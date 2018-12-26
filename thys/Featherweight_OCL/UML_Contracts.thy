@@ -44,8 +44,8 @@ theory UML_Contracts
 imports UML_State
 begin
 
-text{* Modeling of an operation contract for an operation  with 2 arguments,
-       (so depending on three parameters if one takes "self" into account). *}
+text\<open>Modeling of an operation contract for an operation  with 2 arguments,
+       (so depending on three parameters if one takes "self" into account).\<close>
 
 locale contract_scheme =
    fixes f_\<upsilon>

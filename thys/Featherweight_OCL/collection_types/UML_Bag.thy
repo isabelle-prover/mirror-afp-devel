@@ -50,7 +50,7 @@ imports "../basic_types/UML_Void"
 begin
 
 no_notation None ("\<bottom>")
-section{* Collection Type Bag: Operations *}
+section\<open>Collection Type Bag: Operations\<close>
 
 definition "Rep_Bag_base' x = {(x0, y). y < \<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil> x0 }"
 definition "Rep_Bag_base x \<tau> = {(x0, y). y < \<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> x0 }"
@@ -60,10 +60,10 @@ definition ApproxEq (infixl "\<cong>" 30)
 where     "X \<cong> Y \<equiv>  \<lambda> \<tau>. \<lfloor>\<lfloor>Rep_Set_base X \<tau> = Rep_Set_base Y \<tau> \<rfloor>\<rfloor>"
 
 
-subsection{* As a Motivation for the (infinite) Type Construction: Type-Extensions as Bags 
-             \label{sec:type-extensions}*}
+subsection\<open>As a Motivation for the (infinite) Type Construction: Type-Extensions as Bags 
+             \label{sec:type-extensions}\<close>
 
-text{* Our notion of typed bag goes beyond the usual notion of a finite executable bag and
+text\<open>Our notion of typed bag goes beyond the usual notion of a finite executable bag and
 is powerful enough to capture \emph{the extension of a type} in UML and OCL. This means
 we can have in Featherweight OCL Bags containing all possible elements of a type, not only
 those (finite) ones representable in a state. This holds for base types as well as class types,
@@ -77,9 +77,9 @@ In a world with @{term invalid} and @{term null}, there are two notions extensio
 \item the bag of all \emph{valid} values of a type @{term T}, so including @{term null}
       (for which we will introduce the constant  @{term T\<^sub>n\<^sub>u\<^sub>l\<^sub>l}).
 \end{enumerate}
-*}
+\<close>
 
-text{* We define the bag extensions for the base type @{term Integer} as follows: *}
+text\<open>We define the bag extensions for the base type @{term Integer} as follows:\<close>
 definition Integer :: "('\<AA>,Integer\<^sub>b\<^sub>a\<^sub>s\<^sub>e) Bag"
 where     "Integer \<equiv> (\<lambda> \<tau>. (Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e o Some o Some)  (\<lambda> None \<Rightarrow> 0 | Some None \<Rightarrow> 0 | _ \<Rightarrow> 1))"
 
@@ -96,20 +96,20 @@ apply(rule ext, auto simp: Integer\<^sub>n\<^sub>u\<^sub>l\<^sub>l_def defined_d
                            bot_fun_def null_fun_def null_option_def)
 by(simp_all add: Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject bot_option_def bot_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def null_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def null_option_def)
 
-text{* This allows the theorems:
+text\<open>This allows the theorems:
 
-      @{text "\<tau> \<Turnstile> \<delta> x  \<Longrightarrow> \<tau> \<Turnstile> (Integer->includes\<^sub>B\<^sub>a\<^sub>g(x))"}
-      @{text "\<tau> \<Turnstile> \<delta> x  \<Longrightarrow> \<tau> \<Turnstile> Integer  \<triangleq> (Integer->including\<^sub>B\<^sub>a\<^sub>g(x))"}
+      \<open>\<tau> \<Turnstile> \<delta> x  \<Longrightarrow> \<tau> \<Turnstile> (Integer->includes\<^sub>B\<^sub>a\<^sub>g(x))\<close>
+      \<open>\<tau> \<Turnstile> \<delta> x  \<Longrightarrow> \<tau> \<Turnstile> Integer  \<triangleq> (Integer->including\<^sub>B\<^sub>a\<^sub>g(x))\<close>
 
 and
 
-      @{text "\<tau> \<Turnstile> \<upsilon> x  \<Longrightarrow> \<tau> \<Turnstile> (Integer\<^sub>n\<^sub>u\<^sub>l\<^sub>l->includes\<^sub>B\<^sub>a\<^sub>g(x))"}
-      @{text "\<tau> \<Turnstile> \<upsilon> x  \<Longrightarrow> \<tau> \<Turnstile> Integer\<^sub>n\<^sub>u\<^sub>l\<^sub>l  \<triangleq> (Integer\<^sub>n\<^sub>u\<^sub>l\<^sub>l->including\<^sub>B\<^sub>a\<^sub>g(x))"}
+      \<open>\<tau> \<Turnstile> \<upsilon> x  \<Longrightarrow> \<tau> \<Turnstile> (Integer\<^sub>n\<^sub>u\<^sub>l\<^sub>l->includes\<^sub>B\<^sub>a\<^sub>g(x))\<close>
+      \<open>\<tau> \<Turnstile> \<upsilon> x  \<Longrightarrow> \<tau> \<Turnstile> Integer\<^sub>n\<^sub>u\<^sub>l\<^sub>l  \<triangleq> (Integer\<^sub>n\<^sub>u\<^sub>l\<^sub>l->including\<^sub>B\<^sub>a\<^sub>g(x))\<close>
 
 which characterize the infiniteness of these bags by a recursive property on these bags.
-*}
+\<close>
 
-text{* In the same spirit, we proceed similarly for the remaining base types: *}
+text\<open>In the same spirit, we proceed similarly for the remaining base types:\<close>
 
 definition Void\<^sub>n\<^sub>u\<^sub>l\<^sub>l :: "('\<AA>,Void\<^sub>b\<^sub>a\<^sub>s\<^sub>e) Bag"
 where     "Void\<^sub>n\<^sub>u\<^sub>l\<^sub>l \<equiv> (\<lambda> \<tau>. (Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e o Some o Some) (\<lambda> x. if x = Abs_Void\<^sub>b\<^sub>a\<^sub>s\<^sub>e (Some None) then 1 else 0))"
@@ -220,9 +220,9 @@ apply(rule ext, auto simp: Real\<^sub>n\<^sub>u\<^sub>l\<^sub>l_def defined_def 
                            bot_fun_def null_fun_def null_option_def)
 by(simp_all add: Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject bot_option_def bot_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def null_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def null_option_def)
 
-subsection{* Basic Properties of the Bag Type*}
+subsection\<open>Basic Properties of the Bag Type\<close>
 
-text{* Every element in a defined bag is valid. *}
+text\<open>Every element in a defined bag is valid.\<close>
 
 lemma Bag_inv_lemma: "\<tau> \<Turnstile> (\<delta> X) \<Longrightarrow> \<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e (X \<tau>)\<rceil>\<rceil> bot = 0"
 apply(insert Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e [of "X \<tau>"], simp)
@@ -271,18 +271,18 @@ apply(simp add: valid_def null_fun_def bot_fun_def bot_Bag\<^sub>b\<^sub>a\<^sub
 apply(subst Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject,simp_all add: null_option_def bot_option_def)
 done
 
-text{* ... which means that we can have a type @{text "('\<AA>,('\<AA>,('\<AA>) Integer) Bag) Bag"}
+text\<open>... which means that we can have a type \<open>('\<AA>,('\<AA>,('\<AA>) Integer) Bag) Bag\<close>
 corresponding exactly to Bag(Bag(Integer)) in OCL notation. Note that the parameter
-@{text "'\<AA>"} still refers to the object universe; making the OCL semantics entirely parametric
+\<open>'\<AA>\<close> still refers to the object universe; making the OCL semantics entirely parametric
 in the object universe makes it possible to study (and prove) its properties
-independently from a concrete class diagram. *}
+independently from a concrete class diagram.\<close>
 
-subsection{* Definition: Strict Equality \label{sec:bag-strict-equality}*}
+subsection\<open>Definition: Strict Equality \label{sec:bag-strict-equality}\<close>
 
-text{* After the part of foundational operations on bags, we detail here equality on bags.
+text\<open>After the part of foundational operations on bags, we detail here equality on bags.
 Strong equality is inherited from the OCL core, but we have to consider
 the case of the strict equality. We decide to overload strict equality in the
-same way we do for other value's in OCL:*}
+same way we do for other value's in OCL:\<close>
 
 overloading StrictRefEq \<equiv> "StrictRefEq :: [('\<AA>,'\<alpha>::null)Bag,('\<AA>,'\<alpha>::null)Bag] \<Rightarrow> ('\<AA>)Boolean"
 begin
@@ -292,20 +292,20 @@ begin
                                        else invalid \<tau>"
 end
 
-text{* One might object here that for the case of objects, this is an empty definition.
+text\<open>One might object here that for the case of objects, this is an empty definition.
 The answer is no, we will restrain later on states and objects such that any object
 has its oid stored inside the object (so the ref, under which an object can be referenced
 in the store will represented in the object itself). For such well-formed stores that satisfy
 this invariant (the WFF-invariant), the referential equality and the
-strong equality---and therefore the strict equality on bags in the sense above---coincides.*}
+strong equality---and therefore the strict equality on bags in the sense above---coincides.\<close>
 
-text{* Property proof in terms of @{term "profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v"}*}
+text\<open>Property proof in terms of @{term "profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v"}\<close>
 interpretation  StrictRefEq\<^sub>B\<^sub>a\<^sub>g : profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v "\<lambda> x y. (x::('\<AA>,'\<alpha>::null)Bag) \<doteq> y" 
          by unfold_locales (auto simp:  StrictRefEq\<^sub>B\<^sub>a\<^sub>g)
 
 
 
-subsection{* Constants: mtBag *}
+subsection\<open>Constants: mtBag\<close>
 definition mtBag::"('\<AA>,'\<alpha>::null) Bag"  ("Bag{}")
 where     "Bag{} \<equiv> (\<lambda> \<tau>.  Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor>\<lambda>_. 0::nat\<rfloor>\<rfloor> )"
 
@@ -324,18 +324,18 @@ lemma mtBag_rep_bag: "\<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e (B
  apply(simp add: mtBag_def, subst Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse)
 by(simp add: bot_option_def)+
 
-text_raw{* \isatagafp *}
+text_raw\<open>\isatagafp\<close>
 
 lemma [simp,code_unfold]: "const Bag{}"
 by(simp add: const_def mtBag_def)
 
 
-text{* Note that the collection types in OCL allow for null to be included;
-  however, there is the null-collection into which inclusion yields invalid. *}
+text\<open>Note that the collection types in OCL allow for null to be included;
+  however, there is the null-collection into which inclusion yields invalid.\<close>
 
-text_raw{* \endisatagafp *}
+text_raw\<open>\endisatagafp\<close>
 
-subsection{* Definition: Including *}
+subsection\<open>Definition: Including\<close>
 
 definition OclIncluding   :: "[('\<AA>,'\<alpha>::null) Bag,('\<AA>,'\<alpha>) val] \<Rightarrow> ('\<AA>,'\<alpha>) Bag"
 where     "OclIncluding x y = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
@@ -365,7 +365,7 @@ translations
   "Bag{x}"     == "CONST OclIncluding (Bag{}) x "
 
 
-subsection{* Definition: Excluding *}
+subsection\<open>Definition: Excluding\<close>
 
 definition OclExcluding   :: "[('\<AA>,'\<alpha>::null) Bag,('\<AA>,'\<alpha>) val] \<Rightarrow> ('\<AA>,'\<alpha>) Bag"
 where     "OclExcluding x y = (\<lambda> \<tau>.  if (\<delta> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
@@ -386,7 +386,7 @@ proof -
                                           mem_Collect_eq null_option_def)+
 qed
 
-subsection{* Definition: Includes *}
+subsection\<open>Definition: Includes\<close>
 
 definition OclIncludes   :: "[('\<AA>,'\<alpha>::null) Bag,('\<AA>,'\<alpha>) val] \<Rightarrow> '\<AA> Boolean"
 where     "OclIncludes x y = (\<lambda> \<tau>.   if (\<delta> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
@@ -397,21 +397,21 @@ notation   OclIncludes    ("_->includes\<^sub>B\<^sub>a\<^sub>g'(_')" (*[66,65]6
 interpretation OclIncludes : profile_bin\<^sub>d_\<^sub>v OclIncludes "\<lambda>x y. \<lfloor>\<lfloor> \<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil> y > 0 \<rfloor>\<rfloor>"
 by(unfold_locales, auto simp:OclIncludes_def bot_option_def null_option_def invalid_def)
 
-subsection{* Definition: Excludes *}
+subsection\<open>Definition: Excludes\<close>
 
 definition OclExcludes   :: "[('\<AA>,'\<alpha>::null) Bag,('\<AA>,'\<alpha>) val] \<Rightarrow> '\<AA> Boolean"
 where     "OclExcludes x y = (not(OclIncludes x y))"
 notation   OclExcludes    ("_->excludes\<^sub>B\<^sub>a\<^sub>g'(_')" (*[66,65]65*))
 
-text{* The case of the size definition is somewhat special, we admit
+text\<open>The case of the size definition is somewhat special, we admit
 explicitly in Featherweight OCL the possibility of infinite bags. For
 the size definition, this requires an extra condition that assures
-that the cardinality of the bag is actually a defined integer. *}
+that the cardinality of the bag is actually a defined integer.\<close>
 
 interpretation OclExcludes : profile_bin\<^sub>d_\<^sub>v OclExcludes "\<lambda>x y. \<lfloor>\<lfloor> \<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil> y \<le> 0 \<rfloor>\<rfloor>"
 by(unfold_locales, auto simp:OclExcludes_def OclIncludes_def OclNot_def bot_option_def null_option_def invalid_def)
 
-subsection{* Definition: Size *}
+subsection\<open>Definition: Size\<close>
 
 definition OclSize     :: "('\<AA>,'\<alpha>::null)Bag \<Rightarrow> '\<AA> Integer"
 where     "OclSize x = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> finite (Rep_Bag_base x \<tau>)
@@ -420,16 +420,16 @@ where     "OclSize x = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \
 notation  (* standard ascii syntax *)
            OclSize        ("_->size\<^sub>B\<^sub>a\<^sub>g'(')" (*[66]*))
 
-text{* The following definition follows the requirement of the
+text\<open>The following definition follows the requirement of the
 standard to treat null as neutral element of bags. It is
 a well-documented exception from the general strictness
 rule and the rule that the distinguished argument self should
-be non-null. *}
+be non-null.\<close>
 
 (*TODO Locale - Equivalent*)  
 
 
-subsection{* Definition: IsEmpty *}
+subsection\<open>Definition: IsEmpty\<close>
 
 definition OclIsEmpty   :: "('\<AA>,'\<alpha>::null) Bag \<Rightarrow> '\<AA> Boolean"
 where     "OclIsEmpty x =  ((\<upsilon> x and not (\<delta> x)) or ((OclSize x) \<doteq> \<zero>))"
@@ -437,7 +437,7 @@ notation   OclIsEmpty     ("_->isEmpty\<^sub>B\<^sub>a\<^sub>g'(')" (*[66]*))
 
 (*TODO Locale - Equivalent*)  
 
-subsection{* Definition: NotEmpty *}
+subsection\<open>Definition: NotEmpty\<close>
 
 definition OclNotEmpty   :: "('\<AA>,'\<alpha>::null) Bag \<Rightarrow> '\<AA> Boolean"
 where     "OclNotEmpty x =  not(OclIsEmpty x)"
@@ -445,7 +445,7 @@ notation   OclNotEmpty    ("_->notEmpty\<^sub>B\<^sub>a\<^sub>g'(')" (*[66]*))
 
 (*TODO Locale - Equivalent*)  
 
-subsection{* Definition: Any *}
+subsection\<open>Definition: Any\<close>
 
 (* Slight breach of naming convention in order to avoid naming conflict on constant.*)
 definition OclANY   :: "[('\<AA>,'\<alpha>::null) Bag] \<Rightarrow> ('\<AA>,'\<alpha>) val"
@@ -464,10 +464,10 @@ source->any\<^sub>B\<^sub>a\<^sub>g(iterator | body) =
 source->select(iterator | body)->asSequence()->first(). Since we don't have sequences,
 we have to go for a direct---restricted---definition. *)
 
-subsection{* Definition: Forall *}
+subsection\<open>Definition: Forall\<close>
 
-text{* The definition of OclForall mimics the one of @{term "OclAnd"}:
-OclForall is not a strict operation. *}
+text\<open>The definition of OclForall mimics the one of @{term "OclAnd"}:
+OclForall is not a strict operation.\<close>
 definition OclForall     :: "[('\<AA>,'\<alpha>::null)Bag,('\<AA>,'\<alpha>)val\<Rightarrow>('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"
 where     "OclForall S P = (\<lambda> \<tau>. if (\<delta> S) \<tau> = true \<tau>
                                  then if (\<exists>x\<in>Rep_Set_base S \<tau>. P (\<lambda>_. x) \<tau> = false \<tau>)
@@ -485,9 +485,9 @@ translations
 
 (*TODO Locale - Equivalent*)  
 
-subsection{* Definition: Exists *}
+subsection\<open>Definition: Exists\<close>
   
-text{* Like OclForall, OclExists is also not strict. *}
+text\<open>Like OclForall, OclExists is also not strict.\<close>
 definition OclExists     :: "[('\<AA>,'\<alpha>::null) Bag,('\<AA>,'\<alpha>)val\<Rightarrow>('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"
 where     "OclExists S P = not(UML_Bag.OclForall S (\<lambda> X. not (P X)))"
 
@@ -498,7 +498,7 @@ translations
 
 (*TODO Locale - Equivalent*)  
   
-subsection{* Definition: Iterate *}
+subsection\<open>Definition: Iterate\<close>
 
 definition OclIterate :: "[('\<AA>,'\<alpha>::null) Bag,('\<AA>,'\<beta>::null)val,
                            ('\<AA>,'\<alpha>)val\<Rightarrow>('\<AA>,'\<beta>)val\<Rightarrow>('\<AA>,'\<beta>)val] \<Rightarrow> ('\<AA>,'\<beta>)val"
@@ -513,7 +513,7 @@ translations
 
 (*TODO Locale - Equivalent*)  
 
-subsection{* Definition: Select *}
+subsection\<open>Definition: Select\<close>
   
   
 definition OclSelect :: "[('\<AA>,'\<alpha>::null)Bag,('\<AA>,'\<alpha>)val\<Rightarrow>('\<AA>)Boolean] \<Rightarrow> ('\<AA>,'\<alpha>)Bag"
@@ -534,7 +534,7 @@ translations
 
 (*TODO Locale - Equivalent*)  
 
-subsection{* Definition: Reject *}
+subsection\<open>Definition: Reject\<close>
 
 definition OclReject :: "[('\<AA>,'\<alpha>::null)Bag,('\<AA>,'\<alpha>)val\<Rightarrow>('\<AA>)Boolean] \<Rightarrow> ('\<AA>,'\<alpha>::null)Bag"
 where "OclReject S P = OclSelect S (not o P)"
@@ -545,7 +545,7 @@ translations
 
 (*TODO Locale - Equivalent*)  
 
-subsection{* Definition: IncludesAll *}
+subsection\<open>Definition: IncludesAll\<close>
 
 definition OclIncludesAll   :: "[('\<AA>,'\<alpha>::null) Bag,('\<AA>,'\<alpha>) Bag] \<Rightarrow> '\<AA> Boolean"
 where     "OclIncludesAll x y = (\<lambda> \<tau>.   if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
@@ -557,7 +557,7 @@ interpretation OclIncludesAll : profile_bin\<^sub>d_\<^sub>d OclIncludesAll "\<l
 by(unfold_locales, auto simp:OclIncludesAll_def bot_option_def null_option_def invalid_def
                              Rep_Bag_base_def Rep_Bag_base'_def)
 
-subsection{* Definition: ExcludesAll *}
+subsection\<open>Definition: ExcludesAll\<close>
 
 definition OclExcludesAll   :: "[('\<AA>,'\<alpha>::null) Bag,('\<AA>,'\<alpha>) Bag] \<Rightarrow> '\<AA> Boolean"
 where     "OclExcludesAll x y = (\<lambda> \<tau>.   if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
@@ -569,7 +569,7 @@ interpretation OclExcludesAll : profile_bin\<^sub>d_\<^sub>d OclExcludesAll "\<l
 by(unfold_locales, auto simp:OclExcludesAll_def bot_option_def null_option_def invalid_def
                              Rep_Bag_base_def Rep_Bag_base'_def)
 
-subsection{* Definition: Union *}
+subsection\<open>Definition: Union\<close>
 
 definition OclUnion   :: "[('\<AA>,'\<alpha>::null) Bag,('\<AA>,'\<alpha>) Bag] \<Rightarrow> ('\<AA>,'\<alpha>) Bag"
 where     "OclUnion x y = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
@@ -592,7 +592,7 @@ proof -
                                  null_option_def)+
 qed
 
-subsection{* Definition: Intersection *}
+subsection\<open>Definition: Intersection\<close>
 
 definition OclIntersection   :: "[('\<AA>,'\<alpha>::null) Bag,('\<AA>,'\<alpha>) Bag] \<Rightarrow> ('\<AA>,'\<alpha>) Bag"
 where     "OclIntersection x y = (\<lambda> \<tau>.  if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
@@ -616,7 +616,7 @@ proof -
                                  null_option_def)+
 qed
 
-subsection{* Definition: Count *}
+subsection\<open>Definition: Count\<close>
 
 definition OclCount   :: "[('\<AA>,'\<alpha>::null) Bag,('\<AA>,'\<alpha>) val] \<Rightarrow> ('\<AA>) Integer"
 where     "OclCount x y = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
@@ -627,16 +627,16 @@ notation   OclCount ("_->count\<^sub>B\<^sub>a\<^sub>g'(_')"  (*[66,65]65*))
 interpretation OclCount : profile_bin\<^sub>d_\<^sub>d OclCount "\<lambda>x y. \<lfloor>\<lfloor>int(\<lceil>\<lceil>Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil> y)\<rfloor>\<rfloor>"
 by(unfold_locales, auto simp:OclCount_def bot_option_def null_option_def)
 
-subsection{* Definition (future operators) *}
+subsection\<open>Definition (future operators)\<close>
 
 consts (* abstract bag collection operations *)
     OclSum         :: " ('\<AA>,'\<alpha>::null) Bag \<Rightarrow> '\<AA> Integer"
   
 notation  OclSum         ("_->sum\<^sub>B\<^sub>a\<^sub>g'(')" (*[66]*))
 
-subsection{* Logical Properties *}
+subsection\<open>Logical Properties\<close>
 
-text{* OclIncluding *}
+text\<open>OclIncluding\<close>
 
 lemma OclIncluding_valid_args_valid:
 "(\<tau> \<Turnstile> \<upsilon>(X->including\<^sub>B\<^sub>a\<^sub>g(x))) = ((\<tau> \<Turnstile>(\<delta> X)) \<and> (\<tau> \<Turnstile>(\<upsilon> x)))"
@@ -646,10 +646,10 @@ lemma OclIncluding_valid_args_valid''[simp,code_unfold]:
 "\<upsilon>(X->including\<^sub>B\<^sub>a\<^sub>g(x)) = ((\<delta> X) and (\<upsilon> x))"
 by (simp add: OclIncluding.def_valid_then_def)
 
-text{* etc. etc. *}
-text_raw{* \isatagafp *} 
+text\<open>etc. etc.\<close>
+text_raw\<open>\isatagafp\<close> 
 
-text{* OclExcluding *}
+text\<open>OclExcluding\<close>
 
 lemma OclExcluding_valid_args_valid:
 "(\<tau> \<Turnstile> \<upsilon>(X->excluding\<^sub>B\<^sub>a\<^sub>g(x))) = ((\<tau> \<Turnstile>(\<delta> X)) \<and> (\<tau> \<Turnstile>(\<upsilon> x)))"
@@ -659,7 +659,7 @@ lemma OclExcluding_valid_args_valid''[simp,code_unfold]:
 "\<upsilon>(X->excluding\<^sub>B\<^sub>a\<^sub>g(x)) = ((\<delta> X) and (\<upsilon> x))"
 by (simp add: OclExcluding.def_valid_then_def)
 
-text{* OclIncludes *}
+text\<open>OclIncludes\<close>
 
 lemma OclIncludes_valid_args_valid:
 "(\<tau> \<Turnstile> \<upsilon>(X->includes\<^sub>B\<^sub>a\<^sub>g(x))) = ((\<tau> \<Turnstile>(\<delta> X)) \<and> (\<tau> \<Turnstile>(\<upsilon> x)))"
@@ -669,7 +669,7 @@ lemma OclIncludes_valid_args_valid''[simp,code_unfold]:
 "\<upsilon>(X->includes\<^sub>B\<^sub>a\<^sub>g(x)) = ((\<delta> X) and (\<upsilon> x))"
 by (simp add: OclIncludes.def_valid_then_def)
 
-text{* OclExcludes *}
+text\<open>OclExcludes\<close>
 
 lemma OclExcludes_valid_args_valid:
 "(\<tau> \<Turnstile> \<upsilon>(X->excludes\<^sub>B\<^sub>a\<^sub>g(x))) = ((\<tau> \<Turnstile>(\<delta> X)) \<and> (\<tau> \<Turnstile>(\<upsilon> x)))"
@@ -679,7 +679,7 @@ lemma OclExcludes_valid_args_valid''[simp,code_unfold]:
 "\<upsilon>(X->excludes\<^sub>B\<^sub>a\<^sub>g(x)) = ((\<delta> X) and (\<upsilon> x))"
 by (simp add: OclExcludes.def_valid_then_def)
 
-text{* OclSize *}
+text\<open>OclSize\<close>
 
 lemma OclSize_defined_args_valid: "\<tau> \<Turnstile> \<delta> (X->size\<^sub>B\<^sub>a\<^sub>g()) \<Longrightarrow> \<tau> \<Turnstile> \<delta> X"
 by(auto simp: OclSize_def OclValid_def true_def valid_def false_def StrongEq_def
@@ -712,7 +712,7 @@ lemma size_defined':
  apply(simp add: defined_def bot_option_def bot_fun_def null_option_def null_fun_def X_finite)
 done
 
-text{* OclIsEmpty *}
+text\<open>OclIsEmpty\<close>
 
 lemma OclIsEmpty_defined_args_valid:"\<tau> \<Turnstile> \<delta> (X->isEmpty\<^sub>B\<^sub>a\<^sub>g()) \<Longrightarrow> \<tau> \<Turnstile> \<upsilon> X"
   apply(auto simp: OclIsEmpty_def OclValid_def defined_def valid_def false_def true_def
@@ -737,7 +737,7 @@ lemma OclIsEmpty_infinite: "\<tau> \<Turnstile> \<delta> X \<Longrightarrow> \<n
   apply(case_tac x, simp add: null_option_def bot_option_def, simp)
 by(simp add: OclSize_def StrictRefEq\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r valid_def bot_fun_def false_def true_def invalid_def)
 
-text{* OclNotEmpty *}
+text\<open>OclNotEmpty\<close>
 
 lemma OclNotEmpty_defined_args_valid:"\<tau> \<Turnstile> \<delta> (X->notEmpty\<^sub>B\<^sub>a\<^sub>g()) \<Longrightarrow> \<tau> \<Turnstile> \<upsilon> X"
 by (metis (hide_lams, no_types) OclNotEmpty_def OclNot_defargs OclNot_not foundation6 foundation9
@@ -779,7 +779,7 @@ lemma OclNotEmpty_has_elt' : "\<tau> \<Turnstile> \<delta> X \<Longrightarrow>
  apply(drule OclNotEmpty_has_elt, simp)
 by(simp add: Rep_Bag_base_def Rep_Set_base_def image_def)
 
-text{* OclANY *}
+text\<open>OclANY\<close>
 
 lemma OclANY_defined_args_valid: "\<tau> \<Turnstile> \<delta> (X->any\<^sub>B\<^sub>a\<^sub>g()) \<Longrightarrow> \<tau> \<Turnstile> \<delta> X"
 by(auto simp: OclANY_def OclValid_def true_def valid_def false_def StrongEq_def
@@ -824,19 +824,19 @@ lemma OclANY_valid_args_valid''[simp,code_unfold]:
 by(auto intro!: OclANY_valid_args_valid transform2_rev)
 
 (* and higher order ones : forall, exists, iterate, select, reject... *)
-text_raw{* \endisatagafp *} 
+text_raw\<open>\endisatagafp\<close> 
 
-subsection{* Execution Laws with Invalid or Null or Infinite Set as Argument *}
+subsection\<open>Execution Laws with Invalid or Null or Infinite Set as Argument\<close>
 
-text{* OclIncluding *} (* properties already generated by the corresponding locale *)
+text\<open>OclIncluding\<close> (* properties already generated by the corresponding locale *)
 
-text{* OclExcluding *} (* properties already generated by the corresponding locale *)
+text\<open>OclExcluding\<close> (* properties already generated by the corresponding locale *)
 
-text{* OclIncludes *} (* properties already generated by the corresponding locale *)
+text\<open>OclIncludes\<close> (* properties already generated by the corresponding locale *)
 
-text{* OclExcludes *} (* properties already generated by the corresponding locale *)
+text\<open>OclExcludes\<close> (* properties already generated by the corresponding locale *)
 
-text{* OclSize *}
+text\<open>OclSize\<close>
 
 lemma OclSize_invalid[simp,code_unfold]:"(invalid->size\<^sub>B\<^sub>a\<^sub>g()) = invalid"
 by(simp add: bot_fun_def OclSize_def invalid_def defined_def valid_def false_def true_def)
@@ -846,7 +846,7 @@ by(rule ext,
    simp add: bot_fun_def null_fun_def null_is_valid OclSize_def
              invalid_def defined_def valid_def false_def true_def)
 
-text{* OclIsEmpty *}
+text\<open>OclIsEmpty\<close>
 
 lemma OclIsEmpty_invalid[simp,code_unfold]:"(invalid->isEmpty\<^sub>B\<^sub>a\<^sub>g()) = invalid"
 by(simp add: OclIsEmpty_def)
@@ -854,7 +854,7 @@ by(simp add: OclIsEmpty_def)
 lemma OclIsEmpty_null[simp,code_unfold]:"(null->isEmpty\<^sub>B\<^sub>a\<^sub>g()) = true"
 by(simp add: OclIsEmpty_def)
 
-text{* OclNotEmpty *}
+text\<open>OclNotEmpty\<close>
 
 lemma OclNotEmpty_invalid[simp,code_unfold]:"(invalid->notEmpty\<^sub>B\<^sub>a\<^sub>g()) = invalid"
 by(simp add: OclNotEmpty_def)
@@ -862,7 +862,7 @@ by(simp add: OclNotEmpty_def)
 lemma OclNotEmpty_null[simp,code_unfold]:"(null->notEmpty\<^sub>B\<^sub>a\<^sub>g()) = false"
 by(simp add: OclNotEmpty_def)
 
-text{* OclANY *}
+text\<open>OclANY\<close>
 
 lemma OclANY_invalid[simp,code_unfold]:"(invalid->any\<^sub>B\<^sub>a\<^sub>g()) = invalid"
 by(simp add: bot_fun_def OclANY_def invalid_def defined_def valid_def false_def true_def)
@@ -870,7 +870,7 @@ by(simp add: bot_fun_def OclANY_def invalid_def defined_def valid_def false_def 
 lemma OclANY_null[simp,code_unfold]:"(null->any\<^sub>B\<^sub>a\<^sub>g()) = null"
 by(simp add: OclANY_def false_def true_def)
 
-text{* OclForall *}
+text\<open>OclForall\<close>
 
 lemma OclForall_invalid[simp,code_unfold]:"invalid->forAll\<^sub>B\<^sub>a\<^sub>g(a| P a) = invalid"
 by(simp add: bot_fun_def invalid_def OclForall_def defined_def valid_def false_def true_def)
@@ -878,7 +878,7 @@ by(simp add: bot_fun_def invalid_def OclForall_def defined_def valid_def false_d
 lemma OclForall_null[simp,code_unfold]:"null->forAll\<^sub>B\<^sub>a\<^sub>g(a | P a) = invalid"
 by(simp add: bot_fun_def invalid_def OclForall_def defined_def valid_def false_def true_def)
 
-text{* OclExists *}
+text\<open>OclExists\<close>
 
 lemma OclExists_invalid[simp,code_unfold]:"invalid->exists\<^sub>B\<^sub>a\<^sub>g(a| P a) = invalid"
 by(simp add: OclExists_def)
@@ -886,7 +886,7 @@ by(simp add: OclExists_def)
 lemma OclExists_null[simp,code_unfold]:"null->exists\<^sub>B\<^sub>a\<^sub>g(a | P a) = invalid"
 by(simp add: OclExists_def)
 
-text{* OclIterate *}
+text\<open>OclIterate\<close>
 
 lemma OclIterate_invalid[simp,code_unfold]:"invalid->iterate\<^sub>B\<^sub>a\<^sub>g(a; x = A | P a x) = invalid"
 by(simp add: bot_fun_def invalid_def OclIterate_def defined_def valid_def false_def true_def)
@@ -898,7 +898,7 @@ by(simp add: bot_fun_def invalid_def OclIterate_def defined_def valid_def false_
 lemma OclIterate_invalid_args[simp,code_unfold]:"S->iterate\<^sub>B\<^sub>a\<^sub>g(a; x = invalid | P a x) = invalid"
 by(simp add: bot_fun_def invalid_def OclIterate_def defined_def valid_def false_def true_def)
 
-text{* An open question is this ... *}
+text\<open>An open question is this ...\<close>
 lemma (*OclIterate_null_args[simp,code_unfold]:*) "S->iterate\<^sub>B\<^sub>a\<^sub>g(a; x = null | P a x) = invalid"
 oops
 (* In the definition above, this does not hold in general.
@@ -911,7 +911,7 @@ apply(insert non_finite [THEN OclSize_infinite])
 apply(subst (asm) foundation9, simp)
 by(metis OclIterate_def OclValid_def invalid_def)
 
-text{* OclSelect *}
+text\<open>OclSelect\<close>
 
 lemma OclSelect_invalid[simp,code_unfold]:"invalid->select\<^sub>B\<^sub>a\<^sub>g(a | P a) = invalid"
 by(simp add: bot_fun_def invalid_def OclSelect_def defined_def valid_def false_def true_def)
@@ -919,7 +919,7 @@ by(simp add: bot_fun_def invalid_def OclSelect_def defined_def valid_def false_d
 lemma OclSelect_null[simp,code_unfold]:"null->select\<^sub>B\<^sub>a\<^sub>g(a | P a) = invalid"
 by(simp add: bot_fun_def invalid_def OclSelect_def defined_def valid_def false_def true_def)
 
-text{* OclReject *}
+text\<open>OclReject\<close>
 
 lemma OclReject_invalid[simp,code_unfold]:"invalid->reject\<^sub>B\<^sub>a\<^sub>g(a | P a) = invalid"
 by(simp add: OclReject_def)
@@ -927,9 +927,9 @@ by(simp add: OclReject_def)
 lemma OclReject_null[simp,code_unfold]:"null->reject\<^sub>B\<^sub>a\<^sub>g(a | P a) = invalid"
 by(simp add: OclReject_def)
 
-text_raw{* \isatagafp *}
+text_raw\<open>\isatagafp\<close>
 
-subsubsection{* Context Passing *}
+subsubsection\<open>Context Passing\<close>
 
 lemma cp_OclIncludes1:
 "(X->includes\<^sub>B\<^sub>a\<^sub>g(x)) \<tau> = (X->includes\<^sub>B\<^sub>a\<^sub>g(\<lambda> _. x \<tau>)) \<tau>"
@@ -1012,7 +1012,7 @@ lemmas cp_intro''\<^sub>B\<^sub>a\<^sub>g[intro!,simp,code_unfold] =
        cp_OclNotEmpty  [THEN allI[THEN allI[THEN cpI1], of "OclNotEmpty"]]
        cp_OclANY       [THEN allI[THEN allI[THEN cpI1], of "OclANY"]]
 
-subsubsection{* Const *}
+subsubsection\<open>Const\<close>
 
 lemma const_OclIncluding[simp,code_unfold] :
  assumes const_x : "const x"
@@ -1040,9 +1040,9 @@ lemma const_OclIncluding[simp,code_unfold] :
        apply(subst (1 2) const_charn[OF const_S])
        by simp
 qed
-text_raw{* \endisatagafp *}
+text_raw\<open>\endisatagafp\<close>
 
-subsection{* Test Statements *}
+subsection\<open>Test Statements\<close>
 
 (*Assert   "(\<tau> \<Turnstile> (Bag{\<lambda>_. \<lfloor>\<lfloor>x\<rfloor>\<rfloor>} \<doteq> Bag{\<lambda>_. \<lfloor>\<lfloor>x\<rfloor>\<rfloor>}))"
 Assert   "(\<tau> \<Turnstile> (Bag{\<lambda>_. \<lfloor>x\<rfloor>} \<doteq> Bag{\<lambda>_. \<lfloor>x\<rfloor>}))"*)

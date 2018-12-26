@@ -44,18 +44,18 @@ theory  UML_Void
 imports "../UML_PropertyProfiles"
 begin
 
-section{* Basic Type Void: Operations *}
+section\<open>Basic Type Void: Operations\<close>
 
 (* For technical reasons, the type does not contain to the null-class yet. *)
-text {* This \emph{minimal} OCL type contains only two elements:
+text \<open>This \emph{minimal} OCL type contains only two elements:
 @{term "invalid"} and @{term "null"}.
 @{term "Void"} could initially be defined as @{typ "unit option option"},
 however the cardinal of this type is more than two, so it would have the cost to consider
- @{text "Some None"} and @{text "Some (Some ())"} seemingly everywhere.*}
+ \<open>Some None\<close> and \<open>Some (Some ())\<close> seemingly everywhere.\<close>
  
-subsection{* Fundamental Properties on Voids: Strict Equality *}
+subsection\<open>Fundamental Properties on Voids: Strict Equality\<close>
 
-subsubsection{* Definition *}
+subsubsection\<open>Definition\<close>
 
 instantiation   Void\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: bot
 begin
@@ -81,9 +81,9 @@ begin
 end
 
 
-text{* The last basic operation belonging to the fundamental infrastructure
+text\<open>The last basic operation belonging to the fundamental infrastructure
 of a value-type in OCL is the weak equality, which is defined similar
-to the @{typ "('\<AA>)Void"}-case as strict extension of the strong equality:*}
+to the @{typ "('\<AA>)Void"}-case as strict extension of the strong equality:\<close>
 overloading StrictRefEq \<equiv> "StrictRefEq :: [('\<AA>)Void,('\<AA>)Void] \<Rightarrow> ('\<AA>)Boolean"
 begin
   definition StrictRefEq\<^sub>V\<^sub>o\<^sub>i\<^sub>d[code_unfold] :
@@ -92,15 +92,15 @@ begin
                                else invalid \<tau>"
 end
 
-text{* Property proof in terms of @{term "profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v"}*}
+text\<open>Property proof in terms of @{term "profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v"}\<close>
 interpretation   StrictRefEq\<^sub>V\<^sub>o\<^sub>i\<^sub>d : profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v "\<lambda> x y. (x::('\<AA>)Void) \<doteq> y" 
        by unfold_locales (auto simp:  StrictRefEq\<^sub>V\<^sub>o\<^sub>i\<^sub>d)
  
                                     
-subsection{* Basic Void Constants *}
+subsection\<open>Basic Void Constants\<close>
 
 
-subsection{* Validity and Definedness Properties *}
+subsection\<open>Validity and Definedness Properties\<close>
 
 lemma  "\<delta>(null::('\<AA>)Void) = false" by simp
 lemma  "\<upsilon>(null::('\<AA>)Void) = true"  by simp
@@ -130,7 +130,7 @@ apply(rule ext, simp split:, intro conjI impI)
 by(metis null_Void_def null_is_valid, simp add: true_def)
 
 
-subsection{* Test Statements *}
+subsection\<open>Test Statements\<close>
 
 Assert "\<tau> \<Turnstile> ((null::('\<AA>)Void)  \<doteq> null)"
 

@@ -70,7 +70,7 @@ lemmas substs4 = StrongEq_L_subst4_rev
                  
 lemmas substs = substs1 substs2 substs4 [THEN iffD2] substs4
 thm substs
-ML{*
+ML\<open>
 fun ocl_subst_asm_tac ctxt  = FIRST'(map (fn C => (eresolve0_tac [C]) THEN' (simp_tac ctxt)) 
                                          @{thms "substs"})
 
@@ -81,7 +81,7 @@ val _ = Theory.setup
              (Scan.succeed (ocl_subst_asm)) 
              "ocl substition step") 
  
-*}
+\<close>
 
 lemma test1 : "\<tau> \<Turnstile> A \<Longrightarrow> \<tau> \<Turnstile> (A and B \<triangleq> B)"
 apply(tactic "ocl_subst_asm_tac @{context} 1")

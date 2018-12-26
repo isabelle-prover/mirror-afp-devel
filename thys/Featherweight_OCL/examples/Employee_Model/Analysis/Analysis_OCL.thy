@@ -45,10 +45,10 @@ theory
 imports
   Analysis_UML
 begin
-text {* \label{ex:employee-analysis:ocl} *}
+text \<open>\label{ex:employee-analysis:ocl}\<close>
 
-section{* OCL Part: Invariant *}
-text{* These recursive predicates can be defined conservatively
+section\<open>OCL Part: Invariant\<close>
+text\<open>These recursive predicates can be defined conservatively
 by greatest fix-point
 constructions---automatically. See~\cite{brucker.ea:hol-ocl-book:2006,brucker:interactive:2007}
 for details. For the purpose of this example, we state them as axioms
@@ -58,7 +58,7 @@ here.
 context Person
   inv label : self .boss <> null implies (self .salary  \<le>  ((self .boss) .salary))
 \end{ocl}
-*}
+\<close>
 
 definition Person_label\<^sub>i\<^sub>n\<^sub>v :: "Person \<Rightarrow> Boolean" 
 where     "Person_label\<^sub>i\<^sub>n\<^sub>v (self) \<equiv>  
@@ -87,7 +87,7 @@ lemma REC_pre : "\<tau> \<Turnstile> Person_label\<^sub>g\<^sub>l\<^sub>o\<^sub>
 oops (* Attempt to allegiate the burden of he following axiomatizations: could be
         a witness for a constant specification ...*)       
 
-text{* This allows to state a predicate: *}
+text\<open>This allows to state a predicate:\<close>
                                        
 axiomatization inv\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<^sub>_\<^sub>l\<^sub>a\<^sub>b\<^sub>e\<^sub>l :: "Person \<Rightarrow> Boolean"
 where inv\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<^sub>_\<^sub>l\<^sub>a\<^sub>b\<^sub>e\<^sub>l_def:
@@ -121,8 +121,8 @@ lemma inv_2 :
                                      (\<tau> \<Turnstile> (inv\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<^sub>_\<^sub>l\<^sub>a\<^sub>b\<^sub>e\<^sub>l\<^sub>A\<^sub>T\<^sub>p\<^sub>r\<^sub>e(self .boss@pre)))))"
 oops (* Let's hope that this holds ... *)
 
-text{* A very first attempt to characterize the axiomatization by an inductive
-definition - this can not be the last word since too weak (should be equality!) *}
+text\<open>A very first attempt to characterize the axiomatization by an inductive
+definition - this can not be the last word since too weak (should be equality!)\<close>
 coinductive inv :: "Person \<Rightarrow> (\<AA>)st \<Rightarrow> bool" where
  "(\<tau> \<Turnstile> (\<delta> self)) \<Longrightarrow> ((\<tau> \<Turnstile> (self .boss \<doteq> null)) \<or>
                       (\<tau> \<Turnstile> (self .boss <> null) \<and> (\<tau> \<Turnstile> (self .boss .salary \<le>\<^sub>i\<^sub>n\<^sub>t self .salary))  \<and>
@@ -130,8 +130,8 @@ coinductive inv :: "Person \<Rightarrow> (\<AA>)st \<Rightarrow> bool" where
                      \<Longrightarrow> ( inv self \<tau>)"
 
 
-section{* OCL Part: The Contract of a Recursive Query *}
-text{* The original specification of a recursive query :
+section\<open>OCL Part: The Contract of a Recursive Query\<close>
+text\<open>The original specification of a recursive query :
 \begin{ocl}
 context Person::contents():Set(Integer)
 pre:   true
@@ -139,11 +139,11 @@ post:  result = if self.boss = null
                 then Set{i}
                 else self.boss.contents()->including(i)
                 endif
-\end{ocl} *}
+\end{ocl}\<close>
 
 
                   
-text{* For the case of recursive queries, we use at present just axiomatizations: *}               
+text\<open>For the case of recursive queries, we use at present just axiomatizations:\<close>               
                   
 axiomatization contents :: "Person \<Rightarrow> Set_Integer"  ("(1(_).contents'('))" 50)
 where contents_def:
@@ -206,8 +206,8 @@ interpretation contents : contract0 "contents" "\<lambda> self. true"
          qed
 
          
-text{* Specializing @{thm contents.unfold2}, one gets the following more practical rewrite
-rule that is amenable to symbolic evaluation: *}
+text\<open>Specializing @{thm contents.unfold2}, one gets the following more practical rewrite
+rule that is amenable to symbolic evaluation:\<close>
 theorem unfold_contents :
    assumes "cp E"
    and     "\<tau> \<Turnstile> \<delta> self"
@@ -218,8 +218,8 @@ theorem unfold_contents :
 by(rule contents.unfold2[of _ _ _ "\<lambda> X. true"], simp_all add: assms)
 
 
-text{* Since we have only one interpretation function, we need the corresponding
-operation on the pre-state: *}               
+text\<open>Since we have only one interpretation function, we need the corresponding
+operation on the pre-state:\<close>               
 
 consts contentsATpre :: "Person \<Rightarrow> Set_Integer"  ("(1(_).contents@pre'('))" 50)
 
@@ -281,8 +281,8 @@ interpretation contentsATpre : contract0 "contentsATpre" "\<lambda> self. true"
            by(simp add: A B C)
          qed
   
-text{* Again, we derive via @{thm [source] contents.unfold2} a Knaster-Tarski like Fixpoint rule
-that is amenable to symbolic evaluation: *}
+text\<open>Again, we derive via @{thm [source] contents.unfold2} a Knaster-Tarski like Fixpoint rule
+that is amenable to symbolic evaluation:\<close>
 theorem unfold_contentsATpre :
    assumes "cp E"
    and     "\<tau> \<Turnstile> \<delta> self"
@@ -293,11 +293,11 @@ theorem unfold_contentsATpre :
 by(rule contentsATpre.unfold2[of _ _ _ "\<lambda> X. true"], simp_all add: assms)
 
          
-text{* Note that these \inlineocl{@pre} variants on methods are only available on queries, \ie,
-operations without side-effect. *}
+text\<open>Note that these \inlineocl{@pre} variants on methods are only available on queries, \ie,
+operations without side-effect.\<close>
 
-section{* OCL Part: The Contract of a User-defined Method *}
-text{*
+section\<open>OCL Part: The Contract of a User-defined Method\<close>
+text\<open>
 The example specification in high-level OCL input syntax reads as follows:
 \begin{ocl}
 context Person::insert(x:Integer)
@@ -307,7 +307,7 @@ contents() = contents@pre()->including(x)
 \end{ocl}
 
 This boils down to:
-*}
+\<close>
 
 definition insert :: "Person \<Rightarrow>Integer \<Rightarrow> Void"  ("(1(_).insert'(_'))" 50)
 where "self .insert(x) \<equiv> 
@@ -317,7 +317,7 @@ where "self .insert(x) \<equiv>
                        (\<tau> \<Turnstile> ((self).contents() \<triangleq> (self).contents@pre()->including\<^sub>S\<^sub>e\<^sub>t(x))))
                   else \<tau> \<Turnstile> res \<triangleq> invalid)"  
 
-text{* The semantic consequences of this definition were computed inside this locale interpretation:*}
+text\<open>The semantic consequences of this definition were computed inside this locale interpretation:\<close>
 interpretation insert : contract1 "insert" "\<lambda> self x. true" 
                                   "\<lambda> self x res. ((self .contents()) \<triangleq> 
                                                        (self .contents@pre()->including\<^sub>S\<^sub>e\<^sub>t(x)))" 
@@ -330,7 +330,7 @@ interpretation insert : contract1 "insert" "\<lambda> self x. true"
          by(simp)  (* an extremely hacky proof that cries for reformulation and automation - bu *)
 
          
-text{* The result of this locale interpretation for our @{term insert}  contract is the following 
+text\<open>The result of this locale interpretation for our @{term insert}  contract is the following 
 set of properties, which serves as basis for automated deduction on them: 
 
 \begin{table}[htbp]
@@ -357,6 +357,6 @@ set of properties, which serves as basis for automated deduction on them:
    \label{tab:sem_operation_contract}
 \end{table}
 
-*}
+\<close>
          
 end

@@ -44,13 +44,13 @@ theory  UML_String
 imports "../UML_PropertyProfiles"
 begin
 
-section{* Basic Type String: Operations *}
+section\<open>Basic Type String: Operations\<close>
 
-subsection{* Fundamental Properties on Strings: Strict Equality \label{sec:string-strict-eq}*}
+subsection\<open>Fundamental Properties on Strings: Strict Equality \label{sec:string-strict-eq}\<close>
 
-text{* The last basic operation belonging to the fundamental infrastructure
+text\<open>The last basic operation belonging to the fundamental infrastructure
 of a value-type in OCL is the weak equality, which is defined similar
-to the @{typ "('\<AA>)Boolean"}-case as strict extension of the strong equality:*}
+to the @{typ "('\<AA>)Boolean"}-case as strict extension of the strong equality:\<close>
 overloading StrictRefEq \<equiv> "StrictRefEq :: [('\<AA>)String,('\<AA>)String] \<Rightarrow> ('\<AA>)Boolean"
 begin
   definition StrictRefEq\<^sub>S\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g[code_unfold] :
@@ -59,22 +59,22 @@ begin
                                   else invalid \<tau>"
 end
 
-text{* Property proof in terms of @{term "profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v"}*}
+text\<open>Property proof in terms of @{term "profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v"}\<close>
 interpretation  StrictRefEq\<^sub>S\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g : profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v "\<lambda> x y. (x::('\<AA>)String) \<doteq> y" 
          by unfold_locales (auto simp: StrictRefEq\<^sub>S\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g)
  
-subsection{* Basic String Constants *}
+subsection\<open>Basic String Constants\<close>
 
-text{* Although the remaining part of this library reasons about
-integers abstractly, we provide here as example some convenient shortcuts. *}
+text\<open>Although the remaining part of this library reasons about
+integers abstractly, we provide here as example some convenient shortcuts.\<close>
 
 definition OclStringa ::"('\<AA>)String" ("\<a>")    where      "\<a> = (\<lambda> _ . \<lfloor>\<lfloor>''a''\<rfloor>\<rfloor>)"
 definition OclStringb ::"('\<AA>)String" ("\<b>")    where      "\<b> = (\<lambda> _ . \<lfloor>\<lfloor>''b''\<rfloor>\<rfloor>)"
 definition OclStringc ::"('\<AA>)String" ("\<c>")    where      "\<c> = (\<lambda> _ . \<lfloor>\<lfloor>''c''\<rfloor>\<rfloor>)"
-text{* Etc.*}
-text_raw{* \isatagafp *}
+text\<open>Etc.\<close>
+text_raw\<open>\isatagafp\<close>
 
-subsection{* Validity and Definedness Properties *}
+subsection\<open>Validity and Definedness Properties\<close>
 
 lemma  "\<delta>(null::('\<AA>)String) = false" by simp
 lemma  "\<upsilon>(null::('\<AA>)String) = true"  by simp
@@ -90,18 +90,18 @@ by(simp add:valid_def true_def
 (* ecclectic proofs to make examples executable *)
 lemma [simp,code_unfold]: "\<delta> \<a> = true" by(simp add:OclStringa_def)
 lemma [simp,code_unfold]: "\<upsilon> \<a> = true" by(simp add:OclStringa_def)
-text_raw{* \endisatagafp *}
+text_raw\<open>\endisatagafp\<close>
 
-subsection{* String Operations *}
+subsection\<open>String Operations\<close>
 
-subsubsection{* Definition *}
-text{* Here is a common case of a built-in operation on built-in types.
-Note that the arguments must be both defined (non-null, non-bot). *}
-text{* Note that we can not follow the lexis of the OCL Standard for Isabelle
+subsubsection\<open>Definition\<close>
+text\<open>Here is a common case of a built-in operation on built-in types.
+Note that the arguments must be both defined (non-null, non-bot).\<close>
+text\<open>Note that we can not follow the lexis of the OCL Standard for Isabelle
 technical reasons; these operators are heavily overloaded in the HOL library
 that a further overloading would lead to heavy technical buzz in this
 document.
-*}
+\<close>
 definition OclAdd\<^sub>S\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g ::"('\<AA>)String \<Rightarrow> ('\<AA>)String \<Rightarrow> ('\<AA>)String" (infix "+\<^sub>s\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g" 40)
 where "x +\<^sub>s\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g y \<equiv> \<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
                        then \<lfloor>\<lfloor>concat [\<lceil>\<lceil>x \<tau>\<rceil>\<rceil>, \<lceil>\<lceil>y \<tau>\<rceil>\<rceil>]\<rfloor>\<rfloor>
@@ -112,7 +112,7 @@ interpretation OclAdd\<^sub>S\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g : profile_
 (* TODO : size(), concat, substring(s:string) toInteger, toReal, at(i:Integer), characters() etc. *)
 
 
-subsubsection{* Basic Properties *}
+subsubsection\<open>Basic Properties\<close>
 
 lemma OclAdd\<^sub>S\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g_not_commute: "\<exists>X Y. (X +\<^sub>s\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g Y) \<noteq> (Y +\<^sub>s\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g X)"
   apply(rule_tac x = "\<lambda>_. \<lfloor>\<lfloor>''b''\<rfloor>\<rfloor>" in exI)
@@ -121,9 +121,9 @@ lemma OclAdd\<^sub>S\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g_not_commute: "\<exi
   by(auto, drule fun_cong, auto)
 
 
-subsection{* Test Statements *}
-text{* Here follows a list of code-examples, that explain the meanings
-of the above definitions by compilation to code and execution to @{term "True"}.*}
+subsection\<open>Test Statements\<close>
+text\<open>Here follows a list of code-examples, that explain the meanings
+of the above definitions by compilation to code and execution to @{term "True"}.\<close>
 (*
 Assert "\<tau> \<Turnstile> ( \<nine> \<le>\<^sub>s\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g \<one>\<zero> )"
 Assert "\<tau> \<Turnstile> (( \<four> +\<^sub>s\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g \<four> ) \<le>\<^sub>s\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g \<one>\<zero> )"
@@ -131,11 +131,11 @@ Assert "\<tau> |\<noteq> (( \<four> +\<^sub>s\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^
 Assert "\<tau> \<Turnstile> not (\<upsilon> (null +\<^sub>s\<^sub>t\<^sub>r\<^sub>i\<^sub>n\<^sub>g \<one>)) "
 *)
 
-text{* Here follows a list of code-examples, that explain the meanings
-of the above definitions by compilation to code and execution to @{term "True"}.*}
+text\<open>Here follows a list of code-examples, that explain the meanings
+of the above definitions by compilation to code and execution to @{term "True"}.\<close>
 
 
-text{* Elementary computations on String *}
+text\<open>Elementary computations on String\<close>
 
 Assert "\<tau> \<Turnstile> \<a> <> \<b>"
 Assert "\<tau> \<Turnstile> \<b> <> \<a>"

@@ -45,13 +45,13 @@ imports "../UML_PropertyProfiles"
 begin
 
 
-subsection{* Fundamental Predicates on Basic Types: Strict (Referential) Equality *}
-text{*
+subsection\<open>Fundamental Predicates on Basic Types: Strict (Referential) Equality\<close>
+text\<open>
   Here is a first instance of a definition of strict value equality---for
   the special case of the type @{typ "('\<AA>)Boolean"}, it is just
   the strict extension of the logical
   equality:
-*}
+\<close>
 overloading StrictRefEq \<equiv> "StrictRefEq :: [('\<AA>)Boolean,('\<AA>)Boolean] \<Rightarrow> ('\<AA>)Boolean"
 begin
   definition StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n[code_unfold] :
@@ -60,7 +60,7 @@ begin
                                   else invalid \<tau>"
 end
 
-text{* which implies elementary properties like: *}
+text\<open>which implies elementary properties like:\<close>
 lemma [simp,code_unfold] : "(true \<doteq> false) = false"
 by(simp add:StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n)
 lemma [simp,code_unfold] : "(false \<doteq> true) = false"
@@ -84,28 +84,28 @@ lemma true_non_null [simp,code_unfold]:"(true \<doteq> null) = false"
  apply(rule ext, simp add: StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n StrongEq_def false_def)
  by(simp add: true_def bot_option_def null_fun_def null_option_def)
 
-text{* With respect to strictness properties and miscelleaneous side-calculi,
+text\<open>With respect to strictness properties and miscelleaneous side-calculi,
 strict referential equality behaves on booleans as described in the
-@{term "profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v"}:*}
+@{term "profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v"}:\<close>
 interpretation StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n : profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v "\<lambda> x y. (x::('\<AA>)Boolean) \<doteq> y" 
          by unfold_locales (auto simp:StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n)
          
-text{* In particular, it is strict, cp-preserving and const-preserving. In particular,
-it generates the simplifier rules for terms like:*}
+text\<open>In particular, it is strict, cp-preserving and const-preserving. In particular,
+it generates the simplifier rules for terms like:\<close>
 lemma "(invalid \<doteq> false) = invalid" by(simp)
 lemma "(invalid \<doteq> true) = invalid"  by(simp)
 lemma "(false \<doteq> invalid) = invalid" by(simp)
 lemma "(true \<doteq> invalid) = invalid"  by(simp)
 lemma "((invalid::('\<AA>)Boolean) \<doteq> invalid) = invalid" by(simp)
-text{* Thus, the weak equality is \emph{not} reflexive. *}
+text\<open>Thus, the weak equality is \emph{not} reflexive.\<close>
 
 
 
-subsection{* Test Statements on Boolean Operations. *}
-text{* Here follows a list of code-examples, that explain the meanings
-of the above definitions by compilation to code and execution to @{term "True"}.*}
+subsection\<open>Test Statements on Boolean Operations.\<close>
+text\<open>Here follows a list of code-examples, that explain the meanings
+of the above definitions by compilation to code and execution to @{term "True"}.\<close>
 
-text{* Elementary computations on Boolean *}
+text\<open>Elementary computations on Boolean\<close>
 Assert "\<tau> \<Turnstile> \<upsilon>(true)"
 Assert "\<tau> \<Turnstile> \<delta>(false)"
 Assert "\<tau> |\<noteq> \<delta>(null)"

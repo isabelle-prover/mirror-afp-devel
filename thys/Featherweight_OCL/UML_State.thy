@@ -40,31 +40,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-chapter{* Formalization III:  UML/OCL constructs: State Operations and Objects *}
+chapter\<open>Formalization III:  UML/OCL constructs: State Operations and Objects\<close>
 
 theory  UML_State
 imports UML_Library
 begin
 
 no_notation None ("\<bottom>")
-section{* Introduction: States over Typed Object Universes *}
+section\<open>Introduction: States over Typed Object Universes\<close>
 
-text{* \label{sec:universe}
+text\<open>\label{sec:universe}
   In the following, we will refine the concepts of a user-defined
   data-model (implied by a class-diagram) as well as the notion of
   $\state{}$ used in the previous section to much more detail.
   Surprisingly, even without a concrete notion of an objects and a
   universe of object representation, the generic infrastructure of
   state-related operations is fairly rich.
-*}
+\<close>
 
 
 
-subsection{* Fundamental Properties on Objects: Core Referential Equality *}
-subsubsection{* Definition *}
+subsection\<open>Fundamental Properties on Objects: Core Referential Equality\<close>
+subsubsection\<open>Definition\<close>
 
-text{* Generic referential equality - to be used for instantiations
- with concrete object types ... *}
+text\<open>Generic referential equality - to be used for instantiations
+ with concrete object types ...\<close>
 definition  StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t :: "('\<AA>,'a::{object,null})val \<Rightarrow> ('\<AA>,'a)val \<Rightarrow> ('\<AA>)Boolean"
 where      "StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t x y
             \<equiv> \<lambda> \<tau>. if (\<upsilon> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
@@ -73,7 +73,7 @@ where      "StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t x y
                          else \<lfloor>\<lfloor>(oid_of (x \<tau>)) = (oid_of (y \<tau>)) \<rfloor>\<rfloor>
                     else invalid \<tau>"
 
-subsubsection{* Strictness and context passing  *}
+subsubsection\<open>Strictness and context passing\<close>
 
 lemma StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_strict1[simp,code_unfold] :
 "(StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t x invalid) = invalid"
@@ -88,7 +88,7 @@ lemma cp_StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t:
 "(StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t x y \<tau>) = (StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t (\<lambda>_. x \<tau>) (\<lambda>_. y \<tau>)) \<tau>"
 by(auto simp: StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def cp_valid[symmetric])
 
-text_raw{* \isatagafp *}
+text_raw\<open>\isatagafp\<close>
 lemmas cp0_StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t= cp_StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t[THEN allI[THEN allI[THEN allI[THEN cpI2]],
              of "StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t"]]
 
@@ -97,12 +97,12 @@ lemmas cp_intro''[intro!,simp,code_unfold] =
        cp_StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t[THEN allI[THEN allI[THEN allI[THEN cpI2]],
              of "StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t"]]
 
-text_raw{* \endisatagafp *}
+text_raw\<open>\endisatagafp\<close>
 
-subsection{* Logic and Algebraic Layer on Object *}
-subsubsection{* Validity and Definedness Properties *}
+subsection\<open>Logic and Algebraic Layer on Object\<close>
+subsubsection\<open>Validity and Definedness Properties\<close>
 
-text{* We derive the usual laws on definedness for (generic) object equality:*}
+text\<open>We derive the usual laws on definedness for (generic) object equality:\<close>
 lemma StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_defargs:
 "\<tau> \<Turnstile> (StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t x (y::('\<AA>,'a::{null,object})val))\<Longrightarrow> (\<tau> \<Turnstile>(\<upsilon> x)) \<and> (\<tau> \<Turnstile>(\<upsilon> y))"
 by(simp add: StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def OclValid_def true_def invalid_def bot_option_def
@@ -119,7 +119,7 @@ lemma StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def_homo :
 "\<delta>(StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t x (y::('\<AA>,'a::{null,object})val)) = ((\<upsilon> x) and (\<upsilon> y))"
 oops (* sorry *)
 
-subsubsection{* Symmetry *}
+subsubsection\<open>Symmetry\<close>
 
 lemma StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_sym :
 assumes x_val : "\<tau> \<Turnstile> \<upsilon> x"
@@ -128,9 +128,9 @@ by(simp add: StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def tru
              x_val[simplified OclValid_def])
 
 
-subsubsection{* Behavior vs StrongEq *}
+subsubsection\<open>Behavior vs StrongEq\<close>
 
-text{* It remains to clarify the role of the state invariant
+text\<open>It remains to clarify the role of the state invariant
 $\inv_\sigma(\sigma)$ mentioned above that states the condition that
 there is a ``one-to-one'' correspondence between object
 representations and $\oid$'s: $\forall \mathit{oid} \in \dom\ap
@@ -140,33 +140,33 @@ back to \citet{richters:precise:2002}; however, we state this
 condition as an invariant on states rather than a global axiom. It
 can, therefore, not be taken for granted that an $\oid$ makes sense
 both in pre- and post-states of OCL expressions.
-*}
+\<close>
 
-text{* We capture this invariant in the predicate WFF :*}
+text\<open>We capture this invariant in the predicate WFF :\<close>
 
 definition WFF :: "('\<AA>::object)st \<Rightarrow> bool"
 where "WFF \<tau> = ((\<forall> x \<in> ran(heap(fst \<tau>)). \<lceil>heap(fst \<tau>) (oid_of x)\<rceil> = x) \<and>
                 (\<forall> x \<in> ran(heap(snd \<tau>)). \<lceil>heap(snd \<tau>) (oid_of x)\<rceil> = x))"
 
-text{* It turns out that WFF is a key-concept for linking strict referential equality to
+text\<open>It turns out that WFF is a key-concept for linking strict referential equality to
 logical equality: in well-formed states (i.e. those states where the self (oid-of) field contains
 the pointer to which the object is associated to in the state), referential equality coincides
-with logical equality. *}
+with logical equality.\<close>
 
 
-text{* We turn now to the generic definition of referential equality on objects:
+text\<open>We turn now to the generic definition of referential equality on objects:
 Equality on objects in a state is reduced to equality on the
 references to these objects. As in HOL-OCL~\cite{brucker.ea:hol-ocl:2008,brucker.ea:hol-ocl-book:2006},
 we will store the reference of an object inside the object in a (ghost) field.
 By establishing certain invariants (``consistent state''), it can
 be assured that there is a ``one-to-one-correspondence'' of objects
 to their references---and therefore the definition below
-behaves as we expect. *}
-text{* Generic Referential Equality enjoys the usual properties:
+behaves as we expect.\<close>
+text\<open>Generic Referential Equality enjoys the usual properties:
 (quasi) reflexivity, symmetry, transitivity, substitutivity for
 defined values. For type-technical reasons, for each concrete
-object type, the equality @{text "\<doteq>"} is defined by generic referential
-equality. *}
+object type, the equality \<open>\<doteq>\<close> is defined by generic referential
+equality.\<close>
 
 theorem StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_vs_StrongEq:
 assumes WFF: "WFF \<tau>"
@@ -198,21 +198,21 @@ shows "(\<tau> \<Turnstile> (StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c
  apply(auto simp: StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def OclValid_def WFF_def StrongEq_def true_def Ball_def)
 by (metis foundation18' oid_preserve valid_x valid_y)+
 
-text{* So, if two object descriptions live in the same state (both pre or post), the referential
-equality on objects implies in a WFF state the logical equality.  *}
+text\<open>So, if two object descriptions live in the same state (both pre or post), the referential
+equality on objects implies in a WFF state the logical equality.\<close>
 
-section{* Operations on Object *}
-subsection{* Initial States (for testing and code generation) *}
+section\<open>Operations on Object\<close>
+subsection\<open>Initial States (for testing and code generation)\<close>
 
 definition \<tau>\<^sub>0 :: "('\<AA>)st"
 where     "\<tau>\<^sub>0 \<equiv> (\<lparr>heap=Map.empty, assocs = Map.empty\<rparr>,
                  \<lparr>heap=Map.empty, assocs = Map.empty\<rparr>)"
 
-subsection{* OclAllInstances *}
+subsection\<open>OclAllInstances\<close>
 
-text{* To denote OCL types occurring in OCL expressions syntactically---as, for example,
+text\<open>To denote OCL types occurring in OCL expressions syntactically---as, for example,
 as ``argument'' of \inlineocl{oclAllInstances()}---we use the inverses of the injection functions into the object
-universes; we show that this is a sufficient ``characterization.'' *}
+universes; we show that this is a sufficient ``characterization.''\<close>
 
 definition OclAllInstances_generic :: "(('\<AA>::object) st \<Rightarrow> '\<AA> state) \<Rightarrow> ('\<AA>::object \<rightharpoonup> '\<alpha>) \<Rightarrow>
                                        ('\<AA>, '\<alpha> option option) Set"
@@ -264,7 +264,7 @@ by (metis OclAllInstances_generic_defined
           A foundation16' foundation18 foundation24 foundation6)
 
 
-text{* One way to establish the actual presence of an object representation in a state is:*}
+text\<open>One way to establish the actual presence of an object representation in a state is:\<close>
 
 definition "is_represented_in_state fst_snd x H \<tau> = (x \<tau> \<in> (Some o H) ` ran (heap (fst_snd \<tau>)))"
 
@@ -305,12 +305,12 @@ proof -
  by(subst Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject, (simp add: bot_option_def true_def)+)
 qed
 
-text{* Here comes a couple of operational rules that allow to infer the value
+text\<open>Here comes a couple of operational rules that allow to infer the value
 of \inlineisar+oclAllInstances+ from the context $\tau$. These rules are a special-case
 in the sense that they are the only rules that relate statements with \emph{different}
 $\tau$'s. For that reason, new concepts like ``constant contexts P'' are necessary
 (for which we do not elaborate an own theory for reasons of space limitations;
- in examples, we will prove resulting constraints straight forward by hand). *}
+ in examples, we will prove resulting constraints straight forward by hand).\<close>
 
 
 lemma state_update_vs_allInstances_generic_including':
@@ -475,7 +475,7 @@ qed
 
 declare OclAllInstances_generic_def [simp]
 
-subsubsection{* OclAllInstances (@post) *}
+subsubsection\<open>OclAllInstances (@post)\<close>
 
 definition OclAllInstances_at_post :: "('\<AA> :: object \<rightharpoonup> '\<alpha>) \<Rightarrow> ('\<AA>, '\<alpha> option option) Set"
                            ("_ .allInstances'(')")
@@ -503,7 +503,7 @@ unfolding OclAllInstances_at_post_def
 by(rule represented_generic_objects_defined[OF A[simplified OclAllInstances_at_post_def]])
 
 
-text{* One way to establish the actual presence of an object representation in a state is:*}
+text\<open>One way to establish the actual presence of an object representation in a state is:\<close>
 
 lemma
 assumes A: "\<tau> \<Turnstile> H .allInstances()->includes\<^sub>S\<^sub>e\<^sub>t(x)"
@@ -515,12 +515,12 @@ shows   "(\<sigma>, \<lparr>heap=Map.empty, assocs=A\<rparr>) \<Turnstile> Type 
 unfolding OclAllInstances_at_post_def
 by(rule state_update_vs_allInstances_generic_empty[OF snd_conv])
 
-text{* Here comes a couple of operational rules that allow to infer the value
+text\<open>Here comes a couple of operational rules that allow to infer the value
 of \inlineisar+oclAllInstances+ from the context $\tau$. These rules are a special-case
 in the sense that they are the only rules that relate statements with \emph{different}
 $\tau$'s. For that reason, new concepts like ``constant contexts P'' are necessary
 (for which we do not elaborate an own theory for reasons of space limitations;
- in examples, we will prove resulting constraints straight forward by hand). *}
+ in examples, we will prove resulting constraints straight forward by hand).\<close>
 
 
 lemma state_update_vs_allInstances_at_post_including':
@@ -581,7 +581,7 @@ shows   "((\<sigma>, \<lparr>heap=\<sigma>'(oid\<mapsto>Object),assocs=A\<rparr>
 unfolding OclAllInstances_at_post_def
 by(rule state_update_vs_allInstances_generic_tc[OF snd_conv], insert assms)
 
-subsubsection{* OclAllInstances (@pre) *}
+subsubsection\<open>OclAllInstances (@pre)\<close>
 
 definition OclAllInstances_at_pre :: "('\<AA> :: object \<rightharpoonup> '\<alpha>) \<Rightarrow> ('\<AA>, '\<alpha> option option) Set"
                            ("_ .allInstances@pre'(')")
@@ -608,7 +608,7 @@ unfolding OclAllInstances_at_pre_def
 by(rule represented_generic_objects_defined[OF A[simplified OclAllInstances_at_pre_def]])
 
 
-text{* One way to establish the actual presence of an object representation in a state is:*}
+text\<open>One way to establish the actual presence of an object representation in a state is:\<close>
 
 lemma
 assumes A: "\<tau> \<Turnstile> H .allInstances@pre()->includes\<^sub>S\<^sub>e\<^sub>t(x)"
@@ -621,12 +621,12 @@ shows   "(\<lparr>heap=Map.empty, assocs=A\<rparr>, \<sigma>) \<Turnstile> Type 
 unfolding OclAllInstances_at_pre_def
 by(rule state_update_vs_allInstances_generic_empty[OF fst_conv])
 
-text{* Here comes a couple of operational rules that allow to infer the value
+text\<open>Here comes a couple of operational rules that allow to infer the value
 of \inlineisar+oclAllInstances@pre+ from the context $\tau$. These rules are a special-case
 in the sense that they are the only rules that relate statements with \emph{different}
 $\tau$'s. For that reason, new concepts like ``constant contexts P'' are necessary
 (for which we do not elaborate an own theory for reasons of space limitations;
- in examples, we will prove resulting constraints straight forward by hand). *}
+ in examples, we will prove resulting constraints straight forward by hand).\<close>
 
 
 lemma state_update_vs_allInstances_at_pre_including':
@@ -687,7 +687,7 @@ shows   "((\<lparr>heap=\<sigma>'(oid\<mapsto>Object),assocs=A\<rparr>, \<sigma>
 unfolding OclAllInstances_at_pre_def
 by(rule state_update_vs_allInstances_generic_tc[OF fst_conv], insert assms)
 
-subsubsection{* @post or @pre *}
+subsubsection\<open>@post or @pre\<close>
 
 theorem StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_vs_StrongEq'':
 assumes WFF: "WFF \<tau>"
@@ -730,7 +730,7 @@ proof -
     simp add: comp_def image_def, fastforce)+
 qed
 
-subsection{* OclIsNew, OclIsDeleted, OclIsMaintained, OclIsAbsent *}
+subsection\<open>OclIsNew, OclIsDeleted, OclIsMaintained, OclIsAbsent\<close>
 
 definition OclIsNew:: "('\<AA>, '\<alpha>::{null,object})val \<Rightarrow> ('\<AA>)Boolean"   ("(_).oclIsNew'(')")
 where "X .oclIsNew() \<equiv> (\<lambda>\<tau> . if (\<delta> X) \<tau> = true \<tau>
@@ -738,9 +738,9 @@ where "X .oclIsNew() \<equiv> (\<lambda>\<tau> . if (\<delta> X) \<tau> = true \
                                      oid_of (X \<tau>) \<in> dom(heap(snd \<tau>))\<rfloor>\<rfloor>
                               else invalid \<tau>)"
 
-text{* The following predicates --- which are not part of the OCL standard descriptions ---
+text\<open>The following predicates --- which are not part of the OCL standard descriptions ---
 complete the goal of \inlineisar+oclIsNew+ by describing where an object belongs.
-*}
+\<close>
 
 definition OclIsDeleted:: "('\<AA>, '\<alpha>::{null,object})val \<Rightarrow> ('\<AA>)Boolean"   ("(_).oclIsDeleted'(')")
 where "X .oclIsDeleted() \<equiv> (\<lambda>\<tau> . if (\<delta> X) \<tau> = true \<tau>
@@ -772,17 +772,17 @@ lemma notNew_vs_others : "\<tau> \<Turnstile> \<delta> X \<Longrightarrow>
 by(simp add: OclIsDeleted_def OclIsNew_def OclIsMaintained_def OclIsAbsent_def
                 OclNot_def OclValid_def true_def, blast)
 
-subsection{* OclIsModifiedOnly *}
-subsubsection{* Definition *}
+subsection\<open>OclIsModifiedOnly\<close>
+subsubsection\<open>Definition\<close>
 
-text{* The following predicate---which is not part of the OCL
+text\<open>The following predicate---which is not part of the OCL
 standard---provides a simple, but powerful means to describe framing
 conditions. For any formal approach, be it animation of OCL contracts,
 test-case generation or die-hard theorem proving, the specification of
 the part of a system transition that \emph{does not change} is of
 primordial importance. The following operator establishes the equality
 between old and new objects in the state (provided that they exist in
-both states), with the exception of those objects. *}
+both states), with the exception of those objects.\<close>
 
 definition OclIsModifiedOnly ::"('\<AA>::object,'\<alpha>::{null,object})Set \<Rightarrow> '\<AA> Boolean"
                         ("_->oclIsModifiedOnly'(')")
@@ -793,7 +793,7 @@ where "X->oclIsModifiedOnly() \<equiv> (\<lambda>(\<sigma>,\<sigma>').
                               then \<lfloor>\<lfloor>\<forall> x \<in> S. (heap \<sigma>) x = (heap \<sigma>') x\<rfloor>\<rfloor>
                               else invalid (\<sigma>,\<sigma>'))"
 
-subsubsection{* Execution with Invalid or Null or Null Element as Argument *}
+subsubsection\<open>Execution with Invalid or Null or Null Element as Argument\<close>
 
 lemma "invalid->oclIsModifiedOnly() = invalid"
 by(simp add: OclIsModifiedOnly_def)
@@ -810,16 +810,16 @@ lemma
  apply(simp split: if_split_asm)
 by(simp add: null_fun_def, blast)
 
-subsubsection{* Context Passing *}
+subsubsection\<open>Context Passing\<close>
 
 lemma cp_OclIsModifiedOnly : "X->oclIsModifiedOnly() \<tau> = (\<lambda>_. X \<tau>)->oclIsModifiedOnly() \<tau>"
 by(simp only: OclIsModifiedOnly_def, case_tac \<tau>, simp only:, subst cp_defined, simp)
 
-subsection{* OclSelf *}
+subsection\<open>OclSelf\<close>
 
-text{* The following predicate---which is not part of the OCL
+text\<open>The following predicate---which is not part of the OCL
 standard---explicitly retrieves in the pre or post state the original OCL expression
-given as argument. *}
+given as argument.\<close>
 
 definition [simp]: "OclSelf x H fst_snd = (\<lambda>\<tau> . if (\<delta> x) \<tau> = true \<tau>
                         then if oid_of (x \<tau>) \<in> dom(heap(fst \<tau>)) \<and> oid_of (x \<tau>) \<in> dom(heap (snd \<tau>))
@@ -837,7 +837,7 @@ definition OclSelf_at_post :: "('\<AA>::object,'\<alpha>::{null,object})val \<Ri
                       ('\<AA>::object,'\<alpha>::{null,object})val" ("(_)@post(_)")
 where "x @post H = OclSelf x H snd"
 
-subsection{* Framing Theorem *}
+subsection\<open>Framing Theorem\<close>
 
 lemma all_oid_diff:
  assumes def_x : "\<tau> \<Turnstile> \<delta> x"
@@ -956,8 +956,8 @@ theorem framing:
 qed(simp add: OclSelf_at_post_def OclSelf_at_pre_def OclValid_def StrongEq_def true_def)+
 
 
-text{* As corollary, the framing property can be expressed with only the strong equality
-as comparison operator. *}
+text\<open>As corollary, the framing property can be expressed with only the strong equality
+as comparison operator.\<close>
 
 theorem framing':
   assumes wff : "WFF \<tau>"
@@ -985,7 +985,7 @@ proof -
  by(simp add: OclSelf_at_post_def OclSelf_at_pre_def OclValid_def StrongEq_def true_def)+
 qed
 
-subsection{* Miscellaneous *}
+subsection\<open>Miscellaneous\<close>
 
 lemma pre_post_new: "\<tau> \<Turnstile> (x .oclIsNew()) \<Longrightarrow> \<not> (\<tau> \<Turnstile> \<upsilon>(x @pre H1)) \<and> \<not> (\<tau> \<Turnstile> \<upsilon>(x @post H2))"
 by(simp add: OclIsNew_def OclSelf_at_pre_def OclSelf_at_post_def
@@ -1021,17 +1021,17 @@ by(simp add: OclIsMaintained_def OclSelf_at_pre_def OclSelf_at_post_def
 lemma framing_same_state: "(\<sigma>, \<sigma>) \<Turnstile> (x @pre H  \<triangleq>  (x @post H))"
 by(simp add: OclSelf_at_pre_def OclSelf_at_post_def OclValid_def StrongEq_def)
 
-section{* Accessors on Object *}
-subsection{* Definition *}
+section\<open>Accessors on Object\<close>
+subsection\<open>Definition\<close>
 
 definition "select_object mt incl smash deref l = smash (foldl incl mt (map deref l))
  \<comment> \<open>smash returns null with \<open>mt\<close> in input (in this case, object contains null pointer)\<close>"
 
-text{* The continuation @{text f} is usually instantiated with a smashing
+text\<open>The continuation \<open>f\<close> is usually instantiated with a smashing
 function which is either the identity @{term id} or, for \inlineocl{0..1} cardinalities
 of associations, the @{term OclANY}-selector which also handles the
 @{term null}-cases appropriately. A standard use-case for this combinator
-is for example: *}
+is for example:\<close>
 term "(select_object mtSet UML_Set.OclIncluding UML_Set.OclANY f  l oid )::('\<AA>, 'a::null)val"
 
 definition "select_object\<^sub>S\<^sub>e\<^sub>t = select_object mtSet UML_Set.OclIncluding id"
@@ -1047,7 +1047,7 @@ definition "select_object\<^sub>S\<^sub>e\<^sub>q = select_object mtSequence UML
 definition "select_object_any\<^sub>S\<^sub>e\<^sub>q f s_set = UML_Sequence.OclANY (select_object\<^sub>S\<^sub>e\<^sub>q f s_set)"
 definition "select_object\<^sub>P\<^sub>a\<^sub>i\<^sub>r f1 f2 = (\<lambda>(a,b). OclPair (f1 a) (f2 b))"
 
-subsection{* Validity and Definedness Properties *}
+subsection\<open>Validity and Definedness Properties\<close>
 
 lemma select_fold_exec\<^sub>S\<^sub>e\<^sub>q:
  assumes "list_all (\<lambda>f. (\<tau> \<Turnstile> \<upsilon> f)) l"

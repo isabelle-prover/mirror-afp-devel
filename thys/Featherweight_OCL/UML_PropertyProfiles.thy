@@ -47,17 +47,17 @@ theory UML_PropertyProfiles
 imports  UML_Logic
 begin
 
-section{* Property Profiles for OCL Operators via Isabelle Locales *}
+section\<open>Property Profiles for OCL Operators via Isabelle Locales\<close>
 
-text{* We use the Isabelle mechanism of a \emph{Locale} to generate the
+text\<open>We use the Isabelle mechanism of a \emph{Locale} to generate the
 common lemmas for each type and operator; Locales can be seen as a 
 functor that takes a local theory and generates a number of theorems.
 In our case, we will instantiate later these locales by the local theory 
 of an operator definition and obtain the common rules for strictness, definedness
 propagation, context-passingness and constance in a systematic way.
-*}
+\<close>
 
-subsection{* Property Profiles for Monadic Operators *}
+subsection\<open>Property Profiles for Monadic Operators\<close>
 
 locale profile_mono_scheme_defined =
    fixes f :: "('\<AA>,'\<alpha>::null)val \<Rightarrow> ('\<AA>,'\<beta>::null)val"
@@ -140,7 +140,7 @@ begin
            split: if_split_asm)
 end
 
-subsection{*  Property Profiles for Single  *}
+subsection\<open>Property Profiles for Single\<close>
 
 locale profile_single =
    fixes d:: "('\<AA>,'a::null)val \<Rightarrow> '\<AA> Boolean"
@@ -148,7 +148,7 @@ locale profile_single =
    assumes d_cp0: "d X \<tau> = d (\<lambda> _. X \<tau>) \<tau>"
    assumes d_const[simp,code_unfold]: "const X \<Longrightarrow> const (d X)"
 
-subsection{* Property Profiles for Binary Operators *}
+subsection\<open>Property Profiles for Binary Operators\<close>
 
 definition "bin' f g d\<^sub>x d\<^sub>y X Y =
                        (f X Y = (\<lambda> \<tau>. if (d\<^sub>x X) \<tau> = true \<tau> \<and> (d\<^sub>y Y) \<tau> = true \<tau>
@@ -223,14 +223,14 @@ begin
 end
 
 
-text{*
+text\<open>
 In our context, we will use Locales as ``Property Profiles'' for OCL operators;
 if an operator @{term "f"} is of profile @{term "profile_bin_scheme defined f g"} we know
-that it satisfies a number of properties like @{text "strict1"} or @{text "strict2"}
+that it satisfies a number of properties like \<open>strict1\<close> or \<open>strict2\<close>
 \ie{} @{term "f invalid y = invalid"} and @{term "f null y = invalid"}.
 Since some of the more advanced Locales come with 10 - 15 theorems, property profiles
 represent a major structuring mechanism for the OCL library.
-*}
+\<close>
 
 
 locale profile_bin_scheme_defined =

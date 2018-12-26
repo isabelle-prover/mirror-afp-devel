@@ -44,13 +44,13 @@ theory  UML_Integer
 imports "../UML_PropertyProfiles"
 begin
 
-section{* Basic Type Integer: Operations *}
+section\<open>Basic Type Integer: Operations\<close>
 
-subsection{* Fundamental Predicates on Integers: Strict Equality \label{sec:integer-strict-eq}*}
+subsection\<open>Fundamental Predicates on Integers: Strict Equality \label{sec:integer-strict-eq}\<close>
 
-text{* The last basic operation belonging to the fundamental infrastructure
+text\<open>The last basic operation belonging to the fundamental infrastructure
 of a value-type in OCL is the weak equality, which is defined similar
-to the @{typ "('\<AA>)Boolean"}-case as strict extension of the strong equality:*}
+to the @{typ "('\<AA>)Boolean"}-case as strict extension of the strong equality:\<close>
 overloading StrictRefEq \<equiv> "StrictRefEq :: [('\<AA>)Integer,('\<AA>)Integer] \<Rightarrow> ('\<AA>)Boolean"
 begin
   definition StrictRefEq\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r[code_unfold] :
@@ -59,20 +59,20 @@ begin
                                   else invalid \<tau>"
 end
 
-text{* Property proof in terms of @{term "profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v"}*}
+text\<open>Property proof in terms of @{term "profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v"}\<close>
 interpretation  StrictRefEq\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r : profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v "\<lambda> x y. (x::('\<AA>)Integer) \<doteq> y" 
          by unfold_locales (auto simp: StrictRefEq\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r)
 
-subsection{* Basic Integer Constants *}
+subsection\<open>Basic Integer Constants\<close>
 
-text{* Although the remaining part of this library reasons about
-integers abstractly, we provide here as example some convenient shortcuts. *}
+text\<open>Although the remaining part of this library reasons about
+integers abstractly, we provide here as example some convenient shortcuts.\<close>
 
 definition OclInt0 ::"('\<AA>)Integer" ("\<zero>")  where      "\<zero> = (\<lambda> _ . \<lfloor>\<lfloor>0::int\<rfloor>\<rfloor>)"
 definition OclInt1 ::"('\<AA>)Integer" ("\<one>")  where      "\<one> = (\<lambda> _ . \<lfloor>\<lfloor>1::int\<rfloor>\<rfloor>)"
 definition OclInt2 ::"('\<AA>)Integer" ("\<two>")  where      "\<two> = (\<lambda> _ . \<lfloor>\<lfloor>2::int\<rfloor>\<rfloor>)"
-text{* Etc. *}
-text_raw{* \isatagafp *}
+text\<open>Etc.\<close>
+text_raw\<open>\isatagafp\<close>
 definition OclInt3 ::"('\<AA>)Integer" ("\<three>")  where      "\<three> = (\<lambda> _ . \<lfloor>\<lfloor>3::int\<rfloor>\<rfloor>)"
 definition OclInt4 ::"('\<AA>)Integer" ("\<four>")  where      "\<four> = (\<lambda> _ . \<lfloor>\<lfloor>4::int\<rfloor>\<rfloor>)"
 definition OclInt5 ::"('\<AA>)Integer" ("\<five>")  where      "\<five> = (\<lambda> _ . \<lfloor>\<lfloor>5::int\<rfloor>\<rfloor>)"
@@ -82,7 +82,7 @@ definition OclInt8 ::"('\<AA>)Integer" ("\<eight>")  where      "\<eight> = (\<l
 definition OclInt9 ::"('\<AA>)Integer" ("\<nine>")  where      "\<nine> = (\<lambda> _ . \<lfloor>\<lfloor>9::int\<rfloor>\<rfloor>)"
 definition OclInt10 ::"('\<AA>)Integer" ("\<one>\<zero>")where      "\<one>\<zero> = (\<lambda> _ . \<lfloor>\<lfloor>10::int\<rfloor>\<rfloor>)"
 
-subsection{* Validity and Definedness Properties *}
+subsection\<open>Validity and Definedness Properties\<close>
 
 lemma  "\<delta>(null::('\<AA>)Integer) = false" by simp
 lemma  "\<upsilon>(null::('\<AA>)Integer) = true"  by simp
@@ -109,18 +109,18 @@ lemma [simp,code_unfold]: "\<upsilon> \<eight> = true" by(simp add:OclInt8_def)
 lemma [simp,code_unfold]: "\<delta> \<nine> = true" by(simp add:OclInt9_def)
 lemma [simp,code_unfold]: "\<upsilon> \<nine> = true" by(simp add:OclInt9_def)
 
-text_raw{* \endisatagafp *}
+text_raw\<open>\endisatagafp\<close>
 
-subsection{* Arithmetical Operations *}
+subsection\<open>Arithmetical Operations\<close>
 
-subsubsection{* Definition *}
-text{* Here is a common case of a built-in operation on built-in types.
-Note that the arguments must be both defined (non-null, non-bot). *}
-text{* Note that we can not follow the lexis of the OCL Standard for Isabelle
+subsubsection\<open>Definition\<close>
+text\<open>Here is a common case of a built-in operation on built-in types.
+Note that the arguments must be both defined (non-null, non-bot).\<close>
+text\<open>Note that we can not follow the lexis of the OCL Standard for Isabelle
 technical reasons; these operators are heavily overloaded in the HOL library
 that a further overloading would lead to heavy technical buzz in this
 document.
-*}
+\<close>
 definition OclAdd\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r ::"('\<AA>)Integer \<Rightarrow> ('\<AA>)Integer \<Rightarrow> ('\<AA>)Integer" (infix "+\<^sub>i\<^sub>n\<^sub>t" 40)
 where "x +\<^sub>i\<^sub>n\<^sub>t y \<equiv> \<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
                        then \<lfloor>\<lfloor>\<lceil>\<lceil>x \<tau>\<rceil>\<rceil> + \<lceil>\<lceil>y \<tau>\<rceil>\<rceil>\<rfloor>\<rfloor>
@@ -144,8 +144,8 @@ where "x *\<^sub>i\<^sub>n\<^sub>t y \<equiv> \<lambda> \<tau>. if (\<delta> x) 
 interpretation OclMult\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r : profile_bin\<^sub>d_\<^sub>d "OclMult\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r" "\<lambda> x y. \<lfloor>\<lfloor>\<lceil>\<lceil>x\<rceil>\<rceil> * \<lceil>\<lceil>y\<rceil>\<rceil>\<rfloor>\<rfloor>"
          by   unfold_locales  (auto simp:OclMult\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r_def bot_option_def null_option_def)
           
-text{* Here is the special case of division, which is defined as invalid for division
-by zero. *}
+text\<open>Here is the special case of division, which is defined as invalid for division
+by zero.\<close>
 definition OclDivision\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r ::"('\<AA>)Integer \<Rightarrow> ('\<AA>)Integer \<Rightarrow> ('\<AA>)Integer" (infix "div\<^sub>i\<^sub>n\<^sub>t" 45)
 where "x div\<^sub>i\<^sub>n\<^sub>t y \<equiv> \<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
                        then if y \<tau> \<noteq> OclInt0 \<tau> then \<lfloor>\<lfloor>\<lceil>\<lceil>x \<tau>\<rceil>\<rceil> div \<lceil>\<lceil>y \<tau>\<rceil>\<rceil>\<rfloor>\<rfloor> else invalid \<tau> 
@@ -173,14 +173,14 @@ where "x \<le>\<^sub>i\<^sub>n\<^sub>t y \<equiv> \<lambda> \<tau>. if (\<delta>
 interpretation OclLe\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r : profile_bin\<^sub>d_\<^sub>d "(\<le>\<^sub>i\<^sub>n\<^sub>t)" "\<lambda> x y. \<lfloor>\<lfloor>\<lceil>\<lceil>x\<rceil>\<rceil> \<le> \<lceil>\<lceil>y\<rceil>\<rceil>\<rfloor>\<rfloor>"
          by   unfold_locales  (auto simp:OclLe\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r_def bot_option_def null_option_def)
 
-subsubsection{* Basic Properties *}
+subsubsection\<open>Basic Properties\<close>
 
 lemma OclAdd\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r_commute: "(X +\<^sub>i\<^sub>n\<^sub>t Y) = (Y +\<^sub>i\<^sub>n\<^sub>t X)"
   by(rule ext,auto simp:true_def false_def OclAdd\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r_def invalid_def
                    split: option.split option.split_asm
                           bool.split bool.split_asm)
 
-subsubsection{* Execution with Invalid or Null or Zero as Argument *}
+subsubsection\<open>Execution with Invalid or Null or Zero as Argument\<close>
 
 lemma OclAdd\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r_zero1[simp,code_unfold] :
 "(x +\<^sub>i\<^sub>n\<^sub>t \<zero>) = (if \<upsilon> x and not (\<delta> x) then invalid else x endif)"
@@ -214,9 +214,9 @@ by(subst OclAdd\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r_commute,
 
 
 
-subsection{* Test Statements *}
-text{* Here follows a list of code-examples, that explain the meanings
-of the above definitions by compilation to code and execution to @{term "True"}.*}
+subsection\<open>Test Statements\<close>
+text\<open>Here follows a list of code-examples, that explain the meanings
+of the above definitions by compilation to code and execution to @{term "True"}.\<close>
 
 Assert "\<tau> \<Turnstile> ( \<nine> \<le>\<^sub>i\<^sub>n\<^sub>t \<one>\<zero> )"
 Assert "\<tau> \<Turnstile> (( \<four> +\<^sub>i\<^sub>n\<^sub>t \<four> ) \<le>\<^sub>i\<^sub>n\<^sub>t \<one>\<zero> )"
@@ -250,11 +250,11 @@ lemma OclInt9_non_null [simp,code_unfold]: "(\<nine> \<doteq> null) = false" by(
 lemma null_non_OclInt9 [simp,code_unfold]: "(null \<doteq> \<nine>) = false" by(simp add: OclInt9_def)
 
 
-text{* Here follows a list of code-examples, that explain the meanings
-of the above definitions by compilation to code and execution to @{term "True"}.*}
+text\<open>Here follows a list of code-examples, that explain the meanings
+of the above definitions by compilation to code and execution to @{term "True"}.\<close>
 
 
-text{* Elementary computations on Integer *}
+text\<open>Elementary computations on Integer\<close>
 
 Assert "\<tau> \<Turnstile> ((\<zero> <\<^sub>i\<^sub>n\<^sub>t \<two>) and (\<zero> <\<^sub>i\<^sub>n\<^sub>t \<one>))"
 

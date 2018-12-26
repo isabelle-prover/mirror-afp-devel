@@ -40,15 +40,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-chapter{* Formalization II: OCL Terms and Library Operations *}
+chapter\<open>Formalization II: OCL Terms and Library Operations\<close>
 
 theory  UML_Logic 
 imports UML_Types 
 begin
 
-section{* The Operations of the Boolean Type and the OCL Logic*}
+section\<open>The Operations of the Boolean Type and the OCL Logic\<close>
 
-subsection{* Basic Constants *}
+subsection\<open>Basic Constants\<close>
 
 lemma bot_Boolean_def : "(bot::('\<AA>)Boolean) = (\<lambda> \<tau>. \<bottom>)"
 by(simp add: bot_fun_def bot_option_def)
@@ -86,7 +86,7 @@ by(simp add: Sem_def true_def)
 lemma textbook_false: "I\<lbrakk>false\<rbrakk> \<tau> = \<lfloor>\<lfloor>False\<rfloor>\<rfloor>"
 by(simp add: Sem_def false_def)
 
-text {*
+text \<open>
 \begin{table}[htbp]
    \centering
    \begin{tabu}{lX[,c,]}
@@ -102,12 +102,12 @@ text {*
    \caption{Basic semantic constant definitions of the logic}
    \label{tab:sem_basic_constants}
 \end{table}
-*}
+\<close>
 
-subsection{* Validity and Definedness *}
+subsection\<open>Validity and Definedness\<close>
 
-text{* However, this has also the consequence that core concepts like definedness,
-validity and even cp have to be redefined on this type class:*}
+text\<open>However, this has also the consequence that core concepts like definedness,
+validity and even cp have to be redefined on this type class:\<close>
 
 definition valid :: "('\<AA>,'a::null)val \<Rightarrow> ('\<AA>)Boolean" ("\<upsilon> _" [100]100)
 where   "\<upsilon> X \<equiv>  \<lambda> \<tau> . if X \<tau> = bot \<tau> then false \<tau> else true \<tau>"
@@ -124,16 +124,16 @@ lemma valid3[simp]: "\<upsilon> true = true"
 lemma valid4[simp]: "\<upsilon> false = true"
   by(rule ext,simp add: valid_def bot_fun_def bot_option_def null_is_valid
                         null_fun_def invalid_def true_def false_def)
-text_raw{* \isatagafp *}
+text_raw\<open>\isatagafp\<close>
 lemma cp_valid: "(\<upsilon> X) \<tau> = (\<upsilon> (\<lambda> _. X \<tau>)) \<tau>"
 by(simp add: valid_def)
-text_raw{* \endisatagafp *}
+text_raw\<open>\endisatagafp\<close>
 
 definition defined :: "('\<AA>,'a::null)val \<Rightarrow> ('\<AA>)Boolean" ("\<delta> _" [100]100)
 where   "\<delta> X \<equiv>  \<lambda> \<tau> . if X \<tau> = bot \<tau>  \<or> X \<tau> = null \<tau> then false \<tau> else true \<tau>"
 
-text{* The generalized definitions of invalid and definedness have the same
-properties as the old ones : *}
+text\<open>The generalized definitions of invalid and definedness have the same
+properties as the old ones :\<close>
 lemma defined1[simp]: "\<delta> invalid = false"
   by(rule ext,simp add: defined_def bot_fun_def bot_option_def
                         null_def invalid_def true_def false_def)
@@ -162,13 +162,13 @@ lemma valid6[simp]: "\<upsilon> \<delta> X = true"
   by(rule ext,
      auto simp: valid_def defined_def true_def false_def
                 bot_fun_def bot_option_def null_option_def null_fun_def)
-text_raw{* \isatagafp *}
+text_raw\<open>\isatagafp\<close>
 lemma cp_defined:"(\<delta> X)\<tau> = (\<delta> (\<lambda> _. X \<tau>)) \<tau>"
 by(simp add: defined_def)
-text_raw{* \endisatagafp *}
+text_raw\<open>\endisatagafp\<close>
 
-text{* The definitions above for the constants @{const defined} and @{const valid}
-can be rewritten into the conventional semantic "textbook" format  as follows: *}
+text\<open>The definitions above for the constants @{const defined} and @{const valid}
+can be rewritten into the conventional semantic "textbook" format  as follows:\<close>
 
 lemma textbook_defined: "I\<lbrakk>\<delta>(X)\<rbrakk> \<tau> = (if I\<lbrakk>X\<rbrakk> \<tau> = I\<lbrakk>bot\<rbrakk> \<tau>  \<or> I\<lbrakk>X\<rbrakk> \<tau> = I\<lbrakk>null\<rbrakk> \<tau>
                                      then I\<lbrakk>false\<rbrakk> \<tau>
@@ -181,7 +181,7 @@ lemma textbook_valid: "I\<lbrakk>\<upsilon>(X)\<rbrakk> \<tau> = (if I\<lbrakk>X
 by(simp add: Sem_def valid_def)
 
 
-text {*
+text \<open>
 \autoref{tab:sem_definedness} and \autoref{tab:alglaws_definedness}
 summarize the results of this section.
 \begin{table}[htbp]
@@ -214,10 +214,10 @@ summarize the results of this section.
    \caption{Laws of the basic predicates of the logic.}
    \label{tab:alglaws_definedness}
 \end{table}
-*}
+\<close>
 
-subsection{* The Equalities of OCL \label{sec:equality}*}
-text{*
+subsection\<open>The Equalities of OCL \label{sec:equality}\<close>
+text\<open>
   The OCL contains a particular version of equality, written in
   Standard documents \inlineocl+_ = _+ and \inlineocl+_ <> _+ for its
   negation, which is referred as \emph{weak referential equality}
@@ -236,7 +236,7 @@ text{*
   Standard. The purpose of strong equality is to define and reason
   over OCL. It is therefore a natural task in Featherweight OCL to
   formally investigate the somewhat quite complex relationship between
-  these two.  *} text{* Strong equality has two motivations: a
+  these two.\<close> text\<open>Strong equality has two motivations: a
   pragmatic one and a fundamental one.
   \begin{enumerate}
   \item The pragmatic reason is fairly simple: users of object-oriented languages want
@@ -279,8 +279,8 @@ text{*
     sub-expression $s$ in a term $P$ by $t$ and we have that the
     replacement is equal to the original.''
 \end{enumerate}
-*}
-text{*
+\<close>
+text\<open>
   While weak referential equality is defined to be strict in the OCL
   standard, we will define strong equality as non-strict.  It is quite
   nasty (but not impossible) to define the logical equality in a
@@ -288,31 +288,31 @@ text{*
   however, whenever references were used, strong equality is needed
   since references refer to particular states (pre or post), and that
   they mean the same thing can therefore not be taken for granted.
-*}
+\<close>
 
-subsubsection{* Definition *}
-text{*
+subsubsection\<open>Definition\<close>
+text\<open>
   The strict equality on basic types (actually on all types) must be
   exceptionally defined on @{term "null"}---otherwise the entire
   concept of null in the language does not make much sense. This is an
   important exception from the general rule that null
   arguments---especially if passed as ``self''-argument---lead to
   invalid results.
-*}
+\<close>
 
 
-text{*
+text\<open>
   We define strong equality extremely generic, even for types that
-  contain a @{text "null"} or @{text "\<bottom>"} element. Strong
+  contain a \<open>null\<close> or \<open>\<bottom>\<close> element. Strong
   equality is simply polymorphic in Featherweight OCL, \ie, is
   defined identical for all types in OCL and HOL.
-*}
+\<close>
 definition StrongEq::"['\<AA> st \<Rightarrow> '\<alpha>,'\<AA> st \<Rightarrow> '\<alpha>] \<Rightarrow> ('\<AA>)Boolean"  (infixl "\<triangleq>" 30)
 where     "X \<triangleq> Y \<equiv>  \<lambda> \<tau>. \<lfloor>\<lfloor>X \<tau> = Y \<tau> \<rfloor>\<rfloor>"
 
-text{*
+text\<open>
   From this follow already elementary properties like:
-*}
+\<close>
 lemma [simp,code_unfold]: "(true \<triangleq> false) = false"
 by(rule ext, auto simp: StrongEq_def)
 
@@ -320,10 +320,10 @@ lemma [simp,code_unfold]: "(false \<triangleq> true) = false"
 by(rule ext, auto simp: StrongEq_def)
 
 
-subsubsection{* Fundamental Predicates on Strong Equality *}
+subsubsection\<open>Fundamental Predicates on Strong Equality\<close>
 
-text{* Equality reasoning in OCL is not humpty dumpty. While strong equality
-is clearly an equivalence: *}
+text\<open>Equality reasoning in OCL is not humpty dumpty. While strong equality
+is clearly an equivalence:\<close>
 lemma StrongEq_refl [simp]: "(X \<triangleq> X) = true"
 by(rule ext, simp add: null_def invalid_def true_def false_def StrongEq_def)
 
@@ -339,7 +339,7 @@ lemma StrongEq_trans_strong [simp]:
   apply(drule_tac x=x in fun_cong)+
   by auto
 
-text{*
+text\<open>
     it is only in a limited sense a congruence, at least from the
     point of view of this semantic theory. The point is that it is
     only a congruence on OCL expressions, not arbitrary HOL
@@ -351,7 +351,7 @@ text{*
     the sub-expressions, \ie, all sub-expressions inside an OCL
     expression refer to the same context. Expressed formally, this
     boils down to:
-*}
+\<close>
 lemma StrongEq_subst :
   assumes cp: "\<And>X. P(X)\<tau> = P(\<lambda> _. X \<tau>)\<tau>"
   and     eq: "(X \<triangleq> Y)\<tau> = true \<tau>"
@@ -375,8 +375,8 @@ lemma valid7[simp]: "\<upsilon> (X \<triangleq> Y) = true"
 lemma cp_StrongEq: "(X \<triangleq> Y) \<tau> = ((\<lambda> _. X \<tau>) \<triangleq> (\<lambda> _. Y \<tau>)) \<tau>"
 by(simp add: StrongEq_def)
 
-subsection{* Logical Connectives and their Universal Properties *}
-text{*
+subsection\<open>Logical Connectives and their Universal Properties\<close>
+text\<open>
   It is a design goal to give OCL a semantics that is as closely as
   possible to a ``logical system'' in a known sense; a specification
   logic where the logical connectives can not be understood other that
@@ -397,7 +397,7 @@ text{*
   Kleene-Logics with @{term "invalid"} as least, @{term "null"} as
   middle and @{term "true"} resp.  @{term "false"} as unrelated
   top-elements.
-*}
+\<close>
 
 
 definition OclNot :: "('\<AA>)Boolean \<Rightarrow> ('\<AA>)Boolean" ("not")
@@ -447,16 +447,16 @@ where     "X and Y \<equiv>  (\<lambda> \<tau> . case X \<tau> of
                         | \<lfloor>\<lfloor>True\<rfloor>\<rfloor>  \<Rightarrow>               Y \<tau>)"
 
 
-text{*
+text\<open>
   Note that @{term "not"} is \emph{not} defined as a strict function;
   proximity to lattice laws implies that we \emph{need} a definition
-  of @{term "not"} that satisfies @{text "not(not(x))=x"}.
-*}
+  of @{term "not"} that satisfies \<open>not(not(x))=x\<close>.
+\<close>
 
-text{*
+text\<open>
   In textbook notation, the logical core constructs @{const
     "OclNot"} and @{const "OclAnd"} were represented as follows:
-*}
+\<close>
 lemma textbook_OclNot:
      "I\<lbrakk>not(X)\<rbrakk> \<tau> =  (case I\<lbrakk>X\<rbrakk> \<tau> of   \<bottom>   \<Rightarrow> \<bottom>
                                  |  \<lfloor> \<bottom> \<rfloor> \<Rightarrow> \<lfloor> \<bottom> \<rfloor>
@@ -685,7 +685,7 @@ lemma OclImplies_true2[simp]: "(X implies true) = true"
 lemma OclImplies_false1[simp]:"(false implies X) = true"
   by(simp add: OclImplies_def)
 
-subsection{* A Standard Logical Calculus for OCL *}
+subsection\<open>A Standard Logical Calculus for OCL\<close>
 
 definition OclValid  :: "[('\<AA>)st, ('\<AA>)Boolean] \<Rightarrow> bool" ("(1(_)/ \<Turnstile> (_))" 50)
 where     "\<tau> \<Turnstile> P \<equiv> ((P \<tau>) = true \<tau>)"
@@ -694,7 +694,7 @@ syntax OclNonValid  :: "[('\<AA>)st, ('\<AA>)Boolean] \<Rightarrow> bool" ("(1(_
 
 translations "\<tau> |\<noteq> P" == "\<not>(\<tau> \<Turnstile> P)" 
 
-subsubsection{* Global vs. Local Judgements*}
+subsubsection\<open>Global vs. Local Judgements\<close>
 lemma transform1: "P = true \<Longrightarrow> \<tau> \<Turnstile> P"
 by(simp add: OclValid_def)
 
@@ -713,9 +713,9 @@ apply(auto simp: false_def true_def defined_def bot_Boolean_def null_Boolean_def
                  split: option.split_asm HOL.if_split_asm)
 done
 
-text{* However, certain properties (like transitivity) can not
+text\<open>However, certain properties (like transitivity) can not
        be \emph{transformed} from the global level to the local one,
-       they have to be re-proven on the local level. *}
+       they have to be re-proven on the local level.\<close>
 
 lemma (*transform3:*)
 assumes H : "P = true \<Longrightarrow> Q = true"
@@ -725,8 +725,8 @@ apply(rule H[THEN fun_cong])
 apply(rule ext)
 oops
 
-subsubsection{* Local Validity and Meta-logic*}
-text{* \label{sec:localVal} *}
+subsubsection\<open>Local Validity and Meta-logic\<close>
+text\<open>\label{sec:localVal}\<close>
 
 lemma foundation1[simp]: "\<tau> \<Turnstile> true"
 by(auto simp: OclValid_def)
@@ -784,12 +784,12 @@ by(simp add: OclNot_def OclValid_def true_def false_def valid_def
              split: option.split option.split_asm)
 
 
-text{*
+text\<open>
   Key theorem for the $\delta$-closure: either an expression is
-  defined, or it can be replaced (substituted via @{text "StrongEq_L_subst2"};
-  see below) by @{text invalid} or @{text null}. Strictness-reduction rules will
+  defined, or it can be replaced (substituted via \<open>StrongEq_L_subst2\<close>;
+  see below) by \<open>invalid\<close> or \<open>null\<close>. Strictness-reduction rules will
   usually reduce these substituted terms drastically.
-*}
+\<close>
 
 
 lemma foundation8:
@@ -952,7 +952,7 @@ by(simp add: OclOr_def defined_and_I defined_not_I)
 lemma valid_or_I :   "\<tau> \<Turnstile> \<upsilon> (x) \<Longrightarrow>  \<tau> \<Turnstile> \<upsilon> (y) \<Longrightarrow> \<tau> \<Turnstile> \<upsilon> (x or y)"
 by(simp add: OclOr_def valid_and_I valid_not_I)
 
-subsubsection{* Local Judgements and Strong Equality *}
+subsubsection\<open>Local Judgements and Strong Equality\<close>
 
 lemma StrongEq_L_refl: "\<tau> \<Turnstile> (x \<triangleq> x)"
 by(simp add: OclValid_def StrongEq_def)
@@ -966,18 +966,18 @@ by(simp add: OclValid_def StrongEq_def true_def)
 
 
 
-text{* In order to establish substitutivity (which does not
+text\<open>In order to establish substitutivity (which does not
 hold in general HOL formulas) we introduce the following
-predicate that allows for a calculus of the necessary side-conditions.*}
+predicate that allows for a calculus of the necessary side-conditions.\<close>
 definition cp   :: "(('\<AA>,'\<alpha>) val \<Rightarrow> ('\<AA>,'\<beta>) val) \<Rightarrow> bool"
 where     "cp P \<equiv> (\<exists> f. \<forall> X \<tau>. P X \<tau> = f (X \<tau>) \<tau>)"
 
 
-text{* The rule of substitutivity in Featherweight OCL holds only
+text\<open>The rule of substitutivity in Featherweight OCL holds only
 for context-passing expressions, \ie those that pass
-the context @{text "\<tau>"} without changing it. Fortunately, all
+the context \<open>\<tau>\<close> without changing it. Fortunately, all
 operators of the OCL language satisfy this property
-(but not all HOL operators).*}
+(but not all HOL operators).\<close>
 
 lemma StrongEq_L_subst1: "\<And> \<tau>. cp P \<Longrightarrow> \<tau> \<Turnstile> (x \<triangleq> y) \<Longrightarrow> \<tau> \<Turnstile> (P x \<triangleq> P y)"
 by(auto simp: OclValid_def StrongEq_def true_def cp_def)
@@ -1055,7 +1055,7 @@ lemma cp_const : "cp(\<lambda>_. c)"
 lemma cp_id :     "cp(\<lambda>X. X)"
   by (simp add: cp_def, fast)
 
-text_raw{*  \isatagafp *}
+text_raw\<open>\isatagafp\<close>
  
 lemmas cp_intro[intro!,simp,code_unfold] =
        cp_const
@@ -1069,10 +1069,10 @@ lemmas cp_intro[intro!,simp,code_unfold] =
        cp_StrongEq[THEN allI[THEN allI[THEN allI[THEN cpI2]],
                    of "StrongEq"]]
 
-text_raw{* \endisatagafp *}
+text_raw\<open>\endisatagafp\<close>
        
        
-subsection{* OCL's if then else endif *}
+subsection\<open>OCL's if then else endif\<close>
 
 definition OclIf :: "[('\<AA>)Boolean , ('\<AA>,'\<alpha>::null) val, ('\<AA>,'\<alpha>) val] \<Rightarrow> ('\<AA>,'\<alpha>) val"
                      ("if (_) then (_) else (_) endif" [10,10,10]50)
@@ -1086,12 +1086,12 @@ where "(if C then B\<^sub>1 else B\<^sub>2 endif) = (\<lambda> \<tau>. if (\<del
 lemma cp_OclIf:"((if C then B\<^sub>1 else B\<^sub>2 endif) \<tau> =
                   (if (\<lambda> _. C \<tau>) then (\<lambda> _. B\<^sub>1 \<tau>) else (\<lambda> _. B\<^sub>2 \<tau>) endif) \<tau>)"
 by(simp only: OclIf_def, subst cp_defined, rule refl)
-text_raw{*  \isatagafp *}
+text_raw\<open>\isatagafp\<close>
 
 lemmas cp_intro'[intro!,simp,code_unfold] =
        cp_intro
        cp_OclIf[THEN allI[THEN allI[THEN allI[THEN allI[THEN cpI3]]], of "OclIf"]]
-text_raw{* \endisatagafp *}
+text_raw\<open>\endisatagafp\<close>
 
 lemma OclIf_invalid [simp]: "(if invalid then B\<^sub>1 else B\<^sub>2 endif) = invalid"
 by(rule ext, auto simp: OclIf_def)
@@ -1135,9 +1135,9 @@ by simp
 
 
        
-subsection{* Fundamental Predicates on Basic Types: Strict (Referential) Equality *}
+subsection\<open>Fundamental Predicates on Basic Types: Strict (Referential) Equality\<close>
 
-text{*
+text\<open>
   In contrast to logical equality, the OCL standard defines an equality operation
   which we call ``strict referential equality''. It behaves differently for all
   types---on value types, it is basically a strict version of strong equality, 
@@ -1145,22 +1145,22 @@ text{*
   their references within the store. We  introduce strict referential equality 
   as an \emph{overloaded} concept and will handle it for
   each type instance individually.
-*}
+\<close>
 consts StrictRefEq :: "[('\<AA>,'a)val,('\<AA>,'a)val] \<Rightarrow> ('\<AA>)Boolean" (infixl "\<doteq>" 30)
 
-text{* with {term "not"} we can express the notation:*}
+text\<open>with {term "not"} we can express the notation:\<close>
 
 syntax
   "notequal"        :: "('\<AA>)Boolean \<Rightarrow> ('\<AA>)Boolean \<Rightarrow> ('\<AA>)Boolean"   (infix "<>" 40)
 translations
   "a <> b" == "CONST OclNot(a \<doteq> b)"
        
-text{* We will define instances of this equality in a case-by-case basis.*}       
+text\<open>We will define instances of this equality in a case-by-case basis.\<close>       
        
-subsection{* Laws to Establish Definedness (\texorpdfstring{$\delta$}{d}-closure) *}
+subsection\<open>Laws to Establish Definedness (\texorpdfstring{$\delta$}{d}-closure)\<close>
 
-text{* For the logical connectives, we have --- beyond
-@{thm foundation6} --- the following facts:  *}
+text\<open>For the logical connectives, we have --- beyond
+@{thm foundation6} --- the following facts:\<close>
 lemma OclNot_defargs:
 "\<tau> \<Turnstile> (not P) \<Longrightarrow> \<tau> \<Turnstile> \<delta> P"
 by(auto simp: OclNot_def OclValid_def true_def invalid_def defined_def false_def
@@ -1181,7 +1181,7 @@ proof -
 qed
 
 
-subsection{* A Side-calculus for Constant Terms *}
+subsection\<open>A Side-calculus for Constant Terms\<close>
 
 definition "const X \<equiv> \<forall> \<tau> \<tau>'. X \<tau> = X \<tau>'"
 
@@ -1354,7 +1354,7 @@ lemmas const_ss = const_bot const_null  const_invalid  const_false  const_true  
                   const_HOL_if const_HOL_and const_HOL_eq
                
 
-text{* Miscellaneous: Overloading the syntax of ``bottom'' *}
+text\<open>Miscellaneous: Overloading the syntax of ``bottom''\<close>
 
 notation bot ("\<bottom>")
 

@@ -45,10 +45,10 @@ theory
 imports
   Design_UML
 begin
-text {* \label{ex:employee-design:ocl} *}
+text \<open>\label{ex:employee-design:ocl}\<close>
 
-section{* OCL Part: Invariant *}
-text{* These recursive predicates can be defined conservatively
+section\<open>OCL Part: Invariant\<close>
+text\<open>These recursive predicates can be defined conservatively
 by greatest fix-point
 constructions---automatically. See~\cite{brucker.ea:hol-ocl-book:2006,brucker:interactive:2007}
 for details. For the purpose of this example, we state them as axioms
@@ -58,7 +58,7 @@ here.
 context Person
   inv label : self .boss <> null implies (self .salary  \<le>  ((self .boss) .salary))
 \end{ocl}
-*}
+\<close>
 
 definition Person_label\<^sub>i\<^sub>n\<^sub>v :: "Person \<Rightarrow> Boolean" 
 where     "Person_label\<^sub>i\<^sub>n\<^sub>v (self) \<equiv>  
@@ -87,7 +87,7 @@ lemma REC_pre : "\<tau> \<Turnstile> Person_label\<^sub>g\<^sub>l\<^sub>o\<^sub>
 oops (* Attempt to allegiate the burden of he following axiomatizations: could be
         a witness for a constant specification ...*)       
 
-text{* This allows to state a predicate: *}
+text\<open>This allows to state a predicate:\<close>
                                        
 axiomatization inv\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<^sub>_\<^sub>l\<^sub>a\<^sub>b\<^sub>e\<^sub>l :: "Person \<Rightarrow> Boolean"
 where inv\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<^sub>_\<^sub>l\<^sub>a\<^sub>b\<^sub>e\<^sub>l_def:
@@ -121,8 +121,8 @@ lemma inv_2 :
                                      (\<tau> \<Turnstile> (inv\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n\<^sub>_\<^sub>l\<^sub>a\<^sub>b\<^sub>e\<^sub>l\<^sub>A\<^sub>T\<^sub>p\<^sub>r\<^sub>e(self .boss@pre)))))"
 oops (* Let's hope that this holds ... *)
 
-text{* A very first attempt to characterize the axiomatization by an inductive
-definition - this can not be the last word since too weak (should be equality!) *}
+text\<open>A very first attempt to characterize the axiomatization by an inductive
+definition - this can not be the last word since too weak (should be equality!)\<close>
 coinductive inv :: "Person \<Rightarrow> (\<AA>)st \<Rightarrow> bool" where
  "(\<tau> \<Turnstile> (\<delta> self)) \<Longrightarrow> ((\<tau> \<Turnstile> (self .boss \<doteq> null)) \<or>
                       (\<tau> \<Turnstile> (self .boss <> null) \<and> (\<tau> \<Turnstile> (self .boss .salary \<le>\<^sub>i\<^sub>n\<^sub>t self .salary))  \<and>
@@ -130,8 +130,8 @@ coinductive inv :: "Person \<Rightarrow> (\<AA>)st \<Rightarrow> bool" where
                      \<Longrightarrow> ( inv self \<tau>)"
 
 
-section{* OCL Part: The Contract of a Recursive Query *}
-text{* This part is analogous to the Analysis Model and skipped here. *}
+section\<open>OCL Part: The Contract of a Recursive Query\<close>
+text\<open>This part is analogous to the Analysis Model and skipped here.\<close>
 
 
 end

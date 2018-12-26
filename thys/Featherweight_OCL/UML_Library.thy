@@ -56,9 +56,9 @@ imports (* Basic Type Operations *)
         "collection_types/UML_Sequence"
 begin
 
-section{* Miscellaneous Stuff*}
+section\<open>Miscellaneous Stuff\<close>
 
-subsection{* Definition: asBoolean *}
+subsection\<open>Definition: asBoolean\<close>
 
 definition OclAsBoolean\<^sub>I\<^sub>n\<^sub>t  :: "('\<AA>) Integer \<Rightarrow> ('\<AA>) Boolean" ("(_)->oclAsType\<^sub>I\<^sub>n\<^sub>t'(Boolean')")
 where     "OclAsBoolean\<^sub>I\<^sub>n\<^sub>t X = (\<lambda>\<tau>. if (\<delta> X) \<tau> = true \<tau> 
@@ -76,7 +76,7 @@ where     "OclAsBoolean\<^sub>R\<^sub>e\<^sub>a\<^sub>l X = (\<lambda>\<tau>. if
 interpretation OclAsBoolean\<^sub>R\<^sub>e\<^sub>a\<^sub>l : profile_mono\<^sub>d OclAsBoolean\<^sub>R\<^sub>e\<^sub>a\<^sub>l "\<lambda>x. \<lfloor>\<lfloor>\<lceil>\<lceil>x\<rceil>\<rceil> \<noteq> 0\<rfloor>\<rfloor>"
                                  by unfold_locales (auto simp: OclAsBoolean\<^sub>R\<^sub>e\<^sub>a\<^sub>l_def bot_option_def)
 
-subsection{* Definition: asInteger *}
+subsection\<open>Definition: asInteger\<close>
 
 definition OclAsInteger\<^sub>R\<^sub>e\<^sub>a\<^sub>l  :: "('\<AA>) Real \<Rightarrow> ('\<AA>) Integer" ("(_)->oclAsType\<^sub>R\<^sub>e\<^sub>a\<^sub>l'(Integer')")
 where     "OclAsInteger\<^sub>R\<^sub>e\<^sub>a\<^sub>l X = (\<lambda>\<tau>. if (\<delta> X) \<tau> = true \<tau> 
@@ -86,7 +86,7 @@ where     "OclAsInteger\<^sub>R\<^sub>e\<^sub>a\<^sub>l X = (\<lambda>\<tau>. if
 interpretation OclAsInteger\<^sub>R\<^sub>e\<^sub>a\<^sub>l : profile_mono\<^sub>d OclAsInteger\<^sub>R\<^sub>e\<^sub>a\<^sub>l "\<lambda>x. \<lfloor>\<lfloor>floor \<lceil>\<lceil>x\<rceil>\<rceil>\<rfloor>\<rfloor>"
                                  by unfold_locales (auto simp: OclAsInteger\<^sub>R\<^sub>e\<^sub>a\<^sub>l_def bot_option_def)
 
-subsection{* Definition: asReal *}
+subsection\<open>Definition: asReal\<close>
 
 definition OclAsReal\<^sub>I\<^sub>n\<^sub>t  :: "('\<AA>) Integer \<Rightarrow> ('\<AA>) Real" ("(_)->oclAsType\<^sub>I\<^sub>n\<^sub>t'(Real')")
 where     "OclAsReal\<^sub>I\<^sub>n\<^sub>t X = (\<lambda>\<tau>. if (\<delta> X) \<tau> = true \<tau> 
@@ -103,7 +103,7 @@ lemma Integer_subtype_of_Real:
   apply(subst (2 4) cp_defined, simp add: true_def)
   by (metis assms bot_option_def drop.elims foundation16 null_option_def)
 
-subsection{* Definition: asPair *}
+subsection\<open>Definition: asPair\<close>
 
 definition OclAsPair\<^sub>S\<^sub>e\<^sub>q   :: "[('\<AA>,'\<alpha>::null)Sequence]\<Rightarrow>('\<AA>,'\<alpha>::null,'\<alpha>::null) Pair" ("(_)->asPair\<^sub>S\<^sub>e\<^sub>q'(')")
 where     "OclAsPair\<^sub>S\<^sub>e\<^sub>q S = (if S->size\<^sub>S\<^sub>e\<^sub>q() \<doteq> \<two>
@@ -125,7 +125,7 @@ where     "OclAsPair\<^sub>B\<^sub>a\<^sub>g S = (if S->size\<^sub>B\<^sub>a\<^s
                             else invalid
                             endif)"
 
-subsection{* Definition: asSet *}
+subsection\<open>Definition: asSet\<close>
 
 definition OclAsSet\<^sub>S\<^sub>e\<^sub>q   :: "[('\<AA>,'\<alpha>::null)Sequence]\<Rightarrow>('\<AA>,'\<alpha>)Set" ("(_)->asSet\<^sub>S\<^sub>e\<^sub>q'(')")
 where     "OclAsSet\<^sub>S\<^sub>e\<^sub>q S = (S->iterate\<^sub>S\<^sub>e\<^sub>q(b; x = Set{} | x ->including\<^sub>S\<^sub>e\<^sub>t(b)))"
@@ -139,7 +139,7 @@ where     "OclAsSet\<^sub>B\<^sub>a\<^sub>g S =  (\<lambda> \<tau>. if (\<delta>
                                  else if (\<upsilon> S) \<tau> = true \<tau> then null \<tau> 
                                                           else invalid \<tau>)"
 
-subsection{* Definition: asSequence *}
+subsection\<open>Definition: asSequence\<close>
 
 definition OclAsSeq\<^sub>S\<^sub>e\<^sub>t   :: "[('\<AA>,'\<alpha>::null)Set]\<Rightarrow>('\<AA>,'\<alpha>)Sequence" ("(_)->asSequence\<^sub>S\<^sub>e\<^sub>t'(')")
 where     "OclAsSeq\<^sub>S\<^sub>e\<^sub>t S = (S->iterate\<^sub>S\<^sub>e\<^sub>t(b; x = Sequence{} | x ->including\<^sub>S\<^sub>e\<^sub>q(b)))"
@@ -150,7 +150,7 @@ where     "OclAsSeq\<^sub>B\<^sub>a\<^sub>g S = (S->iterate\<^sub>B\<^sub>a\<^su
 definition OclAsSeq\<^sub>P\<^sub>a\<^sub>i\<^sub>r   :: "[('\<AA>,'\<alpha>::null,'\<alpha>::null) Pair]\<Rightarrow>('\<AA>,'\<alpha>)Sequence" ("(_)->asSequence\<^sub>P\<^sub>a\<^sub>i\<^sub>r'(')")
 where     "OclAsSeq\<^sub>P\<^sub>a\<^sub>i\<^sub>r S = Sequence{S .First(), S .Second()}"
 
-subsection{* Definition: asBag *}
+subsection\<open>Definition: asBag\<close>
 
 definition OclAsBag\<^sub>S\<^sub>e\<^sub>q   :: "[('\<AA>,'\<alpha>::null)Sequence]\<Rightarrow>('\<AA>,'\<alpha>)Bag" ("(_)->asBag\<^sub>S\<^sub>e\<^sub>q'(')")
 where     "OclAsBag\<^sub>S\<^sub>e\<^sub>q S = (\<lambda>\<tau>. Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor>\<lambda>s. if list_ex ((=) s) \<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (S \<tau>)\<rceil>\<rceil> then 1 else 0\<rfloor>\<rfloor>)"
@@ -165,21 +165,21 @@ oops
 definition OclAsBag\<^sub>P\<^sub>a\<^sub>i\<^sub>r   :: "[('\<AA>,'\<alpha>::null,'\<alpha>::null) Pair]\<Rightarrow>('\<AA>,'\<alpha>)Bag" ("(_)->asBag\<^sub>P\<^sub>a\<^sub>i\<^sub>r'(')")
 where     "OclAsBag\<^sub>P\<^sub>a\<^sub>i\<^sub>r S = Bag{S .First(), S .Second()}"
 
-text_raw{* \isatagafp *}
-subsection{* Collection Types *}
+text_raw\<open>\isatagafp\<close>
+subsection\<open>Collection Types\<close>
 lemmas cp_intro'' [intro!,simp,code_unfold] =
        cp_intro'
      (*  cp_intro''\<^sub>P\<^sub>a\<^sub>i\<^sub>r *)
        cp_intro''\<^sub>S\<^sub>e\<^sub>t
        cp_intro''\<^sub>S\<^sub>e\<^sub>q
-text_raw{* \endisatagafp *}
+text_raw\<open>\endisatagafp\<close>
 
-subsection{* Test Statements *}
+subsection\<open>Test Statements\<close>
 
 lemma syntax_test: "Set{\<two>,\<one>} = (Set{}->including\<^sub>S\<^sub>e\<^sub>t(\<one>)->including\<^sub>S\<^sub>e\<^sub>t(\<two>))"
 by (rule refl)
 
-text{* Here is an example of a nested collection. *}
+text\<open>Here is an example of a nested collection.\<close>
 lemma semantic_test2:
 assumes H:"(Set{\<two>} \<doteq> null) = (false::('\<AA>)Boolean)"
 shows   "(\<tau>::('\<AA>)st) \<Turnstile> (Set{Set{\<two>},null}->includes\<^sub>S\<^sub>e\<^sub>t(null))"
@@ -207,7 +207,7 @@ done
 Assert   "\<tau> \<Turnstile> (\<zero> <\<^sub>i\<^sub>n\<^sub>t \<two>) and (\<zero> <\<^sub>i\<^sub>n\<^sub>t \<one>) "
 
 
-text{* Elementary computations on Sets.*}
+text\<open>Elementary computations on Sets.\<close>
 
 declare OclSelect_body_def [simp]
 
@@ -248,7 +248,7 @@ Assert    "\<tau> \<Turnstile> (Set{null}->reject\<^sub>S\<^sub>e\<^sub>t(x | no
 lemma     "const (Set{Set{\<two>,null}, invalid})" by(simp add: const_ss)
 
 
-text{* Elementary computations on Sequences.*}
+text\<open>Elementary computations on Sequences.\<close>
 
 Assert "\<not> (\<tau> \<Turnstile> \<upsilon>(invalid::('\<AA>,'\<alpha>::null) Sequence))"
 Assert    "\<tau> \<Turnstile> \<upsilon>(null::('\<AA>,'\<alpha>::null) Sequence)"

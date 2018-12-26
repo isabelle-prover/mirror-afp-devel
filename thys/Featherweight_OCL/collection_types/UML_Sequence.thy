@@ -47,11 +47,11 @@ imports "../basic_types/UML_Boolean"
 begin
 
 no_notation None ("\<bottom>")
-section{* Collection Type Sequence: Operations *}
+section\<open>Collection Type Sequence: Operations\<close>
 
-subsection{* Basic Properties of the Sequence Type *}
+subsection\<open>Basic Properties of the Sequence Type\<close>
 
-text{* Every element in a defined sequence is valid. *}
+text\<open>Every element in a defined sequence is valid.\<close>
 
 lemma Sequence_inv_lemma: "\<tau> \<Turnstile> (\<delta> X) \<Longrightarrow> \<forall>x\<in>set \<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (X \<tau>)\<rceil>\<rceil>. x \<noteq> bot"
 apply(insert Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e [of "X \<tau>"], simp)
@@ -66,12 +66,12 @@ apply(subst Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject[symmetric], rule
 apply(simp add: Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse  null_option_def)
 by (simp add: bot_option_def)
 
-subsection{* Definition: Strict Equality \label{sec:seq-strict-equality}*}
+subsection\<open>Definition: Strict Equality \label{sec:seq-strict-equality}\<close>
 
-text{* After the part of foundational operations on sets, we detail here equality on sets.
+text\<open>After the part of foundational operations on sets, we detail here equality on sets.
 Strong equality is inherited from the OCL core, but we have to consider
 the case of the strict equality. We decide to overload strict equality in the
-same way we do for other value's in OCL:*}
+same way we do for other value's in OCL:\<close>
 
 overloading
   StrictRefEq \<equiv> "StrictRefEq :: [('\<AA>,'\<alpha>::null)Sequence,('\<AA>,'\<alpha>::null)Sequence] \<Rightarrow> ('\<AA>)Boolean"
@@ -82,22 +82,22 @@ begin
                                                 else invalid \<tau>)"
 end
 
-text_raw{* \isatagafp *}
-text{* One might object here that for the case of objects, this is an empty definition.
+text_raw\<open>\isatagafp\<close>
+text\<open>One might object here that for the case of objects, this is an empty definition.
 The answer is no, we will restrain later on states and objects such that any object
 has its oid stored inside the object (so the ref, under which an object can be referenced
 in the store will represented in the object itself). For such well-formed stores that satisfy
 this invariant (the WFF-invariant), the referential equality and the
-strong equality---and therefore the strict equality on sequences in the sense above---coincides.*}
-text_raw{* \endisatagafp *}
+strong equality---and therefore the strict equality on sequences in the sense above---coincides.\<close>
+text_raw\<open>\endisatagafp\<close>
 
-text{* Property proof in terms of @{term "profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v"}*}
+text\<open>Property proof in terms of @{term "profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v"}\<close>
 interpretation  StrictRefEq\<^sub>S\<^sub>e\<^sub>q : profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v "\<lambda> x y. (x::('\<AA>,'\<alpha>::null)Sequence) \<doteq> y" 
                 by unfold_locales (auto simp:  StrictRefEq\<^sub>S\<^sub>e\<^sub>q)
 
 
 
-subsection{* Constants: mtSequence *}
+subsection\<open>Constants: mtSequence\<close>
 definition mtSequence ::"('\<AA>,'\<alpha>::null) Sequence"  ("Sequence{}")
 where     "Sequence{} \<equiv> (\<lambda> \<tau>.  Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor>[]::'\<alpha> list\<rfloor>\<rfloor> )"
 
@@ -116,18 +116,18 @@ lemma mtSequence_rep_set: "\<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\
  apply(simp add: mtSequence_def, subst Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse)
 by(simp add: bot_option_def)+
 
-text_raw{* \isatagafp *}
+text_raw\<open>\isatagafp\<close>
 
 lemma [simp,code_unfold]: "const Sequence{}"
 by(simp add: const_def mtSequence_def)
 
-text{* Note that the collection types in OCL allow for null to be included;
-  however, there is the null-collection into which inclusion yields invalid. *}
+text\<open>Note that the collection types in OCL allow for null to be included;
+  however, there is the null-collection into which inclusion yields invalid.\<close>
 
-text_raw{* \endisatagafp *}
+text_raw\<open>\endisatagafp\<close>
 
 
-subsection{* Definition: Prepend *}
+subsection\<open>Definition: Prepend\<close>
 definition OclPrepend   :: "[('\<AA>,'\<alpha>::null) Sequence,('\<AA>,'\<alpha>) val] \<Rightarrow> ('\<AA>,'\<alpha>) Sequence"
 where     "OclPrepend x y = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
                                     then Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor> (y \<tau>)#\<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> \<rfloor>\<rfloor>
@@ -163,7 +163,7 @@ translations
   "Sequence{x, xs}" == "CONST OclPrepend (Sequence{xs}) x"
   "Sequence{x}"     == "CONST OclPrepend (Sequence{}) x "
 
-subsection{* Definition: Including *}
+subsection\<open>Definition: Including\<close>
 
 definition OclIncluding   :: "[('\<AA>,'\<alpha>::null) Sequence,('\<AA>,'\<alpha>) val] \<Rightarrow> ('\<AA>,'\<alpha>) Sequence"
 where     "OclIncluding x y = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
@@ -223,7 +223,7 @@ lemma [simp,code_unfold] : "((S->prepend\<^sub>S\<^sub>e\<^sub>q(a))->including\
  by (metis OclValid_def foundation16 invalid_def)+
 qed
 
-subsection{* Definition: Excluding *}
+subsection\<open>Definition: Excluding\<close>
 definition OclExcluding   :: "[('\<AA>,'\<alpha>::null) Sequence,('\<AA>,'\<alpha>) val] \<Rightarrow> ('\<AA>,'\<alpha>) Sequence"
 where     "OclExcluding x y = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
                                     then Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor> filter (\<lambda>x. x = y \<tau>)
@@ -243,8 +243,8 @@ proof -
    done
 qed
 
-subsection{* Definition: Append *}
-text{* Identical to OclIncluding. *}
+subsection\<open>Definition: Append\<close>
+text\<open>Identical to OclIncluding.\<close>
 definition OclAppend   :: "[('\<AA>,'\<alpha>::null) Sequence,('\<AA>,'\<alpha>) val] \<Rightarrow> ('\<AA>,'\<alpha>) Sequence"
 where     "OclAppend = OclIncluding"
 notation   OclAppend   ("_->append\<^sub>S\<^sub>e\<^sub>q'(_')")
@@ -255,7 +255,7 @@ interpretation OclAppend :
  by(auto simp: OclAppend_def bin_def bin'_def
                OclIncluding.def_scheme OclIncluding.def_body)
 
-subsection{* Definition: Union *}
+subsection\<open>Definition: Union\<close>
 definition OclUnion   :: "[('\<AA>,'\<alpha>::null) Sequence,('\<AA>,'\<alpha>) Sequence] \<Rightarrow> ('\<AA>,'\<alpha>) Sequence"
 where     "OclUnion x y = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
                                 then Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e \<lfloor>\<lfloor> \<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> @
@@ -277,7 +277,7 @@ proof -
       simp_all add: bot_option_def null_option_def  Set.ball_Un A null_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def bot_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def)+
 qed
 
-subsection{* Definition: At *}
+subsection\<open>Definition: At\<close>
 definition OclAt   :: "[('\<AA>,'\<alpha>::null) Sequence,('\<AA>) Integer] \<Rightarrow> ('\<AA>,'\<alpha>) val"
 where     "OclAt x y = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
                              then if  1 \<le> \<lceil>\<lceil>y \<tau>\<rceil>\<rceil> \<and>  \<lceil>\<lceil>y \<tau>\<rceil>\<rceil> \<le> length\<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> 
@@ -288,7 +288,7 @@ notation   OclAt ("_->at\<^sub>S\<^sub>e\<^sub>q'(_')")
 (*TODO Locale - Equivalent*)  
 
 
-subsection{* Definition: First *}
+subsection\<open>Definition: First\<close>
 definition OclFirst   :: "[('\<AA>,'\<alpha>::null) Sequence] \<Rightarrow> ('\<AA>,'\<alpha>) val"
 where     "OclFirst x = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> then
                                 case \<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> of [] \<Rightarrow> invalid \<tau>
@@ -298,7 +298,7 @@ notation   OclFirst   ("_->first\<^sub>S\<^sub>e\<^sub>q'(_')")
 (*TODO Locale - Equivalent*)  
 
 
-subsection{* Definition: Last *}
+subsection\<open>Definition: Last\<close>
 definition OclLast   :: "[('\<AA>,'\<alpha>::null) Sequence] \<Rightarrow> ('\<AA>,'\<alpha>) val"
 where     "OclLast x = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> then
                                if \<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x \<tau>)\<rceil>\<rceil> = [] then
@@ -309,7 +309,7 @@ where     "OclLast x = (\<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> t
 notation   OclLast   ("_->last\<^sub>S\<^sub>e\<^sub>q'(_')")
 (*TODO Locale - Equivalent*)  
 
-subsection{* Definition: Iterate *}
+subsection\<open>Definition: Iterate\<close>
 
 definition OclIterate :: "[('\<AA>,'\<alpha>::null) Sequence,('\<AA>,'\<beta>::null)val,
                            ('\<AA>,'\<alpha>)val\<Rightarrow>('\<AA>,'\<beta>)val\<Rightarrow>('\<AA>,'\<beta>)val] \<Rightarrow> ('\<AA>,'\<beta>)val"
@@ -326,7 +326,7 @@ translations
 
   
   
-subsection{* Definition: Forall *}
+subsection\<open>Definition: Forall\<close>
 definition OclForall     :: "[('\<AA>,'\<alpha>::null) Sequence,('\<AA>,'\<alpha>)val\<Rightarrow>('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"
 where     "OclForall S P = (S->iterate\<^sub>S\<^sub>e\<^sub>q(b; x = true | x and (P b)))"
 
@@ -337,7 +337,7 @@ translations
 
 (*TODO Locale - Equivalent*)  
 
-subsection{* Definition: Exists *}
+subsection\<open>Definition: Exists\<close>
 definition OclExists     :: "[('\<AA>,'\<alpha>::null) Sequence,('\<AA>,'\<alpha>)val\<Rightarrow>('\<AA>)Boolean] \<Rightarrow> '\<AA> Boolean"
 where     "OclExists S P = (S->iterate\<^sub>S\<^sub>e\<^sub>q(b; x = false | x or (P b)))"
 
@@ -348,7 +348,7 @@ translations
 
 (*TODO Locale - Equivalent*)  
 
-subsection{* Definition: Collect *}
+subsection\<open>Definition: Collect\<close>
 definition OclCollect     :: "[('\<AA>,'\<alpha>::null)Sequence,('\<AA>,'\<alpha>)val\<Rightarrow>('\<AA>,'\<beta>)val]\<Rightarrow>('\<AA>,'\<beta>::null)Sequence"
 where     "OclCollect S P = (S->iterate\<^sub>S\<^sub>e\<^sub>q(b; x = Sequence{} | x->prepend\<^sub>S\<^sub>e\<^sub>q(P b)))"
 
@@ -359,7 +359,7 @@ translations
 
 (*TODO Locale - Equivalent*)  
 
-subsection{* Definition: Select *}
+subsection\<open>Definition: Select\<close>
 definition OclSelect     :: "[('\<AA>,'\<alpha>::null)Sequence,('\<AA>,'\<alpha>)val\<Rightarrow>('\<AA>)Boolean]\<Rightarrow>('\<AA>,'\<alpha>::null)Sequence"
 where     "OclSelect S P = 
            (S->iterate\<^sub>S\<^sub>e\<^sub>q(b; x = Sequence{} | if P b then x->prepend\<^sub>S\<^sub>e\<^sub>q(b) else x endif))"
@@ -371,20 +371,20 @@ translations
 
 (*TODO Locale - Equivalent*)  
 
-subsection{* Definition: Size *}
+subsection\<open>Definition: Size\<close>
 definition OclSize     :: "[('\<AA>,'\<alpha>::null)Sequence]\<Rightarrow>('\<AA>)Integer" ("(_)->size\<^sub>S\<^sub>e\<^sub>q'(')")
 where     "OclSize S = (S->iterate\<^sub>S\<^sub>e\<^sub>q(b; x = \<zero> | x +\<^sub>i\<^sub>n\<^sub>t \<one> ))"
 
 (*TODO Locale - Equivalent*)  
 
-subsection{* Definition: IsEmpty *}
+subsection\<open>Definition: IsEmpty\<close>
 definition OclIsEmpty   :: "('\<AA>,'\<alpha>::null) Sequence \<Rightarrow> '\<AA> Boolean"
 where     "OclIsEmpty x =  ((\<upsilon> x and not (\<delta> x)) or ((OclSize x) \<doteq> \<zero>))"
 notation   OclIsEmpty     ("_->isEmpty\<^sub>S\<^sub>e\<^sub>q'(')" (*[66]*))
 
 (*TODO Locale - Equivalent*)  
 
-subsection{* Definition: NotEmpty *}
+subsection\<open>Definition: NotEmpty\<close>
 
 definition OclNotEmpty   :: "('\<AA>,'\<alpha>::null) Sequence \<Rightarrow> '\<AA> Boolean"
 where     "OclNotEmpty x =  not(OclIsEmpty x)"
@@ -392,7 +392,7 @@ notation   OclNotEmpty    ("_->notEmpty\<^sub>S\<^sub>e\<^sub>q'(')" (*[66]*))
 
 (*TODO Locale - Equivalent*)  
 
-subsection{* Definition: Any *}
+subsection\<open>Definition: Any\<close>
 
 definition "OclANY x = (\<lambda> \<tau>.
   if x \<tau> = invalid \<tau> then
@@ -404,7 +404,7 @@ notation   OclANY   ("_->any\<^sub>S\<^sub>e\<^sub>q'(')")
 
 (*TODO Locale - Equivalent*)  
 
-subsection{* Definition (future operators) *}
+subsection\<open>Definition (future operators)\<close>
 
 consts (* abstract set collection operations *)
     OclCount       :: "[('\<AA>,'\<alpha>::null) Sequence,('\<AA>,'\<alpha>) Sequence] \<Rightarrow> '\<AA> Integer"
@@ -418,11 +418,11 @@ consts (* abstract set collection operations *)
 notation  OclCount       ("_->count\<^sub>S\<^sub>e\<^sub>q'(_')" (*[66,65]65*))
 notation  OclSum         ("_->sum\<^sub>S\<^sub>e\<^sub>q'(')" (*[66]*))
 
-subsection{* Logical Properties *}
+subsection\<open>Logical Properties\<close>
 
-subsection{* Execution Laws with Invalid or Null as Argument *}
+subsection\<open>Execution Laws with Invalid or Null as Argument\<close>
 
-text{* OclIterate *}
+text\<open>OclIterate\<close>
 
 lemma OclIterate_invalid[simp,code_unfold]:"invalid->iterate\<^sub>S\<^sub>e\<^sub>q(a; x = A | P a x) = invalid"  
 by(simp add: OclIterate_def false_def true_def, simp add: invalid_def)
@@ -433,9 +433,9 @@ by(simp add: OclIterate_def false_def true_def, simp add: invalid_def)
 lemma OclIterate_invalid_args[simp,code_unfold]:"S->iterate\<^sub>S\<^sub>e\<^sub>q(a; x = invalid | P a x) = invalid"
 by(simp add: bot_fun_def invalid_def OclIterate_def defined_def valid_def false_def true_def)
 
-text_raw{* \isatagafp *}
+text_raw\<open>\isatagafp\<close>
 
-subsubsection{* Context Passing *}
+subsubsection\<open>Context Passing\<close>
 
 lemma cp_OclIncluding:
 "(X->including\<^sub>S\<^sub>e\<^sub>q(x)) \<tau> = ((\<lambda> _. X \<tau>)->including\<^sub>S\<^sub>e\<^sub>q(\<lambda> _. x \<tau>)) \<tau>"
@@ -450,12 +450,12 @@ by(simp add: OclIterate_def cp_defined[symmetric])
 lemmas cp_intro''\<^sub>S\<^sub>e\<^sub>q[intro!,simp,code_unfold] = 
        cp_OclIncluding [THEN allI[THEN allI[THEN allI[THEN cpI2]], of "OclIncluding"]]
 
-subsubsection{* Const *}
+subsubsection\<open>Const\<close>
 
-text_raw{* \endisatagafp *}
+text_raw\<open>\endisatagafp\<close>
 
-subsection{* General Algebraic Execution Rules *}
-subsubsection{* Execution Rules on Iterate *}
+subsection\<open>General Algebraic Execution Rules\<close>
+subsubsection\<open>Execution Rules on Iterate\<close>
 
 lemma OclIterate_empty[simp,code_unfold]:"Sequence{}->iterate\<^sub>S\<^sub>e\<^sub>q(a; x = A | P a x) = A"  
 apply(simp add: OclIterate_def foundation22[symmetric] foundation13, 
@@ -464,7 +464,7 @@ apply(case_tac "\<tau> \<Turnstile> \<upsilon> A", simp_all add: foundation18')
 apply(simp add: mtSequence_def)
 apply(subst Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse) by auto
 
-text{* In particular, this does hold for A = null. *}
+text\<open>In particular, this does hold for A = null.\<close>
 
 lemma OclIterate_including[simp,code_unfold]:
 assumes strict1 : "\<And>X. P invalid X = invalid"
@@ -540,7 +540,7 @@ qed
 
 (* < *)
 
-subsection{* Test Statements *}
+subsection\<open>Test Statements\<close>
 (*
 Assert   "(\<tau> \<Turnstile> (Sequence{\<lambda>_. \<lfloor>\<lfloor>x\<rfloor>\<rfloor>} \<doteq> Sequence{\<lambda>_. \<lfloor>\<lfloor>x\<rfloor>\<rfloor>}))"
 Assert   "(\<tau> \<Turnstile> (Sequence{\<lambda>_. \<lfloor>x\<rfloor>} \<doteq> Sequence{\<lambda>_. \<lfloor>x\<rfloor>}))"

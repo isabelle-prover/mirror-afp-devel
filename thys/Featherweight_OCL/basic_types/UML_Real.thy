@@ -44,13 +44,13 @@ theory  UML_Real
 imports "../UML_PropertyProfiles"
 begin
 
-section{* Basic Type Real: Operations *}
+section\<open>Basic Type Real: Operations\<close>
 
-subsection{* Fundamental Predicates on Reals: Strict Equality \label{sec:real-strict-eq}*}
+subsection\<open>Fundamental Predicates on Reals: Strict Equality \label{sec:real-strict-eq}\<close>
 
-text{* The last basic operation belonging to the fundamental infrastructure
+text\<open>The last basic operation belonging to the fundamental infrastructure
 of a value-type in OCL is the weak equality, which is defined similar
-to the @{typ "('\<AA>)Boolean"}-case as strict extension of the strong equality:*}
+to the @{typ "('\<AA>)Boolean"}-case as strict extension of the strong equality:\<close>
 overloading StrictRefEq \<equiv> "StrictRefEq :: [('\<AA>)Real,('\<AA>)Real] \<Rightarrow> ('\<AA>)Boolean"
 begin
   definition StrictRefEq\<^sub>R\<^sub>e\<^sub>a\<^sub>l [code_unfold] :
@@ -59,20 +59,20 @@ begin
                                   else invalid \<tau>"
 end
 
-text{* Property proof in terms of @{term "profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v"}*}
+text\<open>Property proof in terms of @{term "profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v"}\<close>
 interpretation StrictRefEq\<^sub>R\<^sub>e\<^sub>a\<^sub>l : profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v "\<lambda> x y. (x::('\<AA>)Real) \<doteq> y" 
          by unfold_locales (auto simp: StrictRefEq\<^sub>R\<^sub>e\<^sub>a\<^sub>l)
 
-subsection{* Basic Real Constants *}
+subsection\<open>Basic Real Constants\<close>
 
-text{* Although the remaining part of this library reasons about
-reals abstractly, we provide here as example some convenient shortcuts. *}
+text\<open>Although the remaining part of this library reasons about
+reals abstractly, we provide here as example some convenient shortcuts.\<close>
 
 definition OclReal0 ::"('\<AA>)Real" ("\<zero>.\<zero>")   where      "\<zero>.\<zero> =  (\<lambda> _ . \<lfloor>\<lfloor>0::real\<rfloor>\<rfloor>)"
 definition OclReal1 ::"('\<AA>)Real" ("\<one>.\<zero>")   where      "\<one>.\<zero> = (\<lambda> _ . \<lfloor>\<lfloor>1::real\<rfloor>\<rfloor>)"
 definition OclReal2 ::"('\<AA>)Real" ("\<two>.\<zero>")   where      "\<two>.\<zero> = (\<lambda> _ . \<lfloor>\<lfloor>2::real\<rfloor>\<rfloor>)"
-text{* Etc. *}
-text_raw{* \isatagafp *}
+text\<open>Etc.\<close>
+text_raw\<open>\isatagafp\<close>
 definition OclReal3 ::"('\<AA>)Real" ("\<three>.\<zero>")   where      "\<three>.\<zero> = (\<lambda> _ . \<lfloor>\<lfloor>3::real\<rfloor>\<rfloor>)"
 definition OclReal4 ::"('\<AA>)Real" ("\<four>.\<zero>")   where      "\<four>.\<zero> = (\<lambda> _ . \<lfloor>\<lfloor>4::real\<rfloor>\<rfloor>)"
 definition OclReal5 ::"('\<AA>)Real" ("\<five>.\<zero>")   where      "\<five>.\<zero> = (\<lambda> _ . \<lfloor>\<lfloor>5::real\<rfloor>\<rfloor>)"
@@ -83,7 +83,7 @@ definition OclReal9 ::"('\<AA>)Real" ("\<nine>.\<zero>")   where      "\<nine>.\
 definition OclReal10 ::"('\<AA>)Real" ("\<one>\<zero>.\<zero>") where      "\<one>\<zero>.\<zero> = (\<lambda> _ . \<lfloor>\<lfloor>10::real\<rfloor>\<rfloor>)"
 definition OclRealpi ::"('\<AA>)Real" ("\<pi>")    where      "\<pi> = (\<lambda> _ . \<lfloor>\<lfloor>pi\<rfloor>\<rfloor>)"
 
-subsection{* Validity and Definedness Properties *}
+subsection\<open>Validity and Definedness Properties\<close>
 
 lemma  "\<delta>(null::('\<AA>)Real) = false" by simp
 lemma  "\<upsilon>(null::('\<AA>)Real) = true"  by simp
@@ -109,18 +109,18 @@ lemma [simp,code_unfold]: "\<delta> \<eight>.\<zero> = true" by(simp add:OclReal
 lemma [simp,code_unfold]: "\<upsilon> \<eight>.\<zero> = true" by(simp add:OclReal8_def)
 lemma [simp,code_unfold]: "\<delta> \<nine>.\<zero> = true" by(simp add:OclReal9_def)
 lemma [simp,code_unfold]: "\<upsilon> \<nine>.\<zero> = true" by(simp add:OclReal9_def)
-text_raw{* \endisatagafp *}
+text_raw\<open>\endisatagafp\<close>
 
-subsection{* Arithmetical Operations *}
+subsection\<open>Arithmetical Operations\<close>
 
-subsubsection{* Definition *}
-text{* Here is a common case of a built-in operation on built-in types.
-Note that the arguments must be both defined (non-null, non-bot). *}
-text{* Note that we can not follow the lexis of the OCL Standard for Isabelle
+subsubsection\<open>Definition\<close>
+text\<open>Here is a common case of a built-in operation on built-in types.
+Note that the arguments must be both defined (non-null, non-bot).\<close>
+text\<open>Note that we can not follow the lexis of the OCL Standard for Isabelle
 technical reasons; these operators are heavily overloaded in the HOL library
 that a further overloading would lead to heavy technical buzz in this
 document.
-*}
+\<close>
 definition OclAdd\<^sub>R\<^sub>e\<^sub>a\<^sub>l ::"('\<AA>)Real \<Rightarrow> ('\<AA>)Real \<Rightarrow> ('\<AA>)Real" (infix "+\<^sub>r\<^sub>e\<^sub>a\<^sub>l" 40)
 where "x +\<^sub>r\<^sub>e\<^sub>a\<^sub>l y \<equiv> \<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
                        then \<lfloor>\<lfloor>\<lceil>\<lceil>x \<tau>\<rceil>\<rceil> + \<lceil>\<lceil>y \<tau>\<rceil>\<rceil>\<rfloor>\<rfloor>
@@ -144,8 +144,8 @@ where "x *\<^sub>r\<^sub>e\<^sub>a\<^sub>l y \<equiv> \<lambda> \<tau>. if (\<de
 interpretation OclMult\<^sub>R\<^sub>e\<^sub>a\<^sub>l : profile_bin\<^sub>d_\<^sub>d "OclMult\<^sub>R\<^sub>e\<^sub>a\<^sub>l" "\<lambda> x y. \<lfloor>\<lfloor>\<lceil>\<lceil>x\<rceil>\<rceil> * \<lceil>\<lceil>y\<rceil>\<rceil>\<rfloor>\<rfloor>"
          by   unfold_locales  (auto simp:OclMult\<^sub>R\<^sub>e\<^sub>a\<^sub>l_def bot_option_def null_option_def)
           
-text{* Here is the special case of division, which is defined as invalid for division
-by zero. *}
+text\<open>Here is the special case of division, which is defined as invalid for division
+by zero.\<close>
 definition OclDivision\<^sub>R\<^sub>e\<^sub>a\<^sub>l ::"('\<AA>)Real \<Rightarrow> ('\<AA>)Real \<Rightarrow> ('\<AA>)Real" (infix "div\<^sub>r\<^sub>e\<^sub>a\<^sub>l" 45)
 where "x div\<^sub>r\<^sub>e\<^sub>a\<^sub>l y \<equiv> \<lambda> \<tau>. if (\<delta> x) \<tau> = true \<tau> \<and> (\<delta> y) \<tau> = true \<tau>
                        then if y \<tau> \<noteq> OclReal0 \<tau> then \<lfloor>\<lfloor>\<lceil>\<lceil>x \<tau>\<rceil>\<rceil> / \<lceil>\<lceil>y \<tau>\<rceil>\<rceil>\<rfloor>\<rfloor> else invalid \<tau> 
@@ -174,14 +174,14 @@ where "x \<le>\<^sub>r\<^sub>e\<^sub>a\<^sub>l y \<equiv> \<lambda> \<tau>. if (
 interpretation OclLe\<^sub>R\<^sub>e\<^sub>a\<^sub>l : profile_bin\<^sub>d_\<^sub>d "(\<le>\<^sub>r\<^sub>e\<^sub>a\<^sub>l)" "\<lambda> x y. \<lfloor>\<lfloor>\<lceil>\<lceil>x\<rceil>\<rceil> \<le> \<lceil>\<lceil>y\<rceil>\<rceil>\<rfloor>\<rfloor>"
          by   unfold_locales  (auto simp:OclLe\<^sub>R\<^sub>e\<^sub>a\<^sub>l_def bot_option_def null_option_def)
 
-subsubsection{* Basic Properties *}
+subsubsection\<open>Basic Properties\<close>
 
 lemma OclAdd\<^sub>R\<^sub>e\<^sub>a\<^sub>l_commute: "(X +\<^sub>r\<^sub>e\<^sub>a\<^sub>l Y) = (Y +\<^sub>r\<^sub>e\<^sub>a\<^sub>l X)"
   by(rule ext,auto simp:true_def false_def OclAdd\<^sub>R\<^sub>e\<^sub>a\<^sub>l_def invalid_def
                    split: option.split option.split_asm
                           bool.split bool.split_asm)
 
-subsubsection{* Execution with Invalid or Null or Zero as Argument *}
+subsubsection\<open>Execution with Invalid or Null or Zero as Argument\<close>
 
 lemma OclAdd\<^sub>R\<^sub>e\<^sub>a\<^sub>l_zero1[simp,code_unfold] :
 "(x +\<^sub>r\<^sub>e\<^sub>a\<^sub>l \<zero>.\<zero>) = (if \<upsilon> x and not (\<delta> x) then invalid else x endif)"
@@ -215,9 +215,9 @@ by(subst OclAdd\<^sub>R\<^sub>e\<^sub>a\<^sub>l_commute, simp)
 
 
 
-subsection{* Test Statements *}
-text{* Here follows a list of code-examples, that explain the meanings
-of the above definitions by compilation to code and execution to @{term "True"}.*}
+subsection\<open>Test Statements\<close>
+text\<open>Here follows a list of code-examples, that explain the meanings
+of the above definitions by compilation to code and execution to @{term "True"}.\<close>
 
 Assert "\<tau> \<Turnstile> ( \<nine>.\<zero> \<le>\<^sub>r\<^sub>e\<^sub>a\<^sub>l \<one>\<zero>.\<zero> )"
 Assert "\<tau> \<Turnstile> (( \<four>.\<zero> +\<^sub>r\<^sub>e\<^sub>a\<^sub>l \<four>.\<zero> ) \<le>\<^sub>r\<^sub>e\<^sub>a\<^sub>l \<one>\<zero>.\<zero> )"
@@ -251,11 +251,11 @@ lemma OclReal9_non_null [simp,code_unfold]: "(\<nine>.\<zero> \<doteq> null) = f
 lemma null_non_OclReal9 [simp,code_unfold]: "(null \<doteq> \<nine>.\<zero>) = false" by(simp add: OclReal9_def)
 
 
-text{* Here follows a list of code-examples, that explain the meanings
-of the above definitions by compilation to code and execution to @{term "True"}.*}
+text\<open>Here follows a list of code-examples, that explain the meanings
+of the above definitions by compilation to code and execution to @{term "True"}.\<close>
 
 
-text{* Elementary computations on Real *}
+text\<open>Elementary computations on Real\<close>
 
 Assert "\<tau> \<Turnstile> \<one>.\<zero> <> \<two>.\<zero>"
 Assert "\<tau> \<Turnstile> \<two>.\<zero> <> \<one>.\<zero>"

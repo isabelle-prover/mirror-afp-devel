@@ -44,15 +44,15 @@ theory  UML_Pair
 imports "../UML_PropertyProfiles"
 begin
 
-section{* Collection Type Pairs: Operations \label{sec:collection_pairs} *}
+section\<open>Collection Type Pairs: Operations \label{sec:collection_pairs}\<close>
 
-text{* The OCL standard provides the concept of \emph{Tuples}, \ie{} a family of record-types
+text\<open>The OCL standard provides the concept of \emph{Tuples}, \ie{} a family of record-types
 with projection functions. In FeatherWeight OCL,  only the theory of a special case is
 developped, namely the type of Pairs, which is, however, sufficient for all applications
 since it can be used to mimick all tuples. In particular, it can be used to express operations
-with multiple arguments, roles of n-ary associations, ... *}
+with multiple arguments, roles of n-ary associations, ...\<close>
 
-subsection{* Semantic Properties of the Type Constructor *}
+subsection\<open>Semantic Properties of the Type Constructor\<close>
 
 lemma A[simp]:"Rep_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e x \<noteq> None \<Longrightarrow> Rep_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e x \<noteq> null \<Longrightarrow> (fst \<lceil>\<lceil>Rep_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e x\<rceil>\<rceil>) \<noteq> bot" 
 by(insert Rep_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e[of x],auto simp:null_option_def bot_option_def)
@@ -82,12 +82,12 @@ apply(subst Rep_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject[symmetric], simp)
 apply(subst Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e.Abs_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse, simp_all,simp add: null_option_def bot_option_def)
 done
 
-subsection{* Fundamental Properties of Strict Equality \label{sec:pair-strict-eq}*}
+subsection\<open>Fundamental Properties of Strict Equality \label{sec:pair-strict-eq}\<close>
 
-text{* After the part of foundational operations on sets, we detail here equality on sets.
+text\<open>After the part of foundational operations on sets, we detail here equality on sets.
 Strong equality is inherited from the OCL core, but we have to consider
 the case of the strict equality. We decide to overload strict equality in the
-same way we do for other value's in OCL:*}
+same way we do for other value's in OCL:\<close>
 
 overloading
   StrictRefEq \<equiv> "StrictRefEq :: [('\<AA>,'\<alpha>::null,'\<beta>::null)Pair,('\<AA>,'\<alpha>::null,'\<beta>::null)Pair] \<Rightarrow> ('\<AA>)Boolean"
@@ -98,15 +98,15 @@ begin
                                                      else invalid \<tau>)"
 end
 
-text{* Property proof in terms of @{term "profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v"}*}
+text\<open>Property proof in terms of @{term "profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v"}\<close>
 interpretation  StrictRefEq\<^sub>P\<^sub>a\<^sub>i\<^sub>r : profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v "\<lambda> x y. (x::('\<AA>,'\<alpha>::null,'\<beta>::null)Pair) \<doteq> y" 
                 by unfold_locales (auto simp:  StrictRefEq\<^sub>P\<^sub>a\<^sub>i\<^sub>r)
  
-subsection{* Standard Operations Definitions *}
+subsection\<open>Standard Operations Definitions\<close>
 
-text{* This part provides a collection of operators for the Pair type. *}
+text\<open>This part provides a collection of operators for the Pair type.\<close>
 
-subsubsection{* Definition: Pair Constructor *}
+subsubsection\<open>Definition: Pair Constructor\<close>
 
 definition OclPair::"('\<AA>, '\<alpha>) val \<Rightarrow>
                      ('\<AA>, '\<beta>) val \<Rightarrow>
@@ -121,7 +121,7 @@ interpretation OclPair : profile_bin\<^sub>v_\<^sub>v
                by(auto simp: Abs_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject null_option_def bot_option_def)
              
 
-subsubsection{* Definition: First *}
+subsubsection\<open>Definition: First\<close>
 
 definition OclFirst::" ('\<AA>,'\<alpha>::null,'\<beta>::null) Pair \<Rightarrow> ('\<AA>, '\<alpha>) val"  (" _ .First'(')")
 where     "X .First() \<equiv> (\<lambda> \<tau>. if (\<delta> X) \<tau> = true \<tau>
@@ -132,7 +132,7 @@ where     "X .First() \<equiv> (\<lambda> \<tau>. if (\<delta> X) \<tau> = true 
 interpretation OclFirst : profile_mono\<^sub>d OclFirst "\<lambda>x.  fst \<lceil>\<lceil>Rep_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x)\<rceil>\<rceil>"
                           by unfold_locales (auto simp:  OclFirst_def)
 
-subsubsection{* Definition: Second *}
+subsubsection\<open>Definition: Second\<close>
                               
 definition OclSecond::" ('\<AA>,'\<alpha>::null,'\<beta>::null) Pair \<Rightarrow> ('\<AA>, '\<beta>) val"  ("_ .Second'(')")
 where     "X .Second() \<equiv> (\<lambda> \<tau>. if (\<delta> X) \<tau> = true \<tau>
@@ -142,7 +142,7 @@ where     "X .Second() \<equiv> (\<lambda> \<tau>. if (\<delta> X) \<tau> = true
 interpretation OclSecond : profile_mono\<^sub>d OclSecond "\<lambda>x.  snd \<lceil>\<lceil>Rep_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e (x)\<rceil>\<rceil>"
                            by unfold_locales  (auto simp:  OclSecond_def)
                            
-subsection{* Logical Properties *}
+subsection\<open>Logical Properties\<close>
 
 lemma 1 : "\<tau> \<Turnstile> \<upsilon> Y \<Longrightarrow> \<tau> \<Turnstile> Pair{X,Y} .First() \<triangleq> X"
 apply(case_tac "\<not>(\<tau> \<Turnstile> \<upsilon> X)")
@@ -162,7 +162,7 @@ apply(auto simp: OclValid_def valid_def defined_def StrongEq_def OclSecond_def O
 apply(auto simp: Abs_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject null_option_def bot_option_def bot_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def null_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def)
 by(simp add: Abs_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse)
 
-subsection{* Algebraic Execution Properties *}
+subsection\<open>Algebraic Execution Properties\<close>
 
 lemma proj1_exec [simp, code_unfold] : "Pair{X,Y} .First() = (if (\<upsilon> Y) then X else invalid endif)"
 apply(rule ext, rename_tac "\<tau>", simp add: foundation22[symmetric])
@@ -185,7 +185,7 @@ by(erule 2)
 
 (* < *)
 
-subsection{* Test Statements*}
+subsection\<open>Test Statements\<close>
 (*
 Assert   "(\<tau> \<Turnstile> (Pair{\<lambda>_. \<lfloor>\<lfloor>x\<rfloor>\<rfloor>,\<lambda>_. \<lfloor>\<lfloor>x\<rfloor>\<rfloor>} \<doteq> Pair{\<lambda>_. \<lfloor>\<lfloor>x\<rfloor>\<rfloor>,\<lambda>_. \<lfloor>\<lfloor>x\<rfloor>\<rfloor>}))"
 Assert   "(\<tau> \<Turnstile> (Pair{\<lambda>_. \<lfloor>x\<rfloor>,\<lambda>_. \<lfloor>x\<rfloor>} \<doteq> Pair{\<lambda>_. \<lfloor>x\<rfloor>,\<lambda>_. \<lfloor>x\<rfloor>}))"
