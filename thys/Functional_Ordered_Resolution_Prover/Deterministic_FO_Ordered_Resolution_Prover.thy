@@ -506,10 +506,8 @@ proof (induct "length P'" arbitrary: P P' rule: less_induct)
           apply (subst (3) p')
         using subs
           apply (simp add: case_prod_beta)
-          apply (rule arg_cong[of _ _ "\<lambda>f. image_mset (apfst mset) (mset (filter f (tl P')))"])
-          apply (rule ext)
-          apply (simp add: comp_def strictly_subsume_def)
-          apply force
+          apply (rule arg_cong[of _ _ "\<lambda>x. image_mset (apfst mset) x"])
+        apply (metis (no_types, hide_lams) strictly_subsume_def)
          apply (subst (3) p')
          apply (subst list.size)
          apply (metis (no_types, lifting) less_Suc0 less_add_same_cancel1 linorder_neqE_nat
