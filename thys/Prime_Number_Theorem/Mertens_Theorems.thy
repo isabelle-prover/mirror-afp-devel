@@ -162,7 +162,7 @@ proof -
   have "R \<le> 3 / 2 * (\<Sum>(p, i) | (p, i) \<in> S' \<and> even i. ln (real p) / real (p ^ i))"
   proof -
     have "R = (\<Sum>y\<in>{0, 1}. \<Sum>z | z \<in> S' \<and> snd z mod 2 = y. ln (real (fst z)) / real (fst z ^ snd z))"
-      using \<open>finite S'\<close> by (subst sum_group) (auto simp: case_prod_unfold R_def S'_def)
+      using \<open>finite S'\<close> by (subst sum.group) (auto simp: case_prod_unfold R_def S'_def)
     also have "\<dots> = (\<Sum>(p,i) | (p, i) \<in> S' \<and> even i. ln (real p) / real (p ^ i)) +
                     (\<Sum>(p,i) | (p, i) \<in> S' \<and> odd i. ln (real p) / real (p ^ i))"
       unfolding even_iff_mod_2_eq_zero odd_iff_mod_2_eq_one by (simp add: case_prod_unfold)
