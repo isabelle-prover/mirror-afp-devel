@@ -1,0 +1,25 @@
+chapter AFP
+
+session "Transformer_Semantics" (AFP) = "Quantales" +
+  options [timeout = 600]
+ 
+  sessions
+    Order_Lattice_Props
+    Quantales
+  
+  theories [document = false]
+     "Order_Lattice_Props.Fixpoint_Fusion"
+     "Quantales.Quantale_Star"
+      Kleene_Algebra.Dioid
+
+  theories
+    Isotone_Transformers
+    Sup_Inf_Preserving_Transformers
+    Powerset_Monad
+    Kleisli_Transformers
+    Kleisli_Quantaloid
+    Kleisli_Quantale
+ 
+  document_files
+    "root.tex"
+    "root.bib"

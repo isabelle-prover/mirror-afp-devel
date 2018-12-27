@@ -9,7 +9,171 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>22 Oct 2018 00:00:00 +0000</pubDate>
+    <pubDate>17 Dec 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Constructive Cryptography in HOL</title>
+              <link>https://www.isa-afp.org/entries/Constructive_Cryptography.html</link>
+       <guid>https://www.isa-afp.org/entries/Constructive_Cryptography.html</guid>
+       <dc:creator> Andreas Lochbihler, S. Reza Sefidgar       </dc:creator>
+       <pubDate>17 Dec 2018 00:00:00 +0000</pubDate>
+       <description>
+Inspired by Abstract Cryptography, we extend CryptHOL, a framework for
+formalizing game-based proofs, with an abstract model of Random
+Systems and provide proof rules about their composition and equality.
+This foundation facilitates the formalization of Constructive
+Cryptography proofs, where the security of a cryptographic scheme is
+realized as a special form of construction in which a complex random
+system is built from simpler ones. This is a first step towards a
+fully-featured compositional framework, similar to Universal
+Composability framework, that supports formalization of
+simulation-based proofs.</description>
+    </item>
+    <item>
+       <title>Transformer Semantics</title>
+              <link>https://www.isa-afp.org/entries/Transformer_Semantics.html</link>
+       <guid>https://www.isa-afp.org/entries/Transformer_Semantics.html</guid>
+       <dc:creator> Georg Struth       </dc:creator>
+       <pubDate>11 Dec 2018 00:00:00 +0000</pubDate>
+       <description>
+These mathematical components formalise predicate transformer
+semantics for programs, yet currently only for partial correctness and
+in the absence of faults.  A first part for isotone (or monotone),
+Sup-preserving and Inf-preserving transformers follows Back and von
+Wright&#39;s approach, with additional emphasis on the quantalic
+structure of algebras of transformers.  The second part develops
+Sup-preserving and Inf-preserving predicate transformers from the
+powerset monad, via its Kleisli category and Eilenberg-Moore algebras,
+with emphasis on adjunctions and dualities, as well as isomorphisms
+between relations, state transformers and predicate transformers.</description>
+    </item>
+    <item>
+       <title>Quantales</title>
+              <link>https://www.isa-afp.org/entries/Quantales.html</link>
+       <guid>https://www.isa-afp.org/entries/Quantales.html</guid>
+       <dc:creator> Georg Struth       </dc:creator>
+       <pubDate>11 Dec 2018 00:00:00 +0000</pubDate>
+       <description>
+These mathematical components formalise basic properties of quantales,
+together with some important models, constructions, and concepts,
+including quantic nuclei and conuclei.</description>
+    </item>
+    <item>
+       <title>Properties of Orderings and Lattices</title>
+              <link>https://www.isa-afp.org/entries/Order_Lattice_Props.html</link>
+       <guid>https://www.isa-afp.org/entries/Order_Lattice_Props.html</guid>
+       <dc:creator> Georg Struth       </dc:creator>
+       <pubDate>11 Dec 2018 00:00:00 +0000</pubDate>
+       <description>
+These components add further fundamental order and lattice-theoretic
+concepts and properties to Isabelle&#39;s libraries.  They follow by
+and large the introductory sections of the Compendium of Continuous
+Lattices,  covering directed and filtered sets, down-closed and
+up-closed sets, ideals and filters, Galois connections, closure and
+co-closure operators. Some emphasis is on duality and morphisms
+between structures, as in the Compendium.  To this end, three ad-hoc
+approaches to duality are compared.</description>
+    </item>
+    <item>
+       <title>Graph Saturation</title>
+              <link>https://www.isa-afp.org/entries/Graph_Saturation.html</link>
+       <guid>https://www.isa-afp.org/entries/Graph_Saturation.html</guid>
+       <dc:creator> Sebastiaan J. C. Joosten       </dc:creator>
+       <pubDate>23 Nov 2018 00:00:00 +0000</pubDate>
+       <description>
+This is an Isabelle/HOL formalisation of graph saturation, closely
+following a &lt;a href=&#34;https://doi.org/10.1016/j.jlamp.2018.06.005&#34;&gt;paper by the author&lt;/a&gt; on graph saturation.
+Nine out of ten lemmas of the original paper are proven in this
+formalisation. The formalisation additionally includes two theorems
+that show the main premise of the paper: that consistency and
+entailment are decided through graph saturation. This formalisation
+does not give executable code, and it did not implement any of the
+optimisations suggested in the paper.</description>
+    </item>
+    <item>
+       <title>A Verified Functional Implementation of Bachmair and Ganzinger's Ordered Resolution Prover</title>
+              <link>https://www.isa-afp.org/entries/Functional_Ordered_Resolution_Prover.html</link>
+       <guid>https://www.isa-afp.org/entries/Functional_Ordered_Resolution_Prover.html</guid>
+       <dc:creator> Anders Schlichtkrull, Jasmin Christian Blanchette, Dmitriy Traytel       </dc:creator>
+       <pubDate>23 Nov 2018 00:00:00 +0000</pubDate>
+       <description>
+This Isabelle/HOL formalization refines the abstract ordered
+resolution prover  presented in Section 4.3 of Bachmair and
+Ganzinger&#39;s &#34;Resolution Theorem Proving&#34; chapter in the
+&lt;i&gt;Handbook of Automated Reasoning&lt;/i&gt;. The result is a
+functional implementation of a first-order prover.</description>
+    </item>
+    <item>
+       <title>Auto2 Prover</title>
+              <link>https://www.isa-afp.org/entries/Auto2_HOL.html</link>
+       <guid>https://www.isa-afp.org/entries/Auto2_HOL.html</guid>
+       <dc:creator> Bohua Zhan       </dc:creator>
+       <pubDate>20 Nov 2018 00:00:00 +0000</pubDate>
+       <description>
+Auto2 is a saturation-based heuristic prover for higher-order logic,
+implemented as a tactic in Isabelle.  This entry contains the
+instantiation of auto2 for Isabelle/HOL, along with two basic
+examples: solutions to some of the Pelletier’s problems, and
+elementary number theory of primes.</description>
+    </item>
+    <item>
+       <title>Matroids</title>
+              <link>https://www.isa-afp.org/entries/Matroids.html</link>
+       <guid>https://www.isa-afp.org/entries/Matroids.html</guid>
+       <dc:creator> Jonas Keinholz       </dc:creator>
+       <pubDate>16 Nov 2018 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This article defines the combinatorial structures known as
+&lt;em&gt;Independence Systems&lt;/em&gt; and
+&lt;em&gt;Matroids&lt;/em&gt; and provides basic concepts and theorems
+related to them. These structures play an important role in
+combinatorial optimisation, e. g. greedy algorithms such as
+Kruskal&#39;s algorithm. The development is based on Oxley&#39;s
+&lt;a href=&#34;http://www.math.lsu.edu/~oxley/survey4.pdf&#34;&gt;`What
+is a Matroid?&#39;&lt;/a&gt;.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>Deriving generic class instances for datatypes</title>
+              <link>https://www.isa-afp.org/entries/Generic_Deriving.html</link>
+       <guid>https://www.isa-afp.org/entries/Generic_Deriving.html</guid>
+       <dc:creator> Jonas Rädle, Lars Hupel       </dc:creator>
+       <pubDate>06 Nov 2018 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;We provide a framework for automatically deriving instances for
+generic type classes. Our approach is inspired by Haskell&#39;s
+&lt;i&gt;generic-deriving&lt;/i&gt; package and Scala&#39;s
+&lt;i&gt;shapeless&lt;/i&gt; library.  In addition to generating the
+code for type class functions, we also attempt to automatically prove
+type class laws for these instances. As of now, however, some manual
+proofs are still required for recursive datatypes.&lt;/p&gt;
+&lt;p&gt;Note: There are already articles in the AFP that provide
+automatic instantiation for a number of classes. Concretely, &lt;a href=&#34;https://www.isa-afp.org/entries/Deriving.html&#34;&gt;Deriving&lt;/a&gt; allows the automatic instantiation of comparators, linear orders, equality, and hashing. &lt;a href=&#34;https://www.isa-afp.org/entries/Show.html&#34;&gt;Show&lt;/a&gt; instantiates a Haskell-style &lt;i&gt;show&lt;/i&gt; class.&lt;/p&gt;&lt;p&gt;Our approach works for arbitrary classes (with some Isabelle/HOL overhead for each class), but a smaller set of datatypes.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>Formalisation and Evaluation of Alan Gewirth's Proof for the Principle of Generic Consistency in Isabelle/HOL</title>
+              <link>https://www.isa-afp.org/entries/GewirthPGCProof.html</link>
+       <guid>https://www.isa-afp.org/entries/GewirthPGCProof.html</guid>
+       <dc:creator> David Fuenmayor, Christoph Benzmüller       </dc:creator>
+       <pubDate>30 Oct 2018 00:00:00 +0000</pubDate>
+       <description>
+An ambitious ethical theory ---Alan Gewirth&#39;s &#34;Principle of
+Generic Consistency&#34;--- is encoded and analysed in Isabelle/HOL.
+Gewirth&#39;s theory has stirred much attention in philosophy and
+ethics and has been proposed as a potential means to bound the impact
+of artificial general intelligence.</description>
+    </item>
+    <item>
+       <title>Epistemic Logic</title>
+              <link>https://www.isa-afp.org/entries/Epistemic_Logic.html</link>
+       <guid>https://www.isa-afp.org/entries/Epistemic_Logic.html</guid>
+       <dc:creator> Andreas Halkjær From       </dc:creator>
+       <pubDate>29 Oct 2018 00:00:00 +0000</pubDate>
+       <description>
+This work is a formalization of epistemic logic with countably many
+agents. It includes proofs of soundness and completeness for the axiom
+system K. The completeness proof is based on the textbook
+&#34;Reasoning About Knowledge&#34; by Fagin, Halpern, Moses and
+Vardi (MIT Press 1995).</description>
+    </item>
     <item>
        <title>Smooth Manifolds</title>
               <link>https://www.isa-afp.org/entries/Smooth_Manifolds.html</link>
@@ -399,187 +563,6 @@ a multiplicative subset (i.e. a submonoid of R seen as a
 multiplicative monoid). This localization is itself a commutative ring
 and we build the natural homomorphism of rings from R to its
 localization.</description>
-    </item>
-    <item>
-       <title>Partial Order Reduction</title>
-              <link>https://www.isa-afp.org/entries/Partial_Order_Reduction.html</link>
-       <guid>https://www.isa-afp.org/entries/Partial_Order_Reduction.html</guid>
-       <dc:creator> Julian Brunner       </dc:creator>
-       <pubDate>05 Jun 2018 00:00:00 +0000</pubDate>
-       <description>
-This entry provides a formalization of the abstract theory of ample
-set partial order reduction. The formalization includes transition
-systems with actions, trace theory, as well as basics on finite,
-infinite, and lazy sequences. We also provide a basic framework for
-static analysis on concurrent systems with respect to the ample set
-condition.</description>
-    </item>
-    <item>
-       <title>Optimal Binary Search Trees</title>
-              <link>https://www.isa-afp.org/entries/Optimal_BST.html</link>
-       <guid>https://www.isa-afp.org/entries/Optimal_BST.html</guid>
-       <dc:creator> Tobias Nipkow, Dániel Somogyi       </dc:creator>
-       <pubDate>27 May 2018 00:00:00 +0000</pubDate>
-       <description>
-This article formalizes recursive algorithms for the construction
-of optimal binary search trees given fixed access frequencies.
-We follow Knuth (1971), Yao (1980) and Mehlhorn (1984).
-The algorithms are memoized with the help of the AFP article
-&lt;a href=&#34;Monad_Memo_DP.html&#34;&gt;Monadification, Memoization and Dynamic Programming&lt;/a&gt;,
-thus yielding dynamic programming algorithms.</description>
-    </item>
-    <item>
-       <title>Hidden Markov Models</title>
-              <link>https://www.isa-afp.org/entries/Hidden_Markov_Models.html</link>
-       <guid>https://www.isa-afp.org/entries/Hidden_Markov_Models.html</guid>
-       <dc:creator> Simon Wimmer       </dc:creator>
-       <pubDate>25 May 2018 00:00:00 +0000</pubDate>
-       <description>
-This entry contains a formalization of hidden Markov models [3] based
-on Johannes Hölzl&#39;s formalization of discrete time Markov chains
-[1]. The basic definitions are provided and the correctness of two
-main (dynamic programming) algorithms for hidden Markov models is
-proved: the forward algorithm for computing the likelihood of an
-observed sequence, and the Viterbi algorithm for decoding the most
-probable hidden state sequence. The Viterbi algorithm is made
-executable including memoization.  Hidden markov models have various
-applications in natural language processing. For an introduction see
-Jurafsky and Martin [2].</description>
-    </item>
-    <item>
-       <title>Probabilistic Timed Automata</title>
-              <link>https://www.isa-afp.org/entries/Probabilistic_Timed_Automata.html</link>
-       <guid>https://www.isa-afp.org/entries/Probabilistic_Timed_Automata.html</guid>
-       <dc:creator> Simon Wimmer, Johannes Hölzl       </dc:creator>
-       <pubDate>24 May 2018 00:00:00 +0000</pubDate>
-       <description>
-We present a formalization of probabilistic timed automata (PTA) for
-which we try to follow the formula MDP + TA = PTA as far as possible:
-our work starts from our existing formalizations of Markov decision
-processes (MDP) and timed automata (TA) and combines them modularly.
-We prove the fundamental result for probabilistic timed automata: the
-region construction that is known from timed automata carries over to
-the probabilistic setting. In particular, this allows us to prove that
-minimum and maximum reachability probabilities can be computed via a
-reduction to MDP model checking, including the case where one wants to
-disregard unrealizable behavior. Further information can be found in
-our ITP paper [2].</description>
-    </item>
-    <item>
-       <title>Irrational Rapidly Convergent Series</title>
-              <link>https://www.isa-afp.org/entries/Irrationality_J_Hancl.html</link>
-       <guid>https://www.isa-afp.org/entries/Irrationality_J_Hancl.html</guid>
-       <dc:creator> Angeliki Koutsoukou-Argyraki, Wenda Li       </dc:creator>
-       <pubDate>23 May 2018 00:00:00 +0000</pubDate>
-       <description>
-We formalize with Isabelle/HOL a proof of a theorem by J. Hancl asserting the
-irrationality of the sum of a series consisting of rational numbers, built up
-by sequences that fulfill certain properties. Even though the criterion is a
-number theoretic result, the proof makes use only of analytical arguments. We
-also formalize a corollary of the theorem for a specific series fulfilling the
-assumptions of the theorem.</description>
-    </item>
-    <item>
-       <title>Axiom Systems for Category Theory in Free Logic</title>
-              <link>https://www.isa-afp.org/entries/AxiomaticCategoryTheory.html</link>
-       <guid>https://www.isa-afp.org/entries/AxiomaticCategoryTheory.html</guid>
-       <dc:creator> Christoph Benzmüller, Dana Scott       </dc:creator>
-       <pubDate>23 May 2018 00:00:00 +0000</pubDate>
-       <description>
-This document provides a concise overview on the core results of our
-previous work on the exploration of axioms systems for category
-theory. Extending the previous studies
-(http://arxiv.org/abs/1609.01493) we include one further axiomatic
-theory in our experiments. This additional theory has been suggested
-by Mac Lane in 1948. We show that the axioms proposed by Mac Lane are
-equivalent to the ones we studied before, which includes an axioms set
-suggested by Scott in the 1970s and another axioms set proposed by
-Freyd and Scedrov in 1990, which we slightly modified to remedy a
-minor technical issue.</description>
-    </item>
-    <item>
-       <title>Monadification, Memoization and Dynamic Programming</title>
-              <link>https://www.isa-afp.org/entries/Monad_Memo_DP.html</link>
-       <guid>https://www.isa-afp.org/entries/Monad_Memo_DP.html</guid>
-       <dc:creator> Simon Wimmer, Shuwei Hu, Tobias Nipkow       </dc:creator>
-       <pubDate>22 May 2018 00:00:00 +0000</pubDate>
-       <description>
-We present a lightweight framework for the automatic verified
-(functional or imperative) memoization of recursive functions. Our
-tool can turn a pure Isabelle/HOL function definition into a
-monadified version in a state monad or the Imperative HOL heap monad,
-and prove a correspondence theorem. We provide a variety of memory
-implementations for the two types of monads. A number of simple
-techniques allow us to achieve bottom-up computation and
-space-efficient memoization. The framework’s utility is demonstrated
-on a number of representative dynamic programming problems. A detailed
-description of our work can be found in the accompanying paper [2].</description>
-    </item>
-    <item>
-       <title>OpSets: Sequential Specifications for Replicated Datatypes</title>
-              <link>https://www.isa-afp.org/entries/OpSets.html</link>
-       <guid>https://www.isa-afp.org/entries/OpSets.html</guid>
-       <dc:creator> Martin Kleppmann, Victor B. F. Gomes, Dominic P. Mulligan, Alastair R. Beresford       </dc:creator>
-       <pubDate>10 May 2018 00:00:00 +0000</pubDate>
-       <description>
-We introduce OpSets, an executable framework for specifying and
-reasoning about the semantics of replicated datatypes that provide
-eventual consistency in a distributed system, and for mechanically
-verifying algorithms that implement these datatypes. Our approach is
-simple but expressive, allowing us to succinctly specify a variety of
-abstract datatypes, including maps, sets, lists, text, graphs, trees,
-and registers. Our datatypes are also composable, enabling the
-construction of complex data structures. To demonstrate the utility of
-OpSets for analysing replication algorithms, we highlight an important
-correctness property for collaborative text editing that has
-traditionally been overlooked; algorithms that do not satisfy this
-property can exhibit awkward interleaving of text. We use OpSets to
-specify this correctness property and prove that although one existing
-replication algorithm satisfies this property, several other published
-algorithms do not.</description>
-    </item>
-    <item>
-       <title>An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties</title>
-              <link>https://www.isa-afp.org/entries/Modular_Assembly_Kit_Security.html</link>
-       <guid>https://www.isa-afp.org/entries/Modular_Assembly_Kit_Security.html</guid>
-       <dc:creator> Oliver Bračevac, Richard Gay, Sylvia Grewe, Heiko Mantel, Henning Sudbrock, Markus Tasch       </dc:creator>
-       <pubDate>07 May 2018 00:00:00 +0000</pubDate>
-       <description>
-The &#34;Modular Assembly Kit for Security Properties&#34; (MAKS) is
-a framework for both the definition and verification of possibilistic
-information-flow security properties at the specification-level. MAKS
-supports the uniform representation of a wide range of possibilistic
-information-flow properties and provides support for the verification
-of such properties via unwinding results and compositionality results.
-We provide a formalization of this framework in Isabelle/HOL.</description>
-    </item>
-    <item>
-       <title>WebAssembly</title>
-              <link>https://www.isa-afp.org/entries/WebAssembly.html</link>
-       <guid>https://www.isa-afp.org/entries/WebAssembly.html</guid>
-       <dc:creator> Conrad Watt       </dc:creator>
-       <pubDate>29 Apr 2018 00:00:00 +0000</pubDate>
-       <description>
-This is a mechanised specification of the WebAssembly language, drawn
-mainly from the previously published paper formalisation of Haas et
-al. Also included is a full proof of soundness of the type system,
-together with a verified type checker and interpreter. We include only
-a partial procedure for the extraction of the type checker and
-interpreter here. For more details, please see our paper in CPP 2018.</description>
-    </item>
-    <item>
-       <title>VerifyThis 2018 - Polished Isabelle Solutions</title>
-              <link>https://www.isa-afp.org/entries/VerifyThis2018.html</link>
-       <guid>https://www.isa-afp.org/entries/VerifyThis2018.html</guid>
-       <dc:creator> Peter Lammich, Simon Wimmer       </dc:creator>
-       <pubDate>27 Apr 2018 00:00:00 +0000</pubDate>
-       <description>
-&lt;a
-href=&#34;http://www.pm.inf.ethz.ch/research/verifythis.html&#34;&gt;VerifyThis
-2018&lt;/a&gt; was a program verification competition associated with
-ETAPS 2018. It was the 7th event in the VerifyThis competition series.
-In this entry, we present polished and completed versions of our
-solutions that we created during the competition.</description>
     </item>
   </channel>
 </rss>
