@@ -2,7 +2,7 @@ chapter AFP
 
 session Order_Lattice_Props (AFP) = "HOL-Library" +
   options [timeout = 600]
-  
+
   theories
     Sup_Lattice
     Order_Duality

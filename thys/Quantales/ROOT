@@ -2,13 +2,12 @@ chapter AFP
 
 session "Quantales" (AFP) = "Order_Lattice_Props" +
   options [timeout = 600]
-  
+
   sessions
     Kleene_Algebra
     Order_Lattice_Props
-   
+
   theories [document = false]
-    "Order_Lattice_Props.Closure_Operators"
     Dioid_Models_New
 
   theories
