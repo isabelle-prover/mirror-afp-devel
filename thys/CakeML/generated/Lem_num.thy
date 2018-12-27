@@ -938,6 +938,8 @@ definition instance_Basic_classes_OrdMaxMin_Num_integer_dict  :: "(int)OrdMaxMin
 
 \<comment> \<open>\<open>val rationalFromInt : int -> rational\<close>\<close>
 
+\<comment> \<open>\<open>val rationalFromInteger : integer -> rational\<close>\<close>
+
 \<comment> \<open>\<open>val rationalEq : rational -> rational -> bool\<close>\<close>
 
 \<comment> \<open>\<open>val rationalLess : rational -> rational -> bool\<close>\<close>
@@ -1025,6 +1027,10 @@ definition instance_Num_NumDivision_Num_rational_dict  :: "(rat)NumDivision_clas
 
 \<comment> \<open>\<open>val rationalFromFrac : int -> int -> rational\<close>\<close>
 \<comment> \<open>\<open>let rationalFromFrac n d=  (Instance_Num_NumDivision_Num_rational./) (rationalFromInt n) (rationalFromInt d)\<close>\<close>
+
+\<comment> \<open>\<open>val rationalNumerator : rational -> integer\<close>\<close>  \<comment> \<open>\<open> TODO: test \<close>\<close>
+
+\<comment> \<open>\<open>val rationalDenominator : rational -> integer\<close>\<close>  \<comment> \<open>\<open> TODO: test \<close>\<close>
 
 \<comment> \<open>\<open>val rationalPowInteger : rational -> integer -> rational\<close>\<close>
 fun  rationalPowInteger  :: " rat \<Rightarrow> int \<Rightarrow> rat "  where 
@@ -1189,6 +1195,12 @@ definition instance_Basic_classes_OrdMaxMin_Num_real_dict  :: "(real)OrdMaxMin_c
 \<comment> \<open>\<open>val realCeiling : real -> integer\<close>\<close>
 
 \<comment> \<open>\<open>val realFloor : real -> integer\<close>\<close>
+
+
+\<comment> \<open>\<open>val integerSqrt : integer -> integer\<close>\<close>
+definition integerSqrt  :: " int \<Rightarrow> int "  where 
+     " integerSqrt i = ( floor (sqrt ((real_of_int i))))"
+
 
 \<comment> \<open>\<open> ========================================================================== \<close>\<close>
 \<comment> \<open>\<open> Translation between number types                                           \<close>\<close>

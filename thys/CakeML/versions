@@ -5,7 +5,7 @@
 # Repository versions
 
 LEM_REPOSITORY="https://github.com/larsrh/lem"
-LEM_COMMIT="dc631b9f1b2ed62ebffa0e18ce8339d4d2eac2c3" # larsrh-3
+LEM_COMMIT="9db1a4addd9e685059e8ea597e4bad502a12f380" # larsrh-3
 CAKEML_REPOSITORY="https://github.com/larsrh/cakeml"
 CAKEML_COMMIT="96f095e9587084b98331d634154cbbde5a781c29" # v2.0 tag + backports
 
