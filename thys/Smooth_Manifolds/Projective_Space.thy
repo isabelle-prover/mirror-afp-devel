@@ -397,7 +397,7 @@ instance proj_space :: (euclidean_space) t2_space
   by (rule t2_space_quotient)
 
 instance proj_space :: (euclidean_space) second_countable_topology
-  apply (rule class.Topology_Euclidean_Space.second_countable_topology.of_class.intro)
+  apply (rule class.Elementary_Topology.second_countable_topology.of_class.intro)
   using open_proj_space_def surj_Proj Proj_open_map
   by (rule second_countable_topology_quotient)
 
