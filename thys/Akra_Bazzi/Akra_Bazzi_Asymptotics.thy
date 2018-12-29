@@ -44,7 +44,7 @@ proof (rule smallo_imp_le_real)
     "h2 x = ln x powr (- e / 2) * ((1 + ln b / ln x) powr (- e / 2) - 1)" for x
   from bep have "((\<lambda>x. ln b / ln x) \<longlongrightarrow> 0) at_top"
     by (simp add: tendsto_0_smallo_1)
-  note one_plus_x_powr_taylor2_bigo[OF this, of "-e/2"]
+  note one_plus_x_powr_Taylor2_bigo[OF this, of "-e/2"]
   also have "(\<lambda>x. (1 + ln b / ln x) powr (- e / 2) - 1 - - e / 2 * (ln b / ln x)) = h1"
     by (simp add: h1_def)
   finally have "h1 \<in> o(\<lambda>x. 1 / ln x)"
@@ -76,7 +76,7 @@ proof-
     by (simp add: tendsto_0_smallo_1)
   have "(\<lambda>x. (1 + c * inverse b * ln x powr (-(1+e))) powr p - 1)
            \<in> O(\<lambda>x. c * inverse b * ln x powr - (1 + e))"
-    using bep by (intro one_plus_x_powr_taylor1_bigo) (simp add: tendsto_0_smallo_1)
+    using bep by (intro one_plus_x_powr_Taylor1_bigo) (simp add: tendsto_0_smallo_1)
   also from bep have "negl (\<lambda>x. c * inverse b * ln x powr - (1 + e))" by simp
   finally show ?thesis .
 qed
@@ -91,7 +91,7 @@ proof (rule that[of "\<lambda>x. f x - 1"])
        (insert bep, simp_all add: tendsto_0_smallo_1)
   hence lim': "(g \<longlongrightarrow> 0) at_top" unfolding g_def
     by (intro tendsto_mult_zero) (insert bep, simp add: tendsto_0_smallo_1)
-  from one_plus_x_powr_taylor2_bigo[OF this, of "-e/2"]
+  from one_plus_x_powr_Taylor2_bigo[OF this, of "-e/2"]
     have "(\<lambda>x. (1 + g x) powr (-e/2) - 1 - - e/2 * g x) \<in> O(\<lambda>x. (g x)\<^sup>2)" .
   also from lim' have "(\<lambda>x. g x ^ 2) \<in> o(\<lambda>x. g x * 1)" unfolding power2_eq_square
     by (intro landau_o.big_small_mult smalloI_tendsto) simp_all

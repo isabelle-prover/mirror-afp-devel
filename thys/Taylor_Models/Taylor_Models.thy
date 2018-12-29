@@ -97,7 +97,7 @@ lemma range_tmD:
   by (auto simp: range_tm_def)
 
 
-subsection \<open>Interval bounds for taylor models\<close>
+subsection \<open>Interval bounds for Taylor models\<close>
 
 text \<open>Bound a polynomial by simply approximating it with interval arguments.\<close>
 fun compute_bound_poly :: "nat \<Rightarrow> float interval poly \<Rightarrow> (float interval list) \<Rightarrow> (float interval list) \<Rightarrow> float interval" where
@@ -115,7 +115,7 @@ fun compute_bound_poly :: "nat \<Rightarrow> float interval poly \<Rightarrow> (
     round_interval prec (compute_bound_poly prec p I a +
       mult_float_interval prec (round_interval prec (I ! n - (a ! n))) (compute_bound_poly prec q I a))"
 
-text \<open>Bounds on taylor models are simply a bound on its polynomial, widened by the approximation error.\<close>
+text \<open>Bounds on Taylor models are simply a bound on its polynomial, widened by the approximation error.\<close>
 fun compute_bound_tm :: "nat \<Rightarrow> float interval list \<Rightarrow> float interval list \<Rightarrow> taylor_model \<Rightarrow> float interval"
   where "compute_bound_tm prec I a (TaylorModel p e) = compute_bound_poly prec p I a + e"
 
@@ -470,11 +470,11 @@ lemma deriv_rec_0_idem[simp]:
   by (cases "(f, 0::nat)" rule: deriv_rec.cases, simp_all)
 
 
-subsubsection \<open>Computing taylor models for arbitrary univariate expressions\<close> 
+subsubsection \<open>Computing Taylor models for arbitrary univariate expressions\<close> 
 
 fun tmf_c :: "nat \<Rightarrow> float interval list \<Rightarrow> floatarith \<Rightarrow> nat \<Rightarrow> float interval option"
   where "tmf_c prec I f i = compute_bound_fa prec (Mult (deriv_rec f i) (Inverse (Num (fact i)))) I"
-    \<comment> \<open>The interval coefficients of the taylor polynomial,
+    \<comment> \<open>The interval coefficients of the Taylor polynomial,
    i.e. the real coefficients approximated by a float interval.\<close>
 
 fun tmf_ivl_cs :: "nat \<Rightarrow> nat \<Rightarrow> float interval list \<Rightarrow> float list \<Rightarrow> floatarith \<Rightarrow> float interval list option"
@@ -497,8 +497,8 @@ fun tm_floatarith :: "nat \<Rightarrow> nat \<Rightarrow> float interval list \<
         e = round_interval prec (Ipoly (map2 (-) I a) pi) \<comment> \<open>TODO: use \<open>compute_bound_tm\<close> here?!\<close>
     in TaylorModel pf e
   ) (tmf_ivl_cs prec ord I a f)
-)" \<comment> \<open>Compute a taylor model from an arbitrary, univariate floatarith expression, if possible.
-   This is used to compute taylor models for elemental functions like sin, cos, exp, etc.\<close>
+)" \<comment> \<open>Compute a Taylor model from an arbitrary, univariate floatarith expression, if possible.
+   This is used to compute Taylor models for elemental functions like sin, cos, exp, etc.\<close>
 
 term compute_bound_poly
 lemma tmf_c_correct:
@@ -718,7 +718,7 @@ proof -
   proof cases
     case hyps: 1
     then have 1: "0 < ord" and 5: "x \<noteq> xs ! 0" by simp_all
-    from taylor[OF 1 2 3 4 5] obtain s where s: "(if ?x < ?c then ?x < s \<and> s < ?c else ?c < s \<and> s < ?x)"
+    from Taylor[OF 1 2 3 4 5] obtain s where s: "(if ?x < ?c then ?x < s \<and> s < ?c else ?c < s \<and> s < ?x)"
       and tse: "?f ?x = (\<Sum>m<?n. ?diff m ?c / fact m * (?x - ?c) ^ m) + ?diff ?n s / fact ?n * (?x - ?c) ^ ?n"
       by blast
 
@@ -767,11 +767,11 @@ proof -
 qed
 
 
-subsection \<open>Operations on taylor models\<close>
+subsection \<open>Operations on Taylor models\<close>
 
 fun tm_norm_poly :: "taylor_model \<Rightarrow> taylor_model"
   where "tm_norm_poly (TaylorModel p e) = TaylorModel (polynate p) e"
-\<comment> \<open>Normalizes the taylor model by transforming its polynomial into horner form.\<close>
+\<comment> \<open>Normalizes the Taylor model by transforming its polynomial into horner form.\<close>
 
 fun tm_lower_order tm_lower_order_of_normed :: "nat \<Rightarrow> nat \<Rightarrow> float interval list \<Rightarrow> float interval list \<Rightarrow> taylor_model \<Rightarrow> taylor_model"
   where "tm_lower_order prec ord I a t = tm_lower_order_of_normed prec ord I a (tm_norm_poly t)"
@@ -779,7 +779,7 @@ fun tm_lower_order tm_lower_order_of_normed :: "nat \<Rightarrow> nat \<Rightarr
          let (l, r) = split_by_degree ord p
          in TaylorModel l (round_interval prec (e + compute_bound_poly prec r I a))
        )"
-\<comment> \<open>Reduces the degree of a taylor model's polynomial to n and keeps it range by increasing the error bound.\<close>
+\<comment> \<open>Reduces the degree of a Taylor model's polynomial to n and keeps it range by increasing the error bound.\<close>
 
 fun tm_round_floats tm_round_floats_of_normed :: "nat \<Rightarrow> float interval list \<Rightarrow> float interval list \<Rightarrow> taylor_model \<Rightarrow> taylor_model"
   where "tm_round_floats prec I a t = tm_round_floats_of_normed prec I a (tm_norm_poly t)"
@@ -787,7 +787,7 @@ fun tm_round_floats tm_round_floats_of_normed :: "nat \<Rightarrow> float interv
          let (l, r) = split_by_prec prec p
          in TaylorModel l (round_interval prec (e + compute_bound_poly prec r I a))
        )"
-\<comment> \<open>Rounding of taylor models. Rounds both the coefficients of the polynomial and the floats in the error bound.\<close>
+\<comment> \<open>Rounding of Taylor models. Rounds both the coefficients of the polynomial and the floats in the error bound.\<close>
 
 fun tm_norm tm_norm' :: "nat \<Rightarrow> nat \<Rightarrow> float interval list \<Rightarrow> float interval list \<Rightarrow> taylor_model \<Rightarrow> taylor_model"
   where "tm_norm prec ord I a t = tm_norm' prec ord I a (tm_norm_poly t)"
@@ -823,7 +823,7 @@ fun tm_pow :: "nat \<Rightarrow> nat \<Rightarrow> float interval list \<Rightar
               in tm_mul prec ord I a t' t'
        )"
 
-text \<open>Evaluates a float polynomial, using a taylor model as the parameter. This is used to compose taylor models.\<close>
+text \<open>Evaluates a float polynomial, using a Taylor model as the parameter. This is used to compose Taylor models.\<close>
 fun eval_poly_at_tm :: "nat \<Rightarrow> nat \<Rightarrow> float interval list \<Rightarrow> float interval list \<Rightarrow> float poly \<Rightarrow> taylor_model \<Rightarrow> taylor_model"
   where "eval_poly_at_tm prec ord I a (poly.C c) t = tm_const c"
   | "eval_poly_at_tm prec ord I a (poly.Bound n) t = t"
@@ -876,7 +876,7 @@ fun tm_min :: "nat \<Rightarrow> float interval list \<Rightarrow> float interva
 fun tm_max :: "nat \<Rightarrow> float interval list \<Rightarrow> float interval list \<Rightarrow> taylor_model \<Rightarrow> taylor_model \<Rightarrow> taylor_model"
   where "tm_max  prec I a t1 t2 = tm_union prec I a t1 t2"
 
-text \<open>Rangeity of is preserved by our operations on taylor models.\<close>
+text \<open>Rangeity of is preserved by our operations on Taylor models.\<close>
 
 lemma insertion_polyadd[simp]: "insertion e (a +\<^sub>p b) = insertion e a + insertion e b"
   for a b::"'a::ring_1 poly"
@@ -1476,10 +1476,10 @@ lemma tm_max_range:
   by (auto simp: Let_def tm_max.simps max_def intro: tm_union_range_left tm_union_range_right)
 
 
-subsection \<open>Computing taylor models for multivariate expressions\<close>
+subsection \<open>Computing Taylor models for multivariate expressions\<close>
 
-text \<open>Compute taylor models for expressions of the form "f (g x)", where f is an elementary function like exp or cos,
-   by composing taylor models for f and g. For our correctness proof, we need to make it explicit that the range
+text \<open>Compute Taylor models for expressions of the form "f (g x)", where f is an elementary function like exp or cos,
+   by composing Taylor models for f and g. For our correctness proof, we need to make it explicit that the range
    of g on I is inside the domain of f, by introducing the \<open>f_exists_on\<close> predicate.\<close>
 fun compute_tm_by_comp :: "nat \<Rightarrow> nat \<Rightarrow> float interval list \<Rightarrow> float interval list \<Rightarrow> floatarith \<Rightarrow> taylor_model option \<Rightarrow> (float interval \<Rightarrow> bool) \<Rightarrow> taylor_model option"
   where "compute_tm_by_comp prec ord I a f g f_exists_on = (
@@ -1493,8 +1493,8 @@ fun compute_tm_by_comp :: "nat \<Rightarrow> nat \<Rightarrow> float interval li
          | _ \<Rightarrow> None
        )"
 
-text \<open>Compute taylor models with numerical precision \<open>prec\<close> of degree \<open>ord\<close>,
-  with taylor models in the environment \<open>env\<close> whose variables are jointly interpreted with domain
+text \<open>Compute Taylor models with numerical precision \<open>prec\<close> of degree \<open>ord\<close>,
+  with Taylor models in the environment \<open>env\<close> whose variables are jointly interpreted with domain
   \<open>I\<close> and expanded around point \<open>a\<close>.
   from floatarith expressions on a rectangular domain.\<close>
 fun approx_tm :: "nat \<Rightarrow> nat \<Rightarrow> float interval list \<Rightarrow> float interval list \<Rightarrow> floatarith \<Rightarrow> taylor_model list \<Rightarrow>

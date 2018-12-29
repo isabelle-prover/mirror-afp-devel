@@ -2248,27 +2248,27 @@ proof-
         by (simp add: e1_def)
 
       text \<open> Taylor expansion of f on set G. \<close>
-      from uniform_explicit_remainder_taylor_1[where f=f and f'=f',
+      from uniform_explicit_remainder_Taylor_1[where f=f and f'=f',
         OF derivative_rhs[OF subsetD[OF \<open>G \<subseteq> X\<close>]] f'_cont_on_G \<open>open G\<close> H_props \<open>0 < e1\<close>]
-      obtain d_taylor R
-      where taylor_expansion:
-        "0 < d_taylor"
+      obtain d_Taylor R
+      where Taylor_expansion:
+        "0 < d_Taylor"
         "\<And>x z. f z = f x + (f' x) (z - x) + R x z"
-        "\<And>x y. x \<in> H \<Longrightarrow> y \<in> H \<Longrightarrow> dist x y < d_taylor \<Longrightarrow> norm (R x y) \<le> e1 * dist x y"
+        "\<And>x y. x \<in> H \<Longrightarrow> y \<in> H \<Longrightarrow> dist x y < d_Taylor \<Longrightarrow> norm (R x y) \<le> e1 * dist x y"
         "continuous_on (G \<times> G) (\<lambda>(a, b). R a b)"
           by auto
 
-      text \<open> Find d, such that solutions are always at least \<open>min (e_domain/2) d_taylor\<close> apart,
+      text \<open> Find d, such that solutions are always at least \<open>min (e_domain/2) d_Taylor\<close> apart,
          i.e. always in H. This later gives us the bound on the remainder. \<close>
-      have "0 < min (e_domain/2) d_taylor"
-        using \<open>0 < d_taylor\<close> \<open>0 < e_domain\<close>
+      have "0 < min (e_domain/2) d_Taylor"
+        using \<open>0 < d_Taylor\<close> \<open>0 < e_domain\<close>
         by auto
       from uniform_limit_flow[OF \<open>t0 \<in> existence_ivl0 x0\<close> \<open>t1 \<in> existence_ivl0 x0\<close> \<open>t0 \<le> t1\<close>,
         THEN uniform_limitD, OF this, unfolded eventually_at]
       obtain d_ivl where d_ivl_def:
         "0 < d_ivl"
         "\<And>x. 0 < dist x x0 \<Longrightarrow> dist x x0 < d_ivl \<Longrightarrow>
-          (\<forall>t\<in>J. dist (flow0 x0 t) (Y (x - x0) t) < min (e_domain / 2) d_taylor)"
+          (\<forall>t\<in>J. dist (flow0 x0 t) (Y (x - x0) t) < min (e_domain / 2) d_Taylor)"
         by (auto simp: dist_commute J_def)
 
       define d where "d \<equiv> min u d_ivl"
@@ -2349,7 +2349,7 @@ proof-
           by (intro order_trans[OF uK_def(6)[OF x_in_ball] mult_left_mono])
              (auto simp add: J_def intro!: mult_mono)
         from d_ivl_def x_x0_dist \<open>d \<le> d_ivl\<close>
-        have dist_flow0_Y2: "\<And>t. t \<in> J \<Longrightarrow> dist (flow0 x0 t) (Y (x - x0) t) < min (e_domain2) d_taylor"
+        have dist_flow0_Y2: "\<And>t. t \<in> J \<Longrightarrow> dist (flow0 x0 t) (Y (x - x0) t) < min (e_domain2) d_Taylor"
           by (auto simp: e_domain2_def)
 
         let ?g = "\<lambda>t. norm (Y (x - x0) t - flow0 x0 t - vector_Dflow (x - x0) t)"
@@ -2415,7 +2415,7 @@ proof-
           have [continuous_intros]: "continuous_on J (\<lambda>s. R (flow0 x0 s) (Y (x - x0) s))"
             using J_in_existence J_in_existence_ivl[OF x_in_ball] X_in_G \<open>{a..b} \<subseteq> J\<close> Y_in_G
               x_x0_dist
-            by (auto intro!: continuous_intros continuous_on_compose_Pair[OF taylor_expansion(4)]
+            by (auto intro!: continuous_intros continuous_on_compose_Pair[OF Taylor_expansion(4)]
               simp: dist_commute subset_iff)
           hence [continuous_intros]:
             "(\<lambda>s. R (flow0 x0 s) (Y (x - x0) s)) integrable_on J"
@@ -2503,7 +2503,7 @@ proof-
             fix s' assume "s' \<in> {a..b}"
             show "f' (flow0 x0 s') (Y (x - x0) s' - flow0 x0 s' - vector_Dflow (x - x0) s') + R (flow0 x0 s') (Y (x - x0) s') =
               f (Y (x - x0) s') - f (flow0 x0 s') - f' (flow0 x0 s') (vector_Dflow (x - x0) s')"
-              by (simp add: blinfun.diff_right taylor_expansion(2)[of "flow0 x s'" "flow0 x0 s'"])
+              by (simp add: blinfun.diff_right Taylor_expansion(2)[of "flow0 x s'" "flow0 x0 s'"])
           qed
           also have "... \<le> integral {a..b}
             (\<lambda>s. norm (f' (flow0 x0 s) (Y (x - x0) s - flow0 x0 s - vector_Dflow (x - x0) s)) +
@@ -2536,7 +2536,7 @@ proof-
               using J_in_existence_ivl[OF x_in_ball] \<open>0 < e_domain\<close> dist_flow0_Y2 \<open>0 < e_domain2\<close>
               by (intro integral_le)
                 (force
-                  intro!: continuous_intros taylor_expansion(3) order_trans[OF infdist_le]
+                  intro!: continuous_intros Taylor_expansion(3) order_trans[OF infdist_le]
                    dest!: \<open>{a..b} \<subseteq> J\<close>[THEN subsetD]
                    intro: less_imp_le
                    simp: dist_commute H_def)+

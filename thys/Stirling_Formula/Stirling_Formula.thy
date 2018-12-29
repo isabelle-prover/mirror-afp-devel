@@ -361,7 +361,7 @@ proof -
     from assms D_summable[of x] show "summable (\<lambda>n. D (real n + x))" by simp
   next
     show "uniformly_convergent_on {x/2<..} (\<lambda>n x. \<Sum>i<n. D' (real i + x))"
-    proof (rule weierstrass_m_test')
+    proof (rule Weierstrass_m_test')
       fix n :: nat and y :: real
       assume y: "y \<in> {x/2<..}"
       with assms have "y > 0" by auto

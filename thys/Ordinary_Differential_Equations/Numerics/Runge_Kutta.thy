@@ -514,8 +514,8 @@ next
       by (auto simp: diff_def intro!: has_vector_derivative_within_subset[OF _ subset] x')
   qed
 
-  from taylor_has_integral[of 2 diff x t "t + h", OF _ _ diff] \<open>0 \<le> h\<close>
-  have taylor: "((\<lambda>xa. (t + h - xa) *\<^sub>R f' (xa, x xa) (1, f xa (x xa))) has_integral x (t + h) - (x t + h *\<^sub>R f t (x t))) {t..t + h}"
+  from Taylor_has_integral[of 2 diff x t "t + h", OF _ _ diff] \<open>0 \<le> h\<close>
+  have Taylor: "((\<lambda>xa. (t + h - xa) *\<^sub>R f' (xa, x xa) (1, f xa (x xa))) has_integral x (t + h) - (x t + h *\<^sub>R f t (x t))) {t..t + h}"
     by (simp add: eval_nat_numeral diff_def)
 
   have *: "h\<^sup>2 / 2 = content {t..t + h} *\<^sub>R (t + h) - (if t \<le> t + h then (t + h)\<^sup>2 / 2 - t\<^sup>2 / 2 else 0)"
@@ -526,13 +526,13 @@ next
     using \<open>0 \<le> h\<close>
     by (auto intro!: has_integral_diff ident_has_integral[THEN has_integral_eq_rhs]
         has_integral_const_real[THEN has_integral_eq_rhs])
-  from taylor_has_integral[of 2 diff x t "t + h", OF _ _ diff] \<open>0 \<le> h\<close>
-  have taylor: "((\<lambda>xa. (t + h - xa) *\<^sub>R f' (xa, x xa) (1, f xa (x xa))) has_integral x (t + h) - (x t + h *\<^sub>R f t (x t))) {t..t + h}"
+  from Taylor_has_integral[of 2 diff x t "t + h", OF _ _ diff] \<open>0 \<le> h\<close>
+  have Taylor: "((\<lambda>xa. (t + h - xa) *\<^sub>R f' (xa, x xa) (1, f xa (x xa))) has_integral x (t + h) - (x t + h *\<^sub>R f t (x t))) {t..t + h}"
     by (simp add: eval_nat_numeral diff_def)
 
   define F' where "F' \<equiv> (\<lambda>y. (2 / h\<^sup>2) *\<^sub>R (y - discrete_evolution (euler_increment f) (t + h) t (x t))) ` R"
   have "x (t + h) - (x t + h *\<^sub>R f t (x t)) \<in> (*\<^sub>R) (h\<^sup>2 / 2) ` F'"
-    apply (rule integral_by_parts_in_bounded_closed_convex_set[OF integral taylor[unfolded interval_cbox]])
+    apply (rule integral_by_parts_in_bounded_closed_convex_set[OF integral Taylor[unfolded interval_cbox]])
     subgoal using R \<open>h \<noteq> 0\<close> \<open>0 \<le> h\<close> subset by (force simp: F'_def)
     by (auto intro!: bounded_scaleR_image bounded_minus_image closed_injective_image_subspace bcc \<open>0 \<le> h\<close>
       simp: F'_def image_constant_conv closed_scaleR_image_iff convex_scaleR_image_iff \<open>h \<noteq> 0\<close>)
@@ -677,7 +677,7 @@ next
       by (auto simp: diff_def intro!: has_vector_derivative_within_subset[OF _ subset] x' p')
   qed
 
-  from taylor_has_integral[of 3 diff x t "t + h", OF _ _ diff]
+  from Taylor_has_integral[of 3 diff x t "t + h", OF _ _ diff]
   have
     "((\<lambda>x. ((t + h - x) ^ 2 / 2) *\<^sub>R diff 3 x)
       has_integral
@@ -698,9 +698,9 @@ next
    (1 / \<bar>h\<bar>) *\<^sub>R (x (t + h) - x t - h *\<^sub>R f (t, x t) - (h\<^sup>2 / 2) *\<^sub>R f' (t, x t) $ (1, f (t, x t))))
     {0..1}" .
   from has_integral_cmul[OF this, of h]
-  have taylor: "((\<lambda>x. (1 - x)\<^sup>2 *\<^sub>R ((h^3 / 2) *\<^sub>R ?q (h * x + t))) has_integral
+  have Taylor: "((\<lambda>x. (1 - x)\<^sup>2 *\<^sub>R ((h^3 / 2) *\<^sub>R ?q (h * x + t))) has_integral
    (x (t + h) - x t - h *\<^sub>R f (t, x t) - (h\<^sup>2 / 2) *\<^sub>R f' (t, x t) $ (1, f (t, x t))))
-    {0..1}" (is "(?i_taylor has_integral _) _")
+    {0..1}" (is "(?i_Taylor has_integral _) _")
     using \<open>h \<ge> 0\<close> \<open>h \<noteq> 0\<close>
     by (simp add: diff_def divide_simps algebra_simps power2_eq_square power3_eq_cube)
   have line_in': "h * y + t \<in> T"
@@ -715,7 +715,7 @@ next
     by (rule fundamental_theorem_of_calculus)
       (auto intro!: derivative_eq_intros
         simp: has_vector_derivative_def power2_eq_square algebra_simps)
-  have f_taylor: "((\<lambda>s. (1 - s) *\<^sub>R f'' (x + s *\<^sub>R h) h h) has_integral f (x + h) - f x - f' x $ h) {0..1}"
+  have f_Taylor: "((\<lambda>s. (1 - s) *\<^sub>R f'' (x + s *\<^sub>R h) h h) has_integral f (x + h) - f x - f' x $ h) {0..1}"
     if line_in: "(\<lambda>s. x + s *\<^sub>R h) ` {0..1} \<subseteq> T \<times> X" for x h::"real*'a"
   proof -
     from that have *: "y \<in> T \<times> X" if "y \<in> closed_segment x (x + h)" for y
@@ -726,7 +726,7 @@ next
       for x h1 h2 and i::nat
     have "((\<lambda>y. ((1 - y) ^ (2 - 1) / fact (2 - 1)) *\<^sub>R Df (x + y *\<^sub>R h) 2 h h) has_integral
      f (x + h) - (\<Sum>i<2. (1 / fact i) *\<^sub>R Df x i h h)) {0..1}"
-      apply (rule multivariate_taylor_has_integral[of 2 Df h f x "T \<times> X"])
+      apply (rule multivariate_Taylor_has_integral[of 2 Df h f x "T \<times> X"])
       subgoal by simp
       subgoal by (simp add: Df_def)
       subgoal premises prems for a i d
@@ -759,7 +759,7 @@ next
       using convexD_alt[OF \<open>convex X\<close> tx(2) step_in s]
       by (simp add: algebra_simps)
   qed
-  from f_taylor[OF line_in, simplified]
+  from f_Taylor[OF line_in, simplified]
   have k: "((\<lambda>s. (1 - s) *\<^sub>R ((h\<^sup>2 * p\<^sup>2) *\<^sub>R
           f'' (t + s * (h * p), x t + (s * (h * p)) *\<^sub>R f (t, x t)) $
             (1, f (t, x t)) $
@@ -802,7 +802,7 @@ next
     using k
     by (intro has_integral_integral_eqI) (rule has_integral_integrable)
   from has_integral_cmul[OF this, of "h / (p * 2)"]
-  have discrete_taylor:
+  have discrete_Taylor:
     "((\<lambda>s. (1 - s) *\<^sub>R ((h^3 * p / 2) *\<^sub>R
           f'' (t + s * (h * p), x t + (s * (h * p)) *\<^sub>R f (t, x t)) $
             (1, f (t, x t)) $
@@ -810,7 +810,7 @@ next
     (discrete_evolution (rk2_increment p (\<lambda>t x. f (t, x))) (t + h) t (x t) -
       x t - h *\<^sub>R f (t, x t) -
       (h\<^sup>2 / 2) *\<^sub>R f' (t, x t) (1, f (t, x t)))) {0 .. 1}"
-    (is "(?i_dtaylor has_integral _) _")
+    (is "(?i_dTaylor has_integral _) _")
     using \<open>h > 0\<close>
     by (simp add: algebra_simps diff_divide_distrib power2_eq_square power3_eq_cube)
   have integral_minus: "((-) 1 has_integral 1/2) (cbox 0 (1::real))"
@@ -853,7 +853,7 @@ next
                f (h * xa + t,
                   x (h * xa + t)))))) `
      cbox 0 1)"
-     by (rule set_rev_mp[OF integral_by_parts_in_bounded_set[OF intsquare taylor[unfolded interval_cbox]]])
+     by (rule set_rev_mp[OF integral_by_parts_in_bounded_set[OF intsquare Taylor[unfolded interval_cbox]]])
         (auto intro!: bounded_scaleR_image bounded_plus_image
          bounded_blinfun_apply_image bounded_Pair_image
          bounded_f'' bounded_f' bounded_f
@@ -869,7 +869,7 @@ next
              (1, f (t, x t)) $
              (1, f (t, x t))) `
        cbox 0 1)"
-    by (rule integral_by_parts_in_bounded_set[OF integral_minus discrete_taylor[unfolded interval_cbox]])
+    by (rule integral_by_parts_in_bounded_set[OF integral_minus discrete_Taylor[unfolded interval_cbox]])
        (auto intro!: bounded_scaleR_image bounded_blinfun_apply_image
          bounded_f''_2 simp: image_constant[of 0])
   have "x (t + h) - discrete_evolution (rk2_increment p (\<lambda>t x. f (t, x))) (t + h) t (x t) \<in>

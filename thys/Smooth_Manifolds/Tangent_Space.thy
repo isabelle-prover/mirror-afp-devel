@@ -1246,7 +1246,7 @@ proof -
       assume f: "f \<in> manifold_eucl.diff_fun_space k"
       then have "smooth_on UNIV f" using \<open>k = \<infinity>\<close>
         by simp
-      from smooth_on_taylor2E[OF this, of a]
+      from smooth_on_Taylor2E[OF this, of a]
       obtain g where f_exp:
         "\<And>x. f x = f a + frechet_derivative f (at a) (x - a) +
           (\<Sum>i\<in>Basis. \<Sum>j\<in>Basis. (x - a) \<bullet> j * ((x - a) \<bullet> i) * g i j x)"

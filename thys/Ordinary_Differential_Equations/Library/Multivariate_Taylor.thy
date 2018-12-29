@@ -18,11 +18,11 @@ lemma
   assumes cs: "closed_segment X (X + H) \<subseteq> G"
   defines "i \<equiv> \<lambda>x.
       ((1 - x) ^ (n - 1) / fact (n - 1)) *\<^sub>R Df (X + x *\<^sub>R H) n H H"
-  shows multivariate_taylor_has_integral:
+  shows multivariate_Taylor_has_integral:
     "(i has_integral f (X + H) - (\<Sum>i<n. (1 / fact i) *\<^sub>R Df X i H H)) {0..1}"
-  and multivariate_taylor:
+  and multivariate_Taylor:
     "f (X + H) = (\<Sum>i<n. (1 / fact i) *\<^sub>R Df X i H H) + integral {0..1} i"
-  and multivariate_taylor_integrable:
+  and multivariate_Taylor_integrable:
     "i integrable_on {0..1}"
 proof goal_cases
   case 1
@@ -54,9 +54,9 @@ proof goal_cases
          intro!: derivative_eq_intros set_mp[OF cs])
   qed
   ultimately
-  have g_taylor: "(i has_integral g 1 - (\<Sum>i<n. ((1 - 0) ^ i / fact i) *\<^sub>R Dg i 0)) {0 .. 1}"
+  have g_Taylor: "(i has_integral g 1 - (\<Sum>i<n. ((1 - 0) ^ i / fact i) *\<^sub>R Dg i 0)) {0 .. 1}"
     unfolding i_def Dg_def [abs_def] line_def
-    by (rule taylor_has_integral) auto
+    by (rule Taylor_has_integral) auto
   then show c: ?case using \<open>n > 0\<close> by (auto simp: g_def line_def Dg_def)
   case 2 show ?case using c
     by (simp add: integral_unique add.commute)
@@ -360,7 +360,7 @@ qed
 end
 
 lemma
-  uniform_explicit_remainder_taylor_1:
+  uniform_explicit_remainder_Taylor_1:
   fixes f::"'a::{banach,heine_borel,perfect_space} \<Rightarrow> 'b::banach"
   assumes f'[derivative_intros]: "\<And>x. x \<in> G \<Longrightarrow> (f has_derivative blinfun_apply (f' x)) (at x)"
   assumes f'_cont: "\<And>x. x \<in> G \<Longrightarrow> isCont f' x"

@@ -6,7 +6,7 @@ begin
 
 subsection \<open>From/To \<open>Multivariate_Taylor.thy\<close>\<close>
 
-lemma multivariate_taylor_integral:
+lemma multivariate_Taylor_integral:
   fixes f::"'a::real_normed_vector \<Rightarrow> 'b::banach"
     and Df::"'a \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'b"
   assumes "n > 0"
@@ -16,11 +16,11 @@ lemma multivariate_taylor_integral:
   assumes cs: "closed_segment X (X + H) \<subseteq> G"
   defines "i \<equiv> \<lambda>x.
       ((1 - x) ^ (n - 1) / fact (n - 1)) *\<^sub>R Df (X + x *\<^sub>R H) n H"
-  shows multivariate_taylor_has_integral:
+  shows multivariate_Taylor_has_integral:
     "(i has_integral f (X + H) - (\<Sum>i<n. (1 / fact i) *\<^sub>R Df X i H)) {0..1}"
-  and multivariate_taylor:
+  and multivariate_Taylor:
     "f (X + H) = (\<Sum>i<n. (1 / fact i) *\<^sub>R Df X i H) + integral {0..1} i"
-  and multivariate_taylor_integrable:
+  and multivariate_Taylor_integrable:
     "i integrable_on {0..1}"
 proof goal_cases
   case 1
@@ -52,9 +52,9 @@ proof goal_cases
          intro!: derivative_eq_intros set_mp[OF cs])
   qed
   ultimately
-  have g_taylor: "(i has_integral g 1 - (\<Sum>i<n. ((1 - 0) ^ i / fact i) *\<^sub>R Dg i 0)) {0 .. 1}"
+  have g_Taylor: "(i has_integral g 1 - (\<Sum>i<n. ((1 - 0) ^ i / fact i) *\<^sub>R Dg i 0)) {0 .. 1}"
     unfolding i_def Dg_def [abs_def] line_def
-    by (rule taylor_has_integral) auto
+    by (rule Taylor_has_integral) auto
   then show c: ?case using \<open>n > 0\<close> by (auto simp: g_def line_def Dg_def)
   case 2 show ?case using c
     by (simp add: integral_unique add.commute)
@@ -778,7 +778,7 @@ lemma closed_segment_subsetD:
   by (rule set_mp) (auto simp: closed_segment_def algebra_simps intro!: exI[where x=x])
 
 
-lemma higher_differentiable_taylor:
+lemma higher_differentiable_Taylor:
   fixes f::"'a::real_normed_vector \<Rightarrow> 'b::banach"
     and H::"'a"
     and Df::"'a \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'b"
@@ -795,7 +795,7 @@ proof -
     "(\<And>a h i. i < n \<Longrightarrow> a \<in> S \<Longrightarrow> ((\<lambda>a. Df a i H) has_derivative Df a (Suc i)) (at a))"
     "\<And>a i. i \<le> n \<Longrightarrow> a \<in> S \<Longrightarrow> Df a i H = nth_derivative i f a H"
     by blast
-  from multivariate_taylor_integral[OF \<open>n > 0\<close>, of Df H f X, OF Df(1,2)] cs
+  from multivariate_Taylor_integral[OF \<open>n > 0\<close>, of Df H f X, OF Df(1,2)] cs
   have mt: "((\<lambda>x. ((1 - x) ^ (n - 1) / fact (n - 1)) *\<^sub>R Df (X + x *\<^sub>R H) n H) has_integral
      f (X + H) - (\<Sum>i<n. (1 / fact i) *\<^sub>R Df X i H))
      {0..1}"
@@ -863,7 +863,7 @@ proof -
     by (simp add: frechet_derivative_const)
 qed
 
-lemma higher_differentiable_taylor1:
+lemma higher_differentiable_Taylor1:
   fixes f::"'a::real_normed_vector \<Rightarrow> 'b::banach"
   assumes hd: "higher_differentiable_on S f 2" "open S"
   assumes cs: "closed_segment X (X + H) \<subseteq> S"
@@ -871,7 +871,7 @@ lemma higher_differentiable_taylor1:
   shows "(i has_integral f (X + H) - (f X + nth_derivative 1 f X H)) {0..1}"
     and "f (X + H) = f X + nth_derivative 1 f X H + integral {0..1} i"
     and "i integrable_on {0..1}"
-  using higher_differentiable_taylor[OF _ hd cs]
+  using higher_differentiable_Taylor[OF _ hd cs]
   by (auto simp: numeral_2_eq_2 i_def)
 
 lemma differentiable_on_open_blinfunE:
@@ -1283,7 +1283,7 @@ lemma smooth_on_fst:
   by (auto simp: smooth_on_def)
 
 
-lemma smooth_on_taylor2E:
+lemma smooth_on_Taylor2E:
   fixes f::"'a::euclidean_space \<Rightarrow> real"
   assumes hd: "\<infinity>-smooth_on UNIV f"
   obtains g where "\<And>Y.
@@ -1326,7 +1326,7 @@ proof -
       "f (X + H) = f X + nth_derivative 1 f X H + integral {0..1} (i H)"
       "i H integrable_on {0..1}"
       unfolding i_def
-      using higher_differentiable_taylor1[OF hd2 cs]
+      using higher_differentiable_Taylor1[OF hd2 cs]
       by auto
     note i(2)
     also

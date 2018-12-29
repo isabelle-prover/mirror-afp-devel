@@ -18,7 +18,7 @@ lemma field_differentiable_bound:\<comment> \<open>TODO: generalize @{thm field_
   apply fact
   done
 
-lemma field_taylor:\<comment> \<open>TODO: generalize @{thm complex_taylor}\<close>
+lemma field_Taylor:\<comment> \<open>TODO: generalize @{thm complex_Taylor}\<close>
   assumes s: "convex s"
       and f: "\<And>i x. x \<in> s \<Longrightarrow> i \<le> n \<Longrightarrow> (f i has_field_derivative f (Suc i) x) (at x within s)"
       and B: "\<And>x. x \<in> s \<Longrightarrow> norm (f (Suc n) x) \<le> B"
@@ -115,7 +115,7 @@ qed
 lemma Taylor_exp:\<comment> \<open>TODO: generalize @{thm Taylor_exp}\<close>
   fixes z::"'a::{banach,real_normed_field}"
   shows "norm (exp z - (\<Sum>i\<le>n. z ^ i / fact i)) \<le> exp (norm z) * (norm z * norm z ^ n) / fact n"
-proof (rule field_taylor[of _ n "\<lambda>k. exp" "exp (norm z)" 0 z, simplified])
+proof (rule field_Taylor[of _ n "\<lambda>k. exp" "exp (norm z)" 0 z, simplified])
   show "convex (closed_segment 0 z)"
     by (rule convex_closed_segment [of 0 z])
 next

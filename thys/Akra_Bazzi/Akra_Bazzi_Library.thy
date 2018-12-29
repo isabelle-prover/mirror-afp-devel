@@ -140,7 +140,7 @@ proof (cases "x = 0")
   have "\<exists>t. (if x < 0 then x < t \<and> t < 0 else 0 < t \<and> t < x) \<and>
               (1 + x) powr p = (\<Sum>m<2. ?fs m 0 / (fact m) * (x - 0)^m) + 
               ?fs 2 t / (fact 2) * (x - 0)\<^sup>2"
-    using assms x' by (intro taylor[OF _ _ A]) simp_all
+    using assms x' by (intro Taylor[OF _ _ A]) simp_all
   then guess t by (elim exE conjE)
   note t = this
   with assms have "abs t < 1/2" by (auto split: if_split_asm)
@@ -164,7 +164,7 @@ apply (rule order.trans[OF powr_mono2 max.cobounded2], simp_all) []
 apply (rule order.trans[OF powr_mono2' max.cobounded1], simp_all) []
 done
 
-lemma one_plus_x_powr_taylor2:
+lemma one_plus_x_powr_Taylor2:
   obtains k where "\<And>x. abs (x::real) \<le> 1/2 \<Longrightarrow> abs ((1 + x) powr p - 1 - p*x) \<le> k*x^2"
 proof-
   define k where "k = \<bar>p*(p - 1)\<bar> * max ((1/2) powr (p - 2)) ((3/2) powr (p - 2)) / 2"
@@ -181,11 +181,11 @@ proof-
   qed
 qed
 
-lemma one_plus_x_powr_taylor2_bigo:
+lemma one_plus_x_powr_Taylor2_bigo:
   assumes lim: "(f \<longlongrightarrow> 0) F"
   shows   "(\<lambda>x. (1 + f x) powr (p::real) - 1 - p * f x) \<in> O[F](\<lambda>x. f x ^ 2)"
 proof -
-  from one_plus_x_powr_taylor2[of p] guess k .
+  from one_plus_x_powr_Taylor2[of p] guess k .
   moreover from tendstoD[OF lim, of "1/2"] 
     have "eventually (\<lambda>x. abs (f x) < 1/2) F" by (simp add: dist_real_def)
   ultimately have "eventually (\<lambda>x. norm ((1 + f x) powr p - 1 - p * f x) \<le> k * norm (f x ^ 2)) F"
@@ -193,12 +193,12 @@ proof -
   thus ?thesis by (rule bigoI)
 qed
 
-lemma one_plus_x_powr_taylor1_bigo:
+lemma one_plus_x_powr_Taylor1_bigo:
   assumes lim: "(f \<longlongrightarrow> 0) F"
   shows   "(\<lambda>x. (1 + f x) powr (p::real) - 1) \<in> O[F](\<lambda>x. f x)"
 proof -
   from assms have "(\<lambda>x. (1 + f x) powr p - 1 - p * f x) \<in> O[F](\<lambda>x. (f x)\<^sup>2)"
-    by (rule one_plus_x_powr_taylor2_bigo)
+    by (rule one_plus_x_powr_Taylor2_bigo)
   also from assms have "f \<in> O[F](\<lambda>_. 1)" by (intro bigoI_tendsto) simp_all
   from landau_o.big.mult[of f F f, OF _ this] have "(\<lambda>x. (f x)^2) \<in> O[F](\<lambda>x. f x)"
     by (simp add: power2_eq_square)

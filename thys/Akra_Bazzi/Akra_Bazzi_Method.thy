@@ -24,7 +24,7 @@ done
 
 lemma exp_1_lt_3: "exp (1::real) < 3"
 proof-
-  from taylor_up[of 3 "\<lambda>_. exp" exp 0 1 0] 
+  from Taylor_up[of 3 "\<lambda>_. exp" exp 0 1 0] 
     obtain t :: real where "t > 0" "t < 1" "exp 1 = 5/2 + exp t / 6" by (auto simp: eval_nat_numeral)
   note this(3)
   also from \<open>t < 1\<close> have "exp t < exp 1" by simp

@@ -644,7 +644,7 @@ proof
 next
   assume "discrete S \<and> compact S"
   then show "finite S" 
-    by (meson discrete_def heine_borel_imp_bolzano_weierstrass isolate_islimpt_iff order_refl)
+    by (meson discrete_def Heine_Borel_imp_Bolzano_Weierstrass isolate_islimpt_iff order_refl)
 qed
   
 lemma uniform_discrete_finite_iff:
