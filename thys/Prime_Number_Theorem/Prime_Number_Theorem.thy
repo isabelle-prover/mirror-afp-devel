@@ -206,7 +206,7 @@ proof -
   define M where "M = (\<lambda>p::nat. ln p * (C / p powr (x + 1) + 1 / (p powr x * (p powr x - 1))))"
 
   show ?thesis unfolding pre_newman_def
-  proof (intro weierstrass_m_test_ev[OF eventually_mono[OF eventually_gt_at_top[of 1]]] ballI)
+  proof (intro Weierstrass_m_test_ev[OF eventually_mono[OF eventually_gt_at_top[of 1]]] ballI)
     show "summable M"
     proof (rule summable_comparison_test_bigo)
       define \<epsilon> where "\<epsilon> = min (2 * x - 1) x / 2"
