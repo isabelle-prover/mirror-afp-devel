@@ -804,7 +804,7 @@ proof(rule bd_ctsI)
         hence "(\<lambda>s. Sup (range (\<lambda>i. iterates body G i (M j) s))) \<in>
               range ((\<lambda>P s. Sup {f s |f.
                            \<exists>t. f = t P \<and> t \<in> range (iterates body G)}) \<circ> M)"
-          by (simp add: o_def cong del: SUP_cong_strong)
+          by (simp add: o_def cong del: SUP_cong_simp)
       }
       ultimately show "x \<in> ?Y s" by(auto)
     next
@@ -830,7 +830,7 @@ proof(rule bd_ctsI)
     qed
     hence "(\<lambda>s. Sup (range (\<lambda>j .Sup (range (\<lambda>i. iterates body G i (M j) s))))) =
           Sup_exp (range (Sup_trans (range (iterates body G)) o M))"
-      by (simp add: Sup_exp_def Sup_trans_def cong del: SUP_cong_strong)
+      by (simp add: Sup_exp_def Sup_trans_def cong del: SUP_cong_simp)
   }
   also have "Sup_exp (range (Sup_trans (range (iterates body G)) o M)) =
              Sup_exp (range (wp do G \<longrightarrow> body od o M))"

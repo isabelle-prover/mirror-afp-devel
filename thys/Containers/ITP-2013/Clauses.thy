@@ -15,7 +15,7 @@ datatype bexp
 
 declare [[coercion Var]] [[coercion_enabled]]
 
-declare SUP_cong_strong[fundef_cong del]
+declare SUP_cong_simp[fundef_cong del]
 function cnf :: "bexp \<Rightarrow> cnf"
 where
   "cnf v = {{(v, True)}}"
@@ -27,7 +27,7 @@ where
 | "cnf (not (b or b')) = cnf (not b and not b')"
 by pat_completeness simp_all
 termination by(relation "measure (rec_bexp (\<lambda>_. 1) (\<lambda>_ n. 3 * n + 1) (\<lambda>_ _ n m. n + m + 1) (\<lambda>_ _ n m. n + m + 1))") simp_all
-declare SUP_cong_strong[fundef_cong]
+declare SUP_cong_simp[fundef_cong]
 
 definition test 
 where 

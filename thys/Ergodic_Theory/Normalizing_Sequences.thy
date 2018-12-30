@@ -456,10 +456,9 @@ proof -
       also have "... = (\<integral>\<^sup>+x. 1 * h x \<partial>M)"
         by (rule nn_transfer_operator_intTn_g, auto)
       also have "... = emeasure P (space M)"
-        unfolding \<open>P = density M h\<close> apply simp
-        by (metis (no_types, lifting) assms(3) emeasure_density indicator_simps(1) mult.right_neutral nn_integral_cong_strong sets.top)
+        using PS.emeasure_space_1 by (simp add: emeasure_density \<open>P = density M h\<close>)
       also have "... < \<infinity>"
-        using PS.emeasure_space_1 by auto
+        using PS.emeasure_space_1 by simp
       finally show "(\<integral>\<^sup>+x. ((nn_transfer_operator^^k) h) x \<partial>P) \<noteq> \<infinity>"
         by auto
     qed (simp)

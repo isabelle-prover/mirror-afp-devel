@@ -447,7 +447,7 @@ lemma p_id_assoc1: "(1\<^sub>\<pi> \<cdot> R) \<cdot> S = 1\<^sub>\<pi> \<cdot> 
   by (clarsimp simp: mr_simp)
 
 lemma p_id_assoc2: "(R \<cdot> 1\<^sub>\<pi>) \<cdot> T = R \<cdot> (1\<^sub>\<pi> \<cdot> T)"
-  by (auto simp add: mr_simp cong del: SUP_cong_strong, blast+)
+  by (auto simp add: mr_simp cong del: SUP_cong_simp, blast+)
 
 lemma seq_conc_subdistrl: 
 assumes "P \<subseteq> 1\<^sub>\<sigma>"

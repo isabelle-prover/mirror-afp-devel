@@ -116,7 +116,7 @@ proof -
         apply (subst AE_bind[where B="?S"])
           apply measurable
         apply (auto intro!: AE_distrD[where f=shd and M'="count_space UNIV"]
-                    simp: AE_measure_pmf_iff n[OF NM] n'_shd in_\<Omega>[OF 0] cong: AE_cong_strong)
+                    simp: AE_measure_pmf_iff n[OF NM] n'_shd in_\<Omega>[OF 0] cong: AE_cong_simp)
         done
     next
       case (Suc i) note NM = Suc(2)[THEN R_F, simp]
@@ -125,7 +125,7 @@ proof -
         apply (subst AE_bind[where B="?S"])
           apply measurable
         apply (auto intro!: AE_distrD[where f=stl and M'="?S"] Suc(1)[OF nm_F] Suc(2)
-          simp: AE_measure_pmf_iff n'_stl cong: AE_cong_strong)
+          simp: AE_measure_pmf_iff n'_stl cong: AE_cong_simp)
         done
     qed
     then have AE_N: "\<And>N M. (N, M) \<in> F \<Longrightarrow> AE x in N. x \<in> streams \<Omega>"
@@ -139,7 +139,7 @@ proof -
         apply (subst AE_bind[where B="?S"])
           apply measurable
         apply (auto intro!: AE_distrD[where f=shd and M'="count_space UNIV"]
-                    simp: AE_measure_pmf_iff m[OF NM] m'_shd in_\<Omega>[OF 0] cong: AE_cong_strong)
+                    simp: AE_measure_pmf_iff m[OF NM] m'_shd in_\<Omega>[OF 0] cong: AE_cong_simp)
         done
     next
       case (Suc i) note NM = Suc(2)[THEN R_F, simp]
@@ -148,7 +148,7 @@ proof -
         apply (subst AE_bind[where B="?S"])
           apply measurable
         apply (auto intro!: AE_distrD[where f=stl and M'="?S"] Suc(1)[OF nm_F] Suc(2)
-          simp: AE_measure_pmf_iff m'_stl cong: AE_cong_strong)
+          simp: AE_measure_pmf_iff m'_stl cong: AE_cong_simp)
         done
     qed
     then have AE_M: "\<And>N M. (N, M) \<in> F \<Longrightarrow> AE x in M. x \<in> streams \<Omega>"

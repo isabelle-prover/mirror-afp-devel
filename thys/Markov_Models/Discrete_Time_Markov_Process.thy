@@ -36,7 +36,7 @@ proof (rule measure_eqI_PiM_infinite[OF * _ A])
     unfolding emb_eq by (rule eq) fact
 qed
 
-lemma distr_cong_strong:
+lemma distr_cong_simp:
   "M = K \<Longrightarrow> sets N = sets L \<Longrightarrow> (\<And>x. x \<in> space M =simp=> f x = g x) \<Longrightarrow> distr M N f = distr K L g"
   unfolding simp_implies_def by (rule distr_cong)
 
@@ -108,7 +108,7 @@ proof -
 
   { fix n :: nat and X assume "X \<in> sets (\<Pi>\<^sub>M j\<in>{0..<n}. M)"
     then show "emeasure (lim_sequence x) (PF.emb UNIV {0..<n} X) = emeasure (C 0 n (\<lambda>x. undefined)) X"
-      by (simp add: space_C emb CI_def space_PiM distr_id2 sets_C cong: distr_cong_strong) }
+      by (simp add: space_C emb CI_def space_PiM distr_id2 sets_C cong: distr_cong_simp) }
 qed
 
 lemma lim_sequence[measurable]: "lim_sequence \<in> M \<rightarrow>\<^sub>M prob_algebra (\<Pi>\<^sub>M i\<in>UNIV. M)"
@@ -391,7 +391,7 @@ lemma AE_lim_stream:
   assumes x[simp]: "x \<in> space M" and P[measurable]: "Measurable.pred (stream_space M) P"
   shows "(AE \<omega> in lim_stream x. P \<omega>) \<longleftrightarrow> (AE y in K x. AE \<omega> in lim_stream y. P (y ## \<omega>))"
   unfolding lim_stream_eq[OF x]
-  by (simp_all add: space_K space_lim_stream space_stream_space AE_return AE_bind[OF measurable_prob_algebraD P] cong: AE_cong_strong)
+  by (simp_all add: space_K space_lim_stream space_stream_space AE_return AE_bind[OF measurable_prob_algebraD P] cong: AE_cong_simp)
 
 lemma emeasure_lim_stream:
   assumes x[measurable, simp]: "x \<in> space M" and A[measurable, simp]: "A \<in> sets (stream_space M)"
@@ -626,7 +626,7 @@ proof (coinduction arbitrary: x T rule: lim_stream_eq_coinduct)
           by (auto simp: S_eq space_lim_stream shift.simps[abs_def] streams_empty_iff
                 bind_const'[OF _ prob_space_imp_subprob_space] prob_space_lim_stream prob_space.prob_space_distr
               intro!: bind_return_distr'[symmetric]
-              cong: bind_cong_strong)
+              cong: bind_cong_simp)
       next
         assume *: "\<not> (\<forall>\<omega>\<in>streams (space M). T (y##\<omega>) = 0)"
         then have T_pos: "\<omega> \<in> streams (space M) \<Longrightarrow> T (y ## \<omega>) \<noteq> 0" for \<omega>

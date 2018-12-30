@@ -726,7 +726,7 @@ proof -
     show "?thesis S"
       unfolding r_def r\<^sub>\<psi>_def product_run_embed_limit_finiteness[OF 1 2, unfolded ltl.sel comp_def, symmetric] 
       using product_run_embed_limit_finiteness_snd[OF  \<open>finite (range r)\<close>[unfolded r_def delta.simps initial.simps]]
-      by (auto simp del: simple_product.simps product.simps product_initial_state.simps simp add: comp_def cong del: SUP_cong_strong)
+      by (auto simp del: simple_product.simps product.simps product_initial_state.simps simp add: comp_def cong del: SUP_cong_simp)
   qed
   hence "limit r \<inter> fst (Acc \<Sigma> \<pi> (G \<psi>)) = {} \<and> limit r \<inter> snd (Acc \<Sigma> \<pi> (G \<psi>)) \<noteq> {} 
      \<longleftrightarrow> limit r\<^sub>\<psi> \<inter> fst (\<MM>.Acc\<^sub>\<R> (the (\<pi> (G \<psi>)))) = {} \<and> limit r\<^sub>\<psi> \<inter> snd (\<MM>.Acc\<^sub>\<R> (the (\<pi> (G \<psi>)))) \<noteq> {}"

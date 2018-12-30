@@ -102,7 +102,7 @@ proof -
     using subset_G 
       by (auto simp add: Let_def mapping_generator_code [symmetric]
         lookup_tabulate G_eq_G_list [symmetric] mapping_generator_set_eq
-        cong del: SUP_cong_strong; blast)
+        cong del: SUP_cong_simp; blast)
   finally
   show ?thesis
     by simp

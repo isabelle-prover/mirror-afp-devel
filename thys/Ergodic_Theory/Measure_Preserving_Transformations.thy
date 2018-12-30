@@ -444,7 +444,7 @@ next
       have 3: "U x \<in> measure_preserving N N" using assms(2) that(2) by (simp add: mpt.Tm)
 
       have "(\<integral>\<^sup>+y. indicator B (x,y) \<partial>N) = (\<integral>\<^sup>+y. indicator A (T x, U x y) \<partial>N)"
-        using 2 by (intro nn_integral_cong_strong) (auto simp add: indicator_def \<open>x \<in> space M\<close>)
+        using 2 by (intro nn_integral_cong_simp) (auto simp add: indicator_def \<open>x \<in> space M\<close>)
       also have "... = (\<integral>\<^sup>+y. indicator A (T x, y) \<partial>N)"
         by (rule measure_preserving_preserves_nn_integral[OF 3, symmetric], metis 1)
       finally show ?thesis by simp

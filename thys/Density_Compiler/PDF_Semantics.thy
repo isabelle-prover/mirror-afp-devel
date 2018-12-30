@@ -634,7 +634,7 @@ primrec expr_sem :: "state \<Rightarrow> expr \<Rightarrow> val measure" where
 
 lemma expr_sem_pair_vars: "expr_sem \<sigma> <Var x, Var y> = return_val <|\<sigma> x, \<sigma> y|>"
   by (simp add: return_val_def bind_return[where N="PRODUCT (val_type (\<sigma> x)) (val_type (\<sigma> y))"]
-           cong: bind_cong_strong)
+           cong: bind_cong_simp)
 
 text \<open>
   Well-typed expressions produce a result in the measure space that corresponds to their type

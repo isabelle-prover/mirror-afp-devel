@@ -1321,7 +1321,7 @@ proof (cases "m = 0")
   qed (simp_all add: fds_truncate_mult)
 qed simp_all
 
-lemma dirichlet_inverse_cong_strong:
+lemma dirichlet_inverse_cong_simp:
   assumes "\<And>m. m > 0 \<Longrightarrow> m \<le> n \<Longrightarrow> f m = f' m" "i = i'" "n = n'"
   shows   "dirichlet_inverse f i n = dirichlet_inverse f' i' n'"
 proof -
@@ -1352,7 +1352,7 @@ proof (rule fds_truncate_cong, goal_cases)
   case (1 n)
   have *: "dirichlet_inverse (\<lambda>n. if n \<le> m then fds_nth f n else 0) (inverse (fds_nth f 1)) n =
              dirichlet_inverse (fds_nth f) (inverse (fds_nth f 1)) n" using 1
-    by (intro dirichlet_inverse_cong_strong) auto
+    by (intro dirichlet_inverse_cong_simp) auto
   show ?case
   proof (cases "fds_nth f 1 = 0")
     case True

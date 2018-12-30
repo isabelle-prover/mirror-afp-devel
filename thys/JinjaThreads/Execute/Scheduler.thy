@@ -1132,7 +1132,7 @@ proof -
     case None
     with invar show ?thesis
       by (auto simp add: thr.lookup_correct \<alpha>.step_thread_def step_thread_def ws.lookup_correct
-        split_beta holds_eq split: if_split_asm cong del: SUP_cong_strong) metis+
+        split_beta holds_eq split: if_split_asm cong del: SUP_cong_simp) metis+
   next
     case (Some a)
     then obtain t' taxm \<sigma>' 
@@ -1157,7 +1157,7 @@ proof -
         by (auto simp add: thr.lookup_correct ws.lookup_correct \<alpha>.step_thread_def step_thread_def
           split_beta \<alpha>.deterministic_THE [OF det, where s="state_\<alpha> s", simplified]
           deterministic_THE2[OF det] holds_eq split: if_split_asm
-          cong del: SUP_cong_strong) blast+
+          cong del: SUP_cong_simp) blast+
       moreover {
         assume "?tso ta \<longrightarrow> ?inv ta"
         hence ?thesis2 using rrs invar
