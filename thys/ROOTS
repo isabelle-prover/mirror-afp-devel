@@ -76,6 +76,7 @@ ComponentDependencies
 ConcurrentGC
 ConcurrentIMP
 Concurrent_Ref_Alg
+Concurrent_Revisions
 Consensus_Refined
 Constructive_Cryptography
 Constructor_Funs
