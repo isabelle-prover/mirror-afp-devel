@@ -7612,3 +7612,21 @@ abstract =
   powerset monad, via its Kleisli category and Eilenberg-Moore algebras,
   with emphasis on adjunctions and dualities, as well as isomorphisms
   between relations, state transformers and predicate transformers.
+
+[Concurrent_Revisions]
+title = Formalization of Concurrent Revisions
+author = Roy Overbeek <mailto:Roy.Overbeek@cwi.nl>
+topic = Computer Science/Concurrency
+date = 2018-12-25
+notify = Roy.Overbeek@cwi.nl
+abstract = 
+  Concurrent revisions is a concurrency control model developed by
+  Microsoft Research. It has many interesting properties that
+  distinguish it from other well-known models such as transactional
+  memory. One of these properties is <em>determinacy</em>:
+  programs written within the model always produce the same outcome,
+  independent of scheduling activity. The concurrent revisions model has
+  an operational semantics, with an informal proof of determinacy. This
+  document contains an Isabelle/HOL formalization of this semantics and
+  the proof of determinacy.
+

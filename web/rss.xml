@@ -9,7 +9,24 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>17 Dec 2018 00:00:00 +0000</pubDate>
+    <pubDate>25 Dec 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Formalization of Concurrent Revisions</title>
+              <link>https://www.isa-afp.org/entries/Concurrent_Revisions.html</link>
+       <guid>https://www.isa-afp.org/entries/Concurrent_Revisions.html</guid>
+       <dc:creator> Roy Overbeek       </dc:creator>
+       <pubDate>25 Dec 2018 00:00:00 +0000</pubDate>
+       <description>
+Concurrent revisions is a concurrency control model developed by
+Microsoft Research. It has many interesting properties that
+distinguish it from other well-known models such as transactional
+memory. One of these properties is &lt;em&gt;determinacy&lt;/em&gt;:
+programs written within the model always produce the same outcome,
+independent of scheduling activity. The concurrent revisions model has
+an operational semantics, with an informal proof of determinacy. This
+document contains an Isabelle/HOL formalization of this semantics and
+the proof of determinacy.</description>
+    </item>
     <item>
        <title>Constructive Cryptography in HOL</title>
               <link>https://www.isa-afp.org/entries/Constructive_Cryptography.html</link>
@@ -550,19 +567,6 @@ geometry using the notion of rank of a matroid. This last approach
 allows to handle incidence relations in an homogeneous way dealing
 only with points and without the need of talking explicitly about
 lines, planes or any higher entity.</description>
-    </item>
-    <item>
-       <title>The Localization of a Commutative Ring</title>
-              <link>https://www.isa-afp.org/entries/Localization_Ring.html</link>
-       <guid>https://www.isa-afp.org/entries/Localization_Ring.html</guid>
-       <dc:creator> Anthony Bordg       </dc:creator>
-       <pubDate>14 Jun 2018 00:00:00 +0000</pubDate>
-       <description>
-We formalize the localization of a commutative ring R with respect to
-a multiplicative subset (i.e. a submonoid of R seen as a
-multiplicative monoid). This localization is itself a commutative ring
-and we build the natural homomorphism of rings from R to its
-localization.</description>
     </item>
   </channel>
 </rss>
