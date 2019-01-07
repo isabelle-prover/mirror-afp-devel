@@ -253,7 +253,7 @@ abstract =
 [Constructive_Cryptography]
 title = Constructive Cryptography in HOL
 author = Andreas Lochbihler <http://www.andreas-lochbihler.de/>, S. Reza Sefidgar<>
-topic = Computer Science/Security, Mathematics/Probability Theory
+topic = Computer Science/Security/Cryptography, Mathematics/Probability Theory
 date = 2018-12-17
 notify = mail@andreas-lochbihler.de, reza.sefidgar@inf.ethz.ch
 abstract =
@@ -7619,7 +7619,7 @@ author = Roy Overbeek <mailto:Roy.Overbeek@cwi.nl>
 topic = Computer Science/Concurrency
 date = 2018-12-25
 notify = Roy.Overbeek@cwi.nl
-abstract = 
+abstract =
   Concurrent revisions is a concurrency control model developed by
   Microsoft Research. It has many interesting properties that
   distinguish it from other well-known models such as transactional
