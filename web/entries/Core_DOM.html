@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Formal Network Models and Their Application to Firewall Policies - Archive of Formal Proofs
+<title>A Formal Model of the Document Object Model - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,23 +61,21 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">F</font>ormal
+  <h1>          <font class="first">A</font>
   
-          <font class="first">N</font>etwork
+          <font class="first">F</font>ormal
   
-          <font class="first">M</font>odels
+          <font class="first">M</font>odel
   
-          and
+          of
   
-          <font class="first">T</font>heir
+          the
   
-          <font class="first">A</font>pplication
+          <font class="first">D</font>ocument
   
-          to
+          <font class="first">O</font>bject
   
-          <font class="first">F</font>irewall
-  
-          <font class="first">P</font>olicies
+          <font class="first">M</font>odel
   
 </h1>
   <p>&nbsp;</p>
@@ -86,7 +84,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Formal Network Models and Their Application to Firewall Policies</td>
+  <td class="data" width="80%">A Formal Model of the Document Object Model</td>
 </tr>
 
 <tr>
@@ -94,9 +92,8 @@
           Authors:
       </td>
   <td class="data">
-                      <a href="https://www.brucker.ch/">Achim D. Brucker</a>,
-                Lukas Brügger and
-          Burkhart Wolff (wolff /at/ lri /dot/ fr)
+                    <a href="https://www.brucker.ch/">Achim D. Brucker</a> and
+          <a href="http://www.dcs.shef.ac.uk/cgi-bin/makeperson?M.Herzberg">Michael Herzberg</a>
       </td>
 </tr>
 
@@ -104,32 +101,39 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2017-01-08</td>
+  <td class="data">2018-12-26</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-We present a formal model of network protocols and their application
-to modeling firewall policies. The formalization is based on the
-Unified Policy Framework (UPF). The formalization was originally
-developed with for generating test cases for testing the security
-configuration actual firewall and router (middle-boxes) using
-HOL-TestGen. Our work focuses on modeling application level protocols
-on top of tcp/ip.</td>
+In this AFP entry, we formalize the core of the Document Object Model
+(DOM).  At its core, the DOM defines a tree-like data structure for
+representing documents in general and HTML documents in particular. It
+is the heart of any modern web browser.  Formalizing the key concepts
+of the DOM is a prerequisite for the formal reasoning over client-side
+JavaScript programs and for the analysis of security concepts in
+modern web browsers.  We present a formalization of the core DOM, with
+focus on the node-tree and the operations defined on node-trees, in
+Isabelle/HOL. We use the formalization to verify the functional
+correctness of the most important functions defined in the DOM
+standard. Moreover, our formalization is 1) extensible, i.e., can be
+extended without the need of re-proving already proven properties and
+2) executable, i.e., we can generate executable code from our
+specification.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{UPF_Firewall-AFP,
-  author  = {Achim D. Brucker and Lukas Brügger and Burkhart Wolff},
-  title   = {Formal Network Models and Their Application to Firewall Policies},
+        <pre>@article{Core_DOM-AFP,
+  author  = {Achim D. Brucker and Michael Herzberg},
+  title   = {A Formal Model of the Document Object Model},
   journal = {Archive of Formal Proofs},
-  month   = jan,
-  year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/UPF_Firewall.html},
+  month   = dec,
+  year    = 2018,
+  note    = {\url{http://isa-afp.org/entries/Core_DOM.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -140,9 +144,7 @@ on top of tcp/ip.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="UPF.html">UPF</a>      </td></tr>
-          
+                    
                     
 
         
@@ -155,34 +157,23 @@ on top of tcp/ip.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/UPF_Firewall/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/UPF_Firewall/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Core_DOM/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Core_DOM/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/UPF_Firewall/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Core_DOM/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-UPF_Firewall-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Core_DOM-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2017:
-          <a href="../release/afp-UPF_Firewall-2017-10-10.tar.gz">
-            afp-UPF_Firewall-2017-10-10.tar.gz
-          </a>
-          </li>
-                                <li>Isabelle 2016-1:
-          <a href="../release/afp-UPF_Firewall-2017-01-11.tar.gz">
-            afp-UPF_Firewall-2017-01-11.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>
