@@ -9,7 +9,29 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>25 Dec 2018 00:00:00 +0000</pubDate>
+    <pubDate>26 Dec 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Formal Model of the Document Object Model</title>
+              <link>https://www.isa-afp.org/entries/Core_DOM.html</link>
+       <guid>https://www.isa-afp.org/entries/Core_DOM.html</guid>
+       <dc:creator> Achim D. Brucker, Michael Herzberg       </dc:creator>
+       <pubDate>26 Dec 2018 00:00:00 +0000</pubDate>
+       <description>
+In this AFP entry, we formalize the core of the Document Object Model
+(DOM).  At its core, the DOM defines a tree-like data structure for
+representing documents in general and HTML documents in particular. It
+is the heart of any modern web browser.  Formalizing the key concepts
+of the DOM is a prerequisite for the formal reasoning over client-side
+JavaScript programs and for the analysis of security concepts in
+modern web browsers.  We present a formalization of the core DOM, with
+focus on the node-tree and the operations defined on node-trees, in
+Isabelle/HOL. We use the formalization to verify the functional
+correctness of the most important functions defined in the DOM
+standard. Moreover, our formalization is 1) extensible, i.e., can be
+extended without the need of re-proving already proven properties and
+2) executable, i.e., we can generate executable code from our
+specification.</description>
+    </item>
     <item>
        <title>Formalization of Concurrent Revisions</title>
               <link>https://www.isa-afp.org/entries/Concurrent_Revisions.html</link>
@@ -551,22 +573,6 @@ us an explicit and executable characterisation of all the solutions.
 &lt;/p&gt; &lt;p&gt; Based on this, simple executable algorithms for
 computing the fundamental solution and the infinite sequence of all
 non-negative solutions are also provided. &lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Projective Geometry</title>
-              <link>https://www.isa-afp.org/entries/Projective_Geometry.html</link>
-       <guid>https://www.isa-afp.org/entries/Projective_Geometry.html</guid>
-       <dc:creator> Anthony Bordg       </dc:creator>
-       <pubDate>14 Jun 2018 00:00:00 +0000</pubDate>
-       <description>
-We formalize the basics of projective geometry. In particular, we give
-a proof of the so-called Hessenberg&#39;s theorem in projective plane
-geometry. We also provide a proof of the so-called Desargues&#39;s
-theorem based on an axiomatization of (higher) projective space
-geometry using the notion of rank of a matroid. This last approach
-allows to handle incidence relations in an homogeneous way dealing
-only with points and without the need of talking explicitly about
-lines, planes or any higher entity.</description>
     </item>
   </channel>
 </rss>
