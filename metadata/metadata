@@ -33,6 +33,7 @@ abstract =
 [CakeML]
 title = CakeML
 author = Lars Hupel <https://www21.in.tum.de/~hupel/>, Yu Zhang <>
+contributors = Johannes Åman Pohjola <>
 topic = Computer Science/Programming Languages/Language Definitions
 date = 2018-03-12
 notify = hupel@in.tum.de

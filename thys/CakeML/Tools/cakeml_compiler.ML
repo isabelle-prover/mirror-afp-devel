@@ -1,21 +1,26 @@
 signature CAKEML_COMPILER = sig
+  datatype mode =
+    Literal (* concrete syntax *) |
+    Prog (* sexp syntax *)
+
   val compiler: unit -> Path.T
-  val compile_ml: string -> Path.T
-  val compile_ml_file: Path.T -> Path.T
+  val compile_ml: mode -> string -> Path.T
+  val compile_ml_file: mode -> Path.T -> Path.T
   val compile_c_file: Path.T -> Path.T
   val compile_ffi: unit -> Path.T
   val link: Path.T list -> Path.T
 
-  val eval: string -> string
-  val eval_source: Input.source -> string
+  val eval: mode -> string -> string
+  val eval_source: mode -> Input.source -> string
 
   val string_of_prog: Proof.context -> term -> string
 
-  datatype mode = Literal | Prog
   val cakeml_cmd: Proof.context -> mode -> Input.source -> unit
 end
 
 structure CakeML_Compiler : CAKEML_COMPILER = struct
+
+datatype mode = Literal | Prog
 
 fun compiler () =
   let
@@ -32,14 +37,16 @@ fun compiler () =
 fun basis_ffi () =
   Path.append (Path.explode (getenv_strict "ISABELLE_CAKEML_HOME")) (Path.basic "basis_ffi.c")
 
-fun compile_ml_file source =
+fun compile_ml_file mode source =
   let
     val id = serial_string ()
     val output = File.tmp_path (Path.basic ("cakeml_out" ^ id ^ ".S"))
 
+    val sexp = if mode = Literal then "false" else "true"
+
     val bash_cake = File.bash_path (compiler ())
     val bash_source = File.bash_path source
-    val {out, err, rc, ...} = Bash.process (bash_cake ^ " < " ^ bash_source)
+    val {out, err, rc, ...} = Bash.process (bash_cake ^ " --sexp=" ^ sexp ^ " < " ^ bash_source)
     val _ = if err <> "" then warning err else ()
   in
     if rc <> 0 orelse err <> "" then
@@ -48,12 +55,12 @@ fun compile_ml_file source =
       (File.write output out; output)
   end
 
-fun compile_ml source =
+fun compile_ml mode source =
   let
     val id = serial_string ()
     val output = File.tmp_path (Path.basic ("cakeml_in" ^ id))
     val _ = File.write output source
-  in compile_ml_file output end
+  in compile_ml_file mode output end
 
 fun compile_c_file source =
   let
@@ -94,9 +101,9 @@ fun link sources =
       output
   end
 
-fun eval source =
+fun eval mode source =
   let
-    val cake = compile_ml source
+    val cake = compile_ml mode source
     val ffi = compile_ffi ()
     val bin = link [cake, ffi]
     val {out, err, rc, ...} = Bash.process (File.bash_path bin)
@@ -108,19 +115,17 @@ fun eval source =
       out
   end
 
-val eval_source =
-  eval o #1 o Input.source_content
+fun eval_source mode =
+  eval mode o #1 o Input.source_content
 
 fun string_of_prog ctxt t =
   let
-    val (_, raw_string) =
-      Thm.cterm_of ctxt (@{const print_prog} $ t)
+    val (_, raw_prog) =
+      Thm.cterm_of ctxt t
       |> Code_Simp.dynamic_conv ctxt
       |> Thm.prop_of
       |> Logic.dest_equals
-  in HOLogic.dest_string raw_string end
-
-datatype mode = Literal | Prog
+  in CakeML_Sexp.print_prog raw_prog end
 
 val parse_mode =
   Args.parens (Parse.reserved "literal" >> K Literal ||
@@ -138,7 +143,7 @@ fun cakeml_cmd ctxt mode source =
           |> Syntax.check_term ctxt
           |> string_of_prog ctxt
     val _ = tracing ("Evaluating: " ^ source)
-    val output = eval source
+    val output = eval mode source
   in writeln output end
 
 val _ =

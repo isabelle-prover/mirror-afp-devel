@@ -2,7 +2,10 @@ theory Compiler_Test
 imports "../CakeML_Compiler"
 begin
 
-consts default_loc :: locs \<comment> \<open>no code equations needed, locs are never printed\<close>
+definition default_loc :: locs where
+"default_loc =
+  (\<lparr> locn.row = 0, locn.col = 0, locn.offset = 0 \<rparr>,
+   \<lparr> locn.row = 0, locn.col = 0, locn.offset = 0 \<rparr>)"
 
 definition simple_print :: Ast.prog where
 "simple_print =
@@ -12,7 +15,7 @@ cakeml (literal) \<open>print "hi1";\<close>
 cakeml (literal) \<open>print "hi2";\<close>
 
 ML\<open>
-  val out = CakeML_Compiler.eval_source \<open>val x = 3 + 4; print (Int.toString x);\<close>;
+  val out = CakeML_Compiler.eval_source CakeML_Compiler.Literal \<open>val x = 3 + 4; print (Int.toString x);\<close>;
   @{assert} (out = "7")
 \<close>
 
