@@ -173,7 +173,7 @@ begin
     code into various target languages:\<close>
   export_code bfs_code checking SML
   export_code bfs_code checking OCaml?
-  export_code bfs_code checking Haskell?
+  (*export_code bfs_code checking Haskell?*)
   export_code bfs_code checking Scala
 
   text \<open>The generated code is most conveniently executed within 
