@@ -6,7 +6,7 @@ theory Native_Word_Test_MLton2 imports
   Native_Word_Test_Emu
 begin
 
-export_code test_casts' in SML module_name Generated_Code
+export_code test_casts' in SML module_name Generated_Code file \<open>\<close>
 
 declare [[code_test_overlord]]
 

@@ -888,7 +888,7 @@ fun export_code_cmd' seris tmp_export_code f_err filename_thy raw_cs thy =
           val _ = Isabelle_Code_Target.export_code_cmd
         false
         (if mem_scala then Deep0.Export_code_env.Isabelle.function :: raw_cs else raw_cs)
-        seris
+        ((map o apfst o apsnd) SOME seris)
         (Proof_Context.init_global
            let val v = Deep0.apply_hs_code_identifiers Deep0.Export_code_env.Haskell.argument thy in
            if mem_scala then Code_printing.apply_code_printing v else v end) in
@@ -1059,7 +1059,7 @@ fun f_command l_mode =
             val _ = Isabelle_Code_Target.export_code_cmd
                       (List.exists (fn (((("SML", _), _), _), _) => true | _ => false) seri_args')
                       [Deep0.Export_code_env.Isabelle.function]
-                      (List.map fst seri_args')
+                      (List.map ((apfst o apsnd) SOME o fst) seri_args')
                       (Proof_Context.init_global
                         (Code_printing.apply_code_printing
                           (Deep0.apply_hs_code_identifiers Deep0.Export_code_env.Haskell.function thy)))

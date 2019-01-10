@@ -154,7 +154,7 @@ export_code
   modusponens gen axiom_addimp axiom_distribimp axiom_doubleneg axiom_allimp axiom_impall
   axiom_existseq axiom_eqrefl axiom_funcong axiom_predcong axiom_iffimp1 axiom_iffimp2
   axiom_impiff axiom_true axiom_not axiom_and axiom_or axiom_exists concl
-in SML module_name Proven
+in SML module_name Proven file \<open>\<close>
 
 code_printing constant fol_equal \<rightharpoonup> (SML) "_ = _" \<comment> \<open>More efficient\<close>
 
@@ -162,7 +162,7 @@ export_code
   modusponens gen axiom_addimp axiom_distribimp axiom_doubleneg axiom_allimp axiom_impall
   axiom_existseq axiom_eqrefl axiom_funcong axiom_predcong axiom_iffimp1 axiom_iffimp2
   axiom_impiff axiom_true axiom_not axiom_and axiom_or axiom_exists concl
-in SML module_name Proven
+in SML module_name Proven file \<open>\<close>
 
 code_printing constant fol_equal \<rightharpoonup> (SML) \<comment> \<open>Delete\<close>
 
@@ -170,7 +170,7 @@ export_code
   modusponens gen axiom_addimp axiom_distribimp axiom_doubleneg axiom_allimp axiom_impall
   axiom_existseq axiom_eqrefl axiom_funcong axiom_predcong axiom_iffimp1 axiom_iffimp2
   axiom_impiff axiom_true axiom_not axiom_and axiom_or axiom_exists concl
-in SML module_name Proven
+in SML module_name Proven file \<open>\<close>
 
 subsection \<open>Semantics of first-order logic\<close>
 

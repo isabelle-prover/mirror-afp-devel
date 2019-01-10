@@ -130,7 +130,6 @@ begin
     is executable: \<close>  
   thm min_of_list3_def  
   export_code min_of_list3 checking SML_imp
-  export_code min_of_list3 in SML_imp module_name Min_Of_List
 
   text \<open>Also note that the Sepref tool applied a deforestation optimization: 
     It recognizes a fold over @{term "[0..<n]"}, and implements it by the 
@@ -637,9 +636,6 @@ sepref_definition nat_seg_map2 is nat_seg_map1 :: "(hs.assn id_assn)\<^sup>k \<r
   apply (rewrite in "FOREACHi _ _ _ \<hole>" "hm.fold_custom_empty")
   by sepref
 
-export_code nat_seg_map2 in SML module_name Test (* Note: Currently, 
-  no deforestation lemmas for set iterators: They convert the set to a list, 
-  and then fold over the list. This is somewhat inefficient. *)
 export_code nat_seg_map2 checking SML
 
 lemmas nat_seg_map2_correct = nat_seg_map2.refine[FCOMP nat_seg_map1_refine]

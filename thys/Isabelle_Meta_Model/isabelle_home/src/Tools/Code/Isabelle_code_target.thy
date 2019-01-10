@@ -98,7 +98,7 @@ fun prep_destination "" = NONE
 fun export_code_cmd all_public raw_cs seris ctxt =
   Code_Target.export_code ctxt all_public
     (Code_Thingol.read_const_exprs ctxt raw_cs)
-    ((map o apfst o apsnd) prep_destination seris);
+    ((map o apfst o apsnd o Option.map) prep_destination seris);
 
 
 

@@ -52,7 +52,6 @@ lift_definition uint64_of_uint16 :: "uint16 \<Rightarrow> uint64" is ucast .
 lift_definition uint64_of_uint32 :: "uint32 \<Rightarrow> uint64" is ucast .
 
 definition mask where "mask = (0xFFFFFFFF :: integer)"
-export_code mask in OCaml
 
 code_printing
   constant uint8_of_uint16 \<rightharpoonup>
