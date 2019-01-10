@@ -132,6 +132,6 @@ definition "test_codegen \<equiv> (rm.add ,
   rm.update ,
   rm.update_dj)"
 
-export_code test_codegen in SML
+export_code test_codegen checking SML
 
 end

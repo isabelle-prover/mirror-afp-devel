@@ -171,10 +171,10 @@ begin
       
   text \<open>Now we can use the code-generator of Isabelle/HOL to generate
     code into various target languages:\<close>
-  export_code bfs_code in SML
-  export_code bfs_code in OCaml
-  export_code bfs_code in Haskell
-  export_code bfs_code in Scala
+  export_code bfs_code checking SML
+  export_code bfs_code checking OCaml?
+  export_code bfs_code checking Haskell?
+  export_code bfs_code checking Scala
 
   text \<open>The generated code is most conveniently executed within 
     Isabelle/HOL itself. We use a small test graph here:\<close>

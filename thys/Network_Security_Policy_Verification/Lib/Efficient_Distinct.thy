@@ -90,7 +90,7 @@ text\<open>@{const merge}\<close>
   done
 
 (*import scala.annotation.tailrec*)
-  export_code distinct in Scala
+  export_code distinct checking Scala
 
 
   value "distinct [(CHR ''A'')]"

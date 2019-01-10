@@ -277,7 +277,7 @@ lemmas [code] =
   eval.simps[Transfer.transferred]
   step.equation[Transfer.transferred]
 
-export_code reduce step' eval in SML
+export_code reduce step' eval checking SML
 
 section \<open>Troubleshooting\<close>
 

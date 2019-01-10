@@ -459,7 +459,7 @@ concrete_definition red_dfs_impl for E onstack V u uses red_dfs_impl
 
 prepare_code_thms red_dfs_impl_def
 
-export_code red_dfs_impl in SML
+export_code red_dfs_impl checking SML
 
 
 end

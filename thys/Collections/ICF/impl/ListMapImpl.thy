@@ -98,6 +98,6 @@ definition "test_codegen \<equiv> (
   lm.update ,
   lm.update_dj)"
 
-export_code test_codegen in SML
+export_code test_codegen checking SML
 
 end

@@ -165,7 +165,7 @@ definition test_codegen where "test_codegen \<equiv> (
   ahm.update ,
   ahm.update_dj)"
 
-export_code test_codegen in SML
+export_code test_codegen checking SML
 
 end
 

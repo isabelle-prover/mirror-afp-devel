@@ -50,7 +50,7 @@ text \<open>
 
   lemmas hs_set_i_impl = hs.set_i_impl[folded hs_seti_def]
 
-export_code hs_seti in SML
+export_code hs_seti checking SML
 
   \<comment> \<open>Code generation\<close>
   ML \<open>@{code hs_seti}\<close> 

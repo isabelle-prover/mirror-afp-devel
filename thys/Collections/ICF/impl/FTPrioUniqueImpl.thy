@@ -36,6 +36,6 @@ definition test_codegen where "test_codegen \<equiv> (
   aluprioi.prio
 )"
 
-export_code test_codegen in SML
+export_code test_codegen checking SML
 
 end

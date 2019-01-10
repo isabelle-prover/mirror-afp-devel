@@ -119,7 +119,7 @@ text \<open>Complete example:\<close>
   value "BLP_eval fabNet sensorProps_NMParams_try3"
 
 
-export_code SINVAR_LIB_BLPbasic in Scala
+export_code SINVAR_LIB_BLPbasic checking Scala
 
 hide_const (open) NetModel_node_props BLP_offending_list BLP_eval
 

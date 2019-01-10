@@ -1097,7 +1097,7 @@ schematic_goal ndfs_impl_refine_aux:
 
 concrete_definition ndfs_impl for succi Ai s uses ndfs_impl_refine_aux 
 prepare_code_thms ndfs_impl_def
-export_code ndfs_impl in SML
+export_code ndfs_impl checking SML
 
 term "\<lambda>E A v0. ndfs_impl (succ_of_list_impl E) (acc_of_list_impl A) v0"
 

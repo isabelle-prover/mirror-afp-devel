@@ -233,7 +233,7 @@ derive (eq) ceq lit
 derive (rbt) set_impl lit
 derive ccompare lit
 
-export_code imp_graph_impl in SML module_name foo
+export_code imp_graph_impl checking SML
 
 lemma finite_vars_of_cnf: "finite cnf \<Longrightarrow> finite (vars_of_cnf cnf)"
 by(clarsimp simp add: vars_of_cnf_def)
@@ -247,7 +247,7 @@ by(simp add: reachable_def finite_2sat_iff finite_vars_of_cnf Let_def)
 
 lemmas [code] = satisfiable_code[containers_identify]
 
-export_code satisfiable in SML module_name twoSAT
+export_code satisfiable checking SML
 
 subsection \<open>Memoize the implication graph's successor function\<close>
 
@@ -317,7 +317,6 @@ end
 
 derive (rbt) mapping_impl lit
 
-export_code satisfiable in SML module_name twoSAT
 export_code satisfiable checking SML Scala Haskell? OCaml?
 
 

@@ -199,6 +199,6 @@ definition test_codegen where "test_codegen \<equiv> (
   lsnd.from_list
 )"
 
-export_code test_codegen in SML
+export_code test_codegen checking SML
 
 end

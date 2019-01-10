@@ -168,7 +168,7 @@ text \<open>Setup of Containers-Framework to handle RBT-maps of literals\<close>
 derive ccompare lit   derive (rbt) mapping_impl lit
 
 
-export_code sati in SML
+export_code sati checking SML
 
 export_code sati checking SML OCaml? Haskell? Scala
 

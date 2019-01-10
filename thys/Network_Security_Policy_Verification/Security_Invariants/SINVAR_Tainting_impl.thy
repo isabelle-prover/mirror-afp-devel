@@ -108,7 +108,7 @@ begin
   private lemma "sinvar tainting_example tainting_example_props" by eval
 end
 
-export_code SINVAR_LIB_Tainting in Scala
+export_code SINVAR_LIB_Tainting checking Scala
 
 hide_const (open) NetModel_node_props Tainting_offending_list Tainting_eval
 

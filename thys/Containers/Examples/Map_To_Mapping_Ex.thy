@@ -18,7 +18,7 @@ lift_definition test' :: "(nat, int) mapping \<Rightarrow> nat list \<Rightarrow
 
 lemmas [code] = test_def[containers_identify]
 
-export_code test' in SML
+export_code test' checking SML
 
 
 fun iter :: "('a \<Rightarrow> 'a option) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a option"

@@ -16,7 +16,7 @@ fun sinvar :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> SINVAR_TaintingTrus
 
 
 (*Test that we have executable code, despite the abstractions*)
-export_code sinvar in SML
+export_code sinvar checking SML
 value[code] "sinvar \<lparr> nodesL = [], edgesL =[] \<rparr> (\<lambda>_. SINVAR_TaintingTrusted.default_node_properties)"
 lemma "sinvar \<lparr> nodesL = [], edgesL =[] \<rparr> (\<lambda>_. SINVAR_TaintingTrusted.default_node_properties)" by eval
 
@@ -29,7 +29,7 @@ definition TaintingTrusted_offending_list
     [ [e \<leftarrow> edgesL G. case e of (v1,v2) \<Rightarrow> \<not>(taints (nP v1) - untaints (nP v1) \<subseteq> taints (nP v2))] ])"
 
 (*TODO: is this code somewhat efficient?*)
-export_code TaintingTrusted_offending_list in SML
+export_code TaintingTrusted_offending_list checking SML
 
 
 definition "NetModel_node_props P =
@@ -126,8 +126,8 @@ begin
 end
 
 (*TODO: fails. why?*)
-export_code SINVAR_LIB_TaintingTrusted in Scala
-export_code SINVAR_LIB_TaintingTrusted in SML
+export_code SINVAR_LIB_TaintingTrusted checking Scala
+export_code SINVAR_LIB_TaintingTrusted checking SML
 
 hide_const (open) NetModel_node_props TaintingTrusted_offending_list TaintingTrusted_eval
 

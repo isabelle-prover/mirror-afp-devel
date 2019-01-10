@@ -79,9 +79,9 @@ text \<open>Examples\<close>
     (1 := DomainMember, 2:= DomainMember, 3:= AccessibleMember,
      8:= PolEnforcePoint, 9:= PolEnforcePointIN))" 
   
-  export_code sinvar in SML
+  export_code sinvar checking SML
   definition "test = sinvar \<lparr> nodesL=[1::nat], edgesL=[] \<rparr> (\<lambda>_. SINVAR_SecGwExt.default_node_properties)"
-  export_code test in SML
+  export_code test checking SML
   value(**) "sinvar \<lparr> nodesL=[1::nat], edgesL=[] \<rparr> (\<lambda>_. SINVAR_SecGwExt.default_node_properties)"
 
   value(**) "sinvar example_net_secgw example_conf_secgw"

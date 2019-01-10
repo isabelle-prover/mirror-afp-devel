@@ -74,7 +74,7 @@ subsubsection\<open>Example\<close>
  (*TODO*)
 
 
-export_code SINVAR_LIB_BLPtrusted in Scala
+export_code SINVAR_LIB_BLPtrusted checking Scala
 
 
 hide_const (open) NetModel_node_props BLP_offending_list BLP_eval

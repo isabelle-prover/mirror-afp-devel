@@ -70,7 +70,7 @@ text \<open>Code examples.\<close>
   "wf_graph_impl_example \<equiv> wf_list_graph wf_graph_example"
 
 
-  export_code wf_list_graph empty add_node delete_node add_edge delete_edge in Scala
+  export_code wf_list_graph empty add_node delete_node add_edge delete_edge checking Scala
 
 
 end
