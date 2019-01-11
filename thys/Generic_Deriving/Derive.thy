@@ -1,8 +1,8 @@
-chapter "Derive"
-text {*
+chapter \<open>Derive\<close>
+text \<open>
 This theory includes the Isabelle/ML code needed for the derivation and exports the two keywords
 \texttt{derive\_generic} and \texttt{derive\_generic\_setup}.
-*}
+\<close>
 
 theory Derive
   imports Main Tagged_Prod_Sum

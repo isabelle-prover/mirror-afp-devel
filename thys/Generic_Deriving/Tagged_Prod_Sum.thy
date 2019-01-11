@@ -1,8 +1,8 @@
-chapter "Tagged Sum-of-Products Representation"
-text {*
+chapter \<open>Tagged Sum-of-Products Representation\<close>
+text \<open>
 This theory sets up a version of the sum-of-products representation that includes constructor and 
 selector names. For an example of a type class that uses this representation see Derive\_Show.
-*}
+\<close>
 
 theory Tagged_Prod_Sum
 imports Main

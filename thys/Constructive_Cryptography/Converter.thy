@@ -81,7 +81,7 @@ lemma outsp_converter_outs_converter_eq [pred_set_conv]: "Converter.outsp_conver
   by(simp add: outs_converter_def)
 
 context begin
-local_setup {* Local_Theory.map_background_naming (Name_Space.mandatory_path "outs_converter") *}
+local_setup \<open>Local_Theory.map_background_naming (Name_Space.mandatory_path "outs_converter")\<close>
 
 lemmas intros [intro?] = outsp_converter.intros[to_set]
   and Out = outsp_converter.Out[to_set]
@@ -98,7 +98,7 @@ lemma resultsp_converter_results_converter_eq [pred_set_conv]:
   by(simp add: results_converter_def)
 
 context begin
-local_setup {* Local_Theory.map_background_naming (Name_Space.mandatory_path "results_converter") *}
+local_setup \<open>Local_Theory.map_background_naming (Name_Space.mandatory_path "results_converter")\<close>
 
 lemmas intros [intro?] = resultsp_converter.intros[to_set]
   and Result = resultsp_converter.Result[to_set]

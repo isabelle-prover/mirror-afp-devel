@@ -862,7 +862,7 @@ lemma outsp_gpv_outs_gpv_eq [pred_set_conv]: "outsp_gpv \<I> x = (\<lambda>gpv. 
   by(simp add: outs_gpv_def)
 
 context begin
-local_setup {* Local_Theory.map_background_naming (Name_Space.mandatory_path "outs_gpv") *}
+local_setup \<open>Local_Theory.map_background_naming (Name_Space.mandatory_path "outs_gpv")\<close>
 
 lemmas intros [intro?] = outsp_gpv.intros[to_set]
   and IO = IO[to_set]
@@ -1940,7 +1940,7 @@ proof(induction arbitrary: gpv s rule: expectation_gpv_fixp_induct)
     assume IO: "IO out c \<in> set_spmf (the_gpv gpv)"
     with step.prems (1) have out: "out \<in> outs_\<I> \<I>" by(rule WT_gpv_OutD)
     have "(INF r:responses_\<I> \<I> out. expectation_gpv' (c r)) = \<integral>\<^sup>+ generat. (INF r:responses_\<I> \<I> out. expectation_gpv' (c r)) \<partial>measure_spmf (the_gpv (callee s out))"
-      using WT_callee[OF out, of s] callee[OF out, of s] `I s`
+      using WT_callee[OF out, of s] callee[OF out, of s] \<open>I s\<close>
       by(clarsimp simp add: measure_spmf.emeasure_eq_measure plossless_iff_colossless_pfinite colossless_gpv_lossless_spmfD lossless_weight_spmfD)
     also have "\<dots> \<le> \<integral>\<^sup>+ generat. (case generat of Pure (x, s') \<Rightarrow>
             \<integral>\<^sup>+ xx. (case xx of Inl (x, _) \<Rightarrow> f x 
@@ -1952,10 +1952,10 @@ proof(induction arbitrary: gpv s rule: expectation_gpv_fixp_induct)
       fix x s'
       assume Pure: "Pure (x, s') \<in> set_spmf (the_gpv (callee s out))"
       hence "(x, s') \<in> results_gpv \<I>' (callee s out)" by(rule results_gpv.Pure)
-      with results_callee[OF out, of s] `I s` have x: "x \<in> responses_\<I> \<I> out" and "I s'" by blast+
+      with results_callee[OF out, of s] \<open>I s\<close> have x: "x \<in> responses_\<I> \<I> out" and "I s'" by blast+
       from x have "(INF r:responses_\<I> \<I> out. expectation_gpv' (c r)) \<le> expectation_gpv' (c x)" by(rule INF_lower)
       also have "\<dots> \<le> expectation_gpv2 (\<lambda>(x, s). f x) (inline callee (c x) s')"
-        by(rule step.IH)(rule WT_gpv_ContD[OF step.prems(1) IO x] step.prems `I s'`|assumption)+
+        by(rule step.IH)(rule WT_gpv_ContD[OF step.prems(1) IO x] step.prems \<open>I s'\<close>|assumption)+
       also have "\<dots> = \<integral>\<^sup>+ xx. (case xx of Inl (x, _) \<Rightarrow> f x 
                | Inr (out', callee', rpv) \<Rightarrow> INF r':responses_\<I> \<I>' out'. expectation_gpv 0 \<I>' (\<lambda>(r, s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (rpv r) s')) (callee' r'))
             \<partial>measure_spmf (inline1 callee (c x) s')"
@@ -1966,7 +1966,7 @@ proof(induction arbitrary: gpv s rule: expectation_gpv_fixp_induct)
       fix out' rpv
       assume IO': "IO out' rpv \<in> set_spmf (the_gpv (callee s out))"
       have "(INF r:responses_\<I> \<I> out. expectation_gpv' (c r)) \<le> (INF (r, s'):(\<Union>r'\<in>responses_\<I> \<I>' out'. results_gpv \<I>' (rpv r')). expectation_gpv' (c r))"
-        using IO' results_callee[OF out, of s] `I s` by(intro INF_mono)(auto intro: results_gpv.IO)
+        using IO' results_callee[OF out, of s] \<open>I s\<close> by(intro INF_mono)(auto intro: results_gpv.IO)
       also have "\<dots> = (INF r':responses_\<I> \<I>' out'. INF (r, s'):results_gpv \<I>' (rpv r'). expectation_gpv' (c r))"
         by(simp add: INF_UNION)
       also have "\<dots> \<le> (INF r':responses_\<I> \<I>' out'. expectation_gpv 0 \<I>' (\<lambda>(r', s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (c r') s')) (rpv r'))"
@@ -1977,7 +1977,7 @@ proof(induction arbitrary: gpv s rule: expectation_gpv_fixp_induct)
           using IO IO' step.prems out results_callee[OF out, of s] r'
           by(auto intro!: INF_mono rev_bexI step.IH dest: WT_gpv_ContD intro: results_gpv.IO)
         also have "\<dots> \<le>  expectation_gpv 0 \<I>' (\<lambda>(r', s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (c r') s')) (rpv r')"
-          unfolding expectation_gpv2_def using plossless_gpv_ContD[OF callee, OF out `I s` IO' r'] WT_callee[OF out `I s`] IO' r'
+          unfolding expectation_gpv2_def using plossless_gpv_ContD[OF callee, OF out \<open>I s\<close> IO' r'] WT_callee[OF out \<open>I s\<close>] IO' r'
           by(intro plossless_INF_le_expectation_gpv)(auto intro: WT_gpv_ContD)
         finally show "(INF (r, s'):results_gpv \<I>' (rpv r'). expectation_gpv' (c r)) \<le> \<dots>" .
       qed

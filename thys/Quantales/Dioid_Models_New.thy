@@ -4,14 +4,14 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Models of Dioids *}
+section \<open>Models of Dioids\<close>
 
 theory Dioid_Models_New
   imports Kleene_Algebra.Dioid
           HOL.Real
 begin
 
-text {* In this section we consider some well known models of
+text \<open>In this section we consider some well known models of
 dioids. These so far include the powerset dioid over a monoid,
 languages, binary relations, sets of traces, sets paths (in a graph),
 as well as the min-plus and the max-plus semirings. Most of these
@@ -22,14 +22,14 @@ The advantage of formally linking these models with the abstract
 axiomatisations of dioids is that all abstract theorems are
 automatically available in all models. It therefore makes sense to
 establish models for the strongest possible axiomatisations (whereas
-theorems should be proved for the weakest ones). *}
+theorems should be proved for the weakest ones).\<close>
 
 
-subsection {* The Powerset Dioid over a Monoid *}
+subsection \<open>The Powerset Dioid over a Monoid\<close>
 
-text {* We assume a multiplicative monoid and define the usual complex
+text \<open>We assume a multiplicative monoid and define the usual complex
 product on sets of elements. We formalise the well known result that
-this lifting induces a dioid. *}
+this lifting induces a dioid.\<close>
 
 (* change here! *)
 
@@ -99,9 +99,9 @@ begin
 end (* instantiation *)
 
 
-subsection {* Language Dioids *}
+subsection \<open>Language Dioids\<close>
 
-text {* Language dioids arise as special cases of the monoidal lifting
+text \<open>Language dioids arise as special cases of the monoidal lifting
 because sets of words form free monoids. Moreover, monoids of words
 are isomorphic to monoids of lists under append.
 
@@ -109,7 +109,7 @@ To show that languages form dioids it therefore suffices to show that
 sets of lists closed under append and multiplication with the empty
 word form a (multiplicative) monoid. Isabelle then does the rest of the work
 automatically. Infix~@{text @} denotes word
-concatenation. *}
+concatenation.\<close>
 
 instantiation list :: (type) monoid_mult
 begin
@@ -132,21 +132,21 @@ begin
 
 end  (* instantiation *)
 
-text {* Languages as sets of lists have already been formalised in
+text \<open>Languages as sets of lists have already been formalised in
 Isabelle in various places. We can now obtain much of their algebra
-for free. *}
+for free.\<close>
 
 type_synonym 'a lan = "'a list set"
 
 interpretation lan_dioid: dioid_one_zero "(+)" "(\<cdot>)" "1::'a lan" "0" "(\<subseteq>)" "(\<subset>)" ..
 
 
-subsection {* Relation Dioids *}
+subsection \<open>Relation Dioids\<close>
 
-text {* We now show that binary relations under union, relational
+text \<open>We now show that binary relations under union, relational
 composition, the identity relation, the empty relation and set
 inclusion form dioids. Due to the well developed relation library of
-Isabelle this is entirely trivial. *}
+Isabelle this is entirely trivial.\<close>
 
 interpretation rel_dioid: dioid_one_zero "(\<union>)" "(O)" Id "{}" "(\<subseteq>)" "(\<subset>)"
   by (unfold_locales, auto)
@@ -154,9 +154,9 @@ interpretation rel_dioid: dioid_one_zero "(\<union>)" "(O)" Id "{}" "(\<subseteq
 interpretation rel_monoid: monoid_mult Id "(O)" ..
 
 
-subsection {* Trace Dioids *}
+subsection \<open>Trace Dioids\<close>
 
-text {* Traces have been considered, for instance, by
+text \<open>Traces have been considered, for instance, by
 Kozen~\cite{kozen00hoare} in the context of Kleene algebras with
 tests. Intuitively, a trace is an execution sequence of a labelled
 transition system from some state to some other state, in which state
@@ -173,7 +173,7 @@ of length zero, the empty set of traces and set inclusion form a
 dioid.
 
 We first define the notion of trace and the product of traces, which
-has been called \emph{fusion product} by Kozen. *}
+has been called \emph{fusion product} by Kozen.\<close>
 
 type_synonym ('p, 'a) trace = "'p \<times> ('a \<times> 'p) list"
 
@@ -203,18 +203,18 @@ proof (cases xs)
   qed
 qed
 
-text {* The fusion product is a partial operation. It is undefined if
+text \<open>The fusion product is a partial operation. It is undefined if
 the last element of the first trace and the first element of the
 second trace are different. If these elements are the same, then the
 fusion product removes the first element from the second trace and
-appends the resulting object to the first trace. *}
+appends the resulting object to the first trace.\<close>
 
 definition t_fusion :: "('p, 'a) trace \<Rightarrow> ('p, 'a) trace \<Rightarrow> ('p, 'a) trace" where
   "t_fusion x y \<equiv> if last x = first y then (fst x, snd x @ snd y) else undefined"
 
-text {* We now show that the first element and the last element of a
+text \<open>We now show that the first element and the last element of a
 trace are a left and right unit for that trace and prove some other
-auxiliary lemmas. *}
+auxiliary lemmas.\<close>
 
 lemma t_fusion_leftneutral [simp]: "t_fusion (first x, []) x = x"
   by (cases x, simp add: t_fusion_def)
@@ -228,17 +228,17 @@ lemma first_t_fusion [simp]: "last x = first y \<Longrightarrow> first (t_fusion
 lemma last_t_fusion [simp]: "last x = first y \<Longrightarrow> last (t_fusion x y) = last y"
   by (simp add: first_def t_fusion_def)
 
-text {* Next we show that fusion of traces is associative. *}
+text \<open>Next we show that fusion of traces is associative.\<close>
 
 lemma t_fusion_assoc [simp]:
   "\<lbrakk> last x = first y; last y = first z \<rbrakk> \<Longrightarrow> t_fusion x (t_fusion y z) = t_fusion (t_fusion x y) z"
   by (cases x, cases y, cases z, simp add: t_fusion_def)
 
 
-subsection {* Sets of Traces *}
+subsection \<open>Sets of Traces\<close>
 
-text {* We now lift the fusion product to a complex product on sets of
-traces. This operation is total. *}
+text \<open>We now lift the fusion product to a complex product on sets of
+traces. This operation is total.\<close>
 
 no_notation
   times (infixl "\<cdot>" 70)
@@ -246,8 +246,8 @@ no_notation
 definition t_prod :: "('p, 'a) trace set \<Rightarrow> ('p, 'a) trace set \<Rightarrow> ('p, 'a) trace set" (infixl "\<cdot>" 70)
 where "X \<cdot> Y = {t_fusion u v| u v. u \<in> X \<and> v \<in> Y \<and> last u = first v}"
 
-text {* Next we define the empty set of traces and the set of traces
-of length zero as the multiplicative unit of the trace dioid. *}
+text \<open>Next we define the empty set of traces and the set of traces
+of length zero as the multiplicative unit of the trace dioid.\<close>
 
 definition t_zero :: "('p, 'a) trace set" where
   "t_zero \<equiv> {}"
@@ -255,7 +255,7 @@ definition t_zero :: "('p, 'a) trace set" where
 definition t_one :: "('p, 'a) trace set" where
   "t_one \<equiv> \<Union>p. {(p, [])}"
 
-text {* We now provide elimination rules for trace products.*}
+text \<open>We now provide elimination rules for trace products.\<close>
 
 lemma t_prod_iff:
   "w \<in> X\<cdot>Y \<longleftrightarrow> (\<exists>u v. w = t_fusion u v \<and> u \<in> X \<and> v \<in> Y \<and> last u = first v)"
@@ -269,10 +269,10 @@ lemma t_prod_elim [elim]:
   "w \<in> X\<cdot>Y \<Longrightarrow> \<exists>u v. w = t_fusion u v \<and> u \<in> X \<and> v \<in> Y \<and> last u = first v"
   by (meson t_prod_iff)
 
-text {* Finally we prove the interpretation statement that sets of traces
+text \<open>Finally we prove the interpretation statement that sets of traces
 under union and the complex product based on trace fusion together
 with the empty set of traces and the set of traces of length one forms
-a dioid. *}
+a dioid.\<close>
 
 interpretation trace_dioid: dioid_one_zero "(\<union>)" t_prod t_one t_zero "(\<subseteq>)" "(\<subset>)"
 apply unfold_locales
@@ -285,26 +285,26 @@ no_notation
   t_prod (infixl "\<cdot>" 70)
 
 
-subsection {* The Path Diod *}
+subsection \<open>The Path Diod\<close>
 
-text {* The next model we consider are sets of paths in a graph. We
+text \<open>The next model we consider are sets of paths in a graph. We
 consider two variants, one that contains the empty path and one that
 doesn't. The former leads to more difficult proofs and a more involved
 specification of the complex product. We start with paths that include
-the empty path. In this setting, a path is a list of nodes. *}
+the empty path. In this setting, a path is a list of nodes.\<close>
 
-subsection {* Path Models with the Empty Path *}
+subsection \<open>Path Models with the Empty Path\<close>
 
 type_synonym 'a path = "'a list"
 
-text {* Path fusion is defined similarly to trace
+text \<open>Path fusion is defined similarly to trace
 fusion. Mathematically it should be a partial operation. The fusion of
 two empty paths yields the empty path; the fusion between a non-empty
 path and an empty one is undefined; the fusion of two non-empty paths
 appends the tail of the second path to the first one.
 
 We need to use a total alternative and make sure that undefined paths
-do not contribute to the complex product. *}
+do not contribute to the complex product.\<close>
 
 fun p_fusion :: "'a path \<Rightarrow> 'a path \<Rightarrow> 'a path" where
   "p_fusion [] _ = []"
@@ -332,8 +332,8 @@ proof (induct rs)
   qed
 qed
 
-text {* This lemma overapproximates the real situation, but it holds
-in all cases where path fusion should be defined. *}
+text \<open>This lemma overapproximates the real situation, but it holds
+in all cases where path fusion should be defined.\<close>
 
 lemma p_fusion_last:
   assumes "List.last ps = hd qs"
@@ -348,8 +348,8 @@ lemma p_fusion_hd: "\<lbrakk>ps \<noteq> []; qs \<noteq> []\<rbrakk> \<Longright
 lemma nonempty_p_fusion: "\<lbrakk>ps \<noteq> []; qs \<noteq> []\<rbrakk> \<Longrightarrow> p_fusion ps qs \<noteq> []"
   by (metis list.exhaust append_Cons p_fusion.simps(3) list.simps(2))
 
-text {* We now define a condition that filters out undefined paths in
-the complex product. *}
+text \<open>We now define a condition that filters out undefined paths in
+the complex product.\<close>
 
 abbreviation p_filter :: "'a path \<Rightarrow> 'a path \<Rightarrow> bool" where
 "p_filter ps qs \<equiv> ((ps = [] \<and> qs = []) \<or> (ps \<noteq> [] \<and> qs \<noteq> [] \<and> (List.last ps) = hd qs))"
@@ -364,8 +364,8 @@ lemma p_prod_iff:
   "ps \<in> X \<cdot> Y \<longleftrightarrow> (\<exists>qs rs. ps = p_fusion qs rs \<and> qs \<in> X \<and> rs \<in> Y \<and> p_filter qs rs)"
   by (unfold p_prod_def) auto
 
-text {* Due to the complexity of the filter condition, proving
-properties of complex products can be tedious. *}
+text \<open>Due to the complexity of the filter condition, proving
+properties of complex products can be tedious.\<close>
 
 lemma p_prod_assoc: "(X \<cdot> Y) \<cdot> Z = X \<cdot> (Y \<cdot> Z)"
 proof (rule set_eqI)
@@ -380,9 +380,9 @@ proof (rule set_eqI)
   qed
 qed
 
-text {* We now define the multiplicative unit of the path dioid as the
+text \<open>We now define the multiplicative unit of the path dioid as the
 set of all paths of length one, including the empty path, and show the
-unit laws with respect to the path product. *}
+unit laws with respect to the path product.\<close>
 
 definition p_one :: "'a path set" where
   "p_one \<equiv> {p . \<exists>q::'a. p = [q]} \<union> {[]}"
@@ -413,7 +413,7 @@ proof (rule set_eqI)
     qed
 qed
 
-text {* Next we show distributivity laws at the powerset level. *}
+text \<open>Next we show distributivity laws at the powerset level.\<close>
 
 lemma p_prod_distl: "X \<cdot> (Y \<union> Z) = X \<cdot> Y \<union> X \<cdot> Z"
 proof (rule set_eqI)
@@ -430,8 +430,8 @@ proof (rule set_eqI)
     by (cases ps) (auto simp add: p_prod_iff)
 qed
 
-text {* Finally we show that sets of paths under union, the complex
-product, the unit set and the empty set form a dioid. *}
+text \<open>Finally we show that sets of paths under union, the complex
+product, the unit set and the empty set form a dioid.\<close>
 
 interpretation path_dioid: dioid_one_zero "(\<union>)" "(\<cdot>)" p_one "{}" "(\<subseteq>)" "(\<subset>)"
 proof
@@ -468,10 +468,10 @@ no_notation
   p_prod (infixl "\<cdot>" 70)
 
 
-subsection {* Path Models without the Empty Path *}
+subsection \<open>Path Models without the Empty Path\<close>
 
-text {* We now build a model of paths that does not include the empty
-path and therefore leads to a simpler complex product. *}
+text \<open>We now build a model of paths that does not include the empty
+path and therefore leads to a simpler complex product.\<close>
 
 datatype 'a ppath = Node 'a | Cons 'a "'a ppath"
 
@@ -483,18 +483,18 @@ primrec pp_last :: "'a ppath \<Rightarrow> 'a" where
   "pp_last (Node x)    = x"
 | "pp_last (Cons _ xs) = pp_last xs"
 
-text {* The path fusion product (although we define it as a total
+text \<open>The path fusion product (although we define it as a total
 funcion) should only be applied when the last element of the first
-argument is equal to the first element of the second argument. *}
+argument is equal to the first element of the second argument.\<close>
 
 primrec pp_fusion :: "'a ppath \<Rightarrow> 'a ppath \<Rightarrow> 'a ppath" where
   "pp_fusion (Node x) ys = ys"
 | "pp_fusion (Cons x xs) ys = Cons x (pp_fusion xs ys)"
 
-text {* We now go through the same steps as for traces and paths
+text \<open>We now go through the same steps as for traces and paths
 before, showing that the first and last element of a trace a left or
 right unit for that trace and that the fusion product on traces is
-associative. *}
+associative.\<close>
 
 lemma pp_fusion_leftneutral [simp]: "pp_fusion (Node (pp_first x)) x = x"
   by simp
@@ -514,20 +514,20 @@ lemma pp_fusion_assoc [simp]:
   "\<lbrakk> pp_last x = pp_first y; pp_last y = pp_first z \<rbrakk> \<Longrightarrow> pp_fusion x (pp_fusion y z) = pp_fusion (pp_fusion x y) z"
   by (induct x) simp_all
 
-text {* We now lift the path fusion product to a complex product on
-sets of paths. This operation is total. *}
+text \<open>We now lift the path fusion product to a complex product on
+sets of paths. This operation is total.\<close>
 
 definition pp_prod :: "'a ppath set \<Rightarrow> 'a ppath set \<Rightarrow> 'a ppath set" (infixl "\<cdot>" 70)
   where "X\<cdot>Y = {pp_fusion u v| u v. u \<in> X \<and> v \<in> Y \<and> pp_last u = pp_first v}"
 
-text {* Next we define the set of paths of length one as the
-multiplicative unit of the path dioid. *}
+text \<open>Next we define the set of paths of length one as the
+multiplicative unit of the path dioid.\<close>
 
 definition pp_one :: "'a ppath set" where
   "pp_one \<equiv> range Node"
 
-text {* We again provide an
-elimination rule. *}
+text \<open>We again provide an
+elimination rule.\<close>
 
 lemma pp_prod_iff:
   "w \<in> X\<cdot>Y \<longleftrightarrow> (\<exists>u v. w = pp_fusion u v \<and> u \<in> X \<and> v \<in> Y \<and> pp_last u = pp_first v)"
@@ -567,13 +567,13 @@ qed
 no_notation
   pp_prod (infixl "\<cdot>" 70)
 
-subsection {* The Distributive Lattice Dioid *}
+subsection \<open>The Distributive Lattice Dioid\<close>
 
-text {* A bounded distributive lattice is a distributive lattice with
+text \<open>A bounded distributive lattice is a distributive lattice with
 a least and a greatest element. Using Isabelle's lattice theory file
 we define a bounded distributive lattice as an axiomatic type class
 and show, using a sublocale statement, that every bounded distributive
-lattice is a dioid with one and zero. *}
+lattice is a dioid with one and zero.\<close>
 
 class bounded_distributive_lattice = bounded_lattice + distrib_lattice
 
@@ -609,10 +609,10 @@ proof
 qed
 
 
-subsection {* The Boolean Dioid *}
+subsection \<open>The Boolean Dioid\<close>
 
-text {* In this section we show that the booleans form a dioid,
-because the booleans form a bounded distributive lattice.  *}
+text \<open>In this section we show that the booleans form a dioid,
+because the booleans form a bounded distributive lattice.\<close>
 
 instantiation bool :: bounded_distributive_lattice
 begin
@@ -625,21 +625,21 @@ interpretation boolean_dioid: dioid_one_zero sup inf True False less_eq less
   by (unfold_locales, simp_all add: inf_bool_def sup_bool_def)
 
 
-subsection {* The Max-Plus Dioid *}
+subsection \<open>The Max-Plus Dioid\<close>
 
-text {* The following dioids have important applications in
+text \<open>The following dioids have important applications in
 combinatorial optimisations, control theory, algorithm design and
-computer networks. *}
+computer networks.\<close>
 
-text {* A definition of reals extended with~@{text "+\<infinity>"} {\em
+text \<open>A definition of reals extended with~@{text "+\<infinity>"} {\em
 and}~@{text "-\<infinity>"} may be found in {\em
 HOL/Library/Extended\_Real.thy}. Alas, we require separate extensions
-with either~@{text "+\<infinity>"} or~@{text "-\<infinity>"}. *}
+with either~@{text "+\<infinity>"} or~@{text "-\<infinity>"}.\<close>
 
-text {* The carrier set of the max-plus semiring is the set of real
+text \<open>The carrier set of the max-plus semiring is the set of real
 numbers extended by minus infinity. The operation of addition is
 maximum, the operation of multiplication is addition, the additive
-unit is minus infinity and the multiplicative unit is zero. *}
+unit is minus infinity and the multiplicative unit is zero.\<close>
 
 datatype mreal = mreal real | MInfty  \<comment> \<open>minus infinity\<close>
 
@@ -655,9 +655,9 @@ fun mreal_plus where
   "mreal_plus (mreal x) (mreal y) = mreal (x + y)"
 | "mreal_plus _ _ = MInfty"
 
-text {* We now show that the max plus-semiring satisfies the axioms of
+text \<open>We now show that the max plus-semiring satisfies the axioms of
 selective semirings, from which it follows that it satisfies the dioid
-axioms. *}
+axioms.\<close>
 
 instantiation mreal :: selective_semiring
 begin
@@ -713,11 +713,11 @@ begin
 end (* instantiation *)
 
 
-subsection {* The Min-Plus Dioid *}
+subsection \<open>The Min-Plus Dioid\<close>
 
-text {* The min-plus dioid is also known as {\em tropical
+text \<open>The min-plus dioid is also known as {\em tropical
 semiring}. Here we need to add a positive infinity to the real
-numbers. The procedere follows that of max-plus semirings.  *}
+numbers. The procedere follows that of max-plus semirings.\<close>
 
 datatype preal = preal real | PInfty  \<comment> \<open>plus infinity\<close>
 
@@ -786,9 +786,9 @@ begin
 
 end (* instantiation *)
 
-text {* Variants of min-plus and max-plus semirings can easily be
+text \<open>Variants of min-plus and max-plus semirings can easily be
 obtained. Here we formalise the min-plus semiring over the natural
-numbers as an example. *}
+numbers as an example.\<close>
 
 datatype pnat = pnat nat | PInfty  \<comment> \<open>plus infinity\<close>
 
