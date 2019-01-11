@@ -24,8 +24,8 @@ text \<open>
   possible combinations. Moreover we do not have to worry about mutable data
   structures in a multi-threaded environment. See also the graph
   implementation in the Isabelle sources @{file
-  "$ISABELLE_HOME/src/Pure/General/graph.ML"} and @{file
-  "$ISABELLE_HOME/src/Pure/General/graph.scala"}.
+  \<open>$ISABELLE_HOME/src/Pure/General/graph.ML\<close>} and @{file
+  \<open>$ISABELLE_HOME/src/Pure/General/graph.scala\<close>}.
 \<close>
 
 type_synonym relation = "(nat \<times> nat) set"

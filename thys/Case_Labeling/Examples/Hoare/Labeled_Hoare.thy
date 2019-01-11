@@ -56,7 +56,7 @@ context begin
 end
 
 
-ML_file "labeled_hoare_tac.ML"
+ML_file \<open>labeled_hoare_tac.ML\<close>
 
 method_setup labeled_vcg = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD' (Labeled_Hoare.hoare_tac ctxt (K all_tac)))\<close>

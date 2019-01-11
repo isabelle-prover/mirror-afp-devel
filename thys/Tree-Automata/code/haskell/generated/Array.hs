@@ -1,5 +1,3 @@
-{-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
-
 module Array where {
 
 

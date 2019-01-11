@@ -717,7 +717,7 @@ RFC5952:
    MUST be represented in lowercase.
 \end{verbatim}
 \<close>
-text\<open>See @{file "IP_Address_toString.thy"} for examples and test cases.\<close>
+text\<open>See @{file \<open>IP_Address_toString.thy\<close>} for examples and test cases.\<close>
 context
 begin
   private function goup_by_zeros :: "16 word list \<Rightarrow> 16 word list list" where

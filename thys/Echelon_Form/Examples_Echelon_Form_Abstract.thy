@@ -15,7 +15,7 @@ imports
 begin
 
 text\<open>The definitions introduced in this file will be also used in 
-  the computations presented in file @{file "Examples_Echelon_Form_IArrays.thy"}. 
+  the computations presented in file @{file \<open>Examples_Echelon_Form_IArrays.thy\<close>}. 
   Some of these definitions are not even used in this file since they are quite 
   time consuming.\<close>
 
@@ -89,7 +89,7 @@ text\<open>SLOW; several minutes.\<close>
 value "matrix_to_list_of_list (echelon_form_of test_int_8x8 euclid_ext2)"*)
 
 text\<open>The following definitions will be used in 
-  file @{file "Examples_Echelon_Form_IArrays.thy"}.
+  file @{file \<open>Examples_Echelon_Form_IArrays.thy\<close>}.
   Using the abstract version of matrices would produce lengthy computations.\<close>
 
 definition test_int_6x6 :: "int^6^6"

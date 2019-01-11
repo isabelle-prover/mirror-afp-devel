@@ -23,7 +23,7 @@ named_theorems pwp
 named_theorems pwlp
   "user-supplied probabilistic wlp rules"
 
-ML_file "pVCG.ML"
+ML_file \<open>pVCG.ML\<close>
 
 method_setup pvcg =
   \<open>Scan.succeed (fn ctxt => SIMPLE_METHOD' (pVCG.pVCG_tac ctxt))\<close>

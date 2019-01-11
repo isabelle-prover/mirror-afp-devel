@@ -1561,6 +1561,6 @@ export_code
   integer_of_nat
   lasso_ext
   in SML module_name HPY_new_hash
-  file "nested_dfs_hash.sml"
+  file \<open>nested_dfs_hash.sml\<close>
 
 end

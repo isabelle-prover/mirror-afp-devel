@@ -574,7 +574,7 @@ lemma sturm_imp_conv:
 
 subsection \<open>Setup for the ``sturm'' method\<close>
 
-ML_file "sturm.ML"
+ML_file \<open>sturm.ML\<close>
 
 method_setup sturm = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD' (Sturm.sturm_tac ctxt true))

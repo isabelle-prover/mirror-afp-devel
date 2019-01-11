@@ -15,7 +15,7 @@ text \<open>
   For a more theoretical discussion, see \cite{Lochbihler2013ITP}.
   This user guide assumes that you are familiar with refinement in the code generator \cite{HaftmannBulwahn2013codetut,HaftmannKrausKuncarNipkow2013ITP}.
   The theory \<open>Containers_Userguide\<close> generates it; so if you want to experiment with the examples, you can find their source code there.
-  Further examples can be found in the @{dir Examples} folder.
+  Further examples can be found in the @{dir \<open>Examples\<close>} folder.
 \<close>
 
 section \<open>Characteristics\<close>
@@ -445,7 +445,7 @@ text \<open>
 (*<*)end(*>*)
 
 text \<open>
-  For datatypes, the theory @{theory Containers.Card_Datatype} defines some machinery to assist in proving that the type is (in)finite and has a given number of elements -- see @{file "Examples/Card_Datatype_Ex.thy"} for examples.
+  For datatypes, the theory @{theory Containers.Card_Datatype} defines some machinery to assist in proving that the type is (in)finite and has a given number of elements -- see @{file \<open>Examples/Card_Datatype_Ex.thy\<close>} for examples.
   With this, it is easy to instantiate @{class card_UNIV} for our running examples:
 \<close>
 

@@ -28,7 +28,7 @@ proof -
   with bn show ?thesis by blast
 qed  
 
-ML_file "cancel_card_constraint.ML"
+ML_file \<open>cancel_card_constraint.ML\<close>
 
 
 (* below you find an example what the attribute cancel_card_constraint can do and how

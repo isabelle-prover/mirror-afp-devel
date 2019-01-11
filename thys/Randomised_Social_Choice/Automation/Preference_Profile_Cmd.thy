@@ -16,7 +16,7 @@ keywords
   "preference_profile" :: thy_goal
 begin
 
-ML_file "preference_profiles.ML"
+ML_file \<open>preference_profiles.ML\<close>
 
 
 context election

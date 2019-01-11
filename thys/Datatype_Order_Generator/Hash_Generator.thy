@@ -72,6 +72,6 @@ subsection "Installing the generator"
 
 lemma hash_mod_lemma: "1 < (n :: nat) \<Longrightarrow> x mod n < n" by auto
 
-ML_file "hash_generator.ML"
+ML_file \<open>hash_generator.ML\<close>
 
 end

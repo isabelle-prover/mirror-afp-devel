@@ -17,7 +17,7 @@ section \<open>Modelling IP Adresses\<close>
     extensible packets), this notation makes it easier to spot that type @{typ 'i} is for
     IP addresses.
 
-    The files @{file "IPv4.thy"} @{file "IPv6.thy"} concrete this for IPv4 and IPv6.\<close>
+    The files @{file \<open>IPv4.thy\<close>} @{file \<open>IPv6.thy\<close>} concrete this for IPv4 and IPv6.\<close>
 
   text\<open>The maximum IP address\<close>
   definition max_ip_addr :: "'i::len word" where

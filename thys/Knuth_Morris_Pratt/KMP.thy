@@ -931,8 +931,8 @@ ML_val \<open>
   
   val test1 = kmp "anas" "bananas"
   val test2 = kmp "" "bananas"
-  val test3 = kmp "hide_fact" (File.read @{file "~~/src/HOL/Main.thy"})
-  val test4 = kmp "sorry" (File.read @{file "~~/src/HOL/HOL.thy"})  
+  val test3 = kmp "hide_fact" (File.read @{file \<open>~~/src/HOL/Main.thy\<close>})
+  val test4 = kmp "sorry" (File.read @{file \<open>~~/src/HOL/HOL.thy\<close>})  
 \<close>
 
 end

@@ -10,7 +10,7 @@ imports
   Main
 begin
 
-ML_file "stream_fusion.ML"
+ML_file \<open>stream_fusion.ML\<close>
 
 simproc_setup stream_fusion ("f x") = \<open>K Stream_Fusion.fusion_simproc\<close>
 declare [[simproc del: stream_fusion]]

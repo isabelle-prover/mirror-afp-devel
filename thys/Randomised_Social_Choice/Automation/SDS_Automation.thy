@@ -424,7 +424,7 @@ proof
   finally show ?th .
 qed fact+
 
-ML_file "randomised_social_choice.ML"
-ML_file "sds_automation.ML"
+ML_file \<open>randomised_social_choice.ML\<close>
+ML_file \<open>sds_automation.ML\<close>
 
 end

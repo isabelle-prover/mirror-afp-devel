@@ -14,7 +14,7 @@ imports
   Examples_Echelon_Form_Abstract
 begin
 
-text\<open>The file @{file "Examples_Echelon_Form_Abstract.thy"} is only imported to 
+text\<open>The file @{file \<open>Examples_Echelon_Form_Abstract.thy\<close>} is only imported to 
   include the definitions of matrices that we use in the following examples. 
   Otherwise, it could be removed.\<close>
 

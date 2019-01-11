@@ -2640,6 +2640,6 @@ export_code
   setUp printProcesses printConfigFromAST nexts_code executable_triv apply_triv 
   extractLTLs lookupLTL
   in SML 
-  file "Promela.sml"
+  file \<open>Promela.sml\<close>
 
 end

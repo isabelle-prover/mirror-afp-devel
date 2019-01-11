@@ -14,6 +14,6 @@ imports
   Select_Solve
   Mk_Record_Simp
 begin
-  ML_file "Cond_Rewr_Conv.ML"
-  ML_file "Revert_Abbrev.ML"
+  ML_file \<open>Cond_Rewr_Conv.ML\<close>
+  ML_file \<open>Revert_Abbrev.ML\<close>
 end

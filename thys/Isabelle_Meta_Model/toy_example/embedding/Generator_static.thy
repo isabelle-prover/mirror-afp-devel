@@ -47,7 +47,7 @@ theory  Generator_static
 imports Printer
 begin
 (*<*)
-ML_file "~~/src/Doc/antiquote_setup.ML"
+ML_file \<open>~~/src/Doc/antiquote_setup.ML\<close>
 
 declare[[cartouche_type' = "abr_string"]]
 (*>*)

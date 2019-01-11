@@ -7,7 +7,7 @@ imports
   "HOL-Eisbach.Eisbach"
 begin
 
-ML_file "../util.ML"
+ML_file \<open>../util.ML\<close>
 
 ML \<open>
   fun vcg_tac nt_rules nt_comb ctxt =

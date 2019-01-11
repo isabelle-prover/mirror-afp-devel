@@ -11,7 +11,7 @@ theory Order_Thms
   imports Logic_Thms HOL.Rat
 begin
 
-ML_file "util_arith.ML"
+ML_file \<open>util_arith.ML\<close>
 setup \<open>Consts.add_const_data ("NUMC", UtilArith.is_numc)\<close>
 
 subsection \<open>Results in class order or preorder\<close>

@@ -94,7 +94,7 @@ lemma mult_cancel_left_1:
 
 lemmas landau_mult_cancel_simps = mult_cancel_left' mult_cancel_left_1
 
-ML_file "landau_simprocs.ML"
+ML_file \<open>landau_simprocs.ML\<close>
 
 lemmas bigtheta_simps = 
   landau_theta.cong_bigtheta[OF bigtheta_const_ln]

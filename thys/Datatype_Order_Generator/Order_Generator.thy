@@ -103,6 +103,6 @@ subsection "Installing the generator"
 
 lemma linear_cases: "(x :: 'a :: linorder) = y \<or> x < y \<or> y < x" by auto
 
-ML_file "order_generator.ML" 
+ML_file \<open>order_generator.ML\<close> 
 
 end

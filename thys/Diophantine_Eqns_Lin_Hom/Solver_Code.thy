@@ -9,7 +9,7 @@ theory Solver_Code
   imports Algorithm
 begin
 
-external_file "src/Main.hs"
+external_file \<open>src/Main.hs\<close>
 
 export_code solve checking Haskell \<comment> \<open>test whether Haskell code generation works\<close>
 
@@ -26,7 +26,7 @@ ML \<open>
     (Path.append compile_dir (Path.basic "Main.hs"));
 \<close>
 
-export_code solve integer_of_nat nat_of_integer in Haskell module_name HLDE file "$ISABELLE_TMP/HLDE"
+export_code solve integer_of_nat nat_of_integer in Haskell module_name HLDE file \<open>$ISABELLE_TMP/HLDE\<close>
 
 ML \<open>
   if exists_ghc then

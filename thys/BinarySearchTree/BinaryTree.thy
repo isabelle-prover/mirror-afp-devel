@@ -793,6 +793,6 @@ by (simp add: remove_sort remove_set)
 definition "test = tlookup id 4 (remove id 3 (binsert id 4 (binsert id 3 Tip)))"
 
 export_code test
-  in SML module_name BinaryTree_Code file "BinaryTree_Code.ML"
+  in SML module_name BinaryTree_Code file \<open>BinaryTree_Code.ML\<close>
 
 end

@@ -82,6 +82,6 @@ begin
     - introduce op_map_map operation for maps instead of manually iterating via FOREACH
     - consolidate various binds and maps in expand_map_get_7 *)
   export_code complement_impl nat_of_integer integer_of_nat test nbaei
-    in SML module_name Complementation file "code/Complementation_Export.sml"
+    in SML module_name Complementation file \<open>code/Complementation_Export.sml\<close>
 
 end

@@ -451,7 +451,7 @@ text \<open>
 
   \<open>\<forall>x y :: 'a mpoly. y \<noteq> 0 \<Rightarrow> \<exists>a q r. smult a x = q * y + r\<close>
 
-  The introduction of pseudo-division below generalises @{file "~~/src/HOL/Computational_Algebra/Polynomial.thy"}.
+  The introduction of pseudo-division below generalises @{file \<open>~~/src/HOL/Computational_Algebra/Polynomial.thy\<close>}.
   [1] Winkler, Polynomial Algorithms, 1996.
   The generalisation raises issues addressed by Wenda Li and commented below.
   Florian replied to the issues conjecturing, that the abstract mpoly needs not

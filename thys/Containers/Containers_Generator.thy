@@ -19,6 +19,6 @@ text \<open>
   be used by the individual generators.
 \<close>
 
-ML_file "containers_generator.ML"
+ML_file \<open>containers_generator.ML\<close>
 
 end

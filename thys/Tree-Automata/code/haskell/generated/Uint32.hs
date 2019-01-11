@@ -1,5 +1,3 @@
-{-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
-
 module Uint32 where {
 
 import qualified Data.Word;

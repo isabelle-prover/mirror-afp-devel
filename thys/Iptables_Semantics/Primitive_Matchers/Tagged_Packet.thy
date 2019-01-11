@@ -9,7 +9,7 @@ section\<open>Tagged Simple Packet\<close>
              conntrack connection state\<close>
 
   text\<open>The idea to tag the connection state into the packet is sound.
-       See @{file "../Semantics_Stateful.thy"}\<close>
+       See @{file \<open>../Semantics_Stateful.thy\<close>}\<close>
 
   record (overloaded) 'i tagged_packet = "'i::len simple_packet" +
                          p_tag_ctstate :: ctstate

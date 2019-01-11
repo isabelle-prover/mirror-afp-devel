@@ -15,6 +15,6 @@ begin
 export_code init_state0 reset_mode_mod reset_mode_val
 state_undef
 seq_exec_leon3 in OCaml
-module_name Sparc_seq file sparc_seq
+module_name Sparc_seq file \<open>sparc_seq\<close>
 
 end

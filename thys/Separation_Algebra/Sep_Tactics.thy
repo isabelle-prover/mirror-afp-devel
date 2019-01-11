@@ -9,7 +9,7 @@ theory Sep_Tactics
 imports Separation_Algebra
 begin
 
-ML_file "sep_tactics.ML"
+ML_file \<open>sep_tactics.ML\<close>
 
 text \<open>A number of proof methods to assist with reasoning about separation logic.\<close>
 

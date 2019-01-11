@@ -1,7 +1,7 @@
 theory Refine_Mono_Prover
 imports Main Automatic_Refinement.Refine_Lib
 begin
-  ML_file "refine_mono_prover.ML"
+  ML_file \<open>refine_mono_prover.ML\<close>
 
   setup Refine_Mono_Prover.setup
   declaration Refine_Mono_Prover.decl_setup

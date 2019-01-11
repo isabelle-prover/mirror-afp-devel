@@ -78,7 +78,7 @@ This generator can be used for arbitrary types, not just datatypes.
 
 lemma equality_subst: "c1 = c2 \<Longrightarrow> equality c1 \<Longrightarrow> equality c2" by blast
 
-ML_file "ceq_generator.ML"
+ML_file \<open>ceq_generator.ML\<close>
 
 subsection \<open>Type class instances for HOL types\<close>
 

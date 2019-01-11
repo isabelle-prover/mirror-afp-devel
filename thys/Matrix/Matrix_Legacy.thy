@@ -32,7 +32,7 @@ imports
 begin
 
 text \<open>This theory is marked as legacy, since there is a better
-  implementation of matrices available in @{file "../Jordan_Normal_Form/Matrix.thy"}.
+  implementation of matrices available in @{file \<open>../Jordan_Normal_Form/Matrix.thy\<close>}.
   That formalization is more abstract, more complete in terms of operations,
   and it still provides an efficient implementation.\<close>
 

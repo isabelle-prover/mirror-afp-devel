@@ -66,7 +66,7 @@ text \<open>
   problem by term rewriting \cite{Basin1994IPL}.
 \<close>
 
-ML_file "monad_rules.ML"
+ML_file \<open>monad_rules.ML\<close>
 
 subsection \<open>Usage\<close>
 
@@ -162,7 +162,7 @@ by (simp split: nat.split)
 
 subsection \<open>Setup of the normalisation simproc\<close>
 
-ML_file "monad_normalisation.ML"
+ML_file \<open>monad_normalisation.ML\<close>
 
 simproc_setup monad_normalisation ("f x y") = \<open>K Monad_Normalisation.normalise_step\<close>
 declare [[simproc del: monad_normalisation]]

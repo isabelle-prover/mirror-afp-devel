@@ -11,7 +11,7 @@ export_code nat_of_integer integer_of_nat int_of_integer integer_of_int
   compute_flow_val_imp edmonds_karp_val
   in SML_imp 
   module_name Fofu 
-  file "evaluation/fofu-SML/Fofu_Export.sml"  
+  file \<open>evaluation/fofu-SML/Fofu_Export.sml\<close>  
 
 
 end

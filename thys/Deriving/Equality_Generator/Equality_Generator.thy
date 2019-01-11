@@ -92,7 +92,7 @@ lemma equality_def': "equality f = (f = (=))"
 
 subsection \<open>The Generator\<close>
 
-ML_file "equality_generator.ML"
+ML_file \<open>equality_generator.ML\<close>
 
 hide_fact (open) equalityI
 

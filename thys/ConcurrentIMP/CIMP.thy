@@ -16,8 +16,8 @@ imports
   CIMP_vcg
 begin
 
-ML_file "mkterm_antiquote.ML"
-ML_file "cimp.ML"
+ML_file \<open>mkterm_antiquote.ML\<close>
+ML_file \<open>cimp.ML\<close>
 
 setup \<open>Com.setup #> Loc.setup\<close>
 

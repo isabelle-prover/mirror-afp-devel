@@ -254,6 +254,6 @@ end
 
 declare [[code abort: "HOL.equal :: node \<Rightarrow> node \<Rightarrow> bool"]]
 
-export_code dfs dfs2 in SML file "dfs.ML"
+export_code dfs dfs2 in SML file \<open>dfs.ML\<close>
 
 end

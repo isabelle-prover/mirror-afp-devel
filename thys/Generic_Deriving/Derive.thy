@@ -20,9 +20,9 @@ lemma iso_intro: "(\<And>a. to (from a) = a) \<Longrightarrow> (\<And>b. from (t
 
 end
 
-ML_file "derive_util.ML"
-ML_file "derive_laws.ML"
-ML_file "derive_setup.ML"
-ML_file "derive.ML"
+ML_file \<open>derive_util.ML\<close>
+ML_file \<open>derive_laws.ML\<close>
+ML_file \<open>derive_setup.ML\<close>
+ML_file \<open>derive.ML\<close>
 
 end

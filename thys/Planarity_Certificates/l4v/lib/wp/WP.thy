@@ -28,7 +28,7 @@ definition
 where
  "postconditions P Q = (\<lambda>a b. P a b \<and> Q a b)"
 
-ML_file "WP-method.ML"
+ML_file \<open>WP-method.ML\<close>
 
 declare [[wp_warn_unused = false]]
 

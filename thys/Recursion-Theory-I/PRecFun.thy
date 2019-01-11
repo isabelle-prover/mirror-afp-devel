@@ -76,7 +76,7 @@ lemmas pr_comp3_2 = PrimRec1_PrimRec2_PrimRec3.comp3_2
 lemmas pr_comp3_3 = PrimRec1_PrimRec2_PrimRec3.comp3_3
 lemmas pr_rec = PrimRec1_PrimRec2_PrimRec3.prim_rec
 
-ML_file "Utils.ML"
+ML_file \<open>Utils.ML\<close>
 
 named_theorems prec
 

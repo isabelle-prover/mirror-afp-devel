@@ -63,7 +63,7 @@ lemmas two_comparisons_into_compare =
 thm two_comparisons_into_compare
 end
 
-ML_file "compare_code.ML"
+ML_file \<open>compare_code.ML\<close>
 
 text \<open>\<open>Compare_Code.change_compare_code const ty-vars\<close> changes the code equations of some constant such that
   two consecutive comparisons via @{term "(<=)"}, @{term "(<)"}", or @{term "(=)"} are turned into one

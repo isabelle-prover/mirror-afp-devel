@@ -167,7 +167,7 @@ lemma o_append:
   "(\<And>x y. f (x @ y) = f x @ y) \<Longrightarrow> g (x @ y) = g x @ y \<Longrightarrow> (f o g) (x @ y) = (f o g) x @ y"
   by simp
 
-ML_file "show_generator.ML"
+ML_file \<open>show_generator.ML\<close>
 
 local_setup \<open>
   Show_Generator.register_foreign_partial_and_full_showsp @{type_name "list"} 0

@@ -32,7 +32,7 @@ export_code
 
   nat_cr_graph_imp nat_dijkstra_imp 
   in SML_imp module_name Dijkstra
-  file "dijkstra_export.sml"
+  file \<open>dijkstra_export.sml\<close>
 
 
 end

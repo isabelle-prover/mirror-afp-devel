@@ -123,10 +123,10 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
       apply(simp add: NumberWang_IPv4.div65536[simplified])
       (*The [simplified] is needed because Word_Lib adds some additional simp rules*)
       done
-      \<comment> \<open>When @{file "../Word_Lib/Word_Lemmas.thy"} is imported,
-         some @{file "NumberWang_IPv4.thy"} lemmas need the
+      \<comment> \<open>When @{file \<open>../Word_Lib/Word_Lemmas.thy\<close>} is imported,
+         some @{file \<open>NumberWang_IPv4.thy\<close>} lemmas need the
          [simplified] attribute because @{text Word_Lib} adds some simp rules.
-         This theory should also work without @{file "../Word_Lib/Word_Lemmas.thy"}\<close>
+         This theory should also work without @{file \<open>../Word_Lib/Word_Lemmas.thy\<close>}\<close>
     from assms have c:
       "nat_of_ipv4addr ((ipv4addr_of_nat (d + 256 * c + 65536 * b + 16777216 * a) >> 8) AND mask 8) = c"
       apply(simp add: ipv4addr_of_nat_def word_of_nat)

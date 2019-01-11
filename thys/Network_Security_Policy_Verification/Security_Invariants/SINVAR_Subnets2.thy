@@ -7,8 +7,8 @@ begin
 
 subsection \<open>SecurityInvariant Subnets2\<close>
 
-text\<open>Warning, This is just a test. Please look at @{file "SINVAR_Subnets.thy"}.
-This security invariant has the following changes, compared to @{file "SINVAR_Subnets.thy"}:
+text\<open>Warning, This is just a test. Please look at @{file \<open>SINVAR_Subnets.thy\<close>}.
+This security invariant has the following changes, compared to @{file \<open>SINVAR_Subnets.thy\<close>}:
 A new BorderRouter' is introduced which can send to the members of its subnet.
 A new InboundRouter is accessible by anyone. It can access all other routers and the outside.
 \<close>

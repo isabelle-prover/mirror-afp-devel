@@ -37,8 +37,8 @@ lemma append_is_empty [forward]: "xs @ ys = [] \<Longrightarrow> xs = [] \<and> 
 
 lemma cons_to_append [rewrite_back]: "a # b = [a] @ b" by simp
 
-ML_file "list_ac.ML"
-ML_file "list_ac_test.ML"
+ML_file \<open>list_ac.ML\<close>
+ML_file \<open>list_ac_test.ML\<close>
 
 subsection \<open>Showing two lists are equal\<close>
 

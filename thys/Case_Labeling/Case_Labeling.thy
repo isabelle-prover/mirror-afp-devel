@@ -106,12 +106,12 @@ text \<open>
   Introduces a command @{verbatim print_nested_cases}. This is similar to @{verbatim print_cases},
   but shows also the nested cases.
 \<close>
-ML_file "print_nested_cases.ML"
+ML_file \<open>print_nested_cases.ML\<close>
 
-ML_file "util.ML"
+ML_file \<open>util.ML\<close>
 
 text \<open>Introduces the proof method.\<close>
-ML_file "casify.ML"
+ML_file \<open>casify.ML\<close>
 
 
 ML \<open>

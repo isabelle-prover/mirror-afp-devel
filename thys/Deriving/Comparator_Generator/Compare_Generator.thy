@@ -46,6 +46,6 @@ qed
  
 named_theorems compare_simps "simp theorems to derive \"compare = comparator_of\""
 
-ML_file "compare_generator.ML"
+ML_file \<open>compare_generator.ML\<close>
 
 end

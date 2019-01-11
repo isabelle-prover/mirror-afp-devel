@@ -656,7 +656,7 @@ lemma pratt_primeI:
   shows   "prime p"
   using pratt_sound[OF assms] by simp
 
-ML_file "pratt.ML"
+ML_file \<open>pratt.ML\<close>
 
 end
 
