@@ -163,7 +163,7 @@ export_code
   fun.fun_ndfs_impl fun.fun_succ_of_list fun.fun_acc_of_list
   funs.funs_ndfs_impl funs.funs_succ_of_list funs.funs_acc_of_list
   imp_ndfs_impl imp_ndfs_sz_impl imp_acc_of_list imp_graph_of_list
-in SML_imp module_name NDFS_Benchmark file "NDFS_Benchmark_export.sml"
+in SML_imp module_name NDFS_Benchmark file \<open>NDFS_Benchmark_export.sml\<close>
 
 ML_val \<open>open Time\<close>
 end

@@ -768,14 +768,14 @@ section \<open>Infrastructure for Equivariance and \<open>Perm_simp\<close>\<clo
 
 subsection \<open>Basic functions about permutations\<close>
 
-ML_file "nominal_basics.ML"
+ML_file \<open>nominal_basics.ML\<close>
 
 
 subsection \<open>Eqvt infrastructure\<close>
 
 text \<open>Setup of the theorem attributes \<open>eqvt\<close> and \<open>eqvt_raw\<close>.\<close>
 
-ML_file "nominal_thmdecls.ML"
+ML_file \<open>nominal_thmdecls.ML\<close>
 
 
 lemmas [eqvt] =
@@ -816,7 +816,7 @@ lemma eqvt_bound:
 
 text \<open>provides \<open>perm_simp\<close> methods\<close>
 
-ML_file "nominal_permeq.ML"
+ML_file \<open>nominal_permeq.ML\<close>
 
 method_setup perm_simp =
  \<open>Nominal_Permeq.args_parser >> Nominal_Permeq.perm_simp_meth\<close>
@@ -3244,7 +3244,7 @@ setup \<open>Sign.add_const_constraint
 
 section \<open>Library functions for the nominal infrastructure\<close>
 
-ML_file "nominal_library.ML"
+ML_file \<open>nominal_library.ML\<close>
 
 
 section \<open>The freshness lemma according to Andy Pitts\<close>
@@ -3428,11 +3428,11 @@ section \<open>Automation for creating concrete atom types\<close>
 
 text \<open>At the moment only single-sort concrete atoms are supported.\<close>
 
-ML_file "nominal_atoms.ML"
+ML_file \<open>nominal_atoms.ML\<close>
 
 
 section \<open>Automatic equivariance procedure for inductive definitions\<close>
 
-ML_file "nominal_eqvt.ML"
+ML_file \<open>nominal_eqvt.ML\<close>
 
 end

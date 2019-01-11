@@ -90,7 +90,7 @@ lemma shows_sep_paren_final:
   shows "(shows_sep_paren a) r @ s = (shows_sep_paren a) (r @ s)"
   unfolding shows_sep_paren_def by (simp add: assms)
 
-ML_file "old_show_generator.ML"
+ML_file \<open>old_show_generator.ML\<close>
 
 end
 

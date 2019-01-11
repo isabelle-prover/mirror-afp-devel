@@ -6,7 +6,7 @@ begin
 datatype ctstate = CT_New | CT_Established | CT_Related | CT_Untracked | CT_Invalid
 
 text\<open>The state associated with a packet can be added as a tag to the packet.
-      See @{file "../Semantics_Stateful.thy"}.\<close>
+      See @{file \<open>../Semantics_Stateful.thy\<close>}.\<close>
 
 fun match_ctstate :: "ctstate set \<Rightarrow> ctstate \<Rightarrow> bool" where
 "match_ctstate S s_tag \<longleftrightarrow> s_tag \<in> S"

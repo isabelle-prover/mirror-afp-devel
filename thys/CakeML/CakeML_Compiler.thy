@@ -9,7 +9,7 @@ begin
 
 hide_const (open) Lem_string.concat
 
-ML_file "Tools/cakeml_sexp.ML"
-ML_file "Tools/cakeml_compiler.ML"
+ML_file \<open>Tools/cakeml_sexp.ML\<close>
+ML_file \<open>Tools/cakeml_compiler.ML\<close>
 
 end

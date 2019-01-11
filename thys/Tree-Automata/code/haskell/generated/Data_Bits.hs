@@ -1,5 +1,3 @@
-{-# LANGUAGE EmptyDataDecls, RankNTypes, ScopedTypeVariables #-}
-
 module Data_Bits where {
 
 import qualified Data.Bits;

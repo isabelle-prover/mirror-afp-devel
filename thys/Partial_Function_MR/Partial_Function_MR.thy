@@ -6,7 +6,7 @@ keywords "partial_function_mr" :: thy_decl
 begin
 
 subsection  \<open>Register the \isa{partial-function-mr} command\<close>
-ML_file "partial_function_mr.ML"
+ML_file \<open>partial_function_mr.ML\<close>
               
 subsection \<open>Register the "option"-monad\<close>
 

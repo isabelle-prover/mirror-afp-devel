@@ -147,6 +147,6 @@ text \<open>We can test this implementation by generating code.\<close>
 definition "test = memb 4 (remove (3::nat) (binsert 4 (binsert 3 Tip)))"
 
 export_code test
-  in SML module_name BinaryTree_TacticStyle_Code file "BinaryTree_TacticStyle_Code.ML"
+  in SML module_name BinaryTree_TacticStyle_Code file \<open>BinaryTree_TacticStyle_Code.ML\<close>
 
 end

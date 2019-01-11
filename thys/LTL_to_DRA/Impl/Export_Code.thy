@@ -126,6 +126,6 @@ export_code true\<^sub>c Iff_ltlc Nop true Abs AList_Mapping.Mapping set ltlc_to
 
 \<comment> \<open>Export translator (and also constructors)\<close>
 export_code true\<^sub>c Iff_ltlc Nop true Abs AList_Mapping.Mapping set ltlc_to_rabin 
-  in SML module_name LTL file "../Code/LTL_to_DRA_Translator.sml"
+  in SML module_name LTL file \<open>../Code/LTL_to_DRA_Translator.sml\<close>
 
 end

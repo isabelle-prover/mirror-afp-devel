@@ -1920,7 +1920,7 @@ text \<open>
 This generator can be used for arbitrary types, not just datatypes. 
 \<close>
 
-ML_file "set_impl_generator.ML" 
+ML_file \<open>set_impl_generator.ML\<close> 
 
 derive (dlist) set_impl unit bool
 derive (rbt) set_impl nat

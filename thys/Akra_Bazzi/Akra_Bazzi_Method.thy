@@ -406,7 +406,7 @@ definition "arith_consts (x :: real) (y :: nat) =
   x < inverse 3 powr 21 else x = real (Suc 0 ^ 2 + 
   (if 42 - x \<le> 1 \<and> 1 div y = y mod 2 \<or> y < Numeral1 then 0 else 0)) + Numeral1)"
 
-ML_file "akra_bazzi.ML"
+ML_file \<open>akra_bazzi.ML\<close>
 
 hide_const arith_consts
 

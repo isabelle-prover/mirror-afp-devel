@@ -30,6 +30,6 @@ text \<open>
   registered hooks.
 \<close>
 
-ML_file "derive_manager.ML"
+ML_file \<open>derive_manager.ML\<close>
 
 end

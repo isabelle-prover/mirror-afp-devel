@@ -84,7 +84,7 @@ text \<open>
 This generator can be used for arbitrary types, not just datatypes. 
 \<close>
 
-ML_file "cenum_generator.ML"
+ML_file \<open>cenum_generator.ML\<close>
 
 
 subsection \<open>Instantiations\<close>

@@ -36,7 +36,7 @@ export_code
   ls_size hs_size rs_size
   in SML 
   module_name Ta
-  file "code/ml/generated/Ta.ML"
+  file \<open>code/ml/generated/Ta.ML\<close>
 
 
 (* CAUTION: If this statement fails because the directory cannot be found, 
@@ -61,7 +61,7 @@ export_code
   ls_size hs_size rs_size
   in Haskell 
   module_name Ta
-  file "code/haskell/generated"
+  file \<open>code/haskell/generated\<close>
   (string_classes)
 
 (* CAUTION: If this statement fails because the directory cannot be found, 
@@ -86,6 +86,6 @@ export_code
   ls_size hs_size rs_size
   in OCaml 
   module_name Ta
-  file "code/ocaml/generated/Ta.ml"
+  file \<open>code/ocaml/generated/Ta.ml\<close>
 
 end

@@ -522,7 +522,7 @@ subsection \<open>Cartesian Product\<close>
 
 text \<open>Definition of the cartesian products over multisets. The construction mimics of the cartesian
   product on sets and use the same theorem names (adding only the suffix \<open>_mset\<close> to Sigma
-  and Times). See file @{file "~~/src/HOL/Product_Type.thy"}\<close>
+  and Times). See file @{file \<open>~~/src/HOL/Product_Type.thy\<close>}\<close>
 
 definition Sigma_mset :: "'a multiset \<Rightarrow> ('a \<Rightarrow> 'b multiset) \<Rightarrow> ('a \<times> 'b) multiset" where
   "Sigma_mset A B \<equiv> \<Union># {#{#(a, b). b \<in># B a#}. a \<in># A #}"

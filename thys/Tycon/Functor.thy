@@ -219,6 +219,6 @@ text \<open>We now set up a new type definition command, which is used for
   provide a proof of the composition law to obtain a \<open>functor\<close>
   class instance.)\<close>
 
-ML_file "tycondef.ML"
+ML_file \<open>tycondef.ML\<close>
 
 end

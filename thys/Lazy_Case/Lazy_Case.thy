@@ -35,7 +35,7 @@ section \<open>Setup\<close>
 text \<open>@{const HOL.If} is just an alias for @{const case_bool}.\<close>
 lemma [code_unfold]: "HOL.If P t f = case_bool t f P" by simp
 
-ML_file "lazy_case.ML"
+ML_file \<open>lazy_case.ML\<close>
 setup \<open>Lazy_Case.setup\<close>
 
 end

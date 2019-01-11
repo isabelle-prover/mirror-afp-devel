@@ -97,6 +97,6 @@ export_code
   testsuite ftestsuite
   nat_of_integer integer_of_nat
   in SML_imp module_name Heapmap
-  file "heapmap_export.sml"
+  file \<open>heapmap_export.sml\<close>
 
 end

@@ -58,9 +58,9 @@ theorem nat_ineq_impl_not_eq: "(x::nat) + n \<le> y \<Longrightarrow> n > 0 \<Lo
 theorem eq_to_ineqs: "(x::nat) \<equiv> y \<Longrightarrow> x \<le> y \<and> y \<le> x" by simp
 theorem ineq_to_eqs1: "(x::nat) \<le> y + 0 \<Longrightarrow> y \<le> x + 0 \<Longrightarrow> x = y" by simp
 
-ML_file "arith.ML"
-ML_file "order.ML"
-ML_file "order_test.ML"
+ML_file \<open>arith.ML\<close>
+ML_file \<open>order.ML\<close>
+ML_file \<open>order_test.ML\<close>
 
 setup \<open>register_wellform_data ("(a::nat) - b", ["a \<ge> b"])\<close>
 setup {* add_prfstep_check_req ("(a::nat) - b", "(a::nat) \<ge> b") *}
@@ -92,8 +92,8 @@ lemma nat_sub_combine3:
   "n \<le> m \<Longrightarrow> (a::nat) + b * n \<ge> c + b * m \<Longrightarrow> (a + b * n) - (c + b * m) = a - (c + b * (m - n)) \<and> a \<ge> c + b * (m - n) \<and> m \<ge> n"
   by (smt add.commute mult.commute nat_diff_add_eq2 nat_le_add_iff1)
 
-ML_file "nat_sub.ML"
-ML_file "nat_sub_test.ML"
+ML_file \<open>nat_sub.ML\<close>
+ML_file \<open>nat_sub_test.ML\<close>
 
 (* Ordering on Nats. *)
 lemma le_neq_implies_less' [forward]: "(m::nat) \<noteq> n \<Longrightarrow> m \<le> n \<Longrightarrow> m < n" by simp

@@ -877,6 +877,6 @@ export_code (* Cava MC *)
             integer_of_nat integer_of_int
   in SML 
   module_name CAVA
-  file "code/CAVA_Export.sml"
+  file \<open>code/CAVA_Export.sml\<close>
 
 end

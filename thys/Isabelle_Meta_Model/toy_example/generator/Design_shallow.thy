@@ -49,11 +49,11 @@ imports
   "../Toy_Library_Static"
   "../embedding/Generator_dynamic_sequential"
 begin
-ML_file "~~/src/Doc/antiquote_setup.ML"
+ML_file \<open>~~/src/Doc/antiquote_setup.ML\<close>
 
 text\<open>
 In this example, we configure our package to execute tactic SML code
-(corresponding to some generated \verb|.thy| file, @{file "Design_deep.thy"}
+(corresponding to some generated \verb|.thy| file, @{file \<open>Design_deep.thy\<close>}
 details how to obtain such generated \verb|.thy| file).
 Since SML code are already compiled (or reflected) and bound with the native Isabelle API in
 @{theory Isabelle_Meta_Model.Generator_dynamic_sequential}, nothing is generated in this theory.

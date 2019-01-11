@@ -43,7 +43,7 @@
 theory Rail
 imports "../toy_example/embedding/Generator_dynamic_sequential"
 begin
-ML_file "~~/src/Doc/antiquote_setup.ML"
+ML_file \<open>~~/src/Doc/antiquote_setup.ML\<close>
 (*>*)
 
 section\<open>Main Setup of Meta Commands\<close>

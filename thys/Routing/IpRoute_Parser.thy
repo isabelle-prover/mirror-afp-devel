@@ -35,7 +35,7 @@ text\<open>The parser ensures that @{const sanity_ip_route} holds for any rulese
 
 (* Hide all the ugly ml in a file with the right extension *)
 (*Depends on the function parser_ipv4 from IP_Address_Parser*)
-ML_file "IpRoute_Parser.ml"
+ML_file \<open>IpRoute_Parser.ml\<close>
                   
 ML\<open>
   Outer_Syntax.local_theory @{command_keyword parse_ip_route}

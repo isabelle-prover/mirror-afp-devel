@@ -192,7 +192,7 @@ subsection\<open>Main Combinators for the Translation\<close>
 
 text\<open>
 As general remark, all the future translating steps 
-(e.g., that will occur in @{file "Floor1_access.thy"})
+(e.g., that will occur in @{file \<open>Floor1_access.thy\<close>})
 will extensively use Isabelle expressions,
 represented by its Meta-Model, for example lots of functions will use @{term "Term_app"}...
 So the overall can be simplified by the use of polymorphic cartouches.

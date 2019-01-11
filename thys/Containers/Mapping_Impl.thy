@@ -212,7 +212,7 @@ text \<open>
 This generator can be used for arbitrary types, not just datatypes. 
 \<close>
 
-ML_file "mapping_impl_generator.ML" 
+ML_file \<open>mapping_impl_generator.ML\<close> 
 
 derive (assoclist) mapping_impl unit bool
 derive (rbt) mapping_impl nat

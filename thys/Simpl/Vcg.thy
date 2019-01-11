@@ -33,7 +33,7 @@ begin
 
 axiomatization NoBody::"('s,'p,'f) com"
 
-ML_file "hoare.ML"
+ML_file \<open>hoare.ML\<close>
 
 method_setup hoare = "Hoare.hoare"
   "raw verification condition generator for Hoare Logic"
@@ -421,7 +421,7 @@ translations
 definition Let':: "['a, 'a => 'b] => 'b"
   where "Let' = Let"
 
-ML_file "hoare_syntax.ML"
+ML_file \<open>hoare_syntax.ML\<close>
 
 
 parse_translation \<open>

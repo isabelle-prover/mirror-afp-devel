@@ -54,7 +54,7 @@ definition "payments b r n (a::allocation) =
    necessary for the computation and write it to a file of choice, in this case the file
    VCG.scala *)
 export_code vcgaAlg payments allocationPrettyPrint in Scala module_name VCG 
-            file "VCG-withoutWrapper.scala"
+            file \<open>VCG-withoutWrapper.scala\<close>
 
 end
 

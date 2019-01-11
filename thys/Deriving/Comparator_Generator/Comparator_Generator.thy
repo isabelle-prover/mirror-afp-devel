@@ -246,6 +246,6 @@ lemma length_nth_simps:
 
 subsection \<open>The Comparator Generator\<close>
 
-ML_file "comparator_generator.ML"
+ML_file \<open>comparator_generator.ML\<close>
                  
 end

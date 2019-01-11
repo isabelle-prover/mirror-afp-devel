@@ -34,6 +34,6 @@ lemma hash_combine_unfold:
 
 subsection \<open>The Generator\<close>
 
-ML_file "hash_generator.ML"
+ML_file \<open>hash_generator.ML\<close>
 
 end

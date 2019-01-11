@@ -3,6 +3,6 @@ imports
   Deriving.Derive_Manager
 begin
 
-ML_file "derive_aux.ML"
+ML_file \<open>derive_aux.ML\<close>
 
 end

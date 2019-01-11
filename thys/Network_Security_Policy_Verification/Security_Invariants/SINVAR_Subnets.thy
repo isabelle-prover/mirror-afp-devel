@@ -4,7 +4,7 @@ begin
 
 subsection \<open>SecurityInvariant Subnets\<close>
 
-text\<open>If unsure, maybe you should look at @{file "SINVAR_SubnetsInGW.thy"}\<close>
+text\<open>If unsure, maybe you should look at @{file \<open>SINVAR_SubnetsInGW.thy\<close>}\<close>
 
 
 datatype subnets = Subnet nat | BorderRouter nat | Unassigned

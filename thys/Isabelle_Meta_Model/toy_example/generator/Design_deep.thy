@@ -47,12 +47,12 @@ theory
 imports
   "../embedding/Generator_dynamic_sequential"
 begin
-ML_file "~~/src/Doc/antiquote_setup.ML"
+ML_file \<open>~~/src/Doc/antiquote_setup.ML\<close>
 
 text\<open>
 In this example, we configure our package to generate a \verb|.thy| file,
 without executing the associated generated code contained in this \verb|.thy| file
-(c.f. @{file "Design_shallow.thy"} for a direct evaluation).
+(c.f. @{file \<open>Design_shallow.thy\<close>} for a direct evaluation).
 This mode is particularly relevant for debugging purposes:
 while by default no evaluation occurs, 
 the generated files (and their proofs!) can be executed on
@@ -63,7 +63,7 @@ After clicking on the generated content, the newly inserted content could depend
 which are not loaded by this current one.
 In this case, it is necessary to manually add all the needed dependencies above after the 
 keyword @{keyword "imports"}.
-One should compare this current theory with @{file "Design_shallow.thy"}
+One should compare this current theory with @{file \<open>Design_shallow.thy\<close>}
 to see the differences of imported theories, and which ones to manually import
 (whenever an error happens).
 \<close>
@@ -352,11 +352,11 @@ subsection\<open>Designing Class Models (V): Inspection of Generated Files\<clos
 text\<open>
 According to options given to the (first) command @{command generation_syntax} above, 
 we retrieve the first generated file in the mentioned directory:
-@{file "../document_generated/Design_generated.thy"}.
+@{file \<open>../document_generated/Design_generated.thy\<close>}.
 
 Because this file still contains meta-commands, we are here executing again
 a new generating step inside this file, the new result becomes saved in
-@{file "../document_generated/Design_generated_generated.thy"}.
+@{file \<open>../document_generated/Design_generated_generated.thy\<close>}.
 As remark, in this last file, the dependency to @{theory Isabelle_Meta_Model.Generator_dynamic_sequential} was 
 automatically removed because the meta-compiler has detected the absence of meta-commands
 in the generated content.

@@ -7,7 +7,7 @@ begin
 
 section\<open>Replacing output interfaces by their IP ranges according to Routing\<close>
 
-text\<open>Copy of @{file "Interface_Replace.thy"}\<close>
+text\<open>Copy of @{file \<open>Interface_Replace.thy\<close>}\<close>
 
 definition ipassmt_iface_replace_dstip_mexpr
   :: "'i::len ipassignment \<Rightarrow> iface \<Rightarrow> 'i common_primitive match_expr" where

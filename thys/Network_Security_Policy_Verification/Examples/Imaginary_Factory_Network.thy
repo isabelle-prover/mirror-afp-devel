@@ -93,8 +93,8 @@ This means, once a connection is established, packet exchange can be bidirection
 This makes sure that the watchdog will receive the health information from the robots, 
 the mission control machines will receive the current state of the robots, and the administrator can actually log into the mission control machines. 
 The policy should only specify who is allowed to set up the connections. 
-We will elaborate on the stateful implementation in @{file "../TopoS_Stateful_Policy.thy"} 
-and @{file "../TopoS_Stateful_Policy_Algorithm.thy"}.\<close>
+We will elaborate on the stateful implementation in @{file \<open>../TopoS_Stateful_Policy.thy\<close>} 
+and @{file \<open>../TopoS_Stateful_Policy_Algorithm.thy\<close>}.\<close>
 
 
 subsection\<open>Specification of Security Invariants\<close>
@@ -556,10 +556,10 @@ The NonInterference template was deliberately selected for our scenario as one o
 Our framework allows to specify almost arbitrary invariant templates. 
 We concluded that all non-ENF-structured invariants which may produce an exponential 
 number of offending flows are problematic for practical use. 
-This includes ``Comm. With'' (@{file "../Security_Invariants/SINVAR_ACLcommunicateWith.thy"}), 
-``Not Comm. With'' (@{file "../Security_Invariants/SINVAR_ACLnotCommunicateWith.thy"}), 
-Dependability (@{file "../Security_Invariants/SINVAR_Dependability.thy"}), 
-and NonInterference (@{file "../Security_Invariants/SINVAR_NonInterference.thy"}).
+This includes ``Comm. With'' (@{file \<open>../Security_Invariants/SINVAR_ACLcommunicateWith.thy\<close>}), 
+``Not Comm. With'' (@{file \<open>../Security_Invariants/SINVAR_ACLnotCommunicateWith.thy\<close>}), 
+Dependability (@{file \<open>../Security_Invariants/SINVAR_Dependability.thy\<close>}), 
+and NonInterference (@{file \<open>../Security_Invariants/SINVAR_NonInterference.thy\<close>}).
 In this section, we discuss the consequences of the NonInterference invariant for automated policy construction. 
 We will conclude that, though we can solve all technical challenges, said invariants are 
 ---due to their inherent ambiguity--- not very well suited for automated policy construction.\<close>

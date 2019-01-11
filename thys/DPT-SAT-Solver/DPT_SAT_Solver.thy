@@ -7,6 +7,6 @@ theory DPT_SAT_Solver
 imports Main
 begin
 
-ML_file "dpt_sat_solver.ML"
+ML_file \<open>dpt_sat_solver.ML\<close>
 
 end

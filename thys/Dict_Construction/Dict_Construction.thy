@@ -47,12 +47,12 @@ by (metis wfP_implies_wf_set_of wf_implies_dom)
 
 named_theorems dict_construction_specs
 
-ML_file "dict_construction_util.ML"
-ML_file "transfer_termination.ML"
-ML_file "congruences.ML"
-ML_file "side_conditions.ML"
-ML_file "class_graph.ML"
-ML_file "dict_construction.ML"
+ML_file \<open>dict_construction_util.ML\<close>
+ML_file \<open>transfer_termination.ML\<close>
+ML_file \<open>congruences.ML\<close>
+ML_file \<open>side_conditions.ML\<close>
+ML_file \<open>class_graph.ML\<close>
+ML_file \<open>dict_construction.ML\<close>
 
 method_setup fo_cong_rule = \<open>
   Attrib.thm >> (fn thm => fn ctxt => SIMPLE_METHOD' (Dict_Construction_Util.fo_cong_tac ctxt thm))

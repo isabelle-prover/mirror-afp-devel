@@ -107,7 +107,7 @@ lemma comparator_subst: "c1 = c2 \<Longrightarrow> comparator c1 \<Longrightarro
 lemma (in compare) compare_subst: "\<And> comp. compare = comp \<Longrightarrow> comparator comp"
   using comparator_compare by blast  
 
-ML_file "ccompare_generator.ML"
+ML_file \<open>ccompare_generator.ML\<close>
 
 subsection \<open>Instantiations for HOL types\<close>
 

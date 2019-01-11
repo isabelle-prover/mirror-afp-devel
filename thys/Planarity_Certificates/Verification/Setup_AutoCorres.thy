@@ -9,7 +9,7 @@ section \<open>AutoCorres setup for VCG labelling\<close>
 
 text \<open>Theorem collections for the VCG\<close>
 
-ML_file "../../Case_Labeling/util.ML"
+ML_file \<open>../../Case_Labeling/util.ML\<close>
 
 ML \<open>
   fun vcg_tac nt_rules nt_comb ctxt =

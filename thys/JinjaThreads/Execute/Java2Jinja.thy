@@ -16,7 +16,7 @@ code_identifier
 definition j_Program :: "addr J_mb cdecl list \<Rightarrow> addr J_prog"
 where "j_Program = Program"
 
-export_code wf_J_prog' j_Program in SML file "JWellForm.ML" 
+export_code wf_J_prog' j_Program in SML file \<open>JWellForm.ML\<close> 
 
 text \<open>Functions for extracting calls to the native print method\<close>
 
@@ -73,7 +73,7 @@ export_code
   purge case_llist' case_tllist' terminal' llist_of_tllist'
   thr' shr' heap_toString thread_toString trace_toString
   in SML
-  file "J_Execute.ML"
+  file \<open>J_Execute.ML\<close>
 
 definition j2jvm :: "addr J_prog \<Rightarrow> addr jvm_prog" where "j2jvm = J2JVM"
 
@@ -83,6 +83,6 @@ export_code
   purge case_llist' case_tllist' terminal' llist_of_tllist'
   thr' shr' heap_toString thread_toString' trace_toString
   in SML
-  file "JVM_Execute2.ML"
+  file \<open>JVM_Execute2.ML\<close>
 
 end

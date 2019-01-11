@@ -10,8 +10,8 @@ imports
   Main
 begin
 
-ML_file "bnf_access.ML"
-ML_file "generator_aux.ML"
+ML_file \<open>bnf_access.ML\<close>
+ML_file \<open>generator_aux.ML\<close>
 
 lemma in_set_simps: 
   "x \<in> set (y # z # ys) = (x = y \<or> x \<in> set (z # ys))"

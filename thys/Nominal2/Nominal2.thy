@@ -7,38 +7,38 @@ keywords
   "avoids" "binds"
 begin
 
-ML_file "nominal_dt_data.ML"
+ML_file \<open>nominal_dt_data.ML\<close>
 ML \<open>open Nominal_Dt_Data\<close>
 
-ML_file "nominal_dt_rawfuns.ML"
+ML_file \<open>nominal_dt_rawfuns.ML\<close>
 ML \<open>open Nominal_Dt_RawFuns\<close>
 
-ML_file "nominal_dt_alpha.ML"
+ML_file \<open>nominal_dt_alpha.ML\<close>
 ML \<open>open Nominal_Dt_Alpha\<close>
 
-ML_file "nominal_dt_quot.ML"
+ML_file \<open>nominal_dt_quot.ML\<close>
 ML \<open>open Nominal_Dt_Quot\<close>
 
 (*****************************************)
 (* setup for induction principles method *)
-ML_file "nominal_induct.ML"
+ML_file \<open>nominal_induct.ML\<close>
 method_setup nominal_induct =
   \<open>NominalInduct.nominal_induct_method\<close>
   \<open>nominal induction\<close>
 
 (****************************************************)
 (* inductive definition involving nominal datatypes *)
-ML_file "nominal_inductive.ML"
+ML_file \<open>nominal_inductive.ML\<close>
 
 
 (***************************************)
 (* forked code of the function package *)
 (* for defining nominal functions      *)
-ML_file "nominal_function_common.ML"
-ML_file "nominal_function_core.ML"
-ML_file "nominal_mutual.ML"
-ML_file "nominal_function.ML"
-ML_file "nominal_termination.ML"
+ML_file \<open>nominal_function_common.ML\<close>
+ML_file \<open>nominal_function_core.ML\<close>
+ML_file \<open>nominal_mutual.ML\<close>
+ML_file \<open>nominal_function.ML\<close>
+ML_file \<open>nominal_termination.ML\<close>
 
 ML \<open>
 val eqvt_attr = Attrib.internal (K Nominal_ThmDecls.eqvt_add)

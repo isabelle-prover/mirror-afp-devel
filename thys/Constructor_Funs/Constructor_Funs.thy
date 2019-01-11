@@ -29,7 +29,7 @@ text \<open>
 
 section \<open>Setup\<close>
 
-ML_file "constructor_funs.ML"
+ML_file \<open>constructor_funs.ML\<close>
 setup \<open>Constructor_Funs.setup\<close>
 
 end
