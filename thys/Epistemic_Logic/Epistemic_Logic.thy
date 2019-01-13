@@ -16,7 +16,7 @@ type_synonym id = string
 
 datatype 'i fm
   = FF ("\<^bold>\<bottom>")
-  | Pre id
+  | Pro id
   | Dis \<open>'i fm\<close> \<open>'i fm\<close> (infixr "\<^bold>\<or>" 30)
   | Con \<open>'i fm\<close> \<open>'i fm\<close> (infixr "\<^bold>\<and>" 35)
   | Imp \<open>'i fm\<close> \<open>'i fm\<close> (infixr "\<^bold>\<longrightarrow>" 25)
@@ -35,7 +35,7 @@ datatype ('i, 's) kripke = Kripke (\<pi>: \<open>'s \<Rightarrow> id \<Rightarro
 primrec semantics :: \<open>('i, 's) kripke \<Rightarrow> 's \<Rightarrow> 'i fm \<Rightarrow> bool\<close>
   ("_, _ \<Turnstile> _" [50,50] 50) where
   \<open>(_, _ \<Turnstile> \<^bold>\<bottom>) = False\<close>
-| \<open>(M, s \<Turnstile> Pre i) = \<pi> M s i\<close>
+| \<open>(M, s \<Turnstile> Pro i) = \<pi> M s i\<close>
 | \<open>(M, s \<Turnstile> (p \<^bold>\<or> q)) = ((M, s \<Turnstile> p) \<or> (M, s \<Turnstile> q))\<close>
 | \<open>(M, s \<Turnstile> (p \<^bold>\<and> q)) = ((M, s \<Turnstile> p) \<and> (M, s \<Turnstile> q))\<close>
 | \<open>(M, s \<Turnstile> (p \<^bold>\<longrightarrow> q)) = ((M, s \<Turnstile> p) \<longrightarrow> (M, s \<Turnstile> q))\<close>
@@ -127,7 +127,7 @@ section \<open>Axiom System K\<close>
 
 primrec eval :: \<open>(id \<Rightarrow> bool) \<Rightarrow> ('i fm \<Rightarrow> bool) \<Rightarrow> 'i fm \<Rightarrow> bool\<close> where
   \<open>eval _ _ \<^bold>\<bottom> = False\<close>
-| \<open>eval g _ (Pre i) = g i\<close>
+| \<open>eval g _ (Pro i) = g i\<close>
 | \<open>eval g h (p \<^bold>\<or> q) = (eval g h p \<or> eval g h q)\<close>
 | \<open>eval g h (p \<^bold>\<and> q) = (eval g h p \<and> eval g h q)\<close>
 | \<open>eval g h (p \<^bold>\<longrightarrow> q) = (eval g h p \<longrightarrow> eval g h q)\<close>
@@ -371,7 +371,7 @@ section \<open>Consistency\<close>
 
 definition consistency :: \<open>'i fm set set \<Rightarrow> bool\<close> where
   \<open>consistency C \<equiv> \<forall>S \<in> C.
-    (\<forall>p. \<not> (Pre p \<in> S \<and> (\<^bold>\<not> Pre p) \<in> S)) \<and>
+    (\<forall>p. \<not> (Pro p \<in> S \<and> (\<^bold>\<not> Pro p) \<in> S)) \<and>
     \<^bold>\<bottom> \<notin> S \<and>
     (\<forall>Z. (\<^bold>\<not> (\<^bold>\<not> Z)) \<in> S \<longrightarrow> S \<union> {Z} \<in> C) \<and>
     (\<forall>A B. (A \<^bold>\<and> B) \<in> S \<longrightarrow> S \<union> {A, B} \<in> C) \<and>
@@ -413,9 +413,9 @@ proof (intro ballI allI impI conjI)
     unfolding close_def by blast
 
   { fix p
-    have \<open>\<not> (Pre p \<in> S \<and> (\<^bold>\<not> Pre p) \<in> S)\<close>
+    have \<open>\<not> (Pro p \<in> S \<and> (\<^bold>\<not> Pro p) \<in> S)\<close>
       using \<open>S \<in> C\<close> \<open>consistency C\<close> unfolding consistency_def by simp
-    then show \<open>\<not> (Pre p \<in> S' \<and> (\<^bold>\<not> Pre p) \<in> S')\<close>
+    then show \<open>\<not> (Pro p \<in> S' \<and> (\<^bold>\<not> Pro p) \<in> S')\<close>
       using \<open>S' \<subseteq> S\<close> by blast }
 
   { have \<open>\<^bold>\<bottom> \<notin> S\<close>
@@ -550,10 +550,10 @@ proof (intro ballI allI impI conjI)
     by blast
 
   { fix i
-    show \<open>\<not> (Pre i \<in> S \<and> (\<^bold>\<not> Pre i) \<in> S)\<close>
+    show \<open>\<not> (Pro i \<in> S \<and> (\<^bold>\<not> Pro i) \<in> S)\<close>
     proof
-      assume \<open>Pre i \<in> S \<and> (\<^bold>\<not> Pre i) \<in> S\<close>
-      then have \<open>{Pre i, (\<^bold>\<not> Pre i)} \<in> C\<close>
+      assume \<open>Pro i \<in> S \<and> (\<^bold>\<not> Pro i) \<in> S\<close>
+      then have \<open>{Pro i, (\<^bold>\<not> Pro i)} \<in> C\<close>
         using finc by simp
       then show False
         using \<open>consistency C\<close> unfolding consistency_def by fast
@@ -930,8 +930,8 @@ proof (intro conjI ballI allI impI notI)
     by blast
 
   { fix i
-    assume \<open>Pre i \<in> S \<and> (\<^bold>\<not> Pre i) \<in> S\<close>
-    then have \<open>\<turnstile> imply G (Pre i)\<close> \<open>\<turnstile> imply G (\<^bold>\<not> Pre i)\<close>
+    assume \<open>Pro i \<in> S \<and> (\<^bold>\<not> Pro i) \<in> S\<close>
+    then have \<open>\<turnstile> imply G (Pro i)\<close> \<open>\<turnstile> imply G (\<^bold>\<not> Pro i)\<close>
       using K_imply_member * by blast+
     then have \<open>\<turnstile> imply G \<^bold>\<bottom>\<close>
       using K_FFI K_right_mp by blast
@@ -1121,7 +1121,7 @@ proof (induct p)
   then show ?case
     using assms unfolding consistency_def by blast
 next
-  case (Pre x)
+  case (Pro x)
   then show ?case
     using assms unfolding consistency_def by simp
 next
@@ -1356,7 +1356,7 @@ qed
 type_synonym 'i s_max = \<open>'i fm set\<close>
 
 abbreviation pi :: \<open>'i s_max \<Rightarrow> id \<Rightarrow> bool\<close> where
-  \<open>pi s i \<equiv> Pre i \<in> s\<close>
+  \<open>pi s i \<equiv> Pro i \<in> s\<close>
 
 abbreviation partition :: \<open>'i fm set \<Rightarrow> 'i \<Rightarrow> 'i fm set\<close> where
   \<open>partition V i \<equiv> {p. K i p \<in> V}\<close>
@@ -1406,32 +1406,32 @@ proof -
         by blast
     qed
   next
-    case (Pre i)
+    case (Pro i)
     then show ?case
     proof (intro conjI impI iffI)
-      assume \<open>Pre i \<in> V\<close>
+      assume \<open>Pro i \<in> V\<close>
       then have \<open>pi V i\<close>
         using \<open>maximal V C\<close> by blast
-      then show \<open>Kripke pi (reach C), V \<Turnstile> Pre i\<close>
+      then show \<open>Kripke pi (reach C), V \<Turnstile> Pro i\<close>
         by simp
     next
-      assume \<open>(\<^bold>\<not> Pre i) \<in> V\<close>
-      then have \<open>Pre i \<notin> V\<close>
+      assume \<open>(\<^bold>\<not> Pro i) \<in> V\<close>
+      then have \<open>Pro i \<notin> V\<close>
         using \<open>consistency C\<close> \<open>V \<in> C\<close> unfolding consistency_def by fast
       then have \<open>\<not> (pi V i)\<close>
         using \<open>maximal V C\<close> by blast
-      then show \<open>Kripke pi (reach C), V \<Turnstile> \<^bold>\<not> Pre i\<close>
+      then show \<open>Kripke pi (reach C), V \<Turnstile> \<^bold>\<not> Pro i\<close>
         by simp
     next
-      assume \<open>Kripke pi (reach C), V \<Turnstile> Pre i\<close>
-      then show \<open>Pre i \<in> V\<close>
+      assume \<open>Kripke pi (reach C), V \<Turnstile> Pro i\<close>
+      then show \<open>Pro i \<in> V\<close>
         by simp
     next
-      assume \<open>Kripke pi (reach C), V \<Turnstile> \<^bold>\<not> Pre i\<close>
-      then have \<open>Pre i \<notin> V\<close>
+      assume \<open>Kripke pi (reach C), V \<Turnstile> \<^bold>\<not> Pro i\<close>
+      then have \<open>Pro i \<notin> V\<close>
         by simp
-      then show \<open>(\<^bold>\<not> Pre i) \<in> V\<close>
-        using at_least_one_in_maximal Pre \<open>consistency C\<close>
+      then show \<open>(\<^bold>\<not> Pro i) \<in> V\<close>
+        using at_least_one_in_maximal Pro \<open>consistency C\<close>
         by blast
     qed
   next
