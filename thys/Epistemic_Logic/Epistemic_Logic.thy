@@ -1526,10 +1526,8 @@ proof -
       assume \<open>Kripke pi (reach C), V \<Turnstile> K i p\<close>
 
       have \<open>partition V i \<union> {\<^bold>\<not> p} \<notin> C\<close>
-      proof (rule ccontr)
-        assume \<open>\<not> (partition V i \<union> {\<^bold>\<not> p} \<notin> C)\<close>
-        then have \<open>partition V i \<union> {\<^bold>\<not> p} \<in> C\<close>
-          by blast
+      proof
+        assume \<open>partition V i \<union> {\<^bold>\<not> p} \<in> C\<close>
         then obtain W where \<open>partition V i \<union> {\<^bold>\<not> p} \<subseteq> W\<close> \<open>W \<in> C\<close> \<open>maximal W C\<close>
           using \<open>consistency C\<close> \<open>finite_char C\<close> exists_maximal_superset by blast
         then have \<open>Kripke pi (reach C), W \<Turnstile> \<^bold>\<not> p\<close>
