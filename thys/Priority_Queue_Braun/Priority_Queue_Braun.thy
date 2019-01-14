@@ -38,14 +38,14 @@ qed simp
 subsection "Get Minimum"
 
 lemma get_min_in:
-  "h \<noteq> Leaf \<Longrightarrow> root_val h \<in> set_tree h"
+  "h \<noteq> Leaf \<Longrightarrow> value h \<in> set_tree h"
 by(auto simp add: neq_Leaf_iff)
 
 lemma get_min_min:
-  "\<lbrakk> heap h; x \<in> set_tree h \<rbrakk> \<Longrightarrow> root_val h \<le> x"
+  "\<lbrakk> heap h; x \<in> set_tree h \<rbrakk> \<Longrightarrow> value h \<le> x"
 by(cases h)(auto)
 
-lemma get_min: "\<lbrakk> heap h;  h \<noteq> Leaf \<rbrakk> \<Longrightarrow> root_val h = Min_mset (mset_tree h)"
+lemma get_min: "\<lbrakk> heap h;  h \<noteq> Leaf \<rbrakk> \<Longrightarrow> value h = Min_mset (mset_tree h)"
 by (auto simp add: eq_Min_iff get_min_in get_min_min)
 
 subsection \<open>Insertion\<close>
@@ -217,7 +217,7 @@ proof(cases t rule: del_min.cases)
 qed (insert assms, auto)
 
 lemma mset_del_min: assumes "braun t" "heap t" "t \<noteq> Leaf"
-shows "mset_tree(del_min t) = mset_tree t - {#root_val t#}"
+shows "mset_tree(del_min t) = mset_tree t - {#value t#}"
 proof(cases t rule: del_min.cases)
   case 1 with assms show ?thesis by simp
 next
@@ -240,7 +240,7 @@ text \<open>Last step: prove all axioms of the priority queue specification:\<cl
 interpretation braun: Priority_Queue
 where empty = Leaf and is_empty = "\<lambda>h. h = Leaf"
 and insert = insert and del_min = del_min
-and get_min = root_val and invar = "\<lambda>h. braun h \<and> heap h"
+and get_min = "value" and invar = "\<lambda>h. braun h \<and> heap h"
 and mset = mset_tree
 proof(standard, goal_cases)
   case 1 show ?case by simp
