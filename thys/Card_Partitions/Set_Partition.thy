@@ -444,7 +444,7 @@ next
   from this have mem: "\<And>X x. X \<in> P \<Longrightarrow> x \<in> X \<Longrightarrow> x \<in> f ` A"
     by (auto elim!: partition_onE)
   have "(`) (f \<circ> the_inv_into A f) ` P = (`) f ` (`) (the_inv_into A f) ` P"
-    by (simp add: image_comp comp_image)
+    by (simp add: image_image cong: image_cong_simp)
   moreover have "P = (`) (f \<circ> the_inv_into A f) ` P"
   proof (rule set_eqI')
     fix X

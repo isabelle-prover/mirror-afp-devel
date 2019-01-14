@@ -974,11 +974,11 @@ proof -
 
     have "h(T x) = Inf {birkhoff_sum f n (T x) |n. n \<in> {1..}}"
       unfolding h_def by (metis Setcompr_eq_image)
+    also have "... =  (\<Sqinter>t\<in>{birkhoff_sum f n x |n. n \<in> {2..}}. t - f x)"
+      by (simp only: *)
     also have "... = (\<lambda>t. t - (f x)) (Inf {birkhoff_sum f n x |n. n \<in> {2..}})"
-      unfolding * apply (rule mono_bij_cInf[symmetric], auto simp add: mono_def bij_def inj_def)
-      apply (metis (full_types) UNIV_I add_diff_cancel_left' image_iff) using B by auto
+      using B by (auto intro!: monoI bijI mono_bij_cInf [symmetric])
     finally have I: "Inf {birkhoff_sum f n x |n. n \<in> {2..}} = f x + h (T x)" by auto
-
     have "max 0 (h x) + u x = h x"
       unfolding u_def by auto
     also have "... = Inf {birkhoff_sum f n x |n. n \<in> {1..}}"

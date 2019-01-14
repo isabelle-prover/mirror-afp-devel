@@ -155,7 +155,7 @@ lemma init_lifted:
           proof (cases "i \<in> net_tree_ips p2")
             assume "i \<notin> net_tree_ips p2"
             with \<open>i \<notin> net_tree_ips p1\<close> and \<sigma>_desc show ?thesis
-              by simp
+              by (auto dest: spec [of _ i])
           next
             assume "i \<in> net_tree_ips p2"
             with \<open>s2 \<in> init (pnet np p2)\<close> have "i \<in> net_ips s2" ..
@@ -186,7 +186,7 @@ lemma init_lifted:
           proof (cases "i \<in> net_tree_ips p1")
             assume "i \<notin> net_tree_ips p1"
             with \<open>i \<notin> net_tree_ips p2\<close> and \<sigma>_desc show ?thesis
-              by simp
+              by (auto dest: spec [of _ i])
           next
             assume "i \<in> net_tree_ips p1"
             with \<open>s1 \<in> init (pnet np p1)\<close> have "i \<in> net_ips s1" ..

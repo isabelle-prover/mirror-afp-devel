@@ -290,11 +290,17 @@ lemma lowest_vertex_eq_center_iff:
   "lowest_vertex (x0, nlex_pdevs (snd X)) = x0 \<longleftrightarrow> snd X = zero_pdevs"
 proof
   assume "lowest_vertex (x0, nlex_pdevs (snd X)) = x0"
-  hence "sum_list (map snd (list_of_pdevs (nlex_pdevs (snd X)))) = 0"
-    by (auto simp: lowest_vertex_def)
-  thus "snd X = zero_pdevs"
-    by (subst (asm) sum_list_nlex_eq_zero_iff)
-     (auto simp: list_all_iff list_of_pdevs_def split: if_split_asm intro!: pdevs_eqI)
+  then have "sum_list (map snd (list_of_pdevs (nlex_pdevs (snd X)))) = 0"
+    by (simp add: lowest_vertex_def)
+  moreover have "list_all (\<lambda>x. Counterclockwise_2D_Arbitrary.lex x 0)
+    (map snd (list_of_pdevs (nlex_pdevs (snd X))))"
+    by (auto simp add: list_all_iff list_of_pdevs_def)
+  ultimately have "\<forall>x\<in>set (list_of_pdevs (nlex_pdevs (snd X))). snd x = 0"
+    by (simp add: sum_list_nlex_eq_zero_iff list_all_iff)
+  then have "pdevs_apply (snd X) i = pdevs_apply zero_pdevs i" for i
+    by (simp add: list_of_pdevs_def split: if_splits)
+  then show "snd X = zero_pdevs"
+    by (rule pdevs_eqI)
 qed (simp add: lowest_vertex_def)
 
 

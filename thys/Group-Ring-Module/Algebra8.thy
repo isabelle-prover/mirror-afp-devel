@@ -351,24 +351,24 @@ apply (rule mHom_eq[of N], assumption+)
  apply (unfold generator_def, frule conjunct1, fold generator_def)
 apply (cut_tac sc_Ring, frule Ring.whole_ideal)
  apply simp
- apply (simp add:linmap_im_lincomb[of "carrier R" N])
-
+  apply (simp add: linmap_im_lincomb [of "carrier R" N])
  apply (frule_tac s = s and n = n and f = "cmp f fa" and g = "cmp g fa" in 
-         Module.linear_comb_eq[of N R "f ` H"],
-        (simp add:mHom_def aHom_def, (erule conjE)+,
-         simp add:image_sub[of f "carrier M" "carrier N" H],
-         assumption), 
-        (rule Pi_I, simp add:cmp_def,
+         Module.linear_comb_eq[of N R "f ` H"])
+  apply (simp add: mHom_def aHom_def cong del: image_cong)
+       apply (erule conjE)+
+       apply (simp add: image_sub [of f "carrier M" "carrier N" H] cong del: image_cong)
+      apply assumption
+    apply (rule Pi_I, simp add:cmp_def,
          simp add:image_def, 
          frule_tac f = fa and A = "{j. j \<le> n}" and B = H and x = x in 
-         funcset_mem, simp, blast),
-        (rule Pi_I, simp add:cmp_def,
+         funcset_mem, simp, blast)
+  apply (rule Pi_I, simp add:cmp_def,
          simp add:image_def, 
          frule_tac f = fa and A = "{j. j \<le> n}" and B = H and x = x in 
-         funcset_mem, simp, blast), 
-        (rule ballI, simp add:cmp_def,
+         funcset_mem, simp, blast)
+  apply (rule ballI, simp add:cmp_def,
          frule_tac f = fa and A = "{j. j \<le> n}" and B = H and x = j in 
-         funcset_mem, simp))
+         funcset_mem, simp)
    apply blast
  apply assumption
 done

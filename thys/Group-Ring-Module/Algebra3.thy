@@ -1257,17 +1257,10 @@ by (simp add:gkernel_def Gimage_def,
 
 lemma Pj_im_subg:"\<lbrakk>Group G; G \<guillemotright> H; G \<triangleright> K; K \<subseteq> H\<rbrakk> \<Longrightarrow> 
                          Pj G K ` H = carrier ((Gp G H) / K)"
-apply (simp add:Qg_def [of "Gp G H" "K"])
-apply (rule equalityI, rule subsetI)
- apply (simp add:image_def Pj_def set_rcs_def)
- apply (erule bexE,
-        frule_tac h = xa in Group.sg_subset_elem[of "G" "H"], assumption+,
-        simp)
-apply (simp add:Group.Gp_carrier)
- apply (frule Group.nsg_sg[of "G" "K"], assumption+)
- apply (frule_tac x1 = xa in Group.Gp_rcs[THEN sym, of "G" "K" "H"], 
-         assumption+, blast)
-
+apply (simp add: Qg_def [of "Gp G H" "K"])
+apply (rule equalityI)
+   apply (simp add: Pj_def set_rcs_def Group.sg_subset_elem cong: image_cong_simp)
+  using Group.Gp_rcs Group.carrier_Gp Group.nsg_sg apply fastforce
 apply (rule subsetI)
  apply (simp add:image_def Pj_def)
  apply (simp add:set_rcs_def)
@@ -2401,7 +2394,7 @@ apply (case_tac "j = Suc n")
          thin_tac "\<forall>l\<le>n. \<forall>j\<le>n. l < j \<longrightarrow> f j \<subseteq> f l") apply (
          frule_tac a = n in forall_spec) apply (simp,
          thin_tac "\<forall>j\<le>n. l < j \<longrightarrow> f j \<subseteq> f l", simp)
-  apply (metis less_le_trans d_gchain_pre less_Suc_eq_le linorder_antisym_conv1 mod_if mod_le_divisor)
+  apply (simp add: d_gchain_pre)
 done
 
 lemma (in Group) d_gchainTr2:"\<lbrakk>0 < n; d_gchain G n f; l \<le> n; j \<le> n; l \<le> j \<rbrakk>
@@ -2504,15 +2497,16 @@ done
 lemma (in Group) im_d_gchains1_1:"\<lbrakk>d_gchain G n f; f n \<noteq> f 0\<rbrakk>  \<Longrightarrow> 
       f `{i. i \<le> n} = {f 0} \<union> 
          {f i |i. (LEAST j. f j \<in> (f `{i. i \<le> n} - {f 0})) \<le> i \<and> i \<le> n}"
-apply (case_tac "n = 0") apply simp
-apply (simp)
-apply (frule im_d_gchains1 [of "n" "f" "n" 
+  apply (case_tac "n = 0")
+   apply simp
+  apply simp
+  apply (frule im_d_gchains1 [of "n" "f" "n" 
                 "(LEAST j. f j \<in> f ` {i. i \<le> n} - {f 0})"], assumption+,
        simp add:n_in_Nsetn)
-apply (cut_tac n_in_Nsetn[of "n"], simp,
+    apply (cut_tac n_in_Nsetn[of "n"], simp,
        simp)
-apply simp
-done
+  apply (simp cong del: image_cong)
+  done
 
 lemma (in Group) d_gchains_leastTr:"\<lbrakk>d_gchain G n f; f n \<noteq> f 0\<rbrakk>  \<Longrightarrow>  
                (LEAST j. f j \<in> (f `{i. i \<le> n} - {f 0})) \<in> {i. i \<le> n} \<and> 
