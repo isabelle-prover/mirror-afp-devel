@@ -200,7 +200,7 @@ done
 
 lemma SafeDelayedRMWReadOnly:
   "\<lbrakk>\<not> cond (\<theta>(t\<mapsto>m a)); a \<in> dom \<S> \<union> \<O>; 
-   \<forall>j < length \<O>s. i\<noteq>j \<longrightarrow> (\<R>s!j) a \<noteq> Some False (* no release of unshared address *)\<rbrakk> 
+   \<forall>j < length \<O>s. i\<noteq>j \<longrightarrow> (\<R>s!j) a \<noteq> Some False \<comment> \<open>no release of unshared address\<close>\<rbrakk> 
    \<Longrightarrow> 
    \<O>s,\<R>s,i\<turnstile>(RMW a t (D,f) cond ret A L R W# is, \<theta>, m, \<D>, \<O>, \<S>)\<surd>"
 apply (rule safe_delayed_direct_memop_state.RMWReadOnly)
