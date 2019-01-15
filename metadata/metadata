@@ -7637,7 +7637,7 @@ author = Achim D. Brucker <https://www.brucker.ch/>, Michael Herzberg <http://ww
 topic = Computer Science/Data Structures
 date = 2018-12-26
 notify = adbrucker@0x5f.org
-abstract = 
+abstract =
   In this AFP entry, we formalize the core of the Document Object Model
   (DOM).  At its core, the DOM defines a tree-like data structure for
   representing documents in general and HTML documents in particular. It
@@ -7659,13 +7659,13 @@ author = Ernie Cohen <mailto:ecohen@amazon.com>, Norbert Schirmer <mailto:norber
 topic = Computer Science/Concurrency
 date = 2019-01-07
 notify = norbert.schirmer@web.de
-abstract = 
+abstract =
   When verifying a concurrent program, it is usual to assume that memory
   is sequentially consistent.  However, most modern multiprocessors
   depend on store buffering for efficiency, and provide native
   sequential consistency only at a substantial performance penalty.  To
   regain sequential consistency, a programmer has to follow an
-  appropriate programming discipline. However, na\"ive disciplines,
+  appropriate programming discipline. However, na&iuml;ve disciplines,
   such as protecting all shared accesses with locks, are not flexible
   enough for building high-performance multiprocessor software.  We
   present a new discipline for concurrent programming under TSO (total
