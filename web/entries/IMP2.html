@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>CakeML - Archive of Formal Proofs
+<title>IMP2 – Simple Program Verification in Isabelle/HOL - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,7 +61,19 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">C</font>akeML
+  <h1>          <font class="first">I</font>MP2
+  
+          <font class="first">–</font>
+  
+          <font class="first">S</font>imple
+  
+          <font class="first">P</font>rogram
+  
+          <font class="first">V</font>erification
+  
+          in
+  
+          <font class="first">I</font>sabelle/HOL
   
 </h1>
   <p>&nbsp;</p>
@@ -70,7 +82,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">CakeML</td>
+  <td class="data" width="80%">IMP2 – Simple Program Verification in Isabelle/HOL</td>
 </tr>
 
 <tr>
@@ -78,48 +90,52 @@
           Authors:
       </td>
   <td class="data">
-                    <a href="https://www21.in.tum.de/~hupel/">Lars Hupel</a> and
-          Yu Zhang
+                    <a href="http://www21.in.tum.de/~lammich">Peter Lammich</a> and
+          <a href="http://in.tum.de/~wimmers">Simon Wimmer</a>
       </td>
 </tr>
 
-  <tr>
-    <td class="datahead">
-              Contributor:
-          </td>
-    <td class="data">
-                  Johannes Åman Pohjola
-           </td>
-  </tr>
 
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2018-03-12</td>
+  <td class="data">2019-01-15</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-CakeML is a functional programming language with a proven-correct
-compiler and runtime system. This entry contains an unofficial version
-of the CakeML semantics that has been exported from the Lem
-specifications to Isabelle. Additionally, there are some hand-written
-theory files that adapt the exported code to Isabelle and port proofs
-from the HOL4 formalization, e.g. termination and equivalence proofs.</td>
+IMP2 is a simple imperative language together with Isabelle tooling to
+create a program verification environment in Isabelle/HOL. The tools
+include a C-like syntax, a verification condition generator, and
+Isabelle commands for the specification of programs. The framework is
+modular, i.e., it allows easy reuse of already proved programs within
+larger programs.  This entry comes with a quickstart guide and a large
+collection of examples, spanning basic algorithms with simple proofs
+to more advanced algorithms and proof techniques like data refinement.
+Some highlights from the examples are: <ul> <li>Bisection
+Square Root, </li> <li>Extended Euclid,  </li>
+<li>Exponentiation by Squaring,  </li> <li>Binary
+Search,  </li> <li>Insertion Sort,  </li>
+<li>Quicksort,  </li> <li>Depth First Search.
+</li> </ul>  The abstract syntax and semantics are very
+simple and well-documented. They are suitable to be used in a course,
+as extension to the IMP language which comes with the Isabelle
+distribution.  While this entry is limited to a simple imperative
+language, the ideas could be extended to more sophisticated languages.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{CakeML-AFP,
-  author  = {Lars Hupel and Yu Zhang},
-  title   = {CakeML},
+        <pre>@article{IMP2-AFP,
+  author  = {Peter Lammich and Simon Wimmer},
+  title   = {IMP2 – Simple Program Verification in Isabelle/HOL},
   journal = {Archive of Formal Proofs},
-  month   = mar,
-  year    = 2018,
-  note    = {\url{http://isa-afp.org/entries/CakeML.html},
+  month   = jan,
+  year    = 2019,
+  note    = {\url{http://isa-afp.org/entries/IMP2.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -130,9 +146,7 @@ from the HOL4 formalization, e.g. termination and equivalence proofs.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Coinductive.html">Coinductive</a>, <a href="IEEE_Floating_Point.html">IEEE_Floating_Point</a>, <a href="Show.html">Show</a>      </td></tr>
-          
+                    
                     
 
         
@@ -145,17 +159,17 @@ from the HOL4 formalization, e.g. termination and equivalence proofs.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/CakeML/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/CakeML/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/IMP2/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/IMP2/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/CakeML/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/IMP2/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-CakeML-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-IMP2-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 

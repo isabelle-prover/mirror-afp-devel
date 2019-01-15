@@ -184,6 +184,7 @@ Hybrid_Multi_Lane_Spatial_Logic
 HyperCTL
 IEEE_Floating_Point
 IMAP-CRDT
+IMP2
 IP_Addresses
 Imperative_Insertion_Sort
 Impossible_Geometry
@@ -404,6 +405,7 @@ Stochastic_Matrices
 Stone_Algebras
 Stone_Kleene_Relation_Algebras
 Stone_Relation_Algebras
+Store_Buffer_Reduction
 Stream-Fusion
 Stream_Fusion_Code
 Strong_Security
