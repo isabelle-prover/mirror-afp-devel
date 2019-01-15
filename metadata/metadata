@@ -7668,3 +7668,29 @@ abstract =
   consistent. Thus, we can show sequential consistency under TSO by
   ordinary assertional reasoning about the program, without having to
   consider store buffers at all.
+
+[IMP2]
+title = IMP2 --- Simple Program Verification in Isabelle/HOL
+author = Peter Lammich <http://www21.in.tum.de/~lammich>, Simon Wimmer <http://in.tum.de/~wimmers>
+topic = Computer Science/Programming Languages/Logics, Computer Science/Algorithms
+date = 2019-01-15
+notify = lammich@in.tum.de
+abstract = 
+  IMP2 is a simple imperative language together with Isabelle tooling to
+  create a program verification environment in Isabelle/HOL. The tools
+  include a C-like syntax, a verification condition generator, and
+  Isabelle commands for the specification of programs. The framework is
+  modular, i.e., it allows easy reuse of already proved programs within
+  larger programs.  This entry comes with a quickstart guide and a large
+  collection of examples, spanning basic algorithms with simple proofs
+  to more advanced algorithms and proof techniques like data refinement.
+  Some highlights from the examples are: <ul> <li>Bisection
+  Square Root, </li> <li>Extended Euclid,  </li>
+  <li>Exponentiation by Squaring,  </li> <li>Binary
+  Search,  </li> <li>Insertion Sort,  </li>
+  <li>Quicksort,  </li> <li>Depth First Search.
+  </li> </ul>  The abstract syntax and semantics are very
+  simple and well-documented. They are suitable to be used in a course,
+  as extension to the IMP language which comes with the Isabelle
+  distribution.  While this entry is limited to a simple imperative
+  language, the ideas could be extended to more sophisticated languages.

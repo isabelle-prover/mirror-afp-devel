@@ -9,7 +9,33 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>07 Jan 2019 00:00:00 +0000</pubDate>
+    <pubDate>15 Jan 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>IMP2 --- Simple Program Verification in Isabelle/HOL</title>
+              <link>https://www.isa-afp.org/entries/IMP2.html</link>
+       <guid>https://www.isa-afp.org/entries/IMP2.html</guid>
+       <dc:creator> Peter Lammich, Simon Wimmer       </dc:creator>
+       <pubDate>15 Jan 2019 00:00:00 +0000</pubDate>
+       <description>
+IMP2 is a simple imperative language together with Isabelle tooling to
+create a program verification environment in Isabelle/HOL. The tools
+include a C-like syntax, a verification condition generator, and
+Isabelle commands for the specification of programs. The framework is
+modular, i.e., it allows easy reuse of already proved programs within
+larger programs.  This entry comes with a quickstart guide and a large
+collection of examples, spanning basic algorithms with simple proofs
+to more advanced algorithms and proof techniques like data refinement.
+Some highlights from the examples are: &lt;ul&gt; &lt;li&gt;Bisection
+Square Root, &lt;/li&gt; &lt;li&gt;Extended Euclid,  &lt;/li&gt;
+&lt;li&gt;Exponentiation by Squaring,  &lt;/li&gt; &lt;li&gt;Binary
+Search,  &lt;/li&gt; &lt;li&gt;Insertion Sort,  &lt;/li&gt;
+&lt;li&gt;Quicksort,  &lt;/li&gt; &lt;li&gt;Depth First Search.
+&lt;/li&gt; &lt;/ul&gt;  The abstract syntax and semantics are very
+simple and well-documented. They are suitable to be used in a course,
+as extension to the IMP language which comes with the Isabelle
+distribution.  While this entry is limited to a simple imperative
+language, the ideas could be extended to more sophisticated languages.</description>
+    </item>
     <item>
        <title>A Reduction Theorem for Store Buffers</title>
               <link>https://www.isa-afp.org/entries/Store_Buffer_Reduction.html</link>
@@ -548,27 +574,6 @@ way to compute fair prices of derivative products in the
 Cox-Ross-Rubinstein model of a financial market, thus completing the
 work that was presented in this &lt;a
 href=&#34;https://hal.archives-ouvertes.fr/hal-01562944&#34;&gt;paper&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>Von-Neumann-Morgenstern Utility Theorem</title>
-              <link>https://www.isa-afp.org/entries/Neumann_Morgenstern_Utility.html</link>
-       <guid>https://www.isa-afp.org/entries/Neumann_Morgenstern_Utility.html</guid>
-       <dc:creator> Julian Parsert, Cezary Kaliszyk       </dc:creator>
-       <pubDate>04 Jul 2018 00:00:00 +0000</pubDate>
-       <description>
-Utility functions form an essential part of game theory and economics.
-In order to guarantee the existence of utility functions most of the
-time sufficient properties are assumed in an axiomatic manner. One
-famous and very common set of such assumptions is that of expected
-utility theory. Here, the rationality, continuity, and independence of
-preferences is assumed. The von-Neumann-Morgenstern Utility theorem
-shows that these assumptions are necessary and sufficient for an
-expected utility function to exists. This theorem was proven by
-Neumann and Morgenstern in ``Theory of Games and Economic
-Behavior&#39;&#39; which is regarded as one of the most influential
-works in game theory. The formalization includes formal definitions of
-the underlying concepts including continuity and independence of
-preferences.</description>
     </item>
   </channel>
 </rss>
