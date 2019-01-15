@@ -12,7 +12,7 @@ begin
     ''a'' ::= N 1;;
     ''c'' ::= N 0;;
     WHILE Cmpop (<) (V ''c'') (V ''n'') DO (
-      ''a'' ::= Binop ( * ) (N 2) (V ''a'');; 
+      ''a'' ::= Binop (*) (N 2) (V ''a'');; 
       ''c'' ::= Binop (+) (V ''c'') (N 1))"
 
   (* Type \ < ^ imp > \open \close , without the spaces.

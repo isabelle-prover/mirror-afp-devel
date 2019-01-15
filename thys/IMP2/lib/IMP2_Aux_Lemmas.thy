@@ -382,7 +382,7 @@ lemma lran_upd_outside[simp]:
   
 lemma lran_upd_inside: "i\<in>{l..<h} \<Longrightarrow> lran (a(i:=x)) l h = (lran a l h)[nat (i-l) := x]"
   apply (rule nth_equalityI)
-   apply (simp_all add: nth_list_update)
+   apply (simp_all add: nth_list_update, linarith)
   done
 
 

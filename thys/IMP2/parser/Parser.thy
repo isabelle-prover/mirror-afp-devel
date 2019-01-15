@@ -575,7 +575,7 @@ subsection \<open>Parser for IMP Programs\<close>
     
   declaration \<open>K ( I
   #> IMP_Parser.add_unop (31,"-",@{term "Unop uminus"})  
-  #> IMP_Parser.add_binop (25,"*",@{term "Binop ( *)"})
+  #> IMP_Parser.add_binop (25,"*",@{term "Binop (*)"})
   #> IMP_Parser.add_binop (25,"/",@{term "Binop (div)"})
   #> IMP_Parser.add_binop (25,"mod",@{term "Binop (mod)"})
   #> IMP_Parser.add_binop (21,"+",@{term "Binop (+)"})
