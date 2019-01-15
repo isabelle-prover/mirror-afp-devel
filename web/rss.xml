@@ -37,6 +37,27 @@ distribution.  While this entry is limited to a simple imperative
 language, the ideas could be extended to more sophisticated languages.</description>
     </item>
     <item>
+       <title>An Algebra for Higher-Order Terms</title>
+              <link>https://www.isa-afp.org/entries/Higher_Order_Terms.html</link>
+       <guid>https://www.isa-afp.org/entries/Higher_Order_Terms.html</guid>
+       <dc:creator> Lars Hupel       </dc:creator>
+       <pubDate>15 Jan 2019 00:00:00 +0000</pubDate>
+       <description>
+In this formalization, I introduce a higher-order term algebra,
+generalizing the notions of free variables, matching, and
+substitution. The need arose from the work on a &lt;a
+href=&#34;http://dx.doi.org/10.1007/978-3-319-89884-1_35&#34;&gt;verified
+compiler from Isabelle to CakeML&lt;/a&gt;. Terms can be thought of as
+consisting of a generic (free variables, constants, ap- plication) and
+a specific part. As example applications, this entry provides
+instantiations for de-Bruijn terms, terms with named variables, and
+&lt;a
+href=&#34;https://www.isa-afp.org/entries/Lambda_Free_RPOs.html&#34;&gt;Blanchette’s
+&amp;lambda;-free higher-order terms&lt;/a&gt;. Furthermore, I
+implement translation functions between de-Bruijn terms and named
+terms and prove their correctness.</description>
+    </item>
+    <item>
        <title>A Reduction Theorem for Store Buffers</title>
               <link>https://www.isa-afp.org/entries/Store_Buffer_Reduction.html</link>
        <guid>https://www.isa-afp.org/entries/Store_Buffer_Reduction.html</guid>
@@ -560,20 +581,6 @@ that reach the second state but not the first. In particular both
 these sets are undecidable. &lt;/p&gt;&lt;p&gt; We do
 &lt;em&gt;not&lt;/em&gt; prove that recursive functions can simulate
 Minsky machines. &lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Pricing in discrete financial models</title>
-              <link>https://www.isa-afp.org/entries/DiscretePricing.html</link>
-       <guid>https://www.isa-afp.org/entries/DiscretePricing.html</guid>
-       <dc:creator> Mnacho Echenim       </dc:creator>
-       <pubDate>16 Jul 2018 00:00:00 +0000</pubDate>
-       <description>
-We have formalized the computation of fair prices for derivative
-products in discrete financial models. As an application, we derive a
-way to compute fair prices of derivative products in the
-Cox-Ross-Rubinstein model of a financial market, thus completing the
-work that was presented in this &lt;a
-href=&#34;https://hal.archives-ouvertes.fr/hal-01562944&#34;&gt;paper&lt;/a&gt;.</description>
     </item>
   </channel>
 </rss>

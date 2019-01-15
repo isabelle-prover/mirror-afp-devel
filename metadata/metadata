@@ -372,6 +372,27 @@ abstract =
   proof. This work implements a certified dictionary translation that
   produces new class-free constants and derives equality theorems.
 
+[Higher_Order_Terms]
+title = An Algebra for Higher-Order Terms
+author = Lars Hupel <https://lars.hupel.info/>
+topic = Computer Science/Programming Languages/Lambda Calculi
+date = 2019-01-15
+notify = lars@hupel.info
+abstract =
+  In this formalization, I introduce a higher-order term algebra,
+  generalizing the notions of free variables, matching, and
+  substitution. The need arose from the work on a <a
+  href="http://dx.doi.org/10.1007/978-3-319-89884-1_35">verified
+  compiler from Isabelle to CakeML</a>. Terms can be thought of as
+  consisting of a generic (free variables, constants, ap- plication) and
+  a specific part. As example applications, this entry provides
+  instantiations for de-Bruijn terms, terms with named variables, and
+  <a
+  href="https://www.isa-afp.org/entries/Lambda_Free_RPOs.html">Blanchette’s
+  &lambda;-free higher-order terms</a>. Furthermore, I
+  implement translation functions between de-Bruijn terms and named
+  terms and prove their correctness.
+
 [Subresultants]
 title = Subresultants
 author = Sebastiaan Joosten <mailto:sebastiaan.joosten@uibk.ac.at>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@uibk.ac.at>
@@ -7604,7 +7625,7 @@ author = Roy Overbeek <mailto:Roy.Overbeek@cwi.nl>
 topic = Computer Science/Concurrency
 date = 2018-12-25
 notify = Roy.Overbeek@cwi.nl
-abstract = 
+abstract =
   Concurrent revisions is a concurrency control model developed by
   Microsoft Research. It has many interesting properties that
   distinguish it from other well-known models such as transactional
@@ -7621,7 +7642,7 @@ author = Achim D. Brucker <https://www.brucker.ch/>, Michael Herzberg <http://ww
 topic = Computer Science/Data Structures
 date = 2018-12-26
 notify = adbrucker@0x5f.org
-abstract = 
+abstract =
   In this AFP entry, we formalize the core of the Document Object Model
   (DOM).  At its core, the DOM defines a tree-like data structure for
   representing documents in general and HTML documents in particular. It
@@ -7643,7 +7664,7 @@ author = Ernie Cohen <mailto:ecohen@amazon.com>, Norbert Schirmer <mailto:norber
 topic = Computer Science/Concurrency
 date = 2019-01-07
 notify = norbert.schirmer@web.de
-abstract = 
+abstract =
   When verifying a concurrent program, it is usual to assume that memory
   is sequentially consistent.  However, most modern multiprocessors
   depend on store buffering for efficiency, and provide native
@@ -7675,7 +7696,7 @@ author = Peter Lammich <http://www21.in.tum.de/~lammich>, Simon Wimmer <http://i
 topic = Computer Science/Programming Languages/Logics, Computer Science/Algorithms
 date = 2019-01-15
 notify = lammich@in.tum.de
-abstract = 
+abstract =
   IMP2 is a simple imperative language together with Isabelle tooling to
   create a program verification environment in Isabelle/HOL. The tools
   include a C-like syntax, a verification condition generator, and
