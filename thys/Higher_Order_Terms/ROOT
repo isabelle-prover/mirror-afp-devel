@@ -4,7 +4,6 @@ session Higher_Order_Terms (AFP) = HOL +
   options [timeout = 600]
   sessions
     Datatype_Order_Generator
-    Automatic_Refinement
     "List-Index"
     Lambda_Free_RPOs
   theories [document = false]

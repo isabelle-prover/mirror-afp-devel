@@ -390,7 +390,7 @@ abstract =
   substitution. The need arose from the work on a <a
   href="http://dx.doi.org/10.1007/978-3-319-89884-1_35">verified
   compiler from Isabelle to CakeML</a>. Terms can be thought of as
-  consisting of a generic (free variables, constants, ap- plication) and
+  consisting of a generic (free variables, constants, application) and
   a specific part. As example applications, this entry provides
   instantiations for de-Bruijn terms, terms with named variables, and
   <a
