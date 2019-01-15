@@ -7652,3 +7652,35 @@ abstract =
   extended without the need of re-proving already proven properties and
   2) executable, i.e., we can generate executable code from our
   specification.
+
+[Store_Buffer_Reduction]
+title = A Reduction Theorem for Store Buffers
+author = Ernie Cohen <mailto:ecohen@amazon.com>, Norbert Schirmer <mailto:norbert.schirmer@web.de>
+topic = Computer Science/Concurrency
+date = 2019-01-07
+notify = norbert.schirmer@web.de
+abstract = 
+  When verifying a concurrent program, it is usual to assume that memory
+  is sequentially consistent.  However, most modern multiprocessors
+  depend on store buffering for efficiency, and provide native
+  sequential consistency only at a substantial performance penalty.  To
+  regain sequential consistency, a programmer has to follow an
+  appropriate programming discipline. However, na\"ive disciplines,
+  such as protecting all shared accesses with locks, are not flexible
+  enough for building high-performance multiprocessor software.  We
+  present a new discipline for concurrent programming under TSO (total
+  store order, with store buffer forwarding). It does not depend on
+  concurrency primitives, such as locks. Instead, threads use ghost
+  operations to acquire and release ownership of memory addresses. A
+  thread can write to an address only if no other thread owns it, and
+  can read from an address only if it owns it or it is shared and the
+  thread has flushed its store buffer since it last wrote to an address
+  it did not own. This discipline covers both coarse-grained concurrency
+  (where data is protected by locks) as well as fine-grained concurrency
+  (where atomic operations race to memory).  We formalize this
+  discipline in Isabelle/HOL, and prove that if every execution of a
+  program in a system without store buffers follows the discipline, then
+  every execution of the program with store buffers is sequentially
+  consistent. Thus, we can show sequential consistency under TSO by
+  ordinary assertional reasoning about the program, without having to
+  consider store buffers at all.
