@@ -68,9 +68,7 @@ definition term_to_nterm' :: "term \<Rightarrow> nterm" where
 lemma term_to_nterm_mono: "mono_state (term_to_nterm \<Gamma> x)"
 by (induction \<Gamma> x rule: term_to_nterm.induct) (auto intro: bind_mono_strong)
 
-context begin
-
-private lemma term_to_nterm_vars0:
+lemma term_to_nterm_vars0:
   assumes "wellformed' (length \<Gamma>) t"
   shows "frees (fst (run_state (term_to_nterm \<Gamma> t) s)) |\<subseteq>| frees t |\<union>| fset_of_list \<Gamma>"
 using assms proof (induction \<Gamma> t arbitrary: s rule: term_to_nterm_induct)
@@ -101,8 +99,6 @@ proof -
   thus ?thesis
     by (simp add: fresh_fNext_def fresh_frun_def)
 qed
-
-end
 
 corollary term_to_nterm_closed: "closed t \<Longrightarrow> wellformed t \<Longrightarrow> closed (term_to_nterm' t)"
 using term_to_nterm_vars[where F = "frees t" and t = t, simplified]
@@ -177,9 +173,7 @@ section \<open>Correctness\<close>
 
 text \<open>Some proofs in this section have been contributed by Yu Zhang.\<close>
 
-context begin
-
-private lemma term_to_nterm_nterm_to_term0:
+lemma term_to_nterm_nterm_to_term0:
   assumes "wellformed' (length \<Gamma>) t" "fdisjnt (fset_of_list \<Gamma>) (frees t)" "distinct \<Gamma>"
   assumes "fBall (frees t |\<union>| fset_of_list \<Gamma>) (\<lambda>x. x \<le> s)"
   shows "nterm_to_term \<Gamma> (fst (run_state (term_to_nterm \<Gamma> t) s)) = t"
@@ -279,8 +273,6 @@ next
     using \<open>frees t |\<subseteq>| S\<close>
     by auto
 qed simp
-
-end
 
 corollary term_to_nterm_nterm_to_term_simple:
   assumes "wellformed t"

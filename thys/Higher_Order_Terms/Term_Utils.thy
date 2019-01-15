@@ -5,6 +5,37 @@ imports
   "HOL-Library.State_Monad"
 begin
 
+fun map2 where
+"map2 f (x # xs) (y # ys) = f x y # map2 f xs ys" |
+"map2 _ _ _ = []"
+
+lemma map2_elemE:
+  assumes "z \<in> set (map2 f xs ys)"
+  obtains x y where "x \<in> set xs" "y \<in> set ys" "z = f x y"
+using assms by (induct f xs ys rule: map2.induct) auto
+
+lemma map2_elemE1:
+  assumes "length xs = length ys" "x \<in> set xs"
+  obtains y where "y \<in> set ys" "f x y \<in> set (map2 f xs ys)"
+using assms by (induct xs ys rule: list_induct2) auto
+
+lemma map2_elemE2:
+  assumes "length xs = length ys" "y \<in> set ys"
+  obtains x where "x \<in> set xs" "f x y \<in> set (map2 f xs ys)"
+using assms by (induct xs ys rule: list_induct2) auto
+
+lemma map2_cong[fundef_cong]:
+  assumes "xs1 = xs2" "ys1 = ys2"
+  assumes fg: "\<And>x y. x \<in> set xs1 \<Longrightarrow> y \<in> set ys1 \<Longrightarrow> f x y = g x y"
+  shows "map2 f xs1 ys1 = map2 g xs2 ys2"
+proof -
+  have "map2 f xs1 ys1 = map2 g xs1 ys1"
+    using fg
+    by (induction f xs1 ys1 rule: map2.induct) auto
+  with assms show ?thesis
+    by simp
+qed
+
 lemma option_bindE:
   assumes "x \<bind> f = Some a"
   obtains x' where "x = Some x'"  "f x' = Some a"
