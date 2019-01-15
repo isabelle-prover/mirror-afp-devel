@@ -1223,7 +1223,7 @@ inductive safe_delayed_direct_memop_state :: "owns list \<Rightarrow> rels list 
                     ("_,_,_\<turnstile> _ \<surd>" [60,60,60,60] 100)
 where
   Read: "\<lbrakk>a \<in> \<O> \<or> a \<in> read_only \<S> \<or> (volatile \<and> a \<in> dom \<S>);
-          \<forall>j < length \<O>s. i\<noteq>j \<longrightarrow> (\<R>s!j) a \<noteq> Some False; (* no release of unshared address *)
+          \<forall>j < length \<O>s. i\<noteq>j \<longrightarrow> (\<R>s!j) a \<noteq> Some False; \<comment> \<open>no release of unshared address\<close>
           \<not> volatile \<longrightarrow> (\<forall>j < length \<O>s. i\<noteq>j \<longrightarrow> a \<notin> dom (\<R>s!j));
           volatile \<longrightarrow> \<not> \<D> \<rbrakk>
         \<Longrightarrow>
@@ -1253,7 +1253,7 @@ where
 
 | RMWReadOnly:
   "\<lbrakk>\<not> cond (\<theta>(t\<mapsto>m a)); a \<in> \<O> \<or> a \<in> dom \<S>; 
-   \<forall>j < length \<O>s. i\<noteq>j \<longrightarrow> (\<R>s!j) a \<noteq> Some False (* no release of unshared address *)\<rbrakk> 
+   \<forall>j < length \<O>s. i\<noteq>j \<longrightarrow> (\<R>s!j) a \<noteq> Some False \<comment> \<open>no release of unshared address\<close>\<rbrakk>
    \<Longrightarrow> 
    \<O>s,\<R>s,i\<turnstile>(RMW a t (D,f) cond ret A L R W# is, \<theta>, m, \<D>, \<O>, \<S>)\<surd>"
 
