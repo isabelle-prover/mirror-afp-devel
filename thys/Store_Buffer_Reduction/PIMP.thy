@@ -5,7 +5,7 @@
 header {* Parallel - IMP *}
 *)
 
-subsection {* PIMP *}
+subsection \<open>PIMP\<close>
 
 theory PIMP
 imports ReduceStoreBufferSimulation
@@ -1183,7 +1183,7 @@ thm PIMP.concurrent_direct_steps_simulates_store_buffer_history_step
 thm PIMP.concurrent_direct_steps_simulates_store_buffer_history_steps
 thm PIMP.concurrent_direct_steps_simulates_store_buffer_step
 
-text {* We can instantiate PIMP with the various memory models.*}
+text \<open>We can instantiate PIMP with the various memory models.\<close>
 
 (* FIXME: note I used () instead of sb , because simplifier rewrites sb::unit to sb.
   Make this consistent with interpretations/theorems in ReduceStoreBuffer *)
@@ -1208,7 +1208,7 @@ abbreviation direct_pimp_steps::
 where
 "direct_pimp_steps == direct_pimp_step^**"
 
-text {* Execution examples *}
+text \<open>Execution examples\<close>
 
 
 

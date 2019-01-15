@@ -3,7 +3,7 @@ imports PIMP SyntaxTweaks
 begin
 
 
-text {* now we can use dots as a term *}
+text \<open>now we can use dots as a term\<close>
 
 consts dots::"'a" ("\<dots>") 
 

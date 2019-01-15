@@ -13,7 +13,7 @@ notation (holimplnl output)
 
 syntax (letnl output)
   "_binds"      :: "[letbind, letbinds] => letbinds"     ("_;//_")
-text {* Theorems as inference rules, usepackage mathpartir *}
+text \<open>Theorems as inference rules, usepackage mathpartir\<close>
 
 syntax (eqindent output) "op =" ::"['a, 'a] => bool"               ( "(2_ =/ _)" [49,50]50)
 
@@ -63,7 +63,7 @@ syntax (IfThenNoBox output)
   "_asm" :: "prop \<Rightarrow> asms" ("_")
 
 
-text {* power *}
+text \<open>power\<close>
 syntax (latex output)
   power :: "['a::power, nat] => 'a"           ("_\<^bsup>_\<^esup>" [1000,0]80)
 
@@ -73,7 +73,7 @@ syntax (latex output)
 translations
   "_emptyset"      <= "{}"
 
-text {* insert *}
+text \<open>insert\<close>
 translations 
 (*
   "{x} \<union> A" <= "insert x A"
@@ -90,24 +90,24 @@ syntax (latex output)
  "Some" :: "'a \<Rightarrow> 'a option" ("(\<lfloor>_\<rfloor>)")
  "None" :: "'a option" ("\<bottom>")
 
-text {* lesser indentation as default*}
+text \<open>lesser indentation as default\<close>
 syntax (latex output)
   "ALL "        :: "[idts, bool] => bool"                ("(2\<forall>_./ _)" [0, 10] 10)
   "EX "         :: "[idts, bool] => bool"                ("(2\<exists>_./ _)" [0, 10] 10)
 
-text {* space around \<in>*}
+text \<open>space around \<in>\<close>
 syntax (latex output)
   "_Ball"       :: "pttrn => 'a set => bool => bool"      ("(3\<forall>_\<^latex>\<open>\\,\<close>\<in>_./ _)" [0, 0, 10] 10)
   "_Bex"        :: "pttrn => 'a set => bool => bool"      ("(3\<exists>_\<^latex>\<open>\\,\<close>\<in>_./ _)" [0, 0, 10] 10)
 
-text {* compact line breaking for some infix operators *}
+text \<open>compact line breaking for some infix operators\<close>
 term "HOL.conj"
 notation (compact output)
 "conj" ("_ \<and>/ _" [34,35]35)
 notation (compact output)
 "append" ("_ @/ _" [64,65]65)
 
-text {* force a newline after definition equation *}
+text \<open>force a newline after definition equation\<close>
 syntax (defnl output)
   "=="       :: "[prop, prop] => prop"                ("(2_ \<equiv>// _)" [1,2] 2) 
 syntax (defeqnl output)
@@ -117,24 +117,24 @@ syntax (eqnl output)
 syntax (latex output)
   "=="       :: "[prop, prop] => prop"                ("(2_ \<equiv>/ _)" [1,2] 2) 
 
-text {* New-line after assumptions *}
+text \<open>New-line after assumptions\<close>
 syntax (asmnl output)
   "_asms" :: "prop \<Rightarrow> asms \<Rightarrow> asms" 
   ("_; // _")
 
-text {* uncurry functions *}
+text \<open>uncurry functions\<close>
 syntax (uncurry output)
 "_cargs" :: "'a \<Rightarrow> cargs \<Rightarrow> cargs" ("_, _")
 "_applC" :: "[('b => 'a), cargs] => logic" ("(1_/(1'(_')))" [1000, 0] 1000)
 
-text {* but keep curried notation for constructors *}
+text \<open>but keep curried notation for constructors\<close>
 syntax (uncurry output)
 "_cargs_curry":: "'a \<Rightarrow> cargs \<Rightarrow> cargs" ("_ _" [1000,1000] 1000)
 "_applC_curry":: "[('b => 'a), cargs] => logic" ("(1_/ _)" [1000, 1000] 999)
 
 
 
-text {* `dot'-selector notation for records *}
+text \<open>`dot'-selector notation for records\<close>
 syntax (latex output)
 "_rec_sel" :: "'r \<Rightarrow> id \<Rightarrow> 'a" ("_._" [1000,1000]1000)
 
@@ -162,7 +162,7 @@ val _ = Markup.add_mode Latex.latexN latex_markup;
 \<close>
 
 
-text {* invisible binder in case we want to force "bound"-markup *}
+text \<open>invisible binder in case we want to force "bound"-markup\<close>
 consts Bind:: "('a \<Rightarrow> 'b) \<Rightarrow> 'c" (binder "Bind " 10)
 translations
   "f" <= "Bind x. f"

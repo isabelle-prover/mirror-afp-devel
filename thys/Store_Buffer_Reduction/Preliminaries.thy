@@ -13,8 +13,8 @@ Foo ("\<^latex>\<open>\\constructor{Foo}\<close>")
 setup {*add_constructor_syntax "latex" "Preliminaries.foodatatype" *}
 *)
 (*>*)
-section {* Preliminaries \label{sec:preliminaries}*}
-text {*
+section \<open>Preliminaries \label{sec:preliminaries}\<close>
+text \<open>
 The formalization presented in this papaer is mechanized and checked within the generic interactive theorem prover \emph{Isabelle}\cite{Paulson:IGTP94}. 
 Isabelle is called generic as it provides a framework to formalize various \emph{object logics} declared via natural deduction style inference rules.
 The object logic that we employ for our formalization is the higher order logic of \emph{Isabelle/HOL}\cite{Nipkow:IHOL02}. 
@@ -76,7 +76,7 @@ Sets come along with the standard operations like union, \ie @{term "A \<union> 
 %The first and second component of a pair can be accessed with the functions @{const fst} and @{const snd}. 
 Tuples with more than two components are pairs nested to the right.
 
-*}
+\<close>
 (*<*)
 end
 (*>*)

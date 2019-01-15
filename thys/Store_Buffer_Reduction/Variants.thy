@@ -82,7 +82,7 @@ apply (rule sim_direct_config.intros)
 apply auto
 done
 
-ML {*@{term "(\<lambda>(p,is, \<theta>,sb::unit,\<D>, \<O>,\<R>). (p,is,\<theta>,[],(),(),()))"}*}
+ML \<open>@{term "(\<lambda>(p,is, \<theta>,sb::unit,\<D>, \<O>,\<R>). (p,is,\<theta>,[],(),(),()))"}\<close>
 
 lemma DRead: "(Read volatile a t # is,\<theta>, x, m,ghst) \<rightarrow>
                (is, \<theta> (t\<mapsto>m a), x, m, ghst)"

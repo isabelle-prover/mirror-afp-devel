@@ -237,8 +237,8 @@ where
     \<Longrightarrow> 
      (ts\<^sub>s\<^sub>b,m\<^sub>s\<^sub>b,\<S>\<^sub>s\<^sub>b) \<sim> (ts,m,\<S>)"
 
-text {* The machine without
-history only stores writes in the store-buffer.*}
+text \<open>The machine without
+history only stores writes in the store-buffer.\<close>
 inductive sim_history_config:: 
  "('p,'p store_buffer,'dirty,'owns,'rels) thread_config list \<Rightarrow> ('p,'p store_buffer,bool,owns,rels) thread_config list \<Rightarrow> bool" 
   ("_ \<sim>\<^sub>h _ " [60,60] 100)
@@ -1950,7 +1950,7 @@ proof -
 
       from local.weak_sharing_consis_axioms have "weak_sharing_consis ts" .
       from read_only_share_all_until_volatile_write_unacquired' [OF dist ro_unowned 
-       `weak_sharing_consis ts` a_unacq' a_ro] 
+       \<open>weak_sharing_consis ts\<close> a_unacq' a_ro] 
       have a_ro_all: "a \<in> read_only (share_all_until_volatile_write ts \<S>)" .
 
       from weak_consis weak_sharing_consistent_append [of \<O> ?take_sb ?drop_sb]
@@ -1958,7 +1958,7 @@ proof -
         by auto
 
       from weak_sharing_consistent_preserves_distinct_share_all_until_volatile_write [OF dist 
-        ro_unowned `weak_sharing_consis ts` i_bound ts_i]
+        ro_unowned \<open>weak_sharing_consis ts\<close> i_bound ts_i]
       have "acquired True ?take_sb \<O> \<inter>
          read_only (share_all_until_volatile_write ts \<S>) = {}".
 
@@ -2036,7 +2036,7 @@ lemma release_append_Prog\<^sub>s\<^sub>b:
        (release  (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb) S \<R>) "
   by (induct sb) (auto split: memref.splits)
 
-subsection {* Simulation of Store Buffer Machine with History by Virtual Machine with Delayed Releases *}
+subsection \<open>Simulation of Store Buffer Machine with History by Virtual Machine with Delayed Releases\<close>
 
 theorem (in xvalid_program) concurrent_direct_steps_simulates_store_buffer_history_step:
   assumes step_sb: "(ts\<^sub>s\<^sub>b,m\<^sub>s\<^sub>b,\<S>\<^sub>s\<^sub>b) \<Rightarrow>\<^sub>s\<^sub>b\<^sub>h (ts\<^sub>s\<^sub>b',m\<^sub>s\<^sub>b',\<S>\<^sub>s\<^sub>b')"
@@ -2478,7 +2478,7 @@ proof -
 	      done
 	    from valid_reads [OF j_bound jth]
 	    have reads_consis_j: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
-	    from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` j_bound 
+	    from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> j_bound 
 	      jth reads_consis_j]
 	    have reads_consis_m_j: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
 	      by (simp add: m suspends\<^sub>j)
@@ -2631,7 +2631,7 @@ proof -
 
 	    from valid_reads [OF j_bound jth]
 	    have reads_consis_j: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
-	    from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` j_bound 
+	    from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> j_bound 
 	      jth reads_consis_j]
 	    have reads_consis_m_j: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
 	      by (simp add: m suspends\<^sub>j)
@@ -3569,7 +3569,7 @@ proof -
 	      done
 	    from valid_reads [OF j_bound jth]
 	    have reads_consis_j: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
-	    from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` j_bound 
+	    from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> j_bound 
 	      jth reads_consis_j]
 	    have reads_consis_m_j: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
 	      by (simp add: m suspends\<^sub>j)
@@ -3721,7 +3721,7 @@ proof -
 
 	    from valid_reads [OF j_bound jth]
 	    have reads_consis_j: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
-	    from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` j_bound 
+	    from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> j_bound 
 	      jth reads_consis_j]
 	    have reads_consis_m_j: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
 	      by (simp add: m suspends\<^sub>j)
@@ -4974,7 +4974,7 @@ proof -
 	assume a: "a \<in> read_only (share sb \<S>\<^sub>s\<^sub>b)"
 	from local.read_only_unowned_axioms have "read_only_unowned \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b".
         from in_read_only_share_all_until_volatile_write' [OF ownership_distinct_ts\<^sub>s\<^sub>b sharing_consis_ts\<^sub>s\<^sub>b
-          `read_only_unowned \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` i_bound ts\<^sub>s\<^sub>b_i a_unowned_others a] 
+          \<open>read_only_unowned \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> i_bound ts\<^sub>s\<^sub>b_i a_unowned_others a] 
 	have "a \<in> read_only (share ?drop_sb \<S>)"
 	  by (simp add: \<S>)
 	with a_not_ro' show False by simp
@@ -5092,7 +5092,7 @@ proof -
 	      from valid_reads [OF j_bound'' ts\<^sub>s\<^sub>b_j]
 	      have reads_consis_j: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
 
-	      from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` 
+	      from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> 
 		j_bound'' ts\<^sub>s\<^sub>b_j this]
 	      have reads_consis_m_j: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
 		by (simp add: m suspends\<^sub>j)
@@ -5248,7 +5248,7 @@ proof -
 
 	      from valid_reads [OF j_bound'' ts\<^sub>s\<^sub>b_j]
 	      have reads_consis_j: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
-	      from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` 
+	      from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> 
 		j_bound'' ts\<^sub>s\<^sub>b_j this]
 	      have reads_consis_m_j: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
 		by (simp add: m suspends\<^sub>j)
@@ -5484,7 +5484,7 @@ proof -
 	   from valid_reads [OF j_bound'' ts\<^sub>s\<^sub>b_j]
 	   have reads_consis: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
 
-	   from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` j_bound''
+	   from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> j_bound''
 	     ts\<^sub>s\<^sub>b_j reads_consis]
 	   have reads_consis_m: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
 	     by (simp add: m suspends\<^sub>j)
@@ -5805,7 +5805,7 @@ proof -
 	       from valid_reads [OF j_bound'' ts\<^sub>s\<^sub>b_j]
 	       have reads_consis: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
 	       
-	       from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` 
+	       from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> 
 		 j_bound''
 		 ts\<^sub>s\<^sub>b_j reads_consis]
 	       have reads_consis_m: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
@@ -6060,7 +6060,7 @@ proof -
 	       from valid_reads [OF j_bound'' ts\<^sub>s\<^sub>b_j]
 	       have reads_consis: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
 	       
-	       from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` 
+	       from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> 
 		 j_bound''
 		 ts\<^sub>s\<^sub>b_j reads_consis]
 	       have reads_consis_m: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
@@ -6366,7 +6366,7 @@ proof -
 	   from valid_reads [OF j_bound'' ts\<^sub>s\<^sub>b_j]
 	   have reads_consis: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
 
-	   from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` j_bound''
+	   from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> j_bound''
 	     ts\<^sub>s\<^sub>b_j reads_consis]
 	   have reads_consis_m: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
 	     by (simp add: m suspends\<^sub>j)
@@ -6892,7 +6892,7 @@ proof -
               {
                 assume "x \<in> dom \<S>"
                 
-                from share_all_until_volatile_write_share_acquired [OF `sharing_consis \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` 
+                from share_all_until_volatile_write_share_acquired [OF \<open>sharing_consis \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> 
                   i_bound ts\<^sub>s\<^sub>b_i this [simplified \<S>]]
                   A_unowned_by_others x_A
                 have ?thesis
@@ -7729,7 +7729,7 @@ proof -
 	assume a: "a \<in> read_only (\<S>\<^sub>s\<^sub>b)"
 	  from local.read_only_unowned_axioms have "read_only_unowned \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b". 
         from in_read_only_share_all_until_volatile_write' [OF ownership_distinct_ts\<^sub>s\<^sub>b sharing_consis_ts\<^sub>s\<^sub>b
-          `read_only_unowned \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` i_bound ts\<^sub>s\<^sub>b_i a_unowned_others, simplified sb, simplified, 
+          \<open>read_only_unowned \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> i_bound ts\<^sub>s\<^sub>b_i a_unowned_others, simplified sb, simplified, 
           OF a] 
 	have "a \<in> read_only (\<S>)"
 	  by (simp add: \<S>)
@@ -7847,7 +7847,7 @@ proof -
 	    from valid_reads [OF j_bound ts\<^sub>s\<^sub>b_j]
 	    have reads_consis_j: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
 	    
-	   from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` 
+	   from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> 
 	      j_bound ts\<^sub>s\<^sub>b_j this]
 	   have reads_consis_m_j: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
 	    by (simp add: m suspends\<^sub>j)
@@ -8003,7 +8003,7 @@ proof -
 	    from valid_reads [OF j_bound ts\<^sub>s\<^sub>b_j]
 	    have reads_consis_j: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
 	    
-	    from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` 
+	    from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> 
 	      j_bound ts\<^sub>s\<^sub>b_j this]
 	    have reads_consis_m_j: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
 	      by (simp add: m suspends\<^sub>j)
@@ -8232,7 +8232,7 @@ proof -
 
 	      from valid_reads [OF j_bound'' ts\<^sub>s\<^sub>b_j]
 	      have reads_consis: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
-	      from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` 
+	      from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> 
 		j_bound''
 		ts\<^sub>s\<^sub>b_j this]
 	      have reads_consis_m_j: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
@@ -8491,7 +8491,7 @@ ts_a_j [simplified split_suspends\<^sub>j] refl lp [simplified split_suspends\<^
 		from valid_reads [OF j_bound'' ts\<^sub>s\<^sub>b_j]
 		have reads_consis: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
 		from reads_consistent_flush_all_until_volatile_write [OF 
-		  `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b`  j_bound''
+		  \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close>  j_bound''
 		  ts\<^sub>s\<^sub>b_j this]
 		have reads_consis_m_j: 
 		  "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
@@ -8695,7 +8695,7 @@ ts_a_j [simplified split_suspends\<^sub>j] refl lp [simplified split_suspends\<^
 		from valid_reads [OF j_bound'' ts\<^sub>s\<^sub>b_j]
 		have reads_consis: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
 		from reads_consistent_flush_all_until_volatile_write [OF 
-		  `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b`  j_bound''
+		  \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close>  j_bound''
 		  ts\<^sub>s\<^sub>b_j this]
 		have reads_consis_m_j: 
 		  "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
@@ -8935,7 +8935,7 @@ ts_a_j [simplified split_suspends\<^sub>j] refl lp [simplified split_suspends\<^
 
 	      from valid_reads [OF j_bound ts\<^sub>s\<^sub>b_j]
 	      have reads_consis: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
-	      from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` 
+	      from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> 
 		j_bound
 		ts\<^sub>s\<^sub>b_j this]
 	      have reads_consis_m_j: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
@@ -9962,7 +9962,7 @@ ts_a_j [simplified split_suspends\<^sub>j] refl lp [simplified split_suspends\<^
 	thus ?thesis by blast
       qed
 
-      from share_all_until_volatile_write_commute [OF `ownership_distinct ts\<^sub>s\<^sub>b` `sharing_consis \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` 
+      from share_all_until_volatile_write_commute [OF \<open>ownership_distinct ts\<^sub>s\<^sub>b\<close> \<open>sharing_consis \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> 
 	all_shared_L all_shared_A all_acquired_R all_unshared_R all_shared_R]
       have share_commute: "share_all_until_volatile_write ts\<^sub>s\<^sub>b \<S>\<^sub>s\<^sub>b \<oplus>\<^bsub>W\<^esub> R \<ominus>\<^bsub>A\<^esub> L =
         share_all_until_volatile_write ts\<^sub>s\<^sub>b (\<S>\<^sub>s\<^sub>b \<oplus>\<^bsub>W\<^esub> R \<ominus>\<^bsub>A\<^esub> L)".
@@ -10186,7 +10186,7 @@ ts_a_j [simplified split_suspends\<^sub>j] refl lp [simplified split_suspends\<^
 	   from valid_reads [OF j_bound'' ts\<^sub>s\<^sub>b_j]
 	   have reads_consis: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
 
-	   from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` j_bound''
+	   from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> j_bound''
 	     ts\<^sub>s\<^sub>b_j reads_consis]
 	   have reads_consis_m: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
 	     by (simp add: m suspends\<^sub>j)
@@ -10437,7 +10437,7 @@ ts_a_j [simplified split_suspends\<^sub>j] refl lp [simplified split_suspends\<^
 	       from valid_reads [OF j_bound'' ts\<^sub>s\<^sub>b_j]
 	       have reads_consis: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
 	       
-	       from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` j_bound''
+	       from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> j_bound''
 		 ts\<^sub>s\<^sub>b_j reads_consis]
 	       have reads_consis_m: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
 		 by (simp add: m suspends\<^sub>j)
@@ -10618,7 +10618,7 @@ ts_a_j [simplified split_suspends\<^sub>j] refl lp [simplified split_suspends\<^
 	       from valid_reads [OF j_bound'' ts\<^sub>s\<^sub>b_j]
 	       have reads_consis: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
 	       
-	       from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` j_bound''
+	       from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> j_bound''
 		 ts\<^sub>s\<^sub>b_j reads_consis]
 	       have reads_consis_m: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
 		 by (simp add: m suspends\<^sub>j)
@@ -10849,7 +10849,7 @@ ts_a_j [simplified split_suspends\<^sub>j] refl lp [simplified split_suspends\<^
 	    from valid_reads [OF j_bound'' ts\<^sub>s\<^sub>b_j]
 	    have reads_consis: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
 	    
-	    from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` j_bound''
+	    from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> j_bound''
 		 ts\<^sub>s\<^sub>b_j reads_consis]
 	    have reads_consis_m: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
 	      by (simp add: m suspends\<^sub>j)
@@ -11291,7 +11291,7 @@ ts_a_j [simplified split_suspends\<^sub>j] refl lp [simplified split_suspends\<^
               {
                 assume "x \<in> dom \<S>"
                 
-                from share_all_until_volatile_write_share_acquired [OF `sharing_consis \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` 
+                from share_all_until_volatile_write_share_acquired [OF \<open>sharing_consis \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> 
                   i_bound ts\<^sub>s\<^sub>b_i this [simplified \<S>]]
                   A_unowned_by_others x_A
                 have ?thesis
@@ -11634,7 +11634,7 @@ ts_a_j [simplified split_suspends\<^sub>j] refl lp [simplified split_suspends\<^
         qed
 
 	note share_commute = 
-	  share_all_until_volatile_write_append_Ghost\<^sub>s\<^sub>b [OF True `ownership_distinct ts\<^sub>s\<^sub>b` `sharing_consis \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b`
+	  share_all_until_volatile_write_append_Ghost\<^sub>s\<^sub>b [OF True \<open>ownership_distinct ts\<^sub>s\<^sub>b\<close> \<open>sharing_consis \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close>
 	  i_bound ts\<^sub>s\<^sub>b_i all_shared_L all_shared_A all_acquired_R all_unshared_R all_shared_R]
         
 	from \<D>
@@ -12160,7 +12160,7 @@ ts_a_j [simplified split_suspends\<^sub>j] refl lp [simplified split_suspends\<^
 	      from valid_reads [OF j_bound ts\<^sub>s\<^sub>b_j]
 	      have reads_consis_j: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
 	      
-	      from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` 
+	      from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> 
 		j_bound ts\<^sub>s\<^sub>b_j this]
 	      have reads_consis_m_j: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
 		by (simp add: m suspends\<^sub>j)
@@ -12301,7 +12301,7 @@ ts_a_j [simplified split_suspends\<^sub>j] refl lp [simplified split_suspends\<^
 	      from valid_reads [OF j_bound ts\<^sub>s\<^sub>b_j]
 	      have reads_consis_j: "reads_consistent False \<O>\<^sub>j m\<^sub>s\<^sub>b sb\<^sub>j".
 	    
-	      from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` 
+	      from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> 
 		j_bound ts\<^sub>s\<^sub>b_j this]
 	      have reads_consis_m_j: "reads_consistent True (acquired True ?take_sb\<^sub>j \<O>\<^sub>j) m suspends\<^sub>j"
 		by (simp add: m suspends\<^sub>j)
@@ -12960,7 +12960,7 @@ ts_a_j [simplified split_suspends\<^sub>j] refl lp [simplified split_suspends\<^
                                  dropWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb')"
 	  by (simp add: sb'_split [symmetric])
 
-	from reads_consistent_flush_all_until_volatile_write [OF `valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b`
+	from reads_consistent_flush_all_until_volatile_write [OF \<open>valid_ownership_and_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close>
 	i_bound ts\<^sub>s\<^sub>b_i reads_consis]
 	have "reads_consistent True (acquired True ?take_sb \<O>\<^sub>s\<^sub>b) m (Write\<^sub>s\<^sub>b True a (D,f) v A L R W#sb')"
 	  by (simp add: m sb Write\<^sub>s\<^sub>b volatile)
@@ -13124,7 +13124,7 @@ ts_a_j [simplified split_suspends\<^sub>j] refl lp [simplified split_suspends\<^
         from local.ownership_distinct_axioms have "ownership_distinct ts\<^sub>s\<^sub>b" .
         from local.sharing_consis_axioms have "sharing_consis \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b".
         note share_commute=
-          share_all_until_volatile_write_flush_commute [OF take_empty `ownership_distinct ts\<^sub>s\<^sub>b` `sharing_consis \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` i_bound ts\<^sub>s\<^sub>b_i dist_sb' dist_R_L_A]
+          share_all_until_volatile_write_flush_commute [OF take_empty \<open>ownership_distinct ts\<^sub>s\<^sub>b\<close> \<open>sharing_consis \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> i_bound ts\<^sub>s\<^sub>b_i dist_sb' dist_R_L_A]
         
         have rel_commute_empty:
           "release (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb') (dom \<S> \<union> R - L) Map.empty =
@@ -13140,7 +13140,7 @@ ts_a_j [simplified split_suspends\<^sub>j] refl lp [simplified split_suspends\<^
                 all_shared_append [of "(takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb')" "(dropWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb')"]
               have "a \<in> \<O>\<^sub>s\<^sub>b \<union> all_acquired sb  " 
                 by (auto simp add: sb Write\<^sub>s\<^sub>b volatile)
-              from share_all_until_volatile_write_thread_local [OF `ownership_distinct ts\<^sub>s\<^sub>b` `sharing_consis \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` i_bound ts\<^sub>s\<^sub>b_i this]
+              from share_all_until_volatile_write_thread_local [OF \<open>ownership_distinct ts\<^sub>s\<^sub>b\<close> \<open>sharing_consis \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> i_bound ts\<^sub>s\<^sub>b_i this]
               have "\<S> a = \<S>\<^sub>s\<^sub>b a"
                 by (auto simp add: sb Write\<^sub>s\<^sub>b volatile \<S>)
               then show ?thesis
@@ -14326,8 +14326,8 @@ have "(ts\<^sub>s\<^sub>b [i := (p\<^sub>s\<^sub>b,is\<^sub>s\<^sub>b, \<theta>\
       note release_commute = this
 	    from ownership_distinct_axioms have "ownership_distinct ts\<^sub>s\<^sub>b".
       from sharing_consis_axioms have "sharing_consis \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b".
-      note share_commute = share_all_until_volatile_write_Ghost\<^sub>s\<^sub>b_commute [OF `ownership_distinct ts\<^sub>s\<^sub>b` 
-	`sharing_consis \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` i_bound ts\<^sub>s\<^sub>b_i [simplified sb Ghost\<^sub>s\<^sub>b] dist_R_L_A]
+      note share_commute = share_all_until_volatile_write_Ghost\<^sub>s\<^sub>b_commute [OF \<open>ownership_distinct ts\<^sub>s\<^sub>b\<close> 
+	\<open>sharing_consis \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> i_bound ts\<^sub>s\<^sub>b_i [simplified sb Ghost\<^sub>s\<^sub>b] dist_R_L_A]
       
       have "(ts\<^sub>s\<^sub>b [i := (p\<^sub>s\<^sub>b,is\<^sub>s\<^sub>b, \<theta>\<^sub>s\<^sub>b, sb', \<D>\<^sub>s\<^sub>b, \<O>\<^sub>s\<^sub>b \<union> A - R,augment_rels (dom \<S>\<^sub>s\<^sub>b) R \<R>\<^sub>s\<^sub>b)],m\<^sub>s\<^sub>b,\<S>\<^sub>s\<^sub>b') \<sim> (ts,m,\<S>)"
 	apply (rule sim_config.intros) 
@@ -14758,20 +14758,20 @@ proof (induct rule: converse_rtranclp_induct_sbh_steps)
     by auto
 next
   case (step ts\<^sub>s\<^sub>b  m\<^sub>s\<^sub>b \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b''  m\<^sub>s\<^sub>b'' \<S>\<^sub>s\<^sub>b'')
-  note first = `(ts\<^sub>s\<^sub>b, m\<^sub>s\<^sub>b, \<S>\<^sub>s\<^sub>b) \<Rightarrow>\<^sub>s\<^sub>b\<^sub>h (ts\<^sub>s\<^sub>b'', m\<^sub>s\<^sub>b'', \<S>\<^sub>s\<^sub>b'')`
-  note sim = `(ts\<^sub>s\<^sub>b, m\<^sub>s\<^sub>b, \<S>\<^sub>s\<^sub>b) \<sim> (ts, m, \<S>)`
-  note safe_reach = `safe_reach_direct safe_delayed (ts, m, \<S>)`
-  note valid_own = `valid_ownership \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b`
-  note valid_reads = `valid_reads m\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b`
-  note valid_hist = `valid_history program_step ts\<^sub>s\<^sub>b`
-  note valid_sharing = `valid_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b`
-  note tmps_distinct = `tmps_distinct ts\<^sub>s\<^sub>b`
-  note valid_sops = `valid_sops ts\<^sub>s\<^sub>b`
-  note valid_dd = `valid_data_dependency ts\<^sub>s\<^sub>b`
-  note load_tmps_fresh = `load_tmps_fresh ts\<^sub>s\<^sub>b`
-  note enough_flushs = `enough_flushs ts\<^sub>s\<^sub>b`
-  note valid_prog_hist = `valid_program_history ts\<^sub>s\<^sub>b`
-  note valid = `valid ts\<^sub>s\<^sub>b`
+  note first = \<open>(ts\<^sub>s\<^sub>b, m\<^sub>s\<^sub>b, \<S>\<^sub>s\<^sub>b) \<Rightarrow>\<^sub>s\<^sub>b\<^sub>h (ts\<^sub>s\<^sub>b'', m\<^sub>s\<^sub>b'', \<S>\<^sub>s\<^sub>b'')\<close>
+  note sim = \<open>(ts\<^sub>s\<^sub>b, m\<^sub>s\<^sub>b, \<S>\<^sub>s\<^sub>b) \<sim> (ts, m, \<S>)\<close>
+  note safe_reach = \<open>safe_reach_direct safe_delayed (ts, m, \<S>)\<close>
+  note valid_own = \<open>valid_ownership \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close>
+  note valid_reads = \<open>valid_reads m\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close>
+  note valid_hist = \<open>valid_history program_step ts\<^sub>s\<^sub>b\<close>
+  note valid_sharing = \<open>valid_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close>
+  note tmps_distinct = \<open>tmps_distinct ts\<^sub>s\<^sub>b\<close>
+  note valid_sops = \<open>valid_sops ts\<^sub>s\<^sub>b\<close>
+  note valid_dd = \<open>valid_data_dependency ts\<^sub>s\<^sub>b\<close>
+  note load_tmps_fresh = \<open>load_tmps_fresh ts\<^sub>s\<^sub>b\<close>
+  note enough_flushs = \<open>enough_flushs ts\<^sub>s\<^sub>b\<close>
+  note valid_prog_hist = \<open>valid_program_history ts\<^sub>s\<^sub>b\<close>
+  note valid = \<open>valid ts\<^sub>s\<^sub>b\<close>
   from concurrent_direct_steps_simulates_store_buffer_history_step [OF first
   valid_own valid_reads valid_hist valid_sharing tmps_distinct valid_sops valid_dd
   load_tmps_fresh enough_flushs valid_prog_hist valid sim safe_reach]
@@ -14837,11 +14837,11 @@ proof -
   from local.ini.enough_flushs_axioms have "enough_flushs ts\<^sub>s\<^sub>b".
   from local.ini.valid_program_history_axioms have "valid_program_history ts\<^sub>s\<^sub>b".
   from concurrent_direct_steps_simulates_store_buffer_history_steps [OF exec_sb 
-    `valid_ownership \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b`
-    `valid_reads m\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` `valid_history program_step ts\<^sub>s\<^sub>b`
-    `valid_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b` `tmps_distinct ts\<^sub>s\<^sub>b` `valid_sops ts\<^sub>s\<^sub>b`
-    `valid_data_dependency ts\<^sub>s\<^sub>b` `load_tmps_fresh ts\<^sub>s\<^sub>b` `enough_flushs ts\<^sub>s\<^sub>b`
-   `valid_program_history ts\<^sub>s\<^sub>b` valid sim safe_delayed]
+    \<open>valid_ownership \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close>
+    \<open>valid_reads m\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> \<open>valid_history program_step ts\<^sub>s\<^sub>b\<close>
+    \<open>valid_sharing \<S>\<^sub>s\<^sub>b ts\<^sub>s\<^sub>b\<close> \<open>tmps_distinct ts\<^sub>s\<^sub>b\<close> \<open>valid_sops ts\<^sub>s\<^sub>b\<close>
+    \<open>valid_data_dependency ts\<^sub>s\<^sub>b\<close> \<open>load_tmps_fresh ts\<^sub>s\<^sub>b\<close> \<open>enough_flushs ts\<^sub>s\<^sub>b\<close>
+   \<open>valid_program_history ts\<^sub>s\<^sub>b\<close> valid sim safe_delayed]
   show ?thesis by auto
 qed
 
@@ -14856,7 +14856,7 @@ proof (induct xs)
   case Nil thus ?case by simp
 next
   case (Cons x xs)
-  note feq = `filter is_Write\<^sub>s\<^sub>b (x#xs) = Write\<^sub>s\<^sub>b volatile a sop v A L R W# ys`
+  note feq = \<open>filter is_Write\<^sub>s\<^sub>b (x#xs) = Write\<^sub>s\<^sub>b volatile a sop v A L R W# ys\<close>
   show ?case
   proof (cases x)
     case (Write\<^sub>s\<^sub>b volatile' a' sop' v' A' L' R' W')
@@ -14923,7 +14923,7 @@ proof (induct xs)
   case Nil thus ?case by simp
 next
   case (Cons x xs)
-  note feq = `filter is_Write\<^sub>s\<^sub>b (x#xs) = []`
+  note feq = \<open>filter is_Write\<^sub>s\<^sub>b (x#xs) = []\<close>
   show ?case
   proof (cases x)
     case (Write\<^sub>s\<^sub>b volatile' a' v')
@@ -14967,7 +14967,7 @@ proof (induct sb)
   case Nil thus ?case by auto
 next
   case (Cons x sb)
-  note `\<forall>r\<in>set (x # sb). is_Read\<^sub>s\<^sub>b r \<or> is_Prog\<^sub>s\<^sub>b r \<or> is_Ghost\<^sub>s\<^sub>b r`
+  note \<open>\<forall>r\<in>set (x # sb). is_Read\<^sub>s\<^sub>b r \<or> is_Prog\<^sub>s\<^sub>b r \<or> is_Ghost\<^sub>s\<^sub>b r\<close>
   then obtain  x: "is_Read\<^sub>s\<^sub>b x \<or> is_Prog\<^sub>s\<^sub>b x \<or> is_Ghost\<^sub>s\<^sub>b x" and sb: "\<forall>r\<in>set sb. is_Read\<^sub>s\<^sub>b r \<or> is_Prog\<^sub>s\<^sub>b r \<or> is_Ghost\<^sub>s\<^sub>b r"
     by (cases x) auto
 
@@ -15060,8 +15060,8 @@ proof (induct rule: converse_rtranclp_induct5)
   case refl thus ?case by auto
 next
   case (step m sb \<O> \<R> \<S> m'' sb'' \<O>'' \<R>'' \<S>'')
-  note first=  `(m,sb,\<O>,\<R>,\<S>) \<rightarrow>\<^sub>f (m'',sb'',\<O>'',\<R>'',\<S>'')`
-  note rest = `(m'', sb'',\<O>'',\<R>'',\<S>'') \<rightarrow>\<^sub>f\<^sup>* (m', sb',\<O>',\<R>',\<S>')`
+  note first=  \<open>(m,sb,\<O>,\<R>,\<S>) \<rightarrow>\<^sub>f (m'',sb'',\<O>'',\<R>'',\<S>'')\<close>
+  note rest = \<open>(m'', sb'',\<O>'',\<R>'',\<S>'') \<rightarrow>\<^sub>f\<^sup>* (m', sb',\<O>',\<R>',\<S>')\<close>
   from step.hyps (3)  have append_rest: "(m'', sb''@xs,\<O>'',\<R>'',\<S>'') \<rightarrow>\<^sub>f\<^sup>* (m', sb'@xs,\<O>',\<R>',\<S>')".
   from first show ?case
   proof (cases)
@@ -15201,7 +15201,7 @@ theorem flush_simulates_filter_writes:
 using step
 proof (induct rule: store_buffer_step_induct)
   case (SBWrite\<^sub>s\<^sub>b m volatile a D f v A L R W sb \<O> \<R> \<S>)
-  note filter_Write\<^sub>s\<^sub>b = `Write\<^sub>s\<^sub>b volatile a (D,f) v A L R W# sb = filter is_Write\<^sub>s\<^sub>b sb\<^sub>h`
+  note filter_Write\<^sub>s\<^sub>b = \<open>Write\<^sub>s\<^sub>b volatile a (D,f) v A L R W# sb = filter is_Write\<^sub>s\<^sub>b sb\<^sub>h\<close>
   
   from filter_is_Write\<^sub>s\<^sub>b_Cons_Write\<^sub>s\<^sub>b [OF filter_Write\<^sub>s\<^sub>b [symmetric]]
   obtain rs rws where
@@ -15253,7 +15253,7 @@ lemma outstanding_refs_is_volatile_Write\<^sub>s\<^sub>b_filter_writes:
    outstanding_refs is_volatile_Write\<^sub>s\<^sub>b xs"
   by (induct xs) (auto simp add: is_volatile_Write\<^sub>s\<^sub>b_def split: memref.splits)
 
-subsection {* Simulation of Store Buffer Machine without History by Store Buffer Machine with History *}
+subsection \<open>Simulation of Store Buffer Machine without History by Store Buffer Machine with History\<close>
 
 theorem (in valid_program) concurrent_history_steps_simulates_store_buffer_step:
   assumes step_sb: "(ts,m,\<S>) \<Rightarrow>\<^sub>s\<^sub>b (ts',m',\<S>')"
@@ -16349,7 +16349,7 @@ proof -
     by auto
 qed
 
-subsection {* Plug Together the Two Simulations *}
+subsection \<open>Plug Together the Two Simulations\<close>
 
 corollary (in xvalid_program) concurrent_direct_steps_simulates_store_buffer_step:
   assumes step_sb: "(ts\<^sub>s\<^sub>b,m\<^sub>s\<^sub>b,\<S>\<^sub>s\<^sub>b) \<Rightarrow>\<^sub>s\<^sub>b (ts\<^sub>s\<^sub>b',m\<^sub>s\<^sub>b',\<S>\<^sub>s\<^sub>b')"

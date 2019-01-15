@@ -810,7 +810,7 @@ The thread updates his lb: lb(a:=t);
 (\1,\2,\3,\4,\5,\6,\8)
 *)
 
-subsection {* Memory Instructions*}
+subsection \<open>Memory Instructions\<close>
 
 type_synonym addr = nat 
 type_synonym val = nat
@@ -873,7 +873,7 @@ lemma list_update_id': "v = xs ! i \<Longrightarrow> xs[i := v] = xs"
 lemmas converse_rtranclp_induct5 = 
 converse_rtranclp_induct [where a="(m,sb,\<O>,\<R>,\<S>)" and b="(m',sb',\<O>',\<R>',\<S>')", split_rule,consumes 1, case_names refl step]
 
-subsection {* Abstract Program Semantics *}
+subsection \<open>Abstract Program Semantics\<close>
 
 locale memory_system = 
   fixes
@@ -939,9 +939,9 @@ proof (induct rule: converse_rtranclp_induct5)
     by (simp add: list_update_id')
 next
   case (step m sb \<O> \<R> \<S> m'' sb'' \<O>'' \<R>'' \<S>'')
-  note i_bound = `i < length ts`
-  note ts_i = `ts ! i = (p, is, \<theta>, sb, \<D>, \<O>, \<R>)`
-  note step = `(m, sb,\<O>,\<R>,\<S>) \<rightarrow>\<^sub>s\<^sub>b (m'', sb'',\<O>'',\<R>'',\<S>'')`
+  note i_bound = \<open>i < length ts\<close>
+  note ts_i = \<open>ts ! i = (p, is, \<theta>, sb, \<D>, \<O>, \<R>)\<close>
+  note step = \<open>(m, sb,\<O>,\<R>,\<S>) \<rightarrow>\<^sub>s\<^sub>b (m'', sb'',\<O>'',\<R>'',\<S>'')\<close>
   let ?ts' = "ts[i := (p, is, \<theta>, sb'',\<D>, \<O>'',\<R>'')]"
   from StoreBuffer [OF i_bound ts_i step] 
   have "(ts, m, \<S>) \<Rightarrow> (?ts', m'', \<S>'')".
@@ -1081,7 +1081,7 @@ where
 
 declare domIff [iff del]
 
-subsection {* Memory Transitions *}
+subsection \<open>Memory Transitions\<close>
 
 locale gen_direct_memop_step = 
 fixes emp::'rels and aug::"owns \<Rightarrow> rel \<Rightarrow> 'rels \<Rightarrow> 'rels"
@@ -1170,7 +1170,7 @@ apply (cases)
 apply (auto intro: virtual_memop_step.gen_direct_memop_step.intros)
 done
 
-subsection {* Safe Configurations of Virtual Machines *}
+subsection \<open>Safe Configurations of Virtual Machines\<close>
 
 inductive safe_direct_memop_state :: "owns list \<Rightarrow> nat \<Rightarrow>  
                   (instrs \<times> tmps \<times> memory \<times> bool \<times> owns \<times> shared) \<Rightarrow> bool " 
@@ -1723,9 +1723,9 @@ qed
 
 locale program_progress = program +
 assumes progress: "\<theta>\<turnstile> p \<rightarrow>\<^sub>p (p',is') \<Longrightarrow> p' \<noteq> p \<or> is' \<noteq> []"
-text {* The assumption `progress' could be avoided if we introduce stuttering steps in lemma @{text "undo_local_step"}
+text \<open>The assumption `progress' could be avoided if we introduce stuttering steps in lemma @{text "undo_local_step"}
 or make the scheduling of threads explicit, such that we can directly express that `thread i does not make a step'.
-*}
+\<close>
 
 lemma (in program_progress) undo_local_step:
 assumes step: "(ts,m,\<S>) \<Rightarrow>\<^sub>d (ts',m',\<S>')"
@@ -5871,7 +5871,7 @@ next
       with Cons Write\<^sub>s\<^sub>b show ?thesis by auto
     next
       case True
-      note `read_only \<S> \<subseteq> read_only \<S>'`
+      note \<open>read_only \<S> \<subseteq> read_only \<S>'\<close>
       from augment_read_only_mono [OF this]
       have "read_only (\<S> \<oplus>\<^bsub>W\<^esub> R) \<subseteq> read_only (\<S>' \<oplus>\<^bsub>W\<^esub> R)".
       from restrict_read_only_mono [OF this, of A L]
@@ -5888,7 +5888,7 @@ next
       by auto
   next
     case (Ghost\<^sub>s\<^sub>b A L R W)
-    note `read_only \<S> \<subseteq> read_only \<S>'`
+    note \<open>read_only \<S> \<subseteq> read_only \<S>'\<close>
     from augment_read_only_mono [OF this]
     have "read_only (\<S> \<oplus>\<^bsub>W\<^esub> R) \<subseteq> read_only (\<S>' \<oplus>\<^bsub>W\<^esub> R)".
     from restrict_read_only_mono [OF this, of A L]
@@ -7706,13 +7706,13 @@ assumes valid_store_sops:
 
 locale valid_sops = valid_write_sops + valid_store_sops
 
-text {* The value stored in a non-volatile @{const "Read\<^sub>s\<^sub>b"} in the store-buffer has to match the
+text \<open>The value stored in a non-volatile @{const "Read\<^sub>s\<^sub>b"} in the store-buffer has to match the
  last value written to the same address in the store buffer 
  or the memory content if there is no corresponding write in the store buffer.
  No volatile read may follow a volatile write.
  Volatile reads in the store buffer may refer to a stale value:
   e.g. imagine one writer and multiple readers
-*}
+\<close>
 
 (* Read\<^sub>s\<^sub>b-only reads in the takeWhile part of the store buffer may become stale*)
 (* FIXME: The flushing stuff: outstanding_refs is_volatile_Read\<^sub>s\<^sub>b rs = {} \<and> acquired_reads True rs (A - R) = {}
@@ -7820,9 +7820,9 @@ proof (induct sb arbitrary: m' m pending_write \<O>)
   case Nil thus ?case by simp
 next
   case (Cons r sb)
-  note mem_eq = `\<forall>a \<in> A. m' a = m a`
-  note subset = `outstanding_refs (is_non_volatile_Read\<^sub>s\<^sub>b) (r#sb) \<subseteq> A`
-  note consis_m = `reads_consistent pending_write \<O> m (r#sb)`
+  note mem_eq = \<open>\<forall>a \<in> A. m' a = m a\<close>
+  note subset = \<open>outstanding_refs (is_non_volatile_Read\<^sub>s\<^sub>b) (r#sb) \<subseteq> A\<close>
+  note consis_m = \<open>reads_consistent pending_write \<O> m (r#sb)\<close>
 
   from subset have subset': "outstanding_refs is_non_volatile_Read\<^sub>s\<^sub>b sb \<subseteq> A"
     by (auto simp add: Write\<^sub>s\<^sub>b)
@@ -7903,9 +7903,9 @@ proof (induct sb arbitrary: m' m)
   case Nil thus ?case by simp
 next
   case (Cons r sb)
-  note mem_eq = `\<forall>a \<in> A. m' a = m a`
-  note subset = `outstanding_refs (is_volatile_Read\<^sub>s\<^sub>b) (r#sb) \<subseteq> A`
-  note consis_m = `volatile_reads_consistent m (r#sb)`
+  note mem_eq = \<open>\<forall>a \<in> A. m' a = m a\<close>
+  note subset = \<open>outstanding_refs (is_volatile_Read\<^sub>s\<^sub>b) (r#sb) \<subseteq> A\<close>
+  note consis_m = \<open>volatile_reads_consistent m (r#sb)\<close>
 
   from subset have subset': "outstanding_refs is_volatile_Read\<^sub>s\<^sub>b sb \<subseteq> A"
     by (auto simp add: Write\<^sub>s\<^sub>b)
@@ -7988,8 +7988,8 @@ done
 
 
 
-text {* @{text "Read\<^sub>s\<^sub>bs"} and writes have in the store-buffer have to conform to the 
-  valuation of temporaries.*}
+text \<open>@{text "Read\<^sub>s\<^sub>bs"} and writes have in the store-buffer have to conform to the 
+  valuation of temporaries.\<close>
 context program
 begin
 fun history_consistent:: "tmps \<Rightarrow> 'p \<Rightarrow> 'p store_buffer \<Rightarrow> bool"
@@ -8366,9 +8366,9 @@ proof (induct ts)
   case Nil thus ?case by simp
 next
   case (Cons t ts)
-  note i_bound = `i < length (t # ts)`
-  note ith = `(t # ts) ! i = (p,is,xs, sb, \<D>, \<O>,\<R>)`
-  note dist = `ownership_distinct (t#ts)`
+  note i_bound = \<open>i < length (t # ts)\<close>
+  note ith = \<open>(t # ts) ! i = (p,is,xs, sb, \<D>, \<O>,\<R>)\<close>
+  note dist = \<open>ownership_distinct (t#ts)\<close>
   then interpret ownership_distinct "t#ts".
   from dist
   have dist': "ownership_distinct ts"
@@ -8448,8 +8448,8 @@ proof (induct ts)
   case Nil thus ?case by simp
 next
   case (Cons t ts)
-  note i_bound = `i < length (t # ts)`
-  note ith = `(t # ts) ! i = (p,is, xs, sb, \<D>, \<O>, \<R>)`
+  note i_bound = \<open>i < length (t # ts)\<close>
+  note ith = \<open>(t # ts) ! i = (p,is, xs, sb, \<D>, \<O>, \<R>)\<close>
   show ?case
   proof (cases i)
     case 0
@@ -8482,9 +8482,9 @@ proof (induct ts)
   case Nil thus ?case by simp
 next
   case (Cons t ts)
-  note i_bound = `i < length (t # ts)`
-  note ith = `(t # ts) ! i = (p,is, xs, sb,\<D>, \<O>,\<R>)`
-  note dist = `ownership_distinct (t#ts)`
+  note i_bound = \<open>i < length (t # ts)\<close>
+  note ith = \<open>(t # ts) ! i = (p,is, xs, sb,\<D>, \<O>,\<R>)\<close>
+  note dist = \<open>ownership_distinct (t#ts)\<close>
   then interpret ownership_distinct "t#ts".
   from dist
   have dist': "ownership_distinct ts"
@@ -8735,8 +8735,8 @@ proof (induct ls)
     by simp
 next
   case (Cons l ls)
-  note i_bound =  `i < length (l#ls)`
-  note ith = `(l#ls)!i = (p,Read volatile a t#is,\<theta>,sb,\<D>,\<O>,\<R>)`
+  note i_bound =  \<open>i < length (l#ls)\<close>
+  note ith = \<open>(l#ls)!i = (p,Read volatile a t#is,\<theta>,sb,\<D>,\<O>,\<R>)\<close>
   show ?case
   proof (cases i)
     case 0
@@ -8773,8 +8773,8 @@ proof (induct ts)
     by simp
 next
   case (Cons l ts)
-  note i_bound =  `i < length (l#ts)`
-  note ith = `(l#ts)!i = (p,is,\<theta>,sb,\<D>,\<O>,\<R>)`
+  note i_bound =  \<open>i < length (l#ts)\<close>
+  note ith = \<open>(l#ts)!i = (p,is,\<theta>,sb,\<D>,\<O>,\<R>)\<close>
   show ?case
   proof (cases i)
     case 0
@@ -8876,7 +8876,7 @@ proof (induct sb)
   case Nil thus ?case by simp
 next
   case (Cons r sb)
-  note a_notin = `a \<notin> outstanding_refs is_Write\<^sub>s\<^sub>b (r#sb)`
+  note a_notin = \<open>a \<notin> outstanding_refs is_Write\<^sub>s\<^sub>b (r#sb)\<close>
   show ?case
   proof (cases r)
     case (Write\<^sub>s\<^sub>b volatile a' sop v)
@@ -8946,8 +8946,8 @@ next
   case (Cons l ls)
   obtain p "is" \<O> \<R> \<D> xs sb where l: "l=(p,is,xs,sb,\<D>,\<O>,\<R>)"
     by (cases l)
-  note `a \<notin> \<Union> ((\<lambda>(_,_,_,sb,_,_,_). outstanding_refs is_Write\<^sub>s\<^sub>b 
-                            (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb)) \` set (l#ls))`
+  note \<open>a \<notin> \<Union> ((\<lambda>(_,_,_,sb,_,_,_). outstanding_refs is_Write\<^sub>s\<^sub>b 
+                            (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb)) ` set (l#ls))\<close>
   then obtain
     a_notin_sb: "a \<notin> outstanding_refs is_Write\<^sub>s\<^sub>b 
                             (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb)" and
@@ -9024,8 +9024,8 @@ next
   case (Cons l ls)
   obtain p "is" \<O> \<R> \<D> xs sb where l: "l=(p,is,xs,sb,\<D>,\<O>,\<R>)"
     by (cases l)
-  note a_in = `a \<in> \<Union> ((\<lambda>(_,_,_,sb,_,_,_). outstanding_refs is_Write\<^sub>s\<^sub>b 
-                     (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb)) \` set (l#ls))`
+  note a_in = \<open>a \<in> \<Union> ((\<lambda>(_,_,_,sb,_,_,_). outstanding_refs is_Write\<^sub>s\<^sub>b 
+                     (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb)) ` set (l#ls))\<close>
   show ?case 
   proof (cases "a \<in> \<Union> ((\<lambda>(_,_,_,sb,_,_,_). outstanding_refs is_Write\<^sub>s\<^sub>b 
                      (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb)) ` set ls)") 
@@ -9061,11 +9061,11 @@ proof (induct ls)
     by simp
 next
   case (Cons l ls)
-  note i_bound =  `i < length (l#ls)`
-  note ith = `(l#ls)!i = (p,is,xs,sb,\<D>,\<O>,\<R>)`
-  note notin = `\<forall>j < length (l#ls). i \<noteq> j \<longrightarrow>
+  note i_bound =  \<open>i < length (l#ls)\<close>
+  note ith = \<open>(l#ls)!i = (p,is,xs,sb,\<D>,\<O>,\<R>)\<close>
+  note notin = \<open>\<forall>j < length (l#ls). i \<noteq> j \<longrightarrow>
                 (let (_,_,_,sb\<^sub>j,_,_,_) = (l#ls)!j 
-                 in a \<notin> outstanding_refs is_non_volatile_Write\<^sub>s\<^sub>b (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb\<^sub>j))`
+                 in a \<notin> outstanding_refs is_non_volatile_Write\<^sub>s\<^sub>b (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb\<^sub>j))\<close>
   show ?case
   proof (cases i)
     case 0
@@ -9243,9 +9243,9 @@ proof (induct ts)
     by simp
 next
   case (Cons t ts)
-  note notin = `\<forall>j < length (t#ts). 
+  note notin = \<open>\<forall>j < length (t#ts). 
                 (let (_,_,_,sb\<^sub>j,_,_,_) = (t#ts)!j 
-                 in a \<notin> outstanding_refs is_non_volatile_Write\<^sub>s\<^sub>b (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb\<^sub>j))`
+                 in a \<notin> outstanding_refs is_non_volatile_Write\<^sub>s\<^sub>b (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb\<^sub>j))\<close>
   hence notin': "\<forall>j < length ts. 
                 (let (_,_,_,sb\<^sub>j,_,_,_) = ts!j 
                  in a \<notin> outstanding_refs is_non_volatile_Write\<^sub>s\<^sub>b (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb\<^sub>j))"
@@ -9284,11 +9284,11 @@ proof (induct ts)
     by simp
 next
   case (Cons t ts)
-  note i_bound =  `i < length (t#ts)`
-  note ith = `(t#ts)!i = (p,is,xs,sb,\<D>,\<O>,\<R>)`
-  note notin = `\<forall>j < length (t#ts). i \<noteq> j \<longrightarrow>
+  note i_bound =  \<open>i < length (t#ts)\<close>
+  note ith = \<open>(t#ts)!i = (p,is,xs,sb,\<D>,\<O>,\<R>)\<close>
+  note notin = \<open>\<forall>j < length (t#ts). i \<noteq> j \<longrightarrow>
                 (let (_,_,_,sb\<^sub>j,_,_,_) = (t#ts)!j 
-                 in a \<notin> outstanding_refs is_non_volatile_Write\<^sub>s\<^sub>b (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb\<^sub>j))`
+                 in a \<notin> outstanding_refs is_non_volatile_Write\<^sub>s\<^sub>b (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb\<^sub>j))\<close>
   show ?case
   proof (cases i)
     case 0
@@ -9342,8 +9342,8 @@ proof (induct ts)
     by simp
 next
   case (Cons l ts)
-  note i_bound =  `i < length (l#ts)`
-  note ith = `(l#ts)!i = (p,is,xs,sb,\<D>,\<O>,\<R>)`
+  note i_bound =  \<open>i < length (l#ts)\<close>
+  note ith = \<open>(l#ts)!i = (p,is,xs,sb,\<D>,\<O>,\<R>)\<close>
   show ?case
   proof (cases i)
     case 0
@@ -9380,8 +9380,8 @@ proof (induct ts)
     by simp
 next
   case (Cons l ts)
-  note i_bound =  `i < length (l#ts)`
-  note ith = `(l#ts)!i = (p,is,\<theta>,sb,\<D>,\<O>,\<R>)`
+  note i_bound =  \<open>i < length (l#ts)\<close>
+  note ith = \<open>(l#ts)!i = (p,is,\<theta>,sb,\<D>,\<O>,\<R>)\<close>
   show ?case
   proof (cases i)
     case 0
@@ -9411,8 +9411,8 @@ proof (induct ts)
     by simp
 next
   case (Cons l ts)
-  note i_bound =  `i < length (l#ts)`
-  note ith = `(l#ts)!i = (p,is,\<theta>,sb,\<D>,\<O>,\<R>)`
+  note i_bound =  \<open>i < length (l#ts)\<close>
+  note ith = \<open>(l#ts)!i = (p,is,\<theta>,sb,\<D>,\<O>,\<R>)\<close>
   show ?case
   proof (cases i)
     case 0
@@ -9477,9 +9477,9 @@ proof (induct xs)
     by auto
 next
   case (Cons x xs)
-  note valid_sops = `\<forall>sop\<in>write_sops (x # xs). valid_sop sop`
-  note read_tmps_dist = `read_tmps (x#xs) \<inter> read_tmps ys = {}`
-  note consis = `history_consistent \<theta> p ((x#xs)@ys)`
+  note valid_sops = \<open>\<forall>sop\<in>write_sops (x # xs). valid_sop sop\<close>
+  note read_tmps_dist = \<open>read_tmps (x#xs) \<inter> read_tmps ys = {}\<close>
+  note consis = \<open>history_consistent \<theta> p ((x#xs)@ys)\<close>
   show ?case
   proof (cases x)
     case (Write\<^sub>s\<^sub>b volatile a sop v)
@@ -9587,11 +9587,11 @@ proof (induct xs)
   case Nil thus ?case by simp
 next
   case (Cons x xs)
-  note valid_sops = `\<forall>sop\<in>write_sops (x # xs). valid_sop sop`
-  note consis_xs = `history_consistent (\<theta> |\` (dom \<theta> - read_tmps ys)) p (x # xs)`
-  note consis_ys = `history_consistent \<theta> (last_prog p (x # xs)) ys`
-  note dist = `read_tmps ys \<inter> \<Union>(fst \` write_sops (x # xs)) = {}`
-  note valid_p = `valid_prog p`
+  note valid_sops = \<open>\<forall>sop\<in>write_sops (x # xs). valid_sop sop\<close>
+  note consis_xs = \<open>history_consistent (\<theta> |` (dom \<theta> - read_tmps ys)) p (x # xs)\<close>
+  note consis_ys = \<open>history_consistent \<theta> (last_prog p (x # xs)) ys\<close>
+  note dist = \<open>read_tmps ys \<inter> \<Union>(fst ` write_sops (x # xs)) = {}\<close>
+  note valid_p = \<open>valid_prog p\<close>
   show ?case
   proof (cases x)
     case (Write\<^sub>s\<^sub>b volatile a sop v)
@@ -9962,16 +9962,16 @@ proof (induct ts)
     by simp
 next
   case (Cons l ts)
-  note i_bound =  `i < length (l#ts)`
-  note ith = `(l#ts)!i = (p,is,xs,Write\<^sub>s\<^sub>b True a sop v A L R W#sb,\<D>,\<O>,\<R>)`
-  note disj = `\<forall>i < length (l#ts). (\<forall>j < length (l#ts). i \<noteq> j \<longrightarrow>
+  note i_bound =  \<open>i < length (l#ts)\<close>
+  note ith = \<open>(l#ts)!i = (p,is,xs,Write\<^sub>s\<^sub>b True a sop v A L R W#sb,\<D>,\<O>,\<R>)\<close>
+  note disj = \<open>\<forall>i < length (l#ts). (\<forall>j < length (l#ts). i \<noteq> j \<longrightarrow>
                   (let (_,_,_,sb\<^sub>i,_,_,_) = (l#ts)!i;
                       (_,_,_,sb\<^sub>j,_,_,_) = (l#ts)!j
                    in outstanding_refs is_Write\<^sub>s\<^sub>b sb\<^sub>i \<inter> 
-                      outstanding_refs is_Write\<^sub>s\<^sub>b (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb\<^sub>j) = {}))`
-  note a_notin = `\<forall>j < length (l#ts). i \<noteq> j \<longrightarrow>
+                      outstanding_refs is_Write\<^sub>s\<^sub>b (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb\<^sub>j) = {}))\<close>
+  note a_notin = \<open>\<forall>j < length (l#ts). i \<noteq> j \<longrightarrow>
                 (let (_,_,_,sb\<^sub>j,_,_,_) = (l#ts)!j 
-                 in a \<notin> outstanding_refs is_Write\<^sub>s\<^sub>b (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb\<^sub>j))`
+                 in a \<notin> outstanding_refs is_Write\<^sub>s\<^sub>b (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb\<^sub>j))\<close>
   show ?case
   proof (cases i)
     case 0
@@ -10241,16 +10241,16 @@ proof (induct ts)
     by simp
 next
   case (Cons l ts)
-  note i_bound =  `i < length (l#ts)`
-  note ith = `(l#ts)!i = (p,is,xs,Write\<^sub>s\<^sub>b False a sop v A L R W#sb,\<D>,\<O>,\<R>)`
-  note disj = `\<forall>i < length (l#ts). (\<forall>j < length (l#ts). i \<noteq> j \<longrightarrow>
+  note i_bound =  \<open>i < length (l#ts)\<close>
+  note ith = \<open>(l#ts)!i = (p,is,xs,Write\<^sub>s\<^sub>b False a sop v A L R W#sb,\<D>,\<O>,\<R>)\<close>
+  note disj = \<open>\<forall>i < length (l#ts). (\<forall>j < length (l#ts). i \<noteq> j \<longrightarrow>
                   (let (_,_,_,sb\<^sub>i,_,_,_) = (l#ts)!i;
                       (_,_,_,sb\<^sub>j,_,_,_) = (l#ts)!j
                    in outstanding_refs is_Write\<^sub>s\<^sub>b sb\<^sub>i \<inter> 
-                      outstanding_refs is_Write\<^sub>s\<^sub>b (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb\<^sub>j) = {}))`
-  note a_notin = `\<forall>j < length (l#ts). i \<noteq> j \<longrightarrow>
+                      outstanding_refs is_Write\<^sub>s\<^sub>b (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb\<^sub>j) = {}))\<close>
+  note a_notin = \<open>\<forall>j < length (l#ts). i \<noteq> j \<longrightarrow>
                 (let (_,_,_,sb\<^sub>j,_,_,_) = (l#ts)!j 
-    in a \<notin> outstanding_refs is_Write\<^sub>s\<^sub>b (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb\<^sub>j))`
+    in a \<notin> outstanding_refs is_Write\<^sub>s\<^sub>b (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) sb\<^sub>j))\<close>
   show ?case
   proof (cases i)
     case 0
@@ -10320,8 +10320,8 @@ proof (induct ts)
     by simp
 next
   case (Cons l ts)
-  note i_bound =  `i < length (l#ts)`
-  note ith = `(l#ts)!i = (p,is,\<theta>,Read\<^sub>s\<^sub>b volatile a t v#sb,\<D>,\<O>,\<R>)`
+  note i_bound =  \<open>i < length (l#ts)\<close>
+  note ith = \<open>(l#ts)!i = (p,is,\<theta>,Read\<^sub>s\<^sub>b volatile a t v#sb,\<D>,\<O>,\<R>)\<close>
   show ?case
   proof (cases i)
     case 0
@@ -10358,8 +10358,8 @@ proof (induct ts)
     by simp
 next
   case (Cons l ts)
-  note i_bound =  `i < length (l#ts)`
-  note ith = `(l#ts)!i = (p,is,\<theta>,Ghost\<^sub>s\<^sub>b A L R W#sb,\<D>,\<O>,\<R>)`
+  note i_bound =  \<open>i < length (l#ts)\<close>
+  note ith = \<open>(l#ts)!i = (p,is,\<theta>,Ghost\<^sub>s\<^sub>b A L R W#sb,\<D>,\<O>,\<R>)\<close>
   show ?case
   proof (cases i)
     case 0
@@ -10396,8 +10396,8 @@ proof (induct ts)
     by simp
 next
   case (Cons l ts)
-  note i_bound =  `i < length (l#ts)`
-  note ith = `(l#ts)!i = (p,is,\<theta>,Prog\<^sub>s\<^sub>b p\<^sub>1 p\<^sub>2 mis#sb,\<D>,\<O>,\<R>)`
+  note i_bound =  \<open>i < length (l#ts)\<close>
+  note ith = \<open>(l#ts)!i = (p,is,\<theta>,Prog\<^sub>s\<^sub>b p\<^sub>1 p\<^sub>2 mis#sb,\<D>,\<O>,\<R>)\<close>
   show ?case
   proof (cases i)
     case 0
@@ -10435,8 +10435,8 @@ proof (induct ts)
     by simp
 next
   case (Cons l ts)
-  note i_bound =  `i < length (l#ts)`
-  note ith = `(l#ts)!i = (p,is,\<theta>,sb,\<D>,\<O>,\<R>)`
+  note i_bound =  \<open>i < length (l#ts)\<close>
+  note ith = \<open>(l#ts)!i = (p,is,\<theta>,sb,\<D>,\<O>,\<R>)\<close>
   show ?case
   proof (cases i)
     case 0
@@ -10476,8 +10476,8 @@ proof (induct xs)
   case Nil with step show ?case by simp
 next
   case (Cons x xs)
-  note consis = `history_consistent \<theta> (hd_prog p (x # xs)) (x # xs)`
-  note last = `last_prog p (x#xs) = p`
+  note consis = \<open>history_consistent \<theta> (hd_prog p (x # xs)) (x # xs)\<close>
+  note last = \<open>last_prog p (x#xs) = p\<close>
   show ?case
   proof (cases x)
     case Write\<^sub>s\<^sub>b with Cons show ?thesis by (auto simp add: read_tmps_append)
@@ -10798,13 +10798,13 @@ case (Cons r sb)
   hence causal': "causal_program_history is\<^sub>s\<^sub>b (sb @ sb')" 
     by (auto simp add: causal_program_history_def)
 
-  note reads_consis = `reads_consistent True \<O>' m (r#sb)`
-  note p = `p = hd_prog p\<^sub>s\<^sub>b ((r#sb)@sb')`
-  note p\<^sub>s\<^sub>b = `last_prog p\<^sub>s\<^sub>b ((r # sb) @ sb') = p\<^sub>s\<^sub>b`
-  note hist_consis = `history_consistent \<theta> p ((r#sb)@sb')`
-  note valid_sops = `\<forall>sop \<in> write_sops (r#sb). valid_sop sop`
-  note dist = `distinct_read_tmps ((r#sb)@sb')`
-  note vol_read_consis = `volatile_reads_consistent m (r#sb)`
+  note reads_consis = \<open>reads_consistent True \<O>' m (r#sb)\<close>
+  note p = \<open>p = hd_prog p\<^sub>s\<^sub>b ((r#sb)@sb')\<close>
+  note p\<^sub>s\<^sub>b = \<open>last_prog p\<^sub>s\<^sub>b ((r # sb) @ sb') = p\<^sub>s\<^sub>b\<close>
+  note hist_consis = \<open>history_consistent \<theta> p ((r#sb)@sb')\<close>
+  note valid_sops = \<open>\<forall>sop \<in> write_sops (r#sb). valid_sop sop\<close>
+  note dist = \<open>distinct_read_tmps ((r#sb)@sb')\<close>
+  note vol_read_consis = \<open>volatile_reads_consistent m (r#sb)\<close>
 
   show ?case
   proof (cases r)
@@ -11266,11 +11266,11 @@ proof (induct xs)
   case Nil thus ?case by simp
 next
   case (Cons x xs)
-  note no_inter = `outstanding_refs (Not \<circ> is_volatile_Read\<^sub>s\<^sub>b) (x # xs) \<inter> 
-    outstanding_refs is_non_volatile_Write\<^sub>s\<^sub>b sb = {}`
+  note no_inter = \<open>outstanding_refs (Not \<circ> is_volatile_Read\<^sub>s\<^sub>b) (x # xs) \<inter> 
+    outstanding_refs is_non_volatile_Write\<^sub>s\<^sub>b sb = {}\<close>
   hence no_inter': "outstanding_refs (Not \<circ> is_volatile_Read\<^sub>s\<^sub>b) xs \<inter> outstanding_refs is_non_volatile_Write\<^sub>s\<^sub>b sb = {}"
     by (auto)
-  note consis = `reads_consistent pending_write \<O> m (x # xs)`
+  note consis = \<open>reads_consistent pending_write \<O> m (x # xs)\<close>
   show ?case
   proof (cases x)
     case (Write\<^sub>s\<^sub>b volatile a sop v A L R)
@@ -11428,12 +11428,12 @@ next
 
   note no_inter = Cons.prems (1)
 
-  note consis = `reads_consistent False \<O> m (x # xs)`
+  note consis = \<open>reads_consistent False \<O> m (x # xs)\<close>
   have aargh: "(Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) = (\<lambda>a. \<not> is_volatile_Write\<^sub>s\<^sub>b a)"
     by (rule ext) auto
 
 
-  note RO = `read_only_reads \<O> (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) (x#xs)) \<subseteq> RO`
+  note RO = \<open>read_only_reads \<O> (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) (x#xs)) \<subseteq> RO\<close>
 
 
   show ?case
@@ -11709,10 +11709,10 @@ proof (induct ts)
   case Nil thus ?case by simp
 next
   case (Cons t ts)
-  note i_bound = `i < length (t # ts)`
-  note ts_i = `(t # ts) ! i = (p, is,\<theta>, sb, \<D>, \<O>,\<R>)`
-  note consis = `reads_consistent pending_write \<O> m sb`
-  note valid = `valid_ownership_and_sharing \<S> (t#ts)`
+  note i_bound = \<open>i < length (t # ts)\<close>
+  note ts_i = \<open>(t # ts) ! i = (p, is,\<theta>, sb, \<D>, \<O>,\<R>)\<close>
+  note consis = \<open>reads_consistent pending_write \<O> m sb\<close>
+  note valid = \<open>valid_ownership_and_sharing \<S> (t#ts)\<close>
   then interpret valid_ownership_and_sharing \<S> "t#ts".
   from valid_ownership_and_sharing_tl [OF valid] have valid': "valid_ownership_and_sharing \<S> ts".
     
@@ -13109,8 +13109,8 @@ proof (induct ls)
     by simp
 next
   case (Cons l ls)
-  note i_bound =  `i < length (l#ls)`
-  note ith = `(l#ls)!i = (p,Read volatile a t#is,\<theta>,sb,\<D>,\<O>)`
+  note i_bound =  \<open>i < length (l#ls)\<close>
+  note ith = \<open>(l#ls)!i = (p,Read volatile a t#is,\<theta>,sb,\<D>,\<O>)\<close>
   show ?case
   proof (cases i)
     case 0
@@ -13150,8 +13150,8 @@ proof (induct ls)
     by simp
 next
   case (Cons l ls)
-  note i_bound =  `i < length (l#ls)`
-  note ith = `(l#ls)!i = (p,Write volatile a (D,f) A L R W#is,\<theta>,sb,\<D>,\<O>)`
+  note i_bound =  \<open>i < length (l#ls)\<close>
+  note ith = \<open>(l#ls)!i = (p,Write volatile a (D,f) A L R W#is,\<theta>,sb,\<D>,\<O>)\<close>
   show ?case
   proof (cases i)
     case 0
@@ -13190,8 +13190,8 @@ proof (induct ls)
     by simp
 next
   case (Cons l ls)
-  note i_bound =  `i < length (l#ls)`
-  note ith = `(l#ls)!i = (p,RMW a t (D,f) cond ret A L R W#is,\<theta>,[],\<D>,\<O>)`
+  note i_bound =  \<open>i < length (l#ls)\<close>
+  note ith = \<open>(l#ls)!i = (p,RMW a t (D,f) cond ret A L R W#is,\<theta>,[],\<D>,\<O>)\<close>
   show ?case
   proof (cases i)
     case 0
@@ -13230,8 +13230,8 @@ proof (induct ls)
     by simp
 next
   case (Cons l ls)
-  note i_bound =  `i < length (l#ls)`
-  note ith = `(l#ls)!i = (p,Fence#is,\<theta>,[],\<D>,\<O>,\<R>)`
+  note i_bound =  \<open>i < length (l#ls)\<close>
+  note ith = \<open>(l#ls)!i = (p,Fence#is,\<theta>,[],\<D>,\<O>,\<R>)\<close>
   show ?case
   proof (cases i)
     case 0
@@ -17402,10 +17402,10 @@ proof (induct ts)
   case Nil thus ?case by simp
 next
   case (Cons t ts)
-  note `read_only_unowned \<S> (t#ts)`
+  note \<open>read_only_unowned \<S> (t#ts)\<close>
   then interpret read_only_unowned \<S> "t#ts" .
-  note i_bound = `i < length (t # ts)`
-  note ith = `(t # ts) ! i = (p,is,\<theta>, sb, \<D>, \<O>,\<R>)`
+  note i_bound = \<open>i < length (t # ts)\<close>
+  note ith = \<open>(t # ts) ! i = (p,is,\<theta>, sb, \<D>, \<O>,\<R>)\<close>
 
   have dist: "ownership_distinct (t#ts)" by fact
   then interpret ownership_distinct "t#ts" .
@@ -17623,7 +17623,7 @@ proof -
     
     from local.weak_sharing_consis_axioms have "weak_sharing_consis ts" .
     from read_only_share_all_until_volatile_write_unacquired [OF dist ro_unowned 
-      `weak_sharing_consis ts` a_unacq a_ro]
+      \<open>weak_sharing_consis ts\<close> a_unacq a_ro]
     have a_ro_all: "a \<in> read_only (share_all_until_volatile_write ts \<S>)" .
 
     from weak_consis weak_sharing_consistent_append [of \<O> ?take_sb ?drop_sb]
@@ -17631,7 +17631,7 @@ proof -
       by auto
 
     from weak_sharing_consistent_preserves_distinct_share_all_until_volatile_write [OF dist 
-      ro_unowned `weak_sharing_consis ts` i_bound ts_i]
+      ro_unowned \<open>weak_sharing_consis ts\<close> i_bound ts_i]
     have "acquired True ?take_sb \<O> \<inter>
        read_only (share_all_until_volatile_write ts \<S>) = {}".
 
@@ -17792,9 +17792,9 @@ proof (induct sb arbitrary: A W m' m pending_write \<O>)
   case Nil thus ?case by simp
 next
   case (Cons r sb)
-  note mem_eq = `\<forall>a \<in> A \<union> W. m' a = m a`
-  note subset = `unforwarded_non_volatile_reads (r#sb) W \<subseteq> A`
-  note consis_m = `reads_consistent pending_write \<O> m (r#sb)`
+  note mem_eq = \<open>\<forall>a \<in> A \<union> W. m' a = m a\<close>
+  note subset = \<open>unforwarded_non_volatile_reads (r#sb) W \<subseteq> A\<close>
+  note consis_m = \<open>reads_consistent pending_write \<O> m (r#sb)\<close>
 
   show ?case
   proof (cases r)
@@ -17923,11 +17923,11 @@ proof (induct sb arbitrary: A W m' m \<O>)
   case Nil thus ?case by simp
 next
   case (Cons r sb)
-  note mem_eq = `\<forall>a \<in> A \<union> W. m' a = m a`
-  note subset = `unforwarded_non_volatile_reads 
-    (dropWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) (r#sb)) W \<subseteq> A`
-  note subset_acq = `acquired_reads True (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b)(r#sb)) \<O> \<subseteq> A`
-  note consis_m = `reads_consistent False \<O> m (r#sb)`
+  note mem_eq = \<open>\<forall>a \<in> A \<union> W. m' a = m a\<close>
+  note subset = \<open>unforwarded_non_volatile_reads 
+    (dropWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b) (r#sb)) W \<subseteq> A\<close>
+  note subset_acq = \<open>acquired_reads True (takeWhile (Not \<circ> is_volatile_Write\<^sub>s\<^sub>b)(r#sb)) \<O> \<subseteq> A\<close>
+  note consis_m = \<open>reads_consistent False \<O> m (r#sb)\<close>
 
   show ?case
   proof (cases r)

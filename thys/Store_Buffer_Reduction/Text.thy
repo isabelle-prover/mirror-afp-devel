@@ -3,9 +3,9 @@ theory Text
 imports Variants 
 begin
 (*>*)
-section {* Programming discipline \label{sec:discipline}*}
+section \<open>Programming discipline \label{sec:discipline}\<close>
 
-text {*
+text \<open>
 For sequential code on a single processor the store buffer is invisible, since reads respect outstanding writes in the buffer. 
 This argument can be extended to thread local memory in the context of a multiprocessor architecture. 
 Memory typically becomes temporarily thread local by means of locking. 
@@ -85,10 +85,10 @@ R, vW, W           & never                  \\
 \end{table}
 
 
-*}
-section {*Formalization \label{sec:formalization}*}
+\<close>
+section \<open>Formalization \label{sec:formalization}\<close>
 
-text {*
+text \<open>
 
 In this section we go into the details of our formalization. In our model, we distinguish the plain `memory system' from the 
 `programming language semantics' which we both describe as a small-step transition relation. 
@@ -166,11 +166,11 @@ Again the Boolean @{term "volatile"} specifies the kind of memory access.
 \item @{term "Ghost A L R W"} for ownership transfer.
 \end{itemize}
 
-*}
+\<close>
 
-subsection {* Store buffer machine \label{sec:storebuffermachine} *}
+subsection \<open>Store buffer machine \label{sec:storebuffermachine}\<close>
 
-text (in program) {*
+text (in program) \<open>
 For the store buffer machine the configuration of a single thread is a tuple @{term "(p, is, \<theta>, sb)"} consisting of the program state @{term "p"}, a memory instruction list @{term "is"}, the map of temporaries @{term "\<theta>"} and the store buffer @{term "sb"}. A global configuration of the store buffer machine @{term "(ts, m)"} consists of a list of thread configurations @{term "ts"} and the memory @{term "m"}, which is a function from addresses to values. 
 
 
@@ -237,9 +237,9 @@ The fence and the ghost instruction are just skipped.
 
 
 
-*}
-subsection {* Virtual machine \label{sec:virtualmachine} *}
-text (in program) {*
+\<close>
+subsection \<open>Virtual machine \label{sec:virtualmachine}\<close>
+text (in program) \<open>
 The virtual machine is a sequentially consistent machine without store buffers, maintaining additional ghost state to check for the programming discipline.
 A thread configuration is a tuple @{term "(p, is, \<theta>, (), \<D>, \<O>,())"}, with a dirty flag @{term "\<D>"} indicating whether there may be an outstanding volatile write in the store buffer and the set of owned addresses @{term "\<O>"}. 
 The dirty flag @{term "\<D>"} is considered to specify if a read is clean: for \emph{all} volatile reads the dirty flag must not be set.
@@ -317,11 +317,11 @@ The other effects on the ghost state and the safety sideconditions are the same 
 The only effect of the fence instruction in the system without store buffer is to reset the dirty flag.
 
 The ghost instruction @{term "Ghost A L R W"} allows to transfer ownership when no write is involved \ie when merely reading from memory. It has the same safety requirements as the corresponding parts in the write instructions. 
-*}
+\<close>
 
-subsection {* Reduction \label{sec:reduction}*}
+subsection \<open>Reduction \label{sec:reduction}\<close>
 
-text (in xvalid_program_progress) {*
+text (in xvalid_program_progress) \<open>
 The reduction theorem we aim at reduces a computation of a machine with store buffers to a sequential consistent computation of the virtual machine. We formulate this as a
  simulation theorem which states that a computation of the store buffer machine @{term "(ts\<^sub>s\<^sub>b,m,()) \<Rightarrow>\<^sub>s\<^sub>b\<^sup>* (ts\<^sub>s\<^sub>b',m',())"} can be simulated by a computation of the virtual machine @{term "(ts,m,\<S>) \<Rightarrow>\<^sub>v\<^sup>* (ts',m',\<S>')"}. 
 The main theorem only considers computations that start in an initial configuration where all store buffers are empty and end in a configuration where all store buffers are empty again. A configuration of the store buffer machine is obtained from a virtual configuration by removing all ghost components and assuming empty store buffers. This coupling relation between the thread configurations is written as @{term "ts\<^sub>s\<^sub>b \<sim>\<^sub>d ts"}. Moreover, the precondition  @{term "initial\<^sub>v ts \<S> valid"} ensures that the ghost state of the initial configuration of the virtual machine is properly initialized: the ownership sets of the threads are distinct, an address marked as read-only (according to @{term \<S>}) is unowned and every unowned address is shared. %TODO (ommit): and the instruction lists are empty. 
@@ -332,11 +332,11 @@ Finally with @{term [names_short] "safe_reach_virtual_free_flowing (ts,m,S)"} we
 \end{theorem}
 %
 This theorem captures our intiution that every result that can be obtained from a computation of the store buffer machine can also be obtained by a sequentially consistent computation. However, to prove it we need some generalizations that we sketch in the following sections. First of all the theorem is not inductive as we do not consider arbitrary intermediate configurations but only those where all store buffers are empty. For intermediate confiugrations the coupling relation becomes more involved. The major obstacle is that a volatile read (from memory) can overtake non-volatile writes that are still in the store-buffer and have not yet emerged to memory. Keep in mind that our programming discipline only ensures that no \emph{volatile} writes can be in the store buffer the moment we do a volatile read, outstanding non-volatile writes are allowed. This reordering of operations is reflected in the coupling relation for intermediate configurations as discussed in the following section.
-*}
+\<close>
 
-section {* Building blocks of the proof \label{sec:buildingblocks} *}
+section \<open>Building blocks of the proof \label{sec:buildingblocks}\<close>
 
-text (in program) {*
+text (in program) \<open>
 A corner stone of the proof is a proper coupling relation between an \emph{intermediate} configuration of a machine with store buffers and the virtual machine without store buffers. 
 It allows us to simulate every computation step of the store buffer machine by a sequence of steps (potentially empty) on the virtual machine. 
 This transformation is essentially a sequentialization of the trace of the store buffer machine. 
@@ -381,11 +381,11 @@ Note that the refined rules for delayed releases are just an intermediate step i
 They do not have to be considered for the final programming discipline. As sketched above we can show in a separate theorem that a safety violation in a trace with respect to delayed releases implies a safety violation of a (potenitally other) trace with respect to free flowing releases. Both notions of safety collaps in all configurations where there are no released addresses, like the initial state. So if all reachable configurations are safe with respect to free flowing releases they are also safe with respect to delayed releases. This allows us to use the stricter policy of delayed releases for the simulation proof.
 Before continuing with the coupling relation, we introduce the refined intermediate models for delayed releases and store buffers with history information. 
 
-*}
+\<close>
 
-subsection {* Intermediate models *}
+subsection \<open>Intermediate models\<close>
 
-text (in program) {*
+text (in program) \<open>
 We begin with the virtual machine with delayed releases, for which the memory transitions 
 @{term "(is,\<theta>,(),m,\<D>,\<O>,\<R>,\<S>) \<rightarrow> (is',\<theta>',(),m',\<D>',\<O>',\<R>',\<S>')"}
 are defined Figure \ref{fig:virtual-delayed-memory}.
@@ -473,11 +473,11 @@ takes effect when the instruction leaves the store buffer.
 \end{figure}
 %
 The global transitions @{term "(ts\<^sub>s\<^sub>b\<^sub>h, m, \<S>) \<Rightarrow>\<^sub>s\<^sub>b\<^sub>h (ts\<^sub>s\<^sub>b\<^sub>h',m',\<S>')"} are analogous to the rules in Figure \ref{fig:global-transitions} replacing the memory transtions and store buffer transtiontions accordingly.
-*}
+\<close>
 
-subsection {* Coupling relation \label{sec:couplingrelation} *}
+subsection \<open>Coupling relation \label{sec:couplingrelation}\<close>
 
-text (in program) {*
+text (in program) \<open>
 After this introduction of the immediate models we can proceed to the details of the coupling relation, which relates configurations of the store buffer machine with histroy and the virtual machine with delayed releases.
 Remember the basic idea of the coupling relation: the state of the virtual machine is obtained from the state of the store buffer machine, by executing each store buffer until we reach the first volatile write. The remaining store buffer entries are suspended as instructions. The instructions now also include the history entries for reads, program steps and ghost operations.
 The suspended reads are not yet visible in the temporaries of the virtual machine. 
@@ -604,11 +604,11 @@ The memory is obtained by executing all store buffers until the first volatile w
 Similarly the sharing map of the virtual machine is obtained by executing all store buffers until the first volatile write via the function @{const "share_all_until_volatile_write"}. For the local ownership set @{term "\<O>\<^sub>s\<^sub>b\<^sub>h"} the auxiliary function @{term "acquire"} calculates the outstanding effect of the already simulated parts of the store buffer. Analogously @{term "release"} calculates the effect for the released addresses @{term "\<R>\<^sub>s\<^sub>b\<^sub>h"}.
 
 
-*}
+\<close>
 
-subsection {* Simulation \label{sec:simulation} *}
+subsection \<open>Simulation \label{sec:simulation}\<close>
 
-text (in xvalid_program_progress) {*
+text (in xvalid_program_progress) \<open>
 Theorem \ref{thm:simulation} is our core inductive simulation theorem. 
 Provided that all reachable states of the virtual machine (with delayed releases) are safe, a step of the store buffer machine (with history) can be simulated by a (potentially empty) sequence of steps on the virtual machine, maintaining the coupling relation and an invariant on the configurations of the store buffer machine.
 %
@@ -921,9 +921,9 @@ Up to now we have focused on how to simulate the read and in particular on how t
 Last we want to comment on the case where the store buffer takes a step. The major case destinction is wheter a volatile write leaves the store buffer or not. In the former case the virtual machine has to simulate a whole bunch of instructions at once to simulate the store buffer machine up to the next volatile write in the store buffer. In the latter case the virtual machine does no step at all, since the instruction leaving the store buffer is already simulated. In both cases one key argument is commutativity of non-volatile operations with respect to global effects on the memory or the sharing map. Consider a non-volatile store buffer step of thread @{term i}. In the configuration of the virtual machine before the store buffer step of thread @{term i}, the simulation relation applies the update to the memory and the sharing map of the store buffer machine, within the operations @{term "flush_all_until_volatile_write"} and @{term "share_all_until_volatile_write"} `somewhere in the middle' to obtain the memory and the sharing map of the virtual machine. After the store buffer step however, when the non-volatile operations has left the store buffer, the effect is applied to the memory and the sharing map right in the beginning. The invariants and safety sideconditions for non-volatile operations guarantee `locality' of the operation which manifests in commutativity properties. For example, a non-volatile write is thread local. There is no conflicting write in any other store buffer and hence the write can be safely moved to the beginning.
 
 This conludes the discussion on the proof of Theorem~\ref{thm:simulation}.\qed
-*}
+\<close>
 
-text (in xvalid_program_progress) {*
+text (in xvalid_program_progress) \<open>
 \bigskip
 The simulation theorem for a single step is inductive and can therefor be extended to arbitrary long computations.
 Moreover, the coupling relation as well as the invariants become trivial for a initial configuration where all store buffers are empty and the ghost state is setup appropriately. To arrive at our final Theorem \ref{thm:reduction} we need the following steps:
@@ -954,10 +954,10 @@ Note that the delayed release point is not yet reached as this would empty the r
 Thus Thread @{term i} does only perform reads, ghost instructions, program steps or non-volatile writes.
 All of these instructions of Thread @{term i} either have no influence on the computation of Thread @{term j} at all (e.g. a read, program step, non-volatile write or irrelevant ghost operation) or may cause a safety violation already in a shorter computation (e.g. acquiring an address that another thread holds). This is fine for our inductive argument. So either we can replay every step of Thread @{term j} and reach 
 the final configuration @{term c'} which is now also unsafe according to free flowing releases, or we hit a configuration @{term c''} in a shorter computation which violates the rules of delayed as well as free flowing releases (using the induction hypothesis).
-*}
+\<close>
 
-section {* PIMP \label{sec:pimp} *}
-text {*
+section \<open>PIMP \label{sec:pimp}\<close>
+text \<open>
 PIMP is a parallel version of IMP\cite{Nipkow-FSTTCS-96}, a canonical WHILE-language. 
 
 
@@ -1057,7 +1057,7 @@ Let @{term "\<theta>"} be the valuation of temporaries in the current configurat
 For the PIMP transitions we prove these invariants by rule induction on the semantics.
 For the memory system (including the store buffer steps) the invariants are straightforward. 
 The memory system does not alter the program state and does not create new temporaries, only the PIMP transitions create new ones in strictly  ascending order. 
-*}
+\<close>
 
 
 
