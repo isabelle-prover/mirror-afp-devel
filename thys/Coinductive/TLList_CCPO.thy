@@ -222,12 +222,11 @@ by(rule ccpo.admissibleI)(simp)
 
 lemma terminal_tSup:
   "\<forall>xs\<in>Y. is_TNil xs \<Longrightarrow> terminal (tSup Y) = flat_lub b (terminal ` Y)"
-including tllist.lifting
-apply(transfer)
-apply(clarsimp simp add: split_def)
-apply(rule arg_cong[where f="flat_lub b"])
-apply(auto simp add: split_def)
-done
+  including tllist.lifting apply transfer
+  apply (auto simp add: split_def)
+  apply (rule arg_cong [where f = "flat_lub b"])
+  apply force
+  done
 
 lemma thd_tSup:
   "\<exists>xs \<in> Y. \<not> is_TNil xs

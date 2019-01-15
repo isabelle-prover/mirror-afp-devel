@@ -898,7 +898,7 @@ lemma Sup_assertion [simp]: "X \<subseteq> assertion \<Longrightarrow> Sup X \<i
       finally show "x * \<top> \<sqinter> \<Sqinter>(dual ` X) = x" .
       qed
       show "(\<lambda>y. y \<sqinter> \<Sqinter>(dual ` X)) ` (\<lambda>x . x * \<top>) ` X = X"
-        by (auto simp add: image_image) (metis (no_types, lifting) B imageI)
+        by (auto simp add: image_image cong: image_cong_simp)
     qed
 
 lemma Sup_range_assertion [simp]: "(!!w . p w \<in> assertion) \<Longrightarrow> Sup (range p) \<in> assertion"

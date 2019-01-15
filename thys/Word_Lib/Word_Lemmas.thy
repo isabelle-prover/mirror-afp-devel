@@ -2131,7 +2131,7 @@ lemma plus_Collect_helper:
 
 lemma plus_Collect_helper2:
   "(+) (- x) ` {xa. P (xa :: 'a :: len word)} = {xa. P (x + xa)}"
-  by (simp add: field_simps plus_Collect_helper)
+  using plus_Collect_helper [of "- x" P] by (simp add: ac_simps)
 
 lemma word_FF_is_mask:
   "0xFF = mask 8"
