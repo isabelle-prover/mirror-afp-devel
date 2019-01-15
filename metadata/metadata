@@ -7670,7 +7670,7 @@ abstract =
   consider store buffers at all.
 
 [IMP2]
-title = IMP2 --- Simple Program Verification in Isabelle/HOL
+title = IMP2 – Simple Program Verification in Isabelle/HOL
 author = Peter Lammich <http://www21.in.tum.de/~lammich>, Simon Wimmer <http://in.tum.de/~wimmers>
 topic = Computer Science/Programming Languages/Logics, Computer Science/Algorithms
 date = 2019-01-15
