@@ -285,7 +285,7 @@ proof (induction rule: dfree.induct)
   case (dfree_Var i)
   have free:"dfree (Var i)" by (rule dfree_Var)
   have bounded_linear:"bounded_linear (\<lambda> \<nu>'. \<nu>' \<bullet> axis i 1)"
-    by (auto simp add: bounded_linear_component_cart)
+    by (auto simp add: bounded_linear_vec_nth)
   have cont:"continuous_on UNIV (\<lambda>\<nu>. Blinfun(\<lambda> \<nu>'. \<nu>' \<bullet> axis i 1))"
     using continuous_on_const by blast
   have eq:"\<And>\<nu> \<nu>'. (\<lambda>\<nu>. Blinfun(\<lambda> \<nu>'. \<nu>' \<bullet> axis i 1)) \<nu> \<nu>' = (blin_frechet (good_interp I) (simple_term (Var i))) \<nu> \<nu>'"
