@@ -24,7 +24,7 @@ begin
     shows "pp ! k \<in> DBA.nodes (AA ! k)"
     using assms unfolding dbgail_def by induct auto
 
-  lemma dbgail_finite[intro]:
+  lemma dbgail_nodes_finite[intro]:
     assumes "list_all (finite \<circ> DBA.nodes) AA"
     shows "finite (DGBA.nodes (dbgail AA))"
   proof (rule finite_subset)
@@ -33,6 +33,21 @@ begin
     have "finite (listset (map DBA.nodes AA)) \<longleftrightarrow> list_all finite (map DBA.nodes AA)"
       by (rule listset_finite) (auto simp: list_all_iff)
     then show "finite (listset (map DBA.nodes AA))" using assms by (simp add: list.pred_map)
+  qed
+  lemma dbgail_nodes_card:
+    assumes "list_all (finite \<circ> DBA.nodes) AA"
+    shows "card (DGBA.nodes (dbgail AA)) \<le> prod_list (map (card \<circ> DBA.nodes) AA)"
+  proof -
+    have "card (DGBA.nodes (dbgail AA)) \<le> card (listset (map DBA.nodes AA))"
+    proof (rule card_mono)
+      have "finite (listset (map DBA.nodes AA)) \<longleftrightarrow> list_all finite (map DBA.nodes AA)"
+        by (rule listset_finite) (auto simp: list_all_iff)
+      then show "finite (listset (map DBA.nodes AA))" using assms by (simp add: list.pred_map)
+      show "DGBA.nodes (dbgail AA) \<subseteq> listset (map DBA.nodes AA)"
+        by (force simp: listset_member list_all2_conv_all_nth dbgail_nodes_length)
+    qed
+    also have "\<dots> = prod_list (map (card \<circ> DBA.nodes) AA)" by simp
+    finally show ?thesis by this
   qed
 
   lemma dbgail_language[simp]: "DGBA.language (dbgail AA) = INTER (set AA) DBA.language"
@@ -88,10 +103,23 @@ begin
   definition dbail :: "('label, 'state) dba list \<Rightarrow> ('label, 'state list degen) dba" where
     "dbail = degen \<circ> dbgail"
 
-  lemma dbail_finite[intro]:
+  lemma dbail_nodes_finite[intro]:
     assumes "list_all (finite \<circ> DBA.nodes) AA"
     shows "finite (DBA.nodes (dbail AA))"
-    using dbgail_finite assms unfolding dbail_def by auto
+    using dbgail_nodes_finite assms unfolding dbail_def by auto
+  lemma dbail_nodes_card:
+    assumes "AA \<noteq> []" "list_all (finite \<circ> DBA.nodes) AA"
+    shows "card (DBA.nodes (dbail AA)) \<le> length AA * prod_list (map (card \<circ> DBA.nodes) AA)"
+  proof -
+    have 1: "dgba.accepting (dbgail AA) \<noteq> []" unfolding dbgail_def using assms(1) by simp
+    have "card (DBA.nodes (dbail AA)) \<le>
+      length (dgba.accepting (dbgail AA)) * card (DGBA.nodes (dbgail AA))"
+      unfolding dbail_def using degen_nodes_card assms(2) 1 by auto
+    also have "length (dgba.accepting (dbgail AA)) = length AA" unfolding dbgail_def by simp
+    also have "card (DGBA.nodes (dbgail AA)) \<le> prod_list (map (card \<circ> DBA.nodes) AA)"
+      using dbgail_nodes_card assms(2) by this
+    finally show ?thesis by simp
+  qed
 
   lemma dbail_language[simp]: "DBA.language (dbail AA) = INTER (set AA) DBA.language"
     unfolding dbail_def using degen_language dbgail_language by auto
@@ -117,7 +145,7 @@ begin
     shows "pp ! k \<in> DBA.nodes (AA ! k)"
     using assms(2, 3, 1) unfolding dbaul_def by induct force+
 
-  lemma dbaul_finite[intro]:
+  lemma dbaul_nodes_finite[intro]:
     assumes "INTER (set AA) dba.alphabet = UNION (set AA) dba.alphabet"
     assumes "list_all (finite \<circ> DBA.nodes) AA"
     shows "finite (DBA.nodes (dbaul AA))"
@@ -127,6 +155,22 @@ begin
     have "finite (listset (map DBA.nodes AA)) \<longleftrightarrow> list_all finite (map DBA.nodes AA)"
       by (rule listset_finite) (auto simp: list_all_iff)
     then show "finite (listset (map DBA.nodes AA))" using assms(2) by (simp add: list.pred_map)
+  qed
+  lemma dbaul_nodes_card:
+    assumes "INTER (set AA) dba.alphabet = UNION (set AA) dba.alphabet"
+    assumes "list_all (finite \<circ> DBA.nodes) AA"
+    shows "card (DBA.nodes (dbaul AA)) \<le> prod_list (map (card \<circ> DBA.nodes) AA)"
+  proof -
+    have "card (DBA.nodes (dbaul AA)) \<le> card (listset (map DBA.nodes AA))"
+    proof (rule card_mono)
+      have "finite (listset (map DBA.nodes AA)) \<longleftrightarrow> list_all finite (map DBA.nodes AA)"
+        by (rule listset_finite) (auto simp: list_all_iff)
+      then show "finite (listset (map DBA.nodes AA))" using assms(2) by (simp add: list.pred_map)
+      show "DBA.nodes (dbaul AA) \<subseteq> listset (map DBA.nodes AA)"
+        using assms(1) by (force simp: listset_member list_all2_conv_all_nth dbaul_nodes_length)
+    qed
+    also have "\<dots> = prod_list (map (card \<circ> DBA.nodes) AA)" by simp
+    finally show ?thesis by this
   qed
 
   lemma dbaul_language[simp]:

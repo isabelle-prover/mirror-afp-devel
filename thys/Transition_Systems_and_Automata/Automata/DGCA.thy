@@ -78,6 +78,10 @@ begin
     by rule
 
   lemma degen_nodes_finite[iff]: "finite (DCA.nodes (degen A)) \<longleftrightarrow> finite (DGCA.nodes A)" by simp
+  lemma degen_nodes_card:
+    assumes "finite (DGCA.nodes A)" "rejecting A \<noteq> []"
+    shows "card (DCA.nodes (degen A)) \<le> length (rejecting A) * card (DGCA.nodes A)"
+    using dgca.degen_nodes_card assms by simp
 
   lemma degen_language[simp]: "DCA.language (degen A) = DGCA.language A"
     unfolding DCA.language_def DGCA.language_def degen_simps

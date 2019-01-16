@@ -39,13 +39,26 @@ begin
     then show "q \<in> DCA.nodes B" unfolding dcai_def by (induct arbitrary: q) (auto)
   qed
 
-  lemma dcai_finite[intro]:
+  lemma dcai_nodes_finite[intro]:
     assumes "finite (DCA.nodes A)" "finite (DCA.nodes B)"
     shows "finite (DCA.nodes (dcai A B))"
   proof (rule finite_subset)
     show "DCA.nodes (dcai A B) \<subseteq> DCA.nodes A \<times> DCA.nodes B"
       using dcai_nodes_fst dcai_nodes_snd unfolding image_subset_iff by force
     show "finite (DCA.nodes A \<times> DCA.nodes B)" using assms by simp
+  qed
+  lemma dcai_nodes_card[intro]:
+    assumes "finite (DCA.nodes A)" "finite (DCA.nodes B)"
+    shows "card (DCA.nodes (dcai A B)) \<le> card (DCA.nodes A) * card (DCA.nodes B)"
+  proof -
+    have "card (DCA.nodes (dcai A B)) \<le> card (DCA.nodes A \<times> DCA.nodes B)"
+    proof (rule card_mono)
+      show "finite (DCA.nodes A \<times> DCA.nodes B)" using assms by simp
+      show "DCA.nodes (dcai A B) \<subseteq> DCA.nodes A \<times> DCA.nodes B"
+        using dcai_nodes_fst dcai_nodes_snd unfolding image_subset_iff by force
+    qed
+    also have "\<dots> = card (DCA.nodes A) * card (DCA.nodes B)" using card_cartesian_product by this
+    finally show ?thesis by this
   qed
 
   lemma dcai_language[simp]: "DCA.language (dcai A B) = DCA.language A \<inter> DCA.language B"
@@ -89,6 +102,21 @@ begin
     have "finite (listset (map DCA.nodes AA)) \<longleftrightarrow> list_all finite (map DCA.nodes AA)"
       by (rule listset_finite) (auto simp: list_all_iff)
     then show "finite (listset (map DCA.nodes AA))" using assms by (simp add: list.pred_map)
+  qed
+  lemma dcail_nodes_card:
+    assumes "list_all (finite \<circ> DCA.nodes) AA"
+    shows "card (DCA.nodes (dcail AA)) \<le> prod_list (map (card \<circ> DCA.nodes) AA)"
+  proof -
+    have "card (DCA.nodes (dcail AA)) \<le> card (listset (map DCA.nodes AA))"
+    proof (rule card_mono)
+      have "finite (listset (map DCA.nodes AA)) \<longleftrightarrow> list_all finite (map DCA.nodes AA)"
+        by (rule listset_finite) (auto simp: list_all_iff)
+      then show "finite (listset (map DCA.nodes AA))" using assms by (simp add: list.pred_map)
+      show "DCA.nodes (dcail AA) \<subseteq> listset (map DCA.nodes AA)"
+        by (force simp: listset_member list_all2_conv_all_nth dcail_nodes_length)
+    qed
+    also have "\<dots> = prod_list (map (card \<circ> DCA.nodes) AA)" by simp
+    finally show ?thesis by this
   qed
 
   lemma dcail_language[simp]: "DCA.language (dcail AA) = INTER (set AA) DCA.language"
@@ -162,7 +190,7 @@ begin
     shows "pp ! k \<in> DCA.nodes (AA ! k)"
     using assms(2, 3, 1) unfolding dcgaul_def by induct force+
 
-  lemma dcgaul_finite[intro]:
+  lemma dcgaul_nodes_finite[intro]:
     assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
     assumes "list_all (finite \<circ> DCA.nodes) AA"
     shows "finite (DGCA.nodes (dcgaul AA))"
@@ -172,6 +200,22 @@ begin
     have "finite (listset (map DCA.nodes AA)) \<longleftrightarrow> list_all finite (map DCA.nodes AA)"
       by (rule listset_finite) (auto simp: list_all_iff)
     then show "finite (listset (map DCA.nodes AA))" using assms(2) by (simp add: list.pred_map)
+  qed
+  lemma dcgaul_nodes_card:
+    assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
+    assumes "list_all (finite \<circ> DCA.nodes) AA"
+    shows "card (DGCA.nodes (dcgaul AA)) \<le> prod_list (map (card \<circ> DCA.nodes) AA)"
+  proof -
+    have "card (DGCA.nodes (dcgaul AA)) \<le> card (listset (map DCA.nodes AA))"
+    proof (rule card_mono)
+      have "finite (listset (map DCA.nodes AA)) \<longleftrightarrow> list_all finite (map DCA.nodes AA)"
+        by (rule listset_finite) (auto simp: list_all_iff)
+      then show "finite (listset (map DCA.nodes AA))" using assms(2) by (simp add: list.pred_map)
+      show "DGCA.nodes (dcgaul AA) \<subseteq> listset (map DCA.nodes AA)"
+        using assms(1) by (force simp: listset_member list_all2_conv_all_nth dcgaul_nodes_length)
+    qed
+    also have "\<dots> = prod_list (map (card \<circ> DCA.nodes) AA)" by simp
+    finally show ?thesis by this
   qed
 
   lemma dcgaul_language[simp]:
@@ -227,11 +271,25 @@ begin
   definition dcaul :: "('label, 'state) dca list \<Rightarrow> ('label, 'state list degen) dca" where
     "dcaul = degen \<circ> dcgaul"
 
-  lemma dcaul_finite[intro]:
+  lemma dcaul_nodes_finite[intro]:
     assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
     assumes "list_all (finite \<circ> DCA.nodes) AA"
     shows "finite (DCA.nodes (dcaul AA))"
-    using dcgaul_finite assms unfolding dcaul_def by auto
+    using dcgaul_nodes_finite assms unfolding dcaul_def by auto
+  lemma dcaul_nodes_card:
+    assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
+    assumes "AA \<noteq> []" "list_all (finite \<circ> DCA.nodes) AA"
+    shows "card (DCA.nodes (dcaul AA)) \<le> length AA * prod_list (map (card \<circ> DCA.nodes) AA)"
+  proof -
+    have 1: "dgca.rejecting (dcgaul AA) \<noteq> []" unfolding dcgaul_def using assms(2) by simp
+    have "card (DCA.nodes (dcaul AA)) \<le>
+      length (dgca.rejecting (dcgaul AA)) * card (DGCA.nodes (dcgaul AA))"
+      unfolding dcaul_def using degen_nodes_card assms(1, 3) 1 by auto
+    also have "length (dgca.rejecting (dcgaul AA)) = length AA" unfolding dcgaul_def by simp
+    also have "card (DGCA.nodes (dcgaul AA)) \<le> prod_list (map (card \<circ> DCA.nodes) AA)"
+      using dcgaul_nodes_card assms(1, 3) by this
+    finally show ?thesis by simp
+  qed
 
   lemma dcaul_language[simp]:
     assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"

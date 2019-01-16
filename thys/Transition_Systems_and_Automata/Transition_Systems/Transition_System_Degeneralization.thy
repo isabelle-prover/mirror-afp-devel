@@ -106,6 +106,23 @@ begin
       also have "finite \<dots>" using 1 2 by simp
       finally show "finite degen.nodes" by this
     qed
+    lemma degen_nodes_card:
+      assumes "finite nodes" "condition \<noteq> []"
+      shows "card degen.nodes \<le> length condition * card nodes"
+    proof -
+      have "card degen.nodes \<le> card (nodes \<times> insert 0 {0 ..< length condition})"
+      proof (rule card_mono)
+        show "finite (nodes \<times> insert 0 {0 ..< length condition})" using assms(1) by simp
+        show "degen.nodes \<subseteq> nodes \<times> insert 0 {0 ..< length condition}"
+          using subset_fst_snd degen_nodes_fst degen_nodes_snd by blast
+      qed
+      also have "\<dots> = card (insert 0 {0 ..< length condition}) * card nodes"
+        unfolding card_cartesian_product by simp
+      also have "insert 0 {0 ..< length condition} = {0 ..< length condition}"
+        using assms(2) by auto
+      also have "card \<dots> = length condition" by simp
+      finally show ?thesis by this
+    qed
 
     definition dcondition :: "'state degen pred" where
       "dcondition \<equiv> \<lambda> (p, k). k \<ge> length condition \<or> (condition ! k) p"

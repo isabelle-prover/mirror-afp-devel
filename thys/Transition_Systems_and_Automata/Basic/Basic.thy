@@ -31,4 +31,6 @@ begin
   (* TODO: why are there two copies of this theorem? *)
   thm inj_on_subset subset_inj_on
 
+  lemma inj_inj_on[dest]: "inj f \<Longrightarrow> inj_on f S" using inj_on_subset by auto
+
 end

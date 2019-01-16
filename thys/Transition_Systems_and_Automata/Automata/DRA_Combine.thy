@@ -50,13 +50,26 @@ begin
     then show "q \<in> DCA.nodes B" unfolding dbcrai_def by (induct arbitrary: q) (auto)
   qed
 
-  lemma dbcrai_finite[intro]:
+  lemma dbcrai_nodes_finite[intro]:
     assumes "finite (DBA.nodes A)" "finite (DCA.nodes B)"
     shows "finite (DRA.nodes (dbcrai A B))"
   proof (rule finite_subset)
     show "DRA.nodes (dbcrai A B) \<subseteq> DBA.nodes A \<times> DCA.nodes B"
       using dbcrai_nodes_fst dbcrai_nodes_snd unfolding image_subset_iff by force
     show "finite (DBA.nodes A \<times> DCA.nodes B)" using assms by simp
+  qed
+  lemma dbcrai_nodes_card[intro]:
+    assumes "finite (DBA.nodes A)" "finite (DCA.nodes B)"
+    shows "card (DRA.nodes (dbcrai A B)) \<le> card (DBA.nodes A) * card (DCA.nodes B)"
+  proof -
+    have "card (DRA.nodes (dbcrai A B)) \<le> card (DBA.nodes A \<times> DCA.nodes B)"
+    proof (rule card_mono)
+      show "finite (DBA.nodes A \<times> DCA.nodes B)" using assms by simp
+      show "DRA.nodes (dbcrai A B) \<subseteq> DBA.nodes A \<times> DCA.nodes B"
+        using dbcrai_nodes_fst dbcrai_nodes_snd unfolding image_subset_iff by force
+    qed
+    also have "\<dots> = card (DBA.nodes A) * card (DCA.nodes B)" using card_cartesian_product by this
+    finally show ?thesis by this
   qed
 
   lemma dbcrai_language[simp]: "DRA.language (dbcrai A B) = DBA.language A \<inter> DCA.language B"
@@ -104,7 +117,7 @@ begin
     shows "pp ! k \<in> DRA.nodes (AA ! k)"
     using assms(2, 3, 1) unfolding draul_def by induct force+
 
-  lemma draul_finite[intro]:
+  lemma draul_nodes_finite[intro]:
     assumes "INTER (set AA) dra.alphabet = UNION (set AA) dra.alphabet"
     assumes "list_all (finite \<circ> DRA.nodes) AA"
     shows "finite (DRA.nodes (draul AA))"
@@ -114,6 +127,22 @@ begin
     have "finite (listset (map DRA.nodes AA)) \<longleftrightarrow> list_all finite (map DRA.nodes AA)"
       by (rule listset_finite) (auto simp: list_all_iff)
     then show "finite (listset (map DRA.nodes AA))" using assms(2) by (simp add: list.pred_map)
+  qed
+  lemma draul_nodes_card:
+    assumes "INTER (set AA) dra.alphabet = UNION (set AA) dra.alphabet"
+    assumes "list_all (finite \<circ> DRA.nodes) AA"
+    shows "card (DRA.nodes (draul AA)) \<le> prod_list (map (card \<circ> DRA.nodes) AA)"
+  proof -
+    have "card (DRA.nodes (draul AA)) \<le> card (listset (map DRA.nodes AA))"
+    proof (rule card_mono)
+      have "finite (listset (map DRA.nodes AA)) \<longleftrightarrow> list_all finite (map DRA.nodes AA)"
+        by (rule listset_finite) (auto simp: list_all_iff)
+      then show "finite (listset (map DRA.nodes AA))" using assms(2) by (simp add: list.pred_map)
+      show "DRA.nodes (draul AA) \<subseteq> listset (map DRA.nodes AA)"
+        using assms(1) by (force simp: listset_member list_all2_conv_all_nth draul_nodes_length)
+    qed
+    also have "\<dots> = prod_list (map (card \<circ> DRA.nodes) AA)" by simp
+    finally show ?thesis by this
   qed
 
   lemma draul_language[simp]:

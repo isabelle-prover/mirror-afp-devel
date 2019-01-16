@@ -51,6 +51,20 @@ begin
     also have "finite A \<and> \<dots> \<longleftrightarrow> list_all finite (A # XS)" by simp
     finally show ?case by this
   qed
+  lemma listset_card[simp]: "card (listset XS) = prod_list (map card XS)"
+  proof (induct XS)
+    case Nil
+    show ?case by simp
+  next
+    case (Cons A XS)
+    have 1: "inj (case_prod Cons)" unfolding inj_def by simp
+    have "listset (A # XS) = case_prod Cons ` (A \<times> listset XS)" by (auto simp: set_Cons_def)
+    also have "card \<dots> = card (A \<times> listset XS)" using card_image 1 by auto
+    also have "\<dots> = card A * card (listset XS)" using card_cartesian_product by this
+    also have "card (listset XS) = prod_list (map card XS)" using Cons by this
+    also have "card A * \<dots> = prod_list (map card (A # XS))" by simp
+    finally show ?case by this
+  qed
 
   subsection \<open>Stream Basics\<close>
 
