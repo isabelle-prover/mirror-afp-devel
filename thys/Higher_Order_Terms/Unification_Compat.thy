@@ -1,4 +1,4 @@
-chapter \<open>Instantiation for \<open>HOL-ex.Unification\<close> from \<^session>\<open>HOL-ex\<close>\<close>
+chapter \<open>Instantiation for \<open>HOL-ex.Unification\<close> from session \<open>HOL-ex\<close>\<close>
 
 theory Unification_Compat
 imports
