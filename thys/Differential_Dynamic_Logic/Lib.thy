@@ -308,7 +308,7 @@ lemma has_derivative_proj:
   shows "((\<lambda>x. f j x) has_derivative (\<lambda>h. f' j h)) F"
 proof -
   have bounded_proj:"bounded_linear (\<lambda> x::(real^'a). x $ j)"
-    by (simp add: bounded_linear_component_cart)
+    by (simp add: bounded_linear_vec_nth)
   show "?thesis"
     using bounded_linear.has_derivative[OF bounded_proj, of "(\<lambda>x. \<chi> i. f i x)" "(\<lambda>h. \<chi> i. f' i h)", OF assm]
     by auto
@@ -319,7 +319,7 @@ lemma has_derivative_proj':
   shows "\<forall>x. ((\<lambda> x. x $ i) has_derivative (\<lambda>x::(real^'a). x $ i)) (at x)"
 proof -
   have bounded_proj:"bounded_linear (\<lambda> x::(real^'a). x $ i)"
-    by (simp add: bounded_linear_component_cart)
+    by (simp add: bounded_linear_vec_nth)
   show "?thesis"
     using bounded_proj unfolding has_derivative_def by auto
 qed
