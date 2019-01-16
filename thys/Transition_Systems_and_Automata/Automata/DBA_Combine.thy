@@ -124,6 +124,83 @@ begin
   lemma dbail_language[simp]: "DBA.language (dbail AA) = INTER (set AA) DBA.language"
     unfolding dbail_def using degen_language dbgail_language by auto
 
+  definition dbau :: "('label, 'state\<^sub>1) dba \<Rightarrow> ('label, 'state\<^sub>2) dba \<Rightarrow>
+    ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) dba" where
+    "dbau A B \<equiv> dba
+      (dba.alphabet A \<union> dba.alphabet B)
+      (dba.initial A, dba.initial B)
+      (\<lambda> a (p, q). (dba.succ A a p, dba.succ B a q))
+      (\<lambda> (p, q). dba.accepting A p \<or> dba.accepting B q)"
+
+  lemma dbau_fst[iff]: "infs (P \<circ> fst) (dba.trace (dbau A B) w (p, q)) \<longleftrightarrow> infs P (dba.trace A w p)"
+  proof -
+    let ?t = "dba.trace (dbau A B) w (p, q)"
+    have "infs (P \<circ> fst) ?t \<longleftrightarrow> infs P (smap fst ?t)" by simp
+    also have "smap fst ?t = dba.trace A w p" unfolding dbau_def by (coinduction arbitrary: w p q) (auto)
+    finally show ?thesis by this
+  qed
+  lemma dbau_snd[iff]: "infs (P \<circ> snd) (dba.trace (dbau A B) w (p, q)) \<longleftrightarrow> infs P (dba.trace B w q)"
+  proof -
+    let ?t = "dba.trace (dbau A B) w (p, q)"
+    have "infs (P \<circ> snd) ?t \<longleftrightarrow> infs P (smap snd ?t)" by simp
+    also have "smap snd ?t = dba.trace B w q" unfolding dbau_def by (coinduction arbitrary: w p q) (auto)
+    finally show ?thesis by this
+  qed
+  lemma dbau_nodes_fst[intro]:
+    assumes "dba.alphabet A = dba.alphabet B"
+    shows "fst ` DBA.nodes (dbau A B) \<subseteq> DBA.nodes A"
+  proof (rule subsetI, erule imageE)
+    fix pq p
+    assume "pq \<in> DBA.nodes (dbau A B)" "p = fst pq"
+    then show "p \<in> DBA.nodes A" using assms unfolding dbau_def by (induct arbitrary: p) (auto)
+  qed
+  lemma dbau_nodes_snd[intro]:
+    assumes "dba.alphabet A = dba.alphabet B"
+    shows "snd ` DBA.nodes (dbau A B) \<subseteq> DBA.nodes B"
+  proof (rule subsetI, erule imageE)
+    fix pq q
+    assume "pq \<in> DBA.nodes (dbau A B)" "q = snd pq"
+    then show "q \<in> DBA.nodes B" using assms unfolding dbau_def by (induct arbitrary: q) (auto)
+  qed
+
+  lemma dbau_nodes_finite[intro]:
+    assumes "dba.alphabet A = dba.alphabet B"
+    assumes "finite (DBA.nodes A)" "finite (DBA.nodes B)"
+    shows "finite (DBA.nodes (dbau A B))"
+  proof (rule finite_subset)
+    show "DBA.nodes (dbau A B) \<subseteq> DBA.nodes A \<times> DBA.nodes B"
+      using dbau_nodes_fst[OF assms(1)] dbau_nodes_snd[OF assms(1)] unfolding image_subset_iff by force
+    show "finite (DBA.nodes A \<times> DBA.nodes B)" using assms(2, 3) by simp
+  qed
+  lemma dbau_nodes_card[intro]:
+    assumes "dba.alphabet A = dba.alphabet B"
+    assumes "finite (DBA.nodes A)" "finite (DBA.nodes B)"
+    shows "card (DBA.nodes (dbau A B)) \<le> card (DBA.nodes A) * card (DBA.nodes B)"
+  proof -
+    have "card (DBA.nodes (dbau A B)) \<le> card (DBA.nodes A \<times> DBA.nodes B)"
+    proof (rule card_mono)
+      show "finite (DBA.nodes A \<times> DBA.nodes B)" using assms(2, 3) by simp
+      show "DBA.nodes (dbau A B) \<subseteq> DBA.nodes A \<times> DBA.nodes B"
+        using dbau_nodes_fst[OF assms(1)] dbau_nodes_snd[OF assms(1)] unfolding image_subset_iff by force
+    qed
+    also have "\<dots> = card (DBA.nodes A) * card (DBA.nodes B)" using card_cartesian_product by this
+    finally show ?thesis by this
+  qed
+
+  lemma dbau_language[simp]:
+    assumes "dba.alphabet A = dba.alphabet B"
+    shows "DBA.language (dbau A B) = DBA.language A \<union> DBA.language B"
+  proof -
+    have 1: "dba.alphabet (dbau A B) = dba.alphabet A \<union> dba.alphabet B" unfolding dbau_def by simp
+    have 2: "dba.initial (dbau A B) = (dba.initial A, dba.initial B)" unfolding dbau_def by simp
+    have 3: "dba.accepting (dbau A B) = (\<lambda> pq. (dba.accepting A \<circ> fst) pq \<or> (dba.accepting B \<circ> snd) pq)"
+      unfolding dbau_def by auto
+    have 4: "infs (dba.accepting (dbau A B)) (DBA.trace (dbau A B) w (p, q)) \<longleftrightarrow>
+      infs (dba.accepting A) (DBA.trace A w p) \<or> infs (dba.accepting B) (DBA.trace B w q)" for w p q
+      unfolding 3 by blast
+    show ?thesis using assms unfolding DBA.language_def DBA.run_alt_def 1 2 4 by auto
+  qed
+
   definition dbaul :: "('label, 'state) dba list \<Rightarrow> ('label, 'state list) dba" where
     "dbaul AA \<equiv> dba
       (UNION (set AA) dba.alphabet)
