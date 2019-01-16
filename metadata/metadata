@@ -381,6 +381,7 @@ abstract =
 [Higher_Order_Terms]
 title = An Algebra for Higher-Order Terms
 author = Lars Hupel <https://lars.hupel.info/>
+contributors = Yu Zhang <>
 topic = Computer Science/Programming Languages/Lambda Calculi
 date = 2019-01-15
 notify = lars@hupel.info

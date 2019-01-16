@@ -6,6 +6,7 @@ session Higher_Order_Terms (AFP) = HOL +
     Datatype_Order_Generator
     "List-Index"
     Lambda_Free_RPOs
+    "HOL-ex"
   theories [document = false]
     Term_Utils
     Disjoint_Sets

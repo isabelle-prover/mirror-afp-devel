@@ -1,51 +1,15 @@
 chapter \<open>Instantiation for \<open>\<lambda>\<close>-free terms according to Blanchette\<close>
 
 theory Lambda_Free_Compat
-imports Term_Class "Lambda_Free_RPOs.Lambda_Free_Term"
+imports Unification_Compat "Lambda_Free_RPOs.Lambda_Free_Term"
 begin
 
 text \<open>
-  Blanchette et al.\ define a higher-order, lambda-free term language @{cite blanchette2016lambda}.
-  To illustrate flexibility of the term algebra, I instantiate my class with their term type. The
-  major issue is that Blanchette's terms are parameterized over the symbol and variable types, which
-  cannot easily be supported by the classy approach, where those types are fixed to @{typ name}.
-  As a workaround, I introduce a class that requires both symbol and variable types to be isomorphic
-  to @{typ name}. Finally, I derive a matching operation for Blanchette's terms and prove that their
-  substitution operation satisfies the class axioms.
+  Another instantiation of the algebra for Blanchette et al.'s term type
+  @{cite blanchette2016lambda}.
 \<close>
 
 hide_const (open) Lambda_Free_Term.subst
-
-class is_name =
-  fixes of_name :: "name \<Rightarrow> 'a"
-  assumes bij: "bij of_name"
-begin
-
-definition to_name :: "'a \<Rightarrow> name" where
-"to_name = inv of_name"
-
-lemma to_of_name[simp]: "to_name (of_name a) = a"
-unfolding to_name_def using bij by (metis bij_inv_eq_iff)
-
-lemma of_to_name[simp]: "of_name (to_name a) = a"
-unfolding to_name_def using bij by (meson bij_inv_eq_iff)
-
-lemma of_name_inj: "of_name name\<^sub>1 = of_name name\<^sub>2 \<Longrightarrow> name\<^sub>1 = name\<^sub>2"
-using bij by (metis to_of_name)
-
-end
-
-instantiation name :: is_name begin
-
-definition of_name_name :: "name \<Rightarrow> name" where
-[code_unfold]: "of_name_name x = x"
-
-instance by standard (auto simp: of_name_name_def bij_betw_def inj_on_def)
-
-end
-
-lemma [code_unfold]: "(to_name :: name \<Rightarrow> name) = id"
-unfolding to_name_def of_name_name_def by auto
 
 instantiation tm :: (is_name, is_name) "pre_term" begin
 
@@ -105,8 +69,9 @@ lemma subst_tm[code, simp]:
 unfolding subst_tm_def
 by (auto simp: fmlookup_default_def split: hd.splits option.splits)
 
-instance proof (standard, goal_cases)
-qed (auto
+instance
+by standard
+   (auto
       simp: app_tm_def unapp_tm_def const_tm_def unconst_tm_def free_tm_def unfree_tm_def of_name_inj
       split: tm.splits hd.splits option.splits)
 
