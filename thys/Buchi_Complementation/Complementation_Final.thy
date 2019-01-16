@@ -9,8 +9,7 @@ begin
 
   definition "hci k \<equiv> uint32_of_nat k * 1103515245 + 12345"
   definition "hc \<equiv> \<lambda> (p, q, b). hci p + hci q * 31 + (if b then 1 else 0)"
-  definition list_hash :: "(nat \<times> item) list \<Rightarrow> uint32" where
-    "list_hash xs \<equiv> fold (bitXOR \<circ> hc) xs 0"
+  definition "list_hash xs \<equiv> fold (bitXOR \<circ> hc) xs 0"
 
   lemma list_hash_eq:
     assumes "distinct xs" "distinct ys" "set xs = set ys"
