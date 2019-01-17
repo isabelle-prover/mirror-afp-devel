@@ -7351,7 +7351,7 @@ abstract =
   for the incremental version of the Simplex algorithm which is used in
   most state-of-the-art SMT solvers. It supports extraction of
   satisfying assignments, extraction of unsatisfiable cores, incremental
-  assertion of constraints and backtracking. Formalization relies on
+  assertion of constraints and backtracking. The formalization relies on
   stepwise program refinement, starting from a simple specification,
   going through a number of refinement steps, and ending up in a fully
   executable functional implementation. Symmetries present in the
