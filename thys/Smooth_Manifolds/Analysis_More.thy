@@ -641,6 +641,11 @@ lemma subtopology_map_topology:
   using sub_map_finer_than_commute[OF that] map_sub_finer_than_commute[of f T X]
   by auto
 
+lemma quotient_map_map_topology:
+  "quotient_map X (map_topology f X) f"
+  by (auto simp: quotient_map_def openin_map_topology ac_simps)
+    (simp_all add: vimage_def Int_def)
+
 lemma topological_space_quotient: "class.topological_space (openin (map_topology f euclidean))"
   if "surj f"
   apply standard
