@@ -8,6 +8,7 @@ theory HMA_Connect
 imports 
   Jordan_Normal_Form.Spectral_Radius 
   "HOL-Analysis.Determinants"
+  "HOL-Analysis.Cartesian_Euclidean_Space"
   Bij_Nat
   Cancel_Card_Constraint
   "HOL-Eisbach.Eisbach" 

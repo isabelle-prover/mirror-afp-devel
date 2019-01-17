@@ -4,6 +4,7 @@
 theory Square_Matrix
 imports
   "HOL-Analysis.Determinants"
+  "HOL-Analysis.Cartesian_Euclidean_Space"
 begin
 
 lemma smult_axis: "x *s axis i y = axis i (x * y::_::mult_zero)"
