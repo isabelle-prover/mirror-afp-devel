@@ -27,6 +27,7 @@ hide_const (open) Finite_Cartesian_Product.mat
 hide_const (open) Finite_Cartesian_Product.row
 hide_const (open) Finite_Cartesian_Product.rows
 hide_const (open) Finite_Cartesian_Product.vec
+hide_const (open) Path_Connected.outside
 hide_const (open) Linear_Algebra.orthogonal
 hide_type (open) Finite_Cartesian_Product.vec
 
