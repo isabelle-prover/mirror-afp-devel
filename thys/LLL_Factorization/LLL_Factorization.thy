@@ -724,7 +724,7 @@ proof -
   have mon_iu: "monic ?iu" unfolding deg_iu unfolding inv_Mp_def Mp_def inv_M_def M_def
     by (insert pl1, auto simp: coeff_map_poly monic)
   let ?L = "factorization_lattice ?iu (n - ?d) pl" 
-  let ?sv = "short_vector 2 ?L" 
+  let ?sv = "short_vector_hybrid 2 ?L" 
   from deg_u_0 deg_le have n: "n \<noteq> 0" by auto
   from deg_u_0 have u0: "u \<noteq> 0" by auto
   have id: "LLL_short_polynomial n u = poly_of_vec ?sv" 
@@ -741,7 +741,7 @@ proof -
   have *: "4/3 \<le> (2 :: rat)" "L.gs.lin_indpt_list (L.RAT ?L)" by (auto simp: deg_iu)
   interpret L: LLL_with_assms n n ?L 2
     by (unfold_locales, insert *, auto simp: deg_iu deg_le)
-  note short = L.short_vector[OF refl n, unfolded id' L.L_def]
+  note short = L.short_vector_hybrid[OF refl n, unfolded id' L.L_def]
   from short(2) have mem: "LLL_short_polynomial n u \<in> poly_of_vec ` lattice_of ?L" 
     unfolding id by auto
   note fact = L.factorization_lattice(1)[OF deg_iu0 pl0 deg_iu_le n, unfolded deg_iu, OF mem]

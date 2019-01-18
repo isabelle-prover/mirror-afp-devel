@@ -14,7 +14,7 @@ text \<open>This theory contains an implementation of a polynomial time factoriz
   two non-trivial factors, or to deduce irreducibility.\<close>
 
 theory LLL_Factorization_Impl
-  imports LLL_Basis_Reduction.LLL_Mu_Integer_Impl
+  imports LLL_Basis_Reduction.LLL_Certification
     Factor_Bound_2
     Missing_Dvd_Int_Poly
     Berlekamp_Zassenhaus.Berlekamp_Zassenhaus
@@ -66,7 +66,7 @@ begin
 
 text \<open>Optimization: directly try to minimize coefficients of polynomial $u$.\<close>
 definition LLL_short_polynomial where
-  "LLL_short_polynomial n u = poly_of_vec (short_vector 2 (factorization_lattice 
+  "LLL_short_polynomial n u = poly_of_vec (short_vector_hybrid 2 (factorization_lattice 
      (poly_mod.inv_Mp pl (poly_mod.Mp pl u)) (n - degree u) pl))" 
 
 function LLL_reconstruction where 
