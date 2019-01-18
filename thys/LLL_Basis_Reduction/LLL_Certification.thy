@@ -14,13 +14,15 @@ This invocation will then usually just require one computation of Gram--Schmidt 
 to check that the basis is already reduced. Alternatively, one could also throw an error
 message in case the basis is not reduced.\<close>
 
+subsection \<open>Checking Results of External LLL Solvers\<close>
+
 theory LLL_Certification
   imports
     LLL_Mu_Integer_Impl
     Jordan_Normal_Form.Show_Matrix
 begin
 
-text \<open>First, we define and prove some required facts about the row space and column space. \<close>
+text \<open>First, we define and prove some required facts about the row space and column space.\<close>
 
 context vec_space
 begin
@@ -524,7 +526,7 @@ proof -
 qed
 end
 
-consts lll_oracle :: "integer \<times> integer \<Rightarrow> integer list list \<Rightarrow> integer list list \<times> integer list list \<times> integer list list" 
+consts external_lll_solver :: "integer \<times> integer \<Rightarrow> integer list list \<Rightarrow> integer list list \<times> integer list list \<times> integer list list" 
 
 definition short_vector_external :: "rat \<Rightarrow> int vec list \<Rightarrow> int vec" where
   "short_vector_external \<alpha> fs = (let 
@@ -532,7 +534,7 @@ definition short_vector_external :: "rat \<Rightarrow> int vec list \<Rightarrow
     fsi = map (map integer_of_int o list_of_vec) fs;
     n = dim_vec (hd fs);
     m = length fs in 
-  case lll_oracle (map_prod integer_of_int integer_of_int (quotient_of \<alpha>)) fsi of 
+  case external_lll_solver (map_prod integer_of_int integer_of_int (quotient_of \<alpha>)) fsi of 
     (gsi, u1i, u2i) \<Rightarrow> let 
      u1 = mat_of_rows_list m (map (map int_of_integer) u1i);
      u2 = mat_of_rows_list m (map (map int_of_integer) u2i);
@@ -570,7 +572,7 @@ proof (atomize(full), goal_cases)
   next
     case False
     from m0 fs_init len have dim_fs_n: "dim_vec (hd fs_init) = n" by (cases fs_init, auto)
-    let ?ext = "lll_oracle (map_prod integer_of_int integer_of_int (quotient_of \<alpha>)) 
+    let ?ext = "external_lll_solver (map_prod integer_of_int integer_of_int (quotient_of \<alpha>)) 
       (map (map integer_of_int \<circ> list_of_vec) fs_init)" 
     note res = res[unfolded short_vector_external_def Let_def Code.abort_def]
     from res False obtain gsi u1i u2i where ext: "?ext = (gsi, u1i, u2i)" by (cases ?ext, auto)
@@ -597,10 +599,10 @@ qed
 
 end
 
-consts enable_lll_oracle :: bool
+consts enable_external_lll_solver :: bool
 
 definition short_vector_hybrid :: "rat \<Rightarrow> int vec list \<Rightarrow> int vec" where
-  "short_vector_hybrid = (if enable_lll_oracle then short_vector_external else short_vector)" 
+  "short_vector_hybrid = (if enable_external_lll_solver then short_vector_external else short_vector)" 
 
 
 context LLL_with_assms
@@ -615,7 +617,7 @@ shows "v \<in> carrier_vec n"
 proof (atomize (full), goal_cases)
   case 1 
   show ?case
-  proof (cases enable_lll_oracle)
+  proof (cases enable_external_lll_solver)
     case True
     with res[unfolded short_vector_hybrid_def] have "short_vector_external \<alpha> fs_init = v" by simp
     from short_vector_external[OF this m0] show ?thesis by blast
@@ -628,30 +630,24 @@ qed
 
 end
 
+lemma lll_oracle_default_code[code]: 
+  "external_lll_solver x = Code.abort (STR ''no implementation of external_lll_solver specified'') (\<lambda> _. external_lll_solver x)" 
+  by simp
+
+text \<open>By default, external solvers are disabled.
+  For enabling an external solver, load it via a separate theory like \<^file>\<open>FPLLL_Solver.thy\<close>\<close>
 
 code_printing
-  code_module "LLL_Extern" \<rightharpoonup> (Haskell) \<open>
-  import Prelude (Maybe(Nothing, Just), Integer, Bool(..));
-  import External_LLL (external_lll);
-
-  lll_extern :: (Integer,Integer) -> [[Integer]] -> ([[Integer]], ([[Integer]], [[Integer]]));
-  lll_extern alpha fs = (case external_lll alpha fs of (g,u,v) -> (g,(u,v)));
-
-  enable_lll_oracle :: Bool;
-  enable_lll_oracle = True;
-\<close>
-
-
-code_reserved Haskell LLL_Extern External_LLL lll_extern external_lll
-
-code_printing
-  constant lll_oracle \<rightharpoonup> (Haskell) "LLL'_Extern.lll'_extern"
-| constant enable_lll_oracle \<rightharpoonup> (Haskell) "LLL'_Extern.enable'_lll'_oracle"
+  constant enable_external_lll_solver \<rightharpoonup> (Haskell) "False"
+| constant enable_external_lll_solver \<rightharpoonup> (SML) "false"
+| constant enable_external_lll_solver \<rightharpoonup> (Eval) "false"
+| constant enable_external_lll_solver \<rightharpoonup> (Scala) "false"
+| constant enable_external_lll_solver \<rightharpoonup> (OCaml) "false"
 
 definition "short_vector_test_hybrid xs = 
   (let ys = map (vec_of_list o map int_of_integer) xs
    in integer_of_int (sq_norm (short_vector_hybrid (3/2) ys)))" 
 
 (* export_code short_vector_test_hybrid in Haskell module_name LLL file "~/Code" *)
-
+ 
 end
