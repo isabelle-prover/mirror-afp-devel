@@ -524,16 +524,16 @@ proof -
 qed
 end
 
-consts lll_oracle :: "integer \<times> integer \<Rightarrow> integer list list \<Rightarrow> (integer list list \<times> integer list list \<times> integer list list) option" 
+consts lll_oracle :: "integer \<times> integer \<Rightarrow> integer list list \<Rightarrow> integer list list \<times> integer list list \<times> integer list list" 
 
 definition short_vector_external :: "rat \<Rightarrow> int vec list \<Rightarrow> int vec" where
-  "short_vector_external \<alpha> fs = (let sv = short_vector \<alpha>;
+  "short_vector_external \<alpha> fs = (let 
+    sv = short_vector \<alpha>;
     fsi = map (map integer_of_int o list_of_vec) fs;
     n = dim_vec (hd fs);
     m = length fs in 
   case lll_oracle (map_prod integer_of_int integer_of_int (quotient_of \<alpha>)) fsi of 
-    None \<Rightarrow> sv fs
-  | Some (gsi, u1i, u2i) \<Rightarrow> let 
+    (gsi, u1i, u2i) \<Rightarrow> let 
      u1 = mat_of_rows_list m (map (map int_of_integer) u1i);
      u2 = mat_of_rows_list m (map (map int_of_integer) u2i);
      gs = (map (vec_of_list o map int_of_integer) gsi);
@@ -551,7 +551,6 @@ definition short_vector_external :: "rat \<Rightarrow> int vec list \<Rightarrow
 
 instance bool :: prime_card
   by (standard, auto)
-
 
 context LLL_with_assms
 begin
@@ -574,7 +573,7 @@ proof (atomize(full), goal_cases)
     let ?ext = "lll_oracle (map_prod integer_of_int integer_of_int (quotient_of \<alpha>)) 
       (map (map integer_of_int \<circ> list_of_vec) fs_init)" 
     note res = res[unfolded short_vector_external_def Let_def Code.abort_def]
-    from res False obtain gsi u1i u2i where ext: "?ext = Some (gsi, u1i, u2i)" by (cases ?ext, auto)
+    from res False obtain gsi u1i u2i where ext: "?ext = (gsi, u1i, u2i)" by (cases ?ext, auto)
     define u1 where "u1 = mat_of_rows_list m (map (map int_of_integer) u1i)"
     define u2 where "u2 = mat_of_rows_list m (map (map int_of_integer) u2i)" 
     define gs where "gs = map (vec_of_list o map int_of_integer) gsi" 
@@ -598,23 +597,61 @@ qed
 
 end
 
+consts enable_lll_oracle :: bool
+
+definition short_vector_hybrid :: "rat \<Rightarrow> int vec list \<Rightarrow> int vec" where
+  "short_vector_hybrid = (if enable_lll_oracle then short_vector_external else short_vector)" 
+
+
+context LLL_with_assms
+begin
+
+lemma short_vector_hybrid: assumes res: "short_vector_hybrid \<alpha> fs_init = v"
+  and m0: "m \<noteq> 0"
+shows "v \<in> carrier_vec n"
+  "v \<in> L - {0\<^sub>v n}"
+  "h \<in> L - {0\<^sub>v n} \<Longrightarrow> rat_of_int (sq_norm v) \<le> \<alpha> ^ (m - 1) * rat_of_int (sq_norm h)"
+  "v \<noteq> 0\<^sub>v j"
+proof (atomize (full), goal_cases)
+  case 1 
+  show ?case
+  proof (cases enable_lll_oracle)
+    case True
+    with res[unfolded short_vector_hybrid_def] have "short_vector_external \<alpha> fs_init = v" by simp
+    from short_vector_external[OF this m0] show ?thesis by blast
+  next
+    case False
+    with res[unfolded short_vector_hybrid_def] have "short_vector \<alpha> fs_init = v" by simp
+    from short_vector[OF this m0] show ?thesis by blast
+  qed
+qed
+
+end
+
+
 code_printing
   code_module "LLL_Extern" \<rightharpoonup> (Haskell) \<open>
-  import Prelude (Maybe(Nothing, Just), Integer);
+  import Prelude (Maybe(Nothing, Just), Integer, Bool(..));
   import External_LLL (external_lll);
 
-  lll_extern :: (Integer,Integer) -> [[Integer]] -> Maybe ([[Integer]], ([[Integer]], [[Integer]]));
-  lll_extern alpha fs = case external_lll alpha fs of (g,u,v) -> Just (g,(u,v));\<close>
+  lll_extern :: (Integer,Integer) -> [[Integer]] -> ([[Integer]], ([[Integer]], [[Integer]]));
+  lll_extern alpha fs = (case external_lll alpha fs of (g,u,v) -> (g,(u,v)));
+
+  enable_lll_oracle :: Bool;
+  enable_lll_oracle = True;
+\<close>
+
 
 code_reserved Haskell LLL_Extern External_LLL lll_extern external_lll
 
 code_printing
- constant lll_oracle \<rightharpoonup> (Haskell) "LLL'_Extern.lll'_extern"
+  constant lll_oracle \<rightharpoonup> (Haskell) "LLL'_Extern.lll'_extern"
+| constant enable_lll_oracle \<rightharpoonup> (Haskell) "LLL'_Extern.enable'_lll'_oracle"
 
-definition "short_vector_test_external xs = 
+definition "short_vector_test_hybrid xs = 
   (let ys = map (vec_of_list o map int_of_integer) xs
-   in integer_of_int (sq_norm (short_vector_external (3/2) ys)))" 
+   in integer_of_int (sq_norm (short_vector_hybrid (3/2) ys)))" 
 
-(* export_code short_vector_test_external in Haskell module_name LLL file "~/Code" *)
+(* export_code short_vector_test_hybrid in Haskell module_name LLL file "~/Code" *)
 
 end
