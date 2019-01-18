@@ -28,6 +28,8 @@ session LLL_Basis_Reduction (AFP) = Berlekamp_Zassenhaus +
     LLL_Mu_Integer_Impl_Complexity    
   theories
     LLL_Number_Bounds
+  theories
+    LLL_Certification
   document_files
     "root.tex"
     "root.bib"

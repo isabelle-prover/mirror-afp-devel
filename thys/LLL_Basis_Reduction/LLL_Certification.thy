@@ -11,7 +11,7 @@ but also the matrices which translate between the input basis and the reduced ba
 Then we can easily check whether the resulting lattices are indeed identical and just have
 to start the verified algorithm on the already reduced basis.
 This invocation will then usually just require one computation of Gram--Schmidt in order
-to check that the basis is already reduced. Alternatively, one could also through an error
+to check that the basis is already reduced. Alternatively, one could also throw an error
 message in case the basis is not reduced.\<close>
 
 theory LLL_Certification
