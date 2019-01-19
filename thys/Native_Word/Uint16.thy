@@ -171,12 +171,14 @@ end; (* struct Uint16 *)\<close>
 code_reserved SML_word Uint16
 
 code_printing code_module Uint16 \<rightharpoonup> (Haskell)
-\<open>import qualified Data.Word;
-import qualified Data.Int;
+ \<open>module Uint16(Int16, Word16) where
 
-type Int16 = Data.Int.Int16;
+  import qualified Data.Word
+  import qualified Data.Int
 
-type Word16 = Data.Word.Word16;\<close>
+  type Int16 = Data.Int.Int16
+
+  type Word16 = Data.Word.Word16\<close>
 code_reserved Haskell Uint16
 
 text \<open>Scala provides unsigned 16-bit numbers as Char.\<close>

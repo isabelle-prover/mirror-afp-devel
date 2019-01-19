@@ -162,12 +162,14 @@ end; (* struct Uint8 *)\<close>
 code_reserved SML Uint8
 
 code_printing code_module Uint8 \<rightharpoonup> (Haskell)
-\<open>import qualified Data.Word;
-import qualified Data.Int;
+ \<open>module Uint8(Int8, Word8) where
 
-type Int8 = Data.Int.Int8;
+  import qualified Data.Word
+  import qualified Data.Int
 
-type Word8 = Data.Word.Word8;\<close>
+  type Int8 = Data.Int.Int8
+
+  type Word8 = Data.Word.Word8\<close>
 code_reserved Haskell Uint8
 
 text \<open>

@@ -18,6 +18,8 @@ text \<open>Warning: Since we only define a Haskell binding for FPLLL,
 
 code_printing
   code_module "FPLLL_Solver" \<rightharpoonup> (Haskell) \<open>
+module FPLLL_Solver where {
+
 import System.IO.Unsafe (unsafePerformIO);
 import System.IO (stderr,hPutStrLn,hPutStr);
 import System.Process (readProcessWithExitCode);
@@ -124,7 +126,7 @@ sendError = unsafePerformIO $ do {
 
 id_ofsize :: Int -> [[Integer]];
 id_ofsize n = [[if i == j then 1 else 0 | j <- [0..n-1]] | i <- [0..n-1]];
-\<close>
+}\<close>
 
 code_reserved Haskell FPLLL_Solver fplll_solver
 

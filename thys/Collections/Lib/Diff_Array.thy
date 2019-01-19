@@ -545,7 +545,8 @@ array_shrink a sz = if sz > array_length a then undefined else array_of_size sz 
 (* TODO/FIXME: Using standard functional arrays here, as DiffArray seems 
   to be discontinued in Haskell! *)
 code_printing code_module "Array" \<rightharpoonup>
-  (Haskell) \<open>
+  (Haskell) \<open>module Array where {
+
 --import qualified Data.Array.Diff as Arr;
 import qualified Data.Array as Arr;
 
@@ -575,7 +576,7 @@ array_grow a i x = let (s, e) = Arr.bounds a in Arr.listArray (s, e+i) (Arr.elem
 
 array_shrink :: ArrayType e -> Integer -> ArrayType e;
 array_shrink a sz = if sz > array_length a then undefined else array_of_size sz (Arr.elems a);
-\<close>
+}\<close>
 
 
 

@@ -159,12 +159,14 @@ end; (* struct Uint32 *)\<close>
 code_reserved SML Uint32
 
 code_printing code_module Uint32 \<rightharpoonup> (Haskell)
-\<open>import qualified Data.Word;
-import qualified Data.Int;
+ \<open>module Uint32(Int32, Word32) where
 
-type Int32 = Data.Int.Int32;
+  import qualified Data.Word
+  import qualified Data.Int
 
-type Word32 = Data.Word.Word32;\<close>
+  type Int32 = Data.Int.Int32
+
+  type Word32 = Data.Word.Word32\<close>
 code_reserved Haskell Uint32
 
 text \<open>

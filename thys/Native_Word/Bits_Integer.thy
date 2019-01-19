@@ -145,7 +145,10 @@ end; (*struct Bits_Integer*)\<close>
 code_reserved SML Bits_Integer
 
 code_printing code_module Data_Bits \<rightharpoonup> (Haskell)
-\<open>import qualified Data.Bits;
+\<open>
+module Data_Bits where {
+
+import qualified Data.Bits;
 
 {-
   The ...Bounded functions assume that the Integer argument for the shift 
@@ -205,14 +208,19 @@ shiftrUnbounded x n
 ;
 
 shiftrBounded :: (Ord a, Data.Bits.Bits a) => a -> Integer -> a;
-shiftrBounded x n = Data.Bits.shiftR x (fromInteger n);\<close>
+shiftrBounded x n = Data.Bits.shiftR x (fromInteger n);
+
+}\<close>
 
   and \<comment> \<open>@{theory HOL.Quickcheck_Narrowing} maps @{typ integer} to 
             Haskell's Prelude.Int type instead of Integer. For compatibility
             with the Haskell target, we nevertheless provide bounded and 
             unbounded functions.\<close>
   (Haskell_Quickcheck)
-\<open>import qualified Data.Bits;
+\<open>
+module Data_Bits where {
+
+import qualified Data.Bits;
 
 {-
   The functions assume that the Int argument for the shift or bit index is 
@@ -259,7 +267,9 @@ shiftrUnbounded :: Data.Bits.Bits a => a -> Prelude.Int -> a;
 shiftrUnbounded = Data.Bits.shiftR;
 
 shiftrBounded :: (Ord a, Data.Bits.Bits a) => a -> Prelude.Int -> a;
-shiftrBounded = Data.Bits.shiftR;\<close>
+shiftrBounded = Data.Bits.shiftR;
+
+}\<close>
 code_reserved Haskell Data_Bits
 
 code_printing code_module Bits_Integer \<rightharpoonup> (OCaml)

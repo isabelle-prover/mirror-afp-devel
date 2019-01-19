@@ -196,40 +196,37 @@ end; (* struct Uint *)\<close>
 code_reserved SML Uint
 
 code_printing code_module Uint \<rightharpoonup> (Haskell)
-\<open>
-import qualified Prelude;
-import qualified Data.Word;
-import qualified Data.Int;
-import qualified Data.Bits;
+ \<open>module Uint(Int, Word, dflt_size) where
 
-type Int = Data.Int.Int;
+  import qualified Prelude
+  import qualified Data.Word
+  import qualified Data.Int
+  import qualified Data.Bits
 
-type Word = Data.Word.Word;
+  type Int = Data.Int.Int
 
-dflt_size :: Prelude.Integer;
-dflt_size = Prelude.toInteger (bitSize_aux (0::Word))
-  where {
-    bitSize_aux :: (Data.Bits.Bits a, Prelude.Bounded a) => a -> Uint.Int;
-    bitSize_aux = Data.Bits.bitSize
-  };
-\<close>
+  type Word = Data.Word.Word
+
+  dflt_size :: Prelude.Integer
+  dflt_size = Prelude.toInteger (bitSize_aux (0::Word)) where
+    bitSize_aux :: (Data.Bits.Bits a, Prelude.Bounded a) => a -> Uint.Int
+    bitSize_aux = Data.Bits.bitSize\<close>
   and (Haskell_Quickcheck)
-\<open>
-import qualified Prelude;
-import qualified Data.Word;
-import qualified Data.Int;
-import qualified Data.Bits;
+ \<open>module Uint(Int, Word, dflt_size) where
 
-type Int = Data.Int.Int;
+  import qualified Prelude
+  import qualified Data.Word
+  import qualified Data.Int
+  import qualified Data.Bits
 
-type Word = Data.Word.Word;
+  type Int = Data.Int.Int
 
-dflt_size :: Prelude.Int;
-dflt_size = bitSize_aux (0::Word)
-  where {
-    bitSize_aux :: (Data.Bits.Bits a, Prelude.Bounded a) => a -> Uint.Int;
+  type Word = Data.Word.Word
+
+  dflt_size :: Prelude.Int
+  dflt_size = bitSize_aux (0::Word) where
+    bitSize_aux :: (Data.Bits.Bits a, Prelude.Bounded a) => a -> Uint.Int
     bitSize_aux = Data.Bits.bitSize
-  };
 \<close>
 code_reserved Haskell Uint dflt_size
 

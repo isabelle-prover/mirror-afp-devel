@@ -27,12 +27,13 @@ text\<open>The following \<open>code_printing code_module\<close> module is the 
 in Haskell. In this case, we rebind some functions from Data.Ratio. 
 See @{url "https://lists.cam.ac.uk/pipermail/cl-isabelle-users/2013-June/msg00007.html"}\<close>
 
-code_printing code_module Rational => (Haskell) \<open>
- import qualified Data.Ratio;
- fract (a, b) = a Data.Ratio.% b;
- numerator a = Data.Ratio.numerator a;
- denominator a = Data.Ratio.denominator a;
-\<close>
+code_printing code_module Rational \<rightharpoonup> (Haskell)
+ \<open>module Rational(fract, numerator, denominator) where
+
+  import qualified Data.Ratio
+  import Data.Ratio(numerator, denominator)
+
+  fract (a, b) = a Data.Ratio.% b\<close>
 
 context
 includes integer.lifting

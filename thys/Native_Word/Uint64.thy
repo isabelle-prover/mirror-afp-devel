@@ -358,12 +358,14 @@ end
 \<close>
 
 code_printing code_module Uint64 \<rightharpoonup> (Haskell)
-\<open>import qualified Data.Word;
-import qualified Data.Int;
+ \<open>module Uint64(Int64, Word64) where
 
-type Int64 = Data.Int.Int64;
+  import qualified Data.Word
+  import qualified Data.Int
 
-type Word64 = Data.Word.Word64;\<close>
+  type Int64 = Data.Int.Int64
+
+  type Word64 = Data.Word.Word64\<close>
 code_reserved Haskell Uint64
 
 text \<open>

@@ -57,9 +57,11 @@ subsection\<open>Kernel Code for Target Languages\<close>
      (e.g. '_', '"', ...) *)
 
 lazy_code_printing code_module "CodeType" \<rightharpoonup> (Haskell) \<open>
+module CodeType where {
   type MlInt = Integer
 ; type MlMonad a = IO a
-\<close> | code_module "CodeConst" \<rightharpoonup> (Haskell) \<open>
+}\<close> | code_module "CodeConst" \<rightharpoonup> (Haskell) \<open>
+module CodeConst where {
   import System.Directory
 ; import System.IO
 ; import qualified CodeConst.Printf
@@ -73,11 +75,13 @@ lazy_code_printing code_module "CodeType" \<rightharpoonup> (Haskell) \<open>
 
 ; outStand1 :: ((String -> String -> IO ()) -> IO ()) -> IO ()
 ; outStand1 f = f (\pat -> putStr . CodeConst.Printf.sprintf1 pat)
-\<close> | code_module "CodeConst.Monad" \<rightharpoonup> (Haskell) \<open>
+}\<close> | code_module "CodeConst.Monad" \<rightharpoonup> (Haskell) \<open>
+module CodeConst.Monad where {
   bind a = (>>=) a
 ; return :: a -> IO a
 ; return = Prelude.return
-\<close> | code_module "CodeConst.Printf" \<rightharpoonup> (Haskell) \<open>
+}\<close> | code_module "CodeConst.Printf" \<rightharpoonup> (Haskell) \<open>
+module CodeConst.Printf where {
   import Text.Printf
 ; sprintf0 = id
 
@@ -95,16 +99,18 @@ lazy_code_printing code_module "CodeType" \<rightharpoonup> (Haskell) \<open>
 
 ; sprintf5 :: PrintfArg a => PrintfArg b => PrintfArg c => PrintfArg d => PrintfArg e => String -> a -> b -> c -> d -> e -> String
 ; sprintf5 = printf
-\<close> | code_module "CodeConst.String" \<rightharpoonup> (Haskell) \<open>
+}\<close> | code_module "CodeConst.String" \<rightharpoonup> (Haskell) \<open>
+module CodeConst.String where {
   concat s [] = []
 ; concat s (x : xs) = x ++ concatMap ((++) s) xs
-\<close> | code_module "CodeConst.Sys" \<rightharpoonup> (Haskell) \<open>
+}\<close> | code_module "CodeConst.Sys" \<rightharpoonup> (Haskell) \<open>
+module CodeConst.Sys where {
   import System.Directory
 ; isDirectory2 = doesDirectoryExist
-\<close> | code_module "CodeConst.To" \<rightharpoonup> (Haskell) \<open>
+}\<close> | code_module "CodeConst.To" \<rightharpoonup> (Haskell) \<open>
+module CodeConst.To where {
   nat = id
-
-\<close> | code_module "" \<rightharpoonup> (OCaml) \<open>
+}\<close> | code_module "" \<rightharpoonup> (OCaml) \<open>
 module CodeType = struct
   type mlInt = int
 
