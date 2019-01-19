@@ -360,12 +360,8 @@ end
 code_printing code_module Uint64 \<rightharpoonup> (Haskell)
  \<open>module Uint64(Int64, Word64) where
 
-  import qualified Data.Word
-  import qualified Data.Int
-
-  type Int64 = Data.Int.Int64
-
-  type Word64 = Data.Word.Word64\<close>
+  import Data.Int(Int64)
+  import Data.Word(Word64)\<close>
 code_reserved Haskell Uint64
 
 text \<open>

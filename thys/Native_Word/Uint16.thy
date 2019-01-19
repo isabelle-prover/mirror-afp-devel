@@ -173,12 +173,8 @@ code_reserved SML_word Uint16
 code_printing code_module Uint16 \<rightharpoonup> (Haskell)
  \<open>module Uint16(Int16, Word16) where
 
-  import qualified Data.Word
-  import qualified Data.Int
-
-  type Int16 = Data.Int.Int16
-
-  type Word16 = Data.Word.Word16\<close>
+  import Data.Int(Int16)
+  import Data.Word(Word16)\<close>
 code_reserved Haskell Uint16
 
 text \<open>Scala provides unsigned 16-bit numbers as Char.\<close>

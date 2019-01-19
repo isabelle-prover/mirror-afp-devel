@@ -199,33 +199,25 @@ code_printing code_module Uint \<rightharpoonup> (Haskell)
  \<open>module Uint(Int, Word, dflt_size) where
 
   import qualified Prelude
-  import qualified Data.Word
-  import qualified Data.Int
+  import Data.Int(Int)
+  import Data.Word(Word)
   import qualified Data.Bits
-
-  type Int = Data.Int.Int
-
-  type Word = Data.Word.Word
 
   dflt_size :: Prelude.Integer
   dflt_size = Prelude.toInteger (bitSize_aux (0::Word)) where
-    bitSize_aux :: (Data.Bits.Bits a, Prelude.Bounded a) => a -> Uint.Int
+    bitSize_aux :: (Data.Bits.Bits a, Prelude.Bounded a) => a -> Int
     bitSize_aux = Data.Bits.bitSize\<close>
   and (Haskell_Quickcheck)
  \<open>module Uint(Int, Word, dflt_size) where
 
   import qualified Prelude
-  import qualified Data.Word
-  import qualified Data.Int
+  import Data.Int(Int)
+  import Data.Word(Word)
   import qualified Data.Bits
-
-  type Int = Data.Int.Int
-
-  type Word = Data.Word.Word
 
   dflt_size :: Prelude.Int
   dflt_size = bitSize_aux (0::Word) where
-    bitSize_aux :: (Data.Bits.Bits a, Prelude.Bounded a) => a -> Uint.Int
+    bitSize_aux :: (Data.Bits.Bits a, Prelude.Bounded a) => a -> Int
     bitSize_aux = Data.Bits.bitSize
 \<close>
 code_reserved Haskell Uint dflt_size
