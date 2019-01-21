@@ -615,7 +615,7 @@ context order_with_dual
 begin
 
 lemma upset_inj: "inj \<up>"
-  by (metis inj_comp inj_on_imageI2 downset_inj inj_dual upset_to_downset)
+  by (metis inj_compose inj_on_imageI2 downset_inj inj_dual upset_to_downset)
 
 lemma "(X \<subseteq> Y) = (\<Up>Y \<subseteq> \<Up>X)" (*nitpick*)
   oops
