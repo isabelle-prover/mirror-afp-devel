@@ -9,7 +9,10 @@ begin
 test_code "test_uint64' = 0x12"
 in PolyML
 
-(* Does not work for PolyML 5.6 
-ML {* val 0wx12 = @{code test_uint64'} *} *)
+ML \<open>
+  if ML_System.platform_is_64 then
+    ML \<open>\<^assert> (\<^code>\<open>test_uint64'\<close> = 0wx12)\<close>
+  else ()
+\<close>
 
 end

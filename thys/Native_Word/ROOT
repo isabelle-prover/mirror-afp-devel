@@ -19,9 +19,8 @@ session "Native_Word" (AFP) = "HOL-Word" +
     Native_Word_Test_Emu
     Native_Word_Test_PolyML
     Native_Word_Test_PolyML2
-    Native_Word_Test_Scala
-  theories [condition = ML_SYSTEM_64]
     Native_Word_Test_PolyML64
+    Native_Word_Test_Scala
   theories [condition = ISABELLE_GHC]
     Native_Word_Test_GHC
   theories [condition = ISABELLE_MLTON]
