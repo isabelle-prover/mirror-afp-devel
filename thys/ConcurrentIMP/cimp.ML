@@ -43,19 +43,9 @@ fun com_locs_map f com = com_locs_fold (fn l => fn acc => f l :: acc) [] com
 (* Clag from autocorres *)
 
 (* Define lemmas into the local theory. *)  (* FIXME !? *)
-fun define_lemmas name attrs thm_list lthy =
-  let
-    val ((_, thms), lthy) = Local_Theory.note ((Binding.name name, attrs), thm_list) lthy
-    (*
-     * Restore the theory; not entirely sure why this is needed, but prevents
-     * definitions from taking O(n^2) time (where "n" is the number of
-     * definitions previously made).
-     *)
-    val lthy' = Local_Theory.reset lthy  (* FIXME disrupts context *)
-    val thms' = map (Morphism.thm (Local_Theory.target_morphism lthy)) thms
-  in
-    (thms', lthy')
-  end
+fun define_lemmas name attrs thm_list =
+  Local_Theory.subtarget_result Morphism.fact
+    (Local_Theory.note ((Binding.name name, attrs), thm_list) #>> snd);
 
 (* Cache location set membership facts.
 

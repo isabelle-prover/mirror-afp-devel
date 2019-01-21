@@ -249,25 +249,22 @@ fun define_raw_alpha raw_dt_info bn_info bclausesss fvs lthy =
     val all_alpha_intros = map (pair Binding.empty_atts) (flat alpha_intros @ flat alpha_bn_intros)
 
     val (alpha_info, lthy') = lthy
-      |> Inductive.add_inductive_i
-       {quiet_mode = true, verbose = false, alt_name = Binding.empty,
-        coind = false, no_elim = false, no_ind = false, skip_mono = false}
-         all_alpha_names [] all_alpha_intros []
+      |> Local_Theory.subtarget_result Inductive.transform_result
+        (Inductive.add_inductive_i
+         {quiet_mode = true, verbose = false, alt_name = Binding.empty,
+          coind = false, no_elim = false, no_ind = false, skip_mono = false}
+           all_alpha_names [] all_alpha_intros [])
 
-    val all_alpha_trms_loc = #preds alpha_info;
-    val alpha_raw_induct_loc = #raw_induct alpha_info;
-    val alpha_intros_loc = #intrs alpha_info;
-    val alpha_cases_loc = #elims alpha_info;
     val phi =
       Proof_Context.export_morphism lthy'
         (Proof_Context.transfer (Proof_Context.theory_of lthy') lthy);
 
-    val all_alpha_trms = all_alpha_trms_loc
-      |> map (Morphism.term phi)
-      |> map Type.legacy_freeze
-    val alpha_raw_induct = Morphism.thm phi alpha_raw_induct_loc
-    val alpha_intros = map (Morphism.thm phi) alpha_intros_loc
-    val alpha_cases = map (Morphism.thm phi) alpha_cases_loc
+    val alpha_info_global = Inductive.transform_result phi alpha_info;
+
+    val all_alpha_trms = #preds alpha_info_global |> map Type.legacy_freeze (*FIXME*)
+    val alpha_raw_induct = #raw_induct alpha_info_global
+    val alpha_intros = #intrs alpha_info_global;
+    val alpha_cases = #elims alpha_info_global;
 
     val (alpha_trms, alpha_bn_trms) = chop (length fvs) all_alpha_trms
 
@@ -286,7 +283,7 @@ fun define_raw_alpha raw_dt_info bn_info bclausesss fvs lthy =
        alpha_bn_tys = alpha_bn_tys,
        alpha_intros = alpha_intros,
        alpha_cases = alpha_cases,
-       alpha_raw_induct = alpha_raw_induct}, Local_Theory.reset lthy')  (* FIXME disrupts context *)
+       alpha_raw_induct = alpha_raw_induct}, lthy')
   end
 
 

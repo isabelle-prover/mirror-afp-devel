@@ -86,8 +86,6 @@ sig
 
   val freeify_tvars : typ -> typ
 
-  val restore_with_morphism : local_theory -> morphism * local_theory
-
   val add_used_tycos : Proof.context -> string -> string list -> string list
 
   val type_parameters : typ -> Proof.context -> (string * sort) list * typ list
@@ -246,10 +244,6 @@ fun add_used_tycos ctxt tyco =
       (case BNF_FP_Def_Sugar.fp_sugar_of ctxt tyco of
         NONE => I
       | SOME sugar => #fp_ctr_sugar sugar |> #ctrXs_Tss |> flat |> fold add_tycos)
-
-fun restore_with_morphism lthy_old =
-      Local_Theory.reset lthy_old    (* FIXME disrupts context *)
-      |> `(Proof_Context.export_morphism lthy_old)
 
 fun infer_type ctxt =
       map_types (map_type_tvar (K dummyT))

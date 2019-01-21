@@ -217,12 +217,11 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
     val eqs = map (generate_pcomp_eqs lthy) (tycos ~~ Ts) |> flat
     val bindings = tycos ~~ Ts |> map mk_pcomp
       |> map (fn (name, T) => (Binding.name name, SOME T, NoSyn))
-    val ((pcomps, _, pcomp_simps), lthy) = lthy
-      |> BNF_LFP_Rec_Sugar.primrec false [] bindings
-        (map (fn t => ((Binding.empty_atts, t), [], [])) eqs)
-    val (phi, lthy) = restore_with_morphism lthy
-    val pcomps = map (Morphism.term phi) pcomps
-    val pcomp_simps = pcomp_simps |> map (Morphism.fact phi)
+
+    val ((pcomps, pcomp_simps), lthy) = Local_Theory.subtarget_result
+      (fn phi => fn (pcomps, _, pcomp_simps) => (map (Morphism.term phi) pcomps, map (Morphism.fact phi) pcomp_simps))
+      (BNF_LFP_Rec_Sugar.primrec false [] bindings
+        (map (fn t => ((Binding.empty_atts, t), [], [])) eqs)) lthy
 
     (* definitions of equalitys via partial equalitys and maps *)
 
@@ -246,10 +245,10 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
         |>> the_single o snd
         |>> `(K comp)
       end
-    val ((comps, comp_defs), lthy) = fold_map generate_comp_def tycos lthy |>> split_list
-    val (phi, lthy) = restore_with_morphism lthy
-    val comps = map (Morphism.term phi) comps
-    val comp_defs = map (Morphism.thm phi) comp_defs
+
+    val ((comps, comp_defs), lthy) = Local_Theory.subtarget_result
+      (fn phi => fn (comps, comp_defs) => (map (Morphism.term phi) comps, map (Morphism.thm phi) comp_defs))
+      (fold_map generate_comp_def tycos #>> split_list) lthy
 
     (* alternative simp-rules for equalitys *)
 
@@ -329,9 +328,9 @@ fun generate_equalitys_from_bnf_fp tyco lthy =
         |> (fn lthy => (thms, lthy))
       end
 
-    val (comp_simps, lthy) = fold_map generate_comp_simps (tycos ~~ Ts) lthy
-    val (phi, lthy) = restore_with_morphism lthy
-    val comp_simps = map (Morphism.fact phi) comp_simps
+    val (comp_simps, lthy) = Local_Theory.subtarget_result
+      (fn phi => map (Morphism.fact phi))
+      (fold_map generate_comp_simps (tycos ~~ Ts)) lthy
 
     (* partial theorems *)
 

@@ -263,19 +263,20 @@ let
     raw_prove_eqvt raw_bns raw_bn_inducts (raw_bn_defs @ raw_perm_simps) lthy4
 
   (* noting the raw_bn_eqvt lemmas in a temprorary theory *)
-  val lthy_tmp = snd (Local_Theory.note ((Binding.empty, [eqvt_attr]), raw_bn_eqvt) lthy4)
+  val lthy_tmp = Local_Theory.subtarget
+    (Local_Theory.note ((Binding.empty, [eqvt_attr]), raw_bn_eqvt) #> snd) lthy4
 
   val raw_fv_eqvt =
     raw_prove_eqvt (raw_fvs @ raw_fv_bns) raw_fv_bns_induct (raw_fv_defs @ raw_perm_simps)
-      (Local_Theory.reset lthy_tmp)
+      lthy_tmp
 
   val raw_size_eqvt =
     let
       val RawDtInfo {raw_size_trms, raw_size_thms, raw_induct_thms, ...} = raw_dt_info
     in
       raw_prove_eqvt raw_size_trms raw_induct_thms (raw_size_thms @ raw_perm_simps)
-        (Local_Theory.reset lthy_tmp)
-        |> map (rewrite_rule (Local_Theory.reset lthy_tmp)
+        lthy_tmp
+        |> map (rewrite_rule lthy_tmp
             @{thms permute_nat_def[THEN eq_reflection]})
         |> map (fn thm => thm RS @{thm sym})
     end
