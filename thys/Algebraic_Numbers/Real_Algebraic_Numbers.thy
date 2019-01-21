@@ -3461,6 +3461,12 @@ proof
 qed
 end
 
+definition real_alg_of_real :: "real \<Rightarrow> real_alg" where
+  "real_alg_of_real x = (if (\<exists> y. x = real_of y) then (THE y. x = real_of y) else 0)" 
+
+lemma real_alg_of_real_code[code]: "real_alg_of_real (real_of x) = x"
+  using real_of_inj unfolding real_alg_of_real_def by auto
+
 lift_definition to_rat_real_alg_main :: "real_alg \<Rightarrow> rat option" is to_rat_3
   by (simp add: to_rat_3)
 

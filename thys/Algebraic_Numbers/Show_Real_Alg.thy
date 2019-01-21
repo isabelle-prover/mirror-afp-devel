@@ -38,11 +38,7 @@ derive "show" real_alg
 text \<open>We now define @{const show_real}.\<close>
 overloading show_real \<equiv> show_real
 begin
-  definition "show_real x \<equiv>
-    (if (\<exists> y. x = real_of y) then show_real_alg (THE y. x = real_of y) else ''transcendental number'')"
+  definition "show_real \<equiv> show_real_alg o real_alg_of_real"
 end
-
-lemma show_real_alg[code]: "show_real (real_of x) = show_real_alg x"
-  unfolding show_real_def by (auto simp: real_of_inj)
 
 end
