@@ -203,7 +203,7 @@ lemma mult_monom: "monom x a * monom y b = monom (x + y) (a * b)"
   by transfer' (simp add: Poly_Mapping.mult_single)
 
 instance mpoly :: (semiring_char_0) semiring_char_0
-  by intro_classes (auto simp add: of_nat_monom inj_of_nat intro: inj_comp)
+  by intro_classes (auto simp add: of_nat_monom inj_of_nat intro: inj_compose)
 
 instance mpoly :: (ring_char_0) ring_char_0
   ..

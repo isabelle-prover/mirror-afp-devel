@@ -343,7 +343,7 @@ text %visible \<open>\hrulefill ~~ Part 2 ~~ \hrulefill\<close>
   also have "(\<Sum>i\<le>n. X^i *\<^sub>S \<^bold>C (A * B i)) =
       (\<Sum>i<n. X^(i + 1) *\<^sub>S \<^bold>C (A * B (i + 1))) + \<^bold>C (A * B 0)"
     unfolding %invisible lessThan_Suc_atMost[symmetric] lessThan_Suc_eq_insert_0
-    by %invisible (simp add: Zero_notin_Suc monom_0 sum.reindex one_poly_def[symmetric] diag_mult)
+    by %invisible (simp add: zero_notin_Suc_image monom_0 sum.reindex one_poly_def[symmetric] diag_mult)
   finally have diag_charpoly:
     "charpoly A *\<^sub>S 1 = X^(n + 1) *\<^sub>S \<^bold>C (B n) +
       (\<Sum>i<n. X^(i + 1) *\<^sub>S \<^bold>C (B i - A * B (i + 1))) - \<^bold>C (A * B 0)"

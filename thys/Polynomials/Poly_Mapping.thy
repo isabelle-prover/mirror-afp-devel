@@ -795,7 +795,7 @@ proof transfer
 qed
 
 instance poly_mapping :: (monoid_add, semiring_char_0) semiring_char_0
-  by intro_classes (auto intro: inj_comp inj_of_nat simp add: of_nat_single)
+  by intro_classes (auto intro: inj_compose inj_of_nat simp add: of_nat_single)
 
 instance poly_mapping :: (monoid_add, ring_char_0) ring_char_0
   ..
@@ -1258,7 +1258,7 @@ lemma map_key_compose:
   shows "map_key f (map_key g p) = map_key (g \<circ> f) p"
 proof -
   from assms have [transfer_rule]: "inj (g \<circ> f)"
-    by(simp add: inj_comp)
+    by(simp add: inj_compose)
   show ?thesis by transfer(simp add: o_assoc)
 qed
 
