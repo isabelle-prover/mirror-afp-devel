@@ -250,7 +250,7 @@ fun define_raw_alpha raw_dt_info bn_info bclausesss fvs lthy =
 
     val (alpha_info, lthy') = lthy
       |> Local_Theory.subtarget_result Inductive.transform_result
-        (Inductive.add_inductive_i
+        (Inductive.add_inductive
          {quiet_mode = true, verbose = false, alt_name = Binding.empty,
           coind = false, no_elim = false, no_ind = false, skip_mono = false}
            all_alpha_names [] all_alpha_intros [])
