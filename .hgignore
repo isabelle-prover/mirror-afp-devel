@@ -62,6 +62,10 @@ thys/Refine_Imperative_HOL/benchmarks/NestedDFS/isabelle/NDFS_Benchmark_export.s
 
 thys/SPARCv8/SparcModel_MMU/sparc_seq
 
+thys/Tree-Automata/code/haskell/generated/Array.hs
+thys/Tree-Automata/code/haskell/generated/Data_Bits.hs
+thys/Tree-Automata/code/haskell/generated/Natural.hs
+thys/Tree-Automata/code/haskell/generated/Uint32.hs
+
 admin/py-bootstrap
 admin/venv
-
