@@ -7732,3 +7732,20 @@ abstract =
   as extension to the IMP language which comes with the Isabelle
   distribution.  While this entry is limited to a simple imperative
   language, the ideas could be extended to more sophisticated languages.
+
+[Farkas]
+title = Farkas' Lemma and Motzkin's Transposition Theorem
+author = Ralph Bottesch <http://cl-informatik.uibk.ac.at/users/bottesch/>, Max W. Haslbeck <http://cl-informatik.uibk.ac.at/users/mhaslbeck/>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann/>
+topic = Mathematics/Algebra
+date = 2019-01-17
+notify = rene.thiemann@uibk.ac.at
+abstract = 
+  We formalize a proof of Motzkin's transposition theorem and
+  Farkas' lemma in Isabelle/HOL. Our proof is based on the
+  formalization of the simplex algorithm which, given a set of linear
+  constraints, either returns a satisfying assignment to the problem or
+  detects unsatisfiability. By reusing facts about the simplex algorithm
+  we show that a set of linear constraints is unsatisfiable if and only
+  if there is a linear combination of the constraints which evaluates to
+  a trivially unsatisfiable inequality.
+
