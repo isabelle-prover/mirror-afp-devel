@@ -13,7 +13,7 @@ text \<open>Let $c_1,\dots,c_n$ be a finite list of linear inequalities.
   unsatisfiable if and only if Farkas coefficients exist. We will prove this lemma
   with the help of the simplex algorithm of Dutertre and de~Moura's.
 
-  Note that the simplex implementation in works on four layers, and we will formulate and prove 
+  Note that the simplex implementation works on four layers, and we will formulate and prove 
   a variant of Farkas' Lemma for each of these layers.\<close>
 
 theory Farkas
@@ -482,7 +482,7 @@ proof -
   have "\<exists> x c d. Leq x c \<in> ?A \<and> Geq x d \<in> ?A \<and> c < d" 
   proof (cases a)
     case (Geq x d)
-    let ?s = "update\<B>\<I> (Direction.UBI_upd (Direction (\<lambda>x y. y < x) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l \<I>\<^sub>u \<I>\<^sub>l \<B>\<^sub>i\<^sub>l_update Geq Leq))
+    let ?s = "update\<B>\<I> (Direction.UBI_upd (Direction (\<lambda>x y. y < x) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l \<I>\<^sub>u \<I>\<^sub>l \<B>\<^sub>i\<^sub>l_update Geq Leq (\<le>)))
                         i x d s" 
     have id: "\<U> ?s = \<U> s" by auto
     have norm: "\<triangle> (\<T> ?s)" using inv by auto
@@ -501,7 +501,7 @@ proof -
     from xc xd lt show ?thesis by auto
   next
     case (Leq x c)
-    let ?s = "update\<B>\<I> (Direction.UBI_upd (Direction (<) \<B>\<^sub>i\<^sub>l \<B>\<^sub>i\<^sub>u \<B>\<^sub>l \<B>\<^sub>u \<I>\<^sub>l \<I>\<^sub>u \<B>\<^sub>i\<^sub>u_update Leq Geq)) i x c s" 
+    let ?s = "update\<B>\<I> (Direction.UBI_upd (Direction (<) \<B>\<^sub>i\<^sub>l \<B>\<^sub>i\<^sub>u \<B>\<^sub>l \<B>\<^sub>u \<I>\<^sub>l \<I>\<^sub>u \<B>\<^sub>i\<^sub>u_update Leq Geq (\<ge>))) i x c s" 
     have id: "\<U> ?s = \<U> s" by auto
     have norm: "\<triangle> (\<T> ?s)" using inv by auto
     have val: "\<nabla> ?s" using inv(4) unfolding tableau_valuated_def by simp
@@ -991,6 +991,26 @@ proof -
     by blast
 qed
 
+lemma preprocess'_unsat_indexD: "i \<in> set (UnsatIndices (preprocess' ns j)) \<Longrightarrow> 
+  \<exists> c. poly c = 0 \<and> \<not> zero_satisfies c \<and> (i,c) \<in> set ns" 
+  by (induct ns j rule: preprocess'.induct, auto simp: Let_def split: if_splits option.splits)
+
+lemma preprocess'_unsat_index_farkas_coefficients_ns: 
+  assumes "i \<in> set (UnsatIndices (preprocess' ns j))" 
+  shows "\<exists> C. farkas_coefficients_ns (snd ` set ns) C" 
+proof -
+  from preprocess'_unsat_indexD[OF assms]
+  obtain c where contr: "poly c = 0" "\<not> zero_satisfies c" and mem: "(i,c) \<in> set ns" by auto
+  from mem have mem: "c \<in> snd ` set ns" by force
+  let ?c = "ns_constraint_const c" 
+  define r where "r = (case c of LEQ_ns _ _ \<Rightarrow> 1 | _ \<Rightarrow> (-1 :: rat))" 
+  define d where "d = (case c of LEQ_ns _ _ \<Rightarrow> ?c | _ \<Rightarrow> - ?c)" 
+  have [simp]: "(- x < 0) = (0 < x)" for x :: QDelta using uminus_less_lrv[of _ 0] by simp
+  show ?thesis unfolding farkas_coefficients_ns_def 
+    by (intro exI[of _ "[(r,c)]"] exI[of _ d], insert mem contr, cases "c", 
+        auto simp: r_def d_def)
+qed
+
 text \<open>The combination of the previous results easily provides the main result of this section:
   a finite set of non-strict constraints on layer~2 is unsatisfiable if and only if there are Farkas coefficients.
   Again, here we use results from the simplex formalization, namely soundness of the preprocess-function.\<close>
@@ -1004,20 +1024,26 @@ next
   assume unsat: "\<nexists> v. v \<Turnstile>\<^sub>n\<^sub>s\<^sub>s ns" 
   from finite_list[OF assms] obtain nsl where ns: "ns = set nsl" by auto
   let ?cs = "map (Pair ()) nsl" 
-  obtain t ias where part1: "preprocess_part_1 ?cs = (t,ias)" by force
+  obtain I t ias where part1: "preprocess_part_1 ?cs = (t,ias,I)" by (cases "preprocess_part_1 ?cs", auto)
   let ?as = "snd ` set ias" 
   let ?s = "start_fresh_variable ?cs" 
   have fin: "finite ?as" by auto
   have id: "ias = Atoms (preprocess' ?cs ?s)" "t = Tableau (preprocess' ?cs ?s)" 
+    "I = UnsatIndices (preprocess' ?cs ?s)" 
     using part1 unfolding preprocess_part_1_def Let_def by auto
   have norm: "\<triangle> t" using normalized_tableau_preprocess'[of ?cs] unfolding  id .
   {
     fix v
     assume "v \<Turnstile>\<^sub>a\<^sub>s ?as" "v \<Turnstile>\<^sub>t t" 
-    from preprocess'_sat[OF this[unfolded id]] unsat[unfolded ns] have False by auto
+    from preprocess'_sat[OF this[unfolded id], folded id] unsat[unfolded ns] 
+    have "set I \<noteq> {}" by auto
+    then obtain i where "i \<in> set I" using all_not_in_conv by blast
+    from preprocess'_unsat_index_farkas_coefficients_ns[OF this[unfolded id]]
+    have "\<exists>C. farkas_coefficients_ns (snd ` set ?cs) C" by simp
   }    
   with farkas_coefficients_atoms_tableau[OF norm fin]
-  obtain C where "farkas_coefficients_atoms_tableau ?as t C" by blast
+  obtain C where "farkas_coefficients_atoms_tableau ?as t C
+     \<or> (\<exists>C. farkas_coefficients_ns (snd ` set ?cs) C)" by blast
   from farkas_coefficients_preprocess'[of ?cs, OF refl] this
   have "\<exists> C. farkas_coefficients_ns (snd ` set ?cs) C" 
     using part1 unfolding preprocess_part_1_def Let_def by auto

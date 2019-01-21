@@ -86,11 +86,12 @@ lemma normalized_tableau_preprocess': "\<triangle> (Tableau (preprocess' cs (sta
 proof -
   let ?s = "start_fresh_variable cs"
   show ?thesis
-    using lvars_distinct
+    using lvars_distinct[of cs ?s]
     using lvars_tableau_ge_start[of cs ?s]
     using vars_tableau_vars_constraints[of cs ?s]
     using start_fresh_variable_fresh[of cs] 
-    by (force simp add: Let_def normalized_tableau_def preprocess_part_1_def)
+    unfolding normalized_tableau_def Let_def
+    by (smt disjoint_iff_not_equal inf.absorb_iff2 inf.strict_order_iff rhs_no_zero_tableau_start set_mp)
 qed
 
 end
