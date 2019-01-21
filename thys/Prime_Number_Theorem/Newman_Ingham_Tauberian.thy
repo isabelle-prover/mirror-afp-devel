@@ -64,7 +64,7 @@ lemma hurwitz_zeta_real_bound_aux:
   shows "(\<Sum>i. (a + real (Suc i)) powr (-x)) \<le> a powr (1 - x) / (x - 1)"
 proof (rule decreasing_sum_le_integral, goal_cases)
   have "((\<lambda>t. (a + t) powr -x) has_integral -(a powr (-x + 1)) / (-x + 1)) (interior {0..})"
-    using powr_has_integral_at_top[of 0 a "-x"] using ax by (simp add: interior_real_semiline)
+    using powr_has_integral_at_top[of 0 a "-x"] using ax by (simp add: interior_real_atLeast)
   also have "-(a powr (- x + 1)) / (- x + 1) = a powr (1 - x) / (x - 1)"
     using ax by (simp add: field_simps)
   finally show "((\<lambda>t. (a + t) powr -x) has_integral a powr (1 - x) / (x - 1)) {0..}"
