@@ -187,7 +187,7 @@ proof (rule stream_space_eq_sstart)
     also have "\<dots> = emeasure (K.T t) (sstart S xs) * pmf (K s) t"
       by (simp add: emeasure_pmf_single max_def)
     finally show ?case
-      by (simp add: lessThan_Suc_eq_insert_0 Zero_notin_Suc prod.reindex Cons
+      by (simp add: lessThan_Suc_eq_insert_0 zero_notin_Suc_image prod.reindex Cons
         prod_nonneg ennreal_mult[symmetric])
   qed
   also have "pmf I s * ennreal (\<Prod>i<length xs. pmf (K ((s#xs)!i)) (xs!i)) =

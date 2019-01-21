@@ -86,7 +86,7 @@ qed
 lemma p_fun_mult_var: "x\<^sup>\<smile> ; x \<le> 1' \<Longrightarrow> (x \<cdot> y)\<^sup>\<smile> ; (x \<cdot> y) \<le> 1'"
 by (metis conv_times inf_le1 mult_isol_var order_trans)
 
-lemma inj_comp:
+lemma inj_compose:
   assumes "is_inj x" and "is_inj y"
   shows "is_inj (x ; y)"
 by (metis assms conv_contrav inj_p_fun p_fun_comp)
@@ -118,7 +118,7 @@ by (metis assms is_map_def p_fun_comp total_comp)
 lemma bij_comp:
   assumes "is_bij x" and "is_bij y"
   shows "is_bij (x ; y)"
-by (metis assms is_bij_def inj_comp map_comp sur_comp)
+by (metis assms is_bij_def inj_compose map_comp sur_comp)
 
 text \<open>We now show that (partial) functions, unlike relations, distribute over
 meets from the left.\<close>

@@ -1450,7 +1450,7 @@ proof -
   from A2 have g_inj: "inj g" by (unfold one_reducible_to_via_def, auto)
   from A2 have L2: "\<forall> x. (x \<in> B) = (g x \<in> C)" by (unfold one_reducible_to_via_def, auto)
   from g_tr f_tr have fg_tr: "total_recursive (g o f)" by (rule comp_tot_rec)
-  from g_inj f_inj have fg_inj: "inj (g o f)" by (rule inj_comp)
+  from g_inj f_inj have fg_inj: "inj (g o f)" by (rule inj_compose)
   from L1 L2 have L3: "(\<forall> x. (x \<in> A) = ((g o f) x \<in> C))" by auto
   with fg_tr fg_inj show ?thesis by (unfold one_reducible_to_via_def, auto)
 qed

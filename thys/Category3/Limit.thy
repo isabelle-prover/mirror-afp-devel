@@ -812,7 +812,7 @@ begin
       apply unfold_locales
       using UP_mapsto
        apply auto[1]
-      using inj_UP inj_Inr inj_comp
+      using inj_UP inj_Inr inj_compose
       by metis
 
     notation SetCat.comp      (infixr "\<cdot>\<^sub>S" 55)
@@ -825,7 +825,7 @@ begin
       apply (unfold_locales)
       using UP_mapsto
        apply auto[1]
-      using SetCat.inj_UP injD inj_onI inj_Inl inj_comp
+      using SetCat.inj_UP injD inj_onI inj_Inl inj_compose
       by (metis (no_types, lifting))
 
     interpretation Y: yoneda_functor C "SetCat.comp :: ('c + ('j \<Rightarrow> 'c)) SetCat.arr comp"
@@ -1090,7 +1090,7 @@ begin
               assume X': "X' \<in> \<iota> ` D.cones a'"
               hence "\<o> X' \<in> \<o> ` \<iota> ` D.cones a'" by simp
               hence "\<o> X' \<in> D.cones a'"
-                by (simp add: inj_UP inj_comp)
+                by (simp add: inj_UP inj_compose)
               hence "\<exists>!f. \<guillemotleft>f : a' \<rightarrow> a\<guillemotright> \<and> D.cones_map f \<chi> = \<o> X'"
                 using a' is_universal by simp
               from this obtain f where "\<guillemotleft>f : a' \<rightarrow> a\<guillemotright> \<and> D.cones_map f \<chi> = \<o> X'"
