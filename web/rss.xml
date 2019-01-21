@@ -9,7 +9,23 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>15 Jan 2019 00:00:00 +0000</pubDate>
+    <pubDate>17 Jan 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Farkas' Lemma and Motzkin's Transposition Theorem</title>
+              <link>https://www.isa-afp.org/entries/Farkas.html</link>
+       <guid>https://www.isa-afp.org/entries/Farkas.html</guid>
+       <dc:creator> Ralph Bottesch, Max W. Haslbeck, René Thiemann       </dc:creator>
+       <pubDate>17 Jan 2019 00:00:00 +0000</pubDate>
+       <description>
+We formalize a proof of Motzkin&#39;s transposition theorem and
+Farkas&#39; lemma in Isabelle/HOL. Our proof is based on the
+formalization of the simplex algorithm which, given a set of linear
+constraints, either returns a satisfying assignment to the problem or
+detects unsatisfiability. By reusing facts about the simplex algorithm
+we show that a set of linear constraints is unsatisfiable if and only
+if there is a linear combination of the constraints which evaluates to
+a trivially unsatisfiable inequality.</description>
+    </item>
     <item>
        <title>IMP2 – Simple Program Verification in Isabelle/HOL</title>
               <link>https://www.isa-afp.org/entries/IMP2.html</link>
@@ -559,28 +575,6 @@ stepwise program refinement, starting from a simple specification,
 going through a number of refinement steps, and ending up in a fully
 executable functional implementation. Symmetries present in the
 algorithm are handled with special care.</description>
-    </item>
-    <item>
-       <title>Minsky Machines</title>
-              <link>https://www.isa-afp.org/entries/Minsky_Machines.html</link>
-       <guid>https://www.isa-afp.org/entries/Minsky_Machines.html</guid>
-       <dc:creator> Bertram Felgenhauer       </dc:creator>
-       <pubDate>14 Aug 2018 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt; We formalize undecidablity results for Minsky machines. To
-this end, we also formalize recursive inseparability.
-&lt;/p&gt;&lt;p&gt; We start by proving that Minsky machines can
-compute arbitrary primitive recursive and recursive functions. We then
-show that there is a deterministic Minsky machine with one argument
-and two final states such that the set of inputs that are accepted in
-one state is recursively inseparable from the set of inputs that are
-accepted in the other state. &lt;/p&gt;&lt;p&gt; As a corollary, the
-set of Minsky configurations that reach the first state but not the
-second recursively inseparable from the set of Minsky configurations
-that reach the second state but not the first. In particular both
-these sets are undecidable. &lt;/p&gt;&lt;p&gt; We do
-&lt;em&gt;not&lt;/em&gt; prove that recursive functions can simulate
-Minsky machines. &lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

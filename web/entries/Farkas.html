@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>An Incremental Simplex Algorithm with Unsatisfiable Core Generation - Archive of Formal Proofs
+<title>Farkas' Lemma and Motzkin's Transposition Theorem - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,21 +61,17 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">A</font>n
+  <h1>          <font class="first">F</font>arkas'
   
-          <font class="first">I</font>ncremental
+          <font class="first">L</font>emma
   
-          <font class="first">S</font>implex
+          and
   
-          <font class="first">A</font>lgorithm
+          <font class="first">M</font>otzkin's
   
-          with
+          <font class="first">T</font>ransposition
   
-          <font class="first">U</font>nsatisfiable
-  
-          <font class="first">C</font>ore
-  
-          <font class="first">G</font>eneration
+          <font class="first">T</font>heorem
   
 </h1>
   <p>&nbsp;</p>
@@ -84,7 +80,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">An Incremental Simplex Algorithm with Unsatisfiable Core Generation</td>
+  <td class="data" width="80%">Farkas' Lemma and Motzkin's Transposition Theorem</td>
 </tr>
 
 <tr>
@@ -92,8 +88,8 @@
           Authors:
       </td>
   <td class="data">
-                      Filip Marić (filip /at/ matf /dot/ bg /dot/ ac /dot/ rs),
-                Mirko Spasić (mirko /at/ matf /dot/ bg /dot/ ac /dot/ rs) and
+                      <a href="http://cl-informatik.uibk.ac.at/users/bottesch/">Ralph Bottesch</a>,
+                <a href="http://cl-informatik.uibk.ac.at/users/mhaslbeck/">Max W. Haslbeck</a> and
           <a href="http://cl-informatik.uibk.ac.at/~thiemann/">René Thiemann</a>
       </td>
 </tr>
@@ -102,34 +98,33 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2018-08-24</td>
+  <td class="data">2019-01-17</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-We present an Isabelle/HOL formalization and total correctness proof
-for the incremental version of the Simplex algorithm which is used in
-most state-of-the-art SMT solvers. It supports extraction of
-satisfying assignments, extraction of unsatisfiable cores, incremental
-assertion of constraints and backtracking. Formalization relies on
-stepwise program refinement, starting from a simple specification,
-going through a number of refinement steps, and ending up in a fully
-executable functional implementation. Symmetries present in the
-algorithm are handled with special care.</td>
+We formalize a proof of Motzkin's transposition theorem and
+Farkas' lemma in Isabelle/HOL. Our proof is based on the
+formalization of the simplex algorithm which, given a set of linear
+constraints, either returns a satisfying assignment to the problem or
+detects unsatisfiability. By reusing facts about the simplex algorithm
+we show that a set of linear constraints is unsatisfiable if and only
+if there is a linear combination of the constraints which evaluates to
+a trivially unsatisfiable inequality.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Simplex-AFP,
-  author  = {Filip Marić and Mirko Spasić and René Thiemann},
-  title   = {An Incremental Simplex Algorithm with Unsatisfiable Core Generation},
+        <pre>@article{Farkas-AFP,
+  author  = {Ralph Bottesch and Max W. Haslbeck and René Thiemann},
+  title   = {Farkas' Lemma and Motzkin's Transposition Theorem},
   journal = {Archive of Formal Proofs},
-  month   = aug,
-  year    = 2018,
-  note    = {\url{http://isa-afp.org/entries/Simplex.html},
+  month   = jan,
+  year    = 2019,
+  note    = {\url{http://isa-afp.org/entries/Farkas.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -140,10 +135,10 @@ algorithm are handled with special care.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Farkas.html">Farkas</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Simplex.html">Simplex</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -155,17 +150,17 @@ algorithm are handled with special care.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Simplex/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Simplex/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Farkas/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Farkas/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Simplex/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Farkas/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Simplex-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Farkas-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
