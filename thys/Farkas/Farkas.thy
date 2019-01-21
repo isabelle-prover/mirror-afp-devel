@@ -17,7 +17,7 @@ text \<open>Let $c_1,\dots,c_n$ be a finite list of linear inequalities.
   a variant of Farkas' Lemma for each of these layers.\<close>
 
 theory Farkas
-  imports More_Simplex
+  imports Simplex.Simplex
 begin
 
 subsection \<open>Linear Inequalities\<close>
@@ -234,7 +234,7 @@ proof -
     have [simp]: "set XL\<^sub>j = X\<^sub>j" unfolding XL\<^sub>j_def X\<^sub>j_def 
       using set_vars_list by blast
     have XL\<^sub>j_distinct: "distinct XL\<^sub>j"
-      unfolding XL\<^sub>j_def using ALP_vars_list_distinct by simp
+      unfolding XL\<^sub>j_def using distinct_vars_list by simp
     define A where "A = coeff (rhs ?eq)"
     have bounds_id: "\<B>\<^sub>A (set_unsat I s) = \<B>\<^sub>A s" "\<B>\<^sub>u (set_unsat I s) = \<B>\<^sub>u s" "\<B>\<^sub>l (set_unsat I s) = \<B>\<^sub>l s"
       by (auto simp: boundsl_def boundsu_def bound_atoms_def)

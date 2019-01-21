@@ -7383,6 +7383,19 @@ lemma lvars_distinct:
   using first_fresh_variable_not_in_lvars[where ?'a = 'a]
   by (induct cs, auto simp add: Let_def lvars_def) (force split: option.splits)
 
+lemma normalized_tableau_preprocess': "\<triangle> (Tableau (preprocess' cs (start_fresh_variable cs)))"
+proof -
+  let ?s = "start_fresh_variable cs"
+  show ?thesis
+    using lvars_distinct[of cs ?s]
+    using lvars_tableau_ge_start[of cs ?s]
+    using vars_tableau_vars_constraints[of cs ?s]
+    using start_fresh_variable_fresh[of cs] 
+    unfolding normalized_tableau_def Let_def
+    by (smt disjoint_iff_not_equal inf.absorb_iff2 inf.strict_order_iff rhs_no_zero_tableau_start set_mp)
+qed
+
+
 text \<open>Improved preprocessing: Deletion. An equation x = p can be deleted from the tableau,
   if x does not occur in the atoms.\<close>
 
@@ -7566,13 +7579,8 @@ proof
   from id[unfolded preprocess_def part1 split ncs_def[symmetric]]
   have part_2: "preprocess_part_2 as t = (t',trans_v)" 
     by (auto split: prod.splits)
-  have norm: "\<triangle> t"
-    using lvars_distinct
-    using lvars_tableau_ge_start[of ncs "start_fresh_variable ncs"]
-    using vars_tableau_vars_constraints[of ncs "start_fresh_variable ncs"]
-    using start_fresh_variable_fresh[of ncs] part1
-    using rhs_no_zero_tableau_start[of ncs "start_fresh_variable ncs"]
-    by (force simp: Let_def normalized_tableau_def preprocess_part_1_def)
+  have norm: "\<triangle> t" using normalized_tableau_preprocess' part1
+    by (auto simp: preprocess_part_1_def Let_def)
   note part_2 = preprocess_part_2[OF part_2 norm]
   show "\<triangle> t'" by fact
   have unsat: "(I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<Longrightarrow> I \<inter> set ui = {} \<Longrightarrow> (I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set ncs" for v 
