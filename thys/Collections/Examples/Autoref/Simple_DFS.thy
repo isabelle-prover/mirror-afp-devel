@@ -293,7 +293,7 @@ concrete_definition dfs_impl for succi src tgt uses dfs_impl_refine_aux
 text \<open>Set up code equations for the recursion combinators\<close>
 prepare_code_thms dfs_impl_def
 text \<open>And export the algorithm to all supported target languages\<close>
-export_code dfs_impl in Haskell file "/tmp/foo"
+export_code dfs_impl in Haskell
 export_code dfs_impl checking SML OCaml? Haskell? Scala
 
 
