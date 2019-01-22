@@ -62,7 +62,7 @@ lemma deriv_zeta_2_bound: "Re (deriv zeta 2) > -1"
 proof -
   have "((\<lambda>x::real. ln (x + 3) * (x + 3) powr -2) has_integral (ln 3 + 1) / 3) (interior {0..})"
     using ln_powr_has_integral_at_top[of 1 0 3 "-2"]
-    by (simp add: interior_real_semiline powr_minus)
+    by (simp add: interior_real_atLeast powr_minus)
   hence "((\<lambda>x::real. ln (x + 3) * (x + 3) powr -2) has_integral (ln 3 + 1) / 3) {0..}"
     by (subst (asm) has_integral_interior) auto
   also have "?this \<longleftrightarrow> ((\<lambda>x::real. ln (x + 3) / (x + 3) ^ 2) has_integral (ln 3 + 1) / 3) {0..}"
