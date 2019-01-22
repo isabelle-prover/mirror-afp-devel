@@ -99,7 +99,7 @@ lemma ABinds_restr_subst:
   apply (auto simp del: fun_meet_simp join_comm simp add: env_restr_join)
   apply (rule arg_cong2[where f = join])
   apply (case_tac "ae v")
-  apply (auto dest:  set_mp[OF set_delete_subset])
+  apply (auto dest:  subsetD[OF set_delete_subset])
   done
 
 lemma Abinds_append_disjoint: "domA \<Delta> \<inter> domA \<Gamma> = {} \<Longrightarrow>  ABinds (\<Delta> @ \<Gamma>)\<cdot>ae = ABinds \<Delta>\<cdot>ae \<squnion> ABinds \<Gamma>\<cdot>ae"
@@ -172,7 +172,7 @@ begin
   
   lemma edom_AnalBinds: "edom (ABinds \<Gamma>\<cdot>ae) \<subseteq> fv \<Gamma>"
     by (induction \<Gamma> rule: ABinds.induct)
-       (auto simp del: fun_meet_simp dest: set_mp[OF fup_Aexp_edom] dest: set_mp[OF fv_delete_subset])
+       (auto simp del: fun_meet_simp dest: subsetD[OF fup_Aexp_edom] dest: subsetD[OF fv_delete_subset])
 end 
 
 end

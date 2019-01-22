@@ -214,7 +214,7 @@ proof (induct "length L" arbitrary: N \<alpha> \<beta> r \<gamma> D L x rule: le
           apply blast
           done
         with z_in_Scan_y have z_in_Scan_Gen: "?z \<in> Scan T k (Gen(Prefixes p))"
-          using set_rev_mp by blast
+          using rev_subsetD by blast
         have wellformed_z: "wellformed_item ?z"
           using k' k'_upperbound next_symbol_y wellformed_inc_item wellformed_y by auto
         have item_\<beta>_z: "item_\<beta> ?z = a2@\<beta>"

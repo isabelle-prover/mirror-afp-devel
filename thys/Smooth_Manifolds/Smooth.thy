@@ -49,7 +49,7 @@ proof goal_cases
     show ?thesis
       using Df.scaleR \<open>m < n\<close>
       by (auto simp: Dg_def [abs_def] has_vector_derivative_def g_def segment_eq
-         intro!: derivative_eq_intros set_mp[OF cs])
+         intro!: derivative_eq_intros subsetD[OF cs])
   qed
   ultimately
   have g_Taylor: "(i has_integral g 1 - (\<Sum>i<n. ((1 - 0) ^ i / fact i) *\<^sub>R Dg i 0)) {0 .. 1}"
@@ -775,7 +775,7 @@ lemma closed_segment_subsetD:
   "0 \<le> x \<Longrightarrow> x \<le> 1 \<Longrightarrow> (X + x *\<^sub>R H) \<in> S"
   if "closed_segment X (X + H) \<subseteq> S"
   using that
-  by (rule set_mp) (auto simp: closed_segment_def algebra_simps intro!: exI[where x=x])
+  by (rule subsetD) (auto simp: closed_segment_def algebra_simps intro!: exI[where x=x])
 
 
 lemma higher_differentiable_Taylor:

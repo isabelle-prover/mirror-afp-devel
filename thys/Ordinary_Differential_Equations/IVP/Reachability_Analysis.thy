@@ -321,7 +321,7 @@ lemma frontier_aux_lemma:
   assumes "closed R" "R \<subseteq> {x. x \<bullet> n = c}" and [simp]: "n \<noteq> 0"
   shows "frontier {x \<in> R. c \<le> x \<bullet> n} = {x \<in> R. c = x \<bullet> n}"
   apply (auto simp: frontier_closures)
-  subgoal by (metis (full_types) Collect_subset assms(1) closure_minimal set_mp)
+  subgoal by (metis (full_types) Collect_subset assms(1) closure_minimal subsetD)
   subgoal premises prems for x
   proof -
     note prems

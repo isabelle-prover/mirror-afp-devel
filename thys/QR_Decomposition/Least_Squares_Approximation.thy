@@ -110,7 +110,7 @@ proof -
     proof (unfold proj_onto_def proj_def, rule subspace_sum)
       show "subspace S" using subspace_S .
       show "x\<in>X \<Longrightarrow> proj v x \<in> S" for x
-        by (simp add: proj_def X set_rev_mp subspace_S subspace_mul)
+        by (simp add: proj_def X rev_subsetD subspace_S subspace_mul)
     qed
     show "v - ?p\<in> orthogonal_complement S"
       by (rule v_minus_p_orthogonal_complement[OF subspace_S ind_X X span_X o])
@@ -249,7 +249,7 @@ proof (auto)
   proof (rule exI[of _ ?p], rule conjI, rule subspace_sum)
     show "subspace S" using subspace_S .
     show "x \<in> X \<Longrightarrow> proj v x \<in> S" for x
-      by (simp add: Projections.proj_def X set_rev_mp subspace_S subspace_mul)
+      by (simp add: Projections.proj_def X rev_subsetD subspace_S subspace_mul)
     have "\<forall>y\<in>S - {?p}. norm (v - ?p) < norm (v - y)" 
       using least_squares_approximation[OF subspace_S ind_X X span_X o]
       unfolding proj_onto_def

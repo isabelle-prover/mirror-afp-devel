@@ -174,7 +174,7 @@ lemma subst'_Nil[simp]: "subst' [] f = f"
 
 lemma lc_subst': "lc (subst' s f) \<subseteq> lc f \<union> lc_subst s"
   apply (induction s f rule: subst'.induct)
-     apply (auto split: option.splits dest: map_of_SomeD  dest!: set_mp[OF lc_subst1] simp add: fv_subst_def)
+     apply (auto split: option.splits dest: map_of_SomeD  dest!: subsetD[OF lc_subst1] simp add: fv_subst_def)
    apply (fastforce dest!: set_zip_rightD)+
   done
 
@@ -220,7 +220,7 @@ lemma subst_noop[simp]: "fv f = {} \<Longrightarrow> subst s f = f"
   by simp
 
 lemma lc_subst: "lc (subst s f) \<subseteq> lc f \<union> lc_subst s"
-  by (auto dest: set_mp[OF lc_subst'])
+  by (auto dest: subsetD[OF lc_subst'])
 
 lemma lc_subst_map_lc_subst[simp]: "lc_subst (map_lc_subst p s) = p ` lc_subst s"
   by force

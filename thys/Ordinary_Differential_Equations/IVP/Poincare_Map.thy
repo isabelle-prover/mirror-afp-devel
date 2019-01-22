@@ -49,7 +49,7 @@ lemma
   by (meson assms(1) assms(2) general.existence_ivl_reverse general.flow_solves_ode
       general.is_interval_existence_ivl general.maximal_existence_flow(1)
       general.mem_existence_ivl_iv_defined(2) general.mem_existence_ivl_subset
-      local.existence_ivl_subset set_mp)
+      local.existence_ivl_subset subsetD)
 
 end
 
@@ -808,7 +808,7 @@ proof -
     using \<open>0 < e\<close> assms(6)
     by (auto simp: H_def subset_iff)
   have u0: "(u, 0) \<in> H ` ball (x, y) r" if "u \<in> cball x e" for u
-    apply (rule set_rev_mp)
+    apply (rule rev_subsetD)
      apply (rule e_r_subset)
      apply fact
     unfolding r2_def using r2 by auto
@@ -916,7 +916,7 @@ proof -
       apply (auto simp: H_def solves[OF s])
       unfolding u_def
       apply (rule G2)
-      apply (rule set_mp; fact)
+      apply (rule subsetD; fact)
       done
     have "(s, snd (G (s, 0))) = (G (s, 0))"
       using GH H_def s s' solves by fastforce
@@ -925,7 +925,7 @@ proof -
       apply (rule the_inv_into_into)
         apply fact
        apply (rule u0)
-       apply (rule set_mp; fact)
+       apply (rule subsetD; fact)
       apply (rule order_refl)
       done
     finally have "(s, u s) \<in> ball (x, y) r" unfolding u_def .
@@ -1861,7 +1861,7 @@ proof (rule tendstoI)
   define d where "d \<equiv> d2 / 2"
   from \<open>0 < d2\<close> have "d > 0" by (simp add: d_def)
   have d_neg: "dist y x< d \<Longrightarrow> 0 < t \<Longrightarrow> t \<le> d \<Longrightarrow> (Ds (flow0 y t)) (f (flow0 y t)) < 0" for y t
-    using d2_neg[of y t, OF set_mp[OF cball_times_subset[of x d2 0]]]
+    using d2_neg[of y t, OF subsetD[OF cball_times_subset[of x d2 0]]]
     by (auto simp: d_def dist_commute)
   have d_ex: "t \<in> existence_ivl0 y" if "dist y x< d" "0 \<le> t" "t \<le> d" for y t
   proof cases
@@ -1873,12 +1873,12 @@ proof (rule tendstoI)
       using that by (simp add: d_def dist_commute)
     finally have "sqrt ((dist x y)\<^sup>2 + (d2 / 2)\<^sup>2) \<le> d2" by simp
     with \<open>t = 0\<close> show ?thesis
-      using d2_ex[of y t, OF set_mp[OF cball_times_subset[of x d2 0]]] d2_ex0[of y d] \<open>0 < d2\<close>
+      using d2_ex[of y t, OF subsetD[OF cball_times_subset[of x d2 0]]] d2_ex0[of y d] \<open>0 < d2\<close>
       by (auto simp: d_def dist_commute dist_prod_def)
   next
     assume "t \<noteq> 0"
     then show ?thesis
-      using d2_ex[of y t, OF set_mp[OF cball_times_subset[of x d2 0]]] that
+      using d2_ex[of y t, OF subsetD[OF cball_times_subset[of x d2 0]]] that
       by (auto simp: d_def dist_commute)
   qed
   have d_mvt: "s (flow0 y t) < s y" if "0 < t" "t \<le> d" "dist y x < d" for y t

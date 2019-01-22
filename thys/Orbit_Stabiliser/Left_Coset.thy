@@ -163,7 +163,7 @@ proof
   then have "(\<exists>x'\<in>\<Union>h\<in>H. {a \<otimes> h}. x = inv a \<otimes> x')" by blast  
   then show "x \<in> H" 
     using \<open>H \<subseteq> carrier G\<close> \<open>a \<in> carrier G\<close> is_group
-    by clarify (metis inv_solve_left m_closed set_mp)
+    by clarify (metis inv_solve_left m_closed subsetD)
 next
   show "\<And>a. H \<subseteq> carrier G \<Longrightarrow> finite (carrier G) \<Longrightarrow> a \<in> carrier G \<Longrightarrow> c = a <# H \<Longrightarrow> finite H"
   using rev_finite_subset by blast

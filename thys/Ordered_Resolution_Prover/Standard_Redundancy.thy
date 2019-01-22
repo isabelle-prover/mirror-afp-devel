@@ -301,7 +301,7 @@ proof (rule ccontr)
     have cc: "CC = side_prems_of \<gamma>" and d: "D = main_prem_of \<gamma>" and e: "E = concl_of \<gamma>"
       unfolding \<gamma> by simp_all
     have "\<gamma> \<in> Ri N"
-      by (rule set_mp[OF satur[unfolded saturated_upto_def inferences_from_def infer_from_def]])
+      by (rule subsetD[OF satur[unfolded saturated_upto_def inferences_from_def infer_from_def]])
         (simp add: \<gamma>_in d_in_m cc_subs_m cc[symmetric] d[symmetric] M_def[symmetric])
     then have "\<gamma> \<in> Ri M"
       unfolding M_def using Ri_indep by fast

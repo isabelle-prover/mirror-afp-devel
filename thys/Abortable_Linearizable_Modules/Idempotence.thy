@@ -1037,7 +1037,7 @@ next
           \<Longrightarrow> r = pending s1 p"
             using 10 4 Reco2(1) by auto
         ultimately show ?thesis using 1 2 Reco2(1) 
-          by (metis (lifting, no_types) UnE set_rev_mp) 
+          by (metis (lifting, no_types) UnE rev_subsetD) 
       qed
     qed   
   qed
@@ -1636,7 +1636,7 @@ proof -
                   have "\<exists> rs . set rs \<subseteq> pendingReqs s1 
                     \<and> iv = dstate s1 \<star> rs"
                       using \<open>P8 (s1,s2)\<close> 7 3 by auto
-                        (metis mem_Collect_eq pendingSeqs_def set_rev_mp) }
+                        (metis mem_Collect_eq pendingSeqs_def rev_subsetD) }
                 moreover have "finite ivs" using \<open>P13 (s1,s2)\<close> 3
                     by (metis P13.simps rev_finite_subset)
                 ultimately show ?thesis using that glb_common_set 4

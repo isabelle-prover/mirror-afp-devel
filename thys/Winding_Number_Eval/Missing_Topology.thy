@@ -592,7 +592,7 @@ lemma discrete_subset[elim]: "discrete S \<Longrightarrow> T \<subseteq> S \<Lon
   unfolding discrete_def using islimpt_subset isolate_islimpt_iff by blast
     
 lemma uniform_discrete_subset[elim]: "uniform_discrete S \<Longrightarrow> T \<subseteq> S \<Longrightarrow> uniform_discrete T"
-  by (meson set_mp uniform_discrete_def)
+  by (meson subsetD uniform_discrete_def)
         
 lemma continuous_on_discrete: "discrete S \<Longrightarrow> continuous_on S f" 
   unfolding continuous_on_topological by (metis discrete_def islimptI isolate_islimpt_iff)

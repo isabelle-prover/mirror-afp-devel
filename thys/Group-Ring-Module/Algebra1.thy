@@ -4161,23 +4161,7 @@ apply (simp add:image_def, erule exE, erule conjE)
 apply (frule_tac a = x in forall_spec, assumption,
        thin_tac "\<forall>j\<le>n. f j \<le> Zmax n f")
 apply (frule sym, thin_tac "Zmax n f + 1 = f x", simp)
-done
-
-lemma infinite_Univ_int:"\<not> (finite (UNIV :: int set))"
-apply (rule contrapos_pp, simp+)
-apply (subgoal_tac "(0::int) \<in> UNIV")
-prefer 2 apply simp
-apply (frule nonempty[of "(0::int)" UNIV])
-apply (frule_tac nonempty_card_pos[of UNIV], assumption)
-apply (frule Nset2_finite[of UNIV "(card UNIV) - Suc 0"],
-       rule Suc_pred[THEN sym, of "card UNIV"],simp)
-apply (erule exE, erule conjE)
-apply (frule_tac f = f in 
-            Nset2finite_inj[of UNIV "(card UNIV) - Suc 0"],
-       rule Suc_pred[THEN sym, of "card UNIV"], simp, assumption)
-apply (frule_tac f = f and n = "card UNIV - Suc 0" in Zmax_plus1)
-apply (simp add:surj_to_def)
-done
+  done
 
 lemma image_Nsetn_card_pos:" 0 < card (f ` {i. i \<le> (n::nat)})"
 apply(rule nonempty_card_pos)

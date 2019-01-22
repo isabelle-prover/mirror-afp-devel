@@ -296,6 +296,14 @@ qed
 lemma valuate_Var: "(Var x) \<lbrace>v\<rbrace> = v x"
   by transfer auto
 
+lemma valuate_sum: "((\<Sum>x\<in>A. f x) \<lbrace> v \<rbrace>) = (\<Sum>x\<in>A. ((f x) \<lbrace> v \<rbrace>))" 
+  by (induct A rule: infinite_finite_induct, auto simp: valuate_zero valuate_add)
+
+lemma distinct_vars_list: 
+  "distinct (vars_list p)"
+  by transfer (use distinct_sorted_list_of_set in auto)
+
+
 lemma zero_coeff_zero: "p = 0 \<longleftrightarrow> (\<forall> v. coeff p v = 0)"
   by transfer auto
 
@@ -381,6 +389,13 @@ proof (transfer, simp, goal_cases)
     by (cases "c = 0", auto)
 qed
 
+lemma valuate_lp_monom_1[simp]: "((lp_monom 1 x) \<lbrace>v\<rbrace>) = v x"
+  by transfer simp 
+
+lemma coeff_lp_monom [simp]:
+  shows "coeff (lp_monom c v) v' = (if v = v' then c else 0)"
+  by (transfer, auto)
+
 lemma vars_uminus [simp]: "vars (-p) = vars p"
   unfolding uminus_linear_poly_def
   by transfer auto
@@ -392,6 +407,9 @@ lemma vars_minus [simp]: "vars (p1 - p2) \<subseteq> vars p1 \<union> vars p2"
   unfolding minus_linear_poly_def
   using vars_plus[of p1 "-p2"] vars_uminus[of p2]
   by simp
+
+lemma vars_lp_monom: "vars (lp_monom r x) = (if r = 0 then {} else {x})" 
+  by (transfer, auto)
 
 lemma vars_scaleRat1: "vars (c *R p) \<subseteq> vars p"
   by transfer auto
@@ -556,5 +574,48 @@ lemma monom_valuate:
   using assms
   using is_monom_vars_monom_var
   by (simp add: vars_def coeff_def monom_coeff_def valuate_def)
+
+lemma coeff_zero_simp [simp]:
+  "coeff 0 v = 0"
+  using zero_coeff_zero by blast
+
+lemma poly_eq_iff: "p = q \<longleftrightarrow> (\<forall> v. coeff p v = coeff q v)"
+  by transfer auto
+
+lemma poly_eqI:
+  assumes "\<And>v. coeff p v = coeff q v"
+  shows "p = q"
+  using assms poly_eq_iff by simp
+
+lemma coeff_sum_list:
+  assumes "distinct xs"
+  shows "coeff (\<Sum>x\<leftarrow>xs. f x *R lp_monom 1 x) v = (if v \<in> set xs then f v else 0)"
+  using assms by (induction xs) auto
+
+lemma linear_poly_sum:
+  "p \<lbrace> v \<rbrace> = (\<Sum>x\<in>vars p. coeff p x *R v x)"
+  by transfer simp
+
+lemma all_valuate_zero: assumes "\<And>(v::'a::lrv valuation). p \<lbrace>v\<rbrace> = 0"
+  shows "p = 0"
+  using all_val assms by blast
+
+lemma linear_poly_eqI: assumes "\<And>(v::'a::lrv valuation). (p \<lbrace>v\<rbrace>) = (q \<lbrace>v\<rbrace>)"
+  shows "p = q"
+  using assms 
+proof -
+  have "(p - q) \<lbrace> v \<rbrace> = 0" for v::"'a::lrv valuation"
+    using assms by (subst valuate_minus) auto
+  then have "p - q = 0"
+    by (intro all_valuate_zero) auto
+  then show ?thesis
+    by simp
+qed
+
+lemma monom_poly_assemble:
+  assumes "is_monom p"
+  shows "monom_coeff p *R lp_monom 1 (monom_var p) = p"
+  by (simp add: assms linear_poly_eqI monom_valuate valuate_scaleRat)
+
 
 end

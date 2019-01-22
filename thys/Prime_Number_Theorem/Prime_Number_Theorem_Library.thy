@@ -15,7 +15,7 @@ lemma real_root_increasing: "0 < n \<Longrightarrow> n \<le> N \<Longrightarrow>
 lemma frontier_real_Ici [simp]:
   fixes a :: real
   shows "frontier {a..} = {a}"
-  unfolding frontier_def by (auto simp: interior_real_semiline)
+  unfolding frontier_def by (auto simp: interior_real_atLeast)
 
 lemma sum_upto_ln_conv_sum_upto_mangoldt:
   "sum_upto (\<lambda>n. ln (real n)) x = sum_upto (\<lambda>n. mangoldt n * nat \<lfloor>x / real n\<rfloor>) x"

@@ -2159,7 +2159,7 @@ proof -
           have 2: "inj (\<lambda>(i'',j). (insert_index i i'', j))"
             apply (intro injI) using injD[OF insert_index_inj_on[of _ UNIV]] by auto
           have "inj (\<lambda>i''. (insert_index i i'', insert_index j (q i'')))"
-            using inj_comp[OF 2 1] unfolding o_def by auto
+            using inj_compose[OF 2 1] unfolding o_def by auto
           thus "inj_on (\<lambda>i''. (insert_index i i'', insert_index j (q i''))) {0..<l}"
             using subset_inj_on by auto
         qed auto

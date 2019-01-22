@@ -220,7 +220,7 @@ proof -
     by (rule image[symmetric])
   also have "\<dots> \<subseteq> closure ((\<lambda>(x, y). x - y) ` (A \<times> B))"
     by (rule image_closure_subset)
-      (auto simp: split_beta' intro!: set_mp[OF closure_subset]
+      (auto simp: split_beta' intro!: subsetD[OF closure_subset]
         continuous_at_imp_continuous_on)
   also note image
   finally show ?thesis .
@@ -478,7 +478,7 @@ next
   from ht have line_subset: "(\<lambda>ta. t + ta * h) ` {0..1} \<subseteq> {t..u}"
     by (auto intro!: order_trans[OF add_left_mono[OF mult_left_le_one_le]])
   hence line_in: "\<And>s. 0 \<le> s \<Longrightarrow> s \<le> 1 \<Longrightarrow> t + s * h \<in> {t..u}"
-    by (rule set_mp) auto
+    by (rule subsetD) auto
   from ht have subset: "{t .. t + h} \<subseteq> {t .. u}" by simp
   let ?T = "{t..u}"
   from ht have subset: "{t .. t + h} \<subseteq> {t .. u}" by simp
@@ -607,7 +607,7 @@ next
   from ht have line_subset: "(\<lambda>ta. t + ta * h) ` {0..1} \<subseteq> {t..u}"
     by (auto intro!: order_trans[OF add_left_mono[OF mult_left_le_one_le]])
   hence line_in: "\<And>s. 0 \<le> s \<Longrightarrow> s \<le> 1 \<Longrightarrow> t + s * h \<in> {t..u}"
-    by (rule set_mp) auto
+    by (rule subsetD) auto
   from ht have subset: "{t .. t + h} \<subseteq> {t .. u}" by simp
   let ?T = "{t..u}"
   from ht have subset: "{t .. t + h} \<subseteq> {t .. u}" by simp
@@ -853,7 +853,7 @@ next
                f (h * xa + t,
                   x (h * xa + t)))))) `
      cbox 0 1)"
-     by (rule set_rev_mp[OF integral_by_parts_in_bounded_set[OF intsquare Taylor[unfolded interval_cbox]]])
+     by (rule rev_subsetD[OF integral_by_parts_in_bounded_set[OF intsquare Taylor[unfolded interval_cbox]]])
         (auto intro!: bounded_scaleR_image bounded_plus_image
          bounded_blinfun_apply_image bounded_Pair_image
          bounded_f'' bounded_f' bounded_f

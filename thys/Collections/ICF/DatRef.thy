@@ -180,7 +180,7 @@ proof
     apply (frule (2) cond_abs)
     apply (erule (2) waa.step_invar)
 
-    apply (erule set_rev_mp[OF _ initial_invarc])
+    apply (erule rev_subsetD[OF _ initial_invarc])
 
     apply (insert initial_abs waa.initial_invar) [1]
     apply blast
@@ -241,7 +241,7 @@ proof -
 
     apply (simp add: icf)
     apply (rule conjI)
-    apply (erule set_rev_mp[OF _ initial_addi])
+    apply (erule rev_subsetD[OF _ initial_addi])
     apply (insert initial_abs waa.initial_invar) [1]
     apply blast
 

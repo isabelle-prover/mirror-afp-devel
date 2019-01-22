@@ -74,7 +74,7 @@ next
 
     have "supp (TransLam a x (transform_sumC (PropLam a, e))) \<subseteq> supp (Lam [x]. e)"
       apply (rule subset_trans[OF SuppTransLam])
-      apply (auto simp add:  exp_assn.supp supp_Pair supp_at_base pure_supp exp_assn.fsupp dest!: set_mp[OF supp_eqvt_at[OF prems(1)], rotated])
+      apply (auto simp add:  exp_assn.supp supp_Pair supp_at_base pure_supp exp_assn.fsupp dest!: subsetD[OF supp_eqvt_at[OF prems(1)], rotated])
       done
     moreover
     assume "supp \<pi> \<sharp>* (Lam [x]. e)" 
@@ -112,7 +112,7 @@ next
   proof (rule eqvt_let_case)
     have "supp (TransLet (AnalLet as body a) (map_transform (\<lambda>x0 x1. transform_sumC (x0, x1)) (PropLetHeap (AnalLet as body a)) as) (transform_sumC (PropLetBody (AnalLet as body a), body))) \<subseteq> supp (Let as body)"
       by (auto simp add: Let_supp supp_Pair pure_supp exp_assn.fsupp
-               dest!: set_mp[OF supp_eqvt_at[OF prems(2)], rotated] set_mp[OF SuppTransLet] set_mp[OF supp_map])
+               dest!: subsetD[OF supp_eqvt_at[OF prems(2)], rotated] subsetD[OF SuppTransLet] subsetD[OF supp_map])
     moreover
     fix \<pi> :: perm
     assume "supp \<pi> \<sharp>* Terms.Let as body"
@@ -156,7 +156,7 @@ next
    qed
 
   lemma fv_transform: "fv (transform a e) \<subseteq> fv e"
-    unfolding fv_def by (auto dest: set_mp[OF supp_transform])
+    unfolding fv_def by (auto dest: subsetD[OF supp_transform])
 
 end
 
@@ -203,7 +203,7 @@ begin
       apply standard
       apply ((perm_simp, rule)+)[4]
       apply (auto simp add: exp_assn.supp supp_at_base)[1]
-      apply (auto simp add: Let_supp supp_Pair supp_at_base dest: set_mp[OF supp_map_transform])[1]
+      apply (auto simp add: Let_supp supp_Pair supp_at_base dest: subsetD[OF supp_map_transform])[1]
       done
   qed
 

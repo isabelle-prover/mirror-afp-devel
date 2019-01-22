@@ -1502,13 +1502,13 @@ begin
       unfolding inC_def using SetCat.UP_mapsto
        apply auto[1]
       using SetCat.inj_UP
-      by (metis (no_types, lifting) injD inj_Inl inj_comp inj_onI)
+      by (metis (no_types, lifting) injD inj_Inl inj_compose inj_onI)
     interpretation HomD: hom_functor D "SetCat.comp :: ('c+'d) SetCat.arr comp" "\<lambda>_. inD"
       apply unfold_locales
       unfolding inD_def using SetCat.UP_mapsto
        apply auto[1]
       using SetCat.inj_UP
-      by (metis (no_types, lifting) injD inj_Inr inj_comp inj_onI)
+      by (metis (no_types, lifting) injD inj_Inr inj_compose inj_onI)
     interpretation Fop: dual_functor D C F ..
     interpretation FopxC: product_functor Dop.comp C Cop.comp C Fop.map C.map ..
     interpretation DopxG: product_functor Dop.comp C Dop.comp D Dop.map G ..

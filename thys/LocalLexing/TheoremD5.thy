@@ -1147,7 +1147,7 @@ proof -
     have clen_ptok: "k + length c = charslength (p@[tok])"
       using charslength_p tok by simp
     from ptok_dom have ptok_doc_tokens: "doc_tokens (p@[tok])"
-      using \<PP>_are_doc_tokens \<PP>_covers_\<P> set_rev_mp by blast
+      using \<PP>_are_doc_tokens \<PP>_covers_\<P> rev_subsetD by blast
     have wellformed_x: "wellformed_item x"
       apply (simp add: x_is_scan)
       apply (rule_tac wellformed_inc_item)

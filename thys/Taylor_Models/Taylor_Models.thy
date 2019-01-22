@@ -1596,7 +1596,7 @@ proof-
   have 1: "interpret_floatarith f [x] \<in>\<^sub>i range_tm (\<lambda>_. x - ?mid) tf"
     apply (rule tm_floatarith[OF t1_def, simplified])
     subgoal
-      apply (rule set_rev_mp)
+      apply (rule rev_subsetD)
       apply (rule mid_in_real_interval)
       apply (rule set_of_real_interval_mono)
       apply (rule compute_bound_tm_mono)

@@ -26,9 +26,9 @@ subsection \<open>Definitions\<close>
     lemma E_validD: assumes "(v,e,v')\<in>E"
       shows "v\<in>V" "v'\<in>V"
       apply -
-      apply (rule set_mp[OF E_valid(1)])
+      apply (rule subsetD[OF E_valid(1)])
       using assms apply force
-      apply (rule set_mp[OF E_valid(2)])
+      apply (rule subsetD[OF E_valid(2)])
       using assms apply force
       done
 

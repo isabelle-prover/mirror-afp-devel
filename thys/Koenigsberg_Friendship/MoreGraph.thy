@@ -1495,7 +1495,7 @@ proof -
    have "v\<in>V" 
     proof (rule ccontr)
       assume "v\<notin>V"
-      hence "\<forall>e \<in> E. fst e \<noteq> v" by (metis E_valid(1) imageI set_mp)
+      hence "\<forall>e \<in> E. fst e \<noteq> v" by (metis E_valid(1) imageI subsetD)
       hence "degree v G=0" unfolding degree_def using \<open>finite E\<close> 
         by force
       thus False using \<open>odd(degree v G)\<close> by auto
@@ -1503,7 +1503,7 @@ proof -
   have "v'\<in>V" 
     proof (rule ccontr)
       assume "v'\<notin>V"
-      hence "\<forall>e \<in> E. fst e \<noteq> v'" by (metis E_valid(1) imageI set_mp)
+      hence "\<forall>e \<in> E. fst e \<noteq> v'" by (metis E_valid(1) imageI subsetD)
       hence "degree v' G=0" unfolding degree_def using \<open>finite E\<close> 
         by force
      thus False using \<open>odd(degree v' G)\<close> by auto

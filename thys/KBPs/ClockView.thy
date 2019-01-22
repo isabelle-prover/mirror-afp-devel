@@ -714,7 +714,7 @@ lemma eval_rec_models:
 using XY s
 proof(induct \<phi> arbitrary: X s)
   case (Kknows a' \<phi> X s)
-  from \<open>s \<in> ODList.toSet X\<close> clock_coEC_relation_image[OF set_mp[OF Kknows(2) Kknows(3)], where a=a']
+  from \<open>s \<in> ODList.toSet X\<close> clock_coEC_relation_image[OF subsetD[OF Kknows(2) Kknows(3)], where a=a']
   show ?case
     apply simp
     apply rule
@@ -736,7 +736,7 @@ next
     case True with \<open>s \<in> ODList.toSet X\<close> show ?thesis by clarsimp
   next
     case False
-    with \<open>s \<in> ODList.toSet X\<close> clock_commonKnowledge_relation_image[OF set_mp[OF Kcknows(2) Kcknows(3)], where as=as]
+    with \<open>s \<in> ODList.toSet X\<close> clock_commonKnowledge_relation_image[OF subsetD[OF Kcknows(2) Kcknows(3)], where as=as]
     show ?thesis
       apply simp
       apply rule

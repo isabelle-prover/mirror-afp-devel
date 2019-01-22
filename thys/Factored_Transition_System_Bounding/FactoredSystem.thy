@@ -139,7 +139,7 @@ lemma fmdom'_fmsubset_restrict_set:
   shows "fmdom' (fmrestrict_set X1 s) = X1"
   using assms
   by (metis (no_types, lifting)
-      antisym_conv fmdom'_notD fmdom'_notI fmlookup_restrict_set set_rev_mp subsetI)
+      antisym_conv fmdom'_notD fmdom'_notI fmlookup_restrict_set rev_subsetD subsetI)
 
 
 \<comment> \<open>NOTE added lemma.\<close>

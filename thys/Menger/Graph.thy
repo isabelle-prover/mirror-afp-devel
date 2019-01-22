@@ -487,7 +487,7 @@ proof-
   interpret H: Digraph "remove_vertex x" using remove_vertex_Digraph by blast
   show ?thesis using assms proof (induct rule: H.walk.induct)
     case (Singleton v)
-    then show ?case by (meson Digraph.Singleton Digraph_axioms remove_vertex_V' set_mp)
+    then show ?case by (meson Digraph.Singleton Digraph_axioms remove_vertex_V' subsetD)
   next
     case (Cons v w vs)
     then show ?case by (meson Digraph.Cons Digraph_axioms remove_vertex_E')

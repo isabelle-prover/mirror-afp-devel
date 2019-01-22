@@ -1207,7 +1207,7 @@ using assms proof(induction rule: substitutes_fnE'[where y=y and T=T and A=A and
         have "y \<notin> fvs B'"
           using
             substitutes_fvs \<open>substitutes B x M B'\<close> \<open>y \<notin> fvs B\<close> \<open>y \<notin> fvs M\<close>
-            Diff_subset UnE set_rev_mp
+            Diff_subset UnE rev_subsetD
           by blast
         hence "X = Fn y T ([y \<leftrightarrow> z] \<cdot> B')"
           using \<open>X = Fn z S B'\<close> \<open>y \<noteq> z\<close> \<open>T = S\<close> fn_eq

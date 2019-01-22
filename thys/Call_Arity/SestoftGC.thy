@@ -242,7 +242,7 @@ proof-
 
       from fresh_distinct[OF let\<^sub>1(3)] fresh_distinct_fv[OF let\<^sub>1(4)]
       have "domA \<Delta>'' \<inter> domA \<Gamma>'' = {}" and "domA \<Delta>'' \<inter> upds S'' = {}"  and "domA \<Delta>'' \<inter> dummies S'' = {}" 
-        by (auto dest: set_mp[OF ups_fv_subset] set_mp[OF dummies_fv_subset])
+        by (auto dest: subsetD[OF ups_fv_subset] subsetD[OF dummies_fv_subset])
       moreover
       from let\<^sub>1(1)
       have "domA \<Gamma>' \<union> upds S' \<subseteq> domA \<Gamma>'' \<union> upds S'' \<union> dummies S''"

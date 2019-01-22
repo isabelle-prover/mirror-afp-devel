@@ -512,7 +512,7 @@ using assms proof (induct xs arbitrary: i)
 next
   case (Cons a xs)
   then show ?case
-    by (cases i) (auto simp add: set_remove_nth_subset set_rev_mp)
+    by (cases i) (auto simp add: set_remove_nth_subset rev_subsetD)
 qed
 
 end

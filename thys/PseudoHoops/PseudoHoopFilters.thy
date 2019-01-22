@@ -81,10 +81,10 @@ lemma [simp]: "A \<subseteq> filters \<Longrightarrow> \<Inter> A \<in> filters"
   apply simp
   apply (simp add: filters_def)
   apply blast
-  apply (frule set_rev_mp)
+  apply (frule rev_subsetD)
   apply simp
   apply simp
-  apply (frule set_rev_mp)
+  apply (frule rev_subsetD)
   apply simp
   apply (subgoal_tac "a \<in> X")
   apply blast

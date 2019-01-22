@@ -47,7 +47,7 @@ lemma inj_funpow:
 proof (induct n)
   case 0 then show ?case by (auto simp: id_def[symmetric])
 next
-  case (Suc n) with assms show ?case unfolding funpow.simps by (rule inj_comp)
+  case (Suc n) with assms show ?case unfolding funpow.simps by (rule inj_compose)
 qed
 
 lemma funpow_inj_finite:

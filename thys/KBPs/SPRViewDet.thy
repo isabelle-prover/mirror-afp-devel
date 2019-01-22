@@ -983,7 +983,7 @@ lemma eval_rec_models:
 using XY s
 proof(induct \<phi> arbitrary: X s)
   case (Kknows a' \<phi> X s)
-  from \<open>s \<in> toSet X\<close> spr_knowledge[OF set_mp[OF Kknows(2) Kknows(3)], where a=a']
+  from \<open>s \<in> toSet X\<close> spr_knowledge[OF subsetD[OF Kknows(2) Kknows(3)], where a=a']
   show ?case
     apply simp
     apply rule
@@ -1005,7 +1005,7 @@ next
     case True with \<open>s \<in> toSet X\<close> show ?thesis by clarsimp
   next
     case False
-    with \<open>s \<in> toSet X\<close> spr_commonKnowledge_relation_image[OF set_mp[OF Kcknows(2) Kcknows(3)], where as=as]
+    with \<open>s \<in> toSet X\<close> spr_commonKnowledge_relation_image[OF subsetD[OF Kcknows(2) Kcknows(3)], where as=as]
     show ?thesis
       apply simp
       apply rule
@@ -1058,7 +1058,7 @@ lemma spr_simAbs_fst_snd_trc:
   apply (simp only: toSet_def[symmetric])
   apply (subgoal_tac "(ab,ba) \<in> toSet (fst ec)")
    apply (simp add: spr_commonKnowledge_relation_image tObsC_abs_rel[OF tC ec])
-  apply (simp add: set_mp[OF agent_abs_tObsC_abs_subset[OF refl]])
+  apply (simp add: subsetD[OF agent_abs_tObsC_abs_subset[OF refl]])
   done
 
 lemma agent_abs_rel_inv:
@@ -1155,7 +1155,7 @@ next
     apply (rule ball_cong[OF refl])
     apply (rule ball_cong)
     apply (subst spr_commonKnowledge_relation_image)
-    apply (simp_all add: set_mp[OF agent_abs_tObsC_abs_subset[OF refl]])
+    apply (simp_all add: subsetD[OF agent_abs_tObsC_abs_subset[OF refl]])
     done
   also have "... = (\<forall>s\<in>agent_abs a t. spr_repMC (toSet (fst ec)), s \<Turnstile> Kcknows as \<psi>)"
     apply (rule ball_cong[OF refl])
@@ -1166,7 +1166,7 @@ next
      apply (simp add: toSet_def[symmetric])
      apply (rule_tac x=y in bexI)
       apply (subst spr_commonKnowledge_relation_image)
-       apply (auto elim: set_mp[OF agent_abs_tObsC_abs_subset[OF refl]])[1]
+       apply (auto elim: subsetD[OF agent_abs_tObsC_abs_subset[OF refl]])[1]
       apply simp
      apply assumption
     apply (rule refl)
@@ -1185,7 +1185,7 @@ next
     apply (rule S5n_common_knowledge_fixed_point_simpler[symmetric])
     using spr_simAbs_agent_abs[OF tC Kcknows(3)] spr_simAbs_tObsC_abs[OF tC Kcknows(3)]
           Kcknows(1) Kcknows(2)
-      apply (auto elim: set_mp[OF agent_abs_tObsC_abs_subset[OF refl]])
+      apply (auto elim: subsetD[OF agent_abs_tObsC_abs_subset[OF refl]])
     done
   finally show ?case .
 qed simp_all

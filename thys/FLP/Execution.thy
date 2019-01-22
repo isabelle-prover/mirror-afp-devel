@@ -600,7 +600,7 @@ proof -
     moreover have "msg \<in> set (drop (length trace) trace''')" 
       using Prefix(2) PrefixLists MsgInTrace'' 
       by (metis (hide_lams, no_types) PrefixListHasTail append_eq_conv_conj 
-         drop_take set_rev_mp set_take_subset)
+         drop_take rev_subsetD set_take_subset)
     ultimately show ?thesis by auto
   qed
   with Exec'''(1) Exec'''(3) show ?thesis by blast

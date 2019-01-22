@@ -125,7 +125,7 @@ text \<open>Next we show that finite suprema are order preserving.\<close>
 lemma sum_iso:
   assumes "finite (B :: 'a::join_semilattice_zero set)"
   shows "A \<subseteq> B \<longrightarrow> \<Sum> A \<le> \<Sum> B"
-  by (metis assms finite_subset order_refl set_rev_mp sum_sup)
+  by (metis assms finite_subset order_refl rev_subsetD sum_sup)
 
 text \<open>The following lemmas state unfold properties for suprema and
 finite sets. They are subtly different from the non-idempotent case,

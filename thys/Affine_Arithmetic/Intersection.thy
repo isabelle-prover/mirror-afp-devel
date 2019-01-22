@@ -2719,7 +2719,7 @@ next
         elim!: ccw'.sortedP_Cons ccw'.sortedP_Nil
         intro!: triangle_encompassing_polychain_of)
     thus ?case
-      by (rule set_rev_mp[OF _ hull_mono]) (auto simp: \<open>snd y = fst z\<close>)
+      by (rule rev_subsetD[OF _ hull_mono]) (auto simp: \<open>snd y = fst z\<close>)
   next
     assume *: "list_all (encompasses p) ((fst x, snd y) # z # w # ws)"
     from Cons.prems
@@ -2743,7 +2743,7 @@ next
     }
     ultimately
     show "p \<in> convex hull set (map fst (x # y # z # w # ws))"
-      by (rule set_mp[OF hull_mono])
+      by (rule subsetD[OF hull_mono])
   qed
 qed
 

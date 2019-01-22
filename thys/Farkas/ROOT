@@ -1,0 +1,9 @@
+chapter AFP
+
+session Farkas (AFP) = Simplex +
+  options [timeout = 600]
+  theories
+    Farkas
+  document_files
+    "root.bib"
+    "root.tex"

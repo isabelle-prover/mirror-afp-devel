@@ -365,7 +365,7 @@ proof -
   proof (rule gcd_eq_1_imp_coprime, rule gcdI [symmetric])
     fix k
     assume dvd: "k dvd ?single" "k dvd ?onederiv"
-    note bs_monic = as_monic[OF set_mp[OF bs]]
+    note bs_monic = as_monic[OF subsetD[OF bs]]
     from dvd(1) single have k: "k \<noteq> 0" by auto
     show "k dvd 1"
     proof (cases "degree k > 0")
@@ -424,7 +424,7 @@ proof -
         from coeff_smult[of "c/d" b "degree b", unfolded id] deg bs_monic[OF ai] bs_monic[OF bj]
         have "c / d = 1" by simp
         from id[unfolded this] have "a = b" by simp
-        with as_distinct[OF set_mp[OF bs ai] set_mp[OF bs bj]] bj'
+        with as_distinct[OF subsetD[OF bs ai] subsetD[OF bs bj]] bj'
         show False by auto
       next
         from f[OF ai] obtain k where fi: "f i = Suc k" by (cases "f i", auto)

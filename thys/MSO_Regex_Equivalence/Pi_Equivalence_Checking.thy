@@ -260,7 +260,7 @@ proof (unfold invariant_def, (split prod.splits)+, elim case_prodE conjE, clarif
 (*next*)
   from ws x ws_Cons have wr's': "?ws w r' s'" by auto
   with ws ws_Cons show "\<forall>(w, r', s') \<in> set ws'. ?ws w r' s'" unfolding ws'
-    by (auto dest!: mp_remdups' elim!: set_mp)
+    by (auto dest!: mp_remdups' elim!: subsetD)
 (*next*)
   from ps wr's' test_invariant[unfolded ws_Cons x] show "\<forall>(r', s') \<in> set ps'. ?ps r' s' N'" unfolding ps' N'
     by (fastforce simp: image_Collect)

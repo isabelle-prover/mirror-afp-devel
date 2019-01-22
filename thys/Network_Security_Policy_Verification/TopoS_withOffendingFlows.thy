@@ -446,7 +446,7 @@ context SecurityInvariant_preliminaries
          apply(simp_all)
         apply(subgoal_tac "insert e1 (insert e2 (nodes G)) = nodes G")
          apply(simp)
-        by (metis assms(3) insert_absorb set_rev_mp wf_graph.E_wfD(1) wf_graph.E_wfD(2))
+        by (metis assms(3) insert_absorb rev_subsetD wf_graph.E_wfD(1) wf_graph.E_wfD(2))
       from \<open>E \<noteq> {}\<close> obtain e where "e \<in> E" by blast
       with min \<open>E \<subseteq> F\<close> have mine: "\<not> sinvar \<lparr> nodes = nodes G, edges = ((edges G) - F) \<union> {e} \<rparr> nP" by fast
       have e1: "edges G - (F - {e}) = insert e (edges G - F)" using DiffD2 \<open>e \<in> E\<close> assms(3) assms(4) by auto 

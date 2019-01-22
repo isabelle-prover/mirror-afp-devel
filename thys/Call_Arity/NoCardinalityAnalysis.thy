@@ -75,7 +75,7 @@ next
   thus ?case by (simp cong: Abinds_reorder)
 next
   case 3
-  thus ?case by (auto dest: set_mp[OF ap_subset_edom_AEstack])
+  thus ?case by (auto dest: subsetD[OF ap_subset_edom_AEstack])
 next
   case 4
   thus ?case by (auto intro: env_restr_mono2 )
@@ -103,7 +103,7 @@ sublocale CardinalityPrognosisLam prognosis
 proof (standard, goal_cases)
   case (1 ae as a \<Gamma> e y x S)
   have "edom (Aexp e[y::=x]\<cdot>(pred\<cdot>a)) \<subseteq> insert x (edom (env_delete y (Aexp e\<cdot>(pred\<cdot>a))))"
-    by (auto dest: set_mp[OF edom_mono[OF Aexp_subst]] )
+    by (auto dest: subsetD[OF edom_mono[OF Aexp_subst]] )
   also have "\<dots> \<subseteq> insert x (edom (Aexp (Lam [y]. e)\<cdot>a))"
     using edom_mono[OF Aexp_Lam] by auto
   finally show ?case by (auto intro!: env_restr_mono2)
@@ -122,7 +122,7 @@ next
   case (3 e x \<Gamma> ae as S)
   have "fup\<cdot>(Aexp e)\<cdot>(ae x) \<sqsubseteq> Aexp e\<cdot>0" by (cases "ae x") (auto intro: monofun_cfun_arg)
   from edom_mono[OF this]
-  show ?case by (auto intro!: env_restr_mono2 dest: set_mp[OF edom_mono[OF ABinds_delete_below]])
+  show ?case by (auto intro!: env_restr_mono2 dest: subsetD[OF edom_mono[OF ABinds_delete_below]])
 qed
 
 sublocale CardinalityPrognosisIfThenElse prognosis
@@ -142,13 +142,13 @@ sublocale CardinalityPrognosisLet prognosis  cHeap Aheap
 proof (standard, goal_cases)
   case prems: (1 \<Delta> \<Gamma> S ae e a as)
 
-  from set_mp[OF prems(3)] fresh_distinct[OF prems(1)] fresh_distinct_fv[OF prems(2)]
+  from subsetD[OF prems(3)] fresh_distinct[OF prems(1)] fresh_distinct_fv[OF prems(2)]
   have  "ae f|` domA \<Delta> = \<bottom>"
-    by (auto dest: set_mp[OF ups_fv_subset])
+    by (auto dest: subsetD[OF ups_fv_subset])
   hence [simp]: "ABinds \<Delta>\<cdot>(ae \<squnion> Aheap \<Delta> e\<cdot>a) = ABinds \<Delta>\<cdot>(Aheap \<Delta> e\<cdot>a)" by (simp cong: Abinds_env_restr_cong add: env_restr_join)
 
   from  fresh_distinct[OF prems(1)]
-  have "Aheap \<Delta> e\<cdot>a f|` domA \<Gamma> = \<bottom>" by (auto dest!: set_mp[OF edom_Aheap])
+  have "Aheap \<Delta> e\<cdot>a f|` domA \<Gamma> = \<bottom>" by (auto dest!: subsetD[OF edom_Aheap])
   hence [simp]: "ABinds \<Gamma>\<cdot>(ae \<squnion> Aheap \<Delta> e\<cdot>a) = ABinds \<Gamma>\<cdot>ae" by (simp cong: Abinds_env_restr_cong add: env_restr_join)
   
   have "edom (ABinds (\<Delta> @ \<Gamma>)\<cdot>(Aheap \<Delta> e\<cdot>a \<squnion> ae)) \<union> edom (Aexp e\<cdot>a)  = edom (ABinds \<Delta>\<cdot>(Aheap \<Delta> e\<cdot>a)) \<union> edom (ABinds \<Gamma>\<cdot>ae) \<union>  edom (Aexp e\<cdot>a) "
@@ -166,7 +166,7 @@ proof (standard, goal_cases)
 qed
 
 sublocale CardinalityPrognosisEdom prognosis
-  by standard (auto dest: set_mp[OF Aexp_edom] set_mp[OF ap_fv_subset] set_mp[OF edom_AnalBinds]  set_mp[OF edom_AEstack])
+  by standard (auto dest: subsetD[OF Aexp_edom] subsetD[OF ap_fv_subset] subsetD[OF edom_AnalBinds]  subsetD[OF edom_AEstack])
 
 
 sublocale CardinalityPrognosisSafe prognosis cHeap Aheap Aexp..

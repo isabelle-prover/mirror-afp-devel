@@ -1101,21 +1101,21 @@ proof -
         apply(cases x)
         subgoal for a
           apply(cases "a \<in> ODE_vars I ODE")
-           by (simp | metis (no_types, lifting) FVT ODE_vars_lr Vagree_def mk_v_agree mk_xode.elims set_mp snd_conv)+
+           by (simp | metis (no_types, lifting) FVT ODE_vars_lr Vagree_def mk_v_agree mk_xode.elims subsetD snd_conv)+
         subgoal for a
           apply(cases "a \<in> ODE_vars I ODE")
-           by (simp | metis (no_types, lifting) FVT Vagree_def mk_v_agree mk_xode.elims set_mp snd_conv)+
+           by (simp | metis (no_types, lifting) FVT Vagree_def mk_v_agree mk_xode.elims subsetD snd_conv)+
         done
       subgoal for i x
         apply(cases x)
         subgoal for a
           apply(cases "a \<in> ODE_vars I ODE")
-           using FVT ODE_vars_lr Vagree_def mk_v_agree mk_xode.elims set_mp snd_conv
+           using FVT ODE_vars_lr Vagree_def mk_v_agree mk_xode.elims subsetD snd_conv
            by auto
         subgoal for a
           apply(cases "a \<in> ODE_vars I ODE")
            apply(erule allE[where x=i])+
-           using FVT ODE_vars_lr Vagree_def mk_v_agree mk_xode.elims set_mp snd_conv
+           using FVT ODE_vars_lr Vagree_def mk_v_agree mk_xode.elims subsetD snd_conv
            by auto
         done
       done

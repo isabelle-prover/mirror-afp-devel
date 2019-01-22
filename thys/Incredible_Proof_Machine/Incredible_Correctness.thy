@@ -121,7 +121,7 @@ case (wf v p pth)
   let ?l = "labelAtIn v p"
 
   from e valid_edges have "v' |\<in>| vertices" and "p' |\<in>| outPorts (nodeOf v')" by auto
-  hence "nodeOf v' \<in> sset nodes" using valid_nodes by (meson image_eqI notin_fset set_mp)
+  hence "nodeOf v' \<in> sset nodes" using valid_nodes by (meson image_eqI notin_fset subsetD)
 
   from \<open>?e \<in> edges\<close>
   have s: "labelAtOut v' p' = labelAtIn v p"  by (rule solved)

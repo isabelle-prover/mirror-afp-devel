@@ -228,7 +228,7 @@ proof -
       have 2:"\<And> s . s \<in> start B \<Longrightarrow> f s \<subseteq> start A " 
         using assms(1) by (simp add:is_backward_sim_def)
       from Nil 1 2 have 3:"s' \<in> start A" 
-        by (metis (full_types) is_exec_of_def last_state.simps(1) set_mp surjective_pairing)
+        by (metis (full_types) is_exec_of_def last_state.simps(1) subsetD surjective_pairing)
       let ?e_A = "(s', [])"
       have 4:"is_exec_of A ?e_A" using 3 by (simp add:is_exec_of_def)
       have 5:"trace (ioa.asig A) ?e_A = trace (ioa.asig A) e_B" using Nil.hyps 

@@ -642,7 +642,7 @@ impossibility of trisection an angle and of duplicating a cube.\<close>
 
 lemma cubic_root_radical_sqrt_steplemma:
   fixes P :: "real set"
-  assumes Nats [THEN set_mp, intro]: "Nats \<subseteq> P"
+  assumes Nats [THEN subsetD, intro]: "Nats \<subseteq> P"
   and Neg:  "\<forall>x \<in> P. -x \<in> P"
   and Inv:  "\<forall>x \<in> P. x \<noteq> 0 \<longrightarrow> 1/x \<in> P"
   and Add:  "\<forall>x \<in> P. \<forall>y \<in> P. x+y \<in> P"
@@ -719,7 +719,7 @@ next
 qed
 
 lemma cubic_root_radical_sqrt_steplemma_sqrt:
-  assumes Nats [THEN set_mp, intro]: "Nats \<subseteq> P"
+  assumes Nats [THEN subsetD, intro]: "Nats \<subseteq> P"
   and Neg:  "\<forall>x \<in> P. -x \<in> P"
   and Inv:  "\<forall>x \<in> P. x \<noteq> 0 \<longrightarrow> 1/x \<in> P"
   and Add:  "\<forall>x \<in> P. \<forall>y \<in> P. x+y \<in> P"

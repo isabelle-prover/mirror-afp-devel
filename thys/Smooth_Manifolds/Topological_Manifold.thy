@@ -305,7 +305,7 @@ proof -
   have "closure (W i) \<subseteq> carrier" for i
     using V closure_mono
     apply (auto simp: W_def)
-    using Diff_subset set_mp by blast
+    using Diff_subset subsetD by blast
   have "carrier = (\<Union>i. W i)" "\<And>i. open (W i)" "\<And>i. compact (closure (W i))"
     "\<And>i. closure (W i) \<subseteq> carrier"
     "locally_finite_on carrier UNIV W"

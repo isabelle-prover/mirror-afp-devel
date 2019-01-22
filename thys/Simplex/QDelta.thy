@@ -172,4 +172,9 @@ lemma delta_min:
   using delta0
   by (induct qd, auto)
 
+lemma QDelta_0_0: "QDelta 0 0 = 0" by code_simp
+lemma qdsnd_0: "qdsnd 0 = 0" by code_simp
+lemma qdfst_0: "qdfst 0 = 0" by code_simp
+
+
 end

@@ -2,7 +2,7 @@ signature SIDE_CONDITIONS = sig
   type predicate =
     {f: term,
      index: int,
-     inductive: Inductive.inductive_result,
+     inductive: Inductive.result,
      alt: thm option}
 
   val transform_predicate: morphism -> predicate -> predicate
@@ -28,7 +28,7 @@ val inductive_config =
 type predicate =
   {f: term,
    index: int,
-   inductive: Inductive.inductive_result,
+   inductive: Inductive.result,
    alt: thm option}
 
 fun transform_predicate phi {f, index, inductive, alt} =
@@ -186,7 +186,7 @@ fun mk_side simps inducts lthy =
 
     val inds = map (rpair NoSyn o apfst Binding.name) (distinct op = sides)
     val (result, lthy') =
-      Inductive.add_inductive_i inductive_config inds []
+      Inductive.add_inductive inductive_config inds []
         (map (pair (Binding.empty, [])) intros) [] lthy
 
     fun mk_impartial_goal pred names =

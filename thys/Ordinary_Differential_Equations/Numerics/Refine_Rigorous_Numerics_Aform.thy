@@ -1559,12 +1559,12 @@ proof (goal_cases)
         apply (rule image_eqI[where x="eucl_of_list y"])
           apply (subst list_of_eucl_eucl_of_list)
           apply (auto simp: 1 Joints_imp_length_eq)
-        apply (rule set_mp, assumption)
+        apply (rule subsetD, assumption)
         apply (auto simp: intro!: eucl_of_list_mem_eucl_of_list_aform 1)
         using inner_lv_rel_autoref[where 'a="'n rvec", param_fo, OF lv_relI lv_relI, of y "normal si"]
         by (auto simp: plane_of_def 1 Joints_imp_length_eq)
       subgoal for y
-        apply (drule set_mp, assumption)
+        apply (drule subsetD, assumption)
         using inner_lv_rel_autoref[where 'a="'n rvec", param_fo, OF lv_relI lv_relI, of "list_of_eucl y" "normal si"]
         by (auto simp: plane_of_def 1 Joints_imp_length_eq)
       done

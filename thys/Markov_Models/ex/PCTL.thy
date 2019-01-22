@@ -343,7 +343,7 @@ proof -
           with \<open>t\<in>S\<close> obtain s where t_s: "(t, s) \<in> (SIGMA x:\<Phi>. E x)\<^sup>*" and "s \<in> \<Psi>"
             unfolding P0 by auto
           from t_s have "(t, s) \<in> acc"
-            by (rule set_rev_mp) (intro rtrancl_mono Sigma_mono, auto)
+            by (rule rev_subsetD) (intro rtrancl_mono Sigma_mono, auto)
           with \<open>s \<in> \<Psi>\<close> show ?thesis by auto
         qed
       next
@@ -804,7 +804,7 @@ next
         = (\<integral>\<^sup>+\<omega>. ennreal (\<rho> s + \<iota> s (\<omega> !! 0)) + ennreal (\<Sum>i<k. \<rho> (\<omega> !! i) + \<iota> (\<omega> !! i) (\<omega> !! (Suc i))) \<partial>T s)"
         by (auto intro!: nn_integral_cong
                  simp del: ennreal_plus
-                 simp: ennreal_plus[symmetric] sum_nonneg sum.reindex lessThan_Suc_eq_insert_0 Zero_notin_Suc)
+                 simp: ennreal_plus[symmetric] sum_nonneg sum.reindex lessThan_Suc_eq_insert_0 zero_notin_Suc_image)
       also have "\<dots> = (\<integral>\<^sup>+\<omega>. \<rho> s + \<iota> s (\<omega> !! 0) \<partial>T s) +
           (\<integral>\<^sup>+\<omega>. (\<Sum>i<k. \<rho> (\<omega> !! i) + \<iota> (\<omega> !! i) (\<omega> !! (Suc i))) \<partial>T s)"
         using \<open>s \<in> S\<close>

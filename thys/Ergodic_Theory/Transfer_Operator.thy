@@ -688,7 +688,7 @@ proof -
     then have "AE x\<in>B in M. False"
       using PInf by auto
     then have "emeasure M B = 0"
-      by (smt AE_E B(1) Collect_mem_eq Collect_mono_iff dual_order.trans emeasure_eq_0 set_mp sets.sets_into_space)
+      by (smt AE_E B(1) Collect_mem_eq Collect_mono_iff dual_order.trans emeasure_eq_0 subsetD sets.sets_into_space)
     then show False
       using B by auto
   qed

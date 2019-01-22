@@ -178,7 +178,7 @@ lemma remdups_gen_subset: "set (remdups_gen eq xs) \<subseteq> set xs"
 lemma positive_pos_imaginary_parts_3: assumes "x \<in> set (pos_imaginary_parts_3 p)"
   shows "0 < real_of_3 x" 
 proof -
-  from set_mp[OF remdups_gen_subset assms[unfolded pos_imaginary_parts_3_def]]
+  from subsetD[OF remdups_gen_subset assms[unfolded pos_imaginary_parts_3_def]]
   have "sgn_3 x = 1" by auto
   thus ?thesis using sgn_3[of x] by (simp add: sgn_1_pos)
 qed

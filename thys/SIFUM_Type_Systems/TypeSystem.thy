@@ -987,7 +987,7 @@ next
         apply (rule \<R>\<^sub>2_elim)
         by auto
       hence "\<forall> x \<in> dom \<Gamma>'. \<Gamma>' x = Some High"
-        by (metis Sec.simps(2) \<open>dom \<Gamma>' \<subseteq> dom \<Gamma>\<^sub>1'\<close> context_le_def domD less_eq_Sec_def sub(4) set_rev_mp option.sel)
+        by (metis Sec.simps(2) \<open>dom \<Gamma>' \<subseteq> dom \<Gamma>\<^sub>1'\<close> context_le_def domD less_eq_Sec_def sub(4) rev_subsetD option.sel)
       ultimately show ?thesis
         by (metis (no_types) \<R>\<^sub>2.intro \<R>\<^sub>2_elim' \<open>mds_consistent mds \<Lambda>\<^sub>1\<close> \<open>mds_consistent mds \<Lambda>\<^sub>2\<close> r2)
     qed

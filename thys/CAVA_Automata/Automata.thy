@@ -90,7 +90,7 @@ begin
   lemma finite_V_Fe:
     assumes "finite V" "A \<in> F"
     shows "finite A"
-    using assms by (metis Pow_iff infinite_super set_rev_mp F_ss)
+    using assms by (metis Pow_iff infinite_super rev_subsetD F_ss)
 
 end
 
@@ -207,12 +207,12 @@ begin
   lemma L_sim1: "\<lbrakk>range r \<subseteq> V; L (r i) l\<rbrakk> \<Longrightarrow> G'.L (f (r i)) l"
     by (auto simp: G'_gba_fields fi_def[symmetric] fi_f 
       dest: inj_onD[OF INJ]
-      dest!: set_rev_mp[OF rangeI[of _ i]])
+      dest!: rev_subsetD[OF rangeI[of _ i]])
 
   lemma L_sim2: "\<lbrakk> range r \<subseteq> f`V; G'.L (r i) l \<rbrakk> \<Longrightarrow> L (fi (r i)) l"
     by (auto
       simp: G'_gba_fields fi_def[symmetric] f_fi
-      dest!: set_rev_mp[OF rangeI[of _ i]])
+      dest!: rev_subsetD[OF rangeI[of _ i]])
     
   lemma accept_eq[simp]: "G'.accept = accept"
     apply (rule ext)

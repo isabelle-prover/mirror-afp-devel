@@ -1100,7 +1100,7 @@ next
   have "\<forall>l s.  pre C I  l s \<longrightarrow> I l (postQ C s)"
     apply(rule Awhile(1)[THEN conjunct2, THEN conjunct1])
             apply(fact)+ subgoal using  Is apply auto done
-    subgoal using Awhile(8) LVE_LVE  by (metis set_mp sup.cobounded2)
+    subgoal using Awhile(8) LVE_LVE  by (metis subsetD sup.cobounded2)
             apply fact using Awhile(10) LVE_LVE by blast 
   hence step: "\<And>l s. pre C I  l s \<Longrightarrow> I l (postQ C s)" by simp
    

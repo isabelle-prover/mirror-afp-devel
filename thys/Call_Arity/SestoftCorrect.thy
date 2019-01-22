@@ -33,7 +33,7 @@ case (Variable \<Gamma> x e L \<Delta> z S)
 
   from \<open>fv (\<Gamma>, Var x, S) \<subseteq> set L \<union> domA \<Gamma>\<close>
   have prem: "fv (delete x \<Gamma>, e, Upd x # S) \<subseteq> set (x#L) \<union> domA (delete x \<Gamma>)"
-    by (auto dest: set_mp[OF fv_delete_subset] set_mp[OF map_of_Some_fv_subset[OF \<open>map_of \<Gamma> x = Some e\<close>]])
+    by (auto dest: subsetD[OF fv_delete_subset] subsetD[OF map_of_Some_fv_subset[OF \<open>map_of \<Gamma> x = Some e\<close>]])
 
   from \<open>map_of \<Gamma> x = Some e\<close>
   have "(\<Gamma>, Var x, S) \<Rightarrow> (delete x \<Gamma>, e, Upd x # S)"..
@@ -71,7 +71,7 @@ case (Let as \<Gamma> L body \<Delta> z S)
   have "domA as \<inter> fv (\<Gamma>, L) = {}"
     by (rule fresh_distinct_fv)
   hence "domA as \<inter> (set L \<union> domA \<Gamma>) = {}"
-    by (auto dest: set_mp[OF domA_fv_subset])
+    by (auto dest: subsetD[OF domA_fv_subset])
   with Let(4)
   have "domA as \<inter> fv S = {}"
     by auto

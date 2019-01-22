@@ -142,7 +142,7 @@ done
 lemma SkipRuleTC:
   assumes "p \<subseteq> q"
     shows "ValidTC p (Basic id) q"
-  by (metis assms Sem.intros(1) ValidTC_def id_apply set_mp)
+  by (metis assms Sem.intros(1) ValidTC_def id_apply subsetD)
 
 lemma BasicRuleTC:
   assumes "p \<subseteq> {s. f s \<in> q}"

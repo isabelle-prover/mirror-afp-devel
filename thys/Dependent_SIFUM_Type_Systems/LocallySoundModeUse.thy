@@ -673,8 +673,8 @@ next
         have "x \<in> mds' GuarNoReadOrWrite \<longrightarrow> doesnt_read_or_modify ?c' x"
           apply clarify
           apply (rule if_doesnt_read')
-           apply (metis IntI \<open>mds' \<le> mdsa\<close> empty_iff le_fun_def set_rev_mp while.hyps(1) while.hyps(4))
-          by (metis IntI \<open>mds' \<le> mdsa\<close> empty_iff le_fun_def set_rev_mp while.hyps(1) while.hyps(5))
+           apply (metis IntI \<open>mds' \<le> mdsa\<close> empty_iff le_fun_def rev_subsetD while.hyps(1) while.hyps(4))
+          by (metis IntI \<open>mds' \<le> mdsa\<close> empty_iff le_fun_def rev_subsetD while.hyps(1) while.hyps(5))
         moreover
         have "x \<in> mds' GuarNoWrite \<longrightarrow> doesnt_modify ?c' x"
           by (metis annotate.simps(1) if_doesnt_modify)

@@ -16,7 +16,7 @@ end
 context EdomArityAnalysis
 begin
   lemma edom_AEstack: "edom (AEstack as S) \<subseteq> fv S"
-    by (induction as S rule: AEstack.induct) (auto simp del: fun_meet_simp dest!: set_mp[OF Aexp_edom])
+    by (induction as S rule: AEstack.induct) (auto simp del: fun_meet_simp dest!: subsetD[OF Aexp_edom])
 end
 
 end

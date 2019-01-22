@@ -74,7 +74,7 @@ lemma set_upds_list[simp]:
 lemma ups_fv_subset: "upds S \<subseteq> fv S"
   by (induction S rule: upds.induct) auto
 lemma fresh_distinct_ups: "atom ` V \<sharp>* S \<Longrightarrow> V \<inter> upds S = {}"
-   by (auto dest!: fresh_distinct_fv set_mp[OF ups_fv_subset])
+   by (auto dest!: fresh_distinct_fv subsetD[OF ups_fv_subset])
 lemma ap_fv_subset: "ap S \<subseteq> fv S"
   by (induction S rule: upds.induct) auto
 lemma dummies_fv_subset: "dummies S \<subseteq> fv S"
@@ -237,7 +237,7 @@ lemma heap_upds_ok_let:
   assumes "heap_upds_ok (\<Gamma>, S)"
   shows "heap_upds_ok (\<Delta> @ \<Gamma>, S)"
 using assms(2) fresh_distinct_fv[OF assms(1)]
-by (auto intro: heap_upds_ok_append dest: set_mp[OF ups_fv_subset])
+by (auto intro: heap_upds_ok_append dest: subsetD[OF ups_fv_subset])
 
 lemma heap_upds_ok_to_stack:
   "x \<in> domA \<Gamma> \<Longrightarrow> heap_upds_ok (\<Gamma>, S) \<Longrightarrow> heap_upds_ok (delete x \<Gamma>, Upd x #S)"

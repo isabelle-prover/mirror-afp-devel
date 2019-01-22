@@ -15,7 +15,7 @@ lemma ccBind_eq:
   apply (rule cont_if_else_above)
   apply simp
   apply simp
-  apply (auto dest: set_mp[OF ccField_cc_restr])[1]
+  apply (auto dest: subsetD[OF ccField_cc_restr])[1]
   (* Abstraction broken! Fix this. *)
   apply (case_tac p, auto, transfer, auto)[1]
   apply (rule adm_subst[OF cont_snd])
@@ -26,7 +26,7 @@ lemma ccBind_strict[simp]: "ccBind v e \<cdot> \<bottom> = \<bottom>"
   by (auto simp add: inst_prod_pcpo ccBind_eq simp del: Pair_strict)
 
 lemma ccField_ccBind: "ccField (ccBind v e\<cdot>(ae,G)) \<subseteq> fv e"
-  by (auto simp add: ccBind_eq dest: set_mp[OF ccField_cc_restr])
+  by (auto simp add: ccBind_eq dest: subsetD[OF ccField_cc_restr])
 
 definition ccBinds :: "heap \<Rightarrow> ((AEnv \<times> CoCalls) \<rightarrow> CoCalls)"
   where "ccBinds \<Gamma> = (\<Lambda> i. (\<Squnion>v\<mapsto>e\<in>map_of \<Gamma>. ccBind v e\<cdot>i))"
@@ -65,7 +65,7 @@ lemma ccBind_below_ccBinds: "map_of \<Gamma> x = Some e \<Longrightarrow> ccBind
   by (auto simp add: ccBinds_eq)
 
 lemma ccField_ccBinds: "ccField (ccBinds \<Gamma>\<cdot>(ae,G)) \<subseteq> fv \<Gamma>"
-  by (auto simp add: ccBinds_eq dest: set_mp[OF ccField_ccBind] intro: set_mp[OF map_of_Some_fv_subset])
+  by (auto simp add: ccBinds_eq dest: subsetD[OF ccField_ccBind] intro: subsetD[OF map_of_Some_fv_subset])
 
 definition ccBindsExtra :: "heap \<Rightarrow> ((AEnv \<times> CoCalls) \<rightarrow> CoCalls)"
   where "ccBindsExtra \<Gamma> = (\<Lambda> i.  snd i \<squnion> ccBinds \<Gamma> \<cdot> i  \<squnion> (\<Squnion>x\<mapsto>e\<in>map_of \<Gamma>. ccProd (fv e) (ccNeighbors x (snd i))))"
@@ -83,7 +83,7 @@ lemma ccBindsExtra_strict[simp]: "ccBindsExtra \<Gamma> \<cdot> \<bottom> = \<bo
 lemma ccField_ccBindsExtra:
   "ccField (ccBindsExtra \<Gamma>\<cdot>(ae,G)) \<subseteq> fv \<Gamma> \<union> ccField G"
   by (auto simp add: ccBindsExtra_simp elem_to_ccField
-      dest!:  set_mp[OF ccField_ccBinds]  set_mp[OF ccField_ccProd_subset] map_of_Some_fv_subset)
+      dest!:  subsetD[OF ccField_ccBinds]  subsetD[OF ccField_ccProd_subset] map_of_Some_fv_subset)
 
 end
 

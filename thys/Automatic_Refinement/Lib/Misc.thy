@@ -430,7 +430,7 @@ subsection \<open>Sets\<close>
     by (metis Domain.DomainI fst_eq_Domain in_mono)
 
   lemma snd_image_mp: "\<lbrakk>snd`A \<subseteq> B; (x,y)\<in>A \<rbrakk> \<Longrightarrow> y\<in>B"
-    by (metis Range.intros set_rev_mp snd_eq_Range)
+    by (metis Range.intros rev_subsetD snd_eq_Range)
 
   lemma inter_eq_subsetI: "\<lbrakk> S\<subseteq>S'; A\<inter>S' = B\<inter>S' \<rbrakk> \<Longrightarrow> A\<inter>S = B\<inter>S"
     by auto
@@ -1148,7 +1148,7 @@ by (induct xs) simp_all
 
 lemma tl_subset:
   "xs \<noteq> [] \<Longrightarrow> set xs \<subseteq> A \<Longrightarrow> set (tl xs) \<subseteq> A"
-by (metis in_set_tlD set_rev_mp subsetI)
+by (metis in_set_tlD rev_subsetD subsetI)
 
 lemma tl_last:
   "tl xs \<noteq> [] \<Longrightarrow> last xs = last (tl xs)"
@@ -1162,7 +1162,7 @@ by (induct xs rule: list_nonempty_induct) simp_all
 
 lemma butlast_subset:
   "xs \<noteq> [] \<Longrightarrow> set xs \<subseteq> A \<Longrightarrow> set (butlast xs) \<subseteq> A"
-by (metis in_set_butlastD set_rev_mp subsetI)
+by (metis in_set_butlastD rev_subsetD subsetI)
 
 lemma butlast_rev_tl:
   "xs \<noteq> [] \<Longrightarrow> butlast (rev xs) = rev (tl xs)"

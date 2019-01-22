@@ -84,7 +84,7 @@ lemma true_clss_union[iff]: "I \<Turnstile>s CC \<union> DD \<longleftrightarrow
   unfolding true_clss_def by blast
 
 lemma true_clss_mono: "DD \<subseteq> CC \<Longrightarrow> I \<Turnstile>s CC \<Longrightarrow> I \<Turnstile>s DD"
-  by (simp add: set_mp true_clss_def)
+  by (simp add: subsetD true_clss_def)
 
 abbreviation satisfiable :: "'a clause set \<Rightarrow> bool" where
   "satisfiable CC \<equiv> \<exists>I. I \<Turnstile>s CC"

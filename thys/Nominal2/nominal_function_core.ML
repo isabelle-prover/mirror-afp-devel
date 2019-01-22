@@ -604,7 +604,7 @@ fun inductive_def (binding as ((R, T), _)) intrs lthy =
       lthy
       |> Config.put Inductive.inductive_internals true
       |> Proof_Context.concealed
-      |> Inductive.add_inductive_i
+      |> Inductive.add_inductive
           {quiet_mode = true,
             verbose = ! trace,
             alt_name = Binding.empty,

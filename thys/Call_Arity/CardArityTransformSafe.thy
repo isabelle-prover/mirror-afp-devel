@@ -22,7 +22,7 @@ begin
 
   lemma supp_transform: "supp (transform a e) \<subseteq> supp e"
     by (induction rule: transform.induct)
-       (auto simp add: exp_assn.supp Let_supp dest!: set_mp[OF supp_map_transform] set_mp[OF supp_map_transform_step] )
+       (auto simp add: exp_assn.supp Let_supp dest!: subsetD[OF supp_map_transform] subsetD[OF supp_map_transform_step] )
   interpretation supp_bounded_transform transform
     by standard (auto simp add: fresh_def supp_transform) 
 
@@ -75,7 +75,7 @@ begin
   proof-
     from assms
     have "edom (prognosis \<bottom> [] 0 ([], e, [])) = {}"
-     by (auto dest!: set_mp[OF edom_prognosis])
+     by (auto dest!: subsetD[OF edom_prognosis])
     thus ?thesis
       by (auto simp add: edom_empty_iff_bot closed_a_consistent[OF assms])
   qed
@@ -109,7 +109,7 @@ begin
   next
   case (thunk \<Gamma> x e S)
     hence "x \<in> thunks \<Gamma>" by auto
-    hence [simp]: "x \<in> domA \<Gamma>" by (rule set_mp[OF thunks_domA])
+    hence [simp]: "x \<in> domA \<Gamma>" by (rule subsetD[OF thunks_domA])
 
     from thunk have "prognosis ae as a (\<Gamma>, Var x, S) \<sqsubseteq> ce" by auto
     from below_trans[OF prognosis_called fun_belowD[OF this] ]
@@ -335,23 +335,23 @@ begin
     let ?ae = "Aheap \<Delta> e\<cdot>a"
     let ?ce = "cHeap \<Delta> e\<cdot>a"
   
-    have "domA \<Delta> \<inter> upds S = {}" using fresh_distinct_fv[OF let\<^sub>1(2)] by (auto dest: set_mp[OF ups_fv_subset])
-    hence *: "\<And> x. x \<in> upds S \<Longrightarrow> x \<notin> edom ?ae" by (auto simp add: edom_cHeap dest!: set_mp[OF edom_Aheap])
+    have "domA \<Delta> \<inter> upds S = {}" using fresh_distinct_fv[OF let\<^sub>1(2)] by (auto dest: subsetD[OF ups_fv_subset])
+    hence *: "\<And> x. x \<in> upds S \<Longrightarrow> x \<notin> edom ?ae" by (auto simp add: edom_cHeap dest!: subsetD[OF edom_Aheap])
     have restr_stack_simp2: "restr_stack (edom (?ae \<squnion> ae)) S = restr_stack (edom ae) S"
       by (auto intro: restr_stack_cong dest!: *)
 
     have "edom ce = edom ae" using let\<^sub>1 by auto
   
     have "edom ae \<subseteq> domA \<Gamma> \<union> upds S" using let\<^sub>1 by (auto dest!: a_consistent_edom_subsetD)
-    from set_mp[OF this] fresh_distinct[OF let\<^sub>1(1)] fresh_distinct_fv[OF let\<^sub>1(2)]
-    have "edom ae \<inter> domA \<Delta> = {}" by (auto dest: set_mp[OF ups_fv_subset])
+    from subsetD[OF this] fresh_distinct[OF let\<^sub>1(1)] fresh_distinct_fv[OF let\<^sub>1(2)]
+    have "edom ae \<inter> domA \<Delta> = {}" by (auto dest: subsetD[OF ups_fv_subset])
 
     from \<open>edom ae \<inter> domA \<Delta> = {}\<close>
-    have [simp]: "edom (Aheap \<Delta> e\<cdot>a) \<inter> edom ae = {}" by (auto dest!: set_mp[OF edom_Aheap]) 
+    have [simp]: "edom (Aheap \<Delta> e\<cdot>a) \<inter> edom ae = {}" by (auto dest!: subsetD[OF edom_Aheap]) 
 
     from fresh_distinct[OF let\<^sub>1(1)]
     have [simp]: "restrictA (edom ae \<union> edom (Aheap \<Delta> e\<cdot>a)) \<Gamma> = restrictA (edom ae) \<Gamma>"
-      by (auto intro: restrictA_cong dest!: set_mp[OF edom_Aheap]) 
+      by (auto intro: restrictA_cong dest!: subsetD[OF edom_Aheap]) 
 
     have "set r \<subseteq> domA \<Gamma> \<union> upds S" using let\<^sub>1 by auto
     have [simp]: "restrictA (- set r) \<Delta> = \<Delta>"
@@ -366,7 +366,7 @@ begin
     { fix x e'
       assume "x \<in> thunks \<Gamma>"
       hence "x \<notin> edom ?ce" using fresh_distinct[OF let\<^sub>1(1)]
-        by (auto simp add: edom_cHeap dest: set_mp[OF edom_Aheap]  set_mp[OF thunks_domA])
+        by (auto simp add: edom_cHeap dest: subsetD[OF edom_Aheap]  subsetD[OF thunks_domA])
       hence [simp]: "?ce x = \<bottom>" unfolding edomIff by auto
     
       assume "many \<sqsubseteq> (?ce \<squnion> ce) x"
@@ -378,7 +378,7 @@ begin
       assume "x \<in> thunks \<Delta>" 
       hence "x \<notin> domA \<Gamma>" and "x \<notin> upds S"
         using fresh_distinct[OF let\<^sub>1(1)] fresh_distinct_fv[OF let\<^sub>1(2)]
-        by (auto dest!: set_mp[OF thunks_domA] set_mp[OF ups_fv_subset])
+        by (auto dest!: subsetD[OF thunks_domA] subsetD[OF ups_fv_subset])
       hence "x \<notin> edom ce" using \<open>edom ae \<subseteq> domA \<Gamma> \<union> upds S\<close> \<open>edom ce = edom ae\<close> by auto
       hence [simp]: "ce x = \<bottom>"  by (auto simp add: edomIff)
   
@@ -406,7 +406,7 @@ begin
     hence  "set r \<subseteq> (domA \<Gamma> \<union> upds S) - edom (?ce \<squnion> ce)"
       apply (rule order_trans)
       using \<open>domA \<Delta> \<inter> domA \<Gamma> = {}\<close> \<open>domA \<Delta> \<inter> upds S = {}\<close> 
-      apply (auto simp add: edom_cHeap dest!: set_mp[OF edom_Aheap])
+      apply (auto simp add: edom_cHeap dest!: subsetD[OF edom_Aheap])
       done
     ultimately
     have "consistent (?ae \<squnion> ae, ?ce \<squnion> ce, a, as, r) (\<Delta> @ \<Gamma>, e, S)" by auto
@@ -415,7 +415,7 @@ begin
     {
       have "\<And> x. x \<in> domA \<Gamma> \<Longrightarrow> x \<notin> edom ?ae" "\<And> x. x \<in> domA \<Gamma> \<Longrightarrow> x \<notin> edom ?ce"
         using fresh_distinct[OF let\<^sub>1(1)]
-        by (auto simp add: edom_cHeap dest!: set_mp[OF edom_Aheap])
+        by (auto simp add: edom_cHeap dest!: subsetD[OF edom_Aheap])
       hence "map_transform Aeta_expand (?ae \<squnion> ae) (map_transform transform (?ae \<squnion> ae) (restrictA (-set r) \<Gamma>))
          = map_transform Aeta_expand ae (map_transform transform ae (restrictA (-set r) \<Gamma>))"
          by (auto intro!: map_transform_cong restrictA_cong simp add: edomIff)
@@ -431,7 +431,7 @@ begin
             
       from  \<open>domA \<Delta> \<inter> domA \<Gamma> = {}\<close>   \<open>domA \<Delta> \<inter> upds S = {}\<close>
       have "atom ` domA \<Delta> \<sharp>* set r"
-        by (auto simp add: fresh_star_def fresh_at_base fresh_finite_set_at_base dest!: set_mp[OF \<open>set r \<subseteq> domA \<Gamma> \<union> upds S\<close>])
+        by (auto simp add: fresh_star_def fresh_at_base fresh_finite_set_at_base dest!: subsetD[OF \<open>set r \<subseteq> domA \<Gamma> \<union> upds S\<close>])
       hence "atom ` domA \<Delta> \<sharp>* map Dummy (rev r)" 
         apply -
         apply (rule eqvt_fresh_star_cong1[where f = "map Dummy"], perm_simp, rule)
@@ -446,7 +446,7 @@ begin
         apply (auto simp add: map_transform_append restrictA_append edom_cHeap restr_stack_simp2[simplified] )
         apply (rule normal)
         apply (rule step.let\<^sub>1)
-        apply (auto intro: normal step.let\<^sub>1 dest: set_mp[OF edom_Aheap] simp add: fresh_star_list)
+        apply (auto intro: normal step.let\<^sub>1 dest: subsetD[OF edom_Aheap] simp add: fresh_star_list)
         done
     }
     ultimately

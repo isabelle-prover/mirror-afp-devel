@@ -153,7 +153,7 @@ lemma ESem_subst:
   shows "\<lbrakk> e \<rbrakk>\<^bsub>\<sigma>(x := \<sigma> y)\<^esub> = \<lbrakk> e[x::= y] \<rbrakk>\<^bsub>\<sigma>\<^esub>"
 proof(cases "x = y")
   case False
-  hence [simp]: "x \<notin> fv e[x::=y]" by (auto simp add: fv_def supp_subst supp_at_base dest: set_mp[OF supp_subst]) 
+  hence [simp]: "x \<notin> fv e[x::=y]" by (auto simp add: fv_def supp_subst supp_at_base dest: subsetD[OF supp_subst]) 
 
   have "\<lbrakk> e \<rbrakk>\<^bsub>\<sigma>(x := \<sigma> y)\<^esub> = \<lbrakk> e[x::= y] \<rbrakk>\<^bsub>\<sigma>(x := \<sigma> y)\<^esub>"
     by (rule ESem_subst_same) simp

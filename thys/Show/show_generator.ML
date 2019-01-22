@@ -167,12 +167,11 @@ fun generate_showsp tyco lthy =
     val eqs = map (generate_pshow_eqs lthy) (tycos ~~ Ts) |> flat
     val bindings = tycos ~~ Ts |> map mk_pshowsp
       |> map (fn (name, T) => (Binding.name name, T |> showsify_typ |> SOME, NoSyn))
-    val ((pshows, _, pshow_simps), lthy) = lthy
-      |> BNF_LFP_Rec_Sugar.primrec false [] bindings
-        (map (fn t => ((Binding.empty_atts, t), [], [])) eqs)
-    val (phi, lthy) = restore_with_morphism lthy
-    val pshows = map (Morphism.term phi) pshows
-    val pshow_simps = pshow_simps |> map (Morphism.fact phi)
+
+    val ((pshows, pshow_simps), lthy) = Local_Theory.subtarget_result
+      (fn phi => fn (pshows, _, pshow_simps) => (map (Morphism.term phi) pshows, map (Morphism.fact phi) pshow_simps))
+      (BNF_LFP_Rec_Sugar.primrec false [] bindings
+        (map (fn t => ((Binding.empty_atts, t), [], [])) eqs)) lthy
 
     (* definitions of show functions via partial show functions and map *)
 
@@ -200,10 +199,9 @@ fun generate_showsp tyco lthy =
         |>> `(K showsp)
       end
 
-    val ((shows, show_defs), lthy) = fold_map generate_show_defs tycos lthy |>> split_list
-    val (phi, lthy) = restore_with_morphism lthy
-    val shows = map (Morphism.term phi) shows
-    val show_defs = map (Morphism.thm phi) show_defs
+    val ((shows, show_defs), lthy) = Local_Theory.subtarget_result
+      (fn phi => fn (shows, show_defs) => (map (Morphism.term phi) shows, map (Morphism.thm phi) show_defs))
+      (fold_map generate_show_defs tycos #>> split_list) lthy
 
     (* alternative simp-rules for show functions *)
 
@@ -256,9 +254,9 @@ fun generate_showsp tyco lthy =
         |> apfst snd
       end
 
-    val (show_simps, lthy) = fold_map generate_show_simps (tycos ~~ Ts) lthy
-    val (phi, lthy) = restore_with_morphism lthy
-    val show_simps = map (Morphism.fact phi) show_simps
+    val (show_simps, lthy) = Local_Theory.subtarget_result
+      (fn phi => map (Morphism.fact phi))
+      (fold_map generate_show_simps (tycos ~~ Ts)) lthy
 
     (* show law theorems *)
 
@@ -350,15 +348,14 @@ fun generate_showsp tyco lthy =
       (fn {context = ctxt, ...} =>
         HEADGOAL (show_law_tac ctxt (map Free xs)))
 
-    val (show_law_thms, lthy) = fold_map (fn (tyco, thm) =>
+    val (show_law_thms, lthy) = Local_Theory.subtarget_result Morphism.fact
+      (fold_map (fn (tyco, thm) =>
       let val name = Long_Name.base_name tyco
       in
         Local_Theory.note
           ((Binding.name ("show_law_" ^ name), @{attributes [show_law_intros]}), [thm])
         #> apfst (the_single o snd)
-      end) (tycos ~~ show_law_thms) lthy
-    val (phi, lthy) = restore_with_morphism lthy
-    val show_law_thms = Morphism.fact phi show_law_thms
+      end) (tycos ~~ show_law_thms)) lthy
   in
     lthy
     |> fold (fn ((((((tyco, pshow), show), show_def), m), m_comp), law_thm) =>

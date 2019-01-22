@@ -44,7 +44,7 @@ lemma edom_subset_adm[simp]:
   apply (erule ch2ch_fun)
   unfolding not_all
   apply (erule exE)
-  apply (rule set_mp)
+  apply (rule subsetD)
   apply (rule allE) apply assumption apply assumption
   unfolding edom_def
   apply simp
@@ -104,7 +104,7 @@ lemma env_restr_env_restr_subset:
  by (metis Int_absorb2 env_restr_env_restr)
 
 lemma env_restr_useless: "edom m \<subseteq> S \<Longrightarrow> m f|` S = m"
-  by (rule ext) (auto simp add: lookup_env_restr_eq dest!: set_mp)
+  by (rule ext) (auto simp add: lookup_env_restr_eq dest!: subsetD)
 
 lemma env_restr_UNIV[simp]: "m f|` UNIV = m"
   by (rule env_restr_useless) simp
@@ -328,11 +328,11 @@ lemma env_delete_esing[simp]: "env_delete x (esing x \<cdot> n) = \<bottom>"
 
 lemma env_restr_esing[simp]:
   "x\<in> S \<Longrightarrow> esing x\<cdot>v f|` S = esing x\<cdot>v" 
-  by (auto intro: env_restr_useless dest: set_mp[OF edom_esing_subset])
+  by (auto intro: env_restr_useless dest: subsetD[OF edom_esing_subset])
 
 lemma env_restr_esing2[simp]:
   "x \<notin> S \<Longrightarrow> esing x\<cdot>v f|` S = \<bottom>" 
-  by (auto  dest: set_mp[OF edom_esing_subset])
+  by (auto  dest: subsetD[OF edom_esing_subset])
 
 lemma esing_eq_iff[simp]:
   "esing x\<cdot>v = esing x\<cdot>v' \<longleftrightarrow> v = v'"

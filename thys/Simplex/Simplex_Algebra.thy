@@ -270,4 +270,13 @@ begin
 instance by standard (auto simp add: field_simps)
 end
 
+lemma uminus_less_lrv[simp]: fixes a b :: "'a :: lrv"
+  shows "- a < - b \<longleftrightarrow> b < a" 
+proof -
+  have "(- a < - b) = (-1 *R a < -1 *R b)" by simp
+  also have "\<dots> \<longleftrightarrow> (b < a)" 
+    using scaleRat_less2[of _ _ "-1"] scaleRat_less2[of "-1 *R a" "-1 *R b" "-1"] by auto 
+  finally show ?thesis .
+qed
+
 end

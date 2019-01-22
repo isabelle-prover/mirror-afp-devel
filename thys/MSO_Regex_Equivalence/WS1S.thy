@@ -454,7 +454,7 @@ proof (intro equalityI subsetI)
    (\<forall>i \<in> FO. case I ! i of Inl _ \<Rightarrow> True | Inr _ \<Rightarrow> False) \<and>
    (\<forall>i \<in> SO. case I ! i of Inl _ \<Rightarrow> False | Inr _ \<Rightarrow> True)" unfolding I_def dec_word_def
     by (auto dest: stream_dec_not_Inr stream_dec_not_Inl simp: \<sigma>_def  max_idx_vars
-      dest!: set_mp[OF set_cut_same[of any "map fst x"]] set_mp[OF *]  split: sum.splits)
+      dest!: subsetD[OF set_cut_same[of any "map fst x"]] subsetD[OF *]  split: sum.splits)
       (auto simp: stream_dec_def positions_in_row finite_True_in_row)
   moreover have "length I = n" unfolding I_def by simp
   moreover have "x \<in> enc (dec_word ?s, I)" unfolding I_def
@@ -546,7 +546,7 @@ lemma enc_wf_interp:
     stream_dec_Inl[of _ "FOV \<phi>" "length I" "stream_enc (w, I)", OF _ bspec[OF max_idx_vars]]
     stream_dec_Inr[of _ "FOV \<phi>" "length I" "stream_enc (w, I)", OF _ bspec[OF max_idx_vars]]
   by (auto split: sum.splits intro: Inr_dec_finite[OF finite_True_in_row] simp: max_idx_vars dec_word_def
-    dest!: stream_dec_not_Inl stream_dec_not_Inr set_mp[OF set_cut_same] simp del: stream_enc.simps)
+    dest!: stream_dec_not_Inl stream_dec_not_Inr subsetD[OF set_cut_same] simp del: stream_enc.simps)
     (auto simp: cut_same_def in_set_zip smap2_alt shift_snth)
 
 lemma enc_atom_welldef: "\<forall>x a. enc_atom I x a = enc_atom I' x a \<Longrightarrow> m < length I \<Longrightarrow>
@@ -1093,7 +1093,7 @@ next
       by (subst FExists(1)[of "Suc n", symmetric])
         (fastforce simp del: enc.simps simp: lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_def nth_Cons' intro!: exI[of _ "enc (w, Inl p # I)"])+
     thus "x \<in> ?L n (FExists \<phi>)" using *(1,2,3)
-      by (auto simp: lang_quot simp del: o_apply enc.simps elim: set_mp[OF SAMEQUOT_mono[OF image_mono]])
+      by (auto simp: lang_quot simp del: o_apply enc.simps elim: subsetD[OF SAMEQUOT_mono[OF image_mono]])
   next
     fix x assume "x \<in> ?L n (FExists \<phi>)"
     then obtain x' m where "x' \<in> ?L (Suc n) \<phi>" and
@@ -1128,7 +1128,7 @@ next
       by (subst FEXISTS(1)[of "Suc n", symmetric])
         (fastforce simp del: enc.simps simp: lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_def nth_Cons' intro!: exI[of _ "enc (w, Inr P # I)"])+
     thus "x \<in> ?L n (FEXISTS \<phi>)" using *(1,2,3,4)
-      by (auto simp: lang_quot simp del: o_apply enc.simps elim: set_mp[OF SAMEQUOT_mono[OF image_mono]])
+      by (auto simp: lang_quot simp del: o_apply enc.simps elim: subsetD[OF SAMEQUOT_mono[OF image_mono]])
   next
     fix x assume "x \<in> ?L n (FEXISTS \<phi>)"
     then obtain x' m where "x' \<in> ?L (Suc n) \<phi>" and
@@ -1209,7 +1209,7 @@ proof (intro equalityI subsetI)
   with I(3) show "x \<in> ?R"
     unfolding lang_ENC_formula[OF wf1] using I(1) tl_enc[of "Inl p" I, symmetric]
     by (simp del: enc.simps) 
-      (fastforce simp del: enc.simps elim!: set_rev_mp[OF _ SAMEQUOT_mono[OF image_mono]]
+      (fastforce simp del: enc.simps elim!: rev_subsetD[OF _ SAMEQUOT_mono[OF image_mono]]
         intro: exI[of _ "enc (w, Inl p # I)"])
 next
   fix x assume wf: "wf_formula n (FExists \<phi>)" and x: "x \<in> ?R"
@@ -1238,7 +1238,7 @@ proof (intro equalityI subsetI)
   with I(3) show "x \<in> ?R"
     unfolding lang_ENC_formula[OF wf1] using I(1) tl_enc[of "Inr P" I, symmetric]
     by (simp del: enc.simps) 
-      (fastforce simp del: enc.simps elim!: set_rev_mp[OF _ SAMEQUOT_mono[OF image_mono]]
+      (fastforce simp del: enc.simps elim!: rev_subsetD[OF _ SAMEQUOT_mono[OF image_mono]]
         intro: exI[of _ "enc (w, Inr P # I)"])
 next
   fix x assume wf: "wf_formula n (FEXISTS \<phi>)" and x: "x \<in> ?R"
@@ -1394,7 +1394,7 @@ proof -
   proof (safe elim!: subsetD[OF SAMEQUOT_mono[OF subset_trans[OF image_Int_subset Int_lower1]]])
     fix w assume "w \<in> SAMEQUOT z (map \<pi> ` (Z \<inter> lang (n + 1) (ENC (n + 1) X)))"
     then have "w \<in> SAMEQUOT z (map \<pi> ` lang (n + 1) (ENC (n + 1) X))"
-      by (rule set_rev_mp[OF _ SAMEQUOT_mono]) auto
+      by (rule rev_subsetD[OF _ SAMEQUOT_mono]) auto
     with assms(2) show "w \<in> lang n (ENC n ((\<lambda>x. x - 1) ` X))"
       unfolding lang_ENC[OF assms(3) subset_refl] lang_ENC[OF * subset_refl]
       by (auto simp: image_Union z_def length_Suc_conv simp del: enc.simps

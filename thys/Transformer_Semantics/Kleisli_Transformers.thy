@@ -189,7 +189,7 @@ lemma irbd_rbd_inv2_iff: "((bd\<^sub>\<R> \<circ> bd\<^sup>-\<^sub>\<R>) \<phi> 
   using irbd_rbd_inv2 irbd_rbd_inv2_inv by blast
 
 lemma rbd_inj: "inj bd\<^sub>\<R>"
-  by (simp add: fbd_inj inj_comp r2f_inj rbd_def)
+  by (simp add: fbd_inj inj_compose r2f_inj rbd_def)
 
 lemma rbd_translate: "(bd\<^sub>\<R> R = bd\<^sub>\<R> S) = (R = S)"
   by (simp add: rbd_inj inj_eq)
@@ -522,7 +522,7 @@ lemma irfb_inv2: "Inf_pres \<phi> \<Longrightarrow> (fb\<^sub>\<R> \<circ> fb\<^
   by (simp add: rfb_def irfb_def, metis ffb_iffb_galois r2f_f2r_galois)
 
 lemma rfb_inj: "inj fb\<^sub>\<R>"
-  by (simp add: rfb_def ffb_inj inj_comp r2f_inj)
+  by (simp add: rfb_def ffb_inj inj_compose r2f_inj)
 
 lemma rfb_inj_iff: "(fb\<^sub>\<R> R = fb\<^sub>\<R> S) = (R = S)"
   by (simp add: rfb_inj inj_eq)
