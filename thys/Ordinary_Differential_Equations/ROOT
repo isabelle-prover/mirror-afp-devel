@@ -29,7 +29,7 @@ session "Lorenz_Approximation" (AFP) = "HOL-ODE-Numerics" +
   theories
     "Ex/Lorenz/Lorenz_Approximation"
 
-session "HOL-ODE-Examples" (AFP) = "HOL-ODE-Numerics" +
+session "HOL-ODE-Examples" (AFP large) = "HOL-ODE-Numerics" +
   options [timeout = 7200]
   theories
     ODE_Examples
