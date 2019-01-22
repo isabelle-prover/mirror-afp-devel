@@ -350,7 +350,7 @@ proof -
 qed
 
 lemma rem_cycles_removes_last: "j \<notin> set (rem_cycles i j xs)"
-by (meson remove_all_rev_removes remove_all_subs set_rev_mp)
+by (meson remove_all_rev_removes remove_all_subs rev_subsetD)
 
 lemma rem_cycles_distinct: "distinct (rem_cycles i j xs)"
 by (meson distinct.simps(2) order_refl remove_all_cycles_distinct

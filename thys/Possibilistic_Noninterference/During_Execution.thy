@@ -1080,7 +1080,7 @@ lemma bis_imp[simp]:
 "\<And> c1 c2. c1 \<approx>wT c2 \<Longrightarrow> c1 \<approx>w c2"
 (*  *)
 "\<And> c1 c2. c1 \<approx>wT c2 \<Longrightarrow> c1 \<approx>T c2"
-using bis_incl set_rev_mp by auto
+using bis_incl rev_subsetD by auto
 
 text\<open>Self-isomorphism implies strong bisimilarity:\<close>
 

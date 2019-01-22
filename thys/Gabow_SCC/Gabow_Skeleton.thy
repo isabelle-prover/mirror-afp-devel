@@ -901,9 +901,9 @@ begin
           also have "(u,v)\<in>?E" using \<open>i<length p\<close>
             apply (clarsimp)
             apply (intro conjI)
-            apply (rule set_rev_mp[OF \<open>u\<in>p!(length p - 1)\<close>])
+            apply (rule rev_subsetD[OF \<open>u\<in>p!(length p - 1)\<close>])
             apply (simp)
-            apply (rule set_rev_mp[OF VMEM])
+            apply (rule rev_subsetD[OF VMEM])
             apply (simp)
             done
           also 

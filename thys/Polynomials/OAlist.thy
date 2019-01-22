@@ -1820,7 +1820,7 @@ next
         hence "f k0 (lookup_pair xs k0) (lookup_pair ((k', v') # ys) k0) =
                 f k0 (lookup_pair ((k, v) # xs) k0) (lookup_pair ((k', v') # ys) k0)"
           by (auto simp add: lookup_pair_Cons[OF *(1)] simp del: lookup_pair.simps)
-        also have "... = Some Eq" by (rule Cons(6), rule set_rev_mp, fact k0_in, auto)
+        also have "... = Some Eq" by (rule Cons(6), rule rev_subsetD, fact k0_in, auto)
         finally show "f k0 (lookup_pair xs k0) (lookup_pair ((k', v') # ys) k0) = Some Eq" .
       next
         have "f k v 0 = f k (lookup_pair ((k, v) # xs) k) (lookup_pair ((k', v') # ys) k)"
@@ -1849,7 +1849,7 @@ next
                 f k0 (lookup_pair ((k, v) # xs) k0) (lookup_pair ((k', v') # ys) k0)"
           by (simp add: lookup_pair_Cons[OF *(1)] lookup_pair_Cons[OF Cons(1)] del: lookup_pair.simps,
               auto simp: \<open>k = k'\<close>)
-        also have "... = Some Eq" by (rule Cons(6), rule set_rev_mp, fact k0_in, auto)
+        also have "... = Some Eq" by (rule Cons(6), rule rev_subsetD, fact k0_in, auto)
         finally show "f k0 (lookup_pair xs k0) (lookup_pair ys k0) = Some Eq" .
       next
         have "f k v v' = f k (lookup_pair ((k, v) # xs) k) (lookup_pair ((k', v') # ys) k)"
@@ -1881,7 +1881,7 @@ next
         hence "f k0 (lookup_pair ((k, v) # xs) k0) (lookup_pair ys k0) =
                 f k0 (lookup_pair ((k, v) # xs) k0) (lookup_pair ((k', v') # ys) k0)"
           by (auto simp add: lookup_pair_Cons[OF Cons(1)] simp del: lookup_pair.simps)
-        also have "... = Some Eq" by (rule Cons(6), rule set_rev_mp, fact k0_in, auto)
+        also have "... = Some Eq" by (rule Cons(6), rule rev_subsetD, fact k0_in, auto)
         finally show "f k0 (lookup_pair ((k, v) # xs) k0) (lookup_pair ys k0) = Some Eq" .
       next
         have "f k' 0 v' = f k' (lookup_pair ((k, v) # xs) k') (lookup_pair ((k', v') # ys) k')"

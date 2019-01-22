@@ -156,7 +156,7 @@ proof
           using suc_n_in_v1 assm nat_int.consec_def nat_int.el.rep_eq
           by auto
         hence "n\<notin> Rep_nat_int (restrict v2 (res ts) c)"
-          using less_eq_nat_int.rep_eq set_rev_mp subs by blast
+          using less_eq_nat_int.rep_eq rev_subsetD subs by blast
         hence "Rep_nat_int (restrict v2 (res ts) c) = {}" 
           using insert_absorb insert_ident insert_not_empty n_def less_eq_nat_int.rep_eq
             restrict_res singleton_insert_inj_eq subset_insert suc_n_not_in_res_v2 

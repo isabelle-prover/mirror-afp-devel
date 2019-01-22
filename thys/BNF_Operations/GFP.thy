@@ -54,7 +54,7 @@ lemma F1map_comp_id: "F1map g1 g2 g3 (F1map id f2 f3 x) = F1map g1 (g2 o f2) (g3
   done
 
 lemmas F1in_mono23 = F1.in_mono[OF subset_refl]
-lemmas F1in_mono23' = set_mp[OF F1in_mono23]
+lemmas F1in_mono23' = subsetD[OF F1in_mono23]
 
 lemma F1map_congL: "\<lbrakk>\<forall>a \<in> F1set2 x. f a = a; \<forall>a \<in> F1set3 x. g a = a\<rbrakk> \<Longrightarrow>
   F1map id f g x = x"
@@ -82,7 +82,7 @@ lemma F2map_comp_id: "F2map g1 g2 g3 (F2map id f2 f3 x) = F2map g1 (g2 o f2) (g3
   done
 
 lemmas F2in_mono23 = F2.in_mono[OF subset_refl]
-lemmas F2in_mono23' = set_mp[OF F2in_mono23]
+lemmas F2in_mono23' = subsetD[OF F2in_mono23]
 
 lemma F2map_congL: "\<lbrakk>\<forall>a \<in> F2set2 x. f a = a; \<forall>a \<in> F2set3 x. g a = a\<rbrakk> \<Longrightarrow>
   F2map id f g x = x"
@@ -200,8 +200,8 @@ lemma mor_image2: "mor B1 B2 s1 s2 B1' B2' s1' s2' f g \<Longrightarrow> g ` B2 
   apply assumption
   done
 
-lemmas mor_image1' = set_mp[OF mor_image1 imageI]
-lemmas mor_image2' = set_mp[OF mor_image2 imageI]
+lemmas mor_image1' = subsetD[OF mor_image1 imageI]
+lemmas mor_image2' = subsetD[OF mor_image2 imageI]
 
 lemma morE1: "\<lbrakk>mor B1 B2 s1 s2 B1' B2' s1' s2' f g; z \<in> B1\<rbrakk>
    \<Longrightarrow> F1map id f g (s1 z) = s1' (f z)"
@@ -225,12 +225,12 @@ lemma mor_incl: "\<lbrakk>B1 \<subseteq> B1'; B2 \<subseteq> B2'\<rbrakk> \<Long
    apply (rule conjI)
     apply (rule ballI)
     apply (rule ssubst_mem[OF id_apply])
-    apply (erule set_mp)
+    apply (erule subsetD)
     apply assumption
 
    apply (rule ballI)
    apply (rule ssubst_mem[OF id_apply])
-   apply (erule set_mp)
+   apply (erule subsetD)
    apply assumption
 
   apply (rule conjI)
@@ -518,7 +518,7 @@ lemma bis_Frel:
     apply (rule trans)
      apply (rule F1.map_cong0)
        apply (rule Collect_case_prodD)
-       apply (erule set_mp)
+       apply (erule subsetD)
        apply assumption
       apply (rule refl)
      apply (rule refl)
@@ -570,7 +570,7 @@ lemma bis_Frel:
    apply (rule trans)
     apply (rule F2.map_cong0)
       apply (rule Collect_case_prodD)
-      apply (erule set_mp)
+      apply (erule subsetD)
       apply assumption
      apply (rule refl)
     apply (rule refl)
@@ -847,7 +847,7 @@ lemma equiv_lsbis1: "coalg B1 B2 s1 s2 \<Longrightarrow> equiv B1 (lsbis1 B1 B2 
    apply (rule conjI)
     apply (rule lsbis1_incl)
    apply (rule ballI)
-   apply (rule set_mp)
+   apply (rule subsetD)
     apply (rule incl_lsbis1)
     apply (rule bis_diag)
     apply assumption
@@ -857,7 +857,7 @@ lemma equiv_lsbis1: "coalg B1 B2 s1 s2 \<Longrightarrow> equiv B1 (lsbis1 B1 B2 
    apply (rule iffD2[OF sym_def])
    apply (rule allI)+
    apply (rule impI)
-   apply (rule set_mp)
+   apply (rule subsetD)
     apply (rule incl_lsbis1)
     apply (rule bis_converse)
     apply (rule sbis_lsbis)
@@ -866,7 +866,7 @@ lemma equiv_lsbis1: "coalg B1 B2 s1 s2 \<Longrightarrow> equiv B1 (lsbis1 B1 B2 
   apply (rule iffD2[OF trans_def])
   apply (rule allI)+
   apply (rule impI)+
-  apply (rule set_mp)
+  apply (rule subsetD)
    apply (rule incl_lsbis1)
    apply (rule bis_Comp)
     apply (rule sbis_lsbis)
@@ -882,7 +882,7 @@ lemma equiv_lsbis2: "coalg B1 B2 s1 s2 \<Longrightarrow> equiv B2 (lsbis2 B1 B2 
    apply (rule conjI)
     apply (rule lsbis2_incl)
    apply (rule ballI)
-   apply (rule set_mp)
+   apply (rule subsetD)
     apply (rule incl_lsbis2)
     apply (rule bis_diag)
     apply assumption
@@ -892,7 +892,7 @@ lemma equiv_lsbis2: "coalg B1 B2 s1 s2 \<Longrightarrow> equiv B2 (lsbis2 B1 B2 
 
    apply (rule allI)+
    apply (rule impI)
-   apply (rule set_mp)
+   apply (rule subsetD)
     apply (rule incl_lsbis2)
     apply (rule bis_converse)
     apply (rule sbis_lsbis)
@@ -900,7 +900,7 @@ lemma equiv_lsbis2: "coalg B1 B2 s1 s2 \<Longrightarrow> equiv B2 (lsbis2 B1 B2 
 
   apply (rule allI)+
   apply (rule impI)+
-  apply (rule set_mp)
+  apply (rule subsetD)
    apply (rule incl_lsbis2)
    apply (rule bis_Comp)
     apply (rule sbis_lsbis)
@@ -994,7 +994,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
     apply (rule conjI)
      apply (rule conjI)
       apply (erule empty_Shift)
-      apply (drule set_rev_mp)
+      apply (drule rev_subsetD)
        apply (erule equalityD1)
       apply (erule CollectD)
      apply (rule ballI)
@@ -1008,7 +1008,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
       apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
       apply (drule bspec)
        apply (rule CollectI)
-       apply (erule set_mp[OF equalityD1[OF Succ_Shift]])
+       apply (erule subsetD[OF equalityD1[OF Succ_Shift]])
       apply (erule exE conjE)+
       apply (rule exI)
       apply (rule conjI)
@@ -1041,7 +1041,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
      apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
      apply (drule bspec)
       apply (rule CollectI)
-      apply (erule set_mp[OF equalityD1[OF Succ_Shift]])
+      apply (erule subsetD[OF equalityD1[OF Succ_Shift]])
      apply (erule exE conjE)+
      apply (rule exI)
      apply (rule conjI)
@@ -1068,7 +1068,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
      apply assumption
     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (drule bspec)
-     apply (erule set_mp[OF equalityD1])
+     apply (erule subsetD[OF equalityD1])
      apply assumption
     apply (erule exE conjE)+
     apply (rule exI)
@@ -1100,7 +1100,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
    apply (rule conjI)
     apply (rule conjI)
      apply (erule empty_Shift)
-     apply (drule set_rev_mp)
+     apply (drule rev_subsetD)
       apply (erule equalityD1)
      apply (erule CollectD)
     apply (rule ballI)
@@ -1114,7 +1114,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
      apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (drule bspec)
       apply (rule CollectI)
-      apply (erule set_mp[OF equalityD1[OF Succ_Shift]])
+      apply (erule subsetD[OF equalityD1[OF Succ_Shift]])
      apply (erule exE conjE)+
      apply (rule exI)
      apply (rule conjI)
@@ -1147,7 +1147,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (drule bspec)
      apply (rule CollectI)
-     apply (erule set_mp[OF equalityD1[OF Succ_Shift]])
+     apply (erule subsetD[OF equalityD1[OF Succ_Shift]])
     apply (erule exE conjE)+
     apply (rule exI)
     apply (rule conjI)
@@ -1174,7 +1174,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
     apply assumption
    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (drule bspec)
-    apply (erule set_mp[OF equalityD1])
+    apply (erule subsetD[OF equalityD1])
     apply assumption
    apply (erule exE conjE)+
    apply (rule exI)
@@ -1220,7 +1220,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
    apply (rule conjI)
     apply (rule conjI)
      apply (erule empty_Shift)
-     apply (drule set_rev_mp)
+     apply (drule rev_subsetD)
       apply (erule equalityD1)
      apply (erule CollectD)
     apply (rule ballI)
@@ -1234,7 +1234,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
      apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (drule bspec)
       apply (rule CollectI)
-      apply (erule set_mp[OF equalityD1[OF Succ_Shift]])
+      apply (erule subsetD[OF equalityD1[OF Succ_Shift]])
      apply (erule exE conjE)+
      apply (rule exI)
      apply (rule conjI)
@@ -1267,7 +1267,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (drule bspec)
      apply (rule CollectI)
-     apply (erule set_mp[OF equalityD1[OF Succ_Shift]])
+     apply (erule subsetD[OF equalityD1[OF Succ_Shift]])
     apply (erule exE conjE)+
     apply (rule exI)
     apply (rule conjI)
@@ -1294,7 +1294,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
     apply assumption
    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
    apply (drule bspec)
-    apply (erule set_mp[OF equalityD1])
+    apply (erule subsetD[OF equalityD1])
     apply assumption
    apply (erule exE conjE)+
    apply (rule exI)
@@ -1326,7 +1326,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
   apply (rule conjI)
    apply (rule conjI)
     apply (erule empty_Shift)
-    apply (drule set_rev_mp)
+    apply (drule rev_subsetD)
      apply (erule equalityD1)
     apply (erule CollectD)
    apply (rule ballI)
@@ -1340,7 +1340,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (drule bspec)
      apply (rule CollectI)
-     apply (erule set_mp[OF equalityD1[OF Succ_Shift]])
+     apply (erule subsetD[OF equalityD1[OF Succ_Shift]])
     apply (erule exE conjE)+
     apply (rule exI)
     apply (rule conjI)
@@ -1373,7 +1373,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (drule bspec)
     apply (rule CollectI)
-    apply (erule set_mp[OF equalityD1[OF Succ_Shift]])
+    apply (erule subsetD[OF equalityD1[OF Succ_Shift]])
    apply (erule exE conjE)+
    apply (rule exI)
    apply (rule conjI)
@@ -1400,7 +1400,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
    apply assumption
   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
   apply (drule bspec)
-   apply (erule set_mp[OF equalityD1])
+   apply (erule subsetD[OF equalityD1])
    apply assumption
   apply (erule exE conjE)+
   apply (rule exI)
@@ -1496,13 +1496,13 @@ lemma length_Lev:
    apply (rule allI)+
    apply (rule conjI)
     apply (rule impI)
-    apply (drule set_mp[OF equalityD1[OF Lev1_0]])
+    apply (drule subsetD[OF equalityD1[OF Lev1_0]])
     apply (erule singletonE)
     apply (erule ssubst)
     apply (rule list.size(3))
 
    apply (rule impI)
-   apply (drule set_mp[OF equalityD1[OF Lev2_0]])
+   apply (drule subsetD[OF equalityD1[OF Lev2_0]])
    apply (erule singletonE)
    apply (erule ssubst)
    apply (rule list.size(3))
@@ -1510,7 +1510,7 @@ lemma length_Lev:
   apply (rule allI)+
   apply (rule conjI)
    apply (rule impI)
-   apply (drule set_mp[OF equalityD1[OF Lev1_Suc]])
+   apply (drule subsetD[OF equalityD1[OF Lev1_Suc]])
    apply (erule UnE)
     apply (erule CollectE exE conjE)+
     apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
@@ -1534,7 +1534,7 @@ lemma length_Lev:
 
 
   apply (rule impI)
-  apply (drule set_mp[OF equalityD1[OF Lev2_Suc]])
+  apply (drule subsetD[OF equalityD1[OF Lev2_Suc]])
   apply (erule UnE)
    apply (erule CollectE exE conjE)+
    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
@@ -1724,7 +1724,7 @@ lemma Fset_Lev:
    apply (rule allI)+
    apply (rule conjI)
     apply (rule impI)
-    apply (drule set_mp[OF equalityD1[OF Lev1_0]])
+    apply (drule subsetD[OF equalityD1[OF Lev1_0]])
     apply (erule singletonE)
     apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
     apply (rule conjI)
@@ -1736,7 +1736,7 @@ lemma Fset_Lev:
      apply (rule conjI)
       apply (rule impI)
       apply (rule ssubst_mem[OF append_Nil])
-      apply (rule set_mp[OF equalityD2])
+      apply (rule subsetD[OF equalityD2])
        apply (rule Lev1_Suc)
       apply (rule UnI1)
       apply (rule CollectI)
@@ -1744,12 +1744,12 @@ lemma Fset_Lev:
       apply (rule conjI)
        apply (rule refl)
       apply (erule conjI)
-      apply (rule set_mp[OF equalityD2])
+      apply (rule subsetD[OF equalityD2])
        apply (rule Lev1_0)
       apply (rule singletonI)
      apply (rule impI)
      apply (rule ssubst_mem[OF append_Nil])
-     apply (rule set_mp[OF equalityD2])
+     apply (rule subsetD[OF equalityD2])
       apply (rule Lev1_Suc)
      apply (rule UnI2)
      apply (rule CollectI)
@@ -1757,7 +1757,7 @@ lemma Fset_Lev:
      apply (rule conjI)
       apply (rule refl)
      apply (erule conjI)
-     apply (rule set_mp[OF equalityD2])
+     apply (rule subsetD[OF equalityD2])
       apply (rule Lev2_0)
      apply (rule singletonI)
 
@@ -1767,7 +1767,7 @@ lemma Fset_Lev:
     apply (erule notE[OF Inr_not_Inl])
 
    apply (rule impI)
-   apply (drule set_rev_mp[OF _ equalityD1])
+   apply (drule rev_subsetD[OF _ equalityD1])
     apply (rule Lev2_0)
    apply (erule singletonE)
    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
@@ -1785,7 +1785,7 @@ lemma Fset_Lev:
    apply (tactic \<open>stac @{context} @{thm append_Nil} 1\<close>)+
    apply (rule conjI)
     apply (rule impI)
-    apply (rule set_mp[OF equalityD2])
+    apply (rule subsetD[OF equalityD2])
      apply (rule Lev2_Suc)
     apply (rule UnI1)
     apply (rule CollectI)
@@ -1793,11 +1793,11 @@ lemma Fset_Lev:
     apply (rule conjI)
      apply (rule refl)
     apply (erule conjI)
-    apply (rule set_mp[OF equalityD2])
+    apply (rule subsetD[OF equalityD2])
      apply (rule Lev1_0)
     apply (rule singletonI)
    apply (rule impI)
-   apply (rule set_mp[OF equalityD2])
+   apply (rule subsetD[OF equalityD2])
     apply (rule Lev2_Suc)
    apply (rule UnI2)
    apply (rule CollectI)
@@ -1805,7 +1805,7 @@ lemma Fset_Lev:
    apply (rule conjI)
     apply (rule refl)
    apply (erule conjI)
-   apply (rule set_mp[OF equalityD2])
+   apply (rule subsetD[OF equalityD2])
     apply (rule Lev2_0)
    apply (rule singletonI)
 
@@ -1813,7 +1813,7 @@ lemma Fset_Lev:
   apply (rule allI)+
   apply (rule conjI)
    apply (rule impI)
-   apply (drule set_mp[OF equalityD1[OF Lev1_Suc]])
+   apply (drule subsetD[OF equalityD1[OF Lev1_Suc]])
    apply (erule UnE)
     apply (erule CollectE exE conjE)+
     apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
@@ -1821,7 +1821,7 @@ lemma Fset_Lev:
      apply (rule impI)
      apply (rule conjI)
       apply (rule impI)
-      apply (rule set_mp[OF equalityD2])
+      apply (rule subsetD[OF equalityD2])
        apply (rule Lev1_Suc)
       apply (rule ssubst_mem[OF append_Cons])
       apply (rule UnI1)
@@ -1847,7 +1847,7 @@ lemma Fset_Lev:
       apply assumption
 
      apply (rule impI)
-     apply (rule set_mp[OF equalityD2])
+     apply (rule subsetD[OF equalityD2])
       apply (rule Lev1_Suc)
      apply (rule ssubst_mem[OF append_Cons])
      apply (rule UnI1)
@@ -1875,7 +1875,7 @@ lemma Fset_Lev:
     apply (rule impI)
     apply (rule conjI)
      apply (rule impI)
-     apply (rule set_mp[OF equalityD2])
+     apply (rule subsetD[OF equalityD2])
       apply (rule Lev1_Suc)
      apply (rule ssubst_mem[OF append_Cons])
      apply (rule UnI1)
@@ -1901,7 +1901,7 @@ lemma Fset_Lev:
      apply assumption
 
     apply (rule impI)
-    apply (rule set_mp[OF equalityD2])
+    apply (rule subsetD[OF equalityD2])
      apply (rule Lev1_Suc)
     apply (rule ssubst_mem[OF append_Cons])
     apply (rule UnI1)
@@ -1936,7 +1936,7 @@ lemma Fset_Lev:
     apply (rule impI)
     apply (rule conjI)
      apply (rule impI)
-     apply (rule set_mp[OF equalityD2])
+     apply (rule subsetD[OF equalityD2])
       apply (rule Lev1_Suc)
      apply (rule ssubst_mem[OF append_Cons])
      apply (rule UnI2)
@@ -1957,7 +1957,7 @@ lemma Fset_Lev:
      apply assumption
 
     apply (rule impI)
-    apply (rule set_mp[OF equalityD2])
+    apply (rule subsetD[OF equalityD2])
      apply (rule Lev1_Suc)
     apply (rule ssubst_mem[OF append_Cons])
     apply (rule UnI2)
@@ -1980,7 +1980,7 @@ lemma Fset_Lev:
    apply (rule impI)
    apply (rule conjI)
     apply (rule impI)
-    apply (rule set_mp[OF equalityD2])
+    apply (rule subsetD[OF equalityD2])
      apply (rule Lev1_Suc)
     apply (rule ssubst_mem[OF append_Cons])
     apply (rule UnI2)
@@ -2001,7 +2001,7 @@ lemma Fset_Lev:
     apply assumption
 
    apply (rule impI)
-   apply (rule set_mp[OF equalityD2])
+   apply (rule subsetD[OF equalityD2])
     apply (rule Lev1_Suc)
    apply (rule ssubst_mem[OF append_Cons])
    apply (rule UnI2)
@@ -2024,7 +2024,7 @@ lemma Fset_Lev:
 (**)
 
   apply (rule impI)
-  apply (drule set_rev_mp[OF _ equalityD1])
+  apply (drule rev_subsetD[OF _ equalityD1])
    apply (rule Lev2_Suc)
   apply (erule UnE)
    apply (erule CollectE exE conjE)+
@@ -2037,7 +2037,7 @@ lemma Fset_Lev:
     apply (rule impI)
     apply (rule conjI)
      apply (rule impI)
-     apply (rule set_mp[OF equalityD2])
+     apply (rule subsetD[OF equalityD2])
       apply (rule Lev2_Suc)
      apply (rule ssubst_mem[OF append_Cons])
      apply (rule UnI1)
@@ -2058,7 +2058,7 @@ lemma Fset_Lev:
      apply assumption
 
     apply (rule impI)
-    apply (rule set_mp[OF equalityD2])
+    apply (rule subsetD[OF equalityD2])
      apply (rule Lev2_Suc)
     apply (rule ssubst_mem[OF append_Cons])
     apply (rule UnI1)
@@ -2081,7 +2081,7 @@ lemma Fset_Lev:
    apply (rule impI)
    apply (rule conjI)
     apply (rule impI)
-    apply (rule set_mp[OF equalityD2])
+    apply (rule subsetD[OF equalityD2])
      apply (rule Lev2_Suc)
     apply (rule ssubst_mem[OF append_Cons])
     apply (rule UnI1)
@@ -2102,7 +2102,7 @@ lemma Fset_Lev:
     apply assumption
 
    apply (rule impI)
-   apply (rule set_mp[OF equalityD2])
+   apply (rule subsetD[OF equalityD2])
     apply (rule Lev2_Suc)
    apply (rule ssubst_mem[OF append_Cons])
    apply (rule UnI1)
@@ -2132,7 +2132,7 @@ lemma Fset_Lev:
    apply (rule impI)
    apply (rule conjI)
     apply (rule impI)
-    apply (rule set_mp[OF equalityD2])
+    apply (rule subsetD[OF equalityD2])
      apply (rule Lev2_Suc)
     apply (rule ssubst_mem[OF append_Cons])
     apply (rule UnI2)
@@ -2153,7 +2153,7 @@ lemma Fset_Lev:
     apply assumption
 
    apply (rule impI)
-   apply (rule set_mp[OF equalityD2])
+   apply (rule subsetD[OF equalityD2])
     apply (rule Lev2_Suc)
    apply (rule ssubst_mem[OF append_Cons])
    apply (rule UnI2)
@@ -2176,7 +2176,7 @@ lemma Fset_Lev:
   apply (rule impI)
   apply (rule conjI)
    apply (rule impI)
-   apply (rule set_mp[OF equalityD2])
+   apply (rule subsetD[OF equalityD2])
     apply (rule Lev2_Suc)
    apply (rule ssubst_mem[OF append_Cons])
    apply (rule UnI2)
@@ -2197,7 +2197,7 @@ lemma Fset_Lev:
    apply assumption
 
   apply (rule impI)
-  apply (rule set_mp[OF equalityD2])
+  apply (rule subsetD[OF equalityD2])
    apply (rule Lev2_Suc)
   apply (rule ssubst_mem[OF append_Cons])
   apply (rule UnI2)
@@ -2249,7 +2249,7 @@ lemma Fset_image_Lev:
    apply (rule allI)+
    apply (rule conjI)
     apply (rule impI)
-    apply (drule set_mp[OF equalityD1[OF Lev1_0]])
+    apply (drule subsetD[OF equalityD1[OF Lev1_0]])
     apply (erule singletonE)
     apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
     apply (rule conjI)
@@ -2259,7 +2259,7 @@ lemma Fset_image_Lev:
       apply (drule trans[OF sym])
        apply (rule rv1_Nil)
       apply (drule ssubst_mem[OF sym[OF append_Nil]])
-      apply (drule set_mp[OF equalityD1[OF Lev1_Suc]])
+      apply (drule subsetD[OF equalityD1[OF Lev1_Suc]])
       apply (drule Inl_inject)
       apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
       apply (erule UnE)
@@ -2282,7 +2282,7 @@ lemma Fset_image_Lev:
     apply (rule conjI)
      apply (rule impI)
      apply (drule ssubst_mem[OF sym[OF append_Nil]])
-     apply (drule set_mp[OF equalityD1[OF Lev1_Suc]])
+     apply (drule subsetD[OF equalityD1[OF Lev1_Suc]])
      apply (drule trans[OF sym])
       apply (rule rv1_Nil)
      apply (drule Inl_inject)
@@ -2304,7 +2304,7 @@ lemma Fset_image_Lev:
     apply (erule notE[OF Inr_not_Inl])
 
    apply (rule impI)
-   apply (drule set_mp[OF equalityD1[OF Lev2_0]])
+   apply (drule subsetD[OF equalityD1[OF Lev2_0]])
    apply (erule singletonE)
    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (rule conjI)
@@ -2316,7 +2316,7 @@ lemma Fset_image_Lev:
      apply (erule notE[OF Inl_not_Inr])
     apply (rule impI)
     apply (drule ssubst_mem[OF sym[OF append_Nil]])
-    apply (drule set_mp[OF equalityD1[OF Lev2_Suc]])
+    apply (drule subsetD[OF equalityD1[OF Lev2_Suc]])
     apply (drule trans[OF sym])
      apply (rule rv2_Nil)
     apply (drule Inr_inject)
@@ -2341,7 +2341,7 @@ lemma Fset_image_Lev:
     apply (erule notE[OF Inl_not_Inr])
    apply (rule impI)
    apply (drule ssubst_mem[OF sym[OF append_Nil]])
-   apply (drule set_mp[OF equalityD1[OF Lev2_Suc]])
+   apply (drule subsetD[OF equalityD1[OF Lev2_Suc]])
    apply (drule trans[OF sym])
     apply (rule rv2_Nil)
    apply (drule Inr_inject)
@@ -2363,14 +2363,14 @@ lemma Fset_image_Lev:
   apply (rule allI)+
   apply (rule conjI)
    apply (rule impI)
-   apply (drule set_mp[OF equalityD1[OF Lev1_Suc]])
+   apply (drule subsetD[OF equalityD1[OF Lev1_Suc]])
    apply (erule UnE)
     apply (erule CollectE exE conjE)+
     apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
     apply (rule conjI)
      apply (rule impI)
      apply (drule ssubst_mem[OF sym[OF append_Cons]])
-     apply (drule set_mp[OF equalityD1[OF Lev1_Suc]])
+     apply (drule subsetD[OF equalityD1[OF Lev1_Suc]])
      apply (erule UnE)
       apply (erule CollectE exE conjE)+
       apply (drule list.inject[THEN iffD1])
@@ -2421,7 +2421,7 @@ lemma Fset_image_Lev:
 
     apply (rule impI)
     apply (drule ssubst_mem[OF sym[OF append_Cons]])
-    apply (drule set_mp[OF equalityD1[OF Lev1_Suc]])
+    apply (drule subsetD[OF equalityD1[OF Lev1_Suc]])
     apply (erule UnE)
      apply (erule CollectE exE conjE)+
      apply (drule list.inject[THEN iffD1])
@@ -2475,7 +2475,7 @@ lemma Fset_image_Lev:
    apply (rule conjI)
     apply (rule impI)
     apply (drule ssubst_mem[OF sym[OF append_Cons]])
-    apply (drule set_mp[OF equalityD1[OF Lev1_Suc]])
+    apply (drule subsetD[OF equalityD1[OF Lev1_Suc]])
     apply (erule UnE)
      apply (erule CollectE exE conjE)+
      apply (drule list.inject[THEN iffD1])
@@ -2526,7 +2526,7 @@ lemma Fset_image_Lev:
 
    apply (rule impI)
    apply (drule ssubst_mem[OF sym[OF append_Cons]])
-   apply (drule set_mp[OF equalityD1[OF Lev1_Suc]])
+   apply (drule subsetD[OF equalityD1[OF Lev1_Suc]])
    apply (erule UnE)
     apply (erule CollectE exE conjE)+
     apply (drule list.inject[THEN iffD1])
@@ -2578,14 +2578,14 @@ lemma Fset_image_Lev:
 (*1/2*)
 
   apply (rule impI)
-  apply (drule set_mp[OF equalityD1[OF Lev2_Suc]])
+  apply (drule subsetD[OF equalityD1[OF Lev2_Suc]])
   apply (erule UnE)
    apply (erule CollectE exE conjE)+
    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (rule conjI)
     apply (rule impI)
     apply (drule ssubst_mem[OF sym[OF append_Cons]])
-    apply (drule set_mp[OF equalityD1[OF Lev2_Suc]])
+    apply (drule subsetD[OF equalityD1[OF Lev2_Suc]])
     apply (erule UnE)
      apply (erule CollectE exE conjE)+
      apply (drule list.inject[THEN iffD1])
@@ -2636,7 +2636,7 @@ lemma Fset_image_Lev:
 
    apply (rule impI)
    apply (drule ssubst_mem[OF sym[OF append_Cons]])
-   apply (drule set_mp[OF equalityD1[OF Lev2_Suc]])
+   apply (drule subsetD[OF equalityD1[OF Lev2_Suc]])
    apply (erule UnE)
     apply (erule CollectE exE conjE)+
     apply (drule list.inject[THEN iffD1])
@@ -2690,7 +2690,7 @@ lemma Fset_image_Lev:
   apply (rule conjI)
    apply (rule impI)
    apply (drule ssubst_mem[OF sym[OF append_Cons]])
-   apply (drule set_mp[OF equalityD1[OF Lev2_Suc]])
+   apply (drule subsetD[OF equalityD1[OF Lev2_Suc]])
    apply (erule UnE)
     apply (erule CollectE exE conjE)+
     apply (drule list.inject[THEN iffD1])
@@ -2741,7 +2741,7 @@ lemma Fset_image_Lev:
 
   apply (rule impI)
   apply (drule ssubst_mem[OF sym[OF append_Cons]])
-  apply (drule set_mp[OF equalityD1[OF Lev2_Suc]])
+  apply (drule subsetD[OF equalityD1[OF Lev2_Suc]])
   apply (erule UnE)
    apply (erule CollectE exE conjE)+
    apply (drule list.inject[THEN iffD1])
@@ -2819,7 +2819,7 @@ lemma mor_beh:
   apply (rule conjI)
    apply (rule conjI)
     apply (rule ballI)
-    apply (rule set_mp[OF equalityD2[OF carT1_def]])
+    apply (rule subsetD[OF equalityD2[OF carT1_def]])
     apply (rule CollectI)
     apply (rule exI)+
     apply (rule conjI)
@@ -2828,7 +2828,7 @@ lemma mor_beh:
      apply (rule conjI)
       apply (rule UN_I)
        apply (rule UNIV_I)
-      apply (rule set_mp)
+      apply (rule subsetD)
        apply (rule equalityD2)
        apply (rule Lev1_0)
       apply (rule singletonI)
@@ -2867,7 +2867,7 @@ lemma mor_beh:
         apply (drule length_Lev1)
         apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
         apply (drule length_Lev1')
-        apply (erule set_mp[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
+        apply (erule subsetD[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
        apply assumption
 
       apply (rule trans[OF F1.set_map(3)])
@@ -2890,7 +2890,7 @@ lemma mor_beh:
        apply (drule length_Lev1)
        apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
        apply (drule length_Lev1')
-       apply (erule set_mp[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
+       apply (erule subsetD[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
       apply assumption
 
      apply (rule ballI)
@@ -2924,7 +2924,7 @@ lemma mor_beh:
        apply (drule length_Lev1)
        apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
        apply (drule length_Lev1')
-       apply (erule set_mp[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
+       apply (erule subsetD[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
       apply assumption
 
      apply (rule trans[OF F2.set_map(3)])
@@ -2947,7 +2947,7 @@ lemma mor_beh:
       apply (drule length_Lev1)
       apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
       apply (drule length_Lev1')
-      apply (erule set_mp[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
+      apply (erule subsetD[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
      apply assumption
 
     apply (rule iffD2[OF isNode1_def])
@@ -2965,7 +2965,7 @@ lemma mor_beh:
       apply (rule SuccI)
       apply (rule UN_I[OF UNIV_I])
       apply (rule F1set2_Lev1)
-        apply (rule set_mp[OF equalityD2])
+        apply (rule subsetD[OF equalityD2])
          apply (rule Lev1_0)
         apply (rule singletonI)
        apply (rule rv1_Nil)
@@ -2973,10 +2973,10 @@ lemma mor_beh:
      apply (rule subsetI)
      apply (erule CollectE SuccD[elim_format] UN_E)+
      apply (rule F1set2_image_Lev1)
-       apply (rule set_mp[OF equalityD2[OF Lev1_0]])
+       apply (rule subsetD[OF equalityD2[OF Lev1_0]])
        apply (rule singletonI)
       apply (drule length_Lev1')
-      apply (erule set_mp[OF equalityD1[OF arg_cong[OF
+      apply (erule subsetD[OF equalityD1[OF arg_cong[OF
             trans[OF length_append_singleton arg_cong[of _ _ Suc, OF list.size(3)]]]]])
      apply (rule rv1_Nil)
 
@@ -2987,7 +2987,7 @@ lemma mor_beh:
      apply (rule SuccI)
      apply (rule UN_I[OF UNIV_I])
      apply (rule F1set3_Lev1)
-       apply (rule set_mp[OF equalityD2])
+       apply (rule subsetD[OF equalityD2])
         apply (rule Lev1_0)
        apply (rule singletonI)
       apply (rule rv1_Nil)
@@ -2995,17 +2995,17 @@ lemma mor_beh:
     apply (rule subsetI)
     apply (erule CollectE SuccD[elim_format] UN_E)+
     apply (rule F1set3_image_Lev1)
-      apply (rule set_mp[OF equalityD2[OF Lev1_0]])
+      apply (rule subsetD[OF equalityD2[OF Lev1_0]])
       apply (rule singletonI)
      apply (drule length_Lev1')
-     apply (erule set_mp[OF equalityD1[OF arg_cong[OF
+     apply (erule subsetD[OF equalityD1[OF arg_cong[OF
             trans[OF length_append_singleton arg_cong[of _ _ Suc, OF list.size(3)]]]]])
     apply (rule rv1_Nil)
 
 (**)
 
    apply (rule ballI)
-   apply (rule set_mp[OF equalityD2[OF carT2_def]])
+   apply (rule subsetD[OF equalityD2[OF carT2_def]])
    apply (rule CollectI)
    apply (rule exI)+
    apply (rule conjI)
@@ -3014,7 +3014,7 @@ lemma mor_beh:
     apply (rule conjI)
      apply (rule UN_I)
       apply (rule UNIV_I)
-     apply (rule set_mp)
+     apply (rule subsetD)
       apply (rule equalityD2)
       apply (rule Lev2_0)
      apply (rule singletonI)
@@ -3053,7 +3053,7 @@ lemma mor_beh:
        apply (drule length_Lev2)
        apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
        apply (drule length_Lev2')
-       apply (erule set_mp[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
+       apply (erule subsetD[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
       apply assumption
 
      apply (rule trans[OF F1.set_map(3)])
@@ -3076,7 +3076,7 @@ lemma mor_beh:
       apply (drule length_Lev2)
       apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
       apply (drule length_Lev2')
-      apply (erule set_mp[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
+      apply (erule subsetD[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
      apply assumption
 
     apply (rule ballI)
@@ -3110,7 +3110,7 @@ lemma mor_beh:
       apply (drule length_Lev2)
       apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
       apply (drule length_Lev2')
-      apply (erule set_mp[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
+      apply (erule subsetD[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
      apply assumption
 
     apply (rule trans[OF F2.set_map(3)])
@@ -3133,7 +3133,7 @@ lemma mor_beh:
      apply (drule length_Lev2)
      apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
      apply (drule length_Lev2')
-     apply (erule set_mp[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
+     apply (erule subsetD[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
     apply assumption
 
    apply (rule iffD2[OF isNode2_def])
@@ -3151,17 +3151,17 @@ lemma mor_beh:
      apply (rule SuccI)
      apply (rule UN_I[OF UNIV_I])
      apply (rule F2set2_Lev2)
-       apply (rule set_mp[OF equalityD2[OF Lev2_0]])
+       apply (rule subsetD[OF equalityD2[OF Lev2_0]])
        apply (rule singletonI)
       apply (rule rv2_Nil)
      apply assumption
     apply (rule subsetI)
     apply (erule CollectE SuccD[elim_format] UN_E)+
     apply (rule F2set2_image_Lev2)
-      apply (rule set_mp[OF equalityD2[OF Lev2_0]])
+      apply (rule subsetD[OF equalityD2[OF Lev2_0]])
       apply (rule singletonI)
      apply (drule length_Lev2')
-     apply (erule set_mp[OF equalityD1[OF arg_cong[OF
+     apply (erule subsetD[OF equalityD1[OF arg_cong[OF
             trans[OF length_append_singleton arg_cong[of _ _ Suc, OF list.size(3)]]]]])
     apply (rule rv2_Nil)
 
@@ -3172,7 +3172,7 @@ lemma mor_beh:
     apply (rule SuccI)
     apply (rule UN_I[OF UNIV_I])
     apply (rule F2set3_Lev2)
-      apply (rule set_mp[OF equalityD2])
+      apply (rule subsetD[OF equalityD2])
        apply (rule Lev2_0)
       apply (rule singletonI)
      apply (rule rv2_Nil)
@@ -3180,10 +3180,10 @@ lemma mor_beh:
    apply (rule subsetI)
    apply (erule CollectE SuccD[elim_format] UN_E)+
    apply (rule F2set3_image_Lev2)
-     apply (rule set_mp[OF equalityD2[OF Lev2_0]])
+     apply (rule subsetD[OF equalityD2[OF Lev2_0]])
      apply (rule singletonI)
     apply (drule length_Lev2')
-    apply (erule set_mp[OF equalityD1[OF arg_cong[OF
+    apply (erule subsetD[OF equalityD1[OF arg_cong[OF
             trans[OF length_append_singleton arg_cong[of _ _ Suc, OF list.size(3)]]]]])
    apply (rule rv2_Nil)
 
@@ -3217,7 +3217,7 @@ lemma mor_beh:
       apply (drule length_Lev1')
       apply (drule asm_rl)
       apply (erule thin_rl)
-      apply (drule set_rev_mp[OF _ equalityD1])
+      apply (drule rev_subsetD[OF _ equalityD1])
        apply (rule trans[OF arg_cong[OF length_Cons]])
        apply (rule Lev1_Suc)
       apply (erule UnE)
@@ -3240,7 +3240,7 @@ lemma mor_beh:
      apply (rule subsetI)
      apply (rule CollectI)
      apply (rule UN_I[OF UNIV_I])
-     apply (rule set_mp[OF equalityD2])
+     apply (rule subsetD[OF equalityD2])
       apply (rule Lev1_Suc)
      apply (rule UnI1)
      apply (rule CollectI)
@@ -3279,7 +3279,7 @@ lemma mor_beh:
      apply (drule length_Lev1')
      apply (drule asm_rl)
      apply (erule thin_rl)
-     apply (drule set_rev_mp[OF _ equalityD1])
+     apply (drule rev_subsetD[OF _ equalityD1])
       apply (rule trans[OF arg_cong[OF length_Cons]])
       apply (rule Lev1_Suc)
      apply (erule UnE)
@@ -3302,7 +3302,7 @@ lemma mor_beh:
     apply (rule subsetI)
     apply (rule CollectI)
     apply (rule UN_I[OF UNIV_I])
-    apply (rule set_mp[OF equalityD2])
+    apply (rule subsetD[OF equalityD2])
      apply (rule Lev1_Suc)
     apply (rule UnI2)
     apply (rule CollectI)
@@ -3351,7 +3351,7 @@ lemma mor_beh:
      apply (drule length_Lev2')
      apply (drule asm_rl)
      apply (erule thin_rl)
-     apply (drule set_rev_mp[OF _ equalityD1])
+     apply (drule rev_subsetD[OF _ equalityD1])
       apply (rule trans[OF arg_cong[OF length_Cons]])
       apply (rule Lev2_Suc)
      apply (erule UnE)
@@ -3374,7 +3374,7 @@ lemma mor_beh:
     apply (rule subsetI)
     apply (rule CollectI)
     apply (rule UN_I[OF UNIV_I])
-    apply (rule set_mp[OF equalityD2])
+    apply (rule subsetD[OF equalityD2])
      apply (rule Lev2_Suc)
     apply (rule UnI1)
     apply (rule CollectI)
@@ -3411,7 +3411,7 @@ lemma mor_beh:
     apply (drule length_Lev2')
     apply (drule asm_rl)
     apply (erule thin_rl)
-    apply (drule set_rev_mp[OF _ equalityD1])
+    apply (drule rev_subsetD[OF _ equalityD1])
      apply (rule trans[OF arg_cong[OF length_Cons]])
      apply (rule Lev2_Suc)
     apply (erule UnE)
@@ -3434,7 +3434,7 @@ lemma mor_beh:
    apply (rule subsetI)
    apply (rule CollectI)
    apply (rule UN_I[OF UNIV_I])
-   apply (rule set_mp[OF equalityD2])
+   apply (rule subsetD[OF equalityD2])
     apply (rule Lev2_Suc)
    apply (rule UnI2)
    apply (rule CollectI)
@@ -3487,12 +3487,12 @@ lemma congruent_strQ1: "congruent (lsbis1 carT1 carT2 strT1 strT2 :: 'a carrier 
     apply (rule equiv_proj)
      apply (rule equiv_lsbis1)
      apply (rule coalg_T)
-    apply (erule set_mp)
+    apply (erule subsetD)
     apply assumption
    apply (rule equiv_proj)
     apply (rule equiv_lsbis2)
     apply (rule coalg_T)
-   apply (erule set_mp)
+   apply (erule subsetD)
    apply assumption
   apply (rule sym)
   apply (rule trans[OF o_apply])
@@ -3514,12 +3514,12 @@ lemma congruent_strQ2: "congruent (lsbis2 carT1 carT2 strT1 strT2 :: 'a carrier 
     apply (rule equiv_proj)
      apply (rule equiv_lsbis1)
      apply (rule coalg_T)
-    apply (erule set_mp)
+    apply (erule subsetD)
     apply assumption
    apply (rule equiv_proj)
     apply (rule equiv_lsbis2)
     apply (rule coalg_T)
-   apply (erule set_mp)
+   apply (erule subsetD)
    apply assumption
   apply (rule sym)
   apply (rule trans[OF o_apply])
@@ -3547,14 +3547,14 @@ lemma coalg_final:
     apply (rule iffD2)
      apply (rule proj_in_iff)
      apply (rule equiv_lsbis1[OF coalg_T])
-    apply (erule set_rev_mp)
+    apply (erule rev_subsetD)
     apply (erule coalg_F1set2[OF coalg_T])
    apply (rule ord_eq_le_trans[OF F1.set_map(3)])
    apply (rule image_subsetI)
    apply (rule iffD2)
     apply (rule proj_in_iff)
     apply (rule equiv_lsbis2[OF coalg_T])
-   apply (erule set_rev_mp)
+   apply (erule rev_subsetD)
    apply (erule coalg_F1set3[OF coalg_T])
 
   apply (rule univ_preserves)
@@ -3572,14 +3572,14 @@ lemma coalg_final:
    apply (rule iffD2)
     apply (rule proj_in_iff)
     apply (rule equiv_lsbis1[OF coalg_T])
-   apply (erule set_rev_mp)
+   apply (erule rev_subsetD)
    apply (erule coalg_F2set2[OF coalg_T])
   apply (rule ord_eq_le_trans[OF F2.set_map(3)])
   apply (rule image_subsetI)
   apply (rule iffD2)
    apply (rule proj_in_iff)
    apply (rule equiv_lsbis2[OF coalg_T])
-  apply (erule set_rev_mp)
+  apply (erule rev_subsetD)
   apply (erule coalg_F2set3[OF coalg_T])
   done
 
@@ -3658,14 +3658,14 @@ lemma mor_Rep_JF: "mor UNIV UNIV dtor1 dtor2
     apply (rule ballI)
     apply (rule trans[OF o_apply])
     apply (rule Abs_JF1_inverse)
-    apply (erule set_rev_mp)
+    apply (erule rev_subsetD)
     apply (rule coalg_F1set2)
      apply (rule coalg_final)
     apply (rule Rep_JF1)
    apply (rule ballI)
    apply (rule trans[OF o_apply])
    apply (rule Abs_JF2_inverse)
-   apply (erule set_rev_mp)
+   apply (erule rev_subsetD)
    apply (rule coalg_F1set3)
     apply (rule coalg_final)
    apply (rule Rep_JF1)
@@ -3676,14 +3676,14 @@ lemma mor_Rep_JF: "mor UNIV UNIV dtor1 dtor2
    apply (rule ballI)
    apply (rule trans[OF o_apply])
    apply (rule Abs_JF1_inverse)
-   apply (erule set_rev_mp)
+   apply (erule rev_subsetD)
    apply (rule coalg_F2set2)
     apply (rule coalg_final)
    apply (rule Rep_JF2)
   apply (rule ballI)
   apply (rule trans[OF o_apply])
   apply (rule Abs_JF2_inverse)
-  apply (erule set_rev_mp)
+  apply (erule rev_subsetD)
   apply (rule coalg_F2set3)
    apply (rule coalg_final)
   apply (rule Rep_JF2)
@@ -3841,7 +3841,7 @@ lemma unfold_unique_mor:
    f1 = unfold1 s1 s2 \<and> f2 = unfold2 s1 s2"
   apply (rule conjI)
    apply (rule ext)
-   apply (erule IdD[OF set_mp[OF JF_cind1[OF bis_image2[OF tcoalg _ tcoalg]]]])
+   apply (erule IdD[OF subsetD[OF JF_cind1[OF bis_image2[OF tcoalg _ tcoalg]]]])
     apply (rule mor_comp[OF mor_final mor_Abs_JF])
    apply (rule image2_eqI)
      apply (rule refl)
@@ -3850,7 +3850,7 @@ lemma unfold_unique_mor:
    apply (rule UNIV_I)
 
   apply (rule ext)
-  apply (erule IdD[OF set_mp[OF JF_cind2[OF bis_image2[OF tcoalg _ tcoalg]]]])
+  apply (erule IdD[OF subsetD[OF JF_cind2[OF bis_image2[OF tcoalg _ tcoalg]]]])
    apply (rule mor_comp[OF mor_final mor_Abs_JF])
   apply (rule image2_eqI)
     apply (rule refl)
@@ -4065,13 +4065,13 @@ lemma Frel_coind:
   apply (rule conjI)
    apply (rule impI)
    apply (rule IdD)
-   apply (erule set_mp)
+   apply (erule subsetD)
    apply (rule CollectI)
    apply (erule case_prodI)
 
   apply (rule impI)
   apply (rule IdD)
-  apply (erule set_mp)
+  apply (erule subsetD)
   apply (rule CollectI)
   apply (erule case_prodI)
   done
@@ -4344,7 +4344,7 @@ lemma F1set2_JF1set_incl_JF1set:
   apply (rule subsetI)
   apply (rule UN_I)
    apply (rule UNIV_I)
-  apply (rule set_mp)
+  apply (rule subsetD)
    apply (rule equalityD2)
    apply (rule JF1col_Suc)
   apply (rule UnI2)
@@ -4359,7 +4359,7 @@ lemma F1set3_JF2set_incl_JF1set:
   apply (rule subsetI)
   apply (rule UN_I)
    apply (rule UNIV_I)
-  apply (rule set_mp)
+  apply (rule subsetD)
    apply (rule equalityD2)
    apply (rule JF1col_Suc)
   apply (rule UnI2)
@@ -4374,7 +4374,7 @@ lemma F2set2_JF1set_incl_JF2set:
   apply (rule subsetI)
   apply (rule UN_I)
    apply (rule UNIV_I)
-  apply (rule set_mp)
+  apply (rule subsetD)
    apply (rule equalityD2)
    apply (rule JF2col_Suc)
   apply (rule UnI2)
@@ -4389,7 +4389,7 @@ lemma F2set3_JF2set_incl_JF2set:
   apply (rule subsetI)
   apply (rule UN_I)
    apply (rule UNIV_I)
-  apply (rule set_mp)
+  apply (rule subsetD)
    apply (rule equalityD2)
    apply (rule JF2col_Suc)
   apply (rule UnI2)
@@ -4398,12 +4398,12 @@ lemma F2set3_JF2set_incl_JF2set:
   apply assumption
   done
 
-lemmas F1set1_JF1set = set_mp[OF F1set1_incl_JF1set]
-lemmas F2set1_JF2set = set_mp[OF F2set1_incl_JF2set]
-lemmas F1set2_JF1set_JF1set = set_mp[OF F1set2_JF1set_incl_JF1set]
-lemmas F1set3_JF2set_JF1set = set_mp[OF F1set3_JF2set_incl_JF1set]
-lemmas F2set2_JF1set_JF2set = set_mp[OF F2set2_JF1set_incl_JF2set]
-lemmas F2set3_JF2set_JF2set = set_mp[OF F2set3_JF2set_incl_JF2set]
+lemmas F1set1_JF1set = subsetD[OF F1set1_incl_JF1set]
+lemmas F2set1_JF2set = subsetD[OF F2set1_incl_JF2set]
+lemmas F1set2_JF1set_JF1set = subsetD[OF F1set2_JF1set_incl_JF1set]
+lemmas F1set3_JF2set_JF1set = subsetD[OF F1set3_JF2set_incl_JF1set]
+lemmas F2set2_JF1set_JF2set = subsetD[OF F2set2_JF1set_incl_JF2set]
+lemmas F2set3_JF2set_JF2set = subsetD[OF F2set3_JF2set_incl_JF2set]
 
 lemma JFset_le:
   fixes a :: "'a JF1" and b :: "'a JF2"
@@ -4820,7 +4820,7 @@ theorem JF2set_bd: "|JF2set j| \<le>o bd_F"
 abbreviation "JF2wit \<equiv> ctor2 wit_F2"
 
 theorem JF2wit: "\<And>x. x \<in> JF2set JF2wit \<Longrightarrow> False"
-  apply (drule set_rev_mp)
+  apply (drule rev_subsetD)
    apply (rule equalityD1)
    apply (rule JF2set_simps)
   unfolding dtor2_ctor2
@@ -4836,7 +4836,7 @@ theorem JF2wit: "\<And>x. x \<in> JF2set JF2wit \<Longrightarrow> False"
 abbreviation "JF1wit \<equiv> (%a. ctor1 (wit2_F1 a JF2wit))"
 
 theorem JF1wit: "\<And>x. x \<in> JF1set (JF1wit a) \<Longrightarrow> x = a"
-  apply (drule set_rev_mp)
+  apply (drule rev_subsetD)
    apply (rule equalityD1)
    apply (rule JF1set_simps)
   unfolding dtor1_ctor1
@@ -4849,7 +4849,7 @@ theorem JF1wit: "\<And>x. x \<in> JF1set (JF1wit a) \<Longrightarrow> x = a"
   apply (erule UN_E)
   apply (drule F1.wit2)
   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
-  apply (drule set_rev_mp)
+  apply (drule rev_subsetD)
    apply (rule equalityD1)
    apply (rule JF2set_simps)
   unfolding dtor2_ctor2
@@ -4929,7 +4929,7 @@ lemma J_rel_coind_ind:
        apply (erule thin_rl)
        apply (drule mp)
         apply assumption
-       apply (erule CollectE conjE Collect_case_prodD[OF set_mp] set_rev_mp)+
+       apply (erule CollectE conjE Collect_case_prodD[OF subsetD] rev_subsetD)+
        apply hypsubst
   unfolding unfold1 F1.set_map(1) prod.case image_id id_apply
        apply (rule subset_refl)
@@ -4940,7 +4940,7 @@ lemma J_rel_coind_ind:
       apply (drule spec2)
       apply (drule mp)
        apply assumption
-      apply (erule CollectE conjE Collect_case_prodD[OF set_mp] set_rev_mp)+
+      apply (erule CollectE conjE Collect_case_prodD[OF subsetD] rev_subsetD)+
       apply hypsubst
   unfolding unfold2 F2.set_map(1) prod.case image_id id_apply
       apply (rule subset_refl)
@@ -4960,7 +4960,7 @@ lemma J_rel_coind_ind:
      apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
      apply (erule allE mp)+
      apply (rule conjI)
-      apply (erule Collect_case_prodD[OF set_mp])
+      apply (erule Collect_case_prodD[OF subsetD])
       apply assumption
      apply (rule arg_cong[OF surjective_pairing])
     (**)
@@ -4978,7 +4978,7 @@ lemma J_rel_coind_ind:
     apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
     apply (erule allE mp)+
     apply (rule conjI)
-     apply (erule Collect_case_prodD[OF set_mp])
+     apply (erule Collect_case_prodD[OF subsetD])
      apply assumption
     apply (rule arg_cong[OF surjective_pairing])
 
@@ -4997,7 +4997,7 @@ lemma J_rel_coind_ind:
    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (erule allE mp)+
    apply (rule conjI)
-    apply (erule Collect_case_prodD[OF set_mp])
+    apply (erule Collect_case_prodD[OF subsetD])
     apply assumption
    apply (rule arg_cong[OF surjective_pairing])
     (**)
@@ -5015,7 +5015,7 @@ lemma J_rel_coind_ind:
   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   apply (erule allE mp)+
   apply (rule conjI)
-   apply (erule Collect_case_prodD[OF set_mp])
+   apply (erule Collect_case_prodD[OF subsetD])
    apply assumption
   apply (rule arg_cong[OF surjective_pairing])
   done
@@ -5077,14 +5077,14 @@ lemma J_rel_coind_coind1:
     apply (rule ord_eq_le_trans[OF F1.set_map(2)])
     apply (rule image_subsetI CollectI case_prodI exI)+
     apply (rule conjI)
-     apply (erule Collect_case_prodD[OF set_mp])
+     apply (erule Collect_case_prodD[OF subsetD])
      apply assumption
     apply (rule arg_cong[OF surjective_pairing])
 
    apply (rule ord_eq_le_trans[OF F1.set_map(3)])
    apply (rule image_subsetI CollectI case_prodI exI)+
    apply (rule conjI)
-    apply (erule Collect_case_prodD[OF set_mp])
+    apply (erule Collect_case_prodD[OF subsetD])
     apply assumption
    apply (rule arg_cong[OF surjective_pairing])
 
@@ -5136,14 +5136,14 @@ lemma J_rel_coind_coind1:
    apply (rule case_prodI)
    apply (rule exI)
    apply (rule conjI)
-    apply (erule Collect_case_prodD[OF set_mp])
+    apply (erule Collect_case_prodD[OF subsetD])
     apply assumption
    apply (rule arg_cong[OF surjective_pairing])
 
   apply (rule ord_eq_le_trans[OF F2.set_map(3)])
   apply (rule image_subsetI CollectI case_prodI exI)+
   apply (rule conjI)
-   apply (erule Collect_case_prodD[OF set_mp])
+   apply (erule Collect_case_prodD[OF subsetD])
    apply assumption
   apply (rule arg_cong[OF surjective_pairing])
   done
@@ -5205,14 +5205,14 @@ lemma J_rel_coind_coind2:
     apply (rule ord_eq_le_trans[OF F1.set_map(2)])
     apply (rule image_subsetI CollectI case_prodI exI)+
     apply (rule conjI)
-     apply (erule Collect_case_prodD[OF set_mp])
+     apply (erule Collect_case_prodD[OF subsetD])
      apply assumption
     apply (rule arg_cong[OF surjective_pairing])
 
    apply (rule ord_eq_le_trans[OF F1.set_map(3)])
    apply (rule image_subsetI CollectI case_prodI exI)+
    apply (rule conjI)
-    apply (erule Collect_case_prodD[OF set_mp])
+    apply (erule Collect_case_prodD[OF subsetD])
     apply assumption
    apply (rule arg_cong[OF surjective_pairing])
 
@@ -5260,14 +5260,14 @@ lemma J_rel_coind_coind2:
    apply (rule ord_eq_le_trans[OF F2.set_map(2)])
    apply (rule image_subsetI CollectI case_prodI exI)+
    apply (rule conjI)
-    apply (erule Collect_case_prodD[OF set_mp])
+    apply (erule Collect_case_prodD[OF subsetD])
     apply assumption
    apply (rule arg_cong[OF surjective_pairing])
 
   apply (rule ord_eq_le_trans[OF F2.set_map(3)])
   apply (rule image_subsetI CollectI case_prodI exI)+
   apply (rule conjI)
-   apply (erule Collect_case_prodD[OF set_mp])
+   apply (erule Collect_case_prodD[OF subsetD])
    apply assumption
   apply (rule arg_cong[OF surjective_pairing])
   done
@@ -5461,7 +5461,7 @@ lemma JF1rel_F1rel: "JF1rel R a b \<longleftrightarrow> F1rel R (JF1rel R) (JF2r
       apply (rule F1.set_map(2))
      apply (rule arg_cong[OF sym[OF dtor1_ctor1]])
     apply (rule UN_least)
-    apply (drule set_rev_mp)
+    apply (drule rev_subsetD)
      apply (erule image_mono)
     apply (erule imageE)
     apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
@@ -5477,7 +5477,7 @@ lemma JF1rel_F1rel: "JF1rel R a b \<longleftrightarrow> F1rel R (JF1rel R) (JF2r
     apply (rule trans[OF arg_cong[OF dtor1_ctor1]])
     apply (rule arg_cong[OF F1.set_map(3)])
    apply (rule UN_least)
-   apply (drule set_rev_mp)
+   apply (drule rev_subsetD)
     apply (erule image_mono)
    apply (erule imageE)
    apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
@@ -5500,7 +5500,7 @@ lemma JF1rel_F1rel: "JF1rel R a b \<longleftrightarrow> F1rel R (JF1rel R) (JF2r
     apply (rule F1.map_cong0)
       apply (rule fun_cong[OF o_id])
      apply (rule trans[OF o_apply])
-     apply (drule set_rev_mp)
+     apply (drule rev_subsetD)
       apply assumption
      apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
      apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+
@@ -5510,7 +5510,7 @@ lemma JF1rel_F1rel: "JF1rel R a b \<longleftrightarrow> F1rel R (JF1rel R) (JF2r
      apply (erule conjE)+
      apply assumption
     apply (rule trans[OF o_apply])
-    apply (drule set_rev_mp)
+    apply (drule rev_subsetD)
      apply assumption
     apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
     apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+
@@ -5532,7 +5532,7 @@ lemma JF1rel_F1rel: "JF1rel R a b \<longleftrightarrow> F1rel R (JF1rel R) (JF2r
    apply (rule F1.map_cong0)
      apply (rule fun_cong[OF o_id])
     apply (rule trans[OF o_apply])
-    apply (drule set_rev_mp)
+    apply (drule rev_subsetD)
      apply assumption
     apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
     apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+
@@ -5542,7 +5542,7 @@ lemma JF1rel_F1rel: "JF1rel R a b \<longleftrightarrow> F1rel R (JF1rel R) (JF2r
     apply (erule conjE)+
     apply assumption
    apply (rule trans[OF o_apply])
-   apply (drule set_rev_mp)
+   apply (drule rev_subsetD)
     apply assumption
    apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
    apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+
@@ -5664,7 +5664,7 @@ lemma JF2rel_F2rel: "JF2rel R a b \<longleftrightarrow> F2rel R (JF1rel R) (JF2r
      apply (rule trans[OF arg_cong[OF dtor2_ctor2]])
      apply (rule arg_cong[OF F2.set_map(2)])
     apply (rule UN_least)
-    apply (drule set_rev_mp)
+    apply (drule rev_subsetD)
      apply (erule image_mono)
     apply (erule imageE)
     apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
@@ -5679,7 +5679,7 @@ lemma JF2rel_F2rel: "JF2rel R a b \<longleftrightarrow> F2rel R (JF1rel R) (JF2r
     apply (rule trans[OF arg_cong[OF dtor2_ctor2]])
     apply (rule arg_cong[OF F2.set_map(3)])
    apply (rule UN_least)
-   apply (drule set_rev_mp)
+   apply (drule rev_subsetD)
     apply (erule image_mono)
    apply (erule imageE)
    apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
@@ -5704,7 +5704,7 @@ lemma JF2rel_F2rel: "JF2rel R a b \<longleftrightarrow> F2rel R (JF1rel R) (JF2r
     apply (rule F2.map_cong0)
       apply (rule fun_cong[OF o_id])
      apply (rule trans[OF o_apply])
-     apply (drule set_rev_mp)
+     apply (drule rev_subsetD)
       apply assumption
      apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
      apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+
@@ -5714,7 +5714,7 @@ lemma JF2rel_F2rel: "JF2rel R a b \<longleftrightarrow> F2rel R (JF1rel R) (JF2r
      apply (erule conjE)+
      apply assumption
     apply (rule trans[OF o_apply])
-    apply (drule set_rev_mp)
+    apply (drule rev_subsetD)
      apply assumption
     apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
     apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+
@@ -5737,7 +5737,7 @@ lemma JF2rel_F2rel: "JF2rel R a b \<longleftrightarrow> F2rel R (JF1rel R) (JF2r
    apply (rule F2.map_cong0)
      apply (rule fun_cong[OF o_id])
     apply (rule trans[OF o_apply])
-    apply (drule set_rev_mp)
+    apply (drule rev_subsetD)
      apply assumption
     apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
     apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+
@@ -5747,7 +5747,7 @@ lemma JF2rel_F2rel: "JF2rel R a b \<longleftrightarrow> F2rel R (JF1rel R) (JF2r
     apply (erule conjE)+
     apply assumption
    apply (rule trans[OF o_apply])
-   apply (drule set_rev_mp)
+   apply (drule rev_subsetD)
     apply assumption
    apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
    apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+

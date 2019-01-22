@@ -198,24 +198,24 @@ proof-
 
   have [simp]: "Aheap \<Delta> e\<cdot>a f|` domA \<Gamma> = \<bottom>"
     using fresh_distinct[OF assms(2)]
-    by (auto intro: env_restr_empty dest!: set_mp[OF edom_Aheap])
+    by (auto intro: env_restr_empty dest!: subsetD[OF edom_Aheap])
 
   have [simp]: "ABinds \<Gamma>\<cdot>(Aheap \<Delta> e\<cdot>a \<squnion> ae) = ABinds \<Gamma>\<cdot>ae"
     by (rule Abinds_env_restr_cong) (simp add: env_restr_join)
 
   have [simp]: "ABinds \<Gamma>\<cdot>ae f|` (domA \<Delta> \<union> domA \<Gamma> \<union> upds S)  = ABinds \<Gamma>\<cdot>ae f|` (domA \<Gamma> \<union> upds S)" 
     using fresh_distinct_fv[OF assms(2)]
-    by (auto intro: env_restr_cong dest!: set_mp[OF edom_AnalBinds])
+    by (auto intro: env_restr_cong dest!: subsetD[OF edom_AnalBinds])
 
   have [simp]: "AEstack as S f|` (domA \<Delta> \<union> domA \<Gamma> \<union> upds S) = AEstack as S f|` (domA \<Gamma> \<union> upds S)" 
     using fresh_distinct_fv[OF assms(3)]
-    by (auto intro: env_restr_cong dest!:  set_mp[OF edom_AEstack])
+    by (auto intro: env_restr_cong dest!:  subsetD[OF edom_AEstack])
 
   have [simp]: "Aexp (Let \<Delta> e)\<cdot>a f|` (domA \<Delta> \<union> domA \<Gamma> \<union> upds S) = Aexp (Terms.Let \<Delta> e)\<cdot>a f|` (domA \<Gamma> \<union> upds S)"
-    by (rule env_restr_cong) (auto dest!: set_mp[OF Aexp_edom])
+    by (rule env_restr_cong) (auto dest!: subsetD[OF Aexp_edom])
   
   have [simp]: "Aheap \<Delta> e\<cdot>a f|` (domA \<Delta> \<union> domA \<Gamma> \<union> upds S) = Aheap \<Delta> e\<cdot>a "
-    by (rule env_restr_useless) (auto dest!: set_mp[OF edom_Aheap])
+    by (rule env_restr_useless) (auto dest!: subsetD[OF edom_Aheap])
 
   have "((ABinds \<Gamma>)\<cdot>ae \<squnion> AEstack as S) f|` (domA \<Gamma> \<union> upds S) \<sqsubseteq> ae" using assms(1) by (auto simp add: a_consistent.simps join_below_iff env_restr_join)
   moreover
@@ -231,10 +231,10 @@ proof-
   note fresh_distinct[OF assms(2)]
   moreover
   from fresh_distinct_fv[OF assms(3)]
-  have  "domA \<Delta> \<inter> upds S = {}" by (auto dest!: set_mp[OF ups_fv_subset])
+  have  "domA \<Delta> \<inter> upds S = {}" by (auto dest!: subsetD[OF ups_fv_subset])
   ultimately
   show ?thesis using assms(1)
-    by (auto simp add: a_consistent.simps dest!: set_mp[OF edom_Aheap] intro: heap_upds_ok_append)
+    by (auto simp add: a_consistent.simps dest!: subsetD[OF edom_Aheap] intro: heap_upds_ok_append)
 qed
 
 lemma a_consistent_if\<^sub>1:
@@ -262,7 +262,7 @@ using assms by (auto simp add: a_consistent.simps)
 
 lemma closed_a_consistent:
   "fv e = ({}::var set) \<Longrightarrow> a_consistent (\<bottom>, 0, []) ([], e, [])"
-  by (auto simp add: edom_empty_iff_bot a_consistent.simps  dest!: set_mp[OF Aexp_edom])
+  by (auto simp add: edom_empty_iff_bot a_consistent.simps  dest!: subsetD[OF Aexp_edom])
 
 end
 

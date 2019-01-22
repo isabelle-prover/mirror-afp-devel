@@ -1003,7 +1003,7 @@ proof -
   let ?G="set G"
   have "?a \<in> winningAllocationsRel N (set G) bids" using assms lm090 by blast
   moreover have "winningAllocationsRel N (set G) bids \<subseteq> ?p N ?G" using assms winningAllocationPossible by metis
-  ultimately have "?a \<in> ?p N ?G" using lm090 assms winningAllocationPossible set_rev_mp by blast
+  ultimately have "?a \<in> ?p N ?G" using lm090 assms winningAllocationPossible rev_subsetD by blast
   then show ?thesis using assms lm102 by blast 
 qed
 

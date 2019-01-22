@@ -19,7 +19,7 @@ locale EdomArityAnalysis = ArityAnalysis +
 begin
 
   lemma fup_Aexp_edom: "edom (\<A>\<^sup>\<bottom>\<^bsub>a\<^esub> e) \<subseteq> fv e"
-    by (cases a) (auto dest:set_mp[OF Aexp_edom])
+    by (cases a) (auto dest:subsetD[OF Aexp_edom])
   
   lemma Aexp_fresh_bot[simp]: assumes "atom v \<sharp> e" shows "\<A>\<^bsub>a\<^esub> e v = \<bottom>"
   proof-

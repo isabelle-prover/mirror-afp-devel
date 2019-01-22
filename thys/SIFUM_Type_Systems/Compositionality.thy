@@ -419,7 +419,7 @@ proof -
             have "x \<notin> dom (?h'\<^sub>X)"
               by (metis \<open>dom (h' |` X) = X\<close> insert(2))
             with IH have "x \<notin> dom (g\<^sub>X ?h'\<^sub>X)"
-              by (metis \<open>dom (h' |` X) = X\<close> change_respecting.simps func_le_dom set_rev_mp)
+              by (metis \<open>dom (h' |` X) = X\<close> change_respecting.simps func_le_dom rev_subsetD)
 
             ultimately have "mem' x \<noteq> v"
               by (metis fun_upd_triv overwrite subst_not_in_dom)
@@ -461,7 +461,7 @@ proof -
                 by simp
               also have "x \<notin> dom (g\<^sub>v ?h\<^sub>X)"
                 using IH\<^sub>v \<open>dom ?h\<^sub>X = X\<close> change_respecting_dom
-                by (metis func_le_dom insert(2) set_rev_mp)
+                by (metis func_le_dom insert(2) rev_subsetD)
               ultimately show "mem\<^sub>v' x = v"
                 by (metis subst_not_in_dom)
             qed
@@ -485,7 +485,7 @@ proof -
                 by auto
               also have "x \<notin> dom (g\<^sub>v ?h'\<^sub>X)"
                 using IH\<^sub>v \<open>dom ?h'\<^sub>X = X\<close> change_respecting_dom
-                by (metis func_le_dom insert(2) set_mp)
+                by (metis func_le_dom insert(2) subsetD)
               ultimately show "mem\<^sub>v' x = mem' x"
                 using \<open>x \<notin> dom (g\<^sub>X ?h'\<^sub>X)\<close>
                 by (metis subst_not_in_dom)

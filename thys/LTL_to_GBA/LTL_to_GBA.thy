@@ -968,7 +968,7 @@ next
     and "new2 \<psi> \<subseteq> subfrmlsn \<phi>"
     and "next1 \<psi> \<subseteq> subfrmlsn \<phi>"
     using assms subfrmlsn_subset[OF new1_subset_frmls[of _ \<psi>]]
-      subfrmlsn_subset[of \<psi> \<phi>, OF set_rev_mp[of _ "new n"]]
+      subfrmlsn_subset[of \<psi> \<phi>, OF rev_subsetD[of _ "new n"]]
       subfrmlsn_subset[OF new2_subset_frmls[of _ \<psi>]]
       subfrmlsn_subset[OF next1_subset_frmls[of _ \<psi>]]
     unfolding expand_inv_def
@@ -978,7 +978,7 @@ next
     apply (clarsimp split: prod.splits)
     apply (metis in_mono new1_subset_frmls)
     apply (clarsimp split: prod.splits)
-    apply (metis new2_subset_frmls set_rev_mp)
+    apply (metis new2_subset_frmls rev_subsetD)
     apply (clarsimp split: prod.splits)
     apply (metis in_mono next1_subset_frmls)
     done
@@ -2561,7 +2561,7 @@ proof (rule ccontr)
 
   from assms inres_SPEC[OF res old_propag_on_create_graph] create_gba_from_nodes__ipath
   have "\<mu> U\<^sub>n \<eta> \<in> subfrmlsn \<phi>"
-    by (metis assms(2) set_mp)
+    by (metis assms(2) subsetD)
   then have "S\<in>gbg_F(create_gba_from_nodes \<phi> qs)"
     unfolding S_def create_gba_from_nodes_def by auto
   with ACC have 1: "\<exists>\<^sub>\<infinity>i. \<sigma> i \<in> S"

@@ -110,7 +110,7 @@ begin
     assumes FH: "f'=f" "h'=h"
     shows "(f',h') \<in> fref P' R' S'"
     unfolding FH
-    apply (rule set_mp[OF fref_mono fref_compI'[OF FR1 FR2]])
+    apply (rule subsetD[OF fref_mono fref_compI'[OF FR1 FR2]])
     using C1 C2 apply blast
     using R1 apply blast
     using R2 apply blast
@@ -573,7 +573,7 @@ begin
     by (fastforce intro: entt_trans)
 
   lemma fcomp_norm_dflt_init: "x\<in>[P]\<^sub>a R \<rightarrow> T \<Longrightarrow> hrp_imp R S \<Longrightarrow> x\<in>[P]\<^sub>a S \<rightarrow> T"
-    apply (erule set_rev_mp)
+    apply (erule rev_subsetD)
     by (rule hfref_imp)
 
   definition "comp_PRE R P Q S \<equiv> \<lambda>x. S x \<longrightarrow> (P x \<and> (\<forall>y. (y,x)\<in>R \<longrightarrow> Q x y))"
@@ -604,7 +604,7 @@ begin
     assumes "\<And>x. P x \<longrightarrow> P' x"  
     assumes "(f,h) \<in> fref P' R S"
     shows "(f,h) \<in> fref P R S"
-    apply (rule set_rev_mp[OF assms(2) fref_mono])
+    apply (rule rev_subsetD[OF assms(2) fref_mono])
     using assms(1) by auto
     
   lemma fref_PRE_D1:

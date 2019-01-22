@@ -111,7 +111,7 @@ lemma in_orthogonal_complement_basis:
 proof (unfold orthogonal_complement_def, auto)
   fix a assume "\<forall>x\<in>S. orthogonal v x" and "a \<in> B"  
   thus "orthogonal a v" 
-    by (metis B orthogonal_commute set_rev_mp)
+    by (metis B orthogonal_commute rev_subsetD)
 next
   fix x assume o: "\<forall>a\<in>B. orthogonal a v" and x: "x \<in> S"
   have finite_B: "finite B" using independent_bound_general[OF ind_B] ..
@@ -167,7 +167,7 @@ proof (unfold set_plus_def, auto)
   have "v=?p +(v-?p)" by simp
   moreover have "?p \<in> S" unfolding proj_onto_def proj_def[abs_def]
     by (rule subspace_sum[OF s])
-      (simp add: X s set_rev_mp subspace_mul)
+      (simp add: X s rev_subsetD subspace_mul)
   moreover have "(v-?p) \<in> orthogonal_complement S"
     by (rule v_minus_p_orthogonal_complement[OF s ind_X X span_X o])
   ultimately show "\<exists>a\<in>S. \<exists>b\<in>orthogonal_complement S. v = a + b" by force

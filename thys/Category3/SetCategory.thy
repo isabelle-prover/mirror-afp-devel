@@ -2343,7 +2343,7 @@ begin
             proof (intro arr_eqI)
               show "par f f'" using ff' by simp
               have "\<And>t t'. t \<in> Cod f \<and> t' \<in> Cod f \<Longrightarrow> t = t'"
-                using f ff' set_subset_Univ ide_cod set_mp by blast
+                using f ff' set_subset_Univ ide_cod subsetD by blast
               thus "Fun f = Fun f'"
                 using ff' Fun_mapsto [of f] Fun_mapsto [of f']
                       extensional_arb [of "Fun f" "Dom f"] extensional_arb [of "Fun f'" "Dom f"]

@@ -296,7 +296,7 @@ subsection "Dijkstra's Algorithm"
             and EDGE: "(v,w,v')\<in>E"
           hence [simp]: "p = pv@[(v,w,v')]" by simp
           
-          from bspec[OF PATH_VALID set_rev_mp[OF V_MEM WL_SUBSET]] have 
+          from bspec[OF PATH_VALID rev_subsetD[OF V_MEM WL_SUBSET]] have 
             PATHV: "is_path v0 pv v" and IVV: "int_vertices pv \<subseteq> V - wl" by auto
           hence 
             "is_path v0 p v'" 

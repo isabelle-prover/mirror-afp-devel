@@ -392,7 +392,7 @@ lemma wfp_on_measure_on [iff]:
 
 lemma wfp_on_mono:
   "A \<subseteq> B \<Longrightarrow> (\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> P x y \<Longrightarrow> Q x y) \<Longrightarrow> wfp_on Q B \<Longrightarrow> wfp_on P A"
-  unfolding wfp_on_def by (metis set_mp)
+  unfolding wfp_on_def by (metis subsetD)
 
 lemma wfp_on_subset:
   "A \<subseteq> B \<Longrightarrow> wfp_on P B \<Longrightarrow> wfp_on P A"
@@ -417,7 +417,7 @@ lemma transp_on_map':
     and "\<And>x. x \<in> A \<Longrightarrow> Q\<^sup>=\<^sup>= (h x) (g x)"
   shows "transp_on (\<lambda>x y. Q (g x) (h y)) A"
   using assms unfolding transp_on_def
-  by auto (metis imageI set_mp)
+  by auto (metis imageI subsetD)
 
 lemma transp_on_map:
   assumes "transp_on Q B"

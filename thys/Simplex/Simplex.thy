@@ -7453,7 +7453,7 @@ proof -
     using vars_tableau_vars_constraints[of cs ?s]
     using start_fresh_variable_fresh[of cs] 
     unfolding normalized_tableau_def Let_def
-    by (smt disjoint_iff_not_equal inf.absorb_iff2 inf.strict_order_iff rhs_no_zero_tableau_start set_mp)
+    by (smt disjoint_iff_not_equal inf.absorb_iff2 inf.strict_order_iff rhs_no_zero_tableau_start subsetD)
 qed
 
 

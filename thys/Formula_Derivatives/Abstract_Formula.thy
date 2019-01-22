@@ -465,7 +465,7 @@ proof -
         have "(\<Union>xs. disjuncts \<langle>fold (deriv d0) xs ?\<phi>\<rangle>) \<subseteq>
           (\<Union>xs. disjuncts \<langle>fold (Formula_Operations.deriv extend d0) xs \<phi>\<rangle>)"
         by (force simp: fold_deriv_FOr nf_ACI_juncts nf_ACI_norm_ACI
-          dest: notin_juncts set_mp[OF equalityD1[OF disjuncts_NFOR], rotated -1]
+          dest: notin_juncts subsetD[OF equalityD1[OF disjuncts_NFOR], rotated -1]
           intro: exI[of _ "extend k b x # xs" for b xs])
         with * show "disjuncts \<psi> \<subseteq> \<dots>" by blast
       qed simp_all
@@ -491,7 +491,7 @@ proof -
         have "(\<Union>xs. conjuncts \<langle>fold (deriv d0) xs ?\<phi>\<rangle>) \<subseteq>
           (\<Union>xs. conjuncts \<langle>fold (Formula_Operations.deriv extend d0) xs \<phi>\<rangle>)"
         by (force simp: fold_deriv_FAnd nf_ACI_juncts nf_ACI_norm_ACI
-          dest: notin_juncts set_mp[OF equalityD1[OF conjuncts_NFAND], rotated -1]
+          dest: notin_juncts subsetD[OF equalityD1[OF conjuncts_NFAND], rotated -1]
           intro: exI[of _ "extend k b x # xs" for b xs])
         with * show "conjuncts \<psi> \<subseteq> \<dots>" by blast
       qed simp_all

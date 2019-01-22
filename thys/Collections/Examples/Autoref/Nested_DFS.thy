@@ -120,7 +120,7 @@ lemma gen_dfs_fe_inv_imp_pre:
   apply blast
   apply clarsimp
   apply (rule rtrancl_into_rtrancl[where b=u0])
-  apply (auto intro: set_rev_mp[OF _ rtrancl_mono[where r="E \<inter> S \<times> UNIV"]]) []
+  apply (auto intro: rev_subsetD[OF _ rtrancl_mono[where r="E \<inter> S \<times> UNIV"]]) []
   apply blast
   done
 
@@ -160,7 +160,7 @@ lemma gen_dfs_post_aux:
 proof -
   from 1 3 have "(u0,x)\<in>(E - UNIV \<times> S)" by blast
   also have "(x,y)\<in>(E - UNIV \<times> S)\<^sup>*"
-    apply (rule_tac set_rev_mp[OF 2 rtrancl_mono])
+    apply (rule_tac rev_subsetD[OF 2 rtrancl_mono])
     by auto
   finally show ?thesis .
 qed
@@ -207,7 +207,7 @@ lemma gen_dfs_post_imp_reachable:
   shows "V \<subseteq> V0 \<union> E\<^sup>*``{u0}"
   using assms unfolding gen_dfs_post_def gen_dfs_pre_def
   apply clarsimp
-  apply (blast intro: set_rev_mp[OF _ rtrancl_mono])
+  apply (blast intro: rev_subsetD[OF _ rtrancl_mono])
   done
 
 lemma gen_dfs_post_imp_complete:
@@ -232,7 +232,7 @@ lemma gen_dfs_post_imp_below_U:
   shows "V \<subseteq> U"
   using assms unfolding gen_dfs_pre_def gen_dfs_post_def
   apply clarsimp
-  apply (blast intro: set_rev_mp[OF _ rtrancl_mono] dest: Image_closed_trancl)
+  apply (blast intro: rev_subsetD[OF _ rtrancl_mono] dest: Image_closed_trancl)
   done
 
 subsection "Abstract Algorithm"

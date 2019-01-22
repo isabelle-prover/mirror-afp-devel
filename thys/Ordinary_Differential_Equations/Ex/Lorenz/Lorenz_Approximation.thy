@@ -1345,7 +1345,7 @@ lemma [autoref_rules]:
 proof -
   show 1: ?th1
     unfolding scaleR2_rel_def
-    apply (rule set_mp)
+    apply (rule subsetD)
      apply (rule fun_rel_comp_dist)
     apply (rule relcompI)
      apply (rule fun_relI)
@@ -2526,7 +2526,7 @@ proof (cases "x \<in> \<Sigma>\<^sub>l\<^sub>e")
     apply (rule closed_sequentially[where f="\<lambda>n. x - (0, 0, inverse (Suc n))"])
       apply (rule closed_closure)
     subgoal
-      apply (auto simp: ) apply (rule set_mp) apply (rule closure_subset)
+      apply (auto simp: ) apply (rule subsetD) apply (rule closure_subset)
       using that
       apply (auto simp: \<Sigma>\<^sub>l\<^sub>e_def prod_eq_iff)
       apply (rule order_trans)

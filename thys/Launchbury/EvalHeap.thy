@@ -19,7 +19,7 @@ lemma evalHeap_eqvt[eqvt]:
   by (induct h) (auto simp add:fun_upd_eqvt  simp del: fun_upd_apply)
 
 lemma edom_evalHeap_subset:"edom (evalHeap h eval) \<subseteq> domA h"
-  by (induct h eval rule:evalHeap.induct) (auto dest:set_mp[OF edom_fun_upd_subset] simp del: fun_upd_apply)
+  by (induct h eval rule:evalHeap.induct) (auto dest:subsetD[OF edom_fun_upd_subset] simp del: fun_upd_apply)
 
 lemma evalHeap_cong[fundef_cong]:
   "\<lbrakk> heap1 = heap2 ;  (\<And> e. e \<in> snd ` set heap2 \<Longrightarrow> eval1 e = eval2 e) \<rbrakk>

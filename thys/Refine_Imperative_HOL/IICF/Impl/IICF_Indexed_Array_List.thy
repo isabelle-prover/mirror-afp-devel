@@ -41,7 +41,7 @@ begin
       by (metis atLeastLessThan_iff nth_mem psubsetD psubsetI)
 
     lemma l_set_simp[simp]: "k\<in>set l \<Longrightarrow> k < length qp" 
-      by (auto dest: set_mp[OF l_set])
+      by (auto dest: subsetD[OF l_set])
 
     lemma qpk_idx: "k<length qp \<Longrightarrow> qp ! k < length l \<longleftrightarrow> k \<in> set l"
     proof (rule iffI)

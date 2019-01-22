@@ -1216,7 +1216,7 @@ lemma sorted_list_subset_correct:
 apply(induct "(=) :: 'a \<Rightarrow> 'a \<Rightarrow> bool" xs ys rule: sorted_list_subset.induct)
 apply(auto 6 2)
 apply auto
-by (metis eq_iff insert_iff set_mp)
+by (metis eq_iff insert_iff subsetD)
 
 end
 

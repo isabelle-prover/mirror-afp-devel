@@ -108,8 +108,8 @@ lemma assumes "V \<subseteq> Vs" "a \<sharp> p"
       shows fresh_pV [simp]: "a \<sharp> p \<bullet> V" and fresh_V [simp]: "a \<sharp> V"
   using fresh_pVs fresh_Vs assms 
   apply (auto simp: fresh_def)
-  apply (metis (full_types) Vs finite_V permute_finite set_mp subset_Un_eq supp_of_finite_union union_eqvt)
-  by (metis Vs finite_V set_mp subset_Un_eq supp_of_finite_union)
+  apply (metis (full_types) Vs finite_V permute_finite subsetD subset_Un_eq supp_of_finite_union union_eqvt)
+  by (metis Vs finite_V subsetD subset_Un_eq supp_of_finite_union)
 
 lemma qp_insert:
   fixes i::name and i'::name
@@ -211,7 +211,7 @@ lemma ssubst_quot_fm [simp]:
   by (simp add: ground_ssubst_eq supp_conv_fresh)
 
 lemma atom_in_p_Vs: "\<lbrakk>i \<in> p \<bullet> V; V \<subseteq> Vs\<rbrakk> \<Longrightarrow> i \<in> p \<bullet> Vs"
-  by (metis (full_types) True_eqvt set_mp subset_eqvt)
+  by (metis (full_types) True_eqvt subsetD subset_eqvt)
 
 
 section\<open>The Main Theorems of Section 7\<close>

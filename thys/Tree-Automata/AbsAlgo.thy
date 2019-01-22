@@ -335,11 +335,11 @@ lemma br_invar_final:
   "\<forall>\<Sigma>. \<Sigma>\<in>wa_invar (br_algo \<delta>) \<and> \<Sigma>\<notin>wa_cond (br_algo \<delta>) 
    \<longrightarrow> fst \<Sigma> = b_accessible \<delta>"
   apply (simp add: br_invar_def br_cond_def br_algo_def)
-  apply (auto intro: set_rev_mp[OF _ b_accs_as_closed])
+  apply (auto intro: rev_subsetD[OF _ b_accs_as_closed])
   done
 (*  shows "\<lbrakk>(Q,W)\<in>br_invar \<delta>; (Q,W)\<notin>br_cond\<rbrakk> \<Longrightarrow> Q = b_accessible \<delta>"
   apply (simp add: br_invar_def br_cond_def)
-  apply (auto intro: set_rev_mp[OF _ b_accs_as_closed])
+  apply (auto intro: rev_subsetD[OF _ b_accs_as_closed])
   done*)
 
 theorem br_while_algo: 
@@ -367,10 +367,10 @@ theorem bre_while_algo:
   apply (unfold bre_algo_def)
   apply (auto simp add: br_invar_initial br_step_in_termrel
     intro: br_invar_step 
-    dest: set_rev_mp[OF _ bre_cond_imp_br_cond])
+    dest: rev_subsetD[OF _ bre_cond_imp_br_cond])
   apply (rule_tac r="br_termrel \<delta>" in wf_subset)
   apply (auto intro: br_step_in_termrel
-              dest: set_rev_mp[OF _ bre_cond_imp_br_cond])
+              dest: rev_subsetD[OF _ bre_cond_imp_br_cond])
   done
 
 text_raw \<open>\paragraph{\<open>\<alpha>'\<close> - Level}\<close>

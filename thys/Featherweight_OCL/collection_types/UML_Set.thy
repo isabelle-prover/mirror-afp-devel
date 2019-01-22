@@ -2923,7 +2923,7 @@ lemma OclForall_not_includes :
  apply(simp add: OclForall_rep_set_false[OF x_def],
        simp add: OclIncludes_def OclValid_def y_def[simplified OclValid_def])
  apply(insert Set_inv_lemma[OF x_def], simp add: valid_def false_def true_def bot_fun_def)
-by(rule iffI, metis set_rev_mp, metis subsetI)
+by(rule iffI, metis rev_subsetD, metis subsetI)
 
 lemma OclForall_iterate:
  assumes S_finite: "finite \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (S \<tau>)\<rceil>\<rceil>"

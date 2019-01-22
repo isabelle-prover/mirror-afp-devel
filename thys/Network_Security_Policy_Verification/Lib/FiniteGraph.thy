@@ -38,9 +38,9 @@ subsection\<open>Definitions\<close>
     lemma E_wfD: assumes "(v,v') \<in> E"
       shows "v \<in> V" "v' \<in> V"
       apply -
-       apply (rule set_mp[OF E_wf(1)])
+       apply (rule subsetD[OF E_wf(1)])
        using assms apply force
-      apply (rule set_mp[OF E_wf(2)])
+      apply (rule subsetD[OF E_wf(2)])
       using assms apply force
       done
 

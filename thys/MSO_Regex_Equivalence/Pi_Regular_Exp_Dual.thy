@@ -69,7 +69,7 @@ primrec lang_dual :: "nat \<Rightarrow> 'b rexp_dual => 'a lang" where
 "lang_dual n (CoPr b r) = set_unop_dual n b (map project ` (set_unop_dual (n + 1) b (lang_dual (n + 1) r)))"
 
 lemma wf_dual_lang_dual_wf_word: "wf_dual n r \<Longrightarrow> \<forall>w \<in> lang_dual n r. wf_word n w"
-  by (induct r arbitrary: n) (auto elim: set_rev_mp[OF _ conc_mono] star_induct
+  by (induct r arbitrary: n) (auto elim: rev_subsetD[OF _ conc_mono] star_induct
     intro: iffD2[OF wf_word] wf_word_map_project)
 
 lemma lang_dual_subset_lists: "wf_dual n r \<Longrightarrow> lang_dual n r \<subseteq> lists (\<Sigma> n)"

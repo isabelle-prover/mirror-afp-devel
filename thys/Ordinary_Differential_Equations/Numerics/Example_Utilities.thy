@@ -1405,7 +1405,7 @@ lemma c1_info_of_appr_subsetI1:
   using len
   apply (auto simp: aform.c1_info_of_appr_def flow1_of_list_def
       split: option.splits
-      intro!: set_mp[OF subset] elim!: mem_Joints_appendE)
+      intro!: subsetD[OF subset] elim!: mem_Joints_appendE)
   subgoal
     by (auto intro!: eucl_of_list_mem_eucl_of_list_aform eucl_of_list_map_Inf_aform_leI eucl_of_list_map_Sup_aform_geI)
   subgoal
@@ -1730,7 +1730,7 @@ proof (intro impI)
     apply (rule aforms_of_ivls)
     subgoal by (simp add: X)
     subgoal by (simp add: X)
-    using set_mp[OF X(1) x0]
+    using subsetD[OF X(1) x0]
     apply (auto simp: eucl_le[where 'a='a] X)
     apply (metis assms(3) dim length_Basis_list list_of_eucl_eucl_of_list list_of_eucl_nth nth_Basis_list_in_Basis)
     apply (metis assms(4) dim length_Basis_list list_of_eucl_eucl_of_list list_of_eucl_nth nth_Basis_list_in_Basis)
@@ -1765,7 +1765,7 @@ proof (intro impI)
     apply (rule aforms_of_ivls)
     subgoal by (simp add: X)
     subgoal by (simp add: X)
-    using set_mp[OF X(1) x0]
+    using subsetD[OF X(1) x0]
     apply (auto simp: eucl_le[where 'a='a] X)
     apply (metis assms(3) dim length_Basis_list list_of_eucl_eucl_of_list list_of_eucl_nth nth_Basis_list_in_Basis)
     apply (metis assms(4) dim length_Basis_list list_of_eucl_eucl_of_list list_of_eucl_nth nth_Basis_list_in_Basis)
@@ -1869,7 +1869,7 @@ proof -
     by auto
   have flow: "flow0 (a, 0) (b - a) \<in> UNIV \<times> {l..u}"
     using lsus
-    apply (rule set_rev_mp)
+    apply (rule rev_subsetD)
     using ls_us_subset
     by (auto simp: eucl_of_list_prod)
   from ivl_subset_existence_ivl[OF exivl] \<open>a \<le> b\<close> exivl

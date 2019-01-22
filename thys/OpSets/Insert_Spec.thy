@@ -958,7 +958,7 @@ lemma list_order_monotonic:
       moreover have "insert_ops (remove1 e xa)"
         by (simp add: insert_ops_remove1 less.prems(2))
       moreover have "set A \<subseteq> set (remove1 e xa)"
-        by (metis (no_types, lifting) \<open>e \<notin> set A\<close> in_set_remove1 less.prems(3) set_rev_mp subsetI)
+        by (metis (no_types, lifting) \<open>e \<notin> set A\<close> in_set_remove1 less.prems(3) rev_subsetD subsetI)
       ultimately show ?thesis
         by (simp add: Suc less.IH less.prems(1) less.prems(4))
     qed

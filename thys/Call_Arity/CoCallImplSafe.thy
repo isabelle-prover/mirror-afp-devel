@@ -181,7 +181,7 @@ proof
   fix \<Gamma> e a
   show "edom (Aheap \<Gamma> e\<cdot>a) \<subseteq> domA \<Gamma>"
     by (cases "nonrec \<Gamma>")
-       (auto simp add: Aheap_nonrec_simp dest: set_mp[OF edom_esing_subset] elim!: nonrecE)
+       (auto simp add: Aheap_nonrec_simp dest: subsetD[OF edom_esing_subset] elim!: nonrecE)
 next
   fix x y :: var and \<Gamma> :: heap and e :: exp
   assume assms: "x \<notin> domA \<Gamma>"  "y \<notin> domA \<Gamma>"
@@ -249,7 +249,7 @@ next
     then obtain x e' where [simp]: "\<Gamma> = [(x,e')]" "x \<notin> fv e'" by (auto elim: nonrecE)
 
     hence "\<And> a. x \<notin> edom (fup\<cdot>(Aexp e')\<cdot>a)"
-      by (auto dest:set_mp[OF fup_Aexp_edom])
+      by (auto dest:subsetD[OF fup_Aexp_edom])
     hence [simp]: "\<And> a. (fup\<cdot>(Aexp e')\<cdot>a) x = \<bottom>" by (simp add: edomIff)
 
     show ?thesis
@@ -298,7 +298,7 @@ proof
 next
   fix y e n
   show "cc_restr (fv (Lam [y]. e)) (CCexp e\<cdot>(pred\<cdot>n)) \<sqsubseteq> CCexp (Lam [y]. e)\<cdot>n"
-    by (auto simp add: CCexp_pre_simps predCC_eq dest!: set_mp[OF ccField_cc_restr] simp del: CCexp_simps)
+    by (auto simp add: CCexp_pre_simps predCC_eq dest!: subsetD[OF ccField_cc_restr] simp del: CCexp_simps)
 next
   fix x y :: var and S e a
   assume "x \<notin> S"  and "y \<notin> S"
@@ -340,7 +340,7 @@ next
     have "(Afix \<Delta>\<cdot>(Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0)f|` (thunks \<Delta>))) x = up\<cdot>a'" 
       by (simp add: Aheap_def)
     hence "CCexp e'\<cdot>a' \<sqsubseteq> ccBind x e'\<cdot>(Afix \<Delta>\<cdot>(Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0)f|` (thunks \<Delta>)), CCfix \<Delta>\<cdot>(Afix \<Delta>\<cdot>(Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0)f|` (thunks \<Delta>)), CCexp e\<cdot>a))"
-      by (auto simp add: ccBind_eq dest: set_mp[OF ccField_CCexp])
+      by (auto simp add: ccBind_eq dest: subsetD[OF ccField_CCexp])
     also
     have "ccBind x e'\<cdot>(Afix \<Delta>\<cdot>(Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0)f|` (thunks \<Delta>)), CCfix \<Delta>\<cdot>(Afix \<Delta>\<cdot>(Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0)f|` (thunks \<Delta>)), CCexp e\<cdot>a)) \<sqsubseteq>  ccHeap \<Delta> e\<cdot>a"
       using \<open>map_of \<Delta> x = Some e'\<close> False
@@ -398,7 +398,7 @@ next
     have [simp]: "\<Delta> = [(x,e')]" "x \<notin> fv e'" by (auto elim!: nonrecE split: if_splits)
 
     have [simp]: "(ccNeighbors x (ccBind x e'\<cdot>(Aexp e\<cdot>a, CCexp e\<cdot>a))) = {}"
-     by (auto simp add: ccBind_eq dest!: set_mp[OF ccField_cc_restr] set_mp[OF ccField_fup_CCexp])
+     by (auto simp add: ccBind_eq dest!: subsetD[OF ccField_cc_restr] subsetD[OF ccField_fup_CCexp])
 
     show ?thesis
     proof(cases "isVal e' \<and> x--x\<in>CCexp e\<cdot>a")
@@ -409,7 +409,7 @@ next
         ccNeighbors x (ccProd (fv e') (ccNeighbors x (CCexp e\<cdot>a) - (if isVal e' then {} else {x}))) \<union>
         ccNeighbors x (CCexp e\<cdot>a)" by (auto simp add: ccHeap_simp2 )
     also have "ccNeighbors x (ccBind  x e'\<cdot>(Aheap_nonrec x e'\<cdot>(Aexp e\<cdot>a, CCexp e\<cdot>a), CCexp e\<cdot>a)) = {}"
-       by (auto simp add: ccBind_eq dest!: set_mp[OF ccField_cc_restr] set_mp[OF ccField_fup_CCexp])
+       by (auto simp add: ccBind_eq dest!: subsetD[OF ccField_cc_restr] subsetD[OF ccField_fup_CCexp])
     also have "ccNeighbors x (ccProd (fv e') (ccNeighbors x (CCexp e\<cdot>a) - (if isVal e' then {} else {x})))
       \<subseteq> ccNeighbors x (ccProd (fv e') (ccNeighbors x (CCexp e\<cdot>a)))" by (simp add: ccNeighbors_ccProd)
     also have "\<dots> \<subseteq> fv e'" by (simp add: ccNeighbors_ccProd)
@@ -433,7 +433,7 @@ next
         ccNeighbors x (ccProd (fv e') (ccNeighbors x (CCexp e\<cdot>a) - (if isVal e' then {} else {x}))) \<union>
         ccNeighbors x (CCexp e\<cdot>a)" by (auto simp add: ccHeap_simp2 )
     also have "ccNeighbors x (ccBind  x e'\<cdot>(Aheap_nonrec x e'\<cdot>(Aexp e\<cdot>a, CCexp e\<cdot>a), CCexp e\<cdot>a)) = {}"
-       by (auto simp add: ccBind_eq dest!: set_mp[OF ccField_cc_restr] set_mp[OF ccField_fup_CCexp])
+       by (auto simp add: ccBind_eq dest!: subsetD[OF ccField_cc_restr] subsetD[OF ccField_fup_CCexp])
     also have  "ccNeighbors x (ccProd (fv e') (ccNeighbors x (CCexp e\<cdot>a) - (if isVal e' then {} else {x}) )) 
       = {}" using False by (auto simp add: ccNeighbors_ccProd)
     finally
@@ -451,7 +451,7 @@ next
   fix x \<Gamma> e a
   assume [simp]: "\<not> nonrec \<Gamma>"
   assume "x \<in> thunks \<Gamma>"
-  hence [simp]: "x \<in> domA \<Gamma>" by (rule set_mp[OF thunks_domA])
+  hence [simp]: "x \<in> domA \<Gamma>" by (rule subsetD[OF thunks_domA])
   assume "x \<in> edom (Aheap \<Gamma> e\<cdot>a)"
 
   from \<open>x \<in> thunks \<Gamma>\<close>

@@ -498,7 +498,7 @@ begin
     using E_ss_VxV cfE_ss_invE no_parallel_edge by auto
       
   lemma uv_not_eq[simp]: "u\<noteq>v" "v\<noteq>u"
-    using E_ss_VxV cfE_ss_invE[THEN set_mp, OF uv_cf_edge] no_parallel_edge 
+    using E_ss_VxV cfE_ss_invE[THEN subsetD, OF uv_cf_edge] no_parallel_edge 
     by auto
 
   definition "\<Delta> = min (excess f u) (cf_of f (u,v))"    

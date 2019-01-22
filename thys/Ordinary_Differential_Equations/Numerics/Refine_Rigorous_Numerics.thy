@@ -1697,7 +1697,7 @@ lemma inter_sctn_specs_inter_sctn_spec:
     apply (cases b; cases c)
     apply (rule ImageI, assumption)
     apply (auto simp: lv_rel_def br_def sctn_rel_def plane_of_def)
-    apply (rule set_mp, assumption)
+    apply (rule subsetD, assumption)
     apply auto
     subgoal for x1
       using lv_rel_inner[param_fo, OF lv_relI lv_relI, of f x1]
@@ -1706,7 +1706,7 @@ lemma inter_sctn_specs_inter_sctn_spec:
   subgoal for a b c d e f
     apply (cases b; cases c)
     apply (auto simp: sctn_rel_def lv_rel_def br_def)
-    apply (drule set_rev_mp, assumption)
+    apply (drule rev_subsetD, assumption)
     subgoal for x1 x2
       using lv_rel_inner[where 'a = 'a, param_fo, OF lv_relI lv_relI, of f x1]
       by auto
@@ -1979,9 +1979,9 @@ lemma transfer_operations[unfolded comps, autoref_rules]:
       by (simp add: nres_rel_comp prod_rel_relcomp_distr comps)
   qed
   subgoal
-    by (intro relcompI[OF transfer_operations_rl(7) Inf_inners_Inf_inner, THEN set_rev_mp] rel_lemmas)
+    by (intro relcompI[OF transfer_operations_rl(7) Inf_inners_Inf_inner, THEN rev_subsetD] rel_lemmas)
   subgoal
-    by (intro relcompI[OF transfer_operations_rl(8) Sup_inners_Sup_inner, THEN set_rev_mp] rel_lemmas)
+    by (intro relcompI[OF transfer_operations_rl(8) Sup_inners_Sup_inner, THEN rev_subsetD] rel_lemmas)
   subgoal apply (auto simp: appr_rel_def)
   proof goal_cases
     case (1 r s x y z)
@@ -2025,7 +2025,7 @@ lemma transfer_operations[unfolded comps, autoref_rules]:
       by (simp add: nres_rel_comp prod_rel_relcomp_distr comps)
   qed
   subgoal
-    by (intro relcompI[OF transfer_operations_rl(11) width_spec_width_spec, THEN set_rev_mp] rel_lemmas)
+    by (intro relcompI[OF transfer_operations_rl(11) width_spec_width_spec, THEN rev_subsetD] rel_lemmas)
   subgoal using transfer_operations_rl(12) by auto
   done
 

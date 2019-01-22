@@ -271,7 +271,7 @@ proof -
   define gt' where "\<And>y x. gt' y x \<longleftrightarrow> y \<noteq> x \<and> (x, y) \<in> Ge'"
 
   have gt_imp_gt': "gt \<le> gt'"
-    by (auto simp: gt'_def gt_irrefl intro: gt_sub_Ge'[THEN set_mp])
+    by (auto simp: gt'_def gt_irrefl intro: gt_sub_Ge'[THEN subsetD])
 
   have gt'_irrefl: "\<And>z. \<not> gt' z z"
     unfolding gt'_def by simp

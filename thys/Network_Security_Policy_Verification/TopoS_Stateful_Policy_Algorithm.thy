@@ -645,7 +645,7 @@ subsection \<open>Sketch for generating a stateful policy from a simple directed
     from  wfG show ?thesis
      apply(simp add: generate_valid_stateful_policy_IFSACS_def wf_stateful_policy_def)
      apply(auto simp add: wf_graph_def)
-     using edgesList filter_IFS_no_violations_subseteq_input filter_compliant_stateful_ACS_subseteq_input by (metis set_rev_mp)
+     using edgesList filter_IFS_no_violations_subseteq_input filter_compliant_stateful_ACS_subseteq_input by (metis rev_subsetD)
    qed
 
    lemma generate_valid_stateful_policy_IFSACS_select_simps:
@@ -751,7 +751,7 @@ subsection \<open>Sketch for generating a stateful policy from a simple directed
     from  wfG show ?thesis
      apply(simp add: generate_valid_stateful_policy_IFSACS_2_def wf_stateful_policy_def)
      apply(auto simp add: wf_graph_def)
-     using edgesList filter_IFS_no_violations_subseteq_input by (metis set_rev_mp)
+     using edgesList filter_IFS_no_violations_subseteq_input by (metis rev_subsetD)
    qed
 
    lemma generate_valid_stateful_policy_IFSACS_2_select_simps:

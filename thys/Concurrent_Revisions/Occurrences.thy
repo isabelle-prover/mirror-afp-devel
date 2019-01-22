@@ -226,7 +226,7 @@ qed
 lemma in_restricted_global_in_unrestricted_global [intro]: 
   "r' \<in> RID\<^sub>G (s(r := None)) \<Longrightarrow> r' \<in> RID\<^sub>G s"
   "l \<in> LID\<^sub>G (s(r := None)) \<Longrightarrow> l \<in> LID\<^sub>G s"
-  by (simp add: ID_restricted_global_subset_unrestricted set_rev_mp)+
+  by (simp add: ID_restricted_global_subset_unrestricted rev_subsetD)+
 
 lemma in_restricted_global_in_updated_global [intro]: 
   "r' \<in> RID\<^sub>G (s(r := None)) \<Longrightarrow> r' \<in> RID\<^sub>G (s(r \<mapsto> ls))" 

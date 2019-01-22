@@ -170,7 +170,7 @@ proof -
   have "\<forall>L La. L \<notin> La \<or> entails La L"
     by (meson entails_member)
   thus ?thesis
-    by (meson assms entails_formula_def set_rev_mp)
+    by (meson assms entails_formula_def rev_subsetD)
 qed
 
 lemma entailed_formula_entails_implicates:

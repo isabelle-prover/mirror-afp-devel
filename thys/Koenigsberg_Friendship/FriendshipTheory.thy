@@ -665,7 +665,7 @@ next
           thus ?thesis using qs k_adj[OF \<open>v\<in>V\<close>] by auto
         next
           case False
-          have "last ps \<in> V" using adj_path_V by (metis False \<open>adj_path v ps\<close> last_in_set set_mp)
+          have "last ps \<in> V" using adj_path_V by (metis False \<open>adj_path v ps\<close> last_in_set subsetD)
           thus ?thesis using k_adj[of "last ps"] False qs by auto
         qed
       obtain app where app:"app=(\<lambda>q. ps@[q])" by auto
@@ -824,7 +824,7 @@ proof -
               then obtain ps where "length ps = 2"  "adj_path v ps" "last ps=x" "last ps\<noteq>v"
                 using l2_neq_v by auto
               hence "(last ps)\<in>V" 
-                by (metis (full_types) adj_path_V last_in_set length_0_conv set_rev_mp 
+                by (metis (full_types) adj_path_V last_in_set length_0_conv rev_subsetD 
                   zero_neq_numeral) 
               thus " x \<in> V \<and> x \<noteq> v" using \<open>last ps=x\<close> \<open>last ps\<noteq>v\<close> by auto
             qed

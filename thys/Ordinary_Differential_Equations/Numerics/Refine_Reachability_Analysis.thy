@@ -1569,7 +1569,7 @@ next
       apply (simp add: nonempty_interval Picard_step_def)
       apply (safe intro!: exI[where x="{l .. u}"] compact_interval)
       subgoal by (auto simp: nonempty_interval)
-      apply (rule set_mp[of CX' "{l .. u}"])
+      apply (rule subsetD[of CX' "{l .. u}"])
       subgoal
         apply (rule order_trans, assumption)
         unfolding atLeastatMost_subset_iff
@@ -3843,10 +3843,10 @@ lemma op_eventually_within_sctn[le, refine_vcg]:
       using prems by auto
     ultimately show "d \<bullet> B \<ge> k \<bullet> B" using \<open>\<bar>normal sctn\<bar> \<in> set Basis_list\<close>
       by (auto simp: elim!: abs_in_Basis_absE)
-  qed (use prems in \<open>auto elim!: abs_in_BasisE simp: eucl_le[where 'a='a] dest!: bspec set_mp\<close>)
+  qed (use prems in \<open>auto elim!: abs_in_BasisE simp: eucl_le[where 'a='a] dest!: bspec subsetD\<close>)
   subgoal by simp
-  subgoal by (auto elim!: abs_in_BasisE simp: eucl_le[where 'a='a] dest!: bspec set_mp)
-  subgoal by (auto elim!: abs_in_BasisE simp: eucl_le[where 'a='a] dest!: bspec set_mp)
+  subgoal by (auto elim!: abs_in_BasisE simp: eucl_le[where 'a='a] dest!: bspec subsetD)
+  subgoal by (auto elim!: abs_in_BasisE simp: eucl_le[where 'a='a] dest!: bspec subsetD)
   done
 
 schematic_goal op_eventually_within_sctn_impl:
@@ -3891,9 +3891,9 @@ proof -
     subgoal for x0 d0 h h'
       using subs fp
       apply -
-      apply (rule set_mp, assumption)
+      apply (rule subsetD, assumption)
       apply (drule bspec)
-       apply (rule set_mp; assumption)
+       apply (rule subsetD; assumption)
       apply safe
       apply (drule bspec[where x=h], force)
       apply auto
@@ -4548,7 +4548,7 @@ lemma inform_autoref[autoref_rules]:
     apply (rule exI[where x="Basis_list ! index a y"])
     by (auto simp: eucl_of_list_inner)
   subgoal
-    apply (rule set_rev_mp)
+    apply (rule rev_subsetD)
      apply (rule closed_contains_Sup)
        apply (auto intro!: finite_imp_closed)
     apply (rule imageI)
@@ -4727,7 +4727,7 @@ lemma scaleR2_rep_of_coll[le, refine_vcg]:
   apply (refine_vcg FORWEAK_mono_rule[where I="\<lambda>Xs ((l, u), Y). \<Union>Xs \<subseteq> scaleR2 l u Y"])
    apply (auto intro: scaleR2_subset)
   apply (rule scaleR2_subset)
-     apply (rule set_mp)
+     apply (rule subsetD)
       apply assumption
      apply auto
   done
@@ -5433,14 +5433,14 @@ lemma scaleR2_rep_of_coll2[le, refine_vcg]:
   subgoal by (auto simp: scaleR2_def image_def vimage_def, fastforce)
   subgoal
     apply (rule scaleR2_subset)
-       apply (rule set_mp)
+       apply (rule subsetD)
         apply assumption
        apply auto
     done
   subgoal by force
   subgoal
     apply (rule scaleR2_subset)
-       apply (rule set_mp)
+       apply (rule subsetD)
         apply assumption
        apply auto
     done
@@ -6149,7 +6149,7 @@ lemma poincare_start_on[le, refine_vcg]:
       apply (rule le_less_trans)
        prefer 2 apply assumption
       apply (drule bspec)
-       apply (rule set_mp, assumption)
+       apply (rule subsetD, assumption)
        prefer 2 apply assumption
       apply auto
       done
@@ -6179,7 +6179,7 @@ lemma poincare_start_on[le, refine_vcg]:
         apply (rule le_less_trans)
          prefer 2 apply assumption
         apply (drule bspec)
-         apply (rule set_mp, assumption)
+         apply (rule subsetD, assumption)
          prefer 2 apply assumption
         apply auto
         done
@@ -7800,7 +7800,7 @@ lemma op_inter_ivl_coll_scaleR2[le,refine_vcg]:
   unfolding op_inter_ivl_coll_scaleR2_def
   apply refine_vcg
   apply (auto simp: scaleR2_def image_def vimage_def)
-  apply (drule set_mp)
+  apply (drule subsetD)
    apply (rule IntI, assumption, force)
   apply auto apply force
   done
@@ -8291,7 +8291,7 @@ lemma reduce_ivle[le, refine_vcg]:
   apply refine_vcg
   apply (auto simp: scaleR2_def image_def vimage_def)
   subgoal for a b c d e f g h i j k
-    apply (drule set_mp, assumption)
+    apply (drule subsetD, assumption)
     apply auto
     subgoal for l m
     apply (rule exI[where x="l * g"])
@@ -9488,7 +9488,7 @@ lemma one_step_until_time_ivl_spec[le, refine_vcg]:
   subgoal for X CX Y CY CY' x0 d0
     apply (drule bspec, assumption, clarsimp)
     apply (drule bspec, assumption, clarsimp simp add: nonneg_interval_mem_existence_ivlI)
-    apply (rule set_mp, assumption)
+    apply (rule subsetD, assumption)
     subgoal for t
       apply (drule bspec[where x=0], force)
       apply (drule bspec[where x="t - t1"], force)

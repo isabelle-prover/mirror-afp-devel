@@ -69,7 +69,7 @@ next
     by (auto simp add:contains_def)
   have 3:"s \<star> (rs#r') = \<bottom>\<star>(rs'#r')" using 1 by fastforce
   show "contains (s \<star> (rs#r')) r" using 2 3 
-    by (auto simp add:contains_def) (metis exec_cons set_rev_mp set_subset_Cons)
+    by (auto simp add:contains_def) (metis exec_cons rev_subsetD set_subset_Cons)
 qed
 
 lemma preceq_star: "s \<star> (rs#r) \<preceq> s' \<Longrightarrow> s \<star> rs \<preceq> s'"

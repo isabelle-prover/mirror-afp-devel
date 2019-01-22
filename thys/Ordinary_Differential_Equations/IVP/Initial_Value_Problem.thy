@@ -1893,7 +1893,7 @@ lemma is_solution_in_domain:
   assumes sol: "(x solves_ode f) (closed_segment t0 t) Y" and iv: "x t0 = x0"
   shows "x t \<in> X"
   using is_solution_in_cone[OF assms] cone_subset_domain[OF \<open>t \<in> T\<close>]
-  by (rule set_rev_mp)
+  by (rule rev_subsetD)
 
 lemma solves_ode_on_subset_domain:
   assumes sol: "(x solves_ode f) S Y" and iv: "x t0 = x0"

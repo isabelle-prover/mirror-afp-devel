@@ -54,12 +54,12 @@ proof
   fix oid op1 op2
   assume "(oid, op1) \<in> X" and "(oid, op2) \<in> X"
   thus "op1 = op2"
-    using assms by (meson opset.unique_oid set_mp)
+    using assms by (meson opset.unique_oid subsetD)
 next
   fix oid oper ref
   assume "(oid, oper) \<in> X" and "ref \<in> deps oper"
   thus "ref < oid"
-    using assms by (meson opset.ref_older set_rev_mp)
+    using assms by (meson opset.ref_older rev_subsetD)
 next
   show "finite X"
     using assms opset.finite_opset finite_subset by blast

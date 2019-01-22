@@ -20,13 +20,13 @@ context TTreeAnalysisCarrier
 begin
   lemma carrier_Fstack: "carrier (Fstack as S) \<subseteq> fv S"
     by (induction S rule: Fstack.induct)
-       (auto simp add: empty_is_bottom[symmetric] carrier_Fexp dest!: set_mp[OF Aexp_edom])
+       (auto simp add: empty_is_bottom[symmetric] carrier_Fexp dest!: subsetD[OF Aexp_edom])
 
   lemma carrier_FBinds: "carrier ((FBinds \<Gamma>\<cdot>ae) x) \<subseteq> fv \<Gamma>"
   apply (simp add: Texp.AnalBinds_lookup)
   apply (auto split: option.split simp add: empty_is_bottom[symmetric] )
   apply (case_tac "ae x")
-  apply (auto simp add: empty_is_bottom[symmetric] carrier_Fexp dest!: set_mp[OF Aexp_edom])
+  apply (auto simp add: empty_is_bottom[symmetric] carrier_Fexp dest!: subsetD[OF Aexp_edom])
   by (metis (poly_guards_query) contra_subsetD domA_from_set map_of_fv_subset map_of_SomeD option.sel)
 end
 
@@ -47,11 +47,11 @@ begin
       assume "x \<in> ap S"
       hence "[x,x] \<in> paths (Fstack as S)"
         by (induction S rule: Fstack.induct)
-           (auto 4 4 intro: set_mp[OF both_contains_arg1] set_mp[OF both_contains_arg2] paths_Cons_nxt)
+           (auto 4 4 intro: subsetD[OF both_contains_arg1] subsetD[OF both_contains_arg2] paths_Cons_nxt)
       hence "[x,x] \<in> paths (Texp e\<cdot>a \<otimes>\<otimes> Fstack as S)"
-        by (rule set_mp[OF both_contains_arg2])
+        by (rule subsetD[OF both_contains_arg2])
       hence "[x,x] \<in> paths (substitute (FBinds \<Gamma>\<cdot>ae) (thunks \<Gamma>) (Texp e\<cdot>a \<otimes>\<otimes> Fstack as S))" 
-        by (rule set_mp[OF substitute_contains_arg])
+        by (rule subsetD[OF substitute_contains_arg])
       hence "pathCard [x,x] x \<sqsubseteq> pathsCard (paths (substitute (FBinds \<Gamma>\<cdot>ae) (thunks \<Gamma>) (Texp e\<cdot>a \<otimes>\<otimes> Fstack as S))) x"
         by (metis fun_belowD paths_Card_above)
       also have "pathCard [x,x] x = many"  by (auto simp add: pathCard_def)
@@ -179,7 +179,7 @@ begin
 
     have [simp]: "thunks ((x, e) # \<Gamma>) = thunks \<Gamma>" 
       using \<open>isVal e\<close>
-      by (auto simp add: thunks_Cons dest: set_mp[OF thunks_domA])
+      by (auto simp add: thunks_Cons dest: subsetD[OF thunks_domA])
 
     have "fup\<cdot>(Texp e)\<cdot>(ae x) \<sqsubseteq> Texp e\<cdot>0" by (metis fup2 monofun_cfun_arg up_zero_top)
     hence "substitute ((FBinds \<Gamma>\<cdot>ae)(x := fup\<cdot>(Texp e)\<cdot>(ae x))) (thunks \<Gamma>) (Texp e\<cdot>0 \<otimes>\<otimes> Fstack as S) \<sqsubseteq> substitute ((FBinds \<Gamma>\<cdot>ae)(x := Texp e\<cdot>0)) (thunks \<Gamma>) (Texp e\<cdot>0 \<otimes>\<otimes> Fstack as S)"
@@ -249,7 +249,7 @@ begin
     show "edom (prognosis ae as a (\<Gamma>, e, S)) \<subseteq> fv \<Gamma> \<union> fv e \<union> fv S"
       apply (simp add: Union_paths_carrier)
       apply (rule carrier_substitute_below)
-      apply (auto simp add: carrier_Fexp dest: set_mp[OF Aexp_edom] set_mp[OF carrier_Fstack] set_mp[OF ap_fv_subset] set_mp[OF carrier_FBinds])
+      apply (auto simp add: carrier_Fexp dest: subsetD[OF Aexp_edom] subsetD[OF carrier_Fstack] subsetD[OF ap_fv_subset] subsetD[OF carrier_FBinds])
       done
   qed
   
@@ -267,21 +267,21 @@ begin
 
     have const_on1:  "\<And> x. const_on (FBinds \<Delta>\<cdot>(Aheap \<Delta> e\<cdot>a)) (carrier ((FBinds \<Gamma>\<cdot>ae) x)) empty"
       unfolding const_on_edom_disj using fresh_distinct_fv[OF \<open>atom ` domA \<Delta> \<sharp>* \<Gamma>\<close>]
-      by (auto dest!: set_mp[OF carrier_FBinds] set_mp[OF Texp.edom_AnalBinds])
+      by (auto dest!: subsetD[OF carrier_FBinds] subsetD[OF Texp.edom_AnalBinds])
     have const_on2:  "const_on (FBinds \<Delta>\<cdot>(Aheap \<Delta> e\<cdot>a)) (carrier (Fstack as S)) empty"
       unfolding const_on_edom_disj using fresh_distinct_fv[OF \<open>atom ` domA \<Delta> \<sharp>* S\<close>]
-      by (auto dest!: set_mp[OF carrier_FBinds] set_mp[OF carrier_Fstack] set_mp[OF Texp.edom_AnalBinds] set_mp[OF ap_fv_subset ])
+      by (auto dest!: subsetD[OF carrier_FBinds] subsetD[OF carrier_Fstack] subsetD[OF Texp.edom_AnalBinds] subsetD[OF ap_fv_subset ])
     have  const_on3: "const_on (FBinds \<Gamma>\<cdot>ae) (- (- domA \<Delta>)) TTree.empty"
       and const_on4: "const_on (FBinds \<Delta>\<cdot>(Aheap \<Delta> e\<cdot>a)) (domA \<Gamma>) TTree.empty"
       unfolding const_on_edom_disj using fresh_distinct[OF \<open>atom ` domA \<Delta> \<sharp>* \<Gamma>\<close>]
-      by (auto dest!:  set_mp[OF Texp.edom_AnalBinds])
+      by (auto dest!:  subsetD[OF Texp.edom_AnalBinds])
 
     have disj1: "\<And> x. carrier ((FBinds \<Gamma>\<cdot>ae) x) \<inter> domA \<Delta> = {}"
       using fresh_distinct_fv[OF \<open>atom ` domA \<Delta> \<sharp>* \<Gamma>\<close>]
-      by (auto dest: set_mp[OF carrier_FBinds])
+      by (auto dest: subsetD[OF carrier_FBinds])
     hence disj1': "\<And> x. carrier ((FBinds \<Gamma>\<cdot>ae) x) \<subseteq> - domA \<Delta>" by auto
     have disj2: "\<And> x. carrier (Fstack as S) \<inter> domA \<Delta> = {}"
-      using fresh_distinct_fv[OF \<open>atom ` domA \<Delta> \<sharp>* S\<close>] by (auto dest!: set_mp[OF carrier_Fstack])
+      using fresh_distinct_fv[OF \<open>atom ` domA \<Delta> \<sharp>* S\<close>] by (auto dest!: subsetD[OF carrier_Fstack])
     hence disj2': "carrier (Fstack as S) \<subseteq> - domA \<Delta>" by auto
     
 
@@ -315,11 +315,11 @@ begin
     also have "substitute (FBinds \<Gamma>\<cdot>ae) (thunks (\<Delta> @ \<Gamma>)) = substitute (FBinds \<Gamma>\<cdot>ae) (thunks \<Gamma>)"
       apply (rule substitute_cong_T)
       using const_on3
-      by (auto dest: set_mp[OF thunks_domA])
+      by (auto dest: subsetD[OF thunks_domA])
     also have "substitute (FBinds \<Delta>\<cdot>(Aheap \<Delta> e\<cdot>a)) (thunks (\<Delta> @ \<Gamma>)) = substitute (FBinds \<Delta>\<cdot>(Aheap \<Delta> e\<cdot>a)) (thunks \<Delta>)"
       apply (rule substitute_cong_T)
       using const_on4
-      by (auto dest: set_mp[OF thunks_domA])
+      by (auto dest: subsetD[OF thunks_domA])
     also have "substitute (FBinds \<Delta>\<cdot>(Aheap \<Delta> e\<cdot>a)) (thunks \<Delta>) (Texp e\<cdot>a \<otimes>\<otimes> Fstack as S) = substitute (FBinds \<Delta>\<cdot>(Aheap \<Delta> e\<cdot>a)) (thunks \<Delta>) (Texp e\<cdot>a) \<otimes>\<otimes> Fstack as S"
       by (rule substitute_only_empty_both[OF const_on2])
     also note calculation

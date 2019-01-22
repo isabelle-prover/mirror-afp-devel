@@ -216,8 +216,8 @@ begin
   lemma finite_symbols[simp, intro!]: "finite (\<delta>_symbols (ta_rules TA))"
     by simp
 
-  lemmas is_subset = set_rev_mp[OF _ initial_subset] 
-                     set_rev_mp[OF _ states_subset]
+  lemmas is_subset = rev_subsetD[OF _ initial_subset] 
+                     rev_subsetD[OF _ states_subset]
 end
 
 subsection "Other Classes of Tree Automata"
@@ -783,7 +783,7 @@ lemma \<delta>_states_reduce_subset:
   by (unfold \<delta>_states_def reduce_rules_def)
     auto
 
-lemmas \<delta>_states_reduce_subsetI = set_rev_mp[OF _ \<delta>_states_reduce_subset]
+lemmas \<delta>_states_reduce_subsetI = rev_subsetD[OF _ \<delta>_states_reduce_subset]
 
 definition ta_reduce 
   :: "('Q,'L) tree_automaton_rec \<Rightarrow> ('Q set) \<Rightarrow> ('Q,'L) tree_automaton_rec"

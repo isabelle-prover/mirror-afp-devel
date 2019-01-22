@@ -575,7 +575,7 @@ lemma sim_submodel_aux:
   shows "gen_model MCS s = gen_model (MCSn n) s"
 proof(rule gen_model_subset[where T="jkbpCSn n"])
   from s show "s \<in> worlds MCS"
-    by (simp add: set_mp[OF jkbpCSn_jkbpCS_subset])
+    by (simp add: subsetD[OF jkbpCSn_jkbpCS_subset])
   from s show "s \<in> worlds (MCSn n)" by assumption
 next
   fix a

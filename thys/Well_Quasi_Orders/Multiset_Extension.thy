@@ -385,7 +385,7 @@ lemma mult1_mono:
     and "(M, N) \<in> mult1 R"
   shows "(M, N) \<in> mult1 S"
   using assms unfolding mult1_def multisets_def
-  by auto (metis (full_types) set_mp)
+  by auto (metis (full_types) subsetD)
 
 lemma mulex1_mono:
   assumes "\<And>x y. \<lbrakk>x \<in> A; y \<in> A; P x y\<rbrakk> \<Longrightarrow> Q x y"

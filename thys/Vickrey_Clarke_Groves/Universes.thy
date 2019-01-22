@@ -103,7 +103,7 @@ proof -
   let ?xx="XX - YY" let ?X="\<Union> XX" let ?Y="\<Union> YY"
   let ?x="?X - ?Y"
   have "\<forall> y \<in> YY. \<forall> x\<in>?xx. y \<inter> x={}" using assms is_non_overlapping_def 
-       by (metis Diff_iff set_rev_mp)
+       by (metis Diff_iff rev_subsetD)
   then have "\<Union> ?xx \<subseteq> ?x" using assms by blast
   then have "\<Union> ?xx = ?x" by blast
   moreover have "is_non_overlapping ?xx" using subset_is_non_overlapping 
@@ -412,7 +412,7 @@ proof -
      using is_partition_of_def mem_Collect_eq by (metis) 
   then show ?thesis 
      using assms IntI Int_lower1 equalityE allocationInjectionsUnivervseProperty 
-           mem_Collect_eq set_rev_mp 
+           mem_Collect_eq rev_subsetD 
      by (metis (lifting, no_types))
 qed
 
@@ -525,7 +525,7 @@ proof -
     ultimately moreover have "\<forall> x \<in> ?r ?a1. \<forall> y\<in>?Yi. x \<noteq> y" 
     using IntI empty_iff by metis
     ultimately moreover have "\<forall> x \<in> ?r ?a1. \<forall> y\<in>?Yi. x \<inter> y = {}" 
-       using 3 4 6 is_non_overlapping_def by (metis set_rev_mp)
+       using 3 4 6 is_non_overlapping_def by (metis rev_subsetD)
     ultimately have "?U (?r ?a1) \<inter> ?Y = {}" using unionIntersectionEmpty
 proof -
   have "\<forall>v0. v0 \<in> Range (a - (X \<union> {i}) \<times> Range a) \<longrightarrow> (\<forall>v1. v1 \<in> a `` (X \<union> {i}) \<longrightarrow> v0 \<inter> v1 = {})" 
@@ -692,7 +692,7 @@ proof -
   let ?d = Domain
   let ?aa = "a outside (X \<union> {i}) \<union> ({i} \<times> {?U(a``(X\<union>{i}))})" 
   have 
-  1: "a \<in> allocationsUniverse" using assms(1) allAllocationsUniverse  set_rev_mp by blast
+  1: "a \<in> allocationsUniverse" using assms(1) allAllocationsUniverse  rev_subsetD by blast
   have "i \<notin> X" using assms by fast 
   then have 
   2: "?d a - X \<union> {i} = ?d a \<union> {i} - X" by fast

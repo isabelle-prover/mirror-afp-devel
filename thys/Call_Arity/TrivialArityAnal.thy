@@ -71,7 +71,7 @@ lemma Trivial_fup_Aexp_below_fv: "fup\<cdot>(Trivial_Aexp e)\<cdot>a \<sqsubsete
 
 lemma Trivial_Abinds_below_fv: "ABinds \<Gamma>\<cdot>ae \<sqsubseteq> (\<lambda> x . up\<cdot>0) f|` fv \<Gamma>"
   by (induction \<Gamma> rule:ABinds.induct)
-     (auto simp add: join_below_iff intro!: below_trans[OF Trivial_fup_Aexp_below_fv] env_restr_mono2 elim: below_trans dest: set_mp[OF fv_delete_subset] simp del: fun_meet_simp)
+     (auto simp add: join_below_iff intro!: below_trans[OF Trivial_fup_Aexp_below_fv] env_restr_mono2 elim: below_trans dest: subsetD[OF fv_delete_subset] simp del: fun_meet_simp)
 
 interpretation ArityAnalysisLetSafe Trivial_Aexp Trivial_Aheap
 proof

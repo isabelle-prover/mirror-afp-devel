@@ -704,7 +704,7 @@ lemma pn_map_correct:
     order_trans[OF pn_props_correct]
   )
   apply simp_all
-  apply (blast dest: set_mp[THEN FIN']) []
+  apply (blast dest: subsetD[THEN FIN']) []
   apply (force 
     split: option.splits 
     simp: the_inv_into_f_f[OF INJ] it_step_insert_iff) []

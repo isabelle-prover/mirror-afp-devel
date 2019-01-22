@@ -18,7 +18,7 @@ proof clarify
     have "inj_on R J" by(rule subset_inj_on[OF \<open>?inj R A\<close> \<open>J\<subseteq>I\<close>])
     moreover have "(R ` J) \<subseteq> (\<Union>(A ` J))" using \<open>J\<subseteq>I\<close> \<open>?R R A\<close> by auto
     moreover have "finite (\<Union>(A ` J))" using \<open>J\<subseteq>I\<close> assms
-      by (metis finite_UN_I finite_subset set_mp)
+      by (metis finite_UN_I finite_subset subsetD)
     ultimately show ?thesis by (rule card_inj_on_le)
   qed
 qed

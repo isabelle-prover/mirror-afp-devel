@@ -190,7 +190,7 @@ proof -
     using w hom by (rule awalk_app_isoD)
   have "pre_digraph.awalk_verts (app_iso hom G) u p =
       pre_digraph.awalk_verts (app_iso hom G) (iso_verts hom (iso_verts (inv_iso hom) u)) (map (iso_arcs hom) (map (iso_arcs (inv_iso hom)) p))"
-    using hom w by (auto simp add: o_def set_mp cong: map_cong)
+    using hom w by (auto simp add: o_def subsetD cong: map_cong)
   also have "\<dots> = map (iso_verts hom) (awalk_verts (iso_verts (inv_iso hom) u) (map (iso_arcs (inv_iso hom)) p))"
     using hom w' by (rule awalk_verts_app_iso_eq)
   finally show ?thesis .

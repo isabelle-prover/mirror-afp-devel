@@ -163,7 +163,7 @@ proof
   fix c c'
   assume "c \<Rightarrow> c'" and "closed c"
   thus "closed c'"
-  by (induction rule: step.induct) (auto simp add: fv_subst_eq dest!: set_mp[OF fv_delete_subset] dest: set_mp[OF map_of_Some_fv_subset])
+  by (induction rule: step.induct) (auto simp add: fv_subst_eq dest!: subsetD[OF fv_delete_subset] dest: subsetD[OF map_of_Some_fv_subset])
 qed
 
 lemma heap_upds_ok_invariant:

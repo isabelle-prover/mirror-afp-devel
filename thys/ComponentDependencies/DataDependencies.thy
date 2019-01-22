@@ -306,7 +306,7 @@ qed
 lemma NoDSourceNoSource:
   assumes "S \<notin> (Sources i C)"
   shows     "S \<notin> (DSources i C)"
-using assms by (metis (full_types) Sources_DSources set_rev_mp)
+using assms by (metis (full_types) Sources_DSources rev_subsetD)
 
 lemma DSourcesEmptySources:
   assumes "DSources i C = {}"
@@ -397,7 +397,7 @@ lemma SourceOfDSource:
 using assms
 proof -
   from assms have "Sources i S \<subseteq> Sources i C" by (simp add: DSource_Sources) 
-  thus ?thesis by (metis (full_types) assms(1) set_rev_mp)  
+  thus ?thesis by (metis (full_types) assms(1) rev_subsetD)  
 qed
 
 lemma DSourceOfSource:

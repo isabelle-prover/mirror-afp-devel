@@ -79,17 +79,17 @@ lemma (in linorder) class_to_linorder:
 
 lemma restrict_linorder: "\<lbrakk>linorder_on D cmp ; D'\<subseteq>D\<rbrakk> \<Longrightarrow> linorder_on D' cmp"
   apply (rule linorder_on.intro)
-  apply (drule (1) set_rev_mp)+
+  apply (drule (1) rev_subsetD)+
   apply (erule (2) linorder_on.lt_eq)
-  apply (drule (1) set_rev_mp)+
+  apply (drule (1) rev_subsetD)+
   apply (erule (1) linorder_on.refl)
-  apply (drule (1) set_rev_mp)+
+  apply (drule (1) rev_subsetD)+
   apply (erule (5) linorder_on.trans)
-  apply (drule (1) set_rev_mp)+
+  apply (drule (1) rev_subsetD)+
   apply (erule (5) linorder_on.trans)
-  apply (drule (1) set_rev_mp)+
+  apply (drule (1) rev_subsetD)+
   apply (erule (5) linorder_on.trans)
-  apply (drule (1) set_rev_mp)+
+  apply (drule (1) rev_subsetD)+
   apply (erule (5) linorder_on.trans)
   done
 
@@ -661,7 +661,7 @@ proof -
     apply unfold_locales
     using S
     apply -
-    apply (drule (1) set_rev_mp)+
+    apply (drule (1) rev_subsetD)+
     apply auto
     done
 qed
@@ -850,8 +850,8 @@ lemma cmp_combine_paramD:
   apply (intro fun_relI)
   apply (drule_tac x=a in fun_relD, assumption)
   apply (drule_tac x=aa in fun_relD, assumption)
-  apply (drule RangeI, drule (1) set_rev_mp)
-  apply (drule RangeI, drule (1) set_rev_mp)
+  apply (drule RangeI, drule (1) rev_subsetD)
+  apply (drule RangeI, drule (1) rev_subsetD)
   apply simp
   done
 

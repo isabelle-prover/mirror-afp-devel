@@ -644,7 +644,7 @@ proof -
   finally (relcompI) show ?thesis
     unfolding is_map_iterator_linord_def is_map_iterator_genord_def
     apply -
-    apply (erule set_rev_mp)
+    apply (erule rev_subsetD)
     apply (simp add: rbt_map_rel_def rbt_map_rel'_def)
     apply (
       rule Orderings.order_trans[OF fun_rel_comp_dist] fun_rel_mono subset_refl
@@ -663,7 +663,7 @@ proof -
   finally (relcompI) show ?thesis
     unfolding is_map_iterator_rev_linord_def is_map_iterator_genord_def
     apply -
-    apply (erule set_rev_mp)
+    apply (erule rev_subsetD)
     apply (simp add: rbt_map_rel_def rbt_map_rel'_def)
     apply (
       rule Orderings.order_trans[OF fun_rel_comp_dist] fun_rel_mono subset_refl
@@ -682,7 +682,7 @@ proof -
   finally (relcompI) show ?thesis
     unfolding is_map_iterator_def is_map_iterator_genord_def
     apply -
-    apply (erule set_rev_mp)
+    apply (erule rev_subsetD)
     apply (simp add: rbt_map_rel_def rbt_map_rel'_def)
     apply (
       rule Orderings.order_trans[OF fun_rel_comp_dist] fun_rel_mono subset_refl

@@ -948,7 +948,7 @@ proof (induct rule: dd_commute[of r "down L" "down R"])
        aux1[OF b'(1), of L] aux1[OF b'(1), of R] aux2[OF b'(1), of R]
        aux3[of L] aux3[of R]
   show ?case
-  by (intro set_mp[OF _ pk[OF \<open>(s, t) \<in> L a'\<close> \<open>(s, u) \<in> R b'\<close>]], unfold UN_Un)
+  by (intro subsetD[OF _ pk[OF \<open>(s, t) \<in> L a'\<close> \<open>(s, u) \<in> R b'\<close>]], unfold UN_Un)
      (intro relcomp_mono rtrancl_mono Un_mono iffD2[OF converse_mono]; fast)
 qed fact+
 

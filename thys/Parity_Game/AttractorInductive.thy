@@ -54,7 +54,7 @@ proof
         { assume "v \<in> W" hence "v \<in> attractor_inductive p W" by blast }
         moreover
         { assume "v \<in> S" hence "v \<in> attractor_inductive p W"
-            by (meson \<open>S \<subseteq> attractor_inductive p W\<close> set_rev_mp) }
+            by (meson \<open>S \<subseteq> attractor_inductive p W\<close> rev_subsetD) }
         moreover
         { assume v_attracted: "v \<in> directly_attracted p S"
           hence "v \<in> V" using \<open>S \<subseteq> V\<close> attractor_step_bounded_by_V by blast

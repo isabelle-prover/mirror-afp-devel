@@ -154,7 +154,7 @@ lemma \<W>_bounded_by_\<X>: "\<W> P k \<subseteq> \<X> k"
   by (metis (no_types, lifting) \<W>_def mem_Collect_eq subsetI)
 
 lemma \<Z>_subset_\<X>: "\<Z> k n \<subseteq> \<X> k"
-  by (metis Sel_precondition \<W>_bounded_by_\<X> set_rev_mp subsetI)
+  by (metis Sel_precondition \<W>_bounded_by_\<X> rev_subsetD subsetI)
 
 lemma \<Z>_subset_Suc: "\<Z> k n \<subseteq> \<Z> k (Suc n)"
 apply (induct n)

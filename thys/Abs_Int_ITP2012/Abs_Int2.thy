@@ -44,7 +44,7 @@ and gamma_Bot[simp]: "\<gamma> \<bottom> = {}"
 begin
 
 lemma in_gamma_meet: "x : \<gamma> a1 \<Longrightarrow> x : \<gamma> a2 \<Longrightarrow> x : \<gamma>(a1 \<sqinter> a2)"
-by (metis IntI inter_gamma_subset_gamma_meet set_mp)
+by (metis IntI inter_gamma_subset_gamma_meet subsetD)
 
 lemma gamma_meet[simp]: "\<gamma>(a1 \<sqinter> a2) = \<gamma> a1 \<inter> \<gamma> a2"
 by (metis equalityI inter_gamma_subset_gamma_meet le_inf_iff mono_gamma meet_le1 meet_le2)
@@ -70,7 +70,7 @@ locale Abs_Int1 =
 begin
 
 lemma in_gamma_join_UpI: "s : \<gamma>\<^sub>o S1 \<or> s : \<gamma>\<^sub>o S2 \<Longrightarrow> s : \<gamma>\<^sub>o(S1 \<squnion> S2)"
-by (metis (no_types) join_ge1 join_ge2 mono_gamma_o set_rev_mp)
+by (metis (no_types) join_ge1 join_ge2 mono_gamma_o rev_subsetD)
 
 fun aval'' :: "aexp \<Rightarrow> 'av st option \<Rightarrow> 'av" where
 "aval'' e None = \<bottom>" |

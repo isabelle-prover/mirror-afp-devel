@@ -80,7 +80,7 @@ proof -
           case 0
           from steps[of 0, unfolded f0] Ssteps have steps: "(a,f (Suc 0)) \<in> S^* O ?RS" by blast
           have "(a,f (Suc 0)) \<in> ?RS" 
-            by (rule set_mp[OF _ steps], regexp)
+            by (rule subsetD[OF _ steps], regexp)
           thus ?thesis unfolding 0 by simp
         qed
       qed simp
@@ -188,7 +188,7 @@ proof (unfold SN_rel_on_def)
     have g0: "g 0 = a 0" unfolding g Let_def by simp
     with fa0 have fg0: "(f 0, g 0) \<in> S^* O R" by auto
     have fg0: "(f 0, g 0) \<in> (R \<union> S)^*"
-      by (rule set_mp[OF _ fg0], regexp)
+      by (rule subsetD[OF _ fg0], regexp)
     have len: "\<And> i j n. ?g n = (i,j) \<Longrightarrow> j < length (?l i)"
     proof -
       fix i j n
@@ -619,7 +619,7 @@ proof
     have step: "(?f i, ?f (Suc i)) \<in> A^* O (A^* O R' O A^*) O A^*"
       by fast
     have "(?f i, ?f (Suc i)) \<in> A^* O R' O A^*"
-      by (rule set_mp[OF _ step], regexp)
+      by (rule subsetD[OF _ step], regexp)
     hence "(h i, h (Suc i)) \<in> (relto R' Rw')^+"
       unfolding A h relto_trancl_conv .
   }
@@ -982,7 +982,7 @@ proof -
             by (cases "?ty i", auto)
           with stepsI[OF I[of i]] have "(?f i, ?f (Suc i)) \<in> ?PPR"
             by auto
-          from set_mp[OF PPR this] have "(?f i, ?f (Suc i)) \<in> Ms" .
+          from subsetD[OF PPR this] have "(?f i, ?f (Suc i)) \<in> Ms" .
           thus ?thesis unfolding Ms by auto
         next
           case True
@@ -1036,7 +1036,7 @@ proof -
       from step(3) one
       have steps: "(s,u) \<in> ?A^* O ?A" by blast      
       have "(s,u) \<in> ?A^*" 
-        by (rule set_mp[OF _ steps], regexp)
+        by (rule subsetD[OF _ steps], regexp)
       with one show ?case by simp
     qed
   } note Amany = this      

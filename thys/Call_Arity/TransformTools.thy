@@ -101,14 +101,14 @@ locale supp_bounded_transform =
   assumes supp_trans: "supp (trans a e) \<subseteq> supp e"
 begin
   lemma supp_lift_transform: "supp (lift_transform trans a e) \<subseteq> supp e"
-    by (cases "(trans, a, e)" rule:lift_transform.cases) (auto dest!: set_mp[OF supp_trans])
+    by (cases "(trans, a, e)" rule:lift_transform.cases) (auto dest!: subsetD[OF supp_trans])
 
   lemma supp_map_transform: "supp (map_transform trans ae \<Gamma>) \<subseteq> supp \<Gamma>"
   unfolding map_transform_def
-     by (induction \<Gamma>) (auto simp add: supp_Pair supp_Cons dest!: set_mp[OF supp_lift_transform])
+     by (induction \<Gamma>) (auto simp add: supp_Pair supp_Cons dest!: subsetD[OF supp_lift_transform])
 
   lemma fresh_transform[intro]: "a \<sharp> e \<Longrightarrow> a \<sharp> trans n e"
-    by (auto simp add: fresh_def) (auto dest!: set_mp[OF supp_trans])
+    by (auto simp add: fresh_def) (auto dest!: subsetD[OF supp_trans])
 
   lemma fresh_star_transform[intro]: "a \<sharp>* e \<Longrightarrow> a \<sharp>* trans n e"
     by (auto simp add: fresh_star_def)

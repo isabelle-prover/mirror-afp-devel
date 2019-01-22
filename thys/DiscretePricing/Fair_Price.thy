@@ -187,7 +187,7 @@ lemma (in sigma_finite_subalgebra) real_cond_exp_bsum :
   shows "AE x in M. real_cond_exp M F (\<lambda>x. \<Sum>i\<in>I. f i x) x = (\<Sum>i\<in>I. real_cond_exp M F (f i) x)"
 proof (rule real_cond_exp_charact)
   fix A assume [measurable]: "A \<in> sets F"
-  then have A_meas [measurable]: "A \<in> sets M" by (meson set_mp subalg subalgebra_def)
+  then have A_meas [measurable]: "A \<in> sets M" by (meson subsetD subalg subalgebra_def)
 
   have *: "\<And>i. i \<in> I \<Longrightarrow> integrable M (\<lambda>x. indicator A x * f i x)"
     using integrable_mult_indicator[OF \<open>A \<in> sets M\<close> assms(1)]  by auto

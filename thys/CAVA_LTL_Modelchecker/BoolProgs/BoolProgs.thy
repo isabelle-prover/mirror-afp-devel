@@ -413,12 +413,12 @@ lemma in_bound_step:
   apply (auto 
     simp add: nexts.simps 
     split: if_split_asm)
-  apply (frule (2) exec_bound[THEN set_mp])
+  apply (frule (2) exec_bound[THEN subsetD])
   apply clarsimp
   apply (frule (1) rcs_aux)
   apply simp
 
-  apply (frule (2) exec_bound[THEN set_mp])
+  apply (frule (2) exec_bound[THEN subsetD])
   apply clarsimp
   
   apply (frule (1) rcs_aux)

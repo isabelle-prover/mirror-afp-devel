@@ -823,7 +823,7 @@ lemma small_step_fragmentsLS:
   shows "fragmentsLS s' \<subseteq> fragmentsLS s"
 using assms by (induct rule: small_step.induct) (case_tac [!] cs, auto)
 
-lemmas small_step_fragmentsLS_mem = set_mp[OF small_step_fragmentsLS]
+lemmas small_step_fragmentsLS_mem = subsetD[OF small_step_fragmentsLS]
 
 (*>*)
 text\<open>

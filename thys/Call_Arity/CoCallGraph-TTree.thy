@@ -382,7 +382,7 @@ proof
   fix xs
   assume "xs \<in> valid_lists S G"
   thus "xs \<in> valid_lists S' G"
-    by (induction rule: valid_lists.induct) (auto dest: set_mp[OF assms])
+    by (induction rule: valid_lists.induct) (auto dest: subsetD[OF assms])
 qed
 
 lemma valid_lists_chain1:
@@ -452,7 +452,7 @@ lemma valid_lists_cc_restr: "valid_lists S G = valid_lists S (cc_restr S G)"
 proof(rule set_eqI)
   fix xs
   show "(xs \<in> valid_lists S G) = (xs \<in> valid_lists S (cc_restr S G))"
-    by (induction xs) (auto dest: set_mp[OF valid_lists_subset])
+    by (induction xs) (auto dest: subsetD[OF valid_lists_subset])
 qed
 
 lemma interleave_valid_list:
@@ -564,7 +564,7 @@ lemma carrier_ccTTree[simp]: "carrier (ccTTree S G) = S"
 lemma valid_lists_ccFromList:
   "xs \<in> valid_lists S G \<Longrightarrow> ccFromList xs \<sqsubseteq> cc_restr S G"
 by (induction rule:valid_lists.induct)
-   (auto simp add: join_below_iff subset_ccNeighbors ccProd_below_cc_restr elim: set_mp[OF valid_lists_subset])
+   (auto simp add: join_below_iff subset_ccNeighbors ccProd_below_cc_restr elim: subsetD[OF valid_lists_subset])
 
 lemma ccApprox_ccTTree[simp]: "ccApprox (ccTTree S G) = cc_restr S G"
 proof (transfer' fixing: S G, rule below_antisym)
@@ -745,7 +745,7 @@ next
   have "xs \<in> filter P ` valid_lists S G".
 
   from  \<open>xs \<in> valid_lists {x' \<in> S. P x'} G\<close>
-  have "xs \<in> valid_lists S G" by (rule set_mp[OF valid_lists_mono1, rotated]) auto
+  have "xs \<in> valid_lists S G" by (rule subsetD[OF valid_lists_mono1, rotated]) auto
 
   from \<open>set xs \<subseteq> ccNeighbors x G\<close> this \<open>x \<in> S\<close>
   have "x # xs \<in> valid_lists S G" by rule
@@ -764,7 +764,7 @@ by (transfer' fixing: S') (auto dest: filter_valid_lists'  filter_valid_lists[wh
 
 lemma repeatable_ccTTree_ccSquare: "S \<subseteq> S' \<Longrightarrow> repeatable (ccTTree S (ccSquare S'))"
    unfolding repeatable_def
-   by transfer (auto simp add:ccNeighbors_ccSquare dest: set_mp[OF valid_lists_subset])
+   by transfer (auto simp add:ccNeighbors_ccSquare dest: subsetD[OF valid_lists_subset])
 
 
 text \<open>An alternative definition\<close>

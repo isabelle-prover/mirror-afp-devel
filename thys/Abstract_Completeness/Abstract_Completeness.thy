@@ -94,7 +94,7 @@ qed
 definition "fair rs \<equiv> sset rs \<subseteq> R \<and> (\<forall> r \<in> R. alw (ev (holds ((=) r))) rs)"
 
 lemma fair_stl: "fair rs \<Longrightarrow> fair (stl rs)"
-  unfolding fair_def by (metis alw.simps set_mp stl_sset subsetI)
+  unfolding fair_def by (metis alw.simps subsetD stl_sset subsetI)
 
 lemma sdrop_fair: "fair rs \<Longrightarrow> fair (sdrop m rs)"
   using alw_sdrop unfolding fair_def by (metis alw.coinduct alw_nxt fair_def fair_stl)
@@ -188,7 +188,7 @@ lemma assumes "s \<in> S" and "fair rs"
   and trim_fair: "fair (trim rs s)"
   unfolding trim_alt[OF assms] minWait_def
   using LeastI_ex[OF minWait_ex[OF assms]] sdrop_fair[OF assms(2)]
-    conjunct1[OF assms(2)[unfolded fair_def]] by simp_all (metis set_mp snth_sset)
+    conjunct1[OF assms(2)[unfolded fair_def]] by simp_all (metis subsetD snth_sset)
 
 lemma minWait_least: "\<lbrakk>enabled (shd (sdrop n rs)) s\<rbrakk> \<Longrightarrow> minWait rs s \<le> n"
   unfolding minWait_def by (intro Least_le conjI)
