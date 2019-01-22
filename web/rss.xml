@@ -145,6 +145,24 @@ document contains an Isabelle/HOL formalization of this semantics and
 the proof of determinacy.</description>
     </item>
     <item>
+       <title>Verifying Imperative Programs using Auto2</title>
+              <link>https://www.isa-afp.org/entries/Auto2_Imperative_HOL.html</link>
+       <guid>https://www.isa-afp.org/entries/Auto2_Imperative_HOL.html</guid>
+       <dc:creator> Bohua Zhan       </dc:creator>
+       <pubDate>21 Dec 2018 00:00:00 +0000</pubDate>
+       <description>
+This entry contains the application of auto2 to verifying functional
+and imperative programs. Algorithms and data structures that are
+verified include linked lists, binary search trees, red-black trees,
+interval trees, priority queue, quicksort, union-find, Dijkstra&#39;s
+algorithm, and a sweep-line algorithm for detecting rectangle
+intersection. The imperative verification is based on Imperative HOL
+and its separation logic framework. A major goal of this work is to
+set up automation in order to reduce the length of proof that the user
+needs to provide, both for verifying functional programs and for
+working with separation logic.</description>
+    </item>
+    <item>
        <title>Constructive Cryptography in HOL</title>
               <link>https://www.isa-afp.org/entries/Constructive_Cryptography.html</link>
        <guid>https://www.isa-afp.org/entries/Constructive_Cryptography.html</guid>
@@ -558,23 +576,6 @@ original Sturm&#39;s theorem only counts distinct real roots.
 Compared to the Budan-Fourier theorem, our extended Sturm&#39;s
 theorem always counts roots exactly but may suffer from greater
 computational cost.</description>
-    </item>
-    <item>
-       <title>An Incremental Simplex Algorithm with Unsatisfiable Core Generation</title>
-              <link>https://www.isa-afp.org/entries/Simplex.html</link>
-       <guid>https://www.isa-afp.org/entries/Simplex.html</guid>
-       <dc:creator> Filip Marić, Mirko Spasić, René Thiemann       </dc:creator>
-       <pubDate>24 Aug 2018 00:00:00 +0000</pubDate>
-       <description>
-We present an Isabelle/HOL formalization and total correctness proof
-for the incremental version of the Simplex algorithm which is used in
-most state-of-the-art SMT solvers. It supports extraction of
-satisfying assignments, extraction of unsatisfiable cores, incremental
-assertion of constraints and backtracking. Formalization relies on
-stepwise program refinement, starting from a simple specification,
-going through a number of refinement steps, and ending up in a fully
-executable functional implementation. Symmetries present in the
-algorithm are handled with special care.</description>
     </item>
   </channel>
 </rss>

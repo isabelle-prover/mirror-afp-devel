@@ -4,6 +4,7 @@ session Auto2_Imperative_HOL (AFP) = Auto2_HOL +
   description {*
     Application of auto2 to verify functional and imperative programs.
   *}
+  options [timeout = 2100]
   sessions
     "HOL-Library"
     "HOL-Imperative_HOL"
