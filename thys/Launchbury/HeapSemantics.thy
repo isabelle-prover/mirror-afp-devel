@@ -390,7 +390,7 @@ next
   moreover
   from fresh have "x \<notin> domA \<Gamma>" by (metis domA_not_fresh)
   hence "env_delete x (\<^bold>\<lbrakk> (x, e) # \<Gamma> \<^bold>\<rbrakk>\<^bsub>y\<^esub>) = \<^bold>\<lbrakk> \<Gamma> \<^bold>\<rbrakk>\<^bsub>y\<^esub>"
-    by (auto intro: env_delete_noop dest:  set_mp[OF edom_evalHeap_subset])
+    by (auto intro: env_delete_noop dest:  subsetD[OF edom_evalHeap_subset])
   moreover
   have "\<dots> = \<^bold>\<lbrakk> \<Gamma> \<^bold>\<rbrakk>\<^bsub>z\<^esub>"
     apply (rule evalHeap_cong[OF refl])

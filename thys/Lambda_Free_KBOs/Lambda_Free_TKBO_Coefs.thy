@@ -1609,7 +1609,7 @@ proof (simp only: atomize_imp,
       note hd_t_gt_hd_s = this(2)
 
       have "head (subst \<rho> t) >\<^sub>h\<^sub>d head (subst \<rho> s)"
-        by (meson hd_t_gt_hd_s wary_subst_ground_heads gt_hd_def set_rev_mp wary_\<rho>)
+        by (meson hd_t_gt_hd_s wary_subst_ground_heads gt_hd_def rev_subsetD wary_\<rho>)
       thus ?thesis
         by (rule gt_diff[OF wt_\<rho>t_ge_\<rho>s])
     }

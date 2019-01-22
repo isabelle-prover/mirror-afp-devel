@@ -594,7 +594,7 @@ apply (rule set_eqI)
 apply (simp add: image_iff Bex_def cut_less_mem_iff)
 apply (unfold strict_mono_on_def)
 apply (rule iffI)
- apply (metis not_less_iff_gr_or_eq set_rev_mp)
+ apply (metis not_less_iff_gr_or_eq rev_subsetD)
 apply blast
 done
 
@@ -613,7 +613,7 @@ apply (rule set_eqI)
 apply (simp add: image_iff Bex_def cut_greater_mem_iff)
 apply (unfold strict_mono_on_def)
 apply (rule iffI)
- apply (metis not_less_iff_gr_or_eq set_rev_mp)
+ apply (metis not_less_iff_gr_or_eq rev_subsetD)
 apply blast
 done
 

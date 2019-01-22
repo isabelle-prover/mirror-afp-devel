@@ -48,7 +48,7 @@ proof -
       span_is_subset subset_antisym subset_trans)
     then obtain s where "s\<in>S" "s \<notin> span U" by blast
     then have "lin_indpt (U\<union>{s})" using lindep_span
-      by (meson \<open>U \<subseteq> S\<close> \<open>lin_indpt U\<close> assms(1) lin_dep_iff_in_span set_rev_mp span_mem subset_trans)
+      by (meson \<open>U \<subseteq> S\<close> \<open>lin_indpt U\<close> assms(1) lin_dep_iff_in_span rev_subsetD span_mem subset_trans)
     have "s\<notin>U" using \<open>U \<subseteq> S\<close> \<open>s \<notin> span U\<close> assms(1) span_mem by auto
     then have "(U\<union>{s}) \<subseteq> S \<and> lin_indpt (U\<union>{s})" using \<open>U \<subseteq> S\<close> \<open>lin_indpt (U \<union> {s})\<close> \<open>s \<in> S\<close> by auto
     then have "\<not>maximal U (\<lambda>T. T \<subseteq> S \<and> lin_indpt T)"
@@ -496,7 +496,7 @@ proof -
         using \<open>LinearCombinations.module.span K (vs W1) b1 = carrier (vs W1)\<close> \<open>b1 \<subseteq> W1\<close> \<open>x1 \<in> W1\<close>
               \<open>LinearCombinations.module.span K (vs W2) b2 = carrier (vs W2)\<close> \<open>b2 \<subseteq> W2\<close> \<open>x2 \<in> W2\<close>
         assms(1) assms(2) span_li_not_depend(1) by auto
-      then have "x1\<in>span (b1 \<union> b2)" "x2\<in>span (b1 \<union> b2)" by (meson le_sup_iff set_mp span_is_monotone subsetI)+
+      then have "x1\<in>span (b1 \<union> b2)" "x2\<in>span (b1 \<union> b2)" by (meson le_sup_iff subsetD span_is_monotone subsetI)+
       then show "x \<in> span (b1 \<union> b2)" unfolding \<open>x = x1 \<oplus>\<^bsub>V\<^esub> x2\<close>
         by (meson \<open>b1 \<union> b2 \<subseteq> subspace_sum W1 W2\<close> assms(1) assms(2) is_module submodule.subset
         subset_trans sum_is_submodule vectorspace.span_add1 vectorspace_axioms)

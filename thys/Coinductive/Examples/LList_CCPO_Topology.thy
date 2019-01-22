@@ -641,13 +641,13 @@ lemma "lextdown i (LCons x xs) = (if x \<le> i then lextdown x xs else LCons i (
 lemma "lset (lextup a xs) \<subseteq> {a} \<union> lset xs"
   apply (rule tendsto_le_ccpo[where g="\<lambda>xs. lset (lextup a xs)" and f="\<lambda>xs. {a} \<union> lset xs" and F="at' xs"])
   apply (rule tendsto_intros at'_bot tendsto_lup eventually_at'_llistI tendsto_id_at')+
-  apply (auto dest!: lprefix_lsetD set_ext[THEN set_mp])
+  apply (auto dest!: lprefix_lsetD set_ext[THEN subsetD])
   done
 
 lemma "lset (lextdown a xs) \<subseteq> {a} \<union> lset xs"
   apply (rule tendsto_le_ccpo[where g="\<lambda>xs. lset (lextdown a xs)" and f="\<lambda>xs. {a} \<union> lset xs" and F="at' xs"])
   apply (rule tendsto_intros at'_bot tendsto_lup eventually_at'_llistI tendsto_id_at')+
-  apply (auto dest!: lprefix_lsetD set_ext[THEN set_mp])
+  apply (auto dest!: lprefix_lsetD set_ext[THEN subsetD])
   done
 
 lemma distinct_ext:

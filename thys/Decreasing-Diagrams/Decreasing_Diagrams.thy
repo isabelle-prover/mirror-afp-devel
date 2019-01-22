@@ -1656,8 +1656,8 @@ proof -
     from conv_imp_valley[OF t IH \<rho> \<rho>m M] obtain \<tau>3'' \<sigma>3'' where
      \<tau>3'':"\<tau>3'' \<in> seq ars" and \<sigma>3'': "\<sigma>3'' \<in> seq ars" and eq:"fst \<tau>3'' = fst \<rho> \<and> fst \<sigma>3'' = lst_conv \<rho> \<and> lst \<tau>3'' = lst \<sigma>3'' \<and>
     set_mset (measure r (\<tau>3'', \<sigma>3'')) \<subseteq> dm r {#fst \<alpha>_step, fst \<beta>_step#}"  apply auto by fast
-    have s1: "set (labels \<sigma>3'') \<subseteq> ds r {fst \<alpha>_step, fst \<beta>_step}" using eq unfolding dm_def measure_def apply auto by (metis (hide_lams, no_types) insert_commute lexmax_set set_mp t)
-    have s2: "set (labels \<tau>3'') \<subseteq> ds r {fst \<beta>_step, fst \<alpha>_step}" using eq unfolding dm_def measure_def apply auto by (metis (hide_lams, no_types) insert_commute lexmax_set set_mp t)
+    have s1: "set (labels \<sigma>3'') \<subseteq> ds r {fst \<alpha>_step, fst \<beta>_step}" using eq unfolding dm_def measure_def apply auto by (metis (hide_lams, no_types) insert_commute lexmax_set subsetD t)
+    have s2: "set (labels \<tau>3'') \<subseteq> ds r {fst \<beta>_step, fst \<alpha>_step}" using eq unfolding dm_def measure_def apply auto by (metis (hide_lams, no_types) insert_commute lexmax_set subsetD t)
     have \<sigma>1_eq: "lst (s, [\<beta>_step]) = fst \<sigma>1" and \<tau>1_eq: "lst (s, [\<alpha>_step]) = fst \<tau>1" using onetwo1 onetwo2 surjective_pairing unfolding lst_def by auto
     have eqn: " lst \<tau>3'' = lst \<sigma>3''" and \<sigma>_eq: "lst \<sigma>3' = fst \<sigma>3''" and \<tau>_eq: "lst \<tau>3' = fst \<tau>3''" using eq eq1 eq2 by auto
     have \<sigma>3':"(fst \<sigma>3',snd \<sigma>3'@snd \<sigma>3'') \<in> seq ars" (is "?\<sigma>3 \<in> _") using seq_concat[OF _ \<sigma>3'' \<sigma>_eq] sigmas by blast

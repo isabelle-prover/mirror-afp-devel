@@ -199,7 +199,7 @@ proof -
           then obtain c where cb: "(c,b) \<in> R^*" and ca: "c \<in> set_of (r a)" by blast
           hence ab: "(a,b) \<in> R O R^*" by auto
           have "(a,b) \<in> R^*" 
-            by (rule set_mp[OF _ ab], regexp)
+            by (rule subsetD[OF _ ab], regexp)
           with at show "b \<in> R^* `` set_of todo" by auto
         qed
         thus "?l \<subseteq> ?r" using sel unfolding un by auto
@@ -246,7 +246,7 @@ proof (induct todo fin rule: mk_rtrancl_main.induct)
           then obtain c where c: "c \<in> init" and ca: "(c,a) \<in> R^*" by blast
           from ca ab have cb: "(c,b) \<in> R^* O R" by auto
           have "(c,b) \<in> R^*" 
-            by (rule set_mp[OF _ cb], regexp)
+            by (rule subsetD[OF _ cb], regexp)
           with c have "b \<in> R^* `` init" by auto
         }
         with subset

@@ -382,7 +382,7 @@ begin
       fix v r k
       assume 2: "v \<in> gunodes A w" "gurun A w r v" "smap f' (gtrace r v) = sconst k"
       have 20: "shd r \<in> gureachable A w v" using 2
-        by (auto) (metis graph.reachable.reflexive graph.reachable_trace gtrace_alt_def set_mp shd_sset)
+        by (auto) (metis graph.reachable.reflexive graph.reachable_trace gtrace_alt_def subsetD shd_sset)
       obtain 3:
         "shd r \<in> gunodes A w"
         "gurun A w (stl r) (shd r)"

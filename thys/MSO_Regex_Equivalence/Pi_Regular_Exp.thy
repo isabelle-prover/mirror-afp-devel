@@ -346,7 +346,7 @@ lemma wf_word_map_project[simp]: "wf_word (Suc n) ws \<Longrightarrow> wf_word n
   by (induct ws arbitrary: n) (auto intro: project)
 
 lemma wf_lang_wf_word: "wf n r \<Longrightarrow> \<forall>w \<in> lang n r. wf_word n w"
-  by (induct r arbitrary: n) (auto elim: set_rev_mp[OF _ conc_mono] star_induct intro: iffD2[OF wf_word])
+  by (induct r arbitrary: n) (auto elim: rev_subsetD[OF _ conc_mono] star_induct intro: iffD2[OF wf_word])
 
 lemma lang_subset_lists: "wf n r \<Longrightarrow> lang n r \<subseteq> lists (\<Sigma> n)"
 proof (induct r arbitrary: n)

@@ -109,7 +109,7 @@ lemma ccField_CCfix:
   unfolding CCfix_def
   apply simp
   apply (rule fix_ind[where P = "\<lambda> x . ccField x \<subseteq> fv \<Gamma> \<union> ccField G"])
-  apply (auto dest!: set_mp[OF ccField_ccBindsExtra])
+  apply (auto dest!: subsetD[OF ccField_ccBindsExtra])
   done
 
 

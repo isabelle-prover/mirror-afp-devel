@@ -443,7 +443,7 @@ subsubsection \<open>Instance helper\<close>
       obtain e1 e2 where e1e2cond: "(e1, e2) \<in> f \<and> e1 = i" by fastforce
 
     from conjunct1[OF e1e2cond] a_offending have "(e1, e2) \<in> edges G"
-      by (metis (lifting, no_types) SecurityInvariant_withOffendingFlows.set_offending_flows_def mem_Collect_eq set_rev_mp)
+      by (metis (lifting, no_types) SecurityInvariant_withOffendingFlows.set_offending_flows_def mem_Collect_eq rev_subsetD)
   
     from conjunct1[OF e1e2cond] a_f_3_in_f have e1e2notP: "\<not> P (nP e1) e1 (nP e2) e2" by simp
     from e1e2notP a_weakrefl have e1ore2neqbot: "(nP e1) \<noteq> \<bottom> \<or> (nP e2) \<noteq> \<bottom>" by fastforce
@@ -495,7 +495,7 @@ subsubsection \<open>Instance helper\<close>
       obtain e1 e2 where e1e2cond: "(e1, e2)\<in>f \<and> e2 = i" by fastforce
 
     from conjunct1[OF e1e2cond] a_offending have "(e1, e2) \<in> edges G"
-      by (metis (lifting, no_types) SecurityInvariant_withOffendingFlows.set_offending_flows_def mem_Collect_eq set_rev_mp)
+      by (metis (lifting, no_types) SecurityInvariant_withOffendingFlows.set_offending_flows_def mem_Collect_eq rev_subsetD)
   
     from conjunct1[OF e1e2cond] a_f_3_in_f have e1e2notP: "\<not> P (nP e1) e1 (nP e2) e2" by simp
     from e1e2notP a_weakrefl have e1ore2neqbot: "(nP e1) \<noteq> \<bottom> \<or> (nP e2) \<noteq> \<bottom>" by fastforce

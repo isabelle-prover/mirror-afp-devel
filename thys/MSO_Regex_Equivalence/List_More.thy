@@ -83,8 +83,8 @@ lemma find_append[simp]:
 lemma subset_remdups'_append: "set (remdups' f (xs @ ys)) \<subseteq> set (remdups' f xs) \<union> set (remdups' f ys)"
   by (induct xs arbitrary: ys) (auto split: option.splits)
 
-lemmas mp_remdups' = set_mp[OF subset_remdups']
-lemmas mp_remdups'_append = set_mp[OF subset_remdups'_append]
+lemmas mp_remdups' = subsetD[OF subset_remdups']
+lemmas mp_remdups'_append = subsetD[OF subset_remdups'_append]
 
 lemma inj_on_set_remdups'[simp]: "inj_on f (set (remdups' f xs))"
   by (induct xs) (auto split: option.splits simp add: find_None_iff dest!: mp_remdups')

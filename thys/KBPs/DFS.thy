@@ -210,7 +210,7 @@ next
     apply auto[1]
    apply (subgoal_tac "nodeAbs xc \<in> insert (nodeAbs x) (nodeAbs ` (set xs \<union> {x. isNode x \<and> memb x S}))")
     defer
-    apply (erule set_rev_mp)
+    apply (erule rev_subsetD)
     apply (erule subset_trans)
     apply blast
    apply auto

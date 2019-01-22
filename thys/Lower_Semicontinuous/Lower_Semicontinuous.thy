@@ -1824,7 +1824,7 @@ next
   finally have *: "(lsc_hull f) y \<le> Liminf (at 1 within {0..<1}) ?g" by auto
   { fix b assume "ereal b\<ge>(lsc_hull f) y"
     hence yb: "(y,b):closure(Epigraph UNIV f)" by (metis epigraph_lsc_hull mem_Epigraph UNIV_I)
-    have "x : domain f" by (metis assms(2) rel_interior_subset set_rev_mp)
+    have "x : domain f" by (metis assms(2) rel_interior_subset rev_subsetD)
     hence "f x<\<infinity>" unfolding domain_def by auto
     then obtain a where"ereal a>f x" by (metis ereal_dense2)
       hence xa: "(x,a):rel_interior(Epigraph UNIV f)" by (metis assms rel_interior_Epigraph)

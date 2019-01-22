@@ -165,7 +165,7 @@ proof (intro rel_funI, goal_cases)
       next 
         case (Some j)
         from map_of_SomeD[OF this] have "(j,i) \<in> set (pivot_positions_gen ze' A')" by auto
-        from set_mp[OF set_pivot_positions_main_gen this[unfolded pivot_positions_gen_def]]
+        from subsetD[OF set_pivot_positions_main_gen this[unfolded pivot_positions_gen_def]]
         have j: "j < dim_row A'" by auto
         with trans(4) y have [transfer_rule]: "R (A $$ (j,y)) (A' $$ (j,y))" unfolding mat_rel_def by auto
         show ?thesis unfolding Some by (simp, transfer_prover)

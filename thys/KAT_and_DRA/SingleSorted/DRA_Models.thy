@@ -123,8 +123,8 @@ begin
 
   lift_definition plus_bool_op :: "'a bool_op \<Rightarrow> 'a bool_op \<Rightarrow> 'a bool_op" is "(+)"
     apply (auto simp: o_def fun_union_def fun_order_def bot_def mono_def)
-    apply (metis set_mp)
-    apply (metis set_mp)
+    apply (metis subsetD)
+    apply (metis subsetD)
     apply (rule ext)
     by (metis (no_types, lifting) semilattice_sup_class.sup.assoc semilattice_sup_class.sup.left_commute)
 

@@ -1452,7 +1452,7 @@ next
     by (auto simp add: vec_eq_iff)
   from VA have VAs:"\<And>j. Vagree \<nu> \<omega> (\<Union>i\<in>SIGT (x2 j). case SFunctions \<sigma> i of Some a \<Rightarrow> FVT a | None \<Rightarrow> {})"
     unfolding Vagree_def SIGT.simps using rangeI 
-    by (metis (no_types, lifting) set_mp subs)
+    by (metis (no_types, lifting) subsetD subs)
   have SIGF:"\<And>a. SPredicates \<sigma> x1 = Some a \<Longrightarrow> Inr (Inr x1) \<in> SDom \<sigma> \<inter> SIGF ($\<phi> x1 x2)" unfolding SDom_def
     by auto
   have VAsub:"\<And>a. SPredicates \<sigma> x1 = Some a \<Longrightarrow> (FVF a) \<subseteq> (\<Union>i\<in>SDom \<sigma> \<inter> SIGF ($\<phi> x1 x2). SFV \<sigma> i)"

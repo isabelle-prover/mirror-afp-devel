@@ -313,7 +313,7 @@ proof (insert assms, unfold initial_ps2_def, transfer)
   apply (unfold G_def vertices.simps edges.simps)
   apply (drule wf_dia_inv(3))
   apply (unfold acyclicity_def)
-  apply (metis fst_e_in_S inter_fset le_iff_inf set_mp)
+  apply (metis fst_e_in_S inter_fset le_iff_inf subsetD)
   apply (insert wf_G)[1]
   apply (unfold G_def vertices.simps edges.simps)
   apply (drule wf_dia_inv(4))
@@ -823,7 +823,7 @@ next
         apply (subst (asm) fset_simps)
         apply (insert disjoint_iff_not_equal)[1]
         apply blast
-        apply (metis G_def Suc(3) e_in_E set_mp less_eq_fset.rep_eq wf_dia_inv')
+        apply (metis G_def Suc(3) e_in_E subsetD less_eq_fset.rep_eq wf_dia_inv')
         prefer 2
         apply (metis (lifting) IntI Suc(2) \<open>ws |\<inter>| initials G = {||}\<close>
             empty_iff fset_simps(1) in_mono inter_fset less_eq_fset.rep_eq ws_def)

@@ -185,7 +185,7 @@ begin
 lemma Afix_edom: "edom (Afix \<Gamma> \<cdot> ae) \<subseteq> fv \<Gamma> \<union> edom ae"
   unfolding Afix_eq
   by (rule fix_ind[where P = "\<lambda> ae' . edom ae' \<subseteq> fv \<Gamma> \<union> edom ae"] )
-     (auto dest: set_mp[OF edom_AnalBinds])
+     (auto dest: subsetD[OF edom_AnalBinds])
 
 lemma ABinds_lookup_fresh:
   "atom v \<sharp> \<Gamma> \<Longrightarrow> (ABinds \<Gamma>\<cdot>ae) v = \<bottom>"

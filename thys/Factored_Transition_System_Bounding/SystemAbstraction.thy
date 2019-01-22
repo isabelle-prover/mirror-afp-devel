@@ -1179,7 +1179,7 @@ lemma NOT_IN_PRE_EFF_NOT_IN_PRE_EFF_PROJ:
     (\<not>(v \<in> fmdom' (fst a)) \<longrightarrow> \<not>(v \<in> fmdom' (fst (action_proj a vs))))
     \<and> (\<not>(v \<in> fmdom' (snd a)) \<longrightarrow> \<not>(v \<in> fmdom' (snd (action_proj a vs))))
   "
-  using PROJ_DOM_PRE_EFF_SUBSET_DOM set_rev_mp
+  using PROJ_DOM_PRE_EFF_SUBSET_DOM rev_subsetD
   by metis
 
 

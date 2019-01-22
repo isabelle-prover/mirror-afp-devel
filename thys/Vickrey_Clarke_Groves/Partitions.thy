@@ -40,7 +40,7 @@ lemma subset_is_non_overlapping:
           non_overlapping: "is_non_overlapping Q"
   shows "is_non_overlapping P"
 (* CL: The following takes 387 ms with Isabelle2013-1-RC1:
-   by (metis is_non_overlapping_def non_overlapping set_rev_mp subset). MC: possibly useful for TPTP *)
+   by (metis is_non_overlapping_def non_overlapping rev_subsetD subset). MC: possibly useful for TPTP *)
 proof -
   {
     fix X Y assume "X \<in> P \<and> Y \<in> P"

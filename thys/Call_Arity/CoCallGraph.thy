@@ -210,7 +210,7 @@ lemma cc_restr_empty: "ccField G \<subseteq> - S \<Longrightarrow> G G|` S = \<b
   apply transfer
   apply (auto simp add: Field_def)
   apply (drule DomainI)
-  apply (drule (1) set_mp)
+  apply (drule (1) subsetD)
   apply simp
   done
 
@@ -218,7 +218,7 @@ lemma cc_restr_empty_set[simp]: "cc_restr {} G = \<bottom>"
   by transfer auto
   
 lemma cc_restr_noop[simp]: "ccField G \<subseteq> S \<Longrightarrow> cc_restr S G = G"
-  by transfer (force simp add: Field_def dest: DomainI RangeI elim: set_mp)
+  by transfer (force simp add: Field_def dest: DomainI RangeI elim: subsetD)
 
 lemma cc_restr_bot[simp]: "cc_restr S \<bottom> = \<bottom>"
   by simp

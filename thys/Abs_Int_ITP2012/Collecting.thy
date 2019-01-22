@@ -158,9 +158,9 @@ proof(induction c1 c2 arbitrary: S1 S2 rule: less_eq_acom.induct)
 next
   case 3 thus ?case by(simp add: le_post)
 next
-  case 4 thus ?case by(simp add: subset_iff)(metis le_post set_mp)+
+  case 4 thus ?case by(simp add: subset_iff)(metis le_post subsetD)+
 next
-  case 5 thus ?case by(simp add: subset_iff) (metis le_post set_mp)
+  case 5 thus ?case by(simp add: subset_iff) (metis le_post subsetD)
 qed auto
 
 lemma mono_step: "mono (step S)"

@@ -2748,13 +2748,13 @@ lemma subterms_inclusion_subset:
   assumes "E2 \<subseteq> E2'"
   shows "subterms_inclusion E1 E2'"
 by (meson assms(1) assms(2) basic_superposition.subterms_inclusion_def basic_superposition_axioms 
-      set_mp)
+      subsetD)
 
 lemma set_inclusion_preserve_normalization:
   assumes "all_trms_irreducible E f"
   assumes "E' \<subseteq> E"
   shows "all_trms_irreducible E' f"
-by (meson all_trms_irreducible_def assms(1) assms(2) set_mp)
+by (meson all_trms_irreducible_def assms(1) assms(2) subsetD)
 
 lemma subterms_inclusion_preserves_normalization:
   assumes "all_trms_irreducible E f"
@@ -7598,7 +7598,7 @@ proof (rule ccontr)
     have "\<forall>x. x \<in> P \<longrightarrow> derivable_ecl x S"
     proof ((rule allI),(rule impI)) 
       fix x assume "x \<in> P"
-      from this and \<open>P \<subseteq> ?S\<close> have "x \<in> ?S" by (meson set_rev_mp)
+      from this and \<open>P \<subseteq> ?S\<close> have "x \<in> ?S" by (meson rev_subsetD)
       from this show "derivable_ecl x S" by (meson CollectD) 
     qed
     from this and \<open>(derivable D P ?S \<theta> FirstOrder C')\<close> have "derivable_ecl D S" 

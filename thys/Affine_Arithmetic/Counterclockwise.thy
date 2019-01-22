@@ -234,7 +234,7 @@ proof (induction xs rule: selsort.induct)
     by (fastforce simp: list_all_iff Let_def
         simp del: remove1.simps
         intro: Cons intro!: 2(1)[OF refl refl]
-        dest!: set_rev_mp[OF _ set_remove1_subset])+
+        dest!: rev_subsetD[OF _ set_remove1_subset])+
 qed (auto intro!: Nil)
 
 end

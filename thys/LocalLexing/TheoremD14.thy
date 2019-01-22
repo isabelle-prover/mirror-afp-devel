@@ -437,7 +437,7 @@ proof (induct k arbitrary: u rule: less_induct)
                   using f4 f3 f2 Suc_lessD y_in_items_le less.hyps less_trans_Suc by blast
               qed
               then have "\<exists> p. p \<in> \<P> k'' v'' \<and> pvalid p y"
-                by (meson Gen_implies_pvalid paths_le_is_filter set_rev_mp)
+                by (meson Gen_implies_pvalid paths_le_is_filter rev_subsetD)
               then obtain p where p: "p \<in> \<P> k'' v'' \<and> pvalid p y" by blast
               then have charslength_p: "charslength p = k''" using pvalid_item_end scan_step by auto 
               have pvalid_p_y: "pvalid p y" using p by blast
@@ -446,7 +446,7 @@ proof (induct k arbitrary: u rule: less_induct)
                 apply (rule pvalid_p_y)
                 using scan_step apply (simp add: terminal_of_token_def) 
                 using scan_step by (metis TokensAt_subset_\<X> \<T>_subset_TokensAt \<X>_are_terminals 
-                  set_rev_mp terminal_of_token_def) 
+                  rev_subsetD terminal_of_token_def) 
               then have admissible_p_X: "admissible (p@[X])" by simp
               have X_in_\<Z>: "X \<in> \<Z> k'' (Suc v'')" by (metis (no_types, lifting) Suc_lessD \<Z>_subset_Suc 
                 k'_bound dual_order.trans indexle_def indexlt_simp item_end_of_inc_item item_end_x 
@@ -622,7 +622,7 @@ proof (induct k arbitrary: u rule: less_induct)
             have subset7: "Scan T k'' (items_le k'' (\<J> k'' (Suc v'')))
               \<subseteq> items_le k (Scan T k'' (\<J> k'' (Suc v'')))" by simp
             have "T \<subseteq> \<Z> k'' (Suc (Suc v''))" using T k''
-              using \<Z>_subset_Suc set_rev_mp singletonD subsetI by blast 
+              using \<Z>_subset_Suc rev_subsetD singletonD subsetI by blast 
             then have T_subset_\<T>: "T \<subseteq> \<T> k'' (Suc (Suc v''))" using induct2 by auto
             have subset8: "Scan T k'' (\<J> k'' (Suc v'')) \<subseteq>
               Scan (\<T> k'' (Suc (Suc v''))) k'' (\<J> k'' (Suc v''))" 
@@ -672,13 +672,13 @@ proof (induct k arbitrary: u rule: less_induct)
               then show ?thesis using \<pi>_apply_setmonotone by blast
             qed
             have "Gen (paths_le k (\<P> k' v)) \<subseteq> \<pi> k {} (natUnion (\<lambda> v. items_le k (\<J> k' v)))"
-              using Gen_split case_le suffices5 UnE set_rev_mp subsetI by blast 
+              using Gen_split case_le suffices5 UnE rev_subsetD subsetI by blast 
           }
           note suffices4 = this
           have super_lemma: "Gen (paths_le k (\<P> k 0)) \<subseteq> items_le k (\<J> k 0)"
             apply (subst simp_right)
             apply (subst simp_left')
-            using suffices4 by (meson natUnion_ex set_rev_mp subsetI) 
+            using suffices4 by (meson natUnion_ex rev_subsetD subsetI) 
           from super_lemma sub_lemma show ?thesis by blast
         qed             
         then show ?case using thmD13 less.prems by blast   

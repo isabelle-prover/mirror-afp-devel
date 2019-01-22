@@ -62,9 +62,9 @@ begin
   lemma E_wfD: assumes "(v,v') \<in> flows_fix \<T>"
     shows "v \<in> hosts \<T>" "v' \<in> hosts \<T>"
     apply -
-     apply (rule set_mp[OF E_wf(1)])
+     apply (rule subsetD[OF E_wf(1)])
      using assms apply force
-    apply (rule set_mp[OF E_wf(2)])
+    apply (rule subsetD[OF E_wf(2)])
     using assms apply force
     done
  
@@ -78,9 +78,9 @@ begin
   lemma E_state_validD: assumes "(v,v') \<in> flows_state \<T>"
     shows "v \<in> hosts \<T>" "v' \<in> hosts \<T>"
     apply -
-     apply (rule set_mp[OF E_state_valid(1)])
+     apply (rule subsetD[OF E_state_valid(1)])
      using assms apply force
-    apply (rule set_mp[OF E_state_valid(2)])
+    apply (rule subsetD[OF E_state_valid(2)])
     using assms apply force
     done
 

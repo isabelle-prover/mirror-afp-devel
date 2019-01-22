@@ -343,7 +343,7 @@ proof -
           with \<open>t\<in>S\<close> obtain s where t_s: "(t, s) \<in> (SIGMA x:\<Phi>. E x)\<^sup>*" and "s \<in> \<Psi>"
             unfolding P0 by auto
           from t_s have "(t, s) \<in> acc"
-            by (rule set_rev_mp) (intro rtrancl_mono Sigma_mono, auto)
+            by (rule rev_subsetD) (intro rtrancl_mono Sigma_mono, auto)
           with \<open>s \<in> \<Psi>\<close> show ?thesis by auto
         qed
       next

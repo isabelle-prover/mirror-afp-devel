@@ -49,7 +49,7 @@ lemma predCC_eq:
   unfolding predCC_def
   apply (rule beta_cfun)
   apply (rule cont_if_else_above)
-  apply (auto dest: set_mp[OF ccField_cc_restr])
+  apply (auto dest: subsetD[OF ccField_cc_restr])
   done
 
 lemma predCC_eqvt[eqvt, simp]: "\<pi> \<bullet> (predCC S f) = predCC (\<pi> \<bullet> S) (\<pi> \<bullet> f)"
@@ -196,7 +196,7 @@ by (simp add: cccFix_eq Aexp_eq fup_Aexp_eq CCexp_eq fup_CCexp_eq predCC_eq)+
 lemma 
   shows ccField_CCexp: "ccField (CCexp e\<cdot>a) \<subseteq> fv e" and Aexp_edom': "edom (\<A>\<^bsub>a\<^esub> e) \<subseteq> fv e"
   apply (induction e arbitrary: a rule: exp_induct_rec)
-  apply (auto simp add: CCexp_pre_simps predCC_eq Aexp_pre_simps dest!: set_mp[OF ccField_cc_restr] set_mp[OF ccField_ccProd_subset])
+  apply (auto simp add: CCexp_pre_simps predCC_eq Aexp_pre_simps dest!: subsetD[OF ccField_cc_restr] subsetD[OF ccField_ccProd_subset])
   apply fastforce+
   done
 
@@ -206,7 +206,7 @@ by (rule cc_restr_noop[OF ccField_CCexp])
 
 lemma ccField_fup_CCexp:
   "ccField (fup\<cdot>(CCexp e)\<cdot>n) \<subseteq> fv e"
-by (cases n) (auto dest: set_mp[OF ccField_CCexp])
+by (cases n) (auto dest: subsetD[OF ccField_CCexp])
 
 lemma cc_restr_fup_ccExp_useless[simp]: "cc_restr (fv e) (fup\<cdot>(CCexp e)\<cdot>n) = fup\<cdot>(CCexp e)\<cdot>n"
   by (rule cc_restr_noop[OF ccField_fup_CCexp])
@@ -231,8 +231,8 @@ lemma CCexp_simps[simp]:
 by (auto simp add: CCexp_pre_simps Diff_eq cc_restr_cc_restr[symmetric] predCC_eq 
             simp del: cc_restr_cc_restr cc_restr_join
             intro!: cc_restr_noop
-            dest!: set_mp[OF ccField_cc_delete] set_mp[OF ccField_cc_restr]  set_mp[OF ccField_CCexp]
-                   set_mp[OF ccField_CCfix] set_mp[OF ccField_ccBind]  set_mp[OF ccField_ccProd_subset] elem_to_ccField
+            dest!: subsetD[OF ccField_cc_delete] subsetD[OF ccField_cc_restr]  subsetD[OF ccField_CCexp]
+                   subsetD[OF ccField_CCfix] subsetD[OF ccField_ccBind]  subsetD[OF ccField_ccProd_subset] elem_to_ccField
      )
 
 definition Aheap where
@@ -273,19 +273,19 @@ proof-
   have "Aexp (Lam [x]. e) \<cdot> n = Aexp e\<cdot>(pred\<cdot>n) f|` (fv e - {x})" by (simp add: Aexp_pre_simps)
   also have "... = env_delete x (Aexp e\<cdot>(pred\<cdot>n)) f|` (fv e - {x})" by simp
   also have "\<dots> = env_delete x (Aexp e\<cdot>(pred\<cdot>n))"
-     by (rule env_restr_useless) (auto dest: set_mp[OF Aexp_edom])
+     by (rule env_restr_useless) (auto dest: subsetD[OF Aexp_edom])
   finally show ?thesis.
 qed
 
 lemma Aexp_Let_simp1:
   "\<not> nonrec \<Gamma> \<Longrightarrow> \<A>\<^bsub>a\<^esub> (Let \<Gamma> e) = (Afix \<Gamma>\<cdot>(\<A>\<^bsub>a\<^esub> e \<squnion> (\<lambda>_.up\<cdot>0) f|` thunks \<Gamma>)) f|` (- domA \<Gamma>)"
   unfolding Aexp_pre_simps
-  by (rule env_restr_cong) (auto simp add: dest!: set_mp[OF Afix_edom] set_mp[OF Aexp_edom] set_mp[OF thunks_domA])
+  by (rule env_restr_cong) (auto simp add: dest!: subsetD[OF Afix_edom] subsetD[OF Aexp_edom] subsetD[OF thunks_domA])
 
 lemma Aexp_Let_simp2:
   "x \<notin> fv e \<Longrightarrow> \<A>\<^bsub>a\<^esub>(let x be e in exp) = env_delete x (\<A>\<^sup>\<bottom>\<^bsub>ABind_nonrec x e \<cdot> (\<A>\<^bsub>a\<^esub> exp, CCexp exp\<cdot>a)\<^esub> e \<squnion> \<A>\<^bsub>a\<^esub> exp)"
   unfolding Aexp_pre_simps env_delete_restr
-  by (rule env_restr_cong) (auto dest!: set_mp[OF fup_Aexp_edom]  set_mp[OF Aexp_edom])
+  by (rule env_restr_cong) (auto dest!: subsetD[OF fup_Aexp_edom]  subsetD[OF Aexp_edom])
 
 lemma Aexp_simps[simp]:
   "\<A>\<^bsub>a\<^esub>(Var x) = esing x\<cdot>(up\<cdot>a)"

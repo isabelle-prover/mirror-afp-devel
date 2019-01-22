@@ -1053,7 +1053,7 @@ lemma lm130:
 lemma lm131: 
   assumes "Y \<subseteq> f-`{0}" 
   shows "sum f Y  =  0" 
-  using assms by (metis set_rev_mp sum.neutral vimage_singleton_eq)
+  using assms by (metis rev_subsetD sum.neutral vimage_singleton_eq)
 
 lemma lm132: 
   assumes "Y \<subseteq> f-`{0}" "finite X" 

@@ -235,7 +235,7 @@ lemma parts_subset_iff [simp]: "(parts G \<subseteq> parts H) = (G \<subseteq> p
 by (metis parts_idem parts_increasing parts_mono subset_trans)
 
 lemma parts_trans: "[| X\<in> parts G;  G \<subseteq> parts H |] ==> X\<in> parts H"
-by (metis parts_subset_iff set_mp)
+by (metis parts_subset_iff subsetD)
 
 text\<open>Cut\<close>
 lemma parts_cut:
@@ -678,7 +678,7 @@ by (metis Un_commute analz_increasing insert_subset parts_analz parts_mono
 lemma Fake_parts_insert_in_Un:
      "[|Z \<in> parts (insert X H);  X: synth (analz H)|] 
       ==> Z \<in>  synth (analz H) \<union> parts H"
-by (metis Fake_parts_insert set_mp)
+by (metis Fake_parts_insert subsetD)
 
 text\<open>@{term H} is sometimes @{term"Key ` KK \<union> spies evs"}, so can't put 
   @{term "G=H"}.\<close>

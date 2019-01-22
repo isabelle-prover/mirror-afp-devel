@@ -145,7 +145,7 @@ lemma finite_set_minimal:
   apply (rule assms(2))
   apply simp
   apply simp
-  by (metis assms(3) insert_iff order_trans set_mp)
+  by (metis assms(3) insert_iff order_trans subsetD)
 
 end
 

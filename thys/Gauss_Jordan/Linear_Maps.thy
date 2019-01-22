@@ -212,7 +212,7 @@ proof -
     finally have rw: " (\<Sum>x\<in>C. f x *s x) = L (\<Sum>x\<in>B. (f \<circ> L) x *s x)" .
     have "(\<Sum>x\<in>B. (f \<circ> L) x *s x) \<in> W"
       by (rule vec.subspace_sum[OF sub_W])
-        (simp add: B_in_W set_rev_mp sub_W vec.subspace_scale)
+        (simp add: B_in_W rev_subsetD sub_W vec.subspace_scale)
     hence "(\<Sum>x\<in>B. (f \<circ> L) x *s x)=0"
       using sum rw
       using vec.linear_inj_on_iff_eq_0[OF L.linear_axioms sub_W] using inj_on_LW

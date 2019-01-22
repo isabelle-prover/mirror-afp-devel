@@ -22,7 +22,7 @@ begin
 
   lemma supp_transform: "supp (transform a e) \<subseteq> supp e"
     by (induction rule: transform.induct)
-       (auto simp add: exp_assn.supp Let_supp dest!: set_mp[OF supp_map_transform] set_mp[OF supp_map_transform_step] )
+       (auto simp add: exp_assn.supp Let_supp dest!: subsetD[OF supp_map_transform] subsetD[OF supp_map_transform_step] )
   interpretation supp_bounded_transform transform
     by standard (auto simp add: fresh_def supp_transform) 
 
@@ -88,7 +88,7 @@ begin
   next
   case (thunk \<Gamma> x e S)
     hence "x \<in> thunks \<Gamma>" by auto
-    hence [simp]: "x \<in> domA \<Gamma>" by (rule set_mp[OF thunks_domA])
+    hence [simp]: "x \<in> domA \<Gamma>" by (rule subsetD[OF thunks_domA])
 
     from \<open>heap_upds_ok_conf (\<Gamma>, Var x, S)\<close>
     have "x \<notin> upds S"  by (auto dest!: heap_upds_okE)
@@ -172,14 +172,14 @@ begin
     case (let\<^sub>1 \<Delta> \<Gamma> e S)
     let ?ae = "Aheap \<Delta> e\<cdot>a"
   
-    have "domA \<Delta> \<inter> upds S = {}" using fresh_distinct_fv[OF let\<^sub>1(2)] by (auto dest: set_mp[OF ups_fv_subset])
-    hence *: "\<And> x. x \<in> upds S \<Longrightarrow> x \<notin> edom ?ae" by (auto simp add:  dest!: set_mp[OF edom_Aheap])
+    have "domA \<Delta> \<inter> upds S = {}" using fresh_distinct_fv[OF let\<^sub>1(2)] by (auto dest: subsetD[OF ups_fv_subset])
+    hence *: "\<And> x. x \<in> upds S \<Longrightarrow> x \<notin> edom ?ae" by (auto simp add:  dest!: subsetD[OF edom_Aheap])
     have restr_stack_simp2: "restr_stack (edom (?ae \<squnion> ae)) S = restr_stack (edom ae) S"
       by (auto intro: restr_stack_cong dest!: *)
 
     have "edom ae \<subseteq> domA \<Gamma> \<union> upds S" using let\<^sub>1 by (auto dest!: a_consistent_edom_subsetD)
-    from set_mp[OF this] fresh_distinct[OF let\<^sub>1(1)] fresh_distinct_fv[OF let\<^sub>1(2)]
-    have "edom ae \<inter> domA \<Delta> = {}" by (auto dest: set_mp[OF ups_fv_subset])
+    from subsetD[OF this] fresh_distinct[OF let\<^sub>1(1)] fresh_distinct_fv[OF let\<^sub>1(2)]
+    have "edom ae \<inter> domA \<Delta> = {}" by (auto dest: subsetD[OF ups_fv_subset])
 
     {
     { fix x e'
@@ -207,7 +207,7 @@ begin
     {
       have "\<And> x. x \<in> domA \<Gamma> \<Longrightarrow> x \<notin> edom ?ae"
         using fresh_distinct[OF let\<^sub>1(1)]
-        by (auto dest!: set_mp[OF edom_Aheap])
+        by (auto dest!: subsetD[OF edom_Aheap])
       hence "map_transform Aeta_expand (?ae \<squnion> ae) (map_transform transform (?ae \<squnion> ae) \<Gamma>)
          = map_transform Aeta_expand ae (map_transform transform ae \<Gamma>)"
          by (auto intro!: map_transform_cong restrictA_cong simp add: edomIff)
@@ -216,7 +216,7 @@ begin
       from \<open>edom ae \<subseteq> domA \<Gamma> \<union> upds S\<close>
       have  "\<And> x. x \<in> domA \<Delta> \<Longrightarrow> x \<notin> edom ae"
          using fresh_distinct[OF let\<^sub>1(1)] fresh_distinct_fv[OF let\<^sub>1(2)] 
-         by (auto dest!:  set_mp[OF ups_fv_subset])
+         by (auto dest!:  subsetD[OF ups_fv_subset])
       hence "map_transform Aeta_expand (?ae \<squnion> ae) (map_transform transform (?ae \<squnion> ae) \<Delta>)
          = map_transform Aeta_expand ?ae (map_transform transform ?ae \<Delta>)"
          by (auto intro!: map_transform_cong restrictA_cong simp add: edomIff)
@@ -227,7 +227,7 @@ begin
         using restr_stack_simp2 let\<^sub>1(1,2)
         apply (auto simp add: map_transform_append restrictA_append  restr_stack_simp2[simplified] map_transform_restrA)
         apply (rule step.let\<^sub>1)
-        apply (auto dest: set_mp[OF edom_Aheap])
+        apply (auto dest: subsetD[OF edom_Aheap])
         done
     }
     ultimately

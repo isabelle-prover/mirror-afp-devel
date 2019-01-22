@@ -51,7 +51,7 @@ proof goal_cases
     show ?thesis
       using Df.scaleR \<open>m < n\<close>
       by (auto simp: Dg_def [abs_def] has_vector_derivative_def g_def segment_eq
-         intro!: derivative_eq_intros set_mp[OF cs])
+         intro!: derivative_eq_intros subsetD[OF cs])
   qed
   ultimately
   have g_Taylor: "(i has_integral g 1 - (\<Sum>i<n. ((1 - 0) ^ i / fact i) *\<^sub>R Dg i 0)) {0 .. 1}"

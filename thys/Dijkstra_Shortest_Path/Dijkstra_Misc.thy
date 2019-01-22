@@ -8,7 +8,7 @@ begin
   lemma least_map_subset: "least_map f S \<subseteq> S"
     by (auto elim: least_map.cases)
 
-  lemmas least_map_elemD = set_mp[OF least_map_subset]
+  lemmas least_map_elemD = subsetD[OF least_map_subset]
 
   lemma least_map_leD:
     assumes "x \<in> least_map f S"

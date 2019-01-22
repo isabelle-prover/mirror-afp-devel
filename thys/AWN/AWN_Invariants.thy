@@ -258,7 +258,7 @@ corollary seq_reachable_in_cterms:
       and "p' \<in> sterms \<Gamma> p"
     shows "p' \<in> cterms \<Gamma>"
   using assms(1-3)
-  proof (rule cterms_includes_sterms_of_seq_reachable [THEN set_mp])
+  proof (rule cterms_includes_sterms_of_seq_reachable [THEN subsetD])
     from assms(4-5) show "p' \<in> \<Union>(sterms \<Gamma> ` snd ` reachable A I)"
       by (auto elim!: rev_bexI)
   qed

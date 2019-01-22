@@ -211,7 +211,7 @@ lemma isometry_preserves_bounded:
   assumes "isometry_on X f"
           "A \<subseteq> X"
   shows "bounded (f`A) \<longleftrightarrow> bounded A"
-unfolding bounded_two_points using assms(2) isometry_onD[OF assms(1)] by auto (metis assms(2) set_rev_mp)+
+unfolding bounded_two_points using assms(2) isometry_onD[OF assms(1)] by auto (metis assms(2) rev_subsetD)+
 
 lemma isometry_preserves_infdist:
   assumes "isometry_on X f"

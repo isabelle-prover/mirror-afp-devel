@@ -73,7 +73,7 @@ lemma Star_string:
   assumes "s \<in> star A"
   shows "\<exists>ss. concat ss = s \<and> (\<forall>s \<in> set ss. s \<in> A)"
 using assms
-by (metis in_star_iff_concat set_mp)
+by (metis in_star_iff_concat subsetD)
 
 lemma Star_val:
   assumes "\<forall>s\<in>set ss. \<exists>v. s = flat v \<and> \<turnstile> v : r"

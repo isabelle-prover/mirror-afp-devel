@@ -49,7 +49,7 @@ proof-
   have "isVal ?v" using \<open>isVal v\<close> by simp
 
   have "fv (transform 0 e) = ({} :: var set)" using closed
-    by (auto dest: set_mp[OF fv_transform])
+    by (auto dest: subsetD[OF fv_transform])
 
   note sestoftUnGC'[OF \<open>([], transform 0 e, []) \<Rightarrow>\<^sub>G\<^sup>* (?\<Gamma>, ?v, map Dummy (rev r))\<close> \<open>isVal ?v\<close> \<open>fv (transform 0 e) = {}\<close>]
   then obtain \<Gamma>'

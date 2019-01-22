@@ -882,7 +882,7 @@ context begin interpretation timing_syntax .
       proof (cases "b = v")
         case True with T v_notin_tree have [simp]: "a = hd (stack s)" by auto
         with stack_discovered have "a \<in> dom (discovered s)" 
-          by (metis hd_in_set NE set_mp)
+          by (metis hd_in_set NE subsetD)
         with v_hd True timing_less_counter show ?thesis by simp
       next
         case False with v_notin_tree T have "(a,b) \<in> tree_edges s" "a \<noteq> v" by auto

@@ -110,7 +110,7 @@ lemma init_lifted:
             \<and> (\<forall>j. if j \<in> net_tree_ips \<langle>i; R\<rangle> then \<sigma> j = the (fst (netgmap sr s) j)
                    else \<sigma> j \<in> (fst \<circ> sr) ` init (np j))} \<subseteq> init (opnet onp \<langle>i; R\<rangle>)"
       by (clarsimp simp add: node_comps onode_comps)
-         (rule set_mp [OF init], auto)
+         (rule subsetD [OF init], auto)
   next
     fix p1 p2
     assume IH1: "wf_net_tree p1
@@ -169,7 +169,7 @@ lemma init_lifted:
           using \<open>s1 \<in> init (pnet np p1)\<close> and \<sigma>_desc by auto
       qed
       hence "(\<sigma>, snd (netgmap sr s1)) \<in> init (opnet onp p1)"
-        by (rule set_mp [OF IH1 [OF \<open>wf_net_tree p1\<close>]])
+        by (rule subsetD [OF IH1 [OF \<open>wf_net_tree p1\<close>]])
 
       have "(\<sigma>, snd (netgmap sr s2)) \<in> ?S2"
       proof -
@@ -201,7 +201,7 @@ lemma init_lifted:
           using \<open>s2 \<in> init (pnet np p2)\<close> and \<sigma>_desc by auto
       qed
       hence "(\<sigma>, snd (netgmap sr s2)) \<in> init (opnet onp p2)"
-        by (rule set_mp [OF IH2 [OF \<open>wf_net_tree p2\<close>]])
+        by (rule subsetD [OF IH2 [OF \<open>wf_net_tree p2\<close>]])
 
       with \<open>(\<sigma>, snd (netgmap sr s1)) \<in> init (opnet onp p1)\<close>
         show "(\<sigma>, snd (netgmap sr (SubnetS s1 s2))) \<in> init (opnet onp (p1 \<parallel> p2))"
@@ -257,7 +257,7 @@ lemma init_pnet_opnet [elim]:
         by (rule rev_image_eqI)
     qed
     ultimately show ?thesis
-      by (rule set_rev_mp [rotated])
+      by (rule rev_subsetD [rotated])
   qed
 
 lemma transfer_connect:
@@ -1466,7 +1466,7 @@ lemma pnet_reachable_transfer':
                                         \<subseteq> netmask (net_tree_ips n) ` ?oreachable n"
       by (intro image_mono subsetI) (rule oreachable_init)
     ultimately show "netgmap sr s \<in> netmask (net_tree_ips n) ` ?oreachable n"
-      by (rule set_rev_mp)
+      by (rule rev_subsetD)
   next
     fix s a s'
     assume "s \<in> reachable (closed (pnet np n)) TT"
@@ -1574,7 +1574,7 @@ lemma pnet_reachable_transfer:
     hence "s \<in> init (pnet np n)" by simp
 
     from \<open>wf_net_tree n\<close> have "initmissing (netgmap sr s) \<in> init (opnet onp n)"
-    proof (rule init_lifted [THEN set_mp], intro CollectI exI conjI allI)
+    proof (rule init_lifted [THEN subsetD], intro CollectI exI conjI allI)
       show "initmissing (netgmap sr s) = (fst (initmissing (netgmap sr s)), snd (netgmap sr s))"
         by (metis snd_initmissing surjective_pairing)
     next
@@ -1723,7 +1723,7 @@ sublocale openproc_parq \<subseteq> openproc "\<lambda>i. np i \<langle>\<langle
       from this(5) have "\<forall>j. j \<noteq> i \<longrightarrow> \<sigma> j \<in> (fst \<circ> sr) ` init (np j)"
         by auto
       with \<open>p \<in> init (np i)\<close> and \<open>\<sigma> i = fst (sr p)\<close> have "(\<sigma>, snd (sr p)) \<in> init (onp i)"
-        by - (rule init [THEN set_mp], auto)
+        by - (rule init [THEN subsetD], auto)
       with \<open>lq\<in> init qp\<close> have "((\<sigma>, snd (sr p)), lq) \<in> init (onp i) \<times> init qp"
         by simp
       hence "(\<sigma>, (snd (sr p), lq)) \<in> extg ` (init (onp i) \<times> init qp)"

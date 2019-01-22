@@ -122,7 +122,7 @@ proof
   moreover
   {fix k have "fst (\<pi>1 !! k) \<in> S \<and> snd (\<pi>1 !! k) \<subseteq> AP' \<and> snd (\<pi>1 !! k) \<inter> AP = L (fst (\<pi>1 !! k))"
    apply(cases "k < Suc i",simp_all)
-   by (metis (lifting, no_types) \<pi> wfp AP_AP' IntD1 L \<delta> inf.orderE order_trans set_rev_mp toSink)+
+   by (metis (lifting, no_types) \<pi> wfp AP_AP' IntD1 L \<delta> inf.orderE order_trans rev_subsetD toSink)+
   }
   ultimately show "wfp AP' \<pi>1" unfolding wfp by auto
   show "stateOf \<pi>1 = stateOf \<pi>"

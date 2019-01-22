@@ -2588,7 +2588,7 @@ proof(rule subsetI)
       using CH_range fp_cop_F_closed_inv' fp_cop_F_preferred unfolding above_def by blast
   next
     case False with assms \<open>x \<in> X''\<close> show ?thesis
-      by (meson Cd_range' IntD2 fp_cop_F_all mem_CD_on_Cd set_rev_mp)
+      by (meson Cd_range' IntD2 fp_cop_F_all mem_CD_on_Cd rev_subsetD)
   qed
 qed
 

@@ -228,7 +228,7 @@ proof (rule ccontr)
 
   have "\<And>i. (g (Suc i), g i) \<in> R"
     unfolding g_def funpow.simps comp_def
-    by (rule set_mp[OF relcomp_subset_left_imp_relcomp_trancl_subset_left[OF O_subset]])
+    by (rule subsetD[OF relcomp_subset_left_imp_relcomp_trancl_subset_left[OF O_subset]])
       (rule relcompI[OF j_of_in_R between_g])
   moreover have "\<forall>f. \<exists>i. (f (Suc i), f i) \<notin> R"
     using wf_R[unfolded wf_iff_no_infinite_down_chain] by blast

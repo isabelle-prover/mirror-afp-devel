@@ -236,14 +236,14 @@ assumes "out P \<subseteq> ins A"
         and "\<not> know A (kKS m)" 
 shows    "\<not> eout P (kE m)" 
 using assms
-by (metis (full_types) eout_def ine_ins_neg1 not_know_k_not_ine set_rev_mp)
+by (metis (full_types) eout_def ine_ins_neg1 not_know_k_not_ine rev_subsetD)
 
 lemma  adv_not_know2:
 assumes "out P \<subseteq> ins A"
        and "\<not> know A (sKS m)"
 shows    "\<not> eout P (sE m)"
 using assms
-by (metis (full_types) eout_def ine_ins_neg1 not_know_s_not_ine set_rev_mp)
+by (metis (full_types) eout_def ine_ins_neg1 not_know_s_not_ine rev_subsetD)
 
 lemma LocalSecrets_L1:
 assumes "(kKS) key \<in> LocalSecrets P"  

@@ -379,7 +379,7 @@ next
   assume "possible t x \<or> possible t' x"
   then obtain xs where "x#xs\<in> paths t \<or> x#xs\<in> paths t'"
     by transfer auto
-  from this have "x#xs \<in> paths (t \<otimes>\<otimes> t')" by (auto dest: set_mp[OF both_contains_arg1]  set_mp[OF both_contains_arg2])
+  from this have "x#xs \<in> paths (t \<otimes>\<otimes> t')" by (auto dest: subsetD[OF both_contains_arg1]  subsetD[OF both_contains_arg2])
   thus "possible (t \<otimes>\<otimes> t') x" by transfer auto
 qed
 
@@ -471,8 +471,8 @@ proof-
   have "x \<in> carrier t \<union> carrier t'"  by transfer auto
   }
   moreover
-  note set_mp[OF carrier_mono[OF both_contains_arg1[where t=t and t' = t']]]
-       set_mp[OF carrier_mono[OF both_contains_arg2[where t=t and t' = t']]]
+  note subsetD[OF carrier_mono[OF both_contains_arg1[where t=t and t' = t']]]
+       subsetD[OF carrier_mono[OF both_contains_arg2[where t=t and t' = t']]]
   ultimately
   show ?thesis by auto
 qed
@@ -694,7 +694,7 @@ proof
   case (Cons x xs)
     from Cons.prems
     show ?case
-    by (auto elim!: Cons.IH dest: set_mp dest!: set_mp[OF f_nxt_mono1[OF Cons.prems(2)]] set_mp[OF substitute_mono2[OF  both_mono2[OF Cons.prems(2)]]])
+    by (auto elim!: Cons.IH dest: subsetD dest!: subsetD[OF f_nxt_mono1[OF Cons.prems(2)]] subsetD[OF substitute_mono2[OF  both_mono2[OF Cons.prems(2)]]])
   qed
 qed
 
@@ -716,8 +716,8 @@ proof
     from Cons.IH[OF this(2) Cons.prems(2)]
     have "xs \<in> paths (substitute (f_nxt f T' x) T (nxt t x \<otimes>\<otimes> f x))".
     hence "xs \<in> paths (substitute (f_nxt f T x) T (nxt t x \<otimes>\<otimes> f x))"
-      by (rule set_mp[OF substitute_mono1, rotated])
-         (auto simp add: f_nxt_def set_mp[OF Cons.prems(2)])
+      by (rule subsetD[OF substitute_mono1, rotated])
+         (auto simp add: f_nxt_def subsetD[OF Cons.prems(2)])
     thus ?case by auto
   qed
 qed
@@ -737,7 +737,7 @@ proof
     moreover
     from \<open>x # xs \<in> paths t\<close> have "xs \<in> paths (nxt t x)"
       by (auto simp add: paths_nxt_eq)
-    hence "xs \<in> paths (nxt t x \<otimes>\<otimes> f x)" by (rule set_mp[OF both_contains_arg1])
+    hence "xs \<in> paths (nxt t x \<otimes>\<otimes> f x)" by (rule subsetD[OF both_contains_arg1])
     note Cons.IH[OF this]
     ultimately
     show ?case by simp
@@ -978,7 +978,7 @@ next
   from Cons.prems(1,2) Cons.prems(4)[symmetric]
   show ?case
     by (auto elim!: Cons.IH
-          dest!: set_mp[OF carrier_f_nxt] set_mp[OF carrier_nxt_subset] set_mp[OF Cons.prems(3)] set_mp[OF \<open>carrier (f x) \<subseteq> A\<close>]
+          dest!: subsetD[OF carrier_f_nxt] subsetD[OF carrier_nxt_subset] subsetD[OF Cons.prems(3)] subsetD[OF \<open>carrier (f x) \<subseteq> A\<close>]
           intro: f_nxt_cong
           )
 qed
@@ -1169,7 +1169,7 @@ proof(rule paths_inj, rule set_eqI, rule iffI)
     hence "[x'\<leftarrow>xs . x' \<in> S] \<in> paths (ttree_restr S (nxt t x))" by (simp add: ttree_restr_is_empty[OF Cons.prems(2)])
     with \<open>possible t x\<close>
     show "[x'\<leftarrow>x#xs . x' \<in> S] \<in> paths (ttree_restr S t)"
-      by (cases "x \<in> S") (auto simp add: Cons_path ttree_restr_possible  dest: set_mp[OF ttree_restr_nxt_subset2]  set_mp[OF ttree_restr_nxt_subset])
+      by (cases "x \<in> S") (auto simp add: Cons_path ttree_restr_possible  dest: subsetD[OF ttree_restr_nxt_subset2]  subsetD[OF ttree_restr_nxt_subset])
   qed
   thus "xs \<in> paths (ttree_restr S t)" by simp
 next
@@ -1178,7 +1178,7 @@ next
   then obtain xs' where [simp]:"xs = filter (\<lambda> x'. x' \<in> S) xs'" and "xs' \<in> paths t" 
     by (auto simp add: filter_paths_conv_free_restr[symmetric])
   from this(2)
-  have "xs' \<in> paths (substitute f T t)" by (rule set_mp[OF substitute_contains_arg])
+  have "xs' \<in> paths (substitute f T t)" by (rule subsetD[OF substitute_contains_arg])
   thus "xs \<in> paths (ttree_restr S (substitute f T t))"
     by (auto simp add: filter_paths_conv_free_restr[symmetric])
 qed
@@ -1271,14 +1271,14 @@ proof(rule paths_inj, rule set_eqI, rule iffI)
       show ?thesis
         using \<open>possible t x\<close> Cons.prems(3) * True
         by (auto simp add: ttree_restr_both ttree_restr_noop[OF Cons.prems(2)] intro: ttree_restr_possible
-                    dest: set_mp[OF substitute_mono2[OF both_mono1[OF ttree_restr_nxt_subset]]])
+                    dest: subsetD[OF substitute_mono2[OF both_mono1[OF ttree_restr_nxt_subset]]])
     next
       case False
       with \<open>const_on f (- S) TTree.empty\<close> have [simp]: "f x = empty" by auto
       hence [simp]: "f_nxt f T x = f" by (auto simp add: f_nxt_def)
       show ?thesis
       using * False
-      by (auto dest:  set_mp[OF substitute_mono2[OF ttree_restr_nxt_subset2]])
+      by (auto dest:  subsetD[OF substitute_mono2[OF ttree_restr_nxt_subset2]])
     qed
   qed
   thus "xs \<in> paths (substitute f T (ttree_restr S t))" by simp

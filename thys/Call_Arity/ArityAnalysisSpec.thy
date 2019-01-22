@@ -80,13 +80,13 @@ begin
     moreover
     from assms
     have "ABinds \<Delta>\<cdot>(Aheap \<Delta> e\<cdot>a) f|` domA \<Delta> = \<bottom>"
-      by (rule nonrecE) (auto simp add: fv_def fresh_def dest!: set_mp[OF fup_Aexp_edom])
+      by (rule nonrecE) (auto simp add: fv_def fresh_def dest!: subsetD[OF fup_Aexp_edom])
     moreover
     have "Aheap \<Delta> e\<cdot>a f|` domA \<Delta> = Aheap \<Delta> e\<cdot>a" 
       by (rule env_restr_useless[OF edom_Aheap])
     moreover
     have "(Aexp (Let \<Delta> e)\<cdot>a) f|` domA \<Delta> = \<bottom>" 
-      by (auto dest!: set_mp[OF Aexp_edom])
+      by (auto dest!: subsetD[OF Aexp_edom])
     ultimately
     show "Aexp e\<cdot>a f|` domA \<Delta> \<sqsubseteq> Aheap \<Delta> e\<cdot>a"
       by (simp add: env_restr_join)
