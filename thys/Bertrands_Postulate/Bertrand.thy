@@ -742,9 +742,8 @@ lemma not_primepow_1_nat: "\<not>primepow (1 :: nat)" by auto
                  
 ML_file \<open>bertrand.ML\<close>
 
-
 (* This should not take more than 1 minute *)
-local_setup \<open> fn ctxt =>
+local_setup \<open>fn ctxt =>
 let
   fun tac {context = ctxt, ...} =
     let

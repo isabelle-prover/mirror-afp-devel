@@ -8,7 +8,6 @@ val prime_conv : Proof.context -> cache -> conv
 val primepow_conv : Proof.context -> cache -> conv
 val pre_mangoldt_conv : Proof.context -> cache -> conv
 
-val prove_prime : Proof.context -> cache -> term -> thm
 val prove_primepow : Proof.context -> cache -> term -> primepow_thm
 val prove_pre_mangoldt : Proof.context -> cache -> term -> thm
 val prove_psi : Proof.context -> int -> (int * int * thm) list
@@ -25,8 +24,6 @@ type cache = (int * thm) list
 datatype primepow_cert = Primepow of int * int | NotPrimepow of int * int
 datatype primepow_thm = PrimepowThm of thm * thm | NotPrimepowThm of thm
 
-fun get_cached_prime_thm cache p = AList.lookup op = cache p
-
 val mk_nat = HOLogic.mk_number @{typ nat}
 
 fun mk_primepow_cert n =
@@ -41,19 +38,17 @@ fun mk_primepow_cert n =
     if m = 1 then Primepow (p, k) else NotPrimepow (p, find_prime_divisor m)
   end
 
-fun prove_prime ctxt cache p =
-  case get_cached_prime_thm cache (snd (HOLogic.dest_number p)) of
-    SOME thm => thm
-  | NONE => 
-      Goal.prove ctxt [] [] (HOLogic.mk_Trueprop (@{term "prime :: nat => bool"} $ p))
-        (fn {context = ctxt, ...} => HEADGOAL (Pratt.pratt_tac false NONE ctxt))
-
 fun bool_thm_to_eq_thm thm =
   case HOLogic.dest_Trueprop (Thm.concl_of thm) of
     @{term "HOL.Not"} $ _ => thm RS @{thm Eq_FalseI}
   | _ => thm RS @{thm Eq_TrueI}
 
-fun prime_conv ctxt cache = bool_thm_to_eq_thm o prove_prime ctxt cache o Thm.term_of
+fun prime_conv ctxt cache ct =
+  case Thm.term_of ct of
+    @{const "HOL.Trueprop"} $ (@{term "prime :: nat \<Rightarrow> bool"} $ p) =>
+      Pratt.prove_prime cache (snd (HOLogic.dest_number p)) ctxt
+      |> fst |> the |> bool_thm_to_eq_thm
+    | _ => raise CTERM ("prime_conv", [ct])
 
 fun prime_sieve n =
 let
@@ -69,20 +64,23 @@ in
   go [] 2
 end
 
+fun fold_accum f xs acc =
+  fold (fn x => fn (ys, acc) => case f x acc of (y, acc') => (y :: ys, acc')) xs ([], acc)
+  |> apfst rev
+
 fun mk_prime_cache ctxt n =
   let
     val ps = prime_sieve n
-    val thms = ps |> map (prove_prime ctxt [] o mk_nat)
   in
-    ps ~~ thms
+    fold_accum (fn p => fn cache => Pratt.prove_prime cache p ctxt) ps [] |> snd
   end
 
 fun prove_primepow ctxt cache t =
   let
     val (_, n) = HOLogic.dest_number t
     fun inst xs = Drule.infer_instantiate' ctxt (map (SOME o Thm.cterm_of ctxt o mk_nat) xs)
-    val prove_prime' = prove_prime ctxt cache o mk_nat
     val prove = Goal.prove ctxt [] []
+    fun prove_prime' p = the (fst (Pratt.prove_prime cache p ctxt))
   in
     if n <= 0 then
       raise TERM ("prove_primepow", [t])
