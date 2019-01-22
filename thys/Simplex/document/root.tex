@@ -27,7 +27,7 @@ contributions or seniority.}}
 We present an Isabelle/HOL formalization and total correctness
 proof for the incremental version of the Simplex algorithm which is
 used in most state-of-the-art SMT solvers. It supports extraction of satisfying
-assignments, extraction of unsatisfiable cores, incremental assertion of constraints
+assignments, extraction of minimal unsatisfiable cores, incremental assertion of constraints
 and backtracking. The formalization relies on
 stepwise program refinement, starting from a simple specification,
 going through a number of refinement steps, and ending up in a fully
@@ -50,7 +50,7 @@ a satisfying assignment or the information that it is unsatisfiable.
 
 The original formalization was extended by Thiemann in three different ways.
 \begin{itemize}
-\item The extended simplex method returns an unsatisfiable core instead
+\item The extended simplex method returns a minimal unsatisfiable core instead
   of just a bit ``unsatisfiable''.
 \item The extension also contains an incremental interface to the simplex
   method where one can dynamically assert and retract linear constraints.

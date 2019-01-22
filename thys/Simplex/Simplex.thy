@@ -80,14 +80,15 @@ definition distinct_indices :: "('i \<times> 'c) list \<Rightarrow> bool" where
 lemma distinct_indicesD: "distinct_indices as \<Longrightarrow> (i,x) \<in> set as \<Longrightarrow> (i,y) \<in> set as \<Longrightarrow> x = y"
   unfolding distinct_indices_def by (rule eq_key_imp_eq_value)
 
-text \<open>For the unsat-core predicate we distinguish two modes. The strict mode (True) requires that
-  minimal unsat cores are returned whenever the input contains non-distinct indices, whereas
-  in the weak mode (False) minimality is not ensured. 
-  Currently the strict mode is used in the non-incremental version of the simplex algorithm,
-  whereas the weak mode is used for the incremental version.\<close>
-definition minimal_unsat_core :: "bool \<Rightarrow> 'i set \<Rightarrow> 'i i_constraint list \<Rightarrow> bool" where
-  "minimal_unsat_core mode I ics  = ((I \<subseteq> fst ` set ics) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set ics))
-     \<and> (mode \<longrightarrow> distinct_indices ics \<longrightarrow> (\<forall> J. J \<subset> I \<longrightarrow> (\<exists> v. (J,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set ics))))"
+text \<open>For the unsat-core predicate we only demand minimality in case that the indices are distinct.
+  Otherwise, minimality does in general not hold. For instance, consider the input
+  constraints $c_1: x < 0$, $c_2: x > 2$ and $c_2: x < 1$ where the index $c_2$ occurs twice.
+  If the simplex-method first encounters constraint $c_1$, then it will detect that there is a conflict
+  between $c_1$ and the first $c_2$-constraint. Consequently, the index-set $\{c_1,c_2\}$ will be returned,
+  but this set is not minimal since $\{c_2\}$ is already unsatisfiable.\<close>
+definition minimal_unsat_core :: "'i set \<Rightarrow> 'i i_constraint list \<Rightarrow> bool" where
+  "minimal_unsat_core I ics  = ((I \<subseteq> fst ` set ics) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set ics))
+     \<and> (distinct_indices ics \<longrightarrow> (\<forall> J. J \<subset> I \<longrightarrow> (\<exists> v. (J,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set ics))))"
 
 subsection \<open>Procedure Specification\<close>
 
@@ -105,7 +106,7 @@ locale Solve =
   assumes  simplex_sat:  "solve cs = Sat v \<Longrightarrow> v \<Turnstile>\<^sub>c\<^sub>s flat (set cs)"
     \<comment> \<open>If the status @{const Unsat} is returned, then constraints are
      unsatisfiable, i.e., an unsatisfiable core is returned.\<close>
-  assumes  simplex_unsat:  "solve cs = Unsat I \<Longrightarrow> minimal_unsat_core True (set I) cs"
+  assumes  simplex_unsat:  "solve cs = Unsat I \<Longrightarrow> minimal_unsat_core (set I) cs"
 
 abbreviation (input) look where "look \<equiv> Mapping.lookup"
 abbreviation (input) upd where "upd \<equiv> Mapping.update"
@@ -140,7 +141,7 @@ given by: @{thm map2fun_def'[no_vars]}.\<close>
 locale SolveExec =
   fixes solve_exec :: "'i i_constraint list \<Rightarrow> 'i list + (var, rat) mapping"
   assumes  simplex_sat0:  "solve_exec cs = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>c\<^sub>s flat (set cs)"
-  assumes  simplex_unsat0:  "solve_exec cs = Unsat I \<Longrightarrow> minimal_unsat_core True (set I) cs"
+  assumes  simplex_unsat0:  "solve_exec cs = Unsat I \<Longrightarrow> minimal_unsat_core (set I) cs"
 begin
 definition solve where
   "solve cs \<equiv> case solve_exec cs of Sat v \<Rightarrow> Sat \<langle>v\<rangle> | Unsat c \<Rightarrow> Unsat c"
@@ -194,13 +195,13 @@ primrec ns_constraint_const :: "'a ns_constraint \<Rightarrow> 'a" where
   "ns_constraint_const (LEQ_ns p a) = a" 
 | "ns_constraint_const (GEQ_ns p a) = a" 
 
-definition distinct_indices_ns :: "('i,'a :: lrv) i_ns_constraint list \<Rightarrow> bool" where 
-  "distinct_indices_ns ns = ((\<forall> n1 n2 i. (i,n1) \<in> set ns \<longrightarrow> (i,n2) \<in> set ns \<longrightarrow> 
+definition distinct_indices_ns :: "('i,'a :: lrv) i_ns_constraint set \<Rightarrow> bool" where 
+  "distinct_indices_ns ns = ((\<forall> n1 n2 i. (i,n1) \<in> ns \<longrightarrow> (i,n2) \<in> ns \<longrightarrow> 
      poly n1 = poly n2 \<and> ns_constraint_const n1 = ns_constraint_const n2))" 
 
-definition minimal_unsat_core_ns :: "bool \<Rightarrow> 'i set \<Rightarrow> ('i,'a :: lrv) i_ns_constraint list \<Rightarrow> bool" where
-  "minimal_unsat_core_ns mode I cs = ((I \<subseteq> fst ` set cs) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs))
-     \<and> (mode \<longrightarrow> distinct_indices_ns cs \<longrightarrow> (\<forall> J \<subset> I. \<exists> v. (J,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs)))"
+definition minimal_unsat_core_ns :: "'i set \<Rightarrow> ('i,'a :: lrv) i_ns_constraint set \<Rightarrow> bool" where
+  "minimal_unsat_core_ns I cs = ((I \<subseteq> fst ` cs) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s cs))
+     \<and> (distinct_indices_ns cs \<longrightarrow> (\<forall> J \<subset> I. \<exists> v. (J,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s cs)))"
 
 
 text\<open>Specification of reduction of constraints to non-strict form is given by:\<close>
@@ -212,10 +213,10 @@ locale To_ns =
     \<comment> \<open>Convert the valuation that satisfies all non-strict constraints to the valuation that
    satisfies all initial constraints.\<close>
   fixes from_ns :: "(var, 'a) mapping \<Rightarrow> 'a ns_constraint list \<Rightarrow> (var, rat) mapping"
-  assumes  to_ns_unsat:  "minimal_unsat_core_ns mode I (to_ns cs) \<Longrightarrow> minimal_unsat_core mode I cs"
+  assumes  to_ns_unsat:  "minimal_unsat_core_ns I (set (to_ns cs)) \<Longrightarrow> minimal_unsat_core I cs"
   assumes  i_to_ns_sat:  "(I,\<langle>v'\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set (to_ns cs) \<Longrightarrow> (I,\<langle>from_ns v' (flat_list (to_ns cs))\<rangle>) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs"
   assumes to_ns_indices: "fst ` set (to_ns cs) = fst ` set cs"
-  assumes distinct_cond: "distinct_indices cs \<Longrightarrow> distinct_indices_ns (to_ns cs)" 
+  assumes distinct_cond: "distinct_indices cs \<Longrightarrow> distinct_indices_ns (set (to_ns cs))" 
 begin
 lemma to_ns_sat: "\<langle>v'\<rangle>  \<Turnstile>\<^sub>n\<^sub>s\<^sub>s flat (set (to_ns cs)) \<Longrightarrow> \<langle>from_ns v' (flat_list (to_ns cs))\<rangle> \<Turnstile>\<^sub>c\<^sub>s flat (set cs)"
   using i_to_ns_sat[of UNIV v' cs] by auto
@@ -225,7 +226,7 @@ end
 locale Solve_exec_ns =
   fixes solve_exec_ns :: "('i,'a::lrv) i_ns_constraint list \<Rightarrow> 'i list + (var, 'a) mapping"
   assumes simplex_ns_sat:  "solve_exec_ns cs = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>n\<^sub>s\<^sub>s flat (set cs)"
-  assumes simplex_ns_unsat:  "solve_exec_ns cs = Unsat I \<Longrightarrow> minimal_unsat_core_ns True (set I) cs"
+  assumes simplex_ns_unsat:  "solve_exec_ns cs = Unsat I \<Longrightarrow> minimal_unsat_core_ns (set I) (set cs)"
 
 
 text\<open>After the transformation, the procedure is reduced to solving
@@ -523,8 +524,8 @@ lemma satisifies_atom_restrict_to_Cons: "v \<Turnstile>\<^sub>a\<^sub>s restrict
 lemma satisfies_tableau_Cons: "v \<Turnstile>\<^sub>t t \<Longrightarrow> v \<Turnstile>\<^sub>e e \<Longrightarrow> v \<Turnstile>\<^sub>t (e # t)"
   unfolding satisfies_tableau_def by auto
 
-definition distinct_indices_atoms :: "('i,'a) i_atom list \<Rightarrow> bool" where
-  "distinct_indices_atoms as = (\<forall> i a b. (i,a) \<in> set as \<longrightarrow> (i,b) \<in> set as \<longrightarrow> atom_var a = atom_var b \<and> atom_const a = atom_const b)" 
+definition distinct_indices_atoms :: "('i,'a) i_atom set \<Rightarrow> bool" where
+  "distinct_indices_atoms as = (\<forall> i a b. (i,a) \<in> as \<longrightarrow> (i,b) \<in> as \<longrightarrow> atom_var a = atom_var b \<and> atom_const a = atom_const b)" 
 
 text\<open>
 The specification of the preprocessing function is given by:\<close>
@@ -540,7 +541,7 @@ i_preprocess_sat: "\<And> v. preprocess cs = (t,as,trans_v,U) \<Longrightarrow> 
 preprocess_unsat: "preprocess cs = (t, as,trans_v,U) \<Longrightarrow> (I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs \<Longrightarrow> \<exists> v'. (I,v') \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<and> v' \<Turnstile>\<^sub>t t" and
 
 \<comment> \<open>distinct indices on ns-constraints ensures distinct indices in atoms\<close>
-preprocess_distinct: "preprocess cs = (t, as,trans_v, U) \<Longrightarrow> distinct_indices_ns cs \<Longrightarrow> distinct_indices_atoms as" and
+preprocess_distinct: "preprocess cs = (t, as,trans_v, U) \<Longrightarrow> distinct_indices_ns (set cs) \<Longrightarrow> distinct_indices_atoms (set as)" and
 
 \<comment> \<open>unsat indices\<close>
 preprocess_unsat_indices: "preprocess cs = (t, as,trans_v, U) \<Longrightarrow> i \<in> set U \<Longrightarrow> \<not> (\<exists> v. ({i},v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs)" and
@@ -553,20 +554,20 @@ lemma preprocess_sat: "preprocess cs = (t,as,trans_v,U) \<Longrightarrow> U = []
 
 end
 
-definition minimal_unsat_core_tabl_atoms :: "'i set \<Rightarrow> tableau \<Rightarrow> ('i,'a::lrv) i_atom list \<Rightarrow> bool" where
-  "minimal_unsat_core_tabl_atoms I t as = ( I \<subseteq> fst ` set as \<and> (\<not> (\<exists> v. v \<Turnstile>\<^sub>t t \<and> (I,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as)) \<and>
-       (distinct_indices_atoms as \<longrightarrow> (\<forall> J \<subset> I. \<exists> v. v \<Turnstile>\<^sub>t t \<and> (J,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s set as)))" 
+definition minimal_unsat_core_tabl_atoms :: "'i set \<Rightarrow> tableau \<Rightarrow> ('i,'a::lrv) i_atom set \<Rightarrow> bool" where
+  "minimal_unsat_core_tabl_atoms I t as = ( I \<subseteq> fst ` as \<and> (\<not> (\<exists> v. v \<Turnstile>\<^sub>t t \<and> (I,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s as)) \<and>
+       (distinct_indices_atoms as \<longrightarrow> (\<forall> J \<subset> I. \<exists> v. v \<Turnstile>\<^sub>t t \<and> (J,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s as)))" 
 
 lemma minimal_unsat_core_tabl_atomsD: assumes "minimal_unsat_core_tabl_atoms I t as"
-  shows "I \<subseteq> fst ` set as" 
-    "\<not> (\<exists> v. v \<Turnstile>\<^sub>t t \<and> (I,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as)" 
-    "distinct_indices_atoms as \<Longrightarrow> J \<subset> I \<Longrightarrow> \<exists> v. v \<Turnstile>\<^sub>t t \<and> (J,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s set as" 
+  shows "I \<subseteq> fst ` as" 
+    "\<not> (\<exists> v. v \<Turnstile>\<^sub>t t \<and> (I,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s as)" 
+    "distinct_indices_atoms as \<Longrightarrow> J \<subset> I \<Longrightarrow> \<exists> v. v \<Turnstile>\<^sub>t t \<and> (J,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s as" 
   using assms unfolding minimal_unsat_core_tabl_atoms_def by auto
 
 locale AssertAll =
   fixes assert_all :: "tableau \<Rightarrow> ('i,'a::lrv) i_atom list \<Rightarrow> 'i list + (var, 'a)mapping"
   assumes assert_all_sat:  "\<triangle> t \<Longrightarrow> assert_all t as = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<and> \<langle>v\<rangle> \<Turnstile>\<^sub>a\<^sub>s flat (set as)"
-  assumes assert_all_unsat:  "\<triangle> t \<Longrightarrow> assert_all t as = Unsat I \<Longrightarrow> minimal_unsat_core_tabl_atoms (set I) t as"
+  assumes assert_all_unsat:  "\<triangle> t \<Longrightarrow> assert_all t as = Unsat I \<Longrightarrow> minimal_unsat_core_tabl_atoms (set I) t (set as)"
 
 
 text\<open>Once the preprocessing is done and tableau and atoms are
@@ -589,6 +590,50 @@ definition solve_exec_ns where
       (case assert_all t as of Inl I \<Rightarrow> Inl I | Inr v \<Rightarrow> Inr (trans_v v))) "
 end
 
+context Preprocess
+begin
+
+lemma preprocess_unsat_index: assumes prep: "preprocess cs = (t,as,trans_v,ui)" 
+  and i: "i \<in> set ui" 
+shows "minimal_unsat_core_ns {i} (set cs)"
+proof -
+  from preprocess_index[OF prep] have "set ui \<subseteq> fst ` set cs" by auto
+  with i have i': "i \<in> fst ` set cs" by auto
+  from preprocess_unsat_indices[OF prep i]
+  show ?thesis unfolding minimal_unsat_core_ns_def using i' by auto
+qed
+
+lemma preprocess_minimal_unsat_core: assumes prep: "preprocess cs = (t,as,trans_v,ui)"
+    and unsat: "minimal_unsat_core_tabl_atoms I t (set as)" 
+    and inter: "I \<inter> set ui = {}" 
+  shows "minimal_unsat_core_ns I (set cs)" 
+proof -
+  from preprocess_tableau_normalized[OF prep]
+  have t: "\<triangle> t" .
+  from preprocess_index[OF prep] have index: "fst ` set as \<union> set ui \<subseteq> fst ` set cs" by auto
+  from minimal_unsat_core_tabl_atomsD(1,2)[OF unsat] preprocess_unsat[OF prep, of I]
+  have 1: "I \<subseteq> fst ` set as" "\<not> (\<exists> v. (I, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs)" by force+
+  show "minimal_unsat_core_ns I (set cs)" unfolding minimal_unsat_core_ns_def
+  proof (intro conjI impI allI 1(2))
+    show "I \<subseteq> fst ` set cs" using 1 index by auto
+    fix J
+    assume "distinct_indices_ns (set cs)" "J \<subset> I" 
+    with preprocess_distinct[OF prep]
+    have "distinct_indices_atoms (set as)" "J \<subset> I" by auto
+    from minimal_unsat_core_tabl_atomsD(3)[OF unsat this]
+    obtain v where model: "v \<Turnstile>\<^sub>t t" "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s set as" by auto
+    from i_satisfies_atom_set'_stronger[OF model(2)] 
+    have model': "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" . 
+    define w where "w = Mapping.Mapping (\<lambda> x. Some (v x))"
+    have "v = \<langle>w\<rangle>" unfolding w_def map2fun_def
+      by (intro ext, transfer, auto)
+    with model model' have "\<langle>w\<rangle> \<Turnstile>\<^sub>t t" "(J, \<langle>w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" by auto
+    from i_preprocess_sat[OF prep _ this(2,1)] \<open>J \<subset> I\<close> inter
+    have "(J, \<langle>trans_v w\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs" by auto
+    then show "\<exists> w. (J, w) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs" by auto
+  qed
+qed
+end
 
 sublocale Solve_exec_ns' < Solve_exec_ns solve_exec_ns
 proof
@@ -607,36 +652,19 @@ proof
   {
     fix I
     assume res: "solve_exec_ns cs = Unsat I"
-    show "minimal_unsat_core_ns True (set I) cs" 
+    show "minimal_unsat_core_ns (set I) (set cs)" 
     proof (cases ui)
       case (Cons i uis)
       hence I: "I = [i]" using res[unfolded solve] by auto
-      from preprocess_unsat_indices[OF prep, of i] Cons have "\<nexists>v. ({i}, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set cs" by auto
-      thus ?thesis unfolding I minimal_unsat_core_ns_def using Cons index by auto
+      from preprocess_unsat_index[OF prep, of i] I Cons index show ?thesis by auto
     next
       case Nil
       from res[unfolded solve Nil] have assert: "assert_all t as = Unsat I"
         by (auto split: sum.splits)
-      from minimal_unsat_core_tabl_atomsD(1,2)[OF assert_all_unsat[OF t assert]] preprocess_unsat[OF prep, of "set I"]
-      have 1: "set I \<subseteq> fst ` set as" "\<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs)" by force+
-      show "minimal_unsat_core_ns True (set I) cs" unfolding minimal_unsat_core_ns_def
-      proof (intro conjI impI allI 1(2))
-        show "set I \<subseteq> fst ` set cs" using 1 index by auto
-        fix J
-        assume "distinct_indices_ns cs" "J \<subset> set I" 
-        with preprocess_distinct[OF prep]
-        have "distinct_indices_atoms as" "J \<subset> set I" by auto
-        from minimal_unsat_core_tabl_atomsD(3)[OF assert_all_unsat[OF t assert] this]
-        obtain v where model: "v \<Turnstile>\<^sub>t t" "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s set as" by auto
-        from i_satisfies_atom_set'_stronger[OF model(2)] 
-        have model': "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" . 
-        define w where "w = Mapping.Mapping (\<lambda> x. Some (v x))"
-        have "v = \<langle>w\<rangle>" unfolding w_def map2fun_def
-          by (intro ext, transfer, auto)
-        with model model' have "\<langle>w\<rangle> \<Turnstile>\<^sub>t t" "(J, \<langle>w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" by auto
-        from i_preprocess_sat[OF prep _ this(2,1)] Nil have "(J, \<langle>trans_v w\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set cs" by simp
-        then show "\<exists> w. (J, w) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set cs" by auto
-      qed
+      from assert_all_unsat[OF t assert]
+      have "minimal_unsat_core_tabl_atoms (set I) t (set as)" .
+      from preprocess_minimal_unsat_core[OF prep this] Nil
+      show "minimal_unsat_core_ns (set I) (set cs)" by simp
     qed
   }
 qed
@@ -926,6 +954,41 @@ definition subsets_sat_core :: "('i,'a::lrv) state \<Rightarrow> bool" where
 definition minimal_unsat_state_core :: "('i,'a::lrv) state \<Rightarrow> bool" where
   "minimal_unsat_state_core s = (unsat_state_core s \<and> (distinct_indices_state s \<longrightarrow> subsets_sat_core s))" 
 
+lemma minimal_unsat_core_tabl_atoms_mono: assumes sub: "as \<subseteq> bs" 
+  and unsat: "minimal_unsat_core_tabl_atoms I t as" 
+shows "minimal_unsat_core_tabl_atoms I t bs" 
+  unfolding minimal_unsat_core_tabl_atoms_def
+proof (intro conjI impI allI)
+  note min = unsat[unfolded minimal_unsat_core_tabl_atoms_def]
+  from min have I: "I \<subseteq> fst ` as" by blast
+  with sub show "I \<subseteq> fst ` bs" by blast
+  from min have "(\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s as)" by blast
+  with i_satisfies_atom_set_mono[OF sub]
+  show "(\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s bs)" by blast
+  fix J
+  assume J: "J \<subset> I" and dist_bs: "distinct_indices_atoms bs" 
+  hence dist: "distinct_indices_atoms as" 
+    using sub unfolding distinct_indices_atoms_def by blast
+  from min dist J obtain v where v: "v \<Turnstile>\<^sub>t t" "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s as" by blast
+  have "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s bs"
+    unfolding i_satisfies_atom_set'.simps
+  proof (intro ballI)
+    fix a
+    assume "a \<in> snd ` (bs \<inter> J \<times> UNIV)" 
+    then obtain i where ia: "(i,a) \<in> bs" and i: "i \<in> J" 
+      by force
+    with J have "i \<in> I" by auto 
+    with I obtain b where ib: "(i,b) \<in> as" by force
+    with sub have ib': "(i,b) \<in> bs" by auto
+    from dist_bs[unfolded distinct_indices_atoms_def, rule_format, OF ia ib']
+    have id: "atom_var a = atom_var b" "atom_const a = atom_const b" by auto
+    from v(2)[unfolded i_satisfies_atom_set'.simps] i ib 
+    have "v \<Turnstile>\<^sub>a\<^sub>e b" by force
+    thus "v \<Turnstile>\<^sub>a\<^sub>e a" using id unfolding satisfies_atom'_def by auto
+  qed
+  with v show "\<exists>v. v \<Turnstile>\<^sub>t t \<and> (J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s bs" by blast
+qed
+
 lemma state_satisfies_index: assumes "v \<Turnstile>\<^sub>s s"
   shows "(I,v) \<Turnstile>\<^sub>i\<^sub>s s"
   unfolding satisfies_state_index.simps satisfies_bounds_index.simps
@@ -957,17 +1020,17 @@ lemma index_valid_indices_state: "index_valid as s \<Longrightarrow> indices_sta
 lemma index_valid_mono: "as \<subseteq> bs \<Longrightarrow> index_valid as s \<Longrightarrow> index_valid bs s"
   unfolding index_valid_def by blast
 
-lemma index_valid_distinct_indices: assumes "index_valid (set as) s" 
+lemma index_valid_distinct_indices: assumes "index_valid as s" 
   and "distinct_indices_atoms as" 
 shows "distinct_indices_state s" 
   unfolding distinct_indices_state_def
 proof (intro allI impI, goal_cases)
   case (1 i x b y c)
   note valid = assms(1)[unfolded index_valid_def, rule_format]
-  from 1(1) valid[of x i b] have "(i, Geq x b) \<in> set as \<or> (i, Leq x b) \<in> set as" by auto
-  then obtain a where a: "(i,a) \<in> set as" "atom_var a = x" "atom_const a = b" by auto
-  from 1(2) valid[of y i c] have y: "(i, Geq y c) \<in> set as \<or> (i, Leq y c) \<in> set as" by auto
-  then obtain a' where a': "(i,a') \<in> set as" "atom_var a' = y" "atom_const a' = c" by auto
+  from 1(1) valid[of x i b] have "(i, Geq x b) \<in> as \<or> (i, Leq x b) \<in> as" by auto
+  then obtain a where a: "(i,a) \<in> as" "atom_var a = x" "atom_const a = b" by auto
+  from 1(2) valid[of y i c] have y: "(i, Geq y c) \<in> as \<or> (i, Leq y c) \<in> as" by auto
+  then obtain a' where a': "(i,a') \<in> as" "atom_var a' = y" "atom_const a' = c" by auto
   from assms(2)[unfolded distinct_indices_atoms_def, rule_format, OF a(1) a'(1)]
   show ?case using a a' by auto
 qed
@@ -1952,16 +2015,6 @@ proof
 
   show "indices_state s' \<subseteq> fst ` set ats"
     by (intro index_valid_indices_state, fact)
-
-  assume dist: "distinct_indices_atoms ats" 
-  let ?s = "assert_bound_loop ats (init t)" 
-  from AssertAllState''_precond[OF *, of ats, unfolded Let_def] 
-  have pre: 
-    "\<not> \<U> ?s \<Longrightarrow> \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s ?s" 
-    "\<not> \<U> ?s \<Longrightarrow> \<diamond> ?s" 
-    "\<not> \<U> ?s \<Longrightarrow> \<triangle> (\<T> ?s)" 
-    "\<not> \<U> ?s \<Longrightarrow> \<nabla> ?s" 
-    by auto
 qed
 
 
@@ -2602,6 +2655,31 @@ lemma satisfies_tableau_cong: assumes "\<And> x. x \<in> tvars t \<Longrightarro
   by (intro ball_cong[OF refl] arg_cong2[of _ _ _ _ "(=)"] valuate_depend, 
       insert assms, auto simp: lvars_def rvars_def)
 
+lemma satisfying_state_valuation_to_atom_tabl: assumes J: "J \<subseteq> indices_state s" 
+  and model: "(J, v) \<Turnstile>\<^sub>i\<^sub>s\<^sub>e s" 
+  and ivalid: "index_valid as s" 
+  and dist: "distinct_indices_atoms as" 
+shows "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s as" "v \<Turnstile>\<^sub>t \<T> s" 
+  unfolding i_satisfies_atom_set'.simps
+proof (intro ballI)
+  from model[unfolded satisfies_state_index'.simps]
+  have model: "v \<Turnstile>\<^sub>t \<T> s" "(J, v) \<Turnstile>\<^sub>i\<^sub>b\<^sub>e \<B>\<I> s" by auto
+  show "v \<Turnstile>\<^sub>t \<T> s" by fact
+  fix a 
+  assume "a \<in> restrict_to J as" 
+  then obtain i where iJ: "i \<in> J" and mem: "(i,a) \<in> as" by auto
+  with J have "i \<in> indices_state s" by auto
+  from this[unfolded indices_state_def] obtain x c where 
+    look: "look (\<B>\<^sub>i\<^sub>l s) x = Some (i, c) \<or> look (\<B>\<^sub>i\<^sub>u s) x = Some (i, c)" by auto
+  with ivalid[unfolded index_valid_def] 
+  obtain b where "(i,b) \<in> as" "atom_var b = x" "atom_const b = c" by force
+  with dist[unfolded distinct_indices_atoms_def, rule_format, OF this(1) mem]
+  have a: "atom_var a = x" "atom_const a = c" by auto
+  from model(2)[unfolded satisfies_bounds_index'.simps] look iJ have "v x = c" 
+    by (auto simp: boundsu_def boundsl_def indexu_def indexl_def)
+  thus "v \<Turnstile>\<^sub>a\<^sub>e a" unfolding satisfies_atom'_def a .
+qed
+
 text \<open>Note that in order to ensure minimality of the unsat cores, pivoting is required.\<close>
 
 sublocale AssertAllState < AssertAll assert_all
@@ -2624,7 +2702,7 @@ proof
   from unsat have "set I \<subseteq> indices_state ?s" by auto
   also have "\<dots> \<subseteq> fst ` set as" using assert_all_state_indices[OF D refl] .
   finally have indices: "set I \<subseteq> fst ` set as" .
-  show "minimal_unsat_core_tabl_atoms (set I) t as" 
+  show "minimal_unsat_core_tabl_atoms (set I) t (set as)" 
     unfolding minimal_unsat_core_tabl_atoms_def
   proof (intro conjI impI allI indices, clarify)
     fix v
@@ -2641,30 +2719,15 @@ proof
     with no_model show False by simp
   next
     fix J
-    assume dist: "distinct_indices_atoms as" and J: "J \<subset> set I" 
+    assume dist: "distinct_indices_atoms (set as)" and J: "J \<subset> set I" 
     from J unsat[unfolded subsets_sat_core_def, folded i] 
     have J': "J \<subseteq> indices_state ?s" by auto
     from index_valid_distinct_indices[OF ivalid dist] J unsat[unfolded subsets_sat_core_def, folded i]
-    obtain v where "(J, v) \<Turnstile>\<^sub>i\<^sub>s\<^sub>e ?s" by blast
-    from this[unfolded satisfies_state_index'.simps, folded assert_all_state_tableau_equiv[OF D refl]]
-    have model: "v \<Turnstile>\<^sub>t t" "(J, v) \<Turnstile>\<^sub>i\<^sub>b\<^sub>e \<B>\<I> ?s" by auto
-    have "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s set as" unfolding i_satisfies_atom_set'.simps
-    proof (intro ballI)
-      fix a 
-      assume "a \<in> restrict_to J (set as)" 
-      then obtain i where iJ: "i \<in> J" and mem: "(i,a) \<in> set as" by auto
-      with J' have "i \<in> indices_state ?s" by auto
-      from this[unfolded indices_state_def] obtain x c where 
-        look: "look (\<B>\<^sub>i\<^sub>l ?s) x = Some (i, c) \<or> look (\<B>\<^sub>i\<^sub>u ?s) x = Some (i, c)" by auto
-      with ivalid[unfolded index_valid_def] 
-      obtain b where "(i,b) \<in> set as" "atom_var b = x" "atom_const b = c" by force
-      with dist[unfolded distinct_indices_atoms_def, rule_format, OF this(1) mem]
-      have a: "atom_var a = x" "atom_const a = c" by auto
-      from model(2)[unfolded satisfies_bounds_index'.simps] look iJ have "v x = c" 
-        by (auto simp: boundsu_def boundsl_def indexu_def indexl_def)
-      thus "v \<Turnstile>\<^sub>a\<^sub>e a" unfolding satisfies_atom'_def a .
-    qed
-    with model show "\<exists> v. v \<Turnstile>\<^sub>t t \<and> (J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s set as" by blast
+    obtain v where model: "(J, v) \<Turnstile>\<^sub>i\<^sub>s\<^sub>e ?s" by blast
+    have "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s set as" "v \<Turnstile>\<^sub>t t" 
+      using satisfying_state_valuation_to_atom_tabl[OF J' model ivalid dist]
+       assert_all_state_tableau_equiv[OF D refl] by auto      
+    then show "\<exists> v. v \<Turnstile>\<^sub>t t \<and> (J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s set as" by blast
   qed
 qed
 
@@ -7588,7 +7651,7 @@ proof
   from part1[unfolded preprocess_part_1_def Let_def] obtain var where
     as: "as = Atoms (preprocess' ncs var)" and ui: "ui = UnsatIndices (preprocess' ncs var)" by auto
   note min_defs = distinct_indices_atoms_def distinct_indices_ns_def
-  have min1: "(distinct_indices_ns ncs \<longrightarrow> (\<forall> k a. (k,a) \<in> set as \<longrightarrow> (\<exists> v p. a = qdelta_constraint_to_atom p v \<and> (k,p) \<in> set ncs
+  have min1: "(distinct_indices_ns (set ncs) \<longrightarrow> (\<forall> k a. (k,a) \<in> set as \<longrightarrow> (\<exists> v p. a = qdelta_constraint_to_atom p v \<and> (k,p) \<in> set ncs
     \<and> (\<not> is_monom (poly p) \<longrightarrow> Poly_Mapping (preprocess' ncs var) (poly p) = Some v)  ))) 
     \<and> fst ` set as \<union> set ui \<subseteq> fst ` set ncs" 
     unfolding as ui
@@ -7601,7 +7664,7 @@ proof
         using sub by (auto simp: Let_def split: option.splits)
     next
       case (1 k a)
-      hence min': "distinct_indices_ns t" unfolding min_defs list.simps by blast
+      hence min': "distinct_indices_ns (set t)" unfolding min_defs list.simps by blast
       note IH = 2[THEN conjunct1, rule_format, OF min']
       show ?case
       proof (cases "(k,a) \<in> set (Atoms (preprocess' t v))")
@@ -7624,8 +7687,8 @@ proof
   qed (auto simp: min_defs)
   then show "fst ` set as \<union> set ui \<subseteq> fst ` set cs" by (auto simp: ncs)
   {
-    assume mini: "distinct_indices_ns cs" 
-    have mini: "distinct_indices_ns ncs" unfolding distinct_indices_ns_def
+    assume mini: "distinct_indices_ns (set cs)" 
+    have mini: "distinct_indices_ns (set ncs)" unfolding distinct_indices_ns_def
     proof (intro impI allI, goal_cases)
       case (1 n1 n2 i)
       from 1(1) obtain c1 where c1: "(i,c1) \<in> set cs" and n1: "n1 = normalize_ns_constraint c1" 
@@ -7637,7 +7700,7 @@ proof
         by (cases c1; cases c2; auto simp: normalize_ns_constraint.simps Let_def)
     qed
     note min = min1[THEN conjunct1, rule_format, OF this]
-    show "distinct_indices_atoms as" 
+    show "distinct_indices_atoms (set as)" 
       unfolding distinct_indices_atoms_def
     proof (intro allI impI)
       fix i a b 
@@ -8072,7 +8135,7 @@ proof unfold_locales
   qed
   {
     assume dist: "distinct_indices cs" 
-    show "distinct_indices_ns (to_ns cs)" unfolding distinct_indices_ns_def
+    show "distinct_indices_ns (set (to_ns cs))" unfolding distinct_indices_ns_def
     proof (intro allI impI conjI notI)
       fix n1 n2 i 
       assume "(i,n1) \<in> set (to_ns cs)" "(i,n2) \<in> set (to_ns cs)" 
@@ -8088,10 +8151,10 @@ proof unfold_locales
     qed
   } note mini = this
   fix I mode
-  assume unsat: "minimal_unsat_core_ns mode I (to_ns cs)"
+  assume unsat: "minimal_unsat_core_ns I (set (to_ns cs))"
   note unsat = unsat[unfolded minimal_unsat_core_ns_def indices]
   hence indices: "I \<subseteq> fst ` set cs" by auto
-  show "minimal_unsat_core mode I cs"
+  show "minimal_unsat_core I cs"
     unfolding minimal_unsat_core_def
   proof (intro conjI indices impI allI, clarify)
     fix v
@@ -8137,8 +8200,8 @@ proof unfold_locales
     with unsat show False unfolding minimal_unsat_core_ns_def by simp blast
   next
     fix J
-    assume *: mode "distinct_indices cs" "J \<subset> I" 
-    hence "distinct_indices_ns (to_ns cs)" 
+    assume *: "distinct_indices cs" "J \<subset> I" 
+    hence "distinct_indices_ns (set (to_ns cs))" 
       using mini by auto
     with * unsat obtain v where model: "(J, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set (to_ns cs)" by blast
     define w where "w = Mapping.Mapping (\<lambda> x. Some (v x))"
@@ -8173,7 +8236,7 @@ lemma simplex_index:
 proof (unfold simplex_index_def)
   assume "solve_exec_code cs = Unsat I"
   from SolveExec'Default.simplex_unsat0[OF this]
-  have core: "minimal_unsat_core True (set I) cs" by auto
+  have core: "minimal_unsat_core (set I) cs" by auto
   then show "set I \<subseteq> fst ` set cs \<and> \<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs) \<and>
     (distinct_indices cs \<longrightarrow> (\<forall>J\<subset>set I. \<exists>v. (J, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs))"
     unfolding minimal_unsat_core_def by auto

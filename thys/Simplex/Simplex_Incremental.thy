@@ -28,11 +28,11 @@ assumes
   assert_s_ok: "invariant_s t as s \<Longrightarrow> assert_s a s = Inr s' \<Longrightarrow> 
     invariant_s t (insert a as) s'" and
   assert_s_unsat: "invariant_s t as s \<Longrightarrow> assert_s a s = Unsat I \<Longrightarrow>
-    set I \<subseteq> fst ` insert a as \<and> \<not> (\<exists> v. v \<Turnstile>\<^sub>t t \<and> (set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s insert a as)" and
+    minimal_unsat_core_tabl_atoms (set I) t (insert a as)" and
   check_s_ok: "invariant_s t as s \<Longrightarrow> check_s s = Inr s' \<Longrightarrow> 
     checked_s t as s'" and
   check_s_unsat: "invariant_s t as s \<Longrightarrow> check_s s = Unsat I \<Longrightarrow>
-    set I \<subseteq> fst ` as \<and> \<not> (\<exists> v. v \<Turnstile>\<^sub>t t \<and> (set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s as)" and
+    minimal_unsat_core_tabl_atoms (set I) t as" and
   init_s: "precond_s t \<Longrightarrow> checked_s t {} (init_s t)" and
   solution_s: "checked_s t as s \<Longrightarrow> solution_s s = v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<and> \<langle>v\<rangle> \<Turnstile>\<^sub>a\<^sub>s Simplex.flat as" and
   backtrack_s: "checked_s t as s \<Longrightarrow> checkpoint_s s = c 
@@ -56,7 +56,7 @@ proof (induct bs arbitrary: s as)
 qed auto
 
 lemma assert_all_s_unsat: "invariant_s t as s \<Longrightarrow> assert_all_s bs s = Unsat I \<Longrightarrow> 
-    set I \<subseteq> fst ` (as \<union> set bs) \<and> \<not> (\<exists> v. v \<Turnstile>\<^sub>t t \<and> (set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s (set bs \<union> as))"
+   minimal_unsat_core_tabl_atoms (set I) t (as \<union> set bs)" 
 proof (induct bs arbitrary: s as)
   case (Cons b bs s as)
   show ?case
@@ -64,9 +64,9 @@ proof (induct bs arbitrary: s as)
     case unsat: (Inl J)
     with Cons have J: "J = I" by auto
     from assert_s_unsat[OF Cons(2) unsat] J
-    have "set J \<subseteq> fst ` insert b as" "\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s insert b as" by auto
-    with i_satisfies_atom_set_mono[of "insert b as" "set (b # bs) \<union> as"]
-    show ?thesis unfolding J by fastforce
+    have min: "minimal_unsat_core_tabl_atoms (set I) t (insert b as)" by auto    
+    show ?thesis 
+      by (rule minimal_unsat_core_tabl_atoms_mono[OF _ min], auto)
   next
     case (Inr s')
     from Cons(1)[OF assert_s_ok[OF Cons(2) Inr]] Cons(3) Inr show ?thesis by auto
@@ -114,6 +114,45 @@ lemma invariant_sD: assumes "invariant_s t as s"
     "(\<forall> v :: (var \<Rightarrow> 'a). v \<Turnstile>\<^sub>t \<T> s \<longleftrightarrow> v \<Turnstile>\<^sub>t t)" 
   using assms unfolding invariant_s_def by auto
 
+lemma minimal_unsat_state_core_translation: assumes 
+  unsat: "minimal_unsat_state_core (s :: ('i,'a::lrv)state)" and
+  tabl: "\<forall>(v :: 'a valuation). v \<Turnstile>\<^sub>t \<T> s = v \<Turnstile>\<^sub>t t" and
+  index: "index_valid as s" and
+  imp: "as \<Turnstile>\<^sub>i \<B>\<I> s" and
+  I: "I = the (\<U>\<^sub>c s)" 
+shows "minimal_unsat_core_tabl_atoms (set I) t as" 
+  unfolding minimal_unsat_core_tabl_atoms_def
+proof (intro conjI impI notI allI; (elim exE conjE)?)
+  from unsat[unfolded minimal_unsat_state_core_def]
+  have unsat: "unsat_state_core s" 
+    and minimal: "distinct_indices_state s \<Longrightarrow> subsets_sat_core s" 
+    by auto
+  from unsat[unfolded unsat_state_core_def I[symmetric]]
+  have Is: "set I \<subseteq> indices_state s" and unsat: "(\<nexists>v. (set I, v) \<Turnstile>\<^sub>i\<^sub>s s)" by auto
+  from Is index show "set I \<subseteq> fst ` as"
+    using index_valid_indices_state by blast
+  {
+    fix v
+    assume t: "v \<Turnstile>\<^sub>t t" and as: "(set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s as" 
+    from t tabl have t: "v \<Turnstile>\<^sub>t \<T> s" by auto
+    then have "(set I, v) \<Turnstile>\<^sub>i\<^sub>s s" using as imp 
+      using atoms_imply_bounds_index.simps satisfies_state_index.simps by blast
+    with unsat show False by blast
+  }
+  {
+    fix J
+    assume dist: "distinct_indices_atoms as" 
+      and J: "J \<subset> set I" 
+    from J Is have J': "J \<subseteq> indices_state s" by auto
+    from dist index have "distinct_indices_state s" by (metis index_valid_distinct_indices)
+    with minimal have "subsets_sat_core s" .
+    from this[unfolded subsets_sat_core_def I[symmetric], rule_format, OF J]
+    obtain v where "(J, v) \<Turnstile>\<^sub>i\<^sub>s\<^sub>e s" by blast
+    from satisfying_state_valuation_to_atom_tabl[OF J' this index dist] tabl
+    show "\<exists>v. v \<Turnstile>\<^sub>t t \<and> (J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s as" by blast
+  }
+qed
+
 lemma incremental_atom_ops: "Incremental_Atom_Ops 
   init assert_s check_s \<V> checkpoint_s backtrack_s \<triangle> invariant_s checked_s" 
 proof (unfold_locales, goal_cases)
@@ -148,17 +187,15 @@ next
   from assert_bound_nolhs_tableau_id[OF *(1-5)]
   have T: "\<T> s' = \<T> s" unfolding s' by auto
   from *(3,9)
-  have "\<forall> v :: var \<Rightarrow> 'a. v \<Turnstile>\<^sub>t \<T> s' = v \<Turnstile>\<^sub>t t" unfolding T by blast+
-  moreover from assert_bound_nolhs_unsat[OF *(1-5,8) U] s'
-  have "unsat_state_core s'" by (auto simp: minimal_unsat_state_core_def)
-  moreover from assert_bound_nolhs_index_valid[OF *(1-5,8)]
-  have "index_valid (insert a as) s'" unfolding s' by auto
-  moreover from assert_bound_nolhs_atoms_imply_bounds_index[OF *(1-5,7)]
-  have "insert a as \<Turnstile>\<^sub>i \<B>\<I> s'" unfolding s' .
-  moreover from U
-  have "\<U> s'" unfolding s' by auto
-  ultimately show ?case unfolding unsat_state_core_def I[symmetric]
-    using atoms_imply_bounds_index.simps index_valid_indices_state satisfies_state_index.simps by blast
+  have tabl: "\<forall> v :: var \<Rightarrow> 'a. v \<Turnstile>\<^sub>t \<T> s' = v \<Turnstile>\<^sub>t t" unfolding T by blast+
+  from assert_bound_nolhs_unsat[OF *(1-5,8) U] s'
+  have unsat: "minimal_unsat_state_core s'" by auto
+  from assert_bound_nolhs_index_valid[OF *(1-5,8)]
+  have index: "index_valid (insert a as) s'" unfolding s' by auto
+  from assert_bound_nolhs_atoms_imply_bounds_index[OF *(1-5,7)]
+  have imp: "insert a as \<Turnstile>\<^sub>i \<B>\<I> s'" unfolding s' .
+  from minimal_unsat_state_core_translation[OF unsat tabl index imp I]
+  show ?case .
 next
   case (3 t as s s') (* check ok *)
   from 3(2)[unfolded check_s_def Let_def]
@@ -193,17 +230,15 @@ next
   note * = invariant_sD[OF 4(1)]
   note ** = *(1,2,5,3,4)
   from check_unsat[OF ** U]
-  have "unsat_state_core s'" unfolding s' minimal_unsat_state_core_def by auto
-  moreover from check_tableau_equiv[OF **] *(9)
-  have "\<forall>v :: _ \<Rightarrow> 'a. v \<Turnstile>\<^sub>t \<T> s' = v \<Turnstile>\<^sub>t t" unfolding s' by auto
-  moreover from check_tableau_index_valid[OF **] *(8)
-  have "index_valid as s'" unfolding s' by auto
-  moreover from check_bounds_id[OF **] *(7)
-  have "as \<Turnstile>\<^sub>i \<B>\<I> s'" unfolding s' by (auto simp: boundsu_def boundsl_def indexu_def indexl_def)
-  moreover from U 
-  have "\<U> s'" unfolding s' .
-  ultimately show ?case unfolding unsat_state_core_def I[symmetric]
-    using atoms_imply_bounds_index.simps index_valid_indices_state satisfies_state_index.simps by blast
+  have unsat: "minimal_unsat_state_core s'" unfolding s' by auto
+  from check_tableau_equiv[OF **] *(9)
+  have tabl: "\<forall>v :: _ \<Rightarrow> 'a. v \<Turnstile>\<^sub>t \<T> s' = v \<Turnstile>\<^sub>t t" unfolding s' by auto
+  from check_tableau_index_valid[OF **] *(8)
+  have index: "index_valid as s'" unfolding s' by auto
+  from check_bounds_id[OF **] *(7)
+  have imp: "as \<Turnstile>\<^sub>i \<B>\<I> s'" unfolding s' by (auto simp: boundsu_def boundsl_def indexu_def indexl_def)
+  from minimal_unsat_state_core_translation[OF unsat tabl index imp I]
+  show ?case .
 next
   case *: (5 t) (* init *)
   show ?case unfolding checked_s_def invariant_s_def
@@ -306,11 +341,11 @@ assumes
   assert_nsc_ok: "invariant_nsc nsc J s \<Longrightarrow> assert_nsc j s = Inr s' \<Longrightarrow> 
     invariant_nsc nsc (insert j J) s'" and
   assert_nsc_unsat: "invariant_nsc nsc J s \<Longrightarrow> assert_nsc j s = Unsat I \<Longrightarrow>
-    set I \<subseteq> insert j J \<and> minimal_unsat_core_ns False (set I) nsc" and
+    set I \<subseteq> insert j J \<and> minimal_unsat_core_ns (set I) (set nsc)" and
   check_nsc_ok: "invariant_nsc nsc J s \<Longrightarrow> check_nsc s = Inr s' \<Longrightarrow> 
     checked_nsc nsc J s'" and
   check_nsc_unsat: "invariant_nsc nsc J s \<Longrightarrow> check_nsc s = Unsat I \<Longrightarrow> 
-    set I \<subseteq> J \<and> minimal_unsat_core_ns False (set I) nsc" and
+    set I \<subseteq> J \<and> minimal_unsat_core_ns (set I) (set nsc)" and
   init_nsc: "checked_nsc nsc {} (init_nsc nsc)" and
   solution_nsc: "checked_nsc nsc J s \<Longrightarrow> solution_nsc s = v \<Longrightarrow> (J, \<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set nsc" and
   backtrack_nsc: "checked_nsc nsc J s \<Longrightarrow> checkpoint_nsc s = c 
@@ -431,27 +466,24 @@ next
     have inv: "invariant_s t (set as \<inter> J \<times> UNIV) s" 
       and asi: "set (asi j) = set as \<inter> {j} \<times> UNIV" by auto
     from assert_all_s_unsat[OF inv unsat, unfolded asi]
-    have I: "set I \<subseteq> insert j J" "set I \<subseteq> fst ` set as" 
-      and "\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s (set as \<inter> (insert j J) \<times> UNIV)" 
-      by (force, force, metis Int_Un_distrib Sigma_Un_distrib1 insert_is_Un)+
-    then have "\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (set I \<inter> (insert j J), v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" 
-      unfolding i_satisfies_atom_set_inter_right by simp
-    also have "set I \<inter> (insert j J) = set I" using I by auto
-    finally have unsat: "\<nexists>v. (set I, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set nsc" 
-      using preprocess_unsat[OF prep, of "set I"] by blast
-    show ?thesis unfolding minimal_unsat_core_ns_def 
-    proof (intro conjI I unsat)
-      show "set I \<subseteq> fst ` set nsc" using I preprocess_index[OF prep] by auto
-    qed simp
+    have "minimal_unsat_core_tabl_atoms (set I) t (set as \<inter> J \<times> UNIV \<union> set as \<inter> {j} \<times> UNIV)" .
+    also have "set as \<inter> J \<times> UNIV \<union> set as \<inter> {j} \<times> UNIV = set as \<inter> insert j J \<times> UNIV" by blast
+    finally have unsat: "minimal_unsat_core_tabl_atoms (set I) t (set as \<inter> insert j J \<times> UNIV)" .
+    hence I: "set I \<subseteq> insert j J" unfolding minimal_unsat_core_tabl_atoms_def by force
+    with False pre have empty: "set I \<inter> set ui' = {}" by auto
+    have "minimal_unsat_core_tabl_atoms (set I) t (set as)"
+      by (rule minimal_unsat_core_tabl_atoms_mono[OF _ unsat], auto)
+    from preprocess_minimal_unsat_core[OF prep this empty]
+    have "minimal_unsat_core_ns (set I) (set nsc)" .
+    then show ?thesis using I by blast
   next
     case True
     with pre(2) have I: "I = [j]" by auto
     from pre(1)[unfolded invariant_nsc.simps prep split invariant_as_asi.simps]
     have "set ui = set ui'" by simp
     with True have j: "j \<in> set ui'" by auto
-    then have "j \<in> fst ` set nsc" using preprocess_index[OF prep] by blast
-    with preprocess_unsat_indices[OF prep j] 
-    show ?thesis unfolding I minimal_unsat_core_ns_def by auto
+    from preprocess_unsat_index[OF prep j]
+    show ?thesis unfolding I by auto
   qed
 next
   case (3 nsc J S S') (* check ok *)
@@ -466,14 +498,15 @@ next
     unsat: "check_s s = Unsat I"  and
     inv: "invariant_s t (set as \<inter> J \<times> UNIV) s" 
     by (auto split: sum.splits)
-  then have I: "set I \<subseteq> J" "set I \<subseteq> fst ` set as" and 
-    "\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s (set as \<inter> J \<times> UNIV)" 
-    using check_s_unsat[OF inv unsat] by auto
-  then have "\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (set I \<inter> J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" 
-    unfolding i_satisfies_atom_set_inter_right by simp
-  also have "set I \<inter> J = set I" using I by auto
-  finally show ?case using preprocess_unsat[OF prep, of "set I"] I using preprocess_index[OF prep] 
-    unfolding minimal_unsat_core_ns_def by blast
+  from check_s_unsat[OF inv unsat]
+  have unsat: "minimal_unsat_core_tabl_atoms (set I) t (set as \<inter> J \<times> UNIV)" .
+  hence I: "set I \<subseteq> J" unfolding minimal_unsat_core_tabl_atoms_def by force
+  with pre have empty: "set I \<inter> set ui' = {}" by auto
+  have "minimal_unsat_core_tabl_atoms (set I) t (set as)"
+    by (rule minimal_unsat_core_tabl_atoms_mono[OF _ unsat], auto)
+  from preprocess_minimal_unsat_core[OF prep this empty]
+  have "minimal_unsat_core_ns (set I) (set nsc)" .
+  then show ?case using I by blast
 next
   case (5 nsc) (* init *)
   obtain t as tv' ui' where prep[simp]: "preprocess nsc = (t, as, tv', ui')" by (cases "preprocess nsc")
@@ -519,11 +552,11 @@ assumes
   assert_cs_ok: "invariant_cs cs J s \<Longrightarrow> assert_cs j s = Inr s' \<Longrightarrow> 
     invariant_cs cs (insert j J) s'" and
   assert_cs_unsat: "invariant_cs cs J s \<Longrightarrow> assert_cs j s = Unsat I \<Longrightarrow>
-    set I \<subseteq> insert j J \<and> minimal_unsat_core False (set I) cs" and
+    set I \<subseteq> insert j J \<and> minimal_unsat_core (set I) cs" and
   check_cs_ok: "invariant_cs cs J s \<Longrightarrow> check_cs s = Inr s' \<Longrightarrow> 
     checked_cs cs J s'" and
   check_cs_unsat: "invariant_cs cs J s \<Longrightarrow> check_cs s = Unsat I \<Longrightarrow>
-    set I \<subseteq> J \<and> minimal_unsat_core False (set I) cs" and
+    set I \<subseteq> J \<and> minimal_unsat_core (set I) cs" and
   init_cs: "checked_cs cs {} (init_cs cs)" and
   solution_cs: "checked_cs cs J s \<Longrightarrow> solution_cs s = v \<Longrightarrow> (J, \<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs" and
   backtrack_cs: "checked_cs cs J s \<Longrightarrow> checkpoint_cs s = c 
@@ -586,7 +619,7 @@ next
     by (auto split: sum.splits)
   from pre(1) have inv: "invariant_nsc (to_ns cs) J s" by auto
   from assert_nsc_unsat[OF inv unsat]
-  have "set I \<subseteq> insert j J" "minimal_unsat_core_ns False (set I) (to_ns cs)" 
+  have "set I \<subseteq> insert j J" "minimal_unsat_core_ns (set I) (set (to_ns cs))" 
     by auto
   from to_ns_unsat[OF this(2)] this(1)
   show ?case by blast
@@ -602,7 +635,7 @@ next
     by (auto split: sum.splits)
   from pre(1) have inv: "invariant_nsc (to_ns cs) J s" by auto
   from check_nsc_unsat[OF inv unsat]
-  have "set I \<subseteq> J" "minimal_unsat_core_ns False (set I) (to_ns cs)" 
+  have "set I \<subseteq> J" "minimal_unsat_core_ns (set I) (set (to_ns cs))" 
     unfolding minimal_unsat_core_ns_def by auto
   from to_ns_unsat[OF this(2)] this(1)
   show ?case by blast
@@ -853,13 +886,13 @@ qed
   
 lemma assert_simplex_unsat:
   "invariant_simplex cs J s \<Longrightarrow> assert_simplex j s = Inl I \<Longrightarrow> 
-     set I \<subseteq> insert j J \<inter> fst ` set cs \<and> (\<nexists>v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)" 
+     set I \<subseteq> insert j J \<and> minimal_unsat_core (set I) cs" 
 proof (cases s)
   case s: (Simplex_State ss)
   show "invariant_simplex cs J s \<Longrightarrow> assert_simplex j s = Inl I \<Longrightarrow> 
-    set I \<subseteq> insert j J \<inter> fst ` set cs \<and> (\<nexists>v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)"
+    set I \<subseteq> insert j J \<and> minimal_unsat_core (set I) cs"
     unfolding s invariant_simplex.simps assert_simplex' 
-    using Incremental_Simplex.assert_cs_unsat[of cs J ss j, unfolded minimal_unsat_core_def]
+    using Incremental_Simplex.assert_cs_unsat[of cs J ss j]
     by (cases "assert_simplex' j ss", auto)
 qed
 
@@ -874,12 +907,13 @@ qed
 
 lemma check_simplex_unsat:
   "invariant_simplex cs J s \<Longrightarrow> check_simplex s = Unsat I \<Longrightarrow> 
-     set I \<subseteq> J \<inter> fst ` set cs \<and> (\<nexists>v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)" 
+     set I \<subseteq> J \<and> minimal_unsat_core (set I) cs" 
 proof (cases s)
   case s: (Simplex_State ss)
-  show "invariant_simplex cs J s \<Longrightarrow> check_simplex s = Unsat I \<Longrightarrow> set I \<subseteq> J \<inter> fst ` set cs \<and> (\<nexists>v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)"
+  show "invariant_simplex cs J s \<Longrightarrow> check_simplex s = Unsat I \<Longrightarrow> 
+    set I \<subseteq> J \<and> minimal_unsat_core (set I) cs"
     unfolding s invariant_simplex.simps check_simplex.simps check_simplex' 
-    using Incremental_Simplex.check_cs_unsat[of cs J ss, unfolded minimal_unsat_core_def]
+    using Incremental_Simplex.check_cs_unsat[of cs J ss I]
     by (cases "check_simplex' ss", auto)
 qed
 
@@ -939,7 +973,7 @@ proof (induct K arbitrary: s J)
 qed auto
 
 lemma assert_all_simplex_unsat: "invariant_simplex cs J s \<Longrightarrow> assert_all_simplex K s = Unsat I \<Longrightarrow> 
-    set I \<subseteq> (set K \<union> J) \<inter> fst ` set cs \<and> \<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)"
+    set I \<subseteq> set K \<union> J \<and> minimal_unsat_core (set I) cs"
 proof (induct K arbitrary: s J)
   case (Cons k K s J)
   show ?case
@@ -947,7 +981,7 @@ proof (induct K arbitrary: s J)
     case unsat: (Inl J')
     with Cons have J': "J' = I" by auto
     from assert_simplex_unsat[OF Cons(2) unsat]
-    have "set J' \<subseteq> insert k J \<inter> fst ` set cs" "\<nexists>v. (set J', v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs" by auto
+    have "set J' \<subseteq> insert k J" "minimal_unsat_core (set J') cs" by auto
     then show ?thesis unfolding J' i_satisfies_cs.simps
       by auto
   next
