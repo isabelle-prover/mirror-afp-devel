@@ -81,14 +81,12 @@ lemma distinct_indicesD: "distinct_indices as \<Longrightarrow> (i,x) \<in> set 
   unfolding distinct_indices_def by (rule eq_key_imp_eq_value)
 
 text \<open>For the unsat-core predicate we distinguish two modes. The strict mode (True) requires that
-  only indices may be returned which occur in the constraints, whereas the weak mode (False) does
-  not require this. The weak mode is used for the incremental version of the simplex method where
-  it is the obligation of the user to only select suitable indices, i.e., here the unsat-core will
-  be a subset of the user-selected indices. The strict mode is used in the
-  non-incremental simplex-version where this mode guarantees that the unsat-core will only contain
-  indices from the input-constraints.\<close>
+  minimal unsat cores are returned whenever the input contains non-distinct indices, whereas
+  in the weak mode (False) minimality is not ensured. 
+  Currently the strict mode is used in the non-incremental version of the simplex algorithm,
+  whereas the weak mode is used for the incremental version.\<close>
 definition minimal_unsat_core :: "bool \<Rightarrow> 'i set \<Rightarrow> 'i i_constraint list \<Rightarrow> bool" where
-  "minimal_unsat_core mode I ics  = ((mode \<longrightarrow> I \<subseteq> fst ` set ics) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set ics))
+  "minimal_unsat_core mode I ics  = ((I \<subseteq> fst ` set ics) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set ics))
      \<and> (mode \<longrightarrow> distinct_indices ics \<longrightarrow> (\<forall> J. J \<subset> I \<longrightarrow> (\<exists> v. (J,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set ics))))"
 
 subsection \<open>Procedure Specification\<close>
@@ -201,7 +199,7 @@ definition distinct_indices_ns :: "('i,'a :: lrv) i_ns_constraint list \<Rightar
      poly n1 = poly n2 \<and> ns_constraint_const n1 = ns_constraint_const n2))" 
 
 definition minimal_unsat_core_ns :: "bool \<Rightarrow> 'i set \<Rightarrow> ('i,'a :: lrv) i_ns_constraint list \<Rightarrow> bool" where
-  "minimal_unsat_core_ns mode I cs = ((mode \<longrightarrow> I \<subseteq> fst ` set cs) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs))
+  "minimal_unsat_core_ns mode I cs = ((I \<subseteq> fst ` set cs) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs))
      \<and> (mode \<longrightarrow> distinct_indices_ns cs \<longrightarrow> (\<forall> J \<subset> I. \<exists> v. (J,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs)))"
 
 
@@ -8092,7 +8090,7 @@ proof unfold_locales
   fix I mode
   assume unsat: "minimal_unsat_core_ns mode I (to_ns cs)"
   note unsat = unsat[unfolded minimal_unsat_core_ns_def indices]
-  hence indices: "mode \<longrightarrow> I \<subseteq> fst ` set cs" by auto
+  hence indices: "I \<subseteq> fst ` set cs" by auto
   show "minimal_unsat_core mode I cs"
     unfolding minimal_unsat_core_def
   proof (intro conjI indices impI allI, clarify)

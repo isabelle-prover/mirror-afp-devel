@@ -431,20 +431,26 @@ next
     have inv: "invariant_s t (set as \<inter> J \<times> UNIV) s" 
       and asi: "set (asi j) = set as \<inter> {j} \<times> UNIV" by auto
     from assert_all_s_unsat[OF inv unsat, unfolded asi]
-    have I: "set I \<subseteq> insert j J" 
+    have I: "set I \<subseteq> insert j J" "set I \<subseteq> fst ` set as" 
       and "\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s (set as \<inter> (insert j J) \<times> UNIV)" 
-      by (force, metis Int_Un_distrib Sigma_Un_distrib1 insert_is_Un)+
+      by (force, force, metis Int_Un_distrib Sigma_Un_distrib1 insert_is_Un)+
     then have "\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (set I \<inter> (insert j J), v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" 
       unfolding i_satisfies_atom_set_inter_right by simp
     also have "set I \<inter> (insert j J) = set I" using I by auto
-    finally show ?thesis using preprocess_unsat[OF prep, of "set I"] I unfolding minimal_unsat_core_ns_def by blast
+    finally have unsat: "\<nexists>v. (set I, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set nsc" 
+      using preprocess_unsat[OF prep, of "set I"] by blast
+    show ?thesis unfolding minimal_unsat_core_ns_def 
+    proof (intro conjI I unsat)
+      show "set I \<subseteq> fst ` set nsc" using I preprocess_index[OF prep] by auto
+    qed simp
   next
     case True
     with pre(2) have I: "I = [j]" by auto
     from pre(1)[unfolded invariant_nsc.simps prep split invariant_as_asi.simps]
     have "set ui = set ui'" by simp
-    with True have "j \<in> set ui'" by auto
-    from preprocess_unsat_indices[OF prep this]
+    with True have j: "j \<in> set ui'" by auto
+    then have "j \<in> fst ` set nsc" using preprocess_index[OF prep] by blast
+    with preprocess_unsat_indices[OF prep j] 
     show ?thesis unfolding I minimal_unsat_core_ns_def by auto
   qed
 next
@@ -460,12 +466,14 @@ next
     unsat: "check_s s = Unsat I"  and
     inv: "invariant_s t (set as \<inter> J \<times> UNIV) s" 
     by (auto split: sum.splits)
-  then have I: "set I \<subseteq> J" and "\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s (set as \<inter> J \<times> UNIV)" 
+  then have I: "set I \<subseteq> J" "set I \<subseteq> fst ` set as" and 
+    "\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s (set as \<inter> J \<times> UNIV)" 
     using check_s_unsat[OF inv unsat] by auto
   then have "\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (set I \<inter> J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" 
     unfolding i_satisfies_atom_set_inter_right by simp
   also have "set I \<inter> J = set I" using I by auto
-  finally show ?case using preprocess_unsat[OF prep, of "set I"] I  unfolding minimal_unsat_core_ns_def by blast
+  finally show ?case using preprocess_unsat[OF prep, of "set I"] I using preprocess_index[OF prep] 
+    unfolding minimal_unsat_core_ns_def by blast
 next
   case (5 nsc) (* init *)
   obtain t as tv' ui' where prep[simp]: "preprocess nsc = (t, as, tv', ui')" by (cases "preprocess nsc")
@@ -511,13 +519,11 @@ assumes
   assert_cs_ok: "invariant_cs cs J s \<Longrightarrow> assert_cs j s = Inr s' \<Longrightarrow> 
     invariant_cs cs (insert j J) s'" and
   assert_cs_unsat: "invariant_cs cs J s \<Longrightarrow> assert_cs j s = Unsat I \<Longrightarrow>
-    set I \<subseteq> insert j J \<and>
-    \<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)" and
+    set I \<subseteq> insert j J \<and> minimal_unsat_core False (set I) cs" and
   check_cs_ok: "invariant_cs cs J s \<Longrightarrow> check_cs s = Inr s' \<Longrightarrow> 
     checked_cs cs J s'" and
   check_cs_unsat: "invariant_cs cs J s \<Longrightarrow> check_cs s = Unsat I \<Longrightarrow>
-    set I \<subseteq> J \<and> 
-    \<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)" and
+    set I \<subseteq> J \<and> minimal_unsat_core False (set I) cs" and
   init_cs: "checked_cs cs {} (init_cs cs)" and
   solution_cs: "checked_cs cs J s \<Longrightarrow> solution_cs s = v \<Longrightarrow> (J, \<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs" and
   backtrack_cs: "checked_cs cs J s \<Longrightarrow> checkpoint_cs s = c 
@@ -583,7 +589,7 @@ next
   have "set I \<subseteq> insert j J" "minimal_unsat_core_ns False (set I) (to_ns cs)" 
     by auto
   from to_ns_unsat[OF this(2)] this(1)
-  show ?case unfolding minimal_unsat_core_def by blast
+  show ?case by blast
 next
   case (3 cs J S S') (* check ok *)
   then show ?case using check_nsc_ok unfolding check_cs_def
@@ -599,7 +605,7 @@ next
   have "set I \<subseteq> J" "minimal_unsat_core_ns False (set I) (to_ns cs)" 
     unfolding minimal_unsat_core_ns_def by auto
   from to_ns_unsat[OF this(2)] this(1)
-  show ?case unfolding minimal_unsat_core_def by blast
+  show ?case by blast
 next
   case (5 cs) (* init *)
   show ?case unfolding init_cs_def Let_def using init_nsc by auto
@@ -846,11 +852,14 @@ proof (cases s)
 qed
   
 lemma assert_simplex_unsat:
-  "invariant_simplex cs J s \<Longrightarrow> assert_simplex j s = Inl I \<Longrightarrow> set I \<subseteq> insert j J \<and> (\<nexists>v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)" 
+  "invariant_simplex cs J s \<Longrightarrow> assert_simplex j s = Inl I \<Longrightarrow> 
+     set I \<subseteq> insert j J \<inter> fst ` set cs \<and> (\<nexists>v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)" 
 proof (cases s)
   case s: (Simplex_State ss)
-  show "invariant_simplex cs J s \<Longrightarrow> assert_simplex j s = Inl I \<Longrightarrow> set I \<subseteq> insert j J \<and> (\<nexists>v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)"
-    unfolding s invariant_simplex.simps assert_simplex' using Incremental_Simplex.assert_cs_unsat[of cs J ss j]
+  show "invariant_simplex cs J s \<Longrightarrow> assert_simplex j s = Inl I \<Longrightarrow> 
+    set I \<subseteq> insert j J \<inter> fst ` set cs \<and> (\<nexists>v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)"
+    unfolding s invariant_simplex.simps assert_simplex' 
+    using Incremental_Simplex.assert_cs_unsat[of cs J ss j, unfolded minimal_unsat_core_def]
     by (cases "assert_simplex' j ss", auto)
 qed
 
@@ -864,11 +873,13 @@ proof (cases s)
 qed
 
 lemma check_simplex_unsat:
-  "invariant_simplex cs J s \<Longrightarrow> check_simplex s = Unsat I \<Longrightarrow> set I \<subseteq> J \<and> (\<nexists>v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)" 
+  "invariant_simplex cs J s \<Longrightarrow> check_simplex s = Unsat I \<Longrightarrow> 
+     set I \<subseteq> J \<inter> fst ` set cs \<and> (\<nexists>v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)" 
 proof (cases s)
   case s: (Simplex_State ss)
-  show "invariant_simplex cs J s \<Longrightarrow> check_simplex s = Unsat I \<Longrightarrow> set I \<subseteq> J \<and> (\<nexists>v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)"
-    unfolding s invariant_simplex.simps check_simplex.simps check_simplex' using Incremental_Simplex.check_cs_unsat[of cs J ss]
+  show "invariant_simplex cs J s \<Longrightarrow> check_simplex s = Unsat I \<Longrightarrow> set I \<subseteq> J \<inter> fst ` set cs \<and> (\<nexists>v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)"
+    unfolding s invariant_simplex.simps check_simplex.simps check_simplex' 
+    using Incremental_Simplex.check_cs_unsat[of cs J ss, unfolded minimal_unsat_core_def]
     by (cases "check_simplex' ss", auto)
 qed
 
@@ -928,7 +939,7 @@ proof (induct K arbitrary: s J)
 qed auto
 
 lemma assert_all_simplex_unsat: "invariant_simplex cs J s \<Longrightarrow> assert_all_simplex K s = Unsat I \<Longrightarrow> 
-    set I \<subseteq> set K \<union> J \<and> \<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)"
+    set I \<subseteq> (set K \<union> J) \<inter> fst ` set cs \<and> \<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)"
 proof (induct K arbitrary: s J)
   case (Cons k K s J)
   show ?case
@@ -936,7 +947,7 @@ proof (induct K arbitrary: s J)
     case unsat: (Inl J')
     with Cons have J': "J' = I" by auto
     from assert_simplex_unsat[OF Cons(2) unsat]
-    have "set J' \<subseteq> insert k J" "\<nexists>v. (set J', v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs" by auto
+    have "set J' \<subseteq> insert k J \<inter> fst ` set cs" "\<nexists>v. (set J', v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs" by auto
     then show ?thesis unfolding J' i_satisfies_cs.simps
       by auto
   next
