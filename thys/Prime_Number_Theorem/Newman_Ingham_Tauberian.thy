@@ -68,7 +68,7 @@ proof (rule decreasing_sum_le_integral, goal_cases)
   also have "-(a powr (- x + 1)) / (- x + 1) = a powr (1 - x) / (x - 1)"
     using ax by (simp add: field_simps)
   finally show "((\<lambda>t. (a + t) powr -x) has_integral a powr (1 - x) / (x - 1)) {0..}"
-    by (simp add: has_integral_interior)
+    by (subst (asm) has_integral_interior) auto
 qed (insert ax, auto intro!: powr_mono2')
 
 

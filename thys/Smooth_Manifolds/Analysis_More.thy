@@ -421,10 +421,8 @@ proof -
       by auto
     then show ?thesis by (simp add: generate_topology.UNIV)
   qed
-  ultimately
-  show ?thesis
-    using subset
-    by (auto simp: openin_subtopology open_gen)
+  ultimately show ?thesis
+    by (metis open_gen open_openin openin_open_Int' openin_subtopology)
 qed
 
 subsection \<open>Equal topologies\<close>
@@ -680,7 +678,7 @@ lemma second_countable_topology_quotient: "class.second_countable_topology (open
   subgoal by (unfold open_def, rule topological_space_quotient; fact)
 proof standard
   have euclidean_def: "euclidean = map_topology p euclidean"
-    by (auto simp: topology_eq_iff open_def)
+    by (simp add: openin_inverse open_def)
   have continuous_on: "continuous_on UNIV p"
     unfolding continuous_on_continuous_on_topo euclidean_def
     by (simp add: continuous_on_map_topology)
