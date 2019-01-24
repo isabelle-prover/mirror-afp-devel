@@ -4,7 +4,6 @@ theory Pratt_Certificate
 imports
   Complex_Main
   Lehmer.Lehmer
-  "HOL-Library.Code_Target_Numeral"
 begin
 
 text \<open>
@@ -524,60 +523,127 @@ proof -
 qed
 
 
-subsection \<open>Executable certificate checker\<close>
+subsection \<open>Efficient modular exponentiation\<close>
 
-text \<open>
-  The following definition implements modular exponentiation more efficiently:
-\<close>
+locale efficient_power =
+  fixes f :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
+  assumes f_assoc: "\<And>x z. f x (f x z) = f (f x x) z"
+begin
 
-definition mod_exp :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"
-  where [code_abbrev]: "mod_exp b e m = (b ^ e) mod m"
+function efficient_power :: "'a \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a" where
+  "efficient_power y x 0 = y"
+| "efficient_power y x (Suc 0) = f x y"
+| "n \<noteq> 0 \<Longrightarrow> even n \<Longrightarrow> efficient_power y x n = efficient_power y (f x x) (n div 2)"
+| "n \<noteq> 1 \<Longrightarrow> odd n \<Longrightarrow> efficient_power y x n = efficient_power (f x y) (f x x) (n div 2)"
+  by force+
+termination by (relation "measure (snd \<circ> snd)") (auto elim: oddE)
 
-lemma mod_exp_code [code]:
-  "mod_exp b e m = 
-    (if e = 0 then if m = 1 then 0 else 1 
-     else if even e then mod_exp ((b * b) mod m) (e div 2) m
-     else (b * mod_exp ((b * b) mod m) (e div 2) m) mod m)"
-  by (auto simp add: mod_exp_def power2_eq_square mod_Suc power_mod power_mult
-    mod_mult_right_eq elim: evenE oddE)
+lemma efficient_power_code:
+  "efficient_power y x n =
+     (if n = 0 then y
+      else if n = 1 then f x y
+      else if even n then efficient_power y (f x x) (n div 2)
+      else efficient_power (f x y) (f x x) (n div 2))"
+  by (induction y x n rule: efficient_power.induct) auto
 
-(* 
-  Need to use @{term "b*b::nat"} here instead of squaring, otherwise code_unfold produces
-  infinite recursion
-  FIXME: Better performance using divMod or bit tests/bit shifts. Tail-recursive would also be good.
-*)
-
-lemma eval_mod_exp [simp]:
-  "mod_exp b 0 (Suc 0) = 0"
-  "m \<noteq> 1 \<Longrightarrow> mod_exp b 0 m = 1"
-  "mod_exp b 1 m = b mod m"
-  "mod_exp b (Suc 0) m = b mod m"
-  "mod_exp b (numeral (num.Bit0 n)) m = mod_exp (b\<^sup>2 mod m) (numeral n) m"
-  "mod_exp b (numeral (num.Bit1 n)) m = b * mod_exp (b\<^sup>2 mod m) (numeral n) m mod m"
+lemma efficient_power_correct: "efficient_power y x n = (f x ^^ n) y"
 proof -
-  have "1 mod m = 1" if "m \<noteq> 1" using that 
-    by (cases m) auto
-  show "m \<noteq> 1 \<Longrightarrow> mod_exp b 0 m = 1" "mod_exp b 0 (Suc 0) = 0"
-    by (cases m) (simp_all add: mod_exp_def)
-  show "mod_exp b 1 m = b mod m" by (simp add: mod_exp_def)
-  show "mod_exp b (Suc 0) m = b mod m" by (simp add: mod_exp_def)
-  have "numeral (num.Bit0 n) = (2 * numeral n :: nat)"
-    by (subst numeral.numeral_Bit0) (simp del: arith_simps)
-  also have "mod_exp b \<dots> m = mod_exp (b\<^sup>2 mod m) (numeral n) m"
-    by (simp only: mod_exp_def power_mult mod_simps)
-  finally show "mod_exp b (numeral (num.Bit0 n)) m = mod_exp (b\<^sup>2 mod m) (numeral n) m" by simp
-  have "numeral (num.Bit1 n) = Suc (2 * numeral n :: nat)"
-    by (subst numeral.numeral_Bit1) (simp del: arith_simps)
-  also have "mod_exp b \<dots> m = b * mod_exp (b\<^sup>2 mod m) (numeral n) m mod m"
-    by (simp only: mod_exp_def power_mult power_Suc mod_simps)
-  finally show "mod_exp b (numeral (num.Bit1 n)) m = b * mod_exp (b\<^sup>2 mod m) (numeral n) m mod m" .
+  have [simp]: "f ^^ 2 = (\<lambda>x. f (f x))" for f :: "'a \<Rightarrow> 'a"
+    by (simp add: eval_nat_numeral o_def)
+  show ?thesis
+    by (induction y x n rule: efficient_power.induct)
+       (auto elim!: evenE oddE simp: funpow_mult [symmetric] funpow_Suc_right f_assoc
+             simp del: funpow.simps(2))
 qed
 
+end
 
-text \<open>
-  The following alternative definitions of valid certificates are better suited for 
-  evaluation by the simplifier than the original ones.
-\<close>
+interpretation mod_exp_nat: efficient_power "\<lambda>x y :: nat. (x * y) mod m"
+  by standard (simp add: mod_mult_left_eq mod_mult_right_eq mult_ac)
+
+definition mod_exp_nat_aux where "mod_exp_nat_aux = mod_exp_nat.efficient_power"
+
+lemma mod_exp_nat_aux_code [code]:
+  "mod_exp_nat_aux m y x n =
+     (if n = 0 then y
+      else if n = 1 then (x * y) mod m
+      else if even n then mod_exp_nat_aux m y ((x * x) mod m) (n div 2)
+      else mod_exp_nat_aux m ((x * y) mod m) ((x * x) mod m) (n div 2))"
+  unfolding mod_exp_nat_aux_def by (rule mod_exp_nat.efficient_power_code)
+
+lemma mod_exp_nat_aux_correct:
+  "mod_exp_nat_aux m y x n mod m = (x ^ n * y) mod m"
+proof -
+  have "mod_exp_nat_aux m y x n = ((\<lambda>y. x * y mod m) ^^ n) y"
+    by (simp add: mod_exp_nat_aux_def mod_exp_nat.efficient_power_correct)
+  also have "((\<lambda>y. x * y mod m) ^^ n) y mod m = (x ^ n * y) mod m"
+  proof (induction n)
+    case (Suc n)
+    hence "x * ((\<lambda>y. x * y mod m) ^^ n) y mod m = x * x ^ n * y mod m"
+      by (metis mod_mult_right_eq mult.assoc)
+    thus ?case by auto
+  qed auto
+  finally show ?thesis .
+qed
+
+definition mod_exp_nat :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"
+  where [code_abbrev]: "mod_exp_nat b e m = (b ^ e) mod m"
+
+lemma mod_exp_nat_code [code]: "mod_exp_nat b e m = mod_exp_nat_aux m 1 b e mod m"
+  by (simp add: mod_exp_nat_def mod_exp_nat_aux_correct)
+
+lemmas [code_unfold] = cong_def
+
+lemma eval_mod_exp_nat_aux [simp]:
+  "mod_exp_nat_aux m y x 0 = y"
+  "mod_exp_nat_aux m y x (Suc 0) = (x * y) mod m"
+  "mod_exp_nat_aux m y x (numeral (num.Bit0 n)) =
+     mod_exp_nat_aux m y (x\<^sup>2 mod m) (numeral n)"
+  "mod_exp_nat_aux m y x (numeral (num.Bit1 n)) =
+     mod_exp_nat_aux m ((x * y) mod m) (x\<^sup>2 mod m) (numeral n)"
+proof -
+  define n' where "n' = (numeral n :: nat)"
+  have [simp]: "n' \<noteq> 0" by (auto simp: n'_def)
+  
+  show "mod_exp_nat_aux m y x 0 = y" and "mod_exp_nat_aux m y x (Suc 0) = (x * y) mod m"
+    by (simp_all add: mod_exp_nat_aux_def)
+
+  have "numeral (num.Bit0 n) = (2 * n')"
+    by (subst numeral.numeral_Bit0) (simp del: arith_simps add: n'_def)
+  also have "mod_exp_nat_aux m y x \<dots> = mod_exp_nat_aux m y (x^2 mod m) n'"
+    by (subst mod_exp_nat_aux_code) (simp_all add: power2_eq_square)
+  finally show "mod_exp_nat_aux m y x (numeral (num.Bit0 n)) =
+                  mod_exp_nat_aux m y (x\<^sup>2 mod m) (numeral n)"
+    by (simp add: n'_def)
+
+  have "numeral (num.Bit1 n) = Suc (2 * n')"
+    by (subst numeral.numeral_Bit1) (simp del: arith_simps add: n'_def)
+  also have "mod_exp_nat_aux m y x \<dots> = mod_exp_nat_aux m ((x * y) mod m) (x^2 mod m) n'"
+    by (subst mod_exp_nat_aux_code) (simp_all add: power2_eq_square)
+  finally show "mod_exp_nat_aux m y x (numeral (num.Bit1 n)) =
+                  mod_exp_nat_aux m ((x * y) mod m) (x\<^sup>2 mod m) (numeral n)"
+    by (simp add: n'_def)
+qed
+
+lemma eval_mod_exp [simp]:
+  "mod_exp_nat b' 0 m' = 1 mod m'"
+  "mod_exp_nat b' 1 m' = b' mod m'"
+  "mod_exp_nat b' (Suc 0) m' = b' mod m'"
+  "mod_exp_nat b' e' 0 = b' ^ e'"  
+  "mod_exp_nat b' e' 1 = 0"
+  "mod_exp_nat b' e' (Suc 0) = 0"
+  "mod_exp_nat 0 1 m' = 0"
+  "mod_exp_nat 0 (Suc 0) m' = 0"
+  "mod_exp_nat 0 (numeral e) m' = 0"
+  "mod_exp_nat 1 e' m' = 1 mod m'"
+  "mod_exp_nat (Suc 0) e' m' = 1 mod m'"
+  "mod_exp_nat (numeral b) (numeral e) (numeral m) =
+     mod_exp_nat_aux (numeral m) 1 (numeral b) (numeral e) mod numeral m"
+  by (simp_all add: mod_exp_nat_def mod_exp_nat_aux_correct)
+
+
+
+subsection \<open>Executable certificate checker\<close>
 
 lemmas [code] = valid_cert.simps(1)
 
@@ -587,16 +653,16 @@ begin
 lemma valid_cert_Cons1 [code]:
   "valid_cert (Prime p # xs) \<longleftrightarrow>
      p > 1 \<and> (\<exists>t\<in>set xs. case t of Prime _ \<Rightarrow> False | 
-     Triple p' a x \<Rightarrow> p' = p \<and> x = p - 1 \<and> mod_exp a (p-1) p = 1 ) \<and> valid_cert xs"
+     Triple p' a x \<Rightarrow> p' = p \<and> x = p - 1 \<and> mod_exp_nat a (p-1) p = 1 ) \<and> valid_cert xs"
   (is "?lhs = ?rhs")
 proof
-  assume ?lhs thus ?rhs by (auto simp: mod_exp_def cong_def split: pratt.splits)
+  assume ?lhs thus ?rhs by (auto simp: mod_exp_nat_def cong_def split: pratt.splits)
 next
   assume ?rhs
   hence "p > 1" "valid_cert xs" by blast+
   moreover from \<open>?rhs\<close> obtain t where "t \<in> set xs" "case t of Prime _ \<Rightarrow> False | 
      Triple p' a x \<Rightarrow> p' = p \<and> x = p - 1 \<and> [a^(p-1) = 1] (mod p)" 
-     by (auto simp: cong_def mod_exp_def cong: pratt.case_cong)
+     by (auto simp: cong_def mod_exp_nat_def cong: pratt.case_cong)
   ultimately show ?lhs by (cases t) auto
 qed
 
@@ -615,7 +681,7 @@ lemma valid_cert_Cons2 [code]:
   "valid_cert (Triple p a x # xs) \<longleftrightarrow> x > 0 \<and> p > 1 \<and> (x = 1 \<or> (
      (\<exists>t\<in>set xs. case t of Prime _ \<Rightarrow> False |
         Triple p' a' y \<Rightarrow> p' = p \<and> a' = a \<and> y dvd x \<and> 
-        (let q = x div y in Prime q \<in> set xs \<and> mod_exp a ((p-1) div q) p \<noteq> 1)))) \<and> valid_cert xs"
+        (let q = x div y in Prime q \<in> set xs \<and> mod_exp_nat a ((p-1) div q) p \<noteq> 1)))) \<and> valid_cert xs"
   (is "?lhs = ?rhs")
 proof
   assume ?lhs
@@ -631,9 +697,9 @@ proof
     then guess q y by (elim exE conjE) note qy = this
     hence "(\<exists>t\<in>set xs. case t of Prime _ \<Rightarrow> False |
         Triple p' a' y \<Rightarrow> p' = p \<and> a' = a \<and> y dvd x \<and> 
-        (let q = x div y in Prime q \<in> set xs \<and> mod_exp a ((p-1) div q) p \<noteq> 1))"
+        (let q = x div y in Prime q \<in> set xs \<and> mod_exp_nat a ((p-1) div q) p \<noteq> 1))"
     using pos gt_1 by (intro bexI [of _ "Triple p a y"]) 
-      (auto simp: Suc_0_mod_eq_Suc_0_iff Suc_0_eq_Suc_0_mod_iff cong_def mod_exp_def)
+      (auto simp: Suc_0_mod_eq_Suc_0_iff Suc_0_eq_Suc_0_mod_iff cong_def mod_exp_nat_def)
     with pos gt_1 valid show ?thesis by blast
   qed
 next
@@ -647,12 +713,12 @@ next
     case False
     with \<open>?rhs\<close> obtain t where t: "t \<in> set xs" "case t of Prime x \<Rightarrow> False
          | Triple p' a' y \<Rightarrow> p' = p \<and> a' = a \<and> y dvd x \<and> (let q = x div y
-              in Prime q \<in> set xs \<and> mod_exp a ((p - 1) div q) p \<noteq> 1)" by auto
+              in Prime q \<in> set xs \<and> mod_exp_nat a ((p - 1) div q) p \<noteq> 1)" by auto
     then obtain y where y: "t = Triple p a y" "y dvd x" "let q = x div y in Prime q \<in> set xs \<and> 
-                              mod_exp a ((p - 1) div q) p \<noteq> 1" 
+                              mod_exp_nat a ((p - 1) div q) p \<noteq> 1" 
       by (cases t rule: pratt.exhaust) auto
     with gt_1 have y': "let q = x div y in Prime q \<in> set xs \<and> [a^((p - 1) div q) \<noteq> 1] (mod p)"
-      by (auto simp: cong_def Let_def mod_exp_def Suc_0_mod_eq_Suc_0_iff Suc_0_eq_Suc_0_mod_iff)
+      by (auto simp: cong_def Let_def mod_exp_nat_def Suc_0_mod_eq_Suc_0_iff Suc_0_eq_Suc_0_mod_iff)
     define q where "q = x div y"
     have "\<exists>q y. x = q * y \<and> Prime q \<in> set xs \<and> Triple p a y \<in> set xs
                      \<and> [a^((p - 1) div q) \<noteq> 1] (mod p)"
@@ -665,17 +731,19 @@ declare valid_cert.simps(2,3) [simp del]
 
 lemmas eval_valid_cert = valid_cert.simps(1) valid_cert_Cons1 valid_cert_Cons2
 
-lemma "valid_cert [Prime 101,
-     Triple 101 2 100, Triple 101 2 50, Triple 101 2 25,
-     Triple 101 2 5, Triple 101 2 1, Prime 5, Triple 5 2 4,
-     Triple 5 2 2, Triple 5 2 1, Prime 3, Triple 3 2 2,
-     Triple 3 2 1, Prime 2, Triple 2 1 1]"
-  by code_simp
-
 end
 
 
-subsection \<open>Proof Method Setup\<close>
+text \<open>
+  The following alternative tree representation of certificates is better suited for 
+  efficient checking.
+\<close>
+
+datatype pratt_tree = Pratt_Node "nat \<times> nat \<times> pratt_tree list"
+
+fun pratt_tree_number where
+  "pratt_tree_number (Pratt_Node (n, _, _)) = n"
+
 
 text \<open>
   The following function checks that a given list contains all the prime factors of the given
@@ -703,7 +771,7 @@ lemma check_prime_factors_subset_Cons [simp]:
  by (subst check_prime_factors_subset.simps; force)+
 
 lemma check_prime_factors_subset_correct:
-  assumes "list_all prime ps" "check_prime_factors_subset n ps"
+  assumes "check_prime_factors_subset n ps" "list_all prime ps"
   shows   "prime_factors n \<subseteq> set ps"
   using assms
 proof (induction n ps rule: check_prime_factors_subset.induct)
@@ -732,14 +800,55 @@ proof (induction n ps rule: check_prime_factors_subset.induct)
 qed auto
 
 
+fun valid_pratt_tree where
+  "valid_pratt_tree (Pratt_Node (n, a, ts)) \<longleftrightarrow>
+     n \<ge> 2 \<and>
+     check_prime_factors_subset (n - 1) (map pratt_tree_number ts) \<and>
+     [a ^ (n - 1) = 1] (mod n) \<and>
+     (\<forall>t\<in>set ts. [a ^ ((n - 1) div pratt_tree_number t) \<noteq> 1] (mod n)) \<and>
+     (\<forall>t\<in>set ts. valid_pratt_tree t)"
+
+lemma valid_pratt_tree_code [code]:
+  "valid_pratt_tree (Pratt_Node (n, a, ts)) \<longleftrightarrow>
+     n \<ge> 2 \<and>
+     check_prime_factors_subset (n - 1) (map pratt_tree_number ts) \<and>
+     mod_exp_nat a (n - 1) n = 1 \<and>
+     (\<forall>t\<in>set ts. mod_exp_nat a ((n - 1) div pratt_tree_number t) n \<noteq> 1) \<and>
+     (\<forall>t\<in>set ts. valid_pratt_tree t)"
+  by (simp add: mod_exp_nat_def cong_def)
+
+lemma valid_pratt_tree_imp_prime:
+  assumes "valid_pratt_tree t"
+  shows   "prime (pratt_tree_number t)"
+  using assms
+proof (induction t rule: valid_pratt_tree.induct)
+  case (1 n a ts)
+  from 1 have "prime_factors (n - 1) \<subseteq> set (map pratt_tree_number ts)"
+    by (intro check_prime_factors_subset_correct) (auto simp: list.pred_set)
+  with 1 show ?case
+    by (intro lehmers_theorem[where a = a]) auto
+qed
+
+lemma valid_pratt_tree_imp_prime':
+  assumes "PROP (Trueprop (valid_pratt_tree (Pratt_Node (n, a, ts)))) \<equiv> PROP (Trueprop True)"
+  shows   "prime n"
+proof -
+  have "valid_pratt_tree (Pratt_Node (n, a, ts))"
+    by (subst assms) auto
+  from valid_pratt_tree_imp_prime[OF this] show ?thesis by simp
+qed
+
+
+subsection \<open>Proof method setup\<close>
+
 theorem lehmers_theorem':
   fixes p :: nat
   assumes "list_all prime ps" "a \<equiv> a" "n \<equiv> n"
-  assumes "list_all (\<lambda>p. mod_exp a ((n - 1) div p) n \<noteq> 1) ps" "mod_exp a (n - 1) n = 1"
+  assumes "list_all (\<lambda>p. mod_exp_nat a ((n - 1) div p) n \<noteq> 1) ps" "mod_exp_nat a (n - 1) n = 1"
   assumes "check_prime_factors_subset (n - 1) ps" "2 \<le> n"
   shows "prime n"
-  using assms check_prime_factors_subset_correct[OF assms(1,6)]
-  by (intro lehmers_theorem[where a = a]) (auto simp: cong_def mod_exp_def list.pred_set)
+  using assms check_prime_factors_subset_correct[OF assms(6,1)]
+  by (intro lehmers_theorem[where a = a]) (auto simp: cong_def mod_exp_nat_def list.pred_set)
 
 lemma list_all_ConsI: "P x \<Longrightarrow> list_all P xs \<Longrightarrow> list_all P (x # xs)"
   by simp
@@ -747,13 +856,21 @@ lemma list_all_ConsI: "P x \<Longrightarrow> list_all P xs \<Longrightarrow> lis
 ML_file \<open>pratt.ML\<close>
 
 method_setup pratt = \<open>
-  Scan.lift (Scan.option Pratt.cert_cartouche) >> 
-    (fn cert => fn ctxt => SIMPLE_METHOD (HEADGOAL (Pratt.tac true [] cert ctxt)))
+  Scan.lift (Pratt.tac_config_parser -- Scan.option Pratt.cert_cartouche) >> 
+    (fn (config, cert) => fn ctxt => SIMPLE_METHOD (HEADGOAL (Pratt.tac config cert ctxt)))
 \<close> "Prove primality of natural numbers using Pratt certificates."
 
+text \<open>
+  The proof method replays a given Pratt certificate to prove the primality of a given number.
+  If no certificate is given, the method attempts to compute one. The computed certificate is then
+  also printed with a prompt to insert it into the proof document so that it does not have to
+  be recomputed the next time.
 
+  The format of the certificates is compatible with those generated by Mathematica. Therefore,
+  for larger numbers, certificates generated by Mathematica can be used with this method directly.
+\<close>
 lemma "prime (47 :: nat)"
-  by pratt
+  by (pratt (silent))
 
 lemma "prime (2503 :: nat)"
   by pratt
@@ -763,10 +880,5 @@ lemma "prime (7919 :: nat)"
 
 lemma "prime (131059 :: nat)"
   by (pratt \<open>{131059, 2, {2, {3, 2, {2}}, {809, 3, {2, {101, 2, {2, {5, 2, {2}}}}}}}}\<close>)
-
-lemma "prime (100000007 :: nat)"
-  by (pratt \<open>{100000007, 5, {2, {491, 2, {2, {5, 2, {2}}, {7, 3, {2, {3, 2, {2}}}}}}, 
-               {101833, 5, {2, {3, 2, {2}}, {4243, 2, {2, {3, 2, {2}}, {7, 3, {2, {3, 2, {2}}}}, 
-                 {101, 2, {2, {5, 2, {2}}}}}}}}}}\<close>)
 
 end

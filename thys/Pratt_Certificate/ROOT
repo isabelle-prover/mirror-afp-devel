@@ -6,6 +6,7 @@ session "Pratt_Certificate" (AFP) = "HOL-Number_Theory" +
     Lehmer
   theories
     Pratt_Certificate
+    Pratt_Certificate_Code
   document_files
     "root.tex"
     "root.bib"

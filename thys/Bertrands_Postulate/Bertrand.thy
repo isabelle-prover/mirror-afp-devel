@@ -11,6 +11,7 @@ theory Bertrand
     "HOL-Number_Theory.Number_Theory"
     "HOL-Library.Discrete"
     "HOL-Decision_Procs.Approximation_Bounds"
+    "HOL-Library.Code_Target_Numeral"
     Pratt_Certificate.Pratt_Certificate
 begin
 
@@ -1441,7 +1442,7 @@ qed
 
 lemma ub_ln_1200: "ln 1200 \<le> 57 / (8 :: real)"
 proof -
-  have "Some (Float 57 (-3)) = ub_ln 8 (Float 1200 0)" by code_simp
+  have "Some (Float 57 (-3)) = ub_ln 8 1200" by code_simp
   from ub_ln(1)[OF this] show ?thesis by simp
 qed
   
@@ -1543,7 +1544,7 @@ proof cases
   from \<open>n > 1\<close> n_less have "\<exists>p \<in> prime_constants. n < p \<and> p < 2 * n"
     unfolding bex_simps greaterThanLessThan_iff prime_constants_def by presburger
   moreover have "\<forall>p\<in>prime_constants. prime p" 
-    unfolding prime_constants_def ball_simps HOL.simp_thms by (intro conjI; pratt)
+    unfolding prime_constants_def ball_simps HOL.simp_thms by (intro conjI; pratt (silent))
   ultimately show ?thesis
     unfolding greaterThanLessThan_def greaterThan_def lessThan_def by blast
 next
