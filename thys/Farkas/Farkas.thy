@@ -819,7 +819,6 @@ proof -
       ultimately have False using start_fresh_variable_fresh[of cs, folded start] by force
     } 
     moreover 
-    have [simp]: "\<not> is_monom 0" unfolding is_monom_def by code_simp
     from monom_of_atom_coeff[OF True a] True
     have "\<exists>r. r \<noteq> 0 \<and> r *R nsc_of_atom a = c" 
       by (intro exI[of _ "monom_coeff ?p"], auto, cases a, auto)
