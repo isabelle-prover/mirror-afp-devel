@@ -8,7 +8,7 @@ section \<open>Integration of \textsf{IsaFoR} Terms\<close>
 
 text \<open>
 This theory implements the abstract interface for atoms and substitutions using
-the \textsf{IsaFoR} library (part of the AFP entry @{text First_Order_Terms}).
+the \textsf{IsaFoR} library (part of the AFP entry \<open>First_Order_Terms\<close>).
 \<close>
 
 theory IsaFoR_Term

@@ -108,7 +108,7 @@ are isomorphic to monoids of lists under append.
 To show that languages form dioids it therefore suffices to show that
 sets of lists closed under append and multiplication with the empty
 word form a (multiplicative) monoid. Isabelle then does the rest of the work
-automatically. Infix~@{text @} denotes word
+automatically. Infix~\<open>@\<close> denotes word
 concatenation.\<close>
 
 instantiation list :: (type) monoid_mult
@@ -631,10 +631,10 @@ text \<open>The following dioids have important applications in
 combinatorial optimisations, control theory, algorithm design and
 computer networks.\<close>
 
-text \<open>A definition of reals extended with~@{text "+\<infinity>"} {\em
-and}~@{text "-\<infinity>"} may be found in {\em
+text \<open>A definition of reals extended with~\<open>+\<infinity>\<close> {\em
+and}~\<open>-\<infinity>\<close> may be found in {\em
 HOL/Library/Extended\_Real.thy}. Alas, we require separate extensions
-with either~@{text "+\<infinity>"} or~@{text "-\<infinity>"}.\<close>
+with either~\<open>+\<infinity>\<close> or~\<open>-\<infinity>\<close>.\<close>
 
 text \<open>The carrier set of the max-plus semiring is the set of real
 numbers extended by minus infinity. The operation of addition is

@@ -40,7 +40,7 @@ To formalize partial functions the type @{typ "'a option"} is used.
 It is a data type with two constructors, one to inject values of the base type, \eg @{term "Some x"}, and the additional element @{term "None"}. 
 A base value can be projected with the function @{term "the"}, which is defined by the sole equation @{thm option.sel [of x]}. 
 Since HOL is a total logic the term @{term "the None"} is still a well-defined yet un(der)specified value. 
-Partial functions are usually represented by the type @{text "\<^latex>\<open>\\tfreeify{\<close>'a\<^latex>\<open>}\<close> \<Rightarrow> \<^latex>\<open>\\tfreeify{\<close>'b\<^latex>\<open>}\<close> option"}, abbreviated as @{typ  "'a \<rightharpoonup> 'b"}. 
+Partial functions are usually represented by the type \<open>\<^latex>\<open>\tfreeify{\<close>'a\<^latex>\<open>}\<close> \<Rightarrow> \<^latex>\<open>\tfreeify{\<close>'b\<^latex>\<open>}\<close> option\<close>, abbreviated as @{typ  "'a \<rightharpoonup> 'b"}. 
 They are commonly used as \emph{maps}. 
 %With @{term "map_of xs"} we construct a map from an association list, \ie a list of key~/~value pairs. 
 We denote the domain of map  @{term "m"} by @{term "dom m"}. % not used: and to its range by @{term "ran m"}. 

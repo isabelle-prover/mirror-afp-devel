@@ -7,7 +7,7 @@ nitpick_params[user_axioms=true, show_all, expect=genuine, format = 3]
 
 section \<open>Extending the Carmo and Jones DDL Logical Framework\<close>
 text\<open>\noindent{In the last section, we have modelled Kaplanian contexts by introducing a new type of object (type c) and modelled
-sentence meanings as so-called "characters", i.e. functions from contexts to sets of worlds (type @{text "c\<Rightarrow>w\<Rightarrow>o"}).
+sentence meanings as so-called "characters", i.e. functions from contexts to sets of worlds (type \<open>c\<Rightarrow>w\<Rightarrow>o\<close>).
 We also made the corresponding adjustments to the original semantic embedding of Carmo and Jones' DDL @{cite "C71"} @{cite "BenzmuellerDDL"}.
 So far we haven't said much about what these Kaplanian contexts are or which effect they should have on the evaluation
 of logical validity. We restricted ourselves to illustrating that their introduction does not have any influence
@@ -26,11 +26,11 @@ In the following we will refer to Kaplan's logic as the logic "LD".
 It is characteristic of an indexical that its content varies with context, i.e. they have a context-sensitive character.
 Non-indexicals have a fixed character. The same content is invoked in all contexts.
 Kaplan's logical system models context-sensitivity by representing contexts as tuples of features 
-(@{text "\<langle>Agent(c), Position(c), World(c), Time(c)\<rangle>"}). The agent and the position of context c can be seen as the actual speaker
+(\<open>\<langle>Agent(c), Position(c), World(c), Time(c)\<rangle>\<close>). The agent and the position of context c can be seen as the actual speaker
 and place of the utterance respectively, while c's world and time stand for the circumstances of evaluation of the
 expression's content and allow for the interaction of indexicals with alethic and tense modalities respectively.}\<close>
 
-text\<open>\noindent{To keep things simple (and relevant for our task) we restrict ourselves to representing a context c as the pair: @{text "\<langle>Agent(c), World(c)\<rangle>"}.
+text\<open>\noindent{To keep things simple (and relevant for our task) we restrict ourselves to representing a context c as the pair: \<open>\<langle>Agent(c), World(c)\<rangle>\<close>.
 For this purpose we represent the functional concepts "Agent" and "World" as logical constants.}\<close>
 consts Agent::"c\<Rightarrow>e"  \<comment> \<open> function retrieving the agent corresponding to context c \<close>   
 consts World::"c\<Rightarrow>w"  \<comment> \<open> function retrieving the world corresponding to context c \<close>
@@ -38,7 +38,7 @@ consts World::"c\<Rightarrow>w"  \<comment> \<open> function retrieving the worl
 subsection \<open>Logical Validity\<close>
 
 text\<open>\noindent{Kaplan's notion of (context-dependent) logical truth for a sentence corresponds to its (context-sensitive) formula
-(of type @{text "c\<Rightarrow>w\<Rightarrow>bool"} i.e. m) being true in the given context and at its corresponding world.}\<close>
+(of type \<open>c\<Rightarrow>w\<Rightarrow>bool\<close> i.e. m) being true in the given context and at its corresponding world.}\<close>
 abbreviation ldtruectx::"m\<Rightarrow>c\<Rightarrow>bool" ("\<lfloor>_\<rfloor>\<^sub>_") where "\<lfloor>\<phi>\<rfloor>\<^sub>c \<equiv> \<phi> c (World c)" \<comment> \<open>  truth in the given context \<close>
 
 text\<open>\noindent{Kaplan's LD notion of logical validity for a sentence corresponds to its being true in all contexts.

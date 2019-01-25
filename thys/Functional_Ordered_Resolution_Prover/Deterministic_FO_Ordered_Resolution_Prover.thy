@@ -7,7 +7,7 @@
 section \<open>A Deterministic Ordered Resolution Prover for First-Order Clauses\<close>
 
 text \<open>
-The @{text deterministic_RP} prover introduced below is a deterministic program that works on finite
+The \<open>deterministic_RP\<close> prover introduced below is a deterministic program that works on finite
 lists, committing to a strategy for assigning priorities to clauses. However, it is not fully
 executable: It abstracts over operations on atoms and employs logical specifications instead of
 executable functions for auxiliary notions.

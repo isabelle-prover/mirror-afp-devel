@@ -986,7 +986,7 @@ A statement @{term "s"} is either
 The key idea of the semantics is the following: expressions are evaluated by issuing instructions to the memory system, then the program waits until the memory system has made all necessary results available in the temporaries, which allows the program to make another step. Figure~\ref{fig:expression-evaluation} defines expression evaluation.
 %
 \begin{figure}
-\begin{tabularx}{\textwidth}{l@ {~~@{text "="}~~}X}
+\begin{tabularx}{\textwidth}{l@ {~~\<open>=\<close>~~}X}
 @{thm (lhs) issue_expr.simps (1) [no_vars]} & @{thm (rhs) issue_expr.simps (1) [no_vars]}\\
 @{thm (lhs) issue_expr.simps (2) [no_vars]} & @{thm (rhs) issue_expr.simps (2) [no_vars]}\\
 @{thm (lhs) issue_expr.simps (3) [where sop="(D,f)", no_vars]} & @{thm (rhs) issue_expr.simps (3) [where sop="(D,f)", no_vars]}\\
@@ -994,7 +994,7 @@ The key idea of the semantics is the following: expressions are evaluated by iss
 @{thm (lhs) issue_expr.simps (5) [no_vars]} & @{thm [break,margin=50] (rhs) issue_expr.simps (5) [no_vars]}\\
 \end{tabularx}\\[2pt]
 
-\begin{tabularx}{\textwidth}{l@ {~~@{text "="}~~}X}
+\begin{tabularx}{\textwidth}{l@ {~~\<open>=\<close>~~}X}
 @{thm (lhs) eval_expr.simps (1) [no_vars]} & @{thm (rhs) eval_expr.simps (1) [no_vars]}\\
 @{thm (lhs) eval_expr.simps (2) [no_vars]} & @{thm (rhs) eval_expr.simps (2) [no_vars]}\\
 @{thm (lhs) eval_expr.simps (3) [where sop="(D,f)", no_vars]} & @{thm (rhs) eval_expr.simps (3) [where sop="(D,f)",simplified fst_conv snd_conv, no_vars]}\\

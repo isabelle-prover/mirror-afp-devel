@@ -7,7 +7,7 @@
 section \<open>A Fair Ordered Resolution Prover for First-Order Clauses with Weights\<close>
 
 text \<open>
-The @{text weighted_RP} prover introduced below operates on finite multisets of clauses and
+The \<open>weighted_RP\<close> prover introduced below operates on finite multisets of clauses and
 organizes the multiset of processed clauses as a priority queue to ensure that inferences are
 performed in a fair manner, to guarantee completeness.
 \<close>

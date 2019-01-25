@@ -7,7 +7,7 @@ section \<open>An Executable Algorithm for Clause Subsumption\<close>
 
 text \<open>
 This theory provides a functional implementation of clause subsumption, building
-on the \textsf{IsaFoR} library (part of the AFP entry @{text First_Order_Terms}).
+on the \textsf{IsaFoR} library (part of the AFP entry \<open>First_Order_Terms\<close>).
 \<close>
 
 theory Executable_Subsumption
@@ -313,7 +313,7 @@ text \<open>
   by Hoare in 1962. For a list that is already sorted, this leads to $n(n-1)$
   comparisons, but as is well known, the average case is much better.
 
-  The code below is adapted from Manuel Eberl's @{text Quick_Sort_Cost} AFP
+  The code below is adapted from Manuel Eberl's \<open>Quick_Sort_Cost\<close> AFP
   entry, but without invoking probability theory and using a predicate instead
   of a set.
 \<close>
@@ -351,7 +351,7 @@ proof (induction R xs rule: quicksort.induct)
 qed auto
 
 text \<open>
-End of the material adapted from Eberl's @{text Quick_Sort_Cost}.
+End of the material adapted from Eberl's \<open>Quick_Sort_Cost\<close>.
 \<close>
 
 lemma subsumes_list_subsumes_list_filter[abs_def, code_unfold]:

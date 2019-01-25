@@ -1723,7 +1723,7 @@ qed
 
 locale program_progress = program +
 assumes progress: "\<theta>\<turnstile> p \<rightarrow>\<^sub>p (p',is') \<Longrightarrow> p' \<noteq> p \<or> is' \<noteq> []"
-text \<open>The assumption `progress' could be avoided if we introduce stuttering steps in lemma @{text "undo_local_step"}
+text \<open>The assumption `progress' could be avoided if we introduce stuttering steps in lemma \<open>undo_local_step\<close>
 or make the scheduling of threads explicit, such that we can directly express that `thread i does not make a step'.
 \<close>
 
@@ -7988,7 +7988,7 @@ done
 
 
 
-text \<open>@{text "Read\<^sub>s\<^sub>bs"} and writes have in the store-buffer have to conform to the 
+text \<open>\<open>Read\<^sub>s\<^sub>bs\<close> and writes have in the store-buffer have to conform to the 
   valuation of temporaries.\<close>
 context program
 begin

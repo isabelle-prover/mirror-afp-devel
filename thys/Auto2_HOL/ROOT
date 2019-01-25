@@ -1,9 +1,9 @@
 chapter AFP
 
 session Auto2_HOL (AFP) = HOL +
-  description {*
+  description \<open>
     Instantiation of Auto2 for Isabelle/HOL.
-  *}
+\<close>
   options [timeout = 600]
   sessions
     "HOL-Library"

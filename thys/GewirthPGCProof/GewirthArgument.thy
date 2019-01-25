@@ -86,11 +86,11 @@ The third axiom, however, has been added by us as an implicit premise in order t
 This axiom aims at representing the intuitive notion of "seeking the good". In particular, it asserts
 that, from the point of view of an agent, necessarily good purposes are not only action motivating,
 but also entail an instrumental obligation to their realisation. The notion of necessity here involved 
-is not the usual metaphysical one (which is represented in DDL with the modal box operator @{text "\<^bold>\<box>\<^sub>a"}), but the linguistic one
-introduced above (@{text "\<^bold>\<box>\<^sup>D"}) derived from indexical validity, signaling that an agent holds some
+is not the usual metaphysical one (which is represented in DDL with the modal box operator \<open>\<^bold>\<box>\<^sub>a\<close>), but the linguistic one
+introduced above (\<open>\<^bold>\<box>\<^sup>D\<close>) derived from indexical validity, signaling that an agent holds some
 purpose as being true almost 'by definition' (i.e.~a priori).
 This sets quite high standards for the kind of purposes an agent would ever take to be (instrumentally) obligatory and is 
-indeed the weakest implicit premise we could come up with so far (taking away the @{text "\<^bold>\<box>\<^sup>D"} 'a priori necessity' operator
+indeed the weakest implicit premise we could come up with so far (taking away the \<open>\<^bold>\<box>\<^sup>D\<close> 'a priori necessity' operator
 would indeed make this premise much stronger and our proof less credible).}\<close>
 
 subsubsection \<open>Freedom and Well-Being\<close>
@@ -125,9 +125,9 @@ lemma True nitpick[satisfy, card c = 1, card e = 1, card w = 2] oops \<comment> 
 
 subsubsection \<open>Obligation and Interference\<close>
 
-text\<open>\noindent{ Kant's Law ("ought implies can") is derivable directly from DDL: If @{text "\<phi>"} oughts to obtain then @{text "\<phi>"} is possible.
-Note that we will use for the formalisation of Gewirth's argument the DDL ideal obligation operator (@{text "\<^bold>O\<^sub>i"}) but
-we could have also used (mutatis mutandis) the DDL actual obligation operator (@{text "\<^bold>O\<^sub>a"}).}\<close>
+text\<open>\noindent{ Kant's Law ("ought implies can") is derivable directly from DDL: If \<open>\<phi>\<close> oughts to obtain then \<open>\<phi>\<close> is possible.
+Note that we will use for the formalisation of Gewirth's argument the DDL ideal obligation operator (\<open>\<^bold>O\<^sub>i\<close>) but
+we could have also used (mutatis mutandis) the DDL actual obligation operator (\<open>\<^bold>O\<^sub>a\<close>).}\<close>
 lemma "\<lfloor>\<^bold>O\<^sub>i\<phi> \<^bold>\<rightarrow> \<^bold>\<diamond>\<^sub>p\<phi>\<rfloor>" using sem_5ab by simp
 
 
@@ -140,8 +140,8 @@ axiomatization where OIOAC: "\<lfloor>\<^bold>O\<^sub>i\<phi> \<^bold>\<rightarr
 
 text\<open>\noindent{Concerning the concept of interference, we state that the existence of an individual (successfully) interfering
 with some state of affairs S implies that S cannot possibly obtain in any of the actually possible situations (and the other way round).
-Note that for this definition we have employed a possibility operator (@{text "\<^bold>\<diamond>\<^sub>a"}) which is weaker than metaphysical
-possibility (@{text "\<^bold>\<diamond>\<^sub>a"}) (see Carmo and Jones DDL framework @{cite "CJDDL"} for details).
+Note that for this definition we have employed a possibility operator (\<open>\<^bold>\<diamond>\<^sub>a\<close>) which is weaker than metaphysical
+possibility (\<open>\<^bold>\<diamond>\<^sub>a\<close>) (see Carmo and Jones DDL framework @{cite "CJDDL"} for details).
 Also note that we have also employed the (stronger) classical notion of modal
 validity instead of indexical validity. (So far we haven't been able to get theorem provers and model finders to prove/disprove
 Gewirth's proof if formalizing this axiom as simply indexically valid.)}\<close>
