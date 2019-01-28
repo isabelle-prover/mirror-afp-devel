@@ -385,7 +385,7 @@ locale igb_graph =
   graph G
   for G :: "('Q,'more) igb_graph_rec_scheme"
   +
-  assumes acc_bound: "\<Union>range (igbg_acc G) \<subseteq> {0..<(igbg_num_acc G)}"
+  assumes acc_bound: "\<Union>(range (igbg_acc G)) \<subseteq> {0..<(igbg_num_acc G)}"
   assumes acc_ss: "igbg_acc G q \<noteq> {} \<Longrightarrow> q\<in>V"
 begin
   abbreviation num_acc where "num_acc \<equiv> igbg_num_acc G"
@@ -526,7 +526,7 @@ definition F_to_idx :: "'Q set set \<Rightarrow> (nat \<times> ('Q \<Rightarrow>
 
 lemma F_to_idx_correct:
   shows "F_to_idx F \<le> SPEC (\<lambda>(num_acc,acc). F = { {q. i\<in>acc q} | i. i<num_acc } 
-    \<and> \<Union>range acc \<subseteq> {0..<num_acc})"
+    \<and> \<Union>(range acc) \<subseteq> {0..<num_acc})"
   unfolding F_to_idx_def
   apply (refine_rcg refine_vcg)
   apply (clarsimp dest!: sym[where t=F])
@@ -626,7 +626,7 @@ proof -
   also note F_to_idx_correct
   finally have R: "F_to_idx_impl F
     \<le> SPEC (\<lambda>(num_acc, acc). F = {{q. i \<in> acc q} |i. i < num_acc}
-      \<and> \<Union>range acc \<subseteq> {0..<num_acc})" by simp
+      \<and> \<Union>(range acc) \<subseteq> {0..<num_acc})" by simp
 
   have eq_conjI: "\<And>a b c. (b\<longleftrightarrow>c) \<Longrightarrow> (a&b \<longleftrightarrow> a&c)" by simp
 
