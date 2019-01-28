@@ -251,7 +251,7 @@ lemma in_set_ParamDefsE:
   by (cases "(P, n)" rule: ParamDefs.cases) auto
 
 lemma in_set_ParamUsesE:
-  assumes V_in_ParamUses: "V \<in> \<Union>set (ParamUses P n)"
+  assumes V_in_ParamUses: "V \<in> \<Union>(set (ParamUses P n))"
   obtains "n = (ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Normal)" and "V = Heap"
   | C M pc M' n' i where "n = (C, M, \<lfloor>pc\<rfloor>, Normal)" and "instrs_of (PROG P) C M ! pc = Invoke M' n'"
     and "V = Heap \<or> V = Stack (stkLength (P, C, M) pc - Suc i)" and "i < Suc n'" and "C \<noteq> ClassMain P"
@@ -429,7 +429,7 @@ next
 next
   fix n V
   assume "CFG.valid_node sourcenode targetnode (valid_edge (P, C0, Main)) n"
-    and V: "V \<in> \<Union>set (ParamUses P n)"
+    and V: "V \<in> \<Union>(set (ParamUses P n))"
   then obtain ek n'
     where ve:"valid_edge (P, C0, Main) (n, ek, n') \<or> valid_edge (P, C0, Main) (n', ek, n)"
     by (fastforce simp: JVMCFG_Interpret.valid_node_def)

@@ -143,28 +143,28 @@ fun pref_classes_lists_aux where
 | "pref_classes_lists_aux acc (xs#xss) = insert acc (pref_classes_lists_aux (acc \<union> xs) xss)"
 
 lemma pref_classes_lists_append: 
-  "pref_classes_lists (xs @ ys) = ((\<union>) (\<Union>set ys)) ` pref_classes_lists xs \<union> pref_classes_lists ys"
+  "pref_classes_lists (xs @ ys) = (\<union>) (\<Union>(set ys)) ` pref_classes_lists xs \<union> pref_classes_lists ys"
   by (induction xs) auto
 
 lemma pref_classes_lists_aux:
-  assumes "is_weak_ranking xss" "acc \<inter> (\<Union>set xss) = {}"
+  assumes "is_weak_ranking xss" "acc \<inter> (\<Union>(set xss)) = {}"
   shows  "pref_classes_lists_aux acc xss = 
             (insert acc ((\<lambda>A. A \<union> acc) ` pref_classes_lists (rev xss)) - {acc \<union> \<Union>(set xss)})"
 using assms
 proof (induction acc xss rule: pref_classes_lists_aux.induct [case_names Nil Cons]) 
   case (Cons acc xs xss)
-  from Cons.prems have A: "acc \<inter> (xs \<union> \<Union>set xss) = {}" "xs \<noteq> {}" 
+  from Cons.prems have A: "acc \<inter> (xs \<union> \<Union>(set xss)) = {}" "xs \<noteq> {}" 
     by (simp_all add: is_weak_ranking_Cons)
   from Cons.prems have "pref_classes_lists_aux (acc \<union> xs) xss =
                           insert (acc \<union> xs) ((\<lambda>A. A \<union> (acc \<union> xs)) `pref_classes_lists (rev xss)) -
-                          {acc \<union> xs \<union> \<Union>set xss}"
+                          {acc \<union> xs \<union> \<Union>(set xss)}"
     by (intro Cons.IH) (auto simp: is_weak_ranking_Cons)
   with Cons.prems have "pref_classes_lists_aux acc (xs # xss) = 
       insert acc (insert (acc \<union> xs) ((\<lambda>A. A \<union> (acc \<union> xs)) ` pref_classes_lists (rev xss)) -
-         {acc \<union> (xs \<union> \<Union>set xss)})"
+         {acc \<union> (xs \<union> \<Union>(set xss))})"
     by (simp_all add: is_weak_ranking_Cons pref_classes_lists_append image_image Un_ac)
   also from  A have "\<dots> = insert acc (insert (acc \<union> xs) ((\<lambda>x. x \<union> (acc \<union> xs)) ` 
-                            pref_classes_lists (rev xss))) - {acc \<union> (xs \<union> \<Union>set xss)}" 
+                            pref_classes_lists (rev xss))) - {acc \<union> (xs \<union> \<Union>(set xss))}" 
     by blast
   finally show ?case
     by (simp_all add: pref_classes_lists_append image_image Un_ac)
@@ -172,15 +172,15 @@ qed simp_all
 
 lemma pref_classes_list_aux_hd_tl:
   assumes "is_weak_ranking xss" "xss \<noteq> []"
-  shows   "pref_classes_lists_aux (hd xss) (tl xss) = pref_classes_lists (rev xss) - {\<Union>set xss}"
+  shows   "pref_classes_lists_aux (hd xss) (tl xss) = pref_classes_lists (rev xss) - {\<Union>(set xss)}"
 proof -
   from assms have A: "xss = hd xss # tl xss" by simp
-  from assms have "hd xss \<inter> \<Union>set (tl xss) = {} \<and> is_weak_ranking (tl xss)"
+  from assms have "hd xss \<inter> \<Union>(set (tl xss)) = {} \<and> is_weak_ranking (tl xss)"
     by (subst (asm) A, subst (asm) is_weak_ranking_Cons) simp_all
   hence "pref_classes_lists_aux (hd xss) (tl xss) = 
            insert (hd xss) ((\<lambda>A. A \<union> hd xss) ` pref_classes_lists (rev (tl xss))) -
-           {hd xss \<union> \<Union>set (tl xss)}" by (intro pref_classes_lists_aux) simp_all
-  also have "hd xss \<union> \<Union>set (tl xss) = \<Union>(set xss)" by (subst (3) A, subst set_simps) simp_all
+           {hd xss \<union> \<Union>(set (tl xss))}" by (intro pref_classes_lists_aux) simp_all
+  also have "hd xss \<union> \<Union>(set (tl xss)) = \<Union>(set xss)" by (subst (3) A, subst set_simps) simp_all
   also have "insert (hd xss) ((\<lambda>A. A \<union> hd xss) ` pref_classes_lists (rev (tl xss))) =
                pref_classes_lists (rev (tl xss) @ [hd xss])"
     by (subst pref_classes_lists_append) auto
@@ -197,23 +197,23 @@ proof safe
     by (induction xss) (auto simp: is_weak_ranking_Cons of_weak_ranking_Collect_ge_Cons')
 next
   fix x assume "x \<in> pref_classes_lists xss"
-  with assms show "x \<in> of_weak_ranking_Collect_ge xss ` \<Union>set xss"
+  with assms show "x \<in> of_weak_ranking_Collect_ge xss ` \<Union>(set xss)"
   proof (induction xss)
     case (Cons xs xss)
-    from Cons.prems consider "x = xs \<union> \<Union>set xss" | "x \<in> pref_classes_lists xss" by auto
+    from Cons.prems consider "x = xs \<union> \<Union>(set xss)" | "x \<in> pref_classes_lists xss" by auto
     thus ?case
     proof cases
-      assume "x = xs \<union> \<Union>set xss"
+      assume "x = xs \<union> \<Union>(set xss)"
       with Cons.prems show ?thesis
         by (auto simp: is_weak_ranking_Cons of_weak_ranking_Collect_ge_Cons')
     next
       assume x: "x \<in> pref_classes_lists xss"
-      from Cons.prems x have "x \<in> of_weak_ranking_Collect_ge xss ` \<Union>set xss"
+      from Cons.prems x have "x \<in> of_weak_ranking_Collect_ge xss ` \<Union>(set xss)"
         by (intro Cons.IH) (simp_all add: is_weak_ranking_Cons)
-      moreover from Cons.prems have "xs \<inter> \<Union>set xss = {}"
+      moreover from Cons.prems have "xs \<inter> \<Union>(set xss) = {}"
         by (simp add: is_weak_ranking_Cons)
       ultimately have "x \<in> of_weak_ranking_Collect_ge xss `
-                         ((xs \<union> \<Union>set xss) \<inter> {x. x \<notin> xs})" by blast
+                         ((xs \<union> \<Union>(set xss)) \<inter> {x. x \<notin> xs})" by blast
       thus ?thesis by (simp add: of_weak_ranking_Collect_ge_Cons')
     qed
   qed simp_all
@@ -224,7 +224,7 @@ lemma eval_pref_classes_of_weak_ranking:
   shows   "pref_classes alts (of_weak_ranking xss) = pref_classes_lists_aux (hd xss) (tl xss)"
 proof -
   have "pref_classes alts (of_weak_ranking xss) = 
-               preferred_alts (of_weak_ranking xss) ` (\<Union>(set (rev xss))) - {\<Union>set xss}"
+               preferred_alts (of_weak_ranking xss) ` (\<Union>(set (rev xss))) - {\<Union>(set xss)}"
     by (simp add: pref_classes_def assms)
   also {
     have "of_weak_ranking_Collect_ge (rev xss) ` (\<Union>(set (rev xss))) = pref_classes_lists (rev xss)"
@@ -234,7 +234,7 @@ proof -
     finally have "preferred_alts (of_weak_ranking xss) ` (\<Union>(set (rev xss))) = 
                     pref_classes_lists (rev xss)" .
   }
-  also from assms have "pref_classes_lists (rev xss) - {\<Union>set xss} = 
+  also from assms have "pref_classes_lists (rev xss) - {\<Union>(set xss)} = 
                           pref_classes_lists_aux (hd xss) (tl xss)"
     by (intro pref_classes_list_aux_hd_tl [symmetric]) auto
   finally show ?thesis by simp
@@ -368,9 +368,9 @@ proof
   moreover from * xs'_aux' have "is_finite_weak_ranking xs'"
     by (auto simp: xs' is_finite_weak_ranking_def)
   moreover from prefs_from_table_wfD(5)[OF wf(3) xs'_aux] 
-    have "\<Union>set xs' = alts" unfolding xs' 
+    have "\<Union>(set xs') = alts" unfolding xs' 
     by (simp add: image_Union [symmetric] permutes_image[OF perm'])
-  ultimately have wf_xs': "is_weak_ranking xs'" "is_finite_weak_ranking xs'" "\<Union>set xs' = alts"
+  ultimately have wf_xs': "is_weak_ranking xs'" "is_finite_weak_ranking xs'" "\<Union>(set xs') = alts"
     by (simp_all add: is_finite_weak_ranking_def)
   from this wf j have wf': "is_pref_profile R1" "total_preorder_on alts Ri'" 
                       "is_pref_profile R2" "finite_total_preorder_on alts Ri'"

@@ -342,7 +342,7 @@ lemma dep_slist_imp_mem_dep:
   shows "(\<exists>vs'. ListMem vs' lvs \<and> dep_var_set PROB vs' vs)"
 proof -
   obtain v1 v2 where 
-    obtain_v1_v2: "v1 \<in> \<Union>set lvs" "v2 \<in> vs" "disjnt (\<Union>set lvs) vs" "dep PROB v1 v2" 
+    obtain_v1_v2: "v1 \<in> \<Union>(set lvs)" "v2 \<in> vs" "disjnt (\<Union>(set lvs)) vs" "dep PROB v1 v2" 
     using assms dep_var_set_def[of PROB "\<Union> (set lvs)" vs] 
     by blast
   then obtain vs' where obtain_vs': "vs' \<in> set lvs" "v1 \<in> vs'" 
@@ -351,7 +351,7 @@ proof -
     using ListMem_iff
     by fast
   moreover {
-    have "vs' \<subseteq> (\<Union>set lvs)" 
+    have "vs' \<subseteq> \<Union>(set lvs)" 
       using obtain_vs'(1)
       by blast
     then have "disjnt vs' vs" 

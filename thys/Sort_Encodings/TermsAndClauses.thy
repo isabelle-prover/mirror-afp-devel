@@ -47,14 +47,14 @@ fun vars where
 fun varsA where
 "varsA (Eq T1 T2) = vars T1 \<union> vars T2"
 |
-"varsA (Pr p Tl) = \<Union> set (map vars Tl)"
+"varsA (Pr p Tl) = \<Union> (set (map vars Tl))"
 
 fun varsL where
 "varsL (Pos at) = varsA at"
 |
 "varsL (Neg at) = varsA at"
 
-definition "varsC c = \<Union> set (map varsL c)"
+definition "varsC c = \<Union> (set (map varsL c))"
 
 definition "varsPB \<Phi> = \<Union> {varsC c | c. c \<in> \<Phi>}"
 

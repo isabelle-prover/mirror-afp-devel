@@ -25,15 +25,15 @@ lemma pol_polC: "pol \<sigma> P = polC P"
 unfolding polC_def using pol_ct by auto
 
 lemma nv2L_simps[simp]:
-"nv2L (Pos (Pr p Tl)) = (case polC p of Fext \<Rightarrow> \<Union> set (map nv2T Tl) |_ \<Rightarrow> {})"
-"nv2L (Neg (Pr p Tl)) = (case polC p of Text \<Rightarrow> \<Union> set (map nv2T Tl) |_ \<Rightarrow> {})"
+"nv2L (Pos (Pr p Tl)) = (case polC p of Fext \<Rightarrow> \<Union> (set (map nv2T Tl)) |_ \<Rightarrow> {})"
+"nv2L (Neg (Pr p Tl)) = (case polC p of Text \<Rightarrow> \<Union> (set (map nv2T Tl)) |_ \<Rightarrow> {})"
 by (auto split: epol.splits simp: pol_polC)
 
 declare nv2L.simps(3,4)[simp del]
 
 lemma isGuard_simps[simp]:
-"isGuard x (Pos (Pr p Tl)) \<longleftrightarrow> x \<in> \<Union> set (map nv2T Tl) \<and> polC p = Text"
-"isGuard x (Neg (Pr p Tl)) \<longleftrightarrow> x \<in> \<Union> set (map nv2T Tl) \<and> polC p = Fext"
+"isGuard x (Pos (Pr p Tl)) \<longleftrightarrow> x \<in> \<Union> (set (map nv2T Tl)) \<and> polC p = Text"
+"isGuard x (Neg (Pr p Tl)) \<longleftrightarrow> x \<in> \<Union> (set (map nv2T Tl)) \<and> polC p = Fext"
 by (auto simp: pol_polC)
 
 declare isGuard.simps(3,4)[simp del]

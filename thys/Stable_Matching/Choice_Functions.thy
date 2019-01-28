@@ -1228,11 +1228,11 @@ proof(rule mwc_sarpI)
   assume LLL: "length Xs > 1"
      and EEE: "distinct (map f Xs)"
      and AAA: "\<forall>i. f (Xs!%i) \<subset> Xs!%i \<inter> Xs!%(i+1)"
-  have 6: "f (\<Union>set Xs) \<subseteq> (\<Inter>X\<in>set Xs. f X)"
+  have 6: "f (\<Union>(set Xs)) \<subseteq> (\<Inter>X\<in>set Xs. f X)"
   proof -
-    have 4: "x \<notin> f (\<Union>set Xs)" if "x \<in> (\<Union>set Xs) - (\<Union>X\<in>set Xs. f X)" for x
+    have 4: "x \<notin> f (\<Union>(set Xs))" if "x \<in> \<Union>(set Xs) - (\<Union>X\<in>set Xs. f X)" for x
       using that \<open>iia f\<close> unfolding iia_on_def by simp blast
-    have 5: "x \<notin> f (\<Union>set Xs)" if "x \<in> (\<Union>X\<in>set Xs. f X) - (\<Inter>X\<in>set Xs. f X)" for x
+    have 5: "x \<notin> f (\<Union>(set Xs))" if "x \<in> (\<Union>X\<in>set Xs. f X) - (\<Inter>X\<in>set Xs. f X)" for x
     proof -
       from that obtain j k where "x \<in> f (Xs ! j)" "x \<notin> f (Xs ! k)" "j < length Xs" "k < length Xs"
         by (clarsimp simp: in_set_conv_nth)
@@ -1240,10 +1240,10 @@ proof(rule mwc_sarpI)
       obtain i where "x \<in> f (Xs !% i) - f (Xs !% (i+1))"
         by %invisible auto (metis One_nat_def add_eq_if diff_diff_cancel diff_is_0_eq' lessI mod_less nat_le_linear zero_less_diff)
       with AAA have "x \<in> Rf f (Xs!%(i+1))" by auto
-      with LLL show "x \<notin> f (\<Union>set Xs)"
+      with LLL show "x \<notin> f (\<Union>(set Xs))"
         using \<open>iia f\<close> unfolding iia_on_def by clarsimp (meson Suc_lessD Sup_upper mod_less_divisor nth_mem)
     qed
-    from 4 5 have "x \<notin> f (\<Union>set Xs)" if "x \<in> (\<Union>set Xs) - (\<Inter>X\<in>set Xs. f X)" for x
+    from 4 5 have "x \<notin> f (\<Union>(set Xs))" if "x \<in> (\<Union>(set Xs)) - (\<Inter>X\<in>set Xs. f X)" for x
       using that by blast
     with \<open>f_range f\<close> show ?thesis by (blast dest: f_range_onD)
   qed
@@ -1251,20 +1251,20 @@ proof(rule mwc_sarpI)
   proof -
     from \<open>f_range f\<close> LLL have "\<Inter>(f ` set Xs) \<subseteq> Xs ! 1"
       using nth_mem f_range_onD by fastforce
-    with \<open>consistency f\<close> LLL 6 have f4: "f (\<Union>set Xs) = f (Xs ! 1)"
+    with \<open>consistency f\<close> LLL 6 have f4: "f (\<Union>(set Xs)) = f (Xs ! 1)"
       by - (rule consistencyD[where f=f], force+)
     with \<open>f_range f\<close> LLL 6 have "f (Xs ! 1) \<subseteq> Xs ! 0"
       using f_range_onD by (metis INT_lower One_nat_def Suc_lessD subset_trans nth_mem top.extremum)
     with \<open>consistency f\<close> EEE LLL f4 show ?thesis
       by (metis One_nat_def Suc_lessD Sup_upper consistencyD length_map nth_eq_iff_index_eq nth_map nth_mem zero_neq_one)
   qed
-  moreover have "\<forall>i. f (Xs!%i) = f (\<Union>set Xs)"
+  moreover have "\<forall>i. f (Xs!%i) = f (\<Union>(set Xs))"
   proof -
     from AAA have "\<forall>i. f (Xs!%i) \<subseteq> Xs!%i" by auto
-    moreover from LLL have "\<forall>i. Xs!%i \<subseteq> \<Union>set Xs"
+    moreover from LLL have "\<forall>i. Xs!%i \<subseteq> \<Union>(set Xs)"
       by (metis One_nat_def Suc_lessD Sup_upper mod_less_divisor nth_mem)
     moreover note 6 \<open>\<forall>i. (\<Inter>X\<in>set Xs. f X) \<subset> f (Xs !% i)\<close>
-    ultimately show "\<forall>i. f (Xs!%i) = f (\<Union>set Xs)"
+    ultimately show "\<forall>i. f (Xs!%i) = f (\<Union>(set Xs))"
       by - (clarsimp; rule consistencyD[OF \<open>consistency f\<close>, symmetric]; meson dual_order.trans psubsetE)
   qed
   ultimately show False by force

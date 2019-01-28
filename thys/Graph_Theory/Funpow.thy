@@ -608,7 +608,7 @@ proof (induction arbitrary: f rule: finite_psubset_induct)
       then have "cyclic_on f c" using C(1)[OF \<open>c \<in> C\<close>] by (simp cong: cyclic_cong add: *)
     } note in_C_cyclic = this
 
-    have Un_ins: "\<Union>insert (orbit f s) C = S"
+    have Un_ins: "\<Union>(insert (orbit f s) C) = S"
       using \<open>\<Union>C = _\<close>  \<open>orbit f s \<subseteq> S\<close> by blast
 
     have Disj_ins: "(\<forall>c1 \<in> insert (orbit f s) C. \<forall>c2 \<in> insert (orbit f s) C. c1 \<noteq> c2 \<longrightarrow> c1 \<inter> c2 = {})"

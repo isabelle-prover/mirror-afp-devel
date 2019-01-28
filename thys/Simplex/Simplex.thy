@@ -295,7 +295,7 @@ definition satisfies_tableau ::"'a::rational_vector valuation \<Rightarrow> tabl
 definition lvars :: "tableau \<Rightarrow> var set" where
   "lvars t = set (map lhs t)"
 definition rvars :: "tableau \<Rightarrow> var set" where
-  "rvars t = \<Union> set (map rvars_eq t)"
+  "rvars t = \<Union> (set (map rvars_eq t))"
 abbreviation tvars where "tvars t \<equiv> lvars t \<union> rvars t"
 
 text \<open>The condition that the rhss are non-zero is required to obtain minimal unsatisfiable cores.
@@ -4907,7 +4907,7 @@ proof-
       by (auto dest: finite_imageD)
   qed
 
-  have "?A = \<Union> \<Union> (((`) ?Vt) ` (?Al ` {L. L \<subseteq> V}))" (is "?A = ?A'")
+  have "?A = \<Union> (\<Union> (((`) ?Vt) ` (?Al ` {L. L \<subseteq> V})))" (is "?A = ?A'")
     by (auto simp add: normalized_tableau_def)
   moreover
   have "finite ?A'"
@@ -5120,7 +5120,7 @@ proof (rule acyclicI, rule allI)
 
     have "finite ?enter_rvars"
     proof-
-      let ?all_vars = "(\<Union> set (map (\<lambda> t. lvars t \<union> rvars t) (map \<T> l)))"
+      let ?all_vars = "\<Union> (set (map (\<lambda> t. lvars t \<union> rvars t) (map \<T> l)))"
       have "finite ?all_vars"
         by (auto simp add: lvars_def rvars_def finite_vars)
       moreover
@@ -7131,7 +7131,7 @@ lemma fresh_var_monoinc:
   by (induct cs) (auto simp add: Let_def split: option.splits)
 
 abbreviation vars_constraints where
-  "vars_constraints cs \<equiv> \<Union> set (map vars (map poly cs))"
+  "vars_constraints cs \<equiv> \<Union> (set (map vars (map poly cs)))"
 
 lemma start_fresh_variable_fresh:
   "\<forall> var \<in> vars_constraints (flat_list cs). var < start_fresh_variable cs"

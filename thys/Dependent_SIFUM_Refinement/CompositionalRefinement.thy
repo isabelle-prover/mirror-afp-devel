@@ -1441,7 +1441,7 @@ locale sifum_refinement_sys =
   fixes priv_mem\<^sub>C :: "'Var\<^sub>C set list"
   defines priv_mem\<^sub>C_def: "priv_mem\<^sub>C \<equiv> map priv_mem cms"
   assumes priv_mem_disjoint: "i < length cms \<Longrightarrow> j < length cms \<Longrightarrow> i \<noteq> j \<Longrightarrow> priv_mem\<^sub>C ! i \<inter> priv_mem\<^sub>C ! j = {}"
-  assumes new_vars_priv: "- range var\<^sub>C_of = \<Union> set priv_mem\<^sub>C"
+  assumes new_vars_priv: "- range var\<^sub>C_of = \<Union> (set priv_mem\<^sub>C)"
   assumes new_privs_preserved: "\<langle>c, mds, mem\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c', mds', mem'\<rangle>\<^sub>C \<Longrightarrow> x \<notin> range var\<^sub>C_of \<Longrightarrow>
                                  (x \<in> mds m) = (x \<in> mds' m)"
   assumes secure_refinements: 
@@ -1821,7 +1821,7 @@ lemma nth_map_eq:
   done
 
 lemma nth_in_Union_over_set: 
-  "i < length xs \<Longrightarrow> xs ! i \<subseteq> \<Union>set xs"
+  "i < length xs \<Longrightarrow> xs ! i \<subseteq> \<Union>(set xs)"
   by (simp add: Union_upper)
 
 lemma priv_are_new_vars: 

@@ -305,7 +305,7 @@ next
         by (simp; metis (no_types) Diff_eq_empty_iff subset_singletonD)
     next
       from \<open>partition_on (insert a A) P\<close> have "\<Union>P = insert a A" by (auto elim: partition_onE)
-      from p_def this \<open>a \<notin> A\<close> a_notmem show "\<Union>insert (p - {a}) (P - {p}) = A" by auto
+      from p_def this \<open>a \<notin> A\<close> a_notmem show "\<Union>(insert (p - {a}) (P - {p})) = A" by auto
     next
       show "\<And>pa pa'. pa\<in>insert (p - {a}) (P - {p}) \<Longrightarrow> pa'\<in>insert (p - {a}) (P - {p}) \<Longrightarrow> pa \<noteq> pa' \<Longrightarrow> pa \<inter> pa' = {}"
         using \<open>partition_on (insert a A) P\<close> p_def a_notmem

@@ -73,7 +73,7 @@ lemma "\<not>pre_par c  \<Longrightarrow> pre c \<in> pre_set c"
   by (induct c; simp)
 
 lemma pre_set:
-  "pre c = \<Inter> pre_set c"
+  "pre c = \<Inter> (pre_set c)"
   by (induct c; fastforce)
 
 lemma pre_imp_pre_set:

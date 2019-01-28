@@ -948,9 +948,9 @@ definition "inv_face_cycles_outer s iG iM i c edge_info \<equiv>
 definition "inv_face_cycles_inner s iG iM i j c edge_info \<equiv>
   j \<in> pre_digraph_map.face_cycle_set iM i
   \<and> c = card (fcs_upto iM i)
-  \<and> i \<notin> \<Union>fcs_upto iM i
+  \<and> i \<notin> \<Union>(fcs_upto iM i)
   \<and> (\<forall>k < length (ig_edges iG). k \<in> edge_info \<longleftrightarrow>
-    (k \<in> \<Union>fcs_upto iM i
+    (k \<in> \<Union>(fcs_upto iM i)
     \<or> (\<exists>l < funpow_dist1 (pre_digraph_map.face_cycle_succ iM) i j. (pre_digraph_map.face_cycle_succ iM ^^ l) i = k)))"
 
 lemma finite_fcs_upto: "finite (fcs_upto iM i)"
@@ -1087,7 +1087,7 @@ proof vcg_casify
           have fcs_in: "G.face_cycle_succ i \<in> G.face_cycle_set i"
             by (simp add: G.face_cycle_succ_inI)
 
-          have i_not_in_fcs: "i \<notin> \<Union>fcs_upto iM i"
+          have i_not_in_fcs: "i \<notin> \<Union>(fcs_upto iM i)"
             using g weaken
             by (auto simp: inv_face_cycles_outer_def fcs_upto_def)
 

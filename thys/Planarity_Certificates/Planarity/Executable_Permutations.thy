@@ -609,7 +609,7 @@ proof (induct "length as" arbitrary: as rule: less_induct)
     from Cons less.prems have A: "distincts (orbits_list f (fold remove1 (orbit_list f a) as'))"
       by (intro less) (auto simp: distinct_fold_remove1 length_fold_remove1_le less_Suc_eq_le)
 
-    have B: "set (orbit_list f a) \<inter> \<Union> sset (orbits_list f (fold remove1 (orbit_list f a) as')) = {}"
+    have B: "set (orbit_list f a) \<inter> \<Union>(sset (orbits_list f (fold remove1 (orbit_list f a) as'))) = {}"
     proof -
       have "orbit f a \<inter> set (fold remove1 (orbit_list f a) as') = {}"
         using assms less.prems Cons by (simp add: set_fold_remove1_distinct set_orbit_list')
@@ -648,7 +648,7 @@ lemma cyclic_on_lists_succ:
 lemma permutes_as_lists_succ:
   assumes "distincts xss"
   assumes ls_eq: "\<And>xs. xs \<in> set xss \<Longrightarrow> list_succ xs = perm_restrict f (set xs)"
-  assumes "f permutes (\<Union>sset xss)"
+  assumes "f permutes (\<Union>(sset xss))"
   shows "f = lists_succ xss"
   using assms
 proof (induct xss arbitrary: f)
@@ -693,7 +693,7 @@ qed
 lemma cyclic_on_obtain_lists_succ:
   assumes
     permutes: "f permutes S" and
-    S: "S = \<Union>sset css" and
+    S: "S = \<Union>(sset css)" and
     dists: "distincts css" and
     cyclic: "\<And>cs. cs \<in> set css \<Longrightarrow> cyclic_on f (set cs)"
   obtains xss where "f = lists_succ xss" "distincts xss" "map set xss = map set css" "map hd xss = map hd css"
@@ -751,7 +751,7 @@ proof -
   next
     have "S = (\<Union>xs\<in>set (map some_list css). set xs)"
       using S sl_cs(2) by auto
-    with permutes show "f permutes (\<Union>sset (map some_list css))"
+    with permutes show "f permutes \<Union>(sset (map some_list css))"
       by simp
   qed
 
@@ -893,7 +893,7 @@ lemma in_set_cyc_permutationss:
 proof -
   { assume A: "list_all2 (\<lambda>x ys. x \<in> set ys) yss (map cyc_permutations xss)"
     then have "length yss = length xss" by (auto simp: list_all2_lengthD)
-    then have "\<Union>sset xss = \<Union>sset yss" "distincts yss" "map set xss = map set yss" "map hd xss = map hd yss"
+    then have "\<Union>(sset xss) = \<Union>(sset yss)" "distincts yss" "map set xss = map set yss" "map hd xss = map hd yss"
       using A assms
       by (induct yss xss rule: list_induct2) (auto simp: distincts_Cons in_set_cyc_permutations)
   } note X = this
@@ -910,7 +910,7 @@ qed
 
 lemma lists_succ_set_cyc_permutationss:
   assumes "distincts xss"
-  shows "lists_succ ` set (cyc_permutationss xss) = {f. f permutes \<Union>sset xss \<and> (\<forall>c \<in> sset xss. cyclic_on f c)}" (is "?L = ?R")
+  shows "lists_succ ` set (cyc_permutationss xss) = {f. f permutes \<Union>(sset xss) \<and> (\<forall>c \<in> sset xss. cyclic_on f c)}" (is "?L = ?R")
   using assms
 proof (intro set_eqI iffI)
   fix f assume "f \<in> ?L"
@@ -925,7 +925,7 @@ proof (intro set_eqI iffI)
   by (auto simp: in_set_cyc_permutationss cyclic_on_lists_succ') (metis lists_succ_permutes)
 next
   fix f assume "f \<in> ?R"
-  then have "f permutes \<Union>sset xss" "\<And>cs. cs \<in> set xss \<Longrightarrow> cyclic_on f (set cs)"
+  then have "f permutes \<Union>(sset xss)" "\<And>cs. cs \<in> set xss \<Longrightarrow> cyclic_on f (set cs)"
     by auto
   from this(1) refl assms this(2)
   obtain yss where "f = lists_succ yss" "distincts yss" "map set yss = map set xss" "map hd yss = map hd xss"
@@ -952,7 +952,7 @@ lemma in_set_permutationss:
 proof -
   { assume A: "list_all2 (\<lambda>x ys. x \<in> set ys) yss (map permutations xss)"
     then have "length yss = length xss" by (auto simp: list_all2_lengthD)
-    then have "\<Union>sset xss = \<Union>sset yss" "distincts yss" "map set xss = map set yss"
+    then have "\<Union>(sset xss) = \<Union>(sset yss)" "distincts yss" "map set xss = map set yss"
       using A assms
       by (induct yss xss rule: list_induct2) (auto simp: distincts_Cons in_set_permutations)
   } note X = this

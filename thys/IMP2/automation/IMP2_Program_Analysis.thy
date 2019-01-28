@@ -140,7 +140,7 @@ begin
   | "lhsv' (SCOPE c) = Set.filter is_global (lhsv' c)"
   | "lhsv' (PCall p) = {}"
   | lhsv'_pscope_simp_orig[simp del]: 
-    "lhsv' (PScope \<pi> c) = (\<Union>ran (map_option lhsv' o \<pi>)) \<union> lhsv' c"
+    "lhsv' (PScope \<pi> c) = \<Union>(ran (map_option lhsv' o \<pi>)) \<union> lhsv' c"
   
   definition "lhsv\<pi> \<pi> \<equiv> (\<Union>c\<in>ran \<pi>. lhsv' c)"
   

@@ -826,7 +826,7 @@ subsection \<open>Monotonicity of offending flows\<close>
 
     text\<open>The offending flows are monotonic.\<close>
     corollary offending_flows_union_mono: "\<lbrakk> wf_graph \<lparr> nodes = V, edges = E \<rparr>; E' \<subseteq> E \<rbrakk> \<Longrightarrow> 
-      (\<Union> set_offending_flows \<lparr> nodes = V, edges = E' \<rparr> nP) \<subseteq> (\<Union> set_offending_flows \<lparr> nodes = V, edges = E \<rparr> nP)"
+      \<Union> (set_offending_flows \<lparr> nodes = V, edges = E' \<rparr> nP) \<subseteq> \<Union> (set_offending_flows \<lparr> nodes = V, edges = E \<rparr> nP)"
       apply(clarify)
       apply(drule(2) mono_extend_set_offending_flows)
       by blast
@@ -905,7 +905,7 @@ end
 
     value "pow_combine {1::int,2} {{5::int, 6}, {1}} \<subseteq> pow_combine {1::int,2} {{5::int, 6}, {8}}"
 
-    lemma rule_pow_combine_fixfst_Union: "\<Union> B \<subseteq> \<Union> C \<Longrightarrow> \<Union> pow_combine A B \<subseteq> \<Union> pow_combine A C"
+    lemma rule_pow_combine_fixfst_Union: "\<Union> B \<subseteq> \<Union> C \<Longrightarrow> \<Union> (pow_combine A B) \<subseteq> \<Union> (pow_combine A C)"
       apply(rule)
       apply(fastforce simp: pow_combine_def)
     done
@@ -971,19 +971,19 @@ end
            it also disappears from the offending flows.\<close>
     lemma Un_set_offending_flows_bound_minus:
     assumes wfG: "wf_graph \<lparr> nodes = V, edges = E \<rparr>"
-    and     Foffending: "\<Union> set_offending_flows \<lparr>nodes = V, edges = E\<rparr> nP \<subseteq> X"
-    shows   "\<Union> set_offending_flows \<lparr>nodes = V, edges = E - {f}\<rparr> nP \<subseteq> X - {f}"
+    and     Foffending: "\<Union>(set_offending_flows \<lparr>nodes = V, edges = E\<rparr> nP) \<subseteq> X"
+    shows   "\<Union>(set_offending_flows \<lparr>nodes = V, edges = E - {f}\<rparr> nP) \<subseteq> X - {f}"
     proof -
       from wfG have wfG': "wf_graph \<lparr> nodes = V, edges = E - {f} \<rparr>"
         by(auto simp add: wf_graph_def finite_subset)
       
       from offending_flows_union_mono[OF wfG, where E'="E - {f}"] have 
-        "\<Union>set_offending_flows \<lparr>nodes = V, edges = E - {f}\<rparr> nP - {f} \<subseteq> \<Union>set_offending_flows \<lparr>nodes = V, edges = E\<rparr> nP - {f}" by blast
+        "\<Union>(set_offending_flows \<lparr>nodes = V, edges = E - {f}\<rparr> nP) - {f} \<subseteq> \<Union>(set_offending_flows \<lparr>nodes = V, edges = E\<rparr> nP) - {f}" by blast
       also have 
-        "\<Union>set_offending_flows \<lparr>nodes = V, edges = E - {f}\<rparr> nP \<subseteq> \<Union>set_offending_flows \<lparr>nodes = V, edges = E - {f}\<rparr> nP - {f}"
+        "\<Union>(set_offending_flows \<lparr>nodes = V, edges = E - {f}\<rparr> nP) \<subseteq> \<Union>(set_offending_flows \<lparr>nodes = V, edges = E - {f}\<rparr> nP) - {f}"
         apply(simp add: set_offending_flows_simp[OF wfG']) by blast
       ultimately have Un_set_offending_flows_minus:
-        "\<Union> set_offending_flows \<lparr>nodes = V, edges = E - {f}\<rparr> nP \<subseteq> \<Union> set_offending_flows \<lparr>nodes = V, edges = E \<rparr> nP - {f}"
+        "\<Union>(set_offending_flows \<lparr>nodes = V, edges = E - {f}\<rparr> nP) \<subseteq> \<Union>(set_offending_flows \<lparr>nodes = V, edges = E \<rparr> nP) - {f}"
         by blast
 
       from Foffending Un_set_offending_flows_minus 
@@ -998,19 +998,19 @@ end
 \<close>
     lemma Un_set_offending_flows_bound_minus_subseteq:
     assumes wfG: "wf_graph \<lparr> nodes = V, edges = E \<rparr>"
-    and     Foffending: "\<Union> set_offending_flows \<lparr>nodes = V, edges = E\<rparr> nP \<subseteq> X"
-    shows   "\<Union> set_offending_flows \<lparr>nodes = V, edges = E - E'\<rparr> nP \<subseteq> X - E'"
+    and     Foffending: "\<Union> (set_offending_flows \<lparr>nodes = V, edges = E\<rparr> nP) \<subseteq> X"
+    shows   "\<Union> (set_offending_flows \<lparr>nodes = V, edges = E - E'\<rparr> nP) \<subseteq> X - E'"
     proof -
       from wfG have wfG': "wf_graph \<lparr> nodes = V, edges = E - E' \<rparr>"
         by(auto simp add: wf_graph_def finite_subset)
       
       from offending_flows_union_mono[OF wfG, where E'="E - E'"] have 
-        "(\<Union>set_offending_flows \<lparr>nodes = V, edges = E - E'\<rparr> nP) - E' \<subseteq> (\<Union>set_offending_flows \<lparr>nodes = V, edges = E\<rparr> nP) - E'" by blast
+        "\<Union>(set_offending_flows \<lparr>nodes = V, edges = E - E'\<rparr> nP) - E' \<subseteq> \<Union>(set_offending_flows \<lparr>nodes = V, edges = E\<rparr> nP) - E'" by blast
       also have 
-        "\<Union>set_offending_flows \<lparr>nodes = V, edges = E - E'\<rparr> nP \<subseteq> \<Union>set_offending_flows \<lparr>nodes = V, edges = E - E'\<rparr> nP - E'"
+        "\<Union>(set_offending_flows \<lparr>nodes = V, edges = E - E'\<rparr> nP) \<subseteq> \<Union>(set_offending_flows \<lparr>nodes = V, edges = E - E'\<rparr> nP) - E'"
         apply(simp add: set_offending_flows_simp[OF wfG']) by blast
       ultimately have Un_set_offending_flows_minus:
-        "\<Union> set_offending_flows \<lparr>nodes = V, edges = E - E'\<rparr> nP \<subseteq> \<Union> set_offending_flows \<lparr>nodes = V, edges = E \<rparr> nP - E'"
+        "\<Union> (set_offending_flows \<lparr>nodes = V, edges = E - E'\<rparr> nP) \<subseteq> \<Union> (set_offending_flows \<lparr>nodes = V, edges = E \<rparr> nP) - E'"
         by blast
 
       from Foffending Un_set_offending_flows_minus 
@@ -1019,8 +1019,8 @@ end
 
   corollary Un_set_offending_flows_bound_minus_subseteq': 
     "\<lbrakk> wf_graph \<lparr> nodes = V, edges = E \<rparr>;
-    \<Union> set_offending_flows \<lparr> nodes = V, edges = E \<rparr> nP \<subseteq> X \<rbrakk> \<Longrightarrow>
-    \<Union> set_offending_flows \<lparr> nodes = V, edges = E - E' \<rparr> nP \<subseteq> X - E'"
+    \<Union> (set_offending_flows \<lparr> nodes = V, edges = E \<rparr> nP) \<subseteq> X \<rbrakk> \<Longrightarrow>
+    \<Union> (set_offending_flows \<lparr> nodes = V, edges = E - E' \<rparr> nP) \<subseteq> X - E'"
     apply(drule(1) Un_set_offending_flows_bound_minus_subseteq) by blast
 
 

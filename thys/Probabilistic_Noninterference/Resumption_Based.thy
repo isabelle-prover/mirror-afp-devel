@@ -406,7 +406,7 @@ proof-
   thus ?thesis using j gen_incl[of I0 P] by auto
 qed
 
-lemma Union_partGen: "\<Union> partGen P = \<Union> P"
+lemma Union_partGen: "\<Union> (partGen P) = \<Union> P"
 using ex_partGen[of _ P] partGen_ex[of _ P] by fastforce
 
 lemma Int_partGen:

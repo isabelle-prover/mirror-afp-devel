@@ -443,13 +443,13 @@ definition prefs_from_table :: "('agent \<times> 'alt set list) list \<Rightarro
 
 definition prefs_from_table_wf where
   "prefs_from_table_wf agents alts xss \<longleftrightarrow> agents \<noteq> {} \<and> alts \<noteq> {} \<and> distinct (map fst xss) \<and> 
-       set (map fst xss) = agents \<and> (\<forall>xs\<in>set (map snd xss). (\<Union>set xs) = alts \<and> 
+       set (map fst xss) = agents \<and> (\<forall>xs\<in>set (map snd xss). \<Union>(set xs) = alts \<and> 
        is_finite_weak_ranking xs)"
 
 lemma prefs_from_table_wfI:
   assumes "agents \<noteq> {}" "alts \<noteq> {}" "distinct (map fst xss)"
   assumes "set (map fst xss) = agents"
-  assumes "\<And>xs. xs \<in> set (map snd xss) \<Longrightarrow> (\<Union>set xs) = alts"
+  assumes "\<And>xs. xs \<in> set (map snd xss) \<Longrightarrow> \<Union>(set xs) = alts"
   assumes "\<And>xs. xs \<in> set (map snd xss) \<Longrightarrow> is_finite_weak_ranking xs"
   shows   "prefs_from_table_wf agents alts xss"
   using assms unfolding prefs_from_table_wf_def by auto
@@ -458,7 +458,7 @@ lemma prefs_from_table_wfD:
   assumes "prefs_from_table_wf agents alts xss"
   shows "agents \<noteq> {}" "alts \<noteq> {}" "distinct (map fst xss)"
     and "set (map fst xss) = agents"
-    and "\<And>xs. xs \<in> set (map snd xss) \<Longrightarrow> (\<Union>set xs) = alts"
+    and "\<And>xs. xs \<in> set (map snd xss) \<Longrightarrow> \<Union>(set xs) = alts"
     and "\<And>xs. xs \<in> set (map snd xss) \<Longrightarrow> is_finite_weak_ranking xs"
   using assms unfolding prefs_from_table_wf_def by auto
        
@@ -592,7 +592,7 @@ proof
       by (cases "map_of xss i") (auto simp: prefs_from_table_wf_def xs_def)
     have xs_in_xss: "xs \<in> snd ` set xss"
       using xs by (force dest!: map_of_SomeD)
-    with wf have set_xs: "\<Union>set xs = alts"
+    with wf have set_xs: "\<Union>(set xs) = alts"
       by (simp add: prefs_from_table_wfD)
 
     from i have "prefs_from_table (map (\<lambda>(x,y). (x, map ((`) \<sigma>) y)) xss) i =
@@ -618,8 +618,8 @@ lemma eval_prefs_from_table [simp]:
   by (simp_all add: prefs_from_table_def)
 
 lemma eval_of_weak_ranking [simp]:
-  "a \<notin> \<Union>set xs \<Longrightarrow> \<not>of_weak_ranking xs a b"
-  "b \<in> x \<Longrightarrow> a \<in> \<Union>set (x#xs) \<Longrightarrow> of_weak_ranking (x # xs) a b"
+  "a \<notin> \<Union>(set xs) \<Longrightarrow> \<not>of_weak_ranking xs a b"
+  "b \<in> x \<Longrightarrow> a \<in> \<Union>(set (x#xs)) \<Longrightarrow> of_weak_ranking (x # xs) a b"
   "b \<notin> x \<Longrightarrow> of_weak_ranking (x # xs) a b \<longleftrightarrow> of_weak_ranking xs a b"
   by (induction xs) (simp_all add: of_weak_ranking_Cons)
 
@@ -644,13 +644,13 @@ lemma of_weak_ranking_Collect_ge_empty [simp]:
   by (simp add: of_weak_ranking_Collect_ge_def)
 
 lemma of_weak_ranking_Collect_ge_Cons [simp]:
-  "y \<in> x \<Longrightarrow> of_weak_ranking_Collect_ge (x#xs) y = (\<Union>set (x#xs))"
+  "y \<in> x \<Longrightarrow> of_weak_ranking_Collect_ge (x#xs) y = \<Union>(set (x#xs))"
   "y \<notin> x \<Longrightarrow> of_weak_ranking_Collect_ge (x#xs) y = of_weak_ranking_Collect_ge xs y"
   by (auto simp: of_weak_ranking_Cons of_weak_ranking_Collect_ge_def)
 
 lemma of_weak_ranking_Collect_ge_Cons':
   "of_weak_ranking_Collect_ge (x#xs) = (\<lambda>y.
-     (if y \<in> x then (\<Union>set (x#xs)) else of_weak_ranking_Collect_ge xs y))"
+     (if y \<in> x then \<Union>(set (x#xs)) else of_weak_ranking_Collect_ge xs y))"
   by (auto simp: of_weak_ranking_Cons of_weak_ranking_Collect_ge_def fun_eq_iff)
 
 lemma anonymise_prefs_from_table:

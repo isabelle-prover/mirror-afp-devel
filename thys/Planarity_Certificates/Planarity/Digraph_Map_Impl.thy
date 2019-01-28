@@ -161,7 +161,7 @@ qed
 section \<open>Compute Face Cycles\<close>
 
 definition lists_fc_succ :: "('a \<times> 'a) list list \<Rightarrow> ('a \<times> 'a) \<Rightarrow> ('a \<times> 'a)" where
-  "lists_fc_succ xss = (let sxss = \<Union>sset xss in (\<lambda>x. lists_succ xss (swap_in sxss x)))"
+  "lists_fc_succ xss = (let sxss = \<Union>(sset xss) in (\<lambda>x. lists_succ xss (swap_in sxss x)))"
 
 locale lists_digraph_map =
   fixes G_list :: "'b list \<times> ('b \<times> 'b) list"
@@ -169,7 +169,7 @@ locale lists_digraph_map =
   assumes digraph_map: "digraph_map (list_digraph G_list) (to_map' (snd G_list) xss)"
   assumes no_loops: "\<And>a. a \<in> parcs (list_digraph G_list) \<Longrightarrow> fst a \<noteq> snd a"
   assumes distincts_xss: "distincts xss"
-  assumes parcs_xss: "parcs (list_digraph G_list) = \<Union>sset xss"
+  assumes parcs_xss: "parcs (list_digraph G_list) = \<Union>(sset xss)"
 begin
 
 abbreviation (input) "G \<equiv> list_digraph G_list"
@@ -212,11 +212,11 @@ lemma M_simps:
   "edge_succ M = lists_succ xss"
   unfolding to_map_def by (cases G_list) auto
 
-lemma lists_fc_succ_permutes: "lists_fc_succ xss permutes (\<Union>sset xss)"
+lemma lists_fc_succ_permutes: "lists_fc_succ xss permutes (\<Union>(sset xss))"
 proof -
-  have "\<forall>(u,v) \<in> \<Union>sset xss. (v,u) \<in> \<Union>sset xss"
+  have "\<forall>(u,v) \<in> \<Union>(sset xss). (v,u) \<in> \<Union>(sset xss)"
     using sym_arcs unfolding parcs_xss[symmetric] symmetric_def by (auto elim: symE)
-  then have "swap_in (\<Union>sset xss) permutes \<Union>sset xss"
+  then have "swap_in (\<Union>(sset xss)) permutes \<Union>(sset xss)"
     using distincts_xss
     apply (auto simp: permutes_def split: if_splits)
     unfolding swap_in_def
@@ -224,10 +224,10 @@ proof -
     apply metis+
     done
   moreover
-  have "lists_succ xss permutes (\<Union>sset xss)"
+  have "lists_succ xss permutes (\<Union>(sset xss))"
     using lists_succ_permutes[OF distincts_xss] by simp
   moreover
-  have "lists_fc_succ xss = lists_succ xss o swap_in (\<Union>sset xss)"
+  have "lists_fc_succ xss = lists_succ xss o swap_in (\<Union>(sset xss))"
     by (simp add: fun_eq_iff lists_fc_succ_def)
   ultimately
   show ?thesis by (metis permutes_compose)
@@ -362,7 +362,7 @@ qed
 
 lemma elems_all_maps_list:
   assumes "M \<in> set (all_maps_list G)" "distinct (snd G)"
-  shows "\<Union>sset M = set (snd G)"
+  shows "\<Union>(sset M) = set (snd G)"
     using assms
     by (simp add: all_maps_list_def in_set_cyc_permutationss distincts_grouped_arcs union_grouped_out_arcs[symmetric])
        (metis set_map)

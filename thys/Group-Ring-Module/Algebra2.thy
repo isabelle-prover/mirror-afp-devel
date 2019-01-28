@@ -1794,7 +1794,7 @@ by (simp add:WWa_def Wa_def)
 lemma (in Order) mem_WWa_sub_carrier:"W \<in> WWa D g a \<Longrightarrow> W \<subseteq> carrier D"
 by (simp add:WWa_def Wa_def)
 
-lemma (in Order) Union_WWa_sub_carrier:"\<Union> WWa D g a \<subseteq> carrier D"
+lemma (in Order) Union_WWa_sub_carrier:"\<Union> (WWa D g a) \<subseteq> carrier D"
 by (rule Union_least[of "WWa D g a" "carrier D"], simp add:mem_WWa_sub_carrier)
 
 lemma (in Order) mem_WWa_inc_a:"W \<in> WWa D g a \<Longrightarrow> a \<in> W"
@@ -2274,8 +2274,8 @@ apply simp
 done  
 
 lemma (in Order) BNTr7_1:"\<lbrakk>f \<in> carrier D \<rightarrow> carrier D; a \<in> carrier D; 
-       \<forall>x\<in>carrier D. x \<preceq> f x; x \<in> W; W \<in> WWa D f a; xa \<in> \<Union> WWa D f a;
-         xa \<prec>\<^bsub>Iod D (\<Union> WWa D f a)\<^esub> x\<rbrakk> \<Longrightarrow> xa \<in> W"
+       \<forall>x\<in>carrier D. x \<preceq> f x; x \<in> W; W \<in> WWa D f a; xa \<in> \<Union> (WWa D f a);
+         xa \<prec>\<^bsub>Iod D (\<Union> (WWa D f a))\<^esub> x\<rbrakk> \<Longrightarrow> xa \<in> W"
 apply (cut_tac Union_WWa_sub_carrier[of "f" "a"],
        frule_tac X = W and C = "WWa D f a" and A = x in UnionI, assumption+,
        simp del:Union_iff add:Iod_less)
@@ -2300,17 +2300,17 @@ apply (frule_tac W = W' in mem_WWa_sub_carrier)
 done
 
 lemma (in Order) BNTr7_1_1:"\<lbrakk>f \<in> carrier D \<rightarrow> carrier D; a \<in> carrier D; 
-       \<forall>x\<in>carrier D. x \<preceq> f x; x \<in> W; W \<in> WWa D f a; xa \<in> \<Union> WWa D f a;
+       \<forall>x\<in>carrier D. x \<preceq> f x; x \<in> W; W \<in> WWa D f a; xa \<in> \<Union> (WWa D f a);
          xa \<prec> x\<rbrakk> \<Longrightarrow> xa \<in> W" 
 apply (cut_tac Union_WWa_sub_carrier[of "f" "a"],
-       frule Iod_Order[of "\<Union> WWa D f a"],
-       frule Iod_less[THEN sym, of "\<Union> WWa D f a" "xa" "x"], assumption+,
+       frule Iod_Order[of "\<Union> (WWa D f a)"],
+       frule Iod_less[THEN sym, of "\<Union> (WWa D f a)" "xa" "x"], assumption+,
        rule UnionI[of "W" "WWa D f a" "x"], assumption+)
 apply (simp del:Union_iff, rule BNTr7_1, assumption+)
 done
 
 lemma (in Order) BNTr7_2:" \<lbrakk>f \<in> carrier D \<rightarrow> carrier D; a \<in> carrier D;
-    \<forall>x\<in>carrier D. x \<preceq> f x; x \<in> \<Union>WWa D f a; ExPre (Iod D (\<Union>WWa D f a)) x \<rbrakk>
+    \<forall>x\<in>carrier D. x \<preceq> f x; x \<in> \<Union>(WWa D f a); ExPre (Iod D (\<Union>(WWa D f a))) x \<rbrakk>
   \<Longrightarrow> \<forall>W\<in>WWa D f a. (x \<in> W \<longrightarrow> ExPre (Iod D W) x )"
 apply (cut_tac Union_WWa_sub_carrier[of "f" "a"])
 apply (rule ballI, rule impI)
@@ -2321,7 +2321,7 @@ apply (simp only:ExPre_def)
  apply (simp del:Union_iff)
  apply (frule_tac x = W in bspec, assumption,
         thin_tac "\<forall>y\<in>WWa D f a.
-           \<forall>y\<in>y. xa \<prec>\<^bsub>Iod D (\<Union>WWa D f a)\<^esub> y \<longrightarrow> \<not> y \<prec>\<^bsub>Iod D (\<Union>WWa D f a)\<^esub> x")
+           \<forall>y\<in>y. xa \<prec>\<^bsub>Iod D (\<Union>(WWa D f a))\<^esub> y \<longrightarrow> \<not> y \<prec>\<^bsub>Iod D (\<Union>(WWa D f a))\<^esub> x")
  apply (frule_tac W = W and xa = xa in BNTr7_1[of "f" "a" "x"], assumption+,
         frule_tac W = W in mem_WWa_sub_carrier)
  apply (simp del:Union_iff add:Iod_less)
@@ -2332,18 +2332,18 @@ apply (simp only:ExPre_def)
 
  apply (rule ballI, rule impI)
  apply (frule_tac x = y in bspec, assumption,
-        thin_tac "\<forall>y\<in>W. xa \<prec>\<^bsub>Iod D (\<Union>WWa D f a)\<^esub> y \<longrightarrow> \<not> y \<prec>\<^bsub>Iod D (\<Union>WWa D f a)\<^esub> x",
+        thin_tac "\<forall>y\<in>W. xa \<prec>\<^bsub>Iod D (\<Union>(WWa D f a))\<^esub> y \<longrightarrow> \<not> y \<prec>\<^bsub>Iod D (\<Union>(WWa D f a))\<^esub> x",
         frule_tac X = W and C = "WWa D f a" and A = y in UnionI, assumption+)
  apply (simp add:Iod_less)
 done
 
 lemma (in Order) BNTr7_3:" \<lbrakk>f \<in> carrier D \<rightarrow> carrier D; a \<in> carrier D;
-    \<forall>x\<in>carrier D. x \<preceq> f x; x \<in> \<Union>WWa D f a; ExPre (Iod D (\<Union>WWa D f a)) x \<rbrakk>
-  \<Longrightarrow> \<forall>W\<in>WWa D f a. (x \<in> W \<longrightarrow> Pre (Iod D (\<Union>WWa D f a)) x = Pre (Iod D W) x)"
+    \<forall>x\<in>carrier D. x \<preceq> f x; x \<in> \<Union>(WWa D f a); ExPre (Iod D (\<Union>(WWa D f a))) x \<rbrakk>
+  \<Longrightarrow> \<forall>W\<in>WWa D f a. (x \<in> W \<longrightarrow> Pre (Iod D (\<Union>(WWa D f a))) x = Pre (Iod D W) x)"
 apply (rule ballI)
 apply (rule impI)
  apply (rule_tac s = "Pre (Iod D W) x" in 
-                   sym[of _ "Pre (Iod D (\<Union>WWa D f a)) x"],
+                   sym[of _ "Pre (Iod D (\<Union>(WWa D f a))) x"],
         frule_tac W = W in mem_wwa_Worder,
         frule_tac W = W in mem_WWa_sub_carrier,
         frule BNTr7_2[of "f" "a" "x"], assumption+,
@@ -2352,7 +2352,7 @@ apply (rule impI)
         simp) 
  
  apply (rule_tac D = "Iod D W" and a = x and 
-        ?a1.0 = "Pre (Iod D (\<Union>WWa D f a)) x" in Worder.UniquePre,
+        ?a1.0 = "Pre (Iod D (\<Union>(WWa D f a))) x" in Worder.UniquePre,
         assumption,
         simp add:Iod_carrier, assumption, simp add:Iod_carrier) 
   apply (frule_tac D = "Iod D W" in Worder.Order,
@@ -2360,12 +2360,12 @@ apply (rule impI)
          simp add:Iod_carrier, assumption,
          (erule conjE)+, simp add:Iod_carrier)  
   apply (cut_tac Union_WWa_sub_carrier[of "f" "a"],
-         frule Iod_Order[of "\<Union>WWa D f a"],
+         frule Iod_Order[of "\<Union>(WWa D f a)"],
          frule_tac X = W and A = x in UnionI[of _ "WWa D f a"], assumption+,
-         frule_tac D = "Iod D (\<Union>WWa D f a)" and a = x in Order.Pre_element,
+         frule_tac D = "Iod D (\<Union>(WWa D f a))" and a = x in Order.Pre_element,
          simp del:Union_iff add:Iod_carrier, assumption)
  apply (erule conjE)+
- apply (frule_tac W = W and xa = "Pre (Iod D (\<Union>WWa D f a)) x" in 
+ apply (frule_tac W = W and xa = "Pre (Iod D (\<Union>(WWa D f a))) x" in 
         BNTr7_1[of "f" "a" "x"], assumption+,
         simp only:Iod_carrier, assumption,
         simp del:Union_iff)
@@ -2377,15 +2377,15 @@ apply (rule conjI,
        thin_tac "\<forall>y\<in>W. Pre (Iod D W) x \<prec>\<^bsub>Iod D W\<^esub> y \<longrightarrow> \<not> y \<prec>\<^bsub>Iod D W\<^esub> x")
  apply (simp only:Iod_carrier,
         frule_tac x = y in bspec, assumption,
-        thin_tac "\<forall>y\<in>\<Union>WWa D f a.
-              Pre (Iod D (\<Union>WWa D f a)) x \<prec>\<^bsub>Iod D (\<Union>WWa D f a)\<^esub> y \<longrightarrow>
-              \<not> y \<prec>\<^bsub>Iod D (\<Union>WWa D f a)\<^esub> x")
+        thin_tac "\<forall>y\<in>\<Union>(WWa D f a).
+              Pre (Iod D (\<Union>(WWa D f a))) x \<prec>\<^bsub>Iod D (\<Union>(WWa D f a))\<^esub> y \<longrightarrow>
+              \<not> y \<prec>\<^bsub>Iod D (\<Union>(WWa D f a))\<^esub> x")
  apply (simp del:Union_iff add:Iod_less)
 done
 
 lemma (in Order) BNTr7_4:"\<lbrakk>f \<in> carrier D \<rightarrow> carrier D; a \<in> carrier D;
          \<forall>x\<in>carrier D. x \<preceq> f x; x \<in> W;  W \<in> WWa D f a\<rbrakk> \<Longrightarrow> 
-         ExPre (Iod D (\<Union>WWa D f a)) x = ExPre (Iod D W) x"
+         ExPre (Iod D (\<Union>(WWa D f a))) x = ExPre (Iod D W) x"
 apply (rule iffI) 
  apply (frule BNTr7_2[of "f" "a" "x"], assumption+)
  apply (frule_tac X = W and A = x in UnionI[of _ "WWa D f a"], assumption+,
@@ -2395,14 +2395,14 @@ apply (simp only:ExPre_def, erule exE, (erule conjE)+)
 apply (cut_tac Union_WWa_sub_carrier[of "f" "a"])
 apply (frule mem_WWa_sub_carrier[of "W"], simp only:Iod_carrier,
        frule Iod_Order[of "W"]) apply (
-       frule Iod_Order[of "\<Union>WWa D f a"]) apply (
+       frule Iod_Order[of "\<Union>(WWa D f a)"]) apply (
        simp only:Iod_less)
 apply (frule_tac X = W and A = xa in UnionI[of _ "WWa D f a"], assumption+,
        frule_tac X = W and A = x in UnionI[of _ "WWa D f a"], assumption+)
- apply (frule_tac T1 = "\<Union>WWa D f a" and a1 = xa and b1 = x in 
+ apply (frule_tac T1 = "\<Union>(WWa D f a)" and a1 = xa and b1 = x in 
                                 Iod_less[THEN sym], assumption+)
- apply (subgoal_tac " \<not> (\<exists>y\<in>\<Union>WWa D f a.
-                       xa \<prec>\<^bsub>Iod D (\<Union>WWa D f a)\<^esub> y \<and> y \<prec>\<^bsub>Iod D (\<Union>WWa D f a)\<^esub> x)")
+ apply (subgoal_tac " \<not> (\<exists>y\<in>\<Union>(WWa D f a).
+                       xa \<prec>\<^bsub>Iod D (\<Union>(WWa D f a))\<^esub> y \<and> y \<prec>\<^bsub>Iod D (\<Union>(WWa D f a))\<^esub> x)")
  apply blast
 
  apply (rule contrapos_pp, (simp del:Union_iff)+)
@@ -2416,19 +2416,19 @@ done
 
 lemma (in Order) BNTr7_5:" \<lbrakk>f \<in> carrier D \<rightarrow> carrier D; a \<in> carrier D;
            \<forall>x\<in>carrier D. x \<preceq> f x; x \<in> W; W \<in> WWa D f a\<rbrakk>
-          \<Longrightarrow> (segment (Iod D (\<Union>WWa D f a)) x) = segment (Iod D W) x"
+          \<Longrightarrow> (segment (Iod D (\<Union>(WWa D f a))) x) = segment (Iod D W) x"
 apply (cut_tac Union_WWa_sub_carrier[of "f" "a"])
 apply (frule_tac W = W in mem_WWa_sub_carrier)
-apply (frule Iod_Order[of "\<Union>WWa D f a"],
+apply (frule Iod_Order[of "\<Union>(WWa D f a)"],
        frule Iod_Order[of "W"])
 apply (rule equalityI)
  apply (rule subsetI,
-       frule Order.segment_sub[of "Iod D (\<Union>WWa D f a)" "x"],
-       frule_tac c = xa in subsetD[of "segment (Iod D (\<Union>WWa D f a)) x" 
-                            "carrier (Iod D (\<Union>WWa D f a))"], assumption+,
+       frule Order.segment_sub[of "Iod D (\<Union>(WWa D f a))" "x"],
+       frule_tac c = xa in subsetD[of "segment (Iod D (\<Union>(WWa D f a))) x" 
+                            "carrier (Iod D (\<Union>(WWa D f a)))"], assumption+,
        frule_tac X = W and A = x in UnionI[of _ "WWa D f a"], assumption+)
  apply (frule_tac a1 = xa in Order.segment_inc[THEN sym, 
-                             of "Iod D (\<Union>WWa D f a)" _ "x"],
+                             of "Iod D (\<Union>(WWa D f a))" _ "x"],
         assumption, simp add:Iod_carrier, simp del:Union_iff,
         frule_tac xa = xa in BNTr7_1[of "f" "a" "x"], assumption+,
         simp only:Iod_carrier, assumption, simp only:Iod_carrier,
@@ -2450,13 +2450,13 @@ apply (rule equalityI)
 
   apply (frule_tac X = W and A = xa in UnionI[of _ "WWa D f a"], assumption+,
          frule_tac X = W and A = x in UnionI[of _ "WWa D f a"], assumption+,
-         subst Order.segment_inc[THEN sym, of "Iod D (\<Union>WWa D f a)" _ "x"],
+         subst Order.segment_inc[THEN sym, of "Iod D (\<Union>(WWa D f a))" _ "x"],
          assumption+, simp only:Iod_carrier, simp only:Iod_carrier,
          simp only:Iod_less)
 done
 
 lemma (in Order) BNTr7_6:"\<lbrakk>f \<in> carrier D \<rightarrow> carrier D; 
-      a \<in> carrier D; \<forall>x\<in>carrier D. x \<preceq> (f x)\<rbrakk>  \<Longrightarrow> a \<in> \<Union>WWa D f a"
+      a \<in> carrier D; \<forall>x\<in>carrier D. x \<preceq> (f x)\<rbrakk>  \<Longrightarrow> a \<in> \<Union>(WWa D f a)"
 apply (frule BNTr2[of "f" "a"], assumption+,
        frule UnionI[of "{a}" "WWa D f a" "a"]) 
 apply (simp, assumption)
@@ -2464,7 +2464,7 @@ done
 
 lemma (in Order) BNTr7_7:"\<lbrakk>S_inductive_set D; f \<in> carrier D \<rightarrow> carrier D; 
       a \<in> carrier D; \<forall>x\<in>carrier D. x \<preceq> (f x); \<exists>xa. Wa D xa f a \<and> x \<in> xa\<rbrakk> \<Longrightarrow> 
-      x \<in> \<Union>WWa D f a"
+      x \<in> \<Union>(WWa D f a)"
 apply (subst Union_iff[of "x" "WWa D f a"])
 apply (subst WWa_def, blast)
 done
@@ -2478,9 +2478,9 @@ done
 
 
 lemma (in Order) BNTr7_9:"\<lbrakk>f \<in> carrier D \<rightarrow> carrier D; a \<in> carrier D; 
-           \<forall>x\<in>carrier D. x \<preceq> (f x); x \<in> \<Union>WWa D f a \<rbrakk> \<Longrightarrow> x \<in> carrier D" 
+           \<forall>x\<in>carrier D. x \<preceq> (f x); x \<in> \<Union>(WWa D f a) \<rbrakk> \<Longrightarrow> x \<in> carrier D" 
 by (cut_tac Union_WWa_sub_carrier[of "f" "a"],
-       rule subsetD[of "\<Union>WWa D f a" "carrier D" "x"], assumption+)
+       rule subsetD[of "\<Union>(WWa D f a)" "carrier D" "x"], assumption+)
 
 lemma (in Order) BNTr7_10:"\<lbrakk>S_inductive_set D; f \<in> carrier D \<rightarrow> carrier D; 
       a \<in> carrier D; \<forall>x\<in>carrier D. x \<preceq> (f x); W \<in> WWa D f a; Sup D W \<notin> W\<rbrakk> \<Longrightarrow>
@@ -3137,9 +3137,9 @@ done
 lemma (in Order) BNTr8:"\<lbrakk>f \<in> carrier D \<rightarrow> carrier D; a \<in> carrier D; 
           \<forall>x\<in>carrier D. x \<preceq> (f x)\<rbrakk> \<Longrightarrow>  \<Union> (WWa D f a) \<in> (WWa D f a)"
 apply (cut_tac Union_WWa_sub_carrier[of "f" "a"])
-apply (rule mem_of_WWa[of "\<Union>WWa D f a" "a" "f"], simp)
+apply (rule mem_of_WWa[of "\<Union>(WWa D f a)" "a" "f"], simp)
  apply (simp add:Worder_def Torder_def)
- apply (simp add:Iod_Order[of "\<Union>WWa D f a"])
+ apply (simp add:Iod_Order[of "\<Union>(WWa D f a)"])
  apply (rule conjI)
  apply (simp add:Torder_axioms_def)
  apply ((rule allI, rule impI)+, simp add:Iod_carrier,
@@ -3185,7 +3185,7 @@ apply (subst Worder_axioms_def)
  apply (rule allI, rule impI, erule conjE)
  apply (frule_tac A = X in nonempty_ex, erule exE)
  apply (simp only:Iod_carrier,
-        frule_tac c = x and A = X and B = "\<Union>WWa D f a" in subsetD,
+        frule_tac c = x and A = X and B = "\<Union>(WWa D f a)" in subsetD,
         assumption, simp, erule bexE)
  apply (rename_tac X x W)
  apply (frule_tac W = W in mem_wwa_Worder[of _ "f" "a"],
@@ -3206,9 +3206,9 @@ apply (subst Worder_axioms_def)
 apply (rule contrapos_pp, (simp del:Union_iff)+, erule conjE)
  apply (simp add:minimum_elem_def)
  apply (frule_tac a = xa in forall_spec, assumption+,
-        thin_tac "\<forall>x. x \<in> X \<longrightarrow> (\<exists>xa\<in>X. \<not> x \<preceq>\<^bsub>Iod D (\<Union>WWa D f a)\<^esub> xa)",
+        thin_tac "\<forall>x. x \<in> X \<longrightarrow> (\<exists>xa\<in>X. \<not> x \<preceq>\<^bsub>Iod D (\<Union>(WWa D f a))\<^esub> xa)",
         erule bexE)
- apply (frule_tac c = xb and A = X and B = "\<Union>WWa D f a" in subsetD,
+ apply (frule_tac c = xb and A = X and B = "\<Union>(WWa D f a)" in subsetD,
                  assumption+) 
 apply (cut_tac A = xb and C = "WWa D f a" in Union_iff, simp del:Union_iff,
        erule bexE, rename_tac X x W xa xb W',
@@ -3218,7 +3218,7 @@ apply (cut_tac A = xb and C = "WWa D f a" in Union_iff, simp del:Union_iff,
         rotate_tac 4,
         frule_tac x = xb in bspec, simp,
         thin_tac "\<forall>x\<in>X \<inter> W. xa \<preceq>\<^bsub>Iod D W\<^esub> x")
- apply (frule Iod_Order[of "\<Union>WWa D f a"], 
+ apply (frule Iod_Order[of "\<Union>(WWa D f a)"], 
         frule_tac X = W and A = xa in UnionI[of _ "WWa D f a"], assumption+,
         simp del:Union_iff add:Iod_le)
  apply (simp del:Union_iff)
@@ -3236,8 +3236,8 @@ apply (cut_tac A = xb and C = "WWa D f a" in Union_iff, simp del:Union_iff,
         apply (simp add:Iod_carrier) apply (simp add:Iod_carrier)
  apply (simp del:Union_iff add:Iod_less, thin_tac "\<not> xa \<preceq> xb", 
         thin_tac "\<not> xa \<preceq>\<^bsub>Iod D W'\<^esub> xb")
- apply (frule Iod_Order[of "\<Union>WWa D f a"])
- apply (frule_tac a1 = xb and b1 = xa in Iod_less[THEN sym, of "\<Union> WWa D f a"],
+ apply (frule Iod_Order[of "\<Union>(WWa D f a)"])
+ apply (frule_tac a1 = xb and b1 = xa in Iod_less[THEN sym, of "\<Union> (WWa D f a)"],
         assumption+, simp del:Union_iff,
         frule_tac x = xa and xa = xb and W = W in BNTr7_1[of "f" "a"], 
                         assumption+,
@@ -3256,7 +3256,7 @@ apply (rule ballI)
  apply (simp add:WWa_def Wa_def[of "D" _ "f" "a"])
 
 apply (rule ballI)
-apply (case_tac "ExPre (Iod D (\<Union>WWa D f a)) x", simp,
+apply (case_tac "ExPre (Iod D (\<Union>(WWa D f a))) x", simp,
        erule bexE, rename_tac x W,
        frule_tac X = W and A = x in UnionI[of _ "WWa D f a"], assumption+,
        frule_tac x = x in BNTr7_2[of "f" "a"], assumption+,
@@ -3266,7 +3266,7 @@ apply (case_tac "ExPre (Iod D (\<Union>WWa D f a)) x", simp,
   apply (frule_tac x = x in BNTr7_3[of "f" "a"], assumption+,
          frule_tac x = W in bspec, assumption,
          thin_tac "\<forall>W\<in>WWa D f a.
-              x \<in> W \<longrightarrow> Pre (Iod D (\<Union>WWa D f a)) x = Pre (Iod D W) x",
+              x \<in> W \<longrightarrow> Pre (Iod D (\<Union>(WWa D f a))) x = Pre (Iod D W) x",
          simp del:Union_iff)
   apply (simp add:WWa_def Wa_def)
 
@@ -3277,19 +3277,19 @@ apply (simp del:Union_iff, rule impI)
         simp)
  apply (frule_tac x = x and W = W in BNTr7_4[of "f" "a"], assumption+,
         simp del:Union_iff,
-        thin_tac "\<Union>WWa D f a \<subseteq> carrier D",
+        thin_tac "\<Union>(WWa D f a) \<subseteq> carrier D",
         thin_tac "\<exists>X\<in>WWa D f a. x \<in> X",
-        thin_tac "segment (Iod D (\<Union>WWa D f a)) x = segment (Iod D W) x",
-        thin_tac "\<not> ExPre (Iod D (\<Union>WWa D f a)) x")
+        thin_tac "segment (Iod D (\<Union>(WWa D f a))) x = segment (Iod D W) x",
+        thin_tac "\<not> ExPre (Iod D (\<Union>(WWa D f a))) x")
  apply (simp add:WWa_def Wa_def)
 done
 
 (*
 lemma (in Order) BNTr9:"\<lbrakk>S_inductive_set D; f \<in> carrier D \<rightarrow> carrier D; 
            a \<in> carrier D;  \<forall>x\<in>carrier D. x \<preceq> (f x)\<rbrakk> \<Longrightarrow> 
-            insert (Sup D (\<Union>WWa D f a)) (\<Union>WWa D f a) \<in> WWa D f a"
+            insert (Sup D (\<Union>(WWa D f a))) (\<Union>(WWa D f a)) \<in> WWa D f a"
 apply (frule BNTr8[of "f" "a"], assumption+,
-       rule BNTr7_14[of "f" "a" "\<Union>WWa D f a"], assumption+)
+       rule BNTr7_14[of "f" "a" "\<Union>(WWa D f a)"], assumption+)
 done
 
 lemma (in Order) S_inductive_postSup_outside:" \<lbrakk>S_inductive_set D; 
@@ -3349,38 +3349,38 @@ apply (frule well_ord_adjunction[of "insert (Sup D W) W" "b"], assumption+)
 
 lemma (in Order) BNTr10:"\<lbrakk>S_inductive_set D; f \<in> carrier D \<rightarrow> carrier D; 
    a \<in> carrier D;  \<forall>x\<in>carrier D. x \<preceq> (f x)\<rbrakk> \<Longrightarrow>
-                   (Sup D (\<Union>WWa D f a)) \<in> (\<Union>WWa D f a)"
+                   (Sup D (\<Union>(WWa D f a))) \<in> (\<Union>(WWa D f a))"
 apply (frule_tac f = f and a = a in BNTr8, assumption+,
-       frule BNTr7_14[of "f" "a" "\<Union>WWa D f a"], assumption+,
-       frule mem_family_sub_Un[of "insert (Sup D (\<Union>WWa D f a)) (\<Union>WWa D f a)"
+       frule BNTr7_14[of "f" "a" "\<Union>(WWa D f a)"], assumption+,
+       frule mem_family_sub_Un[of "insert (Sup D (\<Union>(WWa D f a))) (\<Union>(WWa D f a))"
           "WWa D f a"],
-       cut_tac insertI1[of "Sup D (\<Union>WWa D f a)" "\<Union>WWa D f a"])
+       cut_tac insertI1[of "Sup D (\<Union>(WWa D f a))" "\<Union>(WWa D f a)"])
 apply (simp add:subsetD)
 done         
 
 lemma (in Order) BNTr11:"\<lbrakk>S_inductive_set D; f \<in> carrier D \<rightarrow> carrier D; 
                  a \<in> carrier D;  \<forall>x\<in>carrier D. x \<preceq> (f x)\<rbrakk> \<Longrightarrow> 
-                   f (Sup D (\<Union>WWa D f a)) = (Sup D (\<Union>WWa D f a))"
+                   f (Sup D (\<Union>(WWa D f a))) = (Sup D (\<Union>(WWa D f a)))"
 apply (frule_tac f = f and a = a in BNTr8, assumption+,
-       frule mem_WWa_Chain[of "\<Union>WWa D f a"],
+       frule mem_WWa_Chain[of "\<Union>(WWa D f a)"],
        frule BNTr10[of "f" "a"], assumption+,
-       frule S_inductive_sup_mem[of "\<Union>WWa D f a"], assumption)
-apply (frule BNTr7_17[of "f" "a" "\<Union>WWa D f a"], assumption+) 
-apply (cut_tac insertI1[of "f (Sup D (\<Union>WWa D f a) )" "insert (Sup D (\<Union>WWa D f a)) (\<Union>WWa D f a)"],
-       frule mem_family_sub_Un[of "insert (f (Sup D (\<Union>WWa D f a)))
-      (insert (Sup D (\<Union>WWa D f a)) (\<Union>WWa D f a))" "WWa D f a"])
-apply (frule subsetD[of "insert (f (Sup D (\<Union>WWa D f a))) 
-        (insert (Sup D (\<Union>WWa D f a)) (\<Union>WWa D f a))" "\<Union>WWa D f a" "f (Sup D (\<Union>WWa D f a))"],
+       frule S_inductive_sup_mem[of "\<Union>(WWa D f a)"], assumption)
+apply (frule BNTr7_17[of "f" "a" "\<Union>(WWa D f a)"], assumption+) 
+apply (cut_tac insertI1[of "f (Sup D (\<Union>(WWa D f a)) )" "insert (Sup D (\<Union>(WWa D f a))) (\<Union>(WWa D f a))"],
+       frule mem_family_sub_Un[of "insert (f (Sup D (\<Union>(WWa D f a))))
+      (insert (Sup D (\<Union>(WWa D f a))) (\<Union>(WWa D f a)))" "(WWa D f a)"])
+apply (frule subsetD[of "insert (f (Sup D (\<Union>(WWa D f a)))) 
+        (insert (Sup D (\<Union>(WWa D f a))) (\<Union>(WWa D f a)))" "\<Union>(WWa D f a)" "f (Sup D (\<Union>(WWa D f a)))"],
          assumption+)
-apply (frule S_inductive_sup_bound[of "\<Union>WWa D f a"], assumption) 
-apply (frule_tac x = "f (Sup D (\<Union>WWa D f a))" in bspec,
+apply (frule S_inductive_sup_bound[of "\<Union>(WWa D f a)"], assumption) 
+apply (frule_tac x = "f (Sup D (\<Union>(WWa D f a)))" in bspec,
        assumption,
-       thin_tac "\<forall>x\<in>\<Union>WWa D f a. x \<preceq> Sup D (\<Union>WWa D f a)")
-apply (frule_tac x = "Sup D (\<Union>WWa D f a)" in bspec, assumption,
+       thin_tac "\<forall>x\<in>\<Union>(WWa D f a). x \<preceq> Sup D (\<Union>(WWa D f a))")
+apply (frule_tac x = "Sup D (\<Union>(WWa D f a))" in bspec, assumption,
        thin_tac "\<forall>x\<in>carrier D. x \<preceq> f x")
-apply (frule funcset_mem[of "f" "carrier D" "carrier D" "Sup D (\<Union>WWa D f a)"],
+apply (frule funcset_mem[of "f" "carrier D" "carrier D" "Sup D (\<Union>(WWa D f a))"],
        assumption+,
-       rule le_antisym[of "f (Sup D (\<Union>WWa D f a))" "Sup D (\<Union>WWa D f a)"], 
+       rule le_antisym[of "f (Sup D (\<Union>(WWa D f a)))" "Sup D (\<Union>(WWa D f a))"], 
         assumption+)
 done
 
@@ -3388,8 +3388,8 @@ lemma (in Order) Bourbaki_Nakayama:"\<lbrakk>S_inductive_set D;
       f \<in> carrier D \<rightarrow> carrier D; a \<in> carrier D; \<forall>x\<in>carrier D. x \<preceq> (f x)\<rbrakk> \<Longrightarrow>
       \<exists>x0\<in>carrier D. f x0 = x0"
 apply (frule BNTr8[of "f" "a"], assumption+,
-       frule mem_WWa_Chain[of "\<Union>WWa D f a" "f" "a"],
-       frule S_inductive_sup_mem[of "\<Union>WWa D f a"], assumption+,
+       frule mem_WWa_Chain[of "\<Union>(WWa D f a)" "f" "a"],
+       frule S_inductive_sup_mem[of "\<Union>(WWa D f a)"], assumption+,
        frule BNTr11[of "f" "a"], assumption+)
 apply blast
 done

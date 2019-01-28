@@ -104,7 +104,7 @@ where
 
 | AsParallelExprs: "i < length cs \<Longrightarrow> assertionsR \<Gamma> \<Theta> (postcond (as!i)) (abrcond (as!i)) (pres (as!i)) (cs!i) a \<Longrightarrow>
     assertionsR \<Gamma> \<Theta> Q A (AnnPar as) (Parallel cs) a" 
-| AsParallelSkips: "Qs = \<Inter> set (map postcond as) \<Longrightarrow>
+| AsParallelSkips: "Qs = \<Inter> (set (map postcond as)) \<Longrightarrow>
   assertionsR \<Gamma> \<Theta> Q A (AnnPar as) (Parallel cs) (Qs)" 
 
 definition
@@ -189,8 +189,8 @@ where
 | Parallel: "\<lbrakk> length as = length cs;
                \<forall>i < length cs. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub>(pres (as!i)) (cs!i) (postcond (as!i)),(abrcond (as!i));
                interfree \<Gamma> \<Theta> F as cs;
-               \<Inter> set (map postcond as) \<subseteq> Q;
-               \<Union> set (map abrcond as) \<subseteq> A
+               \<Inter> (set (map postcond as)) \<subseteq> Q;
+               \<Union> (set (map abrcond as)) \<subseteq> A
               \<rbrakk>
         \<Longrightarrow> \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (AnnPar as) (Parallel cs) Q,A"
 

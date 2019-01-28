@@ -367,19 +367,19 @@ context Signature begin
 fun fsyms where
 "fsyms (Var x) = {}"
 |
-"fsyms (Fn f Tl) = {f} \<union> (\<Union> set (map fsyms Tl))"
+"fsyms (Fn f Tl) = {f} \<union> \<Union> (set (map fsyms Tl))"
 
 fun fsymsA where
 "fsymsA (Eq T1 T2) = fsyms T1 \<union> fsyms T2"
 |
-"fsymsA (Pr p Tl) = \<Union> set (map fsyms Tl)"
+"fsymsA (Pr p Tl) = \<Union> (set (map fsyms Tl))"
 
 fun fsymsL where
 "fsymsL (Pos at) = fsymsA at"
 |
 "fsymsL (Neg at) = fsymsA at"
 
-definition "fsymsC c = \<Union> set (map fsymsL c)"
+definition "fsymsC c = \<Union> (set (map fsymsL c))"
 
 definition "fsymsPB \<Phi> = \<Union> {fsymsC c | c. c \<in> \<Phi>}"
 

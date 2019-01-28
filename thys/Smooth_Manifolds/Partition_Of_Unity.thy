@@ -229,7 +229,7 @@ proof -
       then have jinterk: "j \<in> intersecting (V k)" by (auto simp: intersecting_def)
 
       have 1: "compact (closure (V k))" by (rule V)
-      have 2: "closure (V k) \<subseteq> \<Union>range V" unfolding V(1)[symmetric] by (rule V)
+      have 2: "closure (V k) \<subseteq> \<Union>(range V)" unfolding V(1)[symmetric] by (rule V)
       have 3: "B \<in> range V \<Longrightarrow> open B" for B by (auto simp: V)
       from compactE[OF 1 2 3]
       obtain Vj where "Vj \<subseteq> range V" "finite Vj" "closure (V k) \<subseteq> \<Union>Vj" by auto

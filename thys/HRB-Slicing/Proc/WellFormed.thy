@@ -1345,7 +1345,7 @@ proof -
     qed auto
   next
     fix n V assume "CFG.valid_node sourcenode targetnode (valid_edge wfp) n"
-      and "V \<in> \<Union>set (ParamUses wfp n)"
+      and "V \<in> \<Union>(set (ParamUses wfp n))"
     thus "V \<in> Use wfp n" by(fastforce simp:Use_def)
   next
     fix a Q p f ins outs V

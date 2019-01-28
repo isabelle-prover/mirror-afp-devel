@@ -158,7 +158,7 @@ next
   case (Next_ltlc \<phi>)
     show ?case
       using Next_ltlc(1)[of "suffix 1 w", unfolded suffix_comp comp_def] Next_ltlc(2,3) apply simp 
-        by (metis Next_ltlc.prems(1) One_nat_def \<open>\<lbrakk>\<Union>range (suffix 1 w) \<subseteq> APs; atoms_ltlc \<phi> \<subseteq> APs\<rbrakk> \<Longrightarrow> suffix 1 w \<Turnstile>\<^sub>c \<phi> = suffix 1 (\<lambda>x. f ` w x) \<Turnstile>\<^sub>c map_ltlc f \<phi>\<close> suffix_range)
+        by (metis Next_ltlc.prems(1) One_nat_def \<open>\<lbrakk>\<Union>(range (suffix 1 w)) \<subseteq> APs; atoms_ltlc \<phi> \<subseteq> APs\<rbrakk> \<Longrightarrow> suffix 1 w \<Turnstile>\<^sub>c \<phi> = suffix 1 (\<lambda>x. f ` w x) \<Turnstile>\<^sub>c map_ltlc f \<phi>\<close> suffix_range)
 next 
   case (Final_ltlc \<phi>)
     thus ?case 
@@ -186,7 +186,7 @@ proof -
   let ?\<xi>r = "\<lambda>i. \<xi> i \<inter> atoms_ltlc \<phi>"
   let ?\<xi>r' = "\<lambda>i. \<xi> i \<inter> dom f"
 
-  have 1: "\<Union>range ?\<xi>r \<subseteq> atoms_ltlc \<phi>" by auto
+  have 1: "\<Union>(range ?\<xi>r) \<subseteq> atoms_ltlc \<phi>" by auto
 
   have INJ_the_dom: "inj_on (the o f) (dom f)" 
     using assms

@@ -311,7 +311,7 @@ lemma of_weak_ranking_Nil' [code]: "of_weak_ranking [] x y = False"
   by simp
   
 lemma of_weak_ranking_Cons [code]:
-  "x \<succeq>[of_weak_ranking (z#zs)] y \<longleftrightarrow> x \<in> z \<and> y \<in> (\<Union>set (z#zs)) \<or> x \<succeq>[of_weak_ranking zs] y" 
+  "x \<succeq>[of_weak_ranking (z#zs)] y \<longleftrightarrow> x \<in> z \<and> y \<in> \<Union>(set (z#zs)) \<or> x \<succeq>[of_weak_ranking zs] y" 
       (is "?lhs \<longleftrightarrow> ?rhs")
 proof 
   assume ?lhs
@@ -323,7 +323,7 @@ next
   assume ?rhs
   thus ?lhs
   proof (elim disjE conjE)
-    assume "x \<in> z" "y \<in> \<Union>set (z # zs)"
+    assume "x \<in> z" "y \<in> \<Union>(set (z # zs))"
     then obtain j where "j < length (z # zs)" "y \<in> (z # zs) ! j" 
       by (subst (asm) set_conv_nth) auto
     with \<open>x \<in> z\<close> show "of_weak_ranking (z # zs) y x" 
@@ -349,7 +349,7 @@ lemma of_weak_ranking_map:
      (simp_all add: map_relation_def of_weak_ranking_Cons)
 
 lemma of_weak_ranking_permute':
-  assumes "f permutes (\<Union>set xs)"
+  assumes "f permutes (\<Union>(set xs))"
   shows   "map_relation f (of_weak_ranking xs) = of_weak_ranking (map ((`) (inv f)) xs)"
 proof -
   have "map_relation f (of_weak_ranking xs) = of_weak_ranking (map ((-`) f) xs)"
@@ -360,7 +360,7 @@ proof -
 qed 
 
 lemma of_weak_ranking_permute:
-  assumes "f permutes (\<Union>set xs)"
+  assumes "f permutes (\<Union>(set xs))"
   shows   "of_weak_ranking (map ((`) f) xs) = map_relation (inv f) (of_weak_ranking xs)"
   using of_weak_ranking_permute'[OF permutes_inv[OF assms]] assms
   by (simp add: inv_inv_eq permutes_bij)
@@ -413,7 +413,7 @@ lemma is_weak_ranking_rev [simp]: "is_weak_ranking (rev xs) \<longleftrightarrow
   by (simp add: is_weak_ranking_iff)
 
 lemma is_weak_ranking_map_inj:
-  assumes "is_weak_ranking xs" "inj_on f (\<Union>set xs)"
+  assumes "is_weak_ranking xs" "inj_on f (\<Union>(set xs))"
   shows   "is_weak_ranking (map ((`) f) xs)"
   using assms by (auto simp: is_weak_ranking_iff distinct_map inj_on_image disjoint_image)
 
@@ -455,18 +455,18 @@ lemma is_finite_weak_ranking_singleton [simp]:
 lemma is_weak_ranking_append:
   "is_weak_ranking (xs @ ys) \<longleftrightarrow> 
       is_weak_ranking xs \<and> is_weak_ranking ys \<and>
-      (set xs \<inter> set ys = {} \<and> (\<Union>set xs) \<inter> (\<Union>set ys) = {})"
+      (set xs \<inter> set ys = {} \<and> \<Union>(set xs) \<inter> \<Union>(set ys) = {})"
   by (simp only: is_weak_ranking_iff)
      (auto dest: disjointD disjoint_unionD1 disjoint_unionD2 intro: disjoint_union)
 
 lemma is_weak_ranking_Cons [code]:
   "is_weak_ranking (x # xs) \<longleftrightarrow> 
-      x \<noteq> {} \<and> is_weak_ranking xs \<and> x \<inter> \<Union>set xs = {}"
+      x \<noteq> {} \<and> is_weak_ranking xs \<and> x \<inter> \<Union>(set xs) = {}"
   using is_weak_ranking_append[of "[x]" xs] by auto
 
 lemma is_finite_weak_ranking_Cons [code]:
   "is_finite_weak_ranking (x # xs) \<longleftrightarrow> 
-      x \<noteq> {} \<and> finite x \<and> is_finite_weak_ranking xs \<and> x \<inter> \<Union>set xs = {}"
+      x \<noteq> {} \<and> finite x \<and> is_finite_weak_ranking xs \<and> x \<inter> \<Union>(set xs) = {}"
   by (auto simp add: is_finite_weak_ranking_def is_weak_ranking_Cons)
 
 primrec is_weak_ranking_aux where
@@ -476,7 +476,7 @@ primrec is_weak_ranking_aux where
 
 
 lemma is_weak_ranking_aux:
-  "is_weak_ranking_aux A xs \<longleftrightarrow> A \<inter> (\<Union>set xs) = {} \<and> is_weak_ranking xs"
+  "is_weak_ranking_aux A xs \<longleftrightarrow> A \<inter> \<Union>(set xs) = {} \<and> is_weak_ranking xs"
   by (induction xs arbitrary: A) (auto simp: is_weak_ranking_Cons)
 
 lemma is_weak_ranking_code [code]:
@@ -484,7 +484,7 @@ lemma is_weak_ranking_code [code]:
   by (subst is_weak_ranking_aux) auto
 
 lemma of_weak_ranking_altdef:
-  assumes "is_weak_ranking xs" "x \<in> \<Union>set xs" "y \<in> \<Union>set xs"
+  assumes "is_weak_ranking xs" "x \<in> \<Union>(set xs)" "y \<in> \<Union>(set xs)"
   shows   "of_weak_ranking xs x y \<longleftrightarrow> 
              find_index ((\<in>) x) xs \<ge> find_index ((\<in>) y) xs"
 proof -
@@ -510,7 +510,7 @@ qed
 
   
 lemma total_preorder_of_weak_ranking:
-  assumes "\<Union>set xs = A"
+  assumes "\<Union>(set xs) = A"
   assumes "is_weak_ranking xs"
   shows   "total_preorder_on A (of_weak_ranking xs)"
 proof
@@ -545,9 +545,9 @@ qed
 
 lemma restrict_relation_of_weak_ranking_Cons:
   assumes "is_weak_ranking (A # As)"
-  shows   "restrict_relation (\<Union>set As) (of_weak_ranking (A # As)) = of_weak_ranking As"
+  shows   "restrict_relation (\<Union>(set As)) (of_weak_ranking (A # As)) = of_weak_ranking As"
 proof -
-  from assms interpret R: total_preorder_on "\<Union>set As" "of_weak_ranking As"
+  from assms interpret R: total_preorder_on "\<Union>(set As)" "of_weak_ranking As"
     by (intro total_preorder_of_weak_ranking)
        (simp_all add: is_weak_ranking_Cons)
   from assms show ?thesis using R.not_outside
@@ -572,16 +572,16 @@ context
   assumes wf: "is_weak_ranking (x#xs)"
 begin
 
-interpretation R: total_preorder_on "\<Union>set (x#xs)" "of_weak_ranking (x#xs)"
+interpretation R: total_preorder_on "\<Union>(set (x#xs))" "of_weak_ranking (x#xs)"
   by (intro total_preorder_of_weak_ranking) (simp_all add: wf)
 
 lemma of_weak_ranking_imp_in_set:
   assumes "of_weak_ranking xs a b"
-  shows   "a \<in> \<Union>set xs" "b \<in> \<Union>set xs"
+  shows   "a \<in> \<Union>(set xs)" "b \<in> \<Union>(set xs)"
   using assms by (fastforce elim!: of_weak_ranking.cases)+
 
 lemma of_weak_ranking_Cons':
-  assumes "a \<in> \<Union>set (x#xs)" "b \<in> \<Union>set (x#xs)"
+  assumes "a \<in> \<Union>(set (x#xs))" "b \<in> \<Union>(set (x#xs))"
   shows   "of_weak_ranking (x#xs) a b \<longleftrightarrow> b \<in> x \<or> (a \<notin> x \<and> of_weak_ranking xs a b)"
 proof
   assume "of_weak_ranking (x # xs) a b"
@@ -598,7 +598,7 @@ lemma Max_wrt_among_of_weak_ranking_Cons1:
   assumes "x \<inter> A = {}"
   shows   "Max_wrt_among (of_weak_ranking (x#xs)) A = Max_wrt_among (of_weak_ranking xs) A"
 proof -
-  from wf interpret R': total_preorder_on "\<Union>set xs" "of_weak_ranking xs"
+  from wf interpret R': total_preorder_on "\<Union>(set xs)" "of_weak_ranking xs"
     by (intro total_preorder_of_weak_ranking) (simp_all add: is_weak_ranking_Cons)
   from assms show ?thesis
     by (auto simp: R.Max_wrt_among_total_preorder
@@ -609,7 +609,7 @@ lemma Max_wrt_among_of_weak_ranking_Cons2:
   assumes "x \<inter> A \<noteq> {}"
   shows   "Max_wrt_among (of_weak_ranking (x#xs)) A = x \<inter> A"
 proof -
-  from wf interpret R': total_preorder_on "\<Union>set xs" "of_weak_ranking xs"
+  from wf interpret R': total_preorder_on "\<Union>(set xs)" "of_weak_ranking xs"
     by (intro total_preorder_of_weak_ranking) (simp_all add: is_weak_ranking_Cons)
   from assms obtain a where "a \<in> x \<inter> A" by blast
   with wf R'.not_outside(1)[of a] show ?thesis
@@ -673,7 +673,7 @@ termination proof (relation "Wellfounded.measure card")
 qed simp_all
 
 lemma weak_ranking_aux_Union:
-  "A \<subseteq> carrier \<Longrightarrow> \<Union>set (weak_ranking_aux A) = A"
+  "A \<subseteq> carrier \<Longrightarrow> \<Union>(set (weak_ranking_aux A)) = A"
 proof (induction A rule: weak_ranking_aux.induct [case_names empty nonempty])
   case (nonempty A)
   with Max_wrt_among_subset[of A] show ?case by auto
@@ -695,9 +695,9 @@ proof (induction A rule: weak_ranking_aux.induct [case_names empty nonempty])
     from nonempty.prems nonempty.hyps have "Max_wrt_among le A \<noteq> {}"
       by (intro Max_wrt_among_nonempty) auto
     moreover from nonempty.prems 
-      have "\<Union>set (weak_ranking_aux (A - Max_wrt_among le A)) = A - Max_wrt_among le A"
+      have "\<Union>(set (weak_ranking_aux (A - Max_wrt_among le A))) = A - Max_wrt_among le A"
       by (intro weak_ranking_aux_Union) auto
-    ultimately show "Max_wrt_among le A \<inter> \<Union>set (weak_ranking_aux (A - Max_wrt_among le A)) = {}"
+    ultimately show "Max_wrt_among le A \<inter> \<Union>(set (weak_ranking_aux (A - Max_wrt_among le A))) = {}"
       by blast+
   qed
   with nonempty.prems nonempty.hyps show ?case by simp
@@ -758,33 +758,33 @@ proof (intro ext)
 qed
 
 lemma weak_ranking_aux_unique':
-  assumes "\<Union>set As \<subseteq> carrier" "is_weak_ranking As"
-          "of_weak_ranking As = restrict_relation (\<Union>set As) le"
-  shows   "As = weak_ranking_aux (\<Union>set As)"
+  assumes "\<Union>(set As) \<subseteq> carrier" "is_weak_ranking As"
+          "of_weak_ranking As = restrict_relation (\<Union>(set As)) le"
+  shows   "As = weak_ranking_aux (\<Union>(set As))"
 using assms
 proof (induction As)
   case (Cons A As)
-  have "restrict_relation (\<Union>set As) (of_weak_ranking (A # As)) = of_weak_ranking As"
+  have "restrict_relation (\<Union>(set As)) (of_weak_ranking (A # As)) = of_weak_ranking As"
     by (intro restrict_relation_of_weak_ranking_Cons Cons.prems)
-  also have eq1: "of_weak_ranking (A # As) = restrict_relation (\<Union>set (A # As)) le" by fact
-  finally have eq: "of_weak_ranking As = restrict_relation (\<Union>set As) le"
+  also have eq1: "of_weak_ranking (A # As) = restrict_relation (\<Union>(set (A # As))) le" by fact
+  finally have eq: "of_weak_ranking As = restrict_relation (\<Union>(set As)) le"
     by (simp add: Int_absorb2)
-  with Cons.prems have eq2: "weak_ranking_aux (\<Union>set As) = As"
+  with Cons.prems have eq2: "weak_ranking_aux (\<Union>(set As)) = As"
     by (intro sym [OF Cons.IH]) (auto simp: is_weak_ranking_Cons)
 
   from eq1 have 
-    "Max_wrt_among le (\<Union>set (A # As)) = 
-       Max_wrt_among (of_weak_ranking (A#As)) (\<Union>set (A#As))"
+    "Max_wrt_among le (\<Union>(set (A # As))) = 
+       Max_wrt_among (of_weak_ranking (A#As)) (\<Union>(set (A#As)))"
     by (intro Max_wrt_among_cong) simp_all
   also from Cons.prems have "\<dots> = A"
     by (subst Max_wrt_among_of_weak_ranking_Cons2)
        (simp_all add: is_weak_ranking_Cons)
-  finally have Max: "Max_wrt_among le (\<Union>set (A # As)) = A" .
+  finally have Max: "Max_wrt_among le (\<Union>(set (A # As))) = A" .
 
   moreover from Cons.prems have "A \<noteq> {}" by (simp add: is_weak_ranking_Cons)
-  ultimately have "weak_ranking_aux (\<Union>set (A # As)) = A # weak_ranking_aux (A \<union> \<Union>set As - A)" 
+  ultimately have "weak_ranking_aux (\<Union>(set (A # As))) = A # weak_ranking_aux (A \<union> \<Union>(set As) - A)" 
     using Cons.prems by simp
-  also from Cons.prems have "A \<union> \<Union>set As - A = \<Union>set As"
+  also from Cons.prems have "A \<union> \<Union>(set As) - A = \<Union>(set As)"
     by (auto simp: is_weak_ranking_Cons)
   also from eq2 have "weak_ranking_aux \<dots> = As" .
   finally show ?case ..
@@ -794,13 +794,13 @@ lemma weak_ranking_aux_unique:
   assumes "is_weak_ranking As" "of_weak_ranking As = le"
   shows   "As = weak_ranking_aux carrier"
 proof -
-  interpret R: total_preorder_on "\<Union>set As" "of_weak_ranking As"
+  interpret R: total_preorder_on "\<Union>(set As)" "of_weak_ranking As"
     by (intro total_preorder_of_weak_ranking assms) simp_all
-  from assms have "x \<in> (\<Union>set As) \<longleftrightarrow> x \<in> carrier" for x
+  from assms have "x \<in> \<Union>(set As) \<longleftrightarrow> x \<in> carrier" for x
     using R.not_outside not_outside R.refl[of x] refl[of x]
     by blast
-  hence eq: "\<Union>set As = carrier" by blast
-  from assms eq have "As = weak_ranking_aux (\<Union>set As)"
+  hence eq: "\<Union>(set As) = carrier" by blast
+  from assms eq have "As = weak_ranking_aux (\<Union>(set As))"
     by (intro weak_ranking_aux_unique') simp_all
   with eq show ?thesis by simp
 qed
@@ -820,7 +820,7 @@ lemma weak_ranking_altdef:
   "weak_ranking le = weak_ranking_aux carrier"
   by (intro weak_ranking_aux_unique weak_ranking_total_preorder)
 
-lemma weak_ranking_Union: "(\<Union>set (weak_ranking le)) = carrier"
+lemma weak_ranking_Union: "\<Union>(set (weak_ranking le)) = carrier"
   by (simp add: weak_ranking_altdef weak_ranking_aux_Union)
 
 lemma weak_ranking_unique:
@@ -981,7 +981,7 @@ lemma finite_total_preorder_on_iff:
   by (simp add: finite_total_preorder_on_def finite_total_preorder_on_axioms_def)
 
 lemma finite_total_preorder_of_weak_ranking:
-  assumes "\<Union>set xs = A" "is_finite_weak_ranking xs"
+  assumes "\<Union>(set xs) = A" "is_finite_weak_ranking xs"
   shows   "finite_total_preorder_on A (of_weak_ranking xs)"
 proof -
   from assms(2) have "is_weak_ranking xs" by (simp add: is_finite_weak_ranking_def)
@@ -995,7 +995,7 @@ lemma weak_ranking_of_weak_ranking:
   assumes "is_finite_weak_ranking xs"
   shows   "weak_ranking (of_weak_ranking xs) = xs"
 proof -
-  from assms interpret finite_total_preorder_on "\<Union>set xs" "of_weak_ranking xs"
+  from assms interpret finite_total_preorder_on "\<Union>(set xs)" "of_weak_ranking xs"
     by (intro finite_total_preorder_of_weak_ranking) simp_all
   from assms show ?thesis
     by (intro sym[OF weak_ranking_unique]) (simp_all add: is_finite_weak_ranking_def)

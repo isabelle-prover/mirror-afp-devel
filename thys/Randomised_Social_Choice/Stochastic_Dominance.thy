@@ -425,7 +425,7 @@ next
   define xs where "xs = weak_ranking le"
   have le: "le = of_weak_ranking xs" and [simp]: "is_weak_ranking xs"
     by (simp_all add: xs_def weak_ranking_total_preorder)
-  have carrier: "carrier = \<Union>set xs"
+  have carrier: "carrier = \<Union>(set xs)"
     by (simp add: xs_def weak_ranking_Union)
   from assms have carrier_nonempty: "carrier \<noteq> {}"
     by (auto simp: lotteries_on_def set_pmf_not_empty)

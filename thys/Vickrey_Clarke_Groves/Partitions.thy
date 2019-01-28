@@ -276,7 +276,7 @@ lemma insert_into_member_partition1:
   fixes elem::'a
     and P::"'a set set"
     and set::"'a set"
-  shows "\<Union> insert_into_member elem P set = \<Union> insert (set \<union> {elem}) (P - {set})"
+  shows "\<Union> (insert_into_member elem P set) = \<Union> (insert (set \<union> {elem}) (P - {set}))"
 (* CL: The following takes 12 ms in Isabelle2013-1-RC1:
    by (metis insert_into_member_def). MC: possibly useful for TPTP *)
     unfolding insert_into_member_def
@@ -379,11 +379,11 @@ proof -
     using assms unfolding coarser_partitions_with_def by fast
   {
     fix eq_class assume eq_class_in_P: "eq_class \<in> P"
-    have "\<Union> insert (eq_class \<union> {elem}) (P - {eq_class}) = ?S \<union> (eq_class \<union> {elem})"
+    have "\<Union> (insert (eq_class \<union> {elem}) (P - {eq_class})) = ?S \<union> (eq_class \<union> {elem})"
       using insert_into_member_partition1
       by (metis Sup_insert Un_commute Un_empty_right Un_insert_right insert_Diff_single)
-    with eq_class_in_P have "\<Union> insert (eq_class \<union> {elem}) (P - {eq_class}) = ?S \<union> {elem}" by blast
-    then have "\<Union> insert_into_member elem P eq_class = ?S \<union> {elem}"
+    with eq_class_in_P have "\<Union> (insert (eq_class \<union> {elem}) (P - {eq_class})) = ?S \<union> {elem}" by blast
+    then have "\<Union> (insert_into_member elem P eq_class) = ?S \<union> {elem}"
       using insert_into_member_partition1
       by (rule subst)
   }
@@ -406,9 +406,9 @@ text \<open>alternative characterization of the set partitioned by the partition
 lemma partition_without_covers:
   fixes elem::'a
     and P::"'a set set"
-  shows "\<Union> partition_without elem P = (\<Union> P) - {elem}"
+  shows "\<Union> (partition_without elem P) = (\<Union> P) - {elem}"
 proof -
-  have "\<Union> partition_without elem P = \<Union> ((\<lambda>x . x - {elem}) ` P - {{}})"
+  have "\<Union> (partition_without elem P) = \<Union> ((\<lambda>x . x - {elem}) ` P - {{}})"
     unfolding partition_without_def by fast
   also have "\<dots> = \<Union> P - {elem}" by blast
   finally show ?thesis .

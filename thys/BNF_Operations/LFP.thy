@@ -2326,8 +2326,8 @@ text \<open>The set operator\<close>
 
 (* "IFcol" stands for "collect"  *)
 
-abbreviation IF1col where "IF1col \<equiv> (\<lambda>X. F1set1 X \<union> (\<Union>F1set2 X \<union> \<Union>F1set3 X))"
-abbreviation IF2col where "IF2col \<equiv> (\<lambda>X. F2set1 X \<union> (\<Union>F2set2 X \<union> \<Union>F2set3 X))"
+abbreviation IF1col where "IF1col \<equiv> (\<lambda>X. F1set1 X \<union> (\<Union>(F1set2 X) \<union> \<Union>(F1set3 X)))"
+abbreviation IF2col where "IF2col \<equiv> (\<lambda>X. F2set1 X \<union> (\<Union>(F2set2 X) \<union> \<Union>(F2set3 X)))"
 
 abbreviation IF1set where "IF1set \<equiv> fold1 IF1col IF2col"
 abbreviation IF2set where "IF2set \<equiv> fold2 IF1col IF2col"

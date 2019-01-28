@@ -22,7 +22,7 @@ fun nvL where
 |
 "nvL (Neg at) = {}"
 
-definition "nvC c \<equiv> \<Union> set (map nvL c)"
+definition "nvC c \<equiv> \<Union> (set (map nvL c))"
 
 definition "nvPB \<equiv> \<Union> c \<in> \<Phi>. nvC c"
 

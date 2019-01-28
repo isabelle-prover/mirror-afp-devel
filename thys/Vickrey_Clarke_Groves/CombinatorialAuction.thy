@@ -38,14 +38,14 @@ abbreviation "seller == (0::integer)"
 abbreviation "allAllocations' N \<Omega> == 
   injectionsUniverse \<inter> {a. Domain a \<subseteq> N & Range a \<in> all_partitions \<Omega>}" 
 
-abbreviation "allAllocations'' N \<Omega> == allocationsUniverse \<inter> {a. Domain a \<subseteq> N & \<Union> Range a = \<Omega>}"
+abbreviation "allAllocations'' N \<Omega> == allocationsUniverse \<inter> {a. Domain a \<subseteq> N & \<Union>(Range a) = \<Omega>}"
 
 lemma allAllocationsEquivalence: 
   "allAllocations N \<Omega> = allAllocations' N \<Omega> & allAllocations N \<Omega> = allAllocations'' N \<Omega>" 
   using allocationInjectionsUnivervseProperty allAllocationsIntersection by metis
 
 lemma allAllocationsVarCharacterization: 
-  "(a \<in> allAllocations'' N \<Omega>) = (a \<in> allocationsUniverse& Domain a \<subseteq> N & \<Union> Range a = \<Omega>)" 
+  "(a \<in> allAllocations'' N \<Omega>) = (a \<in> allocationsUniverse& Domain a \<subseteq> N & \<Union>(Range a) = \<Omega>)" 
   by force
 
 (* remove the seller from the set of all allocations *)
@@ -57,7 +57,7 @@ abbreviation "soldAllocations N \<Omega> == (Outside' {seller}) ` (allAllocation
 abbreviation "soldAllocations' N \<Omega> == (Outside' {seller}) ` (allAllocations' (N \<union> {seller}) \<Omega>)"
 abbreviation "soldAllocations'' N \<Omega> == (Outside' {seller}) ` (allAllocations'' (N \<union> {seller}) \<Omega>)"
 abbreviation "soldAllocations''' N \<Omega> == 
-  allocationsUniverse \<inter> {aa. Domain aa\<subseteq>N-{seller} & \<Union>Range aa\<subseteq>\<Omega>}"
+  allocationsUniverse \<inter> {aa. Domain aa\<subseteq>N-{seller} & \<Union>(Range aa)\<subseteq>\<Omega>}"
 lemma soldAllocationsEquivalence: 
   "soldAllocations N \<Omega> = soldAllocations' N \<Omega> & 
    soldAllocations' N \<Omega> = soldAllocations'' N \<Omega>"
@@ -74,7 +74,7 @@ lemma allocationSellerMonotonicity:
   using Outside_def by simp
 
 lemma allocationsUniverseCharacterization: 
-  "(a \<in> allocationsUniverse) = (a \<in> allAllocations'' (Domain a) (\<Union> Range a))"
+  "(a \<in> allocationsUniverse) = (a \<in> allAllocations'' (Domain a) (\<Union>(Range a)))"
   by blast
 
 lemma allocationMonotonicity: 
@@ -100,7 +100,7 @@ qed
 
 lemma soldAllocationIsAllocationVariant: 
   assumes "a \<in> soldAllocations N \<Omega>" 
-  shows "a \<in> allAllocations'' (Domain a) (\<Union>Range a)"
+  shows "a \<in> allAllocations'' (Domain a) (\<Union>(Range a))"
 proof - 
   show ?thesis using assms soldAllocationIsAllocation
   by auto blast+
@@ -108,7 +108,7 @@ qed
 
 lemma onlyGoodsAreSold: 
   assumes "a \<in> soldAllocations'' N \<Omega>" 
-  shows "\<Union> Range a \<subseteq> \<Omega>" 
+  shows "\<Union> (Range a) \<subseteq> \<Omega>" 
   using assms Outside_def by blast
 
 lemma soldAllocationIsRestricted: 
@@ -122,31 +122,31 @@ lemma restrictionConservation:
   unfolding Outside_def paste_def by blast
 
 lemma allocatedToBuyerMeansSold: 
-  assumes "a \<in> allocationsUniverse" "Domain a \<subseteq> N-{seller}" "\<Union> Range a \<subseteq> \<Omega>" 
+  assumes "a \<in> allocationsUniverse" "Domain a \<subseteq> N-{seller}" "\<Union> (Range a) \<subseteq> \<Omega>" 
   shows "a \<in> soldAllocations'' N \<Omega>"
 proof -
   let ?i = "seller" 
-  let ?Y = "{\<Omega>-\<Union> Range a}-{{}}" 
+  let ?Y = "{\<Omega>-\<Union> (Range a)}-{{}}" 
   let ?b = "{?i}\<times>?Y" 
   let ?aa = "a\<union>?b"
   let ?aa' = "a +* ?b" 
   have
   1: "a \<in> allocationsUniverse" using assms(1) by fast 
-  have "?b \<subseteq> {(?i,\<Omega>-\<Union> Range a)} - {(?i, {})}" by fastforce 
+  have "?b \<subseteq> {(?i,\<Omega>-\<Union>(Range a))} - {(?i, {})}" by fastforce 
   then have 
   2: "?b \<in> allocationsUniverse" 
     using allocationUniverseProperty subsetAllocation by (metis(no_types))
   have 
-  3: "\<Union> Range a \<inter> \<Union> (Range ?b) = {}" by blast 
+  3: "\<Union> (Range a) \<inter> \<Union> (Range ?b) = {}" by blast 
   have 
   4: "Domain a \<inter> Domain ?b ={}" using assms by fast
   have "?aa \<in> allocationsUniverse" using 1 2 3 4 by (rule allocationUnion)
-  then have "?aa \<in> allAllocations'' (Domain ?aa) (\<Union> Range ?aa)" 
+  then have "?aa \<in> allAllocations'' (Domain ?aa) (\<Union> (Range ?aa))" 
     unfolding allocationsUniverseCharacterization by metis 
-  then have "?aa \<in> allAllocations'' (N\<union>{?i}) (\<Union> Range ?aa)" 
+  then have "?aa \<in> allAllocations'' (N\<union>{?i}) (\<Union> (Range ?aa))" 
     using allocationMonotonicity assms paste_def by auto
   moreover have "Range ?aa = Range a \<union> ?Y" by blast 
-  then moreover have "\<Union> Range ?aa = \<Omega>" 
+  then moreover have "\<Union> (Range ?aa) = \<Omega>" 
     using Un_Diff_cancel Un_Diff_cancel2 Union_Un_distrib Union_empty Union_insert  
     by (metis (lifting, no_types) assms(3) cSup_singleton subset_Un_eq) 
   moreover have "?aa' = ?aa" using 4 by (rule paste_disj_domains)
@@ -181,30 +181,30 @@ qed
 
 corollary lm02: 
   assumes "a \<in> soldAllocations'' N \<Omega>" 
-  shows "a \<in> allocationsUniverse & Domain a \<subseteq> N-{seller} & \<Union> Range a \<subseteq> \<Omega>"
+  shows "a \<in> allocationsUniverse & Domain a \<subseteq> N-{seller} & \<Union> (Range a) \<subseteq> \<Omega>"
 proof -
   have "a \<in> allocationsUniverse" using assms lm01 [of a] by blast
   moreover have "Domain a \<subseteq> N-{seller}" using assms lm01 by blast
-  moreover have "\<Union> Range a \<subseteq> \<Omega>" using assms onlyGoodsAreSold by blast
+  moreover have "\<Union> (Range a) \<subseteq> \<Omega>" using assms onlyGoodsAreSold by blast
   ultimately show ?thesis by blast
 qed
 
 corollary lm03:
   "(a \<in> soldAllocations'' N \<Omega>) =
-   (a \<in> allocationsUniverse & a \<in> {aa. Domain aa \<subseteq> N-{seller} & \<Union> Range aa \<subseteq> \<Omega>})" 
+   (a \<in> allocationsUniverse & a \<in> {aa. Domain aa \<subseteq> N-{seller} & \<Union> (Range aa) \<subseteq> \<Omega>})" 
   (is "?L = ?R") 
 proof -
   have "(a\<in>soldAllocations'' N \<Omega>) =
-        (a\<in>allocationsUniverse& Domain a \<subseteq> N-{seller} & \<Union> Range a \<subseteq> \<Omega>)" 
+        (a\<in>allocationsUniverse& Domain a \<subseteq> N-{seller} & \<Union> (Range a) \<subseteq> \<Omega>)" 
   using lm02 allocatedToBuyerMeansSold by (metis (mono_tags))
-  then have "?L = (a\<in>allocationsUniverse& Domain a \<subseteq> N-{seller} & \<Union> Range a \<subseteq> \<Omega>)" by fast
+  then have "?L = (a\<in>allocationsUniverse& Domain a \<subseteq> N-{seller} & \<Union> (Range a) \<subseteq> \<Omega>)" by fast
   moreover have "... = ?R" using mem_Collect_eq by (metis (lifting, no_types))
   ultimately show ?thesis by auto
 qed
 
 corollary lm04: 
   "a \<in> soldAllocations'' N \<Omega> =
-   (a\<in> (allocationsUniverse \<inter> {aa. Domain aa \<subseteq> N-{seller} & \<Union> Range aa \<subseteq> \<Omega>}))" 
+   (a\<in> (allocationsUniverse \<inter> {aa. Domain aa \<subseteq> N-{seller} & \<Union> (Range aa) \<subseteq> \<Omega>}))" 
   using lm03 by (metis (mono_tags) Int_iff)
 
 corollary soldAllocationVariantEquivalence: 
@@ -226,16 +226,16 @@ proof -
   let ?bb = seller 
   let ?d = Domain 
   let ?r = Range 
-  let ?X1 = "{aa. ?d aa \<subseteq> N-{n}-{?bb} & \<Union>?r aa\<subseteq>\<Omega>}" 
-  let ?X2 = "{aa. ?d aa \<subseteq> N-{?bb} & \<Union>?r aa \<subseteq> \<Omega>}" 
+  let ?X1 = "{aa. ?d aa \<subseteq> N-{n}-{?bb} & \<Union>(?r aa)\<subseteq>\<Omega>}" 
+  let ?X2 = "{aa. ?d aa \<subseteq> N-{?bb} & \<Union>(?r aa) \<subseteq> \<Omega>}" 
   have "a\<in>?X2" using assms(1) by fast  
   then have 
-  0: "?d a \<subseteq> N-{?bb} & \<Union>?r a \<subseteq> \<Omega>" by blast 
+  0: "?d a \<subseteq> N-{?bb} & \<Union>(?r a) \<subseteq> \<Omega>" by blast 
   then have "?d (a--n) \<subseteq> N-{?bb}-{n}" 
     using outside_reduces_domain by (metis Diff_mono subset_refl) 
   moreover have "... = N-{n}-{?bb}" by fastforce 
   ultimately have "?d (a--n) \<subseteq> N-{n}-{?bb}" by blast 
-  moreover have "\<Union> ?r (a--n) \<subseteq> \<Omega>" 
+  moreover have "\<Union> (?r (a--n)) \<subseteq> \<Omega>" 
     unfolding Outside_def using 0 by blast 
   ultimately have "a -- n \<in> ?X1" by fast 
   moreover have "a--n \<in> allocationsUniverse" 
@@ -495,7 +495,7 @@ theorem vcgaIsMaximal:
 
 corollary vcgaIsAllocationAllocatingGoodsOnly: 
   assumes "distinct \<Omega>" "set \<Omega> \<noteq> {}" "finite N" 
-  shows "vcga' N \<Omega> b r \<in> allocationsUniverse & \<Union> Range (vcga' N \<Omega> b r) \<subseteq> set \<Omega>" 
+  shows "vcga' N \<Omega> b r \<in> allocationsUniverse & \<Union> (Range (vcga' N \<Omega> b r)) \<subseteq> set \<Omega>" 
 proof -
   let ?a = "vcga' N \<Omega> b r" 
   let ?n = seller
@@ -509,8 +509,8 @@ proof -
                                     allAllocationsUniverse subset_trans)
   ultimately moreover have "?a = a -- seller  &  a \<in> allocationsUniverse" by blast
   then have "?a \<in> allocationsUniverse" using allocationsUniverseOutside by auto
-  moreover have "\<Union> Range a= set \<Omega>" using allAllocationsIntersectionSetEquals 1 by metis
-  then moreover have "\<Union> Range ?a \<subseteq> set \<Omega>" using Outside_def 0 by fast
+  moreover have "\<Union> (Range a) = set \<Omega>" using allAllocationsIntersectionSetEquals 1 by metis
+  then moreover have "\<Union> (Range ?a) \<subseteq> set \<Omega>" using Outside_def 0 by fast
   ultimately show ?thesis using allocationsUniverseOutside Outside_def by blast
 qed
 
@@ -595,8 +595,8 @@ proof -
   have 2: "n \<in> Domain ?a" using assms vcgaEquivalence by fast
   with 1 have "?a,,n \<in> Range ?a" using eval_runiq_in_Range by fast 
   with 1 2 have "?a,,,n \<in> Range ?a" using imageEquivalence by fastforce
-  then have "g \<in> \<Union> Range ?a" using assms vcgaEquivalence by blast 
-  moreover have "\<Union> Range ?a \<subseteq> set \<Omega>" using assms(1,2,3) vcgaIsAllocationAllocatingGoodsOnly by fast
+  then have "g \<in> \<Union> (Range ?a)" using assms vcgaEquivalence by blast 
+  moreover have "\<Union> (Range ?a) \<subseteq> set \<Omega>" using assms(1,2,3) vcgaIsAllocationAllocatingGoodsOnly by fast
   ultimately show ?thesis by blast
 qed
 

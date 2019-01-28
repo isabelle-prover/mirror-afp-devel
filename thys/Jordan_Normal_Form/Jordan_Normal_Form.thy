@@ -524,14 +524,14 @@ proof -
         using elements_matD[OF e] by (simp only:pow_mat_dim_square[OF jm],auto)
       have "?jmk = diag_block_mat ?As"
         using jordan_matrix_pow[of n_as k] by auto
-      hence "elements_mat ?jmk \<subseteq> {0} \<union> \<Union> set (map elements_mat ?As)"
+      hence "elements_mat ?jmk \<subseteq> {0} \<union> \<Union> (set (map elements_mat ?As))"
         using elements_diag_block_mat[of ?As] by auto
-      hence e_mem: "e \<in> {0} \<union> \<Union> set (map elements_mat ?As)"
+      hence e_mem: "e \<in> {0} \<union> \<Union> (set (map elements_mat ?As))"
         using e by blast
       show "norm e \<le> ?g k c"
       proof (cases "e = 0")
         case False
-          then have "e \<in> \<Union> set (map elements_mat ?As)" using e_mem by auto
+          then have "e \<in> \<Union> (set (map elements_mat ?As))" using e_mem by auto
           then obtain n a
             where "e \<in> elements_mat (jordan_block n a ^\<^sub>m k)"
             and na: "(n,a) \<in> set n_as" by force

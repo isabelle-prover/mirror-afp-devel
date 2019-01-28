@@ -484,7 +484,7 @@ corollary lm049:
   using lm046 rangeSetOfPairs unionFinestPart  by fastforce
 
 corollary lm050: 
-  "Range (pseudoAllocation a) = finestpart (\<Union> Range a)" 
+  "Range (pseudoAllocation a) = finestpart (\<Union> (Range a))" 
   using commuteUnionFinestpart lm049 by metis 
 
 lemma lm051: 

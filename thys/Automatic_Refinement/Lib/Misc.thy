@@ -1888,7 +1888,7 @@ lemma list_collect_set_alt: "list_collect_set f l = \<Union>{ f (l!i) | i. i<len
   apply auto
   done
 
-lemma list_collect_set_as_map: "list_collect_set f l = \<Union>set (map f l)"
+lemma list_collect_set_as_map: "list_collect_set f l = \<Union>(set (map f l))"
   by (unfold list_collect_set_def) auto
 
 subsubsection \<open>Sorted List with arbitrary Relations\<close>
@@ -1963,12 +1963,12 @@ lemma in_set_drop_conv_nth: "x\<in>set (drop n l) \<longleftrightarrow> (\<exist
   apply auto []
   done
 
-lemma Union_take_drop_id: "\<Union>set (drop n l) \<union> \<Union>set (take n l) = \<Union>set l"
+lemma Union_take_drop_id: "\<Union>(set (drop n l)) \<union> \<Union>(set (take n l)) = \<Union>(set l)"
   by (metis Union_Un_distrib append_take_drop_id set_union_code sup_commute)
 
 
 lemma Un_set_drop_extend: "\<lbrakk>j\<ge>Suc 0; j < length l\<rbrakk>
-  \<Longrightarrow> l ! (j - Suc 0) \<union> \<Union>set (drop j l) = \<Union>set (drop (j - Suc 0) l)"
+  \<Longrightarrow> l ! (j - Suc 0) \<union> \<Union>(set (drop j l)) = \<Union>(set (drop (j - Suc 0) l))"
   apply safe
   apply simp_all
   apply (metis diff_Suc_Suc diff_zero gr0_implies_Suc in_set_drop_conv_nth

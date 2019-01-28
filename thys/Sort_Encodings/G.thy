@@ -127,7 +127,7 @@ where
 "glitOfL (Neg at) = {grdLit x | x. x \<in> varsA at \<and> prot (tpOfV x)}"
 
 (* of a clause: *)
-definition "glitOfC c \<equiv> \<Union> set (map glitOfL c)"
+definition "glitOfC c \<equiv> \<Union> (set (map glitOfL c))"
 
 lemma finite_glitOfL[simp]: "finite (glitOfL l)"
 proof-

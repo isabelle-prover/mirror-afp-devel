@@ -36,7 +36,7 @@ where
   "finals A \<equiv> {\<approx>A `` {s} | s . s \<in> A}"
 
 lemma lang_is_union_of_finals: 
-  shows "A = \<Union> finals A"
+  shows "A = \<Union>(finals A)"
 unfolding finals_def
 unfolding Image_def
 unfolding str_eq_def

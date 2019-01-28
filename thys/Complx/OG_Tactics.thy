@@ -415,7 +415,7 @@ lemma inter_aux_Par_Map: "\<forall>k. i\<le>k \<and> k<j \<longrightarrow> inter
 lemma Parallel_inter_aux:
   "\<lbrakk> interfree_aux_right \<Gamma> \<Theta> F (Q, com, ann);
      interfree_aux_right \<Gamma> \<Theta> F (A, com, ann);
-     interfree_aux_right \<Gamma> \<Theta> F (\<Inter> set (map postcond as), com, ann);
+     interfree_aux_right \<Gamma> \<Theta> F (\<Inter> (set (map postcond as)), com, ann);
      inter_aux_Par \<Gamma> \<Theta> F (cs, as, com, ann) \<rbrakk> \<Longrightarrow>
      interfree_aux \<Gamma> \<Theta> F (Parallel cs, (AnnPar as, Q, A), com, ann)"
   apply (clarsimp simp: interfree_aux_def interfree_aux_right_def inter_aux_Par_def)

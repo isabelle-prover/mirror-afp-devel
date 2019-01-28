@@ -1082,7 +1082,7 @@ lemma concat_concat_map:
   by (induct xs) simp_all
 
 lemma UN_upt_len_conv [simp]:
-  "length xs = n \<Longrightarrow> (\<Union>i \<in> {0 ..< n}. f (xs ! i)) = \<Union>set (map f xs)"
+  "length xs = n \<Longrightarrow> (\<Union>i \<in> {0 ..< n}. f (xs ! i)) = \<Union>(set (map f xs))"
   by (force simp: in_set_conv_nth)
 
 lemma Ball_at_Least0LessThan_conv [simp]:

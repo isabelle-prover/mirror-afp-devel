@@ -136,7 +136,7 @@ Here's a useful little function for testing a conjecture on "a few" examples:
 fun all_formulas_of_size where
 "all_formulas_of_size K 0 = {\<bottom>} \<union> Atom ` K" |
 "all_formulas_of_size K (Suc n) = (
-  let af = \<Union>set [all_formulas_of_size K m. m \<leftarrow> [0..<Suc n]] in
+  let af = \<Union>(set [all_formulas_of_size K m. m \<leftarrow> [0..<Suc n]]) in
   (\<Union>F\<in>af.
     (\<Union>G\<in>af. if size F + size G \<le> Suc n then {And F G, Or F G, Imp F G} else {}) 
    \<union> (if size F \<le> Suc n then {Not F} else {})) 
@@ -177,8 +177,8 @@ proof -
       by (metis Suc_diff_1 formula.size_neq leD neq0_conv)
     with And have IH: "F \<in> all_formulas_of_size K mF" "G \<in> all_formulas_of_size K mG" 
       using nFG by simp+
-    let ?af = "\<Union>set [all_formulas_of_size K m. m \<leftarrow> [0..<Suc m]]"
-    have r: "F \<in> all_formulas_of_size K mF \<Longrightarrow> mF \<le> n \<Longrightarrow> F \<in> \<Union>set (map (all_formulas_of_size K) [0..<Suc n])"
+    let ?af = "\<Union>(set [all_formulas_of_size K m. m \<leftarrow> [0..<Suc m]])"
+    have r: "F \<in> all_formulas_of_size K mF \<Longrightarrow> mF \<le> n \<Longrightarrow> F \<in> \<Union>(set (map (all_formulas_of_size K) [0..<Suc n]))"
       for F mF n by fastforce
     have af: "F \<in> ?af" "G \<in> ?af" using nFG(3) by(intro IH[THEN r]; simp)+
     have m: "F \<^bold>\<and> G \<in> (if size F + size G \<le> Suc m then {F \<^bold>\<and> G, F \<^bold>\<or> G, F \<^bold>\<rightarrow> G} else {})" using * by simp
@@ -196,8 +196,8 @@ proof -
       by (metis Suc_diff_1 formula.size_neq leD neq0_conv)
     with Or have IH: "F \<in> all_formulas_of_size K mF" "G \<in> all_formulas_of_size K mG" 
       using nFG by simp+
-    let ?af = "\<Union>set [all_formulas_of_size K m. m \<leftarrow> [0..<Suc m]]"
-    have r: "F \<in> all_formulas_of_size K mF \<Longrightarrow> mF \<le> n \<Longrightarrow> F \<in> \<Union>set (map (all_formulas_of_size K) [0..<Suc n])"
+    let ?af = "\<Union>(set [all_formulas_of_size K m. m \<leftarrow> [0..<Suc m]])"
+    have r: "F \<in> all_formulas_of_size K mF \<Longrightarrow> mF \<le> n \<Longrightarrow> F \<in> \<Union>(set (map (all_formulas_of_size K) [0..<Suc n]))"
       for F mF n by fastforce
     have af: "F \<in> ?af" "G \<in> ?af" using nFG(3) by(intro IH[THEN r]; simp)+
     have m: "Or F G \<in> (if size F + size G \<le> Suc m then {F \<^bold>\<and> G, F \<^bold>\<or> G, F \<^bold>\<rightarrow> G} else {})" using * by simp
@@ -213,8 +213,8 @@ proof -
       by (metis Suc_diff_1 formula.size_neq leD neq0_conv)
     with Imp have IH: "F \<in> all_formulas_of_size K mF" "G \<in> all_formulas_of_size K mG" 
       using nFG by simp+
-    let ?af = "\<Union>set [all_formulas_of_size K m. m \<leftarrow> [0..<Suc m]]"
-    have r: "F \<in> all_formulas_of_size K mF \<Longrightarrow> mF \<le> n \<Longrightarrow> F \<in> \<Union>set (map (all_formulas_of_size K) [0..<Suc n])"
+    let ?af = "\<Union>(set [all_formulas_of_size K m. m \<leftarrow> [0..<Suc m]])"
+    have r: "F \<in> all_formulas_of_size K mF \<Longrightarrow> mF \<le> n \<Longrightarrow> F \<in> \<Union>(set (map (all_formulas_of_size K) [0..<Suc n]))"
       for F mF n by fastforce
     have af: "F \<in> ?af" "G \<in> ?af" using nFG(3) by(intro IH[THEN r]; simp)+
     have m: "Imp F G \<in> (if size F + size G \<le> Suc m then {F \<^bold>\<and> G, F \<^bold>\<or> G, F \<^bold>\<rightarrow> G} else {})" using * by simp

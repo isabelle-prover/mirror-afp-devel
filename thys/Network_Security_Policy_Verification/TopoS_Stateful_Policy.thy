@@ -171,7 +171,7 @@ text\<open>@{const wf_stateful_policy} implies @{term wf_graph}\<close>
 
 (*we use the second way of writing it in the paper*)
 lemma "(\<forall>F \<in> get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<T> ). F \<subseteq> backflows (filternew_flows_state \<T>)) \<longleftrightarrow>
-    \<Union> get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<T> ) \<subseteq> (backflows (flows_state \<T>)) - (flows_fix \<T>)"
+    \<Union>(get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<T>)) \<subseteq> (backflows (flows_state \<T>)) - (flows_fix \<T>)"
     by(simp add: filternew_flows_state_alt backflows_minus_backflows, blast)
 
 
@@ -399,17 +399,17 @@ locale stateful_policy_compliance =
 
 
     text \<open>All violations are backflows of valid flows\<close>
-    corollary compliant_stateful_ACS_only_state_violations_union: "\<Union> get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<T>) \<subseteq> backflows (flows_state \<T>)"
+    corollary compliant_stateful_ACS_only_state_violations_union: "\<Union>(get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<T>)) \<subseteq> backflows (flows_state \<T>)"
     using compliant_stateful_ACS_only_state_violations by fastforce
 
-    corollary compliant_stateful_ACS_only_state_violations_union': "\<Union> get_offending_flows M (stateful_policy_to_network_graph \<T>) \<subseteq> backflows (flows_state \<T>)"
+    corollary compliant_stateful_ACS_only_state_violations_union': "\<Union>(get_offending_flows M (stateful_policy_to_network_graph \<T>)) \<subseteq> backflows (flows_state \<T>)"
     using compliant_stateful_ACS_only_state_violations' by fastforce
 
     text\<open>All individual flows cause no side effects, i.e. each backflow causes at most itself as violation, no other
            side-effect violations are induced.\<close>
     lemma  compliant_stateful_ACS_no_state_singleflow_side_effect:
       "\<forall> (v\<^sub>1, v\<^sub>2) \<in> backflows (flows_state \<T>). 
-       (\<Union> get_offending_flows(get_ACS M) \<lparr> nodes = hosts \<T>, edges = flows_fix \<T> \<union> flows_state \<T> \<union> {(v\<^sub>1, v\<^sub>2)} \<rparr>) \<subseteq> {(v\<^sub>1, v\<^sub>2)}"
+       \<Union>(get_offending_flows(get_ACS M) \<lparr> nodes = hosts \<T>, edges = flows_fix \<T> \<union> flows_state \<T> \<union> {(v\<^sub>1, v\<^sub>2)} \<rparr>) \<subseteq> {(v\<^sub>1, v\<^sub>2)}"
     using compliant_stateful_ACS_no_side_effects' by blast
   end
 

@@ -530,7 +530,7 @@ proof -
 proof -
   have "\<forall>v0. v0 \<in> Range (a - (X \<union> {i}) \<times> Range a) \<longrightarrow> (\<forall>v1. v1 \<in> a `` (X \<union> {i}) \<longrightarrow> v0 \<inter> v1 = {})" 
     by (metis (no_types) \<open>\<forall>x\<in>Range (a - (X \<union> {i}) \<times> Range a). \<forall>y\<in>a `` (X \<union> {i}). x \<inter> y = {}\<close>) 
-  thus "\<Union>Range (a - (X \<union> {i}) \<times> Range a) \<inter> \<Union>(a `` (X \<union> {i})) = {}" by blast
+  thus "\<Union>(Range (a - (X \<union> {i}) \<times> Range a)) \<inter> \<Union>(a `` (X \<union> {i})) = {}" by blast
 qed 
   then have 
     "?U (?r ?a1) \<inter> (?U (?r ?a2)) = {}" by blast
@@ -538,7 +538,7 @@ qed
     moreover have "?a1 \<in> allocationsUniverse" using assms(1) reducedAllocation by blast
     moreover have "?a2 \<in> allocationsUniverse" using allocationUniverseProperty by fastforce
     ultimately have "?a1 \<in> allocationsUniverse & ?a2 \<in> allocationsUniverse &
-                     \<Union>Range ?a1 \<inter> \<Union>Range ?a2 = {} & Domain ?a1 \<inter> Domain ?a2 = {}" 
+                     \<Union>(Range ?a1) \<inter> \<Union>(Range ?a2) = {} & Domain ?a1 \<inter> Domain ?a2 = {}" 
       by blast 
     then have ?t1 using allocationUnion by auto       
     then have ?thesis using 1 7 by simp
@@ -606,8 +606,8 @@ proof -
     hence "a outside (X \<union> {i}) \<union> {i} \<times> ({\<Union>(a `` (X \<union> {i}))} - {{}}) \<in> allocationsUniverse"
       by (metis "0")
     thus "a outside (X \<union> {i}) \<union> {i} \<times> ({\<Union>(a `` (X \<union> {i}))} - {{}}) \<in> 
-           allocationsUniverse \<and> \<Union>Range (a outside (X \<union> {i}) \<union> {i} \<times> ({\<Union>(a `` (X \<union> {i}))} - {{}}))
-          = \<Union>Range a"
+           allocationsUniverse \<and> \<Union>(Range (a outside (X \<union> {i}) \<union> {i} \<times> ({\<Union>(a `` (X \<union> {i}))} - {{}})))
+          = \<Union>(Range a)"
           using "0" by (metis (no_types) allocationsUniverseOutsideUnion)
   qed
   moreover have 
@@ -833,12 +833,12 @@ corollary sum_associativity:
   by (metis is_partition_of_def familyUnionFiniteEverySetFinite)
 
 lemma lm057: 
-  assumes "a \<in> allocationsUniverse" "Domain a \<subseteq> N" "(\<Union>Range a) = G" 
+  assumes "a \<in> allocationsUniverse" "Domain a \<subseteq> N" "\<Union>(Range a) = G" 
   shows   "a \<in> allAllocations N G" 
   using assms posssibleAllocationsRelCharacterization lm040 by (metis (mono_tags, lifting))
 
 corollary lm058: 
-  "(allocationsUniverse \<inter> {a. (Domain a) \<subseteq> N & (\<Union>Range a) = G}) \<subseteq>
+  "(allocationsUniverse \<inter> {a. (Domain a) \<subseteq> N & \<Union>(Range a) = G}) \<subseteq>
    allAllocations N G"
   using lm057 by fastforce
 
@@ -847,18 +847,18 @@ corollary lm059:
   using allocationInverseRangeDomainProperty by blast
 
 corollary lm060: 
-  "allAllocations N G \<subseteq> {a. (\<Union>Range a) = G}" 
+  "allAllocations N G \<subseteq> {a. \<Union>(Range a) = G}" 
   using is_partition_of_def allocationInverseRangeDomainProperty mem_Collect_eq subsetI
   by (metis(mono_tags))
 
 corollary lm061: 
   "allAllocations N G  \<subseteq>  allocationsUniverse &
-   allAllocations N G \<subseteq> {a. (Domain a) \<subseteq> N & (\<Union>Range a) = G}" 
+   allAllocations N G \<subseteq> {a. (Domain a) \<subseteq> N & \<Union>(Range a) = G}" 
   using lm059 lm060 conj_subset_def allAllocationsUniverse by (metis (no_types))
 
 corollary allAllocationsIntersectionSubset: 
   "allAllocations N G \<subseteq> 
-   allocationsUniverse \<inter> {a. (Domain a) \<subseteq> N & (\<Union>Range a) = G}"
+   allocationsUniverse \<inter> {a. (Domain a) \<subseteq> N & \<Union>(Range a) = G}"
   (is "?L \<subseteq> ?R1 \<inter> ?R2")
 proof - 
   have "?L \<subseteq> ?R1 & ?L \<subseteq> ?R2" by (rule lm061) thus ?thesis by auto 
@@ -866,7 +866,7 @@ qed
 
 corollary allAllocationsIntersection: 
   "allAllocations N G = 
-   (allocationsUniverse \<inter> {a. (Domain a) \<subseteq> N & (\<Union>Range a) = G})" 
+   (allocationsUniverse \<inter> {a. (Domain a) \<subseteq> N & \<Union>(Range a) = G})" 
   (is "?L = ?R") 
 proof -
   have "?L \<subseteq> ?R" using allAllocationsIntersectionSubset by metis 
@@ -876,7 +876,7 @@ qed
 
 corollary allAllocationsIntersectionSetEquals: 
   "a \<in> allAllocations N G  = 
-   (a \<in> allocationsUniverse  & (Domain a) \<subseteq> N & (\<Union>Range a) = G)" 
+   (a \<in> allocationsUniverse  & (Domain a) \<subseteq> N & \<Union>(Range a) = G)" 
   using allAllocationsIntersection Int_Collect by (metis (mono_tags, lifting))
 
 corollary allocationsUniverseOutside: 

@@ -37,11 +37,11 @@ fun nv2L where
 |
 "nv2L (Neg (Eq T1 T2)) = {}"
 |
-"nv2L (Pos (Pr p Tl)) = {x \<in> \<Union> set (map nv2T Tl) . pol (tpOfV x) p = Fext}"
+"nv2L (Pos (Pr p Tl)) = {x \<in> \<Union> (set (map nv2T Tl)) . pol (tpOfV x) p = Fext}"
 |
-"nv2L (Neg (Pr p Tl)) = {x \<in> \<Union> set (map nv2T Tl) . pol (tpOfV x) p = Text}"
+"nv2L (Neg (Pr p Tl)) = {x \<in> \<Union> (set (map nv2T Tl)) . pol (tpOfV x) p = Text}"
 
-definition "nv2C c \<equiv> \<Union> set (map nv2L c)"
+definition "nv2C c \<equiv> \<Union> (set (map nv2L c))"
 
 lemma in_nv2T: "x \<in> nv2T T \<longleftrightarrow> T = Var x"
 apply(cases T)
@@ -81,9 +81,9 @@ fun isGuard :: "var \<Rightarrow> ('fsym,'psym) lit \<Rightarrow> bool" where
  (T1 = Var x \<and> (\<exists> f Tl. T2 = Fn f Tl)) \<or>
  (T2 = Var x \<and> (\<exists> f Tl. T1 = Fn f Tl))"
 |
-"isGuard x (Pos (Pr p Tl)) \<longleftrightarrow> x \<in> \<Union> set (map nv2T Tl) \<and> pol (tpOfV x) p = Text"
+"isGuard x (Pos (Pr p Tl)) \<longleftrightarrow> x \<in> \<Union> (set (map nv2T Tl)) \<and> pol (tpOfV x) p = Text"
 |
-"isGuard x (Neg (Pr p Tl)) \<longleftrightarrow> x \<in> \<Union> set (map nv2T Tl) \<and> pol (tpOfV x) p = Fext"
+"isGuard x (Neg (Pr p Tl)) \<longleftrightarrow> x \<in> \<Union> (set (map nv2T Tl)) \<and> pol (tpOfV x) p = Fext"
 
 
 text\<open>The monotonicity calculus from the Classen et. al. paper, applied

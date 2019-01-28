@@ -221,7 +221,7 @@ done
 
 lemma FAddSA_RootEx_def: 
   "\<lbrakk> S \<in> dom G; (States SA) \<inter> (dom G) = {} \<rbrakk> \<Longrightarrow> 
-    RootEx F (G [f+] (S,SA)) = (\<exists>! A . A \<in> F \<and> A \<notin> insert SA (\<Union> ran G))"
+    RootEx F (G [f+] (S,SA)) = (\<exists>! A . A \<in> F \<and> A \<notin> insert SA (\<Union> (ran G)))"
 apply (unfold RootEx_def)
 apply (simp only: FAddSA_Union_ran Int_commute)
 done
@@ -237,7 +237,7 @@ done
 
 lemma FAddSA_Root_def:
   "\<lbrakk> S \<in> dom G; (States SA) \<inter> (dom G) = {} \<rbrakk>  \<Longrightarrow> 
-   (Root F (G [f+] (S,SA)) = (@ A . A \<in> F \<and> A \<notin> insert SA (\<Union> ran G)))" 
+   (Root F (G [f+] (S,SA)) = (@ A . A \<in> F \<and> A \<notin> insert SA (\<Union> (ran G))))" 
 apply (unfold Root_def)
 apply (simp only: FAddSA_Union_ran Int_commute)
 done

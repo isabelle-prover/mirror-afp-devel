@@ -226,8 +226,8 @@ proof (induction B rule:finite_induct)
   then show ?case by auto
 next
   case (insert P B)
-  have "card (\<Union>insert P B) \<le> card P + card (\<Union>B)" by (simp add: card_Un_le)
-  then have "card (\<Union>insert P B) \<le> card P + card B * k" using insert by auto
+  have "card (\<Union>(insert P B)) \<le> card P + card (\<Union>B)" by (simp add: card_Un_le)
+  then have "card (\<Union>(insert P B)) \<le> card P + card B * k" using insert by auto
   then show ?case using insert by simp
 qed
 

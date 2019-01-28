@@ -240,8 +240,8 @@ lemma oghoare_Parallel[rule_format, OF _ refl]:
 "\<Gamma>, \<Theta>\<turnstile>\<^bsub>/F\<^esub> P x Q,A \<Longrightarrow> \<forall>cs. x = Parallel cs \<longrightarrow>
  (\<exists>as. P = AnnPar as \<and> 
    length as = length cs \<and>
-   (\<Inter>set (map postcond as)) \<subseteq> Q \<and>
-   (\<Union>set (map abrcond as)) \<subseteq> A \<and>
+   \<Inter>(set (map postcond as)) \<subseteq> Q \<and>
+   \<Union>(set (map abrcond as)) \<subseteq> A \<and>
    (\<forall>i<length cs. \<exists>Q' A'. \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F\<^esub> (pres (as!i)) (cs!i) Q', A' \<and>
             Q' \<subseteq> postcond (as!i) \<and> A' \<subseteq> abrcond (as!i)) \<and>
   interfree \<Gamma> \<Theta> F as cs)"
@@ -781,8 +781,8 @@ lemma ParallelRuleAnn:
 " length as = length cs \<Longrightarrow>
   \<forall>i<length cs. \<Gamma>,\<Theta> \<turnstile>\<^bsub>/F \<^esub>(pres (as ! i)) (cs ! i) (postcond (as ! i)),(abrcond (as ! i)) \<Longrightarrow>
   interfree \<Gamma> \<Theta> F as cs \<Longrightarrow>
-  \<Inter>set (map postcond as) \<subseteq> Q \<Longrightarrow>
-  \<Union>set (map abrcond as) \<subseteq> A \<Longrightarrow> \<Gamma>,\<Theta> \<turnstile>\<^bsub>/F \<^esub>(AnnPar as) (Parallel cs) Q,A"
+  \<Inter>(set (map postcond as)) \<subseteq> Q \<Longrightarrow>
+  \<Union>(set (map abrcond as)) \<subseteq> A \<Longrightarrow> \<Gamma>,\<Theta> \<turnstile>\<^bsub>/F \<^esub>(AnnPar as) (Parallel cs) Q,A"
  apply (erule (3) Parallel)
  apply auto
 done

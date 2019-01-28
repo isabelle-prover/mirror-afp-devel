@@ -1621,7 +1621,7 @@ lemma diag_block_one_mat[simp]:
   by (induct As, auto simp: Let_def)
 
 lemma elements_diag_block_mat:
-  "elements_mat (diag_block_mat As) \<subseteq> {0} \<union> \<Union> set (map elements_mat As)"
+  "elements_mat (diag_block_mat As) \<subseteq> {0} \<union> \<Union> (set (map elements_mat As))"
 proof (induct As)
   case Nil then show ?case using dim_diag_block_mat[of Nil] by auto next
   case (Cons A As)

@@ -249,7 +249,7 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
     lemma get_offending_flows_alt1: "get_offending_flows M G = \<Union> {c_offending_flows m G | m. m \<in> set M}"
       apply(simp add: get_offending_flows_def)
       by fastforce
-    lemma get_offending_flows_un: "\<Union> get_offending_flows M G = (\<Union>m\<in>set M. \<Union>c_offending_flows m G)"
+    lemma get_offending_flows_un: "\<Union>(get_offending_flows M G) = (\<Union>m\<in>set M. \<Union>(c_offending_flows m G))"
       apply(simp add: get_offending_flows_def)
       by blast
   
@@ -334,21 +334,21 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
           case (Cons m M)
           from valid_reqs1[OF Cons(2)] have validReq: "configured_SecurityInvariant m" .
 
-          from Cons(3) have valid_rmUnOff: "wf_graph \<lparr>nodes = V, edges = E - (\<Union>c_offending_flows m \<lparr>nodes = V, edges = E\<rparr>) \<rparr>"
+          from Cons(3) have valid_rmUnOff: "wf_graph \<lparr>nodes = V, edges = E - \<Union>(c_offending_flows m \<lparr>nodes = V, edges = E\<rparr>) \<rparr>"
             by(simp add: wf_graph_remove_edges)
           
           from configured_SecurityInvariant.sinvar_valid_remove_flattened_offending_flows[OF validReq Cons(3)]
-          have valid_eval_rmUnOff: "c_sinvar m \<lparr>nodes = V, edges = E - (\<Union>c_offending_flows m \<lparr>nodes = V, edges = E\<rparr>) \<rparr>" .
+          have valid_eval_rmUnOff: "c_sinvar m \<lparr>nodes = V, edges = E - \<Union>(c_offending_flows m \<lparr>nodes = V, edges = E\<rparr>) \<rparr>" .
     
           from generate_valid_topology_subseteq_edges have edges_gentopo_subseteq: 
-            "(edges (generate_valid_topology M \<lparr>nodes = V, edges = E\<rparr>)) - (\<Union>c_offending_flows m \<lparr>nodes = V, edges = E\<rparr>)
+            "edges (generate_valid_topology M \<lparr>nodes = V, edges = E\<rparr>) - \<Union>(c_offending_flows m \<lparr>nodes = V, edges = E\<rparr>)
                \<subseteq>
-            E - (\<Union>c_offending_flows m \<lparr>nodes = V, edges = E\<rparr>)"  by fastforce
+            E - \<Union>(c_offending_flows m \<lparr>nodes = V, edges = E\<rparr>)"  by fastforce
     
           from configured_SecurityInvariant.mono_sinvar[OF validReq valid_rmUnOff edges_gentopo_subseteq valid_eval_rmUnOff]
-          have "c_sinvar m \<lparr>nodes = V, edges = (edges (generate_valid_topology M \<lparr>nodes = V, edges = E\<rparr>)) - (\<Union>c_offending_flows m \<lparr>nodes = V, edges = E\<rparr>) \<rparr>" .
+          have "c_sinvar m \<lparr>nodes = V, edges = (edges (generate_valid_topology M \<lparr>nodes = V, edges = E\<rparr>)) - \<Union>(c_offending_flows m \<lparr>nodes = V, edges = E\<rparr>) \<rparr>" .
           from this have goal1: 
-            "c_sinvar m (delete_edges (generate_valid_topology M \<lparr>nodes = V, edges = E\<rparr>) (\<Union>c_offending_flows m \<lparr>nodes = V, edges = E\<rparr>))"
+            "c_sinvar m (delete_edges (generate_valid_topology M \<lparr>nodes = V, edges = E\<rparr>) (\<Union>(c_offending_flows m \<lparr>nodes = V, edges = E\<rparr>)))"
                by(simp add: delete_edges_simp2 generate_valid_topology_nodes)
     
           from valid_reqs2[OF Cons(2)] have "valid_reqs M" .
@@ -373,7 +373,7 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
             "\<And> E'. E' \<subseteq> E_IH \<Longrightarrow> all_security_requirements_fulfilled M \<lparr>nodes = V, edges = E'\<rparr>" .
     
           have "all_security_requirements_fulfilled M 
-            (delete_edges (generate_valid_topology M \<lparr>nodes = V, edges = E\<rparr>) (\<Union>c_offending_flows m \<lparr>nodes = V, edges = E\<rparr>))"
+            (delete_edges (generate_valid_topology M \<lparr>nodes = V, edges = E\<rparr>) (\<Union>(c_offending_flows m \<lparr>nodes = V, edges = E\<rparr>)))"
             apply(subst E_IH_prop)
             apply(simp add: delete_edges_simp2)
             apply(rule mono_rule)
@@ -381,7 +381,7 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
     
           from this have goal2:
             "(\<forall>ma\<in>set M.
-            c_sinvar ma (delete_edges (generate_valid_topology M \<lparr>nodes = V, edges = E\<rparr>) (\<Union>c_offending_flows m \<lparr>nodes = V, edges = E\<rparr>)))"
+            c_sinvar ma (delete_edges (generate_valid_topology M \<lparr>nodes = V, edges = E\<rparr>) (\<Union>(c_offending_flows m \<lparr>nodes = V, edges = E\<rparr>))))"
             by(simp add: all_security_requirements_fulfilled_def)
     
           from goal1 goal2 
@@ -395,7 +395,7 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
    apply(induction M arbitrary: G)
     apply(simp_all add: delete_edges_simp2 generate_valid_topology_nodes) by fastforce
 
-  lemma c_offending_flows_subseteq_edges: "configured_SecurityInvariant m \<Longrightarrow> \<Union>c_offending_flows m G \<subseteq> edges G"
+  lemma c_offending_flows_subseteq_edges: "configured_SecurityInvariant m \<Longrightarrow> \<Union>(c_offending_flows m G) \<subseteq> edges G"
     apply(clarify)
     apply(simp only: configured_SecurityInvariant.valid_c_offending_flows)
     apply(thin_tac "configured_SecurityInvariant x" for x)
@@ -462,7 +462,7 @@ lemma enf_not_fulfilled_if_in_offending:
   assumes validRs: "valid_reqs M"
     and   wfG:     "wf_graph G"
     and   enf:     "\<forall>m \<in> set M. \<exists>P. \<forall>G. c_sinvar m G = (\<forall>e \<in> edges G. P e)"
-    shows "\<forall>x \<in> (\<Union>m\<in>set M. \<Union>c_offending_flows m (fully_connected G)).
+    shows "\<forall>x \<in> (\<Union>m\<in>set M. \<Union>(c_offending_flows m (fully_connected G))).
                 \<not> all_security_requirements_fulfilled M \<lparr> nodes = V, edges = insert x E\<rparr>"
    unfolding all_security_requirements_fulfilled_def
    proof(simp, clarify, rename_tac m F a b)
@@ -503,10 +503,10 @@ qed
 
     obtain V E where VE_prop: "\<lparr> nodes = V, edges = E \<rparr> = generate_valid_topology M ?G" by (metis graph.cases)
     hence VE_prop_asset:
-      "\<lparr> nodes = V, edges = E \<rparr> = \<lparr> nodes = V, edges = V \<times> V - (\<Union>m\<in>set M. \<Union>c_offending_flows m ?G)\<rparr>"
+      "\<lparr> nodes = V, edges = E \<rparr> = \<lparr> nodes = V, edges = V \<times> V - (\<Union>m\<in>set M. \<Union>(c_offending_flows m ?G))\<rparr>"
       by(simp add: fully_connected_def generate_valid_topology_as_set delete_edges_simp2)
 
-    from VE_prop_asset have E_prop: "E =  V \<times> V - (\<Union>m\<in>set M. \<Union>c_offending_flows m ?G)" by fast
+    from VE_prop_asset have E_prop: "E =  V \<times> V - (\<Union>m\<in>set M. \<Union>(c_offending_flows m ?G))" by fast
     from VE_prop have V_prop: "nodes G = V"
       by (simp add: fully_connected_def delete_edges_simp2 generate_valid_topology_def_alt)
     from VE_prop have V_full_prop: "nodes (generate_valid_topology M ?G) = V" by (metis graph.select_convs(1))
@@ -516,25 +516,25 @@ qed
     have wfG_VE: "wf_graph \<lparr> nodes = V, edges = E \<rparr>" by force
 
     from generate_valid_topology_sound[OF validRs wfG_VE] fully_connected_wf[OF wfG] have VE_all_valid: 
-      "all_security_requirements_fulfilled M \<lparr> nodes = V, edges = V \<times> V - (\<Union>m\<in>set M. \<Union>c_offending_flows m ?G)\<rparr>"
+      "all_security_requirements_fulfilled M \<lparr> nodes = V, edges = V \<times> V - (\<Union>m\<in>set M. \<Union>(c_offending_flows m ?G))\<rparr>"
       by (metis VE_prop VE_prop_asset fully_connected_def generate_valid_topology_sound validRs)
     hence goal1: "all_security_requirements_fulfilled M (generate_valid_topology M (fully_connected G))" by (metis VE_prop VE_prop_asset)
 
     from validRs have valid_mD:"\<And>m. m \<in> set M \<Longrightarrow> configured_SecurityInvariant m " 
       by(simp add: valid_reqs_def)
 
-    from c_offending_flows_subseteq_edges[where G="?G"] validRs have hlp1: "(\<Union>m\<in>set M. \<Union>c_offending_flows m ?G) \<subseteq> V \<times> V"
+    from c_offending_flows_subseteq_edges[where G="?G"] validRs have hlp1: "(\<Union>m\<in>set M. \<Union>(c_offending_flows m ?G)) \<subseteq> V \<times> V"
       apply(simp add: fully_connected_def V_prop)
       using valid_reqs_def by blast
     have "\<And>A B. A - (A - B) = B \<inter> A" by fast 
-    from E_prop hlp1 have "V \<times> V - E = (\<Union>m\<in>set M. \<Union>c_offending_flows m ?G)" by force
+    from E_prop hlp1 have "V \<times> V - E = (\<Union>m\<in>set M. \<Union>(c_offending_flows m ?G))" by force
 
 
     from enf_not_fulfilled_if_in_offending[OF validRs wfG enf]
-    have "\<forall>(v1, v2) \<in> (\<Union>m\<in>set M. \<Union>c_offending_flows m ?G).
+    have "\<forall>(v1, v2) \<in> (\<Union>m\<in>set M. \<Union>(c_offending_flows m ?G)).
        \<not> all_security_requirements_fulfilled M \<lparr> nodes = V, edges = E \<union> {(v1, v2)}\<rparr>" by simp
           
-    from this \<open>V \<times> V - E = (\<Union>m\<in>set M. \<Union>c_offending_flows m ?G)\<close> have "\<forall>(v1, v2) \<in> V \<times> V - E.
+    from this \<open>V \<times> V - E = (\<Union>m\<in>set M. \<Union>(c_offending_flows m ?G))\<close> have "\<forall>(v1, v2) \<in> V \<times> V - E.
          \<not> all_security_requirements_fulfilled M \<lparr> nodes = V, edges = E \<union> {(v1, v2)}\<rparr>" by simp
     hence goal2: "(\<forall>(v1, v2)\<in>nodes (generate_valid_topology M ?G) \<times> nodes (generate_valid_topology M ?G) -
                 edges (generate_valid_topology M ?G).
@@ -611,7 +611,7 @@ qed
          from m2' x have "\<not> all_security_requirements_fulfilled M \<lparr>nodes = V, edges = insert x E\<rparr>"
            by (simp)
          
-         from a6 x have x_offedning: "x \<in> (\<Union>m\<in>set M. \<Union>c_offending_flows m (fully_connected G))"
+         from a6 x have x_offedning: "x \<in> (\<Union>m\<in>set M. \<Union>(c_offending_flows m (fully_connected G)))"
            apply(simp add: generate_valid_topology_as_set delete_edges_simp2 fully_connected_def)
            by blast
   
@@ -635,7 +635,7 @@ qed
         by(simp add: valid_c_offending_flows)
 
      lemma all_security_requirements_fulfilled_imp_no_offending_flows:
-        "valid_reqs M \<Longrightarrow> all_security_requirements_fulfilled M G \<Longrightarrow> (\<Union>m\<in>set M. \<Union>c_offending_flows m G) = {}"
+        "valid_reqs M \<Longrightarrow> all_security_requirements_fulfilled M G \<Longrightarrow> (\<Union>m\<in>set M. \<Union>(c_offending_flows m G)) = {}"
         proof(induction M)
         case Cons thus ?case
           unfolding all_security_requirements_fulfilled_def
@@ -698,7 +698,7 @@ qed
     thm configured_SecurityInvariant.offending_flows_union_mono
     lemma get_offending_flows_union_mono: "\<lbrakk>valid_reqs M; 
       wf_graph \<lparr>nodes = V, edges = E\<rparr>; E' \<subseteq> E \<rbrakk> \<Longrightarrow>
-      \<Union>get_offending_flows M \<lparr>nodes = V, edges = E'\<rparr> \<subseteq> \<Union>get_offending_flows M \<lparr>nodes = V, edges = E\<rparr>"
+      \<Union>(get_offending_flows M \<lparr>nodes = V, edges = E'\<rparr>) \<subseteq> \<Union>(get_offending_flows M \<lparr>nodes = V, edges = E\<rparr>)"
       apply(induction M)
        apply(simp add: get_offending_flows_def)
       apply(frule valid_reqs2, drule valid_reqs1)
@@ -709,17 +709,17 @@ qed
     thm configured_SecurityInvariant.Un_set_offending_flows_bound_minus_subseteq'
     lemma Un_set_offending_flows_bound_minus_subseteq':"\<lbrakk>valid_reqs M; 
       wf_graph \<lparr>nodes = V, edges = E\<rparr>; E' \<subseteq> E;
-      \<Union>get_offending_flows M \<lparr>nodes = V, edges = E\<rparr> \<subseteq> X \<rbrakk> \<Longrightarrow> \<Union>get_offending_flows M \<lparr>nodes = V, edges = E - E'\<rparr> \<subseteq> X - E'"
+      \<Union>(get_offending_flows M \<lparr>nodes = V, edges = E\<rparr>) \<subseteq> X \<rbrakk> \<Longrightarrow> \<Union>(get_offending_flows M \<lparr>nodes = V, edges = E - E'\<rparr>) \<subseteq> X - E'"
       proof(induction M)
       case Nil thus ?case by (simp add: get_offending_flows_def)
       next
       case (Cons m M)
         from Cons.prems(1) valid_reqs2 have "valid_reqs M" by force
         from Cons.prems(1) valid_reqs1 have "configured_SecurityInvariant m" by force
-        from Cons.prems(4) have "\<Union>get_offending_flows M \<lparr>nodes = V, edges = E\<rparr> \<subseteq> X" by(simp add: get_offending_flows_def)
-        from Cons.IH[OF \<open>valid_reqs M\<close> Cons.prems(2) Cons.prems(3) \<open>\<Union>get_offending_flows M \<lparr>nodes = V, edges = E\<rparr> \<subseteq> X\<close>] have IH: "\<Union>get_offending_flows M \<lparr>nodes = V, edges = E - E'\<rparr> \<subseteq> X - E'" .
-        from Cons.prems(4) have "\<Union>c_offending_flows m \<lparr>nodes = V, edges = E\<rparr> \<subseteq> X" by(simp add: get_offending_flows_def)
-        from configured_SecurityInvariant.Un_set_offending_flows_bound_minus_subseteq'[OF \<open>configured_SecurityInvariant m\<close> Cons.prems(2) \<open>\<Union>c_offending_flows m \<lparr>nodes = V, edges = E\<rparr> \<subseteq> X\<close>] have "\<Union>c_offending_flows m \<lparr>nodes = V, edges = E - E'\<rparr> \<subseteq> X - E'" .
+        from Cons.prems(4) have "\<Union>(get_offending_flows M \<lparr>nodes = V, edges = E\<rparr>) \<subseteq> X" by(simp add: get_offending_flows_def)
+        from Cons.IH[OF \<open>valid_reqs M\<close> Cons.prems(2) Cons.prems(3) \<open>\<Union>(get_offending_flows M \<lparr>nodes = V, edges = E\<rparr>) \<subseteq> X\<close>] have IH: "\<Union>(get_offending_flows M \<lparr>nodes = V, edges = E - E'\<rparr>) \<subseteq> X - E'" .
+        from Cons.prems(4) have "\<Union>(c_offending_flows m \<lparr>nodes = V, edges = E\<rparr>) \<subseteq> X" by(simp add: get_offending_flows_def)
+        from configured_SecurityInvariant.Un_set_offending_flows_bound_minus_subseteq'[OF \<open>configured_SecurityInvariant m\<close> Cons.prems(2) \<open>\<Union>(c_offending_flows m \<lparr>nodes = V, edges = E\<rparr>) \<subseteq> X\<close>] have "\<Union>(c_offending_flows m \<lparr>nodes = V, edges = E - E'\<rparr>) \<subseteq> X - E'" .
         from this IH show ?case by(simp add: get_offending_flows_def)
       qed
 
