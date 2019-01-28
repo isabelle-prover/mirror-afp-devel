@@ -289,7 +289,7 @@ end end
 
 context Tarjan begin context begin interpretation timing_syntax .
   lemma i_sccs_finished_stack_ss_tj_stack:
-    "is_invar (\<lambda>s. \<Union>sccs s \<subseteq> dom (finished s) \<and> set (stack s) \<subseteq> set (tj_stack s))"
+    "is_invar (\<lambda>s. \<Union>(sccs s) \<subseteq> dom (finished s) \<and> set (stack s) \<subseteq> set (tj_stack s))"
   proof (induct rule: establish_invarI)
     case (finish s s' u) then interpret Tarjan_invar where s=s by simp
 
@@ -355,7 +355,7 @@ context Tarjan begin context begin interpretation timing_syntax .
   qed (auto simp add: tarjan_disc_def tarjan_back_def)
 
   lemma i_finished_ss_sccs_tj_stack:
-    "is_invar (\<lambda>s. dom (finished s) \<subseteq> \<Union>sccs s \<union> set (tj_stack s))"
+    "is_invar (\<lambda>s. dom (finished s) \<subseteq> \<Union>(sccs s) \<union> set (tj_stack s))"
   proof (induction rule: establish_invarI_ND)
     case (new_discover s s' v) then interpret Tarjan_invar where s=s by simp
     from new_discover finished_discovered have "v \<notin> dom (finished s)" by auto
@@ -380,7 +380,7 @@ context Tarjan_invar begin
     i_tj_stack_ss_stack_finished[THEN make_invar_thm]
 
   lemma sccs_finished:
-    "\<Union>sccs s \<subseteq> dom (finished s)"
+    "\<Union>(sccs s) \<subseteq> dom (finished s)"
     using i_sccs_finished_stack_ss_tj_stack[THEN make_invar_thm]
     by blast
 
@@ -674,11 +674,11 @@ context Tarjan begin context begin interpretation timing_syntax .
           ultimately have "v \<in> dom (finished ?s)" "v \<notin> set (tj_stack ?s)" 
             using s'.scc_root_finished_impl_scc_finished s'.no_finished_root
             by auto
-          with s'.finished_ss_sccs_tj_stack have "v \<in> \<Union>sccs ?s" by blast
-          hence "v \<in> \<Union>sccs s \<or> v \<in> ?tw'" by auto
+          with s'.finished_ss_sccs_tj_stack have "v \<in> \<Union>(sccs ?s)" by blast
+          hence "v \<in> \<Union>(sccs s) \<or> v \<in> ?tw'" by auto
           thus "v \<in> ?tw'"
           proof
-            assume "v \<in> \<Union>sccs s"
+            assume "v \<in> \<Union>(sccs s)"
             then obtain scc where scc: "v \<in> scc" "scc \<in> sccs s" by auto
             moreover with finish have "is_scc E scc" by simp
             moreover have "is_scc E (scc_of E u)" by simp
@@ -1292,14 +1292,14 @@ context Tarjan_invar begin context begin interpretation timing_syntax .
 
   lemma nc_sccs_eq_reachable:
     assumes NC: "\<not> cond s"
-    shows "reachable = \<Union>sccs s"
+    shows "reachable = \<Union>(sccs s)"
   proof
     from nc_finished_eq_reachable NC have [simp]: "reachable = dom (finished s)" by simp
-    with sccs_finished show "\<Union>sccs s \<subseteq> reachable" by simp
+    with sccs_finished show "\<Union>(sccs s) \<subseteq> reachable" by simp
 
     from NC have "stack s = []" by (simp add: cond_alt)
     with stacks_eq_iff have "tj_stack s = []" by simp
-    with finished_ss_sccs_tj_stack show "reachable \<subseteq> \<Union>sccs s" by simp
+    with finished_ss_sccs_tj_stack show "reachable \<subseteq> \<Union>(sccs s)" by simp
   qed
 end end
 
@@ -1359,7 +1359,7 @@ next
 
   from sccs_are_sccs show "\<forall>scc\<in>sccs s. is_scc (g_E G) scc" .
   
-  from nc_sccs_eq_reachable C show "\<Union>sccs s = tarjan.reachable TYPE('b) G" by simp
+  from nc_sccs_eq_reachable C show "\<Union>(sccs s) = tarjan.reachable TYPE('b) G" by simp
 qed
 
 end

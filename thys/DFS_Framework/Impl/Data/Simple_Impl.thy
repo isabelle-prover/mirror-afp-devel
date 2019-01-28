@@ -136,7 +136,7 @@ begin
   sublocale tailrec_impl_defs G c.gds .
 
 
-  definition "get_pending s \<equiv> \<Union>set (map (\<lambda>(u,Vs). {u}\<times>Vs) (ss_stack s))"
+  definition "get_pending s \<equiv> \<Union>(set (map (\<lambda>(u,Vs). {u}\<times>Vs) (ss_stack s)))"
   definition "get_stack s \<equiv> map fst (ss_stack s)"
   definition choose_pending 
     :: "'v \<Rightarrow> 'v option \<Rightarrow> ('v,'d) simple_state_scheme \<Rightarrow> ('v,'d) simple_state_scheme nres"
