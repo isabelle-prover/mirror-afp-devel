@@ -242,7 +242,7 @@ qed
 (* OPTIMIZED PARTITIONING *)
 
 definition wordinterval_list_to_set :: "'a::len wordinterval list \<Rightarrow> 'a::len word set" where
-  "wordinterval_list_to_set ws = \<Union> set (map wordinterval_to_set ws)"
+  "wordinterval_list_to_set ws = \<Union>(set (map wordinterval_to_set ws))"
 
 lemma wordinterval_list_to_set_compressed:
   "wordinterval_to_set (wordinterval_compress (foldr wordinterval_union xs Empty_WordInterval)) =
@@ -665,7 +665,7 @@ proof -
   from getParts_same_fw_behaviour same_fw_spec
     have b1: "\<forall>A \<in> set (map wordinterval_to_set (getParts rs)) . \<forall>a1 \<in> A. \<forall>a2 \<in> A.
               same_fw_behaviour_one a1 a2 c rs" by fast
-  from getParts_complete have complete: "\<Union>set (map wordinterval_to_set (getParts rs)) = UNIV"
+  from getParts_complete have complete: "\<Union>(set (map wordinterval_to_set (getParts rs))) = UNIV"
     by(simp add: wordinterval_list_to_set_def)
   from getParts_nonempty_elems have nonempty: "\<forall>w\<in>set (getParts rs). \<not> wordinterval_empty w" by simp
 
@@ -1039,7 +1039,7 @@ theorem build_ip_partition_same_fw_min: "A \<in> set (build_ip_partition c rs) \
 
 theorem build_ip_partition_complete: "(\<Union>x\<in>set (build_ip_partition c rs). wordinterval_to_set x) = (UNIV :: 'i::len word set)"
   proof -
-  have "wordinterval_to_set (foldr wordinterval_union x Empty_WordInterval) = (\<Union>set (map wordinterval_to_set x))"
+  have "wordinterval_to_set (foldr wordinterval_union x Empty_WordInterval) = \<Union>(set (map wordinterval_to_set x))"
     for x::"'i wordinterval list"
     by(induction x) simp_all
   thus ?thesis
@@ -1128,33 +1128,33 @@ lemma build_ip_partition_distinct: "distinct (map wordinterval_to_set (build_ip_
 proof -
   have  
   "(wordinterval_to_set \<circ> (\<lambda>xs. wordinterval_sort (wordinterval_compress (foldr wordinterval_union xs Empty_WordInterval)))) ws
-       = \<Union> set (map wordinterval_to_set ws)" for ws::"'a::len wordinterval list"
+       = \<Union>(set (map wordinterval_to_set ws))" for ws::"'a::len wordinterval list"
     proof(induction ws)
     qed(simp_all add: wordinterval_compress wordinterval_sort)
   hence hlp1: "map wordinterval_to_set (build_ip_partition c rs) =
-                   map (\<lambda>x. \<Union> set (map wordinterval_to_set x)) (groupWIs c rs)"
+                   map (\<lambda>x. \<Union>(set (map wordinterval_to_set x))) (groupWIs c rs)"
     unfolding build_ip_partition_def groupWIs3 by auto
 
   \<comment> \<open>generic rule\<close>
   have "\<forall>x \<in> set xs. \<not> wordinterval_empty x \<Longrightarrow>
          disjoint_list (map wordinterval_to_set xs) \<Longrightarrow>
-         distinct (map (\<lambda>x. \<Union>set (map wordinterval_to_set x)) (groupF f xs))"
+         distinct (map (\<lambda>x. \<Union>(set (map wordinterval_to_set x))) (groupF f xs))"
          for f::"'x::len wordinterval \<Rightarrow> 'y" and xs::"'x::len wordinterval list"
     proof(induction f xs rule: groupF.induct)
     case 1 thus ?case by simp
     next
     case (2 f x xs)
       have hlp_internal:
-          "\<Union> (set (map (\<lambda>x. \<Union> set (map wordinterval_to_set x)) (groupF f xs))) =
-           \<Union> set (map wordinterval_to_set xs)" for f::"'x wordinterval \<Rightarrow> 'y" and xs
+          "\<Union> (set (map (\<lambda>x. \<Union>(set (map wordinterval_to_set x))) (groupF f xs))) =
+           \<Union> (set (map wordinterval_to_set xs))" for f::"'x wordinterval \<Rightarrow> 'y" and xs
       by(induction f xs rule: groupF.induct) (auto)
 
       from 2(2,3) have "wordinterval_to_set x \<inter> \<Union>(wordinterval_to_set ` set xs) = {}"
         by(auto simp add: disjoint_def disjoint_list_def)
       hence "\<not> (wordinterval_to_set x) \<subseteq> \<Union>(wordinterval_to_set ` set xs)" using 2(2) by auto
-      hence "\<not> wordinterval_to_set x \<subseteq> \<Union>set (map wordinterval_to_set [y\<leftarrow>xs . f x \<noteq> f y])" by auto
+      hence "\<not> wordinterval_to_set x \<subseteq> \<Union>(set (map wordinterval_to_set [y\<leftarrow>xs . f x \<noteq> f y]))" by auto
       hence "\<not> wordinterval_to_set x \<union> (\<Union>x\<in>{xa \<in> set xs. f x = f xa}.
-         wordinterval_to_set x) \<subseteq> \<Union> (set (map (\<lambda>x. \<Union> set (map wordinterval_to_set x)) (groupF f [y\<leftarrow>xs . f x \<noteq> f y])))" 
+         wordinterval_to_set x) \<subseteq> \<Union> (set (map (\<lambda>x. \<Union>(set (map wordinterval_to_set x))) (groupF f [y\<leftarrow>xs . f x \<noteq> f y])))" 
       unfolding hlp_internal by blast
       hence g1: "wordinterval_to_set x \<union> (\<Union>x\<in>{xa \<in> set xs. f x = f xa}. wordinterval_to_set x)
         \<notin> (\<lambda>x. \<Union>x\<in>set x. wordinterval_to_set x) ` set (groupF f [y\<leftarrow>xs . f x \<noteq> f y])" by force
@@ -1170,7 +1170,7 @@ proof -
     qed
     with getParts_disjoint_list getParts_nonempty_elems have
       "distinct
-     (map (\<lambda>x. \<Union>set (map wordinterval_to_set x))
+     (map (\<lambda>x. \<Union>(set (map wordinterval_to_set x)))
        (groupF (\<lambda>wi. (map (\<lambda>d. runFw (getOneIp wi) d c rs) (map getOneIp (getParts rs)),
                       map (\<lambda>s. runFw s (getOneIp wi) c rs) (map getOneIp (getParts rs))))
          (getParts rs)))" by blast
