@@ -546,7 +546,7 @@ end
 lemma foldli_Union: "det_fold_set X (\<lambda>_. True) (\<union>) {} Union"
 proof (rule, goal_cases)
   case (1 l)
-  have "\<forall>a. foldli l (\<lambda>_. True) (\<union>) a = a \<union> \<Union>set l"
+  have "\<forall>a. foldli l (\<lambda>_. True) (\<union>) a = a \<union> \<Union>(set l)"
     by (induct l) auto
   thus ?case by auto
 qed
