@@ -16,7 +16,7 @@ begin
     contains SCCs in topological order\<close>
 
   definition "compute_SCC_spec \<equiv> SPEC (\<lambda>l. 
-    distinct l \<and> \<Union>set l = E\<^sup>*``V0 \<and> (\<forall>U\<in>set l. is_scc E U) 
+    distinct l \<and> \<Union>(set l) = E\<^sup>*``V0 \<and> (\<forall>U\<in>set l. is_scc E U) 
     \<and> (\<forall>i j. i<j \<and> j<length l \<longrightarrow> l!j \<times> l!i \<inter> E\<^sup>* = {}) )"
 end
 
@@ -25,7 +25,7 @@ section \<open>Extended Invariant\<close>
 locale cscc_invar_ext = fr_graph G
   for G :: "('v,'more) graph_rec_scheme" + 
   fixes l :: "'v set list" and D :: "'v set"
-  assumes l_is_D: "\<Union>set l = D" \<comment> \<open>The output contains all done CNodes\<close>
+  assumes l_is_D: "\<Union>(set l) = D" \<comment> \<open>The output contains all done CNodes\<close>
   assumes l_scc: "set l \<subseteq> Collect (is_scc E)" \<comment> \<open>The output contains only SCCs\<close>
   assumes l_no_fwd: "\<And>i j. \<lbrakk>i<j; j<length l\<rbrakk> \<Longrightarrow> l!j \<times> l!i \<inter> E\<^sup>* = {}" 
     \<comment> \<open>The output contains no forward edges\<close>
@@ -75,7 +75,7 @@ begin
             ASSERT (p\<noteq>[]);
             case vo of 
               Some v \<Rightarrow> do {
-                if v \<in> \<Union>set p then do {
+                if v \<in> \<Union>(set p) then do {
                   \<comment> \<open>Collapse\<close>
                   RETURN (l,collapse v (p,D,pE))
                 } else if v\<notin>D then do {
@@ -204,7 +204,7 @@ begin
       proof (rule disjointI, safe)
         fix u v
         assume "(u, v) \<in> E\<^sup>*" "u \<in> l ! (j - Suc 0)" "v \<in> (last p # l) ! i"
-        from \<open>u \<in> l ! (j - Suc 0)\<close> A have "u\<in>\<Union>set l"
+        from \<open>u \<in> l ! (j - Suc 0)\<close> A have "u\<in>\<Union>(set l)"
           by (metis Ex_list_of_length Suc_pred UnionI length_greater_0_conv 
             less_nat_zero_code not_less_eq nth_mem) 
         with l_is_D have "u\<in>D" by simp
@@ -292,7 +292,7 @@ begin
     assumes INV: "cscc_outer_invar {} (l,D)"
     shows fin_l_is_scc: "\<lbrakk>U\<in>set l\<rbrakk> \<Longrightarrow> is_scc E U"
     and fin_l_distinct: "distinct l"
-    and fin_l_is_reachable: "\<Union>set l = E\<^sup>* `` V0"
+    and fin_l_is_reachable: "\<Union>(set l) = E\<^sup>* `` V0"
     and fin_l_no_fwd: "\<lbrakk>i<j; j<length l\<rbrakk> \<Longrightarrow> l!j \<times>l!i \<inter> E\<^sup>* = {}"
   proof -
     from INV interpret cscc_outer_invar_loc G "{}" l D
@@ -302,7 +302,7 @@ begin
 
     show "distinct l" by (rule l_distinct)
 
-    show "\<Union>set l = E\<^sup>* `` V0"
+    show "\<Union>(set l) = E\<^sup>* `` V0"
       using fin_outer_D_is_reachable[OF outer_invar_this] l_is_D
       by auto
 
@@ -512,7 +512,7 @@ begin
       (s',(p,D,pE))\<in>GS_rel;
       (l',l)\<in>Id;
       (v',v)\<in>Id;
-      v\<in>\<Union>set p
+      v\<in>\<Union>(set p)
     \<rbrakk> \<Longrightarrow> do { s'\<leftarrow>collapse_impl v' s'; RETURN (l',s') } 
       \<le> \<Down>(Id \<times>\<^sub>r GS_rel) (RETURN (l,collapse v (p,D,pE)))"
       apply (refine_rcg order_trans[OF collapse_refine] refine_vcg)

@@ -69,12 +69,12 @@ lemma path_seg_simps[simp]:
   done
 
 lemma path_seg_drop:
-  "\<Union>set (drop i p) = path_seg p i (length p)"
+  "\<Union>(set (drop i p)) = path_seg p i (length p)"
   unfolding path_seg_def
   by (fastforce simp: in_set_drop_conv_nth Bex_def)
 
 lemma path_seg_butlast: 
-  "p\<noteq>[] \<Longrightarrow> path_seg p 0 (length p - Suc 0) = \<Union>set (butlast p)"
+  "p\<noteq>[] \<Longrightarrow> path_seg p 0 (length p - Suc 0) = \<Union>(set (butlast p))"
   apply (cases p rule: rev_cases, simp)
   apply (fastforce simp: path_seg_def nth_append in_set_conv_nth)
   done
@@ -86,7 +86,7 @@ definition idx_of :: "'a set list \<Rightarrow> 'a \<Rightarrow> nat"
 lemma idx_of_props:
   assumes 
     p_disjoint_sym: "\<forall>i j v. i<length p \<and> j<length p \<and> v\<in>p!i \<and> v\<in>p!j \<longrightarrow> i=j"
-  assumes ON_STACK: "v\<in>\<Union>set p"
+  assumes ON_STACK: "v\<in>\<Union>(set p)"
   shows 
     "idx_of p v < length p" and
     "v \<in> p ! idx_of p v"
@@ -123,7 +123,7 @@ context fr_graph
 begin
   definition touched :: "'v set list \<Rightarrow> 'v set \<Rightarrow> 'v set" 
     \<comment> \<open>Touched: Nodes that are done or on path\<close>
-    where "touched p D \<equiv> D \<union> \<Union>set p"
+    where "touched p D \<equiv> D \<union> \<Union>(set p)"
 
   definition vE :: "'v set list \<Rightarrow> 'v set \<Rightarrow> ('v \<times> 'v) set \<Rightarrow> ('v \<times> 'v) set"
     \<comment> \<open>Visited edges: No longer pending edges from touched nodes\<close>
@@ -166,9 +166,9 @@ locale invar_loc \<comment> \<open>Invariant of the inner loop\<close>
   assumes v0_initial[simp, intro!]: "v0\<in>V0"
   assumes D_incr: "D0 \<subseteq> D"
 
-  assumes pE_E_from_p: "pE \<subseteq> E \<inter> (\<Union>set p) \<times> UNIV" 
+  assumes pE_E_from_p: "pE \<subseteq> E \<inter> (\<Union>(set p)) \<times> UNIV" 
     \<comment> \<open>Pending edges are edges from path\<close>
-  assumes E_from_p_touched: "E \<inter> (\<Union>set p \<times> UNIV) \<subseteq> pE \<union> UNIV \<times> touched p D" 
+  assumes E_from_p_touched: "E \<inter> (\<Union>(set p) \<times> UNIV) \<subseteq> pE \<union> UNIV \<times> touched p D" 
     \<comment> \<open>Edges from path are pending or touched\<close>
   assumes D_reachable: "D\<subseteq>E\<^sup>*``V0" \<comment> \<open>Done nodes are reachable\<close>
   assumes p_connected: "Suc i<length p \<Longrightarrow> p!i \<times> p!Suc i \<inter> (E-pE) \<noteq> {}"
@@ -187,7 +187,7 @@ locale invar_loc \<comment> \<open>Invariant of the inner loop\<close>
 
   assumes vE_no_back: "\<lbrakk>i<j; j<length p\<rbrakk> \<Longrightarrow> vE p D pE \<inter> p!j \<times> p!i = {}" 
   \<comment> \<open>Visited edges do not go back on path\<close>
-  assumes p_not_D: "\<Union>set p \<inter> D = {}" \<comment> \<open>Path does not contain done nodes\<close>
+  assumes p_not_D: "\<Union>(set p) \<inter> D = {}" \<comment> \<open>Path does not contain done nodes\<close>
 begin
   abbreviation ltouched where "ltouched \<equiv> touched p D"
   abbreviation lvE where "lvE \<equiv> vE p D pE"
@@ -215,10 +215,10 @@ begin
     unfolding vE_def by auto
 
 
-  lemma path_touched: "\<Union>set p \<subseteq> ltouched" by (auto simp: touched_def)
+  lemma path_touched: "\<Union>(set p) \<subseteq> ltouched" by (auto simp: touched_def)
   lemma D_touched: "D \<subseteq> ltouched" by (auto simp: touched_def)
 
-  lemma pE_by_vE: "pE = (E \<inter> \<Union>set p \<times> UNIV) - lvE"
+  lemma pE_by_vE: "pE = (E \<inter> \<Union>(set p) \<times> UNIV) - lvE"
     \<comment> \<open>Pending edges are edges from path not yet visited\<close>
     unfolding vE_def touched_def
     using pE_E_from_p
@@ -246,7 +246,7 @@ context fr_graph
 begin
   text \<open>The termination argument is based on unprocessed edges: 
     Reachable edges from untouched nodes and pending edges.\<close>
-  definition "unproc_edges v0 p D pE \<equiv> (E \<inter> (E\<^sup>*``{v0} - (D \<union> \<Union>set p)) \<times> UNIV) \<union> pE"
+  definition "unproc_edges v0 p D pE \<equiv> (E \<inter> (E\<^sup>*``{v0} - (D \<union> \<Union>(set p))) \<times> UNIV) \<union> pE"
 
   text \<open>
     In each iteration of the loop, either the number of unprocessed edges
@@ -268,7 +268,7 @@ begin
     where "initial v0 D \<equiv> ([{v0}], D, (E \<inter> {v0}\<times>UNIV))"
 
   definition (in -) collapse_aux :: "'a set list \<Rightarrow> nat \<Rightarrow> 'a set list"
-    where "collapse_aux p i \<equiv> take i p @ [\<Union>set (drop i p)]"
+    where "collapse_aux p i \<equiv> take i p @ [\<Union>(set (drop i p))]"
 
   definition (in -) collapse :: "'a \<Rightarrow> 'a abs_state \<Rightarrow> 'a abs_state" 
     where "collapse v PDPE \<equiv> 
@@ -316,7 +316,7 @@ begin
     unfolding select_edge_def by simp
 
   lemma "collapse v (p,D,pE) 
-    \<equiv> let i=idx_of p v in (take i p @ [\<Union>set (drop i p)],D,pE)"
+    \<equiv> let i=idx_of p v in (take i p @ [\<Union>(set (drop i p))],D,pE)"
     unfolding collapse_def collapse_aux_def by simp
 
   lemma "push v (p, D, pE) \<equiv> (p @ [{v}], D, pE \<union> E \<inter> {v} \<times> UNIV)"
@@ -348,7 +348,7 @@ begin
             ASSERT (p\<noteq>[]);
             case vo of 
               Some v \<Rightarrow> do { \<comment> \<open>Found outgoing edge to node \<open>v\<close>\<close>
-                if v \<in> \<Union>set p then do {
+                if v \<in> \<Union>(set p) then do {
                   \<comment> \<open>Back edge: Collapse path\<close>
                   RETURN (collapse v (p,D,pE))
                 } else if v\<notin>D then do {
@@ -379,7 +379,7 @@ subsection \<open>Invariant Preservation\<close>
 
 context fr_graph begin
 
-  lemma set_collapse_aux[simp]: "\<Union>set (collapse_aux p i) = \<Union>set p"
+  lemma set_collapse_aux[simp]: "\<Union>(set (collapse_aux p i)) = \<Union>(set p)"
     apply (subst (2) append_take_drop_id[of _ p,symmetric])
     apply (simp del: append_take_drop_id)
     unfolding collapse_aux_def by auto
@@ -502,10 +502,10 @@ begin
     finally show "(x,y)\<in>(lvE\<inter>?seg'\<times>?seg')\<^sup>*" .
   qed
 
-  lemma p_reachable: "\<Union>set p \<subseteq> E\<^sup>*``{v0}" \<comment> \<open>Nodes on path are reachable\<close>
+  lemma p_reachable: "\<Union>(set p) \<subseteq> E\<^sup>*``{v0}" \<comment> \<open>Nodes on path are reachable\<close>
   proof 
     fix v
-    assume A: "v\<in>\<Union>set p"
+    assume A: "v\<in>\<Union>(set p)"
     then obtain i where "i<length p" and "v\<in>p!i" 
       by (metis UnionE in_set_conv_nth)
     moreover from A root_v0 have "v0\<in>p!0" by (cases p) auto
@@ -564,7 +564,7 @@ begin
   proof (induction)
     case (path_prepend u v l w) 
     from \<open>(u,v)\<in>lvE\<close> vE_touched have "v\<in>ltouched" by auto
-    hence "v\<in>\<Union>set p"
+    hence "v\<in>\<Union>(set p)"
       unfolding touched_def
     proof
       assume "v\<in>D"
@@ -614,11 +614,11 @@ begin
   qed
 
 
-  lemma no_D_p_edges: "E \<inter> D \<times> \<Union>set p = {}"
+  lemma no_D_p_edges: "E \<inter> D \<times> \<Union>(set p) = {}"
     using D_closed p_not_D by auto
 
   lemma idx_of_props:
-    assumes ON_STACK: "v\<in>\<Union>set p"
+    assumes ON_STACK: "v\<in>\<Union>(set p)"
     shows 
       "idx_of p v < length p" and
       "v \<in> p ! idx_of p v"
@@ -633,7 +633,7 @@ lemma (in fr_graph) vE_initial[simp]: "vE [{v0}] {} (E \<inter> {v0} \<times> UN
 
 context invar_loc
 begin
-  lemma vE_push: "\<lbrakk> (u,v)\<in>pE; u\<in>last p; v\<notin>\<Union>set p; v\<notin>D \<rbrakk> 
+  lemma vE_push: "\<lbrakk> (u,v)\<in>pE; u\<in>last p; v\<notin>\<Union>(set p); v\<notin>D \<rbrakk> 
     \<Longrightarrow> vE (p @ [{v}]) D ((pE - {(u,v)}) \<union> E\<inter>{v}\<times>UNIV) = insert (u,v) lvE"
     unfolding vE_def touched_def using pE_E_from_p
     by auto
@@ -669,10 +669,10 @@ begin
     {
       assume "u\<in>last p" "v\<notin>last p" 
       moreover from E NO \<open>u\<in>last p\<close> have "(u,v)\<in>lvE" by auto
-      ultimately have "v\<in>D \<or> v\<in>\<Union>set p" 
+      ultimately have "v\<in>D \<or> v\<in>\<Union>(set p)" 
         using vE_touched unfolding touched_def by auto
       moreover {
-        assume "v\<in>\<Union>set p"
+        assume "v\<in>\<Union>(set p)"
         then obtain j where V: "j<length p" "v\<in>p!j" 
           by (metis UnionE in_set_conv_nth)
         with \<open>v\<notin>last p\<close> have "j<?i" by (cases "j=?i") auto
@@ -727,7 +727,7 @@ begin
     have [simp]: "set p = insert (last p) (set (butlast p))" 
       using NE by (cases p rule: rev_cases) auto
 
-    from p_disjoint have lp_dj_blp: "last p \<inter> \<Union>set (butlast p) = {}"
+    from p_disjoint have lp_dj_blp: "last p \<inter> \<Union>(set (butlast p)) = {}"
       apply (cases p rule: rev_cases)
       apply simp
       apply (fastforce simp: in_set_conv_nth nth_append)
@@ -789,7 +789,7 @@ begin
     assumes INV: "invar v0 D0 (p,D,pE)"
     assumes NE[simp]: "p\<noteq>[]"
     assumes E: "(u,v)\<in>pE" and "u\<in>last p"
-    assumes BACK: "v\<in>\<Union>set p"
+    assumes BACK: "v\<in>\<Union>(set p)"
     defines "i \<equiv> idx_of p v"
     defines "p' \<equiv> collapse_aux p i"
     shows "invar v0 D0 (collapse v (p,D,pE - {(u,v)}))"
@@ -801,7 +801,7 @@ begin
 
     let ?thesis="invar_loc G v0 D0 p' D (pE - {(u,v)})"
 
-    have SETP'[simp]: "\<Union>set p' = \<Union>set p" unfolding p'_def by simp
+    have SETP'[simp]: "\<Union>(set p') = \<Union>(set p)" unfolding p'_def by simp
 
     have IL: "i < length p" and VMEM: "v\<in>p!i" 
       using idx_of_props[OF BACK] unfolding i_def by auto
@@ -998,7 +998,7 @@ begin
     assumes INV: "invar v0 D0 (p,D,pE)"
     assumes NE[simp]: "p\<noteq>[]"
     assumes E: "(u,v)\<in>pE" and UIL: "u\<in>last p"
-    assumes VNE: "v\<notin>\<Union>set p" "v\<notin>D"
+    assumes VNE: "v\<notin>\<Union>(set p)" "v\<notin>D"
     shows "invar v0 D0 (push v (p,D,pE - {(u,v)}))"
     unfolding invar_def push_def
     apply simp
@@ -1090,7 +1090,7 @@ begin
 
       apply (rule AUX_p_connected, assumption+) []
 
-      using p_disjoint \<open>v\<notin>\<Union>set p\<close> apply (auto simp: nth_append) []
+      using p_disjoint \<open>v\<notin>\<Union>(set p)\<close> apply (auto simp: nth_append) []
 
       apply (rule AUX_p_sc, assumption+) []
 
@@ -1110,7 +1110,7 @@ begin
     assumes INV: "invar v0 D0 (p,D,pE)"
     assumes NE[simp]: "p\<noteq>[]"
     assumes E: "(u,v)\<in>pE" and UIL: "u\<in>last p"
-    assumes VNP: "v\<notin>\<Union>set p" and VD: "v\<in>D"
+    assumes VNP: "v\<notin>\<Union>(set p)" and VD: "v\<in>D"
     shows "invar v0 D0 (p,D,pE - {(u, v)})"
     unfolding invar_def
     apply simp
@@ -1312,7 +1312,7 @@ begin
   lemma abs_wf_push:
     assumes INV: "invar v0 D0 (p,D,pE)"
     assumes NE[simp]: "p\<noteq>[]"
-    assumes E: "(u,v)\<in>pE" "u\<in>last p" and A: "v\<notin>D" "v\<notin>\<Union>set p"
+    assumes E: "(u,v)\<in>pE" "u\<in>last p" and A: "v\<notin>D" "v\<notin>\<Union>(set p)"
     shows "(push v (p,D,pE-{(u,v)}), (p, D, pE)) \<in> abs_wf_rel v0"
     unfolding push_def
     apply simp
@@ -1631,7 +1631,7 @@ begin
       unfolding seg_def by auto
 
   lemma set_p_\<alpha>_is_set_S:
-    "\<Union>set p_\<alpha> = set S"
+    "\<Union>(set p_\<alpha>) = set S"
     apply rule
     unfolding p_\<alpha>_def seg_def[abs_def]
     using seg_end_bound apply fastforce []
@@ -1648,7 +1648,7 @@ begin
     by (simp add: nth_eq_iff_index_eq)
 
   lemma S_idx_of_correct: 
-    assumes A: "v\<in>\<Union>set p_\<alpha>"
+    assumes A: "v\<in>\<Union>(set p_\<alpha>)"
     shows "S_idx_of v < length S" and "S!S_idx_of v = v"
   proof -
     from A have "v\<in>set S" by (simp add: set_p_\<alpha>_is_set_S)
@@ -1847,7 +1847,7 @@ qed
 context GS_invar
 begin
   lemma push_correct:
-    assumes A: "v\<notin>\<Union>set p_\<alpha>" and B: "v\<notin>D_\<alpha>"
+    assumes A: "v\<notin>\<Union>(set p_\<alpha>)" and B: "v\<notin>D_\<alpha>"
     shows "GS.\<alpha> (push_impl v succs) = (p_\<alpha>@[{v}],D_\<alpha>,pE_\<alpha> \<union> {v}\<times>succs)" 
       (is ?G1)
     and "GS_invar (push_impl v succs)" (is ?G2)
@@ -2224,7 +2224,7 @@ begin
   qed
 
   lemma find_seg_idx_of_correct:
-    assumes A: "v\<in>\<Union>set p_\<alpha>"
+    assumes A: "v\<in>\<Union>(set p_\<alpha>)"
     shows "(find_seg (S_idx_of v)) = idx_of p_\<alpha> v"
   proof -
     note S_idx_of_correct[OF A] idx_of_props[OF p_\<alpha>_disjoint_sym A]
@@ -2238,7 +2238,7 @@ begin
 
 
   lemma idx_of_correct:
-    assumes A: "v\<in>\<Union>set p_\<alpha>"
+    assumes A: "v\<in>\<Union>(set p_\<alpha>)"
     shows "idx_of_impl v \<le> SPEC (\<lambda>x. x=idx_of p_\<alpha> v \<and> x<length B)"
     using assms
     unfolding idx_of_impl_def
@@ -2249,7 +2249,7 @@ begin
     by (metis find_seg_correct(2) find_seg_impl)
 
   lemma collapse_correct:
-    assumes A: "v\<in>\<Union>set p_\<alpha>"
+    assumes A: "v\<in>\<Union>(set p_\<alpha>)"
     shows "collapse_impl v \<le>\<Down>GS_rel (SPEC (\<lambda>r. r=collapse v \<alpha>))"
   proof -
     {
@@ -2407,7 +2407,7 @@ context fr_graph begin
 
   lemma push_refine:
     assumes A: "(s,(p,D,pE))\<in>GS_rel" "(v,v')\<in>Id"
-    assumes B: "v\<notin>\<Union>set p" "v\<notin>D"
+    assumes B: "v\<notin>\<Union>(set p)" "v\<notin>D"
     shows "(push_impl v s, push v' (p,D,pE))\<in>GS_rel"
   proof -
     from A have [simp]: "p=GS.p_\<alpha> s \<and> D=GS.D_\<alpha> s \<and> pE=GS.pE_\<alpha> s" "v'=v" 
@@ -2451,7 +2451,7 @@ context fr_graph begin
 
   lemma collapse_refine:
     assumes A: "(s,(p,D,pE))\<in>GS_rel" "(v,v')\<in>Id"
-    assumes B: "v'\<in>\<Union>set p"
+    assumes B: "v'\<in>\<Union>(set p)"
     shows "collapse_impl v s \<le>\<Down>GS_rel (RETURN (collapse v' (p,D,pE)))"
   proof -
     from A have [simp]: "p=GS.p_\<alpha> s \<and> D=GS.D_\<alpha> s \<and> pE=GS.pE_\<alpha> s" "v'=v" 
@@ -2506,7 +2506,7 @@ context fr_graph begin
     \<equiv> case I v of Some (STACK _) \<Rightarrow> True | _ \<Rightarrow> False"
 
   lemma (in GS_invar) is_on_stack_impl_correct:
-    shows "is_on_stack_impl v \<longleftrightarrow> v\<in>\<Union>set p_\<alpha>"
+    shows "is_on_stack_impl v \<longleftrightarrow> v\<in>\<Union>(set p_\<alpha>)"
     unfolding is_on_stack_impl_def
     using I_consistent[of v]
     apply (force 
@@ -2520,7 +2520,7 @@ context fr_graph begin
       unfolded GS.is_on_stack_impl_def GS_sel_simps]
 
   lemma is_on_stack_refine:
-    "\<lbrakk> GS_invar s \<rbrakk> \<Longrightarrow> is_on_stack_impl v s \<longleftrightarrow> v\<in>\<Union>set (GS.p_\<alpha> s)"
+    "\<lbrakk> GS_invar s \<rbrakk> \<Longrightarrow> is_on_stack_impl v s \<longleftrightarrow> v\<in>\<Union>(set (GS.p_\<alpha> s))"
     unfolding is_on_stack_impl_def GS_rel_def br_def
     by (simp add: GS_invar.is_on_stack_impl_correct)
 

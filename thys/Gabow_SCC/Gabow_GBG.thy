@@ -115,14 +115,14 @@ begin
               ASSERT (p\<noteq>[]);
               case vo of 
                 Some v \<Rightarrow> do {
-                  if v \<in> \<Union>set p then do {
+                  if v \<in> \<Union>(set p) then do {
                     \<comment> \<open>Collapse\<close>
                     let (p,D,pE) = collapse v (p,D,pE);
 
                     ASSERT (p\<noteq>[]);
 
                     if \<forall>i<num_acc. \<exists>q\<in>last p. i\<in>acc q then
-                      RETURN (Some (\<Union>set (butlast p),last p),p,D,pE)
+                      RETURN (Some (\<Union>(set (butlast p)),last p),p,D,pE)
                     else
                       RETURN (None,p,D,pE)
                   } else if v\<notin>D then do {
@@ -232,7 +232,7 @@ begin
     assumes NE[simp]: "p\<noteq>[]"
     assumes NONTRIV: "vE p D pE \<inter> (last p \<times> last p) \<noteq> {}"
     assumes ACC: "\<forall>i<num_acc. \<exists>q\<in>last p. i\<in>acc q"
-    shows "fgl_invar_part (Some (\<Union>set (butlast p), last p), p, D, pE)"
+    shows "fgl_invar_part (Some (\<Union>(set (butlast p)), last p), p, D, pE)"
   proof -
     from INV interpret invar_loc G v0 D0 p D pE by (simp add: invar_def)
     txt \<open>The last collapsed node on the path contains states from all 
@@ -240,7 +240,7 @@ begin
       As it is strongly connected and reachable, we get a counter-example. 
       Here, we explicitely construct the lasso.\<close>
 
-    let ?Er = "E \<inter> (\<Union>set (butlast p) \<times> UNIV)"
+    let ?Er = "E \<inter> (\<Union>(set (butlast p)) \<times> UNIV)"
 
     txt \<open>We choose a node in the last Cnode, that is reachable only using
       former Cnodes.\<close>
@@ -264,7 +264,7 @@ begin
       from VIP have "v\<in>last p" by (cases p rule: rev_cases) auto
 
       from pathI[OF V0IP UIP] \<open>length p > 1\<close> have 
-        "(v0,u)\<in>(lvE \<inter> (\<Union>set (butlast p)) \<times> (\<Union>set (butlast p)))\<^sup>*"
+        "(v0,u)\<in>(lvE \<inter> \<Union>(set (butlast p)) \<times> \<Union>(set (butlast p)))\<^sup>*"
         (is "_ \<in> \<dots>\<^sup>*")  
         by (simp add: path_seg_butlast)
       also have "\<dots> \<subseteq> ?Er" using lvE_ss_E by auto
@@ -277,7 +277,7 @@ begin
     qed
     then obtain "pr" where 
       P_REACH: "path E v0 pr w" and 
-      R_SS: "set pr \<subseteq> \<Union>set (butlast p)"
+      R_SS: "set pr \<subseteq> \<Union>(set (butlast p))"
       apply -
       apply (erule rtrancl_is_path)
       apply (frule path_nodes_edges)
@@ -380,7 +380,7 @@ begin
 
     from order_trans[OF path_touched touched_reachable]
     have LP_REACH: "last p \<subseteq> E\<^sup>*``V0" 
-      and BLP_REACH: "\<Union>set (butlast p) \<subseteq> E\<^sup>*``V0"
+      and BLP_REACH: "\<Union>(set (butlast p)) \<subseteq> E\<^sup>*``V0"
       apply -
       apply (cases p rule: rev_cases)
       apply simp
@@ -412,11 +412,11 @@ begin
     assumes INV': "invar v0 D0 (p',D',pE'')"
     assumes NE[simp]: "p\<noteq>[]"
     assumes E: "(u,v)\<in>pE" and "u\<in>last p"
-    assumes BACK: "v\<in>\<Union>set p"
+    assumes BACK: "v\<in>\<Union>(set p)"
     assumes ACC: "\<forall>i<num_acc. \<exists>q\<in>last p'. i\<in>acc q"
     defines i_def: "i \<equiv> idx_of p v"
     shows "fgl_invar_part (
-      Some (\<Union>set (butlast p'), last p'), 
+      Some (\<Union>(set (butlast p')), last p'), 
       collapse v (p,D,pE'))"
   proof -
 
@@ -463,7 +463,7 @@ begin
     assumes INV': "invar v0 D0 (p',D',pE'')"
     assumes NE[simp]: "p\<noteq>[]"
     assumes E: "(u,v)\<in>pE" and "u\<in>last p"
-    assumes BACK: "v\<in>\<Union>set p"
+    assumes BACK: "v\<in>\<Union>(set p)"
     assumes NACC: "j<num_acc" "\<forall>q\<in>last p'. j\<notin>acc q"
     defines "i \<equiv> idx_of p v"
     shows "fgl_invar_part (None, collapse v (p,D,pE'))"
@@ -547,7 +547,7 @@ begin
     assumes BRK[simp]: "brk=None" 
     assumes NE[simp]: "p\<noteq>[]"
     assumes E: "(u,v)\<in>pE" and UIL: "u\<in>last p"
-    assumes VNE: "v\<notin>\<Union>set p" "v\<notin>D"
+    assumes VNE: "v\<notin>\<Union>(set p)" "v\<notin>D"
     assumes INV': "invar v0 D0 (push v (p,D,pE - {(u,v)}))"
     shows "fgl_invar_part (None, push v (p,D,pE - {(u,v)}))"
   proof -
@@ -912,7 +912,7 @@ begin
   definition (in -) gcollapse_aux 
     :: "nat set list \<Rightarrow> 'a set list \<Rightarrow> nat \<Rightarrow> nat set list \<times> 'a set list"
     where "gcollapse_aux a p i \<equiv> 
-      (take i a @ [\<Union>set (drop i a)],take i p @ [\<Union>set (drop i p)])"
+      (take i a @ [\<Union>(set (drop i a))],take i p @ [\<Union>(set (drop i p))])"
 
   definition (in -) gcollapse :: "'a \<Rightarrow> 'a abs_gstate \<Rightarrow> 'a abs_gstate" 
     where "gcollapse v APDPE \<equiv> 
@@ -964,7 +964,7 @@ begin
             ASSERT (p\<noteq>[]);
             case vo of 
               Some v \<Rightarrow> do {
-                if v \<in> \<Union>set p then do {
+                if v \<in> \<Union>(set p) then do {
                   \<comment> \<open>Collapse\<close>
                   let (a,p,D,pE) = gcollapse v (a,p,D,pE);
 
@@ -972,7 +972,7 @@ begin
                   ASSERT (a\<noteq>[]);
 
                   if last a = {0..<num_acc} then
-                    RETURN (Some (\<Union>set (butlast p),last p),a,p,D,pE)
+                    RETURN (Some (\<Union>(set (butlast p)),last p),a,p,D,pE)
                   else
                     RETURN (None,a,p,D,pE)
                 } else if v\<notin>D then do {
@@ -1095,10 +1095,10 @@ definition Un_set_drop_impl :: "nat \<Rightarrow> 'a set list \<Rightarrow> 'a s
   }"
 
 lemma Un_set_drop_impl_correct: 
-  "Un_set_drop_impl i A \<le> SPEC (\<lambda>r. r=\<Union>set (drop i A))"
+  "Un_set_drop_impl i A \<le> SPEC (\<lambda>r. r=\<Union>(set (drop i A)))"
   unfolding Un_set_drop_impl_def
   apply (refine_rcg 
-    WHILET_rule[where I="\<lambda>(i',res). res=\<Union>set ((drop i (take i' A))) \<and> i\<le>i'" 
+    WHILET_rule[where I="\<lambda>(i',res). res=\<Union>(set ((drop i (take i' A)))) \<and> i\<le>i'" 
     and R="measure (\<lambda>(i',_). length A - i')"] 
     refine_vcg)
   apply (auto simp: take_Suc_conv_app_nth)
@@ -1147,7 +1147,7 @@ definition gGS_invar :: "'Q gGS \<Rightarrow> bool"
   let (a,S,B,I,P) = s in 
     GS_invar (S,B,I,P)
     \<and> length a = length B
-    \<and> \<Union>set a \<subseteq> {0..<num_acc}
+    \<and> \<Union>(set a) \<subseteq> {0..<num_acc}
   "
 
 definition gGS_\<alpha> :: "'Q gGS \<Rightarrow> 'Q abs_gstate"
@@ -1179,7 +1179,7 @@ begin
     obtains S' B' I' P' where "s'=(a,S',B',I',P')" 
       and "((S',B',I',P'),(p,D,pE))\<in>GS_rel" 
       and "length a = length B'"
-      and "\<Union>set a \<subseteq> {0..<num_acc}"
+      and "\<Union>(set a) \<subseteq> {0..<num_acc}"
     using assms
     apply (cases s')
     apply (simp add: gGS_rel_def br_def gGS_\<alpha>_def GS.\<alpha>_def)
@@ -1232,12 +1232,12 @@ begin
   lemma gpush_impl_refine:
     assumes B: "(s',(a,p,D,pE))\<in>gGS_rel"
     assumes A: "(v',v)\<in>Id" 
-    assumes PRE: "v' \<notin> \<Union>set p" "v' \<notin> D"
+    assumes PRE: "v' \<notin> \<Union>(set p)" "v' \<notin> D"
     shows "(gpush_impl v' s', gpush v (a,p,D,pE))\<in>gGS_rel"
   proof -
     from B obtain S' B' I' P' where [simp]: "s'=(a,S',B',I',P')" 
       and OSR: "((S',B',I',P'),(p,D,pE))\<in>GS_rel" and L: "length a = length B'" 
-      and R: "\<Union>set a \<subseteq> {0..<num_acc}"
+      and R: "\<Union>(set a) \<subseteq> {0..<num_acc}"
       by (rule gGS_relE)
     {
       fix S B I P S' B' I' P'
@@ -1269,7 +1269,7 @@ begin
   proof -
     from A obtain S' B' I' P' where [simp]: "s'=(a,S',B',I',P')" 
       and OSR: "((S',B',I',P'),(p,D,pE))\<in>GS_rel" and L: "length a = length B'"
-      and R: "\<Union>set a \<subseteq> {0..<num_acc}"
+      and R: "\<Union>(set a) \<subseteq> {0..<num_acc}"
       by (rule gGS_relE)
 
     from PRE OSR have [simp]: "a\<noteq>[]" using L
@@ -1312,7 +1312,7 @@ begin
   proof -
     from A obtain S' B' I' P' where [simp]: "s'=(a,S',B',I',P')" 
       and OSR: "((S',B',I',P'),(p,D,pE))\<in>GS_rel" and L: "length a = length B'"
-      and R: "\<Union>set a \<subseteq> {0..<num_acc}"
+      and R: "\<Union>(set a) \<subseteq> {0..<num_acc}"
       by (rule gGS_relE)
 
     {
@@ -1365,7 +1365,7 @@ begin
         (a,p,D,pE)=APDPE; 
         i=idx_of p v;
         s=collapse v (p,D,pE);
-        us=\<Union>set (drop i a);
+        us=\<Union>(set (drop i a));
         a = take i a @ [us]
       in (a,s))"
     unfolding gcollapse_def gcollapse_aux_def collapse_def collapse_aux_def
@@ -1375,7 +1375,7 @@ begin
   lemma gcollapse_impl_aux_refine:
     assumes A: "(s', a, p, D, pE) \<in> gGS_rel" 
     assumes B: "(v',v)\<in>Id"
-    assumes PRE: "v\<in>\<Union>set p"
+    assumes PRE: "v\<in>\<Union>(set p)"
     shows "gcollapse_impl_aux v' s' 
       \<le> \<Down> gGS_rel (RETURN (gcollapse v (a, p, D, pE)))"
   proof -
@@ -1383,7 +1383,7 @@ begin
 
     from A obtain S' B' I' P' where [simp]: "s'=(a,S',B',I',P')" 
       and OSR: "((S',B',I',P'),(p,D,pE))\<in>GS_rel" and L: "length a = length B'"
-      and R: "\<Union>set a \<subseteq> {0..<num_acc}"
+      and R: "\<Union>(set a) \<subseteq> {0..<num_acc}"
       by (rule gGS_relE)
 
     from B have [simp]: "v'=v" by simp
@@ -1391,7 +1391,7 @@ begin
     from OSR have [simp]: "GS.p_\<alpha> (S',B',I',P') = p"
       by (simp add: GS_rel_def br_def GS.\<alpha>_def)
 
-    from OSR PRE have PRE': "v \<in> \<Union>set (GS.p_\<alpha> (S',B',I',P'))"
+    from OSR PRE have PRE': "v \<in> \<Union>(set (GS.p_\<alpha> (S',B',I',P')))"
       by (simp add: GS_rel_def br_def GS.\<alpha>_def)
 
     from OSR have GS_invar: "GS_invar (S',B',I',P')" 
@@ -1458,7 +1458,7 @@ begin
   lemma gcollapse_impl_refine:
     assumes A: "(s', a, p, D, pE) \<in> gGS_rel" 
     assumes B: "(v',v)\<in>Id"
-    assumes PRE: "v\<in>\<Union>set p"
+    assumes PRE: "v\<in>\<Union>(set p)"
     shows "gcollapse_impl v' s' 
     \<le> \<Down> gGS_rel (RETURN (gcollapse v (a, p, D, pE)))"
     using order_trans[OF 
@@ -1497,7 +1497,7 @@ begin
     where "gis_on_stack_impl v s = is_on_stack_impl v (snd s)"
 
   lemma gis_on_stack_refine: 
-    "\<lbrakk>(s,(a,p,D,pE))\<in>gGS_rel\<rbrakk> \<Longrightarrow> gis_on_stack_impl v s \<longleftrightarrow> v\<in>\<Union>set p"
+    "\<lbrakk>(s,(a,p,D,pE))\<in>gGS_rel\<rbrakk> \<Longrightarrow> gis_on_stack_impl v s \<longleftrightarrow> v\<in>\<Union>(set p)"
     unfolding gis_on_stack_impl_def 
     using is_on_stack_refine
     by (fastforce simp: gGS_rel_def br_def gGS_invar_def gGS_\<alpha>_def GS.\<alpha>_def)
@@ -1526,7 +1526,7 @@ begin
 
   lemma (in GS_invar) set_butlast_p_refine:
     assumes PRE: "p_\<alpha>\<noteq>[]"
-    shows "Collect (on_stack_less I (last B)) = \<Union>set (butlast p_\<alpha>)" (is "?L=?R")
+    shows "Collect (on_stack_less I (last B)) = \<Union>(set (butlast p_\<alpha>))" (is "?L=?R")
   proof (intro equalityI subsetI)
     from PRE have [simp]: "B\<noteq>[]" by (auto simp: p_\<alpha>_def)
 
@@ -1637,7 +1637,7 @@ begin
     assumes A: "(s,(a,p,D,pE))\<in>gGS_rel"
     assumes PRE: "p\<noteq>[]"
     shows "ce_impl s \<le> \<Down>(Id\<times>\<^sub>rgGS_rel) 
-      (RETURN (Some (\<Union>set (butlast p),last p),a,p,D,pE))"
+      (RETURN (Some (\<Union>(set (butlast p)),last p),a,p,D,pE))"
   proof -
     from A obtain S' B' I' P' where [simp]: "s=(a,S',B',I',P')" 
       and OSR: "((S',B',I',P'),(p,D,pE))\<in>GS_rel" and L: "length a = length B'"
