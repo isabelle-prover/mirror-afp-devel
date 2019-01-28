@@ -830,21 +830,21 @@ proof -
     fix n V
     assume "CFG.CFG.valid_node src trg 
       (lift_valid_edge valid_edge sourcenode targetnode kind Entry Exit) n"
-      and "V \<in> \<Union>set (lift_ParamUses ParamUses n)"
+      and "V \<in> \<Union>(set (lift_ParamUses ParamUses n))"
     hence "((n = NewEntry) \<or> n = NewExit) \<or> (\<exists>m. n = Node m \<and> valid_node m)"
       by(auto elim:lift_valid_edge.cases simp:CFG.valid_node_def)
     thus "V \<in> lift_Use Use Entry Exit H L n" apply -
     proof(erule disjE)+
       assume "n = NewEntry"
-      with \<open>V \<in> \<Union>set (lift_ParamUses ParamUses n)\<close> show ?thesis by simp
+      with \<open>V \<in> \<Union>(set (lift_ParamUses ParamUses n))\<close> show ?thesis by simp
     next
       assume "n = NewExit"
-      with \<open>V \<in> \<Union>set (lift_ParamUses ParamUses n)\<close> show ?thesis by simp
+      with \<open>V \<in> \<Union>(set (lift_ParamUses ParamUses n))\<close> show ?thesis by simp
     next
       assume "\<exists>m. n = Node m \<and> valid_node m"
       then obtain m where "n = Node m" and "valid_node m" by blast
-      from \<open>V \<in> \<Union>set (lift_ParamUses ParamUses n)\<close> \<open>n = Node m\<close>
-      have "V \<in> \<Union>set (ParamUses m)" by simp
+      from \<open>V \<in> \<Union>(set (lift_ParamUses ParamUses n))\<close> \<open>n = Node m\<close>
+      have "V \<in> \<Union>(set (ParamUses m))" by simp
       with \<open>valid_node m\<close> have "V \<in> Use m" by(rule ParamUses_in_Use)
       with \<open>n = Node m\<close> show ?thesis by(fastforce intro:lift_Use_node)
     qed
