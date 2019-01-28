@@ -3018,10 +3018,10 @@ context approximate_sets_ode_slp' begin
 definition "c1_info_of_appr XD =
   (case snd XD of None \<Rightarrow> eucl_of_list ` set_of_appr (fst XD) \<times> UNIV
    | Some D \<Rightarrow> flow1_of_list ` set_of_appr (fst XD @ D))"
-definition "c1_info_of_apprs x = \<Union>set (map c1_info_of_appr x)"
+definition "c1_info_of_apprs x = \<Union>(set (map c1_info_of_appr x))"
 definition "c1_info_of_appr' x = Affine_Code.the_default UNIV (map_option c1_info_of_apprs x)"
 definition "c1_info_of_appre X = scaleR2 (fst (fst X)) (snd (fst X)) (c1_info_of_appr (snd X))"
-definition "c1_info_of_apprse x = \<Union>set (map c1_info_of_appre x)"
+definition "c1_info_of_apprse x = \<Union>(set (map c1_info_of_appre x))"
 
 definition appr1_rel::"(('b list \<times> 'b list option) \<times>
   ('a::executable_euclidean_space c1_info set)) set"
