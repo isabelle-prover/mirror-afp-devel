@@ -189,7 +189,7 @@ fun wi_to_ipt_iprange :: "'i::len wordinterval \<Rightarrow> 'i ipt_iprange list
       [interval_to_wi_to_ipt_iprange s e])" |
   "wi_to_ipt_iprange (RangeUnion a b) = wi_to_ipt_iprange a @ wi_to_ipt_iprange b"
 
-lemma wi_to_ipt_ipv4range: "\<Union> set (map ipt_iprange_to_set (wi_to_ipt_iprange wi)) = wordinterval_to_set wi"
+lemma wi_to_ipt_ipv4range: "\<Union>(set (map ipt_iprange_to_set (wi_to_ipt_iprange wi))) = wordinterval_to_set wi"
   apply(induction wi)
    apply(simp add: interval_to_wi_to_ipt_ipv4range)
   apply(simp)
