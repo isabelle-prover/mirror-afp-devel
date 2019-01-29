@@ -147,8 +147,8 @@ qed
 
 subsection "Recurrence Diameter" 
 
-text \<open> The recurrence diameter—defined as the longest simple path in the digraph modelling the
-state space—provides a loose upper bound on the system diameter. [Abdulaziz et al., Definition 9, 
+text \<open> The recurrence diameter---defined as the longest simple path in the digraph modelling the
+state space---provides a loose upper bound on the system diameter. [Abdulaziz et al., Definition 9, 
 p.15] \<close>
 
 \<comment> \<open>NOTE name shortened.\<close>

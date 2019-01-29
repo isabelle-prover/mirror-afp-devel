@@ -13,8 +13,8 @@ no_notation Map.map_add (infixl "++" 100)
 
 subsection "Semantics of Plan Execution"
 
-text \<open> This section aims at characterizing the semantics of executing plans—i.e. sequences
-of actions—on a given initial state.
+text \<open> This section aims at characterizing the semantics of executing plans---i.e. sequences
+of actions---on a given initial state.
 
 The semantics of action execution were previously introduced
 via the notion of succeding state (`state\_succ`). Plan execution (`exec\_plan`) extends this notion
@@ -55,8 +55,8 @@ lemma cycle_removal_lemma:
 
 subsubsection "Characterization of the Set of Possible States"
 
-text \<open> To show the construction principle of the set of possible states—in lemma
-`construction\_of\_all\_possible\_states\_lemma`—the following ancillary proves of finite map
+text \<open> To show the construction principle of the set of possible states---in lemma
+`construction\_of\_all\_possible\_states\_lemma`---the following ancillary proves of finite map
 properties are required.
 
 Most importantly, in lemma `fmupd\_fmrestrict\_subset` we show how finite mappings `s` with domain

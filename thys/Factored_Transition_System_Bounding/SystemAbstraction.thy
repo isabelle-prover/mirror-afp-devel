@@ -22,8 +22,8 @@ no_notation Map.map_add (infixl "++" 100)
 section "System Abstraction"
 
 text \<open> Projection of an object (state, action, sequence of action or factored representation)
-to a variable set `vs` restricts the domain of the object or its components—in case of composite
-objects—to `vs`. [Abdulaziz et al., p.12]
+to a variable set `vs` restricts the domain of the object or its components---in case of composite
+objects---to `vs`. [Abdulaziz et al., p.12]
 
 This section presents the relevant definitions (`action\_proj`, `as\_proj`, `prob\_proj` and `ss\_proj`)
 as well as their characterization. \<close>
@@ -1381,7 +1381,7 @@ proof -
 qed
 
 
-\<comment> \<open>NOTE showcase (the step using `graph\_plan\_lemma\_5`— labelled by '[1]'— is non-trivial proof
+\<comment> \<open>NOTE showcase (the step using `graph\_plan\_lemma\_5`--- labelled by '[1]'--- is non-trivial proof
 due to missing premises and the last six proof steps are redundant).\<close>
 lemma state_succ_proj_eq_state_succ:
   fixes a s vs
