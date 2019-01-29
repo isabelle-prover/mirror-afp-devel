@@ -1,7 +1,7 @@
 section \<open>FIFO Push Relabel Algorithm\<close>
 theory Fifo_Push_Relabel
 imports 
-  Maxflow_Lib.Refine_Add_Fofu
+  Flow_Networks.Refine_Add_Fofu
   Generic_Push_Relabel 
 begin
 text \<open>The FIFO push-relabel algorithm maintains a first-in-first-out queue

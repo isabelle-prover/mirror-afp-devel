@@ -1,7 +1,7 @@
 section \<open>Implementation of Flow Networks\<close>
 theory Network_Impl
 imports 
-  Maxflow_Lib.Refine_Add_Fofu
+  "Lib/Refine_Add_Fofu"
   Ford_Fulkerson 
 begin
 
