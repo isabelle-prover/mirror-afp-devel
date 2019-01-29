@@ -6,16 +6,12 @@ session Regex_Equivalence (AFP) = HOL +
     "HOL-Library"
     "Regular-Sets"
     "Efficient-Mergesort"
+    Spec_Check
   theories
     Regex_Equivalence
+  theories [document = false]
+    Examples
+    Benchmark
   document_files
     "root.tex"
     "root.bib"
-
-session Regex_Equivalence_Examples (AFP) = Regex_Equivalence +
-  options [timeout = 600]
-  sessions
-    Spec_Check
-  theories
-    Examples
-    Benchmark
