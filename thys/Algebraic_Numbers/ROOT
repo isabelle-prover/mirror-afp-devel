@@ -14,13 +14,3 @@ session Algebraic_Numbers (AFP) = Berlekamp_Zassenhaus +
   document_files
     "root.bib"
     "root.tex"
-
-session Algebraic_Numbers_Lib (AFP) = Berlekamp_Zassenhaus + 
-  description "Algebraic numbers, without tests"
-  options [timeout = 600]
-  sessions
-    Algebraic_Numbers
-  theories
-    Algebraic_Numbers.Real_Factorization
-    Algebraic_Numbers.Show_Real_Approx
-    Algebraic_Numbers.Show_Real_Precise
