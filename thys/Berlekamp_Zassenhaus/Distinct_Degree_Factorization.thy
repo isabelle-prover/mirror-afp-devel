@@ -572,7 +572,7 @@ next
   unfolding eq2 P_def 
   proof (rule mult_closed_power)
     show "(monom 1 1 mod f) [^]\<^bsub>R\<^esub> CARD('a) ^ n = monom 1 1 mod f"
-      using eq field_R.nat_pow_eone m P_def by auto
+      using P_def element_in_carrier eq m mod_poly_less by force
     show "((\<Prod>i = 0..<b. monom 1 1) mod f) [^]\<^bsub>R\<^esub> CARD('a) ^ n = (\<Prod>i = 0..<b. monom 1 1) mod f"      
       using P_def Suc.hyps by blast
   qed (auto)

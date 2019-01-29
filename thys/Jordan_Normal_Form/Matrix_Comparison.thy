@@ -72,7 +72,7 @@ end
 
 
 definition mat_mono :: "('a \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> bool"
-where "mat_mono mon sd A = (\<forall> j < sd. \<exists> i < sd. mon (A $$ (i,j)))"
+where "mat_mono P sd A = (\<forall> j < sd. \<exists> i < sd. P (A $$ (i,j)))"
 
 context non_strict_order
 begin
