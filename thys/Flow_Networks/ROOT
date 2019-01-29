@@ -1,22 +1,18 @@
 chapter AFP
 
-session Maxflow_Lib (AFP) = Sepref_IICF +
+session Flow_Networks (AFP) = Sepref_IICF +
   options [timeout = 600]
   sessions
     "Program-Conflict-Analysis"
     CAVA_Automata
     DFS_Framework
     Refine_Imperative_HOL
-  theories
+  theories [document = false]
     DFS_Framework.DFS_Framework
     DFS_Framework.Reachable_Nodes
     "Lib/Fofu_Abs_Base"
     "Lib/Fofu_Impl_Base"
     "Lib/Refine_Add_Fofu"
-
-session Flow_Networks (AFP) = Maxflow_Lib +
-  options [timeout = 600]
-  theories [document = false]
     Graph
   theories
     Network

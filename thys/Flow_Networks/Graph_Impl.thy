@@ -1,6 +1,6 @@
 (* TODO: That's quite specific to the BFS alg. Move to Edka! *)
 theory Graph_Impl
-imports Maxflow_Lib.Refine_Add_Fofu Graph
+imports "Lib/Refine_Add_Fofu" Graph
 begin
 
 \<comment> \<open>Fixing capacities to integer values\<close>

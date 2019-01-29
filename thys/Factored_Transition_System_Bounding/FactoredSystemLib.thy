@@ -17,13 +17,13 @@ semantics which are left to right (ltr), rather than right-to-left as in Isabell
 This means that given a finite map (`M = M1 ++ M2`) and a variable `v` which is in the domain of
 both `M1` and `M2`, the lookup `M v` will yield `M1 v` in HOL4 but `M2 v` in Isabelle/HOL.
 This behavior can be confirmed  by looking at the definition of `fmap\_add` (`++f`, 
-Finite\_Map.thy:460)—which is lifted from `map\_add` (Map.thy:24)
+Finite\_Map.thy:460)---which is lifted from `map\_add` (Map.thy:24)
 
   @{const map_add}  (infixl "++" 100) where
     @{term "m1 ++ m2 = (\<lambda>x. case m2 x of None \<Rightarrow> m1 x | Some y \<Rightarrow> Some y)"}
   
 
-to finite sets—and the HOL4 definition of "FUNION` (finite\_mapScript.sml:770) which recurs
+to finite sets---and the HOL4 definition of "FUNION` (finite\_mapScript.sml:770) which recurs
 on `union\_lemma` (finite\_mapScript.sml:756)
 
   !\^fmap g.
@@ -79,8 +79,8 @@ to the problem domain and the set of valid action sequences (or, valid plans) is
 Kleene closure of @{term "\<delta>"}, i.e. @{term "\<delta>_star = {\<pi>. set(\<pi>) \<subseteq> \<delta>}"}. [Abdulaziz et al., Definition 3, p.9] 
   
 Ultimately, the effect of executing an action `a` on a state `s` is given by calculating the 
-succeding state. In general, the succeding state is either the preceding state—if the action does
-not apply to the state, i.e. if the preconditions are not met—; or, the union of the effects of
+succeding state. In general, the succeding state is either the preceding state---if the action does
+not apply to the state, i.e. if the preconditions are not met---; or, the union of the effects of
 the action application and the state. [Abdulaziz et al., Definition 3, p.9]
 \<close>
 

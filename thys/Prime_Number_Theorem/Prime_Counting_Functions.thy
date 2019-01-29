@@ -11,7 +11,7 @@ begin
 
 text \<open>
   We will now define the basic prime-counting functions \<open>\<pi>\<close>, \<open>\<theta>\<close>, and \<open>\<psi>\<close>. Additionally, we 
-  shall define a function M that is related to Mertens’ theorems and Newman’s proof of the
+  shall define a function M that is related to Mertens' theorems and Newman's proof of the
   Prime Number Theorem. Most of the results in this file are not actually required to prove 
   the Prime Number Theorem, but are still nice to have.
 \<close>

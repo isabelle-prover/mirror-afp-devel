@@ -1,15 +1,12 @@
 chapter AFP
 
-session PTA_library (AFP) = "Markov_Models" +
-  options [timeout = 1200, document = false]
+session Probabilistic_Timed_Automata (AFP) = "Markov_Models" +
+  options [timeout = 1200]
   sessions
     "Timed_Automata"
     "HOL-Eisbach"
-  theories
+  theories [document = false]
     "library/Lib"
-
-session Probabilistic_Timed_Automata (AFP) = "PTA_library" +
-  options [timeout = 600]
   theories
     "PTA"
     "PTA_Reachability"

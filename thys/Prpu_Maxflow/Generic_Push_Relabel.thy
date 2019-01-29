@@ -1,7 +1,7 @@
 section \<open>Generic Push Relabel Algorithm\<close>
 theory Generic_Push_Relabel
 imports 
-  Maxflow_Lib.Fofu_Abs_Base
+  Flow_Networks.Fofu_Abs_Base
   Flow_Networks.Ford_Fulkerson
 begin
 

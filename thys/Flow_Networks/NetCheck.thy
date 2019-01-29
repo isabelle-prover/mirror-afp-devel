@@ -1,7 +1,7 @@
 section \<open>Checking for Valid Network\<close>
 theory NetCheck
 imports 
-  Maxflow_Lib.Refine_Add_Fofu
+  "Lib/Refine_Add_Fofu"
   Network
   Graph_Impl
   DFS_Framework.Reachable_Nodes

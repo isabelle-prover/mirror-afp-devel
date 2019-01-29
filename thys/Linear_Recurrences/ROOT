@@ -15,8 +15,9 @@ session Linear_Recurrences (AFP) = Count_Complex_Roots +
   document_files
     "root.tex"
 
-session Linear_Recurrences_Solver (AFP) = "Algebraic_Numbers_Lib" +
+session Linear_Recurrences_Solver (AFP) = Berlekamp_Zassenhaus +
   options [timeout = 1200]
+  sessions
+    Algebraic_Numbers
   theories
     Linear_Recurrences_Test
-

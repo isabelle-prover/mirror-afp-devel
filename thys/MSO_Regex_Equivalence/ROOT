@@ -24,12 +24,9 @@ session MSO_Regex_Equivalence (AFP) = HOL +
     WS1S
     WS1S_Normalization
     WS1S_Equivalence_Checking
+  theories [document = false]
+    M2L_Examples
+    WS1S_Examples
   document_files
     "root.tex"
     "root.bib"
-
-session "MSO_Examples" (AFP) = "MSO_Regex_Equivalence" +
-  options [timeout = 600]
-  theories
-    M2L_Examples
-    WS1S_Examples

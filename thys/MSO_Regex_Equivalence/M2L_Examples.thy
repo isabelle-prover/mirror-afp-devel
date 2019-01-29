@@ -1,7 +1,7 @@
 (* Author: Dmitriy Traytel *)
 
 theory M2L_Examples
-imports MSO_Regex_Equivalence.M2L_Equivalence_Checking "HOL-Library.Char_ord"
+imports M2L_Equivalence_Checking "HOL-Library.Char_ord"
     "HOL-Library.Product_Lexorder"
 begin
 

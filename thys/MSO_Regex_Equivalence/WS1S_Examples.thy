@@ -1,7 +1,7 @@
 (* Author: Dmitriy Traytel *)
 
 theory WS1S_Examples
-imports MSO_Regex_Equivalence.WS1S_Equivalence_Checking "HOL-Library.Char_ord"
+imports WS1S_Equivalence_Checking "HOL-Library.Char_ord"
     "HOL-Library.Product_Lexorder"
 begin
 

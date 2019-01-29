@@ -17,7 +17,7 @@ text \<open>The Descartes roots test is a consequence of Descartes' rule of sign
   More information can be found in the wiki page about Vincent's theorem:
     @{url "https://en.wikipedia.org/wiki/Vincent%27s_theorem"}
   and Collins and Akritas's classic paper of root isolation:
-    Collins, G.E., Akritas, A.G.: Polynomial real root isolation using Descarte's rule of signs. SYMSACC. 272–275 (1976).
+    Collins, G.E., Akritas, A.G.: Polynomial real root isolation using Descarte's rule of signs. SYMSACC. 272--275 (1976).
   A more modern treatment is available from a recent implementation of isolating real roots:
     Kobel, A., Rouillier, F., Sagraloff, M.: Computing Real Roots of Real Polynomials ... and now For Real! 
     Proceedings of ISSAC '16, New York, New York, USA (2016).
