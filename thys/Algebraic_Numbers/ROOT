@@ -9,7 +9,6 @@ session Algebraic_Numbers (AFP) = Berlekamp_Zassenhaus +
     Real_Factorization
     Show_Real_Approx
     Show_Real_Precise
-  theories
     Algebraic_Number_Tests
     Algebraic_Numbers_External_Code
   document_files
