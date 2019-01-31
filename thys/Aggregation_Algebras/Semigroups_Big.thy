@@ -520,7 +520,7 @@ end
 
 subsection \<open>Generalized summation over a set\<close>
 
-no_notation Sum ("\<Sum>_" [1000] 999)
+no_notation Sum ("\<Sum>")
 
 class ab_semigroup_add_0 = zero + ab_semigroup_add +
   assumes zero_neutral [simp]: "x + y + 0 = x + y"
@@ -531,8 +531,8 @@ sublocale sum_0: abel_semigroup_set plus 0
   defines sum_0 = sum_0.F
   by unfold_locales simp_all
 
-abbreviation Sum_0 ("\<Sum>_" [1000] 999)
-  where "\<Sum>A \<equiv> sum_0 (\<lambda>x. x) A"
+abbreviation Sum_0 ("\<Sum>")
+  where "\<Sum> \<equiv> sum_0 (\<lambda>x. x)"
 
 end
 
