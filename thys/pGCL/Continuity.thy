@@ -776,7 +776,7 @@ lemma SetDC_finite_insert:
   assumes fS: "finite S"
       and neS: "S \<noteq> {}"
   shows "SetDC a (\<lambda>_. insert x S) = a x \<Sqinter> SetDC a (\<lambda>_. S)"
-proof (intro ext, simp add: SetDC_def DC_def)
+proof (intro ext, simp add: SetDC_def DC_def cong del: image_cong_simp cong add: INF_cong_simp)
   fix ab P s
   from fS have A: "finite (insert (a x ab P s) ((\<lambda>x. a x ab P s) ` S))" 
            and B: "finite (((\<lambda>x. a x ab P s) ` S))" by(auto)
@@ -922,7 +922,7 @@ proof(rule bd_cts_trI, rule le_trans_antisym)
   qed
 
   show "le_trans (?F (Sup_trans (range M))) (Sup_trans (range (?F o M)))"
-   proof(rule le_transI, rule le_funI, simp add:wp_eval)
+   proof(rule le_transI, rule le_funI, simp add: wp_eval cong del: image_cong_simp)
     fix P::"'s expect" and s::'s
     assume sP: "sound P"
     have "{t P |t. t \<in> range M} = range (\<lambda>i. M i P)"

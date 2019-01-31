@@ -154,7 +154,7 @@ text\<open>
     qed
 
   lemma sconjunctive_assert [simp]: "sconjunctive {.p.}"
-    proof (auto simp add: sconjunctive_def assert_def image_def, rule antisym, auto)
+    proof (auto simp add: sconjunctive_def assert_def image_def cong: INF_cong_simp, rule antisym, auto)
       fix Q :: "'a set"
       have [simp]: "\<And> x . x \<in> Q \<Longrightarrow> Inf Q \<le> x"
         by (rule Inf_lower, simp)

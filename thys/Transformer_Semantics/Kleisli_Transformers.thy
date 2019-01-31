@@ -537,7 +537,7 @@ lemma rfb_surj: "Inf_pres \<phi> \<Longrightarrow> (\<exists>R. fb\<^sub>\<R> R 
   using irfb_inv2 by fastforce
 
 lemma irfb_surj: "surj fb\<^sup>-\<^sub>\<R>" 
-  by (simp add: irfb_def comp_surj f2r_surj iffb_surj)
+  by (simp add: irfb_def comp_surj f2r_surj iffb_surj cong del: image_cong_simp)
 
 lemma rfb_irfb_galois: "Inf_pres \<phi> \<Longrightarrow> (fb\<^sup>-\<^sub>\<R> \<phi> = R) = (fb\<^sub>\<R> R = \<phi>)"
   by (simp add: irfb_def rfb_def, metis ffb_iffb_galois r2f_f2r_galois)

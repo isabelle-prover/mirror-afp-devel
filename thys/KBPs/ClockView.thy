@@ -180,7 +180,7 @@ done
 lemma clock_sim_r:
   "sim_r Clock.MC clock_simMC clock_sim"
   apply (rule sim_rI)
-  apply (clarsimp simp: clock_simRels_def clock_sim_def)
+  apply (clarsimp simp: clock_simRels_def clock_sim_def cong del: image_cong_simp)
   apply (rule_tac x=xa in exI)
   unfolding Clock.mkM_def
   apply auto
@@ -484,8 +484,6 @@ next
     apply rule
     unfolding clock_repRels_def clock_repSim_def clock_simRels_def clock_sim_def
     apply clarsimp
-    apply (rule_tac x=xa in image_eqI)
-    apply auto
     done
 qed
 
@@ -549,7 +547,7 @@ lemma clock_simInit:
    apply (rule_tac x="tInit s" in image_eqI)
     apply (auto simp: Set.image_def Clock.jviewInit)[2]
   apply clarsimp
-  apply (case_tac t)
+  apply (case_tac xa)
    apply clarsimp
    apply rule
     apply rule
@@ -1211,6 +1209,7 @@ lemma clock_simTrans:
           |t' s. t' \<leadsto> s \<in> Clock.jkbpC \<and> clock_jview a t' = clock_jview a t }"
 (*<*) (is "?lhs = ?rhs")
 proof
+  note image_cong_simp [cong del]
   show "?lhs \<subseteq> ?rhs"
     unfolding clock_simTrans_def clock_mkSuccs_def
     using clock_trans_common[OF tC ec] clock_trans_agent[OF tC ec]

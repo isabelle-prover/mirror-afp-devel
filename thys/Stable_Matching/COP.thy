@@ -447,6 +447,7 @@ There are two stable matches in this model.
 lemma Xd1_Xd2'_stable:
   shows "BSI.stable {Xd1, Xd2'}"
 proof(rule BSI.stable_onI)
+  note image_cong_simp [cong del] note INF_cong_simp [cong] note SUP_cong_simp [cong]
   show "BSI.individually_rational {Xd1, Xd2'}"
     unfolding BSI.individually_rational_on_def BSI.CD_on_def BSI.CH_def
     by (auto simp: insert_commute D2_UNION H2_UNION)
@@ -458,6 +459,7 @@ qed
 lemma Xd1'_Xd2_stable:
   shows "BSI.stable {Xd1', Xd2}"
 proof(rule BSI.stable_onI)
+  note image_cong_simp [cong del] note INF_cong_simp [cong] note SUP_cong_simp [cong]
   show "BSI.individually_rational {Xd1', Xd2}"
     unfolding BSI.individually_rational_on_def BSI.CD_on_def BSI.CH_def
     by (auto simp: insert_commute D2_UNION H2_UNION)

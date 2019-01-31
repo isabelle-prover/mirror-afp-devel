@@ -1089,8 +1089,8 @@ begin
               fix X'
               assume X': "X' \<in> \<iota> ` D.cones a'"
               hence "\<o> X' \<in> \<o> ` \<iota> ` D.cones a'" by simp
-              hence "\<o> X' \<in> D.cones a'"
-                by (simp add: inj_UP inj_compose)
+              with S.\<o>_\<iota> have "\<o> X' \<in> D.cones a'"
+                by auto
               hence "\<exists>!f. \<guillemotleft>f : a' \<rightarrow> a\<guillemotright> \<and> D.cones_map f \<chi> = \<o> X'"
                 using a' is_universal by simp
               from this obtain f where "\<guillemotleft>f : a' \<rightarrow> a\<guillemotright> \<and> D.cones_map f \<chi> = \<o> X'"

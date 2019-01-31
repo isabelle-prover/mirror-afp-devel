@@ -518,10 +518,13 @@ lemma free_group_card_infinite:
   shows "|X| =o |carrier \<F>\<^bsub>X\<^esub>|"
 proof-
   have "inj_on insert X"
-   and "insert ` X \<subseteq> carrier \<F>\<^bsub>X\<^esub>"
-    by (auto intro:insert_closed inj_onI simp add:insert_def)
-  hence "|X| \<le>o |carrier \<F>\<^bsub>X\<^esub>|"
-    by (subst card_of_ordLeq[THEN sym], auto)
+    by (rule inj_onI) (auto simp add: insert_def)
+  moreover have "insert ` X \<subseteq> carrier \<F>\<^bsub>X\<^esub>"
+    by (auto intro: insert_closed)
+  ultimately have "\<exists>f. inj_on f X \<and> f ` X \<subseteq> carrier \<F>\<^bsub>X\<^esub>"
+    by auto
+  then have "|X| \<le>o |carrier \<F>\<^bsub>X\<^esub>|"
+    by (simp add: card_of_ordLeq)
   moreover
   have "|carrier \<F>\<^bsub>X\<^esub>| \<le>o |lists ((UNIV::bool set)\<times>X)|"
     by (auto intro!:card_of_mono1 simp add:free_group_def)

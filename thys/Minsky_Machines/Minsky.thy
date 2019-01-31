@@ -53,12 +53,12 @@ lemmas deterministic_imp_CR = deterministic_imp_weak_diamond[THEN weak_diamond_i
 
 lemma deterministic_union:
   "fst ` S \<inter> fst ` R = {} \<Longrightarrow> deterministic S \<Longrightarrow> deterministic R \<Longrightarrow> deterministic (S \<union> R)"
-  by (force simp: deterministic_def)
+  by (fastforce simp add: deterministic_def disjoint_iff_not_equal)
 
 lemma deterministic_map:
   "inj_on f (fst ` R) \<Longrightarrow> deterministic R \<Longrightarrow> deterministic (map_prod f g ` R)"
-  apply (auto simp: deterministic_def inj_on_def)
-  by (metis deterministicD deterministic_def fst_conv)
+  by (auto simp add: deterministic_def dest!: inj_onD; force)
+
 
 subsection \<open>Minsky machine definition\<close>
 

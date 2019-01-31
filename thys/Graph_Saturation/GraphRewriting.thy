@@ -380,7 +380,8 @@ proof -
     g:"inj g \<and> range g \<subseteq> A" by blast
   hence i:"inj (f o g)" using assms(2) using comp_inj_on inj_on_subset by blast
   have "range (f o g) \<subseteq> B" using assms(3) by auto
-  thus ?thesis using i unfolding infinite_iff_countable_subset by auto
+  with i show ?thesis
+    unfolding infinite_iff_countable_subset by blast
 qed
 
 lemma makestep_makes_selector_inj:

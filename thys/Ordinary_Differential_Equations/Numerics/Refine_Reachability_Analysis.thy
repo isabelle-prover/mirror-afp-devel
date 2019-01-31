@@ -9,6 +9,8 @@ imports
   "HOL-Decision_Procs.Approximation"
 begin
 
+declare INF_cong_simp [cong] SUP_cong_simp [cong] image_cong_simp [cong del]
+
 context auto_ll_on_open begin
 
 lemma nonneg_interval_mem_existence_ivlI[intro]:\<comment> \<open>TODO: move!\<close>
@@ -3423,7 +3425,7 @@ lemma op_image_zerofst_impl[autoref_rules]:
   apply (auto simp: appr1_rel_br dest!: brD intro!: brI)
   subgoal by (force simp: c1_info_of_appr_def image_image flow1_of_list_def
         set_of_appr_of_ivl_point_append eucl_of_list_prod c1_info_invar_def length_set_of_appr
-        split: option.splits elim!: mem_set_of_appr_appendE)
+        split: option.splits elim!: mem_set_of_appr_appendE cong del: image_cong_simp)
   subgoal for a b c d
     apply (auto simp: c1_info_of_appr_def
         split: option.splits)
@@ -3456,7 +3458,7 @@ lemma op_image_zerofst_vec_impl[autoref_rules]:
   using that
   apply (auto simp: appr_rel_br set_of_appr_of_ivl_point_append image_image eucl_of_list_prod
       dest!: brD intro!: brI
-      dest: drop_set_of_apprD[where n="CARD('n)"] )
+      dest: drop_set_of_apprD[where n="CARD('n)"] cong del: image_cong_simp)
   subgoal for a b
     apply (drule set_of_appr_dropD)
     apply safe
@@ -3845,8 +3847,8 @@ lemma op_eventually_within_sctn[le, refine_vcg]:
       by (auto simp: elim!: abs_in_Basis_absE)
   qed (use prems in \<open>auto elim!: abs_in_BasisE simp: eucl_le[where 'a='a] dest!: bspec subsetD\<close>)
   subgoal by simp
-  subgoal by (auto elim!: abs_in_BasisE simp: eucl_le[where 'a='a] dest!: bspec subsetD)
-  subgoal by (auto elim!: abs_in_BasisE simp: eucl_le[where 'a='a] dest!: bspec subsetD)
+  subgoal by (auto elim!: abs_in_BasisE simp: eucl_le[where 'a='a] dest!: bspec subsetD cong del: image_cong_simp)
+  subgoal by (auto elim!: abs_in_BasisE simp: eucl_le[where 'a='a] dest!: bspec subsetD cong del: image_cong_simp)
   done
 
 schematic_goal op_eventually_within_sctn_impl:

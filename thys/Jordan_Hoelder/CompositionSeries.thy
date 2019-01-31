@@ -309,7 +309,7 @@ next
     hence "subgroup (\<Psi> ` \<GG> ! Suc i) H" by (metis H is_group iso iso_subgroup)
     hence "group (H\<lparr>carrier := \<Psi> ` \<GG> ! Suc i\<rparr>)" by (metis H subgroup.subgroup_is_group)
     ultimately have "restrict \<Psi> (\<GG> ! Suc i) ` \<GG> ! i \<lhd> H\<lparr>carrier := \<Psi> ` \<GG> ! Suc i\<rparr>"
-      using is_group H iso_normal_subgroup by auto
+      using is_group H iso_normal_subgroup by (auto cong del: image_cong_simp)
     moreover from norm have "\<GG> ! i \<subseteq> \<GG> ! Suc i" unfolding normal_def subgroup_def by auto
     hence "{y. \<exists>x\<in>\<GG> ! i. y = (if x \<in> \<GG> ! Suc i then \<Psi> x else undefined)} = {y. \<exists>x\<in>\<GG> ! i. y = \<Psi> x}" by auto
     ultimately show "\<Psi> ` \<GG> ! i \<lhd> H\<lparr>carrier := \<Psi> ` \<GG> ! Suc i\<rparr>" unfolding restrict_def image_def by auto

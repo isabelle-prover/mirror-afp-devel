@@ -109,9 +109,11 @@ proof(induct f)
     qed
   qed
 next
-  case (And f1 f2) thus ?case by (fastforce simp:Ball_def)
+  case (And f1 f2) thus ?case
+    by auto (metis (no_types, hide_lams))+
 next
-  case (Or f1 f2) thus ?case by (fastforce simp:Ball_def)
+  case (Or f1 f2) thus ?case
+    by auto (metis (no_types, hide_lams))+
 qed fastforce+
 
 theorem I_FR\<^sub>1:

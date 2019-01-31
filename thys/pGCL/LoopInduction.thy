@@ -524,7 +524,7 @@ proof(rule le_trans_antisym)
     from hb cb have "bd_cts_tr ?F" by(rule cts_wp_loopstep)
     with iterates_increasing[OF hb] iterates_healthy[OF hb]
     have "equiv_trans (?F ?Y) (Sup_trans (range (?F o (iterates body G))))"
-      by(auto intro!:healthy_feasibleD bd_cts_trD)
+      by (auto intro!: healthy_feasibleD bd_cts_trD cong del: image_cong_simp)
     also have "le_trans (Sup_trans (range (?F o (iterates body G)))) ?Y"
     proof(rule le_transI)
       fix P::"'s expect"

@@ -373,10 +373,9 @@ by (intro continuous_at_extension_sequentially[OF _ assms], auto)
 subsubsection \<open>Homeomorphisms\<close>
 
 lemma homeomorphism_cong:
-  assumes "homeomorphism X Y f g"
-          "X' = X" "Y' = Y" "\<And>x. x \<in> X \<Longrightarrow> f' x = f x" "\<And>y. y \<in> Y \<Longrightarrow> g' y = g y"
-  shows "homeomorphism X' Y' f' g'"
-using assms image_cong unfolding homeomorphism_def by (auto simp add: rev_image_eqI) force
+  "homeomorphism X' Y' f' g'" if "homeomorphism X Y f g"
+    "X' = X" "Y' = Y" "\<And>x. x \<in> X \<Longrightarrow> f' x = f x" "\<And>y. y \<in> Y \<Longrightarrow> g' y = g y"
+  using that by (auto simp add: homeomorphism_def)
 
 lemma homeomorphism_empty [simp]:
   "homeomorphism {} {} f g"

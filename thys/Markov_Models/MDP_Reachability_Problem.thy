@@ -124,8 +124,8 @@ qed
 
 definition "p = (\<lambda>s\<in>S. P_sup s (\<lambda>\<omega>. (HLD S1 suntil HLD S2) (s ## \<omega>)))"
 
-lemma p_eq_SUP_v: "s \<in> S \<Longrightarrow> p s = (SUP cfg \<in> cfg_on s. v cfg)"
-  by (auto simp add: p_def v_def P_sup_def T.emeasure_eq_measure intro: valid_cfgI intro!: SUP_cong)
+lemma p_eq_SUP_v: "s \<in> S \<Longrightarrow> p s = \<Squnion> (v ` cfg_on s)"
+  by (auto simp add: p_def v_def P_sup_def T.emeasure_eq_measure intro: valid_cfgI intro!: SUP_cong cong: SUP_cong_simp)
 
 lemma v_le_p: "cfg \<in> valid_cfg \<Longrightarrow> v cfg \<le> p (state cfg)"
   by (subst p_eq_SUP_v) (auto intro!: SUP_upper dest: valid_cfgD valid_cfg_state_in_S)

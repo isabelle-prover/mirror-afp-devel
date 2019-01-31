@@ -169,8 +169,9 @@ lemma toplevel_summands_flatten_ACI_norm_alt_image:
 lemma ACI_norm_ACI_norm_alt: "\<guillemotleft>ACI_norm_alt r\<guillemotright> = \<guillemotleft>r\<guillemotright>"
 proof (induction r)
   case (Plus r s) show ?case
-    by (auto simp: ACI_norm_flatten image_Un toplevel_summands_ACI_nPlus)
-       (metis Plus.IH toplevel_summands_ACI_norm)
+    using ACI_norm_flatten [of "ACI_norm_alt (Plus r s)"] ACI_norm_flatten [of "Plus r s"]
+    by (auto simp: image_Un toplevel_summands_ACI_nPlus)
+      (metis Plus.IH toplevel_summands_ACI_norm)
 qed auto
 
 lemma ACI_nPlus_singleton_PLUS: 
@@ -210,8 +211,11 @@ lemma ACI_nPlus_flatten_PLUS:
   by (rule trans[OF ACI_nPlus_PLUS]) auto
 
 lemma ACI_nPlus_ACI_norm[simp]: "ACI_nPlus \<guillemotleft>r\<guillemotright> \<guillemotleft>s\<guillemotright> = \<guillemotleft>Plus r s\<guillemotright>"
-  by (auto simp: image_Un Un_assoc ACI_norm_flatten intro!: trans[OF ACI_nPlus_flatten_PLUS])
-   (metis ACI_norm_Plus Plus_toplevel_summands ACI_norm_flatten)+
+  using ACI_norm_flatten [of r] ACI_norm_flatten [of s] ACI_norm_flatten [of "Plus r s"]
+  apply (auto intro!: trans [OF ACI_nPlus_flatten_PLUS])
+    apply (auto simp: image_Un Un_assoc  intro!: trans [OF ACI_nPlus_flatten_PLUS])
+   apply (metis ACI_norm_Plus Plus_toplevel_summands)+
+  done
 
 lemma ACI_norm_alt:
   "ACI_norm_alt r = \<guillemotleft>r\<guillemotright>"

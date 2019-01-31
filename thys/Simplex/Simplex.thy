@@ -4908,7 +4908,7 @@ proof-
   qed
 
   have "?A = \<Union> (\<Union> (((`) ?Vt) ` (?Al ` {L. L \<subseteq> V})))" (is "?A = ?A'")
-    by (auto simp add: normalized_tableau_def)
+    by (auto simp add: normalized_tableau_def cong del: image_cong_simp)
   moreover
   have "finite ?A'"
   proof (rule finite_Union)
@@ -4954,7 +4954,7 @@ proof-
       by auto
     moreover
     have "map2fun ` {v. ?P' v} \<subseteq> {v. ?P v}"
-      by (auto simp add: map2fun_def) (rule_tac x=t in exI, auto)
+      by (auto simp add: map2fun_def)
     ultimately
     have "finite (map2fun ` {v. ?P' v})"
       by (auto simp add: finite_subset)

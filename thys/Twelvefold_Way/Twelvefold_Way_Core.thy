@@ -317,19 +317,22 @@ proof -
       from X' obtain b' where "b' \<in> B" and X'_eq: "X' = {x \<in> A. f x = b'}" by blast
       from X' this have "b' \<in> f ` A"
         using Collect_empty_eq Diff_iff image_iff insertCI by auto
-      from X_eq X'_eq eq \<open>b \<in> f ` A\<close> \<open>b' \<in> f ` A\<close> have "b = b'" by auto
+      from X_eq X'_eq eq \<open>\<And>b. b \<in> f ` A \<Longrightarrow> the_elem (f ` {x' \<in> A. f x' = b}) = b\<close> \<open>b \<in> f ` A\<close> \<open>b' \<in> f ` A\<close>
+        have "b = b'" by auto
       from this show "X = X'"
         using X_eq X'_eq by simp
     qed
     show "(\<lambda>X. the_elem (f ` X)) ` ((\<lambda>b. {x \<in> A. f x = b}) ` B - {{}}) = f ` A"
     proof
-      show "(\<lambda>X. the_elem (f ` X)) ` ((\<lambda>b. {x \<in> A. f x = b}) ` B - {{}}) \<subseteq> f ` A" by auto
+      show "(\<lambda>X. the_elem (f ` X)) ` ((\<lambda>b. {x \<in> A. f x = b}) ` B - {{}}) \<subseteq> f ` A"
+        using \<open>\<And>b. b \<in> f ` A \<Longrightarrow> the_elem (f ` {x' \<in> A. f x' = b}) = b\<close> by auto 
     next
       show "f ` A \<subseteq> (\<lambda>X. the_elem (f ` X)) ` ((\<lambda>b. {x \<in> A. f x = b}) ` B - {{}})"
       proof
         fix b
         assume "b \<in> f ` A"
-        from this have "b = the_elem (f ` {x \<in> A. f x = b})" by auto
+        from this have "b = the_elem (f ` {x \<in> A. f x = b})"
+          using \<open>\<And>b. b \<in> f ` A \<Longrightarrow> the_elem (f ` {x' \<in> A. f x' = b}) = b\<close> by auto
         moreover from \<open>b \<in> f ` A\<close> have " {x \<in> A. f x = b} \<in> (\<lambda>b. {x \<in> A. f x = b}) ` B - {{}}"
           using \<open>f \<in> A \<rightarrow>\<^sub>E B\<close> by auto
         ultimately show "b \<in> (\<lambda>X. the_elem (f ` X)) ` ((\<lambda>b. {x \<in> A. f x = b}) ` B - {{}})" ..

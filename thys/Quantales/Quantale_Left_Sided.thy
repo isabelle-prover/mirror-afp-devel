@@ -527,7 +527,7 @@ lift_definition bot_lsl_set :: "'a lsl_set" is "\<nu> \<bottom>"
   by blast
 
 lift_definition sup_lsl_set :: "'a lsl_set \<Rightarrow> 'a lsl_set \<Rightarrow> 'a lsl_set" is "\<lambda>x y. \<nu> x \<squnion> \<nu> y"
-  by (simp add: lsl_def sup_distl)
+  by auto (metis lsl_sup_closed_var)
 
 lift_definition   top_lsl_set :: "'a lsl_set" is "\<nu> \<top>"
   by blast
@@ -543,7 +543,7 @@ lift_definition   times_lsl_set :: "'a lsl_set \<Rightarrow> 'a lsl_set \<Righta
   by blast
 
 instance
-  apply (intro_classes; transfer)
+  apply (standard; transfer)
                       apply (simp add: lsl_local_eq mult.commute mult.left_commute)
                       apply (simp add: mult.commute)
                      apply auto[1]
@@ -557,8 +557,9 @@ instance
        apply fastforce+
      apply (smt Sup_distl image_cong lsl_local_eq mult.commute)
     apply (smt Sup_distl image_cong lsl_local_eq mult.commute)
-   apply (simp add: lsl_def)
-  by (simp add: lsl_local_eq)
+   apply (simp add: lsl_def cong del: image_cong_simp)
+  apply (simp add: lsl_local_eq)
+  done
 
 end
 

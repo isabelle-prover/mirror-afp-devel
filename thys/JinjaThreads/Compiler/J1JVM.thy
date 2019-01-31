@@ -364,7 +364,7 @@ next
     case (Red1New a)
     hence "exec_meth_a (compP2 P) [New C'] [] t h ([], xs, 0, None) \<lbrace>NewHeapElem a (Class_type C')\<rbrace> h' ([Addr a], xs, Suc 0, None)"
       and [simp]: "e' = addr a" "xs' = xs" "ta = \<lbrace>NewHeapElem a (Class_type C')\<rbrace>"
-      by(auto intro!: exec_instr simp add: compP2_def simp del: fun_upd_apply)
+      by (auto intro!: exec_instr simp add: compP2_def simp del: fun_upd_apply cong cong del: image_cong_simp)
     moreover have "P, new C', h' \<turnstile> (addr a, xs) \<leftrightarrow> ([Addr a], xs, length (compE2 (new C')), None)"
       by(rule bisim1Val2)(simp)
     moreover have "\<not> \<tau>move2 (compP2 P) h [] (new C') 0 None" by(simp add: \<tau>move2_iff)
@@ -417,7 +417,7 @@ next
       by(rule NewArray_\<tau>ExecrI)
     moreover from new \<open>0 <=s i\<close>
     have "exec_move_a P t (newA U\<lfloor>E\<rceil>) h ([Intg i], loc, length (compE2 E), None) \<lbrace>NewHeapElem a (Array_type U (nat (sint i)))\<rbrace> h' ([Addr a], loc, Suc (length (compE2 E)), None)"
-      by(auto intro!: exec_instr simp add: compP2_def exec_move_def)
+      by (auto intro!: exec_instr simp add: compP2_def exec_move_def cong del: image_cong_simp)
     moreover have "\<tau>move2 (compP2 P) h [Intg i] (newA U\<lfloor>E\<rceil>) (length (compE2 E)) None \<Longrightarrow> False" by(simp add: \<tau>move2_iff)
     moreover have "\<not> \<tau>move1 P h (newA U\<lfloor>Val (Intg i)\<rceil>)" by(auto simp add: \<tau>move1.simps \<tau>moves1.simps)
     moreover have "P, newA U\<lfloor>E\<rceil>, h' \<turnstile> (addr a, loc) \<leftrightarrow> ([Addr a], loc, length (compE2 (newA U\<lfloor>E\<rceil>)), None)"

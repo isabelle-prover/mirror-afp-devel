@@ -69,7 +69,6 @@ lemma [transfer_rule]: "rel_fun (rel_set (pcr_ACI_rexp (=))) (=) (finite o image
   apply (auto simp: elim!: finite_surj[of _ _ ACI_class] finite_surj[of _ _ "ACI_norm o rep_ACI_rexp"])
   apply (metis (hide_lams, no_types) ACI_norm_idem ACI_rexp.abs_eq_iff ACI_decidable imageI)
   apply (rule image_eqI)
-  apply (rule trans[OF _ o_apply[symmetric]])
   apply (subst ACI_decidable[symmetric])
   apply (rule ACI_sym)
   apply (rule Quotient_rep_abs[OF Quotient_ACI_rexp, OF ACI_refl])

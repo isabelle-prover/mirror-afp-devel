@@ -546,14 +546,13 @@ next
       moreover
       have "A\<^sub>2 \<subseteq> set (Vs@[V'])" using TryCatch.prems A_fv[OF A\<^sub>2] by simp blast
       ultimately show ?thesis using TryCatch A\<^sub>1 A\<^sub>2
-        by(fastforce simp add: hyperset_defs image_last_index last_index_size_conv
-          Diff_subset_conv inj_on_image_Int[OF inj_on_last_index])
+        by (auto simp add: Diff_subset_conv last_index_size_conv subsetD hyperset_defs dest!: sym [of _ A])
     qed
   qed
 next
   case (Cond e e\<^sub>1 e\<^sub>2)
   { assume "\<A> e = None \<or> \<A> e\<^sub>1 = None \<or> \<A> e\<^sub>2 = None"
-    hence ?case using Cond by(auto simp add:hyperset_defs image_Un)
+    hence ?case using Cond by (auto simp add: hyperset_defs)
   }
   moreover
   { fix A A\<^sub>1 A\<^sub>2

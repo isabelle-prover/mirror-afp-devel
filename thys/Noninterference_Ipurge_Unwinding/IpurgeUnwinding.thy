@@ -2072,8 +2072,7 @@ qed (erule exE, erule process_rule_3, simp)
 lemma secure_implies_next_event_consistency:
  "secure P I D \<Longrightarrow> (xs, ys) \<in> rel_ipurge P I D (D x) \<Longrightarrow>
   x \<in> next_events P xs \<Longrightarrow> x \<in> next_events P ys"
-by (simp add: next_events_def, rule secure_implies_trace_consistency,
- simp_all add: rel_ipurge_aux_single_dom)
+  by (auto simp add: next_events_def rel_ipurge_aux_single_dom intro: secure_implies_trace_consistency)
 
 lemma secure_implies_refusal_consistency:
  "secure P I D \<Longrightarrow> (xs, ys) \<in> rel_ipurge_aux P I D (D ` X) \<Longrightarrow>

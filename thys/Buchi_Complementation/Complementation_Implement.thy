@@ -708,13 +708,15 @@ begin
       have "bounds_3 A a (f (p \<mapsto> s)) q = Some (\<Sqinter>(fst ` (insert s S)), \<Squnion>(snd ` (insert s S)))"
         unfolding bounds_3_def 1 by simp
       also have "\<dots> = Some (merge_5 s (bounds_3 A a (f (p := None)) q))"
-        unfolding 2 bounds_3_def merge_5_def by (cases s) (auto simp: cINF_insert)
+        unfolding 2 bounds_3_def merge_5_def by (cases s) (simp_all add: cInf_insert)
       also have "\<dots> = override_on (bounds_3 A a f) (Some \<circ> merge_5 s \<circ> bounds_3 A a (f (p := None)))
         (succ A a p) q" using True by simp
       finally show ?thesis by this
     next
       case False
-      show ?thesis using False unfolding bounds_3_def by simp
+      then have "pred A a q \<inter> {x. x \<noteq> p} = pred A a q"
+        by auto
+      with False show ?thesis by (simp add: bounds_3_def)
     qed
   qed
 

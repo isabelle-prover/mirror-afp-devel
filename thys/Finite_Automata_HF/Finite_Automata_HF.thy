@@ -350,11 +350,12 @@ lemma sym: "dfa_isomorphism N M (inv_into (states M) h)"
   done
 
 lemma trans: "dfa_isomorphism N N' h' \<Longrightarrow> dfa_isomorphism M N' (h' o h)"
-  apply (auto simp: dfa_isomorphism_def dfa_isomorphism_axioms_def, unfold_locales)
-  apply (metis bij_betw_comp_iff h)
-  apply (metis imageI final)
-  apply (metis image_comp final)
-  apply (metis bij_betw_def h imageI)
+  apply (auto simp: dfa_isomorphism_def dfa_isomorphism_axioms_def)
+      apply unfold_locales
+     apply (metis bij_betw_comp_iff h)
+    apply (metis imageI final)
+   apply (simp only: final [symmetric] image_comp) apply simp
+  apply (metis bij_betw_def h image_iff)
   done
 
 end

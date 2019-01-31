@@ -3186,7 +3186,7 @@ next
   case bisim1Val2 thus ?case by(auto dest: exec_meth_length_compE2_stack_xliftD)
 next
   case bisim1New thus ?case
-    by(fastforce elim: exec_meth.cases intro: exec_meth.intros split: if_split_asm)
+    by (fastforce elim: exec_meth.cases intro: exec_meth.intros split: if_split_asm cong del: image_cong_simp)
 next
   case bisim1NewThrow thus ?case by(fastforce elim: exec_meth.cases intro: exec_meth.intros)
 next
@@ -3207,8 +3207,11 @@ next
     with pc have [simp]: "pc = length (compE2 e)" by simp
     with bisim obtain v where [simp]: "stk = [v]" "xcp = None"
       by(auto dest: dest: bisim1_pc_length_compE2D)
-    with exec show ?thesis apply(simp)
-      by(erule exec_meth.cases)(auto 4 4 intro: exec_meth.intros split: if_split_asm)
+    with exec show ?thesis
+      apply simp
+      apply (erule exec_meth.cases)
+       apply (auto 4 4 intro: exec_meth.intros split: if_split_asm cong del: image_cong_simp)
+      done
   qed
 next
   case (bisim1NewArrayThrow e n a xs stk loc pc T)
@@ -4572,9 +4575,10 @@ next
       from exec'' None True
       have "?exec e2 stk STK loc pc xcp stk' loc' (pc' - length ?pre) xcp'"
         apply -
-        apply(erule exec_meth.cases)
-        apply(cases "compE2 e2 ! pc")
-        by(fastforce simp add: is_Ref_def intro: exec_meth.intros split: if_split_asm)+
+        apply (erule exec_meth.cases)
+        apply (cases "compE2 e2 ! pc")
+                            apply (fastforce simp add: is_Ref_def intro: exec_meth.intros split: if_split_asm cong del: image_cong_simp)+
+        done
       from IH[OF this] obtain stk'' where stk: "stk' = stk'' @ STK"
         and exec''': "exec_meth_d (compP2 P) (compE2 e2) (compxE2 e2 0 0) t h (stk, loc, pc, xcp)
       ta h' (stk'', loc', pc' - length ?pre, xcp')" by blast
@@ -5063,9 +5067,9 @@ next
       case None
       with exec' True have "?exec e stk STK loc pc xcp stk' loc' pc' xcp'"
         apply -
-        apply(erule exec_meth.cases)
-        apply(cases "compE2 e ! pc")
-        apply(fastforce simp add: is_Ref_def intro: exec_meth.intros split: if_split_asm)+
+        apply (erule exec_meth.cases)
+        apply (cases "compE2 e ! pc")
+        apply (fastforce simp add: is_Ref_def intro: exec_meth.intros split: if_split_asm cong del: image_cong_simp)+
         done
       from IH[OF this] show ?thesis by auto
     next

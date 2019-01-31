@@ -7,6 +7,8 @@ imports
   Affine_Arithmetic.Float_Real
 begin
 
+declare INF_cong_simp [cong] SUP_cong_simp [cong] image_cong_simp [cong del]
+
 declare [[ cd_patterns "_ = interpret_floatariths ?fas _" "_ = interpret_floatarith ?fa _"]]
 
 concrete_definition reify_example for i j k uses reify_example

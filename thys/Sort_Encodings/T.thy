@@ -514,7 +514,7 @@ using T proof(induct T)
       unfolding eenv_def Ik.wtE_def intT_def by simp
     next
       case False  hence "\<xi> x \<in> (eintF (Tag ?\<sigma>) \<circ> singl) ` {b. eintT ?\<sigma> b}"
-      using \<xi> unprot unfolding wtE_def intT_def singl_def[abs_def] by simp
+        using \<xi> unprot unfolding wtE_def intT_def singl_def[abs_def] by (simp cong del: image_cong_simp)
       thus ?thesis using unprot unfolding eenv_def using False by simp
     qed
   qed(unfold eenv_def, simp)
@@ -569,7 +569,7 @@ using T proof(induct T)
       unfolding eenv_def Ik.wtE_def intT_def by simp
     next
       case False  hence "\<xi> x \<in> (eintF (Tag ?\<sigma>) \<circ> singl) ` {b. eintT ?\<sigma> b}"
-      using \<xi> unprot unfolding wtE_def intT_def singl_def[abs_def] by simp
+      using \<xi> unprot unfolding wtE_def intT_def singl_def[abs_def] by (simp cong del: image_cong_simp)
       thus ?thesis using unprot unfolding eenv_def using False by simp
     qed
   qed(unfold eenv_def, simp)

@@ -7,9 +7,10 @@ text \<open>
 \<close>
 
 theory Prelim
-imports Main
-
+imports Main "HOL-Library.Set_Algebras"
 begin
+
+declare image_cong_simp [cong del]
 
 subsection \<open>Natural numbers\<close>
 

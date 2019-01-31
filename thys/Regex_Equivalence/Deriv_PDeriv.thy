@@ -138,7 +138,7 @@ lemma pset_pnorm_alt_id: "s \<in> pset r \<Longrightarrow> pnorm_alt s = s"
   by (induct r arbitrary: s) (auto simp: pset_pnTimes_Times)
 
 lemma pnorm_alt_image_pset: "pnorm_alt ` pset r = pset r"
-  by (induct r) (auto simp: image_iff pset_pnorm_alt_id pset_pnTimes_Times)
+  by (induction r) (auto, auto simp add: pset_pnorm_alt_id pset_pnTimes_Times image_iff)
 
 lemma pnorm_pnorm_alt: "pnorm (pnorm_alt r) = pnorm r"
   by (induct r) (auto simp: pnorm_def pset_pnPlus pset_pnTimes pset_pnorm_alt pnorm_alt_image_pset)

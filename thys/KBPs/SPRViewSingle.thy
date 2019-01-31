@@ -404,7 +404,7 @@ lemma spr_simInit:
     apply auto[1]
    apply simp
    apply simp
-  apply (rule_tac x="tInit xa" in image_eqI)
+  apply (rule_tac x="tInit xb" in image_eqI)
   apply auto
   done
 (*>*)

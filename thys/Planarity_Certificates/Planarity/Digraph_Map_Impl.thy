@@ -149,13 +149,13 @@ proof -
       = {f. f permutes arcs ?G \<and> (\<forall>v \<in> pverts ?G. out_arcs ?G v \<noteq> {} \<longrightarrow> cyclic_on f (out_arcs ?G v))}"
     unfolding all_maps_list_def using assms all_eq
     by (simp add: lists_succ_set_cyc_permutationss distincts_grouped_arcs union_grouped_out_arcs list_digraph_simps)
-  then show ?thesis
-    by (simp add: maps_all_maps_list_def all_maps_def image_comp[symmetric] list_digraph_simps)
+  then have *: "lists_succ ` set (all_maps_list G_list) = {f. f permutes set (snd G_list) \<and> (\<forall>v\<in>set (fst G_list). out_arcs (with_proj \<lparr>pverts = set (fst G_list), parcs = set (snd G_list)\<rparr>) v \<noteq> {} \<longrightarrow> cyclic_on f (out_arcs (with_proj \<lparr>pverts = set (fst G_list), parcs = set (snd G_list)\<rparr>) v))}"
+    by (auto simp add: maps_all_maps_list_def all_maps_def list_digraph_simps list_digraph_ext_def)
+  then have **: "\<And>f. \<not> (f permutes set (snd G_list) \<and> (\<forall>a. a \<in> set (fst G_list) \<longrightarrow> out_arcs (with_proj \<lparr>pverts = set (fst G_list), parcs = set (snd G_list)\<rparr>) a \<noteq> {} \<longrightarrow> cyclic_on f (out_arcs (with_proj \<lparr>pverts = set (fst G_list), parcs = set (snd G_list)\<rparr>) a))) \<or> f \<in> lists_succ ` set (all_maps_list G_list)"
+    by force
+  from * show ?thesis
+    by (auto simp add: maps_all_maps_list_def all_maps_def list_digraph_simps list_digraph_ext_def) (use ** in blast)
 qed
-
-
-
-
 
 
 section \<open>Compute Face Cycles\<close>

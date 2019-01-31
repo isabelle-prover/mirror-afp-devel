@@ -36,9 +36,9 @@ begin
       apply(safe)
         apply(simp_all)
         using hlp apply blast
-       using hlp apply blast
-      apply(simp add: helpX)
-      by (metis atLeastAtMost_iff image_eqI word_le_nat_alt word_unat.Rep_inverse)
+        using hlp apply blast
+        apply (metis atLeastAtMost_iff imageI image_int_atLeastAtMost of_int_of_nat_eq word_le_nat_alt word_unat.Rep_inverse)
+        done
     qed
 
   text\<open>The function @{const ipv4addr_upto} gives back a list of all the ips in the list.

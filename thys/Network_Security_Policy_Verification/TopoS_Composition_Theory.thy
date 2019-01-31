@@ -916,14 +916,10 @@ qed
      
       show "valid_reqs M \<Longrightarrow> wf_graph G \<Longrightarrow> ?thesis"
       unfolding generate_valid_topology_SOME_def_alt generate_valid_topology_def_alt
-      apply(rule delete_edges_edges_mono)
-      apply(simp add: delete_edges_simp2 get_offending_flows_def)
-      apply(rule)
-      apply(subst(asm) isabelle2016_1_helper)
-      apply(erule bexE, rename_tac m)
-      apply(subgoal_tac "c_offending_flows m G \<noteq> {}")
-       using 1 apply blast
-      by (simp add: configured_SecurityInvariant.defined_offending' valid_reqs_def)
+      apply (rule delete_edges_edges_mono)
+      apply (auto simp add: delete_edges_simp2 get_offending_flows_def valid_reqs_def)
+      apply (metis (full_types) configured_SecurityInvariant.defined_offending' some_in_eq)
+      done
     qed
 
 

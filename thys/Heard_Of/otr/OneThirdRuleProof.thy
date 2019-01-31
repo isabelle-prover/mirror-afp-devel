@@ -38,7 +38,7 @@ next
   assume ih: "VInv rho m"
   let ?xinit = "range (x \<circ> (rho 0))"
   have "range (x \<circ> (rho (Suc m))) \<subseteq> ?xinit"
-  proof (clarsimp)
+  proof (clarsimp cong del: image_cong_simp)
     fix p
     from run
     have nxt: "OTR_nextState m p (rho m p) 

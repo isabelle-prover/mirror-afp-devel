@@ -2114,20 +2114,20 @@ apply (frule Vr_ring[of v])
 apply (case_tac "I = carrier (Vr K v)",
    frule sym, thin_tac "I = carrier (Vr K v)",
    frule Ring.ring_one[of "Vr K v"],
-   simp, simp add:Vr_1_f_1,
+   simp, simp add: Vr_1_f_1,
    frule val_Ig[of v I], assumption+, erule conjE,
    frule LI_pos[of v I], assumption+,
 
-   simp add:LI_def,
+   simp add: LI_def cong del: image_cong_simp,
    frule I_vals_LBset[of v], assumption+,
-   simp only:ant_0[THEN sym],
+   simp only: ant_0[THEN sym],
    frule I_vals_nonempty[of v], assumption+,
    frule AMin[of "v ` I" "0"], assumption, erule conjE,
 
    frule val_in_image[of v I "1\<^sub>r"], assumption+,
    drule_tac x = "v (1\<^sub>r)" in bspec, assumption+,
-   simp add:value_of_one ant_0,
-   simp add:zero_val_gen_whole[of v "Ig K v I"])
+   simp add: value_of_one ant_0 cong del: image_cong_simp,
+   simp add: zero_val_gen_whole[of v "Ig K v I"])
 
 apply (frule val_Ig[of v I], assumption+, (erule conjE)+,
        frule Ring.ideal_cont_Rxa[of "Vr K v" "I" "Ig K v I"], assumption+,

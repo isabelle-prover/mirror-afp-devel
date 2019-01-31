@@ -304,8 +304,8 @@ lemma homeomorphism_prod:
   "homeomorphism (a \<times> b) (c \<times> d) (\<lambda>(x, y). (f x, g y)) (\<lambda>(x, y). (f' x, g' y))"
   if "homeomorphism a c f f'"
      "homeomorphism b d g g'"
-  using that unfolding homeomorphism_def
-  by (auto intro!: continuous_intros simp: split_beta image_prod elim: continuous_on_compose2)  
+  using that by (simp add: homeomorphism_def image_prod)
+    (auto simp add: split_beta intro!: continuous_intros elim: continuous_on_compose2)
 
 
 subsection \<open>Generalizations\<close>

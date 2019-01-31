@@ -176,11 +176,17 @@ where
      ModeDecl Skip (Rel control_Z AsmNoWrite) ;;
      Skip"
 
-thm swap_vars_def
 lemma \<C>_simp[simp]:
   "\<C> = {control_X, control_Y, control_Z}"
-  by (fastforce simp: \<C>_def \<C>_vars_def image_def split: if_splits)
-  
+proof -
+  have "\<C> = control_var_of ` {x. x = X \<or> x = Y \<or> x = Z}"
+    by (simp add: \<C>_def \<C>_vars_def UNION_singleton_eq_range)
+  also have "{x. x = X \<or> x = Y \<or> x = Z} = {X, Y, Z}"
+    by auto
+  finally show ?thesis
+    by simp
+qed
+
 lemma type_aexpr_Load:
   "v \<notin> dom \<Gamma> \<Longrightarrow> type_aexpr \<Gamma> (Load v) (dma_type v)"
   apply(insert type_aexpr[of \<Gamma> "Load v", simplified])

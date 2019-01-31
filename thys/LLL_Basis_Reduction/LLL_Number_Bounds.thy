@@ -1153,7 +1153,7 @@ proof -
   have "(Missing_Lemmas.max_list (map (nat \<circ> sq_norm) fs_init)) = Max ((nat \<circ> sq_norm) ` set fs_init)"
     using assms len by (subst max_list_Max) (auto)
   also have "\<dots> = nat (Max (sq_norm_vec ` set fs_init))"
-    using assms by (auto intro!: nat_mono Max_eqI simp add: 1)
+    using assms 1 by (auto intro!: nat_mono Max_eqI)
   also have "int \<dots> = Max (sq_norm_vec ` set fs_init)"
     by (subst int_nat_eq) (auto)
   also have "rat_of_int \<dots> = Max (sq_norm ` set (map of_int_hom.vec_hom fs_init))"

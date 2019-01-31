@@ -211,7 +211,7 @@ proof (induction n)
   qed
   have "stake 0 = (\<lambda>s. [])" unfolding stake_def by simp
   hence "?L = {[]}" using \<open>streams A \<noteq> {}\<close> by auto
-  show "finite (stake 0 `(streams A))"  by (simp add: \<open>?L = {[]}\<close>)
+  show "finite (stake 0 `(streams A))" by (simp add: \<open>?L = {[]}\<close> image_constant_conv)
 next
   fix n assume "finite (stake n `(streams A))" note hyp = this
   have "(stake (Suc n) `(streams A)) = {s#w| s w. s\<in> A \<and> w\<in> (stake n `(streams A))}" (is "?L = ?R")
@@ -3150,8 +3150,8 @@ proof -
     hence "\<And>w. w\<in>pseudo_proj_True n ` g -` {g z} \<Longrightarrow> f w = f zt"
     proof
       fix w
-      assume "w\<in> pseudo_proj_True n ` g -` {g z}"
-      hence "g w = g zt \<and> snth w n = snth zt n" using eqw by simp
+      assume "w \<in> pseudo_proj_True n ` g -` {g z}"
+      hence "g w = g zt \<and> snth w n = snth zt n" using eqw [of w] by simp
       thus "f w = f zt" using assms(5) by blast
     qed
     thus ?thesis by simp
@@ -3177,7 +3177,7 @@ proof -
     proof
       fix w
       assume "w\<in> pseudo_proj_False n ` g -` {g z}"
-      hence "g w = g zf \<and> snth w n = snth zf n" using eqw by simp
+      hence "g w = g zf \<and> snth w n = snth zf n" using eqw [of w] by simp
       thus "f w = f zf" using assms by blast
     qed
     thus ?thesis by simp

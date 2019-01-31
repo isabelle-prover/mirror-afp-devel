@@ -175,7 +175,11 @@ proof -
     by (rule lbvc.wtl_complete [OF lbvc.intro, OF lbv.intro lbvc_axioms.intro, OF Semilat.intro lbv_axioms.intro])
   moreover from 0 size have "\<tau>s \<noteq> []" by auto
   moreover from ck_types have "check_types P mxs mxl ?cert"
-    by (auto simp add: make_cert_def check_types_def JVM_states_unfold)
+    apply (auto simp add: make_cert_def check_types_def JVM_states_unfold)
+    apply (subst Ok_in_err [symmetric])
+    apply (drule nth_mem)
+    apply auto
+    done
   moreover note 0 size
   ultimately show ?thesis 
     by (simp add: wt_lbv_def lbvjvm_def mk_cert_def step_def_exec [symmetric]

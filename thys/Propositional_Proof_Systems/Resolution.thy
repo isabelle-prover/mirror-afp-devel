@@ -139,18 +139,19 @@ lemma s_sub_all_clauses: "S \<subseteq> all_clauses S"
   by (metis imageI literal.exhaust literal.simps(5) literal.simps(6))
 lemma atoms_res: "atoms_of_cnf (res S) \<subseteq>  atoms_of_cnf S"
   unfolding res_def atoms_of_cnf_alt
-  by(clarsimp simp: lit_atoms_cases[abs_def] image_def split: literal.splits if_splits)
-    blast
+  apply (clarsimp simp: lit_atoms_cases [abs_def] split: literal.splits if_splits)
+  apply (clarsimp simp add: image_iff)
+  apply force
+  done
+
 lemma exlitE: "(\<And>x. xe = Pos x \<Longrightarrow> P x) \<Longrightarrow> (\<And>x. xe = Neg x \<Longrightarrow> False) \<Longrightarrow> \<exists>x. xe = Pos x \<and> P x"
   by(cases xe) auto
 lemma res_in_all_clauses: "res S \<subseteq> all_clauses S"
-  (*apply(clarsimp simp: res_def all_clauses_def atoms_of_cnf_alt image_def lit_atoms_cases)
-    apply(clarsimp split: literal.splits)*)
-  apply(clarsimp simp: res_def all_clauses_def atoms_of_cnf_alt image_def lit_atoms_cases
-                 split: literal.splits if_splits)
-  apply(rule exlitE)
-   apply (blast+)
-done
+  apply (clarsimp simp: res_def all_clauses_def atoms_of_cnf_alt lit_atoms_cases
+    split: literal.splits if_splits)
+  apply (clarsimp simp add: image_iff)
+  apply (metis atoms_of_lit.simps(1) atoms_of_lit.simps(2) lit_atoms_cases literal.exhaust)
+  done
 
 lemma Res_in_all_clauses: "res S \<union> S \<subseteq> all_clauses S"
   by (simp add: res_in_all_clauses s_sub_all_clauses)  

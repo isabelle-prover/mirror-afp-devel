@@ -1856,7 +1856,7 @@ program_spec dfs1
 \<close>
   apply vcg_cs
   subgoal by auto
-  subgoal by auto
+  subgoal by (auto simp add: image_constant_conv)
   subgoal by (clarsimp simp: finite_psupset_def sub_insert_same_iff)
   subgoal by (auto simp: set_of_def)
   subgoal by (clarsimp simp: finite_psupset_def sub_insert_same_iff)

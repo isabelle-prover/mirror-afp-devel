@@ -25,7 +25,7 @@ lemma prod_chart_compat:
   "k-smooth_compat (prod_chart c1 c2) (prod_chart d1 d2)"
   if compat1: "k-smooth_compat c1 d1" and compat2: "k-smooth_compat c2 d2"
   unfolding smooth_compat_def
-  apply (auto simp add: comp_def case_prod_beta)
+  apply (auto simp add: comp_def case_prod_beta cong del: image_cong_simp)
    apply (simp add: times_Int_times image_prod)
    apply (rule smooth_on_Pair')
       apply (auto intro!: continuous_intros)

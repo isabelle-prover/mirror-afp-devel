@@ -722,7 +722,8 @@ proof -
     have 1: "snd (initial \<phi>) (G \<psi>) = Some \<MM>.q\<^sub>\<R>"
       using \<open>G \<psi> \<in> dom \<pi>\<close> \<open>dom \<pi> \<subseteq> \<^bold>G \<phi>\<close> by auto
     have 2: "finite (range (run\<^sub>t (\<Delta>\<^sub>\<times> (semi_mojmir_def.step \<Sigma> \<delta>\<^sub>M o q\<^sub>0\<^sub>M o theG)) (snd (initial \<phi>)) w))"
-      using \<open>finite (range r)\<close> r_def comp_apply by (auto intro: product_run_finite_snd)
+      using \<open>finite (range r)\<close> r_def comp_apply
+      by (auto intro: product_run_finite_snd cong del: image_cong_simp)
     show "?thesis S"
       unfolding r_def r\<^sub>\<psi>_def product_run_embed_limit_finiteness[OF 1 2, unfolded ltl.sel comp_def, symmetric] 
       using product_run_embed_limit_finiteness_snd[OF  \<open>finite (range r)\<close>[unfolded r_def delta.simps initial.simps]]

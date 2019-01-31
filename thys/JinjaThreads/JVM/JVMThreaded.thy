@@ -197,7 +197,7 @@ lemma exec_instr_preserve_tconf:
      P,h \<turnstile> t' \<surd>t \<rbrakk>
   \<Longrightarrow> P,h' \<turnstile> t' \<surd>t"
 apply(cases ins)
-apply(auto intro: tconf_hext_mono hext_allocate hext_heap_write red_external_aggr_preserves_tconf split: if_split_asm sum.split_asm simp add: split_beta has_method_def intro!: is_native.intros)
+apply(auto intro: tconf_hext_mono hext_allocate hext_heap_write red_external_aggr_preserves_tconf split: if_split_asm sum.split_asm simp add: split_beta has_method_def intro!: is_native.intros cong del: image_cong_simp)
 done
 
 lemma exec_preserve_tconf:

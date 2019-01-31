@@ -945,7 +945,7 @@ proof -
   with shift_autonomous_solution[OF flow_solves_ode[OF a], of "-s"]
     flow_in_domain
   have sol: "((\<lambda>t. flow 0 x (t - s)) solves_ode f) ?T X"
-    by (auto simp: auto)
+    by (auto simp: auto algebra_simps)
 
   have "flow 0 x (s - s) = x"
     by (auto simp: a)

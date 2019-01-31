@@ -115,11 +115,10 @@ lemma assumes ms: "measure_space M" and dis: "\<forall>j1\<in>(R::nat set). \<fo
   hence "\<forall>i. (if i\<in>R then B i else {})\<in> measurable_sets M"
     by auto
   with ms have "(\<Union>i. if i\<in>R then B i else {}) \<in> measurable_sets M"
-    by (simp add: measure_space_def sigma_algebra_def)
-  
+    by (auto simp add: measure_space_def sigma_algebra_def) (use eq in presburger)
   with meas2 dis2 have "(\<lambda>n. measure M (if n \<in> R then B n else {}))
     sums measure M (\<Union>i. if i\<in>R then B i else {})"
-    using ms by (simp add: measure_space_def countably_additive_def)
+    using ms by (simp add: measure_space_def countably_additive_def cong: SUP_cong_simp)
   with eq show ?thesis  
     by simp
 qed(*>*)

@@ -99,13 +99,22 @@ proof (induct xs)
     by (auto split: option.splits) (fastforce simp: find_None_iff dest!: mp_remdups')
 qed simp
 
-lemma set_remdups'_strong: "(\<forall>x\<in>set xs. \<forall>y\<in>set xs. g x = g y \<longrightarrow> f x = f y) \<Longrightarrow>
-  f ` set (remdups' g xs) = f ` set xs"
-proof (induct xs)
-  case (Cons x xs) thus ?case
-    by (clarsimp split: option.splits simp add: find_Some_iff)
-       (intro insert_absorb[symmetric] image_eqI[OF _ nth_mem, of _ f xs], auto)
-qed simp
+lemma set_remdups'_strong:
+  "f ` set (remdups' g xs) = f ` set xs" if "\<forall>x\<in>set xs. \<forall>y\<in>set xs. g x = g y \<longrightarrow> f x = f y"
+using that proof (induction xs)
+  case Nil
+  then show ?case
+    by simp
+next
+  case (Cons x xs)
+  then have "\<forall>x\<in>set xs. \<forall>y\<in>set xs. g x = g y \<longrightarrow> f x = f y"
+    by (auto simp only: set_simps)
+  then have "f ` set (remdups' g xs) = f ` set xs"
+    by (rule Cons.IH)
+  then show ?case
+    by (auto simp add: find_Some_iff split: option.splits)
+      (metis Cons.prems image_eqI list.set_intros(1) list.set_intros(2) nth_mem)
+qed
 
 (*multisets only needed below*)
 lemma multiset_concat_gen: "M + mset (concat xs) = fold (\<lambda>x M. M + mset x) xs M"

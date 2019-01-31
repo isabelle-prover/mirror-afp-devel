@@ -1222,10 +1222,7 @@ begin
       fix b assume "b \<in> ?R"
       then show "b \<in> ?L"
         using Y
-        apply (auto simp: segment_altdef a_in_o H.face_cycle_set_altdef)
-        apply (rule_tac x=n in exI)
-        apply simp
-        done
+        by (auto simp: segment_altdef a_in_o H.face_cycle_set_altdef Suc_le_eq) metis
     qed
   qed
 

@@ -123,7 +123,7 @@ by (auto simp add: reach_equiv_beh_states oreach_def obeh_def)
 
 lemma obeh_pi_translation:
   "(map pi)`(obeh S) = obeh (S(| obs := pi o (obs S) |))"
-  by(simp add: obeh_def map_comp)
+  by (simp add: obeh_def image_comp)
 
 lemma oreach_pi_translation:
   "pi`(oreach S) = oreach (S(| obs := pi o (obs S) |))"
@@ -235,7 +235,7 @@ by (auto simp add: implements_def)
 lemma implements_trans:
   "\<lbrakk> implements pi1 S1 S2; implements pi2 S2 S3 \<rbrakk> 
   \<Longrightarrow> implements (pi1 o pi2) S1 S3"
-by (auto simp add: implements_def map_comp del: subsetI
+by (auto simp add: implements_def image_comp del: subsetI
          dest: image_mono [where f="map pi1"])
 
 

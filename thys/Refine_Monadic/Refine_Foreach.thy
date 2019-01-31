@@ -926,12 +926,8 @@ subsection \<open>FOREACH with empty sets\<close>
 
 lemma FOREACHoci_emp [simp] :
   "FOREACHoci R \<Phi> {} c f \<sigma> = do {ASSERT (\<Phi> {} \<sigma>); RETURN \<sigma>}"
-proof -
-  have "\<And>xs. {xs. xs = [] \<and> distinct xs \<and> sorted_wrt R xs} = {[]}"
-    by auto
-  then show ?thesis
-    by (simp add: FOREACHoci_def bind_RES image_def WHILEIT_unfold FOREACH_cond_def)
-qed
+  by (simp add: FOREACHoci_def FOREACH_cond_def bind_RES)
+    (simp add: WHILEIT_unfold)
 
 lemma FOREACHoi_emp [simp] :
   "FOREACHoi R \<Phi> {} f \<sigma> = do {ASSERT (\<Phi> {} \<sigma>); RETURN \<sigma>}"

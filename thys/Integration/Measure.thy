@@ -328,7 +328,7 @@ proof -
     also 
     from i ms have 
       un: "(\<Union>i. if i\<le>n then mkdisjoint A i else {}) \<in> measurable_sets M" 
-      by (simp add: measure_space_def sigma_algebra_def)
+      by (simp add: measure_space_def sigma_algebra_def cong add: SUP_cong_simp)
     moreover
     from i ms have 
       "range (\<lambda>i. if i\<le>n then mkdisjoint A i else {}) \<subseteq> measurable_sets M" 
@@ -341,7 +341,7 @@ proof -
     moreover note ms
     ultimately have 
       "measure M (A n) = (\<Sum>i. measure M (if i \<le> n then mkdisjoint A i else {}))"
-      by (simp add: measure_space_def countably_additive_def sums_unique)
+      by (simp add: measure_space_def countably_additive_def sums_unique cong add: SUP_cong_simp)
     
     also
     from ms have 

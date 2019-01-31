@@ -435,8 +435,11 @@ proof -
        "\<And>x \<sigma>. interaction_any_bounded_by (snd \<A> x \<sigma>) q2"
     unfolding ind_cpa.ibounded_by_def by(auto simp add: split_beta iadd_le_enat_iff)
   show "prf.ibounded_by (prf_adversary \<A>) (1 + q)" using q
-    unfolding prf_adversary_def Let_def split_def
-    by -(interaction_bound, auto simp add: iadd_SUP_le_iff SUP_le_iff add.assoc[symmetric] one_enat_def)
+    apply (simp only: prf_adversary_def Let_def split_def)
+    apply -
+    apply interaction_bound
+      apply (auto simp add: iadd_SUP_le_iff SUP_le_iff add.assoc [symmetric] one_enat_def cong del: image_cong_simp cong add: SUP_cong_simp)
+    done 
 qed
 
 lemma lossless_prf_adversary: "ind_cpa.lossless \<A> \<Longrightarrow> prf.lossless (prf_adversary \<A>)"

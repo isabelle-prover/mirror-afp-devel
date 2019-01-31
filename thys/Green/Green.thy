@@ -811,10 +811,10 @@ proof -
     apply (rule continuous_on_subset [OF field_cont])
     using twoCisTypeII(1) twoCisTypeII(3) by auto
   have "g2 a \<le> g1 a" using twoCisTypeII(1) twoCisTypeII(2) by auto
-  then have "(\<lambda>x. g2 a + (g1 a - g2 a) * x) ` {(0::real)..1} = {g2 a .. g1 a}"
-    using add_scale_img'[of "g2 a" "g1 a"] by blast
-  then have left_eq: "?D_left_edge = ?left_edge ` {0..1}"
-    by (force simp add: twoCisTypeII(10) subset_iff image_def set_eq_iff Semiring_Normalization.comm_semiring_1_class.semiring_normalization_rules(7))
+  then have "(\<lambda>x. g2 a + x * (g1 a - g2 a)) ` {(0::real)..1} = {g2 a .. g1 a}"
+    using add_scale_img'[of "g2 a" "g1 a"] by (auto simp add: ac_simps)
+  with \<open>g2 a \<le> g1 a\<close> have left_eq: "?D_left_edge = ?left_edge ` {0..1}"
+    by (simp only: twoCisTypeII(10)) auto
   then have cont_on_left: "continuous_on (path_image ?left_edge) F"
     using field_cont_on_left_edge_image path_image_def
     by (metis left_eq field_cont_on_left_edge_image path_image_def)
@@ -823,11 +823,10 @@ proof -
     apply (rule continuous_on_subset [OF field_cont])
     using twoCisTypeII(1) twoCisTypeII(3) by auto
   have "g2 b \<le> g1 b" using twoCisTypeII(1) twoCisTypeII(2) by auto
-  then have "(\<lambda>x. g2 b + (g1 b - g2 b) * x) ` {(0::real)..1} = {g2 b .. g1 b}"
-    using add_scale_img'[of "g2 b" "g1 b"]
-    by blast
-  then have right_eq: "?D_right_edge = ?right_edge ` {0..1}"
-    by (auto simp add: twoCisTypeII(8) subset_iff image_def set_eq_iff Semiring_Normalization.comm_semiring_1_class.semiring_normalization_rules(7))
+  then have "(\<lambda>x. g2 b + x * (g1 b - g2 b)) ` {(0::real)..1} = {g2 b .. g1 b}"
+    using add_scale_img'[of "g2 b" "g1 b"] by (auto simp add: ac_simps)
+  with \<open>g2 b \<le> g1 b\<close> have right_eq: "?D_right_edge = ?right_edge ` {0..1}"
+    by (simp only: twoCisTypeII(8)) auto
   then have cont_on_right:
     "continuous_on (path_image ?right_edge) F"
     using field_cont_on_left_edge_image path_image_def

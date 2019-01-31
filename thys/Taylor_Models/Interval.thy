@@ -701,8 +701,8 @@ lemma in_abs_intervalI2:
   for xa::"'a::linordered_idom"
   by (force intro: image_eqI[where x="-xa"] image_eqI[where x="xa"])
 
-lemma set_of_abs_interval: "set_of (abs_interval x) = abs ` (set_of x)"
-  by (auto simp: set_of_eq not_less intro: in_abs_intervalI1 in_abs_intervalI2)
+lemma set_of_abs_interval: "set_of (abs_interval x) = abs ` set_of x"
+  by (auto simp: set_of_eq not_less intro: in_abs_intervalI1 in_abs_intervalI2 cong del: image_cong_simp)
 
 fun split_domain :: "('a::preorder interval \<Rightarrow> 'a interval list) \<Rightarrow> 'a interval list \<Rightarrow> 'a interval list list"
   where "split_domain split [] = [[]]"

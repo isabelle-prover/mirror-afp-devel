@@ -1220,7 +1220,7 @@ proof
   have Two_map: "Two \<in> set (map (h1 k 0) js)"
     proof -
       have "Two = h1 k 0 i" using assms by simp
-      with i_in_js show ?thesis by simp
+      with i_in_js show ?thesis using IntI by (auto split: if_splits)
     qed
   
   have f1_Two: "\<And>x y. x = Two \<or> y = Two \<Longrightarrow> f1 x y = Two"

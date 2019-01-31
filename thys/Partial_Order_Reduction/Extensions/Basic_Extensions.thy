@@ -111,8 +111,10 @@ begin
       assumes "finite (range (f \<parallel> g))"
       obtains "finite (range f)" "finite (range g)"
     proof
-      show "finite (range f)" using finite_imageI[OF assms(1), of fst] by simp
-      show "finite (range g)" using finite_imageI[OF assms(1), of snd] by simp
+      show "finite (range f)" using finite_imageI [OF assms(1), of fst]
+        by (simp add: image_image)
+      show "finite (range g)" using finite_imageI [OF assms(1), of snd]
+        by (simp add: image_image)
     qed
   
     lemma zip_fun_split:

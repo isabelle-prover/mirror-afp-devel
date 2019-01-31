@@ -103,10 +103,6 @@ proof (rule distr_bij_count_space[symmetric])
     by (auto intro!: o_bij[where g=uminus])
 qed
 
-lemma (in ab_group_add) surj_plus [simp]:
-  "surj (plus a)"
-  by (auto intro: range_eqI [of b "plus a" "b - a" for b] simp add: algebra_simps)
-
 lemma count_space_plus:
   "count_space UNIV = distr (count_space UNIV) (count_space UNIV) ((+) (c :: ('a :: ring)))"
   by (rule distr_bij_count_space [symmetric]) simp

@@ -839,8 +839,8 @@ lemma Xd1_Xd2_stable:
   shows "StableNoDecomp.stable {Xd1, Xd2}"
 proof(rule StableNoDecomp.stable_onI)
   show "StableNoDecomp.individually_rational {Xd1, Xd2}"
-    unfolding StableNoDecomp.individually_rational_on_def StableNoDecomp.CD_on_def StableNoDecomp.CH_def
-    by (simp add: insert_commute D2_UNION)
+    by (simp add: StableNoDecomp.individually_rational_on_def StableNoDecomp.CD_on_def
+      StableNoDecomp.CH_def insert_commute D2_UNION cong add: SUP_cong_simp)
   show "StableNoDecomp.stable_no_blocking {Xd1, Xd2}"
     apply (rule StableNoDecomp.stable_no_blocking_onI)
     apply (rule_tac x="(H, X'')" in CX4h.cases)
@@ -852,8 +852,8 @@ lemma Xd1'_Xd2'_stable:
   shows "StableNoDecomp.stable {Xd1', Xd2'}"
 proof(rule StableNoDecomp.stable_onI)
   show "StableNoDecomp.individually_rational {Xd1', Xd2'}"
-    unfolding StableNoDecomp.individually_rational_on_def StableNoDecomp.CD_on_def StableNoDecomp.CH_def
-    by (simp add: insert_commute D2_UNION)
+    by (simp add: StableNoDecomp.individually_rational_on_def StableNoDecomp.CD_on_def
+      StableNoDecomp.CH_def insert_commute D2_UNION cong add: SUP_cong_simp)
   show "StableNoDecomp.stable_no_blocking {Xd1', Xd2'}"
     apply (rule StableNoDecomp.stable_no_blocking_onI)
     apply (rule_tac x="(H, X'')" in CX4h.cases)
@@ -874,7 +874,7 @@ proof(rule iffI)
     unfolding StableNoDecomp.stable_on_def StableNoDecomp.individually_rational_on_def
               StableNoDecomp.stable_no_blocking_on_def StableNoDecomp.blocking_on_def
               StableNoDecomp.CD_on_def StableNoDecomp.CH_def
-    by simp (elim disjE, simp_all add: D2_UNION X4_ALL insert_commute StableNoDecomp.maxR_def)
+    by simp (elim disjE, simp_all add: D2_UNION X4_ALL insert_commute StableNoDecomp.maxR_def cong add: SUP_cong_simp)
 next
   assume ?rhs then show ?lhs
     using Xd1_Xd2_stable Xd1'_Xd2'_stable by blast
@@ -893,13 +893,14 @@ lemma StableNoDecomp_XD_XH:
 (*<*)
 (is "?lhs = ?rhs")
 proof(rule iffI)
-    assume ?lhs then show ?rhs (* Expand the Cartesian product and check. *)
-    using X4_pow[of XD] X4_pow[of XH]
+  note image_cong_simp [cong del] note INF_cong_simp [cong] note SUP_cong_simp [cong]
+  assume ?lhs then show ?rhs (* Expand the Cartesian product and check. *)
+  using X4_pow [of XD] X4_pow [of XH]
     apply simp
     apply (erule StableNoDecomp.stable_pair_onE)
     apply (elim disjE)
     apply (simp_all add: StableNoDecomp.CD_on_def StableNoDecomp.CH_def)
-    unfolding X4_UNIV[simplified]
+    unfolding X4_UNIV [simplified]
     apply (auto simp: D2_ALL D2_UNION X4_ALL insert_commute StableNoDecomp.maxR_def linord_of_list_linord_of_listP)
     done
 next
@@ -2167,6 +2168,7 @@ by unfold_locales blast+
 lemma Theorem_9_stable_Xd1':
   shows "Theorem_9.stable_on UNIV {Xd1'}"
 proof %invisible (rule Theorem_9.stable_onI)
+  note image_cong_simp [cong del] note INF_cong_simp [cong] note SUP_cong_simp [cong]
   show "Theorem_9.individually_rational_on UNIV {Xd1'}"
     by (rule Theorem_9.individually_rational_onI)
        (simp_all add: D2_UNION Theorem_9.CD_on_def Theorem_9.CH_def)
@@ -2183,6 +2185,7 @@ qed
 lemma Theorem_9_stable_Xd1_Xd2:
   shows "Theorem_9.stable_on UNIV {Xd1, Xd2}"
 proof %invisible (rule Theorem_9.stable_onI)
+  note image_cong_simp [cong del] note INF_cong_simp [cong] note SUP_cong_simp [cong]
   show "Theorem_9.individually_rational_on UNIV {Xd1, Xd2}"
     by (rule Theorem_9.individually_rational_onI)
        (simp_all add: D2_UNION Theorem_9.CD_on_def Theorem_9.CH_def insert_commute)

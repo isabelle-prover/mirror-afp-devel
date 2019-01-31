@@ -270,14 +270,14 @@ proof -
   from assms(1) have c: "k-smooth_on (apply_chart c ` (domain c \<inter> domain c')) (apply_chart c' \<circ> inv_chart c)"
     and c': "k-smooth_on (apply_chart c' ` (domain c \<inter> domain c')) (apply_chart c \<circ> inv_chart c')"
     by (auto simp: smooth_compat_def)
+  from homeo have *: "open (p ` apply_chart c ` (domain c \<inter> domain c'))"
+    by (rule homeomorphism_UNIV_imp_open_map) auto
   have "k-smooth_on ((p \<circ> apply_chart c) ` (domain c \<inter> domain c')) (apply_chart c' \<circ> inv_chart c \<circ> p')"
     apply (rule smooth_on_compose2) prefer 2
          apply (rule dD)
         apply (rule c)
-       apply (auto simp: assms image_comp[symmetric])
-    apply (rule homeomorphism_UNIV_imp_open_map)
-     apply fact
-    by auto
+       apply (auto simp add: assms image_comp [symmetric] * cong del: image_cong_simp)
+    done
   moreover
   have "k-smooth_on (apply_chart c' ` (domain c \<inter> domain c')) (p \<circ> (apply_chart c \<circ> inv_chart c'))"
     apply (rule smooth_on_compose2)

@@ -286,13 +286,10 @@ subsection\<open>generate valid topology\<close>
        wf_list_graph (G::('v list_graph)) \<rbrakk> \<Longrightarrow> 
        list_graph_to_graph (generate_valid_topology (get_impl M) G) = 
        TopoS_Composition_Theory.generate_valid_topology (get_spec M) (list_graph_to_graph G)"
-    apply(subst generate_valid_topology_def_alt)
-    apply(drule(1) implc_get_offending_flows_complies)
-    apply(simp)
-    apply(simp add: delete_edges_correct[symmetric])
-    apply(simp add: list_graph_to_graph_def FiniteGraph.delete_edges_simp2)
-    apply(simp)
-    by blast
+    apply (subst generate_valid_topology_def_alt)
+    apply (drule(1) implc_get_offending_flows_complies)
+    apply (simp add: delete_edges_correct [symmetric])
+    done
 
 
 

@@ -196,9 +196,8 @@ proof -
 qed
 
 lemma stutter_sampled_range:
-  assumes "stutter_sampler f \<sigma>"
-  shows "range (\<sigma> \<circ> f) = range \<sigma>"
-  using assms by (auto intro: stutter_sampled_in_range)
+  "range (\<sigma> \<circ> f) = range \<sigma>" if "stutter_sampler f \<sigma>"
+  using that stutter_sampled_in_range [of f \<sigma>] by auto
 
 lemma stutter_sampled_precedence:
   assumes f: "stutter_sampler f \<sigma>" and ij: "i \<le> j"

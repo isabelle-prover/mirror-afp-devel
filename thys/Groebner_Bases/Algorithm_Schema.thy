@@ -602,11 +602,11 @@ definition full_gb :: "('t, 'b, 'c) pdata list \<Rightarrow> ('t, 'b::zero_neq_o
 
 lemma fst_set_full_gb:
   "fst ` set (full_gb bs) = (\<lambda>v. monomial 1 (term_of_pair (0, component_of_term v))) ` Keys (fst ` set bs)"
-  by (simp add: full_gb_def set_Keys_to_list image_comp, rule image_cong, fact refl, simp)
+  by (simp add: full_gb_def set_Keys_to_list image_comp)
 
 lemma Keys_full_gb:
   "Keys (fst ` set (full_gb bs)) = (\<lambda>v. term_of_pair (0, component_of_term v)) ` Keys (fst ` set bs)"
-  by (simp add: fst_set_full_gb Keys_def image_UN, blast)
+  by (auto simp add: fst_set_full_gb Keys_def image_image)
 
 lemma pps_full_gb: "pp_of_term ` Keys (fst ` set (full_gb bs)) \<subseteq> {0}"
   by (simp add: Keys_full_gb image_comp image_subset_iff term_simps)
@@ -4343,7 +4343,8 @@ qed
 lemma count_const_lt_components_punit [code]:
   "punit.count_const_lt_components hs =
     (if (\<exists>h\<in>set hs. punit.const_lt_component (fst h) = Some ()) then 1 else 0)"
-proof (simp add: punit.count_const_lt_components_def, simp add: card_set[symmetric], rule)
+proof (simp add: punit.count_const_lt_components_def cong del: image_cong_simp,
+  simp add: card_set [symmetric] cong del: image_cong_simp, rule)
   assume "\<exists>h\<in>set hs. punit.const_lt_component (fst h) = Some ()"
   then obtain h where "h \<in> set hs" and "punit.const_lt_component (fst h) = Some ()" ..
   from this(2) have "(punit.const_lt_component \<circ> fst) h = Some ()" by simp

@@ -168,7 +168,7 @@ next
   case cauchy: (would_be_Cauchy u)
   have "(map_aux o u)`UNIV \<subseteq> Field wo_aux" using cauchy.IH by auto
   then have "wo_aux.AboveS ((map_aux o u)`UNIV) \<noteq> {}"
-    using map_aux_AboveS_not_empty[of "u`(UNIV)"] by (simp add: fun.set_map)
+    using map_aux_AboveS_not_empty[of "u`(UNIV)"] by (simp add: image_image)
   then show ?case
     by (simp add: AboveS_Field wo_aux.suc_def)
 qed
@@ -198,7 +198,7 @@ lemma cauchy_rel:
 proof -
   have *: "(map_aux o u)`UNIV \<subseteq> Field wo_aux" using map_aux_in_Field by auto
   then have "wo_aux.AboveS ((map_aux o u)`UNIV) \<noteq> {}"
-    using map_aux_AboveS_not_empty[of "u`(UNIV)"] by (simp add: fun.set_map)
+    using map_aux_AboveS_not_empty[of "u`(UNIV)"] by (simp add: image_image)
   then show ?thesis
     using * by (simp add: wo_aux.suc_greater Id_def)
 qed
@@ -221,11 +221,14 @@ proof -
   using Well_order_pullback[of wo_aux map_aux] by (metis wo_aux.WELL)
 
   have "(x, y) \<in> r" if "x \<in> range basepoint" "y \<in> - range basepoint" for x y
-    apply (rule r(3)) using that apply (cases y, auto)
-    apply (metis insert_is_Un map_aux.simps(2) map_aux_in_Field wo_aux.zero_smallest)
-    apply (metis Diff_iff insert_is_Un wo_aux.leq_zero_imp map_aux.simps(2) middle_rel_a pair_in_Id_conv)
-    apply (metis map_aux.simps(3) map_aux_in_Field wo_aux.zero_smallest)
-    by (metis Diff_iff cauchy_rel wo_aux.leq_zero_imp map_aux.simps(3) pair_in_Id_conv)
+    apply (rule r(3)) using that
+    apply (cases y)
+      apply (auto cong del: image_cong_simp)
+       apply (metis insert_is_Un map_aux.simps(2) map_aux_in_Field wo_aux.zero_smallest)
+      apply (metis Diff_iff insert_is_Un wo_aux.leq_zero_imp map_aux.simps(2) middle_rel_a pair_in_Id_conv)
+     apply (metis map_aux.simps(3) map_aux_in_Field wo_aux.zero_smallest)
+    apply (metis Diff_iff cauchy_rel wo_aux.leq_zero_imp map_aux.simps(3) pair_in_Id_conv)
+    done
   moreover have "(a, middle a b) \<in> r" for a b
     apply (rule r(3)) using middle_rel_a by auto
   moreover have "(b, middle a b) \<in> r" for a b

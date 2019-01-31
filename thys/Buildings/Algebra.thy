@@ -7,7 +7,7 @@ text \<open>
 \<close>
 
 theory Algebra
-imports Prelim "HOL-Library.Set_Algebras"
+imports Prelim
 
 begin
 

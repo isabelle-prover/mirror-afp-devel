@@ -1012,10 +1012,10 @@ lemma fSup_distl_var: "Sup_pres f \<Longrightarrow> f \<circ> \<Squnion>G = (\<S
   unfolding fun_eq_iff comp_def by simp
 
 lemma fInf_distl: "Inf_pres f \<Longrightarrow> Inf_pres ((\<circ>) f)"
-  unfolding fun_eq_iff comp_def by (clarsimp, metis comp_apply)
+  unfolding fun_eq_iff comp_def by auto
 
 lemma fInf_distl_var: "Inf_pres f \<Longrightarrow> f \<circ> \<Sqinter>G = (\<Sqinter>g \<in> G. f \<circ> g)"
-  unfolding fun_eq_iff comp_def by (clarsimp, metis comp_apply)
+  unfolding fun_eq_iff comp_def by auto
 
 text \<open>Downsets preserve infs whereas upsets preserve sups.\<close>
 

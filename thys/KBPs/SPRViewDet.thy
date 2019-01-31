@@ -1711,7 +1711,7 @@ proof
        apply (auto intro: spr_tLast)[1]
       apply (rule conjI)
        apply (auto intro: spr_tLast)[1]
-      apply (rule_tac x=ta in exI)
+      apply (rule_tac x=xb in exI)
       apply (auto dest: spr_jview_tObsC intro: spr_jview_tObsC_trans)[1]
       done
   qed
@@ -1840,6 +1840,7 @@ proof
       done
   qed
 next
+  note image_cong_simp [cong del]
   show "?rhs \<subseteq> ?lhs"
   proof
     fix x assume x: "x \<in> ?rhs"

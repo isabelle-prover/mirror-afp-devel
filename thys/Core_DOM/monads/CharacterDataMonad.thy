@@ -57,9 +57,10 @@ lemma character_data_ptr_kinds_M_eq:
 lemma character_data_ptr_kinds_M_reads: 
   "reads (\<Union>node_ptr. {preserved (get_M\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t node_ptr RObject.nothing)}) character_data_ptr_kinds_M h h'"
   using node_ptr_kinds_M_reads
-  apply(simp add: reads_def node_ptr_kinds_M_defs character_data_ptr_kinds_M_defs 
-      character_data_ptr_kinds_def preserved_def)
-  by (metis (mono_tags, hide_lams) node_ptr_kinds_small old.unit.exhaust preserved_def)
+  apply (simp add: reads_def node_ptr_kinds_M_defs character_data_ptr_kinds_M_defs 
+    character_data_ptr_kinds_def preserved_def cong del: image_cong_simp)
+  apply (metis (mono_tags, hide_lams) node_ptr_kinds_small old.unit.exhaust preserved_def)
+  done
 
 global_interpretation l_dummy defines get_M\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a = "l_get_M.a_get_M get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a" .
 lemma get_M_is_l_get_M: "l_get_M get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a type_wf character_data_ptr_kinds"

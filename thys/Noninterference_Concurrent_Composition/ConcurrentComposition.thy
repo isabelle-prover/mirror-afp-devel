@@ -796,7 +796,7 @@ lemma con_comp_ref_union_closed:
     B: "ref_union_closed Q"
   shows "ref_union_closed (P \<parallel> Q <p, q>)"
 proof (simp add: ref_union_closed_def con_comp_failures con_comp_failures_def
- con_comp_divergences_def del: SUP_identity_eq, (rule allI)+, (rule impI)+,
+ con_comp_divergences_def del: SUP_identity_eq cong: SUP_cong_simp, (rule allI)+, (rule impI)+,
  erule exE, rule disjI1)
   fix xs A X
   assume "\<forall>X \<in> A. \<exists>R S T.

@@ -1001,8 +1001,7 @@ proof -
   proof (rule measurable_piecewise_restrict2[of B])
     show "B n \<in> sets M" for n unfolding B_def by simp
     show "space M = (\<Union>n. B n)"
-      unfolding B_def using sets.sets_into_space[OF A_meas] apply (auto, auto)
-      by (meson Diff_iff subsetCE)
+      unfolding B_def using sets.sets_into_space [OF A_meas] by auto
     have *: "?f x = n" if "x \<in> A n" for x n
       apply (rule cInf_eq_minimum) using that unfolding A_def by auto
     moreover have **: "?f x = (Inf ({}::nat set))" if "x \<in> space M - (\<Union>n. A n)" for x

@@ -1068,7 +1068,10 @@ proof -
       x = y \<or> (x = 0 \<and> y = Suc 0) \<or> (x = Suc 0 \<and> y = 0)"
       by (metis neq0_conv) (metis One_nat_def Suc_diff_1 diff_0_eq_0 diff_self_eq_0 neq0_conv)
     moreover from *(2) assms(3) have "x = enc (w, Inr (positions_in_row x 0) # I)"
-      by (intro project_enc_extend[OF *(3)]) (auto simp: \<sigma>_def)
+      apply (intro project_enc_extend [OF *(3)])
+      apply (simp only: \<sigma>_def)
+      apply auto
+      done
     moreover from arg_cong[OF *(3), of length] have "length w = length x" by simp
     ultimately show " map \<pi> x \<in> map \<pi> `
       (Z \<inter> {enc (w, I') |w I'. length I' = length I + 1 \<and> (0 < length w \<and> (\<forall>a\<in>set w. a \<in> set \<Sigma>) \<and>

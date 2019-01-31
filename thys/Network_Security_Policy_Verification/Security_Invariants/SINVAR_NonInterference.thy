@@ -137,8 +137,8 @@ and sinvar = SINVAR_NonInterference.sinvar
     apply(thin_tac "n \<in> nodes G")
     apply(thin_tac "nP n = Interfering")
     apply(erule disjE)
-     apply (metis fun_upd_other fun_upd_same imageI node_config.distinct(1) rev_subsetD singleton_iff)
-    apply (metis fun_upd_other fun_upd_same imageI node_config.distinct(1) rev_subsetD singleton_iff)
+     apply fastforce
+     apply fastforce
    (*case Unrelated*)
    apply simp
   (*unique: *)

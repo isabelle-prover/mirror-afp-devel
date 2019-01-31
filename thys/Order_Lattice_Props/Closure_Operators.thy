@@ -465,9 +465,10 @@ lemma surj_Sup_pres_bij_on:
   shows "bij_betw f (range (radj f \<circ> f)) UNIV"
   unfolding bij_betw_def
   apply safe
-  apply (simp add: assms(1) assms(2) surj_Sup_pres_inj_on)
-  apply simp
-  by (metis assms(1) assms(2) fun.set_map surj_Sup_pres_id surj_id)
+    apply (simp add: assms(1) assms(2) surj_Sup_pres_inj_on cong del: image_cong_simp)
+   apply auto
+  apply (metis (mono_tags) UNIV_I assms(1) assms(2) comp_apply id_apply image_image surj_Sup_pres_id surj_def)
+  done
 
 text \<open>Thus the restriction of $f$ to the set of closed elements is indeed a bijection. The final fact
 shows that it preserves Sups of closed elements, and hence is an isomorphism of complete lattices.\<close>

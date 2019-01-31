@@ -485,11 +485,11 @@ proof(rule iffI)
     by (subst subseqs_powset; clarsimp; metis M.exhaust W.exhaust)
   with \<open>?lhs\<close> show ?rhs
     unfolding Non_Strict.stable_def Non_Strict.match_def
-    apply simp
+    apply (simp cong: INF_cong_simp SUP_cong_simp cong del: image_cong_simp)
     apply (elim disjE)
-    apply simp_all
+    apply (simp_all cong: INF_cong_simp SUP_cong_simp cong del: image_cong_simp)
     apply (simp_all add: M_All W_All Non_Strict.blocks_def Non_Strict.m_strictly_prefers_def
-                         Non_Strict.w_strictly_prefers_def)
+                         Non_Strict.w_strictly_prefers_def cong: INF_cong_simp SUP_cong_simp cong del: image_cong_simp)
     done
 next
   assume ?rhs with Non_Strict_stable1 Non_Strict_stable2 show ?lhs by blast

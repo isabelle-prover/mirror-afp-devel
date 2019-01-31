@@ -177,8 +177,10 @@ next
 qed
 
 lemma finite_ACI_norm_toplevel_summands: "finite B \<Longrightarrow> finite {f \<guillemotleft>s\<guillemotright> |s. toplevel_summands s \<subseteq> B}"
-  by (elim finite_surj[OF iffD2[OF finite_Pow_iff], of _ _ "f o flatten PLUS o image ACI_norm"])
-   (auto simp: Pow_def image_Collect ACI_norm_flatten)
+  apply (elim finite_surj [OF iffD2 [OF finite_Pow_iff], of _ _ "f o flatten PLUS o image ACI_norm"])
+  apply (subst ACI_norm_flatten)
+  apply auto
+  done
 
 lemma lderivs_Not: "lderivs xs (Not r) = Not (lderivs xs r)"
   by (induct xs arbitrary: r) auto

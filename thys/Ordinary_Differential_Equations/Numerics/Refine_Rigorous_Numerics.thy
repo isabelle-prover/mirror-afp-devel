@@ -595,10 +595,10 @@ lemma closure_sbelow_halfspaces[intro, simp]:
   shows "closure (sbelow_halfspaces sctns) \<subseteq> below_halfspaces sctns"
 proof -
   have *: "{closure S |S. S \<in> sbelow_halfspace ` sctns} = {S |S. S \<in> below_halfspace ` sctns}"
-    by (auto simp: assms intro!: closure_shalfspace(1)[symmetric] exI)
+    by (auto simp: assms intro!: closure_shalfspace(1) [symmetric] exI)
   show ?thesis
     unfolding sbelow_halfspaces_def
-    by (rule order_trans[OF closure_Int]) (auto simp: halfspace_simps *)
+    by (rule order_trans [OF closure_Int]) (auto simp: halfspace_simps * cong del: image_cong_simp)
 qed
 
 lemma halfspaces_empty[simp]: "sbelow_halfspaces {} = UNIV" "below_halfspaces {} = UNIV"

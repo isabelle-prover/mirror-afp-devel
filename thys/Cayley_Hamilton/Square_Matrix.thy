@@ -583,10 +583,10 @@ proof (transfer fixing: i i')
 
   note p = permutes_UNIV_permutation evenperm_comp permutes_swap_id evenperm_swap permutes_compose
     sign_compose sign_swap_id
-  { fix q assume "q \<notin> ?s`?E" "q permutes UNIV" with \<open>i \<noteq> i'\<close> have "evenperm q"
-      by (auto simp add: comp_assoc[symmetric] image_iff p elim!: allE[of _ "?s q"]) }
-  then have "(\<Sum>p | p permutes UNIV. ?p p) = (\<Sum>p \<in> ?E \<union> ?s`?E. ?p p)"
-    by (fastforce simp: permutes_compose permutes_swap_id intro: sum.cong)
+  from \<open>i \<noteq> i'\<close> have *: "evenperm q" if "q \<notin> ?s`?E" "q permutes UNIV" for q
+    using that by (auto simp add: comp_assoc[symmetric] image_iff p elim!: allE[of _ "?s q"])
+  have "(\<Sum>p | p permutes UNIV. ?p p) = (\<Sum>p \<in> ?E \<union> ?s`?E. ?p p)"
+    by (auto simp add: permutes_compose permutes_swap_id intro: * sum.cong)
   also have "\<dots> = (\<Sum>p\<in>?E. ?p p) + (\<Sum>p\<in>?s`?E. ?p p)"
     by (intro sum.union_disjoint) (auto simp: p \<open>i \<noteq> i'\<close>)
   also have "(\<Sum>p\<in>?s`?E. ?p p) = (\<Sum>p\<in>?E. - ?p p)"

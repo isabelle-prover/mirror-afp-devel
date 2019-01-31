@@ -125,7 +125,7 @@ proof(rule contI)
   also have "\<dots> = insert [] (\<Union>x. \<Union>(t ` paths (Y x)))"
     by (simp add: assms(1))
   also have "\<dots> = \<Union>(t ` insert [] (\<Union>x. paths (Y x)))"
-    using assms(2) by auto
+    using assms(2) by (auto cong add: SUP_cong_simp)
   also have "\<dots> = \<Union>(t ` paths (Either (range Y)))"
     by (auto simp add: paths_Either)
   also have "\<dots> = paths (f (Either (range Y)))"

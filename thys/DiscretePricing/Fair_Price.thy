@@ -1932,8 +1932,8 @@ proof (intro allI)
     show "closing_value_process Mkt pf n w = closing_value_process Mkt2 pf n w"
     proof (induct n)
       case 0
-      thus ?case
-        by (metis True assms(1) assms(2) coincides_value_process up_cl_proc.simps(1) closing_value_process_def)
+      with assms show ?case
+        by (simp add: closing_value_process_def coincides_value_process)
     next
       case Suc
       thus ?case using coincides_closing_value_process' assms by blast

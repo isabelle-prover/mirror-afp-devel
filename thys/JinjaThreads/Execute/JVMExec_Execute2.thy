@@ -444,12 +444,12 @@ proof -
     ta_upd_simps map_tl o_def
   note [split] = if_split_asm sum.split
   from assms have "jvm_ta_state_of_jvm_ta_state' tas \<in> execute.exec_instr i P t h stk loc C M pc (map frame_of_frame' frs)"
-  proof(cases i)
+  proof (cases i)
     case Invoke thus ?thesis using assms
       by(fastforce simp add: extNTA2JVM'_def extNTA2JVM_def split_def extRet2JVM'_extRet2JVM[simplified])
   next
     case Return thus ?thesis using assms by(auto simp add: neq_Nil_conv)
-  qed auto
+  qed (auto cong del: image_cong_simp)
   also from assms have ok': "jvm_ta_state'_ok P tas" by(rule check_exec_instr_ok)
   hence "jvm_ta_state_of_jvm_ta_state' tas \<in> execute.exec_instr i P t h stk loc C M pc (map frame_of_frame' frs) \<longleftrightarrow>
     tas \<in> jvm_ta_state'_of_jvm_ta_state P ` execute.exec_instr i P t h stk loc C M pc (map frame_of_frame' frs)"

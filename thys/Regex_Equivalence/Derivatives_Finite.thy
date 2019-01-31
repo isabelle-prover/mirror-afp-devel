@@ -213,9 +213,14 @@ lemma ACI_norm_toplevel_summands_Zero: "toplevel_summands r \<subseteq> {Zero} \
 by (subst ACI_norm_flatten) (auto dest: subset_singletonD)
 
 lemma finite_ACI_norm_toplevel_summands:
-  "finite B \<Longrightarrow> finite {f \<guillemotleft>s\<guillemotright> |s. toplevel_summands s \<subseteq> B}"
-by (elim finite_surj[OF iffD2[OF finite_Pow_iff], of _ _ "f o flatten PLUS o image ACI_norm"])
-   (auto simp: Pow_def image_Collect ACI_norm_flatten)
+  "finite {f \<guillemotleft>s\<guillemotright> |s. toplevel_summands s \<subseteq> B}" if "finite B"
+proof -
+  have *: "{f \<guillemotleft>s\<guillemotright> | s.
+    toplevel_summands s \<subseteq> B} \<subseteq> (f \<circ> flatten PLUS \<circ> (`) ACI_norm) ` Pow B"
+    by (subst ACI_norm_flatten) auto
+  with that show ?thesis 
+    by (rule finite_surj [OF iffD2 [OF finite_Pow_iff]])
+qed
 
 theorem finite_derivs: "finite {\<guillemotleft>derivs xs r\<guillemotright> | xs . True}"
 proof (induct r)
@@ -357,8 +362,9 @@ lemma toplevel_summands_flatten_ACI_norm_alt_image:
 lemma ACI_norm_ACI_norm_alt: "\<guillemotleft>ACI_norm_alt r\<guillemotright> = \<guillemotleft>r\<guillemotright>"
 proof (induction r)
   case (Plus r s) show ?case
-    by (auto simp: ACI_norm_flatten image_Un toplevel_summands_ACI_nPlus)
-       (metis Plus.IH toplevel_summands_ACI_norm)
+    using ACI_norm_flatten [of r] ACI_norm_flatten [of s]
+    by (auto simp add: toplevel_summands_ACI_nPlus)
+      (metis ACI_norm_flatten Plus.IH(1) Plus.IH(2) image_Un toplevel_summands.simps(1) toplevel_summands_ACI_nPlus toplevel_summands_ACI_norm)
 qed auto
 
 lemma ACI_nPlus_singleton_PLUS: 
@@ -400,9 +406,11 @@ lemma ACI_nPlus_flatten_PLUS:
   ACI_nPlus (flatten PLUS X1) (flatten PLUS X2) = flatten PLUS (X1 \<union> X2)"
   by (rule trans[OF ACI_nPlus_PLUS]) auto
 
-lemma ACI_nPlus_ACI_norm[simp]: "ACI_nPlus \<guillemotleft>r\<guillemotright> \<guillemotleft>s\<guillemotright> = \<guillemotleft>Plus r s\<guillemotright>"
-  by (auto simp: image_Un Un_assoc ACI_norm_flatten intro!: trans[OF ACI_nPlus_flatten_PLUS])
-   (metis ACI_norm_Plus Plus_toplevel_summands ACI_norm_flatten)+
+lemma ACI_nPlus_ACI_norm [simp]: "ACI_nPlus \<guillemotleft>r\<guillemotright> \<guillemotleft>s\<guillemotright> = \<guillemotleft>Plus r s\<guillemotright>"
+  by (auto simp: image_Un Un_assoc ACI_norm_flatten [of r] ACI_norm_flatten [of s] ACI_norm_flatten [of "Plus r s"]
+    toplevel_summands_flatten_ACI_norm_image
+    intro!: trans [OF ACI_nPlus_flatten_PLUS])
+    (metis ACI_norm_Plus Plus_toplevel_summands)+
 
 lemma ACI_norm_alt:
   "ACI_norm_alt r = \<guillemotleft>r\<guillemotright>"

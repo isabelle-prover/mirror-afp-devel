@@ -1887,7 +1887,7 @@ proof (rule quasi_isometry_betweenI)
 
   show "(g \<circ> f) ` X \<subseteq> Z"
     using quasi_isometry_betweenD(2)[OF assms(1)] quasi_isometry_betweenD(2)[OF assms(2)]
-    by (auto, auto)
+    by auto
   fix z assume "z \<in> Z"
   obtain y where y: "y \<in> Y" "dist (g y) z \<le> D"
     using quasi_isometry_betweenD(3)[OF assms(2) \<open>z \<in> Z\<close>] by auto
