@@ -944,63 +944,6 @@ proof -
   finally show ?thesis .
 qed
 
-lemma zeta_conv_hurwitz_zeta_multiplication:
-  fixes k :: nat and s :: complex
-  assumes "k > 0" "s \<noteq> 1"
-  shows   "k powr s * zeta s = (\<Sum>n=1..k. hurwitz_zeta (n / k) s)" (is "?lhs s = ?rhs s")
-proof (rule analytic_continuation_open[where ?f = ?lhs and ?g = ?rhs])
-  show "connected (-{1::complex})" by (rule connected_punctured_universe) auto
-  show "{s. Re s > 1} \<noteq> {}" by (auto intro!: exI[of _ 2])
-next
-  fix s assume s: "s \<in> {s. Re s > 1}"
-  show "?lhs s = ?rhs s"
-  proof (rule sums_unique2)
-    have "(\<lambda>m. \<Sum>n=1..k. (of_nat m + of_real (real n / real k)) powr -s) sums 
-            (\<Sum>n=1..k. hurwitz_zeta (real n / real k) s)"
-      using assms s by (intro sums_sum sums_hurwitz_zeta) auto
-    also have "(\<lambda>m. \<Sum>n=1..k. (of_nat m + of_real (real n / real k)) powr -s) =
-                 (\<lambda>m. of_nat k powr s * (\<Sum>n=1..k. of_nat (m * k + n) powr -s))"
-      unfolding sum_distrib_left
-    proof (intro ext sum.cong, goal_cases)
-      case (2 m n)
-      hence "m * k + n > 0" by (intro add_nonneg_pos) auto
-      hence "of_nat 0 \<noteq> (of_nat (m * k + n) :: complex)" by (simp only: of_nat_eq_iff)
-      also have "of_nat (m * k + n) = of_nat m * of_nat k + (of_nat n :: complex)" by simp
-      finally have nz: "\<dots> \<noteq> 0" by auto
-      
-      have "of_nat m + of_real (real n / real k) = 
-              (inverse (of_nat k) * of_nat (m * k + n) :: complex)" using assms
-        (* TODO: Field_as_Ring messing up things again *)
-        by (simp add: field_simps del: div_mult_self1 div_mult_self2 div_mult_self3 div_mult_self4)
-      also from nz have "\<dots> powr -s = of_nat k powr s * of_nat (m * k + n) powr -s"
-        by (subst powr_times_real) (auto simp: add_eq_0_iff powr_def exp_minus Ln_inverse)
-      finally show ?case .
-    qed auto
-    finally show "\<dots> sums (\<Sum>n=1..k. hurwitz_zeta (real n / real k) s)" .
-  next
-    have "(\<lambda>m. of_nat (Suc m) powr -s) sums zeta s"
-      using s by (intro sums_zeta assms) auto
-    hence "(\<lambda>m. \<Sum>n=m*k..<m*k+k. of_nat (Suc n) powr - s) sums zeta s"
-      using \<open>k > 0\<close> by (rule sums_group)
-    also have "(\<lambda>m. \<Sum>n=m*k..<m*k+k. of_nat (Suc n) powr - s) = 
-                 (\<lambda>m. \<Sum>n=1..k. of_nat (m * k + n) powr -s)"
-    proof (rule ext, goal_cases)
-      case (1 m)
-      show ?case using assms
-        by (intro ext sum.reindex_bij_witness[of _ "\<lambda>n. m * k + n - 1" "\<lambda>n. Suc n - m * k"]) auto
-    qed
-    finally show "(\<lambda>m. of_nat k powr s * (\<Sum>n=1..k. of_nat (m * k + n) powr -s)) sums
-                    (of_nat k powr s * zeta s)" by (rule sums_mult)
-  qed
-qed (insert assms, auto intro!: holomorphic_intros simp: finite_imp_closed open_halfspace_Re_gt)
-
-lemma hurwitz_zeta_one_half_left:
-  assumes "s \<noteq> 1"
-  shows   "hurwitz_zeta (1 / 2) s = (2 powr s - 1) * zeta s"
-  using zeta_conv_hurwitz_zeta_multiplication[of 2 s] assms
-  by (simp add: eval_nat_numeral zeta_def field_simps)
-
-
 text \<open>
   The following gives an extension of the $\zeta$ functions to the critical strip.
 \<close>
@@ -3541,4 +3484,149 @@ corollary zeta_zero_reflect_iff:
   shows   "zeta (1 - s) = 0 \<longleftrightarrow> zeta s = 0"
   using zeta_zero_reflect[of s] zeta_zero_reflect[of "1 - s"] assms by auto
 
+
+subsection \<open>More functional equations\<close>
+
+lemma perzeta_conv_hurwitz_zeta_multiplication:
+  fixes k :: nat and a :: int and s :: complex
+  assumes "k > 0" "s \<noteq> 1"
+  shows   "k powr s * perzeta (a / k) s =
+             (\<Sum>n=1..k. exp (2 * pi * n * a / k * \<i>) * hurwitz_zeta (n / k) s)"
+  (is "?lhs s = ?rhs s")
+proof (rule analytic_continuation_open[where ?f = ?lhs and ?g = ?rhs])
+  show "connected (-{1::complex})" by (rule connected_punctured_universe) auto
+  show "{s. Re s > 1} \<noteq> {}" by (auto intro!: exI[of _ 2])
+next
+  fix s assume s: "s \<in> {s. Re s > 1}"
+  let ?f = "\<lambda>n. exp (2 * pi * n * a / k * \<i>)"
+
+  show "?lhs s = ?rhs s"
+  proof (rule sums_unique2)
+    have "(\<lambda>m. \<Sum>n=1..k. ?f n * (of_nat m + of_real (real n / real k)) powr -s) sums
+            (\<Sum>n=1..k. ?f n * hurwitz_zeta (real n / real k) s)"
+      using assms s by (intro sums_sum sums_mult sums_hurwitz_zeta) auto
+    also have "(\<lambda>m. \<Sum>n=1..k. ?f n * (of_nat m + of_real (real n / real k)) powr -s) =
+                 (\<lambda>m. of_nat k powr s * (\<Sum>n=1..k. ?f n * of_nat (m * k + n) powr -s))"
+      unfolding sum_distrib_left
+    proof (intro ext sum.cong, goal_cases)
+      case (2 m n)
+      hence "m * k + n > 0" by (intro add_nonneg_pos) auto
+      hence "of_nat 0 \<noteq> (of_nat (m * k + n) :: complex)" by (simp only: of_nat_eq_iff)
+      also have "of_nat (m * k + n) = of_nat m * of_nat k + (of_nat n :: complex)" by simp
+      finally have nz: "\<dots> \<noteq> 0" by auto
+      
+      have "of_nat m + of_real (real n / real k) = 
+              (inverse (of_nat k) * of_nat (m * k + n) :: complex)" using assms
+        (* TODO: Field_as_Ring messing up things again *)
+        by (simp add: field_simps del: div_mult_self1 div_mult_self2 div_mult_self3 div_mult_self4)
+      also from nz have "\<dots> powr -s = of_nat k powr s * of_nat (m * k + n) powr -s"
+        by (subst powr_times_real) (auto simp: add_eq_0_iff powr_def exp_minus Ln_inverse)
+      finally show ?case by simp
+    qed auto
+    finally show "\<dots> sums (\<Sum>n=1..k. ?f n * hurwitz_zeta (real n / real k) s)" .
+  next
+    define g where "g = (\<lambda>m. exp (2 * pi * \<i> * m * (real_of_int a / real k)))"
+    have "(\<lambda>m. g (Suc m) / (Suc m) powr s) sums eval_fds (fds_perzeta (a / k)) s"
+      unfolding g_def using s by (intro sums_fds_perzeta) auto
+    also have "(\<lambda>m. g (Suc m) / (Suc m) powr s) = (\<lambda>m. ?f (Suc m) * (Suc m) powr -s)"
+      by (simp add: powr_minus field_simps g_def)
+    also have "eval_fds (fds_perzeta (a / k)) s = perzeta (a / k) s"
+      using s by (simp add: perzeta_altdef1)
+    finally have "(\<lambda>m. \<Sum>n=m*k..<m*k+k. ?f (Suc n) * of_nat (Suc n) powr -s) sums perzeta (a / k) s"
+      using \<open>k > 0\<close> by (rule sums_group)
+    also have "(\<lambda>m. \<Sum>n=m*k..<m*k+k. ?f (Suc n) * of_nat (Suc n) powr -s) = 
+                 (\<lambda>m. \<Sum>n=1..k. ?f (m * k + n) * of_nat (m * k + n) powr -s)"
+    proof (rule ext, goal_cases)
+      case (1 m)
+      show ?case using assms
+        by (intro ext sum.reindex_bij_witness[of _ "\<lambda>n. m * k + n - 1" "\<lambda>n. Suc n - m * k"]) auto
+    qed
+    also have "(\<lambda>m n. ?f (m * k + n)) = (\<lambda>m n. ?f n)"
+    proof (intro ext)
+      fix m n :: nat
+      have "?f (m * k + n) / ?f n = exp (2 * pi * m * a * \<i>)"
+        using \<open>k > 0\<close> by (auto simp: ring_distribs add_divide_distrib exp_add mult_ac)
+      also have "\<dots> = cis (2 * pi * (m * a))"
+        by (simp add: exp_eq_polar mult_ac)
+      also have "\<dots> = 1"
+        by (rule cis_multiple_2pi) auto
+      finally show "?f (m * k + n) = ?f n"
+        by simp
+    qed
+    finally show "(\<lambda>m. of_nat k powr s * (\<Sum>n=1..k. ?f n * of_nat (m * k + n) powr -s)) sums
+                    (of_nat k powr s * perzeta (a / k) s)" by (rule sums_mult)
+  qed
+qed (use assms in \<open>auto intro!: holomorphic_intros simp: finite_imp_closed open_halfspace_Re_gt\<close>)
+
+
+lemma perzeta_conv_hurwitz_zeta_multiplication':
+  fixes k :: nat and a :: int and s :: complex
+  assumes "k > 0" "s \<noteq> 1"
+  shows   "perzeta (a / k) s = k powr -s *
+             (\<Sum>n=1..k. exp (2 * pi * n * a / k * \<i>) * hurwitz_zeta (n / k) s)"
+  using perzeta_conv_hurwitz_zeta_multiplication[of k s a] assms
+  by (simp add: powr_minus field_simps)
+
+lemma zeta_conv_hurwitz_zeta_multiplication:
+  fixes k a :: nat and s :: complex
+  assumes "k > 0" "s \<noteq> 1"
+  shows   "k powr s * zeta s = (\<Sum>n=1..k. hurwitz_zeta (n / k) s)"
+  using perzeta_conv_hurwitz_zeta_multiplication[of k s 0]
+  using assms by (simp add: perzeta_int)
+
+lemma hurwitz_zeta_one_half_left:
+  assumes "s \<noteq> 1"
+  shows   "hurwitz_zeta (1 / 2) s = (2 powr s - 1) * zeta s"
+  using zeta_conv_hurwitz_zeta_multiplication[of 2 s] assms
+  by (simp add: eval_nat_numeral zeta_def field_simps)
+
+theorem hurwitz_zeta_functional_equation:
+  fixes h k :: nat and s :: complex
+  assumes hk: "k > 0" "h \<in> {0<..k}" and s: "s \<notin> {0, 1}"
+  defines "a \<equiv> real h / real k"
+  shows "rGamma s * hurwitz_zeta a (1 - s) =
+           2 * (2 * pi * k) powr -s *
+             (\<Sum>n=1..k. cos (s*pi/2 - 2*pi*n*h/k) * hurwitz_zeta (n / k) s)"
+proof -
+  from hk have a: "a \<in> {0<..1}" by (auto simp: a_def)
+
+  have "rGamma s * hurwitz_zeta a (1 - s) =
+          (2 * pi) powr - s * (\<i> powr - s * perzeta a s + \<i> powr s * perzeta (- a) s)"
+    using s a by (intro hurwitz_zeta_formula) auto
+  also have "\<dots> = (2 * pi) powr - s * (\<i> powr - s * perzeta (of_int (int h) / k) s +
+                                       \<i> powr s * perzeta (of_int (-int h) / k) s)"
+    by (simp add: a_def)
+  also have "\<dots> = (2 * pi) powr -s * k powr -s *
+     ((\<Sum>n=1..k. \<i> powr -s * cis (2 * pi * n * h / k) * hurwitz_zeta (n / k) s) +
+       (\<Sum>n=1..k. \<i> powr s  * cis (-2 * pi * n * h / k) * hurwitz_zeta (n / k) s))"
+    (is "_ = _ * (?S1 + ?S2)") using hk a s
+    by (subst (1 2) perzeta_conv_hurwitz_zeta_multiplication')
+       (auto simp: field_simps sum_distrib_left sum_distrib_right exp_eq_polar)
+  also have "(2 * pi) powr -s * k powr -s = (2 * k * pi) powr -s"
+    using hk pi_gt_zero
+    by (simp add: powr_def Ln_times_Reals field_simps exp_add exp_diff exp_minus)
+  also have "?S1 + ?S2 = (\<Sum>n=1..k. (\<i> powr -s * cis (2*pi*n*h/k) + \<i> powr s * cis (-2*pi*n*h/k)) *
+                                    hurwitz_zeta (n / k) s)"
+    (is "_ = (\<Sum>n\<in>_. ?c n * _)") by (simp add: algebra_simps sum.distrib)
+  also have "?c = (\<lambda>n. 2 * cos (s*pi/2 - 2*pi*n*h/k))"
+  proof
+    fix n :: nat
+    have "\<i> powr -s * cis (2*pi*n*h/k) = exp (-s*pi/2*\<i> + 2*pi*n*h/k*\<i>)"
+      unfolding exp_add by (simp add: powr_def cis_conv_exp mult_ac)
+    moreover have "\<i> powr s * cis (-2*pi*n*h/k) = exp (s*pi/2*\<i> + -2*pi*n*h/k*\<i>)"
+      unfolding exp_add by (simp add: powr_def cis_conv_exp mult_ac)
+    ultimately have "?c n = exp (\<i> * (s*pi/2 - 2*pi*n*h/k)) + exp (-(\<i> * (s*pi/2 - 2*pi*n*h/k)))"
+      by (simp add: mult_ac ring_distribs)
+    also have "\<dots> / 2 = cos (s*pi/2 - 2*pi*n*h/k)"
+      by (rule cos_exp_eq [symmetric])
+    finally show "?c n = 2 * cos (s*pi/2 - 2*pi*n*h/k)" 
+      by simp
+  qed
+  also have "(2 * k * pi) powr -s * (\<Sum>n=1..k. \<dots> n * hurwitz_zeta (n / k) s) =
+               2 * (2 * pi * k) powr -s *
+               (\<Sum>n=1..k. cos (s*pi/2 - 2*pi*n*h/k) * hurwitz_zeta (n / k) s)"
+    by (simp add: sum_distrib_left sum_distrib_right mult_ac)
+  finally show ?thesis .
+qed
+  
 end
