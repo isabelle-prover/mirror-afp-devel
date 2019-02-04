@@ -1,7 +1,7 @@
 chapter AFP
 
 session Sturm_Sequences (AFP) = "HOL-Computational_Algebra" +
-  options [timeout = 600]
+  options [timeout = 600, document_variants = "document:outline=/proof,/ML:userguide"]
   theories
     "Lib/Sturm_Library_Document"
     "Lib/Misc_Polynomial"
@@ -12,4 +12,6 @@ session Sturm_Sequences (AFP) = "HOL-Computational_Algebra" +
     Sturm_Method
     "Examples/Sturm_Ex"
   document_files
+    "build"
     "root.tex"
+    "root_userguide.tex"
