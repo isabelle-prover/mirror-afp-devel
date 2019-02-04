@@ -5,6 +5,7 @@ imports
   Bernoulli_FPS
 begin
 
+(* TODO: Move *)
 lemma joinpaths_cong: "f = f' \<Longrightarrow> g = g' \<Longrightarrow> f +++ g = f' +++ g'"
   by simp
 
@@ -24,8 +25,8 @@ proof -
   have "residue (\<lambda>z. (1 / z ^ m) / (exp z - 1)) (2 * pi * real_of_int n * \<i>) =
           1 / (2 * pi * real_of_int n * \<i>) ^ m / 1"
     using exp_integer_2pi[of "real_of_int n"] and assms
-    apply (rule_tac residue_simple_pole_deriv[where s="-{0}"])
-    by (auto intro!: holomorphic_intros derivative_eq_intros connected_open_delete_finite 
+    by (rule_tac residue_simple_pole_deriv[where s="-{0}"])
+       (auto intro!: holomorphic_intros derivative_eq_intros connected_open_delete_finite 
              simp add: mult_ac connected_punctured_universe)
   thus ?thesis by (simp add: divide_simps)
 qed

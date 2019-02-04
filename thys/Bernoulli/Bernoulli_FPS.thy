@@ -389,9 +389,11 @@ proof -
     by (simp add: fps_compose_def atLeast0AtMost fps_sum_nth)
   also have "fps_ln 1 = fps_X * Abs_fps (\<lambda>m. (-1) ^ m / real (Suc m))"
     unfolding fps_ln_def by (auto simp: fps_eq_iff)
-  hence "Abs_fps (\<lambda>m. (-1) ^ m / real (Suc m)) = fps_ln 1 / fps_X" by simp
-  also have "fps_compose \<dots> (fps_exp 1 - 1) = fps_compose (fps_ln 1) (fps_exp 1 - 1) / (fps_exp 1 - 1)"
-    by (simp add: fps_compose_divide_distrib)
+  hence "Abs_fps (\<lambda>m. (-1) ^ m / real (Suc m)) = fps_ln 1 / fps_X"
+    by (metis fps_X_neq_zero nonzero_mult_div_cancel_left)
+  also have "fps_compose \<dots> (fps_exp 1 - 1) =
+               fps_compose (fps_ln 1) (fps_exp 1 - 1) / (fps_exp 1 - 1)"
+    by (subst fps_compose_divide_distrib) auto
   also have "fps_compose (fps_ln 1) (fps_exp 1 - 1 :: real fps) = fps_X"
     by (simp add: fps_ln_fps_exp_inv fps_inv_fps_exp_compose)
   also have "(fps_X / (fps_exp 1 - 1)) = bernoulli_fps" by (simp add: bernoulli_fps_def)
@@ -555,7 +557,8 @@ proof -
   also {
     have "fps_ln 1 = fps_X * Abs_fps (\<lambda>n. (-1)^n / real (Suc n))"
       by (intro fps_ext) (simp del: of_nat_Suc add: fps_ln_def)
-    hence "fps_ln 1 / fps_X = Abs_fps (\<lambda>n. (-1)^n / real (Suc n))" by simp
+    hence "fps_ln 1 / fps_X = Abs_fps (\<lambda>n. (-1)^n / real (Suc n))" 
+      by (metis fps_X_neq_zero nonzero_mult_div_cancel_left)
     also have "fps_compose \<dots> (-fps_X) = Abs_fps f"
       by (simp add: fps_compose_uminus' fps_eq_iff f_def)
     finally have "Abs_fps f = fps_compose (fps_ln 1 / fps_X) (-fps_X)" ..
