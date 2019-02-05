@@ -1,4 +1,4 @@
-(* Author: Tobias Nipkow, with contributions from Dmitriy Traytel and Lukas Bulwahn *)
+(* Author: Tobias Nipkow, with contributions from Dmitriy Traytel, Lukas Bulwahn, and Peter Lammich *)
 
 section \<open>Index-based manipulation of lists\<close>
 
@@ -40,6 +40,10 @@ definition last_index :: "'a list \<Rightarrow> 'a \<Rightarrow> nat" where
  (let i = index (rev xs) x; n = size xs
   in if i = n then i else n - (i+1))"
 
+lemma find_index_append: "find_index P (xs @ ys) =
+  (if \<exists>x\<in>set xs. P x then find_index P xs else size xs + find_index P ys)"
+  by (induct xs) simp_all
+  
 lemma find_index_le_size: "find_index P xs <= size xs"
 by(induct xs) simp_all
 
@@ -167,8 +171,47 @@ by (rule inj_onI) auto
 lemma inj_on_last_index: "inj_on (last_index xs) (set xs)"
 by (simp add:inj_on_def)
 
+lemma find_index_conv_takeWhile: 
+  "find_index P xs = size(takeWhile (Not o P) xs)"
+by(induct xs) auto
+
 lemma index_conv_takeWhile: "index xs x = size(takeWhile (\<lambda>y. x\<noteq>y) xs)"
 by(induct xs) auto
+
+lemma find_index_first: "i < find_index P xs \<Longrightarrow> \<not>P (xs!i)"
+unfolding find_index_conv_takeWhile
+by (metis comp_apply nth_mem set_takeWhileD takeWhile_nth)
+
+lemma index_first: "i<index xs x \<Longrightarrow> x\<noteq>xs!i"
+using find_index_first unfolding index_def by blast
+
+lemma find_index_eqI:
+  assumes "i\<le>length xs"  
+  assumes "\<forall>j<i. \<not>P (xs!j)"
+  assumes "i<length xs \<Longrightarrow> P (xs!i)"
+  shows "find_index P xs = i"
+by (metis (mono_tags, lifting) antisym_conv2 assms find_index_eq_size_conv 
+  find_index_first find_index_less_size_conv linorder_neqE_nat nth_find_index)
+  
+lemma find_index_eq_iff:
+  "find_index P xs = i 
+  \<longleftrightarrow> (i\<le>length xs \<and> (\<forall>j<i. \<not>P (xs!j)) \<and> (i<length xs \<longrightarrow> P (xs!i)))"  
+by (auto intro: find_index_eqI 
+         simp: nth_find_index find_index_le_size find_index_first)
+  
+lemma index_eqI:
+  assumes "i\<le>length xs"  
+  assumes "\<forall>j<i. xs!j \<noteq> x"
+  assumes "i<length xs \<Longrightarrow> xs!i = x"
+  shows "index xs x = i"
+unfolding index_def by (simp add: find_index_eqI assms)
+  
+lemma index_eq_iff:
+  "index xs x = i 
+  \<longleftrightarrow> (i\<le>length xs \<and> (\<forall>j<i. xs!j \<noteq> x) \<and> (i<length xs \<longrightarrow> xs!i = x))"  
+by (auto intro: index_eqI 
+         simp: index_le_size index_less_size_conv 
+         dest: index_first)
 
 lemma index_take: "index xs x >= i \<Longrightarrow> x \<notin> set(take i xs)"
 apply(subst (asm) index_conv_takeWhile)
