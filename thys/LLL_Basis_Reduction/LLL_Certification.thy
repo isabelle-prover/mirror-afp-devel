@@ -528,11 +528,11 @@ end
 
 consts external_lll_solver :: "integer \<times> integer \<Rightarrow> integer list list \<Rightarrow> integer list list \<times> integer list list \<times> integer list list" 
 
-definition short_vector_external :: "rat \<Rightarrow> int vec list \<Rightarrow> int vec" where
-  "short_vector_external \<alpha> fs = (let 
-    sv = short_vector \<alpha>;
+definition reduce_basis_external :: "rat \<Rightarrow> int vec list \<Rightarrow> int vec list" where
+  "reduce_basis_external \<alpha> fs = (case fs of Nil \<Rightarrow> [] | Cons f _ \<Rightarrow> (let 
+    rb = reduce_basis \<alpha>;
     fsi = map (map integer_of_int o list_of_vec) fs;
-    n = dim_vec (hd fs);
+    n = dim_vec f;
     m = length fs in 
   case external_lll_solver (map_prod integer_of_int integer_of_int (quotient_of \<alpha>)) fsi of 
     (gsi, u1i, u2i) \<Rightarrow> let 
@@ -543,19 +543,76 @@ definition short_vector_external :: "rat \<Rightarrow> int vec list \<Rightarrow
      Gs = mat_of_rows n gs in 
      if (dim_row u1 = m \<and> dim_col u1 = m \<and> dim_row u2 = m \<and> dim_col u2 = m 
          \<and> length gs = m \<and> Fs = u1 * Gs \<and> Gs = u2 * Fs \<and> (\<forall> gi \<in> set gs. dim_vec gi = n))
-      then sv gs
+      then rb gs
       else Code.abort (STR ''error in external lll invocation\<newline>f,g,u1,u2 are as follows\<newline>''
         + String.implode (show Fs) + STR ''\<newline>\<newline>''
         + String.implode (show Gs) + STR ''\<newline>\<newline>''
         + String.implode (show u1) + STR ''\<newline>\<newline>''
         + String.implode (show u2) + STR ''\<newline>\<newline>''
-        ) (\<lambda> _. sv fs))" 
+        ) (\<lambda> _. rb fs)))" 
+
+definition short_vector_external :: "rat \<Rightarrow> int vec list \<Rightarrow> int vec" where
+  "short_vector_external \<alpha> fs = (hd (reduce_basis_external \<alpha> fs))" 
 
 instance bool :: prime_card
   by (standard, auto)
 
 context LLL_with_assms
 begin
+
+lemma reduce_basis_external: assumes res: "reduce_basis_external \<alpha> fs_init = fs" 
+  shows "reduced fs m" "LLL_invariant True m fs" 
+  (* "lattice_of fs = lattice_of fs_init" is part of LLL_invariant *)
+proof (atomize(full), goal_cases)
+  case 1
+  show ?case
+  proof (cases "reduce_basis \<alpha> fs_init = fs")
+    case True
+    from reduce_basis[OF this] show ?thesis by simp
+  next
+    case False
+    show ?thesis
+    proof (cases fs_init)
+      case Nil
+      with res have "fs = []" unfolding reduce_basis_external_def by auto
+      with False Nil have False by (simp add: reduce_basis_def)
+      thus ?thesis ..
+    next
+      case (Cons f rest)
+      from Cons fs_init len have dim_fs_n: "dim_vec f = n" by auto
+      let ?ext = "external_lll_solver (map_prod integer_of_int integer_of_int (quotient_of \<alpha>)) 
+        (map (map integer_of_int \<circ> list_of_vec) fs_init)" 
+      note res = res[unfolded reduce_basis_external_def Cons Let_def list.case Code.abort_def dim_fs_n,
+          folded Cons]
+      from res False obtain gsi u1i u2i where ext: "?ext = (gsi, u1i, u2i)" by (cases ?ext, auto)
+      define u1 where "u1 = mat_of_rows_list m (map (map int_of_integer) u1i)"
+      define u2 where "u2 = mat_of_rows_list m (map (map int_of_integer) u2i)" 
+      define gs where "gs = map (vec_of_list o map int_of_integer) gsi" 
+      note res = res[unfolded ext option.simps split len dim_fs_n, folded u1_def u2_def gs_def]
+      from res False 
+      have u1: "u1 \<in> carrier_mat m m" 
+        and u2: "u2 \<in> carrier_mat m m" 
+        and len_gs: "length gs = m" 
+        and prod1: "mat_of_rows n fs_init = u1 * mat_of_rows n gs" 
+        and prod2: "mat_of_rows n gs = u2 * mat_of_rows n fs_init" 
+        and gs_v: "reduce_basis \<alpha> gs = fs" 
+        and gs: "set gs \<subseteq> carrier_vec n" 
+        by (auto split: if_splits)
+      from LLL_change_basis[OF gs len_gs u1 u2 prod1 prod2]
+      have id: "lattice_of gs = lattice_of fs_init" 
+        and assms: "LLL_with_assms n m gs \<alpha>" by auto
+      from LLL_with_assms.reduce_basis[OF assms gs_v]
+      have red: "reduced fs m" and inv: "LLL.LLL_invariant n m gs \<alpha> True m fs" by auto
+      from inv[unfolded LLL.LLL_invariant_def LLL.L_def id]
+      have lattice: "lattice_of fs = lattice_of fs_init" by auto
+      show ?thesis
+      proof (intro conjI red lattice)
+        show "LLL_invariant True m fs" using inv unfolding LLL.LLL_invariant_def LLL.L_def id .
+      qed
+    qed
+  qed 
+qed
+
 
 lemma short_vector_external: assumes res: "short_vector_external \<alpha> fs_init = v"
   and m0: "m \<noteq> 0"
@@ -565,69 +622,42 @@ shows "v \<in> carrier_vec n"
   "v \<noteq> 0\<^sub>v j"
 proof (atomize(full), goal_cases)
   case 1
-  show ?case
-  proof (cases "short_vector \<alpha> fs_init = v")
-    case True
-    from short_vector[OF True m0] show ?thesis by auto
-  next
-    case False
-    from m0 fs_init len have dim_fs_n: "dim_vec (hd fs_init) = n" by (cases fs_init, auto)
-    let ?ext = "external_lll_solver (map_prod integer_of_int integer_of_int (quotient_of \<alpha>)) 
-      (map (map integer_of_int \<circ> list_of_vec) fs_init)" 
-    note res = res[unfolded short_vector_external_def Let_def Code.abort_def]
-    from res False obtain gsi u1i u2i where ext: "?ext = (gsi, u1i, u2i)" by (cases ?ext, auto)
-    define u1 where "u1 = mat_of_rows_list m (map (map int_of_integer) u1i)"
-    define u2 where "u2 = mat_of_rows_list m (map (map int_of_integer) u2i)" 
-    define gs where "gs = map (vec_of_list o map int_of_integer) gsi" 
-    note res = res[unfolded ext option.simps split len dim_fs_n, folded u1_def u2_def gs_def]
-    from res False 
-    have u1: "u1 \<in> carrier_mat m m" 
-      and u2: "u2 \<in> carrier_mat m m" 
-      and len_gs: "length gs = m" 
-      and prod1: "mat_of_rows n fs_init = u1 * mat_of_rows n gs" 
-      and prod2: "mat_of_rows n gs = u2 * mat_of_rows n fs_init" 
-      and gs_v: "short_vector \<alpha> gs = v" 
-      and gs: "set gs \<subseteq> carrier_vec n" 
-      by (auto split: if_splits)
-    from LLL_change_basis[OF gs len_gs u1 u2 prod1 prod2]
-    have id: "lattice_of gs = lattice_of fs_init" 
-      and assms: "LLL_with_assms n m gs \<alpha>" by auto
-    from LLL_with_assms.short_vector[OF assms gs_v m0]
-    show ?thesis using id by (simp add: LLL.L_def)
-  qed
+  obtain fs where red: "reduce_basis_external \<alpha> fs_init = fs" by blast
+  from res[unfolded short_vector_external_def red] have v: "v = hd fs" by auto
+  from reduce_basis_external[OF red] 
+  have red: "reduced fs m" and inv: "LLL_invariant True m fs" by blast+
+  from basis_reduction_short_vector[OF inv v m0]
+  show ?case by blast
 qed
-
 end
+
+text \<open>Unspecified constant to easily enable/disable external lll solver in generated code\<close>
 
 consts enable_external_lll_solver :: bool
 
 definition short_vector_hybrid :: "rat \<Rightarrow> int vec list \<Rightarrow> int vec" where
   "short_vector_hybrid = (if enable_external_lll_solver then short_vector_external else short_vector)" 
 
+definition reduce_basis_hybrid :: "rat \<Rightarrow> int vec list \<Rightarrow> int vec list" where
+  "reduce_basis_hybrid = (if enable_external_lll_solver then reduce_basis_external else reduce_basis)" 
+
 
 context LLL_with_assms
 begin
-
 lemma short_vector_hybrid: assumes res: "short_vector_hybrid \<alpha> fs_init = v"
   and m0: "m \<noteq> 0"
 shows "v \<in> carrier_vec n"
   "v \<in> L - {0\<^sub>v n}"
   "h \<in> L - {0\<^sub>v n} \<Longrightarrow> rat_of_int (sq_norm v) \<le> \<alpha> ^ (m - 1) * rat_of_int (sq_norm h)"
   "v \<noteq> 0\<^sub>v j"
-proof (atomize (full), goal_cases)
-  case 1 
-  show ?case
-  proof (cases enable_external_lll_solver)
-    case True
-    with res[unfolded short_vector_hybrid_def] have "short_vector_external \<alpha> fs_init = v" by simp
-    from short_vector_external[OF this m0] show ?thesis by blast
-  next
-    case False
-    with res[unfolded short_vector_hybrid_def] have "short_vector \<alpha> fs_init = v" by simp
-    from short_vector[OF this m0] show ?thesis by blast
-  qed
-qed
+  using short_vector[of v, OF _ m0] short_vector_external[of v, OF _ m0]
+    res[unfolded short_vector_hybrid_def]
+  by (auto split: if_splits)
 
+lemma reduce_basis_hybrid: assumes res: "reduce_basis_hybrid \<alpha> fs_init = fs" 
+  shows "reduced fs m" "LLL_invariant True m fs" 
+  using reduce_basis_external[of fs] reduce_basis[of fs] res[unfolded reduce_basis_hybrid_def]
+  by (auto split: if_splits)
 end
 
 lemma lll_oracle_default_code[code]: 

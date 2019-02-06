@@ -666,7 +666,7 @@ shows "LLL_invariant True m fs"
   by auto
 
 lemma reduce_basis: assumes res: "reduce_basis \<alpha> fs_init = fs"
-  shows "gs.reduced \<alpha> m (map (gso fs) [0..<m]) (\<mu> fs)" "LLL_invariant True m fs"
+  shows "reduced fs m" "LLL_invariant True m fs"
 proof -
   show "LLL_invariant True m fs"
   proof (cases fs_init)
@@ -682,7 +682,7 @@ proof -
     show "LLL_invariant True m fs" unfolding fs LLL_invariant_def L_def gs.reduced_def gs.weakly_reduced_def
       using lin_dep unfolding m0 Nil by auto
   qed
-  thus "gs.reduced \<alpha> m (map (gso fs) [0..<m]) (\<mu> fs)" by (rule LLL_inv_m_imp_reduced)
+  thus "reduced fs m" by (rule LLL_inv_m_imp_reduced)
 qed
 
 lemma short_vector: assumes res: "short_vector \<alpha> fs_init = v"
