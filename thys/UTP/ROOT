@@ -15,17 +15,18 @@ session "UTP-Toolkit" (AFP) = "HOL-Algebra" +
     Optics
   theories
     "toolkit/utp_toolkit"
-  document_files
+(*  document_files
     "root.tex"
     "root.bib"
     "document.sty"
+*)
 
 (* Core UTP Framework *)
 
 session "UTP" (AFP) = "UTP-Toolkit" +
   options [timeout = 600]
   theories [document = false]
-    utp_parser_utils
+    "utp/utp_parser_utils"
   theories 
     "utp/utp"
     "utp/utp_full"
