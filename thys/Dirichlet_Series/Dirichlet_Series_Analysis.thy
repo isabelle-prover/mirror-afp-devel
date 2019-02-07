@@ -7,6 +7,7 @@ theory Dirichlet_Series_Analysis
 imports
   "HOL-Analysis.Analysis"
   "HOL-Library.Going_To_Filter"
+  "HOL-Real_Asymp.Real_Asymp"
   Dirichlet_Series
   Moebius_Mu
   Partial_Summation
@@ -1226,6 +1227,49 @@ end
 
 subsection \<open>Limit at infinity\<close>
 
+lemma eval_fds_at_top_tail_bound:
+  fixes f :: "'a :: dirichlet_series fds"
+  assumes c: "ereal c > abs_conv_abscissa f"
+  defines "B \<equiv> (\<Sum>n. norm (fds_nth f (n+2)) / real (n+2) powr c) * 2 powr c"
+  assumes s: "s \<bullet> 1 \<ge> c"
+  shows   "norm (eval_fds f s - fds_nth f 1) \<le> B / 2 powr (s \<bullet> 1)"
+proof -
+  from c have "fds_abs_converges f (of_real c)" by (intro fds_abs_converges) simp_all
+  also have "?this \<longleftrightarrow> summable (\<lambda>n. norm (fds_nth f n) / real n powr c)"
+    unfolding fds_abs_converges_def
+    by (intro summable_cong eventually_mono[OF eventually_gt_at_top[of "0::nat"]]) 
+       (auto simp: norm_divide norm_nat_power norm_powr_real_powr)
+  finally have summable_c: \<dots> .
+
+  note c
+  also from s have "ereal c \<le> ereal (s \<bullet> 1)" by simp
+  finally have "fds_abs_converges f s" by (intro fds_abs_converges) auto
+  hence summable: "summable (\<lambda>n. norm (fds_nth f n / nat_power n s))"
+    by (simp add: fds_abs_converges_def)
+  from summable_norm_cancel[OF this]
+    have "(\<lambda>n. fds_nth f n / nat_power n s) sums eval_fds f s"
+    by (simp add: eval_fds_def sums_iff)
+  from sums_split_initial_segment[OF this, of "Suc (Suc 0)"]
+    have "norm (eval_fds f s - fds_nth f 1) = norm (\<Sum>n. fds_nth f (n+2) / nat_power (n+2) s)"
+    by (auto simp: sums_iff)
+  also have "\<dots> \<le> (\<Sum>n. norm (fds_nth f (n+2) / nat_power (n+2) s))"
+    by (intro summable_norm summable_ignore_initial_segment summable)
+  also have "\<dots> \<le> (\<Sum>n. norm (fds_nth f (n+2)) / real (n+2) powr c / 2 powr (s \<bullet> 1 - c))"
+  proof (intro suminf_le allI)
+    fix n :: nat
+    have "norm (fds_nth f (n + 2) / nat_power (n + 2) s) =
+            norm (fds_nth f (n + 2)) / real (n+2) powr c / real (n+2) powr (s \<bullet> 1 - c)"
+      by (simp add: field_simps powr_diff norm_divide norm_nat_power)
+    also have "\<dots> \<le> norm (fds_nth f (n + 2)) / real (n+2) powr c / 2 powr (s \<bullet> 1 - c)" using s
+      by (intro divide_left_mono divide_nonneg_pos powr_mono2 mult_pos_pos) simp_all
+    finally show "norm (fds_nth f (n + 2) / nat_power (n + 2) s) \<le> \<dots>" .
+  qed (intro summable_ignore_initial_segment summable summable_divide summable_c)+
+  also have "\<dots> = (\<Sum>n. norm (fds_nth f (n+2)) / real (n+2) powr c) / 2 powr (s \<bullet> 1 - c)"
+    by (intro suminf_divide summable_ignore_initial_segment summable_c)
+  also have "\<dots> = B / 2 powr (s \<bullet> 1)" by (simp add: B_def powr_diff)
+  finally show ?thesis .
+qed
+
 lemma tendsto_eval_fds_Re_at_top:
   assumes "conv_abscissa (f :: 'a :: dirichlet_series fds) \<noteq> \<infinity>"
   assumes lim: "filterlim (\<lambda>x. S x \<bullet> 1) at_top F"
@@ -1234,45 +1278,10 @@ proof -
   from assms(1) have "abs_conv_abscissa f < \<infinity>"
     using abs_conv_le_conv_abscissa_plus_1[of f] by auto
   from ereal_dense2[OF this] obtain c where c: "abs_conv_abscissa f < ereal c" by auto
-    
-  from c have "fds_abs_converges f (of_real c)" by (intro fds_abs_converges) simp_all
-  also have "?this \<longleftrightarrow> summable (\<lambda>n. norm (fds_nth f n) / real n powr c)"
-    unfolding fds_abs_converges_def
-    by (intro summable_cong eventually_mono[OF eventually_gt_at_top[of "0::nat"]]) 
-       (auto simp: norm_divide norm_nat_power)
-  finally have summable_c: \<dots> .
   define B where "B = (\<Sum>n. norm (fds_nth f (n+2)) / real (n+2) powr c) * 2 powr c"
 
   have *: "norm (eval_fds f s - fds_nth f 1) \<le> B / 2 powr (s \<bullet> 1)" if s: "s \<bullet> 1 \<ge> c" for s
-  proof -
-    note c
-    also from s have "ereal c \<le> ereal (s \<bullet> 1)" by simp
-    finally have "fds_abs_converges f s" by (rule fds_abs_converges)
-    hence summable: "summable (\<lambda>n. norm (fds_nth f n / nat_power n s))"
-      by (simp add: fds_abs_converges_def)
-    from summable_norm_cancel[OF this]
-      have "(\<lambda>n. fds_nth f n / nat_power n s) sums eval_fds f s"
-      by (simp add: eval_fds_def sums_iff)
-    from sums_split_initial_segment[OF this, of "Suc (Suc 0)"]
-      have "norm (eval_fds f s - fds_nth f 1) = norm (\<Sum>n. fds_nth f (n+2) / nat_power (n+2) s)"
-      by (auto simp: sums_iff)
-    also have "\<dots> \<le> (\<Sum>n. norm (fds_nth f (n+2) / nat_power (n+2) s))"
-      by (intro summable_norm summable_ignore_initial_segment summable)
-    also have "\<dots> \<le> (\<Sum>n. norm (fds_nth f (n+2)) / real (n+2) powr c / 2 powr (s \<bullet> 1 - c))"
-    proof (intro suminf_le allI)
-      fix n :: nat
-      have "norm (fds_nth f (n + 2) / nat_power (n + 2) s) =
-              norm (fds_nth f (n + 2)) / real (n+2) powr c / real (n+2) powr (s\<bullet>1 - c)"
-        by (simp add: field_simps powr_diff norm_divide norm_nat_power)
-      also have "\<dots> \<le> norm (fds_nth f (n + 2)) / real (n+2) powr c / 2 powr (s\<bullet>1 - c)" using s
-        by (intro divide_left_mono divide_nonneg_pos powr_mono2 mult_pos_pos) simp_all
-      finally show "norm (fds_nth f (n + 2) / nat_power (n + 2) s) \<le> \<dots>" .
-    qed (intro summable_ignore_initial_segment summable summable_divide summable_c)+
-    also have "\<dots> = (\<Sum>n. norm (fds_nth f (n+2)) / real (n+2) powr c) / 2 powr (s \<bullet> 1 - c)"
-      by (intro suminf_divide summable_ignore_initial_segment summable_c)
-    also have "\<dots> = B / 2 powr (s \<bullet> 1)" by (simp add: B_def powr_diff)
-    finally show ?thesis .
-  qed
+    using eval_fds_at_top_tail_bound[of f c s] that c by (simp add: B_def)
   moreover from lim have "eventually (\<lambda>x. S x \<bullet> 1 \<ge> c) F" by (auto simp: filterlim_at_top)
   ultimately have "eventually (\<lambda>x. norm (eval_fds f (S x) - fds_nth f 1) \<le> 
                       B / 2 powr (S x \<bullet> 1)) F" by (auto elim!: eventually_mono)
@@ -1283,6 +1292,40 @@ proof -
   ultimately have "((\<lambda>x. eval_fds f (S x) - fds_nth f 1) \<longlongrightarrow> 0) F"
     by (rule Lim_null_comparison)
   thus ?thesis by (subst (asm) Lim_null [symmetric])
+qed
+
+lemma tendsto_eval_fds_Re_at_top':
+  assumes "conv_abscissa (f :: complex fds) \<noteq> \<infinity>"
+  shows   "uniform_limit UNIV (\<lambda>\<sigma> t. eval_fds f (of_real \<sigma> + of_real t * \<i>)
+                       ) (\<lambda>_ .fds_nth f 1) at_top"
+proof -
+  from assms(1) have "abs_conv_abscissa f < \<infinity>"
+    using abs_conv_le_conv_abscissa_plus_1[of f] by auto
+  from ereal_dense2[OF this] obtain c where c: "abs_conv_abscissa f < ereal c" by auto
+  define B where "B \<equiv> (\<Sum>n. norm (fds_nth f (n+2)) / real (n+2) powr c) * 2 powr c"
+
+  show ?thesis
+    unfolding uniform_limit_iff
+  proof safe
+    fix \<epsilon> :: real assume "\<epsilon> > 0"
+    hence "eventually (\<lambda>\<sigma>. B / 2 powr \<sigma> < \<epsilon>) at_top"
+      by real_asymp
+    thus "eventually (\<lambda>\<sigma>. \<forall>t\<in>UNIV.
+            dist (eval_fds f (of_real \<sigma> + of_real t * \<i>)) (fds_nth f 1) < \<epsilon>) at_top"
+      using eventually_ge_at_top[of c]
+    proof eventually_elim
+      case (elim \<sigma>)
+      show ?case
+      proof
+        fix t :: real
+        have "dist (eval_fds f (of_real \<sigma> + of_real t * \<i>)) (fds_nth f 1) \<le> B / 2 powr \<sigma>"
+          using eval_fds_at_top_tail_bound[of f c "of_real \<sigma> + of_real t * \<i>"] elim c
+          by (simp add: dist_norm B_def)
+        also have "\<dots> < \<epsilon>" by fact
+        finally show "dist (eval_fds f (of_real \<sigma> + of_real t * \<i>)) (fds_nth f 1) < \<epsilon>" .
+      qed
+    qed
+  qed
 qed
 
 lemma tendsto_eval_fds_Re_going_to_at_top:
