@@ -679,7 +679,6 @@ proof (cases "x = 2")
     unfolding primes_M_def prime_sum_upto_def using x
     by (intro sum.mono_neutral_cong_right) (auto simp: b_def ind_def not_less prime_le_2)
   finally show ?thesis by simp
-  thm primes_M_def
 qed (auto simp: eval_\<theta> eval_\<MM>)
 
 lemma integrable_primes_M: "\<MM> integrable_on {x..y}" if "2 \<le> x" for x y :: real
