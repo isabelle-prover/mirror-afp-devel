@@ -1104,7 +1104,7 @@ end
 end
 
 
-subsection \<open>Evaluation of $L(\<chi>, 0)$\<close>
+subsection \<open>Evaluation of $L(\chi, 0)$\<close>
 
 context residues_nat
 begin
@@ -1175,7 +1175,7 @@ end
 end
 
 
-subsection \<open>Properties of real characters\<close>
+subsection \<open>Properties of $L(\chi, s)$ for real $\chi$\<close>
 
 (*<*)
 unbundle no_vec_lambda_notation
@@ -1217,7 +1217,7 @@ qed
 
 text \<open>
   The following property of real characters is used by Apostol to show the non-vanishing of
-  $L(\chi, 0)$. We have already shown this in a much easier way, but this particular result is
+  $L(\chi, 1)$. We have already shown this in a much easier way, but this particular result is
   still of general interest.
 \<close>
 lemma
