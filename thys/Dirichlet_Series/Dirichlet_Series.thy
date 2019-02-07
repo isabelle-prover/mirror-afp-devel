@@ -287,7 +287,10 @@ proof
   also have "\<dots> \<noteq> 0" using mn by auto
   finally show "f * g \<noteq> 0" by auto
 qed
-  
+
+(* TODO: instance fds :: (semiring_no_zero_divisors_cancel) semiring_no_zero_divisors_cancel
+   Maybe using Bell series and cancellation on FPSs *) 
+
 instance fds :: (ring_no_zero_divisors) ring_no_zero_divisors ..
 instance fds :: (idom) idom ..
 

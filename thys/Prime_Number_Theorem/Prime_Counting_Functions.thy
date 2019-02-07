@@ -413,6 +413,88 @@ proof (rule filterlim_at_top_mono)
   show "filterlim (\<lambda>n::nat. n + 2) at_top at_top" by real_asymp
 qed (auto simp: nth_prime_lower_bound)
 
+lemma \<pi>_at_top: "filterlim \<pi> at_top at_top"
+  unfolding filterlim_at_top
+proof safe
+  fix C :: real
+  define x0 where "x0 = real (nth_prime (nat \<lceil>max 0 C\<rceil>))"
+  show "eventually (\<lambda>x. \<pi> x \<ge> C) at_top"
+    using eventually_ge_at_top
+  proof eventually_elim
+    fix x assume "x \<ge> x0"
+    have "C \<le> real (nat \<lceil>max 0 C\<rceil> + 1)" by linarith
+    also have "real (nat \<lceil>max 0 C\<rceil> + 1) = \<pi> x0"
+      unfolding x0_def by simp
+    also have "\<dots> \<le> \<pi> x" by (rule \<pi>_mono) fact
+    finally show "\<pi> x \<ge> C" .
+  qed
+qed
+
+text\<open>
+  An unbounded, strictly increasing sequence $a_n$ partitions $[a_0; \infty)$ into
+  segments of the form $[a_n; a_{n+1})$.
+\<close>
+lemma strict_mono_sequence_partition:
+  assumes "strict_mono (f :: nat \<Rightarrow> 'a :: {linorder, no_top})"
+  assumes "x \<ge> f 0"
+  assumes "filterlim f at_top at_top"
+  shows   "\<exists>k. x \<in> {f k..<f (Suc k)}"
+proof -
+  define k where "k = (LEAST k. f (Suc k) > x)"
+  {
+    obtain n where "x \<le> f n"
+      using assms by (auto simp: filterlim_at_top eventually_at_top_linorder)
+    also have "f n < f (Suc n)"
+      using assms by (auto simp: strict_mono_Suc_iff)
+    finally have "\<exists>n. f (Suc n) > x" by auto
+  }
+  from LeastI_ex[OF this] have "x < f (Suc k)"
+    by (simp add: k_def)
+  moreover have "f k \<le> x"
+  proof (cases k)
+    case (Suc k')
+    have "k \<le> k'" if "f (Suc k') > x"
+      using that unfolding k_def by (rule Least_le)
+    with Suc show "f k \<le> x" by (cases "f k \<le> x") (auto simp: not_le)
+  qed (use assms in auto)
+  ultimately show ?thesis by auto
+qed
+
+lemma nth_prime_partition:
+  assumes "x \<ge> 2"
+  shows   "\<exists>k. x \<in> {nth_prime k..<nth_prime (Suc k)}"
+  using strict_mono_sequence_partition[OF strict_mono_nth_prime, of x] assms nth_prime_at_top
+  by simp
+
+lemma nth_prime_partition':
+  assumes "x \<ge> 2"
+  shows   "\<exists>k. x \<in> {real (nth_prime k)..<real (nth_prime (Suc k))}"
+  by (rule strict_mono_sequence_partition)
+     (auto simp: strict_mono_Suc_iff assms
+           intro!: filterlim_real_sequentially filterlim_compose[OF _ nth_prime_at_top])
+
+lemma between_nth_primes_imp_nonprime:
+  assumes "n > nth_prime k" "n < nth_prime (Suc k)"
+  shows   "\<not>prime n"
+  using assms by (metis Suc_leI not_le nth_prime_Suc smallest_prime_beyond_smallest)
+
+lemma nth_prime_partition'':
+  assumes "x \<ge> (2 :: real)"
+  shows "x \<in> {real (nth_prime (nat \<lfloor>\<pi> x\<rfloor> - 1))..<real (nth_prime (nat \<lfloor>\<pi> x\<rfloor>))}"
+proof -
+  obtain n where n: "x \<in> {nth_prime n..<nth_prime (Suc n)}"
+    using nth_prime_partition' assms by auto
+  have "\<pi> (nth_prime n) = \<pi> x"
+    unfolding \<pi>_def using between_nth_primes_imp_nonprime n
+    by (intro prime_sum_upto_eqI) (auto simp: le_nat_iff le_floor_iff)
+  hence "real n = \<pi> x - 1"
+    by simp
+  hence n_eq: "n = nat \<lfloor>\<pi> x\<rfloor> - 1" "Suc n = nat \<lfloor>\<pi> x\<rfloor>"
+    by linarith+
+  with n show ?thesis 
+    by simp
+qed
+
 
 subsection \<open>Relations between different prime-counting functions\<close>
 
@@ -569,6 +651,35 @@ proof (cases "x = 2")
     unfolding \<theta>_def prime_sum_upto_def using x
     by (intro sum.mono_neutral_cong_right) (auto simp: b_def ind_def not_less prime_le_2)
   finally show ?thesis by simp
+qed (auto simp: eval_\<theta> eval_\<MM>)
+
+lemma \<MM>_conv_\<theta>_integral:
+  assumes "x \<ge> 2"
+  shows  "((\<lambda>t. \<theta> t / t\<^sup>2) has_integral (\<MM> x - \<theta> x / x)) {2..x}"
+proof (cases "x = 2")
+  case False
+  with assms have x: "x > 2" by simp
+  define b :: "nat \<Rightarrow> real" where "b = (\<lambda>p. ind prime p * ln p)"
+  note [intro] = finite_vimage_real_of_nat_greaterThanAtMost
+  have prime_le_2: "p = 2" if "p \<le> 2" "prime p" for p :: nat
+    using that by (auto simp: prime_nat_iff)
+
+  have "((\<lambda>t. sum_upto b t * (1 / t^2)) has_integral
+          sum_upto b x * (-1 / x) - sum_upto b 2 * (-1 / 2) -
+          (\<Sum>n\<in>real -` {2<..x}. b n * (-1 / real n))) {2..x}" using x
+    by (intro partial_summation_strong[of "{}"])
+       (auto simp flip: has_field_derivative_iff_has_vector_derivative simp: power2_eq_square
+             intro!: derivative_eq_intros continuous_intros)
+  also have "sum_upto b = \<theta>"
+    by (simp add: fun_eq_iff \<theta>_def b_def prime_sum_upto_altdef1)
+  also have "\<theta> x * (-1 / x) - \<theta> 2 * (-1 / 2) - (\<Sum>n\<in>real -` {2<..x}. b n * (-1 / real n)) =
+               -(\<theta> x / x - (\<Sum>n\<in>insert 2 (real -` {2<..x}). b n / real n))"
+    by (subst sum.insert) (auto simp: eval_\<theta> b_def sum_negf)
+  also have "(\<Sum>n\<in>insert 2 (real -` {2<..x}). b n / real n) = \<MM> x"
+    unfolding primes_M_def prime_sum_upto_def using x
+    by (intro sum.mono_neutral_cong_right) (auto simp: b_def ind_def not_less prime_le_2)
+  finally show ?thesis by simp
+  thm primes_M_def
 qed (auto simp: eval_\<theta> eval_\<MM>)
 
 lemma integrable_primes_M: "\<MM> integrable_on {x..y}" if "2 \<le> x" for x y :: real
@@ -900,7 +1011,7 @@ qed
 text \<open>
   The following statement already indicates that the asymptotics of \<open>\<pi>\<close> and \<open>\<theta>\<close>
   are very closely related, since through it, $\pi(x) \sim x / \ln x$ and $\theta(x) \sim x$
-  imply each other each other.
+  imply each other.
 \<close>
 lemma \<pi>_\<theta>_bigo: "(\<lambda>x. \<pi> x - \<theta> x / ln x) \<in> O(\<lambda>x. x / ln x ^ 2)"
 proof -
@@ -947,6 +1058,229 @@ proof -
   ultimately have "(\<lambda>x. \<pi> x - \<theta> x / ln x + \<theta> x / ln x) \<in> O(\<lambda>x. x / ln x)"
     by (rule sum_in_bigo)
   thus ?thesis by simp
+qed
+
+
+subsection \<open>Equivalence of various forms of the Prime Number Theorem\<close>
+
+text \<open>
+  In this section, we show that the following forms of the Prime Number Theorem are
+  all equivalent:
+    \<^enum> $\pi(x) \sim x / \ln x$
+    \<^enum> $\pi(x) \ln \pi(x) \sim x$
+    \<^enum> $p_n \sim n \ln n$
+    \<^enum> $\vartheta(x) \sim x$
+    \<^enum> $\psi(x) \sim x$
+
+  We show the following implication chains:
+    \<^item> \<open>(1) \<rightarrow> (2) \<rightarrow> (3) \<rightarrow> (2) \<rightarrow> (1)\<close>
+    \<^item> \<open>(1) \<rightarrow> (4) \<rightarrow> (1)\<close>
+    \<^item> \<open>(4) \<rightarrow> (5) \<rightarrow> (4)\<close>
+
+  All of these proofs are taken from Apostol's book.
+\<close>
+
+lemma PNT1_imp_PNT1':
+  assumes "\<pi> \<sim>[at_top] (\<lambda>x. x / ln x)"
+  shows   "(\<lambda>x. ln (\<pi> x)) \<sim>[at_top] ln"
+proof -
+  (* TODO: Tedious Landau sum reasoning *)
+  from assms have "((\<lambda>x. \<pi> x / (x / ln x)) \<longlongrightarrow> 1) at_top"
+    by (rule asymp_equivD_strong[OF _ eventually_mono[OF eventually_gt_at_top[of 1]]]) auto
+  hence "((\<lambda>x. ln (\<pi> x / (x / ln x))) \<longlongrightarrow> ln 1) at_top"
+    by (rule tendsto_ln) auto
+  also have "?this \<longleftrightarrow> ((\<lambda>x. ln (\<pi> x) - ln x + ln (ln x)) \<longlongrightarrow> 0) at_top"
+    by (intro filterlim_cong eventually_mono[OF eventually_gt_at_top[of 2]])
+       (auto simp: ln_div field_simps ln_mult \<pi>_pos)
+  finally have "(\<lambda>x. ln (\<pi> x) - ln x + ln (ln x)) \<in> o(\<lambda>_. 1)"
+    by (intro smalloI_tendsto) auto
+  also have "(\<lambda>_::real. 1 :: real) \<in> o(\<lambda>x. ln x)"
+    by real_asymp
+  finally have "(\<lambda>x. ln (\<pi> x) - ln x + ln (ln x) - ln (ln x)) \<in> o(\<lambda>x. ln x)"
+    by (rule sum_in_smallo) real_asymp+
+  thus *: "(\<lambda>x. ln (\<pi> x)) \<sim>[at_top] ln"
+    by (simp add: asymp_equiv_altdef)
+qed
+
+lemma PNT1_imp_PNT2:
+  assumes "\<pi> \<sim>[at_top] (\<lambda>x. x / ln x)"
+  shows   "(\<lambda>x. \<pi> x * ln (\<pi> x)) \<sim>[at_top] (\<lambda>x. x)"
+proof -
+  have "(\<lambda>x. \<pi> x * ln (\<pi> x)) \<sim>[at_top] (\<lambda>x. x / ln x * ln x)"
+    by (intro asymp_equiv_intros assms PNT1_imp_PNT1')
+  also have "\<dots> \<sim>[at_top] (\<lambda>x. x)"
+    by (intro asymp_equiv_refl_ev eventually_mono[OF eventually_gt_at_top[of 1]])
+       (auto simp: field_simps)
+  finally show "(\<lambda>x. \<pi> x * ln (\<pi> x)) \<sim>[at_top] (\<lambda>x. x)"
+    by simp
+qed
+
+lemma PNT2_imp_PNT3:
+  assumes "(\<lambda>x. \<pi> x * ln (\<pi> x)) \<sim>[at_top] (\<lambda>x. x)"
+  shows   "nth_prime \<sim>[at_top] (\<lambda>n. n * ln n)"
+proof -
+  have "(\<lambda>n. nth_prime n) \<sim>[at_top] (\<lambda>n. \<pi> (nth_prime n) * ln (\<pi> (nth_prime n)))"
+    using assms
+    by (rule asymp_equiv_symI [OF asymp_equiv_compose'])
+       (auto intro!: filterlim_compose[OF filterlim_real_sequentially nth_prime_at_top])
+  also have "\<dots> = (\<lambda>n. real (Suc n) * ln (real (Suc n)))"
+    by (simp add: add_ac)
+  also have "\<dots> \<sim>[at_top] (\<lambda>n. real n * ln (real n))"
+    by real_asymp
+  finally show "nth_prime \<sim>[at_top] (\<lambda>n. n * ln n)" .
+qed
+
+lemma PNT3_imp_PNT2:
+  assumes "nth_prime \<sim>[at_top] (\<lambda>n. n * ln n)"
+  shows   "(\<lambda>x. \<pi> x * ln (\<pi> x)) \<sim>[at_top] (\<lambda>x. x)"
+proof (rule asymp_equiv_symI, rule asymp_equiv_sandwich_real)
+  show "eventually (\<lambda>x. x \<in> {real (nth_prime (nat \<lfloor>\<pi> x\<rfloor> - 1))..real (nth_prime (nat \<lfloor>\<pi> x\<rfloor>))})
+          at_top"
+    using eventually_ge_at_top[of 2]
+  proof eventually_elim
+    case (elim x)
+    with nth_prime_partition''[of x] show ?case by auto
+  qed
+next
+  have "(\<lambda>x. real (nth_prime (nat \<lfloor>\<pi> x\<rfloor> - 1))) \<sim>[at_top]
+           (\<lambda>x. real (nat \<lfloor>\<pi> x\<rfloor> - 1) * ln (real (nat \<lfloor>\<pi> x\<rfloor> - 1)))"
+    by (rule asymp_equiv_compose'[OF _ \<pi>_at_top], rule asymp_equiv_compose'[OF assms]) real_asymp
+  also have "\<dots> \<sim>[at_top] (\<lambda>x. \<pi> x * ln (\<pi> x))"
+    by (rule asymp_equiv_compose'[OF _ \<pi>_at_top]) real_asymp
+  finally show "(\<lambda>x. real (nth_prime (nat \<lfloor>\<pi> x\<rfloor> - 1))) \<sim>[at_top] (\<lambda>x. \<pi> x * ln (\<pi> x))" .
+next
+  have "(\<lambda>x. real (nth_prime (nat \<lfloor>\<pi> x\<rfloor>))) \<sim>[at_top]
+           (\<lambda>x. real (nat \<lfloor>\<pi> x\<rfloor>) * ln (real (nat \<lfloor>\<pi> x\<rfloor>)))"
+    by (rule asymp_equiv_compose'[OF _ \<pi>_at_top], rule asymp_equiv_compose'[OF assms]) real_asymp
+  also have "\<dots> \<sim>[at_top] (\<lambda>x. \<pi> x * ln (\<pi> x))"
+    by (rule asymp_equiv_compose'[OF _ \<pi>_at_top]) real_asymp
+  finally show "(\<lambda>x. real (nth_prime (nat \<lfloor>\<pi> x\<rfloor>))) \<sim>[at_top] (\<lambda>x. \<pi> x * ln (\<pi> x))" .
+qed
+
+lemma PNT2_imp_PNT1:
+  assumes "(\<lambda>x. \<pi> x * ln (\<pi> x)) \<sim>[at_top] (\<lambda>x. x)"
+  shows   "(\<lambda>x. ln (\<pi> x)) \<sim>[at_top] (\<lambda>x. ln x)"
+    and   "\<pi> \<sim>[at_top] (\<lambda>x. x / ln x)"
+proof -
+   have ev: "eventually (\<lambda>x. \<pi> x > 0) at_top"
+            "eventually (\<lambda>x. ln (\<pi> x) > 0) at_top"
+            "eventually (\<lambda>x. ln (ln (\<pi> x)) > 0) at_top"
+    by (rule eventually_compose_filterlim[OF _ \<pi>_at_top], real_asymp)+
+
+  from assms have "((\<lambda>x. \<pi> x * ln (\<pi> x) / x) \<longlongrightarrow> 1) at_top"
+    by (rule asymp_equivD_strong[OF _ eventually_mono[OF eventually_gt_at_top[of 1]]]) auto
+  hence "((\<lambda>x. ln (\<pi> x * ln (\<pi> x) / x)) \<longlongrightarrow> ln 1) at_top"
+    by (rule tendsto_ln) auto
+  moreover have "eventually (\<lambda>x. ln (\<pi> x * ln (\<pi> x) / x) =
+                   ln (\<pi> x) * (1 + ln (ln (\<pi> x)) / ln (\<pi> x) - ln x / ln (\<pi> x))) at_top"
+      (is "eventually (\<lambda>x. _ = _ * ?f x) _")
+    using eventually_gt_at_top[of 0] ev
+    by eventually_elim (simp add: field_simps ln_mult ln_div)
+  ultimately have "((\<lambda>x. ln (\<pi> x) * ?f x) \<longlongrightarrow> ln 1) at_top"
+    by (rule Lim_transform_eventually [rotated])
+
+  moreover have "((\<lambda>x. 1 / ln (\<pi> x)) \<longlongrightarrow> 0) at_top"
+    by (rule filterlim_compose[OF _ \<pi>_at_top]) real_asymp
+  ultimately have "((\<lambda>x. ln (\<pi> x) * ?f x * (1 / ln (\<pi> x))) \<longlongrightarrow> ln 1 * 0) at_top"
+    by (rule tendsto_mult)
+  moreover have "eventually (\<lambda>x. ln (\<pi> x) * ?f x * (1 / ln (\<pi> x)) = ?f x) at_top"
+    using ev by eventually_elim auto
+  ultimately have "(?f \<longlongrightarrow> ln 1 * 0) at_top"
+    by (rule Lim_transform_eventually [rotated])
+  hence "((\<lambda>x. 1 + ln (ln (\<pi> x)) / ln (\<pi> x) - ?f x) \<longlongrightarrow> 1 + 0 - ln 1 * 0) at_top"
+    by (intro tendsto_intros filterlim_compose[OF _ \<pi>_at_top]) (real_asymp | simp)+
+  hence "((\<lambda>x. ln x / ln (\<pi> x)) \<longlongrightarrow> 1) at_top"
+    by simp
+  thus *: "(\<lambda>x. ln (\<pi> x)) \<sim>[at_top] (\<lambda>x. ln x)"
+    by (rule asymp_equiv_symI[OF asymp_equivI'])
+
+  have "eventually (\<lambda>x. \<pi> x = \<pi> x * ln (\<pi> x) / ln (\<pi> x)) at_top"
+    using ev by eventually_elim auto
+  hence "\<pi> \<sim>[at_top] (\<lambda>x. \<pi> x * ln (\<pi> x) / ln (\<pi> x))"
+    by (rule asymp_equiv_refl_ev)
+  also from assms and * have "(\<lambda>x. \<pi> x * ln (\<pi> x) / ln (\<pi> x)) \<sim>[at_top] (\<lambda>x. x / ln x)"
+    by (rule asymp_equiv_intros)
+  finally show "\<pi> \<sim>[at_top] (\<lambda>x. x / ln x)" .
+qed
+
+lemma PNT4_imp_PNT5:
+  assumes "\<theta> \<sim>[at_top] (\<lambda>x. x)"
+  shows   "\<psi> \<sim>[at_top] (\<lambda>x. x)"
+proof -
+  define r where "r = (\<lambda>x. \<psi> x - \<theta> x)"
+  have "r \<in> O(\<lambda>x. ln x * sqrt x)"
+    unfolding r_def by (fact \<psi>_minus_\<theta>_bigo)
+  also have "(\<lambda>x::real. ln x * sqrt x) \<in> o(\<lambda>x. x)"
+    by real_asymp
+  finally have r: "r \<in> o(\<lambda>x. x)" .
+
+  have "(\<lambda>x. \<theta> x + r x) \<sim>[at_top] (\<lambda>x. x)"
+    using assms r by (subst asymp_equiv_add_right) auto
+  thus ?thesis by (simp add: r_def)
+qed
+
+lemma PNT4_imp_PNT1:
+  assumes "\<theta> \<sim>[at_top] (\<lambda>x. x)"
+  shows   "\<pi> \<sim>[at_top] (\<lambda>x. x / ln x)"
+proof -
+  have "(\<lambda>x. (\<pi> x - \<theta> x / ln x) + ((\<theta> x - x) / ln x)) \<in> o(\<lambda>x. x / ln x)"
+  proof (rule sum_in_smallo)
+    have "(\<lambda>x. \<pi> x - \<theta> x / ln x) \<in> O(\<lambda>x. x / ln x ^ 2)"
+      by (rule \<pi>_\<theta>_bigo)
+    also have "(\<lambda>x. x / ln x ^ 2) \<in> o(\<lambda>x. x / ln x :: real)"
+      by real_asymp
+    finally show "(\<lambda>x. \<pi> x - \<theta> x / ln x) \<in> o(\<lambda>x. x / ln x)" .
+  next
+    have "eventually (\<lambda>x::real. ln x > 0) at_top" by real_asymp
+    hence "eventually (\<lambda>x::real. ln x \<noteq> 0) at_top" by eventually_elim auto
+    thus "(\<lambda>x. (\<theta> x - x) / ln x) \<in> o(\<lambda>x. x / ln x)"
+      by (intro landau_o.small.divide_right asymp_equiv_imp_diff_smallo assms)
+  qed
+  thus ?thesis by (simp add: diff_divide_distrib asymp_equiv_altdef)
+qed
+
+lemma PNT1_imp_PNT4:
+  assumes "\<pi> \<sim>[at_top] (\<lambda>x. x / ln x)"
+  shows   "\<theta> \<sim>[at_top] (\<lambda>x. x)"
+proof -
+  have "\<theta> \<sim>[at_top] (\<lambda>x. \<pi> x * ln x)"
+  proof (rule smallo_imp_asymp_equiv)
+    have "(\<lambda>x. \<theta> x - \<pi> x * ln x) \<in> \<Theta>(\<lambda>x. - ((\<pi> x - \<theta> x / ln x) * ln x))"
+      by (intro bigthetaI_cong eventually_mono[OF eventually_gt_at_top[of 1]])
+         (auto simp: field_simps)
+    also have "(\<lambda>x. - ((\<pi> x - \<theta> x / ln x) * ln x)) \<in> O(\<lambda>x. x / (ln x)\<^sup>2 * ln x)"
+      unfolding landau_o.big.uminus_in_iff by (intro landau_o.big.mult_right \<pi>_\<theta>_bigo)
+    also have "(\<lambda>x::real. x / (ln x)\<^sup>2 * ln x) \<in> o(\<lambda>x. x / ln x * ln x)"
+      by real_asymp
+    also have "(\<lambda>x. x / ln x * ln x) \<in> \<Theta>(\<lambda>x. \<pi> x * ln x)"
+      by (intro asymp_equiv_imp_bigtheta asymp_equiv_intros asymp_equiv_symI[OF assms])
+    finally show "(\<lambda>x. \<theta> x - \<pi> x * ln x) \<in> o(\<lambda>x. \<pi> x * ln x)" .
+  qed
+  also have "\<dots> \<sim>[at_top] (\<lambda>x. x / ln x * ln x)"
+    by (intro asymp_equiv_intros assms)
+  also have "\<dots> \<sim>[at_top] (\<lambda>x. x)"
+    by real_asymp
+  finally show ?thesis .
+qed
+
+lemma PNT5_imp_PNT4:
+  assumes "\<psi> \<sim>[at_top] (\<lambda>x. x)"
+  shows   "\<theta> \<sim>[at_top] (\<lambda>x. x)"
+proof -
+  define r where "r = (\<lambda>x. \<theta> x - \<psi> x)"
+  have "(\<lambda>x. \<psi> x - \<theta> x) \<in> O(\<lambda>x. ln x * sqrt x)"
+    by (fact \<psi>_minus_\<theta>_bigo)
+  also have "(\<lambda>x. \<psi> x - \<theta> x) = (\<lambda>x. -r x)"
+    by (simp add: r_def)
+  finally have "r \<in> O(\<lambda>x. ln x * sqrt x)"
+    by simp
+  also have "(\<lambda>x::real. ln x * sqrt x) \<in> o(\<lambda>x. x)"
+    by real_asymp
+  finally have r: "r \<in> o(\<lambda>x. x)" .
+
+  have "(\<lambda>x. \<psi> x + r x) \<sim>[at_top] (\<lambda>x. x)"
+    using assms r by (subst asymp_equiv_add_right) auto
+  thus ?thesis by (simp add: r_def)
 qed
 
 

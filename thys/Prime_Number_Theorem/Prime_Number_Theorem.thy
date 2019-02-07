@@ -777,51 +777,27 @@ proof -
 qed
 
 text \<open>
-  The asymptotics of \<open>\<psi>\<close> and \<open>\<pi>\<close> follow as simple corollaries.
+  The various other forms of the Prime Number Theorem follow as simple corollaries.
 \<close>
 corollary \<psi>_asymptotics: "\<psi> \<sim>[at_top] (\<lambda>x. x)"
-proof -
-  define r where "r = (\<lambda>x. \<psi> x - \<theta> x)"
-  have "r \<in> O(\<lambda>x. ln x * sqrt x)"
-    unfolding r_def by (fact \<psi>_minus_\<theta>_bigo)
-  also have "(\<lambda>x::real. ln x * sqrt x) \<in> o(\<lambda>x. x)"
-    by real_asymp
-  finally have r: "r \<in> o(\<lambda>x. x)" .
-
-  have "(\<lambda>x. \<theta> x + r x) \<sim>[at_top] (\<lambda>x. x)"
-    using \<theta>_asymptotics r by (subst asymp_equiv_add_right) auto
-  thus ?thesis by (simp add: r_def)
-qed
+  using \<theta>_asymptotics PNT4_imp_PNT5 by simp
   
 corollary prime_number_theorem: "\<pi> \<sim>[at_top] (\<lambda>x. x / ln x)"
-proof -
-  have "(\<lambda>x. (\<pi> x - \<theta> x / ln x) + ((\<theta> x - x) / ln x)) \<in> o(\<lambda>x. x / ln x)"
-  proof (rule sum_in_smallo)
-    have "(\<lambda>x. \<pi> x - \<theta> x / ln x) \<in> O(\<lambda>x. x / ln x ^ 2)"
-      by (rule \<pi>_\<theta>_bigo)
-    also have "(\<lambda>x. x / ln x ^ 2) \<in> o(\<lambda>x. x / ln x :: real)"
-      by real_asymp
-    finally show "(\<lambda>x. \<pi> x - \<theta> x / ln x) \<in> o(\<lambda>x. x / ln x)" .
-  next
-    have "eventually (\<lambda>x::real. ln x > 0) at_top" by real_asymp
-    hence "eventually (\<lambda>x::real. ln x \<noteq> 0) at_top" by eventually_elim auto
-    thus "(\<lambda>x. (\<theta> x - x) / ln x) \<in> o(\<lambda>x. x / ln x)"
-      by (intro landau_o.small.divide_right asymp_equiv_imp_diff_smallo \<theta>_asymptotics)
-  qed
-  thus ?thesis by (simp add: diff_divide_distrib asymp_equiv_altdef)
-qed
+  using \<theta>_asymptotics PNT4_imp_PNT1 by simp
 
-lemma asymp_equivD_strong:
-  assumes "f \<sim>[F] g" "eventually (\<lambda>x. f x \<noteq> 0 \<or> g x \<noteq> 0) F"
-  shows   "((\<lambda>x. f x / g x) \<longlongrightarrow> 1) F"
-proof -
-  from assms(1) have "((\<lambda>x. if f x = 0 \<and> g x = 0 then 1 else f x / g x) \<longlongrightarrow> 1) F"
-    by (rule asymp_equivD)
-  also have "?this \<longleftrightarrow> ?thesis"
-    by (intro filterlim_cong eventually_mono[OF assms(2)]) auto
-  finally show ?thesis .
-qed
+corollary ln_\<pi>_asymptotics: "(\<lambda>x. ln (\<pi> x)) \<sim>[at_top] ln"
+  using prime_number_theorem PNT1_imp_PNT1' by simp
 
+corollary \<pi>_ln_\<pi>_asymptotics: "(\<lambda>x. \<pi> x * ln (\<pi> x)) \<sim>[at_top] (\<lambda>x. x)"
+  using prime_number_theorem PNT1_imp_PNT2 by simp
+
+corollary nth_prime_asymptotics: "(\<lambda>n. real (nth_prime n)) \<sim>[at_top] (\<lambda>n. real n * ln (real n))"
+  using \<pi>_ln_\<pi>_asymptotics PNT2_imp_PNT3 by simp
+
+
+text \<open>
+  The following versions use a little less notation.
+\<close>
 corollary prime_number_theorem': "((\<lambda>x. \<pi> x / (x / ln x)) \<longlongrightarrow> 1) at_top"
   using prime_number_theorem
   by (rule asymp_equivD_strong[OF _ eventually_mono[OF eventually_gt_at_top[of 1]]]) auto
@@ -841,56 +817,6 @@ proof -
     using prime_number_theorem''
     by (rule asymp_equiv_compose') (simp add: filterlim_real_sequentially)
   thus ?thesis by simp
-qed
-
-text \<open>
-  Finally, we show that $p_n \sim n \ln n$, where $p_n$ denotes the $n$-th prime number. We again
-  follow a proof by Apostol, first showing the intermediate result $\ln \pi(x) \sim \ln x$:
-\<close>
-lemma ln_\<pi>_asymptotics: "(\<lambda>x. ln (\<pi> x)) \<sim>[at_top] ln"
-proof -
-  from prime_number_theorem' have "((\<lambda>x. \<pi> x / (x / ln x)) \<longlongrightarrow> 1) at_top" .
-  hence "((\<lambda>x. ln (\<pi> x / (x / ln x))) \<longlongrightarrow> ln 1) at_top"
-    by (rule tendsto_ln) auto
-  also have "?this \<longleftrightarrow> ((\<lambda>x. ln x * (ln (\<pi> x) / ln x + ln (ln x) / ln x - 1)) \<longlongrightarrow> 0) at_top"
-    by (intro filterlim_cong eventually_mono[OF eventually_gt_at_top[of 2]])
-       (auto simp: ln_div field_simps ln_mult \<pi>_pos)
-  finally have "((\<lambda>x::real. ln x * (ln (\<pi> x) / ln x + ln (ln x) / ln x - 1) / ln x) \<longlongrightarrow> 0) at_top"
-    by (rule real_tendsto_divide_at_top) real_asymp
-  also have "?this \<longleftrightarrow> ((\<lambda>x. ln (\<pi> x) / ln x + (ln (ln x) / ln x - 1)) \<longlongrightarrow> 0) at_top"
-    by (intro filterlim_cong eventually_mono[OF eventually_gt_at_top[of 2]])
-       (auto simp: field_simps)
-  finally have "((\<lambda>x. ln (\<pi> x) / ln x + (ln (ln x) / ln x - 1) - (ln (ln x) / ln x - 1))
-                   \<longlongrightarrow> 0 - (-1)) at_top"
-    by (rule tendsto_diff) real_asymp
-  hence "((\<lambda>x. ln (\<pi> x) / ln x) \<longlongrightarrow> 1) at_top"
-    by simp
-  thus "(\<lambda>x. ln (\<pi> x)) \<sim>[at_top] ln"
-    by (rule asymp_equivI')
-qed
-
-text \<open>
-  Combining this auxiliary result with the Prime Number Theorem, we obtain 
-  $\pi(x) \ln \pi(x) \sim x$, and with the substitution $x := p_n$:
-  \[p_n \sim \pi(p_n) \ln \pi(p_n) \sim n \ln n\ .\]
-\<close>
-corollary nth_prime_asymptotics: "(\<lambda>n. real (nth_prime n)) \<sim>[at_top] (\<lambda>n. real n * ln (real n))"
-proof -
-  have "(\<lambda>x. \<pi> x * ln (\<pi> x)) \<sim>[at_top] (\<lambda>x. x / ln x * ln x)"
-    by (intro asymp_equiv_intros prime_number_theorem ln_\<pi>_asymptotics)
-  also have "\<dots> \<sim>[at_top] (\<lambda>x. x)"
-    by (intro asymp_equiv_refl_ev eventually_mono[OF eventually_gt_at_top[of 1]])
-       (auto simp: field_simps)
-  finally have "(\<lambda>x. \<pi> x * ln (\<pi> x)) \<sim>[at_top] (\<lambda>x. x)"
-    by simp
-  hence "(\<lambda>n. nth_prime n) \<sim>[at_top] (\<lambda>n. \<pi> (nth_prime n) * ln (\<pi> (nth_prime n)))"
-    by (rule asymp_equiv_symI [OF asymp_equiv_compose'])
-       (auto intro!: filterlim_compose[OF filterlim_real_sequentially nth_prime_at_top])
-  also have "\<dots> = (\<lambda>n. real (Suc n) * ln (real (Suc n)))"
-    by (simp add: add_ac)
-  also have "\<dots> \<sim>[at_top] (\<lambda>n. real n * ln (real n))"
-    by real_asymp
-  finally show ?thesis .
 qed
 
 (*<*)

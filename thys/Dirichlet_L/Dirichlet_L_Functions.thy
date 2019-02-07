@@ -19,17 +19,26 @@ text \<open>
   $\chi$ as syntax, which causes some annoyance to us, so we disable it locally.
 \<close>
 
+(*<*)
+bundle vec_lambda_notation
+begin
+notation vec_lambda (binder "\<chi>" 10)
+end
+
 bundle no_vec_lambda_notation
 begin
 no_notation vec_lambda (binder "\<chi>" 10)
 end
+(*>*)
 
 
 subsection \<open>Definition and basic properties\<close>
 
+(*<*)
 context
   includes no_vec_lambda_notation
 begin
+(*>*)
 
 text \<open>
   We now define Dirichlet $L$ functions as a finite linear combination of Hurwitz $\zeta$ functions.
@@ -43,6 +52,12 @@ definition Dirichlet_L :: "nat \<Rightarrow> (nat \<Rightarrow> complex) \<Right
         if \<chi> = principal_dchar m then 0 else eval_fds (fds \<chi>) 1
       else 
         of_nat m powr - s * (\<Sum>k = 1..m. \<chi> k * hurwitz_zeta (real k / real m) s))"
+
+lemma Dirichlet_L_conv_hurwitz_zeta_nonprincipal:
+  assumes "s \<noteq> 1"
+  shows   "Dirichlet_L n \<chi> s =
+             of_nat n powr -s * (\<Sum>k = 1..n. \<chi> k * hurwitz_zeta (real k / real n) s)"
+  using assms by (simp add: Dirichlet_L_def)
 
 text \<open>
   Analyticity everywhere except $1$ is trivial by the above definition, since the
@@ -61,14 +76,18 @@ proof -
   finally show ?thesis .
 qed
 
+(*<*)
 end
+(*>*)
 
 
 context dcharacter
 begin
+(*<*)
 context
   includes no_vec_lambda_notation dcharacter_syntax
 begin
+(*>*)
 
 text \<open>
   For a real value greater than 1, the formal Dirichlet series of an $L$ function
@@ -372,12 +391,16 @@ proof -
   thus ?thesis by (auto simp add: Dirichlet_L_def cnj_powr eval_inv_character)
 qed
 
+(*<*)
 end
+(*>*)
 end
 
+(*<*)
 context
   includes no_vec_lambda_notation
 begin
+(*>*)
 
 lemma holomorphic_Dirichlet_L [holomorphic_intros]:
   assumes "n > 1" "\<chi> \<noteq> principal_dchar n \<and> dcharacter n \<chi> \<or> \<chi> = principal_dchar n \<and> 1 \<notin> A"
@@ -420,14 +443,18 @@ corollary continuous_Dirichlet_L' [continuous_intros]:
      continuous (at s within A) (\<lambda>x. Dirichlet_L n \<chi> (f x))"
   by (rule continuous_within_compose3[OF continuous_Dirichlet_L]) auto
 
+(*<*)
 end
+(*>*)
 
 
 context residues_nat
 begin
+(*<*)
 context
 includes no_vec_lambda_notation dcharacter_syntax
 begin
+(*>*)
 
 text \<open>
   Applying the above to the $L(\chi_0,s)$, the $L$ function of the principal character, we find 
@@ -486,7 +513,9 @@ proof (cases "s = 1")
          open_halfspace_Re_gt exI[of _ 2] connected_punctured_universe)
 qed (simp_all add: Dirichlet_L_def zeta_1)
 
+(*<*)
 end
+(*>*)
 end
 
 
@@ -537,9 +566,11 @@ text \<open>
 \<close>
 context dcharacter
 begin
+(*<*)
 context
   includes no_vec_lambda_notation dcharacter_syntax
 begin
+(*>*)
 
 theorem Dirichlet_L_Re_ge_1_nonzero_nonprincipal:
   assumes "\<chi> \<noteq> \<chi>\<^sub>0" and "Re u \<ge> 1"
@@ -1067,6 +1098,168 @@ proof (rule bigoI)
   qed
 qed
 
+(*<*)
 end
+(*>*)
 end
+
+
+subsection \<open>Evaluation of $L(\<chi>, 0)$\<close>
+
+context residues_nat
+begin
+(*<*)
+context
+  includes no_vec_lambda_notation dcharacter_syntax
+begin
+(*>*)
+
+lemma Dirichlet_L_0_principal [simp]: "Dirichlet_L n \<chi>\<^sub>0 0 = 0"
+proof -
+  have "Dirichlet_L n \<chi>\<^sub>0 0 = -1/2 * (\<Prod>p | prime p \<and> p dvd n. 1 - 1 / p powr 0)"
+    by (simp add: Dirichlet_L_principal prime_gt_0_nat)
+  also have "(\<Prod>p | prime p \<and> p dvd n. 1 - 1 / p powr 0) = (\<Prod>p | prime p \<and> p dvd n. 0 :: complex)"
+    by (intro prod.cong) (auto simp: prime_gt_0_nat)
+  also have "(\<Prod>p | prime p \<and> p dvd n. 0 :: complex) = 0"
+    using prime_divisor_exists[of n] n by (auto simp: card_gt_0_iff)
+  finally show ?thesis by simp
+qed
+
+end
+(*<*)
+end
+(*>*)
+
+context dcharacter
+begin
+(*<*)
+context
+  includes no_vec_lambda_notation dcharacter_syntax
+begin
+(*>*)
+
+lemma Dirichlet_L_0_nonprincipal:
+  assumes nonprincipal: "\<chi> \<noteq> \<chi>\<^sub>0"
+  shows   "Dirichlet_L n \<chi> 0 = -(\<Sum>k=1..<n. of_nat k * \<chi> k) / of_nat n"
+proof -
+  have "Dirichlet_L n \<chi> 0 = (\<Sum>k=1..n. \<chi> k * (1 / 2 - of_nat k / of_nat n))"
+    using assms n by (simp add: Dirichlet_L_conv_hurwitz_zeta_nonprincipal)
+  also have "\<dots> = -1/n * (\<Sum>k=1..n. of_nat k * \<chi> k)"
+    using assms by (simp add: algebra_simps sum_subtractf sum_dcharacter_block'
+                              sum_divide_distrib [symmetric])
+  also have "(\<Sum>k=1..n. of_nat k * \<chi> k) = (\<Sum>k=1..<n. of_nat k * \<chi> k)"
+    using n by (intro sum.mono_neutral_right) (auto simp: eq_zero_iff)
+  finally show eq: "Dirichlet_L n \<chi> 0 = -(\<Sum>k=1..<n. of_nat k * \<chi> k) / of_nat n"
+    by simp
+qed
+
+lemma Dirichlet_L_0_even [simp]:
+  assumes "\<chi> (n - 1) = 1"
+  shows   "Dirichlet_L n \<chi> 0 = 0"
+proof (cases "\<chi> = \<chi>\<^sub>0")
+  case False
+  hence "Dirichlet_L n \<chi> 0 = -(\<Sum>k=Suc 0..<n. of_nat k * \<chi> k) / of_nat n"
+    by (simp add: Dirichlet_L_0_nonprincipal)
+  also have "\<dots> = 0"
+    using assms False by (subst even_dcharacter_linear_sum_eq_0) auto
+  finally show "Dirichlet_L n \<chi> 0 = 0" .
+qed auto
+
+lemma Dirichlet_L_0:
+  "Dirichlet_L n \<chi> 0 = (if \<chi> (n - 1) = 1 then 0 else -(\<Sum>k=1..<n. of_nat k * \<chi> k) / of_nat n)"
+  by (cases "\<chi> = \<chi>\<^sub>0") (auto simp: Dirichlet_L_0_nonprincipal)
+
+(*<*)
+end
+(*>*)
+end
+
+
+subsection \<open>Properties of real characters\<close>
+
+(*<*)
+unbundle no_vec_lambda_notation
+(*>*)
+
+locale real_dcharacter = dcharacter +
+  assumes real: "\<chi> k \<in> \<real>"
+begin
+
+lemma Im_eq_0 [simp]: "Im (\<chi> k) = 0"
+  using real[of k] by (auto elim!: Reals_cases)
+
+lemma of_real_Re [simp]: "of_real (Re (\<chi> k)) = \<chi> k"
+  by (simp add: complex_eq_iff)
+
+lemma char_cases: "\<chi> k \<in> {-1, 0, 1}"
+proof -
+  from norm[of k] have "Re (\<chi> k) \<in> {-1,0,1}" 
+    by (auto simp: cmod_def split: if_splits)
+  hence "of_real (Re (\<chi> k)) \<in> {-1, 0, 1}" by auto
+  also have "of_real (Re (\<chi> k)) = \<chi> k" by (simp add: complex_eq_iff)
+  finally show ?thesis .
+qed
+
+lemma cnj [simp]: "cnj (\<chi> k) = \<chi> k"
+  by (simp add: complex_eq_iff)
+
+lemma inv_character_id [simp]: "inv_character \<chi> = \<chi>"
+  by (simp add: inv_character_def fun_eq_iff)
+
+lemma Dirichlet_L_in_Reals:
+  assumes "s \<in> \<real>"
+  shows   "Dirichlet_L n \<chi> s \<in> \<real>"
+proof -
+  have "cnj (Dirichlet_L n \<chi> s) = Dirichlet_L n \<chi> s"
+    using assms by (subst cnj_Dirichlet_L) (auto elim!: Reals_cases)
+  thus ?thesis using Reals_cnj_iff by blast
+qed
+
+text \<open>
+  The following property of real characters is used by Apostol to show the non-vanishing of
+  $L(\chi, 0)$. We have already shown this in a much easier way, but this particular result is
+  still of general interest.
+\<close>
+lemma
+  assumes k: "k > 0"
+  shows sum_char_divisors_ge: "Re (\<Sum>d | d dvd k. \<chi> d) \<ge> 0" (is "Re (?A k) \<ge> 0")
+  and   sum_char_divisors_square_ge: "is_square k \<Longrightarrow> Re (\<Sum>d | d dvd k. \<chi> d) \<ge> 1"
+proof -
+  interpret sum: multiplicative_function ?A
+    by (fact mult.multiplicative_sum_divisors)
+
+  have A: "?A k \<in> \<real>" for k by (intro sum_in_Reals real)
+  hence [simp]: "Im (?A k) = 0" for k by (auto elim!: Reals_cases)
+  have *: "Re (?A (p ^ m)) \<ge> (if even m then 1 else 0)" if p: "prime p" for p m
+  proof -
+    have sum_neg1: "(\<Sum>i\<le>m. (-1) ^ i) = (if even m then 1 else (0::real))"
+      by (induction m) auto
+    from p have "?A (p ^ m) = (\<Sum>k\<le>m. \<chi> (p ^ k))"
+      by (intro sum.reindex_bij_betw [symmetric] bij_betw_prime_power_divisors)
+    also have "Re \<dots> = (\<Sum>k\<le>m. Re (\<chi> p) ^ k)" by (simp add: mult.power)
+    also have "\<dots> \<ge> (if even m then 1 else 0)"
+      using sum_neg1 char_cases[of p] by (auto simp: power_0_left)
+    finally show ?thesis .
+  qed
+  have *: "Re (?A (p ^ m)) \<ge> 0" "even m \<Longrightarrow> Re (?A (p ^ m)) \<ge> 1" if "prime p" for p m
+    using *[of p m] that by (auto split: if_splits)
+
+  have eq: "Re (?A k) = (\<Prod>p\<in>prime_factors k. Re (?A (p ^ multiplicity p k)))"
+    using k A by (subst sum.prod_prime_factors) (auto simp: Re_prod_Reals)
+  show "Re (\<Sum>d | d dvd k. \<chi> d) \<ge> 0"  by (subst eq, intro prod_nonneg ballI *) auto
+
+  assume "is_square k"
+  then obtain m where m: "k = m ^ 2" by (auto elim!: is_nth_powerE)
+  have "even (multiplicity p k)" if "prime p" for p using k that unfolding m
+    by (subst prime_elem_multiplicity_power_distrib) (auto intro!: Nat.gr0I)
+  thus "Re (\<Sum>d | d dvd k. \<chi> d) \<ge> 1"
+    by (subst eq, intro prod_ge_1 ballI *) auto
+qed
+
+end
+
+(*<*)
+unbundle vec_lambda_notation
+(*>*)
+
 end

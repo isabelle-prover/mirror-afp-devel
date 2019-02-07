@@ -28,6 +28,23 @@ definition residue_mult_group :: "nat \<Rightarrow> nat monoid" where
 definition principal_dchar :: "nat \<Rightarrow> nat \<Rightarrow> complex" where
   "principal_dchar n = (\<lambda>k. if coprime k n then 1 else 0)"
 
+lemma principal_dchar_coprime [simp]: "coprime k n \<Longrightarrow> principal_dchar n k = 1"
+  and principal_dchar_not_coprime [simp]: "\<not>coprime k n \<Longrightarrow> principal_dchar n k = 0"
+  by (simp_all add: principal_dchar_def)
+
+lemma principal_dchar_1 [simp]: "principal_dchar n 1 = 1"
+  by simp
+
+lemma principal_dchar_minus1 [simp]:
+  assumes "n > 0"
+  shows   "principal_dchar n (n - Suc 0) = 1"
+proof (cases "n = 1")
+  case False
+  with assms have "n > 1" by linarith
+  thus ?thesis using coprime_diff_one_left_nat[of n]
+    by (intro principal_dchar_coprime) auto
+qed auto
+
 lemma mod_in_totatives: "n > 1 \<Longrightarrow> a mod n \<in> totatives n \<longleftrightarrow> coprime a n"
   by (auto simp: totatives_def mod_greater_zero_iff_not_dvd dest: coprime_common_divisor_nat)
 
@@ -47,6 +64,9 @@ lemma order [simp]: "order G = totient n"
 
 lemma totatives_mod [simp]: "x \<in> totatives n \<Longrightarrow> x mod n = x"
   using n by (intro mod_less) (auto simp: totatives_def intro!: order.not_eq_order_implies_strict)
+
+lemma principal_dchar_minus1 [simp]: "principal_dchar n (n - Suc 0) = 1"
+  using principal_dchar_minus1[of n] n by simp
 
 sublocale finite_comm_group G
 proof
@@ -133,6 +153,17 @@ proof (induction m)
   finally show ?case .
 qed simp_all
 
+lemma minus_one_periodic [simp]:
+  assumes "k > 0"
+  shows   "\<chi> (k * n - 1) = \<chi> (n - 1)"
+proof -
+  have "k * n - 1 = n - 1 + (k - 1) * n"
+    using assms n by (simp add: algebra_simps)
+  also have "\<chi> \<dots> = \<chi> (n - 1)"
+    by (rule periodic_mult)
+  finally show ?thesis .
+qed
+
 lemma cong:
   assumes "[a = b] (mod n)"
   shows   "\<chi> a = \<chi> b"
@@ -175,6 +206,20 @@ proof safe
   hence "\<chi> (x * y) = \<chi> (Suc 0)" by (rule cong)
   with \<open>\<chi> x = 0\<close> show False by simp
 qed (auto simp: eq_zero)
+
+lemma minus_one': "\<chi> (n - 1) \<in> {-1, 1}"
+proof -
+  define n' where "n' = n - 2"
+  have n: "n = Suc (Suc n')" using n by (simp add: n'_def)
+  have "(n - 1) ^ 2 = 1 + (n - 2) * n"
+    by (simp add: power2_eq_square algebra_simps n)
+  also have "\<chi> \<dots> = 1"
+    by (subst periodic_mult) auto
+  also have "\<chi> ((n - 1) ^ 2) = \<chi> (n - 1) ^ 2"
+    by (rule mult.power)
+  finally show ?thesis
+    by (subst (asm) power2_eq_1_iff) auto
+qed
 
 lemma c2dc_dc2c [simp]: "c2dc (dc2c \<chi>) = \<chi>"
   using n by (auto simp: c2dc_def dc2c_def fun_eq_iff intro!: cong simp: cong_def)
@@ -295,6 +340,15 @@ proof -
   finally show ?thesis .
 qed
 
+lemma (in dcharacter) sum_dcharacter_block':
+  "sum \<chi> {Suc 0..n} = (if \<chi> = principal_dchar n then of_nat (totient n) else 0)"
+proof -
+  let ?f = "\<lambda>k. if k = n then 0 else k" and ?g = "\<lambda>k. if k = 0 then n else k"
+  have "sum \<chi> {1..n} = sum \<chi> {..<n}"
+    using n by (intro sum.reindex_bij_witness[where j = ?f and i = ?g]) (auto simp: eq_zero_iff)
+  thus ?thesis by (simp add: sum_dcharacter_block)
+qed
+
 lemma (in dcharacter) sum_lessThan_dcharacter:
   assumes "\<chi> \<noteq> principal_dchar n"
   shows   "(\<Sum>x<m. \<chi> x) = (\<Sum>x<m mod n. \<chi> x)"
@@ -376,6 +430,34 @@ next
   from False have "(\<Sum>\<chi>\<in>dcharacters n. \<chi> x) = 0"
     by (intro sum.neutral) (auto simp: dcharacters_def dcharacter.eq_zero)
   with \<open>x mod n \<noteq> 1\<close> and n show ?thesis by (simp add: cong_def)
+qed
+
+lemma (in dcharacter) even_dcharacter_linear_sum_eq_0 [simp]:
+  assumes "\<chi> \<noteq> principal_dchar n" and "\<chi> (n - 1) = 1"
+  shows   "(\<Sum>k=Suc 0..<n. of_nat k * \<chi> k) = 0"
+proof -
+  have "(\<Sum>k=1..<n. of_nat k * \<chi> k) = (\<Sum>k=1..<n. (of_nat n - of_nat k) * \<chi> (n - k))"
+    by (intro sum.reindex_bij_witness[where i = "\<lambda>k. n - k" and j = "\<lambda>k. n - k"])
+       (auto simp: of_nat_diff)
+  also have "\<dots> = n * (\<Sum>k=1..<n. \<chi> (n - k)) - (\<Sum>k=1..<n. k * \<chi> (n - k))"
+    by (simp add: algebra_simps sum_subtractf sum_distrib_left)
+  also have "(\<Sum>k=1..<n. \<chi> (n - k)) = (\<Sum>k=1..<n. \<chi> k)"
+    by (intro sum.reindex_bij_witness[where i = "\<lambda>k. n - k" and j = "\<lambda>k. n - k"]) auto
+  also have "\<dots> = (\<Sum>k<n. \<chi> k)"
+    by (intro sum.mono_neutral_left) (auto simp: Suc_le_eq)
+  also have "\<dots> = 0" using assms by (simp add: sum_dcharacter_block)
+  also have "(\<Sum>k=1..<n. of_nat k * \<chi> (n - k)) = (\<Sum>k=1..<n. k * \<chi> k)"
+  proof (intro sum.cong refl)
+    fix k assume k: "k \<in> {1..<n}"
+    have "of_nat k * \<chi> k = of_nat k * \<chi> ((n - 1) * k)"
+      using assms by (subst mult) simp_all
+    also have "(n - 1) * k = n - k + (k - 1) * n"
+      using k by (simp add: algebra_simps)
+    also have "\<chi> \<dots> = \<chi> (n - k)"
+      by (rule periodic_mult)
+    finally show "of_nat k * \<chi> (n - k) = of_nat k * \<chi> k" ..
+  qed
+  finally show ?thesis by simp
 qed
 
 end
