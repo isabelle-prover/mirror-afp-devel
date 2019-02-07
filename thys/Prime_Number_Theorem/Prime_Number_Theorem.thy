@@ -471,7 +471,7 @@ proof -
   qed
 
   have conv: "fds_converges F s" if "Re s \<ge> 1" for s
-  proof (rule Newman_Ingham)
+  proof (rule Newman_Ingham_1)
     have "(\<lambda>n. \<MM> (real n) - ln (real n)) \<in> O(\<lambda>_. 1)"
       using mertens_bounded by (rule landau_o.big.compose) real_asymp
     from natfun_bigo_1E[OF this, of 1]
