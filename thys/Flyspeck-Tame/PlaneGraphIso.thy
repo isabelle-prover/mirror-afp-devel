@@ -165,6 +165,7 @@ declare Image_Collect_case_prod[simp del]
 
 lemma pr_Hom_pres_face_nodes:
  "is_pr_Hom \<phi> Fs\<^sub>1 Fs\<^sub>2 \<Longrightarrow> (\<Union>F\<in>Fs\<^sub>1. {\<phi> ` (set F)}) = (\<Union>F\<in>Fs\<^sub>2. {set F})"
+supply image_cong_simp [cong del]
 apply(clarsimp simp:is_pr_Hom_def quotient_def)
 apply auto
 apply(subgoal_tac "\<exists>F' \<in> Fs\<^sub>2. {\<cong>} `` {map \<phi> F} = {\<cong>} `` {F'}")
@@ -674,6 +675,7 @@ by(auto simp:image_def dom_def)
 lemma image_map_of_conv_Image:
  "\<And>A. \<lbrakk> distinct(map fst xys) \<rbrakk>
  \<Longrightarrow> map_of xys ` A = Some ` (set xys `` A) \<union> (if A \<subseteq> fst ` set xys then {} else {None})"
+supply image_cong_simp [cong del]
 apply (induct xys)
  apply (simp add:image_def Image_def Collect_conv_if)
 apply (simp add:image_map_upd dom_map_of_conv_image_fst)
