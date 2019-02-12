@@ -9,7 +9,20 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>01 Feb 2019 00:00:00 +0000</pubDate>
+    <pubDate>08 Feb 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Universal Turing Machine</title>
+              <link>https://www.isa-afp.org/entries/Universal_Turing_Machine.html</link>
+       <guid>https://www.isa-afp.org/entries/Universal_Turing_Machine.html</guid>
+       <dc:creator> Jian Xu, Xingyuan Zhang, Christian Urban, Sebastiaan J. C. Joosten       </dc:creator>
+       <pubDate>08 Feb 2019 00:00:00 +0000</pubDate>
+       <description>
+We formalise results from computability theory: recursive functions,
+undecidability of the halting problem, and the existence of a
+universal Turing machine. This formalisation is the AFP entry
+corresponding to the paper Mechanising Turing Machines and Computability Theory
+in Isabelle/HOL, ITP 2013.</description>
+    </item>
     <item>
        <title>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming</title>
               <link>https://www.isa-afp.org/entries/UTP.html</link>
@@ -556,23 +569,6 @@ cross product in 7 dimensions. The development of the theory of
 Octonions is inspired by that of the theory of Quaternions by Lawrence
 Paulson. However, we do not work within the type class real_algebra_1
 because the octonionic product is not associative.</description>
-    </item>
-    <item>
-       <title>Quaternions</title>
-              <link>https://www.isa-afp.org/entries/Quaternions.html</link>
-       <guid>https://www.isa-afp.org/entries/Quaternions.html</guid>
-       <dc:creator> Lawrence C. Paulson       </dc:creator>
-       <pubDate>05 Sep 2018 00:00:00 +0000</pubDate>
-       <description>
-This theory is inspired by the HOL Light development of quaternions,
-but follows its own route. Quaternions are developed coinductively, as
-in the existing formalisation of the complex numbers. Quaternions are
-quickly shown to belong to the type classes of real normed division
-algebras and real inner product spaces. And therefore they inherit a
-great body of facts involving algebraic  laws, limits, continuity,
-etc., which must be proved explicitly in the HOL Light version.  The
-development concludes with the geometric interpretation of the product
-of imaginary quaternions.</description>
     </item>
   </channel>
 </rss>
