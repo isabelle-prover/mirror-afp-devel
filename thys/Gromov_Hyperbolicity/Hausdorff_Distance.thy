@@ -34,7 +34,7 @@ unfolding hausdorff_distance_def by auto
 
 lemma hausdorff_distance_points [simp]:
   "hausdorff_distance {x} {y} = dist x y"
-unfolding hausdorff_distance_def by (auto, metis cSup_singleton dist_commute empty_is_image image_insert max.idem)
+unfolding hausdorff_distance_def by (auto, metis dist_commute max.idem)
 
 text \<open>The Hausdorff distance is expressed in terms of a supremum. To use it, one needs again
 and again to show that this is the supremum of a set which is bounded from above.\<close>
