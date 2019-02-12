@@ -2322,9 +2322,9 @@ proposition (in geodesic_space) quasi_geodesic_made_lipschitz:
   assumes "lambda C-quasi_isometry_on {a..b} c" "dist (c a) (c b) \<ge> 2 * C"
   shows "\<exists>d. continuous_on {a..b} d \<and> d a = c a \<and> d b = c b
               \<and> (\<forall>x\<in>{a..b}. dist (c x) (d x) \<le> 4 * C)
-              \<and> lambda (6 * C)-quasi_isometry_on {a..b} d
+              \<and> lambda (5 * C)-quasi_isometry_on {a..b} d
               \<and> (2 * lambda)-lipschitz_on {a..b} d
-              \<and> hausdorff_distance (c ` {a..b}) (d`{a..b}) \<le> 2 * C"
+              \<and> hausdorff_distance (c`{a..b}) (d`{a..b}) \<le> 2 * C"
 proof -
   consider "C = 0" | "C > 0 \<and> b \<le> a" | "C > 0 \<and> a < b"
     using quasi_isometry_onD(4)[OF assms(1)] by fastforce
@@ -2340,9 +2340,9 @@ proof -
       using lipschitz_on_continuous_on by blast
     have "continuous_on {a..b} c \<and> c a = c a \<and> c b = c b
                 \<and> (\<forall>x\<in>{a..b}. dist (c x) (c x) \<le> 4 * C)
-                \<and> lambda (6 * C)-quasi_isometry_on {a..b} c
+                \<and> lambda (5 * C)-quasi_isometry_on {a..b} c
                 \<and> (2 * lambda)-lipschitz_on {a..b} c
-                \<and> hausdorff_distance (c ` {a..b}) (c`{a..b}) \<le> 2 * C"
+                \<and> hausdorff_distance (c`{a..b}) (c`{a..b}) \<le> 2 * C"
       using 1 a b assms(1) by auto
     then show ?thesis by blast
   next
@@ -2356,9 +2356,9 @@ proof -
       using lipschitz_on_continuous_on by blast
     have "continuous_on {a..b} c \<and> c a = c a \<and> c b = c b
                 \<and> (\<forall>x\<in>{a..b}. dist (c x) (c x) \<le> 4 * C)
-                \<and> lambda (6 * C)-quasi_isometry_on {a..b} c
+                \<and> lambda (5 * C)-quasi_isometry_on {a..b} c
                 \<and> (2 * lambda)-lipschitz_on {a..b} c
-                \<and> hausdorff_distance (c ` {a..b}) (c`{a..b}) \<le> 2 * C"
+                \<and> hausdorff_distance (c`{a..b}) (c`{a..b}) \<le> 2 * C"
       using a b quasi_isometry_on_empty assms(1) quasi_isometry_onD[OF assms(1)] * assms by auto
     then show ?thesis by blast
   next
@@ -2661,11 +2661,11 @@ proof -
     qed
 
     text \<open>From the above controls, we check that $d$ is a quasi-isometry, with explicit constants.\<close>
-    have "lambda (6 * C)-quasi_isometry_on {a..b} d"
+    have "lambda (5 * C)-quasi_isometry_on {a..b} d"
     proof
       show "1 \<le> lambda" using C by auto
-      show "0 \<le> 6 * C" using C by auto
-      have I : "dist (d x) (d y) \<le> lambda * dist x y + 6 * C" if H: "x \<in> {a..b}" "y \<in> {a..b}" "x < y" for x y
+      show "0 \<le> 5 * C" using C by auto
+      have I : "dist (d x) (d y) \<le> lambda * dist x y + 5 * C" if H: "x \<in> {a..b}" "y \<in> {a..b}" "x < y" for x y
       proof -
         obtain u where u: "u \<in> A - {b}" "x \<in> {u..next_in A u}"
           using intervals_decomposition[OF A] H(1) by force
@@ -2682,7 +2682,7 @@ proof -
           case True
           have "dist (d x) (d y) \<le> lambda * dist x y + C"
             apply (rule QI0[OF u]) using v(2) True by auto
-          also have "... \<le> lambda * dist x y + 6 * C"
+          also have "... \<le> lambda * dist x y + 5 * C"
             using C by auto
           finally show ?thesis by simp
         next
@@ -2710,7 +2710,7 @@ proof -
           finally show ?thesis using C by simp
         qed
       qed
-      show "dist (d x) (d y) \<le> lambda * dist x y + 6 * C" if H: "x \<in> {a..b}" "y \<in> {a..b}" for x y
+      show "dist (d x) (d y) \<le> lambda * dist x y + 5 * C" if H: "x \<in> {a..b}" "y \<in> {a..b}" for x y
       proof -
         consider "x < y" | "x = y" | "x > y" by linarith
         then show ?thesis
@@ -2725,7 +2725,16 @@ proof -
           show ?thesis using I [OF H(2) H(1) 3] by (simp add: metric_space_class.dist_commute)
         qed
       qed
-      have J : "dist (d x) (d y) \<ge> (1/lambda) * dist x y - 6 * C" if H: "x \<in> {a..b}" "y \<in> {a..b}" "x < y" for x y
+      text \<open>The lower bound is more tricky. We separate the case where $x$ and $y$ are in the same
+      interval, and when they are in different intervals. The latter case is more difficult. There,
+      we approximate $dist (d x) (d y)$ by $dist (d u') (d v')$ where $u'$ and $v'$ are suitable
+      endpoints of the intervals containing respectively $x$ and $y$. We use the inner endpoint
+      (between $x$ and $y$) if the distance between $x$ or $y$ and this point is less than $1/3$
+      of the length of the interval, and the outer endpoint otherwise. The reason is that, with
+      the outer endpoints, we get right away an upper bound for the distance between $x$ and $y$,
+      while this is not the case with the inner endpoints where there is an additional error.
+      The equilibrium is reached at proportion $1/3$. \<close>
+      have J : "dist (d x) (d y) \<ge> (1/lambda) * dist x y - 5 * C" if H: "x \<in> {a..b}" "y \<in> {a..b}" "x < y" for x y
       proof -
         obtain u where u: "u \<in> A - {b}" "x \<in> {u..next_in A u}"
           using intervals_decomposition[OF A] H(1) by force
@@ -2741,7 +2750,7 @@ proof -
         show ?thesis
         proof (cases "u = v")
           case True
-          have "(1/lambda) * dist x y - 6 * C \<le> lambda * dist x y - 6 * C"
+          have "(1/lambda) * dist x y - 5 * C \<le> lambda * dist x y - 5 * C"
             apply (intro mono_intros) by auto
           also have "... \<le> lambda * (2 * C/lambda) - 2 * C"
             apply (intro mono_intros)
@@ -2761,37 +2770,154 @@ proof -
           have "iu < iv" using pmono[of iv iu] \<open>u < v\<close> unfolding iu iv by force
           then have "iu < N" using iv by auto
           have "u \<noteq> p N" using pmono'[OF \<open>iu < N\<close>] unfolding iu(2) by auto
-          have *: "next_in A u = u + C/lambda" using nx[OF _ _ \<open>u \<noteq> p N\<close>] u by auto
-          have [mono_intros]: "dist u x \<le> C/lambda" using u(2) unfolding * dist_real_def by auto
-          have *: "next_in A v \<le> v + 2 * C/lambda" using gap[OF v(1)] by auto
-          then have [mono_intros]: "dist y (next_in A v) \<le> 2 * C/lambda" using v(2) unfolding dist_real_def by auto
+          have nu: "next_in A u = u + C/lambda" using nx[OF _ _ \<open>u \<noteq> p N\<close>] u by auto
+          have nv: "next_in A v \<le> v + 2 * C/lambda" using gap[OF v(1)] by auto
 
-          have d1: "d u = c u"
-            using \<open>u \<in> A - {b}\<close> unfolding d_def by auto
-          have d2: "d (next_in A v) = c (next_in A v)"
-            using \<open>next_in A v \<in> A\<close> unfolding d_def by auto
+          have d: "d u = c u" "d (next_in A u) = c (next_in A u)" "d v = c v" "d (next_in A v) = c (next_in A v)"
+            using \<open>u \<in> A - {b}\<close> \<open>next_in A u \<in> A\<close> \<open>v \<in> A - {b}\<close> \<open>next_in A v \<in> A\<close> unfolding d_def by auto
 
-          have "(1/lambda) * dist x y - C \<le> (1/lambda) * dist u (next_in A v) - C"
-            apply (intro mono_intros)  unfolding dist_real_def using u(2) v(2) \<open>x < y\<close> C by auto
-          also have "... \<le> dist (c u) (c (next_in A v))"
-            apply (rule quasi_isometry_onD(2)[OF assms(1)])
-            using \<open>u \<in> A - {b}\<close> \<open>next_in A v \<in> A\<close> \<open>A \<subseteq> {a..b}\<close> by auto
-          also have "... = dist (d u) (d (next_in A v))"
-            unfolding d1 d2 by auto
-          also have "... \<le> dist (d u) (d x) + dist (d x) (d y) + dist (d y) (d (next_in A v))"
-            by (intro mono_intros)
-          also have "... \<le> (lambda * dist u x + C) + dist (d x) (d y) + (lambda * dist y (next_in A v) + C)"
-            apply (intro mono_intros)
-             apply (rule QI0[OF u(1)]) using u(2) apply auto[1] using u(2) apply auto[1]
-            apply (rule QI0[OF v]) using v(2) by auto
-          also have "... \<le> (lambda * (C/lambda) + C) + dist (d x) (d y) + (lambda * (2 * C/lambda) + C)"
-            apply (intro mono_intros) using C by auto
-          also have "... = dist (d x) (d y) + 5 * C"
-            using C by (auto simp add: algebra_simps divide_simps)
-          finally show "(1/lambda) * dist x y - 6 * C \<le> dist (d x) (d y)" by auto
+          text \<open>The interval containing $x$ has length $C/\lambda$, while the interval containing
+          $y$ has length $\leq 2C/\lambda$. Therefore, $x$ is at proportion $1/3$ of the inner point
+          if $x > u + (2/3) C/\lambda$, and $y$ is at proportion $1/3$ of the inner point if
+          $y < v + (1/3) \cdot 2C/\lambda = v + (2/3)C/\lambda$.\<close>
+          consider "x \<le> u + (2/3) * C/lambda \<and> y \<le> v + (2/3) * C/lambda"
+                 | "x \<ge> u + (2/3) * C/lambda \<and> y \<le> v + (2/3) * C/lambda"
+                 | "x \<le> u + (2/3) * C/lambda \<and> y \<ge> v + (2/3) * C/lambda"
+                 | "x \<ge> u + (2/3) * C/lambda \<and> y \<ge> v + (2/3) * C/lambda"
+            by linarith
+          then show ?thesis
+          proof (cases)
+            case 1
+            have "(1/lambda) * dist u v - C \<le> dist (c u) (c v)"
+              apply (rule quasi_isometry_onD(2)[OF assms(1)])
+              using \<open>u \<in> A - {b}\<close> \<open>v \<in> A - {b}\<close> \<open>A \<subseteq> {a..b}\<close> by auto
+            also have "... = dist (d u) (d v)"
+              using d by auto
+            also have "... \<le> dist (d u) (d x) + dist (d x) (d y) + dist (d y) (d v)"
+              by (intro mono_intros)
+            also have "... \<le> (lambda * dist u x + C) + dist (d x) (d y) + (lambda * dist y v + C)"
+              apply (intro mono_intros)
+              apply (rule QI0[OF u(1)]) using u(2) apply auto[1] using u(2) apply auto[1]
+              apply (rule QI0[OF v]) using v(2) by auto
+            also have "... \<le> (lambda * ((2/3) * C/lambda) + C) + dist (d x) (d y) + (lambda * ((2/3) * C/lambda) + C)"
+              apply (intro mono_intros)
+              unfolding dist_real_def using 1 u v C by auto
+            also have "... = 10/3 * C + dist (d x) (d y)"
+              using C by (auto simp add: algebra_simps divide_simps)
+            finally have *: "(1/lambda) * dist u v \<le> dist (d x) (d y) + 13/3 * C" by auto
+
+            have "(1/lambda) * dist x y \<le> (1/lambda) * (dist u v + dist v y)"
+              apply (intro mono_intros)
+              unfolding dist_real_def using C u(2) v(2) \<open>x < y\<close> by auto
+            also have "... \<le> (1/lambda) * (dist u v + 2/3 * C/lambda)"
+              apply (intro mono_intros)
+              unfolding dist_real_def using 1 v(2) C by auto
+            also have "... = (1/lambda) * dist u v + 2/3 * C * (1/(lambda * lambda))"
+              using C by (auto simp add: algebra_simps divide_simps)
+            also have "... \<le> (1/lambda) * dist u v + 2/3 * C * 1"
+              apply (intro mono_intros)
+              using C by (auto simp add: divide_simps algebra_simps mult_ge1_powers(1))
+            also have "... \<le> (dist (d x) (d y) + 13/3 * C) + 2/3 * C * 1"
+              using * by auto
+            finally show ?thesis by auto
+          next
+            case 2
+            have "(1/lambda) * dist (next_in A u) v - C \<le> dist (c (next_in A u)) (c v)"
+              apply (rule quasi_isometry_onD(2)[OF assms(1)])
+              using \<open>next_in A u \<in> A\<close> \<open>v \<in> A - {b}\<close> \<open>A \<subseteq> {a..b}\<close> by auto
+            also have "... = dist (d (next_in A u)) (d v)"
+              using d by auto
+            also have "... \<le> dist (d (next_in A u)) (d x) + dist (d x) (d y) + dist (d y) (d v)"
+              by (intro mono_intros)
+            also have "... \<le> (lambda * dist (next_in A u) x + C) + dist (d x) (d y) + (lambda * dist y v + C)"
+              apply (intro mono_intros)
+              apply (rule QI0[OF u(1)]) using u(2) apply auto[1] using u(2) apply auto[1]
+              apply (rule QI0[OF v]) using v(2) by auto
+            also have "... \<le> (lambda * ((1/3) * C/lambda) + C) + dist (d x) (d y) + (lambda * ((2/3) * C/lambda) + C)"
+              apply (intro mono_intros)
+              unfolding dist_real_def using 2 u v C nu by auto
+            also have "... = 3 * C + dist (d x) (d y)"
+              using C by (auto simp add: algebra_simps divide_simps)
+            finally have *: "(1/lambda) * dist (next_in A u) v \<le> dist (d x) (d y) + 4 * C" by auto
+
+            have "(1/lambda) * dist x y \<le> (1/lambda) * (dist x (next_in A u) + dist (next_in A u) v + dist v y)"
+              apply (intro mono_intros)
+              unfolding dist_real_def using C u(2) v(2) \<open>x < y\<close> by auto
+            also have "... \<le> (1/lambda) * (((1/3)*C/lambda) + dist (next_in A u) v  + (2/3 * C/lambda))"
+              apply (intro mono_intros)
+              unfolding dist_real_def using 2 u(2) v(2) C nu by auto
+            also have "... = (1/lambda) * dist (next_in A u) v + C * (1/(lambda * lambda))"
+              using C by (auto simp add: algebra_simps divide_simps)
+            also have "... \<le> (1/lambda) * dist (next_in A u) v + C * 1"
+              apply (intro mono_intros)
+              using C by (auto simp add: divide_simps algebra_simps mult_ge1_powers(1))
+            also have "... \<le> (dist (d x) (d y) + 4 * C) + C * 1"
+              using * by auto
+            finally show ?thesis by auto
+          next
+            case 3
+            have "(1/lambda) * dist u (next_in A v) - C \<le> dist (c u) (c (next_in A v))"
+              apply (rule quasi_isometry_onD(2)[OF assms(1)])
+              using \<open>u \<in> A - {b}\<close> \<open>next_in A v \<in> A\<close> \<open>A \<subseteq> {a..b}\<close> by auto
+            also have "... = dist (d u) (d (next_in A v))"
+              using d by auto
+            also have "... \<le> dist (d u) (d x) + dist (d x) (d y) + dist (d y) (d (next_in A v))"
+              by (intro mono_intros)
+            also have "... \<le> (lambda * dist u x + C) + dist (d x) (d y) + (lambda * dist y (next_in A v) + C)"
+              apply (intro mono_intros)
+              apply (rule QI0[OF u(1)]) using u(2) apply auto[1] using u(2) apply auto[1]
+              apply (rule QI0[OF v]) using v(2) by auto
+            also have "... \<le> (lambda * ((2/3) * C/lambda) + C) + dist (d x) (d y) + (lambda * ((4/3) * C/lambda) + C)"
+              apply (intro mono_intros)
+              unfolding dist_real_def using 3 u v C nv by auto
+            also have "... = 4 * C + dist (d x) (d y)"
+              using C by (auto simp add: algebra_simps divide_simps)
+            finally have *: "(1/lambda) * dist u (next_in A v) \<le> dist (d x) (d y) + 5 * C" by auto
+
+            have "(1/lambda) * dist x y \<le> (1/lambda) * dist u (next_in A v)"
+              apply (intro mono_intros)
+              unfolding dist_real_def using C u(2) v(2) \<open>x < y\<close> by auto
+            also have "... \<le> dist (d x) (d y) + 5 * C"
+              using * by auto
+            finally show ?thesis by auto
+          next
+            case 4
+            have "(1/lambda) * dist (next_in A u) (next_in A v) - C \<le> dist (c (next_in A u)) (c (next_in A v))"
+              apply (rule quasi_isometry_onD(2)[OF assms(1)])
+              using \<open>next_in A u \<in> A\<close> \<open>next_in A v \<in> A\<close> \<open>A \<subseteq> {a..b}\<close> by auto
+            also have "... = dist (d (next_in A u)) (d (next_in A v))"
+              using d by auto
+            also have "... \<le> dist (d (next_in A u)) (d x) + dist (d x) (d y) + dist (d y) (d (next_in A v))"
+              by (intro mono_intros)
+            also have "... \<le> (lambda * dist (next_in A u) x + C) + dist (d x) (d y) + (lambda * dist y (next_in A v) + C)"
+              apply (intro mono_intros)
+              apply (rule QI0[OF u(1)]) using u(2) apply auto[1] using u(2) apply auto[1]
+              apply (rule QI0[OF v]) using v(2) by auto
+            also have "... \<le> (lambda * ((1/3) * C/lambda) + C) + dist (d x) (d y) + (lambda * ((4/3) * C/lambda) + C)"
+              apply (intro mono_intros)
+              unfolding dist_real_def using 4 u v C nu nv by auto
+            also have "... = 11/3 * C + dist (d x) (d y)"
+              using C by (auto simp add: algebra_simps divide_simps)
+            finally have *: "(1/lambda) * dist (next_in A u) (next_in A v) \<le> dist (d x) (d y) + 14/3 * C" by auto
+
+            have "(1/lambda) * dist x y \<le> (1/lambda) * (dist x (next_in A u) + dist (next_in A u) (next_in A v))"
+              apply (intro mono_intros)
+              unfolding dist_real_def using C u(2) v(2) \<open>x < y\<close> by auto
+            also have "... \<le> (1/lambda) * (((1/3)*C/lambda) + dist (next_in A u) (next_in A v))"
+              apply (intro mono_intros)
+              unfolding dist_real_def using 4 u(2) v(2) C nu by auto
+            also have "... = (1/lambda) * dist (next_in A u) (next_in A v) + 1/3 * C * (1/(lambda * lambda))"
+              using C by (auto simp add: algebra_simps divide_simps)
+            also have "... \<le> (1/lambda) * dist (next_in A u) (next_in A v) + 1/3 * C * 1"
+              apply (intro mono_intros)
+              using C by (auto simp add: divide_simps algebra_simps mult_ge1_powers(1))
+            also have "... \<le> (dist (d x) (d y) + 14/3 * C) + 1/3 * C * 1"
+              using * by auto
+            finally show ?thesis by auto
+          qed
         qed
       qed
-      show "dist (d x) (d y) \<ge> (1/lambda) * dist x y - 6 * C" if H: "x \<in> {a..b}" "y \<in> {a..b}" for x y
+      show "dist (d x) (d y) \<ge> (1/lambda) * dist x y - 5 * C" if H: "x \<in> {a..b}" "y \<in> {a..b}" for x y
       proof -
         consider "x < y" | "x = y" | "x > y" by linarith
         then show ?thesis
@@ -2810,7 +2936,7 @@ proof -
 
     text \<open>We have proved that $d$ has all the properties we wanted.\<close>
     then have "continuous_on {a..b} d \<and> d a = c a \<and> d b = c b
-          \<and> lambda (6 * C)-quasi_isometry_on {a..b} d
+          \<and> lambda (5 * C)-quasi_isometry_on {a..b} d
           \<and> (\<forall>x\<in>{a..b}. dist (c x) (d x) \<le> 4 *C)
           \<and> (2*lambda)-lipschitz_on {a..b} d
           \<and> hausdorff_distance (c`{a..b}) (d`{a..b}) \<le> 2 * C"

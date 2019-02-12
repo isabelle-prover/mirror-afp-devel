@@ -2470,17 +2470,17 @@ proof -
     case 1
     have "\<exists>d. continuous_on {a..b} d \<and> d a = f a \<and> d b = f b
                 \<and> (\<forall>x\<in>{a..b}. dist (f x) (d x) \<le> 4 * C)
-                \<and> lambda (6 * C)-quasi_isometry_on {a..b} d
+                \<and> lambda (5 * C)-quasi_isometry_on {a..b} d
                 \<and> (2 * lambda)-lipschitz_on {a..b} d
                 \<and> hausdorff_distance (f`{a..b}) (d`{a..b}) \<le> 2 * C"
       apply (rule quasi_geodesic_made_lipschitz[OF assms(1)]) using 1 by auto
     then obtain d where d: "d a = f a" "d b = f b"
                         "\<And>x. x \<in> {a..b} \<Longrightarrow> dist (f x) (d x) \<le> 4 * C"
-                        "lambda (6 * C)-quasi_isometry_on {a..b} d"
+                        "lambda (5 * C)-quasi_isometry_on {a..b} d"
                         "(2 * lambda)-lipschitz_on {a..b} d"
                         "hausdorff_distance (f`{a..b}) (d`{a..b}) \<le> 2 * C"
       by auto
-    have a: "hausdorff_distance (d`{a..b}) G \<le> lambda^2 * ((11/2) * (6 * C) + 92 * deltaG(TYPE('a)))"
+    have a: "hausdorff_distance (d`{a..b}) G \<le> lambda^2 * ((11/2) * (5 * C) + 92 * deltaG(TYPE('a)))"
       apply (rule Morse_Gromov_theorem_aux2) using d assms lipschitz_on_continuous_on by auto
 
     have "hausdorff_distance (f`{a..b}) G \<le>
@@ -2488,11 +2488,11 @@ proof -
       apply (rule hausdorff_distance_triangle)
       using 1 apply simp
       by (rule quasi_isometry_on_bounded[OF d(4)], auto)
-    also have "... \<le> lambda^2 * ((11/2) * (6 * C) + 92 * deltaG(TYPE('a))) + 1 * 2 * C"
+    also have "... \<le> lambda^2 * ((11/2) * (5 * C) + 92 * deltaG(TYPE('a))) + 1 * 2 * C"
       using a d by auto
-    also have "... \<le> lambda^2 * ((11/2) * (6 * C) + 92 * deltaG(TYPE('a))) + lambda^2 * 2 * C"
+    also have "... \<le> lambda^2 * ((11/2) * (5 * C) + 92 * deltaG(TYPE('a))) + lambda^2 * 2 * C"
       apply (intro mono_intros) using \<open>lambda \<ge> 1\<close> \<open>C \<ge> 0\<close> by auto
-    also have "... = lambda^2 * (35 * C + 92 * deltaG(TYPE('a)))"
+    also have "... = lambda^2 * (59/2 * C + 92 * deltaG(TYPE('a)))"
       by (simp add: algebra_simps divide_simps)
     also have "... \<le> lambda^2 * (92 * C + 92 * deltaG(TYPE('a)))"
       apply (intro mono_intros) using \<open>lambda \<ge> 1\<close> \<open>C \<ge> 0\<close> by auto
@@ -2912,7 +2912,7 @@ proof -
     case 3
     then obtain d where d: "continuous_on {A..B} d" "d A = c A" "d B = c B"
               "\<And>x. x \<in> {A..B} \<Longrightarrow> dist (c x) (d x) \<le> 4 *C"
-              "lambda (6 * C)-quasi_isometry_on {A..B} d"
+              "lambda (5 * C)-quasi_isometry_on {A..B} d"
               "(2 * lambda)-lipschitz_on {A..B} d"
               "hausdorff_distance (c`{A..B}) (d`{A..B}) \<le> 2 * C"
       using quasi_geodesic_made_lipschitz[OF assms] C(1) by fastforce
@@ -3084,25 +3084,25 @@ proof -
         finally show False by simp
       qed
 
-      have "(1/lambda) * dist um uM - (6 * C) \<le> dist (d um) (d uM)"
-        by (rule quasi_isometry_onD(2)[OF \<open>lambda (6 * C)-quasi_isometry_on {A..B} d\<close> \<open>um \<in> {A..B}\<close> \<open>uM \<in> {A..B}\<close>])
+      have "(1/lambda) * dist um uM - (5 * C) \<le> dist (d um) (d uM)"
+        by (rule quasi_isometry_onD(2)[OF \<open>lambda (5 * C)-quasi_isometry_on {A..B} d\<close> \<open>um \<in> {A..B}\<close> \<open>uM \<in> {A..B}\<close>])
       also have "... \<le> dist ym xm + dist xm x + dist x xM + dist xM yM"
         unfolding um(2)[symmetric] uM(2)[symmetric] by (rule dist_triangle5)
       also have "... \<le> D + (2*D) + (2*D) + D"
         using \<open>dist xm ym \<le> D\<close> \<open>dist xm x \<le> 2*D\<close> \<open>dist xM x \<le> 2*D\<close> \<open>dist xM yM \<le> D\<close>
         by (auto simp add: metric_space_class.dist_commute intro: add_mono)
-      finally have "(1/lambda) * dist um uM \<le> 6*D + 6*C" by auto
-      then have "dist um uM \<le> 6*D*lambda + 6*C*lambda"
+      finally have "(1/lambda) * dist um uM \<le> 6*D + 5*C" by auto
+      then have "dist um uM \<le> 6*D*lambda + 5*C*lambda"
         using C by (auto simp add: divide_simps algebra_simps)
-      then have "L \<le> D + (6*D*lambda + 6*C*lambda) + D"
+      then have "L \<le> D + (6*D*lambda + 5*C*lambda) + D"
         unfolding L_def dist_real_def using \<open>dist xm ym \<le> D\<close> \<open>dist xM yM \<le> D\<close>
         by (auto simp add: metric_space_class.dist_commute intro: add_mono)
-      also have "... \<le> 8 * D * lambda + 6*C*lambda"
+      also have "... \<le> 8 * D * lambda + 5*C*lambda"
         using C \<open>D \<ge> 0\<close> by (auto intro: mono_intros)
-      finally have L_bound: "L \<le> lambda * (8 * D + 6 * C)"
+      finally have L_bound: "L \<le> lambda * (8 * D + 5 * C)"
         by (auto simp add: algebra_simps)
 
-      have "1 * (1 * 1 + 0) \<le> lambda * (8 * D + 6 * C)"
+      have "1 * (1 * 1 + 0) \<le> lambda * (8 * D + 5 * C)"
         using C \<open>D \<ge> 1\<close> by (intro mono_intros, auto)
 
       consider "um < uM" | "um = uM" | "um > uM" by linarith
@@ -3191,7 +3191,7 @@ proof -
         unfolding a_def using \<open>D \<ge> 1\<close> \<open>lambda \<ge> 1\<close> by (simp add: algebra_simps)
       finally have "(31 * ln 2 / 128) * D \<le> deltaG(TYPE('a)) * max 0 (ln (a * L))"
         by (auto simp add: algebra_simps divide_simps)
-      also have "... \<le> deltaG(TYPE('a)) * max 0 (ln ((64 * lambda/D) * (lambda * (8 * D + 6 * C))))"
+      also have "... \<le> deltaG(TYPE('a)) * max 0 (ln ((64 * lambda/D) * (lambda * (8 * D + 5 * C))))"
         unfolding a_def apply (intro mono_intros)
         using L_bound \<open>L > 0\<close> \<open>lambda \<ge> 1\<close> \<open>D \<ge> 1\<close> by auto
       also have "... \<le> deltaG(TYPE('a)) * max 0 (ln ((64 * lambda/D) * (lambda * (8 * D + 8 * C))))"
@@ -3258,9 +3258,9 @@ proof -
     gives a bound on the distance between $y_m$ and $y_M$, and therefore a bound between $y$ and the
     geodesic, as desired.\<close>
 
-    define D1 where "D1 = lambda * lambda * (72 * lambda + 48 * C + 72 * deltaG(TYPE('a))^2)"
+    define D1 where "D1 = lambda * lambda * (72 * lambda + 46 * C + 72 * deltaG(TYPE('a))^2)"
     have "1 * 1 * (24 * lambda + 12 * C + 24 * deltaG(TYPE('a))^2)
-            \<le> lambda * lambda * (72 * lambda + 48 * C + 72 * deltaG(TYPE('a))^2)"
+            \<le> lambda * lambda * (72 * lambda + 46 * C + 72 * deltaG(TYPE('a))^2)"
       apply (intro mono_intros) using C by auto
     then have "D0 \<le> D1" unfolding D0_def D1_def by auto
     have second_step: "infdist y {c A--c B} \<le> D1" if "y \<in> d`{A..B}" for y
@@ -3372,29 +3372,29 @@ proof -
       then obtain w where "w \<in> {c A--c B}" "w \<in> Km" "w \<in> KM" by auto
       then obtain twm twM where tw: "twm \<in> {A..tm}" "w \<in> cball (d twm) D0" "twM \<in> {tM..B}" "w \<in> cball (d twM) D0"
         unfolding Km_def KM_def by auto
-      have "(1/lambda) * dist twm twM - (6*C) \<le> dist (d twm) (d twM)"
+      have "(1/lambda) * dist twm twM - (5*C) \<le> dist (d twm) (d twM)"
         apply (rule quasi_isometry_onD(2)[OF d(5)]) using tw tm tM by auto
       also have "... \<le> dist (d twm) w + dist w (d twM)"
         by (rule metric_space_class.dist_triangle)
       also have "... \<le> 2 * D0" using tw by (auto simp add: metric_space_class.dist_commute)
-      finally have "dist twm twM \<le> lambda * (6*C + 2*D0)"
+      finally have "dist twm twM \<le> lambda * (5*C + 2*D0)"
         using C by (auto simp add: divide_simps algebra_simps)
-      then have *: "dist twm ty \<le> lambda * (6*C + 2*D0)"
+      then have *: "dist twm ty \<le> lambda * (5*C + 2*D0)"
         using tw tm tM dist_real_def by auto
 
       have "dist (d ty) w \<le> dist (d ty) (d twm) + dist (d twm) w"
         by (rule metric_space_class.dist_triangle)
-      also have "... \<le> (lambda * dist ty twm + (6*C)) + D0"
+      also have "... \<le> (lambda * dist ty twm + (5*C)) + D0"
         apply (intro add_mono, rule quasi_isometry_onD(1)[OF d(5)]) using tw tm tM by auto
-      also have "... \<le> (lambda * (lambda * (6*C + 2*D0))) + (6*C) + D0"
+      also have "... \<le> (lambda * (lambda * (5*C + 2*D0))) + (5*C) + D0"
         apply (intro mono_intros) using C * by (auto simp add: metric_space_class.dist_commute)
-      also have "... = lambda * lambda * (6*C + 2*D0) + 1 * 1 * (6 * C) + 1 * 1 * D0"
+      also have "... = lambda * lambda * (5*C + 2*D0) + 1 * 1 * (5 * C) + 1 * 1 * D0"
         by simp
-      also have "... \<le> lambda * lambda * (6*C + 2*D0) + lambda * lambda * (6 * C) + lambda * lambda * D0"
+      also have "... \<le> lambda * lambda * (5*C + 2*D0) + lambda * lambda * (5 * C) + lambda * lambda * D0"
         apply (intro mono_intros) using C * \<open>D0 > 0\<close> by auto
-      also have "... = lambda * lambda * (12 * C + 3 * D0)"
+      also have "... = lambda * lambda * (10 * C + 3 * D0)"
         by (auto simp add: algebra_simps)
-      also have "... = lambda * lambda * (48 * C + 72 * lambda + 72 * deltaG(TYPE('a))^2)"
+      also have "... = lambda * lambda * (46 * C + 72 * lambda + 72 * deltaG(TYPE('a))^2)"
         unfolding D0_def by auto
       finally have "dist y w \<le> D1" unfolding D1_def \<open>y = d ty\<close> by (auto simp add: algebra_simps)
       then show "infdist y {c A--c B} \<le> D1" using infdist_le[OF \<open>w \<in> {c A--c B}\<close>, of y] by auto
@@ -3421,10 +3421,10 @@ proof -
       using \<open>A \<in> {A..B}\<close> apply blast
       by (rule quasi_isometry_on_bounded[OF d(5)], auto)
     also have "... \<le> D1 + 2*C" using a d by auto
-    also have "... = lambda * lambda * (72 * lambda + 48 * C + 72 * deltaG(TYPE('a))^2) + 1 * 1 * (2 * C)"
+    also have "... = lambda * lambda * (72 * lambda + 46 * C + 72 * deltaG(TYPE('a))^2) + 1 * 1 * (2 * C)"
       unfolding D1_def by auto
-    also have "... \<le> lambda * lambda * (72 * lambda + 48 * C + 72 * deltaG(TYPE('a))^2)
-                      + lambda * lambda * (24 * C)"
+    also have "... \<le> lambda * lambda * (72 * lambda + 46 * C + 72 * deltaG(TYPE('a))^2)
+                      + lambda * lambda * (26 * C)"
       apply (intro mono_intros) using C delta_nonneg by auto
     also have "... = 72 * lambda^2 * (lambda + C + deltaG(TYPE('a))^2)"
       by (auto simp add: algebra_simps power2_eq_square)
