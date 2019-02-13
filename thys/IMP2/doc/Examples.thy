@@ -687,7 +687,7 @@ program_spec equilibrium
   \<close>
   apply vcg_cs
      apply (auto simp: intvs_incdec is_equil_def)
-    apply (metis atLeastLessThan_iff eq_iff finite_atLeastLessThan_int sum_diff1_ring)
+    apply (metis atLeastLessThan_iff eq_iff finite_atLeastLessThan_int sum_diff1)
    apply force
   by force
 

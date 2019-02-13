@@ -581,7 +581,7 @@ proof (intro allI)
     (((prices Mkt) x n w) * (pf1 x (Suc n) w))) + (prices Mkt y n w)* (pf1 y (Suc n) w)"
   proof (cases "y\<in> support_set pf1")
     case True
-    thus ?thesis by (simp add: fin sum_diff1_ring)
+    thus ?thesis by (simp add: fin sum_diff1)
   next
     case False
     hence "pf1 y (Suc n) w = 0" unfolding support_set_def by simp
@@ -1237,7 +1237,7 @@ proof (intro allI)
     (((prices Mkt) x (Suc n) w) * (pf1 x (Suc n) w))) + (prices Mkt y (Suc n) w)* (pf1 y (Suc n) w)"
   proof (cases "y\<in> support_set pf1")
     case True
-    thus ?thesis by (simp add: fin sum_diff1_ring)
+    thus ?thesis by (simp add: fin sum_diff1)
   next
     case False
     hence "pf1 y (Suc n) w = 0" unfolding support_set_def by simp
