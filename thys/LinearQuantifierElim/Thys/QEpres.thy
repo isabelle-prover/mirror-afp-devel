@@ -357,7 +357,7 @@ by(auto simp:qe_pres\<^sub>1_def intro!:qfree_list_disj)
 lemma normal_qe_pres\<^sub>1_o:
   "\<forall>a \<in> set as. hd_coeff a \<noteq> 0 \<and> divisor a \<noteq> 0 \<Longrightarrow>
    Z.normal ((qe_pres\<^sub>1 \<circ> hd_coeffs1) as)"
-  using image_cong_simp [cong del]
+  supply image_cong_simp [cong del]
 apply(auto simp:qe_pres\<^sub>1_def Z.normal_def
    dest!:atoms_list_disjE atoms_list_conjE)
 
