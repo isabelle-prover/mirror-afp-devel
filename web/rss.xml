@@ -9,7 +9,26 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>08 Feb 2019 00:00:00 +0000</pubDate>
+    <pubDate>11 Feb 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Probabilistic Primality Testing</title>
+              <link>https://www.isa-afp.org/entries/Probabilistic_Prime_Tests.html</link>
+       <guid>https://www.isa-afp.org/entries/Probabilistic_Prime_Tests.html</guid>
+       <dc:creator> Daniel Stüwe, Manuel Eberl       </dc:creator>
+       <pubDate>11 Feb 2019 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;The most efficient known primality tests are
+&lt;em&gt;probabilistic&lt;/em&gt; in the sense that they use
+randomness and may, with some probability, mistakenly classify a
+composite number as prime &amp;ndash; but never a prime number as
+composite. Examples of this are the Miller&amp;ndash;Rabin test, the
+Solovay&amp;ndash;Strassen test, and (in most cases) Fermat&#39;s
+test.&lt;/p&gt; &lt;p&gt;This entry defines these three tests and
+proves their correctness. It also develops some of the
+number-theoretic foundations, such as Carmichael numbers and the
+Jacobi symbol with an efficient executable algorithm to compute
+it.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>Universal Turing Machine</title>
               <link>https://www.isa-afp.org/entries/Universal_Turing_Machine.html</link>
@@ -553,22 +572,6 @@ matrices and for edge weights in graphs. We verify the correctness of
 Prim&#39;s and Kruskal&#39;s minimum spanning tree algorithms based
 on these algebras. We also show numerous instances of these algebras
 based on linearly ordered commutative semigroups.</description>
-    </item>
-    <item>
-       <title>Octonions</title>
-              <link>https://www.isa-afp.org/entries/Octonions.html</link>
-       <guid>https://www.isa-afp.org/entries/Octonions.html</guid>
-       <dc:creator> Angeliki Koutsoukou-Argyraki       </dc:creator>
-       <pubDate>14 Sep 2018 00:00:00 +0000</pubDate>
-       <description>
-We develop the basic theory of Octonions, including various identities
-and properties of the octonions and of the octonionic product, a
-description of 7D isometries and representations of orthogonal
-transformations. To this end we first develop the theory of the vector
-cross product in 7 dimensions. The development of the theory of
-Octonions is inspired by that of the theory of Quaternions by Lawrence
-Paulson. However, we do not work within the type class real_algebra_1
-because the octonionic product is not associative.</description>
     </item>
   </channel>
 </rss>

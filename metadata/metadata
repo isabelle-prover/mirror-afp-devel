@@ -7783,3 +7783,22 @@ abstract =
   using calculi like Hoare logics. This document describes the
   relational core of the UTP in Isabelle/HOL.
 
+[Probabilistic_Prime_Tests]
+title = Probabilistic Primality Testing
+author = Daniel Stüwe, Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory
+date = 2019-02-11
+notify = eberlm@in.tum.de
+abstract = 
+  <p>The most efficient known primality tests are
+  <em>probabilistic</em> in the sense that they use
+  randomness and may, with some probability, mistakenly classify a
+  composite number as prime &ndash; but never a prime number as
+  composite. Examples of this are the Miller&ndash;Rabin test, the
+  Solovay&ndash;Strassen test, and (in most cases) Fermat's
+  test.</p> <p>This entry defines these three tests and
+  proves their correctness. It also develops some of the
+  number-theoretic foundations, such as Carmichael numbers and the
+  Jacobi symbol with an efficient executable algorithm to compute
+  it.</p>
+
