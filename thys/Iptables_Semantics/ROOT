@@ -57,7 +57,7 @@ session Iptables_Semantics_Examples (AFP) = Iptables_Semantics +
     "root.bib"
     "mathpartir.sty"
 
-session Iptables_Semantics_Examples_Big (AFP large slow very_slow) = Iptables_Semantics_Examples +
+session Iptables_Semantics_Examples_Big (AFP slow very_slow) = Iptables_Semantics_Examples +
   options [timeout = 60000]
   theories
     "Examples/topoS_generated/Analyze_topos_generated"
