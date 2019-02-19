@@ -9,7 +9,23 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>11 Feb 2019 00:00:00 +0000</pubDate>
+    <pubDate>14 Feb 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Kruskal's Algorithm for Minimum Spanning Forest</title>
+              <link>https://www.isa-afp.org/entries/Kruskal.html</link>
+       <guid>https://www.isa-afp.org/entries/Kruskal.html</guid>
+       <dc:creator> Maximilian P.L. Haslbeck, Peter Lammich, Julian Biendarra       </dc:creator>
+       <pubDate>14 Feb 2019 00:00:00 +0000</pubDate>
+       <description>
+This Isabelle/HOL formalization defines a greedy algorithm for finding
+a minimum weight basis on a weighted matroid and proves its
+correctness. This algorithm is an abstract version of Kruskal&#39;s
+algorithm.  We interpret the abstract algorithm for the cycle matroid
+(i.e. forests in a graph) and refine it to imperative executable code
+using an efficient union-find data structure.  Our formalization can
+be instantiated for different graph representations. We provide
+instantiations for undirected graphs and symmetric directed graphs.</description>
+    </item>
     <item>
        <title>Probabilistic Primality Testing</title>
               <link>https://www.isa-afp.org/entries/Probabilistic_Prime_Tests.html</link>
@@ -559,19 +575,6 @@ shorter and clearer. This article attempts to provide a short and
 clear formalisation of all components of that proof using the full
 range of mathematical machinery available in Isabelle, staying as
 close as possible to Newman&#39;s simple paper proof.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Aggregation Algebras</title>
-              <link>https://www.isa-afp.org/entries/Aggregation_Algebras.html</link>
-       <guid>https://www.isa-afp.org/entries/Aggregation_Algebras.html</guid>
-       <dc:creator> Walter Guttmann       </dc:creator>
-       <pubDate>15 Sep 2018 00:00:00 +0000</pubDate>
-       <description>
-We develop algebras for aggregation and minimisation for weight
-matrices and for edge weights in graphs. We verify the correctness of
-Prim&#39;s and Kruskal&#39;s minimum spanning tree algorithms based
-on these algebras. We also show numerous instances of these algebras
-based on linearly ordered commutative semigroups.</description>
     </item>
   </channel>
 </rss>

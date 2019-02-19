@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Matroids - Archive of Formal Proofs
+<title>Kruskal's Algorithm for Minimum Spanning Forest - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,7 +61,17 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">M</font>atroids
+  <h1>          <font class="first">K</font>ruskal's
+  
+          <font class="first">A</font>lgorithm
+  
+          for
+  
+          <font class="first">M</font>inimum
+  
+          <font class="first">S</font>panning
+  
+          <font class="first">F</font>orest
   
 </h1>
   <p>&nbsp;</p>
@@ -70,15 +80,17 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Matroids</td>
+  <td class="data" width="80%">Kruskal's Algorithm for Minimum Spanning Forest</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Author:
+          Authors:
       </td>
   <td class="data">
-              Jonas Keinholz
+                      <a href="http://in.tum.de/~haslbema/">Maximilian P.L. Haslbeck</a>,
+                <a href="http://www21.in.tum.de/~lammich">Peter Lammich</a> and
+          Julian Biendarra
       </td>
 </tr>
 
@@ -86,33 +98,33 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2018-11-16</td>
+  <td class="data">2019-02-14</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-<p>This article defines the combinatorial structures known as
-<em>Independence Systems</em> and
-<em>Matroids</em> and provides basic concepts and theorems
-related to them. These structures play an important role in
-combinatorial optimisation, e. g. greedy algorithms such as
-Kruskal's algorithm. The development is based on Oxley's
-<a href="http://www.math.lsu.edu/~oxley/survey4.pdf">`What
-is a Matroid?'</a>.</p></td>
+This Isabelle/HOL formalization defines a greedy algorithm for finding
+a minimum weight basis on a weighted matroid and proves its
+correctness. This algorithm is an abstract version of Kruskal's
+algorithm.  We interpret the abstract algorithm for the cycle matroid
+(i.e. forests in a graph) and refine it to imperative executable code
+using an efficient union-find data structure.  Our formalization can
+be instantiated for different graph representations. We provide
+instantiations for undirected graphs and symmetric directed graphs.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Matroids-AFP,
-  author  = {Jonas Keinholz},
-  title   = {Matroids},
+        <pre>@article{Kruskal-AFP,
+  author  = {Maximilian P.L. Haslbeck and Peter Lammich and Julian Biendarra},
+  title   = {Kruskal's Algorithm for Minimum Spanning Forest},
   journal = {Archive of Formal Proofs},
-  month   = nov,
-  year    = 2018,
-  note    = {\url{http://isa-afp.org/entries/Matroids.html},
+  month   = feb,
+  year    = 2019,
+  note    = {\url{http://isa-afp.org/entries/Kruskal.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -123,10 +135,10 @@ is a Matroid?'</a>.</p></td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Kruskal.html">Kruskal</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Collections.html">Collections</a>, <a href="Matroids.html">Matroids</a>, <a href="Refine_Imperative_HOL.html">Refine_Imperative_HOL</a>, <a href="Refine_Monadic.html">Refine_Monadic</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -138,17 +150,17 @@ is a Matroid?'</a>.</p></td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Matroids/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Matroids/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Kruskal/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Kruskal/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Matroids/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Kruskal/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Matroids-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Kruskal-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 

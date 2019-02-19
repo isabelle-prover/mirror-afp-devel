@@ -1944,7 +1944,7 @@ notify = christian.urban@kcl.ac.uk
 
 [Universal_Turing_Machine]
 title = Universal Turing Machine
-author = Jian Xu, Xingyuan Zhang, Christian Urban <https://nms.kcl.ac.uk/christian.urban/>, Sebastiaan J. C. Joosten <http://sjcjoosten.nl/>
+author = Jian Xu<>, Xingyuan Zhang<>, Christian Urban <https://nms.kcl.ac.uk/christian.urban/>, Sebastiaan J. C. Joosten <http://sjcjoosten.nl/>
 topic = Logic, Computer Science/Automata and Formal Languages
 date = 2019-02-08
 notify = sjcjoosten@gmail.com, christian.urban@kcl.ac.uk
@@ -7785,7 +7785,7 @@ abstract =
 
 [Probabilistic_Prime_Tests]
 title = Probabilistic Primality Testing
-author = Daniel Stüwe, Manuel Eberl <https://www21.in.tum.de/~eberlm>
+author = Daniel Stüwe<>, Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Mathematics/Number Theory
 date = 2019-02-11
 notify = eberlm@in.tum.de
@@ -7801,4 +7801,21 @@ abstract =
   number-theoretic foundations, such as Carmichael numbers and the
   Jacobi symbol with an efficient executable algorithm to compute
   it.</p>
+
+[Kruskal]
+title = Kruskal's Algorithm for Minimum Spanning Forest
+author = Maximilian P.L. Haslbeck <http://in.tum.de/~haslbema/>, Peter Lammich <http://www21.in.tum.de/~lammich>, Julian Biendarra<>
+topic = Computer Science/Algorithms
+date = 2019-02-14
+notify = haslbema@in.tum.de, lammich@in.tum.de
+abstract = 
+  This Isabelle/HOL formalization defines a greedy algorithm for finding
+  a minimum weight basis on a weighted matroid and proves its
+  correctness. This algorithm is an abstract version of Kruskal's
+  algorithm.  We interpret the abstract algorithm for the cycle matroid
+  (i.e. forests in a graph) and refine it to imperative executable code
+  using an efficient union-find data structure.  Our formalization can
+  be instantiated for different graph representations. We provide
+  instantiations for undirected graphs and symmetric directed graphs.
+  
 
