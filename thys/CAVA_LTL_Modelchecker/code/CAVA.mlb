@@ -37,6 +37,7 @@ local
     end
 in
     structure IsaArith = Arith
+    structure HOLString
     structure CAVA_Impl
     structure Statistics
 

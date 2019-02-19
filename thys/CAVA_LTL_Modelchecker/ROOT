@@ -1,24 +1,36 @@
 chapter AFP
 
-session CAVA_buildchain1 (AFP) = "LTL_to_GBA" +
-  options [timeout = 600]
+session SM_Base (AFP) = CAVA_Automata +
   sessions
+    Partial_Order_Reduction
+    DFS_Framework
+  theories
+    Partial_Order_Reduction.Ample_Correctness
+    Partial_Order_Reduction.Ample_Analysis
+    DFS_Framework.Feedback_Arcs
+
+session SM (AFP) = SM_Base +
+  sessions
+    LTL_to_GBA (* TODO: only needed for LTL_to_GBA.LTL_Stutter, which should be moved to Stuttering_Equivalence *)
+  theories [document = false]
+    "SM/Lib/LTS"
+    "SM/Lib/SOS_Misc_Add"
+  theories
+    "SM/Impl/SM_Wrapup"
+
+session CAVA_Setup (AFP) = CAVA_Automata +
+  sessions
+    LTL_to_GBA
     Gabow_SCC
-  theories
-    Gabow_SCC.All_Of_Gabow_SCC
-
-(*session CAVA_buildchain2 (AFP) = CAVA_buildchain1 +
-  options [document = false]
-  theories "../Nested_DFS/All_Of_Nested_DFS"*)
-
-session CAVA_buildchain3 (AFP) = CAVA_buildchain1 +
-  options [timeout = 1200]
-  sessions
     Promela
+    SM
   theories
+    LTL_to_GBA.All_Of_LTL_to_GBA
+    Gabow_SCC.All_Of_Gabow_SCC
     Promela.All_Of_Promela
+    SM.SM_Wrapup
 
-session CAVA_LTL_Modelchecker (AFP) = CAVA_buildchain3 +
+session CAVA_LTL_Modelchecker (AFP) = CAVA_Setup +
   options [timeout = 1200]
   theories [document = false]
     "Nested_DFS/NDFS_SI_Statistics"
@@ -30,6 +42,7 @@ session CAVA_LTL_Modelchecker (AFP) = CAVA_buildchain3 +
     "BoolProgs/BoolProgs_Extras"
     "BoolProgs/BoolProgs_LTL_Conv"
     "BoolProgs/Programs/BoolProgs_Programs"
+    "Examples/Mulog"
   theories
     CAVA_Impl
   theories [document = false]
