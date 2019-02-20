@@ -215,7 +215,7 @@ method_setup pred_simp = \<open>
   (fn args => fn ctx =>
     let val prove_tac = Basic_Tactics.utp_simp_tac in
       (UTP_Tactics.inst_gen_pred_tac args prove_tac ctx)
-    end);
+    end)
 \<close>
 
 method_setup rel_simp = \<open>
@@ -223,7 +223,7 @@ method_setup rel_simp = \<open>
     (fn args => fn ctx =>
       let val prove_tac = Basic_Tactics.utp_simp_tac in
         (UTP_Tactics.inst_gen_rel_tac args prove_tac ctx)
-      end);
+      end)
 \<close>
 
 method_setup pred_auto = \<open>
@@ -231,7 +231,7 @@ method_setup pred_auto = \<open>
     (fn args => fn ctx =>
       let val prove_tac = Basic_Tactics.utp_auto_tac in
         (UTP_Tactics.inst_gen_pred_tac args prove_tac ctx)
-      end);
+      end)
 \<close>
 
 method_setup rel_auto = \<open>
@@ -239,7 +239,7 @@ method_setup rel_auto = \<open>
     (fn args => fn ctx =>
       let val prove_tac = Basic_Tactics.utp_auto_tac in
         (UTP_Tactics.inst_gen_rel_tac args prove_tac ctx)
-      end);
+      end)
 \<close>
 
 method_setup pred_blast = \<open>
@@ -247,7 +247,7 @@ method_setup pred_blast = \<open>
     (fn args => fn ctx =>
       let val prove_tac = Basic_Tactics.utp_blast_tac in
         (UTP_Tactics.inst_gen_pred_tac args prove_tac ctx)
-      end);
+      end)
 \<close>
 
 method_setup rel_blast = \<open>
@@ -255,7 +255,7 @@ method_setup rel_blast = \<open>
     (fn args => fn ctx =>
       let val prove_tac = Basic_Tactics.utp_blast_tac in
         (UTP_Tactics.inst_gen_rel_tac args prove_tac ctx)
-      end);
+      end)
 \<close>
   
 text \<open> Simpler, one-shot versions of the above tactics, but without the possibility of dynamic arguments. \<close>
