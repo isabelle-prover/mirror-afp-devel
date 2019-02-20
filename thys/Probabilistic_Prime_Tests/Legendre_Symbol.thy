@@ -157,13 +157,13 @@ proof -
   have "card E = card ((\<lambda>x. x * 2 mod p) `
           {0<..(p - 1) div 2} \<inter> {(p - 1) div 2<..})" (is "_ = card ?A")
     unfolding E_def C_def B_def A_def image_image using assms by simp
-  also have "(\<lambda>x. x * 2 mod p) ` {0<..(p - 1) div 2} = (( * ) 2) ` {0<..(p - 1) div 2}"
+  also have "(\<lambda>x. x * 2 mod p) ` {0<..(p - 1) div 2} = ((*) 2) ` {0<..(p - 1) div 2}"
     by (intro image_cong) auto
   also have "card (\<dots> \<inter> {(p - 1) div 2<..}) =
-               nat ((p - 1) div 2) - card (( * ) 2 ` {0<..(p - 1) div 2} - {(p - 1) div 2<..})"
+               nat ((p - 1) div 2) - card ((*) 2 ` {0<..(p - 1) div 2} - {(p - 1) div 2<..})"
     using assms by (subst card_Int) (auto simp: card_image inj_onI)
-  also have "card ((( * ) 2) ` {0<..(p - 1) div 2} - {(p - 1) div 2<..}) = card {0 <.. (p div 4)}"
-    by (rule sym, intro bij_betw_same_card[of "( * ) 2"] bij_betw_imageI inj_onI)
+  also have "card (((*) 2) ` {0<..(p - 1) div 2} - {(p - 1) div 2<..}) = card {0 <.. (p div 4)}"
+    by (rule sym, intro bij_betw_same_card[of "(*) 2"] bij_betw_imageI inj_onI)
        (insert assms prime_odd_int[of p], auto simp: image_def elim!: oddE)
   also have "\<dots> = nat p div 4" using assms by simp
   also have "nat ((p - 1) div 2) - nat p div 4 =  nat ((p - 1) div 2 - p div 4)"

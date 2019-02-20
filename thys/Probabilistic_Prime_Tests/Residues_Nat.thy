@@ -138,7 +138,7 @@ proof safe
   then obtain y where y: "[x * y = 1] (mod n)"
     using n_gt_1 by (auto simp: Units_def cong_def)
   hence "coprime x n"
-    using cong_imp_coprime_nat cong_sym coprime_1_left coprime_mult_left_iff by metis
+    using cong_imp_coprime cong_sym coprime_1_left coprime_mult_left_iff by metis
   with x show "x \<in> totatives n" by (auto simp: totatives_def Units_def intro!: Nat.gr0I)
 next
   fix x assume x: "x \<in> totatives n"
