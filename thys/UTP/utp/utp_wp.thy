@@ -1,10 +1,10 @@
-section {* Weakest (Liberal) Precondition Calculus *}
+section \<open>Weakest (Liberal) Precondition Calculus\<close>
 
 theory utp_wp
 imports utp_hoare
 begin
 
-text {* A very quick implementation of wlp -- more laws still needed! *}
+text \<open>A very quick implementation of wlp -- more laws still needed!\<close>
 
 named_theorems wp
 
@@ -62,8 +62,8 @@ theorem wp_hoare_link:
   "\<lbrace>p\<rbrace>Q\<lbrace>r\<rbrace>\<^sub>u \<longleftrightarrow> (Q wp r \<sqsubseteq> p)"
   by rel_auto
 
-text {* If two programs have the same weakest precondition for any postcondition then the programs
-  are the same. *}
+text \<open>If two programs have the same weakest precondition for any postcondition then the programs
+  are the same.\<close>
 
 theorem wp_eq_intro: "\<lbrakk> \<And> r. P wp r = Q wp r \<rbrakk> \<Longrightarrow> P = Q"
   by (rel_auto robust, fastforce+)

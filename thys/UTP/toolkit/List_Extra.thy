@@ -32,7 +32,7 @@ end
 subsection \<open> List Lookup \<close>
 
 text \<open>
-  The following variant of the standard @{text nth} function returns @{text "\<bottom>"} if the index is 
+  The following variant of the standard \<open>nth\<close> function returns \<open>\<bottom>\<close> if the index is 
   out of range.
 \<close>
 

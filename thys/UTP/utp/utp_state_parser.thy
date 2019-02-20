@@ -45,7 +45,7 @@ translations
     "CONST state_block (_abs (_state_tuple (_state_type vs) vs) P) (_state_lenses vs)"
   "_state_decl vs P" <= "CONST state_block (_abs vs P) k"
 
-parse_translation {*
+parse_translation \<open>
   let
     open HOLogic;
     val lens_comp = Const (@{const_syntax "lens_comp"}, dummyT);
@@ -68,7 +68,7 @@ parse_translation {*
   in
   [("_state_lenses", state_lens)]
   end
-*}
+\<close>
 
 subsection \<open> Examples \<close>
 

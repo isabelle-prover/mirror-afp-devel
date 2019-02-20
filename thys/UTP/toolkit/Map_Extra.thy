@@ -231,7 +231,7 @@ lemma ifSomeE [elim]: "\<lbrakk> (if c then Some(x) else None) = Some(y); \<lbra
 
 subsection \<open> Range Restriction \<close>
 
-text {* A range restriction operator; only domain restriction is provided in HOL. *}
+text \<open>A range restriction operator; only domain restriction is provided in HOL.\<close>
 
 definition ran_restrict_map :: "('a \<rightharpoonup> 'b) \<Rightarrow> 'b set \<Rightarrow> 'a \<rightharpoonup> 'b" ("_\<upharpoonleft>\<^bsub>_\<^esub>" [111,110] 110) where
 "ran_restrict_map f B = (\<lambda>x. do { v <- f(x); if (v \<in> B) then Some(v) else None })"

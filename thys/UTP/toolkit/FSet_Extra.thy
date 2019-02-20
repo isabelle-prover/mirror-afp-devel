@@ -5,7 +5,7 @@
 (* Emails: frank.zeyda@york.ac.uk and simon.foster@york.ac.uk                 *)
 (******************************************************************************)
 
-section {* Finite Sets: extra functions and properties *}
+section \<open>Finite Sets: extra functions and properties\<close>
 
 theory FSet_Extra
 imports
@@ -42,12 +42,12 @@ definition FUnion :: "'a fset fset \<Rightarrow> 'a fset" ("\<Union>\<^sub>f_" [
 definition FInter :: "'a fset fset \<Rightarrow> 'a fset" ("\<Inter>\<^sub>f_" [90] 90) where
 "FInter xs = Abs_fset (\<Inter>x\<in>\<langle>xs\<rangle>\<^sub>f. \<langle>x\<rangle>\<^sub>f)"
 
-text {* Finite power set *}
+text \<open>Finite power set\<close>
 
 definition FinPow :: "'a fset \<Rightarrow> 'a fset fset" where
 "FinPow xs = Abs_fset (Abs_fset ` Pow \<langle>xs\<rangle>\<^sub>f)"
 
-text {* Set of all finite subsets of a set *}
+text \<open>Set of all finite subsets of a set\<close>
 
 definition Fow :: "'a set \<Rightarrow> 'a fset set" where
 "Fow A = {x. \<langle>x\<rangle>\<^sub>f \<subseteq> A}"

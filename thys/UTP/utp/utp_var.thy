@@ -40,7 +40,7 @@ text \<open> This theory describes the foundational structure of UTP variables, 
   in this shallow model are simply represented as types @{typ "'\<alpha>"}, though by convention usually a record
   type where each field corresponds to a variable. UTP variables in this frame are simply modelled 
   as lenses @{typ "'a \<Longrightarrow> '\<alpha>"}, where the view type @{typ "'a"} is the variable type, and the 
-  source type @{text "'\<alpha>"} is the alphabet or state-space type.
+  source type \<open>'\<alpha>\<close> is the alphabet or state-space type.
 
   We define some lifting functions for variables to create input and output variables.
   These simply lift the alphabet to a tuple type since relations will ultimately be defined

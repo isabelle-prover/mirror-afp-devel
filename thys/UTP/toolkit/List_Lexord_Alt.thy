@@ -5,7 +5,7 @@
 (* Emails: simon.foster@york.ac.uk and frank.zeyda@york.ac.uk                 *)
 (******************************************************************************)
 
-section {* Alternative List Lexicographic Order *}
+section \<open>Alternative List Lexicographic Order\<close>
 
 theory List_Lexord_Alt
   imports Main

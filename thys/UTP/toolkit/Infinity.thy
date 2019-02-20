@@ -14,12 +14,12 @@ imports HOL.Real
 begin
 
 text \<open>
-  This theory introduces a type class @{text infinite} that guarantees that the
+  This theory introduces a type class \<open>infinite\<close> that guarantees that the
   underlying universe of the type is infinite. It also provides useful theorems
   to prove infinity of the universes for various HOL types.
 \<close>
 
-subsection \<open> Type class @{text infinite} \<close>
+subsection \<open> Type class \<open>infinite\<close> \<close>
 
 text \<open>
   The type class postulates that the universe (carrier) of a type is infinite.
