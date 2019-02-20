@@ -30,10 +30,10 @@ begin
   proof -
     assume E: "E = \<alpha> ` set la"
     have *: "fst ` set la \<union> (snd \<circ> snd) ` set la = (\<Union>x\<in>set la. case x of (x1, x1a, x2a) \<Rightarrow> {x1, x2a})"
-      apply auto by (metis image_comp img_snd) 
+      by auto force 
     show ?thesis  
-    unfolding E apply simp 
-    by (auto simp add: \<alpha>_def  max_node_def prod.case_distrib *) 
+    unfolding E using *
+    by (auto simp add: \<alpha>_def  max_node_def prod.case_distrib) 
   qed
 
 

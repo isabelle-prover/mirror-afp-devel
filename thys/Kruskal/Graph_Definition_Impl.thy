@@ -23,15 +23,14 @@ begin
     assume E: "E =  set la"
     have *: "fst ` set la \<union> (snd \<circ> snd) ` set la
              = (\<Union>x\<in>set la. case x of (x1, x1a, x2a) \<Rightarrow> {x1, x2a})"
-      apply auto by (metis image_comp img_snd) 
+      by auto force 
     show ?thesis 
     unfolding E  
     by (auto simp add:    max_node_def prod.case_distrib * ) 
   qed
 
   lemma ind_valid_graph: "\<And>E'. E' \<subseteq> E \<Longrightarrow> valid_graph (ind E')"
-    unfolding valid_graph_def apply auto  
-    by (metis image_comp img_snd subsetCE) 
+    unfolding valid_graph_def by force
   
   lemma vE: "valid_graph (ind E)" apply(rule ind_valid_graph) by simp
   
@@ -39,8 +38,7 @@ begin
     apply(rule ind_valid_graph) by(auto simp: subgraph_def) 
     
   lemma add_edge_ind: "(a,w,b)\<in>E \<Longrightarrow> add_edge a w b (ind F) = ind (insert (a,w,b) F)"
-    unfolding add_edge_def apply auto  
-    by (metis image_comp img_snd)
+    unfolding add_edge_def by force
   
                                                      
   lemma nodes_connected_ind_sym: "F\<subseteq>E \<Longrightarrow> sym {(x, y) |x y. nodes_connected (ind F) x y}"
@@ -82,7 +80,7 @@ begin
       subgoal for p  apply(cases p) by auto
       subgoal for p  apply(cases p) by auto
       subgoal apply(rule exI[where x="[]"]) by auto
-      subgoal apply(rule exI[where x="[]"]) apply simp  by (metis image_comp img_snd)  
+      subgoal apply(rule exI[where x="[]"]) by force  
       done
   next
     case (6 E1 E2 u v)
@@ -104,7 +102,7 @@ begin
       with e have i: "\<not> nodes_connected (delete_edge a w b (ind (insert e F))) a b" by auto
       have ii: "(delete_edge a w b (ind (insert e F))) = ind F"
         using 7(2) e by (auto simp: delete_edge_def)
-      from i have "\<not> nodes_connected (ind F) a b" by(simp add: ii) 
+      from i have "\<not> nodes_connected (ind F) a b" using ii by auto
       then show "(u, v) \<notin> {(a, b) |a b. nodes_connected (ind F) a b}"
         using 7(3)   valid_graph.nodes_connected_sym[OF ind_valid_graph'[OF s]] e by auto
     next
@@ -117,8 +115,7 @@ begin
       then have nn: "~nodes_connected (ind F) a b" by auto
       have "forest (add_edge a w b (ind F))" apply(rule forest.forest_add_edge[OF f _ _ nn])
         using uv abuv by auto
-      then have f': "forest (ind (insert e F))" using 7(2) by(auto simp add: e add_edge_ind)
-  
+      then have f': "forest (ind (insert e F))" using 7(2) add_edge_ind by (auto simp add: e)   
       from f' sg show "forest (ind (insert e F)) \<and> subgraph (ind (insert e F)) (ind E) "
         by auto
     qed
@@ -145,8 +142,7 @@ begin
       subgoal apply(rule part_equiv_nodes_connected_ind) by fact
       using xy e 10(5) by auto
     show ?case
-      apply(simp add: *[simplified ad_eq])
-      using 10(5) e by auto 
+      using 10(5) e * ad_eq by auto
   next
     case 11
     then show ?case by auto
@@ -182,8 +178,7 @@ begin
   next
     case (18 a b)
     then show ?case apply auto
-        subgoal for w apply(rule exI[where x="[(a, w, b)]"]) apply simp 
-          by (metis image_comp img_snd set_mp) 
+        subgoal for w apply(rule exI[where x="[(a, w, b)]"]) by force
         subgoal for w apply(rule exI[where x="[(a, w, b)]"]) apply simp by blast
         done
   next
@@ -309,8 +304,8 @@ proof -
   interpret fromlist L by unfold_locales
   have *: "\<And>F'. edge_weight (ind F') = sum (\<lambda>(u,w,v). w) F'"
     unfolding edge_weight_def apply auto by (metis fn_snd_conv fst_def)
-  show ?thesis
-    by (sep_auto heap: corr simp: * minimum_spanning_forest_def optimal_forest_def)
+  show ?thesis using *
+    by (sep_auto heap: corr simp: minimum_spanning_forest_def optimal_forest_def)
 qed
 
 

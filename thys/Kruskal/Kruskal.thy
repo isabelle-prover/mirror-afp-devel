@@ -145,7 +145,7 @@ proof (rule ccontr, clarsimp)
   assume "\<forall>u. u \<in> V \<longrightarrow> (\<forall>v. CC E1 u = CC E1 v \<longrightarrow> v \<in> V \<longrightarrow> CC E2 u = CC E2 v)"
   then have "\<And>u v. u\<in>V \<Longrightarrow> v\<in>V \<Longrightarrow> CC E1 u = CC E1 v \<Longrightarrow> CC E2 u = CC E2 v" by blast
 
-  with coarser[OF finiteV] have "card ((CC E1) ` V) \<ge> card ((CC E2) ` V)" by auto
+  with coarser[OF finiteV] have "card ((CC E1) ` V) \<ge> card ((CC E2) ` V)" by blast
 
   with CCs_imageCC cardlt show "False" by auto
 qed
