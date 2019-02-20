@@ -342,7 +342,7 @@ text \<open> The following code sets up pretty-printing for homogeneous relation
   
 print_translation \<open>
 let
-fun tr' ctx [ a
+fun tr' ctxt [ a
             , Const (@{type_syntax "prod"},_) $ alpha $ beta ] = 
   if (alpha = beta) 
     then Syntax.const @{type_syntax "hexpr"} $ a $ alpha

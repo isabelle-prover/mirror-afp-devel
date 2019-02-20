@@ -212,49 +212,49 @@ text \<open>
 
 method_setup pred_simp = \<open>
   (Scan.lift UTP_Tactics.scan_args) >>
-  (fn args => fn ctx =>
+  (fn args => fn ctxt =>
     let val prove_tac = Basic_Tactics.utp_simp_tac in
-      (UTP_Tactics.inst_gen_pred_tac args prove_tac ctx)
+      (UTP_Tactics.inst_gen_pred_tac args prove_tac ctxt)
     end)
 \<close>
 
 method_setup rel_simp = \<open>
   (Scan.lift UTP_Tactics.scan_args) >>
-    (fn args => fn ctx =>
+    (fn args => fn ctxt =>
       let val prove_tac = Basic_Tactics.utp_simp_tac in
-        (UTP_Tactics.inst_gen_rel_tac args prove_tac ctx)
+        (UTP_Tactics.inst_gen_rel_tac args prove_tac ctxt)
       end)
 \<close>
 
 method_setup pred_auto = \<open>
   (Scan.lift UTP_Tactics.scan_args) >>
-    (fn args => fn ctx =>
+    (fn args => fn ctxt =>
       let val prove_tac = Basic_Tactics.utp_auto_tac in
-        (UTP_Tactics.inst_gen_pred_tac args prove_tac ctx)
+        (UTP_Tactics.inst_gen_pred_tac args prove_tac ctxt)
       end)
 \<close>
 
 method_setup rel_auto = \<open>
   (Scan.lift UTP_Tactics.scan_args) >>
-    (fn args => fn ctx =>
+    (fn args => fn ctxt =>
       let val prove_tac = Basic_Tactics.utp_auto_tac in
-        (UTP_Tactics.inst_gen_rel_tac args prove_tac ctx)
+        (UTP_Tactics.inst_gen_rel_tac args prove_tac ctxt)
       end)
 \<close>
 
 method_setup pred_blast = \<open>
   (Scan.lift UTP_Tactics.scan_args) >>
-    (fn args => fn ctx =>
+    (fn args => fn ctxt =>
       let val prove_tac = Basic_Tactics.utp_blast_tac in
-        (UTP_Tactics.inst_gen_pred_tac args prove_tac ctx)
+        (UTP_Tactics.inst_gen_pred_tac args prove_tac ctxt)
       end)
 \<close>
 
 method_setup rel_blast = \<open>
   (Scan.lift UTP_Tactics.scan_args) >>
-    (fn args => fn ctx =>
+    (fn args => fn ctxt =>
       let val prove_tac = Basic_Tactics.utp_blast_tac in
-        (UTP_Tactics.inst_gen_rel_tac args prove_tac ctx)
+        (UTP_Tactics.inst_gen_rel_tac args prove_tac ctxt)
       end)
 \<close>
   

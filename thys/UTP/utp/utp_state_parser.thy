@@ -64,7 +64,7 @@ parse_translation {*
       var_decl_num _ = 1;
 
     
-    fun state_lens ctx [vs] = state_lenses (var_decl_num vs) id_lens ;
+    fun state_lens ctxt [vs] = state_lenses (var_decl_num vs) id_lens ;
   in
   [("_state_lenses", state_lens)]
   end
