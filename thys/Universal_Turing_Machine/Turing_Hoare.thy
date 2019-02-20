@@ -3,7 +3,7 @@
    Modifications: Sebastiaan Joosten
 *)
 
-chapter {* Hoare Rules for TMs *}
+chapter \<open>Hoare Rules for TMs\<close>
 
 theory Turing_Hoare
   imports Turing
@@ -62,11 +62,11 @@ lemma Hoare_unhaltI:
 
 
 
-text {*
+text \<open>
   {P} A {Q}   {Q} B {S}  A well-formed
   -----------------------------------------
   {P} A |+| B {S}
-*}
+\<close>
 
 
 lemma Hoare_plus_halt [case_names A_halt B_halt A_wf]: 
@@ -101,11 +101,11 @@ proof(rule Hoare_haltI)
     using b1 b2 by (rule_tac x = "n2 + n3" in exI) (simp)
 qed
 
-text {*
+text \<open>
   {P} A {Q}   {Q} B loops   A well-formed
   ------------------------------------------
           {P} A |+| B  loops
-*}
+\<close>
 
 lemma Hoare_plus_unhalt [case_names A_halt B_unhalt A_wf]:
   assumes A_halt: "{P} A {Q}"
@@ -138,7 +138,7 @@ proof(rule_tac Hoare_unhaltI)
     then have "\<not> is_final (steps0 (1, l, r) (A |+| B) (n2 + (n  - n2)))"
       using A_wf by (simp only: steps_add eq) simp
     then show "\<not> is_final (steps0 (1, l, r) (A |+| B) n)" 
-      using `n2 \<le> n` by simp
+      using \<open>n2 \<le> n\<close> by simp
   next 
     case False
     then obtain n3 where "n = n2 - n3"

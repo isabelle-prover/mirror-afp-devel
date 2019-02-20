@@ -15,18 +15,18 @@ fun mv_box :: "nat \<Rightarrow> nat \<Rightarrow> abc_prog"
   where
     "mv_box m n = [Dec m 3, Inc n, Goto 0]"
 
-text {* The compilation of @{text "z"}-operator. *}
+text \<open>The compilation of @{text "z"}-operator.\<close>
 definition rec_ci_z :: "abc_inst list"
   where
     "rec_ci_z \<equiv> [Goto 1]"
 
-text {* The compilation of @{text "s"}-operator. *}
+text \<open>The compilation of @{text "s"}-operator.\<close>
 definition rec_ci_s :: "abc_inst list"
   where
     "rec_ci_s \<equiv> (addition 0 1 2 [+] [Inc 1])"
 
 
-text {* The compilation of @{text "id i j"}-operator *}
+text \<open>The compilation of @{text "id i j"}-operator\<close>
 fun rec_ci_id :: "nat \<Rightarrow> nat \<Rightarrow> abc_inst list"
   where
     "rec_ci_id i j = addition j i (i + 1)"
@@ -50,13 +50,13 @@ fun cn_merge_gs ::
          gprog [+] mv_box gpara p [+] cn_merge_gs gs (Suc p))"
 
 
-text {*
+text \<open>
   The compiler of recursive functions, where @{text "rec_ci recf"} return 
   @{text "(ap, arity, fp)"}, where @{text "ap"} is the Abacus program, @{text "arity"} is the 
   arity of the recursive function @{text "recf"}, 
   @{text "fp"} is the amount of memory which is going to be
   used by @{text "ap"} for its execution. 
-*}
+\<close>
 
 fun rec_ci :: "recf \<Rightarrow> abc_inst list \<times> nat \<times> nat"
   where

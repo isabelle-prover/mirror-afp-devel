@@ -3,13 +3,13 @@
    Modifications: Sebastiaan Joosten
 *)
 
-chapter {* Turing Machines *}
+chapter \<open>Turing Machines\<close>
 
 theory Turing
   imports Main
 begin
 
-section {* Basic definitions of Turing machine *}
+section \<open>Basic definitions of Turing machine\<close>
 
 datatype action = W0 | W1 | L | R | Nop
 

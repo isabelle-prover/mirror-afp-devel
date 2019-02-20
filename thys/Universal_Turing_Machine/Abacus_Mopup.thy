@@ -3,7 +3,7 @@
    Modifications: Sebastiaan Joosten
 *)
 
-chapter {* Mopup Turing Machine that deletes all "registers", except one *}
+chapter \<open>Mopup Turing Machine that deletes all "registers", except one\<close>
 
 theory Abacus_Mopup
   imports Uncomputable

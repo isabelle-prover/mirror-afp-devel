@@ -3,7 +3,7 @@
    Modifications: Sebastiaan Joosten
 *)
 
-chapter {* Undeciablity of the Halting Problem *}
+chapter \<open>Undeciablity of the Halting Problem\<close>
 
 theory Uncomputable
   imports Turing_Hoare
@@ -25,7 +25,7 @@ lemma numeral:
 
 lemma gr1_conv_Suc:"Suc 0 < mr \<longleftrightarrow> (\<exists> nat. mr = Suc (Suc nat))" by presburger
 
-text {* The Copying TM, which duplicates its input. *}
+text \<open>The Copying TM, which duplicates its input.\<close>
 
 definition 
   tcopy_begin :: "instr list"
@@ -866,12 +866,12 @@ proof -
 qed
 
 
-section {* The {\em Dithering} Turing Machine *}
+section \<open>The {\em Dithering} Turing Machine\<close>
 
-text {*
+text \<open>
   The {\em Dithering} TM, when the input is @{text "1"}, it will loop forever, otherwise, it will
   terminate.
-*}
+\<close>
 
 definition dither :: "instr list"
   where
@@ -911,12 +911,12 @@ lemma dither_halts:
   by (metis (lifting, mono_tags) holds_for.simps is_final_eq)
 
 
-section {* The diagnal argument below shows the undecidability of Halting problem *}
+section \<open>The diagnal argument below shows the undecidability of Halting problem\<close>
 
-text {*
+text \<open>
   @{text "halts tp x"} means TM @{text "tp"} terminates on input @{text "x"}
   and the final configuration is standard.
-*}
+\<close>
 
 definition halts :: "tprog0 \<Rightarrow> nat list \<Rightarrow> bool"
   where
@@ -928,12 +928,12 @@ lemma tm_wf0_tcopy[intro, simp]: "tm_wf0 tcopy"
 lemma tm_wf0_dither[intro, simp]: "tm_wf0 dither"
   by (auto simp: tm_wf.simps dither_def)
 
-text {*
+text \<open>
   The following locale specifies that TM @{text "H"} can be used to solve 
   the {\em Halting Problem} and @{text "False"} is going to be derived 
   under this locale. Therefore, the undecidability of {\em Halting Problem}
   is established. 
-*}
+\<close>
 
 locale uncomputable = 
   (* The coding function of TM, interestingly, the detailed definition of this 
@@ -1085,9 +1085,9 @@ proof -
 qed
 
 
-text {*
+text \<open>
   @{text "False"} can finally derived.
-*}
+\<close>
 
 lemma false: "False"
   using tcontra_halt tcontra_unhalt 

@@ -3,7 +3,7 @@
    Modifications: Sebastiaan Joosten
 *)
 
-chapter {* Abacus Machines *}
+chapter \<open>Abacus Machines\<close>
 
 theory Abacus
   imports Turing_Hoare Abacus_Mopup
@@ -22,27 +22,27 @@ type_synonym abc_prog = "abc_inst list"
 
 type_synonym abc_state = nat
 
-text {*
+text \<open>
   The memory of Abacus machine is defined as a list of contents, with 
   every units addressed by index into the list.
-  *}
+\<close>
 type_synonym abc_lm = "nat list"
 
-text {*
+text \<open>
   Fetching contents out of memory. Units not represented by list elements are considered
   as having content @{text "0"}.
-*}
+\<close>
 fun abc_lm_v :: "abc_lm \<Rightarrow> nat \<Rightarrow> nat"
   where 
     "abc_lm_v lm n = (if (n < length lm) then (lm!n) else 0)"         
 
 
-text {*
+text \<open>
   Set the content of memory unit @{text "n"} to value @{text "v"}.
   @{text "am"} is the Abacus memory before setting.
   If address @{text "n"} is outside to scope of @{text "am"}, @{text "am"} 
   is extended so that @{text "n"} becomes in scope.
-*}
+\<close>
 
 fun abc_lm_s :: "abc_lm \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> abc_lm"
   where
@@ -50,24 +50,24 @@ fun abc_lm_s :: "abc_lm \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> abc_lm
                            am@ (replicate (n - length am) 0) @ [v])"
 
 
-text {*
+text \<open>
   The configuration of Abaucs machines consists of its current state and its
   current memory:
-*}
+\<close>
 type_synonym abc_conf = "abc_state \<times> abc_lm"
 
-text {*
+text \<open>
   Fetch instruction out of Abacus program:
-*}
+\<close>
 
 fun abc_fetch :: "nat \<Rightarrow> abc_prog \<Rightarrow> abc_inst option" 
   where
     "abc_fetch s p = (if (s < length p) then Some (p ! s) else None)"
 
-text {*
+text \<open>
   Single step execution of Abacus machine. If no instruction is feteched, 
   configuration does not change.
-*}
+\<close>
 fun abc_step_l :: "abc_conf \<Rightarrow> abc_inst option \<Rightarrow> abc_conf"
   where
     "abc_step_l (s, lm) a = (case a of 
@@ -80,28 +80,28 @@ fun abc_step_l :: "abc_conf \<Rightarrow> abc_inst option \<Rightarrow> abc_conf
                Some (Goto n) \<Rightarrow> (n, lm) 
                )"
 
-text {*
+text \<open>
   Multi-step execution of Abacus machine.
-*}
+\<close>
 fun abc_steps_l :: "abc_conf \<Rightarrow> abc_prog \<Rightarrow> nat \<Rightarrow> abc_conf"
   where
     "abc_steps_l (s, lm) p 0 = (s, lm)" |
     "abc_steps_l (s, lm) p (Suc n) = 
       abc_steps_l (abc_step_l (s, lm) (abc_fetch s p)) p n"
 
-section {*
+section \<open>
   Compiling Abacus machines into Turing machines
-*}
+\<close>
 
-subsection {*
+subsection \<open>
   Compiling functions
-*}
+\<close>
 
-text {*
+text \<open>
   @{text "findnth n"} returns the TM which locates the represention of
   memory cell @{text "n"} on the tape and changes representation of zero
   on the way.
-*}
+\<close>
 
 fun findnth :: "nat \<Rightarrow> instr list"
   where
@@ -109,11 +109,11 @@ fun findnth :: "nat \<Rightarrow> instr list"
     "findnth (Suc n) = (findnth n @ [(W1, 2 * n + 1), 
            (R, 2 * n + 2), (R, 2 * n + 3), (R, 2 * n + 2)])"
 
-text {*
+text \<open>
   @{text "tinc_b"} returns the TM which increments the representation 
   of the memory cell under rw-head by one and move the representation 
   of cells afterwards to the right accordingly.
-  *}
+\<close>
 
 definition tinc_b :: "instr list"
   where
@@ -121,22 +121,22 @@ definition tinc_b :: "instr list"
              (L, 7), (W0, 5), (R, 6), (W0, 5), (W1, 3), (R, 6),
              (L, 8), (L, 7), (R, 9), (L, 7), (R, 10), (W0, 9)]" 
 
-text {*
+text \<open>
   @{text "tinc ss n"} returns the TM which simulates the execution of 
   Abacus instruction @{text "Inc n"}, assuming that TM is located at
   location @{text "ss"} in the final TM complied from the whole
   Abacus program.
-*}
+\<close>
 
 fun tinc :: "nat \<Rightarrow> nat \<Rightarrow> instr list"
   where
     "tinc ss n = shift (findnth n @ shift tinc_b (2 * n)) (ss - 1)"
 
-text {*
+text \<open>
   @{text "tinc_b"} returns the TM which decrements the representation 
   of the memory cell under rw-head by one and move the representation 
   of cells afterwards to the left accordingly.
-  *}
+\<close>
 
 definition tdec_b :: "instr list"
   where
@@ -148,40 +148,40 @@ definition tdec_b :: "instr list"
               (R, 0), (W0, 16)]"
 
 
-text {*
+text \<open>
   @{text "tdec ss n label"} returns the TM which simulates the execution of 
   Abacus instruction @{text "Dec n label"}, assuming that TM is located at
   location @{text "ss"} in the final TM complied from the whole
   Abacus program.
-*}
+\<close>
 
 fun tdec :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> instr list"
   where
     "tdec ss n e = shift (findnth n) (ss - 1) @ adjust (shift (shift tdec_b (2 * n)) (ss - 1)) e"
 
-text {*
+text \<open>
   @{text "tgoto f(label)"} returns the TM simulating the execution of Abacus instruction
   @{text "Goto label"}, where @{text "f(label)"} is the corresponding location of
   @{text "label"} in the final TM compiled from the overall Abacus program.
-*}
+\<close>
 
 fun tgoto :: "nat \<Rightarrow> instr list"
   where
     "tgoto n = [(Nop, n), (Nop, n)]"
 
-text {*
+text \<open>
   The layout of the final TM compiled from an Abacus program is represented
   as a list of natural numbers, where the list element at index @{text "n"} represents the 
   starting state of the TM simulating the execution of @{text "n"}-th instruction
   in the Abacus program.
-*}
+\<close>
 
 type_synonym layout = "nat list"
 
-text {*
+text \<open>
   @{text "length_of i"} is the length of the 
   TM simulating the Abacus instruction @{text "i"}.
-*}
+\<close>
 fun length_of :: "abc_inst \<Rightarrow> nat"
   where
     "length_of i = (case i of 
@@ -189,27 +189,27 @@ fun length_of :: "abc_inst \<Rightarrow> nat"
                     Dec n e \<Rightarrow> 2 * n + 16 |
                     Goto n  \<Rightarrow> 1)"
 
-text {*
+text \<open>
   @{text "layout_of ap"} returns the layout of Abacus program @{text "ap"}.
-*}
+\<close>
 fun layout_of :: "abc_prog \<Rightarrow> layout"
   where "layout_of ap = map length_of ap"
 
 
-text {*
+text \<open>
   @{text "start_of layout n"} looks out the starting state of @{text "n"}-th
   TM in the finall TM.
-*}
+\<close>
 
 fun start_of :: "nat list \<Rightarrow> nat \<Rightarrow> nat"
   where
     "start_of ly x = (Suc (sum_list (take x ly))) "
 
-text {*
+text \<open>
   @{text "ci lo ss i"} complies Abacus instruction @{text "i"}
   assuming the TM of @{text "i"} starts from state @{text "ss"} 
   within the overal layout @{text "lo"}.
-*}
+\<close>
 
 fun ci :: "layout \<Rightarrow> nat \<Rightarrow> abc_inst \<Rightarrow> instr list"
   where
@@ -217,27 +217,27 @@ fun ci :: "layout \<Rightarrow> nat \<Rightarrow> abc_inst \<Rightarrow> instr l
   | "ci ly ss (Dec n e) = tdec ss n (start_of ly e)"
   | "ci ly ss (Goto n) = tgoto (start_of ly n)"
 
-text {*
+text \<open>
   @{text "tpairs_of ap"} transfroms Abacus program @{text "ap"} pairing
   every instruction with its starting state.
-*}
+\<close>
 
 fun tpairs_of :: "abc_prog \<Rightarrow> (nat \<times> abc_inst) list"
   where "tpairs_of ap = (zip (map (start_of (layout_of ap)) 
                          [0..<(length ap)]) ap)"
 
-text {*
+text \<open>
   @{text "tms_of ap"} returns the list of TMs, where every one of them simulates
   the corresponding Abacus intruction in @{text "ap"}.
-*}
+\<close>
 
 fun tms_of :: "abc_prog \<Rightarrow> (instr list) list"
   where "tms_of ap = map (\<lambda> (n, tm). ci (layout_of ap) n tm) 
                          (tpairs_of ap)"
 
-text {*
+text \<open>
   @{text "tm_of ap"} returns the final TM machine compiled from Abacus program @{text "ap"}.
-*}
+\<close>
 fun tm_of :: "abc_prog \<Rightarrow> instr list"
   where "tm_of ap = concat (tms_of ap)"
 
@@ -250,12 +250,12 @@ lemma ci_length : "length (ci ns n ai) div 2 = length_of ai"
       split: abc_inst.splits simp del: adjust.simps)
   done
 
-subsection {* Representation of Abacus memory by TM tapes *}
+subsection \<open>Representation of Abacus memory by TM tapes\<close>
 
-text {*
+text \<open>
   @{text "crsp acf tcf"} meams the abacus configuration @{text "acf"}
   is corretly represented by the TM configuration @{text "tcf"}.
-*}
+\<close>
 
 fun crsp :: "layout \<Rightarrow> abc_conf \<Rightarrow> config \<Rightarrow> cell list \<Rightarrow> bool"
   where 
@@ -265,10 +265,10 @@ fun crsp :: "layout \<Rightarrow> abc_conf \<Rightarrow> config \<Rightarrow> ce
 
 declare crsp.simps[simp del]
 
-text {*
+text \<open>
   The type of invarints expressing correspondence between 
   Abacus configuration and TM configuration.
-*}
+\<close>
 
 type_synonym inc_inv_t = "abc_conf \<Rightarrow> config \<Rightarrow> cell list \<Rightarrow> bool"
 
@@ -278,10 +278,10 @@ declare tms_of.simps[simp del] tm_of.simps[simp del]
   ci.simps [simp del] length_of.simps[simp del] 
   layout_of.simps[simp del]
 
-text {*
+text \<open>
   The lemmas in this section lead to the correctness of 
   the compilation of @{text "Inc n"} instruction.
-*}
+\<close>
 
 declare abc_step_l.simps[simp del] abc_steps_l.simps[simp del]
 lemma start_of_nonzero[simp]: "start_of ly as > 0" "(start_of ly as = 0) = False"
@@ -879,7 +879,7 @@ proof -
     done
 qed
 
-subsection {* Crsp of Inc*}
+subsection \<open>Crsp of Inc\<close>
 
 fun at_begin_fst_bwtn :: "inc_inv_t"
   where
@@ -1891,7 +1891,7 @@ proof(cases "(abc_step_l (as, lm) (Some (Inc n)))")
     done
 qed
 
-subsection{* Crsp of Dec n e*}
+subsection\<open>Crsp of Dec n e\<close>
 
 type_synonym dec_inv_t = "(nat * nat list) \<Rightarrow> config \<Rightarrow> cell list \<Rightarrow>  bool"
 
@@ -3029,7 +3029,7 @@ proof(simp add: ci.simps)
     done
 qed    
 
-subsection{*Crsp of Goto*}
+subsection\<open>Crsp of Goto\<close>
 
 lemma crsp_step_goto:
   assumes layout: "ly = layout_of ap"
@@ -3129,7 +3129,7 @@ lemma tp_correct':
   apply(case_tac "steps (Suc 0, l, r) (tm_of ap, 0) stpA", simp add: crsp.simps)
   done
 
-text{*The tp @ [(Nop, 0), (Nop, 0)] is nomoral turing machines, so we can use Hoare\_plus when composing with Mop machine*}
+text\<open>The tp @ [(Nop, 0), (Nop, 0)] is nomoral turing machines, so we can use Hoare\_plus when composing with Mop machine\<close>
 
 lemma layout_id_cons: "layout_of (ap @ [p]) = layout_of ap @ [length_of p]"
   apply(simp add: layout_of.simps)

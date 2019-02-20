@@ -8,7 +8,7 @@ theory Recs
 begin
 
 
-text{*
+text\<open>
   A more streamlined and cleaned-up version of Recursive 
   Functions following 
 
@@ -19,7 +19,7 @@ text{*
 
     Lecture on Undecidability
     Michael M. Wolf 
-*}
+\<close>
 
 declare One_nat_def[simp del]
 
@@ -38,7 +38,7 @@ lemma nth:
   by (simp_all)
 
 
-section {* Some auxiliary lemmas about @{text "\<Sum>"} and @{text "\<Prod>"} *}
+section \<open>Some auxiliary lemmas about @{text "\<Sum>"} and @{text "\<Prod>"}\<close>
 
 lemma setprod_atMost_Suc[simp]: 
   "(\<Prod>i \<le> Suc n. f i) = (\<Prod>i \<le> n. f i) * f(Suc n)"
@@ -165,7 +165,7 @@ lemma setprod_one [simp]:
 
 
 
-section {* Recursive Functions *}
+section \<open>Recursive Functions\<close>
 
 datatype recf =  Z
   |  S
@@ -183,7 +183,7 @@ fun arity :: "recf \<Rightarrow> nat"
   | "arity (Pr n f g) = Suc n"
   | "arity (Mn n f) = n"
 
-text {* Abbreviations for calculating the arity of the constructors *}
+text \<open>Abbreviations for calculating the arity of the constructors\<close>
 
 abbreviation
   "CN f gs \<equiv> Cn (arity (hd gs)) f gs"
@@ -194,7 +194,7 @@ abbreviation
 abbreviation
   "MN f \<equiv> Mn (arity f - 1) f"
 
-text {* the evaluation function and termination relation *}
+text \<open>the evaluation function and termination relation\<close>
 
 fun rec_eval :: "recf \<Rightarrow> nat list \<Rightarrow> nat"
   where
@@ -224,12 +224,12 @@ inductive
               \<forall> i < r. terminates f (i # xs) \<and> rec_eval f (i # xs) > 0\<rbrakk> \<Longrightarrow> terminates (Mn n f) xs"
 
 
-section {* Arithmetic Functions *}
+section \<open>Arithmetic Functions\<close>
 
-text {*
+text \<open>
   @{text "constn n"} is the recursive function which computes 
   natural number @{text "n"}.
-*}
+\<close>
 fun constn :: "nat \<Rightarrow> recf"
   where
     "constn 0 = Z"  |
@@ -296,11 +296,11 @@ lemma minus_lemma [simp]:
   by (induct y) (simp_all add: rec_minus_def)
 
 
-section {* Logical functions *}
+section \<open>Logical functions\<close>
 
-text {* 
+text \<open>
   The @{text "sign"} function returns 1 when the input argument 
-  is greater than @{text "0"}. *}
+  is greater than @{text "0"}.\<close>
 
 definition 
   "rec_sign = CN rec_minus [constn 1, CN rec_minus [constn 1, Id 1 0]]"
@@ -308,9 +308,9 @@ definition
 definition 
   "rec_not = CN rec_minus [constn 1, Id 1 0]"
 
-text {*
+text \<open>
   @{text "rec_eq"} compares two arguments: returns @{text "1"}
-  if they are equal; @{text "0"} otherwise. *}
+  if they are equal; @{text "0"} otherwise.\<close>
 definition 
   "rec_eq = CN rec_minus [CN (constn 1) [Id 2 0], CN rec_add [rec_minus, rec_swap rec_minus]]"
 
@@ -326,9 +326,9 @@ definition
 definition 
   "rec_imp = CN rec_disj [CN rec_not [Id 2 0], Id 2 1]"
 
-text {* @{term "rec_ifz [z, x, y]"} returns x if z is zero,
+text \<open>@{term "rec_ifz [z, x, y]"} returns x if z is zero,
   y otherwise;  @{term "rec_if [z, x, y]"} returns x if z is *not*
-  zero, y otherwise *}
+  zero, y otherwise\<close>
 
 definition 
   "rec_ifz = PR (Id 2 0) (Id 4 3)"
@@ -373,11 +373,11 @@ lemma if_lemma [simp]:
   "rec_eval rec_if [z, x, y] = (if 0 < z then x else y)" 
   by (simp add: rec_if_def)
 
-section {* Less and Le Relations *}
+section \<open>Less and Le Relations\<close>
 
-text {*
+text \<open>
   @{text "rec_less"} compares two arguments and returns @{text "1"} if
-  the first is less than the second; otherwise returns @{text "0"}. *}
+  the first is less than the second; otherwise returns @{text "0"}.\<close>
 
 definition 
   "rec_less = CN rec_sign [rec_swap rec_minus]"
@@ -394,7 +394,7 @@ lemma le_lemma [simp]:
   by(simp add: rec_le_def)
 
 
-section {* Summation and Product Functions *}
+section \<open>Summation and Product Functions\<close>
 
 definition 
   "rec_sigma1 f = PR (CN f [CN Z [Id 1 0], Id 1 0]) 
@@ -438,7 +438,7 @@ lemma accum3_lemma [simp]:
   by (induct x) (simp_all add: rec_accum3_def)
 
 
-section {* Bounded Quantifiers *}
+section \<open>Bounded Quantifiers\<close>
 
 definition
   "rec_all1 f = CN rec_sign [rec_accum1 f]"
@@ -498,7 +498,7 @@ lemma all2_less_lemma [simp]:
    apply(metis nat_less_le)+
   done
 
-section {* Quotients *}
+section \<open>Quotients\<close>
 
 definition
   "rec_quo = (let lhs = CN S [Id 3 0] in
@@ -550,7 +550,7 @@ lemma quo_lemma [simp]:
   by (simp add: Quo_div Quo_rec_quo)
 
 
-section {* Iteration *}
+section \<open>Iteration\<close>
 
 definition
   "rec_iter f = PR (Id 1 0) (CN f [Id 3 1])"
@@ -568,7 +568,7 @@ lemma iter_lemma [simp]:
   by (induct n) (simp_all add: rec_iter_def)
 
 
-section {* Bounded Maximisation *}
+section \<open>Bounded Maximisation\<close>
 
 
 fun BMax_rec where
@@ -613,15 +613,15 @@ lemma max2_lemma [simp]:
   by (induct x) (simp_all add: rec_max2_def)
 
 
-section {* Encodings using Cantor's pairing function *}
+section \<open>Encodings using Cantor's pairing function\<close>
 
-text {*
+text \<open>
   We use Cantor's pairing function from Nat-Bijection.
   However, we need to prove that the formulation of the
   decoding function there is recursive. For this we first 
   prove that we can extract the maximal triangle number 
   using @{term prod_decode}.
-*}
+\<close>
 
 abbreviation Max_triangle_aux where
   "Max_triangle_aux k z \<equiv> fst (prod_decode_aux k z) + snd (prod_decode_aux k z)"
@@ -710,7 +710,7 @@ lemma max_triangle_lemma [simp]:
   by (simp add: Max_triangle_greatest rec_max_triangle_def Let_def BMax_rec_eq1) 
 
 
-text {* Encodings for Products *}
+text \<open>Encodings for Products\<close>
 
 definition
   "rec_penc = CN rec_add [CN rec_triangle [CN rec_add [Id 2 0, Id 2 1]], Id 2 0]"
@@ -734,7 +734,7 @@ lemma penc_lemma [simp]:
   by (simp add: rec_penc_def prod_encode_def)
 
 
-text {* Encodings of Lists *}
+text \<open>Encodings of Lists\<close>
 
 fun 
   lenc :: "nat list \<Rightarrow> nat" 
@@ -767,7 +767,7 @@ lemma lenc_length_le:
   by (induct xs) (simp_all add: prod_encode_def)
 
 
-text {* Membership for the List Encoding *}
+text \<open>Membership for the List Encoding\<close>
 
 fun inside :: "nat \<Rightarrow> nat \<Rightarrow> bool" where
   "inside z 0 = (0 < z)"
@@ -790,7 +790,7 @@ next
   then show ?case by (cases xs;auto)
 qed
 
-text {* Length of Encoded Lists *}
+text \<open>Length of Encoded Lists\<close>
 
 lemma enclen_length [simp]:
   "enclen (lenc xs) = length xs"
@@ -809,7 +809,7 @@ lemma enclen_zero [simp]:
   by (simp add: enclen_def)
 
 
-text {* Recursive Definitions for List Encodings *}
+text \<open>Recursive Definitions for List Encodings\<close>
 
 fun 
   rec_lenc :: "recf list \<Rightarrow> recf" 

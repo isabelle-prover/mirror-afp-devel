@@ -41,11 +41,11 @@ lemma abc_Hoare_haltI:
   unfolding abc_Hoare_halt_def 
   using assms by auto
 
-text {*
+text \<open>
   {P} A {Q}   {Q} B {S} 
   -----------------------------------------
   {P} A [+] B {S}
-*}
+\<close>
 
 definition
   abc_Hoare_unhalt :: "abc_assert \<Rightarrow> abc_prog \<Rightarrow> bool" ("({(1_)}/ (_)) \<up>" 50)

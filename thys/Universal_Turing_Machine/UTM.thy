@@ -3,15 +3,15 @@
    Modifications: Sebastiaan Joosten
 *)
 
-chapter {* Construction of a Universal Turing Machine *}
+chapter \<open>Construction of a Universal Turing Machine\<close>
 
 theory UTM
   imports Recursive Abacus UF HOL.GCD Turing_Hoare
 begin
 
-section {* Wang coding of input arguments *}
+section \<open>Wang coding of input arguments\<close>
 
-text {*
+text \<open>
   The direct compilation of the universal function @{text "rec_F"} can
   not give us UTM, because @{text "rec_F"} is of arity 2, where the
   first argument represents the Godel coding of the TM being simulated
@@ -510,7 +510,7 @@ The diagram of TM $adjust$ is shown in Figure \ref{adjust_diag}.
  \end{tikzpicture}}
 \caption{Diagram of TM $adjust$} \label{adjust_diag}
 \end{figure}
-*}
+\<close>
 
 
 definition rec_twice :: "recf"
@@ -3990,16 +3990,16 @@ proof -
     done
 qed
 
-text {*
+text \<open>
   The initialization TM @{text "t_wcode"}.
-  *}
+\<close>
 definition t_wcode :: "instr list"
   where
     "t_wcode = (t_wcode_prepare |+| t_wcode_main) |+| t_wcode_adjust        "
 
-text {*
+text \<open>
   The correctness of @{text "t_wcode"}.
-  *}
+\<close>
 
 lemma wcode_lemma_1:
   "args \<noteq> [] \<Longrightarrow> 
@@ -4016,12 +4016,12 @@ lemma wcode_lemma:
   apply(simp add: t_wcode_def tape_of_list_def tape_of_nat_def)
   done
 
-section {* The universal TM *}
+section \<open>The universal TM\<close>
 
-text {*
+text \<open>
   This section gives the explicit construction of {\em Universal Turing Machine}, defined as @{text "UTM"} and proves its 
   correctness. It is pretty easy by composing the partial results we have got so far.
-  *}
+\<close>
 
 
 definition UTM :: "instr list"
@@ -4217,9 +4217,9 @@ proof -
     by auto
 qed
 
-text {*
+text \<open>
   The correctness of @{text "UTM"}, the halt case.
-*}
+\<close>
 lemma UTM_halt_lemma': 
   assumes tm_wf: "tm_wf (tp, 0)"
     and result: "0 < rs"
@@ -4597,9 +4597,9 @@ proof -
     done
 qed
 
-text {*
+text \<open>
   The correctness of @{text "UTM"}, the unhalt case.
-  *}
+\<close>
 
 lemma UTM_uhalt_lemma':
   assumes tm_wf: "tm_wf (tp, 0)"

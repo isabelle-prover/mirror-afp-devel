@@ -3,7 +3,7 @@
    Modifications: Sebastiaan Joosten
 *)
 
-chapter {* Alternative Definitions for Translating Abacus Machines to TMs *}
+chapter \<open>Alternative Definitions for Translating Abacus Machines to TMs\<close>
 
 theory Abacus_Defs
   imports Abacus
