@@ -1,5 +1,6 @@
 AODV
 Auto2_HOL
+Auto2_Imperative_HOL
 AVL-Trees
 AWN
 Abortable_Linearizable_Modules
@@ -213,6 +214,7 @@ Kleene_Algebra
 Knot_Theory
 Knuth_Morris_Pratt
 Koenigsberg_Friendship
+Kruskal
 Kuratowski_Closure_Complement
 LLL_Basis_Reduction
 LLL_Factorization
@@ -326,6 +328,7 @@ Prime_Harmonic_Series
 Prime_Number_Theorem
 Priority_Queue_Braun
 Probabilistic_Noninterference
+Probabilistic_Prime_Tests
 Probabilistic_System_Zoo
 Probabilistic_Timed_Automata
 Probabilistic_While
@@ -438,9 +441,11 @@ Trie
 Twelvefold_Way
 Tycon
 Types_Tableaus_and_Goedels_God
+Universal_Turing_Machine
 UPF
 UPF_Firewall
 UpDown_Scheme
+UTP
 Valuation
 VectorSpace
 Verified-Prover
