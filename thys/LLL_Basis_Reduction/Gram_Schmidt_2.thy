@@ -2181,7 +2181,7 @@ qed
 
 
 definition "gram_schmidt_wit = gram_schmidt.main" 
-lemmas gram_schmidt_wit = gram_schmidt_fs_lin_indpt.weakly_reduced_imp_short_vector[folded gram_schmidt_wit_def]
+
 declare gram_schmidt.adjuster_wit.simps[code]
 declare gram_schmidt.sub2_wit.simps[code]
 declare gram_schmidt.main_def[code]
