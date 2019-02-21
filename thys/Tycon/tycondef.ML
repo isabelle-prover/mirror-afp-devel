@@ -48,7 +48,9 @@ fun define_singleton_type
     fun tac ctxt = resolve_tac ctxt [UNIV_witness] 1
     val _ = writeln ("Defining type " ^ Binding.print (first typ))
   in
-    Typedef.add_typedef_global {overloaded = false} typ set opt_morphs tac thy
+    thy
+    |> Named_Target.theory_map_result (apsnd o Typedef.transform_info)
+      (Typedef.add_typedef {overloaded = false} typ set opt_morphs tac)
   end    
 
 (******************************************************************************)
