@@ -1,6 +1,7 @@
 chapter AFP
 
 session SM_Base (AFP) = CAVA_Automata +
+  options [timeout = 1200]
   sessions
     Partial_Order_Reduction
     DFS_Framework
@@ -10,6 +11,7 @@ session SM_Base (AFP) = CAVA_Automata +
     DFS_Framework.Feedback_Arcs
 
 session SM (AFP) = SM_Base +
+  options [timeout = 1200]
   sessions
     LTL_to_GBA (* TODO: only needed for LTL_to_GBA.LTL_Stutter, which should be moved to Stuttering_Equivalence *)
   theories [document = false]
@@ -19,6 +21,7 @@ session SM (AFP) = SM_Base +
     "SM/Impl/SM_Wrapup"
 
 session CAVA_Setup (AFP) = CAVA_Automata +
+  options [timeout = 1200]
   sessions
     LTL_to_GBA
     Gabow_SCC
