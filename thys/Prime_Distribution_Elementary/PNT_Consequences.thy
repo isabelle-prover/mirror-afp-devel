@@ -527,7 +527,7 @@ proof -
 next
   have "(\<lambda>x. exp (f x) / exp ((1 - \<epsilon>) * x)) \<in> \<Theta>(\<lambda>x. exp (((f x - x) / x + \<epsilon>) * x))"
     by (intro bigthetaI_cong eventually_mono[OF eventually_gt_at_top[of 1]])
-       (simp_all add: divide_simps ring_distribs flip: exp_add exp_diff)
+       (simp add: ring_distribs flip: exp_add exp_diff)
   also have "filterlim (\<lambda>x. exp (((f x - x) / x + \<epsilon>) * x)) at_top at_top"
   proof (intro filterlim_compose[OF exp_at_top] filterlim_tendsto_pos_mult_at_top)
     have smallo: "(\<lambda>x. f x - x) \<in> o(\<lambda>x. x)"
