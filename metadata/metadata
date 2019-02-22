@@ -7848,3 +7848,26 @@ abstract =
   <em>O</em>(<em>n log n</em>)
   divide-and-conquer algorithm to compute the number of
   inversions.</p>
+
+[Prime_Distribution_Elementary]
+title = Elementary Facts About the Distribution of Primes
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory
+date = 2019-02-21
+notify = eberlm@in.tum.de
+abstract = 
+  <p>This entry is a formalisation of Chapter 4 (and parts of
+  Chapter 3) of Apostol's <a
+  href="https://www.springer.com/de/book/9780387901633"><em>Introduction
+  to Analytic Number Theory</em></a>. The main topics that
+  are addressed are properties of the distribution of prime numbers that
+  can be shown in an elementary way (i.&thinsp;e. without the Prime
+  Number Theorem), the various equivalent forms of the PNT (which imply
+  each other in elementary ways), and consequences that follow from the
+  PNT in elementary ways. The latter include, most notably, asymptotic
+  bounds for the number of distinct prime factors of
+  <em>n</em>, the divisor function
+  <em>d(n)</em>, Euler's totient function
+  <em>&phi;(n)</em>, and
+  lcm(1,&hellip;,<em>n</em>).</p>
+

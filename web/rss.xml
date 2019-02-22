@@ -9,7 +9,29 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>14 Feb 2019 00:00:00 +0000</pubDate>
+    <pubDate>21 Feb 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Elementary Facts About the Distribution of Primes</title>
+              <link>https://www.isa-afp.org/entries/Prime_Distribution_Elementary.html</link>
+       <guid>https://www.isa-afp.org/entries/Prime_Distribution_Elementary.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>21 Feb 2019 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This entry is a formalisation of Chapter 4 (and parts of
+Chapter 3) of Apostol&#39;s &lt;a
+href=&#34;https://www.springer.com/de/book/9780387901633&#34;&gt;&lt;em&gt;Introduction
+to Analytic Number Theory&lt;/em&gt;&lt;/a&gt;. The main topics that
+are addressed are properties of the distribution of prime numbers that
+can be shown in an elementary way (i.&amp;thinsp;e. without the Prime
+Number Theorem), the various equivalent forms of the PNT (which imply
+each other in elementary ways), and consequences that follow from the
+PNT in elementary ways. The latter include, most notably, asymptotic
+bounds for the number of distinct prime factors of
+&lt;em&gt;n&lt;/em&gt;, the divisor function
+&lt;em&gt;d(n)&lt;/em&gt;, Euler&#39;s totient function
+&lt;em&gt;&amp;phi;(n)&lt;/em&gt;, and
+lcm(1,&amp;hellip;,&lt;em&gt;n&lt;/em&gt;).&lt;/p&gt;</description>
+    </item>
     <item>
        <title>Kruskal's Algorithm for Minimum Spanning Forest</title>
               <link>https://www.isa-afp.org/entries/Kruskal.html</link>
@@ -522,30 +544,6 @@ previous two, that given a polynomial over some ring
 roots is also in &lt;em&gt;R&lt;/em&gt; even when the roots are not.
 &lt;/ul&gt; &lt;p&gt; Both the symmetry property itself and the
 witness for the Fundamental Theorem are executable. &lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Signature-Based Gröbner Basis Algorithms</title>
-              <link>https://www.isa-afp.org/entries/Signature_Groebner.html</link>
-       <guid>https://www.isa-afp.org/entries/Signature_Groebner.html</guid>
-       <dc:creator> Alexander Maletzky       </dc:creator>
-       <pubDate>20 Sep 2018 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This article formalizes signature-based algorithms for computing
-Gr&amp;ouml;bner bases. Such algorithms are, in general, superior to
-other algorithms in terms of efficiency, and have not been formalized
-in any proof assistant so far. The present development is both
-generic, in the sense that most known variants of signature-based
-algorithms are covered by it, and effectively executable on concrete
-input thanks to Isabelle&#39;s code generator. Sample computations of
-benchmark problems show that the verified implementation of
-signature-based algorithms indeed outperforms the existing
-implementation of Buchberger&#39;s algorithm in Isabelle/HOL.&lt;/p&gt;
-&lt;p&gt;Besides total correctness of the algorithms, the article also proves
-that under certain conditions they a-priori detect and avoid all
-useless zero-reductions, and always return &#39;minimal&#39; (in
-some sense) Gr&amp;ouml;bner bases if an input parameter is chosen in
-the right way.&lt;/p&gt;&lt;p&gt;The formalization follows the recent survey article by
-Eder and Faug&amp;egrave;re.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

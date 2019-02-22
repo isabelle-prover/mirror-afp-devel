@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>The Hurwitz and Riemann ζ Functions - Archive of Formal Proofs
+<title>Elementary Facts About the Distribution of Primes - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,17 +61,19 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">T</font>he
+  <h1>          <font class="first">E</font>lementary
   
-          <font class="first">H</font>urwitz
+          <font class="first">F</font>acts
   
-          and
+          <font class="first">A</font>bout
   
-          <font class="first">R</font>iemann
+          the
   
-          ζ
+          <font class="first">D</font>istribution
   
-          <font class="first">F</font>unctions
+          of
+  
+          <font class="first">P</font>rimes
   
 </h1>
   <p>&nbsp;</p>
@@ -80,7 +82,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">The Hurwitz and Riemann ζ Functions</td>
+  <td class="data" width="80%">Elementary Facts About the Distribution of Primes</td>
 </tr>
 
 <tr>
@@ -96,41 +98,39 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2017-10-12</td>
+  <td class="data">2019-02-21</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-<p> This entry builds upon the results about formal and analytic
-Dirichlet series to define the Hurwitz &zeta; function and, based
-on that, the Riemann &zeta; function. This is done by first
-defining them for &real;(<i>z</i>) > 1 and then
-successively extending the domain to the left using the
-Euler&ndash;MacLaurin formula. </p> <p> Some basic
-results about these functions are also shown, such as their
-analyticity on &#8450;&#8726;&#123;1&#125;, that they
-have a simple pole with residue 1 at 1, their relation to the
-&Gamma; function, and the special values at negative integers and
-positive even integers &ndash; including the famous &zeta;(-1)
-= -1/12 and &zeta;(2) = &pi;&sup2;/6. </p> <p>
-Lastly, the entry also contains Euler's analytic proof of the
-infinitude of primes, based on the fact that
-&zeta;(<i>s</i>) has a pole at <i>s</i> =
-1. </p></td>
+<p>This entry is a formalisation of Chapter 4 (and parts of
+Chapter 3) of Apostol's <a
+href="https://www.springer.com/de/book/9780387901633"><em>Introduction
+to Analytic Number Theory</em></a>. The main topics that
+are addressed are properties of the distribution of prime numbers that
+can be shown in an elementary way (i.&thinsp;e. without the Prime
+Number Theorem), the various equivalent forms of the PNT (which imply
+each other in elementary ways), and consequences that follow from the
+PNT in elementary ways. The latter include, most notably, asymptotic
+bounds for the number of distinct prime factors of
+<em>n</em>, the divisor function
+<em>d(n)</em>, Euler's totient function
+<em>&phi;(n)</em>, and
+lcm(1,&hellip;,<em>n</em>).</p></td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Zeta_Function-AFP,
+        <pre>@article{Prime_Distribution_Elementary-AFP,
   author  = {Manuel Eberl},
-  title   = {The Hurwitz and Riemann ζ Functions},
+  title   = {Elementary Facts About the Distribution of Primes},
   journal = {Archive of Formal Proofs},
-  month   = oct,
-  year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/Zeta_Function.html},
+  month   = feb,
+  year    = 2019,
+  note    = {\url{http://isa-afp.org/entries/Prime_Distribution_Elementary.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -142,11 +142,9 @@ infinitude of primes, based on the fact that
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Bernoulli.html">Bernoulli</a>, <a href="Dirichlet_Series.html">Dirichlet_Series</a>, <a href="Euler_MacLaurin.html">Euler_MacLaurin</a>, <a href="Winding_Number_Eval.html">Winding_Number_Eval</a>      </td></tr>
+          <td class="data"><a href="Prime_Number_Theorem.html">Prime_Number_Theorem</a>, <a href="Zeta_Function.html">Zeta_Function</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Dirichlet_L.html">Dirichlet_L</a>, <a href="Prime_Distribution_Elementary.html">Prime_Distribution_Elementary</a>, <a href="Prime_Number_Theorem.html">Prime_Number_Theorem</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -158,29 +156,23 @@ infinitude of primes, based on the fact that
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Zeta_Function/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Zeta_Function/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Prime_Distribution_Elementary/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Prime_Distribution_Elementary/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Zeta_Function/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Prime_Distribution_Elementary/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Zeta_Function-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Prime_Distribution_Elementary-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2017:
-            <a href="../release/afp-Zeta_Function-2017-10-16.tar.gz">
-              afp-Zeta_Function-2017-10-16.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>
