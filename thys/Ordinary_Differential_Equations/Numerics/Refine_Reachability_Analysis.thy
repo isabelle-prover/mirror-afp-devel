@@ -1,13 +1,18 @@
 theory Refine_Reachability_Analysis
 imports
-  Affine_Arithmetic.Print
+  Affine_Arithmetic.Affine_Arithmetic
   "../Refinement/Weak_Set"
   "../Refinement/Refine_String"
   "../Refinement/Refine_Folds"
+  "../Refinement/Refine_Default"
+  "../Refinement/Refine_Parallel"
   Ordinary_Differential_Equations.Flow
+  Runge_Kutta
   Refine_Rigorous_Numerics
   "HOL-Decision_Procs.Approximation"
 begin
+
+hide_const (open) floatarith.Max floatarith.Min floatarith.Pi floatarith.Ln floatarith.Arctan
 
 declare INF_cong_simp [cong] SUP_cong_simp [cong] image_cong_simp [cong del]
 
@@ -4164,14 +4169,14 @@ lemma do_intersection_impl_refine[autoref_rules]:
  do_intersection::'a rvec set\<Rightarrow>_)
 \<in> clw_rel
     (\<langle>lvivl_rel,
-     \<langle>lv_rel\<rangle>plane_rel\<rangle>Refine_Rigorous_Numerics.inter_rel) \<rightarrow>
+     \<langle>lv_rel\<rangle>plane_rel\<rangle>inter_rel) \<rightarrow>
   \<langle>lv_rel\<rangle>ivl_rel \<rightarrow>
   \<langle>lv_rel\<rangle>sctn_rel \<rightarrow>
   appr1_rel \<rightarrow> rnv_rel \<rightarrow>
   \<langle>bool_rel \<times>\<^sub>r clw_rel appr1_rel \<times>\<^sub>r clw_rel appr1_rel \<times>\<^sub>r
    clw_rel
     (\<langle>sappr_rel,
-     \<langle>lv_rel\<rangle>sbelows_rel\<rangle>Refine_Rigorous_Numerics.inter_rel)\<rangle>nres_rel"
+     \<langle>lv_rel\<rangle>sbelows_rel\<rangle>inter_rel)\<rangle>nres_rel"
   if "DIM_precond TYPE((real, 'a::enum) vec) D" "var.ncc_precond TYPE((real, 'a) vec)"
     "var.ncc_precond TYPE((real, 'a) vec \<times> ((real, 'a) vec, 'a) vec)"
   by (intro fun_relI do_intersection_impl.refine[OF that])
@@ -5531,12 +5536,12 @@ lemma reach_cont_ho[autoref_rules]:
    reach_cont::_\<Rightarrow>'a rvec set \<Rightarrow> _)
   \<in> reach_optns_rel \<rightarrow> clw_rel
       (\<langle>\<langle>lv_rel\<rangle>ivl_rel,
-       \<langle>lv_rel\<rangle>plane_rel\<rangle>Refine_Rigorous_Numerics.inter_rel) \<rightarrow>
+       \<langle>lv_rel\<rangle>plane_rel\<rangle>inter_rel) \<rightarrow>
     clw_rel appr1e_rel \<rightarrow>
     \<langle>clw_rel sappr_rel \<times>\<^sub>r
      clw_rel
       (\<langle>\<langle>\<langle>lv_rel\<rangle>ivl_rel,
-       \<langle>lv_rel:: (real list \<times> 'a rvec) set\<rangle>plane_rel\<rangle>Refine_Rigorous_Numerics.inter_rel,
+       \<langle>lv_rel:: (real list \<times> 'a rvec) set\<rangle>plane_rel\<rangle>inter_rel,
        \<langle>rnv_rel, appr1e_rel\<rangle>info_rel\<rangle>info_rel)\<rangle>nres_rel"
   using reach_cont_impl.refine by fastforce
 
@@ -6445,11 +6450,11 @@ lemma do_intersection_core_impl_refine[autoref_rules]:
   var.ncc_precond TYPE((real, 'a) vec \<times> ((real, 'a) vec, 'a) vec) \<Longrightarrow>
   (\<lambda>guardsi ivli sctni Xi.
     nres_of (do_intersection_core_impl guardsi ivli sctni Xi), do_intersection_core::'a rvec set \<Rightarrow> _)
-  \<in>  clw_rel (\<langle>\<langle>lv_rel\<rangle>ivl_rel, \<langle>lv_rel\<rangle>plane_rel\<rangle>Refine_Rigorous_Numerics.inter_rel) \<rightarrow>
+  \<in>  clw_rel (\<langle>\<langle>lv_rel\<rangle>ivl_rel, \<langle>lv_rel\<rangle>plane_rel\<rangle>inter_rel) \<rightarrow>
   \<langle>lv_rel\<rangle>ivl_rel \<rightarrow>
   \<langle>lv_rel\<rangle>sctn_rel \<rightarrow>
    \<langle>rnv_rel, appr1e_rel\<rangle>info_rel \<rightarrow>
-  \<langle>clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r clw_rel (\<langle>sappr_rel, \<langle>lv_rel\<rangle>sbelows_rel\<rangle>Refine_Rigorous_Numerics.inter_rel) \<times>\<^sub>r clw_rel appr1e_rel\<rangle>nres_rel"
+  \<langle>clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r clw_rel (\<langle>sappr_rel, \<langle>lv_rel\<rangle>sbelows_rel\<rangle>inter_rel) \<times>\<^sub>r clw_rel appr1e_rel\<rangle>nres_rel"
   using do_intersection_core_impl.refine[where 'a='a] by force
 
 
@@ -6513,7 +6518,7 @@ lemma finite_ra1eicacacslsbicae1lw: "(xc, x'c) \<in> \<langle>\<langle>rnv_rel, 
           clw_rel appr1e_rel \<times>\<^sub>r
           clw_rel
            (\<langle>sappr_rel,
-            \<langle>lv_rel\<rangle>sbelows_rel\<rangle>Refine_Rigorous_Numerics.inter_rel) \<times>\<^sub>r
+            \<langle>lv_rel\<rangle>sbelows_rel\<rangle>inter_rel) \<times>\<^sub>r
           clw_rel appr1e_rel\<rangle>list_wset_rel \<Longrightarrow> finite x'c"
   for x'c::"('n::enum eucl1 set * 'n eucl1 set * 'n eucl1 set * 'n rvec set * 'n eucl1 set) set"
   apply (rule list_wset_rel_finite)
@@ -7289,7 +7294,7 @@ lemma sv_thingy: "single_valued (clw_rel appr1e_rel \<times>\<^sub>r
           \<langle>lv_rel\<rangle>sctn_rel \<times>\<^sub>r
           clw_rel
            (\<langle>sappr_rel,
-            \<langle>lv_rel\<rangle>sbelows_rel\<rangle>Refine_Rigorous_Numerics.inter_rel) \<times>\<^sub>r
+            \<langle>lv_rel\<rangle>sbelows_rel\<rangle>inter_rel) \<times>\<^sub>r
           clw_rel sappr_rel)"
   by (intro relator_props)
 
@@ -7827,10 +7832,10 @@ lemma op_image_fst_ivl[autoref_rules]:
   apply (rule brI)
   subgoal for a b
     apply (drule fun_relD)
-     apply (rule lv_relI[where c=a])
+     apply (rule lv_relI[where x=a])
       apply (simp add: lv_rel_def br_def)
     apply (drule fun_relD)
-     apply (rule lv_relI[where c=b])
+     apply (rule lv_relI[where x=b])
       apply (simp add: lv_rel_def br_def)
     apply (auto simp: set_of_ivl_def lv_rel_def br_def fst_imageIcc eucl_of_list_prod)
     done
@@ -8603,7 +8608,7 @@ lemma closed_ivl_prod8_list_rel:
           clw_rel appr1e_rel \<times>\<^sub>r
           clw_rel appr1e_rel \<times>\<^sub>r
           \<langle>lv_rel\<rangle>ivl_rel \<times>\<^sub>r
-          \<langle>lv_rel\<rangle>sctn_rel \<times>\<^sub>r clw_rel (\<langle>sappr_rel, \<langle>lv_rel\<rangle>sbelows_rel\<rangle>Refine_Rigorous_Numerics.inter_rel) \<times>\<^sub>r clw_rel sappr_rel\<rangle>list_wset_rel"
+          \<langle>lv_rel\<rangle>sctn_rel \<times>\<^sub>r clw_rel (\<langle>sappr_rel, \<langle>lv_rel\<rangle>sbelows_rel\<rangle>inter_rel) \<times>\<^sub>r clw_rel sappr_rel\<rangle>list_wset_rel"
   shows "(\<forall>(b, X, PS1, PS2, R, ivl, sctn, CX, CXS)\<in>x'l. closed ivl)"
   using assms
   unfolding list_wset_rel_def set_rel_sv[OF single_valued_Id_arbitrary_interface]
@@ -8637,7 +8642,7 @@ lemma
           let guard0 = mk_coll (mk_inter ivl (plane_of sctn))
           in ASSUME (closed guard0) \<bind>
              (\<lambda>_. (poincare_onto2 (ro ::: reach_optns_rel) (interrupt:::appr1e_rel \<rightarrow> \<langle>clw_rel appr_rel \<times>\<^sub>r clw_rel appr1e_rel\<rangle>nres_rel) trap
-                    (op_empty_coll ::: clw_rel (\<langle>\<langle>lv_rel\<rangle>ivl_rel, \<langle>lv_rel\<rangle>plane_rel\<rangle>Refine_Rigorous_Numerics.inter_rel)) guard0 XS0 :::
+                    (op_empty_coll ::: clw_rel (\<langle>\<langle>lv_rel\<rangle>ivl_rel, \<langle>lv_rel\<rangle>plane_rel\<rangle>inter_rel)) guard0 XS0 :::
                    \<langle>\<langle>bool_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r lvivl_rel \<times>\<^sub>r \<langle>lv_rel\<rangle>sctn_rel \<times>\<^sub>r
       clw_rel (isbelows_rel sappr_rel) \<times>\<^sub>r clw_rel sappr_rel\<rangle>list_wset_rel\<rangle>nres_rel) \<bind>
                   (\<lambda>(XS1).
@@ -8651,7 +8656,7 @@ lemma
                  in ASSUME (closed guard0) \<bind>
                  (\<lambda>_. ASSUME (\<forall>(guard, ro)\<in>set (x # xs). closed guard) \<bind>
                       (\<lambda>_. let guardset = \<Union>(guard, ro)\<in>set ((guard0, ro0) # xs). guard
-                           in (poincare_onto2 ro (interrupt:::appr1e_rel \<rightarrow> \<langle>clw_rel appr_rel \<times>\<^sub>r clw_rel appr1e_rel\<rangle>nres_rel) trap (guardset ::: clw_rel (\<langle>\<langle>lv_rel\<rangle>ivl_rel, \<langle>lv_rel\<rangle>plane_rel\<rangle>Refine_Rigorous_Numerics.inter_rel))
+                           in (poincare_onto2 ro (interrupt:::appr1e_rel \<rightarrow> \<langle>clw_rel appr_rel \<times>\<^sub>r clw_rel appr1e_rel\<rangle>nres_rel) trap (guardset ::: clw_rel (\<langle>\<langle>lv_rel\<rangle>ivl_rel, \<langle>lv_rel\<rangle>plane_rel\<rangle>inter_rel))
                                 guard XS0 :::
                                \<langle>\<langle>bool_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r lvivl_rel \<times>\<^sub>r \<langle>lv_rel\<rangle>sctn_rel \<times>\<^sub>r
       clw_rel (isbelows_rel sappr_rel) \<times>\<^sub>r clw_rel sappr_rel\<rangle>list_wset_rel\<rangle>nres_rel) \<bind>
@@ -9951,7 +9956,11 @@ lemma clw_rel_appr1e_relI:
 
 definition "c0_info_of_appr X = eucl_of_list ` set_of_appr X"
 definition "c0_info_of_apprs X = (\<Union>x\<in>set X. c0_info_of_appr x)"
+
 definition "c0_info_of_appr' X = the_default UNIV (map_option c0_info_of_apprs X)"
+
+lemma the_default_eq: "the_default a x = (case x of None \<Rightarrow> a | Some b \<Rightarrow> b)"
+  by (auto split: option.splits)
 
 lemma c0_info_of_apprsI:
   assumes "(b, a) \<in> clw_rel appr_rel"
@@ -9965,7 +9974,7 @@ lemma c0_info_of_appr'I:
   assumes "x \<in> a"
   shows "x \<in> c0_info_of_appr' b"
   using assms
-  by (auto simp add: c0_info_of_appr'_def intro!: c0_info_of_apprsI split: option.splits)
+  by (auto simp add: c0_info_of_appr'_def the_default_eq intro!: c0_info_of_apprsI split: option.splits)
 
 lemmas rel_prod_br = br_rel_prod
 

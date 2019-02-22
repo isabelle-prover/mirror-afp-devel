@@ -909,7 +909,7 @@ lemma c0_info_of_apprs_transfer[transfer_rule]:
 lemma c0_info_of_appr'_transfer[transfer_rule]:
   "(rel_option (list_all2 (=)) ===> rel_set rel_ve)
     aform.c0_info_of_appr' aform.c0_info_of_appr'"
-  unfolding aform.c0_info_of_appr'_def
+  unfolding aform.c0_info_of_appr'_def aform.the_default_eq
   by transfer_prover
 
 lemma aform_Csafe_vX[simp]: "aform.Csafe ode_fas safe_form = (vX::'n rvec set)"
@@ -1429,8 +1429,8 @@ lemmas [simp] = compute_tdev
 syntax product_aforms::"(real aform) list \<Rightarrow> (real aform) list \<Rightarrow> (real aform) list"
   (infixr "\<times>\<^sub>a" 70)
 
-
 lemma matrix_inner_Basis_list:
+  includes vec_syntax
   assumes "k < CARD('n) * CARD('m)"
   shows "(f::(('n::enum rvec, 'm::enum) vec)) \<bullet> Basis_list ! k =
     vec_nth (vec_nth f (enum_class.enum ! (k div CARD('n)))) (enum_class.enum ! (k mod CARD('n)))"
@@ -1459,7 +1459,8 @@ proof -
 qed
 
 lemma list_of_eucl_matrix:
-  "(list_of_eucl (M::(('n::enum rvec, 'm::enum) vec))) =
+  includes vec_syntax
+  shows "(list_of_eucl (M::(('n::enum rvec, 'm::enum) vec))) =
     concat (map (\<lambda>i. map (\<lambda>j. M $ (enum_class.enum ! i)$ (enum_class.enum ! j) )
       [0..<CARD('n)]) [0..<CARD('m)])"
   by (auto intro!: nth_equalityI simp: length_concat o_def sum_list_distinct_conv_sum_set ac_simps

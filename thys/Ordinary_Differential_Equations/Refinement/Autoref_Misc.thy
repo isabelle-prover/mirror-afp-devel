@@ -518,4 +518,164 @@ proof -
     by (auto simp: conc_fun_def abs_fun_def)
 qed
 
+
+lemma nres_rel_comp: "\<langle>A\<rangle>nres_rel O \<langle>B\<rangle>nres_rel = \<langle>A O B\<rangle> nres_rel"
+  unfolding nres_rel_def
+  apply (auto simp: nres_rel_def conc_fun_def converse_relcomp relcomp_Image split: )
+  apply (subst converse_relcomp)
+  apply (subst relcomp_Image)
+  apply (auto split: nres.splits)
+  apply (meson Image_mono RES_leof_RES_iff equalityE le_RES_nofailI leofD leof_lift leof_trans)
+  apply (rule relcompI)
+   defer apply force
+  apply (auto simp: converse_relcomp relcomp_Image)
+  done
+
+lemma nres_rel_mono: "A \<subseteq> B \<Longrightarrow> \<langle>A\<rangle>nres_rel \<subseteq> \<langle>B\<rangle>nres_rel"
+  apply (auto simp: nres_rel_def conc_fun_def)
+  apply (split nres.splits)+
+  apply auto
+  by (meson Image_mono RES_leof_RES_iff converse_mono equalityE le_RES_nofailI leofD leof_lift leof_trans)
+
+text \<open>TODO: move!!\<close>
+
+lemma \<comment> \<open>TODO: needed  because @{thm dres.transfer_rec_list} expects one argument,
+  but functions with more arguments defined by primrec take several arguments\<close>
+  uncurry_rec_list: "rec_list (\<lambda>a b. fn a b) (\<lambda>x xs rr a b. fs x xs rr a b) xs a b =
+         rec_list (\<lambda>(a,b). fn a b) (\<lambda>x xs rr (a,b). fs x xs (\<lambda>a b. rr (a,b)) a b) xs (a,b)"
+  apply (induction xs arbitrary: a b)
+   apply (auto split: prod.splits)
+  apply metis
+  done
+
+
+lemma Id_br: "Id = br (\<lambda>x. x) top"
+  by (auto simp: br_def)
+
+lemma br_rel_prod: "br a I \<times>\<^sub>r br b J = br (\<lambda>(x, y). (a x, b y)) (\<lambda>(x, y). I x \<and> J y)"
+  by (auto simp: br_def)
+
+lemma br_list_rel: "\<langle>br a I\<rangle>list_rel = br (map a) (list_all I)"
+  apply (auto simp: br_def list_rel_def list_all_iff list_all2_iff split_beta' Ball_def
+      in_set_zip intro!: nth_equalityI)
+   apply force
+  by (metis in_set_conv_nth)
+
+lemma brD: "(c,a)\<in>br \<alpha> I \<Longrightarrow> a = \<alpha> c \<and> I c"
+  by (simp add: br_def)
+
+
+primrec nres_of_nress :: "('b \<Rightarrow> bool) \<Rightarrow> 'b nres list \<Rightarrow> 'b list nres"
+  where "nres_of_nress P [] = RETURN []"
+  | "nres_of_nress P (x#xs) = do {r \<leftarrow> x; rs \<leftarrow> nres_of_nress P xs; RETURN (r#rs)}"
+
+lemma nres_of_nress_SPEC[THEN order_trans, refine_vcg]:
+  assumes [refine_vcg]: "\<And>x. x \<in> set xs \<Longrightarrow> x \<le> SPEC P"
+  shows "nres_of_nress P xs \<le> SPEC (list_all P)"
+  using assms
+  apply (induction xs)
+    apply (simp add: )
+  apply (simp add:)
+  apply (intro refine_vcg)
+  subgoal for x xs
+    apply (rule order_trans[of _ "SPEC P"])
+       apply auto
+    apply refine_vcg
+    done
+  done
+context begin interpretation autoref_syn .
+lemma [autoref_op_pat_def]: "nres_of_nress P x \<equiv> (OP (nres_of_nress P) $ x)"
+  by auto
+lemma nres_of_nress_alt_def[abs_def]:
+  "nres_of_nress P xs = rec_list (RETURN []) (\<lambda>x xs xsa. x \<bind> (\<lambda>r. xsa \<bind> (\<lambda>rs. RETURN (r # rs)))) xs"
+  by (induction xs) auto
+
+schematic_goal nres_of_nress_impl:
+  "(?r, nres_of_nress P $ x) \<in> \<langle>\<langle>A\<rangle>list_rel\<rangle>nres_rel"
+  if [autoref_rules]: "(xi, x) \<in> \<langle>\<langle>A\<rangle>nres_rel\<rangle>list_rel"
+  unfolding nres_of_nress_alt_def
+  by autoref
+concrete_definition nres_of_nress_impl uses nres_of_nress_impl
+lemmas [autoref_rules] = nres_of_nress_impl.refine
+
+lemma nres_of_nress_impl_map:
+  "nres_of_nress_impl (map f x) =
+  rec_list (RETURN []) (\<lambda>x xs r. do { fx \<leftarrow> f x; r \<leftarrow> r; RETURN (fx # r)}) x"
+  by (induction x) (auto simp: nres_of_nress_impl_def)
+
+definition [refine_vcg_def]: "list_spec X = SPEC (\<lambda>xs. set xs = X)"
+
+end
+
+
+lemma
+  insert_mem_set_rel_iff:
+  assumes "single_valued A"
+  shows "(insert x (set xs), XXS) \<in> \<langle>A\<rangle>set_rel \<longleftrightarrow> (\<exists>X XS. (x, X) \<in> A \<and> (set xs, XS) \<in> \<langle>A\<rangle>set_rel \<and> XXS = insert X XS)"
+  using assms
+  apply (auto simp: set_rel_def single_valuedD)
+  subgoal for a
+    apply (cases "x \<in> set xs")
+    subgoal by (rule exI[where x=a]) auto
+    subgoal
+      apply (rule exI[where x=a])
+      apply auto
+      apply (rule exI[where x="{y\<in>XXS. (\<exists>x\<in>set xs. (x, y) \<in> A)}"])
+      apply auto
+      subgoal by (drule bspec, assumption) auto
+      subgoal by (meson single_valuedD)
+      done
+    done
+  done
+
+
+lemma image_mem_set_rel_iff:
+  shows "(f ` x, y) \<in> \<langle>R\<rangle>set_rel \<longleftrightarrow> (x, y) \<in> \<langle>br f top O R\<rangle>set_rel"
+proof -
+  have "z \<in> Domain ({(c, a). a = f c} O R)"
+    if "f ` x \<subseteq> Domain R" "z \<in> x"
+    for z
+  proof -
+    have "(f z, fun_of_rel R (f z)) \<in> R"
+      using that
+      by (auto intro!: for_in_RI)
+    then show ?thesis
+      by (auto intro!: Domain.DomainI[where b="fun_of_rel R (f z)"] relcompI[where b="f z"])
+  qed
+  then show ?thesis
+    by (auto simp: set_rel_def relcomp.simps br_def)
+qed
+
+lemma finite_list_set_rel[autoref_rules]: "(\<lambda>_. True, finite) \<in> \<langle>A\<rangle>list_set_rel \<rightarrow> bool_rel"
+  by (auto simp: list_set_rel_def br_def)
+
+lemma list_set_rel_finiteD: "(xs, X) \<in> \<langle>A\<rangle>list_set_rel \<Longrightarrow> finite X"
+  by (auto simp: list_set_rel_def br_def)
+
+lemma set_rel_br: "\<langle>br a I\<rangle>set_rel = br ((`) a) (\<lambda>X. Ball X I)"
+  by (auto simp: set_rel_def br_def)
+
+lemma set_rel_sv:
+  "\<langle>R\<rangle>set_rel = {(S,S'). S'=R``S \<and> S\<subseteq>Domain R}"
+  if "single_valued R"
+  using that
+  by (auto simp: set_rel_def set_rel_br elim!: single_valued_as_brE)
+     (auto simp: br_def)
+
+lemma list_ex_rec_list: "list_ex P xs = rec_list False (\<lambda>x xs b. P x \<or> b) xs"
+  by (induct xs) simp_all
+
+lemma list_ex_param[autoref_rules, param]:
+  "(list_ex, list_ex) \<in> (A \<rightarrow> bool_rel) \<rightarrow> \<langle>A\<rangle>list_rel \<rightarrow> bool_rel"
+  unfolding list_ex_rec_list
+  by parametricity
+
+lemma zip_param[autoref_rules, param]:
+  "(zip, zip) \<in> \<langle>A\<rangle>list_rel \<rightarrow> \<langle>A\<rangle>list_rel \<rightarrow> \<langle>A \<times>\<^sub>r A\<rangle>list_rel"
+  by (rule param_zip)
+
+lemma ex_br_conj_iff:
+  "(\<exists>x. (y, x) \<in> br a I \<and> P x) \<longleftrightarrow> I y \<and> P (a y)"
+  by (auto intro!: brI dest!: brD)
+
 end

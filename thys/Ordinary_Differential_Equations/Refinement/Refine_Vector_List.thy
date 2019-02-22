@@ -1,10 +1,9 @@
 theory Refine_Vector_List
   imports
-  Ordinary_Differential_Equations.Reachability_Analysis
-  Affine_Arithmetic.Affine_Arithmetic
+  Ordinary_Differential_Equations.ODE_Auxiliarities
   "../Refinement/Autoref_Misc" (* TODO: what is still needed there? *)
   "../Refinement/Weak_Set"
-  Runge_Kutta
+  "Enclosure_Operations"
 begin
 
 subsection \<open>Id on euclidean space, real etc\<close>
@@ -12,6 +11,29 @@ subsection \<open>Id on euclidean space, real etc\<close>
 consts i_rnv::interface
 abbreviation "rnv_rel \<equiv> (Id::('a::real_normed_vector\<times>_) set)"
 lemmas [autoref_rel_intf] = REL_INTFI[of rnv_rel i_rnv]
+
+context begin interpretation autoref_syn .
+
+lemma [autoref_rules]:
+  "((=), (=)) \<in> rnv_rel \<rightarrow> rnv_rel \<rightarrow> bool_rel"
+  "((\<le>), (\<le>)) \<in> rnv_rel \<rightarrow> rnv_rel \<rightarrow> bool_rel"
+  "((<), (<)) \<in> rnv_rel \<rightarrow> rnv_rel \<rightarrow> bool_rel"
+  "(min, min) \<in> rnv_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel"
+  "(max, max) \<in> rnv_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel"
+  "((+), (+)) \<in> rnv_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel"
+  "((-), (-)) \<in> rnv_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel"
+  "((/), (/)) \<in> rnv_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel"
+  "((*), (*)) \<in> rnv_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel"
+  "((^), (^)) \<in> rnv_rel \<rightarrow> nat_rel \<rightarrow> rnv_rel"
+  "(int, int) \<in> nat_rel \<rightarrow> int_rel"
+  "(Float, Float) \<in> int_rel \<rightarrow> int_rel \<rightarrow> Id"
+  "(real_of_float, real_of_float) \<in> Id \<rightarrow> rnv_rel"
+  "(upto, upto) \<in> int_rel \<rightarrow> int_rel \<rightarrow> \<langle>int_rel\<rangle>list_rel"
+  "(upt, upt) \<in> nat_rel \<rightarrow> nat_rel \<rightarrow> \<langle>nat_rel\<rangle>list_rel"
+  "(product_lists, product_lists) \<in> \<langle>\<langle>int_rel\<rangle>list_rel\<rangle>list_rel \<rightarrow> \<langle>\<langle>int_rel\<rangle>list_rel\<rangle>list_rel"
+  "(floor, floor) \<in> rnv_rel \<rightarrow> int_rel"
+  by auto
+end
 
 subsection \<open>list vector relation\<close>
 
@@ -198,6 +220,109 @@ lemma eucl_of_list_image_lv_ivl:
    apply (rule eucl_of_list_list_of_eucl[symmetric])
   using nth_Basis_list_in_Basis apply fastforce
   done
+
+end
+
+subsection \<open>Specs for Vectors\<close>
+
+context begin interpretation autoref_syn .
+
+lemma Inf_specs_Inf_spec:
+  "(Inf_specs d, Inf_spec::_\<Rightarrow>'a::executable_euclidean_space nres) \<in> \<langle>lv_rel\<rangle>set_rel \<rightarrow> \<langle>lv_rel\<rangle>nres_rel"
+  if "d = DIM('a)"
+  apply (auto intro!: nres_relI RES_refine simp: Inf_specs_def Inf_spec_def set_rel_def that)
+  subgoal for x y s
+    apply (rule exI[where x="eucl_of_list s"])
+    apply (auto simp: lv_rel_def br_def subset_iff)
+    apply (drule bspec, assumption)
+    apply auto
+    apply (drule bspec, assumption)
+    apply auto
+    apply (drule bspec, assumption)
+    subgoal for c
+      using lv_rel_le[where 'a ='a, param_fo, OF lv_relI lv_relI, of s c]
+      by auto
+    done
+  done
+
+lemma Sup_specs_Sup_spec:
+  "(Sup_specs d, Sup_spec::_\<Rightarrow>'a::executable_euclidean_space nres) \<in> \<langle>lv_rel\<rangle>set_rel \<rightarrow> \<langle>lv_rel\<rangle>nres_rel"
+  if "d = DIM('a)"
+ apply (auto intro!: nres_relI RES_refine simp: Sup_specs_def Sup_spec_def set_rel_def that)
+  subgoal for x y s
+    apply (rule exI[where x="eucl_of_list s"])
+    apply (auto simp: lv_rel_def br_def subset_iff)
+    apply (drule bspec, assumption)
+    apply auto
+    apply (drule bspec, assumption)
+    apply auto
+    apply (drule bspec, assumption)
+    subgoal for c
+      using lv_rel_le[where 'a ='a, param_fo, OF lv_relI lv_relI, of c s]
+      by auto
+    done
+  done
+
+lemma Sup_inners_Sup_inner: "(Sup_inners, Sup_inner) \<in> \<langle>lv_rel\<rangle>set_rel \<rightarrow> lv_rel \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
+  unfolding set_rel_sv[OF lv_rel_sv]
+  apply (auto intro!: nres_relI RES_refine
+      simp: Sup_inners_def Sup_inner_def  plane_ofs_def plane_of_def lv_rel_def br_def)
+  subgoal for a b c d
+    using lv_rel_inner[where 'a = 'a, param_fo, OF lv_relI lv_relI, of d b]
+    by auto
+  done
+
+lemma Inf_inners_Inf_inner: "(Inf_inners, Inf_inner) \<in> \<langle>lv_rel\<rangle>set_rel \<rightarrow> lv_rel \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
+  unfolding set_rel_sv[OF lv_rel_sv]
+  apply (auto intro!: nres_relI RES_refine
+      simp: Inf_inners_def Inf_inner_def plane_ofs_def plane_of_def lv_rel_def br_def)
+  subgoal for a b c d
+    using lv_rel_inner[where 'a = 'a, param_fo, OF lv_relI lv_relI, of d b]
+    by auto
+  done
+
+lemma split_spec_params_split_spec_param:
+  "(split_spec_params d, split_spec_param::nat\<Rightarrow>'a::executable_euclidean_space set\<Rightarrow>_) \<in> nat_rel \<rightarrow> \<langle>lv_rel\<rangle>set_rel \<rightarrow> \<langle>\<langle>lv_rel\<rangle>set_rel\<times>\<^sub>r\<langle>lv_rel\<rangle>set_rel\<rangle>nres_rel"
+  if "d = DIM('a::executable_euclidean_space)"
+  apply (auto intro!: nres_relI RES_refine simp: split_spec_param_def split_spec_params_def env_len_def that)
+  unfolding set_rel_sv[OF lv_rel_sv]
+  apply (auto intro!: nres_relI RES_refine simp: plane_ofs_def plane_of_def lv_rel_def br_def subset_iff)
+  done
+
+lemma reduce_specs_reduce_spec:
+  "(reduce_specs d, reduce_spec::_\<Rightarrow>'a::executable_euclidean_space set\<Rightarrow>_) \<in> A \<rightarrow> \<langle>lv_rel\<rangle>set_rel \<rightarrow> \<langle>\<langle>lv_rel\<rangle>set_rel\<rangle>nres_rel"
+  if "d = DIM('a::executable_euclidean_space)"
+  apply (auto intro!: nres_relI RES_refine simp: reduce_spec_def reduce_specs_def env_len_def that)
+  unfolding set_rel_sv[OF lv_rel_sv]
+  apply (auto intro!: nres_relI RES_refine simp: plane_ofs_def plane_of_def lv_rel_def br_def subset_iff)
+  done
+
+definition [simp]: "rnv_of_lv x = x"
+
+lemma rnv_of_lv_impl[autoref_rules]: "(hd, rnv_of_lv) \<in> lv_rel \<rightarrow> rnv_rel"
+  by (auto simp: lv_rel_def br_def length_Suc_conv)
+
+lemma
+  assumes [autoref_rules_raw]: "DIM_precond TYPE('a::executable_euclidean_space) D"
+  shows snd_lv_rel[autoref_rules(overloaded)]: "(drop D, snd::('a \<times> _) \<Rightarrow> _) \<in> lv_rel \<rightarrow> lv_rel"
+    and fst_lv_rel[autoref_rules(overloaded)]: "(take D, fst::('a \<times> _) \<Rightarrow> _) \<in> lv_rel \<rightarrow> lv_rel"
+  using assms by (auto simp: lv_rel_def br_def eucl_of_list_prod)
+
+definition [simp]: "Pair_lv_rel = Pair"
+
+lemma Pair_lv_rel[autoref_rules]:
+  assumes [autoref_rules_raw]: "DIM_precond TYPE('a::executable_euclidean_space) D"
+  shows "((@), Pair_lv_rel::'a \<Rightarrow> _) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> lv_rel"
+  using assms
+  by (auto simp: lv_rel_def br_def intro!: eucl_of_list_eqI)
+
+definition [simp]: "split_lv_rel X = (fst X, snd X)"
+
+schematic_goal split_lv_rel_impl[autoref_rules]:
+  assumes [autoref_rules_raw]: "DIM_precond TYPE('a::executable_euclidean_space) D"
+  shows "(?r, split_lv_rel::'a\<times>_\<Rightarrow>_) \<in> lv_rel \<rightarrow> lv_rel \<times>\<^sub>r lv_rel"
+  unfolding split_lv_rel_def
+  by autoref
 
 end
 

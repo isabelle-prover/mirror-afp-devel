@@ -1817,7 +1817,6 @@ global_interpretation aform: aform_approximate_sets0
     and reach_cont_impl_aform = aform.reach_cont_impl
     and vec1reps_impl_aform = aform.vec1reps_impl
     and safe_set_appr_aform = aform.safe_set_appr
-    and split_intersecting_impl_aform = aform.split_intersecting_impl
     and ivl_rep_of_sets_impl_aform = aform.ivl_rep_of_sets_impl
     and ivl_rep_of_set_impl_aform = aform.ivl_rep_of_set_impl
     and ivls_of_sets_impl_aform = aform.ivls_of_sets_impl
@@ -1828,7 +1827,6 @@ global_interpretation aform: aform_approximate_sets0
     and resolve_step_impl_aform = aform.resolve_step_impl
     and euler_step_impl_aform = aform.euler_step_impl
     and rk2_step_impl_aform = aform.rk2_step_impl
-    and disjoint_sets_impl_aform = aform.disjoint_sets_impl
     and op_eventually_within_sctn_impl_aform = aform.op_eventually_within_sctn_impl
     and solve_poincare_plane_impl_aform = aform.solve_poincare_plane_impl
     and cert_stepsize_impl_dres_aform = aform.cert_stepsize_impl_dres
@@ -1846,7 +1844,6 @@ global_interpretation aform: aform_approximate_sets0
     and reach_cont_symstart_impl_aform = aform.reach_cont_symstart_impl
     and subset_iplane_coll_impl_aform = aform.subset_iplane_coll_impl
     and symstart_coll_impl_aform = aform.symstart_coll_impl
-    and split_along_ivls_impl_aform = aform.split_along_ivls_impl
     and subset_spec_ivls_clw_impl_aform = aform.subset_spec_ivls_clw_impl
     and poincare_onto2_impl_aform = aform.poincare_onto2_impl
     and poincare_onto_empty_impl_aform = aform.poincare_onto_empty_impl
