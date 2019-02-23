@@ -333,11 +333,14 @@ subsection \<open>Computing taylor models for basic, univariate functions\<close
 definition tm_const :: "float \<Rightarrow> taylor_model"
   where "tm_const c = TaylorModel (poly.C c) 0"
 
+context includes floatarith_notation begin
+
 definition tm_pi :: "nat \<Rightarrow> taylor_model"
   where "tm_pi prec = (
   let pi_ivl = the (compute_bound_fa prec Pi [])
   in TaylorModel (poly.C (mid pi_ivl)) (centered pi_ivl)
 )"
+
 lemma zero_real_interval[intro,simp]: "0 \<in>\<^sub>r 0"
   by (auto simp: set_of_eq)
 
@@ -1874,7 +1877,7 @@ next
   from hyps obtain tf where tf_def: "approx_tm prec ord I a f env = Some tf"
     by (auto simp: compute_tm_by_comp_eq_Some_iff)
   have safe: "\<And>x. x \<in>\<^sub>r compute_bound_tm prec I a tf \<Longrightarrow>
-        0 < lower (compute_bound_tm prec I a tf) \<Longrightarrow> isDERIV 0 (Ln\<^sub>e (Var 0)) [x]"
+        0 < lower (compute_bound_tm prec I a tf) \<Longrightarrow> isDERIV 0 (Ln (Var 0)) [x]"
     by (auto simp: set_of_eq)
   have np: "num_params (tm_poly tf) \<le> length I"
     using tf_def
@@ -2083,5 +2086,7 @@ proof -
   also note \<open>take d XS = X\<close>
   finally show ?thesis .
 qed
+
+end
 
 end
