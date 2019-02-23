@@ -2072,9 +2072,11 @@ proof (rule order_trans[OF _ d])
     by (simp)
 qed
 
+context includes floatarith_notation begin
+
 definition "range_reducer p l =
   (if l < 0 \<or> l > 2 * lb_pi p
-  then approx p (Pi\<^sub>e * (Num (-2)) * (Floor (Num (l * Float 1 (-1)) / Pi\<^sub>e))) []
+  then approx p (Pi * (Num (-2)) * (Floor (Num (l * Float 1 (-1)) / Pi))) []
   else Some 0)"
 
 lemmas approx_emptyD = approx[OF bounded_by_None[of Nil] sym, simplified]
@@ -2128,7 +2130,7 @@ qed
 definition "min_range_mono p F DF l u X = do {
   let L = Num l;
   let U = Num u;
-  (a, _) \<leftarrow> approx p (Min\<^sub>e (DF L) (DF U)) [];
+  (a, _) \<leftarrow> approx p (Min (DF L) (DF U)) [];
   let A = Num a;
   bivl \<leftarrow> approx p (Half (F L + F U - A * (L + U))) [];
   let (b, be) = mid_err bivl;
@@ -2186,7 +2188,7 @@ qed
 definition "min_range_antimono p F DF l u X = do {
   let L = Num l;
   let U = Num u;
-  (_, a) \<leftarrow> approx p (Max\<^sub>e (DF L) (DF U)) [];
+  (_, a) \<leftarrow> approx p (Max (DF L) (DF U)) [];
   let A = Num a;
   bivl \<leftarrow> approx p (Half (F L + F U - A * (L + U))) [];
   let (b, be) = mid_err bivl;
@@ -2435,7 +2437,7 @@ qed
 definition "ln_aform_err p X = do {
   let l = Inf_aform_err p X;
   let u = Sup_aform_err p X;
-  if 0 < l then min_range_mono p Ln\<^sub>e inverse l u X
+  if 0 < l then min_range_mono p Ln inverse l u X
   else None
 }"
 
@@ -2456,7 +2458,7 @@ proof -
   then show ?thesis
   proof cases
     case 1
-    then have min_eq_Some: "min_range_mono p Ln\<^sub>e inverse l u X = Some Y"
+    then have min_eq_Some: "min_range_mono p Ln inverse l u X = Some Y"
       and bounds: "0 < l"
       using assms(2)
       unfolding ln_aform_err_def l u
@@ -2513,7 +2515,7 @@ qed
 definition "arctan_aform_err p X = do {
   let l = Inf_aform_err p X;
   let u = Sup_aform_err p X;
-  min_range_mono p Arctan\<^sub>e (\<lambda>x. 1 / (Num 1 + x * x)) l u X
+  min_range_mono p Arctan (\<lambda>x. 1 / (Num 1 + x * x)) l u X
 }"
 
 lemma pos_add_nonneg_ne_zero: "a > 0 \<Longrightarrow> b \<ge> 0 \<Longrightarrow> a + b \<noteq> 0"
@@ -2532,7 +2534,7 @@ proof -
   from x l u have lx: "l \<le> x" and ux: "x \<le> u"
     using Inf_Sup_aform_err[OF e, of X p]
     by auto
-  have min_eq_Some: "min_range_mono p Arctan\<^sub>e (\<lambda>x. 1 / (Num 1 + x * x))  l u X = Some Y"
+  have min_eq_Some: "min_range_mono p Arctan (\<lambda>x. 1 / (Num 1 + x * x))  l u X = Some Y"
     using assms(2)
     unfolding arctan_aform_err_def l u
     by (auto simp: l[symmetric] u[symmetric] split: prod.splits if_splits)
@@ -2840,13 +2842,13 @@ where
         Some (ivl_err 0 (max (- i) \<bar>s\<bar>))
       }
     }"
-| "approx_floatarith p (Min\<^sub>e a b) vs =
+| "approx_floatarith p (Min a b) vs =
     do {
       a1 \<leftarrow> approx_floatarith p a vs;
       a2 \<leftarrow> approx_floatarith p b vs;
       Some (min_aform_err p a1 a2)
     }"
-| "approx_floatarith p (floatarith.Max a b) vs =
+| "approx_floatarith p (Max a b) vs =
     do {
       a1 \<leftarrow> approx_floatarith p a vs;
       a2 \<leftarrow> approx_floatarith p b vs;
@@ -2859,18 +2861,18 @@ where
       a \<leftarrow> approx_floatarith p a vs;
       cos_aform_err p a
     }"
-| "approx_floatarith p Pi\<^sub>e vs = Some (ivl_err (lb_pi p) (ub_pi p))"
+| "approx_floatarith p Pi vs = Some (ivl_err (lb_pi p) (ub_pi p))"
 | "approx_floatarith p (Sqrt a) vs =
     do {
       a \<leftarrow> approx_floatarith p a vs;
       sqrt_aform_err p a
     }"
-| "approx_floatarith p (Ln\<^sub>e a) vs =
+| "approx_floatarith p (Ln a) vs =
     do {
       a \<leftarrow> approx_floatarith p a vs;
       ln_aform_err p a
     }"
-| "approx_floatarith p (Arctan\<^sub>e a) vs =
+| "approx_floatarith p (Arctan a) vs =
     do {
       a \<leftarrow> approx_floatarith p a vs;
       arctan_aform_err p a
@@ -3917,3 +3919,4 @@ qed
 
 end
 
+end

@@ -6,6 +6,8 @@ imports
   Float_Real
 begin
 
+context includes floatarith_notation begin
+
 definition "rotate_fas =
   [Cos (Rad_of (Var 2)) * Var 0 - Sin (Rad_of (Var 2)) * Var 1,
    Sin (Rad_of (Var 2)) * Var 0 + Cos (Rad_of (Var 2)) * Var 1]"
@@ -24,6 +26,8 @@ fun translatei where "translatei x i = (((the o (\<lambda>x. approx_slp_outer 7 
 
 value "translatei (aforms_of_ivls [2, 1, 512] [3, 5, 512]) 50"
 
-hide_const  rotate_fas rotate_slp approx_rotate rotate_aform translate_slp translatei
+end
+
+hide_const rotate_fas rotate_slp approx_rotate rotate_aform translate_slp translatei
 
 end

@@ -7,6 +7,8 @@ theory Straight_Line_Program
     "HOL-Library.RBT_Mapping"
 begin
 
+unbundle floatarith_notation
+
 derive (linorder) compare_order float
 
 derive linorder floatarith
@@ -52,12 +54,12 @@ fun slp_of_fa :: "floatarith \<Rightarrow> (floatarith, nat) mapping \<Rightarro
 | "slp_of_fa (Mult a b) M slp =
     (let (M1, slp1) = slp_of_fa a M slp; (M2, slp2) = slp_of_fa b M1 slp1 in
       slp_of_fa_bin Mult a b M slp M2 slp2)"
-| "slp_of_fa (Min\<^sub>e a b) M slp =
+| "slp_of_fa (Min a b) M slp =
     (let (M1, slp1) = slp_of_fa a M slp; (M2, slp2) = slp_of_fa b M1 slp1 in
-      slp_of_fa_bin Min\<^sub>e a b M slp M2 slp2)"
-| "slp_of_fa (floatarith.Max a b) M slp =
+      slp_of_fa_bin Min a b M slp M2 slp2)"
+| "slp_of_fa (Max a b) M slp =
     (let (M1, slp1) = slp_of_fa a M slp; (M2, slp2) = slp_of_fa b M1 slp1 in
-      slp_of_fa_bin floatarith.Max a b M slp M2 slp2)"
+      slp_of_fa_bin Max a b M slp M2 slp2)"
 | "slp_of_fa (Powr a b) M slp =
     (let (M1, slp1) = slp_of_fa a M slp; (M2, slp2) = slp_of_fa b M1 slp1 in
       slp_of_fa_bin Powr a b M slp M2 slp2)"
@@ -65,23 +67,23 @@ fun slp_of_fa :: "floatarith \<Rightarrow> (floatarith, nat) mapping \<Rightarro
    (let (M1, slp1) = slp_of_fa a M slp in slp_of_fa_un Inverse a M slp M1 slp1)"
 | "slp_of_fa (Cos a) M slp  =
    (let (M1, slp1) = slp_of_fa a M slp in slp_of_fa_un Cos a M slp M1 slp1)"
-| "slp_of_fa (Arctan\<^sub>e a) M slp  =
-   (let (M1, slp1) = slp_of_fa a M slp in slp_of_fa_un Arctan\<^sub>e a M slp M1 slp1)"
+| "slp_of_fa (Arctan a) M slp  =
+   (let (M1, slp1) = slp_of_fa a M slp in slp_of_fa_un Arctan a M slp M1 slp1)"
 | "slp_of_fa (Abs a) M slp  =
    (let (M1, slp1) = slp_of_fa a M slp in slp_of_fa_un Abs a M slp M1 slp1)"
 | "slp_of_fa (Sqrt a) M slp  =
    (let (M1, slp1) = slp_of_fa a M slp in slp_of_fa_un Sqrt a M slp M1 slp1)"
 | "slp_of_fa (Exp a) M slp  =
    (let (M1, slp1) = slp_of_fa a M slp in slp_of_fa_un Exp a M slp M1 slp1)"
-| "slp_of_fa (Ln\<^sub>e a) M slp  =
-   (let (M1, slp1) = slp_of_fa a M slp in slp_of_fa_un Ln\<^sub>e a M slp M1 slp1)"
+| "slp_of_fa (Ln a) M slp  =
+   (let (M1, slp1) = slp_of_fa a M slp in slp_of_fa_un Ln a M slp M1 slp1)"
 | "slp_of_fa (Minus a) M slp  =
    (let (M1, slp1) = slp_of_fa a M slp in slp_of_fa_un Minus a M slp M1 slp1)"
 | "slp_of_fa (Floor a) M slp  =
    (let (M1, slp1) = slp_of_fa a M slp in slp_of_fa_un Floor a M slp M1 slp1)"
 | "slp_of_fa (Power a n) M slp  =
    (let (M1, slp1) = slp_of_fa a M slp in slp_of_fa_un (\<lambda>a. Power a n) a M slp M1 slp1)"
-| "slp_of_fa Pi\<^sub>e M slp = slp_of_fa_cnst Pi\<^sub>e Pi\<^sub>e M slp"
+| "slp_of_fa Pi M slp = slp_of_fa_cnst Pi Pi M slp"
 | "slp_of_fa (Var v) M slp = slp_of_fa_cnst (Var v) (Var (v + length slp)) M slp"
 | "slp_of_fa (Num n) M slp = slp_of_fa_cnst (Num n) (Num n) M slp"
 
@@ -808,12 +810,12 @@ fun slp_of_fa_rev :: "floatarith \<Rightarrow> (floatarith, nat) mapping \<Right
 | "slp_of_fa_rev (Mult a b) M slp slpl =
     (let (M1, slp1, slpl1) = slp_of_fa_rev a M slp slpl; (M2, slp2, slpl2) = slp_of_fa_rev b M1 slp1 slpl1 in
       slp_of_fa_rev_bin Mult a b M slp slpl M2 slp2 slpl2)"
-| "slp_of_fa_rev (Min\<^sub>e a b) M slp slpl =
+| "slp_of_fa_rev (Min a b) M slp slpl =
     (let (M1, slp1, slpl1) = slp_of_fa_rev a M slp slpl; (M2, slp2, slpl2) = slp_of_fa_rev b M1 slp1 slpl1 in
-      slp_of_fa_rev_bin Min\<^sub>e a b M slp slpl M2 slp2 slpl2)"
-| "slp_of_fa_rev (floatarith.Max a b) M slp slpl =
+      slp_of_fa_rev_bin Min a b M slp slpl M2 slp2 slpl2)"
+| "slp_of_fa_rev (Max a b) M slp slpl =
     (let (M1, slp1, slpl1) = slp_of_fa_rev a M slp slpl; (M2, slp2, slpl2) = slp_of_fa_rev b M1 slp1 slpl1 in
-      slp_of_fa_rev_bin floatarith.Max a b M slp slpl M2 slp2 slpl2)"
+      slp_of_fa_rev_bin Max a b M slp slpl M2 slp2 slpl2)"
 | "slp_of_fa_rev (Powr a b) M slp slpl =
     (let (M1, slp1, slpl1) = slp_of_fa_rev a M slp slpl; (M2, slp2, slpl2) = slp_of_fa_rev b M1 slp1 slpl1 in
       slp_of_fa_rev_bin Powr a b M slp slpl M2 slp2 slpl2)"
@@ -821,23 +823,23 @@ fun slp_of_fa_rev :: "floatarith \<Rightarrow> (floatarith, nat) mapping \<Right
    (let (M1, slp1, slpl1) = slp_of_fa_rev a M slp slpl in slp_of_fa_rev_un Inverse a M slp slpl M1 slp1 slpl1)"
 | "slp_of_fa_rev (Cos a) M slp slpl =
    (let (M1, slp1, slpl1) = slp_of_fa_rev a M slp slpl in slp_of_fa_rev_un Cos a M slp slpl M1 slp1 slpl1)"
-| "slp_of_fa_rev (Arctan\<^sub>e a) M slp slpl =
-   (let (M1, slp1, slpl1) = slp_of_fa_rev a M slp slpl in slp_of_fa_rev_un Arctan\<^sub>e a M slp slpl M1 slp1 slpl1)"
+| "slp_of_fa_rev (Arctan a) M slp slpl =
+   (let (M1, slp1, slpl1) = slp_of_fa_rev a M slp slpl in slp_of_fa_rev_un Arctan a M slp slpl M1 slp1 slpl1)"
 | "slp_of_fa_rev (Abs a) M slp slpl =
    (let (M1, slp1, slpl1) = slp_of_fa_rev a M slp slpl in slp_of_fa_rev_un Abs a M slp slpl M1 slp1 slpl1)"
 | "slp_of_fa_rev (Sqrt a) M slp slpl =
    (let (M1, slp1, slpl1) = slp_of_fa_rev a M slp slpl in slp_of_fa_rev_un Sqrt a M slp slpl M1 slp1 slpl1)"
 | "slp_of_fa_rev (Exp a) M slp slpl =
    (let (M1, slp1, slpl1) = slp_of_fa_rev a M slp slpl in slp_of_fa_rev_un Exp a M slp slpl M1 slp1 slpl1)"
-| "slp_of_fa_rev (Ln\<^sub>e a) M slp slpl =
-   (let (M1, slp1, slpl1) = slp_of_fa_rev a M slp slpl in slp_of_fa_rev_un Ln\<^sub>e a M slp slpl M1 slp1 slpl1)"
+| "slp_of_fa_rev (Ln a) M slp slpl =
+   (let (M1, slp1, slpl1) = slp_of_fa_rev a M slp slpl in slp_of_fa_rev_un Ln a M slp slpl M1 slp1 slpl1)"
 | "slp_of_fa_rev (Minus a) M slp slpl =
    (let (M1, slp1, slpl1) = slp_of_fa_rev a M slp slpl in slp_of_fa_rev_un Minus a M slp slpl M1 slp1 slpl1)"
 | "slp_of_fa_rev (Floor a) M slp slpl =
    (let (M1, slp1, slpl1) = slp_of_fa_rev a M slp slpl in slp_of_fa_rev_un Floor a M slp slpl M1 slp1 slpl1)"
 | "slp_of_fa_rev (Power a n) M slp slpl =
    (let (M1, slp1, slpl1) = slp_of_fa_rev a M slp slpl in slp_of_fa_rev_un (\<lambda>a. Power a n) a M slp slpl M1 slp1 slpl1)"
-| "slp_of_fa_rev Pi\<^sub>e M slp slpl = slp_of_fa_rev_cnst Pi\<^sub>e Pi\<^sub>e M slp slpl"
+| "slp_of_fa_rev Pi M slp slpl = slp_of_fa_rev_cnst Pi Pi M slp slpl"
 | "slp_of_fa_rev (Var v) M slp slpl = slp_of_fa_rev_cnst (Var v) (Var (v + slpl)) M slp slpl"
 | "slp_of_fa_rev (Num n) M slp slpl = slp_of_fa_rev_cnst (Num n) (Num n) M slp slpl"
 
@@ -985,5 +987,7 @@ lemma slp_of_fa_code[code]:
   by (auto split: prod.splits)
 
 definition "norm2_slp n = slp_of_fas [floatarith.Inverse (norm2\<^sub>e n)]"
+
+unbundle no_floatarith_notation
 
 end

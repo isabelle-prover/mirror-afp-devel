@@ -58,6 +58,8 @@ text\<open>\label{sec:examples}\<close>
 
 experiment begin
 
+unbundle floatarith_notation
+
 text \<open>The examples below are taken from
   @{url "http://link.springer.com/chapter/10.1007/978-3-642-38088-4_26"},
   ``Formal Verification of Nonlinear Inequalities with Taylor Interval Approximations'',
