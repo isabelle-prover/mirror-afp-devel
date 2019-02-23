@@ -1,11 +1,15 @@
 theory Example_Utilities
 imports
-  Ordinary_Differential_Equations.ODE_Analysis
+(*  Ordinary_Differential_Equations.ODE_Analysis
   Affine_Arithmetic.Print
   Refine_Rigorous_Numerics_Aform
   Transfer_Euclidean_Space_Vector
   Affine_Arithmetic.Float_Real
+*)
+  Init_ODE_Solver
 begin
+
+lemmas [simp] = length_aforms_of_ivls
 
 declare INF_cong_simp [cong] SUP_cong_simp [cong] image_cong_simp [cong del]
 

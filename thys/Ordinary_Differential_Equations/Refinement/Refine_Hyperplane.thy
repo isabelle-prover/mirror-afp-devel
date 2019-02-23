@@ -7,6 +7,12 @@ imports
   Refine_Vector_List
 begin
 
+lemma convex_halfspace[simp]:
+  "convex (below_halfspace sctn)"
+  apply (auto simp: below_halfspace_def le_halfspace_def[abs_def])
+  using convex_bound_le
+  apply (auto intro!: convexI simp: algebra_simps)
+  by blast
 
 subsection \<open>Planes\<close>
 
@@ -81,6 +87,9 @@ lemma single_valued_sctn_rel[relator_props]: "single_valued A \<Longrightarrow> 
   by (auto simp: single_valued_def right_unique_def sctn_rel_def)
 
 consts i_sctn :: "interface \<Rightarrow> interface" \<comment> \<open>section datatype\<close>
+
+consts i_halfspace :: "interface \<Rightarrow> interface"
+
 lemmas [autoref_rel_intf] = REL_INTFI[of sctn_rel i_sctn]
 
 
@@ -199,6 +208,30 @@ lemma sctn_rel: "\<langle>lv_rel\<rangle>sctn_rel \<subseteq> \<langle>\<langle>
   "\<langle>\<langle>rnv_rel\<rangle>list_rel\<rangle>sctn_rel O \<langle>lv_rel\<rangle>sctn_rel \<subseteq> \<langle>lv_rel\<rangle>sctn_rel"
   using sctn_rel_comp[of "\<langle>rnv_rel\<rangle>list_rel" lv_rel] by auto
 
+definition halfspace_rel_internal: "halfspaces_rel R = \<langle>\<langle>R\<rangle>sctn_rel\<rangle>list_set_rel O br below_halfspaces top"
+lemma halfspaces_rel_def: "\<langle>R\<rangle>halfspaces_rel = \<langle>\<langle>R\<rangle>sctn_rel\<rangle>list_set_rel O br below_halfspaces top"
+  by (auto simp: relAPP_def halfspace_rel_internal)
+
+lemmas [autoref_rel_intf] = REL_INTFI[of halfspaces_rel i_halfspace]
+
+lemma below_halfspaces_autoref[autoref_rules]:
+  "(\<lambda>x. x, below_halfspaces) \<in> \<langle>\<langle>R\<rangle>sctn_rel\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>halfspaces_rel"
+  by (auto simp: halfspaces_rel_def br_def)
+
 end
+
+lemma plane_rel_br: "\<langle>br a I\<rangle>plane_rel = br (plane_of o map_sctn a) (\<lambda>x. I (normal x))"
+  apply (auto simp: plane_rel_def sctn_rel_def br_def)
+  subgoal for x y z by (cases x; cases y) auto
+  subgoal for x y z by (cases x; cases y) auto
+  subgoal for x y by (cases x; cases y) auto
+  subgoal for a by (cases a; force)
+  done
+
+
+lemma closed_subset_plane[intro]:
+  "closed b \<Longrightarrow> closed {x \<in> b. x \<in> plane_of c}"
+  "closed b \<Longrightarrow> closed {x \<in> b. x \<bullet> n = d}"
+  by (auto simp: plane_of_def intro!: closed_levelset_within continuous_intros)
 
 end

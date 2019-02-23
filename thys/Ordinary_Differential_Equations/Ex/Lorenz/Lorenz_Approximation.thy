@@ -433,7 +433,8 @@ lemma interpret_form_conefield_bounds_form_list:
   by (auto simp: conefield_bounds_form_def L2_set_def)
 
 lemma list_of_eucl_eucl1_3:
-  "(list_of_eucl (vec1_of_flow1 (xDX::(real^3) \<times> ((real^3)\<Rightarrow>\<^sub>L(real^3))))) =
+  includes vec_syntax
+  shows "(list_of_eucl (vec1_of_flow1 (xDX::(real^3) \<times> ((real^3)\<Rightarrow>\<^sub>L(real^3))))) =
   (let
     (x, DX) = xDX;
     DXu = DX (eucl_of_list [1, 0, 0]);
@@ -635,7 +636,7 @@ definition "cube_exiti =
                           (map udec [0,0,0,   0.56,0,0,   0.6,0,0])))]"
 definition "cube_exitv = aform.c1_info_of_apprs cube_exiti"
 
-lemma cube_enteri[autoref_rules]: "(cube_enteri, cube_enter::'a set) \<in> aform.lvivl_rel"
+lemma cube_enteri[autoref_rules]: "(cube_enteri, cube_enter::'a set) \<in> lvivl_rel"
   if "DIM_precond TYPE('a::executable_euclidean_space) 12"
   using that
   by (auto simp: cube_enteri_def cube_enter_def set_of_ivl_def
@@ -1101,7 +1102,7 @@ lemma \<Sigma>\<^sub>l\<^sub>e_impl[autoref_rules]: "(Sctn [0, 0, 1] 27, \<Sigma
   by (auto intro!: brI)
 
 lemma [autoref_rules]: "((), \<Gamma>\<^sub>v) \<in> ghost_rel"
-  by (auto intro!: aform.ghost_relI)
+  by (auto intro!: ghost_relI)
 
 no_notation vec_nth (infixl "$" 90) and vec_lambda (binder "\<chi>" 10)
 
@@ -1139,7 +1140,7 @@ definition lorenz_poincare where
       (\<Gamma>\<^sub>i\<^sub>v interrupt:::ghost_rel)
       ((below_halfspaces {Sctn (eucl_of_list [0, 0, 1]) 27}::(real^3) set):::\<langle>lv_rel\<rangle>halfspaces_rel)
       guards
-      (op_atLeastAtMost_ivl (eucl_of_list [-6, -6, 27]:::lv_rel) (eucl_of_list [6, 6, 27]:::lv_rel):::aform.lvivl_rel::(real^3) set)
+      (op_atLeastAtMost_ivl (eucl_of_list [-6, -6, 27]:::lv_rel) (eucl_of_list [6, 6, 27]:::lv_rel):::lvivl_rel::(real^3) set)
        (Sctn (eucl_of_list [0, 0, -1]) (- 27)::(real^3) sctn)
       roptn
       XS0"
@@ -1170,7 +1171,7 @@ schematic_goal lorenz_poincare_impl[autoref_rules]:
   unfolding autoref_tag_defs
   unfolding lorenz_poincare_def
   including art
-  supply [autoref_rules_raw] = aform.ghost_relI
+  supply [autoref_rules_raw] = ghost_relI
   by (autoref_monadic)
 
 lemma cast_image_eqI: "cast ` X = Y"
@@ -1736,8 +1737,8 @@ lemma mode_ro_spec_impl[autoref_rules]:
   apply (auto simp: mode_ro_spec_def nres_rel_def RETURN_RES_refine_iff)
   apply (rule exI)+
   apply (rule prod_relI'' IdI)+
-  unfolding lv_rel_def ivl_rel_def br_rel_prod br_chain aform.plane_rel_br inter_rel_br
-    aform.clw_rel_br aform.br_list_rel Id_br prod_eq_iff
+  unfolding lv_rel_def ivl_rel_def br_rel_prod br_chain plane_rel_br inter_rel_br
+    clw_rel_br br_list_rel Id_br prod_eq_iff
    apply (rule brI refl)+
    defer apply (rule brI) apply (rule refl) apply auto
   apply (auto simp: lookup_mode_def mode_outer_def mode_inner2_def mode_inner3_def xsecs_def
@@ -1837,9 +1838,9 @@ definition "check_line_nres print_fun m0 n0 c1 res0 = do {
     aform.CHECKs optns (ST ''check_line_nres le'') sp;
     ASSERT (X0l \<le> X0u);
     Pe \<leftarrow> lorenz_poincare_tangents optns interrupt modes ro c1 ({X0l .. X0u}) tangents;
-    PeS \<leftarrow> aform.sets_of_coll Pe;
+    PeS \<leftarrow> sets_of_coll Pe;
     let RETs = (return_of_res results res0);
-    let RET = \<Union>((mk_coll ` (source_of_res ` RETs:::\<langle>aform.lvivl_rel\<rangle>list_wset_rel):::\<langle>clw_rel aform.lvivl_rel\<rangle>list_wset_rel));
+    let RET = \<Union>((mk_coll ` (source_of_res ` RETs:::\<langle>lvivl_rel\<rangle>list_wset_rel):::\<langle>clw_rel lvivl_rel\<rangle>list_wset_rel));
     every \<leftarrow> WEAK_ALL\<^bsup>\<lambda>Pe. \<exists>P em eM Rivls. em > 0 \<and> Pe = scaleR2 em eM P \<and> fst ` P \<subseteq> \<Union>Rivls \<and> (\<forall>Rivl \<in> Rivls. (\<exists>res\<in>RETs. Rivl \<subseteq> source_of_res res \<and> (c1 \<longrightarrow> c1_entry_correct em P res0 res)))\<^esup>
     PeS (\<lambda>Pe. do {
       let _ = aform.trace_set1e (''# Return Element: '') (Some Pe);
@@ -1849,13 +1850,13 @@ definition "check_line_nres print_fun m0 n0 c1 res0 = do {
       (Ri, Rs) \<leftarrow> ivl_rep_of_set R;
       let Rivl = (op_atLeastAtMost_ivl Ri Rs);
       Rivls \<leftarrow> aform.split_along_ivls2 3 (mk_coll Rivl) RET;
-      Rivlss \<leftarrow> aform.sets_of_coll Rivls;
+      Rivlss \<leftarrow> sets_of_coll Rivls;
       WEAK_ALL\<^bsup>\<lambda>Rivl. \<exists>res\<in>RETs. Rivl \<subseteq> source_of_res res \<and> (c1 \<longrightarrow> c1_entry_correct em P res0 res)\<^esup> Rivlss
       (\<lambda>Rivl. do {
         b \<leftarrow>
           WEAK_EX\<^bsup>\<lambda>res. Rivl \<subseteq> source_of_res res \<and> (c1 \<longrightarrow> c1_entry_correct em P res0 res)\<^esup> RETs
           (\<lambda>res. do {
-            let src = (source_of_res res:::aform.lvivl_rel);
+            let src = (source_of_res res:::lvivl_rel);
             let subs = Rivl \<subseteq> src;
             cones \<leftarrow> if \<not>(c1 \<and> subs) then RETURN True else check_c1_entry em P res0 res;
             RETURN (subs \<and> cones)
@@ -1890,7 +1891,7 @@ schematic_goal check_line_impl:
     "(m0i, m0) \<in> \<langle>nat_rel\<rangle>option_rel" "(n0i, n0) \<in> \<langle>nat_rel\<rangle>option_rel"
   shows
   "(nres_of ?r, check_line_nres $ pf $ m0 $ n0 $ c1 $ res0) \<in>
-    \<langle>bool_rel \<times>\<^sub>r clw_rel aform.appr1e_rel \<times>\<^sub>r clw_rel aform.lvivl_rel\<rangle>nres_rel"
+    \<langle>bool_rel \<times>\<^sub>r clw_rel aform.appr1e_rel \<times>\<^sub>r clw_rel lvivl_rel\<rangle>nres_rel"
   unfolding check_line_nres_def
   including art
   by autoref_monadic
@@ -2057,8 +2058,7 @@ lemma check_line_nres_c0_correct:
         apply (auto dest!: bspec[OF _ \<open>x \<in> b\<close>])
         apply (auto simp: scaleR2_def image_def vimage_def)
         apply (auto simp: subset_iff)
-        apply fastforce
-        done\<comment> \<open>slow\<close>
+        by fastforce \<comment>\<open>slow\<close>
       done
   qed
   subgoal for a b c d e f
@@ -2068,8 +2068,7 @@ lemma check_line_nres_c0_correct:
     apply auto
     apply (auto simp: scaleR2_def image_def vimage_def)
     apply (auto simp: subset_iff)
-    apply fastforce
-    done\<comment> \<open>slow\<close>
+    by fastforce\<comment> \<open>slow\<close>
   done
 
 lemma cone_conefield[intro, simp]: "cone (conefield a b)"

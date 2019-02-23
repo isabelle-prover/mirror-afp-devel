@@ -122,6 +122,11 @@ lemma explicit_info_set[THEN order_trans, refine_vcg]:
   unfolding explicit_info_set_def
   by (refine_vcg) (auto simp: split_beta' subset_iff)
 
+lemmas [relator_props del] = sv_info_rel
+lemma sv_info_rel'[relator_props]:
+  "single_valued S \<Longrightarrow> single_valued (\<langle>I, S\<rangle>info_rel)"
+  by (auto simp: info_rel_def single_valued_def br_def)
+
 end
 
 end
