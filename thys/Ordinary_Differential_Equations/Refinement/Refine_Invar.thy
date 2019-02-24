@@ -20,8 +20,7 @@ definition split_with_invar::"('c \<Rightarrow> 'a set) \<Rightarrow> 'a set \<R
   where [refine_vcg_def]: "split_with_invar i X = SPEC (\<lambda>((Y, sctn), YS). X = Y \<union> YS \<and> Y \<subseteq> i sctn)"
 interpretation autoref_op_pat_def "split_with_invar i" for i .
 
-context begin
-interpretation autoref_syn .
+context includes autoref_syntax begin
 
 definition invar_rel_internal:
   "invar_rel a X S = {((x, s'), y). \<exists>s. (s', s) \<in> X \<and> (x, y) \<in> S \<and> y \<subseteq> a s}"
@@ -119,7 +118,7 @@ definition
     }"
 interpretation autoref_op_pat_def "explicit_sctn_set po" for po .
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 
 lemma pfi: "PREFER single_valued R \<Longrightarrow> ((#), OP insert ::: R \<rightarrow> \<langle>R\<rangle>list_wset_rel \<rightarrow> \<langle>R\<rangle>list_wset_rel) \<in> R \<rightarrow> \<langle>R\<rangle>list_wset_rel \<rightarrow> \<langle>R\<rangle>list_wset_rel"
   using list_set_autoref_insert[of R]

@@ -3,7 +3,8 @@ imports Refine_Unions
 begin
 
 consts i_inter::"interface \<Rightarrow> interface \<Rightarrow> interface"
-hide_const (open) inter_rel
+hide_const (open) Impl_Uv_Set.inter_rel
+
 definition inter_rel_internal: "inter_rel AA BB = {((a, b), A \<inter> B)|a b A B. (a, A) \<in> AA \<and> (b, B) \<in> BB}"
 lemma inter_rel_def: "\<langle>AA, BB\<rangle>inter_rel = {((a, b), A \<inter> B)|a b A B. (a, A) \<in> AA \<and> (b, B) \<in> BB}"
   by (auto simp: inter_rel_internal relAPP_def)
@@ -18,7 +19,7 @@ definition mk_inter::"'a set \<Rightarrow> 'a set \<Rightarrow> 'a set"
 definition mk_inter_coll::"'a set \<Rightarrow> 'a set \<Rightarrow> 'a set"
 where [simp]: "mk_inter_coll \<equiv> \<lambda>X Y. X \<inter> Y"
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 lemma [autoref_op_pat]: "mk_inter \<equiv> OP (mk_inter)"
   by simp
 lemma [autoref_op_pat]: "mk_inter \<equiv> OP (mk_inter_coll)"
@@ -105,7 +106,7 @@ lemma get_inter_autoref[autoref_rules]:
 definition split_by_inter::"'a set \<Rightarrow> ('a set \<times> 'a set) nres"
   where [refine_vcg_def]: "split_by_inter X = SPEC (\<lambda>(Y, YS). X = Y \<union> YS)"
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 lemma split_by_inter_appr_plane_autoref[autoref_rules]:
   assumes "PREFER single_valued A"
   assumes "PREFER single_valued S"

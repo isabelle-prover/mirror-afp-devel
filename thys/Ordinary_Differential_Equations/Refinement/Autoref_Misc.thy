@@ -388,15 +388,19 @@ lemma [autoref_op_pat_def]: "x \<equiv> Autoref_Tagging.OP x"
   by simp
 end
 
-context autoref_syn begin
-no_notation funcset  (infixr "\<rightarrow>" 60)
+bundle autoref_syntax begin
 no_notation vec_nth (infixl "$" 90)
+no_notation funcset (infixr "\<rightarrow>" 60)
+notation Autoref_Tagging.APP (infixl "$" 900)
+notation rel_ANNOT (infix ":::" 10)
+notation ind_ANNOT (infix "::#" 10)
+notation "Autoref_Tagging.OP" ("OP")
+notation Autoref_Tagging.ABS (binder "\<lambda>''" 10)
 end
-
 
 definition "THE_NRES = case_option SUCCEED RETURN"
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 schematic_goal THE_NRES_impl:
   assumes [THEN PREFER_sv_D, relator_props]: "PREFER single_valued R"
   assumes [autoref_rules]: "(xi, x) \<in> \<langle>R\<rangle>option_rel"
@@ -414,7 +418,7 @@ lemma THE_NRES_refine[THEN order_trans, refine_vcg]:
 
 definition "CHECK f P = (if P then RETURN () else let _ = f () in SUCCEED)"
 definition "CHECK_dres f P = (if P then dRETURN () else let _ = f () in dSUCCEED)"
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 lemma CHECK_refine[refine_transfer]:
   "nres_of (CHECK_dres f x) \<le> CHECK f x"
   by (auto simp: CHECK_dres_def CHECK_def)
@@ -583,7 +587,7 @@ lemma nres_of_nress_SPEC[THEN order_trans, refine_vcg]:
     apply refine_vcg
     done
   done
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 lemma [autoref_op_pat_def]: "nres_of_nress P x \<equiv> (OP (nres_of_nress P) $ x)"
   by auto
 lemma nres_of_nress_alt_def[abs_def]:
@@ -678,4 +682,5 @@ lemma ex_br_conj_iff:
   "(\<exists>x. (y, x) \<in> br a I \<and> P x) \<longleftrightarrow> I y \<and> P (a y)"
   by (auto intro!: brI dest!: brD)
 
+print_syntax
 end

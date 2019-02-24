@@ -4,7 +4,7 @@ imports
 begin
 
 subsection \<open>Setup for characters\<close>
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 lemma [autoref_itype]: "Char b0 b1 b2 b3 b4 b5 b6 b7 ::\<^sub>i I"
   and [autoref_op_pat_def]: "Char b0 b1 b2 b3 b4 b5 b6 b7 \<equiv> OP (Char b0 b1 b2 b3 b4 b5 b6 b7) :::\<^sub>i I"
   and [autoref_rules]: "(Char b0 b1 b2 b3 b4 b5 b6 b7, OP (Char b0 b1 b2 b3 b4 b5 b6 b7) ::: Id) \<in> Id"
@@ -25,7 +25,7 @@ definition op_str_Nil::"string" where [simp]: "op_str_Nil = Nil"
 definition op_str_Cons::"char \<Rightarrow> string \<Rightarrow> string" where [simp]: "op_str_Cons = Cons"
 definition op_str_append::"string \<Rightarrow> string \<Rightarrow> string" where [simp]: "op_str_append = (@)"
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 lemma
   shows [autoref_itype]:
     "op_str_Nil ::\<^sub>i i_string"
@@ -43,7 +43,7 @@ lemma
 end
 
 subsection \<open>Setup for literals\<close>
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 lemma [autoref_itype]: "String.empty_literal ::\<^sub>i I"
   and [autoref_op_pat_def]: "String.empty_literal \<equiv> OP String.empty_literal :::\<^sub>i I"
   and [autoref_rules]: "(String.empty_literal, OP String.empty_literal ::: Id) \<in> Id"

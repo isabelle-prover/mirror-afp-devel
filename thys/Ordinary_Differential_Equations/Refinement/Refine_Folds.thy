@@ -106,8 +106,7 @@ lemma Max_ne_spec:
   done
 
 subsection \<open>Implementations\<close>
-context begin
-interpretation autoref_syn .
+context includes autoref_syntax begin
 
 schematic_goal FOLD_bin_ne_impl:
   assumes [autoref_rules(overloaded)]: "(del_impl,op_set_delete) \<in> R \<rightarrow> \<langle>R\<rangle>C \<rightarrow> \<langle>R\<rangle>C"

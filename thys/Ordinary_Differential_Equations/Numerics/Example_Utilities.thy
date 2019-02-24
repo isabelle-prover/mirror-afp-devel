@@ -44,6 +44,7 @@ end
 lemma in_list_interval_lengthD: "x \<in> list_interval a b \<Longrightarrow> length x = length a"
   by (auto simp: list_interval_def list_all2_lengthD)
 
+context includes floatarith_notation begin
 
 definition "varvec_fas' D C = ((map Var [0..<D]) @
       concat (map (\<lambda>b.
@@ -196,6 +197,7 @@ proof -
       done
     done
 qed
+end
 
 context ll_on_open_it\<comment> \<open>TODO: do this more generically for @{const ll_on_open_it}\<close>
 begin
@@ -913,7 +915,7 @@ lemma c0_info_of_apprs_transfer[transfer_rule]:
 lemma c0_info_of_appr'_transfer[transfer_rule]:
   "(rel_option (list_all2 (=)) ===> rel_set rel_ve)
     aform.c0_info_of_appr' aform.c0_info_of_appr'"
-  unfolding aform.c0_info_of_appr'_def aform.the_default_eq
+  unfolding aform.c0_info_of_appr'_def
   by transfer_prover
 
 lemma aform_Csafe_vX[simp]: "aform.Csafe ode_fas safe_form = (vX::'n rvec set)"
@@ -1078,7 +1080,7 @@ lemma FAILi_transfer[transfer_rule]: "(rel_nres B) FAILi FAILi"
 lemma RES_transfer[transfer_rule]: "(rel_set B ===> rel_nres B) RES RES"
   by (auto simp: rel_nres_def nres_rel_def rel_set_def intro!: rel_funI RES_refine)
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 lemma RETURN_dres_nres_relI:
   "(fi, f) \<in> A \<rightarrow> B \<Longrightarrow> (\<lambda>x. dRETURN (fi x), (\<lambda>x. RETURN (f x))) \<in> A \<rightarrow> \<langle>B\<rangle>dres_nres_rel"
   by (auto simp: dres_nres_rel_def dest: fun_relD)
@@ -1496,6 +1498,8 @@ lemma ldec: "ldec x \<le> real_of_rat x"
       quotient_of_denom_pos quotient_of_div)
   done
 
+context includes floatarith_notation begin
+
 definition "matrix_of_degrees\<^sub>e =
   (let
     ur = Rad_of (Var 0);
@@ -1692,6 +1696,8 @@ lemma Joints_aforms_of_point_self[simp]: "xs \<in> Joints (aforms_of_point xs)"
 lemma bind_eq_dRETURN_conv:
   "(f \<bind> g = dRETURN S) \<longleftrightarrow> (\<exists>R. f = dRETURN R \<and> g R = dRETURN S)"
   by (cases f) auto
+
+end
 
 context approximate_sets_options' begin
 

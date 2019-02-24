@@ -1,12 +1,12 @@
 theory Init_ODE_Solver
 imports
-  Concrete_Reachability_Analysis
-  Refine_Reachability_Analysis
+  Concrete_Reachability_Analysis_C1
+  Refine_Reachability_Analysis_C1
   Refine_Rigorous_Numerics_Aform
 begin
 
 context approximate_sets_options' begin
-
+context includes autoref_syntax begin
 theorem solves_poincare_map_ncc:
   fixes sctni pos ivli ssc XS ph rl ru dRi CXS X0 S trap
   defines "P \<equiv> set_of_lvivl ivli \<inter> plane_of (map_sctn eucl_of_list sctni)"
@@ -205,6 +205,7 @@ proof -
     by (auto simp: poincare_maps_onto_def solves_poincare_map_onto_def nres_rel_def P_def X1_def)
 qed
 
+end
 end
 
 context aform_approximate_sets0 begin

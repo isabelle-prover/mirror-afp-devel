@@ -5,8 +5,7 @@ imports
 begin
 consts i_phantom :: "interface \<Rightarrow> interface"
 
-context begin
-interpretation autoref_syn .
+context includes autoref_syntax begin
 
 
 definition pphantom_rel_internal:

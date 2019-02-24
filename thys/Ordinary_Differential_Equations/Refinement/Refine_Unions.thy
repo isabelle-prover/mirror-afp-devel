@@ -33,8 +33,7 @@ lemma Union_rel_br: "\<langle>(br l lI), (br s sI)\<rangle>Union_rel = br (\<lam
 
 subsubsection \<open>Implementation of set as union of sets\<close>
 
-context begin
-interpretation autoref_syn .
+context includes autoref_syntax begin
 
 definition [simp]: "op_union_coll = (\<union>)"
 lemma [autoref_op_pat]: "(\<union>) \<equiv> OP op_union_coll"
@@ -150,6 +149,7 @@ definition [simp]: "op_Union_coll = Union"
 lemma [autoref_op_pat]: "Union \<equiv> OP op_Union_coll"
   by simp
 lemma clw_rel_Union[autoref_rules]:
+  includes autoref_syntax
   assumes [unfolded autoref_tag_defs, relator_props]: "PREFER single_valued A"
   shows "(concat, op_Union_coll) \<in> \<langle>clw_rel A\<rangle>list_wset_rel \<rightarrow> clw_rel A"
 proof -

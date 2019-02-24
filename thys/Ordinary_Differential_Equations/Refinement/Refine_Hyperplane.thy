@@ -119,7 +119,7 @@ lemma sbelows_rel_def: "\<langle>A\<rangle>sbelows_rel = \<langle>\<langle>A\<ra
 consts i_sbelows::"interface\<Rightarrow>interface"
 lemmas [autoref_rel_intf] = REL_INTFI[of sbelows_rel i_sbelows]
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 
 lemma plane_of_autoref[autoref_rules]:
   "(\<lambda>x. x, plane_of) \<in> \<langle>A\<rangle>sctn_rel \<rightarrow> \<langle>A\<rangle>plane_rel"
@@ -141,7 +141,7 @@ lemma sbelow_halfspaces_autoref[autoref_rules]:
 end
 
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 lemma [autoref_rules]:
   shows
   "(Sctn, Sctn) \<in> A \<rightarrow> rnv_rel \<rightarrow> \<langle>A\<rangle>sctn_rel"

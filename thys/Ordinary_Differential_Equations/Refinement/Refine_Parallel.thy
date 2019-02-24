@@ -7,7 +7,7 @@ theory
     "../Refinement/Weak_Set"
 begin
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 
 lemma dres_of_dress_impl:
   "nres_of (rec_list (dRETURN []) (\<lambda>x xs r. do { fx \<leftarrow> x; r \<leftarrow> r; dRETURN (fx # r)}) (Parallel.map f x)) \<le>

@@ -12,7 +12,7 @@ consts i_rnv::interface
 abbreviation "rnv_rel \<equiv> (Id::('a::real_normed_vector\<times>_) set)"
 lemmas [autoref_rel_intf] = REL_INTFI[of rnv_rel i_rnv]
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 
 lemma [autoref_rules]:
   "((=), (=)) \<in> rnv_rel \<rightarrow> rnv_rel \<rightarrow> bool_rel"
@@ -45,7 +45,7 @@ lemmas [autoref_rel_intf] = REL_INTFI[of lv_rel i_rnv]
 lemma lv_rel_sv[relator_props]: "single_valued lv_rel"
   by (auto simp: lv_rel_def)
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 
 lemma lv_rel_le[autoref_rules]: "(list_all2 (\<lambda>x y. x \<le> y), (\<le>)) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel"
   by (auto simp: lv_rel_def br_def eucl_le[where 'a='a] eucl_of_list_inner list_all2_conv_all_nth
@@ -225,7 +225,7 @@ end
 
 subsection \<open>Specs for Vectors\<close>
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 
 lemma Inf_specs_Inf_spec:
   "(Inf_specs d, Inf_spec::_\<Rightarrow>'a::executable_euclidean_space nres) \<in> \<langle>lv_rel\<rangle>set_rel \<rightarrow> \<langle>lv_rel\<rangle>nres_rel"

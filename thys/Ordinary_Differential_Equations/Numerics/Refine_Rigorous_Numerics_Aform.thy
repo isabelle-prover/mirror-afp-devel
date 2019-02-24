@@ -1,13 +1,13 @@
 theory Refine_Rigorous_Numerics_Aform
   imports
-    Abstract_Reachability_Analysis
+    Abstract_Reachability_Analysis_C1
     Refine_Rigorous_Numerics
     Collections.Locale_Code
     "HOL-Types_To_Sets.Types_To_Sets"
 begin
 
 text \<open>TODO: theory Refine_Options and remove dependency on \<open>HOL-ODE-Numerics.Abstract_Reachability_Analysis\<close>\<close>
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 lemma [autoref_rules]:
   "(precision, precision)\<in>num_optns_rel \<rightarrow> nat_rel"
   "(reduce, reduce)\<in>num_optns_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> nat_rel \<rightarrow> rl_rel \<rightarrow> bool_rel"
@@ -384,8 +384,7 @@ lemma aform_val_zero_pdevs[simp]: "aform_val e (x, zero_pdevs) = x"
 lemma neg_equal_zero_eucl[simp]: "-a = a \<longleftrightarrow> a = 0" for a::"'a::euclidean_space"
   by (auto simp: algebra_simps euclidean_eq_iff[where 'a='a])
 
-context begin
-interpretation autoref_syn .
+context includes autoref_syntax begin
 
 lemma Option_bind_param[param, autoref_rules]:
   "((\<bind>), (\<bind>)) \<in> \<langle>S\<rangle>option_rel \<rightarrow> (S \<rightarrow> \<langle>R\<rangle>option_rel) \<rightarrow> \<langle>R\<rangle>option_rel"
@@ -431,6 +430,7 @@ lemma bound_intersect_2d_ud[autoref_rules]:
   by auto
 
 lemma eucl_of_list_autoref[autoref_rules]:
+  includes autoref_syntax
   assumes "SIDE_PRECOND (length xs = DIM('a::executable_euclidean_space))"
   assumes "(xsi, xs) \<in> \<langle>rnv_rel\<rangle>list_rel"
   shows "(xsi, eucl_of_list $ xs::'a) \<in> lv_rel"
@@ -901,8 +901,8 @@ lemma aiN: "approx_floatarith p (inner_floatariths xs ys) zs \<noteq> None"
   by (metis old.prod.exhaust)
 
 lemma aiVN: "approx_floatarith p
-        (inner_floatariths (map Var [0..<length a])
-          (map Var [length a..<length a + length b]))
+        (inner_floatariths (map floatarith.Var [0..<length a])
+          (map floatarith.Var [length a..<length a + length b]))
         (map (\<lambda>x. (x, 0)) a @ map (\<lambda>x. (x, 0)) b) \<noteq> None"
   by (rule aiN) (auto simp: nth_append)
 
@@ -918,8 +918,6 @@ definition "width_aforms optns X =
 
 definition "inf_aforms optns xs = map (Inf_aform' (precision optns)) xs"
 definition "sup_aforms optns xs = map (Sup_aform' (precision optns)) xs"
-
-hide_const (open) floatarith.Max
 
 definition "fresh_index_aforms xs = Max (insert 0 (degree_aform ` set xs))"
 
@@ -1073,7 +1071,7 @@ proof -
     by (auto simp: Affine_def valuate_def aform_val_def assms dest: e1 e2)
 qed
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 
 lemma aform_of_ivl_refine: "x \<le> y \<Longrightarrow> (aform_of_ivl x y, atLeastAtMost x y) \<in> \<langle>rnv_rel\<rangle>aform_rel"
   by (auto simp: aform_rel_def br_def Affine_aform_of_ivl)
@@ -1622,8 +1620,7 @@ setup \<open>Sign.add_const_constraint (@{const_name "enum_class.enum"}, SOME @{
 setup \<open>Sign.add_const_constraint (@{const_name "enum_class.enum_all"}, SOME @{typ "('a::enum \<Rightarrow> bool) \<Rightarrow> bool"})\<close>
 setup \<open>Sign.add_const_constraint (@{const_name "enum_class.enum_ex"}, SOME @{typ "('a::enum \<Rightarrow> bool) \<Rightarrow> bool"})\<close>
 
-context begin
-interpretation autoref_syn .
+context includes autoref_syntax begin
 
 text \<open>TODO: this is a special case of \<open>Cancel_Card_Constraint\<close> from \<open>AFP/Perron_Frobenius\<close>!\<close>
 lemma type_impl_card_n_enum:

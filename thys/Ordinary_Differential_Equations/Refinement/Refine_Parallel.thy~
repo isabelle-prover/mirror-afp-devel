@@ -2,8 +2,24 @@ theory
   Refine_Parallel
   imports
     "HOL-Library.Parallel"
-    "HOL-ODE-Numerics.Transfer_Euclidean_Space_Vector"
+    Ordinary_Differential_Equations.ODE_Auxiliarities
+    "../Refinement/Autoref_Misc"
+    "../Refinement/Weak_Set"
 begin
+
+context begin interpretation autoref_syn .
+
+lemma dres_of_dress_impl:
+  "nres_of (rec_list (dRETURN []) (\<lambda>x xs r. do { fx \<leftarrow> x; r \<leftarrow> r; dRETURN (fx # r)}) (Parallel.map f x)) \<le>
+    nres_of_nress_impl (Parallel.map f' x)"
+  if [refine_transfer]: "\<And>x. nres_of (f x) \<le> f' x"
+  unfolding Parallel.map_def nres_of_nress_impl_map
+  apply (induction x)
+   apply (auto simp: )
+  apply refine_transfer
+  done
+concrete_definition dres_of_dress_impl uses dres_of_dress_impl
+lemmas [refine_transfer] = dres_of_dress_impl.refine
 
 definition PAR_IMAGE::"('a \<Rightarrow> 'c \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'c nres) \<Rightarrow> 'a set \<Rightarrow> ('a \<times> 'c) set nres" where
   "PAR_IMAGE P f X = do {
@@ -28,12 +44,12 @@ concrete_definition PAR_IMAGE_nres uses PAR_IMAGE_nres
 lemma PAR_IMAGE_nres_impl_refine[autoref_rules]:
   "PREFER single_valued A \<Longrightarrow>
   PREFER single_valued B \<Longrightarrow>
-  (\<lambda>fi Xi. Refine_Rigorous_Numerics.PAR_IMAGE_nres fi Xi, PAR_IMAGE P)
+  (\<lambda>fi Xi. PAR_IMAGE_nres fi Xi, PAR_IMAGE P)
     \<in> (A \<rightarrow> \<langle>B\<rangle>nres_rel) \<rightarrow> \<langle>A\<rangle>list_wset_rel \<rightarrow> \<langle>\<langle>A\<times>\<^sub>rB\<rangle>list_wset_rel\<rangle>nres_rel"
   using PAR_IMAGE_nres.refine by force
 schematic_goal PAR_IMAGE_dres:
   assumes [refine_transfer]: "\<And>x. nres_of (f x) \<le> f' x"
-  shows "nres_of (?f) \<le> Refine_Rigorous_Numerics.PAR_IMAGE_nres f' X'"
+  shows "nres_of (?f) \<le> PAR_IMAGE_nres f' X'"
   unfolding PAR_IMAGE_nres_def
   by refine_transfer
 concrete_definition PAR_IMAGE_dres for f X' uses PAR_IMAGE_dres
@@ -63,5 +79,7 @@ lemma PAR_IMAGE_SPEC[le, refine_vcg]:
   if [le, refine_vcg]: "\<And>x. x \<in> X \<Longrightarrow> f x \<le> SPEC (I x)"
   unfolding PAR_IMAGE_def
   by refine_vcg
+
+end
 
 end

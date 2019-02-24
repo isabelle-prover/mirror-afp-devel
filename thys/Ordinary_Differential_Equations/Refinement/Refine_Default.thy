@@ -71,7 +71,7 @@ lemma br_Some_O_default_rel_eq: "br Some top O \<langle>A\<rangle>default_rel d 
 
 definition [simp]: "op_Union_default = Union"
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 lemma [autoref_op_pat]: "Union \<equiv> OP op_Union_default"
   by simp
 

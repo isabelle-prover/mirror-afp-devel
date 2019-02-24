@@ -58,7 +58,7 @@ lemma list_wset_autoref_empty[autoref_rules]:
   "([],{})\<in>\<langle>R\<rangle>list_wset_rel"
   by (auto simp: list_wset_rel_def br_def relcompI)
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 
 lemma mem_set_list_relE1:
   assumes "(xs, ys) \<in> \<langle>R\<rangle>list_rel"
@@ -672,7 +672,7 @@ lemma
   using assms
   by (auto simp: op_set_npick_remove_def )
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 definition "op_set_pick_remove X \<equiv> SPEC (\<lambda>(x, X'). x \<in> X \<and> X' = X - {x})"
 lemma op_set_pick_removepat[autoref_op_pat]:
   "SPEC (\<lambda>(x, X'). x \<in> X \<and> X' = X - {x}) \<equiv> op_set_pick_remove $ X"

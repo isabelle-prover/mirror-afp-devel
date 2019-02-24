@@ -17,7 +17,7 @@ subsection \<open>Interval representation\<close>
 
 consts i_ivl::"interface \<Rightarrow> interface"
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 
 definition "set_of_ivl x = {fst x .. snd x}"
 
@@ -292,38 +292,6 @@ proof -
       (auto 0 4 simp: subset_iff eucl_le[where 'a='a] algebra_simps inner_Basis)
 qed
 
-definition [simp]: "project_set_clw = project_set"
-lemma project_set_clw_le:
-  shows
-  "do {
-    XS \<leftarrow> (sets_of_coll (X:::clw_rel A));
-    FORWEAK XS (RETURN op_empty_coll) (\<lambda>X. do {
-      P \<leftarrow> (project_set:::A \<rightarrow> lv_rel \<rightarrow> rnv_rel \<rightarrow> \<langle>A\<rangle>nres_rel) X b y;
-      RETURN (mk_coll P)
-    }) (\<lambda>X Y. RETURN (Y \<union> X))
-  } \<le> project_set_clw X b y"
-  unfolding autoref_tag_defs project_set_def project_set_clw_def
-  by (refine_vcg FORWEAK_mono_rule[where I="\<lambda>X P. \<Union>X \<inter> {x. x \<bullet> b = y} \<subseteq> P \<and> P \<subseteq> {x. x \<bullet> b = y}"])
-      auto
-
-schematic_goal project_set_clw_impl:
-  assumes [relator_props]: "single_valued A"
-  assumes [autoref_rules]: "(Xi, X) \<in> clw_rel A"
-  assumes [autoref_rules]: "(bi, b) \<in> lv_rel"
-  assumes [autoref_rules]: "(yi, y) \<in> rnv_rel"
-  assumes [autoref_rules(overloaded)]: "(ps, project_set) \<in> A \<rightarrow> lv_rel \<rightarrow> rnv_rel \<rightarrow> \<langle>A\<rangle>nres_rel"
-  assumes [refine_transfer]: "\<And>a b c. nres_of (psd a b c) \<le> ps a b c"
-  shows "(nres_of (?f::?'r dres), project_set_clw X b y) \<in> ?R"
-  by (rule nres_rel_trans2[OF project_set_clw_le[where A=A]]) autoref_monadic
-concrete_definition project_set_clw_impl for psd Xi bi yi uses project_set_clw_impl
-lemma project_set_clw_refine[autoref_rules]:
-  "PREFER single_valued A \<Longrightarrow>
-  GEN_OP ps project_set (A \<rightarrow> lv_rel \<rightarrow> rnv_rel \<rightarrow> \<langle>A\<rangle>nres_rel) \<Longrightarrow>
-  (\<And>a b c. TRANSFER (nres_of (psd a b c) \<le> ps a b c)) \<Longrightarrow>
-  (\<lambda>Xi bi yi. nres_of (project_set_clw_impl psd Xi bi yi), project_set_clw) \<in>
-    clw_rel A \<rightarrow> lv_rel \<rightarrow> rnv_rel \<rightarrow> \<langle>clw_rel A\<rangle>nres_rel"
-  using project_set_clw_impl.refine[of A] by force
-
 lemma projection_notempty:
   fixes b::"'a::executable_euclidean_space"
   assumes "b \<in> Basis \<or> -b \<in> Basis"
@@ -352,7 +320,7 @@ where
   }"
 interpretation autoref_op_pat_def restrict_to_halfspace .
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 
 schematic_goal restrict_to_halfspace_impl:
   fixes b y

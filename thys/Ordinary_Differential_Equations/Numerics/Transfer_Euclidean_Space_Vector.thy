@@ -93,7 +93,7 @@ definition "cast_eucl1 x = (cast (fst x), cast_bl (snd x))"
 
 definition [simp]: "op_cast_image = (`) cast"
 definition [simp]: "op_cast_eucl1_image = (`) cast_eucl1"
-context begin interpretation autoref_syn.
+context includes autoref_syntax begin
 lemma [autoref_op_pat_def]:
   "(`) cast \<equiv> OP op_cast_image"
   "(`) cast_eucl1 \<equiv> OP op_cast_eucl1_image"

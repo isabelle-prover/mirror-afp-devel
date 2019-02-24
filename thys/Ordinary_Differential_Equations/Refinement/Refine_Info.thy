@@ -20,7 +20,7 @@ lemma sv_info_rel[relator_props]:
   by (auto simp: info_rel_def intro!: relator_props)
 
 definition [simp]: "op_info_is_empty = is_empty"
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 lemma [autoref_op_pat]:  "is_empty \<equiv> OP op_info_is_empty"
   by simp
 end
@@ -68,7 +68,7 @@ abbreviation "with_stepsize \<equiv> (with_info::real\<Rightarrow>_)"
 definition split_with_info::"'a set \<Rightarrow> ('c \<times> 'a set \<times> 'a set) nres"
   where [refine_vcg_def]: "split_with_info X = SPEC (\<lambda>(S, Y, YS). X = Y \<union> YS)"
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 lemma split_with_info_appr_plane_autoref[autoref_rules]:
   assumes "PREFER single_valued A"
   assumes "PREFER single_valued S"
