@@ -77,7 +77,7 @@ proof (intro \<mu>_bound_rowI)
   show "(\<mu> fs ii j)^2 \<le> 1"
   proof (cases "j < ii")
     case True
-    from red[unfolded gs.reduced_def, THEN conjunct2, rule_format, OF ii True]
+    from red[unfolded gram_schmidt_fs.reduced_def, THEN conjunct2, rule_format, OF ii True]
     have "abs (\<mu> fs ii j) \<le> 1/2" by auto
     from mult_mono[OF this this]
     show ?thesis by (auto simp: power2_eq_square)
@@ -210,7 +210,7 @@ proof (rule bound_invI)
         also have "\<dots> \<le> abs (?mu i k) + (abs (?mu i j) + 1/2) * (1/2)" 
         proof (rule add_left_mono[OF mult_mono], unfold c)
           show "\<bar>?R (round (?mu i j))\<bar> \<le> \<bar>?mu i j\<bar> + 1 / 2" unfolding round_def by linarith
-          from inv(10)[unfolded gs.reduced_def, THEN conjunct2, rule_format, OF \<open>j < i\<close> k_j]
+          from inv(10)[unfolded gram_schmidt_fs.reduced_def, THEN conjunct2, rule_format, OF \<open>j < i\<close> k_j]
           show "\<bar>?mu j k\<bar> \<le> 1/2" .
         qed auto
         also have "\<dots> \<le> M + (M + M) * (1/2)" 

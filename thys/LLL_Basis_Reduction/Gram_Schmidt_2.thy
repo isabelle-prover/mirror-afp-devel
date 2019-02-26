@@ -858,16 +858,6 @@ proof -
   finally show "y1 = y2" .
 qed
 
-definition weakly_reduced :: "'a \<Rightarrow> nat \<Rightarrow> 'a vec list \<Rightarrow> bool" 
-  (* for k = n, this is reduced according to "Modern Computer Algebra" *)
-  where "weakly_reduced \<alpha> k gs = (\<forall> i. Suc i < k \<longrightarrow> 
-    sq_norm (gs ! i) \<le> \<alpha> * sq_norm (gs ! (Suc i)))" 
-  
-definition reduced :: "'a \<Rightarrow> nat \<Rightarrow> 'a vec list \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> 'a) \<Rightarrow> bool" 
-  (* this is reduced according to LLL original paper *)
-  where "reduced \<alpha> k gs mu = (weakly_reduced \<alpha> k gs \<and> 
-    (\<forall> i j. i < k \<longrightarrow> j < i \<longrightarrow> abs (mu i j) \<le> 1/2))"
-
 definition
   "is_oc_projection w S v = (w \<in> carrier_vec n \<and> v - w \<in> span S \<and> (\<forall> u. u \<in> S \<longrightarrow> w \<bullet> u = 0))"
 
@@ -1003,7 +993,6 @@ fun sub2_wit where
     
 definition main :: "'a vec list \<Rightarrow> 'a list list \<times> 'a vec list" where 
   "main us = sub2_wit [] us"
-
 end
 
 
@@ -1158,6 +1147,15 @@ qed
 lemma gso_connect: "snd (main us) = gram_schmidt n us" unfolding main_def gram_schmidt_def
   using sub2[of Nil us] by auto
 
+definition weakly_reduced :: "'a \<Rightarrow> nat \<Rightarrow> bool" 
+  (* for k = n, this is reduced according to "Modern Computer Algebra" *)
+  where "weakly_reduced \<alpha> k = (\<forall> i. Suc i < k \<longrightarrow> 
+    sq_norm (gso i) \<le> \<alpha> * sq_norm (gso (Suc i)))" 
+  
+definition reduced :: "'a \<Rightarrow> nat \<Rightarrow> bool" 
+  (* this is reduced according to LLL original paper *)
+  where "reduced \<alpha> k = (weakly_reduced \<alpha> k \<and> 
+    (\<forall> i j. i < k \<longrightarrow> j < i \<longrightarrow> abs (\<mu> i j) \<le> 1/2))"
 
 
 end (* gram_schmidt_fs *)
@@ -1224,7 +1222,7 @@ proof -
 qed
 
 
-lemma reduced_gso_E: "weakly_reduced \<alpha> k (map gso [0..<m]) \<Longrightarrow> k \<le> m \<Longrightarrow> Suc i < k \<Longrightarrow> 
+lemma reduced_gso_E: "weakly_reduced \<alpha> k \<Longrightarrow> k \<le> m \<Longrightarrow> Suc i < k \<Longrightarrow> 
   sq_norm (gso i) \<le> \<alpha> * sq_norm (gso (Suc i))" 
   unfolding weakly_reduced_def by auto
       
@@ -1818,7 +1816,7 @@ qed
   (bound in textbook looks better as it uses 2^((n-1)/2), but this difference
   is caused by the fact that we here we look at the squared norms) *)
 lemma weakly_reduced_imp_short_vector: 
-  assumes "weakly_reduced \<alpha> m (map gso [0..<m])"
+  assumes "weakly_reduced \<alpha> m"
     and in_L: "h \<in> lattice_of fs - {0\<^sub>v n}" and \<alpha>_pos:"\<alpha> \<ge> 1"
   shows "fs \<noteq> [] \<and> sq_norm (fs ! 0) \<le> \<alpha>^(m-1) * sq_norm h"
 proof -
