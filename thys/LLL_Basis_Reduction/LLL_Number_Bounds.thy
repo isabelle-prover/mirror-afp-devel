@@ -61,7 +61,7 @@ lemma \<mu>_bound_rowD: assumes "\<mu>_bound_row fs bnd i" "j \<le> i"
 lemma \<mu>_bound_row_1: assumes "\<mu>_bound_row fs bnd i" 
   shows "bnd \<ge> 1"
 proof -
-  interpret gs1: gram_schmidt_fs n "TYPE(rat)" "RAT fs" .
+  interpret gs1: gram_schmidt_fs n "RAT fs" .
   show ?thesis
   using \<mu>_bound_rowD[OF assms, of i]
   by (auto simp: gs1.\<mu>.simps)
@@ -73,7 +73,7 @@ shows "\<mu>_bound_row fs 1 ii"
 proof (intro \<mu>_bound_rowI)
   fix j
   assume "j \<le> ii"
-  interpret gs1: gram_schmidt_fs n "TYPE(rat)" "RAT fs" .
+  interpret gs1: gram_schmidt_fs n "RAT fs" .
   show "(\<mu> fs ii j)^2 \<le> 1"
   proof (cases "j < ii")
     case True
@@ -336,7 +336,7 @@ proof -
   note Linv = bound_invD(1)[OF binv]
   from mu_small have mu_small: "\<mu>_small fs i" unfolding \<mu>_small_row_def \<mu>_small_def by auto
   note inv = LLL_invD[OF Linv]
-  interpret gs1: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs"
+  interpret gs1: gram_schmidt_fs_int n "RAT fs"
     by (standard) (use inv gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   note fbnd = bound_invD(2)[OF binv]
   note gbnd = bound_invD(3)[OF binv]
@@ -468,9 +468,9 @@ proof (rule bound_invI)
   note Linv' = swap(1)
   note inv' = LLL_invD[OF Linv']
   note inv = LLL_invD[OF Linv]
-  interpret gs1: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs"
+  interpret gs1: gram_schmidt_fs_int n "RAT fs"
     by (standard) (use inv gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
-  interpret gs2: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs'"
+  interpret gs2: gram_schmidt_fs_int n "RAT fs'"
     by (standard) (use inv' gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   let ?mu1 = "\<mu> fs" 
   let ?mu2 = "\<mu> fs'" 

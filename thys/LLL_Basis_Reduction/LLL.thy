@@ -57,7 +57,7 @@ abbreviation RAT where "RAT \<equiv> map (map_vec rat_of_int)"
 abbreviation SRAT where "SRAT xs \<equiv> set (RAT xs)" 
 abbreviation Rn where "Rn \<equiv> carrier_vec n :: rat vec set" 
 
-sublocale gs: gram_schmidt_fs n "TYPE(rat)" "RAT fs_init" .
+sublocale gs: gram_schmidt_fs n "RAT fs_init" .
 
 abbreviation lin_indep where "lin_indep fs \<equiv> gs.lin_indpt_list (RAT fs)" 
 abbreviation gso where "gso fs \<equiv> gram_schmidt_fs.gso n (RAT fs)"
@@ -103,7 +103,7 @@ lemma LLL_invD: assumes "LLL_invariant upw i fs"
   "i = m \<Longrightarrow> upw"
 proof (atomize (full), goal_cases)
   case 1
-  interpret gs': gram_schmidt_fs_lin_indpt n "TYPE(rat)" "RAT fs"
+  interpret gs': gram_schmidt_fs_lin_indpt n "RAT fs"
     by (standard) (use assms LLL_invariant_def gs.lin_indpt_list_def in auto)
   show ?case
     using assms gs'.fs_carrier gs'.f_carrier gs'.gso_carrier
@@ -313,16 +313,12 @@ proof -
   have conn2: "set (RAT fs') \<subseteq> carrier_vec n"  "length (RAT fs') = m" "distinct (RAT fs')"
     "gs.lin_indpt (set (RAT fs'))"
     using indep_F1 F1' unfolding gs.lin_indpt_list_def by auto
-  interpret gs1: gram_schmidt_fs_lin_indpt n "TYPE(rat)" "RAT fs"
+  interpret gs1: gram_schmidt_fs_lin_indpt n "RAT fs"
     by (standard) (use LLL_invD[OF assms(1)] gs.lin_indpt_list_def in auto)
-  interpret gs2: gram_schmidt_fs_lin_indpt n "TYPE(rat)" "RAT fs'"
+  interpret gs2: gram_schmidt_fs_lin_indpt n "RAT fs'"
     by (standard) (use indep_F1 F1' gs.lin_indpt_list_def in auto)
   let ?G = "map ?g [0 ..< m]" 
   let ?G' = "map ?g' [0 ..< m]" 
-(*  from gs.main_connect[OF conn1] gs.main_connect[OF conn2]
-  have G_def: "gram_schmidt n (RAT fs) = ?G" 
-     and G1_def: "gram_schmidt n (RAT fs') = ?G'"
-    by auto *)
   from gs1.span_gso gs2.span_gso gs1.gso_carrier gs2.gso_carrier conn1 conn2 span_F_F1 len 
   have span_G_G1: "gs.span (set ?G) = gs.span (set ?G')"
    and lenG: "length ?G = m" 
@@ -427,7 +423,7 @@ proof -
   proof -
     have 1: "gs.lin_indpt_list ?G"
       using conn1 gs1.orthogonal_gso gs1.gso_carrier by (intro gs.orthogonal_imp_lin_indpt_list) (auto)
-    interpret G: gram_schmidt_fs_lin_indpt n "TYPE(rat)" ?G
+    interpret G: gram_schmidt_fs_lin_indpt n ?G
       by  (standard) (use 1 gs.lin_indpt_list_def in auto)
     show ?thesis
       by (intro G.Gramian_determinant) auto
@@ -713,10 +709,7 @@ proof -
   have conn2: "set (RAT fs') \<subseteq> carrier_vec n"  "length (RAT fs') = m" "distinct (RAT fs')"
     "gs.lin_indpt (set (RAT fs'))"
     using indepH' lenR'  unfolding gs.lin_indpt_list_def by auto
-  (* interpret gs1: gram_schmidt_fs_lin_indpt n "TYPE(rat)" "RAT fs"
-    by (standard) (use assms LLL_invariant_def gs.lin_indpt_list_def in auto)
- *) (* gs1 became fs.gs *)
-  interpret gs2: gram_schmidt_fs_lin_indpt n "TYPE(rat)" "RAT fs'"
+  interpret gs2: gram_schmidt_fs_lin_indpt n "RAT fs'"
     by (standard) (use indepH' lenR' gs.lin_indpt_list_def in auto)
   have fs'_fs: "k < i - 1 \<Longrightarrow> fs' ! k = fs ! k" for k unfolding fs'_def by auto
   { 
@@ -1273,7 +1266,7 @@ proof -
   from lin_dep have G: "set fs_init \<subseteq> carrier_vec n" unfolding gs.lin_indpt_list_def by auto
   with m0 len have "dim_vec (hd fs_init) = n" by (cases fs_init, auto)
   from v m0 lenH v have v: "v = fs ! 0" by (cases fs, auto)
-  interpret gs1: gram_schmidt_fs_lin_indpt n "TYPE(rat)" "RAT fs"
+  interpret gs1: gram_schmidt_fs_lin_indpt n "RAT fs"
     by (standard) (use assms LLL_invariant_def gs.lin_indpt_list_def in auto)
   let ?r = "rat_of_int" 
   let ?rv = "map_vec ?r" 
@@ -1311,7 +1304,7 @@ context fixes upw i fs
   assumes Linv: "LLL_invariant upw i fs" and gbnd: "g_bound fs" 
 begin
 
-interpretation gs1: gram_schmidt_fs_lin_indpt n "TYPE(rat)" "RAT fs"
+interpretation gs1: gram_schmidt_fs_lin_indpt n "RAT fs"
   by (standard) (use Linv LLL_invariant_def gs.lin_indpt_list_def in auto)
 
 lemma LLL_inv_A_pos: assumes m: "m \<noteq> 0" 
@@ -1431,7 +1424,7 @@ proof -
     let ?N = "map (nat o sq_norm) fs_init"
     let ?r = rat_of_int
     from i have mem: "nat (sq_norm (fs_init ! i)) \<in> set ?N" using fs_init len unfolding set_conv_nth by force
-    interpret gs: gram_schmidt_fs_lin_indpt n "TYPE(rat)" "RAT fs_init"
+    interpret gs: gram_schmidt_fs_lin_indpt n "RAT fs_init"
       by (standard) (use len lin_dep LLL_invariant_def gs.lin_indpt_list_def in auto)
     from mem_set_imp_le_max_list[OF _ mem]
     have FA: "nat (sq_norm (fs_init ! i)) \<le> A" unfolding A_def by force
