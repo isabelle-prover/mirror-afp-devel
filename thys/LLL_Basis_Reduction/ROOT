@@ -19,7 +19,6 @@ session LLL_Basis_Reduction (AFP) = Berlekamp_Zassenhaus +
   theories
     LLL    
   theories
-    LLL_Integer_Equations
     LLL_Impl    
   theories
     LLL_Complexity    
