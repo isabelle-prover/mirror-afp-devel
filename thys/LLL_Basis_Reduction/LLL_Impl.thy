@@ -4,7 +4,7 @@
 *)
 subsubsection \<open>Implementation via Arrays\<close>
 
-theory LLL_Mu_Integer_Impl
+theory LLL_Impl
   imports LLL
    List_Representation
    LLL_Integer_Equations
@@ -247,9 +247,9 @@ lemma basis_reduction_add_rows_loop: assumes
     impl: "LLL_impl_inv state i fs"
   and inv: "LLL_invariant True i fs"
   and mu_small: "\<mu>_small_row i fs j"
-  and res: "LLL_Mu_Integer_Impl.basis_reduction_add_rows_loop n state i j
+  and res: "LLL_Impl.basis_reduction_add_rows_loop n state i j
     (map ((!) fs) (rev [0 ..< j])) = state'"
-    (is "LLL_Mu_Integer_Impl.basis_reduction_add_rows_loop n state i j (?mapf fs j) = _")
+    (is "LLL_Impl.basis_reduction_add_rows_loop n state i j (?mapf fs j) = _")
   and j: "j \<le> i"
   and i: "i < m"
   and fs': "fs' = fs_state state'"
@@ -282,13 +282,13 @@ next
   note updates = d_d\<mu>_add_row[OF Linv i j refl refl Suc(4)]
   note d_state = d_state[OF impl Linv state]
   from d_state[of "Suc j"] j i have djs: "d_state state (Suc j) = d fs (Suc j)" by auto
-  note res = Suc(5)[unfolded floor map_rev_Suc djs append.simps LLL_Mu_Integer_Impl.basis_reduction_add_rows_loop.simps
+  note res = Suc(5)[unfolded floor map_rev_Suc djs append.simps LLL_Impl.basis_reduction_add_rows_loop.simps
       fi Let_def mu id int_times_rat_def]
   show ?case
   proof (cases "?c = 0")
     case True
     from res[unfolded True]
-    have res: "LLL_Mu_Integer_Impl.basis_reduction_add_rows_loop n state i j (?mapf fs j) = state'"
+    have res: "LLL_Impl.basis_reduction_add_rows_loop n state i j (?mapf fs j) = state'"
       by simp
     note step = Linv basis_reduction_add_row_main_0[OF Linv i j True Suc(4)]
     show ?thesis using Suc(1)[OF impl step(1-2) res _ i] j by auto
@@ -372,7 +372,7 @@ qed
 lemma basis_reduction_add_rows: assumes
      impl: "LLL_impl_inv state i fs"
   and inv: "LLL_invariant upw i fs"
-  and res: "LLL_Mu_Integer_Impl.basis_reduction_add_rows n upw i state = state'"
+  and res: "LLL_Impl.basis_reduction_add_rows n upw i state = state'"
   and i: "i < m"
   and fs': "fs' = fs_state state'"
 shows
@@ -382,7 +382,7 @@ shows
 proof (atomize(full), goal_cases)
   case 1
   obtain f mu ds where state: "state = (f,mu,ds)" by (cases state, auto)
-  note def = LLL_Mu_Integer_Impl.basis_reduction_add_rows_def
+  note def = LLL_Impl.basis_reduction_add_rows_def
   show ?case
   proof (cases upw)
     case False
@@ -399,7 +399,7 @@ proof (atomize(full), goal_cases)
     from i have mm: "[0..<m] = [0 ..< i] @ [i] @ [Suc i ..< m]"
       by (intro nth_equalityI, auto simp: nth_append nth_Cons split: nat.splits)
     from res[unfolded def] True
-    have "LLL_Mu_Integer_Impl.basis_reduction_add_rows_loop n state i i (small_fs_state state) = state'" by auto
+    have "LLL_Impl.basis_reduction_add_rows_loop n state i i (small_fs_state state) = state'" by auto
     from basis_reduction_add_rows_loop[OF impl start(1-2) this[unfolded id] le_refl i fs']
     show ?thesis by auto
   qed
@@ -408,7 +408,7 @@ qed
 lemma basis_reduction_swap: assumes
   impl: "LLL_impl_inv state i fs"
   and inv: "LLL_invariant False i fs"
-  and res: "LLL_Mu_Integer_Impl.basis_reduction_swap m i state = (upw',i',state')"
+  and res: "LLL_Impl.basis_reduction_swap m i state = (upw',i',state')"
   and cond: "sq_norm (gso fs (i - 1)) > \<alpha> * sq_norm (gso fs i)"
   and i: "i < m" and i0: "i \<noteq> 0"
   and fs': "fs' = fs_state state'"
@@ -421,7 +421,7 @@ proof -
   obtain f mu ds where state: "state = (f,mu,ds)" by (cases state, auto)
   note dmu_ij_state = dmu_ij_state[OF impl inv state]
   note d_state = d_state[OF impl inv state]
-  note res = res[unfolded LLL_Mu_Integer_Impl.basis_reduction_swap_def Let_def split state, folded state,
+  note res = res[unfolded LLL_Impl.basis_reduction_swap_def Let_def split state, folded state,
     unfolded fi_state[OF impl inv state i] fim1_state[OF impl inv state i i0]]
   note state_id = dmu_ij_state[OF ii i]
   note d_state_i = d_state[OF le_m(1)] d_state[OF le_m(2)] d_state[OF le_m(3)]
@@ -525,7 +525,7 @@ qed
 lemma basis_reduction_step: assumes
   impl: "LLL_impl_inv state i fs"
   and inv: "LLL_invariant upw i fs"
-  and res: "LLL_Mu_Integer_Impl.basis_reduction_step \<alpha> n m upw i state = (upw',i',state')"
+  and res: "LLL_Impl.basis_reduction_step \<alpha> n m upw i state = (upw',i',state')"
   and i: "i < m"
   and fs': "fs' = fs_state state'"
 shows
@@ -535,7 +535,7 @@ shows
 proof (atomize(full), goal_cases)
   case 1
   obtain f mu ds where state: "state = (f,mu,ds)" by (cases state, auto)
-  note def = LLL_Mu_Integer_Impl.basis_reduction_step_def
+  note def = LLL_Impl.basis_reduction_step_def
   from LLL_invD[OF inv] have len: "length fs = m" by auto
   from fs_state[OF impl inv state len] have fs: "fs_state state = fs" by auto
   show ?case
@@ -548,7 +548,7 @@ proof (atomize(full), goal_cases)
   next
     case False
     hence id: "(i = 0) = False" by auto
-    obtain state'' where state'': "LLL_Mu_Integer_Impl.basis_reduction_add_rows n upw i state = state''" by auto
+    obtain state'' where state'': "LLL_Impl.basis_reduction_add_rows n upw i state = state''" by auto
     define fs'' where fs'': "fs'' = fs_state state''"
     obtain f mu ds where state: "state'' = (f,mu,ds)" by (cases state'', auto)
     from basis_reduction_add_rows[OF impl inv state'' i fs'']
@@ -581,7 +581,7 @@ proof (atomize(full), goal_cases)
       case gt: False
       hence gt: "?x > ?y" and id: "(?x \<le> ?y) = False" by auto
       from res[unfolded id if_False] d_def d_sq_norm_comparison fs''.d_def id
-      have "LLL_Mu_Integer_Impl.basis_reduction_swap m i state'' = (upw', i', state')"
+      have "LLL_Impl.basis_reduction_swap m i state'' = (upw', i', state')"
         by auto
       from basis_reduction_swap[OF impl inv this gt i False fs'] show ?thesis using meas by auto
     qed
@@ -591,23 +591,23 @@ qed
 lemma basis_reduction_main: assumes
   impl: "LLL_impl_inv state i fs"
   and inv: "LLL_invariant upw i fs"
-  and res: "LLL_Mu_Integer_Impl.basis_reduction_main \<alpha> n m upw i state = state'"
+  and res: "LLL_Impl.basis_reduction_main \<alpha> n m upw i state = state'"
   and fs': "fs' = fs_state state'"
 shows "LLL_invariant True m fs'"
       "LLL_impl_inv state' m fs'"
 proof (atomize(full), insert assms(1-3), induct "LLL_measure i fs" arbitrary: i fs upw state rule: less_induct)
   case (less i fs upw)
   have id: "LLL_invariant upw i fs = True" using less by auto
-  note res = less(4)[unfolded LLL_Mu_Integer_Impl.basis_reduction_main.simps[of _ _ _ upw]]
+  note res = less(4)[unfolded LLL_Impl.basis_reduction_main.simps[of _ _ _ upw]]
   note inv = less(3)
   note impl = less(2)
   note IH = less(1)
   show ?case
   proof (cases "i < m")
     case i: True
-    obtain i'' state'' upw'' where step: "LLL_Mu_Integer_Impl.basis_reduction_step \<alpha> n m upw i state = (upw'',i'',state'')"
+    obtain i'' state'' upw'' where step: "LLL_Impl.basis_reduction_step \<alpha> n m upw i state = (upw'',i'',state'')"
       (is "?step = _") by (cases ?step, auto)
-    with res i have res: "LLL_Mu_Integer_Impl.basis_reduction_main \<alpha> n m upw'' i'' state'' = state'" by auto
+    with res i have res: "LLL_Impl.basis_reduction_main \<alpha> n m upw'' i'' state'' = state'" by auto
     note main = basis_reduction_step[OF impl inv step i refl]
     from IH[OF main(3,1,2) res]
     show ?thesis by auto
@@ -667,33 +667,33 @@ shows "LLL_invariant True m fs"
   using basis_reduction_main[OF initial_state LLL_inv_initial_state res[unfolded basis_reduction_def len Let_def] fs]
   by auto
 
-lemma reduce_basis: assumes res: "LLL_Mu_Integer_Impl.reduce_basis \<alpha> fs_init = fs"
+lemma reduce_basis: assumes res: "LLL_Impl.reduce_basis \<alpha> fs_init = fs"
   shows "reduced fs m" "LLL_invariant True m fs"
 proof -
   show "LLL_invariant True m fs"
   proof (cases fs_init)
     case (Cons f)
     from fs_init[unfolded Cons] have "dim_vec f = n" by auto
-    from res[unfolded LLL_Mu_Integer_Impl.reduce_basis_def Cons list.simps this, folded Cons]
-    have "fs_state (LLL_Mu_Integer_Impl.basis_reduction \<alpha> n fs_init) = fs" by auto
+    from res[unfolded LLL_Impl.reduce_basis_def Cons list.simps this, folded Cons]
+    have "fs_state (LLL_Impl.basis_reduction \<alpha> n fs_init) = fs" by auto
     from basis_reduction(1)[OF refl refl, unfolded this] show "LLL_invariant True m fs" .
   next
     case Nil
     with len have m0: "m = 0" by auto
-    from Nil res have fs: "fs = fs_init" unfolding LLL_Mu_Integer_Impl.reduce_basis_def by auto
+    from Nil res have fs: "fs = fs_init" unfolding LLL_Impl.reduce_basis_def by auto
     show "LLL_invariant True m fs" unfolding fs LLL_invariant_def L_def gs.reduced_def gs.weakly_reduced_def
       using lin_dep unfolding m0 Nil by auto
   qed
   thus "reduced fs m" by (rule LLL_inv_m_imp_reduced)
 qed
 
-lemma short_vector: assumes res: "LLL_Mu_Integer_Impl.short_vector \<alpha> fs_init = v"
+lemma short_vector: assumes res: "LLL_Impl.short_vector \<alpha> fs_init = v"
   and m0: "m \<noteq> 0"
 shows "v \<in> carrier_vec n"
   "v \<in> L - {0\<^sub>v n}"
   "h \<in> L - {0\<^sub>v n} \<Longrightarrow> rat_of_int (sq_norm v) \<le> \<alpha> ^ (m - 1) * rat_of_int (sq_norm h)"
   "v \<noteq> 0\<^sub>v j"
-  using basis_reduction_short_vector[OF reduce_basis(2)[OF refl] res[symmetric, unfolded LLL_Mu_Integer_Impl.short_vector_def] m0]
+  using basis_reduction_short_vector[OF reduce_basis(2)[OF refl] res[symmetric, unfolded LLL_Impl.short_vector_def] m0]
   by blast+
 
 end

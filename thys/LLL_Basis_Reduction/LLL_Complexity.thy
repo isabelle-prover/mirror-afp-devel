@@ -12,9 +12,9 @@ text \<open>In this section we define a version of the LLL algorithm which expli
   The cost model counts the number of arithmetic operations that occur in vector-addition, scalar-products,
   and scalar multiplication and we prove a polynomial bound on this number.\<close>
 
-theory LLL_Mu_Integer_Impl_Complexity
+theory LLL_Complexity
   imports 
-    LLL_Mu_Integer_Impl
+    LLL_Impl
     Cost
 begin
 
@@ -51,7 +51,7 @@ fun basis_reduction_add_rows_loop_cost where
 
 
 lemma basis_reduction_add_rows_loop_cost: assumes "length fs = j" 
-  shows "result (basis_reduction_add_rows_loop_cost state i j fs) = LLL_Mu_Integer_Impl.basis_reduction_add_rows_loop n state i j fs"  
+  shows "result (basis_reduction_add_rows_loop_cost state i j fs) = LLL_Impl.basis_reduction_add_rows_loop n state i j fs"  
    "cost (basis_reduction_add_rows_loop_cost state i j fs) \<le> sum (\<lambda> j. (2 * n + 4 + 3 * (Suc j))) {0..<j}" 
   using assms
 proof (atomize(full), induct fs arbitrary: state j)
@@ -70,10 +70,10 @@ proof (atomize(full), induct fs arbitrary: state j)
   obtain res c2 where rec: "basis_reduction_add_rows_loop_cost st i (j - 1) fs = (res,c2)" (is "?x = _") by (cases ?x, auto)
   from Cons(2) have "length fs = j - 1" by auto
   from result_costD'[OF Cons(1)[OF this] rec]
-  have res: "LLL_Mu_Integer_Impl.basis_reduction_add_rows_loop n st i (j - 1) fs = res" 
+  have res: "LLL_Impl.basis_reduction_add_rows_loop n st i (j - 1) fs = res" 
     and c2: "c2 \<le> (\<Sum>j = 0..<j - 1. 2 * n + 4 + 3 * Suc j)" by auto
   show ?case unfolding basis_reduction_add_rows_loop_cost.simps Let_def flc split 
-      LLL_Mu_Integer_Impl.basis_reduction_add_rows_loop.simps fl st rec res cost_simps
+      LLL_Impl.basis_reduction_add_rows_loop.simps fl st rec res cost_simps
   proof (intro conjI refl, goal_cases)
     case 1 
     have "c1 + (2 * n + 3 * j) + c2 \<le> (\<Sum>j = 0..<j - 1. 2 * n + 4 + 3 * Suc j) + (2 * n + 4 + 3 * Suc (j - 1))" 
@@ -90,11 +90,11 @@ definition basis_reduction_add_rows_cost where
         else (state,0))" 
 
 lemma basis_reduction_add_rows_cost: assumes impl: "LLL_impl_inv state i fs" and inv: "LLL_invariant upw i fs" 
-  shows "result (basis_reduction_add_rows_cost upw i state) = LLL_Mu_Integer_Impl.basis_reduction_add_rows n upw i state"  
+  shows "result (basis_reduction_add_rows_cost upw i state) = LLL_Impl.basis_reduction_add_rows n upw i state"  
    "cost (basis_reduction_add_rows_cost upw i state) \<le> (2 * n + 2 * i + 7) * i"
 proof (atomize (full), goal_cases)
   case 1
-  note d = basis_reduction_add_rows_cost_def LLL_Mu_Integer_Impl.basis_reduction_add_rows_def
+  note d = basis_reduction_add_rows_cost_def LLL_Impl.basis_reduction_add_rows_def
   show ?case
   proof (cases upw)
     case False
@@ -107,7 +107,7 @@ proof (atomize (full), goal_cases)
     have len: "length (small_fs_state state) = i" 
       unfolding small_fs_state.simps state list_repr_def by auto
     let ?call = "basis_reduction_add_rows_cost upw i state" 
-    have res: "result ?call = LLL_Mu_Integer_Impl.basis_reduction_add_rows n upw i state" 
+    have res: "result ?call = LLL_Impl.basis_reduction_add_rows n upw i state" 
       and cost: "cost ?call \<le> sum (\<lambda> j. (2 * n + 4 + 3 * (Suc j))) {0..<i}"
       unfolding d upw if_True using basis_reduction_add_rows_loop_cost[OF len, of state i] by auto
     note cost
@@ -174,7 +174,7 @@ definition basis_reduction_swap_cost where
          in (res, cost)))"
 
 lemma basis_reduction_swap_cost: 
-   "result (basis_reduction_swap_cost i state) = LLL_Mu_Integer_Impl.basis_reduction_swap m i state"  
+   "result (basis_reduction_swap_cost i state) = LLL_Impl.basis_reduction_swap m i state"  
    "cost (basis_reduction_swap_cost i state) \<le> 8 * (m - Suc i) + 4" 
 proof (atomize(full), goal_cases)
   case 1
@@ -183,7 +183,7 @@ proof (atomize(full), goal_cases)
   let ?di1 = "d_state (f, dmus, djs) (i - 1)" 
   let ?di = "d_state (f, dmus, djs) i" 
   let ?dsi = "d_state (f, dmus, djs) (Suc i)" 
-  show ?case unfolding basis_reduction_swap_cost_def LLL_Mu_Integer_Impl.basis_reduction_swap_def Let_def state split
+  show ?case unfolding basis_reduction_swap_cost_def LLL_Impl.basis_reduction_swap_def Let_def state split
     using swap_mu_cost[of dmus i ?mu ?di1 ?di ?dsi] 
     by (cases "swap_mu_cost dmus i ?mu ?di1 ?di ?dsi", auto simp: cost_simps)
 qed
@@ -208,7 +208,7 @@ lemma basis_reduction_step_cost: assumes
     impl: "LLL_impl_inv state i fs" 
   and inv: "LLL_invariant upw i fs" 
   and i: "i < m" 
-  shows "result (basis_reduction_step_cost upw i state) = LLL_Mu_Integer_Impl.basis_reduction_step \<alpha> n m upw i state" (is ?g1)
+  shows "result (basis_reduction_step_cost upw i state) = LLL_Impl.basis_reduction_step \<alpha> n m upw i state" (is ?g1)
      "cost (basis_reduction_step_cost upw i state) \<le> body_cost" (is ?g2)
 proof -
   obtain state' c_add where add: "basis_reduction_add_rows_cost upw i state = (state',c_add)" 
@@ -217,11 +217,11 @@ proof -
     (is "?swap = _") by (cases ?swap, auto)
   note res = basis_reduction_step_cost_def[of upw i state, unfolded add split swap]
   from result_costD[OF basis_reduction_add_rows_cost[OF impl inv] add]
-  have add: "LLL_Mu_Integer_Impl.basis_reduction_add_rows n upw i state = state'" 
+  have add: "LLL_Impl.basis_reduction_add_rows n upw i state = state'" 
     and c_add: "c_add \<le> (2 * n + 2 * i + 7) * i" 
     by auto
   from result_costD[OF basis_reduction_swap_cost swapc]
-  have swap: "LLL_Mu_Integer_Impl.basis_reduction_swap m i state' = state''" 
+  have swap: "LLL_Impl.basis_reduction_swap m i state' = state''" 
     and c_swap: "c_swap \<le> 8 * (m - Suc i) + 4" by auto
   have "c_add + c_swap + 5 \<le> 8 * m + 2 + (2 * n + 2 * i) * i" 
     using c_add c_swap i by (auto simp: field_simps)
@@ -230,7 +230,7 @@ proof -
   also have "\<dots> = 2 + (8 + 2 * n + 2 * m) * m" by (simp add: field_simps)
   finally have body: "c_add + c_swap + 5 \<le> body_cost" unfolding body_cost_def .
   obtain num denom where alpha: "quotient_of \<alpha> = (num,denom)" by force
-  note res' = LLL_Mu_Integer_Impl.basis_reduction_step_def[of \<alpha> n m upw i state, unfolded add swap Let_def alpha split]
+  note res' = LLL_Impl.basis_reduction_step_def[of \<alpha> n m upw i state, unfolded add swap Let_def alpha split]
   note d = res res'
   show ?g1 unfolding d by (auto split: if_splits simp: cost_simps Let_def alpha swapc)
   show ?g2 unfolding d nat_distrib using body by (auto split: if_splits simp: cost_simps alpha Let_def swapc)
@@ -248,7 +248,7 @@ lemma basis_reduction_main_cost: assumes impl: "LLL_impl_inv state i (fs_state s
   and inv: "LLL_invariant upw i (fs_state state)" 
   and state: "state = initial_state m fs_init" 
   and i: "i = 0" 
-  shows "result (basis_reduction_main_cost upw i state c) = LLL_Mu_Integer_Impl.basis_reduction_main \<alpha> n m upw i state" (is ?g1) 
+  shows "result (basis_reduction_main_cost upw i state c) = LLL_Impl.basis_reduction_main \<alpha> n m upw i state" (is ?g1) 
    "cost (basis_reduction_main_cost upw i state c) \<le> c + body_cost * num_loops" (is ?g2)
 proof -
   have ?g1 and cost: "cost (basis_reduction_main_cost upw i state c) \<le> c + body_cost * LLL_measure i (fs_state state)"
@@ -263,11 +263,11 @@ proof -
       (is "?rec = _") by (cases ?rec, auto)
     note step' = result_costD[OF basis_reduction_step_cost[OF impl inv] step]
     note d = basis_reduction_main_cost.simps[of upw] step split rec 
-        LLL_Mu_Integer_Impl.basis_reduction_main.simps[of _ _ _ upw] 
+        LLL_Impl.basis_reduction_main.simps[of _ _ _ upw] 
     show ?case 
     proof (cases "i < m")
       case i: True
-      from step' i have step': "LLL_Mu_Integer_Impl.basis_reduction_step \<alpha> n m upw i state = (upw',i',state')"
+      from step' i have step': "LLL_Impl.basis_reduction_step \<alpha> n m upw i state = (upw',i',state')"
          and c_step: "c_step \<le> body_cost" 
         by auto
       note d = d step'
@@ -277,7 +277,7 @@ proof -
         and meas: "LLL_measure i' (fs_state state') < LLL_measure i (fs_state state)" 
         by auto
       from result_costD'[OF less(1)[OF meas impl' inv'] rec]
-      have rec': "LLL_Mu_Integer_Impl.basis_reduction_main \<alpha> n m upw' i' state' = state''" 
+      have rec': "LLL_Impl.basis_reduction_main \<alpha> n m upw' i' state' = state''" 
         and c_rec: "c_rec \<le> c + c_step + body_cost * LLL_measure i' (fs_state state')" by auto
       from c_step c_rec have "c_rec \<le> c + body_cost * Suc (LLL_measure i' (fs_state state'))" 
         by auto
@@ -552,7 +552,7 @@ proof -
   have fs: "fs_state (initial_state m fs_init) = fs_init" by (cases "initial_state m fs_init", auto)
   from basis_reduction_main_cost[of "initial_state m fs_init" _ _ 0, unfolded fs, OF impl inv,
     unfolded init main cost_simps] 
-  have main: "LLL_Mu_Integer_Impl.basis_reduction_main \<alpha> n m True 0 state1 = state2" and c2: "c2 \<le> body_cost * num_loops" 
+  have main: "LLL_Impl.basis_reduction_main \<alpha> n m True 0 state1 = state2" and c2: "c2 \<le> body_cost * num_loops" 
     by auto
   have res': "basis_reduction \<alpha> n fs_init = state2" unfolding basis_reduction_def len init main Let_def ..
   show ?g1 unfolding res res' cost_simps ..
@@ -565,11 +565,11 @@ text \<open>The lemma for the LLL algorithm with explicit cost annotations @{con
   the same as in the non-cost counting @{const reduce_basis}.\<close>
 
 lemma reduce_basis_cost: 
-   "result (reduce_basis_cost fs_init) = LLL_Mu_Integer_Impl.reduce_basis \<alpha> fs_init"  (is ?g1)
+   "result (reduce_basis_cost fs_init) = LLL_Impl.reduce_basis \<alpha> fs_init"  (is ?g1)
    "cost (reduce_basis_cost fs_init) \<le> initial_gso_cost + body_cost * num_loops" (is ?g2)
 proof (atomize(full), goal_cases)
   case 1
-  note d = reduce_basis_cost_def LLL_Mu_Integer_Impl.reduce_basis_def
+  note d = reduce_basis_cost_def LLL_Impl.reduce_basis_def
   show ?case
   proof (cases fs_init)
     case Nil

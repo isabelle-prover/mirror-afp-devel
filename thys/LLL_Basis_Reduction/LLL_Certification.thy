@@ -18,7 +18,7 @@ subsection \<open>Checking Results of External LLL Solvers\<close>
 
 theory LLL_Certification
   imports
-    LLL_Mu_Integer_Impl
+    LLL_Impl
     Jordan_Normal_Form.Show_Matrix
 begin
 
@@ -566,7 +566,7 @@ lemma reduce_basis_external: assumes res: "reduce_basis_external \<alpha> fs_ini
 proof (atomize(full), goal_cases)
   case 1
   show ?case
-  proof (cases "LLL_Mu_Integer_Impl.reduce_basis \<alpha> fs_init = fs")
+  proof (cases "LLL_Impl.reduce_basis \<alpha> fs_init = fs")
     case True
     from reduce_basis[OF this] show ?thesis by simp
   next
@@ -575,7 +575,7 @@ proof (atomize(full), goal_cases)
     proof (cases fs_init)
       case Nil
       with res have "fs = []" unfolding reduce_basis_external_def by auto
-      with False Nil have False by (simp add: LLL_Mu_Integer_Impl.reduce_basis_def)
+      with False Nil have False by (simp add: LLL_Impl.reduce_basis_def)
       thus ?thesis ..
     next
       case (Cons f rest)
@@ -595,7 +595,7 @@ proof (atomize(full), goal_cases)
         and len_gs: "length gs = m" 
         and prod1: "mat_of_rows n fs_init = u1 * mat_of_rows n gs" 
         and prod2: "mat_of_rows n gs = u2 * mat_of_rows n fs_init" 
-        and gs_v: "LLL_Mu_Integer_Impl.reduce_basis \<alpha> gs = fs" 
+        and gs_v: "LLL_Impl.reduce_basis \<alpha> gs = fs" 
         and gs: "set gs \<subseteq> carrier_vec n" 
         by (auto split: if_splits)
       from LLL_change_basis[OF gs len_gs u1 u2 prod1 prod2]
