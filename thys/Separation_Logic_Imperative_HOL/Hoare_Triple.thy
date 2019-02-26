@@ -36,6 +36,19 @@ definition hoare_triple
     \<not>is_exn \<sigma> \<and> (h',as')\<Turnstile>Q r \<and> relH ({a . a<lim h \<and> a\<notin>as}) h h' 
     \<and> lim h \<le> lim h')"
 
+text \<open>Sanity checking theorems for Hoare-Triples\<close>  
+lemma
+  assumes "<P> c <Q>"
+  assumes "(h,as)\<Turnstile>P"
+  shows hoare_triple_success: "success c h" 
+    and hoare_triple_effect: "\<exists>h' r. effect c h h' r \<and> (h',new_addrs h as h')\<Turnstile>Q r"
+  using assms 
+  unfolding hoare_triple_def success_def effect_def
+  apply -
+  apply (auto simp: Let_def run.simps) apply fastforce
+  by (metis is_exn.simps(2) not_Some_eq2 the_state.simps)
+
+    
 lemma hoare_tripleD:
   fixes h h' as as' \<sigma> r
   assumes "<P> c <Q>"
@@ -56,7 +69,6 @@ text \<open>For garbage-collected languages, specifications usually allow for so
 abbreviation hoare_triple' 
   :: "assn \<Rightarrow> 'r Heap \<Rightarrow> ('r \<Rightarrow> assn) \<Rightarrow> bool" ("<_> _ <_>\<^sub>t") 
   where "<P> c <Q>\<^sub>t \<equiv> <P> c <\<lambda>r. Q r * true>"
-
 
 subsection \<open>Rules\<close>
 text \<open>
