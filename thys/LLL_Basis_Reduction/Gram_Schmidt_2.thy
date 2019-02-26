@@ -858,16 +858,6 @@ proof -
   finally show "y1 = y2" .
 qed
 
-definition weakly_reduced :: "'a \<Rightarrow> nat \<Rightarrow> 'a vec list \<Rightarrow> bool" 
-  (* for k = n, this is reduced according to "Modern Computer Algebra" *)
-  where "weakly_reduced \<alpha> k gs = (\<forall> i. Suc i < k \<longrightarrow> 
-    sq_norm (gs ! i) \<le> \<alpha> * sq_norm (gs ! (Suc i)))" 
-  
-definition reduced :: "'a \<Rightarrow> nat \<Rightarrow> 'a vec list \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> 'a) \<Rightarrow> bool" 
-  (* this is reduced according to LLL original paper *)
-  where "reduced \<alpha> k gs mu = (weakly_reduced \<alpha> k gs \<and> 
-    (\<forall> i j. i < k \<longrightarrow> j < i \<longrightarrow> abs (mu i j) \<le> 1/2))"
-
 definition
   "is_oc_projection w S v = (w \<in> carrier_vec n \<and> v - w \<in> span S \<and> (\<forall> u. u \<in> S \<longrightarrow> w \<bullet> u = 0))"
 
@@ -1003,14 +993,14 @@ fun sub2_wit where
     
 definition main :: "'a vec list \<Rightarrow> 'a list list \<times> 'a vec list" where 
   "main us = sub2_wit [] us"
-
 end
 
 
-locale gram_schmidt_fs = gram_schmidt n f_ty
-  for n :: nat and f_ty :: "'a :: {trivial_conjugatable_linordered_field} itself" +
-  fixes fs :: "'a vec list"
+locale gram_schmidt_fs = 
+  fixes n :: nat and fs :: "'a :: {trivial_conjugatable_linordered_field} vec list"
 begin
+
+sublocale gram_schmidt n "TYPE('a)" .
 
 fun gso and \<mu> where
   "gso i = fs ! i + sumlist (map (\<lambda> j. - \<mu> i j \<cdot>\<^sub>v gso j) [0 ..< i])" 
@@ -1158,6 +1148,15 @@ qed
 lemma gso_connect: "snd (main us) = gram_schmidt n us" unfolding main_def gram_schmidt_def
   using sub2[of Nil us] by auto
 
+definition weakly_reduced :: "'a \<Rightarrow> nat \<Rightarrow> bool" 
+  (* for k = n, this is reduced according to "Modern Computer Algebra" *)
+  where "weakly_reduced \<alpha> k = (\<forall> i. Suc i < k \<longrightarrow> 
+    sq_norm (gso i) \<le> \<alpha> * sq_norm (gso (Suc i)))" 
+  
+definition reduced :: "'a \<Rightarrow> nat \<Rightarrow> bool" 
+  (* this is reduced according to LLL original paper *)
+  where "reduced \<alpha> k = (weakly_reduced \<alpha> k \<and> 
+    (\<forall> i j. i < k \<longrightarrow> j < i \<longrightarrow> abs (\<mu> i j) \<le> 1/2))"
 
 
 end (* gram_schmidt_fs *)
@@ -1224,7 +1223,7 @@ proof -
 qed
 
 
-lemma reduced_gso_E: "weakly_reduced \<alpha> k (map gso [0..<m]) \<Longrightarrow> k \<le> m \<Longrightarrow> Suc i < k \<Longrightarrow> 
+lemma reduced_gso_E: "weakly_reduced \<alpha> k \<Longrightarrow> k \<le> m \<Longrightarrow> Suc i < k \<Longrightarrow> 
   sq_norm (gso i) \<le> \<alpha> * sq_norm (gso (Suc i))" 
   unfolding weakly_reduced_def by auto
       
@@ -1818,7 +1817,7 @@ qed
   (bound in textbook looks better as it uses 2^((n-1)/2), but this difference
   is caused by the fact that we here we look at the squared norms) *)
 lemma weakly_reduced_imp_short_vector: 
-  assumes "weakly_reduced \<alpha> m (map gso [0..<m])"
+  assumes "weakly_reduced \<alpha> m"
     and in_L: "h \<in> lattice_of fs - {0\<^sub>v n}" and \<alpha>_pos:"\<alpha> \<ge> 1"
   shows "fs \<noteq> [] \<and> sq_norm (fs ! 0) \<le> \<alpha>^(m-1) * sq_norm h"
 proof -
@@ -2048,8 +2047,8 @@ lemma gso_cong:
   using assms
 proof(induct x rule:nat_less_induct[rule_format])
   case (1 x)
-  interpret f1: gram_schmidt_fs n f_ty f1 .
-  interpret f2: gram_schmidt_fs n f_ty f2 .
+  interpret f1: gram_schmidt_fs n f1 .
+  interpret f2: gram_schmidt_fs n f2 .
   have *: "map (\<lambda>j. - f1.\<mu> x j \<cdot>\<^sub>v f1.gso j) [0..<x] = map (\<lambda>j. - f2.\<mu> x j \<cdot>\<^sub>v f2.gso j) [0..<x]"
     using 1 by (intro map_cong) (auto simp add: f1.\<mu>.simps f2.\<mu>.simps)
   show ?case
@@ -2062,8 +2061,8 @@ lemma \<mu>_cong:
     and "j < i \<Longrightarrow> f1 ! i = f2 ! i" 
   shows "gram_schmidt_fs.\<mu> n f1 i j = gram_schmidt_fs.\<mu> n f2 i j"
 proof -
-  interpret f1: gram_schmidt_fs n f_ty f1 .
-  interpret f2: gram_schmidt_fs n f_ty f2 .
+  interpret f1: gram_schmidt_fs n f1 .
+  interpret f2: gram_schmidt_fs n f2 .
   from gso_cong[of j f1 f2] assms have id: "j < i \<Longrightarrow> f1.gso j = f2.gso j" by auto
   show ?thesis unfolding f1.\<mu>.simps f2.\<mu>.simps using assms id by auto
 qed
@@ -2122,7 +2121,7 @@ lemma Hadamard's_inequality:
   shows  "abs (det A) \<le> sqrt (prod_list (map sq_norm (rows A)))" 
 proof -
   let ?us = "map (row A) [0 ..< n]"
-  interpret gso: gram_schmidt_fs n "TYPE(real)" ?us .
+  interpret gso: gram_schmidt_fs n ?us .
   have len: "length ?us = n" by simp
   have us: "set ?us \<subseteq> carrier_vec n" using A by auto
   let ?vs = "map gso.gso [0..<n]" 
@@ -2131,7 +2130,7 @@ proof -
     case True
     with us len have basis: "gso.basis_list ?us" unfolding gso.basis_list_def by auto
     note in_dep = gso.basis_list_imp_lin_indpt_list[OF basis]
-    interpret gso: gram_schmidt_fs_lin_indpt n "TYPE(real)" ?us
+    interpret gso: gram_schmidt_fs_lin_indpt n ?us
       by (standard) (use in_dep gso.lin_indpt_list_def in auto)
     have last: "0 \<le> prod_list (map sq_norm ?vs) \<and> prod_list (map sq_norm ?vs) \<le> prod_list (map sq_norm ?us)" 
     proof (rule prod_list_le_mono, force, unfold length_map length_upt)
@@ -2181,7 +2180,7 @@ qed
 
 
 definition "gram_schmidt_wit = gram_schmidt.main" 
-lemmas gram_schmidt_wit = gram_schmidt_fs_lin_indpt.weakly_reduced_imp_short_vector[folded gram_schmidt_wit_def]
+
 declare gram_schmidt.adjuster_wit.simps[code]
 declare gram_schmidt.sub2_wit.simps[code]
 declare gram_schmidt.main_def[code]
@@ -2884,7 +2883,7 @@ sublocale vec_module "TYPE(int)" n .
 abbreviation RAT where "RAT \<equiv> map (map_vec rat_of_int)" 
 abbreviation (input) m where "m \<equiv> length fs_init"
 
-sublocale gs: gram_schmidt_fs n "TYPE(rat)" "RAT fs_init" .
+sublocale gs: gram_schmidt_fs n "RAT fs_init" .
 
 definition d :: "int vec list \<Rightarrow> nat \<Rightarrow> int" where "d fs k = gs.Gramian_determinant fs k"
 definition D :: "int vec list \<Rightarrow> nat" where "D fs = nat (\<Prod> i < length fs. d fs i)" 
@@ -2915,10 +2914,10 @@ locale fs_int_indpt = fs_int n fs for n fs +
   assumes lin_indep: "gs.lin_indpt_list (RAT fs)"
 begin
 
-sublocale gs: gram_schmidt_fs_lin_indpt n "TYPE(rat)" "RAT fs"
+sublocale gs: gram_schmidt_fs_lin_indpt n "RAT fs"
   by (standard) (use lin_indep gs.lin_indpt_list_def in auto)
 
-sublocale gs: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs"
+sublocale gs: gram_schmidt_fs_int n "RAT fs"
   by (standard) (use gs.f_carrier lin_indep gs.lin_indpt_list_def in \<open>auto intro!: vec_hom_Ints\<close>)
 
 lemma f_carrier[dest]: "i < m \<Longrightarrow> fs ! i \<in> carrier_vec n"

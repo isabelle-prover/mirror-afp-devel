@@ -237,7 +237,7 @@ next
     let ?rr = "(\<Sum>m = 0..<bd. ?ff m (insert x F))"
     have "(f x) \<in> {0..<bd}" using assms by simp
     hence "\<And>h::(nat \<Rightarrow> real). (\<Sum>m=0..<bd. h m) = (\<Sum>y\<in>({0..<bd} - {f x}).h y) + h (f x)"
-      by (metis diff_add_cancel finite_atLeastLessThan sum_diff1_ring)
+      by (metis diff_add_cancel finite_atLeastLessThan sum_diff1)
     moreover hence
     "(\<Sum>m = 0..<bd. ?ff m (insert x F))
     = (\<Sum>m\<in>{0..<bd} - {f x}. ?ff m (insert x F)) + card (f -` {f x} \<inter> F) * g (f x) + g (f x)"

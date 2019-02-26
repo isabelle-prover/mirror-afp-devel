@@ -47,6 +47,8 @@ subsection \<open>Space Rendezvous\<close>
 
 experiment begin
 
+unbundle floatarith_notation
+
 abbreviation "r \<equiv> 42164000"
 abbreviation "mu \<equiv> 3.986*10^14*3600"
 abbreviation "m_c \<equiv> 500"
@@ -155,8 +157,8 @@ abbreviation "Tanu \<equiv> Num (Float 148 (-8))"
 
 abbreviation "safe_p2 \<equiv>
   Conj safe_p1
-    (Conj (Less (Max\<^sub>e (Var 1 * Tanl) (Var 1 * Tanu)) (Var 2))
-      (Less (Max\<^sub>e (Var 1 * Tanl)(Var 1 * Tanu)) (-(Var 2)))) \<comment> \<open>line of sight\<close>"
+    (Conj (Less (Max (Var 1 * Tanl) (Var 1 * Tanu)) (Var 2))
+      (Less (Max (Var 1 * Tanl)(Var 1 * Tanu)) (-(Var 2)))) \<comment> \<open>line of sight\<close>"
 
 schematic_goal p2_fas:
   fixes X
@@ -305,6 +307,8 @@ end
 subsection \<open>Quadrotor\<close>
 experiment begin
 
+unbundle floatarith_notation
+
 abbreviation "g \<equiv> 9.81"
 abbreviation "R \<equiv> 0.1"
 abbreviation "l \<equiv> 0.5"
@@ -374,8 +378,8 @@ lemma Basis_list_16:
   by (auto simp: Basis_list_prod_def Basis_list_real_def zero_prod_def)
 
 
-interpretation quadrot: ode_interpretation "Conj (Less (- Half Pi\<^sub>e) (Var 8))
-  (Conj (Less (Var 8) (Half Pi\<^sub>e)) ((Less (Var 3)
+interpretation quadrot: ode_interpretation "Conj (Less (- Half Pi) (Var 8))
+  (Conj (Less (Var 8) (Half Pi)) ((Less (Var 3)
   ((Num (Float 89 (- 6)))))))"
   "{(t, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, u1, u2, u3).
     x3 < 89/64 \<and> x8 \<in> {-pi/2<..<pi/2}}"
@@ -430,6 +434,8 @@ end
 
 subsection \<open>Laub Loomis\<close>
 experiment begin
+
+unbundle floatarith_notation
 
 schematic_goal laub_fas:
   "[1,

@@ -1,17 +1,28 @@
 theory Refine_Rigorous_Numerics_Aform
-imports
-  Refine_Rigorous_Numerics
-  Refine_Reachability_Analysis (* TODO: remove this dependency (options) *)
-  Collections.Locale_Code
-  "HOL-Types_To_Sets.Types_To_Sets"
+  imports
+    Abstract_Reachability_Analysis_C1
+    Refine_Rigorous_Numerics
+    Collections.Locale_Code
+    "HOL-Types_To_Sets.Types_To_Sets"
 begin
 
-value [code] "aforms_of_ivls [0,0,0] [1,1,1]"
-
-lemma example: "aforms_of_ivls [0,0,0] [1,1,1] = [(FloatR 1 (- 1), pdevs [(0, FloatR 1 (- 1))]),
-  (FloatR 1 (- 1), pdevs [(1, FloatR 1 (- 1))]),
-  (FloatR 1 (- 1), pdevs [(2, FloatR 1 (- 1))])]"
-  by eval
+text \<open>TODO: theory Refine_Options and remove dependency on \<open>HOL-ODE-Numerics.Abstract_Reachability_Analysis\<close>\<close>
+context includes autoref_syntax begin
+lemma [autoref_rules]:
+  "(precision, precision)\<in>num_optns_rel \<rightarrow> nat_rel"
+  "(reduce, reduce)\<in>num_optns_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> nat_rel \<rightarrow> rl_rel \<rightarrow> bool_rel"
+  "(start_stepsize, start_stepsize)\<in>num_optns_rel \<rightarrow> rnv_rel"
+  "(iterations, iterations)\<in> num_optns_rel\<rightarrow> nat_rel"
+  "(halve_stepsizes, halve_stepsizes)\<in> (num_optns_rel) \<rightarrow> nat_rel"
+  "(widening_mod, widening_mod)\<in> (num_optns_rel) \<rightarrow>nat_rel"
+  "(rk2_param, rk2_param)\<in> (num_optns_rel) \<rightarrow> rnv_rel"
+  "(method_id, method_id)\<in> (num_optns_rel) \<rightarrow> nat_rel"
+  "(adaptive_atol, adaptive_atol)\<in> (num_optns_rel) \<rightarrow> rnv_rel"
+  "(adaptive_rtol, adaptive_rtol)\<in> (num_optns_rel) \<rightarrow> rnv_rel"
+  "(printing_fun, printing_fun)\<in> (num_optns_rel) \<rightarrow> bool_rel \<rightarrow> I \<rightarrow> unit_rel"
+  "(tracing_fun, tracing_fun)\<in> (num_optns_rel) \<rightarrow> string_rel \<rightarrow> \<langle>I\<rangle>option_rel \<rightarrow> unit_rel"
+  by auto
+end
 
 lemma Inf_aform_le_Affine: "x \<in> Affine X \<Longrightarrow> Inf_aform X \<le> x"
   by (auto simp: Affine_def valuate_def intro!: Inf_aform)
@@ -373,8 +384,7 @@ lemma aform_val_zero_pdevs[simp]: "aform_val e (x, zero_pdevs) = x"
 lemma neg_equal_zero_eucl[simp]: "-a = a \<longleftrightarrow> a = 0" for a::"'a::euclidean_space"
   by (auto simp: algebra_simps euclidean_eq_iff[where 'a='a])
 
-context begin
-interpretation autoref_syn .
+context includes autoref_syntax begin
 
 lemma Option_bind_param[param, autoref_rules]:
   "((\<bind>), (\<bind>)) \<in> \<langle>S\<rangle>option_rel \<rightarrow> (S \<rightarrow> \<langle>R\<rangle>option_rel) \<rightarrow> \<langle>R\<rangle>option_rel"
@@ -393,10 +403,10 @@ proof (rule eq_reflection)
     done
 qed
 
-lemma length_aforms_of_ivls[simp]: "length (aforms_of_ivls a b) = min (length a) (length b)"
+lemma length_aforms_of_ivls: "length (aforms_of_ivls a b) = min (length a) (length b)"
   by (auto simp: aforms_of_ivls_def)
 
-lemma length_lv_rel[simp]:
+lemma length_lv_rel:
   "(ys, y::'a) \<in> lv_rel \<Longrightarrow> length ys = DIM('a::executable_euclidean_space)"
   by (auto simp: lv_rel_def br_def)
 
@@ -407,10 +417,10 @@ lemma lv_rel_nth[simp]: "(xs, x::'a::executable_euclidean_space) \<in> lv_rel \<
 
 lemma aform_of_ivl_autoref[autoref_rules]:
   "(aforms_of_ivls, aform_of_ivl) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> lv_aforms_rel"
-  apply (auto simp: lv_aforms_rel_def br_def eucl_of_list_aform_def)
+  apply (auto simp: lv_aforms_rel_def br_def eucl_of_list_aform_def length_aforms_of_ivls length_lv_rel)
   subgoal for xs x ys y
     apply (auto simp: aform_of_ivl_def aforms_of_ivls_def o_def eucl_of_list_inner inner_simps
-        pdevs_apply_pdevs_of_ivl
+        pdevs_apply_pdevs_of_ivl length_lv_rel
         intro!: euclidean_eqI[where 'a='a] pdevs_eqI)
     by (metis index_Basis_list_nth inner_not_same_Basis length_Basis_list nth_Basis_list_in_Basis)
   done
@@ -420,6 +430,7 @@ lemma bound_intersect_2d_ud[autoref_rules]:
   by auto
 
 lemma eucl_of_list_autoref[autoref_rules]:
+  includes autoref_syntax
   assumes "SIDE_PRECOND (length xs = DIM('a::executable_euclidean_space))"
   assumes "(xsi, xs) \<in> \<langle>rnv_rel\<rangle>list_rel"
   shows "(xsi, eucl_of_list $ xs::'a) \<in> lv_rel"
@@ -574,7 +585,7 @@ lemmas [autoref_rules] = inter_aform_plane_lv.refine
 end
 
 
-lemma Basis_not_uminus[simp]:
+lemma Basis_not_uminus:
   fixes i::"'a::euclidean_space"
   shows "i \<in> Basis \<Longrightarrow> - i \<notin> Basis"
   by (metis inner_Basis inner_minus_left one_neq_neg_one zero_neq_neg_one)
@@ -587,7 +598,7 @@ lemma
     (if i = abs (normal sctn) then 0 else pdevs_apply cxs x \<bullet> i)"
   using assms[unfolded abs_in_Basis_iff[symmetric]]
   apply (transfer fixing: sctn)
-  apply (auto simp: project_coord_inner)
+  apply (auto simp: project_coord_inner Basis_not_uminus)
   using Basis_nonneg apply force
   using Basis_nonneg assms(1) by force
 
@@ -780,7 +791,7 @@ proof goal_cases
   also have "\<dots> \<in> float" using 1(3,2) by (simp add: is_float_def)
   finally show ?case by (simp add: is_float_def)
 qed
-    
+
 
 lemma approx_floatarith_Some_is_float:
   "approx_floatarith p fa XS = Some ((a, b), ba) \<Longrightarrow>
@@ -890,8 +901,8 @@ lemma aiN: "approx_floatarith p (inner_floatariths xs ys) zs \<noteq> None"
   by (metis old.prod.exhaust)
 
 lemma aiVN: "approx_floatarith p
-        (inner_floatariths (map Var [0..<length a])
-          (map Var [length a..<length a + length b]))
+        (inner_floatariths (map floatarith.Var [0..<length a])
+          (map floatarith.Var [length a..<length a + length b]))
         (map (\<lambda>x. (x, 0)) a @ map (\<lambda>x. (x, 0)) b) \<noteq> None"
   by (rule aiN) (auto simp: nth_append)
 
@@ -907,8 +918,6 @@ definition "width_aforms optns X =
 
 definition "inf_aforms optns xs = map (Inf_aform' (precision optns)) xs"
 definition "sup_aforms optns xs = map (Sup_aform' (precision optns)) xs"
-
-hide_const (open) floatarith.Max
 
 definition "fresh_index_aforms xs = Max (insert 0 (degree_aform ` set xs))"
 
@@ -1013,8 +1022,6 @@ lemma ncc_precond: "var.ncc_precond TYPE('a::executable_euclidean_space)"
   subgoal by (auto simp: convex_Affine dest!: Joints_in_lv_rel_set_relD)
   done
 
-lemmas one_step_in_ivl = one_step_in_ivl_ncc[OF ncc_precond ncc_precond]
-
 lemma fst_eucl_of_list_aform_map: "fst (eucl_of_list_aform (map (\<lambda>x. (fst x, asdf x)) x)) =
   fst (eucl_of_list_aform x)"
   by (auto simp: eucl_of_list_aform_def o_def)
@@ -1025,10 +1032,6 @@ lemma
   by (auto simp: Affine_def valuate_def aform_val_def
       elim: pdevs_val_of_list_of_pdevs2[where X = "snd x"]
         pdevs_val_of_list_of_pdevs[where X = "snd x"])
-
-lemmas solves_poincare_map = solves_poincare_map_ncc[OF ncc_precond ncc_precond]
-lemmas solves_poincare_map' = solves_poincare_map'_ncc[OF ncc_precond ncc_precond]
-lemmas solves_poincare_map_onto = solves_poincare_map_onto_ncc[OF ncc_precond ncc_precond]
 
 end
 
@@ -1068,7 +1071,7 @@ proof -
     by (auto simp: Affine_def valuate_def aform_val_def assms dest: e1 e2)
 qed
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 
 lemma aform_of_ivl_refine: "x \<le> y \<Longrightarrow> (aform_of_ivl x y, atLeastAtMost x y) \<in> \<langle>rnv_rel\<rangle>aform_rel"
   by (auto simp: aform_rel_def br_def Affine_aform_of_ivl)
@@ -1469,7 +1472,7 @@ lemma sv_lv_rel_inverse[relator_props]: "single_valued (lv_rel\<inverse>)"
   using bijective_lv_rel
   by (rule bijective_imp_sv)
 
-lemma list_of_eucl_image_lv_rel_inverse[intro]:
+lemma list_of_eucl_image_lv_rel_inverse:
   "(x, list_of_eucl ` x) \<in> \<langle>lv_rel\<inverse>\<rangle>set_rel"
   unfolding set_rel_sv[OF sv_lv_rel_inverse]
   apply (auto simp: )
@@ -1554,7 +1557,7 @@ proof (goal_cases)
     apply (auto simp: inter_sctn_specs_def inter_sctn_spec_def simp: nres_rel_def intro!: SPEC_refine)
     subgoal for x
       apply (rule exI[where x="list_of_eucl ` x"])
-      apply (auto simp: env_len_def plane_ofs_def)
+      apply (auto simp: env_len_def plane_ofs_def intro: list_of_eucl_image_lv_rel_inverse)
       subgoal for y
         apply (rule image_eqI[where x="eucl_of_list y"])
           apply (subst list_of_eucl_eucl_of_list)
@@ -1578,12 +1581,12 @@ proof (goal_cases)
     apply (rule nres_rel_mono)
     apply (rule relcomp_mono[OF order_refl])
     unfolding set_rel_sv[OF sv_lv_rel_inverse] set_rel_sv[OF lv_rel_sv]
-    apply (auto simp: )
+    apply (auto simp: length_lv_rel)
     unfolding relcomp_Image[symmetric] lv_rel_comp_lv_rel_inverse
-     apply (auto simp:)
+     apply (auto simp: Basis_not_uminus length_lv_rel)
     unfolding lv_rel_def
     subgoal for a b c d
-      apply (auto dest!: brD)
+      apply (auto dest!: brD simp: length_lv_rel)
       using eucl_of_list_inj[where 'a="'n rvec", of d b]
       by auto
     done
@@ -1617,8 +1620,7 @@ setup \<open>Sign.add_const_constraint (@{const_name "enum_class.enum"}, SOME @{
 setup \<open>Sign.add_const_constraint (@{const_name "enum_class.enum_all"}, SOME @{typ "('a::enum \<Rightarrow> bool) \<Rightarrow> bool"})\<close>
 setup \<open>Sign.add_const_constraint (@{const_name "enum_class.enum_ex"}, SOME @{typ "('a::enum \<Rightarrow> bool) \<Rightarrow> bool"})\<close>
 
-context begin
-interpretation autoref_syn .
+context includes autoref_syntax begin
 
 text \<open>TODO: this is a special case of \<open>Cancel_Card_Constraint\<close> from \<open>AFP/Perron_Frobenius\<close>!\<close>
 lemma type_impl_card_n_enum:
@@ -1777,137 +1779,5 @@ sublocale aform_approximate_sets safe_form ode_e optns for safe_form ode_e optns
   done
 
 end
-
-global_interpretation aform: aform_approximate_sets0
-  defines solves_poincare_map_aform = aform.solves_poincare_map
-    and solves_poincare_map_aform' = aform.solves_poincare_map'
-    and solves_poincare_map_onto_aform = aform.solves_poincare_map_onto
-    and solves_one_step_until_time_aform = aform.one_step_until_time_ivl_in_ivl_check
-    and solve_poincare_map_aform = aform.solve_poincare_map
-    and one_step_until_time_ivl_in_ivl_impl_aform = aform.one_step_until_time_ivl_in_ivl_impl
-    and poincare_onto_from_in_ivl_impl_aform = aform.poincare_onto_from_in_ivl_impl
-    and poincare_onto_in_ivl_impl_aform = aform.poincare_onto_in_ivl_impl
-    and solve_poincare_onto_aform = aform.solve_poincare_onto
-    and solve_one_step_until_time_aform = aform.solve_one_step_until_time
-    and one_step_until_time_impl_aform = aform.one_step_until_time_impl
-    and poincare_onto_from_impl_aform = aform.poincare_onto_from_impl
-    and init_ode_solveri_aform = aform.init_ode_solveri
-    and op_image_fst_coll_nres_impl_aform = aform.op_image_fst_coll_nres_impl
-    and poincare_onto_series_impl_aform = aform.poincare_onto_series_impl
-    and poincare_start_on_impl_aform = aform.poincare_start_on_impl
-    and leaves_halfspace_impl_aform = aform.leaves_halfspace_impl
-    and approximate_sets_aform = aform.subset_spec_ivl_collc
-    and subset_spec_plane_impl_aform = aform.subset_spec_plane_impl
-    and disjoints_spec_impl_aform = aform.disjoints_spec_impl
-    and poincare_onto_impl_aform = aform.poincare_onto_impl
-    and partition_set_impl_aform = aform.partition_set_impl
-    and fst_safe_coll_impl_aform = aform.fst_safe_coll_impl
-    and choose_step1_impl_aform = aform.choose_step1_impl
-    and ivl_rep_of_set_coll_impl_aform = aform.ivl_rep_of_set_coll_impl
-    and ode_set_impl_aform = aform.ode_set_impl
-    and mk_safe_impl_aform = aform.mk_safe_impl
-    and subset_spec_ivlc_aform = aform.subset_spec_ivlc
-    and sbelow_sctn_impl_aform = aform.sbelow_sctn_impl
-    and below_sctn_impl_aform = aform.below_sctn_impl
-    and split_under_threshold_impl_aform = aform.split_under_threshold_impl
-    and do_intersection_coll_impl_aform = aform.do_intersection_coll_impl
-    and partition_ivl_impl_aform = aform.partition_ivl_impl
-    and mk_safe_coll_impl_aform = aform.mk_safe_coll_impl
-    and choose_step_impl_aform = aform.choose_step_impl
-    and reach_cont_impl_aform = aform.reach_cont_impl
-    and vec1reps_impl_aform = aform.vec1reps_impl
-    and safe_set_appr_aform = aform.safe_set_appr
-    and split_intersecting_impl_aform = aform.split_intersecting_impl
-    and ivl_rep_of_sets_impl_aform = aform.ivl_rep_of_sets_impl
-    and ivl_rep_of_set_impl_aform = aform.ivl_rep_of_set_impl
-    and ivls_of_sets_impl_aform = aform.ivls_of_sets_impl
-    and tolerate_error_impl_aform = aform.tolerate_error_impl
-    and pre_intersection_step_impl_aform = aform.pre_intersection_step_impl
-    and split_spec_param1_impl_aform = aform.split_spec_param1_impl
-    and do_intersection_impl_aform = aform.do_intersection_impl
-    and resolve_step_impl_aform = aform.resolve_step_impl
-    and euler_step_impl_aform = aform.euler_step_impl
-    and rk2_step_impl_aform = aform.rk2_step_impl
-    and disjoint_sets_impl_aform = aform.disjoint_sets_impl
-    and op_eventually_within_sctn_impl_aform = aform.op_eventually_within_sctn_impl
-    and solve_poincare_plane_impl_aform = aform.solve_poincare_plane_impl
-    and cert_stepsize_impl_dres_aform = aform.cert_stepsize_impl_dres
-    and step_adapt_time_impl_aform = aform.step_adapt_time_impl
-    and inter_sctn1_impl_aform = aform.inter_sctn1_impl
-    and step_split_impl_aform = aform.step_split_impl
-    and intersects_impl_aform = aform.intersects_impl
-    and above_sctn_impl_aform = aform.above_sctn_impl
-    and concat_appr_aform = aform.concat_appr
-    and nonzero_component_impl_aform = aform.nonzero_component_impl
-    and P_iter_impl_aform = aform.P_iter_impl
-    and partition_sets_impl_aform = aform.partition_sets_impl
-    and reach_conts_impl_aform = aform.reach_conts_impl
-    and subsets_iplane_coll_impl_aform = aform.subsets_iplane_coll_impl
-    and reach_cont_symstart_impl_aform = aform.reach_cont_symstart_impl
-    and subset_iplane_coll_impl_aform = aform.subset_iplane_coll_impl
-    and symstart_coll_impl_aform = aform.symstart_coll_impl
-    and split_along_ivls_impl_aform = aform.split_along_ivls_impl
-    and subset_spec_ivls_clw_impl_aform = aform.subset_spec_ivls_clw_impl
-    and poincare_onto2_impl_aform = aform.poincare_onto2_impl
-    and poincare_onto_empty_impl_aform = aform.poincare_onto_empty_impl
-    and resolve_ivlplanes_impl_aform = aform.resolve_ivlplanes_impl
-    and empty_remainders_impl_aform = aform.empty_remainders_impl
-    and adapt_stepsize_fa_aform = aform.adapt_stepsize_fa
-    and split_spec_param1e_impl_aform = aform.split_spec_param1e_impl
-    and setse_of_ivlse_impl_aform = aform.setse_of_ivlse_impl
-    and partition_ivle_impl_aform = aform.partition_ivle_impl
-    and ivlse_of_setse_impl_aform = aform.ivlse_of_setse_impl
-    and choose_step1e_impl_aform = aform.choose_step1e_impl
-    and vec1repse_impl_aform = aform.vec1repse_impl
-    and op_inter_ivl_coll_scaleR2_impl_aform = aform.op_inter_ivl_coll_scaleR2_impl
-    and op_single_inter_ivl_impl_aform = aform.op_single_inter_ivl_impl
-    and scaleR2_rep1_impl_aform = aform.scaleR2_rep1_impl
-    and list_of_appr1e_aform = aform.list_of_appr1e
-    and op_inter_fst_ivl_scaleR2_impl_aform = aform.op_inter_fst_ivl_scaleR2_impl
-    and op_inter_fst_ivl_coll_scaleR2_impl_aform = aform.op_inter_fst_ivl_coll_scaleR2_impl
-    and nonzero_component_within_impl_aform = aform.nonzero_component_within_impl
-    and reduce_ivl_impl_aform = aform.reduce_ivl_impl
-    and reduce_ivle_impl_aform = aform.reduce_ivle_impl
-    and reduces_ivle_impl_aform = aform.reduces_ivle_impl
-    and approx_fas_impl_aform = aform.approx_slp_appr_impl
-    and mig_set_impl_aform = aform.mig_set_impl
-    and op_eucl_of_list_image_pad_aform = aform.op_eucl_of_list_image_pad
-    and reach_cont_par_impl_aform = aform.reach_cont_par_impl
-    and do_intersection_core_impl_aform = aform.do_intersection_core_impl
-    and reduce_spec1e_impl_aform = aform.reduce_spec1e_impl
-    and reduce_spec1_impl_aform = aform.reduce_spec1_impl
-    and one_step_until_time_ivl_impl_aform = aform.one_step_until_time_ivl_impl
-    and subset_spec1_collc_aform = aform.subset_spec1_collc
-    and ivl_of_appr1_coll_impl_aform = aform.ivl_of_appr1_coll_impl
-    and do_intersection_body_impl_aform = aform.do_intersection_body_impl
-  .
-
-no_notation Autoref_Tagging.APP (infixl "$" 900)
-no_notation fun_rel_syn (infixr "\<rightarrow>" 60)
-context autoref_syn begin
-notation fun_rel_syn (infixr "\<rightarrow>" 60)
-end
-
-fun parts::"nat\<Rightarrow>'a list\<Rightarrow>'a list list"
-  where
-  "parts n [] = []"
-| "parts 0 xs = [xs]"
-| "parts n xs = take n xs # parts n (drop n xs)"
-
-definition default_optns::"real aform numeric_options" where "default_optns =
-    \<lparr>
-    precision = 30,
-    reduce = collect_threshold 30 0 (-6),
-    adaptive_atol = FloatR 1 (-12),
-    adaptive_rtol = FloatR 1 (-12),
-    method_id = 2,
-    start_stepsize  = FloatR 1 (- 8),
-    iterations = 40,
-    halve_stepsizes = 10,
-    widening_mod = 40,
-    rk2_param = FloatR 1 0,
-    printing_fun = (\<lambda>_ _. ()),
-    tracing_fun = (\<lambda>_ _. ())
-  \<rparr>"
 
 end

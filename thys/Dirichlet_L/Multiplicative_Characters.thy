@@ -20,10 +20,9 @@ text \<open>
   elements to $1$, multiplication is point-wise multiplication of the characters, and the inverse
   is the point-wise complex conjugate.
 
-  This group is often called the \emph{dual} group and is isomorphic to the original group
-  (in a non-natural way) and the double-dual group is naturally isomorphic to the original group.
-  However, we do not show these last few facts here since we do not need them for the Dirichlet
-  $L$-functions.
+  This group is often called the \emph{Pontryagin dual} group and is isomorphic to the original
+  group (in a non-natural way) while the double-dual group \<^emph>\<open>is\<close> naturally isomorphic to the
+  original group.
 
   To get extensionality of the characters, we also require characters to map anything that is
   not in the group to $0$.
@@ -142,6 +141,15 @@ lemma (in finite_comm_group) character_principal [simp, intro]: "character G (pr
 
 lemmas [simp,intro] = finite_comm_group.character_principal
 
+lemma character_ext:
+  assumes "character G \<chi>" "character G \<chi>'" "\<And>x. x \<in> carrier G \<Longrightarrow> \<chi> x = \<chi>' x"
+  shows   "\<chi> = \<chi>'"
+proof
+  fix x :: 'a
+  show "\<chi> x = \<chi>' x"
+    using assms by (cases "x \<in> carrier G") (auto simp: character.char_eq_0)
+qed
+
 lemma character_mult [intro]: 
   assumes "character G \<chi>" "character G \<chi>'"
   shows   "character G (\<lambda>x. \<chi> x * \<chi>' x)"
@@ -162,7 +170,15 @@ qed (auto simp: character.inv_character)
 definition characters :: "('a, 'b) monoid_scheme \<Rightarrow> ('a \<Rightarrow> complex) set"  where
   "characters G = {\<chi>. character G \<chi>}"
 
-definition Characters :: "('a, 'b) monoid_scheme \<Rightarrow> ('a \<Rightarrow> complex) monoid" 
+
+subsection \<open>The Character group\<close>
+
+text \<open>
+  The characters of a finite abelian group $G$ form another group $\widehat{G}$, which is called
+  its Pontryagin dual group. This generalises to the more general setting of locally compact
+  abelian groups, but we restrict ourselves to the finite setting because it is much easier.
+\<close>
+definition Characters :: "('a, 'b) monoid_scheme \<Rightarrow> ('a \<Rightarrow> complex) monoid"
   where "Characters G = \<lparr> carrier = characters G, mult = (\<lambda>\<chi>\<^sub>1 \<chi>\<^sub>2 k. \<chi>\<^sub>1 k * \<chi>\<^sub>2 k),
                           one = principal_char G \<rparr>"
 
@@ -196,9 +212,6 @@ proof (rule finite_subset)
     by (intro finite_imageI finite_PiE finite_roots_unity) (auto simp: Suc_le_eq)
 qed
 
-text \<open>
-  Characters form a group.
-\<close>
 lemma finite_comm_group_Characters [intro]: "finite_comm_group (Characters G)"
 proof
   fix \<chi> \<chi>' assume *: "\<chi> \<in> carrier (Characters G)" "\<chi>' \<in> carrier (Characters G)"
@@ -266,12 +279,25 @@ lemma (in finite_comm_group) inv_Characters':
   "\<chi> \<in> characters G \<Longrightarrow> inv\<^bsub>Characters G\<^esub> \<chi> = inv_character \<chi>"
   by (intro character.inv_Characters) (auto simp: characters_def)
 
+lemmas (in finite_comm_group) Characters_simps = 
+  carrier_Characters mult_Characters one_Characters inv_Characters'
+
 lemma inv_Characters': "\<chi> \<in> characters G \<Longrightarrow> inv\<^bsub>Characters G\<^esub> \<chi> = inv_character \<chi>"
   using character.inv_Characters[of G \<chi>] by (simp add: characters_def)
 
 
 
 subsection \<open>Relationship of characters and adjoining\<close>
+
+text \<open>
+  We now study the set of characters of two subgroups $H$ and $H_x$, where $x\in G\setminus H$
+  and $H_x$ is the smallest supergroup of $H$ that contains \<open>x\<close>.
+
+  Let $n$ denote the indicator of \<open>x\<close> in \<open>H\<close> (i.\,e.\ the smallest positive number such
+  that $x^n\in H$) We show that any character on $H_x$ corresponds to a pair of
+  a character \<open>\<chi>\<close> on \<open>H\<close> and an $n$-th root of $\chi(x^n)$ (or, equivalently, an $n$-th
+  root of unity).
+\<close>
 
 context finite_comm_group_adjoin
 begin
@@ -400,6 +426,17 @@ proof -
   qed
 qed
 
+lemma lift_character_unchanged [simp]:
+  assumes "x \<in> H"
+  shows   "lift_character \<chi>z x = fst \<chi>z x"
+  using assms mem_adjoin[of H x a] is_subgroup
+  by (cases \<chi>z) (auto simp: lift_character_def)
+
+lemma lift_character_adjoined [simp]:
+ "character (G\<lparr>carrier := H\<rparr>) (fst \<chi>z) \<Longrightarrow> lift_character \<chi>z a = snd \<chi>z"
+  using is_subgroup character.char_one[of "G\<lparr>carrier := H\<rparr>"]
+  by (cases \<chi>z) (auto simp: lift_character_def adjoined_in_adjoin character.char_one)
+
 lemma bij_betw_characters_adjoin:
   defines "h \<equiv> subgroup_indicator G H a"
   shows "bij_betw lift_character
@@ -440,71 +477,231 @@ context finite_comm_group
 begin
 
 text \<open>
-  The number of characters is the same as the order of the group.
+  The following theorem is a very central one. It shows that any character on a subgroup \<open>H\<close> can
+  be extended to a character on the full group in exactly $[G : H]$ ways.
 
-  We show this just like Apostol does by starting with the trivial group (which
-  clearly has only the principal character) and then adjoining new elements until 
-  we have reached $G$.
-
-  Every time we adjoin an element $a\notin H$ to a subgroup $H$, each new character
-  $\tilde{\chi}$ of $\langle H, a\rangle$ corresponds to a character $\chi$ of $H$
-  and a $h$-th complex root of $\chi(a^h)$ (where $h$ is the indicator of 
-  $\chi$ w.\,r.\,t.\ $H$), of which there are $h$. Since adjoining $a$ to $H$ also 
-  increases the number of elements by a factor of $h$, the induction step is valid.
+  The proof is by induction; we start with \<open>H\<close> and then successively adjoin elements until we
+  have reached \<open>G\<close>. As we showed before, when we lift a character from \<open>H\<close> to $H_x$, we have
+  \<open>n\<close> choices to do so, where \<open>n\<close> is the indicator of \<open>x\<close> in \<open>H\<close>. Since $|H_x| = n |H|$, the
+  induction step is valid.
 \<close>
-theorem card_characters: "card (characters G) = order G"
-proof (induction rule: subgroup_adjoin_induct')
-  case singleton
-  interpret G': group "G\<lparr>carrier := {\<one>}\<rparr>"
-    by (intro subgroup_imp_group, standard) auto
-  interpret G': finite_comm_group "G\<lparr>carrier := {\<one>}\<rparr>"
-    by standard auto
-  from singleton show ?case
-    by (subst G'.characters_in_order_1) (simp_all add: order_def)
+theorem card_character_extensions:
+  assumes "subgroup H G" "character (G\<lparr>carrier := H\<rparr>) \<chi>"
+  shows   "card {\<chi>'\<in>characters G. \<forall>x\<in>H. \<chi>' x = \<chi> x} * card H = order G"
+  using assms
+proof (induction rule: subgroup_adjoin_induct)
+  case (base )
+  have "{\<chi>' \<in> characters (G\<lparr>carrier := H\<rparr>). \<forall>x\<in>H. \<chi>' x = \<chi> x} = {\<chi>}"
+    using base by (auto simp: fun_eq_iff characters_def intro: character_ext)
+  thus ?case using base by (simp add: order_def)
 next
-  case (adjoin H a)
-  define h where "h = subgroup_indicator G H a"
+  case (adjoin H' a )
+  interpret H': subgroup H' G by fact
+  interpret H': finite_comm_group "G\<lparr>carrier := H'\<rparr>"
+    by (rule subgroup_imp_finite_comm_group) fact
+  interpret H': finite_comm_group_adjoin G H' a
+    using adjoin.hyps by unfold_locales auto
+
+  define h where "h = subgroup_indicator G H' a"
   from adjoin have [simp]: "h > 0" unfolding h_def by (intro subgroup_indicator_pos) auto
   define c where "c = a [^] h"
-  from adjoin have [simp]: "c \<in> H"
+  from adjoin have [simp]: "c \<in> H'"
     by (auto simp: c_def h_def pow_subgroup_indicator)
 
-  define roots :: "('a \<Rightarrow> complex) \<Rightarrow> complex set" where "roots = (\<lambda>\<chi>. {z. z ^ h = \<chi> c})"
-  define G' G'' where "G' = G\<lparr>carrier := H\<rparr>" and "G'' = G\<lparr>carrier := adjoin G H a\<rparr>"
-  interpret H: subgroup H G by fact
-  have [simp,intro]: "finite H" using finite_subset[OF H.subset fin] .
-  let ?h = "(\<lambda>\<chi>. (\<lambda>k. if k \<in> H then \<chi> k else 0, \<chi> a))"
-  from adjoin have "order (G\<lparr>carrier := adjoin G H a\<rparr>) = card H * h"
-    by (simp add: order_def card_adjoin h_def)
-  interpret G': finite_comm_group G' unfolding G'_def by (rule subgroup_imp_finite_comm_group) fact
-  interpret G'': finite_comm_group G'' unfolding G''_def 
-    using adjoin by (intro subgroup_imp_finite_comm_group adjoin_subgroup) auto
-  interpret adjoin: finite_comm_group_adjoin G H a
-    by standard (insert adjoin.hyps, auto)
+  define C where "C = (\<lambda>H'. {\<chi>'. \<chi>' \<in> characters (G\<lparr>carrier := H'\<rparr>) \<and> (\<forall>x\<in>H. \<chi>' x = \<chi> x)})"
+  define I where "I = (\<lambda>\<chi>. {z::complex. z ^ h = \<chi> c})"
+  have [simp]: "finite (C H')"
+    by (rule finite_subset[OF _ H'.finite_characters]) (auto simp: C_def)
 
-  have "card (characters G'') = card (SIGMA \<chi>:characters G'. roots \<chi>)"
-    unfolding roots_def h_def G''_def G'_def c_def
-    by (rule sym, rule bij_betw_same_card, rule adjoin.bij_betw_characters_adjoin)
-  also have "\<dots> = (\<Sum>\<chi>\<in>characters G'. card (roots \<chi>))"
-    by (intro card_SigmaI) (auto simp: roots_def)
-  also have "\<dots> = (\<Sum>\<chi>\<in>characters G'. h)"
+  (* TODO: extract lemma *)
+  have "bij_betw H'.lift_character (SIGMA \<chi>:C H'. I \<chi>) (C (adjoin G H' a))"
+  proof (rule bij_betwI)
+    show "H'.lift_character \<in> Sigma (C H') I \<rightarrow> C (adjoin G H' a)"
+    proof safe
+      fix \<chi> z assume *: "\<chi> \<in> C H'" "z \<in> I \<chi>"
+      have "\<forall>x\<in>H. H'.lift_character (\<chi>, z) x = \<chi> x"
+        using * adjoin.hyps by auto
+      with * show "H'.lift_character (\<chi>, z) \<in> C (adjoin G H' a)"
+        using H'.lift_character[of \<chi> z]
+        by (auto simp: C_def I_def h_def c_def characters_def)
+    qed
+  next
+    show "(\<lambda>\<chi>. (\<lambda>x. if x \<in> H' then \<chi> x else 0, \<chi> a)) \<in> C (adjoin G H' a) \<rightarrow> Sigma (C H') I"
+    proof safe
+      fix \<chi> assume \<chi>: "\<chi> \<in> C (adjoin G H' a)"
+      thus "(\<lambda>xa. if xa \<in> H' then \<chi> xa else 0) \<in> C H'"
+        using H'.lower_character[of \<chi>] adjoin.prems adjoin.hyps
+        by (auto simp: C_def characters_def character.char_eq_0)
+      have "\<chi> (a [^]\<^bsub>G\<lparr>carrier := adjoin G H' a\<rparr>\<^esub> subgroup_indicator (G\<lparr>carrier := adjoin G H' a\<rparr>) H' a) =
+              \<chi> a ^ subgroup_indicator (G\<lparr>carrier := adjoin G H' a\<rparr>) H' a"
+        using \<chi> adjoin.prems adjoin.hyps
+        by (intro character.char_power) (auto simp: C_def characters_def adjoined_in_adjoin)
+      hence "\<chi> (a [^] h) = \<chi> a ^ subgroup_indicator G H' a"
+        by (simp add: nat_pow_consistent [symmetric] h_def)
+      with \<chi> show "\<chi> a \<in> I (\<lambda>xa. if xa \<in> H' then \<chi> xa else 0)"
+        using adjoin.hyps adjoin.prems
+        by (auto simp: I_def C_def characters_def character.char_power character.char_eq_0
+                       pow_subgroup_indicator h_def c_def)
+    qed
+  next
+    fix \<chi>z assume *: "\<chi>z \<in> (SIGMA \<chi>:C H'. I \<chi>)"
+    obtain \<chi> z where [simp]: "\<chi>z = (\<chi>, z)" by (cases \<chi>z)
+    from * show "(\<lambda>xa. if xa \<in> H' then H'.lift_character \<chi>z xa else 0, H'.lift_character \<chi>z a) = \<chi>z"
+      using H'.lower_character_lift_character[of \<chi> z] by (auto simp: C_def cong: if_cong)
+  next
+    fix \<chi> assume "\<chi> \<in> C (adjoin G H' a)"
+    thus "H'.lift_character (\<lambda>x. if x \<in> H' then \<chi> x else 0, \<chi> a) = \<chi>"
+      using H'.lift_character_lower_character[of \<chi>] by (auto simp: C_def)
+  qed
+
+  hence "card (SIGMA \<chi>:C H'. I \<chi>) = card (C (adjoin G H' a))"
+    by (rule bij_betw_same_card)
+  also have "card (SIGMA \<chi>:C H'. I \<chi>) = (\<Sum>a\<in>C H'. card (I a))"
+    by (intro card_SigmaI) (auto simp: I_def)
+  also have "\<dots> = (\<Sum>a\<in>C H'. h)"
   proof (intro sum.cong refl, goal_cases)
     case (1 \<chi>)
-    then interpret character G' \<chi> by (simp add: characters_def)
+    then interpret character "G\<lparr>carrier := H'\<rparr>" \<chi> by (simp add: characters_def C_def)
     have "\<chi> c \<noteq> 0"
-      by (subst char_eq_0_iff) (auto simp: c_def G'_def h_def intro!: pow_subgroup_indicator adjoin)
-    thus ?case by (simp add: roots_def card_nth_roots)
+      by (subst char_eq_0_iff) (auto simp: c_def h_def intro!: pow_subgroup_indicator adjoin)
+    thus ?case by (simp add: I_def card_nth_roots)
   qed
-  also have "\<dots> = h * card (characters G')" by simp
-  also have "card (characters G') = card H"
-    by (simp add: G'_def adjoin.IH order_def)
-  also have "h * card H = order (G\<lparr>carrier := adjoin G H a\<rparr>)"
-    using adjoin by (simp add: order_def card_adjoin h_def)
-  finally show ?case by (simp add: G''_def)
+  also have "\<dots> = h * card (C H')" by simp
+  finally have "card (C (adjoin G H' a)) * card H = h * (card (C H') * card H)"
+    by simp
+  also have "card (C H') * card H = card H'"
+    unfolding C_def using adjoin.prems by (subst adjoin.IH) (auto simp: order_def)
+  also have "h * card H' = card (adjoin G H' a)"
+    using adjoin.hyps by (subst card_adjoin) (auto simp: h_def)
+  also have "\<dots> = order (G\<lparr>carrier := adjoin G H' a\<rparr>)"
+    by (simp add: order_def)
+  finally show ?case by (simp add: C_def)
 qed
+
+text \<open>
+  By taking \<open>H\<close> to be the trivial subgroup, we obtain that the number of characters
+  on \<open>G\<close> is precisely the order of \<open>G\<close> itself, i.\,e.\ $|\widehat{G}|=|G|$.
+\<close>
+corollary card_characters: "card (characters G) = order G"
+proof -
+  define \<chi> where "\<chi> = principal_char (G\<lparr>carrier := {\<one>}\<rparr>)"
+  interpret triv: subgroup "{\<one>}"
+    by standard auto
+  interpret triv: finite_comm_group "G\<lparr>carrier := {\<one>}\<rparr>"
+    by (rule subgroup_imp_finite_comm_group) (rule triv.is_subgroup)
+  
+  have "card {\<chi>'\<in>characters G. \<forall>x\<in>{\<one>}. \<chi>' x = \<chi> x} * card {\<one>} = order G"
+    unfolding \<chi>_def
+    by (intro card_character_extensions triv.is_subgroup triv.character_principal)
+  also have "{\<chi>'\<in>characters G. \<forall>x\<in>{\<one>}. \<chi>' x = \<chi> x} = characters G"
+    by (auto simp: characters_def character.char_one principal_char_def \<chi>_def)
+  finally show ?thesis by simp
+qed
+
+lemma order_Characters [simp]: "order (Characters G) = order G"
+  by (simp add: order_def card_characters carrier_Characters)
+
+text \<open>
+  It also follows as a simple corollary that any character on \<open>H\<close> \<^emph>\<open>can\<close> be extended
+  to a character on \<open>G\<close>.
+\<close>
+corollary character_extension_exists:
+  assumes "subgroup H G" "character (G\<lparr>carrier := H\<rparr>) \<chi>"
+  obtains \<chi>' where "character G \<chi>'" and "\<And>x. x \<in> H \<Longrightarrow> \<chi>' x = \<chi> x"
+proof -
+  have "card {\<chi>'\<in>characters G. \<forall>x\<in>H. \<chi>' x = \<chi> x} * card H = order G"
+    by (intro card_character_extensions assms)
+  hence "card {\<chi>'\<in>characters G. \<forall>x\<in>H. \<chi>' x = \<chi> x} \<noteq> 0"
+    using order_gt_0 by (intro notI) auto
+  hence "{\<chi>'\<in>characters G. \<forall>x\<in>H. \<chi>' x = \<chi> x} \<noteq> {}"
+    by (intro notI) simp
+  then obtain \<chi>' where "character G \<chi>'" and "\<And>x. x \<in> H \<Longrightarrow> \<chi>' x = \<chi> x"
+    unfolding characters_def by blast
+  thus ?thesis using that[of \<chi>'] by blast
+qed
+
+text \<open>
+  Lastly, we can also show that for each $x\in H$ of order $n > 1$ and each \<open>n\<close>-th root of
+  unity \<open>z\<close>, there exists a character \<open>\<chi>\<close> on \<open>G\<close> such that $\chi(x) = z$.
+\<close>
+corollary character_with_value_exists:
+  assumes "x \<in> carrier G" and "x \<noteq> \<one>" and "z ^ ord x = 1"
+  obtains \<chi> where "character G \<chi>" and "\<chi> x = z"
+proof -
+  define triv where "triv = G\<lparr>carrier := {\<one>}\<rparr>"
+  interpret triv: subgroup "{\<one>}"
+    by standard auto
+  interpret triv: finite_comm_group "G\<lparr>carrier := {\<one>}\<rparr>"
+    by (rule subgroup_imp_finite_comm_group) (rule triv.is_subgroup)
+  interpret H: finite_comm_group_adjoin G "{\<one>}" x
+    using assms by unfold_locales auto
+
+  define h where "h = subgroup_indicator G {\<one>} x"
+  have x_pow_h: "x [^] h = \<one>"
+    using pow_subgroup_indicator[OF triv.is_subgroup assms(1)] by (simp add: h_def)
+  have "h > 0"
+    using subgroup_indicator_pos[OF triv.is_subgroup assms(1)] by (simp add: h_def)
+  have [simp]: "ord x = h"
+    using x_pow_h triv.is_subgroup assms \<open>h > 0\<close> unfolding h_def
+    by (intro antisym subgroup_indicator_le_ord ord_min) auto
+
+  define \<chi> where "\<chi> = principal_char triv"
+  define \<chi>' where "\<chi>' = H.lift_character (\<chi>, z)"
+  have "subgroup (adjoin G {\<one>} x) G"
+    by (intro adjoin_subgroup triv.is_subgroup assms)
+  moreover have \<chi>': "character (G\<lparr>carrier := adjoin G {\<one>} x\<rparr>) \<chi>'"
+    using H.lift_character[of \<chi> z] triv.character_principal assms x_pow_h
+    by (auto simp: \<chi>'_def \<chi>_def principal_char_def triv_def h_def)
+  ultimately obtain \<chi>'' where \<chi>'': "character G \<chi>''" "\<And>y. y \<in> adjoin G {\<one>} x \<Longrightarrow> \<chi>'' y = \<chi>' y"
+    by (erule character_extension_exists)
+  moreover {
+    have "\<chi>'' x = \<chi>' x"
+      using \<chi>''(2)[of x] assms triv.is_subgroup by (auto simp: adjoined_in_adjoin)
+    also have "\<chi>' x = z"
+      unfolding \<chi>'_def by (subst H.lift_character_adjoined) (simp_all add: \<chi>_def triv_def)
+    finally have "\<chi>'' x = z" .
+  }
+  ultimately show ?thesis using that[of \<chi>''] by blast
+qed
+
+text \<open>
+  In particular, for any \<open>x\<close> that is not the identity element, there exists a character \<open>\<chi>\<close>
+  such that $\chi(x)\neq 1$.
+\<close>
+corollary character_neq_1_exists:
+  assumes "x \<in> carrier G" and "x \<noteq> \<one>"
+  obtains \<chi> where "character G \<chi>" and "\<chi> x \<noteq> 1"
+proof -
+  define z where "z = cis (2 * pi / ord x)"
+  have z_pow_h: "z ^ ord x = 1"
+    by (auto simp: z_def DeMoivre)
+
+  from assms have "ord x \<ge> 1" by (intro ord_ge_1) auto
+  moreover have "ord x \<noteq> 1"
+    using pow_ord_eq_1[of x] assms fin by auto
+  ultimately have "ord x > 1" by linarith
+
+  have [simp]: "z \<noteq> 1"
+  proof
+    assume "z = 1"
+    have "bij_betw (\<lambda>k. cis (2 * pi * real k / real (ord x))) {..<ord x} {z. z ^ ord x = 1}"
+      using \<open>ord x > 1\<close> by (intro bij_betw_roots_unity) auto
+    hence inj: "inj_on (\<lambda>k. cis (2 * pi * real k / real (ord x))) {..<ord x}"
+      by (auto simp: bij_betw_def)
+    have "0 = (1 :: nat)"
+      using \<open>z = 1\<close> and \<open>ord x > 1\<close> by (intro inj_onD[OF inj]) (auto simp: z_def)
+    thus False by simp
+  qed
+
+  obtain \<chi> where "character G \<chi>" and "\<chi> x = z"
+    using character_with_value_exists[OF assms z_pow_h] .
+  thus ?thesis using that[of \<chi>] by simp
+qed 
 
 end
 
+
+subsection \<open>The first orthogonality relation\<close>
 
 text \<open>
   The entries of any non-principal character sum to 0.
@@ -531,9 +728,6 @@ next
   with y have "S = 0" by simp
   with False show ?thesis by (simp add: S_def)
 qed
-
-lemmas (in finite_comm_group) Characters_simps = 
-  carrier_Characters mult_Characters one_Characters inv_Characters'
 
 corollary (in finite_comm_group) character_orthogonality1:
   assumes "character G \<chi>" and "character G \<chi>'"
@@ -564,106 +758,123 @@ proof -
   finally show ?thesis .
 qed
 
+
+subsection \<open>The isomorphism between a group and its double dual\<close>
+
+text \<open>
+  Lastly, we show that the double dual of a finite abelian group is naturally isomorphic
+  to the original group via the obvious isomorphism $x\mapsto (\chi\mapsto \chi(x))$.
+  It is easy to see that this is a homomorphism and that it is injective. The fact 
+  $|\widehat{\widehat{G}}| = |\widehat{G}| = |G|$ then shows that it is also surjective.
+\<close>
 context finite_comm_group
 begin
 
+definition double_dual_iso :: "'a \<Rightarrow> ('a \<Rightarrow> complex) \<Rightarrow> complex" where
+  "double_dual_iso x = (\<lambda>\<chi>. if character G \<chi> then \<chi> x else 0)"
+
+lemma double_dual_iso_apply [simp]: "character G \<chi> \<Longrightarrow> double_dual_iso x \<chi> = \<chi> x"
+  by (simp add: double_dual_iso_def)
+
+lemma character_double_dual_iso [intro]:
+  assumes x: "x \<in> carrier G"
+  shows   "character (Characters G) (double_dual_iso x)"
+proof -
+  interpret G': finite_comm_group "Characters G"
+    by (rule finite_comm_group_Characters)
+  show "character (Characters G) (double_dual_iso x)"
+    using x by unfold_locales (auto simp: double_dual_iso_def characters_def Characters_def
+                                              principal_char_def character.char_eq_0)
+qed
+
+lemma double_dual_iso_mult [simp]:
+  assumes "x \<in> carrier G" "y \<in> carrier G"
+  shows   "double_dual_iso (x \<otimes> y) =
+             double_dual_iso x \<otimes>\<^bsub>Characters (Characters G)\<^esub> double_dual_iso y"
+  using assms by (auto simp: double_dual_iso_def Characters_def fun_eq_iff character.char_mult)
+
+lemma double_dual_iso_one [simp]:
+  "double_dual_iso \<one> = principal_char (Characters G)"
+  by (auto simp: fun_eq_iff double_dual_iso_def principal_char_def
+                 carrier_Characters characters_def character.char_one)
+
+lemma inj_double_dual_iso: "inj_on double_dual_iso (carrier G)"
+proof -
+  interpret G': finite_comm_group "Characters G"
+    by (rule finite_comm_group_Characters)
+  interpret G'': finite_comm_group "Characters (Characters G)"
+    by (rule G'.finite_comm_group_Characters)
+  have hom: "double_dual_iso \<in> hom G (Characters (Characters G))"
+    by (rule homI) (auto simp: carrier_Characters characters_def)
+  have inj_aux: "x = \<one>"
+    if x: "x \<in> carrier G" "double_dual_iso x = \<one>\<^bsub>Characters (Characters G)\<^esub>" for x
+  proof (rule ccontr)
+    assume "x \<noteq> \<one>"
+    obtain \<chi> where \<chi>: "character G \<chi>" "\<chi> x \<noteq> 1"
+      using character_neq_1_exists[OF x(1) \<open>x \<noteq> \<one>\<close>] .
+    from x have "\<forall>\<chi>. (if \<chi> \<in> characters G then \<chi> x else 0) = (if \<chi> \<in> characters G then 1 else 0)"
+      by (auto simp: double_dual_iso_def Characters_def fun_eq_iff
+                     principal_char_def characters_def)
+    hence eq1: "\<forall>\<chi>\<in>characters G. \<chi> x = 1" by metis
+    with \<chi> show False unfolding characters_def by auto
+  qed
+  thus ?thesis
+    using inj_aux hom is_group G''.is_group by (subst inj_on_one_iff') auto
+qed
+
+lemma double_dual_iso_eq_iff [simp]:
+  "x \<in> carrier G \<Longrightarrow> y \<in> carrier G \<Longrightarrow> double_dual_iso x = double_dual_iso y \<longleftrightarrow> x = y"
+  by (auto dest: inj_onD[OF inj_double_dual_iso])
+
+theorem double_dual_iso: "double_dual_iso \<in> iso G (Characters (Characters G))"
+proof (rule isoI)
+  interpret G': finite_comm_group "Characters G"
+    by (rule finite_comm_group_Characters)
+  interpret G'': finite_comm_group "Characters (Characters G)"
+    by (rule G'.finite_comm_group_Characters)
+
+  show hom: "double_dual_iso \<in> hom G (Characters (Characters G))"
+    by (rule homI) (auto simp: carrier_Characters characters_def)
+
+  show "bij_betw double_dual_iso (carrier G) (carrier (Characters (Characters G)))"
+    unfolding bij_betw_def
+  proof
+    show "inj_on double_dual_iso (carrier G)" by (fact inj_double_dual_iso)
+  next
+    show "double_dual_iso ` carrier G = carrier (Characters (Characters G))"
+    proof (rule card_subset_eq)
+      show "finite (carrier (Characters (Characters G)))"
+        by (fact G''.fin)
+    next
+      have "card (carrier (Characters (Characters G))) = card (carrier G)"
+        by (simp add: carrier_Characters G'.card_characters card_characters order_def)
+      also have "\<dots> = card (double_dual_iso ` carrier G)"
+        by (intro card_image [symmetric] inj_double_dual_iso)
+      finally show "card (double_dual_iso ` carrier G) =
+                      card (carrier (Characters (Characters G)))" ..
+    next
+      show "double_dual_iso ` carrier G \<subseteq> carrier (Characters (Characters G))"
+        using hom by (auto simp: hom_def)
+    qed
+  qed
+qed
+
+lemma double_dual_is_iso: "Characters (Characters G) \<cong> G"
+  by (rule iso_sym) (use double_dual_iso in \<open>auto simp: is_iso_def\<close>)
+
 text \<open>
-  Summing the value of a fixed element for all characters yields the order of the
-  group if that element is the neutral element of the group and 0 otherwise.
-
-  Apostol shows this in a nice and elegant way using matrices: Representing every
-  character as a row vector of its values, we get a square matrix $A$. The above 
-  fact that the values of every non-principal character sum to 0 then implies 
-  $A \cdot \frac{1}{n} A^* = I$ and therefore $\frac{1}{n} A^* \cdot A = 1$ since
-  matrices commute with their inverses.
-
-  Since matrices are a bit annoying to use in Isabelle at the moment, we shall 
-  instead employ a more direct and arguably no less elegant method: We simply
-  use a subgroup-adjoining induction similar to the one we used to show
-  the previous result above the number of characters.
-
-  We start with the group $\langle x \rangle$, i.\,e.\ @{term "adjoin G {\<one>} x"} 
-  in Isabelle. Let $k$ be the order of $x$ in $G$. The characters of that subgroup 
-  have a one-to-one correspondence to the $k$-th roots of unity, and summing all
-  $k$-th roots of unity with $k > 1$ gives 0.
-
-  On the other hand, when adjoining an element $a$ to a subgroup $H$ that already 
-  contains $x$, the characters $\tilde{\chi}$ of $\langle H, a\rangle$ each arise 
-  from a characters $\chi$ on $H$ and a $k'$-root of unity for some fixed $k'$, 
-  where $\tilde{\chi}(x) = \chi(x)$, so that it is clear that the overall sum
-  does not change at all.
+  The second orthogonality relation follows from the first one via Pontryagin duality:
 \<close>
 theorem sum_characters:
-  assumes "x \<in> carrier G"
+  assumes x: "x \<in> carrier G"
   shows   "(\<Sum>\<chi>\<in>characters G. \<chi> x) = (if x = \<one> then of_nat (order G) else 0)"
-proof (cases "x = \<one>")
-  case True
-  hence "(\<Sum>\<chi>\<in>characters G. \<chi> x) = (\<Sum>\<chi>\<in>characters G. 1)"
-    by (intro sum.cong refl) (auto intro!: character.char_one simp: characters_def)
-  also have "\<dots> = order G" by (simp add: card_characters)
-  finally show ?thesis using True by simp
-next
-  case False
-  define H0 where "H0 = adjoin G {\<one>} x"
-  have [simp]: "subgroup {\<one>} G" by standard auto
-  with assms have "subgroup H0 G" unfolding H0_def by (intro adjoin_subgroup)
-  hence "(\<Sum>\<chi>\<in>characters G. \<chi> x) = 0"
-  proof (induction rule: subgroup_adjoin_induct)
-    case base
-    interpret finite_comm_group_adjoin G "{\<one>}" x
-      by standard (use assms \<open>x \<noteq> \<one>\<close> in auto)
-    interpret G': finite_comm_group "G\<lparr>carrier := {\<one>}\<rparr>" 
-      by (rule subgroup_imp_finite_comm_group) fact
-    from \<open>x \<noteq> \<one>\<close> have "ord x \<noteq> 1" using pow_ord_eq_1[OF fin assms] by (intro notI) auto
-    with ord_pos[OF assms] have ord_x: "ord x > 1" by simp
-    
-    have "(\<Sum>\<chi>\<in>characters (G\<lparr>carrier := H0\<rparr>). \<chi> x) =
-            (\<Sum>(\<chi>,z)\<in>(SIGMA \<chi>:{principal_char (G\<lparr>carrier := {\<one>}\<rparr>)}. 
-               {z. z ^ ord x = \<chi> \<one>}). \<chi> (fst (unadjoin x)) * z ^ snd (unadjoin x))"
-      unfolding H0_def using subgroup_indicator_trivial[OF assms] pow_ord_eq_1[OF fin assms]
-      by (subst sum.reindex_bij_betw [OF bij_betw_characters_adjoin, symmetric])
-         (simp_all add: characters_in_order_1 order_def G'.characters_in_order_1 
-            lift_character_def case_prod_unfold adjoined_in_adjoin)
-    also from ord_x have "\<dots> = \<Sum>{z. z ^ ord x = 1}"
-      by (subst sum.Sigma [symmetric]) (simp_all add: principal_char_def finite_roots_unity)
-    also have "\<dots> = 0" by (rule sum_roots_unity) fact
-    finally show ?case .
-  next
-    case (adjoin H a)
-    interpret H: subgroup H G by fact
-    interpret finite_comm_group_adjoin G H a by standard (use adjoin in auto)
-    interpret G': finite_comm_group "G\<lparr>carrier := H\<rparr>" 
-      by (rule subgroup_imp_finite_comm_group) fact
-    define h where "h = subgroup_indicator G H a"
-    from adjoin have "h > 0" unfolding h_def by (intro subgroup_indicator_pos) auto
-    from pow_subgroup_indicator[of H a] adjoin have "h \<noteq> 1" by (auto simp: h_def)
-    with \<open>h > 0\<close> have "h > 1" by simp
-    from assms have "x \<in> H0" by (auto simp: H0_def adjoined_in_adjoin)
-    also note \<open>H0 \<subseteq> H\<close>
-    finally have "x \<in> H" .
-
-    have "(\<Sum>\<chi>\<in>characters (G\<lparr>carrier := adjoin G H a\<rparr>). \<chi> x) = 
-             (\<Sum>(\<chi>,z)\<in>(SIGMA \<chi>:characters (G\<lparr>carrier := H\<rparr>). {z. z ^ h = \<chi> (a [^] h)}). \<chi> x)"
-      using adjoin \<open>x \<in> H\<close>
-      by (subst sum.reindex_bij_betw [OF bij_betw_characters_adjoin, symmetric])
-         (simp_all add: lift_character_def case_prod_unfold mem_adjoin h_def [symmetric])
-    also have "\<dots> = (\<Sum>\<chi>\<in>characters (G\<lparr>carrier := H\<rparr>). card {z. z ^ h = \<chi> (a [^] h)} * \<chi> x)"
-      using \<open>h > 0\<close> by (subst sum.Sigma [symmetric]) auto
-    also have "\<dots> = (\<Sum>\<chi>\<in>characters (G\<lparr>carrier := H\<rparr>). h * \<chi> x)"
-    proof (intro sum.cong refl, goal_cases)
-      case (1 \<chi>)
-      then interpret character "G\<lparr>carrier := H\<rparr>" \<chi> by (simp add: characters_def)
-      from adjoin have "\<chi> (a [^] h) \<noteq> 0" 
-        by (subst char_eq_0_iff) (auto simp: h_def pow_subgroup_indicator)
-      hence "card {z. z ^ h = \<chi> (a [^] h)} = h" using \<open>h > 1\<close>
-        by (intro card_nth_roots) auto
-      thus ?case by simp
-    qed
-    also have "\<dots> = 0"
-      using adjoin by (simp add: sum_distrib_left [symmetric])
-    finally show ?case .
-  qed
-  with False show ?thesis by simp
+proof -
+  interpret G': finite_comm_group "Characters G"
+    by (rule finite_comm_group_Characters)
+  interpret x: character "Characters G" "double_dual_iso x"
+    using x by auto
+  from x.sum_character show ?thesis using double_dual_iso_eq_iff[of x \<one>] x
+    by (auto simp: characters_def carrier_Characters simp del: double_dual_iso_eq_iff)
 qed
 
 corollary character_orthogonality2:

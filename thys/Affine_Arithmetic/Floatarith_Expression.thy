@@ -10,6 +10,8 @@ text \<open>Much of this could move to the distribution...\<close>
 
 subsection \<open>Approximating Expression*s*\<close>
 
+unbundle floatarith_notation
+
 text \<open>\label{sec:affineexpr}\<close>
 
 primrec interpret_floatariths :: "floatarith list \<Rightarrow> real list \<Rightarrow> real list"
@@ -78,13 +80,6 @@ lemma interpret_floatarith_zero[simp]:
 instance proof qed
 end
 
-hide_const (open) floatarith.Max floatarith.Min floatarith.Pi floatarith.Ln floatarith.Arctan
-
-abbreviation "Pi\<^sub>e \<equiv> floatarith.Pi"
-abbreviation "Ln\<^sub>e \<equiv> floatarith.Ln"
-abbreviation "Min\<^sub>e \<equiv> floatarith.Min"
-abbreviation "Max\<^sub>e \<equiv> floatarith.Max"
-abbreviation "Arctan\<^sub>e \<equiv> floatarith.Arctan"
 
 subsection \<open>Derived symbols\<close>
 
@@ -94,7 +89,7 @@ declare [[coercion R\<^sub>e ]]
 lemma interpret_R\<^sub>e[simp]: "interpret_floatarith (R\<^sub>e x) xs = real_of_rat x"
   by (auto simp: R\<^sub>e_def of_rat_divide dest!: quotient_of_div split: prod.splits)
 
-definition "Sin x = Cos ((Pi\<^sub>e * (Num (Float 1 (-1)))) - x)"
+definition "Sin x = Cos ((Pi * (Num (Float 1 (-1)))) - x)"
 
 lemma interpret_floatarith_Sin[simp]:
   "interpret_floatarith (Sin x) vs = sin (interpret_floatarith x vs)"
@@ -130,7 +125,7 @@ lemma interpret_floatarith_norm[simp]:
   apply (rule sum_list_nth_eqI)
   by (auto simp: in_set_zip eucl_of_list_inner)
 
-notation Power (infixr "^\<^sub>e" 80)
+notation floatarith.Power (infixr "^\<^sub>e" 80)
 
 subsection \<open>Constant Folding\<close>
 
@@ -165,14 +160,14 @@ fun fold_const_fa where
     (case (fold_const_fa a) of
       (Num x) \<Rightarrow> Num (abs x)
     | x \<Rightarrow> Abs x)"
-| "fold_const_fa (Max\<^sub>e a b) =
+| "fold_const_fa (Max a b) =
     (case (fold_const_fa a, fold_const_fa b) of
       (Num x, Num y) \<Rightarrow> Num (max x y)
-    | (x, y) \<Rightarrow> Max\<^sub>e x y)"
-| "fold_const_fa (Min\<^sub>e a b) =
+    | (x, y) \<Rightarrow> Max x y)"
+| "fold_const_fa (Min a b) =
     (case (fold_const_fa a, fold_const_fa b) of
       (Num x, Num y) \<Rightarrow> Num (min x y)
-    | (x, y) \<Rightarrow> Min\<^sub>e x y)"
+    | (x, y) \<Rightarrow> Min x y)"
 | "fold_const_fa (Floor a) =
     (case (fold_const_fa a) of
       (Num x) \<Rightarrow> Num (floor_fl x)
@@ -182,12 +177,12 @@ fun fold_const_fa where
       (Num x) \<Rightarrow> Num (x ^ b)
     | x \<Rightarrow> Power x b)"
 | "fold_const_fa (Cos a) = Cos (fold_const_fa a)"
-| "fold_const_fa (Arctan\<^sub>e a) = Arctan\<^sub>e (fold_const_fa a)"
+| "fold_const_fa (Arctan a) = Arctan (fold_const_fa a)"
 | "fold_const_fa (Sqrt a) = Sqrt (fold_const_fa a)"
 | "fold_const_fa (Exp a) = Exp (fold_const_fa a)"
-| "fold_const_fa (Ln\<^sub>e a) = Ln\<^sub>e (fold_const_fa a)"
+| "fold_const_fa (Ln a) = Ln (fold_const_fa a)"
 | "fold_const_fa (Powr a b) = Powr (fold_const_fa a) (fold_const_fa b)"
-| "fold_const_fa Pi\<^sub>e = Pi\<^sub>e"
+| "fold_const_fa Pi = Pi"
 | "fold_const_fa (Var v) = Var v"
 | "fold_const_fa (Num x) = Num x"
 
@@ -232,9 +227,9 @@ primrec max_Var_form where
 |  "max_Var_form (Disj a b) = max (max_Var_form a) (max_Var_form b)"
 |  "max_Var_form (Less a b) = max (max_Var_floatarith a) (max_Var_floatarith b)"
 |  "max_Var_form (LessEqual a b) = max (max_Var_floatarith a) (max_Var_floatarith b)"
-|  "max_Var_form (Bound a b c d) = Max {max_Var_floatarith a,max_Var_floatarith b, max_Var_floatarith c, max_Var_form d}"
-|  "max_Var_form (AtLeastAtMost a b c) = Max {max_Var_floatarith a,max_Var_floatarith b, max_Var_floatarith c}"
-|  "max_Var_form (Assign a b c) = Max {max_Var_floatarith a,max_Var_floatarith b, max_Var_form c}"
+|  "max_Var_form (Bound a b c d) = linorder_class.Max {max_Var_floatarith a,max_Var_floatarith b, max_Var_floatarith c, max_Var_form d}"
+|  "max_Var_form (AtLeastAtMost a b c) = linorder_class.Max {max_Var_floatarith a,max_Var_floatarith b, max_Var_floatarith c}"
+|  "max_Var_form (Assign a b c) = linorder_class.Max {max_Var_floatarith a,max_Var_floatarith b, max_Var_form c}"
 
 lemma
   interpret_floatarith_eq_take_max_VarI:
@@ -255,25 +250,26 @@ lemma
 
 
 lemma Max_Image_distrib:
-  "Max ((\<lambda>x. max (f1 x) (f2 x)) ` X) = max (Max (f1 ` X)) (Max (f2 ` X))"
-  if "finite X" "X \<noteq> {}"
+  includes no_floatarith_notation
+  assumes "finite X" "X \<noteq> {}"
+  shows "Max ((\<lambda>x. max (f1 x) (f2 x)) ` X) = max (Max (f1 ` X)) (Max (f2 ` X))"
   apply (rule Max_eqI)
-  subgoal using that by simp
+  subgoal using assms by simp
   subgoal for y
-    using that
+    using assms
     by (force intro: max.coboundedI1 max.coboundedI2 Max_ge)
   subgoal
   proof -
-    have "Max (f1 ` X) \<in> f1 ` X" using that by auto
+    have "Max (f1 ` X) \<in> f1 ` X" using assms by auto
     then obtain x1 where x1: "x1 \<in> X" "Max (f1 ` X) = f1 x1" by auto
-    have "Max (f2 ` X) \<in> f2 ` X" using that by auto
+    have "Max (f2 ` X) \<in> f2 ` X" using assms by auto
     then obtain x2 where x2: "x2 \<in> X" "Max (f2 ` X) = f2 x2" by auto
     show ?thesis
       apply (rule image_eqI[where x="if f1 x1 \<le> f2 x2 then x2 else x1"])
-      using x1 x2 that
+      using x1 x2 assms
        apply (auto simp: max_def)
-       apply (metis Max_ge dual_order.trans finite_imageI image_eqI that(1))
-      apply (metis Max_ge dual_order.trans finite_imageI image_eqI that(1))
+       apply (metis Max_ge dual_order.trans finite_imageI image_eqI assms(1))
+      apply (metis Max_ge dual_order.trans finite_imageI image_eqI assms(1))
       done
   qed
   done
@@ -288,7 +284,7 @@ lemma max_Var_floatarith_simps[simp]:
       uminus_floatarith_def)
 
 lemma max_Var_floatariths_Max:
-  "max_Var_floatariths xs = (if set xs = {} then 0 else Max (max_Var_floatarith ` set xs))"
+  "max_Var_floatariths xs = (if set xs = {} then 0 else linorder_class.Max (max_Var_floatarith ` set xs))"
   by (induct xs) auto
 
 
@@ -320,21 +316,21 @@ lemma max_Var_floatariths_map_minus[simp]:
 primrec fresh_floatarith where
   "fresh_floatarith (Var y) x \<longleftrightarrow> (x \<noteq> y)"
 | "fresh_floatarith (Num a) x \<longleftrightarrow> True"
-| "fresh_floatarith Pi\<^sub>e x \<longleftrightarrow> True"
+| "fresh_floatarith Pi x \<longleftrightarrow> True"
 | "fresh_floatarith (Cos a) x \<longleftrightarrow> fresh_floatarith a x"
 | "fresh_floatarith (Abs a) x \<longleftrightarrow> fresh_floatarith a x"
-| "fresh_floatarith (Arctan\<^sub>e a) x \<longleftrightarrow> fresh_floatarith a x"
+| "fresh_floatarith (Arctan a) x \<longleftrightarrow> fresh_floatarith a x"
 | "fresh_floatarith (Sqrt a) x \<longleftrightarrow> fresh_floatarith a x"
 | "fresh_floatarith (Exp a) x \<longleftrightarrow> fresh_floatarith a x"
 | "fresh_floatarith (Floor a) x \<longleftrightarrow> fresh_floatarith a x"
 | "fresh_floatarith (Power a n) x \<longleftrightarrow> fresh_floatarith a x"
 | "fresh_floatarith (Minus a) x \<longleftrightarrow> fresh_floatarith a x"
-| "fresh_floatarith (Ln\<^sub>e a) x \<longleftrightarrow> fresh_floatarith a x"
+| "fresh_floatarith (Ln a) x \<longleftrightarrow> fresh_floatarith a x"
 | "fresh_floatarith (Inverse a) x \<longleftrightarrow> fresh_floatarith a x"
 | "fresh_floatarith (Add a b) x \<longleftrightarrow> fresh_floatarith a x \<and> fresh_floatarith b x"
 | "fresh_floatarith (Mult a b) x \<longleftrightarrow> fresh_floatarith a x \<and> fresh_floatarith b x"
-| "fresh_floatarith (Max\<^sub>e a b) x \<longleftrightarrow> fresh_floatarith a x \<and> fresh_floatarith b x"
-| "fresh_floatarith (Min\<^sub>e a b) x \<longleftrightarrow> fresh_floatarith a x \<and> fresh_floatarith b x"
+| "fresh_floatarith (Max a b) x \<longleftrightarrow> fresh_floatarith a x \<and> fresh_floatarith b x"
+| "fresh_floatarith (Min a b) x \<longleftrightarrow> fresh_floatarith a x \<and> fresh_floatarith b x"
 | "fresh_floatarith (Powr a b) x \<longleftrightarrow> fresh_floatarith a x \<and> fresh_floatarith b x"
 
 lemma fresh_floatarith_subst:
@@ -448,10 +444,10 @@ lemma interpret_floatariths_max_Var_cong:
 lemma max_Var_floatarithimage_Var[simp]: "max_Var_floatarith ` Var ` X = Suc ` X" by force
 
 lemma max_Var_floatariths_map_Var[simp]:
-  "max_Var_floatariths (map Var xs) = (if xs = [] then 0 else Suc (Max (set xs)))"
+  "max_Var_floatariths (map Var xs) = (if xs = [] then 0 else Suc (linorder_class.Max (set xs)))"
   by (auto simp: max_Var_floatariths_Max hom_Max_commute split: if_splits)
 
-lemma Max_atLeastLessThan_nat[simp]: "a < b \<Longrightarrow> Max {a..<b} = b - 1" for a b::nat
+lemma Max_atLeastLessThan_nat[simp]: "a < b \<Longrightarrow> linorder_class.Max {a..<b} = b - 1" for a b::nat
   by (auto intro!: Max_eqI)
 
 
@@ -1090,15 +1086,15 @@ fun subst_floatarith where
 "subst_floatarith s (Minus a)         = Minus (subst_floatarith s a)" |
 "subst_floatarith s (Inverse a)       = Inverse (subst_floatarith s a)" |
 "subst_floatarith s (Cos a)           = Cos (subst_floatarith s a)" |
-"subst_floatarith s (Arctan\<^sub>e a)        = Arctan\<^sub>e (subst_floatarith s a)" |
-"subst_floatarith s (Min\<^sub>e a b)         = Min\<^sub>e (subst_floatarith s a) (subst_floatarith s b)" |
-"subst_floatarith s (Max\<^sub>e a b)         = Max\<^sub>e (subst_floatarith s a) (subst_floatarith s b)" |
+"subst_floatarith s (Arctan a)        = Arctan (subst_floatarith s a)" |
+"subst_floatarith s (Min a b)         = Min (subst_floatarith s a) (subst_floatarith s b)" |
+"subst_floatarith s (Max a b)         = Max (subst_floatarith s a) (subst_floatarith s b)" |
 "subst_floatarith s (Abs a)           = Abs (subst_floatarith s a)" |
-"subst_floatarith s Pi\<^sub>e                = Pi\<^sub>e" |
+"subst_floatarith s Pi                = Pi" |
 "subst_floatarith s (Sqrt a)          = Sqrt (subst_floatarith s a)" |
 "subst_floatarith s (Exp a)           = Exp (subst_floatarith s a)" |
 "subst_floatarith s (Powr a b)        = Powr (subst_floatarith s a) (subst_floatarith s b)" |
-"subst_floatarith s (Ln\<^sub>e a)            = Ln\<^sub>e (subst_floatarith s a)" |
+"subst_floatarith s (Ln a)            = Ln (subst_floatarith s a)" |
 "subst_floatarith s (Power a i)       = Power (subst_floatarith s a) i" |
 "subst_floatarith s (Floor a)         = Floor (subst_floatarith s a)" |
 "subst_floatarith s (Num f)           = Num f" |
@@ -1129,15 +1125,15 @@ fun continuous_on_floatarith :: "floatarith \<Rightarrow> bool" where
 "continuous_on_floatarith (Minus a)         = continuous_on_floatarith a" |
 "continuous_on_floatarith (Inverse a)       = False" |
 "continuous_on_floatarith (Cos a)           = continuous_on_floatarith a" |
-"continuous_on_floatarith (Arctan\<^sub>e a)        = continuous_on_floatarith a" |
-"continuous_on_floatarith (Min\<^sub>e a b)         = (continuous_on_floatarith a \<and> continuous_on_floatarith b)" |
-"continuous_on_floatarith (Max\<^sub>e a b) = (continuous_on_floatarith a \<and> continuous_on_floatarith b)" |
+"continuous_on_floatarith (Arctan a)        = continuous_on_floatarith a" |
+"continuous_on_floatarith (Min a b)         = (continuous_on_floatarith a \<and> continuous_on_floatarith b)" |
+"continuous_on_floatarith (Max a b) = (continuous_on_floatarith a \<and> continuous_on_floatarith b)" |
 "continuous_on_floatarith (Abs a)           = continuous_on_floatarith a" |
-"continuous_on_floatarith Pi\<^sub>e                = True" |
+"continuous_on_floatarith Pi                = True" |
 "continuous_on_floatarith (Sqrt a)          = False" |
 "continuous_on_floatarith (Exp a)           = continuous_on_floatarith a" |
 "continuous_on_floatarith (Powr a b)        = False" |
-"continuous_on_floatarith (Ln\<^sub>e a)            = False" |
+"continuous_on_floatarith (Ln a)            = False" |
 "continuous_on_floatarith (Floor a)         = False" |
 "continuous_on_floatarith (Power a n)       = (if n = 0 then True else continuous_on_floatarith a)" |
 "continuous_on_floatarith (Num f)           = True" |
@@ -1228,16 +1224,16 @@ lemma pairwise_orthogonal_Basis[intro, simp]: "pairwise orthogonal Basis"
 primrec freshs_floatarith where
   "freshs_floatarith (Var y) x \<longleftrightarrow> (y \<notin> set x)"
 | "freshs_floatarith (Num a) x \<longleftrightarrow> True"
-| "freshs_floatarith Pi\<^sub>e x \<longleftrightarrow> True"
+| "freshs_floatarith Pi x \<longleftrightarrow> True"
 | "freshs_floatarith (Cos a) x \<longleftrightarrow> freshs_floatarith a x"
 | "freshs_floatarith (Abs a) x \<longleftrightarrow> freshs_floatarith a x"
-| "freshs_floatarith (Arctan\<^sub>e a) x \<longleftrightarrow> freshs_floatarith a x"
+| "freshs_floatarith (Arctan a) x \<longleftrightarrow> freshs_floatarith a x"
 | "freshs_floatarith (Sqrt a) x \<longleftrightarrow> freshs_floatarith a x"
 | "freshs_floatarith (Exp a) x \<longleftrightarrow> freshs_floatarith a x"
 | "freshs_floatarith (Floor a) x \<longleftrightarrow> freshs_floatarith a x"
 | "freshs_floatarith (Power a n) x \<longleftrightarrow> freshs_floatarith a x"
 | "freshs_floatarith (Minus a) x \<longleftrightarrow> freshs_floatarith a x"
-| "freshs_floatarith (Ln\<^sub>e a) x \<longleftrightarrow> freshs_floatarith a x"
+| "freshs_floatarith (Ln a) x \<longleftrightarrow> freshs_floatarith a x"
 | "freshs_floatarith (Inverse a) x \<longleftrightarrow> freshs_floatarith a x"
 | "freshs_floatarith (Add a b) x \<longleftrightarrow> freshs_floatarith a x \<and> freshs_floatarith b x"
 | "freshs_floatarith (Mult a b) x \<longleftrightarrow> freshs_floatarith a x \<and> freshs_floatarith b x"
@@ -1289,20 +1285,20 @@ lemma interpret_floatariths_fresh_cong:
 fun subterms :: "floatarith \<Rightarrow> floatarith set" where
 "subterms (Add a b) = insert (Add a b) (subterms a \<union> subterms b)" |
 "subterms (Mult a b) = insert (Mult a b) (subterms a \<union> subterms b)" |
-"subterms (Min\<^sub>e a b) = insert (Min\<^sub>e a b) (subterms a \<union> subterms b)" |
+"subterms (Min a b) = insert (Min a b) (subterms a \<union> subterms b)" |
 "subterms (floatarith.Max a b) = insert (floatarith.Max a b) (subterms a \<union> subterms b)" |
 "subterms (Powr a b) = insert (Powr a b) (subterms a \<union> subterms b)" |
 "subterms (Inverse a) = insert (Inverse a) (subterms a)" |
 "subterms (Cos a) = insert (Cos a) (subterms a)" |
-"subterms (Arctan\<^sub>e a) = insert (Arctan\<^sub>e a) (subterms a)" |
+"subterms (Arctan a) = insert (Arctan a) (subterms a)" |
 "subterms (Abs a) = insert (Abs a) (subterms a)" |
 "subterms (Sqrt a) = insert (Sqrt a) (subterms a)" |
 "subterms (Exp a) = insert (Exp a) (subterms a)" |
-"subterms (Ln\<^sub>e a) = insert (Ln\<^sub>e a) (subterms a)" |
+"subterms (Ln a) = insert (Ln a) (subterms a)" |
 "subterms (Power a n) = insert (Power a n) (subterms a)" |
 "subterms (Floor a) = insert (Floor a) (subterms a)" |
 "subterms (Minus a) = insert (Minus a) (subterms a)" |
-"subterms Pi\<^sub>e = {Pi\<^sub>e}" |
+"subterms Pi = {Pi}" |
 "subterms (Var v) = {Var v}" |
 "subterms (Num n) = {Num n}"
 
@@ -2223,12 +2219,14 @@ lemma plain_floatarith_approx_not_None:
     (auto simp: Let_def split_beta' prod_eq_iff approx.simps)
 
 
-definition "Rad_of w = w * (Pi\<^sub>e / Num 180)"
+definition "Rad_of w = w * (Pi / Num 180)"
 lemma interpret_Rad_of[simp]: "interpret_floatarith (Rad_of w) xs = rad_of (interpret_floatarith w xs)"
   by (auto simp: Rad_of_def rad_of_def)
 
-definition "Deg_of w = Num 180 * w / Pi\<^sub>e"
+definition "Deg_of w = Num 180 * w / Pi"
 lemma interpret_Deg_of[simp]: "interpret_floatarith (Deg_of w) xs = deg_of (interpret_floatarith w xs)"
   by (auto simp: Deg_of_def deg_of_def inverse_eq_divide)
+
+unbundle no_floatarith_notation
 
 end

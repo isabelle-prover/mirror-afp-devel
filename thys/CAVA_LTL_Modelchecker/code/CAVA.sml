@@ -85,7 +85,7 @@ datatype show_buchi = NoShow | Show | PDF of string
 
 fun buchi_stats show_buchi phi =
   let
-    val phi' = (LTL_Rewrite.simplify IsaArith.equal_nat LTL_Rewrite.Fast (LTL.ltlc_to_ltln phi));
+    val phi' = LTL_Rewrite.simplify IsaArith.equal_nat LTL_Rewrite.Slow (LTL.ltlc_to_ltln phi);
     val gba = LTL_to_GBA_impl.create_name_gba_code (IsaArith.equal_nat, IsaArith.linorder_nat) phi'
     val export = CAVA_Impl.frv_export_code (fn a => fn b => a=b) gba
 
@@ -300,17 +300,15 @@ fun parse_args args show cfg cppargs parseonly =
               raise ArgumentError "Size <=0 not allowed."
           else 
             let val (params,phi) = bp_get_params prog (Arith.nat n) ltl fromFile
-                fun print_graphq _ q = String.implode (BoolProgs.print_config
-                  nat_to_charlist (String.explode o IntInf.fmt StringCvt.HEX) q)
+                fun print_graphq _ q = HOLString.implode (BoolProgs.print_config (HOLString.explode o Arith.nat_to_string) (HOLString.explode o IntInf.fmt StringCvt.HEX) q)
             in measure_cava phi (bp_cava cfg params) print_graphq show end
 
     fun run_promela prog ltl fromFile fromPromela =
       let val (ast, phi) = promela_get_params prog ltl fromFile fromPromela cppargs
-          fun print_config q1 q2 = String.implode (Promela.printConfigFromAST
-            int_to_charlist ast q1 q2)
+          fun print_config q1 q2 = HOLString.implode (Promela.printConfigFromAST (HOLString.explode o IntInf.toString) ast q1 q2)
           fun print_prog p = (
             println("\nRunning Program \"" ^ prog ^"\"");
-            List.app (println o String.implode) (Promela.printProcesses int_to_charlist p)
+            List.app (println o HOLString.implode) (Promela.printProcesses (HOLString.explode o IntInf.toString) p)
             )
       in if not parseonly then
            measure_cava phi (promela_cava (cfg,print_prog) (ast,phi)) print_config show

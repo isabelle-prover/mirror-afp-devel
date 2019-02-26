@@ -177,7 +177,7 @@ text \<open>
   his bounding of the different contributions fits to his contour, and it seems likely that this
   is also the reason why Harrison altered the contour in the first place.
 \<close>
-theorem Newman_Ingham:
+lemma Newman_Ingham_1:
   fixes F :: "complex fds" and f :: "complex \<Rightarrow> complex"
   assumes coeff_bound:   "fds_nth F \<in> O(\<lambda>_. 1)"
   assumes f_analytic:    "f analytic_on {s. Re s \<ge> 1}"
@@ -630,6 +630,51 @@ proof -
   thus "eval_fds F w = f w"
     using \<open>(\<lambda>N. eval_fds (fds_truncate N F) w) \<longlonglongrightarrow> f w\<close>
     by (intro tendsto_unique[OF _ tendsto_eval_fds_truncate]) auto
+qed
+
+text \<open>
+  The theorem generalises in a trivial way; we can replace the requirement that the
+  coefficients of $f(s)$ be $O(1)$ by $O(n^{\sigma-1})$ for some $\sigma\in\mathbb{R}$, then
+  $f(s)$ converges for $\mathfrak{R}(s)>\sigma$. If it can be analytically continued to
+  $\mathfrak{R}(s)\geq\sigma$, it is also convergent there.
+\<close>
+theorem Newman_Ingham:
+  fixes F :: "complex fds" and f :: "complex \<Rightarrow> complex"
+  assumes coeff_bound:   "fds_nth F \<in> O(\<lambda>n. n powr of_real (\<sigma> - 1))"
+  assumes f_analytic:    "f analytic_on {s. Re s \<ge> \<sigma>}"
+  assumes F_conv_f:      "\<And>s. Re s > \<sigma> \<Longrightarrow> eval_fds F s = f s"
+  assumes w:             "Re w \<ge> \<sigma>"
+  shows   "fds_converges F w" and "eval_fds F w = f w"
+proof -
+  define F' where "F' = fds_shift (-of_real (\<sigma> - 1)) F"
+  define f' where "f' = f \<circ> (\<lambda>s. s + of_real (\<sigma> - 1))"
+
+  have "fds_nth F' = (\<lambda>n. fds_nth F n * of_nat n powr -of_real(\<sigma> - 1))"
+    by (auto simp: fun_eq_iff F'_def)
+  also have "\<dots> \<in> O(\<lambda>n. of_nat n powr of_real (\<sigma> - 1) * of_nat n powr -of_real(\<sigma> - 1))"
+    by (intro landau_o.big.mult_right assms)
+  also have "(\<lambda>n. of_nat n powr of_real (\<sigma> - 1) * of_nat n powr -of_real (\<sigma> - 1)) \<in> \<Theta>(\<lambda>_. 1)"
+    by (intro bigthetaI_cong eventually_mono[OF eventually_gt_at_top[of 0]])
+       (auto simp: powr_minus powr_diff)
+  finally have bigo: "fds_nth F' \<in> O(\<lambda>_. 1)" .
+
+  from f_analytic have analytic: "f' analytic_on {s. Re s \<ge> 1}" unfolding f'_def
+    by (intro analytic_on_compose_gen[OF _ f_analytic]) (auto intro!: analytic_intros)
+
+  have F'_f: "eval_fds F' s = f' s" if "Re s > 1" for s
+    using assms that by (auto simp: F'_def f'_def algebra_simps)
+
+  have w': "1 \<le> Re (w - of_real (\<sigma> - 1))"
+    using w by simp
+  
+  have 1: "fds_converges F' (w - of_real (\<sigma> - 1))"
+    using bigo analytic F'_f w' by (rule Newman_Ingham_1)
+  thus "fds_converges F w" by (auto simp: F'_def)
+
+  have 2: "eval_fds F' (w - of_real (\<sigma> - 1)) = f' (w - of_real (\<sigma> - 1))"
+    using bigo analytic F'_f w' by (rule Newman_Ingham_1)
+  thus "eval_fds F w = f w"
+    using assms by (simp add: F'_def f'_def)
 qed
 
 end

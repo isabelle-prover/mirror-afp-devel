@@ -61,7 +61,7 @@ lemma \<mu>_bound_rowD: assumes "\<mu>_bound_row fs bnd i" "j \<le> i"
 lemma \<mu>_bound_row_1: assumes "\<mu>_bound_row fs bnd i" 
   shows "bnd \<ge> 1"
 proof -
-  interpret gs1: gram_schmidt_fs n "TYPE(rat)" "RAT fs" .
+  interpret gs1: gram_schmidt_fs n "RAT fs" .
   show ?thesis
   using \<mu>_bound_rowD[OF assms, of i]
   by (auto simp: gs1.\<mu>.simps)
@@ -73,11 +73,11 @@ shows "\<mu>_bound_row fs 1 ii"
 proof (intro \<mu>_bound_rowI)
   fix j
   assume "j \<le> ii"
-  interpret gs1: gram_schmidt_fs n "TYPE(rat)" "RAT fs" .
+  interpret gs1: gram_schmidt_fs n "RAT fs" .
   show "(\<mu> fs ii j)^2 \<le> 1"
   proof (cases "j < ii")
     case True
-    from red[unfolded gs.reduced_def, THEN conjunct2, rule_format, OF ii True]
+    from red[unfolded gram_schmidt_fs.reduced_def, THEN conjunct2, rule_format, OF ii True]
     have "abs (\<mu> fs ii j) \<le> 1/2" by auto
     from mult_mono[OF this this]
     show ?thesis by (auto simp: power2_eq_square)
@@ -210,7 +210,7 @@ proof (rule bound_invI)
         also have "\<dots> \<le> abs (?mu i k) + (abs (?mu i j) + 1/2) * (1/2)" 
         proof (rule add_left_mono[OF mult_mono], unfold c)
           show "\<bar>?R (round (?mu i j))\<bar> \<le> \<bar>?mu i j\<bar> + 1 / 2" unfolding round_def by linarith
-          from inv(10)[unfolded gs.reduced_def, THEN conjunct2, rule_format, OF \<open>j < i\<close> k_j]
+          from inv(10)[unfolded gram_schmidt_fs.reduced_def, THEN conjunct2, rule_format, OF \<open>j < i\<close> k_j]
           show "\<bar>?mu j k\<bar> \<le> 1/2" .
         qed auto
         also have "\<dots> \<le> M + (M + M) * (1/2)" 
@@ -336,7 +336,7 @@ proof -
   note Linv = bound_invD(1)[OF binv]
   from mu_small have mu_small: "\<mu>_small fs i" unfolding \<mu>_small_row_def \<mu>_small_def by auto
   note inv = LLL_invD[OF Linv]
-  interpret gs1: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs"
+  interpret gs1: gram_schmidt_fs_int n "RAT fs"
     by (standard) (use inv gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   note fbnd = bound_invD(2)[OF binv]
   note gbnd = bound_invD(3)[OF binv]
@@ -468,9 +468,9 @@ proof (rule bound_invI)
   note Linv' = swap(1)
   note inv' = LLL_invD[OF Linv']
   note inv = LLL_invD[OF Linv]
-  interpret gs1: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs"
+  interpret gs1: gram_schmidt_fs_int n "RAT fs"
     by (standard) (use inv gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
-  interpret gs2: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs'"
+  interpret gs2: gram_schmidt_fs_int n "RAT fs'"
     by (standard) (use inv' gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   let ?mu1 = "\<mu> fs" 
   let ?mu2 = "\<mu> fs'" 
@@ -631,8 +631,9 @@ proof (induct "LLL_measure i fs" arbitrary: i fs upw rule: less_induct)
     show ?thesis by auto
   next
     case False
-    with LLL_invD[OF Linv] have i: "i = m" upw by auto
-    with False res inv show ?thesis by auto
+    with LLL_invD[OF Linv] have i: "i = m" by auto
+    with False res inv have "LLL_bound_invariant True upw m fs'" by auto
+    thus ?thesis by (auto simp: LLL_invariant_def LLL_bound_invariant_def)
   qed
 qed
 

@@ -9,6 +9,7 @@ imports
   "HOL-Number_Theory.Number_Theory"
   Dirichlet_Series
   More_Totient
+  Moebius_Mu
 begin
   
 subsection \<open>The general divisor function\<close>
@@ -268,6 +269,24 @@ proof -
        (simp add: fds_divisor_sigma fds_shift_zeta_1)
   also have "fds_zeta * fds moebius_mu = (1 :: 'a fds)" by (fact fds_zeta_times_moebius_mu)
   finally show ?thesis by simp
+qed
+
+(* Theorem 2.20 *)
+lemma inverse_divisor_sigma:
+  fixes a :: "'a :: {field, nat_power}"
+  shows "inverse (fds (divisor_sigma a)) = fds_shift a (fds moebius_mu) * fds moebius_mu"
+proof -
+  have "fds (divisor_sigma a) = fds_zeta * fds_shift a fds_zeta"
+    by (simp add: fds_divisor_sigma)
+  also have "inverse \<dots> = fds moebius_mu * inverse (fds_shift a fds_zeta)"
+    by (simp add: fds_moebius_inverse_zeta inverse_mult_fds)
+  also have "inverse (fds_shift a fds_zeta) =
+               fds (\<lambda>n. moebius_mu n * fds_nth (fds_shift a fds_zeta) n)"
+    by (intro completely_multiplicative_fds_inverse', unfold_locales)
+       (auto simp: nat_power_mult_distrib)
+  also have "\<dots> = fds_shift a (fds moebius_mu)"
+    by (auto simp: fds_eq_iff)
+  finally show ?thesis by (simp add: mult.commute)
 qed
 
 end

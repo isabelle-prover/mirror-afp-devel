@@ -5,6 +5,18 @@ imports
   "HOL-Real_Asymp.Real_Asymp"
 begin
 
+(* TODO: Move *)
+lemma asymp_equivD_strong:
+  assumes "f \<sim>[F] g" "eventually (\<lambda>x. f x \<noteq> 0 \<or> g x \<noteq> 0) F"
+  shows   "((\<lambda>x. f x / g x) \<longlongrightarrow> 1) F"
+proof -
+  from assms(1) have "((\<lambda>x. if f x = 0 \<and> g x = 0 then 1 else f x / g x) \<longlongrightarrow> 1) F"
+    by (rule asymp_equivD)
+  also have "?this \<longleftrightarrow> ?thesis"
+    by (intro filterlim_cong eventually_mono[OF assms(2)]) auto
+  finally show ?thesis .
+qed
+
 (* TODO: replace in library *)
 lemma real_root_decreasing: "0 < n \<Longrightarrow> n \<le> N \<Longrightarrow> 1 \<le> x \<Longrightarrow> root N x \<le> root n x"
   by (auto simp add: order_le_less real_root_strict_decreasing)

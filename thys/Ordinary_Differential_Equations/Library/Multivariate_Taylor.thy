@@ -465,6 +465,144 @@ proof -
   show thesis ..
 qed
 
+
+text \<open>TODO: rename, duplication?\<close>
+
+locale second_derivative_within' =
+  fixes f f' f'' a G
+  assumes first_fderiv[derivative_intros]:
+    "\<And>a. a \<in> G \<Longrightarrow> (f has_derivative f' a) (at a within G)"
+  assumes in_G: "a \<in> G"
+  assumes second_fderiv[derivative_intros]:
+    "\<And>i. ((\<lambda>x. f' x i) has_derivative f'' i) (at a within G)"
+begin
+
+lemma symmetric_second_derivative_within:
+  assumes "a \<in> G"  "open G"
+  assumes "\<And>s t. s \<in> {0..1} \<Longrightarrow> t \<in> {0..1} \<Longrightarrow> a + s *\<^sub>R i + t *\<^sub>R j \<in> G"
+  shows "f'' i j = f'' j i"
+proof (cases "i = j \<or> i = 0 \<or> j = 0")
+  case True
+  interpret bounded_linear "f'' k" for k
+    by (rule has_derivative_bounded_linear) (rule second_fderiv)
+  have z1: "f'' j 0 = 0" "f'' i 0 = 0" by (simp_all add: zero)
+  have f'z: "f' x 0 = 0" if "x \<in> G" for x
+  proof -
+    interpret bounded_linear "f' x"
+      by (rule has_derivative_bounded_linear) (rule first_fderiv that)+
+    show ?thesis by (simp add: zero)
+  qed
+  note aw = at_within_open[OF \<open>a \<in> G\<close> \<open>open G\<close>]
+  have "((\<lambda>x. f' x 0) has_derivative (\<lambda>_. 0)) (at a within G)"
+    apply (rule has_derivative_transform_within)
+       apply (rule has_derivative_const[where c=0])
+      apply (rule zero_less_one)
+     apply fact
+    by (simp add: f'z)
+  from has_derivative_unique[OF second_fderiv[unfolded aw] this[unfolded aw]]
+  have "f'' 0 = (\<lambda>_. 0)" .
+  with True z1 show ?thesis
+    by (auto)
+next
+  case False
+  show ?thesis
+    using first_fderiv _ _ _ _ assms(1,3-)
+    by (rule symmetric_second_derivative_aux[])
+       (use False in \<open>auto intro!: derivative_eq_intros simp: blinfun.bilinear_simps assms\<close>)
+qed
+
+end
+
+locale second_derivative_on_open =
+  fixes f::"'a::real_normed_vector \<Rightarrow> 'b::banach"
+    and f' :: "'a \<Rightarrow> 'a \<Rightarrow> 'b"
+    and f'' :: "'a \<Rightarrow> 'a \<Rightarrow> 'b"
+    and a :: 'a
+    and G :: "'a set"
+  assumes first_fderiv[derivative_intros]:
+    "\<And>a. a \<in> G \<Longrightarrow> (f has_derivative f' a) (at a)"
+  assumes in_G: "a \<in> G" and open_G: "open G"
+  assumes second_fderiv[derivative_intros]:
+    "((\<lambda>x. f' x i) has_derivative f'' i) (at a)"
+begin
+
+lemma symmetric_second_derivative:
+  assumes "a \<in> G"
+  shows "f'' i j = f'' j i"
+proof -
+  interpret second_derivative_within'
+    by unfold_locales
+      (auto intro!: derivative_intros intro: has_derivative_at_withinI \<open>a \<in> G\<close>)
+  from \<open>a \<in> G\<close> open_G
+  obtain e where e: "e > 0" "\<And>y. dist y a < e \<Longrightarrow> y \<in> G"
+    by (force simp: open_dist)
+  define e' where "e' = e / 3"
+  define i' j' where "i' = e' *\<^sub>R i /\<^sub>R norm i" and "j' = e' *\<^sub>R j /\<^sub>R norm j"
+  hence "norm i' \<le> e'" "norm j' \<le> e'"
+    by (auto simp: field_simps e'_def \<open>0 < e\<close> less_imp_le)
+  hence "\<bar>s\<bar> \<le> 1 \<Longrightarrow> \<bar>t\<bar> \<le> 1 \<Longrightarrow> norm (s *\<^sub>R i' + t *\<^sub>R j') \<le> e' + e'" for s t
+    by (intro norm_triangle_le[OF add_mono])
+      (auto intro!: order_trans[OF mult_left_le_one_le])
+  also have "\<dots> < e" by (simp add: e'_def \<open>0 < e\<close>)
+  finally
+  have "f'' i' j' = f'' j' i'"
+    by (intro symmetric_second_derivative_within \<open>a \<in> G\<close> e)
+      (auto simp add: dist_norm open_G)
+  moreover
+  interpret f'': bounded_linear "f'' k" for k
+    by (rule has_derivative_bounded_linear) (rule second_fderiv)
+  note aw = at_within_open[OF \<open>a \<in> G\<close> \<open>open G\<close>]
+  have z1: "f'' j 0 = 0" "f'' i 0 = 0" by (simp_all add: f''.zero)
+  have f'z: "f' x 0 = 0" if "x \<in> G" for x
+  proof -
+    interpret bounded_linear "f' x"
+      by (rule has_derivative_bounded_linear) (rule first_fderiv that)+
+    show ?thesis by (simp add: zero)
+  qed
+  have "((\<lambda>x. f' x 0) has_derivative (\<lambda>_. 0)) (at a within G)"
+    apply (rule has_derivative_transform_within)
+       apply (rule has_derivative_const[where c=0])
+      apply (rule zero_less_one)
+     apply fact
+    by (simp add: f'z)
+  from has_derivative_unique[OF second_fderiv[unfolded aw] this[unfolded aw]]
+  have z2: "f'' 0 = (\<lambda>_. 0)" .
+  have "((\<lambda>a. f' a (r *\<^sub>R x)) has_derivative f'' (r *\<^sub>R x)) (at a within G)"
+    "((\<lambda>a. f' a (r *\<^sub>R x)) has_derivative (\<lambda>y. r *\<^sub>R f'' x y)) (at a within G)"
+    for r x
+    subgoal by (rule second_fderiv)
+    subgoal
+    proof -
+      have "((\<lambda>a. r *\<^sub>R f' a (x)) has_derivative (\<lambda>y. r *\<^sub>R f'' x y)) (at a within G)"
+        by (auto intro!: derivative_intros)
+      then show ?thesis
+        apply (rule has_derivative_transform[rotated 2])
+         apply (rule in_G)
+        subgoal premises prems for a'
+        proof -
+          interpret bounded_linear "f' a'"
+            apply (rule has_derivative_bounded_linear)
+            by (rule first_fderiv[OF prems])
+          show ?thesis
+            by (simp add: scaleR)
+        qed
+        done
+    qed
+    done
+  then have "((\<lambda>a. f' a (r *\<^sub>R x)) has_derivative f'' (r *\<^sub>R x)) (at a)"
+    "((\<lambda>a. f' a (r *\<^sub>R x)) has_derivative (\<lambda>y. r *\<^sub>R f'' x y)) (at a)" for r x
+    unfolding aw by auto
+  then have f'z: "f'' (r *\<^sub>R x) = (\<lambda>y. r *\<^sub>R f'' x y)" for r x
+    by (rule has_derivative_unique[where f="(\<lambda>a. f' a (r *\<^sub>R x))"])
+  ultimately show ?thesis
+    using e(1)
+    by (auto simp: i'_def j'_def e'_def f''.scaleR z1 z2
+      blinfun.zero_right blinfun.zero_left
+      blinfun.scaleR_left blinfun.scaleR_right algebra_simps)
+qed
+
+end
+
 no_notation
   blinfun_apply (infixl "$" 999)
 notation vec_nth (infixl "$" 90)

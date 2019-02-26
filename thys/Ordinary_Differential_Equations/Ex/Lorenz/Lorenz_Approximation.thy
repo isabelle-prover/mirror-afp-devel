@@ -6,6 +6,11 @@ imports
 begin
 text \<open>\label{sec:lorenz}\<close>
 
+text \<open>TODO: move to isabelle? \<close>
+lifting_update blinfun.lifting
+lifting_forget blinfun.lifting
+
+
 lemma eventually_uniformly_on:
   "(\<forall>\<^sub>F x in uniformly_on T l. P x) = (\<exists>e>0. \<forall>f. (\<forall>x\<in>T. dist (f x) (l x) < e) \<longrightarrow> P f)"
   unfolding uniformly_on_def
@@ -143,6 +148,8 @@ text \<open>This should prove that the expansion estimates are sufficient.\<clos
 lemma expansion_main: "expansion_main (coarse_results) = Some True"
   by eval
 
+context includes floatarith_notation begin
+
 definition "matrix_of_degrees2\<^sub>e =
   (let
     e = Var 2;
@@ -182,6 +189,7 @@ schematic_goal
   interpret_floatariths ?fas X"
   by (reify_floatariths)
 concrete_definition lorenz_fas uses lorenz_fas
+end
 
 interpretation lorenz: ode_interpretation true_form UNIV lorenz_fas "\<lambda>(X0, X1, X2).
  (E1 * X0 -        K1 * (X0 + X1) * X2,
@@ -199,6 +207,8 @@ interpretation lorenz: ode_interpretation true_form UNIV lorenz_fas "\<lambda>(X
 value [code] "length (slp_of_fas lorenz_fas)"
 
 definition "mig_aform p x = mig_componentwise (Inf_aform' p x) (Sup_aform' p x)"
+
+context includes floatarith_notation begin
 
 definition "mig_aforms p x = real_of_float ((fst o the) ((approx p (Norm (map (Num o float_of o (mig_aform p)) x))) []))"
 
@@ -302,9 +312,9 @@ definition "print_irects irects =
 abbreviation "aforms_of_ivl \<equiv> \<lambda>x. aforms_of_ivls (fst x) (snd x)"
 
 definition "conefield_propagation\<^sub>e =
-  ([Deg_of (Arctan\<^sub>e (Var (6) / Var (3))),
-   Deg_of (Arctan\<^sub>e (Var (7) / Var (4))),
-   Min\<^sub>e (Norm [Var(3), Var (6), Var (9)]) (Norm [Var(4), Var (7), Var (10)])])"
+  ([Deg_of (Arctan (Var (6) / Var (3))),
+   Deg_of (Arctan (Var (7) / Var (4))),
+   Min (Norm [Var(3), Var (6), Var (9)]) (Norm [Var(4), Var (7), Var (10)])])"
 
 definition "conefield_propagation DX = approx_floatariths 30 conefield_propagation\<^sub>e DX"
 
@@ -315,8 +325,11 @@ lemma [simp]: "length conefield_propagation_slp = 51"
 definition op_with_unit_matrix :: "'a::real_normed_vector \<Rightarrow> 'a \<times> 'a \<Rightarrow>\<^sub>L 'a" where
   "op_with_unit_matrix X = (X, 1\<^sub>L)"
 
+context includes blinfun.lifting begin
 lemma matrix_vector_mult_blinfun_works[simp]: "matrix e *v g = e g" for e::"(real^'n) \<Rightarrow>\<^sub>L (real^'m)"
   by transfer (simp add: bounded_linear_def matrix_works)
+end
+
 lemma length_conefield_propagation\<^sub>e[simp]: "length conefield_propagation\<^sub>e = 3"
   by (simp add: conefield_propagation\<^sub>e_def)
 
@@ -365,16 +378,6 @@ definition "approx_conefield_bounds (DX::(R3 \<times> (R3 \<Rightarrow>\<^sub>L 
     let _ = aform.trace_set (''# approx_conefield_bounds DX: '') (Some DX);
     approx_form_spec (conefield_bounds_form l u) (list_of_eucl ` DX)
   }"
-
-bundle autoref_syntax begin
-no_notation vec_nth (infixl "$" 90)
-no_notation funcset (infixr "\<rightarrow>" 60)
-notation Autoref_Tagging.APP (infixl "$" 900)
-notation rel_ANNOT (infix ":::" 10)
-notation ind_ANNOT (infix "::#" 10)
-notation "Autoref_Tagging.OP" ("OP")
-notation Autoref_Tagging.ABS (binder "\<lambda>''" 10)
-end
 
 lemma [autoref_rules]:
   includes autoref_syntax
@@ -433,7 +436,8 @@ lemma interpret_form_conefield_bounds_form_list:
   by (auto simp: conefield_bounds_form_def L2_set_def)
 
 lemma list_of_eucl_eucl1_3:
-  "(list_of_eucl (vec1_of_flow1 (xDX::(real^3) \<times> ((real^3)\<Rightarrow>\<^sub>L(real^3))))) =
+  includes vec_syntax
+  shows "(list_of_eucl (vec1_of_flow1 (xDX::(real^3) \<times> ((real^3)\<Rightarrow>\<^sub>L(real^3))))) =
   (let
     (x, DX) = xDX;
     DXu = DX (eucl_of_list [1, 0, 0]);
@@ -635,7 +639,7 @@ definition "cube_exiti =
                           (map udec [0,0,0,   0.56,0,0,   0.6,0,0])))]"
 definition "cube_exitv = aform.c1_info_of_apprs cube_exiti"
 
-lemma cube_enteri[autoref_rules]: "(cube_enteri, cube_enter::'a set) \<in> aform.lvivl_rel"
+lemma cube_enteri[autoref_rules]: "(cube_enteri, cube_enter::'a set) \<in> lvivl_rel"
   if "DIM_precond TYPE('a::executable_euclidean_space) 12"
   using that
   by (auto simp: cube_enteri_def cube_enter_def set_of_ivl_def
@@ -653,7 +657,7 @@ definition "lorenz_interrupt (optns::real aform numeric_options) b (eX::3 eucl1 
     ((el, eu), X) \<leftarrow> scaleR2_rep eX;
     let fX = fst ` X;
     fentry \<leftarrow> aform.op_image_fst_ivl (cube_enter::3 vec1 set);
-    interrupt \<leftarrow> subset_spec (fX:::aform.appr_rel) fentry;
+    interrupt \<leftarrow> aform.op_subset (fX:::aform.appr_rel) fentry;
     (ol, ou) \<leftarrow> ivl_rep fentry;
     aform.CHECKs optns (ST ''asdf'') (0 < el \<and> ol \<le> ou);
     let _ = (if b then aform.trace_set (ST ''Potential Interrupt: '') (Some fX) else ());
@@ -670,7 +674,7 @@ definition "lorenz_interrupt (optns::real aform numeric_options) b (eX::3 eucl1 
       (C1::3 eucl1 set) \<leftarrow> aform.scaleRe_ivl_coll_spec el eu (cube_exitv);
       case vX of None \<Rightarrow> RETURN (CX, C0)
       | Some vX \<Rightarrow> do {
-        b \<leftarrow> subset_spec vX cube_enter;
+        b \<leftarrow> aform.op_subset vX cube_enter;
         aform.CHECKs optns (ST ''FAILED: TANGENT VECTORs are not contained'') b;
         RETURN (CX, C1)
       }
@@ -799,6 +803,8 @@ lemma cast_eucl1_image_scaleR2:
 
 lemma scaleR2_diff_prod2: "scaleR2 d e (X) - Y \<times> UNIV = scaleR2 d e (X - Y \<times> UNIV)"
   by (force simp: scaleR2_def vimage_def image_def)
+
+end
 
 lemma (in c1_on_open_euclidean) flowsto_scaleR2I:
   "flowsto (scaleR2 d e X0) T (CX \<times> UNIV) (scaleR2 d e Y)"
@@ -1101,7 +1107,7 @@ lemma \<Sigma>\<^sub>l\<^sub>e_impl[autoref_rules]: "(Sctn [0, 0, 1] 27, \<Sigma
   by (auto intro!: brI)
 
 lemma [autoref_rules]: "((), \<Gamma>\<^sub>v) \<in> ghost_rel"
-  by (auto intro!: aform.ghost_relI)
+  by (auto intro!: ghost_relI)
 
 no_notation vec_nth (infixl "$" 90) and vec_lambda (binder "\<chi>" 10)
 
@@ -1139,7 +1145,7 @@ definition lorenz_poincare where
       (\<Gamma>\<^sub>i\<^sub>v interrupt:::ghost_rel)
       ((below_halfspaces {Sctn (eucl_of_list [0, 0, 1]) 27}::(real^3) set):::\<langle>lv_rel\<rangle>halfspaces_rel)
       guards
-      (op_atLeastAtMost_ivl (eucl_of_list [-6, -6, 27]:::lv_rel) (eucl_of_list [6, 6, 27]:::lv_rel):::aform.lvivl_rel::(real^3) set)
+      (op_atLeastAtMost_ivl (eucl_of_list [-6, -6, 27]:::lv_rel) (eucl_of_list [6, 6, 27]:::lv_rel):::lvivl_rel::(real^3) set)
        (Sctn (eucl_of_list [0, 0, -1]) (- 27)::(real^3) sctn)
       roptn
       XS0"
@@ -1170,7 +1176,7 @@ schematic_goal lorenz_poincare_impl[autoref_rules]:
   unfolding autoref_tag_defs
   unfolding lorenz_poincare_def
   including art
-  supply [autoref_rules_raw] = aform.ghost_relI
+  supply [autoref_rules_raw] = ghost_relI
   by (autoref_monadic)
 
 lemma cast_image_eqI: "cast ` X = Y"
@@ -1277,6 +1283,8 @@ lemma lorenz_poincare[le, refine_vcg]:
       by (rule aform.poincare_mapsto_subset) (force simp: lorenz.vX_def intro: cast_cast[symmetric])+
   qed
   done
+
+context includes floatarith_notation begin
 
 definition "mat1\<^sub>e =
   [Var 0, Var 1, Var 2,   Var 3, 0, 0,
@@ -1490,11 +1498,9 @@ next
   show ?case
     apply (rule exI[where x="cast_eucl1 ` tans"])
     apply (rule conjI)
-    subgoal
-      using 1
-      apply transfer
-      apply (force simp: cast_def o_def)
-      done
+    subgoal including lifting_syntax
+      using 1(2)
+      by transfer (force simp: cast_def o_def)
     subgoal
       using 1(3) apply transfer
       apply (subst lorenz.avpoincare_mapsto_eq[symmetric])
@@ -1736,8 +1742,8 @@ lemma mode_ro_spec_impl[autoref_rules]:
   apply (auto simp: mode_ro_spec_def nres_rel_def RETURN_RES_refine_iff)
   apply (rule exI)+
   apply (rule prod_relI'' IdI)+
-  unfolding lv_rel_def ivl_rel_def br_rel_prod br_chain aform.plane_rel_br inter_rel_br
-    aform.clw_rel_br aform.br_list_rel Id_br prod_eq_iff
+  unfolding lv_rel_def ivl_rel_def br_rel_prod br_chain plane_rel_br inter_rel_br
+    clw_rel_br br_list_rel Id_br prod_eq_iff
    apply (rule brI refl)+
    defer apply (rule brI) apply (rule refl) apply auto
   apply (auto simp: lookup_mode_def mode_outer_def mode_inner2_def mode_inner3_def xsecs_def
@@ -1837,25 +1843,25 @@ definition "check_line_nres print_fun m0 n0 c1 res0 = do {
     aform.CHECKs optns (ST ''check_line_nres le'') sp;
     ASSERT (X0l \<le> X0u);
     Pe \<leftarrow> lorenz_poincare_tangents optns interrupt modes ro c1 ({X0l .. X0u}) tangents;
-    PeS \<leftarrow> aform.sets_of_coll Pe;
+    PeS \<leftarrow> sets_of_coll Pe;
     let RETs = (return_of_res results res0);
-    let RET = \<Union>((mk_coll ` (source_of_res ` RETs:::\<langle>aform.lvivl_rel\<rangle>list_wset_rel):::\<langle>clw_rel aform.lvivl_rel\<rangle>list_wset_rel));
+    let RET = \<Union>((mk_coll ` (source_of_res ` RETs:::\<langle>lvivl_rel\<rangle>list_wset_rel):::\<langle>clw_rel lvivl_rel\<rangle>list_wset_rel));
     every \<leftarrow> WEAK_ALL\<^bsup>\<lambda>Pe. \<exists>P em eM Rivls. em > 0 \<and> Pe = scaleR2 em eM P \<and> fst ` P \<subseteq> \<Union>Rivls \<and> (\<forall>Rivl \<in> Rivls. (\<exists>res\<in>RETs. Rivl \<subseteq> source_of_res res \<and> (c1 \<longrightarrow> c1_entry_correct em P res0 res)))\<^esup>
     PeS (\<lambda>Pe. do {
       let _ = aform.trace_set1e (''# Return Element: '') (Some Pe);
       ((em, eM), P) \<leftarrow> scaleR2_rep Pe;
       aform.CHECKs optns (ST ''check_line_nres pos'') (0 < em);
       let R = (fst ` P:::aform.appr_rel);
-      (Ri, Rs) \<leftarrow> ivl_rep_of_set R;
+      (Ri, Rs) \<leftarrow> aform.op_ivl_rep_of_set R;
       let Rivl = (op_atLeastAtMost_ivl Ri Rs);
       Rivls \<leftarrow> aform.split_along_ivls2 3 (mk_coll Rivl) RET;
-      Rivlss \<leftarrow> aform.sets_of_coll Rivls;
+      Rivlss \<leftarrow> sets_of_coll Rivls;
       WEAK_ALL\<^bsup>\<lambda>Rivl. \<exists>res\<in>RETs. Rivl \<subseteq> source_of_res res \<and> (c1 \<longrightarrow> c1_entry_correct em P res0 res)\<^esup> Rivlss
       (\<lambda>Rivl. do {
         b \<leftarrow>
           WEAK_EX\<^bsup>\<lambda>res. Rivl \<subseteq> source_of_res res \<and> (c1 \<longrightarrow> c1_entry_correct em P res0 res)\<^esup> RETs
           (\<lambda>res. do {
-            let src = (source_of_res res:::aform.lvivl_rel);
+            let src = (source_of_res res:::lvivl_rel);
             let subs = Rivl \<subseteq> src;
             cones \<leftarrow> if \<not>(c1 \<and> subs) then RETURN True else check_c1_entry em P res0 res;
             RETURN (subs \<and> cones)
@@ -1890,7 +1896,7 @@ schematic_goal check_line_impl:
     "(m0i, m0) \<in> \<langle>nat_rel\<rangle>option_rel" "(n0i, n0) \<in> \<langle>nat_rel\<rangle>option_rel"
   shows
   "(nres_of ?r, check_line_nres $ pf $ m0 $ n0 $ c1 $ res0) \<in>
-    \<langle>bool_rel \<times>\<^sub>r clw_rel aform.appr1e_rel \<times>\<^sub>r clw_rel aform.lvivl_rel\<rangle>nres_rel"
+    \<langle>bool_rel \<times>\<^sub>r clw_rel aform.appr1e_rel \<times>\<^sub>r clw_rel lvivl_rel\<rangle>nres_rel"
   unfolding check_line_nres_def
   including art
   by autoref_monadic
@@ -2057,8 +2063,7 @@ lemma check_line_nres_c0_correct:
         apply (auto dest!: bspec[OF _ \<open>x \<in> b\<close>])
         apply (auto simp: scaleR2_def image_def vimage_def)
         apply (auto simp: subset_iff)
-        apply fastforce
-        done\<comment> \<open>slow\<close>
+        by fastforce \<comment>\<open>slow\<close>
       done
   qed
   subgoal for a b c d e f
@@ -2068,8 +2073,7 @@ lemma check_line_nres_c0_correct:
     apply auto
     apply (auto simp: scaleR2_def image_def vimage_def)
     apply (auto simp: subset_iff)
-    apply fastforce
-    done\<comment> \<open>slow\<close>
+    by fastforce\<comment> \<open>slow\<close>
   done
 
 lemma cone_conefield[intro, simp]: "cone (conefield a b)"
@@ -2810,6 +2814,8 @@ lemma reduce_lorenz_symmetry: "Ball (set results) correct_res"
   if "Ball (set coarse_results) correct_res"
   using that
   by (auto simp: results_def symmetrize_def intro!: correct_res_mirror_result)
+
+end
 
 subsection \<open>Code Generation\<close>
 

@@ -66,18 +66,22 @@ partial_function (tailrec) normalize_float10
 
 subsubsection \<open>Version that should be easy to prove correct, but slow!\<close>
 
+context includes floatarith_notation begin
+
 definition "float_to_float10_approximation f = the
   (do {
     let (x, y) = (mantissa f * 1024, exponent f - 10);
     let p = nat (bitlen (abs x) + bitlen (abs y) + 80); \<comment> \<open>FIXME: are there guarantees?\<close>
-    y_log \<leftarrow> approx p (Approximation.Mult (Approximation.Num (of_int y))
-      ((Approximation.Mult (Approximation.Ln (Approximation.Num 2))
-        (Approximation.Inverse (Approximation.Ln (Approximation.Num 10)))))) [];
+    y_log \<leftarrow> approx p (Mult (Num (of_int y))
+      ((Mult (Ln (Num 2))
+        (Inverse (Ln (Num 10)))))) [];
     let e_fl = floor_fl (fst y_log);
     let e = int_floor_fl e_fl;
-    (ml, mu) \<leftarrow> approx p (Approximation.Mult (Approximation.Num (of_int x)) (Powr (Approximation.Num 10) (Approximation.Add(Approximation.Var 0) (Approximation.Minus (Approximation.Num e_fl))))) [Some y_log];
+    (ml, mu) \<leftarrow> approx p (Mult (Num (of_int x)) (Powr (Num 10) (Add(Var 0) (Minus (Num e_fl))))) [Some y_log];
     Some (normalize_float10 (Float10 (int_floor_fl ml) e), normalize_float10 (Float10 (- int_floor_fl (- mu)) e))
   })"
+
+end
 
 lemma compute_float_of[code]: "float_of (real_of_float f) = f" by simp
 

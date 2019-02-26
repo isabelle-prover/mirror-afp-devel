@@ -23,6 +23,13 @@ definition list_wset_rel_internal_def: "list_wset_rel R = br set top O \<langle>
 lemma list_wset_rel_def: "\<langle>R\<rangle>list_wset_rel = br set top O \<langle>R\<rangle>set_rel"
   unfolding list_wset_rel_internal_def[abs_def] by (simp add: relAPP_def)
 
+lemma list_wset_rel_br_eq: "\<langle>br a I\<rangle>list_wset_rel = br (\<lambda>xs. a ` set xs) (\<lambda>xs. \<forall>x \<in> set xs. I x)"
+  by (auto simp: list_wset_rel_def br_def set_rel_def)
+
+lemma mem_br_list_wset_rel_iff:
+  "(xs, X) \<in> \<langle>br a I\<rangle>list_wset_rel \<longleftrightarrow> (X = (a ` set xs) \<and> (\<forall>x \<in> set xs. I x))"
+  by (auto simp: list_wset_rel_def set_rel_def br_def)
+
 lemma list_set_rel_sv[relator_props]:
   "single_valued R \<Longrightarrow> single_valued (\<langle>R\<rangle>list_wset_rel)"
   unfolding list_wset_rel_def
@@ -51,7 +58,7 @@ lemma list_wset_autoref_empty[autoref_rules]:
   "([],{})\<in>\<langle>R\<rangle>list_wset_rel"
   by (auto simp: list_wset_rel_def br_def relcompI)
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 
 lemma mem_set_list_relE1:
   assumes "(xs, ys) \<in> \<langle>R\<rangle>list_rel"
@@ -665,7 +672,7 @@ lemma
   using assms
   by (auto simp: op_set_npick_remove_def )
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 definition "op_set_pick_remove X \<equiv> SPEC (\<lambda>(x, X'). x \<in> X \<and> X' = X - {x})"
 lemma op_set_pick_removepat[autoref_op_pat]:
   "SPEC (\<lambda>(x, X'). x \<in> X \<and> X' = X - {x}) \<equiv> op_set_pick_remove $ X"
@@ -718,6 +725,94 @@ lemma op_wset_isEmpty_list_wset_rel[autoref_rules]:
   "(\<lambda>x. RETURN (x = []), isEmpty_spec) \<in> \<langle>A\<rangle>list_wset_rel \<rightarrow> \<langle>bool_rel\<rangle>nres_rel"
   by (auto simp: nres_rel_def list_wset_rel_def set_rel_def br_def)
 
+
+definition WEAK_ALL:: "('a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow> bool nres) \<Rightarrow> bool nres" ("WEAK'_ALL\<^bsup>_\<^esup>") where
+  "WEAK_ALL I X P = do {
+    (_, b) \<leftarrow> WHILE\<^bsup>\<lambda>(Y, b). b \<longrightarrow> (\<forall>x \<in> X - Y. I x)\<^esup> (\<lambda>(X, b). b \<and> X \<noteq> {}) (\<lambda>(X, b). do {
+      ASSERT (X \<noteq> {});
+      (x, X') \<leftarrow> op_set_npick_remove X;
+      b' \<leftarrow> P x;
+      RETURN (X', b' \<and> b)
+    }) (X, True); RETURN b}"
+schematic_goal WEAK_ALL_list[autoref_rules]:
+  assumes [relator_props]: "single_valued A"
+  assumes [autoref_rules]: "(Xi, X) \<in> \<langle>A\<rangle>list_wset_rel"
+      "(P_impl, P) \<in> A \<rightarrow> \<langle>bool_rel\<rangle>nres_rel"
+  shows "(?r, WEAK_ALL I X P) \<in> \<langle>bool_rel\<rangle>nres_rel"
+  unfolding WEAK_ALL_def
+  including art
+  by (autoref)
+concrete_definition WEAK_ALL_list for Xi P_impl uses WEAK_ALL_list
+lemma WEAK_ALL_list_refine[autoref_rules]:
+  "PREFER single_valued A \<Longrightarrow> (WEAK_ALL_list, WEAK_ALL I) \<in> \<langle>A\<rangle>list_wset_rel \<rightarrow> (A \<rightarrow> \<langle>bool_rel\<rangle>nres_rel) \<rightarrow> \<langle>bool_rel\<rangle>nres_rel"
+  using WEAK_ALL_list.refine by force
+
+schematic_goal WEAK_ALL_transfer_nres:
+  assumes [refine_transfer]: "\<And>x. nres_of (f x) \<le> f' x"
+  shows "nres_of (?f) \<le> WEAK_ALL_list xs f'"
+  unfolding WEAK_ALL_list_def
+  by refine_transfer
+concrete_definition dWEAK_ALL for xs f uses WEAK_ALL_transfer_nres
+lemmas [refine_transfer] = dWEAK_ALL.refine
+
+definition WEAK_EX:: "('a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow> bool nres) \<Rightarrow> bool nres" ("WEAK'_EX\<^bsup>_\<^esup>") where
+  "WEAK_EX I X P = do {
+    (_, b) \<leftarrow> WHILE\<^bsup>\<lambda>(Y, b). Y \<subseteq> X \<and> (b \<longrightarrow> (\<exists>x \<in> X. I x))\<^esup> (\<lambda>(X, b). \<not>b \<and> X \<noteq> {}) (\<lambda>(X, b). do {
+      ASSERT (X \<noteq> {});
+      (x, X') \<leftarrow> op_set_npick_remove X;
+      b' \<leftarrow> P x;
+      RETURN (X', b' \<or> b)
+    }) (X, False); RETURN b}"
+schematic_goal WEAK_EX_list[autoref_rules]:
+  assumes [relator_props]: "single_valued A"
+  assumes [autoref_rules]: "(Xi, X) \<in> \<langle>A\<rangle>list_wset_rel"
+      "(P_impl, P) \<in> A \<rightarrow> \<langle>bool_rel\<rangle>nres_rel"
+  shows "(?r, WEAK_EX I X P) \<in> \<langle>bool_rel\<rangle>nres_rel"
+  unfolding WEAK_EX_def
+  including art
+  by (autoref)
+concrete_definition WEAK_EX_list for Xi P_impl uses WEAK_EX_list
+lemma WEAK_EX_list_refine[autoref_rules]:
+  "PREFER single_valued A \<Longrightarrow> (WEAK_EX_list, WEAK_EX I) \<in> \<langle>A\<rangle>list_wset_rel \<rightarrow> (A \<rightarrow> \<langle>bool_rel\<rangle>nres_rel) \<rightarrow> \<langle>bool_rel\<rangle>nres_rel"
+  using WEAK_EX_list.refine by force
+
+schematic_goal WEAK_EX_transfer_nres:
+  assumes [refine_transfer]: "\<And>x. nres_of (f x) \<le> f' x"
+  shows "nres_of (?f) \<le> WEAK_EX_list xs f'"
+  unfolding WEAK_EX_list_def
+  by refine_transfer
+concrete_definition dWEAK_EX for xs f uses WEAK_EX_transfer_nres
+lemmas [refine_transfer] = dWEAK_EX.refine
+
+lemma WEAK_EX[THEN order_trans, refine_vcg]:
+  assumes [THEN order_trans, refine_vcg]: "\<And>x. F x \<le> SPEC (\<lambda>r. r \<longrightarrow> I x)"
+  shows "WEAK_EX I X F \<le> SPEC (\<lambda>r. r \<longrightarrow> (\<exists>x\<in>X. I x))"
+  unfolding WEAK_EX_def
+  by (refine_vcg ) (auto simp: )
+
+lemma WEAK_ALL[THEN order_trans, refine_vcg]:
+  assumes [THEN order_trans, refine_vcg]: "\<And>x. F x \<le> SPEC (\<lambda>r. r \<longrightarrow> I x)"
+  shows "WEAK_ALL I X F \<le> SPEC (\<lambda>r. r \<longrightarrow> (\<forall>x\<in>X. I x))"
+  unfolding WEAK_ALL_def
+  by (refine_vcg) auto
+
+lemma [autoref_op_pat_def]:
+  "WEAK_ALL I \<equiv> OP (WEAK_ALL I)"
+  "WEAK_EX I \<equiv> OP (WEAK_EX I)"
+  by auto
+
 end
+
+lemma list_spec_impl[autoref_rules]:
+  "(\<lambda>x. RETURN x, list_spec) \<in> \<langle>A\<rangle>list_wset_rel \<rightarrow> \<langle>\<langle>A\<rangle>list_rel\<rangle>nres_rel"
+  if "PREFER single_valued A"
+  using that
+  apply (auto simp: list_spec_def nres_rel_def RETURN_RES_refine_iff list_wset_rel_br_eq
+      br_list_rel intro!: brI dest!: brD
+      elim!: single_valued_as_brE)
+  subgoal for a I xs
+    apply (rule exI[where x="map a xs"])
+    by (auto simp: br_def list_all_iff)
+  done
 
 end

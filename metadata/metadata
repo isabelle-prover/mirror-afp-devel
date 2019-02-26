@@ -1949,6 +1949,19 @@ date = 2011-08-26
 abstract = There are many proofs of the Myhill-Nerode theorem using automata. In this library we give a proof entirely based on regular expressions, since regularity of languages can be conveniently defined using regular expressions (it is more painful in HOL to define regularity in terms of automata).  We prove the first direction of the Myhill-Nerode theorem by solving equational systems that involve regular expressions.  For the second direction we give two proofs: one using tagging-functions and another using partial derivatives. We also establish various closure properties of regular languages. Most details of the theories are described in our ITP 2011 paper.
 notify = christian.urban@kcl.ac.uk
 
+[Universal_Turing_Machine]
+title = Universal Turing Machine
+author = Jian Xu<>, Xingyuan Zhang<>, Christian Urban <https://nms.kcl.ac.uk/christian.urban/>, Sebastiaan J. C. Joosten <http://sjcjoosten.nl/>
+topic = Logic, Computer Science/Automata and Formal Languages
+date = 2019-02-08
+notify = sjcjoosten@gmail.com, christian.urban@kcl.ac.uk
+abstract =
+  We formalise results from computability theory: recursive functions,
+  undecidability of the halting problem, and the existence of a
+  universal Turing machine. This formalisation is the AFP entry
+  corresponding to the paper Mechanising Turing Machines and Computability Theory
+  in Isabelle/HOL, ITP 2013.
+
 [CYK]
 title = A formalisation of the Cocke-Younger-Kasami algorithm
 author = Maksym Bortin <mailto:Maksym.Bortin@nicta.com.au>
@@ -7739,7 +7752,7 @@ author = Ralph Bottesch <http://cl-informatik.uibk.ac.at/users/bottesch/>, Max W
 topic = Mathematics/Algebra
 date = 2019-01-17
 notify = rene.thiemann@uibk.ac.at
-abstract = 
+abstract =
   We formalize a proof of Motzkin's transposition theorem and
   Farkas' lemma in Isabelle/HOL. Our proof is based on the
   formalization of the simplex algorithm which, given a set of linear
@@ -7748,4 +7761,113 @@ abstract =
   we show that a set of linear constraints is unsatisfiable if and only
   if there is a linear combination of the constraints which evaluates to
   a trivially unsatisfiable inequality.
+
+[Auto2_Imperative_HOL]
+title = Verifying Imperative Programs using Auto2
+author = Bohua Zhan <http://lcs.ios.ac.cn/~bzhan/>
+topic = Computer Science/Algorithms, Computer Science/Data Structures
+date = 2018-12-21
+notify = bzhan@ios.ac.cn
+abstract =
+  This entry contains the application of auto2 to verifying functional
+  and imperative programs. Algorithms and data structures that are
+  verified include linked lists, binary search trees, red-black trees,
+  interval trees, priority queue, quicksort, union-find, Dijkstra's
+  algorithm, and a sweep-line algorithm for detecting rectangle
+  intersection. The imperative verification is based on Imperative HOL
+  and its separation logic framework. A major goal of this work is to
+  set up automation in order to reduce the length of proof that the user
+  needs to provide, both for verifying functional programs and for
+  working with separation logic.
+
+[UTP]
+title = Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming
+author = Simon Foster <https://www-users.cs.york.ac.uk/~simonf/>, Frank Zeyda<>, Yakoub Nemouchi <mailto:yakoub.nemouchi@york.ac.uk>, Pedro Ribeiro<>, Burkhart Wolff<>
+topic = Computer Science/Programming Languages/Logics
+date = 2019-02-01
+notify = simon.foster@york.ac.uk
+abstract =
+  Isabelle/UTP is a mechanised theory engineering toolkit based on Hoare
+  and He’s Unifying Theories of Programming (UTP). UTP enables the
+  creation of denotational, algebraic, and operational semantics for
+  different programming languages using an alphabetised relational
+  calculus. We provide a semantic embedding of the alphabetised
+  relational calculus in Isabelle/HOL, including new type definitions,
+  relational constructors, automated proof tactics, and accompanying
+  algebraic laws. Isabelle/UTP can be used to both capture laws of
+  programming for different languages, and put these fundamental
+  theorems to work in the creation of associated verification tools,
+  using calculi like Hoare logics. This document describes the
+  relational core of the UTP in Isabelle/HOL.
+
+[Probabilistic_Prime_Tests]
+title = Probabilistic Primality Testing
+author = Daniel Stüwe<>, Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory
+date = 2019-02-11
+notify = eberlm@in.tum.de
+abstract = 
+  <p>The most efficient known primality tests are
+  <em>probabilistic</em> in the sense that they use
+  randomness and may, with some probability, mistakenly classify a
+  composite number as prime &ndash; but never a prime number as
+  composite. Examples of this are the Miller&ndash;Rabin test, the
+  Solovay&ndash;Strassen test, and (in most cases) Fermat's
+  test.</p> <p>This entry defines these three tests and
+  proves their correctness. It also develops some of the
+  number-theoretic foundations, such as Carmichael numbers and the
+  Jacobi symbol with an efficient executable algorithm to compute
+  it.</p>
+
+[Kruskal]
+title = Kruskal's Algorithm for Minimum Spanning Forest
+author = Maximilian P.L. Haslbeck <http://in.tum.de/~haslbema/>, Peter Lammich <http://www21.in.tum.de/~lammich>, Julian Biendarra<>
+topic = Computer Science/Algorithms
+date = 2019-02-14
+notify = haslbema@in.tum.de, lammich@in.tum.de
+abstract = 
+  This Isabelle/HOL formalization defines a greedy algorithm for finding
+  a minimum weight basis on a weighted matroid and proves its
+  correctness. This algorithm is an abstract version of Kruskal's
+  algorithm.  We interpret the abstract algorithm for the cycle matroid
+  (i.e. forests in a graph) and refine it to imperative executable code
+  using an efficient union-find data structure.  Our formalization can
+  be instantiated for different graph representations. We provide
+  instantiations for undirected graphs and symmetric directed graphs.
+  
+[List_Inversions]
+title = The Inversions of a List
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Computer Science/Algorithms
+date = 2019-02-01
+notify = eberlm@in.tum.de
+abstract = 
+  <p>This entry defines the set of <em>inversions</em>
+  of a list, i.e. the pairs of indices that violate sortedness. It also
+  proves the correctness of the well-known
+  <em>O</em>(<em>n log n</em>)
+  divide-and-conquer algorithm to compute the number of
+  inversions.</p>
+
+[Prime_Distribution_Elementary]
+title = Elementary Facts About the Distribution of Primes
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory
+date = 2019-02-21
+notify = eberlm@in.tum.de
+abstract = 
+  <p>This entry is a formalisation of Chapter 4 (and parts of
+  Chapter 3) of Apostol's <a
+  href="https://www.springer.com/de/book/9780387901633"><em>Introduction
+  to Analytic Number Theory</em></a>. The main topics that
+  are addressed are properties of the distribution of prime numbers that
+  can be shown in an elementary way (i.&thinsp;e. without the Prime
+  Number Theorem), the various equivalent forms of the PNT (which imply
+  each other in elementary ways), and consequences that follow from the
+  PNT in elementary ways. The latter include, most notably, asymptotic
+  bounds for the number of distinct prime factors of
+  <em>n</em>, the divisor function
+  <em>d(n)</em>, Euler's totient function
+  <em>&phi;(n)</em>, and
+  lcm(1,&hellip;,<em>n</em>).</p>
 

@@ -3,7 +3,7 @@
 section "Comparing Enumeration and Archive"
 
 theory ArchComp
-imports ArchCompProps "HOL-Library.Code_Target_Numeral"
+imports "Flyspeck-Tame.ArchCompProps" "HOL-Library.Code_Target_Numeral"
 begin
 
 subsection \<open>Proofs by evaluation using generated code\<close>

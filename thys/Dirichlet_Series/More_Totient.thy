@@ -56,6 +56,49 @@ proof -
   finally show "multiplicative_function totient" by (rule multiplicative_function_of_natD)
 qed
 
+lemma even_prime_nat: "prime p \<Longrightarrow> even p \<Longrightarrow> p = (2::nat)"
+  using prime_odd_nat[of p] prime_gt_1_nat[of p] by (cases "p = 2") auto
+
+lemma twopow_dvd_totient:
+  fixes n :: nat
+  assumes "n > 0"
+  defines "k \<equiv> card {p\<in>prime_factors n. odd p}"
+  shows   "2 ^ k dvd totient n"
+proof -
+  define P where "P = {p\<in>prime_factors n. odd p}"
+  define P' where "P' = {p\<in>prime_factors n. even p}"
+  define r where "r = (\<lambda>p. multiplicity p n)"
+  from \<open>n > 0\<close> have "totient n = (\<Prod>p\<in>prime_factors n. totient (p ^ r p))"
+    unfolding r_def by (rule totient.prod_prime_factors)
+  also have "prime_factors n = P \<union> P'"
+    by (auto simp: P_def P'_def)
+  also have "(\<Prod>p\<in>\<dots>. totient (p ^ r p)) =
+               (\<Prod>p\<in>P. totient (p ^ r p)) * (\<Prod>p\<in>P'. totient (p ^ r p))"
+    by (subst prod.union_disjoint) (auto simp: P_def P'_def)
+  finally have eq: "totient n = \<dots>" .
+
+  have "p ^ r p > 2" if "p \<in> P" for p
+  proof -
+    have "p \<noteq> 2" using that by (auto simp: P_def)
+    moreover have "p > 1" using prime_gt_1_nat[of p] that by (auto simp: P_def)
+    ultimately have "2 < p" by linarith
+    also have "p = p ^ 1" by simp
+    also have "p ^ 1 \<le> p ^ r p"
+      using that prime_gt_1_nat[of p]
+      by (intro power_increasing) (auto simp: P_def prime_factors_multiplicity r_def)
+    finally show ?thesis .
+  qed
+  hence "(\<Prod>p\<in>P. 2) dvd (\<Prod>p\<in>P. totient (p ^ r p))"
+    by (intro prod_dvd_prod totient_even)
+  hence "2 ^ card P dvd (\<Prod>p\<in>P. totient (p ^ r p))"
+    by simp
+  also have "\<dots> dvd (\<Prod>p\<in>P. totient (p ^ r p)) * (\<Prod>p\<in>P'. totient (p ^ r p))"
+    by simp
+  also have "\<dots> = totient n"
+    by (rule eq [symmetric])
+  finally show ?thesis unfolding k_def P_def .
+qed
+
 lemma totient_conv_moebius_mu':
   assumes "n > (0::nat)"
   shows   "real (totient n) = real n * (\<Sum>d | d dvd n. moebius_mu d / real d)"

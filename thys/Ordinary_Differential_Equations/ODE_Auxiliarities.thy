@@ -74,6 +74,32 @@ text \<open>sometimes @{thm mem_ball} etc. are not good \<open>[simp]\<close> ru
 lemmas [simp del] = mem_ball mem_cball mem_sphere mem_ball_0 mem_cball_0
 
 
+subsection \<open>Boundedness\<close>
+
+lemma bounded_subset_cboxE:
+  assumes "\<And>i. i \<in> Basis \<Longrightarrow> bounded ((\<lambda>x. x \<bullet> i) ` X)"
+  obtains a b where "X \<subseteq> cbox a b"
+proof -
+  have "\<And>i. i \<in> Basis \<Longrightarrow> \<exists>a b. ((\<lambda>x. x \<bullet> i) ` X) \<subseteq> {a..b}"
+    by (metis box_real(2) box_subset_cbox subset_trans bounded_subset_box_symmetric[OF assms] )
+  then obtain a b where bnds: "\<And>i. i \<in> Basis \<Longrightarrow> ((\<lambda>x. x \<bullet> i) ` X) \<subseteq> {a i .. b i}" 
+    by metis
+  then have "X \<subseteq> {x. \<forall>i\<in>Basis. x \<bullet> i \<in> {a i .. b i}}"
+    by force
+  also have "\<dots> = cbox (\<Sum>i\<in>Basis. a i *\<^sub>R i) (\<Sum>i\<in>Basis. b i *\<^sub>R i)"
+    by (auto simp: cbox_def)
+  finally show ?thesis ..
+qed
+
+lemma
+  bounded_euclideanI:
+  assumes "\<And>i. i \<in> Basis \<Longrightarrow> bounded ((\<lambda>x. x \<bullet> i) ` X)"
+  shows "bounded X"
+proof -
+  from bounded_subset_cboxE[OF assms] obtain a b where "X \<subseteq> cbox a b" .
+  with bounded_cbox show ?thesis by (rule bounded_subset)
+qed
+
 subsection \<open>Intervals\<close>
 
 notation closed_segment ("(1{_--_})")
@@ -534,6 +560,14 @@ lift_definition comp12::\<comment> \<open>TODO: name?\<close>
 
 lemma blinfun_apply_comp12[simp]: "blinfun_apply (comp12 f g) b = f (fst b) + g (snd b)"
   by (simp add: comp12.rep_eq split_beta)
+
+
+subsection \<open>Order Transitivity Attributes\<close>
+
+attribute_setup le = \<open>Scan.succeed (Thm.rule_attribute [] (fn context => fn thm => thm RS @{thm order_trans}))\<close>
+  "transitive version of inequality (useful for intro)"
+attribute_setup ge = \<open>Scan.succeed (Thm.rule_attribute [] (fn context => fn thm => thm RS @{thm order_trans[rotated]}))\<close>
+  "transitive version of inequality (useful for intro)"
 
 
 subsection \<open>point reflection\<close>

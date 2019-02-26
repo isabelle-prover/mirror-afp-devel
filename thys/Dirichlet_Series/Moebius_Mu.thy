@@ -257,6 +257,130 @@ qed
 lemma fds_mangoldt: "fds mangoldt = fds moebius_mu * fds (\<lambda>n. of_real (ln (real n)))"
   by (subst fds_moebius_inversion) (rule fds_mangoldt_times_zeta [symmetric])
 
+(* 2.18 *)
+lemma sum_divisors_moebius_mu_times_multiplicative:
+  fixes f :: "nat \<Rightarrow> 'a :: {comm_ring_1}"
+  assumes "multiplicative_function f" "n > 0"
+  shows   "(\<Sum>d | d dvd n. moebius_mu d * f d) = (\<Prod>p\<in>prime_factors n. 1 - f p)"
+proof -
+  define g where "g = (\<lambda>n. \<Sum>d | d dvd n. moebius_mu d * f d)"
+  define g' where "g' = dirichlet_prod (\<lambda>n. moebius_mu n * f n) (\<lambda>n. if n = 0 then 0 else 1)"
+  interpret f: multiplicative_function f by fact
+  have "multiplicative_function (\<lambda>n. if n = 0 then 0 else 1 :: 'a)"
+    by standard auto
+  interpret multiplicative_function g' unfolding g'_def
+    by (intro multiplicative_dirichlet_prod multiplicative_function_mult
+              moebius_mu.multiplicative_function_axioms assms) fact+
+
+  have g'_primepow: "g' (p ^ k) = 1 - f p" if "prime p" "k > 0" for p k
+  proof -
+    have "g' (p ^ k) = (\<Sum>i\<le>k. moebius_mu (p ^ i) * f (p ^ i))"
+      using that by (simp add: g'_def dirichlet_prod_prime_power)
+    also have "\<dots> = (\<Sum>i\<in>{0, 1}. moebius_mu (p ^ i) * f (p ^ i))"
+      using that by (intro sum.mono_neutral_right) (auto simp: moebius_mu_power')
+    also have "\<dots> = 1 - f p"
+      using that by (simp add: moebius_mu.prime)
+    finally show ?thesis .
+  qed
+
+  have "g' n = g n"
+    by (simp add: g_def g'_def dirichlet_prod_def)
+  also from assms have "g' n = (\<Prod>p\<in>prime_factors n. g' (p ^ multiplicity p n))"
+      by (intro prod_prime_factors) auto
+  also have "\<dots> = (\<Prod>p\<in>prime_factors n. 1 - f p)"
+    by (intro prod.cong) (auto simp: g'_primepow prime_factors_multiplicity)
+  finally show ?thesis by (simp add: g_def)
+qed
+  
+
+(* Theorem 2.17 *)
+lemma completely_multiplicative_iff_inverse_moebius_mu:
+  fixes f :: "nat \<Rightarrow> 'a :: {comm_ring_1, ring_no_zero_divisors}"
+  assumes "multiplicative_function f"
+  defines "g \<equiv> dirichlet_inverse f 1"
+  shows   "completely_multiplicative_function f \<longleftrightarrow>
+             (\<forall>n. g n = moebius_mu n * f n)"
+proof -
+  interpret multiplicative_function f by fact
+  show ?thesis
+  proof safe
+    assume "completely_multiplicative_function f"
+    then interpret completely_multiplicative_function f .
+    have [simp]: "fds f \<noteq> 0" by (auto simp: fds_eq_iff)
+
+    have "fds (\<lambda>n. moebius_mu n * f n) * fds f = 1"
+    proof
+      fix n :: nat
+      have "fds_nth (fds (\<lambda>n. moebius_mu n * f n) * fds f) n =
+              (\<Sum>(r, d) | r * d = n. moebius_mu r * f (r * d))"
+        by (simp add: fds_eq_iff fds_nth_mult fds_nth_fds dirichlet_prod_altdef2 mult mult.assoc)
+      also have "\<dots> = (\<Sum>(r, d) | r * d = n. moebius_mu r * f n)"
+        by (intro sum.cong) auto
+      also have "\<dots> = dirichlet_prod moebius_mu (\<lambda>_. 1) n * f n"
+        by (simp add: dirichlet_prod_altdef2 sum_distrib_right case_prod_unfold mult)
+      also have "dirichlet_prod moebius_mu (\<lambda>_. 1) n = fds_nth (fds moebius_mu * fds_zeta) n"
+        by (simp add: fds_nth_mult)
+      also have "fds moebius_mu * fds_zeta = 1"
+        by (simp add: mult_ac fds_zeta_times_moebius_mu)
+      also have "fds_nth 1 n * f n = fds_nth 1 n"
+        by (auto simp: fds_eq_iff fds_nth_one)
+      finally show "fds_nth (fds (\<lambda>n. moebius_mu n * f n) * fds f) n = fds_nth 1 n" .
+    qed
+    also have "1 = fds g * fds f"
+      by (auto simp: fds_eq_iff g_def fds_nth_mult dirichlet_prod_inverse')
+    finally have "fds g = fds (\<lambda>n. moebius_mu n * f n)"
+      by (subst (asm) mult_cancel_right) auto
+    thus "g n = moebius_mu n * f n" for n
+      by (cases "n = 0") (auto simp: fds_eq_iff g_def)
+  next
+    assume g: "\<forall>n. g n = moebius_mu n * f n"
+    show "completely_multiplicative_function f"
+    proof (rule completely_multiplicativeI)
+      fix p k :: nat assume pk: "prime p" "k > 0"
+      show "f (p ^ k) = f p ^ k"
+      proof (induction k)
+        case (Suc k)
+        have eq: "dirichlet_prod g f n = 0" if "n \<noteq> 1" for n
+          unfolding g_def using dirichlet_prod_inverse'[of f 1] that by auto
+        have "dirichlet_prod g f (p ^ Suc k) = 0"
+          using pk by (intro eq) auto
+        also have "dirichlet_prod g f (p ^ Suc k) = (\<Sum>i\<le>Suc k. g (p ^ i) * f (p ^ (Suc k - i)))"
+          by (intro dirichlet_prod_prime_power) fact+
+        also have "\<dots> = (\<Sum>i\<le>Suc k. moebius_mu (p ^ i) * f (p ^ i) * f (p ^ (Suc k - i)))"
+          by (intro sum.cong refl, subst g) auto
+        also have "\<dots> = (\<Sum>i\<in>{0, 1}. moebius_mu (p ^ i) * f (p ^ i) * f (p ^ (Suc k - i)))"
+          using pk by (intro sum.mono_neutral_right) (auto simp: moebius_mu_power')
+        also have "\<dots> = f (p ^ Suc k) - f p ^ Suc k"
+          using pk Suc.IH by (auto simp: moebius_mu.prime)
+        finally show "f (p ^ Suc k) = f p ^ Suc k" by simp
+      qed auto
+    qed
+  qed
+qed
+
+lemma completely_multiplicative_fds_inverse:
+  fixes f :: "nat \<Rightarrow> 'a :: field"
+  assumes "completely_multiplicative_function f"
+  shows   "inverse (fds f) = fds (\<lambda>n. moebius_mu n * f n)"
+proof -
+  interpret completely_multiplicative_function f by fact
+  from assms show ?thesis
+    by (subst (asm) completely_multiplicative_iff_inverse_moebius_mu)
+       (auto simp: inverse_fds_def multiplicative_function_axioms)
+qed
+
+lemma completely_multiplicative_fds_inverse':
+  fixes f :: "'a :: field fds"
+  assumes "completely_multiplicative_function (fds_nth f)"
+  shows   "inverse f = fds (\<lambda>n. moebius_mu n * fds_nth f n)"
+proof -
+  have "f = fds (fds_nth f)" by simp
+  also have "inverse (fds (fds_nth f)) = fds (\<lambda>n. moebius_mu n * fds_nth f n)"
+    by (intro completely_multiplicative_fds_inverse assms)
+  finally show ?thesis by simp
+qed
+    
+
 context
   includes fds_syntax
 begin

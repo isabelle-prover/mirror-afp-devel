@@ -17,7 +17,7 @@ where
   "Eg2_var\<^sub>C_of_Eg1 temp = temp\<^sub>C"
 
 sublocale sifum_refinement_eg1_eg2 \<subseteq> sifum_refinement dma dma\<^sub>C \<C>_vars \<C>_vars\<^sub>C \<C> \<C>\<^sub>C A.eval\<^sub>w C.eval\<^sub>w undefined Eg2_var\<^sub>C_of_Eg1
-  using image_cong_simp [cong del] INF_cong_simp [cong] SUP_cong_simp [cong]
+  supply image_cong_simp [cong del] INF_cong_simp [cong] SUP_cong_simp [cong]
   apply(unfold_locales)
            apply(erule C.eval_det, simp)
           apply(rule C.Var_finite)

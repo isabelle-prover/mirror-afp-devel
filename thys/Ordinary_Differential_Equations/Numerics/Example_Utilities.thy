@@ -1,11 +1,15 @@
 theory Example_Utilities
 imports
-  Ordinary_Differential_Equations.ODE_Analysis
+(*  Ordinary_Differential_Equations.ODE_Analysis
   Affine_Arithmetic.Print
   Refine_Rigorous_Numerics_Aform
   Transfer_Euclidean_Space_Vector
   Affine_Arithmetic.Float_Real
+*)
+  Init_ODE_Solver
 begin
+
+lemmas [simp] = length_aforms_of_ivls
 
 declare INF_cong_simp [cong] SUP_cong_simp [cong] image_cong_simp [cong del]
 
@@ -40,6 +44,7 @@ end
 lemma in_list_interval_lengthD: "x \<in> list_interval a b \<Longrightarrow> length x = length a"
   by (auto simp: list_interval_def list_all2_lengthD)
 
+context includes floatarith_notation begin
 
 definition "varvec_fas' D C = ((map Var [0..<D]) @
       concat (map (\<lambda>b.
@@ -192,6 +197,7 @@ proof -
       done
     done
 qed
+end
 
 context ll_on_open_it\<comment> \<open>TODO: do this more generically for @{const ll_on_open_it}\<close>
 begin
@@ -1074,7 +1080,7 @@ lemma FAILi_transfer[transfer_rule]: "(rel_nres B) FAILi FAILi"
 lemma RES_transfer[transfer_rule]: "(rel_set B ===> rel_nres B) RES RES"
   by (auto simp: rel_nres_def nres_rel_def rel_set_def intro!: rel_funI RES_refine)
 
-context begin interpretation autoref_syn .
+context includes autoref_syntax begin
 lemma RETURN_dres_nres_relI:
   "(fi, f) \<in> A \<rightarrow> B \<Longrightarrow> (\<lambda>x. dRETURN (fi x), (\<lambda>x. RETURN (f x))) \<in> A \<rightarrow> \<langle>B\<rangle>dres_nres_rel"
   by (auto simp: dres_nres_rel_def dest: fun_relD)
@@ -1429,8 +1435,8 @@ lemmas [simp] = compute_tdev
 syntax product_aforms::"(real aform) list \<Rightarrow> (real aform) list \<Rightarrow> (real aform) list"
   (infixr "\<times>\<^sub>a" 70)
 
-
 lemma matrix_inner_Basis_list:
+  includes vec_syntax
   assumes "k < CARD('n) * CARD('m)"
   shows "(f::(('n::enum rvec, 'm::enum) vec)) \<bullet> Basis_list ! k =
     vec_nth (vec_nth f (enum_class.enum ! (k div CARD('n)))) (enum_class.enum ! (k mod CARD('n)))"
@@ -1459,7 +1465,8 @@ proof -
 qed
 
 lemma list_of_eucl_matrix:
-  "(list_of_eucl (M::(('n::enum rvec, 'm::enum) vec))) =
+  includes vec_syntax
+  shows "(list_of_eucl (M::(('n::enum rvec, 'm::enum) vec))) =
     concat (map (\<lambda>i. map (\<lambda>j. M $ (enum_class.enum ! i)$ (enum_class.enum ! j) )
       [0..<CARD('n)]) [0..<CARD('m)])"
   by (auto intro!: nth_equalityI simp: length_concat o_def sum_list_distinct_conv_sum_set ac_simps
@@ -1490,6 +1497,8 @@ lemma ldec: "ldec x \<le> real_of_rat x"
   apply (metis Fract_of_int_quotient less_eq_real_def less_int_code(1) of_rat_rat
       quotient_of_denom_pos quotient_of_div)
   done
+
+context includes floatarith_notation begin
 
 definition "matrix_of_degrees\<^sub>e =
   (let
@@ -1687,6 +1696,8 @@ lemma Joints_aforms_of_point_self[simp]: "xs \<in> Joints (aforms_of_point xs)"
 lemma bind_eq_dRETURN_conv:
   "(f \<bind> g = dRETURN S) \<longleftrightarrow> (\<exists>R. f = dRETURN R \<and> g R = dRETURN S)"
   by (cases f) auto
+
+end
 
 context approximate_sets_options' begin
 

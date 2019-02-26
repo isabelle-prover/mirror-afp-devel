@@ -616,8 +616,10 @@ proof (atomize(full), insert assms(1-3), induct "LLL_measure i fs" arbitrary: i 
     from LLL_invD[OF inv] have len: "length fs = m" by auto
     obtain f mu ds where state: "state = (f,mu,ds)" by (cases state, auto)
     from fs_state[OF impl inv state len] have fs: "fs_state state = fs" by auto
-    from False LLL_invD[OF inv] have i: "i = m" upw by auto
-    with False res inv impl fs show ?thesis by (auto simp: fs')
+    from False LLL_invD[OF inv] have i: "i = m" by auto
+    with False res inv impl fs have "LLL_invariant upw m fs' \<and> LLL_impl_inv state' m fs'" 
+      by (auto simp: fs')
+    thus ?thesis by (auto simp: LLL_invariant_def)
   qed
 qed
 
@@ -666,7 +668,7 @@ shows "LLL_invariant True m fs"
   by auto
 
 lemma reduce_basis: assumes res: "reduce_basis \<alpha> fs_init = fs"
-  shows "gs.reduced \<alpha> m (map (gso fs) [0..<m]) (\<mu> fs)" "LLL_invariant True m fs"
+  shows "reduced fs m" "LLL_invariant True m fs"
 proof -
   show "LLL_invariant True m fs"
   proof (cases fs_init)
@@ -682,7 +684,7 @@ proof -
     show "LLL_invariant True m fs" unfolding fs LLL_invariant_def L_def gs.reduced_def gs.weakly_reduced_def
       using lin_dep unfolding m0 Nil by auto
   qed
-  thus "gs.reduced \<alpha> m (map (gso fs) [0..<m]) (\<mu> fs)" by (rule LLL_inv_m_imp_reduced)
+  thus "reduced fs m" by (rule LLL_inv_m_imp_reduced)
 qed
 
 lemma short_vector: assumes res: "short_vector \<alpha> fs_init = v"

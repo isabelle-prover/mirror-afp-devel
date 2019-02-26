@@ -262,6 +262,38 @@ proof -
   finally show ?thesis .
 qed
 
+lemma (in multiplicative_function) completely_multiplicativeI:
+  assumes "\<And>p k. prime p \<Longrightarrow> k > 0 \<Longrightarrow> f (p ^ k) = f p ^ k"
+  shows   "completely_multiplicative_function f"
+proof
+  fix m n :: nat assume mn: "m > 1" "n > 1"
+  define P where "P = prime_factors (m * n)"
+  have "f (m * n) = (\<Prod>p\<in>P. f (p ^ multiplicity p (m * n)))"
+    using mn by (subst prod_prime_factors) (auto simp: P_def)
+  also have "\<dots> = (\<Prod>p\<in>P. f p ^ multiplicity p (m * n))"
+    by (intro prod.cong) (auto simp: assms prime_factors_multiplicity P_def)
+  also have "\<dots> = (\<Prod>p\<in>P. f p ^ multiplicity p m * f p ^ multiplicity p n)"
+    by (intro prod.cong refl, subst prime_elem_multiplicity_mult_distrib)
+       (use mn in \<open>auto simp: P_def prime_factors_multiplicity power_add\<close>)
+  also have "\<dots> = (\<Prod>p\<in>P. f p ^ multiplicity p m) * (\<Prod>p\<in>P. f p ^ multiplicity p n)"
+    by (rule prod.distrib)
+  also have "(\<Prod>p\<in>P. f p ^ multiplicity p m) = (\<Prod>p\<in>prime_factors m. f p ^ multiplicity p m)"
+    unfolding P_def by (intro prod.mono_neutral_right dvd_prime_factors finite_set_mset)
+                       (use mn in \<open>auto simp: prime_factors_multiplicity\<close>)
+  also have "\<dots> = (\<Prod>p\<in>prime_factors m. f (p ^ multiplicity p m))"
+    by (intro prod.cong) (auto simp: assms prime_factors_multiplicity)
+  also have "\<dots> = f m"
+    using mn by (intro prod_prime_factors [symmetric]) auto
+  also have "(\<Prod>p\<in>P. f p ^ multiplicity p n) = (\<Prod>p\<in>prime_factors n. f p ^ multiplicity p n)"
+    unfolding P_def by (intro prod.mono_neutral_right dvd_prime_factors finite_set_mset)
+                       (use mn in \<open>auto simp: prime_factors_multiplicity\<close>)
+  also have "\<dots> = (\<Prod>p\<in>prime_factors n. f (p ^ multiplicity p n))"
+    by (intro prod.cong) (auto simp: assms prime_factors_multiplicity)
+  also have "\<dots> = f n"
+    using mn by (intro prod_prime_factors [symmetric]) auto
+  finally show "f (m * n) = f m * f n" .
+qed auto
+
 
 subsection \<open>Indicator function\<close>
 
