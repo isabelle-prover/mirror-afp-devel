@@ -18,12 +18,9 @@ session LLL_Basis_Reduction (AFP) = Berlekamp_Zassenhaus +
     Gram_Schmidt_Int
   theories
     LLL    
-    LLL_GSO_Impl    
   theories
     LLL_Integer_Equations
     LLL_Mu_Integer_Impl    
-  theories
-    LLL_GSO_Impl_Complexity
   theories
     LLL_Mu_Integer_Impl_Complexity    
   theories
