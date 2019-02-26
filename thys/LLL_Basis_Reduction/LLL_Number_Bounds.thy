@@ -631,8 +631,9 @@ proof (induct "LLL_measure i fs" arbitrary: i fs upw rule: less_induct)
     show ?thesis by auto
   next
     case False
-    with LLL_invD[OF Linv] have i: "i = m" upw by auto
-    with False res inv show ?thesis by auto
+    with LLL_invD[OF Linv] have i: "i = m" by auto
+    with False res inv have "LLL_bound_invariant True upw m fs'" by auto
+    thus ?thesis by (auto simp: LLL_invariant_def LLL_bound_invariant_def)
   qed
 qed
 

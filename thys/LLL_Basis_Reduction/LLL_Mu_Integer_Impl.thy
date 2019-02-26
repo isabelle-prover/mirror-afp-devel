@@ -616,8 +616,10 @@ proof (atomize(full), insert assms(1-3), induct "LLL_measure i fs" arbitrary: i 
     from LLL_invD[OF inv] have len: "length fs = m" by auto
     obtain f mu ds where state: "state = (f,mu,ds)" by (cases state, auto)
     from fs_state[OF impl inv state len] have fs: "fs_state state = fs" by auto
-    from False LLL_invD[OF inv] have i: "i = m" upw by auto
-    with False res inv impl fs show ?thesis by (auto simp: fs')
+    from False LLL_invD[OF inv] have i: "i = m" by auto
+    with False res inv impl fs have "LLL_invariant upw m fs' \<and> LLL_impl_inv state' m fs'" 
+      by (auto simp: fs')
+    thus ?thesis by (auto simp: LLL_invariant_def)
   qed
 qed
 

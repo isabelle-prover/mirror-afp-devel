@@ -63,8 +63,8 @@ abbreviation lin_indep where "lin_indep fs \<equiv> gs.lin_indpt_list (RAT fs)"
 abbreviation gso where "gso fs \<equiv> gram_schmidt_fs.gso n (RAT fs)"
 abbreviation \<mu> where "\<mu> fs \<equiv> gram_schmidt_fs.\<mu> n (RAT fs)"
 
-abbreviation reduced where "reduced fs i \<equiv> gram_schmidt_fs.reduced n (RAT fs) \<alpha> i" 
-abbreviation weakly_reduced where "weakly_reduced fs i \<equiv> gram_schmidt_fs.weakly_reduced n (RAT fs) \<alpha> i" 
+abbreviation reduced where "reduced fs \<equiv> gram_schmidt_fs.reduced n (RAT fs) \<alpha>" 
+abbreviation weakly_reduced where "weakly_reduced fs \<equiv> gram_schmidt_fs.weakly_reduced n (RAT fs) \<alpha>" 
   
 text \<open>lattice of initial basis\<close>
 definition "L = lattice_of fs_init" 
@@ -83,8 +83,7 @@ definition LLL_invariant :: "bool \<Rightarrow> nat \<Rightarrow> int vec list \
     reduced fs i \<and>
     i \<le> m \<and> 
     length fs = m \<and>
-    (upw \<or> \<mu>_small fs i) \<and>
-    (i = m \<longrightarrow> upw)
+    (upw \<or> \<mu>_small fs i)    
   )" 
 
 lemma LLL_invD: assumes "LLL_invariant upw i fs"
@@ -100,7 +99,6 @@ lemma LLL_invD: assumes "LLL_invariant upw i fs"
   "i \<le> m"
   "reduced fs i" 
   "upw \<or> \<mu>_small fs i"
-  "i = m \<Longrightarrow> upw"
 proof (atomize (full), goal_cases)
   case 1
   interpret gs': gram_schmidt_fs_lin_indpt n "RAT fs"
@@ -118,7 +116,6 @@ lemma LLL_invI: assumes
   "lin_indep fs" 
   "reduced fs i" 
   "upw \<or> \<mu>_small fs i" 
-  "i = m \<Longrightarrow> upw" 
 shows "LLL_invariant upw i fs" 
   unfolding LLL_invariant_def Let_def split using assms by auto
 
@@ -1613,8 +1610,9 @@ proof (induct "LLL_measure i fs" arbitrary: i fs upw rule: less_induct)
     show ?thesis by auto
   next
     case False
-    with LLL_invD[OF inv] have i: "i = m" upw by auto
-    with False res inv show ?thesis by auto
+    with LLL_invD[OF inv] have i: "i = m" by auto
+    with False res inv have "LLL_invariant upw m fs'" by auto
+    thus "LLL_invariant True m fs'" unfolding LLL_invariant_def by auto
   qed
 qed
 
