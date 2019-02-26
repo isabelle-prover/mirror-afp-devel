@@ -15,7 +15,7 @@ text \<open>Soundness of the LLL algorithm is proven in four steps.
   i.e., termination and the property that the returned basis is reduced.
   Then in LLL-Number-Bounds we will strengthen the invariant and prove that
   all intermediate numbers stay polynomial in size.
-  Moreover, in LLL-GSO-Impl we will refine the basic version, so that
+  Moreover, in LLL-Impl we will refine the basic version, so that
   the GSO does not need to be recomputed in every step. 
   Finally, in LLL-Complexity, we develop an cost-annotated version
   of the refined algorithm and prove a polynomial upper bound on the 
@@ -622,7 +622,7 @@ lemma reduction: "0 < reduction" "reduction \<le> 1"
 
 lemma base: "\<alpha> > 4/3 \<Longrightarrow> base > 1" using reduction(1,3) unfolding reduction_def base_def by auto
 
-lemma basis_reduction_swap: assumes Linv: "LLL_invariant False i fs"
+lemma basis_reduction_swap_main: assumes Linv: "LLL_invariant False i fs"
   and i: "i < m"
   and i0: "i \<noteq> 0" 
   and norm_ineq: "sq_norm (gso fs (i - 1)) > \<alpha> * sq_norm (gso fs i)" 
@@ -1454,44 +1454,44 @@ text \<open>We now assemble a basic implementation of the LLL algorithm,
   are always computed from scratch. This enables a simple soundness proof 
   and permits to separate an efficient implementation from the soundness reasoning.\<close>
 
-fun basic_basis_reduction_add_rows_loop where
-  "basic_basis_reduction_add_rows_loop i fs 0 = fs" 
-| "basic_basis_reduction_add_rows_loop i fs (Suc j) = (
+fun basis_reduction_add_rows_loop where
+  "basis_reduction_add_rows_loop i fs 0 = fs" 
+| "basis_reduction_add_rows_loop i fs (Suc j) = (
      let c = round (\<mu> fs i j);
          fs' = (if c = 0 then fs else fs[ i := fs ! i - c \<cdot>\<^sub>v fs ! j])
-      in basic_basis_reduction_add_rows_loop i fs' j)" 
+      in basis_reduction_add_rows_loop i fs' j)" 
 
-definition basic_basis_reduction_add_rows where
-  "basic_basis_reduction_add_rows upw i fs = 
-     (if upw then basic_basis_reduction_add_rows_loop i fs i else fs)" 
+definition basis_reduction_add_rows where
+  "basis_reduction_add_rows upw i fs = 
+     (if upw then basis_reduction_add_rows_loop i fs i else fs)" 
 
-definition basic_basis_reduction_swap where
-  "basic_basis_reduction_swap i fs = (False, i - 1, fs[i := fs ! (i - 1), i - 1 := fs ! i])" 
+definition basis_reduction_swap where
+  "basis_reduction_swap i fs = (False, i - 1, fs[i := fs ! (i - 1), i - 1 := fs ! i])" 
 
-definition basic_basis_reduction_step where
-  "basic_basis_reduction_step upw i fs = (if i = 0 then (True, Suc i, fs)
+definition basis_reduction_step where
+  "basis_reduction_step upw i fs = (if i = 0 then (True, Suc i, fs)
      else let 
-       fs' = basic_basis_reduction_add_rows upw i fs
+       fs' = basis_reduction_add_rows upw i fs
      in if sq_norm (gso fs' (i - 1)) \<le> \<alpha> * sq_norm (gso fs' i) then
           (True, Suc i, fs') 
-        else basic_basis_reduction_swap i fs')" 
+        else basis_reduction_swap i fs')" 
 
-function basic_basis_reduction_main where
-  "basic_basis_reduction_main (upw,i,fs) = (if i < m \<and> LLL_invariant upw i fs
-     then basic_basis_reduction_main (basic_basis_reduction_step upw i fs) else
+function basis_reduction_main where
+  "basis_reduction_main (upw,i,fs) = (if i < m \<and> LLL_invariant upw i fs
+     then basis_reduction_main (basis_reduction_step upw i fs) else
      fs)"
   by pat_completeness auto
 
-definition "basic_basis_reduction = basic_basis_reduction_main (True, 0, fs_init)" 
+definition "reduce_basis = basis_reduction_main (True, 0, fs_init)" 
 
-definition "basic_short_vector = hd basic_basis_reduction" 
+definition "short_vector = hd reduce_basis" 
 
 text \<open>Soundness of this implementation is easily proven\<close>
 
-lemma basic_basis_reduction_add_rows_loop: assumes 
+lemma basis_reduction_add_rows_loop: assumes 
   inv: "LLL_invariant True i fs" 
   and mu_small: "\<mu>_small_row i fs j"
-  and res: "basic_basis_reduction_add_rows_loop i fs j = fs'" 
+  and res: "basis_reduction_add_rows_loop i fs j = fs'" 
   and i: "i < m" 
   and j: "j \<le> i" 
 shows "LLL_invariant False i fs'" "LLL_measure i fs' = LLL_measure i fs" 
@@ -1514,14 +1514,14 @@ next
   qed
 qed
 
-lemma basic_basis_reduction_add_rows: assumes 
+lemma basis_reduction_add_rows: assumes 
   inv: "LLL_invariant upw i fs" 
-  and res: "basic_basis_reduction_add_rows upw i fs = fs'" 
+  and res: "basis_reduction_add_rows upw i fs = fs'" 
   and i: "i < m" 
 shows "LLL_invariant False i fs'" "LLL_measure i fs' = LLL_measure i fs" 
 proof (atomize(full), goal_cases)
   case 1
-  note def = basic_basis_reduction_add_rows_def
+  note def = basis_reduction_add_rows_def
   show ?case
   proof (cases upw)
     case False
@@ -1530,35 +1530,35 @@ proof (atomize(full), goal_cases)
     case True
     with inv have "LLL_invariant True i fs" by auto
     note start = this \<mu>_small_row_refl[of i fs]
-    from res[unfolded def] True have "basic_basis_reduction_add_rows_loop i fs i = fs'" by auto
-    from basic_basis_reduction_add_rows_loop[OF start this i]
+    from res[unfolded def] True have "basis_reduction_add_rows_loop i fs i = fs'" by auto
+    from basis_reduction_add_rows_loop[OF start this i]
     show ?thesis by auto
   qed
 qed
 
-lemma basic_basis_reduction_swap: assumes 
+lemma basis_reduction_swap: assumes 
   inv: "LLL_invariant False i fs" 
-  and res: "basic_basis_reduction_swap i fs = (upw',i',fs')" 
+  and res: "basis_reduction_swap i fs = (upw',i',fs')" 
   and cond: "sq_norm (gso fs (i - 1)) > \<alpha> * sq_norm (gso fs i)" 
   and i: "i < m" "i \<noteq> 0" 
 shows "LLL_invariant upw' i' fs'" (is ?g1)
   "LLL_measure i' fs' < LLL_measure i fs" (is ?g2)
 proof -
-  note def = basic_basis_reduction_swap_def
-  from res[unfolded basic_basis_reduction_swap_def]
+  note def = basis_reduction_swap_def
+  from res[unfolded basis_reduction_swap_def]
   have id: "upw' = False" "i' = i - 1" "fs' = fs[i := fs ! (i - 1), i - 1 := fs ! i]" by auto
-  from basis_reduction_swap(1-2)[OF inv i cond id(3)] show ?g1 ?g2 unfolding id by auto
+  from basis_reduction_swap_main(1-2)[OF inv i cond id(3)] show ?g1 ?g2 unfolding id by auto
 qed
 
-lemma basic_basis_reduction_step: assumes 
+lemma basis_reduction_step: assumes 
   inv: "LLL_invariant upw i fs" 
-  and res: "basic_basis_reduction_step upw i fs = (upw',i',fs')" 
+  and res: "basis_reduction_step upw i fs = (upw',i',fs')" 
   and i: "i < m" 
 shows "LLL_invariant upw' i' fs'" "LLL_measure i' fs' < LLL_measure i fs" 
 proof (atomize(full), goal_cases)
   case 1
-  note def = basic_basis_reduction_step_def
-  obtain fs'' where fs'': "basic_basis_reduction_add_rows upw i fs = fs''" by auto
+  note def = basis_reduction_step_def
+  obtain fs'' where fs'': "basis_reduction_add_rows upw i fs = fs''" by auto
   show ?case
   proof (cases "i = 0")
     case True
@@ -1570,7 +1570,7 @@ proof (atomize(full), goal_cases)
     note res = res[unfolded def id if_False fs'' Let_def]
     let ?x = "sq_norm (gso fs'' (i - 1))" 
     let ?y = "\<alpha> * sq_norm (gso fs'' i)" 
-    from basic_basis_reduction_add_rows[OF inv fs'' i]
+    from basis_reduction_add_rows[OF inv fs'' i]
     have inv: "LLL_invariant False i fs''"
       and meas: "LLL_measure i fs'' = LLL_measure i fs" by auto
     show ?thesis
@@ -1581,32 +1581,32 @@ proof (atomize(full), goal_cases)
     next
       case gt: False
       hence "?x > ?y" by auto
-      from basic_basis_reduction_swap[OF inv _ this i False] gt res meas
+      from basis_reduction_swap[OF inv _ this i False] gt res meas
       show ?thesis by auto
     qed
   qed
 qed
 
-termination by (relation "measure (\<lambda> (upw,i,fs). LLL_measure i fs)", insert basic_basis_reduction_step, auto split: prod.splits)
+termination by (relation "measure (\<lambda> (upw,i,fs). LLL_measure i fs)", insert basis_reduction_step, auto split: prod.splits)
 
-declare basic_basis_reduction_main.simps[simp del]
+declare basis_reduction_main.simps[simp del]
 
-lemma basic_basis_reduction_main: assumes "LLL_invariant upw i fs" 
-  and res: "basic_basis_reduction_main (upw,i,fs) = fs'" 
+lemma basis_reduction_main: assumes "LLL_invariant upw i fs" 
+  and res: "basis_reduction_main (upw,i,fs) = fs'" 
 shows "LLL_invariant True m fs'" 
   using assms
 proof (induct "LLL_measure i fs" arbitrary: i fs upw rule: less_induct)
   case (less i fs upw)
   have id: "LLL_invariant upw i fs = True" using less by auto
-  note res = less(3)[unfolded basic_basis_reduction_main.simps[of upw i fs] id]
+  note res = less(3)[unfolded basis_reduction_main.simps[of upw i fs] id]
   note inv = less(2)
   note IH = less(1)
   show ?case
   proof (cases "i < m")
     case i: True
-    obtain i' fs' upw' where step: "basic_basis_reduction_step upw i fs = (upw',i',fs')" 
+    obtain i' fs' upw' where step: "basis_reduction_step upw i fs = (upw',i',fs')" 
       (is "?step = _") by (cases ?step, auto)
-    from IH[OF basic_basis_reduction_step(2,1)[OF inv step i]] res[unfolded step] i
+    from IH[OF basis_reduction_step(2,1)[OF inv step i]] res[unfolded step] i
     show ?thesis by auto
   next
     case False
@@ -1616,24 +1616,24 @@ proof (induct "LLL_measure i fs" arbitrary: i fs upw rule: less_induct)
   qed
 qed
 
-lemma basic_basis_reduction: assumes res: "basic_basis_reduction = fs" 
+lemma reduce_basis_inv: assumes res: "reduce_basis = fs" 
   shows "LLL_invariant True m fs" 
-  using basic_basis_reduction_main[OF LLL_inv_initial_state res[unfolded basic_basis_reduction_def]] .
+  using basis_reduction_main[OF LLL_inv_initial_state res[unfolded reduce_basis_def]] .
 
-lemma basic_reduce_basis: assumes res: "basic_basis_reduction = fs"
+lemma reduce_basis: assumes res: "reduce_basis = fs"
   shows "lattice_of fs = L" 
   "reduced fs m" 
   "lin_indep fs" 
   "length fs = m" 
-  using LLL_invD[OF basic_basis_reduction[OF res]] by blast+
+  using LLL_invD[OF reduce_basis_inv[OF res]] by blast+
   
-lemma basic_short_vector: assumes res: "basic_short_vector = v" 
+lemma short_vector: assumes res: "short_vector = v" 
   and m0: "m \<noteq> 0"
 shows "v \<in> carrier_vec n"
   "v \<in> L - {0\<^sub>v n}"  
   "h \<in> L - {0\<^sub>v n} \<Longrightarrow> rat_of_int (sq_norm v) \<le> \<alpha> ^ (m - 1) * rat_of_int (sq_norm h)" 
   "v \<noteq> 0\<^sub>v j" 
-  using basis_reduction_short_vector[OF basic_basis_reduction[OF refl] res[symmetric, unfolded basic_short_vector_def] m0] 
+  using basis_reduction_short_vector[OF reduce_basis_inv[OF refl] res[symmetric, unfolded short_vector_def] m0] 
   by blast+
 end
 

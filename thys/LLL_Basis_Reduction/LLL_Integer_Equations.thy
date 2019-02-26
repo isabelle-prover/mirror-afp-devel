@@ -165,7 +165,7 @@ and (* d\<mu>-updates *)
         else d\<mu> fs i j)" 
     (is "\<And> i j. _ \<Longrightarrow> _ \<Longrightarrow> _ = ?new_mu i j")
 proof -
-  note swap = basis_reduction_swap[OF inv k k0 norm_ineq fs'_def]
+  note swap = basis_reduction_swap_main[OF inv k k0 norm_ineq fs'_def]
   from k k0 have kk: "k - 1 < k" and le_m: "k - 1 \<le> m" "k \<le> m" "Suc k \<le> m" by auto
   from LLL_invD[OF inv] have len: "length fs = m" by auto
   interpret fs: fs_int' n m fs_init \<alpha> False k fs

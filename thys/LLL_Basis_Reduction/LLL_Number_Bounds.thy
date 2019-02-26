@@ -273,7 +273,7 @@ end
 context LLL_with_assms
 begin
 
-subsubsection \<open>@{const LLL_bound_invariant} is maintained during execution of @{const basic_basis_reduction}\<close>
+subsubsection \<open>@{const LLL_bound_invariant} is maintained during execution of @{const reduce_basis}\<close>
 
 lemma basis_reduction_add_rows_enter_bound: assumes binv: "LLL_bound_invariant True True i fs"
   and i: "i < m"   
@@ -373,11 +373,11 @@ proof -
 qed
 
 
-lemma basic_basis_reduction_add_rows_loop_bound: assumes
+lemma basis_reduction_add_rows_loop_bound: assumes
   binv: "LLL_bound_invariant False True i fs" 
   and mu_small: "\<mu>_small_row i fs j"
   and mu_bnd: "\<mu>_bound_row_inner fs i j" 
-  and res: "basic_basis_reduction_add_rows_loop i fs j = fs'" 
+  and res: "basis_reduction_add_rows_loop i fs j = fs'" 
   and i: "i < m" 
   and j: "j \<le> i" 
 shows "LLL_bound_invariant True False i fs'" 
@@ -410,13 +410,13 @@ next
   qed
 qed
 
-lemma basic_basis_reduction_add_rows_bound: assumes 
+lemma basis_reduction_add_rows_bound: assumes 
   binv: "LLL_bound_invariant True upw i fs" 
-  and res: "basic_basis_reduction_add_rows upw i fs = fs'" 
+  and res: "basis_reduction_add_rows upw i fs = fs'" 
   and i: "i < m" 
 shows "LLL_bound_invariant True False i fs'"  
 proof -
-  note def = basic_basis_reduction_add_rows_def
+  note def = basis_reduction_add_rows_def
   show ?thesis
   proof (cases upw)
     case False
@@ -426,24 +426,24 @@ proof -
     with binv have binv: "LLL_bound_invariant True True i fs" by auto
     note start = basis_reduction_add_rows_enter_bound[OF this i]
     from res[unfolded def] True 
-    have "basic_basis_reduction_add_rows_loop i fs i = fs'" by auto
-    from basic_basis_reduction_add_rows_loop_bound[OF start(1) \<mu>_small_row_refl start(2) this i le_refl]      
+    have "basis_reduction_add_rows_loop i fs i = fs'" by auto
+    from basis_reduction_add_rows_loop_bound[OF start(1) \<mu>_small_row_refl start(2) this i le_refl]      
     show ?thesis by auto
   qed
 qed
 
 
-lemma basic_basis_reduction_swap_bound: assumes 
+lemma basis_reduction_swap_bound: assumes 
   binv: "LLL_bound_invariant True False i fs" 
-  and res: "basic_basis_reduction_swap i fs = (upw',i',fs')" 
+  and res: "basis_reduction_swap i fs = (upw',i',fs')" 
   and cond: "sq_norm (gso fs (i - 1)) > \<alpha> * sq_norm (gso fs i)" 
   and i: "i < m" "i \<noteq> 0" 
 shows "LLL_bound_invariant True upw' i' fs'" 
 proof (rule bound_invI)
   note Linv = bound_invD(1)[OF binv]
-  from basic_basis_reduction_swap[OF Linv res cond i]
+  from basis_reduction_swap[OF Linv res cond i]
   show Linv': "LLL_invariant upw' i' fs'" by auto
-  from res[unfolded basic_basis_reduction_swap_def]
+  from res[unfolded basis_reduction_swap_def]
   have id: "i' = i - 1" "fs' = fs[i := fs ! (i - 1), i - 1 := fs ! i]" by auto
   from LLL_invD(6)[OF Linv] i
   have choice: "fs' ! k = fs ! k \<or> fs' ! k = fs ! i \<or> fs' ! k = fs ! (i - 1)" for k 
@@ -463,7 +463,7 @@ proof (rule bound_invI)
   have short: "\<And> k. k < m \<Longrightarrow> ?n1 k \<le> of_nat A" by auto
   from short[of "i - 1"] i 
   have short_im1: "?n1 (i - 1) \<le> of_nat A" by auto
-  note swap = basis_reduction_swap[OF Linv i cond id(2)]
+  note swap = basis_reduction_swap_main[OF Linv i cond id(2)]
   note updates = swap(3,4)
   note Linv' = swap(1)
   note inv' = LLL_invD[OF Linv']
@@ -575,14 +575,14 @@ proof (rule bound_invI)
   qed
 qed
 
-lemma basic_basis_reduction_step_bound: assumes 
+lemma basis_reduction_step_bound: assumes 
   binv: "LLL_bound_invariant True upw i fs" 
-  and res: "basic_basis_reduction_step upw i fs = (upw',i',fs')" 
+  and res: "basis_reduction_step upw i fs = (upw',i',fs')" 
   and i: "i < m" 
 shows "LLL_bound_invariant True upw' i' fs'" 
 proof -
-  note def = basic_basis_reduction_step_def
-  obtain fs'' where fs'': "basic_basis_reduction_add_rows upw i fs = fs''" by auto
+  note def = basis_reduction_step_def
+  obtain fs'' where fs'': "basis_reduction_add_rows upw i fs = fs''" by auto
   show ?thesis
   proof (cases "i = 0")
     case True
@@ -594,7 +594,7 @@ proof -
     note res = res[unfolded def id if_False fs'' Let_def]
     let ?x = "sq_norm (gso fs'' (i - 1))" 
     let ?y = "\<alpha> * sq_norm (gso fs'' i)" 
-    from basic_basis_reduction_add_rows_bound[OF binv fs'' i]
+    from basis_reduction_add_rows_bound[OF binv fs'' i]
     have binv: "LLL_bound_invariant True False i fs''" by auto
     show ?thesis
     proof (cases "?x \<le> ?y")
@@ -604,30 +604,30 @@ proof -
     next
       case gt: False
       hence "?x > ?y" by auto
-      from basic_basis_reduction_swap_bound[OF binv _ this i False] gt res
+      from basis_reduction_swap_bound[OF binv _ this i False] gt res
       show ?thesis by auto
     qed
   qed
 qed
 
-lemma basic_basis_reduction_main_bound: assumes "LLL_bound_invariant True upw i fs" 
-  and res: "basic_basis_reduction_main (upw,i,fs) = fs'" 
+lemma basis_reduction_main_bound: assumes "LLL_bound_invariant True upw i fs" 
+  and res: "basis_reduction_main (upw,i,fs) = fs'" 
 shows "LLL_bound_invariant True True m fs'" 
   using assms
 proof (induct "LLL_measure i fs" arbitrary: i fs upw rule: less_induct)
   case (less i fs upw)
   have id: "LLL_bound_invariant True upw i fs = True" using less by auto
-  note res = less(3)[unfolded basic_basis_reduction_main.simps[of upw i fs] id]
+  note res = less(3)[unfolded basis_reduction_main.simps[of upw i fs] id]
   note inv = less(2)
   note IH = less(1)
   note Linv = bound_invD(1)[OF inv]
   show ?case
   proof (cases "i < m")
     case i: True
-    obtain i' fs' upw' where step: "basic_basis_reduction_step upw i fs = (upw',i',fs')" 
+    obtain i' fs' upw' where step: "basis_reduction_step upw i fs = (upw',i',fs')" 
       (is "?step = _") by (cases ?step, auto)
-    note decrease = basic_basis_reduction_step(2)[OF Linv step i]
-    from IH[OF decrease basic_basis_reduction_step_bound(1)[OF inv step i]] res[unfolded step] i Linv
+    note decrease = basis_reduction_step(2)[OF Linv step i]
+    from IH[OF decrease basis_reduction_step_bound(1)[OF inv step i]] res[unfolded step] i Linv
     show ?thesis by auto
   next
     case False
@@ -654,9 +654,9 @@ proof (intro bound_invI[OF LLL_inv_initial_state _ g_bound_fs_init])
   thus "f_bound True 0 fs_init" unfolding f_bound_def by auto
 qed
 
-lemma basic_basis_reduction: assumes res: "basic_basis_reduction = fs" 
+lemma reduce_basis: assumes res: "reduce_basis = fs" 
   shows "LLL_bound_invariant True True m fs" 
-  using basic_basis_reduction_main_bound[OF LLL_inv_initial_state_bound res[unfolded basic_basis_reduction_def]] .
+  using basis_reduction_main_bound[OF LLL_inv_initial_state_bound res[unfolded reduce_basis_def]] .
 
 
 subsubsection \<open>Bound extracted from @{term LLL_bound_invariant}.\<close>
