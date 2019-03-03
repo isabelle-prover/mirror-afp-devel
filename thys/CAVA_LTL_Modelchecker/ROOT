@@ -21,7 +21,7 @@ session SM (AFP) = SM_Base +
     "SM/Impl/SM_Wrapup"
 
 session CAVA_Setup (AFP) = CAVA_Automata +
-  options [timeout = 1200]
+  options [timeout = 3600]
   sessions
     LTL_to_GBA
     Gabow_SCC
