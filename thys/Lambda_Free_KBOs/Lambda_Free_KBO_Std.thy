@@ -750,7 +750,7 @@ qed
 subsection \<open>Stability under Substitution\<close>
 
 definition extra_wt :: "('v \<Rightarrow> ('s, 'v) tm) \<Rightarrow> ('s, 'v) tm \<Rightarrow> nat" where
-  "extra_wt \<rho> s = sum_mset {#wt (\<rho> x) - wt (Hd (Var x)). x \<in># vars_mset s#}"
+  "extra_wt \<rho> s = (\<Sum>x \<in># vars_mset s. wt (\<rho> x) - wt (Hd (Var x)))"
 
 lemma
   extra_wt_Var[simp]: "extra_wt \<rho> (Hd (Var x)) = wt (\<rho> x) - wt (Hd (Var x))" and

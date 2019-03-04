@@ -46,7 +46,7 @@ lemma
   gt_and_basic_gt_le_basic_gt: "(\<lambda>t s. local.kbo_std.gt t s \<and> t >\<^sub>t s) \<le> (>\<^sub>t)"
   by auto
 
-lemma basic_gt_iff_lt: "t >\<^sub>t s \<longleftrightarrow> kbo_std.gt t s"
+lemma basic_gt_iff_gt: "t >\<^sub>t s \<longleftrightarrow> kbo_std.gt t s"
 proof
   assume "t >\<^sub>t s"
   thus "kbo_std.gt t s"
@@ -90,25 +90,28 @@ next
 qed
 
 theorem gt_irrefl: "\<not> s >\<^sub>t s"
-  unfolding basic_gt_iff_lt by (rule kbo_std.gt_irrefl[simplified])
+  unfolding basic_gt_iff_gt by (rule kbo_std.gt_irrefl[simplified])
 
 theorem gt_trans: "u >\<^sub>t t \<Longrightarrow> t >\<^sub>t s \<Longrightarrow> u >\<^sub>t s"
-  unfolding basic_gt_iff_lt by (rule kbo_std.gt_trans[simplified])
+  unfolding basic_gt_iff_gt by (rule kbo_std.gt_trans[simplified])
 
 theorem gt_proper_sub: "proper_sub s t \<Longrightarrow> t >\<^sub>t s"
-  unfolding basic_gt_iff_lt by (rule kbo_std.gt_proper_sub[simplified])
+  unfolding basic_gt_iff_gt by (rule kbo_std.gt_proper_sub[simplified])
 
 theorem gt_compat_fun: "t' >\<^sub>t t \<Longrightarrow> App s t' >\<^sub>t App s t"
-  unfolding basic_gt_iff_lt by (rule kbo_std.gt_compat_fun[simplified])
+  unfolding basic_gt_iff_gt by (rule kbo_std.gt_compat_fun[simplified])
 
 theorem gt_compat_arg: "s' >\<^sub>t s \<Longrightarrow> App s' t >\<^sub>t App s t"
-  unfolding basic_gt_iff_lt by (rule kbo_std.gt_compat_arg[simplified])
+  unfolding basic_gt_iff_gt by (rule kbo_std.gt_compat_arg[simplified])
+
+lemma wt_subst: "wary_subst \<rho> \<Longrightarrow> wt (subst \<rho> s) = wt s + kbo_std.extra_wt \<rho> s"
+  unfolding basic_gt_iff_gt basic_wt_eq_wt by (rule kbo_std.wt_subst[simplified])
 
 theorem gt_subst: "wary_subst \<rho> \<Longrightarrow> t >\<^sub>t s \<Longrightarrow> subst \<rho> t >\<^sub>t subst \<rho> s"
-  unfolding basic_gt_iff_lt by (rule kbo_std.gt_subst[simplified])
+  unfolding basic_gt_iff_gt by (rule kbo_std.gt_subst[simplified])
 
 theorem gt_wf: "wfP (\<lambda>s t. t >\<^sub>t s)"
-  unfolding basic_gt_iff_lt[abs_def] by (rule kbo_std.gt_wf[simplified])
+  unfolding basic_gt_iff_gt[abs_def] by (rule kbo_std.gt_wf[simplified])
 
 end
 

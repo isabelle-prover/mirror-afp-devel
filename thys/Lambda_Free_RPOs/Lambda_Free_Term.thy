@@ -448,7 +448,8 @@ definition wary_subst :: "('v \<Rightarrow> ('s, 'v) tm) \<Rightarrow> bool" whe
 
 definition strict_wary_subst :: "('v \<Rightarrow> ('s, 'v) tm) \<Rightarrow> bool" where
   "strict_wary_subst \<rho> \<longleftrightarrow>
-   (\<forall>x. wary (\<rho> x) \<and> arity (\<rho> x) \<in> {arity_var x, \<infinity>} \<and> ground_heads (head (\<rho> x)) \<subseteq> ground_heads_var x)"
+   (\<forall>x. wary (\<rho> x) \<and> arity (\<rho> x) \<in> {arity_var x, \<infinity>}
+    \<and> ground_heads (head (\<rho> x)) \<subseteq> ground_heads_var x)"
 
 lemma strict_imp_wary_subst: "strict_wary_subst \<rho> \<Longrightarrow> wary_subst \<rho>"
   unfolding strict_wary_subst_def wary_subst_def using eq_iff by force

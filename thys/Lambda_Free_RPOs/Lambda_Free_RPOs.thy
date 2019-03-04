@@ -8,7 +8,7 @@
 section \<open>Recursive Path Orders for Lambda-Free Higher-Order Terms\<close>
 
 theory Lambda_Free_RPOs
-imports Lambda_Free_RPO_App Lambda_Free_RPO_Optim
+imports Lambda_Free_RPO_App Lambda_Free_RPO_Optim Lambda_Encoding
 begin
 
 locale simple_rpo_instances
