@@ -498,21 +498,19 @@ definition "one_prod = (1,1)"
 definition "dual_prod x = (\<partial> (fst x),\<partial> (snd x))"
   
 interpretation prod: complete_lattice Inf_prod Sup_prod inf_prod less_eq_prod less_prod sup_prod bot_prod "top_prod :: ('a::complete_lattice \<times> 'b::complete_lattice)"
-  apply unfold_locales
-                 apply (simp_all add: Inf_prod_def Sup_prod_def inf_prod_def sup_prod_def bot_prod_def top_prod_def less_eq_prod_def less_prod_def Sup_distl Sup_distr)
-  by (auto intro: Inf_lower Inf_greatest Sup_upper Sup_least)
+  by standard (auto simp add: Inf_prod_def Sup_prod_def inf_prod_def sup_prod_def bot_prod_def top_prod_def less_eq_prod_def less_prod_def Sup_distl Sup_distr intro: Inf_lower Inf_greatest Sup_upper Sup_least)
 
 interpretation prod: complete_lattice_with_dual Inf_prod Sup_prod inf_prod less_eq_prod less_prod sup_prod bot_prod "top_prod :: ('a::complete_lattice_with_dual \<times> 'b::complete_lattice_with_dual)" dual_prod
-  by unfold_locales (simp_all add: dual_prod_def fun_eq_iff inj_def Sup_prod_def Inf_prod_def inj_dual_iff Sup_dual_def_var)
+  by standard (simp_all add: dual_prod_def fun_eq_iff inj_def Sup_prod_def Inf_prod_def inj_dual_iff Sup_dual_def_var image_comp)
 
 interpretation prod: proto_near_quantale Inf_prod Sup_prod inf_prod less_eq_prod less_prod sup_prod bot_prod "top_prod :: ('a::proto_near_quantale \<times> 'b::proto_near_quantale)" times_prod'
-  by unfold_locales (simp add: times_prod'_def Sup_prod_def Sup_distr)
+  by standard (simp add: times_prod'_def Sup_prod_def Sup_distr image_comp)
 
 interpretation prod: proto_quantale Inf_prod Sup_prod inf_prod less_eq_prod less_prod sup_prod bot_prod "top_prod :: ('a::proto_quantale \<times> 'b::proto_quantale)" times_prod'
-  by unfold_locales (simp add: times_prod'_def Sup_prod_def less_eq_prod_def Sup_distl)
+  by standard (simp add: times_prod'_def Sup_prod_def less_eq_prod_def Sup_distl image_comp)
 
 interpretation prod: unital_quantale one_prod times_prod' Inf_prod Sup_prod inf_prod less_eq_prod less_prod sup_prod bot_prod "top_prod :: ('a::unital_quantale \<times> 'b::unital_quantale)" 
-  by unfold_locales (simp_all add: one_prod_def times_prod'_def mult.assoc)
+  by standard (simp_all add: one_prod_def times_prod'_def ac_simps image_comp)
 
 
 subsection \<open>Quantale Morphisms\<close>

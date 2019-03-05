@@ -48,7 +48,7 @@ lemma Inf_par_distrib: "D \<noteq> {} \<Longrightarrow> (\<Sqinter> D) \<paralle
   using par_Inf_distrib par_commute by simp
 
 lemma par_INF_distrib: "X \<noteq> {} \<Longrightarrow> c \<parallel> (\<Sqinter>x\<in>X. d x) = (\<Sqinter>x\<in>X. c \<parallel> d x)"
-  using par_Inf_distrib by auto
+  using par_Inf_distrib by (auto simp add: image_comp)
 
 lemma INF_par_distrib: "X \<noteq> {} \<Longrightarrow> (\<Sqinter>x\<in>X. d x) \<parallel> c = (\<Sqinter>x\<in>X. d x \<parallel> c)"
   using par_INF_distrib par_commute by (metis (mono_tags, lifting) INF_cong) 

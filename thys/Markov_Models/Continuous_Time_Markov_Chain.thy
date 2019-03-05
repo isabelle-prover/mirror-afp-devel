@@ -158,7 +158,7 @@ proof -
     by (subst continuous_at_Sup_antimono[where f="\<lambda>r. ennreal (exp (- x * r))"])
        (auto intro!: bdd_aboveI2[where M="\<Sum>i. R i"] sum_le_suminf summable_mult mult_left_mono
                      continuous_mult continuous_at_ennreal continuous_within_exp[THEN continuous_within_compose3] continuous_minus
-             simp: less_imp_le antimono_def)
+             simp: less_imp_le antimono_def image_comp)
   also have "\<dots> = ennreal (exp (- x * (\<Sum>i. R i)))"
     using R by (subst suminf_eq_SUP_real) (auto simp: less_imp_le)
   also have "(\<Inter>n. ?N n) = (\<Pi> i\<in>UNIV. {x<..})"
@@ -274,8 +274,8 @@ proof -
   also have "\<dots> = (INF n. inverse (ennreal (\<Prod>i<n. (1 + R i) / R i)))"
     using R by (subst inverse_ennreal) (auto intro!: prod_pos divide_pos_pos simp: add_pos_pos)
   also have "\<dots> = inverse (SUP n. ennreal (\<Prod>i<n. (1 + R i) / R i))"
-    by (subst continuous_at_Sup_antimono[where f=inverse])
-       (auto simp: antimono_def intro!: continuous_on_imp_continuous_within[OF continuous_on_inverse_ennreal'])
+    by (subst continuous_at_Sup_antimono [where f = inverse])
+      (auto simp: antimono_def image_comp intro!: continuous_on_imp_continuous_within[OF continuous_on_inverse_ennreal'])
   also have "(SUP n. ennreal (\<Prod>i<n. (1 + R i) / R i)) = top"
   proof (cases "SUP n. ennreal (\<Prod>i<n. (1 + R i) / R i)")
     case (real r)

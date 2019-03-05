@@ -18,7 +18,7 @@ text \<open>
 datatype 'a dual = dual 'a
 
 primrec undual :: "'a dual \<Rightarrow> 'a" where
-  undual_dual[code_abbrev]: "undual (dual x) = x"
+  undual_dual: "undual (dual x) = x"
 
 lemma dual_undual [simp]: "dual (undual x') = x'"
   by (cases x') simp
@@ -272,27 +272,24 @@ instantiation dual :: (complete_lattice) complete_lattice
 begin
 
 definition
-  "Sup A \<equiv> dual (Inf (undual ` A))"
+  "Sup A = dual (Inf (undual ` A))"
 
 definition
-  "Inf A \<equiv> dual (Sup (undual ` A))"
+  "Inf A = dual (Sup (undual ` A))"
 
 instance
-apply intro_classes
-apply (auto simp: less_eq_dual_def less_dual_def Sup_dual_def Inf_dual_def
-                  INF_lower SUP_upper
-           intro: INF_greatest SUP_least)
-done
+  by standard (auto simp: less_eq_dual_def less_dual_def Sup_dual_def Inf_dual_def
+    INF_lower SUP_upper intro: INF_greatest SUP_least)
 
 end
 
 lemma SUP_dual_unfold:
   "Sup (f ` A) = dual (Inf ((undual \<circ> f) ` A))"
-  by (simp add: Sup_dual_def)
+  by (simp add: Sup_dual_def image_comp)
 
 lemma INF_dual_unfold:
   "Inf (f ` A) = dual (Sup ((undual \<circ> f) ` A))"
-  by (simp add: Inf_dual_def)
+  by (simp add: Inf_dual_def image_comp)
 
 text \<open>
   Apparently, the \<open>Inf\<close> and \<open>Sup\<close> operations are dual to each
@@ -300,18 +297,18 @@ text \<open>
 \<close>
 
 theorem dual_Inf [intro?]: "dual (Inf A) = Sup (dual ` A)"
-  unfolding Inf_dual_def Sup_dual_def by (simp add: image_image)
+  by (simp add: Inf_dual_def Sup_dual_def image_comp)
 (* BH: Why not [simp]? *)
 
 theorem dual_Sup [intro?]: "dual (Sup A) = Inf (dual ` A)"
-  unfolding Inf_dual_def Sup_dual_def by (simp add: image_image)
+  by (simp add: Inf_dual_def Sup_dual_def image_comp)
 (* BH: Why not [simp]? *)
 
 lemma undual_Inf: "undual (Inf A) = Sup (undual ` A)"
-  unfolding Inf_dual_def by simp
+  by (simp add: Inf_dual_def)
 
 lemma undual_Sup: "undual (Sup A) = Inf (undual ` A)"
-  unfolding Sup_dual_def by simp
+  by (simp add: Sup_dual_def)
 
 theorem dual_Inf' [iff?]:
     "(Inf (dual ` A) = dual s) = (Sup A = s)"

@@ -68,9 +68,9 @@ proof -
   also have "... = ((\<Squnion>x \<in> X. fst x) \<cdot> fst y, (\<Squnion>x \<in> X. snd x) \<squnion> (\<alpha> (\<Squnion>x \<in> X. fst x) (snd y)))"
     by (simp add: sd_prod_def)
   also have "... = ((\<Squnion>x \<in> X. (fst x \<cdot> fst y)), (\<Squnion>x \<in> X. snd x) \<squnion> (\<alpha> (\<Squnion>x \<in> X. fst x) (snd y)))"
-    by (simp add: Sup_distr)
+    by (simp add: Sup_distr image_comp)
   also have "... = ((\<Squnion>x \<in> X. (fst x \<cdot> fst y)), (\<Squnion>x \<in> X. snd x) \<squnion> (\<Squnion>x \<in> X. (\<alpha> (fst x) (snd y))))"
-    by (simp add: act3)
+    by (simp add: act3 image_comp)
   also have "... = ((\<Squnion>x \<in> X. (fst x \<cdot> fst y)), (\<Squnion>x \<in> X. (snd x \<squnion> (\<alpha> (fst x) (snd y)))))"
     using complete_lattice_class.SUP_sup_distrib by fastforce
   also have "... = Sup_prod {(fst x \<cdot> fst y, snd x \<squnion> (\<alpha> (fst x) (snd y))) |x. x \<in> X}"
@@ -94,9 +94,9 @@ proof -
   also have "... = ((fst x) \<cdot> (\<Squnion>y \<in> Y. fst y), (snd x \<squnion> (\<alpha> (fst x) (\<Squnion>y \<in> Y. snd y))))"
     by (simp add: sd_prod_def)
   also have "... = ((\<Squnion>y \<in> Y. fst x \<cdot> fst y), (snd x \<squnion> (\<alpha> (fst x) (\<Squnion>y \<in> Y. snd y))))"
-    by (simp add: Sup_distl)
+    by (simp add: Sup_distl image_comp)
   also have "... = ((\<Squnion>y \<in> Y. fst x \<cdot> fst y), (snd x \<squnion> (\<Squnion>y \<in> Y. \<alpha> (fst x) (snd y))))"
-    by (simp add: act4)
+    by (simp add: act4 image_comp)
   also have "... = ((\<Squnion>y \<in> Y. fst x \<cdot> fst y), (\<Squnion>y \<in> Y. snd x \<squnion> (\<alpha> (fst x) (snd y))))"
     using a sd_distl_aux by blast
   also have "... = Sup_prod {(fst x \<cdot> fst y, snd x \<squnion> (\<alpha> (fst x) (snd y))) |y. y \<in> Y}"
@@ -195,7 +195,7 @@ proof -
      apply (safe intro!: Sup_least, simp add: Sup_upper)
     by (metis (mono_tags, lifting) SUP_upper2 Sup_upper mem_Collect_eq order_refl)
   finally show ?thesis
-    by (simp add: qstar_def act3)
+    by (simp add: qstar_def act3 image_comp)
 qed
 
 end

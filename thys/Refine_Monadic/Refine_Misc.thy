@@ -547,7 +547,7 @@ next
     apply (simp add: contD [OF CONT])
     apply (rule Sup_subset_mono)
     apply (auto)
-    apply (rule_tac x="Suc xa" in range_eqI)
+    apply (rule_tac x="Suc i" in range_eqI)
     apply simp
     done
 qed
@@ -579,7 +579,7 @@ next
     apply (simp add: contD [OF CONT])
     apply (rule Sup_subset_mono)
     apply auto
-    apply (rule_tac x="Suc xa" in range_eqI)
+    apply (rule_tac x="Suc i" in range_eqI)
     apply auto
     done
 qed
@@ -594,7 +594,7 @@ proof -
     by simp
 
   have "f (SUP i. (f^^i) m) = (SUP i. f ((f ^^ i) m))"
-    by (subst contD[OF C]) (simp_all)
+    by (subst contD[OF C]) (simp_all add: image_comp)
   also have "\<dots> \<le> (SUP i. (f^^i) m)"
     apply (rule SUP_least)
     apply (simp, subst 1)

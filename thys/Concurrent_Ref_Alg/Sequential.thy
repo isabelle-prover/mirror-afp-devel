@@ -68,7 +68,7 @@ locale seq_distrib_right = sequential +
 begin
 
 lemma INF_seq_distrib: "(\<Sqinter>c\<in>C. f c) ; d = (\<Sqinter>c\<in>C. f c ; d)"
-  using Inf_seq_distrib by auto
+  using Inf_seq_distrib by (auto simp add: image_comp)
 
 lemma inf_seq_distrib: "(c\<^sub>0 \<sqinter> c\<^sub>1) ; d = (c\<^sub>0 ; d \<sqinter> c\<^sub>1 ; d)"
 proof -

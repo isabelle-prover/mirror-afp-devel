@@ -214,19 +214,18 @@ lemma isometry_preserves_bounded:
 unfolding bounded_two_points using assms(2) isometry_onD[OF assms(1)] by auto (metis assms(2) rev_subsetD)+
 
 lemma isometry_preserves_infdist:
-  assumes "isometry_on X f"
-          "A \<subseteq> X" "x \<in> X"
-  shows "infdist (f x) (f`A) = infdist x A"
-unfolding infdist_def using assms by (auto, meson INF_cong isometry_on_def subset_iff)
+  "infdist (f x) (f`A) = infdist x A"
+  if "isometry_on X f" "A \<subseteq> X" "x \<in> X"
+  using that by (simp add: infdist_def image_comp isometry_on_def subset_iff)
 
 lemma isometry_preserves_hausdorff_distance:
-  assumes "isometry_on X f"
-          "A \<subseteq> X" "B \<subseteq> X"
-  shows "hausdorff_distance (f`A) (f`B) = hausdorff_distance A B"
-unfolding hausdorff_distance_def
-using assms isometry_preserves_infdist[OF assms(1) assms(2)] isometry_preserves_infdist[OF assms(1) assms(3)]
-  isometry_preserves_bounded[OF assms(1) assms(2)] isometry_preserves_bounded[OF assms(1) assms(3)]
-by (auto, smt SUP_cong subset_eq)
+  "hausdorff_distance (f`A) (f`B) = hausdorff_distance A B"
+  if "isometry_on X f" "A \<subseteq> X" "B \<subseteq> X"
+  using that isometry_preserves_infdist [OF that(1) that(2)]
+  isometry_preserves_infdist [OF that(1) that(3)]
+  isometry_preserves_bounded [OF that(1) that(2)]
+  isometry_preserves_bounded [OF that(1) that(3)]
+  by (simp add: hausdorff_distance_def image_comp subset_eq)
 
 lemma isometry_on_UNIV_iterates:
   fixes f::"('a::metric_space) \<Rightarrow> 'a"
@@ -1719,11 +1718,11 @@ proof -
       apply (rule cINF_superset_mono)
         apply (meson bdd_belowI2 zero_le_dist) using assms by (auto intro!: quasi_isometry_onD(1)[OF assms(1)])
     also have "... = (INF t\<in>(dist w)`S. lambda * t + C)"
-      by auto
+      by (auto simp add: image_comp)
     also have "... = lambda * Inf ((dist w)`S) + C"
       apply (rule continuous_at_Inf_mono[symmetric])
       unfolding mono_def using \<open>lambda \<ge> 1\<close> False by (auto intro!: continuous_intros)
-    finally show ?thesis unfolding infdist_def using False by auto
+    finally show ?thesis unfolding infdist_def using False by (auto simp add: image_comp)
   qed
   show "1 / lambda * infdist w S - C \<le> infdist (f w) (f ` S)"
   proof (cases "S = {}")
@@ -1738,12 +1737,12 @@ proof -
       apply (rule continuous_at_Inf_mono)
       unfolding mono_def using \<open>lambda \<ge> 1\<close> False by (auto simp add: divide_simps intro!: continuous_intros)
     also have "... = (INF x\<in>S. (1/lambda) * dist w x - C)"
-      by auto
+      by (auto simp add: image_comp)
     also have "... \<le> (INF x\<in>S. dist (f w) (f x))"
       apply (rule cINF_superset_mono[OF False]) apply (rule bdd_belowI2[of _ "-C"])
       using assms \<open>lambda \<ge> 1\<close> apply simp apply simp apply (rule quasi_isometry_onD(2)[OF assms(1)])
       using assms by auto
-    finally show ?thesis unfolding infdist_def using False by auto
+    finally show ?thesis unfolding infdist_def using False by (auto simp add: image_comp)
   qed
 qed
 

@@ -204,7 +204,7 @@ text\<open>
         by (rule_tac x = a in sconjunctive_simp, auto)
       also have B: "S (Inf (S' ` X)) = Inf (S ` (S' ` X))"
         by (rule_tac x = "S' a" in sconjunctive_simp, auto)
-      finally show "(S o S') (Inf X) = Inf ((S \<circ> S') ` X)" by simp
+      finally show "(S o S') (Inf X) = Inf ((S \<circ> S') ` X)" by (simp add: image_comp)
     qed
 
   lemma [simp]:"conjunctive S \<Longrightarrow> S (Inf (Q ` X)) = (Inf ((S o Q) ` X))"

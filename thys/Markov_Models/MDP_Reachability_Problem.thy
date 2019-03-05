@@ -245,7 +245,7 @@ proof -
       qed simp
     qed simp
     finally have "lfp F_sup s = P_sup s (\<lambda>\<omega>. (HLD S1 suntil HLD S2) (s ## \<omega>))"
-      by (simp add: lfp_F_sup_iterate) }
+      by (simp add: lfp_F_sup_iterate image_comp) }
   moreover have "\<And>s. s \<notin> S \<Longrightarrow> lfp F_sup s = undefined"
     by (subst lfp_unfold[OF mono_F_sup]) (auto simp add: F_sup_def)
   ultimately show ?thesis

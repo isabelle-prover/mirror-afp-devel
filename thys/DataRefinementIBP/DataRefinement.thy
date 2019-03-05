@@ -98,7 +98,7 @@ lemma Disjunctive_Sup:
 
 lemma (in DiagramTermination) disjunctive_SUP_L_P:
   "Disjunctive_fun R \<Longrightarrow> (R .. (SUP_L_P P (pair u i))) =  (SUP_L_P (\<lambda> w . (R .. (P w)))) (pair u i)"
-  by (simp add: SUP_L_P_def apply_fun_def Disjunctive_fun_def Apply.Disjunctive_def fun_eq_iff)
+  by (simp add: SUP_L_P_def apply_fun_def Disjunctive_fun_def Apply.Disjunctive_def fun_eq_iff image_comp)
 
 lemma apply_fun_range: "{y. \<exists>x. y = (R .. P x)} = range (\<lambda> x . R .. P x)"
   by (fact full_SetCompr_eq)

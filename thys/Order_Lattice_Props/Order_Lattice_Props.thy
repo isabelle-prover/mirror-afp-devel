@@ -289,13 +289,13 @@ lemma ideals_filters_dual: "(X \<in> ideals) = ((\<partial> ` X) \<in> filters)"
   by (smt comp_eq_dest_lhs directed_filtered_dual image_inv_f_f image_is_empty inv_unique_comp filters_def ideals_def inj_dual invol_dual mem_Collect_eq upset_setp_downset_setp_dual)
 
 lemma idealp_filterp_dual: "idealp = filterp \<circ> (`) \<partial>"
-  unfolding fun_eq_iff comp_def by (simp add: ideals_filters_dual)
+  unfolding fun_eq_iff by (simp add: ideals_filters_dual)
 
 lemma filters_to_ideals: "(X \<in> filters) = ((\<partial> ` X) \<in> ideals)"
   by (simp add: ideals_filters_dual image_comp)
 
 lemma filterp_idealp_dual: "filterp = idealp \<circ> (`) \<partial>"
-  unfolding fun_eq_iff comp_def by (simp add: filters_to_ideals)
+  unfolding fun_eq_iff by (simp add: filters_to_ideals)
 
 end
 
@@ -317,7 +317,7 @@ lemma downset_set_prop_var: "\<Down>X = (\<Union>x \<in> X. \<down>x)"
   by (simp add: downset_set_prop)
 
 lemma downset_prop: "\<down>x = {y. y \<le> x}"
-  unfolding downset_def downset_set_def fun_eq_iff comp_def by fastforce
+  unfolding downset_def downset_set_def fun_eq_iff by fastforce
 
 lemma downset_prop2: "y \<le> x \<Longrightarrow> y \<in> \<down>x"
   by (simp add: downset_prop)
@@ -374,7 +374,7 @@ lemma downset_set_iso: "mono \<Down>"
   unfolding mono_def downset_set_def by blast
 
 lemma downset_set_idem [simp]: "\<Down> \<circ> \<Down> = \<Down>"
-  unfolding fun_eq_iff downset_set_def comp_def using order_trans by auto
+  unfolding fun_eq_iff downset_set_def using order_trans by auto
 
 lemma downset_faithful: "\<down>x \<subseteq> \<down>y \<Longrightarrow> x \<le> y"
   by (simp add: downset_prop subset_eq)
@@ -412,7 +412,7 @@ next
 qed
 
 lemma downset_directed_downset [simp]: "directed \<circ> \<Down> = directed"
-  unfolding fun_eq_iff comp_def by simp
+  unfolding fun_eq_iff by simp
 
 lemma directed_downset_ideals: "directed (\<Down>X) = (\<Down>X \<in> ideals)"
   by (metis (mono_tags, lifting) CollectI Fix_def directed_alt downset_set_idem downclosed_set_def downsets_def ideals_def o_def ord.ideals_directed)
@@ -521,7 +521,7 @@ lemma upset_set_prop_var: "\<Up>X = (\<Union>x \<in> X. \<up>x)"
   by (simp add: image_Union downset_set_prop_var upset_set_to_downset_set2 upset_to_downset2)
 
 lemma upset_set_prop: "\<Up> = Union \<circ> (`) \<up>"
-  unfolding fun_eq_iff comp_def by (simp add: upset_set_prop_var)
+  unfolding fun_eq_iff by (simp add: upset_set_prop_var)
 
 lemma upset_prop: "\<up>x = {y. x \<le> y}"
   unfolding upset_to_downset3 downset_prop image_def using dual_dual_ord by fastforce
@@ -795,12 +795,18 @@ abbreviation top_dual :: "('a::top \<Rightarrow> 'b::bot) \<Rightarrow> bool" wh
 text \<open>Inf-preservation and sup-preservation relate with duality.\<close>
 
 lemma Inf_pres_map_dual_var: 
-  fixes f :: "'a::complete_lattice_with_dual \<Rightarrow> 'b::complete_lattice_with_dual"
-  shows "Inf_pres f = Sup_pres (\<partial>\<^sub>F f)"
-  unfolding map_dual_def comp_def fun_eq_iff 
-  apply standard
-   apply (simp add: Inf_dual_var Sup_dual_def_var)
-  by (metis (no_types) Inf_dual_var image_image invol_dual_var subset_dual)
+  "Inf_pres f = Sup_pres (\<partial>\<^sub>F f)"
+  for f :: "'a::complete_lattice_with_dual \<Rightarrow> 'b::complete_lattice_with_dual"
+proof -
+  { fix x :: "'a set"
+    assume "\<partial> (f (\<Sqinter> (\<partial> ` x))) = (\<Squnion>y\<in>x. \<partial> (f (\<partial> y)))" for x
+    then have "\<Sqinter> (f ` \<partial> ` A) = f (\<partial> (\<Squnion> A))" for A
+      by (metis (no_types) Sup_dual_def_var image_image invol_dual_var subset_dual)
+    then have "\<Sqinter> (f ` x) = f (\<Sqinter> x)"
+      by (metis Sup_dual_def_var subset_dual) }
+  then show ?thesis
+    by (auto simp add: map_dual_def fun_eq_iff Inf_dual_var Sup_dual_def_var image_comp)
+qed
 
 lemma Inf_pres_map_dual: "Inf_pres = Sup_pres \<circ> (\<partial>\<^sub>F::('a::complete_lattice_with_dual \<Rightarrow> 'b::complete_lattice_with_dual) \<Rightarrow> 'a \<Rightarrow> 'b)"
 proof-
@@ -938,7 +944,7 @@ proof-
   hence "f (\<Sqinter>X) = \<Sqinter> (f ` X)"
     by (meson dual_order.antisym order_refl)}
   thus ?thesis
-    unfolding fun_eq_iff comp_def by simp
+    unfolding fun_eq_iff by simp
 qed
 
 lemma ord_iso_Sup_pres: 
@@ -963,16 +969,16 @@ proof-
   hence "f (\<Squnion>X) = \<Squnion> (f ` X)"
     by (meson dual_order.antisym order_refl)}
   thus ?thesis
-    unfolding fun_eq_iff comp_def by simp
+    unfolding fun_eq_iff by simp
 qed
 
 text \<open>Right preservation of sups and infs is trivial.\<close>
 
 lemma fSup_distr: "Sup_pres (\<lambda>x. x \<circ> f)"
-  unfolding fun_eq_iff comp_def by simp
+  unfolding fun_eq_iff by (simp add: image_comp)
 
 lemma fSup_distr_var: "\<Squnion>F \<circ> g = (\<Squnion>f \<in> F. f \<circ> g)"
-  unfolding fun_eq_iff comp_def by simp
+  unfolding fun_eq_iff by (simp add: image_comp)
 
 lemma fInf_distr: "Inf_pres (\<lambda>x. x \<circ> f)"
   unfolding fun_eq_iff comp_def
@@ -1006,25 +1012,25 @@ lemma fInf_subdistl_var:
   by (simp add: fun_isol mono_Inf)
 
 lemma fSup_distl: "Sup_pres f \<Longrightarrow> Sup_pres ((\<circ>) f)"
-  unfolding fun_eq_iff comp_def by simp
+  unfolding fun_eq_iff by (simp add: image_comp)
 
 lemma fSup_distl_var: "Sup_pres f \<Longrightarrow> f \<circ> \<Squnion>G = (\<Squnion>g \<in> G. f \<circ> g)"
-  unfolding fun_eq_iff comp_def by simp
+  unfolding fun_eq_iff by (simp add: image_comp)
 
 lemma fInf_distl: "Inf_pres f \<Longrightarrow> Inf_pres ((\<circ>) f)"
-  unfolding fun_eq_iff comp_def by auto
+  unfolding fun_eq_iff by (simp add: image_comp)
 
 lemma fInf_distl_var: "Inf_pres f \<Longrightarrow> f \<circ> \<Sqinter>G = (\<Sqinter>g \<in> G. f \<circ> g)"
-  unfolding fun_eq_iff comp_def by auto
+  unfolding fun_eq_iff by (simp add: image_comp)
 
 text \<open>Downsets preserve infs whereas upsets preserve sups.\<close>
 
 lemma Inf_pres_downset: "Inf_pres (\<down>::'a::complete_lattice_with_dual \<Rightarrow> 'a set)"
-  unfolding downset_prop fun_eq_iff comp_def
+  unfolding downset_prop fun_eq_iff
   by (safe, simp_all add: le_Inf_iff)
  
 lemma Sup_dual_upset: "Sup_dual (\<up>::'a::complete_lattice_with_dual \<Rightarrow> 'a set)"
-  unfolding upset_prop fun_eq_iff comp_def
+  unfolding upset_prop fun_eq_iff
   by (safe, simp_all add: Sup_le_iff)
 
 text \<open>Images of Sup-morphisms are closed under Sups and images of Inf-morphisms are closed under Infs.\<close>

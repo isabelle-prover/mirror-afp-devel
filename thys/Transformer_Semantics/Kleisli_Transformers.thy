@@ -453,7 +453,7 @@ proof-
   hence "(fb\<^sub>\<F> \<circ> fb\<^sup>-\<^sub>\<F>) (\<Sqinter>\<Phi>) = \<Sqinter>(\<P> (fb\<^sub>\<F> \<circ> fb\<^sup>-\<^sub>\<F>) \<Phi>)"
     by (metis (mono_tags, lifting) INF_cong INF_identity_eq assms iffb_inv2)
   hence "(fb\<^sub>\<F> \<circ> fb\<^sup>-\<^sub>\<F>) (\<Sqinter>\<Phi>) = fb\<^sub>\<F> (\<Squnion>(\<P> fb\<^sup>-\<^sub>\<F> \<Phi>))"
-    by (simp add: Setcompr_eq_image ffb_Sup_dual_var)
+    by (simp add: Setcompr_eq_image ffb_Sup_dual_var image_comp)
   thus ?thesis
     by (simp add: ffb_inj_iff)
 qed  
@@ -610,7 +610,7 @@ proof-
   hence  "(fb\<^sub>\<R> \<circ> fb\<^sup>-\<^sub>\<R>) (\<Sqinter>\<Phi>) = \<Sqinter>(\<P> (fb\<^sub>\<R> \<circ> fb\<^sup>-\<^sub>\<R>) \<Phi>)"
     by (smt INF_identity_eq Sup.SUP_cong assms irfb_inv2)
   also have "... = \<Sqinter>(\<P> fb\<^sub>\<R> (\<P> fb\<^sup>-\<^sub>\<R> \<Phi>))"
-    by simp
+    by (simp add: image_comp)
   also have "... = fb\<^sub>\<R> (\<Squnion>(\<P> fb\<^sup>-\<^sub>\<R> \<Phi>))"
     by (simp add: rfb_Sup_dual_var)
   finally have "(fb\<^sub>\<R> \<circ> fb\<^sup>-\<^sub>\<R>) (\<Sqinter>\<Phi>) = fb\<^sub>\<R> (\<Squnion>(\<P> fb\<^sup>-\<^sub>\<R> \<Phi>))".

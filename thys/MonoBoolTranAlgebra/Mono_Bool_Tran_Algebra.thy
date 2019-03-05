@@ -858,7 +858,7 @@ lemma dual_SUP: "(\<Squnion>(f ` A)) ^ o = (INF a \<in> A . (f a) ^ o)"
 
 lemma Sup_comp: "(Sup X) * z = (SUP x \<in> X . (x * z))"
   apply (rule dual_eq)
-  by (simp add: dual_comp dual_Sup dual_SUP INF_comp)
+  by (simp add: dual_comp dual_Sup dual_SUP INF_comp image_comp)
 
 lemma SUP_comp: "(\<Squnion>(f ` A)) * z = (SUP a \<in> A . (f a) * z)"
   unfolding Sup_comp
@@ -874,7 +874,6 @@ lemma Sup_assertion [simp]: "X \<subseteq> assertion \<Longrightarrow> Sup X \<i
   apply (simp add: Sup_comp dual_Sup Sup_inf)
   apply (subgoal_tac "((\<lambda>y . y \<sqinter> \<Sqinter>(dual ` X)) ` (\<lambda>x . x * \<top>) ` X) = X")
   apply simp
-  apply (metis local.SUP_inf local.Sup_inf)
   proof -
     assume A: "X \<subseteq> {x. x \<le> 1 \<and> x * \<top> \<sqinter> x ^ o = x}"
     have B [simp]: "!! x . x \<in> X \<Longrightarrow>  x * \<top> \<sqinter> (\<Sqinter>(dual ` X)) = x"
@@ -898,7 +897,7 @@ lemma Sup_assertion [simp]: "X \<subseteq> assertion \<Longrightarrow> Sup X \<i
       finally show "x * \<top> \<sqinter> \<Sqinter>(dual ` X) = x" .
       qed
       show "(\<lambda>y. y \<sqinter> \<Sqinter>(dual ` X)) ` (\<lambda>x . x * \<top>) ` X = X"
-        by (auto simp add: image_image cong: image_cong_simp)
+        by (simp add: image_comp)
     qed
 
 lemma Sup_range_assertion [simp]: "(!!w . p w \<in> assertion) \<Longrightarrow> Sup (range p) \<in> assertion"

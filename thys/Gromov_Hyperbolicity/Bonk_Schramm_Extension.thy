@@ -617,7 +617,7 @@ proof -
         also have "... = extended_distance x z + extended_distance z t"
           unfolding dzt apply simp
           using mono_cSup_bij[of "(\<lambda>w. extended_distance z w - max (extended_distance a w) (extended_distance b w))`(wo.underS (middle a b) \<inter> extended_distance_set)" "\<lambda>s. extended_distance x z + s", OF _ _ T(2) T(3)]
-          by (auto simp add: bdd[OF that(2)] ab(1) T(1) add_diff_eq)
+          by (auto simp add: bdd [OF that(2)] ab(1) T(1) add_diff_eq image_comp)
         finally have "extended_distance x t \<le> extended_distance x z + extended_distance z t" by simp
         then show "extended_distance x z \<le> extended_distance x t + extended_distance t z
                   \<and> extended_distance x t \<le> extended_distance x z + extended_distance z t"

@@ -187,14 +187,13 @@ lemma SUP_LE_P_least:
   by (simp add: SUP_LE_P_def, rule SUP_least, auto)
 
 lemma SUP_SUP_L [simp]: "Sup (range (SUP_LE_P X)) = Sup (range X)"
-  apply (simp add: fun_eq_iff Sup_fun_def, clarify)
+  apply (simp add: fun_eq_iff Sup_fun_def image_comp, clarify)
   apply (rule antisym)
   apply (rule SUP_least)
-  unfolding comp_def
   apply (rule SUP_LE_P_least)
   apply (rule SUP_upper, simp)
   apply (rule SUP_least)
-  apply (rule_tac y = "SUP_LE_P X (pair xa x) x" in  order_trans)
+  apply (rule_tac y = "SUP_LE_P X (pair xa x) x" in order_trans)
   apply (rule SUP_LE_P_upper, simp)
   by (rule SUP_upper, simp)
 

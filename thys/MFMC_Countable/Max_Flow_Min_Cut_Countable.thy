@@ -7270,14 +7270,16 @@ proof -
     hence supp_flow2: "countable (support_flow ?h)" by(rule countable_subset) simp
 
     have OUT1: "d_OUT (Sup (fst ` M)) x = (SUP (\<epsilon>, h)\<in>M. d_OUT \<epsilon> x)" for x
-      by(subst d_OUT_Sup[OF chain1 _ supp_flow1])(simp_all add: nempty split_beta)
+      by (subst d_OUT_Sup [OF chain1 _ supp_flow1])
+        (simp_all add: nempty split_beta image_comp)
     have OUT1': "d_OUT (Sup (fst ` M)) x = (if x = a then SUP (\<epsilon>, h)\<in>M. d_OUT \<epsilon> a else 0)" for x
       unfolding OUT1 by(auto intro!: SUP_eq_const simp add: nempty OUT_\<epsilon> dest!: Chains_FieldD[OF M])
     have OUT1_le: "(\<Squnion>\<epsilon>h\<in>M. d_OUT (fst \<epsilon>h) x) \<le> weight \<Gamma> x" for x
       using currentD_weight_OUT[OF SM1, of x] OUT1[of x] by(simp add: split_beta)
     have OUT1_nonneg: "0 \<le> (\<Squnion>\<epsilon>h\<in>M. d_OUT (fst \<epsilon>h) x)" for x using in_M by(rule SUP_upper2)(simp add: )
     have IN1: "d_IN (Sup (fst ` M)) x = (SUP (\<epsilon>, h)\<in>M. d_IN \<epsilon> x)" for x
-      by(subst d_IN_Sup[OF chain1 _ supp_flow1])(simp_all add: nempty split_beta)
+      by (subst d_IN_Sup [OF chain1 _ supp_flow1])
+        (simp_all add: nempty split_beta image_comp)
     have IN1_le: "(\<Squnion>\<epsilon>h\<in>M. d_IN (fst \<epsilon>h) x) \<le> weight \<Gamma> x" for x
       using currentD_weight_IN[OF SM1, of x] IN1[of x] by(simp add: split_beta)
     have IN1_nonneg: "0 \<le> (\<Squnion>\<epsilon>h\<in>M. d_IN (fst \<epsilon>h) x)" for x using in_M by(rule SUP_upper2) simp
@@ -7320,9 +7322,11 @@ proof -
         by(rule d_OUT_Sup)(simp_all add: nempty)
       also have "\<dots> = \<dots> + (SUP \<epsilon>\<in>fst ` M. d_OUT \<epsilon> x) - (SUP \<epsilon>\<in>fst ` M. d_OUT \<epsilon> x)"
         using OUT1_le[of x]
-        by (intro ennreal_add_diff_cancel_right[symmetric] neq_top_trans[OF weight_finite, of _ x]) simp
+        by (intro ennreal_add_diff_cancel_right[symmetric] neq_top_trans[OF weight_finite, of _ x])
+          (simp add: image_comp)
       also have "\<dots> = (SUP (\<epsilon>, k)\<in>M. d_OUT k x + d_OUT \<epsilon> x) - (SUP \<epsilon>\<in>fst ` M. d_OUT \<epsilon> x)" unfolding split_def
-        by(subst SUP_add_directed_ennreal[OF directed_OUT])(simp_all add: )
+        by (subst SUP_add_directed_ennreal[OF directed_OUT])
+          (simp_all add: image_comp)
       also have "(SUP (\<epsilon>, k)\<in>M. d_OUT k x + d_OUT \<epsilon> x) \<le> weight \<Gamma> x"
         apply(clarsimp dest!: Chains_FieldD[OF M] intro!: SUP_least)
         subgoal premises that for \<epsilon> h
@@ -7330,7 +7334,8 @@ proof -
              countable_bipartite_web_minus_web[OF \<epsilon>_curr, THEN countable_bipartite_web.currentD_OUT', OF that h[OF that], where x=x]
           by (auto simp add: ennreal_le_minus_iff split: if_split_asm)
         done
-      also have "(SUP \<epsilon>\<in>fst ` M. d_OUT \<epsilon> x) = d_OUT (Sup (fst ` M)) x" using OUT1 by(simp add: split_beta)
+      also have "(SUP \<epsilon>\<in>fst ` M. d_OUT \<epsilon> x) = d_OUT (Sup (fst ` M)) x" using OUT1
+        by (simp add: split_beta image_comp)
       finally show "d_OUT h x \<le> weight ?\<Gamma> x"
         using \<Gamma>.currentD_OUT'[OF h[OF Field], of x] currentD_weight_IN[OF SM1, of x] by(auto simp add: ennreal_minus_mono)
 
@@ -7339,19 +7344,22 @@ proof -
         by(rule d_IN_Sup)(simp_all add: nempty)
       also have "\<dots> = \<dots> + (SUP \<epsilon>\<in>fst ` M. d_IN \<epsilon> x) - (SUP \<epsilon>\<in>fst ` M. d_IN \<epsilon> x)"
         using IN1_le[of x]
-        by (intro ennreal_add_diff_cancel_right[symmetric] neq_top_trans[OF weight_finite, of _ x]) simp
+        by (intro ennreal_add_diff_cancel_right [symmetric] neq_top_trans [OF weight_finite, of _ x])
+          (simp add: image_comp)
       also have "\<dots> = (SUP (\<epsilon>, k)\<in>M. d_IN k x + d_IN \<epsilon> x) - (SUP \<epsilon>\<in>fst ` M. d_IN \<epsilon> x)" unfolding split_def
-        by(subst SUP_add_directed_ennreal[OF directed_IN])simp_all
+        by (subst SUP_add_directed_ennreal [OF directed_IN])
+          (simp_all add: image_comp)
       also have "(SUP (\<epsilon>, k)\<in>M. d_IN k x + d_IN \<epsilon> x) \<le> weight \<Gamma> x"
         apply(clarsimp dest!: Chains_FieldD[OF M] intro!: SUP_least)
         subgoal premises that for \<epsilon> h
           using currentD_weight_OUT[OF h, OF that, where x=x] currentD_weight_IN[OF h, OF that, where x=x]
             countable_bipartite_web_minus_web[OF \<epsilon>_curr, THEN countable_bipartite_web.currentD_OUT', OF that h[OF that], where x=x]
             currentD_OUT'[OF \<epsilon>_curr, OF that, where x=x] currentD_IN[OF \<epsilon>_curr, OF that, of x] currentD_weight_IN[OF \<epsilon>_curr, OF that, where x=x]
-          by(auto simp add: ennreal_le_minus_iff
-                     split: if_split_asm intro: add_increasing2 order_trans[rotated])
+          by (auto simp add: ennreal_le_minus_iff image_comp
+                     split: if_split_asm intro: add_increasing2 order_trans [rotated])
         done
-      also have "(SUP \<epsilon>\<in>fst ` M. d_IN \<epsilon> x) = d_IN (Sup (fst ` M)) x" using IN1 by(simp add: split_beta)
+      also have "(SUP \<epsilon>\<in>fst ` M. d_IN \<epsilon> x) = d_IN (Sup (fst ` M)) x"
+        using IN1 by (simp add: split_beta image_comp)
       finally show "d_IN h x \<le> weight ?\<Gamma> x"
         using currentD_IN[OF h[OF Field], of x] currentD_weight_OUT[OF SM1, of x]
         by(auto simp add: ennreal_minus_mono)
@@ -7381,11 +7389,11 @@ proof -
       using supp_flow1 supp_flow2 support_flow_plus_current[of "Sup (fst ` M)" ?h]
       unfolding f_def F_simps by(blast intro: countable_subset)
     have f_alt: "f = Sup ((\<lambda>(\<epsilon>, h). plus_current \<epsilon> h) ` M)"
-      apply(simp add: fun_eq_iff split_def f_def nempty F_def)
-      apply(subst (1 2) add.commute)
-      apply(subst SUP_add_directed_ennreal)
-      apply(rule directed)
-      apply(auto dest!: Chains_FieldD[OF M])
+      apply (simp add: fun_eq_iff split_def f_def nempty F_def image_comp)
+      apply (subst (1 2) add.commute)
+      apply (subst SUP_add_directed_ennreal)
+      apply (rule directed)
+      apply (auto dest!: Chains_FieldD [OF M])
       done
     have f_curr: "current \<Gamma> f" unfolding f_def F_simps using SM1 current by(rule current_plus_current_minus)
     have IN_f: "d_IN f x = d_IN (Sup (fst ` M)) x + d_IN (Sup (snd ` M)) x" for x
@@ -7418,7 +7426,8 @@ proof -
           using currentD_finite_OUT[OF f_curr, of a] by (simp add: \<delta>_pos)
         also have "d_OUT f a + \<delta> = (SUP (\<epsilon>, h)\<in>M. d_OUT (plus_current \<epsilon> h) a) + \<delta>"
           using chain'' nempty supp_flow
-          unfolding f_alt by(subst d_OUT_Sup)(simp_all add: plus_current_def[abs_def] split_def)
+          unfolding f_alt by (subst d_OUT_Sup)
+            (simp_all add: plus_current_def [abs_def] split_def image_comp)
         also have "\<dots> \<le> d_OUT f a"
           unfolding ennreal_SUP_add_left[symmetric, OF nempty]
         proof(rule SUP_least, clarify)
@@ -7447,7 +7456,10 @@ proof -
       define k where "k e = Sup (fst ` M) e - \<epsilon> e" for e
       have k_simps: "k (x, y) = Sup (fst ` M) (x, y) - \<epsilon> (x, y)" for x y by(simp add: k_def)
       have k_alt: "k (x, y) = (if x = a \<and> edge \<Gamma> x y then Sup (fst ` M) (a, y) - \<epsilon> (a, y) else 0)" for x y
-        by(cases "x = a")(auto simp add: k_simps out_\<epsilon>[OF Field] currentD_outside[OF \<epsilon>] intro!: SUP_eq_const[OF nempty] dest!: Chains_FieldD[OF M] intro: currentD_outside[OF \<epsilon>_curr] out_\<epsilon>)
+        by (cases "x = a")
+          (auto simp add: k_simps out_\<epsilon> [OF Field] currentD_outside [OF \<epsilon>] image_comp
+           intro!: SUP_eq_const [OF nempty] dest!: Chains_FieldD [OF M]
+           intro: currentD_outside [OF \<epsilon>_curr] out_\<epsilon>)
       have OUT_k: "d_OUT k x = (if x = a then d_OUT (Sup (fst ` M)) a - d_OUT \<epsilon> a else 0)" for x
       proof -
         have "d_OUT k x = (if x = a then (\<Sum>\<^sup>+ y. Sup (fst ` M) (a, y) - \<epsilon> (a, y)) else 0)"
@@ -7495,12 +7507,13 @@ proof -
         finally show "d_IN k x \<le> weight (\<Gamma> \<ominus> ?\<epsilon>h) x"
           using currentD_weight_IN[OF \<epsilon>h_curr, of x] currentD_weight_OUT[OF \<epsilon>h_curr, of x]
             currentD_weight_IN[OF hM2[OF hM], of x] IN_\<epsilon>[OF Field, of x] *
-          apply(auto simp add: IN_k outgoing_def IN_\<epsilon>h IN_\<epsilon> A_in diff_add_eq_diff_diff_swap_ennreal)
-          apply(subst diff_diff_commute_ennreal)
-          apply(intro ennreal_minus_mono[OF _ order_refl])
-          apply(auto simp add: ennreal_le_minus_iff ac_simps intro: order_trans add_mono)
+          apply (auto simp add: IN_k outgoing_def IN_\<epsilon>h IN_\<epsilon> A_in diff_add_eq_diff_diff_swap_ennreal)
+          apply (subst diff_diff_commute_ennreal)
+          apply (intro ennreal_minus_mono[OF _ order_refl])
+          apply (auto simp add: ennreal_le_minus_iff ac_simps image_comp intro: order_trans add_mono)
           done
-        show "k e = 0" if "e \<notin> \<^bold>E\<^bsub>\<Gamma> \<ominus> ?\<epsilon>h\<^esub>" for e using that by(cases e)(simp add: k_alt)
+        show "k e = 0" if "e \<notin> \<^bold>E\<^bsub>\<Gamma> \<ominus> ?\<epsilon>h\<^esub>" for e
+          using that by (cases e) (simp add: k_alt)
       qed
 
       define q where "q = (\<Sum>\<^sup>+ y\<in>B (\<Gamma> \<ominus> ?\<epsilon>h). d_IN k y - d_OUT k y)"
@@ -7542,7 +7555,7 @@ proof -
         apply(subst d_OUT_add)
          apply(auto simp add: add_diff_eq_ennreal[symmetric] k_simps intro: add_increasing intro!:)
         apply(simp add: add_diff_eq_ennreal SUP_apply[abs_def])
-        apply(auto simp add: g'_def intro!: add_diff_eq_ennreal[symmetric] d_OUT_mono intro: SUP_upper2)
+        apply(auto simp add: g'_def image_comp intro!: add_diff_eq_ennreal[symmetric] d_OUT_mono intro: SUP_upper2)
         done
       have IN_g': "d_IN g' x = d_IN g x + (d_IN (Sup (snd ` M)) x - d_IN h x)" for x
         unfolding g'_simps[abs_def] using \<epsilon>h.currentD_finite_IN[OF k] hM h.currentD_finite_IN[OF h_curr] hM
@@ -7550,7 +7563,7 @@ proof -
          apply(auto simp add: add_diff_eq_ennreal[symmetric] k_simps intro: add_increasing intro!: SUP_upper2)
         apply(subst d_IN_add)
          apply(auto simp add: add_diff_eq_ennreal[symmetric] k_simps intro: add_increasing intro!: SUP_upper)
-        apply(auto simp add: g'_def SUP_apply[abs_def] intro!: add_diff_eq_ennreal[symmetric] d_IN_mono intro: SUP_upper2)
+        apply(auto simp add: g'_def SUP_apply[abs_def] image_comp intro!: add_diff_eq_ennreal[symmetric] d_IN_mono intro: SUP_upper2)
         done
 
       have h': "current (\<Gamma> \<ominus> Sup (fst ` M)) h" using hM by(rule hM2)
@@ -7569,7 +7582,7 @@ proof -
         by(auto simp add: OUT_k OUT_\<epsilon> add_diff_self_ennreal SUP_upper2)
       have IN_\<epsilon>k: "d_IN (Sup (fst ` M)) x = d_IN \<epsilon> x + d_IN k x" for x
         using IN1'[of x] currentD_finite_IN[OF \<epsilon>] currentD_outside[OF \<epsilon>] currentD_outside[OF \<epsilon>_curr]
-        by(auto simp add: IN_k IN_\<epsilon>[OF Field] add_diff_self_ennreal split_beta nempty
+        by(auto simp add: IN_k IN_\<epsilon>[OF Field] add_diff_self_ennreal split_beta nempty image_comp
                 dest!: Chains_FieldD[OF M] intro!: SUP_eq_const intro: SUP_upper2[OF hM])
       have **: "?\<Gamma> = \<Gamma> \<ominus> Sup (fst ` M) \<ominus> h"
       proof(rule web.equality)
@@ -7633,7 +7646,7 @@ proof -
           apply (simp add: \<delta>_def OUT_f diff_add_eq_diff_diff_swap_ennreal)
           apply (subst (5) diff_diff_commute_ennreal)
           apply (rule ennreal_minus_mono[OF _ order_refl])
-          apply (auto simp add: ac_simps diff_add_eq_diff_diff_swap_ennreal[symmetric] add_diff_self_ennreal
+          apply (auto simp add: ac_simps diff_add_eq_diff_diff_swap_ennreal[symmetric] add_diff_self_ennreal image_comp
                       intro!: ennreal_minus_mono[OF order_refl] SUP_upper2[OF hM] d_OUT_mono)
           done
         then show q_z: "q < weight ?\<Gamma> z - d_OUT g' z" using q_less_\<delta> by simp
@@ -8062,7 +8075,7 @@ next
 
   define g where "g = Sup (range f)"
   have "support_flow g \<subseteq> \<^bold>E"
-    by(auto simp add: g_def support_flow.simps currentD_outside[OF f] elim: contrapos_pp)
+    by (auto simp add: g_def support_flow.simps currentD_outside [OF f] image_comp elim: contrapos_pp)
   then have countable_g: "countable (support_flow g)" by(rule countable_subset) simp
   with chain _ _ have g: "current \<Gamma> g" unfolding g_def  by(rule current_Sup)(auto simp add: f)
   moreover

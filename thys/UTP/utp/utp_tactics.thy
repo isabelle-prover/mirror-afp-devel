@@ -15,6 +15,8 @@ theory utp_tactics
 keywords "update_uexpr_rep_eq_thms" :: thy_decl
 begin
 
+declare image_comp [simp]
+
 text \<open>
   In this theory, we define several automatic proof tactics that use transfer
   techniques to re-interpret proof goals about UTP predicates and relations in

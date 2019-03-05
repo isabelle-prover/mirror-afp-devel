@@ -44,8 +44,8 @@ proof -
   assume xne: "X \<noteq> {}"
   have a: "c ; (\<Sqinter>x\<in>X. d x) = c ; \<Sqinter>(d ` X)" by auto
   also have b: "... = (\<Sqinter>d\<in>(d ` X). c ; d)" by (meson image_is_empty seq_Inf_distrib xne)
-  also have c: "... = (\<Sqinter>x\<in>X. c ; d x)" by simp
-  finally show ?thesis by (simp add: b)
+  also have c: "... = (\<Sqinter>x\<in>X. c ; d x)" by (simp add: image_comp)
+  finally show ?thesis by (simp add: b image_comp)
 qed
 
 lemma seq_INF_distrib_UNIV: "c ; (\<Sqinter>x. d x) = (\<Sqinter>x. c ; d x)"

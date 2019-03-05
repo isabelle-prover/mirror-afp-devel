@@ -155,8 +155,8 @@ end
 instance dual :: (lattice) lattice ..
 
 text \<open>
-  Apparently, the \<open>\<sqinter>\<close> and \<open>\<squnion>\<close> operations are dual to each
-  other.
+  Apparently, the \<open>\<sqinter>\<close> and
+  \<open>\<squnion>\<close> operations are dual to each other.
 \<close>
 
 theorem dual_inf [intro?]: "dual (inf x y) = sup (dual x) (dual y)"
@@ -285,11 +285,11 @@ end
 
 lemma SUP_dual_unfold:
   "Sup (f ` A) = dual (Inf ((undual \<circ> f) ` A))"
-  by (simp add: Sup_dual_def)
+  by (simp add: Sup_dual_def image_comp)
 
 lemma INF_dual_unfold:
   "Inf (f ` A) = dual (Sup ((undual \<circ> f) ` A))"
-  by (simp add: Inf_dual_def)
+  by (simp add: Inf_dual_def image_comp)
 
 text \<open>
   Apparently, the \<open>Inf\<close> and \<open>Sup\<close> operations are dual to each
@@ -297,11 +297,11 @@ text \<open>
 \<close>
 
 theorem dual_Inf [intro?]: "dual (Inf A) = Sup (dual ` A)"
-  by (simp add: Inf_dual_def Sup_dual_def)
+  by (simp add: Inf_dual_def Sup_dual_def image_comp)
 (* BH: Why not [simp]? *)
 
 theorem dual_Sup [intro?]: "dual (Sup A) = Inf (dual ` A)"
-  by (simp add: Inf_dual_def Sup_dual_def)
+  by (simp add: Inf_dual_def Sup_dual_def image_comp)
 (* BH: Why not [simp]? *)
 
 lemma undual_Inf: "undual (Inf A) = Sup (undual ` A)"
@@ -318,5 +318,36 @@ theorem dual_Inf' [iff?]:
 theorem dual_Sup' [iff?]:
     "(Sup (dual ` A) = dual i) = (Inf A = i)"
   unfolding Inf_dual_def Sup_dual_def by (simp add: image_image)
+
+instance dual :: (finite) finite
+by standard (simp add: finite_surj[where f=dual and A=UNIV])
+
+lemma lfp_dual_gfp:
+  fixes f :: "'a::complete_lattice \<Rightarrow> 'a"
+  assumes "mono f"
+  shows "lfp f = undual (gfp (dual \<circ> f \<circ> undual))" (is "?lhs = ?rhs")
+proof(rule antisym)
+  show "?lhs \<le> ?rhs"
+    apply (rule lfp_lowerbound)
+    apply (subst dual_leq[symmetric])
+    apply (subst gfp_unfold[where f="dual \<circ> f \<circ> undual"])
+    apply (simp_all add: assms monoD monoI undual_leq)
+    done
+  show "?rhs \<le> ?lhs"
+    apply (subst dual_leq[symmetric])
+    apply (simp add: lfp_fixpoint[OF assms] gfp_upperbound)
+    done
+qed
+
+lemma gfp_dual_lfp:
+  fixes f :: "'a::complete_lattice \<Rightarrow> 'a"
+  assumes "mono f"
+  shows "gfp f = undual (lfp (dual \<circ> f \<circ> undual))"
+using assms
+apply (subst lfp_dual_gfp[simplified o_def])
+ apply (simp_all add: o_def less_eq_dual_def mono_def)
+apply (subst gfp_rolling[where g="undual \<circ> undual", simplified])
+  apply (simp_all add: o_def monoI undual_leq)
+done
 
 end

@@ -62,7 +62,7 @@ context unital_near_quantale
 begin
 
 lemma powers_distr: "qstar x \<cdot> y = (\<Squnion>i. x ^ i \<cdot> y)"
-  by (simp add: qstar_def Sup_distr)
+  by (simp add: qstar_def Sup_distr image_comp)
 
 lemma Sup_iter_unfold: "x ^ 0 \<squnion> (\<Squnion>n. x ^ (Suc n)) = (\<Squnion>n. x ^ n)"
   using fSup_unfold by presburger 
@@ -98,7 +98,7 @@ text \<open>In unital weak quantales one can derive the star axioms of Kleene al
 generalises the language and relation models from our Kleene algebra components.\<close>
 
 lemma powers_distl: "x \<cdot> qstar y = (\<Squnion>i. x \<cdot> y ^ i)"
-  by (simp add: qstar_def weak_Sup_distl)
+  by (simp add: qstar_def weak_Sup_distl image_comp)
 
 lemma qstar_unfoldl: "1 \<squnion> x \<cdot> qstar x \<le> qstar x"
   by (simp only: powers_distl Sup_iter_unfold_var, simp add: qstar_def)

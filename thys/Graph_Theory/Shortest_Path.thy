@@ -310,7 +310,7 @@ proof -
       \<le> (INF p\<in> awalk_to_apath ` set_walks. ereal (awalk_cost f p))"
       by (rule INF_superset_mono) simp
     also have "\<dots> = (INF p\<in> set_walks. ereal (awalk_cost f (awalk_to_apath p)))"
-      by (auto simp add: comp_def)
+      by (simp add: image_comp)
     also have "\<dots> \<le> (INF p\<in> set_walks. ereal (awalk_cost f p))"
     proof -
       { fix p assume "p \<in> set_walks"

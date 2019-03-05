@@ -83,7 +83,7 @@ lemma mono2mono_emeasure_spmf [THEN lfp.mono2mono]:
   by(rule monotoneI le_funI ord_spmf_eqD_emeasure)+
 
 lemma cont_emeasure_spmf: "cont lub_spmf (ord_spmf (=)) Sup (\<le>) (\<lambda>p. emeasure (measure_spmf p))"
-  by(rule contI)(simp add: emeasure_lub_spmf fun_eq_iff)
+  by (rule contI) (simp add: emeasure_lub_spmf fun_eq_iff image_comp)
 
 lemma mcont2mcont_emeasure_spmf [THEN lfp.mcont2mcont, cont_intro]:
   shows mcont_emeasure_spmf: "mcont lub_spmf (ord_spmf (=)) Sup (\<le>) (\<lambda>p. emeasure (measure_spmf p))"

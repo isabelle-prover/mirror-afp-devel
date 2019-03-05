@@ -1377,7 +1377,7 @@ qed
 
 lemma continuous_reward_until:
   "sup_continuous (\<lambda>F s \<omega>. if s \<in> X then 0 else \<rho> s + \<iota> s (shd \<omega>) + (F (shd \<omega>) (stl \<omega>)))"
-  by (intro \<iota>_nonneg \<rho>_nonneg order_continuous_intros) (auto simp: sup_continuous_def)
+  by (intro \<iota>_nonneg \<rho>_nonneg order_continuous_intros) (auto simp: sup_continuous_def image_comp)
 
 lemma
   shows reward_until_unfold: "reward_until X s \<omega> =

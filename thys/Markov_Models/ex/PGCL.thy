@@ -67,8 +67,7 @@ abbreviation r :: "('s \<Rightarrow> ennreal) \<Rightarrow> ('s pgcl \<times> 's
 
 lemma continuous_rF: "sup_continuous (rF f)"
   unfolding rF_def[abs_def]
-  by (auto simp: sup_continuous_def fun_eq_iff SUP_sup_distrib[symmetric]
-           simp del: sup_ennreal_def
+  by (auto simp: sup_continuous_def fun_eq_iff SUP_sup_distrib [symmetric] image_comp
            split: prod.splits pgcl.splits)
 
 lemma mono_rF: "mono (rF f)"
@@ -155,14 +154,14 @@ proof (rule antisym)
     case step then show ?case
       by (rewrite in "_ \<le> \<hole>" E_inf_r_unfold)
          (force intro!: INF_mono[OF bexI] nn_integral_mono intro: le_infI2
-                simp: E_inf_Skip simp del: inf_ennreal_def)
+                simp: E_inf_Skip image_comp)
   qed
   show "step.E_inf (a, s) (r (\<lambda>s. step.E_inf (b, s) (r f))) \<le> step.E_inf (Seq a b, s) (r f)"
   proof (coinduction arbitrary: a s rule: E_inf_r_induct)
     case step then show ?case
       by (rewrite in "_ \<le> \<hole>" E_inf_r_unfold)
          (force intro!: INF_mono[OF bexI] nn_integral_mono intro: le_infI2
-                simp: E_inf_Skip simp del: inf_ennreal_def)
+                simp: E_inf_Skip image_comp)
    qed
 qed
 

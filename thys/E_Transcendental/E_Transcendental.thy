@@ -497,7 +497,7 @@ proof -
     hence "cmod (?f x) \<le> Sup ((cmod \<circ> ?f) ` closed_segment 0 (of_nat n))"
       by (intro cSup_upper bounded_imp_bdd_above compact_imp_bounded compact_continuous_image)
          (auto intro!: continuous_intros)
-    also have "\<dots> \<le> C" by (simp add: C_def)
+    also have "\<dots> \<le> C" by (simp add: C_def image_comp)
     finally have "cmod (?f x) \<le> C" .
   }
   ultimately show ?thesis by (rule that)

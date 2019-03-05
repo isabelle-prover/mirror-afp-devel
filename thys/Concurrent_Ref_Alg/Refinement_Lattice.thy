@@ -89,7 +89,7 @@ lemma Inf_distrib_INF:
   fixes f :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
   assumes f_Inf_distrib: "\<And>c D. f c (\<Sqinter> D) = \<Sqinter> {f c d | d . d \<in> D }"
   shows "f c (\<Sqinter>x\<in>X. d x) = (\<Sqinter>x\<in>X. f c (d x))"
-  by (simp add: Setcompr_eq_image f_Inf_distrib)
+  by (simp add: Setcompr_eq_image f_Inf_distrib image_comp)
 
     
 end

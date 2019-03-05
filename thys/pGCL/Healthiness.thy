@@ -446,14 +446,14 @@ next
           by (simp add: mult_div_mono_left pos)
       qed
       with \<open>c \<noteq> 0\<close> have "inverse c * ?V \<le> inverse c * ?U"
-        by (simp add: mult.assoc [symmetric])
+        by (simp add: mult.assoc [symmetric] image_comp)
       with pos have "c * (inverse c * ?V) \<le> c * (inverse c * ?U)"
         by(auto intro:mult_left_mono)
       with \<open>c \<noteq> 0\<close> show ?thesis by (simp add:mult.assoc [symmetric])
     qed
   qed
   also have "... = Inf ((\<lambda>a. c * wp (prog a) P s) ` S s)"
-    by(simp add:image_comp[symmetric] o_def)
+    by (simp add: image_comp)
   also from sP and pos have "... = Inf ((\<lambda>a. wp (prog a) (\<lambda>s. c * P s) s) ` S s)"
     by(simp add:scalingD[OF healthy_scalingD, OF healthy] cong:image_cong)
   finally show "c * Inf ((\<lambda>a. wp (prog a) P s) ` S s) =

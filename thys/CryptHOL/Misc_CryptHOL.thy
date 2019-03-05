@@ -502,26 +502,25 @@ qed
 subsection \<open> Extended naturals \<close>
 
 lemma idiff_enat_eq_enat_iff: "x - enat n = enat m \<longleftrightarrow> (\<exists>k. x = enat k \<and> k - n = m)"
-by(cases x) simp_all
+  by (cases x) simp_all
 
-lemma eSuc_SUP: "A \<noteq> {} \<Longrightarrow> eSuc (\<Squnion>(f ` A)) = (SUP x\<in>A. eSuc (f x))"
-by(subst eSuc_Sup)(simp_all)
+lemma eSuc_SUP: "A \<noteq> {} \<Longrightarrow> eSuc (\<Squnion> (f ` A)) = (\<Squnion>x\<in>A. eSuc (f x))"
+  by (subst eSuc_Sup) (simp_all add: image_comp)
 
 lemma ereal_of_enat_1: "ereal_of_enat 1 = ereal 1"
-by(simp add: one_enat_def)
+  by (simp add: one_enat_def)
 
 lemma ennreal_real_conv_ennreal_of_enat: "ennreal (real n) = ennreal_of_enat n"
   by (simp add: ennreal_of_nat_eq_real_of_nat)
 
-
 lemma enat_add_sub_same2: "b \<noteq> \<infinity> \<Longrightarrow> a + b - b = (a :: enat)"
-by(cases a; cases b) simp_all
+  by (cases a; cases b) simp_all
 
 lemma enat_sub_add: "y \<le> x \<Longrightarrow> x - y + z = x + z - (y :: enat)"
-by(cases x; cases y; cases z) simp_all
+  by (cases x; cases y; cases z) simp_all
 
-lemma SUP_enat_eq_0_iff [simp]: "(SUP x\<in>A. f x) = (0 :: enat) \<longleftrightarrow> (\<forall>x\<in>A. f x = 0)"
-by(simp add: bot_enat_def[symmetric])
+lemma SUP_enat_eq_0_iff [simp]: "\<Squnion> (f ` A) = (0 :: enat) \<longleftrightarrow> (\<forall>x\<in>A. f x = 0)"
+  by (simp add: bot_enat_def [symmetric])
 
 lemma SUP_enat_add_left:
   assumes "I \<noteq> {}"

@@ -631,7 +631,7 @@ proof (rule antisym)
       by (rewrite sup_continuous_lfp)
          (auto intro!: order_continuous_intros cont_g[THEN sup_continuous_compose] simp: P_def)
     also have "\<dots> = (SUP i. (P ^^ i) \<bottom> (memoryless_on ct s))"
-      by simp
+      by (simp add: image_comp)
     also have "\<dots> \<le> lfp ?F s"
     proof (rule SUP_least)
       fix i show "(P ^^ i) \<bottom> (memoryless_on ct s) \<le> lfp ?F s"

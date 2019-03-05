@@ -156,7 +156,7 @@ begin
         assume "\<forall> u . sconjunctive (S u)"
         from this have [simp]: "\<And> u . sconjunctive (S u)" by simp
         from A have [simp]: "\<And> y . S y (INF y' \<in> init'. S' y' x) =  (INF y' \<in> init' . S y (S' y' x))"
-          by (simp add: sconjunctive_INF_simp)
+          by (simp add: sconjunctive_INF_simp image_comp)
 
         have [simp]: "(INF y \<in> init . (INF y' \<in> init' . S y (S' y' x))) \<le> (INF u \<in> zip_set init init'. S (fst \<circ> u) (S' (snd \<circ> u) x))"
           proof (rule INF_greatest, auto simp add: zip_set_def)
@@ -183,11 +183,11 @@ begin
               by simp
           qed
         have "local_init init S (local_init init' S' x) = (INF y \<in> init. S y (INF y' \<in> init'. S' y' x)) "
-          by (simp add: local_init_def)
+          by (simp add: local_init_def image_comp)
         also have "... = (INF y \<in> init . (INF y' \<in> init' . S y (S' y' x)))"
           by simp
         also have "... = (INF u \<in> zip_set init init'. S (fst \<circ> u) \<circ> S' (snd \<circ> u)) x"
-         by (rule antisym, auto)
+         by (rule antisym) (simp_all add: image_comp)
         also have "... = local_init (zip_set init init') (\<lambda> u . (S (fst o u)) o (S' (snd o u))) x"
           by (simp add: local_init_def)
         finally show "local_init init S (local_init init' S' x) = local_init (zip_set init init') (\<lambda>u::'a \<Rightarrow> 'c \<times> 'b. S (fst \<circ> u) \<circ> S' (snd \<circ> u)) x"

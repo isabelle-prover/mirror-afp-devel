@@ -128,13 +128,13 @@ the recursive program is correct $\models SUP\ p\ \{| lfp\  F |\}\  y$
 \<close>
 
 lemma assert_Sup: "{.\<Squnion> (X::'a::complete_distrib_lattice set).} = \<Squnion> (assert ` X)"
-  by (simp add: fun_eq_iff assert_def Sup_inf)
+  by (simp add: fun_eq_iff assert_def Sup_inf image_comp)
 
 lemma assert_Sup_range: "{.\<Squnion> (range (p::'W \<Rightarrow> 'a::complete_distrib_lattice)).} = \<Squnion> (range (assert o p))"
-  by (simp add: fun_eq_iff assert_def SUP_inf)
+  by (simp add: fun_eq_iff assert_def SUP_inf image_comp)
 
 lemma Sup_range_comp: "(\<Squnion> range p) o S = \<Squnion> (range (\<lambda> w . ((p w) o S)))"
-  by (simp add: fun_eq_iff)
+  by (simp add: fun_eq_iff image_comp)
 
 lemma Sup_less_comp: "(Sup_less P) w o S = Sup_less (\<lambda> w . ((P w) o S)) w"
   apply (simp add: Sup_less_def fun_eq_iff, safe)

@@ -90,8 +90,8 @@ proof-
   have "\<F> (rtrancl R) = \<F> (\<Union>i. R ^^ i)"
     by (simp add: full_SetCompr_eq rtrancl_is_UN_relpow)
   also have "... = (\<Squnion>i. kpower (\<F> R) i)"
-   by (clarsimp simp: r2f_Sup_pres_var, metis r2f_pow)
-    finally show ?thesis
+    by (auto simp: r2f_Sup_pres_var r2f_pow)
+  finally show ?thesis
     by (simp add: kstar_def)
 qed
 

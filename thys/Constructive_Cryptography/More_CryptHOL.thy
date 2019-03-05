@@ -2033,7 +2033,9 @@ proof(induction arbitrary: gpv rule: parallel_fixp_induct_1_1[OF complete_lattic
   case adm show ?case by simp
   case bottom show ?case by simp
   case (step expectation_gpv' expectation_gpv'')
-  show ?case by(auto simp add: pmf_map_spmf_None o_def case_map_generat split: generat.split intro!: nn_integral_cong_AE INF_cong step.IH)
+  show ?case
+    by (auto simp add: pmf_map_spmf_None o_def case_map_generat image_comp
+      split: generat.split intro!: nn_integral_cong_AE INF_cong step.IH)
 qed
 
 lemma expectation_right_gpv [simp]:
@@ -2042,7 +2044,9 @@ proof(induction arbitrary: gpv rule: parallel_fixp_induct_1_1[OF complete_lattic
   case adm show ?case by simp
   case bottom show ?case by simp
   case (step expectation_gpv' expectation_gpv'')
-  show ?case by(auto simp add: pmf_map_spmf_None o_def case_map_generat split: generat.split intro!: nn_integral_cong_AE INF_cong step.IH)
+  show ?case
+    by (auto simp add: pmf_map_spmf_None o_def case_map_generat image_comp
+      split: generat.split intro!: nn_integral_cong_AE INF_cong step.IH)
 qed
 
 lemma pgen_lossless_left_gpv [simp]: "pgen_lossless_gpv fail (\<I> \<oplus>\<^sub>\<I> \<I>') (left_gpv gpv) = pgen_lossless_gpv fail \<I> gpv"
@@ -2306,7 +2310,8 @@ proof(induction arbitrary: gpv rule: parallel_fixp_induct_1_1[OF lattice_partial
     using assms[THEN surjD, of x] by (clarsimp intro!: SUP_upper)
 
   show ?case 
-    by (auto simp add: * step.IH split: generat.split intro!: SUP_cong[OF refl] antisym SUP_upper SUP_least)
+    by (auto simp add: * step.IH image_comp split: generat.split
+      intro!: SUP_cong [OF refl] antisym SUP_upper SUP_least)
 qed simp_all
 
 lemma interaction_any_bounded_by_map_gpv':
@@ -2434,7 +2439,9 @@ proof(induction arbitrary: gpv rule: parallel_fixp_induct_1_1[OF complete_lattic
   have "pmf (the_gpv (map_gpv' g h k gpv)) None = pmf (the_gpv gpv) None"
     by(simp add: pmf_map_spmf_None)
   then show ?case 
-    by simp(auto simp add: nn_integral_measure_spmf step.IH split: generat.split intro!: nn_integral_cong)
+    by simp
+      (auto simp add: nn_integral_measure_spmf step.IH image_comp
+        split: generat.split intro!: nn_integral_cong)
 qed
 
 lemma plossless_gpv_map_gpv' [simp]:

@@ -231,10 +231,10 @@ next
 qed
 
 lemma inf_continuous_nxt[order_continuous_intros]: "inf_continuous P \<Longrightarrow> inf_continuous (\<lambda>x. nxt (P x) \<omega>)"
-  by (auto simp: inf_continuous_def)
+  by (auto simp: inf_continuous_def image_comp)
 
 lemma sup_continuous_nxt[order_continuous_intros]: "sup_continuous P \<Longrightarrow> sup_continuous (\<lambda>x. nxt (P x) \<omega>)"
-  by (auto simp: sup_continuous_def)
+  by (auto simp: sup_continuous_def image_comp)
 
 lemma mcont_ennreal_of_enat: "mcont Sup (\<le>) Sup (\<le>) ennreal_of_enat"
   by (auto intro!: mcontI monotoneI contI ennreal_of_enat_Sup)

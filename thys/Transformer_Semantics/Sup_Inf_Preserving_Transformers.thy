@@ -59,10 +59,10 @@ lemma Inf_top_dual:
 text \<open>Next I show some basic preservation properties.\<close>
 
 lemma Sup_dual2: "Sup_dual f \<Longrightarrow> Inf_dual g \<Longrightarrow> Sup_pres (g \<circ> f)"
-  by (simp add: fun_eq_iff)
+  by (simp add: fun_eq_iff image_comp)
 
 lemma Inf_dual2: "Sup_dual f \<Longrightarrow> Inf_dual g \<Longrightarrow> Inf_pres (f \<circ> g)"
-  by (simp add: fun_eq_iff)
+  by (simp add: fun_eq_iff image_comp)
  
 lemma Sup_pres_id: "Sup_pres id"
   by simp
@@ -71,10 +71,10 @@ lemma Inf_pres_id: "Inf_pres id"
   by simp
 
 lemma Sup_pres_comp: "Sup_pres f \<Longrightarrow> Sup_pres g \<Longrightarrow> Sup_pres (f \<circ> g)"
-  by (simp add: fun_eq_iff)
+  by (simp add: fun_eq_iff image_comp)
 
 lemma Inf_pres_comp: "Inf_pres f \<Longrightarrow> Inf_pres g \<Longrightarrow> Inf_pres(f \<circ> g)"
-  by (simp add: fun_eq_iff)
+  by (simp add: fun_eq_iff image_comp)
 
 lemma Sup_pres_Sup: 
   fixes F :: "('a::complete_lattice \<Rightarrow> 'b::complete_lattice) set"
@@ -195,12 +195,11 @@ lemma fstar_unfoldl_var [simp]:
 proof-
   assume hyp: "Inf_pres f"
   have "x \<sqinter> f (fstar f x) = fpower f 0 x \<sqinter> (\<Sqinter>n. fpower f (Suc n) x)"
-    apply (simp add: fstar_def fun_eq_iff hyp)
-    by (metis (no_types) comp_apply hyp image_image)
+    by (simp add: fstar_def image_comp) (metis (no_types) comp_apply hyp image_image)
   also have "... = (\<Sqinter>n. fpower f n x)"
     by (subst fInf_unfold, auto)
   finally show ?thesis
-    by (simp add: fstar_def)
+    by (simp add: fstar_def image_comp)
 qed
 
 lemma fstar_fiter_id: "Inf_pres f \<Longrightarrow> fstar f = fiter_id f"
@@ -230,7 +229,7 @@ lemma fpower_Inf_comm:
 proof-
   assume "Inf_pres f"
   hence "f (\<Sqinter>i. fpower f i x) = (\<Sqinter>i. fpower f (Suc i) x)"
-    by (simp add: fun_eq_iff)
+    by (simp add: fun_eq_iff image_comp)
   also have "... =  (\<Sqinter>i. fpower f i (f x))"
     by (metis comp_eq_dest_lhs fun_mon.power_Suc2) 
   finally show ?thesis .
@@ -239,7 +238,7 @@ qed
 lemma fstar_comm: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'a"
   shows "Inf_pres f \<Longrightarrow> f \<circ> fstar f = fstar f \<circ> f"
-  apply (simp add: fun_eq_iff fstar_def)
+  apply (simp add: fun_eq_iff fstar_def image_comp)
   by (metis (mono_tags, lifting) INF_cong comp_eq_dest fun_mon.power_commutes)
 
 lemma fstar_unfoldr [simp]: 

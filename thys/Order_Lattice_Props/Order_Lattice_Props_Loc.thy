@@ -545,22 +545,22 @@ lemma fInf_distr_var: "\<Sqinter>F \<circ> g = (\<Sqinter>f \<in> F. f \<circ> g
 lemma fSup_subdistl: 
   assumes "mono (f::'a::complete_lattice \<Rightarrow> 'b::complete_lattice)"
   shows "Sup \<circ> (`) ((\<circ>) f) \<le> (\<circ>) f \<circ> Sup"
-  using assms by (simp add: SUP_least Sup_upper le_fun_def monoD)
+  using assms by (simp add: SUP_least Sup_upper le_fun_def monoD image_comp)
 
 lemma fSup_subdistl_var: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'b::complete_lattice"
   shows  "mono f \<Longrightarrow> (\<Squnion>g \<in> G. f \<circ> g) \<le> f \<circ> \<Squnion>G"
-  by (simp add: SUP_least Sup_upper le_fun_def monoD)
+  by (simp add: SUP_least Sup_upper le_fun_def monoD image_comp)
 
 lemma fInf_subdistl: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'b::complete_lattice"
   shows  "mono f \<Longrightarrow> (\<circ>) f \<circ> Inf \<le> Inf \<circ> (`) ((\<circ>) f)"
-  by (simp add: INF_greatest Inf_lower le_fun_def monoD)
+  by (simp add: INF_greatest Inf_lower le_fun_def monoD image_comp)
 
 lemma fInf_subdistl_var: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'b::complete_lattice"
   shows "mono f \<Longrightarrow> f \<circ> \<Sqinter>G \<le> (\<Sqinter>g \<in> G. f \<circ> g)"
-  by (simp add: INF_greatest Inf_lower le_fun_def monoD)
+  by (simp add: INF_greatest Inf_lower le_fun_def monoD image_comp)
 
 lemma Inf_pres_downset: "Inf_pres (\<down>::'a::complete_lattice \<Rightarrow> 'a set)"
   unfolding downset_prop fun_eq_iff comp_def

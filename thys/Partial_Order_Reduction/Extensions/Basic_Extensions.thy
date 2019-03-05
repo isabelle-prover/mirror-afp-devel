@@ -201,7 +201,7 @@ begin
       also have "\<dots> = Sup {u. curry u \<le> curry (case_prod (f (curry u)))}" unfolding curry_le by simp
       also have "\<dots> = Sup {u. curry u \<le> f (curry u)}" by simp
       also have "\<dots> = Sup (case_prod ` {u. u \<le> f u})" unfolding Collect_curry[of "\<lambda> u. u \<le> f u"] by simp
-      also have "\<dots> = case_prod (Sup {u. u \<le> f u})" by force
+      also have "\<dots> = case_prod (Sup {u. u \<le> f u})" by (force simp add: image_comp)
       also have "\<dots> = case_prod (gfp f)" unfolding gfp_def by simp
       finally show ?thesis by this
     qed
@@ -211,7 +211,7 @@ begin
       also have "\<dots> = Sup {u. case_prod u \<le> case_prod (curry (f (case_prod u)))}" unfolding split_le by simp
       also have "\<dots> = Sup {u. case_prod u \<le> f (case_prod u)}" by simp
       also have "\<dots> = Sup (curry ` {u. u \<le> f u})" unfolding Collect_split[of "\<lambda> u. u \<le> f u"] by simp
-      also have "\<dots> = curry (Sup {u. u \<le> f u})" by force
+      also have "\<dots> = curry (Sup {u. u \<le> f u})" by (force simp add: image_comp)
       also have "\<dots> = curry (gfp f)" unfolding gfp_def by simp
       finally show ?thesis by this
     qed

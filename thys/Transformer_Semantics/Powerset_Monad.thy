@@ -353,19 +353,19 @@ lemma f2r_eta_pres [simp]: "\<R> \<eta> = Id"
   by (simp add: r2f_f2r_galois) 
 
 lemma f2r_Sup_pres:"Sup_pres \<R>"
-  by (auto simp: r2f_f2r_galois_var comp_assoc[symmetric] r2f_Sup_pres)
+  by (auto simp: r2f_f2r_galois_var comp_assoc[symmetric] r2f_Sup_pres image_comp)
 
 lemma f2r_Sup_pres_var: "\<R> (\<Squnion>F) = (\<Squnion>f \<in> F. \<R> f)"
-  by (simp add: r2f_f2r_galois r2f_Sup_pres_var)
+  by (simp add: r2f_f2r_galois r2f_Sup_pres_var image_comp)
 
 lemma f2r_sup_pres: "sup_pres \<R>"
   by (simp add: r2f_f2r_galois r2f_sup_pres pointfree_idE)
 
 lemma f2r_Inf_pres: "Inf_pres \<R>"
-  by (auto simp: r2f_f2r_galois_var comp_assoc[symmetric] r2f_Inf_pres)
+  by (auto simp: r2f_f2r_galois_var comp_assoc[symmetric] r2f_Inf_pres image_comp)
 
 lemma f2r_Inf_pres_var: "\<R> (\<Sqinter>F) = (\<Inter>f \<in> F. \<R> f)"
-  by (simp add: r2f_f2r_galois r2f_Inf_pres_var)
+  by (simp add: r2f_f2r_galois r2f_Inf_pres_var image_comp)
 
 lemma f2r_inf_pres: "inf_pres \<R>"
   by (simp add: r2f_f2r_galois r2f_inf_pres pointfree_idE)

@@ -279,13 +279,13 @@ lemma Inf_dual_var: "\<partial> (\<Sqinter>X) = \<Squnion>(\<partial> ` X)"
   using comp_eq_dest Inf_dual by fastforce
 
 lemma Inf_to_Sup: "Inf = \<partial> \<circ> Sup \<circ> (`) \<partial>"
-  using Sups_dual_def by force
+  by (auto simp add: Sups_dual_def image_comp)
 
 lemma Inf_to_Sup_var: "\<Sqinter>X = \<partial> (\<Squnion>(\<partial> ` X))"
   using Inf_dual_var dual_iff by fastforce
 
 lemma Sup_to_Inf: "Sup = \<partial> \<circ> Inf \<circ> (`) \<partial>"
-  using Inf_dual by force
+  by (auto simp add: Inf_dual image_comp)
 
 lemma Sup_to_Inf_var: "\<Squnion>X = \<partial> (\<Sqinter>(\<partial> ` X))"
   using Sup_to_Inf by force

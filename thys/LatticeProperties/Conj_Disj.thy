@@ -123,10 +123,10 @@ proof
     show "f \<in> (Comp.Conjunctive :: ('a \<Rightarrow> 'a) set)"
     proof (rule Comp.ConjunctiveI)
       fix G :: "('a \<Rightarrow> 'a) set"
-      from * have "f (Inf ((\<lambda>f. f a) ` G)) = (INF b\<in>(\<lambda>f. f a) ` G. f b)"
+      from * have "f (INF f\<in>G. f a) = Inf (f ` (\<lambda>f. f a) ` G)"
         for a :: 'a .
       then show "f \<circ> Inf G = Inf (comp f ` G)"
-        by (simp add: fun_eq_iff)
+        by (simp add: fun_eq_iff image_comp)
     qed
   qed
   show "Comp.Conjunctive \<subseteq> (Apply.Conjunctive :: ('a \<Rightarrow> 'a) set)"
@@ -138,9 +138,9 @@ proof
     show "f \<in> (Apply.Conjunctive :: ('a \<Rightarrow> 'a) set)"
     proof (rule Apply.ConjunctiveI)
       fix A :: "'a set"
-      from * have "f \<circ> Inf ((\<lambda>a (b::'a). a) ` A) = (INF g\<in>(\<lambda>a b. a) ` A. f \<circ> g)" .
+      from * have "f \<circ> (INF a\<in>A. (\<lambda>b :: 'a. a)) = Inf ((\<circ>) f ` (\<lambda>a b. a) ` A)" .
       then show "f (Inf A) = Inf (f ` A)"
-        by (simp add: fun_eq_iff)
+        by (simp add: fun_eq_iff image_comp)
     qed
   qed
 qed  
@@ -182,10 +182,10 @@ proof
     show "f \<in> (Comp.Disjunctive :: ('a \<Rightarrow> 'a) set)"
     proof (rule Comp.DisjunctiveI)
       fix G :: "('a \<Rightarrow> 'a) set"
-      from * have "f (Sup ((\<lambda>f. f a) ` G)) = (SUP b\<in>(\<lambda>f. f a) ` G. f b)"
+      from * have "f (SUP f\<in>G. f a) = Sup (f ` (\<lambda>f. f a) ` G)"
         for a :: 'a .
       then show "f \<circ> Sup G = Sup (comp f ` G)"
-        by (simp add: fun_eq_iff)
+        by (simp add: fun_eq_iff image_comp)
     qed
   qed
   show "Comp.Disjunctive \<subseteq> (Apply.Disjunctive :: ('a \<Rightarrow> 'a) set)"
@@ -197,9 +197,9 @@ proof
     show "f \<in> (Apply.Disjunctive :: ('a \<Rightarrow> 'a) set)"
     proof (rule Apply.DisjunctiveI)
       fix A :: "'a set"
-      from * have "f \<circ> Sup ((\<lambda>a (b::'a). a) ` A) = (SUP g\<in>(\<lambda>a b. a) ` A. f \<circ> g)" .
+      from * have "f \<circ> (SUP a\<in>A. (\<lambda>b :: 'a. a)) = Sup ((\<circ>) f ` (\<lambda>a b. a) ` A)" .
       then show "f (Sup A) = Sup (f ` A)"
-        by (simp add: fun_eq_iff)
+        by (simp add: fun_eq_iff image_comp)
     qed
   qed
 qed  

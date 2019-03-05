@@ -39,19 +39,19 @@ syntax
 
 lemma Inf_comp_fun:
   "\<Sqinter>M \<circ> f = (\<Sqinter>m\<in>M. m \<circ> f)"
-  by (simp add: fun_eq_iff)
+  by (simp add: fun_eq_iff image_comp)
 
 lemma INF_comp_fun:
   "(\<Sqinter>a\<in>A. g a) \<circ> f = (\<Sqinter>a\<in>A. g a \<circ> f)"
-  by (simp add: fun_eq_iff)
+  by (simp add: fun_eq_iff image_comp)
 
 lemma Sup_comp_fun:
   "\<Squnion>M \<circ> f = (\<Squnion>m\<in>M. m \<circ> f)"
-  by (simp add: fun_eq_iff)
+  by (simp add: fun_eq_iff image_comp)
 
 lemma SUP_comp_fun:
   "(\<Squnion>a\<in>A. g a) \<circ> f = (\<Squnion>a\<in>A. g a \<circ> f)"
-  by (simp add: fun_eq_iff)
+  by (simp add: fun_eq_iff image_comp)
 
 lemma (in order) mono_const [simp]:
   "mono (\<lambda>_. c)"

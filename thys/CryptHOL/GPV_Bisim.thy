@@ -690,13 +690,14 @@ next
         (SUP input. interaction_bound'' (c input))" (is "?lhs = ?rhs" is "(SUP x. ?f x) = _")
     if "IO out c \<in> set_spmf (the_gpv gpv)" for out c
   proof -
-    have "?lhs = sup (interaction_bound' (Done None)) (SUP x\<in>range Some. ?f x)" by(simp add: UNIV_option_conv)
+    have "?lhs = sup (interaction_bound' (Done None)) (\<Squnion>x. ?f (Some x))"
+      by (simp add: UNIV_option_conv image_comp)
     also have "interaction_bound' (Done None) = 0" using step.hyps(1)[of "Done None"] by simp
-    also have "(SUP x\<in>range Some. ?f x) = ?rhs" by(simp add: step.IH)
-    finally show ?thesis by(simp add: bot_enat_def[symmetric])
+    also have "(\<Squnion>x. ?f (Some x)) = ?rhs" by (simp add: step.IH)
+    finally show ?thesis by (simp add: bot_enat_def [symmetric])
   qed
   then show ?case
-    by(auto simp add: case_map_generat o_def cong del: generat.case_cong_weak if_weak_cong intro!: SUP_cong split: generat.split)
+    by (auto simp add: case_map_generat o_def image_comp cong del: generat.case_cong_weak if_weak_cong intro!: SUP_cong split: generat.split)
 qed
   
 abbreviation exec_gpv_stop :: "('s \<Rightarrow> 'c \<Rightarrow> ('r option \<times> 's) spmf) \<Rightarrow> ('a, 'c, 'r) gpv \<Rightarrow> 's \<Rightarrow> ('a option \<times> 's) spmf"

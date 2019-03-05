@@ -183,7 +183,7 @@ proof-
   have h2: "mono (fiter_fun f g)"
     by (simp add: assms(1) assms(2) iso_fiter_fun2)
   have h3: "Inf \<circ> image (\<lambda>x. x \<circ> f) = (\<lambda>x. x \<circ> f) \<circ> Inf" 
-    by (simp add: fun_eq_iff)
+    by (simp add: fun_eq_iff image_comp)
   have "(\<lambda>x. x \<circ> f) \<circ> (fiter_fun id g) = (fiter_fun f g) \<circ> (\<lambda>x. x \<circ> f)"
     by (simp add: fun_eq_iff fiter_fun_def) 
   thus ?thesis
@@ -197,7 +197,7 @@ lemma fpower_supdistl:
   by (simp add: Isotone_Transformers.fun_isol fstar_def mono_INF mono_def)
 
 lemma fpower_distr: "fstar f \<circ> g = (\<Sqinter>i. fpower f i \<circ> g)"
-  by (auto simp: fstar_def)
+  by (auto simp: fstar_def image_comp)
 
 lemma fpower_Sup_subcomm: "mono f \<Longrightarrow> f \<circ> fstar f \<le> fstar f \<circ> f"
   by (metis (mono_tags, lifting) fun_mon.power_commutes le_INF_iff fpower_distr fpower_supdistl)
