@@ -626,11 +626,11 @@ proof (rule conjI, clarsimp)
     by (metis Int_iff W(3) vimage_eq)
   also have "openin T \<dots>"
     by (auto intro!: W that)
-  finally show "openin (subtopology (map_topology f T) X) (U \<inter> topspace (subtopology (map_topology f T) X))"
+  finally show "openin (subtopology (map_topology f T) X) (U \<inter> (f ` topspace T \<inter> X))"
     using W
     unfolding topspace_subtopology topspace_map_topology openin_subtopology openin_map_topology
     by (intro exI[where x="(f ` W \<inter> X)"]) auto
-qed (auto simp: topspace_subtopology)
+qed auto
 
 lemma subtopology_map_topology:
   "subtopology (map_topology f T) X = map_topology f (subtopology T (f -` X))"
