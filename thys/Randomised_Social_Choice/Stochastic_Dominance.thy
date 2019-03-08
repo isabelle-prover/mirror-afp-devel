@@ -457,9 +457,9 @@ next
         by (subst (asm) (1 2) integral_measure_pmf[OF finite_carrier])
            (auto simp: lotteries_on_def set_pmf_eq ac_simps)
       hence "(\<Sum>y|le x y. pmf p y) + \<epsilon> * (\<Sum>y\<in>carrier. ?idx y * pmf p y) \<le>
-               (\<Sum>y|le x y. pmf q y) + \<epsilon> * (\<Sum>y\<in>carrier. ?idx y * pmf q y)"
-        using x preferred_subset_carrier unfolding u_def
-        by (simp add: sum.distrib finite_carrier algebra_simps Int_absorb1 sum_distrib_left)
+             (\<Sum>y|le x y. pmf q y) + \<epsilon> * (\<Sum>y\<in>carrier. ?idx y * pmf q y)"
+        using x preferred_subset_carrier not_outside
+        by (simp add: u_def sum.distrib finite_carrier algebra_simps sum_distrib_left cong: rev_conj_cong)
       also have "(\<Sum>y\<in>carrier. ?idx y * pmf q y) \<le> (\<Sum>y\<in>carrier. length xs * pmf q y)"
         by (intro sum_mono mult_right_mono) (simp_all add: pmf_nonneg)
       also have "\<dots> = measure_pmf.expectation q (\<lambda>_. length xs)"
