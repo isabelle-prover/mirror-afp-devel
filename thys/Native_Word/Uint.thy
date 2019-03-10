@@ -230,14 +230,14 @@ text \<open>
 code_printing code_module "Uint" \<rightharpoonup> (OCaml)
 \<open>module Uint : sig
   type t = int
-  val dflt_size : Big_int.big_int
+  val dflt_size : Z.t
   val less : t -> t -> bool
   val less_eq : t -> t -> bool
-  val set_bit : t -> Big_int.big_int -> bool -> t
-  val shiftl : t -> Big_int.big_int -> t
-  val shiftr : t -> Big_int.big_int -> t
-  val shiftr_signed : t -> Big_int.big_int -> t
-  val test_bit : t -> Big_int.big_int -> bool
+  val set_bit : t -> Z.t -> bool -> t
+  val shiftl : t -> Z.t -> t
+  val shiftr : t -> Z.t -> t
+  val shiftr_signed : t -> Z.t -> t
+  val test_bit : t -> Z.t -> bool
   val int_mask : int
   val int32_mask : int32
   val int64_mask : int64
@@ -245,12 +245,7 @@ end = struct
 
 type t = int
 
-(* Can be replaced with Sys.int_size in OCaml 4.03.0 *)
-let dflt_size_int = 
-  let rec f n = if n=0 then 0 else f (n / 2) + 1 
-  in f min_int;;
-
-let dflt_size = Big_int.big_int_of_int dflt_size_int;;
+let dflt_size = Z.of_int Sys.int_size;;
 
 (* negative numbers have their highest bit set, 
    so they are greater than positive ones *)
@@ -265,27 +260,27 @@ let less_eq x y =
   else y < 0 || x <= y;;
 
 let set_bit x n b =
-  let mask = 1 lsl (Big_int.int_of_big_int n)
+  let mask = 1 lsl (Z.to_int n)
   in if b then x lor mask
      else x land (lnot mask);;
 
-let shiftl x n = x lsl (Big_int.int_of_big_int n);;
+let shiftl x n = x lsl (Z.to_int n);;
 
-let shiftr x n = x lsr (Big_int.int_of_big_int n);;
+let shiftr x n = x lsr (Z.to_int n);;
 
-let shiftr_signed x n = x asr (Big_int.int_of_big_int n);;
+let shiftr_signed x n = x asr (Z.to_int n);;
 
-let test_bit x n = x land (1 lsl (Big_int.int_of_big_int n)) <> 0;;
+let test_bit x n = x land (1 lsl (Z.to_int n)) <> 0;;
 
 let int_mask =
-  if dflt_size_int < 32 then lnot 0 else 0xFFFFFFFF;;
+  if Sys.int_size < 32 then lnot 0 else 0xFFFFFFFF;;
 
 let int32_mask = 
-  if dflt_size_int < 32 then Int32.pred (Int32.shift_left Int32.one dflt_size_int) 
+  if Sys.int_size < 32 then Int32.pred (Int32.shift_left Int32.one Sys.int_size)
   else Int32.of_string "0xFFFFFFFF";;
 
 let int64_mask = 
-  if dflt_size_int < 64 then Int64.pred (Int64.shift_left Int64.one dflt_size_int) 
+  if Sys.int_size < 64 then Int64.pred (Int64.shift_left Int64.one Sys.int_size)
   else Int64.of_string "0xFFFFFFFFFFFFFFFF";;
 
 end;; (*struct Uint*)\<close>
@@ -436,7 +431,7 @@ code_printing
   (Haskell_Quickcheck) "(Prelude.fromInteger (Prelude.toInteger _) :: Uint.Word)" and
   (Scala) "_.intValue"
 | constant Uint_signed \<rightharpoonup>
-  (OCaml) "Big'_int.int'_of'_big'_int"
+  (OCaml) "Z.to'_int"
 | constant "0 :: uint" \<rightharpoonup>
   (SML) "(Word.fromInt 0)" and
   (Eval) "(raise (Fail \"Machine dependent code\"))" and

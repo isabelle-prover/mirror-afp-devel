@@ -24,14 +24,14 @@ begin
 (* mod on standard case which can immediately be mapped to 
    target languages without considering special cases *)
 definition mod_nonneg_pos :: "integer \<Rightarrow> integer \<Rightarrow> integer" where
-  "x \<ge> 0 \<Longrightarrow> y > 0 \<Longrightarrow> mod_nonneg_pos x y = (x mod y)" 
+  "x \<ge> 0 \<Longrightarrow> y > 0 \<Longrightarrow> mod_nonneg_pos x y = (x mod y)"
   
-code_printing
+code_printing \<comment> \<open>FIXME illusion of partiality\<close>
   constant mod_nonneg_pos \<rightharpoonup>
         (SML) "IntInf.mod/ ( _,/ _ )"
+    and (Eval) "IntInf.mod/ ( _,/ _ )"
+    and (OCaml) "Z.rem"
     and (Haskell) "Prelude.mod/ ( _ )/ ( _ )"
-    and (Eval) "IntInf.mod/ ( _,/ _ )" 
-    and (OCaml) "Big'_int.mod'_big'_int/ ( _ )/ ( _ )"
     and (Scala) "!((k: BigInt) => (l: BigInt) =>/ (k '% l))"
 
 definition mod_nonneg_pos_int :: "int \<Rightarrow> int \<Rightarrow> int" where

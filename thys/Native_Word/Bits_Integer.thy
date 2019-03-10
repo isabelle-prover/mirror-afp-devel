@@ -56,6 +56,7 @@ by transfer simp
 lemma dup_1 [simp]: "Code_Numeral.dup 1 = 2"
 by transfer simp
 
+
 section \<open>Bit operations on @{typ integer}\<close>
 
 text \<open>Bit operations on @{typ integer} are the same as on @{typ int}\<close>
@@ -89,6 +90,7 @@ end
 abbreviation (input) wf_set_bits_integer
 where "wf_set_bits_integer \<equiv> wf_set_bits_int"
 
+
 section \<open>Target language implementations\<close>
 
 text \<open>
@@ -98,7 +100,6 @@ text \<open>
   \begin{description}
   \item[Standard ML] Shifts in IntInf are given as word, but not IntInf.
   \item[Haskell] In the Data.Bits.Bits type class, shifts and bit indices are given as Int rather than Integer.
-  \item[OCaml] AND, XOR and OR in Big\_int accept only positive integers.
   \end{description}
 
   Additional constants take only parameters of type @{typ integer} rather than @{typ nat}
@@ -143,6 +144,25 @@ fun test_bit x n =
 
 end; (*struct Bits_Integer*)\<close>
 code_reserved SML Bits_Integer
+
+code_printing code_module Bits_Integer \<rightharpoonup> (OCaml)
+\<open>module Bits_Integer : sig
+  val shiftl : Z.t -> Z.t -> Z.t
+  val shiftr : Z.t -> Z.t -> Z.t
+  val test_bit : Z.t -> Z.t -> bool
+end = struct
+
+(* We do not need an explicit range checks here,
+   because Big_int.int_of_big_int raises Failure 
+   if the argument does not fit into an int. *)
+let shiftl x n = Z.shift_left x (Z.to_int n);;
+
+let shiftr x n = Z.shift_right x (Z.to_int n);;
+
+let test_bit x n =  Z.testbit x (Z.to_int n);;
+
+end;; (*struct Bits_Integer*)\<close>
+code_reserved OCaml Bits_Integer
 
 code_printing code_module Data_Bits \<rightharpoonup> (Haskell)
 \<open>
@@ -272,50 +292,6 @@ shiftrBounded = Data.Bits.shiftR;
 }\<close>
 code_reserved Haskell Data_Bits
 
-code_printing code_module Bits_Integer \<rightharpoonup> (OCaml)
-\<open>module Bits_Integer : sig
-  val and_pninteger : Big_int.big_int -> Big_int.big_int -> Big_int.big_int
-  val or_pninteger : Big_int.big_int -> Big_int.big_int -> Big_int.big_int
-  val shiftl : Big_int.big_int -> Big_int.big_int -> Big_int.big_int
-  val shiftr : Big_int.big_int -> Big_int.big_int -> Big_int.big_int
-  val test_bit : Big_int.big_int -> Big_int.big_int -> bool
-end = struct
-
-let and_pninteger bi1 bi2 =
-  Big_int.and_big_int bi1
-    (Big_int.xor_big_int
-      (Big_int.pred_big_int
-        (Big_int.shift_left_big_int Big_int.unit_big_int
-           (max (Big_int.num_digits_big_int bi1 * Nat.length_of_digit)
-                (Big_int.num_digits_big_int bi2 * Nat.length_of_digit))))
-      (Big_int.pred_big_int (Big_int.minus_big_int bi2)));;
-
-let or_pninteger bi1 bi2 =
-  Big_int.pred_big_int (Big_int.minus_big_int
-    (Big_int.and_big_int
-      (Big_int.xor_big_int
-         (Big_int.pred_big_int
-           (Big_int.shift_left_big_int Big_int.unit_big_int
-              (max (Big_int.num_digits_big_int bi1 * Nat.length_of_digit)
-                   (Big_int.num_digits_big_int bi2 * Nat.length_of_digit))))
-         bi1)
-      (Big_int.pred_big_int (Big_int.minus_big_int bi2))));;
-
-(* We do not need an explicit range checks here,
-   because Big_int.int_of_big_int raises Failure 
-   if the argument does not fit into an int. *)
-let shiftl x n = Big_int.shift_left_big_int x (Big_int.int_of_big_int n);;
-
-let shiftr x n = Big_int.shift_right_big_int x (Big_int.int_of_big_int n);;
-
-let test_bit x n = 
-  Big_int.eq_big_int 
-    (Big_int.extract_big_int x (Big_int.int_of_big_int n) 1) 
-    Big_int.unit_big_int
-
-end;; (*struct Bits_Integer*)\<close>
-code_reserved OCaml Bits_Integer
-
 code_printing code_module Bits_Integer \<rightharpoonup> (Scala)
 \<open>object Bits_Integer {
 
@@ -351,31 +327,35 @@ def testBit(x: BigInt, n: BigInt) : Boolean =
 code_printing
   constant "bitAND :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.andb ((_),/ (_))" and
+  (OCaml) "Z.logand" and
   (Haskell) "((Data'_Bits..&.) :: Integer -> Integer -> Integer)" and
   (Haskell_Quickcheck) "((Data'_Bits..&.) :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
   (Scala) infixl 3 "&"
 | constant "bitOR :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.orb ((_),/ (_))" and
+  (OCaml) "Z.logor" and
   (Haskell) "((Data'_Bits..|.) :: Integer -> Integer -> Integer)" and
   (Haskell_Quickcheck) "((Data'_Bits..|.) :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
   (Scala) infixl 1 "|"
 | constant "bitXOR :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.xorb ((_),/ (_))" and
+  (OCaml) "Z.logxor" and
   (Haskell) "(Data'_Bits.xor :: Integer -> Integer -> Integer)" and
   (Haskell_Quickcheck) "(Data'_Bits.xor :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
   (Scala) infixl 2 "^"
 | constant "bitNOT :: integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.notb" and
+  (OCaml) "Z.lognot" and
   (Haskell) "(Data'_Bits.complement :: Integer -> Integer)" and
   (Haskell_Quickcheck) "(Data'_Bits.complement :: Prelude.Int -> Prelude.Int)" and
   (Scala) "_.unary'_~"
 
 code_printing constant bin_rest_integer \<rightharpoonup>
   (SML) "IntInf.div ((_), 2)" and
+  (OCaml) "Z.shift'_right/ _/ 1" and
   (Haskell) "(Data'_Bits.shiftrUnbounded _ 1 :: Integer)" and
   (Haskell_Quickcheck) "(Data'_Bits.shiftrUnbounded _ 1 :: Prelude.Int)" and
-  (Scala) "_ >> 1" and
-  (OCaml) "Big'_int.shift'_right'_big'_int _ 1"
+  (Scala) "_ >> 1"
 
 context
 includes integer.lifting
@@ -405,7 +385,7 @@ by transfer(rule bitval_bin_last)
 end
 
 definition integer_test_bit :: "integer \<Rightarrow> integer \<Rightarrow> bool"
-where [code del]: "integer_test_bit x n = (if n < 0 then undefined x n else x !! nat_of_integer n)"
+  where "integer_test_bit x n = (if n < 0 then undefined x n else x !! nat_of_integer n)"
 
 lemma test_bit_integer_code [code]:
   "x !! n \<longleftrightarrow> integer_test_bit x (integer_of_nat n)"
@@ -435,9 +415,9 @@ by(simp_all add: integer_test_bit_def test_bit_integer_def)
 
 code_printing constant integer_test_bit \<rightharpoonup>
   (SML) "Bits'_Integer.test'_bit" and
+  (OCaml) "Bits'_Integer.test'_bit" and
   (Haskell) "(Data'_Bits.testBitUnbounded :: Integer -> Integer -> Bool)" and
   (Haskell_Quickcheck) "(Data'_Bits.testBitUnbounded :: Prelude.Int -> Prelude.Int -> Bool)" and
-  (OCaml) "Bits'_Integer.test'_bit" and
   (Scala) "Bits'_Integer.testBit"
 
 context
@@ -513,9 +493,9 @@ end
 
 code_printing constant integer_shiftl \<rightharpoonup>
   (SML) "Bits'_Integer.shiftl" and
+  (OCaml) "Bits'_Integer.shiftl" and
   (Haskell) "(Data'_Bits.shiftlUnbounded :: Integer -> Integer -> Integer)" and
   (Haskell_Quickcheck) "(Data'_Bits.shiftlUnbounded :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
-  (OCaml) "Bits'_Integer.shiftl" and
   (Scala) "Bits'_Integer.shiftl"
 
 definition integer_shiftr :: "integer \<Rightarrow> integer \<Rightarrow> integer"
@@ -533,9 +513,9 @@ by(auto simp add: integer_shiftr_def)
 
 code_printing constant integer_shiftr \<rightharpoonup>
   (SML) "Bits'_Integer.shiftr" and
+  (OCaml) "Bits'_Integer.shiftr" and
   (Haskell) "(Data'_Bits.shiftrUnbounded :: Integer -> Integer -> Integer)" and
   (Haskell_Quickcheck) "(Data'_Bits.shiftrUnbounded :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
-  (OCaml) "Bits'_Integer.shiftr" and
   (Scala) "Bits'_Integer.shiftr"
 
 lemma integer_shiftr_code [code]:
@@ -567,309 +547,60 @@ lemma msb_integer_code [code]:
   "msb (x :: integer) \<longleftrightarrow> x < 0"
 by transfer(simp add: msb_int_def)
 
-subsection \<open>OCaml implementation for \<open>AND\<close>, \<open>OR\<close>, and \<open>XOR\<close>\<close>
-
-definition and_pint :: "int \<Rightarrow> int \<Rightarrow> int" where
-  "and_pint i j = 
-  (if i < 0 \<or> j < 0 then int_of_integer (undefined (integer_of_int i) (integer_of_int j))
-   else i AND j)"
-
-definition or_pint :: "int \<Rightarrow> int \<Rightarrow> int" where 
-  "or_pint i j = 
-   (if i < 0 \<or> j < 0 then int_of_integer (undefined (integer_of_int i) (integer_of_int j))
-    else i OR j)"
-
-definition xor_pint :: "int \<Rightarrow> int \<Rightarrow> int" where
-  "xor_pint i j = 
-  (if i < 0 \<or> j < 0 then int_of_integer (undefined (integer_of_int i) (integer_of_int j))
-   else i XOR j)"
-
-lift_definition and_pinteger :: "integer \<Rightarrow> integer \<Rightarrow> integer" is and_pint .
-lift_definition or_pinteger :: "integer \<Rightarrow> integer \<Rightarrow> integer" is or_pint .
-lift_definition xor_pinteger :: "integer \<Rightarrow> integer \<Rightarrow> integer" is xor_pint .
-
 end
-
-code_printing
-  constant and_pinteger \<rightharpoonup> (OCaml) "Big'_int.and'_big'_int"
-| constant or_pinteger  \<rightharpoonup> (OCaml) "Big'_int.or'_big'_int"
-| constant xor_pinteger \<rightharpoonup> (OCaml) "Big'_int.xor'_big'_int"
 
 context
 includes integer.lifting natural.lifting
 begin
 
-lemma and_pinteger_unfold: 
-  "and_pinteger i j = (if i < 0 \<or> j < 0 then undefined i j else i AND j)"
-including undefined_transfer by transfer(simp add: and_pint_def)
-
-lemma or_pinteger_unfold:
-  "or_pinteger i j = (if i < 0 \<or> j < 0 then undefined i j else i OR j)"
-including undefined_transfer by transfer(simp add: or_pint_def)
-
-lemma xor_pinteger_unfold:
-  "xor_pinteger i j = (if i < 0 \<or> j < 0 then undefined i j else i XOR j)"
-including undefined_transfer by transfer(simp add: xor_pint_def)
-
-lemma xor_OCaml_code [code]:
-  fixes i :: integer shows
-  "i XOR j =
-  (if i < 0 then 
-     if j < 0 then
-        xor_pinteger (NOT i) (NOT j)
-     else
-        NOT (xor_pinteger (NOT i) j)
-   else if j < 0 then
-     NOT (xor_pinteger i (NOT j))
-   else xor_pinteger i j)"
-by transfer(simp add: int_xor_not xor_pint_def)
-
-lemma and_pinteger_code [code]:
-  "and_pinteger (Code_Numeral.Neg n) j = undefined (Code_Numeral.Neg n) j"
-  "and_pinteger i (Code_Numeral.Neg n) = undefined i (Code_Numeral.Neg n)"
-  "and_pinteger 0 0 = 0"
-  "and_pinteger (Code_Numeral.Pos n) 0 = 0"
-  "and_pinteger 0 (Code_Numeral.Pos n) = 0"
-  "and_pinteger (Code_Numeral.Pos m) (Code_Numeral.Pos n) = (case bitAND_num m n of None \<Rightarrow> 0 | Some n' \<Rightarrow> Code_Numeral.Pos n')"
-including undefined_transfer by(transfer, simp add: and_pint_def Bit_def int_and_code[unfolded Int.Pos_def])+
-
-lemma or_pinteger_code [code]:
-  "or_pinteger (Code_Numeral.Neg n) j = undefined (Code_Numeral.Neg n) j"
-  "or_pinteger i (Code_Numeral.Neg n) = undefined i (Code_Numeral.Neg n)"
-  "or_pinteger 0 0 = 0"
-  "or_pinteger (Code_Numeral.Pos n) 0 = (Code_Numeral.Pos n)"
-  "or_pinteger 0 (Code_Numeral.Pos n) = (Code_Numeral.Pos n)"
-  "or_pinteger (Code_Numeral.Pos m) (Code_Numeral.Pos n) = Code_Numeral.Pos (bitOR_num m n)"
-including undefined_transfer by(transfer, simp add: or_pint_def Bit_def int_or_code[unfolded Int.Pos_def])+
-
-lemma xor_pinteger_code [code]:
-  "xor_pinteger (Code_Numeral.Neg n) j = undefined (Code_Numeral.Neg n) j"
-  "xor_pinteger i (Code_Numeral.Neg n) = undefined i (Code_Numeral.Neg n)"
-  "xor_pinteger 0 0 = 0"
-  "xor_pinteger (Code_Numeral.Pos n) 0 = (Code_Numeral.Pos n)"
-  "xor_pinteger 0 (Code_Numeral.Pos n) = (Code_Numeral.Pos n)"
-  "xor_pinteger (Code_Numeral.Pos n) (Code_Numeral.Pos m) = (case bitXOR_num n m of None \<Rightarrow> 0 | Some n' \<Rightarrow> Code_Numeral.Pos n')"
-including undefined_transfer by(transfer, simp add: xor_pint_def Bit_def int_xor_code[unfolded Int.Pos_def])+
-
-text \<open>
-  If one argument is positive and the other negative, AND and OR
-  cannot be expressed with XOR/NOT and only positive arguments.
-  To handle this case, we define @{term "and_pninteger"} and @{term "or_pninteger"}
-  and implement them manually in the code\_include Bits\_Integer.
-  The following proves that the implementation is correct.
-\<close>
-
-definition and_pnint :: "int \<Rightarrow> int \<Rightarrow> int" where
-  "and_pnint i j = 
-   (if i \<ge> 0 \<and> j < 0 then i AND j
-    else int_of_integer (undefined (integer_of_int i) (integer_of_int j)))"
-
-definition or_pnint :: "int \<Rightarrow> int \<Rightarrow> int" where
-  "or_pnint i j = 
-   (if i \<ge> 0 \<and> j < 0 then i OR j
-    else int_of_integer (undefined (integer_of_int i) (integer_of_int j)))"
-
-fun log2 :: "int => nat" where
-  "log2 i = (if i < 0 then undefined else if i = 0 then 0 else log2 (i div 2) + 1)"
-
-lift_definition and_pninteger :: "integer \<Rightarrow> integer \<Rightarrow> integer" is and_pnint .
-lift_definition or_pninteger :: "integer \<Rightarrow> integer \<Rightarrow> integer" is or_pnint .
-lift_definition log2_integer :: "integer \<Rightarrow> natural" is log2 .
-lift_definition bin_mask_integer :: "natural \<Rightarrow> integer" is bin_mask .
-
-end
-
-code_printing 
-  constant and_pninteger \<rightharpoonup> (OCaml) "Bits'_Integer.and'_pninteger"
-| constant or_pninteger  \<rightharpoonup> (OCaml) "Bits'_Integer.or'_pninteger"
-
-context
-includes integer.lifting natural.lifting
-begin
-
-lemma and_pninteger_unfold:
-  "and_pninteger i j = (if i \<ge> 0 \<and> j < 0 then i AND j else undefined i j)"
-including undefined_transfer by transfer(simp add: and_pnint_def)
-
-lemma and_pninteger_code [code]:
-  "and_pninteger (Code_Numeral.Neg n) j = undefined (Code_Numeral.Neg n) j"
-  "and_pninteger i 0 = undefined i (0 :: integer)"
-  "and_pninteger i (Code_Numeral.Pos n) = undefined i (Code_Numeral.Pos n)"
-  "and_pninteger 0 (Code_Numeral.Neg n) = 0"
-  "and_pninteger (Code_Numeral.Pos n) (Code_Numeral.Neg num.One) = Code_Numeral.Pos n"
-  "and_pninteger (Code_Numeral.Pos n) (Code_Numeral.Neg (num.Bit0 m)) = Code_Numeral.sub (bitORN_num (Num.BitM m) n) num.One"
-  "and_pninteger (Code_Numeral.Pos n) (Code_Numeral.Neg (num.Bit1 m)) = Code_Numeral.sub (bitORN_num (num.Bit0 m) n) num.One"
-including undefined_transfer by(transfer, simp add: and_pnint_def Bit_def int_and_code[unfolded Int.Pos_def Int.Neg_def])+
-
-lemma or_pninteger_unfold:
-  "or_pninteger i j = (if i \<ge> 0 \<and> j < 0 then i OR j else undefined i j)"
-including undefined_transfer by transfer(simp add: or_pnint_def)
-
-lemma or_pninteger_code [code]:
-  "or_pninteger (Code_Numeral.Neg n) j = undefined (Code_Numeral.Neg n) j"
-  "or_pninteger i 0 = undefined i (0 :: integer)"
-  "or_pninteger i (Code_Numeral.Pos n) = undefined i (Code_Numeral.Pos n)"
-  "or_pninteger 0 (Code_Numeral.Neg n) = Code_Numeral.Neg n"
-
-  "or_pninteger (Code_Numeral.Pos n) (Code_Numeral.Neg num.One) = -1"
-  "or_pninteger (Code_Numeral.Pos n) (Code_Numeral.Neg (num.Bit0 m)) = (case bitANDN_num (Num.BitM m) n of None \<Rightarrow> -1 | Some n' \<Rightarrow> Code_Numeral.Neg (Num.inc n'))"
-  "or_pninteger (Code_Numeral.Pos n) (Code_Numeral.Neg (num.Bit1 m)) = (case bitANDN_num (num.Bit0 m) n of None \<Rightarrow> -1 | Some n' \<Rightarrow> Code_Numeral.Neg (Num.inc n'))"
-including undefined_transfer by(transfer, simp add: or_pnint_def Bit_def int_or_code[unfolded Int.Pos_def Int.Neg_def])+
-
-lemma integer_and_OCaml_code [code]:
-  "i AND j = 
-  (if i \<ge> 0 then
-     if j \<ge> 0 then
-       and_pinteger i j
-     else and_pninteger i j
-   else if j < 0 then
-     NOT (or_pinteger (NOT i) (NOT j))
-   else and_pninteger j i)"
-by transfer(simp add: and_pnint_def and_pint_def or_pint_def bbw_not_dist int_and_comm)
-
-lemma integer_or_OCaml_code [code]:
-  "i OR j = 
-  (if i \<ge> 0 then
-     if j \<ge> 0 then
-       or_pinteger i j
-     else or_pninteger i j
-   else if j < 0 then
-     NOT (and_pinteger (NOT i) (NOT j))
-   else or_pninteger j i)"
-by transfer(simp add: or_pnint_def and_pint_def or_pint_def bbw_not_dist int_or_comm)
-
-lemma integer_or_unfold:
-  fixes x y :: integer shows
-  "x OR y = NOT (NOT x AND NOT y)"
-by(transfer)(simp add: int_or_def)
-
-lemma bitAND_integer_unfold:
+lemma bitAND_integer_unfold [code]:
   "x AND y =
    (if x = 0 then 0
-    else if x = -1 then y
+    else if x = - 1 then y
     else Bit_integer (bin_rest_integer x AND bin_rest_integer y) (bin_last_integer x \<and> bin_last_integer y))"
-by transfer(rule bitAND_int.simps)
+  by transfer (fact bitAND_int.simps)
 
-lemma log2_simps [simp]:
-  "log2 0 = 0"
-  "log2 1 = 1"
-  "n < 0 \<Longrightarrow> log2 n = undefined"
-by(simp_all)
-
-declare log2.simps [simp del]
-
-lemma log2_le_plus1: "0 \<le> i \<Longrightarrow> log2 i \<le> log2 (i + 1)"
-proof(induct i rule: log2.induct)
-  case (1 i) 
-  moreover have "i mod 2 = 0 \<or> i mod 2 = 1" by arith
-  ultimately show ?case by(subst (1 2) log2.simps)(auto, simp_all add: div_add1_eq)
+lemma bitOR_integer_unfold [code]:
+  "x OR y =
+   (if x = 0 then y
+    else if x = - 1 then - 1
+    else Bit_integer (bin_rest_integer x OR bin_rest_integer y) (bin_last_integer x \<or> bin_last_integer y))"
+proof transfer
+  fix x y :: int
+  from int_or_Bits [of "bin_rest x" "bin_last x" "bin_rest y" "bin_last y"]
+  have "(bin_rest x OR bin_rest y) BIT (bin_last x \<or> bin_last y) = x OR y"
+    by simp
+  then show "x OR y =
+    (if x = 0 then y
+     else if x = - 1 then - 1
+     else Bit (bin_rest x OR bin_rest y) (bin_last x \<or> bin_last y))"
+    by simp
 qed
 
-lemma log2_mono: 
-  assumes x: "0 \<le> x" and xy: "x \<le> y"
-  shows "log2 x \<le> log2 y"
-using xy
-proof(induct n\<equiv>"nat (y - x)" arbitrary: y)
-  case 0 thus ?case by simp
-next
-  case (Suc n)
-  from \<open>Suc n = nat (y - x)\<close> Suc.prems
-  have "n = nat (y - 1 - x)" "x \<le> y - 1" by simp_all
-  hence "log2 x \<le> log2 (y - 1)" by(rule Suc)
-  also have "\<dots> \<le> log2 y" using log2_le_plus1[of "y - 1"] x \<open>x \<le> y - 1\<close> by simp
-  finally show ?case .
+lemma bitXOR_integer_unfold [code]:
+  "x XOR y =
+   (if x = 0 then y
+    else if x = - 1 then NOT y
+    else Bit_integer (bin_rest_integer x XOR bin_rest_integer y)
+      (\<not> bin_last_integer x \<longleftrightarrow> bin_last_integer y))"
+proof transfer
+  fix x y :: int
+  from int_xor_Bits [of "bin_rest x" "bin_last x" "bin_rest y" "bin_last y"]
+  have "(bin_rest x XOR bin_rest y) BIT
+    ((bin_last x \<or> bin_last y) \<and> (bin_last x \<longrightarrow> \<not> bin_last y)) = x XOR y"
+    by simp
+  also have "(bin_last x \<or> bin_last y) \<and> (bin_last x \<longrightarrow> \<not> bin_last y) \<longleftrightarrow> (\<not> bin_last x \<longleftrightarrow> bin_last y)"
+    by auto
+  finally show "x XOR y =
+   (if x = 0 then y
+    else if x = - 1 then NOT y
+    else Bit (bin_rest x XOR bin_rest y)
+      (\<not> bin_last x \<longleftrightarrow> bin_last y))"
+    by simp
 qed
-
-lemma log2_eq_0 [simp]:
-  "i \<ge> 0 \<Longrightarrow> log2 i = 0 \<longleftrightarrow> i = 0"
-by(subst log2.simps) force
-
-lemma pow2_log2_gt: "i \<ge> 0 \<Longrightarrow> i < 2 ^ log2 i"
-proof(induct i rule: log2.induct)
-  case (1 i)
-  hence IH: "i div 2 < 2 ^ log2 (i div 2)"
-    by (metis (full_types) div_pos_pos_trivial order_less_imp_not_less order_less_le_trans pos_imp_zdiv_nonneg_iff zero_less_numeral zero_less_power)
-  show ?case
-  proof(cases "i = 0")
-    case True thus ?thesis by simp
-  next
-    case False with \<open>0 \<le> i\<close> have "i > 0" by simp
-    thus ?thesis using IH by(subst log2.simps)(simp add: nat_add_distrib)
-  qed
-qed
-
-lemma log2_bin_rest [simp]: "i > 0 \<Longrightarrow> log2 (bin_rest i) = log2 i - 1"
-by(subst (2) log2.simps)(simp add: bin_rest_def)
-
-lemma bin_mask_XOR_conv_and_not: "\<lbrakk> n \<ge> log2 i; i \<ge> 0 \<rbrakk> \<Longrightarrow> bin_mask n XOR i = bin_mask n AND NOT i"
-proof(induct n arbitrary: i)
-  case 0 thus ?case by simp
-next
-  case (Suc n)
-  from Suc(1)[of "bin_rest i"] \<open>0 \<le> i\<close> Suc(2)
-  show ?case by(cases "i = 0")(auto intro: bin_rl_eqI)
-qed
-
-lemma int_and_mask: "\<lbrakk> n \<ge> log2 i; i \<ge> 0 \<rbrakk> \<Longrightarrow> i AND bin_mask n = i"
-proof(induct n arbitrary: i)
-  case 0 thus ?case by simp
-next
-  case (Suc n)
-  from Suc(1)[of "bin_rest i"] \<open>0 \<le> i\<close> Suc(2)
-  show ?case by(cases "i = 0")(auto intro: bin_rl_eqI)
-qed
-
-
-lemma and_pnint:
-  assumes x: "x \<ge> 0" and y: "y < 0" 
-  and kx: "k \<ge> log2 x" and ky: "k \<ge> log2 (- y)"
-  shows "and_pnint x y = and_pint x (xor_pint (bin_mask k) (- y - 1))"
-proof -
-  from y have "log2 (- y - 1) \<le> log2 (- y)" by(auto intro: log2_mono)
-  with ky have "log2 (NOT y) \<le> k" by(simp add: int_not_def)
-  moreover from y have "0 \<le> NOT y" by(simp add: int_not_def)
-  ultimately have "bin_mask k XOR NOT y = bin_mask k AND NOT NOT y"
-    by(rule bin_mask_XOR_conv_and_not)
-  moreover
-  have "x AND y = (x AND bin_mask k) AND y" using kx x
-    by(rule arg_cong[OF int_and_mask, symmetric])
-  ultimately show ?thesis using x y bin_mask_ge0[of "k"]
-    unfolding and_pnint_def and_pint_def
-    by(simp add: int_and_assoc int_not_def xor_pint_def)
-qed
-
-lemma and_pninteger:  \<comment> \<open>justification for OCaml implementation of @{term andpnint}\<close>
-  "\<lbrakk> x \<ge> 0; y < 0; k \<ge> log2_integer x; k \<ge> log2_integer (- y) \<rbrakk> 
-  \<Longrightarrow> and_pninteger x y = and_pinteger x (xor_pinteger (bin_mask_integer k) (- y - 1))"
-by transfer(rule and_pnint)
-
-
-lemma or_pnint:
-  assumes x: "x \<ge> 0" and y: "y < 0" 
-  and kx: "k \<ge> log2 x" and ky: "k \<ge> log2 (- y)"
-  shows "or_pnint x y = - (and_pint (xor_pint (bin_mask k) x) (- y - 1)) - 1"
-proof -
-  from y have "log2 (- y - 1) \<le> log2 (- y)" by(auto intro: log2_mono)
-  with ky have "log2 (NOT y) \<le> k" by(simp add: int_not_def)
-  moreover from y have "0 \<le> NOT y" by(simp add: int_not_def)
-  ultimately have "bin_mask k XOR NOT y = bin_mask k AND NOT NOT y"
-    by(rule bin_mask_XOR_conv_and_not)
-  moreover have "bin_mask k XOR x \<ge> 0" using x bin_mask_ge0[of k] by simp
-  ultimately show ?thesis using x y kx \<open>log2 (NOT y) \<le> k\<close> \<open>0 \<le> NOT y\<close>
-    by(simp add: or_pnint_def int_or_def and_pint_def int_not_def xor_pint_def bin_mask_XOR_conv_and_not int_and_assoc)
-      (subst bbw_lcs(1), subst (3) int_and_comm, simp add: int_and_mask)
-qed
-
-lemma or_pinteger: \<comment> \<open>justification for OCaml implementation of @{term or_pnint}\<close>
-  "\<lbrakk>  x \<ge> 0; y < 0; k \<ge> log2_integer x; k \<ge> log2_integer (- y) \<rbrakk>
-  \<Longrightarrow> or_pninteger x y = - (and_pinteger (xor_pinteger (bin_mask_integer k) x) (- y - 1)) - 1"
-by(transfer)(rule or_pnint)
 
 end
 
-hide_const (open)
-  log2 and_pint and_pnint or_pint or_pnint xor_pint
-  log2_integer bin_mask_integer and_pinteger and_pninteger or_pinteger or_pninteger xor_pinteger
 
 section \<open>Test code generator setup\<close>
 

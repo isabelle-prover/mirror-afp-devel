@@ -372,11 +372,11 @@ code_printing code_module "Uint64" \<rightharpoonup> (OCaml)
 \<open>module Uint64 : sig
   val less : int64 -> int64 -> bool
   val less_eq : int64 -> int64 -> bool
-  val set_bit : int64 -> Big_int.big_int -> bool -> int64
-  val shiftl : int64 -> Big_int.big_int -> int64
-  val shiftr : int64 -> Big_int.big_int -> int64
-  val shiftr_signed : int64 -> Big_int.big_int -> int64
-  val test_bit : int64 -> Big_int.big_int -> bool
+  val set_bit : int64 -> Z.t -> bool -> int64
+  val shiftl : int64 -> Z.t -> int64
+  val shiftr : int64 -> Z.t -> int64
+  val shiftr_signed : int64 -> Z.t -> int64
+  val test_bit : int64 -> Z.t -> bool
 end = struct
 
 (* negative numbers have their highest bit set, 
@@ -392,19 +392,19 @@ let less_eq x y =
   else Int64.compare y Int64.zero < 0 || Int64.compare x y <= 0;;
 
 let set_bit x n b =
-  let mask = Int64.shift_left Int64.one (Big_int.int_of_big_int n)
+  let mask = Int64.shift_left Int64.one (Z.to_int n)
   in if b then Int64.logor x mask
      else Int64.logand x (Int64.lognot mask);;
 
-let shiftl x n = Int64.shift_left x (Big_int.int_of_big_int n);;
+let shiftl x n = Int64.shift_left x (Z.to_int n);;
 
-let shiftr x n = Int64.shift_right_logical x (Big_int.int_of_big_int n);;
+let shiftr x n = Int64.shift_right_logical x (Z.to_int n);;
 
-let shiftr_signed x n = Int64.shift_right x (Big_int.int_of_big_int n);;
+let shiftr_signed x n = Int64.shift_right x (Z.to_int n);;
 
 let test_bit x n =
   Int64.compare 
-    (Int64.logand x (Int64.shift_left Int64.one (Big_int.int_of_big_int n)))
+    (Int64.logand x (Int64.shift_left Int64.one (Z.to_int n)))
     Int64.zero
   <> 0;;
 
@@ -513,7 +513,7 @@ code_printing
   (Haskell_Quickcheck) "(Prelude.fromInteger (Prelude.toInteger _) :: Uint64.Word64)" and
   (Scala) "_.longValue"
 | constant Uint64_signed \<rightharpoonup>
-  (OCaml) "Big'_int.int64'_of'_big'_int"
+  (OCaml) "Z.to'_int64"
 | constant "0 :: uint64" \<rightharpoonup>
   (SML) "Uint64.zero" and
   (Haskell) "(0 :: Uint64.Word64)" and
@@ -824,7 +824,7 @@ code_printing
   (SML) "Uint64.toInt" and
   (Haskell) "Prelude.toInteger"
 | constant "integer_of_uint64_signed" \<rightharpoonup>
-  (OCaml) "Big'_int.big'_int'_of'_int64" and
+  (OCaml) "Z.of'_int64" and
   (Scala) "BigInt"
 
 section \<open>Quickcheck setup\<close>

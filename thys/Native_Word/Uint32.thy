@@ -173,11 +173,11 @@ code_printing code_module "Uint32" \<rightharpoonup> (OCaml)
 \<open>module Uint32 : sig
   val less : int32 -> int32 -> bool
   val less_eq : int32 -> int32 -> bool
-  val set_bit : int32 -> Big_int.big_int -> bool -> int32
-  val shiftl : int32 -> Big_int.big_int -> int32
-  val shiftr : int32 -> Big_int.big_int -> int32
-  val shiftr_signed : int32 -> Big_int.big_int -> int32
-  val test_bit : int32 -> Big_int.big_int -> bool
+  val set_bit : int32 -> Z.t -> bool -> int32
+  val shiftl : int32 -> Z.t -> int32
+  val shiftr : int32 -> Z.t -> int32
+  val shiftr_signed : int32 -> Z.t -> int32
+  val test_bit : int32 -> Z.t -> bool
 end = struct
 
 (* negative numbers have their highest bit set, 
@@ -193,19 +193,19 @@ let less_eq x y =
   else Int32.compare y Int32.zero < 0 || Int32.compare x y <= 0;;
 
 let set_bit x n b =
-  let mask = Int32.shift_left Int32.one (Big_int.int_of_big_int n)
+  let mask = Int32.shift_left Int32.one (Z.to_int n)
   in if b then Int32.logor x mask
      else Int32.logand x (Int32.lognot mask);;
 
-let shiftl x n = Int32.shift_left x (Big_int.int_of_big_int n);;
+let shiftl x n = Int32.shift_left x (Z.to_int n);;
 
-let shiftr x n = Int32.shift_right_logical x (Big_int.int_of_big_int n);;
+let shiftr x n = Int32.shift_right_logical x (Z.to_int n);;
 
-let shiftr_signed x n = Int32.shift_right x (Big_int.int_of_big_int n);;
+let shiftr_signed x n = Int32.shift_right x (Z.to_int n);;
 
 let test_bit x n =
   Int32.compare 
-    (Int32.logand x (Int32.shift_left Int32.one (Big_int.int_of_big_int n)))
+    (Int32.logand x (Int32.shift_left Int32.one (Z.to_int n)))
     Int32.zero
   <> 0;;
 
@@ -315,7 +315,7 @@ code_printing
   (Haskell_Quickcheck) "(Prelude.fromInteger (Prelude.toInteger _) :: Uint32.Word32)" and
   (Scala) "_.intValue"
 | constant Uint32_signed \<rightharpoonup>
-  (OCaml) "Big'_int.int32'_of'_big'_int"
+  (OCaml) "Z.to'_int32"
 | constant "0 :: uint32" \<rightharpoonup>
   (SML) "(Word32.fromInt 0)" and
   (Haskell) "(0 :: Uint32.Word32)" and
@@ -623,7 +623,7 @@ code_printing
   (SML) "IntInf.fromLarge (Word32.toLargeInt _) : IntInf.int" and
   (Haskell) "Prelude.toInteger"
 | constant "integer_of_uint32_signed" \<rightharpoonup>
-  (OCaml) "Big'_int.big'_int'_of'_int32" and
+  (OCaml) "Z.of'_int32" and
   (Scala) "BigInt"
 
 section \<open>Quickcheck setup\<close>

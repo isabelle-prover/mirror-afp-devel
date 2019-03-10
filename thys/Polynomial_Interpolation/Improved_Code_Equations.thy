@@ -59,13 +59,13 @@ lemma divmod_integer_code''[code]: "divmod_integer k l =
    unfolding divmod_integer_code'
    by (cases "l = 0"; cases "l < 0"; cases "l > 0"; auto split: prod.splits simp: divmod_abs'_def divmod_abs_def)
 
-code_printing
+code_printing \<comment> \<open>FIXME illusion of partiality\<close>
   constant divmod_abs' \<rightharpoonup>
     (SML) "IntInf.divMod/ ( _,/ _ )"
-    and (OCaml) "Big'_int.quomod'_big'_int/ ( _ )/ ( _ )"
+    and (Eval) "Integer.div'_mod/ ( _ )/ ( _ )"
+    and (OCaml) "Z.div'_rem"
     and (Haskell) "divMod/ ( _ )/ ( _ )"
     and (Scala) "!((k: BigInt) => (l: BigInt) =>/ if (l == 0)/ (BigInt(0), k) else/ (k '/% l))"
-    and (Eval) "Integer.div'_mod/ ( _ )/ ( _ )"
 
 subsection \<open>@{const Divides.divmod_nat}.\<close>
 text \<open>We implement @{const Divides.divmod_nat} via @{const divmod_integer}
