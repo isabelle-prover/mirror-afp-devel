@@ -125,7 +125,7 @@ begin
   abbreviation "transitions L S s \<equiv> \<Union> a \<in> L. \<Union> p \<in> S. {p} \<times> {a} \<times> s a p"
   abbreviation "succs T a p \<equiv> (T `` {p}) `` {a}"
 
-  definition nba_nbae where "nba_nbae A \<equiv> nbae (alphabet A) (initial A) 
+  definition nba_nbae where "nba_nbae A \<equiv> nbae (alphabet A) (initial A)
     (transitions (alphabet A) (nodes A) (succ A)) (Set.filter (accepting A) (nodes A))"
   definition nbae_nba where "nbae_nba A \<equiv> nba (alphabete A) (initiale A)
     (succs (transe A)) (\<lambda> p. p \<in> acceptinge A)"

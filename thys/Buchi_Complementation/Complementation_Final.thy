@@ -74,13 +74,16 @@ begin
     finally show ?thesis by simp
   qed
 
-  definition test :: "(String.literal, nat) nbaei \<Rightarrow> nat" where
-    "test A \<equiv> length (transei (complement_impl (nbae_nba_impl A)))"
+  definition nbaei_nbai :: "(String.literal, nat) nbaei \<Rightarrow> (String.literal, nat) nbai" where
+    "nbaei_nbai \<equiv> nbae_nba_impl"
 
   (* TODO: possible optimizations:
     - introduce op_map_map operation for maps instead of manually iterating via FOREACH
     - consolidate various binds and maps in expand_map_get_7 *)
-  export_code complement_impl nat_of_integer integer_of_nat test nbaei
+  export_code
+    nat_of_integer integer_of_nat
+    nbaei alphabetei initialei transei acceptingei
+    nbaei_nbai complement_impl
     in SML module_name Complementation file \<open>code/Complementation_Export.sml\<close>
 
 end
