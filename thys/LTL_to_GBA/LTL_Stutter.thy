@@ -19,7 +19,9 @@ primrec ltlc_next_free :: "'a ltlc \<Rightarrow> bool"
   | "ltlc_next_free (F\<^sub>c \<phi>) = ltlc_next_free \<phi>"
   | "ltlc_next_free (G\<^sub>c \<phi>) = ltlc_next_free \<phi>"
   | "ltlc_next_free (\<phi> U\<^sub>c \<psi>) = (ltlc_next_free \<phi> \<and> ltlc_next_free \<psi>)"
-  | "ltlc_next_free (\<phi> V\<^sub>c \<psi>) = (ltlc_next_free \<phi> \<and> ltlc_next_free \<psi>)"
+  | "ltlc_next_free (\<phi> R\<^sub>c \<psi>) = (ltlc_next_free \<phi> \<and> ltlc_next_free \<psi>)"
+  | "ltlc_next_free (\<phi> W\<^sub>c \<psi>) = (ltlc_next_free \<phi> \<and> ltlc_next_free \<psi>)"
+  | "ltlc_next_free (\<phi> M\<^sub>c \<psi>) = (ltlc_next_free \<phi> \<and> ltlc_next_free \<psi>)"
 
 text \<open>Conversion between the two LTL formalizations\<close>
 

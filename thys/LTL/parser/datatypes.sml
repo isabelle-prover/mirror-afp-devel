@@ -12,6 +12,8 @@ structure Ltl_Dt :
       | Global_ltlc of 'a ltlc 
       | Until_ltlc of 'a ltlc * 'a ltlc 
       | Release_ltlc of 'a ltlc * 'a ltlc
+      | WeakUntil_ltlc of 'a ltlc * 'a ltlc
+      | StrongRelease_ltlc of 'a ltlc * 'a ltlc
     val iff_ltlc : 'a ltlc -> 'a ltlc -> 'a ltlc
    end = 
 struct

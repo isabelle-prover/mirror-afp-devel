@@ -20,23 +20,25 @@ ws = [\ \t];
 
 %%
 
-\n          => (continue ());
-{ws}+       => (continue ());
-"true"      => (T.TRUE (yypos,0));
-"false"     => (T.FALSE (yypos,0));
-"~"|"!"     => (T.NOT (yypos,0));
-"|"+|"\\/"  => (T.OR (yypos,0));
-"&"+|"/\\"  => (T.AND (yypos,0));
-"X"         => (T.NEXT (yypos,0));
-"U"         => (T.UNTIL (yypos,0));
-"V"|"R"     => (T.RELEASE (yypos,0));
-"-->"|"->"  => (T.IMPL (yypos,0));
+\n           => (continue ());
+{ws}+        => (continue ());
+"true"       => (T.TRUE (yypos,0));
+"false"      => (T.FALSE (yypos,0));
+"~"|"!"      => (T.NOT (yypos,0));
+"|"+|"\\/"   => (T.OR (yypos,0));
+"&"+|"/\\"   => (T.AND (yypos,0));
+"X"          => (T.NEXT (yypos,0));
+"U"          => (T.UNTIL (yypos,0));
+"V"|"R"      => (T.RELEASE (yypos,0));
+"W"          => (T.WEAKUNTIL (yypos,0));
+"M"          => (T.STRONGRELEASE (yypos,0));
+"-->"|"->"   => (T.IMPL (yypos,0));
 "<-->"|"<->" => (T.IFF (yypos,0));
-"F"|"<>"    => (T.FINAL (yypos,0));
-"G"|"[]"    => (T.GLOBAL (yypos,0));
-"("         => (T.LPAREN (yypos,0));
-")"         => (T.RPAREN (yypos,0));
+"F"|"<>"     => (T.FINAL (yypos,0));
+"G"|"[]"     => (T.GLOBAL (yypos,0));
+"("          => (T.LPAREN (yypos,0));
+")"          => (T.RPAREN (yypos,0));
 {alpha}({alpha}|{digit})* => (if yytext = "GF" orelse yytext = "FG" then 
                                 REJECT() 
                               else (T.IDENT(yytext,yypos,0)));
-.           => (error("Bad character: " ^ yytext); T.BAD_CHAR (yypos,0));
+.            => (error("Bad character: " ^ yytext); T.BAD_CHAR (yypos,0));

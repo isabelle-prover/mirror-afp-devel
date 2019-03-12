@@ -80,7 +80,7 @@ text \<open>
 fun next_free :: "'a pltl \<Rightarrow> bool"
 where
   "next_free false\<^sub>p = True"
-| "next_free (atom\<^sub>p p) = True"
+| "next_free (atom\<^sub>p(p)) = True"
 | "next_free (\<phi> implies\<^sub>p \<psi>) = (next_free \<phi> \<and> next_free \<psi>)"
 | "next_free (X\<^sub>p \<phi>) = False"
 | "next_free (\<phi> U\<^sub>p \<psi>) = (next_free \<phi> \<and> next_free \<psi>)"
@@ -107,6 +107,18 @@ lemma next_free_eventually [simp]:
 lemma next_free_always [simp]: 
   "next_free (G\<^sub>p \<phi>) = next_free \<phi>"
   by (simp add: Always_ltlp_def)
+
+lemma next_free_release [simp]:
+  "next_free (\<phi> R\<^sub>p \<psi>) = (next_free \<phi> \<and> next_free \<psi>)"
+  by (simp add: Release_ltlp_def)
+
+lemma next_free_weak_until [simp]:
+  "next_free (\<phi> W\<^sub>p \<psi>) = (next_free \<phi> \<and> next_free \<psi>)"
+  by (auto simp: WeakUntil_ltlp_def)
+
+lemma next_free_strong_release [simp]:
+  "next_free (\<phi> M\<^sub>p \<psi>) = (next_free \<phi> \<and> next_free \<psi>)"
+  by (auto simp: StrongRelease_ltlp_def)
 
 lemma next_free_OR [simp]: 
   assumes fin: "finite (\<Phi>::'a pltl set)"

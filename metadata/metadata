@@ -4059,6 +4059,7 @@ notify = lammich@in.tum.de
 [LTL]
 title = Linear Temporal Logic
 author = Salomon Sickert <https://www7.in.tum.de/~sickert>
+contributors = Benedikt Seidl <mailto:benedikt.seidl@tum.de>
 date = 2016-03-01
 topic = Logic, Computer Science/Automata and Formal Languages
 abstract =
@@ -4068,6 +4069,11 @@ abstract =
 	existing entries, yielding a common environment for theories reasoning
 	about LTL. Furthermore a parser written in SML and an executable
 	simplifier are provided.
+extra-history =
+    Change history:
+    [2019-03-12]:
+        Support for additional operators, implementation of common equivalence relations,
+        definition of syntactic fragments of LTL and the minimal disjunctive normal form. <br>
 notify = sickert@in.tum.de
 
 [LTL_to_GBA]

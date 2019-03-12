@@ -31,6 +31,8 @@ where
 | "ltlc_aps_list' (Implies_ltlc x y) l = ltlc_aps_list' y (ltlc_aps_list' x l)"
 | "ltlc_aps_list' (Until_ltlc x y) l = ltlc_aps_list' y (ltlc_aps_list' x l)"
 | "ltlc_aps_list' (Release_ltlc x y) l = ltlc_aps_list' y (ltlc_aps_list' x l)"
+| "ltlc_aps_list' (WeakUntil_ltlc x y) l = ltlc_aps_list' y (ltlc_aps_list' x l)"
+| "ltlc_aps_list' (StrongRelease_ltlc x y) l = ltlc_aps_list' y (ltlc_aps_list' x l)"
 
 lemma ltlc_aps_list'_correct:
   "set (ltlc_aps_list' \<phi> l) = atoms_ltlc \<phi> \<union> set l"

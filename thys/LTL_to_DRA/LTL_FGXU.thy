@@ -14,28 +14,17 @@ text \<open>Inspired/Based on schimpf/LTL\<close>
 subsection \<open>Syntax\<close>
 
 datatype (vars: 'a) ltl  =
-    LTLTrue
-  | LTLFalse
-  | LTLProp 'a
-  | LTLPropNeg 'a
-  | LTLAnd "'a ltl" "'a ltl"
-  | LTLOr "'a ltl" "'a ltl"
-  | LTLNext "'a ltl"
-  | LTLGlobal (theG: "'a ltl")
-  | LTLFinal "'a ltl"
-  | LTLUntil "'a ltl" "'a ltl"
+    LTLTrue                       ("true")
+  | LTLFalse                      ("false")
+  | LTLProp 'a                    ("p'(_')")
+  | LTLPropNeg 'a                 ("np'(_')" [86] 85)
+  | LTLAnd "'a ltl" "'a ltl"      ("_ and _" [83,83] 82)
+  | LTLOr "'a ltl" "'a ltl"       ("_ or _" [82,82] 81)
+  | LTLNext "'a ltl"              ("X _" [88] 87)
+  | LTLGlobal (theG: "'a ltl")    ("G _" [85] 84)
+  | LTLFinal "'a ltl"             ("F _" [84] 83)
+  | LTLUntil "'a ltl" "'a ltl"    ("_ U _" [87,87] 86)
 
-notation
-      LTLTrue     ("true")
-  and LTLFalse    ("false")
-  and LTLProp     ("p'(_')")
-  and LTLPropNeg  ("np'(_')" [86] 85)
-  and LTLAnd      ("_ and _" [83,83] 82)
-  and LTLOr       ("_ or _" [82,82] 81)
-  and LTLNext     ("X _" [88] 87)
-  and LTLGlobal   ("G _" [85] 84)
-  and LTLFinal    ("F _" [84] 83)
-  and LTLUntil    ("_ U _" [87,87] 86)
 
 subsection \<open>Semantics\<close>
 

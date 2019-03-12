@@ -4,7 +4,7 @@ imports
   CAVA_Abstract
   CAVA_Automata.Automata_Impl
 
-  LTL.LTL_Rewrite
+  LTL.Rewriting
 
   LTL_to_GBA.LTL_to_GBA_impl (* LTL to BA *)
 
@@ -151,7 +151,7 @@ definition is_ltl_to_gba_algo
 
 definition gerth_ltl_to_gba 
   \<comment> \<open>Conversion based on Gerth's Algorithm\<close>
-  where "gerth_ltl_to_gba \<phi> \<equiv> create_name_igba (simplify Slow (ltlc_to_ltln \<phi>))"
+  where "gerth_ltl_to_gba \<phi> \<equiv> create_name_igba (ltln_to_ltlr (simplify Slow (ltlc_to_ltln \<phi>)))"
 
 lemma gerth_ltl_to_gba_refine:
   "gerth_ltl_to_gba \<phi> \<le> \<Down>Id (ltl_to_gba_spec \<phi>)"
@@ -164,13 +164,13 @@ proof (safe del: equalityI)
   assume "igba G"
   interpret igba G by fact
   assume 1: "finite (g_V G)"
-  assume 2: "\<forall> \<xi>. accept \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n simplify Slow (ltlc_to_ltln \<phi>)"
+  assume 2: "\<forall> \<xi>. accept \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>r ltln_to_ltlr (simplify Slow (ltlc_to_ltln \<phi>))"
   show "lang = language_ltlc \<phi>"
-     using 2 unfolding lang_def language_ltlc_def simplify_correct ltlc_to_ltln_semantics by auto
+     using 2 unfolding lang_def language_ltlc_def ltln_to_ltlr_semantics simplify_correct ltlc_to_ltln_semantics by auto
   show "finite ((g_E G)\<^sup>* `` g_V0 G)" using 1 reachable_V by auto
 qed
 
-definition "gerth_ltl_to_gba_code \<phi> \<equiv> create_name_igba_code (simplify Slow (ltlc_to_ltln \<phi>))"
+definition "gerth_ltl_to_gba_code \<phi> \<equiv> create_name_igba_code (ltln_to_ltlr (simplify Slow (ltlc_to_ltln \<phi>)))"
   
 lemma gerth_ltl_to_gba_code_refine: "is_ltl_to_gba_algo gerth_ltl_to_gba_code"
 proof -

@@ -7,7 +7,7 @@ section \<open>LTL to GBA translation\<close>
 theory LTL_to_GBA
 imports
   CAVA_Base.CAVA_Base
-  LTL.LTL LTL.LTL_Rewrite
+  LTL.LTL
   CAVA_Automata.Automata
 begin
 
@@ -95,7 +95,7 @@ text \<open>
 
 type_synonym node_name = nat
 
-type_synonym 'a frml = "'a ltln"
+type_synonym 'a frml = "'a ltlr"
 
 type_synonym 'a interprt = "'a set word"
 
@@ -110,22 +110,22 @@ context
 begin
 
 fun new1 where
-  "new1 (\<mu> and\<^sub>n \<psi>) = {\<mu>,\<psi>}"
-| "new1 (\<mu> U\<^sub>n \<psi>) = {\<mu>}"
-| "new1 (\<mu> V\<^sub>n \<psi>) = {\<psi>}"
-| "new1 (\<mu> or\<^sub>n \<psi>) = {\<mu>}"
+  "new1 (\<mu> and\<^sub>r \<psi>) = {\<mu>,\<psi>}"
+| "new1 (\<mu> U\<^sub>r \<psi>) = {\<mu>}"
+| "new1 (\<mu> R\<^sub>r \<psi>) = {\<psi>}"
+| "new1 (\<mu> or\<^sub>r \<psi>) = {\<mu>}"
 | "new1 _ = {}"
 
 fun next1 where
-  "next1 (X\<^sub>n \<psi>) = {\<psi>}"
-| "next1 (\<mu> U\<^sub>n \<psi>) = {\<mu> U\<^sub>n \<psi>}"
-| "next1 (\<mu> V\<^sub>n \<psi>) = {\<mu> V\<^sub>n \<psi>}"
+  "next1 (X\<^sub>r \<psi>) = {\<psi>}"
+| "next1 (\<mu> U\<^sub>r \<psi>) = {\<mu> U\<^sub>r \<psi>}"
+| "next1 (\<mu> R\<^sub>r \<psi>) = {\<mu> R\<^sub>r \<psi>}"
 | "next1 _ = {}"
 
 fun new2 where
-  "new2 (\<mu> U\<^sub>n \<psi>) = {\<psi>}"
-| "new2 (\<mu> V\<^sub>n \<psi>) = {\<mu>, \<psi>}"
-| "new2 (\<mu> or\<^sub>n \<psi>) = {\<psi>}"
+  "new2 (\<mu> U\<^sub>r \<psi>) = {\<psi>}"
+| "new2 (\<mu> R\<^sub>r \<psi>) = {\<mu>, \<psi>}"
+| "new2 (\<mu> or\<^sub>r \<psi>) = {\<psi>}"
 | "new2 _ = {}"
 
 
@@ -248,12 +248,12 @@ where
       ) else do {
         \<phi> \<leftarrow> SPEC (\<lambda>x. x\<in>(new n));
         let n = n\<lparr> new := new n - {\<phi>} \<rparr>;
-        if (\<exists>q. \<phi> = prop\<^sub>n(q) \<or> \<phi> = nprop\<^sub>n(q)) then
-          (if (not\<^sub>n \<phi>) \<in> old n then RETURN (name n, ns)
+        if (\<exists>q. \<phi> = prop\<^sub>r(q) \<or> \<phi> = nprop\<^sub>r(q)) then
+          (if (not\<^sub>r \<phi>) \<in> old n then RETURN (name n, ns)
            else expand (n\<lparr> old := {\<phi>} \<union> old n \<rparr>, ns))
-        else if \<phi> = true\<^sub>n then expand (n\<lparr> old := {\<phi>} \<union> old n \<rparr>, ns)
-        else if \<phi> = false\<^sub>n then RETURN (name n, ns)
-        else if (\<exists>\<nu> \<mu>. (\<phi> = \<nu> and\<^sub>n \<mu>) \<or> (\<phi> = X\<^sub>n \<nu>)) then
+        else if \<phi> = true\<^sub>r then expand (n\<lparr> old := {\<phi>} \<union> old n \<rparr>, ns)
+        else if \<phi> = false\<^sub>r then RETURN (name n, ns)
+        else if (\<exists>\<nu> \<mu>. (\<phi> = \<nu> and\<^sub>r \<mu>) \<or> (\<phi> = X\<^sub>r \<nu>)) then
           expand (
             n\<lparr>
               new := new1 \<phi> \<union> new n,
@@ -327,16 +327,16 @@ abbreviation
 
 abbreviation
   "expand_assm_exist \<xi> n_ns
-   \<equiv> {\<eta>. \<exists>\<mu>. \<mu> U\<^sub>n \<eta> \<in> old (fst n_ns) \<and> \<xi> \<Turnstile>\<^sub>n \<eta>} \<subseteq> new (fst n_ns) \<union> old (fst n_ns)
-         \<and> (\<forall>\<psi>\<in>new (fst n_ns). \<xi> \<Turnstile>\<^sub>n \<psi>)
-         \<and> (\<forall>\<psi>\<in>old (fst n_ns). \<xi> \<Turnstile>\<^sub>n \<psi>)
-         \<and> (\<forall>\<psi>\<in>next (fst n_ns). \<xi> \<Turnstile>\<^sub>n X\<^sub>n \<psi>)"
+   \<equiv> {\<eta>. \<exists>\<mu>. \<mu> U\<^sub>r \<eta> \<in> old (fst n_ns) \<and> \<xi> \<Turnstile>\<^sub>r \<eta>} \<subseteq> new (fst n_ns) \<union> old (fst n_ns)
+         \<and> (\<forall>\<psi>\<in>new (fst n_ns). \<xi> \<Turnstile>\<^sub>r \<psi>)
+         \<and> (\<forall>\<psi>\<in>old (fst n_ns). \<xi> \<Turnstile>\<^sub>r \<psi>)
+         \<and> (\<forall>\<psi>\<in>next (fst n_ns). \<xi> \<Turnstile>\<^sub>r X\<^sub>r \<psi>)"
 
 abbreviation
   "expand_rslt_exist__node_prop \<xi> n nd
    \<equiv> incoming n \<subseteq> incoming nd
-      \<and> (\<forall>\<psi>\<in>old nd. \<xi> \<Turnstile>\<^sub>n \<psi>) \<and> (\<forall>\<psi>\<in>next nd. \<xi> \<Turnstile>\<^sub>n X\<^sub>n \<psi>)
-      \<and> {\<eta>. \<exists>\<mu>. \<mu> U\<^sub>n \<eta> \<in> old nd \<and> \<xi> \<Turnstile>\<^sub>n \<eta>} \<subseteq> old nd"
+      \<and> (\<forall>\<psi>\<in>old nd. \<xi> \<Turnstile>\<^sub>r \<psi>) \<and> (\<forall>\<psi>\<in>next nd. \<xi> \<Turnstile>\<^sub>r X\<^sub>r \<psi>)
+      \<and> {\<eta>. \<exists>\<mu>. \<mu> U\<^sub>r \<eta> \<in> old nd \<and> \<xi> \<Turnstile>\<^sub>r \<eta>} \<subseteq> old nd"
 
 abbreviation
   "expand_rslt_exist \<xi> n_ns nm_nds
@@ -503,7 +503,7 @@ next
     by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
   case prems: (8 f x n ns \<psi>)
-  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
+  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>r \<mu> \<or> \<psi> = \<nu> U\<^sub>r \<mu> \<or> \<psi> = \<nu> R\<^sub>r \<mu>)"
     by (cases \<psi>) auto
   from prems have Q: "?Q (n, ns)" and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC (?P x)"
     by simp_all
@@ -676,13 +676,13 @@ next
 next
   case prems: (3 f x n ns \<psi>)
   { assume "expand_assm_exist \<xi> (n, ns)"
-    with prems have "\<xi> \<Turnstile>\<^sub>n \<psi>" and "\<xi> \<Turnstile>\<^sub>n not\<^sub>n \<psi>"  
+    with prems have "\<xi> \<Turnstile>\<^sub>r \<psi>" and "\<xi> \<Turnstile>\<^sub>r not\<^sub>r \<psi>"  
       by (metis (no_types, lifting) fstI node.select_convs(4) node.surjective node.update_convs(3))+
     then have False by simp }
   with prems show ?case by auto
 next
   case prems: (4 f x n ns \<psi>)
-  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>q. \<psi> = prop\<^sub>n(q) \<or> \<psi> = nprop\<^sub>n(q))"
+  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>q. \<psi> = prop\<^sub>r(q) \<or> \<psi> = nprop\<^sub>r(q))"
     and step: "\<And>x. f x \<le> SPEC (?P x)" by simp_all
   show ?case
     using goal_assms unfolding \<open>x = (n, ns)\<close>
@@ -694,7 +694,7 @@ next
   qed
 next
   case prems: (5 f x n ns \<psi>)
-  then have goal_assms: "\<psi> \<in> new n \<and> \<psi> = true\<^sub>n"
+  then have goal_assms: "\<psi> \<in> new n \<and> \<psi> = true\<^sub>r"
     and step: "\<And>x. f x \<le> SPEC (?P x)" by simp_all
   show ?case
     using goal_assms unfolding \<open>x = (n, ns)\<close>
@@ -707,11 +707,11 @@ next
 next
   case prems: (6 f x n ns \<psi>)
   { assume "expand_assm_exist \<xi> (n, ns)"
-    with prems have "\<xi> \<Turnstile>\<^sub>n false\<^sub>n" by auto }
+    with prems have "\<xi> \<Turnstile>\<^sub>r false\<^sub>r" by auto }
   with prems show ?case by auto
 next
   case prems: (7 f x n ns \<psi>)
-  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>n \<mu> \<or> \<psi> = X\<^sub>n \<nu>)"
+  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>r \<mu> \<or> \<psi> = X\<^sub>r \<nu>)"
     and step: "\<And>x. f x \<le> SPEC (?P x)" by simp_all
   show ?case
     using goal_assms unfolding \<open>x = (n, ns)\<close>
@@ -723,16 +723,16 @@ next
   qed
 next
   case prems: (8 f x n ns \<psi>)
-  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
+  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>r \<mu> \<or> \<psi> = \<nu> U\<^sub>r \<mu> \<or> \<psi> = \<nu> R\<^sub>r \<mu>)"
     by (cases \<psi>) auto
   from prems have step: "\<And>x. f x \<le> SPEC (?P x)"
     and f_sup: "\<And>x. f x \<le> expand x" by auto
   let ?x1 = "(n\<lparr>new := new n - {\<psi>}, new := new1 \<psi> \<union> new (n\<lparr>new := new n - {\<psi>}\<rparr>),
                 old := {\<psi>} \<union> old n, next := next1 \<psi> \<union> next n\<rparr>, ns)"
 
-  let ?new1_assm_sel = "\<lambda>\<psi>. (case \<psi> of \<mu> U\<^sub>n \<eta> => \<eta> | \<mu> V\<^sub>n \<eta> \<Rightarrow> \<mu> | \<mu> or\<^sub>n \<eta> \<Rightarrow> \<eta>)"
+  let ?new1_assm_sel = "\<lambda>\<psi>. (case \<psi> of \<mu> U\<^sub>r \<eta> => \<eta> | \<mu> R\<^sub>r \<eta> \<Rightarrow> \<mu> | \<mu> or\<^sub>r \<eta> \<Rightarrow> \<eta>)"
 
-  { assume new1_assm: "\<not> (\<xi> \<Turnstile>\<^sub>n (?new1_assm_sel \<psi>))"
+  { assume new1_assm: "\<not> (\<xi> \<Turnstile>\<^sub>r (?new1_assm_sel \<psi>))"
     then have ?case
       using goal_assms unfolding \<open>x = (n, ns)\<close>
     proof (rule_tac SPEC_rule_nested2, goal_cases)
@@ -745,15 +745,15 @@ next
             unfolding fst_conv
           proof (cases \<psi>, goal_cases)
             case \<psi>: (8 \<mu> \<eta>)
-            then have "\<xi> \<Turnstile>\<^sub>n \<mu> U\<^sub>n \<eta>" by fast
-            then have "\<xi> \<Turnstile>\<^sub>n \<mu>" and "\<xi> \<Turnstile>\<^sub>n X\<^sub>n (\<mu> U\<^sub>n \<eta>)"
-              using \<psi> ltln_expand_Until[of \<xi> \<mu> \<eta>] by auto
+            then have "\<xi> \<Turnstile>\<^sub>r \<mu> U\<^sub>r \<eta>" by fast
+            then have "\<xi> \<Turnstile>\<^sub>r \<mu>" and "\<xi> \<Turnstile>\<^sub>r X\<^sub>r (\<mu> U\<^sub>r \<eta>)"
+              using \<psi> ltlr_expand_Until[of \<xi> \<mu> \<eta>] by auto
             with \<psi> show ?case by auto
           next
             case \<psi>: (9 \<mu> \<eta>)
-            then have *: "\<xi> \<Turnstile>\<^sub>n \<mu> V\<^sub>n \<eta>" by fast
-            with \<psi> have "\<xi> \<Turnstile>\<^sub>n \<eta>" and "\<xi> \<Turnstile>\<^sub>n X\<^sub>n (\<mu> V\<^sub>n \<eta>)"
-              using ltln_expand_Release[of \<xi> \<mu> \<eta>] by auto
+            then have *: "\<xi> \<Turnstile>\<^sub>r \<mu> R\<^sub>r \<eta>" by fast
+            with \<psi> have "\<xi> \<Turnstile>\<^sub>r \<eta>" and "\<xi> \<Turnstile>\<^sub>r X\<^sub>r (\<mu> R\<^sub>r \<eta>)"
+              using ltlr_expand_Release[of \<xi> \<mu> \<eta>] by auto
             with \<psi> * show ?case by auto
           qed auto
           with prems'' have "expand_rslt_exist \<xi> (n, ns) (nm, nds)" by force }
@@ -792,7 +792,7 @@ next
     qed
   }
   moreover
-  { assume new1_assm: "\<xi> \<Turnstile>\<^sub>n (?new1_assm_sel \<psi>)"
+  { assume new1_assm: "\<xi> \<Turnstile>\<^sub>r (?new1_assm_sel \<psi>)"
     let ?x2f = "\<lambda>(nm::node_name, nds::'a node set). (
         n\<lparr>new := new n - {\<psi>},
           name := nm,
@@ -813,8 +813,8 @@ next
           with new1_assm goal_assms have "expand_assm_exist \<xi> ?x2"
           proof (cases r, cases \<psi>, goal_cases)
             case prems'': (9 _ _ \<mu> \<eta>)
-            then have *: "\<xi> \<Turnstile>\<^sub>n \<mu> V\<^sub>n \<eta>" unfolding fst_conv by fast
-            with ltln_expand_Release[of \<xi> \<mu> \<eta>] have "\<xi> \<Turnstile>\<^sub>n \<eta>" by auto
+            then have *: "\<xi> \<Turnstile>\<^sub>r \<mu> R\<^sub>r \<eta>" unfolding fst_conv by fast
+            with ltlr_expand_Release[of \<xi> \<mu> \<eta>] have "\<xi> \<Turnstile>\<^sub>r \<eta>" by auto
             with prems'' * show ?case by auto
           qed auto
           with prems' have "expand_rslt_exist \<xi> ?x2 (nm', nds')"
@@ -840,10 +840,10 @@ definition expand\<^sub>T :: "('a node \<times> ('a node set)) \<Rightarrow> (no
 
 abbreviation "old_next_pair n \<equiv> (old n, next n)"
 
-abbreviation "old_next_limit \<phi> \<equiv> Pow (subfrmlsn \<phi>) \<times> Pow (subfrmlsn \<phi>)"
+abbreviation "old_next_limit \<phi> \<equiv> Pow (subfrmlsr \<phi>) \<times> Pow (subfrmlsr \<phi>)"
 
 lemma old_next_limit_finite: "finite (old_next_limit \<phi>)"
-  using subfrmlsn_finite by auto
+  using subfrmlsr_finite by auto
 
 definition
   "expand_ord \<phi> \<equiv>
@@ -857,10 +857,10 @@ lemma expand_ord_wf[simp]: "wf (expand_ord \<phi>)"
 abbreviation
   "expand_inv_node \<phi> n
   \<equiv> finite (new n) \<and> finite (old n) \<and> finite (next n)
-  \<and> (new n) \<union> (old n) \<union> (next n) \<subseteq> subfrmlsn \<phi>"
+  \<and> (new n) \<union> (old n) \<union> (next n) \<subseteq> subfrmlsr \<phi>"
 
 abbreviation
-  "expand_inv_result \<phi> ns \<equiv> finite ns \<and> (\<forall>n'\<in>ns. (new n') \<union> (old n') \<union> (next n') \<subseteq> subfrmlsn \<phi>)"
+  "expand_inv_result \<phi> ns \<equiv> finite ns \<and> (\<forall>n'\<in>ns. (new n') \<union> (old n') \<union> (next n') \<subseteq> subfrmlsr \<phi>)"
 
 definition
   "expand_inv \<phi> n_ns \<equiv> (case n_ns of (n, ns) \<Rightarrow> expand_inv_node \<phi> n \<and> expand_inv_result \<phi> ns)"
@@ -868,7 +868,7 @@ definition
 lemma new1_less_sum: 
   "size_set (new1 \<phi>) < size_set {\<phi>}"
 proof (cases \<phi>)
-  case (And_ltln \<nu> \<mu>)
+  case (And_ltlr \<nu> \<mu>)
     thus ?thesis
       by (cases "\<nu> = \<mu>"; simp)
 qed (simp_all)
@@ -876,24 +876,24 @@ qed (simp_all)
 lemma new2_less_sum: 
   "size_set (new2 \<phi>) < size_set {\<phi>}"
 proof (cases \<phi>)
-  case (Release_ltln \<nu> \<mu>)
+  case (Release_ltlr \<nu> \<mu>)
     thus ?thesis
       by (cases "\<nu> = \<mu>"; simp)
 qed (simp_all)
 
 lemma new1_finite[intro]: "finite (new1 \<psi>)"
   by (cases \<psi>) auto
-lemma new1_subset_frmls: "\<phi> \<in> new1 \<psi> \<Longrightarrow> \<phi> \<in> subfrmlsn \<psi>"
+lemma new1_subset_frmls: "\<phi> \<in> new1 \<psi> \<Longrightarrow> \<phi> \<in> subfrmlsr \<psi>"
   by (cases \<psi>) auto
 
 lemma new2_finite[intro]: "finite (new2 \<psi>)"
   by (cases \<psi>) auto
-lemma new2_subset_frmls: "\<phi> \<in> new2 \<psi> \<Longrightarrow> \<phi> \<in> subfrmlsn \<psi>"
+lemma new2_subset_frmls: "\<phi> \<in> new2 \<psi> \<Longrightarrow> \<phi> \<in> subfrmlsr \<psi>"
   by (cases \<psi>) auto
 
 lemma next1_finite[intro]: "finite (next1 \<psi>)"
   by (cases \<psi>) auto
-lemma next1_subset_frmls: "\<phi> \<in> next1 \<psi> \<Longrightarrow> \<phi> \<in> subfrmlsn \<psi>"
+lemma next1_subset_frmls: "\<phi> \<in> next1 \<psi> \<Longrightarrow> \<phi> \<in> subfrmlsr \<psi>"
   by (cases \<psi>) auto
 
 lemma expand_inv_impl[intro!]:
@@ -964,13 +964,13 @@ proof
       unfolding expand_ord_def finite_psupset_def by auto
   qed
 next
-  have "new1 \<psi> \<subseteq> subfrmlsn \<phi>"
-    and "new2 \<psi> \<subseteq> subfrmlsn \<phi>"
-    and "next1 \<psi> \<subseteq> subfrmlsn \<phi>"
-    using assms subfrmlsn_subset[OF new1_subset_frmls[of _ \<psi>]]
-      subfrmlsn_subset[of \<psi> \<phi>, OF rev_subsetD[of _ "new n"]]
-      subfrmlsn_subset[OF new2_subset_frmls[of _ \<psi>]]
-      subfrmlsn_subset[OF next1_subset_frmls[of _ \<psi>]]
+  have "new1 \<psi> \<subseteq> subfrmlsr \<phi>"
+    and "new2 \<psi> \<subseteq> subfrmlsr \<phi>"
+    and "next1 \<psi> \<subseteq> subfrmlsr \<phi>"
+    using assms subfrmlsr_subset[OF new1_subset_frmls[of _ \<psi>]]
+      subfrmlsr_subset[of \<psi> \<phi>, OF rev_subsetD[of _ "new n"]]
+      subfrmlsr_subset[OF new2_subset_frmls[of _ \<psi>]]
+      subfrmlsr_subset[OF next1_subset_frmls[of _ \<psi>]]
     unfolding expand_inv_def
     (* This proof is merely a speed optimization. A single force+ does the job,
        but takes very long *)
@@ -1230,11 +1230,11 @@ abbreviation
   "create_graph_rslt_exist \<xi> nds
    \<equiv> \<exists>nd\<in>nds.
         expand_init\<in>incoming nd
-      \<and> (\<forall>\<psi>\<in>old nd. \<xi> \<Turnstile>\<^sub>n \<psi>) \<and> (\<forall>\<psi>\<in>next nd. \<xi> \<Turnstile>\<^sub>n X\<^sub>n \<psi>)
-      \<and> {\<eta>. \<exists>\<mu>. \<mu> U\<^sub>n \<eta> \<in> old nd \<and> \<xi> \<Turnstile>\<^sub>n \<eta>} \<subseteq> old nd"
+      \<and> (\<forall>\<psi>\<in>old nd. \<xi> \<Turnstile>\<^sub>r \<psi>) \<and> (\<forall>\<psi>\<in>next nd. \<xi> \<Turnstile>\<^sub>r X\<^sub>r \<psi>)
+      \<and> {\<eta>. \<exists>\<mu>. \<mu> U\<^sub>r \<eta> \<in> old nd \<and> \<xi> \<Turnstile>\<^sub>r \<eta>} \<subseteq> old nd"
 
 lemma L4_7:
-  assumes "\<xi> \<Turnstile>\<^sub>n \<phi>"
+  assumes "\<xi> \<Turnstile>\<^sub>r \<phi>"
   shows "create_graph \<phi> \<le> SPEC (create_graph_rslt_exist \<xi>)"
   using assms unfolding create_graph_def
   by (intro refine_vcg, rule_tac order_trans, rule_tac expand_prop_exist) (
@@ -1316,7 +1316,7 @@ next
   then show ?case by simp
 next
   case prems: (8 f x n ns \<psi>)
-  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
+  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>r \<mu> \<or> \<psi> = \<nu> U\<^sub>r \<mu> \<or> \<psi> = \<nu> R\<^sub>r \<mu>)"
     by (cases \<psi>) auto
   with prems have QP: "?Q (n, ns) \<and> ?P ns"
     and step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>x'. ?P (snd x'))"
@@ -1379,13 +1379,13 @@ abbreviation
   "expand_rslt_all__ex_equiv \<xi> nd nds \<equiv>
    (\<exists>nd'\<in>nds.
     name nd \<in> incoming nd'
-    \<and> (\<forall>\<psi>\<in>old nd'. suffix 1 \<xi> \<Turnstile>\<^sub>n \<psi>) \<and> (\<forall>\<psi>\<in>next nd'. suffix 1 \<xi> \<Turnstile>\<^sub>n X\<^sub>n \<psi>)
-    \<and> {\<eta>. \<exists>\<mu>. \<mu> U\<^sub>n \<eta> \<in> old nd' \<and> suffix 1 \<xi> \<Turnstile>\<^sub>n \<eta>} \<subseteq> old nd')"
+    \<and> (\<forall>\<psi>\<in>old nd'. suffix 1 \<xi> \<Turnstile>\<^sub>r \<psi>) \<and> (\<forall>\<psi>\<in>next nd'. suffix 1 \<xi> \<Turnstile>\<^sub>r X\<^sub>r \<psi>)
+    \<and> {\<eta>. \<exists>\<mu>. \<mu> U\<^sub>r \<eta> \<in> old nd' \<and> suffix 1 \<xi> \<Turnstile>\<^sub>r \<eta>} \<subseteq> old nd')"
 
 abbreviation
   "expand_rslt_all \<xi> n_ns nm_nds \<equiv>
    (\<forall>nd\<in>snd nm_nds. name nd \<notin> name ` (snd n_ns) \<and>
-        (\<forall>\<psi>\<in>old nd. \<xi> \<Turnstile>\<^sub>n \<psi>) \<and> (\<forall>\<psi>\<in>next nd. \<xi> \<Turnstile>\<^sub>n X\<^sub>n \<psi>)
+        (\<forall>\<psi>\<in>old nd. \<xi> \<Turnstile>\<^sub>r \<psi>) \<and> (\<forall>\<psi>\<in>next nd. \<xi> \<Turnstile>\<^sub>r X\<^sub>r \<psi>)
         \<longrightarrow> expand_rslt_all__ex_equiv \<xi> nd (snd nm_nds))"
 
 lemma expand_prop_all:
@@ -1447,8 +1447,8 @@ next
     proof clarify
       fix nd
       assume "nd \<in> nds" and name_img: "name nd \<notin> name ` ns"
-        and nd_old_equiv: "\<forall>\<psi>\<in>old nd. \<xi> \<Turnstile>\<^sub>n \<psi>"
-        and nd_next_equiv: "\<forall>\<psi>\<in>next nd. \<xi> \<Turnstile>\<^sub>n X\<^sub>n \<psi>"
+        and nd_old_equiv: "\<forall>\<psi>\<in>old nd. \<xi> \<Turnstile>\<^sub>r \<psi>"
+        and nd_next_equiv: "\<forall>\<psi>\<in>next nd. \<xi> \<Turnstile>\<^sub>r X\<^sub>r \<psi>"
       show "expand_rslt_all__ex_equiv \<xi> nd nds"
       proof (cases "name nd = name n")
         case True
@@ -1483,7 +1483,7 @@ next
   from prems show ?case by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
   case prems: (8 f x n ns \<psi>)
-  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
+  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>r \<mu> \<or> \<psi> = \<nu> U\<^sub>r \<mu> \<or> \<psi> = \<nu> R\<^sub>r \<mu>)"
     by (cases \<psi>) auto
   from prems have Q: "?Q (n, ns)"
     and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC (?P x)"
@@ -1535,8 +1535,8 @@ next
         fix nd
         assume "nd\<in>nds'"
           and name_nd_notin: "name nd \<notin> name ` ns"
-          and old_equiv: "\<forall>\<psi>\<in>old nd. \<xi> \<Turnstile>\<^sub>n \<psi>"
-          and next_equiv: "\<forall>\<psi>\<in>next nd. \<xi> \<Turnstile>\<^sub>n X\<^sub>n \<psi>"
+          and old_equiv: "\<forall>\<psi>\<in>old nd. \<xi> \<Turnstile>\<^sub>r \<psi>"
+          and next_equiv: "\<forall>\<psi>\<in>next nd. \<xi> \<Turnstile>\<^sub>r X\<^sub>r \<psi>"
         show "expand_rslt_all__ex_equiv \<xi> nd nds'"
         proof (cases "name nd \<in> name ` nds")
           case True
@@ -1550,7 +1550,7 @@ next
             using \<open>name nd = name n'\<close> \<open>nd \<in> nds'\<close> by auto
           with nd'_eq have n'_eq: "expand_rslt_exist_eq__node n' nd"
             by simp
-          then have "name n'\<notin>name ` ns" and "\<forall>\<psi>\<in>old n'. \<xi> \<Turnstile>\<^sub>n \<psi>" and "\<forall>\<psi>\<in>next n'. \<xi> \<Turnstile>\<^sub>n X\<^sub>n \<psi>"
+          then have "name n'\<notin>name ` ns" and "\<forall>\<psi>\<in>old n'. \<xi> \<Turnstile>\<^sub>r \<psi>" and "\<forall>\<psi>\<in>next n'. \<xi> \<Turnstile>\<^sub>r X\<^sub>r \<psi>"
             using name_nd_notin old_equiv next_equiv \<open>n' \<in> nds\<close>
             by auto
           then have "expand_rslt_all__ex_equiv \<xi> n' nds"  (is "\<exists>nd'\<in>nds. ?sthm n' nd'")
@@ -1577,11 +1577,11 @@ qed
 
 abbreviation
   "create_graph_rslt_all \<xi> nds
-   \<equiv> \<forall>q\<in>nds. (\<forall>\<psi>\<in>old q. \<xi> \<Turnstile>\<^sub>n \<psi>) \<and> (\<forall>\<psi>\<in>next q. \<xi> \<Turnstile>\<^sub>n X\<^sub>n \<psi>)
+   \<equiv> \<forall>q\<in>nds. (\<forall>\<psi>\<in>old q. \<xi> \<Turnstile>\<^sub>r \<psi>) \<and> (\<forall>\<psi>\<in>next q. \<xi> \<Turnstile>\<^sub>r X\<^sub>r \<psi>)
     \<longrightarrow> (\<exists>q'\<in>nds. name q \<in> incoming q'
-         \<and> (\<forall>\<psi>\<in>old q'. suffix 1 \<xi> \<Turnstile>\<^sub>n \<psi>)
-         \<and> (\<forall>\<psi>\<in>next q'. suffix 1 \<xi> \<Turnstile>\<^sub>n X\<^sub>n \<psi>)
-         \<and> {\<eta>. \<exists>\<mu>. \<mu> U\<^sub>n \<eta> \<in> old q' \<and> suffix 1 \<xi> \<Turnstile>\<^sub>n \<eta>} \<subseteq> old q')"
+         \<and> (\<forall>\<psi>\<in>old q'. suffix 1 \<xi> \<Turnstile>\<^sub>r \<psi>)
+         \<and> (\<forall>\<psi>\<in>next q'. suffix 1 \<xi> \<Turnstile>\<^sub>r X\<^sub>r \<psi>)
+         \<and> {\<eta>. \<exists>\<mu>. \<mu> U\<^sub>r \<eta> \<in> old q' \<and> suffix 1 \<xi> \<Turnstile>\<^sub>r \<eta>} \<subseteq> old q')"
 
 lemma L4_5: "create_graph \<phi> \<le> SPEC (create_graph_rslt_all \<xi>)"
   unfolding create_graph_def
@@ -1599,14 +1599,14 @@ where "create_gba_from_nodes \<phi> qs \<equiv> \<lparr>
   g_V = qs,
   g_E = {(q, q'). q\<in>qs \<and> q'\<in>qs \<and> name q\<in>incoming q'},
   g_V0 = {q\<in>qs. expand_init\<in>incoming q},
-  gbg_F = {{q\<in>qs. \<mu> U\<^sub>n \<eta>\<in>old q \<longrightarrow> \<eta>\<in>old q}|\<mu> \<eta>. \<mu> U\<^sub>n \<eta> \<in> subfrmlsn \<phi>},
-  gba_L = \<lambda>q l. q\<in>qs \<and> {p. prop\<^sub>n(p)\<in>old q}\<subseteq>l \<and> {p. nprop\<^sub>n(p)\<in>old q} \<inter> l = {}
+  gbg_F = {{q\<in>qs. \<mu> U\<^sub>r \<eta>\<in>old q \<longrightarrow> \<eta>\<in>old q}|\<mu> \<eta>. \<mu> U\<^sub>r \<eta> \<in> subfrmlsr \<phi>},
+  gba_L = \<lambda>q l. q\<in>qs \<and> {p. prop\<^sub>r(p)\<in>old q}\<subseteq>l \<and> {p. nprop\<^sub>r(p)\<in>old q} \<inter> l = {}
 \<rparr>"
 
 end
 
 locale create_gba_from_nodes_precond =
-  fixes \<phi> :: "'a ltln"
+  fixes \<phi> :: "'a ltlr"
   fixes qs :: "'a node set"
   assumes res: "inres (create_graph \<phi>) qs"
 begin
@@ -1618,7 +1618,7 @@ lemma create_gba_from_nodes__invar: "gba (create_gba_from_nodes \<phi> qs)"
   using [[simproc finite_Collect]]
   apply unfold_locales
   apply (auto
-    intro!: finite_vimageI subfrmlsn_finite injI
+    intro!: finite_vimageI subfrmlsr_finite injI
     simp: create_gba_from_nodes_def)
   done
 
@@ -1647,8 +1647,8 @@ begin
 
 abbreviation
   "auto_run_j j \<xi> q \<equiv>
-        (\<forall>\<psi>\<in>old q. suffix j \<xi> \<Turnstile>\<^sub>n \<psi>) \<and> (\<forall>\<psi>\<in>next q. suffix j \<xi> \<Turnstile>\<^sub>n X\<^sub>n \<psi>) \<and>
-        {\<eta>. \<exists>\<mu>. \<mu> U\<^sub>n \<eta> \<in> old q \<and> suffix j \<xi> \<Turnstile>\<^sub>n \<eta>} \<subseteq> old q"
+        (\<forall>\<psi>\<in>old q. suffix j \<xi> \<Turnstile>\<^sub>r \<psi>) \<and> (\<forall>\<psi>\<in>next q. suffix j \<xi> \<Turnstile>\<^sub>r X\<^sub>r \<psi>) \<and>
+        {\<eta>. \<exists>\<mu>. \<mu> U\<^sub>r \<eta> \<in> old q \<and> suffix j \<xi> \<Turnstile>\<^sub>r \<eta>} \<subseteq> old q"
 
 fun auto_run :: "['a interprt, 'a node set] \<Rightarrow> 'a node word"
 where
@@ -1674,9 +1674,9 @@ lemma run_propag_on_create_graph:
   by (auto simp: create_gba_from_nodes__ipath)
 
 lemma expand_false_propag:
-  assumes "false\<^sub>n \<notin> old (fst n_ns) \<and> (\<forall>nd\<in>snd n_ns. false\<^sub>n \<notin> old nd)"
+  assumes "false\<^sub>r \<notin> old (fst n_ns) \<and> (\<forall>nd\<in>snd n_ns. false\<^sub>r \<notin> old nd)"
     (is "?Q n_ns")
-  shows "expand n_ns \<le> SPEC (\<lambda>nm_nds. \<forall>nd\<in>snd nm_nds. false\<^sub>n \<notin> old nd)"
+  shows "expand n_ns \<le> SPEC (\<lambda>nm_nds. \<forall>nd\<in>snd nm_nds. false\<^sub>r \<notin> old nd)"
   using assms
 proof (rule_tac expand_rec_rule[where \<Phi>="?Q"], simp, intro refine_vcg, goal_cases)
   case 1
@@ -1686,15 +1686,15 @@ next
   then show ?case by (rule_tac SPEC_rule_nested2) auto
 qed auto
 
-lemma false_propag_on_create_graph: "create_graph \<phi> \<le> SPEC (\<lambda>nds. \<forall>nd\<in>nds. false\<^sub>n \<notin> old nd)"
+lemma false_propag_on_create_graph: "create_graph \<phi> \<le> SPEC (\<lambda>nds. \<forall>nd\<in>nds. false\<^sub>r \<notin> old nd)"
   unfolding create_graph_def
   by (intro refine_vcg, rule_tac order_trans, rule_tac expand_false_propag) auto
 
 
 lemma expand_and_propag:
-  assumes "\<mu> and\<^sub>n \<eta> \<in> old (fst n_ns)
+  assumes "\<mu> and\<^sub>r \<eta> \<in> old (fst n_ns)
     \<longrightarrow> {\<mu>, \<eta>} \<subseteq> old (fst n_ns) \<union> new (fst n_ns)" (is "?Q n_ns")
-    and "\<forall>nd\<in>snd n_ns. \<mu> and\<^sub>n \<eta> \<in> old nd \<longrightarrow> {\<mu>, \<eta>} \<subseteq> old nd" (is "?P (snd n_ns)")
+    and "\<forall>nd\<in>snd n_ns. \<mu> and\<^sub>r \<eta> \<in> old nd \<longrightarrow> {\<mu>, \<eta>} \<subseteq> old nd" (is "?P (snd n_ns)")
   shows "expand n_ns \<le> SPEC (\<lambda>nm_nds. ?P (snd nm_nds))"
   using assms
 proof (rule_tac expand_rec_rule[where \<Phi>="\<lambda>x. ?Q x \<and> ?P (snd x)"],
@@ -1719,10 +1719,10 @@ next
 next
   case prems: (8 f x n ns \<psi>)
   then have goal_assms: "\<psi> \<in> new n
-    \<and> \<not> (\<exists>q. \<psi> = prop\<^sub>n(q) \<or> \<psi> = nprop\<^sub>n(q))
-    \<and> \<psi> \<noteq> true\<^sub>n \<and> \<psi> \<noteq> false\<^sub>n
-    \<and> \<not> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>n \<mu> \<or> \<psi> = X\<^sub>n \<nu>)
-    \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
+    \<and> \<not> (\<exists>q. \<psi> = prop\<^sub>r(q) \<or> \<psi> = nprop\<^sub>r(q))
+    \<and> \<psi> \<noteq> true\<^sub>r \<and> \<psi> \<noteq> false\<^sub>r
+    \<and> \<not> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>r \<mu> \<or> \<psi> = X\<^sub>r \<nu>)
+    \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>r \<mu> \<or> \<psi> = \<nu> U\<^sub>r \<mu> \<or> \<psi> = \<nu> R\<^sub>r \<mu>)"
     by (cases \<psi>) auto
   from prems have QP: "?Q (n, ns) \<and> ?P ns"
     and step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>x'. ?P (snd x'))"
@@ -1739,14 +1739,14 @@ next
 qed auto
 
 lemma and_propag_on_create_graph:
-  "create_graph \<phi> \<le> SPEC (\<lambda>nds. \<forall>nd\<in>nds. \<mu> and\<^sub>n \<eta> \<in> old nd \<longrightarrow> {\<mu>, \<eta>} \<subseteq> old nd)"
+  "create_graph \<phi> \<le> SPEC (\<lambda>nds. \<forall>nd\<in>nds. \<mu> and\<^sub>r \<eta> \<in> old nd \<longrightarrow> {\<mu>, \<eta>} \<subseteq> old nd)"
   unfolding create_graph_def
   by (intro refine_vcg, rule_tac order_trans, rule_tac expand_and_propag) auto
 
 lemma expand_or_propag:
-  assumes "\<mu> or\<^sub>n \<eta> \<in> old (fst n_ns)
+  assumes "\<mu> or\<^sub>r \<eta> \<in> old (fst n_ns)
     \<longrightarrow> {\<mu>, \<eta>} \<inter> (old (fst n_ns) \<union> new (fst n_ns)) \<noteq> {}" (is "?Q n_ns")
-    and "\<forall>nd\<in>snd n_ns. \<mu> or\<^sub>n \<eta> \<in> old nd \<longrightarrow> {\<mu>, \<eta>} \<inter> old nd \<noteq> {}"
+    and "\<forall>nd\<in>snd n_ns. \<mu> or\<^sub>r \<eta> \<in> old nd \<longrightarrow> {\<mu>, \<eta>} \<inter> old nd \<noteq> {}"
     (is "?P (snd n_ns)")
   shows "expand n_ns \<le> SPEC (\<lambda>nm_nds. ?P (snd nm_nds))"
   using assms
@@ -1772,10 +1772,10 @@ next
 next
   case prems: (8 f x n ns \<psi>)
   then have goal_assms: "\<psi> \<in> new n
-    \<and> \<not> (\<exists>q. \<psi> = prop\<^sub>n(q) \<or> \<psi> = nprop\<^sub>n(q))
-    \<and> \<psi> \<noteq> true\<^sub>n \<and> \<psi> \<noteq> false\<^sub>n
-    \<and> \<not> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>n \<mu> \<or> \<psi> = X\<^sub>n \<nu>)
-    \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
+    \<and> \<not> (\<exists>q. \<psi> = prop\<^sub>r(q) \<or> \<psi> = nprop\<^sub>r(q))
+    \<and> \<psi> \<noteq> true\<^sub>r \<and> \<psi> \<noteq> false\<^sub>r
+    \<and> \<not> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>r \<mu> \<or> \<psi> = X\<^sub>r \<nu>)
+    \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>r \<mu> \<or> \<psi> = \<nu> U\<^sub>r \<mu> \<or> \<psi> = \<nu> R\<^sub>r \<mu>)"
     by (cases \<psi>) auto
   from prems have QP: "?Q (n, ns) \<and> ?P ns"
     and step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>x'. ?P (snd x'))"
@@ -1793,20 +1793,20 @@ next
 qed auto
 
 lemma or_propag_on_create_graph:
-  "create_graph \<phi> \<le> SPEC (\<lambda>nds. \<forall>nd\<in>nds. \<mu> or\<^sub>n \<eta> \<in> old nd \<longrightarrow> {\<mu>, \<eta>} \<inter> old nd \<noteq> {})"
+  "create_graph \<phi> \<le> SPEC (\<lambda>nds. \<forall>nd\<in>nds. \<mu> or\<^sub>r \<eta> \<in> old nd \<longrightarrow> {\<mu>, \<eta>} \<inter> old nd \<noteq> {})"
   unfolding create_graph_def
   by (intro refine_vcg, rule_tac order_trans, rule_tac expand_or_propag) auto
 
 
 abbreviation
   "next_propag__assm \<mu> n_ns \<equiv>
-     (X\<^sub>n \<mu> \<in> old (fst n_ns) \<longrightarrow> \<mu> \<in> next (fst n_ns))
-     \<and> (\<forall>nd\<in>snd n_ns. X\<^sub>n \<mu> \<in> old nd \<and> name nd \<in> incoming (fst n_ns)
+     (X\<^sub>r \<mu> \<in> old (fst n_ns) \<longrightarrow> \<mu> \<in> next (fst n_ns))
+     \<and> (\<forall>nd\<in>snd n_ns. X\<^sub>r \<mu> \<in> old nd \<and> name nd \<in> incoming (fst n_ns)
         \<longrightarrow> \<mu> \<in> old (fst n_ns) \<union> new (fst n_ns))"
 
 abbreviation
   "next_propag__rslt \<mu> ns \<equiv>
-     \<forall>nd\<in>ns. \<forall>nd'\<in>ns. X\<^sub>n \<mu> \<in> old nd \<and> name nd \<in> incoming nd' \<longrightarrow> \<mu> \<in> old nd'"
+     \<forall>nd\<in>ns. \<forall>nd'\<in>ns. X\<^sub>r \<mu> \<in> old nd \<and> name nd \<in> incoming nd' \<longrightarrow> \<mu> \<in> old nd'"
 
 lemma expand_next_propag:
   fixes n_ns :: "_ \<times> 'a node set"
@@ -1825,7 +1825,7 @@ proof (rule_tac expand_rec_rule[where \<Phi>="?Q"], simp, intro refine_vcg, goal
     {
       fix nd :: "'a node" and nd' :: "'a node"
       assume "nd\<in>ns" and nd'_elem: "nd'\<in>upd_incoming n ns"
-      have "\<mu> \<in> old nd'" if *: "X\<^sub>n \<mu> \<in> old nd" and **: "name nd \<in> incoming nd'"
+      have "\<mu> \<in> old nd'" if *: "X\<^sub>r \<mu> \<in> old nd" and **: "name nd \<in> incoming nd'"
       proof (cases "nd'\<in>ns")
         case True
         with prems * ** show ?thesis using \<open>nd\<in>ns\<close> by auto
@@ -1907,7 +1907,7 @@ next
   from prems show ?case by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
   case prems: (8 f x n ns \<psi>)
-  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
+  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>r \<mu> \<or> \<psi> = \<nu> U\<^sub>r \<mu> \<or> \<psi> = \<nu> R\<^sub>r \<mu>)"
     by (cases \<psi>) auto
   from prems have Q: "?Q (n, ns)"
       and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
@@ -1948,14 +1948,14 @@ next
       moreover
       from prems'' have nds_ident: "expand_name_ident (snd ?x')" by simp
       moreover
-      have "X\<^sub>n \<mu> \<in> old (fst ?x') \<longrightarrow> \<mu>\<in>next (fst ?x')"
+      have "X\<^sub>r \<mu> \<in> old (fst ?x') \<longrightarrow> \<mu>\<in>next (fst ?x')"
       using Q[THEN conjunct1] goal_assms by auto
       moreover
       from prems'' have "next_propag__rslt \<mu> (snd ?x')" by simp
       moreover
       from prems'' have name_nds_eq: "name ` nds = name ` ns \<union> name ` {nd\<in>nds. name nd \<ge> name n}"
         by auto
-      have "\<forall>nd\<in>nds. (X\<^sub>n \<mu> \<in> old nd \<and> name nd \<in> incoming (fst ?x'))
+      have "\<forall>nd\<in>nds. (X\<^sub>r \<mu> \<in> old nd \<and> name nd \<in> incoming (fst ?x'))
                        \<longrightarrow> \<mu>\<in>old (fst ?x')\<union>new (fst ?x')"
        (is "\<forall>nd\<in>nds. ?assm (fst ?x') nd \<longrightarrow> ?concl (fst ?x') nd")
       proof
@@ -1985,7 +1985,7 @@ next
 qed
 
 lemma next_propag_on_create_graph:
-  "create_graph \<phi> \<le> SPEC (\<lambda>nds. \<forall>n\<in>nds. \<forall>n'\<in>nds. X\<^sub>n \<mu>\<in>old n \<and> name n\<in>incoming n' \<longrightarrow> \<mu>\<in>old n')"
+  "create_graph \<phi> \<le> SPEC (\<lambda>nds. \<forall>n\<in>nds. \<forall>n'\<in>nds. X\<^sub>r \<mu>\<in>old n \<and> name n\<in>incoming n' \<longrightarrow> \<mu>\<in>old n')"
   unfolding create_graph_def
   apply (refine_vcg expand_next_propag)  
   apply (auto simp add:expand_new_name_expand_init)
@@ -1994,21 +1994,21 @@ lemma next_propag_on_create_graph:
 
 abbreviation
   "release_propag__assm \<mu> \<eta> n_ns \<equiv>
-     (\<mu> V\<^sub>n \<eta> \<in> old (fst n_ns)
+     (\<mu> R\<^sub>r \<eta> \<in> old (fst n_ns)
       \<longrightarrow> {\<mu>, \<eta>}\<subseteq>old (fst n_ns)\<union>new (fst n_ns) \<or>
-         (\<eta>\<in>old (fst n_ns)\<union>new (fst n_ns)) \<and> \<mu> V\<^sub>n \<eta> \<in> next (fst n_ns))
+         (\<eta>\<in>old (fst n_ns)\<union>new (fst n_ns)) \<and> \<mu> R\<^sub>r \<eta> \<in> next (fst n_ns))
      \<and> (\<forall>nd\<in>snd n_ns.
-         \<mu> V\<^sub>n \<eta> \<in> old nd \<and> name nd \<in> incoming (fst n_ns)
+         \<mu> R\<^sub>r \<eta> \<in> old nd \<and> name nd \<in> incoming (fst n_ns)
          \<longrightarrow> {\<mu>, \<eta>}\<subseteq>old nd \<or>
-            (\<eta>\<in>old nd \<and> \<mu> V\<^sub>n \<eta> \<in> old (fst n_ns)\<union>new (fst n_ns)))"
+            (\<eta>\<in>old nd \<and> \<mu> R\<^sub>r \<eta> \<in> old (fst n_ns)\<union>new (fst n_ns)))"
 
 abbreviation
   "release_propag__rslt \<mu> \<eta> ns \<equiv>
      \<forall>nd\<in>ns.
        \<forall>nd'\<in>ns.
-         \<mu> V\<^sub>n \<eta> \<in> old nd \<and> name nd \<in> incoming nd'
+         \<mu> R\<^sub>r \<eta> \<in> old nd \<and> name nd \<in> incoming nd'
          \<longrightarrow> {\<mu>, \<eta>}\<subseteq>old nd \<or>
-            (\<eta>\<in>old nd \<and> \<mu> V\<^sub>n \<eta> \<in> old nd')"
+            (\<eta>\<in>old nd \<and> \<mu> R\<^sub>r \<eta> \<in> old nd')"
 
 lemma expand_release_propag:
   fixes n_ns :: "_ \<times> 'a node set"
@@ -2025,14 +2025,14 @@ proof (rule_tac expand_rec_rule[where \<Phi>="?Q"], simp, intro refine_vcg, goal
   proof (simp, rule_tac upd_incoming__ident, goal_cases)
     case prems: 1
     { fix nd :: "'a node" and nd' :: "'a node"
-      let ?V_prop = "\<mu> V\<^sub>n \<eta> \<in> old nd \<and> name nd \<in> incoming nd'
-        \<longrightarrow> {\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> V\<^sub>n \<eta> \<in> old nd'"
+      let ?V_prop = "\<mu> R\<^sub>r \<eta> \<in> old nd \<and> name nd \<in> incoming nd'
+        \<longrightarrow> {\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> R\<^sub>r \<eta> \<in> old nd'"
       assume "nd\<in>ns" and nd'_elem: "nd'\<in>upd_incoming n ns"
       { assume "nd'\<in>ns"
         with prems have ?V_prop using \<open>nd\<in>ns\<close> by auto }
       moreover
       { assume "nd'\<notin>ns"
-          and V_in_nd: "\<mu> V\<^sub>n \<eta> \<in> old nd" and "name nd \<in>incoming nd'"
+          and V_in_nd: "\<mu> R\<^sub>r \<eta> \<in> old nd" and "name nd \<in>incoming nd'"
         with upd_incoming__elem[of nd' n ns] nd'_elem
         obtain nd'' where "nd''\<in>ns"
           and nd'_eq: "nd' = nd''\<lparr>incoming := incoming n \<union> incoming nd''\<rparr>"
@@ -2040,18 +2040,18 @@ proof (rule_tac expand_rec_rule[where \<Phi>="?Q"], simp, intro refine_vcg, goal
           by auto
         { assume "name nd \<in> incoming n"
           with prems V_in_nd \<open>nd\<in>ns\<close>
-          have "{\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> V\<^sub>n \<eta> \<in> old n"
+          have "{\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> R\<^sub>r \<eta> \<in> old n"
             by auto
-          then have "{\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> V\<^sub>n \<eta> \<in> old nd'"
+          then have "{\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> R\<^sub>r \<eta> \<in> old nd'"
             using nd'_eq old_eq by simp }
         moreover
         { assume "name nd \<notin> incoming n"
           then have "name nd \<in> incoming nd''"
             using \<open>name nd \<in>incoming nd'\<close> nd'_eq by simp
-          then have "{\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> V\<^sub>n \<eta> \<in> old nd'"
+          then have "{\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> R\<^sub>r \<eta> \<in> old nd'"
             unfolding nd'_eq
             using prems \<open>nd\<in>ns\<close> \<open>nd''\<in>ns\<close> V_in_nd by auto }
-        ultimately have "{\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> V\<^sub>n \<eta> \<in> old nd'"
+        ultimately have "{\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> R\<^sub>r \<eta> \<in> old nd'"
           by fast
       }
       ultimately have ?V_prop by auto
@@ -2095,14 +2095,14 @@ next
   case 3 then show ?case by auto
 next
   case prems: (4 f x n ns \<psi>)
-  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>q. \<psi> = prop\<^sub>n(q) \<or> \<psi> = nprop\<^sub>n(q))" by simp
+  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>q. \<psi> = prop\<^sub>r(q) \<or> \<psi> = nprop\<^sub>r(q))" by simp
   from prems have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" and Q: "?Q (n, ns)"
     by simp_all
   show ?case
     using Q goal_assms by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
   case prems: (5 f x n ns \<psi>)
-  then have goal_assms: "\<psi> \<in> new n \<and> \<psi> = true\<^sub>n" by simp
+  then have goal_assms: "\<psi> \<in> new n \<and> \<psi> = true\<^sub>r" by simp
   from prems have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" and Q: "?Q (n, ns)"
     by simp_all
   show ?case using Q goal_assms by (rule_tac SPEC_rule_param2, rule_tac step) auto
@@ -2111,13 +2111,13 @@ next
   then show ?case by auto
 next
   case prems: (7 f x n ns \<psi>)
-  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>n \<mu> \<or> \<psi> = X\<^sub>n \<nu>)" by simp
+  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>r \<mu> \<or> \<psi> = X\<^sub>r \<nu>)" by simp
   from prems have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" and Q: "?Q (n, ns)"
     by simp_all
   show ?case using Q goal_assms by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
   case prems: (8 f x n ns \<psi>)
-  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
+  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>r \<mu> \<or> \<psi> = \<nu> U\<^sub>r \<mu> \<or> \<psi> = \<nu> R\<^sub>r \<mu>)"
     by (cases \<psi>) auto
   from prems have Q: "?Q (n, ns)"
     and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
@@ -2158,19 +2158,19 @@ next
       moreover
       from prems'' have nds_ident: "expand_name_ident (snd ?x')" by simp
       moreover
-      have "(\<mu> V\<^sub>n \<eta> \<in> old (fst ?x')
+      have "(\<mu> R\<^sub>r \<eta> \<in> old (fst ?x')
              \<longrightarrow> ({\<mu>, \<eta>}\<subseteq>old (fst ?x') \<union> new (fst ?x')
                   \<or> (\<eta>\<in>old (fst ?x')\<union>new (fst ?x')
-                     \<and> \<mu> V\<^sub>n \<eta> \<in> next (fst ?x'))))"
+                     \<and> \<mu> R\<^sub>r \<eta> \<in> next (fst ?x'))))"
         using Q[THEN conjunct1] goal_assms by auto
       moreover
       from prems'' have "release_propag__rslt \<mu> \<eta> (snd ?x')" by simp
       moreover
       from prems'' have name_nds_eq: "name ` nds = name ` ns \<union> name ` {nd\<in>nds. name nd \<ge> name n}"
         by auto
-      have "\<forall>nd\<in>nds. (\<mu> V\<^sub>n \<eta> \<in> old nd \<and> name nd \<in> incoming (fst ?x'))
+      have "\<forall>nd\<in>nds. (\<mu> R\<^sub>r \<eta> \<in> old nd \<and> name nd \<in> incoming (fst ?x'))
                  \<longrightarrow> ({\<mu>, \<eta>}\<subseteq>old nd
-                      \<or> (\<eta>\<in>old nd \<and> \<mu> V\<^sub>n \<eta> \<in>old (fst ?x')\<union>new (fst ?x')))"
+                      \<or> (\<eta>\<in>old nd \<and> \<mu> R\<^sub>r \<eta> \<in>old (fst ?x')\<union>new (fst ?x')))"
        (is "\<forall>nd\<in>nds. ?assm (fst ?x') nd \<longrightarrow> ?concl (fst ?x') nd")
       proof
         fix nd
@@ -2199,8 +2199,8 @@ qed
 
 lemma release_propag_on_create_graph:
   "create_graph \<phi>
-     \<le> SPEC (\<lambda>nds. \<forall>n\<in>nds. \<forall>n'\<in>nds. \<mu> V\<^sub>n \<eta>\<in>old n \<and> name n\<in>incoming n'
-                                      \<longrightarrow> ({\<mu>, \<eta>}\<subseteq>old n \<or> \<eta>\<in>old n \<and> \<mu> V\<^sub>n \<eta>\<in>old n'))"
+     \<le> SPEC (\<lambda>nds. \<forall>n\<in>nds. \<forall>n'\<in>nds. \<mu> R\<^sub>r \<eta>\<in>old n \<and> name n\<in>incoming n'
+                                      \<longrightarrow> ({\<mu>, \<eta>}\<subseteq>old n \<or> \<eta>\<in>old n \<and> \<mu> R\<^sub>r \<eta>\<in>old n'))"
   unfolding create_graph_def
   apply (refine_vcg expand_release_propag)  
   by (auto simp add:expand_new_name_expand_init)
@@ -2208,16 +2208,16 @@ lemma release_propag_on_create_graph:
 
 abbreviation
   "until_propag__assm f g n_ns \<equiv>
-     (f U\<^sub>n g \<in> old (fst n_ns)
+     (f U\<^sub>r g \<in> old (fst n_ns)
       \<longrightarrow> (g\<in>old (fst n_ns)\<union>new (fst n_ns)
-            \<or> (f\<in>old (fst n_ns)\<union>new (fst n_ns) \<and> f U\<^sub>n g \<in> next (fst n_ns))))
-     \<and> (\<forall>nd\<in>snd n_ns. f U\<^sub>n g \<in> old nd \<and> name nd \<in> incoming (fst n_ns)
-        \<longrightarrow> (g\<in>old nd \<or> (f\<in>old nd \<and> f U\<^sub>n g \<in>old (fst n_ns)\<union>new (fst n_ns))))"
+            \<or> (f\<in>old (fst n_ns)\<union>new (fst n_ns) \<and> f U\<^sub>r g \<in> next (fst n_ns))))
+     \<and> (\<forall>nd\<in>snd n_ns. f U\<^sub>r g \<in> old nd \<and> name nd \<in> incoming (fst n_ns)
+        \<longrightarrow> (g\<in>old nd \<or> (f\<in>old nd \<and> f U\<^sub>r g \<in>old (fst n_ns)\<union>new (fst n_ns))))"
 
 abbreviation
   "until_propag__rslt f g ns \<equiv>
-     \<forall>n\<in>ns. \<forall>nd\<in>ns. f U\<^sub>n g \<in> old n \<and> name n \<in> incoming nd
-                                  \<longrightarrow> (g \<in> old n \<or> (f\<in>old n \<and> f U\<^sub>n g \<in> old nd))"
+     \<forall>n\<in>ns. \<forall>nd\<in>ns. f U\<^sub>r g \<in> old n \<and> name n \<in> incoming nd
+                                  \<longrightarrow> (g \<in> old n \<or> (f\<in>old n \<and> f U\<^sub>r g \<in> old nd))"
 
 lemma expand_until_propag:
   fixes n_ns :: "_ \<times> 'a node set"
@@ -2234,31 +2234,31 @@ proof (rule_tac expand_rec_rule[where \<Phi>="?Q"], simp, intro refine_vcg, goal
   proof (simp, rule_tac upd_incoming__ident, goal_cases)
     case prems': 1
     { fix nd :: "'a node" and nd' :: "'a node"
-      let ?U_prop = "\<mu> U\<^sub>n \<eta> \<in> old nd \<and> name nd \<in> incoming nd'
-                           \<longrightarrow> \<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>n \<eta> \<in> old nd'"
+      let ?U_prop = "\<mu> U\<^sub>r \<eta> \<in> old nd \<and> name nd \<in> incoming nd'
+                           \<longrightarrow> \<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>r \<eta> \<in> old nd'"
       assume "nd\<in>ns" and nd'_elem: "nd'\<in>upd_incoming n ns"
       { assume "nd'\<in>ns"
         with prems' have ?U_prop using \<open>nd\<in>ns\<close> by auto }
       moreover
       { assume "nd'\<notin>ns" and
-        U_in_nd: "\<mu> U\<^sub>n \<eta> \<in> old nd" and "name nd \<in>incoming nd'"
+        U_in_nd: "\<mu> U\<^sub>r \<eta> \<in> old nd" and "name nd \<in>incoming nd'"
         with upd_incoming__elem[of nd' n ns] nd'_elem
         obtain nd'' where "nd''\<in>ns"
           and nd'_eq: "nd' = nd''\<lparr>incoming := incoming n \<union> incoming nd''\<rparr>"
           and old_eq: "old nd'' = old n" by auto
         { assume "name nd \<in> incoming n"
           with prems' U_in_nd \<open>nd\<in>ns\<close>
-          have "\<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>n \<eta> \<in> old n" by auto
-          then have "\<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>n \<eta> \<in> old nd'"
+          have "\<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>r \<eta> \<in> old n" by auto
+          then have "\<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>r \<eta> \<in> old nd'"
             using nd'_eq old_eq by simp }
         moreover
         { assume "name nd \<notin> incoming n"
           then have "name nd \<in> incoming nd''"
             using \<open>name nd \<in>incoming nd'\<close> nd'_eq by simp
-          then have "\<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>n \<eta> \<in> old nd'"
+          then have "\<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>r \<eta> \<in> old nd'"
             unfolding nd'_eq
             using prems' \<open>nd\<in>ns\<close> \<open>nd''\<in>ns\<close> U_in_nd by auto }
-        ultimately have "\<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>n \<eta> \<in> old nd'" by fast }
+        ultimately have "\<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>r \<eta> \<in> old nd'" by fast }
       ultimately have ?U_prop by auto }
     then show ?case by auto
   next
@@ -2315,7 +2315,7 @@ next
   from prems show ?case by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
   case prems: (8 f x n ns \<psi>)
-  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
+  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>r \<mu> \<or> \<psi> = \<nu> U\<^sub>r \<mu> \<or> \<psi> = \<nu> R\<^sub>r \<mu>)"
     by (cases \<psi>) auto
   from prems have Q: "?Q (n, ns)"
     and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
@@ -2357,10 +2357,10 @@ next
       from prems' have nds_ident: "expand_name_ident (snd ?x')"
         by simp
       moreover
-      have "(\<mu> U\<^sub>n \<eta> \<in> old (fst ?x')
+      have "(\<mu> U\<^sub>r \<eta> \<in> old (fst ?x')
              \<longrightarrow> (\<eta>\<in>old (fst ?x')\<union>new (fst ?x')
                   \<or> (\<mu>\<in>old (fst ?x')\<union>new (fst ?x')
-                     \<and> \<mu> U\<^sub>n \<eta> \<in> next (fst ?x'))))"
+                     \<and> \<mu> U\<^sub>r \<eta> \<in> next (fst ?x'))))"
         using Q[THEN conjunct1] goal_assms by auto
       moreover
       from prems' have "until_propag__rslt \<mu> \<eta> (snd ?x')"
@@ -2369,8 +2369,8 @@ next
       from prems' have name_nds_eq:
         "name ` nds = name ` ns \<union> name ` {nd\<in>nds. name nd \<ge> name n}"
         by auto
-      have "\<forall>nd\<in>nds. (\<mu> U\<^sub>n \<eta> \<in> old nd \<and> name nd \<in> incoming (fst ?x'))
-        \<longrightarrow> (\<eta>\<in>old nd \<or> (\<mu>\<in>old nd \<and> \<mu> U\<^sub>n \<eta> \<in>old (fst ?x')\<union>new (fst ?x')))"
+      have "\<forall>nd\<in>nds. (\<mu> U\<^sub>r \<eta> \<in> old nd \<and> name nd \<in> incoming (fst ?x'))
+        \<longrightarrow> (\<eta>\<in>old nd \<or> (\<mu>\<in>old nd \<and> \<mu> U\<^sub>r \<eta> \<in>old (fst ?x')\<union>new (fst ?x')))"
        (is "\<forall>nd\<in>nds. ?assm (fst ?x') nd \<longrightarrow> ?concl (fst ?x') nd")
       proof
         fix nd
@@ -2399,23 +2399,23 @@ next
 qed
 
 lemma until_propag_on_create_graph:
-  "create_graph \<phi> \<le> SPEC (\<lambda>nds. \<forall>n\<in>nds. \<forall>n'\<in>nds. \<mu> U\<^sub>n \<eta>\<in>old n \<and> name n\<in>incoming n'
-    \<longrightarrow> (\<eta>\<in>old n \<or> \<mu>\<in>old n \<and> \<mu> U\<^sub>n \<eta>\<in>old n'))"
+  "create_graph \<phi> \<le> SPEC (\<lambda>nds. \<forall>n\<in>nds. \<forall>n'\<in>nds. \<mu> U\<^sub>r \<eta>\<in>old n \<and> name n\<in>incoming n'
+    \<longrightarrow> (\<eta>\<in>old n \<or> \<mu>\<in>old n \<and> \<mu> U\<^sub>r \<eta>\<in>old n'))"
   unfolding create_graph_def
   apply (refine_vcg expand_until_propag)  
   by (auto simp add:expand_new_name_expand_init)
 
 definition all_subfrmls :: "'a node \<Rightarrow> 'a frml set"
-  where "all_subfrmls n \<equiv> \<Union>(subfrmlsn ` (new n \<union> old n \<union> next n))"
+  where "all_subfrmls n \<equiv> \<Union>(subfrmlsr ` (new n \<union> old n \<union> next n))"
 
 lemma all_subfrmls__UnionD:
-  assumes "(\<Union>x\<in>A. subfrmlsn x) \<subseteq> B"
+  assumes "(\<Union>x\<in>A. subfrmlsr x) \<subseteq> B"
     and "x\<in>A"
-    and "y\<in>subfrmlsn x"
+    and "y\<in>subfrmlsr x"
   shows "y\<in>B"
 proof -
-  note subfrmlsn_id[of x]
-  also have "subfrmlsn x \<subseteq> (\<Union>x\<in>A. subfrmlsn x)"
+  note subfrmlsr_id[of x]
+  also have "subfrmlsr x \<subseteq> (\<Union>x\<in>A. subfrmlsr x)"
     using assms by auto
   finally show ?thesis using assms by auto
 qed
@@ -2448,7 +2448,7 @@ next
   from prems show ?case by (rule_tac step) (auto simp add: all_subfrmls_def)
 next
   case prems: (5 f _ n ns \<psi>)
-  then have goal_assms: "\<psi> \<in> new n \<and> \<psi> = true\<^sub>n" by simp
+  then have goal_assms: "\<psi> \<in> new n \<and> \<psi> = true\<^sub>r" by simp
   from prems have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" and Q: "?Q (n, ns)"
     by simp_all
   show ?case using Q goal_assms
@@ -2458,7 +2458,7 @@ next
   then show ?case by auto
 next
   case prems: (7 f x n ns \<psi>)
-  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>n \<mu> \<or> \<psi> = X\<^sub>n \<nu>)" by simp
+  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>r \<mu> \<or> \<psi> = X\<^sub>r \<nu>)" by simp
   from prems have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" and Q: "?Q (n, ns)"
     by simp_all
   show ?case
@@ -2467,10 +2467,10 @@ next
 next
   case prems: (8 f x n ns \<psi>)
   then have goal_assms: "\<psi> \<in> new n
-    \<and> \<not> (\<exists>q. \<psi> = prop\<^sub>n(q) \<or> \<psi> = nprop\<^sub>n(q))
-    \<and> \<psi> \<noteq> true\<^sub>n \<and> \<psi> \<noteq> false\<^sub>n
-    \<and>  \<not> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>n \<mu> \<or> \<psi> = X\<^sub>n \<nu>)
-    \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
+    \<and> \<not> (\<exists>q. \<psi> = prop\<^sub>r(q) \<or> \<psi> = nprop\<^sub>r(q))
+    \<and> \<psi> \<noteq> true\<^sub>r \<and> \<psi> \<noteq> false\<^sub>r
+    \<and>  \<not> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>r \<mu> \<or> \<psi> = X\<^sub>r \<nu>)
+    \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>r \<mu> \<or> \<psi> = \<nu> U\<^sub>r \<mu> \<or> \<psi> = \<nu> R\<^sub>r \<mu>)"
     by (cases \<psi>) auto
   from prems have Q: "?Q (n, ns)" and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
     by simp_all
@@ -2487,20 +2487,20 @@ next
   qed
 qed
 
-lemma old_propag_on_create_graph: "create_graph \<phi> \<le> SPEC (\<lambda>nds. \<forall>n\<in>nds. old n \<subseteq> subfrmlsn \<phi>)"
+lemma old_propag_on_create_graph: "create_graph \<phi> \<le> SPEC (\<lambda>nds. \<forall>n\<in>nds. old n \<subseteq> subfrmlsr \<phi>)"
   unfolding create_graph_def
   by (intro refine_vcg,
     rule_tac order_trans,
-    rule_tac expand_all_subfrmls_propag[where B = "subfrmlsn \<phi>"])
+    rule_tac expand_all_subfrmls_propag[where B = "subfrmlsr \<phi>"])
    (force simp add:all_subfrmls_def expand_new_name_expand_init)+
 
 lemma L4_2__aux:
   assumes run: "ipath gba.E \<sigma>"
-    and "\<mu> U\<^sub>n \<eta> \<in> old (\<sigma> 0)"
-    and "\<forall>j. (\<forall>i<j. {\<mu>, \<mu> U\<^sub>n \<eta>} \<subseteq> old (\<sigma> i)) \<longrightarrow> \<eta> \<notin> old (\<sigma> j)"
-  shows "\<forall>i. {\<mu>, \<mu> U\<^sub>n \<eta>} \<subseteq> old (\<sigma> i) \<and> \<eta> \<notin> old (\<sigma> i)"
+    and "\<mu> U\<^sub>r \<eta> \<in> old (\<sigma> 0)"
+    and "\<forall>j. (\<forall>i<j. {\<mu>, \<mu> U\<^sub>r \<eta>} \<subseteq> old (\<sigma> i)) \<longrightarrow> \<eta> \<notin> old (\<sigma> j)"
+  shows "\<forall>i. {\<mu>, \<mu> U\<^sub>r \<eta>} \<subseteq> old (\<sigma> i) \<and> \<eta> \<notin> old (\<sigma> i)"
 proof -
-  have "\<forall>i<j. {\<mu>, \<mu> U\<^sub>n \<eta>} \<subseteq> old (\<sigma> i)" (is "?sbthm j") for j
+  have "\<forall>i<j. {\<mu>, \<mu> U\<^sub>r \<eta>} \<subseteq> old (\<sigma> i)" (is "?sbthm j") for j
   proof (induct j)
     show "?sbthm 0" by auto
   next
@@ -2511,7 +2511,7 @@ proof -
       \<and> name (\<sigma> k) \<in> incoming (\<sigma> (Suc k))"
     using assms run_propag_on_create_graph[OF run] by auto
     with inres_SPEC[OF res until_propag_on_create_graph[where \<mu> = \<mu> and \<eta> = \<eta>]]
-    have "{\<mu>, \<mu> U\<^sub>n \<eta>} \<subseteq> old (\<sigma> k)" (is "?subsetthm")
+    have "{\<mu>, \<mu> U\<^sub>r \<eta>} \<subseteq> old (\<sigma> k)" (is "?subsetthm")
     proof (cases k)
       assume "k = 0"
       with assms \<sigma>_k_prop
@@ -2520,12 +2520,12 @@ proof -
     next
       fix l
       assume "k = Suc l"
-      then have "{\<mu>, \<mu> U\<^sub>n \<eta>}\<subseteq>old (\<sigma> l) \<and> \<eta>\<notin>old (\<sigma> l)
+      then have "{\<mu>, \<mu> U\<^sub>r \<eta>}\<subseteq>old (\<sigma> l) \<and> \<eta>\<notin>old (\<sigma> l)
         \<and> \<sigma> l\<in>qs \<and> \<sigma> k\<in>qs
         \<and> name (\<sigma> l)\<in>incoming (\<sigma> k)"
       using step assms run_propag_on_create_graph[OF run] by auto
       with inres_SPEC[OF res until_propag_on_create_graph[where \<mu> = \<mu> and \<eta> = \<eta>]]
-      have "\<mu> U\<^sub>n \<eta>\<in>old (\<sigma> k)" by auto
+      have "\<mu> U\<^sub>r \<eta>\<in>old (\<sigma> k)" by auto
       with \<sigma>_k_prop
         inres_SPEC[OF res until_propag_on_create_graph[where \<mu> = \<mu> and \<eta> = \<eta>]]
       show ?subsetthm by auto
@@ -2537,9 +2537,9 @@ qed
 
 lemma L4_2a:
   assumes "ipath gba.E \<sigma>"
-    and "\<mu> U\<^sub>n \<eta> \<in> old (\<sigma> 0)"
-  shows "(\<forall>i. {\<mu>, \<mu> U\<^sub>n \<eta>} \<subseteq> old (\<sigma> i) \<and> \<eta> \<notin> old (\<sigma> i))
-         \<or> (\<exists>j. (\<forall>i<j. {\<mu>, \<mu> U\<^sub>n \<eta>} \<subseteq> old (\<sigma> i)) \<and> \<eta> \<in> old (\<sigma> j))"
+    and "\<mu> U\<^sub>r \<eta> \<in> old (\<sigma> 0)"
+  shows "(\<forall>i. {\<mu>, \<mu> U\<^sub>r \<eta>} \<subseteq> old (\<sigma> i) \<and> \<eta> \<notin> old (\<sigma> i))
+         \<or> (\<exists>j. (\<forall>i<j. {\<mu>, \<mu> U\<^sub>r \<eta>} \<subseteq> old (\<sigma> i)) \<and> \<eta> \<in> old (\<sigma> j))"
     (is "?A \<or> ?B")
 proof (rule disjCI)
   assume "\<not> ?B"
@@ -2549,37 +2549,37 @@ qed
 
 lemma L4_2b:
   assumes run: "ipath gba.E \<sigma>"
-    and "\<mu> U\<^sub>n \<eta> \<in> old (\<sigma> 0)"
+    and "\<mu> U\<^sub>r \<eta> \<in> old (\<sigma> 0)"
     and ACC: "gba.is_acc \<sigma>"
-  shows "\<exists>j. (\<forall>i<j. {\<mu>, \<mu> U\<^sub>n \<eta>} \<subseteq> old (\<sigma> i)) \<and> \<eta> \<in> old (\<sigma> j)"
+  shows "\<exists>j. (\<forall>i<j. {\<mu>, \<mu> U\<^sub>r \<eta>} \<subseteq> old (\<sigma> i)) \<and> \<eta> \<in> old (\<sigma> j)"
 proof (rule ccontr)
   assume "\<not> ?thesis"
-  then have contr: "\<forall>i. {\<mu>, \<mu> U\<^sub>n \<eta>}\<subseteq>old(\<sigma> i) \<and> \<eta>\<notin>old(\<sigma> i)"
+  then have contr: "\<forall>i. {\<mu>, \<mu> U\<^sub>r \<eta>}\<subseteq>old(\<sigma> i) \<and> \<eta>\<notin>old(\<sigma> i)"
     using assms L4_2a[of \<sigma> \<mu> \<eta>] by blast
 
-  define S where "S = {q \<in> qs. \<mu> U\<^sub>n \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q}"
+  define S where "S = {q \<in> qs. \<mu> U\<^sub>r \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q}"
 
   from assms inres_SPEC[OF res old_propag_on_create_graph] create_gba_from_nodes__ipath
-  have "\<mu> U\<^sub>n \<eta> \<in> subfrmlsn \<phi>"
+  have "\<mu> U\<^sub>r \<eta> \<in> subfrmlsr \<phi>"
     by (metis assms(2) subsetD)
   then have "S\<in>gbg_F(create_gba_from_nodes \<phi> qs)"
     unfolding S_def create_gba_from_nodes_def by auto
   with ACC have 1: "\<exists>\<^sub>\<infinity>i. \<sigma> i \<in> S"
     unfolding gba.is_acc_def by blast
 
-  from INFM_EX[OF 1] obtain k where "\<sigma> k \<in> qs" and "\<mu> U\<^sub>n \<eta> \<in> old (\<sigma> k) \<longrightarrow> \<eta> \<in> old (\<sigma> k)"
+  from INFM_EX[OF 1] obtain k where "\<sigma> k \<in> qs" and "\<mu> U\<^sub>r \<eta> \<in> old (\<sigma> k) \<longrightarrow> \<eta> \<in> old (\<sigma> k)"
     unfolding S_def by auto
-  moreover have "{\<mu>, \<mu> U\<^sub>n \<eta>}\<subseteq>old(\<sigma> k) \<and> \<eta>\<notin>old(\<sigma> k)"
+  moreover have "{\<mu>, \<mu> U\<^sub>r \<eta>}\<subseteq>old(\<sigma> k) \<and> \<eta>\<notin>old(\<sigma> k)"
     using contr by auto
   ultimately show False by auto
 qed
 
 lemma L4_2c:
   assumes run: "ipath gba.E \<sigma>"
-    and "\<mu> V\<^sub>n \<eta> \<in> old (\<sigma> 0)"
+    and "\<mu> R\<^sub>r \<eta> \<in> old (\<sigma> 0)"
   shows "\<forall>i. \<eta> \<in> old (\<sigma> i) \<or> (\<exists>j<i. \<mu> \<in> old (\<sigma> j))"
 proof -
-  have "{\<eta>, \<mu> V\<^sub>n \<eta>} \<subseteq> old (\<sigma> i) \<or> (\<exists>j<i. \<mu> \<in> old (\<sigma> j))" (is "?thm i") for i
+  have "{\<eta>, \<mu> R\<^sub>r \<eta>} \<subseteq> old (\<sigma> i) \<or> (\<exists>j<i. \<mu> \<in> old (\<sigma> j))" (is "?thm i") for i
   proof (induct i)
     case 0
     have "\<sigma> 0\<in>qs \<and> \<sigma> 1\<in>qs \<and> name (\<sigma> 0) \<in> incoming (\<sigma> 1)"
@@ -2591,18 +2591,18 @@ proof -
     case (Suc k)
     note \<open>?thm k\<close>
     moreover
-    { assume "{\<eta>, \<mu> V\<^sub>n \<eta>} \<subseteq> old (\<sigma> k)"
+    { assume "{\<eta>, \<mu> R\<^sub>r \<eta>} \<subseteq> old (\<sigma> k)"
       moreover
       have "\<sigma> k\<in>qs \<and> \<sigma> (Suc k)\<in>qs \<and> name (\<sigma> k) \<in> incoming (\<sigma> (Suc k))"
       using create_gba_from_nodes__ipath assms by auto
-      ultimately have "\<mu> \<in> old (\<sigma> k) \<or> \<mu> V\<^sub>n \<eta> \<in> old (\<sigma> (Suc k))"
+      ultimately have "\<mu> \<in> old (\<sigma> k) \<or> \<mu> R\<^sub>r \<eta> \<in> old (\<sigma> (Suc k))"
         using assms inres_SPEC[OF res release_propag_on_create_graph, of \<mu> \<eta>]
         by auto
       moreover
       { assume "\<mu> \<in> old (\<sigma> k)"
         then have ?case by blast }
       moreover
-      { assume "\<mu> V\<^sub>n \<eta> \<in> old (\<sigma> (Suc k))"
+      { assume "\<mu> R\<^sub>r \<eta> \<in> old (\<sigma> (Suc k))"
         moreover
         have "\<sigma> (Suc k)\<in>qs \<and> \<sigma> (Suc (Suc k))\<in>qs
           \<and> name (\<sigma> (Suc k)) \<in> incoming (\<sigma> (Suc (Suc k)))"
@@ -2625,81 +2625,81 @@ lemma L4_8':
     and "gba.is_acc \<sigma>" (is "?gbarel_accept \<sigma>")
     and "\<forall>i. gba.L (\<sigma> i) (\<xi> i)" (is "?lgbarel_accept \<xi> \<sigma>")
     and "\<psi> \<in> old (\<sigma> 0)"
-  shows "\<xi> \<Turnstile>\<^sub>n \<psi>"
+  shows "\<xi> \<Turnstile>\<^sub>r \<psi>"
   using assms
 proof (induct \<psi> arbitrary: \<sigma> \<xi>)
-  case True_ltln
+  case True_ltlr
   show ?case by auto
 next
-  case False_ltln
+  case False_ltlr
   then show ?case
     using inres_SPEC[OF res false_propag_on_create_graph]
       create_gba_from_nodes__ipath
     by (metis)
 next
-  case (Prop_ltln p)
+  case (Prop_ltlr p)
   then show ?case
     unfolding create_gba_from_nodes_def by auto
 next
-  case (Nprop_ltln p)
+  case (Nprop_ltlr p)
   then show ?case
     unfolding create_gba_from_nodes_def by auto
 next
-  case (And_ltln \<mu> \<eta>)
+  case (And_ltlr \<mu> \<eta>)
   then show ?case
     using inres_SPEC[OF res and_propag_on_create_graph, of \<mu> \<eta>]
       create_gba_from_nodes__ipath
-      by (metis insert_subset semantics_ltln.simps(5))
+      by (metis insert_subset semantics_ltlr.simps(5))
 next
-  case (Or_ltln \<mu> \<eta>)
+  case (Or_ltlr \<mu> \<eta>)
   then have "\<mu> \<in> old (\<sigma> 0) \<or> \<eta> \<in> old (\<sigma> 0)"
     using inres_SPEC[OF res or_propag_on_create_graph, of \<mu> \<eta>]
     create_gba_from_nodes__ipath
     by (metis (full_types) Int_empty_left Int_insert_left_if0)
-  moreover have "\<xi> \<Turnstile>\<^sub>n \<mu>" if "\<mu> \<in> old (\<sigma> 0)"
-    using Or_ltln that by auto
-  moreover have "\<xi> \<Turnstile>\<^sub>n \<eta>" if "\<eta> \<in> old (\<sigma> 0)"
-    using Or_ltln that by auto
+  moreover have "\<xi> \<Turnstile>\<^sub>r \<mu>" if "\<mu> \<in> old (\<sigma> 0)"
+    using Or_ltlr that by auto
+  moreover have "\<xi> \<Turnstile>\<^sub>r \<eta>" if "\<eta> \<in> old (\<sigma> 0)"
+    using Or_ltlr that by auto
   ultimately show ?case by auto
 next
-  case (Next_ltln \<mu>)
+  case (Next_ltlr \<mu>)
   with create_gba_from_nodes__ipath[of \<sigma>]
   have "\<sigma> 0 \<in> qs \<and> \<sigma> 1 \<in> qs \<and> name (\<sigma> 0) \<in> incoming (\<sigma> 1)"
     by auto
   with inres_SPEC[OF res next_propag_on_create_graph, of \<mu>] have "\<mu>\<in>old (suffix 1 \<sigma> 0)"
-    using Next_ltln by auto
+    using Next_ltlr by auto
   moreover
   have "?inf_run (suffix 1 \<sigma>)"
     and "?gbarel_accept (suffix 1 \<sigma>)"
     and "?lgbarel_accept (suffix 1 \<xi>) (suffix 1 \<sigma> )"
-    using Next_ltln create_gba_from_nodes__ipath
+    using Next_ltlr create_gba_from_nodes__ipath
     apply -
     apply (metis ipath_suffix)
     apply (auto simp del: suffix_nth) [] (* FIXME:
       "\<lambda>a. suffix i \<sigma> a" is unfolded, but "suffix i \<sigma>" is not! *)
     apply auto
     done
-  ultimately show ?case using Next_ltln by simp
+  ultimately show ?case using Next_ltlr by simp
 next
-  case (Until_ltln \<mu> \<eta>)
-  then have "\<exists>j. (\<forall>i<j. {\<mu>, \<mu> U\<^sub>n \<eta>} \<subseteq> old (\<sigma> i)) \<and> \<eta> \<in> old (\<sigma> j)"
+  case (Until_ltlr \<mu> \<eta>)
+  then have "\<exists>j. (\<forall>i<j. {\<mu>, \<mu> U\<^sub>r \<eta>} \<subseteq> old (\<sigma> i)) \<and> \<eta> \<in> old (\<sigma> j)"
     using L4_2b by auto
-  then obtain j where \<sigma>_pre: "\<forall>i<j. {\<mu>, \<mu> U\<^sub>n \<eta>} \<subseteq> old (\<sigma> i)" and "\<eta> \<in> old (suffix j \<sigma> 0)"
+  then obtain j where \<sigma>_pre: "\<forall>i<j. {\<mu>, \<mu> U\<^sub>r \<eta>} \<subseteq> old (\<sigma> i)" and "\<eta> \<in> old (suffix j \<sigma> 0)"
     by auto
   moreover
   have "?inf_run (suffix j \<sigma>)"
     and "?gbarel_accept (suffix j \<sigma>)"
     and "?lgbarel_accept (suffix j \<xi>) (suffix j \<sigma>)"
     unfolding limit_suffix
-    using Until_ltln create_gba_from_nodes__ipath
+    using Until_ltlr create_gba_from_nodes__ipath
     apply -
     apply (metis ipath_suffix)
     apply (auto simp del: suffix_nth) [] (* FIXME:
       "\<lambda>a. suffix i \<sigma> a" is unfolded, but "suffix i \<sigma>" is not! *)
     apply auto
     done
-  ultimately have "suffix j \<xi> \<Turnstile>\<^sub>n \<eta>"
-    using Until_ltln by simp
+  ultimately have "suffix j \<xi> \<Turnstile>\<^sub>r \<eta>"
+    using Until_ltlr by simp
   moreover {
     fix i
     assume "i < j"
@@ -2707,7 +2707,7 @@ next
       and "?gbarel_accept (suffix i \<sigma>)"
       and "?lgbarel_accept (suffix i \<xi>) (suffix i \<sigma> )"
       unfolding limit_suffix
-      using Until_ltln create_gba_from_nodes__ipath
+      using Until_ltlr create_gba_from_nodes__ipath
       apply -
       apply (metis ipath_suffix)
       apply (auto simp del: suffix_nth) [] (* FIXME:
@@ -2716,11 +2716,11 @@ next
       done
     moreover have "\<mu>\<in>old (suffix i \<sigma> 0)"
       using \<sigma>_pre \<open>i<j\<close> by auto
-    ultimately have "suffix i \<xi> \<Turnstile>\<^sub>n \<mu>" using Until_ltln by simp
+    ultimately have "suffix i \<xi> \<Turnstile>\<^sub>r \<mu>" using Until_ltlr by simp
   }
   ultimately show ?case by auto
 next
-  case (Release_ltln \<mu> \<eta>)
+  case (Release_ltlr \<mu> \<eta>)
   { fix i
     assume "\<eta> \<in> old (\<sigma> i) \<or> (\<exists>j<i. \<mu> \<in> old (\<sigma> j))"
     moreover
@@ -2730,15 +2730,15 @@ next
         and "?gbarel_accept (suffix i \<sigma>)"
         and "?lgbarel_accept (suffix i \<xi>) (suffix i \<sigma> )"
         unfolding limit_suffix
-        using Release_ltln create_gba_from_nodes__ipath
+        using Release_ltlr create_gba_from_nodes__ipath
         apply -
         apply (metis ipath_suffix)
         apply (auto simp del: suffix_nth) [] (* FIXME:
           "\<lambda>a. suffix i \<sigma> a" is unfolded, but "suffix i \<sigma>" is not! *)
         apply auto
         done
-      with * have "suffix i \<xi> \<Turnstile>\<^sub>n \<eta>"
-        using Release_ltln by auto
+      with * have "suffix i \<xi> \<Turnstile>\<^sub>r \<eta>"
+        using Release_ltlr by auto
     }
     moreover
     {
@@ -2748,21 +2748,21 @@ next
       have "?inf_run (suffix j \<sigma>)"
         and "?gbarel_accept (suffix j \<sigma>)"
         and "?lgbarel_accept (suffix j \<xi>) (suffix j \<sigma> )" unfolding limit_suffix
-        using Release_ltln create_gba_from_nodes__ipath
+        using Release_ltlr create_gba_from_nodes__ipath
         apply -
         apply (metis ipath_suffix)
         apply (auto simp del: suffix_nth) [] (* FIXME:
           "\<lambda>a. suffix i \<sigma> a" is unfolded, but "suffix i \<sigma>" is not! *)
         apply auto
         done
-      ultimately have "suffix j \<xi> \<Turnstile>\<^sub>n \<mu>"
-        using Release_ltln by auto
-      then have "\<exists>j<i. suffix j \<xi> \<Turnstile>\<^sub>n \<mu>"
+      ultimately have "suffix j \<xi> \<Turnstile>\<^sub>r \<mu>"
+        using Release_ltlr by auto
+      then have "\<exists>j<i. suffix j \<xi> \<Turnstile>\<^sub>r \<mu>"
         using \<open>j<i\<close> by auto
     }
-    ultimately have "suffix i \<xi> \<Turnstile>\<^sub>n \<eta> \<or> (\<exists>j<i. suffix j \<xi> \<Turnstile>\<^sub>n \<mu>)" by auto
+    ultimately have "suffix i \<xi> \<Turnstile>\<^sub>r \<eta> \<or> (\<exists>j<i. suffix j \<xi> \<Turnstile>\<^sub>r \<mu>)" by auto
   }
-  then show ?case using Release_ltln L4_2c by auto
+  then show ?case using Release_ltlr L4_2c by auto
 qed
 
 
@@ -2770,7 +2770,7 @@ lemma L4_8:
   assumes "gba.is_acc_run \<sigma>"
     and "\<forall>i. gba.L (\<sigma> i) (\<xi> i)"
     and "\<psi> \<in> old (\<sigma> 0)"
-  shows "\<xi> \<Turnstile>\<^sub>n \<psi>"
+  shows "\<xi> \<Turnstile>\<^sub>r \<psi>"
   using assms
   unfolding gba.is_acc_run_def gba.is_run_def
   using L4_8' by blast
@@ -2848,10 +2848,10 @@ next
 next
   case prems: (8 f x n ns \<psi>)
   then have goal_assms: "\<psi> \<in> new n
-    \<and> \<not> (\<exists>q. \<psi> = prop\<^sub>n(q) \<or> \<psi> = nprop\<^sub>n(q))
-    \<and> \<psi> \<noteq> true\<^sub>n \<and> \<psi> \<noteq> false\<^sub>n
-    \<and> \<not> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>n \<mu> \<or> \<psi> = X\<^sub>n \<nu>)
-    \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
+    \<and> \<not> (\<exists>q. \<psi> = prop\<^sub>r(q) \<or> \<psi> = nprop\<^sub>r(q))
+    \<and> \<psi> \<noteq> true\<^sub>r \<and> \<psi> \<noteq> false\<^sub>r
+    \<and> \<not> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>r \<mu> \<or> \<psi> = X\<^sub>r \<nu>)
+    \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>r \<mu> \<or> \<psi> = \<nu> U\<^sub>r \<mu> \<or> \<psi> = \<nu> R\<^sub>r \<mu>)"
     by (cases \<psi>) auto
   from prems have QP: "?Q (n, ns) \<and> ?P ns" and
     step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>r. name n' \<le> fst r \<and> ?P (snd r))"
@@ -2886,7 +2886,7 @@ lemma L4_6:
 
 lemma L4_9:
   assumes acc: "gba.accept \<xi>"
-  shows "\<xi> \<Turnstile>\<^sub>n \<phi>"
+  shows "\<xi> \<Turnstile>\<^sub>r \<phi>"
 proof -
   from acc obtain \<sigma> where accept: "gba.is_acc_run \<sigma> \<and> (\<forall>i. gba.L (\<sigma> i) (\<xi> i))"
     unfolding gba.accept_def by auto
@@ -2897,7 +2897,7 @@ proof -
 qed
 
 lemma L4_10:
-  assumes "\<xi> \<Turnstile>\<^sub>n \<phi>"
+  assumes "\<xi> \<Turnstile>\<^sub>r \<phi>"
   shows "gba.accept \<xi>"
 proof -
   define \<sigma> where "\<sigma> = auto_run \<xi> qs"
@@ -2905,7 +2905,7 @@ proof -
 
   have \<sigma>_prop_0: "(\<sigma> 0)\<in>qs \<and> expand_init\<in>incoming(\<sigma> 0) \<and> auto_run_j 0 \<xi> (\<sigma> 0)"
     (is "?sbthm")
-  using inres_SPEC[OF res L4_7[OF \<open>\<xi> \<Turnstile>\<^sub>n \<phi>\<close>]]
+  using inres_SPEC[OF res L4_7[OF \<open>\<xi> \<Turnstile>\<^sub>r \<phi>\<close>]]
   unfolding \<sigma>_def auto_run.simps by (rule_tac someI_ex, simp) blast
 
   have \<sigma>_valid: "\<forall>j. \<sigma> j \<in> qs \<and> auto_run_j j \<xi> (\<sigma> j)" (is "\<forall>j. ?\<sigma>_valid j")
@@ -2942,16 +2942,16 @@ proof -
   qed
 
   have \<sigma>_vnaccpt:
-    "\<forall>k \<mu> \<eta>. \<mu> U\<^sub>n \<eta> \<in> old (\<sigma> k) \<longrightarrow> \<not> (\<forall>i. {\<mu>, \<mu> U\<^sub>n \<eta>} \<subseteq> old (\<sigma> (k+i)) \<and> \<eta> \<notin> old (\<sigma> (k+i)))"
+    "\<forall>k \<mu> \<eta>. \<mu> U\<^sub>r \<eta> \<in> old (\<sigma> k) \<longrightarrow> \<not> (\<forall>i. {\<mu>, \<mu> U\<^sub>r \<eta>} \<subseteq> old (\<sigma> (k+i)) \<and> \<eta> \<notin> old (\<sigma> (k+i)))"
   proof clarify
     fix k \<mu> \<eta>
-    assume U_in: "\<mu> U\<^sub>n \<eta> \<in> old (\<sigma> k)"
-      and cntr_prm: "\<forall>i. {\<mu>, \<mu> U\<^sub>n \<eta>} \<subseteq> old (\<sigma> (k+i)) \<and> \<eta> \<notin> old (\<sigma> (k+i))"
-    have "suffix k \<xi> \<Turnstile>\<^sub>n \<mu> U\<^sub>n \<eta>"
+    assume U_in: "\<mu> U\<^sub>r \<eta> \<in> old (\<sigma> k)"
+      and cntr_prm: "\<forall>i. {\<mu>, \<mu> U\<^sub>r \<eta>} \<subseteq> old (\<sigma> (k+i)) \<and> \<eta> \<notin> old (\<sigma> (k+i))"
+    have "suffix k \<xi> \<Turnstile>\<^sub>r \<mu> U\<^sub>r \<eta>"
       using U_in \<sigma>_valid by force
-    then obtain i where "suffix (k+i) \<xi> \<Turnstile>\<^sub>n \<eta>" and "\<forall>j<i. suffix (k+j) \<xi> \<Turnstile>\<^sub>n \<mu>"
+    then obtain i where "suffix (k+i) \<xi> \<Turnstile>\<^sub>r \<eta>" and "\<forall>j<i. suffix (k+j) \<xi> \<Turnstile>\<^sub>r \<mu>"
       by auto
-    moreover have "\<mu> U\<^sub>n \<eta> \<in> old (\<sigma> (k+i)) \<and> \<eta> \<notin> old (\<sigma> (k+i))"
+    moreover have "\<mu> U\<^sub>r \<eta> \<in> old (\<sigma> (k+i)) \<and> \<eta> \<notin> old (\<sigma> (k+i))"
       using cntr_prm by auto
     ultimately show False
       using \<sigma>_valid by force
@@ -2964,15 +2964,15 @@ proof -
     by auto
   moreover
   have \<sigma>_vaccpt:
-    "\<forall>k \<mu> \<eta>. \<mu> U\<^sub>n \<eta> \<in> old (\<sigma> k) \<longrightarrow>
-      (\<exists>j. (\<forall>i<j. {\<mu>, \<mu> U\<^sub>n \<eta>} \<subseteq> old (\<sigma> (k+i))) \<and> \<eta> \<in> old (\<sigma> (k+j)))"
+    "\<forall>k \<mu> \<eta>. \<mu> U\<^sub>r \<eta> \<in> old (\<sigma> k) \<longrightarrow>
+      (\<exists>j. (\<forall>i<j. {\<mu>, \<mu> U\<^sub>r \<eta>} \<subseteq> old (\<sigma> (k+i))) \<and> \<eta> \<in> old (\<sigma> (k+j)))"
   proof(clarify)
     fix k \<mu> \<eta>
-    assume U_in: "\<mu> U\<^sub>n \<eta> \<in> old (\<sigma> k)"
-    then have "\<not> (\<forall>i. {\<mu>, \<mu> U\<^sub>n \<eta>} \<subseteq> old (suffix k \<sigma> i) \<and> \<eta> \<notin> old (suffix k \<sigma> i))"
+    assume U_in: "\<mu> U\<^sub>r \<eta> \<in> old (\<sigma> k)"
+    then have "\<not> (\<forall>i. {\<mu>, \<mu> U\<^sub>r \<eta>} \<subseteq> old (suffix k \<sigma> i) \<and> \<eta> \<notin> old (suffix k \<sigma> i))"
       using \<sigma>_vnaccpt[THEN allE, of k] by auto
     moreover have "suffix k \<sigma> 0 \<in> qs" using \<sigma>_valid by auto
-    ultimately show "\<exists>j. (\<forall>i<j. {\<mu>, \<mu> U\<^sub>n \<eta>} \<subseteq> old (\<sigma> (k+i))) \<and> \<eta> \<in> old (\<sigma> (k+j))"
+    ultimately show "\<exists>j. (\<forall>i<j. {\<mu>, \<mu> U\<^sub>r \<eta>} \<subseteq> old (\<sigma> (k+i))) \<and> \<eta> \<in> old (\<sigma> (k+j))"
       apply -
       apply (rule make_pos_rule'[OF L4_2a])
       apply (fold suffix_def)
@@ -2989,8 +2989,8 @@ proof -
   proof
     fix S
     assume "S\<in>gba.F"
-    then obtain \<mu> \<eta> where S_eq: "S = {q \<in> qs. \<mu> U\<^sub>n \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q}"
-      and "\<mu> U\<^sub>n \<eta> \<in> subfrmlsn \<phi>"
+    then obtain \<mu> \<eta> where S_eq: "S = {q \<in> qs. \<mu> U\<^sub>r \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q}"
+      and "\<mu> U\<^sub>r \<eta> \<in> subfrmlsr \<phi>"
       by (auto simp add: create_gba_from_nodes_def)
     have range_subset: "range \<sigma> \<subseteq> qs"
     proof
@@ -3006,7 +3006,7 @@ proof -
     obtain q where q_in_limit: "q \<in> limit \<sigma>" and q_is_node: "q\<in>qs"
       by auto
     show "\<exists>\<^sub>\<infinity>i. \<sigma> i \<in> S"
-    proof (cases "\<mu> U\<^sub>n \<eta> \<in> old q")
+    proof (cases "\<mu> U\<^sub>r \<eta> \<in> old q")
       case False
       with S_eq q_in_limit q_is_node
       show ?thesis
@@ -3025,7 +3025,7 @@ proof -
         obtain n where "m<n" and \<sigma>n_eq: "\<sigma> n = \<sigma> k" by auto
         moreover
         obtain j where "\<eta> \<in> old (\<sigma> (n+j))"
-          using \<sigma>_vaccpt \<open>\<mu> U\<^sub>n \<eta> \<in> old q\<close> unfolding q_eq by (fold \<sigma>n_eq) force
+          using \<sigma>_vaccpt \<open>\<mu> U\<^sub>r \<eta> \<in> old q\<close> unfolding q_eq by (fold \<sigma>n_eq) force
         ultimately show False by auto
       qed
       then have "\<exists>\<^sub>\<infinity> k. \<sigma> k \<in> qs \<and> \<eta> \<in> old (\<sigma> k)"
@@ -3037,7 +3037,7 @@ proof -
   moreover have "gba.L (\<sigma> i) (\<xi> i)" for i
   proof -
     from \<sigma>_valid have [simp]: "\<sigma> i \<in> qs" by auto
-    have "\<forall>\<psi>\<in>old (\<sigma> i). suffix i \<xi> \<Turnstile>\<^sub>n \<psi>"
+    have "\<forall>\<psi>\<in>old (\<sigma> i). suffix i \<xi> \<Turnstile>\<^sub>r \<psi>"
       using \<sigma>_valid by auto
     then show ?thesis
       unfolding create_gba_from_nodes_def by auto
@@ -3076,7 +3076,7 @@ lemma create_gba__invar: "create_gba \<phi> \<le> SPEC gba"
   by (rule create_gba_from_nodes_precond.create_gba_from_nodes__invar)
 
 lemma create_gba_acc:
-  shows "create_gba \<phi> \<le> SPEC(\<lambda>\<A>. \<forall>\<xi>. gba.accept \<A> \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<phi>)"
+  shows "create_gba \<phi> \<le> SPEC(\<lambda>\<A>. \<forall>\<xi>. gba.accept \<A> \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>r \<phi>)"
   unfolding create_gba_def create_graph_eq_create_graph\<^sub>T[symmetric]
   apply (refine_rcg refine_vcg order_trans[OF create_graph_precond])
   using create_gba_from_nodes_precond.L4_9
@@ -3111,7 +3111,7 @@ proof -
     apply auto[1]
     apply (rule_tac SPEC_rule)
     apply auto
-    by (metis infinite_super subfrmlsn_finite)
+    by (metis infinite_super subfrmlsr_finite)
 qed
 
 lemma create_gba__old_fin:
@@ -3155,7 +3155,7 @@ theorem T4_1:
   "create_gba \<phi> \<le> SPEC(
     \<lambda>\<A>. gba \<A>
     \<and> finite (g_V \<A>)
-    \<and> (\<forall>\<xi>. gba.accept \<A> \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<phi>)
+    \<and> (\<forall>\<xi>. gba.accept \<A> \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>r \<phi>)
     \<and> (nds_invars (g_V \<A>)))"
   using create_gba__invar create_gba__fin create_gba_acc create_gba_nds_invars
   apply (simp add: pw_le_iff)
@@ -3170,13 +3170,13 @@ definition "create_name_gba \<phi> \<equiv> do {
 
 
 theorem create_name_gba_correct:
-  "create_name_gba \<phi> \<le> SPEC(\<lambda>\<A>. gba \<A> \<and> finite (g_V \<A>) \<and> (\<forall>\<xi>. gba.accept \<A> \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<phi>))"
+  "create_name_gba \<phi> \<le> SPEC(\<lambda>\<A>. gba \<A> \<and> finite (g_V \<A>) \<and> (\<forall>\<xi>. gba.accept \<A> \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>r \<phi>))"
   unfolding create_name_gba_def
   apply (refine_rcg refine_vcg order_trans[OF T4_1])
   apply (simp_all add: nds_invars_def gba_rename_correct)
   done
 
-definition create_name_igba :: "'a::linorder ltln \<Rightarrow> _" where
+definition create_name_igba :: "'a::linorder ltlr \<Rightarrow> _" where
 "create_name_igba \<phi> \<equiv> do {
   A \<leftarrow> create_name_gba \<phi>;
   A' \<leftarrow> gba_to_idx A;
@@ -3185,7 +3185,7 @@ definition create_name_igba :: "'a::linorder ltln \<Rightarrow> _" where
 }"
 
 lemma create_name_igba_correct: "create_name_igba \<phi> \<le> SPEC (\<lambda>G.
-  igba G \<and> finite (g_V G) \<and> (\<forall>\<xi>. igba.accept G \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<phi>))"
+  igba G \<and> finite (g_V G) \<and> (\<forall>\<xi>. igba.accept G \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>r \<phi>))"
   unfolding create_name_igba_def
   apply (refine_rcg
     order_trans[OF create_name_gba_correct]
@@ -3206,7 +3206,7 @@ context
   notes [refine_vcg] = order_trans[OF create_name_gba_correct]
 begin
 
-lemma "create_name_igba \<phi> \<le> SPEC (\<lambda>G. igba G \<and> (\<forall>\<xi>. igba.accept G \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<phi>))"
+lemma "create_name_igba \<phi> \<le> SPEC (\<lambda>G. igba G \<and> (\<forall>\<xi>. igba.accept G \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>r \<phi>))"
   unfolding create_name_igba_def
 proof (refine_rcg refine_vcg, clarsimp_all)
   fix G :: "(nat, 'a set) gba_rec"
@@ -3214,8 +3214,8 @@ proof (refine_rcg refine_vcg, clarsimp_all)
   then interpret gba G .
   note [refine_vcg] = order_trans[OF gba_to_idx_ext_correct]
 
-  assume "\<forall>\<xi>. gba.accept G \<xi> = \<xi> \<Turnstile>\<^sub>n \<phi>" "finite (g_V G)"
-  then show "gba_to_idx G \<le> SPEC (\<lambda>G'. igba G' \<and> (\<forall>\<xi>. igba.accept G' \<xi> = \<xi> \<Turnstile>\<^sub>n \<phi>))"
+  assume "\<forall>\<xi>. gba.accept G \<xi> = \<xi> \<Turnstile>\<^sub>r \<phi>" "finite (g_V G)"
+  then show "gba_to_idx G \<le> SPEC (\<lambda>G'. igba G' \<and> (\<forall>\<xi>. igba.accept G' \<xi> = \<xi> \<Turnstile>\<^sub>r \<phi>))"
     by (refine_rcg refine_vcg) (auto intro: finite_V_Fe)
 qed
 

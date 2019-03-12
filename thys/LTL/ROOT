@@ -2,10 +2,16 @@ chapter AFP
 
 session LTL (AFP) = "HOL-Library" +
   options [timeout = 600]
+  sessions
+    Boolean_Expression_Checkers
   theories
+    Code_Equations
+    Disjunctive_Normal_Form
+    Equivalence_Relations
     LTL
-    LTL_Rewrite
-    "example/LTL_Example"
+    Rewriting
+    Syntactic_Fragments
+    "example/Example"
   document_files
     "root.tex"
     "root.bib"

@@ -8,7 +8,7 @@ section \<open>Code Generation\<close>
 theory Export_Code
   imports Main LTL_Compat LTL_Rabin_Impl 
     "HOL-Library.AList_Mapping" (* Future, Performance: Replace by LC *) 
-    LTL.LTL_Rewrite
+    LTL.Rewriting
     "HOL-Library.Code_Target_Numeral" 
 begin
 

@@ -27,7 +27,9 @@ in
     | toString (Final_ltlc f) = "(" ^ "F " ^ toString f ^ ")"
     | toString (Global_ltlc f) = "(" ^ "G " ^ toString f ^ ")"
     | toString (Until_ltlc (fl,fr)) = "(" ^ (toString fl) ^ " U " ^ (toString fr) ^ ")"
-    | toString (Release_ltlc (fl,fr)) = "(" ^ (toString fl) ^ " V " ^ (toString fr) ^ ")";
+    | toString (Release_ltlc (fl,fr)) = "(" ^ (toString fl) ^ " V " ^ (toString fr) ^ ")"
+    | toString (WeakUntil_ltlc (fl,fr)) = "(" ^ (toString fl) ^ " W " ^ (toString fr) ^ ")"
+    | toString (StrongRelease_ltlc (fl,fr)) = "(" ^ (toString fl) ^ " M " ^ (toString fr) ^ ")";
 end
 
 fun compile grab =

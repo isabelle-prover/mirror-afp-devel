@@ -7,6 +7,8 @@ val EOF:  'a * 'a -> (svalue,'a) token
 val IDENT: (string) *  'a * 'a -> (svalue,'a) token
 val RPAREN:  'a * 'a -> (svalue,'a) token
 val LPAREN:  'a * 'a -> (svalue,'a) token
+val STRONGRELEASE:  'a * 'a -> (svalue,'a) token
+val WEAKUNTIL:  'a * 'a -> (svalue,'a) token
 val RELEASE:  'a * 'a -> (svalue,'a) token
 val UNTIL:  'a * 'a -> (svalue,'a) token
 val GLOBAL:  'a * 'a -> (svalue,'a) token

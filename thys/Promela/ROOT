@@ -1,7 +1,9 @@
 chapter AFP
 
-session Promela (AFP) = LTL_to_GBA +
+session Promela (AFP) = CAVA_Automata +
   options [timeout = 600]
+  sessions
+    LTL
   theories [document = false]
     PromelaStatistics
   theories

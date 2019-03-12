@@ -85,7 +85,7 @@ datatype show_buchi = NoShow | Show | PDF of string
 
 fun buchi_stats show_buchi phi =
   let
-    val phi' = LTL_Rewrite.simplify IsaArith.equal_nat LTL_Rewrite.Slow (LTL.ltlc_to_ltln phi);
+    val phi' = Rewriting.simplify IsaArith.equal_nat Rewriting.Slow (LTL.ltlc_to_ltln phi);
     val gba = LTL_to_GBA_impl.create_name_gba_code (IsaArith.equal_nat, IsaArith.linorder_nat) phi'
     val export = CAVA_Impl.frv_export_code (fn a => fn b => a=b) gba
 

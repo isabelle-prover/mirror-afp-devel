@@ -15,108 +15,108 @@ subsection \<open>Parametricity Setup Boilerplate\<close>
 
 subsubsection \<open>LTL Formulas\<close>
 
-derive linorder ltln
+derive linorder ltlr
 
-inductive_set ltln_rel for R where
-  "(True_ltln, True_ltln) \<in> ltln_rel R"
-| "(False_ltln, False_ltln) \<in> ltln_rel R"
-| "(a,a')\<in>R \<Longrightarrow> (Prop_ltln a,Prop_ltln a') \<in> ltln_rel R"
-| "(a,a')\<in>R \<Longrightarrow> (Nprop_ltln a,Nprop_ltln a') \<in> ltln_rel R"
-| "\<lbrakk>(a,a')\<in>ltln_rel R; (b,b')\<in>ltln_rel R\<rbrakk> 
-  \<Longrightarrow> (And_ltln a b,And_ltln a' b') \<in> ltln_rel R"
-| "\<lbrakk>(a,a')\<in>ltln_rel R; (b,b')\<in>ltln_rel R\<rbrakk> 
-  \<Longrightarrow> (Or_ltln a b,Or_ltln a' b') \<in> ltln_rel R"
-| "\<lbrakk>(a,a')\<in>ltln_rel R\<rbrakk> \<Longrightarrow> (Next_ltln a,Next_ltln a') \<in> ltln_rel R"
-| "\<lbrakk>(a,a')\<in>ltln_rel R; (b,b')\<in>ltln_rel R\<rbrakk> 
-  \<Longrightarrow> (Until_ltln a b,Until_ltln a' b') \<in> ltln_rel R"
-| "\<lbrakk>(a,a')\<in>ltln_rel R; (b,b')\<in>ltln_rel R\<rbrakk> 
-  \<Longrightarrow> (Release_ltln a b,Release_ltln a' b') \<in> ltln_rel R"
+inductive_set ltlr_rel for R where
+  "(True_ltlr, True_ltlr) \<in> ltlr_rel R"
+| "(False_ltlr, False_ltlr) \<in> ltlr_rel R"
+| "(a,a')\<in>R \<Longrightarrow> (Prop_ltlr a,Prop_ltlr a') \<in> ltlr_rel R"
+| "(a,a')\<in>R \<Longrightarrow> (Nprop_ltlr a,Nprop_ltlr a') \<in> ltlr_rel R"
+| "\<lbrakk>(a,a')\<in>ltlr_rel R; (b,b')\<in>ltlr_rel R\<rbrakk> 
+  \<Longrightarrow> (And_ltlr a b,And_ltlr a' b') \<in> ltlr_rel R"
+| "\<lbrakk>(a,a')\<in>ltlr_rel R; (b,b')\<in>ltlr_rel R\<rbrakk> 
+  \<Longrightarrow> (Or_ltlr a b,Or_ltlr a' b') \<in> ltlr_rel R"
+| "\<lbrakk>(a,a')\<in>ltlr_rel R\<rbrakk> \<Longrightarrow> (Next_ltlr a,Next_ltlr a') \<in> ltlr_rel R"
+| "\<lbrakk>(a,a')\<in>ltlr_rel R; (b,b')\<in>ltlr_rel R\<rbrakk> 
+  \<Longrightarrow> (Until_ltlr a b,Until_ltlr a' b') \<in> ltlr_rel R"
+| "\<lbrakk>(a,a')\<in>ltlr_rel R; (b,b')\<in>ltlr_rel R\<rbrakk> 
+  \<Longrightarrow> (Release_ltlr a b,Release_ltlr a' b') \<in> ltlr_rel R"
 
-lemmas ltln_rel_induct[induct set] 
-  = ltln_rel.induct[simplified relAPP_def[of ltln_rel, symmetric]]
-lemmas ltln_rel_cases[cases set] 
-  = ltln_rel.cases[simplified relAPP_def[of ltln_rel, symmetric]]
-lemmas ltln_rel_intros 
-  = ltln_rel.intros[simplified relAPP_def[of ltln_rel, symmetric]]
+lemmas ltlr_rel_induct[induct set] 
+  = ltlr_rel.induct[simplified relAPP_def[of ltlr_rel, symmetric]]
+lemmas ltlr_rel_cases[cases set] 
+  = ltlr_rel.cases[simplified relAPP_def[of ltlr_rel, symmetric]]
+lemmas ltlr_rel_intros 
+  = ltlr_rel.intros[simplified relAPP_def[of ltlr_rel, symmetric]]
 
-inductive_simps ltln_rel_left_simps[simplified relAPP_def[of ltln_rel, symmetric]]: 
-  "(True_ltln,z) \<in> ltln_rel R"
-  "(False_ltln,z) \<in> ltln_rel R"
-  "(Prop_ltln p, z) \<in> ltln_rel R"
-  "(Nprop_ltln p, z) \<in> ltln_rel R"
-  "(And_ltln a b, z) \<in> ltln_rel R"
-  "(Or_ltln a b, z) \<in> ltln_rel R"
-  "(Next_ltln a, z) \<in> ltln_rel R"
-  "(Until_ltln a b, z) \<in> ltln_rel R"
-  "(Release_ltln a b, z) \<in> ltln_rel R"
+inductive_simps ltlr_rel_left_simps[simplified relAPP_def[of ltlr_rel, symmetric]]: 
+  "(True_ltlr,z) \<in> ltlr_rel R"
+  "(False_ltlr,z) \<in> ltlr_rel R"
+  "(Prop_ltlr p, z) \<in> ltlr_rel R"
+  "(Nprop_ltlr p, z) \<in> ltlr_rel R"
+  "(And_ltlr a b, z) \<in> ltlr_rel R"
+  "(Or_ltlr a b, z) \<in> ltlr_rel R"
+  "(Next_ltlr a, z) \<in> ltlr_rel R"
+  "(Until_ltlr a b, z) \<in> ltlr_rel R"
+  "(Release_ltlr a b, z) \<in> ltlr_rel R"
 
-lemma ltln_rel_sv[relator_props]: 
+lemma ltlr_rel_sv[relator_props]: 
   assumes SV: "single_valued R"  
-  shows "single_valued (\<langle>R\<rangle>ltln_rel)"
+  shows "single_valued (\<langle>R\<rangle>ltlr_rel)"
 proof (intro single_valuedI allI impI)
   fix x y z
-  assume "(x, y) \<in> \<langle>R\<rangle>ltln_rel" "(x, z) \<in> \<langle>R\<rangle>ltln_rel"
+  assume "(x, y) \<in> \<langle>R\<rangle>ltlr_rel" "(x, z) \<in> \<langle>R\<rangle>ltlr_rel"
   then show "y=z"
     apply (induction arbitrary: z)
-    apply (simp (no_asm_use) only: ltln_rel_left_simps 
+    apply (simp (no_asm_use) only: ltlr_rel_left_simps 
       | blast intro: single_valuedD[OF SV])+
     done
 qed
 
-lemma ltln_rel_id[relator_props]: "\<lbrakk> R = Id \<rbrakk> \<Longrightarrow> \<langle>R\<rangle>ltln_rel = Id"
+lemma ltlr_rel_id[relator_props]: "\<lbrakk> R = Id \<rbrakk> \<Longrightarrow> \<langle>R\<rangle>ltlr_rel = Id"
 proof (intro equalityI subsetI, clarsimp_all)
   fix a b
-  assume "(a,b)\<in>\<langle>Id\<rangle>ltln_rel"
+  assume "(a,b)\<in>\<langle>Id\<rangle>ltlr_rel"
   then show "a=b"
     by induction auto
 next
   fix a
-  show "(a,a)\<in>\<langle>Id\<rangle>ltln_rel"
-    by (induction a) (auto intro: ltln_rel_intros)
+  show "(a,a)\<in>\<langle>Id\<rangle>ltlr_rel"
+    by (induction a) (auto intro: ltlr_rel_intros)
 qed
 
-lemma ltln_rel_id_simp[simp]:  "\<langle>Id\<rangle>ltln_rel = Id" by (rule ltln_rel_id) simp
+lemma ltlr_rel_id_simp[simp]:  "\<langle>Id\<rangle>ltlr_rel = Id" by (rule ltlr_rel_id) simp
 
-consts i_ltln :: "interface \<Rightarrow> interface"
-lemmas [autoref_rel_intf] = REL_INTFI[of ltln_rel i_ltln]
+consts i_ltlr :: "interface \<Rightarrow> interface"
+lemmas [autoref_rel_intf] = REL_INTFI[of ltlr_rel i_ltlr]
 
-thm ltln_rel_intros[no_vars]
+thm ltlr_rel_intros[no_vars]
 
-lemma ltln_con_param[param, autoref_rules]:
-  "(True_ltln, True_ltln) \<in> \<langle>R\<rangle>ltln_rel"
-  "(False_ltln, False_ltln) \<in> \<langle>R\<rangle>ltln_rel"
-  "(Prop_ltln, Prop_ltln) \<in> R \<rightarrow> \<langle>R\<rangle>ltln_rel"
-  "(Nprop_ltln, Nprop_ltln) \<in> R \<rightarrow> \<langle>R\<rangle>ltln_rel"
-  "(And_ltln, And_ltln) \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel"
-  "(Or_ltln, Or_ltln) \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel"
-  "(Next_ltln, Next_ltln) \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel"
-  "(Until_ltln, Until_ltln) \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel"
-  "(Release_ltln, Release_ltln) \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel"
-  by (auto intro: ltln_rel_intros)
+lemma ltlr_con_param[param, autoref_rules]:
+  "(True_ltlr, True_ltlr) \<in> \<langle>R\<rangle>ltlr_rel"
+  "(False_ltlr, False_ltlr) \<in> \<langle>R\<rangle>ltlr_rel"
+  "(Prop_ltlr, Prop_ltlr) \<in> R \<rightarrow> \<langle>R\<rangle>ltlr_rel"
+  "(Nprop_ltlr, Nprop_ltlr) \<in> R \<rightarrow> \<langle>R\<rangle>ltlr_rel"
+  "(And_ltlr, And_ltlr) \<in> \<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel"
+  "(Or_ltlr, Or_ltlr) \<in> \<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel"
+  "(Next_ltlr, Next_ltlr) \<in> \<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel"
+  "(Until_ltlr, Until_ltlr) \<in> \<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel"
+  "(Release_ltlr, Release_ltlr) \<in> \<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel"
+  by (auto intro: ltlr_rel_intros)
 
-lemma case_ltln_param[param, autoref_rules]: 
-  "(case_ltln,case_ltln) \<in> Rv \<rightarrow> Rv \<rightarrow> (R \<rightarrow> Rv)
+lemma case_ltlr_param[param, autoref_rules]: 
+  "(case_ltlr,case_ltlr) \<in> Rv \<rightarrow> Rv \<rightarrow> (R \<rightarrow> Rv)
                 \<rightarrow> (R \<rightarrow> Rv)
-                  \<rightarrow> (\<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> Rv)
-                    \<rightarrow> (\<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> Rv)
-                      \<rightarrow> (\<langle>R\<rangle>ltln_rel \<rightarrow> Rv)
-                        \<rightarrow> (\<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> Rv)
-                          \<rightarrow> (\<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> Rv) \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> Rv"
+                  \<rightarrow> (\<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel \<rightarrow> Rv)
+                    \<rightarrow> (\<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel \<rightarrow> Rv)
+                      \<rightarrow> (\<langle>R\<rangle>ltlr_rel \<rightarrow> Rv)
+                        \<rightarrow> (\<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel \<rightarrow> Rv)
+                          \<rightarrow> (\<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel \<rightarrow> Rv) \<rightarrow> \<langle>R\<rangle>ltlr_rel \<rightarrow> Rv"
   apply (clarsimp)
-  apply (case_tac ai, simp_all add: ltln_rel_left_simps)
+  apply (case_tac ai, simp_all add: ltlr_rel_left_simps)
   apply (clarsimp_all)
   apply parametricity+
   done
 
-lemma rec_ltln_param[param, autoref_rules]: 
-  "(rec_ltln,rec_ltln) \<in> Rv \<rightarrow> Rv \<rightarrow> (R \<rightarrow> Rv)
+lemma rec_ltlr_param[param, autoref_rules]: 
+  "(rec_ltlr,rec_ltlr) \<in> Rv \<rightarrow> Rv \<rightarrow> (R \<rightarrow> Rv)
                 \<rightarrow> (R \<rightarrow> Rv)
-                  \<rightarrow> (\<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> Rv \<rightarrow> Rv \<rightarrow> Rv)
-                    \<rightarrow> (\<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> Rv \<rightarrow> Rv \<rightarrow> Rv)
-                      \<rightarrow> (\<langle>R\<rangle>ltln_rel \<rightarrow> Rv \<rightarrow> Rv)
-                        \<rightarrow> (\<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> Rv \<rightarrow> Rv \<rightarrow> Rv)
-                          \<rightarrow> (\<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> Rv \<rightarrow> Rv \<rightarrow> Rv)
-                            \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> Rv"
+                  \<rightarrow> (\<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel \<rightarrow> Rv \<rightarrow> Rv \<rightarrow> Rv)
+                    \<rightarrow> (\<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel \<rightarrow> Rv \<rightarrow> Rv \<rightarrow> Rv)
+                      \<rightarrow> (\<langle>R\<rangle>ltlr_rel \<rightarrow> Rv \<rightarrow> Rv)
+                        \<rightarrow> (\<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel \<rightarrow> Rv \<rightarrow> Rv \<rightarrow> Rv)
+                          \<rightarrow> (\<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel \<rightarrow> Rv \<rightarrow> Rv \<rightarrow> Rv)
+                            \<rightarrow> \<langle>R\<rangle>ltlr_rel \<rightarrow> Rv"
 proof (clarsimp, goal_cases)
   case prems: 1
   from prems(10)
@@ -128,73 +128,73 @@ proof (clarsimp, goal_cases)
     done
 qed
 
-lemma case_ltln_mono[refine_mono]: 
-  assumes "\<phi> = True_ltln \<Longrightarrow> a\<le>a'"
-  assumes "\<phi> = False_ltln \<Longrightarrow> b\<le>b'"
-  assumes "\<And>p. \<phi> = Prop_ltln p \<Longrightarrow> c p\<le>c' p"
-  assumes "\<And>p. \<phi> = Nprop_ltln p \<Longrightarrow> d p\<le>d' p"
-  assumes "\<And>\<mu> \<nu>. \<phi> = And_ltln \<mu> \<nu> \<Longrightarrow> e \<mu> \<nu>\<le>e' \<mu> \<nu>"
-  assumes "\<And>\<mu> \<nu>. \<phi> = Or_ltln \<mu> \<nu> \<Longrightarrow> f \<mu> \<nu>\<le>f' \<mu> \<nu>"
-  assumes "\<And>\<mu>. \<phi> = Next_ltln \<mu> \<Longrightarrow> g \<mu>\<le>g' \<mu>"
-  assumes "\<And>\<mu> \<nu>. \<phi> = Until_ltln \<mu> \<nu> \<Longrightarrow> h \<mu> \<nu>\<le>h' \<mu> \<nu>"
-  assumes "\<And>\<mu> \<nu>. \<phi> = Release_ltln \<mu> \<nu> \<Longrightarrow> i \<mu> \<nu>\<le>i' \<mu> \<nu>"
-  shows "case_ltln a b c d e f g h i \<phi> \<le> case_ltln a' b' c' d' e' f' g' h' i' \<phi>"
+lemma case_ltlr_mono[refine_mono]: 
+  assumes "\<phi> = True_ltlr \<Longrightarrow> a\<le>a'"
+  assumes "\<phi> = False_ltlr \<Longrightarrow> b\<le>b'"
+  assumes "\<And>p. \<phi> = Prop_ltlr p \<Longrightarrow> c p\<le>c' p"
+  assumes "\<And>p. \<phi> = Nprop_ltlr p \<Longrightarrow> d p\<le>d' p"
+  assumes "\<And>\<mu> \<nu>. \<phi> = And_ltlr \<mu> \<nu> \<Longrightarrow> e \<mu> \<nu>\<le>e' \<mu> \<nu>"
+  assumes "\<And>\<mu> \<nu>. \<phi> = Or_ltlr \<mu> \<nu> \<Longrightarrow> f \<mu> \<nu>\<le>f' \<mu> \<nu>"
+  assumes "\<And>\<mu>. \<phi> = Next_ltlr \<mu> \<Longrightarrow> g \<mu>\<le>g' \<mu>"
+  assumes "\<And>\<mu> \<nu>. \<phi> = Until_ltlr \<mu> \<nu> \<Longrightarrow> h \<mu> \<nu>\<le>h' \<mu> \<nu>"
+  assumes "\<And>\<mu> \<nu>. \<phi> = Release_ltlr \<mu> \<nu> \<Longrightarrow> i \<mu> \<nu>\<le>i' \<mu> \<nu>"
+  shows "case_ltlr a b c d e f g h i \<phi> \<le> case_ltlr a' b' c' d' e' f' g' h' i' \<phi>"
   using assms
   apply (cases \<phi>)
   apply simp_all
   done
 
 
-primrec ltln_eq where
-  "ltln_eq eq True_ltln f \<longleftrightarrow> (case f of True_ltln \<Rightarrow> True | _ \<Rightarrow> False)"
-| "ltln_eq eq False_ltln f \<longleftrightarrow> (case f of False_ltln \<Rightarrow> True | _ \<Rightarrow> False)"
-| "ltln_eq eq (Prop_ltln p) f \<longleftrightarrow> (case f of Prop_ltln p' \<Rightarrow> eq p p' | _ \<Rightarrow> False)"
-| "ltln_eq eq (Nprop_ltln p) f \<longleftrightarrow> (case f of Nprop_ltln p' \<Rightarrow> eq p p' | _ \<Rightarrow> False)"
-| "ltln_eq eq (And_ltln \<mu> \<nu>) f 
-  \<longleftrightarrow> (case f of And_ltln \<mu>' \<nu>' \<Rightarrow> ltln_eq eq \<mu> \<mu>' \<and> ltln_eq eq \<nu> \<nu>' | _ \<Rightarrow> False)"
-| "ltln_eq eq (Or_ltln \<mu> \<nu>) f 
-  \<longleftrightarrow> (case f of Or_ltln \<mu>' \<nu>' \<Rightarrow> ltln_eq eq \<mu> \<mu>' \<and> ltln_eq eq \<nu> \<nu>' | _ \<Rightarrow> False)"
-| "ltln_eq eq (Next_ltln \<phi>) f 
-  \<longleftrightarrow> (case f of Next_ltln \<phi>' \<Rightarrow> ltln_eq eq \<phi> \<phi>' | _ \<Rightarrow> False)"
-| "ltln_eq eq (Until_ltln \<mu> \<nu>) f 
-  \<longleftrightarrow> (case f of Until_ltln \<mu>' \<nu>' \<Rightarrow> ltln_eq eq \<mu> \<mu>' \<and> ltln_eq eq \<nu> \<nu>' | _ \<Rightarrow> False)"
-| "ltln_eq eq (Release_ltln \<mu> \<nu>) f 
+primrec ltlr_eq where
+  "ltlr_eq eq True_ltlr f \<longleftrightarrow> (case f of True_ltlr \<Rightarrow> True | _ \<Rightarrow> False)"
+| "ltlr_eq eq False_ltlr f \<longleftrightarrow> (case f of False_ltlr \<Rightarrow> True | _ \<Rightarrow> False)"
+| "ltlr_eq eq (Prop_ltlr p) f \<longleftrightarrow> (case f of Prop_ltlr p' \<Rightarrow> eq p p' | _ \<Rightarrow> False)"
+| "ltlr_eq eq (Nprop_ltlr p) f \<longleftrightarrow> (case f of Nprop_ltlr p' \<Rightarrow> eq p p' | _ \<Rightarrow> False)"
+| "ltlr_eq eq (And_ltlr \<mu> \<nu>) f 
+  \<longleftrightarrow> (case f of And_ltlr \<mu>' \<nu>' \<Rightarrow> ltlr_eq eq \<mu> \<mu>' \<and> ltlr_eq eq \<nu> \<nu>' | _ \<Rightarrow> False)"
+| "ltlr_eq eq (Or_ltlr \<mu> \<nu>) f 
+  \<longleftrightarrow> (case f of Or_ltlr \<mu>' \<nu>' \<Rightarrow> ltlr_eq eq \<mu> \<mu>' \<and> ltlr_eq eq \<nu> \<nu>' | _ \<Rightarrow> False)"
+| "ltlr_eq eq (Next_ltlr \<phi>) f 
+  \<longleftrightarrow> (case f of Next_ltlr \<phi>' \<Rightarrow> ltlr_eq eq \<phi> \<phi>' | _ \<Rightarrow> False)"
+| "ltlr_eq eq (Until_ltlr \<mu> \<nu>) f 
+  \<longleftrightarrow> (case f of Until_ltlr \<mu>' \<nu>' \<Rightarrow> ltlr_eq eq \<mu> \<mu>' \<and> ltlr_eq eq \<nu> \<nu>' | _ \<Rightarrow> False)"
+| "ltlr_eq eq (Release_ltlr \<mu> \<nu>) f 
   \<longleftrightarrow> (case f of 
-    Release_ltln \<mu>' \<nu>' \<Rightarrow> ltln_eq eq \<mu> \<mu>' \<and> ltln_eq eq \<nu> \<nu>' 
+    Release_ltlr \<mu>' \<nu>' \<Rightarrow> ltlr_eq eq \<mu> \<mu>' \<and> ltlr_eq eq \<nu> \<nu>' 
   | _ \<Rightarrow> False)"
 
-lemma ltln_eq_autoref[autoref_rules]:
+lemma ltlr_eq_autoref[autoref_rules]:
   assumes EQP: "(eq,(=)) \<in> R \<rightarrow> R \<rightarrow> bool_rel"
-  shows "(ltln_eq eq, (=)) \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> bool_rel"
+  shows "(ltlr_eq eq, (=)) \<in> \<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel \<rightarrow> bool_rel"
 proof (intro fun_relI)
   fix \<mu>' \<mu> \<nu>' \<nu>
-  assume "(\<mu>',\<mu>)\<in>\<langle>R\<rangle>ltln_rel" and "(\<nu>',\<nu>)\<in>\<langle>R\<rangle>ltln_rel"
-  then show "(ltln_eq eq \<mu>' \<nu>', \<mu>=\<nu>)\<in>bool_rel"
+  assume "(\<mu>',\<mu>)\<in>\<langle>R\<rangle>ltlr_rel" and "(\<nu>',\<nu>)\<in>\<langle>R\<rangle>ltlr_rel"
+  then show "(ltlr_eq eq \<mu>' \<nu>', \<mu>=\<nu>)\<in>bool_rel"
     apply (induction arbitrary: \<nu>' \<nu>)
-    apply (erule ltln_rel_cases, simp_all) []
-    apply (erule ltln_rel_cases, simp_all) []
-    apply (erule ltln_rel_cases, 
+    apply (erule ltlr_rel_cases, simp_all) []
+    apply (erule ltlr_rel_cases, simp_all) []
+    apply (erule ltlr_rel_cases, 
       simp_all add: EQP[THEN fun_relD, THEN fun_relD, THEN IdD]) []
-    apply (erule ltln_rel_cases, 
+    apply (erule ltlr_rel_cases, 
       simp_all add: EQP[THEN fun_relD, THEN fun_relD, THEN IdD]) []
     apply (rotate_tac -1)
-    apply (erule ltln_rel_cases, simp_all) []
+    apply (erule ltlr_rel_cases, simp_all) []
     apply (rotate_tac -1)
-    apply (erule ltln_rel_cases, simp_all) []
+    apply (erule ltlr_rel_cases, simp_all) []
     apply (rotate_tac -1)
-    apply (erule ltln_rel_cases, simp_all) []
+    apply (erule ltlr_rel_cases, simp_all) []
     apply (rotate_tac -1)
-    apply (erule ltln_rel_cases, simp_all) []
+    apply (erule ltlr_rel_cases, simp_all) []
     apply (rotate_tac -1)
-    apply (erule ltln_rel_cases, simp_all) []
+    apply (erule ltlr_rel_cases, simp_all) []
     done
 qed
 
-lemma ltln_dflt_cmp[autoref_rules_raw]: 
+lemma ltlr_dflt_cmp[autoref_rules_raw]: 
   assumes "PREFER_id R"
   shows
   "(dflt_cmp (\<le>) (<), dflt_cmp (\<le>) (<)) 
-  \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> comp_res_rel"
+  \<in> \<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel \<rightarrow> comp_res_rel"
   using assms
   by simp
 
@@ -203,25 +203,25 @@ type_synonym
 
 abbreviation (input) "node_name_rel \<equiv> Id :: (node_name_impl\<times>node_name) set"
 
-lemma case_ltln_gtransfer:
+lemma case_ltlr_gtransfer:
   assumes
   "\<gamma> ai \<le> a"
   "\<gamma> bi \<le> b"
   "\<And>a. \<gamma> (ci a) \<le> c a"
   "\<And>a. \<gamma> (di a) \<le> d a"
-  "\<And>ltln1 ltln2. \<gamma> (ei ltln1 ltln2) \<le> e ltln1 ltln2"
-  "\<And>ltln1 ltln2. \<gamma> (fi ltln1 ltln2) \<le> f ltln1 ltln2"
-  "\<And>ltln. \<gamma> (gi ltln) \<le> g ltln"
-  "\<And>ltln1 ltln2. \<gamma> (hi ltln1 ltln2) \<le> h ltln1 ltln2"
-  "\<And>ltln1 ltln2. \<gamma> (iiv ltln1 ltln2) \<le> i ltln1 ltln2"
-  shows "\<gamma> (case_ltln ai bi ci di ei fi gi hi iiv \<phi>) 
-    \<le> (case_ltln a b c d e f g h i \<phi>)"
+  "\<And>ltlr1 ltlr2. \<gamma> (ei ltlr1 ltlr2) \<le> e ltlr1 ltlr2"
+  "\<And>ltlr1 ltlr2. \<gamma> (fi ltlr1 ltlr2) \<le> f ltlr1 ltlr2"
+  "\<And>ltlr. \<gamma> (gi ltlr) \<le> g ltlr"
+  "\<And>ltlr1 ltlr2. \<gamma> (hi ltlr1 ltlr2) \<le> h ltlr1 ltlr2"
+  "\<And>ltlr1 ltlr2. \<gamma> (iiv ltlr1 ltlr2) \<le> i ltlr1 ltlr2"
+  shows "\<gamma> (case_ltlr ai bi ci di ei fi gi hi iiv \<phi>) 
+    \<le> (case_ltlr a b c d e f g h i \<phi>)"
   apply (cases \<phi>)
   apply (auto intro: assms)
   done
 
 lemmas [refine_transfer] 
-  = case_ltln_gtransfer[where \<gamma>=nres_of] case_ltln_gtransfer[where \<gamma>=RETURN]
+  = case_ltlr_gtransfer[where \<gamma>=nres_of] case_ltlr_gtransfer[where \<gamma>=RETURN]
 
 lemma [refine_transfer]:
   assumes 
@@ -229,12 +229,12 @@ lemma [refine_transfer]:
   "bi \<noteq> dSUCCEED"
   "\<And>a. ci a \<noteq> dSUCCEED"
   "\<And>a. di a \<noteq> dSUCCEED"
-  "\<And>ltln1 ltln2. ei ltln1 ltln2 \<noteq> dSUCCEED"
-  "\<And>ltln1 ltln2. fi ltln1 ltln2 \<noteq> dSUCCEED"
-  "\<And>ltln. gi ltln \<noteq> dSUCCEED"
-  "\<And>ltln1 ltln2. hi ltln1 ltln2 \<noteq> dSUCCEED"
-  "\<And>ltln1 ltln2. iiv ltln1 ltln2 \<noteq> dSUCCEED"
-  shows "case_ltln ai bi ci di ei fi gi hi iiv \<phi> \<noteq> dSUCCEED"
+  "\<And>ltlr1 ltlr2. ei ltlr1 ltlr2 \<noteq> dSUCCEED"
+  "\<And>ltlr1 ltlr2. fi ltlr1 ltlr2 \<noteq> dSUCCEED"
+  "\<And>ltlr. gi ltlr \<noteq> dSUCCEED"
+  "\<And>ltlr1 ltlr2. hi ltlr1 ltlr2 \<noteq> dSUCCEED"
+  "\<And>ltlr1 ltlr2. iiv ltlr1 ltlr2 \<noteq> dSUCCEED"
+  shows "case_ltlr ai bi ci di ei fi gi hi iiv \<phi> \<noteq> dSUCCEED"
   apply (cases \<phi>)
   apply (simp_all add: assms)
   done
@@ -247,9 +247,6 @@ record 'a node_impl =
   new_impl :: "'a frml list"
   old_impl :: "'a frml list"
   next_impl :: "'a frml list"
-
-hide_const (open) Re
-hide_const (open) exp
 
 definition node_rel where node_rel_def_internal: "node_rel Re R \<equiv> {( 
   \<lparr> name_impl = namei, 
@@ -268,9 +265,9 @@ definition node_rel where node_rel_def_internal: "node_rel Re R \<equiv> {(
   \<rparr> ) | namei name inci inc newi new oldi old nexti next morei more. 
     (namei,name)\<in>node_name_rel 
   \<and> (inci,inc)\<in>\<langle>node_name_rel\<rangle>dflt_rs_rel 
-  \<and> (newi,new)\<in>\<langle>\<langle>R\<rangle>ltln_rel\<rangle>lss.rel
-  \<and> (oldi,old)\<in>\<langle>\<langle>R\<rangle>ltln_rel\<rangle>lss.rel
-  \<and> (nexti,next)\<in>\<langle>\<langle>R\<rangle>ltln_rel\<rangle>lss.rel
+  \<and> (newi,new)\<in>\<langle>\<langle>R\<rangle>ltlr_rel\<rangle>lss.rel
+  \<and> (oldi,old)\<in>\<langle>\<langle>R\<rangle>ltlr_rel\<rangle>lss.rel
+  \<and> (nexti,next)\<in>\<langle>\<langle>R\<rangle>ltlr_rel\<rangle>lss.rel
   \<and> (morei,more)\<in>Re
   }"
 
@@ -291,9 +288,9 @@ lemma node_rel_def: "\<langle>Re,R\<rangle>node_rel = {(
   \<rparr> ) | namei name inci inc newi new oldi old nexti next morei more. 
     (namei,name)\<in>node_name_rel 
   \<and> (inci,inc)\<in>\<langle>node_name_rel\<rangle>dflt_rs_rel  
-  \<and> (newi,new)\<in>\<langle>\<langle>R\<rangle>ltln_rel\<rangle>lss.rel
-  \<and> (oldi,old)\<in>\<langle>\<langle>R\<rangle>ltln_rel\<rangle>lss.rel
-  \<and> (nexti,next)\<in>\<langle>\<langle>R\<rangle>ltln_rel\<rangle>lss.rel
+  \<and> (newi,new)\<in>\<langle>\<langle>R\<rangle>ltlr_rel\<rangle>lss.rel
+  \<and> (oldi,old)\<in>\<langle>\<langle>R\<rangle>ltlr_rel\<rangle>lss.rel
+  \<and> (nexti,next)\<in>\<langle>\<langle>R\<rangle>ltlr_rel\<rangle>lss.rel
   \<and> (morei,more)\<in>Re
   }" by (simp add: node_rel_def_internal relAPP_def)
 
@@ -303,7 +300,7 @@ lemma node_rel_sv[relator_props]:
   apply (rule single_valuedI)
   apply (simp add: node_rel_def)
   apply (auto 
-    dest: single_valuedD lss.rel_sv[OF ltln_rel_sv] map2set_rel_sv[OF ahm_rel_sv] 
+    dest: single_valuedD lss.rel_sv[OF ltlr_rel_sv] map2set_rel_sv[OF ahm_rel_sv] 
     dest: single_valuedD[
       OF map2set_rel_sv[OF rbt_map_rel_sv[OF single_valued_Id single_valued_Id]]
     ])
@@ -316,9 +313,9 @@ lemmas [autoref_rel_intf] = REL_INTFI[of node_rel i_node]
 lemma [autoref_rules]: "(node_impl_ext, node_ext) \<in> 
   node_name_rel 
   \<rightarrow> \<langle>node_name_rel\<rangle>dflt_rs_rel 
-  \<rightarrow> \<langle>\<langle>R\<rangle>ltln_rel\<rangle>lss.rel 
-  \<rightarrow> \<langle>\<langle>R\<rangle>ltln_rel\<rangle>lss.rel 
-  \<rightarrow> \<langle>\<langle>R\<rangle>ltln_rel\<rangle>lss.rel 
+  \<rightarrow> \<langle>\<langle>R\<rangle>ltlr_rel\<rangle>lss.rel 
+  \<rightarrow> \<langle>\<langle>R\<rangle>ltlr_rel\<rangle>lss.rel 
+  \<rightarrow> \<langle>\<langle>R\<rangle>ltlr_rel\<rangle>lss.rel 
   \<rightarrow> Re 
   \<rightarrow> \<langle>Re,R\<rangle>node_rel"
   unfolding node_rel_def
@@ -332,11 +329,11 @@ lemma [autoref_rules]:
     \<rightarrow> \<langle>Re,R\<rangle>node_rel 
     \<rightarrow> \<langle>Re,R\<rangle>node_rel"
   "(node_impl.new_impl_update,node.new_update) 
-  \<in> (\<langle>\<langle>R\<rangle>ltln_rel\<rangle>lss.rel \<rightarrow> \<langle>\<langle>R\<rangle>ltln_rel\<rangle>lss.rel) \<rightarrow> \<langle>Re,R\<rangle>node_rel \<rightarrow> \<langle>Re,R\<rangle>node_rel"
+  \<in> (\<langle>\<langle>R\<rangle>ltlr_rel\<rangle>lss.rel \<rightarrow> \<langle>\<langle>R\<rangle>ltlr_rel\<rangle>lss.rel) \<rightarrow> \<langle>Re,R\<rangle>node_rel \<rightarrow> \<langle>Re,R\<rangle>node_rel"
   "(node_impl.old_impl_update,node.old_update) 
-  \<in> (\<langle>\<langle>R\<rangle>ltln_rel\<rangle>lss.rel \<rightarrow> \<langle>\<langle>R\<rangle>ltln_rel\<rangle>lss.rel) \<rightarrow> \<langle>Re,R\<rangle>node_rel \<rightarrow> \<langle>Re,R\<rangle>node_rel"
+  \<in> (\<langle>\<langle>R\<rangle>ltlr_rel\<rangle>lss.rel \<rightarrow> \<langle>\<langle>R\<rangle>ltlr_rel\<rangle>lss.rel) \<rightarrow> \<langle>Re,R\<rangle>node_rel \<rightarrow> \<langle>Re,R\<rangle>node_rel"
   "(node_impl.next_impl_update,node.next_update) 
-  \<in> (\<langle>\<langle>R\<rangle>ltln_rel\<rangle>lss.rel \<rightarrow> \<langle>\<langle>R\<rangle>ltln_rel\<rangle>lss.rel) \<rightarrow> \<langle>Re,R\<rangle>node_rel \<rightarrow> \<langle>Re,R\<rangle>node_rel"
+  \<in> (\<langle>\<langle>R\<rangle>ltlr_rel\<rangle>lss.rel \<rightarrow> \<langle>\<langle>R\<rangle>ltlr_rel\<rangle>lss.rel) \<rightarrow> \<langle>Re,R\<rangle>node_rel \<rightarrow> \<langle>Re,R\<rangle>node_rel"
   "(node_impl.more_update,node.more_update) 
   \<in> (Re \<rightarrow> Re) \<rightarrow> \<langle>Re,R\<rangle>node_rel \<rightarrow> \<langle>Re,R\<rangle>node_rel"
   unfolding node_rel_def
@@ -347,9 +344,9 @@ lemma [autoref_rules]:
   "(node_impl.name_impl,node.name)\<in>\<langle>Re,R\<rangle>node_rel \<rightarrow> node_name_rel"
   "(node_impl.incoming_impl,node.incoming)
   \<in> \<langle>Re,R\<rangle>node_rel \<rightarrow> \<langle>node_name_rel\<rangle>dflt_rs_rel"
-  "(node_impl.new_impl,node.new)\<in>\<langle>Re,R\<rangle>node_rel \<rightarrow> \<langle>\<langle>R\<rangle>ltln_rel\<rangle>lss.rel"
-  "(node_impl.old_impl,node.old)\<in>\<langle>Re,R\<rangle>node_rel \<rightarrow> \<langle>\<langle>R\<rangle>ltln_rel\<rangle>lss.rel"
-  "(node_impl.next_impl,node.next)\<in>\<langle>Re,R\<rangle>node_rel \<rightarrow> \<langle>\<langle>R\<rangle>ltln_rel\<rangle>lss.rel"
+  "(node_impl.new_impl,node.new)\<in>\<langle>Re,R\<rangle>node_rel \<rightarrow> \<langle>\<langle>R\<rangle>ltlr_rel\<rangle>lss.rel"
+  "(node_impl.old_impl,node.old)\<in>\<langle>Re,R\<rangle>node_rel \<rightarrow> \<langle>\<langle>R\<rangle>ltlr_rel\<rangle>lss.rel"
+  "(node_impl.next_impl,node.next)\<in>\<langle>Re,R\<rangle>node_rel \<rightarrow> \<langle>\<langle>R\<rangle>ltlr_rel\<rangle>lss.rel"
   "(node_impl.more, node.more)\<in>\<langle>Re,R\<rangle>node_rel \<rightarrow> Re"
   unfolding node_rel_def by auto
 
@@ -399,23 +396,23 @@ definition "expand_aimpl \<equiv> REC\<^sub>T (\<lambda>expand (n,ns).
         \<phi> \<leftarrow> SPEC (\<lambda>x. x\<in>(new n));
         let n = n\<lparr> new := new n - {\<phi>} \<rparr>;
         case \<phi> of
-          prop\<^sub>n(q) \<Rightarrow> 
-            if nprop\<^sub>n(q)\<in>old n then RETURN (name n, ns)
+          prop\<^sub>r(q) \<Rightarrow> 
+            if nprop\<^sub>r(q)\<in>old n then RETURN (name n, ns)
             else expand (n\<lparr> old := {\<phi>} \<union> old n \<rparr>, ns)
-        | nprop\<^sub>n(q) \<Rightarrow> 
-            if prop\<^sub>n(q)\<in>old n then RETURN (name n, ns)
+        | nprop\<^sub>r(q) \<Rightarrow> 
+            if prop\<^sub>r(q)\<in>old n then RETURN (name n, ns)
             else expand (n\<lparr> old := {\<phi>} \<union> old n \<rparr>, ns)
-        | true\<^sub>n \<Rightarrow> expand (n\<lparr> old := {\<phi>} \<union> old n \<rparr>, ns)
-        | false\<^sub>n \<Rightarrow> RETURN (name n, ns)
-        | \<nu> and\<^sub>n \<mu> \<Rightarrow> expand (n\<lparr> 
+        | true\<^sub>r \<Rightarrow> expand (n\<lparr> old := {\<phi>} \<union> old n \<rparr>, ns)
+        | false\<^sub>r \<Rightarrow> RETURN (name n, ns)
+        | \<nu> and\<^sub>r \<mu> \<Rightarrow> expand (n\<lparr> 
             new := insert \<nu> (insert \<mu> (new n)), 
             old := {\<phi>} \<union> old n, 
             next := next n \<rparr>, ns)
-        | X\<^sub>n \<nu> \<Rightarrow> expand 
+        | X\<^sub>r \<nu> \<Rightarrow> expand 
             (n\<lparr> new := new n, old := {\<phi>} \<union> old n, next := insert \<nu> (next n) \<rparr>, ns)
-        | \<mu> or\<^sub>n \<nu> \<Rightarrow> expand2 expand n ns \<phi> \<mu> {} {\<nu>}
-        | \<mu> U\<^sub>n \<nu> \<Rightarrow> expand2 expand n ns \<phi> \<mu> {\<phi>} {\<nu>}
-        | \<mu> V\<^sub>n \<nu> \<Rightarrow> expand2 expand n ns \<phi> \<nu> {\<phi>} {\<mu>,\<nu>}
+        | \<mu> or\<^sub>r \<nu> \<Rightarrow> expand2 expand n ns \<phi> \<mu> {} {\<nu>}
+        | \<mu> U\<^sub>r \<nu> \<Rightarrow> expand2 expand n ns \<phi> \<mu> {\<phi>} {\<nu>}
+        | \<mu> R\<^sub>r \<nu> \<Rightarrow> expand2 expand n ns \<phi> \<nu> {\<phi>} {\<mu>,\<nu>}
         \<^cancel>\<open>| _ \<Rightarrow> do {
           (nm, nds) \<leftarrow> expand (
             n\<lparr> 
@@ -462,7 +459,7 @@ proof -
     apply (auto simp: R'_def expand_new_name_def) []
     apply (simp add: R'_def)
 
-    apply (auto split: ltln.split) []
+    apply (auto split: ltlr.split) []
     apply (fastforce simp: R_def R'_def) []
     apply (fastforce simp: R_def R'_def) []
 
@@ -622,58 +619,58 @@ qed
 
 text \<open>\paragraph{ Accepting Sets}\<close>
 
-primrec until_frmlsn :: "'a frml \<Rightarrow> ('a frml \<times> 'a frml) set" where
-  "until_frmlsn (\<mu> and\<^sub>n \<psi>) = (until_frmlsn \<mu>) \<union> (until_frmlsn \<psi>)"
-| "until_frmlsn (X\<^sub>n \<mu>) = until_frmlsn \<mu>"
-| "until_frmlsn (\<mu> U\<^sub>n \<psi>) = insert (\<mu>, \<psi>) ((until_frmlsn \<mu>) \<union> (until_frmlsn \<psi>))"
-| "until_frmlsn (\<mu> V\<^sub>n \<psi>) = (until_frmlsn \<mu>) \<union> (until_frmlsn \<psi>)"
-| "until_frmlsn (\<mu> or\<^sub>n \<psi>) = (until_frmlsn \<mu>) \<union> (until_frmlsn \<psi>)"
-| "until_frmlsn (true\<^sub>n) = {}"
-| "until_frmlsn (false\<^sub>n) = {}"
-| "until_frmlsn (prop\<^sub>n(_)) = {}"
-| "until_frmlsn (nprop\<^sub>n(_)) = {}"
+primrec until_frmlsr :: "'a frml \<Rightarrow> ('a frml \<times> 'a frml) set" where
+  "until_frmlsr (\<mu> and\<^sub>r \<psi>) = (until_frmlsr \<mu>) \<union> (until_frmlsr \<psi>)"
+| "until_frmlsr (X\<^sub>r \<mu>) = until_frmlsr \<mu>"
+| "until_frmlsr (\<mu> U\<^sub>r \<psi>) = insert (\<mu>, \<psi>) ((until_frmlsr \<mu>) \<union> (until_frmlsr \<psi>))"
+| "until_frmlsr (\<mu> R\<^sub>r \<psi>) = (until_frmlsr \<mu>) \<union> (until_frmlsr \<psi>)"
+| "until_frmlsr (\<mu> or\<^sub>r \<psi>) = (until_frmlsr \<mu>) \<union> (until_frmlsr \<psi>)"
+| "until_frmlsr (true\<^sub>r) = {}"
+| "until_frmlsr (false\<^sub>r) = {}"
+| "until_frmlsr (prop\<^sub>r(_)) = {}"
+| "until_frmlsr (nprop\<^sub>r(_)) = {}"
 
-lemma until_frmlsn_correct: 
-  "until_frmlsn \<phi> = {(\<mu>, \<eta>). Until_ltln \<mu> \<eta> \<in> subfrmlsn \<phi>}"
+lemma until_frmlsr_correct: 
+  "until_frmlsr \<phi> = {(\<mu>, \<eta>). Until_ltlr \<mu> \<eta> \<in> subfrmlsr \<phi>}"
   by (induct \<phi>) auto
 
 
 definition "build_F nds \<phi> 
-  \<equiv> (\<lambda>(\<mu>,\<eta>). name ` {q \<in> nds. (Until_ltln \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q)}) `
-    until_frmlsn \<phi>"
+  \<equiv> (\<lambda>(\<mu>,\<eta>). name ` {q \<in> nds. (Until_ltlr \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q)}) `
+    until_frmlsr \<phi>"
 
 lemma build_F_correct: "build_F nds \<phi> = 
-  {name ` A |A. \<exists>\<mu> \<eta>. A = {q \<in> nds. Until_ltln \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q} \<and>
-                     Until_ltln \<mu> \<eta> \<in> subfrmlsn \<phi>}"
+  {name ` A |A. \<exists>\<mu> \<eta>. A = {q \<in> nds. Until_ltlr \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q} \<and>
+                     Until_ltlr \<mu> \<eta> \<in> subfrmlsr \<phi>}"
 proof -
-  have "{name ` A |A. \<exists>\<mu> \<eta>. A = {q \<in> nds. Until_ltln \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q} \<and>
-                     Until_ltln \<mu> \<eta> \<in> subfrmlsn \<phi>}
-    = (\<lambda>(\<mu>,\<eta>). name`{q\<in>nds. Until_ltln \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q}) 
-      ` {(\<mu>, \<eta>). Until_ltln \<mu> \<eta> \<in> subfrmlsn \<phi>}"
+  have "{name ` A |A. \<exists>\<mu> \<eta>. A = {q \<in> nds. Until_ltlr \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q} \<and>
+                     Until_ltlr \<mu> \<eta> \<in> subfrmlsr \<phi>}
+    = (\<lambda>(\<mu>,\<eta>). name`{q\<in>nds. Until_ltlr \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q}) 
+      ` {(\<mu>, \<eta>). Until_ltlr \<mu> \<eta> \<in> subfrmlsr \<phi>}"
     by auto
-  also have "\<dots> = (\<lambda>(\<mu>,\<eta>). name`{q\<in>nds. Until_ltln \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q}) 
-      ` until_frmlsn \<phi>"
-    unfolding until_frmlsn_correct ..
+  also have "\<dots> = (\<lambda>(\<mu>,\<eta>). name`{q\<in>nds. Until_ltlr \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q}) 
+      ` until_frmlsr \<phi>"
+    unfolding until_frmlsr_correct ..
   finally show ?thesis
     unfolding build_F_def by simp
 qed
 
 text \<open>\paragraph{ Labeling Function }\<close>
 definition "pn_props ps \<equiv> FOREACHi 
-  (\<lambda>it (P,N). P = {p. Prop_ltln p \<in> ps - it} \<and> N = {p. Nprop_ltln p \<in> ps - it}) 
+  (\<lambda>it (P,N). P = {p. Prop_ltlr p \<in> ps - it} \<and> N = {p. Nprop_ltlr p \<in> ps - it}) 
   ps (\<lambda>p (P,N). 
-    case p of Prop_ltln p \<Rightarrow> RETURN (insert p P,N)
-    | Nprop_ltln p \<Rightarrow> RETURN (P, insert p N)
+    case p of Prop_ltlr p \<Rightarrow> RETURN (insert p P,N)
+    | Nprop_ltlr p \<Rightarrow> RETURN (P, insert p N)
     | _ \<Rightarrow> RETURN (P,N)
   ) ({},{})"
 
 lemma pn_props_correct: 
   assumes [simp]: "finite ps"
   shows "pn_props ps \<le> SPEC(\<lambda>r. r = 
-  ({p. Prop_ltln p \<in> ps}, {p. Nprop_ltln p \<in> ps}))"
+  ({p. Prop_ltlr p \<in> ps}, {p. Nprop_ltlr p \<in> ps}))"
   unfolding pn_props_def
   apply (refine_rcg refine_vcg)
-  apply (auto split: ltln.split)
+  apply (auto split: ltlr.split)
   done
 
 definition "pn_map nds \<equiv> FOREACH nds 
@@ -690,8 +687,8 @@ lemma pn_map_correct:
     case r qn of 
       None \<Rightarrow> qn \<notin> name`nds
     | Some (P,N) \<Rightarrow> qn \<in> name`nds 
-      \<and> P = {p. Prop_ltln p \<in> old (the_inv_into nds name qn)}
-      \<and> N = {p. Nprop_ltln p \<in> old (the_inv_into nds name qn)}
+      \<and> P = {p. Prop_ltlr p \<in> old (the_inv_into nds name qn)}
+      \<and> N = {p. Nprop_ltlr p \<in> old (the_inv_into nds name qn)}
   )"
   unfolding pn_map_def
   apply (refine_rcg refine_vcg
@@ -699,8 +696,8 @@ lemma pn_map_correct:
       case r qn of 
         None \<Rightarrow> qn \<notin> name`(nds - it)
       | Some (P,N) \<Rightarrow> qn \<in> name`(nds - it)
-        \<and> P = {p. Prop_ltln p \<in> old (the_inv_into nds name qn)}
-        \<and> N = {p. Nprop_ltln p \<in> old (the_inv_into nds name qn)}"]
+        \<and> P = {p. Prop_ltlr p \<in> old (the_inv_into nds name qn)}
+        \<and> N = {p. Nprop_ltlr p \<in> old (the_inv_into nds name qn)}"]
     order_trans[OF pn_props_correct]
   )
   apply simp_all
@@ -779,15 +776,15 @@ subsection \<open>Refinement to Efficient Data Structures\<close>
 
 subsubsection \<open>Creation of GBA from Nodes\<close>
 
-schematic_goal until_frmlsn_impl_aux:
+schematic_goal until_frmlsr_impl_aux:
   assumes [relator_props, simp]: "R=Id"
-  shows "(?c,until_frmlsn) 
-  \<in> \<langle>(R::(_\<times>_::linorder) set)\<rangle>ltln_rel \<rightarrow> \<langle>\<langle>R\<rangle>ltln_rel \<times>\<^sub>r \<langle>R\<rangle>ltln_rel\<rangle>dflt_rs_rel"
-  unfolding until_frmlsn_def
+  shows "(?c,until_frmlsr) 
+  \<in> \<langle>(R::(_\<times>_::linorder) set)\<rangle>ltlr_rel \<rightarrow> \<langle>\<langle>R\<rangle>ltlr_rel \<times>\<^sub>r \<langle>R\<rangle>ltlr_rel\<rangle>dflt_rs_rel"
+  unfolding until_frmlsr_def
   apply (autoref (keep_goal, trace))
   done
-concrete_definition until_frmlsn_impl uses until_frmlsn_impl_aux
-lemmas [autoref_rules] = until_frmlsn_impl.refine[OF PREFER_id_D]
+concrete_definition until_frmlsr_impl uses until_frmlsr_impl_aux
+lemmas [autoref_rules] = until_frmlsr_impl.refine[OF PREFER_id_D]
 
 
 
@@ -819,7 +816,7 @@ lemmas [refine_transfer] = build_succ_code.refine
 schematic_goal build_F_impl_aux:
   assumes [relator_props]:  "R = Id"
   shows "(?c,build_F) \<in> 
-    \<langle>\<langle>Rm,R\<rangle>node_rel\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>\<langle>nat_rel\<rangle>list_set_rel\<rangle>list_set_rel"
+    \<langle>\<langle>Rm,R\<rangle>node_rel\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>\<langle>nat_rel\<rangle>list_set_rel\<rangle>list_set_rel"
   unfolding build_F_def[abs_def]
   using [[autoref_trace_failed_id]]
   apply (autoref (keep_goal, trace))
@@ -860,7 +857,7 @@ schematic_goal cr_rename_gba_impl_aux:
   notes [autoref_tyrel del] = tyrel_dflt_linorder_set
   notes [autoref_tyrel] = ty_REL[of "\<langle>nat_rel\<rangle>list_set_rel"]
   shows "(?c,cr_rename_gba) \<in> 
-    \<langle>\<langle>Rm,R\<rangle>node_rel\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> (?R::(?'c \<times> _) set)"
+    \<langle>\<langle>Rm,R\<rangle>node_rel\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel \<rightarrow> (?R::(?'c \<times> _) set)"
   unfolding ID
   unfolding cr_rename_gba_def[abs_def] expand_init_def comp_def
   using [[autoref_trace_failed_id]]
@@ -873,7 +870,7 @@ thm cr_rename_gba_impl.refine
 lemma cr_rename_gba_autoref[autoref_rules]:
   assumes "PREFER_id R"
   shows "(cr_rename_gba_impl, cr_rename_gba) \<in> 
-    \<langle>\<langle>Rm, R\<rangle>node_rel\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow>
+    \<langle>\<langle>Rm, R\<rangle>node_rel\<rangle>list_set_rel \<rightarrow> \<langle>R\<rangle>ltlr_rel \<rightarrow>
     \<langle>gbav_impl_rel_ext unit_rel nat_rel (\<langle>R\<rangle>fun_set_rel)\<rangle>nres_rel"
   using assms cr_rename_gba_impl.refine[of R Rm] by simp
 
@@ -977,8 +974,6 @@ lemma list_set_autoref_to_list[autoref_ga_rules]:
 
 end
 
-hide_const (open) Im
-
 context begin interpretation autoref_syn .
 lemma [autoref_itype]:
   "upd_incoming 
@@ -1077,7 +1072,7 @@ lemmas [refine_transfer] = expand_code.refine
 schematic_goal create_graph_impl_aux: 
   assumes ID: "R=Id"
   shows "(?c, create_graph_aimpl) 
-    \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>\<langle>\<langle>unit_rel,R\<rangle>node_rel\<rangle>list_set_rel\<rangle>nres_rel"
+    \<in> \<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>\<langle>\<langle>unit_rel,R\<rangle>node_rel\<rangle>list_set_rel\<rangle>nres_rel"
   unfolding ID
   unfolding create_graph_aimpl_def[abs_def] expand_init_def expand_new_name_def
   using [[autoref_trace_failed_id]]
@@ -1095,8 +1090,8 @@ lemmas [refine_transfer] = create_graph_code.refine
 
 
 schematic_goal create_name_gba_impl_aux: 
-  "(?c, (create_name_gba_aimpl:: 'a::linorder ltln \<Rightarrow> _)) 
-  \<in> \<langle>Id\<rangle>ltln_rel \<rightarrow> (?R::(?'c\<times>_) set)"
+  "(?c, (create_name_gba_aimpl:: 'a::linorder ltlr \<Rightarrow> _)) 
+  \<in> \<langle>Id\<rangle>ltlr_rel \<rightarrow> (?R::(?'c\<times>_) set)"
   unfolding create_name_gba_aimpl_def[abs_def]
   using [[autoref_trace_failed_id]]
   apply (autoref (keep_goal, trace))
@@ -1107,11 +1102,11 @@ lemma create_name_gba_autoref[autoref_rules]:
   assumes "PREFER_id R"
   shows
   "(create_name_gba_impl, create_name_gba)
-  \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>gbav_impl_rel_ext unit_rel nat_rel (\<langle>R\<rangle>fun_set_rel)\<rangle>nres_rel" 
+  \<in> \<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>gbav_impl_rel_ext unit_rel nat_rel (\<langle>R\<rangle>fun_set_rel)\<rangle>nres_rel" 
   (is "_:_\<rightarrow>\<langle>?R\<rangle>nres_rel")
 proof (intro fun_relI nres_relI)
   fix \<phi> \<phi>'
-  assume A: "(\<phi>,\<phi>')\<in>\<langle>R\<rangle>ltln_rel"
+  assume A: "(\<phi>,\<phi>')\<in>\<langle>R\<rangle>ltlr_rel"
   from assms have RID[simp]: "R=Id" by simp
     
   note create_name_gba_impl.refine[THEN fun_relD,THEN nres_relD, OF A[unfolded RID]]
@@ -1128,7 +1123,7 @@ lemmas [refine_transfer] = create_name_gba_code.refine
 schematic_goal create_name_igba_impl_aux: 
   assumes RID: "R=Id"
   shows "(?c,create_name_igba)\<in>
-  \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>igbav_impl_rel_ext unit_rel nat_rel (\<langle>R\<rangle>fun_set_rel)\<rangle>nres_rel"
+  \<langle>R\<rangle>ltlr_rel \<rightarrow> \<langle>igbav_impl_rel_ext unit_rel nat_rel (\<langle>R\<rangle>fun_set_rel)\<rangle>nres_rel"
   unfolding RID
   unfolding create_name_igba_def[abs_def]
   using [[autoref_trace_failed_id]]

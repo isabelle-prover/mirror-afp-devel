@@ -14,5 +14,5 @@ fun main () =
     val u = fn () => (usage(); e())
     val phi = LtlParser.compile_from_string (hd (CommandLine.arguments ())) handle LtlParser.LtlError msg => (println_err ("LTL Error: " ^ msg); usage (); e ())
   in 
-    (println (PolyML.makestring (LTL_Example.rewrite phi)))
+    (println (PolyML.makestring (Example.rewrite phi)))
   end
