@@ -14,9 +14,8 @@ struct
 
 fun get_class_info thy classname = Symtab.lookup (Class_Data.get thy) classname
 
-fun prove_isomorphism type_info lthy' =
+fun prove_isomorphism type_info lthy =
 let
-  val lthy = lthy'
   val tname_short = Long_Name.base_name (#tname type_info)
   val from_info = the (#from_info (#rep_info type_info))
   val to_info = the (#to_info (#rep_info type_info))
