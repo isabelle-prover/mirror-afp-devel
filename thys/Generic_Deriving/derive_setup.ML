@@ -55,7 +55,7 @@ let
                    ||> apfst (strip_comb #> snd) ||> apsnd (replace_superclasses lthy)
 
   val class_law_name = classname ^ "_class_law"
-  val class_law_lhs = list_comb ((Free (class_law_name,(map (dest_Free #> snd) vars) ---> @{typ "bool"})),vars)
+  val class_law_lhs = list_comb ((Free (class_law_name,(map (dest_Free #> snd) vars) ---> \<^typ>\<open>bool\<close>)),vars)
   val class_law_eq = HOLogic.Trueprop $ HOLogic.mk_eq (class_law_lhs,class_law)
   val ((_,(_,class_law_thm)),lthy') = Specification.definition NONE [] [] ((Binding.empty, []), class_law_eq) lthy
   
@@ -94,8 +94,8 @@ let
   val axioms = Axclass.get_info thy classname_full |> #axioms
   val (class_law,class_def,axioms_def,vars,lthy) = define_class_law classname (Named_Target.theory_init thy) 
   (* Exit so that class law is defined properly before the next step *)
-  val thy = Named_Target.exit lthy
-  val lthy = Named_Target.theory_init thy
+  val thy' = Named_Target.exit lthy
+  val lthy' = Named_Target.theory_init thy'
 
   val tfree_dt = get_tvar (map (dest_Free #> snd) vars)
   val tfree_rep = let val (n,s) = tfree_dt |> dest_TFree in Name.invent_names (Name.make_context [n]) "'a" [s] end |> hd |> TFree
@@ -108,12 +108,12 @@ let
   val class_law_const_dt = subst_vars ([(class_law_var,tfree_dt)],[]) class_law_const 
   val class_law_const_rep = subst_vars ([(class_law_var,tfree_rep)],[]) class_law_const
 
-  val assm_iso = HOLogic.mk_Trueprop (Const (@{const_name Derive.iso},dummyT) $ from $ to)
+  val assm_iso = HOLogic.mk_Trueprop (Const (\<^const_name>\<open>Derive.iso\<close>,dummyT) $ from $ to)
   val assm_class = HOLogic.mk_Trueprop (list_comb (class_law_const_dt,vars))
-  val vars_transfer = map (transfer_op lthy from to) vars
+  val vars_transfer = map (transfer_op lthy' from to) vars
   val transfer_concl = HOLogic.mk_Trueprop (list_comb (class_law_const_rep,vars_transfer))
   val transfer_term = Logic.mk_implies (assm_iso, (Logic.mk_implies (assm_class, transfer_concl)))
-  val transfer_term_inf = Type_Infer_Context.infer_types lthy [transfer_term] |> hd
+  val transfer_term_inf = Type_Infer_Context.infer_types lthy' [transfer_term] |> hd
 
   fun after_qed thms lthy =
     (fold_map (fn lthy => fn thm => (Local_Theory.note ((Binding.name (classname ^ "_transfer"),[]), lthy) thm))
@@ -124,11 +124,11 @@ let
               lthy)
       |> Local_Theory.exit 
 in 
-  Proof.theorem NONE after_qed [[(transfer_term_inf, [])]] lthy 
+  Proof.theorem NONE after_qed [[(transfer_term_inf, [])]] lthy' 
 end
 
 val _ =
-  Outer_Syntax.command @{command_keyword derive_generic_setup} "prepare a class for derivation"
+  Outer_Syntax.command \<^command_keyword>\<open>derive_generic_setup\<close> "prepare a class for derivation"
     (Parse.name >> (fn c =>
       Toplevel.theory_to_proof (fn thy => if has_class_law c thy 
                                           then prove_class_transfer c thy

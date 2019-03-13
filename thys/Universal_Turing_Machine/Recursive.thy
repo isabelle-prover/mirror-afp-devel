@@ -15,18 +15,18 @@ fun mv_box :: "nat \<Rightarrow> nat \<Rightarrow> abc_prog"
   where
     "mv_box m n = [Dec m 3, Inc n, Goto 0]"
 
-text \<open>The compilation of @{text "z"}-operator.\<close>
+text \<open>The compilation of \<open>z\<close>-operator.\<close>
 definition rec_ci_z :: "abc_inst list"
   where
     "rec_ci_z \<equiv> [Goto 1]"
 
-text \<open>The compilation of @{text "s"}-operator.\<close>
+text \<open>The compilation of \<open>s\<close>-operator.\<close>
 definition rec_ci_s :: "abc_inst list"
   where
     "rec_ci_s \<equiv> (addition 0 1 2 [+] [Inc 1])"
 
 
-text \<open>The compilation of @{text "id i j"}-operator\<close>
+text \<open>The compilation of \<open>id i j\<close>-operator\<close>
 fun rec_ci_id :: "nat \<Rightarrow> nat \<Rightarrow> abc_inst list"
   where
     "rec_ci_id i j = addition j i (i + 1)"
@@ -51,11 +51,11 @@ fun cn_merge_gs ::
 
 
 text \<open>
-  The compiler of recursive functions, where @{text "rec_ci recf"} return 
-  @{text "(ap, arity, fp)"}, where @{text "ap"} is the Abacus program, @{text "arity"} is the 
-  arity of the recursive function @{text "recf"}, 
-  @{text "fp"} is the amount of memory which is going to be
-  used by @{text "ap"} for its execution. 
+  The compiler of recursive functions, where \<open>rec_ci recf\<close> return 
+  \<open>(ap, arity, fp)\<close>, where \<open>ap\<close> is the Abacus program, \<open>arity\<close> is the 
+  arity of the recursive function \<open>recf\<close>, 
+  \<open>fp\<close> is the amount of memory which is going to be
+  used by \<open>ap\<close> for its execution. 
 \<close>
 
 fun rec_ci :: "recf \<Rightarrow> abc_inst list \<times> nat \<times> nat"

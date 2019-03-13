@@ -30,7 +30,7 @@ type_synonym abc_lm = "nat list"
 
 text \<open>
   Fetching contents out of memory. Units not represented by list elements are considered
-  as having content @{text "0"}.
+  as having content \<open>0\<close>.
 \<close>
 fun abc_lm_v :: "abc_lm \<Rightarrow> nat \<Rightarrow> nat"
   where 
@@ -38,10 +38,10 @@ fun abc_lm_v :: "abc_lm \<Rightarrow> nat \<Rightarrow> nat"
 
 
 text \<open>
-  Set the content of memory unit @{text "n"} to value @{text "v"}.
-  @{text "am"} is the Abacus memory before setting.
-  If address @{text "n"} is outside to scope of @{text "am"}, @{text "am"} 
-  is extended so that @{text "n"} becomes in scope.
+  Set the content of memory unit \<open>n\<close> to value \<open>v\<close>.
+  \<open>am\<close> is the Abacus memory before setting.
+  If address \<open>n\<close> is outside to scope of \<open>am\<close>, \<open>am\<close> 
+  is extended so that \<open>n\<close> becomes in scope.
 \<close>
 
 fun abc_lm_s :: "abc_lm \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> abc_lm"
@@ -98,8 +98,8 @@ subsection \<open>
 \<close>
 
 text \<open>
-  @{text "findnth n"} returns the TM which locates the represention of
-  memory cell @{text "n"} on the tape and changes representation of zero
+  \<open>findnth n\<close> returns the TM which locates the represention of
+  memory cell \<open>n\<close> on the tape and changes representation of zero
   on the way.
 \<close>
 
@@ -110,7 +110,7 @@ fun findnth :: "nat \<Rightarrow> instr list"
            (R, 2 * n + 2), (R, 2 * n + 3), (R, 2 * n + 2)])"
 
 text \<open>
-  @{text "tinc_b"} returns the TM which increments the representation 
+  \<open>tinc_b\<close> returns the TM which increments the representation 
   of the memory cell under rw-head by one and move the representation 
   of cells afterwards to the right accordingly.
 \<close>
@@ -122,9 +122,9 @@ definition tinc_b :: "instr list"
              (L, 8), (L, 7), (R, 9), (L, 7), (R, 10), (W0, 9)]" 
 
 text \<open>
-  @{text "tinc ss n"} returns the TM which simulates the execution of 
-  Abacus instruction @{text "Inc n"}, assuming that TM is located at
-  location @{text "ss"} in the final TM complied from the whole
+  \<open>tinc ss n\<close> returns the TM which simulates the execution of 
+  Abacus instruction \<open>Inc n\<close>, assuming that TM is located at
+  location \<open>ss\<close> in the final TM complied from the whole
   Abacus program.
 \<close>
 
@@ -133,7 +133,7 @@ fun tinc :: "nat \<Rightarrow> nat \<Rightarrow> instr list"
     "tinc ss n = shift (findnth n @ shift tinc_b (2 * n)) (ss - 1)"
 
 text \<open>
-  @{text "tinc_b"} returns the TM which decrements the representation 
+  \<open>tinc_b\<close> returns the TM which decrements the representation 
   of the memory cell under rw-head by one and move the representation 
   of cells afterwards to the left accordingly.
 \<close>
@@ -149,9 +149,9 @@ definition tdec_b :: "instr list"
 
 
 text \<open>
-  @{text "tdec ss n label"} returns the TM which simulates the execution of 
-  Abacus instruction @{text "Dec n label"}, assuming that TM is located at
-  location @{text "ss"} in the final TM complied from the whole
+  \<open>tdec ss n label\<close> returns the TM which simulates the execution of 
+  Abacus instruction \<open>Dec n label\<close>, assuming that TM is located at
+  location \<open>ss\<close> in the final TM complied from the whole
   Abacus program.
 \<close>
 
@@ -160,9 +160,9 @@ fun tdec :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> instr list"
     "tdec ss n e = shift (findnth n) (ss - 1) @ adjust (shift (shift tdec_b (2 * n)) (ss - 1)) e"
 
 text \<open>
-  @{text "tgoto f(label)"} returns the TM simulating the execution of Abacus instruction
-  @{text "Goto label"}, where @{text "f(label)"} is the corresponding location of
-  @{text "label"} in the final TM compiled from the overall Abacus program.
+  \<open>tgoto f(label)\<close> returns the TM simulating the execution of Abacus instruction
+  \<open>Goto label\<close>, where \<open>f(label)\<close> is the corresponding location of
+  \<open>label\<close> in the final TM compiled from the overall Abacus program.
 \<close>
 
 fun tgoto :: "nat \<Rightarrow> instr list"
@@ -171,16 +171,16 @@ fun tgoto :: "nat \<Rightarrow> instr list"
 
 text \<open>
   The layout of the final TM compiled from an Abacus program is represented
-  as a list of natural numbers, where the list element at index @{text "n"} represents the 
-  starting state of the TM simulating the execution of @{text "n"}-th instruction
+  as a list of natural numbers, where the list element at index \<open>n\<close> represents the 
+  starting state of the TM simulating the execution of \<open>n\<close>-th instruction
   in the Abacus program.
 \<close>
 
 type_synonym layout = "nat list"
 
 text \<open>
-  @{text "length_of i"} is the length of the 
-  TM simulating the Abacus instruction @{text "i"}.
+  \<open>length_of i\<close> is the length of the 
+  TM simulating the Abacus instruction \<open>i\<close>.
 \<close>
 fun length_of :: "abc_inst \<Rightarrow> nat"
   where
@@ -190,14 +190,14 @@ fun length_of :: "abc_inst \<Rightarrow> nat"
                     Goto n  \<Rightarrow> 1)"
 
 text \<open>
-  @{text "layout_of ap"} returns the layout of Abacus program @{text "ap"}.
+  \<open>layout_of ap\<close> returns the layout of Abacus program \<open>ap\<close>.
 \<close>
 fun layout_of :: "abc_prog \<Rightarrow> layout"
   where "layout_of ap = map length_of ap"
 
 
 text \<open>
-  @{text "start_of layout n"} looks out the starting state of @{text "n"}-th
+  \<open>start_of layout n\<close> looks out the starting state of \<open>n\<close>-th
   TM in the finall TM.
 \<close>
 
@@ -206,9 +206,9 @@ fun start_of :: "nat list \<Rightarrow> nat \<Rightarrow> nat"
     "start_of ly x = (Suc (sum_list (take x ly))) "
 
 text \<open>
-  @{text "ci lo ss i"} complies Abacus instruction @{text "i"}
-  assuming the TM of @{text "i"} starts from state @{text "ss"} 
-  within the overal layout @{text "lo"}.
+  \<open>ci lo ss i\<close> complies Abacus instruction \<open>i\<close>
+  assuming the TM of \<open>i\<close> starts from state \<open>ss\<close> 
+  within the overal layout \<open>lo\<close>.
 \<close>
 
 fun ci :: "layout \<Rightarrow> nat \<Rightarrow> abc_inst \<Rightarrow> instr list"
@@ -218,7 +218,7 @@ fun ci :: "layout \<Rightarrow> nat \<Rightarrow> abc_inst \<Rightarrow> instr l
   | "ci ly ss (Goto n) = tgoto (start_of ly n)"
 
 text \<open>
-  @{text "tpairs_of ap"} transfroms Abacus program @{text "ap"} pairing
+  \<open>tpairs_of ap\<close> transfroms Abacus program \<open>ap\<close> pairing
   every instruction with its starting state.
 \<close>
 
@@ -227,8 +227,8 @@ fun tpairs_of :: "abc_prog \<Rightarrow> (nat \<times> abc_inst) list"
                          [0..<(length ap)]) ap)"
 
 text \<open>
-  @{text "tms_of ap"} returns the list of TMs, where every one of them simulates
-  the corresponding Abacus intruction in @{text "ap"}.
+  \<open>tms_of ap\<close> returns the list of TMs, where every one of them simulates
+  the corresponding Abacus intruction in \<open>ap\<close>.
 \<close>
 
 fun tms_of :: "abc_prog \<Rightarrow> (instr list) list"
@@ -236,7 +236,7 @@ fun tms_of :: "abc_prog \<Rightarrow> (instr list) list"
                          (tpairs_of ap)"
 
 text \<open>
-  @{text "tm_of ap"} returns the final TM machine compiled from Abacus program @{text "ap"}.
+  \<open>tm_of ap\<close> returns the final TM machine compiled from Abacus program \<open>ap\<close>.
 \<close>
 fun tm_of :: "abc_prog \<Rightarrow> instr list"
   where "tm_of ap = concat (tms_of ap)"
@@ -253,8 +253,8 @@ lemma ci_length : "length (ci ns n ai) div 2 = length_of ai"
 subsection \<open>Representation of Abacus memory by TM tapes\<close>
 
 text \<open>
-  @{text "crsp acf tcf"} meams the abacus configuration @{text "acf"}
-  is corretly represented by the TM configuration @{text "tcf"}.
+  \<open>crsp acf tcf\<close> meams the abacus configuration \<open>acf\<close>
+  is corretly represented by the TM configuration \<open>tcf\<close>.
 \<close>
 
 fun crsp :: "layout \<Rightarrow> abc_conf \<Rightarrow> config \<Rightarrow> cell list \<Rightarrow> bool"
@@ -280,7 +280,7 @@ declare tms_of.simps[simp del] tm_of.simps[simp del]
 
 text \<open>
   The lemmas in this section lead to the correctness of 
-  the compilation of @{text "Inc n"} instruction.
+  the compilation of \<open>Inc n\<close> instruction.
 \<close>
 
 declare abc_step_l.simps[simp del] abc_steps_l.simps[simp del]

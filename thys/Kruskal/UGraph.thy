@@ -425,7 +425,7 @@ proof (rule ccontr, clarsimp simp: decycle_def )
     with setep have "set p \<subseteq> F" by auto
     then have "epath (insert (Upair u v) F \<inter> F) w p w" using epath_restrict[OF _ v, where I="F"] by auto
     then have "epath F w p w" using k by auto 
-    with `forest F` show "False" unfolding forest_def decycle_def using p d
+    with \<open>forest F\<close> show "False" unfolding forest_def decycle_def using p d
       by auto
   qed
 qed

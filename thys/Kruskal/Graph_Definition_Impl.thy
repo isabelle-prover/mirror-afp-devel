@@ -5,7 +5,7 @@ imports
  Kruskal_Impl Graph_Definition_Aux
 begin
  
-subsection "Interpreting @{text Kruskl_Impl}"
+subsection "Interpreting \<open>Kruskl_Impl\<close>"
 
 locale fromlist = fixes
   L :: "(nat \<times> int \<times> nat) list" 

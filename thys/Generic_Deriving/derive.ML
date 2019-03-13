@@ -61,8 +61,8 @@ fun instantiate_combinator_type (ty_info : type_info) (cl_info : class_info) con
     val class = #class cl_info
     val params = the (#params cl_info)
 
-    val sum_type_name = if constr_names then @{type_name Tagged_Prod_Sum.sum} else @{type_name Sum_Type.sum}
-    val prod_type_name = if constr_names then @{type_name Tagged_Prod_Sum.prod} else @{type_name Product_Type.prod}
+    val sum_type_name = if constr_names then \<^type_name>\<open>Tagged_Prod_Sum.sum\<close> else \<^type_name>\<open>Sum_Type.sum\<close>
+    val prod_type_name = if constr_names then \<^type_name>\<open>Tagged_Prod_Sum.prod\<close> else \<^type_name>\<open>Product_Type.prod\<close>
 
     val _ = ("Generating instance for type " ^ quote comb_type_name) |> writeln
 
@@ -90,7 +90,7 @@ fun instantiate_combinator_type (ty_info : type_info) (cl_info : class_info) con
         fun replace_op_call opname T replacement t =
           if t = Const (opname,T) then replacement else t
         fun is_TFree (TFree _) = true | is_TFree _ = false
-        fun remove_constraints T = if is_TFree T then dest_TFree T |> apsnd (K @{sort type}) |> TFree else T
+        fun remove_constraints T = if is_TFree T then dest_TFree T |> apsnd (K \<^sort>\<open>type\<close>) |> TFree else T
         val varTs = map (dest_Var #> snd) vars
         val (left,right) = get_tvars (varTs @ [strip_type opT_var |> snd])
         val op_tfree = Term.add_tfreesT opT [] |> hd |> TFree
@@ -113,8 +113,8 @@ fun instantiate_combinator_type (ty_info : type_info) (cl_info : class_info) con
 
         val ((_,(_,def_thm)),lthy') = Specification.definition NONE [] [] ((Binding.empty, []), eq') lthy
 
-        val left = left |> dest_TVar |> (fn ((s,_),_) => TFree (s,@{sort type}))
-        val right = right |> dest_TVar |> (fn ((s,_),_) => TFree (s,@{sort type}))
+        val left = left |> dest_TVar |> (fn ((s,_),_) => TFree (s,\<^sort>\<open>type\<close>))
+        val right = right |> dest_TVar |> (fn ((s,_),_) => TFree (s,\<^sort>\<open>type\<close>))
         val def_const = Thm.hyps_of def_thm |> hd |> Logic.dest_equals |> snd
         val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy')
         val def_thm = singleton (Proof_Context.export lthy' ctxt_thy) def_thm
@@ -336,7 +336,7 @@ fun abstract_over_vars vars t =
               insert_bounds _ t = t
             fun 
               abstract [] t = insert_bounds varmapping t |
-              abstract (x::xs) t = (Const ("Pure.all",dummyT)) $ (Abs (x, dummyT, abstract xs t))          
+              abstract (x::xs) t = (Const (\<^const_name>\<open>Pure.all\<close>,dummyT)) $ (Abs (x, dummyT, abstract xs t))          
           in
             if null vars then t else (abstract varnames t)
           end
@@ -355,15 +355,15 @@ fun define_prod_sum_conv (ty_info : type_info) constr_names lthy =
       |> cat_lines |> writeln
 
     (* Functions to deal with tagged products and sums *)
-    val str_optT = @{typ "string option"}
-    val none_str_opt = Const ("Option.option.None", str_optT)
-    fun some_str s = Const ("Option.option.Some", @{typ string} --> str_optT) $ HOLogic.mk_string s
-    val dummy_str_opt = (Term.dummy_pattern @{typ "string option"})
-    val sum_type_name = if constr_names then @{type_name Tagged_Prod_Sum.sum} else @{type_name Sum_Type.sum}
-    val prod_type_name = if constr_names then @{type_name Tagged_Prod_Sum.prod} else @{type_name Product_Type.prod}
-    val prod_constr_name = if constr_names then @{const_name Tagged_Prod_Sum.Prod} else @{const_name Product_Type.Pair}
-    val inl_constr_name = if constr_names then @{const_name Tagged_Prod_Sum.Inl} else @{const_name Sum_Type.Inl}
-    val inr_constr_name = if constr_names then @{const_name Tagged_Prod_Sum.Inr} else @{const_name Sum_Type.Inr}
+    val str_optT = \<^typ>\<open>string option\<close>
+    val none_str_opt = Const (\<^const_name>\<open>None\<close>, str_optT)
+    fun some_str s = Const (\<^const_name>\<open>Some\<close>, \<^typ>\<open>string\<close> --> str_optT) $ HOLogic.mk_string s
+    val dummy_str_opt = (Term.dummy_pattern \<^typ>\<open>string option\<close>)
+    val sum_type_name = if constr_names then \<^type_name>\<open>Tagged_Prod_Sum.sum\<close> else \<^type_name>\<open>Sum_Type.sum\<close>
+    val prod_type_name = if constr_names then \<^type_name>\<open>Tagged_Prod_Sum.prod\<close> else \<^type_name>\<open>Product_Type.prod\<close>
+    val prod_constr_name = if constr_names then \<^const_name>\<open>Tagged_Prod_Sum.Prod\<close> else \<^const_name>\<open>Product_Type.Pair\<close>
+    val inl_constr_name = if constr_names then \<^const_name>\<open>Tagged_Prod_Sum.Inl\<close> else \<^const_name>\<open>Sum_Type.Inl\<close>
+    val inr_constr_name = if constr_names then \<^const_name>\<open>Tagged_Prod_Sum.Inr\<close> else \<^const_name>\<open>Sum_Type.Inr\<close>
     fun mk_tagged_prodT (T1, T2) = Type (prod_type_name, [T1, T2])
     fun mk_tagged_sumT LT RT = Type (sum_type_name, [LT, RT])
     fun tagged_pair_const T1 T2 = Const (prod_constr_name, str_optT --> str_optT --> T1 --> T2 --> mk_tagged_prodT (T1, T2));
@@ -410,7 +410,7 @@ fun define_prod_sum_conv (ty_info : type_info) constr_names lthy =
           let           
             val c = Const (cN, Ts ---> T)
             val sels = if null sels then replicate (length Ts) "" else sels
-            val cN_opt = Const ("Option.option.Some", @{typ string} --> str_optT) $ HOLogic.mk_string (Long_Name.base_name cN)
+            val cN_opt = Const (\<^const_name>\<open>Some\<close>, \<^typ>\<open>string\<close> --> str_optT) $ HOLogic.mk_string (Long_Name.base_name cN)
             val xs = map Free (Name.invent_names (Variable.names_of lthy) "x" Ts)
             
             val conv_inner = case tail_ctrs of 
@@ -432,7 +432,7 @@ fun define_prod_sum_conv (ty_info : type_info) constr_names lthy =
                                then (let val conv_inner = 
                                              case tail_ctrs of 
                                                 [] => mk_tagged_tuple sels xs|
-                                                _ => mk_tagged_Inl (Term.dummy_pattern @{typ "string option"}) (generate_sum_prodT tail_ctrs) (mk_tagged_tuple_dummy xs)
+                                                _ => mk_tagged_Inl (Term.dummy_pattern \<^typ>\<open>string option\<close>) (generate_sum_prodT tail_ctrs) (mk_tagged_tuple_dummy xs)
                                      in (if HOLogic.is_unit (hd prefix) then conv_inner 
                                                                         else Library.foldr (op $) ((map add_dummy_patterns prefix), conv_inner))
                                      end)
@@ -453,11 +453,11 @@ fun define_prod_sum_conv (ty_info : type_info) constr_names lthy =
                   if HOLogic.is_unit (hd prefix) 
                   then 
                     if constr_names 
-                      then [(Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs))) $ Const ("Option.option.None", str_optT)]
+                      then [(Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs))) $ Const (\<^const_name>\<open>None\<close>, str_optT)]
                       else [(BNF_FP_Util.Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs)))]
                   else prefix @
                     (if constr_names
-                      then [(Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs))) $ Const ("Option.option.None", str_optT)]
+                      then [(Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs))) $ Const (\<^const_name>\<open>None\<close>, str_optT)]
                       else [(BNF_FP_Util.Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs)))])
               val (from_eq,to_eq) = generate_conversion_eq lthy prefix c s (map snd cs)
               val (from_eqs,to_eqs) = generate_conversion_eqs lthy new_prefix ((tyco,cs),T) ss
@@ -494,7 +494,7 @@ fun define_prod_sum_conv (ty_info : type_info) constr_names lthy =
             fun from_const tyco = Free ("from_" ^ (Long_Name.base_name tyco), dummyT --> dummyT)
             fun to_const tyco = Free ("to_" ^ (Long_Name.base_name tyco), dummyT --> dummyT)
             val c = Const (cN, Ts ---> T)
-            val cN_opt = Const ("Option.option.Some", @{typ string} --> str_optT) $ HOLogic.mk_string (Long_Name.base_name cN)
+            val cN_opt = Const (\<^const_name>\<open>Some\<close>, \<^typ>\<open>string\<close> --> str_optT) $ HOLogic.mk_string (Long_Name.base_name cN)
             val xs = map Free (Name.invent_names (Variable.names_of lthy) "x" Ts)
             
             val xs_from = map (fn (v,t) => case find_type t tnames 
@@ -560,11 +560,11 @@ fun define_prod_sum_conv (ty_info : type_info) constr_names lthy =
                   if HOLogic.is_unit (hd prefix) 
                   then 
                     if constr_names 
-                      then [(Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs))) $ Const ("Option.option.None", str_optT)]
+                      then [(Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs))) $ Const (\<^const_name>\<open>None\<close>, str_optT)]
                       else [(BNF_FP_Util.Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs)))]
                   else prefix @
                     (if constr_names
-                      then [(Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs))) $ Const ("Option.option.None", str_optT)]
+                      then [(Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs))) $ Const (\<^const_name>\<open>None\<close>, str_optT)]
                       else [(BNF_FP_Util.Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs)))])
 
               val (from_eq,to_eq) = generate_conversion_eq lthy prefix c s (map snd cs)
@@ -652,8 +652,8 @@ fun define_prod_sum_conv (ty_info : type_info) constr_names lthy =
 
 fun define_rep_type tnames ctrs constr_names lthy = 
   let
-    val sum_type_name = if constr_names then @{type_name Tagged_Prod_Sum.sum} else @{type_name Sum_Type.sum}
-    val prod_type_name = if constr_names then @{type_name Tagged_Prod_Sum.prod} else @{type_name Product_Type.prod}
+    val sum_type_name = if constr_names then \<^type_name>\<open>Tagged_Prod_Sum.sum\<close> else \<^type_name>\<open>Sum_Type.sum\<close>
+    val prod_type_name = if constr_names then \<^type_name>\<open>Tagged_Prod_Sum.prod\<close> else \<^type_name>\<open>Product_Type.prod\<close>
     fun collect_tfree_names ctrs = 
       fold Term.add_tfree_namesT (ctrs |> map (fn l => map snd (snd l)) |> flat |> flat) []
 
@@ -664,7 +664,7 @@ fun define_rep_type tnames ctrs constr_names lthy =
         val ts = map Type ((map fst ctrs) ~~ (replicate (length ctrs) []))
         val names = Name.invent_names ctxt "'a" ts |> map fst
       in
-        ts ~~ (map TFree (names ~~ (replicate (length names) @{sort type}))) 
+        ts ~~ (map TFree (names ~~ (replicate (length names) \<^sort>\<open>type\<close>))) 
       end
 
     fun replace_types_tvars recTs T  =
@@ -904,7 +904,7 @@ fun generate_instance_cmd classname tyco constr_names thy =
     val T = Syntax.parse_typ lthy tyco |> dest_Type |> fst
     val class = Syntax.parse_sort (Proof_Context.init_global thy) classname
   in
-    generate_instance (@{print} T) (@{print} class) constr_names thy
+    generate_instance T class constr_names thy
   end
 
 val parse_cmd =
@@ -913,7 +913,7 @@ val parse_cmd =
       Parse.type_const
 
 val _ =
-  Outer_Syntax.command @{command_keyword derive_generic} "derives some sort"
+  Outer_Syntax.command \<^command_keyword>\<open>derive_generic\<close> "derives some sort"
     (parse_cmd >> (fn ((s,c),t) =>
       let val meta = s = "metadata" in Toplevel.theory_to_proof (generate_instance_cmd c t meta) end ))
 

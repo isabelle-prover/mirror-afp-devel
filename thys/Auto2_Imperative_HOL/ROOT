@@ -1,9 +1,9 @@
 chapter AFP
 
 session Auto2_Imperative_HOL (AFP) = Auto2_HOL +
-  description {*
+  description \<open>
     Application of auto2 to verify functional and imperative programs.
-  *}
+  \<close>
   options [timeout = 2100]
   sessions
     "HOL-Library"
