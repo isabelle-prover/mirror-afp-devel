@@ -654,7 +654,7 @@ proof (intro bound_invI[OF LLL_inv_initial_state _ g_bound_fs_init])
   thus "f_bound True 0 fs_init" unfolding f_bound_def by auto
 qed
 
-lemma reduce_basis: assumes res: "reduce_basis = fs" 
+lemma reduce_basis_bound: assumes res: "reduce_basis = fs" 
   shows "LLL_bound_invariant True True m fs" 
   using basis_reduction_main_bound[OF LLL_inv_initial_state_bound res[unfolded reduce_basis_def]] .
 

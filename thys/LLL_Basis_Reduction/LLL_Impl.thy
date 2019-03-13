@@ -1121,19 +1121,25 @@ proof -
   with res show ?thesis by simp
 qed
 
-lemma reduce_basis: assumes res: "LLL_Impl.reduce_basis \<alpha> fs_init = fs"
-  shows "reduced fs m" "LLL_invariant True m fs"
-  "reduce_basis = fs" 
-  using reduce_basis_impl res reduce_basis_inv LLL_inv_m_imp_reduced by metis+
+lemma reduce_basis: assumes "LLL_Impl.reduce_basis \<alpha> fs_init = fs"
+  shows "lattice_of fs = L" 
+  "reduced fs m" 
+  "lin_indep fs" 
+  "length fs = m" 
+  "LLL_invariant True m fs" 
+  using reduce_basis_impl assms reduce_basis reduce_basis_inv by metis+
+
+lemma short_vector_impl: "LLL_Impl.short_vector \<alpha> fs_init = short_vector" 
+  using reduce_basis_impl unfolding LLL_Impl.short_vector_def short_vector_def by simp
 
 lemma short_vector: assumes res: "LLL_Impl.short_vector \<alpha> fs_init = v"
   and m0: "m \<noteq> 0"
-shows "v \<in> carrier_vec n"
+shows 
+  "v \<in> carrier_vec n"
   "v \<in> L - {0\<^sub>v n}"
   "h \<in> L - {0\<^sub>v n} \<Longrightarrow> rat_of_int (sq_norm v) \<le> \<alpha> ^ (m - 1) * rat_of_int (sq_norm h)"
   "v \<noteq> 0\<^sub>v j"
-  using basis_reduction_short_vector[OF reduce_basis(2)[OF refl] res[symmetric, unfolded LLL_Impl.short_vector_def] m0]
-  by blast+
+  using short_vector[OF assms[unfolded short_vector_impl]] by metis+
 
 end
 end
