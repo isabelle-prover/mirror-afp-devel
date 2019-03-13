@@ -107,9 +107,9 @@ end
 
 (* Manually defined instances need to be added to the theory context *)
 setup \<open>
-(Derive.add_inst_info "Derive_Algebra.monoidl" "Derive_Datatypes.fct" [@{thm neutral_fct_def}]) #>
-(Derive.add_inst_info "Derive_Algebra.monoidl" "Derive_Datatypes.trm" [@{thm neutral_trm_def}]) #>
-(Derive.add_inst_info "Derive_Algebra.monoidl" "Derive_Datatypes.exp" [@{thm neutral_exp_def}])
+(Derive.add_inst_info \<^class>\<open>monoidl\<close> \<^type_name>\<open>fct\<close> [@{thm neutral_fct_def}]) #>
+(Derive.add_inst_info \<^class>\<open>monoidl\<close> \<^type_name>\<open>trm\<close> [@{thm neutral_trm_def}]) #>
+(Derive.add_inst_info \<^class>\<open>monoidl\<close> \<^type_name>\<open>exp\<close> [@{thm neutral_exp_def}])
 \<close>
 
 derive_generic group exp .

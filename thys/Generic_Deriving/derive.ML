@@ -336,7 +336,7 @@ fun abstract_over_vars vars t =
               insert_bounds _ t = t
             fun 
               abstract [] t = insert_bounds varmapping t |
-              abstract (x::xs) t = (Const ("Pure.all",dummyT)) $ (Abs (x, dummyT, abstract xs t))          
+              abstract (x::xs) t = (Const (\<^const_name>\<open>Pure.all\<close>,dummyT)) $ (Abs (x, dummyT, abstract xs t))          
           in
             if null vars then t else (abstract varnames t)
           end
@@ -356,8 +356,8 @@ fun define_prod_sum_conv (ty_info : type_info) constr_names lthy =
 
     (* Functions to deal with tagged products and sums *)
     val str_optT = \<^typ>\<open>string option\<close>
-    val none_str_opt = Const ("Option.option.None", str_optT)
-    fun some_str s = Const ("Option.option.Some", \<^typ>\<open>string\<close> --> str_optT) $ HOLogic.mk_string s
+    val none_str_opt = Const (\<^const_name>\<open>None\<close>, str_optT)
+    fun some_str s = Const (\<^const_name>\<open>Some\<close>, \<^typ>\<open>string\<close> --> str_optT) $ HOLogic.mk_string s
     val dummy_str_opt = (Term.dummy_pattern \<^typ>\<open>string option\<close>)
     val sum_type_name = if constr_names then \<^type_name>\<open>Tagged_Prod_Sum.sum\<close> else \<^type_name>\<open>Sum_Type.sum\<close>
     val prod_type_name = if constr_names then \<^type_name>\<open>Tagged_Prod_Sum.prod\<close> else \<^type_name>\<open>Product_Type.prod\<close>
@@ -410,7 +410,7 @@ fun define_prod_sum_conv (ty_info : type_info) constr_names lthy =
           let           
             val c = Const (cN, Ts ---> T)
             val sels = if null sels then replicate (length Ts) "" else sels
-            val cN_opt = Const ("Option.option.Some", \<^typ>\<open>string\<close> --> str_optT) $ HOLogic.mk_string (Long_Name.base_name cN)
+            val cN_opt = Const (\<^const_name>\<open>Some\<close>, \<^typ>\<open>string\<close> --> str_optT) $ HOLogic.mk_string (Long_Name.base_name cN)
             val xs = map Free (Name.invent_names (Variable.names_of lthy) "x" Ts)
             
             val conv_inner = case tail_ctrs of 
@@ -453,11 +453,11 @@ fun define_prod_sum_conv (ty_info : type_info) constr_names lthy =
                   if HOLogic.is_unit (hd prefix) 
                   then 
                     if constr_names 
-                      then [(Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs))) $ Const ("Option.option.None", str_optT)]
+                      then [(Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs))) $ Const (\<^const_name>\<open>None\<close>, str_optT)]
                       else [(BNF_FP_Util.Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs)))]
                   else prefix @
                     (if constr_names
-                      then [(Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs))) $ Const ("Option.option.None", str_optT)]
+                      then [(Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs))) $ Const (\<^const_name>\<open>None\<close>, str_optT)]
                       else [(BNF_FP_Util.Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs)))])
               val (from_eq,to_eq) = generate_conversion_eq lthy prefix c s (map snd cs)
               val (from_eqs,to_eqs) = generate_conversion_eqs lthy new_prefix ((tyco,cs),T) ss
@@ -494,7 +494,7 @@ fun define_prod_sum_conv (ty_info : type_info) constr_names lthy =
             fun from_const tyco = Free ("from_" ^ (Long_Name.base_name tyco), dummyT --> dummyT)
             fun to_const tyco = Free ("to_" ^ (Long_Name.base_name tyco), dummyT --> dummyT)
             val c = Const (cN, Ts ---> T)
-            val cN_opt = Const ("Option.option.Some", \<^typ>\<open>string\<close> --> str_optT) $ HOLogic.mk_string (Long_Name.base_name cN)
+            val cN_opt = Const (\<^const_name>\<open>Some\<close>, \<^typ>\<open>string\<close> --> str_optT) $ HOLogic.mk_string (Long_Name.base_name cN)
             val xs = map Free (Name.invent_names (Variable.names_of lthy) "x" Ts)
             
             val xs_from = map (fn (v,t) => case find_type t tnames 
@@ -560,11 +560,11 @@ fun define_prod_sum_conv (ty_info : type_info) constr_names lthy =
                   if HOLogic.is_unit (hd prefix) 
                   then 
                     if constr_names 
-                      then [(Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs))) $ Const ("Option.option.None", str_optT)]
+                      then [(Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs))) $ Const (\<^const_name>\<open>None\<close>, str_optT)]
                       else [(BNF_FP_Util.Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs)))]
                   else prefix @
                     (if constr_names
-                      then [(Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs))) $ Const ("Option.option.None", str_optT)]
+                      then [(Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs))) $ Const (\<^const_name>\<open>None\<close>, str_optT)]
                       else [(BNF_FP_Util.Inr_const (generate_sum_prodT [(snd c)]) (generate_sum_prodT (map snd cs)))])
 
               val (from_eq,to_eq) = generate_conversion_eq lthy prefix c s (map snd cs)
