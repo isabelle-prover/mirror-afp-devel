@@ -904,7 +904,7 @@ fun generate_instance_cmd classname tyco constr_names thy =
     val T = Syntax.parse_typ lthy tyco |> dest_Type |> fst
     val class = Syntax.parse_sort (Proof_Context.init_global thy) classname
   in
-    generate_instance (@{print} T) (@{print} class) constr_names thy
+    generate_instance T class constr_names thy
   end
 
 val parse_cmd =
