@@ -60,7 +60,7 @@ lemma unify2EquivClasses_alt:
 proof -
    
   from eq have Rtrancl: "R\<^sup>+ = R" by (auto elim: equivE)
-  from `equiv V R` have sym: "sym R" unfolding equiv_def by auto
+  from \<open>equiv V R\<close> have sym: "sym R" unfolding equiv_def by auto
   
   let ?R' = "per_union R x y"  
 
@@ -186,7 +186,7 @@ proof -
 qed   
        
 
-subsection "On sorting and @{text max_node}"
+subsection "On sorting and \<open>max_node\<close>"
 
 
 definition edges_less_eq :: "('a \<times> 'w::{linorder, ordered_comm_monoid_add} \<times> 'a) \<Rightarrow> ('a \<times> 'w \<times> 'a) \<Rightarrow> bool"

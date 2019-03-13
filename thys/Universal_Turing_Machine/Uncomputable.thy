@@ -869,7 +869,7 @@ qed
 section \<open>The {\em Dithering} Turing Machine\<close>
 
 text \<open>
-  The {\em Dithering} TM, when the input is @{text "1"}, it will loop forever, otherwise, it will
+  The {\em Dithering} TM, when the input is \<open>1\<close>, it will loop forever, otherwise, it will
   terminate.
 \<close>
 
@@ -914,7 +914,7 @@ lemma dither_halts:
 section \<open>The diagnal argument below shows the undecidability of Halting problem\<close>
 
 text \<open>
-  @{text "halts tp x"} means TM @{text "tp"} terminates on input @{text "x"}
+  \<open>halts tp x\<close> means TM \<open>tp\<close> terminates on input \<open>x\<close>
   and the final configuration is standard.
 \<close>
 
@@ -929,8 +929,8 @@ lemma tm_wf0_dither[intro, simp]: "tm_wf0 dither"
   by (auto simp: tm_wf.simps dither_def)
 
 text \<open>
-  The following locale specifies that TM @{text "H"} can be used to solve 
-  the {\em Halting Problem} and @{text "False"} is going to be derived 
+  The following locale specifies that TM \<open>H\<close> can be used to solve 
+  the {\em Halting Problem} and \<open>False\<close> is going to be derived 
   under this locale. Therefore, the undecidability of {\em Halting Problem}
   is established. 
 \<close>
@@ -1086,7 +1086,7 @@ qed
 
 
 text \<open>
-  @{text "False"} can finally derived.
+  \<open>False\<close> can finally derived.
 \<close>
 
 lemma false: "False"

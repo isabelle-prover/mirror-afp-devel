@@ -38,7 +38,7 @@ lemma nth:
   by (simp_all)
 
 
-section \<open>Some auxiliary lemmas about @{text "\<Sum>"} and @{text "\<Prod>"}\<close>
+section \<open>Some auxiliary lemmas about \<open>\<Sum>\<close> and \<open>\<Prod>\<close>\<close>
 
 lemma setprod_atMost_Suc[simp]: 
   "(\<Prod>i \<le> Suc n. f i) = (\<Prod>i \<le> n. f i) * f(Suc n)"
@@ -227,8 +227,8 @@ inductive
 section \<open>Arithmetic Functions\<close>
 
 text \<open>
-  @{text "constn n"} is the recursive function which computes 
-  natural number @{text "n"}.
+  \<open>constn n\<close> is the recursive function which computes 
+  natural number \<open>n\<close>.
 \<close>
 fun constn :: "nat \<Rightarrow> recf"
   where
@@ -299,8 +299,8 @@ lemma minus_lemma [simp]:
 section \<open>Logical functions\<close>
 
 text \<open>
-  The @{text "sign"} function returns 1 when the input argument 
-  is greater than @{text "0"}.\<close>
+  The \<open>sign\<close> function returns 1 when the input argument 
+  is greater than \<open>0\<close>.\<close>
 
 definition 
   "rec_sign = CN rec_minus [constn 1, CN rec_minus [constn 1, Id 1 0]]"
@@ -309,8 +309,8 @@ definition
   "rec_not = CN rec_minus [constn 1, Id 1 0]"
 
 text \<open>
-  @{text "rec_eq"} compares two arguments: returns @{text "1"}
-  if they are equal; @{text "0"} otherwise.\<close>
+  \<open>rec_eq\<close> compares two arguments: returns \<open>1\<close>
+  if they are equal; \<open>0\<close> otherwise.\<close>
 definition 
   "rec_eq = CN rec_minus [CN (constn 1) [Id 2 0], CN rec_add [rec_minus, rec_swap rec_minus]]"
 
@@ -376,8 +376,8 @@ lemma if_lemma [simp]:
 section \<open>Less and Le Relations\<close>
 
 text \<open>
-  @{text "rec_less"} compares two arguments and returns @{text "1"} if
-  the first is less than the second; otherwise returns @{text "0"}.\<close>
+  \<open>rec_less\<close> compares two arguments and returns \<open>1\<close> if
+  the first is less than the second; otherwise returns \<open>0\<close>.\<close>
 
 definition 
   "rec_less = CN rec_sign [rec_swap rec_minus]"

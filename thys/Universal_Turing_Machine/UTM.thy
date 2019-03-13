@@ -12,26 +12,25 @@ begin
 section \<open>Wang coding of input arguments\<close>
 
 text \<open>
-  The direct compilation of the universal function @{text "rec_F"} can
-  not give us UTM, because @{text "rec_F"} is of arity 2, where the
+  The direct compilation of the universal function \<open>rec_F\<close> can
+  not give us UTM, because \<open>rec_F\<close> is of arity 2, where the
   first argument represents the Godel coding of the TM being simulated
   and the second argument represents the right number (in Wang's
-  coding) of the TM tape.  (Notice, left number is always @{text "0"}
+  coding) of the TM tape.  (Notice, left number is always \<open>0\<close>
   at the very beginning). However, UTM needs to simulate the execution
   of any TM which may very well take many input arguments. Therefore,
-  a initialization TM needs to run before the TM compiled from @{text
-  "rec_F"}, and the sequential composition of these two TMs will give
+  a initialization TM needs to run before the TM compiled from \<open>rec_F\<close>, and the sequential composition of these two TMs will give
   rise to the UTM we are seeking. The purpose of this initialization
   TM is to transform the multiple input arguments of the TM being
   simulated into Wang's coding, so that it can be consumed by the TM
-  compiled from @{text "rec_F"} as the second argument.
+  compiled from \<open>rec_F\<close> as the second argument.
 
-  However, this initialization TM (named @{text "t_wcode"}) can not be
+  However, this initialization TM (named \<open>t_wcode\<close>) can not be
   constructed by compiling from any recursive function, because every
   recursive function takes a fixed number of input arguments, while
-  @{text "t_wcode"} needs to take varying number of arguments and
+  \<open>t_wcode\<close> needs to take varying number of arguments and
   tranform them into Wang's coding. Therefore, this section give a
-  direct construction of @{text "t_wcode"} with just some parts being
+  direct construction of \<open>t_wcode\<close> with just some parts being
   obtained from recursive functions.
 
 \newlength{\basewidth}
@@ -3991,14 +3990,14 @@ proof -
 qed
 
 text \<open>
-  The initialization TM @{text "t_wcode"}.
+  The initialization TM \<open>t_wcode\<close>.
 \<close>
 definition t_wcode :: "instr list"
   where
     "t_wcode = (t_wcode_prepare |+| t_wcode_main) |+| t_wcode_adjust        "
 
 text \<open>
-  The correctness of @{text "t_wcode"}.
+  The correctness of \<open>t_wcode\<close>.
 \<close>
 
 lemma wcode_lemma_1:
@@ -4019,7 +4018,7 @@ lemma wcode_lemma:
 section \<open>The universal TM\<close>
 
 text \<open>
-  This section gives the explicit construction of {\em Universal Turing Machine}, defined as @{text "UTM"} and proves its 
+  This section gives the explicit construction of {\em Universal Turing Machine}, defined as \<open>UTM\<close> and proves its 
   correctness. It is pretty easy by composing the partial results we have got so far.
 \<close>
 
@@ -4218,7 +4217,7 @@ proof -
 qed
 
 text \<open>
-  The correctness of @{text "UTM"}, the halt case.
+  The correctness of \<open>UTM\<close>, the halt case.
 \<close>
 lemma UTM_halt_lemma': 
   assumes tm_wf: "tm_wf (tp, 0)"
@@ -4598,7 +4597,7 @@ proof -
 qed
 
 text \<open>
-  The correctness of @{text "UTM"}, the unhalt case.
+  The correctness of \<open>UTM\<close>, the unhalt case.
 \<close>
 
 lemma UTM_uhalt_lemma':
