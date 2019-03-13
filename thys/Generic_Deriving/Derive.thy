@@ -6,8 +6,7 @@ This theory includes the Isabelle/ML code needed for the derivation and exports 
 
 theory Derive
   imports Main Tagged_Prod_Sum
-  keywords "derive_generic" :: thy_decl
-       and "derive_generic_setup" :: thy_decl
+  keywords "derive_generic" "derive_generic_setup" :: thy_goal
 begin
 
 context begin
