@@ -178,7 +178,7 @@ fun combs_to_list t =
 
 fun get_tvar ts =
   case ts of 
-    [] => TFree ("'a", @{sort type}) |
+    [] => TFree ("'a", \<^sort>\<open>type\<close>) |
     (t::ts) =>
       case t of T as TFree _ => T |
                 Type (_,xs) => get_tvar (xs@ts) |

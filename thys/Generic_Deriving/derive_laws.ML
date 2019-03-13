@@ -27,7 +27,7 @@ let
   val to_induct = hd (the (#inducts to_info))
 
   val iso_thm =
-  HOLogic.mk_Trueprop (Const (@{const_name Derive.iso}, dummyT) $ from_f $ to_f)
+  HOLogic.mk_Trueprop (Const (\<^const_name>\<open>Derive.iso\<close>, dummyT) $ from_f $ to_f)
     |> Syntax.check_term lthy
   val induct_tac_to = (Induct_Tacs.induct_tac lthy [[SOME "b"]] (SOME [to_induct]) 2)
   val induct_tac_from = (Induct_Tacs.induct_tac lthy [[SOME "a"]] (SOME [from_induct]) 1)
