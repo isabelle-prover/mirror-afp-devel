@@ -295,7 +295,7 @@ proof -
     define l where "l = log base (real A)" 
     define k where "k = 2 * m * m" 
     obtain f mu ds where init: "initial_state m fs_init = (f,mu,ds)" by (cases "initial_state m fs_init", auto)
-    from fs_state[OF initial_state LLL_inv_initial_state init] LLL_invD(6)[OF LLL_inv_initial_state]
+    from initial_state
     have fs: "fs_state (initial_state m fs_init) = fs_init" by auto
     have "LLL_measure i (fs_state state) \<le> nat (ceiling (m + k * l))" unfolding l_def k_def
       using LLL_measure_approx_fs_init[OF LLL_inv_initial_state \<alpha>_gt m0] unfolding state fs i
@@ -546,11 +546,10 @@ proof -
     unfolding basis_reduction_cost_def init main split by simp
   from result_costD[OF initial_state_cost init]
   have c1: "c1 \<le> initial_gso_cost" and init: "initial_state m fs_init = state1" by auto
-  note inv = LLL_inv_initial_state
+  note inv = LLL_inv_initial_state(1)
   note impl = initial_state
-  from fs_state[OF impl inv _ len]  
-  have fs: "fs_state (initial_state m fs_init) = fs_init" by (cases "initial_state m fs_init", auto)
-  from basis_reduction_main_cost[of "initial_state m fs_init" _ _ 0, unfolded fs, OF impl inv,
+  have fs: "fs_state (initial_state m fs_init) = fs_init" by fact
+  from basis_reduction_main_cost[of "initial_state m fs_init" _ _ 0, unfolded fs, OF impl(1) inv,
     unfolded init main cost_simps] 
   have main: "LLL_Impl.basis_reduction_main \<alpha> n m True 0 state1 = state2" and c2: "c2 \<le> body_cost * num_loops" 
     by auto

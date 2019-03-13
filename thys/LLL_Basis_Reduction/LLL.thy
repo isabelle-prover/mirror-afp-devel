@@ -915,7 +915,7 @@ proof -
 
   (* calculation of new norms *)
   { (* norm of g (i - 1) *)
-    have "sq_norm (?g2 (i - 1)) = sq_norm (?g1 i + ?mu_f1)" unfolding g2_im1 by simp
+    have "?n2 (i - 1) = sq_norm (?g1 i + ?mu_f1)" unfolding g2_im1 by simp
     also have "\<dots> = (?g1 i + ?mu_f1) \<bullet> (?g1 i + ?mu_f1)" 
       by (simp add: sq_norm_vec_as_cscalar_prod)
     also have "\<dots> = (?g1 i + ?mu_f1) \<bullet> ?g1 i + (?g1 i + ?mu_f1) \<bullet> ?mu_f1" 
@@ -992,7 +992,7 @@ proof -
   } note mu_no_change_large_row = this
 
   { (* the new value of mu i (i - 1) *)
-    have "?mu2 i (i - 1) = (?f2 i \<bullet> ?g2 (i - 1)) / sq_norm (?g2 (i - 1))" 
+    have "?mu2 i (i - 1) = (?f2 i \<bullet> ?g2 (i - 1)) / ?n2 (i - 1)" 
       unfolding gs2.\<mu>.simps using i0 by auto
     also have "?f2 i \<bullet> ?g2 (i - 1) = ?f1 (i - 1) \<bullet> ?g2 (i - 1)" 
       using len i i0 unfolding fs'_def by auto
@@ -1005,7 +1005,7 @@ proof -
     also have "?f1 (i - 1) \<bullet> (?mu1 i (i - 1) \<cdot>\<^sub>v ?g1 (i - 1)) = 
        ?mu1 i (i - 1) * (?f1 (i - 1) \<bullet> ?g1 (i - 1))"  
       by (rule scalar_prod_smult_distrib, insert gs g i, auto)
-    also have "?f1 (i - 1) \<bullet> ?g1 (i - 1) = sq_norm (?g1 (i - 1))" 
+    also have "?f1 (i - 1) \<bullet> ?g1 (i - 1) = ?n1 (i - 1)" 
       by (subst fs.gs.fi_scalar_prod_gso, insert conn1 im1, auto simp: fs.gs.\<mu>.simps)
     finally 
     have "?mu2 i (i - 1) = ?mu1 i (i - 1) * ?n1 (i - 1) / ?n2 (i - 1)" 
@@ -1120,7 +1120,7 @@ proof -
     qed auto
     also have "\<dots> = reduction * sq_norm (?g1 (i - 1))" unfolding reduction_def  
       using \<alpha>0 by (simp add: ring_distribs add_divide_distrib)
-    finally have "sq_norm (?g2 (i - 1)) < reduction * sq_norm (?g1 (i - 1))" .
+    finally have "?n2 (i - 1) < reduction * ?n1 (i - 1)" .
   } note g_reduction = this (* Lemma 16.13 (ii) *)
 
   have lin_indpt_list_fs': "gs.lin_indpt_list (RAT fs')"
@@ -1130,7 +1130,7 @@ proof -
     unfolding \<mu>_small_def
   proof (intro allI impI, goal_cases)
     case (1 j)
-    show ?case using inv(11) 1 unfolding mu'_mu_i_im1_j[OF 1] \<mu>_small_def by auto
+    thus ?case using inv(11) unfolding mu'_mu_i_im1_j[OF 1] \<mu>_small_def by auto
   qed      
       
   (* invariant is established *)
