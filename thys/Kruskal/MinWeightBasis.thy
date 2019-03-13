@@ -273,14 +273,14 @@ proof (rule ccontr)
     by (metis (no_types, lifting) i in_set_conv_nth length_take
               min_simps(2) not_less nth_take wF wsorted_nth_mono) 
   have z': "insert x ?FL_restricted \<subseteq> insert x (set ?X)"
-    using xnX `?FL_restricted \<subseteq> set (take i FL)` by auto 
+    using xnX \<open>?FL_restricted \<subseteq> set (take i FL)\<close> by auto 
   from indep_subset[OF indepX z'] have add_x_stay_indep: "indep (insert x ?FL_restricted)" .
 
   \<comment> \<open>... finally this means that we must have taken the element during our greedy algorithm\<close>
-  from `no_smallest_element_skipped {} F`
-      `x\<in>carrier` `weight x < weight (FL ! i)` add_x_stay_indep
+  from \<open>no_smallest_element_skipped {} F\<close>
+      \<open>x\<in>carrier\<close> \<open>weight x < weight (FL ! i)\<close> add_x_stay_indep
     have "x \<in> ?FL_restricted"  by (auto dest: no_smallest_element_skippedD)
-  with `?FL_restricted \<subseteq> set ?X` have "x \<in> set ?X"  by auto
+  with \<open>?FL_restricted \<subseteq> set ?X\<close> have "x \<in> set ?X"  by auto
 
   \<comment> \<open>... but we actually didn't. This finishes our proof by contradiction.\<close>  
   with xnX show "False" by auto              

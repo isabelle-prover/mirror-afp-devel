@@ -14,9 +14,8 @@ struct
 
 fun get_class_info thy classname = Symtab.lookup (Class_Data.get thy) classname
 
-fun prove_isomorphism type_info lthy' =
+fun prove_isomorphism type_info lthy =
 let
-  val lthy = lthy'
   val tname_short = Long_Name.base_name (#tname type_info)
   val from_info = the (#from_info (#rep_info type_info))
   val to_info = the (#to_info (#rep_info type_info))
@@ -28,7 +27,7 @@ let
   val to_induct = hd (the (#inducts to_info))
 
   val iso_thm =
-  HOLogic.mk_Trueprop (Const (@{const_name Derive.iso}, dummyT) $ from_f $ to_f)
+  HOLogic.mk_Trueprop (Const (\<^const_name>\<open>Derive.iso\<close>, dummyT) $ from_f $ to_f)
     |> Syntax.check_term lthy
   val induct_tac_to = (Induct_Tacs.induct_tac lthy [[SOME "b"]] (SOME [to_induct]) 2)
   val induct_tac_from = (Induct_Tacs.induct_tac lthy [[SOME "a"]] (SOME [from_induct]) 1)

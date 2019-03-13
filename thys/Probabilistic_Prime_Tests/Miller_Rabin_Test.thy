@@ -2,7 +2,7 @@
   File:     Miller_Rabin.thy
   Authors:  Daniel Stüwe, Manuel Eberl
 
-  The Miller–Rabin primality test.
+  The Miller--Rabin primality test.
 *)
 section \<open>The Miller--Rabin Test\<close>
 theory Miller_Rabin_Test

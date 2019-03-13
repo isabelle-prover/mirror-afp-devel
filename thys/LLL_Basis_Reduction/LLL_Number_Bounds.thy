@@ -1269,7 +1269,7 @@ proof -
     then have "log 2 \<bar>x\<bar> \<le> 4 * m * log 2 (M * n) + m + log 2 m"
       using assms 0 by (subst 0, intro combined_size_bound_integer') fastforce+
     also have "\<dots> \<le> (6 + 6 * m) * log 2 (M * n) + m + log 2 m"
-       using assms by (intro add_right_mono, intro mult_right_mono) (auto)
+       using assms by (intro add_right_mono, intro mult_right_mono) auto
     finally show ?thesis
       by simp
   qed

@@ -2,7 +2,7 @@
   File:     Solovay_Strassen.thy
   Authors:  Daniel Stüwe, Manuel Eberl
 
-  The Solovay–Strassen primality test.
+  The Solovay--Strassen primality test.
 *)
 section \<open>The Solovay--Strassen Test\<close>
 theory Solovay_Strassen_Test

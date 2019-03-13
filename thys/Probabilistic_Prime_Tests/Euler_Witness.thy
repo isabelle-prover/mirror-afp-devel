@@ -2,7 +2,7 @@
   File:     Euler_Witness.thy
   Author:   Daniel Stüwe
 
-  Euler Witnesses as used in the Solovay–Strassen primality test
+  Euler Witnesses as used in the Solovay--Strassen primality test
 *)
 section \<open>Euler Witnesses\<close>
 theory Euler_Witness

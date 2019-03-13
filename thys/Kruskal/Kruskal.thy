@@ -11,7 +11,7 @@ text \<open>In order to instantiate Kruskal's algorithm for different graph form
 
   Based on the interface, we show that the set of edges together with the predicate of being 
   cycle free (i.e. a forest) forms the cycle matroid.
-  Together with a weight function on the edges we obtain a @{text weighted_matroid} and thus
+  Together with a weight function on the edges we obtain a \<open>weighted_matroid\<close> and thus
   an instance of the minimum weight basis algorithm, which is an abstract version of Kruskal.\<close>
  
   

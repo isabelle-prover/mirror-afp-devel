@@ -37,7 +37,7 @@
 
 section \<open>Voice over IP\<close>
 theory 
-  VoIP
+  Voice_over_IP
   imports 
     "../../UPF-Firewall"
 begin

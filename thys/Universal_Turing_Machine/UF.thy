@@ -10,10 +10,10 @@ theory UF
 begin
 
 text \<open>
-  This theory file constructs the Universal Function @{text "rec_F"}, which is the UTM defined
-  in terms of recursive functions. This @{text "rec_F"} is essentially an 
-  interpreter of Turing Machines. Once the correctness of @{text "rec_F"} is established,
-  UTM can easil be obtained by compling @{text "rec_F"} into the corresponding Turing Machine.
+  This theory file constructs the Universal Function \<open>rec_F\<close>, which is the UTM defined
+  in terms of recursive functions. This \<open>rec_F\<close> is essentially an 
+  interpreter of Turing Machines. Once the correctness of \<open>rec_F\<close> is established,
+  UTM can easil be obtained by compling \<open>rec_F\<close> into the corresponding Turing Machine.
 \<close>
 
 section \<open>Universal Function\<close>
@@ -49,8 +49,8 @@ definition rec_minus :: "recf"
     "rec_minus = Pr 1 (id 1 0) (Cn 3 rec_pred [id 3 2])"
 
 text \<open>
-  @{text "constn n"} is the recursive function which computes 
-  nature number @{text "n"}.
+  \<open>constn n\<close> is the recursive function which computes 
+  nature number \<open>n\<close>.
 \<close>
 fun constn :: "nat \<Rightarrow> recf"
   where
@@ -59,7 +59,7 @@ fun constn :: "nat \<Rightarrow> recf"
 
 
 text \<open>
-  Sign function, which returns 1 when the input argument is greater than @{text "0"}.
+  Sign function, which returns 1 when the input argument is greater than \<open>0\<close>.
 \<close>
 definition rec_sg :: "recf"
   where
@@ -67,24 +67,24 @@ definition rec_sg :: "recf"
                   Cn 1 rec_minus [constn 1, id 1 0]]"
 
 text \<open>
-  @{text "rec_less"} compares its two arguments, returns @{text "1"} if
-  the first is less than the second; otherwise returns @{text "0"}.
+  \<open>rec_less\<close> compares its two arguments, returns \<open>1\<close> if
+  the first is less than the second; otherwise returns \<open>0\<close>.
 \<close>
 definition rec_less :: "recf"
   where
     "rec_less = Cn 2 rec_sg [Cn 2 rec_minus [id 2 1, id 2 0]]"
 
 text \<open>
-  @{text "rec_not"} inverse its argument: returns @{text "1"} when the
-  argument is @{text "0"}; returns @{text "0"} otherwise.
+  \<open>rec_not\<close> inverse its argument: returns \<open>1\<close> when the
+  argument is \<open>0\<close>; returns \<open>0\<close> otherwise.
 \<close>
 definition rec_not :: "recf"
   where
     "rec_not = Cn 1 rec_minus [constn 1, id 1 0]"
 
 text \<open>
-  @{text "rec_eq"} compares its two arguments: returns @{text "1"}
-  if they are equal; return @{text "0"} otherwise.
+  \<open>rec_eq\<close> compares its two arguments: returns \<open>1\<close>
+  if they are equal; return \<open>0\<close> otherwise.
 \<close>
 definition rec_eq :: "recf"
   where
@@ -93,8 +93,8 @@ definition rec_eq :: "recf"
                Cn 2 rec_minus [id 2 1, id 2 0]]]"
 
 text \<open>
-  @{text "rec_conj"} computes the conjunction of its two arguments, 
-  returns @{text "1"} if both of them are non-zero; returns @{text "0"}
+  \<open>rec_conj\<close> computes the conjunction of its two arguments, 
+  returns \<open>1\<close> if both of them are non-zero; returns \<open>0\<close>
   otherwise.
 \<close>
 definition rec_conj :: "recf"
@@ -102,8 +102,8 @@ definition rec_conj :: "recf"
     "rec_conj = Cn 2 rec_sg [Cn 2 rec_mult [id 2 0, id 2 1]] "
 
 text \<open>
-  @{text "rec_disj"} computes the disjunction of its two arguments, 
-  returns @{text "0"} if both of them are zero; returns @{text "0"}
+  \<open>rec_disj\<close> computes the disjunction of its two arguments, 
+  returns \<open>0\<close> if both of them are zero; returns \<open>0\<close>
   otherwise.
 \<close>
 definition rec_disj :: "recf"
@@ -125,10 +125,10 @@ fun arity :: "recf \<Rightarrow> nat"
   | "arity (Mn n f) = n"
 
 text \<open>
-  @{text "get_fstn_args n (Suc k)"} returns
-  @{text "[id n 0, id n 1, id n 2, \<dots>, id n k]"}, 
-  the effect of which is to take out the first @{text "Suc k"} 
-  arguments out of the @{text "n"} input arguments.
+  \<open>get_fstn_args n (Suc k)\<close> returns
+  \<open>[id n 0, id n 1, id n 2, \<dots>, id n k]\<close>, 
+  the effect of which is to take out the first \<open>Suc k\<close> 
+  arguments out of the \<open>n\<close> input arguments.
 \<close>
 
 fun get_fstn_args :: "nat \<Rightarrow>  nat \<Rightarrow> recf list"
@@ -137,8 +137,8 @@ fun get_fstn_args :: "nat \<Rightarrow>  nat \<Rightarrow> recf list"
   | "get_fstn_args n (Suc y) = get_fstn_args n y @ [id n y]"
 
 text \<open>
-  @{text "rec_sigma f"} returns the recursive functions which 
-  sums up the results of @{text "f"}:
+  \<open>rec_sigma f\<close> returns the recursive functions which 
+  sums up the results of \<open>f\<close>:
   \[
   (rec\_sigma f)(x, y) = f(x, 0) + f(x, 1) + \cdots + f(x, y)
   \]
@@ -154,7 +154,7 @@ fun rec_sigma :: "recf \<Rightarrow> recf"
                         @ [Cn (Suc vl) s [id (Suc vl) (vl - 1)]])]))"
 
 text \<open>
-  @{text "rec_exec"} is the interpreter function for
+  \<open>rec_exec\<close> is the interpreter function for
   reursive functions. The function is defined such that 
   it always returns meaningful results for primitive recursive 
   functions.
@@ -163,43 +163,43 @@ text \<open>
 declare rec_exec.simps[simp del] constn.simps[simp del]
 
 text \<open>
-  Correctness of @{text "rec_add"}.
+  Correctness of \<open>rec_add\<close>.
 \<close>
 lemma add_lemma: "\<And> x y. rec_exec rec_add [x, y] =  x + y"
   by(induct_tac y, auto simp: rec_add_def rec_exec.simps)
 
 text \<open>
-  Correctness of @{text "rec_mult"}.
+  Correctness of \<open>rec_mult\<close>.
 \<close>
 lemma mult_lemma: "\<And> x y. rec_exec rec_mult [x, y] = x * y"
   by(induct_tac y, auto simp: rec_mult_def rec_exec.simps add_lemma)
 
 text \<open>
-  Correctness of @{text "rec_pred"}.
+  Correctness of \<open>rec_pred\<close>.
 \<close>
 lemma pred_lemma: "\<And> x. rec_exec rec_pred [x] =  x - 1"
   by(induct_tac x, auto simp: rec_pred_def rec_exec.simps)
 
 text \<open>
-  Correctness of @{text "rec_minus"}.
+  Correctness of \<open>rec_minus\<close>.
 \<close>
 lemma minus_lemma: "\<And> x y. rec_exec rec_minus [x, y] = x - y"
   by(induct_tac y, auto simp: rec_exec.simps rec_minus_def pred_lemma)
 
 text \<open>
-  Correctness of @{text "rec_sg"}.
+  Correctness of \<open>rec_sg\<close>.
 \<close>
 lemma sg_lemma: "\<And> x. rec_exec rec_sg [x] = (if x = 0 then 0 else 1)"
   by(auto simp: rec_sg_def minus_lemma rec_exec.simps constn.simps)
 
 text \<open>
-  Correctness of @{text "constn"}.
+  Correctness of \<open>constn\<close>.
 \<close>
 lemma constn_lemma: "rec_exec (constn n) [x] = n"
   by(induct n, auto simp: rec_exec.simps constn.simps)
 
 text \<open>
-  Correctness of @{text "rec_less"}.
+  Correctness of \<open>rec_less\<close>.
 \<close>
 lemma less_lemma: "\<And> x y. rec_exec rec_less [x, y] = 
   (if x < y then 1 else 0)"
@@ -207,7 +207,7 @@ lemma less_lemma: "\<And> x y. rec_exec rec_less [x, y] =
       rec_less_def minus_lemma sg_lemma)
 
 text \<open>
-  Correctness of @{text "rec_not"}.
+  Correctness of \<open>rec_not\<close>.
 \<close>
 lemma not_lemma: 
   "\<And> x. rec_exec rec_not [x] = (if x = 0 then 1 else 0)"
@@ -215,20 +215,20 @@ lemma not_lemma:
       constn_lemma minus_lemma)
 
 text \<open>
-  Correctness of @{text "rec_eq"}.
+  Correctness of \<open>rec_eq\<close>.
 \<close>
 lemma eq_lemma: "\<And> x y. rec_exec rec_eq [x, y] = (if x = y then 1 else 0)"
   by(induct_tac y, auto simp: rec_exec.simps rec_eq_def constn_lemma add_lemma minus_lemma)
 
 text \<open>
-  Correctness of @{text "rec_conj"}.
+  Correctness of \<open>rec_conj\<close>.
 \<close>
 lemma conj_lemma: "\<And> x y. rec_exec rec_conj [x, y] = (if x = 0 \<or> y = 0 then 0 
                                                        else 1)"
   by(induct_tac y, auto simp: rec_exec.simps sg_lemma rec_conj_def mult_lemma)
 
 text \<open>
-  Correctness of @{text "rec_disj"}.
+  Correctness of \<open>rec_disj\<close>.
 \<close>
 lemma disj_lemma: "\<And> x y. rec_exec rec_disj [x, y] = (if x = 0 \<and> y = 0 then 0
                                                      else 1)"
@@ -236,9 +236,9 @@ lemma disj_lemma: "\<And> x y. rec_exec rec_disj [x, y] = (if x = 0 \<and> y = 0
 
 
 text \<open>
-  @{text "primrec recf n"} is true iff 
-  @{text "recf"} is a primitive recursive function 
-  with arity @{text "n"}.
+  \<open>primrec recf n\<close> is true iff 
+  \<open>recf\<close> is a primitive recursive function 
+  with arity \<open>n\<close>.
 \<close>
 inductive primerec :: "recf \<Rightarrow> nat \<Rightarrow> bool"
   where
@@ -266,8 +266,8 @@ declare mult_lemma[simp] add_lemma[simp] pred_lemma[simp]
   conj_lemma[simp] disj_lemma[simp]
 
 text \<open>
-  @{text "Sigma"} is the logical specification of 
-  the recursive function @{text "rec_sigma"}.
+  \<open>Sigma\<close> is the logical specification of 
+  the recursive function \<open>rec_sigma\<close>.
 \<close>
 function Sigma :: "(nat list \<Rightarrow> nat) \<Rightarrow> nat list \<Rightarrow> nat"
   where
@@ -334,7 +334,7 @@ lemma rec_sigma_Suc_simp_rewrite:
   done      
 
 text \<open>
-  The correctness of @{text "rec_sigma"} with respect to its specification.
+  The correctness of \<open>rec_sigma\<close> with respect to its specification.
 \<close>
 lemma sigma_lemma: 
   "primerec rg (Suc (length xs))
@@ -346,11 +346,11 @@ lemma sigma_lemma:
   done
 
 text \<open>
-  @{text "rec_accum f (x1, x2, \<dots>, xn, k) = 
+  \<open>rec_accum f (x1, x2, \<dots>, xn, k) = 
            f(x1, x2, \<dots>, xn, 0) * 
            f(x1, x2, \<dots>, xn, 1) *
                \<dots> 
-           f(x1, x2, \<dots>, xn, k)"}
+           f(x1, x2, \<dots>, xn, k)\<close>
 \<close>
 fun rec_accum :: "recf \<Rightarrow> recf"
   where
@@ -363,7 +363,7 @@ fun rec_accum :: "recf \<Rightarrow> recf"
                       @ [Cn (Suc vl) s [id (Suc vl) (vl - 1)]])]))"
 
 text \<open>
-  @{text "Accum"} is the formal specification of @{text "rec_accum"}.
+  \<open>Accum\<close> is the formal specification of \<open>rec_accum\<close>.
 \<close>
 function Accum :: "(nat list \<Rightarrow> nat) \<Rightarrow> nat list \<Rightarrow> nat"
   where
@@ -393,7 +393,7 @@ lemma rec_accum_Suc_simp_rewrite:
   done  
 
 text \<open>
-  The correctness of @{text "rec_accum"} with respect to its specification.
+  The correctness of \<open>rec_accum\<close> with respect to its specification.
 \<close>
 lemma accum_lemma :
   "primerec rg (Suc (length xs))
@@ -406,9 +406,9 @@ lemma accum_lemma :
 declare rec_accum.simps [simp del]
 
 text \<open>
-  @{text "rec_all t f (x1, x2, \<dots>, xn)"} 
+  \<open>rec_all t f (x1, x2, \<dots>, xn)\<close> 
   computes the charactrization function of the following FOL formula:
-  @{text "(\<forall> x \<le> t(x1, x2, \<dots>, xn). (f(x1, x2, \<dots>, xn, x) > 0))"}
+  \<open>(\<forall> x \<le> t(x1, x2, \<dots>, xn). (f(x1, x2, \<dots>, xn, x) > 0))\<close>
 \<close>
 fun rec_all :: "recf \<Rightarrow> recf \<Rightarrow> recf"
   where
@@ -433,7 +433,7 @@ qed (insert assms,auto simp add: rec_exec.simps rec_accum.simps get_fstn_args_ta
 
 
 text \<open>
-  The correctness of @{text "rec_all"}.
+  The correctness of \<open>rec_all\<close>.
 \<close>
 lemma all_lemma: 
   "\<lbrakk>primerec rf (Suc (length xs));
@@ -452,9 +452,9 @@ lemma all_lemma:
   done
 
 text \<open>
-  @{text "rec_ex t f (x1, x2, \<dots>, xn)"} 
+  \<open>rec_ex t f (x1, x2, \<dots>, xn)\<close> 
   computes the charactrization function of the following FOL formula:
-  @{text "(\<exists> x \<le> t(x1, x2, \<dots>, xn). (f(x1, x2, \<dots>, xn, x) > 0))"}
+  \<open>(\<exists> x \<le> t(x1, x2, \<dots>, xn). (f(x1, x2, \<dots>, xn, x) > 0))\<close>
 \<close>
 fun rec_ex :: "recf \<Rightarrow> recf \<Rightarrow> recf"
   where
@@ -475,7 +475,7 @@ proof(induct x)
 qed (insert assms,auto simp: get_fstn_args_take rec_exec.simps rec_sigma.simps)
 
 text \<open>
-  The correctness of @{text "ex_lemma"}.
+  The correctness of \<open>ex_lemma\<close>.
 \<close>
 lemma ex_lemma:"
   \<lbrakk>primerec rf (Suc (length xs));
@@ -489,7 +489,7 @@ lemma ex_lemma:"
   done
 
 text \<open>
-  Definition of @{text "Min[R]"} on page 77 of Boolos's book.
+  Definition of \<open>Min[R]\<close> on page 77 of Boolos's book.
 \<close>
 
 fun Minr :: "(nat list \<Rightarrow> bool) \<Rightarrow> nat list \<Rightarrow> nat \<Rightarrow> nat"
@@ -500,7 +500,7 @@ fun Minr :: "(nat list \<Rightarrow> bool) \<Rightarrow> nat list \<Rightarrow> 
 declare Minr.simps[simp del] rec_all.simps[simp del]
 
 text \<open>
-  The following is a set of auxilliary lemmas about @{text "Minr"}.
+  The following is a set of auxilliary lemmas about \<open>Minr\<close>.
 \<close>
 lemma Minr_range: "Minr Rr xs w \<le> w \<or> Minr Rr xs w = Suc w"
   apply(auto simp: Minr.simps)
@@ -545,11 +545,11 @@ lemma Minr_Suc_simp:
   by(insert Minr_range[of Rr xs w], auto)
 
 text \<open>
-  @{text "rec_Minr"} is the recursive function 
-  used to implement @{text "Minr"}:
-  if @{text "Rr"} is implemented by a recursive function @{text "recf"},
-  then @{text "rec_Minr recf"} is the recursive function used to 
-  implement @{text "Minr Rr"}
+  \<open>rec_Minr\<close> is the recursive function 
+  used to implement \<open>Minr\<close>:
+  if \<open>Rr\<close> is implemented by a recursive function \<open>recf\<close>,
+  then \<open>rec_Minr recf\<close> is the recursive function used to 
+  implement \<open>Minr Rr\<close>
 \<close>
 fun rec_Minr :: "recf \<Rightarrow> recf"
   where
@@ -713,7 +713,7 @@ next
 qed
 
 text \<open>
-  The correctness of @{text "rec_Minr"}.
+  The correctness of \<open>rec_Minr\<close>.
 \<close>
 lemma Minr_lemma: "
   \<lbrakk>primerec rf (Suc (length xs))\<rbrakk> 
@@ -743,7 +743,7 @@ proof -
 qed
 
 text \<open>
-  @{text "rec_le"} is the comparasion function 
+  \<open>rec_le\<close> is the comparasion function 
   which compares its two arguments, testing whether the 
   first is less or equal to the second.
 \<close>
@@ -752,14 +752,14 @@ definition rec_le :: "recf"
     "rec_le = Cn (Suc (Suc 0)) rec_disj [rec_less, rec_eq]"
 
 text \<open>
-  The correctness of @{text "rec_le"}.
+  The correctness of \<open>rec_le\<close>.
 \<close>
 lemma le_lemma: 
   "\<And>x y. rec_exec rec_le [x, y] = (if (x \<le> y) then 1 else 0)"
   by(auto simp: rec_le_def rec_exec.simps)
 
 text \<open>
-  Definition of @{text "Max[Rr]"} on page 77 of Boolos's book.
+  Definition of \<open>Max[Rr]\<close> on page 77 of Boolos's book.
 \<close>
 
 fun Maxr :: "(nat list \<Rightarrow> bool) \<Rightarrow> nat list \<Rightarrow> nat \<Rightarrow> nat"
@@ -769,8 +769,8 @@ fun Maxr :: "(nat list \<Rightarrow> bool) \<Rightarrow> nat list \<Rightarrow> 
                   else Max setx)"
 
 text \<open>
-  @{text "rec_maxr"} is the recursive function 
-  used to implementation @{text "Maxr"}.
+  \<open>rec_maxr\<close> is the recursive function 
+  used to implementation \<open>Maxr\<close>.
 \<close>
 fun rec_maxr :: "recf \<Rightarrow> recf"
   where
@@ -927,7 +927,7 @@ proof -
 qed
 
 text \<open>
-  The correctness of @{text "rec_maxr"}.
+  The correctness of \<open>rec_maxr\<close>.
 \<close>
 lemma Maxr_lemma:
   assumes h: "primerec rf (Suc (length xs))"
@@ -983,7 +983,7 @@ proof -
 qed
 
 text \<open>
-  @{text "quo"} is the formal specification of division.
+  \<open>quo\<close> is the formal specification of division.
 \<close>
 fun quo :: "nat list \<Rightarrow> nat"
   where
@@ -995,7 +995,7 @@ fun quo :: "nat list \<Rightarrow> nat"
 declare quo.simps[simp del]
 
 text \<open>
-  The following lemmas shows more directly the menaing of @{text "quo"}:
+  The following lemmas shows more directly the menaing of \<open>quo\<close>:
 \<close>
 lemma quo_is_div: "y > 0 \<Longrightarrow> quo [x, y] = x div y"
 proof -
@@ -1016,7 +1016,7 @@ lemma quo_div: "quo [x, y] = x div y"
   by(cases "y=0", auto elim!:quo_is_div)
 
 text \<open>
-  @{text "rec_noteq"} is the recursive function testing whether its
+  \<open>rec_noteq\<close> is the recursive function testing whether its
   two arguments are not equal.
 \<close>
 definition rec_noteq:: "recf"
@@ -1026,7 +1026,7 @@ definition rec_noteq:: "recf"
                                         ((Suc 0))]]"
 
 text \<open>
-  The correctness of @{text "rec_noteq"}.
+  The correctness of \<open>rec_noteq\<close>.
 \<close>
 lemma noteq_lemma: 
   "\<And> x y. rec_exec rec_noteq [x, y] = 
@@ -1036,7 +1036,7 @@ lemma noteq_lemma:
 declare noteq_lemma[simp]
 
 text \<open>
-  @{text "rec_quo"} is the recursive function used to implement @{text "quo"}
+  \<open>rec_quo\<close> is the recursive function used to implement \<open>quo\<close>
 \<close>
 definition rec_quo :: "recf"
   where
@@ -1099,14 +1099,14 @@ proof(simp add: rec_exec.simps rec_quo_def)
 qed
 
 text \<open>
-  The correctness of @{text "quo"}.
+  The correctness of \<open>quo\<close>.
 \<close>
 lemma quo_lemma2: "rec_exec rec_quo [x, y] = x div y"
   using quo_lemma1[of x y] quo_div[of x y]
   by simp
 
 text \<open>
-  @{text "rec_mod"} is the recursive function used to implement 
+  \<open>rec_mod\<close> is the recursive function used to implement 
   the reminder function.
 \<close>
 definition rec_mod :: "recf"
@@ -1116,7 +1116,7 @@ definition rec_mod :: "recf"
                                                      (Suc (0))]]"
 
 text \<open>
-  The correctness of @{text "rec_mod"}:
+  The correctness of \<open>rec_mod\<close>:
 \<close>
 lemma mod_lemma: "\<And> x y. rec_exec rec_mod [x, y] = (x mod y)"
   by(simp add: rec_exec.simps rec_mod_def quo_lemma2 minus_div_mult_eq_mod)
@@ -1143,8 +1143,8 @@ fun rec_embranch' :: "(recf * recf) list \<Rightarrow> nat \<Rightarrow> recf"
                    [Cn vl rec_mult [rg, rc], rec_embranch' rgcs vl]"
 
 text \<open>
-  @{text "rec_embrach"} is the recursive function used to implement
-  @{text "Embranch"}.
+  \<open>rec_embrach\<close> is the recursive function used to implement
+  \<open>Embranch\<close>.
 \<close>
 fun rec_embranch :: "(recf * recf) list \<Rightarrow> recf"
   where
@@ -1225,7 +1225,7 @@ proof(induct rgs arbitrary: rcs k)
 qed simp
 
 text \<open>
-  The correctness of @{text "rec_embranch"}.
+  The correctness of \<open>rec_embranch\<close>.
 \<close>
 lemma embranch_lemma:
   assumes branch_num:
@@ -1377,7 +1377,7 @@ proof(induct rgs arbitrary: rcs n, simp)
 qed
 
 text\<open>
-  @{text "prime n"} means @{text "n"} is a prime number.
+  \<open>prime n\<close> means \<open>n\<close> is a prime number.
 \<close>
 fun Prime :: "nat \<Rightarrow> bool"
   where
@@ -1394,8 +1394,8 @@ lemma primerec_all2: "primerec (rec_all rt rf) n \<Longrightarrow>
   by(insert primerec_all[of rt rf n], simp)
 
 text \<open>
-  @{text "rec_prime"} is the recursive function used to implement
-  @{text "Prime"}.
+  \<open>rec_prime\<close> is the recursive function used to implement
+  \<open>Prime\<close>.
 \<close>
 definition rec_prime :: "recf"
   where
@@ -1422,7 +1422,7 @@ lemma exec_tmp:
       prime_cn_reverse primerec_rec_eq_2 rec_eq_def zero_less_Suc)
 
 text \<open>
-  The correctness of @{text "Prime"}.
+  The correctness of \<open>Prime\<close>.
 \<close>
 lemma prime_lemma: "rec_exec rec_prime [x] = (if Prime x then 1 else 0)"
 proof(simp add: rec_exec.simps rec_prime_def)
@@ -1517,7 +1517,7 @@ lemma fac_dummy: "rec_exec rec_dummyfac [x, y] = y !"
   done
 
 text \<open>
-  The correctness of @{text "rec_fac"}.
+  The correctness of \<open>rec_fac\<close>.
 \<close>
 lemma fac_lemma: "rec_exec rec_fac [x] =  x!"
   apply(simp add: rec_fac_def rec_exec.simps fac_dummy)
@@ -1526,7 +1526,7 @@ lemma fac_lemma: "rec_exec rec_fac [x] =  x!"
 declare fac.simps[simp del]
 
 text \<open>
-  @{text "Np x"} returns the first prime number after @{text "x"}.
+  \<open>Np x\<close> returns the first prime number after \<open>x\<close>.
 \<close>
 fun Np ::"nat \<Rightarrow> nat"
   where
@@ -1535,8 +1535,8 @@ fun Np ::"nat \<Rightarrow> nat"
 declare Np.simps[simp del] rec_Minr.simps[simp del]
 
 text \<open>
-  @{text "rec_np"} is the recursive function used to implement
-  @{text "Np"}.
+  \<open>rec_np\<close> is the recursive function used to implement
+  \<open>Np\<close>.
 \<close>
 definition rec_np :: "recf"
   where
@@ -1647,7 +1647,7 @@ lemma primerec_rec_prime_1[intro]: "primerec rec_prime (Suc 0)"
   done
 
 text \<open>
-  The correctness of @{text "rec_np"}.
+  The correctness of \<open>rec_np\<close>.
 \<close>
 lemma np_lemma: "rec_exec rec_np [x] = Np x"
 proof(auto simp: rec_np_def rec_exec.simps Let_def fac_lemma)
@@ -1670,7 +1670,7 @@ proof(auto simp: rec_np_def rec_exec.simps Let_def fac_lemma)
 qed
 
 text \<open>
-  @{text "rec_power"} is the recursive function used to implement
+  \<open>rec_power\<close> is the recursive function used to implement
   power function.
 \<close>
 definition rec_power :: "recf"
@@ -1678,13 +1678,13 @@ definition rec_power :: "recf"
     "rec_power = Pr 1 (constn 1) (Cn 3 rec_mult [id 3 0, id 3 2])"
 
 text \<open>
-  The correctness of @{text "rec_power"}.
+  The correctness of \<open>rec_power\<close>.
 \<close>
 lemma power_lemma: "rec_exec rec_power [x, y] = x^y"
   by(induct y, auto simp: rec_exec.simps rec_power_def)
 
 text\<open>
-  @{text "Pi k"} returns the @{text "k"}-th prime number.
+  \<open>Pi k\<close> returns the \<open>k\<close>-th prime number.
 \<close>
 fun Pi :: "nat \<Rightarrow> nat"
   where
@@ -1696,8 +1696,8 @@ definition rec_dummy_pi :: "recf"
     "rec_dummy_pi = Pr 1 (constn 2) (Cn 3 rec_np [id 3 2])"
 
 text \<open>
-  @{text "rec_pi"} is the recursive function used to implement
-  @{text "Pi"}.
+  \<open>rec_pi\<close> is the recursive function used to implement
+  \<open>Pi\<close>.
 \<close>
 definition rec_pi :: "recf"
   where
@@ -1708,7 +1708,7 @@ lemma pi_dummy_lemma: "rec_exec rec_dummy_pi [x, y] = Pi y"
   by(auto simp: rec_exec.simps rec_dummy_pi_def Pi.simps np_lemma)
 
 text \<open>
-  The correctness of @{text "rec_pi"}.
+  The correctness of \<open>rec_pi\<close>.
 \<close>
 lemma pi_lemma: "rec_exec rec_pi [x] = Pi x"
   apply(simp add: rec_pi_def rec_exec.simps pi_dummy_lemma)
@@ -1721,9 +1721,9 @@ fun loR :: "nat list \<Rightarrow> bool"
 declare loR.simps[simp del]
 
 text \<open>
-  @{text "Lo"} specifies the @{text "lo"} function given on page 79 of 
+  \<open>Lo\<close> specifies the \<open>lo\<close> function given on page 79 of 
   Boolos's book. It is one of the two notions of integeral logarithmetic
-  operation on that page. The other is @{text "lg"}.
+  operation on that page. The other is \<open>lg\<close>.
 \<close>
 fun lo :: " nat \<Rightarrow> nat \<Rightarrow> nat"
   where 
@@ -1759,7 +1759,7 @@ lemma primerec_2[intro]:
   by(force simp: prime_cn prime_id rec_mod_def rec_quo_def rec_power_def prime_pr numeral)+
 
 text \<open>
-  @{text "rec_lo"} is the recursive function used to implement @{text "Lo"}.
+  \<open>rec_lo\<close> is the recursive function used to implement \<open>Lo\<close>.
 \<close>
 definition rec_lo :: "recf"
   where
@@ -1845,7 +1845,7 @@ lemma lo_lemma''': "\<lbrakk>\<not> Suc 0 < y\<rbrakk> \<Longrightarrow> rec_exe
   done
 
 text \<open>
-  The correctness of @{text "rec_lo"}:
+  The correctness of \<open>rec_lo\<close>:
 \<close>
 lemma lo_lemma: "rec_exec rec_lo [x, y] = lo x y" 
   apply(cases "Suc 0 < x \<and> Suc 0 < y")
@@ -1857,9 +1857,9 @@ fun lgR :: "nat list \<Rightarrow> bool"
     "lgR [x, y, u] = (y^u \<le> x)"
 
 text \<open>
-  @{text "lg"} specifies the @{text "lg"} function given on page 79 of 
+  \<open>lg\<close> specifies the \<open>lg\<close> function given on page 79 of 
   Boolos's book. It is one of the two notions of integeral logarithmetic
-  operation on that page. The other is @{text "lo"}.
+  operation on that page. The other is \<open>lo\<close>.
 \<close>
 fun lg :: "nat \<Rightarrow> nat \<Rightarrow> nat"
   where
@@ -1870,7 +1870,7 @@ fun lg :: "nat \<Rightarrow> nat \<Rightarrow> nat"
 declare lg.simps[simp del] lgR.simps[simp del]
 
 text \<open>
-  @{text "rec_lg"} is the recursive function used to implement @{text "lg"}.
+  \<open>rec_lg\<close> is the recursive function used to implement \<open>lg\<close>.
 \<close>
 definition rec_lg :: "recf"
   where
@@ -1937,7 +1937,7 @@ lemma lg_lemma''': "\<not> Suc 0 < y \<Longrightarrow> rec_exec rec_lg [x, y] = 
   done
 
 text \<open>
-  The correctness of @{text "rec_lg"}.
+  The correctness of \<open>rec_lg\<close>.
 \<close>
 lemma lg_lemma: "rec_exec rec_lg [x, y] = lg x y"
   apply(cases "Suc 0 < x \<and> Suc 0 < y", auto simp: 
@@ -1945,16 +1945,16 @@ lemma lg_lemma: "rec_exec rec_lg [x, y] = lg x y"
   done
 
 text \<open>
-  @{text "Entry sr i"} returns the @{text "i"}-th entry of a list of natural 
-  numbers encoded by number @{text "sr"} using Godel's coding.
+  \<open>Entry sr i\<close> returns the \<open>i\<close>-th entry of a list of natural 
+  numbers encoded by number \<open>sr\<close> using Godel's coding.
 \<close>
 fun Entry :: "nat \<Rightarrow> nat \<Rightarrow> nat"
   where
     "Entry sr i = lo sr (Pi (Suc i))"
 
 text \<open>
-  @{text "rec_entry"} is the recursive function used to implement
-  @{text "Entry"}.
+  \<open>rec_entry\<close> is the recursive function used to implement
+  \<open>Entry\<close>.
 \<close>
 definition rec_entry:: "recf"
   where
@@ -1963,7 +1963,7 @@ definition rec_entry:: "recf"
 declare Pi.simps[simp del]
 
 text \<open>
-  The correctness of @{text "rec_entry"}.
+  The correctness of \<open>rec_entry\<close>.
 \<close>
 lemma entry_lemma: "rec_exec rec_entry [str, i] = Entry str i"
   by(simp add: rec_entry_def  rec_exec.simps lo_lemma pi_lemma)
@@ -1973,7 +1973,7 @@ subsection \<open>The construction of F\<close>
 
 text \<open>
   Using the auxilliary functions obtained in last section, 
-  we are going to contruct the function @{text "F"}, 
+  we are going to contruct the function \<open>F\<close>, 
   which is an interpreter of Turing Machines.
 \<close>
 
@@ -2021,7 +2021,7 @@ lemma strt'_lemma: "\<lbrakk>length xs = vl; n \<le> vl\<rbrakk> \<Longrightarro
   done
 
 text \<open>
-  @{text "strt"} corresponds to the @{text "strt"} function on page 90 of B book, but 
+  \<open>strt\<close> corresponds to the \<open>strt\<close> function on page 90 of B book, but 
   this definition generalises the original one to deal with multiple input arguments.
 \<close>
 fun strt :: "nat list \<Rightarrow> nat"
@@ -2034,7 +2034,7 @@ fun rec_map :: "recf \<Rightarrow> nat \<Rightarrow> recf list"
     "rec_map rf vl = map (\<lambda> i. Cn vl rf [id vl i]) [0..<vl]"
 
 text \<open>
-  @{text "rec_strt"} is the recursive function used to implement @{text "strt"}.
+  \<open>rec_strt\<close> is the recursive function used to implement \<open>strt\<close>.
 \<close>
 fun rec_strt :: "nat \<Rightarrow> recf"
   where
@@ -2080,7 +2080,7 @@ next
 qed
 
 text \<open>
-  The correctness of @{text "rec_strt"}.
+  The correctness of \<open>rec_strt\<close>.
 \<close>
 lemma strt_lemma: "length xs = vl \<Longrightarrow> 
   rec_exec (rec_strt vl) xs = strt xs"
@@ -2091,20 +2091,20 @@ lemma strt_lemma: "length xs = vl \<Longrightarrow>
   done
 
 text \<open>
-  The @{text "scan"} function on page 90 of B book.
+  The \<open>scan\<close> function on page 90 of B book.
 \<close>
 fun scan :: "nat \<Rightarrow> nat"
   where
     "scan r = r mod 2"
 
 text \<open>
-  @{text "rec_scan"} is the implemention of @{text "scan"}.
+  \<open>rec_scan\<close> is the implemention of \<open>scan\<close>.
 \<close>
 definition rec_scan :: "recf"
   where "rec_scan = Cn 1 rec_mod [id 1 0, constn 2]"
 
 text \<open>
-  The correctness of @{text "scan"}.
+  The correctness of \<open>scan\<close>.
 \<close>
 lemma scan_lemma: "rec_exec rec_scan [r] = r mod 2"
   by(simp add: rec_exec.simps rec_scan_def mod_lemma)
@@ -2181,7 +2181,7 @@ definition rec_newrgt3 :: "recf"
     "rec_newrgt3 = Cn 2 rec_quo [id 2 1, Cn 2 (constn 2) [id 2 0]]"
 
 text \<open>
-  The @{text "new_left"} function on page 91 of B book.
+  The \<open>new_left\<close> function on page 91 of B book.
 \<close>
 fun newleft :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"
   where
@@ -2191,8 +2191,8 @@ fun newleft :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"
                     else p)"
 
 text \<open>
-  @{text "rec_newleft"} is the recursive function used to 
-  implement @{text "newleft"}.
+  \<open>rec_newleft\<close> is the recursive function used to 
+  implement \<open>newleft\<close>.
 \<close>
 definition rec_newleft :: "recf" 
   where
@@ -2227,7 +2227,7 @@ lemma Suc_Suc_Suc_Suc_induct:
 declare quo_lemma2[simp] mod_lemma[simp]
 
 text \<open>
-  The correctness of @{text "rec_newleft"}.
+  The correctness of \<open>rec_newleft\<close>.
 \<close>
 lemma newleft_lemma: 
   "rec_exec rec_newleft [p, r, a] = newleft p r a"
@@ -2267,7 +2267,7 @@ proof(simp only: rec_newleft_def Let_def)
 qed
 
 text \<open>
-  The @{text "newrght"} function is one similar to @{text "newleft"}, but used to 
+  The \<open>newrght\<close> function is one similar to \<open>newleft\<close>, but used to 
   compute the right number.
 \<close>
 fun newrght :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"
@@ -2279,8 +2279,8 @@ fun newrght :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"
                     else r)"
 
 text \<open>
-  @{text "rec_newrght"} is the recursive function used to implement 
-  @{text "newrgth"}.
+  \<open>rec_newrght\<close> is the recursive function used to implement 
+  \<open>newrgth\<close>.
 \<close>
 definition rec_newrght :: "recf" 
   where
@@ -2317,7 +2317,7 @@ lemma primerec_rec_scan_1[intro]: "primerec rec_scan (Suc 0)"
   done
 
 text \<open>
-  The correctness of @{text "rec_newrght"}.
+  The correctness of \<open>rec_newrght\<close>.
 \<close>
 lemma newrght_lemma: "rec_exec rec_newrght [p, r, a] = newrght p r a"
 proof(simp only: rec_newrght_def Let_def)
@@ -2371,10 +2371,10 @@ qed
 declare Entry.simps[simp del]
 
 text \<open>
-  The @{text "actn"} function given on page 92 of B book, which is used to 
+  The \<open>actn\<close> function given on page 92 of B book, which is used to 
   fetch Turing Machine intructions. 
-  In @{text "actn m q r"}, @{text "m"} is the Godel coding of a Turing Machine,
-  @{text "q"} is the current state of Turing Machine, @{text "r"} is the
+  In \<open>actn m q r\<close>, \<open>m\<close> is the Godel coding of a Turing Machine,
+  \<open>q\<close> is the current state of Turing Machine, \<open>r\<close> is the
   right number of Turing Machine tape.
 \<close>
 fun actn :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"
@@ -2383,7 +2383,7 @@ fun actn :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"
                  else 4)"
 
 text \<open>
-  @{text "rec_actn"} is the recursive function used to implement @{text "actn"}
+  \<open>rec_actn\<close> is the recursive function used to implement \<open>actn\<close>
 \<close>
 definition rec_actn :: "recf"
   where
@@ -2399,7 +2399,7 @@ definition rec_actn :: "recf"
              Cn 3 rec_eq [id 3 1, Cn 3 (constn 0) [id 3 0]]]] "
 
 text \<open>
-  The correctness of @{text "actn"}.
+  The correctness of \<open>actn\<close>.
 \<close>
 lemma actn_lemma: "rec_exec rec_actn [m, q, r] = actn m q r"
   by(auto simp: rec_actn_def rec_exec.simps entry_lemma scan_lemma)
@@ -2602,9 +2602,9 @@ lemma newconf_lemma: "rec_exec rec_newconf [m ,c] = newconf m c"
 declare newconf_lemma[simp]
 
 text \<open>
-  @{text "conf m r k"} computes the TM configuration after @{text "k"} steps of execution
-  of TM coded as @{text "m"} starting from the initial configuration where the left number equals @{text "0"}, 
-  right number equals @{text "r"}. 
+  \<open>conf m r k\<close> computes the TM configuration after \<open>k\<close> steps of execution
+  of TM coded as \<open>m\<close> starting from the initial configuration where the left number equals \<open>0\<close>, 
+  right number equals \<open>r\<close>. 
 \<close>
 fun conf :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"
   where
@@ -2614,7 +2614,7 @@ fun conf :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"
 declare conf.simps[simp del]
 
 text \<open>
-  @{text "conf"} is implemented by the following recursive function @{text "rec_conf"}.
+  \<open>conf\<close> is implemented by the following recursive function \<open>rec_conf\<close>.
 \<close>
 definition rec_conf :: "recf"
   where
@@ -2635,7 +2635,7 @@ proof -
 qed
 
 text \<open>
-  The correctness of @{text "rec_conf"}.
+  The correctness of \<open>rec_conf\<close>.
 \<close>
 lemma conf_lemma: 
   "rec_exec rec_conf [m, r, t] = conf m r t"
@@ -2643,7 +2643,7 @@ lemma conf_lemma:
     (auto simp add: rec_conf_def rec_exec.simps conf.simps inpt_lemma trpl_lemma)
 
 text \<open>
-  @{text "NSTD c"} returns true if the configureation coded by @{text "c"} is no a stardard
+  \<open>NSTD c\<close> returns true if the configureation coded by \<open>c\<close> is no a stardard
   final configuration.
 \<close>
 fun NSTD :: "nat \<Rightarrow> bool"
@@ -2652,7 +2652,7 @@ fun NSTD :: "nat \<Rightarrow> bool"
              rght c \<noteq> 2^(lg (rght c + 1) 2) - 1 \<or> rght c = 0)"
 
 text \<open>
-  @{text "rec_NSTD"} is the recursive function implementing @{text "NSTD"}.
+  \<open>rec_NSTD\<close> is the recursive function implementing \<open>NSTD\<close>.
 \<close>
 definition rec_NSTD :: "recf"
   where
@@ -2690,7 +2690,7 @@ lemma NSTD_lemma2'':
   done
 
 text \<open>
-  The correctness of @{text "NSTD"}.
+  The correctness of \<open>NSTD\<close>.
 \<close>
 lemma NSTD_lemma2: "(rec_exec rec_NSTD [c] = Suc 0) = NSTD c"
   using NSTD_lemma1
@@ -2707,7 +2707,7 @@ lemma nstd_lemma: "rec_exec rec_NSTD [c] = nstd c"
   done
 
 text\<open>
-  @{text "nonstep m r t"} means afer @{text "t"} steps of execution, the TM coded by @{text "m"}
+  \<open>nonstep m r t\<close> means afer \<open>t\<close> steps of execution, the TM coded by \<open>m\<close>
   is not at a stardard final configuration.
 \<close>
 fun nonstop :: "nat \<Rightarrow> nat  \<Rightarrow> nat \<Rightarrow> nat"
@@ -2715,14 +2715,14 @@ fun nonstop :: "nat \<Rightarrow> nat  \<Rightarrow> nat \<Rightarrow> nat"
     "nonstop m r t = nstd (conf m r t)"
 
 text \<open>
-  @{text "rec_nonstop"} is the recursive function implementing @{text "nonstop"}.
+  \<open>rec_nonstop\<close> is the recursive function implementing \<open>nonstop\<close>.
 \<close>
 definition rec_nonstop :: "recf"
   where
     "rec_nonstop = Cn 3 rec_NSTD [rec_conf]"
 
 text \<open>
-  The correctness of @{text "rec_nonstop"}.
+  The correctness of \<open>rec_nonstop\<close>.
 \<close>
 lemma nonstop_lemma: 
   "rec_exec rec_nonstop [m, r, t] = nonstop m r t"
@@ -2730,10 +2730,10 @@ lemma nonstop_lemma:
   done
 
 text\<open>
-  @{text "rec_halt"} is the recursive function calculating the steps a TM needs to execute before
+  \<open>rec_halt\<close> is the recursive function calculating the steps a TM needs to execute before
   to reach a stardard final configuration. This recursive function is the only one
-  using @{text "Mn"} combinator. So it is the only non-primitive recursive function 
-  needs to be used in the construction of the universal function @{text "F"}.
+  using \<open>Mn\<close> combinator. So it is the only non-primitive recursive function 
+  needs to be used in the construction of the universal function \<open>F\<close>.
 \<close>
 
 definition rec_halt :: "recf"
@@ -2873,29 +2873,29 @@ next
 qed
 
 text \<open>
-  The following lemma gives the correctness of @{text "rec_halt"}.
-  It says: if @{text "rec_halt"} calculates that the TM coded by @{text "m"}
-  will reach a standard final configuration after @{text "t"} steps of execution, then it is indeed so.
+  The following lemma gives the correctness of \<open>rec_halt\<close>.
+  It says: if \<open>rec_halt\<close> calculates that the TM coded by \<open>m\<close>
+  will reach a standard final configuration after \<open>t\<close> steps of execution, then it is indeed so.
 \<close>
 
 text \<open>F: universal machine\<close>
 
 text \<open>
-  @{text "valu r"} extracts computing result out of the right number @{text "r"}.
+  \<open>valu r\<close> extracts computing result out of the right number \<open>r\<close>.
 \<close>
 fun valu :: "nat \<Rightarrow> nat"
   where
     "valu r = (lg (r + 1) 2) - 1"
 
 text \<open>
-  @{text "rec_valu"} is the recursive function implementing @{text "valu"}.
+  \<open>rec_valu\<close> is the recursive function implementing \<open>valu\<close>.
 \<close>
 definition rec_valu :: "recf"
   where
     "rec_valu = Cn 1 rec_minus [Cn 1 rec_lg [s, constn 2], constn 1]"
 
 text \<open>
-  The correctness of @{text "rec_valu"}.
+  The correctness of \<open>rec_valu\<close>.
 \<close>
 lemma value_lemma: "rec_exec rec_valu [r] = valu r"
   by(simp add: rec_exec.simps rec_valu_def lg_lemma)
@@ -2908,7 +2908,7 @@ lemma primerec_rec_valu_1[intro]: "primerec rec_valu (Suc 0)"
 declare valu.simps[simp del]
 
 text \<open>
-  The definition of the universal function @{text "rec_F"}.
+  The definition of the universal function \<open>rec_F\<close>.
 \<close>
 definition rec_F :: "recf"
   where
@@ -2924,7 +2924,7 @@ lemma terminate_halt_lemma:
 
 
 text \<open>
-  The correctness of @{text "rec_F"}, halt case.
+  The correctness of \<open>rec_F\<close>, halt case.
 \<close>
 
 lemma F_lemma: "rec_exec rec_halt [m, r] = t \<Longrightarrow> rec_exec rec_F [m, r] = (valu (rght (conf m r t)))"
@@ -2943,14 +2943,14 @@ lemma terminate_F_lemma: "terminate rec_halt [m, r] \<Longrightarrow> terminate 
   done
 
 text \<open>
-  The correctness of @{text "rec_F"}, nonhalt case.
+  The correctness of \<open>rec_F\<close>, nonhalt case.
 \<close>
 
 subsection \<open>Coding function of TMs\<close>
 
 text \<open>
   The purpose of this section is to get the coding function of Turing Machine, which is 
-  going to be named @{text "code"}.
+  going to be named \<open>code\<close>.
 \<close>
 
 fun bl2nat :: "cell list \<Rightarrow> nat \<Rightarrow> nat"
@@ -3007,7 +3007,7 @@ fun modify_tprog :: "instr list \<Rightarrow> nat list"
   | "modify_tprog ((ac, ns)#nl) = action_map ac # ns # modify_tprog nl"
 
 text \<open>
-  @{text "code tp"} gives the Godel coding of TM program @{text "tp"}.
+  \<open>code tp\<close> gives the Godel coding of TM program \<open>tp\<close>.
 \<close>
 fun code :: "instr list \<Rightarrow> nat"
   where 
@@ -3747,7 +3747,7 @@ declare code.simps[simp del]
 declare nth_of.simps[simp del]
 
 text \<open>
-  The lemma relates the one step execution of TMs with the interpreter function @{text "rec_newconf"}.
+  The lemma relates the one step execution of TMs with the interpreter function \<open>rec_newconf\<close>.
 \<close>
 lemma rec_t_eq_step: 
   "(\<lambda> (s, l, r). s \<le> length tp div 2) c \<Longrightarrow>
@@ -3841,7 +3841,7 @@ lemma trpl_code_simp[simp]:
   done
 
 text \<open>
-  The following lemma relates the multi-step interpreter function @{text "rec_conf"}
+  The following lemma relates the multi-step interpreter function \<open>rec_conf\<close>
   with the multi-step execution of TMs.
 \<close>
 lemma state_in_range_step
@@ -3945,8 +3945,8 @@ qed
 
 text \<open>
   The following lemma relates execution of TMs with 
-  the multi-step interpreter function @{text "rec_nonstop"}. Note,
-  @{text "rec_nonstop"} is constructed using @{text "rec_conf"}.
+  the multi-step interpreter function \<open>rec_nonstop\<close>. Note,
+  \<open>rec_nonstop\<close> is constructed using \<open>rec_conf\<close>.
 \<close>
 
 declare tm_wf.simps[simp del]
@@ -4150,7 +4150,7 @@ lemma halt_state_keep:
   done
 
 text \<open>
-  The correntess of @{text "rec_F"} which relates the interpreter function @{text "rec_F"} with the
+  The correntess of \<open>rec_F\<close> which relates the interpreter function \<open>rec_F\<close> with the
   execution of of TMs.
 \<close>
 

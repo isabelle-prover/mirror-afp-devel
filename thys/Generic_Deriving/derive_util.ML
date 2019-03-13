@@ -178,7 +178,7 @@ fun combs_to_list t =
 
 fun get_tvar ts =
   case ts of 
-    [] => TFree ("'a", @{sort type}) |
+    [] => TFree ("'a", \<^sort>\<open>type\<close>) |
     (t::ts) =>
       case t of T as TFree _ => T |
                 Type (_,xs) => get_tvar (xs@ts) |
@@ -253,7 +253,7 @@ fun tagged_function_termination_tac ctxt =
   let
     val prod_simp_thm = @{thm size_tagged_prod_simp}
     fun measure_tac ctxt = Function_Relation.relation_infer_tac ctxt 
-      ((Const ("Wellfounded.measure",dummyT)) $ (Const ("Nat.size_class.size",dummyT)))
+      ((Const (\<^const_name>\<open>measure\<close>,dummyT)) $ (Const (\<^const_name>\<open>size\<close>,dummyT)))
     fun prove_termination ctxt = auto_tac (Simplifier.add_simp prod_simp_thm ctxt)
   in
     Function.prove_termination NONE ((HEADGOAL (measure_tac ctxt)) THEN (prove_termination ctxt)) ctxt

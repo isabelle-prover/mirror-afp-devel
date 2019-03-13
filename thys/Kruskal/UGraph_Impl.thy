@@ -7,7 +7,7 @@ begin
 
 definition "\<alpha> = (\<lambda>(u,w,v). Upair u v)"
 
-subsection "Interpreting @{text Kruskl_Impl} with a UGraph"
+subsection "Interpreting \<open>Kruskl_Impl\<close> with a UGraph"
 
 abbreviation (in uGraph)
   "getEdges_SPEC csuper_E

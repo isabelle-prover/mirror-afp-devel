@@ -828,7 +828,7 @@ qed
 
 export_code cava_promela checking SML
 
-subsection {* Model Checker for SM *}
+subsection \<open>Model Checker for SM\<close>
 
 definition test_aprop_impl :: "exp \<Rightarrow> valuation_impl \<Rightarrow> bool" where
   "test_aprop_impl e s \<equiv> case eval_exp_impl e (\<lparr> local_state_impl.variables = vi_empty \<rparr>,

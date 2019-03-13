@@ -3,7 +3,7 @@
   Authors:  Daniel Stüwe, Manuel Eberl
 
   The Jacobi symbol, a generalisation of the Legendre symbol.
-  This is used in the Solovay–Strassen test.
+  This is used in the Solovay--Strassen test.
 *)
 section \<open>The Jacobi Symbol\<close>
 theory Jacobi_Symbol
