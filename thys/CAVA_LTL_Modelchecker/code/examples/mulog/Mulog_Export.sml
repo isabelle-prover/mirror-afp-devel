@@ -6188,7 +6188,7 @@ fun integer_of_char (Chara (b0, b1, b2, b3, b4, b5, b6, b7)) =
 
 fun implode cs =
   (String.implode
-    o map (fn k => if 0 <= k andalso k < 128 then (Char.chr o IntInf.toInt) k else raise Fail "Non-ASCII character in literal"))
+    o List.map (fn k => if 0 <= k andalso k < 128 then (Char.chr o IntInf.toInt) k else raise Fail "Non-ASCII character in literal"))
     (map integer_of_char cs);
 
 fun show_ce ce =
