@@ -7856,7 +7856,7 @@ abstract =
 
 [Safe_OCL]
 title = Safe OCL
-author = Denis Nikiforov
+author = Denis Nikiforov <>
 topic = Computer Science/Programming Languages/Language Definitions
 license = LGPL
 date = 2019-03-09
