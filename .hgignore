@@ -14,6 +14,8 @@ thys/Tree-Automata/code/ocaml/generated/Ta.ml
 thys/BinarySearchTree/BinaryTree_Code.ML
 thys/BinarySearchTree/BinaryTree_TacticStyle_Code.ML
 
+thys/CAVA_LTL_Modelchecker/code/examples/mulog/Mulog_Export.sml
+
 thys/ClockSynchInst/document/abs_distrib_mult.cvc
 thys/ClockSynchInst/document/abs_distrib_mult.ics
 thys/ClockSynchInst/document/abs_distrib_mult2.cvc
