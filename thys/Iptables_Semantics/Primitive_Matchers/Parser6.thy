@@ -1,7 +1,7 @@
 section\<open>Parser for iptables-save\<close>
 theory Parser6
 imports Iptables_Semantics.Code_Interface
-  keywords "parse_ip6tables_save"::thy_decl
+  keywords "parse_ip6tables_save" :: thy_decl
 begin
 
 (*THIS IS A VERBATIM COPY OF THE IPv4 PARSER.

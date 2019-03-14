@@ -1,7 +1,7 @@
 section\<open>Parser for iptables-save\<close>
 theory Parser
 imports Code_Interface
-  keywords "parse_iptables_save"::thy_decl
+  keywords "parse_iptables_save" :: thy_decl
 begin
 
 
