@@ -243,6 +243,28 @@ abbreviation (input) shows_append :: "shows \<Rightarrow> shows \<Rightarrow> sh
 where
   "s +@+ p \<equiv> s \<circ> p"
 
+instantiation String.literal :: "show"
+begin
+
+definition shows_prec_literal :: "nat \<Rightarrow> String.literal \<Rightarrow> string \<Rightarrow> string"
+  where "shows_prec p s = shows_string (String.explode s)"
+
+definition shows_list_literal :: "String.literal list \<Rightarrow> string \<Rightarrow> string"
+  where "shows_list ss = shows_string (concat (map String.explode ss))"
+
+lemma shows_list_literal_code [code]:
+  "shows_list = foldr (\<lambda>s. shows_string (String.explode s))"
+proof
+  fix ss
+  show "shows_list ss = foldr (\<lambda>s. shows_string (String.explode s)) ss"
+    by (induct ss) (simp_all add: shows_list_literal_def shows_string_def)
+qed
+
+instance by standard
+  (simp_all add: shows_prec_literal_def shows_list_literal_def shows_string_def)
+
+end
+
 text \<open>
   Don't use Haskell's existing "Show" class for code-generation, since it is not compatible to the
   formalized class.
