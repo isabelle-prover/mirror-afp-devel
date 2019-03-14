@@ -2682,17 +2682,16 @@ proof -
   finally show ?thesis using deteq by (auto simp add: algebra_simps)
 qed
 
-lemma (in gram_schmidt_fs_int) Gramian_determinant_times_gso_Ints:
+lemma (in gram_schmidt_fs_int) d_gso_Ints:
   assumes "i < n" "k < m"
-  shows "(Gramian_determinant fs k \<cdot>\<^sub>v (gso k)) $ i \<in> \<int>"
+  shows "(d k \<cdot>\<^sub>v (gso k)) $ i \<in> \<int>"
 proof -
   note d_\<kappa>_Ints[intro!]
-  then have "(Gramian_determinant fs k * \<kappa> k k j) * fs ! j $v i \<in> \<int>" if "j < k" for j
+  then have "(d k * \<kappa> k k j) * fs ! j $v i \<in> \<int>" if "j < k" for j
     using that fs_int assms by (auto intro: Ints_mult )
-  moreover have "(Gramian_determinant fs k * \<kappa> k k j) * fs ! j $v i =
-                 Gramian_determinant fs k * \<kappa> k k j * fs ! j $v i" for j
+  moreover have "(d k * \<kappa> k k j) * fs ! j $v i = d k * \<kappa> k k j * fs ! j $v i" for j
     by (auto simp add: field_simps)
-  ultimately have "Gramian_determinant fs k * (\<Sum>j = 0..<k. \<kappa> k k j * fs ! j $v i) \<in> \<int>"
+  ultimately have "d k * (\<Sum>j = 0..<k. \<kappa> k k j * fs ! j $v i) \<in> \<int>"
      by (subst sum_distrib_left) (auto simp add: field_simps intro!: Ints_sum)
   moreover have "(gso k) $v i = fs ! k $v i + sum (\<lambda>j. (\<kappa> k k j \<cdot>\<^sub>v fs ! j) $v i) {0..<k}"
   proof -
@@ -2706,22 +2705,22 @@ proof -
     by (auto simp add: distrib_left Gramian_determinant_Ints fs_int intro!: Ints_mult Ints_add)
 qed
 
-lemma (in gram_schmidt_fs_int) Gramian_determinant_mu_ints:
+lemma (in gram_schmidt_fs_int) d_mu_Ints:
   assumes "l \<le> k" "k < m"
-  shows "Gramian_determinant fs (Suc l) * \<mu> k l \<in> \<int>"
+  shows "d (Suc l) * \<mu> k l \<in> \<int>"
 proof (cases "l < k")
   case True
-  have ll: "Gramian_determinant fs l * gso l $v i = (Gramian_determinant fs l \<cdot>\<^sub>v gso l) $v i" if "i < n" for i
+  have ll: "d l * gso l $v i = (d l \<cdot>\<^sub>v gso l) $v i" if "i < n" for i
     using that assms by auto
-  have "Gramian_determinant fs (Suc l) * \<mu> k l = Gramian_determinant fs (Suc l) * (fs ! k \<bullet> gso l) / \<parallel>gso l\<parallel>\<^sup>2 "
+  have "d (Suc l) * \<mu> k l =d (Suc l) * (fs ! k \<bullet> gso l) / \<parallel>gso l\<parallel>\<^sup>2 "
     using assms True unfolding \<mu>.simps by simp
-  also have "\<dots> = fs ! k \<bullet> (Gramian_determinant fs l \<cdot>\<^sub>v gso l)"
+  also have "\<dots> = fs ! k \<bullet> (d l \<cdot>\<^sub>v gso l)"
     using assms Gramian_determinant(2)[of "Suc l"]
     by (subst Gramian_determinant_div[symmetric]) (auto)
   also have "\<dots> \<in> \<int>"
   proof -
-    have "Gramian_determinant fs l * gso l $v i \<in> \<int>" if "i < n" for i
-      using assms Gramian_determinant_times_gso_Ints that ll by (simp)
+    have "d l * gso l $v i \<in> \<int>" if "i < n" for i
+      using assms d_gso_Ints that ll by (simp)
     then show ?thesis
       using assms by (auto intro!: Ints_sum simp add: fs_int scalar_prod_def)
  qed
@@ -2972,7 +2971,7 @@ proof -
      using that by (intro vec_hom_Ints) auto
   then show ?thesis
     unfolding id using j ii unfolding gs.lin_indpt_list_def 
-    by (intro gs.Gramian_determinant_mu_ints) (auto)
+    by (intro gs.d_mu_Ints) (auto)
 qed
 
 lemma sq_norm_fs_via_sum_mu_gso: assumes i: "i < m" 

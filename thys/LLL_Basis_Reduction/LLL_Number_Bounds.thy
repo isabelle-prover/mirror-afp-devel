@@ -804,7 +804,7 @@ proof -
       using that assms * by (intro vec_hom_Ints) (auto)
     then show ?thesis
       using * gs.gso_connect snd_gram_schmidt_int assms unfolding gs.lin_indpt_list_def
-      by (intro fs.gs.Gramian_determinant_times_gso_Ints) (auto)
+      by (intro fs.gs.d_gso_Ints) (auto)
   qed
   have gsi: "gso fs i \<in> Rn" using *(5)[OF i] .
   have gs_sq: "\<bar>(gso fs i $ j)\<bar>\<^sup>2 \<le> rat_of_nat A"
@@ -1005,7 +1005,7 @@ proof (atomize(full))
     from LLL_invariant_mu_abs_bound[OF assms(1) j]
     have mu_bound: "abs ?mu \<le> of_nat ?bnd" by auto
     have "gs.Gramian_determinant (RAT fs) (Suc j) * ?mu \<in> \<int>" 
-      by (rule fs.gs.Gramian_determinant_mu_ints,
+      by (rule fs.gs.d_mu_Ints,
       insert j *(1,3-6) i, auto simp: set_conv_nth gs.lin_indpt_list_def vec_hom_Ints)
     also have "(gs.Gramian_determinant (RAT fs) (Suc j)) = of_int (d fs (Suc j))" 
       unfolding d_def by (rule fs.of_int_Gramian_determinant, insert i j *(3,6), auto simp: set_conv_nth)

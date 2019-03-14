@@ -1043,7 +1043,7 @@ proof -
     have "\<bar>\<mu>' i j\<bar> \<le> of_nat m * A ^ (3 + 3 * m)" if "j \<le> i" "i < m" for i j
     proof -
       have "\<mu>' i j \<in> \<int>"
-        unfolding \<mu>'_def using that Gramian_determinant_mu_ints by auto
+        unfolding \<mu>'_def using that d_mu_Ints by auto
       then have "\<bar>\<mu>' i j\<bar> \<le> (\<mu>' i j)\<^sup>2"
         by (rule Ints_cases[of "\<mu>' i j"]) auto
       also have "\<dots> \<le> A ^ (3 * Suc j)"
