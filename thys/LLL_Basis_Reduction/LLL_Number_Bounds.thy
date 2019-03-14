@@ -742,7 +742,7 @@ context fixes outside upw k fs
   assumes binv: "LLL_bound_invariant outside upw k fs"
 begin
 
-lemma LLL_invariant_f_bnd: 
+lemma LLL_f_bnd: 
   assumes i: "i < m" and j: "j < n" 
 shows "\<bar>fs ! i $ j\<bar> \<le> f_bnd outside" 
 proof -
@@ -784,7 +784,7 @@ proof -
   qed
 qed
 
-lemma LLL_invariant_gso_bound:
+lemma LLL_gso_bound:
   assumes i: "i < m" and j: "j < n" 
   and quot: "quotient_of (gso fs i $ j) = (num, denom)" 
 shows "\<bar>num\<bar>   \<le> A ^ m" 
@@ -863,17 +863,17 @@ proof -
     using j_m[of "i+1"] num by auto
 qed
 
-lemma LLL_invariant_f_bound:
+lemma LLL_f_bound:
   assumes i: "i < m" and j: "j < n" 
 shows "\<bar>fs ! i $ j\<bar> \<le> A ^ m * 2 ^ (m - 1) * m" 
 proof -
-  have "\<bar>fs ! i $ j\<bar> \<le> int (f_bnd outside)" using LLL_invariant_f_bnd[OF i j] by auto
+  have "\<bar>fs ! i $ j\<bar> \<le> int (f_bnd outside)" using LLL_f_bnd[OF i j] by auto
   also have "\<dots> \<le> int (f_bnd False)" using f_bnd_mono[of outside] by presburger
   also have "\<dots> = int (A ^ m * 2 ^ (m - 1) * m)" by simp
   finally show ?thesis .
 qed
 
-lemma LLL_invariant_d_bound: 
+lemma LLL_d_bound: 
   assumes i: "i \<le> m"   
 shows "abs (d fs i) \<le> A ^ i \<and> abs (d fs i) \<le> A ^ m" 
 proof (cases "m = 0")
@@ -898,7 +898,7 @@ next
   show ?thesis by auto
 qed
 
-lemma LLL_invariant_mu_abs_bound: 
+lemma LLL_mu_abs_bound: 
   assumes i: "i < m"
   and j: "j < i" 
 shows "\<bar>\<mu> fs i j\<bar> \<le> rat_of_nat (A ^ (m - 1) * 2 ^ (m - 1) * m)" 
@@ -948,7 +948,7 @@ qed
 
 
 
-lemma LLL_invariant_d\<mu>_bound: 
+lemma LLL_d\<mu>_bound: 
   assumes i: "i < m" and j: "j < i"  
 shows "abs (d\<mu> fs i j) \<le> A ^ (2 * (m - 1)) * 2 ^ (m - 1) * m" 
 proof -
@@ -961,7 +961,7 @@ proof -
   from LLL_inv_A_pos[OF inv gbnd] i have A: "A > 0" by auto 
   from j i have jm: "j < m - 1" "j < m" by auto
   let ?r = rat_of_int 
-  from LLL_invariant_d_bound[of "Suc j"] jm
+  from LLL_d_bound[of "Suc j"] jm
   have "abs (d fs (Suc j)) \<le> A ^ Suc j" by linarith
   also have "\<dots> \<le> A ^ (m - 1)" unfolding of_nat_le_iff
     by (rule pow_mono_exp, insert A jm, auto)
@@ -971,14 +971,14 @@ proof -
     unfolding d_def fs.d_def d\<mu>_def fs.d\<mu>_def by auto
   also have "\<dots> = ?r (abs (d fs (Suc j))) * abs (\<mu> fs i j)" by (simp add: abs_mult)
   also have "\<dots> \<le> ?r (int A ^ (m - 1)) * rat_of_nat (A ^ (m - 1) * 2 ^ (m - 1) * m)" 
-    by (rule mult_mono[OF _ LLL_invariant_mu_abs_bound[OF i j]], insert dsj, linarith, auto)
+    by (rule mult_mono[OF _ LLL_mu_abs_bound[OF i j]], insert dsj, linarith, auto)
   also have "\<dots> = ?r (int (A ^ ((m - 1) + (m - 1)) * 2 ^ (m - 1) * m))" 
     by (simp add: power_add)
   also have "(m - 1) + (m - 1) = 2 * (m - 1)" by simp
   finally show "abs (d\<mu> fs i j) \<le> A ^ (2 * (m - 1)) * 2 ^ (m - 1) * m" by linarith
 qed
 
-lemma LLL_invariant_mu_num_denom_bound: 
+lemma LLL_mu_num_denom_bound: 
   assumes i: "i < m"                 
   and quot: "quotient_of (\<mu> fs i j) = (num, denom)" 
 shows "\<bar>num\<bar>   \<le> A ^ (2 * m) * 2 ^ m * m" 
@@ -1002,7 +1002,7 @@ proof (atomize(full))
     from quotient_of_square[OF quot] 
     have quot_sq: "quotient_of (?mu^2) = (num * num, denom * denom)" 
       unfolding power2_eq_square by auto
-    from LLL_invariant_mu_abs_bound[OF assms(1) j]
+    from LLL_mu_abs_bound[OF assms(1) j]
     have mu_bound: "abs ?mu \<le> of_nat ?bnd" by auto
     have "gs.Gramian_determinant (RAT fs) (Suc j) * ?mu \<in> \<int>" 
       by (rule fs.gs.d_mu_Ints,
@@ -1010,7 +1010,7 @@ proof (atomize(full))
     also have "(gs.Gramian_determinant (RAT fs) (Suc j)) = of_int (d fs (Suc j))" 
       unfolding d_def by (rule fs.of_int_Gramian_determinant, insert i j *(3,6), auto simp: set_conv_nth)
     finally have ints: "of_int (d fs (Suc j)) * ?mu \<in> \<int>" .
-    from LLL_invariant_d_bound[of "Suc j"] jm
+    from LLL_d_bound[of "Suc j"] jm
     have d_j: "d fs (Suc j) \<le> A ^ m" by auto
     note quot_bounds = quotient_of_bounds[OF quot ints dsj mu_bound]
     have "abs denom \<le> denom" using quotient_of_denom_pos[OF quot] by auto
@@ -1088,11 +1088,11 @@ proof -
   hence num_denom_bound: "\<bar>num\<bar> \<le> ?bnd \<and> \<bar>denom\<bar> \<le> A ^ m" 
   proof (cases)
     case xgs
-    from LLL_invariant_gso_bound[OF i j quot[unfolded xgs]] le
+    from LLL_gso_bound[OF i j quot[unfolded xgs]] le
     show ?thesis by auto
   next
     case xmu
-    from LLL_invariant_mu_num_denom_bound[OF i, of j, OF quot[unfolded xmu]]
+    from LLL_mu_num_denom_bound[OF i, of j, OF quot[unfolded xmu]]
     show ?thesis by auto
   next
     case xfs
@@ -1100,7 +1100,7 @@ proof -
     also have "\<dots> \<le> A ^ m" using A by auto
     finally have denom: "\<bar>denom\<bar> \<le> A ^ m" .
     have "\<bar>num\<bar> = \<bar>fs ! i $ j\<bar>" using quot[unfolded xfs] by auto
-    also have "\<dots> \<le> int (A ^ m * 2 ^ (m - 1) * m)" using LLL_invariant_f_bound[OF i j] by auto
+    also have "\<dots> \<le> int (A ^ m * 2 ^ (m - 1) * m)" using LLL_f_bound[OF i j] by auto
     also have "\<dots> \<le> ?bnd" unfolding of_nat_mult of_nat_power
       by (intro mult_mono pow_mono_exp, insert A, auto)
     finally show ?thesis using denom by auto
@@ -1167,16 +1167,18 @@ lemma fs_gs_A_A: "m \<noteq> 0 \<Longrightarrow> real_of_rat fs.gs.A = real A"
   using fs_gs_A_A' by simp
 
 lemma combined_size_bound_gso_integer:
-  assumes "x \<in> {rat_of_int (fs_init ! i $v j) |i j. i < m \<and> j < n} \<union> {fs.gs.\<mu>' i j |i j. j \<le> i \<and> i < m} \<union> {fs.gs.\<sigma> l i j |i j l. i < m \<and> j \<le> i \<and> l \<le> j}"
+  assumes "x \<in> 
+    {fs.\<mu>' i j |i j. j \<le> i \<and> i < m} \<union> 
+    {fs.\<sigma>s l i j |i j l. i < m \<and> j \<le> i \<and> l < j}"
   and m: "m \<noteq> 0" and "x \<noteq> 0" "n \<noteq> 0"
-shows "log 2 \<bar>real_of_rat x\<bar> \<le> (6 + 6 * m) * log 2 (M * n) + log 2 m + m"
+shows "log 2 \<bar>real_of_int x\<bar> \<le> (6 + 6 * m) * log 2 (M * n) + log 2 m + m"
 proof -
   from bound_invD[OF binv]
   have inv: "LLL_invariant upw k fs"
      and gbnd: "g_bound fs" 
     by auto 
   from LLL_inv_A_pos[OF inv gbnd m] have A: "A > 0" by auto
-  have "log 2 \<bar>real_of_rat x\<bar> \<le> log 2 m + real (3 + 3 * m) * log 2 A"
+  have "log 2 \<bar>real_of_int x\<bar> \<le> log 2 m + real (3 + 3 * m) * log 2 A"
     using assms len fs.combined_size_bound_integer_log by (auto simp add: fs_gs_A_A)
   also have "\<dots> \<le> log 2 m + (3 + 3 * m) * (2 * log 2 (M * n))"
     using logA_le_2log_Mn assms A by (intro add_left_mono, intro mult_left_mono) (auto)
@@ -1209,7 +1211,7 @@ proof -
   proof cases
     case fs
     then obtain i j where i: "i < m" and j: "j < n" and x: "x = fs ! i $ j" by auto
-    from LLL_invariant_f_bound[OF i j, folded x]
+    from LLL_f_bound[OF i j, folded x]
     have "\<bar>x\<bar> \<le> int A ^ m * 2 ^ (m - 1) * int m" by simp
     also have "\<dots> \<le> ?bnd" 
       by (intro mult_mono pow_mono_exp, insert A, auto)
@@ -1217,7 +1219,7 @@ proof -
   next
     case d\<mu>
     then obtain i j where i: "i < m" and j: "j < i" and x: "x = d\<mu> fs i j" by auto
-    from LLL_invariant_d\<mu>_bound[OF i j, folded x]
+    from LLL_d\<mu>_bound[OF i j, folded x]
     have "\<bar>x\<bar> \<le> int A ^ (2 * (m - 1)) * 2 ^ (m - 1) * int m" by simp
     also have "\<dots> \<le> ?bnd" 
       by (intro mult_mono pow_mono_exp, insert A, auto)
@@ -1225,7 +1227,7 @@ proof -
   next
     case d
     then obtain i where i: "i \<le> m" and x: "x = d fs i" by auto
-    from LLL_invariant_d_bound[OF i, folded x]
+    from LLL_d_bound[OF i, folded x]
     have "\<bar>x\<bar> \<le> int A ^ m * 2 ^ 0 * 1" by simp
     also have "\<dots> \<le> ?bnd" 
       by (intro mult_mono pow_mono_exp, insert A m, auto)
@@ -1247,27 +1249,26 @@ proof -
 qed
 
 lemma combined_size_bound_integer:  
-  assumes x'': "x'' \<in> {fs ! i $ j | i j. i < m \<and> j < n} 
+  assumes x: "x \<in> 
+      {fs ! i $ j | i j. i < m \<and> j < n} 
     \<union> {d\<mu> fs i j | i j. j < i \<and> i < m} 
-    \<union> {d fs i | i. i \<le> m}" and 
-  x': "x' \<in> {rat_of_int (fs_init ! i $v j) |i j. i < m \<and> j < n}
-          \<union> {fs.gs.\<mu>' i j |i j. j \<le> i \<and> i < m}
-          \<union> {fs.gs.\<sigma> l i j |i j l. i < m \<and> j \<le> i \<and> l \<le> j}"
-  and x: "x = real_of_int x'' \<or> x = real_of_rat x'"
+    \<union> {d fs i | i. i \<le> m}
+    \<union> {fs.\<mu>' i j |i j. j \<le> i \<and> i < m}
+    \<union> {fs.\<sigma>s l i j |i j l. i < m \<and> j \<le> i \<and> l < j}"
+    (is "?x \<in> ?s1 \<union> ?s2 \<union> ?s3 \<union> ?g1 \<union> ?g2")
   and m: "m \<noteq> 0" and n: "n \<noteq> 0" and "x \<noteq> 0" and "0 < M"
 shows "log 2 \<bar>x\<bar> \<le> (6 + 6 * m) * log 2 (M * n) + log 2 m + m"
 proof -
-  consider "x = real_of_int x''" | "x = real_of_rat x'"
-    using assms by blast
-  then show ?thesis
-  proof cases
-    assume "x = real_of_rat x'"
+  show ?thesis
+  proof (cases "?x \<in> ?g1 \<union> ?g2")
+    case True
     then show ?thesis
-      using combined_size_bound_gso_integer assms by (simp)
+      using combined_size_bound_gso_integer assms by simp
   next
-    assume 0: "x = real_of_int x''"
-    then have "log 2 \<bar>x\<bar> \<le> 4 * m * log 2 (M * n) + m + log 2 m"
-      using assms 0 by (subst 0, intro combined_size_bound_integer') fastforce+
+    case False
+    then have x: "x \<in> ?s1 \<union> ?s2 \<union> ?s3" using x by auto
+    from combined_size_bound_integer'(3)[OF this m n \<open>x \<noteq> 0\<close>]
+    have "log 2 \<bar>x\<bar> \<le> 4 * m * log 2 (M * n) + m + log 2 m" by simp
     also have "\<dots> \<le> (6 + 6 * m) * log 2 (M * n) + m + log 2 m"
        using assms by (intro add_right_mono, intro mult_right_mono) auto
     finally show ?thesis

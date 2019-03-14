@@ -1092,11 +1092,10 @@ context fs_int_indpt
 begin
 
 
-lemma combined_size_bound_integer_log:  
-  assumes x: "x \<in> {of_int (fs ! i $ j) | i j. i < m \<and> j < n} 
-    \<union> {gs.\<mu>' i j | i j. j \<le> i \<and> i < m}
+lemma combined_size_bound_rat_log:  
+  assumes x: "x \<in> {gs.\<mu>' i j | i j. j \<le> i \<and> i < m}
     \<union> {gs.\<sigma> l i j | i j l. i < m \<and> j \<le> i \<and> l \<le> j}" 
-    (is "x \<in> ?fs \<union> ?\<mu>' \<union> ?\<sigma>")
+    (is "x \<in> ?\<mu>' \<union> ?\<sigma>")
     and m: "m \<noteq> 0" "x \<noteq> 0"
   shows "log 2 \<bar>real_of_rat x\<bar> \<le> log 2 m + (3 + 3 * m) * log 2 (real_of_rat gs.A)"
 proof -
@@ -1133,6 +1132,30 @@ proof -
     by (auto)
 qed
 
+lemma combined_size_bound_integer_log:  
+  assumes x: "x \<in> {\<mu>' i j | i j. j \<le> i \<and> i < m}
+    \<union> {\<sigma>s l i j | i j l. i < m \<and> j \<le> i \<and> l < j}" 
+    (is "x \<in> ?\<mu>' \<union> ?\<sigma>")
+    and m: "m \<noteq> 0" "x \<noteq> 0"
+  shows "log 2 \<bar>real_of_int x\<bar> \<le> log 2 m + (3 + 3 * m) * log 2 (real_of_rat gs.A)"
+proof -
+  let ?x = "rat_of_int x" 
+  from m have m: "m \<noteq> 0" "?x \<noteq> 0" by auto
+  show ?thesis
+  proof (rule order_trans[OF _ combined_size_bound_rat_log[OF _ m]], force)
+    from x consider (1) i j where "x = \<mu>' i j" "j \<le> i" "i < m" 
+      | (2) l i j where "x = \<sigma>s l i j" "i < m" "j \<le> i" "l < j" by blast
+    thus "?x \<in> {gs.\<mu>' i j |i j. j \<le> i \<and> i < m} \<union> {gs.\<sigma> l i j |i j l. i < m \<and> j \<le> i \<and> l \<le> j}" 
+    proof (cases)
+      case (1 i j)
+      with \<sigma>s_\<mu>'(2) show ?thesis by blast
+    next
+      case (2 l i j)
+      hence "Suc l \<le> j" by auto
+      from \<sigma>s_\<mu>'(1) 2 this show ?thesis by blast
+    qed
+  qed
+qed
 
 end
 end

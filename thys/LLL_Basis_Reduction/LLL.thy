@@ -1345,8 +1345,8 @@ lemma d_approx: assumes i: "ii < m"
   using d_approx_main[of ii] assms by auto
 
 
-lemma Gramian_determinant_bound: assumes i: "ii < m" 
-  shows "gs.Gramian_determinant fs ii \<le> A^ii" 
+lemma d_bound: assumes i: "ii < m" 
+  shows "d fs ii \<le> A^ii" 
   using d_approx[OF assms] unfolding d_def by linarith
 
 
