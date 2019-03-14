@@ -104,12 +104,6 @@ instance
 
 end
 
-text \<open>Resolve problem with recursive dependencies in generated code.\<close>
-lemma [code]:
-  "HOL.eq (XML name1 attrs1 children1) (XML name2 attrs2 children2) \<longleftrightarrow>
-    HOL.eq name1 name2 \<and> HOL.eq attrs1 attrs2 \<and> list_all2 HOL.eq children1 children2"
-  by (simp add: list_all2_eq)
-
 
 subsection \<open>XML-Parsing\<close>
 
