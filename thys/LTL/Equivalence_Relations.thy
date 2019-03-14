@@ -265,6 +265,66 @@ lemma ltl_const_equiv_lt_ltl_prop_equiv[simp]:
 
 
 
+subsection \<open>Quotient types\<close>
+
+quotient_type 'a ltln\<^sub>L = "'a ltln" / "(\<sim>\<^sub>L)"
+  morphisms Rep_ltln\<^sub>L Abs_ltln\<^sub>L
+  by (rule ltl_lang_equiv_equivp)
+
+instantiation ltln\<^sub>L :: (type) equal
+begin
+
+lift_definition ltln\<^sub>L_eq_test :: "'a ltln\<^sub>L \<Rightarrow> 'a ltln\<^sub>L \<Rightarrow> bool" is "\<lambda>x y. x \<sim>\<^sub>L y"
+  by (metis ltln\<^sub>L.abs_eq_iff)
+
+definition
+  eq\<^sub>L: "equal_class.equal \<equiv> ltln\<^sub>L_eq_test"
+
+instance
+  by (standard; simp add: eq\<^sub>L ltln\<^sub>L_eq_test.rep_eq, metis Quotient_ltln\<^sub>L Quotient_rel_rep)
+
+end
+
+
+quotient_type 'a ltln\<^sub>P = "'a ltln" / "(\<sim>\<^sub>P)"
+  morphisms Rep_ltln\<^sub>P Abs_ltln\<^sub>P
+  by (rule ltl_prop_equiv_equivp)
+
+instantiation ltln\<^sub>P :: (type) equal
+begin
+
+lift_definition ltln\<^sub>P_eq_test :: "'a ltln\<^sub>P \<Rightarrow> 'a ltln\<^sub>P \<Rightarrow> bool" is "\<lambda>x y. x \<sim>\<^sub>P y"
+  by (metis ltln\<^sub>P.abs_eq_iff)
+
+definition
+  eq\<^sub>P: "equal_class.equal \<equiv> ltln\<^sub>P_eq_test"
+
+instance
+  by (standard; simp add: eq\<^sub>P ltln\<^sub>P_eq_test.rep_eq, metis Quotient_ltln\<^sub>P Quotient_rel_rep)
+
+end
+
+
+quotient_type 'a ltln\<^sub>C = "'a ltln" / "(\<sim>\<^sub>C)"
+  morphisms Rep_ltln\<^sub>C Abs_ltln\<^sub>C
+  by (rule ltl_const_equiv_equivp)
+
+instantiation ltln\<^sub>C :: (type) equal
+begin
+
+lift_definition ltln\<^sub>C_eq_test :: "'a ltln\<^sub>C \<Rightarrow> 'a ltln\<^sub>C \<Rightarrow> bool" is "\<lambda>x y. x \<sim>\<^sub>C y"
+  by (metis ltln\<^sub>C.abs_eq_iff)
+
+definition
+  eq\<^sub>C: "equal_class.equal \<equiv> ltln\<^sub>C_eq_test"
+
+instance
+  by (standard; simp add: eq\<^sub>C ltln\<^sub>C_eq_test.rep_eq, metis Quotient_ltln\<^sub>C Quotient_rel_rep)
+
+end
+
+
+
 subsection \<open>Substitution\<close>
 
 fun subst :: "'a ltln \<Rightarrow> ('a ltln \<rightharpoonup> 'a ltln) \<Rightarrow> 'a ltln"

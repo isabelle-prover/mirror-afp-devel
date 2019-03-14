@@ -498,6 +498,10 @@ lemma subfrmlsn_finite:
   "finite (subfrmlsn \<phi>)"
   by (induction \<phi>) auto
 
+lemma subfrmlsn_card:
+  "card (subfrmlsn \<phi>) \<le> size \<phi>"
+  by (induction \<phi>) (simp_all add: card_insert_if subfrmlsn_finite, (meson add_le_mono card_Un_le dual_order.trans le_SucI)+)
+
 lemma subfrmlsn_subset:
   "\<psi> \<in> subfrmlsn \<phi> \<Longrightarrow> subfrmlsn \<psi> \<subseteq> subfrmlsn \<phi>"
   by (induction \<phi>) auto
