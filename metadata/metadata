@@ -7854,3 +7854,34 @@ abstract =
   <em>&phi;(n)</em>, and
   lcm(1,&hellip;,<em>n</em>).</p>
 
+[Safe_OCL]
+title = Safe OCL
+author = Denis Nikiforov
+topic = Computer Science/Programming Languages/Language Definitions
+license = LGPL
+date = 2019-03-09
+notify = denis.nikif@gmail.com
+abstract = 
+  <p>The theory is a formalization of the 
+  <a href="https://www.omg.org/spec/OCL/">OCL</a> type system, its abstract 
+  syntax and expression typing rules. The theory does not define a concrete 
+  syntax and a semantics. In contrast to 
+  <a href="https://www.isa-afp.org/entries/Featherweight_OCL.html">Featherweight OCL</a>, 
+  it is based on a deep embedding approach. The type system is defined from scratch, 
+  it is not based on the Isabelle HOL type system.</p>
+  <p>The Safe OCL distincts nullable and non-nullable types. Also the theory gives a 
+  formal definition of <a href="http://ceur-ws.org/Vol-1512/paper07.pdf">safe 
+  navigation operations</a>. The Safe OCL typing rules are much stricter than rules 
+  given in the OCL specification. It allows one to catch more errors on a type 
+  checking phase.</p>
+  <p>The type theory presented is four-layered: classes, basic types, generic types, 
+  errorable types. We introduce the following new types: non-nullable types (T[1]), 
+  nullable types (T[?]), OclSuper. OclSuper is a supertype of all other types (basic 
+  types, collections, tuples). This type allows us to define a total supremum function, 
+  so types form an upper semilattice. It allows us to define rich expression typing 
+  rules in an elegant manner.</p>
+  <p>The Preliminaries Chapter of the theory defines a number of helper lemmas for 
+  transitive closures and tuples. It defines also a generic object model independent 
+  from OCL. It allows one to use the theory as a reference for formalization of analogous languages.</p>
+
+
