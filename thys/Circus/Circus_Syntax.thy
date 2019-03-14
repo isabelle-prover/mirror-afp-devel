@@ -4,7 +4,7 @@ section \<open>Circus syntax\<close>
 theory Circus_Syntax
 imports Denotational_Semantics
 keywords "alphabet" "state" "channel" "nameset" "chanset" "schema" "action" and
-  "circus_process" :: thy_decl
+  "circus_process" :: thy_defn
 begin
 
 abbreviation list_select::"['r \<Rightarrow> 'a list] \<Rightarrow> ('r \<Rightarrow> 'a)" where

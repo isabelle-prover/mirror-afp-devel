@@ -2,7 +2,7 @@ section \<open>Lens Instances\<close>
 
 theory Lens_Instances
   imports Lens_Order "HOL-Eisbach.Eisbach"
-  keywords "alphabet" :: "thy_decl"
+  keywords "alphabet" :: "thy_defn"
 begin
 
 text \<open>In this section we define a number of concrete instantiations of the lens locales, including

@@ -28,7 +28,7 @@ USA
 section \<open>Facilitating the Hoare Logic\<close>
 theory Vcg
 imports StateSpace "HOL-Statespace.StateSpaceLocale" Generalise
-keywords "procedures" "hoarestate" :: thy_decl
+keywords "procedures" "hoarestate" :: thy_defn
 begin
 
 axiomatization NoBody::"('s,'p,'f) com"

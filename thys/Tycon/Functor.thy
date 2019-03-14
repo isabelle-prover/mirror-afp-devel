@@ -2,7 +2,7 @@ section \<open>Functor Class\<close>
 
 theory Functor
 imports TypeApp Coerce
-keywords "tycondef" :: thy_decl and "\<cdot>"
+keywords "tycondef" :: thy_defn and "\<cdot>"
 begin
 
 subsection \<open>Class definition\<close>

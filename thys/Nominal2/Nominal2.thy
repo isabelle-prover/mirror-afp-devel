@@ -2,8 +2,8 @@ theory Nominal2
 imports
   Nominal2_Base Nominal2_Abs Nominal2_FCB
 keywords
-  "nominal_datatype" :: thy_decl and
-  "nominal_function" "nominal_inductive" "nominal_termination" :: thy_goal and
+  "nominal_datatype" :: thy_defn and
+  "nominal_function" "nominal_inductive" "nominal_termination" :: thy_goal_defn and
   "avoids" "binds"
 begin
 
