@@ -27,9 +27,6 @@ begin
 context LLL
 begin
 
-text \<open>maximum absolute value in initial basis\<close>
-definition "M = Max ({abs (fs_init ! i $ j) | i j. i < m \<and> j < n} \<union> {0})" 
-
 text \<open>The bounds for the $f_i$ distinguishes whether we are inside or outside the inner for-loop.\<close>
 
 definition f_bound :: "bool \<Rightarrow> nat \<Rightarrow> int vec list \<Rightarrow> bool" where 
@@ -660,48 +657,6 @@ lemma reduce_basis_bound: assumes res: "reduce_basis = fs"
 
 
 subsubsection \<open>Bound extracted from @{term LLL_bound_invariant}.\<close>
-
-lemma N_le_MMn: assumes m0: "m \<noteq> 0" 
-  shows "N \<le> nat M * nat M * n" 
-  unfolding N_def
-proof (rule max_list_le, unfold set_map o_def)
-  fix ni
-  assume "ni \<in> (\<lambda>x. nat \<parallel>x\<parallel>\<^sup>2) ` set fs_init" 
-  then obtain fi where ni: "ni = nat (\<parallel>fi\<parallel>\<^sup>2)" and fi: "fi \<in> set fs_init" by auto
-  from fi len obtain i where fii: "fi = fs_init ! i" and i: "i < m" unfolding set_conv_nth by auto
-  from fi fs_init have fi: "fi \<in> carrier_vec n" by auto
-  let ?set = "{\<bar>fs_init ! i $v j\<bar> |i j. i < m \<and> j < n} \<union> {0}" 
-  have id: "?set = (\<lambda> (i,j). abs (fs_init ! i $ j)) ` ({0..<m} \<times> {0..<n}) \<union> {0}" 
-    by force
-  have fin: "finite ?set" unfolding id by auto
-  { 
-    fix j assume "j < n" 
-    hence "M \<ge> \<bar>fs_init ! i $ j\<bar>" unfolding M_def using i
-      by (intro Max_ge[of _ "abs (fs_init ! i $ j)"], intro fin, auto)
-  } note M = this
-  from Max_ge[OF fin, of 0] have M0: "M \<ge> 0" unfolding M_def by auto
-  have "ni = nat (\<parallel>fi\<parallel>\<^sup>2)" unfolding ni by auto
-  also have "\<dots> \<le> nat (int n * \<parallel>fi\<parallel>\<^sub>\<infinity>\<^sup>2)" using sq_norm_vec_le_linf_norm[OF fi]
-    by (intro nat_mono, auto)
-  also have "\<dots> = n * nat (\<parallel>fi\<parallel>\<^sub>\<infinity>\<^sup>2)"
-    by (simp add: nat_mult_distrib)
-  also have "\<dots> \<le> n * nat (M^2)" 
-  proof (rule mult_left_mono[OF nat_mono])
-    have fi: "\<parallel>fi\<parallel>\<^sub>\<infinity> \<le> M" unfolding linf_norm_vec_def    
-    proof (rule max_list_le, unfold set_append set_map, rule ccontr)
-      fix x
-      assume "x \<in> abs ` set (list_of_vec fi) \<union> set [0]" and xM: "\<not> x \<le> M"  
-      with M0 obtain fij where fij: "fij \<in> set (list_of_vec fi)" and x: "x = abs fij" by auto
-      from fij fi obtain j where j: "j < n" and fij: "fij = fi $ j" 
-        unfolding set_list_of_vec vec_set_def by auto
-      from M[OF j] xM[unfolded x fij fii] show False by auto
-    qed auto                
-    show "\<parallel>fi\<parallel>\<^sub>\<infinity>\<^sup>2 \<le> M^2" unfolding abs_le_square_iff[symmetric] using fi 
-      using linf_norm_vec_ge_0[of fi] by auto
-  qed auto
-  finally show "ni \<le> nat M * nat M * n" using M0 
-    by (subst nat_mult_distrib[symmetric], auto simp: power2_eq_square ac_simps)
-qed (insert m0 len, auto)
 
 fun f_bnd :: "bool \<Rightarrow> nat" where
   "f_bnd False = 2 ^ (m - 1) * N ^ m * m" 

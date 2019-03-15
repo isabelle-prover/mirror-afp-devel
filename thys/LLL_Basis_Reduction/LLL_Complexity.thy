@@ -591,7 +591,7 @@ lemma mn: "m \<le> n"
 
 text \<open>Theorem with expanded costs: $O(n\cdot m^3 \cdot \log (\mathit{maxnorm}\ F))$ arithmetic operations\<close>
 lemma reduce_basis_cost_expanded: 
-  assumes "Lg = nat \<lceil>log (of_rat (4 * \<alpha> / (4 + \<alpha>))) N\<rceil>"   
+  assumes "Lg \<ge> nat \<lceil>log (of_rat (4 * \<alpha> / (4 + \<alpha>))) N\<rceil>"   
   shows "cost (reduce_basis_cost fs_init)
   \<le> 4 * Lg * m * m * m * n
     + 4 * Lg * m * m * m * m
@@ -601,16 +601,34 @@ lemma reduce_basis_cost_expanded:
     + 3 * m * m * n 
     + 10 * m * m
     + 2 * n * m 
-    + 3 * m"
-  unfolding assms 
-  using reduce_basis_cost(2)[unfolded num_loops_def body_cost_def initial_gso_cost_def base_def]
-  by (auto simp: algebra_simps)
-
-lemma reduce_basis_cost_expanded':
-  assumes "Lg = nat \<lceil>log (of_rat (4 * \<alpha> / (4 + \<alpha>))) N\<rceil>"   
-  and 0: "0 < Lg" "0 < n"  
-  shows "cost (reduce_basis_cost fs_init) \<le> 49 * m ^ 3 * n * Lg"
+    + 3 * m" 
+  (is "?cost \<le> ?exp Lg")
 proof -
+  define Log where "Log = nat \<lceil>log (of_rat (4 * \<alpha> / (4 + \<alpha>))) N\<rceil>" 
+  have Lg: "Log \<le> Lg" using assms unfolding Log_def .
+  have "?cost \<le> ?exp Log" 
+    unfolding Log_def
+    using reduce_basis_cost(2)[unfolded num_loops_def body_cost_def initial_gso_cost_def base_def]
+    by (auto simp: algebra_simps) 
+  also have "\<dots> \<le> ?exp Lg"
+    by (intro add_mono mult_mono Lg, auto)
+  finally show ?thesis .
+qed
+
+lemma reduce_basis_cost_0: assumes "m = 0" 
+  shows "cost (reduce_basis_cost fs_init) = 0" 
+proof -
+  from len assms have fs_init: "fs_init = []" by auto
+  thus ?thesis unfolding reduce_basis_cost_def by (simp add: cost_simps)
+qed
+
+lemma reduce_basis_cost_N:
+  assumes "Lg \<ge> nat \<lceil>log (of_rat (4 * \<alpha> / (4 + \<alpha>))) N\<rceil>"   
+  and 0: "Lg > 0"  
+  shows "cost (reduce_basis_cost fs_init) \<le> 49 * m ^ 3 * n * Lg"
+proof (cases "m > 0")
+  case True
+  with mn 0 have 0: "0 < Lg" "0 < m" "0 < n" by auto
   note reduce_basis_cost_expanded[OF assms(1)]
   also have "4 * Lg * m * m * m * n = 4 * m ^ 3 * n * Lg"
     using 0 by (auto simp add: power3_eq_cube)
@@ -632,7 +650,49 @@ proof -
     using 0 by (auto simp add: power3_eq_cube)
   finally show ?thesis
     by (auto simp add: algebra_simps)
+next
+  case False
+  with reduce_basis_cost_0 show ?thesis by simp
 qed
+
+lemma reduce_basis_cost_M:
+  assumes "Lg \<ge> nat \<lceil>log (of_rat (4 * \<alpha> / (4 + \<alpha>))) (M * n)\<rceil>"   
+  and 0: "Lg > 0"
+  shows "cost (reduce_basis_cost fs_init) \<le> 98 * m ^ 3 * n * Lg"
+proof (cases "m > 0")
+  case True
+  let ?prod = "nat M * nat M * n" 
+  let ?p = "nat M * nat M * n * n" 
+  let ?lg = "real_of_int (M * n)" 
+  from 0 True have m0: "m \<noteq> 0" by simp
+  from LLL_inv_N_pos[OF LLL_inv_initial_state g_bound_fs_init m0] have N0: "N > 0" .
+  from N_le_MMn[OF m0] have N_prod: "N \<le> ?prod" by auto
+  from N0 N_prod have M0: "M > 0" by (cases "M \<le> 0", auto)
+  from N0 N_prod have prod0: "0 < ?prod" by linarith
+  from prod0 have n0: "n > 0" by auto
+  from n0 prod0 M0 have prod_p: "?prod \<le> ?p" by auto
+  with N_prod prod0 have N_p: "N \<le> ?p" and p0: "0 < ?p" by linarith+
+  let ?base = "real_of_rat (4 * \<alpha> / (4 + \<alpha>))" 
+  have base: "1 < ?base" using \<alpha>_gt by auto
+  have Lg: "nat \<lceil>log ?base N\<rceil> \<le> nat \<lceil>log ?base ?p\<rceil>"
+    by (intro nat_mono ceiling_mono log_mono, subst log_le_cancel_iff[OF base],
+      insert M0 N_p N0 p0 n0, auto simp flip: of_int_mult of_nat_mult)
+  also have "log ?base ?p = log ?base (?lg^2)" 
+    using M0 by (simp add: power2_eq_square ac_simps)
+  also have "\<dots> = 2 * log ?base ?lg" 
+    by (subst log_nat_power, insert M0 n0, auto)
+  finally have "nat \<lceil>log ?base N\<rceil> \<le> nat \<lceil>2 * log ?base ?lg\<rceil>" .
+  also have "\<dots> \<le> 2 * Lg" using assms
+    by linarith
+  finally have Log: "nat \<lceil>log ?base N\<rceil> \<le> 2 * Lg" .
+  from 0 have "0 < 2 * Lg" by simp
+  from reduce_basis_cost_N[OF Log this]
+  show ?thesis by simp
+next
+  case False
+  with reduce_basis_cost_0 show ?thesis by simp
+qed
+  
   
 end (* fixing arith_cost and assume \<alpha> > 4/3 *)
 end (* LLL locale *)
