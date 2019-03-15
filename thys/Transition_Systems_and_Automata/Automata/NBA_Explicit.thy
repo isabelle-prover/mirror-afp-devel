@@ -1,7 +1,7 @@
 section \<open>Explicit Nondeterministic Büchi Automata\<close>
 
 theory NBA_Explicit
-imports NBA_Nodes
+imports NBA_Algorithms
 begin
 
   datatype ('label, 'state) nbae = nbae

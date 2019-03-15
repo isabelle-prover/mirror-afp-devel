@@ -4,6 +4,7 @@ session Transition_Systems_and_Automata (AFP) = "Collections" +
   options [timeout = 1200]
   sessions
     "DFS_Framework"
+    "Gabow_SCC"
   theories
     "Basic/Basic"
     "Basic/Sequence"
@@ -17,7 +18,10 @@ session Transition_Systems_and_Automata (AFP) = "Collections" +
     "Automata/DFA"
     "Automata/NFA"
     "Automata/NBA"
+    "Automata/NBA_Refine"
+    "Automata/NBA_Graphs"
     "Automata/NBA_Implement"
+    "Automata/NBA_Algorithms"
     "Automata/NBA_Explicit"
     "Automata/NBA_Translate"
     "Automata/DBA"
