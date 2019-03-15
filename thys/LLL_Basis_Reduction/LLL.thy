@@ -70,7 +70,7 @@ text \<open>lattice of initial basis\<close>
 definition "L = lattice_of fs_init" 
 
 text \<open>maximum squared norm of initial basis\<close>
-definition "A = max_list (map (nat \<circ> sq_norm) fs_init)" 
+definition "N = max_list (map (nat \<circ> sq_norm) fs_init)" 
 
 text \<open>This is the core invariant which enables to prove functional correctness.\<close>
 
@@ -230,7 +230,7 @@ shows "LLL_invariant True i fs'"
   (* new values of d *)
   "\<And> ii. ii \<le> m \<Longrightarrow> d fs' ii = d fs ii" 
 proof -
-  define bnd :: rat where bnd: "bnd = 4 ^ (m - 1 - Suc j) * of_nat (A ^ (m - 1) * m)" 
+  define bnd :: rat where bnd: "bnd = 4 ^ (m - 1 - Suc j) * of_nat (N ^ (m - 1) * m)" 
   define M where "M = map (\<lambda>i. map (\<mu> fs i) [0..<m]) [0..<m]"
   note inv = LLL_invD[OF Linv]
   note Gr = inv(1)
@@ -599,7 +599,7 @@ qed
 definition base where "base = real_of_rat ((4 * \<alpha>) / (4 + \<alpha>))" 
 
 definition g_bound :: "int vec list \<Rightarrow> bool" where 
-  "g_bound fs = (\<forall> i < m. sq_norm (gso fs i) \<le> of_nat A)" 
+  "g_bound fs = (\<forall> i < m. sq_norm (gso fs i) \<le> of_nat N)" 
 
 end
 
@@ -1304,8 +1304,8 @@ begin
 interpretation gs1: gram_schmidt_fs_lin_indpt n "RAT fs"
   by (standard) (use Linv LLL_invariant_def gs.lin_indpt_list_def in auto)
 
-lemma LLL_inv_A_pos: assumes m: "m \<noteq> 0" 
-shows "A > 0" 
+lemma LLL_inv_N_pos: assumes m: "m \<noteq> 0" 
+shows "N > 0" 
 proof -
   let ?r = rat_of_int
   note inv = LLL_invD[OF Linv]
@@ -1316,56 +1316,56 @@ proof -
   hence F0: "fs ! 0 \<noteq> 0\<^sub>v n" by auto
   hence "sq_norm (fs ! 0) \<noteq> 0" using F by simp
   hence 1: "sq_norm (fs ! 0) \<ge> 1" using sq_norm_vec_ge_0[of "fs ! 0"] by auto
-  from gbnd m have "sq_norm (gso fs 0) \<le> of_nat A" unfolding g_bound_def by auto
+  from gbnd m have "sq_norm (gso fs 0) \<le> of_nat N" unfolding g_bound_def by auto
   also have "gso fs 0 = RAT fs ! 0" unfolding upt using F by (simp add: gs1.gso.simps[of 0])
   also have "RAT fs ! 0 = map_vec ?r (fs ! 0)" using inv(6) m by auto
   also have "sq_norm \<dots> = ?r (sq_norm (fs ! 0))" by (simp add: sq_norm_of_int)
-  finally show ?thesis using 1 by (cases A, auto)
+  finally show ?thesis using 1 by (cases N, auto)
 qed
 
 
 (* equation (3) in front of Lemma 16.18 *)
 lemma d_approx_main: assumes i: "ii \<le> m" "m \<noteq> 0" 
-shows "rat_of_int (d fs ii) \<le> rat_of_nat (A^ii)" 
+shows "rat_of_int (d fs ii) \<le> rat_of_nat (N^ii)" 
 proof -
   note inv = LLL_invD[OF Linv]
-  from LLL_inv_A_pos i have A: "0 < A" by auto
+  from LLL_inv_N_pos i have A: "0 < N" by auto
   note main = inv(2)[unfolded gram_schmidt_int_def gram_schmidt_wit_def]
   have "rat_of_int (d fs ii) = (\<Prod>j<ii. \<parallel>gso fs j\<parallel>\<^sup>2)" unfolding d_def using i
     by (auto simp: Gramian_determinant [OF Linv])
-  also have "\<dots> \<le> (\<Prod>j<ii. of_nat A)" using i
+  also have "\<dots> \<le> (\<Prod>j<ii. of_nat N)" using i
     by (intro prod_mono ballI conjI prod_nonneg, insert gbnd[unfolded g_bound_def], auto)
-  also have "\<dots> = (of_nat A)^ii" unfolding prod_constant by simp
-  also have "\<dots> = of_nat (A^ii)" by simp
+  also have "\<dots> = (of_nat N)^ii" unfolding prod_constant by simp
+  also have "\<dots> = of_nat (N^ii)" by simp
   finally show ?thesis by simp
 qed
 
 lemma d_approx: assumes i: "ii < m"  
-  shows "rat_of_int (d fs ii) \<le> rat_of_nat (A^ii)" 
+  shows "rat_of_int (d fs ii) \<le> rat_of_nat (N^ii)" 
   using d_approx_main[of ii] assms by auto
 
 
 lemma d_bound: assumes i: "ii < m" 
-  shows "d fs ii \<le> A^ii" 
+  shows "d fs ii \<le> N^ii" 
   using d_approx[OF assms] unfolding d_def by linarith
 
 
-lemma D_approx: "D fs \<le> A ^ (m * m)" 
+lemma D_approx: "D fs \<le> N ^ (m * m)" 
 proof - 
   note inv = LLL_invD[OF Linv]
-  from LLL_inv_A_pos have A: "m \<noteq> 0 \<Longrightarrow> 0 < A" by auto
+  from LLL_inv_N_pos have N: "m \<noteq> 0 \<Longrightarrow> 0 < N" by auto
   note main = inv(2)[unfolded gram_schmidt_int_def gram_schmidt_wit_def]
   have "rat_of_int (\<Prod>i<m. d fs i) = (\<Prod>i<m. rat_of_int (d fs i))" by simp
-  also have "\<dots> \<le> (\<Prod>i<m. (of_nat A) ^ i)" 
+  also have "\<dots> \<le> (\<Prod>i<m. (of_nat N) ^ i)" 
     by (rule prod_mono, insert d_approx LLL_d_pos[OF Linv], auto simp: less_le)
-  also have "\<dots> \<le> (\<Prod>i<m. (of_nat A ^ m))" 
-    by (rule prod_mono, insert A, auto intro: pow_mono_exp)
-  also have "\<dots> = (of_nat A)^(m * m)" unfolding prod_constant power_mult by simp
-  also have "\<dots> = of_nat (A ^ (m * m))" by simp
-  finally have "(\<Prod>i<m. d fs i) \<le> A ^ (m * m)" by linarith
+  also have "\<dots> \<le> (\<Prod>i<m. (of_nat N ^ m))" 
+    by (rule prod_mono, insert N, auto intro: pow_mono_exp)
+  also have "\<dots> = (of_nat N)^(m * m)" unfolding prod_constant power_mult by simp
+  also have "\<dots> = of_nat (N ^ (m * m))" by simp
+  finally have "(\<Prod>i<m. d fs i) \<le> N ^ (m * m)" by linarith
   also have "(\<Prod>i<m. d fs i) = D fs" unfolding D_def 
     by (subst nat_0_le, rule prod_nonneg, insert LLL_d_pos[OF Linv], auto simp: le_less)  
-  finally show "D fs \<le> A ^ (m * m)" by linarith 
+  finally show "D fs \<le> N ^ (m * m)" by linarith 
 qed
 
 lemma LLL_mu_d_Z: assumes inv: "LLL_invariant upw i fs" 
@@ -1380,7 +1380,7 @@ qed
 
 
 lemma LLL_measure_approx: assumes "\<alpha> > 4/3" "m \<noteq> 0" 
-shows "LLL_measure i fs \<le> m + 2 * m * m * log base A"
+shows "LLL_measure i fs \<le> m + 2 * m * m * log base N"
 proof -   
   have b1: "base > 1" using base assms by auto
   have id: "base = 1 / real_of_rat reduction" unfolding base_def reduction_def using \<alpha>0 by
@@ -1389,26 +1389,26 @@ proof -
   note invD = LLL_invD[OF Linv]  
   from invD
   have F: "set fs \<subseteq> carrier_vec n" and len: "length fs = m" by auto
-  have A0: "A > 0" using LLL_inv_A_pos[OF assms(2)] .
+  have N0: "N > 0" using LLL_inv_N_pos[OF assms(2)] .
   from D_approx 
-  have D: "D fs \<le> A ^ (m * m)" .
-  hence "real (D fs) \<le> real (A ^ (m * m))" by linarith
-  also have "\<dots> = real A ^ (m * m)" by simp
-  finally have log: "log base (real (D fs)) \<le> log base (real A ^ (m * m))"   
-    by (subst log_le_cancel_iff[OF b1], insert D1 A0, auto)
+  have D: "D fs \<le> N ^ (m * m)" .
+  hence "real (D fs) \<le> real (N ^ (m * m))" by linarith
+  also have "\<dots> = real N ^ (m * m)" by simp
+  finally have log: "log base (real (D fs)) \<le> log base (real N ^ (m * m))"   
+    by (subst log_le_cancel_iff[OF b1], insert D1 N0, auto)
 
   have "real (logD fs) = real (nat \<lfloor>log base (real (D fs))\<rfloor>)" 
     unfolding logD_def id using assms by auto
   also have "\<dots> \<le> log base (real (D fs))" using b1 D1 by auto
-  also have "\<dots> \<le> log base (real A ^ (m * m))" by fact
-  also have "\<dots> = (m * m) * log base (real A)" 
-    by (rule log_nat_power, insert A0, auto)
-  finally have main: "logD fs \<le> m * m * log base A" by simp
+  also have "\<dots> \<le> log base (real N ^ (m * m))" by fact
+  also have "\<dots> = (m * m) * log base (real N)" 
+    by (rule log_nat_power, insert N0, auto)
+  finally have main: "logD fs \<le> m * m * log base N" by simp
 
   have "real (LLL_measure i fs) = real (2 * logD fs + m - i)"
     unfolding LLL_measure_def split invD(1) by simp
   also have "\<dots> \<le> 2 * real (logD fs) + m" using invD by simp
-  also have "\<dots> \<le> 2 * (m * m * log base A) + m" using main by auto
+  also have "\<dots> \<le> 2 * (m * m * log base N) + m" using main by auto
   finally show ?thesis by simp
 qed
 end
@@ -1424,17 +1424,17 @@ proof -
     interpret gs: gram_schmidt_fs_lin_indpt n "RAT fs_init"
       by (standard) (use len lin_dep LLL_invariant_def gs.lin_indpt_list_def in auto)
     from mem_set_imp_le_max_list[OF _ mem]
-    have FA: "nat (sq_norm (fs_init ! i)) \<le> A" unfolding A_def by force
-    hence "\<parallel>fs_init ! i\<parallel>\<^sup>2 \<le> int A" using i by auto
-    also have "\<dots> \<le> int (A * m)" using i by fastforce
-    finally have f_bnd:  "\<parallel>fs_init ! i\<parallel>\<^sup>2 \<le> int (A * m)" .
-    from FA have "rat_of_nat (nat (sq_norm (fs_init ! i))) \<le> rat_of_nat A" by simp
+    have FN: "nat (sq_norm (fs_init ! i)) \<le> N" unfolding N_def by force
+    hence "\<parallel>fs_init ! i\<parallel>\<^sup>2 \<le> int N" using i by auto
+    also have "\<dots> \<le> int (N * m)" using i by fastforce
+    finally have f_bnd:  "\<parallel>fs_init ! i\<parallel>\<^sup>2 \<le> int (N * m)" .
+    from FN have "rat_of_nat (nat (sq_norm (fs_init ! i))) \<le> rat_of_nat N" by simp
     also have "rat_of_nat (nat (sq_norm (fs_init ! i))) = ?r (sq_norm (fs_init ! i))" 
       using sq_norm_vec_ge_0[of "fs_init ! i"] by auto
     also have "\<dots> = sq_norm (RAT fs_init ! i)" unfolding sq_norm_of_int[symmetric] using fs_init len i by auto
-    finally have "sq_norm (RAT fs_init ! i) \<le> rat_of_nat A" .
+    finally have "sq_norm (RAT fs_init ! i) \<le> rat_of_nat N" .
     with gs.sq_norm_gso_le_f i len lin_dep
-    have g_bnd: "\<parallel>gs.gso i\<parallel>\<^sup>2 \<le> rat_of_nat A"
+    have g_bnd: "\<parallel>gs.gso i\<parallel>\<^sup>2 \<le> rat_of_nat N"
       unfolding gs.lin_indpt_list_def by fastforce
     note f_bnd g_bnd
   }
@@ -1443,7 +1443,7 @@ qed
 
 lemma LLL_measure_approx_fs_init: 
   "LLL_invariant upw i fs_init \<Longrightarrow> 4 / 3 < \<alpha> \<Longrightarrow> m \<noteq> 0 \<Longrightarrow> 
-  real (LLL_measure i fs_init) \<le> real m + real (2 * m * m) * log base (real A)" 
+  real (LLL_measure i fs_init) \<le> real m + real (2 * m * m) * log base (real N)" 
   using LLL_measure_approx[OF _ g_bound_fs_init] .
 
 

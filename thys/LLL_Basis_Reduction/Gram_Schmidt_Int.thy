@@ -542,55 +542,55 @@ end (* fs_int_indpt *)
 context gram_schmidt_fs_int
 begin
 
-lemma A_\<mu>':
+lemma N_\<mu>':
   assumes "i < m" "j \<le> i"
-  shows "(\<mu>' i j)\<^sup>2 \<le> A ^ (3 * Suc j)"
+  shows "(\<mu>' i j)\<^sup>2 \<le> N ^ (3 * Suc j)"
 proof -
-  have 1: "1 \<le> A * A ^ j"
-    using assms A_1 one_le_power[of _ "Suc j"] by fastforce
+  have 1: "1 \<le> N * N ^ j"
+    using assms N_1 one_le_power[of _ "Suc j"] by fastforce
   have "0 < d (Suc j)"
      using assms by (intro Gramian_determinant) auto
   then have [simp]: "0 \<le> d (Suc j)"
     by arith
-  have A_d: "d (Suc j) \<le> A ^ (Suc j)"
-    using assms by (intro A_d) auto
+  have N_d: "d (Suc j) \<le> N ^ (Suc j)"
+    using assms by (intro N_d) auto
   have "(\<mu>' i j)\<^sup>2 = (d (Suc j)) * (d (Suc j)) * (\<mu> i j)\<^sup>2"
     unfolding \<mu>'_def by (auto simp add: power2_eq_square)
-  also have "\<dots> \<le> (d (Suc j)) * (d (Suc j)) * A ^ (Suc j)"
+  also have "\<dots> \<le> (d (Suc j)) * (d (Suc j)) * N ^ (Suc j)"
   proof -
-    have "(\<mu> i j)\<^sup>2 \<le> A ^ (Suc j)" if "i = j"
+    have "(\<mu> i j)\<^sup>2 \<le> N ^ (Suc j)" if "i = j"
       using that 1 by (auto simp add: \<mu>.simps)
-    moreover have "(\<mu> i j)\<^sup>2 \<le> A ^ (Suc j)" if "i \<noteq> j"
-      using A_mu assms that by (auto)
-    ultimately have "(\<mu> i j)\<^sup>2 \<le> A ^ (Suc j)"
+    moreover have "(\<mu> i j)\<^sup>2 \<le> N ^ (Suc j)" if "i \<noteq> j"
+      using N_mu assms that by (auto)
+    ultimately have "(\<mu> i j)\<^sup>2 \<le> N ^ (Suc j)"
       by fastforce
     then show ?thesis
       by (intro mult_mono[of _ _ "(\<mu> i j)\<^sup>2"]) (auto)
   qed
-  also have "\<dots> \<le> A ^ (Suc j) * A ^ (Suc j) * A ^ (Suc j)"
-    using assms 1 A_d by (auto intro!: mult_mono)
-  also have "A ^ (Suc j) * A ^ (Suc j) * A ^ (Suc j) = A ^ (3 * (Suc j))"
+  also have "\<dots> \<le> N ^ (Suc j) * N ^ (Suc j) * N ^ (Suc j)"
+    using assms 1 N_d by (auto intro!: mult_mono)
+  also have "N ^ (Suc j) * N ^ (Suc j) * N ^ (Suc j) = N ^ (3 * (Suc j))"
     using nat_pow_distr nat_pow_pow power3_eq_cube by metis
   finally show ?thesis
     by simp
 qed
 
-lemma A_\<sigma>:
+lemma N_\<sigma>:
   assumes "i < m" "j \<le> i" "l \<le> j"
-  shows "\<bar>\<sigma> l i j\<bar> \<le> of_nat l * A ^ (2 * l + 2)"
+  shows "\<bar>\<sigma> l i j\<bar> \<le> of_nat l * N ^ (2 * l + 2)"
 proof -
   have 1: "\<bar>d l\<bar> = d l"
     using Gramian_determinant(2) assms by (intro abs_of_pos) auto
   then have "\<bar>\<sigma> l i j\<bar> = d l * \<bar>\<Sum>k<l. \<mu> i k * \<mu> j k * \<beta> fs k\<bar>"
     using assms by (subst \<sigma>, fastforce, subst abs_mult) auto
-  also have "\<dots> \<le> A ^ l * (of_nat l * A ^ (l + 2))"
+  also have "\<dots> \<le> N ^ l * (of_nat l * N ^ (l + 2))"
   proof -
-    have "\<bar>\<Sum>k<l. \<mu> i k * \<mu> j k * \<beta> fs k\<bar> \<le> of_nat l * A ^ (l + 2)"
+    have "\<bar>\<Sum>k<l. \<mu> i k * \<mu> j k * \<beta> fs k\<bar> \<le> of_nat l * N ^ (l + 2)"
     proof -
-      have [simp]: "0 \<le> \<beta> fs k" "\<parallel>gso k\<parallel>\<^sup>2 \<le> A" if "k < l" for k
-        using that assms A_gso \<beta>_pos[of k] by auto
-      have [simp]: "0 \<le> A * A ^ k" for k
-        using A_ge_0 assms by fastforce
+      have [simp]: "0 \<le> \<beta> fs k" "\<parallel>gso k\<parallel>\<^sup>2 \<le> N" if "k < l" for k
+        using that assms N_gso \<beta>_pos[of k] by auto
+      have [simp]: "0 \<le> N * N ^ k" for k
+        using N_ge_0 assms by fastforce
       have "\<bar>(\<Sum>k < l. \<mu> i k * \<mu> j k * \<beta> fs k)\<bar> \<le> (\<Sum>k < l. \<bar>\<mu> i k * \<mu> j k * \<beta> fs k\<bar>)"
         using sum_abs by blast
       also have "\<dots> = (\<Sum>k < l. \<bar>\<mu> i k * \<mu> j k\<bar> * \<beta> fs k)"
@@ -601,22 +601,22 @@ proof -
         by (auto intro!: sum_mono mult_mono)
       also have "\<dots> = (\<Sum>k < l. (max \<bar>\<mu> i k\<bar> \<bar>\<mu> j k\<bar>)\<^sup>2 * \<beta> fs k)"
         by (auto simp add: power2_eq_square)
-      also have "\<dots> \<le> (\<Sum>k < l. A ^ (Suc k) * \<beta> fs k)"
-        using assms A_mu[of i] A_mu[of j] assms
+      also have "\<dots> \<le> (\<Sum>k < l. N ^ (Suc k) * \<beta> fs k)"
+        using assms N_mu[of i] N_mu[of j] assms
         by (auto intro!: sum_mono mult_right_mono simp add: max_def)
-      also have "\<dots> \<le> (\<Sum>k < l. A ^ (Suc k) * A)"
+      also have "\<dots> \<le> (\<Sum>k < l. N ^ (Suc k) * N)"
         using assms by (auto simp add: gso_norm_beta intro!: sum_mono mult_left_mono)
-      also have "\<dots> \<le> (\<Sum>k < l. A ^ (Suc l) * A)"
-        using assms A_1 A_ge_0 assms by (fastforce intro!: sum_mono mult_right_mono power_increasing)
-      also have "\<dots> = of_nat l * A ^ (l + 2)"
-        by (auto)
+      also have "\<dots> \<le> (\<Sum>k < l. N ^ (Suc l) * N)"
+        using assms N_1 N_ge_0 assms by (fastforce intro!: sum_mono mult_right_mono power_increasing)
+      also have "\<dots> = of_nat l * N ^ (l + 2)"
+        by auto
       finally show ?thesis
         by auto
     qed
     then show ?thesis
-      using assms A_d A_ge_0 by (fastforce intro!: mult_mono zero_le_power)
+      using assms N_d N_ge_0 by (fastforce intro!: mult_mono zero_le_power)
   qed
-  also have "\<dots> = of_nat l * A ^ (2 * l + 2)"
+  also have "\<dots> = of_nat l * N ^ (2 * l + 2)"
     by (auto simp add: field_simps mult_2_right simp flip: power_add)
   finally show ?thesis
     by simp
@@ -1016,62 +1016,62 @@ lemma combined_size_bound_integer:
     \<union> {\<sigma> l i j | i j l. i < m \<and> j \<le> i \<and> l \<le> j}" 
     (is "x \<in> ?fs \<union> ?\<mu>' \<union> ?\<sigma>")
     and m: "m \<noteq> 0"
-  shows "\<bar>x\<bar> \<le> of_nat m * A ^ (3 * Suc m)"
+  shows "\<bar>x\<bar> \<le> of_nat m * N ^ (3 * Suc m)"
 proof -
   let ?m = "(of_nat m)::'a::trivial_conjugatable_linordered_field"
   have [simp]: "1 \<le> ?m"
     using m by (metis Num.of_nat_simps One_nat_def Suc_leI neq0_conv of_nat_mono)
   have [simp]: "\<bar>(of_int z)::'a::trivial_conjugatable_linordered_field\<bar> \<le> (of_int z)\<^sup>2" for z
     using abs_leq_squared by (metis of_int_abs of_int_le_iff of_int_power)
-  have "\<bar>fs ! i $v j\<bar> \<le> of_nat m * A ^ (3 * Suc m)" if "i < m" "j < n" for i j
+  have "\<bar>fs ! i $v j\<bar> \<le> of_nat m * N ^ (3 * Suc m)" if "i < m" "j < n" for i j
   proof -
     have "\<bar>fs ! i $v j\<bar> \<le> \<bar>fs ! i $v j\<bar>\<^sup>2"
       by (rule Ints_cases[of "fs ! i $v j"]) (use fs_int that in auto)
     also have "\<bar>fs ! i $v j\<bar>\<^sup>2 \<le> \<parallel>fs ! i\<parallel>\<^sup>2"
       using that by (intro vec_le_sq_norm) (auto)
-    also have "... \<le> 1 * A"
-      using A_fs that by auto
-    also have "\<dots> \<le> of_nat m * A ^ (3 * Suc m)"
-      using m A_1 by (intro mult_mono) (auto intro!: mult_mono self_le_power)
+    also have "... \<le> 1 * N"
+      using N_fs that by auto
+    also have "\<dots> \<le> of_nat m * N ^ (3 * Suc m)"
+      using m N_1 by (intro mult_mono) (auto intro!: mult_mono self_le_power)
     finally show ?thesis
       by (auto)
   qed
-  then have "\<bar>x\<bar> \<le> of_nat m * A ^ (3 * Suc m)" if "x \<in> ?fs"
+  then have "\<bar>x\<bar> \<le> of_nat m * N ^ (3 * Suc m)" if "x \<in> ?fs"
     using that by auto
-  moreover have "\<bar>x\<bar> \<le> of_nat m * A ^ (3 * Suc m)" if "x \<in> ?\<mu>'"
+  moreover have "\<bar>x\<bar> \<le> of_nat m * N ^ (3 * Suc m)" if "x \<in> ?\<mu>'"
   proof -
-    have "\<bar>\<mu>' i j\<bar> \<le> of_nat m * A ^ (3 + 3 * m)" if "j \<le> i" "i < m" for i j
+    have "\<bar>\<mu>' i j\<bar> \<le> of_nat m * N ^ (3 + 3 * m)" if "j \<le> i" "i < m" for i j
     proof -
       have "\<mu>' i j \<in> \<int>"
         unfolding \<mu>'_def using that d_mu_Ints by auto
       then have "\<bar>\<mu>' i j\<bar> \<le> (\<mu>' i j)\<^sup>2"
         by (rule Ints_cases[of "\<mu>' i j"]) auto
-      also have "\<dots> \<le> A ^ (3 * Suc j)"
-        using that A_\<mu>' by auto
-      also have "\<dots> \<le> 1 * A ^ (3 * Suc m)"
-        using that assms A_1 by (auto intro!: power_increasing)
-      also have "\<dots> \<le> of_nat m * A ^ (3 * Suc m)"
-        using A_ge_0 assms zero_le_power by (intro mult_mono) auto
+      also have "\<dots> \<le> N ^ (3 * Suc j)"
+        using that N_\<mu>' by auto
+      also have "\<dots> \<le> 1 * N ^ (3 * Suc m)"
+        using that assms N_1 by (auto intro!: power_increasing)
+      also have "\<dots> \<le> of_nat m * N ^ (3 * Suc m)"
+        using N_ge_0 assms zero_le_power by (intro mult_mono) auto
       finally show ?thesis
         by auto
     qed
     then show ?thesis
       using that by auto
   qed
-  moreover have "\<bar>x\<bar> \<le> of_nat m * A ^ (3 * Suc m)" if "x \<in> ?\<sigma>"
+  moreover have "\<bar>x\<bar> \<le> of_nat m * N ^ (3 * Suc m)" if "x \<in> ?\<sigma>"
   proof -
-    have "\<bar>\<sigma> l i j\<bar> \<le> of_nat m * A ^ (3 + 3 * m)" if "i < m" "j \<le> i" "l \<le> j" for i j l
+    have "\<bar>\<sigma> l i j\<bar> \<le> of_nat m * N ^ (3 + 3 * m)" if "i < m" "j \<le> i" "l \<le> j" for i j l
     proof -
-      have "\<bar>\<sigma> l i j\<bar> \<le> of_nat l * A ^ (2 * l + 2)"
-        using that A_\<sigma> by auto
-      also have "\<dots> \<le> of_nat m * A ^ (2 * l + 2)"
-        using that A_ge_0 assms zero_le_power by (intro mult_mono) auto
-      also have "\<dots> \<le> of_nat m * A ^ (3 * Suc m)"
+      have "\<bar>\<sigma> l i j\<bar> \<le> of_nat l * N ^ (2 * l + 2)"
+        using that N_\<sigma> by auto
+      also have "\<dots> \<le> of_nat m * N ^ (2 * l + 2)"
+        using that N_ge_0 assms zero_le_power by (intro mult_mono) auto
+      also have "\<dots> \<le> of_nat m * N ^ (3 * Suc m)"
       proof -
-        have "A ^ (2 * l + 2) \<le> A ^ (3 * Suc m)"
-          using that assms A_1 by (intro power_increasing) (auto intro!: power_increasing)
+        have "N ^ (2 * l + 2) \<le> N ^ (3 * Suc m)"
+          using that assms N_1 by (intro power_increasing) (auto intro!: power_increasing)
         then show ?thesis
-          using that assms A_1 by (intro mult_mono) (auto)
+          using that assms N_1 by (intro mult_mono) (auto)
       qed
       finally show ?thesis
         by simp
@@ -1085,7 +1085,7 @@ qed
 
 end (* gram_schmidt_fs_int *)
 
- (* "x \<noteq> 0 \<Longrightarrow> log 2 \<bar>x\<bar> \<le> 2 * m * log 2 A       + m + log 2 m" (is "_ \<Longrightarrow> ?l1 \<le> ?b1")
+ (* "x \<noteq> 0 \<Longrightarrow> log 2 \<bar>x\<bar> \<le> 2 * m * log 2 N       + m + log 2 m" (is "_ \<Longrightarrow> ?l1 \<le> ?b1")
   "x \<noteq> 0 \<Longrightarrow> log 2 \<bar>x\<bar> \<le> 4 * m * log 2 (M * n) + m + log 2 m" (is "_ \<Longrightarrow> _ \<le> ?b2") *)
 
 context fs_int_indpt
@@ -1097,7 +1097,7 @@ lemma combined_size_bound_rat_log:
     \<union> {gs.\<sigma> l i j | i j l. i < m \<and> j \<le> i \<and> l \<le> j}" 
     (is "x \<in> ?\<mu>' \<union> ?\<sigma>")
     and m: "m \<noteq> 0" "x \<noteq> 0"
-  shows "log 2 \<bar>real_of_rat x\<bar> \<le> log 2 m + (3 + 3 * m) * log 2 (real_of_rat gs.A)"
+  shows "log 2 \<bar>real_of_rat x\<bar> \<le> log 2 m + (3 + 3 * m) * log 2 (real_of_rat gs.N)"
 proof -
   let ?r_fs = "map of_int_hom.vec_hom fs::rat vec list"
   have 1: "map of_int_hom.vec_hom fs ! i $v j = of_int (fs ! i $ j)" if "i < m" "j < n" for i j
@@ -1109,7 +1109,7 @@ proof -
                  \<union> {gs.\<mu>' i j |i j. j \<le> i \<and> i < length ?r_fs}
                  \<union> {gs.\<sigma> l i j |i j l. i < length ?r_fs \<and> j \<le> i \<and> l \<le> j}"
     using assms by auto
-  then have 1: "\<bar>x\<bar> \<le> rat_of_nat (length ?r_fs) * gs.A ^ (3 * Suc (length ?r_fs))" (is "?ax \<le> ?t")
+  then have 1: "\<bar>x\<bar> \<le> rat_of_nat (length ?r_fs) * gs.N ^ (3 * Suc (length ?r_fs))" (is "?ax \<le> ?t")
     using assms by (intro gs.combined_size_bound_integer) auto
   then have 1: "real_of_rat ?ax \<le> real_of_rat ?t"
     using of_rat_less_eq 1 by auto
@@ -1117,17 +1117,17 @@ proof -
     by auto
   have "log 2 \<bar>real_of_rat x\<bar> \<le> log 2 (real_of_rat ?t)"
   proof -
-    have "0 < rat_of_nat (length fs) * gs.A ^ (3 + 3 * length fs)"
-      using assms gs.A_1 by (auto)
+    have "0 < rat_of_nat (length fs) * gs.N ^ (3 + 3 * length fs)"
+      using assms gs.N_1 by (auto)
     then show ?thesis
       using 1 assms by (subst log_le_cancel_iff) (auto)
   qed
-  also have "real_of_rat ?t = real m * real_of_rat gs.A ^ (3 + 3 * m)"
+  also have "real_of_rat ?t = real m * real_of_rat gs.N ^ (3 + 3 * m)"
     by (auto simp add: of_rat_mult of_rat_power)
-  also have "log 2 (m * real_of_rat gs.A ^ (3 + 3 * m)) = log 2 m + log 2 (real_of_rat gs.A ^ (3 + 3 * m))"
-    using gs.A_1 assms by (subst log_mult) auto
-  also have "log 2 (real_of_rat gs.A ^ (3 + 3 * m)) = real (3 + 3 * length fs) * log 2 (real_of_rat gs.A)"
-    using gs.A_1 assms by (subst log_nat_power) auto
+  also have "log 2 (m * real_of_rat gs.N ^ (3 + 3 * m)) = log 2 m + log 2 (real_of_rat gs.N ^ (3 + 3 * m))"
+    using gs.N_1 assms by (subst log_mult) auto
+  also have "log 2 (real_of_rat gs.N ^ (3 + 3 * m)) = real (3 + 3 * length fs) * log 2 (real_of_rat gs.N)"
+    using gs.N_1 assms by (subst log_nat_power) auto
   finally show ?thesis
     by (auto)
 qed
@@ -1137,7 +1137,7 @@ lemma combined_size_bound_integer_log:
     \<union> {\<sigma>s l i j | i j l. i < m \<and> j \<le> i \<and> l < j}" 
     (is "x \<in> ?\<mu>' \<union> ?\<sigma>")
     and m: "m \<noteq> 0" "x \<noteq> 0"
-  shows "log 2 \<bar>real_of_int x\<bar> \<le> log 2 m + (3 + 3 * m) * log 2 (real_of_rat gs.A)"
+  shows "log 2 \<bar>real_of_int x\<bar> \<le> log 2 m + (3 + 3 * m) * log 2 (real_of_rat gs.N)"
 proof -
   let ?x = "rat_of_int x" 
   from m have m: "m \<noteq> 0" "?x \<noteq> 0" by auto

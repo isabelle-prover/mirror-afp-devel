@@ -2741,36 +2741,36 @@ subsection \<open>Explicit Bounds for Size of Numbers that Occur During GSO Algo
 context gram_schmidt_fs_lin_indpt
 begin
 
-definition "A = Max (sq_norm ` set fs)"
+definition "N = Max (sq_norm ` set fs)"
 
 
 
-lemma A_ge_0:
+lemma N_ge_0:
   assumes "0 < m"
-  shows "0 \<le> A"
+  shows "0 \<le> N"
 proof -
   have "x \<in> sq_norm ` set fs \<Longrightarrow> 0 \<le> x" for x
     by auto
   then show ?thesis
-  using assms unfolding A_def by auto
+  using assms unfolding N_def by auto
 qed
 
-lemma A_fs:
+lemma N_fs:
   assumes "i < m"
-  shows "\<parallel>fs ! i\<parallel>\<^sup>2 \<le> A"
-    using assms unfolding A_def by (auto)
+  shows "\<parallel>fs ! i\<parallel>\<^sup>2 \<le> N"
+    using assms unfolding N_def by (auto)
 
-lemma A_gso:
+lemma N_gso:
   assumes "i < m"
-  shows "\<parallel>gso i\<parallel>\<^sup>2 \<le> A"
-  using assms A_fs sq_norm_gso_le_f by fastforce
+  shows "\<parallel>gso i\<parallel>\<^sup>2 \<le> N"
+  using assms N_fs sq_norm_gso_le_f by fastforce
 
-lemma A_d:
+lemma N_d:
   assumes "i \<le> m"
-  shows "Gramian_determinant fs i \<le> A ^ i"
+  shows "Gramian_determinant fs i \<le> N ^ i"
 proof -
-  have "(\<Prod>j<i. \<parallel>gso j\<parallel>\<^sup>2) \<le> (\<Prod>j<i. A)"
-      using assms A_gso by (intro prod_mono) auto
+  have "(\<Prod>j<i. \<parallel>gso j\<parallel>\<^sup>2) \<le> (\<Prod>j<i. N)"
+      using assms N_gso by (intro prod_mono) auto
     then show ?thesis
       using assms Gramian_determinant by auto
   qed
@@ -2810,33 +2810,33 @@ qed
 
 lemma
   assumes "set fs \<noteq> {}"
-  shows A_Ints: "A \<in> \<int>" and A_1: "1 \<le> A"  
+  shows N_Ints: "N \<in> \<int>" and N_1: "1 \<le> N"  
 proof -
-  have "\<exists>v\<^sub>m \<in> set fs. A = sq_norm v\<^sub>m"
-    unfolding A_def using assms by (auto intro!: ex_MAXIMUM)
-  then obtain v\<^sub>m::"'a vec" where v\<^sub>m_def: "v\<^sub>m \<in> set fs" "A = sq_norm v\<^sub>m"
+  have "\<exists>v\<^sub>m \<in> set fs. N = sq_norm v\<^sub>m"
+    unfolding N_def using assms by (auto intro!: ex_MAXIMUM)
+  then obtain v\<^sub>m::"'a vec" where v\<^sub>m_def: "v\<^sub>m \<in> set fs" "N = sq_norm v\<^sub>m"
     by blast
-  then show A_Ints: "A \<in> \<int>"
+  then show N_Ints: "N \<in> \<int>"
     using fs_int' carrier_vecD fs_carrier
     by (auto simp add: sq_norm_vec_as_cscalar_prod scalar_prod_def intro!: Ints_sum Ints_mult)
-  have *: "0 \<noteq> A"
-    using A_gso sq_norm_pos assms by fastforce
-  show "1 \<le> A"
-    by (rule Ints_cases[OF A_Ints]) (use * A_ge_0 assms in force)+
+  have *: "0 \<noteq> N"
+    using N_gso sq_norm_pos assms by fastforce
+  show "1 \<le> N"
+    by (rule Ints_cases[OF N_Ints]) (use * N_ge_0 assms in force)+
 qed
 
-lemma A_mu:
+lemma N_mu:
   assumes "i < m" "j \<le> i"
-  shows "(\<mu> i j)\<^sup>2 \<le> A ^ (Suc j)"
+  shows "(\<mu> i j)\<^sup>2 \<le> N ^ (Suc j)"
 proof -
   { assume ji: "j < i"
     have "(\<mu> i j)\<^sup>2 \<le> Gramian_determinant fs j * \<parallel>fs ! i\<parallel>\<^sup>2"
       using assms ji by (intro mu_bound_Gramian_determinant) auto
-    also have "\<dots> \<le> A ^ j * \<parallel>fs ! i\<parallel>\<^sup>2"
-      using assms A_d A_ge_0 by (intro mult_mono) fastforce+
-    also have "A ^ j * \<parallel>fs ! i\<parallel>\<^sup>2 \<le> A ^ j * A"
-      using assms A_fs A_ge_0 by (intro mult_mono) fastforce+
-    also have "\<dots> = A ^ (Suc j)"
+    also have "\<dots> \<le> N ^ j * \<parallel>fs ! i\<parallel>\<^sup>2"
+      using assms N_d N_ge_0 by (intro mult_mono) fastforce+
+    also have "N ^ j * \<parallel>fs ! i\<parallel>\<^sup>2 \<le> N ^ j * N"
+      using assms N_fs N_ge_0 by (intro mult_mono) fastforce+
+    also have "\<dots> = N ^ (Suc j)"
       by auto
     finally have ?thesis
       by simp }
@@ -2844,10 +2844,10 @@ proof -
   { assume ji: "j = i"
     have "(\<mu> i j)\<^sup>2 = 1"
       using ji by (simp add: \<mu>.simps)
-    also have "\<dots> \<le> A"
-      using assms A_1 by fastforce
-    also have "\<dots> \<le> A ^ (Suc j)"
-      using assms A_1 by fastforce
+    also have "\<dots> \<le> N"
+      using assms N_1 by fastforce
+    also have "\<dots> \<le> N ^ (Suc j)"
+      using assms N_1 by fastforce
     finally have ?thesis
       by simp }
   ultimately show ?thesis

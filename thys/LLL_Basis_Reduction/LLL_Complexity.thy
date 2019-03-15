@@ -242,7 +242,7 @@ partial_function (tailrec) basis_reduction_main_cost where
        in basis_reduction_main_cost upw' i' state' (c + c_step)
      else (state, c))"
 
-definition "num_loops = m + 2 * m * m * nat (ceiling (log base (real A)))"
+definition "num_loops = m + 2 * m * m * nat (ceiling (log base (real N)))"
 
 lemma basis_reduction_main_cost: assumes impl: "LLL_impl_inv state i (fs_state state)" 
   and inv: "LLL_invariant upw i (fs_state state)" 
@@ -292,7 +292,7 @@ proof -
   show ?g1 by fact
   note cost also have "body_cost * LLL_measure i (fs_state state) \<le> body_cost * num_loops" 
   proof (rule mult_left_mono; linarith?)
-    define l where "l = log base (real A)" 
+    define l where "l = log base (real N)" 
     define k where "k = 2 * m * m" 
     obtain f mu ds where init: "initial_state m fs_init = (f,mu,ds)" by (cases "initial_state m fs_init", auto)
     from initial_state
@@ -585,57 +585,50 @@ proof (atomize(full), goal_cases)
   qed
 qed
 
+lemma mn: "m \<le> n"
+  unfolding len[symmetric] using lin_dep length_map unfolding gs.lin_indpt_list_def
+  by (metis distinct_card gs.dim_is_n gs.fin_dim gs.li_le_dim(2))
 
 text \<open>Theorem with expanded costs: $O(n\cdot m^3 \cdot \log (\mathit{maxnorm}\ F))$ arithmetic operations\<close>
 lemma reduce_basis_cost_expanded: 
-  assumes "Log = nat \<lceil>log (of_rat (4 * \<alpha> / (4 + \<alpha>))) AA\<rceil>"   
-  and "AA = max_list (map (nat \<circ> sq_norm) fs_init)" 
+  assumes "Lg = nat \<lceil>log (of_rat (4 * \<alpha> / (4 + \<alpha>))) N\<rceil>"   
   shows "cost (reduce_basis_cost fs_init)
-  \<le> 4 * Log * m * m * m * n
-    + 4 * Log * m * m * m * m
-    + 16 * Log * m * m * m
-    + 4 * Log * m * m
+  \<le> 4 * Lg * m * m * m * n
+    + 4 * Lg * m * m * m * m
+    + 16 * Lg * m * m * m
+    + 4 * Lg * m * m
     + 3 * m * m * m
     + 3 * m * m * n 
     + 10 * m * m
     + 2 * n * m 
     + 3 * m"
-  unfolding assms A_def[symmetric]
+  unfolding assms 
   using reduce_basis_cost(2)[unfolded num_loops_def body_cost_def initial_gso_cost_def base_def]
   by (auto simp: algebra_simps)
 
-lemma mn: "m \<le> n"
-  unfolding len[symmetric] using lin_dep length_map unfolding gs.lin_indpt_list_def
-  by (metis distinct_card gs.dim_is_n gs.fin_dim gs.li_le_dim(2))
-
 lemma reduce_basis_cost_expanded':
-  assumes Log: "Log = nat \<lceil>log (of_rat (4 * \<alpha> / (4 + \<alpha>))) AA\<rceil>"   
-  and AA: "AA =  Max {nat \<parallel>v\<parallel>\<^sup>2 | v. v \<in> set fs_init}"
-  and 0: "0 < Log" "0 < AA" "0 < n" "0 < m" "fs_init \<noteq> []"
-  shows "cost (reduce_basis_cost fs_init)
-  \<le> 49 * m ^ 3 * n * Log"
+  assumes "Lg = nat \<lceil>log (of_rat (4 * \<alpha> / (4 + \<alpha>))) N\<rceil>"   
+  and 0: "0 < Lg" "0 < n"  
+  shows "cost (reduce_basis_cost fs_init) \<le> 49 * m ^ 3 * n * Lg"
 proof -
-  have AA: "AA = real (max_list (map (nat \<circ> sq_norm) fs_init))"
-    using max_list_Max assms unfolding comp_apply 
-    by (auto simp add: Setcompr_eq_image  max_list_Max)
-  note reduce_basis_cost_expanded[OF assms(1) AA]
-  also have "4 * Log * m * m * m * n = 4 * m ^ 3 * n * Log"
+  note reduce_basis_cost_expanded[OF assms(1)]
+  also have "4 * Lg * m * m * m * n = 4 * m ^ 3 * n * Lg"
     using 0 by (auto simp add: power3_eq_cube)
-  also have "4 * Log * m * m * m * m \<le> 4 * m ^ 3 * n * Log"
+  also have "4 * Lg * m * m * m * m \<le> 4 * m ^ 3 * n * Lg"
     using 0 mn by (auto simp add: power3_eq_cube)
-  also have "16 * Log * m * m * m \<le> 16 * m ^ 3 * n * Log"
+  also have "16 * Lg * m * m * m \<le> 16 * m ^ 3 * n * Lg"
     using 0 by (auto simp add: power3_eq_cube)
-  also have "4 * Log * m * m \<le> 4 *  m ^ 3 * n * Log"
+  also have "4 * Lg * m * m \<le> 4 *  m ^ 3 * n * Lg"
     using 0 by (auto simp add: power3_eq_cube)
-  also have "3 * m * m * m \<le> 3 *  m ^ 3 * n * Log"
+  also have "3 * m * m * m \<le> 3 *  m ^ 3 * n * Lg"
     using 0 by (auto simp add: power3_eq_cube)
-  also have "3 * m * m * n \<le> 3 * m ^ 3 * n * Log"
+  also have "3 * m * m * n \<le> 3 * m ^ 3 * n * Lg"
     using 0 by (auto simp add: power3_eq_cube)
-  also have "10 * m * m \<le> 10 * m ^ 3 * n * Log"
+  also have "10 * m * m \<le> 10 * m ^ 3 * n * Lg"
     using 0 by (auto simp add: power3_eq_cube)
-  also have "2 * n * m  \<le> 2 * m ^ 3 * n * Log"
+  also have "2 * n * m  \<le> 2 * m ^ 3 * n * Lg"
     using 0 by (auto simp add: power3_eq_cube)
-  also have "3 * m \<le> 3 * m ^ 3 * n * Log"
+  also have "3 * m \<le> 3 * m ^ 3 * n * Lg"
     using 0 by (auto simp add: power3_eq_cube)
   finally show ?thesis
     by (auto simp add: algebra_simps)
