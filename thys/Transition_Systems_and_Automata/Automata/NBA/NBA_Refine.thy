@@ -3,7 +3,7 @@ section \<open>Relations on Nondeterministic Büchi Automata\<close>
 theory NBA_Refine
 imports
   "NBA"
-  "../Transition_Systems/Transition_System_Refine"
+  "../../Transition_Systems/Transition_System_Refine"
 begin
 
   definition nba_rel :: "('label\<^sub>1 \<times> 'label\<^sub>2) set \<Rightarrow> ('state\<^sub>1 \<times> 'state\<^sub>2) set \<Rightarrow>

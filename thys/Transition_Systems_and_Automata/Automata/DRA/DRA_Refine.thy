@@ -3,8 +3,8 @@ section \<open>Relations on Deterministic Rabin Automata\<close>
 theory DRA_Refine
 imports
   "DRA"
-  "../Basic/Acceptance_Refine"
-  "../Transition_Systems/Transition_System_Refine"
+  "../../Basic/Acceptance_Refine"
+  "../../Transition_Systems/Transition_System_Refine"
 begin
 
   definition dra_rel :: "('label\<^sub>1 \<times> 'label\<^sub>2) set \<Rightarrow> ('state\<^sub>1 \<times> 'state\<^sub>2) set \<Rightarrow>

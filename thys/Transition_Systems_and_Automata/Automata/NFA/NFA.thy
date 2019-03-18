@@ -2,10 +2,10 @@ section \<open>Nondeterministic Finite Automata\<close>
 
 theory NFA
 imports
-  "../Basic/Sequence_Zip"
-  "../Transition_Systems/Transition_System"
-  "../Transition_Systems/Transition_System_Extra"
-  "../Transition_Systems/Transition_System_Construction"
+  "../../Basic/Sequence_Zip"
+  "../../Transition_Systems/Transition_System"
+  "../../Transition_Systems/Transition_System_Extra"
+  "../../Transition_Systems/Transition_System_Construction"
 begin
 
   record ('label, 'state) nfa =

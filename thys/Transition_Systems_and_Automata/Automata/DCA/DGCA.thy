@@ -3,7 +3,7 @@ section \<open>Deterministic Co-Generalized Co-Büchi Automata\<close>
 theory DGCA
 imports
   "DCA"
-  "../Transition_Systems/Transition_System_Degeneralization"
+  "../../Transition_Systems/Transition_System_Degeneralization"
 begin
 
   datatype ('label, 'state) dgca = dgca

@@ -2,9 +2,9 @@ section \<open>Deterministic Finite Automata\<close>
 
 theory DFA
 imports
-  "../Transition_Systems/Transition_System"
-  "../Transition_Systems/Transition_System_Extra"
-  "../Transition_Systems/Transition_System_Construction"
+  "../../Transition_Systems/Transition_System"
+  "../../Transition_Systems/Transition_System_Extra"
+  "../../Transition_Systems/Transition_System_Construction"
 begin
 
   record ('label, 'state) dfa =

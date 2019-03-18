@@ -3,7 +3,7 @@ section \<open>Implementation of Deterministic Rabin Automata\<close>
 theory DRA_Implement
 imports
   "DRA_Refine"
-  "../Basic/Implement"
+  "../../Basic/Implement"
 begin
 
   datatype ('label, 'state) drai = drai

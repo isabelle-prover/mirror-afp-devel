@@ -3,7 +3,7 @@ section \<open>Implementation of Nondeterministic Büchi Automata\<close>
 theory NBA_Implement
 imports
   "NBA_Refine"
-  "../Basic/Implement"
+  "../../Basic/Implement"
 begin
 
   datatype ('label, 'state) nbai = nbai

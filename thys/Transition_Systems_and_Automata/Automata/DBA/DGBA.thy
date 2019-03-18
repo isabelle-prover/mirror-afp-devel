@@ -3,7 +3,7 @@ section \<open>Deterministic Generalized Büchi Automata\<close>
 theory DGBA
 imports
   "DBA"
-  "../Transition_Systems/Transition_System_Degeneralization"
+  "../../Transition_Systems/Transition_System_Degeneralization"
 begin
 
   datatype ('label, 'state) dgba = dgba

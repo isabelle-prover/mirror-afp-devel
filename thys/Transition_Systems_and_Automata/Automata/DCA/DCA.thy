@@ -2,11 +2,11 @@ section \<open>Deterministic Co-Büchi Automata\<close>
 
 theory DCA
 imports
-  "../Basic/Sequence_Zip"
-  "../Basic/Acceptance"
-  "../Transition_Systems/Transition_System"
-  "../Transition_Systems/Transition_System_Extra"
-  "../Transition_Systems/Transition_System_Construction"
+  "../../Basic/Sequence_Zip"
+  "../../Basic/Acceptance"
+  "../../Transition_Systems/Transition_System"
+  "../../Transition_Systems/Transition_System_Extra"
+  "../../Transition_Systems/Transition_System_Construction"
 begin
 
   datatype ('label, 'state) dca = dca
