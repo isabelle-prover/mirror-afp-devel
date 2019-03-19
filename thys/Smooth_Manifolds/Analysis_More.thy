@@ -7,7 +7,7 @@ begin
 
 
 lemma openin_open_Int'[intro]:
-  "open S \<Longrightarrow> openin (subtopology euclidean U) (S \<inter> U)"
+  "open S \<Longrightarrow> openin (top_of_set U) (S \<inter> U)"
   by (auto simp: openin_open)
 
 subsection \<open>Parametricity rules for topology\<close>
@@ -49,7 +49,7 @@ lemma continuous_on_transfer[transfer_rule]:
 lemma continuous_on_transfer_right_total[transfer_rule]:
   "(rel_set A ===> (A ===> B) ===> (=)) (\<lambda>X::'a::t2_space set. continuous_on (X \<inter> Collect AP)) (\<lambda>Y::'b::t2_space set. continuous_on Y)"
   if DomainA: "Domainp A = AP"
-    and [folded DomainA, transfer_rule]: "bi_unique A" "right_total A" "(rel_set A ===> (=)) (openin (subtopology euclidean (Collect AP))) open"
+    and [folded DomainA, transfer_rule]: "bi_unique A" "right_total A" "(rel_set A ===> (=)) (openin (top_of_set (Collect AP))) open"
     "bi_unique B" "bi_total B" "(rel_set B ===> (=)) open open"
   unfolding DomainA[symmetric]
 proof (intro rel_funI)
@@ -58,7 +58,7 @@ proof (intro rel_funI)
   from H(1) have XA: "x \<in> X \<Longrightarrow> Domainp A x" for x
     by (auto simp: rel_set_def)
   then have *: "X \<inter> Collect (Domainp A) = X" by auto
-  have "openin (subtopology euclidean (Collect (Domainp A))) (Collect (Domainp A))" by auto
+  have "openin (top_of_set (Collect (Domainp A))) (Collect (Domainp A))" by auto
   show " continuous_on (X \<inter> Collect (Domainp A)) f = continuous_on Y g"
     unfolding continuous_on_eq_continuous_within continuous_within_topological *
     apply transfer
@@ -78,7 +78,7 @@ lemma continuous_on_transfer_right_total2[transfer_rule]:
   "(rel_set A ===> (A ===> B) ===> (=)) (\<lambda>X::'a::t2_space set. continuous_on X) (\<lambda>Y::'b::t2_space set. continuous_on Y)"
   if DomainB: "Domainp B = BP"
   and [folded DomainB, transfer_rule]: "bi_unique A" "bi_total A" "(rel_set A ===> (=)) open open"
-    "bi_unique B" "right_total B" "(rel_set B ===> (=)) ((openin (subtopology euclidean (Collect BP)))) open"
+    "bi_unique B" "right_total B" "(rel_set B ===> (=)) ((openin (top_of_set (Collect BP)))) open"
   unfolding DomainB[symmetric]
 proof (intro rel_funI)
   fix X Y f g
@@ -94,9 +94,9 @@ proof (intro rel_funI)
       by (meson Domainp_applyI H(1) H(2) rel_setD1)
     subgoal for x C
     proof -
-      let ?sub = "subtopology euclidean (Collect (Domainp B))"
+      let ?sub = "top_of_set (Collect (Domainp B))"
       assume cont: "\<forall>x\<in>X. \<forall>Ba\<in>{A. Ball A (Domainp B)}.
-          openin (subtopology euclidean (Collect (Domainp B))) Ba \<longrightarrow> f x \<in> Ba \<longrightarrow> (\<exists>Aa.  open Aa \<and> x \<in> Aa \<and> (\<forall>y\<in>X. y \<in> Aa \<longrightarrow> f y \<in> Ba))"
+          openin (top_of_set (Collect (Domainp B))) Ba \<longrightarrow> f x \<in> Ba \<longrightarrow> (\<exists>Aa.  open Aa \<and> x \<in> Aa \<and> (\<forall>y\<in>X. y \<in> Aa \<longrightarrow> f y \<in> Ba))"
         and x: "x \<in> X" "open C" "f x \<in> C"
       let ?B = "C \<inter> Collect (Domainp B)"
       have "?B \<in> {A. Ball A (Domainp B)}" by auto
@@ -349,7 +349,7 @@ qed
 
 
 lemma openin_subtopology_eq_generate_topology:
-  "openin (subtopology euclidean S) x = generate_topology (insert S ((\<lambda>B. B \<inter> S) ` BB)) x"
+  "openin (top_of_set S) x = generate_topology (insert S ((\<lambda>B. B \<inter> S) ` BB)) x"
   if open_gen: "open = generate_topology BB" and subset: "x \<subseteq> S"
 proof -
   have "generate_topology (insert S ((\<lambda>B. B \<inter> S) ` BB)) (T \<inter> S)"
@@ -460,7 +460,7 @@ lemma antisym_finer_than: "S = T" if "S finer_than T" "T finer_than S"
   apply (metis inf.orderE)
   done
 
-lemma subtopology_finer_than[simp]: "subtopology euclidean X finer_than euclidean"
+lemma subtopology_finer_than[simp]: "top_of_set X finer_than euclidean"
   by (auto simp: finer_than_iff_nhds openin_subtopology)
 
 subsection \<open>Support\<close>
@@ -842,7 +842,7 @@ qed
 
 
 lemma locally_finite_on_closedin_Union_closure:
-  "closedin (subtopology euclidean X) (\<Union>i\<in>I. closure (U i))"
+  "closedin (top_of_set X) (\<Union>i\<in>I. closure (U i))"
   if "locally_finite_on X I U" "\<And>i. i \<in> I \<Longrightarrow> closure (U i) \<subseteq> X"
   unfolding closedin_def
   apply safe
@@ -857,7 +857,7 @@ lemma locally_finite_on_closedin_Union_closure:
     define N' where "N' = N - (\<Union>i \<in> ?I. closure (U i))"
     have "open N'"
       by (auto simp: N'_def intro!: N)
-    then have "openin (subtopology euclidean X) (X \<inter> N')"
+    then have "openin (top_of_set X) (X \<inter> N')"
       by (rule openin_open_Int)
     moreover
     have "x \<in> X \<inter> N'" using x
@@ -867,13 +867,13 @@ lemma locally_finite_on_closedin_Union_closure:
       using x that(2)
       apply (auto simp: N'_def)
       by (meson N(2) closure_iff_nhds_not_empty dual_order.refl)
-    ultimately show "\<exists>T. openin (subtopology euclidean X) T \<and> x \<in> T \<and> T \<subseteq> X - (\<Union>i\<in>I. closure (U i))"
+    ultimately show "\<exists>T. openin (top_of_set X) T \<and> x \<in> T \<and> T \<subseteq> X - (\<Union>i\<in>I. closure (U i))"
       by auto
   qed
   done
 
 lemma closure_subtopology_minimal:
-  "S \<subseteq> T \<Longrightarrow> closedin (subtopology euclidean X) T \<Longrightarrow> closure S \<inter> X \<subseteq> T"
+  "S \<subseteq> T \<Longrightarrow> closedin (top_of_set X) T \<Longrightarrow> closure S \<inter> X \<subseteq> T"
   apply (auto simp: closedin_closed)
   using closure_minimal by blast
 

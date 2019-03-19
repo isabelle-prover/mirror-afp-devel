@@ -785,7 +785,7 @@ text \<open>Given \<open>A \<subseteq> U \<subseteq> carrier\<close>, where \<op
   a differentiable function \<open>\<psi>\<close> such that \<open>0 \<le> \<psi> \<le> 1\<close>, \<open>\<psi> = 1\<close> on \<open>A\<close>, and the
   support of \<open>\<psi>\<close> is contained in \<open>U\<close>.\<close>
 lemma smooth_bump_functionE:
-  assumes "closedin (subtopology euclidean carrier) A"
+  assumes "closedin (top_of_set carrier) A"
     and "A \<subseteq> U" "U \<subseteq> carrier" "open U"
   obtains \<psi>::"'a \<Rightarrow> real" where
     "diff_fun k charts \<psi>"
@@ -860,7 +860,7 @@ text \<open>Extension lemma:
   on \<open>A\<close>, and where the support of \<open>f'\<close> is contained in \<open>U\<close>.\<close>
 lemma extension_lemmaE:
   fixes f::"'a \<Rightarrow> 'e::euclidean_space"
-  assumes "closedin (subtopology euclidean carrier) A"
+  assumes "closedin (top_of_set carrier) A"
   assumes "diff_fun_on A f" "A \<subseteq> U" "U \<subseteq> carrier" "open U"
   obtains f' where
     "diff_fun k charts f'"
