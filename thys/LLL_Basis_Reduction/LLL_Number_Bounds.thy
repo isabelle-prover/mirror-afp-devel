@@ -163,7 +163,8 @@ proof (rule bound_invI)
   from bound_invD[OF Linv]
   have Linv: "LLL_invariant True i fs" and fbnd: "f_bound False i fs" and gbnd: "g_bound fs"
     by auto
-  note main = basis_reduction_add_row_main[OF Linv i j c fs' mu_small]
+  note main = basis_reduction_add_row_main[OF Linv i j fs']
+  note main = main(1) main(2)[OF c mu_small] main(3-)
   show Linv': "LLL_invariant True i fs'" by fact
   define bnd :: rat where bnd: "bnd = 4 ^ (m - 1 - Suc j) * of_nat (N ^ (m - 1) * m)" 
   note mu_bnd = mu_bnd[folded bnd]
@@ -391,7 +392,7 @@ next
   from Suc have j: "j < i" by auto
   let ?c = "round (\<mu> fs i j)" 
   note step = basis_reduction_add_row_main_bound[OF Suc(2) i j refl refl Suc(3-4)]
-  note step' = basis_reduction_add_row_main(1,2,3)[OF Linv i j refl refl Suc(3)]
+  note step' = basis_reduction_add_row_main(1,2,3)[OF Linv i j refl]
   show ?case
   proof (cases "?c = 0")
     case True

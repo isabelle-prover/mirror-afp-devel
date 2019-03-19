@@ -219,11 +219,9 @@ definition "\<mu>_small_row i fs j = (\<forall> j'. j \<le> j' \<longrightarrow>
 
 lemma basis_reduction_add_row_main: assumes Linv: "LLL_invariant True i fs"
   and i: "i < m"  and j: "j < i" 
-  and c: "c = round (\<mu> fs i j)" 
   and fs': "fs' = fs[ i := fs ! i - c \<cdot>\<^sub>v fs ! j]" 
-  and mu_small: "\<mu>_small_row i fs (Suc j)" 
 shows "LLL_invariant True i fs'"
-  "\<mu>_small_row i fs' j" (* mu-value at position i j gets small *)
+  "c = round (\<mu> fs i j) \<Longrightarrow> \<mu>_small_row i fs (Suc j) \<Longrightarrow> \<mu>_small_row i fs' j" (* mu-value at position i j gets small *)
   "LLL_measure i fs' = LLL_measure i fs" 
   (* new values of gso: no change *)
   "\<And> i. i < m \<Longrightarrow> gso fs' i = gso fs i" 
@@ -484,19 +482,24 @@ proof -
 
   have mudiff:"?mu i j - of_int c = ?mu' i j"
     by (subst mu_change, auto simp: gs1.\<mu>.simps)
-  have small: "abs (?mu i j - of_int c) \<le> inverse 2" unfolding j c
-    using of_int_round_abs_le by (auto simp add: abs_minus_commute)
-  from this[unfolded mudiff] 
-  have mu'_2: "abs (?mu' i j) \<le> inverse 2" .
   have lin_indpt_list_fs: "gs.lin_indpt_list (RAT fs')"
     unfolding gs.lin_indpt_list_def using conn2 by auto
-  show "\<mu>_small_row i fs' j" 
-    unfolding \<mu>_small_row_def 
-  proof (intro allI, goal_cases)
-    case (1 j')
-    show ?case using mu'_2 mu_small[unfolded \<mu>_small_row_def, rule_format, of j'] 
-      by (cases "j' > j", insert mu_update[of i j'] i, auto)
-  qed
+  { 
+    assume c: "c = round (\<mu> fs i j)" 
+    assume mu_small: "\<mu>_small_row i fs (Suc j)" 
+    have small: "abs (?mu i j - of_int c) \<le> inverse 2" unfolding j c
+      using of_int_round_abs_le by (auto simp add: abs_minus_commute)
+    from this[unfolded mudiff] 
+    have mu'_2: "abs (?mu' i j) \<le> inverse 2" .
+
+    show "\<mu>_small_row i fs' j" 
+      unfolding \<mu>_small_row_def 
+    proof (intro allI, goal_cases)
+      case (1 j')
+      show ?case using mu'_2 mu_small[unfolded \<mu>_small_row_def, rule_format, of j'] 
+        by (cases "j' > j", insert mu_update[of i j'] i, auto)
+    qed
+  }
 
   show Linv': "LLL_invariant True i fs'" 
     by (intro LLL_invI[OF F1 lattice \<open>i \<le> m\<close> lin_indpt_list_fs sred], auto)
@@ -528,7 +531,7 @@ proof -
   have id: "fs[i := fs ! i - 0 \<cdot>\<^sub>v fs ! j] = fs" 
     by (intro nth_equalityI, insert inv i, auto)
   show ?g1
-    using basis_reduction_add_row_main[OF Linv i j refl _ mu_small, of fs, unfolded 0 id] by auto
+    using basis_reduction_add_row_main[OF Linv i j _, of fs] 0 id mu_small by auto
 qed
 
 lemma \<mu>_small_row_refl: "\<mu>_small_row i fs i" 
@@ -1555,7 +1558,7 @@ next
       Suc(2-) by auto
   next
     case False
-    note step = basis_reduction_add_row_main[OF Suc(2) i j refl refl Suc(3)]
+    note step = basis_reduction_add_row_main[OF Suc(2) i j refl]
     show ?thesis using Suc(1)[OF step(1-2)] False Suc(2-) step(3) by auto
   qed
 qed

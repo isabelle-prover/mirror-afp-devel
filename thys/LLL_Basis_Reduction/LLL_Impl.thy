@@ -83,9 +83,7 @@ begin
 
 lemma d_d\<mu>_add_row: assumes Linv: "LLL_invariant True i fs"
   and i: "i < m"  and j: "j < i" 
-  and c: "c = round (\<mu> fs i j)" 
   and fs': "fs' = fs[ i := fs ! i - c \<cdot>\<^sub>v fs ! j]" 
-  and mu_small: "\<mu>_small_row i fs (Suc j)" 
 shows  
   (* d-updates: none *)
   "\<And> ii. ii \<le> m \<Longrightarrow> d fs' ii = d fs ii" 
@@ -101,7 +99,7 @@ shows
 proof -
   interpret fs: fs_int' n m fs_init \<alpha> True i fs
     by standard (use Linv in auto)
-  note add = basis_reduction_add_row_main[OF Linv i j c fs' mu_small]
+  note add = basis_reduction_add_row_main[OF Linv i j fs']
   interpret fs': fs_int' n m fs_init \<alpha> True i fs'
     by standard (use add in auto)
   show d: "\<And> ii. ii \<le> m \<Longrightarrow> d fs' ii = d fs ii" by fact
@@ -637,7 +635,7 @@ next
     using jj i inv unfolding d\<mu>_def d_def
     by (intro fs.round_num_denom_d\<mu>_d[unfolded fs.d\<mu>_def fs.d_def]) auto
   from LLL_d_pos[OF Linv] j i have dj: "d fs (Suc j) > 0" by auto
-  note updates = d_d\<mu>_add_row[OF Linv i j refl refl Suc(4)]
+  note updates = d_d\<mu>_add_row[OF Linv i j refl]
   note d_state = d_state[OF impl Linv state]
   from d_state[of "Suc j"] j i have djs: "d_state state (Suc j) = d fs (Suc j)" by auto
   note res = Suc(5)[unfolded floor map_rev_Suc djs append.simps LLL_Impl.basis_reduction_add_rows_loop.simps
@@ -659,8 +657,8 @@ next
       by (intro eq_vecI, insert inv(4)[OF i] inv(4)[OF jm], auto)
     define fi' where "fi' = fs ! i - ?c \<cdot>\<^sub>v fs ! j"
     obtain fs'' where fs'': "fs[i := fs ! i - ?c \<cdot>\<^sub>v fs ! j] = fs''" by auto
-    note step = basis_reduction_add_row_main[OF Linv i j refl fs''[symmetric] Suc(4)]
-    note updates = updates[unfolded fs'']
+    note step = basis_reduction_add_row_main[OF Linv i j fs''[symmetric]]
+    note updates = updates[where c = ?c, unfolded fs'']
     have map_id_f: "?mapf fs j = ?mapf fs'' j"
       by (rule nth_equalityI, insert j i, auto simp: rev_nth fs''[symmetric])
     have nth_id: "[0..<m] ! i = i" using i by auto
@@ -723,7 +721,7 @@ next
         show "d_repr ds fs''" unfolding to_d_repr[OF impl Linv state, unfolded d_repr_def] d_repr_def
           by (rule iarray_cong', subst step(6), auto)
       qed (auto simp: mu_repr_def)
-    qed (insert i j, auto)
+    qed (insert i j, auto simp: Suc(4))
   qed
 qed
 
