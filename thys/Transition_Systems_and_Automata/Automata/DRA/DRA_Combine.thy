@@ -1,7 +1,7 @@
 section \<open>Deterministic Rabin Automata Combinations\<close>
 
 theory DRA_Combine
-imports "DBA" "DCA" "DRA"
+imports "DRA" "../DBA/DBA" "../DCA/DCA"
 begin
 
   definition from_dba :: "('label, 'state) dba \<Rightarrow> ('label, 'state) dra" where

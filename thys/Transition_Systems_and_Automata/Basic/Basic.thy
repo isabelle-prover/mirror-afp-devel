@@ -8,10 +8,6 @@ begin
 
   abbreviation (input) "const x \<equiv> \<lambda> _. x"
 
-  lemma if_apply: "(if c then f else g) x = (if c then f x else g x)" by simp
-
-  lemmas if_distribs = if_distrib if_apply
-
   lemmas [simp] = map_prod.id map_prod.comp[symmetric]
   lemma prod_UNIV[iff]: "A \<times> B = UNIV \<longleftrightarrow> A = UNIV \<and> B = UNIV" by auto
 
