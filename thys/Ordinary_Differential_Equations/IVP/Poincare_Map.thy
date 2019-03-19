@@ -1028,7 +1028,7 @@ proof -
     have "continuous_on U (\<lambda>s. u s - v s)"
       by (auto intro!: continuous_intros v continuous_on_subset[OF e(4) U(2)])
     from continuous_closedin_preimage[OF this closed_singleton[where a=0]]
-    have "closedin (subtopology euclidean U) M"
+    have "closedin (top_of_set U) M"
       by (auto simp: M_def vimage_def Collect_conj_eq)
     moreover
     have "\<And>s. s \<in> U  \<Longrightarrow> isCont v s"
@@ -1102,7 +1102,7 @@ proof -
         using \<open>0 < dU\<close> \<open>0 < e'\<close> \<open>0 < dv\<close> \<open>0 < du\<close>
         by (auto intro!: exI[where x="(Min {dU, e', dv, du})"])
     } note ex = this
-    have "openin (subtopology euclidean U) M"
+    have "openin (top_of_set U) M"
       unfolding openin_contains_ball
       apply (rule conjI)
       subgoal using U by (auto simp: M_def)

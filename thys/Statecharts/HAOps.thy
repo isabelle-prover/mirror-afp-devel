@@ -922,7 +922,7 @@ lemma AddSA_InitConf [simp]:
     InitConf (A [++] (S,SA)) = insert (InitState SA) (InitConf A)"
 apply (frule InitConf_HAStates2)
 apply (unfold InitConf_def)
-apply (simp del: insert_times_insert)
+apply (simp del: insert_Times_insert)
 apply auto
 apply (rename_tac T)
 apply (case_tac "T=S")

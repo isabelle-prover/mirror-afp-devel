@@ -408,7 +408,7 @@ lemma derivation_zero_localI: "X f = 0"
     "\<And>x. x \<in> W \<Longrightarrow> f x = 0"
 proof -
   define A where "A = carrier - W"
-  have clA: "closedin (subtopology euclidean carrier) A"
+  have clA: "closedin (top_of_set carrier) A"
     using \<open>open W\<close>
     apply (auto simp: A_def)
     using closedin_def openin_open by fastforce
@@ -773,7 +773,7 @@ lemma extension_lemma_submanifoldE:
     "(\<And>x. x \<in> B \<Longrightarrow> f' x = f x)"
     "csupport_on carrier f' \<inter> carrier \<subseteq> sub.carrier"
 proof -
-  have 1: "closedin (subtopology euclidean carrier) B"
+  have 1: "closedin (top_of_set carrier) B"
     using B by (auto intro!: closed_subset)
   have 2: "diff_fun_on B f"
   proof (rule diff_fun_onI)

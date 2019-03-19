@@ -33,13 +33,13 @@ instance
 end
 
 lemma open_nonzero_openin_transfer:
-  "(rel_set (pcr_nonzero A) ===> (=)) (openin (subtopology euclidean (Collect (Domainp (pcr_nonzero A))))) open"
+  "(rel_set (pcr_nonzero A) ===> (=)) (openin (top_of_set (Collect (Domainp (pcr_nonzero A))))) open"
   if "is_equality A"
   unfolding is_equality_def[THEN iffD1, OF that]
 proof
   fix X::"'a set" and Y::"'a nonzero set"
   assume t[transfer_rule]: "rel_set (pcr_nonzero (=)) X Y"
-  show "openin (subtopology euclidean (Collect (Domainp (pcr_nonzero (=))))) X = open Y"
+  show "openin (top_of_set (Collect (Domainp (pcr_nonzero (=))))) X = open Y"
     apply (auto simp: openin_subtopology)
     subgoal by transfer (auto simp: nonzero.domain_eq open_ne_zero)
     subgoal
@@ -306,12 +306,12 @@ proof -
     have "0 \<notin> A" "0 \<notin> B" using e_less \<open>a \<noteq> 0\<close> \<open>b \<noteq> 0\<close>
       by (auto simp: A_def B_def A1_def B1_def mem_ball a1_def b1_def scales_def)
     moreover
-    let ?S = "subtopology euclidean {x. norm x = 1}"
+    let ?S = "top_of_set {x. norm x = 1}"
     have open_scales: "open (scales X)" if "openin ?S X" for X
     proof -
       have X1: "x \<in> X \<Longrightarrow> norm x = 1" for x using that by (auto simp: openin_subtopology)
       have "0 \<notin> X" using that by (auto simp: openin_subtopology)
-      have "scales X = (\<lambda>x. x /\<^sub>R norm x) -` (X \<union> uminus ` X) \<inter> (topspace (subtopology euclidean (UNIV - {0})))"
+      have "scales X = (\<lambda>x. x /\<^sub>R norm x) -` (X \<union> uminus ` X) \<inter> (topspace (top_of_set (UNIV - {0})))"
         apply (auto simp: scales_def)
         subgoal for c x using \<open>0 \<notin> X\<close>
           apply (cases "c > 0")
@@ -325,7 +325,7 @@ proof -
           apply auto
           by (metis divideR_right norm_eq_zero scale_minus_right)
         done
-      also have "openin (subtopology euclidean (UNIV - {0})) \<dots>"
+      also have "openin (top_of_set (UNIV - {0})) \<dots>"
       proof -
         have *: " {y. inverse (norm y) * norm y = 1} = UNIV - {0}"
           by auto
