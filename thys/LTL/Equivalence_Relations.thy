@@ -325,6 +325,103 @@ end
 
 
 
+subsection \<open>Cardinality of propositional quotient sets\<close>
+
+definition sat_models :: "'a ltln\<^sub>P \<Rightarrow> 'a ltln set set"
+where
+  "sat_models \<phi> = {\<A>. \<A> \<Turnstile>\<^sub>P Rep_ltln\<^sub>P \<phi>}"
+
+lemma Rep_Abs_prop_entailment[simp]:
+  "\<A> \<Turnstile>\<^sub>P Rep_ltln\<^sub>P (Abs_ltln\<^sub>P \<phi>) = \<A> \<Turnstile>\<^sub>P \<phi>"
+  by (metis Quotient3_ltln\<^sub>P Quotient3_rep_abs ltl_prop_equiv_def)
+
+lemma sat_models_Abs:
+  "\<A> \<in> sat_models (Abs_ltln\<^sub>P \<phi>) = \<A> \<Turnstile>\<^sub>P \<phi>"
+  by (simp add: sat_models_def)
+
+lemma sat_models_inj:
+  "inj sat_models"
+proof (rule injI)
+  fix \<phi> \<psi> :: "'a ltln\<^sub>P"
+  assume "sat_models \<phi> = sat_models \<psi>"
+
+  then have "Rep_ltln\<^sub>P \<phi> \<sim>\<^sub>P Rep_ltln\<^sub>P \<psi>"
+    unfolding sat_models_def ltl_prop_equiv_def by force
+
+  then show "\<phi> = \<psi>"
+    by (meson Quotient3_ltln\<^sub>P Quotient3_rel_rep)
+qed
+
+
+fun prop_atoms :: "'a ltln \<Rightarrow> 'a ltln set"
+where
+  "prop_atoms true\<^sub>n = {}"
+| "prop_atoms false\<^sub>n = {}"
+| "prop_atoms (\<phi> and\<^sub>n \<psi>) = prop_atoms \<phi> \<union> prop_atoms \<psi>"
+| "prop_atoms (\<phi> or\<^sub>n \<psi>) = prop_atoms \<phi> \<union> prop_atoms \<psi>"
+| "prop_atoms \<phi> = {\<phi>}"
+
+lemma prop_atoms_subfrmlsn:
+  "prop_atoms \<phi> \<subseteq> subfrmlsn \<phi>"
+  by (induction \<phi>) auto
+
+lemma finite_prop_atoms:
+  "finite (prop_atoms \<phi>)"
+  by (induction \<phi>) auto
+
+lemma prop_atoms_entailment:
+  "prop_atoms \<phi> \<subseteq> P \<Longrightarrow> (\<A> \<inter> P) \<Turnstile>\<^sub>P \<phi> = \<A> \<Turnstile>\<^sub>P \<phi>"
+  by (induction \<phi>) auto
+
+
+lemma sat_models_inter_inj_helper:
+  assumes
+    "prop_atoms \<phi> \<subseteq> P"
+  and
+    "prop_atoms \<psi> \<subseteq> P"
+  and
+    "sat_models (Abs_ltln\<^sub>P \<phi>) \<inter> Pow P = sat_models (Abs_ltln\<^sub>P \<psi>) \<inter> Pow P"
+  shows
+    "\<phi> \<sim>\<^sub>P \<psi>"
+proof -
+  from assms have "\<forall>\<A>. (\<A> \<inter> P) \<Turnstile>\<^sub>P \<phi> \<longleftrightarrow> (\<A> \<inter> P) \<Turnstile>\<^sub>P \<psi>"
+    by (auto simp: sat_models_Abs)
+
+  with assms show "\<phi> \<sim>\<^sub>P \<psi>"
+    by (simp add: prop_atoms_entailment ltl_prop_equiv_def)
+qed
+
+lemma sat_models_inter_inj:
+  "inj_on (\<lambda>\<phi>. sat_models \<phi> \<inter> Pow P) {Abs_ltln\<^sub>P \<phi> |\<phi>. prop_atoms \<phi> \<subseteq> P}"
+  by (auto simp: inj_on_def sat_models_inter_inj_helper ltln\<^sub>P.abs_eq_iff)
+
+lemma sat_models_pow_pow:
+  "{sat_models (Abs_ltln\<^sub>P \<phi>) \<inter> Pow P | \<phi>. prop_atoms \<phi> \<subseteq> P} \<subseteq> Pow (Pow P)"
+  by (auto simp: sat_models_def)
+
+lemma sat_models_finite:
+  "finite P \<Longrightarrow> finite {sat_models (Abs_ltln\<^sub>P \<phi>) \<inter> Pow P | \<phi>. prop_atoms \<phi> \<subseteq> P}"
+  using sat_models_pow_pow finite_subset by fastforce
+
+lemma sat_models_card:
+  "finite P \<Longrightarrow> card ({sat_models (Abs_ltln\<^sub>P \<phi>) \<inter> Pow P | \<phi>. prop_atoms \<phi> \<subseteq> P}) \<le> 2 ^ 2 ^ card P"
+  by (metis (mono_tags, lifting) sat_models_pow_pow Pow_def card_Pow card_mono finite_Collect_subsets)
+
+(* TODO add simp rule?? *)
+lemma image_filter:
+  "f ` {g a | a. P a} = {f (g a) | a. P a}"
+  by blast
+
+lemma prop_equiv_finite:
+  "finite P \<Longrightarrow> finite {Abs_ltln\<^sub>P \<psi> | \<psi>. prop_atoms \<psi> \<subseteq> P}"
+  by (auto simp: image_filter sat_models_finite finite_imageD[OF _ sat_models_inter_inj])
+
+lemma prop_equiv_card:
+  "finite P \<Longrightarrow> card {Abs_ltln\<^sub>P \<psi> | \<psi>. prop_atoms \<psi> \<subseteq> P} \<le> 2 ^ 2 ^ card P"
+  by (auto simp: image_filter sat_models_card card_image[OF sat_models_inter_inj, symmetric])
+
+
+
 subsection \<open>Substitution\<close>
 
 fun subst :: "'a ltln \<Rightarrow> ('a ltln \<rightharpoonup> 'a ltln) \<Rightarrow> 'a ltln"
