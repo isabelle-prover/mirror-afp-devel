@@ -6,7 +6,8 @@
 section \<open>Equivalence Relations for LTL formulas\<close>
 
 theory Equivalence_Relations
-  imports Main LTL
+imports
+  LTL
 begin
 
 subsection \<open>Language Equivalence\<close>

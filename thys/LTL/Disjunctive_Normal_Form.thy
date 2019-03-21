@@ -7,7 +7,8 @@
 section \<open>Disjunctive Normal Form of LTL formulas\<close>
 
 theory Disjunctive_Normal_Form
-  imports Main LTL Equivalence_Relations "HOL-Library.FSet"
+imports
+  LTL Equivalence_Relations "HOL-Library.FSet"
 begin
 
 text \<open>We use the propositional representation of LTL formulas to define
@@ -325,7 +326,7 @@ lemma min_union_finite:
 subsection \<open>Minimal Disjunctive Normal Form\<close>
 
 fun min_dnf :: "'a ltln \<Rightarrow> 'a ltln fset set"
-  where
+where
   "min_dnf true\<^sub>n = {{||}}"
 | "min_dnf false\<^sub>n = {}"
 | "min_dnf (\<phi> and\<^sub>n \<psi>) = (min_dnf \<phi>) \<otimes>\<^sub>m (min_dnf \<psi>)"

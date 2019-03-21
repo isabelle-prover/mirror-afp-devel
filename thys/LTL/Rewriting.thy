@@ -898,9 +898,13 @@ theorem simplify_correct:
   "w \<Turnstile>\<^sub>n simplify m \<phi> \<longleftrightarrow> w \<Turnstile>\<^sub>n \<phi>"
   by (cases m) simp+
 
+
+
 subsection \<open>Code Generation\<close>
 
 code_pred syntactical_implies .
+
+export_code simplify checking
 
 lemma "rewrite_iter_fast (F\<^sub>n (G\<^sub>n (X\<^sub>n prop\<^sub>n(''a'')))) = (F\<^sub>n (G\<^sub>n prop\<^sub>n(''a'')))"
   by eval

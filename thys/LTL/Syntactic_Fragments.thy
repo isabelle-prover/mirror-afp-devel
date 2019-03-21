@@ -6,13 +6,14 @@
 section \<open>Syntactic Fragments of LTL\<close>
 
 theory Syntactic_Fragments
-  imports Main LTL
+imports
+  LTL
 begin
 
 subsection \<open>The fragments $\mu$LTL and $\nu$LTL\<close>
 
 fun is_\<mu>LTL :: "'a ltln \<Rightarrow> bool"
-  where
+where
   "is_\<mu>LTL true\<^sub>n = True"
 | "is_\<mu>LTL false\<^sub>n = True"
 | "is_\<mu>LTL prop\<^sub>n(_) = True"
@@ -25,7 +26,7 @@ fun is_\<mu>LTL :: "'a ltln \<Rightarrow> bool"
 | "is_\<mu>LTL _ = False"
 
 fun is_\<nu>LTL :: "'a ltln \<Rightarrow> bool"
-  where
+where
   "is_\<nu>LTL true\<^sub>n = True"
 | "is_\<nu>LTL false\<^sub>n = True"
 | "is_\<nu>LTL prop\<^sub>n(_) = True"

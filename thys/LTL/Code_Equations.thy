@@ -6,11 +6,10 @@
 section \<open>Code lemmas for abstract definitions\<close>
 
 theory Code_Equations
-  imports Main LTL Equivalence_Relations
-    Boolean_Expression_Checkers.Boolean_Expression_Checkers
-    Boolean_Expression_Checkers.Boolean_Expression_Checkers_AList_Mapping
-
-    "HOL-Library.Code_Target_Numeral"
+imports
+  LTL Equivalence_Relations
+  Boolean_Expression_Checkers.Boolean_Expression_Checkers
+  Boolean_Expression_Checkers.Boolean_Expression_Checkers_AList_Mapping
 begin
 
 subsection \<open>Propositional Equivalence\<close>

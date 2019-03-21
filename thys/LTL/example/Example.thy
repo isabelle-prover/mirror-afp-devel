@@ -6,7 +6,8 @@
 section \<open>Example\<close>
 
 theory Example
-  imports Main "../LTL" "../Rewriting" "HOL-Library.Code_Target_Numeral"
+imports
+  "../LTL" "../Rewriting" "HOL-Library.Code_Target_Numeral"
 begin
 
 \<comment> \<open>The included parser always returns a @{typ "String.literal ltlc"}. If a different labelling is

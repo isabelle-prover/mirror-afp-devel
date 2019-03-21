@@ -5,12 +5,12 @@ session LTL (AFP) = "HOL-Library" +
   sessions
     Boolean_Expression_Checkers
   theories
-    Code_Equations
-    Disjunctive_Normal_Form
-    Equivalence_Relations
     LTL
     Rewriting
+    Equivalence_Relations
     Syntactic_Fragments
+    Disjunctive_Normal_Form
+    Code_Equations
     "example/Example"
   document_files
     "root.tex"
