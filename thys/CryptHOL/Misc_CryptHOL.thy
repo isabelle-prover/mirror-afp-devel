@@ -1337,7 +1337,7 @@ unfolding pred_def by(rule sets.sets_Collect_countable_Ex1)
 
 lemma measurable_snd_count_space [measurable]: 
   "A \<subseteq> B \<Longrightarrow> snd \<in> measurable (M1 \<Otimes>\<^sub>M count_space A) (count_space B)"
-by(auto simp add: measurable_def space_pair_measure snd_vimage_eq_Times times_Int_times)
+by(auto simp add: measurable_def space_pair_measure snd_vimage_eq_Times Times_Int_Times)
 
 subsection \<open>Sequence space\<close>
 

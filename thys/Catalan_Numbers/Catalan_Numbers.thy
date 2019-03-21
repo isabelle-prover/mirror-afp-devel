@@ -429,7 +429,7 @@ lemma trees_of_size_disjoint:
 theorem card_trees_of_size: "card (trees_of_size n) = catalan n"
   by (induction n rule: catalan.induct)
      (simp_all add: catalan_Suc trees_of_size_Suc card_image inj_on_def
-        trees_of_size_disjoint times_Int_times catalan_Suc card_UN_disjoint)
+        trees_of_size_disjoint Times_Int_Times catalan_Suc card_UN_disjoint)
 
 (*<*)
 end

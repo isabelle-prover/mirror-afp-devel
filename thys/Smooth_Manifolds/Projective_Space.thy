@@ -202,12 +202,12 @@ lemma euclidean_proj_space_def: "euclidean = map_topology Proj euclidean"
 
 lemma continuous_on_proj_spaceI: "continuous_on (S) f" if "continuous_on (Proj -` S) (f o Proj)" "open (S)"
   for f::"_ proj_space \<Rightarrow> _"
-  unfolding continuous_on_continuous_on_topo euclidean_proj_space_def
+  unfolding continuous_map_iff_continuous euclidean_proj_space_def
   apply (subst subtopology_map_topology)
   subgoal using that by simp
   apply (subst continuous_on_map_topology2[symmetric])
   using that
-  by (auto simp: continuous_on_continuous_on_topo[symmetric])
+  by (auto simp: continuous_map_iff_continuous[symmetric])
 
 lemma saturate_eq: "Proj -` Proj ` X = (\<Union>c\<in>UNIV-{0}. (*\<^sub>R) c ` X)"
   apply (auto simp: )
@@ -335,8 +335,8 @@ proof -
         then have "openin ?S (X \<union> uminus ` X)"
           using \<open>openin _ X\<close> by auto
         from _ this show ?thesis
-          apply (rule continuous_on_topo_open)
-          apply (auto simp: continuous_on_topo_def)
+          apply (rule continuous_map_open)
+          apply (auto simp: continuous_map_def)
           apply (subst(asm) openin_subtopology)
           apply (auto simp: *)
           apply (subst openin_subtopology)
@@ -464,7 +464,7 @@ lemma chart_last_inv_continuous:
   apply (rule continuous_on_compose)
   subgoal by transfer (auto intro!: continuous_intros)
   subgoal
-    unfolding continuous_on_continuous_on_topo euclidean_proj_space_def
+    unfolding continuous_map_iff_continuous euclidean_proj_space_def
     by (auto intro: continuous_on_finer_topo continuous_on_map_topology)
   done
 
@@ -585,7 +585,7 @@ lemma chart_basis_inv_continuous:
   apply (rule continuous_on_compose)
   subgoal by transfer (auto intro!: continuous_intros)
   subgoal
-    unfolding continuous_on_continuous_on_topo euclidean_proj_space_def
+    unfolding continuous_map_iff_continuous euclidean_proj_space_def
     apply (rule continuous_on_finer_topo)
      apply (rule continuous_on_map_topology)
     by (auto simp: )
