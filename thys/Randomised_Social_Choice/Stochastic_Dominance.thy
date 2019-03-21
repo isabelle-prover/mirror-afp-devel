@@ -459,7 +459,7 @@ next
       hence "(\<Sum>y|le x y. pmf p y) + \<epsilon> * (\<Sum>y\<in>carrier. ?idx y * pmf p y) \<le>
              (\<Sum>y|le x y. pmf q y) + \<epsilon> * (\<Sum>y\<in>carrier. ?idx y * pmf q y)"
         using x preferred_subset_carrier not_outside
-        by (simp add: u_def sum.distrib finite_carrier algebra_simps sum_distrib_left cong: rev_conj_cong)
+        by (simp add: u_def sum.distrib finite_carrier algebra_simps sum_distrib_left Int_absorb1 cong: rev_conj_cong)
       also have "(\<Sum>y\<in>carrier. ?idx y * pmf q y) \<le> (\<Sum>y\<in>carrier. length xs * pmf q y)"
         by (intro sum_mono mult_right_mono) (simp_all add: pmf_nonneg)
       also have "\<dots> = measure_pmf.expectation q (\<lambda>_. length xs)"
