@@ -27,7 +27,7 @@ session "Native_Word" (AFP) = "HOL-Word" +
   theories [condition = ISABELLE_MLTON]
     Native_Word_Test_MLton
     Native_Word_Test_MLton2
-  theories [condition = ISABELLE_OCAMLC]
+  theories [condition = ISABELLE_OCAMLFIND]
     Native_Word_Test_OCaml
     Native_Word_Test_OCaml2
   theories [condition = ISABELLE_SMLNJ]
