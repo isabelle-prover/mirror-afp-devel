@@ -2,6 +2,8 @@ theory Prover
 imports Main
 begin
 
+declare ex_image_cong_iff [simp del]
+
 subsection "Formulas"
 
 type_synonym pred = nat
@@ -333,24 +335,36 @@ lemma ball_eq_ball: "\<forall>x \<in> m. P x = Q x ==> (\<forall>x \<in> m. P x)
 
 lemma bex_eq_bex: "\<forall>x \<in> m. P x = Q x ==> (\<exists>x \<in> m. P x) = (\<exists>x \<in> m. Q x)" by blast
 
-lemma preSuc[simp]:"\<forall>n. Suc n \<in> set A = (n \<in> set (preSuc A))" apply(induct_tac A) apply(simp) apply(case_tac a, force, force) done
+lemma preSuc[simp]:"\<forall>n. Suc n \<in> set A = (n \<in> set (preSuc A))"
+   apply(induct_tac A) apply(simp) apply(case_tac a, force, force) done
 
 lemma FEval_cong: "\<forall>e1 e2. (\<forall>x. x \<in> set (fv A) --> e1 x = e2 x) --> FEval MI e1 A = FEval MI e2 A"
-  apply(induct_tac A) 
-       apply(simp add: Let_def )
- apply(intro allI impI) apply(rule arg_cong, rule map_cong) apply(rule) apply(force)
-      apply(simp add: Let_def ) apply(intro allI impI) apply(rule arg_cong, rule map_cong) apply(rule) apply(force)
-     apply(simp add: Let_def ) apply(intro allI impI) apply(rule and_lem) apply(force) apply(force)
-    apply(simp add: Let_def ) apply(intro allI impI) apply(rule or_lem) apply(force) apply(force)
-   apply(simp add: Let_def ) apply(intro allI impI) apply(rule ball_eq_ball) apply(rule) 
-   apply(drule_tac x="case_nat m e1" in spec) apply(drule_tac x="case_nat m e2" in spec) apply(erule impE)
-    apply(rule) apply(rule) apply(rename_tac x) apply(case_tac x) apply(simp) apply(simp)
-   apply(assumption)
-  apply(simp add: Let_def ) apply(intro allI impI) apply(rule bex_eq_bex) apply(rule) 
-  apply(drule_tac x="case_nat m e1" in spec) apply(drule_tac x="case_nat m e2" in spec) apply(erule impE)
-   apply(rule) apply(rule) apply(rename_tac x) apply(case_tac x) apply(simp) apply(simp)
-  apply(assumption)
-  done
+proof (induction A)
+  case (PAtom x1 x2)
+  then show ?case
+    by (metis FEval.simps(1) fv.simps(1) map_cong)
+next
+  case (NAtom x1 x2)
+  then show ?case
+    by simp (metis list.map_cong0)
+next
+  case (FConj A1 A2)
+  then show ?case
+    by simp blast
+next
+  case (FDisj A1 A2)
+  then show ?case
+    by simp blast
+next
+  case (FAll A)
+  then show ?case
+    by (metis (no_types, lifting) FEval.simps(5) Nitpick.case_nat_unfold One_nat_def Suc_pred fv.simps(5) gr0I preSuc)
+next
+  case (FEx A)
+  then show ?case
+    by (metis (no_types, lifting) FEval.simps(6) Nitpick.case_nat_unfold One_nat_def Suc_pred fv.simps(6) gr0I preSuc)
+qed
+
 
 primrec SEval :: "model => env => form list => bool"
 where
