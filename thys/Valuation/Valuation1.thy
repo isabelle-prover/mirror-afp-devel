@@ -24,6 +24,8 @@ theory Valuation1
 imports  "Group-Ring-Module.Algebra9"
 begin
 
+declare ex_image_cong_iff [simp del]
+
 chapter "Preliminaries"
 
 section "Int and ant (augmented integers)"
@@ -834,17 +836,8 @@ definition
 
 lemma (in Corps) vals_pos_nonempty:"valuation K v \<Longrightarrow>
                        {x. x \<in> v ` carrier K \<and> 0 < x} \<noteq> {}"
-apply (frule val_axiom5[of v],
-       erule exE, (erule conjE)+, rule ex_nonempty, simp,
-       cut_tac x = "v x" in aless_linear[of _ "0"], simp,
-       erule disjE,
-       frule_tac x = x in value_noninf_nonzero[of v], assumption+,
-       frule_tac x1 = x in value_of_inv[THEN sym, of v], assumption+,
-       frule_tac x = "v x" in aless_minus[of _ 0], simp,
-       cut_tac x = x in invf_closed1, simp,
-       simp, erule conjE, simp add:image_def, blast,
-       simp add:image_def, blast)
-done
+  using val_axiom5[of v] value_noninf_nonzero[of v] value_of_inv[THEN sym, of v]
+  by (auto simp: ex_image_cong_iff) (metis Ring.ring_is_ag aGroup.ag_mOp_closed aGroup.ag_pOp_closed aGroup.ag_r_inv1 f_is_ring zero_lt_inf)
 
 lemma (in Corps) vals_pos_LBset:"valuation K v \<Longrightarrow>
             {x. x \<in> v ` carrier K \<and> 0 < x} \<subseteq> LBset 1"
@@ -893,22 +886,8 @@ apply (rule noninf_mem_Z[of "AMin {x \<in> v ` carrier K. 0 < x}"],
        rule subset_refl)
 apply (rule subsetD[of "v ` carrier K" "Z\<^sub>\<infinity>"
                     "AMin {x \<in> v ` carrier K. 0 < x}"], assumption+)
-apply (thin_tac "0 < AMin {x \<in> v ` carrier K. 0 < x}",
-       thin_tac "AMin {x \<in> v ` carrier K. 0 < x} \<in> v ` carrier K",
-       rule contrapos_pp, simp+)
-apply (thin_tac "\<exists>x. x \<in> v ` carrier K \<and> 0 < x",
-       drule_tac a = "v x" in forall_spec, simp, (erule conjE)+)
-apply (frule valuation_map[of v],
-       frule image_sub[of v "carrier K" "Z\<^sub>\<infinity>" "carrier K"],
-       rule subset_refl)
-apply (rule noninf_mem_Z[of "AMin {x \<in> v ` carrier K. 0 < x}"],
-       frule image_sub[of v "carrier K" "Z\<^sub>\<infinity>" "carrier K"],
-       rule subset_refl)
-apply (rule subsetD[of "v ` carrier K" "Z\<^sub>\<infinity>"], assumption, assumption+,
-       thin_tac "AMin {x \<in> v ` carrier K. 0 < x} \<in> v ` carrier K",
-       thin_tac "0 < AMin {x \<in> v ` carrier K. 0 < x}")
-apply (rule contrapos_pp, simp+)
-done
+  apply auto
+  by (metis (no_types, lifting) aneg_le aug_inf_noninf_is_z image_eqI value_in_aug_inf z_less_i)
 
 lemma (in Corps) Lv_z:"valuation K v \<Longrightarrow> \<exists>z. Lv K v = ant z"
 by (simp add:Lv_def, rule AMin_z, assumption+)
