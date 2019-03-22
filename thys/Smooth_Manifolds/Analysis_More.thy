@@ -439,7 +439,7 @@ definition finer_than (infix "(finer'_than)" 50)
 
 lemma finer_than_iff_nhds:
   "T1 finer_than T2 \<longleftrightarrow> (\<forall>X. openin T2 X \<longrightarrow> openin T1 (X \<inter> topspace T1)) \<and> (topspace T1 \<subseteq> topspace T2)"
-  by (auto simp: continuous_map_def finer_than_def)
+  by (auto simp: finer_than_def continuous_map_alt)
 
 lemma continuous_on_finer_topo:
   "continuous_map s t f"
@@ -455,9 +455,8 @@ lemma continuous_on_finer_topo2:
 
 lemma antisym_finer_than: "S = T" if "S finer_than T" "T finer_than S"
   using that
-  apply (auto simp: finer_than_def topology_eq_iff continuous_map_def)
-  apply (metis inf.orderE)
-  apply (metis inf.orderE)
+  apply (auto simp: finer_than_def topology_eq_iff continuous_map_alt)
+  apply (metis inf.orderE)+
   done
 
 lemma subtopology_finer_than[simp]: "top_of_set X finer_than euclidean"
@@ -537,19 +536,19 @@ lemma continuous_on_final_topologyI2:
   "continuous_map (Y i) (final_topology X Y f) (f i)"
   if "\<And>i. f i \<in> topspace (Y i) \<rightarrow> X"
   using that
-  by (auto simp: openin_final_topology continuous_map_def topspace_final_topology)
+  by (auto simp: openin_final_topology continuous_map_alt topspace_final_topology)
 
 lemma continuous_on_final_topologyI1:
   "continuous_map (final_topology X Y f) Z g"
   if hyp: "\<And>i. continuous_map (Y i) Z (g o f i)"
     and that: "\<And>i. f i \<in> topspace (Y i) \<rightarrow> X" "g \<in> X \<rightarrow> topspace Z"
-  unfolding continuous_map_def
+  unfolding continuous_map_alt
 proof safe
   fix V assume V: "openin Z V"
   have oV: "openin (Y i) (f i -` g -` V \<inter> topspace (Y i))"
     for i
     using hyp[rule_format, of i] V
-    by (auto simp: continuous_map_def vimage_comp dest!: spec[where x=V])
+    by (auto simp: continuous_map_alt vimage_comp dest!: spec[where x=V])
   have *: "f i -` g -` V \<inter> f i -` X \<inter> topspace (Y i) =
       f i -` g -` V \<inter> topspace (Y i)"
     (is "_ = ?rhs i")
@@ -583,7 +582,7 @@ lemma topspace_map_topology[simp]: "topspace (map_topology f T) = f ` topspace T
 
 lemma continuous_on_map_topology:
   "continuous_map T (map_topology f T) f"
-  unfolding continuous_map_def openin_map_topology
+  unfolding continuous_map_alt openin_map_topology
   by auto
 
 lemma continuous_map_composeD:
@@ -615,7 +614,7 @@ lemma sub_map_finer_than_commute:
   "subtopology (map_topology f T) X finer_than map_topology f (subtopology T (f -` X))"
   if "openin T (f -` X)"\<comment> \<open>this is more or less the condition from
     \<^url>\<open>https://math.stackexchange.com/questions/705840/quotient-topology-vs-subspace-topology\<close>\<close>
-  unfolding finer_than_def continuous_map_def
+  unfolding finer_than_def continuous_map_alt
 proof (rule conjI, clarsimp)
   fix U
   assume "openin (map_topology f (subtopology T (f -` X))) U"
@@ -680,8 +679,7 @@ proof standard
   have euclidean_def: "euclidean = map_topology p euclidean"
     by (simp add: openin_inverse open_def)
   have continuous_on: "continuous_on UNIV p"
-    unfolding continuous_map_iff_continuous euclidean_def
-    by (simp add: continuous_on_map_topology)
+    using continuous_map_iff_continuous2 continuous_on_map_topology euclidean_def by fastforce
   from ex_countable_basis[where 'a='a] obtain A::"'a set set" where "countable A" "topological_basis A"
     by auto
   define B where "B = (\<lambda>X. p ` X) ` A"

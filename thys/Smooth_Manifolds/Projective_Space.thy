@@ -202,12 +202,7 @@ lemma euclidean_proj_space_def: "euclidean = map_topology Proj euclidean"
 
 lemma continuous_on_proj_spaceI: "continuous_on (S) f" if "continuous_on (Proj -` S) (f o Proj)" "open (S)"
   for f::"_ proj_space \<Rightarrow> _"
-  unfolding continuous_map_iff_continuous euclidean_proj_space_def
-  apply (subst subtopology_map_topology)
-  subgoal using that by simp
-  apply (subst continuous_on_map_topology2[symmetric])
-  using that
-  by (auto simp: continuous_map_iff_continuous[symmetric])
+ by (metis (no_types, hide_lams) continuous_on_open_vimage open_vimage_Proj_iff that vimage_Int vimage_comp) 
 
 lemma saturate_eq: "Proj -` Proj ` X = (\<Union>c\<in>UNIV-{0}. (*\<^sub>R) c ` X)"
   apply (auto simp: )
@@ -464,8 +459,7 @@ lemma chart_last_inv_continuous:
   apply (rule continuous_on_compose)
   subgoal by transfer (auto intro!: continuous_intros)
   subgoal
-    unfolding continuous_map_iff_continuous euclidean_proj_space_def
-    by (auto intro: continuous_on_finer_topo continuous_on_map_topology)
+    by (metis continuous_on_open_vimage continuous_on_subset inf_top.right_neutral open_UNIV open_vimage_Proj_iff top_greatest)
   done
 
 lemma proj_rel_iff: "proj_rel a b \<longleftrightarrow> (\<exists>c\<noteq>0. b = c *\<^sub>R a)"
@@ -586,9 +580,7 @@ lemma chart_basis_inv_continuous:
   subgoal by transfer (auto intro!: continuous_intros)
   subgoal
     unfolding continuous_map_iff_continuous euclidean_proj_space_def
-    apply (rule continuous_on_finer_topo)
-     apply (rule continuous_on_map_topology)
-    by (auto simp: )
+    using continuous_on_open_invariant open_vimage_Proj_iff by blast
   done
 
 lemma chart_basis_inv_inverse: "chart_basis b (chart_basis_inv x) = x"
