@@ -2,8 +2,6 @@ chapter AFP
 
 session "Stable_Matching" (AFP) = "HOL-Library" +
   options [timeout = 600, show_question_marks = false]
-  theories [document = false]
-    Dual_Lattice
   theories
     Sotomayor
     Basis

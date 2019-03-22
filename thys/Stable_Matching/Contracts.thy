@@ -2,7 +2,7 @@
 theory Contracts
 imports
   Choice_Functions
-  Dual_Lattice
+  "HOL-Library.Dual_Ordered_Lattice"
   "HOL-Library.Bourbaki_Witt_Fixpoint"
   "HOL-Library.While_Combinator"
   "HOL-Library.Product_Order"
@@ -1284,9 +1284,8 @@ awkward but straightforward:
 lemma fix_F_stable_pair_on:
   assumes "X = F ds X"
   shows "stable_pair_on ds (map_prod id undual X)"
-using %invisible assms
-unfolding F_def F1_def F2_def stable_pair_on_def split_def
-by simp (metis Compl_Un double_complement fst_conv snd_conv undual_dual)
+  using %invisible assms
+  by (cases X) (simp add: F_def F1_def F2_def stable_pair_on_def dual_eq_iff)
 
 lemma stable_pair_on_fix_F:
   assumes "stable_pair_on ds X"
@@ -1379,7 +1378,7 @@ proof %invisible -
   have "gfp (F ds) = (F1 (undual (gfp ?F')), gfp ?F')"
     by (subst gfp_prod[OF F_mono]) (simp add: F_def o_def gfp_const)
   also have "gfp ?F' = dual (lfp (F2 ds \<circ> F1))"
-    by (simp add: undual_equality[symmetric] lfp_dual_gfp[OF F2_o_F1_mono, simplified o_assoc])
+    by (simp add: lfp_dual_gfp[OF F2_o_F1_mono, simplified o_assoc])
   finally show ?thesis unfolding gfp_F_def by simp
 qed
 
@@ -1831,6 +1830,10 @@ this functional and not @{const "F"}.
 definition F' :: "'a set \<times> 'a set dual \<Rightarrow> 'a set \<times> 'a set dual" where
   "F' = (\<lambda>(XD, XH). (- RH (undual XH), dual (- RD_on (ds-{d'}) XD)))"
 
+lemma F'_apply:
+  "F' (XD, XH) = (- RH (undual XH), dual (- RD_on (ds - {d'}) XD))"
+  by (simp add: F'_def)
+
 lemma %invisible F1'_antimono:
   shows "antimono (\<lambda>XH. - RH XH)"
 by %invisible (rule antimonoI) (auto simp: F1_def dest: Diff_mono[OF _ monoD[OF RH_mono]])
@@ -1845,11 +1848,19 @@ unfolding %invisible F'_def using antimonoD[OF F1'_antimono] antimonoD[OF F2'_an
 by (auto intro: monoI simp: less_eq_dual_def)
 
 lemma fix_F'_stable_pair_on:
-  assumes "A = F' A"
-  shows "stable_pair_on (ds-{d'}) (map_prod id undual A)"
-using %invisible assms
-unfolding F'_def stable_pair_on_def split_def
-by simp (metis fst_conv snd_conv undual_dual)
+  "stable_pair_on (ds - {d'}) (map_prod id undual A)"
+  if "A = F' A"
+proof %invisible -
+  obtain x y where "A = (x, y)"
+    by (cases A)
+  with that have "F' (x, y) = (x, y)"
+    by simp
+  then have "- Rf CH (undual y) = x" and
+    "dual (- Rf (CD_on (ds - {d'})) x) = y"
+    by (simp_all only: F'_apply prod_eq_iff fst_conv snd_conv)
+  with \<open>A = (x, y)\<close> show ?thesis
+    by (simp add: stable_pair_on_def dual_eq_iff)
+qed
 
 text\<open>
 
@@ -1873,12 +1884,12 @@ begin
 lemma F_start:
   shows "F ds (XD_smallest ds X, dual (XH_largest ds X)) = (XD_smallest ds X, dual (XH_largest ds X))"
 using %invisible CH_XH_largest[OF \<open>stable_on ds X\<close>] CD_on_XD_smallest[OF \<open>stable_on ds X\<close>] X_subseteq_XH_largest[OF \<open>stable_on ds X\<close>]
-unfolding F_def F1_def F2_def XD_smallest_def by simp blast
+unfolding F_def F1_def F2_def XD_smallest_def by (auto simp add: dual_eq_iff)
 
 lemma F'_start:
   shows "(XD_smallest ds X, dual (XH_largest ds X)) \<le> F' (XD_smallest ds X, dual (XH_largest ds X))"
 using %invisible F_start unfolding F_def F1_def F2_def F'_def
-unfolding CD_on_def XD_smallest_def by auto
+unfolding CD_on_def XD_smallest_def by (auto simp add: dual_eq_iff dual_less_eq_iff)
 
 lemma
   shows F'_iter_stable_pair_on: "stable_pair_on (ds-{d'}) (map_prod id undual F'_iter)" (is "?thesis1")

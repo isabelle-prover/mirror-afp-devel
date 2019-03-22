@@ -6,8 +6,8 @@ theory Basis
 imports
   HOLCF
   "HOL-Library.Product_Order"
+  "HOL-Library.Dual_Ordered_Lattice"
   "HOLCF-Library.Nat_Discrete"
-  Dual_Lattice
 begin
 
 subsection\<open>Auxiliary lemmas\<close>

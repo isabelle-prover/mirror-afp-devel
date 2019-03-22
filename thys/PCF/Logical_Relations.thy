@@ -204,28 +204,41 @@ Our locale captures the key ingredients in Pitts's scheme:
 
 \<close>
 
-locale DomSolV =
-  fixes \<delta> :: "('d::pcpo \<rightarrow> 'd) \<rightarrow> 'd \<rightarrow> 'd"
-  fixes F :: "('i::type \<Rightarrow> 'd::pcpo) lf"
-  assumes min_inv_ID: "fix\<cdot>\<delta> = ID"
+locale DomSol =
+  fixes F :: "'a::order dual \<times> 'a::order \<Rightarrow> 'a"
   assumes monoF: "mono F"
+begin
+
+definition sym_lr :: "'a dual \<times> 'a \<Rightarrow> 'a dual \<times> 'a"
+where
+  "sym_lr = (\<lambda>(rm, rp). (dual (F (dual rp, undual rm)), F (rm, rp)))"
+
+lemma sym_lr_mono:
+  "mono sym_lr"
+proof
+  fix x y :: "'a dual \<times> 'a"
+  obtain x1 x2 y1 y2 where [simp]: "x = (x1, x2)" "y = (y1, y2)"
+    by (cases x, cases y)
+  assume "x \<le> y"
+  with monoF have "F x \<le> F y" ..
+  from \<open>x \<le> y\<close> have "(dual y2, undual y1) \<le> (dual x2, undual x1)"
+    by (simp_all add: dual_less_eq_iff)
+  with monoF have "F (dual y2, undual y1) \<le> F (dual x2, undual x1)" ..
+  with \<open>F x \<le> F y\<close> show "sym_lr x \<le> sym_lr y"
+    by (simp add: sym_lr_def)
+qed
+
+end
+
+locale DomSolV = DomSol "F :: ('i::type \<Rightarrow> 'd::pcpo) lf" for F +
+  fixes \<delta> :: "('d::pcpo \<rightarrow> 'd) \<rightarrow> 'd \<rightarrow> 'd"
+  assumes min_inv_ID: "fix\<cdot>\<delta> = ID"
   assumes eRSV_deltaF:
       "\<And>(e :: 'd \<rightarrow> 'd) (R :: ('i \<Rightarrow> 'd) admS dual) (S :: ('i \<Rightarrow> 'd) admS).
           eRSV e R S \<Longrightarrow> eRSV (\<delta>\<cdot>e) (dual (F (dual S, undual R))) (F (R, S))"
 (*<*)
 context DomSolV
 begin
-
-definition
-  sym_lr :: "('i \<Rightarrow> 'd) admS dual \<times> ('i \<Rightarrow> 'd) admS
-          \<Rightarrow> ('i \<Rightarrow> 'd) admS dual \<times> ('i \<Rightarrow> 'd) admS"
-where
-  "sym_lr \<equiv> \<lambda>(rm, rp). (dual (F (dual rp, undual rm)), F (rm, rp))"
-
-lemma sym_lr_mono:
-  shows "mono sym_lr"
-unfolding sym_lr_def using monoF
-by (force simp: case_prod_unfold less_eq_prod_def monoD undual_leq intro: monoI)
 
 abbreviation
   f_lim :: "('i \<Rightarrow> 'd) admS dual \<times> ('i \<Rightarrow> 'd) admS"
@@ -264,7 +277,7 @@ proof -
   have "(delta_neg, delta_pos) \<le> (dual rm, rp)"
     by (simp add: delta lfp_lowerbound sym_lr_def)
   then show "delta_neg \<le> dual rm" and "delta_pos \<le> rp"
-    by (simp_all add: undual_leq)
+    by simp_all
 qed
 
 lemma delta_eq:
@@ -483,12 +496,10 @@ abbreviation
 where
   "eRSS e R S \<equiv> \<forall>(d, a) \<in> unsynlr (undual R). (e\<cdot>d, a) \<in> unsynlr S"
 
-locale DomSolSyn =
+locale DomSolSyn =  DomSol "F :: ('d::pcpo, 'a::type) synlf" for F +
   fixes \<delta> :: "('d::pcpo \<rightarrow> 'd) \<rightarrow> 'd \<rightarrow> 'd"
-  fixes F :: "('d::pcpo, 'a::type) synlf"
   assumes min_inv_ID: "fix\<cdot>\<delta> = ID"
   assumes min_inv_strict: "\<And>r. \<delta>\<cdot>r\<cdot>\<bottom> = \<bottom>"
-  assumes monoF: "mono F"
   assumes eRS_deltaF:
       "\<And>(e :: 'd \<rightarrow> 'd) (R :: ('d, 'a) synlr dual) (S :: ('d, 'a) synlr).
           \<lbrakk> e\<cdot>\<bottom> = \<bottom>; eRSS e R S \<rbrakk> \<Longrightarrow> eRSS (\<delta>\<cdot>e) (dual (F (dual S, undual R))) (F (R, S))"
@@ -496,18 +507,6 @@ locale DomSolSyn =
 
 context DomSolSyn
 begin
-
-
-definition
-  sym_lr :: "('d, 'a) synlr dual \<times> ('d, 'a) synlr
-          \<Rightarrow> ('d, 'a) synlr dual \<times> ('d, 'a) synlr"
-where
-  "sym_lr \<equiv> \<lambda>(rm, rp). (dual (F (dual rp, undual rm)), F (rm, rp))"
-
-lemma sym_lr_mono:
-  shows "mono sym_lr"
-unfolding sym_lr_def using monoF
-by (force simp: case_prod_unfold less_eq_prod_def monoD undual_leq intro: monoI)
 
 abbreviation
   f_lim :: "('d, 'a) synlr dual \<times> ('d, 'a) synlr"
@@ -546,7 +545,7 @@ proof -
   have "(delta_neg, delta_pos) \<le> (dual rm, rp)"
     by (simp add: delta lfp_lowerbound sym_lr_def)
   then show "delta_neg \<le> dual rm" and "delta_pos \<le> rp"
-    by (simp_all add: undual_leq)
+    by simp_all
 qed
 
 lemma delta_eq:
@@ -633,11 +632,9 @@ where
      (\<forall>(am, bm) \<in> unlr (fst (undual R)). (fst ea\<cdot>am, fst eb\<cdot>bm) \<in> unlr (fst S))
    \<and> (\<forall>(av, bv) \<in> unlr (snd (undual R)). (snd ea\<cdot>av, snd eb\<cdot>bv) \<in> unlr (snd S))"
 
-locale DomSolP =
-  fixes ad :: "(('am::pcpo \<rightarrow> 'am) \<times> ('av::pcpo \<rightarrow> 'av)) \<rightarrow> (('am \<rightarrow> 'am) \<times> ('av \<rightarrow> 'av))"
-  fixes bd :: "(('bm::pcpo \<rightarrow> 'bm) \<times> ('bv::pcpo \<rightarrow> 'bv)) \<rightarrow> (('bm \<rightarrow> 'bm) \<times> ('bv \<rightarrow> 'bv))"
-  fixes F :: "('am, 'bm, 'av, 'bv) lf_pair"
-  assumes monoF: "mono F"
+locale DomSolP = DomSol "F :: ('am::pcpo, 'bm::pcpo, 'av::pcpo, 'bv::pcpo) lf_pair" for F +
+  fixes ad :: "(('am \<rightarrow> 'am) \<times> ('av \<rightarrow> 'av)) \<rightarrow> (('am \<rightarrow> 'am) \<times> ('av \<rightarrow> 'av))"
+  fixes bd :: "(('bm \<rightarrow> 'bm) \<times> ('bv \<rightarrow> 'bv)) \<rightarrow> (('bm \<rightarrow> 'bm) \<times> ('bv \<rightarrow> 'bv))"
   assumes ad_ID: "fix\<cdot>ad = (ID, ID)"
   assumes bd_ID: "fix\<cdot>bd = (ID, ID)"
   assumes ad_strict: "\<And>r. fst (ad\<cdot>r)\<cdot>\<bottom> = \<bottom>" "\<And>r. snd (ad\<cdot>r)\<cdot>\<bottom> = \<bottom>"
@@ -649,17 +646,6 @@ locale DomSolP =
 
 context DomSolP
 begin
-
-definition
-  sym_lr :: "('am, 'bm, 'av, 'bv) lr_pair dual \<times> ('am, 'bm, 'av, 'bv) lr_pair
-          \<Rightarrow> ('am, 'bm, 'av, 'bv) lr_pair dual \<times> ('am, 'bm, 'av, 'bv) lr_pair"
-where
-  "sym_lr \<equiv> \<lambda>(rm, rp). (dual (F (dual rp, undual rm)), F (rm, rp))"
-
-lemma sym_lr_mono:
-  shows "mono sym_lr"
-unfolding sym_lr_def
-by (force simp: split_def undual_leq fst_mono snd_mono intro: monoI monoD[OF monoF])
 
 abbreviation
   f_lim :: "('am, 'bm, 'av, 'bv) lr_pair dual \<times> ('am, 'bm, 'av, 'bv) lr_pair"
@@ -698,7 +684,7 @@ proof -
   have "(delta_neg, delta_pos) \<le> (dual rm, rp)"
     by (simp add: delta lfp_lowerbound sym_lr_def)
   then show "delta_neg \<le> dual rm" and "delta_pos \<le> rp"
-    by (simp_all add: undual_leq)
+    by simp_all
 qed
 
 lemma delta_eq:

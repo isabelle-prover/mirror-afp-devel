@@ -309,10 +309,9 @@ lemma mono_lr:
   apply simp
   apply (simp add: lr_rep_def)
   apply (rule conjI)
-   apply (force simp: lr_eta_rep_def split_def undual_leq[symmetric] unlr_leq[symmetric])
+   apply (force simp: lr_eta_rep_def split_def dual_less_eq_iff unlr_leq[symmetric])
   (* FIXME stuck with the projections on the product *)
-  apply (auto simp: lr_theta_rep_def split_def undual_leq[symmetric] unlr_leq[symmetric])
-
+  apply (auto simp: lr_theta_rep_def split_def dual_less_eq_iff unlr_leq[symmetric])
   apply (drule_tac x="(ae, bc)" in bspec)
    apply (case_tac a)
    apply (case_tac ab)
@@ -628,7 +627,7 @@ lemma (in at_least_two_elements) min_inv_lr:
   done
 
 (*>*)
-sublocale at_least_two_elements < F: DomSolP ValD_copy_rec ValK_copy_rec lr
+sublocale at_least_two_elements < F: DomSolP lr ValD_copy_rec ValK_copy_rec
   apply standard
          apply (rule mono_lr)
         apply (rule fix_ValD_copy_rec_ID)

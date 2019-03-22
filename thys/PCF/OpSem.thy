@@ -924,12 +924,18 @@ lemma synlr_cal_lr_rep [intro, simp]:
                   dest: evalOP_deterministic)
 
 lemma mono_ca_lr:
-  shows "mono ca_lr"
-  apply (rule monoI)
-  apply simp
-  apply (simp add: ca_lf_rep_def unsynlr_leq[symmetric] undual_leq[symmetric] split_def)
-  apply (fastforce simp: unsynlr_leq[symmetric] undual_leq[symmetric])+
-  done
+  "mono ca_lr"
+proof
+  fix x y :: "(ValD, Prog) synlr dual \<times> (ValD, Prog) synlr"
+  obtain x1 x2 y1 y2 where [simp]: "x = (x1, x2)" "y = (y1, y2)"
+    by (cases x, cases y)
+  assume "x \<le> y"
+  then have "ca_lf_rep (x1, x2) \<subseteq> ca_lf_rep (y1, y2)"
+    by (simp add: ca_lf_rep_def unsynlr_leq [symmetric] dual_less_eq_iff split_def)
+      fastforce
+  then show "ca_lr x \<le> ca_lr y"
+    by simp
+qed
 
 lemma min_inv_ca_lr:
   assumes "e\<cdot>\<bottom> = \<bottom>"
@@ -973,11 +979,11 @@ lemma min_inv_ca_lr:
 (*>*)
 text\<open>\<close>
 
-interpretation ca: DomSolSyn ValD_copy_rec ca_lr
+interpretation ca: DomSolSyn ca_lr ValD_copy_rec
   apply standard
-     apply (rule ValD_copy_ID)
-    apply simp
-   apply (rule mono_ca_lr)
+     apply (rule mono_ca_lr)
+    apply (rule ValD_copy_ID)
+   apply simp
   apply (erule (1) min_inv_ca_lr)
   done
 

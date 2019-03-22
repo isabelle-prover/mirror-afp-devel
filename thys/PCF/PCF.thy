@@ -734,7 +734,14 @@ done
 
 lemma mono_fn_lf_rep:
   "mono fn_lf_rep"
-  by (rule monoI) (fastforce simp: fn_lf_rep_def unlr_leq[symmetric] undual_leq[symmetric])
+proof
+  fix x y :: "('a \<Rightarrow> ValD) admS dual \<times> ('a \<Rightarrow> ValD) admS"
+  obtain x1 x2 y1 y2 where [simp]: "x = (x1, x2)" "y = (y1, y2)"
+    by (cases x, cases y)
+  assume "x \<le> y"
+  then show "fn_lf_rep x \<subseteq> fn_lf_rep y"
+    by (simp add: fn_lf_rep_def) (use dual_less_eq_iff less_eq_admS_def in blast)
+qed
 
 (*>*)
 text\<open>\<close>
@@ -792,10 +799,10 @@ lemma min_inv_POR_lf:
   apply force
   done
 
-interpretation POR: DomSolV ValD_copy_rec POR_lf
+interpretation POR: DomSolV POR_lf ValD_copy_rec
   apply standard
-    apply (rule ValD_copy_ID)
-   apply (rule mono_POR_lf)
+    apply (rule mono_POR_lf)
+   apply (rule ValD_copy_ID)
   apply (erule min_inv_POR_lf)
   done
 
@@ -1164,10 +1171,10 @@ lemma min_inv_PE_lf:
   apply force
   done
 
-interpretation PE: DomSolV ValD_copy_rec PE_lf
+interpretation PE: DomSolV PE_lf ValD_copy_rec
   apply standard
-    apply (rule ValD_copy_ID)
-   apply (rule mono_PE_lf)
+    apply (rule mono_PE_lf)
+   apply (rule ValD_copy_ID)
   apply (erule min_inv_PE_lf)
   done
 
