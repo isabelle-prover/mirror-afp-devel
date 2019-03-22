@@ -680,48 +680,49 @@ next
     ultimately show
      "(xs @ ipurge_tr I D (D y) ys, ipurge_ref I D (D y) (ys @ [y']) Y) \<in> failures P"
      by simp
-  next
-    case False
-    have "unaffected_domains I D {D y} (ys @ [y']) \<subseteq> range D \<inter> (-I) `` range D"
-      (is "?U \<subseteq> _")
+ next
+   case False
+   have "unaffected_domains I D {D y} (ys @ [y']) \<subseteq> range D \<inter> (-I) `` range D"
+     (is "?U \<subseteq> _")
      by (rule unaffected_domains_subset, simp_all)
-    moreover have "?U \<noteq> {}"
-    proof (simp only: unaffected_domains_def sinks_aux_single_dom,
-     simp add: ex_in_conv del: sinks.simps, rule_tac x = "D y'" in exI,
-     (rule conjI, simp?)+)
-      show "(D y, D y') \<notin> I" using False by (rule_tac notI, simp)
-    next
-      have "\<not> ((D y, D y') \<in> I \<or> (\<exists>v \<in> sinks I D (D y) ys. (v, D y') \<in> I))"
+   moreover have "?U \<noteq> {}"
+   proof -
+     have "(D y, D y') \<notin> I" using False by (rule_tac notI, simp)
+     moreover
+     have "\<not> ((D y, D y') \<in> I \<or> (\<exists>v \<in> sinks I D (D y) ys. (v, D y') \<in> I))"
        using False by (simp only: sinks_interference_eq, simp)
-      thus "\<forall>v \<in> sinks I D (D y) (ys @ [y']). (v, D y') \<notin> I" by simp
-    qed
-    moreover have C: "xs @ y # ys @ [y'] \<in> traces P"
+     then have "\<forall>v \<in> sinks I D (D y) (ys @ [y']). (v, D y') \<notin> I" by simp
+     ultimately show "?U \<noteq> {}"
+       apply (simp (no_asm_simp) add: unaffected_domains_def sinks_aux_single_dom set_eq_iff)
+       using \<open>(D y, D y') \<notin> I\<close> by auto
+   qed
+   moreover have C: "xs @ y # ys @ [y'] \<in> traces P"
      using B by (rule failures_traces)
-    have "\<forall>u \<in> ?U. ((xs @ [y]) @ ys @ [y'],
+   have "\<forall>u \<in> ?U. ((xs @ [y]) @ ys @ [y'],
       xs @ ipurge_tr_aux I D {D y} (ys @ [y'])) \<in> R u"
-    proof (rule ballI, rule gu_condition_imply_secure_aux [OF VP WFC WSC LR],
-     simp_all add: unaffected_domains_def C, (erule conjE)+)
-      fix u
-      have "\<forall>u \<in> range D. \<forall>xs x.
+   proof (rule ballI, rule gu_condition_imply_secure_aux [OF VP WFC WSC LR],
+       simp_all add: unaffected_domains_def C, (erule conjE)+)
+     fix u
+     have "\<forall>u \<in> range D. \<forall>xs x.
         (D x, u) \<notin> I \<and> x \<in> next_events P xs \<longrightarrow> (xs, xs @ [x]) \<in> R u"
        using LR by (simp add: locally_respects_def)
-      moreover assume D: "u \<in> range D"
-      ultimately have "\<forall>xs x.
+     moreover assume D: "u \<in> range D"
+     ultimately have "\<forall>xs x.
         (D x, u) \<notin> I \<and> x \<in> next_events P xs \<longrightarrow> (xs, xs @ [x]) \<in> R u" ..
-      hence "(D y, u) \<notin> I \<and> y \<in> next_events P xs \<longrightarrow>
+     hence "(D y, u) \<notin> I \<and> y \<in> next_events P xs \<longrightarrow>
         (xs, xs @ [y]) \<in> R u"
        by blast
-      moreover assume "(D y, u) \<notin> I"
-      moreover have "(xs @ [y]) @ ys @ [y'] \<in> traces P" using C by simp
-      hence "xs @ [y] \<in> traces P" by (rule process_rule_2_traces)
-      hence "y \<in> next_events P xs" by (simp add: next_events_def)
-      ultimately have E: "(xs, xs @ [y]) \<in> R u" by simp
-      have "\<forall>u \<in> range D. equiv (traces P) (R u)"
+     moreover assume "(D y, u) \<notin> I"
+     moreover have "(xs @ [y]) @ ys @ [y'] \<in> traces P" using C by simp
+     hence "xs @ [y] \<in> traces P" by (rule process_rule_2_traces)
+     hence "y \<in> next_events P xs" by (simp add: next_events_def)
+     ultimately have E: "(xs, xs @ [y]) \<in> R u" by simp
+     have "\<forall>u \<in> range D. equiv (traces P) (R u)"
        using VP by (simp add: view_partition_def)
-      hence "equiv (traces P) (R u)" using D ..
-      hence "sym (R u)" by (simp add: equiv_def)
-      thus "(xs @ [y], xs) \<in> R u" using E by (rule symE)
-    qed
+     hence "equiv (traces P) (R u)" using D ..
+     hence "sym (R u)" by (simp add: equiv_def)
+     thus "(xs @ [y], xs) \<in> R u" using E by (rule symE)
+   qed
     hence "\<forall>u \<in> ?U. (xs @ y # ys @ [y'],
       xs @ ipurge_tr I D (D y) (ys @ [y'])) \<in> R u"
      by (simp only: ipurge_tr_aux_single_dom, simp)
@@ -778,49 +779,50 @@ next
      "(xs @ y # ipurge_tr I D (D y) zs, ipurge_ref I D (D y) (zs @ [z]) Z)
         \<in> failures P"
      by simp
-  next
-    case False
-    have "unaffected_domains I D {D y} (zs @ [z]) \<subseteq> range D \<inter> (-I) `` range D"
-      (is "?U \<subseteq> _")
+ next
+   case False
+   have "unaffected_domains I D {D y} (zs @ [z]) \<subseteq> range D \<inter> (-I) `` range D"
+     (is "?U \<subseteq> _")
      by (rule unaffected_domains_subset, simp_all)
-    moreover have "?U \<noteq> {}"
-    proof (simp only: unaffected_domains_def sinks_aux_single_dom,
-     simp add: ex_in_conv del: sinks.simps, rule_tac x = "D z" in exI,
-     (rule conjI, simp?)+)
-      show "(D y, D z) \<notin> I" using False by (rule_tac notI, simp)
-    next
-      have "\<not> ((D y, D z) \<in> I \<or> (\<exists>v \<in> sinks I D (D y) zs. (v, D z) \<in> I))"
+   moreover have "?U \<noteq> {}"
+   proof -
+     have "(D y, D z) \<notin> I" using False by (rule_tac notI, simp)
+     moreover
+     have "\<not> ((D y, D z) \<in> I \<or> (\<exists>v \<in> sinks I D (D y) zs. (v, D z) \<in> I))"
        using False by (simp only: sinks_interference_eq, simp)
-      thus "\<forall>v \<in> sinks I D (D y) (zs @ [z]). (v, D z) \<notin> I" by simp
-    qed
-    moreover have C: "xs @ zs @ [z] \<in> traces P" using B by (rule failures_traces)
-    have "\<forall>u \<in> ?U. (xs @ zs @ [z],
+     then have "\<forall>v \<in> sinks I D (D y) (zs @ [z]). (v, D z) \<notin> I" by simp
+     ultimately show "?U \<noteq> {}"
+       apply (simp (no_asm_simp) add: unaffected_domains_def sinks_aux_single_dom set_eq_iff)
+       using \<open>(D y, D z) \<notin> I\<close> by auto
+   qed
+   moreover have C: "xs @ zs @ [z] \<in> traces P" using B by (rule failures_traces)
+   have "\<forall>u \<in> ?U. (xs @ zs @ [z],
       (xs @ [y]) @ ipurge_tr_aux I D {D y} (zs @ [z])) \<in> R u"
-    proof (rule ballI, rule gu_condition_imply_secure_aux [OF VP WFC WSC LR],
-     simp_all add: unaffected_domains_def C, (erule conjE)+)
-      fix u
-      have "\<forall>u \<in> range D. \<forall>xs x.
+   proof (rule ballI, rule gu_condition_imply_secure_aux [OF VP WFC WSC LR],
+       simp_all add: unaffected_domains_def C, (erule conjE)+)
+     fix u
+     have "\<forall>u \<in> range D. \<forall>xs x.
         (D x, u) \<notin> I \<and> x \<in> next_events P xs \<longrightarrow> (xs, xs @ [x]) \<in> R u"
        using LR by (simp add: locally_respects_def)
-      moreover assume D: "u \<in> range D"
-      ultimately have "\<forall>xs x.
+     moreover assume D: "u \<in> range D"
+     ultimately have "\<forall>xs x.
         (D x, u) \<notin> I \<and> x \<in> next_events P xs \<longrightarrow> (xs, xs @ [x]) \<in> R u" ..
-      hence "(D y, u) \<notin> I \<and> y \<in> next_events P xs \<longrightarrow> (xs, xs @ [y]) \<in> R u" by blast
-      moreover assume "(D y, u) \<notin> I"
-      moreover have "y \<in> next_events P xs" using Y by (simp add: next_events_def)
-      ultimately show "(xs, xs @ [y]) \<in> R u" by simp
-    qed
-    hence "\<forall>u \<in> ?U. (xs @ zs @ [z],
+     hence "(D y, u) \<notin> I \<and> y \<in> next_events P xs \<longrightarrow> (xs, xs @ [y]) \<in> R u" by blast
+     moreover assume "(D y, u) \<notin> I"
+     moreover have "y \<in> next_events P xs" using Y by (simp add: next_events_def)
+     ultimately show "(xs, xs @ [y]) \<in> R u" by simp
+   qed
+   hence "\<forall>u \<in> ?U. (xs @ zs @ [z],
       xs @ y # ipurge_tr I D (D y) (zs @ [z])) \<in> R u"
      by (simp only: ipurge_tr_aux_single_dom, simp)
-    ultimately have "(xs @ y # ipurge_tr I D (D y) (zs @ [z]), Z \<inter> D -` ?U)
+   ultimately have "(xs @ y # ipurge_tr I D (D y) (zs @ [z]), Z \<inter> D -` ?U)
       \<in> failures P"
      using B by (rule ruc_wfc_failures [OF RUC WFC])
-    moreover have
+   moreover have
      "Z \<inter> D -` ?U = {x \<in> Z. D x \<in> unaffected_domains I D {D y} (zs @ [z])}"
      by (simp add: set_eq_iff)
-    ultimately show ?thesis by (simp only: unaffected_domains_single_dom)
-  qed
+   ultimately show ?thesis by (simp only: unaffected_domains_single_dom)
+ qed
 qed
 
 theorem generic_unwinding:
