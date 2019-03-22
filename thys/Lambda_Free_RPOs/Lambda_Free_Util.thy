@@ -157,7 +157,7 @@ lemma f_rev_chain_in_rtrancl:
 subsection \<open>Well-Founded Relations\<close>
 
 lemma wf_app: "wf r \<Longrightarrow> wf {(x, y). (f x, f y) \<in> r}"
-  unfolding wf_eq_minimal by (intro allI, drule spec[of _ "f ` Q" for Q]) auto
+  unfolding wf_eq_minimal by (intro allI, drule spec[of _ "f ` Q" for Q]) fast
 
 lemma wfP_app: "wfP p \<Longrightarrow> wfP (\<lambda>x y. p (f x) (f y))"
   unfolding wfP_def by (rule wf_app[of "{(x, y). p x y}" f, simplified])
