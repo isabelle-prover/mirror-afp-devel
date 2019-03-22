@@ -10,5 +10,6 @@ session "Certification_Monads" (AFP) = "HOL" +
     Check_Monad
     Strict_Sum
     Parser_Monad
+    Misc
   document_files
     "root.tex"
