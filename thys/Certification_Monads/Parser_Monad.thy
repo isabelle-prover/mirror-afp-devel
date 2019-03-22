@@ -11,28 +11,26 @@ imports
   Show.Show
 begin
 
+definition span :: "('a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list"
+  where [simp]: "span P xs = (takeWhile P xs, dropWhile P xs)"
+
+lemma span_code [code]:
+  "span P [] = ([], [])"
+  "span P (x # xs) =
+    (if P x then let (ys, zs) = span P xs in (x # ys, zs) else ([], x # xs))"
+  by simp_all
+
 (*It might be nice to be able to enter things like CHR ''\t'', ... directly.*)
 abbreviation (input) "tab \<equiv> CHR 0x09"
 abbreviation (input) "carriage_return \<equiv> CHR 0x0D"
 abbreviation (input) "wspace \<equiv> [CHR '' '', CHR ''\<newline>'', tab, carriage_return]"
 
-definition "trim = dropWhile (\<lambda>c. c \<in> set wspace)"
+definition trim :: "string \<Rightarrow> string"
+  where "trim = dropWhile (\<lambda>c. c \<in> set wspace)"
 
 lemma trim:
   "\<exists>w. s = w @ trim s"
   by (unfold trim_def) (metis takeWhile_dropWhile_id)
-
-fun span :: "('a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list"
-where
-  "span P (x # xs) =
-    (if P x then let (ys, zs) = span P xs in (x # ys, zs) else ([], x # xs))" |
-  "span _ [] = ([], [])"
-
-lemma span [simp]:
-  "span P xs = (takeWhile P xs, dropWhile P xs)"
-  by (induct xs) auto
-
-declare span.simps[simp del]
 
 definition splitter :: "char list \<Rightarrow> string \<Rightarrow> string \<times> string"
 where
