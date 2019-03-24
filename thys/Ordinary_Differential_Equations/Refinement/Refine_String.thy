@@ -55,6 +55,12 @@ lemma [autoref_itype]: "String.Literal b0 b1 b2 b3 b4 b5 b6 s ::\<^sub>i I"
   and [autoref_rules]: "(String.Literal b0 b1 b2 b3 b4 b5 b6 s,
     OP (String.Literal b0 b1 b2 b3 b4 b5 b6 s) ::: Id) \<in> Id"
   by simp_all
+
+definition [simp]: "ST (x::char list) = x"
+lemma [autoref_op_pat_def]: "ST xs \<equiv> OP (ST xs)" by simp
+lemma [autoref_rules]: "(x, ST x) \<in> string_rel"
+  by (auto simp: string_rel_def)
+
 end
 
 text \<open>A little check\<close>

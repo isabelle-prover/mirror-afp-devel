@@ -6,12 +6,12 @@ begin
 subsection \<open>generic things\<close>
 
 lemma nres_rel_trans1: "a \<le> b \<Longrightarrow> (b, i) \<in> \<langle>R\<rangle>nres_rel \<Longrightarrow> (a, i) \<in> \<langle>R\<rangle>nres_rel"
-  apply (rule nres_relI)
-  using nres_relD order_trans by blast
+  using nres_relD order_trans
+  by (blast intro: nres_relI)
 
 lemma nres_rel_trans2: "a \<le> b \<Longrightarrow> (i, a) \<in> \<langle>R\<rangle>nres_rel \<Longrightarrow> (i, b) \<in> \<langle>R\<rangle>nres_rel"
-  apply (rule nres_relI)
-  using nres_relD ref_two_step by blast
+  using nres_relD
+  by (blast intro: nres_relI ref_two_step)
 
 lemma param_Union[param]: "(Union, Union) \<in> \<langle>\<langle>R\<rangle>set_rel\<rangle>set_rel \<rightarrow> \<langle>R\<rangle>set_rel"
   by (fastforce simp: set_rel_def)
@@ -94,8 +94,8 @@ proof (safe, goal_cases)
     show "(set x, z) \<in> \<langle>R O S\<rangle>set_rel"
       unfolding set_rel_def
       using hyps 
-      apply (clarsimp simp: list_wset_rel_def br_def set_rel_def)  
-      by (meson mem_set_list_relE1 mem_set_list_relE2 relcomp.relcompI)    
+      by (clarsimp simp: list_wset_rel_def br_def set_rel_def)
+        (meson mem_set_list_relE1 mem_set_list_relE2 relcomp.relcompI)
   qed (simp add: br_def)
 next
   case hyps: (2 xs zs)
@@ -105,11 +105,9 @@ next
   obtain ys where ys: "(xs, ys) \<in> \<langle>R\<rangle>list_rel" .
   have set_rel: "(set ys, zs) \<in> \<langle>S\<rangle>set_rel"
     unfolding list_wset_rel_def set_rel_def
-    using hyps 
-    apply (clarsimp simp: list_wset_rel_def br_def set_rel_def)  
-    apply safe
-    apply (metis (full_types) assms mem_set_list_relE2 relcomp.cases single_valued_def ys)  
-    by (metis mem_set_list_relE1 relcompEpair single_valuedD ys assms)
+    using hyps
+    by (clarsimp simp: list_wset_rel_def br_def set_rel_def)
+      (metis (full_types) assms mem_set_list_relE1 mem_set_list_relE2 relcompEpair single_valued_def ys)
   from ys show ?case
     by (rule relcompI)
       (auto simp: list_wset_rel_def br_def intro!: relcompI[where b="set ys"] set_rel)
@@ -126,14 +124,21 @@ proof -
   ultimately have "(Cons, Set.insert) \<in> (R \<rightarrow> \<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel) O (Id \<rightarrow> \<langle>Id\<rangle>list_wset_rel \<rightarrow> \<langle>Id\<rangle>list_wset_rel)"
     by auto
   also have "\<dots> \<subseteq> R \<rightarrow> \<langle>R\<rangle>list_wset_rel \<rightarrow> \<langle>R\<rangle>list_wset_rel"
-    apply (rule order_trans[OF fun_rel_comp_dist])
-    apply (rule fun_rel_mono)
-    subgoal by simp
-    subgoal
-      apply (rule order_trans[OF fun_rel_comp_dist])
+  proof -
+    have "\<langle>R\<rangle>list_rel O \<langle>Id\<rangle>list_wset_rel \<rightarrow> \<langle>R\<rangle>list_rel O \<langle>Id\<rangle>list_wset_rel \<subseteq>
+        \<langle>R\<rangle>list_wset_rel \<rightarrow> \<langle>R\<rangle>list_wset_rel"
       by (rule fun_rel_mono)
         (simp_all add: list_rel_comp_list_wset_rel assms[unfolded autoref_tag_defs])
-    done
+    then have "(\<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel) O (\<langle>Id\<rangle>list_wset_rel \<rightarrow> \<langle>Id\<rangle>list_wset_rel) \<subseteq>
+        \<langle>R\<rangle>list_wset_rel \<rightarrow> \<langle>R\<rangle>list_wset_rel"
+      by (rule order_trans[OF fun_rel_comp_dist])
+    from _ this have
+      "R O Id \<rightarrow> (\<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel) O (\<langle>Id\<rangle>list_wset_rel \<rightarrow> \<langle>Id\<rangle>list_wset_rel) \<subseteq>
+        R \<rightarrow> \<langle>R\<rangle>list_wset_rel \<rightarrow> \<langle>R\<rangle>list_wset_rel"
+      by (rule fun_rel_mono) simp
+    then show ?thesis
+      by (rule order_trans[OF fun_rel_comp_dist])
+  qed
   finally show ?thesis .
 qed
 
@@ -141,29 +146,31 @@ lemma op_set_ndelete_wset_refine[autoref_rules]:
   assumes "PREFER single_valued R"
   assumes "(x, y) \<in> R" "(xs, Y) \<in> \<langle>R\<rangle>list_wset_rel"
   shows "(nres_of (dRETURN (List.remove1 x xs)),op_set_ndelete $ y $ Y) \<in> \<langle>\<langle>R\<rangle>list_wset_rel\<rangle>nres_rel"
-  unfolding op_set_ndelete_spec autoref_tag_defs
-  apply (safe intro!: nres_relI SPEC_refine det_SPEC elim!: relcompE)
-  using assms(3)[unfolded list_wset_rel_def]
-  apply (rule relcompE)
-proof (cases "x \<in> set (remove1 x xs)", goal_cases)
-  case (1 u v w)
-  then have "set (remove1 x xs) = set xs"
-    by (metis in_set_remove1 set_remove1_subset subsetI subset_antisym)
-  then show ?case
-    using 1
-    by (auto intro!: exI[where x=w] simp: list_wset_rel_def br_def intro!: relcompI)
-next
-  case (2 u v w)
-  then have r: "set (remove1 x u) = set xs - {x}"
-    using in_set_remove1[of _ x xs]
-    by (auto simp del: in_set_remove1 simp add: br_def)
-      
-  from assms old_set_rel_sv_eq[of R] have [simp]: "\<langle>R\<rangle>set_rel = \<langle>R\<rangle>old_set_rel" by simp    
-      
-  show ?case
-    using 2 \<open>(x, y) \<in> R\<close> assms
-    by (auto simp: relcomp_unfold r old_set_rel_def single_valued_def br_def list_wset_rel_def)
-    
+proof -
+  from assms(3)[unfolded list_wset_rel_def]
+  obtain u where u: "(xs, u) \<in> br set top" "(u, Y) \<in> \<langle>R\<rangle>set_rel"
+    by (rule relcompE) auto
+  have "\<exists>x'. (remove1 x xs, x') \<in> \<langle>R\<rangle>list_wset_rel \<and> (x' = Y - {y} \<or> x' = Y)"
+  proof (cases "x \<in> set (remove1 x xs)")
+    case True
+    then have "set (remove1 x xs) = set xs"
+      by (metis in_set_remove1 set_remove1_subset subsetI subset_antisym)
+    then show ?thesis
+      using True u
+      by (auto intro!: simp: list_wset_rel_def br_def)
+  next
+    case False
+    then have r: "set (remove1 x xs) = set xs - {x}"
+      using in_set_remove1[of _ x xs] u
+      by (auto simp del: in_set_remove1 simp add: br_def)
+    from assms old_set_rel_sv_eq[of R] have [simp]: "\<langle>R\<rangle>set_rel = \<langle>R\<rangle>old_set_rel" by simp
+    show ?thesis
+      using False \<open>(x, y) \<in> R\<close> assms
+      by (auto simp: relcomp_unfold r old_set_rel_def single_valued_def br_def list_wset_rel_def)
+  qed
+  then show ?thesis
+    unfolding op_set_ndelete_spec autoref_tag_defs
+    by (safe intro!: nres_relI SPEC_refine det_SPEC elim!: relcompE)
 qed
 
 
@@ -171,18 +178,19 @@ subsection \<open>pick\<close>
 
 lemma
   pick_wset_refine[autoref_rules]:
-  assumes "SIDE_PRECOND (X \<noteq> {})"
+  assumes[unfolded autoref_tag_defs, simp]: "SIDE_PRECOND (X \<noteq> {})"
   assumes "(XS, X) \<in> \<langle>A\<rangle>list_wset_rel"
   shows "(nres_of (dRETURN (hd XS)), op_set_pick $ X) \<in> \<langle>A\<rangle>nres_rel"
-  unfolding op_set_pick_def[abs_def] autoref_tag_defs
-  apply (rule nres_relI)
-  apply (rule SPEC_refine)
-  apply (rule det_SPEC)
-  using assms
-  apply (auto simp: Let_def list_wset_rel_def set_rel_def br_def)
-  by (metis (full_types) DomainE ImageI empty_iff insertCI list.exhaust list.sel(1)
-      list.set(1) list.set(2) subsetCE)
-
+proof -
+  have "\<forall>x\<in>set XS. \<exists>y\<in>X. (x, y) \<in> A \<Longrightarrow> \<forall>y\<in>X. \<exists>x\<in>set XS. (x, y) \<in> A \<Longrightarrow>
+    \<forall>x'. (hd XS, x') \<in> A \<longrightarrow> x' \<notin> X \<Longrightarrow> xa \<notin> X" for xa
+    by (metis (full_types) empty_iff insertCI list.exhaust list.sel(1) list.set)
+  show ?thesis
+    using assms(2)
+    unfolding op_set_pick_def[abs_def] autoref_tag_defs
+    by (cases XS)
+      (auto simp: Let_def list_wset_rel_def set_rel_def br_def intro!: nres_relI RETURN_RES_refine det_SPEC)
+qed
 
 subsection \<open>pick remove\<close>
 
@@ -207,15 +215,16 @@ lemma
   assumes "SIDE_PRECOND (X \<noteq> {})"
   assumes [autoref_rules]: "(XS, X) \<in> \<langle>A\<rangle>list_wset_rel"
   shows "(RETURN (hd XS, tl XS), op_set_npick_remove $ X) \<in> \<langle>A \<times>\<^sub>r \<langle>A\<rangle>list_wset_rel\<rangle>nres_rel"
-  unfolding autoref_tag_defs op_set_npick_remove_def'[OF assms(2)[unfolded autoref_tag_defs]]
-  apply (subst remove1_tl[symmetric])
-  subgoal  using assms by (force simp: list_wset_rel_def br_def set_rel_def)
-  subgoal
-    apply (rule aux)
-     apply (autoref)
-    apply (simp )
-    done
-  done
+proof -
+  have "(RETURN (hd XS, remove1 (hd XS) XS), ASSERT (X \<noteq> {}) \<bind> (\<lambda>_. op_set_pick X \<bind> (\<lambda>x. op_set_ndelete x X \<bind> (\<lambda>X'. RETURN (x, X')))))
+    \<in> \<langle>A \<times>\<^sub>r \<langle>A\<rangle>list_wset_rel\<rangle>nres_rel"
+    by (rule aux, autoref, simp)
+  then show ?thesis
+    unfolding autoref_tag_defs op_set_npick_remove_def'[OF assms(2)[unfolded autoref_tag_defs]]
+    using assms
+    by (subst remove1_tl[symmetric]) (force simp: list_wset_rel_def br_def set_rel_def)
+qed
+
 
 subsection \<open>emptiness check\<close>
 
@@ -238,12 +247,16 @@ subsection \<open>of list\<close>
 lemma set_wset_refine[autoref_rules]:
   assumes "PREFER single_valued R"
   shows "((\<lambda>x. x), set) \<in> \<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_wset_rel"
-  apply (rule fun_relI)
-  unfolding list_wset_rel_def
-  apply (rule_tac b = "set a" in relcompI)
-  apply (simp add: br_def)
-  using assms[THEN PREFER_sv_D]
-  by parametricity
+proof (rule fun_relI)
+  fix a a'
+  assume aa': "(a, a') \<in> \<langle>R\<rangle>list_rel"
+  moreover have "(a, a') \<in> \<langle>R\<rangle>list_rel \<Longrightarrow> (set a, set a') \<in> \<langle>R\<rangle>set_rel"
+    using assms[THEN PREFER_sv_D]
+    by parametricity
+  ultimately show "(a, set a') \<in> \<langle>R\<rangle>list_wset_rel"
+    unfolding list_wset_rel_def
+    by (intro relcompI[where b="set a"]) (simp_all add: br_def)
+qed
 
 
 subsection \<open>filter set\<close>
@@ -268,9 +281,8 @@ lemma op_set_wcard_refine[autoref_rules]: "PREFER single_valued R \<Longrightarr
 proof (auto simp: list_wset_rel_def nres_rel_def br_def op_set_wcard_def, goal_cases)
   case (1 x z)
   thus ?case
-    apply (induction x arbitrary: z) 
-    apply (auto simp: old_set_rel_sv_eq[symmetric] old_set_rel_def Image_insert intro!: card_insert_le_m1)  
-    done  
+    by (induction x arbitrary: z)
+      (auto simp: old_set_rel_sv_eq[symmetric] old_set_rel_def Image_insert intro!: card_insert_le_m1)  
 qed
 
 lemmas op_set_wcard_spec[refine_vcg] = op_set_wcard_def[THEN eq_refl, THEN order_trans]
@@ -301,19 +313,16 @@ lemma image_list_wset_rel[autoref_rules]:
   shows "(map, (`)) \<in> (A \<rightarrow> B) \<rightarrow> \<langle>A\<rangle>list_wset_rel \<rightarrow> \<langle>B\<rangle>list_wset_rel"
   unfolding list_wset_rel_def relcomp_unfold
 proof safe
-  show "(a, a') \<in> A \<rightarrow> B \<Longrightarrow> (aa, y) \<in> br set top \<Longrightarrow> (y, a'a) \<in> \<langle>A\<rangle>set_rel \<Longrightarrow>
-       \<exists>y. (map a aa, y) \<in> br set top \<and> (y, a' ` a'a) \<in> \<langle>B\<rangle>set_rel" for a a' aa a'a y
-    apply (safe intro!: exI[where x = "a ` y"])
-    subgoal by (rule brI) (auto simp: br_def)
-    subgoal
-      unfolding set_rel_def
-      apply safe
-      subgoal by (fastforce simp: fun_rel_def split: prod.split)
-      subgoal using assms
-        by (auto simp: fun_rel_def br_def)
-          (metis (no_types, lifting) Domain.cases ImageI image_eqI single_valuedD old.prod.case subsetCE)
-      done
-    done
+  fix a a' aa a'a y
+  assume H: "(a, a') \<in> A \<rightarrow> B" "(aa, y) \<in> br set top" "(y, a'a) \<in> \<langle>A\<rangle>set_rel"
+  have "(map a aa, a ` y) \<in> br set top"
+    using H
+    by (auto simp: br_def)
+  moreover have " (a ` y, a' ` a'a) \<in> \<langle>B\<rangle>set_rel"
+    using H
+    by (fastforce simp: fun_rel_def set_rel_def split: prod.split)
+  ultimately show "\<exists>y. (map a aa, y) \<in> br set top \<and> (y, a' ` a'a) \<in> \<langle>B\<rangle>set_rel"
+    by (safe intro!: exI[where x = "a ` y"])
 qed
 
 subsection \<open>Ball\<close>
@@ -321,10 +330,11 @@ subsection \<open>Ball\<close>
 lemma Ball_list_wset_rel[autoref_rules]:
   "((\<lambda>xs p. foldli xs (\<lambda>x. x) (\<lambda>a _. p a) True), Ball) \<in> \<langle>A\<rangle>list_wset_rel \<rightarrow> (A \<rightarrow> bool_rel) \<rightarrow> bool_rel"
 proof -
-  have "(\<lambda>xs. Ball (set xs), Ball) \<in> {(x, z). (set x, z) \<in> \<langle>A\<rangle>set_rel} \<rightarrow> (A \<rightarrow> bool_rel) \<rightarrow> bool_rel"
-    apply (rule fun_relI)
-    unfolding mem_Collect_eq split_beta' fst_conv snd_conv
+  have "(set a, a') \<in> \<langle>A\<rangle>set_rel \<Longrightarrow> (Ball (set a), Ball a') \<in> (A \<rightarrow> bool_rel) \<rightarrow> bool_rel" for a a'
     by parametricity
+  then have "(\<lambda>xs. Ball (set xs), Ball) \<in> {(x, z). (set x, z) \<in> \<langle>A\<rangle>set_rel} \<rightarrow> (A \<rightarrow> bool_rel) \<rightarrow> bool_rel"
+    unfolding mem_Collect_eq split_beta' fst_conv snd_conv
+    by (rule fun_relI) auto
   then show ?thesis
     by (simp add: relcomp_unfold br_def foldli_ball_aux list_wset_rel_def)
 qed
@@ -801,8 +811,6 @@ lemma [autoref_op_pat_def]:
   "WEAK_EX I \<equiv> OP (WEAK_EX I)"
   by auto
 
-end
-
 lemma list_spec_impl[autoref_rules]:
   "(\<lambda>x. RETURN x, list_spec) \<in> \<langle>A\<rangle>list_wset_rel \<rightarrow> \<langle>\<langle>A\<rangle>list_rel\<rangle>nres_rel"
   if "PREFER single_valued A"
@@ -814,5 +822,100 @@ lemma list_spec_impl[autoref_rules]:
     apply (rule exI[where x="map a xs"])
     by (auto simp: br_def list_all_iff)
   done
+
+lemma list_wset_autoref_delete[autoref_rules]:
+  assumes "PREFER single_valued R"
+  assumes "GEN_OP eq (=) (R \<rightarrow> R \<rightarrow> bool_rel)"
+  shows "(\<lambda>y xs. [x\<leftarrow>xs. \<not>eq y x], op_set_delete) \<in> R \<rightarrow> \<langle>R\<rangle>list_wset_rel \<rightarrow> \<langle>R\<rangle>list_wset_rel"
+  using assms
+  apply (auto simp: list_wset_rel_def dest!: brD elim!: single_valued_as_brE)
+  apply (rule relcompI)
+   apply (rule brI)
+    apply (rule refl)
+   apply auto
+  apply (auto simp: set_rel_br)
+  apply (rule brI)
+   apply (auto dest!: brD dest: fun_relD)
+   apply (auto simp: image_iff dest: fun_relD intro: brI)
+  subgoal for a b c d e
+    apply (drule spec[where x=e])
+    apply auto
+    apply (drule fun_relD)
+     apply (rule brI[where c="c"])
+      apply (rule refl)
+     apply assumption
+    apply (drule bspec, assumption)
+    apply (drule fun_relD)
+     apply (rule brI[where c="e"])
+      apply (rule refl)
+     apply assumption
+    apply auto
+    done
+  done
+
+lemma FORWEAK_mono_rule'':
+  fixes f::"'d \<Rightarrow> 'e nres" and c::"'e \<Rightarrow> 'e \<Rightarrow> 'e nres" and I::"'d set \<Rightarrow> 'e \<Rightarrow> bool"
+  assumes empty: "S = {} \<Longrightarrow> d \<le> SPEC P"
+  assumes I0[THEN order_trans]: "\<And>s. s \<in> S \<Longrightarrow> f s \<le> SPEC (I {s})"
+  assumes I_mono: "\<And>it it' \<sigma>. I it \<sigma> \<Longrightarrow> it' \<subseteq> it \<Longrightarrow> it \<subseteq> S \<Longrightarrow> I it' \<sigma>"
+  assumes IP[THEN order_trans]:
+    "\<And>x it \<sigma>. \<lbrakk> x\<in>S; x \<notin> it; it\<subseteq>S; I it \<sigma> \<rbrakk> \<Longrightarrow> f x \<le> SPEC (\<lambda>f'. c \<sigma> f' \<le> SPEC (I (insert x it)))"
+  assumes II: "\<And>\<sigma>. I S \<sigma> \<Longrightarrow> P \<sigma>"
+  shows "FORWEAK S d f c \<le> SPEC P"
+  apply (rule FORWEAK_invarI[where I="\<lambda>b X. X \<subseteq> S \<and> I (S - X) b"])
+  subgoal by (rule empty)
+  subgoal by (auto simp: Diff_Diff_Int intro!: I0)
+  subgoal
+    by (metis (mono_tags, lifting) Diff_cancel I0 I_mono Refine_Basic.RES_sng_eq_RETURN iSPEC_rule
+        less_eq_nres.simps(2) nres_order_simps(21) subset_insertI subset_refl)
+  subgoal for a b it
+    apply (rule IP[of _ "S - it" b])
+    subgoal by force
+    subgoal by force
+    subgoal by force
+    subgoal by force
+    subgoal
+      apply clarsimp
+      apply (rule order_trans, assumption)
+      by (auto simp: it_step_insert_iff intro: order_trans)
+    done
+  subgoal for a b it
+    apply (rule IP[of _ "S - it" b])
+    subgoal by force
+    subgoal by force
+    subgoal by force
+    subgoal by force
+    subgoal
+      apply clarsimp
+      apply (rule order_trans, assumption)
+      by (auto simp: it_step_insert_iff intro: I_mono)
+    done
+  subgoal by (auto intro!: II)
+  done
+
+lemma FORWEAK_mono_rule_empty:
+  fixes f::"'d \<Rightarrow> 'e nres" and c::"'e \<Rightarrow> 'e \<Rightarrow> 'e nres" and I::"'d set \<Rightarrow> 'e \<Rightarrow> bool"
+  assumes empty: "S = {} \<Longrightarrow> RETURN d \<le> SPEC P"
+  assumes I0: "I {} d"
+  assumes I1: "\<And>s x. s \<in> S \<Longrightarrow> c d x \<le> SPEC (I {s}) \<Longrightarrow> I {s} x"
+  assumes I_mono: "\<And>it it' \<sigma>. I it \<sigma> \<Longrightarrow> it' \<subseteq> it \<Longrightarrow> it \<subseteq> S \<Longrightarrow> I it' \<sigma>"
+  assumes II: "\<And>\<sigma>. I S \<sigma> \<Longrightarrow> P \<sigma>"
+  assumes IP: "\<And>x it \<sigma>. \<lbrakk> x\<in>S; x \<notin> it; it\<subseteq>S; I it \<sigma> \<rbrakk> \<Longrightarrow> f x \<le> SPEC (\<lambda>f'. c \<sigma> f' \<le> SPEC (I (insert x it)))"
+  shows "FORWEAK S (RETURN d) f c \<le> SPEC P"
+  apply (rule FORWEAK_mono_rule''[where S=S and I=I and P=P])
+  subgoal by (rule empty)
+  subgoal for s
+    apply (rule IP[of _ "{}" d, THEN order_trans])
+       apply assumption
+       apply force
+       apply force
+     apply (rule I0)
+    by (auto intro!: I1)
+  subgoal by (rule I_mono)
+  subgoal by (rule IP)
+  subgoal by (rule II)
+  done
+
+end
 
 end

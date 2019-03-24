@@ -15,21 +15,16 @@ concrete_definition e1_fas uses e1_fas
 
 interpretation e1: ode_interpretation true_form UNIV e1_fas "\<lambda>(x, y). (1, y\<^sup>2 - x)::real*real"
   "d::2" for d
-  apply unfold_locales
-  apply (auto simp: aform.ode_def e1_fas_def aform.ode_def aform.safe_def aform.Csafe_def power2_eq_square
-     true_form_def eucl_of_list_prod eval_nat_numeral inner_axis enum_bit0_def enum_bit1_def
-     less_Suc_eq_0_disj isFDERIV_def Basis_list_prod_def Basis_list_real_def Abs_bit0'_def
-     bit0.definitions
-     intro!: ext arg_cong[where f=eucl_of_list])
-  done
+  by unfold_locales (auto simp: e1_fas_def less_Suc_eq_0_disj nth_Basis_list_prod Basis_list_real_def
+      mk_ode_ops_def eucl_of_list_prod power2_eq_square intro!: isFDERIV_I)
 
 lemma e1_0: "t \<in> {4 .. 4} \<longrightarrow> (x, y) \<in> {(0, 0) .. (0, 0.71875)} \<longrightarrow>
    t \<in> e1.existence_ivl0 (x, y) \<and> e1.flow0 (x, y) t \<in> {(3.999, -1.96)..(4, -1.9)}"
-  by (tactic \<open>ode_bnds_tac @{thm e1_fas_def} 30 20 7 12 [(0, 1, "0x000000")] (* "out_e1_0.out" *) "" @{context} 1\<close>)
+  by (tactic \<open>ode_bnds_tac @{thms e1_fas_def} 30 20 7 12 [(0, 1, "0x000000")] (* "out_e1_0.out" *) "" @{context} 1\<close>)
 
 lemma e1_1: "t \<in> {4 .. 4} \<longrightarrow> (x, y) \<in> {(0, 0.71875) .. (0, 0.71875)} \<longrightarrow>
    t \<in> e1.existence_ivl0 (x, y) \<and> e1.flow0 (x, y) t \<in> {(3.999, -1.921)..(4, -1.919)}"
-  by (tactic \<open>ode_bnds_tac @{thm e1_fas_def} 30 20 7 12 [(0, 1, "0xff0000")] (* "out_e1_1.out" *) "" @{context} 1\<close>)
+  by (tactic \<open>ode_bnds_tac @{thms e1_fas_def} 30 20 7 12 [(0, 1, "0xff0000")] (* "out_e1_1.out" *) "" @{context} 1\<close>)
 
 end
 
@@ -45,10 +40,8 @@ concrete_definition exp_fas uses exp_fas
 interpretation exp_ivp: ode_interpretation true_form UNIV exp_fas
   "\<lambda>(t::real, x). (1, x::real)" "one::2"
   by standard
-    (auto intro!: local_lipschitz_c1_euclideanI ext
-      simp: split_beta' aform.ode_def exp_fas_def power2_eq_square aform.safe_def true_form_def
-        eucl_of_list_prod
-        isFDERIV_def less_Suc_eq_0_disj Basis_list_prod_def Basis_list_real_def aform.Csafe_def)
+    (auto simp: exp_fas_def less_Suc_eq_0_disj nth_Basis_list_prod Basis_list_real_def
+      mk_ode_ops_def eucl_of_list_prod power2_eq_square intro!: isFDERIV_I)
 
 subsubsection \<open>connection to exponential function\<close>
 
@@ -72,7 +65,7 @@ lemma exp_ode_result:
   "t \<in> {1 .. 1} \<longrightarrow> (s, x) \<in> {(0, 1) .. (0, 1)} \<longrightarrow>
   t \<in> exp_ivp.existence_ivl0 (s, x) \<and>
   exp_ivp.flow0 (s, x) t \<in> {(0.99, 2.718281) .. (1, 2.718284)}"
-  by (tactic \<open>ode_bnds_tac @{thm exp_fas_def} 30 20 7 20 [(0, 1, "0x000000")] (* "out_exp.out" *) "" @{context} 1\<close>)
+  by (tactic \<open>ode_bnds_tac @{thms exp_fas_def} 30 20 7 20 [(0, 1, "0x000000")] (* "out_exp.out" *) "" @{context} 1\<close>)
 
 lemma exp1: "exp 1 \<in> {2.718281 .. 2.718284::real}"
   using exp_ode_result[of 1 0 1]
@@ -94,14 +87,12 @@ concrete_definition vdp_fas uses vdp_fas
 interpretation vdp: ode_interpretation true_form UNIV vdp_fas "\<lambda>(x, y). (y, y * (1 - x\<^sup>2) - x)::real*real"
   "n::2" for n
   by standard
-    (auto intro!: local_lipschitz_c1_euclideanI ext
-      simp: split_beta' aform.ode_def vdp_fas_def power2_eq_square aform.Csafe_def aform.safe_def true_form_def
-        isFDERIV_def less_Suc_eq_0_disj Basis_list_prod_def Basis_list_real_def eval_nat_numeral
-        inverse_eq_divide eucl_of_list_prod)
+    (auto simp: vdp_fas_def less_Suc_eq_0_disj nth_Basis_list_prod Basis_list_real_def
+      mk_ode_ops_def eucl_of_list_prod power2_eq_square intro!: isFDERIV_I)
 
 lemma vdp_c0: "t \<in> point_ivl 7 \<longrightarrow> (x, y) \<in> point_ivl (1.4, 2.4) \<longrightarrow>
    t \<in> vdp.existence_ivl0 (x, y) \<and> vdp.flow0 (x, y) t \<in> {(1.870, 0.9887) .. (1.875, 1.001)}"
-  by (tactic \<open>ode_bnds_tac @{thm vdp_fas_def} 30 35 9 14 [(0, 1, "0x000000")] (* "out_vdp_c0.out" *) "" @{context} 1\<close>)
+  by (tactic \<open>ode_bnds_tac @{thms vdp_fas_def} 30 35 9 14 [(0, 1, "0x000000")] (* "out_vdp_c0.out" *) "" @{context} 1\<close>)
 
 lemma vdp_c1: "t \<in> point_ivl 7 \<longrightarrow> (x, y) \<in> point_ivl (1.4, 2.4) \<longrightarrow>
    t \<in> vdp.existence_ivl0 (x, y) \<and>
@@ -109,7 +100,7 @@ lemma vdp_c1: "t \<in> point_ivl 7 \<longrightarrow> (x, y) \<in> point_ivl (1.4
     vdp.Dflow (x, y) t o\<^sub>L blinfun_of_list [1,0, 0,1] \<in>
       vdp.blinfuns_of_lvivl ([-0.197,-0.399, 0.835, 1.71],
                              [-0.189, -0.387, 0.858, 1.75])"
-  by (tactic \<open>ode'_bnds_tac @{thm vdp_fas_def} 30 80 40 14
+  by (tactic \<open>ode'_bnds_tac @{thms vdp_fas_def} 30 80 40 14
     [(0, 1, "0x000000", [0,1])] ["0x7f0000", "0x00007f"] (* "out_vdp_c1.out" *) "" @{context} 1\<close>)
 end
 
@@ -130,16 +121,14 @@ interpretation lorenz: ode_interpretation true_form UNIV lorenz_fas
     ::real*real*real"
   "three::3"
   by standard
-    (auto intro!: local_lipschitz_c1_euclideanI ext
-      simp: split_beta' aform.ode_def lorenz_fas_def power2_eq_square aform.safe_def true_form_def
-        eucl_of_list_prod
-        isFDERIV_def less_Suc_eq_0_disj Basis_list_prod_def Basis_list_real_def aform.Csafe_def)
+    (auto simp: lorenz_fas_def less_Suc_eq_0_disj nth_Basis_list_prod Basis_list_real_def
+      mk_ode_ops_def eucl_of_list_prod power2_eq_square intro!: isFDERIV_I)
 
 text \<open>Taken from "A database of rigorous and high-precision periodic orbits of the Lorenz model" (2015)
   by Barrio, Dena, Tucker\<close>
 lemma lorenz_c0: "t \<in> point_ivl 1.558652210 \<longrightarrow> (x, y, z) \<in> point_ivl ( -2.147367631, 2.078048211, 27) \<longrightarrow>
    t \<in> lorenz.existence_ivl0 (x, y, z) \<and> lorenz.flow0 (x, y, z) t \<in> {(-2.1515, 2.0738, 26.992) .. (-2.1434, 2.0824, 27.009)}"
-  by (tactic \<open>ode_bnds_tac @{thm lorenz_fas_def} 30 35 9 16
+  by (tactic \<open>ode_bnds_tac @{thms lorenz_fas_def} 30 35 9 16
     [(0, 1, "0x7f0000"), (0, 2, "0x00007f")] (* "out_lorenz_c0.out" *) "" @{context} 1\<close>)
 
 lemma lorenz_c1: "t \<in> point_ivl (FloatR 52299689 (- 25) \<comment> \<open>for C1-info, the target time needs to be a float\<close>) \<longrightarrow>
@@ -149,7 +138,7 @@ lemma lorenz_c1: "t \<in> point_ivl (FloatR 52299689 (- 25) \<comment> \<open>fo
     lorenz.Dflow (x, y, z) t o\<^sub>L blinfun_of_list [1,0,0, 0,1,0, 0,0,1] \<in>
       lorenz.blinfuns_of_lvivl ([-0.535,-1.15,-0.794, 1.49,4.01,0.651, 2.71,6.85,2.11],
                                 [-0.479,-1.03,-0.751, 1.58,4.14,0.703, 2.82,7.00,2.19])"
-  by (tactic \<open>ode'_bnds_tac @{thm lorenz_fas_def} 30 80 40 16
+  by (tactic \<open>ode'_bnds_tac @{thms lorenz_fas_def} 30 80 40 16
     [(0, 1, "0x000000", [0,1,2]), (0, 2, "0x7f7f7f", [0,1,2])] ["0x7f0000", "0x007f00", "0x00007f"]
       (* "out_lorenz_c1.out" *) "" @{context} 1\<close>)
 end
@@ -178,10 +167,8 @@ interpretation bessel: ode_interpretation "Less (Var 1) (Num 0)" "{(mu, s, _, _)
   (((s\<^sup>2 - mu\<^sup>2) * x + s * x') / s\<^sup>2))"
   "four::4"
   by standard
-    (auto intro!: local_lipschitz_c1_euclideanI   ext
-      simp: split_beta' aform.ode_def bessel_fas_def power2_eq_square aform.safe_def true_form_def
-        eucl_of_list_prod aform.Csafe_def
-        isFDERIV_def less_Suc_eq_0_disj Basis_list_real_def Basis_list_prod_def divide_simps)
+    (auto simp: bessel_fas_def less_Suc_eq_0_disj nth_Basis_list_prod Basis_list_real_def inverse_eq_divide
+      mk_ode_ops_def eucl_of_list_prod power2_eq_square intro!: isFDERIV_I)
 
 definition "J0 = 0.765197686557966551449717526103"
 definition "J0' = 0.440050585744933515959682203719"
@@ -192,7 +179,7 @@ lemma bessel_result:
       (0, -1, 0.765197686557966551449717526103, 0.440050585744933515959682203719)} \<longrightarrow>
    t \<in> bessel.existence_ivl0 (x, y, j0, j0') \<and>
                 bessel.flow0 (x, y, j0, j0') t \<in> {(0, -11.01, -0.18, -0.185) .. (0, -11, -0.165, -0.169)}"
-  by (tactic \<open>ode_bnds_tac @{thm bessel_fas_def} 30 20 7 12
+  by (tactic \<open>ode_bnds_tac @{thms bessel_fas_def} 30 20 7 12
     [(1, 2, "0x007f00"), (1, 3, "0x00007f")] (* "out_bessel.out" *) "" @{context} 1\<close>)
 end
 
@@ -218,21 +205,18 @@ qed
 interpretation oil: ode_interpretation true_form UNIV oil_fas
   "\<lambda>(y, z). (z, z\<^sup>2 - 3 / (0.001 + y\<^sup>2))::real*real" "two::2"
   by standard
-    (auto intro!: local_lipschitz_c1_euclideanI ext
-      simp: split_beta' aform.ode_def oil_fas_def power2_eq_square aform.safe_def true_form_def
-      aform.Csafe_def eucl_of_list_prod
-        isFDERIV_def less_Suc_eq_0_disj Basis_list_prod_def Basis_list_real_def eval_nat_numeral
-        oil_deriv_ok inverse_eq_divide)
+    (auto simp: oil_fas_def oil_deriv_ok less_Suc_eq_0_disj nth_Basis_list_prod Basis_list_real_def inverse_eq_divide
+      mk_ode_ops_def eucl_of_list_prod isDERIV_Power_iff power2_eq_square intro!: isFDERIV_I)
 
 theorem oil_20:
   "t \<in> {50 .. 50} \<longrightarrow> (x, y) \<in> {(10, 0) .. (10, 0)} \<longrightarrow>
    t \<in> oil.existence_ivl0 (x, y) \<and> oil.flow0 (x, y) t \<in> {(-8.310, -0.2252) .. (-8.257, -0.2236)}"
-  by (tactic \<open>ode_bnds_tac @{thm oil_fas_def} 30 20 7 20 [(0, 1, "0x000000")] (* "out_oil_20.out" *) "" @{context} 1\<close>)
+  by (tactic \<open>ode_bnds_tac @{thms oil_fas_def} 30 20 7 20 [(0, 1, "0x000000")] (* "out_oil_20.out" *) "" @{context} 1\<close>)
 
 theorem oil_30:
   "t \<in> {50 .. 50} \<longrightarrow> (x, y) \<in> {(10, 0) .. (10, 0)} \<longrightarrow>
    t \<in> oil.existence_ivl0 (x, y) \<and> oil.flow0 (x, y) t \<in> {(-8.279, -0.2246) .. (-8.276, -0.2245)}"
-  by (tactic \<open>ode_bnds_tac @{thm oil_fas_def} 30 20 7 30 [(0, 1, "0xff0000")] (* "out_oil_30.out" *) "" @{context} 1\<close>)
+  by (tactic \<open>ode_bnds_tac @{thms oil_fas_def} 30 20 7 30 [(0, 1, "0xff0000")] (* "out_oil_30.out" *) "" @{context} 1\<close>)
 end
 
 subsection \<open>Example V in Walter's textbook~\cite{walter}\<close>
@@ -247,15 +231,13 @@ concrete_definition e3_fas uses e3_fas
 interpretation e3: ode_interpretation true_form UNIV e3_fas "\<lambda>(t, x). (1, x\<^sup>2 + t\<^sup>2)::real*real"
   "d::2" for d
   by standard
-    (auto intro!: local_lipschitz_c1_euclideanI   ext
-      simp: split_beta' aform.ode_def e3_fas_def power2_eq_square aform.safe_def true_form_def
-      aform.Csafe_def eucl_of_list_prod
-        isFDERIV_def less_Suc_eq_0_disj Basis_list_prod_def Basis_list_real_def)
+    (auto simp: e3_fas_def less_Suc_eq_0_disj nth_Basis_list_prod Basis_list_real_def
+      mk_ode_ops_def eucl_of_list_prod power2_eq_square intro!: isFDERIV_I)
 
 lemma e3_flow_mem:
   "t \<in> {0.125 .. 0.125} \<longrightarrow> (s, x) \<in> {(0, 1) .. (0, 1)} \<longrightarrow>
   t \<in> e3.existence_ivl0 (s, x) \<and> (e3.flow0 (s, x) t \<in> {(0.124, 1.14347) .. (0.126, 1.14376)})"
-  by (tactic \<open>ode_bnds_tac @{thm e3_fas_def} 30 20 7 11 [(0, 1, "0x000000")] (* "out_e2.out" *) "" @{context} 1\<close>)
+  by (tactic \<open>ode_bnds_tac @{thms e3_fas_def} 30 20 7 11 [(0, 1, "0x000000")] (* "out_e2.out" *) "" @{context} 1\<close>)
 
 subsubsection \<open>Walter's analytical obtained by in section 9, Example V.\<close>
 

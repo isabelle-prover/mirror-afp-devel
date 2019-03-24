@@ -108,14 +108,9 @@ interpretation p1: ode_interpretation safe_p1
        (n^2 + K1_22/m_c)*y + (K1_23/m_c -2*n) * vx + K1_21/m_c * x + K1_24/m_c * vy - mu/sqrt((r+x)^2-y^2)^3 * y
   )::real*real*real*real*real"
   "d::5" for d
-  apply standard
-  subgoal by simp
-  subgoal
-    unfolding aform.Csafe_def aform.safe_def
-    by (auto simp: p1_fas_def less_Suc_eq_0_disj Basis_list_prod_def intro!: isFDERIV_SucI)
-  subgoal
-    by (auto simp: p1_fas_def aform.ode_def eucl_of_list_prod Basis_list_prod_def inverse_eq_divide)
-  done
+  by standard
+    (auto simp: p1_fas_def less_Suc_eq_0_disj nth_Basis_list_prod Basis_list_real_def
+      mk_ode_ops_def eucl_of_list_prod power2_eq_square inverse_eq_divide intro!: isFDERIV_I)
 
 lemma poincare_section_rep[poincare_tac_theorems]:
               "{(0, -100, -500, -1000, -1000)..(125, -100, 0, 1000, 1000)::real*real*real*real*real} =
@@ -131,12 +126,6 @@ lemma p1_start: "TAG_sctn False" by simp
 lemma p1_pi_0: "p1.guards_invar DIM(real \<times> real \<times> real \<times> real \<times> real) []"
   by (auto simp: p1.guards_invar_def)
 
-lemma [nth_list_eq_theorems]:
-  "[a, b, c, d, e] ! 1 = [f, b, g, h, i] ! 1"
-  "[a, b, c, d, e] ! 0 = [a, f, g, h, i] ! 0"
-  by auto
-
-
 lemma
   notes [poincare_tac_theorems] = p1_ro p1_start p1_pi_0
   shows "\<forall>x\<in>{(0, -925, -425, 0, 0) .. (0, -875, -375, 0, 0)}.
@@ -145,7 +134,8 @@ lemma
       {(108.5, -100, -35.05, 1.993, 0.6489) ..
        (111.8, -100, -28.42, 2.007, 0.8130)}"
   using [[ode_numerics_trace]]
-  by (tactic \<open>poincare_bnds_tac @{thm p1_fas_def} 30 50 20 10 [(1, 2, "0x000000")] "" (*"out_space_p1.out"*) @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac @{thms p1_fas_def} 30 50 20 10 [(1, 2, "0x000000")] "" (*"out_space_p1.out"*) @{context} 1\<close>)
+
 
 subsubsection \<open>Location P2\<close>
 
@@ -195,14 +185,9 @@ interpretation p2: ode_interpretation safe_p2
        (n^2 + K2_22/m_c)*y + (K2_23/m_c -2*n) * vx + K2_21/m_c * x + K2_24/m_c * vy - mu/sqrt((r+x)^2-y^2)^3 * y
   )::real*real*real*real*real"
   "d::5" for d
-  apply standard
-  subgoal by simp
-  subgoal
-    unfolding aform.Csafe_def aform.safe_def
-    by (auto simp: p2_fas_def less_Suc_eq_0_disj Basis_list_prod_def intro!: isFDERIV_SucI)
-  subgoal
-    by (auto simp: p2_fas_def aform.ode_def eucl_of_list_prod Basis_list_prod_def inverse_eq_divide)
-  done
+  by standard
+    (auto simp: p2_fas_def less_Suc_eq_0_disj nth_Basis_list_prod Basis_list_real_def
+      mk_ode_ops_def eucl_of_list_prod power2_eq_square inverse_eq_divide intro!: isFDERIV_I)
 
 lemma poincare_section2_rep[poincare_tac_theorems]:
   "{(120, -1000, -1000, -1000, -1000)..(120, 1000, 1000, 1000, 1000)::real*real*real*real*real} =
@@ -227,7 +212,7 @@ lemma
     {(120, -78.24, -27.43, 2.125, 0.596) ..
      (120, -70.85, -20.12, 2.348, 0.829)}"
   using [[ode_numerics_trace]]
-  by (tactic \<open>poincare_bnds_tac @{thm p2_fas_def} 30 50 20 10 [(1, 2, "0x000000"), (3, 4, "0x0000ff")] "" (*"out_space_p2.out"*) @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac @{thms p2_fas_def} 30 50 20 10 [(1, 2, "0x000000"), (3, 4, "0x0000ff")] "" (*"out_space_p2.out"*) @{context} 1\<close>)
 
 (*(1.2e2 -70.8581e1 -2.012131e1 2.347061 8.28834e-1)*)
 subsubsection \<open>Location Passive\<close>
@@ -268,14 +253,9 @@ interpretation passive: ode_interpretation safe_passive
        n^2*y - 2*n * vx - mu/sqrt((r+x)^2-y^2)^3 * y
   )::real*real*real*real*real"
   "d::5" for d
-  apply standard
-  subgoal by simp
-  subgoal
-    unfolding aform.Csafe_def aform.safe_def
-    by (auto simp: passive_fas_def less_Suc_eq_0_disj Basis_list_prod_def intro!: isFDERIV_SucI)
-  subgoal
-    by (auto simp: passive_fas_def aform.ode_def eucl_of_list_prod Basis_list_prod_def inverse_eq_divide)
-  done
+  by standard
+    (auto simp: passive_fas_def less_Suc_eq_0_disj nth_Basis_list_prod Basis_list_real_def
+      mk_ode_ops_def eucl_of_list_prod power2_eq_square inverse_eq_divide intro!: isFDERIV_I)
 
 lemma poincare_section3_rep[poincare_tac_theorems]:
               "{(200, -1000, -1000, -1000, -1000)..(200, 1000, 1000, 1000, 1000)::real*real*real*real*real} =
@@ -300,7 +280,7 @@ lemma
     {(200, 89.95, -46.20, 2.047, -1.050) ..
      (200, 123.9, -14.19, 2.460, -0.701)}"
   using [[ode_numerics_trace]]
-  by (tactic \<open>poincare_bnds_tac @{thm passive_fas_def} 30 50 20 10 [(1, 2, "0x000000")] "" (*"out_space_passive.out"*) @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac @{thms passive_fas_def} 30 50 20 10 [(1, 2, "0x000000")] "" (*"out_space_passive.out"*) @{context} 1\<close>)
 
 end
 
@@ -375,8 +355,7 @@ lemma Basis_list_16:
   (0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0),
   (0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0),
   (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1)]"
-  by (auto simp: Basis_list_prod_def Basis_list_real_def zero_prod_def)
-
+  by (auto simp: Basis_list_prod_def zero_prod_def)
 
 interpretation quadrot: ode_interpretation "Conj (Less (- Half Pi) (Var 8))
   (Conj (Less (Var 8) (Half Pi)) ((Less (Var 3)
@@ -404,17 +383,19 @@ interpretation quadrot: ode_interpretation "Conj (Less (- Half Pi) (Var 8))
     \<comment> \<open>\<open>u\<^sub>3\<close>:\<close> 0::real)" "sixteen::16"
   apply standard
   subgoal by simp
+  subgoal by (simp add: quadrot_fas_def)
+  subgoal by (auto simp: Basis_list_16)
   subgoal
     using cos_gt_zero_pi
-    by (fastforce simp: aform.Csafe_def quadrot_fas_def aform.safe_def Ne_def
-        isFDERIV_compute add_nonneg_eq_0_iff Half_def uminus_floatarith_def)
-  subgoal
-    apply (auto simp: aform.ode_def quadrot_fas_def)
+    apply (simp add: quadrot_fas_def Basis_list_16)
     apply (auto simp: eucl_of_list_prod split: prod.splits)
-    apply (auto simp: power2_eq_square)
-                 apply (auto simp: Basis_list_16)
+    apply (auto simp: power2_eq_square quadrot_fas_def)
+    by (auto simp: approximation_preproc_floatarith[symmetric])
+  subgoal by (auto simp: mk_ode_ops_def quadrot_fas_def Half_def)
+  subgoal
     using cos_gt_zero_pi
-    by (auto simp: approximation_preproc_floatarith[symmetric] )
+    by (fastforce simp: quadrot_fas_def less_Suc_eq_0_disj nth_Basis_list_prod isFDERIV_product
+      mk_ode_ops_def eucl_of_list_prod power2_eq_square inverse_eq_divide intro!: isFDERIV_I)
   done
 
 lemma quadrot: "t \<in> {5 .. 5} \<longrightarrow>
@@ -427,7 +408,7 @@ lemma quadrot: "t \<in> {5 .. 5} \<longrightarrow>
        (5.01,  2.5, 126, 1.02,  0.5, 50,  0.05, 0, 0, 0, 0, 0, 0, 1, 0, 0)}
       \<^cancel>\<open>{(4.9, -2.5, 120, 0.99, -0.5, 48, -0.02, 0, 0, 0, 0, 0, 0, 1, 0, 0) ..
        (5.0,  2.5, 126, 1.00,  0.5, 50,  0.02, 0, 0, 0, 0, 0, 0, 1, 0, 0)}\<close>"
-  by (tactic \<open>ode_bnds_tac @{thm quadrot_fas_def} 16 25 20 10 [(0, 3, "0x000000")]
+  by (tactic \<open>ode_bnds_tac @{thms quadrot_fas_def} 16 25 20 10 [(0, 3, "0x000000")]
     (* "out_quadrot.out" *) "" @{context} 1\<close>)
 
 end
@@ -464,11 +445,9 @@ interpretation ll: ode_interpretation "Less (Var 4) (Num 50)"
      0.7 * x1 - x4 * x5,
      0.3 * x1 - 3.1 * x6,
      1.8 * x6 - 1.5 * x2 * x7)::real*real*real*real*real*real*real*real" "eight::8"
-   by standard
-    (auto intro!: local_lipschitz_c1_euclideanI ext
-      simp: split_beta' aform.ode_def laub_fas_def aform.safe_def true_form_def
-      aform.Csafe_def eucl_of_list_prod
-        isFDERIV_def less_Suc_eq_0_disj Basis_list_prod_def Basis_list_real_def eval_nat_numeral)
+  by standard
+    (auto simp: laub_fas_def less_Suc_eq_0_disj nth_Basis_list_prod Basis_list_real_def
+      mk_ode_ops_def eucl_of_list_prod power2_eq_square inverse_eq_divide intro!: isFDERIV_I)
 
 theorem ll_001:
   "t \<in> {20 .. 20} \<longrightarrow>
@@ -479,7 +458,7 @@ theorem ll_001:
   ll.flow0 (s, x1, x2, x3, x4, x5, x6, x7) t \<in>
     {(19.99, 0.8, 0.3, 0.5, 2.5, 0.1, 0.0, 0.25) ..
      (20, 1.0, 0.5, 0.7, 3.0, 0.3, 0.1, 0.35)}"
-  by (tactic \<open>ode_bnds_tac @{thm laub_fas_def} 30 60 30 13 [(0, 4, "0x000000")] (* "out_ll_001.out" *) "" @{context} 1\<close>)
+  by (tactic \<open>ode_bnds_tac @{thms laub_fas_def} 30 60 30 13 [(0, 4, "0x000000")] (* "out_ll_001.out" *) "" @{context} 1\<close>)
 
 end
 
@@ -496,10 +475,8 @@ concrete_definition vdp_fas uses vdp_fas
 interpretation vdp: ode_interpretation true_form UNIV vdp_fas "\<lambda>(t, x, y). (1, y, y * (1 - x\<^sup>2) - x)::real*real*real"
   "n::3" for n
   by standard
-    (auto intro!: local_lipschitz_c1_euclideanI ext
-      simp: split_beta' aform.ode_def vdp_fas_def power2_eq_square aform.Csafe_def aform.safe_def true_form_def
-        isFDERIV_def less_Suc_eq_0_disj Basis_list_prod_def Basis_list_real_def eval_nat_numeral
-        inverse_eq_divide eucl_of_list_prod)
+    (auto simp: vdp_fas_def less_Suc_eq_0_disj nth_Basis_list_prod Basis_list_real_def
+      mk_ode_ops_def eucl_of_list_prod power2_eq_square inverse_eq_divide intro!: isFDERIV_I)
 
 lemma poincare_section_rep[poincare_tac_theorems]:
   "{(7::real, -3::real, -3::real)..(7::real, 3, 3)} = {eucl_of_list [7, -3, -3]..eucl_of_list [7, 3, 3]}"
@@ -519,7 +496,7 @@ lemma
   shows "\<forall>x\<in>{(0, 1.25, 2.35) .. (0, 1.55, 2.45)}.
   vdp.returns_to   {(7, -3, -3) .. (7, 3, 3)} x \<and>
   vdp.poincare_map_from_outside {(7, -3, -3) .. (7, 3, 3)} x \<in> {(7, 0, 0) .. (7, 3, 3)}"
-  by (tactic \<open>poincare_bnds_tac @{thm vdp_fas_def} 30 20 10 14 [(1, 2, "0x000000")] "" (* "out_p1_vdp_0.out" *)  @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac @{thms vdp_fas_def} 30 20 10 14 [(1, 2, "0x000000")] "" (* "out_p1_vdp_0.out" *)  @{context} 1\<close>)
 
 end
 

@@ -199,12 +199,12 @@ lemma inter_ivl_clw_aux:
 
 lemma inter_ivl_clw[autoref_rules]:
   assumes sv[THEN PREFER_sv_D]: "PREFER single_valued A"
-  assumes intr[THEN GEN_OP_D]: "GEN_OP intr (\<inter>) (\<langle>A\<rangle>ivl_rel \<rightarrow> \<langle>A\<rangle>ivl_rel \<rightarrow> \<langle>A\<rangle>ivl_rel)"
+  assumes intr[THEN GEN_OP_D]: "GEN_OP intr op_inter_ivl (\<langle>A\<rangle>ivl_rel \<rightarrow> \<langle>A\<rangle>ivl_rel \<rightarrow> \<langle>A\<rangle>ivl_rel)"
   assumes "GEN_OP le (\<le>) (A \<rightarrow> A \<rightarrow> bool_rel)"
   shows "(\<lambda>xs y. filter_empty_ivls_impl le (map (intr y) xs), op_inter_ivl_coll) \<in> clw_rel (\<langle>A\<rangle>ivl_rel) \<rightarrow> (\<langle>A\<rangle>ivl_rel) \<rightarrow> clw_rel (\<langle>A\<rangle>ivl_rel)"
   apply safe
   subgoal premises prems
-    using filter_empty_ivls[OF assms(1,3), param_fo, OF inter_ivl_clw_aux[OF sv intr, param_fo, OF prems]]
+    using filter_empty_ivls[OF assms(1,3), param_fo, OF inter_ivl_clw_aux[OF sv intr[unfolded op_inter_ivl_def], param_fo, OF prems]]
     by simp
   done
 
@@ -318,7 +318,6 @@ where
     let s' = (if b \<ge> 0 then (s + (min (y - s \<bullet> b) 0) *\<^sub>R b) else s);
     RETURN ({i' .. s'}:::\<^sub>i\<langle>i_rnv\<rangle>\<^sub>ii_ivl)
   }"
-interpretation autoref_op_pat_def restrict_to_halfspace .
 
 context includes autoref_syntax begin
 
@@ -678,14 +677,15 @@ lemma inter_overappr_impl: "do {(X, _) \<leftarrow> split_intersecting X Y; RETU
   unfolding split_intersecting_def inter_overappr_def autoref_tag_defs
   by (refine_vcg) auto
 
-schematic_goal inter_overappr_autoref[autoref_rules]:
+schematic_goal inter_overappr_autoref:
   assumes [autoref_rules_raw]: "DIM_precond (TYPE('a::executable_euclidean_space)) n"
   assumes [autoref_rules]: "(Xi,X)\<in>clw_rel lvivl_rel"
   assumes [autoref_rules]: "(Zi,Z)\<in>clw_rel lvivl_rel"
-  shows "(nres_of ?f, inter_overappr $ X $ Z::'a set nres)\<in>\<langle>clw_rel lvivl_rel\<rangle>nres_rel"
+  shows "(nres_of ?f, inter_overappr X Z::'a set nres)\<in>\<langle>clw_rel lvivl_rel\<rangle>nres_rel"
   unfolding autoref_tag_defs
   by (rule nres_rel_trans2[OF inter_overappr_impl]) (autoref_monadic)
-
+concrete_definition inter_overappr_impl for Xi Zi uses inter_overappr_autoref
+lemmas [autoref_rules] = inter_overappr_impl.refine[autoref_higher_order_rule(1)]
 
 definition "sctnbounds_of_ivl M X = do {
     (l, u) \<leftarrow> ivl_rep X;
@@ -764,6 +764,48 @@ schematic_goal split_along_ivls_impl:
   by autoref_monadic
 concrete_definition split_along_ivls_impl uses split_along_ivls_impl
 lemmas [autoref_rules] = split_along_ivls_impl.refine
+
+definition "op_ivl_rep_of_set X =
+  do { let X = (X); i \<leftarrow> Inf_spec X; s \<leftarrow> Sup_spec X; RETURN (inf i s, s)}"
+
+definition "op_ivl_rep_of_sets XS =
+  FORWEAK XS (RETURN (0, 0)) op_ivl_rep_of_set (\<lambda>(i, s) (i', s').
+    RETURN (inf i i':::lv_rel, sup s s':::lv_rel))"
+
+definition "op_ivl_of_ivl_coll XS =
+  do {XS \<leftarrow> sets_of_coll XS;
+    (l, u) \<leftarrow> FORWEAK XS (RETURN (0, 0)) ivl_rep (\<lambda>(i, s) (i', s').
+      RETURN (inf i i':::lv_rel, sup s s':::lv_rel));
+    RETURN (op_atLeastAtMost_ivl l u)
+  }"
+
+schematic_goal op_ivl_of_ivl_coll_impl:
+  assumes [autoref_rules_raw]: "DIM_precond TYPE('a::executable_euclidean_space) D"
+  assumes [autoref_rules]: "(ISi, IS::'a::executable_euclidean_space set) \<in> clw_rel lvivl_rel"
+  shows "(?f, op_ivl_of_ivl_coll IS) \<in> \<langle>lvivl_rel\<rangle>nres_rel"
+  unfolding op_ivl_of_ivl_coll_def
+  by autoref_monadic
+concrete_definition op_ivl_of_ivl_coll_impl uses op_ivl_of_ivl_coll_impl
+lemmas op_ivl_of_ivl_coll_impl_refine[autoref_rules] =
+  op_ivl_of_ivl_coll_impl.refine[autoref_higher_order_rule (1)]
+
+lemma is_empty_lvivl_rel[autoref_rules]:
+  shows "(\<lambda>(a, b). \<not> list_all2 (\<le>) a b, is_empty) \<in> lvivl_rel \<rightarrow> bool_rel"
+  using le_left_mono
+  by (fastforce simp: ivl_rel_def br_def set_of_ivl_def dest: lv_rel_le[param_fo])
+
+definition [simp]: "op_times_ivl a b = a \<times> b"
+
+lemma [autoref_op_pat]: "a \<times> b \<equiv> OP op_times_ivl $ a $ b"
+  by (auto simp: )
+
+lemma op_times_ivl[autoref_rules]:
+  "(\<lambda>(l, u) (l', u'). (l @ l', u @ u'), op_times_ivl) \<in> lvivl_rel \<rightarrow> lvivl_rel \<rightarrow> lvivl_rel"
+  apply (auto simp: ivl_rel_def br_def intro!: rel_funI)
+  subgoal for a b c d e f g h
+    apply (rule relcompI[where b="((c, g), (d, h))"])
+    by (auto simp: lv_rel_def br_def set_of_ivl_def)
+  done
 
 end
 

@@ -159,6 +159,12 @@ lemma inner_sum_list_left: "sum_list xs \<bullet> b = (\<Sum>x\<leftarrow>xs. x 
 definition [simp]: "DIM_eq (TYPE('a::executable_euclidean_space)) n \<longleftrightarrow> DIM('a) = n"
 abbreviation "DIM_precond TYPE('a) n \<equiv> DIM_eq TYPE('a::executable_euclidean_space) n"
 
+lemma DIM_precond_times[autoref_rules_raw]:
+  "DIM_precond TYPE('a::executable_euclidean_space\<times>'b::executable_euclidean_space) (D + E)"
+  if "DIM_precond TYPE('a::executable_euclidean_space) D"
+     "DIM_precond TYPE('b::executable_euclidean_space) E"
+  using that by (auto simp: )
+
 lemma [autoref_rules]: "(sum_list, sum_list) \<in> \<langle>rnv_rel\<rangle>list_rel \<rightarrow> rnv_rel"
   by auto
 
@@ -290,7 +296,7 @@ lemma split_spec_params_split_spec_param:
   done
 
 lemma reduce_specs_reduce_spec:
-  "(reduce_specs d, reduce_spec::_\<Rightarrow>'a::executable_euclidean_space set\<Rightarrow>_) \<in> A \<rightarrow> \<langle>lv_rel\<rangle>set_rel \<rightarrow> \<langle>\<langle>lv_rel\<rangle>set_rel\<rangle>nres_rel"
+  "(reduce_specs d, reduce_spec::_\<Rightarrow>'a::executable_euclidean_space set\<Rightarrow>_) \<in> Id \<rightarrow> \<langle>lv_rel\<rangle>set_rel \<rightarrow> \<langle>\<langle>lv_rel\<rangle>set_rel\<rangle>nres_rel"
   if "d = DIM('a::executable_euclidean_space)"
   apply (auto intro!: nres_relI RES_refine simp: reduce_spec_def reduce_specs_def env_len_def that)
   unfolding set_rel_sv[OF lv_rel_sv]
@@ -323,6 +329,22 @@ schematic_goal split_lv_rel_impl[autoref_rules]:
   shows "(?r, split_lv_rel::'a\<times>_\<Rightarrow>_) \<in> lv_rel \<rightarrow> lv_rel \<times>\<^sub>r lv_rel"
   unfolding split_lv_rel_def
   by autoref
+
+lemma lv_rel_less[autoref_rules]: "(list_all2 (\<lambda>x y. x < y), eucl_less) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> bool_rel"
+  by (auto simp: lv_rel_def br_def eucl_less_def[where 'a='a] eucl_of_list_inner list_all2_conv_all_nth
+      index_nth_id)
+     (metis distinct_Basis_list index_nth_id length_Basis_list nth_Basis_list_in_Basis)
+
+lemma list_of_eucl_autoref[autoref_rules]: "(\<lambda>x. x, list_of_eucl) \<in> lv_rel \<rightarrow> \<langle>rnv_rel\<rangle>list_rel"
+  by (auto simp: lv_rel_def br_def)
+
+definition [simp]: "op_DIM TYPE('a) = DIM('a::executable_euclidean_space)"
+lemma [autoref_op_pat_def]: "DIM('a) \<equiv> OP (op_DIM TYPE('a::executable_euclidean_space))" by simp
+lemma op_DIM[autoref_rules]:
+  assumes [simplified, symmetric, simp]: "DIM_precond TYPE('a) E"
+  shows "(E, (op_DIM TYPE('a::executable_euclidean_space))) \<in> nat_rel"
+  using assms
+  by auto
 
 end
 

@@ -3,8 +3,29 @@ theory Concrete_Rigorous_Numerics
     Abstract_Rigorous_Numerics
 begin
 
-context approximate_sets begin
+context includes autoref_syntax begin
 
+lemma [autoref_rules]:
+  "(slp_of_fas, slp_of_fas) \<in> fas_rel \<rightarrow> slp_rel"
+  "(Norm, Norm) \<in> fas_rel \<rightarrow> Id"
+  by auto
+
+lemma [autoref_rules]: "(norm2_slp, norm2_slp) \<in> nat_rel \<rightarrow> Id"
+  by auto
+
+lemma [autoref_rules]:
+  "(floatarith.Var, floatarith.Var) \<in> nat_rel \<rightarrow> Id"
+  "(slp_of_fas, slp_of_fas) \<in> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel"
+  "(fold_const_fa, fold_const_fa) \<in> Id \<rightarrow> Id"
+  "(open_form, open_form) \<in> Id \<rightarrow> bool_rel"
+  "(max_Var_floatariths, max_Var_floatariths) \<in> \<langle>Id\<rangle>list_rel \<rightarrow> nat_rel"
+  "(max_Var_form, max_Var_form) \<in> Id \<rightarrow> nat_rel"
+  "(length, length) \<in> \<langle>A\<rangle>list_rel \<rightarrow> nat_rel"
+  by (auto simp: list_rel_imp_same_length)
+
+end
+
+context approximate_sets begin
 
 lemma prod_rel_relcomp_distr: "(R \<times>\<^sub>r S) O (T \<times>\<^sub>r U) = (R O T) \<times>\<^sub>r (S O U)"
   by (auto simp: prod_rel_def)
@@ -49,18 +70,18 @@ lemma transfer_operations[unfolded comps, autoref_rules]:
   "SIDE_PRECOND (list_all2 (\<le>) xrs yrs) \<Longrightarrow>
     (xri, xrs) \<in> \<langle>rnv_rel\<rangle>list_rel \<Longrightarrow>
     (yri, yrs) \<in> \<langle>rnv_rel\<rangle>list_rel \<Longrightarrow>
-    (appr_of_ivl xri yri, lv_ivl $ xrs $ yrs) \<in> appr_rell"
-  "(product_appr, product_listset) \<in> appr_rell \<rightarrow> appr_rell \<rightarrow> appr_rell"
-  "(msum_appr, (+)) \<in> appr_rel \<rightarrow> appr_rel \<rightarrow> appr_rel"
-  "(RETURN o inf_of_appr optns, Inf_spec) \<in> appr_rel \<rightarrow> \<langle>lv_rel\<rangle>nres_rel"
-  "(RETURN o sup_of_appr optns, Sup_spec) \<in> appr_rel \<rightarrow> \<langle>lv_rel\<rangle>nres_rel"
-  "(RETURN o2 split_appr optns, split_spec_param) \<in> nat_rel \<rightarrow> appr_rel \<rightarrow> \<langle>appr_rel \<times>\<^sub>r appr_rel\<rangle>nres_rel"
-  "(RETURN o2 appr_inf_inner optns, Inf_inner) \<in> appr_rel \<rightarrow> lv_rel \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
-  "(RETURN o2 appr_sup_inner optns, Sup_inner) \<in> appr_rel \<rightarrow> lv_rel \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
-  "(nres_of o2 inter_appr_plane optns, inter_sctn_spec) \<in> appr_rel \<rightarrow> \<langle>lv_rel\<rangle>sctn_rel \<rightarrow> \<langle>appr_rel\<rangle>nres_rel"
-  "(RETURN o2 reduce_appr optns, reduce_spec) \<in> (\<langle>Id\<rangle>list_rel \<rightarrow> nat_rel \<rightarrow> rl_rel \<rightarrow> bool_rel) \<rightarrow> appr_rel \<rightarrow> \<langle>appr_rel\<rangle>nres_rel"
-  "(RETURN o width_appr optns, width_spec) \<in> appr_rel \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
-  "(nres_of o3 approx_slp optns, approx_slp_spec fas) \<in> nat_rel \<rightarrow> slp_rel \<rightarrow> appr_rell \<rightarrow> \<langle>\<langle>appr_rell\<rangle>option_rel\<rangle>nres_rel"
+    (appr_of_ivl ops xri yri, lv_ivl $ xrs $ yrs) \<in> appr_rell"
+  "(product_appr ops, product_listset) \<in> appr_rell \<rightarrow> appr_rell \<rightarrow> appr_rell"
+  "(msum_appr ops, (+)) \<in> appr_rel \<rightarrow> appr_rel \<rightarrow> appr_rel"
+  "(RETURN o inf_of_appr ops optns, Inf_spec) \<in> appr_rel \<rightarrow> \<langle>lv_rel\<rangle>nres_rel"
+  "(RETURN o sup_of_appr ops optns, Sup_spec) \<in> appr_rel \<rightarrow> \<langle>lv_rel\<rangle>nres_rel"
+  "(RETURN o2 split_appr ops, split_spec_param) \<in> nat_rel \<rightarrow> appr_rel \<rightarrow> \<langle>appr_rel \<times>\<^sub>r appr_rel\<rangle>nres_rel"
+  "(RETURN o2 appr_inf_inner ops optns, Inf_inner) \<in> appr_rel \<rightarrow> lv_rel \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
+  "(RETURN o2 appr_sup_inner ops optns, Sup_inner) \<in> appr_rel \<rightarrow> lv_rel \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
+  "(nres_of o2 inter_appr_plane ops optns, inter_sctn_spec) \<in> appr_rel \<rightarrow> \<langle>lv_rel\<rangle>sctn_rel \<rightarrow> \<langle>appr_rel\<rangle>nres_rel"
+  "(RETURN o2 reduce_appr ops optns, reduce_spec) \<in> reduce_argument_rel TYPE('b) \<rightarrow> appr_rel \<rightarrow> \<langle>appr_rel\<rangle>nres_rel"
+  "(RETURN o width_appr ops optns, width_spec) \<in> appr_rel \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
+  "(nres_of o3 approx_slp_dres ops optns, approx_slp_spec fas) \<in> nat_rel \<rightarrow> slp_rel \<rightarrow> appr_rell \<rightarrow> \<langle>\<langle>appr_rell\<rangle>option_rel\<rangle>nres_rel"
   subgoal premises prems using transfer_operations_rl(1)[OF prems] by simp
   subgoal premises prems using transfer_operations_rl(2)[OF prems] by simp
   subgoal premises prems using transfer_operations_rl(3)[OF prems]
@@ -83,13 +104,13 @@ lemma transfer_operations[unfolded comps, autoref_rules]:
   proof goal_cases
     case (1 x y z)
     from transfer_operations_rl(4)[OF 1(1) refl]
-    have Is: "(RETURN (inf_of_appr optns x), Inf_specs (length x) y) \<in> \<langle>rl_rel\<rangle>nres_rel"
+    have Is: "(RETURN (inf_of_appr ops optns x), Inf_specs (length x) y) \<in> \<langle>rl_rel\<rangle>nres_rel"
       by auto
     from 1 have "length x = DIM('c)"
       unfolding set_rel_sv[OF lv_rel_sv]
       by (auto simp: lv_rel_def br_def appr_rell_internal length_set_of_appr subset_iff)
     from relcompI[OF _ Inf_specs_Inf_spec[param_fo], OF Is \<open>length x = _\<close> 1(2)]
-    have "(RETURN (inf_of_appr optns x), Inf_spec z) \<in> \<langle>rl_rel\<rangle>nres_rel O \<langle>lv_rel\<rangle>nres_rel"
+    have "(RETURN (inf_of_appr ops optns x), Inf_spec z) \<in> \<langle>rl_rel\<rangle>nres_rel O \<langle>lv_rel\<rangle>nres_rel"
       by simp
     then show ?case
       by (simp add: nres_rel_comp)
@@ -98,13 +119,13 @@ lemma transfer_operations[unfolded comps, autoref_rules]:
   proof goal_cases
     case (1 x y z)
     from transfer_operations_rl(5)[OF 1(1) refl]
-    have Is: "(RETURN (sup_of_appr optns x), Sup_specs (length x) y) \<in> \<langle>rl_rel\<rangle>nres_rel"
+    have Is: "(RETURN (sup_of_appr ops optns x), Sup_specs (length x) y) \<in> \<langle>rl_rel\<rangle>nres_rel"
       by auto
     from 1 have "length x = DIM('d)"
       unfolding set_rel_sv[OF lv_rel_sv]
       by (auto simp: lv_rel_def br_def appr_rell_internal length_set_of_appr subset_iff)
     from relcompI[OF _ Sup_specs_Sup_spec[param_fo], OF Is \<open>length x = _\<close> 1(2)]
-    have "(RETURN (sup_of_appr optns x), Sup_spec z) \<in> \<langle>rl_rel\<rangle>nres_rel O \<langle>lv_rel\<rangle>nres_rel"
+    have "(RETURN (sup_of_appr ops optns x), Sup_spec z) \<in> \<langle>rl_rel\<rangle>nres_rel O \<langle>lv_rel\<rangle>nres_rel"
       by simp
     then show ?case
       by (simp add: nres_rel_comp)
@@ -113,13 +134,13 @@ lemma transfer_operations[unfolded comps, autoref_rules]:
   proof goal_cases
     case (1 n x y z)
     from transfer_operations_rl(6)[OF _ 1(1) refl]
-    have Is: "(RETURN (split_appr optns n x), split_spec_params (length x) n y) \<in> \<langle>appr_rell \<times>\<^sub>r appr_rell\<rangle>nres_rel"
+    have Is: "(RETURN (split_appr ops n x), split_spec_params (length x) n y) \<in> \<langle>appr_rell \<times>\<^sub>r appr_rell\<rangle>nres_rel"
       by auto
     from 1 have "length x = DIM('e)"
       unfolding set_rel_sv[OF lv_rel_sv]
       by (auto simp: lv_rel_def br_def appr_rell_internal length_set_of_appr subset_iff)
     from relcompI[OF _ split_spec_params_split_spec_param[param_fo], OF Is \<open>length x = _\<close> IdI 1(2)]
-    have "(RETURN (split_appr optns n x), split_spec_param n z) \<in>
+    have "(RETURN (split_appr ops n x), split_spec_param n z) \<in>
         \<langle>appr_rell \<times>\<^sub>r appr_rell\<rangle>nres_rel O \<langle>\<langle>lv_rel\<rangle>set_rel \<times>\<^sub>r \<langle>lv_rel\<rangle>set_rel\<rangle>nres_rel"
       by simp
     then show ?case
@@ -145,28 +166,28 @@ lemma transfer_operations[unfolded comps, autoref_rules]:
     have rr: "(r, r) \<in> \<langle>rl_rel\<rangle>sctn_rel"
       by (cases r) (auto simp: sctn_rel_def)
     from transfer_operations_rl(9)[OF 1(2) refl lens poslen rr]
-    have Is: "(nres_of (inter_appr_plane optns x r), inter_sctn_specs (length x) y r) \<in> \<langle>appr_rell\<rangle>nres_rel"
+    have Is: "(nres_of (inter_appr_plane ops optns x r), inter_sctn_specs (length x) y r) \<in> \<langle>appr_rell\<rangle>nres_rel"
       by (auto dest!: fun_relD)
     from 1 have "length x = DIM('h)"
       unfolding set_rel_sv[OF lv_rel_sv]
       by (auto simp: lv_rel_def br_def appr_rell_internal length_set_of_appr subset_iff)
     from relcompI[OF _ inter_sctn_specs_inter_sctn_spec[param_fo], OF Is, OF \<open>length x = _\<close> 1(3) 1(1)]
-    have "(nres_of (inter_appr_plane optns x r), inter_sctn_spec z s) \<in> \<langle>appr_rell\<rangle>nres_rel O \<langle>\<langle>lv_rel\<rangle>set_rel\<rangle>nres_rel"
+    have "(nres_of (inter_appr_plane ops optns x r), inter_sctn_spec z s) \<in> \<langle>appr_rell\<rangle>nres_rel O \<langle>\<langle>lv_rel\<rangle>set_rel\<rangle>nres_rel"
       by simp
     then show ?case
       by (simp add: nres_rel_comp prod_rel_relcomp_distr comps)
   qed
   subgoal apply (auto simp: appr_rel_def)
   proof goal_cases
-    case (1 r x y z)
-    from transfer_operations_rl(10)[OF _ 1(1) refl]
-    have Is: "(RETURN (reduce_appr optns r x), reduce_specs (length x) r y) \<in> \<langle>appr_rell\<rangle>nres_rel"
+    case (1 ro x y z)
+    from transfer_operations_rl(10)[OF 1(2) refl 1(1)]
+    have Is: "(RETURN (reduce_appr ops optns ro x), reduce_specs (length x) () y) \<in> \<langle>appr_rell\<rangle>nres_rel"
       by auto
     from 1 have "length x = DIM('i)"
       unfolding set_rel_sv[OF lv_rel_sv]
       by (auto simp: lv_rel_def br_def appr_rell_internal length_set_of_appr subset_iff)
-    from relcompI[OF _ reduce_specs_reduce_spec[param_fo], OF Is \<open>length x = _\<close> IdI 1(2)]
-    have "(RETURN (reduce_appr optns r x), reduce_spec r z) \<in> \<langle>appr_rell\<rangle>nres_rel O \<langle>\<langle>lv_rel\<rangle>set_rel\<rangle>nres_rel"
+    from relcompI[OF _ reduce_specs_reduce_spec[param_fo], OF Is \<open>length x = _\<close> IdI 1(3)]
+    have "(RETURN (reduce_appr ops optns ro x), reduce_spec () z) \<in> \<langle>appr_rell\<rangle>nres_rel O \<langle>\<langle>lv_rel\<rangle>set_rel\<rangle>nres_rel"
       by simp
     then show ?case
       by (simp add: nres_rel_comp prod_rel_relcomp_distr comps)
@@ -182,7 +203,7 @@ lemma approx_slp_spec[autoref_op_pat_def]: "approx_slp_spec fas \<equiv> OP (app
 lemma
   concat_appr:
   assumes "(xsi, xs) \<in> \<langle>appr_rell\<rangle>list_rel"
-  shows "(concat_appr xsi, concat ` listset xs) \<in> appr_rell"
+  shows "(concat_appr ops xsi, concat ` listset xs) \<in> appr_rell"
   using assms
   apply (auto simp: appr_rell_internal br_def)
   subgoal premises prems for xi
@@ -197,11 +218,11 @@ lemma
     next
       case (Cons x xs y ys z zs)
       have "(z, set_of_appr z) \<in> appr_rell"
-        "(concat_appr zs, set_of_appr (concat_appr zs)) \<in> appr_rell"
+        "(concat_appr ops zs, set_of_appr (concat_appr ops zs)) \<in> appr_rell"
         by (auto simp: appr_rell_internal br_def)
       from transfer_operations(2)[param_fo, OF this]
-      have *: "set_of_appr (product_appr z (concat_appr zs)) =
-        (\<lambda>(x, y). x @ y) ` (set_of_appr z \<times> set_of_appr (concat_appr zs))"
+      have *: "set_of_appr (product_appr ops z (concat_appr ops zs)) =
+        (\<lambda>(x, y). x @ y) ` (set_of_appr z \<times> set_of_appr (concat_appr ops zs))"
         by (simp add: appr_rell_internal br_def product_listset_def)
       show ?case
         using Cons
@@ -222,11 +243,11 @@ lemma
        then show ?case by simp
      next
        case (Cons x xs y ys)
-       have "(x, set_of_appr x) \<in> appr_rell" "(concat_appr xs, set_of_appr (concat_appr xs)) \<in> appr_rell"
+       have "(x, set_of_appr x) \<in> appr_rell" "(concat_appr ops xs, set_of_appr (concat_appr ops xs)) \<in> appr_rell"
          by (auto simp: appr_rell_internal br_def)
        from transfer_operations(2)[param_fo, OF this]
-       have *: "set_of_appr (product_appr x (concat_appr xs)) =
-          product_listset (set_of_appr x) (set_of_appr (concat_appr xs))"
+       have *: "set_of_appr (product_appr ops x (concat_appr ops xs)) =
+          product_listset (set_of_appr x) (set_of_appr (concat_appr ops xs))"
          by (auto simp: appr_rell_internal br_def)
        show ?case using Cons
          apply (auto simp: * product_listset_def list_rel_def set_Cons_def)
@@ -243,18 +264,18 @@ lemma
    done
 
 lemma op_concat_listset_autoref[autoref_rules]:
-  "(concat_appr, op_concat_listset) \<in> \<langle>appr_rell\<rangle>list_rel \<rightarrow> appr_rell"
+  "(concat_appr ops, op_concat_listset) \<in> \<langle>appr_rell\<rangle>list_rel \<rightarrow> appr_rell"
   using concat_appr by force
 
 lemma transfer_operations1[autoref_rules]:
   assumes "SIDE_PRECOND (x \<le> y)" "(xi, x) \<in> lv_rel" "(yi, y) \<in> lv_rel"
-  shows "(appr_of_ivl xi yi, op_atLeastAtMost_appr $ x $ y) \<in> appr_rel"
+  shows "(appr_of_ivl ops xi yi, op_atLeastAtMost_appr $ x $ y) \<in> appr_rel"
 proof -
-  have "(appr_of_ivl xi yi, lv_ivl (list_of_eucl x) (list_of_eucl y)) \<in> appr_rell"
+  have "(appr_of_ivl ops xi yi, lv_ivl (list_of_eucl x) (list_of_eucl y)) \<in> appr_rell"
     apply (rule transfer_operations_rl[unfolded autoref_tag_defs])
     using assms lv_rel_le[param_fo, of xi x yi y]
     by (auto simp: lv_rel_def br_def)
-  then have "(appr_of_ivl xi yi, eucl_of_list ` lv_ivl (list_of_eucl x) (list_of_eucl y)::'a set) \<in> appr_rel"
+  then have "(appr_of_ivl ops xi yi, eucl_of_list ` lv_ivl (list_of_eucl x) (list_of_eucl y)::'a set) \<in> appr_rel"
     unfolding appr_rel_br
     using assms[unfolded lv_rel_def]
     using lv_rel_le[param_fo, of xi x yi y]
@@ -266,7 +287,7 @@ proof -
 qed
 
 lemma appr_of_ivl_point_appr_rel:
-  "(appr_of_ivl x x, {eucl_of_list x::'a::executable_euclidean_space}) \<in> appr_rel"
+  "(appr_of_ivl ops x x, {eucl_of_list x::'a::executable_euclidean_space}) \<in> appr_rel"
   if "length x = DIM('a)"
   using transfer_operations1[OF _ lv_relI lv_relI, OF _ that that]
   by auto
@@ -280,7 +301,7 @@ lemma is_empty_appr_rel[autoref_rules]:
 lemma appr_rel_nonempty: "(x, X) \<in> appr_rel \<Longrightarrow> X \<noteq> {}"
   by (auto simp: appr_rel_br br_def)
 
-lemma [autoref_rules]: "(optns, optns) \<in> Id"
+lemma [autoref_rules]: "(ops, ops) \<in> Id"
   by simp
 
 lemma single_valued_appr_rel[relator_props]:
@@ -338,8 +359,8 @@ lemma card_info[autoref_rules]:
   by (auto simp: card_info_def nres_rel_def)
 
 lemma ivl_to_set[autoref_rules]:
-  assumes le[THEN GEN_OP_D, param_fo]: "GEN_OP le (\<le>) ((lv_rel::(_ \<times> 'a::executable_euclidean_space)set) \<rightarrow> lv_rel \<rightarrow> bool_rel)"
-  shows "(\<lambda>(i, s). if le i s then [appr_of_ivl i s] else [], ivl_to_set::_\<Rightarrow>'a set) \<in> lvivl_rel \<rightarrow> clw_rel (appr_rel)"
+  "(\<lambda>(i, s). if list_all2 (\<le>) i s then [appr_of_ivl ops i s] else [], ivl_to_set::_\<Rightarrow>'a::executable_euclidean_space set) \<in> lvivl_rel \<rightarrow> clw_rel (appr_rel)"
+  supply le = lv_rel_le[param_fo]
   apply (clarsimp simp add: ivl_rel_def)
   subgoal premises prems for ls us l u X
     using le[OF \<open>(_, l) \<in> _\<close> \<open>(_, u) \<in> _\<close>] prems transfer_operations1[of l u ls us]
@@ -350,21 +371,17 @@ lemma ivl_to_set[autoref_rules]:
   done
 
 lemma sets_of_ivls[autoref_rules]:
-  assumes le[THEN GEN_OP_D, param_fo]: "GEN_OP le (\<le>) ((lv_rel::(_ \<times> 'a::executable_euclidean_space)set) \<rightarrow> lv_rel \<rightarrow> bool_rel)"
-  shows "(\<lambda>xs. map (\<lambda>(i, s). appr_of_ivl i s) [(i,s) \<leftarrow> xs. le i s], sets_of_ivls::_\<Rightarrow>'a set) \<in> clw_rel lvivl_rel \<rightarrow> clw_rel (appr_rel)"
+  shows "(\<lambda>xs. map (\<lambda>(i, s). appr_of_ivl ops i s) [(i,s) \<leftarrow> xs. list_all2 (\<le>) i s], sets_of_ivls::_\<Rightarrow>'a::executable_euclidean_space set) \<in> clw_rel lvivl_rel \<rightarrow> clw_rel (appr_rel)"
+  supply le = lv_rel_le[param_fo]
   apply (rule fun_relI)
   unfolding appr_rel_br ivl_rel_br clw_rel_br lvivl_rel_br
   apply (auto simp: br_def set_of_ivl_def)
   subgoal for a b c d
-    apply (rule exI conjI le le[THEN IdD, THEN iffD2] lv_relI| assumption | force)+
+    apply (rule exI conjI le le[param_fo,THEN IdD, THEN iffD2] lv_relI| assumption | force)+
     using transfer_operations1[where 'a='a, of "eucl_of_list c" "eucl_of_list d" c d]
     apply (auto simp: appr_rel_br br_def lvivl_rel_br set_of_ivl_def lv_rel_def)
     by (metis (mono_tags, lifting) atLeastAtMost_iff atLeastatMost_empty_iff case_prodD empty_iff)
   subgoal for a b c d
-    using transfer_operations1[where 'a='a, of "eucl_of_list b" "eucl_of_list c" b c]
-      le[of b _ c _, OF lv_relI lv_relI]
-    by (auto simp: appr_rel_br br_def lvivl_rel_br set_of_ivl_def lv_rel_def intro!: bexI)
-  subgoal for a b c
     using transfer_operations1[where 'a='a, of "eucl_of_list b" "eucl_of_list c" b c]
       le[of b _ c _, OF lv_relI lv_relI]
     by (auto simp: appr_rel_br br_def lvivl_rel_br set_of_ivl_def lv_rel_def intro!: bexI)
@@ -576,8 +593,8 @@ lemma op_list_of_eucl_image_autoref[autoref_rules]:
 
 lemma op_eucl_of_list_image_autoref[autoref_rules]:
   includes autoref_syntax
-  assumes "(xsi, xs) \<in> appr_rell"
   assumes "DIM_precond TYPE('a::executable_euclidean_space) D"
+  assumes "(xsi, xs) \<in> appr_rell"
   assumes "SIDE_PRECOND (env_len xs D)"
   shows "(xsi, op_eucl_of_list_image $ (xs)::'a set) \<in> appr_rel"
   using assms
@@ -699,17 +716,17 @@ lemma lv_ivl_self[simp]: "lv_ivl xs xs = {xs}" for xs::"'a::order list"
       intro!: nth_equalityI)
 
 lemma set_of_appr_of_ivl_point'[simp]:
-  "set_of_appr (appr_of_ivl (replicate E 0) (replicate E 0)) = {replicate E (0::real)}"
+  "set_of_appr (appr_of_ivl ops (replicate E 0) (replicate E 0)) = {replicate E (0::real)}"
   using transfer_operations_rl(1)[of "(replicate E (0::real))" "(replicate E (0::real))" "(replicate E (0::real))" "(replicate E 0)"]
   by (auto simp: appr_rell_internal br_def)
 
 lemma set_of_appr_of_ivl_point:
-  "set_of_appr (appr_of_ivl xs xs) = {xs}"
+  "set_of_appr (appr_of_ivl ops xs xs) = {xs}"
   using transfer_operations_rl(1)[of xs xs xs xs]
   by (auto simp: appr_rell_internal br_def)
 
 lemma set_of_appr_of_ivl_append_point:
-  "set_of_appr (xs @ appr_of_ivl p p) = (\<lambda>x. x @ p) ` set_of_appr xs"
+  "set_of_appr (xs @ appr_of_ivl ops p p) = (\<lambda>x. x @ p) ` set_of_appr xs"
   apply auto
    apply (frule length_set_of_appr)
   subgoal for x
@@ -743,20 +760,20 @@ lemma set_of_appr_of_ivl_append_point:
     done
   subgoal premises prems for x
   proof -
-    from set_of_appr_ex_append2[where b="appr_of_ivl p p", OF \<open>x \<in> set_of_appr xs\<close>]
-    obtain r where r: "x @ r \<in> set_of_appr (xs @ appr_of_ivl p p)"
+    from set_of_appr_ex_append2[where b="appr_of_ivl ops p p", OF \<open>x \<in> set_of_appr xs\<close>]
+    obtain r where r: "x @ r \<in> set_of_appr (xs @ appr_of_ivl ops p p)"
       by auto
     have "map ((!) (x @ r)) [length xs..<length xs + (length p)]
         \<in> set_of_appr
-            (map ((!) (xs @ appr_of_ivl p p))
+            (map ((!) (xs @ appr_of_ivl ops p p))
               [length xs..<length xs + (length p)])"
       by (rule set_of_appr_project[OF r, of "[length xs..<length xs+(length p)]"])
          auto
     also have "map ((!) (x @ r)) [length xs..<length xs + (length p)] = r"
       using length_set_of_appr prems r
       by (auto intro!: nth_equalityI simp: nth_append dest!: length_set_of_appr)
-    also have "map ((!) (xs @ appr_of_ivl p p))
-        [length xs..<length xs + (length p)] = appr_of_ivl p p"
+    also have "map ((!) (xs @ appr_of_ivl ops p p))
+        [length xs..<length xs + (length p)] = appr_of_ivl ops p p"
       by (auto intro!: nth_equalityI)
     finally have "r = p"
       by (auto simp: set_of_appr_of_ivl_point)
@@ -770,7 +787,7 @@ lemma nth_append_cond:
   by (auto simp: nth_append)
 
 lemma set_of_appr_of_ivl_point_append:
-  "set_of_appr (appr_of_ivl p p @ xs) = (\<lambda>x. p @ x) ` set_of_appr xs"
+  "set_of_appr (appr_of_ivl ops p p @ xs) = (\<lambda>x. p @ x) ` set_of_appr xs"
   apply auto
    apply (frule length_set_of_appr)
   subgoal for x
@@ -785,21 +802,21 @@ lemma set_of_appr_of_ivl_point_append:
     by (metis add_right_imp_eq drop_all_conc drop_set_of_apprD length_append length_set_of_appr)
   subgoal premises prems for x
   proof -
-    from set_of_appr_ex_append1[where b="appr_of_ivl p p",
+    from set_of_appr_ex_append1[where b="appr_of_ivl ops p p",
         OF \<open>x \<in> set_of_appr xs\<close>]
-    obtain r where r: "r @ x \<in> set_of_appr (appr_of_ivl p p @ xs)"
+    obtain r where r: "r @ x \<in> set_of_appr (appr_of_ivl ops p p @ xs)"
       by auto
     have "map ((!) (r @ x)) [0..<(length p)]
         \<in> set_of_appr
-            (map ((!) (appr_of_ivl p p @ xs))
+            (map ((!) (appr_of_ivl ops p p @ xs))
               [0..<(length p)])"
       by (rule set_of_appr_project[OF r, of "[0..<(length p)]"])
          (auto simp: )
     also have "map ((!) (r @ x)) [0..<(length p)] = r"
       using length_set_of_appr prems r
       by (auto intro!: nth_equalityI simp: nth_append dest!: length_set_of_appr)
-    also have "map ((!) (appr_of_ivl p p @ xs))
-        [0..<(length p)] = appr_of_ivl p p"
+    also have "map ((!) (appr_of_ivl ops p p @ xs))
+        [0..<(length p)] = appr_of_ivl ops p p"
       by (auto intro!: nth_equalityI simp: nth_append)
     finally have "r = p"
       by (auto simp: set_of_appr_of_ivl_point)
@@ -810,7 +827,7 @@ lemma set_of_appr_of_ivl_point_append:
 lemma op_eucl_of_list_image_pad:
   includes autoref_syntax
   assumes "(xsi, xs) \<in> appr_rell" "DIM_precond TYPE('a::executable_euclidean_space) E"
-  shows "(take E xsi @ (let z = replicate (E - length xsi) 0 in appr_of_ivl z z),
+  shows "(take E xsi @ (let z = replicate (E - length xsi) 0 in appr_of_ivl ops z z),
     op_eucl_of_list_image $ xs::'a set) \<in> appr_rel"
   using assms
   unfolding appr_rel_br
@@ -854,32 +871,6 @@ lemma approx_slp_appr_impl_refine[autoref_rules]:
   using approx_slp_appr_impl.refine[where 'a='a, of E]
   by force
 
-end
-
-context includes autoref_syntax begin
-
-lemma [autoref_rules]:
-  "(slp_of_fas, slp_of_fas) \<in> fas_rel \<rightarrow> slp_rel"
-  "(Norm, Norm) \<in> fas_rel \<rightarrow> Id"
-  by auto
-
-lemma [autoref_rules]: "(norm2_slp, norm2_slp) \<in> nat_rel \<rightarrow> Id"
-  by auto
-
-lemma [autoref_rules]:
-  "(floatarith.Var, floatarith.Var) \<in> nat_rel \<rightarrow> Id"
-  "(slp_of_fas, slp_of_fas) \<in> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel"
-  "(fold_const_fa, fold_const_fa) \<in> Id \<rightarrow> Id"
-  "(open_form, open_form) \<in> Id \<rightarrow> bool_rel"
-  "(max_Var_floatariths, max_Var_floatariths) \<in> \<langle>Id\<rangle>list_rel \<rightarrow> nat_rel"
-  "(max_Var_form, max_Var_form) \<in> Id \<rightarrow> nat_rel"
-  "(length, length) \<in> \<langle>A\<rangle>list_rel \<rightarrow> nat_rel"
-  by (auto simp: list_rel_imp_same_length)
-
-end
-
-context approximate_sets begin
-
 lemma DIM_precond_real[autoref_rules_raw]: "DIM_precond TYPE(real) 1" by simp
 
 schematic_goal mig_set_impl: "(nres_of ?r, mig_set $ D $ X) \<in> \<langle>rnv_rel\<rangle>nres_rel"
@@ -895,6 +886,13 @@ lemma mig_set_impl_refine[autoref_rules]:
   assumes "DIM_precond TYPE('a::executable_euclidean_space) D" "(Di, D) \<in> nat_rel"
   shows "(\<lambda>x. nres_of (mig_set_impl D x), mig_set $ D::'a set\<Rightarrow>_) \<in> appr_rel \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
   using mig_set_impl.refine assms by force
+
+lemma ncc_precondD:
+  assumes "ncc_precond TYPE('a::executable_euclidean_space)"
+  shows"(Xi, X::'a set) \<in> appr_rel \<Longrightarrow> ncc X"
+  using assms
+  by (auto simp: ncc_precond_def split_beta' br_def appr_rel_br
+      dest!: bspec[where x="(Xi, X)"])
 
 end
 

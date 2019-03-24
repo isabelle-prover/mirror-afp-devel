@@ -19,7 +19,7 @@ lemma list_of_eucl_of_env:
   shows "(list_of_eucl (eucl_of_env xs vs::'a)) = (map (\<lambda>i. vs ! (xs ! i)) [0..<DIM('a::executable_euclidean_space)])"
   by (auto intro!: nth_equalityI simp: eucl_of_env_def eucl_of_list_inner)
 
-context approximate_sets_options
+context approximate_sets_ode
 begin
 
 lemma interpret_ode_fa[simp]:
@@ -64,7 +64,7 @@ lemma interpret_ode_d_fa:
   shows "(eucl_of_list (interpret_floatariths (ode_d_fa n xs ds) vs)::'a) =
       ode_d n (eucl_of_list (interpret_floatariths xs vs)) (eucl_of_list (interpret_floatariths ds vs))
         (eucl_of_list (interpret_floatariths ds vs))"
-  apply (transfer fixing: safe_form ode_e xs ds vs n)
+  apply (transfer fixing: xs ds vs n)
   using FDERIV apply (auto simp del: isnFDERIV.simps simp: interpret_floatariths_append)
   apply (auto simp add: list_of_eucl_of_env ode_def
       ode_d_raw_def eucl_of_list_inner
@@ -282,11 +282,6 @@ lemma rk2_increment_rk2_fas2:
 
 subsubsection \<open>safe set relation\<close>
 
-end
-
-context approximate_sets_ode_slp
-begin
-
 lemma mk_safe[le, refine_vcg]: "wd TYPE('a::executable_euclidean_space)\<Longrightarrow>
   mk_safe X \<le> SPEC (\<lambda>R::'a set. R = X \<and> X \<subseteq> Csafe)"
   unfolding mk_safe_def
@@ -300,12 +295,11 @@ lemma mk_safe_coll[le, refine_vcg]: "wd TYPE('a::executable_euclidean_space) \<L
 
 lemma ode_set_spec[THEN order.trans, refine_vcg]:
   assumes [refine_vcg]: "wd TYPE('a::executable_euclidean_space)"
-  assumes "ode_slp_eq ode_slp"
   shows "ode_set X \<le> SPEC (\<lambda>r. ode ` X \<subseteq> (r::'a set))"
   using assms wdD[OF assms(1)]
   unfolding ode_set_def
   apply (refine_vcg)
-  subgoal by (auto simp: env_len_def ode_slp_eq_def)
+  subgoal by (auto simp: env_len_def ode_slp_def)
   subgoal premises prems
     using prems(1,2,4-)
     by (auto simp: env_len_def eucl_of_list_prod ode_def)
@@ -388,7 +382,6 @@ lemma lv_ivl_sings: "lv_ivl [x] [y] = (\<lambda>x. [x]) ` {x .. y}"
   done
 
 lemma Picard_step_ivl_refine[le, refine_vcg]:
-  assumes eis: "euler_incr_slp_eq euler_incr_slp D"
   assumes [refine_vcg]: "wd TYPE('a::executable_euclidean_space)"
   assumes "(X::'a set) \<subseteq> Csafe"
   assumes "0 \<le> h"
@@ -399,8 +392,8 @@ proof -
     unfolding Picard_step_ivl_def Picard_step_def
     apply (refine_vcg, clarsimp_all simp del: atLeastAtMost_iff)
     subgoal using \<open>0 \<le> h\<close> by simp
-    subgoal using eis by (auto simp: euler_incr_slp_eq_def)
-    subgoal using eis by (auto simp: euler_incr_fas'_def)
+    subgoal by (auto simp: euler_incr_slp_def wdD)
+    subgoal by (auto simp: euler_incr_fas'_def)
     subgoal for XS l u
       apply (auto simp: lv_ivl_sings nonempty_interval
           simp del: atLeastAtMost_iff
@@ -418,9 +411,9 @@ proof -
           using 1 that by (auto simp: cfuncset_iff)
         have "x0 + (h'' - t0) *\<^sub>R ode b \<in> {l .. u}" if "b \<in> X" for b
         proof -
-          from 1(16)[rule_format, OF that]
+          from 1(16)[rule_format, OF that] assms(1)
           have "einterpret (euler_incr_fas' D) (list_of_eucl x0 @ (h'' - t0) # list_of_eucl b) \<in> eucl_of_list ` XS"
-            by auto
+            by (auto simp: wdD)
           also have "eucl_of_list ` XS \<subseteq> {l .. u}" by fact
           finally show ?thesis
             by (simp add: euler_incr_fas'_def einterpret_euler_incr_fas map_nth_append1 nth_append wdD[OF \<open>wd _\<close>] *)
@@ -432,7 +425,7 @@ proof -
           using 1 by (auto simp: cfuncset_iff)
       qed
       subgoal
-        using assms(3)
+        using assms(2)
         by (auto intro!: integrable_continuous_real continuous_intros
             simp: cfuncset_iff)
       done
@@ -451,10 +444,12 @@ lemma inf_le_supI[simp]:
   by (auto simp: eucl_le[where 'a='d] eucl_inf[where 'a='d] eucl_sup[where 'a='d] inf_real_def sup_real_def
     intro!: sum_mono scaleR_right_mono)
 
+lemmas [refine_vcg_def] = do_widening_spec_def
+
 lemma P_iter_spec[le, refine_vcg]:
   assumes "PHI \<subseteq> Csafe"
   assumes "0 \<le> h"
-  assumes [refine_vcg]: "euler_incr_slp_eq euler_incr_slp D" "wd TYPE('a::executable_euclidean_space)"
+  assumes [refine_vcg]: "wd TYPE('a::executable_euclidean_space)"
   shows "P_iter X0 h i PHI \<le>
     SPEC (\<lambda>r. case r of
         None \<Rightarrow> True
@@ -481,7 +476,7 @@ next
         apply (rule disjI2)
         apply (rule conjI)
         subgoal
-          apply (rule order_trans[where y="inf l' l - (if i mod widening_mod optns = 0 then \<bar>l' - l\<bar> else 0)"])
+          apply (rule order_trans[where y="inf l' l - (if b' then \<bar>l' - l\<bar> else 0)"])
           by (simp_all split: if_split_asm add: algebra_simps add_increasing2)
         subgoal
           apply (split if_split_asm)
@@ -580,7 +575,7 @@ qed
 lemma cert_stepsize_spec[le,refine_vcg]:
   assumes "h > 0"
   assumes "one_step_method m"
-  assumes [refine_vcg]: "euler_incr_slp_eq euler_incr_slp D" "wd TYPE('a::executable_euclidean_space)"
+  assumes [refine_vcg]: "wd TYPE('a::executable_euclidean_space)"
   shows "cert_stepsize m X0 h i n \<le> SPEC (\<lambda>(h', RES::'a set, RES_ivl, _). nonempty RES \<and> nonempty RES_ivl \<and> 0 < h' \<and> h' \<le> h \<and> flowpipe0 X0 h' h' RES_ivl RES)"
   using assms(1)[unfolded autoref_tag_defs]
 proof (induction n arbitrary: h)
@@ -627,7 +622,7 @@ qed
 
 lemma one_step_flowpipe:
   assumes [THEN one_step_methodD, refine_vcg]: "one_step_method m"
-  assumes [refine_vcg]: "euler_incr_slp_eq euler_incr_slp D" "wd TYPE('a::executable_euclidean_space)"
+  assumes [refine_vcg]: "wd TYPE('a::executable_euclidean_space)"
   shows "one_step X0 h m \<le> SPEC (\<lambda>(h', _, RES_ivl, RES::'a set). 0 < h' \<and> h' \<le> h \<and> flowpipe0 X0 h' h' RES_ivl RES)"
   using assms
   unfolding one_step_def
@@ -697,8 +692,8 @@ lemma take_interpret_floatariths:
   "d < length fas \<Longrightarrow> take d (interpret_floatariths fas vs) = interpret_floatariths (take d fas) vs"
   by (auto intro!: nth_equalityI)
 
-lemma length_euler_slp_le: "euler_slp_eq euler_slp D \<Longrightarrow> 2 * D \<le> length euler_slp"
-  by (auto simp: euler_slp_eq_def euler_fas'_def intro!: order_trans[OF _ length_slp_of_fas_le])
+lemma length_euler_slp_le: "2 * D \<le> length euler_slp"
+  by (auto simp: euler_fas'_def euler_slp_def intro!: order_trans[OF _ length_slp_of_fas_le])
 
 lemma ncc_nonempty[simp]: "ncc x \<Longrightarrow> nonempty x"
   by (simp add: ncc_def nonempty_def)
@@ -709,16 +704,18 @@ lemma nccD:
   using assms
   by (auto simp: ncc_def nth_image_precond_def compact_eq_bounded_closed)
 
+lemma D_DIM_wdD[simp]: "wd TYPE('a::executable_euclidean_space) \<Longrightarrow> D = DIM('a)"
+  by (auto simp: wdD)
+
 lemma euler_step_flowpipe:
   includes floatarith_notation
-  assumes [refine_vcg]: "euler_incr_slp_eq euler_incr_slp D" "euler_slp_eq euler_slp D"
-      "wd TYPE('a::executable_euclidean_space)"
+  assumes [refine_vcg]: "wd TYPE('a::executable_euclidean_space)"
   shows "euler_step X0 h \<le> SPEC (\<lambda>(h', _, RES_ivl, RES::'a set). 0 < h' \<and> h' \<le> h \<and> flowpipe0 X0 h' h' RES_ivl RES)"
   unfolding euler_step_def THE_NRES_def
   apply (intro SPEC_rule_conjI one_step_flowpipe one_step_methodI)
     apply (refine_vcg, clarsimp_all)
-  subgoal using assms(2) by (auto simp: euler_slp_eq_def euler_fas'_def)
-  subgoal by (auto simp: euler_slp_eq_def euler_fas'_def)
+  subgoal using assms by (auto simp: euler_slp_def euler_fas'_def)
+  subgoal by (auto simp: euler_slp_def euler_fas'_def)
   subgoal using length_euler_slp_le assms by (auto simp: env_len_def wdD[OF \<open>wd _\<close>])
   subgoal using length_euler_slp_le assms by (auto simp: env_len_def wdD[OF \<open>wd _\<close>])
 proof (goal_cases)
@@ -747,7 +744,7 @@ proof (goal_cases)
       also
       have "take (2 * D) (interpret_floatariths (euler_fas' DIM('a)) ?vs) =
         interpret_floatariths (map fold_const_fa (euler_fas (map floatarith.Var [0..<D]) (Var (2 * D)) (map floatarith.Var [D..<2 * D]))) ?vs"
-        unfolding euler_slp_eqD[OF assms(2)] euler_fas'_def
+        unfolding euler_fas'_def
         by (auto simp: euler_fas_def wdD[OF \<open>wd _\<close>] simp del: map_map
             intro!: max_Var_floatariths_map_plus max_Var_floatariths_euler_incr_fas
               max_Var_floatariths_euler_err_fas \<open>wd _\<close>
@@ -766,12 +763,12 @@ proof (goal_cases)
         by (simp add: prems(10) prems(13) prems(14) prems(5) ode_d1_eq[symmetric] wdD[OF \<open>wd _\<close>])
     qed
     done
-  also have "\<dots> \<subseteq> res" using hyps by auto
+  also have "\<dots> \<subseteq> res" using assms hyps by auto
   finally show ?case by simp
 qed (auto simp: assms)
 
-lemma length_rk2_slp_le: "rk2_slp_eq rk2_slp D \<Longrightarrow> 2 * D \<le> length rk2_slp"
-  by (auto simp: rk2_slp_eq_def rk2_fas'_def intro!: order_trans[OF _ length_slp_of_fas_le])
+lemma length_rk2_slp_le: "2 * D \<le> length rk2_slp"
+  by (auto simp: rk2_slp_def rk2_fas'_def intro!: order_trans[OF _ length_slp_of_fas_le])
 
 lemma max_Var_floatarith_R\<^sub>e[simp]: "max_Var_floatarith (R\<^sub>e x) = 0"
   by (auto simp: R\<^sub>e_def split: prod.splits)
@@ -807,20 +804,19 @@ lemma max_Var_floatariths_rk2_fas[le]:
 
 lemma rk2_step_flowpipe:
   includes floatarith_notation
-  assumes "0 < rk2_param optns"
-  assumes "rk2_param optns \<le> 1"
-  assumes rs: "rk2_slp_eq rk2_slp D"
-    and [refine_vcg]: "euler_incr_slp_eq euler_incr_slp D" "wd TYPE('a::executable_euclidean_space)"
-  shows "rk2_step X0 h \<le> SPEC (\<lambda>(h', _, RES_ivl, RES::'a set). 0 < h' \<and> h' \<le> h \<and> flowpipe0 X0 h' h' RES_ivl RES)"
+  assumes [refine_vcg]: "wd TYPE('a::executable_euclidean_space)"
+  shows "rk2_step X0 h \<le> SPEC (\<lambda>(h', _, RES_ivl, RES::'a set).
+    0 < h' \<and> h' \<le> h \<and> flowpipe0 X0 h' h' RES_ivl RES)"
   unfolding rk2_step_def THE_NRES_def
   apply (intro one_step_flowpipe assms one_step_methodI)
   apply (refine_vcg, clarsimp_all)
-  subgoal using rs by (auto simp: rk2_slp_eq_def rk2_fas'_def)
-  subgoal by (auto simp: rk2_slp_eq_def rk2_fas'_def)
-  subgoal using length_rk2_slp_le rs by (auto simp: env_len_def wdD[OF \<open>wd _\<close>])
-  subgoal using length_rk2_slp_le rs by (auto simp: env_len_def wdD[OF \<open>wd _\<close>])
+  subgoal using assms by (auto simp: rk2_slp_def rk2_fas'_def)
+  subgoal by (auto simp: rk2_slp_def rk2_fas'_def)
+  subgoal using length_rk2_slp_le by (auto simp: env_len_def wdD[OF \<open>wd _\<close>])
+  subgoal using length_rk2_slp_le by (auto simp: env_len_def wdD[OF \<open>wd _\<close>])
 proof (goal_cases)
-  case hyps: (1 X0 CX hl hu env res b x0 el h)
+  case hyps: (1 X0 CX hl hu rk2_param env res b x0 el h)
+  from assms have "D = DIM('a)" by simp
   have aux: "ode (flow0 x0 s) = ode (snd (s, flow0 x0 s))" for s
     by simp
   from hyps interpret derivative_on_prod "{0 .. h}" CX "\<lambda>_ x. ode x" "\<lambda>(t, x). ode_d1 x o\<^sub>L snd_blinfun"
@@ -841,7 +837,7 @@ proof (goal_cases)
   also have "\<dots> \<in> eucl_of_list ` take D ` env"
     using hyps assms
     apply (intro rk2_consistent_traj_set[where
-      x="flow0 x0" and u = "h" and T="{0..h}" and X="CX" and p="rk2_param optns"
+      x="flow0 x0" and u = "h" and T="{0..h}" and X="CX" and p="rk2_param"
       and f = "ode_na" and f' = ode_d_na and g' = ode_d_na and f'' = ode_d2_na and g'' = ode_d2_na])
     subgoal by (simp add: \<open>0 \<le> h\<close>)
     subgoal by simp
@@ -885,7 +881,7 @@ proof (goal_cases)
     subgoal by simp
     subgoal
       apply (rule convex_on_segmentI[where j=h])
-      using mult_left_le_one_le[of h "rk2_param optns"]
+      using mult_left_le_one_le[of h "rk2_param"]
       by (auto simp: ncc_def mult_left_le_one_le mult_le_one ac_simps ode_na_def
           ode_d_na_def ode_d2_na_def dest: bspec[where x=0])
     subgoal by (simp add: ncc_def)
@@ -894,31 +890,30 @@ proof (goal_cases)
       apply (clarsimp simp add: lv_ivl_sings)
       subgoal premises prems
       proof -
-        have "s2 * rk2_param optns * h \<le> h"
+        have "s2 * rk2_param * h \<le> h"
           apply (rule mult_left_le_one_le)
           using assms prems
           by (auto intro!: mult_le_one)
-        then have s2: "(s2 * h * rk2_param optns) \<in> {0 .. h}"
+        then have s2: "(s2 * h * rk2_param) \<in> {0 .. h}"
           using prems assms by (auto simp: ac_simps)
         have s1: "h * s1 \<in> {0 .. h}" using prems
           by (auto intro!: mult_right_le_one_le)
         then have
           "interpret_floatariths (rk2_fas' D)
-              (list_of_eucl x0 @ list_of_eucl (flow0 x0 (h * s1)) @ [rk2_param optns, h, s2]) \<in> env"
-          apply (intro prems(15)[rule_format])
-          using prems
-          by auto
+              (list_of_eucl x0 @ list_of_eucl (flow0 x0 (h * s1)) @ [rk2_param, h, s2]) \<in> env"
+          unfolding \<open>D = _\<close> using prems
+          by (intro prems(17)[rule_format]) auto
         then have "take (2 * D) (interpret_floatariths (rk2_fas' D)
-              (list_of_eucl x0 @ list_of_eucl (flow0 x0 (h * s1)) @ [rk2_param optns, h, s2])) \<in> take (2 * D) ` env"
+              (list_of_eucl x0 @ list_of_eucl (flow0 x0 (h * s1)) @ [rk2_param, h, s2])) \<in> take (2 * D) ` env"
           (is "?l \<in> _")
           by auto
         also have "?l = interpret_floatariths
          (map fold_const_fa (rk2_fas (Var (2 * D)) (map floatarith.Var [0..<D]) (Var (2 * D + 1))
           (map floatarith.Var [D..<2 * D])
            (Var (2 * D + 2))))
-         (list_of_eucl x0 @ list_of_eucl (flow0 x0 (h * s1)) @ [rk2_param optns, h, s2])"
+         (list_of_eucl x0 @ list_of_eucl (flow0 x0 (h * s1)) @ [rk2_param, h, s2])"
           (is "_ = interpret_floatariths (map fold_const_fa ?fas) ?xs")
-          unfolding rk2_slp_eqD[OF rs] rk2_fas'_def
+          unfolding rk2_fas'_def
           by (auto intro!: max_Var_floatariths_rk2_fas max_Var_floatariths_fold_const_fa[le] simp: wdD[OF \<open>wd _\<close>])
         finally have "take D (interpret_floatariths ?fas ?xs) \<in> take D ` take (2 * D) ` env"
           by auto
@@ -928,9 +923,9 @@ proof (goal_cases)
         then have "einterpret (take D ?fas) ?xs \<in> eucl_of_list ` take D ` env"
           by (simp add: take_interpret_floatariths wdD[OF \<open>wd _\<close>])
         also have "einterpret (take D ?fas) ?xs =
-          discrete_evolution (rk2_increment (rk2_param optns) (\<lambda>t x. ode_na (t, x))) h 0 x0 +
+          discrete_evolution (rk2_increment (rk2_param) (\<lambda>t x. ode_na (t, x))) h 0 x0 +
           heun_remainder1 (flow0 x0) ode_na ode_d_na ode_d2_na 0 h s1 -
-          heun_remainder2 (rk2_param optns) (flow0 x0) ode_na ode_d2_na 0 h s2"
+          heun_remainder2 (rk2_param) (flow0 x0) ode_na ode_d2_na 0 h s2"
           apply (simp add: wdD[OF \<open>wd _\<close>])
           apply (subst rk2_increment_rk2_fas1[where ?s1'.0 = s1])
           subgoal by (auto simp: nth_append map_nth_append1)
@@ -940,11 +935,11 @@ proof (goal_cases)
           subgoal by (auto simp: nth_append map_nth_append1 \<open>x0 \<in> Csafe\<close>)
           subgoal
             apply (auto simp: nth_append map_nth_append1 \<open>x0 \<in> Csafe\<close>)
-            by (meson connectedD_interval existence_ivl_zero flow0_defined hyps(16) hyps(17) hyps(18)
-                mult_right_le_one_le mult_sign_intros(1) mvar.connected prems(28) prems(29))
+            by (meson connectedD_interval existence_ivl_zero flow0_defined hyps
+                mult_right_le_one_le mult_sign_intros(1) mvar.connected prems)
           subgoal
           proof -
-            have "x0 + ((rk2_param optns * s2) * h) *\<^sub>R ode x0 \<in> CX"
+            have "x0 + ((rk2_param * s2) * h) *\<^sub>R ode x0 \<in> CX"
               by (rule convex_on_segmentI[where j=h])
                  (use prems in \<open>auto simp: ncc_def mult_left_le_one_le mult_le_one
                   dest: bspec[where x=0]\<close>)
@@ -954,25 +949,25 @@ proof (goal_cases)
           qed
           subgoal by (auto simp: nth_append map_nth_append1 ode_na_def)
           done
-        finally show ?thesis by simp
+        finally show ?thesis by (simp add: \<open>D = _\<close>)
       qed
       done
     done
-  also have "\<dots> \<subseteq> res" using hyps(6) by auto
-  finally show ?case by simp
+  also have "\<dots> \<subseteq> res" using hyps(5) by (auto simp: \<open>D = _\<close>)
+  finally show ?case by (simp add: \<open>D = _\<close>)
 qed
 
+lemma interpret_adapt_stepsize_fa:
+  "interpret_floatarith (adapt_stepsize_fa rtol m_id e h') []
+    = float_of h' * (float_of(rtol) / float_of e) powr (1 / (float_of (m_id) + 1))"
+  by (auto simp: inverse_eq_divide adapt_stepsize_fa_def)
+
 lemma choose_step_flowpipe[le, refine_vcg]:
-  assumes "wd_step TYPE('a::executable_euclidean_space)"
+  assumes "wd TYPE('a::executable_euclidean_space)"
   shows "choose_step X0 h \<le> SPEC (\<lambda>(h', _, RES_ivl, (RES::'a set)). 0 < h' \<and> h' \<le> h \<and> flowpipe0 X0 h' h' RES_ivl RES)"
-  using wd_stepD[OF \<open>wd_step _\<close>]
-  unfolding choose_step_def autoref_tag_defs
-  by (split if_split) (safe intro!: rk2_step_flowpipe euler_step_flowpipe)
-
-lemma wd_step_wdD:
-  "wd_step TYPE('a::executable_euclidean_space) \<Longrightarrow> wd TYPE('a)"
-  by (auto simp: wd_step_def)
-
+  using assms
+  unfolding choose_step_def
+  by (refine_vcg rk2_step_flowpipe euler_step_flowpipe)
 
 lemma CsafeI: "t \<in> existence_ivl0 x \<Longrightarrow> x \<in> Csafe"
   using local.mem_existence_ivl_iv_defined(2) by blast
@@ -1363,13 +1358,6 @@ lemma Int_Un_eq_emptyI: "a \<inter> (b \<union> c) = {}" if "a \<inter> b = {}" 
 lemma cancel_times_UNIV_subset: "A \<times> UNIV \<subseteq> B \<times> UNIV \<longleftrightarrow> A \<subseteq> B"
   by auto
 
-lemma scaleR2_subset:
-  assumes "x \<in> scaleR2 i' j' k'"
-  assumes "i \<le> i'" "j' \<le> j" "k' \<subseteq> k"
-  shows "x \<in> scaleR2 i j k"
-  using assms
-  by (force simp: scaleR2_def vimage_def image_def)
-
 lemma split_spec_coll_spec[le,refine_vcg]:
   "split_spec_coll X \<le> SPEC (\<lambda>(A, B). X \<subseteq> A \<union> B)"
   unfolding split_spec_coll_def
@@ -1388,9 +1376,6 @@ lemma (in c1_on_open_euclidean) flowpipe_imp_flowsto_nonneg:\<comment> \<open>TO
   by (fastforce simp: flowsto_def flowpipe_def open_segment_eq_real_ivl
       dest: bspec[where x=hl]
       intro!: bexI[where x=hl])
-
-lemma subset_scaleR2_fstD: "X \<subseteq> scaleR2 l u Y \<Longrightarrow> fst ` X \<subseteq> fst ` Y"
-  by (force simp: scaleR2_def subset_iff image_def vimage_def)
 
 lemma subset_DiffI: "A \<subseteq> B \<Longrightarrow> A \<inter> C = {} \<Longrightarrow> A \<subseteq> B - C"
   by auto
@@ -1557,25 +1542,6 @@ proof safe
     by (auto intro!: simp: open_segment_eq_real_ivl)
 qed
 
-lemma mem_scaleR2_union[simp]: "x \<in> scaleR2 l u (A \<union> B) \<longleftrightarrow> x \<in> scaleR2 l u A \<or> x \<in> scaleR2 l u B"
-  by (force simp: scaleR2_def vimage_def image_def)
-
-lemma scaleR2_empty[simp]: "scaleR2 l u {} = {}"
-  by (auto simp: scaleR2_def)
-
-lemma poincare_mapsto_scaleR2I:
-  "poincare_mapsto P (scaleR2 x1 x2 baa) UNIV x1b (scaleR2 x1 x2 aca)"
-  if "poincare_mapsto P (baa) UNIV x1b (aca)"
-  using that
-  apply (auto simp: poincare_mapsto_def scaleR2_def image_def vimage_def)
-  apply (drule bspec, assumption)
-  apply auto
-  apply (rule exI, rule conjI, assumption)
-  apply (rule exI, rule conjI, assumption, rule conjI, assumption)
-  apply (rule bexI) prefer 2 apply assumption
-  apply (auto simp: scaleR_blinfun_compose_right)
-  done
-
 lemma poincare_mapsto_Union: "poincare_mapsto P (\<Union>xa) S CXS PS" 
   if "\<And>x. x \<in> xa \<Longrightarrow> poincare_mapsto P x S CXS PS"
   by (force simp: poincare_mapsto_def dest!: that)
@@ -1650,80 +1616,6 @@ lemma le_eucl_less_trans:
   shows "a \<le> b \<Longrightarrow> eucl_less b c \<Longrightarrow> eucl_less a c"
   by (force simp: eucl_less_def[where 'a='a] eucl_le[where 'a='a])
 
-lemma wd_stepD':
-  assumes "wd_step TYPE('a::executable_euclidean_space)"
-  shows "0 < rk2_param optns"
-    "rk2_param optns \<le> 1"
-    "ode_slp_eq ode_slp"
-    "rk2_slp_eq rk2_slp D"
-    "euler_slp_eq euler_slp D"
-    "euler_incr_slp_eq euler_incr_slp D"
-    "wd TYPE('a)"
-  using assms by (auto simp: wd_step_def)
-
-lemma FORWEAK_mono_rule'':
-  fixes f::"'d \<Rightarrow> 'e nres" and c::"'e \<Rightarrow> 'e \<Rightarrow> 'e nres" and I::"'d set \<Rightarrow> 'e \<Rightarrow> bool"
-  assumes empty: "S = {} \<Longrightarrow> d \<le> SPEC P"
-  assumes I0[THEN order_trans]: "\<And>s. s \<in> S \<Longrightarrow> f s \<le> SPEC (I {s})"
-  assumes I_mono: "\<And>it it' \<sigma>. I it \<sigma> \<Longrightarrow> it' \<subseteq> it \<Longrightarrow> it \<subseteq> S \<Longrightarrow> I it' \<sigma>"
-  assumes IP[THEN order_trans]:
-    "\<And>x it \<sigma>. \<lbrakk> x\<in>S; x \<notin> it; it\<subseteq>S; I it \<sigma> \<rbrakk> \<Longrightarrow> f x \<le> SPEC (\<lambda>f'. c \<sigma> f' \<le> SPEC (I (insert x it)))"
-  assumes II: "\<And>\<sigma>. I S \<sigma> \<Longrightarrow> P \<sigma>"
-  shows "FORWEAK S d f c \<le> SPEC P"
-  apply (rule FORWEAK_invarI[where I="\<lambda>b X. X \<subseteq> S \<and> I (S - X) b"])
-  subgoal by (rule empty)
-  subgoal by (auto simp: Diff_Diff_Int intro!: I0)
-  subgoal
-    by (metis (mono_tags, lifting) Diff_cancel I0 I_mono Refine_Basic.RES_sng_eq_RETURN iSPEC_rule
-        less_eq_nres.simps(2) nres_order_simps(21) subset_insertI subset_refl)
-  subgoal for a b it
-    apply (rule IP[of _ "S - it" b])
-    subgoal by force
-    subgoal by force
-    subgoal by force
-    subgoal by force
-    subgoal
-      apply clarsimp
-      apply (rule order_trans, assumption)
-      by (auto simp: it_step_insert_iff intro: order_trans)
-    done
-  subgoal for a b it
-    apply (rule IP[of _ "S - it" b])
-    subgoal by force
-    subgoal by force
-    subgoal by force
-    subgoal by force
-    subgoal
-      apply clarsimp
-      apply (rule order_trans, assumption)
-      by (auto simp: it_step_insert_iff intro: I_mono)
-    done
-  subgoal by (auto intro!: II)
-  done
-
-lemma FORWEAK_mono_rule_empty:
-  fixes f::"'d \<Rightarrow> 'e nres" and c::"'e \<Rightarrow> 'e \<Rightarrow> 'e nres" and I::"'d set \<Rightarrow> 'e \<Rightarrow> bool"
-  assumes empty: "S = {} \<Longrightarrow> RETURN d \<le> SPEC P"
-  assumes I0: "I {} d"
-  assumes I1: "\<And>s x. s \<in> S \<Longrightarrow> c d x \<le> SPEC (I {s}) \<Longrightarrow> I {s} x"
-  assumes I_mono: "\<And>it it' \<sigma>. I it \<sigma> \<Longrightarrow> it' \<subseteq> it \<Longrightarrow> it \<subseteq> S \<Longrightarrow> I it' \<sigma>"
-  assumes II: "\<And>\<sigma>. I S \<sigma> \<Longrightarrow> P \<sigma>"
-  assumes IP: "\<And>x it \<sigma>. \<lbrakk> x\<in>S; x \<notin> it; it\<subseteq>S; I it \<sigma> \<rbrakk> \<Longrightarrow> f x \<le> SPEC (\<lambda>f'. c \<sigma> f' \<le> SPEC (I (insert x it)))"
-  shows "FORWEAK S (RETURN d) f c \<le> SPEC P"
-  apply (rule FORWEAK_mono_rule''[where S=S and I=I and P=P])
-  subgoal by (rule empty)
-  subgoal for s
-    apply (rule IP[of _ "{}" d, le])
-       apply assumption
-       apply force
-       apply force
-     apply (rule I0)
-    by (auto intro!: I1)
-  subgoal by (rule I_mono)
-  subgoal by (rule IP)
-  subgoal by (rule II)
-  done
-
 lemma flowsto_source_UnionI:
   assumes "\<And>i. i \<in> I \<Longrightarrow> flowsto i T CXS (f i)"
   shows "flowsto (\<Union>I) T CXS (\<Union>(f ` I))"
@@ -1732,10 +1624,6 @@ lemma flowsto_source_UnionI:
     using assms[unfolded flowsto_def, OF \<open>y \<in> I\<close>, rule_format, OF \<open>_ \<in> y\<close>] prems
     by auto
   done
-
-lemma scaleR2_eq_empty_iff:
-  "scaleR2 l u X = {} \<longleftrightarrow> X = {} \<or> ereal -` {l..u} = {}"
-  by (auto simp: scaleR2_def)
 
 lemma poincare_mapsto_UnionI:
   assumes pm[unfolded poincare_mapsto_def, rule_format]: "\<And>i. i \<in> I \<Longrightarrow> poincare_mapsto p (X0 i) S (CX i) (X1 i)"
@@ -1807,9 +1695,6 @@ lemma map_prod_def': "map_prod f g x = (f (fst x), g (snd x))"
   by (cases x) auto
 
 lemmas rel_prod_br = br_rel_prod
-
-lemma scaleR2_id[simp]: "scaleR2 (1::ereal) 1 = (\<lambda>(x::('d \<times> 'c::real_vector) set). x)"
-  by (rule scaleR2_1_1)
 
 lemmas lvivl_relI = lv_relivl_relI
 

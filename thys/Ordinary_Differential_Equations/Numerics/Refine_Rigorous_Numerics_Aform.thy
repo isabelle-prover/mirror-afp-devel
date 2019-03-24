@@ -1,28 +1,11 @@
 theory Refine_Rigorous_Numerics_Aform
   imports
-    Abstract_Reachability_Analysis_C1
     Refine_Rigorous_Numerics
-    Collections.Locale_Code
     "HOL-Types_To_Sets.Types_To_Sets"
 begin
 
-text \<open>TODO: theory Refine_Options and remove dependency on \<open>HOL-ODE-Numerics.Abstract_Reachability_Analysis\<close>\<close>
-context includes autoref_syntax begin
-lemma [autoref_rules]:
-  "(precision, precision)\<in>num_optns_rel \<rightarrow> nat_rel"
-  "(reduce, reduce)\<in>num_optns_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> nat_rel \<rightarrow> rl_rel \<rightarrow> bool_rel"
-  "(start_stepsize, start_stepsize)\<in>num_optns_rel \<rightarrow> rnv_rel"
-  "(iterations, iterations)\<in> num_optns_rel\<rightarrow> nat_rel"
-  "(halve_stepsizes, halve_stepsizes)\<in> (num_optns_rel) \<rightarrow> nat_rel"
-  "(widening_mod, widening_mod)\<in> (num_optns_rel) \<rightarrow>nat_rel"
-  "(rk2_param, rk2_param)\<in> (num_optns_rel) \<rightarrow> rnv_rel"
-  "(method_id, method_id)\<in> (num_optns_rel) \<rightarrow> nat_rel"
-  "(adaptive_atol, adaptive_atol)\<in> (num_optns_rel) \<rightarrow> rnv_rel"
-  "(adaptive_rtol, adaptive_rtol)\<in> (num_optns_rel) \<rightarrow> rnv_rel"
-  "(printing_fun, printing_fun)\<in> (num_optns_rel) \<rightarrow> bool_rel \<rightarrow> I \<rightarrow> unit_rel"
-  "(tracing_fun, tracing_fun)\<in> (num_optns_rel) \<rightarrow> string_rel \<rightarrow> \<langle>I\<rangle>option_rel \<rightarrow> unit_rel"
-  by auto
-end
+lemma Joints_ne_empty[simp]: "Joints xs \<noteq> {}" "{} \<noteq> Joints xs"
+  by (auto simp: Joints_def valuate_def)
 
 lemma Inf_aform_le_Affine: "x \<in> Affine X \<Longrightarrow> Inf_aform X \<le> x"
   by (auto simp: Affine_def valuate_def intro!: Inf_aform)
@@ -542,9 +525,9 @@ lemma project_coord_lv[autoref_rules]:
   done
 
 definition inter_aform_plane
-  where "inter_aform_plane optns Xs (sctn::'a sctn) =
+  where "inter_aform_plane prec Xs (sctn::'a sctn) =
     do {
-      cxs \<leftarrow> inter_aform_plane_ortho_nres (precision optns) (Xs) (normal sctn) (pstn sctn);
+      cxs \<leftarrow> inter_aform_plane_ortho_nres (prec) (Xs) (normal sctn) (pstn sctn);
       case cxs of
         Some cxs \<Rightarrow>
           (if normal sctn \<in> set Basis_list
@@ -570,17 +553,17 @@ lemma [autoref_rules]:
 schematic_goal inter_aform_plane_lv:
   fixes Z::"'a::executable_euclidean_space aform"
   assumes [autoref_rules_raw]: "DIM_precond TYPE('a) D"
-  assumes [autoref_rules]: "(optnsi, optns) \<in> num_optns_rel" "(Zi, Z) \<in> lv_aforms_rel"
+  assumes [autoref_rules]: "(preci, prec) \<in> nat_rel" "(Zi, Z) \<in> lv_aforms_rel"
       "(sctni, sctn) \<in> \<langle>lv_rel\<rangle>sctn_rel"
   notes [autoref_rules] = those_param param_map
-  shows "(nres_of (?f::?'a dres), inter_aform_plane $ optns $ Z $ sctn) \<in> ?R"
+  shows "(nres_of (?f::?'a dres), inter_aform_plane prec Z sctn) \<in> ?R"
   unfolding autoref_tag_defs
   unfolding inter_aform_plane_def
   including art
   by (autoref_monadic )
 
-concrete_definition inter_aform_plane_lv for optnsi Zi sctni uses inter_aform_plane_lv
-lemmas [autoref_rules] = inter_aform_plane_lv.refine
+concrete_definition inter_aform_plane_lv for preci Zi sctni uses inter_aform_plane_lv
+lemmas [autoref_rules] = inter_aform_plane_lv.refine[autoref_higher_order_rule(1)]
 
 end
 
@@ -691,8 +674,8 @@ lemma
   by (auto simp: Affine_def valuate_def aform_val_project_coord_aform plane_of_def
       project_coord_inner)
 
-definition "reduce_aform optns t X =
-    summarize_aforms (precision optns) (collect_threshold (precision optns) 0 t) (degree_aforms X) X"
+definition "reduce_aform prec t X =
+    summarize_aforms (prec) (collect_threshold (prec) 0 t) (degree_aforms X) X"
 
 definition "correct_girard p m N (X::real aform list) =
   (let
@@ -707,16 +690,16 @@ definition "correct_girard p m N (X::real aform list) =
       _ = ()
     in (\<lambda>i (xs::real list). i \<notin> set ortho_indices))"
 
-definition "reduce_aforms optns C X = summarize_aforms (precision optns) C (degree_aforms X) X"
+definition "reduce_aforms prec C X = summarize_aforms (prec) C (degree_aforms X) X"
 
 definition "pdevs_of_real x = (x, zero_pdevs)"
 
-definition aform_inf_inner where "aform_inf_inner optns X n =
-  (case inner_aforms' (precision optns) X (map pdevs_of_real n) of
-    Some Xn \<Rightarrow> Inf_aform' (precision optns) (hd Xn))"
-definition aform_sup_inner where "aform_sup_inner optns X n =
-  (case inner_aforms' (precision optns) X (map pdevs_of_real n) of
-    Some Xn \<Rightarrow> Sup_aform' (precision optns) (hd Xn))"
+definition aform_inf_inner where "aform_inf_inner prec X n =
+  (case inner_aforms' (prec) X (map pdevs_of_real n) of
+    Some Xn \<Rightarrow> Inf_aform' (prec) (hd Xn))"
+definition aform_sup_inner where "aform_sup_inner prec X n =
+  (case inner_aforms' (prec) X (map pdevs_of_real n) of
+    Some Xn \<Rightarrow> Sup_aform' (prec) (hd Xn))"
 
 text \<open>cannot fail\<close>
 
@@ -911,27 +894,27 @@ lemma iaN: "inner_aforms' p a b \<noteq> None"
   using aiVN[of p a b]
   by (auto simp: Let_def bind_eq_Some_conv)
 
-definition "support_aform optns b X = (let ia = inner_aform X b in fst X \<bullet> b + tdev' (precision optns) (snd ia))"
+definition "support_aform prec b X = (let ia = inner_aform X b in fst X \<bullet> b + tdev' (prec) (snd ia))"
 
-definition "width_aforms optns X =
-  (let t = tdev' (precision optns) ((abssum_of_pdevs_list (map snd X))) in t)"
+definition "width_aforms prec X =
+  (let t = tdev' (prec) ((abssum_of_pdevs_list (map snd X))) in t)"
 
-definition "inf_aforms optns xs = map (Inf_aform' (precision optns)) xs"
-definition "sup_aforms optns xs = map (Sup_aform' (precision optns)) xs"
+definition "inf_aforms prec xs = map (Inf_aform' (prec)) xs"
+definition "sup_aforms prec xs = map (Sup_aform' (prec)) xs"
 
 definition "fresh_index_aforms xs = Max (insert 0 (degree_aform ` set xs))"
 
 definition "independent_aforms x env = (msum_aform (fresh_index_aforms env) (0, zero_pdevs) x#env)"
 
-definition "aform_form_ivl optns form xs =
-  dRETURN (approx_form (precision optns) form (ivls_of_aforms (precision optns) xs) [])"
-definition "aform_form optns form xs =
-  dRETURN (approx_form_aform (precision optns) form xs)"
-definition "aform_slp (optns::real aform numeric_options) n slp xs =
-  dRETURN (approx_slp_outer (precision optns) n slp xs)"
+definition "aform_form_ivl prec form xs =
+  dRETURN (approx_form prec form (ivls_of_aforms prec xs) [])"
+definition "aform_form prec form xs =
+  dRETURN (approx_form_aform prec form xs)"
+definition "aform_slp prec n slp xs =
+  dRETURN (approx_slp_outer prec n slp xs)"
 definition
-  "aform_isFDERIV optns n ns fas xs =
-    dRETURN (isFDERIV_approx (precision optns) n ns fas (ivls_of_aforms (precision optns) xs))"
+  "aform_isFDERIV prec n ns fas xs =
+    dRETURN (isFDERIV_approx prec n ns fas (ivls_of_aforms prec xs))"
 
 definition aform_rel_internal: "aform_rel R = br Affine top O \<langle>R\<rangle>set_rel"
 lemma aform_rel_def: "\<langle>rnv_rel\<rangle>aform_rel = br Affine top"
@@ -975,65 +958,23 @@ lemma
   by (auto intro!: eucl_of_list_mem_eucl_of_list_aform
       in_image_eucl_of_list_eucl_of_list_aform)
 
-locale aform_approximate_sets =
-  approximate_sets_options'
-    "aforms_of_ivls"
-    product_aforms
-    msum_aforms'
-    Joints
-    inf_aforms
-    sup_aforms
-    "\<lambda>_. split_aforms_largest_uncond_take"
-    aform_inf_inner
-    aform_sup_inner
-    "\<lambda>optns xs sctn. inter_aform_plane_lv (length xs) optns xs sctn"
-    reduce_aforms
-    width_aforms
-    aform_slp
-    aform_form
-    aform_isFDERIV
-    aforms_rel
-    optns
-    ode_e
-    safe_form
-    for safe_form::form
-    and ode_e :: "floatarith list"
-    and optns::"real aform numeric_options"
-begin
-
-lemma Joints_in_lv_rel_set_relD:
-  "(Joints xs, X) \<in> \<langle>lv_rel\<rangle>set_rel \<Longrightarrow> X = Affine (eucl_of_list_aform xs)"
-  apply (auto simp: )
-   apply (subst eucl_of_list_image_Joints[symmetric])
-    unfolding lv_rel_def set_rel_br
-    apply (auto simp: br_def )
-    using length_set_of_appr apply auto[1]
-   apply (subst (asm) eucl_of_list_image_Joints[symmetric])
-    unfolding lv_rel_def set_rel_br
-    apply (auto simp: br_def )
-    using length_set_of_appr apply auto[1]
-    done
-
-lemma ncc_precond: "var.ncc_precond TYPE('a::executable_euclidean_space)"
-  apply (auto simp: ncc_precond_def var.ncc_def appr_rel_def)
-  apply (auto simp: aforms_rel_def br_def)
-  apply (metis set_of_appr_nonempty)
-  subgoal by (auto simp: compact_Affine dest!: Joints_in_lv_rel_set_relD)
-  subgoal by (auto simp: convex_Affine dest!: Joints_in_lv_rel_set_relD)
-  done
-
-lemma fst_eucl_of_list_aform_map: "fst (eucl_of_list_aform (map (\<lambda>x. (fst x, asdf x)) x)) =
-  fst (eucl_of_list_aform x)"
-  by (auto simp: eucl_of_list_aform_def o_def)
-
-lemma
-  Affine_pdevs_of_list:\<comment> \<open>TODO: move!\<close>
-  "Affine (fst x, pdevs_of_list (map snd (list_of_pdevs (snd x)))) = Affine x"
-  by (auto simp: Affine_def valuate_def aform_val_def
-      elim: pdevs_val_of_list_of_pdevs2[where X = "snd x"]
-        pdevs_val_of_list_of_pdevs[where X = "snd x"])
-
-end
+definition "aform_ops =
+\<lparr>
+  appr_of_ivl = aforms_of_ivls,
+  product_appr = product_aforms,
+  msum_appr = msum_aforms',
+  inf_of_appr = \<lambda>optns. inf_aforms (precision optns),
+  sup_of_appr = \<lambda>optns. sup_aforms (precision optns),
+  split_appr = split_aforms_largest_uncond_take,
+  appr_inf_inner = \<lambda>optns. aform_inf_inner (precision optns),
+  appr_sup_inner = \<lambda>optns. aform_sup_inner (precision optns),
+  inter_appr_plane = \<lambda>optns xs sctn. inter_aform_plane_lv (length xs) (precision optns) xs sctn,
+  reduce_appr = \<lambda>optns. reduce_aforms (precision optns),
+  width_appr = \<lambda>optns. width_aforms (precision optns),
+  approx_slp_dres = \<lambda>optns. aform_slp (precision optns),
+  approx_euclarithform = \<lambda>optns. aform_form (precision optns),
+  approx_isFDERIV = \<lambda>optns. aform_isFDERIV  (precision optns)
+\<rparr>"
 
 lemma Affine_eq_permI:
   assumes "fst X = fst Y"
@@ -1177,9 +1118,6 @@ lemma msum_aforms'_refine_raw:
   shows "(msum_aforms' x y, {map2 (+) a b|a b. a \<in> Joints x \<and> b \<in> Joints y}) \<in> aforms_rel"
   unfolding aforms_rel_def br_def
   by (safe elim!: mem_Joints_msum_aforms'E intro!: mem_Joints_msum_aforms'I) (auto simp: Joints_imp_length_eq)
-
-lemma Joints_ne_empty[simp]: "Joints xs = {} \<longleftrightarrow> False"
-  by (auto simp: Joints_def valuate_def)
 
 lemma aforms_relD: "(a, b) \<in> aforms_rel \<Longrightarrow> b = Joints a"
   by (auto simp: aforms_rel_def br_def)
@@ -1430,7 +1368,7 @@ qed
 
 lemma inner_aforms'_inner_lv_rel:
   "(a, a') \<in> aforms_rel \<Longrightarrow>
-       inner_aforms' (precision optns) a (map pdevs_of_real a'a) = Some R \<Longrightarrow>
+       inner_aforms' prec a (map pdevs_of_real a'a) = Some R \<Longrightarrow>
        x \<in> a' \<Longrightarrow> inner_lv_rel x a'a \<in> Affine (hd R)"
   unfolding mem_lv_rel_set_rel_iff
   unfolding lv_rel_def aforms_rel_def
@@ -1668,10 +1606,10 @@ lemma inter_aform_plane_refine:
   \<in> \<langle>aforms_rel\<rangle>nres_rel"
   by (rule inter_aform_plane_refine_ex_typedef[cancel_type_definition, simplified])
 
-lemma Joints_reduce_aforms: "x \<in> Joints X \<Longrightarrow> x \<in> Joints (reduce_aforms optns t X)"
+lemma Joints_reduce_aforms: "x \<in> Joints X \<Longrightarrow> x \<in> Joints (reduce_aforms prec t X)"
 proof (auto simp: reduce_aforms_def summarize_threshold_def[abs_def] Joints_def valuate_def aform_val_def, goal_cases)
   case (1 e)
-  from summarize_aformsE[OF \<open>e \<in> _\<close> order_refl, of "X" "(precision optns)" t]
+  from summarize_aformsE[OF \<open>e \<in> _\<close> order_refl, of "X" "prec" t]
   guess e' .
   thus ?case
     by (auto intro!: image_eqI[where x=e'] simp: aform_vals_def)
@@ -1681,8 +1619,8 @@ lemma length_reduce_aform[simp]: "length (reduce_aforms optns a x) = length x"
   by (auto simp: reduce_aforms_def)
 
 lemma reduce_aform_refine:
-  "(ri, r) \<in> \<langle>Id::real aform rel\<rangle>list_rel \<rightarrow> nat_rel \<rightarrow> rl_rel \<rightarrow> bool_rel \<Longrightarrow> (xi, x) \<in> aforms_rel \<Longrightarrow> length xi = d \<Longrightarrow>
-    (RETURN (reduce_aforms optns ri xi), reduce_specs d r x) \<in> \<langle>aforms_rel\<rangle>nres_rel"
+  "(xi, x) \<in> aforms_rel \<Longrightarrow> length xi = d \<Longrightarrow>
+    (RETURN (reduce_aforms prec C xi), reduce_specs d r x) \<in> \<langle>aforms_rel\<rangle>nres_rel"
   apply (auto simp: reduce_specs_def nres_rel_def comps aforms_relp_def mem_lv_rel_set_rel_iff
       aforms_rel_def env_len_def
       intro!: RETURN_SPEC_refine)
@@ -1716,15 +1654,13 @@ lemma approx_slp_outer_lengthD: "approx_slp_outer p d slp a = Some xs \<Longrigh
       aforms_err_to_aforms_def aform_err_to_aform_def dest!: approx_slp_lengthD)
 
 lemma approx_slp_refine:
-  "(nres_of o3 aform_slp optns, approx_slp_spec fas) \<in> 
+  "(nres_of o3 aform_slp prec, approx_slp_spec fas) \<in> 
     nat_rel \<rightarrow> fas_rel \<rightarrow> aforms_rel \<rightarrow> \<langle>\<langle>aforms_rel\<rangle>option_rel\<rangle>nres_rel"
   apply (auto simp: approx_slp_spec_def comps aform_slp_def nres_rel_def
       intro!: RETURN_SPEC_refine ASSERT_refine_right)
   subgoal for a b
-    apply (rule exI[where x = "map_option Joints (approx_slp_outer (precision optns) (length fas) (slp_of_fas fas) a)"])
-    apply (auto simp: option.splits aforms_rel_def br_def env_len_def Joints_imp_length_eq
-          dest!:  
-        )
+    apply (rule exI[where x = "map_option Joints (approx_slp_outer prec (length fas) (slp_of_fas fas) a)"])
+    apply (auto simp: option.splits aforms_rel_def br_def env_len_def Joints_imp_length_eq)
     apply (auto dest!: approx_slp_outer_lengthD)[]
     using length_slp_of_fas_le trans_le_add1 approx_slp_outer_lengthD apply blast
     using approx_slp_outer_plain by blast
@@ -1748,12 +1684,38 @@ lemma independent_aforms_refine: "(independent_aforms, set_Cons) \<in> \<langle>
 
 end
 
-locale aform_approximate_sets0
+
+locale aform_approximate_sets = approximate_sets
+  aform_ops
+  Joints
+  aforms_rel
 begin
 
-sublocale aform_approximate_sets safe_form ode_e optns for safe_form ode_e optns
+lemma Joints_in_lv_rel_set_relD:
+  "(Joints xs, X) \<in> \<langle>lv_rel\<rangle>set_rel \<Longrightarrow> X = Affine (eucl_of_list_aform xs)"
+  unfolding lv_rel_def set_rel_br
+  by (auto simp: br_def Joints_imp_length_eq eucl_of_list_image_Joints[symmetric])
+
+lemma ncc_precond: "ncc_precond TYPE('a::executable_euclidean_space)"
+  unfolding ncc_precond_def ncc_def appr_rel_def
+  by (auto simp: aforms_rel_def compact_Affine convex_Affine dest!: Joints_in_lv_rel_set_relD brD)
+
+lemma fst_eucl_of_list_aform_map: "fst (eucl_of_list_aform (map (\<lambda>x. (fst x, asdf x)) x)) =
+  fst (eucl_of_list_aform x)"
+  by (auto simp: eucl_of_list_aform_def o_def)
+
+lemma
+  Affine_pdevs_of_list:\<comment> \<open>TODO: move!\<close>
+  "Affine (fst x, pdevs_of_list (map snd (list_of_pdevs (snd x)))) = Affine x"
+  by (auto simp: Affine_def valuate_def aform_val_def
+      elim: pdevs_val_of_list_of_pdevs2[where X = "snd x"]
+        pdevs_val_of_list_of_pdevs[where X = "snd x"])
+
+end
+
+lemma aform_approximate_sets: "aform_approximate_sets prec"
   apply (unfold_locales)
-  unfolding autoref_tag_defs
+  unfolding aform_ops_def approximate_set_ops.simps
   subgoal unfolding relAPP_def aforms_rel_def .
   subgoal by (force simp: aforms_of_ivls_refine)
   subgoal by (rule product_aforms_refine)
@@ -1763,10 +1725,8 @@ sublocale aform_approximate_sets safe_form ode_e optns for safe_form ode_e optns
   subgoal by (rule split_aform_largest_take_refine)
   subgoal by (rule aform_inf_inner_refine)
   subgoal by (rule aform_sup_inner_refine)
-  subgoal
-    by (rule inter_aform_plane_refine) simp_all
-  subgoal
-    by (rule reduce_aform_refine)
+  subgoal by (rule inter_aform_plane_refine) simp_all
+  subgoal by (auto split: option.splits intro!: reduce_aform_refine)
   subgoal by (force simp: width_spec_def nres_rel_def)
   subgoal by (rule approx_slp_refine)
   subgoal by (rule aform_euclarithform_refine)
@@ -1777,7 +1737,5 @@ sublocale aform_approximate_sets safe_form ode_e optns for safe_form ode_e optns
   subgoal by (force simp: Affine_def Joints_def valuate_def intro!:)
   subgoal by (auto simp: Joints_imp_length_eq)
   done
-
-end
 
 end

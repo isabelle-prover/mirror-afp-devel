@@ -10,14 +10,36 @@ lemma fst_flow1_of_vec1[simp]: "fst (flow1_of_vec1 x) = fst x"
 lemma fst_vec1_of_flow[simp]: "fst (vec1_of_flow1 x) = fst x"
   by (auto simp: vec1_of_flow1_def)
 
-context approximate_sets_ode_slp'
+context approximate_sets_ode'
 begin
 
+lemma poincare_mapsto_scaleR2I:
+  "poincare_mapsto P (scaleR2 x1 x2 baa) UNIV x1b (scaleR2 x1 x2 aca)"
+  if "poincare_mapsto P (baa) UNIV x1b (aca)"
+  using that
+  apply (auto simp: poincare_mapsto_def scaleR2_def image_def vimage_def)
+  apply (drule bspec, assumption)
+  apply auto
+  apply (rule exI, rule conjI, assumption)
+  apply (rule exI, rule conjI, assumption, rule conjI, assumption)
+  apply (rule bexI) prefer 2 apply assumption
+  apply (auto simp: scaleR_blinfun_compose_right)
+  done
+
+context includes ode_ops.lifting begin
+lemma var_safe_form_eq[simp]: "var.safe_form = safe_form"
+  unfolding var.safe_form_def
+  by transfer (auto simp: var_ode_ops_def safe_form_def)
+
+lemma var_ode_e: "var.ode_e = ode_e'"
+  unfolding var.ode_e_def
+  by transfer (auto simp: var_ode_ops_def)
+end
+
 lemma wd_imp_var_wd[refine_vcg, intro]: "wd (TYPE('n rvec)) \<Longrightarrow> var.wd (TYPE('n::enum vec1))"
-  apply (auto simp: var.wd_def)
-  unfolding ode_e'_def
+  unfolding var.wd_def
   by (auto simp: wd_def length_concat o_def sum_list_distinct_conv_sum_set
-      concat_map_map_index
+      concat_map_map_index var_ode_e D_def ode_e'_def
       intro!: max_Var_floatariths_mmult_fa[le] max_Var_floatariths_mapI
       max_Var_floatarith_FDERIV_floatarith[le]
       max_Var_floatariths_fold_const_fa[le]
@@ -27,10 +49,10 @@ lemma wd_imp_var_wd[refine_vcg, intro]: "wd (TYPE('n rvec)) \<Longrightarrow> va
 lemma safe_eq:
   assumes "wd TYPE('n::enum rvec)"
   shows "var.Csafe = ((Csafe \<times> UNIV)::'n vec1 set)"
-  using assms wd_imp_var_wd[OF assms]
+  using assms var.wdD[OF wd_imp_var_wd[OF assms]] wdD[OF assms]
   unfolding var.safe_def safe_def var.wd_def wd_def var.Csafe_def Csafe_def
-  unfolding ode_e'_def
-  apply (auto simp: )
+  unfolding ode_e'_def var_ode_e
+  apply (auto simp: D_def)
   subgoal
     apply (subst interpret_form_max_Var_cong) prefer 2 apply assumption
     by (auto simp: nth_Basis_list_prod)
@@ -130,7 +152,7 @@ proof -
     done
   ultimately show ?thesis
     unfolding var.ode_def ode_def
-    unfolding ode_e'_def
+    unfolding ode_e'_def var_ode_e
     by (auto simp: wdD[OF \<open>wd _\<close>] ode_d1_def intro!: euclidean_eqI[where 'a="'n vec1"])
 qed
 
@@ -334,7 +356,8 @@ theorem einterpret_solve_poincare_fas:
   subgoal
     apply (auto intro!: euclidean_eqI[where 'a="'n rvec"])
     apply (subst eucl_of_list_prod)
-    by (auto simp: eucl_of_list_prod length_concat o_def sum_list_distinct_conv_sum_set wdD[OF wd] take_eq_map_nth)
+    by (auto simp: eucl_of_list_prod length_concat o_def sum_list_distinct_conv_sum_set D_def Let_def
+        wdD[OF wd] take_eq_map_nth)
   subgoal premises prems
   proof -
     have ode_e_eq: "interpret_floatarith (ode_e ! i) (map ((!) CXs) [0..<CARD('n)]) = interpret_floatarith (ode_e ! i) CXs"
@@ -354,9 +377,9 @@ theorem einterpret_solve_poincare_fas:
     show ?thesis
       supply [simp] = snd_eucl_of_list_prod fst_eucl_of_list_prod
       supply [simp del] = eucl_of_list_take_DIM
-      using prems unfolding z_def[symmetric]
+      using prems unfolding z_def[symmetric] D_def Let_def
       including blinfun.lifting
-      apply (transfer fixing: CXs D n z)
+      apply (transfer fixing: CXs n z)
       unfolding z_def
       apply (auto simp: o_def ode_def intro!: ext)
       apply (vector matrix_vector_mult_def )
@@ -372,50 +395,8 @@ theorem einterpret_solve_poincare_fas:
   qed
   done
 
-lemma sps_eqD: "sps_eq \<Longrightarrow> i < D \<Longrightarrow> solve_poincare_slp ! i = slp_of_fas (map fold_const_fa (solve_poincare_fas i))"
-  by (auto simp: sps_eq_def)
-
-lemma sps_lengthD: "sps_eq \<Longrightarrow> length solve_poincare_slp = D"
-  by (auto simp: sps_eq_def)
-
-lemma sps_length_le:
-  assumes sps_eq
-  shows "i < D \<Longrightarrow> length (solve_poincare_slp ! i) \<ge> length (solve_poincare_fas i)"
-  by (auto simp: sps_eqD[OF \<open>sps_eq\<close>] intro!: order_trans[OF _ length_slp_of_fas_le])
-
-
-lemma
-  vwd_stepD:
-  assumes "vwd_step TYPE('n::enum)"
-  shows "wd TYPE('n rvec)"
-    "0 < rk2_param optns"
-    "rk2_param optns \<le> 1"
-    "sps_eq"
-    "ode_slp_eq ode_slp"
-    "rk2_slp_eq rk2_slp D"
-    "euler_slp_eq euler_slp D"
-    "euler_incr_slp_eq euler_incr_slp D"
-  using assms by (auto simp: vwd_step_def)
-
-lemma vwd_stepD2:
-  assumes "vwd_step TYPE('n::enum)" "has_c1_slps"
-  shows "var.ode_slp_eq ode_slp'"
-    "var.rk2_slp_eq rk2_slp' (D + D * D)"
-    "var.euler_slp_eq euler_slp' (D + D * D)"
-    "var.euler_incr_slp_eq euler_incr_slp' (D + D * D)"
-  using assms by (auto simp: vwd_step_def ode_slp'_def rk2_slp'_def euler_slp'_def
-      euler_incr_slp'_def has_c1_slps_def split: option.splits)
-
-lemma vwd_step[refine_vcg, intro]:
-  assumes "vwd_step TYPE('n::enum)" has_c1_slps
-  shows "var.wd_step TYPE('n::enum vec1)"
-  using assms
-  unfolding var.wd_step_def 
-  by (auto simp: vwd_step_def ode_slp'_def has_c1_slps_def rk2_slp'_def euler_slp'_def euler_incr_slp'_def split: option.splits)
-
 lemma choose_step'_flowpipe:
-  assumes wd[refine_vcg]: "vwd_step TYPE('n::enum)" and nn[refine_vcg]: "has_c1_slps"
-  notes wd' = vwd_stepD[OF wd] vwd_stepD2[OF wd nn]
+  assumes wd[refine_vcg]: "wd TYPE('n::enum rvec)"
   assumes safe: "fst ` X0 \<subseteq> Csafe"
   shows "var.choose_step (X0::'n vec1 set) h \<le> SPEC (\<lambda>(h', _, RES_ivl, RES::'n vec1 set).
       0 < h' \<and> h' \<le> h \<and> flowpipe (flow1_of_vec1 ` X0) h' h' (flow1_of_vec1 ` RES_ivl) (flow1_of_vec1 ` RES))"
@@ -423,17 +404,18 @@ lemma choose_step'_flowpipe:
   apply (auto simp: )
   apply (frule var.flowpipe0_safeD)
   apply (drule var_flowpipe0_flowpipe[rotated])
-  by (auto simp: safe_eq wd')
+  by (auto simp: safe_eq wd)
 
 lemma max_Var_floatariths_solve_poincare_fas[le]:
   assumes wd: "wd (TYPE('n::enum rvec))"
   shows "i < D \<Longrightarrow> max_Var_floatariths (solve_poincare_fas i) \<le> D + D * D"
-  by (auto simp: solve_poincare_fas_def concat_map_map_index intro!: max_Var_floatariths_leI Suc_leI)
+  by (auto simp: solve_poincare_fas_def concat_map_map_index Let_def
+      intro!: max_Var_floatariths_leI Suc_leI)
    (auto intro!: max_Var_floatarith_le_max_Var_floatariths_nthI max_Var_floatariths_ode_e_wd[OF wd]
       simp: wdD[OF wd])
 
 lemma length_solve_poincare_fas[simp]: "length (solve_poincare_fas n) = D + D * D"
-  by (auto simp: solve_poincare_fas_def length_concat o_def sum_list_distinct_conv_sum_set)
+  by (auto simp: solve_poincare_fas_def length_concat o_def sum_list_distinct_conv_sum_set D_def Let_def)
 
 theorem interpret_floatariths_solve_poincare_fas:
   assumes wd: "wd TYPE('n::enum rvec)"
@@ -451,11 +433,47 @@ theorem interpret_floatariths_solve_poincare_fas:
   apply (auto simp: wdD[OF wd])
   done
 
+lemma length_solve_poincare_slp[simp]: "length solve_poincare_slp = D"
+  by (auto simp: solve_poincare_slp_def)
+
+lemma ne_zero_lemma:
+  assumes
+    "ode ` fst ` CX \<subseteq> FC"
+   "\<forall>b\<in>FC. b \<bullet> n \<noteq> 0"
+   "(a, b) \<in> CX"
+   "ode a \<bullet> n = 0"
+ shows "False"
+proof -
+  have "(a, b) \<in> CX" by fact
+  then have "ode (fst (a, b)) \<in> ode ` fst ` CX" by blast
+  also have "\<dots> \<subseteq> FC"
+    by fact
+  finally have "ode a \<in> FC" by simp
+  with assms show False
+    by auto
+qed
+
+lemma ne_zero_lemma2:
+  assumes
+   "ode ` fst ` flow1_of_vec1 ` env \<subseteq> F"
+   "\<forall>x\<in>F. x \<bullet> n \<noteq> 0"
+   "(a, b) \<in> env"
+   "flow1_of_vec1 (a, b) = (a', b')"
+   "ode a' \<bullet> n = 0"
+ shows False
+proof -
+  have "(a', b') \<in> flow1_of_vec1 ` env"
+    apply (rule image_eqI)
+    using assms by auto
+  then have "ode (fst (a', b')) \<in> ode ` fst ` \<dots>" by blast
+  also from assms have "\<dots> \<subseteq> F" by simp
+  finally have "ode a' \<in> F" by simp
+  with assms have "ode a' \<bullet> n \<noteq> 0" by auto
+  with assms show False by simp
+qed
+
 lemma solve_poincare_plane[le, refine_vcg]:
-  assumes vwd[refine_vcg]: "vwd_step (TYPE('n::enum))"
-  notes wds[refine_vcg] = vwd_stepD[OF vwd]
-  notes wd = wds(1)
-  notes wd' = wdD[OF wd]
+  assumes wd[refine_vcg]: "wd (TYPE('n::enum rvec))"
   assumes "n \<in> Basis"
   shows "solve_poincare_plane (n::'n::enum rvec) CX \<le> SPEC (\<lambda>PDP.
     fst ` PDP \<subseteq> Csafe \<and>
@@ -464,46 +482,35 @@ lemma solve_poincare_plane[le, refine_vcg]:
     (\<forall>(x, d) \<in> PDP. ode x \<bullet> n \<noteq> 0))"
   unfolding solve_poincare_plane_def
   apply (refine_vcg)
-  subgoal using sps_eqD[OF \<open>sps_eq\<close>] sps_lengthD[OF \<open>sps_eq\<close>] \<open>n \<in> Basis\<close> wd' by auto
-       apply (auto simp: assms sps_eqD[OF \<open>sps_eq\<close>] sps_lengthD[OF \<open>sps_eq\<close>])
-  subgoal using sps_eqD[OF \<open>sps_eq\<close>] sps_lengthD[OF \<open>sps_eq\<close>] \<open>n \<in> Basis\<close> wd' by auto
-  subgoal for F env F2 x d
+  subgoal using assms by auto
+  subgoal using assms by auto
+  subgoal using assms by auto
+  subgoal using assms by (auto simp: solve_poincare_slp_def)
+  subgoal using assms by auto
+  subgoal for C1 FC _ CX' CX'' P P1 FP _
+    apply auto
     apply (drule bspec, assumption)
     apply (rule image_eqI)
      prefer 2 apply assumption
     apply (subst einterpret_solve_poincare_fas)
     subgoal using wd by auto
-    subgoal using sps_eqD[OF \<open>sps_eq\<close>] sps_lengthD[OF \<open>sps_eq\<close>] \<open>n \<in> Basis\<close> wd' by auto
-    subgoal by assumption
-    subgoal using sps_eqD[OF \<open>sps_eq\<close>] sps_lengthD[OF \<open>sps_eq\<close>] \<open>n \<in> Basis\<close> wd' by auto
-    subgoal using sps_eqD[OF \<open>sps_eq\<close>] sps_lengthD[OF \<open>sps_eq\<close>] \<open>n \<in> Basis\<close> wd' by auto
+    subgoal using wd by auto
+    subgoal using wd by auto
+    subgoal using wd assms by (auto elim!: ne_zero_lemma)
+    subgoal using wd assms by (auto simp: )
     done
-  subgoal premises prems for F env F2 e x d l
-  proof -
-    note prems
-    have "(d, l) \<in> flow1_of_vec1 ` env"
-      apply (rule image_eqI)
-      using prems by auto
-    then have "ode (fst (d, l)) \<in> ode ` fst ` \<dots>" by blast
-    also from prems have "\<dots> \<subseteq> F2" by simp
-    finally have "ode d \<in> F2" by simp
-    with prems have "ode d \<bullet> n \<noteq> 0" by auto
-    then show ?thesis
-      using prems
-      by (simp add: in_Basis_index_Basis_list \<open>n \<in> Basis\<close>)
-  qed
+  subgoal by (auto elim!: ne_zero_lemma2)
   done
 
 lemma choose_step1_flowpipe[le, refine_vcg]:
-  assumes vwd[refine_vcg]: "vwd_step TYPE('n::enum)"
+  assumes wd[refine_vcg]: "wd TYPE('n::enum rvec)"
   shows "choose_step1 (X0::'n eucl1 set) h \<le> SPEC (\<lambda>(h', _, RES_ivl, RES::'n eucl1 set).
       0 < h' \<and> h' \<le> h \<and> flowpipe X0 h' h' RES_ivl RES)"
   using assms
   unfolding choose_step1_def
-  apply (refine_vcg choose_step'_flowpipe[le] vwd_stepD[OF vwd] vwd_stepD2[OF vwd])
-     apply (auto simp: image_image)
-    apply (auto simp: wd_step_def vwd_stepD flowpipe0_imp_flowpipe env_len_def)
-  by (auto simp: safe_eq vwd_step_def vec1_of_flow1_def)
+  by (refine_vcg choose_step'_flowpipe[le] wd)
+    (auto simp: image_image,
+      auto simp: safe_eq vec1_of_flow1_def flowpipe0_imp_flowpipe env_len_def)
 
 lemma image_flow1_of_vec1I:
   "vec1_of_flow1 x \<in> X \<Longrightarrow> x \<in> flow1_of_vec1 ` X"
@@ -534,8 +541,7 @@ lemma vec1reps[THEN order_trans, refine_vcg]: "vec1reps CX \<le> SPEC (\<lambda>
   by (auto simp:  split: option.splits) force+
 
 lemma nonzero_component_within[le, refine_vcg]:
-  assumes wdp: "vwd_step (TYPE('n::enum))"
-  notes [refine_vcg] = vwd_step vwd_stepD[OF wdp]
+  assumes wd[refine_vcg]: "wd (TYPE('n::enum rvec))"
   shows "nonzero_component_within ivl sctn (PDP::'n eucl1 set) \<le> SPEC (\<lambda>b.
     (b \<longrightarrow> (\<forall>x\<in>PDP. fst x \<in> ivl \<and> (\<forall>\<^sub>F x in at (fst x) within plane_of sctn. x \<in> ivl))) \<and>
     fst ` PDP \<subseteq> Csafe \<and>
@@ -578,13 +584,210 @@ lemma do_intersection_invar_inside:
   qed
   done
 
+lemma do_intersection_body_lemma:
+  assumes "flowsto A T (i \<times> UNIV) (X' \<inter> sbelow_halfspace sctn \<times> UNIV)"
+    "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} B UNIV i PS "
+    "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} B UNIV i PS2"
+    "T \<subseteq> {0..}"
+    "i \<subseteq> sbelow_halfspace sctn - guards"
+    "fst ` (A \<union> B) \<subseteq> sbelow_halfspace sctn"
+    "fst ` PS \<subseteq> Csafe "
+    "fst ` PS2 \<subseteq> Csafe "
+    \<open>X = A \<union> B\<close>
+  assumes ivl: "closed ivl" "ivl \<subseteq> plane_of sctn"
+  assumes normal_Basis: "\<bar>normal sctn\<bar> \<in> Basis"
+    and inter_empties: "fst ` Y \<inter> GUARDS = {}" "fst ` CX' \<inter> GUARDS = {}"
+    "fst ` PDP' \<inter> GUARDS = {}" "fst ` PDP'' \<inter> GUARDS = {}"
+    and h': "0 < h'" "h' \<le> h"
+    and safe: "fst ` PDP \<subseteq> Csafe" "fst ` CX' \<subseteq> Csafe"
+    "fst ` PDP' \<subseteq> Csafe"
+    "fst ` PDP'' \<subseteq> Csafe"
+    and PDP:
+    "\<forall>(x,d)\<in>CX'. (x,
+            d - (blinfun_scaleR_left (ode x) o\<^sub>L
+                  (blinfun_scaleR_left (inverse (ode x \<bullet> \<bar>normal sctn\<bar>)) o\<^sub>L
+                  (blinfun_inner_left \<bar>normal sctn\<bar> o\<^sub>L d))))
+               \<in> PDP"
+    and PDP': "PDP \<inter> plane_of sctn \<times> UNIV \<subseteq> PDP'"
+    and PDP'': "PDP \<inter> plane_of sctn \<times> UNIV \<subseteq> PDP''"
+    and evin:
+    "\<forall>x\<in>PDP'. fst x \<in> ivl \<and> (\<forall>\<^sub>F x in at (fst x) within plane_of sctn. x \<in> ivl)"
+    "\<forall>x\<in>PDP''. fst x \<in> ivl \<and> (\<forall>\<^sub>F x in at (fst x) within plane_of sctn. x \<in> ivl)"
+    and through: "\<forall>(x, d)\<in>PDP. ode x \<bullet> \<bar>normal sctn\<bar> \<noteq> 0"
+    "\<forall>x\<in>PDP'. ode (fst x) \<bullet> normal sctn \<noteq> 0"
+    "\<forall>x\<in>PDP''. ode (fst x) \<bullet> normal sctn \<noteq> 0"
+    and plane:
+    "fst ` PDP' \<subseteq> plane_of sctn"
+    "fst ` PDP'' \<subseteq> plane_of sctn"
+    and flowpipe: "flowpipe X' h' h' CX' Y"
+  shows "\<exists>A B. X = A \<union> B \<and>
+        flowsto A {0<..} ((fst ` CX' \<inter> sbelow_halfspace sctn \<union> i) \<times> UNIV) (Y \<inter> sbelow_halfspace sctn \<times> UNIV) \<and>
+        poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} B UNIV (fst ` CX' \<inter> sbelow_halfspace sctn \<union> i) (PDP' \<union> PS) \<and>
+        poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} B UNIV (fst ` CX' \<inter> sbelow_halfspace sctn \<union> i) (PDP'' \<union> PS2)"
+proof -
+  from flowpipe
+  have 1: "flowpipe (X' \<inter> (sbelow_halfspace sctn) \<times> UNIV) h' h' CX' Y"
+    by (rule flowpipe_subset) (use flowpipe in \<open>auto dest!: flowpipe_safeD\<close>)
+  have 2: "fst ` (X' \<inter> (sbelow_halfspace sctn) \<times> UNIV) \<inter> {x. pstn sctn \<le> x \<bullet> normal sctn} = {}"
+    by (auto simp: halfspace_simps plane_of_def)
+  from normal_Basis have 3: "normal sctn \<noteq> 0"
+    by (auto simp: )
+  note 4 = \<open>closed ivl\<close>
+  from \<open>ivl \<subseteq> plane_of sctn\<close> have 5: "ivl \<subseteq> plane (normal sctn) (pstn sctn)"
+    by (auto simp: plane_of_def)
+  have 6: "(x, d) \<in> CX' \<Longrightarrow> x \<in> plane (normal sctn) (pstn sctn) \<Longrightarrow>
+          (x, d - (blinfun_scaleR_left (ode x) o\<^sub>L
+                   (blinfun_scaleR_left (inverse (ode x \<bullet> normal sctn)) o\<^sub>L (blinfun_inner_left (normal sctn) o\<^sub>L d))))
+          \<in> PDP' \<inter> PDP''" for x d
+    unfolding PDP_abs_lemma[OF normal_Basis]
+    apply (drule PDP[rule_format, of "(x, d)", unfolded split_beta' fst_conv snd_conv])
+    using PDP' PDP''
+    by (auto simp: plane_of_def)
+  from normal_Basis through
+  have 7: "(x, d) \<in> PDP' \<Longrightarrow> ode x \<bullet> normal sctn \<noteq> 0" for x d
+    by (auto elim!: abs_in_BasisE)
+  have 8: "(x, d) \<in> PDP' \<Longrightarrow> x \<in> ivl" for x d
+    using evin by auto
+  have 9: "(x, d) \<in> PDP' \<Longrightarrow> \<forall>\<^sub>F x in at x within plane (normal sctn) (pstn sctn). x \<in> ivl" for x d
+    using evin by (auto simp add: plane_of_def)
+  obtain X1 X2
+    where X1X2: "X' \<inter> sbelow_halfspace sctn \<times> UNIV = X1 \<union> X2"
+      and X1: "flowsto X1 {0<..h'} (CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn} \<times> UNIV)
+                      (CX' \<inter> {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} \<times> UNIV)"
+      and X2: "flowsto X2 {h'..h'} (CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn} \<times> UNIV)
+                      (Y \<inter> {x. x \<bullet> normal sctn < pstn sctn} \<times> UNIV)"
+      and P: "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} X1 UNIV
+                      (fst ` CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn}) (PDP' \<inter> PDP'')"
+    by (rule flowpipe_split_at_above_halfspace[OF 1 2 3 4 5 6 7 8 9]) (auto simp: Ball_def)
+  from \<open>flowsto A _ _ _\<close>[unfolded X1X2]
+  obtain p1 p2 where p1p2: "A = p1 \<union> p2" and p1: "flowsto p1 T (i \<times> UNIV) X1" and p2: "flowsto p2 T (i \<times> UNIV) X2"
+    by (rule flowsto_unionE)
+  have "A \<union> B = p2 \<union> (p1 \<union> B)" using \<open>A = p1 \<union> p2\<close>
+    by auto
+  moreover
+  from flowsto_trans[OF p2 X2]
+  have "flowsto p2 {0<..} ((fst ` CX' \<inter> (sbelow_halfspace sctn) \<union> i) \<times> UNIV)
+           (Y \<inter> (sbelow_halfspace sctn) \<times> UNIV)"
+    apply (rule flowsto_subset)
+    subgoal by (auto simp: halfspace_simps)
+    subgoal using h' \<open>T \<subseteq> _\<close> by (auto simp: halfspace_simps intro!: add_nonneg_pos)
+    subgoal
+      using flowpipe_source_subset[OF 1, unfolded X1X2] X1X2
+      apply auto
+      by (auto simp: halfspace_simps)
+    subgoal by (auto simp: halfspace_simps)
+    done
+  moreover
+  have cls: "closed {x \<in> ivl. x \<bullet> normal sctn = pstn sctn}"
+    by (rule closed_levelset_within continuous_intros \<open>closed ivl\<close>)+
+  from flowsto_trans[OF p1 X1]
+  have ftt: "flowsto p1 ({s + t |s t. s \<in> T \<and> t \<in> {0<..h'}})
+       (i \<times> UNIV \<union> CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn} \<times> UNIV \<union> X1 \<inter> X1)
+       (X1 - X1 \<union> CX' \<inter> {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} \<times> UNIV)"
+    by auto
+  from X1X2 have X1_sb: "X1 \<subseteq> sbelow_halfspace sctn \<times> UNIV" by auto
+  have "{x \<in> ivl. x \<bullet> normal sctn = pstn sctn} \<times> UNIV \<inter> (i \<times> UNIV \<union> CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn} \<times> UNIV \<union> X1) = {}"
+    apply (intro Int_Un_eq_emptyI)
+    subgoal using \<open>i \<subseteq> sbelow_halfspace sctn - guards\<close> by (auto simp: halfspace_simps)
+    subgoal by (auto simp: halfspace_simps)
+    subgoal using X1_sb by (auto simp: halfspace_simps)
+    done
+  then have inter_empty:
+    "{x \<in> ivl. x \<bullet> normal sctn = pstn sctn} \<times> UNIV \<inter> (i \<times> UNIV \<union> CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn} \<times> UNIV \<union> X1 \<inter> X1) = {}"
+    by auto
+  have p1ret: "returns_to {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} x"
+    and p1pm: "poincare_map {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} x \<in> fst ` (PDP' \<inter> PDP'')"
+    if "(x, d) \<in> p1" for x d
+     apply (rule flowsto_poincareD[OF ftt _ inter_empty _ _ _ order_refl])
+    subgoal by auto
+    subgoal by fact
+    subgoal using \<open>T \<subseteq> _\<close> by auto
+    subgoal using that by auto
+    subgoal
+      apply (rule flowsto_poincareD[OF ftt _ inter_empty])
+      subgoal by auto
+      subgoal by fact
+      subgoal using \<open>T \<subseteq> _\<close> by auto
+      subgoal using that by auto
+      subgoal using 6 by force
+      done
+    done
+  have crt: "isCont (return_time {x \<in> ivl. x \<bullet> normal sctn - pstn sctn = 0}) x" if "(x, d) \<in> p1" for x d
+    apply (rule return_time_isCont_outside[where Ds="\<lambda>_. blinfun_inner_left (normal sctn)"])
+    subgoal by (simp add: p1ret[OF that])
+    subgoal by fact
+    subgoal by (auto intro!: derivative_eq_intros)
+    subgoal by simp
+    subgoal apply simp
+      using p1pm[OF that]
+      by (auto dest!: 7)
+    subgoal
+      using p1pm[OF that]
+      by (auto dest!: 9 simp: eventually_at_filter)
+    subgoal
+      using \<open>fst ` (A \<union> B) \<subseteq> sbelow_halfspace sctn\<close> that p1p2
+      by (auto simp: halfspace_simps)
+    done
+  have pmij: "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} p1 UNIV
+        (fst ` (i \<times> UNIV \<union> X1) \<union> fst ` CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn}) (PDP' \<inter> PDP'')"
+    apply (rule flowsto_poincare_trans[OF \<open>flowsto _ _ _ X1\<close> P])
+    subgoal using \<open>T \<subseteq> {0..}\<close> by auto
+    subgoal by auto
+    subgoal
+      using \<open>i \<subseteq> sbelow_halfspace sctn - guards\<close> X1X2
+      by (force simp: halfspace_simps)
+    subgoal by fact
+    subgoal for x d using crt by simp
+    subgoal by auto
+    done
+  from pmij have "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} p1 UNIV (fst ` (i \<times> UNIV \<union> X1) \<union> fst ` CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn}) PDP'"
+    apply (rule poincare_mapsto_subset)
+    using \<open>fst ` PDP' \<subseteq> Csafe\<close>
+    by auto
+  from this \<open>poincare_mapsto _ _ _ i PS\<close>
+  have "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} (p1 \<union> B) UNIV
+      ((fst ` (i \<times> UNIV \<union> X1) \<union> fst ` CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn}) \<union> i) (PDP' \<union> PS)"
+    by (intro poincare_mapsto_unionI) (auto simp: plane_of_def)
+  then have "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} (p1 \<union> B) UNIV (fst ` CX' \<inter> sbelow_halfspace sctn \<union> i) (PDP' \<union> PS)"
+    apply (rule poincare_mapsto_subset)
+    subgoal by auto
+    subgoal by auto
+    subgoal
+      using flowpipe_source_subset[OF 1, unfolded X1X2] X1X2 
+      apply (auto simp: halfspace_simps subset_iff)
+      done
+    subgoal using safe \<open>fst ` PS \<subseteq> Csafe\<close> by auto
+    done
+  moreover
+  from pmij have "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} p1 UNIV (fst ` (i \<times> UNIV \<union> X1) \<union> fst ` CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn}) PDP''"
+    apply (rule poincare_mapsto_subset)
+    using \<open>fst ` PDP'' \<subseteq> Csafe\<close>
+    by auto
+  from this \<open>poincare_mapsto _ _ _ i PS2\<close>
+  have "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} (p1 \<union> B) UNIV
+      ((fst ` (i \<times> UNIV \<union> X1) \<union> fst ` CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn}) \<union> i) (PDP'' \<union> PS2)"
+    by (intro poincare_mapsto_unionI) (auto simp: plane_of_def)
+  then have "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} (p1 \<union> B) UNIV (fst ` CX' \<inter> sbelow_halfspace sctn \<union> i) (PDP'' \<union> PS2)"
+    apply (rule poincare_mapsto_subset)
+    subgoal by auto
+    subgoal by auto
+    subgoal
+      using flowpipe_source_subset[OF 1, unfolded X1X2] X1X2
+      apply (auto simp: halfspace_simps subset_iff)
+      done
+    subgoal using safe \<open>fst ` PS2 \<subseteq> Csafe\<close> by auto
+    done
+  ultimately
+  show ?thesis
+    unfolding \<open>X = A \<union> B\<close> by blast
+qed
+
 lemma do_intersection_body_spec:
   fixes guards::"'n::enum rvec set"
   assumes invar: "do_intersection_invar guards GUARDS ivl sctn X (X', T, PS, PS2, i, True, True)"
-    and wdp[refine_vcg]: "vwd_step TYPE('n)"
+    and wdp[refine_vcg]: "wd TYPE('n rvec)"
     and X: "fst ` X \<subseteq> Csafe"
     and ivl: "closed ivl" and GUARDS: "guards \<subseteq> GUARDS"
-  notes [refine_vcg] = vwd_step vwd_stepD[OF wdp]
   shows "do_intersection_body GUARDS ivl sctn h (X', T, PS, PS2, i, True, True) \<le>
     SPEC (do_intersection_invar guards GUARDS ivl sctn X)"
 proof -
@@ -597,17 +800,27 @@ proof -
     "fst ` PS2 \<subseteq> Csafe "
     "i \<subseteq> Csafe "
     "fst ` X' \<subseteq> Csafe "
-    "T \<subseteq> {0..} "
+    "T \<subseteq> {0..}"
     "i \<subseteq> sbelow_halfspace sctn - guards "
     "X' \<subseteq> (- guards) \<times> UNIV "
     "fst ` (PS \<union> PS2) \<inter> guards = {} "
     "0 \<notin> (\<lambda>x. ode x \<bullet> normal sctn) ` fst ` (PS \<union> PS2) "
     "\<forall>x\<in>PS \<union> PS2. \<forall>\<^sub>F x in at (fst x) within plane_of sctn. x \<in> ivl "
     "X = A \<union> B "
-    "flowsto A T (i \<times> UNIV) (X' \<inter> sbelow_halfspace sctn \<times> UNIV) "
+    "flowsto A T (i \<times> UNIV) (X' \<inter> sbelow_halfspace sctn \<times> UNIV)"
     "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} B UNIV i PS "
     "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} B UNIV i PS2"
     by (auto simp: do_intersection_invar_def)
+
+  have ev_in_ivl: "\<forall>\<^sub>F x in at p within plane_of sctn. x \<in> ivl" if
+    \<open>\<forall>x\<in>d. fst x \<in> ivl \<and> (\<forall>\<^sub>F x in at (fst x) within plane_of sctn. x \<in> ivl)\<close>
+    \<open>\<forall>x\<in>e. fst x \<in> ivl \<and> (\<forall>\<^sub>F x in at (fst x) within plane_of sctn. x \<in> ivl)\<close>
+    \<open>(p, q) \<in> d \<or> (p, q) \<in> PS \<or> (p, q) \<in> e \<or> (p, q) \<in> PS2\<close>
+    for p q d e
+      using \<open>\<forall>x\<in>PS \<union> PS2. \<forall>\<^sub>F x in at (fst x) within plane_of sctn. x \<in> ivl\<close>
+      using that
+      by (auto dest!: bspec[where x="(p, q)"])
+
   show ?thesis
     unfolding do_intersection_body_def do_intersection_invar_def
     apply simp
@@ -636,206 +849,14 @@ proof -
     subgoal using AB GUARDS by auto
     subgoal using AB GUARDS by auto\<comment> \<open>unnecessarily slow\<close>
     subgoal using AB GUARDS by auto
-    subgoal premises prems for GUARDS b c d e f g h i j k l m n p q
-      using \<open>\<forall>x\<in>PS \<union> PS2. \<forall>\<^sub>F x in at (fst x) within plane_of sctn. x \<in> ivl\<close>
-      using \<open>\<forall>x\<in>d. fst x \<in> ivl \<and> (\<forall>\<^sub>F x in at (fst x) within plane_of sctn. x \<in> ivl)\<close>
-      using \<open>\<forall>x\<in>e. fst x \<in> ivl \<and> (\<forall>\<^sub>F x in at (fst x) within plane_of sctn. x \<in> ivl)\<close>
-        \<open>(p, q) \<in> d \<or> (p, q) \<in> PS \<or> (p, q) \<in> e \<or> (p, q) \<in> PS2\<close>
-      by (auto dest!: bspec[where x="(p, q)"])
-    subgoal for h' CX' PDP PDP' PDP'' b1 b2 b3 b4 b5 b6 Y b7 b8
-    proof -
-      assume normal_Basis: "\<bar>normal sctn\<bar> \<in> Basis"
-        and inter_empties: "fst ` Y \<inter> GUARDS = {}" "fst ` CX' \<inter> GUARDS = {}"
-        "fst ` PDP' \<inter> GUARDS = {}" "fst ` PDP'' \<inter> GUARDS = {}"
-        and h': "0 < h'" "h' \<le> h"
-        and safe: "fst ` PDP \<subseteq> Csafe" "fst ` CX' \<subseteq> Csafe"
-        "fst ` PDP' \<subseteq> Csafe"
-        "fst ` PDP'' \<subseteq> Csafe"
-        and PDP:
-        "\<forall>(x,d)\<in>CX'. (x,
-            d - (blinfun_scaleR_left (ode x) o\<^sub>L
-                  (blinfun_scaleR_left (inverse (ode x \<bullet> \<bar>normal sctn\<bar>)) o\<^sub>L
-                  (blinfun_inner_left \<bar>normal sctn\<bar> o\<^sub>L d))))
-               \<in> PDP"
-        and PDP': "PDP \<inter> plane_of sctn \<times> UNIV \<subseteq> PDP'"
-        and PDP'': "PDP \<inter> plane_of sctn \<times> UNIV \<subseteq> PDP''"
-        and evin:
-        "\<forall>x\<in>PDP'. fst x \<in> ivl \<and> (\<forall>\<^sub>F x in at (fst x) within plane_of sctn. x \<in> ivl)"
-        "\<forall>x\<in>PDP''. fst x \<in> ivl \<and> (\<forall>\<^sub>F x in at (fst x) within plane_of sctn. x \<in> ivl)"
-        and through: "\<forall>(x, d)\<in>PDP. ode x \<bullet> \<bar>normal sctn\<bar> \<noteq> 0"
-        "\<forall>x\<in>PDP'. ode (fst x) \<bullet> normal sctn \<noteq> 0"
-        "\<forall>x\<in>PDP''. ode (fst x) \<bullet> normal sctn \<noteq> 0"
-        and plane:
-        "fst ` PDP' \<subseteq> plane_of sctn"
-        "fst ` PDP'' \<subseteq> plane_of sctn"
-        and flowpipe: "flowpipe X' h' h' CX' Y"
-
-      from flowpipe
-      have 1: "flowpipe (X' \<inter> (sbelow_halfspace sctn) \<times> UNIV) h' h' CX' Y"
-        by (rule flowpipe_subset) (use flowpipe in \<open>auto dest!: flowpipe_safeD\<close>)
-      have 2: "fst ` (X' \<inter> (sbelow_halfspace sctn) \<times> UNIV) \<inter> {x. pstn sctn \<le> x \<bullet> normal sctn} = {}"
-        by (auto simp: halfspace_simps plane_of_def)
-      from normal_Basis have 3: "normal sctn \<noteq> 0"
-        by (auto simp: )
-      note 4 = \<open>closed ivl\<close>
-      from \<open>ivl \<subseteq> plane_of sctn\<close> have 5: "ivl \<subseteq> plane (normal sctn) (pstn sctn)"
-        by (auto simp: plane_of_def)
-      have 6: "(x, d) \<in> CX' \<Longrightarrow> x \<in> plane (normal sctn) (pstn sctn) \<Longrightarrow>
-          (x, d - (blinfun_scaleR_left (ode x) o\<^sub>L
-                   (blinfun_scaleR_left (inverse (ode x \<bullet> normal sctn)) o\<^sub>L (blinfun_inner_left (normal sctn) o\<^sub>L d))))
-          \<in> PDP' \<inter> PDP''" for x d
-        unfolding PDP_abs_lemma[OF normal_Basis]
-        apply (drule PDP[rule_format, of "(x, d)", unfolded split_beta' fst_conv snd_conv])
-        using PDP' PDP''
-        by (auto simp: plane_of_def)
-      from normal_Basis through
-      have 7: "(x, d) \<in> PDP' \<Longrightarrow> ode x \<bullet> normal sctn \<noteq> 0" for x d
-        by (auto elim!: abs_in_BasisE)
-      have 8: "(x, d) \<in> PDP' \<Longrightarrow> x \<in> ivl" for x d
-        using evin by auto
-      have 9: "(x, d) \<in> PDP' \<Longrightarrow> \<forall>\<^sub>F x in at x within plane (normal sctn) (pstn sctn). x \<in> ivl" for x d
-        using evin by (auto simp add: plane_of_def)
-      obtain X1 X2
-        where X1X2: "X' \<inter> sbelow_halfspace sctn \<times> UNIV = X1 \<union> X2"
-          and X1: "flowsto X1 {0<..h'} (CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn} \<times> UNIV)
-                      (CX' \<inter> {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} \<times> UNIV)"
-          and X2: "flowsto X2 {h'..h'} (CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn} \<times> UNIV)
-                      (Y \<inter> {x. x \<bullet> normal sctn < pstn sctn} \<times> UNIV)"
-          and P: "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} X1 UNIV
-                      (fst ` CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn}) (PDP' \<inter> PDP'')"
-        by (rule flowpipe_split_at_above_halfspace[OF 1 2 3 4 5 6 7 8 9]) (auto simp: Ball_def)
-    from \<open>flowsto A _ _ _\<close>[unfolded X1X2]
-    obtain p1 p2 where p1p2: "A = p1 \<union> p2" and p1: "flowsto p1 T (i \<times> UNIV) X1" and p2: "flowsto p2 T (i \<times> UNIV) X2"
-      by (rule flowsto_unionE)
-    have "A \<union> B = p2 \<union> (p1 \<union> B)" using \<open>A = p1 \<union> p2\<close>
-      by auto
-    moreover
-    from flowsto_trans[OF p2 X2]
-    have "flowsto p2 {0<..} ((fst ` CX' \<inter> (sbelow_halfspace sctn) \<union> i) \<times> UNIV)
-           (Y \<inter> (sbelow_halfspace sctn) \<times> UNIV)"
-      apply (rule flowsto_subset)
-      subgoal by (auto simp: halfspace_simps)
-      subgoal using h' \<open>T \<subseteq> _\<close> by (auto simp: halfspace_simps intro!: add_nonneg_pos)
-      subgoal
-        using flowpipe_source_subset[OF 1, unfolded X1X2] X1X2
-        apply auto
-        by (auto simp: halfspace_simps)
-      subgoal by (auto simp: halfspace_simps)
-      done
-    moreover
-    have cls: "closed {x \<in> ivl. x \<bullet> normal sctn = pstn sctn}"
-      by (rule closed_levelset_within continuous_intros \<open>closed ivl\<close>)+
-    from flowsto_trans[OF p1 X1]
-    have ftt: "flowsto p1 ({s + t |s t. s \<in> T \<and> t \<in> {0<..h'}})
-       (i \<times> UNIV \<union> CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn} \<times> UNIV \<union> X1 \<inter> X1)
-       (X1 - X1 \<union> CX' \<inter> {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} \<times> UNIV)"
-      by auto
-    from X1X2 have X1_sb: "X1 \<subseteq> sbelow_halfspace sctn \<times> UNIV" by auto
-    have "{x \<in> ivl. x \<bullet> normal sctn = pstn sctn} \<times> UNIV \<inter> (i \<times> UNIV \<union> CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn} \<times> UNIV \<union> X1) = {}"
-      apply (intro Int_Un_eq_emptyI)
-      subgoal using \<open>i \<subseteq> sbelow_halfspace sctn - guards\<close> by (auto simp: halfspace_simps)
-      subgoal by (auto simp: halfspace_simps)
-      subgoal using X1_sb by (auto simp: halfspace_simps)
-      done
-    then have inter_empty:
-      "{x \<in> ivl. x \<bullet> normal sctn = pstn sctn} \<times> UNIV \<inter> (i \<times> UNIV \<union> CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn} \<times> UNIV \<union> X1 \<inter> X1) = {}"
-      by auto
-    have p1ret: "returns_to {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} x"
-      and p1pm: "poincare_map {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} x \<in> fst ` (PDP' \<inter> PDP'')"
-      if "(x, d) \<in> p1" for x d
-       apply (rule flowsto_poincareD[OF ftt _ inter_empty _ _ _ order_refl])
-      subgoal by auto
-      subgoal by fact
-      subgoal using \<open>T \<subseteq> _\<close> by auto
-      subgoal using that by auto
-      subgoal
-        apply (rule flowsto_poincareD[OF ftt _ inter_empty])
-        subgoal by auto
-        subgoal by fact
-        subgoal using \<open>T \<subseteq> _\<close> by auto
-        subgoal using that by auto
-        subgoal using 6 by force
-        done
-      done
-    have crt: "isCont (return_time {x \<in> ivl. x \<bullet> normal sctn - pstn sctn = 0}) x" if "(x, d) \<in> p1" for x d
-      apply (rule return_time_isCont_outside[where Ds="\<lambda>_. blinfun_inner_left (normal sctn)"])
-      subgoal by (simp add: p1ret[OF that])
-      subgoal by fact
-      subgoal by (auto intro!: derivative_eq_intros)
-      subgoal by simp
-      subgoal apply simp
-        using p1pm[OF that]
-        by (auto dest!: 7)
-      subgoal
-        using p1pm[OF that]
-        by (auto dest!: 9 simp: eventually_at_filter)
-      subgoal
-        using \<open>fst ` (A \<union> B) \<subseteq> sbelow_halfspace sctn\<close> that p1p2
-        by (auto simp: halfspace_simps)
-      done
-    have pmij: "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} p1 UNIV
-        (fst ` (i \<times> UNIV \<union> X1) \<union> fst ` CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn}) (PDP' \<inter> PDP'')"
-      apply (rule flowsto_poincare_trans[OF \<open>flowsto _ _ _ X1\<close> P])
-      subgoal using \<open>T \<subseteq> {0..}\<close> by auto
-      subgoal by auto
-      subgoal
-        using \<open>i \<subseteq> sbelow_halfspace sctn - guards\<close> X1X2
-        by (force simp: halfspace_simps)
-      subgoal by fact
-      subgoal for x d using crt by simp
-      subgoal by auto
-      done
-    from pmij have "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} p1 UNIV (fst ` (i \<times> UNIV \<union> X1) \<union> fst ` CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn}) PDP'"
-      apply (rule poincare_mapsto_subset)
-      using \<open>fst ` PDP' \<subseteq> Csafe\<close>
-      by auto
-    from this \<open>poincare_mapsto _ _ _ i PS\<close>
-    have "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} (p1 \<union> B) UNIV
-      ((fst ` (i \<times> UNIV \<union> X1) \<union> fst ` CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn}) \<union> i) (PDP' \<union> PS)"
-      by (intro poincare_mapsto_unionI) (auto simp: plane_of_def)
-    then have "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} (p1 \<union> B) UNIV (fst ` CX' \<inter> sbelow_halfspace sctn \<union> i) (PDP' \<union> PS)"
-      apply (rule poincare_mapsto_subset)
-      subgoal by auto
-      subgoal by auto
-      subgoal
-        using flowpipe_source_subset[OF 1, unfolded X1X2] X1X2 
-        apply (auto simp: halfspace_simps subset_iff)
-        done
-      subgoal using safe \<open>fst ` PS \<subseteq> Csafe\<close> by auto
-      done
-    moreover
-    from pmij have "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} p1 UNIV (fst ` (i \<times> UNIV \<union> X1) \<union> fst ` CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn}) PDP''"
-      apply (rule poincare_mapsto_subset)
-      using \<open>fst ` PDP'' \<subseteq> Csafe\<close>
-      by auto
-    from this \<open>poincare_mapsto _ _ _ i PS2\<close>
-    have "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} (p1 \<union> B) UNIV
-      ((fst ` (i \<times> UNIV \<union> X1) \<union> fst ` CX' \<inter> {x. x \<bullet> normal sctn < pstn sctn}) \<union> i) (PDP'' \<union> PS2)"
-      by (intro poincare_mapsto_unionI) (auto simp: plane_of_def)
-    then have "poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} (p1 \<union> B) UNIV (fst ` CX' \<inter> sbelow_halfspace sctn \<union> i) (PDP'' \<union> PS2)"
-      apply (rule poincare_mapsto_subset)
-      subgoal by auto
-      subgoal by auto
-      subgoal
-        using flowpipe_source_subset[OF 1, unfolded X1X2] X1X2
-        apply (auto simp: halfspace_simps subset_iff)
-        done
-      subgoal using safe \<open>fst ` PS2 \<subseteq> Csafe\<close> by auto
-      done
-    ultimately
-    show "\<exists>A B. X = A \<union> B \<and>
-        flowsto A {0<..} ((fst ` CX' \<inter> sbelow_halfspace sctn \<union> i) \<times> UNIV) (Y \<inter> sbelow_halfspace sctn \<times> UNIV) \<and>
-        poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} B UNIV (fst ` CX' \<inter> sbelow_halfspace sctn \<union> i) (PDP' \<union> PS) \<and>
-        poincare_mapsto {x \<in> ivl. x \<bullet> normal sctn = pstn sctn} B UNIV (fst ` CX' \<inter> sbelow_halfspace sctn \<union> i) (PDP'' \<union> PS2)"
-      unfolding \<open>X = A \<union> B\<close> by blast
-    qed
+    subgoal using AB assms by (auto intro: ev_in_ivl)
+    subgoal using AB assms apply - by (rule do_intersection_body_lemma)
     done
 qed
 
 lemma
   do_intersection_spec[le, refine_vcg]:
-  assumes wdp: "vwd_step (TYPE('n::enum))"
-  notes [refine_vcg] = vwd_step vwd_stepD[OF wdp]
+  assumes wd[refine_vcg]: "wd (TYPE('n::enum rvec))"
   shows "do_intersection guards ivl sctn (X::'n eucl1 set) h \<le>
     SPEC (\<lambda>(inside, P, P2, CX). (inside \<longrightarrow>
       (do_intersection_spec UNIV guards ivl sctn X (P, CX) \<and>
@@ -928,12 +949,12 @@ lemma reduce_spec1e[le, refine_vcg]: "reduce_spec1e ro X \<le> SPEC (\<lambda>R.
   by refine_vcg (auto simp: scaleR2_def image_def vimage_def, force)
 
 lemma split_under_threshold[le, refine_vcg]:
-  "split_under_threshold t th X \<le> SPEC (\<lambda>R. X \<subseteq> R)"
+  "split_under_threshold ro th X \<le> SPEC (\<lambda>R. X \<subseteq> R)"
   unfolding split_under_threshold_def autoref_tag_defs
   by (refine_vcg) auto
 
 lemma step_split[le, refine_vcg]:
-  "wd TYPE((real, 'n::enum) vec) \<Longrightarrow> step_split roptns (X::'n eucl1 set) \<le> SPEC (\<lambda>Y. X \<subseteq> Y \<and> fst ` Y \<subseteq> Csafe)"
+  "wd TYPE((real, 'n::enum) vec) \<Longrightarrow> step_split ro (X::'n eucl1 set) \<le> SPEC (\<lambda>Y. X \<subseteq> Y \<and> fst ` Y \<subseteq> Csafe)"
   unfolding step_split_def
   by (refine_vcg refine_vcg) auto
 
@@ -941,12 +962,6 @@ lemma tolerate_error_SPEC[THEN order_trans, refine_vcg]:
   "tolerate_error Y E \<le> SPEC (\<lambda>b. True)"
   unfolding tolerate_error_def
   by refine_vcg
-
-
-lemma interpret_adapt_stepsize_fa:
-  "interpret_floatarith (adapt_stepsize_fa e h') []
-    = float_of h' * (float_of(adaptive_rtol optns) / float_of e) powr (1 / (float_of (method_id optns) + 1))"
-  by (auto simp: inverse_eq_divide adapt_stepsize_fa_def)
 
 lemma flowpipe_scaleR2I: "flowpipe (scaleR2 x1 x2 bc) x1a x1a (fst ` aca \<times> UNIV) (scaleR2 x1 x2 bca)"
   if "flowpipe (bc) x1a x1a (fst ` aca \<times> UNIV) (bca)"
@@ -959,7 +974,7 @@ lemma flowpipe_scaleR2I: "flowpipe (scaleR2 x1 x2 bc) x1a x1a (fst ` aca \<times
   by (auto simp: scaleR_blinfun_compose_right)
 
 lemma choose_step1e_flowpipe[le, refine_vcg]:
-  assumes vwd[refine_vcg]: "vwd_step TYPE('n::enum)"
+  assumes vwd[refine_vcg]: "wd TYPE('n::enum rvec)"
   shows "choose_step1e (X0::'n eucl1 set) h \<le> SPEC (\<lambda>(h', _, RES_ivl, RES::'n eucl1 set).
       0 < h' \<and> h' \<le> h \<and> flowpipe X0 h' h' (RES_ivl \<times> UNIV) RES)"
   unfolding choose_step1e_def
@@ -976,10 +991,14 @@ lemma width_spec_appr1[THEN order_trans, refine_vcg]: "width_spec_appr1 X \<le> 
   unfolding width_spec_appr1_def
   by refine_vcg
 
+lemma tolerate_error1_SPEC[THEN order_trans, refine_vcg]:
+  "tolerate_error1 Y E \<le> SPEC (\<lambda>b. True)"
+  unfolding tolerate_error1_def
+  by refine_vcg
+
 lemma
   step_adapt_time[le, refine_vcg]:
-  assumes wdp: "vwd_step (TYPE('n::enum))"
-  notes [refine_vcg] = wdp vwd_step vwd_stepD[OF wdp]
+  assumes wd[refine_vcg]: "wd (TYPE('n::enum rvec))"
   shows "step_adapt_time (X::'n eucl1 set) h \<le> SPEC (\<lambda>(t, CX, X1, h). flowpipe X t t (CX \<times> UNIV) X1)"
   unfolding step_adapt_time_def  autoref_tag_defs
   apply (refine_vcg refine_vcg, clarsimp)
@@ -989,8 +1008,7 @@ lemma
 
 lemma
   resolve_step[le, refine_vcg]:
-  assumes wdp: "vwd_step (TYPE('n::enum))"
-  notes [refine_vcg] = wdp vwd_step vwd_stepD[OF wdp]
+  assumes wd[refine_vcg]: "wd (TYPE('n::enum rvec))"
   shows "resolve_step roptns (X::'n::enum eucl1 set) h \<le> SPEC (\<lambda>(_, CX, X1, _).
     flowsto X {0..} (CX \<times> UNIV) X1 \<and> X \<union> X1 \<subseteq> CX \<times> UNIV \<and> X1 \<union> CX \<times> UNIV \<subseteq> Csafe \<times> UNIV)"
   unfolding resolve_step_def  autoref_tag_defs
@@ -1051,8 +1069,7 @@ lemma scaleR2_rep_of_coll2[le, refine_vcg]:
   done
 
 lemma reach_cont[le, refine_vcg]:
-  assumes wdp: "vwd_step (TYPE('n::enum))"
-  notes [refine_vcg] = wdp vwd_step vwd_stepD[OF wdp]
+  assumes wd[refine_vcg]: "wd (TYPE('n::enum rvec))"
   shows "reach_cont roptns guards (X::'n eucl1 set) \<le> SPEC (\<lambda>(CX, G).
     G \<union> (CX \<times> UNIV) \<subseteq> (Csafe - guards) \<times> UNIV \<and>
     X \<union> G \<subseteq> CX \<times> UNIV \<and>
@@ -1062,7 +1079,7 @@ lemma reach_cont[le, refine_vcg]:
   subgoal by (rule flowsto_self) (auto simp: )
   subgoal by (force simp: scaleR2_def)
   subgoal by (fastforce simp: scaleR2_def vimage_def image_def)
-  subgoal premises prems for a b c d e f g h i j k l
+  subgoal premises prems for _ _ _ _ _ _ _ g
     using \<open>flowsto X _ _ (g \<union> _ \<union> _)\<close>  \<open>flowsto g _ _ _\<close>
     apply (rule flowsto_stepI)
     using prems
@@ -1122,8 +1139,7 @@ lemma reach_cont[le, refine_vcg]:
   done
 
 lemma reach_cont_par[le, refine_vcg]:
-  assumes wdp: "vwd_step (TYPE('n::enum))"
-  notes [refine_vcg] = wdp vwd_step vwd_stepD[OF wdp]
+  assumes wd[refine_vcg]: "wd (TYPE('n::enum rvec))"
   shows "reach_cont_par roptns guards (X::'n eucl1 set) \<le> SPEC (\<lambda>(CX, G).
     G \<union> (CX \<times> UNIV) \<subseteq> (Csafe - guards) \<times> UNIV \<and>
     X \<union> G \<subseteq> CX \<times> UNIV \<and>
@@ -1184,9 +1200,8 @@ lemma symstart_coll[THEN order_trans, refine_vcg]:
   done
 
 lemma reach_cont_symstart[le, refine_vcg]:
-  assumes wdp: "vwd_step (TYPE('n::enum))"
+  assumes wd[refine_vcg]: "wd (TYPE('n::enum rvec))"
   assumes [le, refine_vcg]: "\<And>X0. X0 \<subseteq> Csafe \<times> UNIV \<Longrightarrow> symstart X0 \<le> SPEC (\<lambda>(CX, X). flowsto (X0 - trap \<times> UNIV) {0..} (CX \<times> UNIV) (X))"
-  notes [refine_vcg] = wdp vwd_step vwd_stepD[OF wdp]
   shows "reach_cont_symstart roptns symstart guards (X::'n eucl1 set) \<le> SPEC (\<lambda>(CX, G).
     G \<union> (CX \<times> UNIV) \<subseteq> (Csafe - guards) \<times> UNIV \<and>
     X \<subseteq> CX \<times> UNIV \<and>
@@ -1204,9 +1219,8 @@ lemma reach_cont_symstart[le, refine_vcg]:
   done
 
 lemma reach_conts[le, refine_vcg]:
-  assumes wdp: "vwd_step (TYPE('n::enum))"
+  assumes wd[refine_vcg]: "wd (TYPE('n::enum rvec))"
   assumes [refine_vcg]: "\<And>X0. X0 \<subseteq> Csafe \<times> UNIV \<Longrightarrow> symstart X0 \<le> SPEC (\<lambda>(CX, X). flowsto (X0 - trap \<times> UNIV) {0..} (CX \<times> UNIV) X)"
-  notes [refine_vcg] = wdp vwd_step vwd_stepD[OF wdp]
   shows "reach_conts roptns symstart trap guards (X::'n eucl1 set) \<le> SPEC (\<lambda>(CX, IGs, X0).
     \<Union>(snd ` IGs) \<union> (CX \<times> UNIV) \<subseteq> (Csafe - guards) \<times> UNIV \<and>
     X \<subseteq> CX \<times> UNIV \<and>
@@ -1229,8 +1243,7 @@ lemma reach_conts[le, refine_vcg]:
   done
 
 lemma leaves_halfspace[le, refine_vcg]:
-  assumes wdp: "vwd_step (TYPE('n::enum))"
-  notes wds[refine_vcg] = wdp vwd_step vwd_stepD[OF wdp]
+  assumes wd[refine_vcg]: "wd (TYPE('n::enum rvec))"
   shows "leaves_halfspace S (X::'n::enum rvec set) \<le>
     SPEC (\<lambda>b. case b of None \<Rightarrow> S = UNIV
       | Some sctn \<Rightarrow>
@@ -1241,8 +1254,7 @@ lemma leaves_halfspace[le, refine_vcg]:
   done
 
 lemma poincare_start_on[le, refine_vcg]:
-  assumes wdp: "vwd_step (TYPE('n::enum))"
-  notes wds[refine_vcg] = wdp vwd_step vwd_stepD[OF wdp]
+  assumes wd[refine_vcg]: "wd (TYPE('n::enum rvec))"
   shows "poincare_start_on guards sctn (X0::'n eucl1 set) \<le> SPEC (\<lambda>(X1S, CX1S).
     fst ` (X1S \<union> (CX1S \<times> UNIV)) \<subseteq> Csafe \<and>
     fst ` X1S \<subseteq> sbelow_halfspace sctn \<and>
@@ -1348,8 +1360,7 @@ lemma do_intersection_spec_scaleR2I:
      (auto simp: scaleR2_def image_def vimage_def)
 
 lemma do_intersection_core[refine_vcg, le]:
-  assumes wdp: "vwd_step (TYPE('n::enum))"
-  notes [refine_vcg] = vwd_step vwd_stepD[OF wdp]
+  assumes wd[refine_vcg]: "wd (TYPE('n::enum rvec))"
   shows "do_intersection_core sctns ivl sctn (X::'n eucl1 set) \<le>
     SPEC (\<lambda>(P1, P2, CX, X0s).
       do_intersection_spec UNIV sctns ivl sctn (X - X0s) (P1, CX) \<and>
@@ -1403,7 +1414,7 @@ next
   show ?case
     apply (cases "F = {}")
     subgoal using insert by simp
-    subgoal 
+    subgoal
       apply simp
       apply (rule do_intersection_spec_union)
        apply (rule insert.prems) apply simp
@@ -1415,8 +1426,7 @@ next
 qed
 
 lemma do_intersection_coll[le]:
-  assumes wdp: "vwd_step (TYPE('n::enum))"
-  notes [refine_vcg] = vwd_step vwd_stepD[OF wdp]
+  assumes wd[refine_vcg]: "wd (TYPE('n::enum rvec))"
   shows "do_intersection_coll sctns ivl sctn (X::'n eucl1 set) \<le>
     SPEC (\<lambda>(P1, P2, CX, X0s).
       do_intersection_spec UNIV sctns ivl sctn (X - X0s) (P1, CX) \<and>
@@ -1424,7 +1434,7 @@ lemma do_intersection_coll[le]:
       \<and> fst ` (X - X0s) \<subseteq> CX
       \<and> X0s \<subseteq> X)"
   unfolding do_intersection_coll_def autoref_tag_defs
-  apply (refine_vcg wdp, clarsimp_all)
+  apply (refine_vcg, clarsimp_all)
   subgoal
     apply (rule do_intersection_spec_subset[OF _ diff_subset])
     apply (rule do_intersection_spec_Union3)
@@ -1489,7 +1499,7 @@ lemma
   done
 
 lemma do_intersection_coll_flowsto[le]:
-  assumes wdp: "vwd_step (TYPE('n::enum))"
+  assumes wd[refine_vcg]: "wd (TYPE('n::enum rvec))"
   assumes ft: "flowsto X0 {0..} (CX0 \<times> UNIV) X"
   assumes X_subset: "X \<subseteq> CX0 \<times> UNIV"
   assumes X0_subset: "X0 \<subseteq> CX0 \<times> UNIV" and CX0_safe: "CX0 \<subseteq> Csafe"
@@ -1505,7 +1515,7 @@ lemma do_intersection_coll_flowsto[le]:
         P1 \<inter> X0s = {} \<and>
         P2 \<inter> X0s = {})"
   apply (rule do_intersection_coll)
-   apply (rule wdp)
+   apply (rule wd)
 proof (clarsimp, goal_cases)
   case (1 P1 P2 CX R)
   from ft have "flowsto X0 {0..} (CX0 \<times> UNIV) (X - R \<union> R)"
@@ -1561,7 +1571,7 @@ lemma op_enlarge_ivl_sctn[le, refine_vcg]:
   done
 
 lemma resolve_ivlplanes[le]:
-  assumes wdp: "vwd_step (TYPE('a::enum))"
+  assumes wd[refine_vcg]: "wd TYPE('a::enum rvec)"
   assumes
     "\<forall>x\<in>Xg. case x of (I, G) \<Rightarrow> flowsto (XSf G) {0..} (CXS \<times> UNIV) G"
     "(\<Union>x\<in>Xg. snd x) \<subseteq> (Csafe - (ivlplanes \<union> guards)) \<times> UNIV"
@@ -1569,7 +1579,6 @@ lemma resolve_ivlplanes[le]:
     "(\<Union>a\<in>Xg. XSf (snd a)) \<subseteq> (CXS::'a rvec set) \<times> UNIV"
     "(\<Union>x\<in>Xg. snd x) \<subseteq> CXS \<times> UNIV"
     "(\<Union>x\<in>Xg. fst x) \<subseteq> ivlplanes \<union> guards"
-  notes [refine_vcg] = wdp vwd_step vwd_stepD[OF wdp]
   shows "resolve_ivlplanes guards ivlplanes Xg \<le> SPEC (\<lambda>PS.
     CXS \<inter> (guards \<union> ivlplanes) = {} \<and>
     CXS \<subseteq> Csafe \<and>
@@ -1602,7 +1611,7 @@ lemma resolve_ivlplanes[le]:
     subgoal for a b c
       apply (frule bspec, assumption, clarsimp)
       apply (rule do_intersection_coll_flowsto)
-              apply (rule wdp)
+              apply (rule wd)
              apply assumption
             apply force
            apply force
@@ -1631,7 +1640,7 @@ lemma resolve_ivlplanes[le]:
     subgoal for a b c d e f R0 P0
       apply (frule bspec, assumption, clarsimp)
       apply (rule do_intersection_coll_flowsto)
-              apply (rule wdp)
+              apply (rule wd)
              apply assumption
       subgoal
         apply (rule order_trans[where y="(\<Union>x\<in>Xg. snd x)"]) 
@@ -1693,10 +1702,9 @@ lemma resolve_ivlplanes[le]:
 
 
 lemma poincare_onto[le, refine_vcg]:
-  assumes wdp: "vwd_step (TYPE('a::enum))"
+  assumes wd[refine_vcg]: "wd TYPE('a::enum rvec)"
   assumes [refine_vcg]: "\<And>X0. X0 \<subseteq> Csafe \<times> UNIV \<Longrightarrow> symstart X0 \<le>
     SPEC (\<lambda>(CX, X). flowsto (X0 - trap \<times> UNIV) {0..} (CX \<times> UNIV) X)"
-  notes [refine_vcg] = wdp vwd_step vwd_stepD[OF wdp]
   assumes CXS0: "CXS0 \<inter> (guards \<union> ivlplanes) = {}"
   shows "poincare_onto ro symstart trap guards ivlplanes (XS0::'a eucl1 set) CXS0 \<le>
     SPEC (\<lambda>PS.
@@ -1714,7 +1722,7 @@ lemma poincare_onto[le, refine_vcg]:
   unfolding poincare_onto_def autoref_tag_defs
   using [[goals_limit=1]]
   apply (refine_vcg, clarsimp_all)
-  apply (refine_vcg resolve_ivlplanes[OF wdp])
+  apply (refine_vcg resolve_ivlplanes[OF wd])
   subgoal by force
   apply clarsimp
   subgoal for a b c d R0 P0
@@ -1767,8 +1775,7 @@ lemma empty_remainders[le, refine_vcg]:
      auto
 
 lemma poincare_onto_empty[le, refine_vcg]:
-  assumes wdp: "vwd_step (TYPE('a::enum))"
-  notes [refine_vcg] = wdp vwd_step vwd_stepD[OF wdp]
+  assumes wd[refine_vcg]: "wd TYPE('a::enum rvec)"
   assumes CXS0: "CXS0 \<inter> (guards \<union> ivlplanes) = {}"
   shows "poincare_onto_empty ro guards ivlplanes (XS0::'a eucl1 set) CXS0 \<le>
     SPEC (\<lambda>(PS).
@@ -1795,10 +1802,9 @@ lemma do_intersection_spec_union2:
   by auto
 
 lemma poincare_onto2[le, refine_vcg]:
-  assumes wdp: "vwd_step (TYPE('a::enum))"
+  assumes wd[refine_vcg]: "wd TYPE('a::enum rvec)"
   assumes [refine_vcg]: "\<And>X0. X0 \<subseteq> Csafe \<times> UNIV \<Longrightarrow> symstart X0 \<le>
     SPEC (\<lambda>(CX, X). flowsto (X0 - trap \<times> UNIV) {0..} (CX \<times> UNIV) X)"
-  notes [refine_vcg] = wdp vwd_step vwd_stepD[OF wdp]
   notes [refine_vcg_def] = op_set_ndelete_spec
   shows "poincare_onto2 ro symstart trap guards ivlplanes (XS0::'a eucl1 set) \<le>
     SPEC (\<lambda>(PS).
@@ -2011,8 +2017,9 @@ lemma partition_ivl_spec[le, refine_vcg]:
   subgoal by fastforce
   subgoal by fastforce
   subgoal by fastforce
-  subgoal premises prems for a b c d e f g h i j k l m n 
+  subgoal premises prems for a b c d e f ws g h i j k l m n
   proof -
+    note prems
     have disj: "\<And>A Aa. n \<notin> A \<or> \<not> XS \<inter> A \<subseteq> Aa \<or> n \<in> Aa"
       using prems by blast
     then have "n \<in> g"
@@ -2039,14 +2046,19 @@ lemma op_inter_fst_ivl_coll_scaleR2[le,refine_vcg]:
   by (refine_vcg FORWEAK_mono_rule[where I="\<lambda>Xs R. (\<Union>Xs) \<inter> (Y \<times> UNIV) \<subseteq> R \<and> R \<subseteq> X \<inter> (Y \<times> UNIV)"])
     auto
 
+lemma op_inter_ivl_co[le, refine_vcg]: "op_ivl_of_ivl_coll X \<le> SPEC (\<lambda>R. X \<subseteq> R)"
+  unfolding op_ivl_of_ivl_coll_def
+  apply (refine_vcg FORWEAK_mono_rule[where I="\<lambda>R (l, u). \<Union>R \<subseteq> {l .. u}"])
+   apply auto
+   apply (metis Set.basic_monos(7) Sup_le_iff atLeastAtMost_iff inf.coboundedI2 inf_sup_aci(1))
+  by (meson Set.basic_monos(7) UnionI atLeastAtMost_iff le_supI1)
+
 lemma op_inter_ivl_coll_scaleR2[le,refine_vcg]:
   "op_inter_ivl_coll_scaleR2 X Y \<le> SPEC (\<lambda>R. X \<inter> (Y \<times> UNIV) \<subseteq> R)"
   unfolding op_inter_ivl_coll_scaleR2_def
   apply refine_vcg
-  apply (auto simp: scaleR2_def image_def vimage_def)
-  apply (drule subsetD)
-   apply (rule IntI, assumption, force)
-  apply auto apply force
+  subgoal for _ _ _ A l u
+    by (auto, rule scaleR2_subset[where i'=l and j'=u and k'=A], auto)
   done
 
 lemma [le, refine_vcg]: "op_image_fst_ivl_coll X \<le> SPEC (\<lambda>R. R = fst ` X)"
@@ -2115,7 +2127,7 @@ lemma scaleR2_rep1[le, refine_vcg]: "scaleR2_rep1 Y \<le> SPEC (\<lambda>R. Y \<
   unfolding scaleR2_rep1_def
   apply refine_vcg
   subgoal by (auto simp: norm2_slp_def)
-  subgoal for a b c d e y z f g h i j k l m n p q r s
+  subgoal for a b c d e y z f g h i j prec k l m n p q r s
     apply (auto simp: scaleR2_def image_def vimage_def)
     subgoal premises prems for B C D E
     proof -
@@ -2129,7 +2141,9 @@ lemma scaleR2_rep1[le, refine_vcg]: "scaleR2_rep1 Y \<le> SPEC (\<lambda>R. Y \<
         apply (intro conjI) prefer 3
           apply (rule bexI[where x="(D, ij *\<^sub>R E)"])
         subgoal using \<open>ij > 0\<close> by auto
-        subgoal using \<open>(D, E) \<in> c\<close> \<open>c \<subseteq> {(n, p)..(q, r)}\<close> \<open>ij > 0\<close>
+        subgoal
+          using prems
+          using \<open>(D, E) \<in> c\<close> \<open>c \<subseteq> {(n, p)..(q, r)}\<close> \<open>ij > 0\<close>
           by (auto simp: ij_def[symmetric] intro!: scaleR_left_mono)
         subgoal
           using \<open>d \<le> ereal B\<close> \<open>0 < ij\<close> \<open>0 < d\<close>
@@ -2140,7 +2154,7 @@ lemma scaleR2_rep1[le, refine_vcg]: "scaleR2_rep1 Y \<le> SPEC (\<lambda>R. Y \<
           by auto
         subgoal
           using \<open>0 < d\<close> \<open>d \<le> ereal B\<close> \<open>ereal B \<le> e\<close> \<open>0 < ij\<close> \<open>0 < e\<close>
-            \<open>0 < real_divr (precision optns) 1 ((i + j) / 2)\<close>
+            \<open>0 < real_divr prec 1 ((i + j) / 2)\<close>
           unfolding ij_def[symmetric]
           apply (cases e; cases d)
                   apply (simp only: times_ereal.simps ereal_less_eq)
@@ -2172,7 +2186,7 @@ proof goal_cases
     subgoal using 1 le apply simp
       apply (rule conjI)
       subgoal
-        apply (auto simp: eucl_le[where 'a="((real, 'a) vec, 'a) vec"])
+        apply (auto simp: eucl_le[where 'a="'c"])
         apply (auto simp: divide_simps)
         apply (subst mult.commute)
         subgoal for i
@@ -2187,7 +2201,7 @@ proof goal_cases
           by (auto simp: not_le inner_Basis split: if_splits dest!: bspec[where x=i])
         done
       subgoal
-        apply (auto simp: eucl_le[where 'a="((real, 'a) vec, 'a) vec"])
+        apply (auto simp: eucl_le[where 'a="'c"])
         subgoal for i
           apply (cases "i = b")
            apply (auto simp: divide_simps)
@@ -2215,7 +2229,7 @@ next
     subgoal using 2 le apply simp
       apply (rule conjI)
       subgoal
-        apply (auto simp: eucl_le[where 'a="((real, 'a) vec, 'a) vec"])
+        apply (auto simp: eucl_le[where 'a="'c"])
         subgoal for i
           apply (cases "i = b")
            apply (auto simp: divide_simps)
@@ -2233,7 +2247,7 @@ next
           done
         done
       subgoal
-        apply (auto simp: eucl_le[where 'a="((real, 'a) vec, 'a) vec"])
+        apply (auto simp: eucl_le[where 'a="'c"])
         subgoal for i
           apply (cases "i = b")
           subgoal by (auto simp: divide_simps algebra_simps)
@@ -2483,8 +2497,7 @@ lemma
   done
 
 lemma poincare_onto_series[le, refine_vcg]:
-  assumes wdp: "vwd_step (TYPE('a::enum))"
-  notes [refine_vcg] = wdp vwd_step vwd_stepD[OF wdp]
+  assumes wd[refine_vcg]: "wd TYPE('a::enum rvec)"
   assumes [refine_vcg]: "\<And>X0. X0 \<subseteq> Csafe \<times> UNIV \<Longrightarrow> symstart X0 \<le> SPEC (\<lambda>(CX, X). flowsto (X0 - trap \<times> UNIV) {0..} (CX \<times> UNIV) (X))"
   assumes trapprop: "stable_on (Csafe - (ivl \<inter> plane_of sctn)) trap"
   shows "poincare_onto_series symstart trap guards (X0::'a eucl1 set) ivl sctn ro \<le>
@@ -2507,13 +2520,13 @@ proof (induction guards arbitrary: X0)
     done
 next
   case (Cons a guards)
-  note Cons.IH[le, refine_vcg]
+  note Cons.IH[simplified, le, refine_vcg]
   show ?case
     apply auto
     apply refine_vcg
      apply clarsimp_all
      defer
-    subgoal premises prems for a b c d e f g h
+    subgoal premises prems for b c d e f g h
     proof -
       from prems have "(f, g) \<in> (\<Union>x\<in>c. h x)"
         by auto
@@ -2523,7 +2536,7 @@ next
         using prems(14)[rule_format, OF \<open>x \<in> c\<close>] prems(5-7)
         by (cases x) (auto simp: do_intersection_spec_def)
     qed
-    subgoal premises prems for b c ro d e f
+    subgoal premises prems for c ro d e f
     proof -
       let ?s = "trap \<times> UNIV"
       note prems
@@ -2661,8 +2674,7 @@ lemma do_intersection_spec_sctn_cong:
   by (auto simp: do_intersection_spec_def plane_of_def set_eq_iff intro!: )
 
 lemma poincare_onto_from[le, refine_vcg]:
-  assumes wdp: "vwd_step (TYPE('a::enum))"
-  notes [refine_vcg] = wdp vwd_step vwd_stepD[OF wdp]
+  assumes wd[refine_vcg]: "wd TYPE('a::enum rvec)"
   assumes [refine_vcg]: "\<And>X0. X0 \<subseteq> Csafe \<times> UNIV \<Longrightarrow> symstart X0 \<le> SPEC (\<lambda>(CX, X). flowsto (X0 - trap \<times> UNIV) {0..} (CX \<times> UNIV) (X))"
   assumes trapprop: "stable_on (Csafe - (ivl \<inter> plane_of sctn)) trap"
   shows "poincare_onto_from symstart trap S guards ivl sctn ro (XS0::'a eucl1 set) \<le>
@@ -2720,8 +2732,7 @@ lemma subset_spec1_coll[le, refine_vcg]:
   by (refine_vcg) (auto simp: subset_iff set_of_ivl_def)
 
 lemma one_step_until_time_spec[le, refine_vcg]:
-  assumes wdp: "vwd_step (TYPE('n::enum))"
-  notes [refine_vcg] = wdp vwd_step vwd_stepD[OF wdp]
+  assumes wd[refine_vcg]: "wd (TYPE('n::enum rvec))"
   shows "one_step_until_time (X0::'n eucl1 set) CX t1 \<le> SPEC (\<lambda>(R, CX).
     (\<forall>(x0, d0) \<in> X0. t1 \<in> existence_ivl0 x0 \<and>
       (flow0 x0 t1, Dflow x0 t1 o\<^sub>L d0) \<in> R \<and>
@@ -2735,7 +2746,7 @@ lemma one_step_until_time_spec[le, refine_vcg]:
   subgoal by auto
   subgoal by (force simp: flowpipe_def existence_ivl_trans flow_trans)
   subgoal by (auto simp: flowpipe_def existence_ivl_trans flow_trans)
-  apply clarsimp subgoal for a b c d e f g h i j
+  apply clarsimp subgoal for startstep rk2_param a b c d e f g h i j
     apply (safe)
     subgoal by (auto simp: flowpipe_def intro!: existence_ivl_trans flow_trans)
     subgoal
@@ -2777,8 +2788,7 @@ lemma ivl_of_eucl1_coll[THEN order_trans, refine_vcg]: "ivl_of_eucl_coll X \<le>
   by refine_vcg auto
 
 lemma one_step_until_time_ivl_spec[le, refine_vcg]:
-  assumes wdp: "vwd_step (TYPE('n::enum))"
-  notes [refine_vcg] = wdp vwd_step vwd_stepD[OF wdp]
+  assumes wd[refine_vcg]: "wd (TYPE('n::enum rvec))"
   shows "one_step_until_time_ivl (X0::'n eucl1 set) CX t1 t2 \<le> SPEC (\<lambda>(R, CX).
     (\<forall>(x0, d0) \<in> X0. {t1 .. t2} \<subseteq> existence_ivl0 x0 \<and>
       (\<forall>t \<in> {t1 .. t2}. (flow0 x0 t, Dflow x0 t o\<^sub>L d0) \<in> R) \<and>
@@ -2800,24 +2810,6 @@ lemma one_step_until_time_ivl_spec[le, refine_vcg]:
     by (auto simp: scaleR2_def image_def vimage_def)
   done
 
-end
-
-context approximate_sets_options' begin
-
-lemma init_ode_solver[le, refine_vcg]:
-  assumes [simp]: "length ode_e = CARD('n::enum)"
-  shows "init_ode_solver u \<le> SPEC (\<lambda>(D, ode_slp, euler_incr_slp, euler_slp, rk2_slp, solve_poincare_slp,
-    c1_slps).
-      CARD('n) = D \<and>
-      vwd_step D ode_slp euler_incr_slp euler_slp rk2_slp c1_slps solve_poincare_slp TYPE('n))"
-  unfolding init_ode_solver_def wd_step_def vwd_step_def
-  apply (refine_vcg)
-        apply (auto simp: var.rk2_slp_eq_def var.euler_slp_eq_def wd_def
-      ode_slp_eq_def var.ode_slp_eq_def rk2_slp_eq_def euler_slp_eq_def euler_incr_slp_eq_def
-      sps_eq_def)
-  by (auto simp: var.euler_incr_slp_eq_def rk2_fas'_def euler_fas'_def euler_incr_fas'_def
-      var.rk2_fas'_def var.euler_fas'_def var.euler_incr_fas'_def)
-
 lemma empty_symstart_flowsto:
   "X0 \<subseteq> Csafe \<times> UNIV \<Longrightarrow>
     RETURN ({}, X0) \<le> SPEC (\<lambda>(CX, X). flowsto (X0 - {} \<times> UNIV) {0..} (CX \<times> UNIV) X)"
@@ -2826,45 +2818,18 @@ lemma empty_symstart_flowsto:
 subsection \<open>Poincare map returning to\<close>
 
 lemma poincare_onto_from_ivla[le, refine_vcg]:
-  assumes [simp]: "length ode_e = CARD('n::enum)"
+  assumes [refine_vcg]: "wd TYPE('n::enum rvec)"
   assumes [refine_vcg]: "\<And>X0. X0 \<subseteq> Csafe \<times> UNIV \<Longrightarrow> symstart X0 \<le> SPEC (\<lambda>(CX, X). flowsto (X0 - trap \<times> UNIV) {0..} (CX \<times> UNIV) (X))"
   assumes trapprop[refine_vcg]: "stable_on (Csafe - (ivl \<inter> plane_of sctn)) trap"
-  shows "poincare_onto_froma symstart trap S guards ivl sctn ro (XS0::'n eucl1 set) \<le> SPEC
+  shows "poincare_onto_from symstart trap S guards ivl sctn ro (XS0::'n eucl1 set) \<le> SPEC
      (\<lambda>P.
-        wd (length ode_e) TYPE((real, 'n) vec) \<and>
+        wd TYPE((real, 'n) vec) \<and>
         poincare_mapsto (ivl \<inter> plane_of sctn) (XS0 - trap \<times> UNIV) S (Csafe - ivl \<inter> plane_of sctn) P)"
-  unfolding poincare_onto_froma_def autoref_tag_defs
-  by (refine_vcg) (auto dest!: vwd_stepD(1))
-
+  by (refine_vcg)
 
 subsection \<open>Poincare map onto (from outside of target)\<close>
 
-
-lemma poincare_ontoa[le, refine_vcg]:
-  assumes [simp]: "length ode_e = CARD('n::enum)"
-  shows "poincare_ontoa guards ivl sctn ro (XS0::'n eucl1 set) \<le> SPEC
-     (\<lambda>P.
-        wd (length ode_e) TYPE((real, 'n) vec) \<and>
-        poincare_mapsto (ivl \<inter> plane_of sctn) XS0 UNIV (Csafe - ivl \<inter> plane_of sctn) P)"
-  unfolding poincare_ontoa_def autoref_tag_defs
-  by (refine_vcg) (auto dest!: vwd_stepD(1) simp: do_intersection_spec_def Int_def stable_on_def intro!: flowsto_self)
-
-
-
 subsection \<open>One step method (reachability in time)\<close>
-
-
-lemma one_step_until_timea[le, refine_vcg]:
-  assumes [simp]: "length ode_e = CARD('n::enum)"
-  shows "solve_one_step_until_timea (X0::'n eucl1 set) CX t1 t2 \<le> SPEC (\<lambda>(X, CX).
-     wd CARD('n) TYPE((real, 'n) vec) \<and>
-     (\<forall>(x0, d0)\<in>X0.
-         {t1 .. t2} \<subseteq> existence_ivl0 x0 \<and>
-         (\<forall>t\<in>{t1 .. t2}. (flow0 x0 t, Dflow x0 t o\<^sub>L d0) \<in> X) \<and>
-         (\<forall>t\<in>{0..t1}. (flow0 x0 t) \<in> CX)) \<and>
-     CX \<subseteq> Csafe)"
-  unfolding solve_one_step_until_timea_def autoref_tag_defs
-  by (refine_vcg) (auto simp: vwd_stepD)
 
 lemma c0_info_of_apprsI:
   assumes "(b, a) \<in> clw_rel appr_rel"
@@ -2881,7 +2846,7 @@ lemma c0_info_of_appr'I:
   by (auto simp add: c0_info_of_appr'_def intro!: c0_info_of_apprsI split: option.splits)
 
 lemma poincare_onto_from_in_ivl[le, refine_vcg]:
-  assumes [simp]: "length ode_e = CARD('n::enum)"
+  assumes [refine_vcg]: "wd TYPE('n::enum rvec)"
   assumes [refine_vcg]: "\<And>X0. X0 \<subseteq> Csafe \<times> UNIV \<Longrightarrow> symstart X0 \<le> SPEC (\<lambda>(CX, X). flowsto (X0 - trap \<times> UNIV) {0..} (CX \<times> UNIV) (X))"
   assumes trapprop: "stable_on (Csafe - (ivl \<inter> plane_of sctn)) trap"
   shows "poincare_onto_from_in_ivl symstart trap S guards ivl sctn ro (XS0::'n::enum eucl1 set) P dP \<le>
@@ -2900,8 +2865,28 @@ lemma lvivl_default_relI:
   by (auto simp: set_of_lvivl'_def set_of_lvivl_def set_of_ivl_def lvivl'_invar_def
       intro!: mem_default_relI lvivl_relI)
 
+lemma stable_on_empty[simp]: "stable_on A {}"
+  by (auto simp: stable_on_def)
+
+lemma poincare_onto_in_ivl[le, refine_vcg]:
+  assumes [simp]: "length (ode_e) = CARD('n::enum)"
+  shows "poincare_onto_in_ivl guards ivl sctn ro (XS0::'n::enum eucl1 set) P dP \<le>
+    SPEC (\<lambda>b. b \<longrightarrow> poincare_mapsto (ivl \<inter> plane_of sctn) (XS0) UNIV (Csafe - ivl \<inter> plane_of sctn) (flow1_of_vec1 ` (P \<times> dP)))"
+proof -
+  have wd[refine_vcg]: "wd TYPE((real, 'n) vec)" by (simp add: wd_def)
+  show ?thesis
+    unfolding poincare_onto_in_ivl_def
+    apply (refine_vcg)
+    subgoal by (auto intro!: flowsto_self)
+    subgoal
+      apply (clarsimp simp add: do_intersection_spec_def Int_def[symmetric])
+      apply (rule poincare_mapsto_subset)
+          apply assumption
+      by auto
+    done
+qed
+
 
 end
-
 
 end

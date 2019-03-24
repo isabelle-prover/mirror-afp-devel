@@ -682,5 +682,49 @@ lemma ex_br_conj_iff:
   "(\<exists>x. (y, x) \<in> br a I \<and> P x) \<longleftrightarrow> I y \<and> P (a y)"
   by (auto intro!: brI dest!: brD)
 
-print_syntax
+setup \<open>
+  let
+    fun higher_order_rl_of assms ctxt thm =
+      let
+        val ((_, [thm']), ctxt') = Variable.import true [thm] ctxt
+      in
+        case Thm.concl_of thm' of
+          @{mpat "Trueprop ((_,?t)\<in>_)"} => let
+            val (f0, args0) = strip_comb t
+            val nargs = Thm.nprems_of thm' - length assms
+            val (applied, args) = chop (length args0 - nargs) args0
+            val f = betapplys (f0, applied)
+          in
+            if length args = 0 then
+              thm
+            else let
+              val cT = TVar(("'c",0), @{sort type})
+              val c = Var (("c",0),cT)
+              val R = Var (("R",0), HOLogic.mk_setT (HOLogic.mk_prodT (cT, fastype_of f)))
+              val goal =
+                HOLogic.mk_mem (HOLogic.mk_prod (c,f), R)
+                |> HOLogic.mk_Trueprop
+                |> Thm.cterm_of ctxt
+              val res_thm = Goal.prove_internal ctxt' (map (Thm.cprem_of thm') assms) goal (fn prems =>
+                REPEAT (resolve_tac ctxt' @{thms fun_relI} 1)
+                THEN (resolve_tac ctxt' [thm] 1)
+                THEN (REPEAT (resolve_tac ctxt' prems 1))
+                THEN (ALLGOALS (assume_tac ctxt'))
+              )
+            in
+              singleton (Variable.export ctxt' ctxt) res_thm
+            end
+          end
+        | _ => raise THM("Expected autoref rule",~1,[thm])
+      end
+
+    fun higher_order_rl_attr assms =
+      Thm.rule_attribute [] (higher_order_rl_of assms o Context.proof_of)
+  in
+    Attrib.setup @{binding autoref_higher_order_rule}
+      (Scan.optional (Scan.lift(Args.parens (Scan.repeat Parse.nat))) [] >>
+       higher_order_rl_attr) "Autoref: Convert rule to higher-order form"
+  end
+\<close>
+
 end

@@ -5,6 +5,7 @@ theory Abstract_Reachability_Analysis_C1
   "../Refinement/Refine_Parallel"
   "../Refinement/Refine_Default"
   "../Refinement/Refine_Phantom"
+  "../Refinement/Refine_ScaleR2"
 begin
 
 definition blinfun_of_list :: "real list \<Rightarrow> 'a \<Rightarrow>\<^sub>L 'a::executable_euclidean_space"
@@ -24,14 +25,6 @@ lemma vec1_of_flow1_flow1_of_vec1[simp]:
   "vec1_of_flow1 (flow1_of_vec1 X) = X"
   unfolding vec1_of_flow1_def flow1_of_vec1_def
   by (transfer) (auto simp: matrix_of_matrix_vector_mul)
-
-definition [refine_vcg_def]: "scaleR2_rep X = SPEC (\<lambda>((l, u), Y). ereal -` {l..u} \<noteq> {} \<and> X = scaleR2 l u Y)"
-
-definition [refine_vcg_def]: "scaleRe_ivl_spec l u X = SPEC (\<lambda>Y. Y = scaleR2 l u X)"
-
-definition [simp]: "op_image_fst_colle = (`) fst"
-
-definition [simp]: "op_image_fste = (`) fst"
 
 definition "flow1_of_list xs =
   (eucl_of_list (take DIM('a::executable_euclidean_space) xs)::'a,
@@ -65,60 +58,11 @@ lemma GSPEC_impl[autoref_rules]:
   shows "(RETURN (), GSPEC P) \<in> \<langle>ghost_rel\<rangle>nres_rel"
   using assms by (auto simp: nres_rel_def ghost_rel_def GSPEC_def intro!: RETURN_SPEC_refine)
 
-locale approximate_sets_ode_slp' = approximate_sets_ode_slp\<comment> \<open>TODO: this prevents infinite chain of interpretations (?!)\<close>
-  where ode_e = ode_e
-    and safe_form = safe_form
-    and optns = "optns::'b numeric_options"
-    for ode_e safe_form optns
-    +
-  fixes c1_slps::"(slp * slp * slp * slp) option" and
-    solve_poincare_slp::"slp list"
-begin
-
-definition "ode_slp' = (fst) (the c1_slps)"
-definition "euler_incr_slp' = (fst o snd) (the c1_slps)"
-definition "euler_slp' =      (fst o snd o snd) (the c1_slps)"
-definition "rk2_slp' =        (snd o snd o snd) (the c1_slps)"
-
-sublocale var: approximate_sets_ode_slp
-  where ode_e = ode_e'
-    and safe_form = safe_form
-    and D = "D + D*D"
-    and ode_slp = ode_slp'
-    and euler_incr_slp = euler_incr_slp'
-    and euler_slp = euler_slp'
-    and rk2_slp = rk2_slp'
-  by standard
-
-definition "solve_poincare_fas n = map floatarith.Var [0..<D] @ concat (map (\<lambda>i \<comment> \<open>(row)\<close>. map (\<lambda>j \<comment> \<open>(column)\<close>.
-    (if i \<noteq> n then floatarith.Var (D + i * D + j) - (floatarith.Var(D + n * D + j) * (ode_e ! i) / (ode_e ! n))
-    else 0)
-  ) [0..<D]) [0..<D])"
-
-definition "sps_eq \<longleftrightarrow> (length solve_poincare_slp = D \<and> (\<forall>i < D. solve_poincare_slp ! i = (slp_of_fas (map fold_const_fa (solve_poincare_fas i)))))"
-
-definition "vwd_step TYPE('n::enum) \<longleftrightarrow>
-     wd TYPE('n rvec)
-   \<and> 0 < rk2_param optns
-   \<and> rk2_param optns \<le> 1
-   \<and> ode_slp_eq ode_slp
-   \<and> rk2_slp_eq rk2_slp D
-   \<and> euler_slp_eq euler_slp D
-   \<and> euler_incr_slp_eq euler_incr_slp D
-   \<and> sps_eq
-   \<and> (case c1_slps of Some (a, b, c, d) \<Rightarrow>
-       var.ode_slp_eq a \<and>
-       var.euler_incr_slp_eq b (D + D * D) \<and>
-       var.euler_slp_eq c (D + D * D) \<and>
-       var.rk2_slp_eq d (D + D * D)
-      | None \<Rightarrow> True
-      )"
-
-definition "has_c1_slps \<longleftrightarrow> c1_slps \<noteq> None"
+context approximate_sets_ode' begin
 
 definition "c1_info_of_appr XD =
   (case snd XD of None \<Rightarrow> eucl_of_list ` set_of_appr (fst XD) \<times> UNIV
-   | Some D \<Rightarrow> flow1_of_list ` set_of_appr (fst XD @ D))"
+   | Some DD \<Rightarrow> flow1_of_list ` set_of_appr (fst XD @ DD))"
 definition "c1_info_of_apprs x = \<Union>(set (map c1_info_of_appr x))"
 definition "c1_info_of_appr' x = Affine_Code.the_default UNIV (map_option c1_info_of_apprs x)"
 definition "c1_info_of_appre X = scaleR2 (fst (fst X)) (snd (fst X)) (c1_info_of_appr (snd X))"
@@ -130,14 +74,11 @@ definition [simp]: "op_image_flow1_of_vec1 = (`) flow1_of_vec1"
 definition [simp]: "op_image_flow1_of_vec1_coll = (`) flow1_of_vec1"
 
 definition [simp]: "op_image_fst = (`) fst"
-sublocale autoref_op_pat_def op_image_fst .
 
 definition [refine_vcg_def]:
   "vec1rep CX = SPEC (\<lambda>R. case R of None \<Rightarrow> True | Some X \<Rightarrow> X = vec1_of_flow1 ` CX)"
-sublocale autoref_op_pat_def vec1rep .
 
 definition [simp]: "op_times_UNIV X = X \<times> UNIV"
-sublocale autoref_op_pat_def op_times_UNIV .
 
 definition appr1_rel::"(('b list \<times> 'b list option) \<times>
   ('a::executable_euclidean_space c1_info set)) set"
@@ -151,29 +92,27 @@ abbreviation "appr1e_rel \<equiv> \<langle>appr1_rel\<rangle>scaleR2_rel"
 text \<open>TODO: remove \<open>...:::relation\<close> from this file\<close>
 definition "solve_poincare_plane (n::'n::enum rvec) (CX::'n eucl1 set) = do {
     X \<leftarrow> mk_safe (((`) fst CX::'n rvec set));
-    F \<leftarrow> ode_set (set_of_sappr X);
+    F \<leftarrow> ode_set (X);
     nonzero_component (ST ''solve_poincare_map: not nonzero!'') F n;
     let i = index Basis_list n;
     ASSERT (i < length solve_poincare_slp);
     vCX \<leftarrow> vec1rep CX;
     case vCX of None \<Rightarrow>
       do {
-        RETURN (op_times_UNIV (set_of_sappr X))
+        RETURN (op_times_UNIV (X))
       }
     | Some vCX \<Rightarrow>
       do {
         (R::'n vec1 set) \<leftarrow> approx_slp_appr (map fold_const_fa (solve_poincare_fas i)) (solve_poincare_slp ! i) (list_of_eucl ` vCX);
         let R = (op_image_flow1_of_vec1 (R:::appr_rel):::appr1_rel);
         X \<leftarrow> mk_safe (op_image_fst R);
-        F \<leftarrow> ode_set (set_of_sappr X);
+        F \<leftarrow> ode_set (X);
         nonzero_component (ST ''solve_poincare_map: not nonzero!'') (F) n;
         RETURN (R::'n eucl1 set)
       }
   }"
-sublocale autoref_op_pat_def solve_poincare_plane .
 
 definition embed1::"'n::enum rvec \<Rightarrow> ('n rvec * (real^'n::enum^'n::enum))" where [simp]: "embed1 x = (x, 0)"
-sublocale autoref_op_pat_def embed1 .
 
 definition "choose_step1 (X::'n::enum eucl1 set) h = do {
     lX \<leftarrow> vec1rep X;
@@ -182,36 +121,32 @@ definition "choose_step1 (X::'n::enum eucl1 set) h = do {
         sX \<leftarrow> mk_safe (fst ` X);
         (h, err, CX', X') \<leftarrow> choose_step sX h;
         \<^cancel>\<open>err \<leftarrow> width_spec (err:::appr_rel);\<close>
-        RETURN (h, err \<times> UNIV, (set_of_sappr CX') \<times> UNIV, (set_of_sappr X') \<times> UNIV)
+        RETURN (h, err \<times> UNIV, (CX') \<times> UNIV, (X') \<times> UNIV)
       }
     | Some vX \<Rightarrow>
       do {
-        CHECKs (''choose_step1 without c1 slp'') (has_c1_slps);
         sX \<leftarrow> var.mk_safe vX;
         (h, err, CX', X') \<leftarrow> var.choose_step sX h;
-        let CX' = flow1_of_vec1 ` (set_of_sappr (CX':::var.sappr_rel):::appr_rel);
-        let X' = flow1_of_vec1 ` (set_of_sappr (X':::var.sappr_rel):::appr_rel);
+        let CX' = flow1_of_vec1 ` ((CX':::appr_rel):::appr_rel);
+        let X' = flow1_of_vec1 ` ((X':::appr_rel):::appr_rel);
         let err' = flow1_of_vec1 ` (err:::appr_rel);
         \<^cancel>\<open>err \<leftarrow> width_spec (fst ` (flow1_of_vec1 ` (err:::appr_rel)):::appr_rel);\<close>
         RETURN (h, err', CX', X'::'n eucl1 set)
       }
   }"
-sublocale autoref_op_pat_def choose_step1 .
 
 definition "plane1_of x = plane_of x \<times> UNIV"
 definition "below1_halfspaces x = below_halfspaces x \<times> UNIV"
 definition "sbelow1_halfspaces x = sbelow_halfspaces x \<times> UNIV"
 abbreviation "plane1_invar_rel \<equiv> \<lambda>A. \<langle>(\<langle>lv_rel\<rangle>sctn_rel), A\<rangle>invar_rel plane1_of "
 
-definition "c1_info_invar N XD \<longleftrightarrow> length (fst XD) = N \<and> (case snd XD of Some D \<Rightarrow> length D = (length (fst XD))\<^sup>2 | None \<Rightarrow> True)"
+definition "c1_info_invar N XD \<longleftrightarrow> length (fst XD) = N \<and> (case snd XD of Some DD \<Rightarrow> length DD = (length (fst XD))\<^sup>2 | None \<Rightarrow> True)"
 
 definition op_image_zerofst :: "('a \<times> 'c) set \<Rightarrow> ('a::zero \<times> 'c) set"
   where [simp]: "op_image_zerofst \<equiv> \<lambda>X. (\<lambda>x. (0, snd x)) ` X"
-sublocale autoref_op_pat_def op_image_zerofst .
 
 definition op_image_zerofst_vec :: "('n::enum vec1) set \<Rightarrow> ('n::enum vec1) set"
   where [simp]: "op_image_zerofst_vec \<equiv> \<lambda>X. (\<lambda>x. (0, snd x)) ` X"
-sublocale autoref_op_pat_def op_image_zerofst_vec .
 
 definition [simp]: "op_image_embed1 X = embed1 ` X"
 
@@ -231,14 +166,12 @@ definition "inter_sctn1_spec (X::'n::enum eucl1 set) (sctn::'n rvec sctn) = do {
         RETURN ((flow1_of_vec1 ` R1), (flow1_of_vec1 ` R2))
       }
   }"
-sublocale autoref_op_pat_def inter_sctn1_spec .
 
 definition "op_image_fst_coll_nres XS = do {
     XSs \<leftarrow> sets_of_coll XS;
     FORWEAK XSs (RETURN op_empty_coll) (\<lambda>X.
       RETURN (mk_coll (op_image_fst X:::appr_rel))) (\<lambda>A B. RETURN (B \<union> A))
   }"
-sublocale autoref_op_pat_def op_image_fst_coll_nres .
 
 lemma op_image_fst_coll_nres_spec[le, refine_vcg]: "op_image_fst_coll_nres X \<le> SPEC (\<lambda>R. R = fst ` X)"
   unfolding op_image_fst_coll_nres_def
@@ -251,7 +184,6 @@ definition "fst_safe_coll XS = do {
     C \<leftarrow> op_image_fst_coll_nres XS;
     mk_safe_coll (C:::clw_rel appr_rel)
   }"
-sublocale autoref_op_pat_def fst_safe_coll .
 
 definition [refine_vcg_def]:
   "vec1reps X = do {
@@ -265,7 +197,6 @@ definition [refine_vcg_def]:
         case (a, b) of (Some a, Some b) \<Rightarrow> RETURN (Some (b \<union> a))
         | _ \<Rightarrow> RETURN None)
   }"
-sublocale autoref_op_pat_def vec1reps .
 
 definition "do_intersection_spec S guards ivl sctn X0 = (\<lambda>(PS, CXS).
     poincare_mapsto {x \<in> ivl. x \<in> plane_of sctn} X0 S CXS PS \<and>
@@ -282,15 +213,13 @@ abbreviation "inter_sbelows X sctns \<equiv> mk_inter X (sbelow_halfspaces sctns
 definition "list_of_appr1 X = fst X @ the_default [] (snd X)"
 
 definition print_set1::"bool \<Rightarrow> 'a set \<Rightarrow> unit" where "print_set1 _ _ = ()"
-sublocale autoref_op_pat_def print_set1 .
 
 definition "nonzero_component_within ivl sctn PDP = do {
   fPDP \<leftarrow> mk_safe (fst ` PDP);
-  F \<leftarrow> ode_set (set_of_sappr fPDP);
+  F \<leftarrow> ode_set (fPDP);
   nonzero_component (ST ''solve_poincare_map: not nonzero!'') F (normal sctn);
   op_eventually_within_sctn (op_image_fst PDP:::appr_rel) sctn ivl
 }"
-sublocale autoref_op_pat_def nonzero_component_within .
 
 definition "do_intersection_invar guards GUARDS ivl sctn X \<equiv> \<lambda>(X', T, PS, PS2, CXS, intersects, inside).
   (inside \<longrightarrow>
@@ -315,28 +244,19 @@ definition "list_of_appr1e X = fst (snd X) @ the_default [] (snd (snd X)) @
   (let (l, u) = fst X;
     roer = (\<lambda>x. if x = - \<infinity> then FloatR 1 (-88) else if x = \<infinity> then FloatR 1 88 else real_of_ereal x)
   in
-    appr_of_ivl [roer l] [roer u]
+    appr_of_ivl ops [roer l] [roer u]
     )"
 
 definition print_set1e::"bool \<Rightarrow> 'a set \<Rightarrow> unit" where "print_set1e _ _ = ()"
-sublocale autoref_op_pat_def print_set1 .
 
 definition trace_set1e::"string\<Rightarrow>'a set option\<Rightarrow>unit" where "trace_set1e _ _ = ()"
-sublocale autoref_op_pat_def trace_set1e .
 definition trace_set1::"string\<Rightarrow>'a set option\<Rightarrow>unit" where "trace_set1 _ _ = ()"
-sublocale autoref_op_pat_def trace_set1 .
-
-definition "adapt_stepsize_fa e h' =
-  floatarith.Num (float_of h') * floatarith.Powr (floatarith.Num (float_of (adaptive_rtol optns)) / floatarith.Num (float_of e))
-                                (inverse (floatarith.Num (float_of (method_id optns) + 1)))"
-
-sublocale autoref_op_pat_def adapt_stepsize_fa .
-
 
 definition "split_spec_param1 X = do {
-    vX \<leftarrow> vec1rep X;
+    (vX) \<leftarrow> vec1rep X;
+    let D = CARD('n);
     case vX of None \<Rightarrow> do {
-      (a, b) \<leftarrow> split_spec_param D (fst ` X);
+      (a, b) \<leftarrow> split_spec_param D (fst ` X::'n::finite rvec set);
       RETURN (a \<times> UNIV, b \<times> UNIV)
     }
     | Some X \<Rightarrow> do {
@@ -344,7 +264,6 @@ definition "split_spec_param1 X = do {
       RETURN (op_image_flow1_of_vec1 a, op_image_flow1_of_vec1 b)
     }
   }"
-sublocale autoref_op_pat_def split_spec_param1 .
 
 abbreviation iinfo_rel :: "('c \<times> 'a set) set \<Rightarrow> ((real \<times> 'c) \<times> 'a::real_normed_vector set) set"
 where "iinfo_rel \<equiv> \<lambda>s. \<langle>rnv_rel, s\<rangle>info_rel"
@@ -356,18 +275,6 @@ definition "split_spec_param1e X = do {
     b \<leftarrow> scaleRe_ivl_spec l u b;
     RETURN (a, b)
   }"
-sublocale autoref_op_pat_def split_spec_param1e .
-
-definition "scaleR2_rep_coll X = do {
-  XS \<leftarrow> sets_of_coll X;
-  FORWEAK XS (RETURN ((0, 0), op_empty_coll)) (\<lambda>X. do {
-    ((l, u), Y) \<leftarrow> scaleR2_rep X;
-    RETURN ((l, u), mk_coll Y)
-  }) (\<lambda>((l, u), Y) ((l', u'), Y'). RETURN ((inf l' l, sup u' u), Y' \<union> Y))
-  }"
-sublocale autoref_op_pat_def scaleR2_rep_coll .
-
-abbreviation "reducer_rel \<equiv> \<langle>Id::'b rel\<rangle>list_rel \<rightarrow> nat_rel \<rightarrow> rl_rel \<rightarrow> bool_rel"
 
 definition "reduce_spec1 C X = do {
   vX \<leftarrow> vec1rep X;
@@ -380,29 +287,29 @@ definition "reduce_spec1 C X = do {
     RETURN (flow1_of_vec1 ` vX)
   }
 }"
-sublocale autoref_op_pat_def reduce_spec1 .
 definition "reduce_spec1e C X = do {
   ((l, u), X) \<leftarrow> scaleR2_rep X;
   X \<leftarrow> reduce_spec1 C X;
   scaleRe_ivl_spec l u X
 }"
-sublocale autoref_op_pat_def reduce_spec1e .
 
-definition split_under_threshold::"'b reach_options \<Rightarrow> real \<Rightarrow> 'n::enum eucl1 set \<Rightarrow> 'n eucl1 set nres" where
+definition [refine_vcg_def]: "pre_split_reduce_spec (ro::unit) = SPEC (\<lambda>x::unit. True)"
+
+definition split_under_threshold::"_ \<Rightarrow> real \<Rightarrow> 'n::enum eucl1 set \<Rightarrow> 'n eucl1 set nres" where
   "split_under_threshold ro th X = do {
     (_, Ys) \<leftarrow> WHILE\<^bsup>\<lambda>(Xs, Ys). X \<subseteq> Xs \<union> Ys\<^esup> (\<lambda>(Xs, Ys). \<not> op_coll_is_empty Xs) (\<lambda>(Xs, Ys). do {
       (X, Xs') \<leftarrow> (split_spec_coll (Xs:::clw_rel (\<langle>appr1_rel\<rangle>scaleR2_rel)):::\<langle>\<langle>appr1_rel\<rangle>scaleR2_rel \<times>\<^sub>r clw_rel (\<langle>appr1_rel\<rangle>scaleR2_rel)\<rangle>nres_rel);
       w \<leftarrow> width_spec (op_image_fste X:::appr_rel);
       if w \<le> th then RETURN (Xs', mk_coll X \<union> Ys)
       else do {
-        X \<leftarrow> reduce_spec1e (pre_split_reduce ro) X;
+        ra \<leftarrow> pre_split_reduce_spec ro;
+        X \<leftarrow> reduce_spec1e ra X;
         (a, b) \<leftarrow> split_spec_param1e (X:::\<langle>appr1_rel\<rangle>scaleR2_rel);
         RETURN (mk_coll (a:::\<langle>appr1_rel\<rangle>scaleR2_rel) \<union> mk_coll (b:::\<langle>appr1_rel\<rangle>scaleR2_rel) \<union> Xs', Ys)
       }
     }) (X:::clw_rel (\<langle>appr1_rel\<rangle>scaleR2_rel), op_empty_coll:::clw_rel (\<langle>appr1_rel\<rangle>scaleR2_rel));
     RETURN Ys
   }"
-sublocale autoref_op_pat_def split_under_threshold .
 
 definition "choose_step1e X h = do {
     ((l, u), X) \<leftarrow> scaleR2_rep X;
@@ -410,11 +317,11 @@ definition "choose_step1e X h = do {
     Y \<leftarrow> scaleRe_ivl_spec l u Y;
     RETURN (h', error, fst ` CY, Y)
   }"
-sublocale autoref_op_pat_def choose_step1e .
 
-definition "step_split (roptns::'b reach_options) (X::'n::enum eucl1 set) =
+definition "step_split ro (X::'n::enum eucl1 set) =
   do {
-    X \<leftarrow> reduce_spec1e (pre_split_reduce roptns) X;
+    ra \<leftarrow> pre_split_reduce_spec ro;
+    X \<leftarrow> reduce_spec1e ra X;
     (a, b) \<leftarrow> split_spec_param1e (X:::appr1e_rel);
     _ \<leftarrow> mk_safe (op_image_fste a);
     _ \<leftarrow> mk_safe (op_image_fste b);
@@ -425,47 +332,21 @@ definition "step_split (roptns::'b reach_options) (X::'n::enum eucl1 set) =
       ST '', ''  @ show (lfloat10 wb)) (None::'n::enum eucl1 set option);
     RETURN (mk_coll a \<union> mk_coll b)
   }"
-sublocale autoref_op_pat_def step_split .
 
 definition "width_spec_appr1 X = do {
     vX \<leftarrow> vec1rep X;
     case vX of None \<Rightarrow> width_spec (fst ` X:::appr_rel)
     | Some vX \<Rightarrow> width_spec (vX:::appr_rel)
   }"
-sublocale autoref_op_pat_def width_spec_appr1 .
 
-definition "tolerate_error Y E = \<^cancel>\<open>do {
-    vY \<leftarrow> vec1rep Y;
-    vE \<leftarrow> vec1rep E;
-    case (vY, vE) of (None, None) \<Rightarrow>\<close>
-      do {
-        (ei, es) \<leftarrow> op_ivl_rep_of_set (fst ` E);
-        (yi, ys) \<leftarrow> op_ivl_rep_of_set (fst ` Y);
-        let ea = sup (abs ei) (abs es);
-        let ya = sup (abs yi) (abs ys);
-
-        let errtol = sup (adaptive_rtol optns *\<^sub>R ya) (adaptive_atol optns *\<^sub>R sum_list Basis_list);
-        RETURN (ea \<le> errtol, infnorm ea)
-      \<^cancel>\<open>}
-    | (Some vY, Some vE) \<Rightarrow>
-      do {
-        (ei, es) \<leftarrow> op_ivl_rep_of_set (vE);
-        (yi, ys) \<leftarrow> op_ivl_rep_of_set (vY);
-        let ea = sup (abs ei) (abs es);
-        let ya = sup (abs yi) (abs ys);
-        let errtol = sup (adaptive_rtol optns *\<^sub>R ya) (adaptive_atol optns *\<^sub>R sum_list Basis_list);
-        RETURN (ea \<le> errtol, infnorm ea)
-      }
-    | _ \<Rightarrow> do {CHECKs ''tolerate_error: different representations???'' False; SUCCEED}\<close>
-  }"
-sublocale autoref_op_pat_def tolerate_error .
+definition "tolerate_error1 Y E = tolerate_error (fst ` Y) (fst ` E)"
 
 definition "step_adapt_time (X::'n::enum eucl1 set) h =
   do {
     let X0 = fst ` X;
     _ \<leftarrow> mk_safe (X0:::appr_rel);
     (h', error, CY, Y) \<leftarrow> choose_step1e X h;
-    (te, e) \<leftarrow> tolerate_error Y error;
+    (te, e) \<leftarrow> tolerate_error1 Y error;
     let _ = trace_set1 (ST ''discrete time step: stepsize = '' @ show (lfloat10 h)) (None::'n eucl1 set option);
     let _ = trace_set1 (ST ''discrete time step: stepsize' = '' @ show (lfloat10 h')) (None::'n eucl1 set option);
     let _ = trace_set1 (ST ''error estimation: '' @ show (lfloat10 e)) (None::'n eucl1 set option);
@@ -479,7 +360,10 @@ definition "step_adapt_time (X::'n::enum eucl1 set) h =
       let _ = print_set True CY;
       let _ = trace_set1e (ST ''discrete step:'') (Some (Y));
       let _ = print_set1e False Y;
-      case approx (precision optns) (adapt_stepsize_fa e h') []
+      rtol \<leftarrow> adaptive_rtol_spec;
+      method_id \<leftarrow> method_spec;
+      prec \<leftarrow> precision_spec;
+      case approx prec (adapt_stepsize_fa rtol method_id e h') []
       of Some (h'', _) \<Rightarrow>
         let _ = trace_set1 (ST ''increase step: stepsize = '' @ show (lfloat10 h'')) (None::'n eucl1 set option)
         in RETURN (h', CY, Y, 15/2/2/2/2 * h'')
@@ -488,19 +372,8 @@ definition "step_adapt_time (X::'n::enum eucl1 set) h =
         in RETURN (h', CY, Y, h' * 5 / 2 / 2)
     }
   }"
-sublocale autoref_op_pat_def step_adapt_time .
-
-definition [refine_vcg_def, simp]: "under_pre_inter_granularity_spec ro X = SPEC (\<lambda>_::bool. True)"
-sublocale autoref_op_pat_def under_pre_inter_granularity_spec .
-
-definition [refine_vcg_def, simp]: "under_post_inter_granularity_spec ro X = SPEC (\<lambda>_::bool. True)"
-sublocale autoref_op_pat_def under_post_inter_granularity_spec .
-
-definition [refine_vcg_def, simp]: "under_max_tdev_thres_spec ro X = SPEC (\<lambda>_::bool. True)"
-sublocale autoref_op_pat_def under_max_tdev_thres_spec .
 
 definition [simp]: "eq_spec x y = SPEC (\<lambda>r. r \<longrightarrow> x = y)"
-sublocale autoref_op_pat_def eq_spec .
 lemma [autoref_itype]: "eq_spec ::\<^sub>i A \<rightarrow>\<^sub>i A \<rightarrow>\<^sub>i \<langle>i_bool\<rangle>\<^sub>ii_nres" by simp
 
 definition "select_with_inter ci a = do {
@@ -519,12 +392,8 @@ definition "select_with_inter ci a = do {
       })
       (\<lambda>CIS CIS'. RETURN (CIS' \<union> CIS))
   }"
-sublocale autoref_op_pat_def select_with_inter .
 
-definition with_coll_infos::"'c set \<Rightarrow> 'a set \<Rightarrow> 'a set nres"
-  where [simp, refine_vcg_def]: "with_coll_infos h x = SPEC (\<lambda>r. r = x)"
-
-abbreviation "fst_safe_colle XS \<equiv> (mk_safe_coll (op_image_fst_colle XS:::clw_rel appr_rel):::\<langle>clw_rel sappr_rel\<rangle>nres_rel)"
+abbreviation "fst_safe_colle XS \<equiv> (mk_safe_coll (op_image_fst_colle XS:::clw_rel appr_rel):::\<langle>clw_rel appr_rel\<rangle>nres_rel)"
 
 definition "do_intersection_body GUARDS ivl sctn h \<equiv> \<lambda>(X, T, PDPS, PDPS2, CXS, _, _).
   do {
@@ -549,9 +418,8 @@ definition "do_intersection_body GUARDS ivl sctn h \<equiv> \<lambda>(X, T, PDPS
     c2 \<leftarrow> nonzero_component_within ivl sctn PDP2;
     RETURN (X', pos_reals:::\<langle>Id\<rangle>phantom_rel, mk_coll PDP \<union> PDPS,
       mk_coll PDP2 \<union> PDPS2,
-      mk_coll (inter_sbelows (CX's:::sappr_rel) {sctn}) \<union> CXS, intersects, c1 \<and> c2)
+      mk_coll (inter_sbelows (CX's:::appr_rel) {sctn}) \<union> CXS, intersects, c1 \<and> c2)
   }"
-sublocale autoref_op_pat_def do_intersection_body .
 
 definition "do_intersection guards ivl sctn (X::'n::enum eucl1 set) (h::real) =
   do {
@@ -569,17 +437,17 @@ definition "do_intersection guards ivl sctn (X::'n::enum eucl1 set) (h::real) =
       (do_intersection_body GUARDS ivl sctn h)
       (X, nonneg_reals:::\<langle>Id\<rangle>phantom_rel, op_empty_coll:::clw_rel appr1_rel::'n eucl1 set,
         op_empty_coll:::clw_rel appr1_rel::'n eucl1 set,
-        mk_coll (inter_sbelows (sX:::sappr_rel) {sctn}), True, inside);
+        mk_coll (inter_sbelows (sX:::appr_rel) {sctn}), True, inside);
     a \<leftarrow> above_sctn (op_image_fst X) sctn;
     b \<leftarrow> subset_spec_coll (op_image_fst_coll PDPS) ivl;
     b2 \<leftarrow> subset_spec_coll (op_image_fst_coll PDPS2) ivl;
     RETURN (inside \<and> b \<and> b2 \<and> a, PDPS, PDPS2, CXS)
   }"
-sublocale autoref_op_pat_def do_intersection .
 
 definition "resolve_step roptns X h = do {
-    width_X \<leftarrow> under_max_tdev_thres_spec roptns (op_image_fste X:::appr_rel);
-    if \<not> width_X
+    width_X \<leftarrow> width_spec (op_image_fste X:::appr_rel);
+    mtdt \<leftarrow> max_tdev_thres_spec roptns;
+    if \<not> width_X \<le> mtdt
     then do {
       Y \<leftarrow> step_split roptns X;
       RETURN (h, fst ` Y, Y, h)
@@ -589,14 +457,15 @@ definition "resolve_step roptns X h = do {
       RETURN (h0, mk_coll (fst ` Y) \<union> mk_coll CY, mk_coll Y, h')
     }
   }"
-sublocale autoref_op_pat_def resolve_step .
 
 definition "pre_intersection_step ro X h = do {
-    if h > max_intersection_step ro
+    mis \<leftarrow> max_intersection_step_spec ro;
+    if h > mis
     then RETURN (with_infos (h/2) (mk_coll X), mk_coll (fst ` X), op_empty_coll:::clw_rel (iinfo_rel appr1e_rel))
     else do {
-      upig \<leftarrow> under_pre_inter_granularity_spec ro (fst ` X:::appr_rel);
-      if upig then
+      width_X \<leftarrow> width_spec (op_image_fste X:::appr_rel);
+      pig \<leftarrow> pre_inter_granularity_spec ro;
+      if width_X \<le> pig then
         RETURN (with_infos h (op_empty_coll:::clw_rel appr1e_rel), mk_coll (fst ` X),
                 with_infos (5 * h / 2 / 2) (mk_coll X))
       else do {
@@ -605,10 +474,10 @@ definition "pre_intersection_step ro X h = do {
       }
     }
   }"
-sublocale autoref_op_pat_def pre_intersection_step .
 
 definition "reach_cont ro (guardsi::'n::enum rvec set) XS0 =
   do {
+    startstep \<leftarrow> start_stepsize_spec;
     (_, XS0') \<leftarrow> scaleR2_rep_coll XS0;
     sXS0 \<leftarrow> fst_safe_coll XS0';
     let fX0 = op_image_fst_colle XS0;
@@ -630,15 +499,15 @@ definition "reach_cont ro (guardsi::'n::enum rvec set) XS0 =
         let _ = trace_set1 (ST ''XS: '' @ show cXS) (None::'n eucl1 set option);
         let _ = trace_set1 (ST ''GS: '' @ show cGS) (None::'n eucl1 set option);
         (h0, fCX', X', h') \<leftarrow> resolve_step ro X h;
-        sfCX' \<leftarrow> (mk_safe_coll (fCX':::clw_rel appr_rel):::\<langle>clw_rel sappr_rel\<rangle>nres_rel);
+        sfCX' \<leftarrow> (mk_safe_coll (fCX':::clw_rel appr_rel):::\<langle>clw_rel appr_rel\<rangle>nres_rel);
         let fX' = (fst ` X');
         fXS \<leftarrow> ivls_of_sets (fCX' \<union> fX');
         IS \<leftarrow> inter_overappr guards fXS;
-        let d = is_empty IS;
+        let d = op_coll_is_empty IS;
         if d then RETURN (with_infos h' X' \<union> XS':::clw_rel (iinfo_rel appr1e_rel), sfCX' \<union> CXS, GS)
         else do {
           (hX', fCX', hG') \<leftarrow> pre_intersection_step ro X h0;
-          sfCX' \<leftarrow> (mk_safe_coll (fCX':::clw_rel appr_rel):::\<langle>clw_rel sappr_rel\<rangle>nres_rel);
+          sfCX' \<leftarrow> (mk_safe_coll (fCX':::clw_rel appr_rel):::\<langle>clw_rel appr_rel\<rangle>nres_rel);
           _ \<leftarrow> fst_safe_colle (uninfo hX');
           _ \<leftarrow> fst_safe_colle (uninfo hG');
           fGs \<leftarrow> ivls_of_sets (op_image_fst_colle (uninfo hG') \<union> fCX' \<union> op_image_fst_colle (uninfo hX'));
@@ -649,11 +518,10 @@ definition "reach_cont ro (guardsi::'n::enum rvec set) XS0 =
           RETURN (hX' \<union> XS', sfCX' \<union> CXS, iG' \<union> GS)
         }
       })
-      (with_infos (start_stepsize optns) (XS0:::clw_rel appr1e_rel):::clw_rel (iinfo_rel appr1e_rel),
-        sXS0:::clw_rel sappr_rel, op_empty_coll:::clw_rel (\<langle>iplane_rel (lvivl_rel::(_\<times>'n rvec set)set), iinfo_rel appr1e_rel\<rangle>info_rel));
+      (with_infos startstep (XS0:::clw_rel appr1e_rel):::clw_rel (iinfo_rel appr1e_rel),
+        sXS0:::clw_rel appr_rel, op_empty_coll:::clw_rel (\<langle>iplane_rel (lvivl_rel::(_\<times>'n rvec set)set), iinfo_rel appr1e_rel\<rangle>info_rel));
     RETURN (CXS, GS)
   }"
-sublocale autoref_op_pat_def reach_cont .
 
 definition "reach_cont_par roptns guards XS = do {
   XS \<leftarrow> sets_of_coll XS;
@@ -663,7 +531,6 @@ definition "reach_cont_par roptns guards XS = do {
     (\<lambda>X. reach_cont roptns guards (mk_coll X)) XS;
   RETURN (\<Union>(fst ` snd ` PARS), \<Union>(snd ` snd ` PARS))
 }"
-sublocale autoref_op_pat_def reach_cont_par .
 
 
 definition "subset_iplane_coll x ics = do {
@@ -676,10 +543,8 @@ definition "subset_iplane_coll x ics = do {
       RETURN (b1 \<and> op_subset_ivl X i)
     }) (\<lambda>b c. RETURN (b \<or> c))
   }"
-sublocale autoref_op_pat_def subset_iplane_coll .
 
 definition "subsets_iplane_coll xs ics = FORWEAK xs (RETURN True) (\<lambda>x. subset_iplane_coll x ics) (\<lambda>a b. RETURN (a \<and> b))"
-sublocale autoref_op_pat_def subsets_iplane_coll .
 
 
 definition "stable_set p = {x. {0..} \<subseteq> existence_ivl0 x \<and> (flow0 x \<longlongrightarrow> p) at_top}"
@@ -688,16 +553,15 @@ definition symstart_coll::"('n::enum eucl1 set \<Rightarrow> ('n rvec set \<time
   'n eucl1 set \<Rightarrow> ('n rvec set \<times> 'n eucl1 set)nres"
   where
 "symstart_coll symstart X0 = do {
-    _ \<leftarrow> (fst_safe_colle (X0:::clw_rel appr1e_rel):::\<langle>clw_rel sappr_rel\<rangle>nres_rel);
+    _ \<leftarrow> (fst_safe_colle (X0:::clw_rel appr1e_rel):::\<langle>clw_rel appr_rel\<rangle>nres_rel);
     X0s \<leftarrow> sets_of_coll X0;
     (CX1, X1) \<leftarrow> FORWEAK X0s (RETURN (op_empty_coll, op_empty_coll)) (symstart)
       (\<lambda>(CX, X) (CX', X'). RETURN (CX' \<union> CX, X' \<union> X));
     RETURN (CX1, X1)
   }"
-sublocale autoref_op_pat_def symstart_coll .
 
 definition reach_cont_symstart ::
-  "'b reach_options \<Rightarrow> _ \<Rightarrow> 'n::enum rvec set
+  "_ \<Rightarrow> _ \<Rightarrow> 'n::enum rvec set
       \<Rightarrow> 'n eucl1 set \<Rightarrow> ('n rvec set \<times> 'n eucl1 set) nres"
   where "reach_cont_symstart ro symstart (guards::'n rvec set) X0 = do {
     let fX0 = op_image_fst_colle X0;
@@ -705,21 +569,21 @@ definition reach_cont_symstart ::
     d \<leftarrow> disjoints_spec fX0 GUARDS;
     CHECKs (ST ''reach_cont_symstart: starting from guarded set'') d;
     (CY, Y0) \<leftarrow> symstart_coll symstart X0;
-    sCY \<leftarrow> (mk_safe_coll (op_image_fst_colle X0 \<union> CY:::clw_rel appr_rel):::\<langle>clw_rel sappr_rel\<rangle>nres_rel);
+    sCY \<leftarrow> (mk_safe_coll (op_image_fst_colle X0 \<union> CY:::clw_rel appr_rel):::\<langle>clw_rel appr_rel\<rangle>nres_rel);
     b \<leftarrow> disjoints_spec (op_image_fst_colle Y0 \<union> CY) GUARDS;
     CHECKs ''reach_cont_symstart with a stupid guard'' b;
-    (CX, GS) \<leftarrow> (reach_cont_par ro guards Y0:::\<langle>clw_rel sappr_rel \<times>\<^sub>r clw_rel (\<langle>iplane_rel lvivl_rel::(_ \<times> 'n rvec set) set, iinfo_rel appr1e_rel\<rangle>info_rel)\<rangle>nres_rel);
+    (CX, GS) \<leftarrow> (reach_cont_par ro guards Y0:::\<langle>clw_rel appr_rel \<times>\<^sub>r clw_rel (\<langle>iplane_rel lvivl_rel::(_ \<times> 'n rvec set) set, iinfo_rel appr1e_rel\<rangle>info_rel)\<rangle>nres_rel);
     let CZ = sCY \<union> CX;
     RETURN (CZ, GS)
   }"
-sublocale autoref_op_pat_def reach_cont_symstart .
 
+context includes autoref_syntax begin\<comment> \<open>TODO: should not be annotating relations here\<close>
 definition reach_conts ::
-  "'b reach_options \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> 'n::enum rvec set
+  "_ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> 'n::enum rvec set
       \<Rightarrow> 'n eucl1 set \<Rightarrow> ('n rvec set \<times> ('n rvec set \<times> 'n eucl1 set) set \<times> ('n eucl1 set \<Rightarrow> 'n eucl1 set)) nres"
   where "reach_conts ro symstart trap (guardsi::'n rvec set) X0 = do {
     (CX, GS) \<leftarrow> (reach_cont_symstart ro (symstart:::appr1e_rel \<rightarrow> \<langle>clw_rel appr_rel \<times>\<^sub>r clw_rel appr1e_rel\<rangle>nres_rel) guardsi X0:::
-      \<langle>clw_rel sappr_rel \<times>\<^sub>r
+      \<langle>clw_rel appr_rel \<times>\<^sub>r
        clw_rel (\<langle>iplane_rel lvivl_rel::(_\<times>'n rvec set) set, iinfo_rel appr1e_rel\<rangle>info_rel)\<rangle>nres_rel);
     (IGSs:: ('n rvec set \<times> 'n eucl1 set) set) \<leftarrow> explicit_info_set GS;
     let GSs = snd ` IGSs;
@@ -729,13 +593,12 @@ definition reach_conts ::
     X0f \<leftarrow> GSPEC (\<lambda>f. X0 = \<Union>(f ` GSs) \<and> (\<forall>G \<in> GSs. flowsto (f G - trap \<times> UNIV) {0..} (CX \<times> UNIV) (G)));
     let K = (fst ` IGSs);
     b \<leftarrow> subsets_iplane_coll K guardsi;
-    CHECKs ''reach_conts: subsets_iplane_coll'' b;
+    CHECKs (ST ''reach_conts: subsets_iplane_coll'') b;
     RETURN (CX, IGSs:::\<langle>iplane_rel lvivl_rel \<times>\<^sub>r clw_rel (iinfo_rel appr1e_rel)\<rangle>list_wset_rel, X0f)
   }"
-sublocale autoref_op_pat_def reach_conts .
+end
 
 definition [refine_vcg_def]: "get_sctns X = SPEC (\<lambda>R. X = below_halfspaces R)"
-sublocale autoref_op_pat_def get_sctns .
 
 definition "leaves_halfspace S X = do {
     sctns \<leftarrow> get_sctns S;
@@ -755,14 +618,14 @@ definition "leaves_halfspace S X = do {
       }
     | _ \<Rightarrow> do {CHECKs (ST ''leaves_halfspace: not a good halfspace'') False; SUCCEED})
   }"
-sublocale autoref_op_pat_def leaves_halfspace .
 
 definition "poincare_start_on guards sctn X0S =
   do {
     X0SS \<leftarrow> sets_of_coll X0S;
     (FORWEAK X0SS (RETURN (op_empty_coll:::clw_rel appr1e_rel, op_empty_coll:::clw_rel appr_rel)) (\<lambda>X0. do {
       mk_safe (fst ` X0);
-      (h, err, CX1, X1) \<leftarrow> choose_step1e X0 (start_stepsize optns);
+      startstep \<leftarrow> start_stepsize_spec;
+      (h, err, CX1, X1) \<leftarrow> choose_step1e X0 (startstep);
       let _ = trace_set (ST ''interpolated start step:'') (Some CX1);
       let _ = print_set True CX1;
       let _ = trace_set1e (ST ''discrete start step:'') (Some X1);
@@ -782,29 +645,10 @@ definition "poincare_start_on guards sctn X0S =
     })
     (\<lambda>(X1, CX1) (X1S, CX1S). RETURN (op_union_coll X1 X1S:::clw_rel appr1e_rel, op_union_coll CX1 CX1S:::clw_rel appr_rel)))
   }"
-sublocale autoref_op_pat_def poincare_start_on .
 
 definition [simp]: "isets_of_iivls x = x"
 
 abbreviation "inter_plane A B \<equiv> mk_inter A (plane_of B)"
-
-definition [simp]: "op_times_UNIV_coll X = X \<times> UNIV"
-sublocale autoref_op_pat_def op_times_UNIV_coll .
-
-definition [simp]: "op_inter_fst X Y = X \<inter> Y \<times> UNIV"
-
-definition "op_inter_fst_coll XS Y = do {
-  XS \<leftarrow> sets_of_coll XS;
-  FORWEAK XS (RETURN op_empty_coll) (\<lambda>X. RETURN (mk_coll (op_inter_fst X Y))) (\<lambda>X X'. RETURN (X' \<union> X))
-  }"
-
-definition "scaleRe_ivl_coll_spec l u X = do {
-    XS \<leftarrow> sets_of_coll X;
-    FORWEAK XS (RETURN op_empty_coll)
-      (\<lambda>X. do {I \<leftarrow> scaleRe_ivl_spec l u X; RETURN (mk_coll I)})
-      (\<lambda>X X'. RETURN (X' \<union> X))
-  }"
-sublocale autoref_op_pat_def scaleRe_ivl_coll_spec .
 
 definition "do_intersection_core guards ivl sctn hX =
   do {
@@ -818,7 +662,6 @@ definition "do_intersection_core guards ivl sctn hX =
     }
     else RETURN (op_empty_coll, op_empty_coll, op_empty_coll, mk_coll eX)
   }"
-sublocale autoref_op_pat_def do_intersection_core .
 
 definition "do_intersection_coll guards ivl sctn X =
   do {
@@ -835,7 +678,6 @@ definition "do_intersection_coll guards ivl sctn X =
             (\<Union>(X, (P1, P2, CX, X0s))\<in>RS. CX),
             (\<Union>(X, (P1, P2, CX, X0s))\<in>RS. X0s))
   }"
-sublocale autoref_op_pat_def do_intersection_coll .
 
 definition "op_enlarge_ivl_sctn ivl sctn d = do {
     (l, u) \<leftarrow> ivl_rep ivl;
@@ -846,7 +688,6 @@ definition "op_enlarge_ivl_sctn ivl sctn d = do {
     ASSERT (l - dOne \<le> u + dOne);
     RETURN (op_atLeastAtMost_ivl (l - dOne) (u + dOne))
   }"
-sublocale autoref_op_pat_def op_enlarge_ivl_sctn .
 
 definition "guardset guards = Union (case_prod (\<inter>) ` (\<lambda>(x, y). (x, plane_of y)) ` guards)"
 
@@ -866,8 +707,8 @@ definition "resolve_ivlplanes (guards::'n::enum rvec set)
         RETURN {(uninfo X, PS1, PS2, RS, ivl, sctn, CXS)}
       })
       (\<lambda>(PS) (PS'). RETURN (PS' \<union> PS))"
-sublocale autoref_op_pat_def resolve_ivlplanes .
 
+context includes autoref_syntax begin
 definition "poincare_onto ro \<comment> \<open>options\<close>
                           symstart trap \<comment> \<open>symbolic start and trap\<close>
                           (guards::'n::enum rvec set) \<comment> \<open>avoiding guards\<close>
@@ -877,26 +718,22 @@ definition "poincare_onto ro \<comment> \<open>options\<close>
      =
   do {
     (CXS, XS, X0s) \<leftarrow> (reach_conts ro (symstart:::appr1e_rel \<rightarrow> \<langle>clw_rel appr_rel \<times>\<^sub>r clw_rel appr1e_rel\<rangle>nres_rel) trap (ivlplanes \<union> guards) XS0:::
-      \<langle>clw_rel sappr_rel \<times>\<^sub>r \<langle>iplane_rel lvivl_rel \<times>\<^sub>r clw_rel (iinfo_rel appr1e_rel)\<rangle>list_wset_rel \<times>\<^sub>r
+      \<langle>clw_rel appr_rel \<times>\<^sub>r \<langle>iplane_rel lvivl_rel \<times>\<^sub>r clw_rel (iinfo_rel appr1e_rel)\<rangle>list_wset_rel \<times>\<^sub>r
      ghost_rel\<rangle>nres_rel);
     PS \<leftarrow> resolve_ivlplanes guards ivlplanes XS;
-    ASSUME (CXS0 \<subseteq> Csafe);
+    _ \<leftarrow> mk_safe_coll CXS0;
     RETURN ((\<lambda>(X, P1, P2, R, ivl, sctn, CX). (X, P1, P2, R, ivl, sctn, CX, CXS \<union> CXS0)) ` PS)
   }"
-sublocale autoref_op_pat_def poincare_onto .
 
 definition "empty_remainders PS =
   FORWEAK PS (RETURN True) (\<lambda>(X, P1, P2, R, ivl, sctn, CX, CXS). do { e \<leftarrow> isEmpty_spec R; RETURN e})
     (\<lambda>a b. RETURN (a \<and> b))"
-sublocale autoref_op_pat_def empty_remainders .
 
 definition [simp]: "empty_trap = {}"
-sublocale autoref_op_pat_def empty_trap .
 
 definition empty_symstart::"((real, 'a) vec \<times> (real, 'a) vec \<Rightarrow>\<^sub>L (real, 'a) vec) set
    \<Rightarrow> ((real, 'a) vec set \<times> ((real, 'a) vec \<times> (real, 'a) vec \<Rightarrow>\<^sub>L (real, 'a) vec) set) nres"
   where [simp]: "empty_symstart \<equiv> \<lambda>X. RETURN (op_empty_coll, mk_coll X)"
-sublocale autoref_op_pat_def empty_symstart .
 
 definition "poincare_onto_empty ro \<comment> \<open>options\<close>
                           (guards::'n::enum rvec set) \<comment> \<open>avoiding guards\<close>
@@ -904,8 +741,6 @@ definition "poincare_onto_empty ro \<comment> \<open>options\<close>
                           (XS0::'n eucl1 set) =
   poincare_onto ro (OP empty_symstart:::appr1e_rel \<rightarrow> \<langle>clw_rel appr_rel \<times>\<^sub>r clw_rel appr1e_rel\<rangle>nres_rel)
     empty_trap guards ivlplanes XS0"
-sublocale autoref_op_pat_def poincare_onto_empty .
-
 
 
 definition "poincare_onto2 ro \<comment> \<open>options\<close>
@@ -917,7 +752,7 @@ definition "poincare_onto2 ro \<comment> \<open>options\<close>
     (PS) \<leftarrow> (poincare_onto ro (symstart:::appr1e_rel \<rightarrow> \<langle>clw_rel appr_rel \<times>\<^sub>r clw_rel appr1e_rel\<rangle>nres_rel)
       trap guards ivlplanes XS0 op_empty_coll:::
       \<langle>\<langle>clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r lvivl_rel \<times>\<^sub>r \<langle>lv_rel\<rangle>sctn_rel \<times>\<^sub>r
-        clw_rel (isbelows_rel sappr_rel) \<times>\<^sub>r clw_rel sappr_rel\<rangle>list_wset_rel\<rangle>nres_rel);
+        clw_rel (isbelows_rel appr_rel) \<times>\<^sub>r clw_rel appr_rel\<rangle>list_wset_rel\<rangle>nres_rel);
     (PS2) \<leftarrow> FORWEAK PS (RETURN ({})) (\<lambda>(X, P1, P2, R, ivl, sctn, CX, CXS).
       if op_coll_is_empty R then RETURN ({})
       else do {
@@ -926,7 +761,7 @@ definition "poincare_onto2 ro \<comment> \<open>options\<close>
         let ivlplanes' = (\<Union>(mk_coll ` ivlplaness':::\<langle>clw_rel (iplane_rel lvivl_rel)\<rangle>list_wset_rel));
         PS' \<leftarrow> (poincare_onto_empty ro (guards) ivlplanes' R CXS:::
             \<langle>\<langle>clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r lvivl_rel \<times>\<^sub>r \<langle>lv_rel\<rangle>sctn_rel
-            \<times>\<^sub>r clw_rel (isbelows_rel sappr_rel) \<times>\<^sub>r clw_rel sappr_rel\<rangle>list_wset_rel\<rangle>nres_rel);
+            \<times>\<^sub>r clw_rel (isbelows_rel appr_rel) \<times>\<^sub>r clw_rel appr_rel\<rangle>list_wset_rel\<rangle>nres_rel);
         b \<leftarrow> empty_remainders PS';
         CHECKs (ST ''poincare_onto2: empty remainders!'') b;
         ASSUME (finite PS');
@@ -934,13 +769,13 @@ definition "poincare_onto2 ro \<comment> \<open>options\<close>
         }) (\<lambda>PS PS'. RETURN (PS' \<union> PS));
       RETURN (Pair True ` PS2 \<union> Pair False ` PS)
     }"
-sublocale autoref_op_pat_def poincare_onto2 .
 
 definition "width_spec_ivl M x = do {
     (i, s) \<leftarrow> ivl_rep x;
     RETURN (\<Sum>(i, s)\<leftarrow>zip (take M (list_of_eucl i)) (take M (list_of_eucl s)). abs (s - i))
   }"
-definition partition_ivl::"'b reach_options \<Rightarrow> 'a::executable_euclidean_space set \<Rightarrow> 'a::executable_euclidean_space set nres"
+
+definition partition_ivl::"_ \<Rightarrow> 'a::executable_euclidean_space set \<Rightarrow> 'a::executable_euclidean_space set nres"
   where
  "partition_ivl roptns xs = (if op_coll_is_empty xs then RETURN (op_empty_coll:::clw_rel lvivl_rel) else do {
     (i, s) \<leftarrow> ivl_rep_of_set_coll (sets_of_ivls (xs:::clw_rel lvivl_rel):::clw_rel appr_rel);
@@ -953,11 +788,12 @@ definition partition_ivl::"'b reach_options \<Rightarrow> 'a::executable_euclide
         (r, rs') \<leftarrow> (split_spec_exact rs:::\<langle>lvivl_rel \<times>\<^sub>r clw_rel lvivl_rel\<rangle>nres_rel);
         (ri, rs) \<leftarrow> ivl_rep r;
         CHECKs (ST ''partition_ivl with strange ivl'') (ri \<le> rs);
-        width \<leftarrow> under_post_inter_granularity_spec roptns ({ri .. rs}:::appr_rel);
-        if width then
+        width \<leftarrow> width_spec ({ri .. rs}:::appr_rel);
+        pig \<leftarrow> post_inter_granularity_spec roptns;
+        if width \<le> pig then
           RETURN (rs', mk_coll r \<union> ps)
         else do {
-          (a, b) \<leftarrow> split_spec_ivl D r;
+          (a, b) \<leftarrow> split_spec_ivl (DIM('a)) r;
           let isa = (op_inter_ivl_coll (xs:::clw_rel lvivl_rel) (a:::lvivl_rel));
           let isb = (op_inter_ivl_coll(xs:::clw_rel lvivl_rel) (b:::lvivl_rel));
           ra' \<leftarrow> (if op_coll_is_empty isa then RETURN op_empty_coll else do {
@@ -973,84 +809,6 @@ definition partition_ivl::"'b reach_options \<Rightarrow> 'a::executable_euclide
       }) (mk_coll r:::clw_rel lvivl_rel, op_empty_coll :::clw_rel lvivl_rel);
     RETURN ps
   })"
-sublocale autoref_op_pat_def partition_ivl .
-
-abbreviation "elvivl_rel \<equiv> \<langle>lvivl_rel\<rangle>scaleR2_rel"
-
-definition "op_inter_fst_ivl_scaleR2 X Y = do {
-    ((l, u), X) \<leftarrow> scaleR2_rep X;
-    (i, s) \<leftarrow> ivl_rep (op_inter_fst X Y);
-    let R = op_inter_fst (op_atLeastAtMost_ivl i s) Y;
-    scaleRe_ivl_coll_spec l u (filter_empty_ivls (mk_coll R))
-  }"
-sublocale autoref_op_pat_def op_inter_fst_ivl_scaleR2 .
-
-definition "op_inter_fst_ivl_coll_scaleR2 X Y = do {
-    Xs \<leftarrow> sets_of_coll X;
-    FORWEAK Xs (RETURN op_empty_coll) (\<lambda>X. op_inter_fst_ivl_scaleR2 X Y) (\<lambda>X X'. RETURN (X' \<union> X))
-  }"
-sublocale autoref_op_pat_def op_inter_fst_ivl_coll_scaleR2 .
-
-definition [refine_vcg_def]: "op_image_fst_ivl X = SPEC (\<lambda>R. R = fst ` X)"
-sublocale autoref_op_pat_def op_image_fst_ivl .
-
-definition "op_inter_ivl_coll_scaleR2 X Y = do {
-    eivls \<leftarrow> op_inter_fst_ivl_coll_scaleR2 X Y;
-    ((l, u), ivls) \<leftarrow> scaleR2_rep_coll eivls;
-    (i, s) \<leftarrow> ivl_rep_of_set_coll (sets_of_ivls ivls);
-    let R = op_inter_fst (op_atLeastAtMost_ivl i s) Y;
-    scaleRe_ivl_coll_spec l u (filter_empty_ivls (mk_coll R))
-  }"
-sublocale autoref_op_pat_def op_inter_ivl_coll_scaleR2 .
-
-definition "op_image_fst_ivl_coll X = do {
-  Xs \<leftarrow> sets_of_coll X;
-  FORWEAK Xs (RETURN op_empty_coll) (\<lambda>X. do {i \<leftarrow> op_image_fst_ivl X; RETURN (mk_coll i)}) (\<lambda>X' X. RETURN (X' \<union> X))
-  }"
-sublocale autoref_op_pat_def op_image_fst_ivl_coll .
-
-definition "op_single_inter_ivl a fxs = do {
-  let isa = (op_inter_ivl_coll (fxs:::clw_rel lvivl_rel) (a:::lvivl_rel));
-  (if op_coll_is_empty isa then RETURN op_empty_coll else do {
-    (i', s') \<leftarrow> ivl_rep_of_set_coll (sets_of_ivls isa);
-    RETURN (mk_coll (({i' .. s'}:::lvivl_rel) \<inter> a))
-  })
-}"
-sublocale autoref_op_pat_def op_single_inter_ivl .
-
-
-definition partition_ivle::
-  "'b reach_options \<Rightarrow> ('n::enum vec1) set \<Rightarrow> _ set nres"
-  where
- "partition_ivle roptns xse =
-  (if op_coll_is_empty xse then RETURN (op_empty_coll:::clw_rel (elvivl_rel)) else do {
-    (_, xs) \<leftarrow> scaleR2_rep_coll xse;
-    xsf \<leftarrow> op_image_fst_ivl_coll xs;
-    (i, s) \<leftarrow> ivl_rep_of_set_coll (sets_of_ivls (xsf:::clw_rel (lvivl_rel)):::clw_rel appr_rel);
-    ASSERT (i \<le> s);
-    let r = (op_atLeastAtMost_ivl i s);
-    (rs, ps) \<leftarrow>
-      WHILE\<^bsup>(\<lambda>(rs, ps). xse \<subseteq> (rs \<times> UNIV) \<union> ps)\<^esup> (\<lambda>(rs, ps). \<not> op_coll_is_empty (rs:::clw_rel lvivl_rel))
-      (\<lambda>(rs, ps).
-      do {
-        (r, rs') \<leftarrow> (split_spec_exact rs:::\<langle>lvivl_rel \<times>\<^sub>r clw_rel lvivl_rel\<rangle>nres_rel);
-        (ri, rs) \<leftarrow> ivl_rep r;
-        CHECKs (ST ''partition_ivle with strange ivl'') (ri \<le> rs);
-        width \<leftarrow> under_post_inter_granularity_spec roptns ({ri .. rs}:::appr_rel);
-        if width then do {
-          I \<leftarrow> op_inter_ivl_coll_scaleR2 (xse) (r);
-          RETURN (rs', I \<union> ps)
-        } else do {
-          (a, b) \<leftarrow> split_spec_ivl D r;
-          fxs \<leftarrow> op_image_fst_ivl_coll xs;
-          ra' \<leftarrow> op_single_inter_ivl a fxs;
-          rb' \<leftarrow> op_single_inter_ivl b fxs;
-          RETURN (ra' \<union> rb' \<union> rs', ps)
-        }
-      }) (mk_coll r:::clw_rel lvivl_rel, op_empty_coll :::clw_rel elvivl_rel);
-    RETURN ps
-  })"
-sublocale autoref_op_pat_def partition_ivle .
 
 definition
   "vec1repse X = do {
@@ -1069,11 +827,11 @@ definition
         case (a, b) of (Some a, Some b) \<Rightarrow> RETURN (Some (b \<union> a))
         | _ \<Rightarrow> RETURN None)
   }"
-sublocale autoref_op_pat_def vec1reps .
 
 abbreviation "appre_rel \<equiv> \<langle>appr_rel\<rangle>scaleR2_rel"
 
-definition "scaleR2_rep1 Y = do {
+definition "scaleR2_rep1 (Y::('a::executable_euclidean_space\<times>_) set) = do {
+    let D = DIM('a);
     ((l, u), X) \<leftarrow> scaleR2_rep Y;
     (i, s) \<leftarrow> op_ivl_rep_of_set X;
     let mig = inf (abs i) (abs s);
@@ -1084,8 +842,9 @@ definition "scaleR2_rep1 Y = do {
     CHECKs (ST ''scaleR2_rep1: scale 0'') (scale > 0);
     CHECKs (ST ''scaleR2_rep1: l 0'') (l > 0);
     CHECKs (ST ''scaleR2_rep1: u 0'') (u > 0);
-    let scalel = real_divl (precision optns) 1 scale;
-    let scaleu = real_divr (precision optns) 1 scale;
+    precision \<leftarrow> precision_spec;
+    let scalel = real_divl (precision) 1 scale;
+    let scaleu = real_divr (precision) 1 scale;
     CHECKs (ST ''scaleR2_rep1: scalel 0'') (scalel > 0);
     CHECKs (ST ''scaleR2_rep1: scaleu 0'') (scaleu > 0);
     (i, s) \<leftarrow> op_ivl_rep_of_set X;
@@ -1094,43 +853,6 @@ definition "scaleR2_rep1 Y = do {
     scaleRe_ivl_spec (scalel * l) (scaleu * u)
       (op_atLeastAtMost_ivl (Pair_lv_rel i0 (scale *\<^sub>R i1)) (Pair_lv_rel s0 (scale *\<^sub>R s1)))
   }"
-sublocale autoref_op_pat_def scaleR2_rep1 .
-
-definition "reduce_ivl (X::'n::enum vec1 set) b = do {
-    (i, s) \<leftarrow> ivl_rep X;
-    CHECKs (''reduce_ivl strange basis'') (b \<in> set Basis_list);
-    CHECKs (''reduce_ivl strange ivl'') (i \<le> s);
-    let (i0, i1) = split_lv_rel i;
-    let (s0, s1) = split_lv_rel s;
-    let ivl2 = op_atLeastAtMost_ivl i1 s1;
-    P \<leftarrow> project_set_ivl ivl2 b 0;
-    (iP, sP) \<leftarrow> ivl_rep P;
-    if iP \<le> 0 \<and> 0 \<le> sP then
-      if i1 \<bullet> b > 0 then do {
-        let s = (i1 \<bullet> b) *\<^sub>R b;
-        let P' = op_atLeastAtMost_ivl (Pair_lv_rel i0 (iP + s)) (Pair_lv_rel s0 (sP + s));
-        scaleRe_ivl_spec 1 \<infinity> P'
-      } else if s1 \<bullet> b < 0 then do {
-        let s = (s1 \<bullet> b) *\<^sub>R b;
-        let P' = op_atLeastAtMost_ivl (Pair_lv_rel i0 (iP + s)) (Pair_lv_rel s0 (sP + s));
-        scaleRe_ivl_spec 1 \<infinity> P'
-      } else scaleRe_ivl_spec 1 1 X
-    else scaleRe_ivl_spec 1 1 X
-  }"
-sublocale autoref_op_pat_def reduce_ivl .
-
-definition "reduce_ivle Y b = do {
-    ((l, u), X) \<leftarrow> scaleR2_rep Y;
-    R \<leftarrow> reduce_ivl X b;
-    ((l', u'), R) \<leftarrow> scaleR2_rep R;
-    CHECKs (''reduce_ivle: wtf?'') (0 < l' \<and> 0 < l \<and> 0 \<le> u \<and> l \<le> u \<and> l' \<le> u');
-    scaleRe_ivl_spec (l'*l) (u' * u) R
-  }"
-sublocale autoref_op_pat_def reduce_ivle .
-
-definition "reduces_ivle (X::'n::enum vec1 set) =
-  FOREACH\<^bsup>\<lambda>B R. X \<subseteq> R\<^esup> (set Basis_list:::\<langle>lv_rel\<rangle>list_set_rel) (\<lambda>b X. reduce_ivle X b) X"
-sublocale autoref_op_pat_def reduces_ivle .
 
 definition "ivlse_of_setse X = do {
   Xs \<leftarrow> sets_of_coll X;
@@ -1140,30 +862,24 @@ definition "ivlse_of_setse X = do {
     RETURN (mk_coll I)
   }) (\<lambda>X' X. RETURN (X' \<union> X))
   }"
-sublocale autoref_op_pat_def ivlse_of_setse .
-
-definition "setse_of_ivlse (X:: ('a::executable_euclidean_space \<times> 'c::executable_euclidean_space) set) = do {
-  Xs \<leftarrow> sets_of_coll X;
-  FORWEAK Xs (RETURN op_empty_coll) (\<lambda>X. do {
-    ((l, u), x) \<leftarrow> scaleR2_rep X;
-    (i, s) \<leftarrow> ivl_rep x;
-    if i \<le> s then do {
-      x \<leftarrow> scaleRe_ivl_spec l u {i .. s};
-      RETURN (mk_coll x)
-    } else RETURN op_empty_coll
-  }) (\<lambda>X' X. RETURN (X' \<union> X))
-}"
-sublocale autoref_op_pat_def setse_of_ivlse .
 
 definition [simp]: "op_image_flow1_of_vec1_colle \<equiv> op_image_flow1_of_vec1_coll"
-sublocale autoref_op_pat_def op_image_flow1_of_vec1_colle .
 
-definition partition_set::"'b reach_options \<Rightarrow> 'n::enum eucl1 set \<Rightarrow> 'n eucl1 set nres"
+definition "okay_granularity ro r = do {
+    (ri, rs) \<leftarrow> ivl_rep r;
+    CHECKs (ST ''partition_ivle with strange ivl'') (ri \<le> rs);
+    width \<leftarrow> width_spec ({ri .. rs}:::appr_rel);
+    pig \<leftarrow> post_inter_granularity_spec ro;
+    RETURN (width\<le>pig)
+  }"
+
+definition partition_set::"unit \<Rightarrow> 'n::enum eucl1 set \<Rightarrow> 'n eucl1 set nres"
   where
     "partition_set ro xs =
     (if op_coll_is_empty xs then RETURN (op_empty_coll:::clw_rel appr1e_rel) else do {
     ASSERT (xs \<noteq> {});
-    xs \<leftarrow> split_under_threshold ro (pre_collect_granularity ro)
+    pcg \<leftarrow> pre_collect_granularity_spec ro;
+    xs \<leftarrow> split_under_threshold ro pcg
             (xs:::clw_rel appr1e_rel);
     vxs \<leftarrow> vec1repse xs;
     case vxs of None \<Rightarrow> do {
@@ -1173,14 +889,13 @@ definition partition_set::"'b reach_options \<Rightarrow> 'n::enum eucl1 set \<R
     }
     | Some xs \<Rightarrow> do {
       xs \<leftarrow> ivlse_of_setse xs;
-      ps \<leftarrow> partition_ivle ro xs;
+      ps \<leftarrow> (OP partition_ivle) $ ro $ xs;
       ps \<leftarrow> setse_of_ivlse ps;
       RETURN (op_image_flow1_of_vec1_colle ps)
     }
   })"
-sublocale autoref_op_pat_def partition_set .
 
-definition partition_sets::"'b reach_options \<Rightarrow>
+definition partition_sets::"unit \<Rightarrow>
   (bool \<times> 'a::enum eucl1 set \<times> 'a::enum eucl1 set \<times> 'a::enum eucl1 set \<times> 'a::enum eucl1 set \<times> 'a rvec set \<times> 'a rvec sctn \<times> 'a rvec set \<times> 'a rvec set) set \<Rightarrow>
   'a eucl1 set nres"
   where
@@ -1190,24 +905,22 @@ definition partition_sets::"'b reach_options \<Rightarrow>
       RETURN PS
     })
     (\<lambda>a b. RETURN (b \<union> a))"
-sublocale autoref_op_pat_def partition_sets .
 
 definition "ivlsctn_to_set xs = (\<Union>(ivl, sctn)\<in>set xs. ivl \<inter> plane_of sctn)"
 
 definition [refine_vcg_def]: "singleton_spec X = SPEC (\<lambda>x. X = {x})"
-sublocale autoref_op_pat_def singleton_spec .
 
 primrec poincare_onto_series where
   "poincare_onto_series interrupt trap [] XS0 ivl sctn ro = do {
     let guard0 = mk_coll (mk_inter ivl (plane_of sctn));
     ASSUME (closed guard0);
-    XS1 \<leftarrow> (poincare_onto2 (ro:::reach_optns_rel)
+    XS1 \<leftarrow> (poincare_onto2 (ro:::Id)
        (interrupt:::appr1e_rel \<rightarrow> \<langle>clw_rel appr_rel \<times>\<^sub>r clw_rel appr1e_rel\<rangle>nres_rel) trap
         (op_empty_coll:::clw_rel (iplane_rel lvivl_rel)) guard0 XS0:::
       \<langle>\<langle>bool_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r lvivl_rel \<times>\<^sub>r \<langle>lv_rel\<rangle>sctn_rel \<times>\<^sub>r
-      clw_rel (isbelows_rel sappr_rel) \<times>\<^sub>r clw_rel sappr_rel\<rangle>list_wset_rel\<rangle>nres_rel);
+      clw_rel (isbelows_rel appr_rel) \<times>\<^sub>r clw_rel appr_rel\<rangle>list_wset_rel\<rangle>nres_rel);
     (b, X, PS1, PS2, R, ivl', sctn', CX, CXS) \<leftarrow> singleton_spec XS1;
-    CHECKs ''poincare_onto_series: last return!'' (ivl' = ivl \<and> sctn' = sctn);
+    CHECKs (ST ''poincare_onto_series: last return!'') (ivl' = ivl \<and> sctn' = sctn);
     RETURN PS2
   }"
 | "poincare_onto_series interrupt trap ((guardro)#guards) XS0 ivl sctn ro0 = (case guardro of (guard, ro) \<Rightarrow>
@@ -1219,14 +932,13 @@ primrec poincare_onto_series where
       let guardset = (\<Union>(guard, ro)\<in>set ((guard0, ro0)#guards). guard);
       XS1 \<leftarrow> (poincare_onto2 ro (interrupt:::appr1e_rel \<rightarrow> \<langle>clw_rel appr_rel \<times>\<^sub>r clw_rel appr1e_rel\<rangle>nres_rel) trap (guardset:::clw_rel (iplane_rel lvivl_rel)) guard XS0 :::
         \<langle>\<langle>bool_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r clw_rel appr1e_rel \<times>\<^sub>r lvivl_rel \<times>\<^sub>r \<langle>lv_rel\<rangle>sctn_rel \<times>\<^sub>r
-      clw_rel (isbelows_rel sappr_rel) \<times>\<^sub>r clw_rel sappr_rel\<rangle>list_wset_rel\<rangle>nres_rel);
+      clw_rel (isbelows_rel appr_rel) \<times>\<^sub>r clw_rel appr_rel\<rangle>list_wset_rel\<rangle>nres_rel);
       ASSUME (\<forall>(b, X, PS1, PS1, R, ivl, sctn, CX, CXS) \<in> XS1. closed ivl);
       XS2 \<leftarrow> partition_sets ro XS1;
       _ \<leftarrow> fst_safe_colle XS2;
-      XS3 \<leftarrow> poincare_onto_series interrupt trap guards XS2 ivl sctn (ro0:::reach_optns_rel);
+      XS3 \<leftarrow> poincare_onto_series interrupt trap guards XS2 ivl sctn (ro0:::Id);
       RETURN XS3
     })"
-sublocale autoref_op_pat_def poincare_onto_series .
 
 definition "poincare_onto_from interrupt trap
                                S                      \<comment> \<open>leaving this (half)space in the beginning\<close>
@@ -1243,11 +955,11 @@ definition "poincare_onto_from interrupt trap
         None \<Rightarrow> RETURN XS0
       | Some lsctn =>
         do {
-            CHECKs ''poincare_onto_from: section only makes sense if start section = end section''
+            CHECKs (ST ''poincare_onto_from: section only makes sense if start section = end section'')
               (lsctn = sctn \<or> normal lsctn = - normal sctn \<and> pstn lsctn = - pstn sctn);
             guards \<leftarrow> unintersect_coll guardset;
             b \<leftarrow> subset_spec_coll (op_image_fst_colle XS0) ivl;
-            CHECKs ''poincare_onto_from: section only makes sense if we start from there'' b;
+            CHECKs (ST ''poincare_onto_from: section only makes sense if we start from there'') b;
             (XS0, _) \<leftarrow> poincare_start_on guards lsctn (XS0);
             RETURN XS0
         }
@@ -1255,11 +967,6 @@ definition "poincare_onto_from interrupt trap
     PS \<leftarrow> poincare_onto_series interrupt trap guards XS0 ivl sctn ro;
     RETURN PS
   }"
-sublocale autoref_op_pat_def poincare_onto_from .
-
-definition [simp]: "op_times_ivl a b = a \<times> b"
-
-definition [refine_vcg_def]: "default_rep d X = SPEC (\<lambda>x. case x of None \<Rightarrow> X = d | Some r \<Rightarrow> X = r)"
 
 definition "subset_spec1 R P dP = do {
     R1 \<leftarrow> vec1rep R;
@@ -1270,7 +977,6 @@ definition "subset_spec1 R P dP = do {
       op_subset RdR (P \<times> dP)
     | (None, Some _) \<Rightarrow> RETURN False
   }"
-sublocale autoref_op_pat_def subset_spec1 .
 
 definition "subset_spec1_coll R P dP = do {
     XS \<leftarrow> sets_of_coll R;
@@ -1279,30 +985,27 @@ definition "subset_spec1_coll R P dP = do {
 
 definition "one_step_until_time X0 (ph::bool) (t1::real) =
   do {
-    CHECKs ''one_step_until_time optns'' (0 \<le> t1 \<and> 0 < start_stepsize optns \<and>
-      0 < rk2_param optns \<and> rk2_param optns \<le> 1);
+    CHECKs ''one_step_until_time optns'' (0 \<le> t1);
+    startstep \<leftarrow> start_stepsize_spec;
+    rk2param \<leftarrow> rk2_param_spec;
     let fX0 = fst ` X0;
     mk_safe (fX0);
     (t, _, X, CX) \<leftarrow> WHILE (\<lambda>(t, _, _, _). t < t1) (\<lambda>(t, h, X, CXs). do {
-        let _ = trace_set1e (''choose step from:'') (Some X);
+        let _ = trace_set1e (ST ''choose step from:'') (Some X);
         (h0, CX, X, h') \<leftarrow> step_adapt_time X (min h (t1 - t));
-        CHECKs ''one_step negative step'' (h0 \<ge> 0 \<and> h' > 0 \<and> h0 \<le> min h (t1 - t));
-        let _ = trace_set (''interpolated step:'') (Some CX);
+        CHECKs (ST ''one_step negative step'') (h0 \<ge> 0 \<and> h' > 0 \<and> h0 \<le> min h (t1 - t));
+        let _ = trace_set (ST ''interpolated step:'') (Some CX);
         let _ = print_set True CX;
-        let _ = trace_set1e (''step:'') (Some X);
+        let _ = trace_set1e (ST ''step:'') (Some X);
         let _ = print_set1e False X;
         let fCX = CX;
         mk_safe fCX;
         let fX = fst ` X;
         mk_safe fX;
         RETURN (t + h0, h', X, mk_phantom (mk_coll CX) \<union> CXs)
-    }) (0::real, start_stepsize optns::real, X0, op_union_phantom (mk_phantom (mk_coll fX0)) (op_empty_phantom ph));
+    }) (0::real, startstep, X0, op_union_phantom (mk_phantom (mk_coll fX0)) (op_empty_phantom ph));
     RETURN (X, CX)
   }"
-sublocale autoref_op_pat_def one_step_until_time .
-
-definition [refine_vcg_def]: "get_phantom X = SPEC (\<lambda>R. R = X)"
-sublocale autoref_op_pat_def get_phantom .
 
 definition "ivl_of_eucl_coll CY =
   do {
@@ -1310,12 +1013,11 @@ definition "ivl_of_eucl_coll CY =
     ASSERT (i \<le> s);
     RETURN (({i .. s}\<times>UNIV):::appr1_rel)
   }"
-sublocale autoref_op_pat_def ivl_of_eucl_coll .
 
 definition "one_step_until_time_ivl X0 (ph::bool) (t1::real) (t2::real) =
   do {
     (X, CX) \<leftarrow>  one_step_until_time X0 ph t1;
-    CHECKs ''one_step_until_time_ivl empty time interval'' (0 \<le> t1 \<and> t1 \<le> t2);
+    CHECKs (ST ''one_step_until_time_ivl empty time interval'') (0 \<le> t1 \<and> t1 \<le> t2);
     (if t2 = t1 then RETURN (X, CX)
     else do {
       (Y, CYp) \<leftarrow> one_step_until_time X False (t2 - t1);
@@ -1326,126 +1028,6 @@ definition "one_step_until_time_ivl X0 (ph::bool) (t1::real) (t2::real) =
       RETURN (R, CYp \<union> CX)
     })
   }"
-sublocale autoref_op_pat_def one_step_until_time_ivl .
-
-
-end
-
-locale approximate_sets_options' = approximate_sets_options\<comment> \<open>TODO: really?!\<close>
-
-context approximate_sets_options' begin
-
-sublocale approximate_sets_ode_slp'
-  where D = D
-    and ode_slp = ode_slp
-    and euler_incr_slp = euler_incr_slp
-    and euler_slp = euler_slp
-    and rk2_slp = rk2_slp
-
-    and solve_poincare_slp = solve_poincare_slp
-
-    and c1_slps = c1_slps
-
-    for D::nat
-    and ode_slp::slp
-    and euler_incr_slp::slp
-    and euler_slp::slp
-    and rk2_slp::slp
-
-    and solve_poincare_slp
-
-    and c1_slps
-  by standard
-
-definition trace_str::"string\<Rightarrow>unit" where "trace_str _ = ()"
-sublocale autoref_op_pat_def trace_str .
-
-definition "init_ode_solver (c1::bool) = do {
-  let D = length (ode_e);
-  CHECK (\<lambda>_. trace_str ''init_ode_solver failed: rk2_param'')
-    (0 < rk2_param optns \<and> rk2_param optns \<le> 1);
-  CHECK (\<lambda>_. trace_str ''init_ode_solver failed: max_Var_floatariths'') (max_Var_floatariths ode_e \<le> D);
-  CHECK (\<lambda>_. trace_str ''init_ode_solver failed: max_Var_form'') (max_Var_form safe_form \<le> D);
-  CHECK (\<lambda>_. trace_str ''init_ode_solver failed: open_form safe_form'') (open_form safe_form);
-  let _ = trace_str ''# ode_slp ...'';
-  let ode_slp = slp_of_fas ode_e;
-  let _ = trace_str ''# solve_poincare_slp ...'';
-  let solve_poincare_slp = map (\<lambda>i. slp_of_fas (map fold_const_fa (solve_poincare_fas D i))) [0..<D];
-
-  let _ = trace_str ''# euler_incr_slp ...'';
-  let euler_incr_slp = slp_of_fas (map fold_const_fa (euler_incr_fas (map floatarith.Var [0..<D]) (floatarith.Var (D))
-      (map floatarith.Var [Suc D..<Suc (2*D)])));
-  let _ = trace_str ''# euler_slp ...'';
-  let euler_slp = slp_of_fas (map fold_const_fa (euler_fas (map floatarith.Var [0..<D])
-    (floatarith.Var (2*D)) (map floatarith.Var [D..<2*D])));
-  let _ = trace_str ''# rk2_slp ...'';
-  let rk2_slp = slp_of_fas (map fold_const_fa (rk2_fas
-    (floatarith.Var (2*D))
-    (map floatarith.Var [0..<D])
-    (floatarith.Var (2*D+1))    (map floatarith.Var [D..<2*D])
-    (floatarith.Var (2*D+2))));
-  c1_slps \<leftarrow>
-    (if c1 then do {
-      let _ = trace_str ''# ode_slp' ...'';
-      let ode_slp' = slp_of_fas (ode_e' D);
-      let D2 = D + D * D;
-      let _ = trace_str ''# rk2_slp' ...'';
-      let rk2_slp' = slp_of_fas
-        (map fold_const_fa (var.rk2_fas D (floatarith.Var (2 * D2)) (map floatarith.Var [0..<D2]) (floatarith.Var (2 * D2 + 1))
-          (map floatarith.Var [D2..<2 * D2]) (floatarith.Var(2 * D2 + 2))));
-      let _ = trace_str ''# euler_slp' ...'';
-      let euler_slp' = slp_of_fas
-          (map fold_const_fa (var.euler_fas D (map floatarith.Var [0..<D2]) (floatarith.Var (2 * D2))
-            (map floatarith.Var [D2..<2 * D2])));
-      let _ = trace_str ''# euler_incr_slp' ...'';
-      let euler_incr_slp' =
-       slp_of_fas
-        (map fold_const_fa (var.euler_incr_fas D (map floatarith.Var [0..<D2]) (floatarith.Var (D2))
-          (map floatarith.Var [Suc D2..<Suc (2 * D2)])))
-      in  RETURN (Some (ode_slp', euler_incr_slp', euler_slp', rk2_slp'))
-    } else RETURN None);
-  RETURN (D, ode_slp,  euler_incr_slp,  euler_slp,  rk2_slp, solve_poincare_slp, c1_slps)
-}"\<comment> \<open>TODO: use definitions for slps\<close>
-sublocale autoref_op_pat_def init_ode_solver .
-
-sublocale autoref_op_pat_def slp_of_fas .
-
-definition [refine_vcg_def]: "has_c1_info X = SPEC (\<lambda>_. True)"
-
-definition "poincare_onto_froma interrupt trap S guards ivl sctn ro (XS0::'n::enum eucl1 set) =
-  do {
-    has_c1 \<leftarrow> has_c1_info XS0;
-    (D, ode_slp, euler_incr_slp, euler_slp, rk2_slp, solve_poincare_slp, c1_slps) \<leftarrow> init_ode_solver has_c1;
-    ASSERT (vwd_step D ode_slp euler_incr_slp euler_slp rk2_slp c1_slps
-      solve_poincare_slp TYPE('n));
-    poincare_onto_from D ode_slp euler_incr_slp euler_slp rk2_slp c1_slps
-       solve_poincare_slp interrupt trap S guards ivl sctn ro XS0
-  }"
-
-definition "poincare_ontoa guards ivl sctn ro (XS0::'n::enum eucl1 set) =
-  do {
-    has_c1 \<leftarrow> has_c1_info XS0;
-    (D, ode_slp, euler_incr_slp, euler_slp, rk2_slp, solve_poincare_slp, c1_slps) \<leftarrow> init_ode_solver has_c1;
-    ASSERT (vwd_step D ode_slp euler_incr_slp euler_slp rk2_slp c1_slps
-      solve_poincare_slp TYPE('n));
-    poincare_onto_series D ode_slp euler_incr_slp euler_slp rk2_slp c1_slps
-       solve_poincare_slp empty_symstart empty_trap guards XS0 ivl sctn ro
-  }"
-
-definition "solve_one_step_until_timea (X0::'n::enum eucl1 set) CX t1 t2 =
-  do {
-    has_c1 \<leftarrow> has_c1_info (mk_coll X0);
-    (D, ode_slp, euler_incr_slp, euler_slp, rk2_slp, solve_poincare_slp,
-       c1_slps) \<leftarrow> init_ode_solver has_c1;
-    ASSERT (vwd_step D ode_slp euler_incr_slp euler_slp rk2_slp c1_slps solve_poincare_slp TYPE('n));
-    one_step_until_time_ivl D euler_incr_slp euler_slp rk2_slp c1_slps X0 CX t1 t2
-  }"
-
-sublocale autoref_op_pat_def poincare_ontoa .
-sublocale autoref_op_pat_def poincare_onto_from .
-sublocale autoref_op_pat_def poincare_onto_froma .
-sublocale autoref_op_pat_def solve_one_step_until_timea .
-sublocale autoref_op_pat_def one_step_until_time .
 
 definition "c1_info_invare n X = (let l = (fst (fst X)); u = (snd (fst X))
   in (c1_info_invar n (snd X)) \<and> (l < u \<or> -\<infinity> < l \<and> l \<le> u \<and> u < \<infinity>))"
@@ -1467,15 +1049,14 @@ definition "poincare_onto_from_in_ivl interrupt trap
                           (XS0::'n::enum eucl1 set)
                           P dP =
   do {
-    RS \<leftarrow> poincare_onto_froma interrupt trap S guards ivl sctn ro XS0;
+    RS \<leftarrow> poincare_onto_from interrupt trap S guards ivl sctn ro XS0;
     ((l, u), R) \<leftarrow> scaleR2_rep_coll RS;
-    CHECKs ''poincare_onto_from_in: there should not be scaleR2'' (l = 1 \<and> u = 1);
+    CHECKs (ST ''poincare_onto_from_in: there should not be scaleR2'') (l = 1 \<and> u = 1);
     (l, u) \<leftarrow> ivl_rep P;
-    CHECKs ''poincare_onto_from_in: strange interval'' (l \<le> u);
-    _ \<leftarrow> mk_safe (length ode_e) {l .. u};
+    CHECKs (ST ''poincare_onto_from_in: strange interval'') (l \<le> u);
+    _ \<leftarrow> mk_safe {l .. u};
     subset_spec1_coll R P dP
   }"
-sublocale autoref_op_pat_def poincare_onto_from_in_ivl .
 
 definition "set_of_lvivl' x = (case x of None \<Rightarrow> UNIV | Some x \<Rightarrow> set_of_lvivl x)"
 
@@ -1484,19 +1065,18 @@ definition "lvivl'_invar n x =
 
 definition "one_step_until_time_ivl_in_ivl X0 (t1::real) (t2::real) R dR =
   do {
-    (X, CX) \<leftarrow> solve_one_step_until_timea X0 True t1 t2;
+    (X, CX) \<leftarrow> one_step_until_time_ivl X0 True t1 t2;
     ((l, u), X) \<leftarrow> scaleR2_rep X;
-    CHECKs ''one_step_until_time_ivl_in_ivl: there should not be scaleR2'' (l = 1 \<and> u = 1);
+    CHECKs (ST ''one_step_until_time_ivl_in_ivl: there should not be scaleR2'') (l = 1 \<and> u = 1);
     (l, u) \<leftarrow> ivl_rep R;
-    CHECKs ''one_step_until_time_ivl_in_ivl: strange interval'' (l \<le> u);
-    _ \<leftarrow> mk_safe (length ode_e) {l .. u};
+    CHECKs (ST ''one_step_until_time_ivl_in_ivl: strange interval'') (l \<le> u);
+    _ \<leftarrow> mk_safe {l .. u};
     let _ = trace_set1 (ST ''final step to:'') (Some X);
     let _ = trace_set (ST ''contained in?'') (Some {l .. u});
     let _ = print_set1 False X;
     let _ = print_set False {l .. u};
     subset_spec1 X R dR
 }"
-sublocale autoref_op_pat_def one_step_until_time_ivl .
 
 definition "poincare_onto_in_ivl
                           (guards)                    \<comment> \<open>avoiding guards\<close>
@@ -1506,22 +1086,22 @@ definition "poincare_onto_in_ivl
                           (XS0::'n::enum eucl1 set)
                           P dP =
   do {
-    RS \<leftarrow> poincare_ontoa guards ivl sctn ro XS0;
-    ASSERT (DIM_precond TYPE((real, 'n) vec) (length ode_e));
+    RS \<leftarrow> poincare_onto_series empty_symstart empty_trap guards XS0 ivl sctn ro;
     ((l, u), R) \<leftarrow> scaleR2_rep_coll RS;
-    CHECKs ''poincare_onto_in_ivl: there should not be scaleR2'' (l = 1 \<and> u = 1);
+    CHECKs (ST ''poincare_onto_in_ivl: there should not be scaleR2'') (l = 1 \<and> u = 1);
     (l, u) \<leftarrow> ivl_rep P;
-    CHECKs ''poincare_onto_in_ivl: strange interval'' (l \<le> u);
+    CHECKs (ST ''poincare_onto_in_ivl: strange interval'') (l \<le> u);
     (lR, uR) \<leftarrow> ivl_rep_of_set_coll (op_image_fst_coll R);
-    CHECKs ''poincare_onto_in_ivl: strange interval2'' (lR \<le> uR);
+    CHECKs (ST ''poincare_onto_in_ivl: strange interval2'') (lR \<le> uR);
     let _ = trace_set (ST ''final step to:'') (Some {lR .. uR});
     let _ = trace_set (ST ''contained in?'') (Some {l .. u});
-    _ \<leftarrow> mk_safe (length ode_e) {l .. u};
+    _ \<leftarrow> mk_safe {l .. u};
     subset_spec1_coll R P dP
   }"
-sublocale autoref_op_pat_def poincare_onto_in_ivl .
 
 definition "poincare_maps_onto \<Sigma> X0 X1 \<longleftrightarrow> poincare_mapsto \<Sigma> X0 UNIV (Csafe - \<Sigma>) X1"
+
+end
 
 end
 

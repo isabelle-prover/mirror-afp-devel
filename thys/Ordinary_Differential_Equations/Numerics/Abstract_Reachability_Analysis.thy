@@ -11,6 +11,61 @@ begin
 
 subsection \<open>Misc\<close>
 
+lemma nth_concat_exists:
+  "\<exists>k j. concat xs ! i = xs ! k ! j \<and> k < length xs \<and> j < length (xs ! k)"
+  if "i < length (concat xs)"
+  using that
+proof (induction xs arbitrary: i)
+  case Nil
+  then show ?case by auto
+next
+  case (Cons xs xss)
+  from Cons.prems consider "i < length xs"
+    | "i \<ge> length xs" "i < length xs + length (concat xss)"
+    by (cases "i < length xs") auto
+  then show ?case
+  proof cases
+    case 1
+    then show ?thesis
+      by (force simp: nth_append intro: exI[where x=i] exI[where x=0])
+  next
+    case 2
+    then have "i - length xs < length (concat xss)" by arith
+    with Cons.IH[of "i - length xs"]
+    obtain k j where
+      "concat xss ! (i - length xs) = xss ! k ! j" "k < length xss" "j < length (xss ! k)"
+      by auto
+    then show ?thesis
+      using 2
+      by (fastforce simp: nth_append nth_Cons split: nat.splits
+          intro: exI[where x=j] exI[where x="k + 1"])
+  qed
+qed
+
+lemma nth_concatE:
+  assumes "i < length (concat xs)"
+  obtains k j where "concat xs ! i = xs ! k ! j" "k < length xs" "j < length (xs ! k)"
+  apply atomize_elim
+  using assms nth_concat_exists by blast
+
+lemma max_Var_floatariths_concat:
+  "max_Var_floatariths (concat xs) \<le> k"
+  if "\<And>x. x \<in> set xs \<Longrightarrow> max_Var_floatariths x \<le> k"
+  using that max_Var_floatarith_le_max_Var_floatariths_nthI
+  by (fastforce simp: in_set_conv_nth intro!: max_Var_floatariths_leI
+      elim!: nth_concatE)
+
+lemma max_Var_floatariths_list_update:
+  "max_Var_floatariths (xs[xa := y]) \<le> k"
+  if "max_Var_floatariths (xs) \<le> k"
+  and "max_Var_floatarith y \<le> k"
+  by (metis neq_le_trans linorder_le_cases list_update_beyond
+      max_Var_floatariths_list_updateI that)
+
+lemma max_Var_floatarith_0[simp]: "max_Var_floatarith 0 = 0"
+  and max_Var_floatarith_1[simp]: "max_Var_floatarith 1 = 0"
+  by (auto simp: zero_floatarith_def one_floatarith_def)
+
 lemma list_set_rel_br: "\<langle>Id\<rangle>list_set_rel = br set distinct"
   by (auto simp: list_set_rel_def)
 
@@ -85,34 +140,12 @@ lemma(in c1_on_open_euclidean) diff_existence_ivl_iff[simp]:\<comment> \<open>TO
    apply (auto intro!: diff_existence_ivl_trans that)
   done
 
-definition "scaleR2 l u X = (\<lambda>(r, (x, y)). (x, r *\<^sub>R y)) ` (ereal -` {l .. u} \<times> X)"
-
-lemma scaleR2_1_1[simp]: "scaleR2 1 1 = (\<lambda>x::(_\<times>'x::real_vector)set. x)"
-  by (force simp: scaleR2_def[abs_def] image_def vimage_def)
-
-consts i_scaleR2::"interface\<Rightarrow>interface"
-
-abbreviation "ereal_rel \<equiv> (Id::ereal rel)"
-
-definition scaleR2_rel where scaleR2_rel_internal:
-  "scaleR2_rel A = ((ereal_rel \<times>\<^sub>r ereal_rel) \<times>\<^sub>r A) O
-    br (\<lambda>((l, u), X). scaleR2 l u X) (\<lambda>((l, u), _). ereal -` {l..u} \<noteq> {})"
-
-
 lemma (in auto_ll_on_open) flow_trans':
   "flow0 (flow0 x0 t1) t2 = flow0 x0 (t1 + t2)"
   if "t1 \<in> existence_ivl0 x0" "t1 + t2 \<in> existence_ivl0 x0"
   apply (subst flow_trans)
   using that
   by (auto intro!: existence_ivl_trans')
-
-context includes autoref_syntax begin
-definition [simp]: "ST (x::char list) = x"
-lemma [autoref_op_pat_def]: "ST xs \<equiv> OP (ST xs)" by simp
-lemma [autoref_rules]: "(x, ST x) \<in> string_rel"
-  by (auto simp: string_rel_def)
-end
-
 
 context auto_ll_on_open begin
 
@@ -142,49 +175,51 @@ end
 
 subsection \<open>Options\<close>
 
-record 'b numeric_options =
-  precision :: nat
-  reduce :: "'b list \<Rightarrow> nat \<Rightarrow> real list \<Rightarrow> bool" \<comment> \<open>is this too special?\<close>
-  adaptive_atol :: real
-  adaptive_rtol :: real
-  method_id :: nat
-  start_stepsize :: real
-  iterations :: nat
-  halve_stepsizes :: nat
-  widening_mod :: nat
-  rk2_param :: real
-  printing_fun :: "bool \<Rightarrow> 'b list \<Rightarrow> unit"
-  tracing_fun :: "string \<Rightarrow> 'b list option \<Rightarrow> unit"
+definition [refine_vcg_def]: "precision_spec = SPEC (\<lambda>prec::nat. True)"
+definition [refine_vcg_def]: "adaptive_atol_spec = SPEC (\<lambda>x::real. True)"
+definition [refine_vcg_def]: "adaptive_rtol_spec = SPEC (\<lambda>x::real. True)"
+definition [refine_vcg_def]: "method_spec = SPEC (\<lambda>m::nat. True)"
+definition [refine_vcg_def]: "start_stepsize_spec = SPEC (\<lambda>x::real. x > 0)"
+definition [refine_vcg_def]: "iterations_spec = SPEC (\<lambda>n::nat. True)"
+definition [refine_vcg_def]: "halve_stepsizes_spec = SPEC (\<lambda>n::nat. True)"
+definition [refine_vcg_def]: "widening_mod_spec = SPEC (\<lambda>n::nat. True)"
+definition [refine_vcg_def]: "rk2_param_spec = SPEC (\<lambda>r::real. 0 < r \<and> r \<le> 1)"
 
-record 'b reach_options =
-  max_tdev_thres :: "'b list \<Rightarrow> real"
-  pre_split_reduce :: "'b list \<Rightarrow> nat \<Rightarrow> real list \<Rightarrow> bool" \<comment> \<open>is this too special?\<close>
+typedef ode_ops = "{(ode_e::floatarith list, safe_form::form).
+  open_form safe_form \<and>
+  max_Var_floatariths ode_e \<le> length ode_e \<and>
+  max_Var_form safe_form \<le> length ode_e}" \<comment> \<open>ode on open domain, welldefined\<close>
+  by (auto intro!: exI[where x="[floatarith.Num 0]"]
+      exI[where x="Less (floatarith.Num 0) (floatarith.Num 1)"])
+setup_lifting type_definition_ode_ops
 
-  pre_inter_granularity :: "'b list \<Rightarrow> real"
-  post_inter_granularity :: "'b list \<Rightarrow> real"
-  pre_collect_granularity :: real
-  max_intersection_step :: real
+lift_definition ode_expression::"ode_ops \<Rightarrow> floatarith list" is fst .
+lift_definition safe_form_expr::"ode_ops \<Rightarrow> form" is snd .
+    \<comment> \<open>TODO: should better called it domain of definition of ODE,
+                its main use is to exclude e.g. division by zero on the rhs.\<close>
 
-abbreviation "num_optns_rel \<equiv> (Id::'b numeric_options rel)"
-abbreviation "reach_optns_rel \<equiv> (Id::'b reach_options rel)"
+lemma open_form_ode_op[intro, simp]: "open_form (safe_form_expr odo)"
+  and max_Var_ode_expression: "max_Var_floatariths (ode_expression odo) \<le> length (ode_expression odo)"
+  and max_Var_form_safe_form_expr: "max_Var_form (safe_form_expr odo) \<le> length (ode_expression odo)"
+  by (transfer, auto)+
 
-locale approximate_sets_options = approximate_sets
-  where appr_rell = appr_rell
-    and optns = optns
-    for appr_rell :: "('b list \<times> real list set) set"
-    and optns::"'b numeric_options"
-    and ode_e::"floatarith list"
-    and safe_form::"form"
-begin
+lift_definition (code_dt) mk_ode_ops::"floatarith list \<Rightarrow> form \<Rightarrow> ode_ops option" is
+  "\<lambda>ode_e safe_form.
+    if (open_form safe_form \<and> max_Var_floatariths ode_e \<le> length ode_e \<and> max_Var_form safe_form \<le> length ode_e)
+    then Some (ode_e, safe_form) else None"
+  by (auto simp:)
 
-definition print_set::"bool \<Rightarrow> 'a set \<Rightarrow> unit" where "print_set _ _ = ()"
-sublocale autoref_op_pat_def print_set .
+lemma
+  assumes "mk_ode_ops e s = Some odo"
+  shows ode_expression_mk_ode_ops: "ode_expression odo = e"
+    and safe_form_expr_mk_ode_ops: "safe_form_expr odo = s"
+  using assms
+  by (transfer, simp split: if_splits prod.splits)+
 
-definition trace_set::"string\<Rightarrow>'a set option\<Rightarrow>unit" where "trace_set _ _ = ()"
-sublocale autoref_op_pat_def trace_set .
+locale ode_operations = fixes ode_ops::ode_ops begin
 
-
-abbreviation "CHECKs \<equiv> \<lambda>s. CHECK (\<lambda>_. tracing_fun optns s None)"
+definition "ode_e = ode_expression ode_ops"
+definition "safe_form = safe_form_expr ode_ops"
 
 definition ode::"'a \<Rightarrow> 'a::executable_euclidean_space"
   where "ode x = eucl_of_list (interpret_floatariths ode_e (list_of_eucl x))"
@@ -571,7 +606,7 @@ lemma eventually_Collect_open:
 lemma ode_d_has_derivative:
   assumes "x \<in> Csafe"
   shows "((\<lambda>x. ode_d n x d d) has_derivative ode_d (Suc n) x d) (at x)"
-  apply (transfer fixing: safe_form ode_e n d x)
+  apply (transfer fixing: n d x)
   using assms
   apply (simp del: isnFDERIV.simps)
   apply (rule if_eventually_has_derivative)
@@ -725,77 +760,79 @@ definition ode_d_na::"real \<times> _ \<Rightarrow> (real \<times> _) \<Rightarr
 definition ode_d2_na::"real \<times> _ \<Rightarrow> (real \<times> _) \<Rightarrow>\<^sub>L (real \<times> _) \<Rightarrow>\<^sub>L _" where
   "ode_d2_na = (\<lambda>tx. flip_blinfun (flip_blinfun (ode_d2 (snd tx) o\<^sub>L snd_blinfun) o\<^sub>L snd_blinfun))"
 
-definition sappr_rel_internal_def: "sappr_rel = appr_rel O {(x,y). x = y \<and> x \<subseteq> Csafe}"
-
 definition "euler_incr_fas' D = (map fold_const_fa (euler_incr_fas (map floatarith.Var [0..<D]) (floatarith.Var (D))
       (map floatarith.Var [Suc D..<Suc (2*D)])))"
-sublocale autoref_op_pat_def euler_incr_fas' .
 definition "euler_fas' D = (map fold_const_fa (euler_fas  (map floatarith.Var [0..<D])
     (floatarith.Var (2*D)) (map floatarith.Var [D..<2*D])))"
-sublocale autoref_op_pat_def euler_fas' .
 definition "rk2_fas' D = (map fold_const_fa (rk2_fas
     (floatarith.Var (2*D))
     (map floatarith.Var [0..<D])
     (floatarith.Var (2*D+1))
     (map floatarith.Var [D..<2*D])
     (floatarith.Var (2*D+2))))"
-sublocale autoref_op_pat_def rk2_fas' .
 lemma [autoref_rules]: "(euler_incr_fas', euler_incr_fas') \<in> nat_rel \<rightarrow> fas_rel"
   "(euler_fas', euler_fas') \<in> nat_rel \<rightarrow> fas_rel"
   "(rk2_fas', rk2_fas') \<in> nat_rel \<rightarrow> fas_rel"
   by auto
 
-definition "ode_slp_eq ode_slp \<longleftrightarrow> ode_slp = slp_of_fas ode_e"
-lemmas ode_slp_eqD = ode_slp_eq_def[THEN iffD1]
-definition "euler_incr_slp_eq euler_incr_slp D \<longleftrightarrow>
-  euler_incr_slp = slp_of_fas (euler_incr_fas' D)"
-lemmas euler_incr_slp_eqD = euler_incr_slp_eq_def[THEN iffD1]
-definition "euler_slp_eq euler_slp D \<longleftrightarrow>
-  euler_slp = slp_of_fas (euler_fas' D)"
-lemmas euler_slp_eqD = euler_slp_eq_def[THEN iffD1]
-definition "rk2_slp_eq rk2_slp D \<longleftrightarrow> rk2_slp = slp_of_fas (rk2_fas' D)"
-lemmas rk2_slp_eqD = rk2_slp_eq_def[THEN iffD1]
+definition "solve_poincare_fas n =
+  (let D = length ode_e in
+  map floatarith.Var [0..<D] @ concat (map (\<lambda>i \<comment> \<open>(row)\<close>. map (\<lambda>j \<comment> \<open>(column)\<close>.
+    (if i \<noteq> n then floatarith.Var (D + i * D + j) - (floatarith.Var(D + n * D + j) * (ode_e ! i) / (ode_e ! n))
+    else 0)
+  ) [0..<D]) [0..<D]))"
 
 end
 
-locale approximate_sets_ode_slp = approximate_sets_options
-  where appr_rell = appr_rell
-    and ode_e = ode_e
-    and safe_form = safe_form
-    and optns = optns
-    for appr_rell :: "('b list \<times> real list set) set" and safe_form ode_e optns and
-      D::nat and ode_slp euler_incr_slp euler_slp rk2_slp::slp
-begin
+definition "nonempty X \<longleftrightarrow> X \<noteq> {}"
 
 definition pad_zeroes :: "nat \<Rightarrow> real list set \<Rightarrow> real list set"
   where [simp]: "pad_zeroes n X = (\<lambda>xs. xs @ replicate n (0::real)) ` X"
 
+locale approximate_sets_ode = approximate_sets where ops = ops + ode_operations
+  where ode_ops = ode_ops
+  for ops:: "'b approximate_set_ops"
+    and ode_ops::"ode_ops"
+begin
+
+definition "D = (length ode_e)"
+definition "ode_slp = slp_of_fas ode_e"
+definition "euler_slp = slp_of_fas (euler_fas' D)"
+definition "euler_incr_slp = slp_of_fas (euler_incr_fas' D)"
+definition "rk2_slp = slp_of_fas (rk2_fas' D)"
+definition "solve_poincare_slp = map (\<lambda>i. slp_of_fas (map fold_const_fa (solve_poincare_fas i))) [0..<D]"
+
 definition safe_set
-  where "safe_set X = do {
+  where "safe_set (X::'a::executable_euclidean_space set) = do {
     b1 \<leftarrow> approx_form_spec safe_form (list_of_eucl ` X);
     b2 \<leftarrow> isFDERIV_spec D [0..<D] ode_e (list_of_eucl ` X);
     RETURN (b1 \<and> b2)
   }"
-sublocale autoref_op_pat_def safe_set .
 
-definition "wd (TYPE('a)) \<longleftrightarrow>
-  (open_form safe_form \<and> length ode_e = DIM('a::executable_euclidean_space) \<and>
-    max_Var_floatariths ode_e \<le> DIM('a) \<and> max_Var_form safe_form \<le> DIM('a) \<and> D = DIM('a))"
+definition "wd TYPE('a::executable_euclidean_space) \<longleftrightarrow> length ode_e = DIM('a)"
+  \<comment> \<open>TODO: should be renamed\<close>
+
+lemma open_safe_form[intro, simp]: "open_form safe_form"
+  by (auto simp: safe_form_def)
+
+lemma max_Var_floatariths_ode_e_le: "max_Var_floatariths ode_e \<le> D"
+  and max_Var_form_safe_form_le: "max_Var_form safe_form \<le> D"
+  using max_Var_ode_expression[of ode_ops] max_Var_form_safe_form_expr[of ode_ops]
+  by (auto simp: ode_e_def safe_form_def D_def)
 
 lemma wdD:
   assumes "wd TYPE('a::executable_euclidean_space)"
-  shows "open_form safe_form" "length ode_e = DIM('a)" "max_Var_floatariths ode_e \<le> DIM('a)"
+  shows "length ode_e = DIM('a)" "max_Var_floatariths ode_e \<le> DIM('a)"
     "max_Var_form safe_form \<le> DIM('a)"
-    "D = DIM('a)" "ode_e \<noteq> []"
-  using assms
-  by (auto simp: wd_def)
+    "ode_e \<noteq> []" "D = DIM('a)"
+  using assms max_Var_floatariths_ode_e_le max_Var_form_safe_form_le
+  by (auto simp: wd_def D_def safe_form_def ode_e_def)
 
 definition "mk_safe (X::'a::executable_euclidean_space set) = do {
     ASSERT (wd TYPE('a));
     s \<leftarrow> safe_set (X:::appr_rel::'a set);
     if s then RETURN (X:::appr_rel) else SUCCEED
   }"
-sublocale autoref_op_pat_def mk_safe .
 
 definition
   "mk_safe_coll X = do {
@@ -807,25 +844,11 @@ definition
         })
         (\<lambda>b c. RETURN (b \<union> c))
     }"
-sublocale autoref_op_pat_def mk_safe_coll .
-
-definition [simp]: "op_DIM TYPE('a) = DIM('a::executable_euclidean_space)"
 
 definition ode_set::"'a::executable_euclidean_space set \<Rightarrow> 'a set nres" where "ode_set X = do {
   _ \<leftarrow> mk_safe X;
   approx_slp_appr ode_e ode_slp (list_of_eucl ` (X))
   }"
-sublocale autoref_op_pat_def ode_set .
-
-definition "ncc (X::'a::executable_euclidean_space set) \<longleftrightarrow> X \<noteq> {} \<and> compact X \<and> convex X"
-
-definition "op_nres_ASSUME_bnd_safecoll x = op_nres_ASSUME_bnd (x \<subseteq> Csafe)"
-sublocale autoref_op_pat_def op_nres_ASSUME_bnd_safecoll .
-
-
-definition "saferel R \<longleftrightarrow> (\<forall>(c, A) \<in> R. A \<subseteq> Csafe)"
-
-definition "nonempty X \<longleftrightarrow> X \<noteq> {}"
 
 definition
   "Picard_step X0 t0 h X = SPEC (\<lambda>R.
@@ -835,15 +858,7 @@ definition
         (\<forall>x0 \<in> X0. \<forall>h'\<in>{t0 .. t0 + h}. \<forall>phi\<in>cfuncset t0 h' X.
           x0 + integral {t0 .. h'} (\<lambda>t. ode (phi t)) \<in> R)
       | None \<Rightarrow> True)"
-sublocale autoref_op_pat_def Picard_step .
 
-definition [simp]: "set_of_sappr X \<equiv> X"
-sublocale autoref_op_pat_def set_of_sappr .
-
-lemma sappr_rel_br: "sappr_rel =
-    br (\<lambda>xs. eucl_of_list ` set_of_appr xs::'a set)
-     (\<lambda>xs. length xs = DIM('a::executable_euclidean_space) \<and> eucl_of_list ` set_of_appr xs \<subseteq> (Csafe::'a set))"
-  by (auto simp: sappr_rel_internal_def appr_rel_br br_def)
 lemmas [refine_vcg_def] = approx_form_spec_def isFDERIV_spec_def
 
 lemma safe_set_spec[THEN order.trans, refine_vcg]:
@@ -853,20 +868,13 @@ lemma safe_set_spec[THEN order.trans, refine_vcg]:
   by (refine_vcg) (auto simp del: isnFDERIV.simps simp add: Csafe_def safe_def replicate_eq_list_of_eucl_zero wdD[OF \<open>wd _\<close>])
 
 
-lemma sappr_rel_nres_relI:
-  assumes "(Xi, X) \<in> \<langle>appr_rel\<rangle>nres_rel"
-  assumes "X \<le> SPEC (\<lambda>X. X \<subseteq> Csafe)"
-  shows "(Xi, X) \<in> \<langle>sappr_rel\<rangle>nres_rel"
-  using assms
-  by (fastforce simp: sappr_rel_br br_def appr_rel_br nres_rel_def conc_fun_def split: nres.splits
-      intro: order_trans)
-
 definition Picard_step_ivl :: "'a::executable_euclidean_space set \<Rightarrow> real \<Rightarrow> real \<Rightarrow> 'a set \<Rightarrow> 'a set option nres" where
   "Picard_step_ivl X0 t0 h X = do {
     ASSERT (0 \<le> h);
     ASSERT (wd TYPE('a));
     let H = lv_ivl [0] [h];
-    let env = concat ` listset [list_of_eucl ` set_of_sappr X0, H, list_of_eucl ` set_of_sappr X];
+    let D = DIM('a);
+    let env = concat ` listset [list_of_eucl ` X0, H, list_of_eucl ` X];
     env \<leftarrow> approx_slp_spec (euler_incr_fas' D) D euler_incr_slp env;
     (case env of
       Some env \<Rightarrow>
@@ -874,40 +882,41 @@ definition Picard_step_ivl :: "'a::executable_euclidean_space set \<Rightarrow> 
           (l, u) \<leftarrow> op_ivl_rep_of_set ((eucl_of_list ` env::'a set));
           ASSERT (l \<le> u);
           r \<leftarrow> mk_safe ({l .. u}:::appr_rel);
-          RETURN (Some (r:::sappr_rel))
+          RETURN (Some (r:::appr_rel))
         }
     | None \<Rightarrow> RETURN None)
   }"
-sublocale autoref_op_pat_def Picard_step_ivl .
+
+definition "do_widening_spec (i::nat) = SPEC (\<lambda>b::bool. True)"
 
 primrec P_iter::"'a::executable_euclidean_space set \<Rightarrow> real \<Rightarrow> nat \<Rightarrow> ('a) set \<Rightarrow> ('a) set option nres" where
   "P_iter X0 h 0 X = do {
-    let _ = trace_set (ST ''P_iter failed (0)'') (Some (set_of_sappr X));
+    let _ = trace_set (ST ''P_iter failed (0)'') (Some (X));
     RETURN None
   }"
 | "P_iter X0 h (Suc i) X = do {
     ASSERT (0 \<le> h);
-    (l, u) \<leftarrow> op_ivl_rep_of_set (set_of_sappr X);
+    (l, u) \<leftarrow> op_ivl_rep_of_set (X);
     ASSERT (l \<le> u);
     ivl \<leftarrow> mk_safe ({l .. u}:::appr_rel);
     X' \<leftarrow> Picard_step_ivl X0 0 h ivl;
     (case X' of
       Some X' \<Rightarrow> do {
-        (l', u') \<leftarrow> op_ivl_rep_of_set (set_of_sappr X');
-        let l' = inf l' l - (if i mod (widening_mod optns) = 0 then abs (l' - l) else 0);
-        let u' = sup u' u + (if i mod widening_mod optns = 0 then abs (u' - u) else 0);
+        (l', u') \<leftarrow> op_ivl_rep_of_set (X');
+        do_widening \<leftarrow> do_widening_spec i;
+        let l' = inf l' l - (if do_widening then abs (l' - l) else 0);
+        let u' = sup u' u + (if do_widening then abs (u' - u) else 0);
         ASSERT (l' \<le> u');
         ivl' \<leftarrow> mk_safe {l' .. u'};
         if (l \<le> l' \<and> u' \<le> u) then RETURN (Some ivl)
         else P_iter X0 h i ivl'
       }
     | None \<Rightarrow> do {
-        let _ = trace_set (ST ''P_iter failed (Picard_step)'') (Some (set_of_sappr X));
+        let _ = trace_set (ST ''P_iter failed (Picard_step)'') (Some (X));
         RETURN None
       }
     )
   }"
-sublocale autoref_op_pat_def P_iter .
 
 
 context fixes m::"('a::executable_euclidean_space set \<Rightarrow> real \<Rightarrow> real \<Rightarrow> 'a set \<Rightarrow> ('a set \<times> 'c) option nres)"
@@ -918,7 +927,7 @@ primrec cert_stepsize::
 where
   "cert_stepsize X0 h n 0 = do { let _ = trace_set (ST ''cert_stepsize failed'') (Some (X0)); SUCCEED}"
 | "cert_stepsize X0 h n (Suc i) = do {
-    (l, u) \<leftarrow> op_ivl_rep_of_set (set_of_sappr X0);
+    (l, u) \<leftarrow> op_ivl_rep_of_set (X0);
     ASSERT (0 \<le> h);
     ASSERT (l \<le> u);
     ivl \<leftarrow> mk_safe {l .. u};
@@ -931,13 +940,13 @@ where
         (case (r1, r2) of
           (Some (res, err), Some (res_ivl, _)) \<Rightarrow>
             do {
-              ASSUME (res \<subseteq> Csafe);
-              ASSUME (res_ivl \<subseteq> Csafe);
+              _ \<leftarrow> mk_safe res;
+              _ \<leftarrow> mk_safe res_ivl;
               RETURN (h, res, res_ivl, err)
             }
         | _ \<Rightarrow>
             do {
-              let _ = trace_set (ST ''cert_stepsize method failed'') (Some (set_of_sappr X'));
+              let _ = trace_set (ST ''cert_stepsize method failed'') (Some (X'));
               cert_stepsize X0 (h / 2) n i
             }
        )
@@ -945,7 +954,6 @@ where
     | None \<Rightarrow> cert_stepsize X0 (h / 2) n i
     }"
 end
-sublocale autoref_op_pat_def cert_stepsize .
 
 definition "one_step_method m \<longleftrightarrow> (\<forall>X0 CX hl hu. m X0 hl hu CX \<le>
     SPEC (\<lambda>r. case r of None \<Rightarrow> True | Some (res, err) \<Rightarrow> nonempty res \<and>
@@ -954,28 +962,32 @@ definition "one_step_method m \<longleftrightarrow> (\<forall>X0 CX hl hu. m X0 
 
 definition "one_step X0 h m = do {
   CHECKs ''one_step nonneg'' (0 < h);
-  (h, res, res_ivl, err) \<leftarrow> cert_stepsize m X0 h (iterations optns) (halve_stepsizes optns);
+  its \<leftarrow> iterations_spec;
+  halvs \<leftarrow> halve_stepsizes_spec;
+  (h, res, res_ivl, err) \<leftarrow> cert_stepsize m X0 h its halvs;
   ASSERT (0 < h);
   RETURN (h, err, res_ivl, res)
   }"
-sublocale autoref_op_pat_def one_step .
+
+definition [refine_vcg_def]: "default_reduce_argument_spec = SPEC (\<lambda>x::unit. True)"
 
 definition "euler_step X0 h = one_step X0 h (\<lambda>X0 hl hu CX.
    do {
     let H = lv_ivl [min hl hu] [max hl hu];
-    ASSUME (CX \<subseteq> Csafe);
-    let env = concat ` listset [list_of_eucl ` set_of_sappr X0, list_of_eucl ` set_of_sappr CX, H];
-    env \<leftarrow> approx_slp_spec (euler_fas' D) (2 * D) euler_slp env;
+    _ \<leftarrow> mk_safe CX;
+    let env = concat ` listset [list_of_eucl ` X0, list_of_eucl ` CX, H];
+    env \<leftarrow> approx_slp_spec (euler_fas' DIM('a)) (2 * DIM('a)) euler_slp env;
     case env of None \<Rightarrow> RETURN None
     | Some env \<Rightarrow> do {
-      let res' = take D ` env;
-      ASSERT (env_len res' D);
+      let res' = take DIM('a) ` env;
+      ASSERT (env_len res' DIM('a));
       let res = (eucl_of_list ` res');
       ASSUME (ncc res);
-      let err' = drop D ` take (D * 2) ` env;
-      ASSERT (env_len err' D);
+      let err' = drop DIM('a) ` take (DIM('a) * 2) ` env;
+      ASSERT (env_len err' DIM('a));
       let err = (eucl_of_list ` err'::'a::executable_euclidean_space set);
-      res \<leftarrow> reduce_spec (reduce optns) res;
+      ra \<leftarrow> default_reduce_argument_spec;
+      res \<leftarrow> reduce_spec ra res;
       ASSUME (ncc res);
       s \<leftarrow> safe_set res;
       if s then
@@ -985,37 +997,28 @@ definition "euler_step X0 h = one_step X0 h (\<lambda>X0 hl hu CX.
       } else RETURN None
     }
   })"
-sublocale autoref_op_pat_def euler_step .
-
-definition "ncc_precond TYPE('a::executable_euclidean_space) \<longleftrightarrow> (\<forall>(Xi, X::'a set) \<in> appr_rel. ncc X)"
-
-lemma ncc_precondD:
-  assumes "ncc_precond TYPE('a::executable_euclidean_space)"
-  shows "(Xi, X::'a set) \<in> sappr_rel \<Longrightarrow> ncc X" "(Xi, X::'a set) \<in> appr_rel \<Longrightarrow> ncc X"
-  using assms
-  by (auto simp: ncc_precond_def split_beta' sappr_rel_br br_def appr_rel_br
-      dest!: bspec[where x="(Xi, X)"])
-
 
 definition "rk2_step X0 h = one_step X0 h (\<lambda>X0 hl hu CX.
   do {
     let H = lv_ivl [min hl hu] [max hl hu];
-    let rkp = lv_ivl [rk2_param optns] [rk2_param optns];
+    rps \<leftarrow> rk2_param_spec;
+    let rkp = lv_ivl [rps] [rps];
     let s2 = lv_ivl [0] [1];
-    ASSUME (CX \<subseteq> Csafe);
+    _ \<leftarrow> mk_safe CX;
     ASSUME (ncc CX);
-    let env = concat ` listset [list_of_eucl ` set_of_sappr X0, list_of_eucl ` set_of_sappr CX, rkp, H, s2];
-    env \<leftarrow> approx_slp_spec (rk2_fas' D) (2 * D) rk2_slp env;
+    let env = concat ` listset [list_of_eucl ` X0, list_of_eucl ` CX, rkp, H, s2];
+    env \<leftarrow> approx_slp_spec (rk2_fas' DIM('a)) (2 * DIM('a)) rk2_slp env;
     case env of None \<Rightarrow> RETURN None
     | Some env \<Rightarrow> do {
-      let res' = take D ` env;
-      ASSERT (env_len res' D);
+      let res' = take DIM('a) ` env;
+      ASSERT (env_len res' DIM('a));
       let res = (eucl_of_list ` res'::'a::executable_euclidean_space set);
       ASSUME (ncc res);
-      let err' = drop D ` take (D * 2) ` env;
-      ASSERT (env_len err' D);
+      let err' = drop DIM('a) ` take (DIM('a) * 2) ` env;
+      ASSERT (env_len err' DIM('a));
       let err = (eucl_of_list ` err'::'a set);
-      res \<leftarrow> reduce_spec (reduce optns) res;
+      ra \<leftarrow> default_reduce_argument_spec;
+      res \<leftarrow> reduce_spec ra res;
       ASSUME (ncc res);
       s \<leftarrow> safe_set res;
       if s then
@@ -1025,21 +1028,11 @@ definition "rk2_step X0 h = one_step X0 h (\<lambda>X0 hl hu CX.
       } else RETURN None
     }
   })"
-sublocale autoref_op_pat_def rk2_step .
 
-definition "choose_step = (if method_id optns = 2 then rk2_step else euler_step)"
-sublocale autoref_op_pat_def choose_step .
-
-definition "wd_step TYPE('a::executable_euclidean_space) \<longleftrightarrow>
-  0 < rk2_param optns \<and>
-  rk2_param optns \<le> 1 \<and>
-  ode_slp_eq ode_slp \<and>
-  rk2_slp_eq rk2_slp D \<and>
-  euler_slp_eq euler_slp D \<and>
-  euler_incr_slp_eq euler_incr_slp D \<and>
-  wd TYPE('a)"
-
-lemmas wd_stepD = wd_step_def[THEN iffD1]
+definition "choose_step X0 h = do {
+  mid \<leftarrow> method_spec;
+  (if mid = 2 then rk2_step X0 h else euler_step X0 h)
+}"
 
 definition "ode_e' = (ode_e @
   mmult_fa D D D (concat (map (\<lambda>j. map (\<lambda>i.
@@ -1052,7 +1045,6 @@ definition "transversal_directions f =
     RETURN (sum_list (map (\<lambda>b. (if I \<bullet> b \<le> 0 then if S \<bullet> b \<le> 0 then S \<bullet> b else 0 else if S \<bullet> b \<ge> 0 then I \<bullet> b else 0) *\<^sub>R b)
       (Basis_list::'a::executable_euclidean_space list)))
   }"
-sublocale autoref_op_pat_def transversal_directions .
 
 definition "intersects_sctns X' sctns = do {
     ASSUME (finite sctns);
@@ -1063,12 +1055,10 @@ definition "intersects_sctns X' sctns = do {
 definition "trace_sets s X = do {
     XS \<leftarrow> sets_of_coll (X:::clw_rel (appr_rel)); FORWEAK XS (RETURN ()) (\<lambda>X. RETURN (trace_set s (Some X))) (\<lambda>_ _. RETURN ())
   }"
-sublocale autoref_op_pat_def trace_sets .
 
 definition "print_sets s X = do {
     XS \<leftarrow> sets_of_coll (X:::clw_rel (appr_rel)); FORWEAK XS (RETURN ()) (\<lambda>X. RETURN (print_set s (X))) (\<lambda>_ _. RETURN ())
   }"
-sublocale autoref_op_pat_def print_sets .
 
 definition "intersects_sctns_spec_clw R sctns = do {
     Rs \<leftarrow> sets_of_coll ((R:::clw_rel appr_rel):::clw_rel(appr_rel));
@@ -1076,23 +1066,19 @@ definition "intersects_sctns_spec_clw R sctns = do {
   }"
 
 definition [simp]: "nonneg_reals = ({0..}::real set)"
-sublocale autoref_op_pat_def nonneg_reals .
 definition [simp]: "pos_reals = ({0<..}::real set)"
-sublocale autoref_op_pat_def pos_reals .
 
 definition "nonzero_component s X n = do {
     I \<leftarrow> Inf_inner X n;
     S \<leftarrow> Sup_inner X n;
     CHECKs s (I > 0 \<or> S < 0)
   }"
-sublocale autoref_op_pat_def nonzero_component .
 
 definition "disjoints_spec X Y = do {
     Xi \<leftarrow> ivls_of_sets X;
     IS \<leftarrow> inter_overappr (Xi:::clw_rel lvivl_rel) (Y:::clw_rel lvivl_rel);
     RETURN (is_empty IS)
   }"
-sublocale autoref_op_pat_def disjoints_spec .
 
 definition subset_spec_plane :: "'a::executable_euclidean_space set \<Rightarrow> 'a sctn \<Rightarrow> bool nres" where
 "subset_spec_plane X sctn = do {
@@ -1100,7 +1086,6 @@ definition subset_spec_plane :: "'a::executable_euclidean_space set \<Rightarrow
     (i, s) \<leftarrow> ivl_rep X;
     RETURN (i \<bullet> normal sctn = pstn sctn \<and> s \<bullet> normal sctn = pstn sctn)
   }"
-sublocale autoref_op_pat_def subset_spec_plane .
 
 definition "op_eventually_within_sctn X sctn S = do {
     (l, u) \<leftarrow> ivl_rep S;
@@ -1113,24 +1098,61 @@ definition "op_eventually_within_sctn X sctn S = do {
     CHECKs (ST ''op_eventually_within_sctn: subset_spec_plane 2'') b;
     RETURN (b \<and> (\<forall>i \<in> set Basis_list - {abs (normal sctn)}. l \<bullet> i < xl \<bullet> i \<and> xu \<bullet> i < u \<bullet> i))
   }"
-sublocale autoref_op_pat_def op_eventually_within_sctn .
 
 definition [simp]: "uninfo X = X"
-sublocale autoref_op_pat_def uninfo .
 
 definition [simp]: "op_subset_ivl a b \<longleftrightarrow> a \<subseteq> b"
-sublocale autoref_op_pat_def op_subset_ivl .
 
 definition [simp]: "op_eq_ivl a b \<longleftrightarrow> a = b"
-sublocale autoref_op_pat_def op_eq_ivl .
 
 abbreviation "iplane_rel \<equiv> \<lambda>A. \<langle>A, \<langle>lv_rel\<rangle>plane_rel\<rangle>inter_rel"
 abbreviation "isbelow_rel \<equiv> \<lambda>A. \<langle>A, \<langle>lv_rel\<rangle>sbelow_rel\<rangle>inter_rel"
 abbreviation "isbelows_rel \<equiv> \<lambda>A. \<langle>A, \<langle>lv_rel\<rangle>sbelows_rel\<rangle>inter_rel"
 
 definition [refine_vcg_def]: "get_plane X = SPEC (\<lambda>sctn. X = plane_of sctn)"
-sublocale autoref_op_pat_def get_plane .
+
+definition "tolerate_error Y E =
+  do {
+    (ei, es) \<leftarrow> op_ivl_rep_of_set (E);
+    (yi, ys) \<leftarrow> op_ivl_rep_of_set (Y);
+    let ea = sup (abs ei) (abs es);
+    let ya = sup (abs yi) (abs ys);
+    rtol \<leftarrow> adaptive_rtol_spec;
+    atol \<leftarrow> adaptive_atol_spec;
+    let errtol = sup (rtol *\<^sub>R ya) (atol *\<^sub>R sum_list Basis_list);
+    RETURN (ea \<le> errtol, infnorm ea)
+  }"
+
+definition "adapt_stepsize_fa rtol mid e h' =
+  floatarith.Num (float_of h') * floatarith.Powr (floatarith.Num (float_of (rtol)) / floatarith.Num (float_of e))
+                                (inverse (floatarith.Num (float_of (real_of_nat mid) + 1)))"
 
 end
+
+
+text \<open>With ODE operations for variational equation\<close>
+
+locale approximate_sets_ode' = approximate_sets_ode\<comment> \<open>TODO: this prevents infinite chain of interpretations (?!)\<close>
+  where ops = ops
+    and ode_ops = ode_ops
+  for ops :: "'b approximate_set_ops"
+    and ode_ops
+begin
+
+lift_definition var_ode_ops::ode_ops is "(ode_e', safe_form)"
+  using max_Var_floatariths_ode_e_le max_Var_form_safe_form_le
+  by (auto simp: ode_e'_def D_def length_concat o_def sum_list_triv
+      intro!: max_Var_floatariths_mmult_fa[le] max_Var_floatariths_concat max_Var_floatariths_mapI
+      max_Var_floatarith_FDERIV_floatarith[le] max_Var_floatariths_list_update
+      max_Var_floatariths_replicateI
+      max_Var_floatarith_le_max_Var_floatariths_nth[le])
+
+sublocale var: approximate_sets_ode where ode_ops = var_ode_ops
+  by unfold_locales
+
+end
+
+lifting_update ode_ops.lifting
+lifting_forget ode_ops.lifting
 
 end

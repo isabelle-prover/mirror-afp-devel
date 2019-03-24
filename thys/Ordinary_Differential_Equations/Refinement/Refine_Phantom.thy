@@ -68,6 +68,18 @@ proof (rule fun_relI)
         simp: phantom_rel_unop_def)
 qed
 
+lemma phantom_rel_union_coll[autoref_rules]:
+  assumes [THEN GEN_OP_D, autoref_rules(overloaded)]: "GEN_OP un op_union_coll (clw_rel A \<rightarrow> clw_rel A \<rightarrow> clw_rel A)"
+  shows "(\<lambda>a b. do {a \<leftarrow> a; b \<leftarrow> b; Some (un a b)}, op_union_phantom) \<in> \<langle>clw_rel A\<rangle>phantom_rel \<rightarrow> \<langle>clw_rel A\<rangle>phantom_rel \<rightarrow> \<langle>clw_rel A\<rangle>phantom_rel"
+  using assms
+  by (fastforce simp: phantom_rel_def dest: fun_relD)
+
+definition [refine_vcg_def]: "get_phantom X = SPEC (\<lambda>R. R = X)"
+
+lemma get_phantom_impl[autoref_rules]:
+  "(\<lambda>x. nres_of (case x of None \<Rightarrow> dSUCCEED | Some y \<Rightarrow> dRETURN y), get_phantom) \<in> \<langle>A\<rangle>phantom_rel \<rightarrow> \<langle>A\<rangle>nres_rel"
+  by (auto simp: get_phantom_def phantom_rel_def nres_rel_def RETURN_RES_refine_iff)
+
 end
 
 end

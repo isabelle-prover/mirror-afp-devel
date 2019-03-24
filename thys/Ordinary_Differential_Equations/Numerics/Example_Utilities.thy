@@ -1,13 +1,18 @@
 theory Example_Utilities
 imports
-(*  Ordinary_Differential_Equations.ODE_Analysis
-  Affine_Arithmetic.Print
-  Refine_Rigorous_Numerics_Aform
-  Transfer_Euclidean_Space_Vector
-  Affine_Arithmetic.Float_Real
-*)
   Init_ODE_Solver
 begin
+
+definition "true_form = Less (floatarith.Num 0) (floatarith.Num 1)"
+
+lemma open_true_form[intro, simp]: "open_form true_form"
+  by (auto simp: true_form_def)
+
+lemma max_Var_form_true_form[simp]: "max_Var_form true_form = 0"
+  by (auto simp: true_form_def)
+
+lemma interpret_form_true_form[simp]: "interpret_form true_form = (\<lambda>_. True)"
+  by (auto simp: true_form_def)
 
 lemmas [simp] = length_aforms_of_ivls
 
@@ -16,7 +21,6 @@ declare INF_cong_simp [cong] SUP_cong_simp [cong] image_cong_simp [cong del]
 declare [[ cd_patterns "_ = interpret_floatariths ?fas _" "_ = interpret_floatarith ?fa _"]]
 
 concrete_definition reify_example for i j k uses reify_example
-
 
 hide_const (open) Print.file_output
 definition "file_output s f =
@@ -124,8 +128,6 @@ in
 end
 \<close>
 
-definition "true_form = Less (Num 0) (Num 1)"
-
 lemma length_aforms_of_point[simp]: "length (aforms_of_point xs) = length xs"
   by (auto simp: aforms_of_point_def)
 
@@ -163,473 +165,6 @@ lemma local_lipschitz_c1_euclideanI:
    apply (rule has_derivative_bounded_linear)
   by auto
 
-lemma lipschitz_on_congI:
-  assumes "L'-lipschitz_on s' g'"
-  assumes "s' = s"
-  assumes "L' \<le> L"
-  assumes "\<And>x y. x \<in> s \<Longrightarrow> g' x = g x"
-  shows "L-lipschitz_on s g"
-  using assms
-  by (auto simp: lipschitz_on_def intro!: order_trans[OF _ mult_right_mono[OF \<open>L' \<le> L\<close>]])
-
-lemma local_lipschitz_congI:
-  assumes "local_lipschitz s' t' g'"
-  assumes "s' = s"
-  assumes "t' = t"
-  assumes "\<And>x y. x \<in> s \<Longrightarrow> y \<in> t \<Longrightarrow> g' x y = g x y"
-  shows "local_lipschitz s t g"
-proof -
-  from assms have "local_lipschitz s t g'"
-    by (auto simp: local_lipschitz_def)
-  then show ?thesis
-    apply (auto simp: local_lipschitz_def)
-    apply (drule_tac bspec, assumption)
-    apply (drule_tac bspec, assumption)
-    apply auto
-    subgoal for x y u L
-    apply (rule exI[where x=u])
-      apply (auto intro!: exI[where x=L])
-      apply (drule bspec)
-      apply simp
-      apply (rule lipschitz_on_congI, assumption, rule refl, rule order_refl)
-      using assms
-      apply (auto)
-      done
-    done
-qed
-end
-
-context ll_on_open_it\<comment> \<open>TODO: do this more generically for @{const ll_on_open_it}\<close>
-begin
-
-context fixes S Y g assumes cong: "X = Y" "T = S" "\<And>x t. x \<in> Y \<Longrightarrow> t \<in> S \<Longrightarrow> f t x = g t x"
-begin
-
-lemma ll_on_open_congI: "ll_on_open S g Y"
-proof -
-  interpret Y: ll_on_open_it S f Y t0
-    apply (subst cong(1)[symmetric])
-    apply (subst cong(2)[symmetric])
-    by unfold_locales
-  show ?thesis
-    apply standard
-    subgoal
-      using local_lipschitz
-      apply (rule local_lipschitz_congI)
-      using cong by simp_all
-    subgoal apply (subst continuous_on_cong) prefer 3 apply (rule cont)
-      using cong by (auto)
-    subgoal using open_domain by (auto simp: cong)
-    subgoal using open_domain by (auto simp: cong)
-    done
-qed
-
-lemma existence_ivl_subsetI:
-  assumes t: "t \<in> existence_ivl t0 x0"
-  shows "t \<in> ll_on_open.existence_ivl S g Y t0 x0"
-proof -
-  from assms have \<open>t0 \<in> T\<close> "x0 \<in> X"
-    by (rule mem_existence_ivl_iv_defined)+
-  interpret Y: ll_on_open S g Y by (rule ll_on_open_congI)
-  have "(flow t0 x0 solves_ode f) (existence_ivl t0 x0) X"
-    by (rule flow_solves_ode) (auto simp: \<open>x0 \<in> X\<close> \<open>t0 \<in> T\<close>)
-  then have "(flow t0 x0 solves_ode f) {t0--t} X"
-    by (rule solves_ode_on_subset)
-     (auto simp add: t local.closed_segment_subset_existence_ivl)
-  then have "(flow t0 x0 solves_ode g) {t0--t} Y"
-    apply (rule solves_ode_congI)
-       apply (auto intro!: assms cong)
-    using \<open>(flow t0 x0 solves_ode f) {t0--t} X\<close> local.cong(1) solves_ode_domainD apply blast
-    using \<open>t0 \<in> T\<close> assms closed_segment_subset_domainI general.mem_existence_ivl_subset local.cong(2)
-    by blast
-  then show ?thesis
-    apply (rule Y.existence_ivl_maximal_segment)
-    subgoal by (simp add: \<open>t0 \<in> T\<close> \<open>x0 \<in> X\<close>)
-    apply (subst cong[symmetric])
-    using \<open>t0 \<in> T\<close> assms closed_segment_subset_domainI general.mem_existence_ivl_subset local.cong(2)
-    by blast
-qed
-
-lemma existence_ivl_cong:
-  shows "existence_ivl t0 x0 = ll_on_open.existence_ivl S g Y t0 x0"
-proof -
-  interpret Y: ll_on_open S g Y by (rule ll_on_open_congI)
-  show ?thesis
-    apply (auto )
-    subgoal by (rule existence_ivl_subsetI)
-    subgoal
-      apply (rule Y.existence_ivl_subsetI)
-      using cong
-      by auto
-    done
-qed
-
-lemma flow_cong:
-  assumes "t \<in> existence_ivl t0 x0"
-  shows "flow t0 x0 t = ll_on_open.flow S g Y t0 x0 t"
-proof -
-  interpret Y: ll_on_open S g Y by (rule ll_on_open_congI)
-  from assms have "t0 \<in> T" "x0 \<in> X"
-    by (rule mem_existence_ivl_iv_defined)+
-  from cong \<open>x0 \<in> X\<close> have "x0 \<in> Y" by auto
-  from cong \<open>t0 \<in> T\<close> have "t0 \<in> S" by auto
-  show ?thesis
-    apply (rule Y.equals_flowI[where T'="existence_ivl t0 x0"])
-    subgoal using \<open>t0 \<in> T\<close> \<open>x0 \<in> X\<close>  by auto
-    subgoal using \<open>x0 \<in> X\<close> by auto
-    subgoal by (auto simp: existence_ivl_cong \<open>x0 \<in> X\<close>)
-    subgoal
-      apply (rule solves_ode_congI)
-          apply (rule flow_solves_ode[OF \<open>t0 \<in> T\<close> \<open>x0 \<in> X\<close>])
-      using existence_ivl_subset[of x0]
-      by (auto simp: cong(2)[symmetric] cong(1)[symmetric] assms flow_in_domain intro!: cong)
-    subgoal using \<open>t0 \<in> S\<close> \<open>t0 \<in> T\<close> \<open>x0 \<in> X\<close> \<open>x0 \<in> Y\<close>
-      by (auto simp:)
-    subgoal by fact
-    done
-qed
-
-end
-
-end
-
-context auto_ll_on_open begin
-
-context fixes Y g assumes cong: "X = Y" "\<And>x t. x \<in> Y \<Longrightarrow> f x = g x"
-begin
-
-lemma auto_ll_on_open_congI: "auto_ll_on_open g Y"
-  apply unfold_locales
-  subgoal
-    using local_lipschitz
-    apply (rule local_lipschitz_congI)
-    using cong by auto
-  subgoal
-    using open_domain
-    using cong by auto
-  done
-
-lemma existence_ivl0_cong:
-  shows "existence_ivl0 x0 = auto_ll_on_open.existence_ivl0 g Y x0"
-proof -
-  interpret Y: auto_ll_on_open g Y by (rule auto_ll_on_open_congI)
-  show ?thesis
-    unfolding Y.existence_ivl0_def
-    apply (rule existence_ivl_cong)
-    using cong by auto
-qed
-
-lemma flow0_cong:
-  assumes "t \<in> existence_ivl0 x0"
-  shows "flow0 x0 t = auto_ll_on_open.flow0 g Y x0 t"
-proof -
-  interpret Y: auto_ll_on_open g Y by (rule auto_ll_on_open_congI)
-  show ?thesis
-    unfolding Y.flow0_def
-    apply (rule flow_cong)
-    using cong assms by auto
-qed
-
-end
-
-end
-
-
-context c1_on_open_euclidean begin
-
-context fixes Y g assumes cong: "X = Y" "\<And>x t. x \<in> Y \<Longrightarrow> f x = g x"
-begin
-
-lemma f'_cong: "(g has_derivative blinfun_apply (f' x)) (at x)" if "x \<in> Y"
-proof -
-  from derivative_rhs[of x] that cong
-  have "(f has_derivative blinfun_apply (f' x)) (at x within Y)"
-    by (auto intro!: has_derivative_at_withinI)
-  then have "(g has_derivative blinfun_apply (f' x)) (at x within Y)"
-    by (rule has_derivative_transform_within[OF _ zero_less_one that])
-       (auto simp: cong)
-  then show ?thesis
-    using at_within_open[OF that] cong open_dom
-    by (auto simp: )
-qed
-
-lemma c1_on_open_euclidean_congI: "c1_on_open_euclidean g f' Y"
-proof -
-  interpret Y: c1_on_open_euclidean f f' Y unfolding cong[symmetric] by unfold_locales
-  show ?thesis
-    apply standard
-    subgoal using cong by simp
-    subgoal by (rule f'_cong)
-    subgoal by (simp add: cong[symmetric] continuous_derivative)
-    done
-qed
-
-lemma vareq_cong: "vareq x0 t = c1_on_open_euclidean.vareq g f' Y x0 t"
-  if "t \<in> existence_ivl0 x0"
-proof -
-  interpret Y: c1_on_open_euclidean g f' Y by (rule c1_on_open_euclidean_congI)
-  show ?thesis
-    unfolding vareq_def Y.vareq_def
-    apply (rule arg_cong[where f=f'])
-    apply (rule flow0_cong)
-    using cong that by auto
-qed
-
-lemma Dflow_cong:
-  assumes "t \<in> existence_ivl0 x0"
-  shows "Dflow x0 t = c1_on_open_euclidean.Dflow g f' Y x0 t"
-proof -
-  interpret Y: c1_on_open_euclidean g f' Y by (rule c1_on_open_euclidean_congI)
-  from assms have "x0 \<in> X"
-    by (rule mem_existence_ivl_iv_defined)
-  from cong \<open>x0 \<in> X\<close> have "x0 \<in> Y" by auto
-  show ?thesis
-    unfolding Dflow_def Y.Dflow_def
-    apply (rule mvar.equals_flowI[symmetric, OF _ _ order_refl])
-    subgoal using \<open>x0 \<in> X\<close> by auto
-    subgoal using \<open>x0 \<in> X\<close> by auto
-    subgoal
-      apply (rule solves_ode_congI)
-          apply (rule Y.mvar.flow_solves_ode)
-           prefer 3 apply (rule refl)
-      subgoal using \<open>x0 \<in> X\<close> \<open>x0 \<in> Y\<close> by auto
-      subgoal using \<open>x0 \<in> X\<close> \<open>x0 \<in> Y\<close> by auto
-      subgoal for t
-        apply (subst vareq_cong)
-         apply (subst (asm) Y.mvar_existence_ivl_eq_existence_ivl)
-        subgoal using \<open>x0 \<in> Y\<close> by simp
-        subgoal
-          using cong
-          by (subst (asm) existence_ivl0_cong[symmetric]) auto
-        subgoal using \<open>x0 \<in> Y\<close> by simp
-        done
-      subgoal using \<open>x0 \<in> X\<close> \<open>x0 \<in> Y\<close>
-        apply (subst mvar_existence_ivl_eq_existence_ivl)
-        subgoal by simp
-        apply (subst Y.mvar_existence_ivl_eq_existence_ivl)
-        subgoal by simp
-        using cong
-        by (subst existence_ivl0_cong[symmetric]) auto
-      subgoal by simp
-      done
-    subgoal using \<open>x0 \<in> X\<close> \<open>x0 \<in> Y\<close> by auto
-    subgoal
-      apply (subst mvar_existence_ivl_eq_existence_ivl)
-       apply auto
-       apply fact+
-      done
-    done
-qed
-
-lemma flowsto_congI1:
-  assumes "flowsto A B C D"
-  shows "c1_on_open_euclidean.flowsto g f' Y A B C D"
-proof -
-  interpret Y: c1_on_open_euclidean g f' Y by (rule c1_on_open_euclidean_congI)
-  show ?thesis
-    using assms
-    unfolding flowsto_def Y.flowsto_def
-    apply (auto simp: existence_ivl0_cong[OF cong]  flow0_cong[OF cong])
-       apply (drule bspec, assumption)
-    apply clarsimp
-    apply (rule bexI)
-    apply (rule conjI)
-       apply assumption
-    apply (subst flow0_cong[symmetric, OF cong])
-     apply auto
-      apply (subst existence_ivl0_cong[OF cong])
-    apply auto
-    apply (subst Dflow_cong[symmetric])
-     apply auto
-      apply (subst existence_ivl0_cong[OF cong])
-    apply auto
-    apply (drule bspec, assumption)
-    apply (subst flow0_cong[symmetric, OF cong])
-     apply auto
-      apply (subst existence_ivl0_cong[OF cong])
-    apply auto defer
-    apply (subst Dflow_cong[symmetric])
-     apply auto
-      apply (subst existence_ivl0_cong[OF cong])
-    apply auto
-    apply (drule Y.closed_segment_subset_existence_ivl)
-    by (auto simp: open_segment_eq_real_ivl closed_segment_eq_real_ivl split: if_splits)
-qed
-
-lemma flowsto_congI2:
-  assumes "c1_on_open_euclidean.flowsto g f' Y A B C D"
-  shows "flowsto A B C D"
-proof -
-  interpret Y: c1_on_open_euclidean g f' Y by (rule c1_on_open_euclidean_congI)
-  show ?thesis
-    apply (rule Y.flowsto_congI1)
-    using assms
-    by (auto simp: cong)
-qed
-
-lemma flowsto_congI: "flowsto A B C D = c1_on_open_euclidean.flowsto g f' Y A B C D"
-  using flowsto_congI1[of A B C D] flowsto_congI2[of A B C D] by auto
-
-lemma
-  returns_to_congI1:
-  assumes "returns_to A x"
-  shows "auto_ll_on_open.returns_to g Y A x"
-proof -
-  interpret Y: c1_on_open_euclidean g f' Y by (rule c1_on_open_euclidean_congI)
-  from assms obtain t where t:
-    "\<forall>\<^sub>F t in at_right 0. flow0 x t \<notin> A"
-    "0 < t" "t \<in> existence_ivl0 x" "flow0 x t \<in> A"
-    by (auto simp: returns_to_def)
-
-  note t(1)
-  moreover
-  have "\<forall>\<^sub>F s in at_right 0. s < t"
-    using tendsto_ident_at \<open>0 < t\<close>
-    by (rule order_tendstoD)
-  moreover have "\<forall>\<^sub>F s in at_right 0. 0 < s"
-    by (auto simp: eventually_at_topological)
-  ultimately have "\<forall>\<^sub>F t in at_right 0. Y.flow0 x t \<notin> A"
-    apply eventually_elim
-    using ivl_subset_existence_ivl[OF \<open>t \<in> _\<close>]
-    apply (subst (asm) flow0_cong[OF cong])
-    by (auto simp: )
-
-  moreover have "\<exists>t>0. t \<in> Y.existence_ivl0 x \<and> Y.flow0 x t \<in> A"
-    using t
-    by (auto intro!: exI[where x=t] simp: flow0_cong[OF cong] existence_ivl0_cong[OF cong])
-  ultimately show ?thesis
-    by (auto simp: Y.returns_to_def)
-qed
-
-lemma
-  returns_to_congI2:
-  assumes "auto_ll_on_open.returns_to g Y x A"
-  shows "returns_to x A"
-proof -
-  interpret Y: c1_on_open_euclidean g f' Y by (rule c1_on_open_euclidean_congI)
-  show ?thesis
-    by (rule Y.returns_to_congI1) (auto simp: assms cong)
-qed
-
-lemma returns_to_cong: "auto_ll_on_open.returns_to g Y A x = returns_to A x"
-  using returns_to_congI1 returns_to_congI2 by blast
-
-lemma
-  return_time_cong:
-  shows "return_time A x = auto_ll_on_open.return_time g Y A x"
-proof -
-  interpret Y: c1_on_open_euclidean g f' Y by (rule c1_on_open_euclidean_congI)
-  have P_eq: "0 < t \<and> t \<in> existence_ivl0 x \<and> flow0 x t \<in> A \<and> (\<forall>s\<in>{0<..<t}. flow0 x s \<notin> A) \<longleftrightarrow>
-    0 < t \<and> t \<in> Y.existence_ivl0 x \<and> Y.flow0 x t \<in> A \<and> (\<forall>s\<in>{0<..<t}. Y.flow0 x s \<notin> A)"
-    for t
-    using ivl_subset_existence_ivl[of t x]
-    apply (auto simp: existence_ivl0_cong[OF cong] flow0_cong[OF cong])
-     apply (drule bspec)
-      apply force
-     apply (subst (asm) flow0_cong[OF cong])
-    apply auto
-    apply (auto simp: existence_ivl0_cong[OF cong, symmetric] flow0_cong[OF cong])
-     apply (subst (asm) flow0_cong[OF cong])
-    apply auto
-    done
-  show ?thesis
-    unfolding return_time_def Y.return_time_def
-    by (auto simp: returns_to_cong P_eq)
-qed
-
-lemma poincare_mapsto_congI1:
-  assumes "poincare_mapsto A B C D E" "closed A"
-  shows "c1_on_open_euclidean.poincare_mapsto g Y A B C D E"
-proof -
-  interpret Y: c1_on_open_euclidean g f' Y by (rule c1_on_open_euclidean_congI)
-  show ?thesis
-    using assms
-    unfolding poincare_mapsto_def Y.poincare_mapsto_def
-    apply auto
-    subgoal for a b
-      by (rule returns_to_congI1) auto
-    subgoal for a b
-      by (subst return_time_cong[abs_def, symmetric]) auto
-    subgoal for a b
-      unfolding poincare_map_def Y.poincare_map_def
-      apply (drule bspec, assumption)
-      apply safe
-      subgoal for D
-        apply (auto intro!: exI[where x=D])
-        subgoal premises prems
-        proof -
-          have "\<forall>\<^sub>F y in at a within C. returns_to A y"
-            apply (rule eventually_returns_to_continuousI)
-              apply fact apply fact
-            apply (rule differentiable_imp_continuous_within)
-            apply fact
-            done
-          moreover have "\<forall>\<^sub>F y in at a within C. y \<in> C"
-            by (auto simp: eventually_at_filter)
-          ultimately have "\<forall>\<^sub>F x' in at a within C. flow0 x' (return_time A x') = Y.flow0 x' (Y.return_time A x')"
-          proof eventually_elim
-            case (elim x')
-            then show ?case
-              apply (subst flow0_cong[OF cong, symmetric], force)
-               apply (subst return_time_cong[symmetric])
-              using prems
-               apply (auto intro!: return_time_exivl)
-              apply (subst return_time_cong[symmetric])
-              apply auto
-              done
-          qed
-          with prems(7)
-          show ?thesis
-            apply (rule has_derivative_transform_eventually)
-            using prems
-             apply (subst flow0_cong[OF cong, symmetric], force)
-              apply (subst return_time_cong[symmetric])
-            using prems
-              apply (auto intro!: return_time_exivl)
-            apply (subst return_time_cong[symmetric])
-            apply auto
-            done
-        qed
-        subgoal
-          apply (subst flow0_cong[OF cong, symmetric], force)
-           apply (subst return_time_cong[symmetric])
-           apply (auto intro!: return_time_exivl)
-          apply (subst return_time_cong[symmetric])
-          apply auto
-          done
-        done
-      done
-    subgoal for a b t
-      apply (drule bspec, assumption)
-      apply (subst flow0_cong[OF cong, symmetric])
-        apply auto
-       apply (subst (asm) return_time_cong[symmetric])
-       apply (rule less_return_time_imp_exivl)
-          apply (rule less_imp_le, assumption)
-         apply (auto simp: return_time_cong)
-      done
-    done
-qed
-
-lemma poincare_mapsto_congI2:
-  assumes "c1_on_open_euclidean.poincare_mapsto g Y A B C D E" "closed A"
-  shows "poincare_mapsto A B C D E"
-proof -
-  interpret Y: c1_on_open_euclidean g f' Y by (rule c1_on_open_euclidean_congI)
-  show ?thesis
-    apply (rule Y.poincare_mapsto_congI1)
-    using assms
-    by (auto simp: cong)
-qed
-
-lemma poincare_mapsto_cong: "closed A \<Longrightarrow>
-    poincare_mapsto A B C D E = c1_on_open_euclidean.poincare_mapsto g Y A B C D E"
-  using poincare_mapsto_congI1[of A B C] poincare_mapsto_congI2[of A B C] by auto
-
-end
-
-end
-
 definition "list_aform_of_aform (x::real aform) = (fst x, list_of_pdevs (snd x))"
 primrec split_aforms_list:: "(real aform) list list
    \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> (real aform) list list" where
@@ -638,33 +173,58 @@ primrec split_aforms_list:: "(real aform) list list
 
 definition "shows_aforms x y c X = shows_lines (map (\<lambda>b. (shows_segments_of_aform x y b c ''\<newline>'')) X)"
 
+end
+
+definition "the_odo ode_fas safe_form = the(mk_ode_ops ode_fas safe_form)"
+
 locale ode_interpretation =
-  fixes safe_form and safe_set::"'a::executable_euclidean_space set" and ode_fas and ode::"'a \<Rightarrow> 'a"
+  fixes safe_form::form and safe_set::"'a::executable_euclidean_space set"
+    and ode_fas::"floatarith list"
+    and ode::"'a \<Rightarrow> 'a"
     and finite::"'n::enum"
   assumes dims: "DIM('a) = CARD('n)"
-  assumes safe_set: "safe_set = aform.Csafe ode_fas safe_form"
-  assumes ode: "\<And>x. x \<in> safe_set \<Longrightarrow> ode x = aform.ode ode_fas x"
+  assumes len: "length ode_fas = CARD('n)"
+  assumes safe_set_form: "safe_set = {x. interpret_form safe_form (list_of_eucl x)}"
+  assumes interpret_fas: "\<And>x. x \<in> safe_set \<Longrightarrow> einterpret ode_fas (list_of_eucl x) = ode x"
+  assumes odo: "mk_ode_ops ode_fas safe_form \<noteq> None"
+  assumes isFDERIV: "\<And>xs. interpret_form safe_form xs \<Longrightarrow>
+    isFDERIV (length ode_fas) [0..<length ode_fas] ode_fas xs"
 begin
 
-sublocale auto_ll_on_open ode safe_set
-  by (rule aform.auto_ll_on_open_congI[OF safe_set[symmetric] ode[symmetric]]) simp
+abbreviation "odo \<equiv> the_odo ode_fas safe_form"
+lemmas odo_def = the_odo_def
 
-lemma ode_has_derivative_ode_d1: "(ode has_derivative blinfun_apply (aform.ode_d1 ode_fas safe_form x)) (at x)"
+lemma odo_simps[simp]: "ode_expression odo = ode_fas" "safe_form_expr odo = safe_form"
+  using odo
+  by (auto simp: odo_def ode_expression_mk_ode_ops safe_form_expr_mk_ode_ops)
+
+lemma safe_set: "safe_set = aform.Csafe odo"
+  using odo dims safe_set_form isFDERIV
+  unfolding aform.Csafe_def aform.safe_def aform.safe_form_def aform.ode_e_def
+  by (auto simp: mk_ode_ops_def safe_set_form len split: if_splits)
+
+lemma ode: "\<And>x. x \<in> safe_set \<Longrightarrow> ode x = aform.ode odo x"
+  by (auto simp: aform.ode_def aform.ode_e_def interpret_fas)
+
+sublocale auto_ll_on_open ode safe_set
+  by (rule aform.auto_ll_on_open_congI[OF safe_set[symmetric] ode[symmetric]])
+
+lemma ode_has_derivative_ode_d1: "(ode has_derivative blinfun_apply (aform.ode_d1 odo x)) (at x)"
   if "x \<in> safe_set" for x
 proof -
   from aform.fderiv[OF that[unfolded safe_set]]
-  have "(aform.ode ode_fas has_derivative blinfun_apply (aform.ode_d1 ode_fas safe_form x)) (at x)"
+  have "(aform.ode odo has_derivative blinfun_apply (aform.ode_d1 odo x)) (at x)"
     by simp
   moreover
-  from topological_tendstoD[OF tendsto_ident_at open_domain(2) that] 
+  from topological_tendstoD[OF tendsto_ident_at open_domain(2) that]
   have "\<forall>\<^sub>F x' in at x. x' \<in> safe_set" .
-  then have "\<forall>\<^sub>F x' in at x. aform.ode ode_fas x' = ode x'"
+  then have "\<forall>\<^sub>F x' in at x. aform.ode odo x' = ode x'"
     by eventually_elim (auto simp: ode)
   ultimately show ?thesis
     by (rule has_derivative_transform_eventually) (auto simp: ode that)
 qed
 
-sublocale c1_on_open_euclidean ode "aform.ode_d1 ode_fas safe_form" safe_set
+sublocale c1_on_open_euclidean ode "aform.ode_d1 odo" safe_set
   apply unfold_locales
   subgoal by simp
   subgoal by (simp add: ode_has_derivative_ode_d1)
@@ -674,11 +234,11 @@ sublocale c1_on_open_euclidean ode "aform.ode_d1 ode_fas safe_form" safe_set
 sublocale transfer_eucl_vec for a::'a and n::'n
   by unfold_locales (simp add: dims)
 
-lemma flow_eq: "t \<in> existence_ivl0 x \<Longrightarrow> aform.flow0 ode_fas safe_form x t = flow0 x t"
-  and Dflow_eq: "t \<in> existence_ivl0 x \<Longrightarrow> aform.Dflow ode_fas safe_form x t = Dflow x t"
-  and ex_ivl_eq: "t \<in> aform.existence_ivl0 ode_fas safe_form x \<Longrightarrow> aform.existence_ivl0 ode_fas safe_form x = existence_ivl0 x"
-  and poincare_mapsto_eq: "closed a \<Longrightarrow> aform.poincare_mapsto ode_fas safe_form a b c d e = poincare_mapsto a b c d e"
-  and flowsto_eq: "aform.flowsto ode_fas safe_form = flowsto"
+lemma flow_eq: "t \<in> existence_ivl0 x \<Longrightarrow> aform.flow0 odo x t = flow0 x t"
+  and Dflow_eq: "t \<in> existence_ivl0 x \<Longrightarrow> aform.Dflow odo x t = Dflow x t"
+  and ex_ivl_eq: "t \<in> aform.existence_ivl0 odo x \<Longrightarrow> aform.existence_ivl0 odo x = existence_ivl0 x"
+  and poincare_mapsto_eq: "closed a \<Longrightarrow> aform.poincare_mapsto odo a b c d e = poincare_mapsto a b c d e"
+  and flowsto_eq: "aform.flowsto odo = flowsto"
       apply -
   subgoal by (rule flow0_cong[symmetric]) (auto simp: safe_set ode)
   subgoal by (rule Dflow_cong[symmetric]) (auto simp: safe_set ode)
@@ -692,45 +252,45 @@ lemma flow_eq: "t \<in> existence_ivl0 x \<Longrightarrow> aform.flow0 ode_fas s
     by (auto simp: safe_set)
   done
 
-definition "avf \<equiv> \<lambda>x::'n rvec. cast (aform.ode ode_fas (cast x)::'a)::'n rvec"
+definition "avf \<equiv> \<lambda>x::'n rvec. cast (aform.ode odo (cast x)::'a)::'n rvec"
 
 context includes lifting_syntax begin
-lemma aform_ode_transfer[transfer_rule]: "(list_all2 (=) ===> rel_ve ===> rel_ve) aform.ode aform.ode"
+lemma aform_ode_transfer[transfer_rule]: "((=) ===> rel_ve ===> rel_ve) aform.ode aform.ode"
   unfolding aform.ode_def
   by transfer_prover
-lemma cast_aform_ode: "cast (aform.ode ode_fas (cast (x::'n rvec))::'a) = aform.ode ode_fas x"
+lemma cast_aform_ode: "cast (aform.ode odo (cast (x::'n rvec))::'a) = aform.ode odo x"
   by transfer simp
 
-lemma aform_safe_transfer[transfer_rule]: "(list_all2 (=) ===> (=) ===> rel_ve ===> (=)) aform.safe aform.safe"
+lemma aform_safe_transfer[transfer_rule]: "((=) ===> rel_ve ===> (=)) aform.safe aform.safe"
   unfolding aform.safe_def
   by transfer_prover
 
-lemma aform_Csafe_transfer[transfer_rule]: "(list_all2 (=) ===> (=) ===> rel_set rel_ve) aform.Csafe aform.Csafe"
+lemma aform_Csafe_transfer[transfer_rule]: "((=) ===> rel_set rel_ve) aform.Csafe aform.Csafe"
   unfolding aform.Csafe_def
   by transfer_prover
 
-lemma cast_safe_set: "(cast ` safe_set::'n rvec set) = aform.Csafe ode_fas safe_form"
+lemma cast_safe_set: "(cast ` safe_set::'n rvec set) = aform.Csafe odo"
   unfolding safe_set
   by transfer simp
 
 lemma aform_ode_d_raw_transfer[transfer_rule]:
-  "(list_all2 (=) ===> (=) ===> rel_ve ===> rel_ve ===> rel_ve ===> rel_ve) aform.ode_d_raw aform.ode_d_raw"
+  "((=) ===> (=) ===> rel_ve ===> rel_ve ===> rel_ve ===> rel_ve) aform.ode_d_raw aform.ode_d_raw"
   unfolding aform.ode_d_raw_def
   by transfer_prover
 
 lemma
   aform_ode_d_raw_aux_transfer:
-  "(list_all2 (=) ===> (=) ===> rel_ve ===> rel_ve ===> rel_ve)
-    (\<lambda>x ya xb xa. if xb \<in> aform.Csafe x ya then aform.ode_d_raw x 0 xb 0 xa else 0)
-    (\<lambda>x ya xb xa. if xb \<in> aform.Csafe x ya then aform.ode_d_raw x 0 xb 0 xa else 0)"
+  "((=) ===> rel_ve ===> rel_ve ===> rel_ve)
+    (\<lambda>x xb xa. if xb \<in> aform.Csafe x then aform.ode_d_raw x 0 xb 0 xa else 0)
+    (\<lambda>x xb xa. if xb \<in> aform.Csafe x then aform.ode_d_raw x 0 xb 0 xa else 0)"
   by transfer_prover
 
 lemma aform_ode_d1_transfer[transfer_rule]:
-  "(list_all2 (=) ===> (=) ===> rel_ve ===> rel_blinfun rel_ve rel_ve) aform.ode_d1 aform.ode_d1"
+  "((=) ===> rel_ve ===> rel_blinfun rel_ve rel_ve) aform.ode_d1 aform.ode_d1"
   apply (auto simp: rel_blinfun_def aform.ode_d1_def intro!: rel_funI)
   unfolding aform.ode_d.rep_eq
   using aform_ode_d_raw_aux_transfer
-  apply (drule rel_funD)
+  apply -
   apply (drule rel_funD, rule refl)
   apply (drule rel_funD, assumption)
   apply (drule rel_funD; assumption)
@@ -748,45 +308,45 @@ lemma rel_blinfun_eq[relator_eq]: "rel_blinfun (=) (=) = (=)"
   by (auto simp: Rel_def rel_blinfun_def blinfun_ext rel_fun_eq intro!: rel_funI ext)
 
 lemma cast_aform_ode_D1:
-  "cast_bl (aform.ode_d1 ode_fas safe_form (cast (x::'n rvec))::'a\<Rightarrow>\<^sub>L'a) =
-    (aform.ode_d1 ode_fas safe_form x::'n rvec \<Rightarrow>\<^sub>L 'n rvec)"
+  "cast_bl (aform.ode_d1 odo (cast (x::'n rvec))::'a\<Rightarrow>\<^sub>L'a) =
+    (aform.ode_d1 odo x::'n rvec \<Rightarrow>\<^sub>L 'n rvec)"
   by transfer simp
 
 end
 
 definition "vf \<equiv> \<lambda>x. cast (ode (cast x))"
-definition "vf' \<equiv> \<lambda>x::'n rvec. cast_bl (aform.ode_d1 ode_fas safe_form (cast x::'a))
+definition "vf' \<equiv> \<lambda>x::'n rvec. cast_bl (aform.ode_d1 odo (cast x::'a))
   ::'n rvec \<Rightarrow>\<^sub>L 'n rvec"
 definition "vX \<equiv> cast ` safe_set"
-sublocale a?: transfer_c1_on_open_euclidean a n ode "aform.ode_d1 ode_fas safe_form" safe_set vf vf' vX
+sublocale a?: transfer_c1_on_open_euclidean a n ode "aform.ode_d1 odo" safe_set vf vf' vX
   for a::'a and n::'n
   by unfold_locales
     (simp_all add: dims vf_def vf'_def vX_def)
 
-sublocale av: transfer_c1_on_open_euclidean a n "aform.ode ode_fas" "aform.ode_d1 ode_fas safe_form"
-  "(aform.Csafe ode_fas safe_form)" avf vf' vX
+sublocale av: transfer_c1_on_open_euclidean a n "aform.ode odo" "aform.ode_d1 odo"
+  "(aform.Csafe odo)" avf vf' vX
   for a::'a and n::'n
      apply unfold_locales
   unfolding vX_def
   by (simp_all add: dims avf_def  safe_set)
 
-lemma vflow_eq: "t \<in> v.existence_ivl0 x \<Longrightarrow> aform.flow0 ode_fas safe_form x t = v.flow0 x t"
+lemma vflow_eq: "t \<in> v.existence_ivl0 x \<Longrightarrow> aform.flow0 odo x t = v.flow0 x t"
   thm flow_eq[of t "cast x"] flow_eq[of t "cast x", untransferred]
   apply (subst flow_eq[of t "cast x", untransferred, symmetric])
    apply simp
   unfolding avf_def vX_def cast_aform_ode cast_safe_set
   ..
 
-lemma vf'_eq: "vf' = aform.ode_d1 ode_fas safe_form"
+lemma vf'_eq: "vf' = aform.ode_d1 odo"
   unfolding vf'_def cast_aform_ode_D1 ..
 
-lemma vDflow_eq: "t \<in> v.existence_ivl0 x \<Longrightarrow> aform.Dflow ode_fas safe_form x t = v.Dflow x t"
+lemma vDflow_eq: "t \<in> v.existence_ivl0 x \<Longrightarrow> aform.Dflow odo x t = v.Dflow x t"
   apply (subst Dflow_eq[of t "cast x", untransferred, symmetric])
    apply simp
   unfolding avf_def vX_def cast_aform_ode cast_safe_set vf'_eq
   ..
 
-lemma vex_ivl_eq: "t \<in> aform.existence_ivl0 ode_fas safe_form x \<Longrightarrow> aform.existence_ivl0 ode_fas safe_form x = v.existence_ivl0 x"
+lemma vex_ivl_eq: "t \<in> aform.existence_ivl0 odo x \<Longrightarrow> aform.existence_ivl0 odo x = v.existence_ivl0 x"
   apply (subst ex_ivl_eq[of t "cast x", untransferred, symmetric])
   unfolding avf_def vX_def cast_aform_ode cast_safe_set vf'_eq
   by auto
@@ -809,13 +369,13 @@ lemma cast_eucl1_transfer[transfer_rule]:
 end
 
 lemma avpoincare_mapsto_eq:
-  "aform.poincare_mapsto ode_fas safe_form a (b::'n eucl1 set) c d e = av.v.poincare_mapsto a b c d e"
+  "aform.poincare_mapsto odo a (b::'n eucl1 set) c d e = av.v.poincare_mapsto a b c d e"
   if "closed a"
   unfolding avf_def vX_def cast_aform_ode cast_safe_set vf'_eq
   by auto
 
 lemma vpoincare_mapsto_eq:
-  "aform.poincare_mapsto ode_fas safe_form a (b::'n eucl1 set) c d e = v.poincare_mapsto a b c d e"
+  "aform.poincare_mapsto odo a (b::'n eucl1 set) c d e = v.poincare_mapsto a b c d e"
   if "closed a"
 proof -
   have "closed (cast ` a::'a set)" using that
@@ -825,30 +385,30 @@ proof -
       "cast ` c::'a set" "cast ` d::'a set" "cast_eucl1 ` e::('a \<times> 'a \<Rightarrow>\<^sub>L 'a) set", OF this, untransferred]
   have "v.poincare_mapsto a b c d e = av.v.poincare_mapsto a b c d e"
     by auto
-  also have "\<dots> = aform.poincare_mapsto ode_fas safe_form a (b::'n eucl1 set) c d e"
+  also have "\<dots> = aform.poincare_mapsto odo a (b::'n eucl1 set) c d e"
     unfolding avf_def vX_def cast_aform_ode cast_safe_set vf'_eq
     by auto
   finally show ?thesis by simp
 qed
 
-lemma avflowsto_eq: "aform.flowsto ode_fas safe_form = (av.v.flowsto::'n eucl1 set \<Rightarrow> _)"
+lemma avflowsto_eq: "aform.flowsto odo = (av.v.flowsto::'n eucl1 set \<Rightarrow> _)"
 proof (intro ext, goal_cases)
   case (1 a b c d)
-  have "av.v.flowsto a b c d = aform.flowsto ode_fas safe_form a b c d"
+  have "av.v.flowsto a b c d = aform.flowsto odo a b c d"
     unfolding avf_def vX_def cast_aform_ode cast_safe_set vf'_eq
     by auto
   then show ?case by simp
 qed
 
-lemma vflowsto_eq: "aform.flowsto ode_fas safe_form = (v.flowsto::'n eucl1 set \<Rightarrow> _)"
+lemma vflowsto_eq: "aform.flowsto odo = (v.flowsto::'n eucl1 set \<Rightarrow> _)"
 proof (intro ext, goal_cases)
   case (1 a b c d)
-  have "aform.flowsto ode_fas safe_form (cast_eucl1 ` a::'a c1_info set) b
+  have "aform.flowsto odo (cast_eucl1 ` a::'a c1_info set) b
     (cast_eucl1 ` c)  (cast_eucl1 ` d) =
     flowsto (cast_eucl1 ` a::'a c1_info set) b (cast_eucl1 ` c)  (cast_eucl1 ` d)"
     by (subst flowsto_eq) auto
   from this[untransferred] have "v.flowsto a b c d = av.v.flowsto a b c d" by auto
-  also have "\<dots> = aform.flowsto ode_fas safe_form a b c d"
+  also have "\<dots> = aform.flowsto odo a b c d"
     unfolding avf_def vX_def cast_aform_ode cast_safe_set vf'_eq
     by auto
   finally show ?case by simp
@@ -918,7 +478,7 @@ lemma c0_info_of_appr'_transfer[transfer_rule]:
   unfolding aform.c0_info_of_appr'_def
   by transfer_prover
 
-lemma aform_Csafe_vX[simp]: "aform.Csafe ode_fas safe_form = (vX::'n rvec set)"
+lemma aform_Csafe_vX[simp]: "aform.Csafe odo = (vX::'n rvec set)"
   by (simp add: vX_def cast_safe_set)
 
 definition blinfuns_of_lvivl::"real list \<times> real list \<Rightarrow> ('b \<Rightarrow>\<^sub>L 'b::executable_euclidean_space) set"
@@ -1034,7 +594,7 @@ lemma blinfun_of_vmatrix_image:
       split: option.splits)
 
 lemma one_step_result123:
-  "solves_one_step_until_time_aform optns ode_fas safe_form X0i t1 t2 E dE \<Longrightarrow>
+  "solves_one_step_until_time_aform optns odo X0i t1 t2 E dE \<Longrightarrow>
     (x0, d0) \<in> aform.c1_info_of_appre X0i \<Longrightarrow>
     t \<in> {t1 .. t2} \<Longrightarrow>
     set_of_lvivl E \<subseteq> S \<Longrightarrow>
@@ -1042,15 +602,16 @@ lemma one_step_result123:
     length (fst E) = CARD('n) \<Longrightarrow> length (snd E) = CARD('n) \<Longrightarrow>
     aform.lvivl'_invar (CARD('n) * CARD('n)) dE \<Longrightarrow>
     aform.c1_info_invare DIM('a) X0i \<Longrightarrow>
-    length ode_fas = DIM('a) \<Longrightarrow>
+    aform.D odo = DIM('a) \<Longrightarrow>
       (t \<in> existence_ivl0 (x0::'a) \<and> flow0 x0 t \<in> S) \<and> Dflow x0 t o\<^sub>L d0 \<in> dS"
-  apply (transfer fixing: optns ode_fas safe_form X0i t1 t2 t E dE)
+  apply (transfer fixing: optns X0i t1 t2 t E dE)
   subgoal premises prems for x0 d0 S dS
   proof -
-    have "t \<in> aform.existence_ivl0 ode_fas safe_form x0 \<and> aform.flow0 ode_fas safe_form x0 t \<in> S \<and> aform.Dflow ode_fas safe_form x0 t o\<^sub>L d0 \<in> dS"
-      apply (rule aform.one_step_in_ivl[of t t1 t2 x0 d0 X0i "fst E" "snd E" S dE dS ode_fas optns safe_form])
+    have "t \<in> aform.existence_ivl0 odo x0 \<and> aform.flow0 odo x0 t \<in> S \<and> aform.Dflow odo x0 t o\<^sub>L d0 \<in> dS"
+      apply (rule one_step_in_ivl[of t t1 t2 x0 d0 X0i "fst E" "snd E" S dE dS odo optns])
       using prems
-      by (auto simp: eucl_of_list_prod set_of_lvivl_def set_of_ivl_def blinfun_of_vmatrix_image)
+      by (auto simp: eucl_of_list_prod set_of_lvivl_def set_of_ivl_def blinfun_of_vmatrix_image aform.D_def
+          solves_one_step_until_time_aform_def)
     with vflow_eq[of t x0] vDflow_eq[of t x0] vex_ivl_eq[symmetric, of t x0] 
     show ?thesis
       by simp
@@ -1201,12 +762,12 @@ lemma stable_on_transfer[transfer_rule]:
   by transfer_prover
 
 theorem solves_poincare_map_aform:
-  "solves_poincare_map_aform optns ode_fas safe_form (\<lambda>x. dRETURN (symstart x)) [S] guards ivl sctn roi XS RET dRET \<Longrightarrow>
+  "solves_poincare_map_aform optns odo (\<lambda>x. dRETURN (symstart x)) [S] guards ivl sctn roi XS RET dRET \<Longrightarrow>
     (symstart, symstarta) \<in> fun_rel (aform.appr1e_rel) (clw_rel aform.appr_rel \<times>\<^sub>r clw_rel aform.appr1e_rel) \<Longrightarrow>
     (\<And>X0. (\<lambda>(CX, X). flowsto (X0 - trap \<times> UNIV) {0..} (CX \<times> UNIV) X) (symstarta X0)) \<Longrightarrow>
-    stable_on (aform.Csafe ode_fas safe_form - set_of_lvivl ivl \<inter> plane_of (map_sctn eucl_of_list sctn)) trap \<Longrightarrow>
+    stable_on (aform.Csafe odo - set_of_lvivl ivl \<inter> plane_of (map_sctn eucl_of_list sctn)) trap \<Longrightarrow>
     (\<And>X. X \<in> set XS \<Longrightarrow> aform.c1_info_invare DIM('a) X) \<Longrightarrow>
-    length ode_fas = DIM('a) \<Longrightarrow>
+    aform.D odo = DIM('a) \<Longrightarrow>
     length (normal sctn) = DIM('a) \<Longrightarrow>
     length (fst ivl) = DIM('a) \<Longrightarrow>
     length (snd ivl) = DIM('a) \<Longrightarrow>
@@ -1222,19 +783,19 @@ theorem solves_poincare_map_aform:
      ((set_of_lvivl ivl::('a set)) \<inter> plane_of (map_sctn eucl_of_list sctn))
      (aform.c1_info_of_apprse XS - trap \<times> UNIV)
      (below_halfspace (map_sctn eucl_of_list S))
-     (aform.Csafe ode_fas safe_form -
+     (aform.Csafe odo -
       set_of_lvivl ivl \<inter> plane_of (map_sctn eucl_of_list sctn))
      (set_of_lvivl RET \<times> blinfuns_of_lvivl' dRET)"
-  apply (transfer fixing: optns ode_fas safe_form symstart S guards ivl sctn roi XS RET dRET)
+  apply (transfer fixing: optns symstart S guards ivl sctn roi XS RET dRET)
   subgoal premises prems for symstarta trap
   proof -
-    have "aform.poincare_mapsto ode_fas safe_form (set_of_lvivl ivl \<inter> plane_of (map_sctn eucl_of_list sctn))
+    have "aform.poincare_mapsto odo (set_of_lvivl ivl \<inter> plane_of (map_sctn eucl_of_list sctn))
      (aform.c1_info_of_apprse XS - trap \<times> UNIV) (below_halfspace (map_sctn eucl_of_list S))
-     (aform.Csafe ode_fas safe_form - set_of_lvivl ivl \<inter> plane_of (map_sctn eucl_of_list sctn))
+     (aform.Csafe odo - set_of_lvivl ivl \<inter> plane_of (map_sctn eucl_of_list sctn))
      (flow1_of_vec1 ` ({eucl_of_list (fst RET)..eucl_of_list (snd RET)} \<times> aform.set_of_lvivl' dRET))"
-      apply (rule aform.solves_poincare_map[OF _ RETURN_dres_nres_relI RETURN_rule,
-        of optns ode_fas safe_form symstart S guards ivl sctn roi XS "fst RET" "snd RET" dRET symstarta trap])
-      subgoal using prems(1) by simp
+      apply (rule solves_poincare_map[OF _ RETURN_dres_nres_relI RETURN_rule,
+        of optns odo symstart S guards ivl sctn roi XS "fst RET" "snd RET" dRET symstarta trap])
+      subgoal using prems(1) by (simp add: solves_poincare_map_aform_def)
       subgoal using prems(2) by (auto simp: fun_rel_def_internal)
       subgoal for X0
         using prems(3)[of X0] vflowsto_eq
@@ -1258,7 +819,7 @@ theorem solves_poincare_map_aform:
           by simp
       qed
       subgoal using prems by auto
-      subgoal using prems by auto
+      subgoal using prems by (auto simp: aform.D_def)
       subgoal using prems by auto
       subgoal using prems by auto
       subgoal using prems by auto
@@ -1276,9 +837,9 @@ theorem solves_poincare_map_aform:
   done
 
 theorem solves_poincare_map_aform':
-  "solves_poincare_map_aform' optns ode_fas safe_form S guards ivl sctn roi XS RET dRET\<Longrightarrow>
+  "solves_poincare_map_aform' optns odo S guards ivl sctn roi XS RET dRET\<Longrightarrow>
     (\<And>X. X \<in> set XS \<Longrightarrow> aform.c1_info_invare DIM('a) X) \<Longrightarrow>
-    length ode_fas = DIM('a) \<Longrightarrow>
+    aform.D odo = DIM('a) \<Longrightarrow>
     length (normal sctn) = DIM('a) \<Longrightarrow>
     length (fst ivl) = DIM('a) \<Longrightarrow>
     length (snd ivl) = DIM('a) \<Longrightarrow>
@@ -1294,22 +855,22 @@ theorem solves_poincare_map_aform':
      ((set_of_lvivl ivl::('a set)) \<inter> plane_of (map_sctn eucl_of_list sctn))
      (aform.c1_info_of_apprse XS)
      (below_halfspace (map_sctn eucl_of_list S))
-     (aform.Csafe ode_fas safe_form -
+     (aform.Csafe odo -
       set_of_lvivl ivl \<inter> plane_of (map_sctn eucl_of_list sctn))
      (set_of_lvivl RET \<times> blinfuns_of_lvivl' dRET)"
-  apply (transfer fixing: optns ode_fas safe_form S guards ivl sctn roi XS RET dRET)
+  apply (transfer fixing: optns S guards ivl sctn roi XS RET dRET)
   subgoal
-    using aform.solves_poincare_map'[of optns ode_fas safe_form S guards ivl sctn roi XS "fst RET" "snd RET" dRET]
+    using solves_poincare_map'[of optns odo S guards ivl sctn roi XS "fst RET" "snd RET" dRET]
     using vflow_eq vex_ivl_eq vflowsto_eq
     apply (subst vpoincare_mapsto_eq[symmetric])
     by (auto intro!: closed_Int simp: set_of_lvivl_def set_of_ivl_def blinfun_of_vmatrix_image
-        flow1_of_vec1_times)
+        flow1_of_vec1_times aform.D_def solves_poincare_map_aform'_def)
   done
 
 theorem solves_poincare_map_onto_aform:
-  "solves_poincare_map_onto_aform optns ode_fas safe_form guards ivl sctn roi XS RET dRET\<Longrightarrow>
+  "solves_poincare_map_onto_aform optns odo guards ivl sctn roi XS RET dRET\<Longrightarrow>
     (\<And>X. X \<in> set XS \<Longrightarrow> aform.c1_info_invare DIM('a) X) \<Longrightarrow>
-    length ode_fas = DIM('a) \<Longrightarrow>
+    aform.D odo = DIM('a) \<Longrightarrow>
     length (normal sctn) = DIM('a) \<Longrightarrow>
     length (fst ivl) = DIM('a) \<Longrightarrow>
     length (snd ivl) = DIM('a) \<Longrightarrow>
@@ -1324,17 +885,17 @@ theorem solves_poincare_map_onto_aform:
      ((set_of_lvivl ivl::('a set)) \<inter> plane_of (map_sctn eucl_of_list sctn))
      (aform.c1_info_of_apprse XS)
      UNIV
-     (aform.Csafe ode_fas safe_form -
+     (aform.Csafe odo -
       set_of_lvivl ivl \<inter> plane_of (map_sctn eucl_of_list sctn))
      (set_of_lvivl RET \<times> blinfuns_of_lvivl' dRET)"
-  apply (transfer fixing: optns ode_fas safe_form guards ivl sctn roi XS RET dRET)
+  apply (transfer fixing: optns guards ivl sctn roi XS RET dRET)
   subgoal
-    using aform.solves_poincare_map_onto[of optns ode_fas safe_form guards ivl sctn roi XS "fst RET" "snd RET" dRET, where 'n='n,
+    using solves_poincare_map_onto[of optns odo guards ivl sctn roi XS "fst RET" "snd RET" dRET, where 'n='n,
           unfolded aform.poincare_maps_onto_def]
     using vflow_eq vex_ivl_eq vflowsto_eq
     apply (subst vpoincare_mapsto_eq[symmetric])
     by (auto intro!: closed_Int simp: set_of_lvivl_def set_of_ivl_def blinfun_of_vmatrix_image
-        flow1_of_vec1_times)
+        flow1_of_vec1_times aform.D_def solves_poincare_map_onto_aform_def)
   done
 
 end
@@ -1524,7 +1085,6 @@ lemma interpret_floatariths_matrix_of_degrees:
 definition "num_options p sstep m N a projs print_fun =
   \<lparr>
     precision = p,
-    reduce = correct_girard (p) (m) (N),
     adaptive_atol = FloatR 1 (- a),
     adaptive_rtol = FloatR 1 (- a),
     method_id = 2,
@@ -1533,6 +1093,7 @@ definition "num_options p sstep m N a projs print_fun =
     halve_stepsizes = 40,
     widening_mod = 10,
     rk2_param = FloatR 1 0,
+    default_reduce = correct_girard (p) (m) (N),
     printing_fun = (\<lambda>a b.
         let
            _ = fold (\<lambda>(x, y, c) _.
@@ -1572,10 +1133,10 @@ definition "num_options_code p sstep m N a projs print_fun =
     (int_of_integer a) (map (\<lambda>(i, j, k). (nat_of_integer i, nat_of_integer j, k)) projs) print_fun"
 
 definition "ro s n M g0 g1 inter_step =
-  \<lparr>max_tdev_thres = (\<lambda>_. FloatR 1 s),
+  \<lparr>max_tdev_thres = FloatR 1 s,
       pre_split_reduce = correct_girard 30 n M,
-      pre_inter_granularity = (\<lambda>_::real aform list. FloatR 1 g0),
-      post_inter_granularity = (\<lambda>_.  FloatR 1 g1),
+      pre_inter_granularity = FloatR 1 g0,
+      post_inter_granularity = (FloatR 1 g1),
       pre_collect_granularity = FloatR 1 g0,
       max_intersection_step = FloatR 1 inter_step\<rparr>"
 
@@ -1699,29 +1260,15 @@ lemma bind_eq_dRETURN_conv:
 
 end
 
-context approximate_sets_options' begin
-
-lemma c1_info_of_appre_c0_I:
-  "(x, d) \<in> c1_info_of_appre ((1, 1), X0, None)"
-  if "list_of_eucl x \<in> set_of_appr X0"
-  using that
-  by (force simp: c1_info_of_appre_def c1_info_of_appr_def)
-
-lemma lvivl'_invar_None[simp]: "lvivl'_invar n None"
-  by (auto simp: lvivl'_invar_def)
-
-lemma c1_info_invar_None: "c1_info_invar n (u, None) \<longleftrightarrow> length u = n"
-  by (auto simp: c1_info_invar_def)
-
-lemma c1_info_invare_None: "c1_info_invare n ((l, u), x, None) \<longleftrightarrow>((l < u \<or> -\<infinity> < l \<and> l \<le> u \<and> u < \<infinity>) \<and> length x = n)"
-  by (auto simp: c1_info_invare_def Let_def c1_info_invar_None)
-
-end
-
 lemma list_of_eucl_memI: "list_of_eucl (x::'x::executable_euclidean_space) \<in> S"
   if "x \<in> eucl_of_list ` S" "\<And>x. x \<in> S \<Longrightarrow> length x = DIM('x)"
   using that
   by auto
+
+lemma Joints_aforms_of_ivls_append_point:
+  "Joints (xs @ aforms_of_ivls p p) = (\<lambda>x. x @ p) ` Joints xs"
+  using aform.set_of_appr_of_ivl_append_point[unfolded aform_ops_def approximate_set_ops.simps] .
+
 
 context ode_interpretation begin
 
@@ -1730,8 +1277,8 @@ theorem solves_one_step_ivl:
   assumes X: "X \<subseteq> {eucl_of_list lx .. eucl_of_list ux}" "length lx = DIM('a)" "length ux = DIM('a)"
   assumes S: "{eucl_of_list ls::'a .. eucl_of_list us} \<subseteq> S"
   assumes lens: "length ls = DIM('a)" "length us = DIM('a)" \<comment> \<open>TODO: this could be verified\<close>
-  assumes [simp]: "length ode_fas = DIM('a)"
-  assumes r: "solves_one_step_until_time_aform optns ode_fas safe_form ((1,1), aforms_of_ivls lx ux, None) t1 t2 (ls, us) None"
+  assumes [simp]: "aform.D odo = DIM('a)"
+  assumes r: "solves_one_step_until_time_aform optns odo ((1,1), aforms_of_ivls lx ux, None) t1 t2 (ls, us) None"
   shows "t \<in> T \<longrightarrow> x0 \<in> X \<longrightarrow> t \<in> existence_ivl0 x0 \<and> flow0 x0 t \<in> S"
 proof (intro impI)
   assume t: "t \<in> T" and x0: "x0 \<in> X"
@@ -1763,8 +1310,8 @@ theorem solves_one_step_ivl':
   assumes S: "{eucl_of_list ls::'a .. eucl_of_list us} \<subseteq> S"
   assumes lens0: "length ls = DIM('a)" "length us = DIM('a)" \<comment> \<open>TODO: this could be verified\<close>
     "length dx0s = DIM('a)*DIM('a)"
-  assumes [simp]: "length ode_fas = DIM('a)"
-  assumes r: "solves_one_step_until_time_aform optns ode_fas safe_form
+  assumes [simp]: "aform.D odo = DIM('a)"
+  assumes r: "solves_one_step_until_time_aform optns odo
     ((1,1), aforms_of_ivls lx ux, Some (aforms_of_point dx0s)) t1 t2 (ls, us) (Some (lds, uds))"
   shows "t \<in> T \<longrightarrow> x0 \<in> X \<longrightarrow> t \<in> existence_ivl0 x0 \<and> flow0 x0 t \<in> S \<and>
     Dflow x0 t o\<^sub>L blinfun_of_list dx0s \<in> blinfuns_of_lvivl (ld, ud)"
@@ -1788,7 +1335,7 @@ proof (intro impI)
     apply (auto simp: aform.c1_info_of_appre_def aform.c1_info_of_appr_def)
     apply (rule image_eqI[where x="list_of_eucl x0@dx0s"])
     using lens0
-     apply (auto simp: flow1_of_list_def aforms_of_point_def aform.set_of_appr_of_ivl_append_point)
+     apply (auto simp: flow1_of_list_def aforms_of_point_def Joints_aforms_of_ivls_append_point)
     apply (rule imageI)
     apply (rule x0)
     done
@@ -1800,7 +1347,7 @@ proof (intro impI)
     "aform.c1_info_invare DIM('a) ((1::ereal, 1), aforms_of_ivls lx ux, Some (aforms_of_point dx0s))"
     by (auto simp: aform.lvivl'_invar_def lends aform.c1_info_invare_def X lens0 power2_eq_square
         aform.c1_info_invar_def)
-  from one_step_result123[OF r x0dx0 t S DS lens inv \<open>length ode_fas = _\<close>]
+  from one_step_result123[OF r x0dx0 t S DS lens inv \<open>aform.D _ = _\<close>]
   show "t \<in> existence_ivl0 x0 \<and> flow0 x0 t \<in> S \<and> Dflow x0 t o\<^sub>L blinfun_of_list dx0s \<in> blinfuns_of_lvivl (ld, ud)"
     by (auto simp: blinfuns_of_lvivl_def)
 qed
@@ -1809,38 +1356,40 @@ end
 
 definition "zero_aforms D = map (\<lambda>_. (0, zero_pdevs)) [0..<D]"
 
-definition "solves_one_step_until_time_aform_fo soptns a b c d e f g =
-  file_output (String.implode (fst soptns)) (\<lambda>pf. solves_one_step_until_time_aform (snd soptns pf) a b c d e f g)"
+definition "solves_one_step_until_time_aform_fo soptns a b c d e f =
+  file_output (String.implode (fst soptns)) (\<lambda>pf. solves_one_step_until_time_aform (snd soptns pf) a b c d e f)"
 
-definition "solves_poincare_map_aform'_fo soptns a b c d e f g h i j =
-  file_output (String.implode (fst soptns)) (\<lambda>pf. solves_poincare_map_aform' (snd soptns pf) a b c d e f g h i j)"
+definition "solves_poincare_map_aform'_fo soptns a b c d e f g h i =
+  file_output (String.implode (fst soptns)) (\<lambda>pf. solves_poincare_map_aform' (snd soptns pf) a b c d e f g h i)"
 
-definition "solves_poincare_map_onto_aform_fo soptns a b c d e f g h i =
-  file_output (String.implode (fst soptns)) (\<lambda>pf. solves_poincare_map_onto_aform (snd soptns pf) a b c d e f g h i)"
+definition "solves_poincare_map_onto_aform_fo soptns a b c d e f g h =
+  file_output (String.implode (fst soptns)) (\<lambda>pf. solves_poincare_map_onto_aform (snd soptns pf) a b c d e f g h)"
 
 lemma solves_one_step_until_time_aform_foI:
-  "solves_one_step_until_time_aform (snd optns (\<lambda>_. ())) a b c d e f g"
-  if "solves_one_step_until_time_aform_fo optns a b c d e f g"
+  "solves_one_step_until_time_aform (snd optns (\<lambda>_. ())) a b c d e f"
+  if "solves_one_step_until_time_aform_fo optns a b c d e f"
   using that
   by (auto simp: solves_one_step_until_time_aform_fo_def file_output_def Print.file_output_def
       print_def[abs_def]
       split: if_splits)
 
 lemma solves_poincare_map_aform'_foI:
-  "solves_poincare_map_aform' (snd optns (\<lambda>_. ())) a b c d e f g h i j"
-  if "solves_poincare_map_aform'_fo optns a b c d e f g h i j"
+  "solves_poincare_map_aform' (snd optns (\<lambda>_. ())) a b c d e f g h i"
+  if "solves_poincare_map_aform'_fo optns a b c d e f g h i"
   using that
   by (auto simp: solves_poincare_map_aform'_fo_def file_output_def Print.file_output_def
       print_def[abs_def]
       split: if_splits)
 
 lemma solves_poincare_map_onto_aform_foI:
-  "solves_poincare_map_onto_aform (snd optns (\<lambda>_. ())) a b c d e f g h i"
-  if "solves_poincare_map_onto_aform_fo optns a b c d e f g h i"
+  "solves_poincare_map_onto_aform (snd optns (\<lambda>_. ())) a b c d e f g h"
+  if "solves_poincare_map_onto_aform_fo optns a b c d e f g h"
   using that
   by (auto simp: solves_poincare_map_onto_aform_fo_def file_output_def Print.file_output_def
       print_def[abs_def]
       split: if_splits)
+
+definition "can_mk_ode_ops fas safe_form \<longleftrightarrow> mk_ode_ops fas safe_form \<noteq> None"
 
 theorem solve_one_step_until_time_aform_integral_bounds:
   fixes f::"real \<Rightarrow> 'a::executable_euclidean_space"
@@ -1848,12 +1397,16 @@ theorem solve_one_step_until_time_aform_integral_bounds:
   assumes ba: "b - a \<in> {t1 .. t2}"
   assumes a: "a \<in> {a1 .. a2}"
   assumes ls_us_subset: "{eucl_of_list ls .. eucl_of_list us} \<subseteq> {l .. u}"
-  assumes fas: "\<And>xs::real list. length xs > 0 \<Longrightarrow> (1::real, f (xs ! 0)) = einterpret fas xs"
+  assumes fas: "\<And>xs::real list. length xs > 0 \<Longrightarrow> interpret_form safe_form xs \<Longrightarrow>
+    (1::real, f (xs ! 0)) = einterpret fas xs"
   assumes D: "D = DIM('a) + 1" "D = CARD('i::enum)"
   assumes lenlu: "length ls + 1 = D" "length us + 1 = D"
   assumes lfas: "length fas = D"
-  assumes sos[THEN solves_one_step_until_time_aform_foI]: "solves_one_step_until_time_aform_fo optns fas true_form
-    ((1,1), (aforms_of_ivls (a1#replicate (D - 1) 0) (a2#replicate (D - 1) 0)), None) t1 t2 (0#ls, t2#us) None"
+  assumes mv: "can_mk_ode_ops fas safe_form"
+  assumes FDERIV: "\<And>xs. interpret_form safe_form xs \<Longrightarrow> isFDERIV (length fas) [0..<length fas] fas xs"
+  assumes sos[THEN solves_one_step_until_time_aform_foI]:
+    "solves_one_step_until_time_aform_fo optns (the(mk_ode_ops fas safe_form))
+      ((1,1), (aforms_of_ivls (a1#replicate (D - 1) 0) (a2#replicate (D - 1) 0)), None) t1 t2 (0#ls, t2#us) None"
   shows "integral {a .. b} f \<in> {l .. u}"
 proof -
   have lens0: "length ((x::real) # replicate (D - 1) 0) = DIM(real \<times> 'a)" for x
@@ -1862,21 +1415,26 @@ proof -
   have a0: "(a, 0) \<in> {eucl_of_list (a1 # replicate (D - 1) 0)..eucl_of_list (a2 # replicate (D - 1) 0)}"
     using assms
     by (auto simp: eucl_of_list_prod)
-  let ?U = "aform.Csafe fas true_form"
-  interpret ode_interpretation true_form ?U fas "\<lambda>x. (1::real, f (fst x))" "undefined::'i"
+  let ?U = "{x::real\<times>'a. interpret_form safe_form (list_of_eucl x)}"
+  interpret ode_interpretation safe_form ?U fas "\<lambda>x. (1::real, f (fst x))" "undefined::'i"
     apply unfold_locales
     subgoal using assms by simp
-    subgoal by simp
+    subgoal using assms by simp
+    subgoal using mv by (simp add: D lfas)
     subgoal for x
       apply (cases x)
-      unfolding aform.ode_def
-      apply (rule HOL.trans[OF _ fas])
-      by (auto simp: )
+      by (rule HOL.trans[OF fas[symmetric]]) (auto simp: fas)
+    subgoal using mv by (simp add: can_mk_ode_ops_def)
+    subgoal by (rule FDERIV)
     done
-  have lens: "length (0 # ls) = DIM(real \<times> 'a)" "length (t2 # us) = DIM(real \<times> 'a)" "length fas = DIM(real \<times> 'a)"
+  have lens: "length (0 # ls) = DIM(real \<times> 'a)" "length (t2 # us) = DIM(real \<times> 'a)" "aform.D odo = DIM(real \<times> 'a)"
     using lenlu
-    by (simp_all add: lfas D)
-  from solves_one_step_ivl[rule_format, OF order_refl order_refl lens0 lens0  order_refl lens sos ba a0]
+    by (simp_all add: lfas aform.D_def D aform.ode_e_def )
+  have D_odo: "aform.D odo = DIM(real \<times> 'a)"
+    by (auto simp: aform.D_def aform.ode_e_def lfas D)
+  from solves_one_step_ivl[rule_format, OF order_refl order_refl lens0 lens0 order_refl lens(1,2) D_odo,
+    unfolded odo_def,
+    OF sos ba a0]
   have lsus: "flow0 (a, 0) (b - a) \<in> {eucl_of_list (0#ls)..eucl_of_list (t2#us)}"
     and exivl: "b - a \<in> existence_ivl0 (a, 0)"
     by auto
@@ -1887,7 +1445,7 @@ proof -
     by (auto simp: eucl_of_list_prod)
   from ivl_subset_existence_ivl[OF exivl] \<open>a \<le> b\<close> exivl
   have "0 \<in> existence_ivl0 (a, 0)"
-    by auto
+    by (auto simp del: existence_ivl_initial_time_iff)
   from mem_existence_ivl_iv_defined(2)[OF this]
   have safe: "(a, 0::'a) \<in> ?U" by simp
   from flow_solves_ode[OF UNIV_I this]
@@ -1935,8 +1493,7 @@ proof -
   then have "((\<lambda>t. snd (flow0 (a, 0) t)) solves_ode (\<lambda>b c. f (a + b))) {0 .. b - a} UNIV"
     apply (rule solves_ode_on_subset)
     using exivl
-     apply auto
-    using existence_ivl_zero mem_is_interval_1_I by blast
+    by (rule ivl_subset_existence_ivl) (rule order_refl)
   from integral_solves_autonomous_odeI[OF this]
   have "((\<lambda>b. f (a + b)) has_integral snd (flow0 (a, 0) (b - a))) (cbox 0 (b - a))"
     using \<open>a \<le> b\<close> safe
@@ -1967,6 +1524,7 @@ lemmas [DIM_simps] =
   add_numeral_special
   add_numeral_special card_sum card_prod card_bit0 card_bit1 card_num0 card_num1
   numeral_times_numeral numeral_mult mult_1_right mult_1
+  aform.D_def
 
 lemma numeral_refl: "numeral x = numeral x" by simp
 
@@ -2195,7 +1753,7 @@ lemma poincare_mapsto_subset:
 
 theorem solves_poincare_map_aform'_derivI:
   assumes solves:
-    "solves_poincare_map_aform'_fo optns ode_fas safe_form
+    "solves_poincare_map_aform'_fo optns odo
       (Sctn (unit_list D n) (lP ! n))
       guards
       (lP, uP)
@@ -2206,7 +1764,7 @@ theorem solves_poincare_map_aform'_derivI:
       (Some (lDR, uDR))"
     and D: "D = DIM('a)"
   assumes DS: "list_interval lDR uDR \<subseteq> list_interval lDS uDS"
-  and ode_fas: "length ode_fas = DIM('a)"
+  and dim: "aform.D odo = DIM('a)"
   and lens:
     "length (lP) = DIM('a)" "length (uP) = DIM('a)"
     "length (lX0) = DIM('a)" "length (uX0) = DIM('a)"
@@ -2254,11 +1812,11 @@ proof (rule ballI)
      (aform.c1_info_of_apprse [((1, 1), aforms_of_ivls lX0 uX0, Some (aforms_of_point DX0))])
      (below_halfspace
        (map_sctn eucl_of_list (Sctn (unit_list D n) (lP ! n))))
-     (aform.Csafe ode_fas safe_form -
+     (aform.Csafe odo -
       set_of_lvivl (lP, uP) \<inter>
       plane_of (map_sctn eucl_of_list (Sctn (unit_list D n) (lP ! n))))
      (set_of_lvivl (lR, uR) \<times> blinfuns_of_lvivl' (Some (lDR, uDR)))"
-    by (rule solves_poincare_map_aform'[OF solves, OF 1 ode_fas 2 3 4 guards 5])
+    by (rule solves_poincare_map_aform'[OF solves, OF 1 dim 2 3 4 guards 5])
       auto
   then have "poincare_mapsto P (X0 \<times> {blinfun_of_list DX0}::('a \<times> ('a \<Rightarrow>\<^sub>L 'a)) set) SS UNIV
     (R \<times> blinfuns_of_lvivl (lDS, uDS))"
@@ -2269,7 +1827,7 @@ proof (rule ballI)
       subgoal for x0
         apply (rule image_eqI[where x="list_of_eucl x0@DX0"])
         using lens
-         apply (auto simp: flow1_of_list_def aforms_of_point_def aform.set_of_appr_of_ivl_append_point)
+         apply (auto simp: flow1_of_list_def aforms_of_point_def Joints_aforms_of_ivls_append_point)
         apply (rule imageI)
         using X0
         by (auto simp: Joints_aforms_of_ivls la2 list_of_eucl_in_list_interval_iff)
@@ -2307,7 +1865,7 @@ theorem solves_poincare_map_aform'I:
   assumes guards: "guards_invar DIM('a) guards"
   and P: "P = {eucl_of_list lP .. eucl_of_list uP}"
   and plane: "uP ! n = lP ! n"
-  and ode_fas: "length ode_fas = DIM('a)"
+  and dim: "aform.D odo = DIM('a)"
   and X0: "X0 \<subseteq> {eucl_of_list lX0 .. eucl_of_list uX0}"
   and nD: "n < DIM('a)"
   and R: "{eucl_of_list lR .. eucl_of_list uR} \<subseteq> R"
@@ -2316,7 +1874,7 @@ theorem solves_poincare_map_aform'I:
     "length (lX0) = DIM('a)" "length (uX0) = DIM('a)"
     "length (lR) = DIM('a)" "length (uR) = DIM('a)"
   and solves:
-    "solves_poincare_map_aform'_fo optns ode_fas safe_form
+    "solves_poincare_map_aform'_fo optns odo
       (Sctn (unit_list D n) (lP ! n))
       guards
       (lP, uP)
@@ -2351,11 +1909,11 @@ proof -
       plane_of (map_sctn eucl_of_list (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))))
     (aform.c1_info_of_apprse [((1, 1), aforms_of_ivls lX0 uX0, None)])
     (below_halfspace (map_sctn eucl_of_list (Sctn (unit_list D n) (lP ! n))))
-    (aform.Csafe ode_fas safe_form -
+    (aform.Csafe odo -
       set_of_lvivl (lP, uP) \<inter>
       plane_of (map_sctn eucl_of_list (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))))
      (set_of_lvivl (lR, uR) \<times> blinfuns_of_lvivl' None)"
-    by (rule solves_poincare_map_aform'[OF solves, OF 1 ode_fas 2 3 4 guards 5])
+    by (rule solves_poincare_map_aform'[OF solves, OF 1 dim 2 3 4 guards 5])
   then have "poincare_mapsto P (X0 \<times> UNIV::('a \<times> ('a \<Rightarrow>\<^sub>L 'a)) set)
       (below_halfspace (map_sctn eucl_of_list (((Sctn (unit_list D n) (lP ! n)))))) UNIV (R \<times> UNIV)"
     apply (rule poincare_mapsto_subset)
@@ -2389,7 +1947,7 @@ theorem poincare_maps_onto_aformI:
   assumes guards: "guards_invar DIM('a) guards"
   and P: "P = {eucl_of_list lP .. eucl_of_list uP}"
   and plane: "uP ! n = lP ! n"
-  and ode_fas: "length ode_fas = DIM('a)"
+  and dim: "aform.D odo = DIM('a)"
   and X0: "X0 \<subseteq> {eucl_of_list lX0 .. eucl_of_list uX0}"
   and nD: "n < DIM('a)"
   and R: "{eucl_of_list lR .. eucl_of_list uR} \<subseteq> R"
@@ -2398,7 +1956,7 @@ theorem poincare_maps_onto_aformI:
     "length (lX0) = DIM('a)" "length (uX0) = DIM('a)"
     "length (lR) = DIM('a)" "length (uR) = DIM('a)"
   and solves:
-    "solves_poincare_map_onto_aform_fo optns ode_fas safe_form
+    "solves_poincare_map_onto_aform_fo optns odo
       guards
       (lP, uP)
       (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))
@@ -2430,11 +1988,11 @@ proof -
       plane_of (map_sctn eucl_of_list (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))))
     (aform.c1_info_of_apprse [((1, 1), aforms_of_ivls lX0 uX0, None)])
     UNIV
-    (aform.Csafe ode_fas safe_form -
+    (aform.Csafe odo -
       set_of_lvivl (lP, uP) \<inter>
       plane_of (map_sctn eucl_of_list (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))))
      (set_of_lvivl (lR, uR) \<times> blinfuns_of_lvivl' None)"
-    by (rule solves_poincare_map_onto_aform[OF solves, OF 1 ode_fas 2 3 guards 5])
+    by (rule solves_poincare_map_onto_aform[OF solves, OF 1 dim 2 3 guards 5])
   then have "poincare_mapsto P (X0 \<times> UNIV::('a \<times> ('a \<Rightarrow>\<^sub>L 'a)) set) UNIV UNIV (R \<times> UNIV)"
     apply (rule poincare_mapsto_subset)
     subgoal using X0
@@ -2458,6 +2016,11 @@ qed
 end
 
 lemmas [simp] = length_approxs
+
+context includes ode_ops.lifting begin
+lift_definition empty_ode_ops::"ode_ops" is "([], true_form)"
+  by (auto simp: )
+end
 
 ML \<open>val ode_numerics_conv = @{computation_check
   terms:
@@ -2575,6 +2138,14 @@ ML \<open>val ode_numerics_conv = @{computation_check
     "zero_pdevs::real pdevs"
     "zero_aforms::_ \<Rightarrow> real aform list"
 
+    (* ode_ops *)
+    mk_ode_ops
+    init_ode_ops
+    empty_ode_ops
+    can_mk_ode_ops
+    "the::ode_ops option \<Rightarrow> ode_ops"
+    the_odo
+
     (* Characters/Strings *)
     String.Char
     String.implode
@@ -2670,7 +2241,152 @@ lemma pi4_bnds: "pi / 4 \<in> {real_divl 80 (lb_pi 80) 4 .. real_divr 80 (ub_pi 
   unfolding atLeastAtMost_iff
   by (intro conjI real_divl[le] real_divr[ge] divide_right_mono) auto
 
+lemma abs_minus_leI: "\<bar>x - x'\<bar> \<le> e" if "x \<in> {x' - e .. x' + e}" for x e::real
+  using that
+  by (auto simp: )
+
+lemmas [DIM_simps] = Suc_numeral One_nat_def[symmetric] TrueI Suc_1 length_approxs arith_simps
+lemma (in ode_interpretation) length_ode_e[DIM_simps]: "length (ode_expression odo) = DIM('a)"
+  by (auto simp: len)
+
+
+named_theorems solves_one_step_ivl_thms
+
+context ode_interpretation begin
+
+lemmas [solves_one_step_ivl_thms] =
+  TAG_optns[OF solves_one_step_ivl[OF _ _ _ _ _ _ _ _ solves_one_step_until_time_aform_foI], rotated -1,
+    of optns _ _ _ _ _ _ _ _ _ optns for optns]
+
+lemmas [solves_one_step_ivl_thms] =
+  TAG_optns[OF solves_one_step_ivl'[OF _ _ _ _ _ _ _ _ _ _ _ _ solves_one_step_until_time_aform_foI], rotated -1,
+    of optns _ _ _ _ _ _ _ _ _ _ _ _ _ _ optns for optns]
+
+lemmas [solves_one_step_ivl_thms] = solves_poincare_map_aform'I poincare_maps_onto_aformI
+
+end
+
+lemma TAG_optnsI: "TAG_optns optns" by simp
+
+named_theorems poincare_tac_theorems
+
+lemmas [DIM_simps] = one_less_numeral_iff rel_simps
+
+
+abbreviation "point_ivl a \<equiv> {a .. a}"
+
+lemma isFDERIV_compute: "isFDERIV D vs fas xs \<longleftrightarrow>
+   (list_all (\<lambda>i. list_all (\<lambda>j. isDERIV (vs ! i) (fas ! j) xs) [0..<D]) [0..<D]) \<and> length fas = D \<and> length vs = D"
+  unfolding isFDERIV_def
+  by (auto simp: list.pred_set)
+
+
+theorem (in ode_interpretation) solves_poincare_map_aform'_derivI'[solves_one_step_ivl_thms]:
+\<comment> \<open>TODO: replace @{thm solves_poincare_map_aform'_derivI}\<close>
+  assumes "TAG_optns optns"
+  assumes "TAG_reach_optns roi"
+  assumes "TAG_sctn mirrored"
+    and D: "D = DIM('a)"
+  assumes DS: "list_interval lDR uDR \<subseteq> list_interval lDS uDS"
+    and ode_fas: "aform.D odo = DIM('a)"
+    and guards: "guards_invar DIM('a) guards"
+    and P: "P = {eucl_of_list lP .. eucl_of_list uP}"
+    and plane: "uP ! n = lP ! n"
+    and X0: "X0 \<subseteq> {eucl_of_list lX0 .. eucl_of_list uX0}"
+    and nD: "n < DIM('a)"
+    and R: "{eucl_of_list lR .. eucl_of_list uR} \<subseteq> R"
+    and lens:
+    "length (lP) = DIM('a)" "length (uP) = DIM('a)"
+    "length (lX0) = DIM('a)" "length (uX0) = DIM('a)"
+    "length (lR) = DIM('a)" "length (uR) = DIM('a)"
+    "length DX0 = DIM('a)*DIM('a)"
+    "length lDR = CARD('n) * CARD('n)"
+    "length uDR = CARD('n) * CARD('n)"
+    and SS: "SS = {x::'a. if mirrored then x \<bullet> Basis_list ! n \<le> lP ! n
+        else x \<bullet> Basis_list ! n \<ge> lP ! n}"
+  assumes solves:
+    "solves_poincare_map_aform'_fo optns odo
+      (mirrored_sctn (\<not>mirrored) (Sctn (unit_list D n) (lP ! n)))
+      guards
+      (lP, uP)
+      (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))
+      roi
+      [((1,1), aforms_of_ivls lX0 uX0, Some (aforms_of_point DX0))]
+      (lR, uR)
+      (Some (lDR, uDR))"
+  shows "\<forall>x\<in>X0. returns_to P x \<and>
+    return_time P differentiable at x within SS \<and>
+    (\<exists>D. (poincare_map P has_derivative blinfun_apply D) (at x within SS) \<and>
+         poincare_map P x \<in> R \<and> D o\<^sub>L blinfun_of_list DX0 \<in> blinfuns_of_lvivl (lDS, uDS))"
+proof (rule ballI)
+  fix x assume "x \<in> X0"
+  then have la2: "list_all2 (\<le>) lX0 uX0"
+    using X0
+    by (force simp: subset_iff eucl_of_list_le_iff le_eucl_of_list_iff lens list_all2_conv_all_nth)
+  have 1: "\<And>X. X \<in> set [((1::ereal, 1::ereal), aforms_of_ivls lX0 uX0, Some (aforms_of_point DX0))] \<Longrightarrow>
+      aform.c1_info_invare DIM('a) X"
+    for X
+    by (auto simp: aform.c1_info_invare_def aform.c1_info_invar_def lens power2_eq_square)
+  have 2: "length (normal (mirrored_sctn (\<not>mirrored) (Sctn (unit_list D n) (lP ! n)))) = DIM('a)"
+    by (auto simp: D mirrored_sctn_def)
+  have 3: "length (fst (lP, uP)) = DIM('a)" "length (snd (lP, uP)) = DIM('a)"
+    by (auto simp: lens)
+  have 4: "length (normal (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))) = DIM('a)"
+    by (auto simp: D mirrored_sctn_def)
+  have 5: "length (fst (lR, uR)) = CARD('n)" "length (snd (lR, uR)) = CARD('n)"
+    "aform.lvivl'_invar (CARD('n) * CARD('n)) (Some (lDR, uDR))"
+    by (auto simp: lens aform.lvivl'_invar_def)
+  note solves = solves[unfolded solves_poincare_map_aform'_fo_def file_output_iff]
+  have "poincare_mapsto
+     (set_of_lvivl (lP, uP) \<inter>
+      plane_of (map_sctn eucl_of_list (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))))
+     (aform.c1_info_of_apprse [((1, 1), aforms_of_ivls lX0 uX0, Some (aforms_of_point DX0))])
+     (below_halfspace (map_sctn eucl_of_list (mirrored_sctn (\<not>mirrored) (Sctn (unit_list D n) (lP ! n)))))
+     (aform.Csafe odo -
+      set_of_lvivl (lP, uP) \<inter>
+      plane_of (map_sctn eucl_of_list (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))))
+     (set_of_lvivl (lR, uR) \<times> blinfuns_of_lvivl' (Some (lDR, uDR)))"
+    by (rule solves_poincare_map_aform'[OF solves, OF 1 ode_fas 4 3 2 _ 5])
+      (use guards in \<open>auto simp: guards_invar_def\<close>)
+  then have "poincare_mapsto P (X0 \<times> {blinfun_of_list DX0}::('a \<times> ('a \<Rightarrow>\<^sub>L 'a)) set) SS UNIV
+    (R \<times> blinfuns_of_lvivl (lDS, uDS))"
+    apply (rule poincare_mapsto_subset)
+    subgoal using X0
+      apply (auto simp: aform.c1_info_of_appre_def aform.c1_info_of_appr_def
+          aform.c1_info_of_apprse_def)
+      subgoal for x0
+        apply (rule image_eqI[where x="list_of_eucl x0@DX0"])
+        using lens
+         apply (auto simp: flow1_of_list_def aforms_of_point_def Joints_aforms_of_ivls_append_point)
+        apply (rule imageI)
+        using X0
+        by (auto simp: Joints_aforms_of_ivls la2 list_of_eucl_in_list_interval_iff)
+      done
+    subgoal by simp
+    subgoal using R DS
+      by (auto simp: set_of_lvivl_def set_of_ivl_def blinfuns_of_lvivl'_def blinfuns_of_lvivl_def
+          lens)
+    subgoal
+      using assms
+      by (auto simp:
+          below_halfspace_def le_halfspace_def[abs_def] mirrored_sctn_def mirror_sctn_def)
+    subgoal
+      using assms
+      by (fastforce simp add: P set_of_lvivl_def set_of_ivl_def plane_of_def
+          le_eucl_of_list_iff eucl_of_list_le_iff mirrored_sctn_def mirror_sctn_def)
+    done
+  then show "returns_to P x \<and>
+    return_time P differentiable at x within SS \<and>
+    (\<exists>D. (poincare_map P has_derivative blinfun_apply D) (at x within SS) \<and>
+         poincare_map P x \<in> R \<and> D o\<^sub>L blinfun_of_list DX0 \<in> blinfuns_of_lvivl (lDS, uDS))"
+    using \<open>x \<in> X0\<close>
+    by (auto simp: poincare_mapsto_def)
+qed
+
+lemmas [DIM_simps] = aform.ode_e_def
+
 ML \<open>
+structure ODE_Numerics_Tac = struct
 fun mk_nat n = HOLogic.mk_number @{typ nat} n
 fun mk_int n = HOLogic.mk_number @{typ int} n
 fun mk_integer n = @{term integer_of_int} $ (HOLogic.mk_number @{typ int} n)
@@ -2688,9 +2404,7 @@ fun mk_numeralT n =
         let val (q, r) = Integer.div_mod n 2;
         in mk_bit r (bin_of q) end;
   in bin_of n end;
-\<close>
 
-ML \<open>
 fun print_tac' ctxt s = K (print_tac ctxt s)
 
 val using_master_directory =
@@ -2732,7 +2446,7 @@ fun real_subset_approx_tac ctxt p =
 fun basic_nt_ss ctxt nt =
   put_simpset HOL_basic_ss ctxt addsimps Named_Theorems.get ctxt nt
 
-fun DIM_tac ctxt = (Simplifier.simp_tac (basic_nt_ss ctxt @{named_theorems DIM_simps}))
+fun DIM_tac defs ctxt = (Simplifier.simp_tac (basic_nt_ss ctxt @{named_theorems DIM_simps} addsimps defs))
 
 fun subset_approx_preconds_tac ctxt p thm =
   let
@@ -2741,17 +2455,116 @@ fun subset_approx_preconds_tac ctxt p thm =
             resolve_tac ctxt [Thm.instantiate inst_approx thm]
       THEN' SOLVED' (reify_floatariths_tac ctxt)
       THEN' SOLVED' (reify_floatariths_tac ctxt)
-      THEN' SOLVED' (DIM_tac ctxt)
-      THEN' SOLVED' (DIM_tac ctxt)
+      THEN' SOLVED' (DIM_tac [] ctxt)
+      THEN' SOLVED' (DIM_tac [] ctxt)
       THEN' SOLVED' (ode_numerics_tac ctxt)
       THEN' SOLVED' (ode_numerics_tac ctxt)
   end
+
+val cfg_trace = Attrib.setup_config_bool @{binding ode_numerics_trace} (K false)
+fun tracing_tac ctxt = if Config.get ctxt cfg_trace then print_tac ctxt else K all_tac
+fun tracing_tac' ctxt = fn s => K (tracing_tac ctxt s)
 
 fun eucl_subset_approx_tac ctxt p = subset_approx_preconds_tac ctxt p @{thm eucl_subset_approxI}
 fun approx_subset_eucl_tac ctxt p = subset_approx_preconds_tac ctxt p @{thm approx_subset_euclI}
 fun approx_subset_list_tac ctxt p = subset_approx_preconds_tac ctxt p @{thm approx_subset_listI}
 
-fun integral_bnds_tac_gen sstep d p m N atol filename ctxt i =
+val static_simpset = Simplifier.simpset_of @{context}
+
+fun nth_tac ctxt =
+  Simplifier.simp_tac
+    (put_simpset HOL_basic_ss ctxt addsimps @{thms nth_Cons_0 nth_Cons_Suc numeral_nat})
+fun nth_list_eq_tac ctxt n = Subgoal.FOCUS_PARAMS (fn {context, concl, ...} =>
+  case try (Thm.term_of #> HOLogic.dest_Trueprop #> HOLogic.dest_eq) concl
+  of
+    SOME (@{const List.nth(real)} $ xs $ Var _, @{const List.nth(real)} $ ys $ Var _) =>
+    let
+      val i = find_index (op=) (HOLogic.dest_list xs ~~ HOLogic.dest_list ys)
+      val thm = Goal.prove context [] []
+        (HOLogic.mk_eq (@{const List.nth(real)} $ xs $ HOLogic.mk_number @{typ nat} i,
+          @{const List.nth(real)} $ ys $ HOLogic.mk_number @{typ nat} i) |> HOLogic.mk_Trueprop)
+        (fn {context, ...} => HEADGOAL (nth_tac context))
+    in
+      SOLVE (HEADGOAL (resolve_tac context [thm]))
+    end
+  | _ => no_tac
+  ) ctxt n
+
+fun numeric_precond_step_tac defs thms p = Subgoal.FOCUS_PARAMS (fn {context, concl, ...} =>
+  let
+    val prems = Logic.strip_imp_prems (Thm.term_of concl)
+    val conclusion = Logic.strip_imp_concl (Thm.term_of concl)
+  in
+    (case conclusion |> HOLogic.dest_Trueprop of
+      @{const Set.member(real)} $ _ $ _ =>
+        tracing_tac context "numeric_precond_step: real in approx"
+        THEN HEADGOAL (real_in_approx_tac context p)
+    | Const(@{const_name less_eq}, _) $
+      (Const (@{const_name atLeastAtMost}, _) $ _ $ _) $
+      (Const (@{const_name atLeastAtMost}, _) $ Var _ $ Var _)  =>
+        tracing_tac context "numeric_precond_step: approx subset eucl"
+        THEN HEADGOAL (real_subset_approx_tac context p)
+    | Const (@{const_name less_eq}, _) $
+        (Const (@{const_name atLeastAtMost}, _) $ (Const (@{const_name eucl_of_list}, _) $ Var _) $ _) $ _ =>
+        tracing_tac context "numeric_precond_step: approx subset eucl"
+        THEN HEADGOAL (approx_subset_eucl_tac context p)
+    | Const (@{const_name less_eq}, _) $ _ $
+        (Const (@{const_name atLeastAtMost}, _) $ (Const (@{const_name eucl_of_list}, _) $ Var _) $ _) =>
+        tracing_tac context "numeric_precond_step: eucl subset approx"
+        THEN HEADGOAL (eucl_subset_approx_tac context p)
+    | Const (@{const_name less_eq}, _) $
+      (@{const list_interval(real)} $ _ $ _) $
+      (@{const list_interval(real)} $ _ $ _) =>
+        tracing_tac context "numeric_precond_step: approx subset list"
+        THEN HEADGOAL (approx_subset_list_tac context p)
+    | @{const HOL.eq(nat)} $ _ $ _ =>
+        tracing_tac context "numeric_precond_step: DIM_tac"
+        THEN HEADGOAL (SOLVED' (DIM_tac [] context))
+    | @{const less(nat)} $ _ $ _ =>
+        tracing_tac context "numeric_precond_step: DIM_tac"
+        THEN HEADGOAL (SOLVED' (DIM_tac [] context))
+    | @{const HOL.eq(real)} $ (@{const nth(real)} $ _ $ _) $ (@{const nth(real)} $ _ $ _) =>
+        tracing_tac context "numeric_precond_step: nth_list_eq_tac"
+        THEN HEADGOAL (SOLVED' (nth_list_eq_tac context))
+    | Const (@{const_name "HOL.eq"}, _) $ _ $
+        (Const (@{const_name eucl_of_list}, _) $ (@{const interpret_floatariths} $ _ $ _)) =>
+        tracing_tac context "numeric_precond_step: reify floatariths"
+        THEN HEADGOAL (resolve_tac context @{thms eq_einterpretI} THEN' reify_floatariths_tac context)
+    | t as _ $ _ =>
+      let
+        val (c, args) = strip_comb t
+      in
+        if member (op=)
+          [@{const "solves_one_step_until_time_aform_fo"},
+           @{const "solves_poincare_map_aform'_fo"},
+           @{const "solves_poincare_map_onto_aform_fo"},
+           @{const "can_mk_ode_ops"}
+          ] c
+        then
+          tracing_tac context "numeric_precond_step: ode_numerics_tac"
+          THEN HEADGOAL (
+            CONVERSION (Simplifier.rewrite (put_simpset HOL_basic_ss context addsimps defs))
+            THEN' tracing_tac' context "numeric_precond_step: ode_numerics_tac (unfolded)"
+            THEN' ode_numerics_tac context)
+        else if member (op=)
+          [@{const "isFDERIV"}] c
+        then
+          tracing_tac context "numeric_precond_step: isFDERIV"
+          THEN HEADGOAL (SOLVED'(Simplifier.asm_full_simp_tac
+              (put_simpset static_simpset context addsimps (@{thms isFDERIV_def less_Suc_eq_0_disj isDERIV_Power_iff} @ thms @ defs))
+              THEN' tracing_tac' context "numeric_precond_step: simplified isFDERIV"
+          ))
+        else
+          tracing_tac context "numeric_precond_step: boolean, try thms"
+          THEN HEADGOAL (SOLVED' (resolve_tac context thms))
+      end
+    | _ =>
+        tracing_tac context "numeric_precond_step: boolean constant"
+        THEN no_tac
+    )
+  end)
+
+fun integral_bnds_tac_gen_start sstep d p m N atol filename ctxt i =
   let
     val insts =
        ([((("'i", 0), @{sort "{enum}"}), mk_numeralT (d + 1) |> Thm.ctyp_of ctxt)],
@@ -2760,71 +2573,18 @@ fun integral_bnds_tac_gen sstep d p m N atol filename ctxt i =
              (using_master_directory_term ctxt filename,
               (@{term num_options} $ mk_nat p $ mk_int sstep $ mk_nat m $ mk_nat N $ mk_int atol $
               @{term "[(0::nat, 1::nat, ''0x000000'')]"}))
-          |> Thm.cterm_of ctxt)])
+          |> Thm.cterm_of ctxt),
+        ((("safe_form", 0), @{typ form}), @{cterm true_form})
+        ])
   in
           resolve_tac ctxt [Thm.instantiate insts @{thm solve_one_step_until_time_aform_integral_bounds}] i
     THEN (Lin_Arith.tac ctxt i ORELSE Simplifier.simp_tac ctxt i)
-    THEN real_in_approx_tac ctxt p i
-    THEN real_in_approx_tac ctxt p i
-    THEN approx_subset_eucl_tac ctxt p i
-    THEN resolve_tac ctxt @{thms eq_einterpretI} i
-    THEN reify_floatariths_tac ctxt i
-    THEN DIM_tac ctxt i
-    THEN DIM_tac ctxt i
-    THEN DIM_tac ctxt i
-    THEN DIM_tac ctxt i
-    THEN DIM_tac ctxt i
-    THEN DIM_tac ctxt i
-    THEN print_tac ctxt ""
-    THEN ode_numerics_tac ctxt i
   end
-val integral_bnds_tac= integral_bnds_tac_gen 5
-\<close>
+fun integral_bnds_tac_gen sstep d p m N atol filename thms ctxt =
+  integral_bnds_tac_gen_start sstep d p m N atol filename ctxt
+  THEN_ALL_NEW_FWD REPEAT_ALL_NEW_FWD (numeric_precond_step_tac [] thms p ctxt)
 
-lemma abs_minus_leI: "\<bar>x - x'\<bar> \<le> e" if "x \<in> {x' - e .. x' + e}" for x e::real
-  using that
-  by (auto simp: )
-
-lemmas [DIM_simps] = Suc_numeral One_nat_def[symmetric] TrueI Suc_1 length_approxs arith_simps
-
-named_theorems solves_one_step_ivl_thms
-
-context ode_interpretation begin
-
-lemmas [solves_one_step_ivl_thms] =
-  TAG_optns[OF solves_one_step_ivl[OF _ _ _ _ _ _ _ _ solves_one_step_until_time_aform_foI], rotated -1,
-  of optns _ _ _ _ _ _ _ _ _ optns for optns]
-
-lemmas [solves_one_step_ivl_thms] =
-  TAG_optns[OF solves_one_step_ivl'[OF _ _ _ _ _ _ _ _ _ _ _ _ solves_one_step_until_time_aform_foI], rotated -1,
-    of optns _ _ _ _ _ _ _ _ _ _ _ _ _ _ optns for optns]
-
-lemmas [solves_one_step_ivl_thms] = solves_poincare_map_aform'I
-  poincare_maps_onto_aformI
-
-end
-
-named_theorems nth_list_eq_theorems
-
-lemma [nth_list_eq_theorems]:
-  "[a] ! 0 = [a] ! 0"
-  "[a, b] ! 0 = [a, c] ! 0"
-  "[a, b] ! 1 = [c, b] ! 1"
-  "[a, b, d] ! 0 = [a, c, e] ! 0"
-  "[a, b, d] ! 1 = [c, b, e] ! 1"
-  "[a, b, d] ! 2 = [c, e, d] ! 2"
-  by auto
-
-lemma TAG_optnsI: "TAG_optns optns" by simp
-
-named_theorems poincare_tac_theorems
-
-lemmas [DIM_simps] = one_less_numeral_iff rel_simps
-
-ML \<open>Config.put\<close>
-
-ML \<open>
-val cfg_trace = Attrib.setup_config_bool @{binding ode_numerics_trace} (K false)
+val integral_bnds_tac = integral_bnds_tac_gen 5
 
 fun mk_proj (m, n, s) = HOLogic.mk_tuple [mk_nat m, mk_nat n, HOLogic.mk_string s]
 fun mk_projs projs = HOLogic.mk_list @{typ "nat \<times> nat \<times> string"} (map mk_proj projs)
@@ -2851,240 +2611,55 @@ fun TAG_optns_c1_thm p sstep m N atol projs ds filename ctxt =
               mk_string_list ds)
           |> Thm.cterm_of ctxt)]) @{thm TAG_optnsI}
 
-fun get_tracing_tac ctxt = if Config.get ctxt cfg_trace then print_tac ctxt else K all_tac
-fun get_tracing_tac' ctxt = fn s => K (get_tracing_tac ctxt s)
+fun ode_bnds_tac_gen_start sstep p m N atol projs filename ctxt =
+  tracing_tac' ctxt "solves_one_step_ivl_thms"
+  THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems solves_one_step_ivl_thms})
+  THEN' tracing_tac' ctxt "resolved solves_one_step_ivl_thms"
+  THEN' resolve_tac ctxt [TAG_optns_thm p sstep m N atol projs filename ctxt]
 
-fun ode_bnds_tac_gen sstep ode_def p m N atol projs filename ctxt =
-  let
-    val ctxt = Context.proof_map (Named_Theorems.add_thm @{named_theorems DIM_simps} ode_def) ctxt
-    val tracing_tac' = get_tracing_tac' ctxt
-  in tracing_tac' "solves_one_step_ivl_thms"
-    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems solves_one_step_ivl_thms})
-    THEN' tracing_tac' "resolved solves_one_step_ivl_thms"
-    THEN' resolve_tac ctxt [TAG_optns_thm p sstep m N atol projs filename ctxt]
-    THEN' SOLVED' (real_subset_approx_tac ctxt p)
-    THEN' SOLVED' (eucl_subset_approx_tac ctxt p)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (approx_subset_eucl_tac ctxt p)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' tracing_tac' "rewrite ode_def"
-    THEN' CONVERSION (Simplifier.rewrite (empty_simpset ctxt addsimps [ode_def]))
-    THEN' tracing_tac' "ode_numerics_tac"
-    THEN' ode_numerics_tac ctxt
-  end
-
+fun ode_bnds_tac_gen sstep ode_defs p m N atol projs filename ctxt =
+  ode_bnds_tac_gen_start sstep p m N atol projs filename ctxt
+  THEN_ALL_NEW_FWD REPEAT_ALL_NEW_FWD (numeric_precond_step_tac ode_defs [] p ctxt)
 val ode_bnds_tac = ode_bnds_tac_gen 5
 
-fun ode'_bnds_tac_gen sstep ode_def p m N atol projs ds filename ctxt =
-  let
-    val ctxt = Context.proof_map (Named_Theorems.add_thm @{named_theorems DIM_simps} ode_def) ctxt
-    val tracing_tac' = get_tracing_tac' ctxt
-  in tracing_tac' "solves_one_step_ivl_thms"
-    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems solves_one_step_ivl_thms})
-    THEN' tracing_tac' "resolved solves_one_step_ivl_thms"
-    THEN' resolve_tac ctxt [TAG_optns_c1_thm p sstep m N atol projs ds filename ctxt]
-    THEN' SOLVED' (real_subset_approx_tac ctxt p)
-    THEN' SOLVED' (eucl_subset_approx_tac ctxt p)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (approx_subset_list_tac ctxt p)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (approx_subset_eucl_tac ctxt p)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' tracing_tac' "rewrite ode_def"
-    THEN' CONVERSION (Simplifier.rewrite (empty_simpset ctxt addsimps [ode_def]))
-    THEN' tracing_tac' "ode_numerics_tac"
-    THEN' ode_numerics_tac ctxt
-  end
+fun ode'_bnds_tac_gen_start sstep p m N atol projs ds filename ctxt =
+  tracing_tac' ctxt "solves_one_step_ivl_thms"
+  THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems solves_one_step_ivl_thms})
+  THEN' tracing_tac' ctxt "resolved solves_one_step_ivl_thms"
+  THEN' resolve_tac ctxt [TAG_optns_c1_thm p sstep m N atol projs ds filename ctxt]
+fun ode'_bnds_tac_gen sstep ode_defs p m N atol projs ds filename ctxt =
+  ode'_bnds_tac_gen_start sstep p m N atol projs ds filename ctxt
+  THEN_ALL_NEW_FWD REPEAT_ALL_NEW_FWD (numeric_precond_step_tac ode_defs [] p ctxt)
 
 val ode'_bnds_tac = ode'_bnds_tac_gen 5
 
-fun poincare_bnds_tac_gen sstep ode_def p m N atol projs filename ctxt =
-  let
-    val ctxt = Context.proof_map (Named_Theorems.add_thm @{named_theorems DIM_simps} ode_def) ctxt
-    val tracing_tac' = get_tracing_tac' ctxt
-  in  tracing_tac' "solves_one_step_ivl_thms"
-    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems solves_one_step_ivl_thms})
-    THEN' tracing_tac' "resolved solves_one_step_ivl_thms"
-    THEN' resolve_tac ctxt [TAG_optns_thm p sstep m N atol projs filename ctxt]
-    THEN' tracing_tac' "poincare_tac_theorems"
-    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
-    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' tracing_tac' "poincare_tac_theorems"
-    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
-    THEN' tracing_tac' "poincare_tac_theorems"
-    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
-    THEN' tracing_tac' "nth_list_eq_theorems"
-    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems nth_list_eq_theorems})
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (eucl_subset_approx_tac ctxt p)
-    THEN' (DIM_tac ctxt)
-    THEN' SOLVED' (approx_subset_eucl_tac ctxt p)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' tracing_tac' "rewrite ode_def"
-    THEN' CONVERSION (Simplifier.rewrite (empty_simpset ctxt addsimps [ode_def]))
-    THEN' tracing_tac' "ode_numerics_tac"
-    THEN' ode_numerics_tac ctxt
-  end
+fun poincare_bnds_tac_gen_start sstep p m N atol projs filename ctxt =
+  tracing_tac' ctxt "solves_one_step_ivl_thms"
+  THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems solves_one_step_ivl_thms})
+  THEN' tracing_tac' ctxt "resolved solves_one_step_ivl_thms"
+  THEN' resolve_tac ctxt [TAG_optns_thm p sstep m N atol projs filename ctxt]
+fun poincare_bnds_tac_gen sstep ode_defs p m N atol projs filename ctxt =
+   poincare_bnds_tac_gen_start sstep p m N atol projs filename ctxt
+  THEN_ALL_NEW_FWD REPEAT_ALL_NEW_FWD (
+    numeric_precond_step_tac ode_defs
+      (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
+      p
+      ctxt)
+
 val poincare_bnds_tac = poincare_bnds_tac_gen 5
-\<close>
 
-abbreviation "point_ivl a \<equiv> {a .. a}"
-
-lemma isFDERIV_compute: "isFDERIV D vs fas xs \<longleftrightarrow>
-   (list_all (\<lambda>i. list_all (\<lambda>j. isDERIV (vs ! i) (fas ! j) xs) [0..<D]) [0..<D]) \<and> length fas = D \<and> length vs = D"
-  unfolding isFDERIV_def
-  by (auto simp: list.pred_set)
-
-
-theorem (in ode_interpretation) solves_poincare_map_aform'_derivI'[solves_one_step_ivl_thms]:
-\<comment> \<open>TODO: replace @{thm solves_poincare_map_aform'_derivI}\<close>
-  assumes "TAG_optns optns"
-  assumes "TAG_reach_optns roi"
-  assumes "TAG_sctn mirrored"
-    and D: "D = DIM('a)"
-  assumes DS: "list_interval lDR uDR \<subseteq> list_interval lDS uDS"
-    and ode_fas: "length ode_fas = DIM('a)"
-    and guards: "guards_invar DIM('a) guards"
-    and P: "P = {eucl_of_list lP .. eucl_of_list uP}"
-    and plane: "uP ! n = lP ! n"
-    and X0: "X0 \<subseteq> {eucl_of_list lX0 .. eucl_of_list uX0}"
-    and nD: "n < DIM('a)"
-    and R: "{eucl_of_list lR .. eucl_of_list uR} \<subseteq> R"
-    and lens:
-    "length (lP) = DIM('a)" "length (uP) = DIM('a)"
-    "length (lX0) = DIM('a)" "length (uX0) = DIM('a)"
-    "length (lR) = DIM('a)" "length (uR) = DIM('a)"
-    "length DX0 = DIM('a)*DIM('a)"
-    "length lDR = CARD('n) * CARD('n)"
-    "length uDR = CARD('n) * CARD('n)"
-    and SS: "SS = {x::'a. if mirrored then x \<bullet> Basis_list ! n \<le> lP ! n
-        else x \<bullet> Basis_list ! n \<ge> lP ! n}"
-  assumes solves:
-    "solves_poincare_map_aform'_fo optns ode_fas safe_form
-      (mirrored_sctn (\<not>mirrored) (Sctn (unit_list D n) (lP ! n)))
-      guards
-      (lP, uP)
-      (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))
-      roi
-      [((1,1), aforms_of_ivls lX0 uX0, Some (aforms_of_point DX0))]
-      (lR, uR)
-      (Some (lDR, uDR))"
-  shows "\<forall>x\<in>X0. returns_to P x \<and>
-    return_time P differentiable at x within SS \<and>
-    (\<exists>D. (poincare_map P has_derivative blinfun_apply D) (at x within SS) \<and>
-         poincare_map P x \<in> R \<and> D o\<^sub>L blinfun_of_list DX0 \<in> blinfuns_of_lvivl (lDS, uDS))"
-proof (rule ballI)
-  fix x assume "x \<in> X0"
-  then have la2: "list_all2 (\<le>) lX0 uX0"
-    using X0
-    by (force simp: subset_iff eucl_of_list_le_iff le_eucl_of_list_iff lens list_all2_conv_all_nth)
-  have 1: "\<And>X. X \<in> set [((1::ereal, 1::ereal), aforms_of_ivls lX0 uX0, Some (aforms_of_point DX0))] \<Longrightarrow>
-      aform.c1_info_invare DIM('a) X"
-    for X
-    by (auto simp: aform.c1_info_invare_def aform.c1_info_invar_def lens power2_eq_square)
-  have 2: "length (normal (mirrored_sctn (\<not>mirrored) (Sctn (unit_list D n) (lP ! n)))) = DIM('a)"
-    by (auto simp: D mirrored_sctn_def)
-  have 3: "length (fst (lP, uP)) = DIM('a)" "length (snd (lP, uP)) = DIM('a)"
-    by (auto simp: lens)
-  have 4: "length (normal (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))) = DIM('a)"
-    by (auto simp: D mirrored_sctn_def)
-  have 5: "length (fst (lR, uR)) = CARD('n)" "length (snd (lR, uR)) = CARD('n)"
-    "aform.lvivl'_invar (CARD('n) * CARD('n)) (Some (lDR, uDR))"
-    by (auto simp: lens aform.lvivl'_invar_def)
-  note solves = solves[unfolded solves_poincare_map_aform'_fo_def file_output_iff]
-  have "poincare_mapsto
-     (set_of_lvivl (lP, uP) \<inter>
-      plane_of (map_sctn eucl_of_list (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))))
-     (aform.c1_info_of_apprse [((1, 1), aforms_of_ivls lX0 uX0, Some (aforms_of_point DX0))])
-     (below_halfspace (map_sctn eucl_of_list (mirrored_sctn (\<not>mirrored) (Sctn (unit_list D n) (lP ! n)))))
-     (aform.Csafe ode_fas safe_form -
-      set_of_lvivl (lP, uP) \<inter>
-      plane_of (map_sctn eucl_of_list (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))))
-     (set_of_lvivl (lR, uR) \<times> blinfuns_of_lvivl' (Some (lDR, uDR)))"
-    by (rule solves_poincare_map_aform'[OF solves, OF 1 ode_fas 4 3 2 _ 5])
-      (use guards in \<open>auto simp: guards_invar_def\<close>)
-  then have "poincare_mapsto P (X0 \<times> {blinfun_of_list DX0}::('a \<times> ('a \<Rightarrow>\<^sub>L 'a)) set) SS UNIV
-    (R \<times> blinfuns_of_lvivl (lDS, uDS))"
-    apply (rule poincare_mapsto_subset)
-    subgoal using X0
-      apply (auto simp: aform.c1_info_of_appre_def aform.c1_info_of_appr_def
-          aform.c1_info_of_apprse_def)
-      subgoal for x0
-        apply (rule image_eqI[where x="list_of_eucl x0@DX0"])
-        using lens
-         apply (auto simp: flow1_of_list_def aforms_of_point_def aform.set_of_appr_of_ivl_append_point)
-        apply (rule imageI)
-        using X0
-        by (auto simp: Joints_aforms_of_ivls la2 list_of_eucl_in_list_interval_iff)
-      done
-    subgoal by simp
-    subgoal using R DS
-      by (auto simp: set_of_lvivl_def set_of_ivl_def blinfuns_of_lvivl'_def blinfuns_of_lvivl_def
-          lens)
-    subgoal
-      using assms
-      by (auto simp:
-          below_halfspace_def le_halfspace_def[abs_def] mirrored_sctn_def mirror_sctn_def)
-    subgoal
-      using assms
-      by (fastforce simp add: P set_of_lvivl_def set_of_ivl_def plane_of_def
-          le_eucl_of_list_iff eucl_of_list_le_iff mirrored_sctn_def mirror_sctn_def)
-    done
-  then show "returns_to P x \<and>
-    return_time P differentiable at x within SS \<and>
-    (\<exists>D. (poincare_map P has_derivative blinfun_apply D) (at x within SS) \<and>
-         poincare_map P x \<in> R \<and> D o\<^sub>L blinfun_of_list DX0 \<in> blinfuns_of_lvivl (lDS, uDS))"
-    using \<open>x \<in> X0\<close>
-    by (auto simp: poincare_mapsto_def)
-qed
-
-ML \<open>
-fun poincare'_bnds_tac_gen sstep ode_def p m N atol projs filename ctxt =
-  let
-    val ctxt = Context.proof_map (Named_Theorems.add_thm @{named_theorems DIM_simps} ode_def) ctxt
-  in
+fun poincare'_bnds_tac_gen_start sstep p m N atol projs filename ctxt =
          resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems solves_one_step_ivl_thms})
     THEN' resolve_tac ctxt [TAG_optns_thm p sstep m N atol projs filename ctxt]
-    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
-    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' approx_subset_list_tac ctxt p
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
-    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
-    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems nth_list_eq_theorems})
-    THEN' SOLVED' (eucl_subset_approx_tac ctxt p)
-    THEN' (DIM_tac ctxt)
-    THEN' SOLVED' (approx_subset_eucl_tac ctxt p)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' SOLVED' (DIM_tac ctxt)
-    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
-    THEN' CONVERSION (Simplifier.rewrite
-      (empty_simpset ctxt addsimps [ode_def]))
-    THEN' ode_numerics_tac ctxt
-  end
+fun poincare'_bnds_tac_gen sstep ode_defs p m N atol projs filename ctxt =
+  poincare'_bnds_tac_gen_start sstep p m N atol projs filename ctxt
+  THEN_ALL_NEW_FWD REPEAT_ALL_NEW_FWD (
+    numeric_precond_step_tac ode_defs
+      (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
+      p
+      ctxt)
 val poincare'_bnds_tac = poincare'_bnds_tac_gen 5
+end
 \<close>
 
 lemma (in auto_ll_on_open) Poincare_Banach_fixed_pointI:
@@ -3113,5 +2688,14 @@ proof (rule banach_fix)
   then show "\<forall>x\<in>S. \<forall>y\<in>S. dist (poincare_map \<Sigma> x) (poincare_map \<Sigma> y) \<le> B * dist x y"
     by (auto simp: lipschitz_on_def)
 qed
+
+ML \<open>open ODE_Numerics_Tac\<close>
+
+lemma isFDERIV_product: "isFDERIV n xs fas vs \<longleftrightarrow>
+  length fas = n \<and> length xs = n \<and>
+  list_all (\<lambda>(x, f). isDERIV x f vs) (List.product xs fas)"
+  apply (auto simp: isFDERIV_def list_all2_iff in_set_zip list_all_length product_nth)
+   apply (metis gt_or_eq_0 less_mult_imp_div_less mod_less_divisor not_less0)
+  by auto
 
 end

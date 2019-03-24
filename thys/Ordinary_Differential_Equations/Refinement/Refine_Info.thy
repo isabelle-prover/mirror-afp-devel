@@ -127,6 +127,25 @@ lemma sv_info_rel'[relator_props]:
   "single_valued S \<Longrightarrow> single_valued (\<langle>I, S\<rangle>info_rel)"
   by (auto simp: info_rel_def single_valued_def br_def)
 
+lemma
+  is_empty_info_rel_autoref[autoref_rules]:
+  "GEN_OP ie is_empty (A \<rightarrow> bool_rel) \<Longrightarrow> (\<lambda>x. ie(snd x), is_empty) \<in> \<langle>R, A\<rangle>info_rel \<rightarrow> bool_rel"
+  by (force simp: info_rel_def br_def dest: fun_relD)
+
+definition with_coll_infos::"'c set \<Rightarrow> 'a set \<Rightarrow> 'a set nres"
+  where [simp, refine_vcg_def]: "with_coll_infos h x = SPEC (\<lambda>r. r = x)"
+
+lemma with_coll_infos_autoref[autoref_rules]:
+  "((\<lambda>ri ai. nres_of (if ri = [] then dSUCCEED else dRETURN (List.product ri ai))), with_coll_infos) \<in>
+    clw_rel R \<rightarrow> clw_rel A \<rightarrow> \<langle>clw_rel (\<langle>R, A\<rangle>info_rel)\<rangle>nres_rel"
+  if "PREFER single_valued R" "PREFER single_valued A"
+  using that
+  by (force simp: relcomp_unfold nres_rel_def info_rel_br list_wset_rel_def Union_rel_br
+      Id_arbitrary_interface_def RETURN_RES_refine_iff set_rel_br
+      elim!: single_valued_as_brE
+      intro!: brI dest!: brD
+      split: if_splits)
+
 end
 
 end

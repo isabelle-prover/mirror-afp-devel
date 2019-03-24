@@ -102,6 +102,16 @@ lemma mk_default[autoref_rules]:
   "(Some, mk_default) \<in> R \<rightarrow> \<langle>R\<rangle>default_rel d"
   by (auto simp: default_rel_def)
 
+definition [refine_vcg_def]: "default_rep d X = SPEC (\<lambda>x. case x of None \<Rightarrow> X = d | Some r \<Rightarrow> X = r)"
+
+lemma default_rep_op_pat[autoref_op_pat_def]: "default_rep d \<equiv> OP (default_rep d)"
+  by (auto simp: )
+
+lemma default_rep[autoref_rules]:
+  "(\<lambda>x. RETURN x, default_rep d) \<in> (\<langle>R\<rangle>(default_rel d)) \<rightarrow> \<langle>\<langle>R\<rangle>option_rel\<rangle>nres_rel"
+  by (force simp: default_rep_def nres_rel_def default_rel_def
+      split: option.splits intro!: RETURN_SPEC_refine )
+
 end
 
 end

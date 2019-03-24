@@ -121,6 +121,7 @@ lemma split_by_inter_appr_plane_autoref[autoref_rules]:
       elim!: single_valued_as_brE
       intro!: nres_relI RETURN_SPEC_refine
       dest!: brD)
+
 end
 
 end

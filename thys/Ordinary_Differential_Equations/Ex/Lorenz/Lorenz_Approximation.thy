@@ -196,13 +196,9 @@ interpretation lorenz: ode_interpretation true_form UNIV lorenz_fas "\<lambda>(X
   E2 * X1 +        K1 * (X0 + X1) * X2,
   E3 * X2 + (X0 + X1) * (K2 * X0 + K3 * X1))::real*real*real"
   "d::3" for d
-  apply unfold_locales
-  apply (auto simp: aform.ode_def lorenz_fas_def aform.ode_def aform.safe_def aform.Csafe_def power2_eq_square
-     true_form_def eucl_of_list_prod eval_nat_numeral inner_axis enum_bit0_def enum_bit1_def
-     less_Suc_eq_0_disj isFDERIV_def Basis_list_prod_def Basis_list_real_def Abs_bit0'_def
-     bit0.definitions inverse_eq_divide
-     intro!: ext arg_cong[where f=eucl_of_list])
-   done
+  by standard
+    (auto simp: lorenz_fas_def less_Suc_eq_0_disj nth_Basis_list_prod Basis_list_real_def
+      mk_ode_ops_def eucl_of_list_prod power2_eq_square inverse_eq_divide intro!: isFDERIV_I)
 
 value [code] "length (slp_of_fas lorenz_fas)"
 
@@ -278,7 +274,6 @@ definition "lorenz_optns print_funo =
   in
     \<lparr>
     precision = 30,
-    reduce = correct_girard 30 50 25,
     adaptive_atol = FloatR 1 (-30),
     adaptive_rtol = FloatR 1 (-30),
     method_id = 2,
@@ -287,13 +282,14 @@ definition "lorenz_optns print_funo =
     halve_stepsizes = 10,
     widening_mod = 40,
     rk2_param = FloatR 1 0,
+    default_reduce = correct_girard 30 50 25,
     printing_fun = pf,
     tracing_fun = tf
   \<rparr>)"
 
 definition lorenz_optns'
   where "lorenz_optns' pf m N rk2p a = lorenz_optns pf \<lparr>
-      reduce := correct_girard 30 m N,
+      default_reduce := correct_girard 30 m N,
       rk2_param := rk2p,
       adaptive_atol := a,
       adaptive_rtol := a
@@ -371,7 +367,7 @@ definition "approx_conefield_bounds (DX::(R3 \<times> (R3 \<Rightarrow>\<^sub>L 
     let DX = (cast_eucl1 ` DX::3 eucl1 set);
     DXo \<leftarrow> aform.vec1rep DX;
     DX \<leftarrow> (case DXo of None \<Rightarrow> do {
-        let _ = aform.trace_str (''# approx_conefield_bounds failed DXo...'');
+        let _ = aform.print_msg (''# approx_conefield_bounds failed DXo...'');
         SUCCEED
       }
     | Some DX \<Rightarrow> RETURN DX);
@@ -396,9 +392,8 @@ schematic_goal approx_conefield_bounds_impl:
   assumes [autoref_rules]: "(DXi, DX) \<in> aform.appr1_rel"
   assumes [autoref_rules]: "(li, l) \<in> Id"
   assumes [autoref_rules]: "(ui, u) \<in> Id"
-  notes [autoref_rules_raw] = aform.ncc_precond
-    and [autoref_rules] =
-      aform.trace_str_impl[where optns = optns]
+  notes [autoref_rules] =
+      aform.print_msg_impl[where optns = optns]
       aform.ivl_rep_of_set_autoref[where optns = optns]
       aform.transfer_operations(12)[where optns = optns]
       aform.approx_euclarithform[where optns=optns]
@@ -656,10 +651,10 @@ definition "lorenz_interrupt (optns::real aform numeric_options) b (eX::3 eucl1 
   do {
     ((el, eu), X) \<leftarrow> scaleR2_rep eX;
     let fX = fst ` X;
-    fentry \<leftarrow> aform.op_image_fst_ivl (cube_enter::3 vec1 set);
+    fentry \<leftarrow> op_image_fst_ivl (cube_enter::3 vec1 set);
     interrupt \<leftarrow> aform.op_subset (fX:::aform.appr_rel) fentry;
     (ol, ou) \<leftarrow> ivl_rep fentry;
-    aform.CHECKs optns (ST ''asdf'') (0 < el \<and> ol \<le> ou);
+    aform.CHECKs (ST ''asdf'') (0 < el \<and> ol \<le> ou);
     let _ = (if b then aform.trace_set (ST ''Potential Interrupt: '') (Some fX) else ());
     let _ = (if b then aform.trace_set (ST ''With: '') (Some ({ol .. ou::3 rvec}:::aform.appr_rel)) else ());
     if \<not>b \<or> \<not>interrupt then RETURN (op_empty_coll, mk_coll eX)
@@ -670,12 +665,12 @@ definition "lorenz_interrupt (optns::real aform numeric_options) b (eX::3 eucl1 
       let u = eucl_of_list [1/2/2, 1/2/2, 1/2/2];
       ASSERT (l \<le> u);
       let CX = mk_coll ({l .. u}:::aform.appr_rel);
-      (C0::3 eucl1 set) \<leftarrow> aform.scaleRe_ivl_coll_spec el eu (fst ` cube_exitv \<times> UNIV);
-      (C1::3 eucl1 set) \<leftarrow> aform.scaleRe_ivl_coll_spec el eu (cube_exitv);
+      (C0::3 eucl1 set) \<leftarrow> scaleRe_ivl_coll_spec el eu (fst ` cube_exitv \<times> UNIV);
+      (C1::3 eucl1 set) \<leftarrow> scaleRe_ivl_coll_spec el eu (cube_exitv);
       case vX of None \<Rightarrow> RETURN (CX, C0)
       | Some vX \<Rightarrow> do {
         b \<leftarrow> aform.op_subset vX cube_enter;
-        aform.CHECKs optns (ST ''FAILED: TANGENT VECTORs are not contained'') b;
+        aform.CHECKs (ST ''FAILED: TANGENT VECTORs are not contained'') b;
         RETURN (CX, C1)
       }
     }
@@ -693,18 +688,18 @@ schematic_goal lorenz_interrupti:
   assumes[autoref_rules]: "(bi, b) \<in> bool_rel" "(Xi, X::3 eucl1 set) \<in> aform.appr1e_rel"
     "(optnsi, optns) \<in> Id"
   shows
-    "(nres_of ?r, lorenz_interrupt $ optns $ b $ X) \<in> \<langle>clw_rel aform.appr_rel \<times>\<^sub>r clw_rel aform.appr1e_rel\<rangle>nres_rel"
-  unfolding autoref_tag_defs
+    "(nres_of ?r, lorenz_interrupt optns b X) \<in> \<langle>clw_rel aform.appr_rel \<times>\<^sub>r clw_rel aform.appr1e_rel\<rangle>nres_rel"
   unfolding lorenz_interrupt_def
   including art
   by autoref_monadic
 concrete_definition lorenz_interrupti for optnsi1 bi Xi uses
-  lorenz_interrupti[where optnsi = optnsi
+  lorenz_interrupti[where optnsi = "optnsi"
        and optnsa = "\<lambda>_ _ _ _ _ _ _ _. optnsi"
          and optnsb = "\<lambda>_ _ _ _ _ _ _ _ _. optnsi"
        and optnsc = "\<lambda>_ _ _ _ _ _ _ _ _ _ _. optnsi"
        and optnsd = "\<lambda>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _. optnsi"
-       and optnse = "optnsi"
+       and optnse = "\<lambda>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _. optnsi"
+       and optnsf = "\<lambda>_ _ _ _ _ _ _ _ _. optnsi"
          and optns = "\<lambda>_ _ _ _ _. optnsi"
        for optnsi]
 lemma lorenz_interrupti_refine[autoref_rules]:
@@ -715,6 +710,7 @@ lemma lorenz_interrupti_refine[autoref_rules]:
     \<in> num_optns_rel \<rightarrow> bool_rel \<rightarrow> aform.appr1e_rel \<rightarrow> \<langle>clw_rel aform.appr_rel \<times>\<^sub>r clw_rel aform.appr1e_rel\<rangle>dres_nres_rel"
   using lorenz_interrupti.refine
   by (auto simp: nres_rel_def dres_nres_rel_def)
+
 definition "(large_cube::R3 set) = {-1/4 .. 1/4} \<times> {-1/4 .. 1/4} \<times> {-1/4 .. 1/4}"
 
 definition "cube_entry = (cast_eucl1 ` (flow1_of_vec1 ` cube_enter::3 eucl1 set)::R3 c1_info set)"
@@ -1111,36 +1107,49 @@ lemma [autoref_rules]: "((), \<Gamma>\<^sub>v) \<in> ghost_rel"
 
 no_notation vec_nth (infixl "$" 90) and vec_lambda (binder "\<chi>" 10)
 
-abbreviation "guards_rel \<equiv> \<langle>clw_rel (\<langle>\<langle>lv_rel\<rangle>ivl_rel, \<langle>lv_rel\<rangle>plane_rel\<rangle>inter_rel) \<times>\<^sub>r reach_optns_rel\<rangle>list_rel"
+abbreviation "guards_rel \<equiv> \<langle>clw_rel (\<langle>\<langle>lv_rel\<rangle>ivl_rel, \<langle>lv_rel\<rangle>plane_rel\<rangle>inter_rel) \<times>\<^sub>r aform.reach_optns_rel\<rangle>list_rel"
 
-lemma aform_poincare_onto_froma[autoref_rules]:
+
+definition "aform_poincare_onto_from optns = aform.poincare_onto_from"
+
+lemma aform_poincare_onto_from[autoref_rules]:
   includes autoref_syntax
   shows
-"(XSi, XS::'b::enum eucl1 set) \<in> clw_rel aform.appr1e_rel \<Longrightarrow>
+"DIM_precond TYPE('b rvec) E \<Longrightarrow>
+    (XSi, XS::'b::enum eucl1 set) \<in> clw_rel aform.appr1e_rel \<Longrightarrow>
     (sctni, sctn) \<in> \<langle>lv_rel\<rangle>sctn_rel \<Longrightarrow>
     (ivli, ivl) \<in> \<langle>lv_rel\<rangle>ivl_rel \<Longrightarrow>
     (Si, Sa) \<in> \<langle>lv_rel\<rangle>halfspaces_rel \<Longrightarrow>
     (guardsi, guards) \<in> guards_rel \<Longrightarrow>
     (symstartd, symstart) \<in> aform.appr1e_rel \<rightarrow> \<langle>clw_rel aform.appr_rel \<times>\<^sub>r clw_rel aform.appr1e_rel\<rangle>dres_nres_rel \<Longrightarrow>
     ((), trap) \<in> ghost_rel \<Longrightarrow>
-    (roi, roptn) \<in> reach_optns_rel \<Longrightarrow>
-    (optnsi, optns) \<in> num_optns_rel \<Longrightarrow> (ode_ei, ode_e) \<in> Id \<Longrightarrow> (safe_formi, safe_form) \<in> Id \<Longrightarrow>
+    (roi, roptn) \<in> aform.reach_optns_rel \<Longrightarrow>
+    (odoi, odo) \<in> ode_ops_rel \<Longrightarrow>
+    (optnsi, optns) \<in> num_optns_rel \<Longrightarrow>
     (nres_of
-      (solve_poincare_map_aform optnsi ode_ei safe_formi symstartd Si guardsi ivli
+      (solve_poincare_map_aform optnsi E odoi symstartd Si guardsi ivli
         sctni roi XSi),
-     aform.poincare_onto_froma $ optns $ ode_e $ safe_form $ symstart $ trap $ Sa $ guards $
+     aform_poincare_onto_from $ optns $ odo $ symstart $ trap $ Sa $ guards $
      ivl $
      sctn $
      roptn $
      XS)
     \<in> \<langle>clw_rel aform.appr1e_rel\<rangle>nres_rel"
-  using aform.solve_poincare_map.refine[OF aform.ncc_precond aform.ncc_precond,
-        where 'b='b, of XSi XS sctni sctn ivli ivl]
-  by force
+  unfolding autoref_tag_defs aform_poincare_onto_from_def
+  using aform.poincare_onto_from_impl.refine[OF _ aform_ncc aform_ncc,
+      where 'a='b, of E odoi odo XSi XS Si Sa guardsi guards ivli ivl sctni sctn roi roptn
+        "(\<lambda>x. nres_of (symstartd x))" symstart symstartd trap optnsi,
+        unfolded autoref_tag_defs, OF _ _ _ _ _ _ _ _ _ order_refl]
+  by (auto simp: dest!: aform.dres_nres_rel_nres_relD)
+
+definition "lorenz_odo_impl = init_ode_ops True True lorenz.odo"
+interpretation autoref_op_pat_def lorenz.odo .
+lemma lorenz_odo_impl[autoref_rules]: "(lorenz_odo_impl, lorenz.odo) \<in> ode_ops_rel"
+  by (auto simp: ode_ops_rel_def lorenz_odo_impl_def)
 
 definition lorenz_poincare where
  "lorenz_poincare optns interrupt guards roptn XS0 =
-    aform.poincare_onto_froma optns lorenz_fas true_form
+    aform_poincare_onto_from optns lorenz.odo
       (lorenz_interrupt optns interrupt)
       (\<Gamma>\<^sub>i\<^sub>v interrupt:::ghost_rel)
       ((below_halfspaces {Sctn (eucl_of_list [0, 0, 1]) 27}::(real^3) set):::\<langle>lv_rel\<rangle>halfspaces_rel)
@@ -1149,27 +1158,20 @@ definition lorenz_poincare where
        (Sctn (eucl_of_list [0, 0, -1]) (- 27)::(real^3) sctn)
       roptn
       XS0"
-lemma [autoref_rules]:
-  "(lorenz_fas, lorenz_fas) \<in> Id"
-  "(true_form, true_form) \<in> Id"
-  by auto
-interpretation autoref_op_pat_def "aform.poincare_onto_froma"  .
 
 lemma [autoref_rules_raw]:
   includes autoref_syntax
   shows "((),
-     (OP \<Gamma>_interrupt ::: bool_rel \<rightarrow> ghost_rel) $
+     (OP \<Gamma>\<^sub>i\<^sub>v ::: bool_rel \<rightarrow> ghost_rel) $
      (OP intr ::: bool_rel))
     \<in> ghost_rel" by (auto simp: ghost_rel_def)
-
-lemmas [autoref_rules_raw] = aform.ncc_precond
 
 schematic_goal lorenz_poincare_impl[autoref_rules]:
   includes autoref_syntax
   assumes [autoref_rules]: "(XSi, XS) \<in> clw_rel aform.appr1e_rel"
     "(intri, intr) \<in> bool_rel"
     "(guardsi, guards) \<in> guards_rel"
-    "(roi, roptn) \<in> reach_optns_rel"
+    "(roi, roptn) \<in> aform.reach_optns_rel"
     "(optnsi, optns) \<in> num_optns_rel"
   shows "(nres_of ?r, lorenz_poincare $ optns $ intr $ guards $ roptn $ XS) \<in>
     \<langle>clw_rel aform.appr1e_rel\<rangle>nres_rel"
@@ -1177,7 +1179,7 @@ schematic_goal lorenz_poincare_impl[autoref_rules]:
   unfolding lorenz_poincare_def
   including art
   supply [autoref_rules_raw] = ghost_relI
-  by (autoref_monadic)
+  by autoref_monadic
 
 lemma cast_image_eqI: "cast ` X = Y"
   if "DIM('a) = DIM('b)"
@@ -1199,14 +1201,17 @@ lemma transfer_\<Gamma>\<^sub>i[transfer_rule]: "(rel_fun (=) (rel_set lorenz.re
 lemma transfer_\<Sigma>[transfer_rule]: "(rel_set lorenz.rel_ve) (cast ` \<Sigma>) \<Sigma>"
   by (auto simp: lorenz.rel_ve_cast' intro!: rel_setI)
 
+lemma len_fas: "length lorenz_fas = 3"
+  by (auto simp: lorenz_fas_def)
+
 lemma lorenz_poincare[le, refine_vcg]:
   "lorenz_poincare optns intr guards roptn XS \<le> SPEC (\<lambda>R.
-    aform.poincare_mapsto lorenz_fas true_form (cast ` \<Sigma>) (XS - (\<Gamma>\<^sub>i\<^sub>v intr \<times> UNIV)) (cast ` \<Sigma>\<^sub>l\<^sub>e)
+    aform.poincare_mapsto lorenz.odo (cast ` \<Sigma>) (XS - (\<Gamma>\<^sub>i\<^sub>v intr \<times> UNIV)) (cast ` \<Sigma>\<^sub>l\<^sub>e)
    UNIV R)"
   if [refine_vcg]: NF
-  unfolding lorenz_poincare_def
+  unfolding lorenz_poincare_def aform_poincare_onto_from_def
   apply (refine_vcg)
-  subgoal  by (simp add: lorenz_fas_def)
+  subgoal  by (simp add: aform.wd_def aform.ode_e_def len_fas)
   subgoal for a b c d
     apply (auto simp: lorenz.flowsto_eq[symmetric])
   proof goal_cases
@@ -1230,7 +1235,7 @@ lemma lorenz_poincare[le, refine_vcg]:
         by (auto dest!: lorenz.a.v.closed_segment_subset_existence_ivl
             simp: closed_segment_eq_real_ivl)
       have "lorenz.v.flow0 x0 s
-        \<in> aform.Csafe lorenz_fas true_form -
+        \<in> aform.Csafe lorenz.odo -
            op_atLeastAtMost_ivl (eucl_of_list [- 6, - 6, 27]) (eucl_of_list [6, 6, 27]) \<inter>
            plane_of (Sctn (eucl_of_list [0, 0, - 1]) (- 27))"
         using 1(4)[rule_format, OF that]
@@ -1298,7 +1303,7 @@ definition mat1_nres::"3 rvec set \<Rightarrow> 3 rvec set \<Rightarrow> 3 eucl1
   RETURN (flow1_of_vec1 ` Xv)
 }"
 lemma [simp]: "(x, x') \<in> aform.appr_rel \<Longrightarrow> aform.ncc x'"
-  using aform.ncc_precond[where 'a='a]
+  using aform_ncc[where 'a='a]
   by (auto simp: aform.ncc_precond_def)
 lemma mat1e_autoref[autoref_rules]: "(mat1\<^sub>e, mat1\<^sub>e) \<in> \<langle>Id\<rangle>list_rel"
   by auto
@@ -1421,7 +1426,7 @@ schematic_goal lorenz_poincare_tangents_impl:
     "(optnsi, optns) \<in> Id"
     "(intrri, intr) \<in> bool_rel"
     "(guardsi, guards) \<in> guards_rel"
-    "(roi, roptn) \<in> reach_optns_rel"
+    "(roi, roptn) \<in> aform.reach_optns_rel"
     "(c1i, c1) \<in> bool_rel"
     "(X0i, X0) \<in> aform.appr_rel"
     "(tangentsi, tangents) \<in> aform.appr_rel"
@@ -1446,7 +1451,7 @@ lemma lorenz_poincare_tangents_impl_refine[autoref_rules]:
   "(\<lambda>optnsi intrri guardsi roi c1i X0i tangentsi. nres_of
     (lorenz_poincare_tangents_impl optnsi intrri guardsi roi c1i X0i tangentsi),
    lorenz_poincare_tangents)
-  \<in> num_optns_rel \<rightarrow> bool_rel \<rightarrow> guards_rel \<rightarrow> reach_optns_rel \<rightarrow> bool_rel \<rightarrow> aform.appr_rel \<rightarrow>
+  \<in> num_optns_rel \<rightarrow> bool_rel \<rightarrow> guards_rel \<rightarrow> aform.reach_optns_rel \<rightarrow> bool_rel \<rightarrow> aform.appr_rel \<rightarrow>
     aform.appr_rel \<rightarrow>
     \<langle>clw_rel aform.appr1e_rel\<rangle>nres_rel"
   using lorenz_poincare_tangents_impl.refine by force
@@ -1560,7 +1565,7 @@ lemma floatdegs_impl[autoref_rules]:
     \<in> Id \<rightarrow> \<langle>unit_rel\<rangle>nres_rel"
   by (auto simp: nres_rel_def floatdegs_def)
 
-definition "check_c1_entry em P (res0::result) (res::result) = do {
+definition "check_c1_entry optns em P (res0::result) (res::result) = do {
     uv_ret \<leftarrow> of_mat1_image P;
     nuv \<leftarrow> aform.mig_set 3 uv_ret;
     floatdegs res0;
@@ -1569,7 +1574,7 @@ definition "check_c1_entry em P (res0::result) (res::result) = do {
     b1 \<leftarrow> approx_conefield_bounds P (min_deg res) (max_deg res);
     let b2 = e' \<ge> preexpansion res;
     let b3 = e' \<ge> expansion res0;
-    let _ = aform.trace_str ((shows ''# check_c1_entry: '' o shows_list [b1, b2, b3] o shows_space o
+    let _ = aform.print_msg ((shows ''# check_c1_entry: '' o shows_list [b1, b2, b3] o shows_space o
       shows_list [e', preexpansion res, expansion res0]) '''');
     RETURN (em \<ge> 0 \<and> b1 \<and> b2 \<and> b3)
   }"
@@ -1601,34 +1606,26 @@ lemma [autoref_rules_raw]: "DIM_precond TYPE(real \<times> real \<times> real) (
 schematic_goal check_c1_entry_impl:
   includes autoref_syntax
   assumes [autoref_rules]:
+    "(optnsi, optns) \<in> Id"
     "(res0i, res0) \<in> Id"
     "(resi, res) \<in> Id"
     "(emi, em) \<in> ereal_rel"
     "(Pei, P) \<in> aform.appr1_rel"
   shows
-    "(nres_of ?r, check_c1_entry $ em $ P $ res0 $ res) \<in> \<langle>bool_rel\<rangle>nres_rel"
+    "(nres_of ?r, check_c1_entry optns em P res0 res) \<in> \<langle>bool_rel\<rangle>nres_rel"
   unfolding check_c1_entry_def
   including art
   by autoref_monadic
 
 concrete_definition check_c1_entry_impl uses check_c1_entry_impl[
-    where optns = "\<lambda>_ _ _ _. optns"
-      and optnsa = "\<lambda>_ _ _ _ _ _ _ _. optns" 
-      and optnsb = "\<lambda>_ _ _ _ _ _ _ _ _ _ _. optns" for optns]
-
-lemma check_c1_entry_impl_refine[autoref_rules]:
-  includes autoref_syntax
-  shows
-    "(optnsi, optns) \<in> Id \<Longrightarrow>
-    (res0i, res0) \<in> Id \<Longrightarrow>
-    (resi, res) \<in> Id \<Longrightarrow>
-    (emi, em) \<in> ereal_rel \<Longrightarrow>
-    (Pei, P) \<in> aform.appr1_rel \<Longrightarrow>
-    (nres_of (check_c1_entry_impl res0i resi emi Pei optns),
-     check_c1_entry $ em $ P $ res0 $ res)
-    \<in> \<langle>bool_rel\<rangle>nres_rel"
-  using check_c1_entry_impl.refine[of res0i res0 resi res emi em Pei P optns]
-  by auto
+    where optns = "\<lambda>_ . optnsi"
+    and optnsi="optnsi"
+    and optnsc=optns
+    and optnsa="\<lambda>_ _ _ _ _. optnsi"
+    and optnsb="\<lambda>_ _ _ _  _ _ _ _ . optnsi"
+    and optns="\<lambda>_. optnsi"
+    for optns optnsi]
+lemmas check_c1_entry_impl_refine[autoref_rules] = check_c1_entry_impl.refine[autoref_higher_order_rule]
 
 definition "c1_entry_correct (em::ereal) (P::R3 c1_info set) res0 res = (\<forall>(_, d)\<in>P. case (d (1, 0, 0)) of (dx, dy, dz) \<Rightarrow>
       dz = 0 \<and> dx > 0 \<and> -90 < min_deg res \<and> min_deg res \<le> max_deg res \<and> max_deg res < 90 \<and>
@@ -1637,7 +1634,7 @@ definition "c1_entry_correct (em::ereal) (P::R3 c1_info set) res0 res = (\<foral
       dy / dx \<in> {tan (rad_of (min_deg res)) .. tan (rad_of (max_deg res))})"
 
 lemma check_c1_entry[le, refine_vcg]:
-  "check_c1_entry em P res0 res \<le> SPEC (\<lambda>b. b \<longrightarrow> c1_entry_correct em P res0 res)"
+  "check_c1_entry optns em P res0 res \<le> SPEC (\<lambda>b. b \<longrightarrow> c1_entry_correct em P res0 res)"
   unfolding check_c1_entry_def c1_entry_correct_def
   apply refine_vcg
   apply (auto dest!: bspec simp:)
@@ -1725,14 +1722,17 @@ definition lookup_mode::"bool \<Rightarrow> result \<Rightarrow> _" where
   else                           mode_outer  c1 (-3) 14)"
 
 definition mode_ro_spec::"bool \<Rightarrow> result \<Rightarrow> ((nat \<times> nat) \<times>
-          int \<times> ((real, 3) vec set \<times> (real \<times> real pdevs) reach_options) list \<times>
-          (real \<times> real pdevs) reach_options) nres"
+          int \<times> ((real, 3) vec set \<times> unit) list \<times>
+          unit) nres"
 where [refine_vcg_def]: "mode_ro_spec c1 res = SPEC (\<lambda>_. True)"
+
+lemma reach_options_rel_br: "reach_options_rel TYPE('ty) = br (\<lambda>_. ()) (\<lambda>_. True)"
+  by (auto simp: reach_options_rel_def br_def)
 
 lemma mode_ro_spec_impl[autoref_rules]:
   includes autoref_syntax
   shows "(\<lambda>b x. RETURN (lookup_mode b x), mode_ro_spec) \<in> bool_rel \<rightarrow> Id \<rightarrow>
-    \<langle>(nat_rel \<times>\<^sub>r nat_rel) \<times>\<^sub>r int_rel \<times>\<^sub>r (guards_rel::(_\<times> (3 rvec set \<times> _) list) set) \<times>\<^sub>r reach_optns_rel\<rangle>nres_rel"
+    \<langle>(nat_rel \<times>\<^sub>r nat_rel) \<times>\<^sub>r int_rel \<times>\<^sub>r guards_rel \<times>\<^sub>r aform.reach_optns_rel\<rangle>nres_rel"
   supply [simp del] = prod_rel_id_simp
   apply (rule fun_relI)
   apply (rule fun_relI)
@@ -1743,7 +1743,7 @@ lemma mode_ro_spec_impl[autoref_rules]:
   apply (rule exI)+
   apply (rule prod_relI'' IdI)+
   unfolding lv_rel_def ivl_rel_def br_rel_prod br_chain plane_rel_br inter_rel_br
-    clw_rel_br br_list_rel Id_br prod_eq_iff
+    clw_rel_br br_list_rel Id_br prod_eq_iff reach_options_rel_br
    apply (rule brI refl)+
    defer apply (rule brI) apply (rule refl) apply auto
   apply (auto simp: lookup_mode_def mode_outer_def mode_inner2_def mode_inner3_def xsecs_def
@@ -1782,7 +1782,8 @@ lemma source_of_res_impl[autoref_rules]: includes autoref_syntax shows
     done
   done
 
-definition tangent_seg_of_res :: "result \<Rightarrow> R3 set nres" where "tangent_seg_of_res res0 = do {
+definition tangent_seg_of_res :: "real aform numeric_options \<Rightarrow> result \<Rightarrow> R3 set nres" where
+"tangent_seg_of_res optns res0 = do {
   let fas = map (OP (nth matrix_of_degrees2\<^sub>e)) [0, 3, 6];
   let u = min_deg res0;
   let v = max_deg res0;
@@ -1790,7 +1791,7 @@ definition tangent_seg_of_res :: "result \<Rightarrow> R3 set nres" where "tange
 }"
 lemmas [refine_vcg_def] = tangent_seg_of_res_spec_def
 lemma tangent_seg_of_res[le, refine_vcg]:
-  "tangent_seg_of_res res \<le> tangent_seg_of_res_spec res"
+  "tangent_seg_of_res optns res \<le> tangent_seg_of_res_spec res"
   unfolding tangent_seg_of_res_def tangent_seg_of_res_spec_def
   apply refine_vcg
   apply (auto simp: matrix_of_degrees2\<^sub>e_def Let_def in_segment)
@@ -1806,12 +1807,13 @@ schematic_goal tangent_seg_of_res_impl:
   assumes [autoref_rules]: "(resi, res) \<in> Id"
     "(optnsi, optns) \<in> num_optns_rel"
   shows
-  "(nres_of ?r, tangent_seg_of_res $ res) \<in> \<langle>aform.appr_rel\<rangle>nres_rel"
+  "(nres_of ?r, tangent_seg_of_res optns res) \<in> \<langle>aform.appr_rel\<rangle>nres_rel"
   unfolding tangent_seg_of_res_def
   including art
   by autoref_monadic
-concrete_definition tangent_seg_of_res_impl uses tangent_seg_of_res_impl[where optns = "\<lambda>_ _ _. optns" and optnsa = optns for optns]
-lemmas [autoref_rules] = tangent_seg_of_res_impl.refine
+concrete_definition tangent_seg_of_res_impl uses tangent_seg_of_res_impl
+lemmas [autoref_rules] = tangent_seg_of_res_impl.refine[where
+    optnsi = optnsi and optnsa=optns and optns="\<lambda>_ _ _. optnsi" for optns optnsi, autoref_higher_order_rule]
 
 lemma return_of_res_impl:
  includes autoref_syntax shows
@@ -1834,13 +1836,13 @@ lemma [autoref_rules]:
 definition "check_line_nres print_fun m0 n0 c1 res0 = do {
     let X0 = source_of_res res0;
     (X0l, X0u) \<leftarrow> ivl_rep X0;
-    tangents \<leftarrow> tangent_seg_of_res res0;
     ((m::nat, n::nat), a::int, modes, ro) \<leftarrow> mode_ro_spec c1 res0;
     let interrupt = invoke_nf res0;
     let optns = lorenz_optns' print_fun (the_default m m0) (the_default n n0) 1 (FloatR 1 a);
-    aform.CHECKs optns (ST ''check_line_nres le'') (X0l \<le> X0u);
-    sp \<leftarrow> aform.subset_spec_plane optns X0 (Sctn (eucl_of_list [0, 0, 1]) 27);
-    aform.CHECKs optns (ST ''check_line_nres le'') sp;
+    tangents \<leftarrow> tangent_seg_of_res optns res0;
+    aform.CHECKs (ST ''check_line_nres le'') (X0l \<le> X0u);
+    sp \<leftarrow> aform.subset_spec_plane X0 (Sctn (eucl_of_list [0, 0, 1]) 27);
+    aform.CHECKs (ST ''check_line_nres le'') sp;
     ASSERT (X0l \<le> X0u);
     Pe \<leftarrow> lorenz_poincare_tangents optns interrupt modes ro c1 ({X0l .. X0u}) tangents;
     PeS \<leftarrow> sets_of_coll Pe;
@@ -1848,11 +1850,11 @@ definition "check_line_nres print_fun m0 n0 c1 res0 = do {
     let RET = \<Union>((mk_coll ` (source_of_res ` RETs:::\<langle>lvivl_rel\<rangle>list_wset_rel):::\<langle>clw_rel lvivl_rel\<rangle>list_wset_rel));
     every \<leftarrow> WEAK_ALL\<^bsup>\<lambda>Pe. \<exists>P em eM Rivls. em > 0 \<and> Pe = scaleR2 em eM P \<and> fst ` P \<subseteq> \<Union>Rivls \<and> (\<forall>Rivl \<in> Rivls. (\<exists>res\<in>RETs. Rivl \<subseteq> source_of_res res \<and> (c1 \<longrightarrow> c1_entry_correct em P res0 res)))\<^esup>
     PeS (\<lambda>Pe. do {
-      let _ = aform.trace_set1e (''# Return Element: '') (Some Pe);
+      let _ = aform.trace_set1e (ST ''# Return Element: '') (Some Pe);
       ((em, eM), P) \<leftarrow> scaleR2_rep Pe;
-      aform.CHECKs optns (ST ''check_line_nres pos'') (0 < em);
+      aform.CHECKs (ST ''check_line_nres pos'') (0 < em);
       let R = (fst ` P:::aform.appr_rel);
-      (Ri, Rs) \<leftarrow> aform.op_ivl_rep_of_set R;
+      (Ri, Rs) \<leftarrow> op_ivl_rep_of_set R;
       let Rivl = (op_atLeastAtMost_ivl Ri Rs);
       Rivls \<leftarrow> aform.split_along_ivls2 3 (mk_coll Rivl) RET;
       Rivlss \<leftarrow> sets_of_coll Rivls;
@@ -1863,31 +1865,30 @@ definition "check_line_nres print_fun m0 n0 c1 res0 = do {
           (\<lambda>res. do {
             let src = (source_of_res res:::lvivl_rel);
             let subs = Rivl \<subseteq> src;
-            cones \<leftarrow> if \<not>(c1 \<and> subs) then RETURN True else check_c1_entry em P res0 res;
+            cones \<leftarrow> if \<not>(c1 \<and> subs) then RETURN True else check_c1_entry optns em P res0 res;
             RETURN (subs \<and> cones)
           });
-        let _ = aform.trace_str ((shows (''# return of '') o shows res0 o
-          shows (if b then '' OK'' else '' FAILED''))'''');
+        let _ = aform.print_msg ((shows (ST ''# return of '') o shows res0 o
+          shows (if b then ST '' OK'' else ST '' FAILED''))'''');
         RETURN b
       })
     });
     RETURN (every, Pe, RET)
   }"
 
-lemma [autoref_op_pat_def del]: "aform.subset_spec_plane optns \<equiv> OP (aform.subset_spec_plane optns)"
-  and [autoref_op_pat_def]: "aform.subset_spec_plane \<equiv> OP aform.subset_spec_plane"
-  by auto
 
-lemma [autoref_rules]:  includes autoref_syntax shows
+definition "aform_subset_spec_plane optns = aform.subset_spec_plane"
+
+lemma aform_subset_spec_plane_impl[autoref_rules]:  includes autoref_syntax shows
   "DIM_precond TYPE('a::executable_euclidean_space) D \<Longrightarrow>
   (Xi, X::'a set) \<in> \<langle>lv_rel\<rangle>ivl_rel \<Longrightarrow>
   (sctni, sctn) \<in> \<langle>lv_rel\<rangle>sctn_rel \<Longrightarrow>
   (optnsi, optns) \<in> num_optns_rel \<Longrightarrow>
-  (nres_of (subset_spec_plane_impl_aform D optnsi Xi sctni),
-   aform.subset_spec_plane $ optns $ X $ sctn)
+  (nres_of (subset_spec_plane_impl_aform optnsi D Xi sctni),
+   aform_subset_spec_plane $ optns $ X $ sctn)
   \<in> \<langle>bool_rel\<rangle>nres_rel"
-  using aform.subset_spec_plane_impl.refine[where 'a='a, of D Xi X sctni sctn]
-  by force
+  using aform.subset_spec_plane_impl.refine[where 'a='a, of D Xi X sctni sctn optnsi]
+  by (force simp: aform_subset_spec_plane_def)
 
 schematic_goal check_line_impl:
   includes autoref_syntax
@@ -1902,11 +1903,13 @@ schematic_goal check_line_impl:
   by autoref_monadic
 
 concrete_definition check_line_impl uses check_line_impl[where
-    optnsi = "\<lambda>_ _ _ _ _ _ _. lorenz_optns pfi"
-    and optns = "\<lambda>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _. lorenz_optns pfi"
-    and optnsa = "\<lambda>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _. lorenz_optns pfi"
-    and optnsb = "\<lambda>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _. lorenz_optns pfi"
-    and optnsia = "\<lambda>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _. lorenz_optns pfi"
+     optns = "\<lambda>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ . lorenz_optns pfi"
+    and optnsa = "\<lambda>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _. lorenz_optns pfi"
+    and optnsb = "\<lambda>_ _ _ _ _ _ _ _ _ _  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _. lorenz_optns pfi"
+    and optnsc = "\<lambda>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _. lorenz_optns pfi"
+    and optnsd = "\<lambda>_ _ _ _ _ _ _ _ _ _  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _. lorenz_optns pfi"
+    and optnse = "\<lambda>_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _. lorenz_optns pfi"
+    and optnsf = "\<lambda> _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _. lorenz_optns pfi"
     and pfi = pfi
     for pfi]
 lemmas [autoref_rules] = check_line_impl.refine
@@ -1985,7 +1988,7 @@ definition check_line_core where
       let res = ((results:::\<langle>Id\<rangle>list_rel) ! (i:::nat_rel));
       (r, P, B) \<leftarrow> check_line_nres print_funo m0 n0 c1 res;
       let _ = print_sets_color print_fun (ST ''0x007f00'') (aform.sets_of_ivls B);
-      (_, Pu) \<leftarrow> aform.scaleR2_rep_coll P;
+      (_, Pu) \<leftarrow> scaleR2_rep_coll P;
       let _ = print_sets_color print_fun (ST ''0x7f0000'')
           (aform.op_image_fst_coll (Pu:::clw_rel aform.appr1_rel):::clw_rel aform.appr_rel);
       let _ = print_lorenz_color print_fun
@@ -2545,7 +2548,7 @@ proof (cases "x \<in> \<Sigma>\<^sub>l\<^sub>e")
         apply (rule tendsto_intros)
         apply (rule tendsto_intros)
         apply (rule tendsto_intros)
-       apply (rule LIMSEQ_inverse_real_of_nat)
+      apply (rule LIMSEQ_inverse_real_of_nat)
       by (auto simp: prod_eq_iff)
     done
   then have "insert x (closure (\<Sigma>\<^sub>l\<^sub>e - {x})) \<subseteq> closure (\<Sigma>\<^sub>l\<^sub>e - {x})"

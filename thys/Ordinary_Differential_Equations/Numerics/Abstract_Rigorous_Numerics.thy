@@ -45,51 +45,110 @@ abbreviation "rl_rel \<equiv> \<langle>rnv_rel\<rangle>list_rel"
 abbreviation "slp_rel \<equiv> \<langle>Id::floatarith rel\<rangle>list_rel"
 abbreviation "fas_rel \<equiv> \<langle>Id::floatarith rel\<rangle>list_rel"
 
-locale approximate_sets = autoref_syn +
-  fixes appr_of_ivl::"real list \<Rightarrow> real list \<Rightarrow> 'b list"
-  fixes product_appr::"'b list \<Rightarrow> 'b list \<Rightarrow> 'b list"
-  fixes msum_appr::"'b list \<Rightarrow> 'b list \<Rightarrow> 'b list"
-  fixes set_of_appr::"'b list \<Rightarrow> real list set"
-  fixes inf_of_appr::"'options \<Rightarrow> 'b list \<Rightarrow> real list"
-  fixes sup_of_appr::"'options \<Rightarrow> 'b list \<Rightarrow> real list"
-  fixes split_appr::"'options \<Rightarrow> nat \<Rightarrow> 'b list \<Rightarrow> 'b list \<times> 'b list"
-  fixes appr_inf_inner::"'options \<Rightarrow> 'b list \<Rightarrow> real list \<Rightarrow> real"
-  fixes appr_sup_inner::"'options \<Rightarrow> 'b list \<Rightarrow> real list \<Rightarrow> real"
-  fixes inter_appr_plane::"'options \<Rightarrow> 'b list \<Rightarrow> real list sctn \<Rightarrow> 'b list dres"
-  fixes reduce_appr::"'options \<Rightarrow> ('b list \<Rightarrow> nat \<Rightarrow> real list \<Rightarrow> bool) \<Rightarrow> 'b list \<Rightarrow> 'b list"
-  fixes width_appr::"'options \<Rightarrow> 'b list \<Rightarrow> real"
-  fixes approx_slp::"'options \<Rightarrow> nat \<Rightarrow> slp \<Rightarrow> 'b list \<Rightarrow> 'b list option dres"
-  fixes approx_euclarithform::"'options \<Rightarrow> form \<Rightarrow> 'b list \<Rightarrow> bool dres"
-  fixes approx_isFDERIV::"'options \<Rightarrow> nat \<Rightarrow> nat list \<Rightarrow> floatarith list \<Rightarrow> 'b list \<Rightarrow>
-    bool dres"
-  fixes appr_rell
-  fixes optns::"'options"
+type_synonym 'b reduce_argument = "'b list \<Rightarrow> nat \<Rightarrow> real list \<Rightarrow> bool" \<comment> \<open>is this too special?\<close>
+
+record 'b numeric_options =
+  precision :: nat
+  adaptive_atol :: real
+  adaptive_rtol :: real
+  method_id :: nat
+  start_stepsize :: real
+  iterations :: nat
+  halve_stepsizes :: nat
+  widening_mod :: nat
+  rk2_param :: real
+  default_reduce :: "'b reduce_argument"
+  printing_fun :: "bool \<Rightarrow> 'b list \<Rightarrow> unit"
+  tracing_fun :: "string \<Rightarrow> 'b list option \<Rightarrow> unit"
+
+record 'b reach_options =
+  max_tdev_thres :: "real"
+  pre_split_reduce :: "'b reduce_argument"
+  pre_inter_granularity :: "real"
+  post_inter_granularity :: "real"
+  pre_collect_granularity :: real
+  max_intersection_step :: real
+
+definition "reach_options_rel TYPE('b) = (UNIV::('b reach_options \<times> unit) set)"
+lemma sv_reach_options_rel[relator_props]: "single_valued (reach_options_rel TYPE('a))"
+  by (auto simp: reach_options_rel_def single_valued_def)
+
+definition "reduce_argument_rel TYPE('b) = (UNIV::('b reduce_argument \<times> unit) set)"
+lemma sv_reduce_argument_rel[relator_props]: "single_valued (reduce_argument_rel TYPE('a))"
+  by (auto simp: reduce_argument_rel_def single_valued_def)
+
+
+definition [refine_vcg_def, simp]: "max_tdev_thres_spec (ro::unit) = SPEC (\<lambda>x::real. True)"
+definition [refine_vcg_def, simp]: "max_intersection_step_spec (ro::unit) = SPEC (\<lambda>x::real. True)"
+definition [refine_vcg_def, simp]: "pre_inter_granularity_spec (ro::unit) = SPEC (\<lambda>x::real. True)"
+definition [refine_vcg_def, simp]: "post_inter_granularity_spec (ro::unit) = SPEC (\<lambda>x::real. True)"
+definition [refine_vcg_def, simp]: "pre_collect_granularity_spec (ro::unit) = SPEC (\<lambda>x::real. True)"
+
+lemma reach_optns_autoref[autoref_rules]:
+  includes autoref_syntax
+  shows
+    "(\<lambda>x. RETURN (max_tdev_thres x), max_tdev_thres_spec) \<in> reach_options_rel TYPE('b) \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
+    "(\<lambda>x. RETURN (pre_inter_granularity x), pre_inter_granularity_spec) \<in> reach_options_rel TYPE('b)  \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
+    "(\<lambda>x. RETURN (post_inter_granularity x), post_inter_granularity_spec) \<in> reach_options_rel TYPE('b) \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
+    "(\<lambda>x. RETURN (pre_collect_granularity x), pre_collect_granularity_spec) \<in> reach_options_rel TYPE('b)  \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
+    "(\<lambda>x. RETURN (max_intersection_step x), max_intersection_step_spec) \<in> reach_options_rel TYPE('b)  \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
+  by (auto simp: nres_rel_def)
+
+
+record 'b approximate_set_ops =
+  appr_of_ivl::"real list \<Rightarrow> real list \<Rightarrow> 'b list"
+  product_appr::"'b list \<Rightarrow> 'b list \<Rightarrow> 'b list"
+  msum_appr::"'b list \<Rightarrow> 'b list \<Rightarrow> 'b list"
+  inf_of_appr::"'b numeric_options \<Rightarrow> 'b list \<Rightarrow> real list"
+  sup_of_appr::"'b numeric_options \<Rightarrow> 'b list \<Rightarrow> real list"
+  split_appr::"nat \<Rightarrow> 'b list \<Rightarrow> 'b list \<times> 'b list"
+  appr_inf_inner::"'b numeric_options \<Rightarrow> 'b list \<Rightarrow> real list \<Rightarrow> real"
+  appr_sup_inner::"'b numeric_options \<Rightarrow> 'b list \<Rightarrow> real list \<Rightarrow> real"
+  inter_appr_plane::"'b numeric_options \<Rightarrow> 'b list \<Rightarrow> real list sctn \<Rightarrow> 'b list dres"
+  reduce_appr::"'b numeric_options \<Rightarrow> 'b reduce_argument \<Rightarrow> 'b list \<Rightarrow> 'b list"
+  width_appr::"'b numeric_options \<Rightarrow> 'b list \<Rightarrow> real"
+  approx_slp_dres::"'b numeric_options \<Rightarrow> nat \<Rightarrow> slp \<Rightarrow> 'b list \<Rightarrow> 'b list option dres"
+  approx_euclarithform::"'b numeric_options \<Rightarrow> form \<Rightarrow> 'b list \<Rightarrow> bool dres"
+  approx_isFDERIV::"'b numeric_options \<Rightarrow> nat \<Rightarrow> nat list \<Rightarrow> floatarith list \<Rightarrow> 'b list \<Rightarrow> bool dres"
+
+primrec concat_appr where
+  "concat_appr ops [] = []"
+| "concat_appr ops (x#xs) = product_appr ops x (concat_appr ops xs)"
+
+
+unbundle autoref_syntax
+
+locale approximate_sets =
+  fixes ops :: "'b approximate_set_ops"
+    and set_of_appr::"'b list \<Rightarrow> real list set"
+    and appr_rell :: "('b list \<times> real list set) set"
+    and optns :: "'b numeric_options"
   assumes appr_rell_internal: "appr_rell \<equiv> br set_of_appr top"
   assumes transfer_operations_rl:
     "SIDE_PRECOND (list_all2 (\<le>) xrs yrs) \<Longrightarrow>
       (xri, xrs) \<in> \<langle>rnv_rel\<rangle>list_rel \<Longrightarrow>
       (yri, yrs) \<in> \<langle>rnv_rel\<rangle>list_rel \<Longrightarrow>
-      (appr_of_ivl xri yri, lv_ivl $ xrs $ yrs) \<in> appr_rell"
-    "(product_appr, product_listset) \<in> appr_rell \<rightarrow> appr_rell \<rightarrow> appr_rell"
-    "(msum_appr, (\<lambda>xs ys. {map2 (+) x y |x y. x \<in> xs \<and> y \<in> ys})) \<in> appr_rell \<rightarrow> appr_rell \<rightarrow> appr_rell"
+      (appr_of_ivl ops xri yri, lv_ivl $ xrs $ yrs) \<in> appr_rell"
+    "(product_appr ops, product_listset) \<in> appr_rell \<rightarrow> appr_rell \<rightarrow> appr_rell"
+    "(msum_appr ops, (\<lambda>xs ys. {map2 (+) x y |x y. x \<in> xs \<and> y \<in> ys})) \<in> appr_rell \<rightarrow> appr_rell \<rightarrow> appr_rell"
     "(xi, x) \<in> appr_rell \<Longrightarrow> length xi = d \<Longrightarrow>
-      (RETURN (inf_of_appr optns xi), Inf_specs d x) \<in> \<langle>rl_rel\<rangle>nres_rel"
+      (RETURN (inf_of_appr ops optns xi), Inf_specs d x) \<in> \<langle>rl_rel\<rangle>nres_rel"
     "(xi, x) \<in> appr_rell \<Longrightarrow> length xi = d \<Longrightarrow>
-      (RETURN (sup_of_appr optns xi), Sup_specs d x) \<in> \<langle>rl_rel\<rangle>nres_rel"
+      (RETURN (sup_of_appr ops optns xi), Sup_specs d x) \<in> \<langle>rl_rel\<rangle>nres_rel"
     "(ni, n) \<in> nat_rel \<Longrightarrow> (xi, x) \<in> appr_rell \<Longrightarrow> length xi = d \<Longrightarrow>
-      (RETURN (split_appr optns ni xi), split_spec_params d n x) \<in> \<langle>appr_rell \<times>\<^sub>r appr_rell\<rangle>nres_rel"
-    "(RETURN o2 appr_inf_inner optns, Inf_inners) \<in> appr_rell \<rightarrow> rl_rel \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
-    "(RETURN o2 appr_sup_inner optns, Sup_inners) \<in> appr_rell \<rightarrow> rl_rel \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
+      (RETURN (split_appr ops ni xi), split_spec_params d n x) \<in> \<langle>appr_rell \<times>\<^sub>r appr_rell\<rangle>nres_rel"
+    "(RETURN o2 appr_inf_inner ops optns, Inf_inners) \<in> appr_rell \<rightarrow> rl_rel \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
+    "(RETURN o2 appr_sup_inner ops optns, Sup_inners) \<in> appr_rell \<rightarrow> rl_rel \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
     "(xi, x) \<in> appr_rell \<Longrightarrow> length xi = d \<Longrightarrow> length (normal si) = d \<Longrightarrow> d > 0 \<Longrightarrow> (si, s) \<in> \<langle>rl_rel\<rangle>sctn_rel \<Longrightarrow>
-      (nres_of (inter_appr_plane optns xi si), inter_sctn_specs d x s) \<in> \<langle>appr_rell\<rangle>nres_rel"
-    "(Ci, C) \<in> \<langle>Id\<rangle>list_rel \<rightarrow> nat_rel \<rightarrow> rl_rel \<rightarrow> bool_rel \<Longrightarrow> (xi, x) \<in> appr_rell \<Longrightarrow> length xi = d \<Longrightarrow>
-      (RETURN (reduce_appr optns Ci xi), reduce_specs d C x) \<in> \<langle>appr_rell\<rangle>nres_rel"
-    "(RETURN o width_appr optns, width_spec) \<in> appr_rell \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
-    "(nres_of o3 approx_slp optns, approx_slp_spec fas) \<in> nat_rel \<rightarrow> slp_rel \<rightarrow> appr_rell \<rightarrow> \<langle>\<langle>appr_rell\<rangle>option_rel\<rangle>nres_rel"
+      (nres_of (inter_appr_plane ops optns xi si), inter_sctn_specs d x s) \<in> \<langle>appr_rell\<rangle>nres_rel"
+    "(xi, x) \<in> appr_rell \<Longrightarrow> length xi = d \<Longrightarrow> (rai, ra) \<in> reduce_argument_rel TYPE('b) \<Longrightarrow>
+      (RETURN (reduce_appr ops optns rai xi), reduce_specs d ra x) \<in> \<langle>appr_rell\<rangle>nres_rel"
+    "(RETURN o width_appr ops optns, width_spec) \<in> appr_rell \<rightarrow> \<langle>rnv_rel\<rangle>nres_rel"
+    "(nres_of o3 approx_slp_dres ops optns, approx_slp_spec fas) \<in> nat_rel \<rightarrow> slp_rel \<rightarrow> appr_rell \<rightarrow> \<langle>\<langle>appr_rell\<rangle>option_rel\<rangle>nres_rel"
 assumes approx_euclarithform[unfolded comps, autoref_rules]:
-  "(nres_of o2 approx_euclarithform optns, approx_form_spec) \<in> Id \<rightarrow> appr_rell \<rightarrow> \<langle>bool_rel\<rangle>nres_rel"
+  "(nres_of o2 approx_euclarithform ops optns, approx_form_spec) \<in> Id \<rightarrow> appr_rell \<rightarrow> \<langle>bool_rel\<rangle>nres_rel"
 assumes approx_isFDERIV[unfolded comps, autoref_rules]:
-  "(\<lambda>N xs fas vs. nres_of (approx_isFDERIV optns N xs fas vs), isFDERIV_spec) \<in>
+  "(\<lambda>N xs fas vs. nres_of (approx_isFDERIV ops optns N xs fas vs), isFDERIV_spec) \<in>
   nat_rel \<rightarrow> \<langle>nat_rel\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow>  appr_rell \<rightarrow> \<langle>bool_rel\<rangle>nres_rel"
 assumes set_of_appr_nonempty[simp]: "set_of_appr X \<noteq> {}"
 assumes length_set_of_appr: "xrs \<in> set_of_appr xs \<Longrightarrow> length xrs = length xs"
@@ -99,6 +158,8 @@ assumes set_of_apprs_ex_Cons: "xrs \<in> set_of_appr xs \<Longrightarrow> \<exis
 assumes set_of_apprs_Nil[simp]: "xrs \<in> set_of_appr [] \<longleftrightarrow> xrs = []"
 begin
 
+abbreviation "reach_optns_rel \<equiv> reach_options_rel TYPE('b)"
+
 definition "appr_rel = appr_rell O \<langle>lv_rel\<rangle>set_rel"
 lemmas [autoref_rel_intf] = REL_INTFI[of appr_rel i_appr]
 
@@ -107,16 +168,11 @@ definition [simp]: "op_concat_listset xs = concat ` listset xs"
 lemma [autoref_op_pat_def]: "concat ` listset xs \<equiv> OP op_concat_listset $ xs"
   by simp
 
-primrec concat_appr where
-  "concat_appr [] = []"
-| "concat_appr (x#xs) = product_appr x (concat_appr xs)"
-
-
 lemma list_all2_replicate [simp]: "list_all2 (\<le>) xs xs" for xs::"'a::order list"
   by (auto simp: list_all2_iff in_set_zip)
 
 lemma length_appr_of_ivl[simp]:
-  "length (appr_of_ivl xs ys) = length xs"
+  "length (appr_of_ivl ops xs ys) = length xs"
   if "list_all2 (\<le>) xs ys"
   using transfer_operations_rl(1)[of xs ys xs ys] that
     apply (simp add: appr_rell_internal br_def lv_ivl_def)
@@ -127,17 +183,11 @@ definition [simp]: "op_atLeastAtMost_appr = atLeastAtMost"
 lemma [autoref_op_pat]: "atLeastAtMost \<equiv> OP op_atLeastAtMost_appr"
   by simp
 
-definition "op_ivl_rep_of_set X =
-  do { let X = (X); i \<leftarrow> Inf_spec X; s \<leftarrow> Sup_spec X; RETURN (inf i s, s)}"
-sublocale autoref_op_pat_def op_ivl_rep_of_set .
+definition card_info::"_ set \<Rightarrow> nat nres" where [refine_vcg_def]: "card_info x = SPEC top" \<comment> \<open>\<open>op_set_wcard\<close>\<close>
 
-definition "op_ivl_rep_of_sets XS =
-  FORWEAK XS (RETURN (0, 0)) op_ivl_rep_of_set (\<lambda>(i, s) (i', s').
-    RETURN (inf i i':::lv_rel, sup s s':::lv_rel))"
-sublocale autoref_op_pat_def op_ivl_rep_of_sets .
+definition [simp]: "set_of_coll X = X"
 
-definition "ivl_rep_of_set_coll X = do { Xs \<leftarrow> sets_of_coll (X:::clw_rel appr_rel); op_ivl_rep_of_sets Xs}"
-sublocale autoref_op_pat_def ivl_rep_of_set_coll .
+definition [simp]: "ivl_to_set X = X"
 
 definition "ivls_of_sets X = do {
     XS \<leftarrow> (sets_of_coll (X:::clw_rel appr_rel) ::: \<langle>\<langle>appr_rel\<rangle>list_wset_rel\<rangle>nres_rel);
@@ -150,14 +200,8 @@ definition "ivls_of_sets X = do {
   }"
 sublocale autoref_op_pat_def ivls_of_sets .
 
-definition card_info::"_ set \<Rightarrow> nat nres" where [refine_vcg_def]: "card_info x = SPEC top" \<comment> \<open>\<open>op_set_wcard\<close>\<close>
-sublocale autoref_op_pat_def card_info .
-
-definition [simp]: "set_of_coll X = X"
-sublocale autoref_op_pat_def set_of_coll .
-
-definition [simp]: "ivl_to_set X = X"
-sublocale autoref_op_pat_def ivl_to_set .
+definition "ivl_rep_of_set_coll X = do { Xs \<leftarrow> sets_of_coll (X:::clw_rel appr_rel); op_ivl_rep_of_sets Xs}"
+sublocale autoref_op_pat_def ivl_rep_of_set_coll .
 
 definition [simp]: "sets_of_ivls X = X"
 sublocale autoref_op_pat_def sets_of_ivls .
@@ -282,6 +326,18 @@ lemma appr_rel_br: "appr_rel = br (\<lambda>xs. eucl_of_list ` (set_of_appr xs):
   unfolding appr_rell_internal br_chain o_def
   using length_set_of_appr
   by (auto dest!: brD intro: brI)
+
+definition print_set::"bool \<Rightarrow> 'a set \<Rightarrow> unit" where "print_set _ _ = ()"
+
+definition trace_set::"string\<Rightarrow>'a set option\<Rightarrow>unit" where "trace_set _ _ = ()"
+
+definition print_msg::"string \<Rightarrow> unit" where "print_msg _ = ()"
+
+abbreviation "CHECKs \<equiv> \<lambda>s. CHECK (\<lambda>_. print_msg s)"
+
+definition "ncc (X::'a::executable_euclidean_space set) \<longleftrightarrow> X \<noteq> {} \<and> compact X \<and> convex X"
+
+definition "ncc_precond TYPE('a::executable_euclidean_space) \<longleftrightarrow> (\<forall>(Xi, X::'a set) \<in> appr_rel. ncc X)"
 
 end
 

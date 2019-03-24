@@ -16,10 +16,8 @@ concrete_definition vdp_fas uses vdp_fas
 interpretation vdp: ode_interpretation true_form UNIV vdp_fas "\<lambda>(x, y). (y, y * (1 - x\<^sup>2) - x)::real*real"
   "n::2" for n
   by standard
-    (auto intro!: local_lipschitz_c1_euclideanI ext
-      simp: split_beta' aform.ode_def vdp_fas_def power2_eq_square aform.Csafe_def aform.safe_def true_form_def
-        isFDERIV_def less_Suc_eq_0_disj Basis_list_prod_def Basis_list_real_def eval_nat_numeral
-        inverse_eq_divide eucl_of_list_prod)
+    (auto simp: vdp_fas_def less_Suc_eq_0_disj nth_Basis_list_prod Basis_list_real_def
+      mk_ode_ops_def eucl_of_list_prod power2_eq_square inverse_eq_divide intro!: isFDERIV_I)
 
 lemma poincare_section_rep[poincare_tac_theorems]:
   "{(1, FloatR 9 (-2))..(2::real, FloatR 9 (-2))} = {eucl_of_list [1, FloatR 9 (-2)]..eucl_of_list [2, FloatR 9 (-2)]}"
@@ -57,7 +55,7 @@ lemma vanderpol_derivative_bounds:
                              0, 1] \<in> vdp.blinfuns_of_lvivl ([-0.016, -0.024, 0, 0], [0.021, 0.031, 0, 0]))
   "
   unfolding ninequarters \<Sigma>_def
-  by (tactic \<open>poincare'_bnds_tac @{thm vdp_fas_def} 30 50 20 14 [(0, 1, "0x000000")] "" (* "out_p0_vdp_0.out" *)  @{context} 1\<close>)
+  by (tactic \<open>poincare'_bnds_tac @{thms vdp_fas_def} 30 50 20 14 [(0, 1, "0x000000")] "" (* "out_p0_vdp_0.out" *)  @{context} 1\<close>)
 
 lemma blinfun_of_list_id2: "blinfun_of_list [1, 0, 0, 1] = (id_blinfun::(real*real)\<Rightarrow>\<^sub>L(real*real))"
   apply (auto intro!: blinfun_euclidean_eqI simp: Basis_prod_def)
@@ -139,7 +137,7 @@ lemma
   vdp.returns_to   {(1, 2.25) .. (2, 2.25)} x \<and>
   vdp.poincare_map {(1, 2.25) .. (2, 2.25)} x \<in> {(1.41, 2.25) .. (1.42, 2.25)}"
   unfolding ninequarters
-  by (tactic \<open>poincare_bnds_tac @{thm vdp_fas_def} 30 20 7 14 [(0, 1, "0x000000")] "" (* "out_p0_vdp_0.out" *)  @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac @{thms vdp_fas_def} 30 20 7 14 [(0, 1, "0x000000")] "" (* "out_p0_vdp_0.out" *)  @{context} 1\<close>)
 
 lemma
   notes [poincare_tac_theorems] = vdp_pi_0 vdp_ro vdp_start
@@ -147,7 +145,7 @@ lemma
   vdp.returns_to   {(1, 2.25) .. (2, 2.25)} x \<and>
   vdp.poincare_map {(1, 2.25) .. (2, 2.25)} x \<in> {(1.35, 2.25) .. (1.45, 2.25)}"
   unfolding ninequarters
-  by (tactic \<open>poincare_bnds_tac @{thm vdp_fas_def} 30 20 7 14 [(0, 1, "0x000000")] "" (* "out_p0_vdp_1.out" *)  @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac @{thms vdp_fas_def} 30 20 7 14 [(0, 1, "0x000000")] "" (* "out_p0_vdp_1.out" *)  @{context} 1\<close>)
 
 
 subsection \<open>One intermediate Poincare map\<close>
@@ -162,7 +160,7 @@ lemma
   vdp.returns_to   {(1, 2.25) .. (2, 2.25)} x \<and>
   vdp.poincare_map {(1, 2.25) .. (2, 2.25)} x \<in> {(1.41, 2.25) .. (1.42, 2.25)}"
   unfolding ninequarters
-  by (tactic \<open>poincare_bnds_tac @{thm vdp_fas_def} 30 20 7 14 [(0, 1, "0x000000")] "" (* "out_p1_vdp_0.out" *)  @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac @{thms vdp_fas_def} 30 20 7 14 [(0, 1, "0x000000")] "" (* "out_p1_vdp_0.out" *)  @{context} 1\<close>)
 
 lemma
   notes [poincare_tac_theorems] = vdp_ro vdp_start vdp_pi_1
@@ -170,7 +168,7 @@ lemma
   vdp.returns_to   {(1, 2.25) .. (2, 2.25)} x \<and>
   vdp.poincare_map {(1, 2.25) .. (2, 2.25)} x \<in> {(1.35, 2.25) .. (1.45, 2.25)}"
   unfolding ninequarters
-  by (tactic \<open>poincare_bnds_tac @{thm vdp_fas_def} 30 20 7 12 [(0, 1, "0x000000")] "" (* "out_p1_vdp_1.out" *) @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac @{thms vdp_fas_def} 30 20 7 12 [(0, 1, "0x000000")] "" (* "out_p1_vdp_1.out" *) @{context} 1\<close>)
 
 lemma
   notes [poincare_tac_theorems] = vdp_ro vdp_start vdp_pi_1
@@ -178,7 +176,7 @@ lemma
   vdp.returns_to   {(1, 2.25) .. (2, 2.25)} x \<and>
   vdp.poincare_map {(1, 2.25) .. (2, 2.25)} x \<in> {(1.3, 2.25) .. (1.5, 2.25)}"
   unfolding ninequarters
-  by (tactic \<open>poincare_bnds_tac @{thm vdp_fas_def} 30 20 7 12 [(0, 1, "0x000000")] "" (* "out_p1_vdp_2.out" *) @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac @{thms vdp_fas_def} 30 20 7 12 [(0, 1, "0x000000")] "" (* "out_p1_vdp_2.out" *) @{context} 1\<close>)
 
 lemma
   notes [poincare_tac_theorems] = vdp_ro vdp_start vdp_pi_1
@@ -186,7 +184,7 @@ lemma
   vdp.returns_to   {(1, 2.25) .. (2, 2.25)} x \<and>
   vdp.poincare_map {(1, 2.25) .. (2, 2.25)} x \<in> {(1.15, 2.25) .. (1.65, 2.25)}"
   unfolding ninequarters
-  by (tactic \<open>poincare_bnds_tac @{thm vdp_fas_def} 30 30 7 16 [(0, 1, "0x000000")] "" (* "out_p1_vdp_3.out" *) @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac @{thms vdp_fas_def} 30 30 7 16 [(0, 1, "0x000000")] "" (* "out_p1_vdp_3.out" *) @{context} 1\<close>)
 
 end
 
@@ -211,10 +209,8 @@ interpretation lorenz: ode_interpretation true_form UNIV lorenz_fas
     ::real*real*real"
   "three::3"
   by standard
-    (auto intro!: local_lipschitz_c1_euclideanI ext
-      simp: split_beta' aform.ode_def lorenz_fas_def power2_eq_square aform.safe_def true_form_def
-        eucl_of_list_prod eval_nat_numeral
-        isFDERIV_def less_Suc_eq_0_disj Basis_list_prod_def Basis_list_real_def aform.Csafe_def)
+    (auto simp: lorenz_fas_def less_Suc_eq_0_disj nth_Basis_list_prod Basis_list_real_def isDERIV_Power_iff
+      mk_ode_ops_def eucl_of_list_prod power2_eq_square inverse_eq_divide intro!: isFDERIV_I)
 
 abbreviation "lorenz_ro \<equiv> ro 2 10 7 2 2 2"
 
@@ -246,42 +242,42 @@ lemma
   shows "\<forall>x\<in>lorenz_iv 0.84 2.21 0.005.
   lorenz.returns_to   \<Sigma> x \<and>
   lorenz.poincare_map \<Sigma> x \<in> lorenz_iv (-2.17) 0.98 0.3"
-  by (tactic \<open>poincare_bnds_tac @{thm lorenz_fas_def} 30 30 9 14 [(0, 2, "0x000000"), (1, 2, "0xff0000")] "" (* "out_p1_lorenz_0.out" *) @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac @{thms lorenz_fas_def} 30 30 9 14 [(0, 2, "0x000000"), (1, 2, "0xff0000")] "" (* "out_p1_lorenz_0.out" *) @{context} 1\<close>)
 
 lemma
   notes [poincare_tac_theorems] = lorenz_pi_1 lorenz_ro lorenz_start
   shows "\<forall>x\<in>lorenz_iv 0.86 2.21 0.005.
   lorenz.returns_to   \<Sigma> x \<and>
   lorenz.poincare_map \<Sigma> x \<in> lorenz_iv (-1.8) 1.2 0.2"
-  by (tactic \<open>poincare_bnds_tac @{thm lorenz_fas_def} 30 30 9 14 [(0, 2, "0x000000"), (1, 2, "0xff0000")] "" (* "out_p1_lorenz_1.out" *) @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac @{thms lorenz_fas_def} 30 30 9 14 [(0, 2, "0x000000"), (1, 2, "0xff0000")] "" (* "out_p1_lorenz_1.out" *) @{context} 1\<close>)
 
 lemma
   notes [poincare_tac_theorems] = lorenz_pi_1 lorenz_ro lorenz_start
   shows "\<forall>x\<in>lorenz_iv 0.88 2.21 0.005.
   lorenz.returns_to   \<Sigma> x \<and>
   lorenz.poincare_map \<Sigma> x \<in> lorenz_iv (-1.58) 1.3 0.1"
-  by (tactic \<open>poincare_bnds_tac @{thm lorenz_fas_def} 30 30 9 14 [(0, 2, "0x000000"), (1, 2, "0xff0000")] "" (* "out_p1_lorenz_2.out" *) @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac @{thms lorenz_fas_def} 30 30 9 14 [(0, 2, "0x000000"), (1, 2, "0xff0000")] "" (* "out_p1_lorenz_2.out" *) @{context} 1\<close>)
 
 lemma
   notes [poincare_tac_theorems] = lorenz_pi_1 lorenz_ro lorenz_start
   shows "\<forall>x\<in>lorenz_iv 0.90 2.21 0.005.
   lorenz.returns_to   \<Sigma> x \<and>
   lorenz.poincare_map \<Sigma> x \<in> lorenz_iv (-1.4) 1.4 0.1"
-  by (tactic \<open>poincare_bnds_tac @{thm lorenz_fas_def} 30 30 9 14 [(0, 2, "0x000000"), (1, 2, "0xff0000")] "" (* "out_p1_lorenz_3.out" *) @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac @{thms lorenz_fas_def} 30 30 9 14 [(0, 2, "0x000000"), (1, 2, "0xff0000")] "" (* "out_p1_lorenz_3.out" *) @{context} 1\<close>)
 
 lemma
   notes [poincare_tac_theorems] = lorenz_pi_1 lorenz_ro lorenz_start
   shows "\<forall>x\<in>lorenz_iv 0.92 2.21 0.005.
   lorenz.returns_to   \<Sigma> x \<and>
   lorenz.poincare_map \<Sigma> x \<in> lorenz_iv (-1.24) 1.45 0.1"
-  by (tactic \<open>poincare_bnds_tac @{thm lorenz_fas_def} 30 30 9 14 [(0, 2, "0x000000"), (1, 2, "0xff0000")] "" (* "out_p1_lorenz_4.out" *) @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac @{thms lorenz_fas_def} 30 30 9 14 [(0, 2, "0x000000"), (1, 2, "0xff0000")] "" (* "out_p1_lorenz_4.out" *) @{context} 1\<close>)
 
 lemma
   notes [poincare_tac_theorems] = lorenz_pi_1 lorenz_ro lorenz_start
   shows "\<forall>x\<in>lorenz_iv 0.94 2.21 0.005.
   lorenz.returns_to   \<Sigma> x \<and>
   lorenz.poincare_map \<Sigma> x \<in> lorenz_iv (-1.11) 1.5 0.1"
-  by (tactic \<open>poincare_bnds_tac @{thm lorenz_fas_def} 30 30 9 14 [(0, 2, "0x000000"), (1, 2, "0xff0000")] "" (* "out_p1_lorenz_5.out" *) @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac @{thms lorenz_fas_def} 30 30 9 14 [(0, 2, "0x000000"), (1, 2, "0xff0000")] "" (* "out_p1_lorenz_5.out" *) @{context} 1\<close>)
 
 end
 
@@ -302,10 +298,8 @@ concrete_definition c2d uses c2d
 interpretation c2d: ode_interpretation true_form UNIV c2d "\<lambda>(x, y). (x*y + y^3 + 2, x\<^sup>2 + 2 * x - 3 * y)::real*real"
   "n::2" for n
   by standard
-    (auto intro!: local_lipschitz_c1_euclideanI ext
-      simp: split_beta' aform.ode_def c2d_def power2_eq_square aform.Csafe_def aform.safe_def true_form_def
-        isFDERIV_def less_Suc_eq_0_disj Basis_list_prod_def Basis_list_real_def eval_nat_numeral
-        inverse_eq_divide eucl_of_list_prod)
+    (auto simp: c2d_def less_Suc_eq_0_disj nth_Basis_list_prod Basis_list_real_def power3_eq_cube
+      mk_ode_ops_def eucl_of_list_prod power2_eq_square inverse_eq_divide intro!: isFDERIV_I)
 
 abbreviation "options \<equiv> ro 2 10 7 2 2 2"
 
@@ -328,7 +322,7 @@ lemma
   c2d.returns_to   {(300, 0) .. (300, 300)} x \<and>
   c2d.poincare_map_from_outside {(300, 0) .. (300, 300)} x \<in> {(300, 70) .. (300, 80)}"
   using [[ode_numerics_trace]]
-  by (tactic \<open>poincare_bnds_tac_gen 20 @{thm c2d_def} 30 20 7 10 [(0, 1, "0x000000")] "-" (* "out_p1_vdp_0.out" *)  @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac_gen 20 @{thms c2d_def} 30 20 7 10 [(0, 1, "0x000000")] "-" (* "out_p1_vdp_0.out" *)  @{context} 1\<close>)
 
 end
 

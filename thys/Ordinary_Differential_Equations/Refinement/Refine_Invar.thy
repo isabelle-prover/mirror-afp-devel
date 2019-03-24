@@ -7,18 +7,20 @@ begin
 consts i_invar::"interface \<Rightarrow> interface \<Rightarrow> interface"
 
 definition [simp]: "uninvar X = X"
-interpretation autoref_op_pat_def uninvar .
 
 definition with_invar::"'invar \<Rightarrow> 'a set \<Rightarrow> 'a set"
   where [simp]: "with_invar i X = X"
 
 definition get_invar::"('invar \<Rightarrow> 'a set) \<Rightarrow> 'a set \<Rightarrow> ('a set \<times> 'invar) nres"
   where [refine_vcg_def]: "get_invar a X = SPEC (\<lambda>(Y, invar). Y = X \<and> Y \<subseteq> a invar)"
-interpretation autoref_op_pat_def "get_invar i" for i .
+lemma get_invar_pat[autoref_op_pat_def]: "get_invar i \<equiv> Autoref_Tagging.OP (get_invar i)"
+  by auto
 
 definition split_with_invar::"('c \<Rightarrow> 'a set) \<Rightarrow> 'a set \<Rightarrow> (('a set \<times> 'c) \<times> 'a set) nres"
   where [refine_vcg_def]: "split_with_invar i X = SPEC (\<lambda>((Y, sctn), YS). X = Y \<union> YS \<and> Y \<subseteq> i sctn)"
-interpretation autoref_op_pat_def "split_with_invar i" for i .
+lemma split_with_invar_pat[autoref_op_pat_def]:
+  "split_with_invar i \<equiv> Autoref_Tagging.OP (split_with_invar i)"
+  by auto
 
 context includes autoref_syntax begin
 
@@ -116,7 +118,8 @@ definition
           {});
       RETURN Xis
     }"
-interpretation autoref_op_pat_def "explicit_sctn_set po" for po .
+lemma explicit_sctn_set_pat[autoref_op_pat_def]: "explicit_sctn_set po \<equiv> Autoref_Tagging.OP (explicit_sctn_set po)"
+  by auto
 
 context includes autoref_syntax begin
 

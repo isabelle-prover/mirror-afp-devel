@@ -38,8 +38,8 @@ definition [refine_vcg_def]: "intersects_spec X sctn = SPEC (\<lambda>b. b \<or>
 
 definition [refine_vcg_def]: "intersects_sctns_spec X sctns = SPEC (\<lambda>b. b \<or> X \<inter> \<Union>(plane_of ` sctns) = {})"
 
-definition [refine_vcg_def]: "reduce_spec (C::'b list \<Rightarrow> nat \<Rightarrow> real list \<Rightarrow> bool) X = SPEC (\<lambda>R. X \<subseteq> R)"
-definition [refine_vcg_def]: "reduce_specs d (C::'b list \<Rightarrow> nat \<Rightarrow> real list \<Rightarrow> bool) X = SPEC (\<lambda>R. env_len R d \<and> X \<subseteq> R)"
+definition [refine_vcg_def]: "reduce_spec (reach_options_o::unit) X = SPEC (\<lambda>R. X \<subseteq> R)"
+definition [refine_vcg_def]: "reduce_specs d (reach_options_o::unit) X = SPEC (\<lambda>R. env_len R d \<and> X \<subseteq> R)"
 
 definition [refine_vcg_def]: "width_spec X = SPEC (top::real\<Rightarrow>_)"
 
