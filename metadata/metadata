@@ -7884,4 +7884,17 @@ abstract =
   transitive closures and tuples. It defines also a generic object model independent 
   from OCL. It allows one to use the theory as a reference for formalization of analogous languages.</p>
 
+[QHLProver]
+title = Quantum Hoare Logic
+author = Junyi Liu<>, Bohua Zhan <http://lcs.ios.ac.cn/~bzhan/>, Shuling Wang<>, Shenggang Ying<>, Tao Liu<>, Yangjia Li<>, Mingsheng Ying<>, Naijun Zhan<>
+topic = Computer Science/Programming Languages/Logics
+date = 2019-03-24
+notify = bzhan@ios.ac.cn
+abstract = 
+  We formalize quantum Hoare logic as given in [1]. In particular, we
+  specify the syntax and denotational semantics of a simple model of
+  quantum programs. Then, we write down the rules of quantum Hoare logic
+  for partial correctness, and show the soundness and completeness of
+  the resulting proof system. As an application, we verify the
+  correctness of Grover’s algorithm.
 
