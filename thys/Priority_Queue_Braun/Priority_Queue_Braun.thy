@@ -16,7 +16,7 @@ each node with subtrees $l$ and $r$, $size(r) \le size(l) \le
 size(r)+1$), to implement flexible arrays. Paulson \cite{Paulson}
 (based on code supplied by Okasaki)
 implemented priority queues via Braun trees. This theory verifies
-Paulsons's implementation, including the logarithmic bounds.\<close>
+Paulsons's implementation (with small simplifications), including the logarithmic bounds.\<close>
 
 text \<open>Direct proof of logarithmic height. Also follows from the fact that Braun
 trees are balanced (proved in the base theory).\<close>
@@ -77,75 +77,43 @@ by(induction t arbitrary: x) (auto  simp add: ball_Un)
 
 subsection \<open>Deletion\<close>
 
+text \<open>Slightly simpler definition of @{text del_left}
+which avoids the need to appeal to the Braun invariant.\<close>
+
 fun del_left :: "'a tree \<Rightarrow> 'a * 'a tree" where
-"del_left (Node Leaf x Leaf) = (x,Leaf)" |
+"del_left (Node Leaf x r) = (x,r)" |
 "del_left (Node l x r) = (let (y,l') = del_left l in (y,Node r x l'))"
 
+lemma del_left_mset_plus:
+  "del_left t = (x,t') \<Longrightarrow> t \<noteq> Leaf
+  \<Longrightarrow> mset_tree t = {#x#} + mset_tree t'"
+  by (induction t arbitrary: x t' rule: del_left.induct;
+    auto split: prod.splits)
+
+lemma del_left_mset:
+  "del_left t = (x,t') \<Longrightarrow> t \<noteq> Leaf
+  \<Longrightarrow> mset_tree t' = mset_tree t - {#x#}"
+  by (auto dest: del_left_mset_plus)
+
+lemma del_left_set:
+  "del_left t = (x,t') \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> set_tree t = {x} \<union> set_tree t'"
+  by (induction t arbitrary: x t' rule: del_left.induct;
+    fastforce split: prod.splits)
+
+lemma del_left_heap:
+  "del_left t = (x,t') \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> heap t \<Longrightarrow> heap t'"
+  by (induction t arbitrary: x t' rule: del_left.induct;
+    fastforce split: prod.splits dest: del_left_set[THEN equalityD2])
+
 lemma del_left_size:
-  "del_left t = (x,t') \<Longrightarrow> braun t \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> size t = size t' + 1"
-apply(induction t arbitrary: x t' rule: del_left.induct)
-apply(fastforce split: prod.splits)+
-done
+  "del_left t = (x,t') \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> size t = size t' + 1"
+  by(induction t arbitrary: x t' rule: del_left.induct;
+    auto split: prod.splits)
 
 lemma del_left_braun:
   "del_left t = (x,t') \<Longrightarrow> braun t \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> braun t'"
-apply(induction t arbitrary: x t' rule: del_left.induct)
-apply(fastforce dest: del_left_size split: prod.splits)+
-done
-
-lemma del_left_elem:
-  "del_left t = (x,t') \<Longrightarrow> braun t \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> x \<in> set_tree t"
-apply(induction t arbitrary: x t' rule: del_left.induct)
-apply(fastforce split: prod.splits)+
-done
-
-lemma del_left_set:
-  "del_left t = (x,t') \<Longrightarrow> braun t \<Longrightarrow> t \<noteq> Leaf
-  \<Longrightarrow> set_tree t = Set.insert x (set_tree t')"
-apply(induction t arbitrary: x t' rule: del_left.induct)
-apply(fastforce split: prod.splits)+
-done
-
-lemma del_left_mset:
-  "del_left t = (x,t') \<Longrightarrow> braun t \<Longrightarrow> t \<noteq> Leaf
-  \<Longrightarrow> mset_tree t' = mset_tree t - {#x#}"
-proof (induction t arbitrary: x t' rule: del_left.induct)
-  case 1 then show ?case by simp
-next
-  case "2_1" then show ?case
-    by (auto simp: diff_union_swap ac_simps
-     dest!: del_left_elem split: prod.splits)
-next
-  case ("2_2" l x v u w y t)
-  from "2_2" obtain t' where t: "t = \<langle>\<langle>v, u, w\<rangle>, x, t'\<rangle>"
-    by (auto split: prod.splits)
-  from "2_2" have y: "y \<in># mset_tree l"
-    by (auto dest!: del_left_elem split: prod.splits)
-  then have "l \<noteq> \<langle>\<rangle>"  by auto
-  with t "2_2.prems" "2_2.IH" [of y t']
-    have "mset_tree t' = mset_tree l - {#y#}"
-    by (auto simp: dest!: del_left_elem split: prod.splits)
-  with y have "mset_tree l = mset_tree t' + {#y#}"
-    by simp
-  with t show ?case
-    by (simp add: ac_simps multiset_diff_union_assoc)
-next
-  case 3 then show ?case by simp
-qed
-
-lemma del_left_heap:
-  "del_left t = (x,t') \<Longrightarrow> heap t \<Longrightarrow> braun t \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> heap t'"
-proof(induction t arbitrary: x t' rule: del_left.induct)
-  case ("2_1" ll a lr b r)
-  from "2_1.prems"(1) obtain l' where
-    "del_left (Node ll a lr) = (x,l')" and [simp]: "t' = Node r b l'"
-    by(auto split: prod.splits)
-  from del_left_set[OF this(1)] "2_1.IH"[OF this(1)] "2_1.prems"
-  show ?case by(auto)
-next
-  case "2_2" thus ?case by(fastforce dest: del_left_set split: prod.splits)
-next
-qed auto
+  by(induction t arbitrary: x t' rule: del_left.induct;
+    auto split: prod.splits dest: del_left_size)
 
 context includes pattern_aliases
 begin
@@ -227,9 +195,9 @@ next
   have "mset_tree(sift_down r y l') = mset_tree t - {#a#}"
     if del: "del_left (Node ll b lr) = (y,l')" for y l'
     using assms del_left_mset[OF del] del_left_size[OF del]
-      del_left_braun[OF del]del_left_elem[OF del]
+      del_left_braun[OF del] del_left_mset_plus[OF del]
     apply (subst mset_sift_down)
-    apply (auto simp: ac_simps)
+    apply (auto simp: ac_simps del_left_mset_plus[OF del])
     done
   thus ?thesis by(auto split: prod.split)
 qed
