@@ -147,7 +147,7 @@ lemma mset_sift_down:
 by(induction l a r rule: sift_down.induct) (auto simp: ac_simps Let_def)
 
 lemma set_sift_down: "braun(Node l a r)
-  \<Longrightarrow> set_tree(sift_down l a r) = Set.insert a (set_tree l \<union> set_tree r)"
+  \<Longrightarrow> set_tree(sift_down l a r) = {a} \<union> (set_tree l \<union> set_tree r)"
 by(drule arg_cong[where f=set_mset, OF mset_sift_down]) (simp)
 
 lemma heap_sift_down:
