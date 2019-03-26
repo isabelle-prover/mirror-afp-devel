@@ -351,12 +351,8 @@ proof -
     using ListMem_iff
     by fast
   moreover {
-    have "vs' \<subseteq> \<Union>(set lvs)" 
-      using obtain_vs'(1)
-      by blast
-    then have "disjnt vs' vs" 
-      using obtain_v1_v2(3) calculation disjnt_subset1
-      by auto
+    have "disjnt vs' vs"
+      using obtain_v1_v2(3) obtain_vs'(1) by auto
     then have "dep_var_set PROB vs' vs" 
       unfolding dep_var_set_def 
       using obtain_v1_v2(1, 2, 4) obtain_vs'(2)
