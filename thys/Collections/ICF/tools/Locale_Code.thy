@@ -157,7 +157,7 @@ structure Locale_Code :LOCALE_CODE = struct
         else ();
     in process_actions acc' acts end;
 
-    fun pat_eqs_of_spec thy (Spec_Rules.Equational,(pats,thms)) = 
+    fun pat_eqs_of_spec thy (Spec_Rules.Equational _,(pats,thms)) = 
       map_filter (filter_pat_eq thy thms) pats
     | pat_eqs_of_spec thy (Spec_Rules.Unknown,
         ([Const (@{const_name LC_DEL},_)$pat],_)) 
