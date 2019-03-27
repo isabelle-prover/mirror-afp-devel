@@ -1023,10 +1023,11 @@ proof -
     using A4 unfolding det_def[of A4] by (auto simp: signof_def sign_def)
   finally show ?thesis by simp
 qed
-  
-lemma det_swap_rows: assumes A: "A \<in> carrier_mat (k + n) (k + n)" 
-  shows "det A = (-1)^(k * n) * det (mat (k + n) (k + n) (\<lambda> (i,j). 
-    A $$ ((if i < k then i + n else i - k),j)))" (is "_ = _ * det ?B")
+
+lemma det_swap_initial_rows: assumes A: "A \<in> carrier_mat m m" 
+  and lt: "k + n \<le> m" 
+  shows "det A = (- 1) ^ (k * n) *
+    det (mat m m (\<lambda>(i, j). A $$ (if i < n then i + k else if i < k + n then i - n else i, j)))" 
 proof -
   define sw where "sw = (\<lambda> (A :: 'a mat) xs. fold (\<lambda> (i,j). swaprows i j) xs A)"
   have dim_sw[simp]: "dim_row (sw A xs) = dim_row A" "dim_col (sw A xs) = dim_col A" for xs A
@@ -1098,28 +1099,92 @@ proof -
         by (subst Suc(1), insert Suc(2-), auto simp: det, auto simp: swb power_add)
     qed
   } note det_swbl = this
-  from assms have le: "n + k \<le> dim_row A" by auto
-  have B: "?B = swbl A n k" by (subst swbl[OF le], rule eq_matI, insert assms, auto)
-  have det: "det ?B = (- 1) ^ (n * k) * det A" unfolding B
-    by (rule det_swbl, insert assms, auto)
-  show ?thesis unfolding det by (simp add: ac_simps)
+  from assms have dim: "dim_row A = dim_col A" "k + n \<le> dim_col A" "k + n \<le> dim_row A" "dim_col A = m" by auto
+  from arg_cong[OF det_swbl[OF dim(2,1), unfolded swbl[OF dim(3)], unfolded Let_def dim], 
+      of  "\<lambda> x. (-1)^(k*n) * x"]
+  show ?thesis by simp
+qed
+
+lemma det_swap_rows: assumes A: "A \<in> carrier_mat (k + n) (k + n)" 
+  shows "det A = (-1)^(k * n) * det (mat (k + n) (k + n) (\<lambda> (i,j). 
+    A $$ ((if i < k then i + n else i - k),j)))" 
+proof -
+  have le: "n + k \<le> k + n" by simp
+  show ?thesis unfolding det_swap_initial_rows[OF A le]
+    by (intro arg_cong2[of _ _ _ _ "\<lambda> x y. ((-1)^x * det y)"], force, intro eq_matI, auto)
+qed
+
+lemma det_swap_final_rows: assumes A: "A \<in> carrier_mat m m"
+  and m: "m = l + k + n" 
+  shows "det A = (- 1) ^ (k * n) *
+    det (mat m m (\<lambda>(i, j). A $$ (if i < l then i else if i < l + n then i + k else i - n, j)))" 
+    (is "_ = _ * det ?M")
+proof -
+  (* l k n -swap-rows\<rightarrow> k n l -swap-initial\<rightarrow> n k l -swap-rows\<rightarrow> l n k *)
+  have m1: "m = (k + n) + l" using m by simp
+  have m2: "k + n \<le> m" using m by simp
+  have m3: "m = l + (n + k)" using m by simp
+  define M where "M = ?M" 
+  let ?M1 = "mat m m (\<lambda>(i, j). A $$ (if i < k + n then i + l else i - (k + n), j))" 
+  let ?M2 = "mat m m
+          (\<lambda>(i, j). A $$ (if i < n then i + k + l else if i < k + n then i - n + l else i - (k + n), j))" 
+  have M2: "?M2 \<in> carrier_mat m m" by auto
+  have "det A = (- 1) ^ ((k + n) * l) * det ?M1" 
+    unfolding det_swap_rows[OF A[unfolded m1]] m1[symmetric] by simp
+  also have "det ?M1 = (- 1) ^ (k * n) * det ?M2"
+    by (subst det_swap_initial_rows[OF _ m2], force, rule arg_cong[of _ _ "\<lambda> x. _ * det x"],
+    rule eq_matI, auto simp: m)
+  also have "det ?M2 = (- 1) ^ (l * (n + k)) * det M" 
+    unfolding M_def det_swap_rows[OF M2[unfolded m3], folded m3]
+    by (rule arg_cong[of _ _ "\<lambda> x. _ * det x"], rule eq_matI, auto simp: m)
+  finally have "det A = (-1) ^ ((k + n) * l + (k * n) + l * (n + k)) * det M" (is "_ = ?b ^ _ * _")
+    by (simp add: power_add)
+  also have "(k + n) * l + (k * n) + l * (n + k) = 2 * (l * (n + k)) + k * n" by simp
+  also have "?b ^ \<dots> = ?b ^ (k * n)" by (simp add: power_add)
+  finally show ?thesis unfolding M_def .
+qed
+
+lemma det_swap_final_cols: assumes A: "A \<in> carrier_mat m m"
+  and m: "m = l + k + n" 
+  shows "det A = (- 1) ^ (k * n) *
+    det (mat m m (\<lambda>(i, j). A $$ (i, if j < l then j else if j < l + n then j + k else j - n)))" 
+proof -
+  have "det A = det (A\<^sup>T)" unfolding det_transpose[OF A] ..
+  also have "\<dots> = (- 1) ^ (k * n) *
+    det (mat m m (\<lambda>(i, j). A\<^sup>T $$ (if i < l then i else if i < l + n then i + k else i - n, j)))" 
+    (is "_ = _ * det ?M")
+    by (rule det_swap_final_rows[OF _ m], insert A, auto)
+  also have "det ?M = det (?M\<^sup>T)" by (subst det_transpose, auto)
+  also have "?M\<^sup>T = mat m m (\<lambda>(i, j). A $$ (i, if j < l then j else if j < l + n then j + k else j - n))" 
+    unfolding transpose_mat_def using A m
+    by (intro eq_matI, auto)
+  finally show ?thesis .
+qed
+
+lemma det_swap_initial_cols: assumes A: "A \<in> carrier_mat m m" 
+  and lt: "k + n \<le> m" 
+  shows "det A = (- 1) ^ (k * n) *
+    det (mat m m (\<lambda>(i, j). A $$ (i, if j < n then j + k else if j < k + n then j - n else j)))" 
+proof -
+  have "det A = det (A\<^sup>T)" unfolding det_transpose[OF A] ..
+  also have "\<dots> = (- 1) ^ (k * n) *
+    det (mat m m (\<lambda>(j, i). A\<^sup>T $$ (if j < n then j + k else if j < k + n then j - n else j,i)))" 
+    (is "_ = _ * det ?M")
+    by (rule det_swap_initial_rows[OF _ lt], insert A, auto)
+  also have "det ?M = det (?M\<^sup>T)" by (subst det_transpose, auto)
+  also have "?M\<^sup>T = mat m m (\<lambda>(i, j). A $$ (i, if j < n then j + k else if j < k + n then j - n else j))" 
+    unfolding transpose_mat_def using A lt
+    by (intro eq_matI, auto)
+  finally show ?thesis .
 qed
   
 lemma det_swap_cols: assumes A: "A \<in> carrier_mat (k + n) (k + n)" 
   shows "det A = (-1)^(k * n) * det (mat (k + n) (k + n) (\<lambda> (i,j). 
    A $$ (i,(if j < k then j + n else j - k))))" (is "_ = _ * det ?B")
 proof -
-  let ?A = "transpose_mat A" 
-  let ?C = "mat (k + n) (k + n) (\<lambda> (i,j). let r = 
-      (if i < k then i + n else i - k)
-      in ?A $$ (r,j))" 
-  have "det A = (det ?A)" using det_transpose[OF A] by simp
-  also have "\<dots> = (-1)^(k * n) * det ?C"
-    by (subst det_swap_rows, insert A, auto)
-  also have "det ?C = det (transpose_mat ?C)" by (subst det_transpose, auto)
-  also have "transpose_mat ?C = ?B" 
-    by (rule eq_matI, insert assms, auto)
-  finally show ?thesis .
+  have le: "n + k \<le> k + n" by simp
+  show ?thesis unfolding det_swap_initial_cols[OF A le]
+    by (intro arg_cong2[of _ _ _ _ "\<lambda> x y. ((-1)^x * det y)"], force, intro eq_matI, auto)
 qed  
   
 lemma det_four_block_mat_upper_right_zero: fixes A1 :: "'a :: idom mat" 
@@ -2234,6 +2299,5 @@ proof-
   qed (auto simp add: assms)
   finally show ?thesis .
 qed
-
 
 end
