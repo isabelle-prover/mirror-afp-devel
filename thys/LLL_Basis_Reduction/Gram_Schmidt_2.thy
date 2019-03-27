@@ -2581,6 +2581,19 @@ lemma Ints_scalar_prod:
    \<Longrightarrow> (\<And> i. i < n \<Longrightarrow> v $ i \<in> \<int>) \<Longrightarrow> (\<And> i. i < n \<Longrightarrow> w $ i \<in> \<int>) \<Longrightarrow> v \<bullet> w \<in> \<int>" 
   unfolding scalar_prod_def by (intro Ints_sum Ints_mult, auto)
 
+lemma Ints_det: assumes "\<And> i j. i < dim_row A \<Longrightarrow> j < dim_col A 
+  \<Longrightarrow> A $$ (i,j) \<in> \<int>"
+  shows "det A \<in> \<int>" 
+proof (cases "dim_row A = dim_col A")
+  case True
+  show ?thesis unfolding Determinant.det_def using True assms
+    by (auto intro!: Ints_sum Ints_mult Ints_prod simp: signof_def)
+next
+  case False
+  show ?thesis unfolding Determinant.det_def using False by simp
+qed
+
+
 lemma (in gram_schmidt_fs_Rn) Gramian_matrix_alt_alt_def:
   assumes "k \<le> m"
   shows "Gramian_matrix fs k = mat k k (\<lambda>(i,j). fs ! i \<bullet> fs ! j)"
