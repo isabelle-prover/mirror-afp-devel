@@ -1536,8 +1536,6 @@ schematic_goal acc_of_list_impl_hash:
 concrete_definition acc_of_list_impl_hash uses acc_of_list_impl_hash
 export_code acc_of_list_impl_hash checking SML
 
-term code_blue_dfs
-
 definition "code_blue_dfs_nat 
   \<equiv> code_blue_dfs :: _ \<Rightarrow> (nat list \<times> _) option"
 definition "code_blue_dfs_hash_nat 

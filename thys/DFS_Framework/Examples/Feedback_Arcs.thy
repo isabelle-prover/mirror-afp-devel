@@ -236,7 +236,6 @@ schematic_goal find_fas_impl:
   apply (autoref_monadic (trace))
   done
 concrete_definition find_fas_code for eq bhc sz Gi uses find_fas_impl
-thm find_fas_code.refine
 export_code find_fas_code checking SML
 
 thm find_fas_code.refine
@@ -386,7 +385,6 @@ schematic_goal find_fas_init_impl:
 
 concrete_definition find_fas_init_code for eq bhc sz Gi FIi
   uses find_fas_init_impl
-thm find_fas_code.refine
 export_code find_fas_init_code checking SML
 
 context begin interpretation autoref_syn .
