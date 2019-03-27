@@ -2582,7 +2582,7 @@ lemma Ints_scalar_prod:
   unfolding scalar_prod_def by (intro Ints_sum Ints_mult, auto)
 
 lemma (in gram_schmidt_fs_Rn) Gramian_matrix_alt_alt_def:
-  assumes "k < m"
+  assumes "k \<le> m"
   shows "Gramian_matrix fs k = mat k k (\<lambda>(i,j). fs ! i \<bullet> fs ! j)"
 proof -
   have *: "vec n (($v) (fs ! i)) = fs ! i" if "i < m" for i
