@@ -35,7 +35,8 @@ ML_command \<open>
           Isabelle_System.bash ("cd " ^ File.bash_path compile_dir ^
             " && \"$ISABELLE_GHC\" Main.hs 2>&1");
         val () =
-          if compile_rc = 0 then Export.export \<^theory> \<^path>\<open>code/generated/hlde\<close> [File.read exe]
+          if compile_rc = 0
+          then Export.export_executable \<^theory> \<^path>\<open>code/generated/hlde\<close> [File.read exe]
           else error "HLDE compilation failed";
 
         (*test*)
