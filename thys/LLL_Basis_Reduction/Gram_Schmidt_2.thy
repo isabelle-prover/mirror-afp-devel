@@ -18,6 +18,7 @@ theory Gram_Schmidt_2
     Jordan_Normal_Form.Matrix_Impl
     Norms
     Int_Rat_Operations
+    Cramer_Lemma_Idom
 begin
 
 (* TODO: Documentation and add references to computer algebra book *)
@@ -2395,12 +2396,12 @@ lemma HMA_M_replace_col[transfer_rule]:
   unfolding rel_fun_def replace_col_def replace_col_hma_def HMA_M_def HMA_V_def HMA_I_def
   by (auto simp: from_hma\<^sub>m_def from_hma\<^sub>v_def to_nat_from_nat_id intro!: eq_matI)
 
-lemma cramer_lemma_mat: fixes A :: "'a::{field} mat" 
+lemma cramer_lemma_mat: fixes A :: "'a::idom mat" 
   assumes A: "A \<in> carrier_mat n n" 
   and x: "x \<in> carrier_vec n" 
   and k: "k < n" 
 shows "det (replace_col A (A *\<^sub>v x) k) = x $v k * det A" 
-  using cramer_lemma[folded replace_col_hma_def, untransferred, cancel_card_constraint] assms
+  using cramer_lemma_idom[folded replace_col_hma_def, untransferred, cancel_card_constraint] assms
   by auto
 
 lemma of_int_dvd:
