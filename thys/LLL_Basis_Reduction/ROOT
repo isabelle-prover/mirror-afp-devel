@@ -13,18 +13,12 @@ session LLL_Basis_Reduction (AFP) = Berlekamp_Zassenhaus +
     Norms
     Cost
     List_Representation
-  theories
     Gram_Schmidt_2
     Gram_Schmidt_Int
-  theories
     LLL    
-  theories
     LLL_Impl    
-  theories
     LLL_Complexity    
-  theories
     LLL_Number_Bounds
-  theories
     LLL_Certification
     FPLLL_Solver
   document_files
