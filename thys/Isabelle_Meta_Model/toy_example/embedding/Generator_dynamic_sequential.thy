@@ -884,13 +884,12 @@ fun export_code_cmd' seris tmp_export_code f_err filename_thy raw_cs thy =
   export_code_tmp_file seris
     (fn seris =>
       let val mem_scala = List.exists (fn ((("Scala", _), _), _) => true | _ => false) seris
-          val _ = Isabelle_Code_Target.export_code_cmd
+          val thy' (* FIXME unused *) = Isabelle_Code_Target.export_code_cmd
         false
         (if mem_scala then Deep0.Export_code_env.Isabelle.function :: raw_cs else raw_cs)
         ((map o apfst o apsnd) SOME seris)
-        (Proof_Context.init_global
-           let val v = Deep0.apply_hs_code_identifiers Deep0.Export_code_env.Haskell.argument thy in
-           if mem_scala then Code_printing.apply_code_printing v else v end) in
+        (let val v = Deep0.apply_hs_code_identifiers Deep0.Export_code_env.Haskell.argument thy in
+         if mem_scala then Code_printing.apply_code_printing v else v end) in
       List_mapi
         (fn i => fn seri => case seri of (((ml_compiler, _), filename), _) =>
           let val (l, (out, err)) =
@@ -1055,13 +1054,12 @@ fun f_command l_mode =
                                   mk_fic (Deep0.Find.function ml_compiler (Deep0.Find.ext ml_compiler))))
                 , export_arg), mk_fic)
               end) seri_args
-            val _ = Isabelle_Code_Target.export_code_cmd
+            val thy' (* FIXME unused *) = Isabelle_Code_Target.export_code_cmd
                       (List.exists (fn (((("SML", _), _), _), _) => true | _ => false) seri_args')
                       [Deep0.Export_code_env.Isabelle.function]
                       (List.map ((apfst o apsnd) SOME o fst) seri_args')
-                      (Proof_Context.init_global
-                        (Code_printing.apply_code_printing
-                          (Deep0.apply_hs_code_identifiers Deep0.Export_code_env.Haskell.function thy)))
+                      (Code_printing.apply_code_printing
+                        (Deep0.apply_hs_code_identifiers Deep0.Export_code_env.Haskell.function thy))
             val () = fold (fn ((((ml_compiler, ml_module), _), _), mk_fic) => fn _ =>
               Deep0.Find.init ml_compiler mk_fic ml_module Deep.mk_free thy) seri_args' () in
         (Gen_deep (env, Internal_deep ( output_header_thy
