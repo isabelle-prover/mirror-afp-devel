@@ -2261,6 +2261,30 @@ proof -
   finally show ?thesis unfolding atLeast0LessThan using A j unfolding l_def by auto
 qed
 
+lemma laplace_expansion_row:
+  assumes A: "(A :: 'a :: comm_ring_1 mat) \<in> carrier_mat n n"
+      and i: "i < n"
+    shows "det A = (\<Sum>j<n. A $$ (i,j) * cofactor A i j)"
+proof -
+  have "det A = det (A\<^sup>T)" using det_transpose[OF A] by simp
+  also have "\<dots> = (\<Sum>j<n. A\<^sup>T $$ (j, i) * cofactor A\<^sup>T j i)" 
+    by (rule laplace_expansion_column[OF _ i], insert A, auto)
+  also have "\<dots> = (\<Sum>j<n. A $$ (i,j) * cofactor A i j)" unfolding cofactor_def
+  proof (rule sum.cong[OF refl], rule arg_cong2[of _ _ _ _ "\<lambda> x y. x * y"], goal_cases)
+    case (1 j)
+    thus ?case using A i by auto
+  next
+    case (2 j)
+    have "det (mat_delete A\<^sup>T j i) = det ((mat_delete A\<^sup>T j i)\<^sup>T)" 
+      by (subst det_transpose, insert A, auto simp: mat_delete_def)
+    also have "(mat_delete A\<^sup>T j i)\<^sup>T = mat_delete A i j" 
+      unfolding mat_delete_def using A by auto
+    finally show ?case by (simp add: ac_simps)
+  qed
+  finally show ?thesis .
+qed
+
+
 lemma degree_det_le: assumes "\<And> i j. i < n \<Longrightarrow> j < n \<Longrightarrow> degree (A $$ (i,j)) \<le> k"
   and A: "A \<in> carrier_mat n n" 
 shows "degree (det A) \<le> k * n" 
@@ -2299,5 +2323,81 @@ proof-
   qed (auto simp add: assms)
   finally show ?thesis .
 qed
+
+definition adj_mat :: "'a :: comm_ring_1 mat \<Rightarrow> 'a mat" where
+  "adj_mat A = mat (dim_row A) (dim_col A) (\<lambda> (i,j). cofactor A j i)" 
+
+lemma adj_mat: assumes A: "A \<in> carrier_mat n n"
+  shows "adj_mat A \<in> carrier_mat n n"
+  "A * adj_mat A = det A \<cdot>\<^sub>m 1\<^sub>m n" 
+  "adj_mat A * A = det A \<cdot>\<^sub>m 1\<^sub>m n" 
+proof -
+  from A have dims: "dim_row A = n" "dim_col A = n" by auto
+  show aA: "adj_mat A \<in> carrier_mat n n" unfolding adj_mat_def dims by simp  
+  {
+    fix i j
+    assume ij: "i < n" "j < n" 
+    define B where "B = mat n n (\<lambda> (i',j'). if i' = j then A $$ (i,j') else A $$ (i',j'))" 
+    have "(A * adj_mat A) $$ (i,j) = (\<Sum> k < n. A $$ (i,k) * cofactor A j k)" 
+      unfolding times_mat_def scalar_prod_def adj_mat_def using ij A by (auto intro: sum.cong)
+    also have "\<dots> = (\<Sum> k < n. A $$ (i,k) * (-1)^(j + k) * det (mat_delete A j k))" 
+      unfolding cofactor_def by (auto intro: sum.cong)
+    also have "\<dots> = (\<Sum> k < n. B $$ (j,k) * (-1)^(j + k) * det (mat_delete B j k))" 
+      by (rule sum.cong[OF refl], intro arg_cong2[of _ _ _ _ "\<lambda> x y. y * _ * det x"], insert A ij,
+        auto simp: B_def mat_delete_def)
+    also have "\<dots> = (\<Sum> k < n. B $$ (j,k) * cofactor B j k)" 
+      unfolding cofactor_def by (simp add: ac_simps)
+    also have "\<dots> = det B" 
+      by (rule laplace_expansion_row[symmetric], insert ij, auto simp: B_def)
+    also have "\<dots> = (if i = j then det A else 0)" 
+    proof (cases "i = j")
+      case True
+      hence "B = A" using A by (auto simp add: B_def)
+      with True show ?thesis by simp
+    next
+      case False
+      have "det B = 0" 
+        by (rule Determinant.det_identical_rows[OF _ False ij], insert A ij, auto simp: B_def)
+      with False show ?thesis by simp
+    qed
+    also have "\<dots> = (det A \<cdot>\<^sub>m 1\<^sub>m n) $$ (i,j)"  using ij by auto
+    finally have "(A * adj_mat A) $$ (i, j) = (det A \<cdot>\<^sub>m 1\<^sub>m n) $$ (i, j)" .
+  } note main = this
+  show "A * adj_mat A = det A \<cdot>\<^sub>m 1\<^sub>m n"
+    by (rule eq_matI[OF main], insert A aA, auto)
+  (* now the completely symmetric version *)
+  {
+    fix i j
+    assume ij: "i < n" "j < n" 
+    define B where "B = mat n n (\<lambda> (i',j'). if j' = i then A $$ (i',j) else A $$ (i',j'))" 
+    have "(adj_mat A * A) $$ (i,j) = (\<Sum> k < n. A $$ (k,j) * cofactor A k i)" 
+      unfolding times_mat_def scalar_prod_def adj_mat_def using ij A by (auto intro: sum.cong)
+    also have "\<dots> = (\<Sum> k < n. A $$ (k,j) * (-1)^(k + i) * det (mat_delete A k i))" 
+      unfolding cofactor_def by (auto intro: sum.cong)
+    also have "\<dots> = (\<Sum> k < n. B $$ (k,i) * (-1)^(k + i) * det (mat_delete B k i))" 
+      by (rule sum.cong[OF refl], intro arg_cong2[of _ _ _ _ "\<lambda> x y. y * _ * det x"], insert A ij,
+        auto simp: B_def mat_delete_def)
+    also have "\<dots> = (\<Sum> k < n. B $$ (k,i) * cofactor B k i)" 
+      unfolding cofactor_def by (simp add: ac_simps)
+    also have "\<dots> = det B" 
+      by (rule laplace_expansion_column[symmetric], insert ij, auto simp: B_def)
+    also have "\<dots> = (if i = j then det A else 0)" 
+    proof (cases "i = j")
+      case True
+      hence "B = A" using A by (auto simp add: B_def)
+      with True show ?thesis by simp
+    next
+      case False
+      have "det B = 0" 
+        by (rule Determinant.det_identical_columns[OF _ False ij], insert A ij, auto simp: B_def)
+      with False show ?thesis by simp
+    qed
+    also have "\<dots> = (det A \<cdot>\<^sub>m 1\<^sub>m n) $$ (i,j)"  using ij by auto
+    finally have "(adj_mat A * A) $$ (i, j) = (det A \<cdot>\<^sub>m 1\<^sub>m n) $$ (i, j)" .
+  } note main = this
+  show "adj_mat A * A = det A \<cdot>\<^sub>m 1\<^sub>m n"
+    by (rule eq_matI[OF main], insert A aA, auto)
+qed
+
 
 end
