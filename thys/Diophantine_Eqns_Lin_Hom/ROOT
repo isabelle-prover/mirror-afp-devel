@@ -13,3 +13,5 @@ session Diophantine_Eqns_Lin_Hom (AFP) = HOL +
   document_files
     "root.bib"
     "root.tex"
+  export_files (in ".") [2]
+    "Diophantine_Eqns_Lin_Hom.Solver_Code:**"
