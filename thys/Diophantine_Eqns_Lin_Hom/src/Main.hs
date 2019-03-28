@@ -4,7 +4,7 @@ License: LGPL
 -}
 module Main (main) where
 
-import HLDE -- for solve: computing solutions to homogeneous lienar diophantine equations
+import HLDE -- for solve: computing solutions to homogeneous linear diophantine equations
 import System.Environment -- for getArgs
 import System.IO -- for file reading
 import System.Exit -- for error codes

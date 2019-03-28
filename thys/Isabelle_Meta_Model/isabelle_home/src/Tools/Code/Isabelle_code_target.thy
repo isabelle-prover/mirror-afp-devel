@@ -91,14 +91,17 @@ val parse_inst_ident = Parse.name --| @{keyword "::"} -- Parse.class;
 
 (* code generation *)
 
-fun prep_destination "" = NONE
-  | prep_destination s = SOME (Path.explode s);
+fun prep_destination s = ({physical = true}, Path.explode s);
 
-
-fun export_code_cmd all_public raw_cs seris ctxt =
-  Code_Target.export_code ctxt all_public
-    (Code_Thingol.read_const_exprs ctxt raw_cs)
-    ((map o apfst o apsnd o Option.map) prep_destination seris);
+fun export_code_cmd all_public raw_cs seris thy =
+  let
+    val ctxt = Proof_Context.init_global thy;
+    val cs = Code_Thingol.read_const_exprs ctxt raw_cs;
+  in
+    thy |> Named_Target.theory_map
+      (Code_Target.export_code all_public cs
+        ((map o apfst o apsnd o Option.map) prep_destination seris))
+  end;
 
 
 

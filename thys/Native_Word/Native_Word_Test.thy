@@ -147,7 +147,7 @@ definition test_uint16 where
 no_notation sshiftr_uint16 (infixl ">>>" 55)
 
 export_code test_uint16 checking Haskell? Scala
-export_code test_uint16 in SML_word file \<open>\<close>
+export_code test_uint16 in SML_word
 
 notepad begin
 have test_uint16 by code_simp
