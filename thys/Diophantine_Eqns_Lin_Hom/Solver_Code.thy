@@ -15,27 +15,26 @@ export_code solve checking Haskell \<comment> \<open>test whether Haskell code g
 
 export_code solve integer_of_nat nat_of_integer in Haskell module_name HLDE file_prefix generated
 
-ML_command \<open>
-  if getenv "ISABELLE_GHC" = "" then warning "No GHC configured"
+ML_command \<^marker>\<open>contributor Makarius\<close> \<open>
+  if getenv "ISABELLE_GHC" = "" then warning "GHC not configured"
   else
-    Isabelle_System.with_tmp_dir "HLDE" (fn compile_dir =>
+    Isabelle_System.with_tmp_dir "HLDE" (fn build_dir =>
       let
-        val exe = Path.append compile_dir (Path.basic "Main");
+        val exe = Path.append build_dir (Path.exe \<^path>\<open>Main\<close>);
 
         (*assemble sources*)
-        val _ = Isabelle_System.copy_file (Path.append \<^master_dir> \<^path>\<open>src/Main.hs\<close>) compile_dir;
+        val _ = Isabelle_System.copy_file (Path.append \<^master_dir> \<^path>\<open>src/Main.hs\<close>) build_dir;
         val _ =
-          File.write (Path.append compile_dir \<^path>\<open>HLDE.hs\<close>)
+          File.write (Path.append build_dir \<^path>\<open>HLDE.hs\<close>)
             (Generated_Files.the_file_content \<^theory> \<^path>\<open>code/generated/HLDE.hs\<close>);
 
         (*compile*)
         val compile_rc =
-          Isabelle_System.bash ("cd " ^ File.bash_path compile_dir ^
-            " && \"$ISABELLE_GHC\" Main.hs 2>&1");
+          Isabelle_System.bash ("cd " ^ File.bash_path build_dir ^ " && \"$ISABELLE_GHC\" Main.hs");
         val () =
-          if compile_rc = 0
-          then Export.export_executable \<^theory> \<^path>\<open>code/generated/hlde\<close> [File.read exe]
-          else error "HLDE compilation failed";
+          if compile_rc = 0 then
+            Export.export_executable_file \<^theory> (Path.exe \<^path>\<open>code/generated/hlde\<close>) exe
+          else error "Compilation failed";
 
         (*test*)
         val print_coeffs = enclose "[" "]" o commas o map string_of_int;
@@ -44,7 +43,7 @@ ML_command \<open>
             val test_rc =
               Isabelle_System.bash (File.bash_path exe ^
                 " <<< '(" ^ print_coeffs xs ^ ", " ^ print_coeffs ys ^ ")'");
-          in if test_rc = 0 then () else error "HLDE computation failed" end;
+          in if test_rc = 0 then () else error "Test failed" end;
       in
         print_hlde ([3, 5, 1], [2, 7])
       end);
