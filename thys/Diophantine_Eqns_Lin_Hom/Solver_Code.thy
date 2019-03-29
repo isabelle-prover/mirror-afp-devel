@@ -25,10 +25,8 @@ ML_command \<open>
         (*assemble sources*)
         val _ = Isabelle_System.copy_file (Path.append \<^master_dir> \<^path>\<open>src/Main.hs\<close>) compile_dir;
         val _ =
-          Generated_Files.get_files \<^theory> |> List.app (fn {path, text, ...} =>
-            if path = \<^path>\<open>code/generated/HLDE.hs\<close> then
-              File.write (Path.append compile_dir \<^path>\<open>HLDE.hs\<close>) text
-            else ());
+          File.write (Path.append compile_dir \<^path>\<open>HLDE.hs\<close>)
+            (Generated_Files.the_file_content \<^theory> \<^path>\<open>code/generated/HLDE.hs\<close>);
 
         (*compile*)
         val compile_rc =
