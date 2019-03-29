@@ -84,6 +84,6 @@ begin
     nat_of_integer integer_of_nat
     nbaei alphabetei initialei transei acceptingei
     nbaei_nbai complement_impl
-    in SML module_name Complementation file \<open>code/Complementation_Export.sml\<close>
+    in SML module_name Complementation file_prefix Complementation_Export
 
 end

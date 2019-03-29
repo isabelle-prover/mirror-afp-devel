@@ -54,8 +54,6 @@ thys/LTL_to_DRA/Code/LTL_to_DRA_Translator.sml
 
 thys/EdmondsKarp_Maxflow/evaluation/fofu-SML/Fofu_Export.sml
 
-thys/Buchi_Complementation/code/Complementation_Export.sml
-
 thys/Refine_Imperative_HOL/benchmarks/Dijkstra/isabelle/dijkstra_export.sml
 thys/Refine_Imperative_HOL/benchmarks/Heapmap/isabelle/heapmap_export.sml
 thys/Refine_Imperative_HOL/benchmarks/NestedDFS/isabelle/NDFS_Benchmark_export.sml
