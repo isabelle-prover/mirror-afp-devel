@@ -269,7 +269,6 @@ lemma ltl_const_equiv_lt_ltl_prop_equiv[simp]:
 subsection \<open>Quotient types\<close>
 
 quotient_type 'a ltln\<^sub>L = "'a ltln" / "(\<sim>\<^sub>L)"
-  morphisms Rep_ltln\<^sub>L Abs_ltln\<^sub>L
   by (rule ltl_lang_equiv_equivp)
 
 instantiation ltln\<^sub>L :: (type) equal
@@ -288,7 +287,6 @@ end
 
 
 quotient_type 'a ltln\<^sub>P = "'a ltln" / "(\<sim>\<^sub>P)"
-  morphisms Rep_ltln\<^sub>P Abs_ltln\<^sub>P
   by (rule ltl_prop_equiv_equivp)
 
 instantiation ltln\<^sub>P :: (type) equal
@@ -307,7 +305,6 @@ end
 
 
 quotient_type 'a ltln\<^sub>C = "'a ltln" / "(\<sim>\<^sub>C)"
-  morphisms Rep_ltln\<^sub>C Abs_ltln\<^sub>C
   by (rule ltl_const_equiv_equivp)
 
 instantiation ltln\<^sub>C :: (type) equal
@@ -330,14 +327,14 @@ subsection \<open>Cardinality of propositional quotient sets\<close>
 
 definition sat_models :: "'a ltln\<^sub>P \<Rightarrow> 'a ltln set set"
 where
-  "sat_models \<phi> = {\<A>. \<A> \<Turnstile>\<^sub>P Rep_ltln\<^sub>P \<phi>}"
+  "sat_models \<phi> = {\<A>. \<A> \<Turnstile>\<^sub>P rep_ltln\<^sub>P \<phi>}"
 
 lemma Rep_Abs_prop_entailment[simp]:
-  "\<A> \<Turnstile>\<^sub>P Rep_ltln\<^sub>P (Abs_ltln\<^sub>P \<phi>) = \<A> \<Turnstile>\<^sub>P \<phi>"
+  "\<A> \<Turnstile>\<^sub>P rep_ltln\<^sub>P (abs_ltln\<^sub>P \<phi>) = \<A> \<Turnstile>\<^sub>P \<phi>"
   by (metis Quotient3_ltln\<^sub>P Quotient3_rep_abs ltl_prop_equiv_def)
 
 lemma sat_models_Abs:
-  "\<A> \<in> sat_models (Abs_ltln\<^sub>P \<phi>) = \<A> \<Turnstile>\<^sub>P \<phi>"
+  "\<A> \<in> sat_models (abs_ltln\<^sub>P \<phi>) = \<A> \<Turnstile>\<^sub>P \<phi>"
   by (simp add: sat_models_def)
 
 lemma sat_models_inj:
@@ -346,7 +343,7 @@ proof (rule injI)
   fix \<phi> \<psi> :: "'a ltln\<^sub>P"
   assume "sat_models \<phi> = sat_models \<psi>"
 
-  then have "Rep_ltln\<^sub>P \<phi> \<sim>\<^sub>P Rep_ltln\<^sub>P \<psi>"
+  then have "rep_ltln\<^sub>P \<phi> \<sim>\<^sub>P rep_ltln\<^sub>P \<psi>"
     unfolding sat_models_def ltl_prop_equiv_def by force
 
   then show "\<phi> = \<psi>"
@@ -381,7 +378,7 @@ lemma sat_models_inter_inj_helper:
   and
     "prop_atoms \<psi> \<subseteq> P"
   and
-    "sat_models (Abs_ltln\<^sub>P \<phi>) \<inter> Pow P = sat_models (Abs_ltln\<^sub>P \<psi>) \<inter> Pow P"
+    "sat_models (abs_ltln\<^sub>P \<phi>) \<inter> Pow P = sat_models (abs_ltln\<^sub>P \<psi>) \<inter> Pow P"
   shows
     "\<phi> \<sim>\<^sub>P \<psi>"
 proof -
@@ -393,32 +390,31 @@ proof -
 qed
 
 lemma sat_models_inter_inj:
-  "inj_on (\<lambda>\<phi>. sat_models \<phi> \<inter> Pow P) {Abs_ltln\<^sub>P \<phi> |\<phi>. prop_atoms \<phi> \<subseteq> P}"
+  "inj_on (\<lambda>\<phi>. sat_models \<phi> \<inter> Pow P) {abs_ltln\<^sub>P \<phi> |\<phi>. prop_atoms \<phi> \<subseteq> P}"
   by (auto simp: inj_on_def sat_models_inter_inj_helper ltln\<^sub>P.abs_eq_iff)
 
 lemma sat_models_pow_pow:
-  "{sat_models (Abs_ltln\<^sub>P \<phi>) \<inter> Pow P | \<phi>. prop_atoms \<phi> \<subseteq> P} \<subseteq> Pow (Pow P)"
+  "{sat_models (abs_ltln\<^sub>P \<phi>) \<inter> Pow P | \<phi>. prop_atoms \<phi> \<subseteq> P} \<subseteq> Pow (Pow P)"
   by (auto simp: sat_models_def)
 
 lemma sat_models_finite:
-  "finite P \<Longrightarrow> finite {sat_models (Abs_ltln\<^sub>P \<phi>) \<inter> Pow P | \<phi>. prop_atoms \<phi> \<subseteq> P}"
+  "finite P \<Longrightarrow> finite {sat_models (abs_ltln\<^sub>P \<phi>) \<inter> Pow P | \<phi>. prop_atoms \<phi> \<subseteq> P}"
   using sat_models_pow_pow finite_subset by fastforce
 
 lemma sat_models_card:
-  "finite P \<Longrightarrow> card ({sat_models (Abs_ltln\<^sub>P \<phi>) \<inter> Pow P | \<phi>. prop_atoms \<phi> \<subseteq> P}) \<le> 2 ^ 2 ^ card P"
+  "finite P \<Longrightarrow> card ({sat_models (abs_ltln\<^sub>P \<phi>) \<inter> Pow P | \<phi>. prop_atoms \<phi> \<subseteq> P}) \<le> 2 ^ 2 ^ card P"
   by (metis (mono_tags, lifting) sat_models_pow_pow Pow_def card_Pow card_mono finite_Collect_subsets)
 
-(* TODO add simp rule?? *)
 lemma image_filter:
   "f ` {g a | a. P a} = {f (g a) | a. P a}"
   by blast
 
 lemma prop_equiv_finite:
-  "finite P \<Longrightarrow> finite {Abs_ltln\<^sub>P \<psi> | \<psi>. prop_atoms \<psi> \<subseteq> P}"
+  "finite P \<Longrightarrow> finite {abs_ltln\<^sub>P \<psi> | \<psi>. prop_atoms \<psi> \<subseteq> P}"
   by (auto simp: image_filter sat_models_finite finite_imageD[OF _ sat_models_inter_inj])
 
 lemma prop_equiv_card:
-  "finite P \<Longrightarrow> card {Abs_ltln\<^sub>P \<psi> | \<psi>. prop_atoms \<psi> \<subseteq> P} \<le> 2 ^ 2 ^ card P"
+  "finite P \<Longrightarrow> card {abs_ltln\<^sub>P \<psi> | \<psi>. prop_atoms \<psi> \<subseteq> P} \<le> 2 ^ 2 ^ card P"
   by (auto simp: image_filter sat_models_card card_image[OF sat_models_inter_inj, symmetric])
 
 

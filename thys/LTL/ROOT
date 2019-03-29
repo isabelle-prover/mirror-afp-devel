@@ -8,7 +8,6 @@ session LTL (AFP) = "HOL-Library" +
     LTL
     Rewriting
     Equivalence_Relations
-    Syntactic_Fragments
     Disjunctive_Normal_Form
     Code_Equations
     "example/Example"

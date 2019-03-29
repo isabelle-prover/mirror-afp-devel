@@ -898,8 +898,6 @@ theorem simplify_correct:
   "w \<Turnstile>\<^sub>n simplify m \<phi> \<longleftrightarrow> w \<Turnstile>\<^sub>n \<phi>"
   by (cases m) simp+
 
-
-
 subsection \<open>Code Generation\<close>
 
 code_pred syntactical_implies .
