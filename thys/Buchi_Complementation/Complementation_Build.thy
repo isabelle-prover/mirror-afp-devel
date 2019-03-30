@@ -43,12 +43,15 @@ ML_command \<^marker>\<open>contributor Makarius\<close> \<open>
 
         (*test*)
         val test_rc =
-          Isabelle_System.bash ("cd " ^ File.bash_path build_dir ^ " && ./Complementation");
+          Isabelle_System.bash
+            ("cd " ^ File.bash_path build_dir ^ " && ./Complementation Complementation.out");
         val _ =
           if test_rc = 0 then
-            Export.export_file thy \<^path_binding>\<open>code/mlmon.out\<close>
-              (Path.append build_dir \<^path>\<open>mlmon.out\<close>)
-          else warning "Test failed";  (* FIXME error -- "unhandled exception: Empty" *)
+            List.app (fn path =>
+              Export.export_file thy (Path.binding0 path) (Path.append build_dir (Path.base path)))
+             [\<^path>\<open>code/Complementation.out\<close>,
+              \<^path>\<open>code/mlmon.out\<close>]
+          else error "Test failed";
       in () end)
 \<close>
 
