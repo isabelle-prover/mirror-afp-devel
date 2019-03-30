@@ -47,10 +47,11 @@ ML_command \<^marker>\<open>contributor Makarius\<close> \<open>
             ("cd " ^ File.bash_path build_dir ^ " && ./Complementation Complementation.out");
         val _ =
           if test_rc = 0 then
-            List.app (fn path =>
-              Export.export_file thy (Path.binding0 path) (Path.append build_dir (Path.base path)))
-             [\<^path>\<open>code/Complementation.out\<close>,
-              \<^path>\<open>code/mlmon.out\<close>]
+            List.app (fn binding =>
+              Export.export_file thy binding
+                (Path.append build_dir (Path.base (#1 (Path.dest_binding binding)))))
+             [\<^path_binding>\<open>code/Complementation.out\<close>,
+              \<^path_binding>\<open>code/mlmon.out\<close>]
           else error "Test failed";
       in () end)
 \<close>
