@@ -20,20 +20,21 @@ ML_command \<^marker>\<open>contributor Makarius\<close> \<open>
   else
     Isabelle_System.with_tmp_dir "HLDE" (fn build_dir =>
       let
+        val thy = \<^theory>;
         val exe = Path.append build_dir (Path.exe \<^path>\<open>Main\<close>);
 
         (*assemble sources*)
         val _ = Isabelle_System.copy_file (Path.append \<^master_dir> \<^path>\<open>src/Main.hs\<close>) build_dir;
         val _ =
           File.write (Path.append build_dir \<^path>\<open>HLDE.hs\<close>)
-            (Generated_Files.the_file_content \<^theory> \<^path>\<open>code/generated/HLDE.hs\<close>);
+            (Generated_Files.the_file_content thy \<^path>\<open>code/generated/HLDE.hs\<close>);
 
         (*compile*)
         val compile_rc =
           Isabelle_System.bash ("cd " ^ File.bash_path build_dir ^ " && \"$ISABELLE_GHC\" Main.hs");
         val () =
           if compile_rc = 0 then
-            Export.export_executable_file \<^theory>
+            Export.export_executable_file thy
               (Path.binding_map Path.exe \<^path_binding>\<open>code/generated/hlde\<close>) exe
           else error "Compilation failed";
 
