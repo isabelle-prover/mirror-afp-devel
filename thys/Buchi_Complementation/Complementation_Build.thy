@@ -46,7 +46,7 @@ ML_command \<^marker>\<open>contributor Makarius\<close> \<open>
         val _ =
           if test_rc = 0 then
             Export.export_file thy \<^path>\<open>code/mlmon.out\<close> (Path.append build_dir \<^path>\<open>mlmon.out\<close>)
-          else warning "Test failed";  (* FIXME error -- unhandled exception: Empty *)
+          else warning "Test failed";  (* FIXME error -- "unhandled exception: Empty" *)
       in () end)
 \<close>
 
