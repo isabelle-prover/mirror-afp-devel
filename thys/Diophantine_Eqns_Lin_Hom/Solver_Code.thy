@@ -33,7 +33,8 @@ ML_command \<^marker>\<open>contributor Makarius\<close> \<open>
           Isabelle_System.bash ("cd " ^ File.bash_path build_dir ^ " && \"$ISABELLE_GHC\" Main.hs");
         val () =
           if compile_rc = 0 then
-            Export.export_executable_file \<^theory> (Path.exe \<^path>\<open>code/generated/hlde\<close>) exe
+            Export.export_executable_file \<^theory>
+              (Path.binding_map Path.exe \<^path_binding>\<open>code/generated/hlde\<close>) exe
           else error "Compilation failed";
 
         (*test*)

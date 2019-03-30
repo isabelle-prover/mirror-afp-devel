@@ -29,7 +29,7 @@ ML_command \<^marker>\<open>contributor Makarius\<close> \<open>
           Generated_Files.the_file_content \<^theory>\<open>Complementation_Final\<close>
             \<^path>\<open>code/Complementation_Export.ML\<close>;
         val _ = File.write (Path.append build_dir \<^path>\<open>Complementation_Export.sml\<close>) exported_code;
-        val _ = Export.export thy \<^path>\<open>code/Complementation_Export.sml\<close> [exported_code];
+        val _ = Export.export thy \<^path_binding>\<open>code/Complementation_Export.sml\<close> [exported_code];
 
         (*compile*)
         val compile_rc =
@@ -37,7 +37,8 @@ ML_command \<^marker>\<open>contributor Makarius\<close> \<open>
             " && \"$ISABELLE_MLTON\" -profile time -default-type intinf Complementation.mlb");
         val _ =
           if compile_rc = 0 then
-            Export.export_executable_file thy (Path.exe \<^path>\<open>code/Complementation\<close>) exe
+            Export.export_executable_file thy
+              (Path.binding_map Path.exe \<^path_binding>\<open>code/Complementation\<close>) exe
           else error "Compilation failed";
 
         (*test*)
@@ -45,7 +46,8 @@ ML_command \<^marker>\<open>contributor Makarius\<close> \<open>
           Isabelle_System.bash ("cd " ^ File.bash_path build_dir ^ " && ./Complementation");
         val _ =
           if test_rc = 0 then
-            Export.export_file thy \<^path>\<open>code/mlmon.out\<close> (Path.append build_dir \<^path>\<open>mlmon.out\<close>)
+            Export.export_file thy \<^path_binding>\<open>code/mlmon.out\<close>
+              (Path.append build_dir \<^path>\<open>mlmon.out\<close>)
           else warning "Test failed";  (* FIXME error -- "unhandled exception: Empty" *)
       in () end)
 \<close>
