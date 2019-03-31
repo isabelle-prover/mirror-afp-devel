@@ -354,7 +354,7 @@ lemma "Set (Collection Boolean[1]) < (OclSuper :: classes1 type)" by simp
 lemma "Set (Bag Boolean[1]) < Set (Collection Boolean[?] :: classes1 type)"
   by simp
 lemma "Tuple (fmap_of_list [(STR ''a'', Boolean[1]), (STR ''b'', Integer[1])]) <
-       Tuple (fmap_of_list [(STR ''a'', Boolean[?] :: classes1 type)])" by code_simp
+       Tuple (fmap_of_list [(STR ''a'', Boolean[?] :: classes1 type)])" by eval
 
 lemma "Integer[1] \<squnion> (Real[?] :: classes1 type) = Real[?]" by simp
 lemma "Set Integer[1] \<squnion> Set (Real[1] :: classes1 type) = Set Real[1]" by simp
