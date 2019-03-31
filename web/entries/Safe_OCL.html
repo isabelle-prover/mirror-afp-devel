@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Octonions - Archive of Formal Proofs
+<title>Safe OCL - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,7 +61,9 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">O</font>ctonions
+  <h1>          <font class="first">S</font>afe
+  
+          <font class="first">O</font>CL
   
 </h1>
   <p>&nbsp;</p>
@@ -70,7 +72,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Octonions</td>
+  <td class="data" width="80%">Safe OCL</td>
 </tr>
 
 <tr>
@@ -78,7 +80,7 @@
           Author:
       </td>
   <td class="data">
-              <a href="https://www.cl.cam.ac.uk/~ak2110/">Angeliki Koutsoukou-Argyraki</a>
+              Denis Nikiforov
       </td>
 </tr>
 
@@ -86,33 +88,46 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2018-09-14</td>
+  <td class="data">2019-03-09</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-We develop the basic theory of Octonions, including various identities
-and properties of the octonions and of the octonionic product, a
-description of 7D isometries and representations of orthogonal
-transformations. To this end we first develop the theory of the vector
-cross product in 7 dimensions. The development of the theory of
-Octonions is inspired by that of the theory of Quaternions by Lawrence
-Paulson. However, we do not work within the type class real_algebra_1
-because the octonionic product is not associative.</td>
+<p>The theory is a formalization of the
+<a href="https://www.omg.org/spec/OCL/">OCL</a> type system, its abstract
+syntax and expression typing rules. The theory does not define a concrete
+syntax and a semantics. In contrast to
+<a href="https://www.isa-afp.org/entries/Featherweight_OCL.html">Featherweight OCL</a>,
+it is based on a deep embedding approach. The type system is defined from scratch,
+it is not based on the Isabelle HOL type system.</p>
+<p>The Safe OCL distincts nullable and non-nullable types. Also the theory gives a
+formal definition of <a href="http://ceur-ws.org/Vol-1512/paper07.pdf">safe
+navigation operations</a>. The Safe OCL typing rules are much stricter than rules
+given in the OCL specification. It allows one to catch more errors on a type
+checking phase.</p>
+<p>The type theory presented is four-layered: classes, basic types, generic types,
+errorable types. We introduce the following new types: non-nullable types (T[1]),
+nullable types (T[?]), OclSuper. OclSuper is a supertype of all other types (basic
+types, collections, tuples). This type allows us to define a total supremum function,
+so types form an upper semilattice. It allows us to define rich expression typing
+rules in an elegant manner.</p>
+<p>The Preliminaries Chapter of the theory defines a number of helper lemmas for
+transitive closures and tuples. It defines also a generic object model independent
+from OCL. It allows one to use the theory as a reference for formalization of analogous languages.</p></td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Octonions-AFP,
-  author  = {Angeliki Koutsoukou-Argyraki},
-  title   = {Octonions},
+        <pre>@article{Safe_OCL-AFP,
+  author  = {Denis Nikiforov},
+  title   = {Safe OCL},
   journal = {Archive of Formal Proofs},
-  month   = sep,
-  year    = 2018,
-  note    = {\url{http://isa-afp.org/entries/Octonions.html},
+  month   = mar,
+  year    = 2019,
+  note    = {\url{http://isa-afp.org/entries/Safe_OCL.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -120,7 +135,7 @@ because the octonionic product is not associative.</td>
 </tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a></td></tr>
 
     
                     
@@ -136,17 +151,17 @@ because the octonionic product is not associative.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Octonions/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Octonions/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Safe_OCL/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Safe_OCL/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Octonions/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Safe_OCL/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Octonions-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Safe_OCL-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 

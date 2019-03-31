@@ -344,6 +344,7 @@ Prpu_Maxflow
 PseudoHoops
 Psi_Calculi
 Ptolemys_Theorem
+QHLProver
 QR_Decomposition
 Quantales
 Quaternions
@@ -375,6 +376,7 @@ Robbins-Conjecture
 Root_Balanced_Tree
 Routing
 Roy_Floyd_Warshall
+Safe_OCL
 SATSolverVerification
 SDS_Impossibility
 SIFPL
@@ -431,6 +433,7 @@ Taylor_Models
 Timed_Automata
 Topology
 TortoiseHare
+Transcendence_Series_Hancl_Rucki
 Transformer_Semantics
 Transition_Systems_and_Automata
 Transitive-Closure

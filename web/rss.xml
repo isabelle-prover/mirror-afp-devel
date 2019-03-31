@@ -9,7 +9,64 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>21 Feb 2019 00:00:00 +0000</pubDate>
+    <pubDate>27 Mar 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Transcendence of Certain Infinite Series</title>
+              <link>https://www.isa-afp.org/entries/Transcendence_Series_Hancl_Rucki.html</link>
+       <guid>https://www.isa-afp.org/entries/Transcendence_Series_Hancl_Rucki.html</guid>
+       <dc:creator> Angeliki Koutsoukou-Argyraki, Wenda Li       </dc:creator>
+       <pubDate>27 Mar 2019 00:00:00 +0000</pubDate>
+       <description>
+We formalize the proofs of two transcendence criteria by J. Hančl
+and P. Rucki that assert the transcendence of the sums of certain
+infinite series built up by sequences that fulfil certain properties.
+Both proofs make use of Roth&#39;s celebrated theorem on diophantine
+approximations to algebraic numbers from 1955  which we implement as
+an assumption without having formalised its proof.</description>
+    </item>
+    <item>
+       <title>Quantum Hoare Logic</title>
+              <link>https://www.isa-afp.org/entries/QHLProver.html</link>
+       <guid>https://www.isa-afp.org/entries/QHLProver.html</guid>
+       <dc:creator> Junyi Liu, Bohua Zhan, Shuling Wang, Shenggang Ying, Tao Liu, Yangjia Li, Mingsheng Ying, Naijun Zhan       </dc:creator>
+       <pubDate>24 Mar 2019 00:00:00 +0000</pubDate>
+       <description>
+We formalize quantum Hoare logic as given in [1]. In particular, we
+specify the syntax and denotational semantics of a simple model of
+quantum programs. Then, we write down the rules of quantum Hoare logic
+for partial correctness, and show the soundness and completeness of
+the resulting proof system. As an application, we verify the
+correctness of Grover’s algorithm.</description>
+    </item>
+    <item>
+       <title>Safe OCL</title>
+              <link>https://www.isa-afp.org/entries/Safe_OCL.html</link>
+       <guid>https://www.isa-afp.org/entries/Safe_OCL.html</guid>
+       <dc:creator> Denis Nikiforov       </dc:creator>
+       <pubDate>09 Mar 2019 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;The theory is a formalization of the
+&lt;a href=&#34;https://www.omg.org/spec/OCL/&#34;&gt;OCL&lt;/a&gt; type system, its abstract
+syntax and expression typing rules. The theory does not define a concrete
+syntax and a semantics. In contrast to
+&lt;a href=&#34;https://www.isa-afp.org/entries/Featherweight_OCL.html&#34;&gt;Featherweight OCL&lt;/a&gt;,
+it is based on a deep embedding approach. The type system is defined from scratch,
+it is not based on the Isabelle HOL type system.&lt;/p&gt;
+&lt;p&gt;The Safe OCL distincts nullable and non-nullable types. Also the theory gives a
+formal definition of &lt;a href=&#34;http://ceur-ws.org/Vol-1512/paper07.pdf&#34;&gt;safe
+navigation operations&lt;/a&gt;. The Safe OCL typing rules are much stricter than rules
+given in the OCL specification. It allows one to catch more errors on a type
+checking phase.&lt;/p&gt;
+&lt;p&gt;The type theory presented is four-layered: classes, basic types, generic types,
+errorable types. We introduce the following new types: non-nullable types (T[1]),
+nullable types (T[?]), OclSuper. OclSuper is a supertype of all other types (basic
+types, collections, tuples). This type allows us to define a total supremum function,
+so types form an upper semilattice. It allows us to define rich expression typing
+rules in an elegant manner.&lt;/p&gt;
+&lt;p&gt;The Preliminaries Chapter of the theory defines a number of helper lemmas for
+transitive closures and tuples. It defines also a generic object model independent
+from OCL. It allows one to use the theory as a reference for formalization of analogous languages.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>Elementary Facts About the Distribution of Primes</title>
               <link>https://www.isa-afp.org/entries/Prime_Distribution_Elementary.html</link>
@@ -472,78 +529,6 @@ for higher-order terms without lambda-abstraction and proves many
 useful properties about it. In contrast to the lambda-free recursive
 path orders, it does not fully coincide with RPO on first-order terms,
 but it is compatible with arbitrary higher-order contexts.</description>
-    </item>
-    <item>
-       <title>Upper Bounding Diameters of State Spaces of Factored Transition Systems</title>
-              <link>https://www.isa-afp.org/entries/Factored_Transition_System_Bounding.html</link>
-       <guid>https://www.isa-afp.org/entries/Factored_Transition_System_Bounding.html</guid>
-       <dc:creator> Friedrich Kurz, Mohammad Abdulaziz       </dc:creator>
-       <pubDate>12 Oct 2018 00:00:00 +0000</pubDate>
-       <description>
-A completeness threshold is required to guarantee the completeness of
-planning as satisfiability, and bounded model checking of safety
-properties. One valid completeness threshold is the diameter of the
-underlying transition system. The diameter is the maximum element in
-the set of lengths of all shortest paths between pairs of states. The
-diameter is not calculated exactly in our setting, where the
-transition system is succinctly described using a (propositionally)
-factored representation. Rather, an upper bound on the diameter is
-calculated compositionally, by bounding the diameters of small
-abstract subsystems, and then composing those.  We port a HOL4
-formalisation of a compositional algorithm for computing a relatively
-tight upper bound on the system diameter. This compositional algorithm
-exploits acyclicity in the state space to achieve compositionality,
-and it was introduced by Abdulaziz et. al. The formalisation that we
-port is described as a part of another paper by Abdulaziz et. al. As a
-part of this porting we developed a libray about transition systems,
-which shall be of use in future related mechanisation efforts.</description>
-    </item>
-    <item>
-       <title>The Transcendence of π</title>
-              <link>https://www.isa-afp.org/entries/Pi_Transcendental.html</link>
-       <guid>https://www.isa-afp.org/entries/Pi_Transcendental.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>28 Sep 2018 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This entry shows the transcendence of &amp;pi; based on the
-classic proof using the fundamental theorem of symmetric polynomials
-first given by von Lindemann in 1882, but the formalisation mostly
-follows the version by Niven. The proof reuses much of the machinery
-developed in the AFP entry on the transcendence of
-&lt;em&gt;e&lt;/em&gt;.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Symmetric Polynomials</title>
-              <link>https://www.isa-afp.org/entries/Symmetric_Polynomials.html</link>
-       <guid>https://www.isa-afp.org/entries/Symmetric_Polynomials.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>25 Sep 2018 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;A symmetric polynomial is a polynomial in variables
-&lt;em&gt;X&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;,&amp;hellip;,&lt;em&gt;X&lt;/em&gt;&lt;sub&gt;n&lt;/sub&gt;
-that does not discriminate between its variables, i.&amp;thinsp;e. it
-is invariant under any permutation of them. These polynomials are
-important in the study of the relationship between the coefficients of
-a univariate polynomial and its roots in its algebraic
-closure.&lt;/p&gt; &lt;p&gt;This article provides a definition of
-symmetric polynomials and the elementary symmetric polynomials
-e&lt;sub&gt;1&lt;/sub&gt;,&amp;hellip;,e&lt;sub&gt;n&lt;/sub&gt; and
-proofs of their basic properties, including three notable
-ones:&lt;/p&gt; &lt;ul&gt; &lt;li&gt; Vieta&#39;s formula, which
-gives an explicit expression for the &lt;em&gt;k&lt;/em&gt;-th
-coefficient of a univariate monic polynomial in terms of its roots
-&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;,&amp;hellip;,&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;n&lt;/sub&gt;,
-namely
-&lt;em&gt;c&lt;/em&gt;&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt; = (-1)&lt;sup&gt;&lt;em&gt;n&lt;/em&gt;-&lt;em&gt;k&lt;/em&gt;&lt;/sup&gt;&amp;thinsp;e&lt;sub&gt;&lt;em&gt;n&lt;/em&gt;-&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;(&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;,&amp;hellip;,&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;n&lt;/sub&gt;).&lt;/li&gt;
-&lt;li&gt;Second, the Fundamental Theorem of Symmetric Polynomials,
-which states that any symmetric polynomial is itself a uniquely
-determined polynomial combination of the elementary symmetric
-polynomials.&lt;/li&gt; &lt;li&gt;Third, as a corollary of the
-previous two, that given a polynomial over some ring
-&lt;em&gt;R&lt;/em&gt;, any symmetric polynomial combination of its
-roots is also in &lt;em&gt;R&lt;/em&gt; even when the roots are not.
-&lt;/ul&gt; &lt;p&gt; Both the symmetry property itself and the
-witness for the Fundamental Theorem are executable. &lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
