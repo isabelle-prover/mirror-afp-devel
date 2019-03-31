@@ -323,7 +323,8 @@ The witness for $\exists A>1 $ is denoted by $M$ here.\<close>
     finally show "\<bar>\<xi> - real_of_int (p k) / real_of_int (q k)\<bar> < 1 / real_of_int (q k) powr (2 + \<delta>)" .
   qed
 
-  define pqs where "pqs={(p, q). q>0 \<and> coprime p q \<and> \<bar>\<xi> - p / q\<bar> < 1 / q powr (2 + \<delta>)}"
+  define pqs where "pqs={(p, q). q>0 \<and> coprime p q 
+      \<and> \<bar>\<xi> - real_of_int p / real_of_int q\<bar> < 1 / q powr (2 + \<delta>)}"
   have \<xi>_infinite:"infinite pqs"
   proof -
     define A where "A={k. \<bar>\<xi> -  (p k) /  (q k)\<bar> < 1 / (q k) powr (2 + \<delta>)}" 
@@ -350,7 +351,7 @@ The witness for $\exists A>1 $ is denoted by $M$ here.\<close>
         then show "sum g {0..x} < sum g {0..y}" by auto
       qed
       then have "inj f" using strict_mono_imp_inj_on by auto
-      then have "inj (quotient_of o f)" by (simp add: inj_comp quotient_of_inj)
+      then have "inj (quotient_of o f)" by (simp add: inj_compose quotient_of_inj)
       then have "inj (\<lambda>k. (p k, q k))"
         unfolding f_def p_def q_def pq_def comp_def
         apply (fold g_def)
@@ -861,7 +862,7 @@ proof-
     qed
   qed
 
-  define pqs where "pqs={(p, q). q>0 \<and> coprime p q \<and> \<bar>\<xi> - p / q\<bar> 
+  define pqs where "pqs={(p, q). q>0 \<and> coprime p q \<and> \<bar>\<xi> - real_of_int p / real_of_int q\<bar> 
                   < 1 / q powr (2 + \<delta> * \<epsilon> / (1 + \<epsilon>))}"
   have \<xi>_infinite:"infinite pqs"
   proof -
@@ -888,7 +889,7 @@ proof-
         then show "sum g {0..x} < sum g {0..y}" by auto
       qed
       then have "inj f" using strict_mono_imp_inj_on by auto
-      then have "inj (quotient_of o f)" by (simp add: inj_comp quotient_of_inj)
+      then have "inj (quotient_of o f)" by (simp add: inj_compose quotient_of_inj)
       then have "inj (\<lambda>k. (p k, q k))"
         unfolding f_def p_def q_def pq_def comp_def
         apply (fold g_def)
