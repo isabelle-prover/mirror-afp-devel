@@ -91,7 +91,7 @@ val parse_inst_ident = Parse.name --| @{keyword "::"} -- Parse.class;
 
 (* code generation *)
 
-fun prep_destination s = ({physical = true}, Path.explode s);
+fun prep_destination s = ({physical = true}, (Path.explode s, Position.none));
 
 fun export_code_cmd all_public raw_cs seris thy =
   let
