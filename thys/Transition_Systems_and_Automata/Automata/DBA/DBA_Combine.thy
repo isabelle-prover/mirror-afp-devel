@@ -107,14 +107,30 @@ begin
     assumes "list_all (finite \<circ> DBA.nodes) AA"
     shows "finite (DBA.nodes (dbail AA))"
     using dbgail_nodes_finite assms unfolding dbail_def by auto
-  lemma dbail_nodes_card:
+  lemma dbail_nodes_card_empty:
+    assumes "AA = []" "list_all (finite \<circ> DBA.nodes) AA"
+    shows "card (DBA.nodes (dbail AA)) = 1"
+  proof -
+    have 1: "dgba.accepting (dbgail AA) = []" unfolding dbgail_def using assms(1) by simp
+    have "card (DBA.nodes (dbail AA)) = card (DGBA.nodes (dbgail AA))"
+      unfolding dbail_def using degen_nodes_card_empty 1 by auto
+    also have "\<dots> = 1"
+    proof (rule antisym)
+      show "card (DGBA.nodes (dbgail AA)) \<le> 1" using dbgail_nodes_card assms by fastforce
+      have "finite (DGBA.nodes (dbgail AA))" using assms(2) by auto
+      then have "card (DGBA.nodes (dbgail AA)) \<noteq> 0" by auto
+      then show "card (DGBA.nodes (dbgail AA)) \<ge> 1" by simp
+    qed
+    finally show ?thesis by this
+  qed
+  lemma dbail_nodes_card_nonempty:
     assumes "AA \<noteq> []" "list_all (finite \<circ> DBA.nodes) AA"
     shows "card (DBA.nodes (dbail AA)) \<le> length AA * prod_list (map (card \<circ> DBA.nodes) AA)"
   proof -
     have 1: "dgba.accepting (dbgail AA) \<noteq> []" unfolding dbgail_def using assms(1) by simp
     have "card (DBA.nodes (dbail AA)) \<le>
       length (dgba.accepting (dbgail AA)) * card (DGBA.nodes (dbgail AA))"
-      unfolding dbail_def using degen_nodes_card assms(2) 1 by auto
+      unfolding dbail_def using degen_nodes_card_nonempty 1 by auto
     also have "length (dgba.accepting (dbgail AA)) = length AA" unfolding dbgail_def by simp
     also have "card (DGBA.nodes (dbgail AA)) \<le> prod_list (map (card \<circ> DBA.nodes) AA)"
       using dbgail_nodes_card assms(2) by this

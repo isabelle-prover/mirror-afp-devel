@@ -79,20 +79,37 @@ begin
           by (induct arbitrary: p) (auto simp: dexecute_def denabled_def dinitial_def)
       qed
     qed
-    lemma degen_nodes_snd: "snd ` degen.nodes \<subseteq> insert 0 {0 ..< length condition}"
-    proof (rule subsetI, erule imageE)
-      fix pk k
-      assume "pk \<in> degen.nodes" "k = snd pk"
-      then show "k \<in> insert 0 {0 ..< length condition}"
-      proof (induct arbitrary: k)
-        case (initial p)
-        then show ?case by (auto simp: dinitial_def)
-      next
-        case (execute p a)
-        then show ?case by (cases "length condition = 0") (auto simp: dexecute_def denabled_def)
-      qed
+    lemma degen_nodes_snd_empty:
+      assumes "condition = []"
+      shows "snd ` degen.nodes \<subseteq> {0}"
+    proof -
+      have 1: "dinitial (p, k) \<Longrightarrow> k = 0" for p k unfolding dinitial_def by simp
+      have 2: "snd (dexecute a (p, k)) = 0" for a p k using assms unfolding dexecute_def by simp
+      show ?thesis using 1 2 by (auto elim: degen.nodes.cases)
     qed
+    lemma degen_nodes_snd_nonempty:
+      assumes "condition \<noteq> []"
+      shows "snd ` degen.nodes \<subseteq> {0 ..< length condition}"
+    proof -
+      have 1: "dinitial (p, k) \<Longrightarrow> k < length condition" for p k using assms unfolding dinitial_def by simp
+      have 2: "snd (dexecute a (p, k)) < length condition" for a p k using assms unfolding dexecute_def by simp
+      show ?thesis using 1 2 by (auto elim: degen.nodes.cases)
+    qed
+    lemma degen_nodes_empty:
+      assumes "condition = []"
+      shows "degen.nodes = nodes \<times> {0}"
+    proof -
+      have "(p, k) \<in> degen.nodes \<longleftrightarrow> p \<in> fst ` degen.nodes \<and> k = 0" for p k
+        using degen_nodes_snd_empty assms by (force simp del: degen_nodes_fst)
+      then show ?thesis by auto
+    qed
+    lemma degen_nodes_nonempty:
+      assumes "condition \<noteq> []"
+      shows "degen.nodes \<subseteq> nodes \<times> {0 ..< length condition}"
+      using subset_fst_snd degen_nodes_fst degen_nodes_snd_nonempty[OF assms] by blast
 
+    lemma degen_nodes_snd_finite[intro!, simp]: "finite (snd ` degen.nodes)"
+      using finite_subset degen_nodes_snd_empty degen_nodes_snd_nonempty by (cases condition) (auto)
     lemma degen_nodes_finite[iff]: "finite degen.nodes \<longleftrightarrow> finite nodes"
     proof
       assume 1: "finite degen.nodes"
@@ -101,27 +118,32 @@ begin
       finally show "finite nodes" by this
     next
       assume 1: "finite nodes"
-      have 2: "finite (snd ` degen.nodes)" using finite_subset degen_nodes_snd by auto
       have "degen.nodes \<subseteq> fst ` degen.nodes \<times> snd ` degen.nodes" using subset_fst_snd by this
-      also have "finite \<dots>" using 1 2 by simp
+      also have "finite \<dots>" using 1 by simp
       finally show "finite degen.nodes" by this
     qed
-    lemma degen_nodes_card:
-      assumes "finite nodes" "condition \<noteq> []"
-      shows "card degen.nodes \<le> length condition * card nodes"
+    lemma degen_nodes_card_empty[simp]:
+      assumes "condition = []"
+      shows "card degen.nodes = card nodes"
     proof -
-      have "card degen.nodes \<le> card (nodes \<times> insert 0 {0 ..< length condition})"
-      proof (rule card_mono)
-        show "finite (nodes \<times> insert 0 {0 ..< length condition})" using assms(1) by simp
-        show "degen.nodes \<subseteq> nodes \<times> insert 0 {0 ..< length condition}"
-          using subset_fst_snd degen_nodes_fst degen_nodes_snd by blast
-      qed
-      also have "\<dots> = card (insert 0 {0 ..< length condition}) * card nodes"
-        unfolding card_cartesian_product by simp
-      also have "insert 0 {0 ..< length condition} = {0 ..< length condition}"
-        using assms(2) by auto
-      also have "card \<dots> = length condition" by simp
+      have "degen.nodes = nodes \<times> {0}" using degen_nodes_empty assms by this
+      also have "card \<dots> = card nodes" unfolding card_cartesian_product by simp
       finally show ?thesis by this
+    qed
+    lemma degen_nodes_card_nonempty:
+      assumes "condition \<noteq> []"
+      shows "card degen.nodes \<le> length condition * card nodes"
+    proof (cases "finite nodes")
+      case True
+      have "card degen.nodes \<le> card (nodes \<times> {0 ..< length condition})"
+        using degen_nodes_nonempty assms True by (blast intro: card_mono)
+      also have "\<dots> = length condition * card nodes" unfolding card_cartesian_product by simp
+      finally show ?thesis by this
+    next
+      case False
+      have 1: "card degen.nodes = 0" using False by simp
+      have 2: "card nodes = 0" using False by simp
+      show ?thesis unfolding 1 2 by simp
     qed
 
     definition dcondition :: "'state degen pred" where
