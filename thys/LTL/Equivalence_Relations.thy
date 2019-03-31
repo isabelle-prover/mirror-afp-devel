@@ -359,12 +359,37 @@ where
 | "prop_atoms (\<phi> or\<^sub>n \<psi>) = prop_atoms \<phi> \<union> prop_atoms \<psi>"
 | "prop_atoms \<phi> = {\<phi>}"
 
+fun nested_prop_atoms :: "'a ltln \<Rightarrow> 'a ltln set"
+where
+  "nested_prop_atoms true\<^sub>n = {}"
+| "nested_prop_atoms false\<^sub>n = {}"
+| "nested_prop_atoms (\<phi> and\<^sub>n \<psi>) = nested_prop_atoms \<phi> \<union> nested_prop_atoms \<psi>"
+| "nested_prop_atoms (\<phi> or\<^sub>n \<psi>) = nested_prop_atoms \<phi> \<union> nested_prop_atoms \<psi>"
+| "nested_prop_atoms (X\<^sub>n \<phi>) = {X\<^sub>n \<phi>} \<union> nested_prop_atoms \<phi>"
+| "nested_prop_atoms (\<phi> U\<^sub>n \<psi>) = {\<phi> U\<^sub>n \<psi>} \<union> nested_prop_atoms \<phi> \<union> nested_prop_atoms \<psi>"
+| "nested_prop_atoms (\<phi> R\<^sub>n \<psi>) = {\<phi> R\<^sub>n \<psi>} \<union> nested_prop_atoms \<phi> \<union> nested_prop_atoms \<psi>"
+| "nested_prop_atoms (\<phi> W\<^sub>n \<psi>) = {\<phi> W\<^sub>n \<psi>} \<union> nested_prop_atoms \<phi> \<union> nested_prop_atoms \<psi>"
+| "nested_prop_atoms (\<phi> M\<^sub>n \<psi>) = {\<phi> M\<^sub>n \<psi>} \<union> nested_prop_atoms \<phi> \<union> nested_prop_atoms \<psi>"
+| "nested_prop_atoms \<phi> = {\<phi>}"
+
 lemma prop_atoms_subfrmlsn:
   "prop_atoms \<phi> \<subseteq> subfrmlsn \<phi>"
   by (induction \<phi>) auto
 
-lemma finite_prop_atoms:
+lemma nested_prop_atoms_subfrmlsn:
+  "nested_prop_atoms \<phi> \<subseteq> subfrmlsn \<phi>"
+  by (induction \<phi>) auto
+
+lemma prop_atoms_nested_prop_atoms:
+  "prop_atoms \<phi> \<subseteq> nested_prop_atoms \<phi>"
+  by (induction \<phi>) auto
+
+lemma prop_atoms_finite:
   "finite (prop_atoms \<phi>)"
+  by (induction \<phi>) auto
+
+lemma nested_prop_atoms_finite:
+  "finite (nested_prop_atoms \<phi>)"
   by (induction \<phi>) auto
 
 lemma prop_atoms_entailment:

@@ -483,12 +483,12 @@ fun subfrmlsn :: "'a ltln \<Rightarrow> 'a ltln set"
 where
   "subfrmlsn (\<phi> and\<^sub>n \<psi>) = {\<phi> and\<^sub>n \<psi>} \<union> subfrmlsn \<phi> \<union> subfrmlsn \<psi>"
 | "subfrmlsn (\<phi> or\<^sub>n \<psi>) = {\<phi> or\<^sub>n \<psi>} \<union> subfrmlsn \<phi> \<union> subfrmlsn \<psi>"
+| "subfrmlsn (X\<^sub>n \<phi>) = {X\<^sub>n \<phi>} \<union> subfrmlsn \<phi>"
 | "subfrmlsn (\<phi> U\<^sub>n \<psi>) = {\<phi> U\<^sub>n \<psi>} \<union> subfrmlsn \<phi> \<union> subfrmlsn \<psi>"
 | "subfrmlsn (\<phi> R\<^sub>n \<psi>) = {\<phi> R\<^sub>n \<psi>} \<union> subfrmlsn \<phi> \<union> subfrmlsn \<psi>"
 | "subfrmlsn (\<phi> W\<^sub>n \<psi>) = {\<phi> W\<^sub>n \<psi>} \<union> subfrmlsn \<phi> \<union> subfrmlsn \<psi>"
 | "subfrmlsn (\<phi> M\<^sub>n \<psi>) = {\<phi> M\<^sub>n \<psi>} \<union> subfrmlsn \<phi> \<union> subfrmlsn \<psi>"
-| "subfrmlsn (X\<^sub>n \<phi>) = {X\<^sub>n \<phi>} \<union> subfrmlsn \<phi>"
-| "subfrmlsn x = {x}"
+| "subfrmlsn \<phi> = {\<phi>}"
 
 lemma subfrmlsn_id[simp]:
   "\<phi> \<in> subfrmlsn \<phi>"
