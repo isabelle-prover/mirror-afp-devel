@@ -42,9 +42,9 @@ proof -
     fix i j assume i: "i < m" and j: "j < m"
     have "(\<lambda>n. (X n) $$ (i, j)) \<longlonglongrightarrow> A$$(i, j)" using limX limit_mat_def i j by auto
     moreover have "(\<lambda>n. c) \<longlonglongrightarrow> c" by auto
-    ultimately have "(\<lambda>n. c * (X n) $$ (i, j)) \<longlonglongrightarrow> c * A$$(i, j)" 
+    ultimately have "(\<lambda>n. c * (X n) $$ (i, j)) \<longlonglongrightarrow> c * A$$(i, j)"
       using tendsto_mult[of "\<lambda>n. c" c] limX limit_mat_def by auto
-    moreover have "(c \<cdot>\<^sub>m X n) $$ (i, j) = c * (X n) $$ (i, j)" for n 
+    moreover have "(c \<cdot>\<^sub>m X n) $$ (i, j) = c * (X n) $$ (i, j)" for n
       using index_smult_mat(1)[of i "X n" j c] i j dimX[of n] by auto
     moreover have "(c \<cdot>\<^sub>m A) $$ (i, j) = c * A $$ (i, j)"
       using index_smult_mat(1)[of i "A" j c] i j dimA by auto
@@ -63,7 +63,7 @@ proof -
   have dimB: "B \<in> carrier_mat m m" using limY limit_mat_def by auto
   have dimX: "\<And>n. X n \<in> carrier_mat m m" using limX unfolding limit_mat_def by auto
   have dimY: "\<And>n. Y n \<in> carrier_mat m m" using limY unfolding limit_mat_def by auto
-  then have dimXAB: "\<forall>n. X n + Y n \<in> carrier_mat m m \<and> A + B \<in> carrier_mat m m" using dimA dimB dimX dimY 
+  then have dimXAB: "\<forall>n. X n + Y n \<in> carrier_mat m m \<and> A + B \<in> carrier_mat m m" using dimA dimB dimX dimY
     by (simp)
 
   have "(\<And>i j. i < m \<Longrightarrow> j < m \<Longrightarrow> (\<lambda>n. (X n + Y n) $$ (i, j)) \<longlonglongrightarrow> (A + B) $$ (i, j))"
@@ -73,15 +73,15 @@ proof -
     moreover have "(\<lambda>n. (Y n) $$ (i, j)) \<longlonglongrightarrow> B$$(i, j)" using limY limit_mat_def i j by auto
     ultimately have "(\<lambda>n. (X n)$$(i, j) + (Y n) $$ (i, j)) \<longlonglongrightarrow> (A$$(i, j) + B$$(i, j))"
       using tendsto_add[of "\<lambda>n. (X n) $$ (i, j)" "A $$ (i, j)"] by auto
-    moreover have "(X n + Y n) $$ (i, j) = (X n)$$(i, j) + (Y n) $$ (i, j)" for n 
+    moreover have "(X n + Y n) $$ (i, j) = (X n)$$(i, j) + (Y n) $$ (i, j)" for n
       using i j dimX dimY index_add_mat(1)[of i "Y n" j "X n"] by fastforce
     moreover have "(A + B) $$ (i, j) = A$$(i, j) + B$$(i, j)"
       using i j dimA dimB by fastforce
     ultimately show "(\<lambda>n. (X n + Y n) $$ (i, j)) \<longlonglongrightarrow> (A + B) $$ (i, j)" by auto
-  qed   
+  qed
   then show ?thesis
     unfolding limit_mat_def using dimXAB by auto
-qed 
+qed
 
 lemma limit_mat_minus:
   fixes X :: "nat \<Rightarrow> complex mat" and Y :: "nat \<Rightarrow> complex mat" and A :: "complex mat"
@@ -94,7 +94,7 @@ proof -
   have dimX: "\<And>n. X n \<in> carrier_mat m m" using limX unfolding limit_mat_def by auto
   have dimY: "\<And>n. Y n \<in> carrier_mat m m" using limY unfolding limit_mat_def by auto
   have "-1 \<cdot>\<^sub>m Y n = - Y n" for n using dimY by auto
-  moreover have "-1 \<cdot>\<^sub>m B = - B" using dimB by auto 
+  moreover have "-1 \<cdot>\<^sub>m B = - B" using dimB by auto
   ultimately have "limit_mat (\<lambda>n. - Y n) (- B) m" using limit_mat_scale[OF limY, of "-1"] by auto
   then have "limit_mat (\<lambda>n. X n + (- Y n)) (A + (- B)) m" using limit_mat_add limX by auto
   moreover have "X n + (- Y n) = X n - Y n" for n using dimX dimY by auto
@@ -112,13 +112,13 @@ proof -
   have dimB: "B \<in> carrier_mat m m" using limY limit_mat_def by auto
   have dimX: "\<And>n. X n \<in> carrier_mat m m" using limX unfolding limit_mat_def by auto
   have dimY: "\<And>n. Y n \<in> carrier_mat m m" using limY unfolding limit_mat_def by auto
-  then have dimXAB: "\<forall>n. X n * Y n \<in> carrier_mat m m \<and> A * B \<in> carrier_mat m m" using dimA dimB dimX dimY 
+  then have dimXAB: "\<forall>n. X n * Y n \<in> carrier_mat m m \<and> A * B \<in> carrier_mat m m" using dimA dimB dimX dimY
     by fastforce
 
   have "(\<And>i j. i < m \<Longrightarrow> j < m \<Longrightarrow> (\<lambda>n. (X n * Y n) $$ (i, j)) \<longlonglongrightarrow> (A * B) $$ (i, j))"
   proof -
     fix i j assume i: "i < m" and j: "j < m"
-    have eqn: "(X n * Y n) $$ (i, j) = (\<Sum>k=0..<m. (X n)$$(i, k) * (Y n)$$(k, j))" for n 
+    have eqn: "(X n * Y n) $$ (i, j) = (\<Sum>k=0..<m. (X n)$$(i, k) * (Y n)$$(k, j))" for n
       using i j dimX[of n] dimY[of n] by (auto simp add: scalar_prod_def)
     have eq: "(A * B) $$ (i, j) = (\<Sum>k=0..<m. A$$(i,k) * B$$(k,j))"
       using i j dimB dimA by (auto simp add: scalar_prod_def)
@@ -129,22 +129,22 @@ proof -
     then have "(\<lambda>n. (\<Sum>k=0..<m. (X n)$$(i,k) * (Y n)$$(k,j))) \<longlonglongrightarrow> (\<Sum>k=0..<m. A$$(i,k) * B$$(k,j))"
       using tendsto_sum[of "{0..<m}" "\<lambda>k n. (X n)$$(i,k) * (Y n)$$(k,j)" "\<lambda>k. A$$(i, k) * B$$(k, j)"] by auto
     then show "(\<lambda>n. (X n * Y n) $$ (i, j)) \<longlonglongrightarrow> (A * B) $$ (i, j)" using eqn eq by auto
-  qed   
+  qed
   then show ?thesis
     unfolding limit_mat_def using dimXAB by fastforce
-qed 
+qed
 
 text \<open>Adding matrix A to the sequence X\<close>
 definition mat_add_seq ::  "complex mat \<Rightarrow> (nat \<Rightarrow> complex mat) \<Rightarrow> nat \<Rightarrow> complex mat" where
   "mat_add_seq A X = (\<lambda>n. A + X n)"
 
-lemma mat_add_limit: 
+lemma mat_add_limit:
   fixes X :: "nat \<Rightarrow> complex mat" and A :: "complex mat" and m :: nat and B :: "complex mat"
   assumes dimB: "B \<in> carrier_mat m m" and limX: "limit_mat X A m"
   shows "limit_mat (mat_add_seq B X) (B + A) m"
   unfolding mat_add_seq_def using limit_mat_add limit_mat_const[OF dimB] limX by auto
 
-lemma mat_minus_limit: 
+lemma mat_minus_limit:
   fixes X :: "nat \<Rightarrow> complex mat" and A :: "complex mat" and m :: nat and B :: "complex mat"
   assumes dimB: "B \<in> carrier_mat m m" and limX: "limit_mat X A m"
   shows "limit_mat (\<lambda>n. B - X n) (B - A) m"
@@ -154,19 +154,19 @@ text \<open>Multiply matrix A by the sequence X\<close>
 definition mat_mult_seq ::  "complex mat \<Rightarrow> (nat \<Rightarrow> complex mat) \<Rightarrow> nat \<Rightarrow> complex mat" where
   "mat_mult_seq A X = (\<lambda>n. A * X n)"
 
-lemma mat_mult_limit: 
+lemma mat_mult_limit:
   fixes X :: "nat \<Rightarrow> complex mat" and A B :: "complex mat" and m :: nat
   assumes dimB: "B \<in> carrier_mat m m" and limX: "limit_mat X A m"
   shows "limit_mat (mat_mult_seq B X) (B * A) m"
   unfolding mat_mult_seq_def using limit_mat_mult limit_mat_const[OF dimB] limX by auto
 
-lemma mult_mat_limit: 
+lemma mult_mat_limit:
   fixes X :: "nat \<Rightarrow> complex mat" and A B :: "complex mat" and m :: nat
   assumes dimB: "B \<in> carrier_mat m m" and limX: "limit_mat X A m"
   shows "limit_mat (\<lambda>k. X k * B) (A * B) m"
   unfolding mat_mult_seq_def using limit_mat_mult limit_mat_const[OF dimB] limX by auto
 
-lemma quadratic_form_mat: 
+lemma quadratic_form_mat:
   fixes A :: "complex mat" and v :: "complex vec" and m :: nat
   assumes dimv: "dim_vec v = m" and dimA: "A \<in> carrier_mat m m"
   shows "inner_prod v (A *\<^sub>v v) = (\<Sum>i=0..<m. (\<Sum>j=0..<m. conjugate (v$i) * A$$(i, j) * v$j))"
@@ -176,19 +176,19 @@ proof -
   unfolding scalar_prod_def using dimv dimA
     apply (simp add: scalar_prod_def sum_distrib_right)
     apply (rule sum.cong, auto, rule sum.cong, auto)
-  done 
+  done
   then show ?thesis by auto
 qed
- 
-lemma sum_subtractff: 
-  fixes h g :: "nat \<Rightarrow> nat \<Rightarrow>'a::ab_group_add" 
+
+lemma sum_subtractff:
+  fixes h g :: "nat \<Rightarrow> nat \<Rightarrow>'a::ab_group_add"
   shows "(\<Sum>x\<in>A. \<Sum>y\<in>B. h x y - g x y) = (\<Sum>x\<in>A. \<Sum>y\<in>B. h x y) - (\<Sum>x\<in>A. \<Sum>y\<in>B. g x y)"
 proof -
-  have "\<forall> x \<in> A. (\<Sum>y\<in>B. h x y - g x y) = (\<Sum>y\<in>B. h x y) - (\<Sum>y\<in>B. g x y)" 
+  have "\<forall> x \<in> A. (\<Sum>y\<in>B. h x y - g x y) = (\<Sum>y\<in>B. h x y) - (\<Sum>y\<in>B. g x y)"
   proof -
     {
       fix x assume x: "x \<in> A"
-      have "(\<Sum>y\<in>B. h x y - g x y) = (\<Sum>y\<in>B. h x y) - (\<Sum>y\<in>B. g x y)" 
+      have "(\<Sum>y\<in>B. h x y - g x y) = (\<Sum>y\<in>B. h x y) - (\<Sum>y\<in>B. g x y)"
         using sum_subtractf by auto
      }
     then show ?thesis  using sum_subtractf by blast
@@ -198,31 +198,31 @@ proof -
     by (simp add: sum_subtractf)
   finally have " (\<Sum>x\<in>A. \<Sum>y\<in>B. h x y - g x y) = (\<Sum>x\<in>A. sum (h x) B) - (\<Sum>x\<in>A. sum (g x) B)" by auto
   then show ?thesis by auto
-qed 
+qed
 
-lemma sum_abs_complex: 
-  fixes h  :: "nat \<Rightarrow> nat \<Rightarrow> complex" 
+lemma sum_abs_complex:
+  fixes h  :: "nat \<Rightarrow> nat \<Rightarrow> complex"
   shows "cmod (\<Sum>x\<in>A.\<Sum>y\<in>B. h x y) \<le> (\<Sum>x\<in>A. \<Sum>y\<in>B. cmod(h x y))"
 proof -
   have B: "\<forall> x \<in> A. cmod( \<Sum>y\<in>B .h x y) \<le> (\<Sum>y\<in>B. cmod(h x y))" using sum_abs norm_sum by blast
   have "cmod (\<Sum>x\<in>A.\<Sum>y\<in>B. h x y) \<le> (\<Sum>x\<in>A.  cmod( \<Sum>y\<in>B .h x y))" using sum_abs norm_sum by blast
-  also have "\<dots> \<le> (\<Sum>x\<in>A. \<Sum>y\<in>B. cmod(h x y))" using sum_abs norm_sum B 
+  also have "\<dots> \<le> (\<Sum>x\<in>A. \<Sum>y\<in>B. cmod(h x y))" using sum_abs norm_sum B
     by (simp add: sum_mono)
   finally have "cmod (\<Sum>x\<in>A. \<Sum>y\<in>B. h x y) \<le> (\<Sum>x\<in>A. \<Sum>y\<in>B. cmod (h x y))" by auto
   then show ?thesis by auto
 qed
 
-lemma hermitian_mat_lim_is_hermitian: 
-  fixes X :: "nat \<Rightarrow> complex mat" and A :: "complex mat" and m :: nat 
-  assumes limX: "limit_mat X A m" and herX: "\<forall> n. hermitian (X n)" 
+lemma hermitian_mat_lim_is_hermitian:
+  fixes X :: "nat \<Rightarrow> complex mat" and A :: "complex mat" and m :: nat
+  assumes limX: "limit_mat X A m" and herX: "\<forall> n. hermitian (X n)"
   shows "hermitian A"
 proof -
   have  dimX: "\<forall>n. X n \<in> carrier_mat m m" using limX unfolding limit_mat_def by auto
   have dimA : "A \<in> carrier_mat m m" using limX unfolding limit_mat_def by auto
- 
+
   from herX have herXn: "\<forall> n. adjoint (X n) = (X n)" unfolding hermitian_def by auto
   from limX have limXn: "\<forall>i<m. \<forall>j<m. (\<lambda>n. X n $$ (i, j)) \<longlonglongrightarrow> A $$ (i, j)" unfolding limit_mat_def by auto
-  have "\<forall>i<m. \<forall>j<m.(adjoint A)$$ (i, j) = A$$ (i, j)" 
+  have "\<forall>i<m. \<forall>j<m.(adjoint A)$$ (i, j) = A$$ (i, j)"
   proof -
     {
       fix i j assume i: "i < m" and j: "j < m"
@@ -235,15 +235,15 @@ proof -
           fix r :: real assume r : "r > 0"
           have "\<exists>no. \<forall>n\<ge>no. cmod (X n $$ (j, i) - A $$ (j, i)) < r" using ji r unfolding  LIMSEQ_def dist_norm by auto
           then obtain no where Xji: "\<forall>n\<ge>no. cmod (X n $$ (j, i) - A $$ (j, i)) < r" by auto
-          then have "\<forall>n\<ge>no. cmod (conjugate (X n $$ (j, i) - A $$ (j, i))) < r" 
+          then have "\<forall>n\<ge>no. cmod (conjugate (X n $$ (j, i) - A $$ (j, i))) < r"
             using complex_mod_cnj conjugate_complex_def by presburger
           then have "\<forall>n\<ge>no. dist (conjugate (X n $$ (j, i))) (conjugate (A $$ (j, i))) < r" unfolding dist_norm by auto
           then have "\<exists>no. \<forall>n\<ge>no. dist (conjugate (X n $$ (j, i))) (conjugate (A $$ (j, i))) < r" by auto
         }
         then show ?thesis by auto
       qed
-      then have conjX: "(\<lambda>n. conjugate (X n $$ (j, i))) \<longlonglongrightarrow>  conjugate (A $$ (j, i))" unfolding LIMSEQ_def by auto     
- 
+      then have conjX: "(\<lambda>n. conjugate (X n $$ (j, i))) \<longlonglongrightarrow>  conjugate (A $$ (j, i))" unfolding LIMSEQ_def by auto
+
       from herXn have "\<forall> n. conjugate (X n $$ (j,i)) = X n$$ (i, j)"  using adjoint_eval i j dimX
         by (metis adjoint_dim_col carrier_matD(1))
       then have "(\<lambda>n. X n $$ (i, j)) \<longlonglongrightarrow>  conjugate (A $$ (j, i))" using conjX by auto
@@ -252,13 +252,13 @@ proof -
     }
     then show ?thesis by auto
   qed
-  then have "hermitian A" using hermitian_def dimA 
+  then have "hermitian A" using hermitian_def dimA
     by (metis adjoint_dim carrier_matD(1) carrier_matD(2) eq_matI)
   then show ?thesis by auto
 qed
 
 lemma quantifier_change_order_once:
-  fixes P :: "nat \<Rightarrow> nat \<Rightarrow> bool" and m :: nat 
+  fixes P :: "nat \<Rightarrow> nat \<Rightarrow> bool" and m :: nat
   shows "\<forall>j<m. \<exists>no. \<forall>n\<ge>no. P n j \<Longrightarrow> \<exists>no. \<forall>j<m. \<forall>n\<ge>no. P n j"
 proof (induct m)
     case 0
@@ -282,7 +282,7 @@ proof (induct m)
 lemma quantifier_change_order_twice:
   fixes P :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" and m n :: nat
   shows "\<forall>i<m. \<forall>j<n. \<exists> no. \<forall>n\<ge>no. P n i j \<Longrightarrow> \<exists>no. \<forall>i<m. \<forall>j<n. \<forall>n\<ge>no. P n i j"
-proof -  
+proof -
   assume fact: "\<forall>i<m. \<forall>j<n. \<exists> no. \<forall>n\<ge>no. P n i j"
   have one: "\<forall>i<m. \<exists>no.\<forall>j<n. \<forall>n\<ge>no. P n i j"
     using fact quantifier_change_order_once by auto
@@ -292,7 +292,7 @@ proof -
     then show ?case by auto
   next
     case (Suc m)
-    then show ?case  
+    then show ?case
     proof -
       obtain M where MM: "\<forall>i<m. \<forall>j<n. \<forall>n\<ge>M. P n i j" using Suc by auto
       obtain N where NN: "\<forall>j<n. \<forall>n\<ge>N. P n m j" using Suc(2) by blast
@@ -315,10 +315,10 @@ proof (rule ccontr)
   have dimA : "A \<in> carrier_mat m m" using limX unfolding limit_mat_def by auto
   have herX : "\<forall> n. hermitian (X n)" using posX positive_is_hermitian by auto
   then have herA : "hermitian A"  using hermitian_mat_lim_is_hermitian limX by auto
-  then have herprod: "\<forall> v. dim_vec v = dim_col A \<longrightarrow> inner_prod v (A *\<^sub>v v) \<in> Reals" 
+  then have herprod: "\<forall> v. dim_vec v = dim_col A \<longrightarrow> inner_prod v (A *\<^sub>v v) \<in> Reals"
     using hermitian_inner_prod_real dimA by auto
- 
-  assume npA: " \<not> positive A" 
+
+  assume npA: " \<not> positive A"
   from npA have "\<not> (A \<in> carrier_mat (dim_col A) (dim_col A)) \<or> \<not> (\<forall>v. dim_vec v = dim_col A \<longrightarrow> 0 \<le> inner_prod v (A *\<^sub>v v))"
     unfolding positive_def by blast
   then have evA: "\<exists> v. dim_vec v = dim_col A \<and> \<not> inner_prod v (A *\<^sub>v v) \<ge> 0" using dimA by blast
@@ -326,14 +326,14 @@ proof (rule ccontr)
   proof -
     obtain v where vA: "dim_vec v = dim_col A \<and> \<not> inner_prod v (A *\<^sub>v v) \<ge> 0" using evA by auto
     from vA herprod have "\<not> 0 \<le> inner_prod v (A *\<^sub>v v) \<and> inner_prod v (A *\<^sub>v v) \<in> Reals" by auto
-    then have "inner_prod v (A *\<^sub>v v) < 0" 
+    then have "inner_prod v (A *\<^sub>v v) < 0"
       using complex_is_Real_iff by auto
     then have  "\<exists> v. dim_vec v = dim_col A \<and>  inner_prod v (A *\<^sub>v v) < 0" using vA by auto
     then show ?thesis by auto
   qed
 
   then obtain v where neg: "dim_vec v = dim_col A \<and> inner_prod v (A *\<^sub>v v) < 0" by auto
- 
+
   have   nzero: "v \<noteq> 0\<^sub>v m"
   proof (rule ccontr)
     assume nega: " \<not> v \<noteq> 0\<^sub>v m"
@@ -345,7 +345,7 @@ proof (rule ccontr)
     with nega show False by auto
   qed
 
-  have invgeq: "inner_prod v v > 0" 
+  have invgeq: "inner_prod v v > 0"
   proof -
     have "inner_prod v v = vec_norm v * vec_norm v" unfolding vec_norm_def
       by (metis carrier_matD(2) carrier_vec_dim_vec dimA mult_cancel_left1 neg normalized_cscalar_prod normalized_vec_norm nzero vec_norm_def)
@@ -360,9 +360,9 @@ proof (rule ccontr)
     {
       have "\<forall> i < m. conjugate (v $ i) * (v $ i) \<ge> 0" using conjugate_square_smaller_0 by simp
       then have vi: "\<forall> i < m. conjugate (v $ i) * (v $ i) = cmod (conjugate (v $ i) * (v $ i))" using cmod_eq_Re
-        by (simp add: complex.expand) 
+        by (simp add: complex.expand)
 
-      have "inner_prod v v= (\<Sum>i = 0..<m. ((v $ i) * conjugate (v $ i)))" 
+      have "inner_prod v v= (\<Sum>i = 0..<m. ((v $ i) * conjugate (v $ i)))"
         unfolding scalar_prod_def vec_conjugate_def using neg dimA by auto
       also have "\<dots> = (\<Sum>i = 0..<m. (conjugate (v $ i) * (v $ i)))"
         by (meson mult.commute)
@@ -371,7 +371,7 @@ proof (rule ccontr)
     }
     then show ?thesis by auto
   qed
-  
+
   let ?r = "inner_prod v (A *\<^sub>v v)" have rl: "?r < 0" using neg by auto
   have vAv: "inner_prod v (A *\<^sub>v v) =  (\<Sum>i=0..<m. (\<Sum>j=0..<m.
                 conjugate (v$i) * A$$(i, j) * v$j))" using quadratic_form_mat dimA neg by auto
@@ -386,10 +386,10 @@ proof (rule ccontr)
         by (simp add: mult.commute right_diff_distrib)
       then have ele: "\<forall> i < m.(\<Sum>j=0..<m.(conjugate (v$i) * X n $$(i, j) * v$j - conjugate (v$i) * A$$(i, j) * v$j)) = (\<Sum>j=0..<m.(
               conjugate (v$i) * (X n $$(i, j)-A$$(i, j)) * v$j))" by auto
-      have "\<forall> i < m. \<forall> j < m. cmod(conjugate (v $ i) * (X n $$ (i, j) - A $$ (i, j)) * v $ j) = 
+      have "\<forall> i < m. \<forall> j < m. cmod(conjugate (v $ i) * (X n $$ (i, j) - A $$ (i, j)) * v $ j) =
                 cmod(conjugate (v $ i)) * cmod (X n $$ (i, j) - A $$ (i, j)) * cmod(v $ j)"
         by (simp add: norm_mult)
-      then have less: "\<forall> i < m.(\<Sum>j = 0..<m. cmod(conjugate (v $ i) * (X n $$ (i, j) - A $$ (i, j)) * v $ j)) = 
+      then have less: "\<forall> i < m.(\<Sum>j = 0..<m. cmod(conjugate (v $ i) * (X n $$ (i, j) - A $$ (i, j)) * v $ j)) =
                 (\<Sum>j = 0..<m. cmod(conjugate (v $ i)) * cmod (X n $$ (i, j) - A $$ (i, j)) * cmod(v $ j))" by auto
 
       have "inner_prod v (X n *\<^sub>v v) - inner_prod v (A *\<^sub>v v) = (\<Sum>i=0..<m. (\<Sum>j=0..<m.
@@ -415,7 +415,7 @@ proof (rule ccontr)
       unfolding LIMSEQ_def dist_norm by auto
     from limX have mg: "m > 0" using limit_mat_def
       by (metis carrier_matD(1) carrier_matD(2) mat_eq_iff neq0_conv not_less0 npA posX)
-    
+
     have cmoda: "\<exists>no. \<forall>n\<ge>no. (\<Sum>i = 0..<m. \<Sum>j = 0..<m. cmod (conjugate (v $ i)) * cmod (X n $$ (i, j) - A $$ (i, j)) * cmod (v $ j)) < r"
       if r: "r > 0" for r
     proof -
@@ -427,17 +427,17 @@ proof (rule ccontr)
           using member_le_sum[of i "{0..<m}" "\<lambda> j. cmod (v$j)"] cmod_def i by simp
         then have "\<forall> i < m. (cmod (conjugate (v $ i)) * (\<Sum>j = 0..<m.( cmod (v $ j)))) \<ge> (cmod (conjugate (v $ i)) * cmod (v $ i))"
           by (simp add: mult_left_mono)
-        then have "?u \<ge> (\<Sum>i = 0..<m. (cmod (conjugate (v $ i)) *cmod (v $ i)))" 
+        then have "?u \<ge> (\<Sum>i = 0..<m. (cmod (conjugate (v $ i)) *cmod (v $ i)))"
           using ur sum_mono[of "{0..<m}" "\<lambda> i.  cmod (conjugate (v $ i)) * cmod (v $ i)" "\<lambda> i. cmod (conjugate (v $ i)) * (\<Sum>j = 0..<m. cmod (v $ j))"]
           by auto
-        moreover have "(\<Sum>i = 0..<m. cmod (conjugate (v $ i)  *cmod (v $ i))) = (\<Sum>i = 0..<m. cmod (conjugate (v $ i) * (v $ i)))" 
+        moreover have "(\<Sum>i = 0..<m. cmod (conjugate (v $ i)  *cmod (v $ i))) = (\<Sum>i = 0..<m. cmod (conjugate (v $ i) * (v $ i)))"
           using norm_ge_zero norm_mult norm_of_real by (metis (no_types, hide_lams) abs_of_nonneg)
         moreover have "(\<Sum>i = 0..<m. cmod (conjugate (v $ i) * (v $ i))) = inner_prod v v" using invv by auto
         ultimately have "?u \<ge>  inner_prod v v"
           by (metis (no_types, lifting) Im_complex_of_real Re_complex_of_real invv less_eq_complex_def norm_mult sum.cong)
         then have "?u > 0"  using invgeq by auto
         then show ?thesis by auto
-      qed 
+      qed
 
       let ?s = "r / (2 * ?u)"
       have sgz: "?s > 0" using ug rl
@@ -447,7 +447,7 @@ proof (rule ccontr)
         obtain N where Ns: "\<forall>n\<ge>N. cmod (X n $$ (i, j) - A $$ (i, j)) < ?s" using sgz limijm i j by blast
         then show ?thesis by auto
       qed
-      then have "\<exists>no. \<forall>i<m. \<forall>j<m. \<forall>n\<ge>no. cmod (X n $$ (i, j) - A $$ (i, j)) < ?s" 
+      then have "\<exists>no. \<forall>i<m. \<forall>j<m. \<forall>n\<ge>no. cmod (X n $$ (i, j) - A $$ (i, j)) < ?s"
         using quantifier_change_order_twice[of m m "\<lambda> n i j. (cmod (X n $$ (i, j) - A $$ (i, j))<?s)"] by auto
       then obtain N where Nno: "\<forall>i<m. \<forall>j<m. \<forall>n\<ge>N. cmod (X n $$ (i, j) - A $$ (i, j)) < ?s" by auto
       then have mmN: "cmod (conjugate (v $ i)) * cmod (X n $$ (i, j) - A $$ (i, j)) * cmod (v $ j)
@@ -472,7 +472,7 @@ proof (rule ccontr)
         proof -
           have "\<forall>j<m. cmod (conjugate (v $ i)) * cmod (X n $$ (i, j) - A $$ (i, j)) * cmod (v $ j)
                  \<le> ?s * (cmod (conjugate (v $ i)) * cmod (v $ j))" using mmX i by auto
-          then show ?thesis 
+          then show ?thesis
           using sum_mono[of "{0..<m}" "\<lambda> j. cmod (conjugate (v $ i)) * cmod (X n $$ (i, j) - A $$ (i, j)) * cmod (v $ j)" "\<lambda> j. (?s * (cmod (conjugate (v $ i)) * cmod (v $ j)))"]
             atLeastLessThan_iff by blast
         qed
@@ -487,7 +487,7 @@ proof (rule ccontr)
     qed
     then have XnAv:"\<exists>no. \<forall>n\<ge>no. cmod (inner_prod v (X n *\<^sub>v v) - inner_prod v (A *\<^sub>v v)) < r" if r: "r > 0" for r
     proof -
-      obtain no where nno: "\<forall>n\<ge>no. (\<Sum>i = 0..<m. \<Sum>j = 0..<m. cmod (conjugate (v $ i)) * cmod (X n $$ (i, j) - A $$ (i, j)) * cmod (v $ j)) < r" 
+      obtain no where nno: "\<forall>n\<ge>no. (\<Sum>i = 0..<m. \<Sum>j = 0..<m. cmod (conjugate (v $ i)) * cmod (X n $$ (i, j) - A $$ (i, j)) * cmod (v $ j)) < r"
         using r cmoda neg by auto
       then have "\<forall>n\<ge>no. cmod (inner_prod v (X n *\<^sub>v v) - inner_prod v (A *\<^sub>v v)) < r" using XAless neg by smt
       then show ?thesis by auto
@@ -502,9 +502,9 @@ proof (rule ccontr)
   then have XN: "cmod (inner_prod v (X N *\<^sub>v v) - inner_prod v (A *\<^sub>v v)) < -?r" by auto
 
   from posX have "positive (X N)" by auto
-  then have XNv:"inner_prod v (X N *\<^sub>v v) \<ge> 0" 
-    by (metis Complex_Matrix.positive_def carrier_matD(2) dimA dimX neg) 
-   
+  then have XNv:"inner_prod v (X N *\<^sub>v v) \<ge> 0"
+    by (metis Complex_Matrix.positive_def carrier_matD(2) dimA dimX neg)
+
   from rl XNv have XX: "cmod (inner_prod v (X N *\<^sub>v v) - inner_prod v (A *\<^sub>v v)) = cmod(inner_prod v (X N *\<^sub>v v)) - cmod(inner_prod v (A *\<^sub>v v))"
     using XN cmod_eq_Re by auto
   then have YY: "cmod(inner_prod v (X N *\<^sub>v v)) - cmod(inner_prod v (A *\<^sub>v v)) < -?r" using XN by auto
@@ -542,9 +542,9 @@ proof -
   from lim have dA: "A \<in> carrier_mat d d" using limit_mat_def by auto
   have trg: "trace (g n) = (\<Sum>k=0..<d. (g n)$$(k, k))" for n unfolding trace_def using carrier_matD[OF dgn] by auto
   have "\<forall>k < d. (\<lambda>n. (g n)$$(k, k)) \<longlonglongrightarrow> A$$(k, k)" using limit_mat_def lim by auto
-  then have "(\<lambda>n. (\<Sum>k=0..<d. (g n)$$(k, k))) \<longlonglongrightarrow> (\<Sum>k=0..<d. A$$(k, k))" 
+  then have "(\<lambda>n. (\<Sum>k=0..<d. (g n)$$(k, k))) \<longlonglongrightarrow> (\<Sum>k=0..<d. A$$(k, k))"
     using tendsto_sum[where ?I = "{0..<d}" and ?f = "(\<lambda>k n. (g n)$$(k, k))"] by auto
-  then show "(\<lambda>n. trace (g n)) \<longlonglongrightarrow> trace A" unfolding trace_def 
+  then show "(\<lambda>n. trace (g n)) \<longlonglongrightarrow> trace A" unfolding trace_def
     using trg carrier_matD[OF dgn] carrier_matD[OF dA] by auto
 qed
 
@@ -577,7 +577,7 @@ proof -
   ultimately show ?thesis by auto
 qed
 
-lemma trace_adjoint_eq_u: 
+lemma trace_adjoint_eq_u:
   fixes A :: "complex mat"
   shows "trace (A * adjoint A) = (\<Sum> i \<in> {0 ..< dim_row A}. \<Sum> j \<in> {0 ..< dim_col A}. (norm(A $$ (i,j)))\<^sup>2)"
 proof -
@@ -585,10 +585,10 @@ proof -
     by (simp add: trace_def cmod_def adjoint_def scalar_prod_def)
   also have "\<dots> = (\<Sum> i \<in> {0 ..< dim_row A}. \<Sum> j \<in> {0 ..< dim_col A}. (norm(A $$ (i,j)))\<^sup>2)"
     proof (simp add: scalar_prod_def cmod_def)
-      have cnjmul: "\<forall> i ia. A $$ (i, ia) * cnj (A $$ (i, ia)) = 
+      have cnjmul: "\<forall> i ia. A $$ (i, ia) * cnj (A $$ (i, ia)) =
                    ((complex_of_real (Re (A $$ (i, ia))))\<^sup>2 + (complex_of_real (Im (A $$ (i, ia))))\<^sup>2)"
-        by (simp add: complex_mult_cnj) 
-      then have "\<forall> i. (\<Sum>ia = 0..<dim_col A. A $$ (i, ia) * cnj (A $$ (i, ia))) = 
+        by (simp add: complex_mult_cnj)
+      then have "\<forall> i. (\<Sum>ia = 0..<dim_col A. A $$ (i, ia) * cnj (A $$ (i, ia))) =
                       (\<Sum>ia = 0..<dim_col A.  ((complex_of_real (Re (A $$ (i, ia))))\<^sup>2 + (complex_of_real (Im (A $$ (i, ia))))\<^sup>2))"
         by auto
       then show"(\<Sum>i = 0..<dim_row A. \<Sum>ia = 0..<dim_col A. A $$ (i, ia) * cnj (A $$ (i, ia))) =
@@ -608,9 +608,9 @@ proof (simp add: trace_adjoint_eq_u)
   have ineqi: "(cmod (A $$ (i, j)))\<^sup>2 \<le> (\<Sum>xa = 0..<dim_col A. (cmod (A $$ (i, xa)))\<^sup>2)"
     using cindex member_le_sum[of j " {0 ..< dim_col A}" "\<lambda> x. (cmod (A $$ (i, x)))\<^sup>2"] by auto
   also have ineqj: "\<dots> \<le> (\<Sum>x = 0..<dim_row A. \<Sum>xa = 0..<dim_col A. (cmod (A $$ (x, xa)))\<^sup>2)"
-    using rindex member_le_sum[of i " {0 ..< dim_row A}" "\<lambda> x. \<Sum>xa = 0..<dim_col A. (cmod (A $$ (x, xa)))\<^sup>2"] 
+    using rindex member_le_sum[of i " {0 ..< dim_row A}" "\<lambda> x. \<Sum>xa = 0..<dim_col A. (cmod (A $$ (x, xa)))\<^sup>2"]
     by (simp add: sum_nonneg)
-  then show "(cmod (A $$ (i, j)))\<^sup>2 \<le> (\<Sum>x = 0..<dim_row A. \<Sum>xa = 0..<dim_col A. (cmod (A $$ (x, xa)))\<^sup>2)" 
+  then show "(cmod (A $$ (i, j)))\<^sup>2 \<le> (\<Sum>x = 0..<dim_row A. \<Sum>xa = 0..<dim_col A. (cmod (A $$ (x, xa)))\<^sup>2)"
   using ineqi by linarith
  qed
 
@@ -623,10 +623,10 @@ proof -
   then show ?thesis by (simp add: hA hermitian_is_normal)
 qed
 
-lemma diag_mat_mul_diag_diag: 
+lemma diag_mat_mul_diag_diag:
   fixes A B ::  "complex mat"
   assumes dimA: "A \<in> carrier_mat n n" and dimB: "B \<in> carrier_mat n n"
-    and dA: "diagonal_mat A"  and dB: "diagonal_mat B" 
+    and dA: "diagonal_mat A"  and dB: "diagonal_mat B"
   shows "diagonal_mat (A * B)"
 proof  -
   have AB: "A * B = mat n n (\<lambda>(i,j). (if (i = j) then (A$$(i, i)) * (B$$(i, i)) else 0))"
@@ -639,14 +639,14 @@ proof  -
     }
     then show ?thesis by auto
   qed
-  then show ?thesis using diagonal_mat_def dAB dimA dimB 
+  then show ?thesis using diagonal_mat_def dAB dimA dimB
     by (metis carrier_matD(1) carrier_matD(2) index_mult_mat(2) index_mult_mat(3))
 qed
- 
-lemma diag_mat_mul_diag_ele: 
+
+lemma diag_mat_mul_diag_ele:
   fixes A B :: "complex mat"
   assumes dimA: "A \<in> carrier_mat n n" and dimB: "B \<in> carrier_mat n n"
-    and dA: "diagonal_mat A" and dB: "diagonal_mat B" 
+    and dA: "diagonal_mat A" and dB: "diagonal_mat B"
   shows "\<forall>i<n. (A*B) $$ (i,i) = A$$(i, i) * B$$(i, i)"
 proof -
   have AB: "A * B = mat n n (\<lambda>(i,j). if i = j then (A$$(i, i)) * (B$$(i, i)) else 0)"
@@ -654,7 +654,7 @@ proof -
   then show ?thesis
     using AB by auto
 qed
- 
+
 lemma trace_square_less_square_trace:
   fixes B ::  "complex mat"
   assumes dimB: "B \<in> carrier_mat n n"
@@ -668,7 +668,7 @@ proof -
       by (metis (no_types) semiring_normalization_rules(29) sum_product tB)
   qed
   have BB: "\<And>i. i < n \<Longrightarrow> (B*B) $$ (i,i) = (B$$(i, i))\<^sup>2" using diag_mat_mul_diag_ele[of B n B] dimB dB
-      by (metis numeral_1_eq_Suc_0 power_Suc0_right power_add_numeral semiring_norm(2))   
+      by (metis numeral_1_eq_Suc_0 power_Suc0_right power_add_numeral semiring_norm(2))
   have tBB:  "trace (B*B) = (\<Sum> i \<in> {0 ..<n}. (B*B) $$ (i,i))" using assms trace_def[of "B*B"] carrier_mat_def by auto
   also have "\<dots> =  (\<Sum> i \<in> {0 ..<n}. (B$$(i, i))\<^sup>2)" using BB by auto
   finally have BBt: " trace (B * B) = (\<Sum>i = 0..<n. (B $$ (i, i))\<^sup>2)" by auto
@@ -676,9 +676,9 @@ proof -
   proof -
     {
       fix i assume i: "i < n"
-      have "(\<Sum>j = 0..<n. B $$ (i, i) * B $$ (j, j)) = (B $$ (i, i))\<^sup>2  + sum (\<lambda> j. (B $$ (i, i) * B $$ (j, j))) ({0 ..<n} - {i})" 
-        by (metis (no_types, lifting) BB add.commute atLeastLessThan_iff dB diag_mat_mul_diag_ele diff_add_cancel dimB finite_atLeastLessThan i not_le not_less_zero sum_diff1_ring)
-      moreover have "(sum (\<lambda> j. (B $$ (i, i) * B $$ (j, j))) ({0 ..<n} - {i})) \<ge> 0" 
+      have "(\<Sum>j = 0..<n. B $$ (i, i) * B $$ (j, j)) = (B $$ (i, i))\<^sup>2  + sum (\<lambda> j. (B $$ (i, i) * B $$ (j, j))) ({0 ..<n} - {i})"
+        by (metis (no_types, lifting) BB atLeastLessThan_iff dB diag_mat_mul_diag_ele dimB finite_atLeastLessThan i not_le not_less_zero sum.remove)
+      moreover have "(sum (\<lambda> j. (B $$ (i, i) * B $$ (j, j))) ({0 ..<n} - {i})) \<ge> 0"
       proof (cases "{0..<n} - {i} \<noteq> {}")
         case True
         then show ?thesis using pB i sum_nonneg[of "{0..<n} - {i}" "\<lambda> j. (B $$ (i, i) * B $$ (j, j))"] by auto
@@ -691,35 +691,35 @@ proof -
    }
    then show ?thesis by auto
  qed
-  from tBtB BBt lesseq have "trace (B*B) \<le> (trace B)\<^sup>2" 
+  from tBtB BBt lesseq have "trace (B*B) \<le> (trace B)\<^sup>2"
     using sum_mono[of "{0..<n}" "\<lambda> i. (B $$ (i, i))\<^sup>2" "\<lambda> i. (\<Sum>j = 0..<n. B $$ (i, i) * B $$ (j, j))"]
     by (metis (no_types, lifting))
   then show ?thesis by auto
 qed
- 
-lemma trace_positive_eq: 
+
+lemma trace_positive_eq:
    fixes A :: "complex mat"
    assumes pos: "positive A"
    shows "trace (A * adjoint A) \<le> (trace A)\<^sup>2"
-proof - 
+proof -
   from assms  have normal: "A * adjoint A = adjoint A * A" by (rule positive_is_normal)
   moreover
   from assms positive_dim_eq obtain n where cA: "A \<in> carrier_mat n n" by auto
-  moreover 
+  moreover
   from assms complex_mat_char_poly_factorizable cA obtain es where charpo: " char_poly A =  (\<Prod> a \<leftarrow> es. [:- a, 1:]) \<and> length es = n" by auto
   moreover
   obtain B P Q where B: "unitary_schur_decomposition A es = (B,P,Q)" by (cases "unitary_schur_decomposition A es", auto)
   ultimately have
-    smw: "similar_mat_wit A B P (adjoint P)" 
+    smw: "similar_mat_wit A B P (adjoint P)"
     and ut: "diagonal_mat B"
-    and uP:  "unitary P" 
+    and uP:  "unitary P"
     and dB: "diag_mat B = es"
-    and QaP: "Q = adjoint P" 
+    and QaP: "Q = adjoint P"
     using normal_complex_mat_has_spectral_decomposition[of A n es B P Q]  unitary_schur_decomposition by auto
   from smw cA QaP uP have cB: "B \<in> carrier_mat n n" and cP: "P \<in> carrier_mat n n" and cQ: "Q \<in> carrier_mat n n"
     unfolding  similar_mat_wit_def Let_def unitary_def by auto
   then have caP: "adjoint P \<in> carrier_mat n n" using adjoint_dim[of P n] by auto
-  from smw QaP cA have A: "A = P * B * adjoint P" and traceA: "trace A = trace (P * B * Q)" and PB: "P * Q = 1\<^sub>m n \<and> Q * P = 1\<^sub>m n" 
+  from smw QaP cA have A: "A = P * B * adjoint P" and traceA: "trace A = trace (P * B * Q)" and PB: "P * Q = 1\<^sub>m n \<and> Q * P = 1\<^sub>m n"
     unfolding similar_mat_wit_def by auto
   have traceAB: "trace (P * B * Q) = trace ((Q*P)*B)"
     using cQ cP cB by (mat_assoc n)
@@ -741,23 +741,23 @@ proof -
   finally have AA: "A * A = P * B * B * adjoint P" by auto
   then have tAA: "trace (A*A) = trace (P * B * B * adjoint P)" by auto
   also have tBB: "\<dots> = trace (adjoint P * P * B * B)" using cP cB by (mat_assoc n)
-  also have "\<dots> = trace (B * B)" using uP unitary_def[of P] inverts_mat_def[of P "adjoint P"] 
+  also have "\<dots> = trace (B * B)" using uP unitary_def[of P] inverts_mat_def[of P "adjoint P"]
     using PB QaP cB by auto
   finally have traceAABB: "trace (A * A) = trace (B * B)" by auto
-  have BP: "\<And>i. i < n \<Longrightarrow> B$$(i, i) \<ge> 0" 
+  have BP: "\<And>i. i < n \<Longrightarrow> B$$(i, i) \<ge> 0"
   proof -
      {
        fix i assume i: "i < n"
-       then have "B$$(i, i) \<ge> 0" using positive_eigenvalue_positive[of A n es B P Q i] cA pos charpo B by auto      
+       then have "B$$(i, i) \<ge> 0" using positive_eigenvalue_positive[of A n es B P Q i] cA pos charpo B by auto
        then show "B$$(i, i) \<ge> 0" by auto
      }
    qed
    have Brel: "trace (B*B) \<le> (trace B)\<^sup>2" using trace_square_less_square_trace[of B n] cB ut BP by auto
    from AaA traceAABB traceAB Brel have "trace (A*adjoint A) \<le> (trace A)\<^sup>2" by auto
    then show ?thesis by auto
- qed 
+ qed
 
-lemma lowner_le_transitive: 
+lemma lowner_le_transitive:
   fixes m n :: nat
   assumes re: "n \<ge> m"
   shows "positive (f n - f m)"
@@ -765,14 +765,14 @@ proof -
   from re show "positive (f n - f m)"
   proof (induct n)
     case 0
-    then show ?case using positive_zero 
+    then show ?case using positive_zero
           by (metis dim le_0_eq minus_r_inv_mat)
   next
     case (Suc n)
     then show ?case
     proof (cases "Suc n = m")
       case True
-      then show ?thesis using positive_zero 
+      then show ?thesis using positive_zero
           by (metis dim minus_r_inv_mat)
     next
       case False
@@ -783,7 +783,7 @@ proof -
         from inc have "positive (f (Suc n) - f n)" unfolding lowner_le_def by auto
         then have pf:  "positive ((f (Suc n) - f n) + (f n - f m))" using positive_add dim pnm
           by (meson minus_carrier_mat)
-        have "(f (Suc n) - f n) + (f n - f m) = f (Suc n) + ((- f n) + f n) + (- f m)" 
+        have "(f (Suc n) - f n) + (f n - f m) = f (Suc n) + ((- f n) + f n) + (- f m)"
           using local.dim by (mat_assoc dim, auto)
         also have "\<dots> = f (Suc n) + 0\<^sub>m dim dim + (- f m)"
           using local.dim by (subst uminus_l_inv_mat[where nc=dim and nr=dim], auto)
@@ -795,16 +795,16 @@ proof -
       qed
     qed
   qed
-qed 
- 
+qed
+
 text \<open>The sequence of matrices converges pointwise.\<close>
-lemma inc_partial_density_operator_converge: 
+lemma inc_partial_density_operator_converge:
   assumes  i: "i \<in> {0 ..<dim}" and j: "j \<in> {0 ..<dim}"
   shows "convergent (\<lambda>n. f n $$ (i, j))"
 proof-
   have tracefn: "trace (f n) \<ge> 0 \<and> trace (f n) \<le> 1" for n
   proof -
-    from pdo show ?thesis 
+    from pdo show ?thesis
       unfolding partial_density_operator_def using positive_trace[of "f n"]
       using dim by blast
   qed
@@ -819,7 +819,7 @@ proof-
     ultimately show ?thesis by auto
   qed
   then have inctrace: "incseq (\<lambda> n. norm(trace (f n)))" by (simp add: incseq_SucI)
-  then have tr_sup: "(\<lambda> n. norm(trace (f n))) \<longlonglongrightarrow> (SUP i. norm (trace (f i)))" 
+  then have tr_sup: "(\<lambda> n. norm(trace (f n))) \<longlonglongrightarrow> (SUP i. norm (trace (f i)))"
     using LIMSEQ_incseq_SUP[of "\<lambda> n. norm(trace (f n))"] pdo partial_density_operator_def normf  by (meson bdd_aboveI2)
   then have tr_cauchy: "Cauchy (\<lambda> n. norm(trace (f n)))" using  Cauchy_convergent_iff convergent_def by blast
   then have tr_cauchy_def: "\<forall>e>0. \<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>M. dist(norm(trace (f n))) (norm(trace (f m))) < e" unfolding Cauchy_def by blast
@@ -829,12 +829,12 @@ proof-
 
   have eq_minus: "\<forall> m n. trace (f m) - trace (f n) = trace (f m - f n)" using trace_minus_linear dim by metis
   from eq_minus norm_trace have norm_trace_cauchy: "\<forall>e>0.\<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>M. norm((trace (f n - f m))) < e" by auto
-  then have norm_trace_cauchy_iff: "\<forall>e>0.\<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>m. norm((trace (f n - f m))) < e" 
+  then have norm_trace_cauchy_iff: "\<forall>e>0.\<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>m. norm((trace (f n - f m))) < e"
     by (meson order_trans_rules(23))
   then have norm_square: "\<forall>e>0.\<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>m. (norm((trace (f n - f m))))\<^sup>2 < e\<^sup>2"
     by (metis abs_of_nonneg norm_ge_zero order_less_le real_sqrt_abs real_sqrt_less_iff)
-   
-  have tr_re: "\<forall> m. \<forall> n \<ge> m. trace ((f n - f m) * adjoint (f n - f m)) \<le> ((trace (f n- f m)))\<^sup>2" 
+
+  have tr_re: "\<forall> m. \<forall> n \<ge> m. trace ((f n - f m) * adjoint (f n - f m)) \<le> ((trace (f n- f m)))\<^sup>2"
     using trace_positive_eq lowner_le_transitive by auto
   have tr_re_g: "\<forall> m. \<forall> n \<ge> m. trace ((f n - f m) * adjoint (f n - f m)) \<ge> 0"
     using lowner_le_transitive positive_trace trace_adjoint_positive by auto
@@ -850,9 +850,9 @@ proof-
     have "\<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>m. (cmod (trace (f n - f m)))\<^sup>2 < e\<^sup>2" using norm_square e by auto
     then obtain M where " \<forall>m\<ge>M. \<forall>n\<ge>m. (cmod (trace (f n - f m)))\<^sup>2 < e\<^sup>2" by auto
     then have "\<forall>m\<ge>M. \<forall>n\<ge>m. norm(trace ((f n- f m) * adjoint (f n - f m))) < e\<^sup>2" using norm_trace_fmn  by fastforce
-    then show ?thesis by auto 
+    then show ?thesis by auto
   qed
-    
+
   have norm_minus: "\<forall> m. \<forall> n \<ge> m. (norm ((f n - f m) $$ (i, j)))\<^sup>2 \<le> trace ((f n - f m) * adjoint (f n - f m))"
     using trace_adjoint_element_ineq i j
     by (smt adjoint_dim_row carrier_matD(1) index_minus_mat(2) index_mult_mat(2) lowner_le_transitive matrix_seq_axioms matrix_seq_def positive_is_normal)
@@ -862,13 +862,13 @@ proof-
     also have "\<dots> = norm (trace ((f n - f m) * adjoint (f n - f m)))" using tr_re_g nm
       by (smt Re_complex_of_real less_eq_complex_def matrix_seq.trace_adjoint_eq_u matrix_seq_axioms mult_cancel_left2 norm_one norm_scaleR of_real_def of_real_hom.hom_zero)
     finally show ?thesis by auto
-  qed 
+  qed
 
   from norm_minus_le cauchy_adj have cauchy_ij: "\<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>m. (norm ((f n - f m) $$ (i, j)))\<^sup>2  < e\<^sup>2" if e: "e > 0" for e
-  proof - 
+  proof -
     have "\<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>m. norm(trace ((f n- f m) * adjoint (f n - f m))) < e\<^sup>2" using cauchy_adj e by auto
     then obtain M where " \<forall>m\<ge>M. \<forall>n\<ge>m. norm(trace ((f n - f m) * adjoint (f n - f m))) < e\<^sup>2" by auto
-    then have "\<forall>m\<ge>M. \<forall>n\<ge>m. (norm ((f n - f m) $$ (i, j)))\<^sup>2 < e\<^sup>2" using norm_minus_le by fastforce 
+    then have "\<forall>m\<ge>M. \<forall>n\<ge>m. (norm ((f n - f m) $$ (i, j)))\<^sup>2 < e\<^sup>2" using norm_minus_le by fastforce
     then show ?thesis by auto
   qed
   then have cauchy_ij_norm: "\<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>m. (norm ((f n - f m) $$ (i, j))) < e" if e: "e > 0" for e
@@ -879,8 +879,8 @@ proof-
     proof -
       from m n mn have "(norm ((f n- f m) $$ (i, j)))\<^sup>2 < e\<^sup>2" by auto
       then show ?thesis
-      using e power_less_imp_less_base by fastforce 
-    qed         
+      using e power_less_imp_less_base by fastforce
+    qed
     then show ?thesis by auto
   qed
 
@@ -890,7 +890,7 @@ proof-
     have "norm ((f m) $$ (i, j) - (f n) $$ (i, j)) < e" if m: "m \<ge> M" and n: "n \<ge> M" for m n
     proof (cases "n \<ge> m")
       case True
-      then show ?thesis 
+      then show ?thesis
       proof -
         from mnm m True have "norm ((f n) $$ (i, j) - (f m) $$ (i, j)) < e"
           by (metis atLeastLessThan_iff carrier_matD(1) carrier_matD(2) dim i index_minus_mat(1) j)
@@ -902,7 +902,7 @@ proof-
       then show ?thesis
       proof -
         from False n mnm have norm: "norm ((f m - f n) $$ (i, j)) < e" by auto
-        have minus: "(f m - f n) $$ (i, j)   =  f m  $$ (i, j) -f n $$ (i, j)" 
+        have minus: "(f m - f n) $$ (i, j)   =  f m  $$ (i, j) -f n $$ (i, j)"
           by (metis atLeastLessThan_iff carrier_matD(1) carrier_matD(2) dim i index_minus_mat(1) j)
         also have "\<dots> = - (f n - f m) $$ (i, j)" using dim
           by (metis atLeastLessThan_iff carrier_matD(1) carrier_matD(2) i index_minus_mat(1) j minus_diff_eq)
@@ -911,12 +911,12 @@ proof-
           by (metis (no_types, lifting) atLeastLessThan_iff carrier_matD(1) carrier_matD(2) i
               index_minus_mat(2) index_minus_mat(3) index_uminus_mat(1) j matrix_seq_axioms matrix_seq_def)
         then have "norm (((f n - f m)) $$ (i, j)) < e" using fmn norm by auto
-        then have "norm (f n $$ (i, j) - f m $$ (i, j)) < e" 
+        then have "norm (f n $$ (i, j) - f m $$ (i, j)) < e"
           by (metis minus norm norm_minus_commute)
-        then have "norm (f m $$ (i, j) - f n $$ (i, j)) < e" by (simp add: norm_minus_commute)   
+        then have "norm (f m $$ (i, j) - f n $$ (i, j)) < e" by (simp add: norm_minus_commute)
         then show ?thesis by auto
       qed
-    qed 
+    qed
     then show ?thesis by auto
   qed
 
@@ -954,14 +954,14 @@ proof -
       then show ?thesis by auto
     qed
     then show ?thesis unfolding LIMSEQ_def by auto
-  qed 
+  qed
   then have limXA: "limit_mat (\<lambda>n. X (n + k)) A m" unfolding limit_mat_def using dimXA by auto
 
   from posY limXA have "positive A" using pos_mat_lim_is_pos[of ?Y A m] by auto
   then show ?thesis by auto
 qed
 
-lemma minus_mat_limit: 
+lemma minus_mat_limit:
   fixes X :: "nat \<Rightarrow> complex mat" and A :: "complex mat" and m :: nat and B :: "complex mat"
   assumes dimB: "B \<in> carrier_mat m m" and limX: "limit_mat X A m"
   shows "limit_mat (mat_seq_minus X B) (A - B) m"
@@ -988,15 +988,15 @@ proof -
   qed
   then show ?thesis
     unfolding limit_mat_def mat_seq_minus_def using dimXAB by auto
-qed 
+qed
 
-lemma mat_minus_limit: 
+lemma mat_minus_limit:
   fixes X :: "nat \<Rightarrow> complex mat" and A :: "complex mat" and m :: nat and B :: "complex mat"
   assumes dimA: "A \<in> carrier_mat m m" and limX: "limit_mat X A m"
   shows "limit_mat (minus_mat_seq B X) (B - A) m"
 proof-
   have dimX : "\<forall>n. X n \<in> carrier_mat m m" using limX unfolding limit_mat_def by auto
-  then have dimXAB: "\<forall>n. B - X n \<in> carrier_mat m m \<and> B - A \<in> carrier_mat m m" using index_minus_mat dimA  
+  then have dimXAB: "\<forall>n. B - X n \<in> carrier_mat m m \<and> B - A \<in> carrier_mat m m" using index_minus_mat dimA
     by (simp add: minus_carrier_mat)
 
   have "(\<lambda>n. (B - X n) $$ (i, j)) \<longlonglongrightarrow> (B - A) $$ (i, j)" if i: "i < m" and j: "j < m" for i j
@@ -1013,17 +1013,17 @@ proof-
           using dimA i j
           by (smt cancel_ab_semigroup_add_class.diff_right_commute cancel_comm_monoid_add_class.diff_cancel carrier_matD(1) carrier_matD(2) diff_add_cancel dimX index_minus_mat(1) minus_diff_eq)
         then have "norm ((B - X n) $$ (i, j) - (B - A) $$ (i, j)) = norm ((X n) $$ (i, j) -  A $$ (i, j))"
-          by (metis norm_minus_cancel)               
+          by (metis norm_minus_cancel)
         then show ?thesis using dist n by auto
-      qed 
+      qed
       then show ?thesis using dist_norm by metis
     qed
     then show ?thesis unfolding LIMSEQ_def by auto
   qed
-  then have "limit_mat (minus_mat_seq B X) (B - A) m" 
+  then have "limit_mat (minus_mat_seq B X) (B - A) m"
     unfolding limit_mat_def minus_mat_seq_def using dimXAB by auto
   then show ?thesis by auto
-qed 
+qed
 
 lemma lowner_lub_form:
   "lowner_is_lub (mat dim dim (\<lambda> (i, j). (lim (\<lambda> n. (f n) $$ (i, j)))))"
@@ -1040,10 +1040,10 @@ proof -
     have "convergent (\<lambda>n. f n $$ (i, j))" using conf i j by auto
     then have "(\<lambda>n. f n $$ (i, j))  \<longlonglongrightarrow> lim (\<lambda>n. f n $$ (i, j)) " using convergent_LIMSEQ_iff by auto
     then show ?thesis using ij by auto
-  qed  
+  qed
 
   from dim dim_A lim_A have lim_mat_A: "limit_mat f ?A dim" unfolding limit_mat_def by auto
- 
+
   have is_ub: "f n \<le>\<^sub>L ?A" for n
   proof -
     have "\<forall> m \<ge> n. positive (f m - f n)" using lowner_le_transitive by auto
@@ -1057,10 +1057,10 @@ proof -
     then have posAf: "\<exists> k. \<forall> m \<ge> k. positive ((mat_seq_minus f (f n)) m)" unfolding mat_seq_minus_def by auto
 
     from limAf posAf have "positive (?A - f n)" using pos_mat_lim_is_pos_aux by auto
-    then have "f n \<le>\<^sub>L mat dim dim (\<lambda>(i, j). lim (\<lambda>n. f n $$ (i, j)))" unfolding lowner_le_def using dim by auto 
+    then have "f n \<le>\<^sub>L mat dim dim (\<lambda>(i, j). lim (\<lambda>n. f n $$ (i, j)))" unfolding lowner_le_def using dim by auto
     then show ?thesis by auto
   qed
-  
+
   have is_lub: "?A \<le>\<^sub>L M'" if ub: "\<forall>n. f n \<le>\<^sub>L M'" for M'
   proof -
     have dim_M: "M' \<in> carrier_mat dim dim" using ub unfolding lowner_le_def using dim
@@ -1103,13 +1103,13 @@ lemma lowner_lub_prop: "lowner_is_lub lowner_lub"
   by (rule lowner_lub_unique)
 
 lemma lowner_lub_is_limit:
-  "limit_mat f lowner_lub dim" 
+  "limit_mat f lowner_lub dim"
 proof -
   define A where "A = lowner_lub"
   then have "A = (THE M. lowner_is_lub M)" using lowner_lub_def by auto
   then have Af: "A = (mat dim dim (\<lambda> (i, j). (lim (\<lambda> n.  (f n) $$ (i, j)))))"
     using lowner_lub_form lowner_lub_unique by auto
-  show "limit_mat f A dim" unfolding Af limit_mat_def 
+  show "limit_mat f A dim" unfolding Af limit_mat_def
     apply (auto simp add: dim)
   proof -
     fix i j assume dims: "i < dim" "j < dim"
@@ -1118,7 +1118,7 @@ proof -
   qed
 qed
 
-lemma lowner_lub_trace: 
+lemma lowner_lub_trace:
   assumes "\<forall> n. trace (f n) \<le> x"
   shows "trace lowner_lub \<le> x"
 proof -
@@ -1126,26 +1126,26 @@ proof -
     using dim by blast
   then have Re: "\<forall> n. Re (trace (f n)) \<ge> 0 \<and> Im (trace (f n)) = 0" by auto
   then have lex: "\<forall> n. Re (trace (f n)) \<le> Re x \<and> Im x = 0" using assms by auto
- 
+
   have "limit_mat f lowner_lub dim"  using lowner_lub_is_limit by auto
   then have conv: "(\<lambda>n. trace (f n)) \<longlonglongrightarrow> trace lowner_lub" using mat_trace_limit by auto
   then have "(\<lambda>n. Re (trace (f n))) \<longlonglongrightarrow> Re (trace lowner_lub)"
     by (simp add: tendsto_Re)
-  then have Rell: "Re (trace lowner_lub) \<le> Re x" 
+  then have Rell: "Re (trace lowner_lub) \<le> Re x"
     using lex Lim_bounded[of "(\<lambda>n. Re (trace (f n)))" "Re (trace lowner_lub)" 0 "Re x"] by simp
 
   from conv have "(\<lambda>n. Im (trace (f n))) \<longlonglongrightarrow> Im (trace lowner_lub)"
     by (simp add: tendsto_Im)
-  then  have Imll: "Im (trace lowner_lub) = 0" using Re  
+  then  have Imll: "Im (trace lowner_lub) = 0" using Re
     by (simp add: Lim_bounded Lim_bounded2 dual_order.antisym)
 
   from Rell Imll lex show ?thesis by simp
 qed
 
-lemma lowner_lub_is_positive: 
+lemma lowner_lub_is_positive:
   shows "positive lowner_lub"
   using lowner_lub_is_limit pos_mat_lim_is_pos pdo unfolding partial_density_operator_def by auto
- 
+
 end
 
 subsection \<open>Finite sum of matrices\<close>
@@ -1178,7 +1178,7 @@ proof (induct n)
   show ?case by auto
 next
   case (Suc n)
-  then show ?case unfolding matrix_sum.simps by auto 
+  then show ?case unfolding matrix_sum.simps by auto
 qed
 
 lemma matrix_sum_add:
@@ -1190,7 +1190,7 @@ proof (induct n)
   then show ?case by auto
 next
   case (Suc n)
-  then show ?case 
+  then show ?case
   proof -
     have gh: "matrix_sum d g n \<in> carrier_mat d d \<and> matrix_sum d h n \<in> carrier_mat d d"
       using matrix_sum_dim Suc(3, 4) by (simp add: matrix_sum_dim)
@@ -1215,10 +1215,10 @@ next
   case (Suc n)
   then show ?case
     apply auto
-    using add_smult_distrib_left_mat Suc matrix_sum_dim  
+    using add_smult_distrib_left_mat Suc matrix_sum_dim
     by (metis lessI less_SucI)
 qed
- 
+
 lemma matrix_sum_remove:
   fixes f :: "nat \<Rightarrow> 'b::semiring_1 mat"
   assumes j: "j < n"
@@ -1231,7 +1231,7 @@ proof -
   have dsf': "k < n \<Longrightarrow> matrix_sum d f' k \<in> carrier_mat d d" for k using matrix_sum_dim[OF df'] by auto
   have flj: "\<And>k. k < j \<Longrightarrow> f' k = f k" using j f' by auto
   then have "matrix_sum d f j = matrix_sum d f' j" using matrix_sum_cong[of j f' f, OF flj] df df' j by auto
-  then have eqj: "matrix_sum d f (Suc j) = f j + matrix_sum d f' (Suc j)" unfolding matrix_sum.simps 
+  then have eqj: "matrix_sum d f (Suc j) = f j + matrix_sum d f' (Suc j)" unfolding matrix_sum.simps
     by (subst (1) f', simp add: df dsf' j)
   have lm: "(j + 1) + l \<le> n \<Longrightarrow> matrix_sum d f ((j + 1) + l) = f j + matrix_sum d f' ((j + 1) + l)" for l
   proof (induct l)
@@ -1270,7 +1270,7 @@ qed
 
 lemma matrix_sum_positive:
   fixes f :: "nat \<Rightarrow> complex mat"
-  shows "(\<And>k. k < n \<Longrightarrow> f k \<in> carrier_mat d d) \<Longrightarrow> (\<And>k. k < n \<Longrightarrow> positive (f k)) 
+  shows "(\<And>k. k < n \<Longrightarrow> f k \<in> carrier_mat d d) \<Longrightarrow> (\<And>k. k < n \<Longrightarrow> positive (f k))
     \<Longrightarrow> positive (matrix_sum d f n)"
 proof (induct n)
   case 0
@@ -1283,7 +1283,7 @@ next
 qed
 
 lemma matrix_sum_mult_right:
-  shows "(\<And>k. k < n \<Longrightarrow> f k \<in> carrier_mat d d) \<Longrightarrow> A \<in> carrier_mat d d 
+  shows "(\<And>k. k < n \<Longrightarrow> f k \<in> carrier_mat d d) \<Longrightarrow> A \<in> carrier_mat d d
     \<Longrightarrow> matrix_sum d (\<lambda>k. (f k) * A) n = matrix_sum d (\<lambda>k. f k) n * A"
 proof (induct n)
   case 0
@@ -1292,14 +1292,14 @@ next
   case (Suc n)
   then have "k < n \<Longrightarrow> f k \<in> carrier_mat d d" and dfn: "f n \<in> carrier_mat d d" for k by auto
   then have dsfn: "matrix_sum d f n \<in> carrier_mat d d" using matrix_sum_dim by auto
-  have "(f n + matrix_sum d f n) * A = f n * A + matrix_sum d f n * A" 
+  have "(f n + matrix_sum d f n) * A = f n * A + matrix_sum d f n * A"
     apply (mat_assoc d) using Suc dsfn by auto
   also have "\<dots> = f n * A + matrix_sum d (\<lambda>k. f k * A) n" using Suc by auto
   finally show ?case by auto
 qed
 
 lemma matrix_sum_add_distrib:
-  shows "(\<And>k. k < n \<Longrightarrow> f k \<in> carrier_mat d d) \<Longrightarrow> (\<And>k. k < n \<Longrightarrow> g k \<in> carrier_mat d d) 
+  shows "(\<And>k. k < n \<Longrightarrow> f k \<in> carrier_mat d d) \<Longrightarrow> (\<And>k. k < n \<Longrightarrow> g k \<in> carrier_mat d d)
     \<Longrightarrow> matrix_sum d (\<lambda>k. (f k) + (g k)) n = matrix_sum d f n + matrix_sum d g n"
 proof (induct n)
   case 0
@@ -1307,7 +1307,7 @@ proof (induct n)
 next
   case (Suc n)
   then have dfn: "f n \<in> carrier_mat d d" and dgn: "g n \<in> carrier_mat d d"
-    and dfk: "k < n \<Longrightarrow> f k \<in> carrier_mat d d" and dgk: "k < n \<Longrightarrow> g k \<in> carrier_mat d d" 
+    and dfk: "k < n \<Longrightarrow> f k \<in> carrier_mat d d" and dgk: "k < n \<Longrightarrow> g k \<in> carrier_mat d d"
     and eq: "matrix_sum d (\<lambda>k. f k + g k) n = matrix_sum d f n + matrix_sum d g n" for k by auto
   have dsf: "matrix_sum d f n \<in> carrier_mat d d" using matrix_sum_dim dfk by auto
   have dsg: "matrix_sum d g n \<in> carrier_mat d d" using matrix_sum_dim dgk by auto
@@ -1317,7 +1317,7 @@ qed
 
 lemma matrix_sum_minus_distrib:
   fixes f g :: "nat \<Rightarrow> complex mat"
-  shows "(\<And>k. k < n \<Longrightarrow> f k \<in> carrier_mat d d) \<Longrightarrow> (\<And>k. k < n \<Longrightarrow> g k \<in> carrier_mat d d) 
+  shows "(\<And>k. k < n \<Longrightarrow> f k \<in> carrier_mat d d) \<Longrightarrow> (\<And>k. k < n \<Longrightarrow> g k \<in> carrier_mat d d)
     \<Longrightarrow> matrix_sum d (\<lambda>k. (f k) - (g k)) n = matrix_sum d f n - matrix_sum d g n"
 proof -
   have eq: "-1 \<cdot>\<^sub>m g k = - g k" for k by auto
@@ -1353,7 +1353,7 @@ qed
 
 lemma lowner_le_matrix_sum:
   fixes f g :: "nat \<Rightarrow> complex mat"
-  shows "(\<And>k. k < n \<Longrightarrow> f k \<in> carrier_mat d d) \<Longrightarrow> (\<And>k. k < n \<Longrightarrow> g k \<in> carrier_mat d d) 
+  shows "(\<And>k. k < n \<Longrightarrow> f k \<in> carrier_mat d d) \<Longrightarrow> (\<And>k. k < n \<Longrightarrow> g k \<in> carrier_mat d d)
     \<Longrightarrow> (\<And>k. k < n \<Longrightarrow> f k \<le>\<^sub>L g k)
     \<Longrightarrow> matrix_sum d f n \<le>\<^sub>L matrix_sum d g n"
 proof (induct n)
@@ -1383,18 +1383,18 @@ proof -
   then have lim2: "\<forall>i<d. \<forall>j<d. (\<lambda>n. g n $$ (i, j)) \<longlonglongrightarrow> (matrix_seq.lowner_lub g) $$ (i, j)" using limit_mat_def assms by auto
 
   have "\<forall>n. f n + g n \<in> carrier_mat d d" using assms unfolding matrix_seq_def by fastforce
-  moreover have "\<forall>n. partial_density_operator (f n + g n)" using assms 
+  moreover have "\<forall>n. partial_density_operator (f n + g n)" using assms
     unfolding matrix_seq_def partial_density_operator_def using positive_add by blast
   moreover have "(f n + g n) \<le>\<^sub>L (f (Suc n) + g (Suc n))" for n
-    using assms 
+    using assms
     unfolding matrix_seq_def using lowner_le_add[of "f n" d  "f (Suc n)" "g n" "g (Suc n)"] by auto
   ultimately have msfg: "matrix_seq d (\<lambda>n. f n + g n)" using assms unfolding matrix_seq_def by auto
-  then have mslfg: "matrix_seq.lowner_is_lub (\<lambda>n. f n + g n) (matrix_seq.lowner_lub (\<lambda>n. f n + g n))" 
+  then have mslfg: "matrix_seq.lowner_is_lub (\<lambda>n. f n + g n) (matrix_seq.lowner_lub (\<lambda>n. f n + g n))"
     using matrix_seq.lowner_lub_prop by auto
   then have "limit_mat (\<lambda>n. f n + g n) (matrix_seq.lowner_lub (\<lambda>n. f n + g n)) d" using matrix_seq.lowner_lub_is_limit msfg by auto
   then have lim3: "\<forall>i<d. \<forall>j<d. (\<lambda>n. (f n + g n) $$ (i, j)) \<longlonglongrightarrow> (matrix_seq.lowner_lub (\<lambda>n. f n + g n)) $$ (i, j)" using limit_mat_def assms by auto
 
-  have "\<forall> i<d. \<forall> j<d. \<forall> n. (f n + g n) $$ (i, j) = f n $$ (i, j) + g n $$ (i, j)" using assms unfolding matrix_seq_def 
+  have "\<forall> i<d. \<forall> j<d. \<forall> n. (f n + g n) $$ (i, j) = f n $$ (i, j) + g n $$ (i, j)" using assms unfolding matrix_seq_def
     by (metis carrier_matD(1) carrier_matD(2) index_add_mat(1))
   then have add: "\<forall>i<d. \<forall>j<d. (\<lambda>n. f n $$ (i, j) + g n $$ (i, j)) \<longlonglongrightarrow> (matrix_seq.lowner_lub (\<lambda>n. f n + g n)) $$ (i, j)" using lim3 by auto
   have "matrix_seq.lowner_lub f $$ (i, j) + matrix_seq.lowner_lub g $$ (i, j) = matrix_seq.lowner_lub (\<lambda>n. f n + g n) $$ (i, j)"
@@ -1403,7 +1403,7 @@ proof -
     have "(\<lambda>n. f n $$ (i, j)) \<longlonglongrightarrow> matrix_seq.lowner_lub f $$ (i, j)" using lim1 i j by auto
     moreover have "(\<lambda>n. g n $$ (i, j)) \<longlonglongrightarrow> matrix_seq.lowner_lub g $$ (i, j)" using lim2 i j by auto
     ultimately have "(\<lambda>n. f n $$ (i, j) + g n $$ (i, j)) \<longlonglongrightarrow> matrix_seq.lowner_lub f $$ (i, j) + matrix_seq.lowner_lub g $$ (i, j)"
-      using tendsto_intros(12)[of "\<lambda>n. f n $$ (i, j)" "matrix_seq.lowner_lub f $$ (i, j)" sequentially "\<lambda>n. g n $$ (i, j)" "matrix_seq.lowner_lub g $$ (i, j)"] by auto 
+      using tendsto_intros(12)[of "\<lambda>n. f n $$ (i, j)" "matrix_seq.lowner_lub f $$ (i, j)" sequentially "\<lambda>n. g n $$ (i, j)" "matrix_seq.lowner_lub g $$ (i, j)"] by auto
     moreover have "(\<lambda>n. f n $$ (i, j) + g n $$ (i, j)) \<longlonglongrightarrow> matrix_seq.lowner_lub (\<lambda>n. f n + g n) $$ (i, j)"  using add i j by auto
     ultimately show ?thesis using LIMSEQ_unique by auto
   qed
@@ -1417,33 +1417,33 @@ lemma lowner_lub_scale:
   fixes c :: real
   assumes "matrix_seq d f"  "\<forall> n. trace (c \<cdot>\<^sub>m f n) \<le> 1"  "c\<ge>0"
   shows "matrix_seq.lowner_lub (\<lambda>n. c \<cdot>\<^sub>m f n) = c \<cdot>\<^sub>m matrix_seq.lowner_lub f"
-proof -  
-  have msf: "matrix_seq.lowner_is_lub f (matrix_seq.lowner_lub f)" 
+proof -
+  have msf: "matrix_seq.lowner_is_lub f (matrix_seq.lowner_lub f)"
     using assms(1) matrix_seq.lowner_lub_prop by auto
-  then have "limit_mat f (matrix_seq.lowner_lub f) d" 
+  then have "limit_mat f (matrix_seq.lowner_lub f) d"
     using matrix_seq.lowner_lub_is_limit assms by auto
   then have lim1: "\<forall>i<d. \<forall>j<d. (\<lambda>n. f n $$ (i, j)) \<longlonglongrightarrow> (matrix_seq.lowner_lub f) $$ (i, j)"
     using limit_mat_def assms by auto
 
   have dimcf: "\<forall>n. c \<cdot>\<^sub>m f n \<in> carrier_mat d d" using assms unfolding matrix_seq_def by fastforce
-  moreover have "\<forall>n. partial_density_operator (c \<cdot>\<^sub>m f n)" using assms 
+  moreover have "\<forall>n. partial_density_operator (c \<cdot>\<^sub>m f n)" using assms
     unfolding matrix_seq_def partial_density_operator_def using positive_scale by blast
   moreover have "\<forall>n.  c \<cdot>\<^sub>m f n \<le>\<^sub>L  c \<cdot>\<^sub>m f (Suc n)" using lowner_le_smult assms(1,3)
     unfolding matrix_seq_def partial_density_operator_def by blast
   ultimately have mscf: "matrix_seq d (\<lambda>n. c \<cdot>\<^sub>m f n)"  unfolding matrix_seq_def by auto
-  then have mslfg: "matrix_seq.lowner_is_lub (\<lambda>n. c \<cdot>\<^sub>m f n) (matrix_seq.lowner_lub (\<lambda>n. c \<cdot>\<^sub>m f n))" 
+  then have mslfg: "matrix_seq.lowner_is_lub (\<lambda>n. c \<cdot>\<^sub>m f n) (matrix_seq.lowner_lub (\<lambda>n. c \<cdot>\<^sub>m f n))"
     using matrix_seq.lowner_lub_prop by auto
-  then have "limit_mat (\<lambda>n. c \<cdot>\<^sub>m f n) (matrix_seq.lowner_lub (\<lambda>n. c \<cdot>\<^sub>m f n)) d" 
+  then have "limit_mat (\<lambda>n. c \<cdot>\<^sub>m f n) (matrix_seq.lowner_lub (\<lambda>n. c \<cdot>\<^sub>m f n)) d"
     using matrix_seq.lowner_lub_is_limit mscf by auto
   then have lim3: "\<forall>i<d. \<forall>j<d. (\<lambda>n. (c \<cdot>\<^sub>m f n) $$ (i, j)) \<longlonglongrightarrow> (matrix_seq.lowner_lub (\<lambda>n. c \<cdot>\<^sub>m f n)) $$ (i, j)"
     using limit_mat_def assms by auto
 
-  from mslfg mscf have dleft: "matrix_seq.lowner_lub (\<lambda>n. c \<cdot>\<^sub>m f n) \<in> carrier_mat d d" 
+  from mslfg mscf have dleft: "matrix_seq.lowner_lub (\<lambda>n. c \<cdot>\<^sub>m f n) \<in> carrier_mat d d"
     using matrix_seq.lowner_is_lub_dim by auto
-  have dllf: "matrix_seq.lowner_lub f \<in> carrier_mat d d" 
+  have dllf: "matrix_seq.lowner_lub f \<in> carrier_mat d d"
     using matrix_seq.lowner_is_lub_dim assms(1) msf unfolding matrix_seq_def by auto
   then  have dright: "c \<cdot>\<^sub>m matrix_seq.lowner_lub f \<in> carrier_mat d d" using index_smult_mat(2,3) by auto
-  have "\<forall> i<d. \<forall> j<d. \<forall> n. (c \<cdot>\<^sub>m f n) $$ (i, j) = c * f n $$ (i, j)" 
+  have "\<forall> i<d. \<forall> j<d. \<forall> n. (c \<cdot>\<^sub>m f n) $$ (i, j) = c * f n $$ (i, j)"
     using assms(1) unfolding matrix_seq_def using index_smult_mat(1)
     by (metis carrier_matD(1-2))
   then have smult: "\<forall>i<d. \<forall>j<d. (\<lambda>n.  c * f n $$ (i, j)) \<longlonglongrightarrow> (matrix_seq.lowner_lub (\<lambda>n. c \<cdot>\<^sub>m f n)) $$ (i, j)"
@@ -1455,12 +1455,12 @@ proof -
     moreover have "\<forall>i<d. \<forall>j<d.(c \<cdot>\<^sub>m matrix_seq.lowner_lub f) $$ (i, j) =  c *  matrix_seq.lowner_lub f $$ (i, j)"
       using index_smult_mat dllf by fastforce
     ultimately have "\<forall>i<d. \<forall>j<d. (\<lambda>n.  c * f n $$ (i, j)) \<longlonglongrightarrow>(c \<cdot>\<^sub>m matrix_seq.lowner_lub f) $$ (i, j)"
-      using tendsto_intros(18)[of "\<lambda>n. c" "c" sequentially "\<lambda>n. f n $$ (i, j)" "matrix_seq.lowner_lub f $$ (i, j)"] i j 
+      using tendsto_intros(18)[of "\<lambda>n. c" "c" sequentially "\<lambda>n. f n $$ (i, j)" "matrix_seq.lowner_lub f $$ (i, j)"] i j
       by (simp add: lim1 tendsto_mult_left)
     then show ?thesis using smult i j LIMSEQ_unique by metis
   qed
 
-  from dleft dright ij show ?thesis 
+  from dleft dright ij show ?thesis
     using mat_eq_iff[of "matrix_seq.lowner_lub  (\<lambda>n. c \<cdot>\<^sub>m f n)" "c \<cdot>\<^sub>m matrix_seq.lowner_lub f"]
     by (metis (mono_tags) carrier_matD(1) carrier_matD(2))
 qed
@@ -1494,7 +1494,7 @@ next
   then have ds: "matrix_sum d f n \<in> carrier_mat d d" using matrix_sum_dim by auto
   then have dPf: "\<And>k. k < n \<Longrightarrow> P * f k \<in> carrier_mat d d" using Suc by auto
   then have "matrix_sum d (\<lambda>k. P * f k) n \<in> carrier_mat d d" using matrix_sum_dim[OF dPf] by auto
-  have "matrix_sum d (\<lambda>k. P * f k) (Suc n) = P * f n + matrix_sum d (\<lambda>k. P * f k) n " unfolding matrix_sum.simps using Suc(2) by auto 
+  have "matrix_sum d (\<lambda>k. P * f k) (Suc n) = P * f n + matrix_sum d (\<lambda>k. P * f k) n " unfolding matrix_sum.simps using Suc(2) by auto
   also have "\<dots> = P * f n + P * matrix_sum d f n" using Suc by auto
   also have "\<dots> = P * (f n + matrix_sum d f n)" apply (mat_assoc d) using ds dPf Suc by auto
   finally show "matrix_sum d (\<lambda>k. P * f k) (Suc n) = P * (matrix_sum d f (Suc n))" by auto
@@ -1503,7 +1503,7 @@ qed
 subsection \<open>Measurement\<close>
 
 definition measurement :: "nat \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> complex mat) \<Rightarrow> bool" where
-  "measurement d n M \<longleftrightarrow> (\<forall>j < n. M j \<in> carrier_mat d d) 
+  "measurement d n M \<longleftrightarrow> (\<forall>j < n. M j \<in> carrier_mat d d)
                         \<and> matrix_sum d (\<lambda>j. (adjoint (M j)) * M j) n = 1\<^sub>m d"
 
 lemma measurement_dim:
@@ -1541,9 +1541,9 @@ proof (auto simp add: carrier_matD[OF dA] carrier_matD[OF dC] simp del: less_eq_
   then have dv: "v \<in> carrier_vec n" by auto
   have ge: "inner_prod v (B *\<^sub>v v) \<ge> 0" using pB dv dB positive_def by auto
   have "0 \<le> inner_prod v ((C - A + (-B)) *\<^sub>v v) " using p positive_def dv dA dB dC by auto
-  also have "\<dots> = inner_prod v ((C - A)*\<^sub>v v + (-B) *\<^sub>v v) " 
+  also have "\<dots> = inner_prod v ((C - A)*\<^sub>v v + (-B) *\<^sub>v v) "
     using dv dA dB dC add_mult_distrib_mat_vec[OF minus_carrier_mat[OF dA]] by auto
-  also have "\<dots> = inner_prod v ((C - A) *\<^sub>v v) + inner_prod v ((-B) *\<^sub>v v)" 
+  also have "\<dots> = inner_prod v ((C - A) *\<^sub>v v) + inner_prod v ((-B) *\<^sub>v v)"
     apply (subst inner_prod_distrib_right)
     by (rule dv, auto simp add: mult_mat_vec_carrier[OF minus_carrier_mat[OF dA]] mult_mat_vec_carrier[OF uminus_carrier_mat[OF dB]] dv)
   also have "\<dots> = inner_prod v ((C - A) *\<^sub>v v) - inner_prod v (B *\<^sub>v v)" using dB dv by auto
@@ -1559,7 +1559,7 @@ lemma add_positive_le_reduce2:
 
 lemma measurement_le_one_mat:
   assumes "measurement d n f"
-  shows "\<And>j. j < n \<Longrightarrow> adjoint (f j) * f j \<le>\<^sub>L 1\<^sub>m d" 
+  shows "\<And>j. j < n \<Longrightarrow> adjoint (f j) * f j \<le>\<^sub>L 1\<^sub>m d"
 proof -
   fix j assume j: "j < n"
   define M where "M = adjoint (f j) * f j"
@@ -1571,16 +1571,16 @@ proof -
     then show "adjoint (f k) * f k \<in> carrier_mat d d" by auto
   qed
   have pafj: "k < n \<Longrightarrow> positive (adjoint (f k) * (f k)) "  for k
-    apply (subst (2) adjoint_adjoint[of "f k", symmetric]) 
+    apply (subst (2) adjoint_adjoint[of "f k", symmetric])
     by (metis adjoint_adjoint daf positive_if_decomp)
   define f' where "\<And>k. f' k = (if k = j then 0\<^sub>m d d else adjoint (f k) * f k)"
   have pf': "k < n \<Longrightarrow> positive (f' k)" for k unfolding f'_def using positive_zero pafj j by auto
   have df': "k < n \<Longrightarrow> f' k \<in> carrier_mat d d" for k using daf j zero_carrier_mat f'_def by auto
   then have dsf': "matrix_sum d f' n \<in> carrier_mat d d" using matrix_sum_dim[of n f' d] by auto
   have psf': "positive (matrix_sum d f' n)" using matrix_sum_positive pafj df' pf' by auto
-  have "M + matrix_sum d f' n = matrix_sum d (\<lambda>k. adjoint (f k) * f k) n" 
+  have "M + matrix_sum d f' n = matrix_sum d (\<lambda>k. adjoint (f k) * f k) n"
     using matrix_sum_remove[OF j , of "(\<lambda>k. adjoint (f k) * f k)", OF daf, of f'] f'_def unfolding M_def by auto
-  also have "\<dots> = 1\<^sub>m d" using measurement_def assms by auto 
+  also have "\<dots> = 1\<^sub>m d" using measurement_def assms by auto
   finally have "M + matrix_sum d f' n = 1\<^sub>m d".
   moreover have "1\<^sub>m d \<le>\<^sub>L 1\<^sub>m d" using lowner_le_refl[of _ d] by auto
   ultimately have "(M + matrix_sum d f' n) \<le>\<^sub>L 1\<^sub>m d" by auto
@@ -1589,20 +1589,20 @@ qed
 
 lemma pdo_close_under_measurement:
   fixes M \<rho> :: "complex mat"
-  assumes dM: "M \<in> carrier_mat n n" and dr: "\<rho> \<in> carrier_mat n n" 
+  assumes dM: "M \<in> carrier_mat n n" and dr: "\<rho> \<in> carrier_mat n n"
     and pdor: "partial_density_operator \<rho>"
     and le: "adjoint M * M \<le>\<^sub>L 1\<^sub>m n"
   shows "partial_density_operator (M * \<rho> * adjoint M)"
   unfolding partial_density_operator_def
 proof
-  show "positive (M * \<rho> * adjoint M)" 
+  show "positive (M * \<rho> * adjoint M)"
     using positive_close_under_left_right_mult_adjoint[OF dM dr] pdor partial_density_operator_def by auto
 next
   have daM: "adjoint M \<in> carrier_mat n n" using dM by auto
   then have daMM: "adjoint M * M \<in> carrier_mat n n" using dM by auto
-  have "trace (M * \<rho> * adjoint M) = trace (adjoint M * M * \<rho>)" 
+  have "trace (M * \<rho> * adjoint M) = trace (adjoint M * M * \<rho>)"
     using dM dr by (mat_assoc n)
-  also have "\<dots> \<le> trace (1\<^sub>m n * \<rho>)" 
+  also have "\<dots> \<le> trace (1\<^sub>m n * \<rho>)"
     using lowner_le_trace[where ?B = "1\<^sub>m n" and ?A = "adjoint M * M", OF daMM one_carrier_mat] le dr pdor by auto
   also have "\<dots> = trace \<rho>" using dr by auto
   also have "\<dots> \<le> 1" using pdor partial_density_operator_def by auto
@@ -1616,11 +1616,11 @@ proof -
   have dMk: "k < n \<Longrightarrow> (M k) \<in> carrier_mat d d" for k using m unfolding measurement_def by auto
   then have daMk: "k < n \<Longrightarrow> adjoint (M k) \<in> carrier_mat d d" for k using m adjoint_dim unfolding measurement_def by auto
   have d1: "k < n \<Longrightarrow> M k * A * adjoint (M k) \<in> carrier_mat d d"for k using dMk daMk dA by fastforce
-  then have ds1: "k < n \<Longrightarrow> matrix_sum d (\<lambda>k. M k * A * adjoint (M k)) k \<in> carrier_mat d d" for k 
-    using matrix_sum_dim[of k "\<lambda>k. M k * A * adjoint (M k)" d] by auto 
+  then have ds1: "k < n \<Longrightarrow> matrix_sum d (\<lambda>k. M k * A * adjoint (M k)) k \<in> carrier_mat d d" for k
+    using matrix_sum_dim[of k "\<lambda>k. M k * A * adjoint (M k)" d] by auto
   have d2: "k < n \<Longrightarrow> adjoint (M k) *M k * A  \<in> carrier_mat d d" for k using daMk dMk dA by fastforce
-  then have ds2: "k < n \<Longrightarrow> matrix_sum d (\<lambda>k. adjoint (M k) *M k * A) k \<in> carrier_mat d d" for k 
-    using matrix_sum_dim[of k "\<lambda>k. adjoint (M k) *M k * A" d] by auto 
+  then have ds2: "k < n \<Longrightarrow> matrix_sum d (\<lambda>k. adjoint (M k) *M k * A) k \<in> carrier_mat d d" for k
+    using matrix_sum_dim[of k "\<lambda>k. adjoint (M k) *M k * A" d] by auto
   have daMMk: "k < n \<Longrightarrow> adjoint (M k) * M k \<in> carrier_mat d d" for k using dMk by fastforce
   have "k \<le> n \<Longrightarrow> trace (matrix_sum d (\<lambda>k. (M k) * A * adjoint (M k)) k) = trace (matrix_sum d (\<lambda>k. adjoint (M k) * (M k) * A) k)" for k
   proof (induct k)
@@ -1655,9 +1655,9 @@ lemma mat_inc_seq_lub:
   assumes dfn: "\<And>n. f n \<in> carrier_mat d d"
     and inc: "\<And>n. f n \<le>\<^sub>L f (Suc n)"
     and ub: "\<And>n. f n \<le>\<^sub>L A"
-  shows "\<exists>B. lowner_is_lub f B \<and> limit_mat f B d" 
+  shows "\<exists>B. lowner_is_lub f B \<and> limit_mat f B d"
 proof -
-  have dmfn0: "\<And>n. f n - f 0 \<in> carrier_mat d d" and incm0: "\<And>n. (f n - f 0) \<le>\<^sub>L (f (Suc n) - f 0)" 
+  have dmfn0: "\<And>n. f n - f 0 \<in> carrier_mat d d" and incm0: "\<And>n. (f n - f 0) \<le>\<^sub>L (f (Suc n) - f 0)"
     using mat_inc_seq_positive_transform[OF dfn, of id] assms by auto
   define c where "c = 1 / (trace (A - f 0) + 1)"
   have "f 0 \<le>\<^sub>L A" using ub by auto
@@ -1668,7 +1668,7 @@ proof -
   then have "trace (A - f 0) + 1 > 0" by auto
   then have gtc: "c > 0" unfolding c_def using complex_is_Real_iff by auto
   then have gtci: "(1 / c) > 0" using complex_is_Real_iff by auto
-  
+
   have "trace (c \<cdot>\<^sub>m (A - f 0)) = c * trace (A - f 0)"
     using trace_smult dAmf0 by auto
   also have "\<dots> = (1 / (trace (A - f 0) + 1)) * trace (A - f 0)" unfolding c_def by auto
@@ -1701,18 +1701,18 @@ proof -
   then have "positive (f n - f 0)" for n using lowner_le_def by auto
   then have p: "positive (c \<cdot>\<^sub>m (f n - f 0))" for n using positive_smult gtc dmfn0 by fastforce
 
-  have inc': "c \<cdot>\<^sub>m (f n - f 0) \<le>\<^sub>L c \<cdot>\<^sub>m (f (Suc n) - f 0)" for n 
+  have inc': "c \<cdot>\<^sub>m (f n - f 0) \<le>\<^sub>L c \<cdot>\<^sub>m (f (Suc n) - f 0)" for n
     using incm0 lowner_le_smultc[of c "f n - f 0"] gtc dmfn0 by fastforce
 
   define g where "g n = c \<cdot>\<^sub>m (f n - f 0)" for n
-  then have "positive (g n)" and "trace (g n) < 1" and "(g n) \<le>\<^sub>L (g (Suc n))" and dgn: "(g n) \<in> carrier_mat d d" for n 
+  then have "positive (g n)" and "trace (g n) < 1" and "(g n) \<le>\<^sub>L (g (Suc n))" and dgn: "(g n) \<in> carrier_mat d d" for n
     unfolding g_def using p trlt1 inc' dmfn0 by auto
   then have ms: "matrix_seq d g" unfolding matrix_seq_def partial_density_operator_def by fastforce
   then have uniM: "\<exists>!M. matrix_seq.lowner_is_lub g M" using matrix_seq.lowner_lub_unique by auto
   then obtain M where M: "matrix_seq.lowner_is_lub g M" by auto
-  then have leg: "g n \<le>\<^sub>L M" and lubg: "\<And>M'. (\<forall>n. g n \<le>\<^sub>L M') \<longrightarrow> M \<le>\<^sub>L M'" for n 
+  then have leg: "g n \<le>\<^sub>L M" and lubg: "\<And>M'. (\<forall>n. g n \<le>\<^sub>L M') \<longrightarrow> M \<le>\<^sub>L M'" for n
     unfolding matrix_seq.lowner_is_lub_def[OF ms] by auto
-  have "M = matrix_seq.lowner_lub g" 
+  have "M = matrix_seq.lowner_lub g"
     using matrix_seq.lowner_lub_def[OF ms] M uniM theI_unique[of "matrix_seq.lowner_is_lub g"] by auto
   then have limg: "limit_mat g M d" using M matrix_seq.lowner_lub_is_limit[OF ms] by auto
   then have dM: "M \<in> carrier_mat d d" unfolding limit_mat_def by auto
@@ -1720,7 +1720,7 @@ proof -
   define B where "B = f 0 + (1 / c) \<cdot>\<^sub>m M"
   have eqinv: "f 0 + (1 / c) \<cdot>\<^sub>m (c \<cdot>\<^sub>m (X - f 0)) = X" if "X \<in> carrier_mat d d" for X
   proof -
-    have "f 0 + (1 / c) \<cdot>\<^sub>m (c \<cdot>\<^sub>m (X - f 0)) = f 0 + (1 / c * c) \<cdot>\<^sub>m (X - f 0)" 
+    have "f 0 + (1 / c) \<cdot>\<^sub>m (c \<cdot>\<^sub>m (X - f 0)) = f 0 + (1 / c * c) \<cdot>\<^sub>m (X - f 0)"
       apply (subgoal_tac "(1 / c) \<cdot>\<^sub>m (c \<cdot>\<^sub>m (X - f 0)) = (1 / c * c) \<cdot>\<^sub>m (X - f 0)", simp)
       using smult_smult_mat dfn that by auto
     also have "\<dots> = f 0 + 1 \<cdot>\<^sub>m (X - f 0)" using gtc by auto
@@ -1731,7 +1731,7 @@ proof -
     finally show ?thesis by auto
   qed
   have "limit_mat (\<lambda>n. (1 / c) \<cdot>\<^sub>m g n) ((1 / c) \<cdot>\<^sub>m M) d" using limit_mat_scale[OF limg] gtci by auto
-  then have "limit_mat (\<lambda>n. f 0 + (1 / c) \<cdot>\<^sub>m g n) (f 0 + (1 / c) \<cdot>\<^sub>m M ) d" 
+  then have "limit_mat (\<lambda>n. f 0 + (1 / c) \<cdot>\<^sub>m g n) (f 0 + (1 / c) \<cdot>\<^sub>m M ) d"
     using mat_add_limit[of "f 0"] limg dfn unfolding mat_add_seq_def by auto
   then have limf: "limit_mat f B d" using eqinv[OF dfn] unfolding B_def g_def by auto
 
@@ -1753,11 +1753,11 @@ proof -
     then have "f 0 \<le>\<^sub>L B'" by auto
     then have dB': "B' \<in> carrier_mat d d" unfolding lowner_le_def using dfn[of 0] by auto
     have "f n \<le>\<^sub>L B'" for n using asm by auto
-    then have "(c \<cdot>\<^sub>m (f n - f 0)) \<le>\<^sub>L (c \<cdot>\<^sub>m (B' - f 0))" for n 
+    then have "(c \<cdot>\<^sub>m (f n - f 0)) \<le>\<^sub>L (c \<cdot>\<^sub>m (B' - f 0))" for n
       using mf0smcle[of "f n" B'] dfn dB' by auto
     then have "g n \<le>\<^sub>L (c \<cdot>\<^sub>m (B' - f 0))" for n using g_def by auto
     then have "M \<le>\<^sub>L  (c \<cdot>\<^sub>m (B' - f 0))" using lubg by auto
-    then have "(f 0 + (1 / c) \<cdot>\<^sub>m M) \<le>\<^sub>L (f 0 + (1 / c) \<cdot>\<^sub>m (c \<cdot>\<^sub>m (B' - f 0)))" 
+    then have "(f 0 + (1 / c) \<cdot>\<^sub>m M) \<le>\<^sub>L (f 0 + (1 / c) \<cdot>\<^sub>m (c \<cdot>\<^sub>m (B' - f 0)))"
       using f0acmcile[of "M" "(c \<cdot>\<^sub>m (B' - f 0))", OF _ dM] using dB' dfn by fastforce
     then have "B \<le>\<^sub>L B'" unfolding B_def using eqinv[OF dB'] by auto
   }
