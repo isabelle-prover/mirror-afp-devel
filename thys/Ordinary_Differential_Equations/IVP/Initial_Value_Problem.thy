@@ -488,7 +488,7 @@ lemma connection_usolves_ode:
 
     from usolves_odeD(4)[OF x _ _ _ \<open>(z solves_ode f) _ _\<close>, of s] prems
     have "z s = x s" if "s \<in> T" using that \<open>tx \<in> T\<close> \<open>z tx = x tx\<close>
-      by (auto simp: is_interval_inter usolves_odeD(3)[OF x] \<open>is_interval TS'\<close>)
+      by (auto simp: is_interval_Int usolves_odeD(3)[OF x] \<open>is_interval TS'\<close>)
 
     moreover
 
@@ -514,13 +514,13 @@ lemma connection_usolves_ode:
         have "z t = x t"
           apply (rule usolves_odeD(4)[OF x _ _ _ z_f, of t])
           using \<open>t \<in> TS'\<close> \<open>t \<in> T\<close> prems assms \<open>tx \<in> T\<close> usolves_odeD(3)[OF x]
-          by (auto intro!: is_interval_inter)
+          by (auto intro!: is_interval_Int)
         with assms have "z t = y t" using t by auto
 
         from usolves_odeD(4)[OF y[OF conn_t] _ _ _ z_g, of s] prems
         have "z s = y s" using \<open>s \<notin> T\<close> assms \<open>z t = y t\<close> t \<open>t \<in> S\<close>
           \<open>is_interval TS'\<close> usolves_odeD(3)[OF y[OF conn_t]]
-          by (auto simp: is_interval_inter)
+          by (auto simp: is_interval_Int)
       } moreover {
         assume "tx \<in> S"
         with prems closure_subset \<open>tx \<in> T\<close>
@@ -530,13 +530,13 @@ lemma connection_usolves_ode:
         have "z tx = x tx"
           apply (rule usolves_odeD(4)[OF x _ _ _ z_f, of tx])
           using \<open>tx \<in> TS'\<close> \<open>tx \<in> T\<close> prems assms \<open>tx \<in> T\<close> usolves_odeD(3)[OF x]
-          by (auto intro!: is_interval_inter)
+          by (auto intro!: is_interval_Int)
         with assms have "z tx = y tx" using tx by auto
 
         from usolves_odeD(4)[OF y[where t=tx] _ _ _ z_g, of s] prems
         have "z s = y s" using \<open>s \<notin> T\<close> assms \<open>z tx = y tx\<close> tx \<open>tx \<in> S\<close>
           \<open>is_interval TS'\<close> usolves_odeD(3)[OF y]
-          by (auto simp: is_interval_inter)
+          by (auto simp: is_interval_Int)
       } ultimately have "z s = y s" by blast
     }
     ultimately

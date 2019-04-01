@@ -570,7 +570,7 @@ proof -
   also have "\<dots> \<le> N ^ (Suc j) * N ^ (Suc j) * N ^ (Suc j)"
     using assms 1 N_d by (auto intro!: mult_mono)
   also have "N ^ (Suc j) * N ^ (Suc j) * N ^ (Suc j) = N ^ (3 * (Suc j))"
-    using nat_pow_distr nat_pow_pow power3_eq_cube by metis
+    using nat_pow_distrib nat_pow_pow power3_eq_cube by metis
   finally show ?thesis
     by simp
 qed

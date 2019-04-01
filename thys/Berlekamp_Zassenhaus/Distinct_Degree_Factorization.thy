@@ -506,7 +506,7 @@ assumes x: "x \<in> carrier R" and y: "y \<in> carrier R"
 and "x [^]\<^bsub>(R)\<^esub> CARD('a) ^ m' = x"
 and "y [^]\<^bsub>(R)\<^esub> CARD('a) ^ m' = y"
 shows "(x \<otimes>\<^bsub>(R)\<^esub> y) [^]\<^bsub>(R)\<^esub> CARD('a) ^ m' = (x \<otimes>\<^bsub>(R)\<^esub> y)" 
-  using assms assms field_R.nat_pow_distr by auto
+  using assms assms field_R.nat_pow_distrib by auto
 
 lemma add_closed_power:
 assumes x1: "x [^]\<^bsub>(R)\<^esub> CARD('a) ^ m' = x"
