@@ -48,7 +48,7 @@ next
     then obtain \<phi> \<psi> where "\<phi> \<in> iso (Rep_group G) (Rep_group H)" "\<psi> \<in> iso (Rep_group H) (Rep_group I)"
       unfolding group_iso_rel_def by auto
     then obtain \<pi> where "\<pi> \<in> iso (Rep_group G) (Rep_group I)" 
-      using Rep_group group.iso_set_trans by blast
+      using iso_set_trans by blast
     thus "group_iso_rel G I" unfolding group_iso_rel_def by auto
   qed
 qed
