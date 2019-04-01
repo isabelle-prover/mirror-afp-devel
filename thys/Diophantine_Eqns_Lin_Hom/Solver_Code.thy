@@ -35,7 +35,7 @@ ML_command \<^marker>\<open>contributor Makarius\<close> \<open>
         val () =
           if compile_rc = 0 then
             Export.export_executable_file thy
-              (Path.binding_map Path.exe \<^path_binding>\<open>code/generated/hlde\<close>) exe
+              (Path.map_binding Path.exe \<^path_binding>\<open>code/generated/hlde\<close>) exe
           else error "Compilation failed";
 
         (*test*)
