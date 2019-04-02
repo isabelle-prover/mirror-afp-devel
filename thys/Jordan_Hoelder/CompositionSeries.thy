@@ -799,7 +799,7 @@ next
     hence "order (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) = order (G\<lparr>carrier := {\<one>}\<rparr>)" by (metis iso_order_closed)
     hence "order (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) = 1" unfolding order_def by auto
     hence "carrier (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) = {\<one>\<^bsub>G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)\<^esub>}"
-      using group.order_one_triv_iff KGsiKGigroup by auto
+      using group.order_one_triv_iff KGsiKGigroup by blast
     moreover from fstgoal have "K \<inter> \<GG> ! i \<lhd> G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr>" by auto
     moreover from finGSi have "finite (carrier (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr>))" by auto
     ultimately have "K \<inter> \<GG> ! i = carrier (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr>)" by (metis normal.fact_group_trivial_iff)

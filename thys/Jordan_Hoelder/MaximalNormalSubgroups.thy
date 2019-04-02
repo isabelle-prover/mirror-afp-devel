@@ -27,14 +27,12 @@ proof
   assume "max_normal_subgroup H G"
   then interpret maxH: max_normal_subgroup H G.
   show "simple_group (G Mod H)" unfolding simple_group_def simple_group_axioms_def
-  apply (rule conjI)
-   apply (rule factorgroup_is_group)
-  proof (auto del:equalityI)
+  proof (intro conjI factorgroup_is_group allI impI disjCI)
     from finite factgroup_finite factorgroup_is_group group.finite_pos_order have gt0:"0 < card (rcosets H)"
       unfolding FactGroup_def order_def by force
     from maxH.proper finite have "carrier (G Mod H) \<noteq> {\<one>\<^bsub>G Mod H\<^esub>}" using fact_group_trivial_iff by auto
     hence "1 \<noteq> order (G Mod H)" using factorgroup_is_group group.order_one_triv_iff by metis
-    with gt0 show "Suc 0 < order (G Mod H)" unfolding order_def FactGroup_def by auto
+    with gt0 show "1 < order (G Mod H)" unfolding order_def FactGroup_def by auto
   next
     fix A'
     assume A'normal:"A' \<lhd> G Mod H" and A'nottriv:"A' \<noteq> {\<one>\<^bsub>G Mod H\<^esub>}"
@@ -49,7 +47,7 @@ proof
     have "H \<subseteq> A" using normalHA.is_subgroup subgroup.subset by force
     with A2 have "A = H \<or> A = carrier G" using maxH.max_normal by auto
     thus "A' = carrier (G Mod H)"
-    proof (rule disjE)
+    proof 
       assume "A = H"
       hence "carrier (G\<lparr>carrier := A\<rparr> Mod H) = {\<one>\<^bsub>(G\<lparr>carrier := A\<rparr> Mod H)\<^esub>}" by (metis finite is_group normalHA.fact_group_trivial_iff normalHA.subgroup_self normalHA.subset subgroup_finite subgroup_of_restricted_group subgroup_of_subgroup subset_antisym)
       also have "... = {\<one>\<^bsub>G Mod H\<^esub>}" unfolding FactGroup_def by auto
