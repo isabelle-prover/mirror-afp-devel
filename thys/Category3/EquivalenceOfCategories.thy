@@ -81,22 +81,19 @@ begin
     lemma G_is_essentially_surjective:
     shows "essentially_surjective_functor C D G"
     proof
-      have "\<And>b. D.ide b \<Longrightarrow> \<exists>a. C.ide a \<and> D.isomorphic (G a) b"
+      fix b
+      assume b: "D.ide b"
+      have "C.ide (F b) \<and> D.isomorphic (G (F b)) b"
       proof
-        fix b
-        assume b: "D.ide b"
-        show "C.ide (F b) \<and> D.isomorphic (G (F b)) b"
-        proof
-          show "C.ide (F b)" using b by simp
-          show "D.isomorphic (G (F b)) b"
-          proof (unfold D.isomorphic_def)
-            have "\<guillemotleft>D.inv (\<eta> b) : G (F b) \<rightarrow>\<^sub>D b\<guillemotright> \<and> D.iso (D.inv (\<eta> b))"
-              using b D.iso_inv_iso by auto
-            thus "\<exists>f. \<guillemotleft>f : G (F b) \<rightarrow>\<^sub>D b\<guillemotright> \<and> D.iso f" by blast
-          qed
+        show "C.ide (F b)" using b by simp
+        show "D.isomorphic (G (F b)) b"
+        proof (unfold D.isomorphic_def)
+          have "\<guillemotleft>D.inv (\<eta> b) : G (F b) \<rightarrow>\<^sub>D b\<guillemotright> \<and> D.iso (D.inv (\<eta> b))"
+            using b D.iso_inv_iso by auto
+          thus "\<exists>f. \<guillemotleft>f : G (F b) \<rightarrow>\<^sub>D b\<guillemotright> \<and> D.iso f" by blast
         qed
       qed
-      thus "\<forall>b. D.ide b \<longrightarrow> (\<exists>a. C.ide a \<and> D.isomorphic (G a) b)"
+      thus "\<exists>a. C.ide a \<and> D.isomorphic (G a) b"
         by blast
     qed
 

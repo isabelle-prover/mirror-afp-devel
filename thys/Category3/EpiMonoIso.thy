@@ -351,6 +351,16 @@ begin
     shows "g \<cdot> f = dom f"
       using assms by auto
 
+    lemma comp_arr_inv':
+    assumes "iso f"
+    shows "f \<cdot> inv f = cod f"
+      using assms inv_is_inverse by blast
+
+    lemma comp_inv_arr':
+    assumes "iso f"
+    shows "inv f \<cdot> f = dom f"
+      using assms inv_is_inverse by blast
+
     lemma inv_in_hom [simp]:
     assumes "iso f" and "\<guillemotleft>f : a \<rightarrow> b\<guillemotright>"
     shows "\<guillemotleft>inv f : b \<rightarrow> a\<guillemotright>"

@@ -3287,31 +3287,6 @@ $$\xymatrix{
 
   section "Coherence"
 
-  context category
-  begin
-
-    text \<open>
-      The next two results are sometimes useful for performing manipulations at the
-      head of a chain of composed arrows.  I have adopted the convention that such
-      chains are canonically represented in right-associated form.  This makes it
-      easy to perform manipulations at the ``tail'' of a chain, but more difficult
-      to perform them at the ``head''.  These results take care of the rote manipulations
-      using associativity that are needed to either permute or combine arrows at the
-      head of a chain.
-\<close>
-
-    lemma comp_permute:
-    assumes "f \<cdot> g = k \<cdot> l" and "seq f g" and "seq g h"
-    shows "f \<cdot> g \<cdot> h = k \<cdot> l \<cdot> h"
-      using assms by (metis comp_assoc)
-
-    lemma comp_reduce:
-    assumes "f \<cdot> g = k" and "seq f g" and "seq g h"
-    shows "f \<cdot> g \<cdot> h = k \<cdot> h"
-      using assms comp_assoc by auto
-
-  end
-
   text\<open>
     If @{term D} is a monoidal category, then a functor \<open>V: C \<rightarrow> D\<close> extends
     in an evident way to an evaluation map that interprets each formal arrow of the

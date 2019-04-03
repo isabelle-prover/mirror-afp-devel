@@ -115,7 +115,7 @@ begin
     assumes "\<guillemotleft>f : a \<rightarrow>\<^sub>A a\<guillemotright>" and "B.ide (F f)"
     shows "A.ide f"
       using assms is_faithful
-      by (metis A.arr_dom_iff_arr A.cod_dom A.dom_dom A.in_homE B.ide_comp_self
+      by (metis A.arr_dom_iff_arr A.cod_dom A.dom_dom A.in_homE B.comp_ide_self
           B.ide_self_inverse B.comp_arr_inv A.ide_cod preserves_dom)
 
   end
@@ -168,10 +168,10 @@ begin
   begin
 
     lemma reflects_ide:
-    assumes "A.arr f" and "B.ide (F f)"
+    assumes "B.ide (F f)"
     shows "A.ide f"
       using assms is_embedding A.ide_in_hom B.ide_in_hom
-      by (metis A.in_homE B.in_homE A.ide_cod preserves_cod)
+      by (metis A.in_homE B.in_homE A.ide_cod preserves_cod preserves_reflects_arr)
 
   end
 
@@ -183,7 +183,7 @@ begin
   and F :: "'a \<Rightarrow> 'b"
 
   locale essentially_surjective_functor = "functor" +
-  assumes essentially_surjective: "\<forall>b. B.ide b \<longrightarrow> (\<exists>a. A.ide a \<and> B.isomorphic (F a) b)"
+  assumes essentially_surjective: "\<And>b. B.ide b \<Longrightarrow> \<exists>a. A.ide a \<and> B.isomorphic (F a) b"
 
   locale constant_functor =
     A: category A +
@@ -420,7 +420,7 @@ begin
     show "G = G'"
       using FG.G.is_extensional FG'.G.is_extensional FG'.inv FG'.inverse_functors_axioms
             FG.inverse_functors_axioms inverse_functor_unique
-      by blast
+      by metis
   qed
 
   lemma inverse_functor_eq':

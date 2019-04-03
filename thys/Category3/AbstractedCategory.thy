@@ -57,7 +57,7 @@ begin
     proof -
       have "C.ide f \<Longrightarrow> A f \<cdot> A f \<noteq> null"
         using comp_def null_char rep_abs abs_rep domain_closed
-        by (metis C.ideD(1) C.ide_comp_self C.not_arr_null)
+        by (metis C.ideD(1) C.comp_ide_self C.not_arr_null)
       thus "C.ide f \<Longrightarrow> ide (A f)"
         unfolding ide_def
         using comp_def null_char rep_abs abs_rep domain_closed C.comp_arr_dom C.comp_cod_arr

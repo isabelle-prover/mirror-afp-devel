@@ -169,7 +169,7 @@ begin
     qed
 
     lemma dom_char:
-    shows "dom f = (if Arr f then C.dom f else C.null)"
+    shows "dom f = (if arr f then C.dom f else C.null)"
       using dom_simp dom_def arr_def arr_char by auto
 
     lemma cod_simp [simp]:
@@ -207,6 +207,15 @@ begin
       show "seq g f \<Longrightarrow> arr f \<and> arr g \<and> C.seq g f"
         apply (elim seqE, auto)
         using inclusion arr_char by auto
+    qed
+
+    lemma hom_char:
+    shows "hom a b = C.hom a b \<inter> Collect Arr"
+    proof
+      show "hom a b \<subseteq> C.hom a b \<inter> Collect Arr"
+        using in_hom_char by auto
+      show "C.hom a b \<inter> Collect Arr \<subseteq> hom a b"
+        using arr_char dom_char cod_char by force
     qed
 
     lemma comp_char:

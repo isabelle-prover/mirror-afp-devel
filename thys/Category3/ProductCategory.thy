@@ -150,12 +150,18 @@ begin
     lemma Dom_comp:
     assumes "seq g f"
     shows "Dom (g \<cdot> f) = Dom f"
-      using assms comp_def by (elim seqE, auto)
+      using assms comp_def
+      apply (cases "C1.arr (fst g)"; cases "C1.arr (fst f)";
+             cases "C2.arr (snd f)"; cases "C2.arr (snd g)"; simp_all)
+      by auto
 
     lemma Cod_comp:
     assumes "seq g f"
     shows "Cod (g \<cdot> f) = Cod g"
-      using assms comp_def by (elim seqE, auto)
+      using assms comp_def
+      apply (cases "C1.arr (fst f)"; cases "C2.arr (snd f)";
+             cases "C1.arr (fst g)"; cases "C2.arr (snd g)"; simp_all)
+      by auto
 
     theorem is_category:
     shows "category comp"

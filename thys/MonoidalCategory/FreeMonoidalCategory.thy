@@ -376,7 +376,7 @@ begin
           ultimately show ?thesis using equiv_iff_eq_norm by blast
         qed
         thus ?thesis
-          using mkarr_def by auto
+          using mkarr_def by force
       qed
       also have "... = mkarr ((rep h \<^bold>\<cdot> rep g) \<^bold>\<cdot> rep f)"
       proof -
@@ -1730,7 +1730,8 @@ begin
           show "(rep g \<^bold>\<otimes> rep g') \<^bold>\<cdot> (rep f \<^bold>\<otimes> rep f') \<in> (g \<otimes> g') \<cdot> (f \<otimes> f')"
             using gf gf' by force
           show "rep g \<^bold>\<cdot> rep f \<^bold>\<otimes> rep g' \<^bold>\<cdot> rep f' \<in> g \<cdot> f \<otimes> g' \<cdot> f'"
-           using gf gf' by force
+           using gf gf'
+           by (meson Comp_in_comp_ARR Tensor_in_tensor rep_in_arr seqE seq_char')
           show "\<^bold>\<lfloor>(rep g \<^bold>\<otimes> rep g') \<^bold>\<cdot> (rep f \<^bold>\<otimes> rep f')\<^bold>\<rfloor> = \<^bold>\<lfloor>rep g \<^bold>\<cdot> rep f \<^bold>\<otimes> rep g' \<^bold>\<cdot> rep f'\<^bold>\<rfloor>"
           proof -
             have "\<^bold>\<lfloor>(rep g \<^bold>\<otimes> rep g') \<^bold>\<cdot> (rep f \<^bold>\<otimes> rep f')\<^bold>\<rfloor>
@@ -2475,7 +2476,7 @@ begin
         show "\<And>f. \<not> arr f \<Longrightarrow> D f = \<F>\<^sub>SC.null" using D_def by simp
         show "\<And>f. arr f \<Longrightarrow> \<F>\<^sub>SC.arr (D f)" by fact
         show "\<And>f. arr f \<Longrightarrow> \<F>\<^sub>SC.dom (D f) = D (dom f)"
-          using D_def Diagonalize_in_Hom \<F>\<^sub>SC.dom_char
+          using D_def Diagonalize_in_Hom \<F>\<^sub>SC.dom_char \<F>\<^sub>SC.arr_char
                 rep_mkarr rep_dom Arr_implies_Ide_Dom Arr_implies_Ide_Cod
                 Diagonalize_preserves_Ide ide_mkarr_Ide Diag_Diagonalize Dom_norm
           by simp
@@ -2879,7 +2880,7 @@ begin
       show "\<And>a b c. \<lbrakk> ide a; ide b; ide c\<rbrakk> \<Longrightarrow> \<guillemotleft>\<a>\<^sub>S[a, b, c] : (a \<otimes>\<^sub>S b) \<otimes>\<^sub>S c \<rightarrow> a \<otimes>\<^sub>S b \<otimes>\<^sub>S c\<guillemotright>"
         using assoc_in_hom by blast
       show "\<And>a b. \<lbrakk> ide a; ide b \<rbrakk> \<Longrightarrow> (a \<otimes>\<^sub>S b) \<cdot>\<^sub>S \<a>\<^sub>S[a, \<I>, b] = a \<otimes>\<^sub>S b"
-        using ide_def tensor_unity_arr assoc\<^sub>S_def ideD(1) tensor_preserves_ide ide_comp_self
+        using ide_def tensor_unity_arr assoc\<^sub>S_def ideD(1) tensor_preserves_ide comp_ide_self
         by simp
       show "\<And>f. arr f \<Longrightarrow> cod f \<cdot>\<^sub>S (\<I> \<otimes>\<^sub>S f) = f \<cdot>\<^sub>S dom f"
         using tensor_unity_arr comp_arr_dom comp_cod_arr by presburger

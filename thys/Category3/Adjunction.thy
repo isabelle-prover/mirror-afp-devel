@@ -2962,10 +2962,10 @@ $$\xymatrix{
         {G' a} \ar[dd]_{\eta'(G'a)} \ar[rr]^{\tau' a} \ar[dr]_{\eta(G'a)}
            && {G a} \ar[rr]^{\tau a} \ar[dr]_{\eta'(Ga)} && {G' a}                     \\
         & {GFG'a} \rrtwocell\omit{\omit(2)} \ar[ur]_{G(\epsilon' a)} \ar[dr]_{\eta'(GFG'a)}
-           && {G'FGa} \drtwocell\omit{\omit(3)} \ar[ur]_{G'(\epsilon' a)} &            \\
-        {G'FG'a} \urtwocell\omit{\omit(1)} \ar[rr]_{\eta'(GFG'a)} \ar@/_8ex/[rrrr]_{G'FG'a}
+           && {G'FGa} \drtwocell\omit{\omit(3)} \ar[ur]_{G'(\epsilon a)} &            \\
+        {G'FG'a} \urtwocell\omit{\omit(1)} \ar[rr]_{G'F\eta(G'a)} \ar@/_8ex/[rrrr]_{G'FG'a}
            && {G'FGFG'a} \dtwocell\omit{\omit(4)} \ar[ru]_{G'FG(\epsilon' a)} \ar[rr]_{G'(\epsilon(FG'a))}
-           && {G'FG'a} \ar[uu]_{G'(\epsilon a')}                                       \\
+           && {G'FG'a} \ar[uu]_{G'(\epsilon' a)}                                       \\
            &&&&
 }$$
 \<close>

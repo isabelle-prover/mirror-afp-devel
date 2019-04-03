@@ -3433,7 +3433,8 @@ begin
                       by fastforce
                     fix j
                     have "\<not>Obj.arr j \<Longrightarrow> \<Delta>o.cones_map (e \<cdot> h') \<pi>o j = \<Delta>o.mkCone \<tau> j"
-                      using 2 e_in_hom h'_in_hom \<pi>o.cone_axioms by auto
+                      using 2 e_in_hom h'_in_hom \<pi>o.cone_axioms
+                      by (auto simp del: comp_in_hom_simp')
                     moreover have "Obj.arr j \<Longrightarrow> \<Delta>o.cones_map (e \<cdot> h') \<pi>o j = \<Delta>o.mkCone \<tau> j"
                     proof -
                       assume j: "Obj.arr j"
@@ -4951,7 +4952,7 @@ begin
                   also have "... = B (A_B.Fun (\<chi> j) a) (A_B.Fun f a)"
                     using f j a \<chi>.preserves_hom A.ide_in_hom J.ide_in_hom A_B.Fun_comp
                           \<chi>.A.map_simp
-                    by (metis A.in_homE A.ide_comp_self A_B.Fun_comp A_B.seqI'
+                    by (metis A.in_homE A.comp_ide_self A_B.Fun_comp A_B.seqI'
                               J.in_homE mem_Collect_eq)
                   also have "... = Da.cones_map (A_B.Fun f a) (at a \<chi>) j"
                     using j a cone_\<chi>a fa Curry.uncurry_def E.map_simp by auto

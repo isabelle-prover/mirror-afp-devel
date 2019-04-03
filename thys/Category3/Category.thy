@@ -159,7 +159,7 @@ begin
     shows "arr f"
       using assms arr_def in_hom_def by auto
 
-    lemma ide_in_hom:
+    lemma ide_in_hom [intro]:
     shows "ide a \<longleftrightarrow> \<guillemotleft>a : a \<rightarrow> a\<guillemotright>"
       using self_domain_iff_ide self_codomain_iff_ide in_hom_def ide_def by fastforce
 
@@ -467,6 +467,16 @@ begin
       using assms in_hom_def domains_comp codomains_comp
       by (metis arrI in_homI seqE)
 
+    lemma comp_in_hom_simp [simp]:
+    assumes "\<guillemotleft>f : a \<rightarrow> cod f\<guillemotright>" and "\<guillemotleft>g : cod f \<rightarrow> c\<guillemotright>"
+    shows "\<guillemotleft>g \<cdot> f : a \<rightarrow> c\<guillemotright>"
+      using assms by auto
+
+    lemma comp_in_hom_simp' [simp]:
+    assumes "\<guillemotleft>f : a \<rightarrow> dom g\<guillemotright>" and "\<guillemotleft>g : dom g \<rightarrow> c\<guillemotright>"
+    shows "\<guillemotleft>g \<cdot> f : a \<rightarrow> c\<guillemotright>"
+      using assms by auto
+
     lemma comp_arr_dom:
     assumes "arr f" and "dom f = a"
     shows "f \<cdot> a = f"
@@ -560,7 +570,7 @@ begin
     shows "cod (g \<cdot> f) = cod g"
       using assms by (simp add: cod_def codomains_comp)
 
-    lemma ide_comp_self [simp]:
+    lemma comp_ide_self [simp]:
     assumes "ide a"
     shows "a \<cdot> a = a"
       using assms comp_arr_ide arrI by auto
@@ -575,6 +585,26 @@ begin
       thus ?thesis
         using assms ide_in_hom using seqI' by blast
     qed
+
+    text \<open>
+      The next two results are sometimes useful for performing manipulations at the
+      head of a chain of composed arrows.  I have adopted the convention that such
+      chains are canonically represented in right-associated form.  This makes it
+      easy to perform manipulations at the ``tail'' of a chain, but more difficult
+      to perform them at the ``head''.  These results take care of the rote manipulations
+      using associativity that are needed to either permute or combine arrows at the
+      head of a chain.
+\<close>
+
+    lemma comp_permute:
+    assumes "f \<cdot> g = k \<cdot> l" and "seq f g" and "seq g h"
+    shows "f \<cdot> g \<cdot> h = k \<cdot> l \<cdot> h"
+      using assms by (metis comp_assoc)
+
+    lemma comp_reduce:
+    assumes "f \<cdot> g = k" and "seq f g" and "seq g h"
+    shows "f \<cdot> g \<cdot> h = k \<cdot> h"
+      using assms comp_assoc by auto
 
     text\<open>
       Here we define some common configurations of arrows.
@@ -782,8 +812,8 @@ begin
     lemma bij_betw_Arr_arr:
     shows "bij_betw Some (Collect Arr) (Collect C.arr)"
       using C.has_codomain_iff_arr has_codomain_char C.not_arr_null null_char
-      apply (intro bij_betwI, auto)
-       apply force
+      apply (intro bij_betwI) apply auto
+       apply fastforce
       by (metis option.collapse)
 
     lemma dom_char:
