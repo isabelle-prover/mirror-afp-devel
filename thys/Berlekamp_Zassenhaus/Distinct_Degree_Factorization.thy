@@ -764,16 +764,15 @@ proof (rule ccontr)
       show "a \<in> carrier R" using a_R unfolding carrier_mult_of by auto
     qed  
   qed
-  have ord_dvd: "group.ord (mult_of R) a dvd (CARD('a)^c - 1)" 
-  proof (rule Multiplicative_Group.group.ord_dvd_pow_eq_1)
-    show "Group.group (mult_of R)"
-      by (simp add: field_R.field_mult_group)
-    show "finite (carrier (mult_of R))" by auto
-    show "a \<in> carrier (mult_of R)" by (rule a_R )
-    show "a [^]\<^bsub>mult_of R\<^esub> (CARD('a) ^ c - 1) = \<one>\<^bsub>mult_of R\<^esub>" 
-      using a_m_1 unfolding mult_of_def 
-      by (auto, metis mult_of_def pow_irr_mult_of nat_pow_mult_of)
-  qed
+  have "Group.group (mult_of R)"
+    by (simp add: field_R.field_mult_group)
+  moreover have "finite (carrier (mult_of R))" by auto
+  moreover have "a \<in> carrier (mult_of R)" by (rule a_R )
+  moreover have "a [^]\<^bsub>mult_of R\<^esub> (CARD('a) ^ c - 1) = \<one>\<^bsub>mult_of R\<^esub>" 
+    using a_m_1 unfolding mult_of_def 
+    by (auto, metis mult_of_def pow_irr_mult_of nat_pow_mult_of)
+  ultimately have ord_dvd: "group.ord (mult_of R) a dvd (CARD('a)^c - 1)" 
+    by (meson group.pow_eq_id)
   have "d dvd c" 
   proof (rule dvd_power_minus_1_conv1[OF nontriv])    
     show "0 < d" using cd by auto
