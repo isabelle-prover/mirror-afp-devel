@@ -1169,6 +1169,12 @@ fun ysec2:: "real \<times> real \<Rightarrow> real \<Rightarrow> (real list \<ti
 fun ysec2':: "real \<times> real \<Rightarrow> real \<Rightarrow> (real list \<times> real list) \<times> real list sctn"
   where "ysec2' (x0, x1) y = (([x0, y], [x1, y]), Sctn [0, -1] (-y))"
 
+fun ysec4:: "real \<times> real \<Rightarrow> real \<Rightarrow> real \<times> real \<Rightarrow> real \<times> real \<Rightarrow> (real list \<times> real list) \<times> real list sctn"
+  where "ysec4 (x0, x1) y (z0, z1) (m0, m1) = (([x0, y, z0, m0], [x1, y, z1, m1]), Sctn [0, 1,0, 0] (y))"
+
+fun ysec4':: "real \<times> real \<Rightarrow> real \<Rightarrow> real \<times> real \<Rightarrow> real \<times> real \<Rightarrow> (real list \<times> real list) \<times> real list sctn"
+  where "ysec4' (x0, x1) y (z0, z1) (m0, m1) = (([x0, y, z0, m0], [x1, y, z1, m1]), Sctn [0, -1,0, 0] (-y))"
+
 definition "code_sctn N n c = Sctn ((replicate (nat_of_integer N) (0::real))[nat_of_integer n := 1]) c"
 definition "code_sctn' N n c = Sctn ((replicate (nat_of_integer N) (0::real))[nat_of_integer n := -1]) (-c)"
 
@@ -2189,6 +2195,7 @@ ML \<open>val ode_numerics_conv = @{computation_check
     (* sections *)
     xsec xsec' ysec ysec' zsec zsec'
     xsec2 xsec2' ysec2 ysec2'
+    ysec4 ysec4'
     mirrored_sctn
 
     Code_Target_Nat.natural

@@ -134,7 +134,8 @@ lemma
       {(108.5, -100, -35.05, 1.993, 0.6489) ..
        (111.8, -100, -28.42, 2.007, 0.8130)}"
   using [[ode_numerics_trace]]
-  by (tactic \<open>poincare_bnds_tac @{thms p1_fas_def} 30 50 20 10 [(1, 2, "0x000000")] "" (*"out_space_p1.out"*) @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac @{thms p1_fas_def} 30 50 20 10 [(1, 2, "0x00007f")]
+    (* "out_space_p1.out" *) ""  @{context} 1\<close>)
 
 
 subsubsection \<open>Location P2\<close>
@@ -212,7 +213,8 @@ lemma
     {(120, -78.24, -27.43, 2.125, 0.596) ..
      (120, -70.85, -20.12, 2.348, 0.829)}"
   using [[ode_numerics_trace]]
-  by (tactic \<open>poincare_bnds_tac @{thms p2_fas_def} 30 50 20 10 [(1, 2, "0x000000"), (3, 4, "0x0000ff")] "" (*"out_space_p2.out"*) @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac @{thms p2_fas_def} 30 50 20 10 [(1, 2, "0x7f0000"), (3, 4, "0x0000ff")]
+    (* "out_space_p2.out" *) ""  @{context} 1\<close>)
 
 (*(1.2e2 -70.8581e1 -2.012131e1 2.347061 8.28834e-1)*)
 subsubsection \<open>Location Passive\<close>
@@ -280,7 +282,7 @@ lemma
     {(200, 89.95, -46.20, 2.047, -1.050) ..
      (200, 123.9, -14.19, 2.460, -0.701)}"
   using [[ode_numerics_trace]]
-  by (tactic \<open>poincare_bnds_tac @{thms passive_fas_def} 30 50 20 10 [(1, 2, "0x000000")] "" (*"out_space_passive.out"*) @{context} 1\<close>)
+  by (tactic \<open>poincare_bnds_tac @{thms passive_fas_def} 30 50 20 10 [(1, 2, "0x000000")] (* "out_space_passive.out" *) ""  @{context} 1\<close>)
 
 end
 
@@ -409,7 +411,7 @@ lemma quadrot: "t \<in> {5 .. 5} \<longrightarrow>
       \<^cancel>\<open>{(4.9, -2.5, 120, 0.99, -0.5, 48, -0.02, 0, 0, 0, 0, 0, 0, 1, 0, 0) ..
        (5.0,  2.5, 126, 1.00,  0.5, 50,  0.02, 0, 0, 0, 0, 0, 0, 1, 0, 0)}\<close>"
   by (tactic \<open>ode_bnds_tac @{thms quadrot_fas_def} 16 25 20 10 [(0, 3, "0x000000")]
-    (* "out_quadrot.out" *) "" @{context} 1\<close>)
+    (* "out_quadrot.out" *) ""  @{context} 1\<close>)
 
 end
 
@@ -458,29 +460,46 @@ theorem ll_001:
   ll.flow0 (s, x1, x2, x3, x4, x5, x6, x7) t \<in>
     {(19.99, 0.8, 0.3, 0.5, 2.5, 0.1, 0.0, 0.25) ..
      (20, 1.0, 0.5, 0.7, 3.0, 0.3, 0.1, 0.35)}"
-  by (tactic \<open>ode_bnds_tac @{thms laub_fas_def} 30 60 30 13 [(0, 4, "0x000000")] (* "out_ll_001.out" *) "" @{context} 1\<close>)
+  by (tactic \<open>ode_bnds_tac @{thms laub_fas_def} 30 60 30 13 [(0, 4, "0x7f7f7f")] (* "out_ll_001.out" *) ""  @{context} 1\<close>)
+
+theorem ll_005:
+  "t \<in> {20 .. 20} \<longrightarrow>
+  (s, x1, x2, x3, x4, x5, x6, x7) \<in>
+      {(0, 1.15, 1.00, 1.45, 2.35, 0.95, 0.05, 0.40) ..
+       (0, 1.25, 1.10, 1.55, 2.45, 1.05, 0.15, 0.50)} \<longrightarrow>
+  t \<in> ll.existence_ivl0 (s, x1, x2, x3, x4, x5, x6, x7) \<and>
+  ll.flow0 (s, x1, x2, x3, x4, x5, x6, x7) t \<in>
+    {(19.99, 0.8, 0.3, 0.5, 2.4, 0.1, 0.0, 0.25) ..
+     (20, 1.0, 0.5, 0.7, 3.0, 0.3, 0.1, 0.35)}"
+  by (tactic \<open>ode_bnds_tac  @{thms laub_fas_def} 30 60 30 13 [(0, 4, "0x000000")] (* "out_ll_005.out" *) "" @{context} 1\<close>)
+
+theorem ll_010:
+  "t \<in> {10 .. 10} \<longrightarrow>
+  (s, x1, x2, x3, x4, x5, x6, x7) \<in>
+      {(0, 1.10, 0.95, 1.40, 2.30, 0.90, 0.00, 0.35) ..
+       (0, 1.30, 1.15, 1.60, 2.50, 1.10, 0.20, 0.55)} \<longrightarrow>
+  t \<in> ll.existence_ivl0 (s, x1, x2, x3, x4, x5, x6, x7) \<and>
+  ll.flow0 (s, x1, x2, x3, x4, x5, x6, x7) t \<in>
+    {(9.99, 0.2, -0.8, -0.4, -1.3, -1.2, 0.0, -0.5) ..
+     (10,   1.8, 1.6, 1.8, 6.2, 1.7, 0.2, 1.2)}"
+  by (tactic \<open>ode_bnds_tac  @{thms laub_fas_def} 30 60 30 13 [(0, 4, "0x0000ff")] (* "out_ll_010.out" *) ""  @{context} 1\<close>)
 
 end
-
 
 subsection \<open>Van der Pol oscillator (with time and ``pseudo-invariant''\<close>
 experiment begin
 
 schematic_goal vdp_fas:
-  "[1, X!2, X!2 * (1 - (X!1)\<^sup>2) - X!1] = interpret_floatariths ?fas X"
+  "[1, X!2, X!3 * X!2 * (1 - (X!1)\<^sup>2) - X!1, 0 \<comment> \<open>\<mu>'\<close> ] = interpret_floatariths ?fas X"
   by (reify_floatariths)
 
 concrete_definition vdp_fas uses vdp_fas
 
-interpretation vdp: ode_interpretation true_form UNIV vdp_fas "\<lambda>(t, x, y). (1, y, y * (1 - x\<^sup>2) - x)::real*real*real"
-  "n::3" for n
+interpretation vdp: ode_interpretation true_form UNIV vdp_fas "\<lambda>(t, x, y, \<mu>). (1, y, \<mu> * y * (1 - x\<^sup>2) - x, 0)::real*real*real*real"
+  "n::4" for n
   by standard
     (auto simp: vdp_fas_def less_Suc_eq_0_disj nth_Basis_list_prod Basis_list_real_def
       mk_ode_ops_def eucl_of_list_prod power2_eq_square inverse_eq_divide intro!: isFDERIV_I)
-
-lemma poincare_section_rep[poincare_tac_theorems]:
-  "{(7::real, -3::real, -3::real)..(7::real, 3, 3)} = {eucl_of_list [7, -3, -3]..eucl_of_list [7, 3, 3]}"
-  by (auto simp: eucl_of_list_prod)
 
 abbreviation "vdp_ro \<equiv> ro 2 10 7 2 2 2"
 
@@ -488,15 +507,36 @@ lemma vdp_ro: "TAG_reach_optns vdp_ro" by simp
 
 lemma vdp_start: "TAG_sctn False" by simp
 
-lemma vdp_pi_1: "vdp.guards_invar DIM(real \<times> real \<times> real) [([ysec' (1,7) (3/2) (-2, 0)], vdp_ro)]"
+lemma poincare_section_rep1:
+  "{(7::real, -3::real, -3::real, -10::real)..(7, 3, 3, 10)} = {eucl_of_list [7, -3, -3, -10]..eucl_of_list [7, 3, 3, 10]}"
+  by (auto simp: eucl_of_list_prod)
+
+lemma vdp_pi_1: "vdp.guards_invar DIM(real \<times> real \<times> real \<times> real) [([ysec4' (1,7) (3/2) (-2, 0) (-10, 10)], vdp_ro)]"
   by (auto simp: vdp.guards_invar_def)
 
 lemma
-  notes [poincare_tac_theorems] = vdp_ro vdp_start vdp_pi_1
-  shows "\<forall>x\<in>{(0, 1.25, 2.35) .. (0, 1.55, 2.45)}.
-  vdp.returns_to   {(7, -3, -3) .. (7, 3, 3)} x \<and>
-  vdp.poincare_map_from_outside {(7, -3, -3) .. (7, 3, 3)} x \<in> {(7, 0, 0) .. (7, 3, 3)}"
-  by (tactic \<open>poincare_bnds_tac @{thms vdp_fas_def} 30 20 10 14 [(1, 2, "0x000000")] "" (* "out_p1_vdp_0.out" *)  @{context} 1\<close>)
+  notes [poincare_tac_theorems] = vdp_ro vdp_start vdp_pi_1 poincare_section_rep1
+  shows "\<forall>x\<in>{(0, 1.25, 2.35, 1) .. (0, 1.55, 2.45, 1)}.
+  vdp.returns_to   {(7, -3, -3, -10) .. (7, 3, 3, 10)} x \<and>
+  vdp.poincare_map_from_outside {(7, -3, -3, -10) .. (7, 3, 3, 10)} x \<in> {(7, 0, 0, -10) .. (7, 3, 3, 10)}"
+  by (tactic \<open>poincare_bnds_tac @{thms vdp_fas_def} 30 20 10 14 [(1, 2, "0x007f00")] (* "out_p1_vdp_mu1_0.out" *) ""  @{context} 1\<close>)
+
+
+abbreviation "t2 \<equiv> 15/2"
+lemma vdp_pi_2: "vdp.guards_invar DIM(real \<times> real \<times> real \<times> real) [([ysec4' (1,t2) (7/2/2) (-2, 0) (-10, 10)], vdp_ro),
+  ([ysec4 (1,t2) (-3/2) (-1, 1) (-10, 10)], vdp_ro)]"
+  by (auto simp: vdp.guards_invar_def)
+
+lemma poincare_section_rep2:
+  "{(t2::real, -30::real, -30::real, -10::real)..(t2, 30, 30, 10)} = {eucl_of_list [t2, -30, -30, -10]..eucl_of_list [t2, 30, 30, 10]}"
+  by (auto simp: eucl_of_list_prod)
+
+lemma
+  notes [poincare_tac_theorems] = vdp_ro vdp_start vdp_pi_2 poincare_section_rep2
+  shows "\<forall>x\<in>{(0, 1.55, 2.35, 2) .. (0, 1.85, 2.45, 2)}.
+  vdp.returns_to   {(t2, -30, -30, -10) .. (t2, 30, 30, 10)} x \<and>
+  vdp.poincare_map_from_outside {(t2, -30, -30, -10) .. (t2, 30, 30, 10)} x \<in> {(t2, -30, -30, -10) .. (t2, 30, 30, 10)}"
+  by (tactic \<open>poincare_bnds_tac @{thms vdp_fas_def} 30 20 10 14 [(1, 2, "0x00007f")] (* "out_p1_vdp_mu2_0.out" *) "" @{context} 1\<close>)
 
 end
 
