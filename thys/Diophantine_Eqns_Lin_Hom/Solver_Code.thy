@@ -17,7 +17,7 @@ export_code solve integer_of_nat nat_of_integer in Haskell module_name HLDE file
 
 compile_generated_files \<^marker>\<open>contributor Makarius\<close>
   \<open>code/generated/HLDE.hs\<close>
-  external_files \<open>src/Main.hs\<close>
+  external_files \<open>Main.hs\<close> (in src)
   export_files \<open>Main\<close> (exe)
   export_prefix \<open>code/generated\<close>
   where \<open>fn dir =>
