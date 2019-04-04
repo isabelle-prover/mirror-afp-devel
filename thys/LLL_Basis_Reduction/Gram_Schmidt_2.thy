@@ -20,7 +20,6 @@ theory Gram_Schmidt_2
     Int_Rat_Operations
     Cramer_Lemma_Idom
 begin
-
 (* TODO: Documentation and add references to computer algebra book *)
 
 hide_const (open) Determinants.det
@@ -38,6 +37,8 @@ hide_fact (open) Determinants.det_transpose
 
 no_notation Inner_Product.real_inner_class.inner (infix "\<bullet>" 70)
 no_notation Finite_Cartesian_Product.vec.vec_nth (infixl "$" 90)
+no_notation Inner_Product.real_inner_class.inner (infix "\<bullet>" 70)
+no_notation Group.m_inv  ("inv\<index> _" [81] 80)
 
 (* TODO: move *)
 lemma map_mat_transpose: "(map_mat f A)\<^sup>T = map_mat f A\<^sup>T"
@@ -135,90 +136,58 @@ proof -
     by (subst sumlist_neutral, force, subst sumlist_neutral, force, auto)
 qed
 
+lemma lattice_of_mset:
+  assumes a: "mset fs = mset gs" and b: "set fs \<subseteq> carrier_vec n"
+  shows "lattice_of fs = lattice_of gs"
+proof -
+  have c: "set gs \<subseteq> carrier_vec n"
+    using assms mset_eq_setD by blast
+  have I: "lattice_of fs \<subseteq> lattice_of gs"
+    if assms: "p permutes {..<length gs}" "permute_list p gs = fs" "set fs \<subseteq> carrier_vec n" for fs gs p
+  proof -
+    have [simp]: "gs ! i \<in> carrier_vec n" if "i < length gs" for i
+      using assms that by auto
+    have [simp]: "gs ! p i \<in> carrier_vec n" if "i < length gs" for i
+      by (metis assms that length_permute_list nth_mem permute_list_nth subset_code(1))
+    have "x \<in> lattice_of gs" if "x \<in> lattice_of fs" for x
+    proof -
+      let ?ls = "[0..<length gs]"
+      from that obtain c where "x = sumlist (map (\<lambda>i. of_int (c i) \<cdot>\<^sub>v fs ! i) [0..<length fs])"
+        unfolding lattice_of_def image_def by (auto)
+      also have "map (\<lambda>i. of_int (c i) \<cdot>\<^sub>v fs ! i) [0..<length fs] = map (\<lambda>i. of_int (c i) \<cdot>\<^sub>v gs ! p i) ?ls"
+        using permute_list_nth[of p gs] assms by (auto)
+      also have "\<dots> = map (\<lambda>i. of_int (c ((inv p) i)) \<cdot>\<^sub>v gs ! i) (map p ?ls)"
+        using assms by (auto simp add: permutes_inverses)
+      also have "sumlist \<dots> = summset (mset (map (\<lambda>i. of_int (c (inv p i)) \<cdot>\<^sub>v gs ! i) (map p ?ls)))"
+         using assms by (intro sumlist_as_summset) (auto)
+      also have "mset (map (\<lambda>i. of_int (c (inv p i)) \<cdot>\<^sub>v gs ! i) (map p ?ls))
+      = image_mset (\<lambda>i. of_int (c (inv p i)) \<cdot>\<^sub>v gs ! i) (image_mset p (mset ?ls))"
+        by (auto simp del: map_map)
+      also have "image_mset p (mset [0..<length gs]) = mset [0..<length gs]"
+        using assms by (auto simp add: permutes_image_mset atLeast0LessThan)
+      also have "summset {#of_int (c (Hilbert_Choice.inv p i)) \<cdot>\<^sub>v gs ! i. i \<in># mset ?ls#} =
+        sumlist (map (\<lambda>i. of_int (c (Hilbert_Choice.inv p i)) \<cdot>\<^sub>v gs ! i) ?ls)"
+        using assms by (subst sumlist_as_summset) (auto)
+      finally show ?thesis
+        unfolding lattice_of_def image_def by auto
+    qed
+    then show ?thesis
+      by auto
+  qed
+  have "lattice_of fs \<subseteq> lattice_of gs"
+    using mset_eq_permutation assms I by metis
+  moreover have "lattice_of gs \<subseteq> lattice_of fs"
+    using mset_eq_permutation a[symmetric] b c I by metis
+  ultimately show ?thesis
+    by auto
+qed
+
 lemma lattice_of_swap: assumes fs: "set fs \<subseteq> carrier_vec n" 
   and ij: "i < length fs" "j < length fs" "i \<noteq> j" 
   and gs: "gs = fs[ i := fs ! j, j := fs ! i]" 
-shows "lattice_of gs = lattice_of fs" 
-proof -
-  {
-    fix i j and fs :: "'a vec list" 
-    assume *: "i < j" "j < length fs" and fs: "set fs \<subseteq> carrier_vec n"
-    let ?gs = "fs[ i := fs ! j, j := fs ! i]"
-    let ?len = "[0..<i] @ [i] @ [Suc i..<j] @ [j] @ [Suc j..<length fs]" 
-    have "[0 ..< length fs] = [0 ..< j] @ [j] @ [Suc j ..< length fs]" using *
-      by (metis append_Cons append_self_conv2 less_Suc_eq_le less_imp_add_positive upt_add_eq_append 
-          upt_conv_Cons zero_less_Suc)
-    also have "[0 ..< j] = [0 ..< i] @ [i] @ [Suc i ..< j]" using *
-      by (metis append_Cons append_self_conv2 less_Suc_eq_le less_imp_add_positive upt_add_eq_append 
-          upt_conv_Cons zero_less_Suc)
-    finally have len: "[0..<length fs] = ?len" by simp
-    from fs have fs: "\<And> i. i < length fs \<Longrightarrow> fs ! i \<in> carrier_vec n" unfolding set_conv_nth by auto
-    {
-      fix f
-      assume "f \<in> lattice_of fs" 
-      from in_latticeE[OF this, unfolded len] obtain c where
-        f: "f = sumlist (map (\<lambda>i. of_int (c i) \<cdot>\<^sub>v fs ! i) ?len)" by auto
-      define sc where "sc = (\<lambda> xs. sumlist (map (\<lambda>i. of_int (c i) \<cdot>\<^sub>v fs ! i) xs))"
-      define d where "d = (\<lambda> k. if k = i then c j else if k = j then c i else c k)"
-      define sd where "sd = (\<lambda> xs. sumlist (map (\<lambda>i. of_int (d i) \<cdot>\<^sub>v ?gs ! i) xs))"
-      have isc: "set is \<subseteq> {0 ..< length fs} \<Longrightarrow> sc is \<in> carrier_vec n" for "is" 
-        unfolding sc_def by (intro sumlist_carrier, auto simp: fs)
-      let ?a = "sc [0..<i]" let ?b = "sc [i]" let ?c = "sc [Suc i ..< j]" let ?d = "sc [j]" 
-      let ?e = "sc [Suc j ..< length fs]" 
-      let ?A = "sd [0..<i]" let ?B = "sd [i]" let ?C = "sd [Suc i ..< j]" let ?D = "sd [j]" 
-      let ?E = "sd [Suc j ..< length fs]" 
-      let ?CC = "carrier_vec n" 
-      have ae: "?a \<in> ?CC" "?b \<in> ?CC" "?c \<in> ?CC" "?d \<in> ?CC" "?e \<in> ?CC"  
-        using * by (auto intro: isc)
-      have sc_sd: "{i,j} \<inter> set is \<subseteq> {} \<Longrightarrow> sc is = sd is" for "is" 
-        unfolding sc_def sd_def by (rule arg_cong[of _ _ sumlist], rule map_cong, auto simp: d_def)
-      have "f = ?a + (?b + (?c + (?d + ?e)))"         
-        unfolding f map_append sc_def using fs *
-        by ((subst sumlist_append, force, force)+, simp)
-      also have "\<dots> = ?a + (?d + (?c + (?b + ?e)))" using * by auto
-      also have "\<dots> = ?A + (?d + (?C + (?b + ?E)))" 
-        using * by (auto simp: sc_sd)
-      also have "?b = ?D" unfolding sd_def sc_def d_def using * by (auto simp: d_def)
-      also have "?d = ?B" unfolding sd_def sc_def using * by (auto simp: d_def)    
-      finally have "f = ?A + (?B + (?C + (?D + ?E)))" .
-      also have "\<dots> = sumlist (map (\<lambda>i. of_int (d i) \<cdot>\<^sub>v ?gs ! i) ?len)" 
-        unfolding f map_append sd_def using fs *
-        by ((subst sumlist_append, force, force)+, simp)
-      also have "\<dots> = sumlist (map (\<lambda>i. of_int (d i) \<cdot>\<^sub>v ?gs ! i) [0 ..< length ?gs])"
-        unfolding len[symmetric] by simp
-      finally have "f = sumlist (map (\<lambda>i. of_int (d i) \<cdot>\<^sub>v ?gs ! i) [0 ..< length ?gs])" .
-      from in_latticeI[OF this] have "f \<in> lattice_of ?gs" .
-    }
-    hence "lattice_of fs \<subseteq> lattice_of ?gs" by blast
-  } note main = this
-  {
-    fix i j and fs :: "'a vec list" 
-    assume *: "i < length fs" "j < length fs" "i \<noteq> j" and fs: "set fs \<subseteq> carrier_vec n"
-    let ?gs = "fs[ i := fs ! j, j := fs ! i]"
-    have "lattice_of fs \<subseteq> lattice_of ?gs" 
-    proof (cases "i < j")
-      case True
-      from main[OF this *(2) fs] show ?thesis .
-    next
-      case False
-      with *(3) have "j < i" by auto
-      from main[OF this *(1) fs] 
-      have "lattice_of fs \<subseteq> lattice_of (fs[j := fs ! i, i := fs ! j])" .
-      also have "fs[j := fs ! i, i := fs ! j] = ?gs" using * 
-        by (metis list_update_swap)
-      finally show ?thesis .
-    qed
-  } note sub = this
-  from sub[OF ij fs] 
-  have one: "lattice_of fs \<subseteq> lattice_of gs" unfolding gs .
-  have "lattice_of gs \<subseteq> lattice_of (gs[i := gs ! j, j := gs ! i])" 
-    by (rule sub, insert ij fs, auto simp: gs)
-  also have "gs[i := gs ! j, j := gs ! i] = fs" unfolding gs
-    apply (rule nth_equalityI, force)
-    by (simp add: ij nth_list_update)
-  finally show ?thesis using one by auto
-qed  
-    
+shows "lattice_of gs = lattice_of fs"
+  using assms mset_swap by (intro lattice_of_mset) auto
+
 lemma lattice_of_add: assumes fs: "set fs \<subseteq> carrier_vec n" 
   and ij: "i < length fs" "j < length fs" "i \<noteq> j" 
   and gs: "gs = fs[ i := fs ! i + of_int l \<cdot>\<^sub>v fs ! j]" 
