@@ -33,8 +33,8 @@ proof (rule antisym; rule subsetI)
 next
   fix x assume "x \<in> ?B"
   then have "lookup (remove_key k f) x \<noteq> 0"  by blast
-  then show "x \<in> ?A" using remove_key_lookup lookup_not_eq_zero_eq_in_keys
-    by (simp add: remove_key_lookup)
+  then show "x \<in> ?A"
+    by (simp add: lookup_not_eq_zero_eq_in_keys remove_key_lookup)
 qed
 
 
@@ -57,7 +57,8 @@ qed
 lemma remove_key_single[simp]: "remove_key v (Poly_Mapping.single v n) = 0"
 proof -
  have 0:"\<And>k. (lookup (Poly_Mapping.single v n) k when k \<noteq> v) = 0" by (simp add: lookup_single_not_eq when_def)
- show ?thesis unfolding remove_key_def 0 by (simp add: zero_poly_mapping_def)
+ show ?thesis unfolding remove_key_def 0
+   by auto
 qed
 
 lemma remove_key_add: "remove_key v m + remove_key v m' = remove_key v (m + m')"
@@ -94,9 +95,9 @@ proof -
   have "(g (lookup f x) when lookup f x \<noteq> 0) = g (lookup f x)"
     by (metis (mono_tags, lifting) assms when_def)
   then have "(g (lookup f x) when x \<in> keys f) = g (lookup f x)"
-    using lookup_not_eq_zero_eq_in_keys by simp
-  then show ?thesis unfolding Poly_Mapping.map_def map_fun_def
-    by (simp add:lookup_Abs_poly_mapping)
+    using lookup_not_eq_zero_eq_in_keys [of f] by simp
+  then show ?thesis 
+    by (simp add: Poly_Mapping.map_def map_fun_def in_keys_iff)
 qed
 
 lemma keys_add:
@@ -117,7 +118,7 @@ proof
   qed
   ultimately show "keys f \<union> keys g \<subseteq> keys (f+g)" by simp
 next
-  show "keys (f + g) \<subseteq> keys f \<union> keys g" by (simp add: keys_add_subset)
+  show "keys (f + g) \<subseteq> keys f \<union> keys g" by (simp add: keys_add)
 qed
 
 lemma fun_when:
@@ -187,7 +188,8 @@ lemma vars_add: "vars (p1 + p2) \<subseteq> vars p1 \<union> vars p2"
 proof
   fix w assume "w \<in> vars (p1 + p2)"
   then obtain m where "w \<in> keys m" "m \<in> keys (mapping_of (p1 + p2))" by (metis UN_E vars_def)
-  then have "m \<in> keys (mapping_of (p1)) \<union> keys (mapping_of (p2))" by (metis keys_add_subset plus_mpoly.rep_eq subsetCE)
+  then have "m \<in> keys (mapping_of (p1)) \<union> keys (mapping_of (p2))"
+    by (metis Poly_Mapping.keys_add plus_mpoly.rep_eq subset_iff)
   then show "w \<in> vars p1 \<union> vars p2" using vars_def \<open>w \<in> keys m\<close> by fastforce
 qed
 
@@ -200,7 +202,8 @@ proof
     by (simp add: times_mpoly.rep_eq)
   then obtain a b where "m=a + b" "a \<in> keys (mapping_of p)" "b \<in> keys (mapping_of q)"
     using keys_mult by blast
-  then have "x \<in> keys a \<union> keys b" by (metis \<open>x \<in> keys m\<close> keys_add_subset subsetCE)
+  then have "x \<in> keys a \<union> keys b"
+    using Poly_Mapping.keys_add \<open>x \<in> keys m\<close> by force
   then show "x \<in> vars p \<union> vars q" unfolding vars_def
     using \<open>a \<in> keys (mapping_of p)\<close> \<open>b \<in> keys (mapping_of q)\<close> by blast
 qed
@@ -268,7 +271,8 @@ proof -
   then show ?thesis unfolding remove_term_def using coeff_def by (metis (mono_tags, lifting) Quotient_mpoly Quotient_rep_abs_fold_unmap)
 qed
 
-lemma coeff_keys: "m \<in> keys (mapping_of p) \<longleftrightarrow> coeff p m \<noteq> 0" by (simp add: coeff_def)
+lemma coeff_keys: "m \<in> keys (mapping_of p) \<longleftrightarrow> coeff p m \<noteq> 0"
+  by (simp add: coeff_def in_keys_iff)
 
 lemma remove_term_keys:
 shows "keys (mapping_of p) - {m} = keys (mapping_of (remove_term m p))" (is "?A = ?B")

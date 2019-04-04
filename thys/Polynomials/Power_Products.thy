@@ -152,23 +152,15 @@ proof (rule poly_mapping_eqI, simp)
     case True
     thus ?thesis by (rule lookup_except_eq_zeroI)
   next
-    case False
-    hence "lookup (except p S) t = lookup p t" by (rule lookup_except_eq_idI)
-    also have "... = 0" using False assms by auto
-    finally show ?thesis .
+    case False then show ?thesis
+      by (metis assms in_keys_iff lookup_except_eq_idI subset_eq) 
   qed
 qed
 
 lemma except_eq_zeroE:
   assumes "except p S = 0"
   shows "keys p \<subseteq> S"
-proof
-  fix t
-  assume "t \<in> keys p"
-  hence "lookup p t \<noteq> 0" by simp
-  moreover from assms have "lookup (except p S) t = 0" by simp
-  ultimately show "t \<in> S" unfolding lookup_except by presburger
-qed                                                                    
+  by (metis assms aux in_keys_iff lookup_except_eq_idI subset_iff)
 
 lemma except_eq_zero_iff: "except p S = 0 \<longleftrightarrow> keys p \<subseteq> S"
   by (rule, elim except_eq_zeroE, elim except_eq_zeroI)
@@ -306,7 +298,8 @@ next
         simp add: q_def lookup_except c_def, simp add: q_def lookup_except_eq_idI)
   show ?case
   proof (simp only: *, rule assms(2))
-    from t show "c \<noteq> 0" by (simp add: c_def)
+    from t show "c \<noteq> 0"
+      using c_def by auto
   next
     show "t \<notin> keys q" by (simp add: q_def keys_except)
   next
@@ -319,7 +312,7 @@ next
 qed
 
 lemma except_Diff_singleton: "except p (keys p - {t}) = Poly_Mapping.single t (lookup p t)"
-  by (rule poly_mapping_eqI) (simp add: lookup_single lookup_except when_def)
+  by (rule poly_mapping_eqI) (simp add: lookup_single in_keys_iff lookup_except when_def)
 
 lemma except_Un_plus_Int: "except p (U \<union> V) + except p (U \<inter> V) = except p U + except p V"
   by (rule poly_mapping_eqI) (simp add: lookup_except lookup_add)
@@ -335,7 +328,7 @@ proof -
 qed
 
 lemma except_keys_Int [simp]: "except p (keys p \<inter> U) = except p U"
-  by (rule poly_mapping_eqI) (simp add: lookup_except)
+  by (rule poly_mapping_eqI) (simp add: in_keys_iff lookup_except)
 
 lemma except_Int_keys [simp]: "except p (U \<inter> keys p) = except p U"
   by (simp only: Int_commute[of U] except_keys_Int)
@@ -2254,32 +2247,18 @@ proof (rule poly_mapping_eqI, simp)
 qed
 
 lemma keys_plus_ninv_comm_monoid_add: "keys (s + t) = keys s \<union> keys (t::'a \<Rightarrow>\<^sub>0 'b::ninv_comm_monoid_add)"
-proof (rule, fact keys_add_subset, rule)
+proof (rule, fact Poly_Mapping.keys_add, rule)
   fix x
   assume "x \<in> keys s \<union> keys t"
   thus "x \<in> keys (s + t)"
   proof
     assume "x \<in> keys s"
-    hence "lookup s x \<noteq> 0" by simp
-    have "lookup (s + t) x \<noteq> 0"
-    proof
-      assume "lookup (s + t) x = 0"
-      hence "lookup s x + lookup t x = 0" by (simp only: lookup_add)
-      hence "lookup s x = 0" by (rule plus_eq_zero)
-      with \<open>lookup s x \<noteq> 0\<close> show False ..
-    qed
-    thus ?thesis by simp
+    thus ?thesis
+      by (metis in_keys_iff lookup_add plus_eq_zero)
   next
     assume "x \<in> keys t"
-    hence "lookup t x \<noteq> 0" by simp
-    have "lookup (s + t) x \<noteq> 0"
-    proof
-      assume "lookup (s + t) x = 0"
-      hence "lookup t x + lookup s x = 0" by (simp only: lookup_add ac_simps)
-      hence "lookup t x = 0" by (rule plus_eq_zero)
-      with \<open>lookup t x \<noteq> 0\<close> show False ..
-    qed
-    thus ?thesis by simp
+    thus ?thesis
+      by (metis in_keys_iff lookup_add plus_eq_zero_2)
   qed
 qed
 

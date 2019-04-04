@@ -5,7 +5,7 @@
 section \<open>An abstract type for multivariate polynomials\<close>
 
 theory MPoly_Type
-imports Poly_Mapping
+imports "HOL-Library.Poly_Mapping"
 begin
 
 subsection \<open>Abstract type definition\<close>
@@ -346,7 +346,7 @@ proof -
   have "finite {l + n | l n. Poly_Mapping.lookup p l \<noteq> 0 \<and> Poly_Mapping.lookup q n \<noteq> 0}"
     by (rule finite_not_eq_zero_sumI) simp_all
   then have fin_PQ: "finite ?PQ"
-    by simp
+    by (simp add: in_keys_iff)
   have "(\<Sum>m. Poly_Mapping.lookup (p * q) m * g m) =
     (\<Sum>m. (\<Sum>l. Poly_Mapping.lookup p l * (\<Sum>n. Poly_Mapping.lookup q n when m = l + n)) * g m)"
     by (simp add: times_poly_mapping.rep_eq prod_fun_def)
@@ -365,15 +365,15 @@ proof -
     done
   also have "\<dots> = (\<Sum>(m, l, n). g m * (Poly_Mapping.lookup p l * Poly_Mapping.lookup q n) when m = l + n)"
     apply (subst Sum_any.cartesian_product [of "?PQ \<times> (?P \<times> ?Q)"])
-    apply (auto dest!: mult_not_zero simp add: fin_PQ)
-    apply auto
+      apply (auto dest!: mult_not_zero simp add: fin_PQ)
+    apply (auto simp: in_keys_iff)
     done
   also have "\<dots> = (\<Sum>(l, n, m). g m * (Poly_Mapping.lookup p l * Poly_Mapping.lookup q n) when m = l + n)"
     using bij by (rule Sum_any.reindex_cong [of "\<lambda>(l, n, m). (m, l, n)"]) (simp add: fun_eq_iff)
   also have "\<dots> = (\<Sum>(l, n). \<Sum>m. g m * (Poly_Mapping.lookup p l * Poly_Mapping.lookup q n) when m = l + n)"
     apply (subst Sum_any.cartesian_product2 [of "(?P \<times> ?Q) \<times> ?PQ"])
     apply (auto dest!: mult_not_zero simp add: fin_PQ )
-    apply auto
+    apply (auto simp: in_keys_iff)
     done
   also have "\<dots> = (\<Sum>(l, n). (g l * g n) * (Poly_Mapping.lookup p l * Poly_Mapping.lookup q n))"
     by (simp add: *)
