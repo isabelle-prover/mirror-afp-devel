@@ -46,7 +46,7 @@ shows "round_num_denom (d\<mu> i j) (d fs (Suc j)) = round (gs.\<mu> i j)"
 proof -
   from j i have sj: "Suc j \<le> m" by auto
   show ?thesis unfolding round_num_denom
-    by (rule arg_cong[of _ _ round], subst d\<mu>[OF j i], insert fs_int_d_pos[OF sj], auto)
+    by (rule arg_cong[of _ _ round], subst d\<mu>[OF _ i], insert j i fs_int_d_pos[OF sj], auto)
 qed
 
 lemma d_sq_norm_comparison:

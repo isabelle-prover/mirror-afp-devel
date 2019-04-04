@@ -2957,6 +2957,17 @@ proof -
     by (intro gs.d_mu_Ints) (auto)
 qed
 
+lemma fs_int_mu_d_Z_m_m:
+  assumes j: "j < m" and ii: "ii < m" 
+  shows "of_int (d fs (Suc j)) * gs.\<mu> ii j \<in> \<int>"
+proof (cases "j \<le> ii")
+  case True
+  thus ?thesis using fs_int_mu_d_Z[OF True ii] by auto
+next
+  case False thus ?thesis by (simp add: gs.\<mu>.simps)
+qed
+
+
 lemma sq_norm_fs_via_sum_mu_gso: assumes i: "i < m" 
   shows "of_int \<parallel>fs ! i\<parallel>\<^sup>2 = (\<Sum>j\<leftarrow>[0..<Suc i]. (gs.\<mu> i j)\<^sup>2 * \<parallel>gs.gso j\<parallel>\<^sup>2)" 
 proof -
@@ -2980,9 +2991,9 @@ proof -
   finally show ?thesis . 
 qed
 
-lemma d\<mu>: assumes "j \<le> ii" "ii < m" 
+lemma d\<mu>: assumes "j < m" "ii < m" 
   shows "of_int (d\<mu> ii j) = of_int (d fs (Suc j)) * gs.\<mu> ii j" 
-  unfolding d\<mu>_def using fs_int_mu_d_Z assms by auto
+  unfolding d\<mu>_def using fs_int_mu_d_Z_m_m assms by auto
 end
 
 

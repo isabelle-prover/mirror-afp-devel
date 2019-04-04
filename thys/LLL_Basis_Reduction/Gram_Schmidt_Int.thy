@@ -427,7 +427,8 @@ lemma \<mu>': assumes "i < m" "j \<le> i"
     "j = i \<Longrightarrow> \<mu>' i j = d fs (Suc i)"  
 proof -
   let ?r = rat_of_int
-  note d\<mu> = d\<mu>[OF assms(2,1)]
+  from assms have "j < m" by auto
+  note d\<mu> = d\<mu>[OF this assms(1)]
   have "?r (\<mu>' i j) = gs.\<mu>' i j" 
     using \<sigma>s_\<mu>' assms by auto
   also have "\<dots> = ?r (d\<mu> i j)"
