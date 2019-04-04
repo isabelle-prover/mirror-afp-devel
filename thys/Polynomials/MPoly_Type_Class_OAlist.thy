@@ -320,7 +320,7 @@ qed
 
 lemma if_poly_mapping_eq_iff:
   "(if x = y then a else b) = (if (\<forall>i\<in>keys x \<union> keys y. lookup x i = lookup y i) then a else b)"
-  by (auto simp: poly_mapping_eq_iff intro!: ext)
+  by simp (metis UnI1 UnI2 in_keys_iff poly_mapping_eqI)
 
 lemma keys_add_eq: "keys (a + b) = keys a \<union> keys b - {x \<in> keys a \<inter> keys b. lookup a x + lookup b x = 0}"
   by (auto simp: in_keys_iff lookup_add add_eq_0_iff
@@ -399,7 +399,7 @@ next
       hence "t adds\<^sub>p u" by (rule adds_ppI)
       with \<open>\<not> t adds\<^sub>p u\<close> show False ..
     qed
-    thus "lookup (MP_oalist (shift_map_keys t ((*) c) xs)) u = 0" by simp
+    thus "lookup (MP_oalist (shift_map_keys t ((*) c) xs)) u = 0" by (simp add: in_keys_iff)
   qed
   thus ?thesis by (simp add: False)
 qed

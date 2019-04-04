@@ -17,7 +17,7 @@ proof -
   have "?M \<subseteq> Poly_Mapping.single v ` {x. Polynomial.coeff p x \<noteq> 0}"
   proof
     fix m assume "m \<in> ?M"
-    then have "\<And>v'. v'\<noteq>v \<Longrightarrow> Poly_Mapping.lookup m v' = 0" by fastforce
+    then have "\<And>v'. v'\<noteq>v \<Longrightarrow> Poly_Mapping.lookup m v' = 0" by (fastforce simp add: in_keys_iff)
     then have "m = Poly_Mapping.single v (Poly_Mapping.lookup m v)"
       using Poly_Mapping.poly_mapping_eqI by (metis (full_types) lookup_single_eq lookup_single_not_eq)
     then show "m \<in> (Poly_Mapping.single v) ` {x. Polynomial.coeff p x \<noteq> 0}" using \<open>m \<in> ?M\<close> by auto
@@ -98,7 +98,7 @@ using assms proof (induction p rule:mpoly_induct)
   next
     case False
     then have "Poly_Mapping.keys m \<subseteq> {v}" using monom unfolding vars_def MPoly_Type.mapping_of_monom keys_single by simp
-    then have "\<And>v'. v'\<noteq>v \<Longrightarrow> Poly_Mapping.lookup m v' = 0" unfolding vars_def by auto
+    then have "\<And>v'. v'\<noteq>v \<Longrightarrow> Poly_Mapping.lookup m v' = 0" unfolding vars_def by (auto simp: in_keys_iff)
     then have "m = Poly_Mapping.single v (Poly_Mapping.lookup m v)"
       by (metis lookup_single_eq lookup_single_not_eq poly_mapping_eqI)
     then have 0:"insertion (\<lambda>v. x) (MPoly_Type.monom m a) = a * x ^ (Poly_Mapping.lookup m v)"

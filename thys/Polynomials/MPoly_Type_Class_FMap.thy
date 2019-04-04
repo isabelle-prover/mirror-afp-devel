@@ -161,11 +161,10 @@ lemma lookup0_fmap_of_list_simps:
 lemma if_poly_mapping_eq_iff:
   "(if x = y then a else b) =
     (if (\<forall>i\<in>keys x \<union> keys y. lookup x i = lookup y i) then a else b)"
-  by (auto simp: poly_mapping_eq_iff intro!: ext)
+  by simp (metis UnI1 UnI2 in_keys_iff poly_mapping_eqI)
 
 lemma keys_add_eq: "keys (a + b) = keys a \<union> keys b - {x \<in> keys a \<inter> keys b. lookup a x + lookup b x = 0}"
-  by (auto simp: in_keys_iff lookup_add add_eq_0_iff
-      simp del: lookup_not_eq_zero_eq_in_keys)
+  by (auto simp: in_keys_iff lookup_add add_eq_0_iff)
 
 context term_powerprod
 begin

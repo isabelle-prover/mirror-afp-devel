@@ -30,7 +30,7 @@ qed
 lemma lookup_mapp_2_homogenous:
   assumes "f k 0 0 = 0"
   shows "lookup (mapp_2 f p q) k = f k (lookup p k) (lookup q k)"
-  by (simp add: lookup_mapp_2 when_def assms)
+  by (simp add: lookup_mapp_2 when_def in_keys_iff assms)
 
 lemma mapp_2_cong [fundef_cong]:
   assumes "p = p'" and "q = q'"
@@ -42,7 +42,7 @@ lemma keys_mapp_subset: "keys (mapp_2 f p q) \<subseteq> keys p \<union> keys q"
 proof
   fix t
   assume "t \<in> keys (mapp_2 f p q)"
-  hence "lookup (mapp_2 f p q) t \<noteq> 0" by simp
+  hence "lookup (mapp_2 f p q) t \<noteq> 0" by (simp add: in_keys_iff) 
   thus "t \<in> keys p \<union> keys q" by (simp add: lookup_mapp_2 when_def split: if_split_asm)
 qed
 
@@ -64,19 +64,11 @@ lemma in_keys_plusI2:
 lemma keys_plus_eqI:
   assumes "keys p \<inter> keys q = {}"
   shows "keys (p + q) = (keys p \<union> keys q)"
-proof (rule, rule keys_add_subset, rule)
-  fix t
-  assume "t \<in> keys p \<union> keys q"
-  thus "t \<in> keys (p + q)"
-  proof
-    assume "t \<in> keys p"
-    moreover from assms this have "t \<notin> keys q" by auto
-    ultimately show ?thesis by (rule in_keys_plusI1)
-  next
-    assume "t \<in> keys q"
-    moreover from assms this have "t \<notin> keys p" by auto
-    ultimately show ?thesis by (rule in_keys_plusI2)
-  qed
+proof
+  show "keys (p + q) \<subseteq> keys p \<union> keys q"
+    by (simp add: Poly_Mapping.keys_add)
+  show "keys p \<union> keys q \<subseteq> keys (p + q)"
+    by (simp add: More_MPoly_Type.keys_add assms)
 qed
   
 lemma keys_uminus: "keys (- p) = keys p"
@@ -149,7 +141,7 @@ proof (rule poly_mapping_eqI, simp add: lookup_single when_def, rule)
   fix s
   assume "t \<noteq> s"
   hence "s \<notin> keys p" using assms by blast
-  thus "lookup p s = 0" by simp
+  thus "lookup p s = 0" by (simp add: in_keys_iff) 
 qed
 
 lemma monomial_0I:
@@ -554,7 +546,7 @@ proof -
       assume "proj_poly k p \<noteq> 0"
       hence "keys (proj_poly k p) \<noteq> {}" using poly_mapping_eq_zeroI by blast
       then obtain t where "lookup (proj_poly k p) t \<noteq> 0" by blast
-      hence "term_of_pair (t, k) \<in> keys p" by (simp add: lookup_proj_poly)
+      hence "term_of_pair (t, k) \<in> keys p" by (simp add: lookup_proj_poly in_keys_iff)
       hence "component_of_term (term_of_pair (t, k)) \<in> component_of_term ` keys p" by fastforce
       thus "k \<in> component_of_term ` keys p" by (simp add: term_simps)
     qed
@@ -577,7 +569,8 @@ proof -
       assume *: "pp_of_term v \<in> keys (lookup p (component_of_term v))"
       hence "keys (lookup p (component_of_term v)) \<noteq> {}" by blast
       hence "lookup p (component_of_term v) \<noteq> 0" by auto
-      hence "component_of_term v \<in> keys p" (is "?k \<in> _") by simp
+      hence "component_of_term v \<in> keys p" (is "?k \<in> _") 
+        by (simp add: in_keys_iff)
       thus "\<exists>k\<in>keys p. v \<in> (\<lambda>t. term_of_pair (t, k)) ` keys (lookup p k)"
       proof
         have "v = term_of_pair (pp_of_term v, component_of_term v)" by (simp add: term_simps)
@@ -585,8 +578,8 @@ proof -
       qed
     qed
     moreover have "finite ?A" by (rule, fact finite_keys, rule finite_imageI, rule finite_keys)
-    ultimately show "finite {v. pp_of_term v \<in> keys (lookup p (component_of_term v))}"
-      by (rule finite_subset)
+    ultimately show "finite {x. lookup (lookup p (component_of_term x)) (pp_of_term x) \<noteq> 0}"
+      by (simp add: finite_subset in_keys_iff)
   qed
   thus ?thesis by (simp add: atomize_poly_def)
 qed
@@ -597,8 +590,8 @@ proof
   proof
     fix t
     assume "t \<in> keys (proj_poly k p)"
-    hence "lookup (proj_poly k p) t \<noteq> 0" by simp
-    hence "term_of_pair (t, k) \<in> keys p" by (simp add: lookup_proj_poly)
+    hence "lookup (proj_poly k p) t \<noteq> 0" by (simp add: in_keys_iff)
+    hence "term_of_pair (t, k) \<in> keys p" by (simp add: in_keys_iff lookup_proj_poly)
     hence "term_of_pair (t, k) \<in> {x\<in>keys p. component_of_term x = k}" by (simp add: term_simps)
     hence "pp_of_term (term_of_pair (t, k)) \<in> pp_of_term ` {x\<in>keys p. component_of_term x = k}" by (rule imageI)
     thus "t \<in> pp_of_term ` {x\<in>keys p. component_of_term x = k}" by (simp only: pp_of_term_of_pair)
@@ -611,9 +604,9 @@ next
     then obtain x where "x \<in> {x\<in>keys p. component_of_term x = k}" and "t = pp_of_term x" ..
     from this(1) have "x \<in> keys p" and "k = component_of_term x" by simp_all
     from this(2) have "x = term_of_pair (t, k)" by (simp add: term_of_pair_pair \<open>t = pp_of_term x\<close>)
-    with \<open>x \<in> keys p\<close> have "lookup p (term_of_pair (t, k)) \<noteq> 0" by simp
+    with \<open>x \<in> keys p\<close> have "lookup p (term_of_pair (t, k)) \<noteq> 0" by (simp add: in_keys_iff)
     hence "lookup (proj_poly k p) t \<noteq> 0" by (simp add: lookup_proj_poly)
-    thus "t \<in> keys (proj_poly k p)" by simp
+    thus "t \<in> keys (proj_poly k p)" by (simp add: in_keys_iff)
   qed
 qed
 
@@ -623,10 +616,10 @@ proof
   proof
     fix k
     assume "k \<in> keys (vectorize_poly p)"
-    hence "lookup (vectorize_poly p) k \<noteq> 0" by simp
+    hence "lookup (vectorize_poly p) k \<noteq> 0" by (simp add: in_keys_iff)
     hence "proj_poly k p \<noteq> 0" by (simp add: lookup_vectorize_poly)
     then obtain t where "lookup (proj_poly k p) t \<noteq> 0" using aux by blast
-    hence "term_of_pair (t, k) \<in> keys p" by (simp add: lookup_proj_poly)
+    hence "term_of_pair (t, k) \<in> keys p" by (simp add: lookup_proj_poly in_keys_iff)
     hence "component_of_term (term_of_pair (t, k)) \<in> component_of_term ` keys p" by (rule imageI)
     thus "k \<in> component_of_term ` keys p" by (simp only: component_of_term_of_pair)
   qed
@@ -637,11 +630,11 @@ next
     assume "k \<in> component_of_term ` keys p"
     then obtain x where "x \<in> keys p" and "k = component_of_term x" ..
     from this(2) have "term_of_pair (pp_of_term x, k) = x" by (simp add: term_of_pair_pair)
-    with \<open>x \<in> keys p\<close> have "lookup p (term_of_pair (pp_of_term x, k)) \<noteq> 0" by simp
+    with \<open>x \<in> keys p\<close> have "lookup p (term_of_pair (pp_of_term x, k)) \<noteq> 0" by (simp add: in_keys_iff)
     hence "lookup (proj_poly k p) (pp_of_term x) \<noteq> 0" by (simp add: lookup_proj_poly)
     hence "proj_poly k p \<noteq> 0" by auto
     hence "lookup (vectorize_poly p) k \<noteq> 0" by (simp add: lookup_vectorize_poly)
-    thus "k \<in> keys (vectorize_poly p)" by simp
+    thus "k \<in> keys (vectorize_poly p)" by (simp add: in_keys_iff)
   qed
 qed
 
@@ -652,10 +645,10 @@ proof
   proof
     fix v
     assume "v \<in> ?l"
-    hence "lookup (atomize_poly p) v \<noteq> 0" by simp
-    hence *: "pp_of_term v \<in> keys (lookup p (component_of_term v))" by (simp add: lookup_atomize_poly)
+    hence "lookup (atomize_poly p) v \<noteq> 0" by (simp add: in_keys_iff)
+    hence *: "pp_of_term v \<in> keys (lookup p (component_of_term v))" by (simp add: in_keys_iff lookup_atomize_poly)
     hence "lookup p (component_of_term v) \<noteq> 0" by fastforce
-    hence "component_of_term v \<in> keys p" by simp
+    hence "component_of_term v \<in> keys p" by (simp add: in_keys_iff)
     thus "v \<in> ?r"
     proof
       from * have "term_of_pair (pp_of_term v, component_of_term v) \<in>
@@ -672,8 +665,8 @@ next
     assume "v \<in> ?r"
     then obtain k where "k \<in> keys p" and "v \<in> (\<lambda>t. term_of_pair (t, k)) ` keys (lookup p k)" ..
     from this(2) obtain t where "t \<in> keys (lookup p k)" and v: "v = term_of_pair (t, k)" ..
-    from this(1) have "lookup (atomize_poly p) v \<noteq> 0" by (simp add: v lookup_atomize_poly term_simps)
-    thus "v \<in> ?l" by simp
+    from this(1) have "lookup (atomize_poly p) v \<noteq> 0" by (simp add: v lookup_atomize_poly in_keys_iff term_simps)
+    thus "v \<in> ?l" by (simp add: in_keys_iff)
   qed
 qed
 
@@ -772,7 +765,8 @@ proof
   proof
     from adds_pp_sminus[OF \<open>t adds\<^sub>p v\<close>] show "v = t \<oplus> (v \<ominus> t)" by simp
   next
-    from mult_not_zero[OF cp_not_zero] show "v \<ominus> t \<in> keys p" by (rule, simp)
+    from mult_not_zero[OF cp_not_zero] show "v \<ominus> t \<in> keys p"
+      by (simp add: in_keys_iff)
   qed
 qed
 
@@ -883,7 +877,7 @@ lemma monom_mult_inj_1:
 proof -
   from assms(2) have "keys p \<noteq> {}" using poly_mapping_eq_zeroI by blast
   then obtain v where "v \<in> keys p" by blast
-  hence *: "lookup p v \<noteq> 0" by simp
+  hence *: "lookup p v \<noteq> 0" by (simp add: in_keys_iff)
   from assms(1) have "lookup (monom_mult c1 t p) (t \<oplus> v) = lookup (monom_mult c2 t p) (t \<oplus> v)"
     by simp
   hence "c1 * lookup p v = c2 * lookup p v" by (simp only: lookup_monom_mult_plus)
@@ -916,7 +910,7 @@ proof -
   proof
     fix v
     assume "v \<in> keys (monom_mult c t p)"
-    hence "lookup (monom_mult c t p) v \<noteq> 0" by simp
+    hence "lookup (monom_mult c t p) v \<noteq> 0" by (simp add: in_keys_iff)
     thus "v \<in> ?A" unfolding lookup_monom_mult by simp
   qed
   also note keys_monom_mult_aux
@@ -979,7 +973,7 @@ lemma lookup_lift_poly_fun_2_homogenous:
   assumes "f 0 0 = 0"
   shows "lookup (lift_poly_fun_2 f p q) v =
          lookup (f (proj_poly (component_of_term v) p) (proj_poly (component_of_term v) q)) (pp_of_term v)"
-  by (simp add: lookup_lift_poly_fun_2 when_def lookup_vectorize_poly assms)
+  by (simp add: lookup_lift_poly_fun_2 when_def in_keys_iff lookup_vectorize_poly assms)
 
 lemma proj_lift_poly_fun_2_homogenous:
   assumes "f 0 0 = 0"
@@ -990,7 +984,7 @@ lemma proj_lift_poly_fun_2_homogenous:
 lemma lookup_lift_poly_fun_homogenous:
   assumes "f 0 = 0"
   shows "lookup (lift_poly_fun f p) v = lookup (f (proj_poly (component_of_term v) p)) (pp_of_term v)"
-  by (simp add: lookup_lift_poly_fun when_def lookup_vectorize_poly assms)
+  by (simp add: lookup_lift_poly_fun when_def in_keys_iff lookup_vectorize_poly assms)
 
 lemma proj_lift_poly_fun_homogenous:
   assumes "f 0 = 0"
@@ -1079,12 +1073,12 @@ lemma in_keys_mult_vecE:
   obtains u v where "u \<in> keys p" and "v \<in> keys q" and "component_of_term u = component_of_term v"
     and "w = term_of_pair (pp_of_term u + pp_of_term v, component_of_term u)"
 proof -
-  from assms have "0 \<noteq> lookup (p ** q) w" by simp
+  from assms have "0 \<noteq> lookup (p ** q) w" by (simp add: in_keys_iff)
   also have "lookup (p ** q) w =
       lookup ((proj_poly (component_of_term w) p) * (proj_poly (component_of_term w) q)) (pp_of_term w)"
     by (fact lookup_mult_vec)
   finally have "pp_of_term w \<in> keys ((proj_poly (component_of_term w) p) * (proj_poly (component_of_term w) q))"
-    by simp
+    by (simp add: in_keys_iff)
   from this keys_mult
   have "pp_of_term w \<in> {t + s |t s. t \<in> keys (proj_poly (component_of_term w) p) \<and>
                                    s \<in> keys (proj_poly (component_of_term w) q)}" ..
@@ -1147,13 +1141,13 @@ proof -
               (\<Sum>t. lookup p t * (Sum_any (?f t)))"
     by (fact lookup_mult)
   also from finite_keys have "\<dots> = (\<Sum>t\<in>keys p. lookup p t * (Sum_any (?f t)))"
-    by (rule Sum_any.expand_superset) (auto dest: mult_not_zero)
+    by (rule Sum_any.expand_superset) (auto simp: in_keys_iff dest: mult_not_zero)
   also from refl have "\<dots> = (\<Sum>t\<in>keys p. lookup p t * (\<Sum>v\<in>keys q. lookup q v when u = t \<oplus> v))"
   proof (rule sum.cong)
     fix t
     assume "t \<in> keys p"
     from finite_keys have "Sum_any (?f t) = (\<Sum>s\<in>keys (proj_poly (component_of_term u) q). ?f t s)"
-      by (rule Sum_any.expand_superset) auto
+      by (rule Sum_any.expand_superset) (auto simp: in_keys_iff)
     also have "\<dots> = (\<Sum>v\<in>{x \<in> keys q. component_of_term x = component_of_term u}. ?f t (pp_of_term v))"
       unfolding keys_proj_poly
     proof (intro sum.reindex[simplified o_def] inj_onI)
@@ -1265,10 +1259,10 @@ lemma in_keys_mult_scalarE:
   assumes "v \<in> keys (p \<odot> q)"
   obtains t u where "t \<in> keys p" and "u \<in> keys q" and "v = t \<oplus> u"
 proof -
-  from assms have "0 \<noteq> lookup (p \<odot> q) v" by simp
+  from assms have "0 \<noteq> lookup (p \<odot> q) v" by (simp add: in_keys_iff)
   also have "lookup (p \<odot> q) v = lookup (p * (proj_poly (component_of_term v) q)) (pp_of_term v)"
     by (fact lookup_mult_scalar)
-  finally have "pp_of_term v \<in> keys (p * proj_poly (component_of_term v) q)" by simp
+  finally have "pp_of_term v \<in> keys (p * proj_poly (component_of_term v) q)" by (simp add: in_keys_iff)
   from this keys_mult have "pp_of_term v \<in> {t + s |t s. t \<in> keys p \<and> s \<in> keys (proj_poly (component_of_term v) q)}" ..
   then obtain t s where "t \<in> keys p" and *: "s \<in> keys (proj_poly (component_of_term v) q)"
     and eq: "pp_of_term v = t + s" by fastforce
@@ -1315,8 +1309,8 @@ proof
     then obtain t where "t \<in> keys p" and "u = t \<oplus> v" ..
     have "lookup (p \<odot> monomial c v) (t \<oplus> v) = lookup p t * c"
       by (fact lookup_mult_scalar_monomial_right_plus)
-    also from \<open>t \<in> keys p\<close> assms have "... \<noteq> 0" by simp
-    finally show "u \<in> keys (p \<odot> monomial c v)" by (simp add: \<open>u = t \<oplus> v\<close>)
+    also from \<open>t \<in> keys p\<close> assms have "... \<noteq> 0" by (simp add: in_keys_iff)
+    finally show "u \<in> keys (p \<odot> monomial c v)" by (simp add: in_keys_iff \<open>u = t \<oplus> v\<close>)
   qed
 qed (fact keys_mult_scalar_monomial_right_subset)
 
@@ -1353,7 +1347,7 @@ proof (cases "finite A")
   next
     case (insert a A)
     have "keys (sum f (insert a A)) \<subseteq> keys (f a) \<union> keys (sum f A)"
-      by (simp only: comm_monoid_add_class.sum.insert[OF insert(1) insert(2)] keys_add_subset)
+      by (simp add: Poly_Mapping.keys_add insert.hyps)
     also have "... \<subseteq> keys (f a) \<union> (\<Union>a\<in>A. keys (f a))" using insert(3) by blast
     also have "... = (\<Union>a\<in>insert a A. keys (f a))" by simp
     finally show ?case .
@@ -1398,7 +1392,7 @@ proof (induct p rule: poly_mapping_plus_induct)
   show ?case by simp
 next
   case step: (2 p c t)
-  from step(2) have "lookup p t = 0" by simp
+  from step(2) have "lookup p t = 0" by (simp add: in_keys_iff)
   have *: "keys (monomial c t + p) = insert t (keys p)"
   proof -
     from step(1) have a: "keys (monomial c t) = {t}" by simp
@@ -1540,7 +1534,7 @@ next
     from this(4) step(5) \<open>b \<in> B\<close> have "P (a + monomial (lookup q0 t) t \<odot> b)"
       unfolding mult_scalar_monomial
     proof (rule assms(3))
-      from step(2) show "lookup q0 t \<noteq> 0" by simp
+      from step(2) show "lookup q0 t \<noteq> 0" by (simp add: in_keys_iff)
     qed
     with _ have "P ((a + monomial (lookup q0 t) t \<odot> b) + except q0 {t} \<odot> b)"
     proof (rule step(3))
@@ -1567,7 +1561,7 @@ proof
       thus ?case by simp
     next
       case ind: (module_plus a p c t)
-      from ind.prems keys_add_subset have "v \<in> keys a \<union> keys (monom_mult c t p)" ..
+      from ind.prems Poly_Mapping.keys_add have "v \<in> keys a \<union> keys (monom_mult c t p)" ..
       thus ?case
       proof
         assume "v \<in> keys a"
@@ -1644,7 +1638,7 @@ lemma full_pmdl_closed_plus:
 proof (rule full_pmdlI)
   fix v
   assume "v \<in> keys (p + q)"
-  also have "... \<subseteq> keys p \<union> keys q" by (fact keys_add_subset)
+  also have "... \<subseteq> keys p \<union> keys q" by (fact Poly_Mapping.keys_add)
   finally show "component_of_term v \<in> K"
   proof
     assume "v \<in> keys p"
@@ -1769,12 +1763,7 @@ lemma map_scale_zero_right [simp]: "k \<cdot> 0 = 0"
   by (rule poly_mapping_eqI) simp
 
 lemma keys_map_scale_subset: "keys (k \<cdot> t) \<subseteq> keys t"
-proof
-  fix x
-  assume "x \<in> keys (k \<cdot> t)"
-  hence "lookup (k \<cdot> t) x \<noteq> 0" by (simp del: lookup_map_scale)
-  thus "x \<in> keys t" using mult_not_zero by force
-qed
+  by (metis in_keys_iff lookup_map_scale mult_zero_right subsetI)
 
 lemma keys_map_scale: "keys ((k::'b::semiring_no_zero_divisors) \<cdot> t) = (if k = 0 then {} else keys t)"
 proof (split if_split, intro conjI impI)

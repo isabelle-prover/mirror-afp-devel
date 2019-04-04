@@ -35,7 +35,7 @@ lemma pp_eq_iff: "(s = t) \<longleftrightarrow> (lookup_pp s = lookup_pp t)"
   by (auto intro: pp_eqI)
 
 lemma keys_pp_iff: "x \<in> keys_pp t \<longleftrightarrow> (lookup_pp t x \<noteq> 0)"
-  by (transfer, simp)
+  by (simp add: in_keys_iff keys_pp.rep_eq lookup_pp.rep_eq)
 
 lemma pp_eqI':
   assumes "\<And>u. u \<in> keys_pp s \<union> keys_pp t \<Longrightarrow> lookup_pp s u = lookup_pp t u"

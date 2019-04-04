@@ -23,8 +23,7 @@ begin
 definition equal_poly_mapping::"('a, 'b) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> bool" where
   "equal_poly_mapping p q \<equiv> (\<forall>t. lookup p t = lookup q t)"
 
-instance by standard (auto simp: equal_poly_mapping_def poly_mapping_eq_iff)
-
+instance by standard (auto simp add: equal_poly_mapping_def poly_mapping_eqI)
 end
 
 definition "clearjunk0 m = fmfilter (\<lambda>k. fmlookup m k \<noteq> Some 0) m"

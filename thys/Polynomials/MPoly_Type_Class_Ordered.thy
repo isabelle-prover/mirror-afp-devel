@@ -204,7 +204,7 @@ lemma lt_max:
   assumes "lookup p v \<noteq> 0"
   shows "v \<preceq>\<^sub>t lt p"
 proof -
-  from assms have t_in: "v \<in> keys p" by simp
+  from assms have t_in: "v \<in> keys p" by (simp add: in_keys_iff)
   hence "keys p \<noteq> {}" by auto
   hence "p \<noteq> 0" using keys_zero by blast
   from lt_alt[OF this] ord_term_lin.Max_ge[OF finite_keys t_in] show ?thesis by simp
@@ -214,13 +214,13 @@ lemma lt_eqI:
   assumes "lookup p v \<noteq> 0" and "\<And>u. lookup p u \<noteq> 0 \<Longrightarrow> u \<preceq>\<^sub>t v"
   shows "lt p = v"
 proof -
-  from assms(1) have "v \<in> keys p" by simp
+  from assms(1) have "v \<in> keys p" by (simp add: in_keys_iff)
   hence "keys p \<noteq> {}" by auto
   hence "p \<noteq> 0"
     using keys_zero by blast
   have "u \<preceq>\<^sub>t v" if "u \<in> keys p" for u
   proof -
-    from that have "lookup p u \<noteq> 0" by simp
+    from that have "lookup p u \<noteq> 0" by (simp add: in_keys_iff)
     thus "u \<preceq>\<^sub>t v" by (rule assms(2))
   qed
   from lt_alt[OF \<open>p \<noteq> 0\<close>] ord_term_lin.Max_eqI[OF finite_keys this \<open>v \<in> keys p\<close>] show ?thesis by simp
@@ -230,12 +230,13 @@ lemma lt_less:
   assumes "p \<noteq> 0" and "\<And>u. v \<preceq>\<^sub>t u \<Longrightarrow> lookup p u = 0"
   shows "lt p \<prec>\<^sub>t v"
 proof -
-  from \<open>p \<noteq> 0\<close> have "keys p \<noteq> {}" by (auto simp: poly_mapping_eq_iff)
+  from \<open>p \<noteq> 0\<close> have "keys p \<noteq> {}"
+    by simp
   have "\<forall>u\<in>keys p. u \<prec>\<^sub>t v"
   proof
     fix u::'t
     assume "u \<in> keys p"
-    hence "lookup p u \<noteq> 0" by simp
+    hence "lookup p u \<noteq> 0" by (simp add: in_keys_iff)
     hence "\<not> v \<preceq>\<^sub>t u" using assms(2)[of u] by auto
     thus "u \<prec>\<^sub>t v" by simp
   qed
@@ -266,20 +267,14 @@ qed
 lemma lt_gr:
   assumes "lookup p s \<noteq> 0" and "t \<prec>\<^sub>t s"
   shows "t \<prec>\<^sub>t lt p"
-proof -
-  from \<open>lookup p s \<noteq> 0\<close> have "s \<in> keys p" by simp
-  hence "keys p \<noteq> {}" by auto
-  hence "p \<noteq> 0" by auto
-  from assms(2) \<open>s \<in> keys p\<close> have "\<exists>s\<in>keys p. t \<prec>\<^sub>t s" ..
-  with lt_alt[OF \<open>p \<noteq> 0\<close>] ord_term_lin.Max_gr_iff[OF finite_keys \<open>keys p \<noteq> {}\<close>] show ?thesis by simp
-qed
+  using assms lt_max ord_term_lin.order.strict_trans2 by blast
 
 lemma lc_not_0:
   assumes "p \<noteq> 0"
   shows "lc p \<noteq> 0"
 proof -
   from keys_zero assms have "keys p \<noteq> {}" by auto
-  from lt_alt[OF assms] ord_term_lin.Max_in[OF finite_keys this] show ?thesis by (simp add: lc_def)
+  from lt_alt[OF assms] ord_term_lin.Max_in[OF finite_keys this] show ?thesis by (simp add: in_keys_iff lc_def)
 qed
 
 lemma lc_eq_zero_iff: "lc p = 0 \<longleftrightarrow> p = 0"
@@ -582,7 +577,7 @@ lemma lt_max_keys:
   assumes "v \<in> keys p"
   shows "v \<preceq>\<^sub>t lt p"
 proof (rule lt_max)
-  from assms show "lookup p v \<noteq> 0" by simp
+  from assms show "lookup p v \<noteq> 0" by (simp add: in_keys_iff)
 qed
 
 lemma lt_eqI_keys:
@@ -594,7 +589,7 @@ lemma lt_gr_keys:
   assumes "u \<in> keys p" and "v \<prec>\<^sub>t u"
   shows "v \<prec>\<^sub>t lt p"
 proof (rule lt_gr)
-  from assms(1) show "lookup p u \<noteq> 0" by simp
+  from assms(1) show "lookup p u \<noteq> 0" by (simp add: in_keys_iff)
 qed fact
 
 lemma lt_plus_eq_maxI:
@@ -625,12 +620,13 @@ lemma lt_monom_mult:
 proof (intro lt_eqI)
   from assms(1) show "lookup (monom_mult c t p) (t \<oplus> lt p) \<noteq> 0"
   proof (simp add: lookup_monom_mult_plus)
-    from assms(2) show "lt p \<in> keys p" by (rule lt_in_keys)
+    show "lookup p (lt p) \<noteq> 0"
+      using assms(2) lt_in_keys by auto
   qed
 next
   fix u::'t
   assume "lookup (monom_mult c t p) u \<noteq> 0"
-  hence "u \<in> keys (monom_mult c t p)" by simp
+  hence "u \<in> keys (monom_mult c t p)" by (simp add: in_keys_iff)
   also have "... \<subseteq> (\<oplus>) t ` keys p" by (fact keys_monom_mult_subset)
   finally obtain v where "v \<in> keys p" and "u = t \<oplus> v" ..
   show "u \<preceq>\<^sub>t t \<oplus> lt p" unfolding \<open>u = t \<oplus> v\<close>
@@ -678,12 +674,13 @@ lemma (in ordered_term) lt_mult_scalar_monomial_right:
 proof (intro lt_eqI)
   from assms(1) show "lookup (p \<odot> monomial c v) (punit.lt p \<oplus> v) \<noteq> 0"
   proof (simp add: lookup_mult_scalar_monomial_right_plus)
-    from assms(2) show "punit.lt p \<in> keys p" by (rule punit.lt_in_keys)
+    from assms(2) show "lookup p (punit.lt p) \<noteq> 0"
+      using in_keys_iff punit.lt_in_keys by fastforce
   qed
 next
   fix u::'t
   assume "lookup (p \<odot> monomial c v) u \<noteq> 0"
-  hence "u \<in> keys (p \<odot> monomial c v)" by simp
+  hence "u \<in> keys (p \<odot> monomial c v)" by (simp add: in_keys_iff)
   also have "... \<subseteq> (\<lambda>t. t \<oplus> v) ` keys p" by (fact keys_mult_scalar_monomial_right_subset)
   finally obtain t where "t \<in> keys p" and "u = t \<oplus> v" ..
   show "u \<preceq>\<^sub>t punit.lt p \<oplus> v" unfolding \<open>u = t \<oplus> v\<close>
@@ -908,7 +905,7 @@ next
     hence "u \<prec>\<^sub>t tt q" using \<open>tt p \<prec>\<^sub>t tt q\<close> by simp
     with tt_less[of u q "tt q"] have "u \<notin> keys q" by blast
     moreover from sp tt_less[of u p "tt p"] have "u \<notin> keys p" by blast
-    ultimately show False using \<open>u \<in> keys (p + q)\<close> keys_add_subset[of p q] by auto
+    ultimately show False using \<open>u \<in> keys (p + q)\<close> Poly_Mapping.keys_add[of p q] by auto
   qed
 qed
     
@@ -934,7 +931,7 @@ next
         assume "u \<in> keys (p + q)"
         hence "u \<in> keys p \<union> keys q"
         proof
-          show "keys (p + q) \<subseteq> keys p \<union> keys q" by (fact keys_add_subset)
+          show "keys (p + q) \<subseteq> keys p \<union> keys q" by (fact Poly_Mapping.keys_add)
         qed
         thus "tt p \<preceq>\<^sub>t u"
         proof
@@ -1180,7 +1177,7 @@ proof
     proof (rule disjI2, rule tt_gr)
       fix u
       assume "u \<in> keys p"
-      hence "lookup p u \<noteq> 0" by simp
+      hence "lookup p u \<noteq> 0" by (simp add: in_keys_iff)
       from \<open>?L\<close> have "lookup (higher p v) u = lookup p u" by simp
       hence "lookup p u = (if v \<prec>\<^sub>t u then lookup p u else 0)" by (simp only: lookup_higher)
       hence "\<not> v \<prec>\<^sub>t u \<Longrightarrow> lookup p u = 0" by simp
@@ -1323,7 +1320,8 @@ next
       hence "lt p \<preceq>\<^sub>t v" by (simp add: lt_def min_term_min)
       with assms show False by simp
     qed
-    thus "lt p \<in> keys p" by (rule lt_in_keys)
+    thus "lookup p (lt p) \<noteq> 0"
+      using lt_in_keys by auto 
   qed fact
 qed
 
@@ -1745,7 +1743,7 @@ proof -
     hence "keys ?b \<noteq> {}" by simp
     then obtain t where "t \<in> keys ?b" by blast
     hence t_in: "t \<in> keys (tail p) \<union> keys (higher q (tt q))"
-      using keys_add_subset[of "tail p" "higher q (tt q)"] by blast
+      using Poly_Mapping.keys_add[of "tail p" "higher q (tt q)"] by blast
     hence "t \<noteq> lt p"
     proof (rule, simp add: keys_tail, simp add: keys_higher, elim conjE)
       assume "t \<in> keys q"
@@ -2288,7 +2286,8 @@ lemma ord_strict_p_plus:
 proof -
   from assms(1) obtain v where 1: "lookup p v = 0" and 2: "lookup q v \<noteq> 0"
     and 3: "\<And>u. v \<prec>\<^sub>t u \<Longrightarrow> lookup p u = lookup q u" unfolding ord_strict_p_def by auto
-  from 2 assms(2) have eq: "lookup r v = 0" by auto
+  have eq: "lookup r v = 0"
+    by (meson "2" assms(2) disjoint_iff_not_equal in_keys_iff)
   show ?thesis unfolding ord_strict_p_def
   proof (intro exI conjI allI impI, simp_all add: lookup_add)
     from 1 show "lookup p v + lookup r v = 0" by (simp add: eq)
@@ -2333,14 +2332,15 @@ lemma poly_mapping_neqE:
 proof -
   let ?A = "{v. lookup p v \<noteq> lookup q v}"
   define v where "v = ord_term_lin.Max ?A"
-  have "?A \<subseteq> keys p \<union> keys q" by (rule, rule ccontr, simp)
+  have "?A \<subseteq> keys p \<union> keys q"
+    using UnI2 in_keys_iff by fastforce
   also have "finite ..." by (rule finite_UnI) (fact finite_keys)+
   finally(finite_subset) have fin: "finite ?A" .
   moreover have "?A \<noteq> {}"
   proof
     assume "?A = {}"
-    hence "lookup p = lookup q" by auto
-    hence "p = q" by (simp add: lookup_inject)
+    hence "p = q"
+      using poly_mapping_eqI by fastforce
     with assms show False ..
   qed
   ultimately have "v \<in> ?A" unfolding v_def by (rule ord_term_lin.Max_in)
@@ -2716,8 +2716,8 @@ next
     have eq: "lookup ((punit.tail p) \<odot> q) ?t = 0"
     proof (rule ccontr)
       assume "lookup ((punit.tail p) \<odot> q) ?t \<noteq> 0"
-      hence "?t \<in> keys ((punit.tail p) \<odot> q)" by simp
-      hence "?t \<preceq>\<^sub>t punit.lt (punit.tail p) \<oplus> lt q" by (rule in_keys_mult_scalar_le)
+      hence "?t \<preceq>\<^sub>t punit.lt (punit.tail p) \<oplus> lt q"
+        by (meson in_keys_mult_scalar_le lookup_not_eq_zero_eq_in_keys) 
       hence "punit.lt p \<preceq> punit.lt (punit.tail p)" by (rule ord_term_canc_left)
       also have "... \<prec> punit.lt p" by fact
       finally show False ..
@@ -2761,8 +2761,8 @@ next
     have eq: "lookup (monom_mult (punit.lc p) (punit.lt p) q) ?t = 0"
     proof (rule ccontr)
       assume "lookup (monom_mult (punit.lc p) (punit.lt p) q) ?t \<noteq> 0"
-      hence "?t \<in> keys (monom_mult (punit.lc p) (punit.lt p) q)" by simp
-      hence "punit.lt p \<oplus> tt q \<preceq>\<^sub>t ?t" by (rule in_keys_monom_mult_ge)
+      hence "punit.lt p \<oplus> tt q \<preceq>\<^sub>t ?t"
+        by (meson in_keys_iff in_keys_monom_mult_ge) 
       hence "punit.lt p \<preceq> punit.tt p" by (rule ord_term_canc_left)
       also have "... \<prec> punit.lt p" by fact
       finally show False ..
@@ -3030,7 +3030,7 @@ lemma dgrad_p_set_le_tail: "dgrad_p_set_le d {tail p} {p}"
   by (simp only: tail_def lower_def, fact dgrad_p_set_le_except)
 
 lemma dgrad_p_set_le_plus: "dgrad_p_set_le d {p + q} {p, q}"
-  by (simp add: dgrad_p_set_le_def Keys_insert, rule dgrad_set_le_subset, rule image_mono, fact keys_add_subset)
+  by (simp add: dgrad_p_set_le_def Keys_insert, rule dgrad_set_le_subset, rule image_mono, fact Poly_Mapping.keys_add)
 
 lemma dgrad_p_set_le_uminus: "dgrad_p_set_le d {-p} {p}"
   by (simp add: dgrad_p_set_le_def Keys_insert keys_uminus, fact dgrad_set_le_refl)
