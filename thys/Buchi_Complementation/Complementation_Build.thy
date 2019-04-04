@@ -9,50 +9,28 @@ external_file \<open>code/Prelude.sml\<close>
 external_file \<open>code/Automaton.sml\<close>
 external_file \<open>code/Complementation.sml\<close>
 
-ML_command \<^marker>\<open>contributor Makarius\<close> \<open>
-  Isabelle_System.with_tmp_dir "Complementation" (fn build_dir =>
+compile_generated_files \<^marker>\<open>contributor Makarius\<close>
+  \<open>code/Complementation_Export.ML\<close> in Complementation_Final
+  external_files
+    \<open>code/Complementation.mlb\<close>
+    \<open>code/Prelude.sml\<close>
+    \<open>code/Automaton.sml\<close>
+    \<open>code/Complementation.sml\<close>
+  export_files \<open>Complementation\<close> (exe) and \<open>Complementation.out\<close> \<open>mlmon.out\<close>
+  export_prefix code
+  where \<open>fn dir =>
     let
-      val thy = \<^theory>;
-      val exe = Path.append build_dir (Path.exe \<^path>\<open>Complementation\<close>);
-
-      (*assemble sources*)
-      val _ =
-        List.app (fn path => Isabelle_System.copy_file (Path.append \<^master_dir> path) build_dir)
-         [\<^path>\<open>code/Complementation.mlb\<close>,
-          \<^path>\<open>code/Prelude.sml\<close>,
-          \<^path>\<open>code/Automaton.sml\<close>,
-          \<^path>\<open>code/Complementation.sml\<close>];
-
-      val exported_code =
-        #content (Generated_Files.get_file \<^theory>\<open>Complementation_Final\<close>
-          \<^path_binding>\<open>code/Complementation_Export.ML\<close>);
-      val _ = File.write (Path.append build_dir \<^path>\<open>Complementation_Export.sml\<close>) exported_code;
-      val _ = Export.export thy \<^path_binding>\<open>code/Complementation_Export.sml\<close> [exported_code];
-
-      (*compile*)
-      val compile_rc =
-        Isabelle_System.bash ("cd " ^ File.bash_path build_dir ^
-          " && " ^ File.bash_path \<^path>\<open>$ISABELLE_MLTON\<close> ^
+      fun exec title script =
+        writeln (Isabelle_System.bash_output_check ("cd " ^ File.bash_path dir ^ " && " ^ script))
+          handle ERROR msg =>
+            let val (s, pos) = Input.source_content title
+            in error (s ^ " failed" ^ Position.here pos ^ ":\n" ^ msg) end;
+    in
+      exec \<open>Compilation\<close>
+        ("mv code/Complementation_Export.ML Complementation_Export.sml && " ^
+          File.bash_path \<^path>\<open>$ISABELLE_MLTON\<close> ^
           " -profile time -default-type intinf Complementation.mlb");
-      val _ =
-        if compile_rc = 0 then
-          Export.export_executable_file thy
-            (Path.map_binding Path.exe \<^path_binding>\<open>code/Complementation\<close>) exe
-        else error "Compilation failed";
-
-      (*test*)
-      val test_rc =
-        Isabelle_System.bash
-          ("cd " ^ File.bash_path build_dir ^ " && ./Complementation Complementation.out");
-      val _ =
-        if test_rc = 0 then
-          List.app (fn binding =>
-            Export.export_file thy binding
-              (Path.append build_dir (Path.base (#1 (Path.dest_binding binding)))))
-           [\<^path_binding>\<open>code/Complementation.out\<close>,
-            \<^path_binding>\<open>code/mlmon.out\<close>]
-        else error "Test failed";
-    in () end)
-\<close>
+      exec \<open>Test\<close> "./Complementation Complementation.out"
+    end\<close>
 
 end
