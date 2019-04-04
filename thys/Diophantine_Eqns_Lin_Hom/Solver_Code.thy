@@ -15,40 +15,27 @@ export_code solve checking Haskell \<comment> \<open>test whether Haskell code g
 
 export_code solve integer_of_nat nat_of_integer in Haskell module_name HLDE file_prefix generated
 
-ML_command \<^marker>\<open>contributor Makarius\<close> \<open>
-  if getenv "ISABELLE_GHC" = "" then warning "GHC not configured"
-  else
-    Isabelle_System.with_tmp_dir "HLDE" (fn build_dir =>
-      let
-        val thy = \<^theory>;
-        val exe = Path.append build_dir (Path.exe \<^path>\<open>Main\<close>);
+compile_generated_files \<^marker>\<open>contributor Makarius\<close>
+  \<open>code/generated/HLDE.hs\<close>
+  external_files \<open>Main.hs\<close> (in src)
+  export_files \<open>Main\<close> (exe)
+  export_prefix \<open>code/generated\<close>
+  where \<open>fn dir =>
+    let
+      fun exec title script =
+        Isabelle_System.bash_output_check ("cd " ^ File.bash_path dir ^ " && " ^ script)
+          handle ERROR msg =>
+            let val (s, pos) = Input.source_content title
+            in error (s ^ " failed" ^ Position.here pos ^ ":\n" ^ msg) end;
 
-        (*assemble sources*)
-        val _ = Isabelle_System.copy_file (Path.append \<^master_dir> \<^path>\<open>src/Main.hs\<close>) build_dir;
-        val _ =
-          File.write (Path.append build_dir \<^path>\<open>HLDE.hs\<close>)
-            (Generated_Files.the_file_content thy \<^path>\<open>code/generated/HLDE.hs\<close>);
+      val _ =
+        exec \<open>Compilation\<close>
+          ("mv code/generated/HLDE.hs . && " ^ File.bash_path \<^path>\<open>$ISABELLE_GHC\<close> ^ " Main.hs");
 
-        (*compile*)
-        val compile_rc =
-          Isabelle_System.bash ("cd " ^ File.bash_path build_dir ^ " && \"$ISABELLE_GHC\" Main.hs");
-        val () =
-          if compile_rc = 0 then
-            Export.export_executable_file thy
-              (Path.map_binding Path.exe \<^path_binding>\<open>code/generated/hlde\<close>) exe
-          else error "Compilation failed";
-
-        (*test*)
-        val print_coeffs = enclose "[" "]" o commas o map string_of_int;
-        fun print_hlde (xs, ys) =
-          let
-            val test_rc =
-              Isabelle_System.bash (File.bash_path exe ^
-                " <<< '(" ^ print_coeffs xs ^ ", " ^ print_coeffs ys ^ ")'");
-          in if test_rc = 0 then () else error "Test failed" end;
-      in
-        print_hlde ([3, 5, 1], [2, 7])
-      end);
+      val print_coeffs = enclose "[" "]" o commas o map string_of_int;
+      fun print_hlde (xs, ys) =
+        writeln (exec \<open>Test\<close> ("./Main <<< '(" ^ print_coeffs xs ^ ", " ^ print_coeffs ys ^ ")'"));
+    in print_hlde ([3, 5, 1], [2, 7]) end
 \<close>
 
 end
