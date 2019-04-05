@@ -22,14 +22,14 @@ compile_generated_files \<^marker>\<open>contributor Makarius\<close>
   export_prefix \<open>code/generated\<close>
   where \<open>fn dir =>
     let
+      val exec = Generated_Files.execute dir;
       val _ =
-        Generated_Files.execute dir \<open>Compilation\<close>
-          ("mv code/generated/HLDE.hs . && " ^ File.bash_path \<^path>\<open>$ISABELLE_GHC\<close> ^ " -o hlde Main.hs");
+        exec \<open>Compilation\<close> ("mv code/generated/HLDE.hs . && " ^
+          File.bash_path \<^path>\<open>$ISABELLE_GHC\<close> ^ " -o hlde Main.hs");
 
       val print_coeffs = enclose "[" "]" o commas o map string_of_int;
       fun print_hlde (xs, ys) =
-        writeln (Generated_Files.execute dir \<open>Test\<close>
-          ("./hlde <<< '(" ^ print_coeffs xs ^ ", " ^ print_coeffs ys ^ ")'"));
+        writeln (exec \<open>Test\<close> ("./hlde <<< '(" ^ print_coeffs xs ^ ", " ^ print_coeffs ys ^ ")'"));
     in print_hlde ([3, 5, 1], [2, 7]) end
 \<close>
 
