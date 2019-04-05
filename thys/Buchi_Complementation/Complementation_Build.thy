@@ -23,17 +23,12 @@ compile_generated_files \<^marker>\<open>contributor Makarius\<close>
   where \<open>fn dir0 =>
     let
       val dir = Path.append dir0 (Path.basic "code");
-      fun exec title script =
-        writeln (Isabelle_System.bash_output_check ("cd " ^ File.bash_path dir ^ " && " ^ script))
-          handle ERROR msg =>
-            let val (s, pos) = Input.source_content title
-            in error (s ^ " failed" ^ Position.here pos ^ ":\n" ^ msg) end;
-    in
-      exec \<open>Compilation\<close>
-        ("mv Complementation_Export.ML Complementation_Export.sml && " ^
-          File.bash_path \<^path>\<open>$ISABELLE_MLTON\<close> ^
-          " -profile time -default-type intinf Complementation.mlb");
-      exec \<open>Test\<close> "./Complementation Complementation.out"
-    end\<close>
+      val _ =
+        Generated_Files.execute dir \<open>Compilation\<close>
+          ("mv Complementation_Export.ML Complementation_Export.sml && " ^
+            File.bash_path \<^path>\<open>$ISABELLE_MLTON\<close> ^
+            " -profile time -default-type intinf Complementation.mlb");
+      val _ = Generated_Files.execute dir \<open>Test\<close> "./Complementation Complementation.out";
+    in () end\<close>
 
 end

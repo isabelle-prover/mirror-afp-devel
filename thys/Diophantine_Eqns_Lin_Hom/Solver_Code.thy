@@ -22,19 +22,14 @@ compile_generated_files \<^marker>\<open>contributor Makarius\<close>
   export_prefix \<open>code/generated\<close>
   where \<open>fn dir =>
     let
-      fun exec title script =
-        Isabelle_System.bash_output_check ("cd " ^ File.bash_path dir ^ " && " ^ script)
-          handle ERROR msg =>
-            let val (s, pos) = Input.source_content title
-            in error (s ^ " failed" ^ Position.here pos ^ ":\n" ^ msg) end;
-
       val _ =
-        exec \<open>Compilation\<close>
+        Generated_Files.execute dir \<open>Compilation\<close>
           ("mv code/generated/HLDE.hs . && " ^ File.bash_path \<^path>\<open>$ISABELLE_GHC\<close> ^ " -o hlde Main.hs");
 
       val print_coeffs = enclose "[" "]" o commas o map string_of_int;
       fun print_hlde (xs, ys) =
-        writeln (exec \<open>Test\<close> ("./hlde <<< '(" ^ print_coeffs xs ^ ", " ^ print_coeffs ys ^ ")'"));
+        writeln (Generated_Files.execute dir \<open>Test\<close>
+          ("./hlde <<< '(" ^ print_coeffs xs ^ ", " ^ print_coeffs ys ^ ")'"));
     in print_hlde ([3, 5, 1], [2, 7]) end
 \<close>
 
