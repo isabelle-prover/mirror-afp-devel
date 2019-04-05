@@ -2594,7 +2594,7 @@ proof -
     unfolding o_def
      apply (rule bounded_linear_compose, assumption, rule bl_lorenz_S)
     unfolding diff lorenz_S_idem
-     apply (auto simp: netlimit_within)
+     apply (auto simp: Lim_ident_at)
     apply (rule Lim_transform_eventually) defer apply assumption
     subgoal premises prems
       using evret
@@ -2646,7 +2646,7 @@ proof -
      apply (rule bounded_linear_compose, rule bl_lorenz_S)
      apply (rule bounded_linear_compose, assumption, rule bl_lorenz_S)
     unfolding diff lorenz_S_idem
-     apply (auto simp: netlimit_within)
+     apply (auto simp: Lim_ident_at)
     apply (rule Lim_transform_eventually) defer apply assumption
     subgoal premises prems
       using evret

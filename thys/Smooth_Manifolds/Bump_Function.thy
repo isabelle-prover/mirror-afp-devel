@@ -231,10 +231,10 @@ next
 qed
 
 lemma netlimit_at_left: "netlimit (at_left x) = x" for x::real
-  by (rule netlimit_within) simp
+  by (rule Lim_ident_at) simp
 
 lemma netlimit_at_right: "netlimit (at_right x) = x" for x::real
-  by (rule netlimit_within) simp
+  by (rule Lim_ident_at) simp
 
 
 lemma has_derivative_split_at:
@@ -312,7 +312,7 @@ next
           f="\<lambda>x'. if x' = 0 then 0 else pk x' / x' ^ (2 * k) * exp (- inverse x')", OF _ zero_less_one])
     subgoal
       unfolding has_derivative_def
-      apply (auto simp: netlimit_within)
+      apply (auto simp: Lim_ident_at)
       apply (rule Lim_transform_eventually[where f="\<lambda>x. (pk x * (exp (- inverse x) / x ^ (2 * k + 1)))"])
        apply (simp add: eventually_at_filter divide_simps)
       apply (rule tendsto_eq_intros)
