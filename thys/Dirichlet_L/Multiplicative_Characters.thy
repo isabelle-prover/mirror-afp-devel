@@ -73,7 +73,8 @@ lemma char_root:
   assumes "a \<in> carrier G"
   shows   "\<chi> a ^ ord a = 1"
 proof -
-  from assms have "\<chi> a ^ ord a = \<chi> (a [^] ord a)" by simp
+  from assms have "\<chi> a ^ ord a = \<chi> (a [^] ord a)"
+    by (subst char_power) auto
   also from fin and assms have "a [^] ord a = \<one>" by (intro pow_ord_eq_1) auto
   finally show ?thesis by simp
 qed
@@ -678,7 +679,7 @@ proof -
 
   from assms have "ord x \<ge> 1" by (intro ord_ge_1) auto
   moreover have "ord x \<noteq> 1"
-    using pow_ord_eq_1[of x] assms fin by auto
+    using pow_ord_eq_1[of x] assms fin by (intro notI) simp_all
   ultimately have "ord x > 1" by linarith
 
   have [simp]: "z \<noteq> 1"

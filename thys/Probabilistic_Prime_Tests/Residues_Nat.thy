@@ -87,7 +87,7 @@ subsection \<open>The ring of residues modulo \<open>n\<close>\<close>
 
 definition Residues_nat :: "nat \<Rightarrow> nat ring" where
   "Residues_nat m = \<lparr>carrier = {0..<m}, monoid.mult = \<lambda>x y. (x * y) mod m, one = 1,
-                     zero = 0, add = \<lambda>x y. (x + y) mod m\<rparr>"
+                     ring.zero = 0, add = \<lambda>x y. (x + y) mod m\<rparr>"
 
 locale residues_nat =
   fixes n :: nat and R

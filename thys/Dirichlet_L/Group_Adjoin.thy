@@ -1,4 +1,4 @@
-(*
+ (*
     File:      Group_Adjoin.thy
     Author:    Manuel Eberl, TU München
 *)
@@ -20,6 +20,11 @@ text \<open>
 \<close>
 
 subsection \<open>Miscellaneous Group Theory\<close>
+
+lemma (in group) ord_min:
+  assumes "finite (carrier G)" "m \<ge> 1" "x \<in> carrier G" "x [^] m = \<one>"
+  shows   "ord x \<le> m"
+  using old_ord_min[of m x] ord_iff_old_ord[of x] assms by (auto simp: old_ord_def)
 
 lemma (in group) bij_betw_mult_left [intro]:
   assumes [simp]: "x \<in> carrier G"
@@ -138,12 +143,7 @@ begin
 lemma ord_pos: 
   assumes "x \<in> carrier G"
   shows   "ord x > 0"
-proof -
-  from assms and fin have "ord x \<ge> 1" unfolding ord_def
-    by (subst Min_ge_iff)
-       (auto intro!: exI[of _ "order G"] simp: Suc_le_eq pow_order_eq_1)
-  thus ?thesis by simp
-qed
+  using ord_ge_1[of x] assms fin by auto
 
 lemma 
   assumes "subgroup H G" and a: "a \<in> carrier G"

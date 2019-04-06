@@ -207,7 +207,7 @@ proof (cases "m = 0")
 qed auto
 
 lemma poly_mapping_nat_le_0 [simp]: "(m :: nat \<Rightarrow>\<^sub>0 nat) \<le> 0 \<longleftrightarrow> m = 0"
-  by (auto simp: less_eq_poly_mapping_def less_fun_def poly_mapping_eq_iff)
+  unfolding less_eq_poly_mapping_def poly_mapping_eq_iff less_fun_def by auto
 
 lemma of_nat_diff_poly_mapping_nat:
   assumes "m \<ge> n"
@@ -257,7 +257,7 @@ lemma (in ring_closed) coeff_mult_closed [intro]:
 lemma coeff_notin_vars:
   assumes "\<not>(keys m \<subseteq> vars p)"
   shows   "coeff p m = 0"
-  using assms unfolding vars_def by transfer' auto
+  using assms unfolding vars_def by transfer' (auto simp: in_keys_iff)
 
 lemma finite_coeff_support [intro]: "finite {m. coeff p m \<noteq> 0}"
   by transfer simp
@@ -459,10 +459,6 @@ lemma keys_Const\<^sub>0: "keys (Const\<^sub>0 c) = (if c = 0 then {} else {0})"
 lemma vars_Const [simp]: "vars (Const c) = {}"
   unfolding vars_def by transfer' (auto simp: keys_Const\<^sub>0)
 
-lemma keys_sum_subset: "keys (sum g X) \<subseteq> (\<Union>x\<in>X. keys (g x))"
-  using keys_add_subset[of "g x" "sum g X" for x X]
-  by (induction X rule: infinite_finite_induct) auto
-
 lemma prod_fun_compose_bij:
   assumes "bij f" and f: "\<And>x y. f (x + y) = f x + f y"
   shows   "prod_fun m1 m2 (f x) = prod_fun (m1 \<circ> f) (m2 \<circ> f) x"
@@ -606,7 +602,7 @@ lift_definition mapm_mpoly :: "((nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow> 'a
 
 lemma poly_mapping_map_conv_mapp: "Poly_Mapping.map f = Poly_Mapping.mapp (\<lambda>_. f)"
   by (auto simp: Poly_Mapping.mapp_def Poly_Mapping.map_def map_fun_def
-                 o_def fun_eq_iff when_def cong: if_cong)
+                 o_def fun_eq_iff when_def in_keys_iff cong: if_cong)
 
 lemma map_mpoly_conv_mapm_mpoly: "map_mpoly f = mapm_mpoly (\<lambda>_. f)"
   by transfer' (auto simp: poly_mapping_map_conv_mapp)
@@ -617,7 +613,7 @@ lemma map_mpoly_comp: "f 0 = 0 \<Longrightarrow> map_mpoly f (map_mpoly g p) = m
 lemma mapp_mapp:
   "(\<And>x. f x 0 = 0) \<Longrightarrow> Poly_Mapping.mapp f (Poly_Mapping.mapp g m) =
                           Poly_Mapping.mapp (\<lambda>x y. f x (g x y)) m"
-  by transfer' (auto simp: fun_eq_iff lookup_mapp)
+  by transfer' (auto simp: fun_eq_iff lookup_mapp in_keys_iff)
 
 lemma mapm_mpoly_comp:
   "(\<And>x. f x 0 = 0) \<Longrightarrow> mapm_mpoly f (mapm_mpoly g p) = mapm_mpoly (\<lambda>m c. f m (g m c)) p"
@@ -631,7 +627,7 @@ lemma coeff_map_mpoly' [simp]: "f 0 = 0 \<Longrightarrow> coeff (map_mpoly f p) 
   by (subst coeff_map_mpoly) auto
 
 lemma coeff_mapm_mpoly: "coeff (mapm_mpoly f p) m = (if coeff p m = 0 then 0 else f m (coeff p m))"
-  by (transfer, transfer') auto
+  by (transfer, transfer') (auto simp: in_keys_iff)
 
 lemma coeff_mapm_mpoly' [simp]: "(\<And>m. f m 0 = 0) \<Longrightarrow> coeff (mapm_mpoly f p) m = f m (coeff p m)"
   by (subst coeff_mapm_mpoly) auto
@@ -716,7 +712,7 @@ lift_definition lead_monom :: "'a :: zero mpoly \<Rightarrow> (nat \<Rightarrow>
 lemma lead_monom_geI [intro]:
   assumes "coeff p m \<noteq> 0"
   shows   "m \<le> lead_monom p"
-  using assms by (auto simp: lead_monom_def coeff_def)
+  using assms by (auto simp: lead_monom_def coeff_def in_keys_iff)
 
 lemma coeff_gt_lead_monom_zero [simp]:
   assumes "m > lead_monom p"
@@ -767,7 +763,8 @@ proof transfer
     thus "m \<le> max (Max (insert 0 (keys p))) (Max (insert 0 (keys q)))"
     proof
       assume "m \<in> keys (p + q)"
-      with keys_add_subset[of p q] have "m \<in> keys p \<or> m \<in> keys q" by auto
+      with keys_add[of p q] have "m \<in> keys p \<or> m \<in> keys q"
+        by (auto simp: in_keys_iff plus_poly_mapping.rep_eq)
       thus ?thesis by (auto simp: le_max_iff_disj)
     qed auto
   qed auto
@@ -847,7 +844,7 @@ proof -
     hence "coeff p (Max (keys (mapping_of (smult c p)))) \<noteq> 0"
       using assms * ** by (auto simp: lead_coeff_def lead_monom_def max_def)
     thus "Max (keys (mapping_of (smult c p))) \<in> keys (mapping_of p)"
-      by (auto simp: smult.rep_eq coeff_def)
+      by (auto simp: smult.rep_eq coeff_def in_keys_iff)
   qed auto
   with * ** show "lead_monom (smult c p) = lead_monom p"
     by (simp add: lead_monom_def max_def)
@@ -894,7 +891,7 @@ proof (cases "p = 0")
   case False
   hence "lead_coeff p \<noteq> 0" by simp
   hence "coeff p (lead_monom p) \<noteq> 0" unfolding lead_coeff_def .
-  thus ?thesis unfolding vars_def by transfer' (auto simp: max_def)
+  thus ?thesis unfolding vars_def by transfer' (auto simp: max_def in_keys_iff)
 qed auto
 
 lemma
@@ -1322,7 +1319,7 @@ proof (intro poly_mapping_eqI)
     case False
     with assms have "f k \<notin> keys p" "g k \<notin> keys p"
       using permutes_in_image[of _ "-keys p" k] by auto
-    thus ?thesis using assms by (auto simp: lookup_permutep permutes_bij)
+    thus ?thesis using assms by (auto simp: lookup_permutep permutes_bij in_keys_iff)
   qed (insert assms, auto simp: lookup_permutep permutes_bij permutes_not_in)
 qed
 
@@ -1854,7 +1851,7 @@ proof (rule wf_subset)
       hence [simp]: "lookup m1 k = 0" "lookup m2 k = 0" by blast+
       from k(1) show False by simp
     qed
-    hence "k \<in> A" using m12 by auto
+    hence "k \<in> A" using m12 by (auto simp: in_keys_iff)
     hence "k < n" by (simp add: less_n)
 
     define as where "as = map (lookup m1) [0..<k]"
@@ -1974,7 +1971,7 @@ lemma vars_fund_sym_step_coeff: "vars (fund_sym_step_coeff p) \<subseteq> vars p
 
 lemma keys_fund_sym_step_monom: "keys (fund_sym_step_monom p) \<subseteq> {1..n}"
   unfolding fund_sym_step_monom_def Let_def
-  by (intro order.trans[OF keys_sum_subset] UN_least, subst keys_single) auto
+  by (intro order.trans[OF keys_sum] UN_least, subst keys_single) auto
 
 lemma coeff_fund_sym_step_poly:
   assumes C: "\<forall>m. coeff p m \<in> C" and "ring_closed C"
@@ -2446,7 +2443,7 @@ proof (rule poly_mapping_eqI)
   show "lookup m1 k = lookup m2 k"
   proof (cases "k \<in> {1..n}")
     case False
-    hence "lookup m1 k = 0" "lookup m2 k = 0" using assms by auto
+    hence "lookup m1 k = 0" "lookup m2 k = 0" using assms by (auto simp: in_keys_iff)
     thus ?thesis by simp
   next
     case True
@@ -2603,7 +2600,7 @@ proof (rule ccontr)
       finally show False by auto
     qed
     hence "lookup m k = 0" for k
-      using keys_subset[of m] by (cases "k \<in> {1..n}") (auto)
+      using keys_subset[of m] by (cases "k \<in> {1..n}") (auto simp: in_keys_iff)
     thus "m = 0" by (intro poly_mapping_eqI) auto
   qed
 
