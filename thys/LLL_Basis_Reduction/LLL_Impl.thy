@@ -652,7 +652,7 @@ next
     case False
     hence id: "(?c = 0) = False" by auto
     from i j have jm: "j < m" by auto
-    have idd: "vec n (\<lambda>ia. fs ! i $v ia - ?c * fs ! j $v ia) =
+    have idd: "vec n (\<lambda>ia. fs ! i $ ia - ?c * fs ! j $ ia) =
       fs ! i - ?c \<cdot>\<^sub>v fs ! j"
       by (intro eq_vecI, insert inv(4)[OF i] inv(4)[OF jm], auto)
     define fi' where "fi' = fs ! i - ?c \<cdot>\<^sub>v fs ! j"

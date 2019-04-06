@@ -1462,7 +1462,7 @@ proof (rule max_list_le, unfold set_map o_def)
   then obtain fi where ni: "ni = nat (\<parallel>fi\<parallel>\<^sup>2)" and fi: "fi \<in> set fs_init" by auto
   from fi len obtain i where fii: "fi = fs_init ! i" and i: "i < m" unfolding set_conv_nth by auto
   from fi fs_init have fi: "fi \<in> carrier_vec n" by auto
-  let ?set = "{\<bar>fs_init ! i $v j\<bar> |i j. i < m \<and> j < n} \<union> {0}" 
+  let ?set = "{\<bar>fs_init ! i $ j\<bar> |i j. i < m \<and> j < n} \<union> {0}" 
   have id: "?set = (\<lambda> (i,j). abs (fs_init ! i $ j)) ` ({0..<m} \<times> {0..<n}) \<union> {0}" 
     by force
   have fin: "finite ?set" unfolding id by auto

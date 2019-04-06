@@ -819,7 +819,7 @@ proof -
     have [simp]: "dim_vec (gso_int i l) = n" "dim_vec (gs.a i l) = n" "dim_vec (gso_int l l) = n"
       "dim_vec (gs.a l l) = n"
       using Suc gs.a_carrier_vec gso_int_carrier_vec carrier_dim_vec gs.gso'_carrier_vec by auto
-    have "rat_of_int (gso_int i l $v k) = gs.a i l $ k" "rat_of_int (gso_int l l $v k) = gs.a l l $ k"
+    have "rat_of_int (gso_int i l $ k) = gs.a i l $ k" "rat_of_int (gso_int l l $ k) = gs.a l l $ k"
       using that Suc(1)[of l] Suc(1)[of i] Suc by auto
     then have ?case if "l = 0"
     proof -
@@ -836,14 +836,14 @@ proof -
     qed
     moreover have ?case if "0 < l"
     proof -
-      have *: "rat_of_int (\<mu>' l l * gso_int i l $v k - \<mu>' i l * gso_int l l $v k) / rat_of_int (\<mu>' (l - Suc 0) (l - Suc 0))
-     = gs.a i (Suc l) $v k"
+      have *: "rat_of_int (\<mu>' l l * gso_int i l $ k - \<mu>' i l * gso_int l l $ k) / rat_of_int (\<mu>' (l - Suc 0) (l - Suc 0))
+     = gs.a i (Suc l) $ k"
         using Suc IH[of l] IH[of i] \<sigma>s_\<mu>' k that by (subst gs.a_alt_def) (auto simp add: Let_def )
-      have "of_int_hom.vec_hom (gso_int i (Suc l)) $v k =
-            rat_of_int ((\<mu>' l l * gso_int i l $v k - \<mu>' i l * gso_int l l $v k) 
+      have "of_int_hom.vec_hom (gso_int i (Suc l)) $ k =
+            rat_of_int ((\<mu>' l l * gso_int i l $ k - \<mu>' i l * gso_int l l $ k) 
                         div \<mu>' (l - Suc 0) (l - Suc 0))"
         using that gso_int_carrier_vec k by (auto)
-      also have "\<dots> = rat_of_int (\<mu>' l l * gso_int i l $v k - \<mu>' i l * gso_int l l $v k) / rat_of_int (\<mu>' (l - Suc 0) (l - Suc 0))"
+      also have "\<dots> = rat_of_int (\<mu>' l l * gso_int i l $ k - \<mu>' i l * gso_int l l $ k) / rat_of_int (\<mu>' (l - Suc 0) (l - Suc 0))"
         using gs.a_Ints k Suc by (intro exact_division, subst *, force)
       also note *
       finally show ?thesis
@@ -1024,11 +1024,11 @@ proof -
     using m by (metis Num.of_nat_simps One_nat_def Suc_leI neq0_conv of_nat_mono)
   have [simp]: "\<bar>(of_int z)::'a::trivial_conjugatable_linordered_field\<bar> \<le> (of_int z)\<^sup>2" for z
     using abs_leq_squared by (metis of_int_abs of_int_le_iff of_int_power)
-  have "\<bar>fs ! i $v j\<bar> \<le> of_nat m * N ^ (3 * Suc m)" if "i < m" "j < n" for i j
+  have "\<bar>fs ! i $ j\<bar> \<le> of_nat m * N ^ (3 * Suc m)" if "i < m" "j < n" for i j
   proof -
-    have "\<bar>fs ! i $v j\<bar> \<le> \<bar>fs ! i $v j\<bar>\<^sup>2"
-      by (rule Ints_cases[of "fs ! i $v j"]) (use fs_int that in auto)
-    also have "\<bar>fs ! i $v j\<bar>\<^sup>2 \<le> \<parallel>fs ! i\<parallel>\<^sup>2"
+    have "\<bar>fs ! i $ j\<bar> \<le> \<bar>fs ! i $ j\<bar>\<^sup>2"
+      by (rule Ints_cases[of "fs ! i $ j"]) (use fs_int that in auto)
+    also have "\<bar>fs ! i $ j\<bar>\<^sup>2 \<le> \<parallel>fs ! i\<parallel>\<^sup>2"
       using that by (intro vec_le_sq_norm) (auto)
     also have "... \<le> 1 * N"
       using N_fs that by auto
@@ -1101,12 +1101,12 @@ lemma combined_size_bound_rat_log:
   shows "log 2 \<bar>real_of_rat x\<bar> \<le> log 2 m + (3 + 3 * m) * log 2 (real_of_rat gs.N)"
 proof -
   let ?r_fs = "map of_int_hom.vec_hom fs::rat vec list"
-  have 1: "map of_int_hom.vec_hom fs ! i $v j = of_int (fs ! i $ j)" if "i < m" "j < n" for i j
+  have 1: "map of_int_hom.vec_hom fs ! i $ j = of_int (fs ! i $ j)" if "i < m" "j < n" for i j
     using that by auto
-  then have "{?r_fs ! i $v j |i j. i < length ?r_fs \<and> j < n} = 
-             {rat_of_int (fs ! i $v j) |i j. i < length fs \<and> j < n}"
+  then have "{?r_fs ! i $ j |i j. i < length ?r_fs \<and> j < n} = 
+             {rat_of_int (fs ! i $ j) |i j. i < length fs \<and> j < n}"
     by (metis (mono_tags, hide_lams) length_map)
-  then have "x \<in> {?r_fs ! i $v j |i j. i < length (map of_int_hom.vec_hom fs) \<and> j < n}
+  then have "x \<in> {?r_fs ! i $ j |i j. i < length (map of_int_hom.vec_hom fs) \<and> j < n}
                  \<union> {gs.\<mu>' i j |i j. j \<le> i \<and> i < length ?r_fs}
                  \<union> {gs.\<sigma> l i j |i j l. i < length ?r_fs \<and> j \<le> i \<and> l \<le> j}"
     using assms by auto

@@ -16,6 +16,7 @@ theory LLL_Complexity
   imports 
     LLL_Impl
     Cost
+    "HOL-Library.Discrete"
 begin
 
 definition round_num_denom_cost :: "int \<Rightarrow> int \<Rightarrow> int cost" where

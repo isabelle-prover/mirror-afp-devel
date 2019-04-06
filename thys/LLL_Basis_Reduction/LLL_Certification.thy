@@ -296,18 +296,18 @@ proof -
       finally show "dim_vec ?lhs = dim_vec ?rhs" .
       fix i assume i: "i < dim_vec ?rhs"
       have i_n: "i < n" using i dim_rhs by auto
-      let ?g = "\<lambda>v. (?f v \<cdot>\<^sub>v v) $v i"
+      let ?g = "\<lambda>v. (?f v \<cdot>\<^sub>v v) $ i"
       have image_h: "?h `{0..<m} = ?set_rows" by (auto simp add: B_def len rows_def)      
-      have "?lhs $v i = (\<Sum>k\<in>{0..<m}. (P $$ (j, k) \<cdot>\<^sub>v row B k) $v i)" 
+      have "?lhs $ i = (\<Sum>k\<in>{0..<m}. (P $$ (j, k) \<cdot>\<^sub>v row B k) $ i)" 
         by (rule index_finsum_vec[OF _ i_n], auto)
       also have "... = sum (?g \<circ> ?h) {0..<m}" unfolding o_def 
         by (rule sum.cong, insert the_x, auto)
-      also have "... = sum (\<lambda>v. (?f v \<cdot>\<^sub>v v) $v i) (?h `{0..<m})" 
+      also have "... = sum (\<lambda>v. (?f v \<cdot>\<^sub>v v) $ i) (?h `{0..<m})" 
         by (rule sum.reindex[symmetric, OF inj_on_rowB])
-      also have "... =  (\<Sum>v\<in>?set_rows. (?f v \<cdot>\<^sub>v v) $v i)" using image_h by auto
-      also have "... = ?rhs $v i" 
+      also have "... =  (\<Sum>v\<in>?set_rows. (?f v \<cdot>\<^sub>v v) $ i)" using image_h by auto
+      also have "... = ?rhs $ i" 
         by (rule index_finsum_vec[symmetric, OF _ i_n], insert set_rows_carrier, auto)
-      finally show "?lhs $v i = ?rhs $v i" by auto    
+      finally show "?lhs $ i = ?rhs $ i" by auto    
     qed
     also have "... = (\<Oplus>\<^bsub>gs.V\<^esub>v\<in>?set_rows. ?f v \<cdot>\<^sub>v v)" unfolding vec_space.finsum_vec ..  
     also have "... = gs.lincomb ?f ?set_rows" unfolding gs.lincomb_def by auto
@@ -329,13 +329,13 @@ proof -
           by (smt DiffE carrier_vecD gs.lincomb_closed local.set_rows_carrier subsetCE subsetI)
         fix i assume i: "i<dim_vec ?rhs"
         hence i_n: "i<n" using dim_vec_eq lincomb_f_closed by auto
-        have "?lhs $v i =  (\<Sum>x\<in>(?set_rows-{v}). ?f x * x $v i)" 
+        have "?lhs $ i =  (\<Sum>x\<in>(?set_rows-{v}). ?f x * x $ i)" 
           by (rule gs.lincomb_index[OF i_n], insert set_rows_carrier, auto)
-        also have "... = (\<Sum>x\<in>(?set_rows-{v}). ?g x * x $v i)"
+        also have "... = (\<Sum>x\<in>(?set_rows-{v}). ?g x * x $ i)"
           by (rule sum.cong, auto simp add: v_def)
-        also have "... = ?rhs $v i"
+        also have "... = ?rhs $ i"
           by (rule gs.lincomb_index[symmetric, OF i_n], insert set_rows_carrier, auto)
-        finally show "?lhs $v i = ?rhs $v i" .
+        finally show "?lhs $ i = ?rhs $ i" .
       qed
       have "0\<^sub>v n = gs.lincomb ?f ?set_rows - v" using lincomb_rowBj unfolding v_def B_def by auto
       also have "... = ?f v \<cdot>\<^sub>v v + gs.lincomb ?f (?set_rows-{v}) - v" using lincomb_f by auto

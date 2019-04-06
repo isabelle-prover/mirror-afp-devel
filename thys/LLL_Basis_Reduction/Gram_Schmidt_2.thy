@@ -12,32 +12,14 @@ section \<open>Gram-Schmidt\<close>
 
 theory Gram_Schmidt_2
   imports 
-    Perron_Frobenius.HMA_Connect
     Jordan_Normal_Form.Gram_Schmidt
     Jordan_Normal_Form.Show_Matrix
     Jordan_Normal_Form.Matrix_Impl
     Norms
     Int_Rat_Operations
-    Cramer_Lemma_Idom
 begin
 (* TODO: Documentation and add references to computer algebra book *)
 
-hide_const (open) Determinants.det
-hide_const (open) Finite_Cartesian_Product.mat
-hide_const (open) Finite_Cartesian_Product.row
-hide_const (open) Finite_Cartesian_Product.rows
-hide_const (open) Finite_Cartesian_Product.vec
-hide_const (open) Path_Connected.outside
-hide_const (open) Linear_Algebra.orthogonal
-hide_type (open) Finite_Cartesian_Product.vec
-
-hide_fact (open) Linear_Algebra.real_inner_class.orthogonal_def
-hide_fact (open) Finite_Cartesian_Product.rows_def
-hide_fact (open) Determinants.det_transpose
-
-no_notation Inner_Product.real_inner_class.inner (infix "\<bullet>" 70)
-no_notation Finite_Cartesian_Product.vec.vec_nth (infixl "$" 90)
-no_notation Inner_Product.real_inner_class.inner (infix "\<bullet>" 70)
 no_notation Group.m_inv  ("inv\<index> _" [81] 80)
 
 (* TODO: move *)
@@ -2354,25 +2336,6 @@ proof -
     unfolding norms_mus_rat_def gram_schmidt.norms_mus_def by auto
 qed
 
-
-definition "replace_col_hma A b k = (\<chi> i j. if j = k then b $h i else A $h i $h j)"
-
-
-definition "replace_col A b k = mat (dim_row A) (dim_col A) (\<lambda> (i,j). if j = k then b $ i else A $$ (i,j))" 
-
-lemma HMA_M_replace_col[transfer_rule]: 
-  "(HMA_M ===> HMA_V ===> HMA_I ===> HMA_M) replace_col replace_col_hma" 
-  unfolding rel_fun_def replace_col_def replace_col_hma_def HMA_M_def HMA_V_def HMA_I_def
-  by (auto simp: from_hma\<^sub>m_def from_hma\<^sub>v_def to_nat_from_nat_id intro!: eq_matI)
-
-lemma cramer_lemma_mat: fixes A :: "'a::idom mat" 
-  assumes A: "A \<in> carrier_mat n n" 
-  and x: "x \<in> carrier_vec n" 
-  and k: "k < n" 
-shows "det (replace_col A (A *\<^sub>v x) k) = x $v k * det A" 
-  using cramer_lemma_idom[folded replace_col_hma_def, untransferred, cancel_card_constraint] assms
-  by auto
-
 lemma of_int_dvd:
   assumes "b \<noteq> 0" "of_int a / (of_int b :: 'a :: field_char_0) \<in> \<int>"
   shows "b dvd a"
@@ -2568,7 +2531,7 @@ lemma (in gram_schmidt_fs_Rn) Gramian_matrix_alt_alt_def:
   assumes "k \<le> m"
   shows "Gramian_matrix fs k = mat k k (\<lambda>(i,j). fs ! i \<bullet> fs ! j)"
 proof -
-  have *: "vec n (($v) (fs ! i)) = fs ! i" if "i < m" for i
+  have *: "vec n (($) (fs ! i)) = fs ! i" if "i < m" for i
     using that by auto
   then show ?thesis
     unfolding Gramian_matrix_def using assms
@@ -2670,13 +2633,13 @@ lemma (in gram_schmidt_fs_int) d_gso_Ints:
   shows "(d k \<cdot>\<^sub>v (gso k)) $ i \<in> \<int>"
 proof -
   note d_\<kappa>_Ints[intro!]
-  then have "(d k * \<kappa> k k j) * fs ! j $v i \<in> \<int>" if "j < k" for j
+  then have "(d k * \<kappa> k k j) * fs ! j $ i \<in> \<int>" if "j < k" for j
     using that fs_int assms by (auto intro: Ints_mult )
-  moreover have "(d k * \<kappa> k k j) * fs ! j $v i = d k * \<kappa> k k j * fs ! j $v i" for j
+  moreover have "(d k * \<kappa> k k j) * fs ! j $ i = d k * \<kappa> k k j * fs ! j $ i" for j
     by (auto simp add: field_simps)
-  ultimately have "d k * (\<Sum>j = 0..<k. \<kappa> k k j * fs ! j $v i) \<in> \<int>"
+  ultimately have "d k * (\<Sum>j = 0..<k. \<kappa> k k j * fs ! j $ i) \<in> \<int>"
      by (subst sum_distrib_left) (auto simp add: field_simps intro!: Ints_sum)
-  moreover have "(gso k) $v i = fs ! k $v i + sum (\<lambda>j. (\<kappa> k k j \<cdot>\<^sub>v fs ! j) $v i) {0..<k}"
+  moreover have "(gso k) $ i = fs ! k $ i + sum (\<lambda>j. (\<kappa> k k j \<cdot>\<^sub>v fs ! j) $ i) {0..<k}"
   proof -
     have " i < dim_vec (M.sumlist (map (\<lambda>j. \<kappa> k k j \<cdot>\<^sub>v fs ! j) [0..<k]))"
       using assms by (subst sumlist_dim) auto
@@ -2693,7 +2656,7 @@ lemma (in gram_schmidt_fs_int) d_mu_Ints:
   shows "d (Suc l) * \<mu> k l \<in> \<int>"
 proof (cases "l < k")
   case True
-  have ll: "d l * gso l $v i = (d l \<cdot>\<^sub>v gso l) $v i" if "i < n" for i
+  have ll: "d l * gso l $ i = (d l \<cdot>\<^sub>v gso l) $ i" if "i < n" for i
     using that assms by auto
   have "d (Suc l) * \<mu> k l =d (Suc l) * (fs ! k \<bullet> gso l) / \<parallel>gso l\<parallel>\<^sup>2 "
     using assms True unfolding \<mu>.simps by simp
@@ -2702,7 +2665,7 @@ proof (cases "l < k")
     by (subst Gramian_determinant_div[symmetric]) (auto)
   also have "\<dots> \<in> \<int>"
   proof -
-    have "d l * gso l $v i \<in> \<int>" if "i < n" for i
+    have "d l * gso l $ i \<in> \<int>" if "i < n" for i
       using assms d_gso_Ints that ll by (simp)
     then show ?thesis
       using assms by (auto intro!: Ints_sum simp add: fs_int scalar_prod_def)
@@ -2842,7 +2805,7 @@ end
 
 lemma vec_hom_Ints:
   assumes "i < n" "xs \<in> carrier_vec n"
-  shows "of_int_hom.vec_hom xs $v i \<in> \<int>"
+  shows "of_int_hom.vec_hom xs $ i \<in> \<int>"
   using assms by auto
 
 lemma division_to_div: "(of_int x  :: 'a :: floor_ceiling) = of_int y / of_int z \<Longrightarrow> x = y div z" 
@@ -2950,7 +2913,7 @@ proof -
   have id: "of_int (d fs (Suc j)) = gs.Gramian_determinant (RAT fs) (Suc j)" 
     unfolding d_def
     by (rule of_int_Gramian_determinant[symmetric], insert j ii , auto)
-  have "of_int_hom.vec_hom (fs ! j) $v i \<in> \<int>" if "i < n" "j < length fs" for i j
+  have "of_int_hom.vec_hom (fs ! j) $ i \<in> \<int>" if "i < n" "j < length fs" for i j
      using that by (intro vec_hom_Ints) auto
   then show ?thesis
     unfolding id using j ii unfolding gs.lin_indpt_list_def 

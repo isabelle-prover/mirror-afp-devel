@@ -19,7 +19,6 @@ theory LLL_Factorization
 begin
 
 subsection \<open>Basic facts about the auxiliary functions\<close>
-hide_const (open) Finite_Cartesian_Product.rows
 hide_const (open) module.smult
 
 lemma nth_factorization_lattice:

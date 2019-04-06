@@ -5,7 +5,6 @@ session LLL_Basis_Reduction (AFP) = Berlekamp_Zassenhaus +
   options [timeout = 3600]
   sessions 
     Algebraic_Numbers
-    Perron_Frobenius
   theories
     Missing_Lemmas
     More_IArray

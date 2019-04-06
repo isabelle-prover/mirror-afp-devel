@@ -735,7 +735,7 @@ proof -
     also have "?num * N ^ m = ?num2^2" unfolding power2_eq_square four power_mult_distrib
       by simp
     also have "int \<dots> = (int ?num2)^2" by simp
-    finally have "(fs ! i $v j)\<^sup>2 \<le> (int (f_bnd outside))\<^sup>2" using False by simp
+    finally have "(fs ! i $ j)\<^sup>2 \<le> (int (f_bnd outside))\<^sup>2" using False by simp
     thus ?thesis unfolding abs_le_square_iff[symmetric] by simp 
   qed
 qed
@@ -754,9 +754,9 @@ proof -
     by standard (use inv in auto)
   note d_approx[OF inv gbnd i, unfolded d_def]  
   let ?r = "rat_of_int"
-  have int: "(gs.Gramian_determinant (RAT fs) i \<cdot>\<^sub>v (gso fs i)) $v j \<in> \<int>"
+  have int: "(gs.Gramian_determinant (RAT fs) i \<cdot>\<^sub>v (gso fs i)) $ j \<in> \<int>"
   proof -
-    have "of_int_hom.vec_hom (fs ! j) $v i \<in> \<int>" if "i < n" "j < m" for i j
+    have "of_int_hom.vec_hom (fs ! j) $ i \<in> \<int>" if "i < n" "j < m" for i j
       using that assms * by (intro vec_hom_Ints) (auto)
     then show ?thesis
       using * gs.gso_connect snd_gram_schmidt_int assms unfolding gs.lin_indpt_list_def
@@ -779,11 +779,11 @@ proof -
   finally have gs_bound: "\<bar>(gso fs i $ j)\<bar> \<le> of_nat N" .
   have "gs.Gramian_determinant (RAT fs) i = rat_of_int (gs.Gramian_determinant fs i)"
     using  assms *(4-6) carrier_vecD nth_mem by (intro fs.of_int_Gramian_determinant) (simp, blast)
-  with int have "(of_int (d fs i) \<cdot>\<^sub>v gso fs i) $v j \<in> \<int>"
+  with int have "(of_int (d fs i) \<cdot>\<^sub>v gso fs i) $ j \<in> \<int>"
     unfolding d_def by simp
-  also have "(of_int (d fs i) \<cdot>\<^sub>v gso fs i) $v j = of_int (d fs i) * (gso fs i $ j)"
+  also have "(of_int (d fs i) \<cdot>\<^sub>v gso fs i) $ j = of_int (d fs i) * (gso fs i $ j)"
     using gsi i j by auto
-  finally have l: "of_int (d fs i) * gso fs i $v j \<in> \<int>"
+  finally have l: "of_int (d fs i) * gso fs i $ j \<in> \<int>"
     by auto
   have num: "rat_of_int \<bar>num\<bar> \<le> of_int (d fs i * int N)" and denom: "denom \<le> d fs i"
     using quotient_of_bounds[OF quot l LLL_d_pos[OF inv] gs_bound] i by auto
@@ -879,7 +879,7 @@ proof -
   have four: "(4 :: nat) = 2^2" by auto
   have "?mu^2 \<le> (gs.Gramian_determinant (RAT fs) j) * sq_norm (RAT fs ! i)"
   proof -
-    have 1: "of_int_hom.vec_hom (fs ! j) $v i \<in> \<int>" if "i < n" "j < length fs" for j i
+    have 1: "of_int_hom.vec_hom (fs ! j) $ i \<in> \<int>" if "i < n" "j < length fs" for j i
       using * that by (metis vec_hom_Ints)
     then show ?thesis
       by (intro fs.gs.mu_bound_Gramian_determinant[OF j], insert * j i, 
