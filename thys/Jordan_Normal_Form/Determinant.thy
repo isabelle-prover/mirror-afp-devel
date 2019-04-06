@@ -2399,5 +2399,31 @@ proof -
     by (rule eq_matI[OF main], insert A aA, auto)
 qed
 
+definition "replace_col A b k = mat (dim_row A) (dim_col A) (\<lambda> (i,j). if j = k then b $ i else A $$ (i,j))"
+
+lemma cramer_lemma_mat:  
+  assumes A: "A \<in> carrier_mat n n" 
+  and x: "x \<in> carrier_vec n" 
+  and k: "k < n" 
+shows "det (replace_col A (A *\<^sub>v x) k) = x $ k * det A" 
+proof -
+  define b where "b = A *\<^sub>v x" 
+  have b: "b \<in> carrier_vec n" using A x unfolding b_def by auto
+  let ?Ab = "replace_col A b k" 
+  have Ab: "?Ab \<in> carrier_mat n n" using A by (auto simp: replace_col_def)
+  have "x $ k * det A = (det A \<cdot>\<^sub>v x) $ k" using A k x by auto
+  also have "det A \<cdot>\<^sub>v x = det A \<cdot>\<^sub>v (1\<^sub>m n *\<^sub>v x)" using x by auto
+  also have "\<dots> = (det A \<cdot>\<^sub>m 1\<^sub>m n) *\<^sub>v x" using A x by auto
+  also have "\<dots> = (adj_mat A * A) *\<^sub>v x" using adj_mat[OF A] by simp
+  also have "\<dots> = adj_mat A *\<^sub>v b" using adj_mat[OF A] A x unfolding b_def
+    by (metis assoc_mult_mat_vec)
+  also have "\<dots> $ k = row (adj_mat A) k \<bullet> b" using adj_mat[OF A] b k by auto
+  also have "\<dots> = det (replace_col A b k)" unfolding scalar_prod_def using b k A
+    by (subst laplace_expansion_column[OF Ab k], auto intro!: sum.cong arg_cong[of _ _ det] 
+      arg_cong[of _ _ "\<lambda> x. _ * x"] eq_matI
+      simp: replace_col_def adj_mat_def Matrix.row_def cofactor_def mat_delete_def ac_simps)
+  finally show ?thesis unfolding b_def by simp
+qed
+
 
 end
