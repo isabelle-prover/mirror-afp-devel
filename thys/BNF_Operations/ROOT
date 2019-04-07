@@ -5,7 +5,6 @@ session BNF_Operations (AFP) = HOL +
   sessions "HOL-Library"
   theories [document = false]
     "HOL-Library.BNF_Axiomatization"
-    "HOL-Library.Cardinal_Notations"
   theories
     LFP
     GFP

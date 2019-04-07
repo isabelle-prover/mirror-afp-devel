@@ -7,9 +7,11 @@ section \<open>Changing the Order of Live Variables\<close>
 
 (*<*)
 theory Permute
-  imports "HOL-Library.BNF_Axiomatization" "HOL-Library.Cardinal_Notations"
+  imports "HOL-Library.BNF_Axiomatization"
 begin
 (*>*)
+
+unbundle cardinal_syntax
 
 declare [[bnf_internals]]
 bnf_axiomatization (dead 'p, Fset1: 'a1, Fset2: 'a2, Fset3: 'a3) F for map: Fmap rel: Frel

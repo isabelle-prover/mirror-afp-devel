@@ -7,9 +7,11 @@ section \<open>Least Fixpoint (a.k.a. Datatype)\<close>
 
 (*<*)
 theory LFP
-  imports "HOL-Library.BNF_Axiomatization" "HOL-Library.Cardinal_Notations"
+  imports "HOL-Library.BNF_Axiomatization"
 begin
 (*>*)
+
+unbundle cardinal_syntax
 
 ML \<open>open Ctr_Sugar_Util\<close>
 notation BNF_Def.convol ("<_ , _>")

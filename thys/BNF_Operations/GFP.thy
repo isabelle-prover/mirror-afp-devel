@@ -7,9 +7,11 @@ section \<open>Greatest Fixpoint (a.k.a. Codatatype)\<close>
 
 (*<*)
 theory GFP
-  imports "HOL-Library.BNF_Axiomatization" "HOL-Library.Cardinal_Notations"
+  imports "HOL-Library.BNF_Axiomatization"
 begin
 (*>*)
+
+unbundle cardinal_syntax
 
 text \<open>
 \begin{tabular}{rcl}

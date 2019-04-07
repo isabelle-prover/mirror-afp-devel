@@ -5,9 +5,10 @@ section \<open>Axiomatisation\<close>
 
 theory Axiomatised_BNF_CC imports
   Preliminaries
-  "HOL-Library.Cardinal_Notations"
   "HOL-Library.Rewrite"
 begin
+
+unbundle cardinal_syntax
 
 text \<open>
   This theory axiomatises two \BNFCC{}s, which will be used to demonstrate the closedness of \BNFCC{}s

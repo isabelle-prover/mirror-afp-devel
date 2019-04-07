@@ -7,9 +7,11 @@ section \<open>Adding New Live Variables\<close>
 
 (*<*)
 theory Lift
-  imports "HOL-Library.BNF_Axiomatization" "HOL-Library.Cardinal_Notations"
+  imports "HOL-Library.BNF_Axiomatization"
 begin
 (*>*)
+
+unbundle cardinal_syntax
 
 declare [[bnf_internals]]
 bnf_axiomatization (dead 'p, Fset1: 'a1, Fset2: 'a2) F

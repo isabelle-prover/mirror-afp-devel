@@ -9,9 +9,11 @@ text \<open>Expected normal form: outer m-ary BNF is composed with m inner n-ary
 
 (*<*)
 theory Compose
-  imports "HOL-Library.BNF_Axiomatization" "HOL-Library.Cardinal_Notations"
+  imports "HOL-Library.BNF_Axiomatization"
 begin
 (*>*)
+
+unbundle cardinal_syntax
 
 declare [[bnf_internals]]
 bnf_axiomatization (dead 'p1, F1set1: 'a1, F1set2: 'a2) F1
