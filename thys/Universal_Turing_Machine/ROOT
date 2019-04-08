@@ -2,6 +2,8 @@ chapter AFP
 
 session Universal_Turing_Machine (AFP) = HOL +
   options [timeout = 1200]
+  sessions
+    "HOL-Library"
   theories
     "Turing"
     "Turing_Hoare"
