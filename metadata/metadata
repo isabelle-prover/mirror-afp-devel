@@ -7140,7 +7140,8 @@ abstract =
   theory of architectural design patterns.
 extra-history =
 	Change history:
-		[2018-05-25]: changing the major assumption for blockchain architectures from alternative minings to relative mining frequencies (revision 5043c5c71685)
+		[2018-05-25]: changing the major assumption for blockchain architectures from alternative minings to relative mining frequencies (revision 5043c5c71685)<br>
+		[2019-04-08]: adapting the terminology: honest instead of trusted, dishonest instead of untrusted (revision 7af3431a22ae)
 
 [Weight_Balanced_Trees]
 title = Weight-Balanced Trees
