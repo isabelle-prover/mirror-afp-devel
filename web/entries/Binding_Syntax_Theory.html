@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>A shallow embedding of HyperCTL* - Archive of Formal Proofs
+<title>A General Theory of Syntax with Bindings - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -63,13 +63,17 @@
   <p>&nbsp;</p>
   <h1>          <font class="first">A</font>
   
-          shallow
+          <font class="first">G</font>eneral
   
-          embedding
+          <font class="first">T</font>heory
   
           of
   
-          <font class="first">H</font>yperCTL*
+          <font class="first">S</font>yntax
+  
+          with
+  
+          <font class="first">B</font>indings
   
 </h1>
   <p>&nbsp;</p>
@@ -78,7 +82,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">A shallow embedding of HyperCTL*</td>
+  <td class="data" width="80%">A General Theory of Syntax with Bindings</td>
 </tr>
 
 <tr>
@@ -86,8 +90,7 @@
           Authors:
       </td>
   <td class="data">
-                      <a href="http://www.react.uni-saarland.de/people/rabe.html">Markus N. Rabe</a>,
-                <a href="http://www21.in.tum.de/~lammich">Peter Lammich</a> and
+                    Lorenzo Gheri (lor /dot/ gheri /at/ gmail /dot/ com) and
           Andrei Popescu (a /dot/ popescu /at/ mdx /dot/ ac /dot/ uk)
       </td>
 </tr>
@@ -96,31 +99,35 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2014-04-16</td>
+  <td class="data">2019-04-06</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">We formalize HyperCTL*, a temporal logic for expressing security properties. We
-first define a shallow embedding of HyperCTL*, within which we prove inductive and coinductive
-rules for the operators. Then we show that a HyperCTL* formula captures Goguen-Meseguer
-noninterference, a landmark information flow property. We also define a deep embedding and
-connect it to the shallow embedding by a denotational semantics, for which we prove sanity w.r.t.
-dependence on the free variables. Finally, we show that under some finiteness assumptions about
-the model, noninterference is given by a (finitary) syntactic formula.</td>
+  <td class="abstract">
+We formalize a theory of syntax with bindings that has been developed
+and refined over the last decade to support several large
+formalization efforts. Terms are defined for an arbitrary number of
+constructors of varying numbers of inputs, quotiented to
+alpha-equivalence and sorted according to a binding signature. The
+theory includes many properties of the standard operators on terms:
+substitution, swapping and freshness. It also includes bindings-aware
+induction and recursion principles and support for semantic
+interpretation. This work has been presented in the ITP 2017 paper “A
+Formalized General Theory of Syntax with Bindings”.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{HyperCTL-AFP,
-  author  = {Markus N. Rabe and Peter Lammich and Andrei Popescu},
-  title   = {A shallow embedding of HyperCTL*},
+        <pre>@article{Binding_Syntax_Theory-AFP,
+  author  = {Lorenzo Gheri and Andrei Popescu},
+  title   = {A General Theory of Syntax with Bindings},
   journal = {Archive of Formal Proofs},
   month   = apr,
-  year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/HyperCTL.html},
+  year    = 2019,
+  note    = {\url{http://isa-afp.org/entries/Binding_Syntax_Theory.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -144,54 +151,23 @@ the model, noninterference is given by a (finitary) syntactic formula.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/HyperCTL/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/HyperCTL/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Binding_Syntax_Theory/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Binding_Syntax_Theory/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/HyperCTL/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Binding_Syntax_Theory/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-HyperCTL-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Binding_Syntax_Theory-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2017:
-          <a href="../release/afp-HyperCTL-2017-10-10.tar.gz">
-            afp-HyperCTL-2017-10-10.tar.gz
-          </a>
-          </li>
-                                <li>Isabelle 2016-1:
-          <a href="../release/afp-HyperCTL-2016-12-17.tar.gz">
-            afp-HyperCTL-2016-12-17.tar.gz
-          </a>
-          </li>
-                                <li>Isabelle 2016:
-          <a href="../release/afp-HyperCTL-2016-02-22.tar.gz">
-            afp-HyperCTL-2016-02-22.tar.gz
-          </a>
-          </li>
-                                <li>Isabelle 2015:
-          <a href="../release/afp-HyperCTL-2015-05-27.tar.gz">
-            afp-HyperCTL-2015-05-27.tar.gz
-          </a>
-          </li>
-                                <li>Isabelle 2014:
-          <a href="../release/afp-HyperCTL-2014-08-28.tar.gz">
-            afp-HyperCTL-2014-08-28.tar.gz
-          </a>
-          </li>
-                                <li>Isabelle 2013-2:
-          <a href="../release/afp-HyperCTL-2014-04-16.tar.gz">
-            afp-HyperCTL-2014-04-16.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>
