@@ -9,7 +9,25 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>27 Mar 2019 00:00:00 +0000</pubDate>
+    <pubDate>06 Apr 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>A General Theory of Syntax with Bindings</title>
+              <link>https://www.isa-afp.org/entries/Binding_Syntax_Theory.html</link>
+       <guid>https://www.isa-afp.org/entries/Binding_Syntax_Theory.html</guid>
+       <dc:creator> Lorenzo Gheri, Andrei Popescu       </dc:creator>
+       <pubDate>06 Apr 2019 00:00:00 +0000</pubDate>
+       <description>
+We formalize a theory of syntax with bindings that has been developed
+and refined over the last decade to support several large
+formalization efforts. Terms are defined for an arbitrary number of
+constructors of varying numbers of inputs, quotiented to
+alpha-equivalence and sorted according to a binding signature. The
+theory includes many properties of the standard operators on terms:
+substitution, swapping and freshness. It also includes bindings-aware
+induction and recursion principles and support for semantic
+interpretation. This work has been presented in the ITP 2017 paper “A
+Formalized General Theory of Syntax with Bindings”.</description>
+    </item>
     <item>
        <title>The Transcendence of Certain Infinite Series</title>
               <link>https://www.isa-afp.org/entries/Transcendence_Series_Hancl_Rucki.html</link>
@@ -516,19 +534,6 @@ are a probabilistic data structure that behaves exactly as if elements
 were inserted into a non-balancing BST in random order. However,
 unlike treaps, they only use discrete probability distributions, but
 their use of randomness is more complicated.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Formalization of the Embedding Path Order for Lambda-Free Higher-Order Terms</title>
-              <link>https://www.isa-afp.org/entries/Lambda_Free_EPO.html</link>
-       <guid>https://www.isa-afp.org/entries/Lambda_Free_EPO.html</guid>
-       <dc:creator> Alexander Bentkamp       </dc:creator>
-       <pubDate>19 Oct 2018 00:00:00 +0000</pubDate>
-       <description>
-This Isabelle/HOL formalization defines the Embedding Path Order (EPO)
-for higher-order terms without lambda-abstraction and proves many
-useful properties about it. In contrast to the lambda-free recursive
-path orders, it does not fully coincide with RPO on first-order terms,
-but it is compatible with arbitrary higher-order contexts.</description>
     </item>
   </channel>
 </rss>
