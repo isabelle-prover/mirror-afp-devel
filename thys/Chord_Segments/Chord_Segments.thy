@@ -34,7 +34,7 @@ next
   define u :: real where "u = 1"
   from \<open>between (A, B) X\<close> \<open>A = B\<close> have "1 / 2 \<le> u" "u \<le> 1" "X = u *\<^sub>R A + (1 - u) *\<^sub>R B"
     unfolding u_def by auto
-  from this that show thesis by blast
+  with that show thesis by blast
 qed
 
 lemma dist_geq_iff_midpoint_in_between:
@@ -62,9 +62,9 @@ proof
     using betweenI [of concl: B X]  by (metis add.commute between_commute)
 next
   assume "between (X, B) (midpoint A B)"
-  from this have "between (A, midpoint A B) X"
+  then have "between (A, midpoint A B) X"
     using \<open>between (A, B) X\<close> between_midpoint(1) between_swap by blast
-  from this have "dist A X \<le> dist A (midpoint A B)"
+  then have "dist A X \<le> dist A (midpoint A B)"
     using between zero_le_dist by force
   also have "dist A (midpoint A B) \<le> dist B (midpoint A B)"
     by (simp add: dist_midpoint)
@@ -91,10 +91,10 @@ proof -
     min (dist S X) (dist X T) = (dist S M) - (dist X M)"
   proof cases
     assume "dist S X \<le> dist X T"
-    from this have "between (X, T) M"
+    then have "between (X, T) M"
       using \<open>between (S, T) X\<close> M_def
       by (simp add: dist_geq_iff_midpoint_in_between dist_commute)
-    from this have "between (S, M) X"
+    then have "between (S, M) X"
       using \<open>between (S, T) X\<close> \<open>between (S, T) M\<close> between_swap by blast
     from \<open>between (X, T) M\<close> have "dist X T = dist X M + dist M T"
       using between by auto
@@ -105,11 +105,11 @@ proof -
       by (simp add: add.commute dist_commute max_def min_def)
   next
     assume "\<not> (dist S X \<le> dist X T)"
-    from this have "dist T X \<le> dist S X" by (simp add: dist_commute)
-    from this have "between (S, X) M"
+    then have "dist T X \<le> dist S X" by (simp add: dist_commute)
+    then have "between (S, X) M"
       using \<open>between (S, T) X\<close> M_def
       by (simp add: dist_geq_iff_midpoint_in_between midpoint_sym between_commute)
-    from this have "between (T, M) X"
+    then have "between (T, M) X"
       using \<open>between (S, T) X\<close> \<open>between (S, T) M\<close> between_swap between_commute by metis
     from \<open>between (S, X) M\<close> have "dist S X = dist S M + dist M X"
       using between by auto
@@ -130,8 +130,8 @@ proof -
     obtain c where "(X - M) = c *\<^sub>R (S - M)"
     proof (cases "S = M")
       assume "S \<noteq> M"
-      from \<open>between (S, T) X\<close> \<open>between (S, T) M\<close> this obtain c where "(X - M) = c *\<^sub>R (S - M)"
-        using between_implies_scaled_diff by blast
+      then obtain c where "(X - M) = c *\<^sub>R (S - M)"
+        using between_implies_scaled_diff [OF \<open>between (S, T) X\<close> \<open>between (S, T) M\<close>] by metis
       from this that show thesis by blast
     next
       assume "S = M"
@@ -147,7 +147,7 @@ proof -
     "(dist S M) ^ 2 + (dist M C) ^ 2 = (dist C S) ^ 2"
     "(dist X M) ^ 2 + (dist M C) ^ 2 = (dist C X) ^ 2"
     by (auto simp only: Pythagoras)
-  from this have geometric_observation:
+  then have geometric_observation:
     "(dist S M) ^ 2 = (dist C S) ^ 2 - (dist M C) ^ 2"
     "(dist X M) ^ 2 = (dist C X) ^ 2 - (dist M C) ^ 2"
     by auto
