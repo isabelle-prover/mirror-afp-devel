@@ -190,7 +190,7 @@ qed
 
 lemma nth_normalize_less_zero_iff:
   "normalize p $ i < 0 \<longleftrightarrow> p $ i < 0"
-using nth_normalize_ge_zero_iff leD leI by blast
+using nth_normalize_ge_zero_iff leD leI by metis
 
 lemma normalize_boundary_iff:
   "\<bar>normalize p $ 1\<bar> = 1 \<longleftrightarrow> p $ 2 = 0"

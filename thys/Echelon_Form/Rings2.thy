@@ -12,6 +12,8 @@ imports
    "HOL-Computational_Algebra.Polynomial_Factorial"
 begin
 
+hide_const Group.subgroup Ideal.ideal
+
 subsection\<open>Previous lemmas and results\<close>
 
 lemma chain_le:
@@ -27,7 +29,7 @@ next
   show ?case by (metis Suc_eq_plus1 inc lift_Suc_mono_le)
 qed
 
-context ring
+context Rings.ring
 begin
 
 lemma sum_add:
@@ -36,18 +38,13 @@ lemma sum_add:
   shows "sum f A + sum g B = sum f (A - B) + sum g (B - A) + sum (\<lambda>x. f x + g x) (A \<inter> B)"
 proof -
   have 1: "sum f A = sum f (A - B) + sum f (A \<inter> B)"
-    by (metis (mono_tags, hide_lams) A Diff_Diff_Int
-      Diff_subset add_commute sum.subset_diff)
+    by (metis A Int_Diff_disjoint Un_Diff_Int finite_Diff finite_Int inf_sup_aci(1) local.sum.union_disjoint)
   have 2: "sum g B = sum g (B - A) + sum g (A \<inter> B)"
-    by (metis (mono_tags, hide_lams) Int_commute[of A B] B
-      Diff_Diff_Int Diff_subset add_commute sum.subset_diff)
+    by (metis B Int_Diff_disjoint Int_commute Un_Diff_Int finite_Diff finite_Int local.sum.union_disjoint)
   have 3: "sum f (A \<inter> B) + sum g (A \<inter> B) = sum (\<lambda>x. f x + g x) (A \<inter> B)"
     by (simp add: sum.distrib)
   show ?thesis
-    unfolding 1 unfolding 2
-    unfolding add_assoc
-    unfolding add.left_commute[of "sum f (A \<inter> B)"]
-    unfolding 3 by fast
+    by (simp add: "1" "2" "3" add.assoc add.left_commute)
 qed
 
 text\<open>This lemma is presented in the library but for additive abelian groups\<close>
@@ -104,14 +101,15 @@ lemma sum_two_elements:
     sum.empty sum.insert sum.insert_remove singletonD)
 
 lemma sum_singleton: "sum f {x} = f x"
-by (metis add_commute empty_iff finite.emptyI add_0_left sum.empty sum.insert)
+  by simp
+
 end
 
 subsection\<open>Subgroups\<close>
 
 context group_add
 begin
-definition "subgroup A = (0 \<in> A \<and> (\<forall>a\<in>A.\<forall>b \<in> A. a + b \<in> A) \<and> (\<forall>a\<in>A. -a \<in> A))"
+definition "subgroup A \<equiv> (0 \<in> A \<and> (\<forall>a\<in>A. \<forall>b \<in> A. a + b \<in> A) \<and> (\<forall>a\<in>A. -a \<in> A))"
 
 lemma subgroup_0: "subgroup {0}"
   unfolding subgroup_def by auto
@@ -165,7 +163,7 @@ end
 
 subsection\<open>Ideals\<close>
 
-context ring
+context Rings.ring
 begin
 
 lemma subgroup_left_principal_ideal: "subgroup {r*a|r. r\<in>UNIV}"
