@@ -363,14 +363,14 @@ next
   qed
 qed
 
-locale trusted =
+locale honest =
   fixes bc:: "('a list) seq"
     and n::nat
   assumes growth: "n'\<noteq>0 \<Longrightarrow> n'\<le>n \<Longrightarrow> bc n' = bc (n'-1) \<or> (\<exists>b. bc n' = bc (n' - 1) @ b)"
 begin
 end
 
-locale untrusted =
+locale dishonest =
   fixes bc:: "('a list) seq"
     and mining::"bool seq"
   assumes growth: "\<And>n::nat. prefix (bc (Suc n)) (bc n) \<or> (\<exists>b::'a. bc (Suc n) = bc n @ [b]) \<and> mining (Suc n)"
@@ -417,7 +417,7 @@ lemma length_suc_length:
 
 end
 
-locale untrusted_growth =
+locale dishonest_growth =
   fixes bc:: "nat seq"
     and mining:: "nat \<Rightarrow> bool"
   assumes as1: "\<And>n::nat. bc (Suc n) \<le> Suc (bc n)"
@@ -426,9 +426,9 @@ begin
 
 end
 
-sublocale untrusted \<subseteq> untrusted_growth "\<lambda>n. length (bc n)" using grow_mining length_suc_length by unfold_locales auto
+sublocale dishonest \<subseteq> dishonest_growth "\<lambda>n. length (bc n)" using grow_mining length_suc_length by unfold_locales auto
 
-context untrusted_growth
+context dishonest_growth
 begin
   theorem ccard_diff_lgth:
     "n'\<ge>n \<Longrightarrow> ccard n n' (\<lambda>n. mining n) \<ge> (bc n' - bc n)"
@@ -457,7 +457,7 @@ begin
   qed
 end
 
-locale trusted_growth =
+locale honest_growth =
   fixes bc:: "nat seq"
     and mining:: "nat \<Rightarrow> bool"
     and init:: nat
@@ -500,29 +500,29 @@ begin
   qed
 end
 
-locale bounded_growth = tg: trusted_growth tbc tmining + ug: untrusted_growth ubc umining
-    for tbc:: "nat seq"
-    and ubc:: "nat seq"
-    and tmining:: "nat \<Rightarrow> bool"
-    and umining:: "nat \<Rightarrow> bool"
+locale bounded_growth = hg: honest_growth hbc hmining + dg: dishonest_growth dbc dmining
+    for hbc:: "nat seq"
+    and dbc:: "nat seq"
+    and hmining:: "nat \<Rightarrow> bool"
+    and dmining:: "nat \<Rightarrow> bool"
     and sbc::nat
     and cnf::nat +
-  assumes fair: "\<And>n n'. ccard n n' (\<lambda>n. umining n) > cnf \<Longrightarrow> ccard n n' (\<lambda>n. tmining n) > cnf"
-    and a2: "tbc 0 \<ge> sbc+cnf"
-    and a3: "ubc 0 < sbc"
+  assumes fair: "\<And>n n'. ccard n n' (\<lambda>n. dmining n) > cnf \<Longrightarrow> ccard n n' (\<lambda>n. hmining n) > cnf"
+    and a2: "hbc 0 \<ge> sbc+cnf"
+    and a3: "dbc 0 < sbc"
 begin
 
-theorem tr_upper_bound: shows "ubc n < tbc n"
+theorem hn_upper_bound: shows "dbc n < hbc n"
 proof (rule ccontr)
-  assume "\<not> ubc n < tbc n"
-  hence "ubc n \<ge> tbc n" by simp
-  moreover from a2 a3 have "tbc 0 > ubc 0 + cnf" by simp
-  moreover have "tbc n\<ge>tbc 0" using tg.grow_mono by simp
-  ultimately have "ubc n - ubc 0 > tbc n - tbc 0 + cnf" by simp
-  moreover have "ccard 0 n (\<lambda>n. tmining n) \<le> tbc n - tbc 0" using tg.ccard_diff_lgth by simp
-  moreover have "ubc n - ubc 0 \<le> ccard 0 n (\<lambda>n. umining n)" using ug.ccard_diff_lgth by simp
-  ultimately have "ccard 0 n (\<lambda>n. umining n) > ccard 0 n (\<lambda>n. tmining n) + cnf" by simp
-  hence "\<exists>n' n''. ccard n' n'' (\<lambda>n. umining n) > cnf \<and> ccard n' n'' (\<lambda>n. tmining n) \<le> cnf"
+  assume "\<not> dbc n < hbc n"
+  hence "dbc n \<ge> hbc n" by simp
+  moreover from a2 a3 have "hbc 0 > dbc 0 + cnf" by simp
+  moreover have "hbc n\<ge>hbc 0" using hg.grow_mono by simp
+  ultimately have "dbc n - dbc 0 > hbc n - hbc 0 + cnf" by simp
+  moreover have "ccard 0 n (\<lambda>n. hmining n) \<le> hbc n - hbc 0" using hg.ccard_diff_lgth by simp
+  moreover have "dbc n - dbc 0 \<le> ccard 0 n (\<lambda>n. dmining n)" using dg.ccard_diff_lgth by simp
+  ultimately have "ccard 0 n (\<lambda>n. dmining n) > ccard 0 n (\<lambda>n. hmining n) + cnf" by simp
+  hence "\<exists>n' n''. ccard n' n'' (\<lambda>n. dmining n) > cnf \<and> ccard n' n'' (\<lambda>n. hmining n) \<le> cnf"
     using ccard_freq by blast
   with fair show False using leD by blast
 qed

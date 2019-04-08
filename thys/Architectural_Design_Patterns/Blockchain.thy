@@ -91,34 +91,34 @@ locale Blockchain = dynamic_component cmp active
     and pout :: "'ND \<Rightarrow> 'nid BC"
     and bc :: "'ND \<Rightarrow> 'nid BC"
     and mining :: "'ND \<Rightarrow> bool"
-    and trusted :: "'nid \<Rightarrow> bool"
-    and actTr :: "cnf \<Rightarrow> 'nid set"
-    and actUt :: "cnf \<Rightarrow> 'nid set"
+    and honest :: "'nid \<Rightarrow> bool"
+    and actHn :: "cnf \<Rightarrow> 'nid set"
+    and actDn :: "cnf \<Rightarrow> 'nid set"
     and PoW:: "trace \<Rightarrow> nat \<Rightarrow> nat"
-    and tmining:: "trace \<Rightarrow> nat \<Rightarrow> bool"
-    and umining:: "trace \<Rightarrow> nat \<Rightarrow> bool"
+    and hmining:: "trace \<Rightarrow> nat \<Rightarrow> bool"
+    and dmining:: "trace \<Rightarrow> nat \<Rightarrow> bool"
     and cb:: nat
-  defines "actTr k \<equiv> {nid. \<parallel>nid\<parallel>\<^bsub>k\<^esub> \<and> trusted nid}"
-    and "actUt k \<equiv> {nid. \<parallel>nid\<parallel>\<^bsub>k\<^esub> \<and> \<not> trusted nid}"
-    and "PoW t n \<equiv> (LEAST x. \<forall>nid\<in>actTr (t n). length (bc (\<sigma>\<^bsub>nid\<^esub>(t n))) \<le> x)"
-    and "tmining t \<equiv> (\<lambda>n. \<exists>nid\<in>actTr (t n). mining (\<sigma>\<^bsub>nid\<^esub>(t n)))"
-    and "umining t \<equiv> (\<lambda>n. \<exists>nid\<in>actUt (t n). mining (\<sigma>\<^bsub>nid\<^esub>(t n)))"
-  assumes consensus: "\<And>nid t t' bc'::('nid BC). \<lbrakk>trusted nid\<rbrakk> \<Longrightarrow> eval nid t t' 0
+  defines "actHn k \<equiv> {nid. \<parallel>nid\<parallel>\<^bsub>k\<^esub> \<and> honest nid}"
+    and "actDn k \<equiv> {nid. \<parallel>nid\<parallel>\<^bsub>k\<^esub> \<and> \<not> honest nid}"
+    and "PoW t n \<equiv> (LEAST x. \<forall>nid\<in>actHn (t n). length (bc (\<sigma>\<^bsub>nid\<^esub>(t n))) \<le> x)"
+    and "hmining t \<equiv> (\<lambda>n. \<exists>nid\<in>actHn (t n). mining (\<sigma>\<^bsub>nid\<^esub>(t n)))"
+    and "dmining t \<equiv> (\<lambda>n. \<exists>nid\<in>actDn (t n). mining (\<sigma>\<^bsub>nid\<^esub>(t n)))"
+  assumes consensus: "\<And>nid t t' bc'::('nid BC). \<lbrakk>honest nid\<rbrakk> \<Longrightarrow> eval nid t t' 0
     (\<box>\<^sub>b ([\<lambda>nd. bc' = (if (\<exists>b\<in>pin nd. length b > length (bc nd)) then (MAX (pin nd)) else (bc nd))]\<^sub>b
       \<longrightarrow>\<^sup>b \<circle>\<^sub>b [\<lambda>nd.(\<not> mining nd \<and> bc nd = bc' \<or> mining nd \<and> (\<exists>b. bc nd = bc' @ [b]))]\<^sub>b))"
-    and attacker: "\<And>nid t t' bc'. \<lbrakk>\<not> trusted nid\<rbrakk> \<Longrightarrow> eval nid t t' 0
+    and attacker: "\<And>nid t t' bc'. \<lbrakk>\<not> honest nid\<rbrakk> \<Longrightarrow> eval nid t t' 0
     (\<box>\<^sub>b ([\<lambda>nd. bc' = (SOME b. b \<in> (pin nd \<union> {bc nd}))]\<^sub>b \<longrightarrow>\<^sup>b
       \<circle>\<^sub>b [\<lambda>nd.(\<not> mining nd \<and> prefix (bc nd) bc' \<or> mining nd \<and> (\<exists>b. bc nd = bc' @ [b]))]\<^sub>b))"
     and forward: "\<And>nid t t'. eval nid t t' 0 (\<box>\<^sub>b [\<lambda>nd. pout nd = bc nd]\<^sub>b)"
     \<comment> \<open>At each time point a node will forward its blockchain to the network\<close>
     and init: "\<And>nid t t'. eval nid t t' 0 [\<lambda>nd. bc nd=[]]\<^sub>b"
-    and conn: "\<And>k nid. \<lbrakk>\<parallel>nid\<parallel>\<^bsub>k\<^esub>; trusted nid\<rbrakk>
-      \<Longrightarrow> pin (cmp nid k) = (\<Union>nid'\<in>actTr k. {pout (cmp nid' k)})"
+    and conn: "\<And>k nid. \<lbrakk>\<parallel>nid\<parallel>\<^bsub>k\<^esub>; honest nid\<rbrakk>
+      \<Longrightarrow> pin (cmp nid k) = (\<Union>nid'\<in>actHn k. {pout (cmp nid' k)})"
     and act: "\<And>t n::nat. finite {nid::'nid. \<parallel>nid\<parallel>\<^bsub>t n\<^esub>}"
-    and actTr: "\<And>t n::nat. \<exists>nid. trusted nid \<and> \<parallel>nid\<parallel>\<^bsub>t n\<^esub> \<and> \<parallel>nid\<parallel>\<^bsub>t (Suc n)\<^esub>"
-    and fair: "\<And>n n'. ccard n n' (umining t) > cb \<Longrightarrow> ccard n n' (tmining t) > cb"
+    and actHn: "\<And>t n::nat. \<exists>nid. honest nid \<and> \<parallel>nid\<parallel>\<^bsub>t n\<^esub> \<and> \<parallel>nid\<parallel>\<^bsub>t (Suc n)\<^esub>"
+    and fair: "\<And>n n'. ccard n n' (dmining t) > cb \<Longrightarrow> ccard n n' (hmining t) > cb"
     and closed: "\<And>t nid b n::nat. \<lbrakk>\<parallel>nid\<parallel>\<^bsub>t n\<^esub>; b \<in> pin (\<sigma>\<^bsub>nid\<^esub>(t n))\<rbrakk> \<Longrightarrow> \<exists>nid'. \<parallel>nid'\<parallel>\<^bsub>t n\<^esub> \<and> bc (\<sigma>\<^bsub>nid'\<^esub>(t n)) = b"
-    and mine: "\<And>t nid n::nat. \<lbrakk>trusted nid; \<parallel>nid\<parallel>\<^bsub>t (Suc n)\<^esub>; mining (\<sigma>\<^bsub>nid\<^esub>(t (Suc n)))\<rbrakk> \<Longrightarrow> \<parallel>nid\<parallel>\<^bsub>t n\<^esub>"
+    and mine: "\<And>t nid n::nat. \<lbrakk>honest nid; \<parallel>nid\<parallel>\<^bsub>t (Suc n)\<^esub>; mining (\<sigma>\<^bsub>nid\<^esub>(t (Suc n)))\<rbrakk> \<Longrightarrow> \<parallel>nid\<parallel>\<^bsub>t n\<^esub>"
 begin
 
 lemma init_model:
@@ -164,8 +164,8 @@ qed
 lemma nempty_input:
   fixes t n nid
   assumes "\<parallel>nid\<parallel>\<^bsub>t n\<^esub>"
-    and "trusted nid"
-  shows "pin (cmp nid (t n))\<noteq>{}" using conn[of nid "t n"] act assms actTr_def by auto
+    and "honest nid"
+  shows "pin (cmp nid (t n))\<noteq>{}" using conn[of nid "t n"] act assms actHn_def by auto
 
 lemma onlyone:
   assumes "\<exists>n'\<ge>n. \<parallel>tid\<parallel>\<^bsub>t n'\<^esub>"
@@ -182,9 +182,9 @@ qed
 
 subsubsection "Component Behavior"
 
-lemma bhv_tr_ex:
+lemma bhv_hn_ex:
   fixes t and t'::"nat \<Rightarrow> 'ND" and tid
-  assumes "trusted tid"
+  assumes "honest tid"
     and "\<exists>n'\<ge>n. \<parallel>tid\<parallel>\<^bsub>t n'\<^esub>"
     and "\<exists>n'<n. \<parallel>tid\<parallel>\<^bsub>t n'\<^esub>"
     and "\<exists>b\<in>pin (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>). length b > length (bc (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>))"
@@ -196,7 +196,7 @@ proof -
     (if (\<exists>b\<in>pin nd. length b > length (bc nd)) then (MAX (pin nd)) else (bc nd))"
   let ?check = "\<lambda>nd. \<not> mining nd \<and> bc nd = MAX (pin (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)) \<or> mining nd \<and>
     (\<exists>b. bc nd = MAX (pin (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)) @ [b])"
-  from \<open>trusted tid\<close> have "eval tid t t' 0 (\<box>\<^sub>b([?cond]\<^sub>b \<longrightarrow>\<^sup>b \<circle>\<^sub>b [?check]\<^sub>b))"
+  from \<open>honest tid\<close> have "eval tid t t' 0 (\<box>\<^sub>b([?cond]\<^sub>b \<longrightarrow>\<^sup>b \<circle>\<^sub>b [?check]\<^sub>b))"
     using consensus[of tid _ _ "MAX (pin (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>))"] by simp
   moreover from assms have "\<exists>i\<ge>0. \<parallel>tid\<parallel>\<^bsub>t i\<^esub>" by auto
   moreover have "\<langle>tid \<Leftarrow> t\<rangle>\<^bsub>0\<^esub> \<le> \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" by simp
@@ -226,9 +226,9 @@ proof -
   ultimately show ?thesis using baEANow[of tid t t' "\<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" ?check] by simp
 qed
 
-lemma bhv_tr_in:
+lemma bhv_hn_in:
   fixes t and t'::"nat \<Rightarrow> 'ND" and tid
-  assumes "trusted tid"
+  assumes "honest tid"
     and "\<exists>n'\<ge>n. \<parallel>tid\<parallel>\<^bsub>t n'\<^esub>"
     and "\<exists>n'<n. \<parallel>tid\<parallel>\<^bsub>t n'\<^esub>"
     and "\<not> (\<exists>b\<in>pin (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>). length b > length (bc (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)))"
@@ -237,7 +237,7 @@ lemma bhv_tr_in:
 proof -
   let ?cond = "\<lambda>nd. bc (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) = (if (\<exists>b\<in>pin nd. length b > length (bc nd)) then (MAX (pin nd)) else (bc nd))"
   let ?check = "\<lambda>nd. \<not> mining nd \<and> bc nd = bc (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) \<or> mining nd \<and> (\<exists>b. bc nd = bc (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) @ [b])"
-  from \<open>trusted tid\<close> have "eval tid t t' 0 ((\<box>\<^sub>b([?cond]\<^sub>b \<longrightarrow>\<^sup>b \<circle>\<^sub>b [?check]\<^sub>b)))"
+  from \<open>honest tid\<close> have "eval tid t t' 0 ((\<box>\<^sub>b([?cond]\<^sub>b \<longrightarrow>\<^sup>b \<circle>\<^sub>b [?check]\<^sub>b)))"
     using consensus[of tid _ _ "bc (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)"] by simp
   moreover from assms have "\<exists>i\<ge>0. \<parallel>tid\<parallel>\<^bsub>t i\<^esub>" by auto
   moreover have "\<langle>tid \<Leftarrow> t\<rangle>\<^bsub>0\<^esub> \<le> \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" by simp
@@ -267,8 +267,8 @@ proof -
   ultimately show ?thesis using baEANow[of tid t t' "\<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" ?check] by simp
 qed
 
-lemma bhv_tr_context:
-  assumes "trusted tid"
+lemma bhv_hn_context:
+  assumes "honest tid"
       and "\<parallel>tid\<parallel>\<^bsub>t n\<^esub>"
       and "\<exists>n'<n. \<parallel>tid\<parallel>\<^bsub>t n'\<^esub>"
     shows "\<exists>nid'. \<parallel>nid'\<parallel>\<^bsub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> \<and> (mining (\<sigma>\<^bsub>tid\<^esub>t n) \<and> (\<exists>b. bc (\<sigma>\<^bsub>tid\<^esub>t n) = bc (\<sigma>\<^bsub>nid'\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) @ [b]) \<or>
@@ -279,7 +279,7 @@ proof cases
   moreover from assms(3) have "\<exists>n'<n. \<parallel>tid\<parallel>\<^bsub>t n'\<^esub>" by auto
   ultimately have "\<not> mining (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) \<and> bc (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) = Blockchain.MAX (pin (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)) \<or>
     mining (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) \<and> (\<exists>b. bc (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) = Blockchain.MAX (pin (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)) @ [b])"
-    using assms(1) bhv_tr_ex by auto
+    using assms(1) bhv_hn_ex by auto
   moreover from assms(2) have "\<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub> = n" using nxtAct_active by simp
   ultimately have "\<not> mining (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) \<and> bc (\<sigma>\<^bsub>tid\<^esub>t n) = Blockchain.MAX (pin (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)) \<or>
     mining (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) \<and> (\<exists>b. bc (\<sigma>\<^bsub>tid\<^esub>t n) = Blockchain.MAX (pin (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)) @ [b])" by simp
@@ -303,7 +303,7 @@ next
   moreover from assms(3) have "\<exists>n'<n. \<parallel>tid\<parallel>\<^bsub>t n'\<^esub>" by auto
   ultimately have "\<not> mining (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) \<and> bc (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) = bc (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) \<or>
     mining (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) \<and> (\<exists>b. bc (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) = bc (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) @ [b])"
-    using assms(1) bhv_tr_in[of tid n t] by auto
+    using assms(1) bhv_hn_in[of tid n t] by auto
   moreover from assms(2) have "\<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub> = n" using nxtAct_active by simp
   ultimately have "\<not> mining (\<sigma>\<^bsub>tid\<^esub>t n) \<and> bc (\<sigma>\<^bsub>tid\<^esub>t n) = bc (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) \<or>
     mining (\<sigma>\<^bsub>tid\<^esub>t n) \<and> (\<exists>b. bc (\<sigma>\<^bsub>tid\<^esub>t n) = bc (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) @ [b])" by simp
@@ -312,9 +312,9 @@ next
   ultimately show ?thesis by auto
 qed
 
-lemma bhv_ut:
+lemma bhv_dn:
   fixes t and t'::"nat \<Rightarrow> 'ND" and uid
-  assumes "\<not> trusted uid"
+  assumes "\<not> honest uid"
     and "\<exists>n'\<ge>n. \<parallel>uid\<parallel>\<^bsub>t n'\<^esub>"
     and "\<exists>n'<n. \<parallel>uid\<parallel>\<^bsub>t n'\<^esub>"
   shows "\<not> mining (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) \<and> prefix (bc (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)) (SOME b. b \<in> pin (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) \<union> {bc (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)})
@@ -323,7 +323,7 @@ proof -
   let ?cond = "\<lambda>nd. (SOME b. b \<in> (pin (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) \<union> {bc (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)})) = (SOME b. b \<in> pin nd \<union> {bc nd})"
   let ?check = "\<lambda>nd. \<not> mining nd \<and> prefix (bc nd) (SOME b. b \<in> pin (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) \<union> {bc (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)})
     \<or> mining nd \<and> (\<exists>b. bc nd = (SOME b. b \<in> pin (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) \<union> {bc (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)}) @ [b])"
-  from \<open>\<not> trusted uid\<close> have "eval uid t t' 0 ((\<box>\<^sub>b([?cond]\<^sub>b \<longrightarrow>\<^sup>b \<circle>\<^sub>b [?check]\<^sub>b)))"
+  from \<open>\<not> honest uid\<close> have "eval uid t t' 0 ((\<box>\<^sub>b([?cond]\<^sub>b \<longrightarrow>\<^sup>b \<circle>\<^sub>b [?check]\<^sub>b)))"
     using attacker[of uid _ _ "(SOME b. b \<in> pin (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) \<union> {bc (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)})"]
     by simp
   moreover from assms have "\<exists>i\<ge>0. \<parallel>uid\<parallel>\<^bsub>t i\<^esub>" by auto
@@ -354,8 +354,8 @@ proof -
   ultimately show ?thesis using baEANow[of uid t t' "\<langle>uid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" ?check] by simp
 qed
 
-lemma bhv_ut_context:
-  assumes "\<not> trusted uid"
+lemma bhv_dn_context:
+  assumes "\<not> honest uid"
       and "\<parallel>uid\<parallel>\<^bsub>t n\<^esub>"
       and "\<exists>n'<n. \<parallel>uid\<parallel>\<^bsub>t n'\<^esub>"
   shows "\<exists>nid'. \<parallel>nid'\<parallel>\<^bsub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> \<and> (mining (\<sigma>\<^bsub>uid\<^esub>t n) \<and> (\<exists>b. prefix (bc (\<sigma>\<^bsub>uid\<^esub>t n)) (bc (\<sigma>\<^bsub>nid'\<^esub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) @ [b]))
@@ -373,7 +373,7 @@ proof -
   moreover from assms(3) have "\<exists>n'<n. \<parallel>uid\<parallel>\<^bsub>t n'\<^esub>" by auto
   ultimately have "\<not> mining (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) \<and> prefix (bc (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)) ?bc \<or>
     mining (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) \<and> (\<exists>b. bc (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) = ?bc @ [b])"
-    using bhv_ut[of uid n t] assms(1) by simp
+    using bhv_dn[of uid n t] assms(1) by simp
   moreover from assms(2) have "\<langle>uid \<rightarrow> t\<rangle>\<^bsub>n\<^esub> = n" using nxtAct_active by simp
   ultimately have casmp: "\<not> mining (\<sigma>\<^bsub>uid\<^esub>t n) \<and> prefix (bc (\<sigma>\<^bsub>uid\<^esub>t n)) ?bc \<or>
     mining (\<sigma>\<^bsub>uid\<^esub>t n) \<and> (\<exists>b. bc (\<sigma>\<^bsub>uid\<^esub>t n) = ?bc @ [b])" by simp
@@ -397,36 +397,36 @@ proof -
   qed
 qed
 
-subsubsection "Maximal Trusted Blockchains"
+subsubsection "Maximal Honest Blockchains"
 
 abbreviation mbc_cond:: "trace \<Rightarrow> nat \<Rightarrow> 'nid \<Rightarrow> bool"
-  where "mbc_cond t n nid \<equiv> nid\<in>actTr (t n) \<and> (\<forall>nid'\<in>actTr (t n). length (bc (\<sigma>\<^bsub>nid'\<^esub>(t n))) \<le> length (bc (\<sigma>\<^bsub>nid\<^esub>(t n))))"
+  where "mbc_cond t n nid \<equiv> nid\<in>actHn (t n) \<and> (\<forall>nid'\<in>actHn (t n). length (bc (\<sigma>\<^bsub>nid'\<^esub>(t n))) \<le> length (bc (\<sigma>\<^bsub>nid\<^esub>(t n))))"
 
 lemma mbc_ex:
   fixes t n
   shows "\<exists>x. mbc_cond t n x"
 proof -
-  let ?ALL="{b. \<exists>nid\<in>actTr (t n). b = bc (\<sigma>\<^bsub>nid\<^esub>(t n))}"
+  let ?ALL="{b. \<exists>nid\<in>actHn (t n). b = bc (\<sigma>\<^bsub>nid\<^esub>(t n))}"
   have "MAX ?ALL \<in> ?ALL"
   proof (rule max_prop)
-    from actTr have "actTr (t n) \<noteq> {}" using actTr_def by blast
+    from actHn have "actHn (t n) \<noteq> {}" using actHn_def by blast
     thus "?ALL\<noteq>{}" by auto
-    from act have "finite (actTr (t n))" using actTr_def by simp
+    from act have "finite (actHn (t n))" using actHn_def by simp
     thus "finite ?ALL" by simp
   qed
-  then obtain nid where "nid \<in> actTr (t n) \<and> bc (\<sigma>\<^bsub>nid\<^esub>(t n)) = MAX ?ALL" by auto
-  moreover have "\<forall>nid'\<in>actTr (t n). length (bc (\<sigma>\<^bsub>nid'\<^esub>(t n))) \<le> length (MAX ?ALL)"
+  then obtain nid where "nid \<in> actHn (t n) \<and> bc (\<sigma>\<^bsub>nid\<^esub>(t n)) = MAX ?ALL" by auto
+  moreover have "\<forall>nid'\<in>actHn (t n). length (bc (\<sigma>\<^bsub>nid'\<^esub>(t n))) \<le> length (MAX ?ALL)"
   proof
     fix nid
-    assume "nid \<in> actTr (t n)"
+    assume "nid \<in> actHn (t n)"
     hence "bc (\<sigma>\<^bsub>nid\<^esub>(t n)) \<in> ?ALL" by auto
     moreover have "\<forall>b'\<in>?ALL. length b' \<le> length (MAX ?ALL)"
     proof (rule max_prop)
       from \<open>bc (\<sigma>\<^bsub>nid\<^esub>(t n)) \<in> ?ALL\<close> show "?ALL\<noteq>{}" by auto
-      from act have "finite (actTr (t n))" using actTr_def by simp
+      from act have "finite (actHn (t n))" using actHn_def by simp
       thus "finite ?ALL" by simp
     qed
-    ultimately show "length (bc (\<sigma>\<^bsub>nid\<^esub>t n)) \<le> length (Blockchain.MAX {b. \<exists>nid\<in>actTr (t n). b = bc (\<sigma>\<^bsub>nid\<^esub>t n)})" by simp
+    ultimately show "length (bc (\<sigma>\<^bsub>nid\<^esub>t n)) \<le> length (Blockchain.MAX {b. \<exists>nid\<in>actHn (t n). b = bc (\<sigma>\<^bsub>nid\<^esub>t n)})" by simp
   qed
   ultimately show ?thesis by auto
 qed
@@ -438,14 +438,14 @@ lemma mbc_prop[simp]:
   shows "mbc_cond t n (MBC t n)"
   using someI_ex[OF mbc_ex] MBC_def by simp
 
-subsubsection "Trusted Proof of Work"
+subsubsection "Honest Proof of Work"
 text \<open>
-  An important construction is the maximal proof of work available in the trusted community.
+  An important construction is the maximal proof of work available in the honest community.
   The construction was already introduces in the locale itself since it was used to express some of the locale assumptions.
 \<close>
 
 abbreviation pow_cond:: "trace \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool"
-  where "pow_cond t n n' \<equiv> \<forall>nid\<in>actTr (t n). length (bc (\<sigma>\<^bsub>nid\<^esub>(t n))) \<le> n'"
+  where "pow_cond t n n' \<equiv> \<forall>nid\<in>actHn (t n). length (bc (\<sigma>\<^bsub>nid\<^esub>(t n))) \<le> n'"
 
 lemma pow_ex:
   fixes t n
@@ -462,16 +462,16 @@ qed
 
 lemma pow_eq:
   fixes n
-  assumes "\<exists>tid\<in>actTr (t n). length (bc (\<sigma>\<^bsub>tid\<^esub>(t n))) = x"
-    and "\<forall>tid\<in>actTr (t n). length (bc (\<sigma>\<^bsub>tid\<^esub>(t n))) \<le> x"
+  assumes "\<exists>tid\<in>actHn (t n). length (bc (\<sigma>\<^bsub>tid\<^esub>(t n))) = x"
+    and "\<forall>tid\<in>actHn (t n). length (bc (\<sigma>\<^bsub>tid\<^esub>(t n))) \<le> x"
   shows "PoW t n = x"
 proof -
   have "(LEAST x. pow_cond t n x) = x"
   proof (rule Least_equality)
-    from assms(2) show "\<forall>nid\<in>actTr (t n). length (bc (\<sigma>\<^bsub>nid\<^esub>t n)) \<le> x" by simp
+    from assms(2) show "\<forall>nid\<in>actHn (t n). length (bc (\<sigma>\<^bsub>nid\<^esub>t n)) \<le> x" by simp
   next
     fix y
-    assume "\<forall>nid\<in>actTr (t n). length (bc (\<sigma>\<^bsub>nid\<^esub>t n)) \<le> y"
+    assume "\<forall>nid\<in>actHn (t n). length (bc (\<sigma>\<^bsub>nid\<^esub>t n)) \<le> y"
     thus "x \<le> y" using assms(1) by auto
   qed
   with PoW_def show ?thesis by simp
@@ -491,15 +491,15 @@ proof -
 qed
 
 lemma pow_le_max:
-  assumes "trusted tid"
+  assumes "honest tid"
     and "\<parallel>tid\<parallel>\<^bsub>t n\<^esub>"
   shows "PoW t n \<le> length (MAX (pin (\<sigma>\<^bsub>tid\<^esub>t n)))"
 proof -
-  from mbc_prop have "trusted (MBC t n)" and "\<parallel>MBC t n\<parallel>\<^bsub>t n\<^esub>" using actTr_def by auto
+  from mbc_prop have "honest (MBC t n)" and "\<parallel>MBC t n\<parallel>\<^bsub>t n\<^esub>" using actHn_def by auto
   hence "pout (\<sigma>\<^bsub>MBC t n\<^esub>t n) = bc (\<sigma>\<^bsub>MBC t n\<^esub>t n)"
     using forward globEANow[THEN baEANow[of "MBC t n" t t' n "\<lambda>nd. pout nd = bc nd"]] by auto
-  with assms \<open>\<parallel>MBC t n\<parallel>\<^bsub>t n\<^esub>\<close> \<open>trusted (MBC t n)\<close> have "bc (\<sigma>\<^bsub>MBC t n\<^esub>t n) \<in> pin (\<sigma>\<^bsub>tid\<^esub>t n)"
-    using conn actTr_def by auto
+  with assms \<open>\<parallel>MBC t n\<parallel>\<^bsub>t n\<^esub>\<close> \<open>honest (MBC t n)\<close> have "bc (\<sigma>\<^bsub>MBC t n\<^esub>t n) \<in> pin (\<sigma>\<^bsub>tid\<^esub>t n)"
+    using conn actHn_def by auto
   moreover from assms (2) have "finite (pin (\<sigma>\<^bsub>tid\<^esub>t n))" using finite_input[of tid t n] by simp
   ultimately have "length (bc (\<sigma>\<^bsub>MBC t n\<^esub>t n)) \<le> length (MAX (pin (\<sigma>\<^bsub>tid\<^esub>t n)))"
     using max_prop(2) by auto
@@ -507,16 +507,16 @@ proof -
 qed
 
 lemma pow_ge_lgth:
-  assumes "trusted tid"
+  assumes "honest tid"
     and "\<parallel>tid\<parallel>\<^bsub>t n\<^esub>"
   shows "length (bc (\<sigma>\<^bsub>tid\<^esub>t n)) \<le> PoW t n"
 proof -
-  from assms have "tid \<in> actTr (t n)" using actTr_def by simp
+  from assms have "tid \<in> actHn (t n)" using actHn_def by simp
   thus ?thesis using pow_prop by simp
 qed
 
 lemma pow_le_lgth:
-  assumes "trusted tid"
+  assumes "honest tid"
     and "\<parallel>tid\<parallel>\<^bsub>t n\<^esub>"
     and "\<not>(\<exists>b\<in>pin (\<sigma>\<^bsub>tid\<^esub>t n). length b > length (bc (\<sigma>\<^bsub>tid\<^esub>t n)))"
   shows "length (bc (\<sigma>\<^bsub>tid\<^esub>t n)) \<ge> PoW t n"
@@ -539,7 +539,7 @@ next
   hence "PoW t n \<le> PoW t n'" by simp
   moreover have "PoW t (Suc n') \<ge> PoW t n'"
   proof -
-    from actTr obtain tid where "trusted tid" and "\<parallel>tid\<parallel>\<^bsub>t n'\<^esub>" and "\<parallel>tid\<parallel>\<^bsub>t (Suc n')\<^esub>" by auto
+    from actHn obtain tid where "honest tid" and "\<parallel>tid\<parallel>\<^bsub>t n'\<^esub>" and "\<parallel>tid\<parallel>\<^bsub>t (Suc n')\<^esub>" by auto
     show ?thesis
     proof cases
       assume "\<exists>b\<in>pin (\<sigma>\<^bsub>tid\<^esub>t n'). length b > length (bc (\<sigma>\<^bsub>tid\<^esub>t n'))"
@@ -551,12 +551,12 @@ next
       moreover from \<open>\<parallel>tid\<parallel>\<^bsub>t (Suc n')\<^esub>\<close> have "\<exists>n''\<ge>Suc n'. \<parallel>tid\<parallel>\<^bsub>t n''\<^esub>" by auto
       ultimately have "bc (\<sigma>\<^bsub>tid\<^esub>t (Suc n')) = Blockchain.MAX (pin (\<sigma>\<^bsub>tid\<^esub>t n')) \<or>
         (\<exists>b. bc (\<sigma>\<^bsub>tid\<^esub>t (Suc n')) = Blockchain.MAX (pin (\<sigma>\<^bsub>tid\<^esub>t n')) @ b)"
-        using \<open>trusted tid\<close> bhv_tr_ex[of tid "Suc n'" t] by auto
+        using \<open>honest tid\<close> bhv_hn_ex[of tid "Suc n'" t] by auto
       hence "length (bc (\<sigma>\<^bsub>tid\<^esub>t (Suc n'))) \<ge> length (Blockchain.MAX (pin (\<sigma>\<^bsub>tid\<^esub>t n')))" by auto
-      moreover from \<open>trusted tid\<close> \<open>\<parallel>tid\<parallel>\<^bsub>t n'\<^esub>\<close>
+      moreover from \<open>honest tid\<close> \<open>\<parallel>tid\<parallel>\<^bsub>t n'\<^esub>\<close>
         have "length (Blockchain.MAX (pin (\<sigma>\<^bsub>tid\<^esub>t n'))) \<ge> PoW t n'" using pow_le_max by simp
       ultimately have "PoW t n' \<le> length (bc (\<sigma>\<^bsub>tid\<^esub>t (Suc n')))" by simp
-      moreover from \<open>trusted tid\<close> \<open>\<parallel>tid\<parallel>\<^bsub>t (Suc n')\<^esub>\<close>
+      moreover from \<open>honest tid\<close> \<open>\<parallel>tid\<parallel>\<^bsub>t (Suc n')\<^esub>\<close>
         have "length (bc (\<sigma>\<^bsub>tid\<^esub>t (Suc n'))) \<le> PoW t (Suc n')" using pow_ge_lgth by simp
       ultimately show ?thesis by simp
     next
@@ -569,11 +569,11 @@ next
       moreover from \<open>\<parallel>tid\<parallel>\<^bsub>t (Suc n')\<^esub>\<close> have "\<exists>n''\<ge>Suc n'. \<parallel>tid\<parallel>\<^bsub>t n''\<^esub>" by auto
       ultimately have "bc (\<sigma>\<^bsub>tid\<^esub>t (Suc n')) = bc (\<sigma>\<^bsub>tid\<^esub>t n') \<or>
         (\<exists>b. bc (\<sigma>\<^bsub>tid\<^esub>t (Suc n')) = bc (\<sigma>\<^bsub>tid\<^esub>t n') @ b)"
-        using \<open>trusted tid\<close> bhv_tr_in[of tid "Suc n'" t] by auto
+        using \<open>honest tid\<close> bhv_hn_in[of tid "Suc n'" t] by auto
       hence "length (bc (\<sigma>\<^bsub>tid\<^esub>t (Suc n'))) \<ge> length (bc (\<sigma>\<^bsub>tid\<^esub>t n'))" by auto
-      moreover from \<open>trusted tid\<close> \<open>\<parallel>tid\<parallel>\<^bsub>t n'\<^esub>\<close> asmp have "length (bc (\<sigma>\<^bsub>tid\<^esub>t n')) \<ge> PoW t n'"
+      moreover from \<open>honest tid\<close> \<open>\<parallel>tid\<parallel>\<^bsub>t n'\<^esub>\<close> asmp have "length (bc (\<sigma>\<^bsub>tid\<^esub>t n')) \<ge> PoW t n'"
         using pow_le_lgth by simp
-      moreover from \<open>trusted tid\<close> \<open>\<parallel>tid\<parallel>\<^bsub>t (Suc n')\<^esub>\<close>
+      moreover from \<open>honest tid\<close> \<open>\<parallel>tid\<parallel>\<^bsub>t (Suc n')\<^esub>\<close>
       have "length (bc (\<sigma>\<^bsub>tid\<^esub>t (Suc n'))) \<le> PoW t (Suc n')" using pow_ge_lgth by simp
       ultimately show ?thesis by simp
     qed
@@ -589,21 +589,21 @@ lemma pow_equals:
 shows "PoW t n = PoW t n''" by (metis pow_mono assms(1) assms(3) assms(4) eq_iff)
 
 lemma pow_mining_suc:
-    assumes "tmining t (Suc n)"
+    assumes "hmining t (Suc n)"
     shows "PoW t n < PoW t (Suc n)"
 proof -
-  from assms obtain nid where "nid\<in>actTr (t (Suc n))" and "mining (\<sigma>\<^bsub>nid\<^esub>(t (Suc n)))"
-    using tmining_def by auto
+  from assms obtain nid where "nid\<in>actHn (t (Suc n))" and "mining (\<sigma>\<^bsub>nid\<^esub>(t (Suc n)))"
+    using hmining_def by auto
   show ?thesis
   proof cases
     assume asmp: "(\<exists>b\<in>pin (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>Suc n\<^esub>). length b > length (bc (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>Suc n\<^esub>)))"
-    moreover from \<open>nid\<in>actTr (t (Suc n))\<close> have "trusted nid" and "\<parallel>nid\<parallel>\<^bsub>t (Suc n)\<^esub>"
-      using actTr_def by auto
-    moreover from \<open>trusted nid\<close> \<open>mining (\<sigma>\<^bsub>nid\<^esub>(t (Suc n)))\<close> \<open>\<parallel>nid\<parallel>\<^bsub>t (Suc n)\<^esub>\<close> have "\<parallel>nid\<parallel>\<^bsub>t n\<^esub>"
+    moreover from \<open>nid\<in>actHn (t (Suc n))\<close> have "honest nid" and "\<parallel>nid\<parallel>\<^bsub>t (Suc n)\<^esub>"
+      using actHn_def by auto
+    moreover from \<open>honest nid\<close> \<open>mining (\<sigma>\<^bsub>nid\<^esub>(t (Suc n)))\<close> \<open>\<parallel>nid\<parallel>\<^bsub>t (Suc n)\<^esub>\<close> have "\<parallel>nid\<parallel>\<^bsub>t n\<^esub>"
       using mine by simp
     hence "\<exists>n'. latestAct_cond nid t (Suc n) n'" by auto
     ultimately have "\<not> mining (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<rightarrow> t\<rangle>\<^bsub>Suc n\<^esub>) \<and> bc (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<rightarrow> t\<rangle>\<^bsub>Suc n\<^esub>) = MAX (pin (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>Suc n\<^esub>)) \<or>
-    mining (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<rightarrow> t\<rangle>\<^bsub>Suc n\<^esub>) \<and> (\<exists>b. bc (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<rightarrow> t\<rangle>\<^bsub>Suc n\<^esub>) = MAX (pin (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>Suc n\<^esub>)) @ [b])" using bhv_tr_ex[of nid "Suc n"] by auto
+    mining (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<rightarrow> t\<rangle>\<^bsub>Suc n\<^esub>) \<and> (\<exists>b. bc (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<rightarrow> t\<rangle>\<^bsub>Suc n\<^esub>) = MAX (pin (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>Suc n\<^esub>)) @ [b])" using bhv_hn_ex[of nid "Suc n"] by auto
     moreover from \<open>\<parallel>nid\<parallel>\<^bsub>t (Suc n)\<^esub>\<close> have "\<langle>nid \<rightarrow> t\<rangle>\<^bsub>Suc n\<^esub> = Suc n" using nxtAct_active by simp
     moreover have "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>Suc n\<^esub> = n"
     proof (rule latestActEq)
@@ -616,22 +616,22 @@ proof -
     mining (\<sigma>\<^bsub>nid\<^esub>t (Suc n)) \<and> (\<exists>b. bc (\<sigma>\<^bsub>nid\<^esub>t (Suc n)) = MAX (pin (\<sigma>\<^bsub>nid\<^esub>t n)) @ [b])" by simp
     with \<open>mining (\<sigma>\<^bsub>nid\<^esub>(t (Suc n)))\<close>
       have "\<exists>b. bc (\<sigma>\<^bsub>nid\<^esub>t (Suc n)) = MAX (pin (\<sigma>\<^bsub>nid\<^esub>t n)) @ [b]" by auto
-    moreover from \<open>trusted nid\<close> \<open>\<parallel>nid\<parallel>\<^bsub>t (Suc n)\<^esub>\<close> have "length (bc (\<sigma>\<^bsub>nid\<^esub>t (Suc n))) \<le> PoW t (Suc n)"
+    moreover from \<open>honest nid\<close> \<open>\<parallel>nid\<parallel>\<^bsub>t (Suc n)\<^esub>\<close> have "length (bc (\<sigma>\<^bsub>nid\<^esub>t (Suc n))) \<le> PoW t (Suc n)"
       using pow_ge_lgth[of nid t "Suc n"] by simp
     ultimately have "length (MAX (pin (\<sigma>\<^bsub>nid\<^esub>t n))) < PoW t (Suc n)" by auto
-    moreover from \<open>trusted nid\<close> \<open>\<parallel>nid\<parallel>\<^bsub>t n\<^esub>\<close> have "length (MAX (pin (\<sigma>\<^bsub>nid\<^esub>t n))) \<ge> PoW t n"
+    moreover from \<open>honest nid\<close> \<open>\<parallel>nid\<parallel>\<^bsub>t n\<^esub>\<close> have "length (MAX (pin (\<sigma>\<^bsub>nid\<^esub>t n))) \<ge> PoW t n"
       using pow_le_max by simp
     ultimately show ?thesis by simp
   next
     assume asmp: "\<not> (\<exists>b\<in>pin (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>Suc n\<^esub>). length b > length (bc (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>Suc n\<^esub>)))"
-    moreover from \<open>nid\<in>actTr (t (Suc n))\<close> have "trusted nid" and "\<parallel>nid\<parallel>\<^bsub>t (Suc n)\<^esub>"
-      using actTr_def by auto
-    moreover from \<open>trusted nid\<close> \<open>mining (\<sigma>\<^bsub>nid\<^esub>(t (Suc n)))\<close> \<open>\<parallel>nid\<parallel>\<^bsub>t (Suc n)\<^esub>\<close> have "\<parallel>nid\<parallel>\<^bsub>t n\<^esub>"
+    moreover from \<open>nid\<in>actHn (t (Suc n))\<close> have "honest nid" and "\<parallel>nid\<parallel>\<^bsub>t (Suc n)\<^esub>"
+      using actHn_def by auto
+    moreover from \<open>honest nid\<close> \<open>mining (\<sigma>\<^bsub>nid\<^esub>(t (Suc n)))\<close> \<open>\<parallel>nid\<parallel>\<^bsub>t (Suc n)\<^esub>\<close> have "\<parallel>nid\<parallel>\<^bsub>t n\<^esub>"
       using mine by simp
     hence "\<exists>n'. latestAct_cond nid t (Suc n) n'" by auto
     ultimately have "\<not> mining (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<rightarrow> t\<rangle>\<^bsub>Suc n\<^esub>) \<and> bc (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<rightarrow> t\<rangle>\<^bsub>Suc n\<^esub>) = bc (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>Suc n\<^esub>) \<or>
     mining (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<rightarrow> t\<rangle>\<^bsub>Suc n\<^esub>) \<and> (\<exists>b. bc (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<rightarrow> t\<rangle>\<^bsub>Suc n\<^esub>) = bc (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>Suc n\<^esub>) @ [b])"
-      using bhv_tr_in[of nid "Suc n"] by auto
+      using bhv_hn_in[of nid "Suc n"] by auto
     moreover from \<open>\<parallel>nid\<parallel>\<^bsub>t (Suc n)\<^esub>\<close> have "\<langle>nid \<rightarrow> t\<rangle>\<^bsub>Suc n\<^esub> = Suc n" using nxtAct_active by simp
     moreover have "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>Suc n\<^esub> = n"
     proof (rule latestActEq)
@@ -646,9 +646,9 @@ proof -
     moreover from \<open>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>Suc n\<^esub> = n\<close>
       have "\<not> (\<exists>b\<in>pin (\<sigma>\<^bsub>nid\<^esub>t n). length (bc (\<sigma>\<^bsub>nid\<^esub>t n)) < length b)"
       using asmp by simp
-    with \<open>trusted nid\<close> \<open>\<parallel>nid\<parallel>\<^bsub>t n\<^esub>\<close> have "length (bc (\<sigma>\<^bsub>nid\<^esub>t n)) \<ge> PoW t n"
+    with \<open>honest nid\<close> \<open>\<parallel>nid\<parallel>\<^bsub>t n\<^esub>\<close> have "length (bc (\<sigma>\<^bsub>nid\<^esub>t n)) \<ge> PoW t n"
       using pow_le_lgth[of nid t n] by simp
-    moreover from \<open>trusted nid\<close> \<open>\<parallel>nid\<parallel>\<^bsub>t (Suc n)\<^esub>\<close> have "length (bc (\<sigma>\<^bsub>nid\<^esub>t (Suc n))) \<le> PoW t (Suc n)"
+    moreover from \<open>honest nid\<close> \<open>\<parallel>nid\<parallel>\<^bsub>t (Suc n)\<^esub>\<close> have "length (bc (\<sigma>\<^bsub>nid\<^esub>t (Suc n))) \<le> PoW t (Suc n)"
       using pow_ge_lgth[of nid t "Suc n"] by simp
     ultimately show ?thesis by auto
   qed
@@ -1452,16 +1452,16 @@ proof -
     hence asmp: "\<forall>x. \<parallel>snd x\<parallel>\<^bsub>t (fst x)\<^esub> \<longrightarrow> fst x = \<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub> \<longrightarrow> \<not> (prefix (bc (\<sigma>\<^bsub>nid'\<^esub>(t n'))) (bc (\<sigma>\<^bsub>snd x\<^esub>(t (fst x)))) \<or> (\<exists>b. bc (\<sigma>\<^bsub>nid'\<^esub>(t n')) = (bc (\<sigma>\<^bsub>snd x\<^esub>(t (fst x)))) @ [b] \<and> mining (\<sigma>\<^bsub>nid'\<^esub>(t n'))))" by auto
     show ?thesis
     proof cases
-      assume "trusted nid'"
+      assume "honest nid'"
       moreover from assms(1) have "\<parallel>nid'\<parallel>\<^bsub>t n'\<^esub>" using his_act by simp
-      ultimately obtain nid'' where "\<parallel>nid''\<parallel>\<^bsub>t \<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>\<^esub>" and "mining (\<sigma>\<^bsub>nid'\<^esub>t n') \<and> (\<exists>b. bc (\<sigma>\<^bsub>nid'\<^esub>t n') = bc (\<sigma>\<^bsub>nid''\<^esub>t \<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>) @ [b]) \<or> \<not> mining (\<sigma>\<^bsub>nid'\<^esub>t n') \<and> bc (\<sigma>\<^bsub>nid'\<^esub>t n') = bc (\<sigma>\<^bsub>nid''\<^esub>t \<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>)" using \<open>\<exists>n. latestAct_cond nid' t n' n\<close> bhv_tr_context[of nid' t n'] by auto
+      ultimately obtain nid'' where "\<parallel>nid''\<parallel>\<^bsub>t \<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>\<^esub>" and "mining (\<sigma>\<^bsub>nid'\<^esub>t n') \<and> (\<exists>b. bc (\<sigma>\<^bsub>nid'\<^esub>t n') = bc (\<sigma>\<^bsub>nid''\<^esub>t \<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>) @ [b]) \<or> \<not> mining (\<sigma>\<^bsub>nid'\<^esub>t n') \<and> bc (\<sigma>\<^bsub>nid'\<^esub>t n') = bc (\<sigma>\<^bsub>nid''\<^esub>t \<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>)" using \<open>\<exists>n. latestAct_cond nid' t n' n\<close> bhv_hn_context[of nid' t n'] by auto
       moreover from \<open>\<parallel>nid''\<parallel>\<^bsub>t \<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>\<^esub>\<close> have "\<not> (prefix (bc (\<sigma>\<^bsub>nid'\<^esub>(t n'))) (bc (\<sigma>\<^bsub>nid''\<^esub>(t (\<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>)))) \<or> (\<exists>b. bc (\<sigma>\<^bsub>nid'\<^esub>(t n')) = (bc (\<sigma>\<^bsub>nid''\<^esub>(t (\<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>)))) @ [b] \<and> mining (\<sigma>\<^bsub>nid'\<^esub>(t n'))))" using asmp by auto
       ultimately have False by auto
       thus ?thesis ..
     next
-      assume "\<not> trusted nid'"
+      assume "\<not> honest nid'"
       moreover from assms(1) have "\<parallel>nid'\<parallel>\<^bsub>t n'\<^esub>" using his_act by simp
-      ultimately obtain nid'' where "\<parallel>nid''\<parallel>\<^bsub>t \<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>\<^esub>" and "(mining (\<sigma>\<^bsub>nid'\<^esub>t n') \<and> (\<exists>b. prefix (bc (\<sigma>\<^bsub>nid'\<^esub>t n')) (bc (\<sigma>\<^bsub>nid''\<^esub>t \<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>) @ [b])) \<or> \<not> mining (\<sigma>\<^bsub>nid'\<^esub>t n') \<and> prefix (bc (\<sigma>\<^bsub>nid'\<^esub>t n')) (bc (\<sigma>\<^bsub>nid''\<^esub>t \<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>)))" using \<open>\<exists>n. latestAct_cond nid' t n' n\<close> bhv_ut_context[of nid' t n'] by auto
+      ultimately obtain nid'' where "\<parallel>nid''\<parallel>\<^bsub>t \<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>\<^esub>" and "(mining (\<sigma>\<^bsub>nid'\<^esub>t n') \<and> (\<exists>b. prefix (bc (\<sigma>\<^bsub>nid'\<^esub>t n')) (bc (\<sigma>\<^bsub>nid''\<^esub>t \<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>) @ [b])) \<or> \<not> mining (\<sigma>\<^bsub>nid'\<^esub>t n') \<and> prefix (bc (\<sigma>\<^bsub>nid'\<^esub>t n')) (bc (\<sigma>\<^bsub>nid''\<^esub>t \<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>)))" using \<open>\<exists>n. latestAct_cond nid' t n' n\<close> bhv_dn_context[of nid' t n'] by auto
       moreover from \<open>\<parallel>nid''\<parallel>\<^bsub>t \<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>\<^esub>\<close> have "\<not> (prefix (bc (\<sigma>\<^bsub>nid'\<^esub>(t n'))) (bc (\<sigma>\<^bsub>nid''\<^esub>(t (\<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>)))) \<or> (\<exists>b. bc (\<sigma>\<^bsub>nid'\<^esub>(t n')) = (bc (\<sigma>\<^bsub>nid''\<^esub>(t (\<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>)))) @ [b] \<and> mining (\<sigma>\<^bsub>nid'\<^esub>(t n'))))" using asmp by auto
       ultimately have False by auto
       thus ?thesis ..
@@ -1660,24 +1660,24 @@ abbreviation devLgthBC where "devLgthBC t n nid n\<^sub>s \<equiv> (\<lambda>n'.
 
 theorem blockchain_save:
   fixes t::"nat\<Rightarrow>cnf" and n\<^sub>s and sbc and n
-  assumes "\<forall>nid. trusted nid \<longrightarrow> prefix sbc (bc (\<sigma>\<^bsub>nid\<^esub>(t (\<langle>nid \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>))))"
-    and "\<forall>nid\<in>actUt (t n\<^sub>s). length (bc (\<sigma>\<^bsub>nid\<^esub>(t n\<^sub>s))) < length sbc"
+  assumes "\<forall>nid. honest nid \<longrightarrow> prefix sbc (bc (\<sigma>\<^bsub>nid\<^esub>(t (\<langle>nid \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>))))"
+    and "\<forall>nid\<in>actDn (t n\<^sub>s). length (bc (\<sigma>\<^bsub>nid\<^esub>(t n\<^sub>s))) < length sbc"
     and "PoW t n\<^sub>s\<ge>length sbc + cb"
     and "\<forall>n'<n\<^sub>s. \<forall>nid. \<parallel>nid\<parallel>\<^bsub>t n'\<^esub> \<longrightarrow> length (bc (\<sigma>\<^bsub>nid\<^esub>t n')) < length sbc \<or> prefix sbc (bc (\<sigma>\<^bsub>nid\<^esub>(t n')))"
     and "n\<ge>n\<^sub>s"
-  shows "\<forall>nid \<in> actTr (t n). prefix sbc (bc (\<sigma>\<^bsub>nid\<^esub>(t n)))"
+  shows "\<forall>nid \<in> actHn (t n). prefix sbc (bc (\<sigma>\<^bsub>nid\<^esub>(t n)))"
 proof (cases)
   assume "sbc=[]"
   thus ?thesis by simp
 next
   assume "\<not> sbc=[]"
-  have "n\<ge>n\<^sub>s \<Longrightarrow> \<forall>nid \<in> actTr (t n). prefix sbc (bc (\<sigma>\<^bsub>nid\<^esub>(t n)))"
+  have "n\<ge>n\<^sub>s \<Longrightarrow> \<forall>nid \<in> actHn (t n). prefix sbc (bc (\<sigma>\<^bsub>nid\<^esub>(t n)))"
   proof (induction n rule: ge_induct)
     case (step n)
     show ?case
     proof
-      fix nid assume "nid \<in> actTr (t n)"
-      hence "\<parallel>nid\<parallel>\<^bsub>t n\<^esub>" and "trusted nid" using actTr_def by auto
+      fix nid assume "nid \<in> actHn (t n)"
+      hence "\<parallel>nid\<parallel>\<^bsub>t n\<^esub>" and "honest nid" using actHn_def by auto
       show "prefix sbc (bc (\<sigma>\<^bsub>nid\<^esub>t n))"
       proof cases
         assume lAct: "\<exists>n' < n. n' \<ge> n\<^sub>s \<and> \<parallel>nid\<parallel>\<^bsub>t n'\<^esub>"    
@@ -1688,70 +1688,70 @@ next
           moreover from lAct have "\<exists>n'. latestAct_cond nid t n n'" by auto
           ultimately have "\<not> mining (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) \<and> bc (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) = MAX (pin (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)) \<or>
             mining (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) \<and> (\<exists>b. bc (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) = MAX (pin (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)) @ [b])"
-            using \<open>trusted nid\<close> bhv_tr_ex[of nid n t] by simp
+            using \<open>honest nid\<close> bhv_hn_ex[of nid n t] by simp
           moreover have "prefix sbc (MAX (pin (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)))"
           proof -
             from \<open>\<exists>n'. latestAct_cond nid t n n'\<close> have "\<parallel>nid\<parallel>\<^bsub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>"
               using latestAct_prop(1) by simp
             hence "pin (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) \<noteq> {}" and "finite (pin (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>))"
-              using nempty_input[of nid t "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>"] finite_input[of nid t "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>"] \<open>trusted nid\<close> by auto
+              using nempty_input[of nid t "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>"] finite_input[of nid t "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>"] \<open>honest nid\<close> by auto
             hence "MAX (pin (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)) \<in> pin (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)" using max_prop(1) by auto
             with \<open>\<parallel>nid\<parallel>\<^bsub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>\<close> obtain nid' where "\<parallel>nid'\<parallel>\<^bsub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>"
               and "bc (\<sigma>\<^bsub>nid'\<^esub>(t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)) = MAX (pin (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>))"
               using closed[where b="MAX (pin (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>))"] by blast
             moreover have "prefix sbc (bc (\<sigma>\<^bsub>nid'\<^esub>(t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)))"
             proof cases
-              assume "trusted nid'"
-              with \<open>\<parallel>nid'\<parallel>\<^bsub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>\<close> have "nid' \<in> actTr (t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)"
-                using actTr_def by simp
+              assume "honest nid'"
+              with \<open>\<parallel>nid'\<parallel>\<^bsub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>\<close> have "nid' \<in> actHn (t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)"
+                using actHn_def by simp
               moreover from \<open>\<exists>n'. latestAct_cond nid t n n'\<close> have "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> < n"
                 using latestAct_prop(2) by simp
               moreover from lAct have "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<ge> n\<^sub>s" using latestActless by blast
               ultimately show ?thesis using \<open>\<parallel>nid'\<parallel>\<^bsub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>\<close> step.IH by simp
             next
-              assume "\<not> trusted nid'"
+              assume "\<not> honest nid'"
               show ?thesis
               proof (rule ccontr)
                 assume "\<not> prefix sbc (bc (\<sigma>\<^bsub>nid'\<^esub>(t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)))"
-                moreover have "\<exists>n'\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'\<ge>n\<^sub>s \<and> length (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' 0) < length sbc \<and> (\<forall>n''>n'. n''\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'')))"
+                moreover have "\<exists>n'\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'\<ge>n\<^sub>s \<and> length (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' 0) < length sbc \<and> (\<forall>n''>n'. n''\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'')))"
                 proof cases
-                  assume "\<exists>n'\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'\<ge>n\<^sub>s \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n') \<and> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'))"
-                  hence "\<exists>n'\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'\<ge>n\<^sub>s \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n') \<and> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n')) \<and> (\<forall>n''>n'. n''\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'')))"
+                  assume "\<exists>n'\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'\<ge>n\<^sub>s \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n') \<and> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'))"
+                  hence "\<exists>n'\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'\<ge>n\<^sub>s \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n') \<and> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n')) \<and> (\<forall>n''>n'. n''\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'')))"
                   proof -
-                    let ?P="\<lambda>n'. n'\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> n'\<ge>n\<^sub>s  \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n') \<and> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'))"
-                    from \<open>\<exists>n'\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'\<ge>n\<^sub>s  \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n') \<and> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'))\<close> have "\<exists>n'. ?P n'" by simp
+                    let ?P="\<lambda>n'. n'\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> n'\<ge>n\<^sub>s  \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n') \<and> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'))"
+                    from \<open>\<exists>n'\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'\<ge>n\<^sub>s  \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n') \<and> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'))\<close> have "\<exists>n'. ?P n'" by simp
                     moreover have "\<forall>n'>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>. \<not> ?P n'" by simp
                     ultimately obtain n' where "?P n'" and "\<forall>n''. ?P n'' \<longrightarrow> n''\<le>n'" using boundedGreatest[of ?P _ "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>"] by auto
-                    hence "\<forall>n''>n'. n''\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n''))" by auto
+                    hence "\<forall>n''>n'. n''\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n''))" by auto
                     thus ?thesis using \<open>?P n'\<close> by auto
                   qed
                   then obtain n' where "n'\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" and "\<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n')"
-                    and "n'\<ge>n\<^sub>s" and "trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'))"
-                    and "\<forall>n''>n'. n''\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n''))" by auto
-                  hence "n'\<ge>n\<^sub>s" and untrusted: "\<forall>n''>n'. n''\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n''))" by auto
+                    and "n'\<ge>n\<^sub>s" and "honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'))"
+                    and "\<forall>n''>n'. n''\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n''))" by auto
+                  hence "n'\<ge>n\<^sub>s" and dishonest: "\<forall>n''>n'. n''\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n''))" by auto
                   moreover have "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub><n" using \<open>\<exists>n'. latestAct_cond nid t n n'\<close> latestAct_prop(2) by blast
                   with \<open>n'\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<close> have "n'<n" by simp
                   moreover from \<open>\<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n')\<close>
                     have "\<parallel>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n')\<parallel>\<^bsub>t n'\<^esub>" using devBC_act by simp
-                  with \<open>trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'))\<close>
-                    have "the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n') \<in>actTr (t n')" using actTr_def by simp
+                  with \<open>honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'))\<close>
+                    have "the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n') \<in>actHn (t n')" using actHn_def by simp
                   ultimately have "prefix sbc (bc (\<sigma>\<^bsub>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n')\<^esub>t n'))"
                     using step.IH by simp
   
-                  interpret ut: untrusted "devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'" "\<lambda>n. umining t (n' + n)"
+                  interpret ut: dishonest "devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'" "\<lambda>n. dmining t (n' + n)"
                   proof
                     fix n''
                     from devExt_devop[of t "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" nid' n'] have "prefix (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' (Suc n'')) (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' n'') \<or> (\<exists>b. devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' (Suc n'') = devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' n'' @ [b]) \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n'')) \<and> \<parallel>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))\<parallel>\<^bsub>t (n' + Suc n'')\<^esub> \<and> n' + Suc n'' \<le> \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> mining (\<sigma>\<^bsub>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))\<^esub>t (n' + Suc n''))" .
-                    thus "prefix (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' (Suc n'')) (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' n'') \<or> (\<exists>b. devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' (Suc n'') = devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' n'' @ [b]) \<and> umining t (n' + Suc n'')"
+                    thus "prefix (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' (Suc n'')) (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' n'') \<or> (\<exists>b. devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' (Suc n'') = devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' n'' @ [b]) \<and> dmining t (n' + Suc n'')"
                     proof
                       assume "prefix (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' (Suc n'')) (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' n'')"
                       thus ?thesis by simp
                     next
                       assume "(\<exists>b. devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' (Suc n'') = devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' n'' @ [b]) \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n'')) \<and> \<parallel>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))\<parallel>\<^bsub>t (n' + Suc n'')\<^esub> \<and> n' + Suc n'' \<le> \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> mining (\<sigma>\<^bsub>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))\<^esub>t (n' + Suc n''))"
                       hence "\<exists>b. devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' (Suc n'') = devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' n'' @ [b]" and "\<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))" and "\<parallel>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))\<parallel>\<^bsub>t (n' + Suc n'')\<^esub>" and "n' + Suc n'' \<le> \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" and "mining (\<sigma>\<^bsub>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))\<^esub>t (n' + Suc n''))" by auto
-                      moreover from \<open>n' + Suc n'' \<le> \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<close> \<open>\<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))\<close> have "\<not> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n'')))" using untrusted by simp
-                      with \<open>\<parallel>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))\<parallel>\<^bsub>t (n' + Suc n'')\<^esub>\<close> have "the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))\<in>actUt (t (n' + Suc n''))" using actUt_def by simp
-                      ultimately show ?thesis using umining_def by auto
+                      moreover from \<open>n' + Suc n'' \<le> \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<close> \<open>\<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))\<close> have "\<not> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n'')))" using dishonest by simp
+                      with \<open>\<parallel>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))\<parallel>\<^bsub>t (n' + Suc n'')\<^esub>\<close> have "the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))\<in>actDn (t (n' + Suc n''))" using actDn_def by simp
+                      ultimately show ?thesis using dmining_def by auto
                     qed
                   qed
                   from \<open>\<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n')\<close> have "bc (\<sigma>\<^bsub>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n')\<^esub>t n') = devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' 0"
@@ -1766,10 +1766,10 @@ next
                     and "length (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' n\<^sub>p) < length sbc" by auto
                   hence "length (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + n\<^sub>p) 0) < length sbc" using devExt_shift[of t "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" nid' n' n\<^sub>p] by simp
                   moreover from \<open>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n'\<close> \<open>n\<^sub>p \<le> \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>-n'\<close> have "(n' + n\<^sub>p) \<le> \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" by simp
-                  ultimately show ?thesis using \<open>n'\<ge>n\<^sub>s\<close> untrusted by auto
+                  ultimately show ?thesis using \<open>n'\<ge>n\<^sub>s\<close> dishonest by auto
                 next
-                  assume "\<not>(\<exists>n'\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'\<ge>n\<^sub>s \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n') \<and> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n')))"
-                  hence cas: "\<forall>n'\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'\<ge>n\<^sub>s \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n') \<longrightarrow> \<not> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'))" by auto
+                  assume "\<not>(\<exists>n'\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'\<ge>n\<^sub>s \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n') \<and> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n')))"
+                  hence cas: "\<forall>n'\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'\<ge>n\<^sub>s \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n') \<longrightarrow> \<not> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'))" by auto
                   show ?thesis
                   proof cases
                     assume "Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s)"
@@ -1779,7 +1779,7 @@ next
                       with \<open>Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s)\<close> have "devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s 0 = []" by simp
                       with \<open>\<not> sbc=[]\<close> have "length (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s 0) < length sbc" by simp
                       moreover from lAct have "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n\<^sub>s" using latestActless by blast
-                      moreover from cas have "\<forall>n''>n\<^sub>s. n''\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n''))" by simp
+                      moreover from cas have "\<forall>n''>n\<^sub>s. n''\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n''))" by simp
                       ultimately show ?thesis by auto
                     next
                       let ?P="\<lambda>n'. n'<n\<^sub>s \<and> \<not>Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n')"
@@ -1800,14 +1800,14 @@ next
                           have "devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s 0 = bc (\<sigma>\<^bsub>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' ?n')\<^esub>(t ?n'))" by simp
                         ultimately have "length (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s 0) < length sbc" by simp
                         moreover from lAct have "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n\<^sub>s" using latestActless by blast
-                        moreover from cas have "\<forall>n''>n\<^sub>s. n''\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n''))" by simp
+                        moreover from cas have "\<forall>n''>n\<^sub>s. n''\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n''))" by simp
                         ultimately show ?thesis by auto
                       next
-                        interpret ut: untrusted "devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s" "\<lambda>n. umining t (n\<^sub>s + n)"
+                        interpret ut: dishonest "devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s" "\<lambda>n. dmining t (n\<^sub>s + n)"
                         proof
                           fix n''
                           from devExt_devop[of t "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" nid' n\<^sub>s] have "prefix (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s (Suc n'')) (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s n'') \<or> (\<exists>b. devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s (Suc n'') = devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s n'' @ [b]) \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n\<^sub>s + Suc n'')) \<and> \<parallel>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n\<^sub>s + Suc n''))\<parallel>\<^bsub>t (n\<^sub>s + Suc n'')\<^esub> \<and> n\<^sub>s + Suc n'' \<le> \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> mining (\<sigma>\<^bsub>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n\<^sub>s + Suc n''))\<^esub>t (n\<^sub>s + Suc n''))" .
-                          thus "prefix (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s (Suc n'')) (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s n'') \<or> (\<exists>b. devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s (Suc n'') = devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s n'' @ [b]) \<and> umining t (n\<^sub>s + Suc n'')"
+                          thus "prefix (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s (Suc n'')) (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s n'') \<or> (\<exists>b. devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s (Suc n'') = devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s n'' @ [b]) \<and> dmining t (n\<^sub>s + Suc n'')"
                           proof
                             assume "prefix (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s (Suc n'')) (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s n'')" thus ?thesis by simp
                           next
@@ -1819,11 +1819,11 @@ next
                               and "mining (\<sigma>\<^bsub>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n\<^sub>s + Suc n''))\<^esub>t (n\<^sub>s + Suc n''))"
                               by auto
                             moreover from \<open>n\<^sub>s + Suc n'' \<le> \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<close> \<open>\<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n\<^sub>s + Suc n''))\<close>
-                              have "\<not> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n\<^sub>s + Suc n'')))"
+                              have "\<not> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n\<^sub>s + Suc n'')))"
                               using cas by simp
                             with \<open>\<parallel>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n\<^sub>s + Suc n''))\<parallel>\<^bsub>t (n\<^sub>s + Suc n'')\<^esub>\<close>
-                              have "the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n\<^sub>s + Suc n''))\<in>actUt (t (n\<^sub>s + Suc n''))" using actUt_def by simp
-                            ultimately show ?thesis using umining_def by auto
+                              have "the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n\<^sub>s + Suc n''))\<in>actDn (t (n\<^sub>s + Suc n''))" using actDn_def by simp
+                            ultimately show ?thesis using dmining_def by auto
                           qed
                         qed
   
@@ -1841,18 +1841,18 @@ next
                         moreover from lAct have "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n\<^sub>s" using latestActless by blast
                         with \<open>n\<^sub>p \<le> \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>-n\<^sub>s\<close> have "(n\<^sub>s + n\<^sub>p) \<le> \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" by simp
                         moreover from \<open>n\<^sub>p \<le> \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>-n\<^sub>s\<close> have "n\<^sub>p \<le> \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" by simp
-                        moreover have "\<forall>n''>n\<^sub>s + n\<^sub>p. n'' \<le> \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n''))" using cas by simp
+                        moreover have "\<forall>n''>n\<^sub>s + n\<^sub>p. n'' \<le> \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n''))" using cas by simp
                         ultimately show ?thesis by auto
                       qed
                     qed
                   next
                     assume asmp: "\<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s)"
                     moreover from lAct have "n\<^sub>s\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" using latestActless by blast
-                    ultimately have "\<not> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s))" using cas by simp
+                    ultimately have "\<not> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s))" using cas by simp
                     moreover from asmp have "\<parallel>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s)\<parallel>\<^bsub>t n\<^sub>s\<^esub>"
                       using devBC_act by simp
-                    ultimately have "the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s)\<in>actUt (t n\<^sub>s)"
-                      using actUt_def by simp
+                    ultimately have "the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s)\<in>actDn (t n\<^sub>s)"
+                      using actDn_def by simp
                     hence "length (bc (\<sigma>\<^bsub>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s)\<^esub>(t n\<^sub>s))) < length sbc"
                       using assms(2) by simp
                     moreover from asmp have
@@ -1860,21 +1860,21 @@ next
                       by simp
                     ultimately have "length (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n\<^sub>s 0) < length sbc" by simp
                     moreover from lAct have "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n\<^sub>s" using latestActless by blast
-                    moreover from cas have "\<forall>n''>n\<^sub>s. n''\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n''))" by simp
+                    moreover from cas have "\<forall>n''>n\<^sub>s. n''\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n''))" by simp
                     ultimately show ?thesis by auto
                   qed
                 qed
                 then obtain n' where "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n'" and "n'\<ge>n\<^sub>s"
                   and "length (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' 0) < length sbc"
-                  and untrusted: "\<forall>n''>n'. n''\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n''))" by auto
-                interpret ut: untrusted "devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'" "\<lambda>n. umining t (n' + n)"
+                  and dishonest: "\<forall>n''>n'. n''\<le>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'') \<longrightarrow> \<not> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n''))" by auto
+                interpret ut: dishonest "devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'" "\<lambda>n. dmining t (n' + n)"
                 proof
                   fix n''
                   from devExt_devop[of t "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" nid' n']
                   have "prefix (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' (Suc n'')) (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' n'') \<or>
                     (\<exists>b. devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' (Suc n'') = devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' n'' @ [b]) \<and> \<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n'')) \<and> \<parallel>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))\<parallel>\<^bsub>t (n' + Suc n'')\<^esub> \<and> n' + Suc n'' \<le> \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> mining (\<sigma>\<^bsub>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))\<^esub>t (n' + Suc n''))" .
                   thus "prefix (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' (Suc n'')) (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' n'')
-                    \<or> (\<exists>b. devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' (Suc n'') = devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' n'' @ [b]) \<and> umining t (n' + Suc n'')"
+                    \<or> (\<exists>b. devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' (Suc n'') = devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' n'' @ [b]) \<and> dmining t (n' + Suc n'')"
                   proof
                     assume "prefix (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' (Suc n'')) (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' n'')"
                     thus ?thesis by simp
@@ -1887,38 +1887,38 @@ next
                       and "mining (\<sigma>\<^bsub>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))\<^esub>t (n' + Suc n''))"
                       by auto
                     moreover from \<open>n' + Suc n'' \<le> \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<close> \<open>\<not> Option.is_none (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))\<close>
-                      have "\<not> trusted (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n'')))" using untrusted by simp
+                      have "\<not> honest (the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n'')))" using dishonest by simp
                     with \<open>\<parallel>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))\<parallel>\<^bsub>t (n' + Suc n'')\<^esub>\<close>
-                      have "the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))\<in>actUt (t (n' + Suc n''))"
-                      using actUt_def by simp
-                    ultimately show ?thesis using umining_def by auto
+                      have "the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' (n' + Suc n''))\<in>actDn (t (n' + Suc n''))"
+                      using actDn_def by simp
+                    ultimately show ?thesis using dmining_def by auto
                   qed
                 qed
-                interpret untrusted_growth "devLgthBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'" "\<lambda>n. umining t (n' + n)"
+                interpret dishonest_growth "devLgthBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'" "\<lambda>n. dmining t (n' + n)"
                   by unfold_locales
-                interpret trusted_growth "\<lambda>n. PoW t (n' + n)" "\<lambda>n. tmining t (n' + n)"
+                interpret honest_growth "\<lambda>n. PoW t (n' + n)" "\<lambda>n. hmining t (n' + n)"
                 proof
                   show "\<And>n. PoW t (n' + n) \<le> PoW t (n' + Suc n)" using pow_mono by simp
-                  show "\<And>n. tmining t (n' + Suc n) \<Longrightarrow> PoW t (n' + n) < PoW t (n' + Suc n)"
+                  show "\<And>n. hmining t (n' + Suc n) \<Longrightarrow> PoW t (n' + n) < PoW t (n' + Suc n)"
                     using pow_mining_suc by simp
                 qed
-                interpret bg: bounded_growth "length sbc" "\<lambda>n. PoW t (n' + n)" "devLgthBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'" "\<lambda>n. tmining t (n' + n)" "\<lambda>n. umining t (n' + n)" "length sbc" cb
+                interpret bg: bounded_growth "length sbc" "\<lambda>n. PoW t (n' + n)" "devLgthBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n'" "\<lambda>n. hmining t (n' + n)" "\<lambda>n. dmining t (n' + n)" "length sbc" cb
                 proof
                   from assms(3) \<open>n'\<ge>n\<^sub>s\<close> show "length sbc + cb \<le> PoW t (n' + 0)" using pow_mono[of n\<^sub>s n' t] by simp
                 next
                   from \<open>length (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' 0) < length sbc\<close> show "length (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' 0) < length sbc" .
                 next
                   fix n'' n'''
-                  assume "cb < card {i. n'' < i \<and> i \<le> n''' \<and> umining t (n' + i)}"
-                  hence "cb < card {i. n'' + n' < i \<and> i \<le> n''' + n' \<and> umining t i}"
-                    using cardshift[of n'' n''' "umining t" n'] by simp
+                  assume "cb < card {i. n'' < i \<and> i \<le> n''' \<and> dmining t (n' + i)}"
+                  hence "cb < card {i. n'' + n' < i \<and> i \<le> n''' + n' \<and> dmining t i}"
+                    using cardshift[of n'' n''' "dmining t" n'] by simp
                   with fair[of "n'' + n'" "n''' + n'" t]
-                  have "cb < card {i. n'' + n' < i \<and> i \<le> n''' + n' \<and> tmining t i}" by simp
-                  thus "cb < card {i. n'' < i \<and> i \<le> n''' \<and> tmining t (n' + i)}"
-                    using cardshift[of n'' n''' "tmining t" n'] by simp
+                  have "cb < card {i. n'' + n' < i \<and> i \<le> n''' + n' \<and> hmining t i}" by simp
+                  thus "cb < card {i. n'' < i \<and> i \<le> n''' \<and> hmining t (n' + i)}"
+                    using cardshift[of n'' n''' "hmining t" n'] by simp
                 qed
                 from \<open>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n'\<close> have "length (devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' (\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>-n')) < PoW t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>"
-                  using bg.tr_upper_bound[of "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>-n'"] by simp
+                  using bg.hn_upper_bound[of "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>-n'"] by simp
                 moreover from \<open>\<parallel>nid'\<parallel>\<^bsub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>\<close> \<open>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n'\<close>
                   have "bc (\<sigma>\<^bsub>the (devBC t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) = devExt t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> nid' n' (\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>-n')"
                   using devExt_bc_geq[of t "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" nid' "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" n'] by simp
@@ -1926,7 +1926,7 @@ next
                   using \<open>\<parallel>nid'\<parallel>\<^bsub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>\<close> by simp
                 moreover have "PoW t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> length (bc (\<sigma>\<^bsub>nid'\<^esub>(t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)))" (is "?lhs \<le> ?rhs")
                 proof -
-                  from \<open>trusted nid\<close> \<open>\<parallel>nid\<parallel>\<^bsub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>\<close>
+                  from \<open>honest nid\<close> \<open>\<parallel>nid\<parallel>\<^bsub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>\<close>
                     have "?lhs \<le> length (MAX (pin (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)))" using pow_le_max by simp
                   also from \<open>bc (\<sigma>\<^bsub>nid'\<^esub>(t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)) = MAX (pin (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>))\<close>
                     have "\<dots> = length (bc (\<sigma>\<^bsub>nid'\<^esub>(t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)))" by simp
@@ -1946,14 +1946,14 @@ next
           moreover from lAct have "\<exists>n'. latestAct_cond nid t n n'" by auto
           ultimately have "\<not> mining (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) \<and> bc (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) = bc (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) \<or>
             mining (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) \<and> (\<exists>b. bc (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) = bc (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) @ [b])"
-            using \<open>trusted nid\<close> bhv_tr_in[of nid n t] by simp
+            using \<open>honest nid\<close> bhv_hn_in[of nid n t] by simp
           moreover have "prefix sbc (bc (\<sigma>\<^bsub>nid\<^esub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>))"
           proof -
             from \<open>\<exists>n'. latestAct_cond nid t n n'\<close> have "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> < n" using latestAct_prop(2) by simp
             moreover from lAct have "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<ge> n\<^sub>s" using latestActless by blast
             moreover from \<open>\<exists>n'. latestAct_cond nid t n n'\<close> have "\<parallel>nid\<parallel>\<^bsub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>"
               using latestAct_prop(1) by simp
-            with \<open>trusted nid\<close> have "nid \<in> actTr (t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)" using actTr_def by simp
+            with \<open>honest nid\<close> have "nid \<in> actHn (t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)" using actHn_def by simp
             ultimately show ?thesis using step.IH by auto
           qed
           moreover from \<open>\<parallel>nid\<parallel>\<^bsub>t n\<^esub>\<close> have "\<langle>nid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>=n" using nxtAct_active by simp
@@ -1963,7 +1963,7 @@ next
         assume nAct: "\<not> (\<exists>n' < n. n' \<ge> n\<^sub>s \<and> \<parallel>nid\<parallel>\<^bsub>t n'\<^esub>)"
         moreover from step.hyps have "n\<^sub>s \<le> n" by simp
         ultimately have "\<langle>nid \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub> = n" using \<open>\<parallel>nid\<parallel>\<^bsub>t n\<^esub>\<close> nxtAct_eq[of n\<^sub>s n nid t] by simp
-        with \<open>trusted nid\<close> show ?thesis using assms(1) by auto
+        with \<open>honest nid\<close> show ?thesis using assms(1) by auto
       qed
     qed
   qed
