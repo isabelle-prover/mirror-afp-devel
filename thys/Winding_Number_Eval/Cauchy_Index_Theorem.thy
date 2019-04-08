@@ -604,14 +604,14 @@ qed
   
 lemma has_sgnx_times[sgnx_intros]:
   assumes "(f has_sgnx c1) F" "(g has_sgnx c2) F"
-  shows "((\<lambda>x. f x* g x) has_sgnx c1*c2) F"
+  shows "((\<lambda>x. f x* g x) has_sgnx c1 * c2) F"
 proof -
   have "\<forall>\<^sub>F x in F. sgn (f x) = c1 \<and> sgn (g x) = c2" 
     using assms unfolding has_sgnx_def by (intro eventually_conj,auto)
   then have "\<forall>\<^sub>F x in F. sgn (f x * g x) = c1 * c2" 
     apply (elim eventually_mono)
     by (simp add: sgn_mult)
-  then show "((\<lambda>x. f x* g x) has_sgnx c1*c2) F" unfolding has_sgnx_def by auto
+  then show "((\<lambda>x. f x* g x) has_sgnx c1 * c2) F" unfolding has_sgnx_def by auto
 qed
 
 lemma sgnx_able_times[sgnx_intros]:
@@ -626,7 +626,7 @@ proof -
   obtain c1 c2 where c1:"(f has_sgnx c1) F" and c2:"(g has_sgnx c2) F"
     using assms unfolding sgnx_able_def by auto
   have "sgnx f F=c1" "sgnx g F=c2" using c1 c2 \<open>F\<noteq>bot\<close> by auto
-  moreover have "((\<lambda>x. f x* g x) has_sgnx c1*c2) F" 
+  moreover have "((\<lambda>x. f x* g x) has_sgnx c1 * c2) F" 
     using has_sgnx_times[OF c1 c2] .
   ultimately show ?thesis using assms(1) has_sgnx_imp_sgnx by blast
 qed
@@ -1985,7 +1985,7 @@ proof -
   moreover have "finite S" 
   proof -
     define a' b' c' where "a'=r * Re c" and "b' = r* Im c" and "c'=Im c * Im z0 + Re z0 * Re c - d"
-    define f where "f \<theta>= a'*cos \<theta> + b' * sin \<theta> + c'" for \<theta>
+    define f where "f \<theta>= a' * cos \<theta> + b' * sin \<theta> + c'" for \<theta>
     have "(z0+r*exp (\<i> * \<theta> )) \<bullet> c = d \<longleftrightarrow> f \<theta> = 0" for \<theta>
       unfolding exp_Euler inner_complex_def f_def a'_def b'_def c'_def
       by (auto simp add:algebra_simps cos_of_real sin_of_real)
@@ -2307,7 +2307,7 @@ next
         then have "sgnx (poly p) (at_right a) = c" by auto
         moreover have "sgnx (poly q) (at_right a) = c"
           unfolding c_def using that by (auto intro!: tendsto_nonzero_sgnx)
-        ultimately have "sgnx (\<lambda>x. poly (q*p) x) (at_right a) = c*c"
+        ultimately have "sgnx (\<lambda>x. poly (q*p) x) (at_right a) = c * c"
           by (simp add:sgnx_times)
         moreover have "c\<noteq>0" by (simp add: c_def sgn_if that) 
         ultimately have "sgnx (\<lambda>x. poly (q*p) x) (at_right a) > 0"

@@ -1234,7 +1234,7 @@ proof -
               by (auto intro!:tendsto_eq_intros)
             have ?thesis when "Re z > Re z0"
             proof -
-              have g_alt:"g = (\<lambda>t. r*cos t + r)" unfolding g_def using \<open>\<bar>Re z - Re z0\<bar> = r\<close> that by auto
+              have g_alt:"g = (\<lambda>t. r * cos t + r)" unfolding g_def using \<open>\<bar>Re z - Re z0\<bar> = r\<close> that by auto
               have "(g has_sgnx 1) (at i)" 
               proof -
                 have "sgn (g t) = 1" when "t \<noteq> i " "dist t i < pi" for t
@@ -1275,7 +1275,7 @@ proof -
             qed
             moreover have ?thesis when "Re z < Re z0"
             proof -
-                have g_alt:"g = (\<lambda>t. r*cos t - r)" unfolding g_def using \<open>\<bar>Re z - Re z0\<bar> = r\<close> that by auto
+                have g_alt:"g = (\<lambda>t. r * cos t - r)" unfolding g_def using \<open>\<bar>Re z - Re z0\<bar> = r\<close> that by auto
                 have "(g has_sgnx - 1) (at i)" 
                 proof -
                   have "sgn (g t) = - 1" when "t \<noteq> i " "dist t i < pi" for t

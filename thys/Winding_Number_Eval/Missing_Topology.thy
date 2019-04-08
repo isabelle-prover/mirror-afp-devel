@@ -173,10 +173,10 @@ qed
 lemma filtermap_at_bot_linear_eq:
   fixes c::"'a::linordered_field"
   assumes "c\<noteq>0"
-  shows "filtermap (\<lambda>x. x*c+b) at_bot = (if c>0 then at_bot else at_top)"
+  shows "filtermap (\<lambda>x. x * c + b) at_bot = (if c>0 then at_bot else at_top)"
 proof (cases "c>0")
   case True
-  then have "filtermap (\<lambda>x. x*c+b) at_bot = at_bot" 
+  then have "filtermap (\<lambda>x. x * c + b) at_bot = at_bot" 
     apply (intro filtermap_fun_inverse[of "\<lambda>x. (x-b) / c"])
     subgoal unfolding eventually_at_bot_linorder filterlim_at_bot
       by (meson linordered_field_class.sign_simps(42) pos_divide_le_eq)
@@ -187,7 +187,7 @@ proof (cases "c>0")
 next
   case False
   then have "c<0" using \<open>c\<noteq>0\<close> by auto
-  then have "filtermap (\<lambda>x. x*c+b) at_bot = at_top"
+  then have "filtermap (\<lambda>x. x * c + b) at_bot = at_top"
     apply (intro filtermap_fun_inverse[of "\<lambda>x. (x-b) / c"])
     subgoal unfolding eventually_at_top_linorder filterlim_at_bot
       by (meson le_diff_eq neg_divide_le_eq)
@@ -246,10 +246,10 @@ qed
 lemma filtermap_at_top_linear_eq:
   fixes c::"'a::linordered_field"
   assumes "c\<noteq>0"
-  shows "filtermap (\<lambda>x. x*c+b) at_top = (if c>0 then at_top else at_bot)"
+  shows "filtermap (\<lambda>x. x * c + b) at_top = (if c>0 then at_top else at_bot)"
 proof (cases "c>0")
   case True
-  then have "filtermap (\<lambda>x. x*c+b) at_top = at_top" 
+  then have "filtermap (\<lambda>x. x * c + b) at_top = at_top" 
     apply (intro filtermap_fun_inverse[of "\<lambda>x. (x-b) / c"])
     subgoal unfolding eventually_at_top_linorder filterlim_at_top 
       by (meson le_diff_eq pos_le_divide_eq)
@@ -260,7 +260,7 @@ proof (cases "c>0")
 next
   case False
   then have "c<0" using \<open>c\<noteq>0\<close> by auto
-  then have "filtermap (\<lambda>x. x*c+b) at_top = at_bot"
+  then have "filtermap (\<lambda>x. x * c + b) at_top = at_bot"
     apply (intro filtermap_fun_inverse[of "\<lambda>x. (x-b) / c"])
     subgoal unfolding eventually_at_bot_linorder filterlim_at_top 
       by (meson linordered_field_class.sign_simps(42) neg_le_divide_eq)
@@ -354,19 +354,19 @@ qed
 lemma filterlim_at_top_linear_iff:
   fixes f::"'a::linordered_field \<Rightarrow> 'b"
   assumes "c\<noteq>0"
-  shows "(LIM x at_top. f (x*c+b) :> F2) \<longleftrightarrow> (if c>0 then (LIM x at_top. f x :> F2) 
+  shows "(LIM x at_top. f (x * c + b) :> F2) \<longleftrightarrow> (if c>0 then (LIM x at_top. f x :> F2) 
             else (LIM x at_bot. f x :> F2))"
   unfolding filterlim_def
-  apply (subst filtermap_filtermap[of f "\<lambda>x. x*c+b",symmetric])
+  apply (subst filtermap_filtermap[of f "\<lambda>x. x * c + b",symmetric])
   using assms by (auto simp add:filtermap_at_top_linear_eq)
     
 lemma filterlim_at_bot_linear_iff:
   fixes f::"'a::linordered_field \<Rightarrow> 'b"
   assumes "c\<noteq>0"
-  shows "(LIM x at_bot. f (x*c+b) :> F2) \<longleftrightarrow> (if c>0 then (LIM x at_bot. f x :> F2) 
+  shows "(LIM x at_bot. f (x * c + b) :> F2) \<longleftrightarrow> (if c>0 then (LIM x at_bot. f x :> F2) 
             else (LIM x at_top. f x :> F2)) "
   unfolding filterlim_def 
-  apply (subst filtermap_filtermap[of f "\<lambda>x. x*c+b",symmetric])
+  apply (subst filtermap_filtermap[of f "\<lambda>x. x * c + b",symmetric])
   using assms by (auto simp add:filtermap_at_bot_linear_eq)      
   
   

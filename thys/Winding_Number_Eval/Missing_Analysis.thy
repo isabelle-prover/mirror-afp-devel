@@ -107,14 +107,14 @@ lemma winding_number_uminus_comp:
   shows "winding_number (uminus \<circ> \<gamma>) z = winding_number \<gamma> (-z)"
 proof -
   define c where "c= 2 * pi * \<i>"
-  have "winding_number (uminus \<circ> \<gamma>) z = 1/c *contour_integral \<gamma> (\<lambda>w. deriv uminus w / (-w-z)) "
+  have "winding_number (uminus \<circ> \<gamma>) z = 1/c * contour_integral \<gamma> (\<lambda>w. deriv uminus w / (-w-z)) "
   proof (rule winding_number_comp[of UNIV, folded c_def])
     show "open UNIV" "uminus holomorphic_on UNIV" "path_image \<gamma> \<subseteq> UNIV" "valid_path \<gamma>"
       using \<open>valid_path \<gamma>\<close> by (auto intro:holomorphic_intros)
     show "z \<notin> path_image (uminus \<circ> \<gamma>)" 
       unfolding path_image_compose using \<open>- z \<notin> path_image \<gamma>\<close> by auto
   qed
-  also have "\<dots> = 1/c *contour_integral \<gamma> (\<lambda>w. 1 / (w- (-z)))"
+  also have "\<dots> = 1/c * contour_integral \<gamma> (\<lambda>w. 1 / (w- (-z)))"
     apply (auto intro!:contour_integral_eq simp add:field_simps)
     apply (subst deriv_linear[of "-1",simplified])
     by (simp add: minus_divide_right)
