@@ -3,22 +3,22 @@
 *)
 theory Recs
   imports Main
-    "~~/src/HOL/Library/Nat_Bijection"
-    "~~/src/HOL/Library/Discrete"
+    "HOL-Library.Nat_Bijection"
+    "HOL-Library.Discrete"
 begin
 
 
 text\<open>
-  A more streamlined and cleaned-up version of Recursive 
-  Functions following 
+  A more streamlined and cleaned-up version of Recursive
+  Functions following
 
     A Course in Formal Languages, Automata and Groups
-    I. M. Chiswell 
+    I. M. Chiswell
 
   and
 
     Lecture on Undecidability
-    Michael M. Wolf 
+    Michael M. Wolf
 \<close>
 
 declare One_nat_def[simp del]
@@ -40,11 +40,11 @@ lemma nth:
 
 section \<open>Some auxiliary lemmas about \<open>\<Sum>\<close> and \<open>\<Prod>\<close>\<close>
 
-lemma setprod_atMost_Suc[simp]: 
+lemma setprod_atMost_Suc[simp]:
   "(\<Prod>i \<le> Suc n. f i) = (\<Prod>i \<le> n. f i) * f(Suc n)"
   by(simp add:atMost_Suc mult_ac)
 
-lemma setprod_lessThan_Suc[simp]: 
+lemma setprod_lessThan_Suc[simp]:
   "(\<Prod>i < Suc n. f i) = (\<Prod>i < n. f i) * f n"
   by (simp add:lessThan_Suc mult_ac)
 
@@ -56,34 +56,34 @@ lemma setsum_add_nat_ivl2: "n \<le> p  \<Longrightarrow>
 
 lemma setsum_eq_zero [simp]:
   fixes f::"nat \<Rightarrow> nat"
-  shows "(\<Sum>i < n. f i) = 0 \<longleftrightarrow> (\<forall>i < n. f i = 0)" 
-    "(\<Sum>i \<le> n. f i) = 0 \<longleftrightarrow> (\<forall>i \<le> n. f i = 0)" 
+  shows "(\<Sum>i < n. f i) = 0 \<longleftrightarrow> (\<forall>i < n. f i = 0)"
+    "(\<Sum>i \<le> n. f i) = 0 \<longleftrightarrow> (\<forall>i \<le> n. f i = 0)"
   by (auto)
 
 lemma setprod_eq_zero [simp]:
   fixes f::"nat \<Rightarrow> nat"
-  shows "(\<Prod>i < n. f i) = 0 \<longleftrightarrow> (\<exists>i < n. f i = 0)" 
-    "(\<Prod>i \<le> n. f i) = 0 \<longleftrightarrow> (\<exists>i \<le> n. f i = 0)" 
+  shows "(\<Prod>i < n. f i) = 0 \<longleftrightarrow> (\<exists>i < n. f i = 0)"
+    "(\<Prod>i \<le> n. f i) = 0 \<longleftrightarrow> (\<exists>i \<le> n. f i = 0)"
   by (auto)
 
 lemma setsum_one_less:
   fixes n::nat
-  assumes "\<forall>i < n. f i \<le> 1" 
-  shows "(\<Sum>i < n. f i) \<le> n"  
+  assumes "\<forall>i < n. f i \<le> 1"
+  shows "(\<Sum>i < n. f i) \<le> n"
   using assms
   by (induct n) (auto)
 
 lemma setsum_one_le:
   fixes n::nat
-  assumes "\<forall>i \<le> n. f i \<le> 1" 
-  shows "(\<Sum>i \<le> n. f i) \<le> Suc n"  
+  assumes "\<forall>i \<le> n. f i \<le> 1"
+  shows "(\<Sum>i \<le> n. f i) \<le> Suc n"
   using assms
   by (induct n) (auto)
 
 lemma setsum_eq_one_le:
   fixes n::nat
-  assumes "\<forall>i \<le> n. f i = 1" 
-  shows "(\<Sum>i \<le> n. f i) = Suc n"  
+  assumes "\<forall>i \<le> n. f i = 1"
+  shows "(\<Sum>i \<le> n. f i) = Suc n"
   using assms
   by (induct n) (auto)
 
@@ -92,14 +92,14 @@ lemma setsum_least_eq:
   assumes h0: "p \<le> n"
   assumes h1: "\<forall>i \<in> {..<p}. f i = 1"
   assumes h2: "\<forall>i \<in> {p..n}. f i = 0"
-  shows "(\<Sum>i \<le> n. f i) = p"  
+  shows "(\<Sum>i \<le> n. f i) = p"
 proof -
-  have eq_p: "(\<Sum>i \<in> {..<p}. f i) = p" 
+  have eq_p: "(\<Sum>i \<in> {..<p}. f i) = p"
     using h1 by (induct p) (simp_all)
-  have eq_zero: "(\<Sum>i \<in> {p..n}. f i) = 0" 
+  have eq_zero: "(\<Sum>i \<in> {p..n}. f i) = 0"
     using h2 by auto
   have "(\<Sum>i \<le> n. f i) = (\<Sum>i \<in> {..<p}. f i) + (\<Sum>i \<in> {p..n}. f i)"
-    using h0 by (simp add: setsum_add_nat_ivl2) 
+    using h0 by (simp add: setsum_add_nat_ivl2)
   also have "... = (\<Sum>i \<in> {..<p}. f i)" using eq_zero by simp
   finally show "(\<Sum>i \<le> n. f i) = p" using eq_p by simp
 qed
@@ -112,21 +112,21 @@ lemma nat_mult_le_one:
 
 lemma setprod_one_le:
   fixes f::"nat \<Rightarrow> nat"
-  assumes "\<forall>i \<le> n. f i \<le> 1" 
-  shows "(\<Prod>i \<le> n. f i) \<le> 1" 
-  using assms 
+  assumes "\<forall>i \<le> n. f i \<le> 1"
+  shows "(\<Prod>i \<le> n. f i) \<le> 1"
+  using assms
   by (induct n) (auto intro: nat_mult_le_one)
 
 lemma setprod_greater_zero:
   fixes f::"nat \<Rightarrow> nat"
-  assumes "\<forall>i \<le> n. f i \<ge> 0" 
-  shows "(\<Prod>i \<le> n. f i) \<ge> 0" 
+  assumes "\<forall>i \<le> n. f i \<ge> 0"
+  shows "(\<Prod>i \<le> n. f i) \<ge> 0"
   using assms by (induct n) (auto)
 
 lemma setprod_eq_one:
   fixes f::"nat \<Rightarrow> nat"
-  assumes "\<forall>i \<le> n. f i = Suc 0" 
-  shows "(\<Prod>i \<le> n. f i) = Suc 0" 
+  assumes "\<forall>i \<le> n. f i = Suc 0"
+  shows "(\<Prod>i \<le> n. f i) = Suc 0"
   using assms by (induct n) (auto)
 
 lemma setsum_cut_off_less:
@@ -135,10 +135,10 @@ lemma setsum_cut_off_less:
     and     h2: "\<forall>i \<in> {m..<n}. f i = 0"
   shows "(\<Sum>i < n. f i) = (\<Sum>i < m. f i)"
 proof -
-  have eq_zero: "(\<Sum>i \<in> {m..<n}. f i) = 0" 
+  have eq_zero: "(\<Sum>i \<in> {m..<n}. f i) = 0"
     using h2 by auto
   have "(\<Sum>i < n. f i) = (\<Sum>i \<in> {..<m}. f i) + (\<Sum>i \<in> {m..<n}. f i)"
-    using h1 by (metis atLeast0LessThan le0 sum_add_nat_ivl) 
+    using h1 by (metis atLeast0LessThan le0 sum_add_nat_ivl)
   also have "... = (\<Sum>i \<in> {..<m}. f i)" using eq_zero by simp
   finally show "(\<Sum>i < n. f i) = (\<Sum>i < m. f i)" by simp
 qed
@@ -149,7 +149,7 @@ lemma setsum_cut_off_le:
     and     h2: "\<forall>i \<in> {m..n}. f i = 0"
   shows "(\<Sum>i \<le> n. f i) = (\<Sum>i < m. f i)"
 proof -
-  have eq_zero: "(\<Sum>i \<in> {m..n}. f i) = 0" 
+  have eq_zero: "(\<Sum>i \<in> {m..n}. f i) = 0"
     using h2 by auto
   have "(\<Sum>i \<le> n. f i) = (\<Sum>i \<in> {..<m}. f i) + (\<Sum>i \<in> {m..n}. f i)"
     using h1 by (simp add: setsum_add_nat_ivl2)
@@ -172,11 +172,11 @@ datatype recf =  Z
   |  Id nat nat
   |  Cn nat recf "recf list"
   |  Pr nat recf recf
-  |  Mn nat recf 
+  |  Mn nat recf
 
 fun arity :: "recf \<Rightarrow> nat"
   where
-    "arity Z = 1" 
+    "arity Z = 1"
   | "arity S = 1"
   | "arity (Id m n) = m"
   | "arity (Cn n f gs) = n"
@@ -198,28 +198,28 @@ text \<open>the evaluation function and termination relation\<close>
 
 fun rec_eval :: "recf \<Rightarrow> nat list \<Rightarrow> nat"
   where
-    "rec_eval Z xs = 0" 
-  | "rec_eval S xs = Suc (xs ! 0)" 
-  | "rec_eval (Id m n) xs = xs ! n" 
-  | "rec_eval (Cn n f gs) xs = rec_eval f (map (\<lambda>x. rec_eval x xs) gs)" 
+    "rec_eval Z xs = 0"
+  | "rec_eval S xs = Suc (xs ! 0)"
+  | "rec_eval (Id m n) xs = xs ! n"
+  | "rec_eval (Cn n f gs) xs = rec_eval f (map (\<lambda>x. rec_eval x xs) gs)"
   | "rec_eval (Pr n f g) (0 # xs) = rec_eval f xs"
-  | "rec_eval (Pr n f g) (Suc x # xs) = 
+  | "rec_eval (Pr n f g) (Suc x # xs) =
      rec_eval g (x # (rec_eval (Pr n f g) (x # xs)) # xs)"
   | "rec_eval (Mn n f) xs = (LEAST x. rec_eval f (x # xs) = 0)"
 
-inductive 
+inductive
   terminates :: "recf \<Rightarrow> nat list \<Rightarrow> bool"
   where
     termi_z: "terminates Z [n]"
   | termi_s: "terminates S [n]"
   | termi_id: "\<lbrakk>n < m; length xs = m\<rbrakk> \<Longrightarrow> terminates (Id m n) xs"
-  | termi_cn: "\<lbrakk>terminates f (map (\<lambda>g. rec_eval g xs) gs); 
+  | termi_cn: "\<lbrakk>terminates f (map (\<lambda>g. rec_eval g xs) gs);
               \<forall>g \<in> set gs. terminates g xs; length xs = n\<rbrakk> \<Longrightarrow> terminates (Cn n f gs) xs"
   | termi_pr: "\<lbrakk>\<forall> y < x. terminates g (y # (rec_eval (Pr n f g) (y # xs) # xs));
               terminates f xs;
-              length xs = n\<rbrakk> 
+              length xs = n\<rbrakk>
               \<Longrightarrow> terminates (Pr n f g) (x # xs)"
-  | termi_mn: "\<lbrakk>length xs = n; terminates f (r # xs); 
+  | termi_mn: "\<lbrakk>length xs = n; terminates f (r # xs);
               rec_eval f (r # xs) = 0;
               \<forall> i < r. terminates f (i # xs) \<and> rec_eval f (i # xs) > 0\<rbrakk> \<Longrightarrow> terminates (Mn n f) xs"
 
@@ -227,7 +227,7 @@ inductive
 section \<open>Arithmetic Functions\<close>
 
 text \<open>
-  \<open>constn n\<close> is the recursive function which computes 
+  \<open>constn n\<close> is the recursive function which computes
   natural number \<open>n\<close>.
 \<close>
 fun constn :: "nat \<Rightarrow> recf"
@@ -241,25 +241,25 @@ definition
 definition
   "rec_add = PR (Id 1 0) (CN S [Id 3 1])"
 
-definition 
+definition
   "rec_mult = PR Z (CN rec_add [Id 3 1, Id 3 2])"
 
-definition 
+definition
   "rec_power = rec_swap (PR (constn 1) (CN rec_mult [Id 3 1, Id 3 2]))"
 
-definition 
+definition
   "rec_fact_aux = PR (constn 1) (CN rec_mult [CN S [Id 3 0], Id 3 1])"
 
 definition
   "rec_fact = CN rec_fact_aux [Id 1 0, Id 1 0]"
 
-definition 
+definition
   "rec_predecessor = CN (PR Z (Id 3 0)) [Id 1 0, Id 1 0]"
 
-definition 
+definition
   "rec_minus = rec_swap (PR (Id 1 0) (CN rec_predecessor [Id 3 1]))"
 
-lemma constn_lemma [simp]: 
+lemma constn_lemma [simp]:
   "rec_eval (constn n) xs = n"
   by (induct n) (simp_all)
 
@@ -267,31 +267,31 @@ lemma swap_lemma [simp]:
   "rec_eval (rec_swap f) [x, y] = rec_eval f [y, x]"
   by (simp add: rec_swap_def)
 
-lemma add_lemma [simp]: 
+lemma add_lemma [simp]:
   "rec_eval rec_add [x, y] =  x + y"
   by (induct x) (simp_all add: rec_add_def)
 
-lemma mult_lemma [simp]: 
+lemma mult_lemma [simp]:
   "rec_eval rec_mult [x, y] = x * y"
   by (induct x) (simp_all add: rec_mult_def)
 
-lemma power_lemma [simp]: 
+lemma power_lemma [simp]:
   "rec_eval rec_power [x, y] = x ^ y"
   by (induct y) (simp_all add: rec_power_def)
 
-lemma fact_aux_lemma [simp]: 
+lemma fact_aux_lemma [simp]:
   "rec_eval rec_fact_aux [x, y] = fact x"
   by (induct x) (simp_all add: rec_fact_aux_def)
 
-lemma fact_lemma [simp]: 
+lemma fact_lemma [simp]:
   "rec_eval rec_fact [x] = fact x"
   by (simp add: rec_fact_def)
 
-lemma pred_lemma [simp]: 
+lemma pred_lemma [simp]:
   "rec_eval rec_predecessor [x] =  x - 1"
   by (induct x) (simp_all add: rec_predecessor_def)
 
-lemma minus_lemma [simp]: 
+lemma minus_lemma [simp]:
   "rec_eval rec_minus [x, y] = x - y"
   by (induct y) (simp_all add: rec_minus_def)
 
@@ -299,78 +299,78 @@ lemma minus_lemma [simp]:
 section \<open>Logical functions\<close>
 
 text \<open>
-  The \<open>sign\<close> function returns 1 when the input argument 
+  The \<open>sign\<close> function returns 1 when the input argument
   is greater than \<open>0\<close>.\<close>
 
-definition 
+definition
   "rec_sign = CN rec_minus [constn 1, CN rec_minus [constn 1, Id 1 0]]"
 
-definition 
+definition
   "rec_not = CN rec_minus [constn 1, Id 1 0]"
 
 text \<open>
   \<open>rec_eq\<close> compares two arguments: returns \<open>1\<close>
   if they are equal; \<open>0\<close> otherwise.\<close>
-definition 
+definition
   "rec_eq = CN rec_minus [CN (constn 1) [Id 2 0], CN rec_add [rec_minus, rec_swap rec_minus]]"
 
-definition 
+definition
   "rec_noteq = CN rec_not [rec_eq]"
 
-definition 
+definition
   "rec_conj = CN rec_sign [rec_mult]"
 
-definition 
+definition
   "rec_disj = CN rec_sign [rec_add]"
 
-definition 
+definition
   "rec_imp = CN rec_disj [CN rec_not [Id 2 0], Id 2 1]"
 
 text \<open>@{term "rec_ifz [z, x, y]"} returns x if z is zero,
   y otherwise;  @{term "rec_if [z, x, y]"} returns x if z is *not*
   zero, y otherwise\<close>
 
-definition 
+definition
   "rec_ifz = PR (Id 2 0) (Id 4 3)"
 
-definition 
+definition
   "rec_if = CN rec_ifz [CN rec_not [Id 3 0], Id 3 1, Id 3 2]"
 
 
-lemma sign_lemma [simp]: 
+lemma sign_lemma [simp]:
   "rec_eval rec_sign [x] = (if x = 0 then 0 else 1)"
   by (simp add: rec_sign_def)
 
-lemma not_lemma [simp]: 
+lemma not_lemma [simp]:
   "rec_eval rec_not [x] = (if x = 0 then 1 else 0)"
   by (simp add: rec_not_def)
 
-lemma eq_lemma [simp]: 
+lemma eq_lemma [simp]:
   "rec_eval rec_eq [x, y] = (if x = y then 1 else 0)"
   by (simp add: rec_eq_def)
 
-lemma noteq_lemma [simp]: 
+lemma noteq_lemma [simp]:
   "rec_eval rec_noteq [x, y] = (if x \<noteq> y then 1 else 0)"
   by (simp add: rec_noteq_def)
 
-lemma conj_lemma [simp]: 
+lemma conj_lemma [simp]:
   "rec_eval rec_conj [x, y] = (if x = 0 \<or> y = 0 then 0 else 1)"
   by (simp add: rec_conj_def)
 
-lemma disj_lemma [simp]: 
+lemma disj_lemma [simp]:
   "rec_eval rec_disj [x, y] = (if x = 0 \<and> y = 0 then 0 else 1)"
   by (simp add: rec_disj_def)
 
-lemma imp_lemma [simp]: 
+lemma imp_lemma [simp]:
   "rec_eval rec_imp [x, y] = (if 0 < x \<and> y = 0 then 0 else 1)"
   by (simp add: rec_imp_def)
 
 lemma ifz_lemma [simp]:
-  "rec_eval rec_ifz [z, x, y] = (if z = 0 then x else y)" 
+  "rec_eval rec_ifz [z, x, y] = (if z = 0 then x else y)"
   by (cases z) (simp_all add: rec_ifz_def)
 
 lemma if_lemma [simp]:
-  "rec_eval rec_if [z, x, y] = (if 0 < z then x else y)" 
+  "rec_eval rec_if [z, x, y] = (if 0 < z then x else y)"
   by (simp add: rec_if_def)
 
 section \<open>Less and Le Relations\<close>
@@ -379,61 +379,61 @@ text \<open>
   \<open>rec_less\<close> compares two arguments and returns \<open>1\<close> if
   the first is less than the second; otherwise returns \<open>0\<close>.\<close>
 
-definition 
+definition
   "rec_less = CN rec_sign [rec_swap rec_minus]"
 
-definition 
+definition
   "rec_le = CN rec_disj [rec_less, rec_eq]"
 
-lemma less_lemma [simp]: 
+lemma less_lemma [simp]:
   "rec_eval rec_less [x, y] = (if x < y then 1 else 0)"
   by (simp add: rec_less_def)
 
-lemma le_lemma [simp]: 
+lemma le_lemma [simp]:
   "rec_eval rec_le [x, y] = (if (x \<le> y) then 1 else 0)"
   by(simp add: rec_le_def)
 
 
 section \<open>Summation and Product Functions\<close>
 
-definition 
-  "rec_sigma1 f = PR (CN f [CN Z [Id 1 0], Id 1 0]) 
+definition
+  "rec_sigma1 f = PR (CN f [CN Z [Id 1 0], Id 1 0])
                      (CN rec_add [Id 3 1, CN f [CN S [Id 3 0], Id 3 2]])"
 
-definition 
-  "rec_sigma2 f = PR (CN f [CN Z [Id 2 0], Id 2 0, Id 2 1]) 
+definition
+  "rec_sigma2 f = PR (CN f [CN Z [Id 2 0], Id 2 0, Id 2 1])
                      (CN rec_add [Id 4 1, CN f [CN S [Id 4 0], Id 4 2, Id 4 3]])"
 
-definition 
-  "rec_accum1 f = PR (CN f [CN Z [Id 1 0], Id 1 0]) 
+definition
+  "rec_accum1 f = PR (CN f [CN Z [Id 1 0], Id 1 0])
                      (CN rec_mult [Id 3 1, CN f [CN S [Id 3 0], Id 3 2]])"
 
-definition 
-  "rec_accum2 f = PR (CN f [CN Z [Id 2 0], Id 2 0, Id 2 1]) 
+definition
+  "rec_accum2 f = PR (CN f [CN Z [Id 2 0], Id 2 0, Id 2 1])
                      (CN rec_mult [Id 4 1, CN f [CN S [Id 4 0], Id 4 2, Id 4 3]])"
 
-definition 
-  "rec_accum3 f = PR (CN f [CN Z [Id 3 0], Id 3 0, Id 3 1, Id 3 2]) 
+definition
+  "rec_accum3 f = PR (CN f [CN Z [Id 3 0], Id 3 0, Id 3 1, Id 3 2])
                      (CN rec_mult [Id 5 1, CN f [CN S [Id 5 0], Id 5 2, Id 5 3, Id 5 4]])"
 
 
-lemma sigma1_lemma [simp]: 
+lemma sigma1_lemma [simp]:
   shows "rec_eval (rec_sigma1 f) [x, y] = (\<Sum> z \<le> x. rec_eval f [z, y])"
   by (induct x) (simp_all add: rec_sigma1_def)
 
-lemma sigma2_lemma [simp]: 
+lemma sigma2_lemma [simp]:
   shows "rec_eval (rec_sigma2 f) [x, y1, y2] = (\<Sum> z \<le> x. rec_eval f  [z, y1, y2])"
   by (induct x) (simp_all add: rec_sigma2_def)
 
-lemma accum1_lemma [simp]: 
+lemma accum1_lemma [simp]:
   shows "rec_eval (rec_accum1 f) [x, y] = (\<Prod> z \<le> x. rec_eval f  [z, y])"
   by (induct x) (simp_all add: rec_accum1_def)
 
-lemma accum2_lemma [simp]: 
+lemma accum2_lemma [simp]:
   shows "rec_eval (rec_accum2 f) [x, y1, y2] = (\<Prod> z \<le> x. rec_eval f  [z, y1, y2])"
   by (induct x) (simp_all add: rec_accum2_def)
 
-lemma accum3_lemma [simp]: 
+lemma accum3_lemma [simp]:
   shows "rec_eval (rec_accum3 f) [x, y1, y2, y3] = (\<Prod> z \<le> x. (rec_eval f)  [z, y1, y2, y3])"
   by (induct x) (simp_all add: rec_accum3_def)
 
@@ -451,12 +451,12 @@ definition
 
 definition
   "rec_all1_less f = (let cond1 = CN rec_eq [Id 3 0, Id 3 1] in
-                      let cond2 = CN f [Id 3 0, Id 3 2] 
+                      let cond2 = CN f [Id 3 0, Id 3 2]
                       in CN (rec_all2 (CN rec_disj [cond1, cond2])) [Id 2 0, Id 2 0, Id 2 1])"
 
 definition
-  "rec_all2_less f = (let cond1 = CN rec_eq [Id 4 0, Id 4 1] in 
-                      let cond2 = CN f [Id 4 0, Id 4 2, Id 4 3] in 
+  "rec_all2_less f = (let cond1 = CN rec_eq [Id 4 0, Id 4 1] in
+                      let cond2 = CN f [Id 4 0, Id 4 2, Id 4 3] in
                       CN (rec_all3 (CN rec_disj [cond1, cond2])) [Id 3 0, Id 3 0, Id 3 1, Id 3 2])"
 
 definition
@@ -519,7 +519,7 @@ lemma Quo1:
   "x * (Quo x y) \<le> y"
   by (induct y) (simp_all)
 
-lemma Quo2: 
+lemma Quo2:
   "b * (Quo b a) + a mod b = a"
   by (induct a) (auto simp add: mod_Suc)
 
@@ -534,10 +534,10 @@ proof -
   have "x - (y mod x) > 0" using mod_less_divisor assms by auto
   then have "y < y + (x - (y mod x))" by simp
   then have "y < x + (y - (y mod x))" by simp
-  then show "y < x + x * (Quo x y)" by (simp add: Quo3) 
+  then show "y < x + x * (Quo x y)" by (simp add: Quo3)
 qed
 
-lemma Quo_div: 
+lemma Quo_div:
   shows "Quo x y = y div x"
   by (metis Quo0 Quo1 Quo4 div_by_0 div_nat_eqI mult_Suc_right neq0_conv)
 
@@ -575,9 +575,9 @@ fun BMax_rec where
   "BMax_rec R 0 = 0"
 | "BMax_rec R (Suc n) = (if R (Suc n) then (Suc n) else BMax_rec R n)"
 
-definition 
+definition
   BMax_set :: "(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> nat"
-  where 
+  where
     "BMax_set R x = Max ({z. z \<le> x \<and> R z} \<union> {0})"
 
 lemma BMax_rec_eq1:
@@ -598,14 +598,14 @@ lemma BMax_rec_eq3:
   "BMax_rec R x = Max (Set.filter (\<lambda>z. R z) {..x} \<union> {0})"
   by (simp add: BMax_rec_eq2 Set.filter_def)
 
-definition 
+definition
   "rec_max1 f = PR Z (CN rec_ifz [CN f [CN S [Id 3 0], Id 3 2], CN S [Id 3 0], Id 3 1])"
 
 lemma max1_lemma [simp]:
   "rec_eval (rec_max1 f) [x, y] = BMax_rec (\<lambda>u. rec_eval f [u, y] = 0) x"
   by (induct x) (simp_all add: rec_max1_def)
 
-definition 
+definition
   "rec_max2 f = PR Z (CN rec_ifz [CN f [CN S [Id 4 0], Id 4 2, Id 4 3], CN S [Id 4 0], Id 4 1])"
 
 lemma max2_lemma [simp]:
@@ -618,8 +618,8 @@ section \<open>Encodings using Cantor's pairing function\<close>
 text \<open>
   We use Cantor's pairing function from Nat-Bijection.
   However, we need to prove that the formulation of the
-  decoding function there is recursive. For this we first 
-  prove that we can extract the maximal triangle number 
+  decoding function there is recursive. For this we first
+  prove that we can extract the maximal triangle number
   using @{term prod_decode}.
 \<close>
 
@@ -635,15 +635,15 @@ abbreviation
 abbreviation
   "pdec2 z \<equiv> snd (prod_decode z)"
 
-abbreviation 
+abbreviation
   "penc m n \<equiv> prod_encode (m, n)"
 
-lemma fst_prod_decode: 
+lemma fst_prod_decode:
   "pdec1 z = z - triangle (Max_triangle z)"
-  by (subst (3) prod_decode_inverse[symmetric]) 
+  by (subst (3) prod_decode_inverse[symmetric])
     (simp add: prod_encode_def prod_decode_def split: prod.split)
 
-lemma snd_prod_decode: 
+lemma snd_prod_decode:
   "pdec2 z = Max_triangle z - pdec1 z"
   by (simp only: prod_decode_def)
 
@@ -656,7 +656,7 @@ lemma Max_triangle_triangle_le:
   by (subst (9) prod_decode_inverse[symmetric])
     (simp add: prod_decode_def prod_encode_def split: prod.split)
 
-lemma Max_triangle_le: 
+lemma Max_triangle_le:
   "Max_triangle z \<le> z"
 proof -
   have "Max_triangle z \<le> triangle (Max_triangle z)"
@@ -665,7 +665,7 @@ proof -
   finally show "Max_triangle z \<le> z" .
 qed
 
-lemma w_aux: 
+lemma w_aux:
   "Max_triangle (triangle k + m) = Max_triangle_aux k m"
   by (simp add: prod_decode_def[symmetric] prod_decode_triangle_add)
 
@@ -674,7 +674,7 @@ lemma y_aux: "y \<le> Max_triangle_aux y k"
   apply(subst (1 2) prod_decode_aux.simps)
   by(auto dest!:spec mp elim:Suc_leD)
 
-lemma Max_triangle_greatest: 
+lemma Max_triangle_greatest:
   "Max_triangle z = (GREATEST k. (triangle k \<le> z \<and> k \<le> z) \<or> k = 0)"
   apply(rule Greatest_equality[symmetric])
    apply(rule disjI1)
@@ -692,11 +692,11 @@ lemma Max_triangle_greatest:
   done
 
 
-definition 
+definition
   "rec_triangle = CN rec_quo [CN rec_mult [Id 1 0, S], constn 2]"
 
 definition
-  "rec_max_triangle = 
+  "rec_max_triangle =
        (let cond = CN rec_not [CN rec_le [CN rec_triangle [Id 2 0], Id 2 1]] in
         CN (rec_max1 cond) [Id 1 0, Id 1 0])"
 
@@ -707,7 +707,7 @@ lemma triangle_lemma [simp]:
 
 lemma max_triangle_lemma [simp]:
   "rec_eval rec_max_triangle [x] = Max_triangle x"
-  by (simp add: Max_triangle_greatest rec_max_triangle_def Let_def BMax_rec_eq1) 
+  by (simp add: Max_triangle_greatest rec_max_triangle_def Let_def BMax_rec_eq1)
 
 
 text \<open>Encodings for Products\<close>
@@ -715,11 +715,11 @@ text \<open>Encodings for Products\<close>
 definition
   "rec_penc = CN rec_add [CN rec_triangle [CN rec_add [Id 2 0, Id 2 1]], Id 2 0]"
 
-definition 
-  "rec_pdec1 = CN rec_minus [Id 1 0, CN rec_triangle [CN rec_max_triangle [Id 1 0]]]" 
+definition
+  "rec_pdec1 = CN rec_minus [Id 1 0, CN rec_triangle [CN rec_max_triangle [Id 1 0]]]"
 
-definition 
-  "rec_pdec2 = CN rec_minus [CN rec_max_triangle [Id 1 0], CN rec_pdec1 [Id 1 0]]" 
+definition
+  "rec_pdec2 = CN rec_minus [CN rec_max_triangle [Id 1 0], CN rec_pdec1 [Id 1 0]]"
 
 lemma pdec1_lemma [simp]:
   "rec_eval rec_pdec1 [z] = pdec1 z"
@@ -736,8 +736,8 @@ lemma penc_lemma [simp]:
 
 text \<open>Encodings of Lists\<close>
 
-fun 
-  lenc :: "nat list \<Rightarrow> nat" 
+fun
+  lenc :: "nat list \<Rightarrow> nat"
   where
     "lenc [] = 0"
   | "lenc (x # xs) = penc (Suc x) (lenc xs)"
@@ -749,7 +749,7 @@ fun
   | "ldec z (Suc n) = ldec (pdec2 z) n"
 
 lemma pdec_zero_simps [simp]:
-  "pdec1 0 = 0" 
+  "pdec1 0 = 0"
   "pdec2 0 = 0"
   by (simp_all add: prod_decode_def prod_decode_aux.simps)
 
@@ -757,13 +757,13 @@ lemma ldec_zero:
   "ldec 0 n = 0"
   by (induct n) (simp_all add: prod_decode_def prod_decode_aux.simps)
 
-lemma list_encode_inverse: 
+lemma list_encode_inverse:
   "ldec (lenc xs) n = (if n < length xs then xs ! n else 0)"
-  by (induct xs arbitrary: n rule: lenc.induct) 
+  by (induct xs arbitrary: n rule: lenc.induct)
     (auto simp add: ldec_zero nth_Cons split: nat.splits)
 
 lemma lenc_length_le:
-  "length xs \<le> lenc xs"  
+  "length xs \<le> lenc xs"
   by (induct xs) (simp_all add: prod_encode_def)
 
 
@@ -811,16 +811,16 @@ lemma enclen_zero [simp]:
 
 text \<open>Recursive Definitions for List Encodings\<close>
 
-fun 
-  rec_lenc :: "recf list \<Rightarrow> recf" 
+fun
+  rec_lenc :: "recf list \<Rightarrow> recf"
   where
     "rec_lenc [] = Z"
   | "rec_lenc (f # fs) = CN rec_penc [CN S [f], rec_lenc fs]"
 
-definition 
+definition
   "rec_ldec = CN rec_predecessor [CN rec_pdec1 [rec_swap (rec_iter rec_pdec2)]]"
 
-definition 
+definition
   "rec_inside = CN rec_less [Z, rec_swap (rec_iter rec_pdec2)]"
 
 definition
