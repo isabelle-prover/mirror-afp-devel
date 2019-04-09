@@ -74,7 +74,8 @@ proof -
     have "p = (\<Sum>a\<in>A. lookup r a * a)" unfolding p by (rule sum.cong, simp_all add: 1)
     also from \<open>finite A\<close> 2 have "... = (\<Sum>a\<in>keys r. lookup r a * a)"
     proof (rule sum.mono_neutral_right)
-      show "\<forall>a\<in>A - keys r. lookup r a * a = 0" by simp
+      show "\<forall>a\<in>A - keys r. lookup r a * a = 0"
+        by (simp add: in_keys_iff)
     qed
     finally show "p = ideal.rep r" by (simp only: ideal.rep_def)
   next
@@ -148,7 +149,7 @@ lemma sig_inv_set_closed_plus:
 proof (rule sig_inv_setI')
   fix v
   assume "v \<in> keys (r + s)"
-  hence "v \<in> keys r \<union> keys s" using keys_add_subset ..
+  hence "v \<in> keys r \<union> keys s" using Poly_Mapping.keys_add ..
   thus "component_of_term v < j"
   proof
     assume "v \<in> keys r"
@@ -515,7 +516,7 @@ proof -
     from this(1) \<open>i < length ?fs\<close> have t: "t \<in> keys (lookup r0 (?fs ! i))"
       by (simp add: lookup_idx_pm_of_pm q_def)
     hence "lookup r0 (?fs ! i) \<noteq> 0" by fastforce
-    hence "lookup r0 (?fs ! i) \<in> Poly_Mapping.range r0" by simp
+    hence "lookup r0 (?fs ! i) \<in> Poly_Mapping.range r0" by (simp add: in_keys_iff)
     hence "lookup r0 (?fs ! i) \<in> punit_dgrad_max_set d" using 1 ..
     hence "d t \<le> dgrad_max d" using t by (rule punit.dgrad_p_setD[simplified])
     thus "d (pp_of_term v) \<le> dgrad_max d" by (simp add: v pp_of_term_of_pair)
@@ -673,7 +674,7 @@ lemma sig_red_singleD1:
 lemma sig_red_singleD2:
   assumes "sig_red_single sing_reg top_tail p q f t"
   shows "t + punit.lt (rep_list f) \<in> keys (rep_list p)"
-  using assms unfolding sig_red_single_def by simp
+  using assms unfolding sig_red_single_def by (simp add: in_keys_iff)
 
 lemma sig_red_singleD3:
   assumes "sig_red_single sing_reg top_tail p q f t"
@@ -842,7 +843,8 @@ proof -
   from \<open>rep_list f \<noteq> 0\<close> have "punit.lc (rep_list f) \<noteq> 0" by (rule punit.lc_not_0)
   from assms(2) have *: "rep_list p + punit.monom_mult ?c t (rep_list f) \<noteq> 0"
     by (simp add: q rep_list_plus rep_list_monom_mult)
-  from in_keys have "lookup (rep_list p) (t + punit.lt (rep_list f)) \<noteq> 0" by simp
+  from in_keys have "lookup (rep_list p) (t + punit.lt (rep_list f)) \<noteq> 0"
+    by (simp add: in_keys_iff)
   moreover from \<open>rep_list f \<noteq> 0\<close> have "punit.lc (rep_list f) \<noteq> 0" by (rule punit.lc_not_0)
   ultimately have "?c \<noteq> 0" by simp
   hence "punit.lt (punit.monom_mult ?c t (rep_list f)) = t + punit.lt (rep_list f)"
@@ -1242,7 +1244,7 @@ proof
     from assms(4, 5, 7) have "sing_reg ((t - punit.lt (rep_list f)) \<oplus> lt f) (lt p)"
       by (simp only: term_is_le_rel_minus)
     thus "sig_red_single sing_reg top_tail p ?q f (t - punit.lt (rep_list f))"
-      by (simp add: sig_red_single_def assms(1-6, 8) eq)
+      by (simp add: assms eq sig_red_singleI)
   qed fact
 qed
 
@@ -4923,7 +4925,7 @@ proof -
           moreover from adds \<open>s \<oplus> lt b \<prec>\<^sub>t punit.lt (rep_list b) \<oplus> lt p'\<close> have "?s \<oplus> lt b \<prec>\<^sub>t lt p'"
             by (simp add: term_is_le_rel_minus)
           ultimately have "lookup (rep_list p') (?s + punit.lt (rep_list b)) = 0" by (rule c)
-          hence "s \<notin> keys (rep_list p')" by (simp add: eq0)
+          hence "s \<notin> keys (rep_list p')" by (simp add: eq0 in_keys_iff)
           thus ?thesis using \<open>s \<in> keys (rep_list p')\<close> ..
         next
           case False
@@ -4931,7 +4933,7 @@ proof -
           hence "lookup (rep_list p') s = lookup (punit.lower (rep_list p') t) s"
             by (simp add: punit.lookup_lower_when)
           also from \<open>p'' = 0\<close> have "... = 0" by (simp add: p''_def)
-          finally have "s \<notin> keys (rep_list p')" by simp
+          finally have "s \<notin> keys (rep_list p')" by (simp add: in_keys_iff)
           thus ?thesis using \<open>s \<in> keys (rep_list p')\<close> ..
         qed
       qed
@@ -8416,7 +8418,7 @@ proof
   from this(2) \<open>lc (poly_of_pair p) \<noteq> 0\<close> have "p' \<noteq> 0" by (simp add: lc_eq_zero_iff[symmetric])
   hence "lt p' \<in> keys p'" by (rule lt_in_keys)
   hence "j \<in> keys (vectorize_poly p')" by (simp add: keys_vectorize_poly j_def)
-  hence "q \<noteq> 0" by (simp add: q_def)
+  hence "q \<noteq> 0" by (simp add: q_def in_keys_iff)
 
   from \<open>p' \<in> sig_inv_set\<close> \<open>lt p' \<in> keys p'\<close> have "j < length fs"
     unfolding j_def by (rule sig_inv_setD')
@@ -8457,7 +8459,8 @@ proof
                               lookup (pm_of_idx_pm ?fs (vectorize_poly p')) k * k)"
     by (simp add: rep_list_def ideal.rep_def pm_of_idx_pm_take)
   also have "... = (\<Sum>k\<in>set ?fs. lookup (pm_of_idx_pm ?fs (vectorize_poly p')) k * k)"
-    using finite_set keys_pm_of_idx_pm_subset by (rule sum.mono_neutral_left) simp
+    using finite_set keys_pm_of_idx_pm_subset by (rule sum.mono_neutral_left) (simp add: in_keys_iff)
+
   also from 2 have "... = (\<Sum>k\<in>set ?fs. lookup (pm_of_idx_pm fs (vectorize_poly p')) k * k)"
     by (simp only: pm_of_idx_pm_take)
   also have "... = lookup (pm_of_idx_pm fs (vectorize_poly p')) (fs ! j) * fs ! j +

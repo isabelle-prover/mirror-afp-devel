@@ -91,9 +91,11 @@ next
     assume "t \<in> pp_of_term ` keys p"
     then obtain x where "x \<in> keys p" and "t = pp_of_term x" ..
     from this(2) have "term_of_pair (t, component_of_term x) = x" by (simp add: term_of_pair_pair)
-    with \<open>x \<in> keys p\<close> have "lookup p (term_of_pair (t, component_of_term x)) \<noteq> 0" by simp
+    with \<open>x \<in> keys p\<close> have "lookup p (term_of_pair (t, component_of_term x)) \<noteq> 0"
+      by (simp add: in_keys_iff)
     hence "lookup (proj_poly (component_of_term x) p) t \<noteq> 0" by (simp add: lookup_proj_poly)
-    hence t: "t \<in> keys (proj_poly (component_of_term x) p)" by simp
+    hence t: "t \<in> keys (proj_poly (component_of_term x) p)"
+      by (simp add: in_keys_iff)
     from \<open>x \<in> keys p\<close> have "component_of_term x \<in> keys (vectorize_poly p)"
       by (simp add: keys_vectorize_poly)
     from t show "t \<in> Keys (Poly_Mapping.range (vectorize_poly p))"

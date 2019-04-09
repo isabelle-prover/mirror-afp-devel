@@ -115,20 +115,22 @@ proof -
   hence eq1: "(\<Sum>v\<in>keys p \<union> keys q. monomial (lookup p v) (decr_grading_term d n v)) =
               (\<Sum>v\<in>keys p. monomial (lookup p v) (decr_grading_term d n v))"
   proof (rule sum.mono_neutral_right)
-    show "\<forall>v\<in>keys p \<union> keys q - keys p. monomial (lookup p v) (decr_grading_term d n v) = 0" by simp
+    show "\<forall>v\<in>keys p \<union> keys q - keys p. monomial (lookup p v) (decr_grading_term d n v) = 0"
+      by (simp add: in_keys_iff)
   qed simp
   from fin have eq2: "(\<Sum>v\<in>keys p \<union> keys q. monomial (lookup q v) (decr_grading_term d n v)) =
               (\<Sum>v\<in>keys q. monomial (lookup q v) (decr_grading_term d n v))"
   proof (rule sum.mono_neutral_right)
-    show "\<forall>v\<in>keys p \<union> keys q - keys q. monomial (lookup q v) (decr_grading_term d n v) = 0" by simp
+    show "\<forall>v\<in>keys p \<union> keys q - keys q. monomial (lookup q v) (decr_grading_term d n v) = 0"
+      by (simp add: in_keys_iff)
   qed simp
-  from fin keys_add_subset
+  from fin Poly_Mapping.keys_add
   have "decr_grading_p d n (p + q) =
                 (\<Sum>v\<in>keys p \<union> keys q. monomial (lookup (p + q) v) (decr_grading_term d n v))"
     unfolding decr_grading_p_def
   proof (rule sum.mono_neutral_left)
     show "\<forall>v\<in>keys p \<union> keys q - keys (p + q). monomial (lookup (p + q) v) (decr_grading_term d n v) = 0"
-      by simp
+      by (simp add: in_keys_iff)
   qed
   also have "... = (\<Sum>v\<in>keys p \<union> keys q. monomial (lookup p v) (decr_grading_term d n v)) +
                    (\<Sum>v\<in>keys p \<union> keys q. monomial (lookup q v) (decr_grading_term d n v))"
