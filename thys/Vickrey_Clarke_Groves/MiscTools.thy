@@ -1037,7 +1037,7 @@ abbreviation "toFunctionWithFallback R fallback ==
 notation 
   toFunctionWithFallback (infix "Else" 75)
 
-abbreviation 
+abbreviation sum' where
   "sum' R X == sum (R Else 0) X"
 
 lemma lm129: 
