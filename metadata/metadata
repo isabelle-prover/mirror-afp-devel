@@ -4746,6 +4746,11 @@ abstract =
   Gewirth's theory has stirred much attention in philosophy and
   ethics and has been proposed as a potential means to bound the impact
   of artificial general intelligence.
+extra-history =
+	Change history:
+	[2019-04-09]:
+	added proof for a stronger variant of the PGC and examplary inferences
+	(revision 88182cb0a2f6)<br>
 
 [Lowe_Ontological_Argument]
 title = Computer-assisted Reconstruction and Assessment of E. J. Lowe's Modal Ontological Argument
