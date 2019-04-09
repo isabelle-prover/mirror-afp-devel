@@ -12,8 +12,6 @@ imports
    "HOL-Computational_Algebra.Polynomial_Factorial"
 begin
 
-hide_const Group.subgroup Ideal.ideal
-
 subsection\<open>Previous lemmas and results\<close>
 
 lemma chain_le:
