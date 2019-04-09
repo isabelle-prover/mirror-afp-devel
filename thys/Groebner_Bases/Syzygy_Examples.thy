@@ -230,7 +230,7 @@ next
   also have "... = 0"
   proof (rule ccontr)
     assume "lookup (MP_oalist (lift_keys_pprod n xs)) v \<noteq> 0"
-    hence "v \<in> keys (MP_oalist (lift_keys_pprod n xs))" by (simp del: MP_oalist.rep_eq)
+    hence "v \<in> keys (MP_oalist (lift_keys_pprod n xs))" by (simp add: in_keys_iff del: MP_oalist.rep_eq)
     also have "... \<subseteq> map_component_pprod ((+) n) ` keys (MP_oalist xs)"
       by (fact pprod'.keys_lift_keys_subset)
     finally obtain u where "v = map_component_pprod ((+) n) u" ..
