@@ -421,16 +421,16 @@ proof -
         simp add: map_upt[of "\<lambda>x. c * lookup p x"] map_of_zip_map, rule)
     fix t
     assume "t \<notin> set ts"
-    with assms(1) have "t \<notin> keys p" by auto
-    thus "c * lookup p t = 0" by simp
+    thus "c * lookup p t = 0"
+      by (metis assms in_mono lookup_not_eq_zero_eq_in_keys mult_not_zero)
   qed
   have **: "lookup (Abs_poly_mapping (list_to_fun ts (list_of_vec (c \<cdot>\<^sub>v (poly_to_row ts p))))) =
             (\<lambda>t. c * lookup p t)"
   proof (simp only: *, rule Abs_poly_mapping_inverse, simp, rule finite_subset, rule, simp)
     fix t
     assume "c * lookup p t \<noteq> 0"
-    hence "lookup p t \<noteq> 0" using mult_not_zero by blast 
-    thus "t \<in> keys p" by simp
+    thus "t \<in> keys p"
+      using in_keys_iff by fastforce
   qed (fact finite_keys)
   show ?thesis unfolding row_to_poly_def
     by (rule poly_mapping_eqI) (simp only: list_to_poly_def ** lookup_map_scale)
@@ -480,10 +480,10 @@ lemma keys_row_to_poly: "keys (row_to_poly ts r) \<subseteq> set ts"
 proof
   fix t
   assume "t \<in> keys (row_to_poly ts r)"
-  hence "lookup (row_to_poly ts r) t \<noteq> 0" by simp
+  hence "lookup (row_to_poly ts r) t \<noteq> 0"
+    by blast
   thus "t \<in> set ts"
-  proof (simp add: row_to_poly_def lookup_list_to_poly list_to_fun_def del: lookup_not_eq_zero_eq_in_keys
-              split: option.splits)
+  proof (simp add: row_to_poly_def lookup_list_to_poly list_to_fun_def split: option.splits)
     fix c
     assume "map_of (zip ts (list_of_vec r)) t = Some c"
     thus "t \<in> set ts" by (meson in_set_zipE map_of_SomeD)
@@ -494,8 +494,9 @@ lemma lookup_row_to_poly_not_zeroE:
   assumes "lookup (row_to_poly ts r) t \<noteq> 0"
   obtains i where "i < length ts" and "t = ts ! i"
 proof -
-  from assms have "t \<in> keys (row_to_poly ts r)" by simp
-  have "t \<in> set ts" by (rule, fact, fact keys_row_to_poly)
+  from assms have "t \<in> keys (row_to_poly ts r)" by (simp add: in_keys_iff)
+  then have "t \<in> set ts"
+    by (meson in_mono punit.keys_row_to_poly)
   then obtain i where "i < length ts" and "t = ts ! i" by (metis in_set_conv_nth)
   thus ?thesis ..
 qed
@@ -556,8 +557,10 @@ proof (rule poly_mapping_eqI)
     with keys_row_to_poly[of ts "vec n (f1 + f2)"] keys_row_to_poly[of ts "vec n f1"]
       keys_row_to_poly[of ts "vec n f2"] have "t \<notin> keys ?l" and "t \<notin> keys ?r1" and "t \<notin> keys ?r2"
       by auto
-    from this(2) this(3) have "t \<notin> keys (?r1 + ?r2)" using keys_add_subset[of ?r1 ?r2] by auto
-    with \<open>t \<notin> keys ?l\<close> show ?thesis by simp
+    then have "t \<notin> keys (?r1 + ?r2)" 
+      by (meson Poly_Mapping.keys_add Un_iff subsetD)
+    with \<open>t \<notin> keys ?l\<close> show ?thesis
+      by (metis not_in_keys_iff_lookup_eq_zero)
   qed
 qed
 
@@ -605,7 +608,7 @@ proof (rule poly_mapping_eqI, simp only: lookup_map_scale)
     case False
     with keys_row_to_poly[of ts "c \<cdot>\<^sub>v r"] keys_row_to_poly[of ts r] have
       "t \<notin> keys ?l" and "t \<notin> keys ?r" by auto
-    thus ?thesis by simp
+    thus ?thesis by (simp add: in_keys_iff)
   qed
 qed
 
@@ -768,7 +771,7 @@ proof -
         and x: "x = c * lookup p t" by auto
       from cp have "p \<in> set ps" by (rule set_zip_rightD)
       with \<open>t \<notin> Keys (set ps)\<close> have "t \<notin> keys p" by (auto intro: in_KeysI)
-      thus "x = 0" by (simp add: x)
+      thus "x = 0" by (simp add: x  in_keys_iff)
     qed
     thus "(\<Sum>x\<leftarrow>zip (list_of_vec v) ps. lookup (case x of (c, x) \<Rightarrow> c \<cdot> x) t) = 0"
       by (metis (mono_tags, lifting) case_prod_conv cond_case_prod_eta)
@@ -949,7 +952,7 @@ proof (rule ccontr)
   let ?ts = "pps_to_list S"
   have len_ts: "length ?ts = dim_col A" by (simp only: length_pps_to_list assms(1))
   from assms(6) have "0 \<noteq> lookup (row_to_poly ?ts (row A i2)) (?ts ! (f i1))"
-    by (simp add: mat_to_polys_nth[OF assms(4)])
+    by (metis not_in_keys_iff_lookup_eq_zero punit.mat_to_polys_nth[OF assms(4)])
   also have "lookup (row_to_poly ?ts (row A i2)) (?ts ! (f i1)) = (row A i2) $ (f i1)"
     by (rule lookup_row_to_poly, fact distinct_pps_to_list, simp_all add: len_ts assms(5))
   finally have "A $$ (i2, f i1) \<noteq> 0" using assms(4) assms(5) by simp
