@@ -59,7 +59,7 @@ lemma NecLDa: "\<lfloor>A\<rfloor>\<^sup>D \<Longrightarrow> \<lfloor>\<^bold>\<
 lemma NecLDp:  "\<lfloor>A\<rfloor>\<^sup>D \<Longrightarrow> \<lfloor>\<^bold>\<box>\<^sub>pA\<rfloor>\<^sup>D" nitpick oops
 
 text\<open>\noindent{The following can be seen as a kind of 'analytic/a priori necessity' operator (to be contrasted to the more
-traditional metaphysic necessity).
+traditional alethic necessity).
 In Kaplan's framework, a sentence being logically (i.e. indexically) valid means its being true \emph{a priori}: it is guaranteed to be true
 in every possible context in which it is uttered, even though it may express distinct propositions in different contexts. This correlation
 between indexical validity and \emph{a prioricity} has also been claimed in other two-dimensional semantic frameworks @{cite "SEP2DSem"}.}\<close>
@@ -67,8 +67,8 @@ abbreviation ldvalidbox :: "m\<Rightarrow>m" ("\<^bold>\<box>\<^sup>D_" [52]53) 
 lemma "\<lfloor>\<^bold>\<box>\<^sup>D\<phi>\<rfloor>\<^sub>C \<equiv> \<forall>c.\<lfloor>\<phi>\<rfloor>\<^sub>c" by simp \<comment> \<open>  this operator works analogously to the box operator in modal logic S5 \<close>
 
 text\<open>\noindent{Quite trivially, the necessitation rule works for the combination of indexical validity with the previous operator.}\<close>
-lemma NecLDa: "\<lfloor>A\<rfloor>\<^sup>D \<Longrightarrow> \<lfloor>\<^bold>\<box>\<^sup>DA\<rfloor>\<^sup>D"  by simp
-lemma NecLDp:  "\<lfloor>A\<rfloor>\<^sup>D \<Longrightarrow> \<lfloor>\<^bold>\<box>\<^sup>DA\<rfloor>\<^sup>D" by simp
+lemma NecLD: "\<lfloor>A\<rfloor>\<^sup>D \<Longrightarrow> \<lfloor>\<^bold>\<box>\<^sup>DA\<rfloor>\<^sup>D"  by simp
+
 text\<open>\noindent{The operator above is not part of the original Kaplan's LD (@{cite "Kaplan1979"}) and has been added
 by us in order to better highlight some semantic features of our formalisation of Gewirth's argument in the next section and to being able to
 use the necessitation rule for some inference steps.}\<close>
