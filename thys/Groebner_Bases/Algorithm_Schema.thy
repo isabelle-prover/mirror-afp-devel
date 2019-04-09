@@ -4336,8 +4336,8 @@ next
   hence "set (punit.Keys_to_list (map fst bs)) \<noteq> {}" by (simp add: punit.set_Keys_to_list)
   hence "punit.Keys_to_list (map fst bs) \<noteq> []" by simp
   thus "remdups (map (\<lambda>_. ()) (punit.Keys_to_list (map fst bs))) = [()]"
-    by (metis (full_types) Nil_is_map_conv distinct_length_2_or_more distinct_remdups
-        old.unit.exhaust remdups_eq_nil_right_iff sorted.cases) (*SLOW: 20s*)
+    by (metis (full_types) old.unit.exhaust sorted.cases Nil_is_map_conv \<open>punit.Keys_to_list (map fst bs) \<noteq> []\<close> distinct_length_2_or_more distinct_remdups remdups_eq_nil_right_iff) 
+    (*SLOW: 13s*)
 qed
 
 lemma count_const_lt_components_punit [code]:

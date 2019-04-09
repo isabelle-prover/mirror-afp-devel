@@ -66,7 +66,7 @@ proof -
   from assms(2) have f_eq: "f = monomial c t" unfolding c_def
     by (metis (mono_tags, lifting) Diff_insert_absorb cancel_comm_monoid_add_class.add_cancel_right_right
         plus_except insert_absorb insert_not_empty keys_eq_empty_iff keys_except)
-  from assms(2) have "c \<noteq> 0" by (simp add: c_def)
+  from assms(2) have "c \<noteq> 0" using f_eq by auto
   hence "monomial 1 t = monom_mult (1 / c) 0 f" by (simp add: f_eq monom_mult_monomial term_simps)
   also from assms(1) have "... \<in> pmdl F" by (rule pmdl_closed_monom_mult)
   finally show ?thesis .

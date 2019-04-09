@@ -6,6 +6,8 @@ theory Syzygy
   imports Groebner_Bases More_MPoly_Type_Class
 begin
 
+declare in_keys_iff [simp]
+
 text \<open>In this theory we first introduce the general concept of @{emph \<open>syzygies\<close>} in modules, and
   then provide a method for computing Gr\"obner bases of syzygy modules of lists of multivariate
   vector-polynomials. Since syzygies in this context are themselves represented by vector-polynomials,
@@ -61,7 +63,7 @@ proof -
     show "\<forall>v\<in>keys r \<union> keys s - keys s. lookup s v *s v = 0" by simp
   qed simp
   have "rep (r + s) = (\<Sum>v\<in>keys (r + s). lookup (r + s) v *s v)" by (simp only: rep_def)
-  also from fin keys_add_subset have "... = (\<Sum>v\<in>keys r \<union> keys s. lookup (r + s) v *s v)"
+  also from fin Poly_Mapping.keys_add have "... = (\<Sum>v\<in>keys r \<union> keys s. lookup (r + s) v *s v)"
   proof (rule sum.mono_neutral_left)
     show "\<forall>i\<in>keys r \<union> keys s - keys (r + s). lookup (r + s) i *s i = 0" by simp
   qed
@@ -181,7 +183,7 @@ proof -
   show ?thesis
   proof (rule representsI)
     from r s have "keys r \<union> keys s \<subseteq> A \<union> B" by blast
-    with keys_add_subset show "keys (r + s) \<subseteq> A \<union> B" by (rule subset_trans)
+    with Poly_Mapping.keys_add show "keys (r + s) \<subseteq> A \<union> B" by (rule subset_trans)
   qed (simp add: rep_plus x y)
 qed
 
@@ -786,17 +788,10 @@ proof
 next
   show "insert (term_of_pair (0, i)) (map_component (\<lambda>k. k + n) ` keys b) \<subseteq> keys (lift_poly_syz n b i)"
   proof (simp, rule)
-    have "lookup (lift_poly_syz n b i) (term_of_pair (0, i)) \<noteq> 0" by (simp add: lookup_lift_poly_syz_alt)
-    thus "term_of_pair (0, i) \<in> keys (lift_poly_syz n b i)" by simp
+    show "lookup (lift_poly_syz n b i) (term_of_pair (0, i)) \<noteq> 0" by (simp add: lookup_lift_poly_syz_alt)
   next
     show "map_component (\<lambda>k. k + n) ` keys b \<subseteq> keys (lift_poly_syz n b i)"
-    proof (rule, elim imageE, simp)
-      fix x
-      assume "x \<in> keys b"
-      hence "lookup (lift_poly_syz n b i) (map_component (\<lambda>k. k + n) x) \<noteq> 0"
-        by (simp add: lookup_lift_poly_syz_alt map_component_def term_simps)
-      thus "map_component (\<lambda>k. k + n) x \<in> keys (lift_poly_syz n b i)" by simp
-    qed
+      by (simp add: image_subset_iff lookup_lift_poly_syz_alt map_component_def term_of_pair_pair)
   qed
 qed
 
@@ -864,7 +859,8 @@ proof
     assume "i \<notin> {0..<n}"
     hence "i - n + n = i" by simp
     hence 1: "map_component (\<lambda>k. k - n + n) x = x" by (simp add: map_component_def i term_simps)
-    have "map_component (\<lambda>k. k - n) x \<in> ?A" by (rule vimageI2, simp add: map_component_comp x 1)
+    have "map_component (\<lambda>k. k - n) x \<in> ?A"
+      by (metis "1" component_of_map_component map_component_def pp_of_map_component vimageI x)
     thus False by (simp add: \<open>?A = {}\<close>)
   qed
 next
