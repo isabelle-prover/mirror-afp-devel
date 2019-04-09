@@ -421,8 +421,6 @@ proof -
     from assms show "subgroup {x \<in> carrier G. H #> x \<in> A} G"
       by (metis (full_types) factgroup_subgroup_union_char factgroup_subgroup_union_subgroup normal_imp_subgroup)
   next
-    show "group G" by (rule is_group)
-  next
     interpret Anormal: normal A "(G Mod H)" using assms by simp
     fix x y
     assume x:"x \<in> carrier G" "y \<in> {x \<in> carrier G. H #> x \<in> A} #> x"
