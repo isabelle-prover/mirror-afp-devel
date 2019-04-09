@@ -145,5 +145,5 @@ text \<open>The above value-command evaluates the expression in Eval/SML to 7771
   a short vector solely by the verified @{const short_vector} algorithm, whereas
   the generated Haskell-code via the external LLL solver yields 60414!\<close>
 
-(* export_code short_vector_test_hybrid in Haskell module_name LLL file "~/Code" *)
+(* export_code short_vector_test_hybrid in Haskell module_name LLL *)
 end

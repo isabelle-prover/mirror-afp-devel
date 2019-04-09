@@ -660,6 +660,8 @@ lemma reduce_basis_hybrid: assumes res: "reduce_basis_hybrid \<alpha> fs_init = 
   by (auto split: if_splits)
 end
 
+
+
 lemma lll_oracle_default_code[code]: 
   "external_lll_solver x = Code.abort (STR ''no implementation of external_lll_solver specified'') (\<lambda> _. external_lll_solver x)" 
   by simp
@@ -667,17 +669,14 @@ lemma lll_oracle_default_code[code]:
 text \<open>By default, external solvers are disabled.
   For enabling an external solver, load it via a separate theory like \<^file>\<open>FPLLL_Solver.thy\<close>\<close>
 
-code_printing
-  constant enable_external_lll_solver \<rightharpoonup> (Haskell) "False"
-| constant enable_external_lll_solver \<rightharpoonup> (SML) "false"
-| constant enable_external_lll_solver \<rightharpoonup> (Eval) "false"
-| constant enable_external_lll_solver \<rightharpoonup> (Scala) "false"
-| constant enable_external_lll_solver \<rightharpoonup> (OCaml) "false"
+overloading enable_external_lll_solver \<equiv> enable_external_lll_solver
+begin
+  definition enable_external_lll_solver where "enable_external_lll_solver = False"
+end
 
 definition "short_vector_test_hybrid xs = 
   (let ys = map (vec_of_list o map int_of_integer) xs
    in integer_of_int (sq_norm (short_vector_hybrid (3/2) ys)))" 
-
-(* export_code short_vector_test_hybrid in Haskell module_name LLL file "~/Code" *)
  
+(* export_code short_vector_test_hybrid in Haskell module_name LLL *)
 end
