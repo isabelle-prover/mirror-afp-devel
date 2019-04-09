@@ -326,9 +326,9 @@ proof (cases "component_of_term (lt p) = component_of_term (lt q)")
       hence v_2: "v = (?l - t2) \<oplus> lt q" by (simp add: True l_2)
       from \<open>q \<noteq> 0\<close> have "lt q \<in> keys q" by (rule lt_in_keys)
       from \<open>lt p \<in> keys p\<close> have "lookup (?a p) v = 1"
-        by (simp add: v_1 lookup_monom_mult lc_def term_simps)
+        by (simp add: in_keys_iff v_1 lookup_monom_mult lc_def term_simps)
       also from \<open>lt q \<in> keys q\<close> have "... = lookup (?b q) v"
-        by (simp add: v_2 lookup_monom_mult lc_def term_simps)
+        by (simp add: in_keys_iff v_2 lookup_monom_mult lc_def term_simps)
       finally have "lookup (spoly p q) v = 0"
         by (simp add: spoly_def ec Let_def t1_def t2_def lookup_minus lc_def)
       moreover have "lookup (fst ?cp) v = 0"
@@ -1014,7 +1014,7 @@ proof (rule disjCI)
   next
     case False
     from not_red is_red_addsI[OF \<open>f \<in> F\<close> \<open>f \<noteq> 0\<close> _ lt_adds, of q] have "\<not> lt p \<in> (keys q)" by blast
-    hence "lookup q (lt p) = 0" by simp
+    hence "lookup q (lt p) = 0" by (simp add: in_keys_iff)
     with lt_in_keys[OF \<open>p \<noteq> 0\<close>] have "lt p \<in> (keys (p + q))" unfolding in_keys_iff by (simp add: lookup_add)
     from is_red_addsI[OF \<open>f \<in> F\<close> \<open>f \<noteq> 0\<close> this lt_adds] show ?thesis .
   qed

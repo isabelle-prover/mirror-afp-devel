@@ -54,17 +54,17 @@ proof -
   from finite_keys finite_keys have fin: "finite (keys r \<union> keys s)" by (rule finite_UnI)
   from fin have eq1: "(\<Sum>v\<in>keys r \<union> keys s. lookup r v *s v) = (\<Sum>v\<in>keys r. lookup r v *s v)"
   proof (rule sum.mono_neutral_right)
-    show "\<forall>v\<in>keys r \<union> keys s - keys r. lookup r v *s v = 0" by simp
+    show "\<forall>v\<in>keys r \<union> keys s - keys r. lookup r v *s v = 0" by (simp add: in_keys_iff)
   qed simp
   from fin have eq2: "(\<Sum>v\<in>keys r \<union> keys s. lookup s v *s v) = (\<Sum>v\<in>keys s. lookup s v *s v)"
   proof (rule sum.mono_neutral_right)
-    show "\<forall>v\<in>keys r \<union> keys s - keys s. lookup s v *s v = 0" by simp
+    show "\<forall>v\<in>keys r \<union> keys s - keys s. lookup s v *s v = 0" by (simp add: in_keys_iff)
   qed simp
   have "rep (r + s) = (\<Sum>v\<in>keys (r + s). lookup (r + s) v *s v)" by (simp only: rep_def)
-  also from fin keys_add_subset have "... = (\<Sum>v\<in>keys r \<union> keys s. lookup (r + s) v *s v)"
+  also have "... = (\<Sum>v\<in>keys r \<union> keys s. lookup (r + s) v *s v)"
   proof (rule sum.mono_neutral_left)
-    show "\<forall>i\<in>keys r \<union> keys s - keys (r + s). lookup (r + s) i *s i = 0" by simp
-  qed
+    show "\<forall>i\<in>keys r \<union> keys s - keys (r + s). lookup (r + s) i *s i = 0" by (simp add: in_keys_iff)
+  qed (auto simp: Poly_Mapping.keys_add)
   also have "... = (\<Sum>v\<in>keys r \<union> keys s. lookup r v *s v) + (\<Sum>v\<in>keys r \<union> keys s. lookup s v *s v)"
     by (simp add: lookup_add scale_left_distrib sum.distrib)
   also have "... = rep r + rep s" by (simp only: eq1 eq2 rep_def)
@@ -76,16 +76,16 @@ proof -
   from finite_keys finite_keys have fin: "finite (keys r \<union> keys s)" by (rule finite_UnI)
   from fin have eq1: "(\<Sum>v\<in>keys r \<union> keys s. lookup r v *s v) = (\<Sum>v\<in>keys r. lookup r v *s v)"
   proof (rule sum.mono_neutral_right)
-    show "\<forall>v\<in>keys r \<union> keys s - keys r. lookup r v *s v = 0" by simp
+    show "\<forall>v\<in>keys r \<union> keys s - keys r. lookup r v *s v = 0" by (simp add: in_keys_iff)
   qed simp
   from fin have eq2: "(\<Sum>v\<in>keys r \<union> keys s. lookup s v *s v) = (\<Sum>v\<in>keys s. lookup s v *s v)"
   proof (rule sum.mono_neutral_right)
-    show "\<forall>v\<in>keys r \<union> keys s - keys s. lookup s v *s v = 0" by simp
+    show "\<forall>v\<in>keys r \<union> keys s - keys s. lookup s v *s v = 0" by (simp add: in_keys_iff)
   qed simp
   have "rep (r - s) = (\<Sum>v\<in>keys (r - s). lookup (r - s) v *s v)" by (simp only: rep_def)
   also from fin keys_minus have "... = (\<Sum>v\<in>keys r \<union> keys s. lookup (r - s) v *s v)"
   proof (rule sum.mono_neutral_left)
-    show "\<forall>i\<in>keys r \<union> keys s - keys (r - s). lookup (r - s) i *s i = 0" by simp
+    show "\<forall>i\<in>keys r \<union> keys s - keys (r - s). lookup (r - s) i *s i = 0" by (simp add: in_keys_iff)
   qed
   also have "... = (\<Sum>v\<in>keys r \<union> keys s. lookup r v *s v) - (\<Sum>v\<in>keys r \<union> keys s. lookup s v *s v)"
     by (simp add: lookup_minus scale_left_diff_distrib sum_subtractf)
@@ -104,7 +104,7 @@ proof -
     by (simp only: rep_def)
   also from finite_keys sub have "... = (\<Sum>v\<in>keys r. lookup (monomial c 0 * r) v *s v)"
   proof (rule sum.mono_neutral_left)
-    show "\<forall>v\<in>keys r - keys (monomial c 0 * r). lookup (monomial c 0 * r) v *s v = 0" by simp
+    show "\<forall>v\<in>keys r - keys (monomial c 0 * r). lookup (monomial c 0 * r) v *s v = 0" by (simp add: in_keys_iff)
   qed
   also have "... = c *s (\<Sum>v\<in>keys r. lookup r v *s v)" by (simp add: l scale_sum_right)
   also have "... = c *s rep r" by (simp add: rep_def)
@@ -128,7 +128,7 @@ proof -
     have "x = (\<Sum>a\<in>A. lookup r a *s a)" unfolding x by (rule sum.cong, simp_all add: 1)
     also from \<open>finite A\<close> 2 have "... = (\<Sum>a\<in>keys r. lookup r a *s a)"
     proof (rule sum.mono_neutral_right)
-      show "\<forall>a\<in>A - keys r. lookup r a *s a = 0" by simp
+      show "\<forall>a\<in>A - keys r. lookup r a *s a = 0" by (simp add: in_keys_iff)
     qed
     finally show "x = rep r" by (simp only: rep_def)
   next
@@ -181,7 +181,8 @@ proof -
   show ?thesis
   proof (rule representsI)
     from r s have "keys r \<union> keys s \<subseteq> A \<union> B" by blast
-    with keys_add_subset show "keys (r + s) \<subseteq> A \<union> B" by (rule subset_trans)
+    thus "keys (r + s) \<subseteq> A \<union> B"
+      by (meson Poly_Mapping.keys_add subset_trans)
   qed (simp add: rep_plus x y)
 qed
 
@@ -354,7 +355,7 @@ lemma keys_pm_of_idx_pm_subset: "keys (pm_of_idx_pm xs f) \<subseteq> set xs"
 proof
   fix t
   assume "t \<in> keys (pm_of_idx_pm xs f)"
-  hence "lookup (pm_of_idx_pm xs f) t \<noteq> 0" by simp
+  hence "lookup (pm_of_idx_pm xs f) t \<noteq> 0" by (simp add: in_keys_iff)
   thus "t \<in> set xs" by (simp add: lookup_pm_of_idx_pm)
 qed
 
@@ -375,7 +376,7 @@ proof
       by (rule Min_in)
     thus "Min {i. i < length xs \<and> xs ! i = t} \<in> {0..<length xs}" by simp
   next
-    from t show "c \<notin> {0}" by (simp add: c)
+    from t show "c \<notin> {0}" by (simp add: c in_keys_iff)
   qed (fact c1)
 qed
 
@@ -499,7 +500,7 @@ proof (rule poly_mapping_eqI)
         with \<open>m1 < j\<close> have "i \<in> set ?xs" by (simp add: \<open>xs ! m1 = i\<close>)
         with False show False ..
       qed
-      thus "lookup f m1 = 0" by simp
+      thus "lookup f m1 = 0" by (simp add: in_keys_iff)
     qed
   qed
 qed
@@ -511,7 +512,7 @@ lemma keys_idx_pm_of_pm_subset: "keys (idx_pm_of_pm xs f) \<subseteq> {0..<lengt
 proof
   fix i
   assume "i \<in> keys (idx_pm_of_pm xs f)"
-  hence "lookup (idx_pm_of_pm xs f) i \<noteq> 0" by simp
+  hence "lookup (idx_pm_of_pm xs f) i \<noteq> 0" by (simp add: in_keys_iff)
   thus "i \<in> {0..<length xs}" by (simp add: lookup_idx_pm_of_pm)
 qed
 
@@ -540,7 +541,7 @@ proof (rule poly_mapping_eqI, simp add: lookup_pm_of_idx_pm when_def, intro conj
 next
   fix k
   assume "k \<notin> set xs"
-  with assms show "lookup f k = 0" by auto
+  with assms show "lookup f k = 0" by (auto simp: in_keys_iff)
 qed
 
 lemma idx_pm_of_pm_of_idx_pm:
@@ -556,7 +557,7 @@ proof (rule poly_mapping_eqI)
     case False
     hence "i \<notin> {0..<length xs}" by simp
     with assms(2) have "i \<notin> keys f" by blast
-    with False show ?thesis by (simp add: lookup_idx_pm_of_pm)
+    with False show ?thesis by (simp add: in_keys_iff lookup_idx_pm_of_pm)
   qed
 qed
 
@@ -735,7 +736,7 @@ proof
   next
     assume "n \<le> component_of_term x \<and> lookup b (map_component (\<lambda>k. k - n) x) \<noteq> 0"
     hence "n \<le> component_of_term x" and 2: "map_component (\<lambda>k. k - n) x \<in> keys b"
-      by (simp_all split: if_split_asm)
+      by (auto simp: in_keys_iff)
     from this(1) have 3: "map_component (\<lambda>k. k - n + n) x = x" by (simp add: map_component_def term_simps)
     from 2 have "map_component (\<lambda>k. k + n) (map_component (\<lambda>k. k - n) x) \<in> map_component (\<lambda>k. k + n) ` keys b"
       by (rule imageI)
@@ -778,7 +779,7 @@ proof
   proof
     fix x
     assume "x \<in> keys (lift_poly_syz n b i)"
-    hence "lookup (lift_poly_syz n b i) x \<noteq> 0" by simp
+    hence "lookup (lift_poly_syz n b i) x \<noteq> 0" by (simp add: in_keys_iff)
     thus "x \<in> ?A" by (simp add: lookup_lift_poly_syz)
   qed
   also note keys_lift_poly_syz_aux
@@ -787,15 +788,15 @@ next
   show "insert (term_of_pair (0, i)) (map_component (\<lambda>k. k + n) ` keys b) \<subseteq> keys (lift_poly_syz n b i)"
   proof (simp, rule)
     have "lookup (lift_poly_syz n b i) (term_of_pair (0, i)) \<noteq> 0" by (simp add: lookup_lift_poly_syz_alt)
-    thus "term_of_pair (0, i) \<in> keys (lift_poly_syz n b i)" by simp
+    thus "term_of_pair (0, i) \<in> keys (lift_poly_syz n b i)" by (simp add: in_keys_iff)
   next
     show "map_component (\<lambda>k. k + n) ` keys b \<subseteq> keys (lift_poly_syz n b i)"
     proof (rule, elim imageE, simp)
       fix x
       assume "x \<in> keys b"
       hence "lookup (lift_poly_syz n b i) (map_component (\<lambda>k. k + n) x) \<noteq> 0"
-        by (simp add: lookup_lift_poly_syz_alt map_component_def term_simps)
-      thus "map_component (\<lambda>k. k + n) x \<in> keys (lift_poly_syz n b i)" by simp
+        by (simp add: in_keys_iff lookup_lift_poly_syz_alt map_component_def term_simps)
+      thus "map_component (\<lambda>k. k + n) x \<in> keys (lift_poly_syz n b i)" by (simp add: in_keys_iff)
     qed
   qed
 qed
@@ -912,7 +913,7 @@ proof -
   next
     fix x
     assume "lookup (proj_poly_syz n p) x \<noteq> 0"
-    hence "map_component (\<lambda>k. k + n) x \<in> keys p" by (simp add: lookup_proj_poly_syz)
+    hence "map_component (\<lambda>k. k + n) x \<in> keys p" by (simp add: in_keys_iff lookup_proj_poly_syz)
     hence "map_component (\<lambda>k. k + n) x \<preceq>\<^sub>t lt p" by (rule lt_max_keys)
     with assms(1) show "x \<preceq>\<^sub>t ?l" by (auto simp add: is_pot_ord term_simps)
   qed
@@ -1185,7 +1186,7 @@ proof (rule syzygy_module_listI)
     have "(\<Sum>v\<in>keys (pm_of_idx_pm bs (vectorize_poly s)).
               mult_scalar (lookup (pm_of_idx_pm bs (vectorize_poly s)) v) v) =
           (\<Sum>b\<in>set bs. mult_scalar (lookup (pm_of_idx_pm bs (vectorize_poly s)) b) b)"
-      by (rule sum.mono_neutral_left, fact finite_set, fact keys_pm_of_idx_pm_subset, simp)
+      by (rule sum.mono_neutral_left, fact finite_set, fact keys_pm_of_idx_pm_subset, simp add: in_keys_iff)
     also have "... = sum_list (map (\<lambda>b. mult_scalar (lookup (pm_of_idx_pm bs (vectorize_poly s)) b) b) bs)"
       by (simp only: sum_code distinct_remdups_id[OF assms(1)])
     also have "... = sum_list (map2 mult_scalar (cofactor_list_syz (length bs) s) bs)"
@@ -1264,7 +1265,7 @@ proof
     also have "... = (\<Sum>b\<in>set bs. mult_scalar (lookup s' b) b)"
       by (simp only: sum_code distinct_remdups_id[OF assms])
     also have "... = (\<Sum>v\<in>keys s'. mult_scalar (lookup s' v) v)"
-      by (rule sum.mono_neutral_right, fact finite_set, fact, simp)
+      by (rule sum.mono_neutral_right, fact finite_set, fact, simp add: in_keys_iff)
     also have "... = 0" by (simp add: 1 pmdl.rep_def)
     finally have eq: "proj_poly_syz (length bs) ?r = 0" .
     show "proj_poly_syz (length bs) s = proj_poly_syz (length bs) ?r"
