@@ -2065,7 +2065,7 @@ next
   proof cases
     assume "n < length qs"
     thus ?case using 2
-    by(simp add: Cons_nth_drop_Suc[symmetric,where i=n] len_acts sum_head_upt_Suc
+    by(simp add: Cons_nth_drop_Suc[symmetric,where i=n] len_acts sum.atLeast_Suc_lessThan
       t_A'_t free_A_def paid_A'_def)
   next
     assume "\<not> n < length qs" thus ?case by (simp add: len_acts)

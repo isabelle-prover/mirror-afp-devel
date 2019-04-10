@@ -240,10 +240,10 @@ next
     fix v::"nat \<Rightarrow> 'a"
     define w where "w = (\<lambda>i. if i = n then v n + v (Suc n) else v i)"
     have "(\<Sum>i\<in>{..Suc n}. v i) = (\<Sum>i\<in>{..<n}. v i) + v n + v (Suc n)"
-      using lessThan_Suc_atMost sum_lessThan_Suc by auto
+      using lessThan_Suc_atMost sum.lessThan_Suc by auto
     also have "... = (\<Sum>i\<in>{..<n}. w i) + w n" unfolding w_def by auto
     finally have "(\<Sum>i\<in>{..Suc n}. v i) = (\<Sum>i\<in>{..n}. w i)"
-      by (metis lessThan_Suc_atMost sum_lessThan_Suc)
+      by (metis lessThan_Suc_atMost sum.lessThan_Suc)
     then have "eNorm N (\<Sum>i\<in>{..Suc n}. v i) = eNorm N (\<Sum>i\<in>{..n}. w i)" by simp
     also have "... \<le> (\<Sum>i\<in>{..<n}. (defect N)^(Suc i) * eNorm N (w i)) + (defect N)^n * eNorm N (w n)"
       using Suc.IH by auto

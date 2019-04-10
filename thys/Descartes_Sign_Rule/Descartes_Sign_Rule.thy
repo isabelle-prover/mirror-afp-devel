@@ -128,11 +128,11 @@ proof (induction xs arbitrary: n rule: psums.induct[case_names Nil sng rec])
     also from rec.prems Suc have "\<dots> = (\<Sum>i\<le>m. ((x+y) # xs) ! i)" 
       by (intro rec.IH) simp_all
     also have "\<dots> = x + y + (\<Sum>i=1..m. (y#xs) ! i)"
-      by (auto simp: atLeast0AtMost [symmetric] sum_head_Suc[of 0])
+      by (auto simp: atLeast0AtMost [symmetric] sum.atLeast_Suc_atMost[of 0])
     also have "(\<Sum>i=1..m. (y#xs) ! i) = (\<Sum>i=Suc 1..Suc m. (x#y#xs) ! i)"
       by (subst sum_shift_bounds_cl_Suc_ivl) simp
     also from Suc have "x + y + \<dots> = (\<Sum>i\<le>n. (x#y#xs) ! i)"
-      by (auto simp: atLeast0AtMost [symmetric] sum_head_Suc add_ac)
+      by (auto simp: atLeast0AtMost [symmetric] sum.atLeast_Suc_atMost add_ac)
     finally show ?thesis .
   qed simp
 qed simp_all

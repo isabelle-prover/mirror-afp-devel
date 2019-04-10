@@ -54,10 +54,10 @@ lemma all1_vec_scalar_prod:
 shows "all1_vec (length xs) \<bullet> (vec_of_list xs) = sum_list xs"
 proof -
   have "all1_vec (length xs) \<bullet> (vec_of_list xs) = (\<Sum>i = 0..<dim_vec (vec_of_list xs). vec_of_list xs $ i)"
-    unfolding scalar_prod_def by (metis (no_types, lifting) all1_vec_def mult_cancel_right1 sum_ivl_cong
+    unfolding scalar_prod_def by (metis (no_types, lifting) all1_vec_def mult_cancel_right1 sum.ivl_cong
     vec.abs_eq dim_vec index_vec vec_of_list.abs_eq)
   also have "... = (\<Sum>i = 0..<length xs. xs ! i)" using vec.abs_eq dim_vec vec_of_list.abs_eq
-    by (metis sum_ivl_cong index_vec)
+    by (metis sum.ivl_cong index_vec)
   also have "... = sum_list xs" by (simp add: sum_list_sum_nth)
   finally show ?thesis by auto
 qed

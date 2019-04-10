@@ -507,7 +507,7 @@ qed
 
 lemma sum_upto_add_nat:
   "a \<le> b \<Longrightarrow> sum f {..<(a :: nat)} + sum f {a..<b} = sum f {..<b}"
-by (metis atLeast0LessThan le0 sum_add_nat_ivl)
+by (metis atLeast0LessThan le0 sum.atLeastLessThan_concat)
 
 lemma nat_fun_sum_eq_conv:
   fixes f :: "'a \<Rightarrow> nat"

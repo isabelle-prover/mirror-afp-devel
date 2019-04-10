@@ -406,7 +406,7 @@ proof -
     by (subst sum_subtractf) (simp add: harm_def sum.distrib sum_distrib_left divide_simps)
   also have "(\<Sum>k=1..n. inverse (real (Suc k))) = (\<Sum>k=Suc 1..Suc n. inverse (real k))"
     by (intro sum.reindex_bij_witness[of _ "\<lambda>x. x - 1" Suc]) auto
-  also have "\<dots> = harm (Suc n) - 1" unfolding harm_def by (subst (2) sum_head_Suc) simp_all
+  also have "\<dots> = harm (Suc n) - 1" unfolding harm_def by (subst (2) sum.atLeast_Suc_atMost) simp_all
   finally have "F n = 2 * harm n + 4 * (1 / (n + 1) - 1)" by (simp add: harm_Suc field_simps)
   also have "\<dots> * real (n + 1) = 2 * real (n + 1) * harm n - 4 * real n"
     by (simp add: field_simps)

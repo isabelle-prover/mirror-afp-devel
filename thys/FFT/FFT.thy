@@ -65,7 +65,7 @@ lemma sum_add_split_nat_ivl:
     and g: "!!i. [| m <= i; i < k |] ==> g i = f i"
     and h: "!!i. [| k <= i; i < n |] ==> h i = f i"
   shows "sum g {m..<k} + sum h {k..<n} = sum f {m..<n}"
-  using le g h by (simp add: sum_add_nat_ivl cong: sum.cong_simp)
+  using le g h by (simp add: sum.atLeastLessThan_concat cong: sum.cong_simp)
 
 lemma ivl_splice_Un:
   "{0..<2*n::nat} = ((*) 2 ` {0..<n}) \<union> ((%i. Suc (2*i)) ` {0..<n})"

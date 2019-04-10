@@ -439,7 +439,7 @@ proof -
       have "(\<Sum>i<n-1. abs(u s ((T^^(i * s+t))x))) + u s ((T^^((n-1) * s+t)) x)
         \<le> (\<Sum>i<n-1. abs(u s ((T^^(i * s+t))x))) + abs(u s ((T^^((n-1) * s+t)) x))" by auto
       also have "... \<le> (\<Sum>i<n. abs(u s ((T^^(i* s+t))x)))"
-        using \<open>n\<ge>1\<close> lessThan_Suc_atMost sum_lessThan_Suc[where ?n = "n-1" and ?f = "\<lambda>i. abs(u s ((T^^(i* s+t))x))" , symmetric] by auto
+        using \<open>n\<ge>1\<close> lessThan_Suc_atMost sum.lessThan_Suc[where ?n = "n-1" and ?f = "\<lambda>i. abs(u s ((T^^(i* s+t))x))" , symmetric] by auto
       finally have ***: "(\<Sum>i<n-1. abs(u s ((T^^(i* s+t))x))) + u s ((T^^((n-1) * s+t)) x) \<le> (\<Sum>i<n. abs(u s ((T^^(i* s+t))x)))"
         by simp
 
@@ -502,7 +502,7 @@ proof -
         also have "... \<le> (\<Sum>j \<in> {(n-1) * s+t..<m}. abs(u 1 ((T^^j) x))) + (\<Sum>j \<in> {m..<n * s+t}. abs(u 1 ((T^^j) x)))"
           by auto
         also have "... = (\<Sum>j \<in> {(n-1) * s+t..<n * s+t}. abs(u 1 ((T^^j) x)))"
-          apply (rule sum_add_nat_ivl) using m2 by auto
+          apply (rule sum.atLeastLessThan_concat) using m2 by auto
         finally have *: "birkhoff_sum (u 1) (n * s+t-m) ((T^^m) x) \<le> (\<Sum>j \<in> {(n-1) * s+t..<n * s+t}. abs(u 1 ((T^^j) x)))"
           by auto
 
@@ -535,7 +535,7 @@ proof -
         also have "... \<le> (\<Sum>j \<in> {p* s+t..<m-l}. abs(u 1 ((T^^j) x))) + (\<Sum>j \<in> {m-l..<(p+1)* s+t}. abs(u 1 ((T^^j) x)))"
           by auto
         also have "... = (\<Sum>j \<in> {p* s+t..<(p+1)* s+t}. abs(u 1 ((T^^j) x)))"
-          apply (rule sum_add_nat_ivl) using p1 p2 by auto
+          apply (rule sum.atLeastLessThan_concat) using p1 p2 by auto
         finally have *: "birkhoff_sum (u 1) (m-l - (p* s+t)) ((T^^(p* s+t)) x)
           \<le> (\<Sum>j \<in> {p* s+t..<(p+1)* s+t}. abs(u 1 ((T^^j) x)))"
           by auto
@@ -559,7 +559,7 @@ proof -
       also have "... \<le> 2* K * s + (\<Sum>i \<in> {p* s+t..<(n-1) * s+t}. F ((T^^i) x)) + (\<Sum>i \<in>{(n-1) * s+t..<n * s+t}. F ((T^^i) x))"
         apply (auto, rule sum_mono2) using \<open>(p+1)* s+t\<le>(n-1) * s+t\<close> F_pos by auto
       also have "... = 2* K * s + (\<Sum>i \<in> {p* s+t..<n * s+t}. F ((T^^i) x))"
-        apply (auto, rule sum_add_nat_ivl) using \<open>p\<le>n-1\<close> by auto
+        apply (auto, rule sum.atLeastLessThan_concat) using \<open>p\<le>n-1\<close> by auto
       finally have A0: "(\<Sum>i \<in> {p* s+t..<(p+1)* s+t}. abs(u 1 ((T^^i) x))) + (\<Sum>i \<in> {(n-1) * s+t..<n * s+t}. abs(u 1 ((T^^i) x)))
         \<le> 2* K * s + (\<Sum>i \<in> {p* s+t..<n * s+t}. F ((T^^i) x))"
         by simp
@@ -595,7 +595,7 @@ proof -
         apply (rule sum_mono2) using \<open>p\<le>n-1\<close> by auto
 
       have A4: "birkhoff_sum F (p * s + t) x + (\<Sum>i \<in> {p* s+t..<n * s+t}. F ((T^^i) x)) = birkhoff_sum F (n * s + t) x"
-        unfolding birkhoff_sum_def apply (subst atLeast0LessThan[symmetric])+ apply (rule sum_add_nat_ivl)
+        unfolding birkhoff_sum_def apply (subst atLeast0LessThan[symmetric])+ apply (rule sum.atLeastLessThan_concat)
         using \<open>p\<le>n-1\<close> by auto
 
       have "u (n * s+t) x \<le> u m x + (\<Sum>i \<in> {(n-1) * s+t..<n * s+t}. abs(u 1 ((T^^i) x)))"

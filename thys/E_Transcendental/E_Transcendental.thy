@@ -336,11 +336,11 @@ proof -
       also have "(\<Sum>j=0..m. poly (df (Suc j)) 0) = (\<Sum>j=Suc 0..Suc m. poly (df j) 0)"
         by (rule sum_shift_bounds_cl_Suc_ivl [symmetric])
       also have "\<dots> = (\<Sum>j=0..Suc m. poly (df j) 0) - poly f 0"
-        by (subst (2) sum_head_Suc) (simp_all add: df_def)
+        by (subst (2) sum.atLeast_Suc_atMost) (simp_all add: df_def)
       also have "(\<Sum>j=0..m. poly (df (Suc j)) u) = (\<Sum>j=Suc 0..Suc m. poly (df j) u)"
         by (rule sum_shift_bounds_cl_Suc_ivl [symmetric])
       also have "\<dots> = (\<Sum>j=0..Suc m. poly (df j) u) - poly f u"
-        by (subst (2) sum_head_Suc) (simp_all add: df_def)
+        by (subst (2) sum.atLeast_Suc_atMost) (simp_all add: df_def)
       finally have "((\<lambda>t. - (exp (u - t *\<^sub>R u) * u * poly (pderiv f) (t *\<^sub>R u))) has_integral
                         -(exp u * ((\<Sum>j = 0..Suc m. poly (df j) 0) - poly f 0) -
                                   ((\<Sum>j = 0..Suc m. poly (df j) u) - poly f u))) {0..1}"

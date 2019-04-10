@@ -242,7 +242,7 @@ proof (induction n)
                exp (- x\<^sup>2) / sqrt pi *
                  (\<Sum>i<Suc n. (- 1) ^ i * fact (2 * i) / (4 ^ i * fact i) / x ^ (2 * i + 1)) +
                  erf_remainder (Suc n) x"
-    by (subst sum_lessThan_Suc) (simp add: algebra_simps)
+    by (subst sum.lessThan_Suc) (simp add: algebra_simps)
   finally show ?case .
 qed (auto simp: assms erf_remainder_0_conv_erfc)
   

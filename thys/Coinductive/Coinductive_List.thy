@@ -4502,7 +4502,7 @@ next
         (auto simp add: LCons image_iff less_Suc_eq_0_disj)
     also have "llength xs + \<dots> = (\<Sum>i<Suc n. llength (lnth xss i))"
       unfolding atLeast0LessThan[symmetric] LCons
-      by(subst (2) sum_head_upt_Suc) simp_all
+      by(subst (2) sum.atLeast_Suc_lessThan) simp_all
     finally show ?thesis using LCons by simp
   qed
 qed
@@ -4603,7 +4603,7 @@ next
     { have "(\<Sum>i < m + length xss'. llength (lnth xss i)) =
             (\<Sum>i < length xss'. llength (lnth xss i)) +
             (\<Sum>i = length xss'..<m + length xss'. llength (lnth xss i))"
-        by(subst (1 2) atLeast0LessThan[symmetric])(subst sum_add_nat_ivl, simp_all)
+        by(subst (1 2) atLeast0LessThan[symmetric])(subst sum.atLeastLessThan_concat, simp_all)
       also from lnth_prefix have "(\<Sum>i < length xss'. llength (lnth xss i)) = 0" by simp
       also have "{length xss'..<m + length xss'} = {0+length xss'..<m+length xss'}" by auto
       also have "(\<Sum>i = 0 + length xss'..<m + length xss'. llength (lnth xss i)) =
@@ -4612,7 +4612,7 @@ next
       also have "\<dots> = (\<Sum>i = 0..<m. llength (lnth (LCons (LCons x xs') xss'') i))"
         unfolding xss by(subst lnth_lappend2) simp+
       also have "\<dots> = eSuc (llength xs') + (\<Sum>i = Suc 0..<m. llength (lnth (LCons (LCons x xs') xss'') i))"
-        by(subst sum_head_upt_Suc) simp_all
+        by(subst sum.atLeast_Suc_lessThan) simp_all
       also {
         fix i
         assume "i \<in> {Suc 0..<m}"
@@ -4623,7 +4623,7 @@ next
              (\<Sum>i = Suc 0..<m. llength (lnth (LCons xs' xss'') i))" by(simp)
       also have "eSuc (llength xs') + \<dots> = 1 + (llength (lnth (LCons xs' xss'') 0) + \<dots>)"
         by(simp add: eSuc_plus_1 ac_simps)
-      also note sum_head_upt_Suc[symmetric, OF \<open>0 < m\<close>]
+      also note sum.atLeast_Suc_lessThan[symmetric, OF \<open>0 < m\<close>]
       finally have "enat (Suc n) = (\<Sum>i<m + length xss'. llength (lnth xss i)) + enat n'"
         unfolding eSuc_enat[symmetric] n_eq by(simp add: eSuc_plus_1 ac_simps atLeast0LessThan) }
     ultimately show ?thesis by blast

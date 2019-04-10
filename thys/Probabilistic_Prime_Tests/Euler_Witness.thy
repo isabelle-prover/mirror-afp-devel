@@ -147,7 +147,7 @@ proof -
       using atLeast0AtMost by auto
                
     also have B: "... = 1 + (\<Sum>k = 1..p. (p choose k) * (n div p) ^ k)" (is "?A = 1 + ?B")
-      by (simp add: sum_head_Suc)
+      by (simp add: sum.atLeast_Suc_atMost)
 
     also have C: "?B = (n div p) * (\<Sum>k = 1..p. (p choose k) * (n div p) ^ (k - 1))" (is "_ = _ * ?C")
       unfolding sum_distrib_left 
@@ -187,8 +187,8 @@ proof -
     have "0 < p" using \<open>odd p\<close> and odd_pos by blast
 
     then have "?C \<noteq> 0"
-      using   sum_head_Suc[OF Suc_leI]
-      by (simp add: Suc_leI sum_head_Suc)
+      using   sum.atLeast_Suc_atMost[OF Suc_leI]
+      by (simp add: Suc_leI sum.atLeast_Suc_atMost)
 
     then have "m \<noteq> 0" using m by fastforce 
 

@@ -51,7 +51,7 @@ next
         finally show ?thesis .
       qed
       from this show ?thesis
-        by (simp add: sum_head_Suc[of _ _ "\<lambda>k. (n choose k) * ?t k"])
+        by (simp add: sum.atLeast_Suc_atMost[of _ _ "\<lambda>k. (n choose k) * ?t k"])
     qed
     also have "\<dots> = ?t 0 + (\<Sum>k = 0..n. (n choose k + (n choose Suc k)) * ?u k)"
       by (simp add: distrib_right sum.distrib)
@@ -65,7 +65,7 @@ next
     also have "\<dots> = ?v 0 + (\<Sum>k = Suc 0..Suc n. ?v k)"
       by (simp only: sum_shift_bounds_cl_Suc_ivl diff_Suc_Suc mult.assoc)
     also have "\<dots> = (\<Sum>k = 0..Suc n. (Suc n choose k) * ffact k x * ffact (Suc n - k) y)"
-      by (simp add: sum_head_Suc)
+      by (simp add: sum.atLeast_Suc_atMost)
     finally show ?thesis .
   qed
   finally show ?case .
@@ -123,7 +123,7 @@ next
         finally show ?thesis .
       qed
       from this show ?thesis
-        by (simp add: sum_head_Suc[of _ _ "\<lambda>k. of_nat (n choose k) * ?t k"])
+        by (simp add: sum.atLeast_Suc_atMost[of _ _ "\<lambda>k. of_nat (n choose k) * ?t k"])
     qed
     also have "\<dots> = ?t 0 + (\<Sum>k = 0..n. of_nat (n choose k + (n choose Suc k)) * ?u k)"
       by (simp add: distrib_right sum.distrib)
@@ -137,7 +137,7 @@ next
     also have "\<dots> = ?v 0 + (\<Sum>k = Suc 0..Suc n. ?v k)"
       by (simp only: sum_shift_bounds_cl_Suc_ivl diff_Suc_Suc mult.assoc)
     also have "\<dots> = (\<Sum>k = 0..Suc n. of_nat (Suc n choose k) * ffact k x * ffact (Suc n - k) y)"
-      by (simp add: sum_head_Suc)
+      by (simp add: sum.atLeast_Suc_atMost)
     finally show ?thesis .
   qed
   finally show ?case .

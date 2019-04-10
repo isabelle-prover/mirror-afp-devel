@@ -138,7 +138,7 @@ proof -
   have eq_zero: "(\<Sum>i \<in> {m..<n}. f i) = 0"
     using h2 by auto
   have "(\<Sum>i < n. f i) = (\<Sum>i \<in> {..<m}. f i) + (\<Sum>i \<in> {m..<n}. f i)"
-    using h1 by (metis atLeast0LessThan le0 sum_add_nat_ivl)
+    using h1 by (metis atLeast0LessThan le0 sum.atLeastLessThan_concat)
   also have "... = (\<Sum>i \<in> {..<m}. f i)" using eq_zero by simp
   finally show "(\<Sum>i < n. f i) = (\<Sum>i < m. f i)" by simp
 qed

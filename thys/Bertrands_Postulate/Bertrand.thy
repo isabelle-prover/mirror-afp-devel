@@ -1093,10 +1093,10 @@ proof -
   from psi_odd_def have "psi_odd n = (\<Sum>d=1..n. mangoldt_odd d)"
     by simp
   also from * have "\<dots> = psi_odd_2 n"
-    by (cases "n \<ge> 1") (simp_all add: eval_nat_numeral sum_head_Suc)
+    by (cases "n \<ge> 1") (simp_all add: eval_nat_numeral sum.atLeast_Suc_atMost)
   also from psi_residues_compare_2 have "\<dots> \<le> psi_even_2 n" .
   also from ** have "\<dots> = psi_even n"
-    by (cases "n \<ge> 1") (simp_all add: eval_nat_numeral sum_head_Suc psi_even_def)
+    by (cases "n \<ge> 1") (simp_all add: eval_nat_numeral sum.atLeast_Suc_atMost psi_even_def)
   finally show ?thesis .
 qed
 
@@ -1436,7 +1436,7 @@ next
   \<le> (\<Sum>d = 1..3. (- 1) ^ (d + 1) * psi (n div d))"
     by simp
   also have "\<dots> = psi n - psi (n div 2) + psi (n div 3)"
-    by (simp add: sum_head_Suc numeral_2_eq_2)
+    by (simp add: sum.atLeast_Suc_atMost numeral_2_eq_2)
   finally show "ln (fact n) - 2 * ln (fact (n div 2)) \<le> psi n - psi (n div 2) + psi (n div 3)" .
 qed
 
@@ -1742,7 +1742,7 @@ next
         also have "\<dots> = (\<Sum>p | prime p \<and> p \<in> {1..n}. (\<Sum>k = 1..n. ln p / p^k))"
           by (subst sum.Sigma) auto
         also have "\<dots> = ?L + (\<Sum>p | prime p \<and> p \<in> {1..n}. (\<Sum>k = 2..n. ln p / p^k))"
-          by (simp add: comm_monoid_add_class.sum.distrib sum_head_Suc numeral_2_eq_2)
+          by (simp add: comm_monoid_add_class.sum.distrib sum.atLeast_Suc_atMost numeral_2_eq_2)
         finally have "?M - ?L \<le> (\<Sum>p | prime p \<and> p \<in> {1..n}. (\<Sum>k = 2..n. ln p / p^k))"
           by (simp add: algebra_simps)
         also have "\<dots> = (\<Sum>p | prime p \<and> p \<in> {1..n}. ln p * (\<Sum>k = 2..n. inverse p ^ k))"
@@ -1826,7 +1826,7 @@ next
           also have "\<dots> \<le> 3 - ln 2"
             using ln_2_less_1 by (simp add: algebra_simps)
         finally show ?thesis
-          using True by (simp add: algebra_simps sum_head_Suc [of 2 n])
+          using True by (simp add: algebra_simps sum.atLeast_Suc_atMost [of 2 n])
       qed
         finally show ?thesis .
       qed

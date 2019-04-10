@@ -692,7 +692,7 @@ next
       unfolding D0_def by auto
     also have "\<dots> = trace (P * (D0 0 \<rho>)) + (\<Sum>k=1..<(Suc k). trace (P * (D0 k \<rho>)))"
       using sum_shift_bounds_Suc_ivl[symmetric, of "\<lambda>k. trace (P * (D0 k \<rho>))"] by auto
-    also have "\<dots> = (\<Sum>k=0..<(Suc k). trace (P * (D0 k \<rho>)))" using sum_head_upt_Suc[of 0 "Suc k" "\<lambda>k. trace (P * (D0 k \<rho>))"] by auto
+    also have "\<dots> = (\<Sum>k=0..<(Suc k). trace (P * (D0 k \<rho>)))" using sum.atLeast_Suc_lessThan[of 0 "Suc k" "\<lambda>k. trace (P * (D0 k \<rho>))"] by auto
     finally have eq1: "trace (P * (M0 * \<rho> * adjoint M0)) + (\<Sum>k=0..<k. trace (P * (D0 k (DS (M1 * \<rho> * adjoint M1))))) 
       = (\<Sum>k=0..<(Suc k). trace (P * (D0 k \<rho>)))".
 
@@ -704,7 +704,7 @@ next
     also have "\<dots> = trace (D0 0 \<rho>) + (\<Sum>k=1..<(Suc k). trace (D0 k \<rho>))"
       using sum_shift_bounds_Suc_ivl[symmetric, of "\<lambda>k. trace (D0 k \<rho>)"] by auto
     also have "\<dots> = (\<Sum>k=0..<(Suc k). trace (D0 k \<rho>))"
-      using sum_head_upt_Suc[of 0 "Suc k" "\<lambda>k. trace (D0 k \<rho>)"] by auto
+      using sum.atLeast_Suc_lessThan[of 0 "Suc k" "\<lambda>k. trace (D0 k \<rho>)"] by auto
     finally have eq3: "trace (M0 * \<rho> * adjoint M0) + (\<Sum>k=0..<k. trace (D0 k (DS (M1 * \<rho> * adjoint M1)))) = (\<Sum>k=0..<(Suc k). trace (D0 k \<rho>))".
 
     then have "trace (M1 * \<rho> * adjoint M1) - (\<Sum>k=0..<k. trace (D0 k (DS (M1 * \<rho> * adjoint M1))))

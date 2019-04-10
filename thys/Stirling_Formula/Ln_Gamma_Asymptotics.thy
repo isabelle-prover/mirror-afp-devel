@@ -1107,7 +1107,7 @@ proof -
                  del: of_nat_Suc power_Suc)
   also have "1 / (2 * x^2) + \<dots> = 
                (\<Sum>k=0..<m. of_real (bernoulli' (Suc k)) * inverse x ^ Suc (Suc k))" using assms
-    by (subst (2) sum_head_upt_Suc) (simp_all add: power2_eq_square field_simps)
+    by (subst (2) sum.atLeast_Suc_lessThan) (simp_all add: power2_eq_square field_simps)
   also have "1 / x + \<dots> = (\<Sum>k=0..<Suc m. of_real (bernoulli' k) * inverse x ^ Suc k)"
     by (subst sum.atLeast0_lessThan_Suc_shift) (simp_all add: bernoulli'_def divide_simps)
   also have "\<dots> = (\<Sum>k\<le>m. of_real (bernoulli' k) * inverse x ^ Suc k)"
@@ -1280,7 +1280,7 @@ proof -
     by (intro sum.cong refl) (simp_all add: bernoulli'_def)
   also have "1 / (2 * x) + \<dots> = 
                (\<Sum>k=0..<m. bernoulli' (Suc k) * inverse x ^ Suc k / real (Suc k))" using m
-    by (subst (2) sum_head_upt_Suc) (simp_all add: field_simps)
+    by (subst (2) sum.atLeast_Suc_lessThan) (simp_all add: field_simps)
   also have "\<dots> = (\<Sum>k = Suc 0..m. bernoulli' k * inverse x ^ k / real k)" using assms
     by (subst sum_shift_bounds_Suc_ivl [symmetric]) (simp add: atLeastLessThanSuc_atLeastAtMost)
   finally show ?thesis .

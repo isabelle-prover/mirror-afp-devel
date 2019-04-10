@@ -391,7 +391,7 @@ next
     apply (unfold poly_y_x_def)
     apply (unfold degree_monom_eq)
     apply (subst(2) lessThan_Suc_atMost[symmetric])
-    apply (unfold sum_lessThan_Suc)
+    apply (unfold sum.lessThan_Suc)
     apply (subst sum.neutral,force)
     apply (subst(14) poly_as_sum_of_monoms[symmetric])
     apply (unfold smult_as_map_poly)

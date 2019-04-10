@@ -39,7 +39,7 @@ proof(intro antisym[OF degree_mult_le] le_degree, unfold coeff_mult)
       then show ?thesis by (intro sum.neutral, auto)
     qed
   also have "sum ?f {..degree p} = sum ?f {..<degree p} + ?f (degree p)"
-    by(fold lessThan_Suc_atMost, unfold sum_lessThan_Suc, auto)
+    by(fold lessThan_Suc_atMost, unfold sum.lessThan_Suc, auto)
   also have "sum ?f {..<degree p} = 0"
     proof-
       {fix x assume "x < degree p"

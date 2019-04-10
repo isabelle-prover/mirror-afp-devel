@@ -815,7 +815,7 @@ lemma conjugate_vec_sprod_comm:
   fixes v w :: "'a :: {conjugatable_ring, comm_ring} vec"
   assumes "v : carrier_vec n" and "w : carrier_vec n"
   shows "v \<bullet>c w = (conjugate w \<bullet> v)"
-  unfolding scalar_prod_def using assms by(subst sum_ivl_cong, auto simp: ac_simps)
+  unfolding scalar_prod_def using assms by(subst sum.ivl_cong, auto simp: ac_simps)
 
 lemma conjugate_square_ge_0_vec[intro!]:
   fixes v :: "'a :: conjugatable_ordered_ring vec"
@@ -871,7 +871,7 @@ next
   also have "\<dots> = poly_of_vec (vec n (f \<circ> Suc)) + monom (f 0) n"
     by (fold Suc, simp)
   also have "\<dots> = poly_of_vec (vec (Suc n) f)"
-    apply (unfold poly_of_vec_def Let_def dim_vec sum_lessThan_Suc)
+    apply (unfold poly_of_vec_def Let_def dim_vec sum.lessThan_Suc)
     by (auto simp add: Suc_diff_Suc)
   finally show ?case..
 qed

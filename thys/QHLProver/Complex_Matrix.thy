@@ -1065,13 +1065,13 @@ proof (rule disjE[of "n = 0" "n > 0"], blast)
     from tri upper_triangularD[of A 0 j] dim have z0: "\<And>j. 0< j \<Longrightarrow> j < n \<Longrightarrow> A$$(j, 0) = 0" 
       by auto
     then have ada00: "(adjoint A * A)$$(0,0) = conjugate (A$$(0,0)) * A$$(0,0)"
-      using asm dim by (auto simp add: scalar_prod_def adjoint_eval sum_head_upt_Suc)
+      using asm dim by (auto simp add: scalar_prod_def adjoint_eval sum.atLeast_Suc_lessThan)
     have aad00: "(A * adjoint A)$$(0,0) = (\<Sum>k=0..<n. A$$(0, k) * conjugate (A$$(0, k)))"
       using asm dim by (auto simp add: scalar_prod_def adjoint_eval)
     moreover have 
       "\<dots> = A$$(0,0) * conjugate (A$$(0,0))
           + (\<Sum>k=1..<n. A$$(0, k) * conjugate (A$$(0, k)))"
-      using dim asm by (subst sum_head_upt_Suc[of 0 n "\<lambda>k. A$$(0, k) * conjugate (A$$(0, k))"], auto)
+      using dim asm by (subst sum.atLeast_Suc_lessThan[of 0 n "\<lambda>k. A$$(0, k) * conjugate (A$$(0, k))"], auto)
     ultimately have f1tneq0: "(\<Sum>k=(Suc 0)..<n. A$$(0, k) * conjugate (A$$(0, k))) = 0"
       using eq0 ada00 by (simp)
     have geq0: "\<And>k. k < n \<Longrightarrow> A$$(0, k) * conjugate (A$$(0, k)) \<ge> 0"  
@@ -1119,7 +1119,7 @@ proof (rule disjE[of "n = 0" "n > 0"], blast)
           "\<dots> = conjugate (A$$(i, i)) * A$$(i, i) 
             + (\<Sum>k=(Suc i)..<n. conjugate (A$$(i, k)) * A$$(i, k))"
           using asm
-          by (auto simp add: sum_head_upt_Suc)
+          by (auto simp add: sum.atLeast_Suc_lessThan)
         finally have
           adaii: "(A * adjoint A)$$(i, i) 
             = conjugate (A$$(i, i)) * A$$(i, i) 
@@ -1136,7 +1136,7 @@ proof (rule disjE[of "n = 0" "n > 0"], blast)
           using asm ih by auto
         also have
             "\<dots> = conjugate (A$$(i, i)) * A$$(i, i)"
-          using asm zsi1 by (auto simp add: sum_head_upt_Suc)
+          using asm zsi1 by (auto simp add: sum.atLeast_Suc_lessThan)
         finally have "(adjoint A * A)$$(i, i) = conjugate (A$$(i, i)) * A$$(i, i)" .
         with adaii eq0 have 
           fsitoneq0: "(\<Sum>k=(Suc i)..<n. conjugate (A$$(i, k)) * A$$(i, k)) = 0" by auto

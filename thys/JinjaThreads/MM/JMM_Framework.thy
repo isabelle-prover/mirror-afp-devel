@@ -636,7 +636,7 @@ proof(rule thread_start_actions_okI)
       let ?i = "length ?start_heap_obs + ?i'"
 
       from \<open>i < m\<close> have "(\<Sum>i<m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>) = ?i' + (\<Sum>i=i..<m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>)"
-        unfolding atLeast0LessThan[symmetric] by(subst sum_add_nat_ivl) simp_all
+        unfolding atLeast0LessThan[symmetric] by(subst sum.atLeastLessThan_concat) simp_all
       hence "?i' \<le> ?a" unfolding a_conv by simp
       hence "?i \<le> a" using \<open>a \<ge> length ?start_heap_obs\<close> by arith
 
@@ -666,18 +666,18 @@ proof(rule thread_start_actions_okI)
           assume "i < k"
           hence "(\<Sum>i<k. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>) = 
                  (\<Sum>i<i. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>) + (\<Sum>i=i..<k. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>)"
-            unfolding atLeast0LessThan[symmetric] by(subst sum_add_nat_ivl) simp_all
+            unfolding atLeast0LessThan[symmetric] by(subst sum.atLeastLessThan_concat) simp_all
           with i_conv have "(\<Sum>i=i..<k. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>) = l" "l = 0" by simp_all
           moreover have "(\<Sum>i=i..<k. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>) \<ge> length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>"
-            by(subst sum_head_upt_Suc[OF \<open>i < k\<close>]) simp
+            by(subst sum.atLeast_Suc_lessThan[OF \<open>i < k\<close>]) simp
           ultimately show False using nth_i by simp
         next
           assume "k < i"
           hence "?i' = (\<Sum>i<k. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>) + (\<Sum>i=k..<i. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>)"
-            unfolding atLeast0LessThan[symmetric] by(subst sum_add_nat_ivl) simp_all
+            unfolding atLeast0LessThan[symmetric] by(subst sum.atLeastLessThan_concat) simp_all
           with i_conv have "(\<Sum>i=k..<i. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>) = l" by simp
           moreover have "(\<Sum>i=k..<i. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>) \<ge> length \<lbrace>snd (lnth E' k)\<rbrace>\<^bsub>o\<^esub>"
-            by(subst sum_head_upt_Suc[OF \<open>k < i\<close>]) simp
+            by(subst sum.atLeast_Suc_lessThan[OF \<open>k < i\<close>]) simp
           ultimately show False using l by simp
         qed
       qed
@@ -1021,7 +1021,7 @@ next
         hence "(\<Sum>i<a_m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>) = (\<Sum>i<a'_m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>) + (\<Sum>i = a'_m..<a_m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>)"
           by(simp add: sum_upto_add_nat)
         hence "a' - n < a - n" using \<open>a'_m < a_m\<close> a'_n E'_a'_m unfolding a_conv a'_conv
-          by(subst (asm) sum_head_upt_Suc) simp_all
+          by(subst (asm) sum.atLeast_Suc_lessThan) simp_all
         with a_a' show False by simp
       qed
   
@@ -1090,7 +1090,7 @@ next
           hence "(\<Sum>i<a'_m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>) = (\<Sum>i<a_m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>) + (\<Sum>i = a_m..<a'_m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>)"
             by(simp add: sum_upto_add_nat)
           with a'_less \<open>a_m < a'_m\<close> E'_a_m a_n a'_n show False
-            unfolding a'_conv a_conv by(subst (asm) sum_head_upt_Suc) simp_all
+            unfolding a'_conv a_conv by(subst (asm) sum.atLeast_Suc_lessThan) simp_all
         qed
       qed
       with E'_a_m E'_a'_m have [simp]: "t_a' = t_a" "ta_a' = ta_a" by simp_all

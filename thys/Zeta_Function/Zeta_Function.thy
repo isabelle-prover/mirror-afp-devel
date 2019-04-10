@@ -1380,9 +1380,9 @@ proof -
     finally show ?case by simp
   qed auto
   also have "a ^ n / 2 + sum ?f {Suc 1..Suc n} = sum ?f {1..Suc n}"
-    by (subst (2) sum_head_Suc) (simp_all add: scaleR_conv_of_real del: of_nat_Suc)
+    by (subst (2) sum.atLeast_Suc_atMost) (simp_all add: scaleR_conv_of_real del: of_nat_Suc)
   also have "-(a ^ Suc n / of_nat (Suc n)) + sum ?f {1..Suc n} = sum ?f {0..Suc n}"
-    by (subst (2) sum_head_Suc) (simp_all add: scaleR_conv_of_real)
+    by (subst (2) sum.atLeast_Suc_atMost) (simp_all add: scaleR_conv_of_real)
   also have "\<dots> = - bernpoly (Suc n) a / of_nat (Suc n)"
     unfolding sum_negf sum_divide_distrib [symmetric] by (simp add: bernpoly_def atLeast0AtMost)
   finally show ?thesis .

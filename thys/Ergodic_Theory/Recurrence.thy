@@ -256,7 +256,7 @@ proof (unfold_locales)
     then have "finite (range u)" using finite_nat_iff_bounded by auto
     then have "\<exists>i j. (i<j) \<and> (u i = u j)" by (metis finite_imageD infinite_UNIV_nat injI less_linear)
     then obtain i k where "k>0" "u i = u (i+k)" using less_imp_add_positive by blast
-    moreover have "s 0 (i+k) = s 0 i + s i k" unfolding s_def by (simp add: sum_add_nat_ivl)
+    moreover have "s 0 (i+k) = s 0 i + s i k" unfolding s_def by (simp add: sum.atLeastLessThan_concat)
     ultimately have "(s i k) mod n = 0" using u_def nat_mod_cong by metis
     then obtain r where "s i k = n * r" by auto
     moreover have "s i k > 0" unfolding s_def
@@ -1261,7 +1261,7 @@ proof
       ultimately have "n = (\<Sum>i\<in>{0..<1}. return_time_function A (((induced_map A)^^i) y))
         + (\<Sum>i \<in> {1..<N0+1}. return_time_function A (((induced_map A)^^i) y))" using \<open>n \<ge> m\<close> by simp
       then have "n = (\<Sum>i\<in>{0..<N0+1}. return_time_function A (((induced_map A)^^i) y))"
-        using le_add2 sum_add_nat_ivl by blast
+        using le_add2 sum.atLeastLessThan_concat by blast
       moreover have "N0 + 1 \<le> n" using \<open>N0 \<le> n-m\<close> \<open>n - m < n\<close> by linarith
       ultimately show ?thesis by (metis atLeast0LessThan)
     qed

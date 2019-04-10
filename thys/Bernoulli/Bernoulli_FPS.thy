@@ -139,7 +139,7 @@ proof -
     also have "\<dots> = (\<Sum>i = Suc 0..n. (n choose i) * Stirling i m)"
       by (intro sum.mono_neutral_right) auto
     also have "\<dots> = real (\<Sum>i = 0..n.  Stirling i m * (n choose i)) - real (Stirling 0 m)"
-      by (simp add: sum_head_Suc mult_ac)
+      by (simp add: sum.atLeast_Suc_atMost mult_ac)
     also have "real (\<Sum>i = 0..n. Stirling i m * (n choose i)) = real (Stirling (Suc n) (Suc m))"
       by (rule Suc.IH [symmetric])
     also have "real (\<Sum>i = 0..n. (n choose i) * Stirling (Suc i) m) = 

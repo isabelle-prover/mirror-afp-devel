@@ -835,7 +835,7 @@ proof -
           add.commute add.left_neutral by auto
   finally have *: "birkhoff_sum f m ((T^^n)x) = (\<Sum>j\<in>{n..< m+n}. f ((T ^^j) x))" unfolding birkhoff_sum_def by auto
   have "birkhoff_sum f (n+m) x = (\<Sum>i<n. f((T^^i)x)) + (\<Sum>i\<in>{n..<m+n}. f((T^^i)x))"
-    unfolding birkhoff_sum_def by (metis add.commute add.right_neutral atLeast0LessThan le_add2 sum_add_nat_ivl)
+    unfolding birkhoff_sum_def by (metis add.commute add.right_neutral atLeast0LessThan le_add2 sum.atLeastLessThan_concat)
   also have "... = birkhoff_sum f n x + (\<Sum>i\<in>{n..<m+n}. f((T^^i)x))" unfolding birkhoff_sum_def by simp
   finally show ?thesis using * by simp
 qed

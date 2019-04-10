@@ -101,7 +101,7 @@ lemma vec_conjugate_sprod_comm:
   fixes v w :: "'a :: {conjugatable_ring, comm_ring} vec"
   assumes "v : carrier_vec n" and "w : carrier_vec n"
   shows "v \<bullet>c w = (conjugate\<^sub>v w \<bullet> v)"
-  unfolding scalar_prod_def using assms by(subst sum_ivl_cong, auto simp: ac_simps)
+  unfolding scalar_prod_def using assms by(subst sum.ivl_cong, auto simp: ac_simps)
 
 lemma vec_conjugate_square_zero:
   fixes v :: "'a :: {conjugatable_ordered_ring,semiring_no_zero_divisors} vec"

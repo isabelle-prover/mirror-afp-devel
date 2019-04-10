@@ -265,7 +265,7 @@ next
     have "(\<Sum>k = 0..n. of_nat (Stirling n k) * (of_nat k * ffact k a)) =
       (\<Sum>k = 0..n+2. of_nat (Stirling n k) * (of_nat k * ffact k a))" by simp
     also have "\<dots> = (\<Sum>k = Suc 0 .. Suc (Suc n). of_nat (Stirling n k) * (of_nat k * ffact k a)) "
-      by (simp only: sum_head_Suc [of 0 "n + 2"]) simp
+      by (simp only: sum.atLeast_Suc_atMost [of 0 "n + 2"]) simp
     also have "\<dots> = (\<Sum>k = 0 .. Suc n. of_nat (Stirling n (Suc k)) * (of_nat (Suc k) * ffact (Suc k) a))"
       by (simp only: image_Suc_atLeastAtMost sum_shift_bounds_cl_Suc_ivl)
     also have "\<dots> = (\<Sum>k = 0 .. Suc n. of_nat ((Suc k) * Stirling n (Suc k)) * ffact (Suc k) a)"
@@ -280,7 +280,7 @@ next
   also have "\<dots> = (\<Sum>k = Suc 0..Suc n. of_nat (Stirling (Suc n) k) * ffact k a)"
     by (simp only: image_Suc_atLeastAtMost sum_shift_bounds_cl_Suc_ivl)
   also have "\<dots> = (\<Sum>k = 0..Suc n. of_nat (Stirling (Suc n) k) * ffact k a)"
-    by (simp only: sum_head_Suc [of "0" "Suc n"]) simp
+    by (simp only: sum.atLeast_Suc_atMost [of "0" "Suc n"]) simp
   finally show ?case by simp
 qed
 
@@ -303,7 +303,7 @@ next
       (\<Sum>k = 0..n. (- 1) ^ (Suc n - k) * of_nat (n * stirling n k) * a ^ k)"
       by (simp add: Suc_diff_le)
     also have "\<dots> = (\<Sum>k = Suc 0..Suc n. (- 1) ^ (Suc n - k) * of_nat (n * stirling n k) * a ^ k)"
-      by (simp add: sum_head_Suc) (cases n; simp)
+      by (simp add: sum.atLeast_Suc_atMost) (cases n; simp)
     also have "\<dots> = (\<Sum>k = 0..n. (- 1) ^ (Suc n - Suc k) * of_nat (n * stirling n (Suc k)) * a ^ Suc k)"
       by (simp only: sum_shift_bounds_cl_Suc_ivl)
     finally show ?thesis by simp
@@ -315,7 +315,7 @@ next
   also have "\<dots> = (\<Sum>k = Suc 0..Suc n. (- 1) ^ (Suc n - k) * of_nat (stirling (Suc n) k) * a ^ k)"
     by (simp only: sum_shift_bounds_cl_Suc_ivl)
   also have "\<dots> = (\<Sum>k = 0..Suc n. (- 1) ^ (Suc n - k) * of_nat (stirling (Suc n) k) * a ^ k)"
-    by (simp add: sum_head_Suc)
+    by (simp add: sum.atLeast_Suc_atMost)
   finally show ?case .
 qed
 

@@ -660,7 +660,7 @@ proof -
         hence uv: "u $ m \<succ> v $ m"
           using vec_comp_allE[OF uv] u by auto
         show ?case
-          unfolding sum_lessThan_Suc
+          unfolding sum.lessThan_Suc
           apply (subst plus_gt_both_mono) 
           using times_gt_left_mono Suc times_gt_left_mono[OF uv] by auto
     qed
@@ -686,7 +686,7 @@ proof -
         hence vw: "v $ m \<succ> w $ m"
           using vec_comp_allE[OF vw] v by auto
         show ?case
-          unfolding sum_lessThan_Suc
+          unfolding sum.lessThan_Suc
           apply (subst plus_gt_both_mono) 
           using times_gt_left_mono Suc times_gt_right_mono[OF vw] by auto
     qed
@@ -772,7 +772,7 @@ lemma scalar_prod_split_head: assumes
   "A \<in> carrier_mat n n" "B \<in> carrier_mat n n" "n > 0" 
   shows "row A 0 \<bullet> col B 0 = A $$ (0,0) * B $$ (0,0) + (\<Sum>i = 1..<n. A $$ (0, i) * B $$ (i, 0))"
   unfolding scalar_prod_def
-  using assms sum_head_upt_Suc by auto
+  using assms sum.atLeast_Suc_lessThan by auto
 
 
 lemma mat_arc_pos_mult:

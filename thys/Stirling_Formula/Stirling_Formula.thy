@@ -182,7 +182,7 @@ proof -
       using x by (simp add: S'_def c_def field_simps)
     also have "1/x + (\<Sum>r=1..<n. inverse (real r + x)) = (\<Sum>r<n. inverse (real r + x))"
       unfolding lessThan_atLeast0 using n 
-      by (subst (2) sum_head_upt_Suc) (simp_all add: field_simps)
+      by (subst (2) sum.atLeast_Suc_lessThan) (simp_all add: field_simps)
     finally show "1 / (2 * (x + real n)) = c n - (ln (real n) - S' n x - 1/(2*x))" by simp
   qed
   moreover have "(\<lambda>n. 1 / (2 * (x + real n))) \<longlonglongrightarrow> 0"

@@ -192,7 +192,7 @@ proof -
       proof (cases "S = 0")
         case True
         have "(\<Sum>i = Suc 0..<n. f (u i) (u (Suc i))) = (\<Sum>i = 0..<n. f (u i) (u (Suc i))) - f(u 0) (u (Suc 0))"
-          using sum_head_upt_Suc[OF \<open>n > 0\<close>, of "\<lambda>i. f (u i) (u (Suc i))"] by simp
+          using sum.atLeast_Suc_lessThan[OF \<open>n > 0\<close>, of "\<lambda>i. f (u i) (u (Suc i))"] by simp
         also have "... \<le> S/2" using True S_def nonneg by auto
         finally have "0 < n \<and> (\<Sum>i = 0..<0. f (u i) (u (Suc i))) \<le> S/2 \<and> (\<Sum>i = Suc 0..<n. f (u i) (u (Suc i))) \<le> S/2"
           using \<open>n > 0\<close> \<open>S = 0\<close> by auto

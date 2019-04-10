@@ -236,7 +236,7 @@ proof -
     finally show ?thesis by auto
   qed
   have "(\<Sum>j<a*N. u N ((T^^j) x)) - (\<Sum>j<n-2*N. u N ((T^^j) x)) = (\<Sum>j\<in>{n-2*N..<a*N}. u N ((T^^j) x))"
-    using sum_add_nat_ivl[OF _ \<open>a*N \<ge> n - 2*N\<close>, of 0 "\<lambda>j. u N ((T^^j) x)", symmetric] atLeast0LessThan by simp
+    using sum.atLeastLessThan_concat[OF _ \<open>a*N \<ge> n - 2*N\<close>, of 0 "\<lambda>j. u N ((T^^j) x)", symmetric] atLeast0LessThan by simp
   also have "... \<le> (\<Sum>j\<in>{n-2*N..<a*N}. E2)" by (rule sum_mono[OF I])
   also have "... = (a*N - (n-2*N)) * E2" by simp
   also have "... \<le> N * E2" using \<open>(a*N - (n-2*N)) \<le> N\<close> \<open>E2 \<ge> 0\<close> by (simp add: mult_right_mono)

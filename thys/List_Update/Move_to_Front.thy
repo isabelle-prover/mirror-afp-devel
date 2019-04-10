@@ -631,7 +631,7 @@ next
   proof cases
     assume "n < length rs"
     thus ?case using 2
-    by(simp add: Cons_nth_drop_Suc[symmetric,where i=n] len_as sum_head_upt_Suc
+    by(simp add: Cons_nth_drop_Suc[symmetric,where i=n] len_as sum.atLeast_Suc_lessThan
       t_A_t mtf_A_def sw_A_def)
   next
     assume "\<not> n < length rs" thus ?case by (simp add: len_as)
@@ -662,7 +662,7 @@ next
   proof cases
     assume "n < length rs"
     thus ?case using 2
-      by(simp add: Cons_nth_drop_Suc[symmetric,where i=n] len_as sum_head_upt_Suc
+      by(simp add: Cons_nth_drop_Suc[symmetric,where i=n] len_as sum.atLeast_Suc_lessThan
         t_mtf_MTF[where s=s0] mtf_A_def sw_A_def mtf_MTF)
   next
     assume "\<not> n < length rs" thus ?case by (simp add: len_as)

@@ -54,7 +54,7 @@ proof -
   have n: "n \<ge> Max A" "n \<ge> 2" by (auto simp: n_def)
   with assms have "A \<subseteq> {0..n}" by (auto intro: order.trans[OF Max_ge])
   hence "(\<Sum>k\<in>A. 1 / (real k ^ 2)) \<le> (\<Sum>k=0..n. 1 / (real k ^ 2))" by (intro sum_mono2) auto
-  also from n have "\<dots> = 1 + (\<Sum>k=Suc 1..n. 1 / (real k ^ 2))" by (simp add: sum_head_Suc)
+  also from n have "\<dots> = 1 + (\<Sum>k=Suc 1..n. 1 / (real k ^ 2))" by (simp add: sum.atLeast_Suc_atMost)
   also have "(\<Sum>k=Suc 1..n. 1 / (real k ^ 2)) \<le>
           (\<Sum>k=Suc 1..n. 1 / (real k ^ 2 - 1/4))" unfolding power2_eq_square
     by (intro sum_mono divide_left_mono mult_pos_pos)

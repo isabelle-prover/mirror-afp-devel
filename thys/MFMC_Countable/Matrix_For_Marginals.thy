@@ -383,7 +383,7 @@ by(simp add: override_on_def fun_eq_iff)
 lemma sum_lessThan_conv_atMost_nat:
   fixes f :: "nat \<Rightarrow> 'b :: ab_group_add"
   shows "sum f {..<n} = sum f {..n} - f n"
-by (metis Groups.add_ac(2) add_diff_cancel_left' lessThan_Suc_atMost sum_lessThan_Suc)
+by (metis Groups.add_ac(2) add_diff_cancel_left' lessThan_Suc_atMost sum.lessThan_Suc)
 
 lemma Collect_disjoint_atLeast:
   "Collect P \<inter> {x..} = {} \<longleftrightarrow> (\<forall>y\<ge>x. \<not> P y)"
@@ -456,7 +456,7 @@ proof -
   { fix n
     have "sum (f' n) {..n + 1} = sum (g' n) {..n + 1}" using sum_fg
       unfolding f'_def g'_def suminf_minus_initial_segment[OF summ_f] suminf_minus_initial_segment[OF summ_g]
-      by(simp)(metis (no_types, hide_lams) add.commute add.left_inverse atLeast0AtMost atLeast0LessThan atLeastLessThanSuc_atLeastAtMost minus_add_distrib sum_lessThan_Suc uminus_add_conv_diff)
+      by(simp)(metis (no_types, hide_lams) add.commute add.left_inverse atLeast0AtMost atLeast0LessThan atLeastLessThanSuc_atLeastAtMost minus_add_distrib sum.lessThan_Suc uminus_add_conv_diff)
     moreover have "sum (f' n) X \<le> sum (g' n) (R' n `` X)" if "X \<subseteq> {..n + 1}" for X
     proof -
       from that have [simp]: "finite X" by(rule finite_subset) simp
