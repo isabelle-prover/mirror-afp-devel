@@ -1255,7 +1255,7 @@ proof
       ultimately have "n-m = (\<Sum>i<N0. return_time_function A (((induced_map A)^^(i+1)) y))"
         by simp
       then have "n-m = (\<Sum>i \<in> {1..<N0+1}. return_time_function A (((induced_map A)^^i) y))"
-        using sum_shift_bounds_nat_ivl[of "\<lambda>i. return_time_function A (((induced_map A)^^i) y)", of 0, of 1, of N0, symmetric]
+        using sum.shift_bounds_nat_ivl[of "\<lambda>i. return_time_function A (((induced_map A)^^i) y)", of 0, of 1, of N0, symmetric]
               atLeast0LessThan by auto
       moreover have "m = (\<Sum>i\<in>{0..<1}. return_time_function A (((induced_map A)^^i) y))" using m_def by simp
       ultimately have "n = (\<Sum>i\<in>{0..<1}. return_time_function A (((induced_map A)^^i) y))

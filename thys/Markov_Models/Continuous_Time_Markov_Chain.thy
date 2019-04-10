@@ -244,7 +244,12 @@ proof -
   also have "\<dots> = (INF n. (\<integral>\<^sup>+\<omega>. (\<Prod>i<n. eexp (- ereal (\<omega> i))) \<partial>?P))"
   proof (intro nn_integral_monotone_convergence_INF_AE')
     show "AE \<omega> in ?P. (\<Prod>i<Suc n. eexp (- ereal (\<omega> i))) \<le> (\<Prod>i<n. eexp (- ereal (\<omega> i)))" for n
-      using AE_pos by eventually_elim (auto intro!: prod_mono3 intro: less_imp_le simp del: prod_lessThan_Suc)
+      using AE_pos
+    proof eventually_elim
+      case (elim \<omega>)
+      show ?case
+        by (rule prod_mono3) (auto simp: elim le_less)
+    qed
   qed (auto simp: less_top[symmetric])
   also have "\<dots> = (INF n. (\<Prod>i<n. (\<integral>\<^sup>+\<omega>. eexp (- ereal (\<omega> i)) \<partial>?P)))"
   proof (intro INF_cong refl indep_vars_nn_integral)
@@ -956,7 +961,7 @@ proof (rule measure_eqI_PiM_sequence)
       by (subst exponential_eq_stretch) (simp_all add: nn_integral_distr)
     also have "emeasure (exponential 1) (A 0) * (\<Prod>i<n. emeasure (exponential 1) (A (Suc i))) =
       (\<Prod>i<Suc n. emeasure (exponential 1) (A i))"
-      by (rule prod_lessThan_Suc_shift[symmetric])
+      by (rule prod.lessThan_Suc_shift[symmetric])
     finally show ?case .
   qed
   also have "\<dots> = emeasure ?P (prod_emb UNIV (\<lambda>_. borel) {..<n'} (Pi\<^sub>E {..<n'} A))"

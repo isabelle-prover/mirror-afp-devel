@@ -130,7 +130,7 @@ proof (induction xs arbitrary: n rule: psums.induct[case_names Nil sng rec])
     also have "\<dots> = x + y + (\<Sum>i=1..m. (y#xs) ! i)"
       by (auto simp: atLeast0AtMost [symmetric] sum.atLeast_Suc_atMost[of 0])
     also have "(\<Sum>i=1..m. (y#xs) ! i) = (\<Sum>i=Suc 1..Suc m. (x#y#xs) ! i)"
-      by (subst sum_shift_bounds_cl_Suc_ivl) simp
+      by (subst sum.shift_bounds_cl_Suc_ivl) simp
     also from Suc have "x + y + \<dots> = (\<Sum>i\<le>n. (x#y#xs) ! i)"
       by (auto simp: atLeast0AtMost [symmetric] sum.atLeast_Suc_atMost add_ac)
     finally show ?thesis .

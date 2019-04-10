@@ -769,7 +769,7 @@ proof -
   have "?sum_g = (\<Sum>i\<in>{0 + n..<degree (msum_pdevs n f g) - n + n}. e i (pdevs_apply g (i - n)))"
     by (rule sum.cong) auto
   also have "\<dots> = (\<Sum>i = 0..<degree (msum_pdevs n f g) - n. e (i + n) (pdevs_apply g (i + n - n)))"
-    by (rule sum_shift_bounds_nat_ivl)
+    by (rule sum.shift_bounds_nat_ivl)
   also have "\<dots> = (\<Sum>i = 0..<degree g. e (i + n) (pdevs_apply g i))"
     using assms degree_msum_pdevs_ge2[of f n]
     by (intro sum.mono_neutral_cong_right) (auto intro!: sum.mono_neutral_cong_right)

@@ -38,7 +38,6 @@ lemma eval_pochhammer_poly: "poly (pochhammer_poly n) k = pochhammer k n"
 
 lemma pochhammer_poly_Suc':
     "pochhammer_poly (Suc n) = pCons 0 (pcompose (pochhammer_poly n) [:1,1:])"
-  by (simp add: pochhammer_poly_altdef prod_lessThan_Suc_shift
-                pcompose_prod pcompose_pCons add_ac del: prod_lessThan_Suc)
+  by (simp add: pochhammer_poly_altdef prod.lessThan_Suc_shift pcompose_prod pcompose_pCons add_ac del: prod.lessThan_Suc)
  
 end

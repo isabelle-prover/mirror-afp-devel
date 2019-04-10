@@ -892,7 +892,7 @@ proof(cases "p = 0")
   case False
   then have deg: "degree (pCons a (pCons b p)) = Suc (Suc (degree p))" by simp
   show ?thesis
-  by (unfold poly_uminus_def deg sum_atMost_Suc_shift monom_Suc monom_0 sum_pCons_0_commute, simp)
+  by (unfold poly_uminus_def deg sum.atMost_Suc_shift monom_Suc monom_0 sum_pCons_0_commute, simp)
 next
   case True
   then show ?thesis by (auto simp add: poly_uminus_def monom_0 monom_Suc)

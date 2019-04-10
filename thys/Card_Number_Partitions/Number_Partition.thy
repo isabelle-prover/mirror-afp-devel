@@ -328,7 +328,7 @@ next
   have "(\<Sum>i\<le>m. p (i - 1) * i) = (\<Sum>i\<le>Suc m. p (i - 1) * i)"
     using partitions k by (cases k) (auto elim!: partitionsE)
   also have "(\<Sum>i\<le>Suc m. p (i - 1) * i) = (\<Sum>i\<le>m. p i * (i + 1))"
-    by (subst sum_atMost_Suc_shift) simp
+    by (subst sum.atMost_Suc_shift) simp
   also have "... = (\<Sum>i\<le>m - k. p i * (i + 1))"
     using eq_0 by (auto intro: sum.mono_neutral_right)
   also have "... = (\<Sum>i\<le>m - k. p i * i) + (\<Sum>i\<le>m - k. p i)" by (simp add: sum.distrib)
@@ -349,7 +349,7 @@ proof -
     by (auto intro: sum.mono_neutral_left elim!: partitionsE)
   also have "\<dots> = sum (\<lambda>i. p (i + 1)) {0..m}" by (simp add: atLeast0AtMost)
   also have "\<dots> = sum (\<lambda>i. p i) {Suc 0.. Suc m}"
-    by (simp only: One_nat_def add_Suc_right add_0_right sum_shift_bounds_cl_Suc_ivl)
+    by (simp only: One_nat_def add_Suc_right add_0_right sum.shift_bounds_cl_Suc_ivl)
   also have "\<dots> = sum (\<lambda>i. p i) {.. Suc m}"
     using \<open>p 0 = 0\<close> by (simp add: atLeast0AtMost sum_shift_lb_Suc0_0)
   also have "\<dots> = sum (\<lambda>i. p i) {.. m}"

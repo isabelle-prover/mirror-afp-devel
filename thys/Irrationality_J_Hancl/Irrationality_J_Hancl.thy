@@ -83,7 +83,7 @@ proof(induct n)
 next
   case (Suc n)
   have ?case when "s\<le>n" using Suc.hyps 
-    by (metis Suc.prems add.commute linorder_not_le powr_add prod_nat_ivl_Suc' sum_cl_ivl_Suc that)
+    by (metis Suc.prems add.commute linorder_not_le powr_add prod.nat_ivl_Suc' sum.cl_ivl_Suc that)
   moreover have ?case when "s=Suc n"   
   proof-
     have "(\<Prod>j = s..Suc n. a powr 2 ^ j) =(a powr 2 ^(Suc n))  " 
@@ -166,7 +166,7 @@ next
   moreover have ?case when  "s \<noteq> n+1" 
   proof -
     have"(\<Sum>i=s..(n+1). 2^i ) = (\<Sum>i=s..n. 2^i ) + (2::real)^(n+1) "
-      using sum_cl_ivl_Suc \<open>s \<le> Suc n \<close>
+      using sum.cl_ivl_Suc \<open>s \<le> Suc n \<close>
       by (auto simp add:add.commute)
     also have "... < (2) ^ (n +1) + (2)^(n+1)" 
     proof -
@@ -357,13 +357,13 @@ proof-
       also have "... \<le>  prod d {m + 1..n} * Max (ff ` {s..m}) * d (n+1)"
         using IH d[rule_format, of "n+1"] by auto
       also have "... = prod d {m + 1..n+1} * Max (ff ` {s..m})"
-        using \<open>n\<ge>m\<close> by (simp add:prod_nat_ivl_Suc' algebra_simps)
+        using \<open>n\<ge>m\<close> by (simp add:prod.nat_ivl_Suc' algebra_simps)
       finally show ?case by simp
     qed
     ultimately show ?case by blast
   qed
   then have "d (n+1) * Max (ff ` {s..n} ) \<le> (\<Prod>j=(m+1)..(n+1). d j)* (Max (ff ` {s..m}))"
-    using \<open>m\<le>n\<close> d[rule_format,of "Suc n"] by (simp add:prod_nat_ivl_Suc')
+    using \<open>m\<le>n\<close> d[rule_format,of "Suc n"] by (simp add:prod.nat_ivl_Suc')
   then show ?thesis using ff_asm[of n] \<open>s\<le>m\<close> \<open>m\<le>n\<close> unfolding ff_def by auto
 qed
 
@@ -404,7 +404,7 @@ proof (rule ccontr)
       then have "(\<lambda>n. \<Prod>i\<in>{0..n}. d (i+(t + 1))) \<longlonglongrightarrow> B"
         using atLeast0AtMost by (auto simp:algebra_simps)
       then have "(\<lambda>n. prod d {(t + 1)..n + (t + 1)}) \<longlonglongrightarrow> B" 
-        apply (subst (asm) prod_shift_bounds_cl_nat_ivl[symmetric])
+        apply (subst (asm) prod.shift_bounds_cl_nat_ivl[symmetric])
         by simp
       from seq_offset_neg[OF this,of "t"]
       show "(\<lambda>n. prod d {t + 1..n+1}) \<longlonglongrightarrow> B"
@@ -815,7 +815,7 @@ proof-
       next
         case (Suc m)
         have "(\<Sum>j<Suc m. c (j + n)) = c n + (\<Sum>i<m. c (Suc i + n)) "
-          unfolding sum_lessThan_Suc_shift by simp
+          unfolding sum.lessThan_Suc_shift by simp
         also have "... \<le> c n + (\<Sum>i<m. c (i + n) / 2)"
         proof -
           have "c (Suc i + n) \<le> c (i + n) / 2" for i

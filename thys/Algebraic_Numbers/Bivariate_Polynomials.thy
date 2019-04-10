@@ -287,7 +287,7 @@ proof(cases "p=0")
   interpret mm: map_poly_comm_monoid_add_hom "\<lambda>x. monom x i" for i..
   from False show ?thesis
     apply (unfold poly_y_x_def degree_pCons_eq)
-    apply (unfold sum_atMost_Suc_shift)
+    apply (unfold sum.atMost_Suc_shift)
     by (simp add: hom_distribs monom_Suc)
 qed simp
 
@@ -302,7 +302,7 @@ proof-
     case False
     show ?thesis
       apply (unfold degree_pCons_eq[OF False])
-      apply (unfold sum_atMost_Suc_shift,simp)
+      apply (unfold sum.atMost_Suc_shift,simp)
       apply (fold monom_Suc)..
   qed
   show ?thesis

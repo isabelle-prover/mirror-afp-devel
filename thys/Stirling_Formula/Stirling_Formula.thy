@@ -44,7 +44,7 @@ proof (cases n)
     unfolding m by (simp add: T_def sum.distrib algebra_simps)
   also have "(\<Sum>r<Suc m. 1 / (2 * real r + 2 * x)) = 
                1/(2*x) + (\<Sum>r<m. 1 / (2 * real (Suc r) + 2 * x))" (is "_ = ?a + ?S")
-    by (subst sum_lessThan_Suc_shift) simp
+    by (subst sum.lessThan_Suc_shift) simp
   also have "(\<Sum>r<n. 1 / (2 * real (Suc r) + 2 * x)) = 
                ?S + 1 / (2*(real m + x + 1))" (is "_ = _ + ?b") by (simp add: Suc)
   also have "?a + ?S + (?S + ?b) = 2*?S + ?a + ?b" by (simp add: add_ac)
@@ -545,7 +545,7 @@ proof -
 
   have p_0 [simp]: "p 0 = 1" by (simp add: p_def)
   have p_Suc: "p (Suc n) = p n * (4 * real (Suc n)^2) / (4 * real (Suc n)^2 - 1)"
-    for n unfolding p_def by (subst prod_nat_ivl_Suc') simp_all
+    for n unfolding p_def by (subst prod.nat_ivl_Suc') simp_all
   have p: "p = (\<lambda>n. 16 ^ n * fact n ^ 4 / (fact (2 * n))\<^sup>2 / (2 * real n + 1))"
   proof
     fix n :: nat
@@ -556,7 +556,7 @@ proof -
     also have "(\<Prod>k=1..n. (2 * real (Suc k) - 1)) = (\<Prod>k=Suc 1..Suc n. (2 * real k - 1))"
       by (subst prod.atLeast_Suc_atMost_Suc_shift) simp_all
     also have "\<dots> = (\<Prod>k=1..n. (2 * real k - 1)) * (2 * real n + 1)"
-      by (induction n) (simp_all add: prod_nat_ivl_Suc')
+      by (induction n) (simp_all add: prod.nat_ivl_Suc')
     also have "(\<Prod>k = 1..n. (2 * real k)\<^sup>2 / (2 * real k - 1)) / \<dots> =
                  (\<Prod>k = 1..n. (2 * real k)^2 / (2 * real k - 1)^2) / (2 * real n + 1)"
       unfolding power2_eq_square by (simp add: prod.distrib prod_dividef)
@@ -568,7 +568,7 @@ proof -
       by (simp add: prod.distrib prod_dividef fact_prod
             prod_power_distrib [symmetric] prod_constant)
     also have "(\<Prod>k=1..n. (2*real k) * (2*real k - 1)) = fact (2*n)"
-      by (induction n) (simp_all add: algebra_simps prod_nat_ivl_Suc')
+      by (induction n) (simp_all add: algebra_simps prod.nat_ivl_Suc')
     finally show "p n = 16 ^ n * fact n ^ 4 / (fact (2 * n))\<^sup>2 / (2 * real n + 1)" .
   qed
 

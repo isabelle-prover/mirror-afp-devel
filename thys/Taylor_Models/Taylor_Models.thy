@@ -550,7 +550,7 @@ lemma Ipoly_fst_tmf_polys:
 proof (induction z)
   case (Cons z zs)
   show ?case
-    unfolding list.size add_Suc_right sum_lessThan_Suc_shift
+    unfolding list.size add_Suc_right sum.lessThan_Suc_shift
     by (auto simp: split_beta' Let_def nth_Cons Cons sum_distrib_left ac_simps)
 qed simp
 
@@ -560,7 +560,7 @@ lemma insertion_fst_tmf_polys:
 proof (induction z)
   case (Cons z zs)
   show ?case
-    unfolding list.size add_Suc_right sum_lessThan_Suc_shift
+    unfolding list.size add_Suc_right sum.lessThan_Suc_shift
     by (auto simp: split_beta' Let_def nth_Cons Cons sum_distrib_left ac_simps)
 qed simp
 
@@ -570,7 +570,7 @@ proof (induction z)
   case (Cons z zs)
   show ?case
     using Cons[THEN set_of_mul_inc_right]
-    unfolding list.size add_Suc_right sum_lessThan_Suc_shift
+    unfolding list.size add_Suc_right sum.lessThan_Suc_shift
     by (auto simp: split_beta' Let_def nth_Cons sum_distrib_left ac_simps
         elim!: plus_in_intervalE intro!: plus_in_intervalI)
 qed (auto simp: real_interval_zero)

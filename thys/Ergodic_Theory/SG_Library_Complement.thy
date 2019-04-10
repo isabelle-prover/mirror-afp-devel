@@ -90,7 +90,7 @@ lemma union_insert_0:
   "(\<Union>n::nat. A n) = A 0 \<union> (\<Union>n\<in>{1..}. A n)"
 by (metis UN_insert Un_insert_left sup_bot.left_neutral One_nat_def atLeast_0 atLeast_Suc_greaterThan ivl_disj_un_singleton(1))
 
-text \<open>Next one could be close to \verb+sum_nat_group+\<close>
+text \<open>Next one could be close to \verb+sum.nat_group+\<close>
 
 lemma sum_arith_progression:
   "(\<Sum>r<(N::nat). (\<Sum>i<a. f (i*N+r))) = (\<Sum>j<a*N. f j)"
@@ -103,7 +103,7 @@ proof -
   also have "... = (\<Sum>i<a. (\<Sum> j \<in> {i*N..<i*N + N}. f j))"
     using * by auto
   also have "... = (\<Sum>j<a*N. f j)"
-    by (rule sum_nat_group)
+    by (rule sum.nat_group)
   finally show ?thesis by simp
 qed
 

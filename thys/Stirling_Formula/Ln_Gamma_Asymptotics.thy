@@ -393,7 +393,7 @@ proof -
     have "(\<lambda>n. \<Sum>i=1..<n. s / of_nat i - ln (1 + s / of_nat i)) \<longlonglongrightarrow> 
              ln_Gamma s + euler_mascheroni * s + ln s" (is "?f \<longlonglongrightarrow> _")
       using ln_Gamma_series'_aux[OF s'] unfolding sums_def 
-      by (subst LIMSEQ_Suc_iff [symmetric], subst (asm) sum_atLeast1_atMost_eq [symmetric]) 
+      by (subst LIMSEQ_Suc_iff [symmetric], subst (asm) sum.atLeast1_atMost_eq [symmetric]) 
          (simp add: atLeastLessThanSuc_atLeastAtMost)
     thus "((\<lambda>n. ?f n - (euler_mascheroni * s + ln s)) \<longlongrightarrow> ln_Gamma s) at_top"
       by (auto intro: tendsto_eq_intros)
@@ -1282,7 +1282,7 @@ proof -
                (\<Sum>k=0..<m. bernoulli' (Suc k) * inverse x ^ Suc k / real (Suc k))" using m
     by (subst (2) sum.atLeast_Suc_lessThan) (simp_all add: field_simps)
   also have "\<dots> = (\<Sum>k = Suc 0..m. bernoulli' k * inverse x ^ k / real k)" using assms
-    by (subst sum_shift_bounds_Suc_ivl [symmetric]) (simp add: atLeastLessThanSuc_atLeastAtMost)
+    by (subst sum.shift_bounds_Suc_ivl [symmetric]) (simp add: atLeastLessThanSuc_atLeastAtMost)
   finally show ?thesis .
 qed
 

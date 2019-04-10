@@ -334,11 +334,11 @@ proof -
                 exp u * (\<Sum>j=0..m. poly (df (Suc j)) 0) - (\<Sum>j=0..m. poly (df (Suc j)) u)) {0..1}"
         by (simp add: df_def funpow_swap1 atMost_atLeast0 I_def)
       also have "(\<Sum>j=0..m. poly (df (Suc j)) 0) = (\<Sum>j=Suc 0..Suc m. poly (df j) 0)"
-        by (rule sum_shift_bounds_cl_Suc_ivl [symmetric])
+        by (rule sum.shift_bounds_cl_Suc_ivl [symmetric])
       also have "\<dots> = (\<Sum>j=0..Suc m. poly (df j) 0) - poly f 0"
         by (subst (2) sum.atLeast_Suc_atMost) (simp_all add: df_def)
       also have "(\<Sum>j=0..m. poly (df (Suc j)) u) = (\<Sum>j=Suc 0..Suc m. poly (df j) u)"
-        by (rule sum_shift_bounds_cl_Suc_ivl [symmetric])
+        by (rule sum.shift_bounds_cl_Suc_ivl [symmetric])
       also have "\<dots> = (\<Sum>j=0..Suc m. poly (df j) u) - poly f u"
         by (subst (2) sum.atLeast_Suc_atMost) (simp_all add: df_def)
       finally have "((\<lambda>t. - (exp (u - t *\<^sub>R u) * u * poly (pderiv f) (t *\<^sub>R u))) has_integral
@@ -566,7 +566,7 @@ proof
                    fact (p - 1) * poly (\<Prod>k = 1..n. [:- of_nat k, 1:] ^ p) 0"
         by (rule poly_higher_pderiv_aux2)
       also have "poly (\<Prod>k = 1..n. [:- of_nat k :: int, 1:] ^ p) 0 = (-1)^(n*p) * fact n ^ p"
-        by (induction n) (simp_all add: prod_nat_ivl_Suc' power_mult_distrib mult_ac
+        by (induction n) (simp_all add: prod.nat_ivl_Suc' power_mult_distrib mult_ac
                             power_minus' power_add del: of_nat_Suc)
       finally show ?thesis by (simp add: mult_ac M_def)
     qed

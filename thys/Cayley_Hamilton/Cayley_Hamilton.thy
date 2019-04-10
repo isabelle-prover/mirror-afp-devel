@@ -352,7 +352,7 @@ text %visible \<open>\hrulefill ~~ Part 3 ~~ \hrulefill\<close>
   let ?p = "\<lambda>i. coeff (charpoly A) i *\<^sub>S A^i"
   let ?AB = "\<lambda>i. A^(i + 1) * B i"
   have "(\<Sum>i\<le>n+1. ?p i) = ?p 0 + (\<Sum>i<n. ?p (i + 1)) + ?p (n + 1)"
-    unfolding %invisible sum_atMost_Suc_shift Suc_eq_plus1[symmetric]
+    unfolding %invisible sum.atMost_Suc_shift Suc_eq_plus1[symmetric]
     by %invisible (simp add: lessThan_Suc_atMost[symmetric])
   also have "?p 0 = - ?AB 0"
     by %invisible (simp add: coeff_smult_1 diag_charpoly map_sq_matrix)

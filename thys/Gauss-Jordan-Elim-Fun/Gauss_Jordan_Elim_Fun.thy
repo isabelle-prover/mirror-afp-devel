@@ -208,7 +208,7 @@ next
                     sum_distrib_left)
     also have "\<dots> = A i n - A p n * A i m / A p m"
       using A le_m
-      by (simp add: solution2_def field_simps del: sum_op_ivl_Suc)
+      by (simp add: solution2_def field_simps del: sum.op_ivl_Suc)
     finally have "(\<Sum>j = 0..<m. (A i j - A i m * A p j / A p m) * x j) =
       A i n - A p n * A i m / A p m" . }
   then have "solution2 ?A m n x" using p

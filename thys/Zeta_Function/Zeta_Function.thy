@@ -989,9 +989,9 @@ proof -
       using I by (simp add: has_integral_iff)
     also have "(\<Sum>i\<in>{0<..n}. of_real (real i + a) powr - s) = 
                  (\<Sum>i=0..n. of_real (real i + a) powr - s) - of_real a powr -s"
-      using assms by (subst sum_head) auto
+      using assms by (subst sum.head) auto
     also have "(\<Sum>i=0..n. of_real (real i + a) powr - s) = S n + of_real (real n + a) powr -s"
-      unfolding S_def by (subst sum_last_plus) (auto simp: atLeast0LessThan)
+      unfolding S_def by (subst sum.last_plus) (auto simp: atLeast0LessThan)
     finally have "C - C' + C'' - D' n + D n + R n + (I n - I' n) = S n - I' n"
       by (simp add: algebra_simps S_def D'_def C''_def)
   }
