@@ -831,7 +831,7 @@ lemma birkhoff_sum_cocycle:
 proof -
   have "(\<Sum>i<m. f ((T ^^ i) ((T ^^ n) x))) = (\<Sum>i<m. f ((T ^^ (i+n)) x))" by (simp add: funpow_add)
   also have "... = (\<Sum>j\<in>{n..< m+n}. f ((T ^^j) x))"
-    using atLeast0LessThan sum.shift_bounds_nat_ivl[where ?f = "\<lambda>j. f((T^^j)x)" and ?k = n and ?m = 0 and ?n = m, symmetric]
+    using atLeast0LessThan sum.shift_bounds_nat_ivl[where ?g = "\<lambda>j. f((T^^j)x)" and ?k = n and ?m = 0 and ?n = m, symmetric]
           add.commute add.left_neutral by auto
   finally have *: "birkhoff_sum f m ((T^^n)x) = (\<Sum>j\<in>{n..< m+n}. f ((T ^^j) x))" unfolding birkhoff_sum_def by auto
   have "birkhoff_sum f (n+m) x = (\<Sum>i<n. f((T^^i)x)) + (\<Sum>i\<in>{n..<m+n}. f((T^^i)x))"
