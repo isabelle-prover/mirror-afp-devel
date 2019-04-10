@@ -63,7 +63,7 @@ next
     have "\<dots> = ?v 0 + (\<Sum>k = 0..n. (Suc n choose (Suc k)) * ?u k)"
       by simp
     also have "\<dots> = ?v 0 + (\<Sum>k = Suc 0..Suc n. ?v k)"
-      by (simp only: sum_shift_bounds_cl_Suc_ivl diff_Suc_Suc mult.assoc)
+      by (simp only: sum.shift_bounds_cl_Suc_ivl diff_Suc_Suc mult.assoc)
     also have "\<dots> = (\<Sum>k = 0..Suc n. (Suc n choose k) * ffact k x * ffact (Suc n - k) y)"
       by (simp add: sum.atLeast_Suc_atMost)
     finally show ?thesis .
@@ -135,7 +135,7 @@ next
     have "\<dots> = ?v 0 + (\<Sum>k = 0..n. of_nat (Suc n choose (Suc k)) * ?u k)"
       by simp
     also have "\<dots> = ?v 0 + (\<Sum>k = Suc 0..Suc n. ?v k)"
-      by (simp only: sum_shift_bounds_cl_Suc_ivl diff_Suc_Suc mult.assoc)
+      by (simp only: sum.shift_bounds_cl_Suc_ivl diff_Suc_Suc mult.assoc)
     also have "\<dots> = (\<Sum>k = 0..Suc n. of_nat (Suc n choose k) * ffact k x * ffact (Suc n - k) y)"
       by (simp add: sum.atLeast_Suc_atMost)
     finally show ?thesis .

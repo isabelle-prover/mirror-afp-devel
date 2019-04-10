@@ -86,7 +86,7 @@ lemma dotprod_Nil [simp]: "[] \<bullet> [] = 0"
 
 lemma dotprod_Cons [simp]:
   "(x # xs) \<bullet> (y # ys) = x * y + xs \<bullet> ys"
-  unfolding dotprod_def and length_Cons and min_Suc_Suc and sum_lessThan_Suc_shift by auto
+  unfolding dotprod_def and length_Cons and min_Suc_Suc and sum.lessThan_Suc_shift by auto
 
 lemma dotprod_1_right [simp]:
   "xs \<bullet> replicate (length xs) 1 = sum_list xs"

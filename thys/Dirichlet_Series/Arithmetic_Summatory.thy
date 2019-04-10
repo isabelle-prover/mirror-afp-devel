@@ -94,7 +94,7 @@ proof -
   then obtain c where "(\<lambda>n. f (Suc n)) sums c" by (auto simp: summable_def)
   hence "(\<lambda>n. \<Sum>k<n. f (Suc k)) \<longlonglongrightarrow> c" by (auto simp: sums_def)
   also have "(\<lambda>n. \<Sum>k<n. f (Suc k)) = (\<lambda>n. \<Sum>k\<in>{0<..n}. f k)"
-    by (subst sum_atLeast1_atMost_eq [symmetric]) (auto simp: atLeastSucAtMost_greaterThanAtMost)
+    by (subst sum.atLeast1_atMost_eq [symmetric]) (auto simp: atLeastSucAtMost_greaterThanAtMost)
   finally have "((\<lambda>x. sum f {0<..nat \<lfloor>x\<rfloor>}) \<longlongrightarrow> c) at_top"
     by (rule filterlim_compose)
        (auto intro!: filterlim_compose[OF filterlim_nat_sequentially] filterlim_floor_sequentially)

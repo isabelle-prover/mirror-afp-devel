@@ -532,7 +532,7 @@ qed
 lemma prod_lessThan_split:
 fixes g :: "nat \<Rightarrow> real" shows "prod g {..<n+m} = prod g {..<n} * prod (\<lambda>x. g (x+n)) {..<m}"
 using Groups_Big.comm_monoid_mult_class.prod.union_inter_neutral[of "{..<n}" "{n..<n+m}" g, unfolded ivl_disj_un_one(2)[OF le_add1], OF finite_lessThan finite_atLeastLessThan]
-by (metis (no_types) add.commute add.left_neutral atLeast0LessThan empty_iff ivl_disj_int_one(2) prod_shift_bounds_nat_ivl)
+by (metis (no_types) add.commute add.left_neutral atLeast0LessThan empty_iff ivl_disj_int_one(2) prod.shift_bounds_nat_ivl)
 
 (* This is a nice lemma, but never used to prove the Fundamental Theorem of Network Capacity: *)
 lemma evaluate_net_from_tensors:
@@ -559,7 +559,7 @@ using assms proof (induction m arbitrary:j "is" inputs)
   also have "(\<Sum>is | is \<lhd> input_sizes (Input M). (if is=[j] then (\<Prod>k<length inputs. inputs ! k $ (is ! k)) else 0))
    = (\<Prod>k<length inputs. inputs ! k $ ([j] ! k))" unfolding sum.delta[OF finite_valid_index]
     using Input.prems(3) valid_index.Cons valid_index.Nil by auto
-  also have "... = inputs ! 0 $ j" using \<open>length inputs = 1\<close> by (simp add: prod_lessThan_Suc)
+  also have "... = inputs ! 0 $ j" using \<open>length inputs = 1\<close> by (simp add: prod.lessThan_Suc)
   also have "... = evaluate_net (Input M) inputs $ j" unfolding evaluate_net.simps
     by (metis \<open>length inputs = 1\<close> hd_conv_nth list.size(3) zero_neq_one)
   finally show ?case by auto

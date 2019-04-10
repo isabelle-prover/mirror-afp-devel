@@ -185,7 +185,7 @@ proof (induction ys arbitrary: x rule: list_nonempty_induct)
   have "(\<Sum>i<length (y # ys). lift (decompose x (y # ys) ! i) div lift ((y # ys) ! i)) = 
           lift (t * x) div lift y + lift (s * x) div lift (prod_list ys)"
     using cons.hyps cons.prems coprime unfolding length_Cons atLeast0LessThan [symmetric]
-    by (subst sum.atLeast_Suc_lessThan, simp, subst sum_shift_bounds_Suc_ivl)
+    by (subst sum.atLeast_Suc_lessThan, simp, subst sum.shift_bounds_Suc_ivl)
        (simp add: atLeast0LessThan decompose_rec st cons.IH lift_mult)
   also have "(lift (t * x) div lift y + lift (s * x) div lift (prod_list ys)) *
                 lift (prod_list (y#ys)) = 
@@ -223,7 +223,7 @@ proof (induction x y n rule: normalise_decomp.induct, goal_cases)
     unfolding atLeast0LessThan[symmetric]
     apply (subst sum.atLeast_Suc_lessThan)
     apply simp
-    apply (subst sum_shift_bounds_Suc_ivl)
+    apply (subst sum.shift_bounds_Suc_ivl)
     apply (simp add: ab atLeast0LessThan ac_simps)
     done
   also have "lift a + (\<Sum>i<n. from_decomp (b ! i) y (n - i)) = 

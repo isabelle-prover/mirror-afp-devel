@@ -4608,7 +4608,7 @@ next
       also have "{length xss'..<m + length xss'} = {0+length xss'..<m+length xss'}" by auto
       also have "(\<Sum>i = 0 + length xss'..<m + length xss'. llength (lnth xss i)) =
                 (\<Sum>i = 0..<m. llength (lnth xss (i + length xss')))"
-        by(rule sum_shift_bounds_nat_ivl)
+        by(rule sum.shift_bounds_nat_ivl)
       also have "\<dots> = (\<Sum>i = 0..<m. llength (lnth (LCons (LCons x xs') xss'') i))"
         unfolding xss by(subst lnth_lappend2) simp+
       also have "\<dots> = eSuc (llength xs') + (\<Sum>i = Suc 0..<m. llength (lnth (LCons (LCons x xs') xss'') i))"

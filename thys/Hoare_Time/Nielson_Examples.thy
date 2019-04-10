@@ -194,7 +194,7 @@ proof( goal_cases)
   next
     case (3 l s)  (* outer loop: S is preserved *)
     { fix i :: int assume "0 \<le> i" then have "int (\<Sum>{0..<nat i}) + i = int (\<Sum>{0..nat i})"
-        by (simp add: sum_last_plus)    } note bla=this
+        by (simp add: sum.last_plus)    } note bla=this
     from 3 show ?case unfolding I1 S1 S2  apply(auto simp add:  )
     proof (goal_cases)
       case 1
@@ -222,7 +222,7 @@ proof( goal_cases)
   next
     case (9 l s)  (* inner loop: S is preserved *)
     { fix i :: int assume "0 \<le> i" then have "int (\<Sum>{0..<nat i}) + i = int (\<Sum>{0..nat i})"
-        by (simp add: sum_last_plus)    } note bla=this
+        by (simp add: sum.last_plus)    } note bla=this
     from 9 show ?case unfolding I2   S2  apply(auto simp add:  ) done  
   next  
     case (10 l s) (* inner loop: post condition is correct after exiting the loop *)

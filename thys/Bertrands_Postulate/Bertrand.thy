@@ -260,7 +260,7 @@ proof -
       by (simp add: sum.distrib)
     also have "\<dots> \<le> (\<Sum>i=1..n. ln (i+1))"
       by (intro sum_mono, subst ln_le_cancel_iff) (auto simp: Suc_le_eq dest: lb ub)
-    also from sum_shift_bounds_cl_nat_ivl[of "ln" 1 1 n] have "\<dots> = (\<Sum>i=1+1..n+1. ln i)" ..
+    also from sum.shift_bounds_cl_nat_ivl[of "ln" 1 1 n] have "\<dots> = (\<Sum>i=1+1..n+1. ln i)" ..
     also have "\<dots> = (\<Sum>i=1..n+1. ln i)"
       by (rule sum.mono_neutral_left) auto
     finally have b_minus_a: "((n+1) * ln (n+1) - (n+1)) - (\<Sum>i=1..n+1. ln i) \<le> 1"
@@ -684,7 +684,7 @@ proof -
   from assms(2) [symmetric] have [simp]: "y > 0" by (simp add: pre_mangoldt_pos)
   have "psi n = psi (Suc m)" by (simp add: assms(3) [symmetric])
   also have "\<dots> = ln (real y * (\<Prod>x = Suc 0..m. real (pre_mangoldt x)))"
-    using assms(2,3) [symmetric] by (simp add: psi_conv_pre_mangoldt prod_nat_ivl_Suc' mult_ac)
+    using assms(2,3) [symmetric] by (simp add: psi_conv_pre_mangoldt prod.nat_ivl_Suc' mult_ac)
   also have "\<dots> = ln (real y) + psi m"
     by (subst ln_mult) (simp_all add: pre_mangoldt_pos prod_pos psi_conv_pre_mangoldt)
   also have "psi m = ln (real (numeral x))" by fact
@@ -1375,7 +1375,7 @@ proof -
       with psi_pos show ?thesis by simp
     next
       case False
-      with sum_cl_ivl_Suc[of "\<lambda>d. (-1)^(d+1) * psi (n div d)" 1 "k-1"]
+      with sum.cl_ivl_Suc[of "\<lambda>d. (-1)^(d+1) * psi (n div d)" 1 "k-1"]
       have "(\<Sum>d=1..k. (-1)^(d+1) * psi (n div d)) = (\<Sum>d=1..k-1. (-1)^(d+1) * psi (n div d))
           + (-1)^(k+1) * psi (n div k)"
         by simp

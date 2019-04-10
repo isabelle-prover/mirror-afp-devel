@@ -49,7 +49,7 @@ proof (induct p)
       case True show ?thesis by (simp add: True map_poly_simps assms)
       next case False show ?thesis
         unfolding degree_pCons_eq[OF False]
-        unfolding sum_atMost_Suc_shift
+        unfolding sum.atMost_Suc_shift
         unfolding map_poly_pCons[OF pCons(1)]
         by (simp add: pCons(2) sum_distrib_left mult.assoc)
   qed

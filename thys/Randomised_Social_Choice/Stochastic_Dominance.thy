@@ -380,7 +380,7 @@ proof safe
       by (simp add: n)
     also have "(\<Sum>i<length xs. u (f i) * ?pref' p (f i)) =
                  (\<Sum>i<n. u (f (Suc i)) * ?pref' p (f (Suc i))) + u (f 0) * ?pref' p (f 0)"
-      unfolding n sum_lessThan_Suc_shift by simp
+      unfolding n sum.lessThan_Suc_shift by simp
     also have "(\<Sum>i<n. u (f (Suc i)) * ?pref' p (f (Suc i))) =
                  (\<Sum>i<n. u (f (Suc i)) * ?pref p (f i))"
     proof (intro sum.cong HOL.refl)

@@ -64,7 +64,7 @@ proof (cases)
   also have "... = (\<Sum>i=0 .. n . x^(Suc i))    - (\<Sum>i=0 .. n . x^i)"
     by (simp add: sum_distrib_left)
   also have "... = (\<Sum>i=Suc 0 .. Suc n . x^i)  - (\<Sum>i=0 .. n . x^i)"
-    by (metis sum_shift_bounds_cl_Suc_ivl)
+    by (metis sum.shift_bounds_cl_Suc_ivl)
   also with n0
   have "... = ((\<Sum>i=Suc 0 .. n. x^i)+x^(Suc n)) - (x^0 + (\<Sum>i=Suc 0 .. n. x^i))"
     by (auto simp add: sum.union_disjoint nat_interval_minus_zero2)

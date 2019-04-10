@@ -439,7 +439,7 @@ proof -
       have "(\<Sum>i<n-1. abs(u s ((T^^(i * s+t))x))) + u s ((T^^((n-1) * s+t)) x)
         \<le> (\<Sum>i<n-1. abs(u s ((T^^(i * s+t))x))) + abs(u s ((T^^((n-1) * s+t)) x))" by auto
       also have "... \<le> (\<Sum>i<n. abs(u s ((T^^(i* s+t))x)))"
-        using \<open>n\<ge>1\<close> lessThan_Suc_atMost sum.lessThan_Suc[where ?n = "n-1" and ?f = "\<lambda>i. abs(u s ((T^^(i* s+t))x))" , symmetric] by auto
+        using \<open>n\<ge>1\<close> lessThan_Suc_atMost sum.lessThan_Suc[of "\<lambda>i. abs(u s ((T^^(i* s+t))x))" "n-1", symmetric] by auto
       finally have ***: "(\<Sum>i<n-1. abs(u s ((T^^(i* s+t))x))) + u s ((T^^((n-1) * s+t)) x) \<le> (\<Sum>i<n. abs(u s ((T^^(i* s+t))x)))"
         by simp
 

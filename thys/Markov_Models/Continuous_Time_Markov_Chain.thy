@@ -961,7 +961,7 @@ proof (rule measure_eqI_PiM_sequence)
       by (subst exponential_eq_stretch) (simp_all add: nn_integral_distr)
     also have "emeasure (exponential 1) (A 0) * (\<Prod>i<n. emeasure (exponential 1) (A (Suc i))) =
       (\<Prod>i<Suc n. emeasure (exponential 1) (A i))"
-      by (rule prod_lessThan_Suc_shift[symmetric])
+      by (rule prod.lessThan_Suc_shift[symmetric])
     finally show ?case .
   qed
   also have "\<dots> = emeasure ?P (prod_emb UNIV (\<lambda>_. borel) {..<n'} (Pi\<^sub>E {..<n'} A))"

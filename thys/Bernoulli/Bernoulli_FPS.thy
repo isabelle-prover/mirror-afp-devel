@@ -90,12 +90,12 @@ next
         (\<Sum>i\<le>n. of_nat (Suc i) * S n (Suc i) *  G ^ Suc i * (fps_deriv ^^ Suc i) H) +
         (\<Sum>i\<le>n. S n i * G ^ Suc i * (fps_deriv ^^ Suc i) H)" 
     (is "_ = sum (\<lambda>i. ?f (Suc i)) \<dots> + ?S2")
-    by (subst sum_atMost_Suc_shift) (simp_all add: sum.distrib algebra_simps fps_of_nat S_def
+    by (subst sum.atMost_Suc_shift) (simp_all add: sum.distrib algebra_simps fps_of_nat S_def
           fps_const_add [symmetric] fps_const_mult [symmetric] del: fps_const_add fps_const_mult)
   also have "sum (\<lambda>i. ?f (Suc i)) {..n} = sum (\<lambda>i. ?f (Suc i)) {..<n}"
     by (intro sum.mono_neutral_right) (auto simp: S_def)
   also have "\<dots> = ?f 0 + \<dots>" by simp
-  also have "\<dots> = sum ?f {..n}" by (subst sum_atMost_shift [symmetric]) simp_all
+  also have "\<dots> = sum ?f {..n}" by (subst sum.atMost_shift [symmetric]) simp_all
   also have "\<dots> + ?S2 = (\<Sum>x\<le>n. fps_XD' G (S n x * G ^ x * (fps_deriv ^^ x) H))"
     unfolding sum.distrib [symmetric]
   proof (rule sum.cong, goal_cases)
@@ -135,7 +135,7 @@ proof -
       by (simp add: algebra_simps sum.distrib)
     also have "(\<Sum>i = 0..n. (n choose Suc i) * Stirling (Suc i) m) =
                  (\<Sum>i = Suc 0..Suc n. (n choose i) * Stirling i m)"
-      by (subst sum_shift_bounds_cl_Suc_ivl) simp_all
+      by (subst sum.shift_bounds_cl_Suc_ivl) simp_all
     also have "\<dots> = (\<Sum>i = Suc 0..n. (n choose i) * Stirling i m)"
       by (intro sum.mono_neutral_right) auto
     also have "\<dots> = real (\<Sum>i = 0..n.  Stirling i m * (n choose i)) - real (Stirling 0 m)"

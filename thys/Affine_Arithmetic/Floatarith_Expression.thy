@@ -670,7 +670,7 @@ proof (induction rule: list_induct2)
 next
   case (Cons x xs y ys)
   then show ?case
-    unfolding length_Cons sum_lessThan_Suc_shift
+    unfolding length_Cons sum.lessThan_Suc_shift
     by simp
 qed
 
