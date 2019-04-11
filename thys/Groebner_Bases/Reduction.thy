@@ -1561,6 +1561,19 @@ qed
 corollary is_irred_map_scale: "\<not> is_red F p \<Longrightarrow> \<not> is_red F (c \<cdot> p)"
   by (auto dest: is_red_map_scale)
 
+lemma is_red_map_scale_iff: "is_red F (c \<cdot> p) \<longleftrightarrow> (c \<noteq> 0 \<and> is_red F p)"
+proof (intro iffI conjI notI)
+  assume "is_red F (c \<cdot> p)" and "c = 0"
+  thus False by (simp add: irred_0)
+next
+  assume "is_red F (c \<cdot> p)"
+  thus "is_red F p" by (rule is_red_map_scale)
+next
+  assume "c \<noteq> 0 \<and> is_red F p"
+  hence "is_red F (inverse c \<cdot> c \<cdot> p)" by (simp add: map_scale_assoc)
+  thus "is_red F (c \<cdot> p)" by (rule is_red_map_scale)
+qed
+
 lemma is_red_uminus: "is_red F (- p) \<longleftrightarrow> is_red F p"
   by (auto elim!: is_red_addsE simp: keys_uminus intro: is_red_addsI)
 
