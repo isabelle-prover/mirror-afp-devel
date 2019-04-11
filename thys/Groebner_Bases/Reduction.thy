@@ -1743,6 +1743,71 @@ next
   from assms(1) assms(2) step(3) step(2) show "q \<in> dgrad_p_set d m" by (rule dgrad_p_set_closed_red)
 qed
 
+lemma red_rtrancl_repE:
+  assumes "dickson_grading d" and "G \<subseteq> dgrad_p_set d m" and "finite G" and "p \<in> dgrad_p_set d m"
+    and "(red G)\<^sup>*\<^sup>* p r"
+  obtains q where "p = r + (\<Sum>g\<in>G. q g \<odot> g)" and "\<And>g. q g \<in> punit.dgrad_p_set d m"
+    and "\<And>g. lt (q g \<odot> g) \<preceq>\<^sub>t lt p"
+  using assms(5)
+proof (induct r arbitrary: thesis)
+  case base
+  show ?case
+  proof (rule base)
+    show "p = p + (\<Sum>g\<in>G. 0 \<odot> g)" by simp
+  qed (simp_all add: punit.zero_in_dgrad_p_set min_term_min)
+next
+  case (step r' r)
+  from step.hyps(2) obtain g t where "g \<in> G" and rs: "red_single r' r g t" by (rule red_setE)
+  from this(2) have "r' = r + monomial (lookup r' (t \<oplus> lt g) / lc g) t \<odot> g"
+    by (simp add: red_single_def mult_scalar_monomial)
+  moreover define q0 where "q0 = monomial (lookup r' (t \<oplus> lt g) / lc g) t"
+  ultimately have r': "r' = r + q0 \<odot> g" by simp
+  obtain q' where p: "p = r' + (\<Sum>g\<in>G. q' g \<odot> g)" and 1: "\<And>g. q' g \<in> punit.dgrad_p_set d m"
+    and 2: "\<And>g. lt (q' g \<odot> g) \<preceq>\<^sub>t lt p" by (rule step.hyps) blast
+  define q where "q = q'(g := q0 + q' g)"
+  show ?case
+  proof (rule step.prems)
+    from assms(3) \<open>g \<in> G\<close> have "p = (r + q0 \<odot> g) + (q' g \<odot> g + (\<Sum>g\<in>G - {g}. q' g \<odot> g))"
+      by (simp add: p r' sum.remove)
+    also have "\<dots> = r + (q g \<odot> g + (\<Sum>g\<in>G - {g}. q' g \<odot> g))"
+      by (simp add: q_def mult_scalar_distrib_right)
+    also from refl have "(\<Sum>g\<in>G - {g}. q' g \<odot> g) = (\<Sum>g\<in>G - {g}. q g \<odot> g)"
+      by (rule sum.cong) (simp add: q_def)
+    finally show "p = r + (\<Sum>g\<in>G. q g \<odot> g)" using assms(3) \<open>g \<in> G\<close> by (simp only: sum.remove)
+  next
+    fix g0
+    have "q g0 \<in> punit.dgrad_p_set d m \<and> lt (q g0 \<odot> g0) \<preceq>\<^sub>t lt p"
+    proof (cases "g0 = g")
+      case True
+      have eq: "q g = q0 + q' g" by (simp add: q_def)
+      show ?thesis unfolding True eq
+      proof
+        from assms(1, 2, 4) step.hyps(1) have "r' \<in> dgrad_p_set d m"
+          by (rule dgrad_p_set_closed_red_rtrancl)
+        with assms(1) have "d t \<le> m" using rs by (rule dgrad_p_set_red_single_pp)
+        hence "q0 \<in> punit.dgrad_p_set d m" by (simp add: q0_def punit.dgrad_p_set_def dgrad_set_def)
+        thus "q0 + q' g \<in> punit.dgrad_p_set d m" by (intro punit.dgrad_p_set_closed_plus 1)
+      next
+        have "lt (q0 \<odot> g + q' g \<odot> g) \<preceq>\<^sub>t ord_term_lin.max (lt (q0 \<odot> g)) (lt (q' g \<odot> g))"
+          by (fact lt_plus_le_max)
+        also have "\<dots> \<preceq>\<^sub>t lt p"
+        proof (intro ord_term_lin.max.boundedI 2)
+          have "lt (q0 \<odot> g) \<preceq>\<^sub>t t \<oplus> lt g" by (simp add: q0_def mult_scalar_monomial lt_monom_mult_le)
+          also from rs have "\<dots> \<preceq>\<^sub>t lt r'" by (intro lt_max) (simp add: red_single_def)
+          also from step.hyps(1) have "\<dots> \<preceq>\<^sub>t lt p" by (intro ord_p_lt red_rtrancl_ord)
+          finally show "lt (q0 \<odot> g) \<preceq>\<^sub>t lt p" .
+        qed
+        finally show "lt ((q0 + q' g) \<odot> g) \<preceq>\<^sub>t lt p" by (simp only: mult_scalar_distrib_right)
+      qed
+    next
+      case False
+      hence "q g0 = q' g0" by (simp add: q_def)
+      thus ?thesis by (simp add: 1 2)
+    qed
+    thus "q g0 \<in> punit.dgrad_p_set d m" and "lt (q g0 \<odot> g0) \<preceq>\<^sub>t lt p" by simp_all
+  qed
+qed
+
 lemma is_relation_order_red:
   assumes "dickson_grading d"
   shows "Confluence.relation_order (red F) (\<prec>\<^sub>p) (dgrad_p_set d m)"
