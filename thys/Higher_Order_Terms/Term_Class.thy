@@ -1036,6 +1036,17 @@ end
 
 end
 
+locale subst_syntactic_and = simple_syntactic_and +
+  assumes P_subst: "P t \<Longrightarrow> fmpred (\<lambda>_. P) env \<Longrightarrow> P (subst t env)"
+begin
+
+lemma rewrite_step:
+  assumes "(lhs, rhs) \<turnstile> t \<rightarrow> t'" "P t" "P rhs"
+  shows "P t'"
+using assms by (auto intro: match P_subst)
+
+end
+
 locale simple_syntactic_or =
   fixes P :: "'a::term \<Rightarrow> bool"
   assumes P_app: "P (app t u) \<longleftrightarrow> P t \<or> P u"
@@ -1066,6 +1077,9 @@ by standard simp
 
 global_interpretation closed: simple_syntactic_and "\<lambda>t. closed_except t S" for S
 by standard (simp add: closed_except_def)
+
+global_interpretation closed: subst_syntactic_and closed
+by standard (rule subst_closed_preserved)
 
 corollary closed_list_comb: "closed (name $$ args) \<longleftrightarrow> list_all closed args"
 by (simp add: closed.list_comb)
