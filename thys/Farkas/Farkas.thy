@@ -1100,7 +1100,7 @@ fun scaleRat_constraint :: "rat \<Rightarrow> constraint \<Rightarrow> constrain
 instance ..
 end
 
-lemma sat_scale_rat: assumes "v \<Turnstile>\<^sub>c c"
+lemma sat_scale_rat: assumes "(v :: rat valuation) \<Turnstile>\<^sub>c c"
   shows "v \<Turnstile>\<^sub>c (r *R c)"
 proof -
   have "r < 0 \<or> r = 0 \<or> r > 0" by auto
