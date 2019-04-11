@@ -69,7 +69,7 @@ where
   "\<phi> \<longrightarrow>\<^sub>P \<psi> \<equiv> \<forall>\<A>. \<A> \<Turnstile>\<^sub>P \<phi> \<longrightarrow> \<A> \<Turnstile>\<^sub>P \<psi>"
 
 lemma ltl_prop_implies_equiv:
-  "(\<phi> \<longrightarrow>\<^sub>P \<psi> \<and> \<psi> \<longrightarrow>\<^sub>P \<phi>) \<longleftrightarrow> \<phi> \<sim>\<^sub>P \<psi>"
+  "\<phi> \<sim>\<^sub>P \<psi> \<longleftrightarrow> (\<phi> \<longrightarrow>\<^sub>P \<psi> \<and> \<psi> \<longrightarrow>\<^sub>P \<phi>)"
   unfolding ltl_prop_equiv_def ltl_prop_implies_def by meson
 
 lemma ltl_prop_equiv_equivp:
@@ -372,16 +372,16 @@ where
 | "nested_prop_atoms (\<phi> M\<^sub>n \<psi>) = {\<phi> M\<^sub>n \<psi>} \<union> nested_prop_atoms \<phi> \<union> nested_prop_atoms \<psi>"
 | "nested_prop_atoms \<phi> = {\<phi>}"
 
+lemma prop_atoms_nested_prop_atoms:
+  "prop_atoms \<phi> \<subseteq> nested_prop_atoms \<phi>"
+  by (induction \<phi>) auto
+
 lemma prop_atoms_subfrmlsn:
   "prop_atoms \<phi> \<subseteq> subfrmlsn \<phi>"
   by (induction \<phi>) auto
 
 lemma nested_prop_atoms_subfrmlsn:
   "nested_prop_atoms \<phi> \<subseteq> subfrmlsn \<phi>"
-  by (induction \<phi>) auto
-
-lemma prop_atoms_nested_prop_atoms:
-  "prop_atoms \<phi> \<subseteq> nested_prop_atoms \<phi>"
   by (induction \<phi>) auto
 
 lemma prop_atoms_finite:
@@ -396,6 +396,9 @@ lemma prop_atoms_entailment:
   "prop_atoms \<phi> \<subseteq> P \<Longrightarrow> (\<A> \<inter> P) \<Turnstile>\<^sub>P \<phi> = \<A> \<Turnstile>\<^sub>P \<phi>"
   by (induction \<phi>) auto
 
+lemma nested_prop_atoms_entailment:
+  "nested_prop_atoms \<phi> \<subseteq> P \<Longrightarrow> (\<A> \<inter> P) \<Turnstile>\<^sub>P \<phi> = \<A> \<Turnstile>\<^sub>P \<phi>"
+  by (induction \<phi>) auto
 
 lemma sat_models_inter_inj_helper:
   assumes
@@ -430,6 +433,7 @@ lemma sat_models_card:
   "finite P \<Longrightarrow> card ({sat_models (abs_ltln\<^sub>P \<phi>) \<inter> Pow P | \<phi>. prop_atoms \<phi> \<subseteq> P}) \<le> 2 ^ 2 ^ card P"
   by (metis (mono_tags, lifting) sat_models_pow_pow Pow_def card_Pow card_mono finite_Collect_subsets)
 
+
 lemma image_filter:
   "f ` {g a | a. P a} = {f (g a) | a. P a}"
   by blast
@@ -441,6 +445,19 @@ lemma prop_equiv_finite:
 lemma prop_equiv_card:
   "finite P \<Longrightarrow> card {abs_ltln\<^sub>P \<psi> | \<psi>. prop_atoms \<psi> \<subseteq> P} \<le> 2 ^ 2 ^ card P"
   by (auto simp: image_filter sat_models_card card_image[OF sat_models_inter_inj, symmetric])
+
+
+lemma prop_equiv_subset:
+  "{abs_ltln\<^sub>P \<psi> |\<psi>. nested_prop_atoms \<psi> \<subseteq> P} \<subseteq> {abs_ltln\<^sub>P \<psi> |\<psi>. prop_atoms \<psi> \<subseteq> P}"
+  using prop_atoms_nested_prop_atoms by blast
+
+lemma prop_equiv_finite':
+  "finite P \<Longrightarrow> finite {abs_ltln\<^sub>P \<psi> | \<psi>. nested_prop_atoms \<psi> \<subseteq> P}"
+  using prop_equiv_finite prop_equiv_subset finite_subset by fast
+
+lemma prop_equiv_card':
+  "finite P \<Longrightarrow> card {abs_ltln\<^sub>P \<psi> | \<psi>. nested_prop_atoms \<psi> \<subseteq> P} \<le> 2 ^ 2 ^ card P"
+  by (metis (mono_tags, lifting) prop_equiv_card prop_equiv_subset prop_equiv_finite card_mono le_trans)
 
 
 

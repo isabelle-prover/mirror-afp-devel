@@ -191,6 +191,9 @@ by (induction t arbitrary: n) (auto split: option.splits intro: wellformed_inc)
 global_interpretation wellformed: simple_syntactic_and "wellformed' n" for n
 by standard (auto simp: app_term_def)
 
+global_interpretation wellformed: subst_syntactic_and wellformed
+by standard (auto intro: subst_wellformed)
+
 lemma match_list_combE:
   assumes "match (name $$ xs) t = Some env"
   obtains ys where "t = name $$ ys" "matchs xs ys = Some env"

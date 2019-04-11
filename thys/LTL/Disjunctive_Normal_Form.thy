@@ -30,15 +30,19 @@ lemma min_set_iff:
 
 lemma min_set_subset:
   "min_set X \<subseteq> X"
-  by (auto simp add: min_set_def)
+  by (auto simp: min_set_def)
 
 lemma min_set_idem[simp]:
   "min_set (min_set X) = min_set X"
-  by (auto simp add: min_set_def)
+  by (auto simp: min_set_def)
 
 lemma min_set_empty[simp]:
   "min_set {} = {}"
   using min_set_subset by blast
+
+lemma min_set_singleton[simp]:
+  "min_set {x} = {x}"
+  by (auto simp: min_set_def)
 
 lemma min_set_finite:
   "finite X \<Longrightarrow> finite (min_set X)"
@@ -71,7 +75,7 @@ definition product :: "'a fset set \<Rightarrow> 'a fset set \<Rightarrow> 'a fs
 definition min_product :: "'a fset set \<Rightarrow> 'a fset set \<Rightarrow> 'a fset set" (infixr "\<otimes>\<^sub>m" 65)
   where "A \<otimes>\<^sub>m B = min_set (A \<otimes> B)"
 
-definition min_product_set :: "'a fset set set \<Rightarrow> 'a fset set" ("\<Otimes>\<^sub>m _" [70])
+definition min_product_set :: "'a fset set set \<Rightarrow> 'a fset set" ("\<Otimes>\<^sub>m")
   where "\<Otimes>\<^sub>m X = Finite_Set.fold min_product {{||}} X"
 
 definition min_union :: "'a fset set \<Rightarrow> 'a fset set \<Rightarrow> 'a fset set" (infixr "\<union>\<^sub>m" 65)
@@ -131,10 +135,6 @@ lemma min_union_comm:
   unfolding min_union_def
   by (simp add: sup.commute)
 
-
-lemma product_intro[intro]:
-  "a \<in> A \<Longrightarrow> b \<in> B \<Longrightarrow> a |\<union>| b \<in> A \<otimes> B"
-  unfolding product_def by blast
 
 lemma product_iff:
   "x \<in> A \<otimes> B \<longleftrightarrow> (\<exists>a \<in> A. \<exists>b \<in> B. x = a |\<union>| b)"
@@ -325,6 +325,14 @@ lemma min_union_finite:
 
 subsection \<open>Minimal Disjunctive Normal Form\<close>
 
+fun dnf :: "'a ltln \<Rightarrow> 'a ltln fset set"
+where
+  "dnf true\<^sub>n = {{||}}"
+| "dnf false\<^sub>n = {}"
+| "dnf (\<phi> and\<^sub>n \<psi>) = (dnf \<phi>) \<otimes> (dnf \<psi>)"
+| "dnf (\<phi> or\<^sub>n \<psi>) = (dnf \<phi>) \<union> (dnf \<psi>)"
+| "dnf \<phi> = {{|\<phi>|}}"
+
 fun min_dnf :: "'a ltln \<Rightarrow> 'a ltln fset set"
 where
   "min_dnf true\<^sub>n = {{||}}"
@@ -333,34 +341,37 @@ where
 | "min_dnf (\<phi> or\<^sub>n \<psi>) = (min_dnf \<phi>) \<union>\<^sub>m (min_dnf \<psi>)"
 | "min_dnf \<phi> = {{|\<phi>|}}"
 
+lemma dnf_min_set:
+  "min_dnf \<phi> = min_set (dnf \<phi>)"
+  by (induction \<phi>) (simp_all, simp_all only: min_product_def min_union_def)
+
+lemma dnf_finite:
+  "finite (dnf \<phi>)"
+  by (induction \<phi>) (auto simp: product_finite)
+
 lemma min_dnf_finite:
   "finite (min_dnf \<phi>)"
-  by (induction \<phi>) (auto simp: finite_image_set2 min_product_def product_def min_union_def min_set_finite(1))
+  by (induction \<phi>) (auto simp: min_product_finite min_union_finite)
+
+lemma dnf_Abs_fset[simp]:
+  "fset (Abs_fset (dnf \<phi>)) = dnf \<phi>"
+  by (simp add: dnf_finite Abs_fset_inverse)
+
+lemma min_dnf_Abs_fset[simp]:
+  "fset (Abs_fset (min_dnf \<phi>)) = min_dnf \<phi>"
+  by (simp add: min_dnf_finite Abs_fset_inverse)
+
+lemma dnf_prop_atoms:
+  "A \<in> dnf \<phi> \<Longrightarrow> fset A \<subseteq> prop_atoms \<phi>"
+  by (induction \<phi> arbitrary: A) (auto simp: product_def, blast+)
+
+lemma min_dnf_prop_atoms:
+  "A \<in> min_dnf \<phi> \<Longrightarrow> fset A \<subseteq> prop_atoms \<phi>"
+  by (induction \<phi> arbitrary: A) (simp_all add: min_product_iff min_union_iff, fastforce+)
 
 lemma min_dnf_min_set[simp]:
   "min_set (min_dnf \<phi>) = min_dnf \<phi>"
   by (induction \<phi>) (simp_all add: min_set_def min_product_def min_union_def, blast+)
-
-lemma min_dnf_not_member:
-  "A \<in> min_dnf \<phi> \<Longrightarrow> false\<^sub>n |\<notin>| A"
-  "A \<in> min_dnf \<phi> \<Longrightarrow> true\<^sub>n |\<notin>| A"
-  "A \<in> min_dnf \<phi> \<Longrightarrow> \<psi>\<^sub>1 and\<^sub>n \<psi>\<^sub>2 |\<notin>| A"
-  "A \<in> min_dnf \<phi> \<Longrightarrow> \<psi>\<^sub>1 or\<^sub>n \<psi>\<^sub>2 |\<notin>| A"
-  by (induction \<phi> arbitrary: A) (simp_all add: min_product_iff min_union_iff, fastforce+)
-
-lemma min_dnf_subfrmlsn:
-  "A \<in> min_dnf \<phi> \<Longrightarrow> fset A \<subseteq> subfrmlsn \<phi>"
-proof (induction \<phi> arbitrary: A)
-  case And_ltln
-
-  then show ?case
-    by (simp add: min_product_iff) fastforce
-next
-  case Or_ltln
-
-  then show ?case
-    by (simp add: min_union_def) (insert min_set_subset, blast)
-qed simp_all
 
 
 lemma min_dnf_iff_prop_assignment_subset:
@@ -427,5 +438,52 @@ next
     using \<open>fset B \<subseteq> \<A>\<close> by blast
 qed
 
+
+lemma ltl_prop_implies_min_dnf:
+  "\<phi> \<longrightarrow>\<^sub>P \<psi> = (\<forall>A \<in> min_dnf \<phi>. \<exists>B \<in> min_dnf \<psi>. B |\<subseteq>| A)"
+  by (meson less_eq_fset.rep_eq ltl_prop_implies_def min_dnf_iff_prop_assignment_subset order_refl dual_order.trans)
+
+lemma ltl_prop_equiv_min_dnf:
+  "\<phi> \<sim>\<^sub>P \<psi> = (min_dnf \<phi> = min_dnf \<psi>)"
+proof
+  assume "\<phi> \<sim>\<^sub>P \<psi>"
+
+  then have "\<And>x. x \<in> min_set (min_dnf \<phi>) \<longleftrightarrow> x \<in> min_set (min_dnf \<psi>)"
+    unfolding ltl_prop_implies_equiv ltl_prop_implies_min_dnf min_set_iff
+    by fastforce
+
+  then show "min_dnf \<phi> = min_dnf \<psi>"
+    by auto
+qed (simp add: ltl_prop_equiv_def min_dnf_iff_prop_assignment_subset)
+
+export_code dnf min_dnf checking
+
+
+
+subsection \<open>DNF to LTL conversion\<close>
+
+abbreviation And\<^sub>n :: "'a ltln list \<Rightarrow> 'a ltln"
+where
+  "And\<^sub>n xs \<equiv> foldr And_ltln xs true\<^sub>n"
+
+abbreviation Or\<^sub>n :: "'a ltln list \<Rightarrow> 'a ltln"
+where
+  "Or\<^sub>n xs \<equiv> foldr Or_ltln xs false\<^sub>n"
+
+lemma And\<^sub>n_semantics:
+  "w \<Turnstile>\<^sub>n And\<^sub>n xs \<longleftrightarrow> (\<forall>x \<in> set xs. w \<Turnstile>\<^sub>n x)"
+  by (induction xs) auto
+
+lemma Or\<^sub>n_semantics:
+  "w \<Turnstile>\<^sub>n Or\<^sub>n xs \<longleftrightarrow> (\<exists>x \<in> set xs. w \<Turnstile>\<^sub>n x)"
+  by (induction xs) auto
+
+lemma And\<^sub>n_prop_entailment:
+  "\<A> \<Turnstile>\<^sub>P And\<^sub>n xs \<longleftrightarrow> (\<forall>x \<in> set xs. \<A> \<Turnstile>\<^sub>P x)"
+  by (induction xs) auto
+
+lemma Or\<^sub>n_prop_entailment:
+  "\<A> \<Turnstile>\<^sub>P Or\<^sub>n xs \<longleftrightarrow> (\<exists>x \<in> set xs. \<A> \<Turnstile>\<^sub>P x)"
+  by (induction xs) auto
 
 end

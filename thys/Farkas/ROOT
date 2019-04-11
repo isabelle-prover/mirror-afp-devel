@@ -4,6 +4,7 @@ session Farkas (AFP) = Simplex +
   options [timeout = 600]
   theories
     Farkas
+    Simplex_for_Reals
   document_files
     "root.bib"
     "root.tex"

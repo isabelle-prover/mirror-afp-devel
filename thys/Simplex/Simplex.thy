@@ -50,17 +50,17 @@ abbreviation (input) flat_list :: "('i \<times> 'a) list \<Rightarrow> 'a list" 
   "flat_list xs \<equiv> map snd xs"
 
 primrec
-  satisfies_constraint :: "rat valuation \<Rightarrow> constraint \<Rightarrow> bool"  (infixl "\<Turnstile>\<^sub>c" 100) where
-  "v \<Turnstile>\<^sub>c LT l r \<longleftrightarrow> l\<lbrace>v\<rbrace> < r"
-| "v \<Turnstile>\<^sub>c GT l r \<longleftrightarrow> l\<lbrace>v\<rbrace> > r"
-| "v \<Turnstile>\<^sub>c LEQ l r \<longleftrightarrow> l\<lbrace>v\<rbrace> \<le> r"
-| "v \<Turnstile>\<^sub>c GEQ l r \<longleftrightarrow> l\<lbrace>v\<rbrace> \<ge>  r"
-| "v \<Turnstile>\<^sub>c EQ l r \<longleftrightarrow> l\<lbrace>v\<rbrace> = r"
-| "v \<Turnstile>\<^sub>c LTPP l1 l2 \<longleftrightarrow> l1\<lbrace>v\<rbrace> < l2\<lbrace>v\<rbrace>"
-| "v \<Turnstile>\<^sub>c GTPP l1 l2 \<longleftrightarrow> l1\<lbrace>v\<rbrace> > l2\<lbrace>v\<rbrace>"
-| "v \<Turnstile>\<^sub>c LEQPP l1 l2 \<longleftrightarrow> l1\<lbrace>v\<rbrace> \<le> l2\<lbrace>v\<rbrace>"
-| "v \<Turnstile>\<^sub>c GEQPP l1 l2 \<longleftrightarrow> l1\<lbrace>v\<rbrace> \<ge> l2\<lbrace>v\<rbrace>"
-| "v \<Turnstile>\<^sub>c EQPP l1 l2 \<longleftrightarrow> l1\<lbrace>v\<rbrace> = l2\<lbrace>v\<rbrace>"
+  satisfies_constraint :: "'a :: lrv valuation \<Rightarrow> constraint \<Rightarrow> bool"  (infixl "\<Turnstile>\<^sub>c" 100) where
+  "v \<Turnstile>\<^sub>c (LT l r) \<longleftrightarrow> (l\<lbrace>v\<rbrace>) < r *R 1"
+| "v \<Turnstile>\<^sub>c GT l r \<longleftrightarrow> (l\<lbrace>v\<rbrace>) > r *R 1"
+| "v \<Turnstile>\<^sub>c LEQ l r \<longleftrightarrow> (l\<lbrace>v\<rbrace>) \<le> r *R 1"
+| "v \<Turnstile>\<^sub>c GEQ l r \<longleftrightarrow> (l\<lbrace>v\<rbrace>) \<ge>  r *R 1"
+| "v \<Turnstile>\<^sub>c EQ l r \<longleftrightarrow> (l\<lbrace>v\<rbrace>) = r *R 1"
+| "v \<Turnstile>\<^sub>c LTPP l1 l2 \<longleftrightarrow> (l1\<lbrace>v\<rbrace>) < (l2\<lbrace>v\<rbrace>)"
+| "v \<Turnstile>\<^sub>c GTPP l1 l2 \<longleftrightarrow> (l1\<lbrace>v\<rbrace>) > (l2\<lbrace>v\<rbrace>)"
+| "v \<Turnstile>\<^sub>c LEQPP l1 l2 \<longleftrightarrow> (l1\<lbrace>v\<rbrace>) \<le> (l2\<lbrace>v\<rbrace>)"
+| "v \<Turnstile>\<^sub>c GEQPP l1 l2 \<longleftrightarrow> (l1\<lbrace>v\<rbrace>) \<ge> (l2\<lbrace>v\<rbrace>)"
+| "v \<Turnstile>\<^sub>c EQPP l1 l2 \<longleftrightarrow> (l1\<lbrace>v\<rbrace>) = (l2\<lbrace>v\<rbrace>)"
 
 
 abbreviation satisfies_constraints :: "rat valuation \<Rightarrow> constraint set \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>c\<^sub>s" 100) where
