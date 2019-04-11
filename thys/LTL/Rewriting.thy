@@ -283,6 +283,10 @@ where
     in
       (\<chi>, if is_constant \<chi> then \<infinity> else min i j))"
 
+lemma fst_combine:
+  "fst (combine binop (\<phi>, i) (\<psi>, j)) = binop (mk_next_pow (the_enat_0 (i - j)) \<phi>) (mk_next_pow (the_enat_0 (j - i)) \<psi>)"
+  unfolding combine.simps by (meson fstI)
+
 abbreviation to_ltln :: "('a ltln * enat) \<Rightarrow> 'a ltln"
 where
   "to_ltln x \<equiv> mk_next_pow (the_enat_0 (snd x)) (fst x)"
@@ -302,7 +306,7 @@ where
 | "rewrite_X_enat (X\<^sub>n \<phi>) = (\<lambda>(\<phi>, n). (\<phi>, eSuc n)) (rewrite_X_enat \<phi>)"
 
 definition
-  "rewrite_X \<phi> = (let t = rewrite_X_enat \<phi> in to_ltln t)"
+  "rewrite_X \<phi> = to_ltln (rewrite_X_enat \<phi>)"
 
 lemma combine_infinity_invariant:
   assumes "i = \<infinity> \<longleftrightarrow> is_constant x"
@@ -882,6 +886,125 @@ theorem rewrite_iter_slow_sound [simp]:
   apply (unfold comp_def rewrite_modal_sound rewrite_X_sound rewrite_syn_imp_sound rewrite_iter_slow_def)
   by blast
 
+subsection \<open>Preservation of atoms\<close>
+
+lemma iterate_atoms:
+  assumes
+    "\<And>\<phi>. atoms_ltln (f \<phi>) \<subseteq> atoms_ltln \<phi>"
+  shows
+    "atoms_ltln (iterate f \<phi> n) \<subseteq> atoms_ltln \<phi>"
+  by (induction n arbitrary: \<phi>) (auto, metis (mono_tags, lifting) assms in_mono)
+
+lemma rewrite_modal_atoms:
+  "atoms_ltln (rewrite_modal \<phi>) \<subseteq> atoms_ltln \<phi>"
+  by (induction \<phi>) auto
+
+lemma mk_and_atoms:
+  "atoms_ltln (mk_and \<phi> \<psi>) \<subseteq> atoms_ltln \<phi> \<union> atoms_ltln \<psi>"
+  by (auto simp: mk_and_def split: ltln.splits)
+
+lemma mk_or_atoms:
+  "atoms_ltln (mk_or \<phi> \<psi>) \<subseteq> atoms_ltln \<phi> \<union> atoms_ltln \<psi>"
+  by (auto simp: mk_or_def split: ltln.splits)
+
+lemma remove_strong_ops_atoms:
+  "atoms_ltln (remove_strong_ops \<phi>) \<subseteq> atoms_ltln \<phi>"
+  by (induction \<phi>) auto
+
+lemma remove_weak_ops_atoms:
+  "atoms_ltln (remove_weak_ops \<phi>) \<subseteq> atoms_ltln \<phi>"
+  by (induction \<phi>) auto
+
+lemma mk_finally_atoms:
+  "atoms_ltln (mk_finally \<phi>) \<subseteq> atoms_ltln \<phi>"
+  by (auto simp: mk_finally_def split: ltln.splits) (insert remove_strong_ops_atoms, fast+)
+
+lemma mk_globally_atoms:
+  "atoms_ltln (mk_globally \<phi>) \<subseteq> atoms_ltln \<phi>"
+  by (auto simp: mk_globally_def split: ltln.splits) (insert remove_weak_ops_atoms, fast+)
+
+lemma mk_until_atoms:
+  "atoms_ltln (mk_until \<phi> \<psi>) \<subseteq> atoms_ltln \<phi> \<union> atoms_ltln \<psi>"
+  by (auto simp: mk_until_def split: ltln.splits) (insert mk_finally_atoms, fastforce+)
+
+lemma mk_release_atoms:
+  "atoms_ltln (mk_release \<phi> \<psi>) \<subseteq> atoms_ltln \<phi> \<union> atoms_ltln \<psi>"
+  by (auto simp: mk_release_def split: ltln.splits) (insert mk_globally_atoms, fastforce+)
+
+lemma mk_weak_until_atoms:
+  "atoms_ltln (mk_weak_until \<phi> \<psi>) \<subseteq> atoms_ltln \<phi> \<union> atoms_ltln \<psi>"
+  by (auto simp: mk_weak_until_def split: ltln.splits) (insert mk_globally_atoms, fastforce+)
+
+lemma mk_strong_release_atoms:
+  "atoms_ltln (mk_strong_release \<phi> \<psi>) \<subseteq> atoms_ltln \<phi> \<union> atoms_ltln \<psi>"
+  by (auto simp: mk_strong_release_def split: ltln.splits) (insert mk_finally_atoms, fastforce+)
+
+lemma mk_next_atoms:
+  "atoms_ltln (mk_next \<phi>) = atoms_ltln \<phi>"
+  by (auto simp: mk_next_def split: ltln.splits)
+
+lemma mk_next_pow_atoms:
+  "atoms_ltln (mk_next_pow n \<phi>) = atoms_ltln \<phi>"
+  by (induction n) (auto simp: mk_next_pow_def split: ltln.splits)
+
+lemma combine_atoms:
+  assumes
+    "\<And>\<phi> \<psi>. atoms_ltln (f \<phi> \<psi>) \<subseteq> atoms_ltln \<phi> \<union> atoms_ltln \<psi>"
+  shows
+    "atoms_ltln (fst (combine f x y)) \<subseteq> atoms_ltln (fst x) \<union> atoms_ltln (fst y)"
+  by (metis assms fst_combine mk_next_pow_atoms prod.collapse)
+
+lemmas combine_mk_atoms =
+  combine_atoms[OF mk_and_atoms]
+  combine_atoms[OF mk_or_atoms]
+  combine_atoms[OF mk_until_atoms]
+  combine_atoms[OF mk_release_atoms]
+  combine_atoms[OF mk_weak_until_atoms]
+  combine_atoms[OF mk_strong_release_atoms]
+
+lemma rewrite_X_enat_atoms:
+  "atoms_ltln (fst (rewrite_X_enat \<phi>)) \<subseteq> atoms_ltln \<phi>"
+  by (induction \<phi>) (simp_all add: case_prod_beta, insert combine_mk_atoms, fast+)
+
+lemma to_ltln_rewirte_X_enat_atoms:
+  "atoms_ltln (to_ltln (rewrite_X_enat \<phi>)) \<subseteq> atoms_ltln \<phi>"
+  oops
+
+lemma rewrite_X_atoms:
+  "atoms_ltln (rewrite_X \<phi>) \<subseteq> atoms_ltln \<phi>"
+  by (induction \<phi>) (simp_all add: rewrite_X_def mk_next_pow_atoms case_prod_beta, insert combine_mk_atoms, fast+)
+
+lemma rewrite_syn_imp_atoms:
+  "atoms_ltln (rewrite_syn_imp \<phi>) \<subseteq> atoms_ltln \<phi>"
+  apply (induction \<phi>)
+  apply simp_all
+  using mk_and_atoms apply fast
+  using mk_or_atoms apply fast
+  using mk_next_atoms apply fast
+  using mk_finally_atoms mk_until_atoms apply fast
+  using mk_globally_atoms mk_release_atoms apply fast
+  done
+
+lemma rewrite_iter_fast_atoms:
+  "atoms_ltln (rewrite_iter_fast \<phi>) \<subseteq> atoms_ltln \<phi>"
+proof -
+  have 1: "\<And>\<phi>. atoms_ltln (rewrite_modal (rewrite_X \<phi>)) \<subseteq> atoms_ltln \<phi>"
+    using rewrite_modal_atoms rewrite_X_atoms by force
+
+  show ?thesis
+    by (simp add: rewrite_iter_fast_def 1 iterate_atoms)
+qed
+
+lemma rewrite_iter_slow_atoms:
+  "atoms_ltln (rewrite_iter_slow \<phi>) \<subseteq> atoms_ltln \<phi>"
+proof -
+  have 1: "\<And>\<phi>. atoms_ltln (rewrite_syn_imp (rewrite_modal (rewrite_X \<phi>))) \<subseteq> atoms_ltln \<phi>"
+    using rewrite_syn_imp_atoms rewrite_modal_atoms rewrite_X_atoms by force
+
+  show ?thesis
+    by (simp add: rewrite_iter_slow_def 1 iterate_atoms)
+qed
+
 subsection \<open>Simplifier\<close>
 
 text \<open>We now define a convenience wrapper for the rewriting engine\<close>
@@ -897,6 +1020,10 @@ where
 theorem simplify_correct:
   "w \<Turnstile>\<^sub>n simplify m \<phi> \<longleftrightarrow> w \<Turnstile>\<^sub>n \<phi>"
   by (cases m) simp+
+
+lemma simplify_atoms:
+  "atoms_ltln (simplify m \<phi>) \<subseteq> atoms_ltln \<phi>"
+  by (cases m) (insert rewrite_iter_fast_atoms rewrite_iter_slow_atoms, fastforce+)
 
 subsection \<open>Code Generation\<close>
 
