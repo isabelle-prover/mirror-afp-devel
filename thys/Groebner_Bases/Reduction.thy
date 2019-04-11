@@ -1201,7 +1201,7 @@ lemma is_red_addsI:
   using assms
 proof (induction p rule: poly_mapping_tail_induct)
   case 0
-  from \<open>v \<in> keys 0\<close> keys_eq_empty_iff[of 0] show ?case by auto
+  from \<open>v \<in> keys 0\<close> show ?case by auto
 next
   case (tail p)
   from "tail.IH"[OF \<open>f \<in> F\<close> \<open>f \<noteq> 0\<close> _ \<open>lt f adds\<^sub>t v\<close>] have imp: "v \<in> keys (tail p) \<Longrightarrow> is_red F (tail p)" .
@@ -1215,7 +1215,7 @@ next
   next
     case False
     with \<open>v \<in> keys p\<close> \<open>p \<noteq> 0\<close> have "v \<in> keys (tail p)"
-      by (simp add: lookup_tail_2 in_keys_iff del: lookup_not_eq_zero_eq_in_keys) 
+      by (simp add: lookup_tail_2 in_keys_iff) 
     from is_red_indI2[OF \<open>p \<noteq> 0\<close> imp[OF this]] show ?thesis .
   qed
 qed

@@ -854,7 +854,7 @@ proof (rule poly_mapping_eqI, simp add: lookup_proj_poly_syz lookup_lift_poly_sy
 qed
 
 lemma proj_poly_syz_eq_zero_iff: "proj_poly_syz n p = 0 \<longleftrightarrow> (component_of_term ` keys p \<subseteq> {0..<n})"
-  unfolding keys_eq_empty_iff[symmetric] keys_proj_poly_syz
+  unfolding keys_eq_empty[symmetric] keys_proj_poly_syz
 proof
   assume "map_component (\<lambda>k. k + n) -` keys p = {}" (is "?A = {}")
   show "component_of_term ` keys p \<subseteq> {0..<n}"

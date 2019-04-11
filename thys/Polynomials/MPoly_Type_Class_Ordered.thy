@@ -251,7 +251,7 @@ proof (cases "p = 0")
   show ?thesis by (simp add: True min_term_min)
 next
   case False
-  hence "keys p \<noteq> {}" using keys_eq_empty_iff[of p] by simp
+  hence "keys p \<noteq> {}" by simp
   have "\<forall>u\<in>keys p. u \<preceq>\<^sub>t v"
   proof
     fix u::'t
@@ -601,7 +601,7 @@ proof (cases "lt p = lt q")
   proof (rule lt_eqI_keys)
     from True have "lc p + lc q \<noteq> 0" by (rule assms)
     thus "ord_term_lin.max (lt p) (lt q) \<in> keys (p + q)"
-      by (simp add: in_keys_iff lc_def lookup_add True del: lookup_not_eq_zero_eq_in_keys)
+      by (simp add: in_keys_iff lc_def lookup_add True)
   next
     fix u
     assume "u \<in> keys (p + q)"
@@ -787,7 +787,7 @@ lemma tt_gr:
   assumes "\<And>u. u \<in> keys p \<Longrightarrow> v \<prec>\<^sub>t u" and "p \<noteq> 0"
   shows "v \<prec>\<^sub>t tt p"
 proof -
-  from \<open>p \<noteq> 0\<close> have "keys p \<noteq> {}" using keys_eq_empty_iff[of p] by simp
+  from \<open>p \<noteq> 0\<close> have "keys p \<noteq> {}" by simp
   show ?thesis by (rule assms(1), rule tt_in_keys, fact \<open>p \<noteq> 0\<close>)
 qed
 
@@ -804,7 +804,7 @@ lemma tt_ge:
   assumes "\<And>u. u \<prec>\<^sub>t v \<Longrightarrow> lookup p u = 0" and "p \<noteq> 0"
   shows "v \<preceq>\<^sub>t tt p"
 proof -
-  from \<open>p \<noteq> 0\<close> have "keys p \<noteq> {}" using keys_eq_empty_iff[of p] by simp
+  from \<open>p \<noteq> 0\<close> have "keys p \<noteq> {}" by simp
   have "\<forall>u\<in>keys p. v \<preceq>\<^sub>t u"
   proof
     fix u::'t
@@ -2704,7 +2704,7 @@ next
       thus False
       proof
         assume "card (keys p) = 0"
-        hence "p = 0" by (meson card_0_eq keys_eq_empty_iff finite_keys) 
+        hence "p = 0" by (meson card_0_eq keys_eq_empty finite_keys) 
         with step(1) show False ..
       next
         assume "card (keys p) = 1"

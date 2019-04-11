@@ -65,7 +65,7 @@ proof -
   define c where "c \<equiv> lookup f t"
   from assms(2) have f_eq: "f = monomial c t" unfolding c_def
     by (metis (mono_tags, lifting) Diff_insert_absorb cancel_comm_monoid_add_class.add_cancel_right_right
-        plus_except insert_absorb insert_not_empty keys_eq_empty_iff keys_except)
+        plus_except insert_absorb insert_not_empty keys_eq_empty keys_except)
   from assms(2) have "c \<noteq> 0"
     unfolding c_def by auto
   hence "monomial 1 t = monom_mult (1 / c) 0 f" by (simp add: f_eq monom_mult_monomial term_simps)
@@ -283,9 +283,7 @@ proof (cases "p = 0")
 next
   case False
   hence "lc p \<noteq> 0" by (rule lc_not_0)
-  thm in_keys_iff
-  show ?thesis
-    by (rule set_eqI, simp add: in_keys_iff lookup_monic \<open>lc p \<noteq> 0\<close> del: lookup_not_eq_zero_eq_in_keys)
+  show ?thesis by (rule set_eqI, simp add: in_keys_iff lookup_monic \<open>lc p \<noteq> 0\<close>)
 qed
 
 lemma lt_monic [simp]: "lt (monic p) = lt p"
