@@ -17,15 +17,19 @@ text \<open>Warning: Since we only define a Haskell binding for FPLLL,
   the target languages do no longer evaluate to the same results on @{const short_vector_hybrid}!\<close>
 
 code_printing
-  code_module "FPLLL_Solver" \<rightharpoonup> (Haskell) \<open>
-module FPLLL_Solver where {
+  code_module "FPLLL_Solver" \<rightharpoonup> (Haskell) 
+\<open>module FPLLL_Solver where {
 
+import System.Process (proc,createProcess,waitForProcess,CreateProcess(..),StdStream(..));
 import System.IO.Unsafe (unsafePerformIO);
-import System.IO (stderr,hPutStrLn,hPutStr);
-import System.Process (readProcessWithExitCode);
+import System.IO (stderr,hPutStrLn,hPutStr,hClose);
+import Data.ByteString.Lazy (hPut,hGetContents,intercalate,ByteString);
+import Data.ByteString.Lazy.Char8 (pack,unpack,uncons,cons);
 import GHC.IO.Exception (ExitCode(ExitSuccess));
 import Data.Char (isNumber, isSpace);
-import Data.List (intercalate);
+import GHC.IO.Handle (hSetBinaryMode,hSetBuffering,BufferMode(BlockBuffering));
+import Control.Exception;
+import Data.IORef;
 
 fplll_command :: String;
 fplll_command = "fplll";
@@ -37,74 +41,87 @@ alpha_to_delta :: (Integer,Integer) -> Double;
 alpha_to_delta (num,denom) = (fromIntegral denom / fromIntegral num) + 
   (default_eta * default_eta);
 
-showrow :: [Integer] -> String;
-showrow rowA = "["++ intercalate " " (map show rowA) ++ "]";
-showmat :: [[Integer]] -> String;
-showmat matA = "["++ intercalate "\n " (map showrow matA) ++"]";
-
+showrow :: [Integer] -> ByteString;
+showrow rowA = (pack "[") `mappend` intercalate (pack " ") (map (pack . show) rowA) `mappend` (pack "]");
+showmat :: [[Integer]] -> ByteString;
+showmat matA = (pack "[") `mappend` intercalate (pack "\n ") (map showrow matA) `mappend` (pack "]");
 
 fplll_solver :: (Integer,Integer) -> [[Integer]] -> ([[Integer]],([[Integer]],[[Integer]]));
-fplll_solver alpha in_mat = unsafePerformIO $ do {
-  (code,res,err) <- readProcessWithExitCode fplll_command ["-e", show default_eta, "-d", show (alpha_to_delta alpha), "-of", "bvu"] (showmat in_mat);
-  if code == ExitSuccess && err == ""
-    then parseRes res
-    else hPutStr stderr err >> fail_to_execute }
+fplll_solver alpha in_mat = unsafePerformIO $ catchE $ do {
+  (Just f_in,Just f_out,Just f_err,f_pid) <- createProcess (proc fplll_command ["-e", show default_eta, "-d", show (alpha_to_delta alpha), "-of", "bvu"]){std_in = CreatePipe, std_err = CreatePipe, std_out = CreatePipe};
+  hSetBinaryMode f_in True;
+  hSetBinaryMode f_out True;
+  hSetBinaryMode f_err True;
+  hSetBuffering f_out (BlockBuffering Nothing);
+  hPut f_in (showmat in_mat);
+  res <- hGetContents f_out;
+  hClose f_in;
+  parseRes res}
  where {
-   parseMat ('[':as) = do {
-     rem0 <- parseSpaces as;
-     (rows,rem1) <- parseRows rem0;
-     case rem1 of
-       ']':rem2 -> do {
-         rem3 <- parseSpaces rem2;
-         return (rows,rem3)
-         };
-       _ -> abort$ "Expecting closing ']' while parsing a matrix.\n"
-       };
+   catchE m = catch m def;
+   def :: SomeException -> IO ([[Integer]], ([[Integer]], [[Integer]]));
+   def _ = seq sendError $ default_answer;
+   unconsIO a = case uncons a of{
+      Just b -> return b;
+      _ -> abort "Unexpected end of file / input"};
+   parseMat ('[',as)
+    = do {
+      (h0,rem0) <- parseSpaces =<< unconsIO as;
+      (rows,(h1,rem1)) <- parseRows (h0,rem0);
+      case seq rows h1 of{
+        ']' -> return (rows,rem1);
+        _ -> abort$ "Expecting closing ']' while parsing a matrix.\n"}
+      } :: IO ([[Integer]], ByteString);
    parseMat _ = abort "Expecting opening '[' while parsing a matrix";
-   parseRows ('[':rem0) = do {
-     rem1 <- parseSpaces rem0;
-     (nums,rem2)<-parseNums rem1;
-     case rem2 of
-       ']':rem3 -> do { rem4 <- parseSpaces rem3;
-                        (rows,rem5) <- parseRows rem4;
-                        return (map read nums:rows,rem5) }
-       _ -> abort$ "Expecting closing ']' while parsing a row\n" ++ rem2
-       };
-   parseRows x = return ([],x);
-   parseNums o@(a:rem0) =
-     if isNumber a || a == '-' then do {
-       (num,rem1) <- parseNum rem0;
-       rem2 <- parseSpaces rem1;
-       (nums,rem3) <- parseNums rem2;
-       return ((a:num):nums,rem3) }
+   parseRows ('[',rem0)
+    = do {
+     (nums,(h2,rem2))<-parseNums =<< parseSpaces =<< unconsIO rem0;
+     case seq nums h2 of
+       ']' -> do { (h4,rem4) <- parseSpaces =<< unconsIO rem2;
+                   (rows,rem5) <- parseRows (h4,rem4);
+                   return (nums:rows,rem5) }
+       _ -> abort$ "Expecting closing ']' while parsing a row\n"
+       } :: IO ([[Integer]],(Char, ByteString));
+   parseRows r = return ([],r);
+   parseNums (a,rem0) =
+     (if isNumber a || a == '-' then do {
+       (n,(h1,rem1)) <- parseNum =<< unconsIO rem0;
+       rem2 <- parseSpaces (h1,rem1);
+       num <- return (read (a:n));
+       (nums,rem3) <- seq (num==num)$ parseNums rem2;
+       return (seq nums $ num:nums,rem3) }
      else if isSpace a then do {
-       rem1 <- parseSpaces rem0;
+       rem1 <- parseSpaces (a,rem0);
        parseNums rem1}
-     else return ([],o);
-   parseNums [] = return ([],[]);
-   parseNum o@(a:rem0) =
+     else return ([],(a, rem0))) :: IO ([Integer], (Char, ByteString));
+   parseNum (a,rem0) =
      if isNumber a then do {
-       (num,rem1) <- parseNum rem0;
+       (num,rem1) <- parseNum =<< unconsIO rem0;
        return (a:num,rem1) 
        }
-     else return ([],o);
-   parseNum o = return ([],o);
-   parseSpaces o@(a:as) = if isSpace a then parseSpaces as else return o;
-   parseSpaces [] = return [];
-   parseRes :: String -> IO ([[Integer]], ([[Integer]], [[Integer]]));
-   parseRes res = do {
-     rem0 <- parseSpaces res;
-     if length rem0 <= 0
+     else return (mempty,(a,rem0));
+   parseSpaces (a,as) = if isSpace a then case uncons as of { Nothing -> return (a,mempty); Just v -> parseSpaces v } else return (a,as);
+   parseRes :: ByteString -> IO ([[Integer]], ([[Integer]], [[Integer]]));
+   parseRes res = if res == mempty
        then default_answer
        else do {
-         (m1,rem1) <- parseMat rem0;
-         (m2,rem2) <- parseMat rem1;
-         (m3,rem3) <- parseMat rem2;
-          if length rem3 > 0
-            then abort "Unexpected output after parsing three matrices."
+         rem0' <- parseSpaces =<< unconsIO res;
+         (m1,rem1) <- parseMat rem0';
+         -- putStrLn "Parsed a matrix";
+         rem1' <- parseSpaces =<< unconsIO rem1;
+         (m2,rem2) <- seq m1$ parseMat rem1';
+         -- putStrLn "Parsed a matrix";
+         rem2' <- parseSpaces =<< unconsIO rem2;
+         (m3,rem3) <- seq m2$ parseMat rem2';
+         seq m3$ return ();
+         -- putStrLn "Parsed a matrix";
+         if rem3 /= mempty
+            then do { (_,rem2') <- parseSpaces =<< unconsIO rem3;
+                      if rem2' /= mempty
+                         then abort "Unexpected output after parsing three matrices."
+                         else return (m1,(m2,m3)) }
             else return (m1,(m2,m3))
-            }
-        };
+            };
    fail_to_execute = seq sendError default_answer;
    
    default_answer = -- not small enough, but it'll be accepted
