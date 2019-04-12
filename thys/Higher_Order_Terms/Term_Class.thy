@@ -307,7 +307,8 @@ class "term" = pre_term + size +
     raw_subst_drop: "abs_pred (\<lambda>t. x |\<notin>| frees t \<longrightarrow> (\<forall>env. subst t (fmdrop x env) = subst t env)) t" and
     raw_subst_indep: "abs_pred (\<lambda>t. \<forall>env\<^sub>1 env\<^sub>2. closed_env env\<^sub>2 \<longrightarrow> fdisjnt (fmdom env\<^sub>1) (fmdom env\<^sub>2) \<longrightarrow> subst t (env\<^sub>1 ++\<^sub>f env\<^sub>2) = subst (subst t env\<^sub>2) env\<^sub>1) t" and
     raw_subst_frees: "abs_pred (\<lambda>t. \<forall>env. closed_env env \<longrightarrow> frees (subst t env) = frees t |-| fmdom env) t" and
-    raw_subst_consts': "abs_pred (\<lambda>a. \<forall>x. consts (subst a x) = consts a |\<union>| ffUnion (consts |`| fmimage x (frees a))) t"
+    raw_subst_consts': "abs_pred (\<lambda>a. \<forall>x. consts (subst a x) = consts a |\<union>| ffUnion (consts |`| fmimage x (frees a))) t" and
+    abs_pred_trivI: "P t \<Longrightarrow> abs_pred P t"
 begin
 
 lemma subst_id: "id_env env \<Longrightarrow> subst t env = t"
