@@ -28,6 +28,9 @@ we will write \<open>p + q = (X \<mapsto> 3, Y \<mapsto> 1, Z \<mapsto> 1)\<clos
 
 subsection \<open>Constant @{term Keys}\<close>
 
+text \<open>Legacy:\<close>
+lemmas keys_eq_empty_iff = keys_eq_empty
+
 definition Keys :: "('a \<Rightarrow>\<^sub>0 'b::zero) set \<Rightarrow> 'a set"
   where "Keys F = \<Union>(keys ` F)"
 
@@ -173,9 +176,6 @@ lemma plus_except: "p = Poly_Mapping.single t (lookup p t) + except p {t}"
 
 lemma keys_except: "keys (except p S) = keys p - S"
   by (transfer, auto simp: except_fun_def)
-
-lemma keys_eq_empty_iff [simp]: "keys p = {} \<longleftrightarrow> p = 0"
-  by (metis keys_zero lookup_zero not_in_keys_iff_lookup_eq_zero poly_mapping_eqI)
 
 lemma except_single: "except (Poly_Mapping.single u c) S = (Poly_Mapping.single u c when u \<notin> S)"
   by (rule poly_mapping_eqI) (simp add: lookup_except lookup_single when_def)

@@ -1,7 +1,10 @@
 (*  Author:     Stefan Berghofer, TU Muenchen, 2003
-    Author: Andreas Halkjær From, DTU Compute, 2017
+    Author: Andreas Halkjær From, DTU Compute, 2019
     Thanks to John Bruntse Larsen, Anders Schlichtkrull & Jørgen Villadsen
+    See also the Natural Deduction Assistant: https://nadea.compute.dtu.dk/
 *)
+
+section \<open>First-Order Logic According to Fitting\<close>
 
 theory FOL_Fitting
   imports "HOL-Library.Countable"
@@ -95,7 +98,8 @@ theorem closedt_mono: assumes le: \<open>i \<le> j\<close>
 
 theorem closed_mono: assumes le: \<open>i \<le> j\<close>
   shows \<open>closed i p \<Longrightarrow> closed j p\<close>
-  using le proof (induct p arbitrary: i j)
+  using le
+proof (induct p arbitrary: i j)
   case (Pred i l)
   then show ?case
     using closedt_mono by simp
@@ -333,12 +337,12 @@ The following substitution lemmas relate substitution and evaluation functions:
 theorem subst_lemma' [simp]:
   \<open>evalt e f (substt t u i) = evalt (e\<langle>i:evalt e f u\<rangle>) f t\<close>
   \<open>evalts e f (substts ts u i) = evalts (e\<langle>i:evalt e f u\<rangle>) f ts\<close>
-  by (induct t and ts rule: evalt.induct evalts.induct) simp_all
+  by (induct t and ts rule: substt.induct substts.induct) simp_all
 
 theorem lift_lemma [simp]:
   \<open>evalt (e\<langle>0:z\<rangle>) f (liftt t) = evalt e f t\<close>
   \<open>evalts (e\<langle>0:z\<rangle>) f (liftts ts) = evalts e f ts\<close>
-  by (induct t and ts rule: evalt.induct evalts.induct) simp_all
+  by (induct t and ts rule: liftt.induct liftts.induct) simp_all
 
 theorem subst_lemma [simp]:
   \<open>eval e f g (subst a t i) = eval (e\<langle>i:evalt e f t\<rangle>) f g a\<close>
@@ -347,7 +351,7 @@ theorem subst_lemma [simp]:
 theorem upd_lemma' [simp]:
   \<open>n \<notin> paramst t \<Longrightarrow> evalt e (f(n := x)) t = evalt e f t\<close>
   \<open>n \<notin> paramsts ts \<Longrightarrow> evalts e (f(n := x)) ts = evalts e f ts\<close>
-  by (induct t and ts rule: evalt.induct evalts.induct) auto
+  by (induct t and ts rule: paramst.induct paramsts.induct) auto
 
 theorem upd_lemma [simp]:
   \<open>n \<notin> params p \<Longrightarrow> eval e (f(n := x)) g p = eval e f g p\<close>
@@ -360,7 +364,7 @@ theorem list_upd_lemma [simp]: \<open>list_all (\<lambda>p. n \<notin> params p)
 theorem psubst_eval' [simp]:
   \<open>evalt e f (psubstt h t) = evalt e (\<lambda>p. f (h p)) t\<close>
   \<open>evalts e f (psubstts h ts) = evalts e (\<lambda>p. f (h p)) ts\<close>
-  by (induct t and ts rule: evalt.induct evalts.induct) simp_all
+  by (induct t and ts rule: psubstt.induct psubstts.induct) simp_all
 
 theorem psubst_eval:
   \<open>eval e f g (psubst h p) = eval e (\<lambda>p. f (h p)) g p\<close>
@@ -570,7 +574,8 @@ proof (induct p rule: deriv.induct)
   then show ?case by (simp add: model_def list_all_iff)
 next
   case (ForallI G a n)
-  show ?case proof (intro allI)
+  show ?case
+  proof (intro allI)
     fix f g and e :: \<open>nat \<Rightarrow> 'c\<close>
     have \<open>\<forall>z. e, (f(n := \<lambda>x. z)), g, G \<Turnstile> (a[App n []/0])\<close>
       using ForallI by blast
@@ -580,7 +585,8 @@ next
   qed
 next
   case (ExistsE G a n b)
-  show ?case proof (intro allI)
+  show ?case
+  proof (intro allI)
     fix f g and e :: \<open>nat \<Rightarrow> 'c\<close>
     obtain z where \<open>list_all (eval e f g) G \<longrightarrow> eval (e\<langle>0:z\<rangle>) f g a\<close>
       using ExistsE unfolding model_def by simp blast
@@ -1422,7 +1428,8 @@ qed
 theorem chain_index:
   assumes ch: \<open>is_chain f\<close> and fin: \<open>finite F\<close>
   shows \<open>F \<subseteq> (\<Union>n. f n) \<Longrightarrow> \<exists>n. F \<subseteq> f n\<close>
-  using fin proof (induct rule: finite_induct)
+  using fin
+proof (induct rule: finite_induct)
   case empty
   then show ?case by blast
 next
@@ -1761,7 +1768,8 @@ next
   show \<open>(x \<in> H \<longrightarrow> closed 0 x \<longrightarrow> ?eval x) \<and> (Neg x \<in> H \<longrightarrow> closed 0 x \<longrightarrow> ?eval (Neg x))\<close>
   proof (cases x)
     case FF
-    show ?thesis proof (intro conjI impI)
+    show ?thesis
+    proof (intro conjI impI)
       assume \<open>x \<in> H\<close>
       then show \<open>?eval x\<close>
         using FF hin by (simp add: hintikka_def)
@@ -1771,7 +1779,8 @@ next
     qed
   next
     case TT
-    show ?thesis proof (intro conjI impI)
+    show ?thesis
+    proof (intro conjI impI)
       assume \<open>x \<in> H\<close>
       then show \<open>?eval x\<close>
         using TT by simp
@@ -1782,7 +1791,8 @@ next
     qed
   next
     case (Pred p ts)
-    show ?thesis proof (intro conjI impI)
+    show ?thesis
+    proof (intro conjI impI)
       assume \<open>x \<in> H\<close> and \<open>closed 0 x\<close>
       then show \<open>?eval x\<close> using Pred by simp
     next
@@ -1796,7 +1806,8 @@ next
     qed
   next
     case (Neg Z)
-    then show ?thesis proof (intro conjI impI)
+    then show ?thesis
+    proof (intro conjI impI)
       assume \<open>x \<in> H\<close> and \<open>closed 0 x\<close>
       then show \<open>?eval x\<close>
         using Neg wf by simp
@@ -1814,7 +1825,8 @@ next
     qed
   next
     case (And A B)
-    then show ?thesis proof (intro conjI impI)
+    then show ?thesis
+    proof (intro conjI impI)
       assume \<open>x \<in> H\<close> and \<open>closed 0 x\<close>
       then have \<open>And A B \<in> H\<close> and \<open>closed 0 (And A B)\<close>
         using And by simp_all
@@ -1833,7 +1845,8 @@ next
     qed
   next
     case (Or A B)
-    then show ?thesis proof (intro conjI impI)
+    then show ?thesis
+    proof (intro conjI impI)
       assume \<open>x \<in> H\<close> and \<open>closed 0 x\<close>
       then have \<open>Or A B \<in> H\<close> and \<open>closed 0 (Or A B)\<close>
         using Or by simp_all
@@ -1852,7 +1865,8 @@ next
     qed
   next
     case (Impl A B)
-    then show ?thesis proof (intro conjI impI)
+    then show ?thesis
+    proof (intro conjI impI)
       assume \<open>x \<in> H\<close> and \<open>closed 0 x\<close>
       then have \<open>Impl A B \<in> H\<close> and \<open>closed 0 (Impl A B)\<close>
         using Impl by simp_all
@@ -1871,7 +1885,8 @@ next
     qed
   next
     case (Forall P)
-    then show ?thesis proof (intro conjI impI)
+    then show ?thesis
+    proof (intro conjI impI)
       assume \<open>x \<in> H\<close> and \<open>closed 0 x\<close>
       have \<open>\<forall>z. eval (e\<langle>0:z\<rangle>) HApp (\<lambda>a ts. Pred a (terms_of_hterms ts) \<in> H) P\<close>
       proof (rule allI)
@@ -1917,7 +1932,8 @@ next
     qed
   next
     case (Exists P)
-    then show ?thesis proof (intro conjI impI allI)
+    then show ?thesis
+    proof (intro conjI impI allI)
       assume \<open>x \<in> H\<close> and \<open>closed 0 x\<close>
       then have \<open>\<exists>t. closedt 0 t \<and> (P[t/0]) \<in> H\<close>
         using Exists hin unfolding hintikka_def by blast
@@ -2847,8 +2863,8 @@ proof (rule infinite_super)
     by (metis (no_types, lifting))
 next
   have \<open>\<And>m n. Suc (2 * m) \<noteq> 2 * n\<close> by arith
-  then show \<open>range (\<lambda>n::nat. (2::nat) * n + (1::nat))
-    \<subseteq> - (\<Union>p::(nat, 'a) form \<in> psubst ((*) (2::nat)) ` S. params p)\<close>
+  then show \<open>range (\<lambda>n. 2 * n + 1)
+    \<subseteq> - (\<Union>p::(nat, 'a) form \<in> psubst (\<lambda>n . 2 * n) ` S. params p)\<close>
     by auto
 qed
 
@@ -2879,17 +2895,17 @@ proof (intro ballI impI)
     using evalS by blast
   then have \<open>\<forall>x \<in> S. eval e f g x\<close>
     using evalS by blast
-  then have \<open>\<forall>p \<in> psubst ((*) 2) ` S. eval e (\<lambda>n. f (n div 2)) g p\<close>
+  then have \<open>\<forall>p \<in> psubst (\<lambda>n. 2 * n) ` S. eval e (\<lambda>n. f (n div 2)) g p\<close>
     by (simp add: psubst_eval)
-  then have \<open>psubst ((*) 2) ` S \<in> ?C\<close>
+  then have \<open>psubst (\<lambda>n. 2 * n) ` S \<in> ?C\<close>
     using doublep_infinite_params by blast
-  moreover have \<open>psubst ((*) 2) p \<in> psubst ((*) 2) ` S\<close>
+  moreover have \<open>psubst (\<lambda>n. 2 * n) p \<in> psubst (\<lambda>n. 2 * n) ` S\<close>
     using \<open>p \<in> S\<close> by blast
-  moreover have \<open>closed 0 (psubst ((*) 2) p)\<close>
+  moreover have \<open>closed 0 (psubst (\<lambda>n. 2 * n) p)\<close>
     using \<open>closed 0 p\<close> by simp
   moreover have \<open>consistency ?C\<close>
     using sat_consistency by blast
-  ultimately have \<open>eval e' HApp ?g (psubst ((*) 2) p)\<close>
+  ultimately have \<open>eval e' HApp ?g (psubst (\<lambda>n. 2 * n) p)\<close>
     using model_existence by blast
   then show \<open>eval e' (\<lambda>n. HApp (2 * n)) ?g p\<close>
     using psubst_eval by blast
@@ -3096,11 +3112,11 @@ lemma subst_0_lift:
   \<open>substts (liftts l) s 0 = l\<close>
   by (induct t and l rule: substt.induct substts.induct) simp_all
 
-lemma params_lift:
+lemma params_lift [simp]:
   fixes t :: \<open>'a term\<close> and ts :: \<open>'a term list\<close>
   shows
-    \<open>paramst t = paramst (liftt t)\<close>
-    \<open>paramsts ts = paramsts (liftts ts)\<close>
+    \<open>paramst (liftt t) = paramst t\<close>
+    \<open>paramsts (liftts ts) = paramsts ts\<close>
   by (induct t and ts rule: paramst.induct paramsts.induct) simp_all
 
 lemma subst_new' [simp]:
@@ -3108,21 +3124,13 @@ lemma subst_new' [simp]:
   \<open>new_term c s \<Longrightarrow> new_list c l \<Longrightarrow> new_list c (substts l s m)\<close>
   by (induct t and l rule: substt.induct substts.induct) simp_all
 
-lemma subst_new: \<open>new_term c s \<Longrightarrow> new c p \<Longrightarrow> new c (subst p s m)\<close>
-proof (induct p arbitrary: m s)
-  case (Forall p)
-  then show ?case
-    by (metis params_lift(1) params.simps(8) subst.simps(8))
-next
-  case (Exists p)
-  then show ?case
-    by (metis params_lift(1) params.simps(9) subst.simps(9))
-qed auto
+lemma subst_new [simp]: \<open>new_term c s \<Longrightarrow> new c p \<Longrightarrow> new c (subst p s m)\<close>
+  by (induct p arbitrary: m s) simp_all
 
 lemma subst_new_all:
   assumes \<open>a \<notin> set cs\<close> \<open>list_all (\<lambda>c. new c p) cs\<close>
   shows \<open>list_all (\<lambda>c. new c (subst p (App a []) m)) cs\<close>
-  using assms subst_new by (induct cs) force+
+  using assms by (induct cs) auto
 
 lemma subc_new' [simp]:
   \<open>new_term c t \<Longrightarrow> subc_term c s t = t\<close>
@@ -3130,27 +3138,27 @@ lemma subc_new' [simp]:
   by (induct t and l rule: subc_term.induct subc_list.induct) auto
 
 lemma subc_new [simp]: \<open>new c p \<Longrightarrow> subc c s p = p\<close>
-  using subc_new' by (induct p arbitrary: s) auto
+  by (induct p arbitrary: s) simp_all
 
 lemma subcs_news: \<open>news c z \<Longrightarrow> subcs c s z = z\<close>
-  using subc_new by (induct z) auto
+  by (induct z) simp_all
 
 lemma subc_psubst' [simp]:
   \<open>(\<forall>x \<in> paramst t. x \<noteq> c \<longrightarrow> f x \<noteq> f c) \<Longrightarrow>
     psubstt f (subc_term c s t) = subc_term (f c) (psubstt f s) (psubstt f t)\<close>
   \<open>(\<forall>x \<in> paramsts l. x \<noteq> c \<longrightarrow> f x \<noteq> f c) \<Longrightarrow>
     psubstts f (subc_list c s l) = subc_list (f c) (psubstt f s) (psubstts f l)\<close>
-  by (induct t and l rule: psubstt.induct psubstts.induct) auto
+  by (induct t and l rule: psubstt.induct psubstts.induct) simp_all
 
 lemma subc_psubst: \<open>(\<forall>x \<in> params p. x \<noteq> c \<longrightarrow> f x \<noteq> f c) \<Longrightarrow>
     psubst f (subc c s p) = subc (f c) (psubstt f s) (psubst f p)\<close>
-  using params_lift by (induct p arbitrary: s) fastforce+
+  by (induct p arbitrary: s) simp_all
 
 lemma subcs_psubst: \<open>(\<forall>x \<in> (\<Union>p \<in> set z. params p). x \<noteq> c \<longrightarrow> f x \<noteq> f c) \<Longrightarrow>
     map (psubst f) (subcs c s z) = subcs (f c) (psubstt f s) (map (psubst f) z)\<close>
   by (induct z) (simp_all add: subc_psubst)
 
-lemma new_lift [simp]:
+lemma new_lift:
   \<open>new_term c t \<Longrightarrow> new_term c (liftt t)\<close>
   \<open>new_list c l \<Longrightarrow> new_list c (liftts l)\<close>
   by (induct t and l rule: liftt.induct liftts.induct) simp_all
@@ -3166,16 +3174,13 @@ lemma new_subc [simp]: \<open>new_term d s \<Longrightarrow> new d p \<Longright
 lemma news_subcs: \<open>new_term d s \<Longrightarrow> news d z \<Longrightarrow> news d (subcs c s z)\<close>
   by (induct z) simp_all
 
-lemma psubst_new_free' [simp]:
+lemma psubst_new_free':
   \<open>c \<noteq> n \<Longrightarrow> new_term n (psubstt (id(n := c)) t)\<close>
   \<open>c \<noteq> n \<Longrightarrow> new_list n (psubstts (id(n := c)) l)\<close>
   by (induct t and l rule: paramst.induct paramsts.induct) simp_all
 
 lemma psubst_new_free: \<open>c \<noteq> n \<Longrightarrow> new n (psubst (id(n := c)) p)\<close>
-proof (induct p)
-  case (Pred i l)
-  then show ?case by fastforce
-qed simp_all
+  using psubst_new_free' by (induct p) fastforce+
 
 lemma map_psubst_new_free: \<open>c \<noteq> n \<Longrightarrow> news n (map (psubst (id(n := c))) z)\<close>
   using psubst_new_free by (induct z) fastforce+
@@ -3185,16 +3190,12 @@ lemma psubst_new_away' [simp]:
   \<open>new_list fresh l \<Longrightarrow> psubstts (id(fresh := c)) (psubstts (id(c := fresh)) l) = l\<close>
   by (induct t and l rule: psubstt.induct psubstts.induct) auto
 
-lemma psubst_new_away: \<open>new fresh p \<Longrightarrow> psubst (id(fresh := c)) (psubst (id(c := fresh)) p) = p\<close>
-proof (induct p)
-  case (Pred i l)
-  then show ?case
-    by (metis params.simps(3) psubst.simps(3) psubst_new_away'(2))
-qed simp_all
+lemma psubst_new_away [simp]: \<open>new fresh p \<Longrightarrow> psubst (id(fresh := c)) (psubst (id(c := fresh)) p) = p\<close>
+  by (induct p) simp_all
 
 lemma map_psubst_new_away:
   \<open>news fresh z \<Longrightarrow> map (psubst (id(fresh := c))) (map (psubst (id(c := fresh))) z) = z\<close>
-  using psubst_new_away by (induct z) auto
+  by (induct z) simp_all
 
 lemma psubst_new':
   \<open>new_term c t \<Longrightarrow> psubstt (id(c := x)) t = t\<close>
@@ -3228,8 +3229,7 @@ lemma lift_subc:
 lemma new_subc_put':
   \<open>new_term c s \<Longrightarrow> subc_term c s (substt t u m) = subc_term c s (substt t (subc_term c s u) m)\<close>
   \<open>new_term c s \<Longrightarrow> subc_list c s (substts l u m) = subc_list c s (substts l (subc_term c s u) m)\<close>
-  using new_subc_same' subc_new'
-  by (induct t and l rule: subc_term.induct subc_list.induct) auto
+  by (induct t and l rule: subc_term.induct subc_list.induct) simp_all
 
 lemma new_subc_put:
   \<open>new_term c s \<Longrightarrow> subc c s (subst p t m) = subc c s (subst p (subc_term c s t) m)\<close>
@@ -3284,15 +3284,11 @@ qed
 lemma subc_subst_new':
   \<open>new_term c u \<Longrightarrow> subc_term c (substt s u m) (substt t u m) = substt (subc_term c s t) u m\<close>
   \<open>new_term c u \<Longrightarrow> subc_list c (substt s u m) (substts l u m) = substts (subc_list c s l) u m\<close>
-  using subc_new' by (induct t and l rule: subc_term.induct subc_list.induct) auto
+  by (induct t and l rule: subc_term.induct subc_list.induct) simp_all
 
 lemma subc_subst_new:
   \<open>new_term c t \<Longrightarrow> subc c (substt s t m) (subst p t m) = subst (subc c s p) t m\<close>
-proof (induct p arbitrary: m t s)
-  case (Pred i l)
-  then show ?case
-    using subc_subst_new' by simp
-qed simp_all
+  using subc_subst_new' by (induct p arbitrary: m t s) fastforce+
 
 lemma subc_sub_0_new [simp]:
   \<open>new_term c t \<Longrightarrow> subc c s (subst p t 0) = subst (subc c (liftt s) p) t 0\<close>
@@ -3362,7 +3358,8 @@ next
     using deriv.AndI by fastforce
 next
   case (ExistsE z p d q)
-  then show ?case proof (cases \<open>c = d\<close>)
+  then show ?case
+  proof (cases \<open>c = d\<close>)
     case True
     then have \<open>z \<turnstile> q\<close>
       using ExistsE deriv.ExistsE by fast
@@ -3390,7 +3387,7 @@ next
     then have \<open>psubstt ?f ?s = psubstt (id(fresh := d)) ?s\<close>
       by (metis fun_upd_twist psubstt_upd(1))
     then have psubst_s: \<open>psubstt ?f ?s = s\<close>
-      using fresh psubst_new_away' by simp
+      using fresh by simp
 
     have \<open>?f c = c\<close> and \<open>new_term (?f c) (App fresh [])\<close>
       using False fresh by auto
@@ -3463,9 +3460,9 @@ next
   have c: \<open>?g c = c\<close>
     using fresh by simp
   have s: \<open>psubstt ?g ?s = s\<close>
-    using fresh psubst_new_away' by simp
+    using fresh by simp
   have p: \<open>psubst ?g (Exists p) = Exists p\<close>
-    using fresh psubst_new_away by simp
+    using fresh by simp
 
   have \<open>\<forall>x \<in> (\<Union>p \<in> set z. params p). x \<noteq> c \<longrightarrow> ?g x \<noteq> ?g c\<close>
     using fresh by auto
@@ -3507,7 +3504,7 @@ next
   have c: \<open>?g c = c\<close>
     using fresh by simp
   have s: \<open>psubstt ?g ?s = s\<close>
-    using fresh psubst_new_away' by simp
+    using fresh by simp
   have p: \<open>psubst ?g (subst p t 0) = subst p t 0\<close>
     using fresh psubst_new psubst_subst subst_new psubst_new'(1) by fastforce
 
@@ -3539,7 +3536,8 @@ next
     using c s p z by (simp add: subc_psubst)
 next
   case (ForallI z p d)
-  then show ?case proof (cases \<open>c = d\<close>)
+  then show ?case
+  proof (cases \<open>c = d\<close>)
     case True
     then have \<open>z \<turnstile> Forall p\<close>
       using ForallI deriv.ForallI by fast
@@ -3567,7 +3565,7 @@ next
     then have \<open>psubstt ?f ?s = psubstt (id(fresh := d)) ?s\<close>
       by (metis fun_upd_twist psubstt_upd(1))
     then have psubst_s: \<open>psubstt ?f ?s = s\<close>
-      using fresh psubst_new_away' by simp
+      using fresh by simp
 
     have \<open>?f c = c\<close> and \<open>new_term c (App fresh [])\<close>
       using False fresh by auto
@@ -3597,7 +3595,7 @@ next
     have \<open>subcs c ?s z \<turnstile> subc c ?s (subst p (App d []) 0)\<close>
       using ForallI by blast
     then have \<open>map (psubst ?f) (subcs c ?s z) \<turnstile> psubst ?f (subc c ?s (subst p (App d []) 0))\<close>
-      using deriv_psubst inf_params by fastforce
+      using deriv_psubst inf_params by blast
     then have \<open>subcs c s z \<turnstile> psubst ?f (subc c ?s (subst p (App d []) 0))\<close>
       using psubst_z by simp
     then have sub_p: \<open>subcs c s z \<turnstile> subst (subc c (liftt s) p) (App fresh []) 0\<close>
@@ -3610,7 +3608,7 @@ next
     then have \<open>new fresh (subc c (liftt s) p)\<close>
       using fresh new_subc by simp
     moreover have \<open>news fresh (subcs c s z)\<close>
-      using \<open>news fresh z\<close> \<open>new_term fresh s\<close> news_subcs by metis
+      using \<open>news fresh z\<close> \<open>new_term fresh s\<close> news_subcs by fast
     ultimately show \<open>subcs c s z \<turnstile> subc c s (Forall p)\<close>
       using deriv.ForallI sub_p by simp
   qed
@@ -3809,7 +3807,7 @@ lemma subc_sub_closed_var' [simp]:
   \<open>new_list c l \<Longrightarrow> closedts (Suc m) l \<Longrightarrow> subc_list c (Var m) (substts l (App c []) m) = l\<close>
   by (induct t and l rule: substt.induct substts.induct) auto
 
-lemma subc_sub_closed_var: \<open>new c p \<Longrightarrow> closed (Suc m) p \<Longrightarrow>
+lemma subc_sub_closed_var [simp]: \<open>new c p \<Longrightarrow> closed (Suc m) p \<Longrightarrow>
     subc c (Var m) (subst p (App c []) m) = p\<close>
   by (induct p arbitrary: m) simp_all
 
@@ -3821,7 +3819,7 @@ lemma sub_put_unis [simp]:
   \<open>subst (put_unis k p) (App c []) i = put_unis k (subst p (App c []) (i + k))\<close>
   by (induct k arbitrary: i) simp_all
 
-lemma closed_put_unis: \<open>closed m (put_unis k p) = closed (m + k) p\<close>
+lemma closed_put_unis [simp]: \<open>closed m (put_unis k p) = closed (m + k) p\<close>
   by (induct k arbitrary: m) simp_all
 
 lemma valid_put_unis: \<open>\<forall>(e :: nat \<Rightarrow> 'a) f g. eval e f g p \<Longrightarrow>
@@ -3859,7 +3857,7 @@ lemma vars_for_consts:
 lemma vars_for_consts_for_unis:
   \<open>closed (length cs) p \<Longrightarrow> list_all (\<lambda>c. new c p) cs \<Longrightarrow> distinct cs \<Longrightarrow>
    vars_for_consts (consts_for_unis (put_unis (length cs) p) cs) cs = p\<close>
-  by (induct cs arbitrary: p) (simp_all add: subst_new_all subc_sub_closed_var)
+  by (induct cs arbitrary: p) (simp_all add: subst_new_all)
 
 lemma fresh_constant:
   fixes p :: \<open>('a, 'b) form\<close>
@@ -3869,12 +3867,12 @@ proof -
   have \<open>finite (set cs \<union> params p)\<close>
     by simp
   then show ?thesis
-    using assms ex_new_if_finite by (metis UnI1 UnI2)
+    using assms ex_new_if_finite UnI1 UnI2 by metis
 qed
 
 lemma fresh_constants:
   fixes p :: \<open>('a, 'b) form\<close>
-  assumes \<open>infinite (UNIV :: 'a set)\<close> \<open>closed 0 (put_unis m p)\<close>
+  assumes \<open>infinite (UNIV :: 'a set)\<close>
   shows \<open>\<exists>cs. length cs = m \<and> list_all (\<lambda>c. new c p) cs \<and> distinct cs\<close>
 proof (induct m)
   case (Suc m)
@@ -3913,7 +3911,7 @@ proof (induct t and l rule: closedt.induct closedts.induct)
     by auto
 qed auto
 
-lemma ex_closed: \<open>\<exists>m. closed m p\<close>
+lemma ex_closed [simp]: \<open>\<exists>m. closed m p\<close>
 proof (induct p)
   case FF
   then show ?case
@@ -3957,7 +3955,7 @@ next
 qed simp_all
 
 lemma ex_closure: \<open>\<exists>m. closed 0 (put_unis m p)\<close>
-  using ex_closed closed_put_unis by fastforce
+  by simp
 
 lemma remove_unis_sentence:
   assumes inf_params: \<open>infinite (- params p)\<close>
@@ -3966,13 +3964,13 @@ lemma remove_unis_sentence:
 proof -
   obtain cs :: \<open>'a list\<close> where \<open>length cs = m\<close>
     and *: \<open>distinct cs\<close> and **: \<open>list_all (\<lambda>c. new c p) cs\<close>
-    using assms fresh_constants inf_params by fastforce
+    using assms finite_compl finite_params fresh_constants inf_params by metis
   then have \<open>[] \<turnstile> consts_for_unis (put_unis (length cs) p) cs\<close>
     using assms consts_for_unis by blast
   then have \<open>[] \<turnstile> vars_for_consts (consts_for_unis (put_unis (length cs) p) cs) cs\<close>
     using vars_for_consts inf_params by fastforce
   moreover have \<open>closed (length cs) p\<close>
-    using assms \<open>length cs = m\<close> closed_put_unis by force
+    using assms \<open>length cs = m\<close> by simp
   ultimately show \<open>[] \<turnstile> p\<close>
     using vars_for_consts_for_unis * ** by metis
 qed
