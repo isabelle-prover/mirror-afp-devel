@@ -703,7 +703,7 @@ proof -
     then have "C \<in> sr.Rf (Sup_llist Gs)"
       using d ns by (metis contra_subsetD llength_lmap lnth_lmap lnth_subset_Sup_llist sr.Rf_mono)
     then have "C \<in> sr.Rf (Liminf_llist Gs)"
-      unfolding ns using local.sr_ext.Rf_Sup_subset_Rf_Liminf derivns ns by auto
+      unfolding ns using local.sr_ext.Rf_limit_Sup derivns ns by auto
     then show False
       using c by auto
   qed
@@ -1510,7 +1510,7 @@ proof -
     then have "\<gamma> \<in> sr_ext_Ri (Sup_llist (lmap grounding_of_state Sts))"
       using j_p' contra_subsetD llength_lmap lnth_lmap lnth_subset_Sup_llist sr_ext.Ri_mono by metis
     then have "\<gamma> \<in> sr_ext_Ri (Liminf_llist (lmap grounding_of_state Sts))"
-      using sr_ext.Ri_Sup_subset_Ri_Liminf[of Gs] derivns ns by blast
+      using sr_ext.Ri_limit_Sup[of Gs] derivns ns by blast
   }
   then have "sr_ext.saturated_upto (Liminf_llist (lmap grounding_of_state Sts))"
     unfolding sr_ext.saturated_upto_def sr_ext.inferences_from_def infer_from_def sr_ext_Ri_def
