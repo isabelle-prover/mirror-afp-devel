@@ -75,9 +75,8 @@ proof (rule dvd_antisym)
   thus "Pocklington.ord n a dvd local.ord a"
     by (subst (asm) ord_divides)
 next
-  from assms show "local.ord a dvd Pocklington.ord n a"
-    using Pocklington.ord[of a n] n_gt_1
-    by (intro ord_dvd_pow_eq_1) (auto simp: cong_def)
+  show "local.ord a dvd Pocklington.ord n a"
+    using assms Pocklington.ord[of a n] n_gt_1 pow_eq_id by (simp add: cong_def)
 qed
 
 end

@@ -14,12 +14,6 @@ begin
           
 hide_const (open) Divisibility.prime
 
-lemma (in group) ord_dvd_pow_eq_1 :
-  assumes "finite (carrier G)" "a \<in> carrier G" "a [^] k = \<one>"
-  shows "ord a dvd k"
-  using old_ord_dvd_pow_eq_1[of a k] ord_iff_old_ord[of a] assms
-  by (auto simp: old_ord_def)
-
 lemma sum_of_bool_eq_card:
   assumes "finite S"
   shows "(\<Sum>a \<in> S. of_bool (P a)) = real (card {a \<in> S . P a })"
