@@ -46,9 +46,18 @@ showrow rowA = (pack "[") `mappend` intercalate (pack " ") (map (pack . show) ro
 showmat :: [[Integer]] -> ByteString;
 showmat matA = (pack "[") `mappend` intercalate (pack "\n ") (map showrow matA) `mappend` (pack "]");
 
-fplll_solver :: (Integer,Integer) -> [[Integer]] -> ([[Integer]],([[Integer]],[[Integer]]));
+data Mode = Simple | Certificate;
+
+flags :: Mode -> String;
+flags Simple = "b";
+flags Certificate = "bvu";
+
+getMode xs = (let m = length xs in if m == 0 then Certificate
+  else if m == length (head xs) then Simple else Certificate);
+
+fplll_solver :: (Integer,Integer) -> [[Integer]] -> ([[Integer]], Maybe ([[Integer]],[[Integer]]));
 fplll_solver alpha in_mat = unsafePerformIO $ catchE $ do {
-  (Just f_in,Just f_out,Just f_err,f_pid) <- createProcess (proc fplll_command ["-e", show default_eta, "-d", show (alpha_to_delta alpha), "-of", "bvu"]){std_in = CreatePipe, std_err = CreatePipe, std_out = CreatePipe};
+  (Just f_in,Just f_out,Just f_err,f_pid) <- createProcess (proc fplll_command ["-e", show default_eta, "-d", show (alpha_to_delta alpha), "-of", flags mode]){std_in = CreatePipe, std_err = CreatePipe, std_out = CreatePipe};
   hSetBinaryMode f_in True;
   hSetBinaryMode f_out True;
   hSetBinaryMode f_err True;
@@ -58,8 +67,9 @@ fplll_solver alpha in_mat = unsafePerformIO $ catchE $ do {
   hClose f_in;
   parseRes res}
  where {
+   mode = getMode in_mat;
    catchE m = catch m def;
-   def :: SomeException -> IO ([[Integer]], ([[Integer]], [[Integer]]));
+   def :: SomeException -> IO ([[Integer]], Maybe ([[Integer]], [[Integer]]));
    def _ = seq sendError $ default_answer;
    unconsIO a = case uncons a of{
       Just b -> return b;
@@ -101,31 +111,35 @@ fplll_solver alpha in_mat = unsafePerformIO $ catchE $ do {
        }
      else return (mempty,(a,rem0));
    parseSpaces (a,as) = if isSpace a then case uncons as of { Nothing -> return (a,mempty); Just v -> parseSpaces v } else return (a,as);
-   parseRes :: ByteString -> IO ([[Integer]], ([[Integer]], [[Integer]]));
+   parseRes :: ByteString -> IO ([[Integer]], Maybe ([[Integer]], [[Integer]]));
    parseRes res = if res == mempty
        then default_answer
        else do {
          rem0' <- parseSpaces =<< unconsIO res;
          (m1,rem1) <- parseMat rem0';
          -- putStrLn "Parsed a matrix";
-         rem1' <- parseSpaces =<< unconsIO rem1;
-         (m2,rem2) <- seq m1$ parseMat rem1';
-         -- putStrLn "Parsed a matrix";
-         rem2' <- parseSpaces =<< unconsIO rem2;
-         (m3,rem3) <- seq m2$ parseMat rem2';
-         seq m3$ return ();
-         -- putStrLn "Parsed a matrix";
-         if rem3 /= mempty
-            then do { (_,rem2') <- parseSpaces =<< unconsIO rem3;
-                      if rem2' /= mempty
-                         then abort "Unexpected output after parsing three matrices."
-                         else return (m1,(m2,m3)) }
-            else return (m1,(m2,m3))
-            };
+         case mode of 
+           Simple -> return (m1, Nothing);
+           _ -> do {
+             rem1' <- parseSpaces =<< unconsIO rem1;
+             (m2,rem2) <- seq m1$ parseMat rem1';
+             -- putStrLn "Parsed a matrix";
+             rem2' <- parseSpaces =<< unconsIO rem2;
+             (m3,rem3) <- seq m2$ parseMat rem2';
+             seq m3$ return ();
+             -- putStrLn "Parsed a matrix";
+             if rem3 /= mempty
+                then do { (_,rem2') <- parseSpaces =<< unconsIO rem3;
+                          if rem2' /= mempty
+                             then abort "Unexpected output after parsing three matrices."
+                             else return (m1, Just (m2,m3)) }
+                else return (m1,Just (m2,m3))
+                }
+        };
    fail_to_execute = seq sendError default_answer;
    
    default_answer = -- not small enough, but it'll be accepted
-     return (in_mat,(id_ofsize (length in_mat),id_ofsize (length in_mat)));
+     return (in_mat, case mode of Simple -> Nothing; _ -> Just (id_ofsize (length in_mat),id_ofsize (length in_mat)));
    abort str = error$ "Runtime exception in parsing fplll output:\n"++str;
    };
    
