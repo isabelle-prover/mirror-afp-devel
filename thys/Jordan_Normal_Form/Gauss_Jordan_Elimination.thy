@@ -1347,7 +1347,7 @@ lemma gauss_jordan: assumes A: "A \<in> carrier_mat nr nc"
   and B: "B \<in> carrier_mat nr nc2"
   and gauss: "gauss_jordan A B = (C,D)"
   shows "x \<in> carrier_vec nc \<Longrightarrow> (A *\<^sub>v x = 0\<^sub>v nr) = (C *\<^sub>v x = 0\<^sub>v nr)" (is "_ \<Longrightarrow> ?l = ?r")
-    "w \<in> carrier_vec nc \<Longrightarrow> X \<in> carrier_mat nc nc2  \<Longrightarrow> (A * X = B) = (C * X = D)" (is "_ \<Longrightarrow> _ \<Longrightarrow> ?l2 = ?r2")
+    "X \<in> carrier_mat nc nc2  \<Longrightarrow> (A * X = B) = (C * X = D)" (is " _ \<Longrightarrow> ?l2 = ?r2")
     "C \<in> carrier_mat nr nc"
     "D \<in> carrier_mat nr nc2"
 proof -
