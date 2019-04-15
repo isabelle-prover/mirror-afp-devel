@@ -55,37 +55,70 @@ lemma factorization_lattice_code[code]: "factorization_lattice u k m = (
 )" unfolding factorization_lattice_def monom_mult_def
   by (auto simp: ac_simps Let_def)
 
-(* 
-  TODO: Is it possible to write here context instead of locale and then use these definitions 
-  in the file Lattice_and_Factorization.thy without adding p pl? 
-  That is, writing "LLL_short_polynomial f u" instead of "LLL_short_polynomial p pl f u".
-  *)
+text \<open>Optimization: directly try to minimize coefficients of polynomial $u$.\<close>
+definition LLL_short_polynomial where
+  "LLL_short_polynomial pl n u = poly_of_vec (short_vector_hybrid 2 (factorization_lattice 
+     (poly_mod.inv_Mp pl (poly_mod.Mp pl u)) (n - degree u) pl))" 
+
 locale LLL_implementation =
   fixes p pl :: int
 begin
 
-text \<open>Optimization: directly try to minimize coefficients of polynomial $u$.\<close>
-definition LLL_short_polynomial where
-  "LLL_short_polynomial n u = poly_of_vec (short_vector_hybrid 2 (factorization_lattice 
-     (poly_mod.inv_Mp pl (poly_mod.Mp pl u)) (n - degree u) pl))" 
+function LLL_many_reconstruction where 
+  "LLL_many_reconstruction f us = (let 
+     d = degree f;
+     d2 = d div 2;
+     f2_opt = find_map_filter 
+        (\<lambda> u. gcd f (LLL_short_polynomial pl (Suc d2) u)) 
+        (\<lambda> f2. let deg = degree f2 in deg > 0 \<and> deg < d)
+        (filter (\<lambda> u. degree u \<le> d2) us)
+    in case f2_opt of None \<Rightarrow> [f] 
+    | Some f2 \<Rightarrow> let f1 = f div f2;
+       (us1, us2) = List.partition (\<lambda> gi. poly_mod.dvdm p gi f1) us
+       in LLL_many_reconstruction f1 us1 @ LLL_many_reconstruction f2 us2)"
+  by pat_completeness auto
+
+termination
+proof (relation "measure (\<lambda> (f,us). degree f)", goal_cases)
+  case (3 f us d d2 f2_opt f2 f1 pair us1 us2)
+  from find_map_filter_Some[OF 3(4)[unfolded 3(3) Let_def]] 3(1,5)
+  show ?case by auto
+next
+  case (2 f us d d2 f2_opt f2 f1 pair us1 us2)
+  from find_map_filter_Some[OF 2(4)[unfolded 2(3) Let_def]] 2(1,5)
+  have f: "f = f1 * f2" and f0: "f \<noteq> 0" 
+    and deg: "degree f2 > 0" "degree f2 < degree f" by auto
+  have "degree f = degree f1 + degree f2" using f0 unfolding f
+    by (subst degree_mult_eq, auto)
+  with deg show ?case by auto
+qed auto
 
 function LLL_reconstruction where 
   "LLL_reconstruction f us = (let 
-     u = choose_u us in
-      \<comment> \<open>sanity checks which are solely used to ensure termination\<close>
-      if \<not> (degree u \<le> degree f \<and> degree u \<noteq> 0 \<and> pl > 1 \<and> monic u) then 
-          Code.abort (STR ''LLL_reconstruction is invoked with non-suitable arguments'') (\<lambda> _. [])
-    else let 
-     g = LLL_short_polynomial (degree f) u;
-     f2 = gcd f g
-    in if degree f2 = 0 then [f] 
+     d = degree f;
+     u = choose_u us;
+     g = LLL_short_polynomial pl d u;
+     f2 = gcd f g;
+     deg = degree f2
+    in if deg = 0 \<or> deg \<ge> d then [f] 
       else let f1 = f div f2;
        (us1, us2) = List.partition (\<lambda> gi. poly_mod.dvdm p gi f1) us
        in LLL_reconstruction f1 us1 @ LLL_reconstruction f2 us2)"
   by pat_completeness auto
+
+termination
+proof (relation "measure (\<lambda> (f,us). degree f)", goal_cases)
+  case (2 f us d u g f2 deg f1 pair us1 us2)
+  hence f: "f = f1 * f2" and f0: "f \<noteq> 0" by auto
+  have deg: "degree f = degree f1 + degree f2" using f0 unfolding f
+    by (subst degree_mult_eq, auto)
+  from 2 have "degree f2 > 0" "degree f2 < degree f" by auto
+  thus ?case using deg by auto
+qed auto
 end
 
-declare LLL_implementation.LLL_short_polynomial_def[code]
+declare LLL_implementation.LLL_reconstruction.simps[code]
+declare LLL_implementation.LLL_many_reconstruction.simps[code]
 
 definition LLL_factorization :: "int poly \<Rightarrow> int poly list" where
   "LLL_factorization f = (let 
@@ -103,5 +136,22 @@ definition LLL_factorization :: "int poly \<Rightarrow> int poly list" where
      \<comment> \<open>reconstruct integer factors via LLL algorithm\<close>
      pl = p^l
    in LLL_implementation.LLL_reconstruction p pl f us)"
+
+definition LLL_many_factorization :: "int poly \<Rightarrow> int poly list" where
+  "LLL_many_factorization f = (let 
+     \<comment> \<open>find suitable prime\<close>
+     p = suitable_prime_bz f;
+     \<comment> \<open>compute finite field factorization\<close>
+     (_, fs) = finite_field_factorization_int p f;
+     \<comment> \<open>determine exponent l and B\<close>
+     n = degree f;
+     no = \<parallel>f\<parallel>\<^sup>2;
+     B = sqrt_int_ceiling (2^(5 * (n div 2) * (n div 2)) * no^(2 * (n div 2)));
+     l = find_exponent p B;
+     \<comment> \<open>perform hensel lifting to lift factorization to mod $p^l$\<close>
+     us = hensel_lifting p l f fs;
+     \<comment> \<open>reconstruct integer factors via LLL algorithm\<close>
+     pl = p^l
+   in LLL_implementation.LLL_many_reconstruction p pl f us)"
 
 end

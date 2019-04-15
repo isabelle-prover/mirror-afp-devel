@@ -694,17 +694,14 @@ end
 
 subsection \<open>Soundness of the LLL factorization algorithm\<close>
 
-context LLL_implementation
-begin
-
 lemma LLL_short_polynomial: assumes deg_u_0: "degree u \<noteq> 0" and deg_le: "degree u \<le> n" 
   and pl1: "pl > 1" 
   and monic: "monic u" 
-shows "degree (LLL_short_polynomial n u) < n" 
-  and "LLL_short_polynomial n u \<noteq> 0"
-  and "poly_mod.dvdm pl u (LLL_short_polynomial n u)" 
+shows "degree (LLL_short_polynomial pl n u) < n" 
+  and "LLL_short_polynomial pl n u \<noteq> 0"
+  and "poly_mod.dvdm pl u (LLL_short_polynomial pl n u)" 
   and "degree u < n \<Longrightarrow> f \<noteq> 0 \<Longrightarrow>
-    poly_mod.dvdm pl u f \<Longrightarrow> degree f < n \<Longrightarrow> \<parallel>LLL_short_polynomial n u\<parallel>\<^sup>2 \<le> 2 ^ (n - 1) * \<parallel>f\<parallel>\<^sup>2" 
+    poly_mod.dvdm pl u f \<Longrightarrow> degree f < n \<Longrightarrow> \<parallel>LLL_short_polynomial pl n u\<parallel>\<^sup>2 \<le> 2 ^ (n - 1) * \<parallel>f\<parallel>\<^sup>2" 
 proof -
   interpret poly_mod_2 pl 
     by (unfold_locales, insert pl1, auto)
@@ -726,9 +723,9 @@ proof -
   let ?sv = "short_vector_hybrid 2 ?L" 
   from deg_u_0 deg_le have n: "n \<noteq> 0" by auto
   from deg_u_0 have u0: "u \<noteq> 0" by auto
-  have id: "LLL_short_polynomial n u = poly_of_vec ?sv" 
+  have id: "LLL_short_polynomial pl n u = poly_of_vec ?sv" 
     unfolding LLL_short_polynomial_def by blast
-  have id': "\<parallel>?sv\<parallel>\<^sup>2 = \<parallel>LLL_short_polynomial n u\<parallel>\<^sup>2" unfolding id by simp
+  have id': "\<parallel>?sv\<parallel>\<^sup>2 = \<parallel>LLL_short_polynomial pl n u\<parallel>\<^sup>2" unfolding id by simp
   interpret vec_module "TYPE(int)" n.
   interpret L: LLL n n "?L" 2 .
   from deg_le deg_iu have deg_iu_le: "degree ?iu \<le> n" by simp
@@ -741,18 +738,18 @@ proof -
   interpret L: LLL_with_assms n n ?L 2
     by (unfold_locales, insert *, auto simp: deg_iu deg_le)
   note short = L.short_vector_hybrid[OF refl n, unfolded id' L.L_def]
-  from short(2) have mem: "LLL_short_polynomial n u \<in> poly_of_vec ` lattice_of ?L" 
+  from short(2) have mem: "LLL_short_polynomial pl n u \<in> poly_of_vec ` lattice_of ?L" 
     unfolding id by auto
   note fact = L.factorization_lattice(1)[OF deg_iu0 pl0 deg_iu_le n, unfolded deg_iu, OF mem]
-  show "degree (LLL_short_polynomial n u) < n" using fact by auto
-  from fact have "?iu dvdm (LLL_short_polynomial n u)" by auto
-  then obtain h where "LLL_short_polynomial n u =m ?iu * h" unfolding dvdm_def by auto
+  show "degree (LLL_short_polynomial pl n u) < n" using fact by auto
+  from fact have "?iu dvdm (LLL_short_polynomial pl n u)" by auto
+  then obtain h where "LLL_short_polynomial pl n u =m ?iu * h" unfolding dvdm_def by auto
   also have "?iu * h =m Mp ?iu * h" unfolding mult_Mp by simp
   also have "Mp ?iu * h =m u * h" unfolding iu_u unfolding mult_Mp by simp
-  finally show "u dvdm (LLL_short_polynomial n u)" unfolding dvdm_def by auto
+  finally show "u dvdm (LLL_short_polynomial pl n u)" unfolding dvdm_def by auto
   from short have sv1: "?sv \<in> carrier_vec n" by auto  
   from short have "?sv \<noteq> 0\<^sub>v j" for j by auto
-  thus "LLL_short_polynomial n u \<noteq> 0" unfolding id by simp
+  thus "LLL_short_polynomial pl n u \<noteq> 0" unfolding id by simp
   assume degu: "degree u < n" and dvd: "u dvdm f" 
     and degf: "degree f < n" and f0: "f \<noteq> 0" 
   from dvd obtain h where "f =m u * h" unfolding dvdm_def by auto
@@ -768,25 +765,12 @@ proof -
   have fv0: "fv \<noteq> 0\<^sub>v n" using f0 unfolding f by auto
   with fv have fvL: "fv \<in> lattice_of ?L - {0\<^sub>v n}" by auto
   from short(3)[OF this, unfolded norm]
-  have "rat_of_int \<parallel>LLL_short_polynomial n u\<parallel>\<^sup>2 \<le> rat_of_int (2 ^ (n - 1) * \<parallel>f\<parallel>\<^sup>2)" by simp
-  thus "\<parallel>LLL_short_polynomial n u\<parallel>\<^sup>2 \<le> 2 ^ (n - 1) * \<parallel>f\<parallel>\<^sup>2" by linarith
+  have "rat_of_int \<parallel>LLL_short_polynomial pl n u\<parallel>\<^sup>2 \<le> rat_of_int (2 ^ (n - 1) * \<parallel>f\<parallel>\<^sup>2)" by simp
+  thus "\<parallel>LLL_short_polynomial pl n u\<parallel>\<^sup>2 \<le> 2 ^ (n - 1) * \<parallel>f\<parallel>\<^sup>2" by linarith
 qed
 
-termination LLL_reconstruction
-proof (standard, rule wf_measure[of "\<lambda> (f,gs). degree f"], goal_cases)
-  case (1 f gs u g k f1)
-  hence "f = (f div k) * k" and f0: "(f div k) * k \<noteq> 0" by auto
-  hence "degree f = degree (f1 * k)" using 1 by auto
-  also have "\<dots> = degree f1 + degree k" by (rule degree_mult_eq, insert f0 \<open>f1 = f div k\<close>, auto)
-  also have "\<dots> > degree f1" using \<open>degree k \<noteq> 0\<close> by auto
-  finally show ?case by simp
-next
-  case (2 f gs u g k f1)
-  hence "degree u \<noteq> 0" "degree u \<le> degree f" "pl > 1" "monic u" by auto
-  from LLL_short_polynomial[OF this(1-4)] 2
-  have "degree g < degree f" "g \<noteq> 0" by auto
-  thus ?case unfolding \<open>k = gcd f g\<close> using degree_gcd1[of g f] by (auto simp: gcd.commute[of f g])
-qed
+context LLL_implementation
+begin
 
 lemma LLL_reconstruction: assumes "LLL_reconstruction f us = fs"
   and "degree f \<noteq> 0"
@@ -809,7 +793,7 @@ proof -
   proof (induct f us arbitrary: fs rule: LLL_reconstruction.induct)
     case (1 f us fs)
     define u where "u = choose_u us" 
-    define g where "g = LLL_short_polynomial (degree f) u" 
+    define g where "g = LLL_short_polynomial pl (degree f) u" 
     define k where "k = gcd f g" 
     note res = 1(3)
     note degf = 1(4)
@@ -840,15 +824,16 @@ proof -
     hence deg_u: "degree u \<noteq> 0" unfolding pl.irreducible\<^sub>d_m_def norm[OF u_gs] by auto
     have deg_uf: "degree u \<le> degree f" unfolding degf_gs using split_list[OF u_gs] by auto
     from mon_gs[OF u_gs] have mon_u: "monic u" and u0: "u \<noteq> 0" by auto
-    let ?cond = "degree u \<le> degree f \<and> degree u \<noteq> 0 \<and> pl > 1 \<and> monic u" 
-    have cond: "?cond = True" "\<not> \<not> ?cond" 
-      using deg_uf degf deg_u pl1 mon_u by auto
-    note res = res[unfolded LLL_reconstruction.simps[of f us] Let_def, folded u_def, 
-        folded g_def, folded k_def, unfolded cond]
     have f0: "f \<noteq> 0" using degf by auto
     from norm have norm': "image_mset pl.Mp (mset us) = mset us" by (induct us, auto)
     have pl0: "pl \<noteq> 0" using pl1 by auto
     note short_main = LLL_short_polynomial[OF deg_u deg_uf pl1 mon_u]
+    from short_main(1-2)[folded g_def] 
+    have "degree k < degree f" unfolding k_def
+      by (smt Suc_leI Suc_less_eq degree_gcd1 gcd.commute le_imp_less_Suc le_trans) 
+    hence deg_fk: "(degree k = 0 \<or> degree f \<le> degree k) = (degree k = 0)" by auto
+    note res = res[unfolded LLL_reconstruction.simps[of f us] Let_def, folded u_def, 
+        folded g_def, folded k_def, unfolded deg_fk]
     show ?case
     proof (cases "degree k = 0")
       case True
@@ -955,8 +940,7 @@ proof -
           with g0 have c0: "c \<noteq> 0" by auto
           hence "pl^2 \<le> (lead_coeff g)^2" unfolding lg abs_le_square_iff[symmetric]
             by (rule aux_abs_int)
-          also have "\<dots> \<le> \<parallel>g\<parallel>\<^sup>2" using coeff_le_sq_norm[of g] by auto 
-          also have "\<dots> = \<parallel>g\<parallel>\<^sup>2 ^ 1" by simp
+          also have "\<dots> \<le> \<parallel>g\<parallel>\<^sup>2 ^ 1" using coeff_le_sq_norm[of g] by auto 
           also have "\<dots> \<le> \<parallel>g\<parallel>\<^sup>2 ^ degree f1" 
             by (rule pow_mono_exp, insert deg normg, auto)
           also have "\<dots> = 1 * \<dots>" by simp
@@ -980,8 +964,8 @@ proof -
       with arg_cong[OF this, of degree] f0 have deg_f1k: "degree f = degree f1 + degree k" 
         by (auto simp: degree_mult_eq)
       from f fF have dvd: "f1 dvd F" "k dvd F" unfolding dvd_def by auto
-      obtain gs1 gs2 where part: "List.partition (\<lambda>gi. p.dvdm gi f1) us = (gs1, gs2)" by force
-      note IH = 1(1-2)[OF u_def cond(2) g_def k_def False f1_def part[symmetric] refl]
+      obtain gs1 gs2 where part: "List.partition (\<lambda>gi. p.dvdm gi f1) us = (gs1, gs2)" by force  
+      note IH = 1(1-2)[OF refl u_def g_def k_def refl, unfolded deg_fk, OF False f1_def part[symmetric] refl]
       obtain fs1 where fs1: "LLL_reconstruction f1 gs1 = fs1" by auto
       obtain fs2 where fs2: "LLL_reconstruction k gs2 = fs2" by auto
       from False res[folded f1_def, unfolded part split fs1 fs2] 
@@ -1006,9 +990,239 @@ proof -
     qed
   qed
 qed
-end
 
-declare LLL_implementation.LLL_reconstruction.simps[code]
+lemma LLL_many_reconstruction: assumes "LLL_many_reconstruction f us = fs"
+  and "degree f \<noteq> 0"
+  and "poly_mod.unique_factorization_m pl f (lead_coeff f, mset us)"
+  and "f dvd F" 
+  and "\<And> ui. ui \<in> set us \<Longrightarrow> poly_mod.Mp pl ui = ui" 
+  and F0: "F \<noteq> 0" 
+  and cop: "coprime (lead_coeff F) p" 
+  and sf: "poly_mod.square_free_m p F" 
+  and pl1: "pl > 1" 
+  and plp: "pl = p^l" 
+  and p: "prime p" 
+  and large: "2^(5 * (degree F div 2) * (degree F div 2)) * \<parallel>F\<parallel>\<^sup>2^(2 * (degree F div 2)) < pl\<^sup>2"
+shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible\<^sub>d fi)" 
+proof -
+  interpret p: poly_mod_prime p by (standard, rule p)
+  interpret pl: poly_mod_2 "pl" by (standard, rule pl1)
+  from pl1 plp have l0: "l \<noteq> 0" by (cases l, auto)
+  show ?thesis using assms(1-5)
+  proof (induct f us arbitrary: fs rule: LLL_many_reconstruction.induct)
+    case (1 f us fs)
+    note res = 1(3)
+    note degf = 1(4)
+    note uf = 1(5)
+    note fF = 1(6)
+    note norm = 1(7)
+    note to_fact = pl.unique_factorization_m_imp_factorization
+    note fact = to_fact[OF uf]
+    have mon_gs: "ui \<in> set us \<Longrightarrow> monic ui" for ui using norm fact
+      unfolding pl.factorization_m_def by auto
+    from p.coprime_lead_coeff_factor[OF p.prime] fF cop 
+    have cop: "coprime (lead_coeff f) p" unfolding dvd_def by blast
+    have plf0: "pl.Mp f \<noteq> 0" 
+      using fact pl.factorization_m_lead_coeff pl.unique_factorization_m_zero uf by fastforce
+    have "degree f = pl.degree_m f" 
+      by (rule sym, rule poly_mod.degree_m_eq[OF _ pl.m1], 
+          insert cop p, simp add: l0 p.coprime_exp_mod plp)
+    also have "\<dots> =  sum_mset (image_mset pl.degree_m (mset us))"
+      unfolding pl.factorization_m_degree[OF fact plf0] ..
+    also have "\<dots> = sum_list (map pl.degree_m us)" 
+      unfolding sum_mset_sum_list[symmetric] by auto
+    also have "\<dots> = sum_list (map degree us)" 
+      by (rule arg_cong[OF map_cong, OF refl], rule pl.monic_degree_m, insert mon_gs, auto)
+    finally have degf_gs: "degree f = sum_list (map degree us)" by auto
+    hence gs: "us \<noteq> []" using degf by (cases us, auto)
+    from 1(4) have f0: "f \<noteq> 0" and df0: "degree f \<noteq> 0" by auto
+    from norm have norm': "image_mset pl.Mp (mset us) = mset us" by (induct us, auto)
+    have pl0: "pl \<noteq> 0" using pl1 by auto
+
+    let ?D2 = "degree F div 2" 
+    let ?d2 = "degree f div 2" 
+    define gg where "gg = LLL_short_polynomial pl (Suc ?d2)" 
+    let ?us = "filter (\<lambda>u. degree u \<le> ?d2) us" 
+    note res = res[unfolded LLL_many_reconstruction.simps[of f us], unfolded Let_def,
+        folded gg_def]
+    let ?f2_opt = "find_map_filter (\<lambda>u. gcd f (gg u)) 
+      (\<lambda>f2. 0 < degree f2 \<and> degree f2 < degree f) ?us" 
+    show ?case
+    proof (cases ?f2_opt)
+      case (Some f2)
+      from find_map_filter_Some[OF this]
+      obtain g where deg_f2: "degree f2 \<noteq> 0" "degree f2 < degree f"
+        and dvd: "f2 dvd f" and gcd: "f2 = gcd f g" by auto
+      note res = res[unfolded Some option.simps]
+
+      define f1 where "f1 = f div f2" 
+      have f: "f = f1 * f2" unfolding f1_def using dvd by auto
+      with arg_cong[OF this, of degree] f0 have deg_sum: "degree f = degree f1 + degree f2" 
+        by (auto simp: degree_mult_eq)
+      with deg_f2 have deg_f1: "degree f1 \<noteq> 0" "degree f1 < degree f" by auto
+      from f fF have dvd: "f1 dvd F" "f2 dvd F" unfolding dvd_def by auto
+      obtain gs1 gs2 where part: "List.partition (\<lambda>gi. p.dvdm gi f1) us = (gs1, gs2)" by force  
+      note IH = 1(1-2)[OF refl refl refl, unfolded Let_def, folded gg_def, OF Some f1_def part[symmetric] refl] 
+      obtain fs1 where fs1: "LLL_many_reconstruction f1 gs1 = fs1" by blast
+      obtain fs2 where fs2: "LLL_many_reconstruction f2 gs2 = fs2" by blast
+      from res[folded f1_def, unfolded part split fs1 fs2] 
+      have fs: "fs = fs1 @ fs2" by auto
+      have sf_f: "p.square_free_m f" using sf fF p.square_free_m_factor unfolding dvd_def by blast
+      from p.unique_factorization_m_factor_partition[OF l0 uf[unfolded plp] f cop sf_f part]
+      have uf: "pl.unique_factorization_m f1 (lead_coeff f1, mset gs1)"  
+          "pl.unique_factorization_m f2 (lead_coeff f2, mset gs2)" by (auto simp: plp)
+      have "set us = set gs1 \<union> set gs2" using part by auto
+      with norm have norm_12: "gi \<in> set gs1 \<or> gi \<in> set gs2 \<Longrightarrow> pl.Mp gi = gi" for gi by auto
+      note IH1 = IH(1)[OF fs1 deg_f1(1) uf(1) dvd(1) norm_12]
+      note IH2 = IH(2)[OF fs2 deg_f2(1) uf(2) dvd(2) norm_12]
+      show ?thesis unfolding fs f using IH1 IH2 by auto
+    next
+      case None
+      from res[unfolded None option.simps] have fs_f: "fs = [f]" by simp
+      from sf fF have sf: "p.square_free_m f" 
+        using p.square_free_m_factor(1)[of f] unfolding dvd_def by auto
+      have "irreducible\<^sub>d f" 
+      proof (rule ccontr)
+        assume "\<not> irreducible\<^sub>d f"
+        from reducible\<^sub>dE[OF this] degf obtain f1 f2 where 
+          f: "f = f1 * f2" and
+          deg12: "degree f1 \<noteq> 0" "degree f2 \<noteq> 0" "degree f1 < degree f" "degree f2 < degree f" 
+          by (simp, metis)
+        from f0 have "degree f = degree f1 + degree f2" unfolding f
+          by (auto simp: degree_mult_eq)
+        hence "degree f1 \<le> degree f div 2 \<or> degree f2 \<le> degree f div 2" by auto
+        then obtain f1 f2 where 
+          f: "f = f1 * f2" and
+          deg12: "degree f1 \<noteq> 0" "degree f2 \<noteq> 0" "degree f1 \<le> degree f div 2" "degree f2 < degree f" 
+        proof (standard, goal_cases) 
+          case 1
+          from 1(1)[of f1 f2] 1(2) f deg12 show ?thesis by auto
+        next  
+          case 2
+          from 2(1)[of f2 f1] 2(2) f deg12 show ?thesis by auto
+        qed
+        from f0 f have f10: "f1 \<noteq> 0" by auto
+        from sf f have sf1: "p.square_free_m f1" 
+          using p.square_free_m_factor(1)[of f1] by auto
+        from p.coprime_lead_coeff_factor[OF p.prime cop[unfolded f]] 
+        have cop1: "coprime (lead_coeff f1) p" by auto
+        have deg_m1: "pl.degree_m f1 = degree f1" 
+          by (rule poly_mod.degree_m_eq[OF _ pl.m1], 
+            insert cop1 p, simp add: l0 p.coprime_exp_mod plp)
+        from pl.unique_factorization_m_factor[OF p uf[unfolded f], folded f, OF cop sf l0 plp]
+        obtain us1 us2 where 
+          uf12: "pl.unique_factorization_m f1 (lead_coeff f1, us1)"
+            "pl.unique_factorization_m f2 (lead_coeff f2, us2)"
+          and gs: "mset us = us1 + us2"
+          and norm12: "image_mset pl.Mp us2 = us2" "image_mset pl.Mp us1 = us1"
+          unfolding pl.Mf_def norm' split by (auto simp: pl.Mf_def)
+        from gs have "x \<in># us1 \<Longrightarrow> x \<in># mset us" for x by auto
+        hence sub1: "x \<in># us1 \<Longrightarrow> x \<in> set us" for x by auto
+        from to_fact[OF uf12(1)]
+        have fact1: "pl.factorization_m f1 (lead_coeff f1, us1)" .
+        have plf10: "pl.Mp f1 \<noteq> 0" 
+          using fact1 pl.factorization_m_lead_coeff pl.unique_factorization_m_zero uf12(1) by fastforce
+        have "degree f1 = pl.degree_m f1" using deg_m1 by simp
+        also have "\<dots> = sum_mset (image_mset pl.degree_m us1)"
+          unfolding pl.factorization_m_degree[OF fact1 plf10] ..
+        also have "\<dots> = sum_mset (image_mset degree us1)"
+          by (rule arg_cong[of _ _ sum_mset], rule image_mset_cong,
+            rule pl.monic_degree_m, rule mon_gs, rule sub1) 
+        finally have degf1_sum: "degree f1 = sum_mset (image_mset degree us1)" by auto
+        with deg12 have "us1 \<noteq> {#}" by auto
+        then obtain u us11 where us1: "us1 = {#u#} + us11" 
+          by (cases us1, auto)        
+        hence u1: "u \<in># us1" by auto
+        hence u: "u \<in> set us" by (rule sub1)
+        let ?g = "gg u" 
+        from pl.factorization_m_mem_dvdm[OF fact1, of u] u1 have u_f1: "pl.dvdm u f1" by auto
+        note norm_u = norm[OF u]
+        from fact u have irred: "pl.irreducible\<^sub>d_m u" unfolding pl.factorization_m_def by auto
+        hence deg_u: "degree u \<noteq> 0" unfolding pl.irreducible\<^sub>d_m_def norm[OF u] by auto
+        have "degree u \<le> degree f1" unfolding degf1_sum unfolding us1 by simp
+        also have "\<dots> \<le> degree f div 2" by fact
+        finally have deg_uf: "degree u \<le> degree f div 2" .
+        hence deg_uf': "degree u \<le> Suc (degree f div 2)" "degree u < Suc (degree f div 2)" by auto
+        from mon_gs[OF u] have mon_u: "monic u" .
+
+        note short = LLL_short_polynomial[OF deg_u deg_uf'(1) pl1 mon_u, folded gg_def]
+        note short = short(1-3) short(4)[OF deg_uf'(2)]
+        from short(1,2) deg12(1,3) f10 have "degree (gcd f ?g) \<le> degree f div 2"
+          by (metis Suc_leI Suc_le_mono degree_gcd1 gcd.commute le_trans)
+        also have "\<dots> < degree f" using degf by simp
+        finally have "degree (gcd f ?g) < degree f" by simp
+        with find_map_filter_None[OF None, simplified, rule_format, of u] deg_uf u
+        have deg_gcd: "degree (gcd f (?g)) = 0" by (auto simp: gcd.commute)
+        have "gcd f1 (?g) dvd gcd f (?g)" using f0 unfolding f by simp
+        from divides_degree[OF this, unfolded deg_gcd] f0
+        have deg_gcd1: "degree (gcd f1 (?g)) = 0" by auto
+        from F0 have normF: "\<parallel>F\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of F] by presburger
+        have g0: "?g \<noteq> 0" using short(2) .
+        from g0 have normg: "\<parallel>?g\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of "?g"] by presburger
+        from f10 have normf1: "\<parallel>f1\<parallel>\<^sup>2 \<ge> 1" using sq_norm_poly_pos[of f1] by presburger
+        from fF f have f1F: "f1 dvd F" unfolding dvd_def by auto
+        have pl_ge0: "pl \<ge> 0" using pl.poly_mod_2_axioms poly_mod_2_def by auto
+        from fF have "degree f \<le> degree F" using F0 f0 by (metis dvd_imp_degree_le)
+        hence d2D2: "?d2 \<le> ?D2" by simp
+        with deg12(3) have df1_D2: "degree f1 \<le> ?D2" by linarith
+        from short(1) d2D2 have dg_D2: "degree (gg u) \<le> ?D2" by linarith
+        have "\<parallel>f1\<parallel>\<^sup>2 ^ degree (gg u) * \<parallel>gg u\<parallel>\<^sup>2 ^ degree f1
+          \<le> \<parallel>f1\<parallel>\<^sup>2 ^ ?D2 * \<parallel>gg u\<parallel>\<^sup>2 ^ ?D2" 
+          by (rule mult_mono[OF pow_mono_exp pow_mono_exp], 
+              insert normf1 normg, auto intro: df1_D2 dg_D2)
+        also have "\<dots> = (\<parallel>f1\<parallel>\<^sup>2 * \<parallel>gg u\<parallel>\<^sup>2)^?D2" 
+          by (simp add: power_mult_distrib)
+        also have "\<dots> \<le> (\<parallel>f1\<parallel>\<^sup>2 * (2^?D2 * \<parallel>f1\<parallel>\<^sup>2))^?D2" 
+          by (rule power_mono[OF mult_left_mono[OF order.trans[OF short(4)[OF f10 u_f1]]]],
+            insert deg12 d2D2, auto intro!: mult_mono)
+        also have "\<dots> = \<parallel>f1\<parallel>\<^sup>2 ^ (?D2 + ?D2) * 2^(?D2 * ?D2)"
+          unfolding power_add power_mult_distrib power_mult by simp
+        also have "\<dots> \<le> (2 ^ (2 * ?D2) * \<parallel>F\<parallel>\<^sup>2) ^ (?D2 + ?D2) * 2^(?D2 * ?D2)" 
+          by (rule mult_right_mono[OF order.trans[OF power_mono[OF sq_norm_factor_bound[OF f1F F0]]]], 
+            auto intro!: power_mono mult_right_mono df1_D2)
+        also have "\<dots> = 2 ^ (2 * ?D2 * (?D2 + ?D2) + ?D2 * ?D2) * \<parallel>F\<parallel>\<^sup>2 ^ (?D2 + ?D2)" 
+          unfolding power_mult_distrib power_mult power_add by simp
+        also have "2 * ?D2 * (?D2 + ?D2) + ?D2 * ?D2 = 5 * ?D2 * ?D2" by simp
+        also have "?D2 + ?D2 = 2 * ?D2" by simp
+        finally have large: 
+          "\<parallel>f1\<parallel>\<^sup>2 ^ degree (gg u) * \<parallel>gg u\<parallel>\<^sup>2 ^ degree f1 < pl^2" using large by simp
+        have "degree u \<le> degree (?g)" 
+        proof (rule pl.dvdm_degree[OF mon_u short(3)], standard)
+          assume "pl.Mp (?g) = 0" 
+          from arg_cong[OF this, of "\<lambda> p. coeff p (degree ?g)"]
+          have "pl.M (coeff ?g (degree ?g)) = 0" by (auto simp: pl.Mp_def coeff_map_poly)
+          from this[unfolded pl.M_def] obtain c where lg: "lead_coeff ?g = pl * c" by auto
+          with g0 have c0: "c \<noteq> 0" by auto
+          hence "pl^2 \<le> (lead_coeff ?g)^2" unfolding lg abs_le_square_iff[symmetric]
+            by (rule aux_abs_int)
+          also have "\<dots> \<le> \<parallel>?g\<parallel>\<^sup>2" using coeff_le_sq_norm[of ?g] by auto 
+          also have "\<dots> = \<parallel>?g\<parallel>\<^sup>2 ^ 1" by simp
+          also have "\<dots> \<le> \<parallel>?g\<parallel>\<^sup>2 ^ degree f1" 
+            by (rule pow_mono_exp, insert deg12 normg, auto)
+          also have "\<dots> = 1 * \<dots>" by simp
+          also have "\<dots> \<le> \<parallel>f1\<parallel>\<^sup>2 ^ degree ?g * \<parallel>?g\<parallel>\<^sup>2 ^ degree f1" 
+            by (rule mult_right_mono, insert normf1, auto)
+          also have "\<dots> < pl\<^sup>2" by (rule large) 
+          finally show False by auto
+        qed
+        with deg_u have deg_g: "0 < degree (gg u)" by auto
+        have pl_ge0: "pl \<ge> 0" using pl.poly_mod_2_axioms poly_mod_2_def by auto
+        from fF have "degree f \<le> degree F" using F0 f0 by (metis dvd_imp_degree_le)
+        hence d2D2: "?d2 \<le> ?D2" by simp
+        with deg12(3) have df1_D2: "degree f1 \<le> ?D2" by linarith
+        from short(1) d2D2 have dg_D2: "degree (gg u) \<le> ?D2" by linarith
+        have "0 < degree f1" "0 < degree u" using deg12 deg_u by auto
+        from common_factor_via_short[of f1 "gg u", OF this(1) deg_g mon_u this(2) u_f1 short(3) _ pl_ge0] deg_gcd1
+        have "pl^2 \<le> \<parallel>f1\<parallel>\<^sup>2 ^ degree (gg u) * \<parallel>gg u\<parallel>\<^sup>2 ^ degree f1" by linarith
+        also have "\<dots> < pl^2" by (rule large)
+        finally show False by simp
+      qed
+      thus ?thesis using fs_f by simp
+    qed
+  qed
+qed
+
+end
 
 lemma LLL_factorization:
   assumes res: "LLL_factorization f = gs"
@@ -1052,8 +1266,54 @@ proof -
           refl prime K[unfolded K_def]]) 
 qed
 
+lemma LLL_many_factorization:
+  assumes res: "LLL_many_factorization f = gs"
+  and sff: "square_free f"
+  and deg: "degree f \<noteq> 0" 
+  shows "f = prod_list gs \<and> (\<forall>g\<in>set gs. irreducible\<^sub>d g)"
+proof -
+  let ?lc = "lead_coeff f" 
+  define p where "p \<equiv> suitable_prime_bz f" 
+  obtain c gs where fff: "finite_field_factorization_int p f = (c,gs)" by force
+  let ?degs = "map degree gs" 
+  note res = res[unfolded LLL_many_factorization_def Let_def, folded p_def,
+    unfolded fff split, folded]
+  from suitable_prime_bz[OF sff refl]
+  have prime: "prime p" and cop: "coprime ?lc p" and sf: "poly_mod.square_free_m p f" 
+    unfolding p_def by auto
+  note res
+  from prime interpret p: poly_mod_prime p by unfold_locales
+  define K where "K = 2^(5 * (degree f div 2) * (degree f div 2)) * \<parallel>f\<parallel>\<^sup>2^(2 * (degree f div 2))"
+  define N where "N = sqrt_int_ceiling K" 
+  have K0: "K \<ge> 0" unfolding K_def by fastforce
+  have N0: "N \<ge> 0" unfolding N_def sqrt_int_ceiling using K0 
+    by (smt of_int_nonneg real_sqrt_ge_0_iff zero_le_ceiling)
+  define n where "n = find_exponent p N" 
+  note res = res[folded n_def[unfolded N_def K_def]]
+  note n = find_exponent[OF p.m1, of N, folded n_def]
+  note bh = p.berlekamp_and_hensel_separated(1)[OF cop sf refl fff n(2)]
+  from deg have f0: "f \<noteq> 0" by auto
+  from n p.m1 have pn1: "p ^ n > 1" by auto
+  note res = res[folded bh(1)]
+  note * = p.berlekamp_hensel_unique[OF cop sf bh n(2)] 
+  note ** = p.berlekamp_hensel_main[OF n(2) bh cop sf fff]
+  from res * **
+  have uf: "poly_mod.unique_factorization_m (p ^ n) f (lead_coeff f, mset (berlekamp_hensel p n f))" 
+    and norm: "\<And>ui. ui \<in> set (berlekamp_hensel p n f) \<Longrightarrow> poly_mod.Mp (p ^ n) ui = ui" 
+    unfolding berlekamp_hensel_def fff split by auto
+  have K: "K < (p ^ n)\<^sup>2" using n sqrt_int_ceiling_bound[OF K0] 
+    by (smt N0 N_def n(1) power2_le_imp_le)
+  show ?thesis
+    by (rule LLL_implementation.LLL_many_reconstruction[OF res deg uf dvd_refl norm f0 cop sf pn1 
+          refl prime K[unfolded K_def]]) 
+qed
+
 lift_definition one_lattice_LLL_factorization :: int_poly_factorization_algorithm
   is LLL_factorization using LLL_factorization by auto
 
+lift_definition many_lattice_LLL_factorization :: int_poly_factorization_algorithm
+  is LLL_many_factorization using LLL_many_factorization by auto
+
 thm factorize_int_poly[of one_lattice_LLL_factorization]
+thm factorize_int_poly[of many_lattice_LLL_factorization]
 end
