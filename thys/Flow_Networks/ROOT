@@ -1,7 +1,7 @@
 chapter AFP
 
 session Flow_Networks (AFP) = Sepref_IICF +
-  options [timeout = 600]
+  options [timeout = 1200]
   sessions
     "Program-Conflict-Analysis"
     CAVA_Automata

@@ -251,7 +251,7 @@ proof (cases "p = 0")
   show ?thesis by (simp add: True min_term_min)
 next
   case False
-  hence "keys p \<noteq> {}" using keys_eq_empty_iff[of p] by simp
+  hence "keys p \<noteq> {}" by simp
   have "\<forall>u\<in>keys p. u \<preceq>\<^sub>t v"
   proof
     fix u::'t
@@ -601,7 +601,7 @@ proof (cases "lt p = lt q")
   proof (rule lt_eqI_keys)
     from True have "lc p + lc q \<noteq> 0" by (rule assms)
     thus "ord_term_lin.max (lt p) (lt q) \<in> keys (p + q)"
-      by (simp add: in_keys_iff lc_def lookup_add True del: lookup_not_eq_zero_eq_in_keys)
+      by (simp add: in_keys_iff lc_def lookup_add True)
   next
     fix u
     assume "u \<in> keys (p + q)"
@@ -787,7 +787,7 @@ lemma tt_gr:
   assumes "\<And>u. u \<in> keys p \<Longrightarrow> v \<prec>\<^sub>t u" and "p \<noteq> 0"
   shows "v \<prec>\<^sub>t tt p"
 proof -
-  from \<open>p \<noteq> 0\<close> have "keys p \<noteq> {}" using keys_eq_empty_iff[of p] by simp
+  from \<open>p \<noteq> 0\<close> have "keys p \<noteq> {}" by simp
   show ?thesis by (rule assms(1), rule tt_in_keys, fact \<open>p \<noteq> 0\<close>)
 qed
 
@@ -804,7 +804,7 @@ lemma tt_ge:
   assumes "\<And>u. u \<prec>\<^sub>t v \<Longrightarrow> lookup p u = 0" and "p \<noteq> 0"
   shows "v \<preceq>\<^sub>t tt p"
 proof -
-  from \<open>p \<noteq> 0\<close> have "keys p \<noteq> {}" using keys_eq_empty_iff[of p] by simp
+  from \<open>p \<noteq> 0\<close> have "keys p \<noteq> {}" by simp
   have "\<forall>u\<in>keys p. v \<preceq>\<^sub>t u"
   proof
     fix u::'t
@@ -2704,7 +2704,7 @@ next
       thus False
       proof
         assume "card (keys p) = 0"
-        hence "p = 0" by (meson card_0_eq keys_eq_empty_iff finite_keys) 
+        hence "p = 0" by (meson card_0_eq keys_eq_empty finite_keys) 
         with step(1) show False ..
       next
         assume "card (keys p) = 1"
@@ -3117,6 +3117,19 @@ proof (rule dgrad_p_setI)
     from assms(3) this(1) have "d s \<le> m" unfolding \<open>s = pp_of_term u\<close> by (rule dgrad_p_setD)
     with \<open>d (pp_of_term v) \<le> d s\<close> show ?thesis by (rule le_trans)
   qed
+qed
+
+lemma dgrad_p_set_closed_monom_mult_zero:
+  assumes "p \<in> dgrad_p_set d m"
+  shows "monom_mult c 0 p \<in> dgrad_p_set d m"
+proof (rule dgrad_p_setI)
+  fix v
+  assume "v \<in> keys (monom_mult c 0 p)"
+  hence "pp_of_term v \<in> pp_of_term ` keys (monom_mult c 0 p)" by simp
+  then obtain u where "u \<in> keys (monom_mult c 0 p)" and eq: "pp_of_term v = pp_of_term u" ..
+  from this(1) have "u \<in> keys p" by (metis keys_monom_multE splus_zero)
+  with assms have "d (pp_of_term u) \<le> m" by (rule dgrad_p_setD)
+  thus "d (pp_of_term v) \<le> m" by (simp only: eq)
 qed
 
 lemma dgrad_p_set_closed_except:
@@ -3576,6 +3589,34 @@ proof -
         by (rule dickson_less_pI)
       hence "y \<notin> Q" by (rule *)
       from this \<open>y \<in> Q\<close> show False ..
+    qed
+  qed
+qed
+
+lemma ord_term_minimum_dgrad_set:
+  assumes "dickson_grading d" and "v \<in> V" and "pp_of_term ` V \<subseteq> dgrad_set d m"
+  obtains u where "u \<in> V" and "\<And>w. w \<prec>\<^sub>t u \<Longrightarrow> w \<notin> V"
+proof -
+  from assms(1) have "wfP (dickson_less_v d m)" by (rule wf_dickson_less_v)
+  then obtain u where "u \<in> V" and *: "\<And>w. dickson_less_v d m w u \<Longrightarrow> w \<notin> V" using assms(2)
+    by (rule wfE_min[to_pred]) blast
+  from this(1) have "pp_of_term u \<in> pp_of_term ` V" by (rule imageI)
+  with assms(3) have "pp_of_term u \<in> dgrad_set d m" ..
+  hence "d (pp_of_term u) \<le> m" by (rule dgrad_setD)
+  from \<open>u \<in> V\<close> show ?thesis
+  proof
+    fix w
+    assume "w \<prec>\<^sub>t u"
+    show "w \<notin> V"
+    proof
+      assume "w \<in> V"
+      hence "pp_of_term w \<in> pp_of_term ` V" by (rule imageI)
+      with assms(3) have "pp_of_term w \<in> dgrad_set d m" ..
+      hence "d (pp_of_term w) \<le> m" by (rule dgrad_setD)
+      from this \<open>d (pp_of_term u) \<le> m\<close> \<open>w \<prec>\<^sub>t u\<close> have "dickson_less_v d m w u"
+        by (rule dickson_less_vI)
+      hence "w \<notin> V" by (rule *)
+      from this \<open>w \<in> V\<close> show False ..
     qed
   qed
 qed

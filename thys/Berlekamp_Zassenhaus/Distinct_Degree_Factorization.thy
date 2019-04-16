@@ -72,7 +72,7 @@ proof -
     { fix x assume x:"x \<in> carrier (mult_of R)"
       hence x':"x\<in>carrier (mult_of R)" by simp
       then have "group.ord (mult_of R) x dvd order (mult_of R)"
-          using finite' G.ord_dvd_group_order[OF _ x'] by (simp add: order_mult_of)
+          using finite' G.ord_dvd_group_order[OF x'] by (simp add: order_mult_of)
       hence "x \<in> ?U" using dvd_nat_bounds[of "order (mult_of R)" "group.ord (mult_of R) x"] x by blast
     } thus "carrier (mult_of R) \<subseteq> ?U" by blast
   qed auto

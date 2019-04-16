@@ -115,7 +115,7 @@ definition "LLL_reconstruction_inner j \<equiv>
       ll' = find_exponent p n in if ll' < l then ll' else l);
   \<comment> \<open>optimization: dynamically adjust the modulus\<close>
       pl = p^ll;
-      g' = LLL_implementation.LLL_short_polynomial pl j u 
+      g' = LLL_short_polynomial pl j u 
   \<comment> \<open>fix: forbid multiples of $p^l$ as short vector, unclear whether this is really required\<close>
   in if abs (lead_coeff g') \<ge> pl then None else 
   let ppg = primitive_part g'
@@ -521,7 +521,7 @@ proof -
   thus ?thesis unfolding pll.dvdm_def ..
 qed
 
-private definition "g \<equiv> LLL_implementation.LLL_short_polynomial (p^ll) j u"
+private definition "g \<equiv> LLL_short_polynomial (p^ll) j u"
 
 lemma deg_g_j: "degree g < j" 
     and g0: "g \<noteq> 0" 
@@ -532,7 +532,7 @@ proof (atomize(full), goal_cases)
   from deg_u have degu0: "degree u \<noteq> 0" by auto
   have ju: "j \<ge> degree u" using d_def dj' le_Suc_eq by blast 
   have ju': "j > degree u" using d_def dj' by auto 
-  note short = LLL_implementation.LLL_short_polynomial[OF degu0 ju pll1 u, folded g_def]
+  note short = LLL_short_polynomial[OF degu0 ju pll1 u, folded g_def]
   from short(1-3) short(4)[OF ju'] show ?case by auto
 qed
 
@@ -568,7 +568,7 @@ proof (rule ccontr)
   from pu_factor u have u_j': "degree u \<le> j'" unfolding deg_factor_j[symmetric]
     using d_def deg_factor_j dj' by blast
   hence u_j: "degree u \<le> j" "degree u < j" by auto
-  note LLL = LLL_implementation.LLL_short_polynomial[OF deg_u0 u_j(1) pll1 u, folded g_def]
+  note LLL = LLL_short_polynomial[OF deg_u0 u_j(1) pll1 u, folded g_def]
   note ret = ret[unfolded LLL_reconstruction_inner_simps Degs if_False]   
   note LLL = LLL(1-3) LLL(4)[OF u_j(2) factor0 pll_u_factor deg_factor_lt_j]
   hence deg_g: "degree g \<le> j'" by simp

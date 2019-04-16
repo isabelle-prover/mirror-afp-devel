@@ -9,7 +9,9 @@ text \<open>By using Farkas' Lemma we prove that a finite set of
   shows unsatisfiability over the real numbers.\<close>
 
 theory Simplex_for_Reals
-  imports Farkas
+  imports 
+    Farkas
+    Simplex.Simplex_Incremental
 begin
 
 
@@ -30,11 +32,11 @@ lemma of_rat_val_eval: "p \<lbrace>of_rat_val v\<rbrace> = of_rat (p \<lbrace>v\
   unfolding of_rat_val_def linear_poly_sum of_rat_sum 
   by (rule sum.cong, auto simp: of_rat_mult)
 
-lemma of_rat_val_satisfies: "of_rat_val v \<Turnstile>\<^sub>c c \<longleftrightarrow> v \<Turnstile>\<^sub>c c" 
+lemma of_rat_val_constraint: "of_rat_val v \<Turnstile>\<^sub>c c \<longleftrightarrow> v \<Turnstile>\<^sub>c c" 
   by (cases c, auto simp: of_rat_val_eval of_rat_less of_rat_less_eq)
 
-lemma rat_to_real_solution: "v \<Turnstile>\<^sub>c\<^sub>s cs \<Longrightarrow> of_rat_val v \<Turnstile>\<^sub>r\<^sub>c\<^sub>s cs" 
-  using of_rat_val_satisfies by auto
+lemma of_rat_val_constraints: "of_rat_val v \<Turnstile>\<^sub>r\<^sub>c\<^sub>s cs \<longleftrightarrow> v \<Turnstile>\<^sub>c\<^sub>s cs" 
+  using of_rat_val_constraint by auto
 
 lemma sat_scale_rat_real: assumes "(v :: real valuation) \<Turnstile>\<^sub>c c"
   shows "v \<Turnstile>\<^sub>c (r *R c)"
@@ -67,7 +69,7 @@ text \<open>This is the main lemma: a finite set of linear constraints is
 lemma rat_real_conversion: assumes "finite cs" 
   shows "(\<exists> v :: rat valuation. v \<Turnstile>\<^sub>c\<^sub>s cs) \<longleftrightarrow> (\<exists> v :: real valuation. v \<Turnstile>\<^sub>r\<^sub>c\<^sub>s cs)" 
 proof
-  show "\<exists>v. v \<Turnstile>\<^sub>c\<^sub>s cs \<Longrightarrow> \<exists>v. v \<Turnstile>\<^sub>r\<^sub>c\<^sub>s cs" using rat_to_real_solution by auto
+  show "\<exists>v. v \<Turnstile>\<^sub>c\<^sub>s cs \<Longrightarrow> \<exists>v. v \<Turnstile>\<^sub>r\<^sub>c\<^sub>s cs" using of_rat_val_constraint by auto
   assume "\<exists>v. v \<Turnstile>\<^sub>r\<^sub>c\<^sub>s cs" 
   then obtain v where *: "v \<Turnstile>\<^sub>r\<^sub>c\<^sub>s cs" by auto
   show "\<exists>v. v \<Turnstile>\<^sub>c\<^sub>s cs" 
@@ -102,25 +104,65 @@ qed
 
 text \<open>The main result of simplex, now using unsatisfiability over the reals.\<close>
 
+fun i_satisfies_cs_real (infixl "\<Turnstile>\<^sub>r\<^sub>i\<^sub>c\<^sub>s" 100) where
+  "(I,v) \<Turnstile>\<^sub>r\<^sub>i\<^sub>c\<^sub>s cs \<longleftrightarrow> v \<Turnstile>\<^sub>r\<^sub>c\<^sub>s Simplex.restrict_to I cs"
+
+lemma simplex_index_real:
+  "simplex_index cs = Unsat I \<Longrightarrow> set I \<subseteq> fst ` set cs \<and> \<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>r\<^sub>i\<^sub>c\<^sub>s set cs) \<and> 
+     (distinct_indices cs \<longrightarrow> (\<forall> J \<subset> set I. (\<exists> v. (J, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)))" \<comment> \<open>minimal unsat core over the reals\<close>
+  "simplex_index cs = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>c\<^sub>s (snd ` set cs)" \<comment> \<open>satisfying assingment\<close>
+  using simplex_index(1)[of cs I] simplex_index(2)[of cs v] 
+    rat_real_conversion[of "Simplex.restrict_to (set I) (set cs)"]
+  by auto
+
+
 lemma simplex_real:
   "simplex cs = Unsat I \<Longrightarrow> \<not> (\<exists> v. v \<Turnstile>\<^sub>r\<^sub>c\<^sub>s set cs)" \<comment> \<open>unsat of original constraints over the reals\<close>
   "simplex cs = Unsat I \<Longrightarrow> set I \<subseteq> {0..<length cs} \<and> \<not> (\<exists> v. v \<Turnstile>\<^sub>r\<^sub>c\<^sub>s {cs ! i | i. i \<in> set I})
-    \<and> (\<forall>J\<subset>set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i |i. i \<in> J})" \<comment> \<open>minimal unsat core (unsat wrt. reals)\<close>
+    \<and> (\<forall>J\<subset>set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i |i. i \<in> J})" \<comment> \<open>minimal unsat core over reals\<close>
   "simplex cs = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>c\<^sub>s set cs"  \<comment> \<open>satisfying assignment over the rationals\<close>
-proof -
-  note simplex = simplex[of cs, unfolded rat_real_conversion[OF finite_set]]
-  show "simplex cs = Unsat I \<Longrightarrow> \<not> (\<exists> v. v \<Turnstile>\<^sub>r\<^sub>c\<^sub>s set cs)" by fact
-  show "simplex cs = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>c\<^sub>s set cs" by fact
-  assume "simplex cs = Unsat I" 
-  from simplex(2)[OF this]
-  have I: "set I \<subseteq> {0..<length cs}" and 
-    unsat: "(\<nexists>v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i |i. i \<in> set I})" and
-    min: "(\<forall>J\<subset>set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i |i. i \<in> J})"  
-    by auto
-  from I have fin: "finite {cs ! i |i. i \<in> set I}" by auto
+proof (intro simplex(1)[unfolded rat_real_conversion[OF finite_set]])
+  assume unsat: "simplex cs = Inl I" 
+  have "finite {cs ! i |i. i \<in> set I}" by auto
+  from simplex(2)[OF unsat, unfolded rat_real_conversion[OF this]]
   show "set I \<subseteq> {0..<length cs} \<and> \<not> (\<exists> v. v \<Turnstile>\<^sub>r\<^sub>c\<^sub>s {cs ! i | i. i \<in> set I})
-    \<and> (\<forall>J\<subset>set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i |i. i \<in> J})" 
-    by (intro conjI I min unsat[unfolded rat_real_conversion[OF fin]])
+    \<and> (\<forall>J\<subset>set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i |i. i \<in> J})" by auto
+qed (insert simplex(3), auto)
+
+text \<open>Define notion of minimal unsat core over the reals:
+  the subset has to be unsat over the reals, and every proper subset has
+  to be satisfiable over the rational numbers.\<close>
+
+definition minimal_unsat_core_real :: "'i set \<Rightarrow> 'i i_constraint list \<Rightarrow> bool" where
+  "minimal_unsat_core_real I ics  = ((I \<subseteq> fst ` set ics) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>r\<^sub>i\<^sub>c\<^sub>s set ics))
+     \<and> (distinct_indices ics \<longrightarrow> (\<forall> J. J \<subset> I \<longrightarrow> (\<exists> v. (J,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set ics))))"
+
+text \<open>Because of equi-satisfiability the two notions of minimal unsat cores coincide.\<close>
+lemma minimal_unsat_core_real_conv: "minimal_unsat_core_real I ics = minimal_unsat_core I ics" 
+proof 
+  show "minimal_unsat_core_real I ics \<Longrightarrow> minimal_unsat_core I ics" 
+    unfolding minimal_unsat_core_real_def minimal_unsat_core_def
+    using of_rat_val_constraint by simp metis
+next
+  assume "minimal_unsat_core I ics"     
+  thus "minimal_unsat_core_real I ics" 
+    unfolding minimal_unsat_core_real_def minimal_unsat_core_def
+    using rat_real_conversion[of "Simplex.restrict_to I (set ics)"]
+    by auto
 qed
+
+text \<open>Easy consequence: The incremental simplex algorithm is also sound wrt. 
+  minimal-unsat-cores over the reals.\<close>
+lemmas incremental_simplex_real = 
+  init_simplex
+  assert_simplex_ok
+  assert_simplex_unsat[folded minimal_unsat_core_real_conv]
+  assert_all_simplex_ok
+  assert_all_simplex_unsat[folded minimal_unsat_core_real_conv]
+  check_simplex_ok
+  check_simplex_unsat[folded minimal_unsat_core_real_conv]
+  solution_simplex
+  backtrack_simplex
+  checked_invariant_simplex
 
 end

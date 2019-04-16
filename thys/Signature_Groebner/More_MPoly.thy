@@ -169,23 +169,7 @@ end (* ordered_term *)
 
 subsection \<open>@{const gd_term.dgrad_p_set}\<close>
 
-context gd_term
-begin
-
-lemma dgrad_p_set_closed_monom_mult_zero:
-  assumes "p \<in> dgrad_p_set d m"
-  shows "monom_mult c 0 p \<in> dgrad_p_set d m"
-proof (rule dgrad_p_setI)
-  fix v
-  assume "v \<in> keys (monom_mult c 0 p)"
-  hence "pp_of_term v \<in> pp_of_term ` keys (monom_mult c 0 p)" by simp
-  then obtain u where "u \<in> keys (monom_mult c 0 p)" and eq: "pp_of_term v = pp_of_term u" ..
-  from this(1) have "u \<in> keys p" by (metis keys_monom_multE splus_zero)
-  with assms have "d (pp_of_term u) \<le> m" by (rule dgrad_p_setD)
-  thus "d (pp_of_term v) \<le> m" by (simp only: eq)
-qed
-
-lemma dgrad_p_set_closed_mult_scalar:
+lemma (in gd_term) dgrad_p_set_closed_mult_scalar:
   assumes "dickson_grading d" and "p \<in> punit.dgrad_p_set d m" and "r \<in> dgrad_p_set d m"
   shows "p \<odot> r \<in> dgrad_p_set d m"
 proof (rule dgrad_p_setI)
@@ -198,36 +182,6 @@ proof (rule dgrad_p_setI)
   ultimately have "d (t + pp_of_term u) \<le> m" using assms(1) by (simp add: dickson_gradingD1)
   thus "d (pp_of_term v) \<le> m" by (simp only: v pp_of_term_splus)
 qed
-
-corollary ord_term_minimum_dgrad_set:
-  assumes "dickson_grading d" and "x \<in> Q" and "pp_of_term ` Q \<subseteq> dgrad_set d m"
-  obtains q where "q \<in> Q" and "\<And>y. y \<prec>\<^sub>t q \<Longrightarrow> y \<notin> Q"
-proof -
-  from assms(1) have "wfP (dickson_less_v d m)" by (rule wf_dickson_less_v)
-  from this assms(2) obtain q where "q \<in> Q" and *: "\<And>y. dickson_less_v d m y q \<Longrightarrow> y \<notin> Q"
-    by (rule wfE_min[to_pred], auto)
-  from this(1) have "pp_of_term q \<in> pp_of_term ` Q" by (rule imageI)
-  with assms(3) have "pp_of_term q \<in> dgrad_set d m" ..
-  hence "d (pp_of_term q) \<le> m" by (rule dgrad_setD)
-  from \<open>q \<in> Q\<close> show ?thesis
-  proof
-    fix y
-    assume "y \<prec>\<^sub>t q"
-    show "y \<notin> Q"
-    proof
-      assume "y \<in> Q"
-      hence "pp_of_term y \<in> pp_of_term ` Q" by (rule imageI)
-      with assms(3) have "pp_of_term y \<in> dgrad_set d m" ..
-      hence "d (pp_of_term y) \<le> m" by (rule dgrad_setD)
-      from this \<open>d (pp_of_term q) \<le> m\<close> \<open>y \<prec>\<^sub>t q\<close> have "dickson_less_v d m y q"
-        by (rule dickson_less_vI)
-      hence "y \<notin> Q" by (rule *)
-      from this \<open>y \<in> Q\<close> show False ..
-    qed
-  qed
-qed
-
-end (* gd_term *)
 
 subsection \<open>Regular Sequences\<close>
 

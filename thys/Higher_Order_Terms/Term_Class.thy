@@ -307,7 +307,8 @@ class "term" = pre_term + size +
     raw_subst_drop: "abs_pred (\<lambda>t. x |\<notin>| frees t \<longrightarrow> (\<forall>env. subst t (fmdrop x env) = subst t env)) t" and
     raw_subst_indep: "abs_pred (\<lambda>t. \<forall>env\<^sub>1 env\<^sub>2. closed_env env\<^sub>2 \<longrightarrow> fdisjnt (fmdom env\<^sub>1) (fmdom env\<^sub>2) \<longrightarrow> subst t (env\<^sub>1 ++\<^sub>f env\<^sub>2) = subst (subst t env\<^sub>2) env\<^sub>1) t" and
     raw_subst_frees: "abs_pred (\<lambda>t. \<forall>env. closed_env env \<longrightarrow> frees (subst t env) = frees t |-| fmdom env) t" and
-    raw_subst_consts': "abs_pred (\<lambda>a. \<forall>x. consts (subst a x) = consts a |\<union>| ffUnion (consts |`| fmimage x (frees a))) t"
+    raw_subst_consts': "abs_pred (\<lambda>a. \<forall>x. consts (subst a x) = consts a |\<union>| ffUnion (consts |`| fmimage x (frees a))) t" and
+    abs_pred_trivI: "P t \<Longrightarrow> abs_pred P t"
 begin
 
 lemma subst_id: "id_env env \<Longrightarrow> subst t env = t"
@@ -1004,11 +1005,11 @@ definition abs_ish :: "term list \<Rightarrow> 'a::term \<Rightarrow> bool" wher
 
 locale simple_syntactic_and =
   fixes P :: "'a::term \<Rightarrow> bool"
-  assumes P_app: "P (app t u) \<longleftrightarrow> P t \<and> P u"
+  assumes app: "P (app t u) \<longleftrightarrow> P t \<and> P u"
 begin
 
 context
-  notes P_app[simp]
+  notes app[simp]
 begin
 
 lemma list_comb: "P (list_comb f xs) \<longleftrightarrow> P f \<and> list_all P xs"
@@ -1036,13 +1037,24 @@ end
 
 end
 
+locale subst_syntactic_and = simple_syntactic_and +
+  assumes subst: "P t \<Longrightarrow> fmpred (\<lambda>_. P) env \<Longrightarrow> P (subst t env)"
+begin
+
+lemma rewrite_step:
+  assumes "(lhs, rhs) \<turnstile> t \<rightarrow> t'" "P t" "P rhs"
+  shows "P t'"
+using assms by (auto intro: match subst)
+
+end
+
 locale simple_syntactic_or =
   fixes P :: "'a::term \<Rightarrow> bool"
-  assumes P_app: "P (app t u) \<longleftrightarrow> P t \<or> P u"
+  assumes app: "P (app t u) \<longleftrightarrow> P t \<or> P u"
 begin
 
 context
-  notes P_app[simp]
+  notes app[simp]
 begin
 
 lemma list_comb: "P (list_comb f xs) \<longleftrightarrow> P f \<or> list_ex P xs"
@@ -1057,7 +1069,7 @@ by (induction pat t env rule: match_some_induct) auto
 end
 
 sublocale neg: simple_syntactic_and "\<lambda>t. \<not> P t"
-by standard (auto simp: P_app)
+by standard (auto simp: app)
 
 end
 
@@ -1066,6 +1078,9 @@ by standard simp
 
 global_interpretation closed: simple_syntactic_and "\<lambda>t. closed_except t S" for S
 by standard (simp add: closed_except_def)
+
+global_interpretation closed: subst_syntactic_and closed
+by standard (rule subst_closed_preserved)
 
 corollary closed_list_comb: "closed (name $$ args) \<longleftrightarrow> list_all closed args"
 by (simp add: closed.list_comb)

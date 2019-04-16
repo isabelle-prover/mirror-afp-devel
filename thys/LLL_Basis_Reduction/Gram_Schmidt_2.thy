@@ -22,6 +22,26 @@ begin
 
 no_notation Group.m_inv  ("inv\<index> _" [81] 80)
 
+(* TODO: Is a function like this already in the library
+   find_index is used to rewrite the sumlists in the lattice_of definition to finsums *)
+
+fun find_index :: "'b list \<Rightarrow> 'b \<Rightarrow> nat" where
+  "find_index [] _ = 0" |
+  "find_index (x#xs) y = (if x = y then 0 else find_index xs y + 1)"
+
+lemma find_index_not_in_set: "x \<notin> set xs \<longleftrightarrow> find_index xs x = length xs"
+  by (induction xs) auto
+
+lemma find_index_in_set: "x \<in> set xs \<Longrightarrow> xs ! (find_index xs x) = x"
+  by (induction xs) auto
+
+lemma find_index_inj: "inj_on (find_index xs) (set xs)"
+  by (induction xs) (auto simp add: inj_on_def)
+
+lemma find_index_leq_length: "find_index xs x < length xs \<longleftrightarrow> x \<in> set xs"
+  by (induction xs) (auto)
+
+
 (* TODO: move *)
 lemma map_mat_transpose: "(map_mat f A)\<^sup>T = map_mat f A\<^sup>T"
   by auto
@@ -94,6 +114,17 @@ lemma scalar_prod_right_sum_distrib:
 definition lattice_of :: "'a vec list \<Rightarrow> 'a vec set" where
   "lattice_of fs = range (\<lambda> c. sumlist (map (\<lambda> i. of_int (c i) \<cdot>\<^sub>v fs ! i) [0 ..< length fs]))"
 
+lemma lattice_of_finsum:
+  assumes "set fs \<subseteq> carrier_vec n"
+  shows "lattice_of fs = range (\<lambda> c. finsum V (\<lambda> i. of_int (c i) \<cdot>\<^sub>v fs ! i) {0 ..< length fs})"
+proof -
+  have "sumlist (map (\<lambda> i. of_int (c i) \<cdot>\<^sub>v fs ! i) [0 ..< length fs])
+        = finsum V (\<lambda> i. of_int (c i) \<cdot>\<^sub>v fs ! i) {0 ..< length fs}" for c
+    using  assms by (subst sumlist_map_as_finsum) (fastforce)+
+  then show ?thesis
+    unfolding lattice_of_def by auto
+qed
+
 lemma in_latticeE: assumes "f \<in> lattice_of fs" obtains c where
     "f = sumlist (map (\<lambda> i. of_int (c i) \<cdot>\<^sub>v fs ! i) [0 ..< length fs])" 
   using assms unfolding lattice_of_def by auto
@@ -101,79 +132,139 @@ lemma in_latticeE: assumes "f \<in> lattice_of fs" obtains c where
 lemma in_latticeI: assumes "f = sumlist (map (\<lambda> i. of_int (c i) \<cdot>\<^sub>v fs ! i) [0 ..< length fs])" 
   shows "f \<in> lattice_of fs" 
   using assms unfolding lattice_of_def by auto
-    
-lemma basis_in_latticeI: assumes fs: "set fs \<subseteq> carrier_vec n" 
-  and f: "f \<in> set fs" 
-shows "f \<in> lattice_of fs" 
+
+lemma finsum_over_indexes_to_vectors:
+  assumes "set vs \<subseteq> carrier_vec n" "l = length vs"
+  shows "\<exists>c. (\<Oplus>\<^bsub>V\<^esub>x\<in>{0..<l}. of_int (g x) \<cdot>\<^sub>v vs ! x) = (\<Oplus>\<^bsub>V\<^esub>v\<in>set vs. of_int (c v) \<cdot>\<^sub>v v)"
+  using assms proof (induction l arbitrary: vs)
+  case (Suc l)
+  then obtain vs' v where vs'_def: "vs = vs' @ [v]"
+    by (metis Zero_not_Suc length_0_conv rev_exhaust)
+  have c: "\<exists>c. (\<Oplus>\<^bsub>V\<^esub>i\<in>{0..<l}. of_int (g i) \<cdot>\<^sub>v vs' ! i) = (\<Oplus>\<^bsub>V\<^esub>v\<in>set vs'. of_int (c v) \<cdot>\<^sub>v v)"
+    using Suc vs'_def by (auto)
+  then obtain c 
+    where c_def: "(\<Oplus>\<^bsub>V\<^esub>x\<in>{0..<l}. of_int (g x) \<cdot>\<^sub>v vs' ! x) = (\<Oplus>\<^bsub>V\<^esub>v\<in>set vs'. of_int (c v) \<cdot>\<^sub>v v)"
+    by blast
+  have "(\<Oplus>\<^bsub>V\<^esub>x\<in>{0..<Suc l}. of_int (g x) \<cdot>\<^sub>v vs ! x) 
+        = of_int (g l) \<cdot>\<^sub>v vs ! l + (\<Oplus>\<^bsub>V\<^esub>x\<in>{0..<l}. of_int (g x) \<cdot>\<^sub>v vs ! x)"
+     using Suc by (subst finsum_insert[symmetric]) (fastforce intro!: finsum_cong')+
+  also have "vs = vs' @ [v]"
+    using vs'_def by simp
+  also have "(\<Oplus>\<^bsub>V\<^esub>x\<in>{0..<l}. of_int (g x) \<cdot>\<^sub>v (vs' @ [v]) ! x) = (\<Oplus>\<^bsub>V\<^esub>x\<in>{0..<l}. of_int (g x) \<cdot>\<^sub>v vs' ! x)"
+    using Suc vs'_def by (intro finsum_cong') (auto simp add: in_mono append_Cons_nth_left)
+  also note c_def
+  also have "(vs' @ [v]) ! l = v"
+    using Suc vs'_def by auto
+  also have "\<exists>d'. of_int (g l) \<cdot>\<^sub>v v + (\<Oplus>\<^bsub>V\<^esub>v\<in>set vs'. of_int (c v) \<cdot>\<^sub>v v) = (\<Oplus>\<^bsub>V\<^esub>v\<in>set vs. of_int (d' v) \<cdot>\<^sub>v v)"
+  proof (cases "v \<in> set vs'")
+    case True
+    then have I: "set vs' = insert v (set vs' - {v})"
+      by blast
+    define c' where "c' x = (if x = v then c x + g l else c x)" for x
+    have "of_int (g l) \<cdot>\<^sub>v v + (\<Oplus>\<^bsub>V\<^esub>v\<in>set vs'. of_int (c v) \<cdot>\<^sub>v v)
+          = of_int (g l) \<cdot>\<^sub>v v + (of_int (c v) \<cdot>\<^sub>v v + (\<Oplus>\<^bsub>V\<^esub>v\<in>set vs' - {v}. of_int (c v) \<cdot>\<^sub>v v))"
+      using Suc vs'_def by (subst I, subst finsum_insert) fastforce+
+    also have "\<dots> = of_int (g l) \<cdot>\<^sub>v v + of_int (c v) \<cdot>\<^sub>v v + (\<Oplus>\<^bsub>V\<^esub>v\<in>set vs' - {v}. of_int (c v) \<cdot>\<^sub>v v)"
+      using Suc vs'_def by (subst a_assoc) (auto intro!: finsum_closed)
+    also have "of_int (g l) \<cdot>\<^sub>v v + of_int (c v) \<cdot>\<^sub>v v = of_int (c' v)  \<cdot>\<^sub>v v"
+      unfolding c'_def by (auto simp add: add_smult_distrib_vec)
+    also have "(\<Oplus>\<^bsub>V\<^esub>v\<in>set vs' - {v}. of_int (c v) \<cdot>\<^sub>v v) = (\<Oplus>\<^bsub>V\<^esub>v\<in>set vs' - {v}. of_int (c' v) \<cdot>\<^sub>v v)"
+      using Suc vs'_def unfolding c'_def by (intro finsum_cong') (auto)
+    also have "of_int (c' v) \<cdot>\<^sub>v v + (\<Oplus>\<^bsub>V\<^esub>v\<in>set vs' - {v}. of_int (c' v) \<cdot>\<^sub>v v)
+               = (\<Oplus>\<^bsub>V\<^esub>v\<in>insert v (set vs'). of_int (c' v) \<cdot>\<^sub>v v)"
+      using Suc vs'_def by (subst finsum_insert[symmetric]) (auto)
+    finally show ?thesis
+      using vs'_def by force
+  next
+    case False
+    define c' where "c' x = (if x = v then g l else c x)" for x
+    have "of_int (g l) \<cdot>\<^sub>v v + (\<Oplus>\<^bsub>V\<^esub>v\<in>set vs'. of_int (c v) \<cdot>\<^sub>v v)
+          = of_int (c' v) \<cdot>\<^sub>v v + (\<Oplus>\<^bsub>V\<^esub>v\<in>set vs'. of_int (c v) \<cdot>\<^sub>v v)"
+      unfolding c'_def by simp
+    also have "(\<Oplus>\<^bsub>V\<^esub>v\<in>set vs'. of_int (c v) \<cdot>\<^sub>v v) = (\<Oplus>\<^bsub>V\<^esub>v\<in>set vs'. of_int (c' v) \<cdot>\<^sub>v v)"
+      unfolding c'_def using Suc False vs'_def by (auto intro!: finsum_cong')
+    also have "of_int (c' v) \<cdot>\<^sub>v v + (\<Oplus>\<^bsub>V\<^esub>v\<in>set vs'. of_int (c' v) \<cdot>\<^sub>v v)
+               = (\<Oplus>\<^bsub>V\<^esub>v\<in>insert v (set vs'). of_int (c' v) \<cdot>\<^sub>v v)"
+      using False Suc vs'_def by (subst finsum_insert[symmetric]) (auto)
+    also have "(\<Oplus>\<^bsub>V\<^esub>v\<in>set vs'. of_int (c' v) \<cdot>\<^sub>v v) = (\<Oplus>\<^bsub>V\<^esub>v\<in>set vs'. of_int (c v) \<cdot>\<^sub>v v)"
+      unfolding c'_def using False Suc vs'_def by (auto intro!: finsum_cong')
+    finally show ?thesis
+      using vs'_def by auto
+  qed
+  finally show ?case
+    unfolding vs'_def by blast
+qed (auto)
+
+lemma lattice_of_altdef:
+  assumes "set vs \<subseteq> carrier_vec n"
+  shows "lattice_of vs = range (\<lambda>c. \<Oplus>\<^bsub>V\<^esub>v\<in>set vs. of_int (c v) \<cdot>\<^sub>v v)"
 proof -
-  from f obtain i where f: "f = fs ! i" and i: "i < length fs" unfolding set_conv_nth by auto
-  let ?c = "\<lambda> j. if j = i then 1 else 0" 
-  have id: "[0 ..< length fs] = [0 ..< i] @ [i] @ [Suc i ..< length fs]"
-    by (rule nth_equalityI, insert i, auto simp: nth_append, rename_tac k, case_tac "k = i", auto)
-  from fs have fs[intro!]: "\<And> i. i < length fs \<Longrightarrow> fs ! i \<in> carrier_vec n" unfolding set_conv_nth by auto
-  have [simp]: "\<And> i. i < length fs \<Longrightarrow> dim_vec (fs ! i) = n" using fs by auto
-  show ?thesis unfolding f
-    apply (rule in_latticeI[of _ ?c], unfold id map_append, insert i)
-    apply (subst sumlist_append,force,force, subst sumlist_append, force, force)
-    by (subst sumlist_neutral, force, subst sumlist_neutral, force, auto)
+  have "v \<in> lattice_of vs" if "v \<in> range (\<lambda>c. \<Oplus>\<^bsub>V\<^esub>v\<in>set vs. of_int (c v) \<cdot>\<^sub>v v)" for v
+  proof -
+    obtain c where v: "v = (\<Oplus>\<^bsub>V\<^esub>v\<in>set vs. of_int (c v) \<cdot>\<^sub>v v)"
+      using \<open>v \<in> range (\<lambda>c. \<Oplus>\<^bsub>V\<^esub>v\<in>set vs. of_int (c v) \<cdot>\<^sub>v v)\<close> by (auto)
+    define c' where "c' i = (if find_index vs (vs ! i) = i then c (vs ! i) else 0)" for i
+    have "v = (\<Oplus>\<^bsub>V\<^esub>v\<in>set vs. of_int (c' (find_index vs v)) \<cdot>\<^sub>v vs ! (find_index vs v))"
+      unfolding v
+      using assms by (auto intro!: finsum_cong' simp add: c'_def find_index_in_set in_mono)
+    also have "\<dots> = (\<Oplus>\<^bsub>V\<^esub>i\<in>find_index vs ` (set vs). of_int (c' i) \<cdot>\<^sub>v vs ! i)"
+      using assms find_index_in_set find_index_inj by (subst finsum_reindex) fastforce+
+    also have "\<dots> = (\<Oplus>\<^bsub>V\<^esub>i\<in>set [0..<length vs]. of_int (c' i) \<cdot>\<^sub>v vs ! i)"
+    proof -
+      have "i \<in> find_index vs ` set vs" if "i < length vs" "find_index vs (vs ! i) = i" for i
+        using that by (metis imageI nth_mem)
+      then show ?thesis
+        unfolding c'_def using find_index_leq_length assms 
+        by (intro add.finprod_mono_neutral_cong_left) (auto simp add: in_mono find_index_leq_length)
+    qed
+    also have "\<dots> = sumlist (map (\<lambda>i. of_int (c' i) \<cdot>\<^sub>v vs ! i) [0..<length vs])"
+      using assms by (subst sumlist_map_as_finsum) (fastforce)+
+    finally show ?thesis
+      unfolding lattice_of_def by blast
+  qed
+  moreover have "v \<in> range (\<lambda>c. \<Oplus>\<^bsub>V\<^esub>v\<in>set vs. of_int (c v) \<cdot>\<^sub>v v)" if "v \<in> lattice_of vs" for v
+  proof -
+    obtain c where "v = sumlist (map (\<lambda>i. of_int (c i) \<cdot>\<^sub>v vs ! i) [0..<length vs])"
+      using \<open>v \<in> lattice_of vs\<close> unfolding lattice_of_def by (auto)
+    also have "\<dots> = (\<Oplus>\<^bsub>V\<^esub>x\<in>{0..<length vs}. of_int (c x) \<cdot>\<^sub>v vs ! x)"
+      using that assms by (subst sumlist_map_as_finsum) fastforce+
+    also obtain d where  "\<dots> = (\<Oplus>\<^bsub>V\<^esub>v\<in>set vs. of_int (d v) \<cdot>\<^sub>v v)"
+      using finsum_over_indexes_to_vectors assms by blast
+    finally show ?thesis
+      by blast
+  qed
+  ultimately show ?thesis
+    by fastforce
 qed
 
-lemma lattice_of_mset:
-  assumes a: "mset fs = mset gs" and b: "set fs \<subseteq> carrier_vec n"
-  shows "lattice_of fs = lattice_of gs"
+lemma basis_in_latticeI:
+  assumes fs: "set fs \<subseteq> carrier_vec n" and "f \<in> set fs" 
+  shows "f \<in> lattice_of fs"
 proof -
-  have c: "set gs \<subseteq> carrier_vec n"
-    using assms mset_eq_setD by blast
-  have I: "lattice_of fs \<subseteq> lattice_of gs"
-    if assms: "p permutes {..<length gs}" "permute_list p gs = fs" "set fs \<subseteq> carrier_vec n" for fs gs p
-  proof -
-    have [simp]: "gs ! i \<in> carrier_vec n" if "i < length gs" for i
-      using assms that by auto
-    have [simp]: "gs ! p i \<in> carrier_vec n" if "i < length gs" for i
-      by (metis assms that length_permute_list nth_mem permute_list_nth subset_code(1))
-    have "x \<in> lattice_of gs" if "x \<in> lattice_of fs" for x
-    proof -
-      let ?ls = "[0..<length gs]"
-      from that obtain c where "x = sumlist (map (\<lambda>i. of_int (c i) \<cdot>\<^sub>v fs ! i) [0..<length fs])"
-        unfolding lattice_of_def image_def by (auto)
-      also have "map (\<lambda>i. of_int (c i) \<cdot>\<^sub>v fs ! i) [0..<length fs] = map (\<lambda>i. of_int (c i) \<cdot>\<^sub>v gs ! p i) ?ls"
-        using permute_list_nth[of p gs] assms by (auto)
-      also have "\<dots> = map (\<lambda>i. of_int (c ((inv p) i)) \<cdot>\<^sub>v gs ! i) (map p ?ls)"
-        using assms by (auto simp add: permutes_inverses)
-      also have "sumlist \<dots> = summset (mset (map (\<lambda>i. of_int (c (inv p i)) \<cdot>\<^sub>v gs ! i) (map p ?ls)))"
-         using assms by (intro sumlist_as_summset) (auto)
-      also have "mset (map (\<lambda>i. of_int (c (inv p i)) \<cdot>\<^sub>v gs ! i) (map p ?ls))
-      = image_mset (\<lambda>i. of_int (c (inv p i)) \<cdot>\<^sub>v gs ! i) (image_mset p (mset ?ls))"
-        by (auto simp del: map_map)
-      also have "image_mset p (mset [0..<length gs]) = mset [0..<length gs]"
-        using assms by (auto simp add: permutes_image_mset atLeast0LessThan)
-      also have "summset {#of_int (c (Hilbert_Choice.inv p i)) \<cdot>\<^sub>v gs ! i. i \<in># mset ?ls#} =
-        sumlist (map (\<lambda>i. of_int (c (Hilbert_Choice.inv p i)) \<cdot>\<^sub>v gs ! i) ?ls)"
-        using assms by (subst sumlist_as_summset) (auto)
-      finally show ?thesis
-        unfolding lattice_of_def image_def by auto
-    qed
-    then show ?thesis
-      by auto
-  qed
-  have "lattice_of fs \<subseteq> lattice_of gs"
-    using mset_eq_permutation assms I by metis
-  moreover have "lattice_of gs \<subseteq> lattice_of fs"
-    using mset_eq_permutation a[symmetric] b c I by metis
-  ultimately show ?thesis
-    by auto
+  define c :: "'a vec \<Rightarrow> int" where "c v = (if v = f then 1 else 0)" for v
+  have "f = (\<Oplus>\<^bsub>V\<^esub>v\<in>{f}. of_int (c v) \<cdot>\<^sub>v v)"
+    using assms by (auto simp add: c_def)
+  also have "\<dots> = (\<Oplus>\<^bsub>V\<^esub>v\<in>set fs. of_int (c v) \<cdot>\<^sub>v v)"
+    using assms by (intro add.finprod_mono_neutral_cong_left) (auto simp add: c_def)
+  finally show ?thesis
+    using assms lattice_of_altdef by blast
 qed
+
+lemma lattice_of_eq_set:
+  assumes "set fs = set gs" "set fs \<subseteq> carrier_vec n"
+  shows "lattice_of fs = lattice_of gs"
+  using assms lattice_of_altdef by simp
 
 lemma lattice_of_swap: assumes fs: "set fs \<subseteq> carrier_vec n" 
   and ij: "i < length fs" "j < length fs" "i \<noteq> j" 
   and gs: "gs = fs[ i := fs ! j, j := fs ! i]" 
 shows "lattice_of gs = lattice_of fs"
-  using assms mset_swap by (intro lattice_of_mset) auto
+  using assms mset_swap by (intro lattice_of_eq_set) auto
 
 lemma lattice_of_add: assumes fs: "set fs \<subseteq> carrier_vec n" 
   and ij: "i < length fs" "j < length fs" "i \<noteq> j" 
   and gs: "gs = fs[ i := fs ! i + of_int l \<cdot>\<^sub>v fs ! j]" 
-shows "lattice_of gs = lattice_of fs" 
+shows "lattice_of gs = lattice_of fs"
 proof -
   {
     fix i j l and fs :: "'a vec list" 
@@ -2957,7 +3048,7 @@ qed
 lemma d\<mu>: assumes "j < m" "ii < m" 
   shows "of_int (d\<mu> ii j) = of_int (d fs (Suc j)) * gs.\<mu> ii j" 
   unfolding d\<mu>_def using fs_int_mu_d_Z_m_m assms by auto
-end
 
+end
 
 end

@@ -22,60 +22,15 @@ text \<open>
 subsection \<open>Miscellaneous Group Theory\<close>
 
 lemma (in group) ord_min:
-  assumes "finite (carrier G)" "m \<ge> 1" "x \<in> carrier G" "x [^] m = \<one>"
+  assumes "m \<ge> 1" "x \<in> carrier G" "x [^] m = \<one>"
   shows   "ord x \<le> m"
-  using old_ord_min[of m x] ord_iff_old_ord[of x] assms by (auto simp: old_ord_def)
+  using assms pow_eq_id by auto
 
 lemma (in group) bij_betw_mult_left [intro]:
   assumes [simp]: "x \<in> carrier G"
   shows "bij_betw (\<lambda>y. x \<otimes> y) (carrier G) (carrier G)"
   by (intro bij_betwI[where ?g = "\<lambda>y. inv x \<otimes> y"])
      (auto simp: m_assoc [symmetric])
-
-lemma (in group) subgroup_trans:
-  assumes "subgroup H (G\<lparr>carrier := H'\<rparr>)" and "subgroup H' G"
-  shows   "subgroup H G"
-proof -
-  interpret H: subgroup H "G\<lparr>carrier := H'\<rparr>" by fact
-  interpret H': subgroup H' G by fact
-  show ?thesis
-  proof
-    have "H \<subseteq> carrier (G\<lparr>carrier := H'\<rparr>)" by (rule H.subset)
-    also have "\<dots> = H'" by simp
-    also have "\<dots> \<subseteq> carrier G" by (rule H'.subset)
-    finally show "H \<subseteq> \<dots>" .
-  next
-    fix x y assume "x \<in> H" "y \<in> H"
-    hence "x \<otimes>\<^bsub>G\<lparr>carrier := H'\<rparr>\<^esub> y \<in> H" by (intro H.m_closed)
-    also have "x \<otimes>\<^bsub>G\<lparr>carrier := H'\<rparr>\<^esub> y = x \<otimes>\<^bsub>G\<^esub> y" by simp
-    finally show "x \<otimes>\<^bsub>G\<^esub> y \<in> H" .
-  next
-    from H.one_closed show "\<one>\<^bsub>G\<^esub> \<in> H" by simp
-  next
-    fix x assume x: "x \<in> H"
-    with H.subset have x': "x \<in> H'" by auto
-    from x have "inv\<^bsub>G\<lparr>carrier := H'\<rparr>\<^esub> x \<in> H" by (rule H.m_inv_closed)
-    also have "inv\<^bsub>G\<lparr>carrier := H'\<rparr>\<^esub> x = inv\<^bsub>G\<^esub> x"
-      using x' assms by (intro m_inv_consistent) auto
-    finally show "inv\<^bsub>G\<^esub> x \<in> H" .
-  qed
-qed
-
-lemma (in group) subgroup_restrict:
-  assumes "subgroup H G" "subgroup H' G" "H \<subseteq> H'"
-  shows   "subgroup H (G\<lparr>carrier := H'\<rparr>)"
-proof -
-  interpret subgroup H G by fact
-  show ?thesis
-  proof 
-    fix x assume x: "x \<in> H"
-    hence x': "x \<in> H'" using assms by auto
-    from m_inv_closed [OF x] have "inv x \<in> H" by simp
-    also have "inv x = inv\<^bsub>G\<lparr>carrier := H'\<rparr>\<^esub> x" using x'
-      by (intro m_inv_consistent [symmetric] assms) auto
-    finally show "inv\<^bsub>G\<lparr>carrier := H'\<rparr>\<^esub> x \<in> H" .
-  qed (insert assms, auto)
-qed
 
 locale finite_comm_group = comm_group +
   assumes fin [intro]: "finite (carrier G)"
@@ -515,11 +470,12 @@ proof -
       interpret H: finite_comm_group "G\<lparr>carrier := H\<rparr>"
         by (rule subgroup_imp_finite_comm_group) fact
       have sg: "subgroup H0 (G\<lparr>carrier := H\<rparr>)"
-        by (intro subgroup_restrict assms psubset.prems)
+        by (simp add: H_sg.subgroup_axioms \<open>subgroup H0 G\<close> psubset.prems(2) subgroup_incl)
       from H.group_decompose_adjoin[OF sg] and False
         obtain H' a where H': "H0 \<subseteq> H'" "subgroup H' (G\<lparr>carrier := H\<rparr>)" "a \<in> H - H'" 
                               "H = adjoin G H' a" by (auto simp: order_def)
-      from H'(2) and \<open>subgroup H G\<close> have "subgroup H' G" by (rule subgroup_trans)
+      have "subgroup H' G"
+        using \<open>subgroup H G\<close> and H'(2) group.incl_subgroup by blast
       from H' and adjoined_in_adjoin[of H' a] and \<open>subgroup H' G\<close> and mem_adjoin[of H' _ a]
         have "a \<in> H" and "a \<notin> H'" and "H' \<subseteq> H" by auto
       hence "H' \<subset> H" by blast

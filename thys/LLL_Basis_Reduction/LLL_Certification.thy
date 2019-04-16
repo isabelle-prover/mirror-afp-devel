@@ -153,7 +153,14 @@ qed
 
 end
 
+definition "gauss_jordan_integer_inverse n A B I = (case gauss_jordan A B of
+   (C,D) \<Rightarrow> C = I \<and> list_all is_int_rat (concat (mat_to_list D)))" 
 
+definition "integer_equivalent n fs gs = (let 
+  fs' = map_mat rat_of_int (mat_of_cols n fs);
+  gs' = map_mat rat_of_int (mat_of_cols n gs);
+  I = 1\<^sub>m n
+  in gauss_jordan_integer_inverse n fs' gs' I \<and> gauss_jordan_integer_inverse n gs' fs' I)" 
 
 context vec_module
 begin
@@ -524,9 +531,76 @@ proof -
     qed
   qed
 qed
+
+lemma gauss_jordan_integer_inverse: fixes fs gs :: "int vec list" 
+  assumes gs: "set gs \<subseteq> carrier_vec n"
+  and len_gs: "length gs = n" 
+  and fs: "set fs \<subseteq> carrier_vec n" 
+  and len_fs: "length fs = n" 
+  and gauss: "gauss_jordan_integer_inverse n (map_mat rat_of_int (mat_of_cols n fs)) 
+    (map_mat rat_of_int (mat_of_cols n gs)) (1\<^sub>m n)" (is "gauss_jordan_integer_inverse _ ?fs ?gs _")
+shows "\<exists> U. U \<in> carrier_mat n n \<and> mat_of_rows n gs = U * mat_of_rows n fs" 
+proof -
+  have fs': "?fs \<in> carrier_mat n n" using fs len_fs by auto
+  have gs': "?gs \<in> carrier_mat n n" using gs len_gs by auto
+  note gauss = gauss[unfolded gauss_jordan_integer_inverse_def]
+  from gauss obtain A where gauss: "gauss_jordan ?fs ?gs = (1\<^sub>m n, A)"
+   and int: "list_all is_int_rat (concat (mat_to_list A))" by auto
+  note gauss = gauss_jordan[OF fs' gs' gauss]
+  note A = gauss(4)
+  let ?A = "map_mat int_of_rat A" 
+  from gauss(2)[OF A] A
+  have id: "?fs * A = ?gs" by auto
+  let ?U = "(map_mat int_of_rat A)\<^sup>T" 
+  from A have U: "?U \<in> carrier_mat n n" by auto
+  have "A = map_mat of_int ?A" using int[unfolded list_all_iff] A
+    by (intro eq_matI, auto simp: mat_to_list_def)
+  with id have "?gs = ?fs * map_mat of_int ?A" by auto
+  also have "\<dots> = map_mat of_int (mat_of_cols n fs * ?A)" 
+    by (rule of_int_hom.mat_hom_mult[symmetric], insert fs' A, auto)
+  finally have "mat_of_cols n fs * ?A = mat_of_cols n gs"
+    using of_int_hom.mat_hom_inj by fastforce
+  hence "(mat_of_cols n gs)\<^sup>T = (mat_of_cols n fs * ?A)\<^sup>T" by simp
+  also have "\<dots> = ?U * (mat_of_cols n fs)\<^sup>T" 
+    by (rule transpose_mult, insert fs' A, auto)
+  also have "(mat_of_cols n fs)\<^sup>T = mat_of_rows n fs" 
+    using fs len_fs unfolding mat_of_rows_def mat_of_cols_def
+    by (intro eq_matI, auto)
+  also have "(mat_of_cols n gs)\<^sup>T = mat_of_rows n gs" 
+    using gs len_gs unfolding mat_of_rows_def mat_of_cols_def
+    by (intro eq_matI, auto)
+  finally show ?thesis using U by blast
+qed 
+  
+
+lemma LLL_change_basis_mat_inverse: assumes gs: "set gs \<subseteq> carrier_vec n" 
+  and len': "length gs = n" 
+  and "m = n" 
+  and eq: "integer_equivalent n fs_init gs" 
+shows "lattice_of gs = lattice_of fs_init" "LLL_with_assms n m gs \<alpha>" 
+proof -
+  from eq[unfolded integer_equivalent_def Let_def]
+  have 1: "gauss_jordan_integer_inverse n (of_int_hom.mat_hom (mat_of_cols n fs_init))
+   (of_int_hom.mat_hom (mat_of_cols n gs)) (1\<^sub>m n)" 
+    and 2: "gauss_jordan_integer_inverse n (of_int_hom.mat_hom (mat_of_cols n gs))
+     (of_int_hom.mat_hom (mat_of_cols n fs_init)) (1\<^sub>m n)" 
+    by auto
+  note len = len[unfolded \<open>m = n\<close>]
+  from gauss_jordan_integer_inverse[OF gs len' fs_init len 1] \<open>m = n\<close>
+  obtain U where U: "U \<in> carrier_mat m m" "mat_of_rows n gs = U * mat_of_rows n fs_init" by auto
+  from gauss_jordan_integer_inverse[OF fs_init len gs len' 2] \<open>m = n\<close>
+  obtain V where V: "V \<in> carrier_mat m m" "mat_of_rows n fs_init = V * mat_of_rows n gs" by auto
+  from LLL_change_basis[OF gs len'[folded \<open>m = n\<close>] V(1) U(1) V(2) U(2)]
+  show "lattice_of gs = lattice_of fs_init" "LLL_with_assms n m gs \<alpha>" by blast+
+qed
+
 end
 
-consts external_lll_solver :: "integer \<times> integer \<Rightarrow> integer list list \<Rightarrow> integer list list \<times> integer list list \<times> integer list list" 
+text \<open>External solvers must deliver a reduced basis and optionally two
+  matrices to convert between the input and the reduced basis. These two
+  matrices are mandatory if the input matrix is not a square matrix.\<close>
+consts external_lll_solver :: "integer \<times> integer \<Rightarrow> integer list list \<Rightarrow> 
+  integer list list \<times> (integer list list \<times> integer list list)option" 
 
 definition reduce_basis_external :: "rat \<Rightarrow> int vec list \<Rightarrow> int vec list" where
   "reduce_basis_external \<alpha> fs = (case fs of Nil \<Rightarrow> [] | Cons f _ \<Rightarrow> (let 
@@ -535,21 +609,33 @@ definition reduce_basis_external :: "rat \<Rightarrow> int vec list \<Rightarrow
     n = dim_vec f;
     m = length fs in 
   case external_lll_solver (map_prod integer_of_int integer_of_int (quotient_of \<alpha>)) fsi of 
-    (gsi, u1i, u2i) \<Rightarrow> let 
-     u1 = mat_of_rows_list m (map (map int_of_integer) u1i);
-     u2 = mat_of_rows_list m (map (map int_of_integer) u2i);
-     gs = (map (vec_of_list o map int_of_integer) gsi);
-     Fs = mat_of_rows n fs;
-     Gs = mat_of_rows n gs in 
-     if (dim_row u1 = m \<and> dim_col u1 = m \<and> dim_row u2 = m \<and> dim_col u2 = m 
-         \<and> length gs = m \<and> Fs = u1 * Gs \<and> Gs = u2 * Fs \<and> (\<forall> gi \<in> set gs. dim_vec gi = n))
-      then rb gs
-      else Code.abort (STR ''error in external lll invocation\<newline>f,g,u1,u2 are as follows\<newline>''
-        + String.implode (show Fs) + STR ''\<newline>\<newline>''
-        + String.implode (show Gs) + STR ''\<newline>\<newline>''
-        + String.implode (show u1) + STR ''\<newline>\<newline>''
-        + String.implode (show u2) + STR ''\<newline>\<newline>''
-        ) (\<lambda> _. rb fs)))" 
+    (gsi, co) \<Rightarrow>
+    let gs = (map (vec_of_list o map int_of_integer) gsi) in
+    if \<not> (length gs = m \<and> (\<forall> gi \<in> set gs. dim_vec gi = n)) then
+      Code.abort (STR ''error in external LLL invocation: dimensions of reduced basis do not fit\<newline>input to external solver: ''
+        + String.implode (show fs) + STR ''\<newline>\<newline>'') (\<lambda> _. rb fs)
+     else 
+       case co of Some (u1i, u2i) \<Rightarrow> (let 
+         u1 = mat_of_rows_list m (map (map int_of_integer) u1i);
+         u2 = mat_of_rows_list m (map (map int_of_integer) u2i);
+         gs = (map (vec_of_list o map int_of_integer) gsi);
+         Fs = mat_of_rows n fs;
+         Gs = mat_of_rows n gs in 
+         if (dim_row u1 = m \<and> dim_col u1 = m \<and> dim_row u2 = m \<and> dim_col u2 = m 
+             \<and> Fs = u1 * Gs \<and> Gs = u2 * Fs)
+          then rb gs
+          else Code.abort (STR ''error in external lll invocation\<newline>f,g,u1,u2 are as follows\<newline>''
+            + String.implode (show Fs) + STR ''\<newline>\<newline>''
+            + String.implode (show Gs) + STR ''\<newline>\<newline>''
+            + String.implode (show u1) + STR ''\<newline>\<newline>''
+            + String.implode (show u2) + STR ''\<newline>\<newline>''
+            ) (\<lambda> _. rb fs))
+   | None \<Rightarrow> (if (n = m \<and> integer_equivalent n fs gs) then
+       rb gs
+      else Code.abort (STR ''error in external LLL invocation:\<newline>'' +
+        (if n = m then STR ''reduced matrix does not span same lattice'' else 
+          STR ''no certificate only allowed for square matrices'')) (\<lambda> _. rb fs))
+    ))" 
 
 definition short_vector_external :: "rat \<Rightarrow> int vec list \<Rightarrow> int vec" where
   "short_vector_external \<alpha> fs = (hd (reduce_basis_external \<alpha> fs))" 
@@ -584,24 +670,43 @@ proof (atomize(full), goal_cases)
         (map (map integer_of_int \<circ> list_of_vec) fs_init)" 
       note res = res[unfolded reduce_basis_external_def Cons Let_def list.case Code.abort_def dim_fs_n,
           folded Cons]
-      from res False obtain gsi u1i u2i where ext: "?ext = (gsi, u1i, u2i)" by (cases ?ext, auto)
-      define u1 where "u1 = mat_of_rows_list m (map (map int_of_integer) u1i)"
-      define u2 where "u2 = mat_of_rows_list m (map (map int_of_integer) u2i)" 
+      from res False obtain gsi co where ext: "?ext = (gsi, co)" by (cases ?ext, auto)
       define gs where "gs = map (vec_of_list o map int_of_integer) gsi" 
-      note res = res[unfolded ext option.simps split len dim_fs_n, folded u1_def u2_def gs_def]
-      from res False 
-      have u1: "u1 \<in> carrier_mat m m" 
-        and u2: "u2 \<in> carrier_mat m m" 
-        and len_gs: "length gs = m" 
-        and prod1: "mat_of_rows n fs_init = u1 * mat_of_rows n gs" 
-        and prod2: "mat_of_rows n gs = u2 * mat_of_rows n fs_init" 
-        and gs_v: "LLL_Impl.reduce_basis \<alpha> gs = fs" 
-        and gs: "set gs \<subseteq> carrier_vec n" 
+      note res = res[unfolded ext option.simps split len dim_fs_n, folded gs_def]
+      from res False have not: "(\<not> (length gs = m \<and> (\<forall>gi\<in>set gs. dim_vec gi = n))) = False" 
         by (auto split: if_splits)
-      from LLL_change_basis[OF gs len_gs u1 u2 prod1 prod2]
-      have id: "lattice_of gs = lattice_of fs_init" 
-        and assms: "LLL_with_assms n m gs \<alpha>" by auto
-      from LLL_with_assms.reduce_basis[OF assms gs_v]
+      note res = res[unfolded this if_False]
+      from not have gs: "set gs \<subseteq> carrier_vec n" 
+         and len_gs: "length gs = m" by auto
+      have "lattice_of gs = lattice_of fs_init \<and> LLL_with_assms n m gs \<alpha> \<and> LLL_Impl.reduce_basis \<alpha> gs = fs" 
+      proof (cases co)
+        case (Some pair)
+        from res Some obtain u1i u2i where co: "co = Some (u1i, u2i)" by (cases co, auto)
+        define u1 where "u1 = mat_of_rows_list m (map (map int_of_integer) u1i)"
+        define u2 where "u2 = mat_of_rows_list m (map (map int_of_integer) u2i)" 
+        note res = res[unfolded co option.simps split len dim_fs_n, folded u1_def u2_def gs_def]
+        from res False 
+        have u1: "u1 \<in> carrier_mat m m" 
+          and u2: "u2 \<in> carrier_mat m m" 
+          and prod1: "mat_of_rows n fs_init = u1 * mat_of_rows n gs" 
+          and prod2: "mat_of_rows n gs = u2 * mat_of_rows n fs_init" 
+          and gs_v: "LLL_Impl.reduce_basis \<alpha> gs = fs" 
+          by (auto split: if_splits)
+        from LLL_change_basis[OF gs len_gs u1 u2 prod1 prod2] gs_v
+        show ?thesis by auto
+      next
+        case None
+        from res[unfolded None option.simps] False
+        have id: "fs = LLL_Impl.reduce_basis \<alpha> gs" and nm: "n = m" 
+          and equiv: "integer_equivalent n fs_init gs" 
+          by (auto split: if_splits)
+        from LLL_change_basis_mat_inverse[OF gs len_gs[folded nm] nm[symmetric] equiv] id
+        show ?thesis by auto
+      qed
+      hence id: "lattice_of gs = lattice_of fs_init" 
+         and assms: "LLL_with_assms n m gs \<alpha>"
+         and gs_fs: "LLL_Impl.reduce_basis \<alpha> gs = fs"  by auto
+      from LLL_with_assms.reduce_basis[OF assms gs_fs]
       have red: "reduced fs m" and inv: "LLL.LLL_invariant n m gs \<alpha> True m fs" by auto
       from inv[unfolded LLL.LLL_invariant_def LLL.L_def id]
       have lattice: "lattice_of fs = lattice_of fs_init" by auto
@@ -612,7 +717,6 @@ proof (atomize(full), goal_cases)
     qed
   qed 
 qed
-
 
 lemma short_vector_external: assumes res: "short_vector_external \<alpha> fs_init = v"
   and m0: "m \<noteq> 0"

@@ -1762,6 +1762,9 @@ lemma map_scale_zero_left [simp]: "0 \<cdot> t = 0"
 lemma map_scale_zero_right [simp]: "k \<cdot> 0 = 0"
   by (rule poly_mapping_eqI) simp
 
+lemma map_scale_eq_0_iff: "c \<cdot> t = 0 \<longleftrightarrow> ((c::_::semiring_no_zero_divisors) = 0 \<or> t = 0)"
+  by (metis aux lookup_map_scale mult_eq_0_iff)
+
 lemma keys_map_scale_subset: "keys (k \<cdot> t) \<subseteq> keys t"
   by (metis in_keys_iff lookup_map_scale mult_zero_right subsetI)
 

@@ -281,4 +281,217 @@ proof
   qed simp
 qed simp
 
+lemma ideal_eq_zero_iff [iff]: "ideal F = {0} \<longleftrightarrow> F \<subseteq> {0}"
+  by (metis empty_subsetI ideal.span_empty ideal.span_eq)
+
+lemma ideal_field_cases:
+  obtains "ideal B = {0}" | "ideal (B::'a::field set) = UNIV"
+proof (cases "ideal B = {0}")
+  case True
+  thus ?thesis ..
+next
+  case False
+  hence "\<not> B \<subseteq> {0}" by simp
+  then obtain b where "b \<in> B" and "b \<noteq> 0" by blast
+  from this(1) have "b \<in> ideal B" by (rule ideal.span_base)
+  hence "inverse b * b \<in> ideal B" by (rule ideal.span_scale)
+  with \<open>b \<noteq> 0\<close> have "ideal B = UNIV" by (simp add: ideal_eq_UNIV_iff_contains_one)
+  thus ?thesis ..
+qed
+
+corollary ideal_field_disj: "ideal B = {0} \<or> ideal (B::'a::field set) = UNIV"
+  by (rule ideal_field_cases) blast+
+
+lemma image_ideal_subset:
+  assumes "\<And>x y. h (x + y) = h x + h y" and "\<And>x y. h (x * y) = h x * h y"
+  shows "h ` ideal F \<subseteq> ideal (h ` F)"
+proof (intro subsetI, elim imageE)
+  fix g f
+  assume g: "g = h f"
+  assume "f \<in> ideal F"
+  thus "g \<in> ideal (h ` F)" unfolding g
+  proof (induct f rule: ideal.span_induct_alt)
+    case base
+    have "h 0 = h (0 + 0)" by simp
+    also have "\<dots> = h 0 + h 0" by (simp only: assms(1))
+    finally show ?case by (simp add: ideal.span_zero)
+  next
+    case (step c f g)
+    from step.hyps(1) have "h f \<in> ideal (h ` F)"
+      by (intro ideal.span_base imageI)
+    hence "h c * h f \<in> ideal (h ` F)" by (rule ideal.span_scale)
+    hence "h c * h f + h g \<in> ideal (h ` F)"
+      using step.hyps(2) by (rule ideal.span_add)
+    thus ?case by (simp only: assms)
+  qed
+qed
+
+lemma image_ideal_eq_surj:
+  assumes "\<And>x y. h (x + y) = h x + h y" and "\<And>x y. h (x * y) = h x * h y" and "surj h"
+  shows "h ` ideal B = ideal (h ` B)"
+proof
+  from assms(1, 2) show "h ` ideal B \<subseteq> ideal (h ` B)" by (rule image_ideal_subset)
+next
+  show "ideal (h ` B) \<subseteq> h ` ideal B"
+  proof
+    fix b
+    assume "b \<in> ideal (h ` B)"
+    thus "b \<in> h ` ideal B"
+    proof (induct b rule: ideal.span_induct_alt)
+      case base
+      have "h 0 = h (0 + 0)" by simp
+      also have "\<dots> = h 0 + h 0" by (simp only: assms(1))
+      finally have "0 = h 0" by simp
+      with ideal.span_zero show ?case by (rule rev_image_eqI)
+    next
+      case (step c b a)
+      from assms(3) obtain c' where c: "c = h c'" by (rule surjE)
+      from step.hyps(2) obtain a' where "a' \<in> ideal B" and a: "a = h a'" ..
+      from step.hyps(1) obtain b' where "b' \<in> B" and b: "b = h b'" ..
+      from this(1) have "b' \<in> ideal B" by (rule ideal.span_base)
+      hence "c' * b' \<in> ideal B" by (rule ideal.span_scale)
+      hence "c' * b' + a' \<in> ideal B" using \<open>a' \<in> _\<close> by (rule ideal.span_add)
+      moreover have "c * b + a = h (c' * b' + a')"
+        by (simp add: c b a assms(1, 2))
+      ultimately show ?case by (rule rev_image_eqI)
+    qed
+  qed
+qed
+
+context
+  fixes h :: "'a \<Rightarrow> 'a::comm_ring_1"
+  assumes h_plus: "h (x + y) = h x + h y"
+  assumes h_times: "h (x * y) = h x * h y"
+  assumes h_idem: "h (h x) = h x"
+begin
+
+lemma in_idealE_homomorphism_finite:
+  assumes "finite B" and "B \<subseteq> range h" and "p \<in> range h" and "p \<in> ideal B"
+  obtains q where "\<And>b. q b \<in> range h" and "p = (\<Sum>b\<in>B. q b * b)"
+proof -
+  from assms(1, 4) obtain q0 where p: "p = (\<Sum>b\<in>B. q0 b * b)" by (rule ideal.span_finiteE)
+  define q where "q = (\<lambda>b. h (q0 b))"
+  show ?thesis
+  proof
+    fix b
+    show "q b \<in> range h" unfolding q_def by (rule rangeI)
+  next
+    from assms(3) obtain p' where "p = h p'" ..
+    hence "p = h p" by (simp only: h_idem)
+    also from \<open>finite B\<close> have "\<dots> = (\<Sum>b\<in>B. q b * h b)" unfolding p
+    proof (induct B)
+      case empty
+      have "h 0 = h (0 + 0)" by simp
+      also have "\<dots> = h 0 + h 0" by (simp only: h_plus)
+      finally show ?case by simp
+    next
+      case (insert b B)
+      thus ?case by (simp add: h_plus h_times q_def)
+    qed
+    also from refl have "\<dots> = (\<Sum>b\<in>B. q b * b)"
+    proof (rule sum.cong)
+      fix b
+      assume "b \<in> B"
+      hence "b \<in> range h" using assms(2) ..
+      then obtain b' where "b = h b'" ..
+      thus "q b * h b = q b * b" by (simp only: h_idem)
+    qed
+    finally show "p = (\<Sum>b\<in>B. q b * b)" .
+  qed
+qed
+
+corollary in_idealE_homomorphism:
+  assumes "B \<subseteq> range h" and "p \<in> range h" and "p \<in> ideal B"
+  obtains A q where "finite A" and "A \<subseteq> B" and "\<And>b. q b \<in> range h" and "p = (\<Sum>b\<in>A. q b * b)"
+proof -
+  from assms(3) obtain A where "finite A" and "A \<subseteq> B" and "p \<in> ideal A"
+    by (rule ideal.span_finite_subset)
+  from this(2) assms(1) have "A \<subseteq> range h" by (rule subset_trans)
+  with \<open>finite A\<close> obtain q where "\<And>b. q b \<in> range h" and "p = (\<Sum>b\<in>A. q b * b)"
+    using assms(2) \<open>p \<in> ideal A\<close> by (rule in_idealE_homomorphism_finite) blast
+  with \<open>finite A\<close> \<open>A \<subseteq> B\<close> show ?thesis ..
+qed
+
+lemma ideal_induct_homomorphism [consumes 3, case_names 0 plus]:
+  assumes "B \<subseteq> range h" and "p \<in> range h" and "p \<in> ideal B"
+  assumes "P 0" and "\<And>c b a. c \<in> range h \<Longrightarrow> b \<in> B \<Longrightarrow> P a \<Longrightarrow> a \<in> range h \<Longrightarrow> P (c * b + a)"
+  shows "P p"
+proof -
+  from assms(1-3) obtain A q where "finite A" and "A \<subseteq> B" and rl: "\<And>f. q f \<in> range h"
+    and p: "p = (\<Sum>f\<in>A. q f * f)" by (rule in_idealE_homomorphism) blast
+  show ?thesis unfolding p using \<open>finite A\<close> \<open>A \<subseteq> B\<close>
+  proof (induct A)
+    case empty
+    from assms(4) show ?case by simp
+  next
+    case (insert a A)
+    from insert.hyps(1, 2) have "(\<Sum>f\<in>insert a A. q f * f) = q a * a + (\<Sum>f\<in>A. q f * f)" by simp
+    also from rl have "P \<dots>"
+    proof (rule assms(5))
+      have "a \<in> insert a A" by simp
+      thus "a \<in> B" using insert.prems ..
+    next
+      from insert.prems have "A \<subseteq> B" by simp
+      thus "P (\<Sum>f\<in>A. q f * f)" by (rule insert.hyps)
+    next
+      from insert.prems have "A \<subseteq> B" by simp
+      hence "A \<subseteq> range h" using assms(1) by (rule subset_trans)
+      with \<open>finite A\<close> show "(\<Sum>f\<in>A. q f * f) \<in> range h"
+      proof (induct A)
+        case empty
+        have "h 0 = h (0 + 0)" by simp
+        also have "\<dots> = h 0 + h 0" by (simp only: h_plus)
+        finally have "(\<Sum>f\<in>{}. q f * f) = h 0" by simp
+        thus ?case by (rule image_eqI) simp
+      next
+        case (insert a A)
+        from insert.prems have "a \<in> range h" and "A \<subseteq> range h" by simp_all
+        from this(1) obtain a' where a: "a = h a'" ..
+        from \<open>q a \<in> range h\<close> obtain q' where q: "q a = h q'" ..
+        from \<open>A \<subseteq> _\<close> have "(\<Sum>f\<in>A. q f * f) \<in> range h" by (rule insert.hyps)
+        then obtain m where eq: "(\<Sum>f\<in>A. q f * f) = h m" ..
+        from insert.hyps(1, 2) have "(\<Sum>f\<in>insert a A. q f * f) = q a * a + (\<Sum>f\<in>A. q f * f)" by simp
+        also have "\<dots> = h (q' * a' + m)" unfolding q by (simp add: a eq h_plus h_times)
+        also have "\<dots> \<in> range h" by (rule rangeI)
+        finally show ?case .
+      qed
+    qed
+    finally show ?case .
+  qed
+qed
+
+lemma image_ideal_eq_Int: "h ` ideal B = ideal (h ` B) \<inter> range h"
+proof
+  from h_plus h_times have "h ` ideal B \<subseteq> ideal (h ` B)" by (rule image_ideal_subset)
+  thus "h ` ideal B \<subseteq> ideal (h ` B) \<inter> range h" by blast
+next
+  show "ideal (h ` B) \<inter> range h \<subseteq> h ` ideal B"
+  proof
+    fix b
+    assume "b \<in> ideal (h ` B) \<inter> range h"
+    hence "b \<in> ideal (h ` B)" and "b \<in> range h" by simp_all
+    have "h ` B \<subseteq> range h" by blast
+    thus "b \<in> h ` ideal B" using \<open>b \<in> range h\<close> \<open>b \<in> ideal (h ` B)\<close>
+    proof (induct b rule: ideal_induct_homomorphism)
+      case 0
+      have "h 0 = h (0 + 0)" by simp
+      also have "\<dots> = h 0 + h 0" by (simp only: h_plus)
+      finally have "0 = h 0" by simp
+      with ideal.span_zero show ?case by (rule rev_image_eqI)
+    next
+      case (plus c b a)
+      from plus.hyps(1) obtain c' where c: "c = h c'" ..
+      from plus.hyps(3) obtain a' where "a' \<in> ideal B" and a: "a = h a'" ..
+      from plus.hyps(2) obtain b' where "b' \<in> B" and b: "b = h b'" ..
+      from this(1) have "b' \<in> ideal B" by (rule ideal.span_base)
+      hence "c' * b' \<in> ideal B" by (rule ideal.span_scale)
+      hence "c' * b' + a' \<in> ideal B" using \<open>a' \<in> _\<close> by (rule ideal.span_add)
+      moreover have "c * b + a = h (c' * b' + a')" by (simp add: a b c h_plus h_times)
+      ultimately show ?case by (rule rev_image_eqI)
+    qed
+  qed
+qed
+
+end
+
 end (* theory *)

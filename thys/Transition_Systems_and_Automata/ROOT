@@ -1,7 +1,7 @@
 chapter AFP
 
 session Transition_Systems_and_Automata (AFP) = "Collections" +
-  options [timeout = 1200]
+  options [timeout = 2400]
   sessions
     "DFS_Framework"
     "Gabow_SCC"
