@@ -876,14 +876,14 @@ lemma iterate_sound:
 
 theorem rewrite_iter_fast_sound [simp]:
   "w \<Turnstile>\<^sub>n rewrite_iter_fast \<phi> \<longleftrightarrow> w \<Turnstile>\<^sub>n \<phi>"
-  apply (insert iterate_sound[of _ "rewrite_modal o rewrite_X"])
-  apply (unfold comp_def rewrite_modal_sound rewrite_X_sound rewrite_iter_fast_def)
+  using iterate_sound[of _ "rewrite_modal o rewrite_X"]
+  unfolding comp_def rewrite_modal_sound rewrite_X_sound rewrite_iter_fast_def
   by blast
 
 theorem rewrite_iter_slow_sound [simp]:
   "w \<Turnstile>\<^sub>n rewrite_iter_slow \<phi> \<longleftrightarrow> w \<Turnstile>\<^sub>n \<phi>"
-  apply (insert iterate_sound[of _ "rewrite_syn_imp o rewrite_modal o rewrite_X"])
-  apply (unfold comp_def rewrite_modal_sound rewrite_X_sound rewrite_syn_imp_sound rewrite_iter_slow_def)
+  using iterate_sound[of _ "rewrite_syn_imp o rewrite_modal o rewrite_X"]
+  unfolding comp_def rewrite_modal_sound rewrite_X_sound rewrite_syn_imp_sound rewrite_iter_slow_def
   by blast
 
 subsection \<open>Preservation of atoms\<close>
@@ -966,24 +966,33 @@ lemma rewrite_X_enat_atoms:
   "atoms_ltln (fst (rewrite_X_enat \<phi>)) \<subseteq> atoms_ltln \<phi>"
   by (induction \<phi>) (simp_all add: case_prod_beta, insert combine_mk_atoms, fast+)
 
-lemma to_ltln_rewirte_X_enat_atoms:
-  "atoms_ltln (to_ltln (rewrite_X_enat \<phi>)) \<subseteq> atoms_ltln \<phi>"
-  oops
-
 lemma rewrite_X_atoms:
   "atoms_ltln (rewrite_X \<phi>) \<subseteq> atoms_ltln \<phi>"
   by (induction \<phi>) (simp_all add: rewrite_X_def mk_next_pow_atoms case_prod_beta, insert combine_mk_atoms, fast+)
 
 lemma rewrite_syn_imp_atoms:
   "atoms_ltln (rewrite_syn_imp \<phi>) \<subseteq> atoms_ltln \<phi>"
-  apply (induction \<phi>)
-  apply simp_all
-  using mk_and_atoms apply fast
-  using mk_or_atoms apply fast
-  using mk_next_atoms apply fast
-  using mk_finally_atoms mk_until_atoms apply fast
-  using mk_globally_atoms mk_release_atoms apply fast
-  done
+proof (induction \<phi>)
+  case (And_ltln \<phi>1 \<phi>2)
+  then show ?case
+    using mk_and_atoms by simp fast
+next
+  case (Or_ltln \<phi>1 \<phi>2)
+  then show ?case
+    using mk_or_atoms by simp fast
+next
+  case (Next_ltln \<phi>)
+  then show ?case
+    using mk_next_atoms by simp fast
+next
+  case (Until_ltln \<phi>1 \<phi>2)
+  then show ?case
+    using mk_finally_atoms mk_until_atoms by simp fast
+next
+  case (Release_ltln \<phi>1 \<phi>2)
+  then show ?case
+    using mk_globally_atoms mk_release_atoms by simp fast
+qed simp_all
 
 lemma rewrite_iter_fast_atoms:
   "atoms_ltln (rewrite_iter_fast \<phi>) \<subseteq> atoms_ltln \<phi>"
