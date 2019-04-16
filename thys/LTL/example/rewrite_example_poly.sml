@@ -9,7 +9,7 @@ use "/usr/lib/mlton/sml/mlyacc-lib/stream.sml";
 use "/usr/lib/mlton/sml/mlyacc-lib/parser2.sml";
 
 (* Load extracted code *)
-use "rewrite_example.sml";
+use "rewrite_example.ML";
 
 (* Load LTL parser *)
 use "../parser/datatypes.sml";

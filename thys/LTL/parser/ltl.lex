@@ -22,8 +22,8 @@ ws = [\ \t];
 
 \n           => (continue ());
 {ws}+        => (continue ());
-"true"       => (T.TRUE (yypos,0));
-"false"      => (T.FALSE (yypos,0));
+"true"|"1"   => (T.TRUE (yypos,0));
+"false"|"0"  => (T.FALSE (yypos,0));
 "~"|"!"      => (T.NOT (yypos,0));
 "|"+|"\\/"   => (T.OR (yypos,0));
 "&"+|"/\\"   => (T.AND (yypos,0));

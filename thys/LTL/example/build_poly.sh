@@ -1,3 +1,3 @@
 #!/bin/sh
 
-polyc -o rewrite_example rewrite_example_poly.sml
+polyc -o rewrite_example_poly rewrite_example_poly.sml

@@ -132,7 +132,7 @@ local
        fun f i =
             if i=numstates then g i
             else (Array.update(memo,i,SHIFT (STATE i)); f (i+1))
-          in f 0 handle Subscript => ()
+          in f 0 handle General.Subscript => ()
           end
 in
 val entry_to_action = fn 0 => ACCEPT | 1 => ERROR | j => Array.sub(memo,(j-2))
@@ -142,7 +142,7 @@ val actionRows=string_to_table(string_to_pairlist_default(T,entry_to_action),act
 val actionRowNumbers = string_to_list actionRowNumbers
 val actionT = let val actionRowLookUp=
 let val a=Array.fromList(actionRows) in fn i=>Array.sub(a,i) end
-in Array.fromList(map actionRowLookUp actionRowNumbers)
+in Array.fromList(List.map actionRowLookUp actionRowNumbers)
 end
 in LrTable.mkLrTable {actions=actionT,gotos=gotoT,numRules=numrules,
 numStates=numstates,initialState=STATE 0}

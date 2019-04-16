@@ -18,7 +18,7 @@ local
 in
   fun toString True_ltlc = "true"
     | toString False_ltlc = "false"
-    | toString (Prop_ltlc p) = "p(" ^ p ^ ")"
+    | toString (Prop_ltlc p) = p
     | toString (Not_ltlc f) = "(" ^ "~ " ^ toString f ^ ")"
     | toString (And_ltlc (fl,fr)) = "(" ^ (toString fl) ^ " & " ^ (toString fr) ^ ")"
     | toString (Or_ltlc (fl,fr)) = "(" ^ (toString fl) ^ " | " ^ (toString fr) ^ ")"
@@ -27,7 +27,7 @@ in
     | toString (Final_ltlc f) = "(" ^ "F " ^ toString f ^ ")"
     | toString (Global_ltlc f) = "(" ^ "G " ^ toString f ^ ")"
     | toString (Until_ltlc (fl,fr)) = "(" ^ (toString fl) ^ " U " ^ (toString fr) ^ ")"
-    | toString (Release_ltlc (fl,fr)) = "(" ^ (toString fl) ^ " V " ^ (toString fr) ^ ")"
+    | toString (Release_ltlc (fl,fr)) = "(" ^ (toString fl) ^ " R " ^ (toString fr) ^ ")"
     | toString (WeakUntil_ltlc (fl,fr)) = "(" ^ (toString fl) ^ " W " ^ (toString fr) ^ ")"
     | toString (StrongRelease_ltlc (fl,fr)) = "(" ^ (toString fl) ^ " M " ^ (toString fr) ^ ")";
 end
