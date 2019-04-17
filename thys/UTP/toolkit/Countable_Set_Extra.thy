@@ -12,7 +12,6 @@ imports
   "HOL-Library.Countable_Set_Type"
   Sequence
   FSet_Extra
-  "HOL-Library.Bit"
 begin
 
 subsection \<open> Extra syntax \<close>
@@ -240,24 +239,21 @@ proof (rule injI, transfer)
     by (auto simp add: set_eq_iff)
 qed
 
-lift_definition bit_seq_of_nat_set :: "nat set \<Rightarrow> bit seq"
-is "\<lambda> A i. if (i \<in> A) then 1 else 0" .
+lift_definition bit_seq_of_nat_set :: "nat set \<Rightarrow> bool seq"
+is "\<lambda> A i. i \<in> A" .
 
 lemma bit_seq_of_nat_set_inj: "inj bit_seq_of_nat_set"
   apply (rule injI)
-  apply (transfer, auto)
-   apply (metis bit.distinct(1))
-  apply (meson zero_neq_one)
+  apply transfer
+  apply (auto simp add: fun_eq_iff)
   done
 
 lemma bit_seq_of_nat_cset_bij: "bij bit_seq_of_nat_set"
   apply (rule bijI)
    apply (fact bit_seq_of_nat_set_inj)
-  apply (auto simp add: image_def)
-  apply (transfer)
-  apply (rename_tac x)
-  apply (rule_tac x="{i. x i = 1}" in exI)
-  apply (auto)
+  apply transfer
+  apply (rule surjI)
+  apply auto
   done
 
 text \<open> This function is a partial injection from countable sets of natural sets to natural sets.
