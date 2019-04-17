@@ -175,12 +175,12 @@ qed
 
   from assms have "unat ((2 ^ n)::128 word) * unat ((of_bl::bool list \<Rightarrow> 128 word) (to_bl b)) mod 2 ^ len_of TYPE(128) =
         2 ^ m * (2 ^ (n - m) * unat ((of_bl::bool list \<Rightarrow> 128 word) (to_bl b)) mod 2 ^ len_of TYPE(128))"
-     apply(subst Word_Miscellaneous.nat_mod_eq')
+     apply(subst nat_mod_eq')
       subgoal apply(subst Aligned.unat_power_lower)
        subgoal by(simp; fail)
       subgoal by (rule power_less_128_helper) simp
       done
-     apply(subst Word_Miscellaneous.nat_mod_eq')
+     apply(subst nat_mod_eq')
       subgoal by(rule power_less_128_helper) simp
      apply(subst Aligned.unat_power_lower)
       apply(simp; fail)
