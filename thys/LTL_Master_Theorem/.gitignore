@@ -1,0 +1,8 @@
+*#
+*~
+*.out
+extern/*
+output/*
+code/LTL_to_DRA.ML
+code/ltl_to_dra
+code/ltl_to_dra_poly

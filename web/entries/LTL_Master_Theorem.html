@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Transition Systems and Automata - Archive of Formal Proofs
+<title>A Compositional and Unified Translation of LTL into ω-Automata - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,13 +61,23 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">T</font>ransition
+  <h1>          <font class="first">A</font>
   
-          <font class="first">S</font>ystems
+          <font class="first">C</font>ompositional
   
           and
   
-          <font class="first">A</font>utomata
+          <font class="first">U</font>nified
+  
+          <font class="first">T</font>ranslation
+  
+          of
+  
+          <font class="first">L</font>TL
+  
+          into
+  
+          ω-Automata
   
 </h1>
   <p>&nbsp;</p>
@@ -76,15 +86,16 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Transition Systems and Automata</td>
+  <td class="data" width="80%">A Compositional and Unified Translation of LTL into ω-Automata</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Author:
+          Authors:
       </td>
   <td class="data">
-              <a href="http://www21.in.tum.de/~brunnerj/">Julian Brunner</a>
+                    Benedikt Seidl (benedikt /dot/ seidl /at/ tum /dot/ de) and
+          Salomon Sickert (s /dot/ sickert /at/ tum /dot/ de)
       </td>
 </tr>
 
@@ -92,35 +103,38 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2017-10-19</td>
+  <td class="data">2019-04-16</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-This entry provides a very abstract theory of transition systems that
-can be instantiated to express various types of automata. A transition
-system is typically instantiated by providing a set of initial states,
-a predicate for enabled transitions, and a transition execution
-function. From this, it defines the concepts of finite and infinite
-paths as well as the set of reachable states, among other things. Many
-useful theorems, from basic path manipulation rules to coinduction and
-run construction rules, are proven in this abstract transition system
-context. The library comes with instantiations for DFAs, NFAs, and
-Büchi automata.</td>
+We present a formalisation of the unified translation approach of
+linear temporal logic (LTL) into ω-automata from [1]. This approach
+decomposes LTL formulas into ``simple'' languages and allows
+a clear separation of concerns: first, we formalise the purely logical
+result yielding this decomposition; second, we instantiate this
+generic theory to obtain a construction for deterministic
+(state-based) Rabin automata (DRA). We extract from this particular
+instantiation an executable tool translating LTL to DRAs. To the best
+of our knowledge this is the first verified translation from LTL to
+DRAs that is proven to be double exponential in the worst case which
+asymptotically matches the known lower bound.  [1]: Javier Esparza,
+Jan Kretínský, Salomon Sickert One Theorem to Rule Them All: A Unified
+Translation of LTL into ω-Automata. LICS 2018</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Transition_Systems_and_Automata-AFP,
-  author  = {Julian Brunner},
-  title   = {Transition Systems and Automata},
+        <pre>@article{LTL_Master_Theorem-AFP,
+  author  = {Benedikt Seidl and Salomon Sickert},
+  title   = {A Compositional and Unified Translation of LTL into ω-Automata},
   journal = {Archive of Formal Proofs},
-  month   = oct,
-  year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/Transition_Systems_and_Automata.html},
+  month   = apr,
+  year    = 2019,
+  note    = {\url{http://isa-afp.org/entries/LTL_Master_Theorem.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -132,11 +146,9 @@ Büchi automata.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Collections.html">Collections</a>, <a href="DFS_Framework.html">DFS_Framework</a>, <a href="Gabow_SCC.html">Gabow_SCC</a>      </td></tr>
+          <td class="data"><a href="LTL.html">LTL</a>, <a href="Transition_Systems_and_Automata.html">Transition_Systems_and_Automata</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Buchi_Complementation.html">Buchi_Complementation</a>, <a href="LTL_Master_Theorem.html">LTL_Master_Theorem</a>, <a href="Partial_Order_Reduction.html">Partial_Order_Reduction</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -148,29 +160,23 @@ Büchi automata.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Transition_Systems_and_Automata/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Transition_Systems_and_Automata/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/LTL_Master_Theorem/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/LTL_Master_Theorem/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Transition_Systems_and_Automata/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/LTL_Master_Theorem/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Transition_Systems_and_Automata-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-LTL_Master_Theorem-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2017:
-            <a href="../release/afp-Transition_Systems_and_Automata-2017-10-27.tar.gz">
-              afp-Transition_Systems_and_Automata-2017-10-27.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>

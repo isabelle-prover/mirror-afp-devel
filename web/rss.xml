@@ -9,7 +9,28 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>06 Apr 2019 00:00:00 +0000</pubDate>
+    <pubDate>16 Apr 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Compositional and Unified Translation of LTL into ω-Automata</title>
+              <link>https://www.isa-afp.org/entries/LTL_Master_Theorem.html</link>
+       <guid>https://www.isa-afp.org/entries/LTL_Master_Theorem.html</guid>
+       <dc:creator> Benedikt Seidl, Salomon Sickert       </dc:creator>
+       <pubDate>16 Apr 2019 00:00:00 +0000</pubDate>
+       <description>
+We present a formalisation of the unified translation approach of
+linear temporal logic (LTL) into ω-automata from [1]. This approach
+decomposes LTL formulas into ``simple&#39;&#39; languages and allows
+a clear separation of concerns: first, we formalise the purely logical
+result yielding this decomposition; second, we instantiate this
+generic theory to obtain a construction for deterministic
+(state-based) Rabin automata (DRA). We extract from this particular
+instantiation an executable tool translating LTL to DRAs. To the best
+of our knowledge this is the first verified translation from LTL to
+DRAs that is proven to be double exponential in the worst case which
+asymptotically matches the known lower bound.  [1]: Javier Esparza,
+Jan Kretínský, Salomon Sickert One Theorem to Rule Them All: A Unified
+Translation of LTL into ω-Automata. LICS 2018</description>
+    </item>
     <item>
        <title>A General Theory of Syntax with Bindings</title>
               <link>https://www.isa-afp.org/entries/Binding_Syntax_Theory.html</link>
@@ -519,21 +540,6 @@ We also examine some concrete manifolds such as spheres and projective
 spaces. The formalization makes extensive use of the analysis and
 linear algebra libraries in Isabelle/HOL, in particular its
 “types-to-sets” mechanism.</description>
-    </item>
-    <item>
-       <title>Randomised Binary Search Trees</title>
-              <link>https://www.isa-afp.org/entries/Randomised_BSTs.html</link>
-       <guid>https://www.isa-afp.org/entries/Randomised_BSTs.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>19 Oct 2018 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This work is a formalisation of the Randomised Binary Search
-Trees introduced by Martínez and Roura, including definitions and
-correctness proofs.&lt;/p&gt; &lt;p&gt;Like randomised treaps, they
-are a probabilistic data structure that behaves exactly as if elements
-were inserted into a non-balancing BST in random order. However,
-unlike treaps, they only use discrete probability distributions, but
-their use of randomness is more complicated.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
