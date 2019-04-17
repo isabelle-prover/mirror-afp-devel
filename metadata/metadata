@@ -7976,7 +7976,8 @@ abstract =
   instantiation an executable tool translating LTL to DRAs. To the best
   of our knowledge this is the first verified translation from LTL to
   DRAs that is proven to be double exponential in the worst case which
-  asymptotically matches the known lower bound.  [1]: Javier Esparza,
-  Jan Kretínský, Salomon Sickert One Theorem to Rule Them All: A Unified
-  Translation of LTL into ω-Automata. LICS 2018
+  asymptotically matches the known lower bound.
+  <p>
+  [1] Javier Esparza, Jan Kretínský, Salomon Sickert. One Theorem to Rule Them All:
+  A Unified Translation of LTL into ω-Automata. LICS 2018
 
