@@ -57,28 +57,25 @@ qed
 
 end (* quasi_pm_powerprod *)
 
-lemma varnum_le_iff: "varnum t \<le> n \<longleftrightarrow> keys t \<subseteq> {x. elem_index x < n}"
-  by (auto simp: varnum_def Suc_le_eq)
-
-lemma hom_grading_varnum: "hom_grading (varnum::('a::countable \<Rightarrow>\<^sub>0 'b::add_wellorder) \<Rightarrow> nat)"
+lemma hom_grading_varnum:
+  "hom_grading ((varnum X)::('x::countable \<Rightarrow>\<^sub>0 'b::add_wellorder) \<Rightarrow> nat)"
 proof -
-  define f where "f = (\<lambda>n t. (except t (- {x. elem_index x < n}))::'a \<Rightarrow>\<^sub>0 'b)"
+  define f where "f = (\<lambda>n t. (except t (- (X \<union> {x. elem_index x < n})))::'x \<Rightarrow>\<^sub>0 'b)"
   show ?thesis unfolding hom_grading_def hom_grading_fun_def
   proof (intro exI allI conjI impI)
     fix n s t
     show "f n (s + t) = f n s + f n t" by (simp only: f_def except_plus)
   next
     fix n t
-    show "varnum (f n t) \<le> n"
-      by (simp add: varnum_le_iff f_def keys_except[of t "- {x. elem_index x < n}"])
+    show "varnum X (f n t) \<le> n" by (auto simp: varnum_le_iff keys_except f_def)
   next
     fix n t
-    show "varnum t \<le> n \<Longrightarrow> f n t = t" by (auto simp add: f_def except_id_iff varnum_le_iff)
+    show "varnum X t \<le> n \<Longrightarrow> f n t = t" by (auto simp: f_def except_id_iff varnum_le_iff)
   qed
 qed
 
 instance poly_mapping :: (countable, add_wellorder) quasi_pm_powerprod
-  by (standard, intro exI conjI, fact dickson_grading_varnum, fact hom_grading_varnum)
+  by (standard, intro exI conjI, fact dickson_grading_varnum_empty, fact hom_grading_varnum)
 
 context term_powerprod
 begin

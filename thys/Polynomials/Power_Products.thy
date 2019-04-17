@@ -2411,54 +2411,85 @@ proof (rule almost_full_onI)
   with \<open>i < j\<close> show "good (adds) seq" by (rule goodI)
 qed
 
-definition varnum :: "('a::countable \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> nat"
-  where "varnum t = (if keys t = {} then 0 else Suc (Max (elem_index ` keys t)))"
+definition varnum :: "'x set \<Rightarrow> ('x::countable \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> nat"
+  where "varnum X t = (if keys t - X = {} then 0 else Suc (Max (elem_index ` (keys t - X))))"
 
 lemma elem_index_less_varnum:
   assumes "x \<in> keys t"
-  shows "elem_index x < varnum t"
-proof -
-  from assms have "keys t \<noteq> {}" by auto
-  hence eq: "varnum t = Suc (Max (elem_index ` keys t))" by (simp add: varnum_def)
-  thus ?thesis by (simp add: less_Suc_eq_le assms)
+  obtains "x \<in> X" | "elem_index x < varnum X t"
+proof (cases "x \<in> X")
+  case True
+  thus ?thesis ..
+next
+  case False
+  with assms have 1: "x \<in> keys t - X" by simp
+  hence "keys t - X \<noteq> {}" by blast
+  hence eq: "varnum X t = Suc (Max (elem_index ` (keys t - X)))" by (simp add: varnum_def)
+  hence "elem_index x < varnum X t" using 1 by (simp add: less_Suc_eq_le)
+  thus ?thesis ..
 qed
 
-lemma varnum_zero [simp]: "varnum 0 = 0"
+lemma varnum_plus:
+  "varnum X (s + t) = max (varnum X s) (varnum X (t::'x::countable \<Rightarrow>\<^sub>0 'b::ninv_comm_monoid_add))"
+proof (simp add: varnum_def keys_plus_ninv_comm_monoid_add image_Un Un_Diff del: Diff_eq_empty_iff, intro impI)
+  assume 1: "keys s - X \<noteq> {}" and 2: "keys t - X \<noteq> {}"
+  have "finite (elem_index ` (keys s - X))" by simp
+  moreover from 1 have "elem_index ` (keys s - X) \<noteq> {}" by simp
+  moreover have "finite (elem_index ` (keys t - X))" by simp
+  moreover from 2 have "elem_index ` (keys t - X) \<noteq> {}" by simp
+  ultimately show "Max (elem_index ` (keys s - X) \<union> elem_index ` (keys t - X)) =
+                    max (Max (elem_index ` (keys s - X))) (Max (elem_index ` (keys t - X)))"
+    by (rule Max_Un)
+qed
+
+lemma dickson_grading_varnum:
+  assumes "finite X"
+  shows "dickson_grading ((varnum X)::('x::countable \<Rightarrow>\<^sub>0 'b::add_wellorder) \<Rightarrow> nat)"
+  using varnum_plus
+proof (rule dickson_gradingI)
+  fix m::nat
+  let ?V = "X \<union> {x. elem_index x < m}"
+  have "{t::'x \<Rightarrow>\<^sub>0 'b. varnum X t \<le> m} \<subseteq> {t. keys t \<subseteq> ?V}"
+  proof (rule, simp, intro subsetI, simp)
+    fix t::"'x \<Rightarrow>\<^sub>0 'b" and x::'x
+    assume "varnum X t \<le> m"
+    assume "x \<in> keys t"
+    thus "x \<in> X \<or> elem_index x < m"
+    proof (rule elem_index_less_varnum)
+      assume "x \<in> X"
+      thus ?thesis ..
+    next
+      assume "elem_index x < varnum X t"
+      hence "elem_index x < m" using \<open>varnum X t \<le> m\<close> by (rule less_le_trans)
+      thus ?thesis ..
+    qed
+  qed
+  thus "almost_full_on (adds) {t::'x \<Rightarrow>\<^sub>0 'b. varnum X t \<le> m}"
+  proof (rule almost_full_on_subset)
+    from assms finite_nat_seg have "finite ?V" by (rule finite_UnI)
+    thus "almost_full_on (adds) {t::'x \<Rightarrow>\<^sub>0 'b. keys t \<subseteq> ?V}" by (rule Dickson_poly_mapping)
+  qed
+qed
+
+corollary dickson_grading_varnum_empty:
+  "dickson_grading ((varnum {})::(_ \<Rightarrow>\<^sub>0 _::add_wellorder) \<Rightarrow> nat)"
+  using finite.emptyI by (rule dickson_grading_varnum)
+
+lemma varnum_le_iff: "varnum X t \<le> n \<longleftrightarrow> keys t \<subseteq> X \<union> {x. elem_index x < n}"
+  by (auto simp: varnum_def Suc_le_eq)
+
+lemma varnum_zero [simp]: "varnum X 0 = 0"
   by (simp add: varnum_def)
 
-lemma varnum_eq_zero_iff: "varnum t = 0 \<longleftrightarrow> t = 0"
+lemma varnum_empty_eq_zero_iff: "varnum {} t = 0 \<longleftrightarrow> t = 0"
 proof
-  assume "varnum t = 0"
+  assume "varnum {} t = 0"
   hence "keys t = {}" by (simp add: varnum_def split: if_splits)
   thus "t = 0" by (rule poly_mapping_eq_zeroI)
 qed simp
 
-lemma varnum_plus:
-  "varnum (s + t) = max (varnum s) (varnum (t::'a::countable \<Rightarrow>\<^sub>0 'b::ninv_comm_monoid_add))"
-  by (simp add: varnum_def keys_plus_ninv_comm_monoid_add image_Un, intro impI, rule Max_Un, auto)
-
-lemma dickson_grading_varnum:
-  "dickson_grading (varnum::('a::countable \<Rightarrow>\<^sub>0 'b::add_wellorder) \<Rightarrow> nat)"
-proof (rule dickson_gradingI, fact varnum_plus)
-  fix m::nat
-  let ?V = "{x. elem_index x < m}"
-  have "{x::'a \<Rightarrow>\<^sub>0 'b. varnum x \<le> m} \<subseteq> {x. keys x \<subseteq> ?V}"
-  proof (rule, simp, intro subsetI, simp)
-    fix t::"'a \<Rightarrow>\<^sub>0 'b" and x
-    assume "x \<in> keys t"
-    hence "elem_index x < varnum t" by (rule elem_index_less_varnum)
-    also assume "... \<le> m"
-    finally show "elem_index x < m" .
-  qed
-  thus "almost_full_on (adds) {x::'a \<Rightarrow>\<^sub>0 'b. varnum x \<le> m}"
-  proof (rule almost_full_on_subset)
-    have "finite ?V" by (fact finite_nat_seg)
-    thus "almost_full_on (adds) {x::'a \<Rightarrow>\<^sub>0 'b. keys x \<subseteq> ?V}" by (rule Dickson_poly_mapping)
-  qed
-qed
-
 instance poly_mapping :: (countable, add_wellorder) graded_dickson_powerprod
-  by (standard, rule, fact dickson_grading_varnum)
+  by standard (rule, fact dickson_grading_varnum_empty)
 
 instance poly_mapping :: (finite, add_wellorder) dickson_powerprod
 proof

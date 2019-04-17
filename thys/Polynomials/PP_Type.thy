@@ -163,7 +163,7 @@ next
   thus ?l by (simp only: adds_pp_iff[symmetric])
 qed
 
-lift_definition varnum_pp :: "('a::countable, 'b::zero) pp \<Rightarrow> nat" is varnum .
+lift_definition varnum_pp :: "('a::countable, 'b::zero) pp \<Rightarrow> nat" is "varnum {}" .
 
 lemma dickson_grading_varnum_pp:
   "dickson_grading (varnum_pp::('a::countable, 'b::add_wellorder) pp \<Rightarrow> nat)"
@@ -175,7 +175,7 @@ next
   show "almost_full_on (adds) {x::('a, 'b) pp. varnum_pp x \<le> m}" unfolding almost_full_on_pp_iff
   proof (transfer, simp)
     fix m::nat
-    from dickson_grading_varnum show "almost_full_on (adds) {x::'a \<Rightarrow>\<^sub>0 'b. varnum x \<le> m}"
+    from dickson_grading_varnum_empty show "almost_full_on (adds) {x::'a \<Rightarrow>\<^sub>0 'b. varnum {} x \<le> m}"
       by (rule dickson_gradingD2)
   qed
 qed
