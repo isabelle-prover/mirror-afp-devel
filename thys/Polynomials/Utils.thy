@@ -6,6 +6,58 @@ theory Utils
   imports Main Well_Quasi_Orders.Almost_Full_Relations
 begin
 
+lemma subset_imageE_inj:
+  assumes "B \<subseteq> f ` A"
+  obtains C where "C \<subseteq> A" and "B = f ` C" and "inj_on f C"
+proof -
+  define g where "g = (\<lambda>x. SOME a. a \<in> A \<and> f a = x)"
+  have "g b \<in> A \<and> f (g b) = b" if "b \<in> B" for b
+  proof -
+    from that assms have "b \<in> f ` A" ..
+    then obtain a where "a \<in> A" and "b = f a" ..
+    hence "a \<in> A \<and> f a = b" by simp
+    thus ?thesis unfolding g_def by (rule someI)
+  qed
+  hence 1: "\<And>b. b \<in> B \<Longrightarrow> g b \<in> A" and 2: "\<And>b. b \<in> B \<Longrightarrow> f (g b) = b" by simp_all
+  let ?C = "g ` B"
+  show ?thesis
+  proof
+    show "?C \<subseteq> A" by (auto intro: 1)
+  next
+    show "B = f ` ?C"
+    proof (rule set_eqI)
+      fix b
+      show "b \<in> B \<longleftrightarrow> b \<in> f ` ?C"
+      proof
+        assume "b \<in> B"
+        moreover from this have "f (g b) = b" by (rule 2)
+        ultimately show "b \<in> f ` ?C" by force
+      next
+        assume "b \<in> f ` ?C"
+        then obtain b' where "b' \<in> B" and "b = f (g b')" unfolding image_image ..
+        moreover from this(1) have "f (g b') = b'" by (rule 2)
+        ultimately show "b \<in> B" by simp
+      qed
+    qed
+  next
+    show "inj_on f ?C"
+    proof
+      fix x y
+      assume "x \<in> ?C"
+      then obtain bx where "bx \<in> B" and x: "x = g bx" ..
+      moreover from this(1) have "f (g bx) = bx" by (rule 2)
+      ultimately have *: "f x = bx" by simp
+      assume "y \<in> ?C"
+      then obtain "by" where "by \<in> B" and y: "y = g by" ..
+      moreover from this(1) have "f (g by) = by" by (rule 2)
+      ultimately have "f y = by" by simp
+      moreover assume "f x = f y"
+      ultimately have "bx = by" using * by simp
+      thus "x = y" by (simp only: x y)
+    qed
+  qed
+qed
+
 lemma wfP_chain:
   assumes "\<not>(\<exists>f. \<forall>i. r (f (Suc i)) (f i))"
   shows "wfP r"
