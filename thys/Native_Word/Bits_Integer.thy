@@ -67,7 +67,7 @@ lift_definition Bit_integer :: "integer \<Rightarrow> bool \<Rightarrow> integer
 
 end
 
-instantiation integer :: bitss begin
+instantiation integer :: bits begin
 context includes integer.lifting begin
 
 lift_definition bitAND_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer" is "bitAND" .

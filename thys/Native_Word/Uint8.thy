@@ -49,7 +49,7 @@ end
 
 lemmas [code] = less_uint8.rep_eq less_eq_uint8.rep_eq
 
-instantiation uint8 :: bitss begin
+instantiation uint8 :: bits begin
 lift_definition bitNOT_uint8 :: "uint8 \<Rightarrow> uint8" is bitNOT .
 lift_definition bitAND_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is bitAND .
 lift_definition bitOR_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is bitOR .

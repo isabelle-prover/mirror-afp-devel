@@ -53,7 +53,7 @@ end
 
 lemmas [code] = less_uint64.rep_eq less_eq_uint64.rep_eq
 
-instantiation uint64 :: bitss begin
+instantiation uint64 :: bits begin
 lift_definition bitNOT_uint64 :: "uint64 \<Rightarrow> uint64" is bitNOT .
 lift_definition bitAND_uint64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" is bitAND .
 lift_definition bitOR_uint64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" is bitOR .

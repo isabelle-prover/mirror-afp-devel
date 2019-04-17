@@ -90,7 +90,7 @@ end
 
 lemmas [code] = less_uint.rep_eq less_eq_uint.rep_eq
 
-instantiation uint :: bitss begin
+instantiation uint :: bits begin
 lift_definition bitNOT_uint :: "uint \<Rightarrow> uint" is bitNOT .
 lift_definition bitAND_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is bitAND .
 lift_definition bitOR_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is bitOR .

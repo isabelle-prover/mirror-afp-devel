@@ -7,6 +7,7 @@ chapter \<open>More bit operations on integers\<close>
 theory More_Bits_Int
 imports
   "HOL-Word.Bits_Bit"
+  "HOL-Word.Bits_Int"
   "HOL-Word.Bool_List_Representation"
 begin
 
@@ -29,7 +30,7 @@ by(auto simp add: numeral_eq_Suc)
 section \<open>Lemmas about bit operations on @{typ int}\<close>
 
 lemma twice_conv_BIT: "2 * x = x BIT False"
-by(rule bin_rl_eqI)(simp_all, simp_all add: bin_rest_def bin_last_def)
+  by (rule bin_rl_eqI)(simp_all, simp_all add: bin_rest_def bin_last_def)
 
 lemma not_int_cmp_0 [simp]:
   fixes i :: int shows
@@ -159,7 +160,8 @@ proof(induction n arbitrary: x)
 next
   case (Suc n)
   obtain x' b where "x = x' BIT b" by(cases x rule: bin_exhaust)
-  with Suc show ?case by(cases b)(simp_all, simp_all add: Bit_def p1mod22k)
+  with Suc show ?case by (cases b)
+    (simp_all, simp_all add: Bit_def pos_zmod_mult_2 add.commute)
 qed
 
 lemma bin_mask_numeral: 
