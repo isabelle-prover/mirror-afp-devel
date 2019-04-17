@@ -2381,6 +2381,28 @@ proof -
         simp only: keys1 lookup_single Poly_Mapping.when_def, auto simp add: lc_def)
 qed
 
+lemma lt_eq_min_term_monomial:
+  assumes "lt p = min_term"
+  shows "monomial (lc p) min_term = p"
+proof (rule poly_mapping_eqI)
+  fix v
+  from min_term_min[of v] have "v = min_term \<or> min_term \<prec>\<^sub>t v" by auto
+  thus "lookup (monomial (lc p) min_term) v = lookup p v"
+  proof
+    assume "v = min_term"
+    thus ?thesis by (simp add: lookup_single lc_def assms)
+  next
+    assume "min_term \<prec>\<^sub>t v"
+    moreover have "v \<notin> keys p"
+    proof
+      assume "v \<in> keys p"
+      hence "v \<preceq>\<^sub>t lt p" by (rule lt_max_keys)
+      with \<open>min_term \<prec>\<^sub>t v\<close> show False by (simp add: assms)
+    qed
+    ultimately show ?thesis by (simp add: lookup_single in_keys_iff)
+  qed
+qed
+
 lemma is_monomial_monomial_ordered:
   assumes "is_monomial p"
   obtains c v where "c \<noteq> 0" and "lc p = c" and "lt p = v" and "p = monomial c v"

@@ -100,6 +100,9 @@ lemma replace_span:
 lemma sum_in_spanI: "(\<Sum>b\<in>B. q b *s b) \<in> span B"
   by (auto simp: intro: span_sum span_scale dest: span_base)
 
+lemma span_closed_sum_list: "(\<And>x. x \<in> set xs \<Longrightarrow> x \<in> span B) \<Longrightarrow> sum_list xs \<in> span B"
+  by (induct xs) (auto intro: span_zero span_add)
+
 lemma spanE:
   assumes "p \<in> span B"
   obtains A q where "finite A" and "A \<subseteq> B" and "p = (\<Sum>b\<in>A. (q b) *s b)"

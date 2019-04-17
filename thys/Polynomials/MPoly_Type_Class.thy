@@ -1337,24 +1337,20 @@ next
   thus ?case by (simp add: lookup_add)
 qed
 
-lemma keys_sum_subset: "keys (sum f A) \<subseteq> (\<Union>a\<in>A. keys (f a))"
-proof (cases "finite A")
-  case True
-  thus ?thesis
-  proof (induct A)
-    case empty
-    show ?case by simp
-  next
-    case (insert a A)
-    have "keys (sum f (insert a A)) \<subseteq> keys (f a) \<union> keys (sum f A)"
-      by (simp add: Poly_Mapping.keys_add insert.hyps)
-    also have "... \<subseteq> keys (f a) \<union> (\<Union>a\<in>A. keys (f a))" using insert(3) by blast
-    also have "... = (\<Union>a\<in>insert a A. keys (f a))" by simp
-    finally show ?case .
-  qed
+text \<open>Legacy:\<close>
+lemmas keys_sum_subset = Poly_Mapping.keys_sum
+
+lemma keys_sum_list_subset: "keys (sum_list ps) \<subseteq> Keys (set ps)"
+proof (induct ps)
+  case Nil
+  show ?case by simp
 next
-  case False
-  thus ?thesis by simp
+  case (Cons p ps)
+  have "keys (sum_list (p # ps)) = keys (p + sum_list ps)" by simp
+  also have "\<dots> \<subseteq> keys p \<union> keys (sum_list ps)" by (fact Poly_Mapping.keys_add)
+  also from Cons have "\<dots> \<subseteq> keys p \<union> Keys (set ps)" by blast
+  also have "\<dots> = Keys (set (p # ps))" by (simp add: Keys_insert)
+  finally show ?case .
 qed
 
 lemma keys_sum:
