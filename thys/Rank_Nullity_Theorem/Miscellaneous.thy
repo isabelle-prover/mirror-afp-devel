@@ -9,7 +9,6 @@ section\<open>Miscellaneous\<close>
 theory Miscellaneous
   imports
   "HOL-Analysis.Determinants"
-  "HOL-Library.Bit"
   Mod_Type
   "HOL-Library.Function_Algebras"
 begin
@@ -352,20 +351,6 @@ instance
 proof (intro_classes)
   fix x y::"('a, 'b::finite) vec"
   show "equal_class.equal x y = (x = y)" unfolding equal_vec_def using vec_eq_iff by auto
-qed
-end
-
-instantiation bit :: linorder
-begin
-
-definition less_eq_bit :: "bit \<Rightarrow> bit \<Rightarrow> bool"
-where "less_eq_bit x y = (y=1 \<or> x=0)"
-
-definition less_bit :: "bit \<Rightarrow> bit \<Rightarrow> bool"
-where "less_bit x y = (y=1 \<and> x=0)"
-
-instance
-proof (intro_classes, auto simp add: less_eq_bit_def less_bit_def)
 qed
 end
 
