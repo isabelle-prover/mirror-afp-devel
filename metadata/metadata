@@ -5783,6 +5783,10 @@ abstract =
 	effectively decide ideal membership in finitely generated polynomial
 	ideals. Furthermore, all functions can be executed on a concrete
 	representation of multivariate polynomials as association lists.
+extra-history =
+	Change history:
+	[2019-04-18]: Specialized Gröbner bases to less abstract representation of polynomials, where
+	power-products are represented as polynomial mappings.<br>
 notify = alexander.maletzky@risc.jku.at
 
 [Bell_Numbers_Spivey]
