@@ -911,8 +911,8 @@ theorem consistent_huffman[simp]:
 by (induct ts rule: huffman.induct) simp+
 
 theorem freq_huffman[simp]:
-"ts \<noteq> [] \<Longrightarrow> freq (huffman ts) = freq\<^sub>F ts"
-by (induct ts rule: huffman.induct) (auto simp: ext)
+"ts \<noteq> [] \<Longrightarrow> freq (huffman ts) a = freq\<^sub>F ts a"
+by (induct ts rule: huffman.induct) auto
 
 section \<open>Definition of Auxiliary Functions Used in the Proof \label{auxiliary}\<close>
 
