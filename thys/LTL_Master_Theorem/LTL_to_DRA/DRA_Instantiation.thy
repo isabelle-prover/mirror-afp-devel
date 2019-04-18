@@ -135,19 +135,14 @@ lemma floorlog_le_const:
   "floorlog x n \<le> n"
   by (induction n) (simp add: floorlog_eq_zero_iff, metis Suc_lessI floorlog_le_iff le_SucI power_inject_exp)
 
-lemma \<AA>\<^sub>2_nodes_card_nonempty:
+lemma \<AA>\<^sub>2_nodes_card:
   assumes
-    "xs \<noteq> []"
-  and
     "length xs \<le> n"
   and
     "\<And>\<psi>. \<psi> \<in> set xs \<Longrightarrow> card (nested_prop_atoms \<psi>) \<le> n"
   shows
     "card (DBA.nodes (\<AA>\<^sub>2 xs ys)) \<le> 2 ^ 2 ^ (n + floorlog 2 n + 2)"
 proof -
-  have 0: "n > 0"
-    using assms(1,2) gr0I by force
-
   have 1: "\<And>\<psi>. \<psi> \<in> set xs \<Longrightarrow> card (nested_prop_atoms (F\<^sub>n \<psi>[set ys]\<^sub>\<mu>)) \<le> Suc n"
   proof -
     fix \<psi>
@@ -161,7 +156,7 @@ proof -
       by (simp add: FG_advice_nested_prop_atoms_card)
 
     also have "\<dots> \<le> Suc n"
-      by (simp add: assms(3) \<open>\<psi> \<in> set xs\<close>)
+      by (simp add: assms(2) \<open>\<psi> \<in> set xs\<close>)
 
     finally show "card (nested_prop_atoms (F\<^sub>n (\<psi>[set ys]\<^sub>\<mu>))) \<le> Suc n" .
   qed
@@ -174,29 +169,28 @@ proof -
     by (rule list_prod_const) (metis 1 Suc_leI nat_power_le_imp_le nat_power_eq_Suc_0_iff neq0_conv pos2 zero_less_power)
 
   also have "\<dots> \<le> (2 ^ 2 ^ Suc n) ^ n"
-    using assms nat_power_le_imp_le by simp
+    using assms(1) nat_power_le_imp_le by fastforce
 
   also have "\<dots> = 2 ^ (n * 2 ^ Suc n)"
     by (metis Groups.mult_ac(2) power_mult)
 
   also have "\<dots> \<le> 2 ^ (2 ^ floorlog 2 n * 2 ^ Suc n)"
-    by (simp add: 0 assms floorlog_bounds less_imp_le_nat)
+    by (cases "n = 0") (auto simp: floorlog_bounds less_imp_le_nat)
 
   also have "\<dots> = 2 ^ 2 ^ (Suc n + floorlog 2 n)"
     by (simp add: power_add)
 
   finally have 2: "(\<Prod>\<psi>\<leftarrow>xs. card (DBA.nodes (\<AA>\<^sub>\<mu>_GF (\<psi>[set ys]\<^sub>\<mu>)))) \<le> 2 ^ 2 ^ (Suc n + floorlog 2 n)" .
 
-
-  have "card (DBA.nodes (\<AA>\<^sub>2 xs ys)) \<le> length xs * (\<Prod>\<psi>\<leftarrow>xs. card (DBA.nodes (\<AA>\<^sub>\<mu>_GF (\<psi>[set ys]\<^sub>\<mu>))))"
-    using dbail_nodes_card_nonempty[OF _ \<AA>\<^sub>2_nodes_finite_helper] assms(1)
+  have "card (DBA.nodes (\<AA>\<^sub>2 xs ys)) \<le> max 1 (length xs) * (\<Prod>\<psi>\<leftarrow>xs. card (DBA.nodes (\<AA>\<^sub>\<mu>_GF (\<psi>[set ys]\<^sub>\<mu>))))"
+    using dbail_nodes_card[OF \<AA>\<^sub>2_nodes_finite_helper]
     by (auto simp: ltl_to_dra.\<AA>\<^sub>2_def comp_def)
 
-  also have "\<dots> \<le> n * 2 ^ 2 ^ (Suc n + floorlog 2 n)"
-    using 2 by (simp add: assms mult_le_mono)
+  also have "\<dots> \<le> max 1 n * 2 ^ 2 ^ (Suc n + floorlog 2 n)"
+    using assms(1) 2 by (simp add: mult_le_mono)
 
   also have "\<dots> \<le> 2 ^ (floorlog 2 n) * 2 ^ 2 ^ (Suc n + floorlog 2 n)"
-    by (simp add: 0 floorlog_bounds less_imp_le_nat)
+    by (cases "n = 0") (auto simp: floorlog_bounds less_imp_le_nat)
 
   also have "\<dots> = 2 ^ (floorlog 2 n + 2 ^ (Suc n + floorlog 2 n))"
     by (simp add: power_add)
@@ -209,20 +203,6 @@ proof -
 
   finally show ?thesis .
 qed
-
-lemma \<AA>\<^sub>2_nodes_card_empty:
-  "card (DBA.nodes (\<AA>\<^sub>2 [] ys)) = 1"
-  unfolding ltl_to_dra.\<AA>\<^sub>2_def using dbail_nodes_card_empty
-  by force
-
-lemma \<AA>\<^sub>2_nodes_card:
-  assumes
-    "length xs \<le> n"
-  and
-    "\<And>\<psi>. \<psi> \<in> set xs \<Longrightarrow> card (nested_prop_atoms \<psi>) \<le> n"
-  shows
-    "card (DBA.nodes (\<AA>\<^sub>2 xs ys)) \<le> 2 ^ 2 ^ (n + floorlog 2 n + 2)"
-  by (cases \<open>xs = []\<close>) (simp add: \<AA>\<^sub>2_nodes_card_empty, insert assms \<AA>\<^sub>2_nodes_card_nonempty, auto)
 
 
 lemma \<AA>\<^sub>3_nodes_card:

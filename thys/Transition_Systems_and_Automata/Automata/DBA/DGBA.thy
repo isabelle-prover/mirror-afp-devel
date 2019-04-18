@@ -78,14 +78,8 @@ begin
     by rule
 
   lemma degen_nodes_finite[iff]: "finite (DBA.nodes (degen A)) \<longleftrightarrow> finite (DGBA.nodes A)" by simp
-  lemma degen_nodes_card_empty[simp]:
-    assumes "accepting A = []"
-    shows "card (DBA.nodes (degen A)) = card (DGBA.nodes A)"
-    using assms by simp
-  lemma degen_nodes_card_nonempty:
-    assumes "accepting A \<noteq> []"
-    shows "card (DBA.nodes (degen A)) \<le> length (accepting A) * card (DGBA.nodes A)"
-    using dgba.degen_nodes_card_nonempty assms by simp
+  lemma degen_nodes_card: "card (DBA.nodes (degen A)) \<le> max 1 (length (accepting A)) * card (DGBA.nodes A)"
+    using dgba.degen_nodes_card by simp
 
   lemma degen_language[simp]: "DBA.language (degen A) = DGBA.language A"
     unfolding DBA.language_def DGBA.language_def degen_simps

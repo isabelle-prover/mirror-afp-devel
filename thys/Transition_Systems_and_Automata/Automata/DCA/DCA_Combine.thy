@@ -276,35 +276,17 @@ begin
     assumes "list_all (finite \<circ> DCA.nodes) AA"
     shows "finite (DCA.nodes (dcaul AA))"
     using dcgaul_nodes_finite assms unfolding dcaul_def by auto
-  lemma dcail_nodes_card_empty:
+  lemma dcaul_nodes_card:
     assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
-    assumes "AA = []" "list_all (finite \<circ> DCA.nodes) AA"
-    shows "card (DCA.nodes (dcaul AA)) = 1"
+    assumes "list_all (finite \<circ> DCA.nodes) AA"
+    shows "card (DCA.nodes (dcaul AA)) \<le> max 1 (length AA) * prod_list (map (card \<circ> DCA.nodes) AA)"
   proof -
-    have 1: "dgca.rejecting (dcgaul AA) = []" unfolding dcgaul_def using assms(2) by simp
-    have "card (DCA.nodes (dcaul AA)) = card (DGCA.nodes (dcgaul AA))"
-      unfolding dcaul_def using degen_nodes_card_empty 1 by auto
-    also have "\<dots> = 1"
-    proof (rule antisym)
-      show "card (DGCA.nodes (dcgaul AA)) \<le> 1" using dcgaul_nodes_card assms by fastforce
-      have "finite (DGCA.nodes (dcgaul AA))" using assms(1, 3) by auto
-      then have "card (DGCA.nodes (dcgaul AA)) \<noteq> 0" by auto
-      then show "card (DGCA.nodes (dcgaul AA)) \<ge> 1" by simp
-    qed
-    finally show ?thesis by this
-  qed
-  lemma dcaul_nodes_card_nonempty:
-    assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
-    assumes "AA \<noteq> []" "list_all (finite \<circ> DCA.nodes) AA"
-    shows "card (DCA.nodes (dcaul AA)) \<le> length AA * prod_list (map (card \<circ> DCA.nodes) AA)"
-  proof -
-    have 1: "dgca.rejecting (dcgaul AA) \<noteq> []" unfolding dcgaul_def using assms(2) by simp
     have "card (DCA.nodes (dcaul AA)) \<le>
-      length (dgca.rejecting (dcgaul AA)) * card (DGCA.nodes (dcgaul AA))"
-      unfolding dcaul_def using degen_nodes_card_nonempty 1 by auto
+      max 1 (length (dgca.rejecting (dcgaul AA))) * card (DGCA.nodes (dcgaul AA))"
+      unfolding dcaul_def using degen_nodes_card by simp
     also have "length (dgca.rejecting (dcgaul AA)) = length AA" unfolding dcgaul_def by simp
     also have "card (DGCA.nodes (dcgaul AA)) \<le> prod_list (map (card \<circ> DCA.nodes) AA)"
-      using dcgaul_nodes_card assms(1, 3) by this
+      using dcgaul_nodes_card assms by this
     finally show ?thesis by simp
   qed
 

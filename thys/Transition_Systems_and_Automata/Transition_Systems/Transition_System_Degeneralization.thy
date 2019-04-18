@@ -10,14 +10,18 @@ begin
     and enabled :: "'transition \<Rightarrow> 'state \<Rightarrow> bool"
     and initial :: "'state \<Rightarrow> bool"
     +
+    (* TODO: why is this a list and not a set? *)
     fixes condition :: "'state pred gen"
   begin
 
+    (* TODO: make this a definition, prove useful (automation) things about, use opaquely *)
+    abbreviation "count p k \<equiv>
+      if k < length condition
+      then if (condition ! k) p then Suc k mod length condition else k
+      else 0"
+
     definition dexecute :: "'transition \<Rightarrow> 'state degen \<Rightarrow> 'state degen" where
-      "dexecute a \<equiv> \<lambda> (p, k). (execute a p,
-        if k < length condition
-        then if (condition ! k) p then Suc k mod length condition else k
-        else 0)"
+      "dexecute a \<equiv> \<lambda> (p, k). (execute a p, count p k)"
     definition denabled :: "'transition \<Rightarrow> 'state degen \<Rightarrow> bool" where
       "denabled a \<equiv> \<lambda> (p, k). enabled a p"
     definition dinitial :: "'state degen \<Rightarrow> bool" where
@@ -107,43 +111,25 @@ begin
       assumes "condition \<noteq> []"
       shows "degen.nodes \<subseteq> nodes \<times> {0 ..< length condition}"
       using subset_fst_snd degen_nodes_fst degen_nodes_snd_nonempty[OF assms] by blast
+    lemma degen_nodes: "degen.nodes \<subseteq> nodes \<times> {0 ..< max 1 (length condition)}"
+      using degen_nodes_empty degen_nodes_nonempty by force
 
-    lemma degen_nodes_snd_finite[intro!, simp]: "finite (snd ` degen.nodes)"
-      using finite_subset degen_nodes_snd_empty degen_nodes_snd_nonempty by (cases condition) (auto)
     lemma degen_nodes_finite[iff]: "finite degen.nodes \<longleftrightarrow> finite nodes"
     proof
-      assume 1: "finite degen.nodes"
-      have "nodes \<subseteq> fst ` degen.nodes" by simp
-      also have "finite \<dots>" using 1 by rule
-      finally show "finite nodes" by this
-    next
-      assume 1: "finite nodes"
-      have "degen.nodes \<subseteq> fst ` degen.nodes \<times> snd ` degen.nodes" using subset_fst_snd by this
-      also have "finite \<dots>" using 1 by simp
-      finally show "finite degen.nodes" by this
+      show "finite nodes" if "finite degen.nodes" using that by (auto simp flip: degen_nodes_fst)
+      show "finite degen.nodes" if "finite nodes" using degen_nodes that by (auto intro: finite_subset)
     qed
-    lemma degen_nodes_card_empty[simp]:
-      assumes "condition = []"
-      shows "card degen.nodes = card nodes"
-    proof -
-      have "degen.nodes = nodes \<times> {0}" using degen_nodes_empty assms by this
-      also have "card \<dots> = card nodes" unfolding card_cartesian_product by simp
-      finally show ?thesis by this
-    qed
-    lemma degen_nodes_card_nonempty:
-      assumes "condition \<noteq> []"
-      shows "card degen.nodes \<le> length condition * card nodes"
+    lemma degen_nodes_card: "card degen.nodes \<le> max 1 (length condition) * card nodes"
     proof (cases "finite nodes")
       case True
-      have "card degen.nodes \<le> card (nodes \<times> {0 ..< length condition})"
-        using degen_nodes_nonempty assms True by (blast intro: card_mono)
-      also have "\<dots> = length condition * card nodes" unfolding card_cartesian_product by simp
+      have "card degen.nodes \<le> card (nodes \<times> {0 ..< max 1 (length condition)})"
+        using degen_nodes True by (blast intro: card_mono)
+      also have "\<dots> = max 1 (length condition) * card nodes" unfolding card_cartesian_product by simp
       finally show ?thesis by this
     next
       case False
-      have 1: "card degen.nodes = 0" using False by simp
-      have 2: "card nodes = 0" using False by simp
-      show ?thesis unfolding 1 2 by simp
+      then have "card nodes = 0" "card degen.nodes = 0" by auto
+      then show ?thesis by simp
     qed
 
     definition dcondition :: "'state degen pred" where
