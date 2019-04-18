@@ -300,8 +300,11 @@ next
   hence suboD:"is_subobj P ((D,D#rev Cs'@[C']))" by simp
   hence "is_subobj P ((D,D#rev Cs'))" by (rule subobj_aux_rev)
   with IH have suboC:"is_subobj P ((C,D#rev Cs'))" by simp
-  obtain C'' where C'':"C'' = last(D#rev Cs')" by simp
-  hence butlast:"D#rev Cs' = butlast(D#rev Cs')@[C'']" by simp
+  obtain C'' where C'': "C'' = last (D # rev Cs')" by simp
+  moreover have "D # rev Cs' = butlast (D # rev Cs') @ [last (D # rev Cs')]"
+    by (rule append_butlast_last_id [symmetric]) simp
+  ultimately have butlast: "D # rev Cs' = butlast (D  #rev Cs') @ [C'']"
+    by simp
   hence butlast2:"D#rev Cs'@[C'] = butlast(D#rev Cs')@[C'']@[C']" by simp
   with suboD have "is_subobj P ((D,butlast(D#rev Cs')@[C'']@[C']))"
     by simp
