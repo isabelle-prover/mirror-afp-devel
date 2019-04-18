@@ -28,63 +28,9 @@ lemma word_of_integer_code [code]: "word_of_integer n = word_of_int (int_of_inte
 by(simp add: word_of_integer.rep_eq)
 end
 
-lemma shiftr_zero_size: "size x \<le> n \<Longrightarrow> x >> n = (0 :: 'a :: len0 word)"
-by(rule word_eqI)(auto simp add: nth_shiftr dest: test_bit_size)
-
-lemma mask_full [simp]: "mask (len_of TYPE('a :: len)) = (-1 :: 'a word)"
-by(simp add: mask_def word_pow_0)
-
-lemma set_bit_beyond: fixes x :: "'a :: len0 word" shows
-  "size x \<le> n \<Longrightarrow> set_bit x n b = x"
-by(auto intro: word_eqI simp add: test_bit_set_gen word_size)
-
 lemma word_of_int_code [code abstract]:
   "uint (word_of_int x :: 'a word) = x AND bin_mask (len_of TYPE('a :: len0))"
 by(simp add: uint_word_of_int and_bin_mask_conv_mod)
-
-
-lemma shiftl_transfer [transfer_rule]:
-  includes lifting_syntax
-  shows "(pcr_word ===> (=) ===> pcr_word) (<<) (<<)"
-by(auto intro!: rel_funI word_eqI simp add: word.pcr_cr_eq cr_word_def word_size nth_shiftl)
-
-lemma set_bits_K_False [simp]: "set_bits (\<lambda>_. False) = (0 :: 'a :: len0 word)"
-by(rule word_eqI)(simp add: test_bit.eq_norm)
-
-lemma test_bit_1' [simp]: "(1 :: 'a :: len0 word) !! n \<longleftrightarrow> 0 < len_of TYPE('a) \<and> n = 0"
-by(cases n)(simp_all only: one_word_def test_bit_wi bin_nth.simps, simp_all)
-
-lemma mask_0 [simp]: "mask 0 = 0"
-by(simp add: Word.mask_def)
-
-lemma shiftl0 [simp]: "x << 0 = (x :: 'a :: len0 word)"
-by (metis shiftl_rev shiftr_x_0 word_rev_gal)
-
-lemma mask_1: "mask 1 = 1"
-by(simp add: mask_def)
-
-lemma mask_Suc_0: "mask (Suc 0) = 1"
-by(simp add: mask_def)
-
-lemma mask_numeral: "mask (numeral n) = 2 * mask (pred_numeral n) + 1"
-unfolding mask_def by transfer(simp, simp add: shiftl_int_def)
-
-lemma bin_last_bintrunc: "bin_last (bintrunc l n) = (l > 0 \<and> bin_last n)"
-by(cases l) simp_all
-
-lemma word_and_1:
-  fixes n :: "_ word"
-  shows "n AND 1 = (if n !! 0 then 1 else 0)"
-by transfer(rule bin_rl_eqI, simp_all add: bin_rest_trunc bin_last_bintrunc)
-
-lemma bintrunc_shiftl: "bintrunc n (m << i) = bintrunc (n - i) m << i"
-proof(induct i arbitrary: n)
-  case (Suc i)
-  thus ?case by(cases n) simp_all
-qed simp
-
-lemma uint_shiftl: "uint (n << i) = bintrunc (size n) (uint n << i)"
-unfolding word_size by transfer(simp add: bintrunc_shiftl)
 
 context fixes f :: "nat \<Rightarrow> bool" begin
 

@@ -719,7 +719,8 @@ next
     by (cases Ds')auto
   obtain C' Cs' where C':"C' = last(last Cs#rev Ds')" and
     "Cs' = butlast(last Cs#rev Ds')" by simp
-  hence "Cs'@[C'] = last Cs#rev Ds'" by simp
+  then have "Cs' @ [C'] = last Cs # rev Ds'"
+    using append_butlast_last_id by blast
   hence "last Cs#rev (D'#Ds') = Cs'@[C',D']" by simp
   with subo have "Subobjs P (last Cs) (Cs'@[C',D'])" by (cases Cs') auto
   hence "P \<turnstile> C' \<prec>\<^sub>R D'" by - (rule Subobjs_subclsR,simp)
