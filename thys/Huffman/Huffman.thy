@@ -11,8 +11,7 @@ begin
 
 section \<open>Introduction\<close>
 
-subsection \<open>Binary Codes
-              \label{binary-codes}\<close>
+subsection \<open>Binary Codes \label{binary-codes}\<close>
 
 text \<open>
 Suppose we want to encode strings over a finite source alphabet to sequences
@@ -249,8 +248,7 @@ declare
   max.absorb1 [simp]
   max.absorb2 [simp]
 
-section \<open>Definition of Prefix Code Trees and Forests
-           \label{trees-and-forests}\<close>
+section \<open>Definition of Prefix Code Trees and Forests \label{trees-and-forests}\<close>
 
 subsection \<open>Tree Type\<close>
 
@@ -545,12 +543,12 @@ to forests is straightforward.
 \<close>
 
 primrec freq :: "'a tree \<Rightarrow> 'a \<Rightarrow> nat" where
-"freq (Leaf w a) = (\<lambda>b. if b = a then w else 0)" |
-"freq (Node w t\<^sub>1 t\<^sub>2) = (\<lambda>b. freq t\<^sub>1 b + freq t\<^sub>2 b)"
+"freq (Leaf w a) b = (if b = a then w else 0)" |
+"freq (Node w t\<^sub>1 t\<^sub>2) b = freq t\<^sub>1 b + freq t\<^sub>2 b"
 
 primrec freq\<^sub>F :: "'a forest \<Rightarrow> 'a \<Rightarrow> nat" where
-"freq\<^sub>F [] = (\<lambda>b. 0)" |
-"freq\<^sub>F (t # ts) = (\<lambda>b. freq t b + freq\<^sub>F ts b)"
+"freq\<^sub>F [] b = 0" |
+"freq\<^sub>F (t # ts) b = freq t b + freq\<^sub>F ts b"
 
 text \<open>
 Alphabet and symbol frequencies are intimately related. Simplification rules
@@ -770,8 +768,7 @@ definition optimum :: "'a tree \<Rightarrow> bool" where
  (\<forall>u. consistent u \<longrightarrow> alphabet t = alphabet u \<longrightarrow> freq t = freq u \<longrightarrow>
   cost t \<le> cost u)"
 
-section \<open>Functional Implementation of Huffman's Algorithm
-           \label{implementation}\<close>
+section \<open>Functional Implementation of Huffman's Algorithm \label{implementation}\<close>
 
 subsection \<open>Cached Weight\<close>
 
@@ -828,7 +825,7 @@ lemma consistent_uniteTrees[simp]:
 by (simp add: uniteTrees_def)
 
 lemma freq_uniteTrees[simp]:
-"freq (uniteTrees t\<^sub>1 t\<^sub>2) = (\<lambda>a. freq t\<^sub>1 a + freq t\<^sub>2 a)"
+"freq (uniteTrees t\<^sub>1 t\<^sub>2) a = freq t\<^sub>1 a + freq t\<^sub>2 a"
 by (simp add: uniteTrees_def)
 
 subsection \<open>Ordered Tree Insertion\<close>
@@ -841,8 +838,7 @@ by cached weight, preserving the sort order.
 primrec insortTree :: "'a tree \<Rightarrow> 'a forest \<Rightarrow> 'a forest" where
 "insortTree u [] = [u]" |
 "insortTree u (t # ts) =
-     (if cachedWeight u \<le> cachedWeight t then u # t # ts
-                                         else t # insortTree u ts)"
+ (if cachedWeight u \<le> cachedWeight t then u # t # ts else t # insortTree u ts)"
 
 text \<open>
 The resulting forest contains one more tree than the original forest. Clearly,
@@ -918,8 +914,7 @@ theorem freq_huffman[simp]:
 "ts \<noteq> [] \<Longrightarrow> freq (huffman ts) = freq\<^sub>F ts"
 by (induct ts rule: huffman.induct) (auto simp: ext)
 
-section \<open>Definition of Auxiliary Functions Used in the Proof
-           \label{auxiliary}\<close>
+section \<open>Definition of Auxiliary Functions Used in the Proof \label{auxiliary}\<close>
 
 subsection \<open>Sibling of a Symbol\<close>
 
@@ -1535,8 +1530,7 @@ lemma sibling_swapSyms_other_sibling[simp]:
  sibling (swapSyms t a b) (sibling t b) = a"
 by (metis consistent_swapSyms sibling_swapSyms_sibling sibling_reciprocal)
 
-subsection \<open>Four-Way Symbol Interchange
-              \label{four-way-symbol-interchange}\<close>
+subsection \<open>Four-Way Symbol Interchange \label{four-way-symbol-interchange}\<close>
 
 text \<open>
 The @{const swapSyms} function exchanges two symbols $a$ and $b$. We use it
@@ -1810,8 +1804,7 @@ definition minima :: "'a tree \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bo
   \<and> (\<forall>c \<in> alphabet t. c \<noteq> a \<longrightarrow> c \<noteq> b \<longrightarrow>
     freq t c \<ge> freq t a \<and> freq t c \<ge> freq t b))"
 
-section \<open>Formalization of the Textbook Proof
-           \label{formalization}\<close>
+section \<open>Formalization of the Textbook Proof \label{formalization}\<close>
 
 subsection \<open>Four-Way Symbol Interchange Cost Lemma\<close>
 
@@ -1888,8 +1881,7 @@ proof -
   qed
 qed
 
-subsection \<open>Leaf Split Optimality Lemma
-              \label{leaf-split-optimality}\<close>
+subsection \<open>Leaf Split Optimality Lemma \label{leaf-split-optimality}\<close>
 
 text \<open>
 The tree @{term "splitLeaf t w\<^sub>a a w\<^sub>b b"} is optimum if $t$ is optimum, under a
@@ -2052,8 +2044,7 @@ proof (unfold optimum_def, clarify)
   qed
 qed
 
-subsection \<open>Leaf Split Commutativity Lemma
-              \label{leaf-split-commutativity}\<close>
+subsection \<open>Leaf Split Commutativity Lemma \label{leaf-split-commutativity}\<close>
 
 text \<open>
 A key property of Huffman's algorithm is that once it has combined two
@@ -2305,8 +2296,7 @@ $$\vcenter{\hbox{\includegraphics{tree-suboptimal.pdf}}}
   \vcenter{\hbox{\includegraphics{tree-optimal.pdf}}}$$
 \<close>
 
-section \<open>Related Work
-           \label{related-work}\<close>
+section \<open>Related Work \label{related-work}\<close>
 
 text \<open>
 Laurent Th\'ery's Coq formalization of Huffman's algorithm \cite{thery-2003,%
@@ -2368,8 +2358,7 @@ simpler proof:
 \end{enumerate}
 \<close>
 
-section \<open>Conclusion
-           \label{conclusion}\<close>
+section \<open>Conclusion \label{conclusion}\<close>
 
 text \<open>
 The goal of most formal proofs is to increase our confidence in a result. In
