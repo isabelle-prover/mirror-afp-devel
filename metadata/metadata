@@ -3914,16 +3914,21 @@ abstract =
 	been essential to  formalize polynomial interpretations.
 	<p>
 	This formalization also contains an abstract representation as coefficient functions with finite
-  support and a type of power-products. If this type is ordered by a linear (term) ordering, various
-  additional notions, such as leading power-product, leading coefficient etc., are introduced as
-  well.
+	support and a type of power-products. If this type is ordered by a linear (term) ordering, various
+	additional notions, such as leading power-product, leading coefficient etc., are introduced as
+	well. Furthermore, a lot of generic properties of, and functions on, multivariate polynomials are
+	formalized, including the substitution and evaluation homomorphisms, embeddings of polynomial rings
+	into larger rings (i.e. with one additional indeterminate), homogenization and dehomogenization of
+	polynomials, and the canonical isomorphism between R[X,Y] and R[X][Y].
 extra-history =
 	Change history:
 	[2010-09-17]: Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.<br>
 	[2016-10-28]: Added abstract representation of polynomials and authors Maletzky/Immler.<br>
 	[2018-01-23]: Added authors Haftmann, Lochbihler after incorporating
 	their formalization of multivariate polynomials based on Polynomial mappings.
-	Moved material from Bentkamp's entry "Deep Learning".
+	Moved material from Bentkamp's entry "Deep Learning".<br>
+	[2019-04-18]: Added material about polynomials whose power-products are represented themselves
+	by polynomial mappings.
 notify = rene.thiemann@uibk.ac.at, christian.sternagel@uibk.ac.at, alexander.maletzky@risc.jku.at, immler@in.tum.de
 
 [Sqrt_Babylonian]

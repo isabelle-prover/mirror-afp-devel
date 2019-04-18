@@ -3,7 +3,7 @@
 section \<open>Signature-Based Algorithms for Computing Gr\"obner Bases\<close>
 
 theory Signature_Groebner
-  imports More_MPoly Groebner_Bases.Syzygy Quasi_PM_Power_Products
+  imports More_MPoly Groebner_Bases.Syzygy Polynomials.Quasi_PM_Power_Products
 begin
 
 text \<open>First, we develop the whole theory for elements of the module $K[X]^r$, i.\,e. objects of type

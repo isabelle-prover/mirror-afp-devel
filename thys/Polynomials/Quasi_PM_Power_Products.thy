@@ -3,7 +3,7 @@
 section \<open>Quasi-Poly-Mapping Power-Products\<close>
 
 theory Quasi_PM_Power_Products
-  imports Polynomials.MPoly_Type_Class_Ordered
+  imports MPoly_Type_Class_Ordered
 begin
 
 text \<open>In this theory we introduce a subclass of @{class graded_dickson_powerprod} that approximates
