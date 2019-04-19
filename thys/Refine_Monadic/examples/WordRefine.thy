@@ -64,7 +64,7 @@ definition test_impl :: "word32 \<Rightarrow> word32 \<Rightarrow> word32 set nr
   }"
 
 lemma test_impl_refine: 
-  assumes "x'+y'<2^len_of TYPE(32)"
+  assumes "x'+y'<2^LENGTH(32)"
   assumes "(x,x')\<in>word_nat_rel" 
   assumes "(y,y')\<in>word_nat_rel" 
   shows "test_impl x y \<le> \<Down>(\<langle>word_nat_rel\<rangle>set_rel) (test x' y')"

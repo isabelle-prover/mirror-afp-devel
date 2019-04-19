@@ -42,7 +42,7 @@ type_synonym word_length_entry_type = word_length2
 type_synonym word_length_machine_word = word_length32
 
 definition length_machine_word :: "nat" 
- where "length_machine_word \<equiv> len_of TYPE(word_length_machine_word)"
+ where "length_machine_word \<equiv> LENGTH(word_length_machine_word)"
 
 text_raw \<open>\newpage\<close>
 

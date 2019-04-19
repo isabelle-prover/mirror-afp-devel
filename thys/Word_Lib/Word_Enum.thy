@@ -20,7 +20,7 @@ instantiation word :: (len) enum
 begin
 
 definition
-  "(enum_class.enum :: ('a :: len) word list) \<equiv> map of_nat [0 ..< 2 ^ len_of TYPE('a)]"
+  "(enum_class.enum :: ('a :: len) word list) \<equiv> map of_nat [0 ..< 2 ^ LENGTH('a)]"
 
 definition
   "enum_class.enum_all (P :: ('a :: len) word \<Rightarrow> bool) \<longleftrightarrow> Ball UNIV P"
@@ -46,11 +46,11 @@ lemma fromEnum_unat[simp]: "fromEnum (x :: ('a :: len) word) = unat x"
    defer
    apply simp
   apply (unfold fromEnum_def enum_word_def)
-  apply (subgoal_tac "\<forall>n. n < 2 ^ len_of TYPE('a) \<longrightarrow> (map of_nat [0..< 2 ^ len_of TYPE('a)] ! n) = x --> n = unat x")
-   apply (subgoal_tac "(map of_nat [0..< 2 ^ len_of TYPE('a)]) ! (the_index (map of_nat [0..< 2 ^ len_of TYPE('a)]) x) = x")
-    apply (subgoal_tac "the_index (map of_nat [0..< 2 ^ len_of TYPE('a)]) x < 2 ^ len_of TYPE('a)")
+  apply (subgoal_tac "\<forall>n. n < 2 ^ LENGTH('a) \<longrightarrow> (map of_nat [0..< 2 ^ LENGTH('a)] ! n) = x --> n = unat x")
+   apply (subgoal_tac "(map of_nat [0..< 2 ^ LENGTH('a)]) ! (the_index (map of_nat [0..< 2 ^ LENGTH('a)]) x) = x")
+    apply (subgoal_tac "the_index (map of_nat [0..< 2 ^ LENGTH('a)]) x < 2 ^ LENGTH('a)")
      apply simp
-    apply (subgoal_tac "the_index (map of_nat [0..< 2 ^ len_of TYPE('a)]) x < length (map of_nat [0..< 2 ^ len_of TYPE('a)])")
+    apply (subgoal_tac "the_index (map of_nat [0..< 2 ^ LENGTH('a)]) x < length (map of_nat [0..< 2 ^ LENGTH('a)])")
      apply simp
     apply (rule the_index_bounded)
     apply (simp add: enum_word_def)
@@ -60,11 +60,11 @@ lemma fromEnum_unat[simp]: "fromEnum (x :: ('a :: len) word) = unat x"
   apply (simp add: unat_of_nat)
   done
 
-lemma length_word_enum: "length (enum :: ('a :: len) word list) = 2 ^ len_of TYPE('a)"
+lemma length_word_enum: "length (enum :: ('a :: len) word list) = 2 ^ LENGTH('a)"
   apply (simp add: enum_word_def)
   done
 
-lemma toEnum_of_nat[simp]: "n < 2 ^ len_of TYPE('a) \<Longrightarrow> ((toEnum n) :: ('a :: len) word) = of_nat n"
+lemma toEnum_of_nat[simp]: "n < 2 ^ LENGTH('a) \<Longrightarrow> ((toEnum n) :: ('a :: len) word) = of_nat n"
   apply (subst toEnum_def)
   apply (simp add: length_word_enum)
   apply (subst enum_word_def)

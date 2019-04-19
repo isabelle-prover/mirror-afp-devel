@@ -29,7 +29,7 @@ by(simp add: word_of_integer.rep_eq)
 end
 
 lemma word_of_int_code [code abstract]:
-  "uint (word_of_int x :: 'a word) = x AND bin_mask (len_of TYPE('a :: len0))"
+  "uint (word_of_int x :: 'a word) = x AND bin_mask (LENGTH('a :: len0))"
 by(simp add: uint_word_of_int and_bin_mask_conv_mod)
 
 context fixes f :: "nat \<Rightarrow> bool" begin
@@ -45,12 +45,12 @@ apply(auto 4 3 intro: word_eqI simp add: word_ao_nth nth_shiftl test_bit.eq_norm
 done
 
 corollary set_bits_conv_set_bits_aux:
-  "set_bits f = (set_bits_aux 0 (len_of TYPE('a)) :: 'a :: len word)"
+  "set_bits f = (set_bits_aux 0 (LENGTH('a)) :: 'a :: len word)"
 by(simp add: set_bits_aux_conv)
 
 end
 
-lemma word_test_bit_set_bits: "(BITS n. f n :: 'a :: len0 word) !! n \<longleftrightarrow> n < len_of TYPE('a) \<and> f n"
+lemma word_test_bit_set_bits: "(BITS n. f n :: 'a :: len0 word) !! n \<longleftrightarrow> n < LENGTH('a) \<and> f n"
 by(auto simp add: word_set_bits_def test_bit_bl word_bl.Abs_inverse word_size)
 
 lemma word_of_int_conv_set_bits: "word_of_int i = (BITS n. i !! n)"
@@ -127,15 +127,15 @@ lemma word_div_lt_eq_0:
   shows "x < y \<Longrightarrow> x div y = 0"
   by (simp add: word_eq_iff word_less_def word_test_bit_def uint_div div_pos_pos_trivial)
 
-lemma Suc_0_lt_2p_len_of: "Suc 0 < 2 ^ len_of TYPE('a :: len)"
+lemma Suc_0_lt_2p_len_of: "Suc 0 < 2 ^ LENGTH('a :: len)"
 by (metis One_nat_def len_gt_0 one_less_numeral_iff one_less_power semiring_norm(76))
 
-lemma unat_p2: "n < len_of TYPE('a :: len) \<Longrightarrow> unat (2 ^ n :: 'a word) = 2 ^ n"
+lemma unat_p2: "n < LENGTH('a :: len) \<Longrightarrow> unat (2 ^ n :: 'a word) = 2 ^ n"
 proof(induct n)
   case 0 thus ?case by simp
 next
   case (Suc n)
-  then obtain n' where "len_of TYPE('a) = Suc n'" by(cases "len_of TYPE('a)") simp_all
+  then obtain n' where "LENGTH('a) = Suc n'" by(cases "LENGTH('a)") simp_all
   with Suc show ?case by(simp add: unat_word_ariths bintrunc_mod2p int_mod_eq')
 qed
 
@@ -176,21 +176,21 @@ lemma div_half_word:
   assumes "y \<noteq> 0"
   shows "(x div y, x mod y) = (let q = (x >> 1) div y << 1; r = x - q * y in if y \<le> r then (q + 1, r - y) else (q, r))"
 proof -
-  obtain n where n: "x = of_nat n" "n < 2 ^ len_of TYPE('a)" by(cases x)
-  obtain m where m: "y = of_nat m" "m < 2 ^ len_of TYPE('a)" by(cases y)
+  obtain n where n: "x = of_nat n" "n < 2 ^ LENGTH('a)" by(cases x)
+  obtain m where m: "y = of_nat m" "m < 2 ^ LENGTH('a)" by(cases y)
   let ?q = "(x >> 1) div y << 1"
   let ?q' = "2 * (n div 2 div m)"
-  have "n div 2 div m < 2 ^ len_of TYPE('a)" using n by (metis of_nat_inverse unat_lt2p uno_simps(2))
+  have "n div 2 div m < 2 ^ LENGTH('a)" using n by (metis of_nat_inverse unat_lt2p uno_simps(2))
   hence q: "?q = of_nat ?q'" using n m
     apply(simp add: shiftr_def shiftr1_def bin_rest_def uint_nat unat_of_nat shiftl_def shiftl1_def Bit_def word_div_def word_of_nat)
 by (metis of_nat_inverse of_nat_numeral uno_simps(2) word_of_nat zdiv_int of_nat_mult)
 
   from assms have "m \<noteq> 0" using m by -(rule notI, simp)
 
-  from n have "2 * (n div 2 div m) < 2 ^ len_of TYPE('a)"
+  from n have "2 * (n div 2 div m) < 2 ^ LENGTH('a)"
     by(metis mult.commute div_mult2_eq minus_mod_eq_mult_div [symmetric] less_imp_diff_less of_nat_inverse unat_lt2p uno_simps(2))
   moreover
-  have "2 * (n div 2 div m) * m < 2 ^ len_of TYPE('a)" using n unfolding div_mult2_eq[symmetric]
+  have "2 * (n div 2 div m) * m < 2 ^ LENGTH('a)" using n unfolding div_mult2_eq[symmetric]
     by(subst (2) mult.commute)(simp add: minus_mod_eq_div_mult [symmetric] diff_mult_distrib minus_mod_eq_mult_div [symmetric] div_mult2_eq)
   moreover have "2 * (n div 2 div m) * m \<le> n"
     by(metis div_mult2_eq div_mult_le mult.assoc mult.commute)
@@ -222,11 +222,11 @@ lemma divmod_via_sdivmod:
   assumes "y \<noteq> 0"
   shows
   "(x div y, x mod y) =
-  (if 1 << (len_of TYPE('a) - 1) \<le> y then if x < y then (0, x) else (1, x - y)
+  (if 1 << (LENGTH('a) - 1) \<le> y then if x < y then (0, x) else (1, x - y)
    else let q = ((x >> 1) sdiv y) << 1;
             r = x - q * y
         in if r \<ge> y then (q + 1, r - y) else (q, r))"
-proof(cases "1 << (len_of TYPE('a) - 1) \<le> y")
+proof(cases "1 << (LENGTH('a) - 1) \<le> y")
   case True
   note y = this
   show ?thesis
@@ -237,9 +237,9 @@ proof(cases "1 << (len_of TYPE('a) - 1) \<le> y")
     thus ?thesis using True y by(simp add: word_div_lt_eq_0)
   next
     case False
-    obtain n where n: "y = of_nat n" "n < 2 ^ len_of TYPE('a)" by(cases y)
-    have "unat x < 2 ^ len_of TYPE('a)" by(rule unat_lt2p)
-    also have "\<dots> = 2 * 2 ^ (len_of TYPE('a) - 1)"
+    obtain n where n: "y = of_nat n" "n < 2 ^ LENGTH('a)" by(cases y)
+    have "unat x < 2 ^ LENGTH('a)" by(rule unat_lt2p)
+    also have "\<dots> = 2 * 2 ^ (LENGTH('a) - 1)"
       by(metis Suc_pred len_gt_0 power_Suc One_nat_def)
     also have "\<dots> \<le> 2 * n" using y n
       by(simp add: word_le_nat_alt unat_of_nat unat_p2)
@@ -253,15 +253,15 @@ proof(cases "1 << (len_of TYPE('a) - 1) \<le> y")
 next
   case False
   note y = this
-  obtain n where n: "x = of_nat n" "n < 2 ^ len_of TYPE('a)" by(cases x)
-  hence "int n div 2 + 2 ^ (len_of TYPE('a) - Suc 0) < 2 ^ len_of TYPE('a)"
-    by (cases "len_of TYPE('a)")
+  obtain n where n: "x = of_nat n" "n < 2 ^ LENGTH('a)" by(cases x)
+  hence "int n div 2 + 2 ^ (LENGTH('a) - Suc 0) < 2 ^ LENGTH('a)"
+    by (cases "LENGTH('a)")
       (simp_all, simp only: of_nat_numeral [where ?'a = int, symmetric]
       zdiv_int [symmetric] of_nat_power [symmetric])
   with y n have "sint (x >> 1) = uint (x >> 1)"
     by(simp add: sint_uint sbintrunc_mod2p shiftr_div_2n)(simp add: int_mod_eq' uint_nat unat_of_nat)
-  moreover have "uint y + 2 ^ (len_of TYPE('a) - Suc 0) < 2 ^ len_of TYPE('a)" using y
-    by(cases "len_of TYPE('a)")(simp_all add: not_le, metis lessI word_2p_lem word_less_def word_size)
+  moreover have "uint y + 2 ^ (LENGTH('a) - Suc 0) < 2 ^ LENGTH('a)" using y
+    by(cases "LENGTH('a)")(simp_all add: not_le, metis lessI word_2p_lem word_less_def word_size)
   hence "sint y = uint y" by(simp add: sint_uint sbintrunc_mod2p int_mod_eq')
   ultimately show ?thesis using y
     by(subst div_half_word[OF assms])(simp add: word_sdiv_def uint_div[symmetric])
@@ -269,10 +269,10 @@ qed
 
 lemma word_of_int_via_signed:
   fixes mask
-  assumes mask_def: "mask = bin_mask (len_of TYPE('a))"
-  and shift_def: "shift = 1 << len_of TYPE('a)"
-  and index_def: "index = len_of TYPE('a) - 1"
-  and overflow_def:"overflow = 1 << (len_of TYPE('a) - 1)"
+  assumes mask_def: "mask = bin_mask (LENGTH('a))"
+  and shift_def: "shift = 1 << LENGTH('a)"
+  and index_def: "index = LENGTH('a) - 1"
+  and overflow_def:"overflow = 1 << (LENGTH('a) - 1)"
   and least_def: "least = - overflow"
   shows
   "(word_of_int i :: 'a :: len word) =
@@ -291,19 +291,19 @@ proof -
       by(auto intro!: bin_eqI simp add: bin_nth_ops)
     have "overflow \<le> i'" by(subst unf)(rule le_int_or, simp add: bin_sign_and assms i'_def)
     hence "i' - shift < least \<longleftrightarrow> False" unfolding assms
-      by(cases "len_of TYPE('a)")(simp_all add: not_less Bit_def)
+      by(cases "LENGTH('a)")(simp_all add: not_less Bit_def)
     moreover
     have "overflow \<le> i' - shift \<longleftrightarrow> False" using \<open>i' < shift\<close> unfolding assms
-      by(cases "len_of TYPE('a)")(auto simp add: not_le Bit_def elim: less_le_trans)
+      by(cases "LENGTH('a)")(auto simp add: not_le Bit_def elim: less_le_trans)
     moreover
     have "word_of_int (i' - shift) = (word_of_int i :: 'a word)" using \<open>i' < shift\<close>
       by(auto intro!: word_eqI simp add: i'_def shift_def mask_def bin_nth_ops bin_nth_minus_p2 bin_sign_and)
     ultimately show ?thesis using True by(simp add: Let_def i'_def)
   next
     case False
-    hence "i' = i AND bin_mask (len_of TYPE('a) - 1)" unfolding assms i'_def
-      by(clarsimp simp add: i'_def bin_nth_ops intro!: bin_eqI)(cases "len_of TYPE('a)", auto simp add: less_Suc_eq)
-    also have "\<dots> \<le> bin_mask (len_of TYPE('a) - 1)" by(rule int_and_le) simp
+    hence "i' = i AND bin_mask (LENGTH('a) - 1)" unfolding assms i'_def
+      by(clarsimp simp add: i'_def bin_nth_ops intro!: bin_eqI)(cases "LENGTH('a)", auto simp add: less_Suc_eq)
+    also have "\<dots> \<le> bin_mask (LENGTH('a) - 1)" by(rule int_and_le) simp
     also have "\<dots> < overflow" unfolding overflow_def
       by(simp add: bin_mask_p1_conv_shift[symmetric])
     also
@@ -323,16 +323,16 @@ by(rule word_eqI)(auto simp add: word_ao_nth word_size nth_shiftl simp del: shif
 
 lemma uint_and_mask_or_full:
   fixes n :: "'a :: len word"
-  assumes "n !! (len_of TYPE('a) - 1)"
-  and "mask1 = mask (len_of TYPE('a) - 1)"
-  and "mask2 = 1 << len_of TYPE('a) - 1"
+  assumes "n !! (LENGTH('a) - 1)"
+  and "mask1 = mask (LENGTH('a) - 1)"
+  and "mask2 = 1 << LENGTH('a) - 1"
   shows "uint (n AND mask1) OR mask2 = uint n"
 proof -
-  have "mask2 = uint (1 << len_of TYPE('a) - 1 :: 'a word)" using assms
+  have "mask2 = uint (1 << LENGTH('a) - 1 :: 'a word)" using assms
     by(simp add: uint_shiftl word_size bintrunc_shiftl del: shiftl_1)(metis One_nat_def Suc_diff_Suc bintrunc_minus bintrunc_shiftl diff_self_eq_0 len_gt_0 len_num1 lessI uint_1 uint_word_arith_bintrs(8))
-  hence "uint (n AND mask1) OR mask2 = uint (n AND mask1 OR (1 << len_of TYPE('a) - 1 :: 'a word))"
+  hence "uint (n AND mask1) OR mask2 = uint (n AND mask1 OR (1 << LENGTH('a) - 1 :: 'a word))"
     by(simp add: uint_or)
-  also have "\<dots> = uint (n AND mask (len_of TYPE('a) - 1 + 1))"
+  also have "\<dots> = uint (n AND mask (LENGTH('a) - 1 + 1))"
     using assms by(simp only: word_and_mask_or_conv_and_mask)
   also have "\<dots> = uint n" by simp
   finally show ?thesis .

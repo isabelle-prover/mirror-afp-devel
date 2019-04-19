@@ -26,8 +26,8 @@ section \<open>Configurations\<close>
   type_synonym focused_state = "local_state \<times> global_state"
 
 section \<open>Utilities\<close>
-  abbreviation "word_len \<equiv> len_of TYPE(word_size)"
-  abbreviation "signeds \<equiv> sints (len_of TYPE(word_size))"
+  abbreviation "word_len \<equiv> LENGTH(word_size)"
+  abbreviation "signeds \<equiv> sints (LENGTH(word_size))"
 
   definition min_signed :: int where "min_signed \<equiv> -(2^(word_len - 1))"
   definition max_signed :: int where "max_signed \<equiv> 2^(word_len - 1) - 1"

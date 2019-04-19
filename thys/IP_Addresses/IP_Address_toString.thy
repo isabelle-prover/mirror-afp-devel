@@ -12,7 +12,7 @@ subsection\<open>Generic Pretty Printer\<close>
   text\<open>Generic function. Whenever possible, use IPv4 or IPv6 pretty printing!\<close>
   definition ipaddr_generic_toString :: "'i::len word \<Rightarrow> string" where
     "ipaddr_generic_toString ip \<equiv>
-      ''[IP address ('' @ string_of_nat (len_of TYPE('i)) @ '' bit): '' @ dec_string_of_word0 ip @ '']''"
+      ''[IP address ('' @ string_of_nat (LENGTH('i)) @ '' bit): '' @ dec_string_of_word0 ip @ '']''"
   
   lemma "ipaddr_generic_toString (ipv4addr_of_dotdecimal (192,168,0,1)) = ''[IP address (32 bit): 3232235521]''" by eval
 

@@ -12,13 +12,13 @@ begin
   primrec lookup :: "nat \<Rightarrow> ('a::len) word list \<Rightarrow> bool" where
     "lookup _ [] \<longleftrightarrow> False"
   | "lookup n (w#ws) 
-      \<longleftrightarrow> (if n<len_of TYPE('a) then test_bit w n else lookup (n-len_of TYPE('a)) ws)"
+      \<longleftrightarrow> (if n<LENGTH('a) then test_bit w n else lookup (n-LENGTH('a)) ws)"
 
   lemma lookup_append[simp]: "lookup n (w1@w2 :: 'a::len word list) 
     \<longleftrightarrow> (
-      if n < len_of TYPE('a) * length w1 then 
+      if n < LENGTH('a) * length w1 then 
         lookup n w1 
-      else lookup (n - len_of TYPE('a) * length w1) w2)"
+      else lookup (n - LENGTH('a) * length w1) w2)"
     by (induction w1 arbitrary: n) auto
 
   lemma lookup_zeroes[simp]: "lookup i (replicate n (0::'a::len word)) = False"
@@ -26,7 +26,7 @@ begin
 
   lemma lookup_out_of_bound: 
     fixes uv :: "'a::len word list"
-    assumes "\<not> i < len_of TYPE('a::len) * length uv" 
+    assumes "\<not> i < LENGTH('a::len) * length uv" 
     shows "\<not> lookup i uv"
     using assms
     by (induction uv arbitrary: i) auto
@@ -40,9 +40,9 @@ begin
 
   function single_bit :: "nat \<Rightarrow> ('a::len) word list" 
     where "single_bit n = (
-      if (n<len_of TYPE('a)) then 
+      if (n<LENGTH('a)) then 
         [set_bit 0 n True] 
-      else 0#single_bit (n-len_of TYPE('a)))"
+      else 0#single_bit (n-LENGTH('a)))"
     by pat_completeness auto
   termination
     apply (relation "measure id")
@@ -63,10 +63,10 @@ find_consts name: set_bit
   primrec set_bit :: "nat \<Rightarrow> 'a::len word list \<Rightarrow> 'a::len word list" where
     "set_bit i [] = single_bit i"
   | "set_bit i (w#ws) = (
-      if i<len_of TYPE('a) then 
+      if i<LENGTH('a) then 
         bits_class.set_bit w i True # ws 
       else 
-        w # set_bit (i - len_of TYPE('a)) ws)"
+        w # set_bit (i - LENGTH('a)) ws)"
   
   lemma set_bit_lookup[simp]: "lookup i (set_bit j ws) \<longleftrightarrow> (lookup i ws \<or> i=j)"
     apply (induction ws arbitrary: i j)
@@ -77,10 +77,10 @@ find_consts name: set_bit
   primrec reset_bit :: "nat \<Rightarrow> 'a::len word list \<Rightarrow> 'a::len word list" where
     "reset_bit i [] = []"
   | "reset_bit i (w#ws) = (
-      if i<len_of TYPE('a) then 
+      if i<LENGTH('a) then 
         bits_class.set_bit w i False # ws 
       else 
-        w # reset_bit (i - len_of TYPE('a)) ws)"
+        w # reset_bit (i - LENGTH('a)) ws)"
   
   lemma reset_bit_lookup[simp]: "lookup i (reset_bit j ws) \<longleftrightarrow> (lookup i ws \<and> i\<noteq>j)"
     apply (induction ws arbitrary: i j)
@@ -93,7 +93,7 @@ find_consts name: set_bit
     is_bin_op_impl 
     :: "(bool\<Rightarrow>bool\<Rightarrow>bool) \<Rightarrow> ('a::len word \<Rightarrow> 'a::len word \<Rightarrow> 'a::len word) \<Rightarrow> bool"
     where "is_bin_op_impl f g \<equiv> 
-    (\<forall>w v.  \<forall>i<len_of TYPE('a). test_bit (g w v) i \<longleftrightarrow> f (test_bit w i) (test_bit v i))"
+    (\<forall>w v.  \<forall>i<LENGTH('a). test_bit (g w v) i \<longleftrightarrow> f (test_bit w i) (test_bit v i))"
 
   definition "is_strict_bin_op_impl f g \<equiv> is_bin_op_impl f g \<and> f False False = False"
 
@@ -223,9 +223,9 @@ find_consts name: set_bit
         apply (auto simp: word_eq_iff IH)
         apply metis
         apply metis
-        apply (drule_tac x="i + len_of TYPE('a)" in spec)
+        apply (drule_tac x="i + LENGTH('a)" in spec)
         apply auto []
-        apply (drule_tac x="i + len_of TYPE('a)" in spec)
+        apply (drule_tac x="i + LENGTH('a)" in spec)
         apply auto []
         done
     qed

@@ -6,7 +6,7 @@ begin
 
 instantiation word :: (len) card_UNIV begin
 definition "finite_UNIV = Phantom('a word) True"
-definition "card_UNIV = Phantom('a word) (2 ^ len_of TYPE('a))"
+definition "card_UNIV = Phantom('a word) (2 ^ LENGTH('a))"
 instance by(intro_classes)(simp_all add: card_UNIV_word_def card_word finite_UNIV_word_def)
 end
 

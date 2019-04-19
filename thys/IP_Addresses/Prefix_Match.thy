@@ -183,10 +183,10 @@ subsection\<open>Equivalence Proofs\<close>
           by simp
         show ?case unfolding * ** ..
       qed
-      have "((mask len)::'a::len word) << len_of TYPE('a) - len = ~~ mask (len_of TYPE('a) - len)"
+      have "((mask len)::'a::len word) << LENGTH('a) - len = ~~ mask (LENGTH('a) - len)"
       for len using NOT_mask_shifted_lenword by (metis word_not_not)
       from this[of "(pfxm_length pfx)"] have mask_def2_symmetric:
-        "((mask (pfxm_length pfx)::'a::len word) << len_of TYPE('a) - pfxm_length pfx) =
+        "((mask (pfxm_length pfx)::'a::len word) << LENGTH('a) - pfxm_length pfx) =
           NOT pfxm_mask pfx"
         unfolding pfxm_mask_def by simp
   

@@ -16,7 +16,7 @@ text\<open>
 definition get_field_from_word_a_b:: "'a::len word \<Rightarrow> nat \<Rightarrow> 'b::len word"
  where
   "get_field_from_word_a_b addr index 
-    \<equiv> let off = (size addr - len_of TYPE('b)) 
+    \<equiv> let off = (size addr - LENGTH('b)) 
        in ucast ((addr << (off-index)) >> off)"
 
 text\<open>

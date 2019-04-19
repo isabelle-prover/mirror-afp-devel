@@ -514,7 +514,7 @@ subsection\<open>Semantics\<close>
         apply simp_all
       by (simp add: length_drop_mask)
 
-    have mask_len_word:"n = (len_of TYPE('a)) \<Longrightarrow> w AND mask n = w"
+    have mask_len_word:"n = (LENGTH('a)) \<Longrightarrow> w AND mask n = w"
       for n and w::"'a::len word" by (simp add: mask_eq_iff) 
 
     have ipv6addr_16word_pieces_compose_or:

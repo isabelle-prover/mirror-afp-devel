@@ -38,7 +38,7 @@ proof -
 qed
 
 lemma length_drop_mask_outer: fixes ip::"'a::len word"
-  shows "len_of TYPE('a) - n' = len \<Longrightarrow> length (dropWhile Not (to_bl (ip AND (mask n << n') >> n'))) \<le> len"
+  shows "LENGTH('a) - n' = len \<Longrightarrow> length (dropWhile Not (to_bl (ip AND (mask n << n') >> n'))) \<le> len"
   apply(subst Word_Lemmas.word_and_mask_shiftl)
   apply(subst Word_Lib.shiftl_shiftr1)
    apply(simp; fail)
@@ -48,7 +48,7 @@ lemma length_drop_mask_outer: fixes ip::"'a::len word"
   apply(simp add: length_drop_mask)
   done
 lemma length_drop_mask_inner: fixes ip::"'a::len word"
-  shows "n \<le> len_of TYPE('a) - n' \<Longrightarrow> length (dropWhile Not (to_bl (ip AND (mask n << n') >> n'))) \<le> n"
+  shows "n \<le> LENGTH('a) - n' \<Longrightarrow> length (dropWhile Not (to_bl (ip AND (mask n << n') >> n'))) \<le> n"
   apply(subst Word_Lemmas.word_and_mask_shiftl)
   apply(subst Word_Lemmas.shiftl_shiftr3)
    apply(simp; fail)
@@ -97,7 +97,7 @@ proof -
     with assms(2) show ?thesis by(subst word_less_nat_alt) simp
   qed
   hence mnhelper2: "(of_bl::bool list \<Rightarrow> 128 word) (to_bl b) < 2 ^ (m - n)"
-    apply(subgoal_tac "(of_bl::bool list \<Rightarrow> 128 word) (to_bl b) < 2^(len_of TYPE(16))")
+    apply(subgoal_tac "(of_bl::bool list \<Rightarrow> 128 word) (to_bl b) < 2^(LENGTH(16))")
      apply(simp; fail)
     by(rule Word.of_bl_length_less) simp+
   have mnhelper3: "(of_bl::bool list \<Rightarrow> 128 word) (to_bl b) * 2 ^ n < 2 ^ m"
@@ -144,7 +144,7 @@ qed
    shows "((ucast:: 16 word \<Rightarrow> 128 word) b << n) && (mask 16 << m) = 0"
  proof -
 
-   have power_less_128_helper: "2 ^ n * unat ((of_bl::bool list \<Rightarrow> 128 word) (to_bl b)) < 2 ^ len_of TYPE(128)"
+   have power_less_128_helper: "2 ^ n * unat ((of_bl::bool list \<Rightarrow> 128 word) (to_bl b)) < 2 ^ LENGTH(128)"
      if n: "n \<le> 128 - 16" for n
    proof -
      have help_mult: "n \<le> l \<Longrightarrow> 2 ^ n * x < 2 ^ l \<longleftrightarrow> x < 2 ^ (l - n)" for x::nat and l
@@ -173,8 +173,8 @@ qed
      done
    qed
 
-  from assms have "unat ((2 ^ n)::128 word) * unat ((of_bl::bool list \<Rightarrow> 128 word) (to_bl b)) mod 2 ^ len_of TYPE(128) =
-        2 ^ m * (2 ^ (n - m) * unat ((of_bl::bool list \<Rightarrow> 128 word) (to_bl b)) mod 2 ^ len_of TYPE(128))"
+  from assms have "unat ((2 ^ n)::128 word) * unat ((of_bl::bool list \<Rightarrow> 128 word) (to_bl b)) mod 2 ^ LENGTH(128) =
+        2 ^ m * (2 ^ (n - m) * unat ((of_bl::bool list \<Rightarrow> 128 word) (to_bl b)) mod 2 ^ LENGTH(128))"
      apply(subst nat_mod_eq')
       subgoal apply(subst Aligned.unat_power_lower)
        subgoal by(simp; fail)
@@ -186,7 +186,7 @@ qed
       apply(simp; fail)
      apply(simp only: *)
      done
-   hence ex_k: "\<exists>k. unat ((2 ^ n)::128 word) * unat ((of_bl::bool list \<Rightarrow> 128 word) (to_bl b)) mod 2 ^ len_of TYPE(128) = 2 ^ m * k"
+   hence ex_k: "\<exists>k. unat ((2 ^ n)::128 word) * unat ((of_bl::bool list \<Rightarrow> 128 word) (to_bl b)) mod 2 ^ LENGTH(128) = 2 ^ m * k"
      by blast
 
    hence aligned: "is_aligned ((of_bl::bool list \<Rightarrow> 128 word) (to_bl b) << n) m"

@@ -564,10 +564,10 @@ definition wivs_overflow_uint :: uint
 
 (* TODO: Move to Word *)
 lemma dflt_size_word_pow_ne_zero [simp]:
-  "(2 :: 'a word) ^ (len_of TYPE('a::len) - Suc 0) \<noteq> 0"
+  "(2 :: 'a word) ^ (LENGTH('a::len) - Suc 0) \<noteq> 0"
 proof
-  assume "(2 :: 'a word) ^ (len_of TYPE('a::len) - Suc 0) = 0"
-  then have "unat ((2 :: 'a word) ^ (len_of TYPE('a::len) - Suc 0)) = unat 0"
+  assume "(2 :: 'a word) ^ (LENGTH('a::len) - Suc 0) = 0"
+  then have "unat ((2 :: 'a word) ^ (LENGTH('a::len) - Suc 0)) = unat 0"
     by simp
   then show False by (simp add: unat_p2)
 qed

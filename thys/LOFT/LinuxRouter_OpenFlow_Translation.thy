@@ -513,7 +513,7 @@ proof(intro inj_onI, goal_cases)
          unfolding mask_bl of_bl_rep_False .
   have "\<And>z. z \<le> 16 \<Longrightarrow> length (replicate (16 - z) False @ replicate z True) = 16" by auto
   with 1(1,2)
-  have ps: "replicate (16 - x) False @ replicate x True \<in> {bl. length bl = len_of TYPE(16)}" " replicate (16 - y) False @ replicate y True \<in> {bl. length bl = len_of TYPE(16)}" by simp_all
+  have ps: "replicate (16 - x) False @ replicate x True \<in> {bl. length bl = LENGTH(16)}" " replicate (16 - y) False @ replicate y True \<in> {bl. length bl = LENGTH(16)}" by simp_all
   from inj_onD[OF word_bl.Abs_inj_on, OF oe ps]
   show ?case using 1(1,2) by(fastforce intro: replicate_FT_hlp)
 qed

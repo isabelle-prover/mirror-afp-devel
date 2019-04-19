@@ -30,18 +30,18 @@ virtual translation tables indexes, virtual address offset and Page protection f
 
 
 definition length_entry_type :: "nat" 
-where "length_entry_type \<equiv> len_of TYPE(word_length_entry_type)" 
+where "length_entry_type \<equiv> LENGTH(word_length_entry_type)" 
 definition length_phys_address:: "nat" 
-where "length_phys_address \<equiv> len_of TYPE(word_length_phys_address)"
+where "length_phys_address \<equiv> LENGTH(word_length_phys_address)"
 definition length_virtua_address:: "nat" 
-where "length_virtua_address \<equiv> len_of TYPE(word_length_virtua_address)"
-definition length_page:: "nat" where "length_page \<equiv> len_of TYPE(word_length_page)"
-definition length_t1:: "nat" where "length_t1 \<equiv> len_of TYPE(word_length_t1)"
-definition length_t2:: "nat" where "length_t2 \<equiv> len_of TYPE(word_length_t2)"
-definition length_t3:: "nat" where "length_t3 \<equiv> len_of TYPE(word_length_t3)"
-definition length_offset:: "nat" where "length_offset \<equiv> len_of TYPE(word_length_offset)"
+where "length_virtua_address \<equiv> LENGTH(word_length_virtua_address)"
+definition length_page:: "nat" where "length_page \<equiv> LENGTH(word_length_page)"
+definition length_t1:: "nat" where "length_t1 \<equiv> LENGTH(word_length_t1)"
+definition length_t2:: "nat" where "length_t2 \<equiv> LENGTH(word_length_t2)"
+definition length_t3:: "nat" where "length_t3 \<equiv> LENGTH(word_length_t3)"
+definition length_offset:: "nat" where "length_offset \<equiv> LENGTH(word_length_offset)"
 definition length_PTE_flags :: "nat" where 
-"length_PTE_flags \<equiv> len_of TYPE(word_length_PTE_flags)"
+"length_PTE_flags \<equiv> LENGTH(word_length_PTE_flags)"
 
 subsection "MMU index values"
 

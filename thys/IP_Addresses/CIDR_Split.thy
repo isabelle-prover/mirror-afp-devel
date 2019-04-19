@@ -96,7 +96,7 @@ proof -
     using a wordinterval_lowest_element_set_eq wordinterval_lowest_none_empty
     by (metis is_lowest_element_def option.distinct(1))
   ultimately have d:
-    "wordinterval_to_set (prefix_to_wordinterval (PrefixMatch a (len_of TYPE('a)))) \<subseteq> wordinterval_to_set r"
+    "wordinterval_to_set (prefix_to_wordinterval (PrefixMatch a (LENGTH('a)))) \<subseteq> wordinterval_to_set r"
     by simp
   show ?thesis
     unfolding largest_contained_prefix_def Let_def
@@ -231,7 +231,7 @@ proof(induction r rule: wordinterval_CIDR_split_prefixmatch.induct)
 qed
 
 lemma wordinterval_CIDR_split_prefixmatch_all_valid_Ball: fixes r:: "'a::len wordinterval"
-  shows "\<forall>e\<in>set (wordinterval_CIDR_split_prefixmatch r). valid_prefix e \<and> pfxm_length e \<le> len_of TYPE('a)"
+  shows "\<forall>e\<in>set (wordinterval_CIDR_split_prefixmatch r). valid_prefix e \<and> pfxm_length e \<le> LENGTH('a)"
 (* The induction is somewhat verbose, so it is less annoying to write the two down at once *)
 proof(induction r rule: wordinterval_CIDR_split_prefixmatch.induct)
   case 1
@@ -243,10 +243,10 @@ proof(induction r rule: wordinterval_CIDR_split_prefixmatch.induct)
     hence i1: "valid_prefix x"
       unfolding wordinterval_CIDR_split1_def Let_def largest_contained_prefix_def
       by(auto dest: find_SomeD split: option.splits)
-    have i2: "pfxm_length x \<le> len_of TYPE('a)" 
+    have i2: "pfxm_length x \<le> LENGTH('a)" 
       using s1 unfolding wordinterval_CIDR_split1_def Let_def largest_contained_prefix_def pfxes_def
       by(force split: option.splits dest: find_SomeD simp: nat_le_iff)
-    have mIH: "\<forall>a\<in>set (wordinterval_CIDR_split_prefixmatch y). valid_prefix a \<and> pfxm_length a \<le> len_of TYPE('a)"
+    have mIH: "\<forall>a\<in>set (wordinterval_CIDR_split_prefixmatch y). valid_prefix a \<and> pfxm_length a \<le> LENGTH('a)"
       using 1[OF False s1[symmetric] refl] .
     with i1 i2 show ?thesis
       apply(subst wordinterval_CIDR_split_prefixmatch.simps)
@@ -258,7 +258,7 @@ qed
 
 
 private lemma wordinterval_CIDR_split_prefixmatch_all_valid_less_Ball_hlp:
-	"x \<in> set [s\<leftarrow>map (PrefixMatch x2) (pfxes TYPE('a::len0)) . valid_prefix s \<and> wordinterval_to_set (prefix_to_wordinterval s) \<subseteq> wordinterval_to_set rs] \<Longrightarrow> pfxm_length x \<le> len_of TYPE('a)"
+	"x \<in> set [s\<leftarrow>map (PrefixMatch x2) (pfxes TYPE('a::len0)) . valid_prefix s \<and> wordinterval_to_set (prefix_to_wordinterval s) \<subseteq> wordinterval_to_set rs] \<Longrightarrow> pfxm_length x \<le> LENGTH('a)"
 by(clarsimp simp: pfxes_def) presburger
 
 

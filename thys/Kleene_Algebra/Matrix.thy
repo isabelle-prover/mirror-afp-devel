@@ -17,13 +17,13 @@ algebra~\cite{conway71regular}.\<close>
 
 subsection \<open>Type Definition\<close>
 
-typedef (overloaded) 'a atMost = "{..<len_of TYPE('a::len)}"
+typedef (overloaded) 'a atMost = "{..<LENGTH('a::len)}"
 by auto
 
 declare Rep_atMost_inject [simp]
 
 lemma UNIV_atMost:
-  "(UNIV::'a atMost set) = Abs_atMost ` {..<len_of TYPE('a::len)}"
+  "(UNIV::'a atMost set) = Abs_atMost ` {..<LENGTH('a::len)}"
  apply auto
  apply (rule Abs_atMost_induct)
  apply auto

@@ -34,7 +34,7 @@ lemma "let word_upto = ((\<lambda> i j. map (of_nat \<circ> nat) [i .. j]) :: in
 function string_of_word :: "bool \<Rightarrow> ('a :: len) word \<Rightarrow> nat \<Rightarrow> ('a :: len) word \<Rightarrow> string" where
   "string_of_word lc base ml w =
     (if
-       base < 2 \<or> len_of TYPE('a) < 2
+       base < 2 \<or> LENGTH('a) < 2
      then
        undefined
      else if
@@ -99,7 +99,7 @@ by (simp add: mod_pos_pos_trivial no_bintr_alt1; fail)
 (*The following lemma [symmetric] as [code_unfold] may give some cool speedup*)
 lemma string_of_word_base_ten_zeropad:
   fixes w ::"'a::len word"
-  assumes lena: "len_of TYPE('a) \<ge> 5" (*word must be long enough to encode 10 = 0xA*)
+  assumes lena: "LENGTH('a) \<ge> 5" (*word must be long enough to encode 10 = 0xA*)
   shows "base = 10 \<Longrightarrow> zero = 0 \<Longrightarrow> string_of_word True base zero w = string_of_nat (unat w)"
   proof(induction True base zero w rule: string_of_word.induct)
   case (1 base ml n)
@@ -138,14 +138,14 @@ lemma string_of_word_base_ten_zeropad:
     apply(subst(asm) unat_ten)
     by(simp)
   hence n_less_ten_unat_not: "\<not> n < 0xA \<Longrightarrow> \<not> unat n < 10" by fastforce
-  have not_wordlength_too_small: "\<not> len_of TYPE('a) < 2" using lena by fastforce
+  have not_wordlength_too_small: "\<not> LENGTH('a) < 2" using lena by fastforce
   have "2 \<le> (0xA::'a word)"
     apply(subst word_le_nat_alt)
     apply(subst unat_ten unat_two)
     apply(subst unat_two)
     by(simp)
   hence ten_not_less_two: "\<not> (0xA::'a word) < 2" by (simp add: Word.word_less_no Word.uint_bintrunc)
-  with 1(2,3) have " \<not> (base < 2 \<or> len_of TYPE(32) < 2)"
+  with 1(2,3) have " \<not> (base < 2 \<or> LENGTH(32) < 2)"
     by(simp)
   with 1 not_wordlength_too_small have IH: "\<not> n < 0xA \<Longrightarrow> string_of_word True 0xA 0 (n div 0xA) = string_of_nat (unat (n div 0xA))"
     by(simp)

@@ -21,7 +21,7 @@ text \<open>
 
 lemma neg_num_bintr:
   "(- numeral x :: 'a::len word) =
-  word_of_int (bintrunc (len_of TYPE('a)) (-numeral x))"
+  word_of_int (bintrunc (LENGTH('a)) (-numeral x))"
   by (simp only: word_ubin.Abs_norm word_neg_numeral_alt)
 
 ML \<open>
@@ -67,7 +67,7 @@ simproc_setup
 declare word_pow_0 [simp]
 
 lemma minus_one_norm:
-  "(-1 :: 'a :: len word) = of_nat (2 ^ len_of TYPE('a) - 1)"
+  "(-1 :: 'a :: len word) = of_nat (2 ^ LENGTH('a) - 1)"
   by (simp add:of_nat_diff)
 
 lemmas minus_one_norm_num =
