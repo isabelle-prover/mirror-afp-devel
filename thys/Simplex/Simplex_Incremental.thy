@@ -543,7 +543,7 @@ locale Incremental_Simplex_Ops = fixes
   init_cs :: "'i i_constraint list \<Rightarrow> 's" and
   assert_cs :: "'i \<Rightarrow> 's \<Rightarrow> 'i list + 's" and
   check_cs :: "'s \<Rightarrow> 'i list + 's" and
-  solution_cs :: "'s \<Rightarrow> (var, rat) mapping" and
+  solution_cs :: "'s \<Rightarrow> rat valuation" and
   checkpoint_cs :: "'s \<Rightarrow> 'c" and
   backtrack_cs :: "'c \<Rightarrow> 's \<Rightarrow> 's" and
   invariant_cs :: "'i i_constraint list \<Rightarrow> 'i set \<Rightarrow> 's \<Rightarrow> bool" and
@@ -558,7 +558,7 @@ assumes
   check_cs_unsat: "invariant_cs cs J s \<Longrightarrow> check_cs s = Unsat I \<Longrightarrow>
     set I \<subseteq> J \<and> minimal_unsat_core (set I) cs" and
   init_cs: "checked_cs cs {} (init_cs cs)" and
-  solution_cs: "checked_cs cs J s \<Longrightarrow> solution_cs s = v \<Longrightarrow> (J, \<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs" and
+  solution_cs: "checked_cs cs J s \<Longrightarrow> solution_cs s = v \<Longrightarrow> (J, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs" and
   backtrack_cs: "checked_cs cs J s \<Longrightarrow> checkpoint_cs s = c 
     \<Longrightarrow> invariant_cs cs K s' \<Longrightarrow> backtrack_cs c s' = s'' \<Longrightarrow> J \<subseteq> K \<Longrightarrow> invariant_cs cs J s''" and
   checked_invariant_cs: "checked_cs cs J s \<Longrightarrow> invariant_cs cs J s" 
@@ -574,7 +574,7 @@ definition "init_cs init tons cs = (let tons_cs = tons cs in (map snd (tons_cs),
 definition "check_cs check s = sum_wrap (\<lambda> cs. check) s" 
 fun checkpoint_cs where "checkpoint_cs checkp (cs,s) = (checkp s)" 
 fun backtrack_cs where "backtrack_cs backt c (cs,s) = (cs, backt c s)" 
-fun solution_cs where "solution_cs sol from (cs,s) = (from (sol s) cs)" 
+fun solution_cs where "solution_cs sol from (cs,s) = (\<langle>from (sol s) cs\<rangle>)" 
 
 locale Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex =
   Incremental_NS_Constraint_Ops init_nsc assert_nsc check_nsc solution_nsc checkpoint_nsc backtrack_nsc 
@@ -649,7 +649,7 @@ next
   note pre = 6[unfolded S solution_cs.simps w Let_def]
   from pre have
     inv: "checked_nsc (to_ns cs) J s" and
-    v: "v = from_ns w (map snd (to_ns cs))" by auto
+    v: "v = \<langle>from_ns w (map snd (to_ns cs))\<rangle>" by auto
   from solution_nsc[OF inv w] have w: "(J, \<langle>w\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set (to_ns cs)" .
   from i_to_ns_sat[OF w]
   show ?case unfolding v .
@@ -825,7 +825,7 @@ fun check_simplex where
   "check_simplex (Simplex_State (cs, asi_tv, s)) = (case check_s s of Inl y \<Rightarrow> Inl y | Inr s' \<Rightarrow> Inr (Simplex_State (cs, asi_tv, s')))"
 
 fun solution_simplex where
-  "solution_simplex (Simplex_State (cs, (asi, tv, ui), s)) = from_ns (tv (\<V> s)) cs" 
+  "solution_simplex (Simplex_State (cs, (asi, tv, ui), s)) = \<langle>from_ns (tv (\<V> s)) cs\<rangle>" 
 
 fun checkpoint_simplex where "checkpoint_simplex (Simplex_State (cs, asi_tv, s)) = Simplex_Checkpoint (checkpoint_s s)" 
 
@@ -918,7 +918,7 @@ proof (cases s)
 qed
 
 lemma solution_simplex:
-  "checked_simplex cs J s \<Longrightarrow> solution_simplex s = v \<Longrightarrow> (J, \<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs" 
+  "checked_simplex cs J s \<Longrightarrow> solution_simplex s = v \<Longrightarrow> (J, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs" 
   using Incremental_Simplex.solution_cs[of cs J]
   by (cases s, auto simp: solution_simplex')
 
@@ -1023,6 +1023,6 @@ value (code) "let cs = [
     s6 = (case assert_all_simplex [5,6] s5 of Inr s \<Rightarrow> s | Unsat _ \<Rightarrow> undefined); \<comment> \<open>assert 5,6\<close>
     s7 = (case check_simplex s6 of Inr s \<Rightarrow> s | Unsat _ \<Rightarrow> undefined); \<comment> \<open>check that 1,2,3,5,6 are sat.\<close>
     sol = solution_simplex s7 \<comment> \<open>solution for 1,2,3,5,6\<close>
-  in (I, map (\<lambda> x. (''x_'', x, ''='', \<langle>sol\<rangle> x)) [0,1,2,3]) \<comment> \<open>output unsat core and solution\<close>" 
+  in (I, map (\<lambda> x. (''x_'', x, ''='', sol x)) [0,1,2,3]) \<comment> \<open>output unsat core and solution\<close>" 
 
 end
