@@ -63,9 +63,6 @@ code_identifier
 | code_module List \<rightharpoonup> (SML) Set
 | code_module Predicate \<rightharpoonup> (SML) Set
 | constant member_i_i \<rightharpoonup> (SML) "Set.member_i_i"
-code_identifier 
-  code_module Bit_Representation => (SML) Bit_Int
-| code_module Bool_List_Representation => (SML) Bit_Int
 
 export_code
   wf_J_prog' exec_J_rr exec_J_rnd 

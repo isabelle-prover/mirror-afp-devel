@@ -6,6 +6,7 @@ chapter \<open>Bit operations for target language integers\<close>
 
 theory Bits_Integer imports
   More_Bits_Int
+  Code_Symbolic_Bits_Int
 begin
 
 lemmas [transfer_rule] =
@@ -28,7 +29,7 @@ begin
 
 lemma bitval_integer_transfer [transfer_rule]:
   "(rel_fun (=) pcr_integer) of_bool of_bool"
-by(auto simp add: of_bool_def integer.pcr_cr_eq cr_integer_def split: bit.split)
+by(auto simp add: of_bool_def integer.pcr_cr_eq cr_integer_def)
 
 lemma integer_of_nat_less_0_conv [simp]: "\<not> integer_of_nat n < 0"
 by(transfer) simp
@@ -112,7 +113,7 @@ text \<open>
 \<close>
 
 code_identifier code_module Bits_Integer \<rightharpoonup>
-  (SML) Bit_Int and (OCaml) Bit_Int and (Haskell) Bit_Int and (Scala) Bit_Int
+  (SML) Bits_Int and (OCaml) Bits_Int and (Haskell) Bits_Int and (Scala) Bits_Int
 
 code_printing code_module Bits_Integer \<rightharpoonup> (SML)
 \<open>structure Bits_Integer : sig

@@ -5,8 +5,7 @@
 chapter \<open>Unsigned words of 8 bits\<close>
 
 theory Uint8 imports
-  Word_Misc
-  Bits_Integer
+  Code_Target_Word_Base
 begin
 
 text \<open>

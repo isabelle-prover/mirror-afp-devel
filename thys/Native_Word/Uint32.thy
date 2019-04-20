@@ -5,8 +5,7 @@
 chapter \<open>Unsigned words of 32 bits\<close>
 
 theory Uint32 imports
-  Word_Misc
-  Bits_Integer
+  Code_Target_Word_Base
 begin
 
 declare prod.Quotient[transfer_rule]

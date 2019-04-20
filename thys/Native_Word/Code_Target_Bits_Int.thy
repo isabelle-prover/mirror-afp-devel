@@ -72,7 +72,4 @@ by(simp add: int_of_integer_symbolic_def)
 
 end
 
-code_identifier code_module Code_Target_Bits_Int \<rightharpoonup>
-  (SML) Bit_Int and (OCaml) Bit_Int and (Haskell) Bit_Int and (Scala) Bit_Int
-
 end
