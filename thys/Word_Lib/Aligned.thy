@@ -520,7 +520,7 @@ proof -
   apply simp
   apply (rule conjI)
    apply (clarsimp simp: word_size)
-   apply (simp add: bl_word_xor map2_def to_bl_2p)
+   apply (simp add: bl_word_xor to_bl_2p)
    apply (subst x)
    apply (subst zip_append)
     apply simp

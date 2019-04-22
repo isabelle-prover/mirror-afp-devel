@@ -96,11 +96,15 @@ lift_definition bitOR_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is bi
 lift_definition bitXOR_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is bitXOR .
 lift_definition test_bit_uint :: "uint \<Rightarrow> nat \<Rightarrow> bool" is test_bit .
 lift_definition set_bit_uint :: "uint \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint" is set_bit .
-lift_definition set_bits_uint :: "(nat \<Rightarrow> bool) \<Rightarrow> uint" is "set_bits" .
 lift_definition lsb_uint :: "uint \<Rightarrow> bool" is lsb .
 lift_definition shiftl_uint :: "uint \<Rightarrow> nat \<Rightarrow> uint" is shiftl .
 lift_definition shiftr_uint :: "uint \<Rightarrow> nat \<Rightarrow> uint" is shiftr .
 lift_definition msb_uint :: "uint \<Rightarrow> bool" is msb .
+instance ..
+end
+
+instantiation uint :: bit_comprehension begin
+lift_definition set_bits_uint :: "(nat \<Rightarrow> bool) \<Rightarrow> uint" is "set_bits" .
 instance ..
 end
 

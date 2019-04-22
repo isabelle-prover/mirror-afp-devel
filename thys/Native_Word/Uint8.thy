@@ -55,11 +55,15 @@ lift_definition bitOR_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" i
 lift_definition bitXOR_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is bitXOR .
 lift_definition test_bit_uint8 :: "uint8 \<Rightarrow> nat \<Rightarrow> bool" is test_bit .
 lift_definition set_bit_uint8 :: "uint8 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint8" is set_bit .
-lift_definition set_bits_uint8 :: "(nat \<Rightarrow> bool) \<Rightarrow> uint8" is "set_bits" .
 lift_definition lsb_uint8 :: "uint8 \<Rightarrow> bool" is lsb .
 lift_definition shiftl_uint8 :: "uint8 \<Rightarrow> nat \<Rightarrow> uint8" is shiftl .
 lift_definition shiftr_uint8 :: "uint8 \<Rightarrow> nat \<Rightarrow> uint8" is shiftr .
 lift_definition msb_uint8 :: "uint8 \<Rightarrow> bool" is msb .
+instance ..
+end
+
+instantiation uint8 :: bit_comprehension begin
+lift_definition set_bits_uint8 :: "(nat \<Rightarrow> bool) \<Rightarrow> uint8" is "set_bits" .
 instance ..
 end
 

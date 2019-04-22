@@ -160,13 +160,10 @@ assumes "length al = length bl" and "a1 \<in> set al \<or> G a1 = F (H a1)"
 shows "lupd al (map F bl) G a1 = F (lupd al bl H a1)"
 using assms apply (induct arbitrary: F G H rule: list_induct2) by auto
 
-definition map2 where
-"map2 f xl yl \<equiv> map (case_prod f) (zip xl yl)"
-
 lemma nth_map2[simp]:
 assumes "length bl = length al" and "i < length al"
 shows "(map2 f al bl) ! i = f (al!i) (bl!i)"
-using assms unfolding map2_def by auto
+using assms by auto
 
 lemma list_all2_Nil_iff:
 assumes "list_all2 R xs ys"
@@ -263,13 +260,13 @@ unfolding list_all2_map1 list_all2_map2 list_all2_list_all_2 ..
 lemma length_map2[simp]:
 assumes "length ys = length xs"
 shows "length (map2 f xs ys) = length xs"
-using assms unfolding map2_def by auto
+using assms by auto
 
 lemma listAll2_map2I[intro?]:
 assumes "length xs = length ys"
 and "\<And> i. i < length xs \<Longrightarrow> R (xs!i) (f (xs!i) (ys!i))"
 shows "list_all2 R xs (map2 f xs ys)"
-apply(rule list_all2I) using assms unfolding set_zip map2_def by auto
+apply(rule list_all2I) using assms unfolding set_zip by auto
 
 (*
 lemma listAll2_map2I[intro?]:

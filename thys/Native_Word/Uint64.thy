@@ -59,11 +59,15 @@ lift_definition bitOR_uint64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint6
 lift_definition bitXOR_uint64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" is bitXOR .
 lift_definition test_bit_uint64 :: "uint64 \<Rightarrow> nat \<Rightarrow> bool" is test_bit .
 lift_definition set_bit_uint64 :: "uint64 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint64" is set_bit .
-lift_definition set_bits_uint64 :: "(nat \<Rightarrow> bool) \<Rightarrow> uint64" is "set_bits" .
 lift_definition lsb_uint64 :: "uint64 \<Rightarrow> bool" is lsb .
 lift_definition shiftl_uint64 :: "uint64 \<Rightarrow> nat \<Rightarrow> uint64" is shiftl .
 lift_definition shiftr_uint64 :: "uint64 \<Rightarrow> nat \<Rightarrow> uint64" is shiftr .
 lift_definition msb_uint64 :: "uint64 \<Rightarrow> bool" is msb .
+instance ..
+end
+
+instantiation uint64 :: bit_comprehension begin
+lift_definition set_bits_uint64 :: "(nat \<Rightarrow> bool) \<Rightarrow> uint64" is "set_bits" .
 instance ..
 end
 

@@ -48,11 +48,15 @@ lift_definition bitOR_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint3
 lift_definition bitXOR_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is bitXOR .
 lift_definition test_bit_uint32 :: "uint32 \<Rightarrow> nat \<Rightarrow> bool" is test_bit .
 lift_definition set_bit_uint32 :: "uint32 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint32" is set_bit .
-lift_definition set_bits_uint32 :: "(nat \<Rightarrow> bool) \<Rightarrow> uint32" is "set_bits" .
 lift_definition lsb_uint32 :: "uint32 \<Rightarrow> bool" is lsb .
 lift_definition shiftl_uint32 :: "uint32 \<Rightarrow> nat \<Rightarrow> uint32" is shiftl .
 lift_definition shiftr_uint32 :: "uint32 \<Rightarrow> nat \<Rightarrow> uint32" is shiftr .
 lift_definition msb_uint32 :: "uint32 \<Rightarrow> bool" is msb .
+instance ..
+end
+
+instantiation uint32 :: bit_comprehension begin
+lift_definition set_bits_uint32 :: "(nat \<Rightarrow> bool) \<Rightarrow> uint32" is "set_bits" .
 instance ..
 end
 

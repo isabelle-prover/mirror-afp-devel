@@ -422,7 +422,7 @@ proof(intro conjI impI)
    \<not> list_all2 (eintP \<circ> Guard) (arOf f) (map singl al)"
   unfolding GE.satC_def list_ex_length list_all2_map2 singl_def
   unfolding list_all2_length
-  by (auto simp add: map2_def map_zip_map2 singl_def getTvars_def xl_def[symmetric])
+  by (auto simp add: map_zip_map2 singl_def getTvars_def xl_def[symmetric])
   have Fax: "GE.satPB \<xi> Fax" using GE.sat_\<Phi>[OF \<xi>] unfolding gPB_def by simp
   {assume ?A1
    hence "GE.satC \<xi> (fax f)" using f Fax unfolding GE.satPB_def Fax_def by auto
@@ -734,7 +734,7 @@ unfolding cOfFax_def by auto
 lemma nv2L_hOfFax[simp]:
 assumes "at \<in> set (hOfFax \<sigma>)"
 shows "GE.nv2L (Neg at) = {}"
-using assms unfolding hOfFax_def map2_def by auto
+using assms unfolding hOfFax_def by auto
 
 lemma nv2L_fax[simp]: "l \<in> set (fax \<sigma>) \<Longrightarrow> GE.nv2L l = {}"
 unfolding fax_def by auto

@@ -64,11 +64,15 @@ lift_definition bitOR_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint1
 lift_definition bitXOR_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is bitXOR .
 lift_definition test_bit_uint16 :: "uint16 \<Rightarrow> nat \<Rightarrow> bool" is test_bit .
 lift_definition set_bit_uint16 :: "uint16 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint16" is set_bit .
-lift_definition set_bits_uint16 :: "(nat \<Rightarrow> bool) \<Rightarrow> uint16" is "set_bits" .
 lift_definition lsb_uint16 :: "uint16 \<Rightarrow> bool" is lsb .
 lift_definition shiftl_uint16 :: "uint16 \<Rightarrow> nat \<Rightarrow> uint16" is shiftl .
 lift_definition shiftr_uint16 :: "uint16 \<Rightarrow> nat \<Rightarrow> uint16" is shiftr .
 lift_definition msb_uint16 :: "uint16 \<Rightarrow> bool" is msb .
+instance ..
+end
+
+instantiation uint16 :: bit_comprehension begin
+lift_definition set_bits_uint16 :: "(nat \<Rightarrow> bool) \<Rightarrow> uint16" is "set_bits" .
 instance ..
 end
 

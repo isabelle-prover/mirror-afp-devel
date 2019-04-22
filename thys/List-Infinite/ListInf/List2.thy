@@ -1189,4 +1189,6 @@ apply (case_tac ys, simp)
 apply (simp add: map2_Cons_Cons map2_snoc_snoc)
 done
 
+hide_const (open) map2
+
 end

@@ -2089,12 +2089,11 @@ lemma map2_Cons_2_3:
   by (case_tac xs, simp_all)
 
 lemma map2_xor_replicate_False:
-  "map2 (\<lambda>(x::bool) y::bool. x = (\<not> y)) xs (replicate n False) = take n xs"
+  "map2 (\<lambda>x y. x \<longleftrightarrow> \<not> y) xs (replicate n False) = take n xs"
   apply (induct xs arbitrary: n)
    apply simp
   apply (case_tac n)
-   apply (simp add: map2_def)
-  apply simp
+   apply simp_all
   done
 
 lemma word_or_zero:

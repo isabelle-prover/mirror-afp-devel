@@ -41,10 +41,6 @@ abbreviation (input)
   "x [\<sqsubset>\<^sub>r] y == x [\<sqsubset>\<^bsub>r\<^esub>] y"
 (*>*)
 
-definition map2 :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'a list \<Rightarrow> 'b list \<Rightarrow> 'c list"
-where
-  "map2 f = (\<lambda>xs ys. map (case_prod f) (zip xs ys))"
-
 abbreviation
   plussublist :: "'a list \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'b list \<Rightarrow> 'c list"
     ("(_ /[\<squnion>\<^bsub>_\<^esub>] _)" [65, 0, 66] 65) where
@@ -316,14 +312,14 @@ lemma list_replicateI [intro]: "x \<in> A \<Longrightarrow> replicate n x \<in> 
 
 lemma plus_list_Nil [simp]: "[] [\<squnion>\<^bsub>f\<^esub>] xs = []"
 (*<*)
-apply (unfold plussub_def map2_def)
+apply (unfold plussub_def)
 apply simp
 done
 (*>*)
 
 lemma plus_list_Cons [simp]:
   "(x#xs) [\<squnion>\<^bsub>f\<^esub>] ys = (case ys of [] \<Rightarrow> [] | y#ys \<Rightarrow> (x \<squnion>\<^sub>f y)#(xs [\<squnion>\<^bsub>f\<^esub>] ys))"
-(*<*) by (simp add: plussub_def map2_def split: list.split) (*>*)
+(*<*) by (simp add: plussub_def split: list.split) (*>*)
 
 lemma length_plus_list [rule_format, simp]:
   "\<forall>ys. size(xs [\<squnion>\<^bsub>f\<^esub>] ys) = min(size xs) (size ys)"
@@ -588,7 +584,6 @@ lemma closed_map2_list [rule_format]:
   \<forall>xs. xs \<in> list n A \<longrightarrow> (\<forall>ys. ys \<in> list n A \<longrightarrow>
   map2 f xs ys \<in> list n (err A))"
 (*<*)
-apply (unfold map2_def)
 apply (induct n)
  apply simp
 apply clarify
