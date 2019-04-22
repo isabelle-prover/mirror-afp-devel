@@ -77,7 +77,7 @@ lemma div_half_word:
   assumes "y \<noteq> 0"
   shows "(x div y, x mod y) = (let q = (x >> 1) div y << 1; r = x - q * y in if y \<le> r then (q + 1, r - y) else (q, r))"
 proof -
-  obtain n where n: "x = of_nat n" "n < 2 ^ LENGTH('a)" by(cases x)
+  obtain n where n: "x = of_nat n" "n < 2 ^ LENGTH('a)" by (cases x)
   obtain m where m: "y = of_nat m" "m < 2 ^ LENGTH('a)" by(cases y)
   let ?q = "(x >> 1) div y << 1"
   let ?q' = "2 * (n div 2 div m)"

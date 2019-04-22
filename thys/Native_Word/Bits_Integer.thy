@@ -79,7 +79,6 @@ lift_definition bitNOT_integer :: "integer \<Rightarrow> integer" is "bitNOT" .
 lift_definition test_bit_integer :: "integer \<Rightarrow> nat \<Rightarrow> bool" is test_bit .
 lift_definition lsb_integer :: "integer \<Rightarrow> bool" is lsb .
 lift_definition set_bit_integer :: "integer \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> integer" is set_bit .
-lift_definition set_bits_integer :: "(nat \<Rightarrow> bool) \<Rightarrow> integer" is set_bits .
 lift_definition shiftl_integer :: "integer \<Rightarrow> nat \<Rightarrow> integer" is shiftl .
 lift_definition shiftr_integer :: "integer \<Rightarrow> nat \<Rightarrow> integer" is shiftr .
 
@@ -460,10 +459,6 @@ lemma integer_set_bit_code [code]:
    if b then x OR (1 << nat_of_integer n)
    else x AND NOT (1 << nat_of_integer n))"
 by(auto simp add: integer_set_bit_def set_bit_integer_conv_masks)
-
-lemma set_bits_code [code]:
-  "set_bits = Code.abort (STR ''set_bits is unsupported on type integer'') (\<lambda>_. set_bits :: _ \<Rightarrow> integer)"
-by simp
 
 definition integer_shiftl :: "integer \<Rightarrow> integer \<Rightarrow> integer"
 where [code del]: "integer_shiftl x n = (if n < 0 then undefined x n else x << nat_of_integer n)"

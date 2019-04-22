@@ -7,6 +7,7 @@ chapter \<open>More bit operations on integers\<close>
 theory More_Bits_Int
 imports
   "HOL-Word.Bits_Int"
+  "HOL-Word.Bit_Comprehension"
 begin
 
 text \<open>Preliminaries\<close>
