@@ -2,7 +2,6 @@ theory Polynomial_Expression_Additional
   imports Interval_Approximation
     "Polynomial_Expression"
     "HOL-Decision_Procs.Approximation"
-    "HOL-Word.Bool_List_Representation" (* map2 to List?! *)
 begin
 
 lemma real_of_float_eq_zero_iff[simp]: "real_of_float x = 0 \<longleftrightarrow> x = 0"
@@ -357,21 +356,18 @@ proof(induction n arbitrary: a b)
     by simp_all
   thus ?case
     using 0
-    by (simp, smt list.exhaust map2_Cons nth_Cons_0)
+    by simp
 next
   case (Suc n a b)
-  have lens: "0 < length a" and "0 < length b"
-    using Suc(2, 3)
-    by auto
-  then have "a = hd a # tl a" and "b = hd b # tl b"
-    by simp_all
+  from Suc.prems have  "0 < length a" "0 < length b" "n < length (tl a)" "n < length (tl b)"
+    using Suc.prems by auto
   have "map2 f a b = map2 f (hd a # tl a) (hd b # tl b)"
     using \<open>0 < length a\<close> \<open>0 < length b\<close>
     by simp
   also have "\<dots> ! Suc n = map2 f (tl a) (tl b) ! n"
     by simp
   also have "\<dots> = f (tl a ! n) (tl b ! n)"
-    using Suc by auto
+    using \<open>n < length (tl a)\<close> \<open>n < length (tl b)\<close> by (rule Suc.IH)
   also have "tl a ! n = (hd a # tl a) ! Suc n" by simp
   also have "(hd a # tl a) = a" using \<open>0 < length a\<close> by simp
   also have "tl b ! n = (hd b # tl b) ! Suc n" by simp

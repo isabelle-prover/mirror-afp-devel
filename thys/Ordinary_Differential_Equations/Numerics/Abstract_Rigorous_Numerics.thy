@@ -130,7 +130,7 @@ locale approximate_sets =
       (yri, yrs) \<in> \<langle>rnv_rel\<rangle>list_rel \<Longrightarrow>
       (appr_of_ivl ops xri yri, lv_ivl $ xrs $ yrs) \<in> appr_rell"
     "(product_appr ops, product_listset) \<in> appr_rell \<rightarrow> appr_rell \<rightarrow> appr_rell"
-    "(msum_appr ops, (\<lambda>xs ys. {map2 (+) x y |x y. x \<in> xs \<and> y \<in> ys})) \<in> appr_rell \<rightarrow> appr_rell \<rightarrow> appr_rell"
+    "(msum_appr ops, (\<lambda>xs ys. {List.map2 (+) x y |x y. x \<in> xs \<and> y \<in> ys})) \<in> appr_rell \<rightarrow> appr_rell \<rightarrow> appr_rell"
     "(xi, x) \<in> appr_rell \<Longrightarrow> length xi = d \<Longrightarrow>
       (RETURN (inf_of_appr ops optns xi), Inf_specs d x) \<in> \<langle>rl_rel\<rangle>nres_rel"
     "(xi, x) \<in> appr_rell \<Longrightarrow> length xi = d \<Longrightarrow>

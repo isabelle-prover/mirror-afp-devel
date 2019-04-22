@@ -3,7 +3,6 @@ theory Executable_Euclidean_Space
 imports
   "HOL-Analysis.Analysis"
   "List-Index.List_Index"
-  "HOL-Word.Bool_List_Representation" (* for map2 *)
   "HOL-Library.Float"
   Affine_Arithmetic_Auxiliarities
 begin
@@ -454,12 +453,12 @@ lemma map_nth_append2:
   using assms
   by (auto simp: intro!: nth_equalityI)
 
-lemma length_map2[simp]: "length (map2 f xs ys) = min (length xs) (length ys)"
-  by (auto simp: map2_def)
+lemma length_map2 [simp]: "length (map2 f xs ys) = min (length xs) (length ys)"
+  by simp
 
-lemma map2_nth[simp]: "map2 f xs ys ! n = f (xs ! n) (ys ! n)"
+lemma map2_nth [simp]: "map2 f xs ys ! n = f (xs ! n) (ys ! n)"
   if "n < length xs" "n < length ys"
-  using that by (auto simp: map2_def)
+  using that by simp
 
 lemma list_of_eucl_add: "list_of_eucl (x + y) = map2 (+) (list_of_eucl x) (list_of_eucl y)"
   by (auto intro!: nth_equalityI simp: inner_simps)

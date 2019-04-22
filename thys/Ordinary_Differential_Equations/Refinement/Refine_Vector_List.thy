@@ -52,22 +52,22 @@ lemma lv_rel_le[autoref_rules]: "(list_all2 (\<lambda>x y. x \<le> y), (\<le>)) 
       index_nth_id)
      (metis distinct_Basis_list index_nth_id length_Basis_list nth_Basis_list_in_Basis)
 
-lemma lv_rel_inf[autoref_rules]: "(map2 min, inf) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> lv_rel"
+lemma lv_rel_inf[autoref_rules]: "(List.map2 min, inf) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> lv_rel"
   by (auto simp: lv_rel_def br_def eucl_inf[where 'a='a] eucl_of_list_inner list_all2_conv_all_nth
       index_nth_id inf_real_def
       intro!: euclidean_eqI[where 'a='a])
 
-lemma lv_rel_sup[autoref_rules]: "(map2 max, sup) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> lv_rel"
+lemma lv_rel_sup[autoref_rules]: "(List.map2 max, sup) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> lv_rel"
   by (auto simp: lv_rel_def br_def eucl_sup[where 'a='a] eucl_of_list_inner list_all2_conv_all_nth
       index_nth_id sup_real_def
       intro!: euclidean_eqI[where 'a='a])
 
-lemma lv_rel_add[autoref_rules]: "(map2 (+), (+)) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> lv_rel"
+lemma lv_rel_add[autoref_rules]: "(List.map2 (+), (+)) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> lv_rel"
   by (auto simp: lv_rel_def br_def eucl_sup[where 'a='a] eucl_of_list_inner list_all2_conv_all_nth
       index_nth_id sup_real_def algebra_simps
       intro!: euclidean_eqI[where 'a='a])
 
-lemma lv_rel_minus[autoref_rules]: "(map2 (-), (-)) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> lv_rel"
+lemma lv_rel_minus[autoref_rules]: "(List.map2 (-), (-)) \<in> lv_rel \<rightarrow> lv_rel \<rightarrow> lv_rel"
   by (auto simp: lv_rel_def br_def eucl_sup[where 'a='a] eucl_of_list_inner list_all2_conv_all_nth
       index_nth_id sup_real_def algebra_simps
       intro!: euclidean_eqI[where 'a='a])
@@ -93,7 +93,7 @@ lemma lv_rel_inner[autoref_rules]: "(inner_lv_rel, (\<bullet>)) \<in> lv_rel \<r
 
 definition "mig_real a b = (if a \<le> 0 \<and> 0 \<le> b \<or> b \<le> 0 \<and> 0 \<le> a then 0 else min (abs a) (abs b))"
 definition "mig_componentwise a b = (\<Sum>i\<in>Basis. mig_real (a \<bullet> i) (b \<bullet> i) *\<^sub>R i)"
-definition "mig_lv a b = (map2 mig_real a b)"
+definition "mig_lv a b = (List.map2 mig_real a b)"
 lemma length_mig_lv[simp]: "length (mig_lv a b) = min (length a) (length b)"
   by (auto simp: mig_lv_def)
 lemma mig_lv_nth: "mig_real (a ! i) (b ! i) = mig_lv a b ! i" if "i < length a" "i < length b"
