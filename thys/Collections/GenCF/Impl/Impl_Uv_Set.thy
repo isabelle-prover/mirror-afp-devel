@@ -64,7 +64,7 @@ find_consts name: set_bit
     "set_bit i [] = single_bit i"
   | "set_bit i (w#ws) = (
       if i<LENGTH('a) then 
-        bits_class.set_bit w i True # ws 
+        Bits.set_bit w i True # ws
       else 
         w # set_bit (i - LENGTH('a)) ws)"
   
@@ -78,7 +78,7 @@ find_consts name: set_bit
     "reset_bit i [] = []"
   | "reset_bit i (w#ws) = (
       if i<LENGTH('a) then 
-        bits_class.set_bit w i False # ws 
+        Bits.set_bit w i False # ws
       else 
         w # reset_bit (i - LENGTH('a)) ws)"
   

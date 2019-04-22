@@ -41,7 +41,7 @@ end
 
 lemmas [code] = less_uint32.rep_eq less_eq_uint32.rep_eq
 
-instantiation uint32 :: bits begin
+instantiation uint32 :: bit_operations begin
 lift_definition bitNOT_uint32 :: "uint32 \<Rightarrow> uint32" is bitNOT .
 lift_definition bitAND_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is bitAND .
 lift_definition bitOR_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is bitOR .

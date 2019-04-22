@@ -57,7 +57,7 @@ end
 
 lemmas [code] = less_uint16.rep_eq less_eq_uint16.rep_eq
 
-instantiation uint16 :: bits begin
+instantiation uint16 :: bit_operations begin
 lift_definition bitNOT_uint16 :: "uint16 \<Rightarrow> uint16" is bitNOT .
 lift_definition bitAND_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is bitAND .
 lift_definition bitOR_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is bitOR .
