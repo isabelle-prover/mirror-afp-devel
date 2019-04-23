@@ -38,15 +38,15 @@ text \<open>For algebraic numbers, it turned out that @{const gcd_int_poly} is n
   Collin's primitive remainder sequence.\<close>
 declare gcd_int_poly_code[code_unfold del]
 
-lemma content_free_imp_unit_iff:
+lemma primitive_imp_unit_iff:
   fixes p :: "'a :: {comm_semiring_1,semiring_no_zero_divisors} poly"
-  assumes cf: "content_free p"
+  assumes pr: "primitive p"
   shows "p dvd 1 \<longleftrightarrow> degree p = 0"
 proof
   assume "degree p = 0"
   from degree0_coeffs[OF this] obtain p0 where p: "p = [:p0:]" by auto
   then have "\<forall>c \<in> set (coeffs p). p0 dvd c" by (simp add: cCons_def)
-  with cf have "p0 dvd 1" by (auto dest: content_freeD)
+  with pr have "p0 dvd 1" by (auto dest: primitiveD)
   with p show "p dvd 1" by auto
 next
   assume "p dvd 1"
@@ -73,10 +73,10 @@ qed
 
 lemma irreducible_content:
   fixes p :: "'a::{comm_semiring_1,semiring_no_zero_divisors} poly"
-  assumes "irreducible p" shows "degree p = 0 \<or> content_free p"
+  assumes "irreducible p" shows "degree p = 0 \<or> primitive p"
 proof(rule ccontr)
   assume not: "\<not>?thesis"
-  then obtain c where c1: "\<not>c dvd 1" and "\<forall>a \<in> set (coeffs p). c dvd a" by (auto elim: not_content_freeE)
+  then obtain c where c1: "\<not>c dvd 1" and "\<forall>a \<in> set (coeffs p). c dvd a" by (auto elim: not_primitiveE)
   from dvd_all_coeffs_imp_dvd[OF this(2)]
   obtain r where p: "p = r * [:c:]" by (elim dvdE, auto)
   from irreducibleD[OF assms this] have "r dvd 1 \<or> [:c:] dvd 1" by auto
@@ -98,7 +98,7 @@ proof (intro irreducibleI)
   from degree_mult_eq[OF this, folded p] assms
   consider "degree a = 1" "degree b = 0" | "degree a = 0" "degree b = 1" by force
   then show "a dvd 1 \<or> b dvd 1"
-    by (cases; insert a0 b0, auto simp: content_free_imp_unit_iff)
+    by (cases; insert a0 b0, auto simp: primitive_imp_unit_iff)
 qed
 
 (* TODO: move *)
@@ -117,7 +117,7 @@ proof (intro irreducibleI)
   from degree_mult_eq[OF this, folded p] assms
   consider "degree a = 1" "degree b = 0" | "degree a = 0" "degree b = 1" by force
   then show "a dvd 1 \<or> b dvd 1"
-    by (cases; insert a1 b1, auto simp: content_free_imp_unit_iff)
+    by (cases; insert a1 b1, auto simp: primitive_imp_unit_iff)
 qed
 
 lemma irreducible_connect_rev:
@@ -321,8 +321,8 @@ lemma content_uminus[simp]:
   fixes p :: "'a :: ring_gcd poly" shows "content (-p) = content p"
   by (induct p, auto)
 
-lemma content_free_abs_int_poly[simp]:
-  "content_free (abs_int_poly p) \<longleftrightarrow> content_free p"
+lemma primitive_abs_int_poly[simp]:
+  "primitive (abs_int_poly p) \<longleftrightarrow> primitive p"
   by (auto simp: abs_int_poly_def)
 
 lemma abs_int_poly_inv[simp]: "smult (sgn (lead_coeff p)) (abs_int_poly p) = p"
@@ -420,7 +420,7 @@ lemma irreducible_connect_int:
   fixes p :: "int poly"
   assumes ir: "irreducible\<^sub>d p" and c: "content p = 1"
   shows "irreducible p"
-  using c content_free_iff_content_eq_1 ir irreducible_content_free_connect by blast
+  using c primitive_iff_content_eq_1 ir irreducible_primitive_connect by blast
 
 lemma
   fixes x :: "'a :: {idom,ring_char_0}"
@@ -458,14 +458,14 @@ qed
 
 
 lemma irr_cf_root_free_poly_rat[simp]: "irreducible (poly_rat x)"
-  "lead_coeff (poly_rat x) > 0" "content_free (poly_rat x)" "root_free (poly_rat x)"
+  "lead_coeff (poly_rat x) > 0" "primitive (poly_rat x)" "root_free (poly_rat x)"
   "square_free (poly_rat x)"
 proof -
   obtain n d where x: "quotient_of x = (n,d)" by force
   hence id: "poly_rat x = [:-n,d:]" by (auto simp: poly_rat_def)
   from quotient_of_denom_pos[OF x] have d: "d > 0" by auto
   show "root_free (poly_rat x)" unfolding id root_free_def using d by auto
-  show "lead_coeff (poly_rat x) > 0" "content_free (poly_rat x)"
+  show "lead_coeff (poly_rat x) > 0" "primitive (poly_rat x)"
     unfolding id cf_pos_def using d quotient_of_coprime[OF x] by (auto simp: content_def)
   from this[unfolded cf_pos_def]
   show irr: "irreducible (poly_rat x)" unfolding id using d by (auto intro!: linear_irreducible_int)
@@ -792,7 +792,7 @@ qed
 
 lemma algebraic_imp_represents_irreducible_cf_pos:
   assumes "algebraic (x::'a::field_char_0)"
-  shows "\<exists>p. p represents x \<and> irreducible p \<and> lead_coeff p > 0 \<and> content_free p"
+  shows "\<exists>p. p represents x \<and> irreducible p \<and> lead_coeff p > 0 \<and> primitive p"
 proof -
   from algebraic_imp_represents_irreducible[OF assms(1)]
   obtain p where px: "p represents x" and irr: "irreducible p" by auto
@@ -1242,7 +1242,7 @@ lemma irreducible_preservation:
   and y: "q represents y"
   and deg: "degree p \<ge> degree q"
   and f: "\<And> q. q represents y \<Longrightarrow> (f q) represents x \<and> degree (f q) \<le> degree q"
-  and cf: "content_free q"
+  and pr: "primitive q"
   shows "irreducible q"
 proof (rule ccontr)
   define pp where "pp = abs_int_poly p"
@@ -1255,7 +1255,7 @@ proof (rule ccontr)
     unfolding pp_def lead_coeff_abs_int_poly by (auto intro!: representsI)
   from x have ax: "algebraic x" unfolding algebraic_altdef_ipoly represents_def by blast
   assume "\<not> ?thesis"
-  from this irreducible_connect_int[of q] cf have "\<not> irreducible\<^sub>d q" by auto
+  from this irreducible_connect_int[of q] pr have "\<not> irreducible\<^sub>d q" by auto
   from this dq obtain r where
     r: "degree r \<noteq> 0" "degree r < degree q" and "r dvd q" by auto
   then obtain rr where q: "q = r * rr" unfolding dvd_def by auto
@@ -1297,8 +1297,8 @@ proof-
   have y: "poly_uminus p represents (- x)" .
   show ?thesis
   proof (rule irreducible_preservation[OF p x y], force)
-    from deg irreducible_imp_content_free[OF p] have "content_free p" by auto
-    then show "content_free (poly_uminus p)" by simp
+    from deg irreducible_imp_primitive[OF p] have "primitive p" by auto
+    then show "primitive (poly_uminus p)" by simp
     fix q
     assume "q represents (- x)"
     from represents_uminus[OF this] have "(poly_uminus q) represents x" by simp
@@ -1316,8 +1316,8 @@ proof -
   from x0 have ix0: "inverse x \<noteq> 0" by auto
   show ?thesis
   proof (rule irreducible_preservation[OF p x y])
-    from x irreducible_imp_content_free[OF p]
-    show "content_free (reflect_poly p)" by (auto simp: content_reflect_poly)
+    from x irreducible_imp_primitive[OF p]
+    show "primitive (reflect_poly p)" by (auto simp: content_reflect_poly)
     fix q
     assume "q represents (inverse x)"
     from represents_inverse[OF ix0 this] have "(reflect_poly q) represents x" by simp

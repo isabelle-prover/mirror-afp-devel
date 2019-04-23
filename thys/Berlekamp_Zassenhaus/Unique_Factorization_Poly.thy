@@ -608,9 +608,9 @@ next
   with a0 a1 show ?thesis by (auto simp: irreducible_altdef p)
 qed
 
-lemma content_free_irreducible_imp_degree:
- "content_free (p::'a::{semiring_gcd,idom} poly) \<Longrightarrow> irreducible p \<Longrightarrow> degree p > 0"
-  by (unfold irreducible_content_free_connect[symmetric], auto)
+lemma primitive_irreducible_imp_degree:
+ "primitive (p::'a::{semiring_gcd,idom} poly) \<Longrightarrow> irreducible p \<Longrightarrow> degree p > 0"
+  by (unfold irreducible_primitive_connect[symmetric], auto)
 
 lemma irreducible_degree_field:
   fixes p :: "'a :: field poly" assumes "irreducible p"
@@ -880,10 +880,10 @@ instance poly :: (ufd) ufd
   by (intro class.ufd.of_class.intro factorial_monoid_imp_ufd factorial_monoid_poly)
 
 
-lemma content_free_iff_some_content_dvd_1:
+lemma primitive_iff_some_content_dvd_1:
   fixes f :: "'a :: ufd poly" (* gcd_condition suffices... *)
-  shows "content_free f \<longleftrightarrow> some_gcd.listgcd (coeffs f) dvd 1" (is "_ \<longleftrightarrow> ?c dvd 1")
-proof(intro iffI content_freeI)
+  shows "primitive f \<longleftrightarrow> some_gcd.listgcd (coeffs f) dvd 1" (is "_ \<longleftrightarrow> ?c dvd 1")
+proof(intro iffI primitiveI)
   fix x
   assume "(\<And>y. y \<in> set (coeffs f) \<Longrightarrow> x dvd y)"
   from some_gcd.listgcd_greatest[of "coeffs f", OF this]
@@ -891,8 +891,8 @@ proof(intro iffI content_freeI)
   also assume "?c dvd 1"
   finally show "x dvd 1".
 next
-  assume "content_free f"
-  from content_freeD[OF this some_gcd.listgcd[of _ "coeffs f"]]
+  assume "primitive f"
+  from primitiveD[OF this some_gcd.listgcd[of _ "coeffs f"]]
   show "?c dvd 1" by auto
 qed
 

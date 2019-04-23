@@ -251,7 +251,7 @@ lemma
   assumes "invariant_1 plr"
   defines "x \<equiv> the_unique_root plr" and "p \<equiv> poly_real_alg_1 plr" and "l \<equiv> rai_lb plr" and "r \<equiv> rai_ub plr"
   shows invariant_1D: "root_cond plr x"
-    "sgn l = sgn r" "sgn x = of_rat (sgn r)" "unique_root plr" "poly_cond p" "degree p > 0" "content_free p"
+    "sgn l = sgn r" "sgn x = of_rat (sgn r)" "unique_root plr" "poly_cond p" "degree p > 0" "primitive p"
     and invariant_1_root_cond: "\<And> y. root_cond plr y \<longleftrightarrow> y = x"
 proof -
   let ?l = "of_rat l :: real"
@@ -286,7 +286,7 @@ proof -
     with pc have "False" by auto
   }
   then show "degree p > 0" by auto
-  with pc show "content_free p" by (intro irreducible_imp_content_free, auto)
+  with pc show "primitive p" by (intro irreducible_imp_primitive, auto)
 qed
 
 lemma invariant_1E[elim]:
@@ -294,7 +294,7 @@ lemma invariant_1E[elim]:
   defines "x \<equiv> the_unique_root plr" and "p \<equiv> poly_real_alg_1 plr" and "l \<equiv> rai_lb plr" and "r \<equiv> rai_ub plr"
   assumes main: "root_cond plr x \<Longrightarrow>
       sgn l = sgn r \<Longrightarrow> sgn x = of_rat (sgn r) \<Longrightarrow> unique_root plr \<Longrightarrow> poly_cond p \<Longrightarrow> degree p > 0 \<Longrightarrow>
-      content_free p \<Longrightarrow> thesis"
+      primitive p \<Longrightarrow> thesis"
   shows thesis apply (rule main)
   using assms(1) unfolding x_def p_def l_def r_def by (auto dest: invariant_1D)
 

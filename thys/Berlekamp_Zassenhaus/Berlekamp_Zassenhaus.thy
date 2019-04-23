@@ -110,10 +110,10 @@ qed
 corollary berlekamp_zassenhaus_factorization_irreducible:
   assumes res: "berlekamp_zassenhaus_factorization f = fs" 
     and sf: "square_free f"
-    and cf: "content_free f"
+    and pr: "primitive f"
     and deg: "degree f > 0"
   shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible fi)" 
-  using cf irreducible_content_free_connect[OF content_free_prod_list]
+  using pr irreducible_primitive_connect[OF primitive_prod_list]
     berlekamp_zassenhaus_factorization_irreducible\<^sub>d[OF res sf deg] by auto
 
 end

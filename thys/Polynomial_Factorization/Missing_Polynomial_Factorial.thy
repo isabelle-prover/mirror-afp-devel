@@ -185,28 +185,28 @@ next
   with c have "1 = p * [:1/c:]" by auto
   from dvdI[OF this] show "is_unit p".
 qed
-  
-definition content_free where
-  "content_free f \<longleftrightarrow> (\<forall>x. (\<forall>y \<in> set (coeffs f). x dvd y) \<longrightarrow> x dvd 1)"
 
-lemma content_freeI:
+definition primitive where
+  "primitive f \<longleftrightarrow> (\<forall>x. (\<forall>y \<in> set (coeffs f). x dvd y) \<longrightarrow> x dvd 1)"
+
+lemma primitiveI:
   assumes "(\<And>x. (\<And>y. y \<in> set (coeffs f) \<Longrightarrow> x dvd y) \<Longrightarrow> x dvd 1)"
-  shows "content_free f" by (insert assms, auto simp: content_free_def)
+  shows "primitive f" by (insert assms, auto simp: primitive_def)
 
-lemma content_freeD:
-  assumes "content_free f"
+lemma primitiveD:
+  assumes "primitive f"
   shows "(\<And>y. y \<in> set (coeffs f) \<Longrightarrow> x dvd y) \<Longrightarrow> x dvd 1"
-    by (insert assms, auto simp: content_free_def)
+    by (insert assms, auto simp: primitive_def)
 
-lemma not_content_freeE:
-  assumes "\<not> content_free f"
+lemma not_primitiveE:
+  assumes "\<not> primitive f"
       and "\<And>x. (\<And>y. y \<in> set (coeffs f) \<Longrightarrow> x dvd y) \<Longrightarrow> \<not> x dvd 1 \<Longrightarrow> thesis"
-  shows thesis by (insert assms, auto simp: content_free_def)
+  shows thesis by (insert assms, auto simp: primitive_def)
 
-lemma content_free_iff_content_eq_1[simp]:
+lemma primitive_iff_content_eq_1[simp]:
   fixes f :: "'a :: semiring_gcd poly"
-  shows "content_free f \<longleftrightarrow> content f = 1"
-proof(intro iffI content_freeI)
+  shows "primitive f \<longleftrightarrow> content f = 1"
+proof(intro iffI primitiveI)
   fix x
   assume "(\<And>y. y \<in> set (coeffs f) \<Longrightarrow> x dvd y)"
   from gcd_list_greatest[of "coeffs f", OF this]
@@ -214,14 +214,14 @@ proof(intro iffI content_freeI)
   also assume "content f = 1"
   finally show "x dvd 1".
 next
-  assume "content_free f"
-  from content_freeD[OF this list_gcd[of _ "coeffs f"], folded content_def]
+  assume "primitive f"
+  from primitiveD[OF this list_gcd[of _ "coeffs f"], folded content_def]
   show "content f = 1" by simp
 qed
 
-lemma content_free_prod_list:
+lemma primitive_prod_list:
   fixes fs :: "'a :: {factorial_semiring,semiring_Gcd} poly list"
-  assumes "content_free (prod_list fs)" and "f \<in> set fs" shows "content_free f"
+  assumes "primitive (prod_list fs)" and "f \<in> set fs" shows "primitive f"
 proof (insert assms, induct fs arbitrary: f)
   case (Cons f' fs)
   from Cons.prems
@@ -232,9 +232,9 @@ proof (insert assms, induct fs arbitrary: f)
   ultimately show ?case using Cons.hyps[of f] by auto
 qed auto
 
-lemma irreducible_imp_content_free:
+lemma irreducible_imp_primitive:
   fixes f :: "'a :: {idom,semiring_gcd} poly"
-  assumes irr: "irreducible f" and deg: "degree f \<noteq> 0" shows "content_free f"
+  assumes irr: "irreducible f" and deg: "degree f \<noteq> 0" shows "primitive f"
 proof (rule ccontr)
   assume not: "\<not> ?thesis"
   then have "\<not> [:content f:] dvd 1" by simp
@@ -246,9 +246,9 @@ proof (rule ccontr)
   with deg show False by auto
 qed
   
-lemma irreducible_content_free_connect:
+lemma irreducible_primitive_connect:
   fixes f :: "'a :: {idom,semiring_gcd} poly"
-  assumes cf: "content_free f" shows "irreducible\<^sub>d f \<longleftrightarrow> irreducible f" (is "?l \<longleftrightarrow> ?r")
+  assumes cf: "primitive f" shows "irreducible\<^sub>d f \<longleftrightarrow> irreducible f" (is "?l \<longleftrightarrow> ?r")
 proof
   assume l: ?l show ?r
   proof(rule ccontr, elim not_irreducibleE)
@@ -311,5 +311,19 @@ proof -
     by fastforce
   thus "\<not> is_unit f" using normalize_1_iff by auto
 qed
+
+lemma content_pCons[simp]: "content (pCons a p) = gcd a (content p)"
+proof(induct p arbitrary: a)
+  case 0 show ?case by simp
+next
+  case (pCons c p)
+  then show ?case by (cases "p = 0", auto simp: content_def cCons_def)
+qed
+
+lemma content_field_poly:
+  fixes f :: "'a :: {field,semiring_gcd} poly"
+  shows "content f = (if f = 0 then 0 else 1)"
+  by(induct f, auto simp: dvd_field_iff is_unit_normalize)
+
 
 end

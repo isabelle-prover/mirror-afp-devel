@@ -877,11 +877,11 @@ lemma zassenhaus_reconstruction_irreducible\<^sub>d:
       res[unfolded zassenhaus_reconstruction_def Let_def]])
 
 corollary zassenhaus_reconstruction:
-  assumes cf: "content_free f"
+  assumes pr: "primitive f"
   assumes res: "zassenhaus_reconstruction hs p n f = fs"
   shows "f = prod_list fs \<and> (\<forall> fi \<in> set fs. irreducible fi)"
-  using zassenhaus_reconstruction_irreducible\<^sub>d[OF res] cf
-    irreducible_content_free_connect[OF content_free_prod_list]
+  using zassenhaus_reconstruction_irreducible\<^sub>d[OF res] pr
+    irreducible_primitive_connect[OF primitive_prod_list]
     by auto
 end
 

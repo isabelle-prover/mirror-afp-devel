@@ -260,9 +260,9 @@ proof-
   finally show ?thesis..
 qed
 
-lemma content_free_imp_no_constant_factor:
+lemma primitive_imp_no_constant_factor:
   fixes p :: "'a :: {comm_semiring_1, semiring_no_zero_divisors} poly"
-  assumes cf: "content_free p" and F: "mset_factors F p" and fF: "f \<in># F"
+  assumes pr: "primitive p" and F: "mset_factors F p" and fF: "f \<in># F"
   shows "degree f \<noteq> 0"
 proof
   from F fF have irr: "irreducible f" and fp: "f dvd p" by (auto dest: mset_factors_imp_dvd)
@@ -270,14 +270,14 @@ proof
   then obtain f0 where f0: "f = [:f0:]" by (auto dest: degree0_coeffs)
   with fp have "[:f0:] dvd p" by simp
   then have "f0 dvd coeff p i" for i by (simp add: const_poly_dvd_iff)
-  with content_freeD[OF cf] dvd_all_coeffs_iff have "f0 dvd 1" by (auto simp: coeffs_def)
+  with primitiveD[OF pr] dvd_all_coeffs_iff have "f0 dvd 1" by (auto simp: coeffs_def)
   with f0 irr show False by auto
 qed
 
 lemma coprime_poly_x_minus_y_poly_lift:
   fixes p q :: "'a :: ufd poly"
   assumes degp: "degree p > 0" and degq: "degree q > 0"
-    and cf: "content_free p"
+    and pr: "primitive p"
   shows "coprime (poly_x_minus_y p) (poly_lift q)"
 proof(rule ccontr)
   from degp have p: "\<not> p dvd 1" by (auto simp: dvd_const)
@@ -319,20 +319,20 @@ proof(rule ccontr)
   finally have ddvd: "poly_y_x (poly_x_minus_y f) ddvd [:g:]" by auto
   then have "degree (poly_y_x (poly_x_minus_y f)) = 0" by (metis degree_pCons_0 dvd_0_left_iff dvd_const)
   then have "degree f = 0" by simp
-  with content_free_imp_no_constant_factor[OF cf F f] show False by auto
+  with primitive_imp_no_constant_factor[OF pr F f] show False by auto
 qed
 
 lemma poly_add_nonzero:
   fixes p q :: "'a :: ufd poly"
   assumes p0: "p \<noteq> 0" and q0: "q \<noteq> 0" and x: "poly p x = 0" and y: "poly q y = 0"
-      and cf: "content_free p"
+      and pr: "primitive p"
   shows "poly_add p q \<noteq> 0"
 proof
   have degp: "degree p > 0" using le_0_eq order_degree order_root p0 x by (metis gr0I)
   have degq: "degree q > 0" using le_0_eq order_degree order_root q0 y by (metis gr0I)
   assume 0: "poly_add p q = 0"
   from resultant_zero_imp_common_factor[OF _ this[unfolded poly_add_def]] degp
-   and coprime_poly_x_minus_y_poly_lift[OF degp degq cf]
+   and coprime_poly_x_minus_y_poly_lift[OF degp degq pr]
   show False by auto
 qed
 
@@ -406,8 +406,8 @@ lemma ipoly_poly_add:
 lemma (in comm_monoid_gcd) gcd_list_eq_0_iff[simp]: "listgcd xs = 0 \<longleftrightarrow> (\<forall>x \<in> set xs. x = 0)"
   by (induct xs, auto)
 
-lemma content_free_field_poly[simp]: "content_free (p :: 'a :: field poly) \<longleftrightarrow> p \<noteq> 0"
-  by (unfold content_free_iff_some_content_dvd_1,auto simp: dvd_field_iff coeffs_def)
+lemma primitive_field_poly[simp]: "primitive (p :: 'a :: field poly) \<longleftrightarrow> p \<noteq> 0"
+  by (unfold primitive_iff_some_content_dvd_1,auto simp: dvd_field_iff coeffs_def)
 
 lemma ipoly_poly_add_nonzero:
   fixes x y :: "'a :: field"

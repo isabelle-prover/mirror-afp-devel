@@ -32,21 +32,6 @@ proof (insert assms, induct rule:finite_induct)
   qed
 qed simp
 
-(* TODO: MOVE! *)
-lemma content_pCons[simp]: "content (pCons a p) = gcd a (content p)"
-proof(induct p arbitrary: a)
-  case 0 show ?case by simp
-next
-  case (pCons c p)
-  then show ?case by (cases "p = 0", auto simp: content_def cCons_def)
-qed
-
-(*TODO: move*)
-lemma content_field_poly[simp]:
-  fixes f :: "'a :: {field,semiring_gcd} poly"
-  shows "content f = (if f = 0 then 0 else 1)"
-  by(induct f, auto simp: dvd_field_iff is_unit_normalize)
-
 context
   fixes alg :: int_poly_factorization_algorithm
 begin
@@ -75,7 +60,7 @@ next
     have c: "c = d * ?r e" and fs: "fs = map (\<lambda> (fi,i). (?rp fi, i)) gs" by auto
     from factorize_int_poly[OF fi]
     have irr: "(fi, i) \<in> set gs \<Longrightarrow> irreducible fi \<and> content fi = 1" for fi i
-      using irreducible_imp_content_free[of fi] by auto
+      using irreducible_imp_primitive[of fi] by auto
     note sff = factorize_int_poly(1)[OF fi]
     note sff' = square_free_factorizationD[OF sff]
     {
@@ -109,9 +94,9 @@ next
       fix fi i
       assume "(fi,i) \<in> set fs" 
       then obtain gi where fi: "fi = ?rp gi" and gi: "(gi,i) \<in> set gs" unfolding fs by auto
-      from irr[OF gi] have cf_gi: "content_free gi" by auto
-      then have "content_free (?rp gi)" by auto
-      note [simp] = irreducible_content_free_connect[OF cf_gi] irreducible_content_free_connect[OF this]
+      from irr[OF gi] have cf_gi: "primitive gi" by auto
+      then have "primitive (?rp gi)" by (auto simp: content_field_poly)
+      note [simp] = irreducible_primitive_connect[OF cf_gi] irreducible_primitive_connect[OF this]
       show "irreducible fi"
       using irr[OF gi] fi irreducible\<^sub>d_int_rat[of gi,simplified] by auto
       then show "degree fi > 0" "square_free fi" unfolding fi

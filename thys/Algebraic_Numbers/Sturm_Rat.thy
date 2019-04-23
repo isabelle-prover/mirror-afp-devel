@@ -31,7 +31,7 @@ qed
 lemma irreducible_primitive_part:
   assumes "irreducible p" and "degree p > 0"
   shows "primitive_part p = p"
-  using irreducible_content[OF assms(1), unfolded content_free_iff_content_eq_1] assms(2)
+  using irreducible_content[OF assms(1), unfolded primitive_iff_content_eq_1] assms(2)
   by (auto simp: primitive_part_def abs_poly_def)
 
 

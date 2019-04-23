@@ -227,7 +227,7 @@ lemma irreducible\<^sub>d_smult_int:
 lemma irreducible\<^sub>d_as_irreducible:
   fixes p :: "int poly"
   shows "irreducible\<^sub>d p \<longleftrightarrow> irreducible (primitive_part p)"
-  using irreducible_content_free_connect[of "primitive_part p"]
+  using irreducible_primitive_connect[of "primitive_part p"]
   by (cases "p = 0", auto simp: irreducible\<^sub>d_primitive_part)
 
 

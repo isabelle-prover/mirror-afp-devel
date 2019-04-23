@@ -594,7 +594,7 @@ definition square_free_factorization_int :: "int poly \<Rightarrow> int \<times>
 
 lemma square_free_factorization_int: assumes res: "square_free_factorization_int f = (d, fs)"
   shows "square_free_factorization f (d,fs)" 
-    "(fi, i) \<in> set fs \<Longrightarrow> content_free fi \<and> lead_coeff fi > 0" 
+    "(fi, i) \<in> set fs \<Longrightarrow> primitive fi \<and> lead_coeff fi > 0" 
 proof -
   obtain n g where xs: "x_split f = (n,g)" by force
   obtain c hs where sf: "square_free_factorization_int' g = (c,hs)" by force
@@ -603,9 +603,9 @@ proof -
   note sff = square_free_factorization_int'(1-2)[OF sf]
   note xs = x_split[OF xs]
   let ?x = "monom 1 1 :: int poly" 
-  have x: "content_free ?x \<and> lead_coeff ?x = 1 \<and> degree ?x = 1"
+  have x: "primitive ?x \<and> lead_coeff ?x = 1 \<and> degree ?x = 1"
     by (auto simp add: degree_monom_eq content_def monom_Suc)
-  thus "(fi, i) \<in> set fs \<Longrightarrow> content_free fi \<and> lead_coeff fi > 0" using sff(2) unfolding fs
+  thus "(fi, i) \<in> set fs \<Longrightarrow> primitive fi \<and> lead_coeff fi > 0" using sff(2) unfolding fs
     by (cases n, auto)
   show "square_free_factorization f (d,fs)" 
   proof (cases n)
