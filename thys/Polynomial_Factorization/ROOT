@@ -1,11 +1,26 @@
 chapter AFP
 
-session "JNF-HOL-Lib" (AFP) = "HOL-Algebra" +
-  description "Theories that are not part of HOL but are used by this entry"
+session "JNF-AFP-Lib" (AFP) = "HOL-Algebra" +
+  description "Theories from HOL-Library and the Archive of Formal Proofs that are used by this entry"
   options [timeout = 600]
   sessions
+    Containers
+    "Abstract-Rewriting"
+    Gauss_Jordan Matrix
+    Polynomial_Interpolation
+    Show
+    VectorSpace
     "HOL-Cardinals"
   theories
+    Containers.Set_Impl
+    Matrix.Utility
+    Matrix.Ordered_Semiring
+    "Abstract-Rewriting.SN_Order_Carrier"
+    "Abstract-Rewriting.Relative_Rewriting"
+    Show.Show_Instances
+    VectorSpace.VectorSpace
+    Polynomial_Interpolation.Missing_Polynomial
+    Polynomial_Interpolation.Ring_Hom_Poly
     "HOL-Library.AList"
     "HOL-Library.Cardinality"
     "HOL-Library.Char_ord"
@@ -34,46 +49,15 @@ session "JNF-HOL-Lib" (AFP) = "HOL-Algebra" +
     "HOL-Cardinals.Order_Union"
     "HOL-Cardinals.Wellorder_Extension"
 
-session "JNF-AFP-Lib" (AFP) = "JNF-HOL-Lib" +
-  description "Theories from the Archive of Formal Proofs that are used by this entry"
-  options [timeout = 600]
-  sessions
-    Containers
-    "Abstract-Rewriting"
-    Gauss_Jordan Matrix
-    Polynomial_Interpolation
-    Show
-    VectorSpace
-  theories
-    Containers.Set_Impl
-    Matrix.Utility
-    Matrix.Ordered_Semiring
-    "Abstract-Rewriting.SN_Order_Carrier"
-    "Abstract-Rewriting.Relative_Rewriting"
-    Show.Show_Instances
-    VectorSpace.VectorSpace
-    Polynomial_Interpolation.Missing_Polynomial
-    Polynomial_Interpolation.Ring_Hom_Poly
 
-session Pre_Polynomial_Factorization (AFP) = "JNF-AFP-Lib" +
-  description "Theories from other AFP-entries and Extended Theories for Matrices"
+session Polynomial_Factorization (AFP) = "JNF-AFP-Lib" + 
+  description "Algebraic Numbers"
   options [timeout = 600]
   sessions
     Partial_Function_MR
     Polynomial_Interpolation
     Show
     Sqrt_Babylonian
-  theories
-    Partial_Function_MR.Partial_Function_MR
-    Polynomial_Interpolation.Polynomial_Interpolation
-    Sqrt_Babylonian.Sqrt_Babylonian
-    Show.Show_Poly
-    "HOL-Library.RBT_Mapping"
-    "HOL-Computational_Algebra.Polynomial"
-
-session Polynomial_Factorization (AFP) = Pre_Polynomial_Factorization +
-  description "Algebraic Numbers"
-  options [timeout = 600]
   theories
     Missing_Multiset
     Missing_List
