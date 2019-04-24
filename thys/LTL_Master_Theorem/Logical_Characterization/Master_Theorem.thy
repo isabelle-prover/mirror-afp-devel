@@ -7,7 +7,7 @@ section \<open>The Master Theorem\<close>
 
 theory Master_Theorem
 imports
-  Advice After Finite_Ordered_Set
+  Advice After
 begin
 
 subsection \<open>Checking @{term "X \<subseteq> \<G>\<F> \<phi> w"} and @{term "Y \<subseteq> \<F>\<G> \<phi> w"}\<close>
@@ -25,7 +25,7 @@ lemma X_\<G>\<F>_Y_\<F>\<G>:
     "X \<subseteq> \<G>\<F> \<phi> w \<and> Y \<subseteq> \<F>\<G> \<phi> w"
 proof -
   \<comment> \<open>Custom induction rule with @{term size} as a partial order\<close>
-  note induct = finite_induct_ordered[where f = size]
+  note induct = finite_ranking_induct[where f = size]
 
   have "finite (X \<union> Y)"
     using subformulas\<^sub>\<mu>_finite subformulas\<^sub>\<nu>_finite X_\<mu> Y_\<nu> finite_subset

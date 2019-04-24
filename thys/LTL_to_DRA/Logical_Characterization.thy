@@ -255,7 +255,7 @@ proof -
   note \<open>G \<psi> \<in> \<G>\<close>
   ultimately
   show "w \<Turnstile> F G \<psi>" 
-  proof (induction arbitrary: \<psi> rule: finite_induct_ordered[where f = G_depth])
+  proof (induction arbitrary: \<psi> rule: finite_ranking_induct[where f = G_depth])
     case (insert x \<G>)
       (* Split \<psi>' out *)
       then obtain \<psi>' where "x = G \<psi>'"

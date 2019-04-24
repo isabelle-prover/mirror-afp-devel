@@ -7,7 +7,7 @@ section \<open>Asymmetric Variant of the Master Theorem\<close>
 
 theory Asymmetric_Master_Theorem
 imports
-  Advice After Finite_Ordered_Set
+  Advice After
 begin
 
 text \<open>This variant of the Master Theorem fixes only a subset @{term Y}
@@ -62,7 +62,7 @@ lemma Y_\<G>:
     "Y \<subseteq> \<G> \<phi> (suffix i w)"
 proof -
   \<comment> \<open>Custom induction rule with @{term size} as a partial order\<close>
-  note induct = finite_induct_ordered[where f = size]
+  note induct = finite_ranking_induct[where f = size]
 
   have "finite Y"
     using Y_\<nu> finite_subset subformulas\<^sub>\<nu>_finite by auto
