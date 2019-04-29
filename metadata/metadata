@@ -970,7 +970,7 @@ notify =
 title = The Generic Unwinding Theorem for CSP Noninterference Security
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
 date = 2015-06-11
-topic = Computer Science/Security
+topic = Computer Science/Security, Computer Science/Concurrency/Process Calculi
 abstract =
 	<p>
 	The classical definition of noninterference security for a deterministic state
@@ -1424,7 +1424,7 @@ notify =
 title = The Correctness of Launchbury's Natural Semantics for Lazy Evaluation
 author = Joachim Breitner <http://pp.ipd.kit.edu/~breitner>
 date = 2013-01-31
-topic = Computer Science/Programming Languages/Lambda Calculi
+topic = Computer Science/Programming Languages/Lambda Calculi, Computer Science/Semantics
 abstract = In his seminal paper "Natural Semantics for Lazy Evaluation", John Launchbury proves his semantics correct with respect to a denotational semantics, and outlines an adequacy proof. We have formalized both semantics and machine-checked the correctness proof, clarifying some details. Furthermore, we provide a new and more direct adequacy proof that does not require intermediate operational semantics.
 extra-history =
 	Change history:
@@ -5662,7 +5662,7 @@ extra-history =
 title = Conservation of CSP Noninterference Security under Sequential Composition
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
 date = 2016-04-26
-topic = Computer Science/Security
+topic = Computer Science/Security, Computer Science/Concurrency/Process Calculi
 abstract =
 	<p>In his outstanding work on Communicating Sequential Processes, Hoare
 	has defined two fundamental binary operations allowing to compose the
@@ -5687,7 +5687,7 @@ title = Conservation of CSP Noninterference Security under Concurrent Compositio
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
 notify = pasquale.noce.lavoro@gmail.com
 date = 2016-06-13
-topic = Computer Science/Security
+topic = Computer Science/Security, Computer Science/Concurrency/Process Calculi
 abstract =
 	<p>In his outstanding work on Communicating Sequential Processes,
 	Hoare has defined two fundamental binary operations allowing to
@@ -7617,7 +7617,7 @@ abstract =
 [Transformer_Semantics]
 title = Transformer Semantics
 author = Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>
-topic = Mathematics/Algebra, Computer Science/Programming Languages/Misc
+topic = Mathematics/Algebra, Computer Science/Semantics
 date = 2018-12-11
 notify = g.struth@sheffield.ac.uk
 abstract =
@@ -7765,7 +7765,7 @@ abstract =
 
 [UTP]
 title = Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming
-author = Simon Foster <https://www-users.cs.york.ac.uk/~simonf/>, Frank Zeyda<>, Yakoub Nemouchi <mailto:yakoub.nemouchi@york.ac.uk>, Pedro Ribeiro<>, Burkhart Wolff<>
+author = Simon Foster <https://www-users.cs.york.ac.uk/~simonf/>, Frank Zeyda<>, Yakoub Nemouchi <mailto:yakoub.nemouchi@york.ac.uk>, Pedro Ribeiro<>, Burkhart Wolff<mailto:wolff@lri.fr>
 topic = Computer Science/Programming Languages/Logics
 date = 2019-02-01
 notify = simon.foster@york.ac.uk
@@ -7783,13 +7783,34 @@ abstract =
   using calculi like Hoare logics. This document describes the
   relational core of the UTP in Isabelle/HOL.
 
+[HOL-CSP]
+title = HOL-CSP Version 2.0
+author = Safouan Taha <mailto:safouan.taha@lri.fr>, Lina Ye <mailto:lina.ye@lri.fr>, Burkhart Wolff<mailto:wolff@lri.fr>
+topic = Computer Science/Concurrency/Process Calculi, Computer Science/Semantics
+date = 2019-04-26
+notify = wolff@lri.fr
+abstract =
+  This is a complete formalization of the work of Hoare and Roscoe on
+  the denotational semantics of the Failure/Divergence Model of CSP. It
+  follows essentially the presentation of CSP in Roscoe’s Book ”Theory
+  and Practice of Concurrency” [8] and the semantic details in a joint
+  Paper of Roscoe and Brooks ”An improved failures model for
+  communicating processes".  The present work is based on a prior
+  formalization attempt, called HOL-CSP 1.0, done in 1997 by H. Tej and
+  B. Wolff with the Isabelle proof technology available at that time.
+  This work revealed minor, but omnipresent foundational errors in key
+  concepts like the process invariant. The present version HOL-CSP
+  profits from substantially improved libraries (notably HOLCF),
+  improved automated proof techniques, and structured proof techniques
+  in Isar and is substantially shorter but more complete.
+
 [Probabilistic_Prime_Tests]
 title = Probabilistic Primality Testing
 author = Daniel Stüwe<>, Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Mathematics/Number Theory
 date = 2019-02-11
 notify = eberlm@in.tum.de
-abstract = 
+abstract =
   <p>The most efficient known primality tests are
   <em>probabilistic</em> in the sense that they use
   randomness and may, with some probability, mistakenly classify a
@@ -7808,7 +7829,7 @@ author = Maximilian P.L. Haslbeck <http://in.tum.de/~haslbema/>, Peter Lammich <
 topic = Computer Science/Algorithms
 date = 2019-02-14
 notify = haslbema@in.tum.de, lammich@in.tum.de
-abstract = 
+abstract =
   This Isabelle/HOL formalization defines a greedy algorithm for finding
   a minimum weight basis on a weighted matroid and proves its
   correctness. This algorithm is an abstract version of Kruskal's
@@ -7817,14 +7838,14 @@ abstract =
   using an efficient union-find data structure.  Our formalization can
   be instantiated for different graph representations. We provide
   instantiations for undirected graphs and symmetric directed graphs.
-  
+
 [List_Inversions]
 title = The Inversions of a List
 author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Computer Science/Algorithms
 date = 2019-02-01
 notify = eberlm@in.tum.de
-abstract = 
+abstract =
   <p>This entry defines the set of <em>inversions</em>
   of a list, i.e. the pairs of indices that violate sortedness. It also
   proves the correctness of the well-known
@@ -7838,7 +7859,7 @@ author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Mathematics/Number Theory
 date = 2019-02-21
 notify = eberlm@in.tum.de
-abstract = 
+abstract =
   <p>This entry is a formalisation of Chapter 4 (and parts of
   Chapter 3) of Apostol's <a
   href="https://www.springer.com/de/book/9780387901633"><em>Introduction
@@ -7861,36 +7882,36 @@ topic = Computer Science/Programming Languages/Language Definitions
 license = LGPL
 date = 2019-03-09
 notify = denis.nikif@gmail.com
-abstract = 
-  <p>The theory is a formalization of the 
-  <a href="https://www.omg.org/spec/OCL/">OCL</a> type system, its abstract 
-  syntax and expression typing rules. The theory does not define a concrete 
-  syntax and a semantics. In contrast to 
-  <a href="https://www.isa-afp.org/entries/Featherweight_OCL.html">Featherweight OCL</a>, 
-  it is based on a deep embedding approach. The type system is defined from scratch, 
+abstract =
+  <p>The theory is a formalization of the
+  <a href="https://www.omg.org/spec/OCL/">OCL</a> type system, its abstract
+  syntax and expression typing rules. The theory does not define a concrete
+  syntax and a semantics. In contrast to
+  <a href="https://www.isa-afp.org/entries/Featherweight_OCL.html">Featherweight OCL</a>,
+  it is based on a deep embedding approach. The type system is defined from scratch,
   it is not based on the Isabelle HOL type system.</p>
-  <p>The Safe OCL distincts nullable and non-nullable types. Also the theory gives a 
-  formal definition of <a href="http://ceur-ws.org/Vol-1512/paper07.pdf">safe 
-  navigation operations</a>. The Safe OCL typing rules are much stricter than rules 
-  given in the OCL specification. It allows one to catch more errors on a type 
+  <p>The Safe OCL distincts nullable and non-nullable types. Also the theory gives a
+  formal definition of <a href="http://ceur-ws.org/Vol-1512/paper07.pdf">safe
+  navigation operations</a>. The Safe OCL typing rules are much stricter than rules
+  given in the OCL specification. It allows one to catch more errors on a type
   checking phase.</p>
-  <p>The type theory presented is four-layered: classes, basic types, generic types, 
-  errorable types. We introduce the following new types: non-nullable types (T[1]), 
-  nullable types (T[?]), OclSuper. OclSuper is a supertype of all other types (basic 
-  types, collections, tuples). This type allows us to define a total supremum function, 
-  so types form an upper semilattice. It allows us to define rich expression typing 
+  <p>The type theory presented is four-layered: classes, basic types, generic types,
+  errorable types. We introduce the following new types: non-nullable types (T[1]),
+  nullable types (T[?]), OclSuper. OclSuper is a supertype of all other types (basic
+  types, collections, tuples). This type allows us to define a total supremum function,
+  so types form an upper semilattice. It allows us to define rich expression typing
   rules in an elegant manner.</p>
-  <p>The Preliminaries Chapter of the theory defines a number of helper lemmas for 
-  transitive closures and tuples. It defines also a generic object model independent 
+  <p>The Preliminaries Chapter of the theory defines a number of helper lemmas for
+  transitive closures and tuples. It defines also a generic object model independent
   from OCL. It allows one to use the theory as a reference for formalization of analogous languages.</p>
 
 [QHLProver]
 title = Quantum Hoare Logic
 author = Junyi Liu<>, Bohua Zhan <http://lcs.ios.ac.cn/~bzhan/>, Shuling Wang<>, Shenggang Ying<>, Tao Liu<>, Yangjia Li<>, Mingsheng Ying<>, Naijun Zhan<>
-topic = Computer Science/Programming Languages/Logics
+topic = Computer Science/Programming Languages/Logics, Computer Science/Semantics
 date = 2019-03-24
 notify = bzhan@ios.ac.cn
-abstract = 
+abstract =
   We formalize quantum Hoare logic as given in [1]. In particular, we
   specify the syntax and denotational semantics of a simple model of
   quantum programs. Then, we write down the rules of quantum Hoare logic
@@ -7904,7 +7925,7 @@ author = Angeliki Koutsoukou-Argyraki <https://www.cl.cam.ac.uk/~ak2110/>, Wenda
 topic = Mathematics/Analysis,  Mathematics/Number Theory
 date = 2019-03-27
 notify = wl302@cam.ac.uk, ak2110@cam.ac.uk
-abstract = 
+abstract =
   We formalize the proofs of two transcendence criteria by J. Hančl
   and P. Rucki that assert the transcendence of the sums of certain
   infinite series built up by sequences that fulfil certain properties.
@@ -7919,7 +7940,7 @@ author = Lorenzo Gheri <mailto:lor.gheri@gmail.com>, Andrei Popescu <mailto:a.po
 topic = Computer Science/Programming Languages/Lambda Calculi, Computer Science/Functional Programming, Logic
 date = 2019-04-06
 notify = a.popescu@mdx.ac.uk, lor.gheri@gmail.com
-abstract = 
+abstract =
   We formalize a theory of syntax with bindings that has been developed
   and refined over the last decade to support several large
   formalization efforts. Terms are defined for an arbitrary number of
