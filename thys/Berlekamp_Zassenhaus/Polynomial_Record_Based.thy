@@ -219,8 +219,8 @@ definition gcd_poly_i :: "'i list \<Rightarrow> 'i list \<Rightarrow> 'i list" w
 definition euclid_ext_poly_i :: "'i list \<Rightarrow> 'i list \<Rightarrow> ('i list \<times> 'i list) \<times> 'i list" where
   "euclid_ext_poly_i = arith_ops.euclid_ext_i poly_ops"
 
-definition square_free_i :: "'i list \<Rightarrow> bool" where
-  "square_free_i xs \<equiv> gcd_poly_i xs (pderiv_i xs) = one_poly_i"
+definition separable_i :: "'i list \<Rightarrow> bool" where
+  "separable_i xs \<equiv> gcd_poly_i xs (pderiv_i xs) = one_poly_i"
 
 end
 

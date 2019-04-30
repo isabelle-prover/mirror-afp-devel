@@ -73,10 +73,15 @@ proof (rule ccontr)
   from us[OF this] show False by auto
 qed
 
-lemma coprime_pderiv_imp_square_free:
-  "square_free f" if "coprime f (pderiv f)" for f :: "'a::{field, factorial_ring_gcd} poly"
+definition separable where 
+  "separable f = coprime f (pderiv f)" 
+
+lemma separable_imp_square_free:
+  assumes sep: "separable (f :: 'a::{field, factorial_ring_gcd} poly)" 
+  shows "square_free f" 
 proof (rule ccontr)
-  from that have f0: "f \<noteq> 0" by (cases f, auto)
+  note sep = sep[unfolded separable_def]
+  from sep have f0: "f \<noteq> 0" by (cases f, auto)
   assume "\<not> square_free f"
   then obtain g where g: "degree g \<noteq> 0" and "g * g dvd f" using f0 unfolding square_free_def by auto
   then obtain h where f: "f = g * (g * h)" unfolding dvd_def by (auto simp: ac_simps)
@@ -87,9 +92,9 @@ proof (rule ccontr)
   ultimately have dvd: "g dvd (gcd f (pderiv f))" by simp
   have "gcd f (pderiv f) \<noteq> 0" using f0 by simp
   with g dvd have "degree (gcd f (pderiv f)) \<noteq> 0"
-    by (simp add: that poly_dvd_1)
+    by (simp add: sep poly_dvd_1)
   hence "\<not> coprime f (pderiv f)" by auto
-  with that show False by simp
+  with sep show False by simp
 qed
 
 lemma square_free_rsquarefree: assumes f: "square_free f" 
@@ -149,12 +154,13 @@ proof (rule square_freeI)
   thus False using assms unfolding rsquarefree_def' by auto
 qed (insert assms, auto simp: rsquarefree_def)
    
-lemma square_free_coprime_pderiv_main:
+lemma square_free_separable_main:
   fixes f :: "'a :: {field,factorial_ring_gcd} poly"
   assumes "square_free f"
-  and cop: "\<not> coprime f (pderiv f)"
+  and sep: "\<not> separable f"
   shows "\<exists> g k. f = g * k \<and> degree g \<noteq> 0 \<and> pderiv g = 0"
 proof -
+  note cop = sep[unfolded separable_def]
   from assms have f: "f \<noteq> 0" unfolding square_free_def by auto
   let ?g = "gcd f (pderiv f)"
   define G where "G = ?g"
@@ -191,22 +197,21 @@ proof -
   with fgk g0 show ?thesis by auto
 qed
 
-lemma square_free_coprime_pderiv: fixes f :: "'a :: {field_char_0,factorial_ring_gcd} poly"
+lemma square_free_imp_separable: fixes f :: "'a :: {field_char_0,factorial_ring_gcd} poly"
   assumes "square_free f"
-  shows "coprime f (pderiv f)"
+  shows "separable f"
 proof (rule ccontr)
-  assume "\<not> coprime f (pderiv f)" 
-  from square_free_coprime_pderiv_main[OF assms this]
+  assume "\<not> separable f" 
+  from square_free_separable_main[OF assms this]
   obtain g k where *: "f = g * k" "degree g \<noteq> 0" "pderiv g = 0" by auto
   hence "g dvd pderiv g" by auto
   thus False unfolding dvd_pderiv_iff using * by auto
 qed
    
 
-lemma square_free_iff_coprime: 
-  "square_free (f :: 'a :: {field_char_0,factorial_ring_gcd} poly) = 
-     (coprime f (pderiv f))"
-  using coprime_pderiv_imp_square_free[of f] square_free_coprime_pderiv[of f] by auto
+lemma square_free_iff_separable: 
+  "square_free (f :: 'a :: {field_char_0,factorial_ring_gcd} poly) = separable f"
+  using separable_imp_square_free[of f] square_free_imp_separable[of f] by auto
 
 context
   assumes "SORT_CONSTRAINT('a::{field,factorial_ring_gcd})"
@@ -1433,7 +1438,7 @@ lemma (in field_hom_0') square_free_map_poly:
   "square_free (map_poly hom f) = square_free f"
 proof -
   interpret map_poly_hom: map_poly_inj_comm_ring_hom..
-  show ?thesis unfolding square_free_iff_coprime
+  show ?thesis unfolding square_free_iff_separable separable_def
     by (simp only: hom_distribs [symmetric] (*fold doesn't work!*))
       (simp add: coprime_iff_gcd_eq_1 map_poly_gcd [symmetric])
 qed

@@ -23,13 +23,13 @@ imports
   Square_Free_Int_To_Square_Free_GFp
 begin
 
-lemma square_free_coprime_pderiv_GFp: fixes f :: "'a :: prime_card mod_ring poly"
+lemma square_free_separable_GFp: fixes f :: "'a :: prime_card mod_ring poly"
   assumes card: "CARD('a) > degree f"
   and sf: "square_free f" 
-  shows "coprime f (pderiv f)"
+  shows "separable f"
 proof (rule ccontr)
-  assume "\<not> coprime f (pderiv f)" 
-  with square_free_coprime_pderiv_main[OF sf]
+  assume "\<not> separable f" 
+  with square_free_separable_main[OF sf]
   obtain g k where *: "f = g * k" "degree g \<noteq> 0" and g0: "pderiv g = 0" by auto
   from assms have f: "f \<noteq> 0" unfolding square_free_def by auto
   have "degree f = degree g + degree k" using f unfolding *(1)
@@ -44,28 +44,28 @@ proof (rule ccontr)
   with card show False by (simp add: deg nat_dvd_not_less)
 qed
   
-lemma square_free_iff_coprime_GFp: assumes "degree f < CARD('a)" 
-  shows "square_free (f :: 'a :: prime_card mod_ring poly) = (coprime f (pderiv f))"
-  using coprime_pderiv_imp_square_free[of f] square_free_coprime_pderiv_GFp[OF assms] by auto
+lemma square_free_iff_separable_GFp: assumes "degree f < CARD('a)" 
+  shows "square_free (f :: 'a :: prime_card mod_ring poly) = separable f"
+  using separable_imp_square_free[of f] square_free_separable_GFp[OF assms] by auto
 
-definition square_free_impl_main :: "int \<Rightarrow> 'i arith_ops_record \<Rightarrow> int poly \<Rightarrow> bool" where
-  "square_free_impl_main p ff_ops f = square_free_i ff_ops (of_int_poly_i ff_ops (poly_mod.Mp p f))" 
+definition separable_impl_main :: "int \<Rightarrow> 'i arith_ops_record \<Rightarrow> int poly \<Rightarrow> bool" where
+  "separable_impl_main p ff_ops f = separable_i ff_ops (of_int_poly_i ff_ops (poly_mod.Mp p f))" 
 
-lemma (in prime_field_gen) square_free_impl: 
-  shows "square_free_impl_main p ff_ops f \<Longrightarrow> square_free_m f" 
-  "p > degree_m f \<Longrightarrow> p > square_free_bound f \<Longrightarrow> square_free f 
-   \<Longrightarrow> square_free_impl_main p ff_ops f" unfolding square_free_impl_main_def
+lemma (in prime_field_gen) separable_impl: 
+  shows "separable_impl_main p ff_ops f \<Longrightarrow> square_free_m f" 
+  "p > degree_m f \<Longrightarrow> p > separable_bound f \<Longrightarrow> square_free f 
+   \<Longrightarrow> separable_impl_main p ff_ops f" unfolding separable_impl_main_def
 proof -
   define F where F: "(F :: 'a mod_ring poly) = of_int_poly (Mp f)"
   let ?f' = "of_int_poly_i ff_ops (Mp f)" 
   define f'' where "f'' \<equiv> of_int_poly (Mp f) :: 'a mod_ring poly"
   have rel_f[transfer_rule]: "poly_rel ?f' f''" 
     by (rule poly_rel_of_int_poly[OF refl], simp add: f''_def)
-  have "square_free_i ff_ops ?f' \<longleftrightarrow> gcd f'' (pderiv f'') = 1"
-    unfolding square_free_i_def by transfer_prover
+  have "separable_i ff_ops ?f' \<longleftrightarrow> gcd f'' (pderiv f'') = 1"
+    unfolding separable_i_def by transfer_prover
   also have "\<dots> \<longleftrightarrow> coprime f'' (pderiv f'')"
     by (auto simp add: gcd_eq_1_imp_coprime)
-  finally have id: "square_free_i ff_ops ?f' \<longleftrightarrow> coprime f'' (pderiv f'')" .
+  finally have id: "separable_i ff_ops ?f' \<longleftrightarrow> separable f''" unfolding separable_def coprime_iff_coprime .
   have Mprel [transfer_rule]: "MP_Rel (Mp f) F" unfolding F MP_Rel_def
     by (simp add: Mp_f_representative)
   have "square_free f'' = square_free F" unfolding f''_def F by simp
@@ -73,49 +73,49 @@ proof -
     by (transfer, simp)
   also have "\<dots> = square_free_m f" by simp
   finally have id2: "square_free f'' = square_free_m f" .
-  from coprime_pderiv_imp_square_free[of f'']
-  show "square_free_i ff_ops ?f' \<Longrightarrow> square_free_m f"
+  from separable_imp_square_free[of f'']
+  show "separable_i ff_ops ?f' \<Longrightarrow> square_free_m f"
     unfolding id id2 by auto
   let ?m = "map_poly (of_int :: int \<Rightarrow> 'a mod_ring)" 
   let ?f = "?m f" 
-  assume "p > degree_m f" and bnd: "p > square_free_bound f" and sf: "square_free f"
+  assume "p > degree_m f" and bnd: "p > separable_bound f" and sf: "square_free f"
   with rel_funD[OF degree_MP_Rel Mprel, folded p]
   have "p > degree F" by simp
   hence "CARD('a) > degree f''" unfolding f''_def F p by simp
-  from square_free_iff_coprime_GFp[OF this]
-  have "square_free_i ff_ops ?f' = square_free f''" unfolding id id2 by simp
+  from square_free_iff_separable_GFp[OF this]
+  have "separable_i ff_ops ?f' = square_free f''" unfolding id id2 by simp
   also have "\<dots> = square_free F" unfolding f''_def F by simp
   also have "F = ?f" unfolding F
     by (rule poly_eqI, (subst coeff_map_poly, force)+, unfold Mp_coeff, 
     auto simp: M_def, transfer, auto simp: p)
   also have "square_free ?f" using square_free_int_imp_square_free_mod_ring[where 'a = 'a, OF sf] bnd m by auto
   finally
-  show "square_free_i ff_ops ?f'" .
+  show "separable_i ff_ops ?f'" .
 qed
 
 context poly_mod_prime begin
 
-lemmas square_free_impl_integer = prime_field_gen.square_free_impl
+lemmas separable_impl_integer = prime_field_gen.separable_impl
   [OF prime_field.prime_field_finite_field_ops_integer, unfolded prime_field_def mod_ring_locale_def,
   unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise,cancel_type_definition, OF non_empty]
 
-lemmas square_free_impl_uint32 = prime_field_gen.square_free_impl
+lemmas separable_impl_uint32 = prime_field_gen.separable_impl
   [OF prime_field.prime_field_finite_field_ops32, unfolded prime_field_def mod_ring_locale_def,
   unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise,cancel_type_definition, OF non_empty]
 
-lemmas square_free_impl_uint64 = prime_field_gen.square_free_impl
+lemmas separable_impl_uint64 = prime_field_gen.separable_impl
   [OF prime_field.prime_field_finite_field_ops64, unfolded prime_field_def mod_ring_locale_def,
   unfolded poly_mod_type_simps, internalize_sort "'a :: prime_card", OF type_to_set, unfolded remove_duplicate_premise,cancel_type_definition, OF non_empty]
 
 end
 
-definition square_free_impl :: "int \<Rightarrow> int poly \<Rightarrow> bool" where
-  "square_free_impl p = ( 
+definition separable_impl :: "int \<Rightarrow> int poly \<Rightarrow> bool" where
+  "separable_impl p = ( 
     if p \<le> 65535 
-    then square_free_impl_main p (finite_field_ops32 (uint32_of_int p))
+    then separable_impl_main p (finite_field_ops32 (uint32_of_int p))
     else if p \<le> 4294967295
-    then square_free_impl_main p (finite_field_ops64 (uint64_of_int p))
-    else square_free_impl_main p (finite_field_ops_integer (integer_of_int p)))" 
+    then separable_impl_main p (finite_field_ops64 (uint64_of_int p))
+    else separable_impl_main p (finite_field_ops_integer (integer_of_int p)))" 
 
 lemma square_free_mod_imp_square_free: assumes 
   p: "prime p" and sf: "poly_mod.square_free_m p f"
@@ -150,15 +150,15 @@ proof -
   qed
 qed
 
-lemma(in poly_mod_prime) square_free_impl: 
-  shows "square_free_impl p f \<Longrightarrow> square_free_m f"
-    "nat p > degree_m f \<Longrightarrow> nat p > square_free_bound f \<Longrightarrow> square_free f 
-    \<Longrightarrow> square_free_impl p f" 
+lemma(in poly_mod_prime) separable_impl: 
+  shows "separable_impl p f \<Longrightarrow> square_free_m f"
+    "nat p > degree_m f \<Longrightarrow> nat p > separable_bound f \<Longrightarrow> square_free f 
+    \<Longrightarrow> separable_impl p f" 
   using
-    square_free_impl_integer[of f] 
-    square_free_impl_uint32[of f]
-    square_free_impl_uint64[of f]
-  unfolding square_free_impl_def by (auto split: if_splits)
+    separable_impl_integer[of f] 
+    separable_impl_uint32[of f]
+    separable_impl_uint64[of f]
+  unfolding separable_impl_def by (auto split: if_splits)
 
 lemma coprime_lead_coeff_large_prime: assumes prime: "prime (p :: int)" 
   and large: "p > abs (lead_coeff f)" 
@@ -193,22 +193,22 @@ proof -
 qed
 
 lemma prime_for_berlekamp_zassenhaus_exists: assumes sf: "square_free f" 
-  shows "\<exists> p. prime p \<and> (coprime (lead_coeff f) p \<and> square_free_impl p f)"
+  shows "\<exists> p. prime p \<and> (coprime (lead_coeff f) p \<and> separable_impl p f)"
 proof (rule ccontr)
   from assms have f0: "f \<noteq> 0" unfolding square_free_def by auto
-  define n where "n = max (max (abs (lead_coeff f)) (degree f)) (square_free_bound f)" 
+  define n where "n = max (max (abs (lead_coeff f)) (degree f)) (separable_bound f)" 
   assume contr: "\<not> ?thesis"
   {
     fix p :: int
     assume prime: "prime p" and n: "p > n" 
     then interpret poly_mod_prime p by unfold_locales
-    from n have large: "p > abs (lead_coeff f)" "nat p > degree f" "nat p > square_free_bound f" 
+    from n have large: "p > abs (lead_coeff f)" "nat p > degree f" "nat p > separable_bound f" 
       unfolding n_def by auto
     from coprime_lead_coeff_large_prime[OF prime large(1) f0]
     have cop: "coprime (lead_coeff f) p" by auto
-    with prime contr have nsf: "\<not> square_free_impl p f" by auto
+    with prime contr have nsf: "\<not> separable_impl p f" by auto
     from large(2) have "nat p > degree_m f" using degree_m_le[of f] by auto
-    from square_free_impl(2)[OF this large(3) sf] nsf have False by auto
+    from separable_impl(2)[OF this large(3) sf] nsf have False by auto
   }
   hence no_large_prime: "\<And> p. prime p \<Longrightarrow> p > n \<Longrightarrow> False" by auto
   from bigger_prime[of "nat n"] obtain p where *: "prime p" "p > nat n" by auto
@@ -309,34 +309,34 @@ qed
 
 definition suitable_prime_bz :: "int poly \<Rightarrow> int" where
   "suitable_prime_bz f \<equiv> let lc = lead_coeff f in int (find_prime (\<lambda> n. let p = int n in 
-       coprime lc p \<and> square_free_impl p f))"
+       coprime lc p \<and> separable_impl p f))"
   
 lemma suitable_prime_bz: assumes sf: "square_free f" and p: "p = suitable_prime_bz f" 
   shows "prime p" "coprime (lead_coeff f) p" "poly_mod.square_free_m p f"
 proof -
   let ?lc = "lead_coeff f" 
   from prime_for_berlekamp_zassenhaus_exists[OF sf, unfolded Let_def]
-  obtain P where *: "prime P \<and> coprime ?lc P \<and> square_free_impl P f" 
+  obtain P where *: "prime P \<and> coprime ?lc P \<and> separable_impl P f" 
     by auto
   hence "prime (nat P)" using prime_int_nat_transfer by blast
-  with * have "\<exists> p. prime p \<and> coprime ?lc (int p) \<and> square_free_impl p f"
+  with * have "\<exists> p. prime p \<and> coprime ?lc (int p) \<and> separable_impl p f"
     by (intro exI [of _ "nat P"]) (auto dest: prime_gt_0_int)
   from find_prime[OF this]
-  have prime: "prime p" and cop: "coprime ?lc p" and sf: "square_free_impl p f" 
+  have prime: "prime p" and cop: "coprime ?lc p" and sf: "separable_impl p f" 
     unfolding p suitable_prime_bz_def Let_def by auto
   then interpret poly_mod_prime p by unfold_locales
-  from prime cop square_free_impl(1)[OF sf]
+  from prime cop separable_impl(1)[OF sf]
   show "prime p" "coprime ?lc p" "square_free_m f" by auto
 qed
 
 definition square_free_heuristic :: "int poly \<Rightarrow> int option" where
   "square_free_heuristic f = (let lc = lead_coeff f in 
-    find (\<lambda> p. coprime lc p \<and> square_free_impl p f) [2, 3, 5, 7, 11, 13, 17, 19, 23])" 
+    find (\<lambda> p. coprime lc p \<and> separable_impl p f) [2, 3, 5, 7, 11, 13, 17, 19, 23])" 
 
 lemma find_Some_D: "find f xs = Some y \<Longrightarrow> y \<in> set xs \<and> f y" unfolding find_Some_iff by auto
   
 lemma square_free_heuristic: assumes "square_free_heuristic f = Some p" 
-  shows "coprime (lead_coeff f) p \<and> square_free_impl p f \<and> prime p" 
+  shows "coprime (lead_coeff f) p \<and> separable_impl p f \<and> prime p" 
 proof -
   from find_Some_D[OF assms[unfolded square_free_heuristic_def Let_def]]
   show ?thesis by auto

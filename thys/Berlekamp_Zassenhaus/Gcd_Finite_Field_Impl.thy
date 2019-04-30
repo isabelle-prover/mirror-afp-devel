@@ -37,7 +37,7 @@ proof -
     = coprime f'' g''" (is "?P \<longleftrightarrow> ?Q")
   proof -
     have "?P \<longleftrightarrow> gcd f'' g'' = 1"
-      unfolding square_free_i_def by transfer_prover
+      unfolding separable_i_def by transfer_prover
     also have "\<dots> \<longleftrightarrow> ?Q"
       by (simp add: coprime_iff_gcd_eq_1)
     finally show ?thesis .
