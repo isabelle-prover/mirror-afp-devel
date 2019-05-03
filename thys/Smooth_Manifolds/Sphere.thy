@@ -215,15 +215,11 @@ lemma homeomorphism_st_proj2: "homeomorphism (UNIV - {bot_sphere}) UNIV st_proj2
 
 lift_definition st_proj1_chart :: "('a sphere, 'a::euclidean_space) chart"
   is "(UNIV - {top_sphere::'a sphere}, UNIV::'a set, st_proj1, st_proj1_inv)"
-  apply auto
-  apply (rule homeomorphism_st_proj1)
-  done
+  using homeomorphism_st_proj1 by blast
   
 lift_definition st_proj2_chart :: "('a sphere, 'a::euclidean_space) chart"
   is "(UNIV - {bot_sphere::'a sphere}, UNIV::'a set, st_proj2, st_proj2_inv)"
-  apply auto
-  apply (rule homeomorphism_st_proj2)
-  done
+  using homeomorphism_st_proj2 by blast
 
 lemma st_projs_compat:
   includes lifting_syntax
@@ -257,17 +253,11 @@ next
 qed
 
 definition charts_sphere :: "('a::euclidean_space sphere, 'a) chart set" where
-  "charts_sphere = {st_proj1_chart, st_proj2_chart}"
+  "charts_sphere \<equiv> {st_proj1_chart, st_proj2_chart}"
 
 lemma c_manifold_atlas_sphere: "c_manifold charts_sphere \<infinity>"
   apply (unfold_locales)
   unfolding charts_sphere_def
-  apply auto
-     apply (rule smooth_compat_refl)
-  apply (rule st_projs_compat)
-  apply (subst smooth_compat_commute)
-   apply (rule st_projs_compat)
-  apply (rule smooth_compat_refl)
-  done
+  using smooth_compat_commute smooth_compat_refl st_projs_compat by fastforce
 
 end
