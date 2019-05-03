@@ -433,6 +433,32 @@ proof (induct F)
     by (rule index_add_vec, insert i, insert finsum_vec_closed[OF vs(1)], auto)
 qed (insert i, auto simp: finsum_vec_empty)
 
+text \<open>Definition of pointwise ordering on vectors for non-strict part, and
+  strict version is defined in a way such that the @{class order} constraints are satisfied.\<close>
+
+instantiation vec :: (ord) ord
+begin
+
+definition less_eq_vec :: "'a vec \<Rightarrow> 'a vec \<Rightarrow> bool" where
+  "less_eq_vec v w = (dim_vec v = dim_vec w \<and> (\<forall> i < dim_vec w. v $ i \<le> w $ i))" 
+
+definition less_vec :: "'a vec \<Rightarrow> 'a vec \<Rightarrow> bool" where
+  "less_vec v w = (v \<le> w \<and> \<not> (w \<le> v))"
+instance ..
+end
+
+instantiation vec :: (preorder) preorder
+begin
+instance
+  by (standard, auto simp: less_vec_def less_eq_vec_def order_trans)
+end
+
+instantiation vec :: (order) order
+begin
+instance
+  by (standard, intro eq_vecI, auto simp: less_eq_vec_def order.antisym)
+end
+
 
 subsection\<open>Matrices\<close>
 
