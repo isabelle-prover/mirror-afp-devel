@@ -1,4 +1,4 @@
-(* Authors: R. Thiemann *)
+(* Author: R. Thiemann *)
 
 subsection \<open>Farkas Lemma for Matrices\<close>
 
@@ -90,13 +90,13 @@ lemma constraints_of_mat_vec_solution:
   shows "(\<exists> x \<in> carrier_vec nc. A *\<^sub>v x \<le> b) = 
     (\<exists> v. \<forall> c \<in> constraints_of_mat_vec A b. v \<Turnstile>\<^sub>l\<^sub>e c)" 
   using constraints_of_mat_vec_solution_1[OF assms] constraints_of_mat_vec_solution_2[OF assms]
-  by blast    
+  by blast 
 
 lemma farkas_lemma_matrix: fixes A :: "rat mat" 
   assumes A: "A \<in> carrier_mat nr nc" 
   and b: "b \<in> carrier_vec nr" 
 shows "(\<exists> x \<in> carrier_vec nc. A *\<^sub>v x \<le> b) \<longleftrightarrow> 
-  (\<forall> y. y \<ge> 0\<^sub>v nr \<longrightarrow> mat_of_rows nr [y] * A = 0\<^sub>m 1 nc \<longrightarrow> y \<bullet> b \<ge> 0)" 
+  (\<forall> y. y \<ge> 0\<^sub>v nr \<longrightarrow> mat_of_row y * A = 0\<^sub>m 1 nc \<longrightarrow> y \<bullet> b \<ge> 0)" 
 proof -
   define cs where "cs = constraints_of_mat_vec A b" 
   have fin: "finite {0 ..< nr}" by auto
@@ -120,7 +120,7 @@ proof -
          (\<Sum>i = 0..<nr. (C i *R poly_of_vec (row A i))) = 0 \<longrightarrow>
          (\<Sum>i = 0..<nr. (C i * b $ i)) \<ge> 0)" 
     using not_less by blast
-  also have "\<dots> = (\<forall> y. y \<ge> 0\<^sub>v nr \<longrightarrow> mat_of_rows nr [y] * A = 0\<^sub>m 1 nc \<longrightarrow> y \<bullet> b \<ge> 0)"
+  also have "\<dots> = (\<forall> y. y \<ge> 0\<^sub>v nr \<longrightarrow> mat_of_row y * A = 0\<^sub>m 1 nc \<longrightarrow> y \<bullet> b \<ge> 0)"
   proof ((standard; intro allI impI), goal_cases)
     case *: (1 y)
     define C where "C = (\<lambda> i. y $ i)" 
@@ -146,8 +146,8 @@ proof -
         have "(\<Sum>i<nr. y $ i * coeff (poly_of_vec (row A i)) v) =
               (\<Sum>i<nr. y $ i * row A i $ v)" 
           by (rule sum.cong[OF refl], rule arg_cong[of _ _ "\<lambda> x. _ * x"], insert A True, transfer, auto)
-        also have "\<dots> = (mat_of_rows nr [y] * A) $$ (0,v)" 
-          unfolding mat_of_rows_def times_mat_def scalar_prod_def
+        also have "\<dots> = (mat_of_row y * A) $$ (0,v)" 
+          unfolding times_mat_def scalar_prod_def
           using A y True by (auto intro: sum.cong)
         also have "\<dots> = 0" unfolding *(3) using True by simp
         finally show ?thesis .
@@ -162,7 +162,7 @@ proof -
     have y: "y \<in> carrier_vec nr" unfolding y_def by auto
     note main = *(1)[rule_format, of y]
     from *(2) have y0: "y \<ge> 0\<^sub>v nr" unfolding less_eq_vec_def y_def by auto
-    have prod0: "mat_of_rows nr [y] * A = 0\<^sub>m 1 nc" 
+    have prod0: "mat_of_row y * A = 0\<^sub>m 1 nc" 
     proof -
       {
         fix j
@@ -183,6 +183,112 @@ proof -
   finally show ?thesis .
 qed
 
+lemma farkas_lemma_matrix': fixes A :: "rat mat" 
+  assumes A: "A \<in> carrier_mat nr nc" 
+  and b: "b \<in> carrier_vec nr" 
+shows "(\<exists> x \<ge> 0\<^sub>v nc. A *\<^sub>v x = b) \<longleftrightarrow> 
+  (\<forall> y \<in> carrier_vec nr. mat_of_row y * A \<ge> 0\<^sub>m 1 nc \<longrightarrow> y \<bullet> b \<ge> 0)" 
+proof -
+  define B where "B = (- 1\<^sub>m nc) @\<^sub>r (A @\<^sub>r -A)"   
+  define b' where "b' = 0\<^sub>v nc @\<^sub>v (b @\<^sub>v -b)" 
+  define n where "n = nc + (nr + nr)" 
+  have id0: "0\<^sub>v (nc + (nr + nr)) = 0\<^sub>v nc @\<^sub>v (0\<^sub>v nr @\<^sub>v 0\<^sub>v nr)" by (intro eq_vecI, auto)
+  have B: "B \<in> carrier_mat n nc" unfolding B_def n_def using A by auto
+  have b': "b' \<in> carrier_vec n" unfolding b'_def n_def using b by auto
+  have "(\<exists> x \<ge> 0\<^sub>v nc. A *\<^sub>v x = b) = (\<exists> x. x \<in> carrier_vec nc \<and> x \<ge> 0\<^sub>v nc \<and> A *\<^sub>v x = b)" 
+    by (rule arg_cong[of _ _ Ex], intro ext, insert A b, auto simp: less_eq_vec_def)
+  also have "\<dots> = (\<exists> x \<in> carrier_vec nc. x \<ge> 0\<^sub>v nc \<and> A *\<^sub>v x = b)" by blast
+  also have "\<dots> = (\<exists> x \<in> carrier_vec nc. 1\<^sub>m nc *\<^sub>v x \<ge> 0\<^sub>v nc \<and> A *\<^sub>v x \<le> b \<and> A *\<^sub>v x \<ge> b)" 
+    by (rule bex_cong[OF refl], insert A b, auto)
+  also have "\<dots> = (\<exists> x \<in> carrier_vec nc. - (1\<^sub>m nc *\<^sub>v x) \<le> - (0\<^sub>v nc) \<and> A *\<^sub>v x \<le> b \<and> - (A *\<^sub>v x) \<le> -b)" 
+    by (rule bex_cong[OF refl], insert A b, auto simp: less_eq_vec_def)
+  also have "\<dots> = (\<exists> x \<in> carrier_vec nc. (- 1\<^sub>m nc) *\<^sub>v x \<le> 0\<^sub>v nc \<and> A *\<^sub>v x \<le> b \<and> (- A) *\<^sub>v x \<le> -b)" 
+    by (rule bex_cong[OF refl], insert A b, auto)
+  also have "\<dots> = (\<exists> x \<in> carrier_vec nc. B *\<^sub>v x \<le> b')"
+    by (rule bex_cong[OF refl], insert A b, unfold B_def b'_def, 
+      subst append_rows_le[of _ ], (auto)[4], intro conj_cong[OF refl], subst append_rows_le, auto)
+  also have "\<dots> = (\<forall>y\<ge>0\<^sub>v n. mat_of_row y * B = 0\<^sub>m 1 nc \<longrightarrow> y \<bullet> b' \<ge> 0)"   
+    by (rule farkas_lemma_matrix[OF B b'])
+  also have "\<dots> = (\<forall> y. y \<in> carrier_vec n \<longrightarrow> y\<ge>0\<^sub>v n \<longrightarrow> mat_of_row y * B = 0\<^sub>m 1 nc \<longrightarrow> y \<bullet> b' \<ge> 0)"
+    by (intro arg_cong[of _ _ All], intro ext, auto simp: less_eq_vec_def)
+  also have "\<dots> = (\<forall> y \<in> carrier_vec n. y\<ge>0\<^sub>v n \<longrightarrow> mat_of_row y * B = 0\<^sub>m 1 nc \<longrightarrow> y \<bullet> b' \<ge> 0)"
+    by blast
+  also have "\<dots> = (\<forall>y1 \<in>carrier_vec nc. \<forall>y2 \<in>carrier_vec nr. \<forall>y3 \<in>carrier_vec nr.
+              0\<^sub>v nc @\<^sub>v (0\<^sub>v nr @\<^sub>v 0\<^sub>v nr) \<le> y1 @\<^sub>v y2 @\<^sub>v y3  \<longrightarrow>
+              mat_of_row (y1 @\<^sub>v y2 @\<^sub>v y3) * ((- 1\<^sub>m nc) @\<^sub>r (A @\<^sub>r -A)) = 0\<^sub>m 1 nc 
+              \<longrightarrow> 0 \<le> (y1 @\<^sub>v y2 @\<^sub>v y3) \<bullet> (0\<^sub>v nc @\<^sub>v (b @\<^sub>v -b)))" 
+    unfolding n_def all_vec_append id0 b'_def B_def by auto
+  also have "\<dots> = (\<forall>y1 \<in>carrier_vec nc. \<forall>y2 \<in>carrier_vec nr. \<forall>y3 \<in>carrier_vec nr.
+              0\<^sub>v nc \<le> y1 \<longrightarrow> 0\<^sub>v nr \<le> y2 \<longrightarrow> 0\<^sub>v nr \<le> y3 \<longrightarrow>
+              (- mat_of_row y1) + 
+              (mat_of_row y2 * A - (mat_of_row y3 * A)) = 0\<^sub>m 1 nc 
+              \<longrightarrow> y2 \<bullet> b - y3 \<bullet> b \<ge> 0)"
+    by (intro ball_cong[OF refl], subst append_vec_le, (auto)[2], subst append_vec_le, (auto)[2], insert A b,
+      subst scalar_prod_append, (auto)[4], subst scalar_prod_append, (auto)[4], 
+      subst mat_of_row_mult_append_rows, (auto)[4],
+      subst mat_of_row_mult_append_rows, (auto)[4],
+      subst add_uminus_minus_mat[symmetric], auto)
+  also have "\<dots> = (\<forall>y1 \<in>carrier_vec nc. \<forall>y2 \<in>carrier_vec nr. \<forall>y3 \<in>carrier_vec nr.
+              0\<^sub>v nc \<le> y1 \<longrightarrow> 0\<^sub>v nr \<le> y2 \<longrightarrow> 0\<^sub>v nr \<le> y3 \<longrightarrow>
+              mat_of_row y1 = mat_of_row y2 * A - mat_of_row y3 * A
+              \<longrightarrow> y2 \<bullet> b - y3 \<bullet> b \<ge> 0)"
+  proof ((intro ball_cong[OF refl] arg_cong2[of _ _ _ _ "(\<longrightarrow>)"] refl, standard), goal_cases)
+    case (1 y1 y2 y3)
+    from arg_cong[OF 1(4), of "\<lambda> x. mat_of_row y1 + x"] show ?case using 1(1-3) A
+      by (subst (asm) assoc_add_mat[symmetric], (auto)[3],
+        subst (asm) add_uminus_minus_mat, (auto)[1],
+        subst (asm) minus_r_inv_mat, force,
+        subst (asm) right_add_zero_mat, force,
+        subst (asm) left_add_zero_mat, force, auto)
+  next
+    case (2 y1 y2 y3)
+    show ?case unfolding 2(4) using 2(1-3) A
+      by (intro eq_matI, auto)
+  qed
+  also have "\<dots> = (\<forall>y1 \<in>carrier_vec nc. \<forall>y2 \<in>carrier_vec nr. \<forall>y3 \<in>carrier_vec nr.
+              0\<^sub>v nc \<le> y1 \<longrightarrow> 0\<^sub>v nr \<le> y2 \<longrightarrow> 0\<^sub>v nr \<le> y3 \<longrightarrow>
+              mat_of_row y1 = mat_of_row (y2 - y3) * A
+              \<longrightarrow> (y2 - y3) \<bullet> b \<ge> 0)"
+    by (intro ball_cong[OF refl] arg_cong2[of _ _ _ _ "(\<longrightarrow>)"] refl 
+      arg_cong2[of _ _ _ _ "(\<le>)"] arg_cong2[of _ _ _ _ "(=)"],
+      subst minus_mult_distrib_mat[symmetric], insert A b, auto
+      simp: minus_scalar_prod_distrib mat_of_rows_def 
+      intro!: arg_cong[of _ _ "\<lambda> x. x * _"])
+  also have "\<dots> = (\<forall>y1 \<in>carrier_vec nc. \<forall>y2 \<in>carrier_vec nr. \<forall>y3 \<in>carrier_vec nr.
+              0\<^sub>v nc \<le> y1 \<longrightarrow> 0\<^sub>v nr \<le> y2 \<longrightarrow> 0\<^sub>v nr \<le> y3 \<longrightarrow>
+              y1 = row (mat_of_row (y2 - y3) * A) 0
+              \<longrightarrow> (y2 - y3) \<bullet> b \<ge> 0)"
+  proof (intro ball_cong[OF refl] arg_cong2[of _ _ _ _ "(\<longrightarrow>)"] refl, standard, goal_cases)
+    case (1 y1 y2 y3)
+    from arg_cong[OF 1(4), of "\<lambda> x. row x 0"] 1(1-3) A
+    show ?case by auto
+  qed (insert A, auto)
+  also have "\<dots> = (\<forall>y2 \<in>carrier_vec nr. \<forall>y3 \<in>carrier_vec nr.
+              0\<^sub>v nc \<le> row (mat_of_row (y2 - y3) * A) 0 \<longrightarrow> 0\<^sub>v nr \<le> y2 \<longrightarrow> 0\<^sub>v nr \<le> y3 \<longrightarrow>
+              row (mat_of_row (y2 - y3) * A) 0 \<in> carrier_vec nc
+              \<longrightarrow> (y2 - y3) \<bullet> b \<ge> 0)" by blast
+  also have "\<dots> = (\<forall>y2 \<in>carrier_vec nr. \<forall>y3 \<in>carrier_vec nr.
+              0\<^sub>v nc \<le> row (mat_of_row (y2 - y3) * A) 0 \<longrightarrow> 0\<^sub>v nr \<le> y2 \<longrightarrow> 0\<^sub>v nr \<le> y3 
+              \<longrightarrow> (y2 - y3) \<bullet> b \<ge> 0)"
+    by (intro ball_cong[OF refl] arg_cong2[of _ _ _ _ "(\<longrightarrow>)"] refl, insert A,
+        auto simp: row_def)
+  also have "\<dots> = (\<forall> y \<in> carrier_vec nr. row (mat_of_row y * A) 0 \<ge> 0\<^sub>v nc \<longrightarrow> y \<bullet> b \<ge> 0)" 
+  proof ((standard; intro ballI impI), goal_cases)
+    case (2 y2 y3)
+    thus ?case by auto
+  next
+    case (1 y)
+    define y2 where "y2 = vec nr (\<lambda> i. if y $ i \<ge> 0 then y $ i else 0)" 
+    define y3 where "y3 = vec nr (\<lambda> i. if y $ i \<ge> 0 then 0 else - y $ i)" 
+    have y: "y = y2 - y3" unfolding y2_def y3_def using 1(2)
+      by (intro eq_vecI, auto)
+    show ?case by (rule 1(1)[rule_format, of y2 y3, folded y, OF _ _ 1(3)],
+       auto simp: y2_def y3_def less_eq_vec_def)
+  qed
+  also have "\<dots> = (\<forall> y \<in> carrier_vec nr. mat_of_row y * A \<ge> 0\<^sub>m 1 nc \<longrightarrow> y \<bullet> b \<ge> 0)"
+    by (intro ball_cong arg_cong2[of _ _ _ _ "(\<longrightarrow>)"] refl,
+      insert A, auto simp: less_eq_vec_def less_eq_mat_def)
+  finally show ?thesis .
+qed 
+
 end
-
-
