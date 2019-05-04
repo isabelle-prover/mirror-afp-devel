@@ -727,7 +727,7 @@ context idom begin
 
   lemma is_gcd_connect:
     assumes "a \<noteq> 0" "b \<noteq> 0" shows "isgcd mk_monoid x a b \<longleftrightarrow> is_gcd x a b"
-    using assms by (auto simp: isgcd_def)
+    using assms by (force simp: isgcd_def)
 
   lemma some_gcd_connect:
     assumes "a \<noteq> 0" and "b \<noteq> 0" shows "somegcd mk_monoid a b = some_gcd a b"
