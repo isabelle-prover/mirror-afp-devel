@@ -1699,7 +1699,8 @@ proof -
     then show ?case using dfn lowner_le_trans[of "f 0" d "f n"] inc by auto
   qed
   then have "positive (f n - f 0)" for n using lowner_le_def by auto
-  then have p: "positive (c \<cdot>\<^sub>m (f n - f 0))" for n using positive_smult gtc dmfn0 by fastforce
+  then have p: "positive (c \<cdot>\<^sub>m (f n - f 0))" for n 
+    by (intro positive_smult, insert gtc dmfn0, auto)
 
   have inc': "c \<cdot>\<^sub>m (f n - f 0) \<le>\<^sub>L c \<cdot>\<^sub>m (f (Suc n) - f 0)" for n
     using incm0 lowner_le_smultc[of c "f n - f 0"] gtc dmfn0 by fastforce
