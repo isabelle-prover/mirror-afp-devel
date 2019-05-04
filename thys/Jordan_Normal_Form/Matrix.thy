@@ -419,6 +419,9 @@ lemma one_smult_vec [simp]:
   "(1::'a::ring_1) \<cdot>\<^sub>v v = v" unfolding smult_vec_def
   by (rule eq_vecI,auto)
 
+lemma uminus_zero_vec[simp]: "- (0\<^sub>v n) = (0\<^sub>v n :: 'a :: group_add vec)" 
+  by (intro eq_vecI, auto)
+
 lemma index_finsum_vec: assumes "finite F" and i: "i < n"
   and vs: "vs \<in> F \<rightarrow> carrier_vec n"
   shows "finsum_vec TYPE('a :: comm_monoid_add) n vs F $ i = sum (\<lambda> f. vs f $ i) F"
@@ -658,6 +661,34 @@ lemma cols_mat_of_cols[simp]:
 lemma mat_of_cols_cols[simp]:
   "mat_of_cols (dim_row A) (cols A) = A"
   unfolding mat_of_cols_def by (rule, auto simp: col_def)
+
+
+instantiation mat :: (ord) ord
+begin
+
+definition less_eq_mat :: "'a mat \<Rightarrow> 'a mat \<Rightarrow> bool" where
+  "less_eq_mat A B = (dim_row A = dim_row B \<and> dim_col A = dim_col B \<and> 
+      (\<forall> i < dim_row B. \<forall> j < dim_col B. A $$ (i,j) \<le> B $$ (i,j)))" 
+
+definition less_mat :: "'a mat \<Rightarrow> 'a mat \<Rightarrow> bool" where
+  "less_mat A B = (A \<le> B \<and> \<not> (B \<le> A))"
+instance ..
+end
+
+instantiation mat :: (preorder) preorder
+begin
+instance
+proof (standard, auto simp: less_mat_def less_eq_mat_def, goal_cases)
+  case (1 A B C i j)
+  thus ?case using order_trans[of "A $$ (i,j)" "B $$ (i,j)" "C $$ (i,j)"] by auto
+qed
+end
+
+instantiation mat :: (order) order
+begin
+instance
+  by (standard, intro eq_matI, auto simp: less_eq_mat_def order.antisym)
+end
 
 instantiation mat :: (plus) plus
 begin
@@ -983,6 +1014,14 @@ lemma transpose_mult:
 
 lemma left_add_zero_mat[simp]:
   "(A :: 'a :: monoid_add mat) \<in> carrier_mat nr nc  \<Longrightarrow> 0\<^sub>m nr nc + A = A"
+  by (intro eq_matI, auto)
+
+lemma add_uminus_minus_mat: "A \<in> carrier_mat nr nc \<Longrightarrow> B \<in> carrier_mat nr nc \<Longrightarrow> 
+  A + (- B) = A - (B :: 'a :: group_add mat)" 
+  by (intro eq_matI, auto)
+
+lemma right_add_zero_mat[simp]: "A \<in> carrier_mat nr nc \<Longrightarrow> 
+  A + 0\<^sub>m nr nc = (A :: 'a :: monoid_add mat)" 
   by (intro eq_matI, auto)
 
 lemma left_mult_zero_mat:
@@ -1354,7 +1393,7 @@ lemma index_append_vec[simp]: "i < dim_vec v + dim_vec w
   "dim_vec (v @\<^sub>v w) = dim_vec v + dim_vec w"
   unfolding append_vec_def Let_def by auto
 
-lemma append_carrier_vec[simp]:
+lemma append_carrier_vec[simp,intro]:
   "v \<in> carrier_vec n1 \<Longrightarrow> w \<in> carrier_vec n2 \<Longrightarrow> v @\<^sub>v w \<in> carrier_vec (n1 + n2)"
   unfolding carrier_vec_def by auto
 
@@ -1388,6 +1427,29 @@ lemma vec_last_carrier[simp]: "vec_last v n \<in> carrier_vec n" by (rule carrie
 lemma vec_first_last_append[simp]:
   assumes "v \<in> carrier_vec (n+m)" shows "vec_first v n @\<^sub>v vec_last v m = v"
   apply(rule) unfolding vec_first_def vec_last_def using assms by auto
+
+lemma append_vec_le: assumes "v \<in> carrier_vec n" and w: "w \<in> carrier_vec n" 
+  shows "v @\<^sub>v v' \<le> w @\<^sub>v w' \<longleftrightarrow> v \<le> w \<and> v' \<le> w'" 
+proof -
+  {
+    fix i
+    assume *: "\<forall>i. (\<not> i < n \<longrightarrow> i < n + dim_vec w' \<longrightarrow> v' $ (i - n) \<le> w' $ (i - n))"
+      and i: "i < dim_vec w'" 
+    have "v' $ i \<le> w' $ i" using *[rule_format, of "n + i"] i by auto
+  }
+  thus ?thesis using assms unfolding less_eq_vec_def by auto
+qed
+
+lemma all_vec_append: "(\<forall> x \<in> carrier_vec (n + m). P x) \<longleftrightarrow> (\<forall> x1 \<in> carrier_vec n. \<forall> x2 \<in> carrier_vec m. P (x1 @\<^sub>v x2))" 
+proof (standard, force, intro ballI, goal_cases)
+  case (1 x)
+  have "x = vec n (\<lambda> i. x $ i) @\<^sub>v vec m (\<lambda> i. x $ (n + i))" 
+    by (rule eq_vecI, insert 1(2), auto)
+  hence "P x = P (vec n (\<lambda> i. x $ i) @\<^sub>v vec m (\<lambda> i. x $ (n + i)))" by simp
+  also have "\<dots>" using 1 by auto
+  finally show ?case .
+qed
+
 
 (* A B
    C D *)
@@ -1502,6 +1564,69 @@ proof -
     by (intro eq_matI, insert c1 c2, auto)
 qed
 
+definition append_rows :: "'a :: zero mat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" (infixr "@\<^sub>r" 65)where
+  "A @\<^sub>r B = four_block_mat A (0\<^sub>m (dim_row A) 0) B (0\<^sub>m (dim_row B) 0)" 
+
+lemma carrier_append_rows[simp,intro]: "A \<in> carrier_mat nr1 nc \<Longrightarrow> B \<in> carrier_mat nr2 nc \<Longrightarrow>
+  A @\<^sub>r B \<in> carrier_mat (nr1 + nr2) nc" 
+  unfolding append_rows_def by auto
+
+lemma col_mult2[simp]:
+  assumes A: "A : carrier_mat nr n"
+      and B: "B : carrier_mat n nc"
+      and j: "j < nc"
+  shows "col (A * B) j = A *\<^sub>v col B j"
+proof
+  have AB: "A * B : carrier_mat nr nc" using A B by auto
+  fix i assume i: "i < dim_vec (A *\<^sub>v col B j)"
+  show "col (A * B) j $ i = (A *\<^sub>v col B j) $ i"
+    using A B AB j i by simp
+qed auto
+
+lemma mat_vec_as_mat_mat_mult: assumes A: "A \<in> carrier_mat nr nc" 
+  and v: "v \<in> carrier_vec nc" 
+shows "A *\<^sub>v v = col (A * mat_of_cols nc [v]) 0"  
+  by (subst col_mult2[OF A], insert v, auto)
+
+lemma mat_mult_append: assumes A: "A \<in> carrier_mat nr1 nc" 
+  and B: "B \<in> carrier_mat nr2 nc" 
+  and v: "v \<in> carrier_vec nc" 
+shows "(A @\<^sub>r B) *\<^sub>v v = (A *\<^sub>v v) @\<^sub>v (B *\<^sub>v v)" 
+proof -
+  let ?Fb1 = "four_block_mat A (0\<^sub>m nr1 0) B (0\<^sub>m nr2 0)" 
+  let ?Fb2 = "four_block_mat (mat_of_cols nc [v]) (0\<^sub>m nc 0) (0\<^sub>m 0 1) (0\<^sub>m 0 0)" 
+  have id: "?Fb2 = mat_of_cols nc [v]" 
+    using v by auto
+  have "(A @\<^sub>r B) *\<^sub>v v = col (?Fb1 * ?Fb2) 0" unfolding id
+    by (subst mat_vec_as_mat_mat_mult[OF _ v], insert A B, auto simp: append_rows_def)
+  also have "?Fb1 * ?Fb2 = four_block_mat (A * mat_of_cols nc [v] + 0\<^sub>m nr1 0 * 0\<^sub>m 0 1) (A * 0\<^sub>m nc 0 + 0\<^sub>m nr1 0 * 0\<^sub>m 0 0)
+     (B * mat_of_cols nc [v] + 0\<^sub>m nr2 0 * 0\<^sub>m 0 1) (B * 0\<^sub>m nc 0 + 0\<^sub>m nr2 0 * 0\<^sub>m 0 0)" 
+    by (rule mult_four_block_mat[OF A _ B], auto)
+  also have "(A * mat_of_cols nc [v] + 0\<^sub>m nr1 0 * 0\<^sub>m 0 1) = A * mat_of_cols nc [v]" 
+    using A v by auto
+  also have "(B * mat_of_cols nc [v] + 0\<^sub>m nr2 0 * 0\<^sub>m 0 1) = B * mat_of_cols nc [v]" 
+    using B v by auto
+  also have "(A * 0\<^sub>m nc 0 + 0\<^sub>m nr1 0 * 0\<^sub>m 0 0) = 0\<^sub>m nr1 0" using A by auto 
+  also have "(B * 0\<^sub>m nc 0 + 0\<^sub>m nr2 0 * 0\<^sub>m 0 0) = 0\<^sub>m nr2 0" using B by auto
+  finally have "(A @\<^sub>r B) *\<^sub>v v = col (four_block_mat (A * mat_of_cols nc [v]) (0\<^sub>m nr1 0) (B * mat_of_cols nc [v]) (0\<^sub>m nr2 0)) 0" .
+  also have "\<dots> = col (A * mat_of_cols nc [v]) 0 @\<^sub>v col (B * mat_of_cols nc [v]) 0" 
+    by (rule col_four_block_mat, insert A B v, auto)
+  also have "col (A * mat_of_cols nc [v]) 0 = A *\<^sub>v v" 
+    by (rule mat_vec_as_mat_mat_mult[symmetric, OF A v])
+  also have "col (B * mat_of_cols nc [v]) 0 = B *\<^sub>v v" 
+    by (rule mat_vec_as_mat_mat_mult[symmetric, OF B v])
+  finally show ?thesis .
+qed
+ 
+lemma append_rows_le: assumes A: "A \<in> carrier_mat nr1 nc" 
+  and B: "B \<in> carrier_mat nr2 nc" 
+  and a: "a \<in> carrier_vec nr1" 
+  and v: "v \<in> carrier_vec nc"
+shows "(A @\<^sub>r B) *\<^sub>v v \<le> (a @\<^sub>v b) \<longleftrightarrow> A *\<^sub>v v \<le> a \<and> B *\<^sub>v v \<le> b" 
+  unfolding mat_mult_append[OF A B v]
+  by (rule append_vec_le[OF _ a], insert A v, auto)
+
+
 lemma elements_four_block_mat:
   assumes c: "A \<in> carrier_mat nr1 nc1" "B \<in> carrier_mat nr1 nc2"
   "C \<in> carrier_mat nr2 nc1" "D \<in> carrier_mat nr2 nc2"
@@ -1517,28 +1642,28 @@ proof rule
   show "a \<in> elements_mat A \<union> elements_mat B \<union> elements_mat C \<union> elements_mat D"
   proof (cases "i < nr1")
     case True note i1 = this
-      show ?thesis
-      proof (cases "j < nc1")
-        case True
-          then have "a = A $$ (i,j)" using c i1 a by simp
-          thus ?thesis using c i1 True by auto next
-        case False
-          then have "a = B $$ (i,j-nc1)" using c i1 a j4 by simp
-          moreover have "j - nc1 < nc2" using c j4 False by auto
-          ultimately show ?thesis using c i1 by auto
-      qed next
+    show ?thesis
+    proof (cases "j < nc1")
+      case True
+      then have "a = A $$ (i,j)" using c i1 a by simp
+      thus ?thesis using c i1 True by auto next
+      case False
+      then have "a = B $$ (i,j-nc1)" using c i1 a j4 by simp
+      moreover have "j - nc1 < nc2" using c j4 False by auto
+      ultimately show ?thesis using c i1 by auto
+    qed next
     case False note i1 = this
-      have i2: "i - nr1 < nr2" using c i1 i4 by auto
-      show ?thesis
-      proof (cases "j < nc1")
-        case True
-          then have "a = C $$ (i-nr1,j)" using c i2 a i1 by simp
-          thus ?thesis using c i2 True by auto next
-        case False
-          then have "a = D $$ (i-nr1,j-nc1)" using c i2 a i1 j4 by simp
-          moreover have "j - nc1 < nc2" using c j4 False by auto
-          ultimately show ?thesis using c i2 by auto
-      qed
+    have i2: "i - nr1 < nr2" using c i1 i4 by auto
+    show ?thesis
+    proof (cases "j < nc1")
+      case True
+      then have "a = C $$ (i-nr1,j)" using c i2 a i1 by simp
+      thus ?thesis using c i2 True by auto next
+      case False
+      then have "a = D $$ (i-nr1,j-nc1)" using c i2 a i1 j4 by simp
+      moreover have "j - nc1 < nc2" using c j4 False by auto
+      ultimately show ?thesis using c i2 by auto
+    qed
   qed
 qed
 
@@ -1864,18 +1989,6 @@ lemma transpose_four_block_mat: assumes *: "A \<in> carrier_mat nr1 nc1" "B \<in
 
 lemma zero_transpose_mat[simp]: "transpose_mat (0\<^sub>m n m) = (0\<^sub>m m n)"
   by (rule eq_matI, auto)
-
-lemma col_mult2[simp]:
-  assumes A: "A : carrier_mat nr n"
-      and B: "B : carrier_mat n nc"
-      and j: "j < nc"
-  shows "col (A * B) j = A *\<^sub>v col B j"
-proof
-  have AB: "A * B : carrier_mat nr nc" using A B by auto
-  fix i assume i: "i < dim_vec (A *\<^sub>v col B j)"
-  show "col (A * B) j $ i = (A *\<^sub>v col B j) $ i"
-    using A B AB j i by simp
-qed auto
 
 lemma upper_triangular_four_block: assumes AD: "A \<in> carrier_mat n n" "D \<in> carrier_mat m m"
   and ut: "upper_triangular A" "upper_triangular D"
@@ -2440,6 +2553,49 @@ lemma mat_diag_diag[simp]: "mat_diag n f * mat_diag n g = mat_diag n (\<lambda> 
   by (subst mat_diag_mult_left[of _ n n], auto simp: mat_diag_def)
 
 lemma mat_diag_one[simp]: "mat_diag n (\<lambda> x. 1) = 1\<^sub>m n" unfolding mat_diag_def by auto
+
+text \<open>Interpret vector as row-matrix\<close>
+
+definition "mat_of_row y = mat 1 (dim_vec y) (\<lambda> ij. y $ (snd ij))" 
+
+lemma mat_of_row_carrier[simp,intro]: 
+  "y \<in> carrier_vec n \<Longrightarrow> mat_of_row y \<in> carrier_mat 1 n"
+  "y \<in> carrier_vec n \<Longrightarrow> mat_of_row y \<in> carrier_mat (Suc 0) n"
+  unfolding mat_of_row_def by auto
+
+lemma mat_of_row_dim[simp]: "dim_row (mat_of_row y) = 1" 
+  "dim_col (mat_of_row y) = dim_vec y" 
+  unfolding mat_of_row_def by auto
+
+lemma mat_of_row_index[simp]: "x < dim_vec y \<Longrightarrow> mat_of_row y $$ (0,x) = y $ x" 
+  unfolding mat_of_row_def by auto
+
+lemma row_mat_of_row[simp]: "row (mat_of_row y) 0 = y" 
+  by auto
+
+lemma mat_of_row_mult_append_rows: assumes y1: "y1 \<in> carrier_vec nr1" 
+  and y2: "y2 \<in> carrier_vec nr2" 
+  and A1: "A1 \<in> carrier_mat nr1 nc" 
+  and A2: "A2 \<in> carrier_mat nr2 nc" 
+shows "mat_of_row (y1 @\<^sub>v y2) * (A1 @\<^sub>r A2) = 
+  mat_of_row y1 * A1 + mat_of_row y2 * A2" 
+proof -
+  from A1 A2 have dim: "dim_row A1 = nr1" "dim_row A2 = nr2" by auto
+  let ?M1 = "mat_of_row y1" 
+  have M1: "?M1 \<in> carrier_mat 1 nr1" using y1 by auto
+  let ?M2 = "mat_of_row y2" 
+  have M2: "?M2 \<in> carrier_mat 1 nr2" using y2 by auto
+  let ?M3 = "0\<^sub>m 0 nr1" 
+  let ?M4 = "0\<^sub>m 0 nr2" 
+  note z = zero_carrier_mat
+  have id: "mat_of_row (y1 @\<^sub>v y2) = four_block_mat 
+    ?M1 ?M2 ?M3 ?M4" using y1 y2 
+    by (intro eq_matI, auto simp: mat_of_rows_def)
+  show ?thesis
+    unfolding id append_rows_def dim
+    by (subst mult_four_block_mat[OF M1 M2 z z A1 z A2 z], insert A1 A2, auto)
+qed
+
 
 text \<open>Allowing to construct and deconstruct vectors like lists\<close>
 abbreviation vNil where "vNil \<equiv> vec 0 ((!) [])"
