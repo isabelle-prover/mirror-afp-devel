@@ -9,7 +9,27 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>26 Apr 2019 00:00:00 +0000</pubDate>
+    <pubDate>09 May 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Multi-Party Computation</title>
+              <link>https://www.isa-afp.org/entries/Multi_Party_Computation.html</link>
+       <guid>https://www.isa-afp.org/entries/Multi_Party_Computation.html</guid>
+       <dc:creator> David Aspinall, David Butler       </dc:creator>
+       <pubDate>09 May 2019 00:00:00 +0000</pubDate>
+       <description>
+We use CryptHOL to consider Multi-Party Computation (MPC) protocols.
+MPC was first considered by Yao in 1983 and recent advances in
+efficiency and an increased demand mean it is now deployed in the real
+world. Security is considered using the real/ideal world paradigm. We
+first define security in the semi-honest security setting where
+parties are assumed not to deviate from the protocol transcript. In
+this setting we prove multiple Oblivious Transfer (OT) protocols
+secure and then show security for the gates of the GMW protocol. We
+then define malicious security, this is a stronger notion of security
+where parties are assumed to be fully corrupted by an adversary. In
+this setting we again consider OT, as it is a fundamental building
+block of almost all MPC protocols.</description>
+    </item>
     <item>
        <title>HOL-CSP Version 2.0</title>
               <link>https://www.isa-afp.org/entries/HOL-CSP.html</link>
@@ -525,21 +545,6 @@ agents. It includes proofs of soundness and completeness for the axiom
 system K. The completeness proof is based on the textbook
 &#34;Reasoning About Knowledge&#34; by Fagin, Halpern, Moses and
 Vardi (MIT Press 1995).</description>
-    </item>
-    <item>
-       <title>Smooth Manifolds</title>
-              <link>https://www.isa-afp.org/entries/Smooth_Manifolds.html</link>
-       <guid>https://www.isa-afp.org/entries/Smooth_Manifolds.html</guid>
-       <dc:creator> Fabian Immler, Bohua Zhan       </dc:creator>
-       <pubDate>22 Oct 2018 00:00:00 +0000</pubDate>
-       <description>
-We formalize the definition and basic properties of smooth manifolds
-in Isabelle/HOL. Concepts covered include partition of unity, tangent
-and cotangent spaces, and the fundamental theorem of path integrals.
-We also examine some concrete manifolds such as spheres and projective
-spaces. The formalization makes extensive use of the analysis and
-linear algebra libraries in Isabelle/HOL, in particular its
-“types-to-sets” mechanism.</description>
     </item>
   </channel>
 </rss>

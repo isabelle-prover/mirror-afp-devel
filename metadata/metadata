@@ -221,6 +221,26 @@ abstract =
   Isabelle's parametricity infrastructure, many simple hops are easily
   justified using the theory of representation independence.</p>
 
+[Multi_Party_Computation]
+title = Multi-Party Computation
+author = David Aspinall <http://homepages.inf.ed.ac.uk/da/>, David Butler <mailto:dbutler@turing.ac.uk>
+topic = Computer Science/Security
+date = 2019-05-09
+notify = dbutler@turing.ac.uk
+abstract =
+  We use CryptHOL to consider Multi-Party Computation (MPC) protocols.
+  MPC was first considered by Yao in 1983 and recent advances in
+  efficiency and an increased demand mean it is now deployed in the real
+  world. Security is considered using the real/ideal world paradigm. We
+  first define security in the semi-honest security setting where
+  parties are assumed not to deviate from the protocol transcript. In
+  this setting we prove multiple Oblivious Transfer (OT) protocols
+  secure and then show security for the gates of the GMW protocol. We
+  then define malicious security, this is a stronger notion of security
+  where parties are assumed to be fully corrupted by an adversary. In
+  this setting we again consider OT, as it is a fundamental building
+  block of almost all MPC protocols.
+
 [CryptHOL]
 title = CryptHOL
 author = Andreas Lochbihler <http://www.andreas-lochbihler.de>
