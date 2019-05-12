@@ -2,16 +2,16 @@ theory Option_Price_Examples imports CRR_Model
 
 begin
 
-text {* This file contains pricing results for four options in the Cox-Ross-Rubinstein model. The first section contains results
+text \<open> This file contains pricing results for four options in the Cox-Ross-Rubinstein model. The first section contains results
 relating some functions to the more abstract counterparts that were used to prove fairness and completeness results. The second
-section contains the pricing results for a few options; some path-dependent and others not. *}
+section contains the pricing results for a few options; some path-dependent and others not. \<close>
 
-section  {* Effective computation definitions and results *}
+section  \<open> Effective computation definitions and results \<close>
 
-subsection {* Generation of lists of boolean elements *}
+subsection \<open> Generation of lists of boolean elements \<close>
 
-text {* The function gener_bool_list permits to generate lists of boolean elements. It is used to generate a list representative
-of the range of boolean streams by the function pseudo_proj_True. *}
+text \<open> The function gener-bool-list permits to generate lists of boolean elements. It is used to generate a list representative
+of the range of boolean streams by the function pseudo-proj-True. \<close>
 
 fun gener_bool_list where
 "gener_bool_list 0 = {[]}"
@@ -108,7 +108,7 @@ proof (rule sum.reindex_cong)
 qed
 
 
-subsection {* Probability components for lists *}
+subsection \<open> Probability components for lists \<close>
 
 fun lprob_comp where
 "lprob_comp (p::real) [] = 1"
@@ -150,7 +150,7 @@ next
   finally show "prod (prob_component pr w) {0..<Suc n} = lprob_comp pr (stake (Suc n) w)" .
 qed
 
-subsection {* Geometric process applied to lists *}
+subsection \<open> Geometric process applied to lists \<close>
 
 fun lrev_geom where
 "lrev_geom u d v [] = v"
@@ -194,7 +194,7 @@ proof -
   thus ?thesis by simp
 qed
 
-subsection {* Effective computation of discounted values *}
+subsection \<open> Effective computation of discounted values \<close>
 
 
 fun det_discount where
@@ -219,12 +219,12 @@ next
   finally show "inverse (disc_rfr_proc r (Suc n) w) * X (Suc n) w = (det_discount r (Suc n)) * X (Suc n) w" .
 qed
 
-section {* Pricing results on options *}
+section \<open>Pricing results on options \<close>
 
-subsection {* Call option *}
+subsection \<open> Call option \<close>
 
-text {* A call option is parameterized by a strike K and maturity T. If S denotes the price of the (unique) risky asset at 
-time T, then the option pays max(S - K, 0) at that time.*}
+text \<open> A call option is parameterized by a strike K and maturity T. If S denotes the price of the (unique) risky asset at 
+time T, then the option pays max(S - K, 0) at that time.\<close>
 
 definition (in CRR_market) call_option where
 "call_option (T::nat) (K::real) = (\<lambda> w. max (prices Mkt stk T w - K) 0)"
@@ -271,7 +271,7 @@ fun call_price where
 "call_price u d init r matur K = (\<Sum> y\<in> (gener_bool_list matur). lprob_comp ((1 + r - d) / (u - d)) y * (det_discount r matur) * 
       (max ((lgeom_proc u d init (take matur (take matur y))) - K) 0))"
 
-text {* Evaluating the function above returns the fair price of a call option. *}
+text \<open> Evaluating the function above returns the fair price of a call option. \<close>
 
 lemma (in CRR_market_viable) call_price:
   shows "fair_price Mkt 
@@ -286,10 +286,10 @@ proof -
   thus ?thesis using call_effect_compute by simp
 qed
 
-subsection {* Put option *}
+subsection \<open> Put option \<close>
 
-text {* A put option is also parameterized by a strike K and maturity T. If S denotes the price of the (unique) risky asset at 
-time T, then the option pays max(K - S, 0) at that time. *}
+text \<open> A put option is also parameterized by a strike K and maturity T. If S denotes the price of the (unique) risky asset at 
+time T, then the option pays max(K - S, 0) at that time. \<close>
 
 definition (in CRR_market) put_option where
 "put_option (T::nat) (K::real) = (\<lambda> w. max (K - prices Mkt stk T w) 0)"
@@ -336,7 +336,7 @@ fun put_price where
 "put_price u d init r matur K = (\<Sum> y\<in> (gener_bool_list matur). lprob_comp ((1 + r - d) / (u - d)) y * (det_discount r matur) * 
       (max (K - (lgeom_proc u d init (take matur (take matur y)))) 0))"
 
-text {* Evaluating the function above returns the fair price of a put option. *}
+text \<open> Evaluating the function above returns the fair price of a put option. \<close>
 
 lemma (in CRR_market_viable) put_price:
   shows "fair_price Mkt 
@@ -352,10 +352,10 @@ proof -
 qed
 
 
-subsection {* Lookback option *}
+subsection \<open> Lookback option \<close>
 
-text {* A lookback option is parameterized by a maturity T. If Sn denotes the price of the (unique) risky asset at 
-time n, then the option pays max(Sn. 0 <= n <= T) - ST at that time. *}
+text \<open> A lookback option is parameterized by a maturity T. If Sn denotes the price of the (unique) risky asset at 
+time n, then the option pays max(Sn. 0 <= n <= T) - ST at that time. \<close>
 
 definition (in CRR_market) lbk_option where
 "lbk_option (T::nat) = (\<lambda> w. Max ((\<lambda>i. (prices Mkt stk) i w)`{0 .. T}) - (prices Mkt stk T w))"
@@ -493,7 +493,7 @@ fun lbk_price where
       (Max ((\<lambda>i. (lgeom_proc u d init (take i y)))`{0 .. matur}) - (lgeom_proc u d init y)))"
 
 
-text {* Evaluating the function above returns the fair price of a lookback option. *}
+text \<open> Evaluating the function above returns the fair price of a lookback option. \<close>
 
 lemma (in CRR_market_viable) lbk_price:
   shows "fair_price Mkt 
@@ -510,10 +510,10 @@ qed
 
 value "lbk_price 1.2 0.8 10 0.03 2"
 
-subsection {* Asian option *}
+subsection \<open> Asian option \<close>
 
-text {* An asian option is parameterized by a maturity T. This option pays the average price of the 
-risky asset at time T. *}
+text \<open> An asian option is parameterized by a maturity T. This option pays the average price of the 
+risky asset at time T. \<close>
 
 definition (in CRR_market) asian_option where
 "asian_option (T::nat) = (\<lambda> w. (\<Sum> i\<in> {1.. T}. prices Mkt stk i w)/T)"
@@ -571,7 +571,7 @@ fun asian_price where
 "asian_price u d init r matur = (\<Sum> y\<in> (gener_bool_list matur). lprob_comp ((1 + r - d) / (u - d)) y * (det_discount r matur) * 
       (\<Sum> i\<in> {1.. matur}. lgeom_proc u d init (take i y))/ matur)"
 
-text {* Evaluating the function above returns the fair price of an asian option. *}
+text \<open> Evaluating the function above returns the fair price of an asian option. \<close>
 
 lemma (in CRR_market_viable) asian_price:
   shows "fair_price Mkt 
