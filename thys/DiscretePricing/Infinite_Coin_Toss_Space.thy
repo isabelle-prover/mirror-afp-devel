@@ -917,30 +917,7 @@ qed
 
 
 
-(*lemma (in infinite_coin_toss_space) nat_filtration_info:
-  fixes f::"bool stream \<Rightarrow> 'b::{t0_space}"
-  assumes "f\<in> borel_measurable (nat_filtration n)"
-  shows "f\<circ> pseudo_proj_True n = f"
-proof (rule ccontr)
-  assume "f\<circ> pseudo_proj_True n \<noteq> f"
-  hence "\<exists> w. (f\<circ> (pseudo_proj_True n)) w \<noteq> f w" by auto
-  from this obtain w where "(f\<circ> (pseudo_proj_True n)) w \<noteq> f w" by blast note wh = this
-  let ?x = "pseudo_proj_True n w"
-  have "pseudo_proj_True n ?x = pseudo_proj_True n w" by (simp add: pseudo_proj_True_proj)
-  have "\<exists>U. open U \<and> ( f w \<in> U = (f ?x \<notin> U))" using wh separation_t0 by auto
-  from this obtain A where "open A" and "f w\<in> A = (f ?x \<notin> A)" by blast note Ah = this
-  have "f-` A\<inter> (space (nat_filtration n)) \<in> sets (nat_filtration n)"
-    using Ah assms borel_open measurable_sets by blast
-  hence fn:"f-` A \<in> sets (nat_filtration n)" using nat_filtration_space by simp
-  have "?x\<in> f-`A = (w \<in> f -`A)" using `pseudo_proj_True n ?x = pseudo_proj_True n w` assms
-    fct_gen_subalgebra_info[of "pseudo_proj_True n" M] bernoulli_stream_space
-    by (metis Pi_I UNIV_I bernoulli fn nat_filtration_def streams_UNIV)
-  also have "... = (f w \<in> A)" by simp
-  also have "... = (f ?x \<notin> A)" using Ah by simp
-  also have "... = (?x \<notin> f -`A)" by simp
-  finally have "?x\<in> f-`A = (?x \<notin> f -`A)" .
-  thus False by simp
-qed*)
+
 
 lemma (in infinite_coin_toss_space) nat_filtration_not_borel_info':
   assumes "f\<in> measurable (nat_filtration n) N"
@@ -991,7 +968,6 @@ using assms nat_filtration_comp_measurable nat_filtration_info by blast
 
 
 
-  (* todo: to remove? *)
 lemma (in infinite_coin_toss_space) nat_filtration_borel_measurable_init:
   fixes f::"bool stream \<Rightarrow> 'b::{t0_space}"
   assumes "f\<in> borel_measurable (nat_filtration 0)"
@@ -1133,7 +1109,7 @@ qed
 
 
 
-(* todo look at theorem simple_function_borel_measurable *)
+
 lemma (in infinite_coin_toss_space) nat_filtration_vimage_finite:
   fixes f::"bool stream \<Rightarrow> 'b::{t2_space}"
   assumes "f\<in> borel_measurable (nat_filtration n)"
@@ -1156,39 +1132,7 @@ proof -
   then show ?thesis
     using assms nat_filtration_vimage_finite simple_function_borel_measurable by blast
 qed
-(*  by (simp add: assms nat_filtration_vimage_finite simple_function_borel_measurable) unfolding simple_function_def
-proof (intro conjI ballI)
-  show "finite (f` space M)" using pseudo_proj_True_finite_image nat_filtration_info[of f n]
-    by (metis assms bernoulli bernoulli_stream_space finite_imageI fun.set_map streams_UNIV)
-  fix x
-  assume "x\<in> f`space M"
-  let ?Ax = "f`space M - {x}"
-  have "finite ?Ax" using \<open>finite (f`space M)\<close> by simp
-  hence "\<exists>U. open U \<and> x\<in> U \<and> U\<inter> ?Ax = {}" by (simp add:open_except_set)
-  then obtain U where "open U" and "x\<in> U" and "U\<inter> ?Ax = {}" by auto
-  have "f`space M \<inter> U = {x}" using \<open>x\<in> U\<close> \<open>U\<inter> ?Ax = {}\<close> using \<open>x \<in> f ` space M\<close> by blast
-  hence "\<exists>A. open A\<and> f`space M \<inter> A = {x}" using \<open>open U\<close> by auto
-  from this obtain A where "open A" and inter: "f`space M \<inter> A = {x}" by auto
-  have "A \<in> sets borel" using \<open>open A\<close> by simp
-  hence "f -`A \<inter> space M \<in> sets (nat_filtration n)" using assms nat_filtration_space
-    by (simp add: bernoulli bernoulli_stream_space in_borel_measurable_borel)
-  hence "f -`A \<inter> space M \<in> events" using nat_filtration_subalgebra
-    by (meson subalgebra_def subset_eq)
-  have "f -`{x}\<inter> space M  = f -`A\<inter> space M"
-  proof
-    have "x\<in> A" using inter by auto
-    thus "f -` {x}\<inter> space M \<subseteq> f -` A\<inter> space M" by auto
-    show "f -` A\<inter> space M \<subseteq> f -` {x}\<inter> space M"
-    proof
-      fix y
-      assume "y\<in> f-` A\<inter> space M"
-      hence  "f y \<in> A\<inter> f`space M" by simp
-      hence "f y = x" using inter by auto
-      thus "y\<in> f -` {x}\<inter> space M" using \<open>y\<in> f-` A\<inter> space M\<close> by auto
-    qed
-  qed
-  thus "f -` {x} \<inter> space M \<in> events" using \<open>f -`A \<inter> space M \<in> events\<close> by simp
-qed*)
+
 
 lemma (in infinite_coin_toss_space) nat_filtration_singleton_range_set:
   fixes f::"bool stream \<Rightarrow> 'b::{t2_space}"
@@ -2114,7 +2058,6 @@ qed
 
 
 lemma (in infinite_cts_filtration) f_borel_Suc_preimage:
-  (*fixes f::"bool stream \<Rightarrow> 'b::{t0_space}"*)
   assumes "f\<in> measurable (F n) N"
   and "set_discriminating n f N"
   shows "range (pseudo_proj_True (Suc n)) \<inter> f -` {f x} =
@@ -2149,7 +2092,6 @@ proof -
       show "w \<in> range (pseudo_proj_True (Suc n)) \<inter> f -` {f x}"
       proof (cases "w = pseudo_proj_True n y")
         case True
-        (*have "stake n w = stake n y" by (simp add: True pseudo_proj_True_stake) *)
         hence "f w = f y" using assms nat_filtration_not_borel_info natural_filtration
           by (metis comp_apply)
         thus ?thesis using \<open>f y = f x\<close>
@@ -2172,111 +2114,6 @@ proof -
 qed
 
 
-
-(*lemma (in infinite_cts_filtration) f_borel_Suc_preimage:
-  (*fixes f::"bool stream \<Rightarrow> 'b::{t0_space}"*)
-  assumes "f\<in> borel_measurable (F n)"
-  shows "range (pseudo_proj_True (Suc n)) \<inter> f -` {f x} =
-  (pseudo_proj_True n) ` (f -` {f x}) \<union> (pseudo_proj_False n) ` (f -` {f x})"
-proof -
-  have "range (pseudo_proj_True (Suc n)) \<inter> f -` {f x} =
-    (\<Union> w\<in> {y. f y = f x}.{pseudo_proj_True n w, pseudo_proj_False n w})"
-  proof
-    show "range (pseudo_proj_True (Suc n)) \<inter> f -` {f x} \<subseteq> (\<Union>w\<in>{y. f y = f x}. {pseudo_proj_True n w, pseudo_proj_False n w})"
-    proof
-      fix w
-      assume "w\<in> range (pseudo_proj_True (Suc n)) \<inter> f -` {f x}"
-      hence "w\<in> range (pseudo_proj_True (Suc n))" and "w\<in> f -` {f x}" by auto
-      hence "f w = f x" by simp
-      hence "w\<in> {y. f y = f x}" by simp
-      have "w = pseudo_proj_True (Suc n) w" using \<open>w\<in> range (pseudo_proj_True (Suc n))\<close>
-        using pseudo_proj_True_proj by auto
-      also have "... \<in> {pseudo_proj_True n w, pseudo_proj_False n w}"
-        using pseudo_proj_Suc_prefix by auto
-      also have "... \<subseteq> (\<Union>w\<in>{y. f y = f x}. {pseudo_proj_True n w, pseudo_proj_False n w})" using \<open>w\<in> {y. f y = f x}\<close>
-        by auto
-      finally show "w \<in> (\<Union>w\<in>{y. f y = f x}. {pseudo_proj_True n w, pseudo_proj_False n w})" .
-    qed
-    show "(\<Union>w\<in>{y. f y = f x}. {pseudo_proj_True n w, pseudo_proj_False n w})
-      \<subseteq> range (pseudo_proj_True (Suc n)) \<inter> f -` {f x}"
-    proof
-      fix w
-      assume "w \<in> (\<Union>w\<in>{y. f y = f x}. {pseudo_proj_True n w, pseudo_proj_False n w})"
-      hence "\<exists>y. f y = f x \<and> w\<in> {pseudo_proj_True n y, pseudo_proj_False n y}" by auto
-      from this obtain y where "f y = f x" and "w\<in> {pseudo_proj_True n y, pseudo_proj_False n y}" by auto
-      hence "w = pseudo_proj_True n y \<or> w = pseudo_proj_False n y" by auto
-      show "w \<in> range (pseudo_proj_True (Suc n)) \<inter> f -` {f x}"
-      proof (cases "w = pseudo_proj_True n y")
-        case True
-        (*have "stake n w = stake n y" by (simp add: True pseudo_proj_True_stake) *)
-        hence "f w = f y" using assms nat_filtration_not_borel_info natural_filtration
-          by (metis comp_apply)
-        thus ?thesis using \<open>f y = f x\<close>
-          by (simp add: True pseudo_proj_True_Suc_proj pseudo_proj_True_img)
-      next
-        case False
-        hence "f w = f y" using assms nat_filtration_info natural_filtration
-          by (metis Int_iff \<open>w \<in> {pseudo_proj_True n y, pseudo_proj_False n y}\<close>
-              comp_apply pseudo_proj_Suc_preimage singletonD vimage_eq)
-      thus ?thesis using \<open>f y = f x\<close>
-        using \<open>w \<in> {pseudo_proj_True n y, pseudo_proj_False n y}\<close> pseudo_proj_Suc_preimage by auto
-      qed
-    qed
-  qed
-  also have "... =
-    (\<Union> w\<in> {y. f y = f x}.{pseudo_proj_True n w}) \<union> (\<Union> w\<in> {y. f y = f x}.{pseudo_proj_False n w})" by auto
-  also have "... = (pseudo_proj_True n) ` {y. f y = f x} \<union> (pseudo_proj_False n) `{y. f y = f x}" by auto
-  also have "... = (pseudo_proj_True n) ` (f -` {f x}) \<union> (pseudo_proj_False n) ` (f -` {f x})" by auto
-  (*also have "... = (pseudo_proj_True (Suc n)) ` (f -` {f x})"
-  proof
-    show "pseudo_proj_True n ` f -` {f x} \<union> pseudo_proj_False n ` f -` {f x} \<subseteq> pseudo_proj_True (Suc n) ` f -` {f x}"
-    proof
-      fix xx
-      assume "xx \<in> pseudo_proj_True n ` f -` {f x} \<union> pseudo_proj_False n ` f -` {f x}"
-      show "xx \<in> pseudo_proj_True (Suc n) ` f -` {f x}"
-      proof (cases "xx \<in> pseudo_proj_True n ` f -` {f x}")
-        case True
-        hence "\<exists>y \<in> f-`{f x}. xx = pseudo_proj_True n y" by auto
-        from this obtain yy where "yy\<in> f-`{f x}" and "xx = pseudo_proj_True n yy" by auto
-        have "f xx = f x" using \<open>yy\<in> f -`{f x}\<close> \<open>xx = pseudo_proj_True n yy\<close>
-          using calculation by auto
-        moreover have "pseudo_proj_True (Suc n) xx = xx"
-          by (simp add: \<open>xx = pseudo_proj_True n yy\<close> pseudo_proj_True_Suc_proj)
-        ultimately show ?thesis by (metis image_iff vimage_singleton_eq)
-      next
-        case False
-        hence "\<exists>y \<in> f-`{f x}. xx = pseudo_proj_False n y"
-          using \<open>xx \<in> pseudo_proj_True n ` f -` {f x} \<union> pseudo_proj_False n ` f -` {f x}\<close> by auto
-        from this obtain yy where "yy\<in> f-`{f x}" and "xx = pseudo_proj_False n yy" by auto
-        have "f xx = f x" using \<open>yy\<in> f -`{f x}\<close> \<open>xx = pseudo_proj_False n yy\<close>
-          using calculation by auto
-        moreover have "pseudo_proj_True (Suc n) xx = xx"
-          by (simp add: \<open>xx = pseudo_proj_False n yy\<close> pseudo_proj_True_Suc_False_proj)
-        ultimately show ?thesis by (metis image_iff vimage_singleton_eq)
-      qed
-    qed
-    show "pseudo_proj_True (Suc n) ` f -` {f x} \<subseteq> pseudo_proj_True n ` f -` {f x} \<union> pseudo_proj_False n ` f -` {f x}"
-    proof
-      fix xx
-      assume "xx\<in> pseudo_proj_True (Suc n) ` f -` {f x}"
-      hence "\<exists>y. xx = pseudo_proj_True (Suc n) y \<and> f y = f x" by auto
-      from this obtain yy where "xx = pseudo_proj_True (Suc n) yy" and "f yy = f x" by auto
-      show "xx\<in> pseudo_proj_True n ` f -` {f x} \<union> pseudo_proj_False n ` f -` {f x}"
-      proof -
-        obtain ss :: "bool stream" where
-          f1: "xx = pseudo_proj_True (Suc n) ss \<and> f ss = f x"
-          by (meson \<open>\<And>thesis. (\<And>yy. \<lbrakk>xx = pseudo_proj_True (Suc n) yy; f yy = f x\<rbrakk> \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>)
-        then have "{pseudo_proj_True n ss, pseudo_proj_False n ss} \<in> (\<lambda>s. {pseudo_proj_True n s, pseudo_proj_False n s}) ` {s. f s = f x}"
-          by auto
-        then have "pseudo_proj_True (Suc n) ss \<in> (\<Union>s\<in>{s. f s = f x}. {pseudo_proj_True n s, pseudo_proj_False n s})"
-          by (meson mem_simps(9) pseudo_proj_True_suc_img)
-        then show ?thesis
-          using f1 by blast
-      qed
-    qed
-  qed  *)
-  finally show ?thesis .
-qed*)
 
 lemma (in infinite_cts_filtration) pseudo_proj_preimage:
   assumes "g\<in> measurable (F n) N"
@@ -2566,10 +2403,6 @@ next
   also have "... = (\<lambda>x. (\<integral>\<^sup>+ X. f (x ## X) \<partial>stream_space BP)) True * ennreal p +
     (\<lambda>x. (\<integral>\<^sup>+ X. f (x ## X) \<partial>stream_space BP)) False * ennreal (1 -p)"
     using  p_gt_0 p_lt_1 unfolding BP_def by simp
-  (*also have "... = (\<integral>\<^sup>+ X. f (True ## X) \<partial>stream_space BP) * ennreal p +
-    (\<integral>\<^sup>+ X. f (False ## X) \<partial>stream_space BP) * ennreal (1-p)" by simp*)
-  (*also have "... = (\<integral>\<^sup>+ X. f (True ## X) \<partial>stream_space BP) * p +
-    (\<integral>\<^sup>+ X. f (False ## X) \<partial>stream_space BP) * (1-p)" by simp*)
   also have "... = (\<integral>\<^sup>+ X. f (True ## X) \<partial>stream_space BP) * p +
     (\<Sum>w\<in>range (pseudo_proj_True n). emeasure M (pseudo_proj_True n -` {w} \<inter> space M) *  (f (False ## w))) * (1-p)"
   proof -
@@ -3760,7 +3593,6 @@ proof
     hence "\<And>i. i \<in>{m. m \<le> n} \<Longrightarrow> x  \<in> (X i) -`{X i w}" by simp
     hence "\<And>i. i \<in>{m. m \<le> n} \<Longrightarrow> X i x = X i w" by simp
     hence "\<And>i. i \<le> n \<Longrightarrow> X i x = X i w" by auto
-    (*hence "\<And>i. i\<le>n \<Longrightarrow> snth (psX x) i = snth (psX w) i"*)
     hence "psX x = psX w" unfolding psX_def
       by (metis (mono_tags, hide_lams) diff_streams_only_if linear not_le order_refl
           proj_stoch_proc_component(1) proj_stoch_proc_component(2))
@@ -4056,32 +3888,9 @@ proof
 qed
 
 
-(*lemma sets_Sup_inc:
-  assumes "\<And>m. m\<in> M \<Longrightarrow> sets m \<subseteq> sets N"
-and "M \<noteq> {}"
-and "\<And>m. m\<in> M \<Longrightarrow> space m = X"
-shows "sets (Sup M) \<subseteq> sets N"
-proof -
-  have "sets (Sup M) = sigma_sets X (\<Union>x\<in>M. sets x)" using assms by (simp add: sets_Sup_eq)
-  have "(\<Union>m\<in>M. sets m) \<subseteq> sets N" using assms by auto
-  hence "sigma_sets X (\<Union>x\<in>M. sets x) \<subseteq> N"
-    by (metis (no_types, hide_lams) \<open>sets (\<Squnion>M) = sigma_sets X (\<Union>x\<in>M. sets x)\<close> assms sets.sigma_sets_subset'
-        sets.top sets_Sup_in_sets subsetCE)
-  thus ?thesis
-    by (simp add: \<open>sets (\<Squnion>M) = sigma_sets X (\<Union>x\<in>M. sets x)\<close>)
-qed
 
-lemma sets_Sup_supset:
-assumes "sets N \<subseteq> (\<Union>m\<in>M. sets m)"
-and "M \<noteq> {}"
-and "\<And>m. m\<in> M \<Longrightarrow> space m = X"
-shows "sets N \<subseteq> sets (Sup M)"
-  by (metis assms(1) assms(2) assms(3) order_trans sets_Sup_eq sigma_sets.Basic subsetI)
-
-*)
 definition  stoch_proc_filt where
   "stoch_proc_filt M X N (n::nat) = gen_subalgebra M (sigma_sets (space M) (\<Union> i\<in> {m. m\<le> n}. {(X i -`A) \<inter> (space M) | A. A\<in> sets N }))"
-(*"stoch_proc_filt X N (n::nat) = gen_subalgebra M (\<Union> i\<in> {m. m\<le> n}. {(X i -`A) \<inter> (space M) | A. A\<in> sets N })"*)
 
 
 

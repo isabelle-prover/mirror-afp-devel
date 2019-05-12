@@ -131,25 +131,6 @@ proof (intro allI conjI impI)
   show "borel_adapt_stoch_proc F (\<lambda>n w. c)" unfolding adapt_stoch_proc_def by simp
 qed
 
-(*lemma (in finite_measure) constant_martingale:
-  assumes "\<forall>m::nat. sigma_finite_subalgebra M (F m)"
-and "filtration M F"
-  shows "martingale M F (\<lambda>n w. c)"
-proof (rule disc_martingale_charact)
-  show a: "\<forall>n. integrable M (\<lambda>w. c)"
-  proof
-    fix n
-    show "integrable M (\<lambda>w. c)" by simp
-  qed
-  show "filtration M F" using assms by simp
-  show b: "\<forall>n. sigma_finite_subalgebra M (F n)" using assms by simp
-  show c: "\<forall>m. (\<lambda>w. c) \<in> borel_measurable (F m)" by simp
-  show "\<forall>n. AE w in M. real_cond_exp M (F n) (\<lambda>w. c) w = (\<lambda>w. c) w"
-  proof
-    fix n
-    show "AE w in M. real_cond_exp M (F n) (\<lambda>w. c) w = (\<lambda>w. c) w"
-      by (intro sigma_finite_subalgebra.real_cond_exp_F_meas, (auto simp add: a b c))
-  qed
-qed*)
+
 
 end
