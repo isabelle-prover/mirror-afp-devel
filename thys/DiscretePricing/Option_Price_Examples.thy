@@ -271,7 +271,7 @@ fun call_price where
 "call_price u d init r matur K = (\<Sum> y\<in> (gener_bool_list matur). lprob_comp ((1 + r - d) / (u - d)) y * (det_discount r matur) * 
       (max ((lgeom_proc u d init (take matur (take matur y))) - K) 0))"
 
-text {* Evaluating the function call_price returns the fair price of a call option. *}
+text {* Evaluating the function above returns the fair price of a call option. *}
 
 lemma (in CRR_market_viable) call_price:
   shows "fair_price Mkt 
@@ -336,7 +336,7 @@ fun put_price where
 "put_price u d init r matur K = (\<Sum> y\<in> (gener_bool_list matur). lprob_comp ((1 + r - d) / (u - d)) y * (det_discount r matur) * 
       (max (K - (lgeom_proc u d init (take matur (take matur y)))) 0))"
 
-text {* Evaluating the function put_price returns the fair price of a put option. *}
+text {* Evaluating the function above returns the fair price of a put option. *}
 
 lemma (in CRR_market_viable) put_price:
   shows "fair_price Mkt 
@@ -493,7 +493,7 @@ fun lbk_price where
       (Max ((\<lambda>i. (lgeom_proc u d init (take i y)))`{0 .. matur}) - (lgeom_proc u d init y)))"
 
 
-text {* Evaluating the function lbk_price returns the fair price of a lookback option. *}
+text {* Evaluating the function above returns the fair price of a lookback option. *}
 
 lemma (in CRR_market_viable) lbk_price:
   shows "fair_price Mkt 
@@ -508,7 +508,7 @@ proof -
   thus ?thesis using lbk_effect_compute by simp
 qed
 
-(*value "lbk_price 1.2 0.8 10 0.03 2"*)
+value "lbk_price 1.2 0.8 10 0.03 2"
 
 subsection {* Asian option *}
 
@@ -571,7 +571,7 @@ fun asian_price where
 "asian_price u d init r matur = (\<Sum> y\<in> (gener_bool_list matur). lprob_comp ((1 + r - d) / (u - d)) y * (det_discount r matur) * 
       (\<Sum> i\<in> {1.. matur}. lgeom_proc u d init (take i y))/ matur)"
 
-text {* Evaluating the function asian_price returns the fair price of an asian option. *}
+text {* Evaluating the function above returns the fair price of an asian option. *}
 
 lemma (in CRR_market_viable) asian_price:
   shows "fair_price Mkt 
