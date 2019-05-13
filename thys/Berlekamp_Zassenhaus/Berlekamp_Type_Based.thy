@@ -2023,7 +2023,7 @@ next
 next
   fix x assume x: "x \<in> mat_kernel (berlekamp_resulting_mat u)"
   show "degree (Poly (list_of_vec x)) < degree u"
-    using assms degree_Poly_list_of_vec mat_kernel_def x by fastforce
+    by (rule degree_Poly_list_of_vec, insert assms x, auto simp: mat_kernel_def)
 qed
 
 

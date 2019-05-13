@@ -11,8 +11,7 @@ theory Generated_Subalgebra imports "HOL-Probability.Probability"
 begin
 
 
-(*definition gen_subalgebra where
-  "gen_subalgebra M G = (measure_of (space M) G (emeasure M))"*)
+
 definition gen_subalgebra where
 "gen_subalgebra M G = sigma (space M) G"
 
@@ -56,15 +55,7 @@ qed
 definition  fct_gen_subalgebra :: "'a measure \<Rightarrow> 'b measure \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a measure" where
   "fct_gen_subalgebra M N X = gen_subalgebra M (sigma_sets (space M) {X -` B \<inter> (space M) | B. B \<in> sets N})"
 
-(*lemma fct_gen_subalgebra_sets:
-  shows "sets (fct_gen_subalgebra M N X) = sigma_sets (space M) {X -` B \<inter> space M |B. B \<in> sets N}"
-unfolding fct_gen_subalgebra_def gen_subalgebra_def
-proof -
-  have "{X -` B \<inter> space M |B. B \<in> sets N} \<subseteq> Pow (space M)"
-    by blast
-  then show "sets (measure_of (space M) (sigma_sets (space M) {X -` B \<inter> space M |B. B \<in> sets N}) (emeasure M)) = sigma_sets (space M) {X -` B \<inter> space M |B. B \<in> sets N}"
-    by (meson sigma_algebra.sets_measure_of_eq sigma_algebra_sigma_sets)
-qed*)
+
 
 lemma fct_gen_subalgebra_sets:
   shows "sets (fct_gen_subalgebra M N X) = sigma_sets (space M) {X -` B \<inter> space M |B. B \<in> sets N}"

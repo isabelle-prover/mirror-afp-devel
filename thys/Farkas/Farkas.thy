@@ -1478,4 +1478,156 @@ proof -
   qed
 qed
 
+text \<open>We also present slightly modified versions\<close>
+
+lemma sum_list_map_filter_sum: fixes f :: "'a \<Rightarrow> 'b :: comm_monoid_add" 
+  shows "sum_list (map f (filter g xs)) + sum_list (map f (filter (Not o g) xs)) = sum_list (map f xs)" 
+  by (induct xs, auto simp: ac_simps)
+
+text \<open>A version where every constraint obtains exactly one coefficient and where 0 coefficients are allowed.\<close>
+
+lemma Farkas'_Lemma_set_sum: fixes cs :: "rat le_constraint set"
+  assumes only_non_strict: "lec_rel ` cs \<subseteq> {Leq_Rel}"  
+    and fin: "finite cs" 
+  shows "(\<nexists> v. \<forall> c \<in> cs. v \<Turnstile>\<^sub>l\<^sub>e c) \<longleftrightarrow> 
+       (\<exists> C const. (\<forall> c \<in> cs. C c \<ge> 0)
+         \<and> (\<Sum> c \<in> cs. Leqc ((C c) *R lec_poly c) ((C c) *R lec_const c)) = Leqc 0 const
+         \<and> const < 0)" 
+  unfolding Farkas'_Lemma[OF only_non_strict fin] 
+proof ((standard; elim exE conjE), goal_cases)
+  case (2 C const)
+  from finite_distinct_list[OF fin] obtain csl where csl: "set csl = cs" and dist: "distinct csl" 
+    by auto
+  let ?list = "filter (\<lambda> c. C c \<noteq> 0) csl" 
+  let ?C = "map (\<lambda> c. (C c, c)) ?list" 
+  show ?case
+  proof (intro exI[of _ ?C] exI[of _ const] conjI)
+    have "(\<Sum>(r, c)\<leftarrow>?C. Le_Constraint Leq_Rel (r *R lec_poly c) (r *R lec_const c))
+      = (\<Sum>(r, c)\<leftarrow>map (\<lambda>c. (C c, c)) csl. Le_Constraint Leq_Rel (r *R lec_poly c) (r *R lec_const c))" 
+      unfolding map_map
+      by (rule sum_list_map_filter, auto simp: zero_le_constraint_def)
+    also have "\<dots> = Le_Constraint Leq_Rel 0 const" unfolding 2(2)[symmetric] csl[symmetric]
+      unfolding sum.distinct_set_conv_list[OF dist] map_map o_def split ..
+    finally 
+    show "(\<Sum>(r, c)\<leftarrow>?C. Le_Constraint Leq_Rel (r *R lec_poly c) (r *R lec_const c)) = Le_Constraint Leq_Rel 0 const"  
+      by auto
+    show "const < 0" by fact
+    show "\<forall>(r, c)\<in>set ?C. 0 < r \<and> c \<in> cs" using 2(1) unfolding set_map set_filter csl by auto
+  qed
+next
+  case (1 C const)
+  define CC where "CC = (\<lambda> c. sum_list (map fst (filter (\<lambda> rc. snd rc = c) C)))" 
+  show "(\<exists> C const. (\<forall> c \<in> cs. C c \<ge> 0)
+         \<and> (\<Sum> c \<in> cs. Leqc ((C c) *R lec_poly c) ((C c) *R lec_const c)) = Leqc 0 const
+         \<and> const < 0)" 
+  proof (intro exI[of _ CC] exI[of _ const] conjI)
+    show "\<forall>c\<in>cs. 0 \<le> CC c" unfolding CC_def using 1(1) 
+      by (force intro!: sum_list_nonneg)
+    show "const < 0" by fact
+    from 1 have snd: "snd ` set C \<subseteq> cs" by auto
+    show "(\<Sum>c\<in>cs. Le_Constraint Leq_Rel (CC c *R lec_poly c) (CC c *R lec_const c)) = Le_Constraint Leq_Rel 0 const" 
+      unfolding 1(2)[symmetric] using fin snd unfolding CC_def
+    proof (induct cs arbitrary: C rule: finite_induct)
+      case empty
+      hence C: "C = []" by auto
+      thus ?case by simp
+    next
+      case *: (insert c cs C)
+      let ?D = "filter (Not \<circ> (\<lambda>rc. snd rc = c)) C" 
+      from * have "snd ` set ?D \<subseteq> cs" by auto
+      note IH = *(3)[OF this]
+      have id: "(\<Sum>a\<leftarrow> ?D. case a of (r, c) \<Rightarrow> Le_Constraint Leq_Rel (r *R lec_poly c) (r *R lec_const c)) = 
+        (\<Sum>(r, c)\<leftarrow>?D. Le_Constraint Leq_Rel (r *R lec_poly c) (r *R lec_const c))" 
+        by (induct C, force+)
+      show ?case
+        unfolding sum.insert[OF *(1,2)]
+        unfolding sum_list_map_filter_sum[of _ "\<lambda> rc. snd rc = c" C, symmetric]
+      proof (rule arg_cong2[of _ _ _ _ "(+)"], goal_cases)
+        case 2
+        show ?case unfolding IH[symmetric] 
+          by (rule sum.cong, insert *(2,1), auto intro!: arg_cong[of _ _ "\<lambda> xs. sum_list (map _ xs)"], (induct C, auto)+)
+      next
+        case 1
+        show ?case
+        proof (rule sym, induct C)
+          case (Cons rc C)
+          thus ?case by (cases "rc", cases "snd rc = c", auto simp: field_simps scaleRat_left_distrib)
+        qed (auto simp: zero_le_constraint_def)
+      qed
+    qed
+  qed
+qed
+
+text \<open>A version with indexed constraints, i.e., in particular where constraints may occur several
+  times.\<close>
+
+lemma Farkas'_Lemma_indexed: fixes c :: "nat \<Rightarrow> rat le_constraint"
+  assumes only_non_strict: "lec_rel ` c ` Is \<subseteq> {Leq_Rel}"  
+  and fin: "finite Is" 
+  shows "(\<nexists> v. \<forall> i \<in> Is. v \<Turnstile>\<^sub>l\<^sub>e c i) \<longleftrightarrow> 
+       (\<exists> C const. (\<forall> i \<in> Is. C i \<ge> 0)
+         \<and> (\<Sum> i \<in> Is. Leqc ((C i) *R lec_poly (c i)) ((C i) *R lec_const (c i))) = Leqc 0 const
+         \<and> const < 0)" 
+proof -
+  let ?C = "c ` Is" 
+  have fin: "finite ?C" using fin by auto
+  have "(\<nexists> v. \<forall> i \<in> Is. v \<Turnstile>\<^sub>l\<^sub>e c i) = (\<nexists> v. \<forall> cc \<in> ?C. v \<Turnstile>\<^sub>l\<^sub>e cc)" by force
+  also have "\<dots> = (\<exists> C const. (\<forall> i \<in> Is. C i \<ge> 0)
+         \<and> (\<Sum> i \<in> Is. Leqc ((C i) *R lec_poly (c i)) ((C i) *R lec_const (c i))) = Leqc 0 const
+         \<and> const < 0)" (is "?l = ?r")
+  proof
+    assume ?r
+    then obtain C const where r: "(\<forall> i \<in> Is. C i \<ge> 0)" 
+         and eq: "(\<Sum> i \<in> Is. Leqc ((C i) *R lec_poly (c i)) ((C i) *R lec_const (c i))) = Leqc 0 const" 
+         and "const < 0" by auto
+    from finite_distinct_list[OF `finite Is`] 
+      obtain Isl where isl: "set Isl = Is" and dist: "distinct Isl" by auto
+    let ?CC = "filter (\<lambda> rc. fst rc \<noteq> 0) (map (\<lambda> i. (C i, c i)) Isl)" 
+    show ?l unfolding Farkas'_Lemma[OF only_non_strict fin]
+    proof (intro exI[of _ ?CC] exI[of _ const] conjI)
+      show "const < 0" by fact
+      show "\<forall> (r, ca) \<in> set ?CC. 0 < r \<and> ca \<in> ?C" using r(1) isl by auto
+      show "(\<Sum>(r, c)\<leftarrow>?CC. Le_Constraint Leq_Rel (r *R lec_poly c) (r *R lec_const c)) =
+        Le_Constraint Leq_Rel 0 const" unfolding eq[symmetric]
+        by (subst sum_list_map_filter, force simp: zero_le_constraint_def,
+          unfold map_map o_def, subst sum_list_distinct_conv_sum_set[OF dist], rule sum.cong, auto simp: isl)
+    qed
+  next
+    assume ?l
+    from this[unfolded Farkas'_Lemma_set_sum[OF only_non_strict fin]]
+    obtain C const where nonneg: "(\<forall>c\<in> ?C. 0 \<le> C c)" 
+     and sum: "(\<Sum>c\<in> ?C. Le_Constraint Leq_Rel (C c *R lec_poly c) (C c *R lec_const c)) =
+        Le_Constraint Leq_Rel 0 const" 
+     and const: "const < 0" 
+      by blast
+    define I where "I = (\<lambda> i. (C (c i) / rat_of_nat (card (Is \<inter> { j. c i = c j}))))" 
+    show ?r
+    proof (intro exI[of _ I] exI[of _ const] conjI const)
+      show "\<forall>i \<in> Is. 0 \<le> I i" using nonneg unfolding I_def by auto
+      show "(\<Sum> i \<in> Is. Le_Constraint Leq_Rel (I i *R lec_poly (c i)) (I i *R lec_const (c i))) =
+        Le_Constraint Leq_Rel 0 const" unfolding sum[symmetric]
+        unfolding sum.image_gen[OF \<open>finite Is\<close>, of _ c]
+      proof (rule sum.cong[OF refl], goal_cases)
+        case (1 cc)
+        define II where "II = (Is \<inter> {j. cc = c j})" 
+        from 1 have "II \<noteq> {}" unfolding II_def by auto
+        moreover have finII: "finite II" using \<open>finite Is\<close> unfolding II_def by auto
+        ultimately have card: "card II \<noteq> 0" by auto
+        let ?C = "\<lambda> II. rat_of_nat (card II)" 
+        define ii where "ii = C cc / rat_of_nat (card II)" 
+        have "(\<Sum>i\<in>{x \<in> Is. c x = cc}. Le_Constraint Leq_Rel (I i *R lec_poly (c i)) (I i *R lec_const (c i)))
+          = (\<Sum> i\<in> II. Le_Constraint Leq_Rel (ii *R lec_poly cc) (ii *R lec_const cc))"
+          unfolding I_def ii_def II_def by (rule sum.cong, auto)
+        also have "\<dots> = Le_Constraint Leq_Rel ((?C II * ii) *R lec_poly cc) ((?C II * ii) *R lec_const cc)" 
+          using finII by (induct II rule: finite_induct, auto simp: zero_le_constraint_def field_simps
+            scaleRat_left_distrib)
+        also have "?C II * ii = C cc" unfolding ii_def using card by auto
+        finally show ?case .
+      qed
+    qed
+  qed
+  finally show ?thesis .
+qed
+
+
 end

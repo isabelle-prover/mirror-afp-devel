@@ -40,11 +40,7 @@ lemma AE_eq_trans[trans]:
 
 abbreviation AEeq where "AEeq M X Y \<equiv> AE w in M. X w = Y w"
 
-(*syntax
-  "-AEeq" :: "pttrn \<Rightarrow> 'a measure \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b)" ("_ \<simeq>\<^sup>_ _" [50,51] 52)
 
-translations
-  "X \<simeq>\<^sup>M Y" == "CONST AEeq M X Y"*)
 
 lemma AE_add:
   assumes "AE w in M. f w = g w"
@@ -215,16 +211,16 @@ subsubsection \<open>Markets\<close>
 
 
 
-definition discr_mkt::"'c set \<Rightarrow> ('c \<Rightarrow> (nat \<Rightarrow> 'a \<Rightarrow> real)) \<Rightarrow> bool" where
-"discr_mkt S A \<longleftrightarrow> S \<noteq> UNIV"
+definition stk_strict_subs::"'c set \<Rightarrow> bool" where
+"stk_strict_subs S \<longleftrightarrow> S \<noteq> UNIV"
 
-typedef ('a,'c) discrete_market = "{(s, a::'c \<Rightarrow> (nat \<Rightarrow> 'a \<Rightarrow> real)). discr_mkt s a}" unfolding discr_mkt_def by fastforce
+typedef ('a,'c) discrete_market = "{(s::('c set), a::'c \<Rightarrow> (nat \<Rightarrow> 'a \<Rightarrow> real)). stk_strict_subs s}" unfolding stk_strict_subs_def by fastforce
 
 definition prices where
   "prices Mkt = (snd (Rep_discrete_market Mkt))"
 
 definition assets where
-  (*"assets Mkt = (prices Mkt) -`UNIV" *)
+
   "assets Mkt = UNIV"
 
 
@@ -234,21 +230,21 @@ definition stocks where
 definition discrete_market_of
 where
   "discrete_market_of S A =
-    Abs_discrete_market (if (discr_mkt S A) then S else {}, A)"
+    Abs_discrete_market (if (stk_strict_subs S) then S else {}, A)"
 
 lemma prices_of:
   shows "prices (discrete_market_of S A) = A"
 proof -
-  have "discr_mkt (if (discr_mkt S A) then S else {}) A"
-  proof (cases "discr_mkt S A")
+  have "stk_strict_subs (if (stk_strict_subs S) then S else {})"
+  proof (cases "stk_strict_subs S")
     case True thus ?thesis by simp
   next
-    case False thus ?thesis unfolding discr_mkt_def by simp
+    case False thus ?thesis unfolding stk_strict_subs_def by simp
   qed
-  hence fct: "((if (discr_mkt S A) then S else {}), A) \<in> {(s, a). discr_mkt s a}" by simp
-  have "discrete_market_of S A = Abs_discrete_market (if (discr_mkt S A) then S else {}, A)" unfolding discrete_market_of_def by simp
-  hence "Rep_discrete_market (discrete_market_of S A) = (if (discr_mkt S A) then S else {},A)"
-    using Abs_discrete_market_inverse[of "(if (discr_mkt S A) then S else {}, A)"] fct  by simp
+  hence fct: "((if (stk_strict_subs S) then S else {}), A) \<in> {(s, a). stk_strict_subs s}" by simp
+  have "discrete_market_of S A = Abs_discrete_market (if (stk_strict_subs S) then S else {}, A)" unfolding discrete_market_of_def by simp
+  hence "Rep_discrete_market (discrete_market_of S A) = (if (stk_strict_subs S) then S else {},A)"
+    using Abs_discrete_market_inverse[of "(if (stk_strict_subs S) then S else {}, A)"] fct  by simp
   thus ?thesis unfolding prices_def by simp
 qed
 
@@ -256,16 +252,16 @@ lemma stocks_of:
   assumes "UNIV \<noteq> S"
   shows "stocks (discrete_market_of S A) = S"
 proof -
-  have "discr_mkt S A" using assms unfolding discr_mkt_def by simp
-  hence fct: "((if (discr_mkt S A) then S else {}), A) \<in> {(s, a). discr_mkt s a}" by simp
-  have "discrete_market_of S A = Abs_discrete_market (if (discr_mkt S A) then S else {}, A)" unfolding discrete_market_of_def by simp
-  hence "Rep_discrete_market (discrete_market_of S A) = (if (discr_mkt S A) then S else {},A)"
-    using Abs_discrete_market_inverse[of "(if (discr_mkt S A) then S else {}, A)"] fct  by simp
-  thus ?thesis unfolding stocks_def using \<open>discr_mkt S A\<close> by simp
+  have "stk_strict_subs S" using assms unfolding stk_strict_subs_def by simp
+  hence fct: "((if (stk_strict_subs S) then S else {}), A) \<in> {(s, a). stk_strict_subs s}" by simp
+  have "discrete_market_of S A = Abs_discrete_market (if (stk_strict_subs S) then S else {}, A)" unfolding discrete_market_of_def by simp
+  hence "Rep_discrete_market (discrete_market_of S A) = (if (stk_strict_subs S) then S else {},A)"
+    using Abs_discrete_market_inverse[of "(if (stk_strict_subs S) then S else {}, A)"] fct  by simp
+  thus ?thesis unfolding stocks_def using \<open>stk_strict_subs S\<close> by simp
 qed
 
 lemma mkt_stocks_assets:
-  shows "discr_mkt (stocks Mkt) (prices Mkt)" unfolding stocks_def prices_def
+  shows "stk_strict_subs (stocks Mkt)" unfolding stocks_def prices_def
   by (metis Rep_discrete_market mem_Collect_eq split_beta')
 
 subsubsection \<open>Quantity processes and portfolios\<close>
@@ -274,23 +270,23 @@ operations are defined on these processes.\<close>
 
 paragraph \<open>Basic operations\<close>
 
-definition empty_pf where
-  "empty_pf = (\<lambda> (x::'a) (n::nat) w. 0::real)"
+definition qty_empty where
+  "qty_empty = (\<lambda> (x::'a) (n::nat) w. 0::real)"
 
-definition single_comp_pf where
-  "single_comp_pf asset qty = (empty_pf(asset := qty))"
+definition qty_single where
+  "qty_single asset qt_proc = (qty_empty(asset := qt_proc))"
 
-definition pf_sum::"('b \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> ('b \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> ('b \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real)"  where
-  "pf_sum pf1 pf2 = (\<lambda>x n w. pf1 x n w + pf2 x n w)"
+definition qty_sum::"('b \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> ('b \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> ('b \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real)"  where
+  "qty_sum pf1 pf2 = (\<lambda>x n w. pf1 x n w + pf2 x n w)"
 
-definition pf_mult_comp::"('b \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> (nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> ('b \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real)"  where
-  "pf_mult_comp pf1 qty = (\<lambda>x n w. (pf1 x n w) * (qty n w))"
+definition qty_mult_comp::"('b \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> (nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> ('b \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real)"  where
+  "qty_mult_comp pf1 qty = (\<lambda>x n w. (pf1 x n w) * (qty n w))"
 
-definition pf_remove_comp::"('b \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> 'b \<Rightarrow> ('b \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real)"  where
-  "pf_remove_comp pf1 x = pf1(x:=(\<lambda>n w. 0))"
+definition qty_rem_comp::"('b \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> 'b \<Rightarrow> ('b \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real)"  where
+  "qty_rem_comp pf1 x = pf1(x:=(\<lambda>n w. 0))"
 
-definition pf_replace_comp where
-  "pf_replace_comp pf1 x pf2 = pf_sum (pf_remove_comp pf1 x) (pf_mult_comp pf2 (pf1 x))"
+definition qty_replace_comp where
+  "qty_replace_comp pf1 x pf2 = qty_sum (qty_rem_comp pf1 x) (qty_mult_comp pf2 (pf1 x))"
 
 
 paragraph \<open>Support sets\<close>
@@ -299,85 +295,87 @@ text \<open>If p x n w is different from 0, this means that this quantity is hel
 definition support_set::"('b \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> 'b set" where
   "support_set p = {x. \<exists> n w. p x n w \<noteq> 0}"
 
+lemma qty_empty_support_set:
+  shows "support_set qty_empty = {}" unfolding support_set_def qty_empty_def by simp							
 lemma sum_support_set:
-  shows "support_set (pf_sum pf1 pf2) \<subseteq> (support_set pf1) \<union> (support_set pf2)"
+  shows "support_set (qty_sum pf1 pf2) \<subseteq> (support_set pf1) \<union> (support_set pf2)"
 proof (intro subsetI, rule ccontr)
   fix x
-  assume "x\<in> support_set (pf_sum pf1 pf2)" and "x \<notin> support_set pf1 \<union> support_set pf2" note xprops = this
-  hence "\<exists> n w. (pf_sum pf1 pf2) x n w \<noteq> 0" by (simp add: support_set_def)
-  from this obtain n w where "(pf_sum pf1 pf2) x n w \<noteq> 0" by auto note nwprops = this
+  assume "x\<in> support_set (qty_sum pf1 pf2)" and "x \<notin> support_set pf1 \<union> support_set pf2" note xprops = this
+  hence "\<exists> n w. (qty_sum pf1 pf2) x n w \<noteq> 0" by (simp add: support_set_def)
+  from this obtain n w where "(qty_sum pf1 pf2) x n w \<noteq> 0" by auto note nwprops = this
   have "pf1 x n w = 0" "pf2 x n w = 0" using xprops by (auto simp add:support_set_def)
-  hence "(pf_sum pf1 pf2) x n w = 0" unfolding pf_sum_def by simp
+  hence "(qty_sum pf1 pf2) x n w = 0" unfolding qty_sum_def by simp
   thus False using nwprops by simp
 qed
 
 lemma mult_comp_support_set:
-shows "support_set (pf_mult_comp pf1 qty) \<subseteq> (support_set pf1)"
+shows "support_set (qty_mult_comp pf1 qty) \<subseteq> (support_set pf1)"
 proof (intro subsetI, rule ccontr)
   fix x
-  assume "x\<in> support_set (pf_mult_comp pf1 qty)" and "x \<notin> support_set pf1" note xprops = this
-  hence "\<exists> n w. (pf_mult_comp pf1 qty) x n w \<noteq> 0" by (simp add: support_set_def)
-  from this obtain n w where "pf_mult_comp pf1 qty x n w \<noteq> 0" by auto note nwprops = this
+  assume "x\<in> support_set (qty_mult_comp pf1 qty)" and "x \<notin> support_set pf1" note xprops = this
+  hence "\<exists> n w. (qty_mult_comp pf1 qty) x n w \<noteq> 0" by (simp add: support_set_def)
+  from this obtain n w where "qty_mult_comp pf1 qty x n w \<noteq> 0" by auto note nwprops = this
   have "pf1 x n w = 0" using xprops by (simp add:support_set_def)
-  hence "(pf_mult_comp pf1 qty) x n w = 0" unfolding pf_mult_comp_def by simp
+  hence "(qty_mult_comp pf1 qty) x n w = 0" unfolding qty_mult_comp_def by simp
   thus False using nwprops by simp
 qed
 
 lemma remove_comp_support_set:
-shows "support_set (pf_remove_comp pf1 x) \<subseteq> ((support_set pf1) - {x})"
+shows "support_set (qty_rem_comp pf1 x) \<subseteq> ((support_set pf1) - {x})"
 proof (intro subsetI, rule ccontr)
   fix y
-  assume "y\<in> support_set (pf_remove_comp pf1 x)" and "y \<notin> support_set pf1 - {x}" note xprops = this
+  assume "y\<in> support_set (qty_rem_comp pf1 x)" and "y \<notin> support_set pf1 - {x}" note xprops = this
   hence "y\<notin> support_set pf1 \<or> y = x" by simp
-  have "\<exists> n w. (pf_remove_comp pf1 x) y n w \<noteq> 0" using xprops by (simp add: support_set_def)
-  from this obtain n w where "(pf_remove_comp pf1 x) y n w \<noteq> 0" by auto note nwprops = this
+  have "\<exists> n w. (qty_rem_comp pf1 x) y n w \<noteq> 0" using xprops by (simp add: support_set_def)
+  from this obtain n w where "(qty_rem_comp pf1 x) y n w \<noteq> 0" by auto note nwprops = this
   show False
   proof (cases "y\<notin> support_set pf1")
     case True
     hence "pf1 y n w = 0" using xprops by (simp add:support_set_def)
-    hence "(pf_remove_comp pf1 x) x n w = 0" unfolding pf_remove_comp_def by simp
-    thus ?thesis using nwprops by (metis \<open>pf1 y n w = 0\<close> fun_upd_apply pf_remove_comp_def)
+    hence "(qty_rem_comp pf1 x) x n w = 0" unfolding qty_rem_comp_def by simp
+    thus ?thesis using nwprops by (metis \<open>pf1 y n w = 0\<close> fun_upd_apply qty_rem_comp_def)
   next
     case False
     hence "y = x" using \<open>y\<notin> support_set pf1 \<or> y = x\<close> by simp
-    hence "(pf_remove_comp pf1 x) x n w = 0" unfolding pf_remove_comp_def by simp
+    hence "(qty_rem_comp pf1 x) x n w = 0" unfolding qty_rem_comp_def by simp
     thus ?thesis using nwprops by (simp add: \<open>y = x\<close>)
   qed
 qed
 
 lemma replace_comp_support_set:
-  shows "support_set (pf_replace_comp pf1 x pf2) \<subseteq> (support_set pf1 - {x}) \<union> support_set pf2"
+  shows "support_set (qty_replace_comp pf1 x pf2) \<subseteq> (support_set pf1 - {x}) \<union> support_set pf2"
 proof -
-  have "support_set (pf_replace_comp pf1 x pf2) \<subseteq> support_set (pf_remove_comp pf1 x) \<union> support_set (pf_mult_comp pf2 (pf1 x))"
-    unfolding pf_replace_comp_def by (simp add:sum_support_set)
+  have "support_set (qty_replace_comp pf1 x pf2) \<subseteq> support_set (qty_rem_comp pf1 x) \<union> support_set (qty_mult_comp pf2 (pf1 x))"
+    unfolding qty_replace_comp_def by (simp add:sum_support_set)
   also have "... \<subseteq> (support_set pf1 - {x}) \<union> support_set pf2" using remove_comp_support_set mult_comp_support_set
     by (metis sup.mono)
   finally show ?thesis .
 qed
 
 lemma single_comp_support:
-  shows "support_set (single_comp_pf asset qty) \<subseteq> {asset}"
+  shows "support_set (qty_single asset qty) \<subseteq> {asset}"
 proof
   fix x
-  assume "x\<in> support_set (single_comp_pf asset qty)"
+  assume "x\<in> support_set (qty_single asset qty)"
   show "x\<in> {asset}"
   proof (rule ccontr)
     assume "x\<notin> {asset}"
     hence "x\<noteq> asset" by auto
-    have "\<exists> n w. single_comp_pf asset qty x n w \<noteq> 0" using \<open>x\<in> support_set (single_comp_pf asset qty)\<close>
+    have "\<exists> n w. qty_single asset qty x n w \<noteq> 0" using \<open>x\<in> support_set (qty_single asset qty)\<close>
       by (simp add:support_set_def)
-    from this obtain n w where "single_comp_pf asset qty x n w \<noteq> 0" by auto
-    thus False using \<open>x\<noteq>asset\<close> by (simp add: single_comp_pf_def empty_pf_def)
+    from this obtain n w where "qty_single asset qty x n w \<noteq> 0" by auto
+    thus False using \<open>x\<noteq>asset\<close> by (simp add: qty_single_def qty_empty_def)
   qed
 qed
 
 lemma single_comp_nz_support:
   assumes "\<exists> n w. qty n w\<noteq> 0"
-  shows "support_set (single_comp_pf asset qty) = {asset}"
+  shows "support_set (qty_single asset qty) = {asset}"
 proof
-  show "support_set (single_comp_pf asset qty) \<subseteq> {asset}" by (simp add: single_comp_support)
-  have "asset\<in> support_set (single_comp_pf asset qty)" using assms unfolding support_set_def single_comp_pf_def by simp
-  thus "{asset} \<subseteq> support_set (single_comp_pf asset qty)" by auto
+  show "support_set (qty_single asset qty) \<subseteq> {asset}" by (simp add: single_comp_support)
+  have "asset\<in> support_set (qty_single asset qty)" using assms unfolding support_set_def qty_single_def by simp
+  thus "{asset} \<subseteq> support_set (qty_single asset qty)" by auto
 qed
 
 paragraph \<open>Portfolios\<close>
@@ -394,83 +392,83 @@ definition stock_portfolio :: "('a, 'b) discrete_market \<Rightarrow> ('b \<Righ
 lemma sum_portfolio:
   assumes "portfolio pf1"
   and "portfolio pf2"
-shows "portfolio (pf_sum pf1 pf2)" unfolding portfolio_def
+shows "portfolio (qty_sum pf1 pf2)" unfolding portfolio_def
 proof -
-  have "support_set (pf_sum pf1 pf2) \<subseteq> (support_set pf1) \<union> (support_set pf2)"  by (simp add: sum_support_set)
-  thus "finite (support_set (pf_sum pf1 pf2))" using assms unfolding portfolio_def using infinite_super by auto
+  have "support_set (qty_sum pf1 pf2) \<subseteq> (support_set pf1) \<union> (support_set pf2)"  by (simp add: sum_support_set)
+  thus "finite (support_set (qty_sum pf1 pf2))" using assms unfolding portfolio_def using infinite_super by auto
 qed
 
 lemma sum_basic_support_set:
   assumes "stock_portfolio Mkt pf1"
   and "stock_portfolio Mkt pf2"
-shows "stock_portfolio Mkt (pf_sum pf1 pf2)" using assms sum_support_set[of pf1 pf2] unfolding stock_portfolio_def
+shows "stock_portfolio Mkt (qty_sum pf1 pf2)" using assms sum_support_set[of pf1 pf2] unfolding stock_portfolio_def
   by (metis Diff_subset_conv gfp.leq_trans subset_Un_eq sum_portfolio)
 
 lemma mult_comp_portfolio:
   assumes "portfolio pf1"
-shows "portfolio (pf_mult_comp pf1 qty)" unfolding portfolio_def
+shows "portfolio (qty_mult_comp pf1 qty)" unfolding portfolio_def
 proof -
-  have "support_set (pf_mult_comp pf1 qty) \<subseteq> (support_set pf1)"  by (simp add: mult_comp_support_set)
-  thus "finite (support_set (pf_mult_comp pf1 qty))" using assms unfolding portfolio_def using infinite_super by auto
+  have "support_set (qty_mult_comp pf1 qty) \<subseteq> (support_set pf1)"  by (simp add: mult_comp_support_set)
+  thus "finite (support_set (qty_mult_comp pf1 qty))" using assms unfolding portfolio_def using infinite_super by auto
 qed
 
 lemma mult_comp_basic_support_set:
   assumes "stock_portfolio Mkt pf1"
-shows "stock_portfolio Mkt (pf_mult_comp pf1 qty)" using assms mult_comp_support_set[of pf1] unfolding stock_portfolio_def
+shows "stock_portfolio Mkt (qty_mult_comp pf1 qty)" using assms mult_comp_support_set[of pf1] unfolding stock_portfolio_def
   using mult_comp_portfolio by blast
 
 
 
 lemma remove_comp_portfolio:
   assumes "portfolio pf1"
-shows "portfolio (pf_remove_comp pf1 x)" unfolding portfolio_def
+shows "portfolio (qty_rem_comp pf1 x)" unfolding portfolio_def
 proof -
-  have "support_set (pf_remove_comp pf1 x) \<subseteq> (support_set pf1)" using remove_comp_support_set[of pf1 x] by blast
-  thus "finite (support_set (pf_remove_comp pf1 x))" using assms unfolding portfolio_def using infinite_super by auto
+  have "support_set (qty_rem_comp pf1 x) \<subseteq> (support_set pf1)" using remove_comp_support_set[of pf1 x] by blast
+  thus "finite (support_set (qty_rem_comp pf1 x))" using assms unfolding portfolio_def using infinite_super by auto
 qed
 
 lemma remove_comp_basic_support_set:
   assumes "stock_portfolio Mkt pf1"
-shows "stock_portfolio Mkt (pf_mult_comp pf1 qty)" using assms mult_comp_support_set[of pf1] unfolding stock_portfolio_def
+shows "stock_portfolio Mkt (qty_mult_comp pf1 qty)" using assms mult_comp_support_set[of pf1] unfolding stock_portfolio_def
   using mult_comp_portfolio by blast
 
 lemma replace_comp_portfolio:
   assumes "portfolio pf1"
   and "portfolio pf2"
-shows "portfolio (pf_replace_comp pf1 x pf2)" unfolding portfolio_def
+shows "portfolio (qty_replace_comp pf1 x pf2)" unfolding portfolio_def
 proof -
-  have "support_set (pf_replace_comp pf1 x pf2) \<subseteq> (support_set pf1) \<union> (support_set pf2)" using replace_comp_support_set[of pf1 x pf2] by blast
-  thus "finite (support_set (pf_replace_comp pf1 x pf2))" using assms unfolding portfolio_def using infinite_super by auto
+  have "support_set (qty_replace_comp pf1 x pf2) \<subseteq> (support_set pf1) \<union> (support_set pf2)" using replace_comp_support_set[of pf1 x pf2] by blast
+  thus "finite (support_set (qty_replace_comp pf1 x pf2))" using assms unfolding portfolio_def using infinite_super by auto
 qed
 
 lemma replace_comp_stocks:
   assumes "support_set pf1 \<subseteq> stocks Mkt \<union> {x}"
   and "support_set pf2 \<subseteq> stocks Mkt"
-shows "support_set (pf_replace_comp pf1 x pf2) \<subseteq> stocks Mkt"
+shows "support_set (qty_replace_comp pf1 x pf2) \<subseteq> stocks Mkt"
 proof -
-  have "support_set (pf_remove_comp pf1 x) \<subseteq> stocks Mkt" using assms(1) remove_comp_support_set by fastforce
-  moreover have "support_set (pf_mult_comp pf2 (pf1 x)) \<subseteq> stocks Mkt" using assms mult_comp_support_set by fastforce
-  ultimately show ?thesis unfolding pf_replace_comp_def using sum_support_set by fastforce
+  have "support_set (qty_rem_comp pf1 x) \<subseteq> stocks Mkt" using assms(1) remove_comp_support_set by fastforce
+  moreover have "support_set (qty_mult_comp pf2 (pf1 x)) \<subseteq> stocks Mkt" using assms mult_comp_support_set by fastforce
+  ultimately show ?thesis unfolding qty_replace_comp_def using sum_support_set by fastforce
 qed
 
 
 
 lemma single_comp_portfolio:
-  shows "portfolio (single_comp_pf asset qty)"
+  shows "portfolio (qty_single asset qty)"
   by (meson finite.emptyI finite.insertI finite_subset portfolio_def single_comp_support)
 
 paragraph \<open>Value processes\<close>
 
-definition value_process where
-  "value_process Mkt p = (if (\<not> (portfolio p)) then (\<lambda> n w. 0)
+definition val_process where
+  "val_process Mkt p = (if (\<not> (portfolio p)) then (\<lambda> n w. 0)
     else (\<lambda> n w . (sum (\<lambda>x. ((prices Mkt) x n w) * (p x (Suc n) w)) (support_set p))))"
 
 
 
-lemma subset_value_process':
+lemma subset_val_process':
   assumes "finite A"
   and "support_set p \<subseteq> A"
-shows "value_process Mkt p n w = (sum (\<lambda>x. ((prices Mkt) x n w) * (p x (Suc n) w)) A)"
+shows "val_process Mkt p n w = (sum (\<lambda>x. ((prices Mkt) x n w) * (p x (Suc n) w)) A)"
 proof -
   have "portfolio p" using assms unfolding portfolio_def using finite_subset by auto
   have "\<exists>C. (support_set p) \<inter> C = {} \<and> (support_set p) \<union> C = A" using assms(2) by auto
@@ -478,37 +476,37 @@ proof -
   have "finite C" using assms \<open>(support_set p) \<union> C = A\<close> by auto
   have "\<forall>x\<in> C. p x (Suc n) w = 0" using Cprops(1) support_set_def by fastforce
   hence "(\<Sum>x\<in> C. ((prices Mkt) x n w) * (p x (Suc n) w)) = 0" by simp
-  hence "value_process Mkt p n w = (\<Sum>x\<in> (support_set p). ((prices Mkt) x n w) * (p x (Suc n) w))
-    + (\<Sum>x\<in> C. ((prices Mkt) x n w) * (p x (Suc n) w))" unfolding value_process_def using \<open>portfolio p\<close> by simp
+  hence "val_process Mkt p n w = (\<Sum>x\<in> (support_set p). ((prices Mkt) x n w) * (p x (Suc n) w))
+    + (\<Sum>x\<in> C. ((prices Mkt) x n w) * (p x (Suc n) w))" unfolding val_process_def using \<open>portfolio p\<close> by simp
   also have "... = (\<Sum> x\<in> A. ((prices Mkt) x n w) * (p x (Suc n) w))"
     using \<open>portfolio p\<close> \<open>finite C\<close> Cprops portfolio_def sum_union_disjoint' by (metis (no_types, lifting))
-  finally show "value_process Mkt p n w = (\<Sum> x\<in> A. ((prices Mkt) x n w) * (p x (Suc n) w))" .
+  finally show "val_process Mkt p n w = (\<Sum> x\<in> A. ((prices Mkt) x n w) * (p x (Suc n) w))" .
 qed
 
 
-lemma sum_value_process:
+lemma sum_val_process:
   assumes "portfolio pf1"
   and "portfolio pf2"
-shows "\<forall>n w. value_process Mkt (pf_sum pf1 pf2) n w = (value_process Mkt pf1) n w + (value_process Mkt pf2) n w"
+shows "\<forall>n w. val_process Mkt (qty_sum pf1 pf2) n w = (val_process Mkt pf1) n w + (val_process Mkt pf2) n w"
 proof (intro allI)
   fix n w
-  have vp1: "value_process Mkt pf1 n w = (\<Sum> x\<in> (support_set pf1)\<union> (support_set pf2). ((prices Mkt) x n w) * (pf1 x (Suc n) w))"
+  have vp1: "val_process Mkt pf1 n w = (\<Sum> x\<in> (support_set pf1)\<union> (support_set pf2). ((prices Mkt) x n w) * (pf1 x (Suc n) w))"
   proof -
     have "finite (support_set pf1 \<union> support_set pf2) \<and> support_set pf1 \<subseteq> support_set pf1 \<union> support_set pf2"
       by (meson assms(1) assms(2) finite_Un portfolio_def sup.cobounded1)
     then show ?thesis
-      by (simp add: subset_value_process')
+      by (simp add: subset_val_process')
   qed
-  have vp2: "value_process Mkt pf2 n w = (\<Sum> x\<in> (support_set pf1)\<union> (support_set pf2). ((prices Mkt) x n w) * (pf2 x (Suc n) w))"
+  have vp2: "val_process Mkt pf2 n w = (\<Sum> x\<in> (support_set pf1)\<union> (support_set pf2). ((prices Mkt) x n w) * (pf2 x (Suc n) w))"
   proof -
     have "finite (support_set pf1 \<union> support_set pf2) \<and> support_set pf2 \<subseteq> support_set pf2 \<union> support_set pf1"
       by (meson assms(1) assms(2) finite_Un portfolio_def sup.cobounded1)
     then show ?thesis
-      by (simp add: subset_value_process')
+      by (simp add: subset_val_process')
   qed
-  have pf:"portfolio (pf_sum pf1 pf2)" using assms by (simp add:sum_portfolio)
+  have pf:"portfolio (qty_sum pf1 pf2)" using assms by (simp add:sum_portfolio)
   have fin:"finite (support_set pf1 \<union> support_set pf2)" using assms finite_Un unfolding portfolio_def by auto
-  have "(value_process Mkt pf1) n w + (value_process Mkt pf2) n w =
+  have "(val_process Mkt pf1) n w + (val_process Mkt pf2) n w =
     (\<Sum> x\<in> (support_set pf1)\<union> (support_set pf2). ((prices Mkt) x n w) * (pf1 x (Suc n) w)) +
     (\<Sum> x\<in> (support_set pf1)\<union> (support_set pf2). ((prices Mkt) x n w) * (pf2 x (Suc n) w))"
     using vp1 vp2 by simp
@@ -518,37 +516,37 @@ proof (intro allI)
   also have "... = (\<Sum> x\<in> (support_set pf1)\<union> (support_set pf2).
     ((prices Mkt) x n w) * ((pf1 x (Suc n) w) + (pf2 x (Suc n) w)))" by (simp add: distrib_left)
   also have "... = (\<Sum> x\<in> (support_set pf1)\<union> (support_set pf2).
-    ((prices Mkt) x n w) * ((pf_sum pf1 pf2) x (Suc n) w))" by (simp add: pf_sum_def)
-  also have "... = (\<Sum> x\<in> (support_set (pf_sum pf1 pf2)).
-    ((prices Mkt) x n w) * ((pf_sum pf1 pf2) x (Suc n) w))" using sum_support_set[of pf1 pf2]
-    subset_value_process'[of "support_set pf1\<union> support_set pf2" "pf_sum pf1 pf2"] pf fin unfolding value_process_def by simp
-  also have "... = value_process Mkt (pf_sum pf1 pf2) n w" by (metis (no_types, lifting) pf sum.cong value_process_def)
-  finally have "(value_process Mkt pf1) n w + (value_process Mkt pf2) n w = value_process Mkt (pf_sum pf1 pf2) n w" .
-  thus "value_process Mkt (pf_sum pf1 pf2) n w = (value_process Mkt pf1) n w + (value_process Mkt pf2) n w" ..
+    ((prices Mkt) x n w) * ((qty_sum pf1 pf2) x (Suc n) w))" by (simp add: qty_sum_def)
+  also have "... = (\<Sum> x\<in> (support_set (qty_sum pf1 pf2)).
+    ((prices Mkt) x n w) * ((qty_sum pf1 pf2) x (Suc n) w))" using sum_support_set[of pf1 pf2]
+    subset_val_process'[of "support_set pf1\<union> support_set pf2" "qty_sum pf1 pf2"] pf fin unfolding val_process_def by simp
+  also have "... = val_process Mkt (qty_sum pf1 pf2) n w" by (metis (no_types, lifting) pf sum.cong val_process_def)
+  finally have "(val_process Mkt pf1) n w + (val_process Mkt pf2) n w = val_process Mkt (qty_sum pf1 pf2) n w" .
+  thus "val_process Mkt (qty_sum pf1 pf2) n w = (val_process Mkt pf1) n w + (val_process Mkt pf2) n w" ..
 qed
 
 
-lemma mult_comp_value_process:
+lemma mult_comp_val_process:
   assumes "portfolio pf1"
-shows "\<forall>n w. value_process Mkt (pf_mult_comp pf1 qty) n w = ((value_process Mkt pf1) n w) * (qty (Suc n) w)"
+shows "\<forall>n w. val_process Mkt (qty_mult_comp pf1 qty) n w = ((val_process Mkt pf1) n w) * (qty (Suc n) w)"
 proof (intro allI)
   fix n w
-  have pf:"portfolio (pf_mult_comp pf1 qty)" using assms by (simp add:mult_comp_portfolio)
+  have pf:"portfolio (qty_mult_comp pf1 qty)" using assms by (simp add:mult_comp_portfolio)
   have fin:"finite (support_set pf1)" using assms unfolding portfolio_def by auto
-  have "((value_process Mkt pf1) n w) * (qty (Suc n) w) =
+  have "((val_process Mkt pf1) n w) * (qty (Suc n) w) =
     (\<Sum> x\<in> (support_set pf1). ((prices Mkt) x n w) * (pf1 x (Suc n) w))*(qty (Suc n) w)"
-    unfolding value_process_def using assms by simp
+    unfolding val_process_def using assms by simp
   also have "... = (\<Sum> x\<in> (support_set pf1).
     (((prices Mkt) x n w) * (pf1 x (Suc n) w) * (qty (Suc n) w)))" using sum_distrib_right by auto
   also have "... = (\<Sum> x\<in> (support_set pf1).
-    ((prices Mkt) x n w) * ((pf_mult_comp pf1 qty) x (Suc n) w))" unfolding pf_mult_comp_def
+    ((prices Mkt) x n w) * ((qty_mult_comp pf1 qty) x (Suc n) w))" unfolding qty_mult_comp_def
     by (simp add: mult.commute mult.left_commute)
-  also have "... = (\<Sum> x\<in> (support_set (pf_mult_comp pf1 qty)).
-    ((prices Mkt) x n w) * ((pf_mult_comp pf1 qty) x (Suc n) w))" using mult_comp_support_set[of pf1]
-    subset_value_process'[of "support_set pf1" "pf_mult_comp pf1 qty"] pf fin unfolding value_process_def by simp
-  also have "... = value_process Mkt (pf_mult_comp pf1 qty) n w" by (metis (no_types, lifting) pf sum.cong value_process_def)
-  finally have "(value_process Mkt pf1) n w * (qty (Suc n) w) = value_process Mkt (pf_mult_comp pf1 qty) n w" .
-  thus "value_process Mkt (pf_mult_comp pf1 qty) n w = (value_process Mkt pf1) n w * (qty (Suc n) w)" ..
+  also have "... = (\<Sum> x\<in> (support_set (qty_mult_comp pf1 qty)).
+    ((prices Mkt) x n w) * ((qty_mult_comp pf1 qty) x (Suc n) w))" using mult_comp_support_set[of pf1]
+    subset_val_process'[of "support_set pf1" "qty_mult_comp pf1 qty"] pf fin unfolding val_process_def by simp
+  also have "... = val_process Mkt (qty_mult_comp pf1 qty) n w" by (metis (no_types, lifting) pf sum.cong val_process_def)
+  finally have "(val_process Mkt pf1) n w * (qty (Suc n) w) = val_process Mkt (qty_mult_comp pf1 qty) n w" .
+  thus "val_process Mkt (qty_mult_comp pf1 qty) n w = (val_process Mkt pf1) n w * (qty (Suc n) w)" ..
 qed
 
 
@@ -557,26 +555,26 @@ qed
 
 lemma remove_comp_values:
   assumes "x \<noteq> y"
-  shows "\<forall>n w. pf1 x n w = (pf_remove_comp pf1 y) x n w"
+  shows "\<forall>n w. pf1 x n w = (qty_rem_comp pf1 y) x n w"
 proof (intro allI)
   fix n w
-  show "pf1 x n w = (pf_remove_comp pf1 y) x n w" by (simp add: assms pf_remove_comp_def)
+  show "pf1 x n w = (qty_rem_comp pf1 y) x n w" by (simp add: assms qty_rem_comp_def)
 qed
 
 
 
 
-lemma remove_comp_value_process:
+lemma remove_comp_val_process:
   assumes "portfolio pf1"
-shows "\<forall>n w. value_process Mkt (pf_remove_comp pf1 y) n w = ((value_process Mkt pf1) n w) - (prices Mkt y n w)* (pf1 y (Suc n) w)"
+shows "\<forall>n w. val_process Mkt (qty_rem_comp pf1 y) n w = ((val_process Mkt pf1) n w) - (prices Mkt y n w)* (pf1 y (Suc n) w)"
 proof (intro allI)
   fix n w
-  have pf:"portfolio (pf_remove_comp pf1 y)" using assms by (simp add:remove_comp_portfolio)
+  have pf:"portfolio (qty_rem_comp pf1 y)" using assms by (simp add:remove_comp_portfolio)
   have fin:"finite (support_set pf1)" using assms unfolding portfolio_def by auto
   hence fin2: "finite (support_set pf1 - {y})" by simp
-  have "((value_process Mkt pf1) n w)  =
+  have "((val_process Mkt pf1) n w)  =
     (\<Sum> x\<in> (support_set pf1). ((prices Mkt) x n w) * (pf1 x (Suc n) w))"
-    unfolding value_process_def using assms by simp
+    unfolding val_process_def using assms by simp
   also have "... = (\<Sum> x\<in> (support_set pf1 - {y}).
     (((prices Mkt) x n w) * (pf1 x (Suc n) w))) + (prices Mkt y n w)* (pf1 y (Suc n) w)"
   proof (cases "y\<in> support_set pf1")
@@ -588,57 +586,57 @@ proof (intro allI)
     thus ?thesis by (simp add: fin sum_diff1)
   qed
   also have "... = (\<Sum> x\<in> (support_set pf1 - {y}).
-    ((prices Mkt) x n w) * ((pf_remove_comp pf1 y) x (Suc n) w)) + (prices Mkt y n w)* (pf1 y (Suc n) w)"
+    ((prices Mkt) x n w) * ((qty_rem_comp pf1 y) x (Suc n) w)) + (prices Mkt y n w)* (pf1 y (Suc n) w)"
   proof -
     have "(\<Sum> x\<in> (support_set pf1 - {y}). (((prices Mkt) x n w) * (pf1 x (Suc n) w))) =
-      (\<Sum> x\<in> (support_set pf1 - {y}). ((prices Mkt) x n w) * ((pf_remove_comp pf1 y) x (Suc n) w))"
+      (\<Sum> x\<in> (support_set pf1 - {y}). ((prices Mkt) x n w) * ((qty_rem_comp pf1 y) x (Suc n) w))"
     proof (rule sum.cong,simp)
       fix x
       assume "x\<in> support_set pf1 - {y}"
-      show "prices Mkt x n w * pf1 x (Suc n) w = prices Mkt x n w * pf_remove_comp pf1 y x (Suc n) w" using remove_comp_values
+      show "prices Mkt x n w * pf1 x (Suc n) w = prices Mkt x n w * qty_rem_comp pf1 y x (Suc n) w" using remove_comp_values
         by (metis DiffD2 \<open>x \<in> support_set pf1 - {y}\<close> singletonI)
     qed
     thus ?thesis by simp
   qed
-  also have "... = (value_process Mkt (pf_remove_comp pf1 y) n w) + (prices Mkt y n w)* (pf1 y (Suc n) w)"
-    using subset_value_process'[of "support_set pf1 - {y}" "pf_remove_comp pf1 y"] fin2
+  also have "... = (val_process Mkt (qty_rem_comp pf1 y) n w) + (prices Mkt y n w)* (pf1 y (Suc n) w)"
+    using subset_val_process'[of "support_set pf1 - {y}" "qty_rem_comp pf1 y"] fin2
     by (simp add: remove_comp_support_set)
-  finally have "(value_process Mkt pf1) n w =
-    (value_process Mkt (pf_remove_comp pf1 y) n w) + (prices Mkt y n w)* (pf1 y (Suc n) w)" .
-  thus  "value_process Mkt (pf_remove_comp pf1 y) n w = ((value_process Mkt pf1) n w) - (prices Mkt y n w)* (pf1 y (Suc n) w)" by simp
+  finally have "(val_process Mkt pf1) n w =
+    (val_process Mkt (qty_rem_comp pf1 y) n w) + (prices Mkt y n w)* (pf1 y (Suc n) w)" .
+  thus  "val_process Mkt (qty_rem_comp pf1 y) n w = ((val_process Mkt pf1) n w) - (prices Mkt y n w)* (pf1 y (Suc n) w)" by simp
 qed
 
 
 
 
-lemma replace_comp_value_process:
-  assumes "\<forall>n w. prices Mkt x n w = value_process Mkt pf2 n w"
+lemma replace_comp_val_process:
+  assumes "\<forall>n w. prices Mkt x n w = val_process Mkt pf2 n w"
   and "portfolio pf1"
   and "portfolio pf2"
-  shows "\<forall>n w. value_process Mkt (pf_replace_comp pf1 x pf2) n w = value_process Mkt pf1 n w"
+  shows "\<forall>n w. val_process Mkt (qty_replace_comp pf1 x pf2) n w = val_process Mkt pf1 n w"
 proof (intro allI)
   fix n w
-  have "value_process Mkt (pf_replace_comp pf1 x pf2) n w = value_process Mkt (pf_remove_comp pf1 x) n w +
-    value_process Mkt (pf_mult_comp pf2 (pf1 x)) n w" unfolding pf_replace_comp_def using assms
-    sum_value_process[of "pf_remove_comp pf1 x" "pf_mult_comp pf2 (pf1 x)"]
+  have "val_process Mkt (qty_replace_comp pf1 x pf2) n w = val_process Mkt (qty_rem_comp pf1 x) n w +
+    val_process Mkt (qty_mult_comp pf2 (pf1 x)) n w" unfolding qty_replace_comp_def using assms
+    sum_val_process[of "qty_rem_comp pf1 x" "qty_mult_comp pf2 (pf1 x)"]
     by (simp add: mult_comp_portfolio remove_comp_portfolio)
-  also have "... = value_process Mkt pf1 n w - (prices Mkt x n w * pf1 x (Suc n) w) + value_process Mkt pf2 n w * pf1 x (Suc n) w"
-    by (simp add: assms(2) assms(3) mult_comp_value_process remove_comp_value_process)
-  also have "... = value_process Mkt pf1 n w" using assms by simp
-  finally show "value_process Mkt (pf_replace_comp pf1 x pf2) n w = value_process Mkt pf1 n w" .
+  also have "... = val_process Mkt pf1 n w - (prices Mkt x n w * pf1 x (Suc n) w) + val_process Mkt pf2 n w * pf1 x (Suc n) w"
+    by (simp add: assms(2) assms(3) mult_comp_val_process remove_comp_val_process)
+  also have "... = val_process Mkt pf1 n w" using assms by simp
+  finally show "val_process Mkt (qty_replace_comp pf1 x pf2) n w = val_process Mkt pf1 n w" .
 qed
 
-lemma single_comp_pf_value_process:
-shows "value_process Mkt (single_comp_pf asset qty) n w =
+lemma qty_single_val_process:
+shows "val_process Mkt (qty_single asset qty) n w =
     prices Mkt asset n w * qty (Suc n) w"
 proof -
-  have "value_process Mkt (single_comp_pf asset qty) n w =
-    (sum (\<lambda>x. ((prices Mkt) x n w) * ((single_comp_pf asset qty) x (Suc n) w)) {asset})"
-  proof (rule subset_value_process')
+  have "val_process Mkt (qty_single asset qty) n w =
+    (sum (\<lambda>x. ((prices Mkt) x n w) * ((qty_single asset qty) x (Suc n) w)) {asset})"
+  proof (rule subset_val_process')
     show "finite {asset}" by simp
-    show "support_set (single_comp_pf asset qty) \<subseteq> {asset}" by (simp add: single_comp_support)
+    show "support_set (qty_single asset qty) \<subseteq> {asset}" by (simp add: single_comp_support)
   qed
-  also have "... = prices Mkt asset n w * qty (Suc n) w" unfolding single_comp_pf_def by simp
+  also have "... = prices Mkt asset n w * qty (Suc n) w" unfolding qty_single_def by simp
   finally show ?thesis .
 qed
 
@@ -649,7 +647,7 @@ subsubsection \<open>Trading strategies\<close>
 
 
 
-(* Todo: change name? *)
+
 locale disc_equity_market = triv_init_disc_filtr_prob_space +
   fixes Mkt::"('a,'b) discrete_market"
 
@@ -670,15 +668,15 @@ definition (in disc_filtr_prob_space) support_adapt:: "('a, 'b) discrete_market 
 lemma (in disc_filtr_prob_space) quantity_adapted:
   assumes "\<forall> asset \<in> support_set p. p asset (Suc n) \<in> borel_measurable (F n)"
   "\<forall>asset \<in> support_set p. prices Mkt asset n \<in> borel_measurable (F n)"
-shows "value_process Mkt p n \<in> borel_measurable (F n)"
+shows "val_process Mkt p n \<in> borel_measurable (F n)"
 proof (cases "portfolio p")
 case False
-  have "value_process Mkt p = (\<lambda> n w. 0)" unfolding value_process_def using False by simp
+  have "val_process Mkt p = (\<lambda> n w. 0)" unfolding val_process_def using False by simp
   thus "?thesis" by simp
 next
   case True
-  hence "value_process Mkt p n = (\<lambda>w. \<Sum>x\<in>support_set p. prices Mkt x n w * p x (Suc n) w)"
-    unfolding value_process_def using True by simp
+  hence "val_process Mkt p n = (\<lambda>w. \<Sum>x\<in>support_set p. prices Mkt x n w * p x (Suc n) w)"
+    unfolding val_process_def using True by simp
   moreover have "(\<lambda>w. \<Sum>x\<in>support_set p. prices Mkt x n w * p x (Suc n) w) \<in> borel_measurable (F n)"
   proof (rule borel_measurable_sum)
     fix asset
@@ -688,27 +686,27 @@ next
       using \<open>asset \<in> support_set p\<close>  assms(2) unfolding support_adapt_def by (simp add: adapt_stoch_proc_def)
     ultimately show "(\<lambda>x. prices Mkt asset n x * p asset (Suc n) x) \<in> borel_measurable (F n)" by simp
   qed
-  ultimately show "value_process Mkt p n \<in> borel_measurable (F n)" by simp
+  ultimately show "val_process Mkt p n \<in> borel_measurable (F n)" by simp
 qed
 
 
-(* todo: no longer need cases: a trading strategy is a portfolio *)
+
 lemma (in disc_filtr_prob_space) trading_strategy_adapted:
   assumes "trading_strategy p"
   and "support_adapt Mkt p"
-  shows "borel_adapt_stoch_proc F (value_process Mkt p)" unfolding support_adapt_def
+  shows "borel_adapt_stoch_proc F (val_process Mkt p)" unfolding support_adapt_def
 proof (cases "portfolio p")
 case False
-  have "value_process Mkt p = (\<lambda> n w. 0)" unfolding value_process_def using False by simp
-  thus "borel_adapt_stoch_proc F (value_process Mkt p)"
+  have "val_process Mkt p = (\<lambda> n w. 0)" unfolding val_process_def using False by simp
+  thus "borel_adapt_stoch_proc F (val_process Mkt p)"
     by (simp add: constant_process_borel_adapted)
 next
 case True
   show ?thesis unfolding adapt_stoch_proc_def
   proof
     fix n
-    have "value_process Mkt p n = (\<lambda>w. \<Sum>x\<in>support_set p. prices Mkt x n w * p x (Suc n) w)"
-      unfolding value_process_def using True by simp
+    have "val_process Mkt p n = (\<lambda>w. \<Sum>x\<in>support_set p. prices Mkt x n w * p x (Suc n) w)"
+      unfolding val_process_def using True by simp
     moreover have "(\<lambda>w. \<Sum>x\<in>support_set p. prices Mkt x n w * p x (Suc n) w) \<in> borel_measurable (F n)"
     proof (rule borel_measurable_sum)
       fix asset
@@ -718,17 +716,17 @@ case True
         using \<open>asset \<in> support_set p\<close>  assms(2) unfolding support_adapt_def  by (simp add:adapt_stoch_proc_def)
       ultimately show "(\<lambda>x. prices Mkt asset n x * p asset (Suc n) x) \<in> borel_measurable (F n)" by simp
     qed
-    ultimately show "value_process Mkt p n \<in> borel_measurable (F n)" by simp
+    ultimately show "val_process Mkt p n \<in> borel_measurable (F n)" by simp
   qed
 qed
 
 
 
-(* TODO: rename lemma *)
-lemma (in disc_equity_market) ats_value_process_adapted:
+
+lemma (in disc_equity_market) ats_val_process_adapted:
   assumes "trading_strategy p"
 and "support_adapt Mkt p"
-  shows "borel_adapt_stoch_proc F (value_process Mkt p)" unfolding support_adapt_def
+  shows "borel_adapt_stoch_proc F (val_process Mkt p)" unfolding support_adapt_def
   by (meson assms(1) assms(2)  subsetCE trading_strategy_adapted)
 
 
@@ -736,18 +734,18 @@ and "support_adapt Mkt p"
 lemma (in disc_equity_market) trading_strategy_init:
   assumes "trading_strategy p"
 and "support_adapt Mkt p"
-  shows "\<exists>c. \<forall>w \<in> space M. value_process Mkt p 0 w = c" using assms adapted_init ats_value_process_adapted by simp
+  shows "\<exists>c. \<forall>w \<in> space M. val_process Mkt p 0 w = c" using assms adapted_init ats_val_process_adapted by simp
 
 
 definition (in disc_equity_market) initial_value where
-  "initial_value pf = constant_image (value_process Mkt pf 0)"
+  "initial_value pf = constant_image (val_process Mkt pf 0)"
 
 lemma (in disc_equity_market) initial_valueI:
   assumes "trading_strategy pf"
 and "support_adapt Mkt pf"
-  shows "\<forall>w\<in> space M. value_process Mkt pf 0 w = initial_value pf" unfolding initial_value_def
+  shows "\<forall>w\<in> space M. val_process Mkt pf 0 w = initial_value pf" unfolding initial_value_def
 proof (rule constant_imageI)
-  show "\<exists>c. \<forall>w\<in>space M. value_process Mkt pf 0 w = c" using trading_strategy_init assms by simp
+  show "\<exists>c. \<forall>w\<in>space M. val_process Mkt pf 0 w = c" using trading_strategy_init assms by simp
 qed
 
 
@@ -816,21 +814,29 @@ lemma (in disc_equity_market) inc_support_trading_strat:
   shows "\<forall> asset \<in> support_set pf1 \<union> B. borel_adapt_stoch_proc F (pf1 asset)" using assms
   by (simp add: inc_predict_support_trading_strat predict_imp_adapt)
 
+lemma (in disc_equity_market) qty_empty_trading_strat:
+  shows "trading_strategy qty_empty" unfolding trading_strategy_def 
+proof (intro conjI ballI)
+  show "portfolio qty_empty"
+    by (metis fun_upd_triv qty_single_def single_comp_portfolio) 
+  show "\<And>asset. asset \<in> support_set qty_empty \<Longrightarrow> borel_predict_stoch_proc F (qty_empty asset)"
+    using qty_empty_support_set by auto
+qed													  
 
 lemma (in disc_equity_market) sum_trading_strat:
   assumes "trading_strategy pf1"
   and "trading_strategy pf2"
-shows "trading_strategy (pf_sum pf1 pf2)"
+shows "trading_strategy (qty_sum pf1 pf2)"
 proof -
   have "\<forall> asset \<in> support_set pf1 \<union> support_set pf2. borel_predict_stoch_proc F (pf1 asset)"
     using assms by (simp add: inc_predict_support_trading_strat)
   have "\<forall> asset \<in> support_set pf2 \<union> support_set pf1. borel_predict_stoch_proc F (pf2 asset)"
     using assms by (simp add: inc_predict_support_trading_strat)
-  have "\<forall> asset \<in> support_set pf1 \<union> support_set pf2. borel_predict_stoch_proc F ((pf_sum pf1 pf2) asset)"
+  have "\<forall> asset \<in> support_set pf1 \<union> support_set pf2. borel_predict_stoch_proc F ((qty_sum pf1 pf2) asset)"
   proof
     fix asset
     assume "asset \<in> support_set pf1 \<union> support_set pf2"
-    show "borel_predict_stoch_proc F (pf_sum pf1 pf2 asset)" unfolding predict_stoch_proc_def pf_sum_def
+    show "borel_predict_stoch_proc F (qty_sum pf1 pf2 asset)" unfolding predict_stoch_proc_def qty_sum_def
     proof
       show "(\<lambda>w. pf1 asset 0 w + pf2 asset 0 w) \<in> borel_measurable (F 0)"
       proof -
@@ -863,12 +869,12 @@ qed
 lemma (in disc_equity_market) mult_comp_trading_strat:
   assumes "trading_strategy pf1"
   and "borel_predict_stoch_proc F qty"
-shows "trading_strategy (pf_mult_comp pf1 qty)"
+shows "trading_strategy (qty_mult_comp pf1 qty)"
 proof -
   have "\<forall> asset \<in> support_set pf1. borel_predict_stoch_proc F (pf1 asset)"
     using assms unfolding trading_strategy_def by simp
-  have "\<forall> asset \<in> support_set pf1. borel_predict_stoch_proc F (pf_mult_comp pf1 qty asset)"
-    unfolding predict_stoch_proc_def pf_mult_comp_def
+  have "\<forall> asset \<in> support_set pf1. borel_predict_stoch_proc F (qty_mult_comp pf1 qty asset)"
+    unfolding predict_stoch_proc_def qty_mult_comp_def
   proof (intro ballI conjI)
     fix asset
     assume "asset \<in> support_set pf1"
@@ -896,12 +902,12 @@ qed
 
 lemma (in disc_equity_market) remove_comp_trading_strat:
   assumes "trading_strategy pf1"
-shows "trading_strategy (pf_remove_comp pf1 x)"
+shows "trading_strategy (qty_rem_comp pf1 x)"
 proof -
   have "\<forall> asset \<in> support_set pf1. borel_predict_stoch_proc F (pf1 asset)"
     using assms unfolding trading_strategy_def by simp
-  have "\<forall> asset \<in> support_set pf1. borel_predict_stoch_proc F (pf_remove_comp pf1 x asset)"
-    unfolding predict_stoch_proc_def pf_remove_comp_def
+  have "\<forall> asset \<in> support_set pf1. borel_predict_stoch_proc F (qty_rem_comp pf1 x asset)"
+    unfolding predict_stoch_proc_def qty_rem_comp_def
   proof (intro ballI conjI)
     fix asset
     assume "asset \<in> support_set pf1"
@@ -941,10 +947,10 @@ qed
 lemma (in disc_equity_market) replace_comp_trading_strat:
   assumes "trading_strategy pf1"
   and "trading_strategy pf2"
-shows "trading_strategy (pf_replace_comp pf1 x pf2)" unfolding pf_replace_comp_def
+shows "trading_strategy (qty_replace_comp pf1 x pf2)" unfolding qty_replace_comp_def
 proof (rule sum_trading_strat)
-  show "trading_strategy (pf_remove_comp pf1 x)" using assms by (simp add: remove_comp_trading_strat)
-  show "trading_strategy (pf_mult_comp pf2 (pf1 x))"
+  show "trading_strategy (qty_rem_comp pf1 x)" using assms by (simp add: remove_comp_trading_strat)
+  show "trading_strategy (qty_mult_comp pf2 (pf1 x))"
   proof (cases "x\<in> support_set pf1")
     case True
     hence "borel_predict_stoch_proc F (pf1 x)" using assms unfolding trading_strategy_def by simp
@@ -960,8 +966,8 @@ proof (rule sum_trading_strat)
         by auto
       then show ?thesis
       proof -
-        have "\<And>f c n a. pf_mult_comp f (pf1 x) (c::'c) n a = 0"
-          by (metis False \<open>\<forall>f c. (c \<notin> {c. \<exists>n a. f c n a \<noteq> 0} \<or> f c (nn c f) (aa c f) \<noteq> 0) \<and> (c \<in> {c. \<exists>n a. f c n a \<noteq> 0} \<or> (\<forall>n a. f c n a = 0))\<close> mult.commute mult_zero_left pf_mult_comp_def support_set_def)
+        have "\<And>f c n a. qty_mult_comp f (pf1 x) (c::'c) n a = 0"
+          by (metis False \<open>\<forall>f c. (c \<notin> {c. \<exists>n a. f c n a \<noteq> 0} \<or> f c (nn c f) (aa c f) \<noteq> 0) \<and> (c \<in> {c. \<exists>n a. f c n a \<noteq> 0} \<or> (\<forall>n a. f c n a = 0))\<close> mult.commute mult_zero_left qty_mult_comp_def support_set_def)
         then show ?thesis
           by (metis (no_types) \<open>\<forall>f c. (c \<notin> {c. \<exists>n a. f c n a \<noteq> 0} \<or> f c (nn c f) (aa c f) \<noteq> 0) \<and> (c \<in> {c. \<exists>n a. f c n a \<noteq> 0} \<or> (\<forall>n a. f c n a = 0))\<close> assms(2) mult_comp_portfolio support_set_def trading_strategy_def)
       qed
@@ -976,41 +982,36 @@ subsubsection \<open>Self-financing portfolios\<close>
 paragraph \<open>Closing value process\<close>
 
 fun up_cl_proc where
-  "up_cl_proc Mkt p 0 = value_process Mkt p 0" |
+  "up_cl_proc Mkt p 0 = val_process Mkt p 0" |
   "up_cl_proc Mkt p (Suc n) = (\<lambda>w. \<Sum>x\<in>support_set p. prices Mkt x (Suc n) w * p x (Suc n) w)"
 
-(*definition up_cl_proc where
-  "up_cl_proc Mkt p n = (\<lambda>w. \<Sum>x\<in>support_set p. prices Mkt x n w * p x n w)"*)
 
-definition closing_value_process where
-"closing_value_process Mkt p = (if (\<not> (portfolio p)) then (\<lambda> n w. 0)
+definition cls_val_process where
+"cls_val_process Mkt p = (if (\<not> (portfolio p)) then (\<lambda> n w. 0)
     else (\<lambda> n w . up_cl_proc Mkt p n w))"
 
-(*definition closing_value_process where
-"closing_value_process Mkt p = (if (\<not> (portfolio p)) then (\<lambda> n w. 0)
-    else (\<lambda> n w . if (n=0) then value_process Mkt p 0 w else \<Sum>x\<in>support_set p. prices Mkt x (Suc n) w * p x (Suc n) w))"*)
+
 
 lemma (in disc_filtr_prob_space) quantity_updated_borel:
   assumes "\<forall>n. \<forall> asset \<in> support_set p. p asset (Suc n) \<in> borel_measurable (F n)"
-(*and "support_adapt Mkt p"*)
 and "\<forall>n. \<forall>asset \<in> support_set p. prices Mkt asset n \<in> borel_measurable (F n)"
-shows "\<forall>n. closing_value_process Mkt p n \<in> borel_measurable (F n)"
+shows "\<forall>n. cls_val_process Mkt p n \<in> borel_measurable (F n)"
 proof (cases "portfolio p")
 case False
-  have "closing_value_process Mkt p = (\<lambda> n w. 0)" unfolding closing_value_process_def using False by simp
+  have "cls_val_process Mkt p = (\<lambda> n w. 0)" unfolding cls_val_process_def using False by simp
   thus "?thesis" by simp
 next
   case True
-  show "\<forall>n. closing_value_process Mkt p n \<in> borel_measurable (F n)"
+  show "\<forall>n. cls_val_process Mkt p n \<in> borel_measurable (F n)"
   proof
     fix n
-    show "closing_value_process Mkt p n \<in> borel_measurable (F n)"
+    show "cls_val_process Mkt p n \<in> borel_measurable (F n)"
     proof (cases "n = 0")
       case False
       hence "\<exists>m. n = Suc m" using old.nat.exhaust by auto
       from this obtain m where "n = Suc m" by auto
-      have "closing_value_process Mkt p (Suc m) = (\<lambda>w. \<Sum>x\<in>support_set p. prices Mkt x (Suc m) w * p x (Suc m) w)"
-        unfolding closing_value_process_def using True by simp
+      have "cls_val_process Mkt p (Suc m) = (\<lambda>w. \<Sum>x\<in>support_set p. prices Mkt x (Suc m) w * p x (Suc m) w)"
+        unfolding cls_val_process_def using True by simp
       moreover have "(\<lambda>w. \<Sum>x\<in>support_set p. prices Mkt x (Suc m) w * p x (Suc m) w) \<in> borel_measurable (F (Suc m))"
       proof (rule borel_measurable_sum)
         fix asset
@@ -1022,47 +1023,47 @@ next
           using \<open>asset \<in> support_set p\<close>  assms(2) unfolding support_adapt_def adapt_stoch_proc_def by blast
         ultimately show "(\<lambda>x. prices Mkt asset (Suc m) x * p asset (Suc m) x) \<in> borel_measurable (F (Suc m))" by simp
       qed
-      ultimately have "closing_value_process Mkt p (Suc m) \<in> borel_measurable (F (Suc m))" by simp
+      ultimately have "cls_val_process Mkt p (Suc m) \<in> borel_measurable (F (Suc m))" by simp
       thus ?thesis using \<open>n = Suc m\<close> by simp
     next
       case True
-      thus "closing_value_process Mkt p n \<in> borel_measurable (F n)"
+      thus "cls_val_process Mkt p n \<in> borel_measurable (F n)"
         by (metis (no_types, lifting) assms(1) assms(2)  quantity_adapted up_cl_proc.simps(1)
-            closing_value_process_def value_process_def)
+            cls_val_process_def val_process_def)
     qed
   qed
 qed
 
 
-lemma (in disc_equity_market) closing_value_process_adapted:
+lemma (in disc_equity_market) cls_val_process_adapted:
   assumes "trading_strategy p"
 and "support_adapt Mkt p"
-  shows "borel_adapt_stoch_proc F (closing_value_process Mkt p)"
+  shows "borel_adapt_stoch_proc F (cls_val_process Mkt p)"
 proof (cases "portfolio p")
   case False
-    have "closing_value_process Mkt p = (\<lambda> n w. 0)" unfolding closing_value_process_def using False by simp
-    thus "borel_adapt_stoch_proc F (closing_value_process Mkt p)"
+    have "cls_val_process Mkt p = (\<lambda> n w. 0)" unfolding cls_val_process_def using False by simp
+    thus "borel_adapt_stoch_proc F (cls_val_process Mkt p)"
       by (simp add: constant_process_borel_adapted)
 next
   case True
   show ?thesis unfolding adapt_stoch_proc_def
   proof
     fix n
-    show "closing_value_process Mkt p n \<in> borel_measurable (F n)"
+    show "cls_val_process Mkt p n \<in> borel_measurable (F n)"
     proof (cases "n = 0")
     case True
-      thus "closing_value_process Mkt p n \<in> borel_measurable (F n)"
+      thus "cls_val_process Mkt p n \<in> borel_measurable (F n)"
         using up_cl_proc.simps(1) assms
-        by (metis (no_types, lifting) adapt_stoch_proc_def ats_value_process_adapted closing_value_process_def
-            value_process_def)
+        by (metis (no_types, lifting) adapt_stoch_proc_def ats_val_process_adapted cls_val_process_def
+            val_process_def)
     next
     case False
       hence "\<exists>m. Suc m = n" using not0_implies_Suc by blast
       from this obtain m where "Suc m = n" by auto
-      hence "closing_value_process Mkt p n = up_cl_proc Mkt p n" unfolding closing_value_process_def using True by simp
+      hence "cls_val_process Mkt p n = up_cl_proc Mkt p n" unfolding cls_val_process_def using True by simp
       also have "... = (\<lambda>w. \<Sum>x\<in>support_set p. prices Mkt x n w * p x n w)"
         using up_cl_proc.simps(2) \<open>Suc m = n\<close> by auto
-      finally have "closing_value_process Mkt p n = (\<lambda>w. \<Sum>x\<in>support_set p. prices Mkt x n w * p x n w)" .
+      finally have "cls_val_process Mkt p n = (\<lambda>w. \<Sum>x\<in>support_set p. prices Mkt x n w * p x n w)" .
     moreover have "(\<lambda>w. \<Sum>x\<in>support_set p. prices Mkt x n w * p x n w) \<in> borel_measurable (F n)"
     proof (rule borel_measurable_sum)
       fix asset
@@ -1073,15 +1074,15 @@ next
         using stock_portfolio_def by blast
       ultimately show "(\<lambda>x. prices Mkt asset n x * p asset n x) \<in> borel_measurable (F n)" by simp
     qed
-    ultimately show "closing_value_process Mkt p n \<in> borel_measurable (F n)" by simp
+    ultimately show "cls_val_process Mkt p n \<in> borel_measurable (F n)" by simp
     qed
   qed
 qed
 
-lemma subset_closing_value_process:
+lemma subset_cls_val_process:
   assumes "finite A"
   and "support_set p \<subseteq> A"
-shows "\<forall>n w. closing_value_process Mkt p (Suc n) w = (sum (\<lambda>x. ((prices Mkt) x (Suc n) w) * (p x (Suc n) w)) A)"
+shows "\<forall>n w. cls_val_process Mkt p (Suc n) w = (sum (\<lambda>x. ((prices Mkt) x (Suc n) w) * (p x (Suc n) w)) A)"
 proof (intro allI)
   fix n::nat
   fix w::'b
@@ -1091,18 +1092,18 @@ proof (intro allI)
   have "finite C" using assms \<open>(support_set p) \<union> C = A\<close> by auto
   have "\<forall>x\<in> C. p x (Suc n) w = 0" using Cprops(1) support_set_def by fastforce
   hence "(\<Sum>x\<in> C. ((prices Mkt) x (Suc n) w) * (p x (Suc n) w)) = 0" by simp
-  hence "closing_value_process Mkt p (Suc n) w = (\<Sum>x\<in> (support_set p). ((prices Mkt) x (Suc n) w) * (p x (Suc n) w))
-    + (\<Sum>x\<in> C. ((prices Mkt) x (Suc n) w) * (p x (Suc n) w))" unfolding closing_value_process_def
+  hence "cls_val_process Mkt p (Suc n) w = (\<Sum>x\<in> (support_set p). ((prices Mkt) x (Suc n) w) * (p x (Suc n) w))
+    + (\<Sum>x\<in> C. ((prices Mkt) x (Suc n) w) * (p x (Suc n) w))" unfolding cls_val_process_def
     using \<open>portfolio p\<close> up_cl_proc.simps(2)[of Mkt p n] by simp
   also have "... = (\<Sum> x\<in> A. ((prices Mkt) x (Suc n) w) * (p x (Suc n) w))"
     using \<open>portfolio p\<close> \<open>finite C\<close> Cprops portfolio_def sum_union_disjoint' by (metis (no_types, lifting))
-  finally show "closing_value_process Mkt p (Suc n) w = (\<Sum> x\<in> A. ((prices Mkt) x (Suc n) w) * (p x (Suc n) w))" .
+  finally show "cls_val_process Mkt p (Suc n) w = (\<Sum> x\<in> A. ((prices Mkt) x (Suc n) w) * (p x (Suc n) w))" .
 qed
 
-lemma subset_closing_value_process':
+lemma subset_cls_val_process':
   assumes "finite A"
   and "support_set p \<subseteq> A"
-shows "closing_value_process Mkt p (Suc n) w = (sum (\<lambda>x. ((prices Mkt) x (Suc n) w) * (p x (Suc n) w)) A)"
+shows "cls_val_process Mkt p (Suc n) w = (sum (\<lambda>x. ((prices Mkt) x (Suc n) w) * (p x (Suc n) w)) A)"
 proof -
   have "portfolio p" using assms unfolding portfolio_def using finite_subset by auto
   have "\<exists>C. (support_set p) \<inter> C = {} \<and> (support_set p) \<union> C = A" using assms(2) by auto
@@ -1110,40 +1111,40 @@ proof -
   have "finite C" using assms \<open>(support_set p) \<union> C = A\<close> by auto
   have "\<forall>x\<in> C. p x (Suc n) w = 0" using Cprops(1) support_set_def by fastforce
   hence "(\<Sum>x\<in> C. ((prices Mkt) x (Suc n) w) * (p x (Suc n) w)) = 0" by simp
-  hence "closing_value_process Mkt p (Suc n) w = (\<Sum>x\<in> (support_set p). ((prices Mkt) x (Suc n) w) * (p x (Suc n) w))
-    + (\<Sum>x\<in> C. ((prices Mkt) x (Suc n) w) * (p x (Suc n) w))" unfolding closing_value_process_def
+  hence "cls_val_process Mkt p (Suc n) w = (\<Sum>x\<in> (support_set p). ((prices Mkt) x (Suc n) w) * (p x (Suc n) w))
+    + (\<Sum>x\<in> C. ((prices Mkt) x (Suc n) w) * (p x (Suc n) w))" unfolding cls_val_process_def
     using \<open>portfolio p\<close> up_cl_proc.simps(2)[of Mkt p n] by simp
   also have "... = (\<Sum> x\<in> A. ((prices Mkt) x (Suc n) w) * (p x (Suc n) w))"
     using \<open>portfolio p\<close> \<open>finite C\<close> Cprops portfolio_def sum_union_disjoint' by (metis (no_types, lifting))
-  finally show "closing_value_process Mkt p (Suc n) w = (\<Sum> x\<in> A. ((prices Mkt) x (Suc n) w) * (p x (Suc n) w))" .
+  finally show "cls_val_process Mkt p (Suc n) w = (\<Sum> x\<in> A. ((prices Mkt) x (Suc n) w) * (p x (Suc n) w))" .
 qed
 
 
 
-lemma sum_closing_value_process_Suc:
+lemma sum_cls_val_process_Suc:
   assumes "portfolio pf1"
   and "portfolio pf2"
-shows "\<forall>n w. closing_value_process Mkt (pf_sum pf1 pf2) (Suc n) w =
-  (closing_value_process Mkt pf1) (Suc n) w + (closing_value_process Mkt pf2) (Suc n) w"
+shows "\<forall>n w. cls_val_process Mkt (qty_sum pf1 pf2) (Suc n) w =
+  (cls_val_process Mkt pf1) (Suc n) w + (cls_val_process Mkt pf2) (Suc n) w"
 proof (intro allI)
   fix n w
-  have vp1: "closing_value_process Mkt pf1 (Suc n) w =
+  have vp1: "cls_val_process Mkt pf1 (Suc n) w =
     (\<Sum> x\<in> (support_set pf1)\<union> (support_set pf2). ((prices Mkt) x (Suc n) w) * (pf1 x (Suc n) w))"
   proof -
     have "finite (support_set pf1 \<union> support_set pf2) \<and> support_set pf1 \<subseteq> support_set pf1 \<union> support_set pf2"
       by (meson assms(1) assms(2) finite_Un portfolio_def sup.cobounded1)
     then show ?thesis
-      by (simp add: subset_closing_value_process)
+      by (simp add: subset_cls_val_process)
   qed
-  have vp2: "closing_value_process Mkt pf2 (Suc n) w = (\<Sum> x\<in> (support_set pf1)\<union> (support_set pf2). ((prices Mkt) x (Suc n) w) * (pf2 x (Suc n) w))"
+  have vp2: "cls_val_process Mkt pf2 (Suc n) w = (\<Sum> x\<in> (support_set pf1)\<union> (support_set pf2). ((prices Mkt) x (Suc n) w) * (pf2 x (Suc n) w))"
   proof -
     have "finite (support_set pf1 \<union> support_set pf2) \<and> support_set pf2 \<subseteq> support_set pf2 \<union> support_set pf1"
       by (meson assms(1) assms(2) finite_Un portfolio_def sup.cobounded1)
-    then show ?thesis by (auto simp add: subset_closing_value_process)
+    then show ?thesis by (auto simp add: subset_cls_val_process)
   qed
-  have pf:"portfolio (pf_sum pf1 pf2)" using assms by (simp add:sum_portfolio)
+  have pf:"portfolio (qty_sum pf1 pf2)" using assms by (simp add:sum_portfolio)
   have fin:"finite (support_set pf1 \<union> support_set pf2)" using assms finite_Un unfolding portfolio_def by auto
-  have "(closing_value_process Mkt pf1) (Suc n) w + (closing_value_process Mkt pf2) (Suc n) w =
+  have "(cls_val_process Mkt pf1) (Suc n) w + (cls_val_process Mkt pf2) (Suc n) w =
     (\<Sum> x\<in> (support_set pf1)\<union> (support_set pf2). ((prices Mkt) x (Suc n) w) * (pf1 x (Suc n) w)) +
     (\<Sum> x\<in> (support_set pf1)\<union> (support_set pf2). ((prices Mkt) x (Suc n) w) * (pf2 x (Suc n) w))"
     using vp1 vp2 by simp
@@ -1153,86 +1154,86 @@ proof (intro allI)
   also have "... = (\<Sum> x\<in> (support_set pf1)\<union> (support_set pf2).
     ((prices Mkt) x (Suc n) w) * ((pf1 x (Suc n) w) + (pf2 x (Suc n) w)))" by (simp add: distrib_left)
   also have "... = (\<Sum> x\<in> (support_set pf1)\<union> (support_set pf2).
-    ((prices Mkt) x (Suc n) w) * ((pf_sum pf1 pf2) x (Suc n) w))" by (simp add: pf_sum_def)
-  also have "... = (\<Sum> x\<in> (support_set (pf_sum pf1 pf2)).
-    ((prices Mkt) x (Suc n) w) * ((pf_sum pf1 pf2) x (Suc n) w))" using sum_support_set[of pf1 pf2]
-    subset_closing_value_process[of "support_set pf1\<union> support_set pf2" "pf_sum pf1 pf2"] pf fin
-    unfolding closing_value_process_def by simp
-  also have "... = closing_value_process Mkt (pf_sum pf1 pf2) (Suc n) w"
-    by (metis (no_types, lifting) pf sum.cong up_cl_proc.simps(2) closing_value_process_def)
-  finally have "(closing_value_process Mkt pf1) (Suc n) w + (closing_value_process Mkt pf2) (Suc n) w =
-    closing_value_process Mkt (pf_sum pf1 pf2) (Suc n) w" .
-  thus "closing_value_process Mkt (pf_sum pf1 pf2) (Suc n) w =
-    (closing_value_process Mkt pf1) (Suc n) w + (closing_value_process Mkt pf2) (Suc n) w" ..
+    ((prices Mkt) x (Suc n) w) * ((qty_sum pf1 pf2) x (Suc n) w))" by (simp add: qty_sum_def)
+  also have "... = (\<Sum> x\<in> (support_set (qty_sum pf1 pf2)).
+    ((prices Mkt) x (Suc n) w) * ((qty_sum pf1 pf2) x (Suc n) w))" using sum_support_set[of pf1 pf2]
+    subset_cls_val_process[of "support_set pf1\<union> support_set pf2" "qty_sum pf1 pf2"] pf fin
+    unfolding cls_val_process_def by simp
+  also have "... = cls_val_process Mkt (qty_sum pf1 pf2) (Suc n) w"
+    by (metis (no_types, lifting) pf sum.cong up_cl_proc.simps(2) cls_val_process_def)
+  finally have "(cls_val_process Mkt pf1) (Suc n) w + (cls_val_process Mkt pf2) (Suc n) w =
+    cls_val_process Mkt (qty_sum pf1 pf2) (Suc n) w" .
+  thus "cls_val_process Mkt (qty_sum pf1 pf2) (Suc n) w =
+    (cls_val_process Mkt pf1) (Suc n) w + (cls_val_process Mkt pf2) (Suc n) w" ..
 qed
 
-lemma sum_closing_value_process0:
+lemma sum_cls_val_process0:
   assumes "portfolio pf1"
   and "portfolio pf2"
-shows "\<forall>w. closing_value_process Mkt (pf_sum pf1 pf2) 0 w =
-  (closing_value_process Mkt pf1) 0 w + (closing_value_process Mkt pf2) 0 w" unfolding closing_value_process_def
-  by (simp add: sum_value_process assms(1) assms(2) sum_portfolio)
+shows "\<forall>w. cls_val_process Mkt (qty_sum pf1 pf2) 0 w =
+  (cls_val_process Mkt pf1) 0 w + (cls_val_process Mkt pf2) 0 w" unfolding cls_val_process_def
+  by (simp add: sum_val_process assms(1) assms(2) sum_portfolio)
 
-lemma sum_closing_value_process:
+lemma sum_cls_val_process:
   assumes "portfolio pf1"
   and "portfolio pf2"
-shows "\<forall>n w. closing_value_process Mkt (pf_sum pf1 pf2) n w =
-  (closing_value_process Mkt pf1) n w + (closing_value_process Mkt pf2) n w"
-  by (metis (no_types, lifting) assms(1) assms(2) sum_closing_value_process0 sum_closing_value_process_Suc up_cl_proc.elims)
+shows "\<forall>n w. cls_val_process Mkt (qty_sum pf1 pf2) n w =
+  (cls_val_process Mkt pf1) n w + (cls_val_process Mkt pf2) n w"
+  by (metis (no_types, lifting) assms(1) assms(2) sum_cls_val_process0 sum_cls_val_process_Suc up_cl_proc.elims)
 
-lemma mult_comp_closing_value_process0:
+lemma mult_comp_cls_val_process0:
   assumes "portfolio pf1"
-  shows "\<forall>w. closing_value_process Mkt (pf_mult_comp pf1 qty) 0 w =
-  ((closing_value_process Mkt pf1) 0 w) * (qty (Suc 0) w)" unfolding closing_value_process_def
-  by (simp add: assms mult_comp_portfolio mult_comp_value_process)
+  shows "\<forall>w. cls_val_process Mkt (qty_mult_comp pf1 qty) 0 w =
+  ((cls_val_process Mkt pf1) 0 w) * (qty (Suc 0) w)" unfolding cls_val_process_def
+  by (simp add: assms mult_comp_portfolio mult_comp_val_process)
 
-lemma mult_comp_closing_value_process_Suc:
+lemma mult_comp_cls_val_process_Suc:
   assumes "portfolio pf1"
-  shows "\<forall>n w. closing_value_process Mkt (pf_mult_comp pf1 qty) (Suc n) w =
-  ((closing_value_process Mkt pf1) (Suc n) w) * (qty (Suc n) w)"
+  shows "\<forall>n w. cls_val_process Mkt (qty_mult_comp pf1 qty) (Suc n) w =
+  ((cls_val_process Mkt pf1) (Suc n) w) * (qty (Suc n) w)"
 proof (intro allI)
   fix n w
-  have pf:"portfolio (pf_mult_comp pf1 qty)" using assms by (simp add:mult_comp_portfolio)
+  have pf:"portfolio (qty_mult_comp pf1 qty)" using assms by (simp add:mult_comp_portfolio)
   have fin:"finite (support_set pf1)" using assms unfolding portfolio_def by auto
-  have "((closing_value_process Mkt pf1) (Suc n) w) * (qty (Suc n) w) =
+  have "((cls_val_process Mkt pf1) (Suc n) w) * (qty (Suc n) w) =
     (\<Sum> x\<in> (support_set pf1). ((prices Mkt) x (Suc n) w) * (pf1 x (Suc n) w))*(qty (Suc n) w)"
-    unfolding closing_value_process_def using assms by simp
+    unfolding cls_val_process_def using assms by simp
   also have "... = (\<Sum> x\<in> (support_set pf1).
     (((prices Mkt) x (Suc n) w) * (pf1 x (Suc n) w) * (qty (Suc n) w)))" using sum_distrib_right by auto
   also have "... = (\<Sum> x\<in> (support_set pf1).
-    ((prices Mkt) x (Suc n) w) * ((pf_mult_comp pf1 qty) x (Suc n) w))" unfolding pf_mult_comp_def
+    ((prices Mkt) x (Suc n) w) * ((qty_mult_comp pf1 qty) x (Suc n) w))" unfolding qty_mult_comp_def
     by (simp add: mult.commute mult.left_commute)
-  also have "... = (\<Sum> x\<in> (support_set (pf_mult_comp pf1 qty)).
-    ((prices Mkt) x (Suc n) w) * ((pf_mult_comp pf1 qty) x (Suc n) w))" using mult_comp_support_set[of pf1 qty]
-    subset_closing_value_process[of "support_set pf1" "pf_mult_comp pf1 qty"] pf fin up_cl_proc.simps(2)
-    unfolding closing_value_process_def by simp
-  also have "... = closing_value_process Mkt (pf_mult_comp pf1 qty) (Suc n) w"   by (metis (no_types, lifting) pf sum.cong closing_value_process_def up_cl_proc.simps(2))
-  finally have "(closing_value_process Mkt pf1) (Suc n) w * (qty (Suc n) w) = closing_value_process Mkt (pf_mult_comp pf1 qty) (Suc n) w" .
-  thus "closing_value_process Mkt (pf_mult_comp pf1 qty) (Suc n) w = (closing_value_process Mkt pf1) (Suc n) w * (qty (Suc n) w)" ..
+  also have "... = (\<Sum> x\<in> (support_set (qty_mult_comp pf1 qty)).
+    ((prices Mkt) x (Suc n) w) * ((qty_mult_comp pf1 qty) x (Suc n) w))" using mult_comp_support_set[of pf1 qty]
+    subset_cls_val_process[of "support_set pf1" "qty_mult_comp pf1 qty"] pf fin up_cl_proc.simps(2)
+    unfolding cls_val_process_def by simp
+  also have "... = cls_val_process Mkt (qty_mult_comp pf1 qty) (Suc n) w"   by (metis (no_types, lifting) pf sum.cong cls_val_process_def up_cl_proc.simps(2))
+  finally have "(cls_val_process Mkt pf1) (Suc n) w * (qty (Suc n) w) = cls_val_process Mkt (qty_mult_comp pf1 qty) (Suc n) w" .
+  thus "cls_val_process Mkt (qty_mult_comp pf1 qty) (Suc n) w = (cls_val_process Mkt pf1) (Suc n) w * (qty (Suc n) w)" ..
 qed
 
 
 
 
-lemma remove_comp_closing_value_process0:
+lemma remove_comp_cls_val_process0:
   assumes "portfolio pf1"
-  shows "\<forall>w. closing_value_process Mkt (pf_remove_comp pf1 y) 0 w =
-  ((closing_value_process Mkt pf1) 0 w) - (prices Mkt y 0 w)* (pf1 y (Suc 0) w)" unfolding closing_value_process_def
-  by (simp add: assms remove_comp_portfolio remove_comp_value_process)
+  shows "\<forall>w. cls_val_process Mkt (qty_rem_comp pf1 y) 0 w =
+  ((cls_val_process Mkt pf1) 0 w) - (prices Mkt y 0 w)* (pf1 y (Suc 0) w)" unfolding cls_val_process_def
+  by (simp add: assms remove_comp_portfolio remove_comp_val_process)
 
 
-lemma remove_comp_closing_value_process_Suc:
+lemma remove_comp_cls_val_process_Suc:
   assumes "portfolio pf1"
-  shows "\<forall>n w. closing_value_process Mkt (pf_remove_comp pf1 y) (Suc n) w =
-  ((closing_value_process Mkt pf1) (Suc n) w) - (prices Mkt y (Suc n) w)* (pf1 y (Suc n) w)"
+  shows "\<forall>n w. cls_val_process Mkt (qty_rem_comp pf1 y) (Suc n) w =
+  ((cls_val_process Mkt pf1) (Suc n) w) - (prices Mkt y (Suc n) w)* (pf1 y (Suc n) w)"
 proof (intro allI)
   fix n w
-  have pf:"portfolio (pf_remove_comp pf1 y)" using assms by (simp add:remove_comp_portfolio)
+  have pf:"portfolio (qty_rem_comp pf1 y)" using assms by (simp add:remove_comp_portfolio)
   have fin:"finite (support_set pf1)" using assms unfolding portfolio_def by auto
   hence fin2: "finite (support_set pf1 - {y})" by simp
-  have "((closing_value_process Mkt pf1) (Suc n) w)  =
+  have "((cls_val_process Mkt pf1) (Suc n) w)  =
     (\<Sum> x\<in> (support_set pf1). ((prices Mkt) x (Suc n) w) * (pf1 x (Suc n) w))"
-    unfolding closing_value_process_def using assms by simp
+    unfolding cls_val_process_def using assms by simp
   also have "... = (\<Sum> x\<in> (support_set pf1 - {y}).
     (((prices Mkt) x (Suc n) w) * (pf1 x (Suc n) w))) + (prices Mkt y (Suc n) w)* (pf1 y (Suc n) w)"
   proof (cases "y\<in> support_set pf1")
@@ -1244,86 +1245,86 @@ proof (intro allI)
     thus ?thesis by (simp add: fin sum_diff1)
   qed
   also have "... = (\<Sum> x\<in> (support_set pf1 - {y}).
-    ((prices Mkt) x (Suc n) w) * ((pf_remove_comp pf1 y) x (Suc n) w)) + (prices Mkt y (Suc n) w)* (pf1 y (Suc n) w)"
+    ((prices Mkt) x (Suc n) w) * ((qty_rem_comp pf1 y) x (Suc n) w)) + (prices Mkt y (Suc n) w)* (pf1 y (Suc n) w)"
   proof -
     have "(\<Sum> x\<in> (support_set pf1 - {y}). (((prices Mkt) x (Suc n) w) * (pf1 x (Suc n) w))) =
-      (\<Sum> x\<in> (support_set pf1 - {y}). ((prices Mkt) x (Suc n) w) * ((pf_remove_comp pf1 y) x (Suc n) w))"
+      (\<Sum> x\<in> (support_set pf1 - {y}). ((prices Mkt) x (Suc n) w) * ((qty_rem_comp pf1 y) x (Suc n) w))"
     proof (rule sum.cong,simp)
       fix x
       assume "x\<in> support_set pf1 - {y}"
-      show "prices Mkt x (Suc n) w * pf1 x (Suc n) w = prices Mkt x (Suc n) w * pf_remove_comp pf1 y x (Suc n) w" using remove_comp_values
+      show "prices Mkt x (Suc n) w * pf1 x (Suc n) w = prices Mkt x (Suc n) w * qty_rem_comp pf1 y x (Suc n) w" using remove_comp_values
         by (metis DiffD2 \<open>x \<in> support_set pf1 - {y}\<close> singletonI)
     qed
     thus ?thesis by simp
   qed
-  also have "... = (closing_value_process Mkt (pf_remove_comp pf1 y) (Suc n) w) + (prices Mkt y (Suc n) w)* (pf1 y (Suc n) w)"
-    using subset_closing_value_process[of "support_set pf1 - {y}" "pf_remove_comp pf1 y"] fin2
+  also have "... = (cls_val_process Mkt (qty_rem_comp pf1 y) (Suc n) w) + (prices Mkt y (Suc n) w)* (pf1 y (Suc n) w)"
+    using subset_cls_val_process[of "support_set pf1 - {y}" "qty_rem_comp pf1 y"] fin2
     by (simp add: remove_comp_support_set)
-  finally have "(closing_value_process Mkt pf1) (Suc n) w =
-    (closing_value_process Mkt (pf_remove_comp pf1 y) (Suc n) w) + (prices Mkt y (Suc n) w)* (pf1 y (Suc n) w)" .
-  thus  "closing_value_process Mkt (pf_remove_comp pf1 y) (Suc n) w =
-    ((closing_value_process Mkt pf1) (Suc n) w) - (prices Mkt y (Suc n) w)* (pf1 y (Suc n) w)" by simp
+  finally have "(cls_val_process Mkt pf1) (Suc n) w =
+    (cls_val_process Mkt (qty_rem_comp pf1 y) (Suc n) w) + (prices Mkt y (Suc n) w)* (pf1 y (Suc n) w)" .
+  thus  "cls_val_process Mkt (qty_rem_comp pf1 y) (Suc n) w =
+    ((cls_val_process Mkt pf1) (Suc n) w) - (prices Mkt y (Suc n) w)* (pf1 y (Suc n) w)" by simp
 qed
 
 
 
-lemma replace_comp_closing_value_process0:
-  assumes "\<forall>w. prices Mkt x 0 w = closing_value_process Mkt pf2 0 w"
+lemma replace_comp_cls_val_process0:
+  assumes "\<forall>w. prices Mkt x 0 w = cls_val_process Mkt pf2 0 w"
   and "portfolio pf1"
   and "portfolio pf2"
-shows "\<forall>w. closing_value_process Mkt (pf_replace_comp pf1 x pf2) 0 w = closing_value_process Mkt pf1 0 w"
+shows "\<forall>w. cls_val_process Mkt (qty_replace_comp pf1 x pf2) 0 w = cls_val_process Mkt pf1 0 w"
 proof
   fix w
-  have "closing_value_process Mkt (pf_replace_comp pf1 x pf2) 0 w = closing_value_process Mkt (pf_remove_comp pf1 x) 0 w +
-    closing_value_process Mkt (pf_mult_comp pf2 (pf1 x)) 0 w" unfolding pf_replace_comp_def using assms
-    sum_closing_value_process0[of "pf_remove_comp pf1 x" "pf_mult_comp pf2 (pf1 x)"]
+  have "cls_val_process Mkt (qty_replace_comp pf1 x pf2) 0 w = cls_val_process Mkt (qty_rem_comp pf1 x) 0 w +
+    cls_val_process Mkt (qty_mult_comp pf2 (pf1 x)) 0 w" unfolding qty_replace_comp_def using assms
+    sum_cls_val_process0[of "qty_rem_comp pf1 x" "qty_mult_comp pf2 (pf1 x)"]
     by (simp add: mult_comp_portfolio remove_comp_portfolio)
-  also have "... = closing_value_process Mkt pf1 0 w - (prices Mkt x 0 w * pf1 x (Suc 0) w) +
-    closing_value_process Mkt pf2 0 w * pf1 x (Suc 0) w"
-    by (simp add: assms(2) assms(3) mult_comp_closing_value_process0 remove_comp_closing_value_process0)
-  also have "... = closing_value_process Mkt pf1 0 w" using assms by simp
-  finally show "closing_value_process Mkt (pf_replace_comp pf1 x pf2) 0 w = closing_value_process Mkt pf1 0 w" .
+  also have "... = cls_val_process Mkt pf1 0 w - (prices Mkt x 0 w * pf1 x (Suc 0) w) +
+    cls_val_process Mkt pf2 0 w * pf1 x (Suc 0) w"
+    by (simp add: assms(2) assms(3) mult_comp_cls_val_process0 remove_comp_cls_val_process0)
+  also have "... = cls_val_process Mkt pf1 0 w" using assms by simp
+  finally show "cls_val_process Mkt (qty_replace_comp pf1 x pf2) 0 w = cls_val_process Mkt pf1 0 w" .
 qed
 
 
-lemma replace_comp_closing_value_process_Suc:
-  assumes "\<forall>n w. prices Mkt x (Suc n) w = closing_value_process Mkt pf2 (Suc n) w"
+lemma replace_comp_cls_val_process_Suc:
+  assumes "\<forall>n w. prices Mkt x (Suc n) w = cls_val_process Mkt pf2 (Suc n) w"
   and "portfolio pf1"
   and "portfolio pf2"
-  shows "\<forall>n w. closing_value_process Mkt (pf_replace_comp pf1 x pf2) (Suc n) w = closing_value_process Mkt pf1 (Suc n) w"
+  shows "\<forall>n w. cls_val_process Mkt (qty_replace_comp pf1 x pf2) (Suc n) w = cls_val_process Mkt pf1 (Suc n) w"
 proof (intro allI)
   fix n w
-  have "closing_value_process Mkt (pf_replace_comp pf1 x pf2) (Suc n) w = closing_value_process Mkt (pf_remove_comp pf1 x) (Suc n) w +
-    closing_value_process Mkt (pf_mult_comp pf2 (pf1 x)) (Suc n) w" unfolding pf_replace_comp_def using assms
-    sum_closing_value_process_Suc[of "pf_remove_comp pf1 x" "pf_mult_comp pf2 (pf1 x)"]
+  have "cls_val_process Mkt (qty_replace_comp pf1 x pf2) (Suc n) w = cls_val_process Mkt (qty_rem_comp pf1 x) (Suc n) w +
+    cls_val_process Mkt (qty_mult_comp pf2 (pf1 x)) (Suc n) w" unfolding qty_replace_comp_def using assms
+    sum_cls_val_process_Suc[of "qty_rem_comp pf1 x" "qty_mult_comp pf2 (pf1 x)"]
     by (simp add: mult_comp_portfolio remove_comp_portfolio)
-  also have "... = closing_value_process Mkt pf1 (Suc n) w - (prices Mkt x (Suc n) w * pf1 x (Suc n) w) +
-    closing_value_process Mkt pf2 (Suc n) w * pf1 x (Suc n) w"
-    by (simp add: assms(2) assms(3) mult_comp_closing_value_process_Suc remove_comp_closing_value_process_Suc)
-  also have "... = closing_value_process Mkt pf1 (Suc n) w" using assms by simp
-  finally show "closing_value_process Mkt (pf_replace_comp pf1 x pf2) (Suc n) w = closing_value_process Mkt pf1 (Suc n) w" .
+  also have "... = cls_val_process Mkt pf1 (Suc n) w - (prices Mkt x (Suc n) w * pf1 x (Suc n) w) +
+    cls_val_process Mkt pf2 (Suc n) w * pf1 x (Suc n) w"
+    by (simp add: assms(2) assms(3) mult_comp_cls_val_process_Suc remove_comp_cls_val_process_Suc)
+  also have "... = cls_val_process Mkt pf1 (Suc n) w" using assms by simp
+  finally show "cls_val_process Mkt (qty_replace_comp pf1 x pf2) (Suc n) w = cls_val_process Mkt pf1 (Suc n) w" .
 qed
 
 
-lemma replace_comp_closing_value_process:
-  assumes "\<forall>n w. prices Mkt x n w = closing_value_process Mkt pf2 n w"
+lemma replace_comp_cls_val_process:
+  assumes "\<forall>n w. prices Mkt x n w = cls_val_process Mkt pf2 n w"
   and "portfolio pf1"
   and "portfolio pf2"
-  shows "\<forall>n w. closing_value_process Mkt (pf_replace_comp pf1 x pf2) n w = closing_value_process Mkt pf1 n w"
-  by (metis (no_types, lifting) assms replace_comp_closing_value_process0 replace_comp_closing_value_process_Suc up_cl_proc.elims)
+  shows "\<forall>n w. cls_val_process Mkt (qty_replace_comp pf1 x pf2) n w = cls_val_process Mkt pf1 n w"
+  by (metis (no_types, lifting) assms replace_comp_cls_val_process0 replace_comp_cls_val_process_Suc up_cl_proc.elims)
 
 
-lemma single_comp_pf_updated:
-  shows "closing_value_process Mkt (single_comp_pf asset qty) (Suc n) w =
+lemma qty_single_updated:
+  shows "cls_val_process Mkt (qty_single asset qty) (Suc n) w =
     prices Mkt asset (Suc n) w * qty (Suc n) w"
 proof -
-  have "closing_value_process Mkt (single_comp_pf asset qty) (Suc n) w =
-    (sum (\<lambda>x. ((prices Mkt) x (Suc n) w) * ((single_comp_pf asset qty) x (Suc n) w)) {asset})"
-  proof (rule subset_closing_value_process')
+  have "cls_val_process Mkt (qty_single asset qty) (Suc n) w =
+    (sum (\<lambda>x. ((prices Mkt) x (Suc n) w) * ((qty_single asset qty) x (Suc n) w)) {asset})"
+  proof (rule subset_cls_val_process')
     show "finite {asset}" by simp
-    show "support_set (single_comp_pf asset qty) \<subseteq> {asset}" by (simp add: single_comp_support)
+    show "support_set (qty_single asset qty) \<subseteq> {asset}" by (simp add: single_comp_support)
   qed
-  also have "... = prices Mkt asset (Suc n) w * qty (Suc n) w" unfolding single_comp_pf_def by simp
+  also have "... = prices Mkt asset (Suc n) w * qty (Suc n) w" unfolding qty_single_def by simp
   finally show ?thesis .
 qed
 
@@ -1332,49 +1333,46 @@ qed
 paragraph \<open>Self-financing\<close>
 
 definition self_financing where
-  "self_financing Mkt p \<longleftrightarrow> (\<forall>n. value_process Mkt p (Suc n) = closing_value_process Mkt p (Suc n))"
+  "self_financing Mkt p \<longleftrightarrow> (\<forall>n. val_process Mkt p (Suc n) = cls_val_process Mkt p (Suc n))"
 
 
 lemma self_financingE:
   assumes "self_financing Mkt p"
-  shows "\<forall>n. value_process Mkt p n = closing_value_process Mkt p n"
+  shows "\<forall>n. val_process Mkt p n = cls_val_process Mkt p n"
 proof
   fix n
-  show "value_process Mkt p n = closing_value_process Mkt p n"
+  show "val_process Mkt p n = cls_val_process Mkt p n"
   proof (cases "n = 0")
     case False
     thus ?thesis using assms unfolding self_financing_def
       by (metis up_cl_proc.elims)
   next
     case True
-    thus ?thesis by (simp add: closing_value_process_def value_process_def)
+    thus ?thesis by (simp add: cls_val_process_def val_process_def)
   qed
 qed
 
 
 
 
-
-
-(* todo: rename to time_constant_pf_self_financing *)
 lemma static_portfolio_self_financing:
   assumes "\<forall> x \<in> support_set p. (\<forall>w i. p x i w = p x (Suc i) w)"
   shows "self_financing Mkt p"
 unfolding self_financing_def
 proof (intro allI impI)
   fix n
-  show "value_process Mkt p (Suc n) = closing_value_process Mkt p (Suc n)"
+  show "val_process Mkt p (Suc n) = cls_val_process Mkt p (Suc n)"
   proof (cases "portfolio p")
     case False
-    thus ?thesis unfolding value_process_def closing_value_process_def by simp
+    thus ?thesis unfolding val_process_def cls_val_process_def by simp
   next
     case True
     have "\<forall>w. (\<Sum>x\<in> support_set p. prices Mkt x (Suc n) w * p x (Suc (Suc n)) w) =
-         closing_value_process Mkt p (Suc n) w"
+         cls_val_process Mkt p (Suc n) w"
     proof
       fix w
       show "(\<Sum>x\<in> support_set p. prices Mkt x (Suc n) w * p x (Suc (Suc n)) w) =
-           closing_value_process Mkt p (Suc n) w"
+           cls_val_process Mkt p (Suc n) w"
       proof -
         have "(\<Sum>x\<in> support_set p. prices Mkt x (Suc n) w * p x (Suc (Suc n)) w) =
             (\<Sum>x\<in> support_set p. prices Mkt x (Suc n) w * p x (Suc n) w)"
@@ -1384,97 +1382,39 @@ proof (intro allI impI)
           hence "p x (Suc n) w = p x (Suc (Suc n)) w" using assms by blast
           thus "prices Mkt x (Suc n) w * p x (Suc (Suc n)) w = prices Mkt x (Suc n) w * p x (Suc n) w" by simp
         qed
-        also have "... = closing_value_process Mkt p (Suc n) w"
-           using up_cl_proc.simps(2)[of Mkt p n] by (metis True closing_value_process_def)
+        also have "... = cls_val_process Mkt p (Suc n) w"
+           using up_cl_proc.simps(2)[of Mkt p n] by (metis True cls_val_process_def)
         finally show ?thesis .
       qed
     qed
-    moreover have "\<forall>w. value_process Mkt p (Suc n) w = (\<Sum>x\<in> support_set p. prices Mkt x (Suc n) w * p x (Suc (Suc n)) w)"
-      unfolding value_process_def using True by simp
+    moreover have "\<forall>w. val_process Mkt p (Suc n) w = (\<Sum>x\<in> support_set p. prices Mkt x (Suc n) w * p x (Suc (Suc n)) w)"
+      unfolding val_process_def using True by simp
     ultimately show ?thesis by auto
   qed
 qed
 
 
-(*lemma static_portfolio_bounded_self_financing:
-  assumes "\<forall> i x. start \<le> i \<and> Suc i \<le> T \<and> x\<in> support_set p \<longrightarrow> (\<forall>w. prices Mkt x i w = p x (Suc i) w)"
-  shows "bounded_self_financing Mkt p start T"
-unfolding bounded_self_financing_def
-proof (intro allI impI)
-  fix n
-  assume ncons: "start \<le> n \<and> Suc n \<le> T"
-  show "value_process Mkt p (Suc n) = closing_value_process Mkt p (Suc n)"
-  proof (cases "portfolio p")
-    case False
-    thus ?thesis unfolding value_process_def closing_value_process_def by simp
-  next
-    case True
-      thus ?thesis unfolding value_process_def closing_value_process_def
-  proof
-    fix w
-    show "(\<Sum>x\<in> support_set p. prices Mkt x  (Suc n) w * p x (Suc n) w) =
-         closing_value_process Mkt p (Suc n) w"
-         using assms ncons closing_value_process.simps(2)[of p n]
-         by auto
-  qed
-qed
-
-
-lemma (in disc_equity_market) value_process_of_self_financing:
-  assumes "trading_strategy p"
-  and "0 < T"
-  and "self_financing p"
-  shows "value_process p T \<in> borel_measurable (F T)"
-proof -
-  have "\<exists>m. Suc m = T" using assms not0_implies_Suc by blast
-  from this obtain m where "Suc m = T" by auto
-  have "(\<forall>n. 0 \<le> n \<and> Suc n \<le> T \<longrightarrow> value_process p (Suc n) = closing_value_process p (Suc n))"
-    using assms unfolding self_financing_def by simp
-  hence "value_process p T = closing_value_process p T" using `Suc m = T`
-    using Suc_leI Suc_le_mono gr0_implies_Suc by auto
-  moreover have "closing_value_process p T \<in> borel_measurable (F T)"
-  proof -
-    have "(\<lambda>w. \<Sum>i = 1..asset_number p. composition p i T w * quantities p i m w) \<in> borel_measurable (F T) "
-    proof (rule borel_measurable_setsum)
-      fix i
-      assume ini:"i\<in> {1.. asset_number p}"
-      hence "composition p i T \<in> borel_measurable (F T)"
-        using assms dsp_assets unfolding trading_strategy_def adapted_stochastic_process_def
-        using Suc_leI lessI by blast
-      moreover have "quantities p i m \<in> borel_measurable (F T)"
-        using assms
-        unfolding adapted_stochastic_process_def trading_strategy_def
-        restr_measure_measurable[of "F m" "F T" "quantities p i m" borel] `Suc m = T`
-        by (metis Suc_n_not_le_n \<open>Suc m = T\<close> increasing_measurable_info ini nat_le_linear)
-      ultimately show "(\<lambda>x. composition p i T x * quantities p i m x) \<in> borel_measurable (F T)" by simp
-    qed
-    thus ?thesis using closing_value_process.simps(2)[of p m] `Suc m = T`
-      by simp
-  qed
-  ultimately show ?thesis by simp
-qed
-*)
 
 lemma sum_self_financing:
   assumes "portfolio pf1"
   and "portfolio pf2"
   and "self_financing Mkt pf1"
   and "self_financing Mkt pf2"
-shows "self_financing Mkt (pf_sum pf1 pf2)"
+shows "self_financing Mkt (qty_sum pf1 pf2)"
 proof -
-  have "\<forall> n w. value_process Mkt (pf_sum pf1 pf2) (Suc n) w =
-    closing_value_process Mkt (pf_sum pf1 pf2) (Suc n) w"
+  have "\<forall> n w. val_process Mkt (qty_sum pf1 pf2) (Suc n) w =
+    cls_val_process Mkt (qty_sum pf1 pf2) (Suc n) w"
   proof (intro allI)
     fix n w
-    have "value_process Mkt (pf_sum pf1 pf2) (Suc n) w = value_process Mkt pf1 (Suc n) w + value_process Mkt pf2 (Suc n) w"
-      using assms by (simp add:sum_value_process)
-    also have "... = closing_value_process Mkt pf1 (Suc n) w + value_process Mkt pf2 (Suc n) w" using assms
+    have "val_process Mkt (qty_sum pf1 pf2) (Suc n) w = val_process Mkt pf1 (Suc n) w + val_process Mkt pf2 (Suc n) w"
+      using assms by (simp add:sum_val_process)
+    also have "... = cls_val_process Mkt pf1 (Suc n) w + val_process Mkt pf2 (Suc n) w" using assms
       unfolding self_financing_def by simp
-    also have "... = closing_value_process Mkt pf1 (Suc n) w + closing_value_process Mkt pf2 (Suc n) w"
+    also have "... = cls_val_process Mkt pf1 (Suc n) w + cls_val_process Mkt pf2 (Suc n) w"
       using assms unfolding self_financing_def by simp
-    also have "... = closing_value_process Mkt (pf_sum pf1 pf2) (Suc n) w" using assms by (simp add: sum_closing_value_process)
-    finally show "value_process Mkt (pf_sum pf1 pf2) (Suc n) w =
-      closing_value_process Mkt (pf_sum pf1 pf2) (Suc n) w" .
+    also have "... = cls_val_process Mkt (qty_sum pf1 pf2) (Suc n) w" using assms by (simp add: sum_cls_val_process)
+    finally show "val_process Mkt (qty_sum pf1 pf2) (Suc n) w =
+      cls_val_process Mkt (qty_sum pf1 pf2) (Suc n) w" .
   qed
   thus ?thesis unfolding self_financing_def by auto
 qed
@@ -1483,20 +1423,20 @@ lemma mult_time_constant_self_financing:
   assumes "portfolio pf1"
   and "self_financing Mkt pf1"
   and "\<forall>n w. qty n w = qty (Suc n) w"
-shows "self_financing Mkt (pf_mult_comp pf1 qty)"
+shows "self_financing Mkt (qty_mult_comp pf1 qty)"
 proof -
-  have "\<forall> n w. value_process Mkt (pf_mult_comp pf1 qty) (Suc n) w =
-    closing_value_process Mkt (pf_mult_comp pf1 qty) (Suc n) w"
+  have "\<forall> n w. val_process Mkt (qty_mult_comp pf1 qty) (Suc n) w =
+    cls_val_process Mkt (qty_mult_comp pf1 qty) (Suc n) w"
   proof (intro allI)
     fix n w
-    have "value_process Mkt (pf_mult_comp pf1 qty) (Suc n) w = value_process Mkt pf1 (Suc n) w * qty (Suc n) w"
-      using assms by (simp add:mult_comp_value_process)
-    also have "... = closing_value_process Mkt pf1 (Suc n) w * qty (Suc n) w" using assms
+    have "val_process Mkt (qty_mult_comp pf1 qty) (Suc n) w = val_process Mkt pf1 (Suc n) w * qty (Suc n) w"
+      using assms by (simp add:mult_comp_val_process)
+    also have "... = cls_val_process Mkt pf1 (Suc n) w * qty (Suc n) w" using assms
       unfolding self_financing_def by simp
-    also have "... = closing_value_process Mkt (pf_mult_comp pf1 qty) (Suc n) w" using assms
-       by (auto simp add: mult_comp_closing_value_process_Suc)
-    finally show "value_process Mkt (pf_mult_comp pf1 qty) (Suc n) w =
-      closing_value_process Mkt (pf_mult_comp pf1 qty) (Suc n) w" .
+    also have "... = cls_val_process Mkt (qty_mult_comp pf1 qty) (Suc n) w" using assms
+       by (auto simp add: mult_comp_cls_val_process_Suc)
+    finally show "val_process Mkt (qty_mult_comp pf1 qty) (Suc n) w =
+      cls_val_process Mkt (qty_mult_comp pf1 qty) (Suc n) w" .
   qed
   thus ?thesis unfolding self_financing_def by auto
 qed
@@ -1504,60 +1444,39 @@ qed
 
 
 lemma replace_comp_self_financing:
-  assumes "\<forall>n w. prices Mkt x n w = closing_value_process Mkt pf2 n w"
+  assumes "\<forall>n w. prices Mkt x n w = cls_val_process Mkt pf2 n w"
   and "portfolio pf1"
   and "portfolio pf2"
   and "self_financing Mkt pf1"
   and "self_financing Mkt pf2"
-shows "self_financing Mkt (pf_replace_comp pf1 x pf2)"
+shows "self_financing Mkt (qty_replace_comp pf1 x pf2)"
 proof -
-  have sfeq: "\<forall>n w. prices Mkt x n w = value_process Mkt pf2 n w" using assms by (simp add: self_financingE)
-  have "\<forall> n w. closing_value_process Mkt (pf_replace_comp pf1 x pf2) (Suc n) w =
-    value_process Mkt (pf_replace_comp pf1 x pf2) (Suc n) w"
+  have sfeq: "\<forall>n w. prices Mkt x n w = val_process Mkt pf2 n w" using assms by (simp add: self_financingE)
+  have "\<forall> n w. cls_val_process Mkt (qty_replace_comp pf1 x pf2) (Suc n) w =
+    val_process Mkt (qty_replace_comp pf1 x pf2) (Suc n) w"
   proof (intro allI)
     fix n w
-    have "closing_value_process Mkt (pf_replace_comp pf1 x pf2) (Suc n) w = closing_value_process Mkt pf1 (Suc n) w"
-      using assms by (simp add:replace_comp_closing_value_process)
-    also have "... = value_process Mkt pf1 (Suc n) w" using assms unfolding self_financing_def by simp
-    also have "... = value_process Mkt (pf_replace_comp pf1 x pf2) (Suc n) w"
-      using assms sfeq by (simp add: replace_comp_value_process self_financing_def)
-    finally show "closing_value_process Mkt (pf_replace_comp pf1 x pf2) (Suc n) w =
-      value_process Mkt (pf_replace_comp pf1 x pf2) (Suc n) w" .
+    have "cls_val_process Mkt (qty_replace_comp pf1 x pf2) (Suc n) w = cls_val_process Mkt pf1 (Suc n) w"
+      using assms by (simp add:replace_comp_cls_val_process)
+    also have "... = val_process Mkt pf1 (Suc n) w" using assms unfolding self_financing_def by simp
+    also have "... = val_process Mkt (qty_replace_comp pf1 x pf2) (Suc n) w"
+      using assms sfeq by (simp add: replace_comp_val_process self_financing_def)
+    finally show "cls_val_process Mkt (qty_replace_comp pf1 x pf2) (Suc n) w =
+      val_process Mkt (qty_replace_comp pf1 x pf2) (Suc n) w" .
   qed
   thus ?thesis unfolding self_financing_def by auto
 qed
 
 
-(*lemma replace_comp_self_financing:
-  assumes "\<forall>n w. prices Mkt x n w = closing_value_process Mkt pf2 n w"
-  and "portfolio pf1"
-  and "portfolio pf2"
-  and "self_financing Mkt pf1"
-  and "self_financing Mkt pf2"
-shows "self_financing Mkt (pf_replace_comp pf1 x pf2)"
-proof -
-  have "\<forall> n w. value_process Mkt (pf_replace_comp pf1 x pf2) (Suc n) w =
-    closing_value_process Mkt (pf_replace_comp pf1 x pf2) (Suc n) w"
-  proof (intro allI)
-    fix n w
-    have "value_process Mkt (pf_replace_comp pf1 x pf2) (Suc n) w = value_process Mkt pf1 (Suc n) w"
-      using assms by (simp add:replace_comp_closing_value_process)
-    also have "... = closing_value_process Mkt pf1 (Suc n) w" using assms unfolding self_financing_def by simp
-    also have "... = closing_value_process Mkt (pf_replace_comp pf1 x pf2) (Suc n) w"
-      using assms by (simp add: replace_comp_closing_value_process_Suc self_financing_def)
-    finally show "closing_value_process Mkt (pf_replace_comp pf1 x pf2) (Suc n) w =
-      closing_value_process Mkt (pf_replace_comp pf1 x pf2) (Suc n) w" .
-  qed
-  thus ?thesis unfolding self_financing_def by auto
-qed   *)
+
 
 paragraph \<open>Make a portfolio self-financing\<close>
 
 fun  remaining_qty where
   init: "remaining_qty Mkt v pf asset 0 = (\<lambda>w. 0)" |
-  first:  "remaining_qty Mkt v pf asset (Suc 0) = (\<lambda>w. (v - value_process Mkt pf 0 w)/(prices Mkt asset 0 w))" |
+  first:  "remaining_qty Mkt v pf asset (Suc 0) = (\<lambda>w. (v - val_process Mkt pf 0 w)/(prices Mkt asset 0 w))" |
   step: "remaining_qty Mkt v pf asset (Suc (Suc n)) = (\<lambda>w. (remaining_qty Mkt v pf asset (Suc n) w) +
-    (closing_value_process Mkt pf (Suc n) w - value_process Mkt pf (Suc n) w)/(prices Mkt asset (Suc n) w))"
+    (cls_val_process Mkt pf (Suc n) w - val_process Mkt pf (Suc n) w)/(prices Mkt asset (Suc n) w))"
 
 lemma (in disc_equity_market) remaining_qty_predict':
   assumes "borel_adapt_stoch_proc F (prices Mkt asset)"
@@ -1566,25 +1485,25 @@ and "support_adapt Mkt pf"
 shows "remaining_qty Mkt v pf asset (Suc n) \<in> borel_measurable (F n)"
 proof (induct n)
   case 0
-  have "(\<lambda>w. (v - value_process Mkt pf 0 w)/(prices Mkt asset 0 w))\<in> borel_measurable (F 0)"
+  have "(\<lambda>w. (v - val_process Mkt pf 0 w)/(prices Mkt asset 0 w))\<in> borel_measurable (F 0)"
   proof (rule borel_measurable_divide)
-    have "value_process Mkt pf 0 \<in> borel_measurable (F 0)" using assms
-      ats_value_process_adapted by (simp add:adapt_stoch_proc_def)
-    thus "(\<lambda>x. v - value_process Mkt pf 0 x) \<in> borel_measurable (F 0)" by simp
+    have "val_process Mkt pf 0 \<in> borel_measurable (F 0)" using assms
+      ats_val_process_adapted by (simp add:adapt_stoch_proc_def)
+    thus "(\<lambda>x. v - val_process Mkt pf 0 x) \<in> borel_measurable (F 0)" by simp
     show "prices Mkt asset 0 \<in> borel_measurable (F 0)" using assms unfolding adapt_stoch_proc_def by simp
   qed
   thus ?case by simp
 next
   case (Suc n)
-  have "(\<lambda>w. (closing_value_process Mkt pf (Suc n) w - value_process Mkt pf (Suc n) w)/
+  have "(\<lambda>w. (cls_val_process Mkt pf (Suc n) w - val_process Mkt pf (Suc n) w)/
     (prices Mkt asset (Suc n) w)) \<in> borel_measurable (F (Suc n))"
   proof (rule borel_measurable_divide)
-    show "(\<lambda>w. (closing_value_process Mkt pf (Suc n) w - value_process Mkt pf (Suc n) w)) \<in> borel_measurable (F (Suc n))"
+    show "(\<lambda>w. (cls_val_process Mkt pf (Suc n) w - val_process Mkt pf (Suc n) w)) \<in> borel_measurable (F (Suc n))"
     proof (rule borel_measurable_diff)
-      show "(\<lambda>w. (closing_value_process Mkt pf (Suc n) w)) \<in> borel_measurable (F (Suc n))"
-        using assms closing_value_process_adapted unfolding adapt_stoch_proc_def by auto
-      show "(\<lambda>w. (value_process Mkt pf (Suc n) w)) \<in> borel_measurable (F (Suc n))"
-        using assms  ats_value_process_adapted by (simp add:adapt_stoch_proc_def)
+      show "(\<lambda>w. (cls_val_process Mkt pf (Suc n) w)) \<in> borel_measurable (F (Suc n))"
+        using assms cls_val_process_adapted unfolding adapt_stoch_proc_def by auto
+      show "(\<lambda>w. (val_process Mkt pf (Suc n) w)) \<in> borel_measurable (F (Suc n))"
+        using assms  ats_val_process_adapted by (simp add:adapt_stoch_proc_def)
     qed
     show "prices Mkt asset (Suc n) \<in> borel_measurable (F (Suc n))" using assms unfolding adapt_stoch_proc_def by simp
   qed
@@ -1623,7 +1542,7 @@ shows "borel_adapt_stoch_proc F (remaining_qty Mkt v pf asset)" using assms unfo
 
 
 definition self_finance where
-  "self_finance Mkt v pf (asset::'a) = pf_sum pf (single_comp_pf asset (remaining_qty Mkt v pf asset))"
+  "self_finance Mkt v pf (asset::'a) = qty_sum pf (qty_single asset (remaining_qty Mkt v pf asset))"
 
 
 lemma self_finance_portfolio:
@@ -1635,23 +1554,23 @@ shows "portfolio (self_finance Mkt v pf asset)" unfolding self_finance_def
 lemma self_finance_init:
   assumes "\<forall>w. prices Mkt asset 0 w \<noteq> 0"
   and "portfolio pf"
-shows "value_process Mkt (self_finance Mkt v pf asset) 0 w = v"
+shows "val_process Mkt (self_finance Mkt v pf asset) 0 w = v"
 proof -
-  define scp where "scp = single_comp_pf asset (remaining_qty Mkt v pf asset)"
-  have "value_process Mkt (self_finance Mkt v pf asset) 0 w =
-    value_process Mkt pf 0 w +
-    value_process Mkt scp 0 w" unfolding scp_def using assms single_comp_portfolio[of asset]
-    sum_value_process[of pf "single_comp_pf asset (remaining_qty Mkt v pf asset)" Mkt]
-    by (simp add: \<open>\<And>qty. portfolio (single_comp_pf asset qty)\<close> self_finance_def)
-  also have "... = value_process Mkt pf 0 w +
+  define scp where "scp = qty_single asset (remaining_qty Mkt v pf asset)"
+  have "val_process Mkt (self_finance Mkt v pf asset) 0 w =
+    val_process Mkt pf 0 w +
+    val_process Mkt scp 0 w" unfolding scp_def using assms single_comp_portfolio[of asset]
+    sum_val_process[of pf "qty_single asset (remaining_qty Mkt v pf asset)" Mkt]
+    by (simp add: \<open>\<And>qty. portfolio (qty_single asset qty)\<close> self_finance_def)
+  also have "... = val_process Mkt pf 0 w +
     (sum (\<lambda>x. ((prices Mkt) x 0 w) * (scp x (Suc 0) w)) {asset})"
-    using subset_value_process'[of "{asset}" scp] unfolding scp_def by (auto simp add:  single_comp_support)
-  also have "... = value_process Mkt pf 0 w + prices Mkt asset 0 w * scp asset (Suc 0) w" by auto
-  also have "... = value_process Mkt pf 0 w + prices Mkt asset 0 w * (remaining_qty Mkt v pf asset) (Suc 0) w"
-    unfolding scp_def single_comp_pf_def by simp
-  also have "... = value_process Mkt pf 0 w + prices Mkt asset 0 w * (v - value_process Mkt pf 0 w)/(prices Mkt asset 0 w)"
+    using subset_val_process'[of "{asset}" scp] unfolding scp_def by (auto simp add:  single_comp_support)
+  also have "... = val_process Mkt pf 0 w + prices Mkt asset 0 w * scp asset (Suc 0) w" by auto
+  also have "... = val_process Mkt pf 0 w + prices Mkt asset 0 w * (remaining_qty Mkt v pf asset) (Suc 0) w"
+    unfolding scp_def qty_single_def by simp
+  also have "... = val_process Mkt pf 0 w + prices Mkt asset 0 w * (v - val_process Mkt pf 0 w)/(prices Mkt asset 0 w)"
     by simp
-  also have "... = value_process Mkt pf 0 w + (v - value_process Mkt pf 0 w)" using assms by simp
+  also have "... = val_process Mkt pf 0 w + (v - val_process Mkt pf 0 w)" using assms by simp
   also have "... = v" by simp
   finally show ?thesis .
 qed
@@ -1660,33 +1579,33 @@ qed
 lemma self_finance_succ:
   assumes "prices Mkt asset (Suc n) w \<noteq> 0"
   and "portfolio pf"
-shows "value_process Mkt (self_finance Mkt v pf asset) (Suc n) w = prices Mkt asset (Suc n) w * remaining_qty Mkt v pf asset (Suc n) w +
-  closing_value_process Mkt pf (Suc n) w"
+shows "val_process Mkt (self_finance Mkt v pf asset) (Suc n) w = prices Mkt asset (Suc n) w * remaining_qty Mkt v pf asset (Suc n) w +
+  cls_val_process Mkt pf (Suc n) w"
 proof -
-  define scp where "scp = single_comp_pf asset (remaining_qty Mkt v pf asset)"
-  have "value_process Mkt (self_finance Mkt v pf asset) (Suc n) w =
-    value_process Mkt pf (Suc n) w +
-    value_process Mkt scp (Suc n) w" unfolding scp_def using assms single_comp_portfolio[of asset]
-    sum_value_process[of pf "single_comp_pf asset (remaining_qty Mkt v pf asset)" Mkt]
-    by (simp add: \<open>\<And>qty. portfolio (single_comp_pf asset qty)\<close> self_finance_def)
-  also have "... = value_process Mkt pf (Suc n) w +
+  define scp where "scp = qty_single asset (remaining_qty Mkt v pf asset)"
+  have "val_process Mkt (self_finance Mkt v pf asset) (Suc n) w =
+    val_process Mkt pf (Suc n) w +
+    val_process Mkt scp (Suc n) w" unfolding scp_def using assms single_comp_portfolio[of asset]
+    sum_val_process[of pf "qty_single asset (remaining_qty Mkt v pf asset)" Mkt]
+    by (simp add: \<open>\<And>qty. portfolio (qty_single asset qty)\<close> self_finance_def)
+  also have "... = val_process Mkt pf (Suc n) w +
     (sum (\<lambda>x. ((prices Mkt) x (Suc n) w) * (scp x (Suc (Suc n)) w)) {asset})"
-    using subset_value_process'[of "{asset}" scp] unfolding scp_def by (auto simp add:  single_comp_support)
-  also have "... = value_process Mkt pf (Suc n) w + prices Mkt asset (Suc n) w * scp asset (Suc (Suc n)) w" by auto
-  also have "... = value_process Mkt pf (Suc n) w + prices Mkt asset (Suc n) w * (remaining_qty Mkt v pf asset) (Suc (Suc n)) w"
-    unfolding scp_def single_comp_pf_def by simp
-  also have "... = value_process Mkt pf (Suc n) w +
+    using subset_val_process'[of "{asset}" scp] unfolding scp_def by (auto simp add:  single_comp_support)
+  also have "... = val_process Mkt pf (Suc n) w + prices Mkt asset (Suc n) w * scp asset (Suc (Suc n)) w" by auto
+  also have "... = val_process Mkt pf (Suc n) w + prices Mkt asset (Suc n) w * (remaining_qty Mkt v pf asset) (Suc (Suc n)) w"
+    unfolding scp_def qty_single_def by simp
+  also have "... = val_process Mkt pf (Suc n) w +
     prices Mkt asset (Suc n) w *
-    (remaining_qty Mkt v pf asset (Suc n) w + (closing_value_process Mkt pf (Suc n) w - value_process Mkt pf (Suc n) w)/(prices Mkt asset (Suc n) w))"
+    (remaining_qty Mkt v pf asset (Suc n) w + (cls_val_process Mkt pf (Suc n) w - val_process Mkt pf (Suc n) w)/(prices Mkt asset (Suc n) w))"
     by simp
-  also have "... = value_process Mkt pf (Suc n) w +
+  also have "... = val_process Mkt pf (Suc n) w +
      prices Mkt asset (Suc n) w * remaining_qty Mkt v pf asset (Suc n) w +
-    prices Mkt asset (Suc n) w * (closing_value_process Mkt pf (Suc n) w - value_process Mkt pf (Suc n) w)/(prices Mkt asset (Suc n) w)"
+    prices Mkt asset (Suc n) w * (cls_val_process Mkt pf (Suc n) w - val_process Mkt pf (Suc n) w)/(prices Mkt asset (Suc n) w)"
      by (simp add: distrib_left)
-  also have "... = value_process Mkt pf (Suc n) w +
-     prices Mkt asset (Suc n) w * remaining_qty Mkt v pf asset (Suc n) w + (closing_value_process Mkt pf (Suc n) w - value_process Mkt pf (Suc n) w)"
+  also have "... = val_process Mkt pf (Suc n) w +
+     prices Mkt asset (Suc n) w * remaining_qty Mkt v pf asset (Suc n) w + (cls_val_process Mkt pf (Suc n) w - val_process Mkt pf (Suc n) w)"
      using assms by simp
-  also have "... = prices Mkt asset (Suc n) w * remaining_qty Mkt v pf asset (Suc n) w + closing_value_process Mkt pf (Suc n) w" by simp
+  also have "... = prices Mkt asset (Suc n) w * remaining_qty Mkt v pf asset (Suc n) w + cls_val_process Mkt pf (Suc n) w" by simp
   finally show ?thesis .
 qed
 
@@ -1694,21 +1613,21 @@ qed
 lemma self_finance_updated:
   assumes "prices Mkt asset (Suc n) w \<noteq> 0"
   and "portfolio pf"
-shows "closing_value_process Mkt (self_finance Mkt v pf asset) (Suc n) w =
-  closing_value_process Mkt pf (Suc n) w + prices Mkt asset (Suc n) w * (remaining_qty Mkt v pf asset) (Suc n) w"
+shows "cls_val_process Mkt (self_finance Mkt v pf asset) (Suc n) w =
+  cls_val_process Mkt pf (Suc n) w + prices Mkt asset (Suc n) w * (remaining_qty Mkt v pf asset) (Suc n) w"
 proof -
-  define scp where "scp = single_comp_pf asset (remaining_qty Mkt v pf asset)"
-  have "closing_value_process Mkt (self_finance Mkt v pf asset) (Suc n) w =
-    closing_value_process Mkt pf (Suc n) w +
-    closing_value_process Mkt scp (Suc n) w" unfolding scp_def using assms single_comp_portfolio[of asset]
-    sum_closing_value_process[of pf "single_comp_pf asset (remaining_qty Mkt v pf asset)" Mkt]
-    by (simp add: \<open>\<And>qty. portfolio (single_comp_pf asset qty)\<close> self_finance_def)
-  also have "... = closing_value_process Mkt pf (Suc n) w +
+  define scp where "scp = qty_single asset (remaining_qty Mkt v pf asset)"
+  have "cls_val_process Mkt (self_finance Mkt v pf asset) (Suc n) w =
+    cls_val_process Mkt pf (Suc n) w +
+    cls_val_process Mkt scp (Suc n) w" unfolding scp_def using assms single_comp_portfolio[of asset]
+    sum_cls_val_process[of pf "qty_single asset (remaining_qty Mkt v pf asset)" Mkt]
+    by (simp add: \<open>\<And>qty. portfolio (qty_single asset qty)\<close> self_finance_def)
+  also have "... = cls_val_process Mkt pf (Suc n) w +
     (sum (\<lambda>x. ((prices Mkt) x (Suc n) w) * (scp x (Suc n) w)) {asset})"
-    using subset_closing_value_process[of "{asset}" scp] unfolding scp_def by (auto simp add:  single_comp_support)
-  also have "... = closing_value_process Mkt pf (Suc n) w + prices Mkt asset (Suc n) w * scp asset (Suc n) w" by auto
-  also have "... = closing_value_process Mkt pf (Suc n) w + prices Mkt asset (Suc n) w * (remaining_qty Mkt v pf asset) (Suc n) w"
-    unfolding scp_def single_comp_pf_def by simp
+    using subset_cls_val_process[of "{asset}" scp] unfolding scp_def by (auto simp add:  single_comp_support)
+  also have "... = cls_val_process Mkt pf (Suc n) w + prices Mkt asset (Suc n) w * scp asset (Suc n) w" by auto
+  also have "... = cls_val_process Mkt pf (Suc n) w + prices Mkt asset (Suc n) w * (remaining_qty Mkt v pf asset) (Suc n) w"
+    unfolding scp_def qty_single_def by simp
   finally show ?thesis .
 qed
 
@@ -1717,12 +1636,12 @@ lemma self_finance_charact:
   and "portfolio pf"
 shows "self_financing Mkt (self_finance Mkt v pf asset)"
 proof-
-  have "\<forall>n w. value_process Mkt (self_finance Mkt v pf asset) (Suc n) w =
-     closing_value_process Mkt (self_finance Mkt v pf asset) (Suc n) w"
+  have "\<forall>n w. val_process Mkt (self_finance Mkt v pf asset) (Suc n) w =
+     cls_val_process Mkt (self_finance Mkt v pf asset) (Suc n) w"
   proof (intro allI)
     fix n w
-    show "value_process Mkt (self_finance Mkt v pf asset) (Suc n) w =
-      closing_value_process Mkt (self_finance Mkt v pf asset) (Suc n) w" using assms self_finance_succ[of Mkt asset]
+    show "val_process Mkt (self_finance Mkt v pf asset) (Suc n) w =
+      cls_val_process Mkt (self_finance Mkt v pf asset) (Suc n) w" using assms self_finance_succ[of Mkt asset]
       by (simp add: self_finance_updated)
   qed
   thus ?thesis unfolding self_financing_def by auto
@@ -1749,7 +1668,7 @@ lemma (in disc_filtr_prob_space) price_structure_maturity:
 
 definition (in disc_equity_market) replicating_portfolio where
   "replicating_portfolio pf der matur  \<longleftrightarrow> (stock_portfolio Mkt pf) \<and> (trading_strategy pf) \<and> (self_financing Mkt pf) \<and>
-  (AE w in M. closing_value_process Mkt pf matur w = der w)"
+  (AE w in M. cls_val_process Mkt pf matur w = der w)"
 
 
 definition (in disc_equity_market) is_attainable where
@@ -1758,99 +1677,94 @@ definition (in disc_equity_market) is_attainable where
 lemma (in disc_equity_market) replicating_price_process:
   assumes "replicating_portfolio pf der matur"
 and "support_adapt Mkt pf"
-  shows "price_structure der matur (initial_value pf) (closing_value_process Mkt pf)"
+  shows "price_structure der matur (initial_value pf) (cls_val_process Mkt pf)"
   unfolding price_structure_def
 proof (intro conjI)
-  show "AE w in M. closing_value_process Mkt pf matur w = der w" using assms unfolding replicating_portfolio_def by simp
-  show "\<forall>w\<in>space M. closing_value_process Mkt pf 0 w = initial_value pf"
+  show "AE w in M. cls_val_process Mkt pf matur w = der w" using assms unfolding replicating_portfolio_def by simp
+  show "\<forall>w\<in>space M. cls_val_process Mkt pf 0 w = initial_value pf"
   proof
     fix w
     assume "w\<in> space M"
-    thus "closing_value_process Mkt pf 0 w = initial_value pf" unfolding initial_value_def using constant_imageI[of "closing_value_process Mkt pf 0"]
+    thus "cls_val_process Mkt pf 0 w = initial_value pf" unfolding initial_value_def using constant_imageI[of "cls_val_process Mkt pf 0"]
       trading_strategy_init[of pf] assms replicating_portfolio_def [of pf der matur]
-      by (simp add: stock_portfolio_def closing_value_process_def)
+      by (simp add: stock_portfolio_def cls_val_process_def)
   qed
-  show "closing_value_process Mkt pf matur \<in> borel_measurable (F matur)" using assms unfolding replicating_portfolio_def
-    using ats_value_process_adapted[of pf]
-    closing_value_process_adapted by (simp add:adapt_stoch_proc_def)
+  show "cls_val_process Mkt pf matur \<in> borel_measurable (F matur)" using assms unfolding replicating_portfolio_def
+    using ats_val_process_adapted[of pf]
+    cls_val_process_adapted by (simp add:adapt_stoch_proc_def)
 qed
 
 
 subsubsection \<open>Arbitrages\<close>
 
-(*definition (in disc_filt_prob_space) arbitrage_process
-where
-  "arbitrage_process Mkt p \<longleftrightarrow> (\<exists> m. (self_financing Mkt p) \<and> (trading_strategy p) \<and>
-    (AE w in M. value_process Mkt p 0 w = 0) \<and>
-    (AE w in M. 0 \<le> value_process Mkt p m w) \<and>
-    0 < \<P>(w in M. value_process Mkt p m w > 0))"*)
+
 definition (in disc_filtr_prob_space) arbitrage_process
 where
   "arbitrage_process Mkt p \<longleftrightarrow> (\<exists> m. (self_financing Mkt p) \<and> (trading_strategy p) \<and>
-    (\<forall>w \<in> space M. value_process Mkt p 0 w = 0) \<and>
-    (AE w in M. 0 \<le> closing_value_process Mkt p m w) \<and>
-    0 < \<P>(w in M. closing_value_process Mkt p m w > 0))"
+    (\<forall>w \<in> space M. val_process Mkt p 0 w = 0) \<and>
+    (AE w in M. 0 \<le> cls_val_process Mkt p m w) \<and>
+    0 < \<P>(w in M. cls_val_process Mkt p m w > 0))"
 
 lemma (in disc_filtr_prob_space) arbitrage_processE:
   assumes "arbitrage_process Mkt p"
   shows "(\<exists> m. (self_financing Mkt p) \<and> (trading_strategy p) \<and>
-    (\<forall>w \<in> space M. closing_value_process Mkt p 0 w = 0) \<and>
-    (AE w in M. 0 \<le> closing_value_process Mkt p m w) \<and>
-    0 < \<P>(w in M. closing_value_process Mkt p m w > 0))"
+    (\<forall>w \<in> space M. cls_val_process Mkt p 0 w = 0) \<and>
+    (AE w in M. 0 \<le> cls_val_process Mkt p m w) \<and>
+    0 < \<P>(w in M. cls_val_process Mkt p m w > 0))"
   using assms disc_filtr_prob_space.arbitrage_process_def disc_filtr_prob_space_axioms self_financingE by fastforce
 
 
 
 lemma (in disc_filtr_prob_space) arbitrage_processI:
   assumes "(\<exists> m. (self_financing Mkt p) \<and> (trading_strategy p) \<and>
-    (\<forall>w \<in> space M. closing_value_process Mkt p 0 w = 0) \<and>
-    (AE w in M. 0 \<le> closing_value_process Mkt p m w) \<and>
-    0 < \<P>(w in M. closing_value_process Mkt p m w > 0))"
+    (\<forall>w \<in> space M. cls_val_process Mkt p 0 w = 0) \<and>
+    (AE w in M. 0 \<le> cls_val_process Mkt p m w) \<and>
+    0 < \<P>(w in M. cls_val_process Mkt p m w > 0))"
   shows "arbitrage_process Mkt p" unfolding arbitrage_process_def  using assms
-  by (simp add: self_financingE closing_value_process_def)
+  by (simp add: self_financingE cls_val_process_def)
 
 definition (in disc_filtr_prob_space) viable_market
 where
   "viable_market Mkt  \<longleftrightarrow> (\<forall>p. stock_portfolio Mkt p \<longrightarrow> \<not> arbitrage_process Mkt p)"
 
-lemma (in disc_filtr_prob_space) arbitrage_value_process:
+lemma (in disc_filtr_prob_space) arbitrage_val_process:
   assumes "arbitrage_process Mkt pf1"
   and "self_financing Mkt pf2"
   and "trading_strategy pf2"
-  and "\<forall> n w. closing_value_process Mkt pf1 n w = closing_value_process Mkt pf2 n w"
+  and "\<forall> n w. cls_val_process Mkt pf1 n w = cls_val_process Mkt pf2 n w"
 shows "arbitrage_process Mkt pf2"
 proof -
   have "(\<exists> m. (self_financing Mkt pf1) \<and> (trading_strategy pf1) \<and>
-    (\<forall>w \<in> space M. closing_value_process Mkt pf1 0 w = 0) \<and>
-    (AE w in M. 0 \<le> closing_value_process Mkt pf1 m w) \<and>
-    0 < \<P>(w in M. closing_value_process Mkt pf1 m w > 0))" using assms arbitrage_processE[of Mkt pf1] by simp
+    (\<forall>w \<in> space M. cls_val_process Mkt pf1 0 w = 0) \<and>
+    (AE w in M. 0 \<le> cls_val_process Mkt pf1 m w) \<and>
+    0 < \<P>(w in M. cls_val_process Mkt pf1 m w > 0))" using assms arbitrage_processE[of Mkt pf1] by simp
   from this obtain m where "(self_financing Mkt pf1)" and "(trading_strategy pf1)" and
-    "(\<forall>w \<in> space M. closing_value_process Mkt pf1 0 w = 0)" and
-    "(AE w in M. 0 \<le> closing_value_process Mkt pf1 m w)"
-    "0 < \<P>(w in M. closing_value_process Mkt pf1 m w > 0)" by auto
-  have ae_eq:"\<forall>w\<in> space M. (closing_value_process Mkt pf1 0 w = 0) = (closing_value_process Mkt pf2 0 w = 0)"
+    "(\<forall>w \<in> space M. cls_val_process Mkt pf1 0 w = 0)" and
+    "(AE w in M. 0 \<le> cls_val_process Mkt pf1 m w)"
+    "0 < \<P>(w in M. cls_val_process Mkt pf1 m w > 0)" by auto
+  have ae_eq:"\<forall>w\<in> space M. (cls_val_process Mkt pf1 0 w = 0) = (cls_val_process Mkt pf2 0 w = 0)"
   proof
     fix w
     assume "w\<in> space M"
-    show "(closing_value_process Mkt pf1 0 w = 0) = (closing_value_process Mkt pf2 0 w = 0) "
+    show "(cls_val_process Mkt pf1 0 w = 0) = (cls_val_process Mkt pf2 0 w = 0) "
       using  assms  by simp
   qed
-  have ae_geq:"almost_everywhere M (\<lambda>w. closing_value_process Mkt pf1 m w \<ge> 0) = almost_everywhere M (\<lambda>w. closing_value_process Mkt pf2 m w \<ge> 0)"
+  have ae_geq:"almost_everywhere M (\<lambda>w. cls_val_process Mkt pf1 m w \<ge> 0) = almost_everywhere M (\<lambda>w. cls_val_process Mkt pf2 m w \<ge> 0)"
   proof (rule AE_cong)
     fix w
     assume "w\<in> space M"
-    show "(closing_value_process Mkt pf1 m w \<ge> 0) = (closing_value_process Mkt pf2 m w \<ge> 0) "
+    show "(cls_val_process Mkt pf1 m w \<ge> 0) = (cls_val_process Mkt pf2 m w \<ge> 0) "
       using  assms by simp
   qed
   have "self_financing Mkt pf2" using assms by simp
   moreover have "trading_strategy pf2" using assms by simp
-  moreover have "(\<forall>w \<in> space M. closing_value_process Mkt pf2 0 w = 0)"  using \<open>(\<forall>w \<in> space M. closing_value_process Mkt pf1 0 w = 0)\<close> ae_eq by simp
-  moreover have "AE w in M. 0 \<le> closing_value_process Mkt pf2 m w" using \<open>AE w in M. 0 \<le> closing_value_process Mkt pf1 m w\<close> ae_geq by simp
-  moreover have "0 < prob {w \<in> space M. 0 < closing_value_process Mkt pf2 m w}"
+  moreover have "(\<forall>w \<in> space M. cls_val_process Mkt pf2 0 w = 0)"  using \<open>(\<forall>w \<in> space M. cls_val_process Mkt pf1 0 w = 0)\<close> ae_eq by simp
+  moreover have "AE w in M. 0 \<le> cls_val_process Mkt pf2 m w" using \<open>AE w in M. 0 \<le> cls_val_process Mkt pf1 m w\<close> ae_geq by simp
+  moreover have "0 < prob {w \<in> space M. 0 < cls_val_process Mkt pf2 m w}"
   proof -
-    have "{w \<in> space M. 0 < closing_value_process Mkt pf2 m w} = {w \<in> space M. 0 < closing_value_process Mkt pf1 m w}"
+    have "{w \<in> space M. 0 < cls_val_process Mkt pf2 m w} = {w \<in> space M. 0 < cls_val_process Mkt pf1 m w}"
       by (simp add: assms(4))
-    thus ?thesis by (simp add: \<open>0 < prob {w \<in> space M. 0 < closing_value_process Mkt pf1 m w}\<close>)
+    thus ?thesis by (simp add: \<open>0 < prob {w \<in> space M. 0 < cls_val_process Mkt pf1 m w}\<close>)
   qed
   ultimately show ?thesis using arbitrage_processI by blast
 qed
@@ -1859,20 +1773,20 @@ qed
 definition coincides_on where
   "coincides_on Mkt Mkt2 A \<longleftrightarrow> (stocks Mkt = stocks Mkt2 \<and> (\<forall>x. x\<in> A \<longrightarrow> prices Mkt x = prices Mkt2 x))"
 
-lemma coincides_value_process:
+lemma coincides_val_process:
   assumes "coincides_on Mkt Mkt2 A"
   and "support_set pf \<subseteq> A"
-  shows "\<forall>n w. value_process Mkt pf n w = value_process Mkt2 pf n w"
+  shows "\<forall>n w. val_process Mkt pf n w = val_process Mkt2 pf n w"
 proof (intro allI)
   fix n w
-  show "value_process Mkt pf n w = value_process Mkt2 pf n w"
+  show "val_process Mkt pf n w = val_process Mkt2 pf n w"
   proof (cases "portfolio pf")
     case False
-    thus ?thesis unfolding value_process_def by simp
+    thus ?thesis unfolding val_process_def by simp
   next
     case True
-    hence "value_process Mkt pf n w = (\<Sum>x\<in> support_set pf. prices Mkt x n w * pf x (Suc n) w)" using assms
-      unfolding value_process_def  by simp
+    hence "val_process Mkt pf n w = (\<Sum>x\<in> support_set pf. prices Mkt x n w * pf x (Suc n) w)" using assms
+      unfolding val_process_def  by simp
     also have "... = (\<Sum>x\<in> support_set pf. prices Mkt2 x n w * pf x (Suc n) w)"
     proof (rule sum.cong, simp)
       fix y
@@ -1882,26 +1796,26 @@ proof (intro allI)
         unfolding coincides_on_def by auto
       thus "prices Mkt y n w * pf y (Suc n) w = prices Mkt2 y n w * pf y (Suc n) w" by simp
     qed
-    also have "... = value_process Mkt2 pf n w"
-      by (metis (mono_tags, lifting) calculation value_process_def)
-    finally show "value_process Mkt pf n w = value_process Mkt2 pf n w" .
+    also have "... = val_process Mkt2 pf n w"
+      by (metis (mono_tags, lifting) calculation val_process_def)
+    finally show "val_process Mkt pf n w = val_process Mkt2 pf n w" .
   qed
 qed
 
-lemma coincides_closing_value_process':
+lemma coincides_cls_val_process':
   assumes "coincides_on Mkt Mkt2 A"
   and "support_set pf \<subseteq> A"
-  shows "\<forall>n w. closing_value_process Mkt pf (Suc n) w = closing_value_process Mkt2 pf (Suc n) w"
+  shows "\<forall>n w. cls_val_process Mkt pf (Suc n) w = cls_val_process Mkt2 pf (Suc n) w"
 proof (intro allI)
   fix n w
-  show "closing_value_process Mkt pf (Suc n) w = closing_value_process Mkt2 pf (Suc n) w"
+  show "cls_val_process Mkt pf (Suc n) w = cls_val_process Mkt2 pf (Suc n) w"
   proof (cases "portfolio pf")
     case False
-    thus ?thesis unfolding closing_value_process_def by simp
+    thus ?thesis unfolding cls_val_process_def by simp
   next
     case True
-    hence "closing_value_process Mkt pf (Suc n) w = (\<Sum>x\<in> support_set pf. prices Mkt x (Suc n) w * pf x (Suc n) w)" using assms
-      unfolding closing_value_process_def  by simp
+    hence "cls_val_process Mkt pf (Suc n) w = (\<Sum>x\<in> support_set pf. prices Mkt x (Suc n) w * pf x (Suc n) w)" using assms
+      unfolding cls_val_process_def  by simp
     also have "... = (\<Sum>x\<in> support_set pf. prices Mkt2 x (Suc n) w * pf x (Suc n) w)"
     proof (rule sum.cong, simp)
       fix y
@@ -1911,32 +1825,32 @@ proof (intro allI)
         unfolding coincides_on_def by auto
       thus "prices Mkt y (Suc n) w * pf y (Suc n) w = prices Mkt2 y (Suc n) w * pf y (Suc n) w" by simp
     qed
-    also have "... = closing_value_process Mkt2 pf (Suc n) w"
-      by (metis (mono_tags, lifting) True  up_cl_proc.simps(2) closing_value_process_def)
-    finally show "closing_value_process Mkt pf (Suc n) w = closing_value_process Mkt2 pf (Suc n) w" .
+    also have "... = cls_val_process Mkt2 pf (Suc n) w"
+      by (metis (mono_tags, lifting) True  up_cl_proc.simps(2) cls_val_process_def)
+    finally show "cls_val_process Mkt pf (Suc n) w = cls_val_process Mkt2 pf (Suc n) w" .
   qed
 qed
 
-lemma coincides_closing_value_process:
+lemma coincides_cls_val_process:
   assumes "coincides_on Mkt Mkt2 A"
   and "support_set pf \<subseteq> A"
-  shows "\<forall>n w. closing_value_process Mkt pf n w = closing_value_process Mkt2 pf n w"
+  shows "\<forall>n w. cls_val_process Mkt pf n w = cls_val_process Mkt2 pf n w"
 proof (intro allI)
   fix n w
-  show "closing_value_process Mkt pf n w = closing_value_process Mkt2 pf n w"
+  show "cls_val_process Mkt pf n w = cls_val_process Mkt2 pf n w"
   proof (cases "portfolio pf")
     case False
-    thus ?thesis unfolding closing_value_process_def by simp
+    thus ?thesis unfolding cls_val_process_def by simp
   next
     case True
-    show "closing_value_process Mkt pf n w = closing_value_process Mkt2 pf n w"
+    show "cls_val_process Mkt pf n w = cls_val_process Mkt2 pf n w"
     proof (induct n)
       case 0
       with assms show ?case
-        by (simp add: closing_value_process_def coincides_value_process)
+        by (simp add: cls_val_process_def coincides_val_process)
     next
       case Suc
-      thus ?case using coincides_closing_value_process' assms by blast
+      thus ?case using coincides_cls_val_process' assms by blast
     qed
   qed
 qed
@@ -1948,15 +1862,15 @@ lemma (in disc_filtr_prob_space) coincides_on_self_financing:
   and "self_financing Mkt p"
 shows "self_financing Mkt2 p"
 proof -
-  have "\<forall> n w. value_process Mkt2 p (Suc n) w = closing_value_process Mkt2 p (Suc n) w"
+  have "\<forall> n w. val_process Mkt2 p (Suc n) w = cls_val_process Mkt2 p (Suc n) w"
   proof (intro allI)
     fix n w
-    have "value_process Mkt2 p (Suc n) w = value_process Mkt p (Suc n) w"
-      using assms(1) assms(2) coincides_value_process stock_portfolio_def by fastforce
-    also have "... = closing_value_process Mkt p (Suc n) w" by (metis \<open>self_financing Mkt p\<close> self_financing_def)
-    also have "... = closing_value_process Mkt2 p (Suc n) w"
-      using assms(1) assms(2) coincides_closing_value_process stock_portfolio_def by blast
-    finally show "value_process Mkt2 p (Suc n) w = closing_value_process Mkt2 p (Suc n) w" .
+    have "val_process Mkt2 p (Suc n) w = val_process Mkt p (Suc n) w"
+      using assms(1) assms(2) coincides_val_process stock_portfolio_def by fastforce
+    also have "... = cls_val_process Mkt p (Suc n) w" by (metis \<open>self_financing Mkt p\<close> self_financing_def)
+    also have "... = cls_val_process Mkt2 p (Suc n) w"
+      using assms(1) assms(2) coincides_cls_val_process stock_portfolio_def by blast
+    finally show "val_process Mkt2 p (Suc n) w = cls_val_process Mkt2 p (Suc n) w" .
   qed
   thus "self_financing Mkt2 p" unfolding self_financing_def by auto
 qed
@@ -1969,37 +1883,37 @@ lemma (in disc_filtr_prob_space) coincides_on_arbitrage:
 shows "arbitrage_process Mkt2 p"
 proof -
   have "(\<exists> m. (self_financing Mkt p) \<and> (trading_strategy p) \<and>
-    (\<forall>w\<in> space M. closing_value_process Mkt p 0 w = 0) \<and>
-    (AE w in M. 0 \<le> closing_value_process Mkt p m w) \<and>
-    0 < \<P>(w in M. closing_value_process Mkt p m w > 0))" using assms using arbitrage_processE by simp
+    (\<forall>w\<in> space M. cls_val_process Mkt p 0 w = 0) \<and>
+    (AE w in M. 0 \<le> cls_val_process Mkt p m w) \<and>
+    0 < \<P>(w in M. cls_val_process Mkt p m w > 0))" using assms using arbitrage_processE by simp
   from this obtain m where "(self_financing Mkt p)" and "(trading_strategy p)" and
-    "(\<forall>w\<in> space M. closing_value_process Mkt p 0 w = 0)" and
-    "(AE w in M. 0 \<le> closing_value_process Mkt p m w)"
-    "0 < \<P>(w in M. closing_value_process Mkt p m w > 0)" by auto
-  have ae_eq:"\<forall>w\<in> space M. (closing_value_process Mkt2 p 0 w = 0) = (closing_value_process Mkt p 0 w = 0)"
+    "(\<forall>w\<in> space M. cls_val_process Mkt p 0 w = 0)" and
+    "(AE w in M. 0 \<le> cls_val_process Mkt p m w)"
+    "0 < \<P>(w in M. cls_val_process Mkt p m w > 0)" by auto
+  have ae_eq:"\<forall>w\<in> space M. (cls_val_process Mkt2 p 0 w = 0) = (cls_val_process Mkt p 0 w = 0)"
   proof
     fix w
     assume "w\<in> space M"
-    show "(closing_value_process Mkt2 p 0 w = 0) = (closing_value_process Mkt p 0 w = 0) "
-      using  assms coincides_closing_value_process by (metis)
+    show "(cls_val_process Mkt2 p 0 w = 0) = (cls_val_process Mkt p 0 w = 0) "
+      using  assms coincides_cls_val_process by (metis)
   qed
-  have ae_geq:"almost_everywhere M (\<lambda>w. closing_value_process Mkt2 p m w \<ge> 0) = almost_everywhere M (\<lambda>w. closing_value_process Mkt p m w \<ge> 0)"
+  have ae_geq:"almost_everywhere M (\<lambda>w. cls_val_process Mkt2 p m w \<ge> 0) = almost_everywhere M (\<lambda>w. cls_val_process Mkt p m w \<ge> 0)"
   proof (rule AE_cong)
     fix w
     assume "w\<in> space M"
-    show "(closing_value_process Mkt2 p m w \<ge> 0) = (closing_value_process Mkt p m w \<ge> 0) "
-      using  assms coincides_closing_value_process by (metis)
+    show "(cls_val_process Mkt2 p m w \<ge> 0) = (cls_val_process Mkt p m w \<ge> 0) "
+      using  assms coincides_cls_val_process by (metis)
   qed
   have "self_financing Mkt2 p" using assms coincides_on_self_financing
     using \<open>self_financing Mkt p\<close> by blast
   moreover have "trading_strategy p" using \<open>trading_strategy p\<close> .
-  moreover have "(\<forall>w\<in> space M. closing_value_process Mkt2 p 0 w = 0)"  using \<open>(\<forall>w\<in> space M. closing_value_process Mkt p 0 w = 0)\<close> ae_eq by simp
-  moreover have "AE w in M. 0 \<le> closing_value_process Mkt2 p m w" using \<open>AE w in M. 0 \<le> closing_value_process Mkt p m w\<close> ae_geq by simp
-  moreover have "0 < prob {w \<in> space M. 0 < closing_value_process Mkt2 p m w}"
+  moreover have "(\<forall>w\<in> space M. cls_val_process Mkt2 p 0 w = 0)"  using \<open>(\<forall>w\<in> space M. cls_val_process Mkt p 0 w = 0)\<close> ae_eq by simp
+  moreover have "AE w in M. 0 \<le> cls_val_process Mkt2 p m w" using \<open>AE w in M. 0 \<le> cls_val_process Mkt p m w\<close> ae_geq by simp
+  moreover have "0 < prob {w \<in> space M. 0 < cls_val_process Mkt2 p m w}"
   proof -
-    have "{w \<in> space M. 0 < closing_value_process Mkt2 p m w} = {w \<in> space M. 0 < closing_value_process Mkt p m w}"
-      by (metis (no_types, lifting) assms(1) assms(2) coincides_closing_value_process)
-    thus ?thesis by (simp add: \<open>0 < prob {w \<in> space M. 0 < closing_value_process Mkt p m w}\<close>)
+    have "{w \<in> space M. 0 < cls_val_process Mkt2 p m w} = {w \<in> space M. 0 < cls_val_process Mkt p m w}"
+      by (metis (no_types, lifting) assms(1) assms(2) coincides_cls_val_process)
+    thus ?thesis by (simp add: \<open>0 < prob {w \<in> space M. 0 < cls_val_process Mkt p m w}\<close>)
   qed
   ultimately show ?thesis using arbitrage_processI by blast
 qed
@@ -2012,43 +1926,43 @@ shows "viable_market Mkt2" using coincides_on_arbitrage
   by (metis (mono_tags, hide_lams) assms(1) assms(2) coincides_on_def stock_portfolio_def viable_market_def)
 
 
-lemma coincides_stocks_value_process:
+lemma coincides_stocks_val_process:
   assumes "stock_portfolio Mkt pf"
   and "coincides_on Mkt Mkt2 (stocks Mkt)"
-shows "\<forall>n w. value_process Mkt pf n w = value_process Mkt2 pf n w" using assms  unfolding stock_portfolio_def
-  by (simp add: coincides_value_process)
+shows "\<forall>n w. val_process Mkt pf n w = val_process Mkt2 pf n w" using assms  unfolding stock_portfolio_def
+  by (simp add: coincides_val_process)
 
-lemma coincides_stocks_closing_value_process:
+lemma coincides_stocks_cls_val_process:
   assumes "stock_portfolio Mkt pf"
   and "coincides_on Mkt Mkt2 (stocks Mkt)"
-shows "\<forall>n w. closing_value_process Mkt pf n w = closing_value_process Mkt2 pf n w" using assms  unfolding stock_portfolio_def
-    by (simp add: coincides_closing_value_process)
+shows "\<forall>n w. cls_val_process Mkt pf n w = cls_val_process Mkt2 pf n w" using assms  unfolding stock_portfolio_def
+    by (simp add: coincides_cls_val_process)
 
-lemma (in disc_filtr_prob_space) coincides_on_adapted_value_process:
+lemma (in disc_filtr_prob_space) coincides_on_adapted_val_process:
   assumes "coincides_on Mkt Mkt2 A"
   and "support_set p \<subseteq> A"
-  and "borel_adapt_stoch_proc F (value_process Mkt p)"
-shows "borel_adapt_stoch_proc F (value_process Mkt2 p)" unfolding adapt_stoch_proc_def
+  and "borel_adapt_stoch_proc F (val_process Mkt p)"
+shows "borel_adapt_stoch_proc F (val_process Mkt2 p)" unfolding adapt_stoch_proc_def
 proof
   fix n
-  have "value_process Mkt p n \<in> borel_measurable (F n)" using assms unfolding adapt_stoch_proc_def by simp
-  moreover have "\<forall>w. value_process Mkt p n w = value_process Mkt2 p n w" using assms coincides_value_process[of Mkt Mkt2 A]
+  have "val_process Mkt p n \<in> borel_measurable (F n)" using assms unfolding adapt_stoch_proc_def by simp
+  moreover have "\<forall>w. val_process Mkt p n w = val_process Mkt2 p n w" using assms coincides_val_process[of Mkt Mkt2 A]
     by auto
-  thus "value_process Mkt2 p n \<in> borel_measurable (F n)"
+  thus "val_process Mkt2 p n \<in> borel_measurable (F n)"
     using calculation by presburger
 qed
 
-lemma (in disc_filtr_prob_space) coincides_on_adapted_closing_value_process:
+lemma (in disc_filtr_prob_space) coincides_on_adapted_cls_val_process:
   assumes "coincides_on Mkt Mkt2 A"
   and "support_set p \<subseteq> A"
-  and "borel_adapt_stoch_proc F (closing_value_process Mkt p)"
-shows "borel_adapt_stoch_proc F (closing_value_process Mkt2 p)" unfolding adapt_stoch_proc_def
+  and "borel_adapt_stoch_proc F (cls_val_process Mkt p)"
+shows "borel_adapt_stoch_proc F (cls_val_process Mkt2 p)" unfolding adapt_stoch_proc_def
 proof
   fix n
-  have "closing_value_process Mkt p n \<in> borel_measurable (F n)" using assms unfolding adapt_stoch_proc_def by simp
-  moreover have "\<forall>w. closing_value_process Mkt p n w = closing_value_process Mkt2 p n w" using assms coincides_closing_value_process[of Mkt Mkt2 A]
+  have "cls_val_process Mkt p n \<in> borel_measurable (F n)" using assms unfolding adapt_stoch_proc_def by simp
+  moreover have "\<forall>w. cls_val_process Mkt p n w = cls_val_process Mkt2 p n w" using assms coincides_cls_val_process[of Mkt Mkt2 A]
     by auto
-  thus "closing_value_process Mkt2 p n \<in> borel_measurable (F n)"
+  thus "cls_val_process Mkt2 p n \<in> borel_measurable (F n)"
     using calculation by presburger
 qed
 
@@ -2060,12 +1974,7 @@ definition (in disc_filtr_prob_space) fair_price where
       ((coincides_on Mkt Mkt2 (stocks Mkt)) \<and> (prices Mkt2 x = pr) \<and> portfolio p \<and> support_set p \<subseteq> stocks Mkt \<union> {x} \<longrightarrow>
         \<not> arbitrage_process Mkt2 p))))"
 
-(*definition (in disc_filtr_prob_space) fair_price where
-  "fair_price Mkt \<pi> pyf matur \<longleftrightarrow>
-    (\<exists> pr. price_structure pyf matur \<pi> pr \<and>
-    (\<forall> x. (x\<notin> stocks Mkt \<longrightarrow>
-      (\<forall> Mkt2 p. (coincides_on Mkt Mkt2 (stocks Mkt)) \<and> (prices Mkt2 x = pr) \<and> portfolio p \<and> support_set p \<subseteq> stocks Mkt \<union> {x} \<longrightarrow>
-        \<not> arbitrage_process Mkt2 p))))"*)
+
 
 lemma (in disc_filtr_prob_space) fair_priceI:
   assumes "fair_price Mkt \<pi> pyf matur"
@@ -2088,39 +1997,39 @@ proof (rule ccontr)
   hence imps: "\<forall>pr. (price_structure der matur \<pi> pr) \<longrightarrow>  (\<exists> x Mkt2 p. (x\<notin> stocks Mkt \<and>
     (coincides_on Mkt Mkt2 (stocks Mkt)) \<and> (prices Mkt2 x = pr) \<and> portfolio p \<and> support_set p \<subseteq> stocks Mkt \<union> {x} \<and>
      arbitrage_process Mkt2 p))" unfolding fair_price_def by simp
-  have "(price_structure der matur \<pi> (closing_value_process Mkt pf))" unfolding \<pi>_def  using replicating_price_process assms by simp
+  have "(price_structure der matur \<pi> (cls_val_process Mkt pf))" unfolding \<pi>_def  using replicating_price_process assms by simp
   hence "\<exists> x Mkt2 p. (x\<notin> stocks Mkt \<and>
-    (coincides_on Mkt Mkt2 (stocks Mkt)) \<and> (prices Mkt2 x = (closing_value_process Mkt pf)) \<and> portfolio p \<and> support_set p \<subseteq> stocks Mkt \<union> {x} \<and>
+    (coincides_on Mkt Mkt2 (stocks Mkt)) \<and> (prices Mkt2 x = (cls_val_process Mkt pf)) \<and> portfolio p \<and> support_set p \<subseteq> stocks Mkt \<union> {x} \<and>
      arbitrage_process Mkt2 p)" using imps by simp
-  from this obtain x Mkt2 p where "x\<notin> stocks Mkt" and "coincides_on Mkt Mkt2 (stocks Mkt)" and "prices Mkt2 x = closing_value_process Mkt pf"
+  from this obtain x Mkt2 p where "x\<notin> stocks Mkt" and "coincides_on Mkt Mkt2 (stocks Mkt)" and "prices Mkt2 x = cls_val_process Mkt pf"
     and "portfolio p" and "support_set p\<subseteq> stocks Mkt \<union> {x}" and "arbitrage_process Mkt2 p" by auto
-  have "\<forall>n w. closing_value_process Mkt pf n w = closing_value_process Mkt2 pf n w"
-    using coincides_stocks_closing_value_process[of Mkt pf Mkt2] assms \<open>coincides_on Mkt Mkt2 (stocks Mkt)\<close>  unfolding replicating_portfolio_def
+  have "\<forall>n w. cls_val_process Mkt pf n w = cls_val_process Mkt2 pf n w"
+    using coincides_stocks_cls_val_process[of Mkt pf Mkt2] assms \<open>coincides_on Mkt Mkt2 (stocks Mkt)\<close>  unfolding replicating_portfolio_def
     by simp
   have "\<exists>m. self_financing Mkt2 p \<and>
       trading_strategy p \<and>
-      (AE w in M. closing_value_process Mkt2 p 0 w = 0) \<and>
-      (AE w in M. 0 \<le> closing_value_process Mkt2 p m w) \<and> 0 < prob {w \<in> space M. 0 < closing_value_process Mkt2 p m w}"
+      (AE w in M. cls_val_process Mkt2 p 0 w = 0) \<and>
+      (AE w in M. 0 \<le> cls_val_process Mkt2 p m w) \<and> 0 < prob {w \<in> space M. 0 < cls_val_process Mkt2 p m w}"
     using \<open>arbitrage_process Mkt2 p\<close> using arbitrage_processE[of Mkt2] by simp
   from this obtain m where "self_financing Mkt2 p"
       "trading_strategy p \<and>
-      (AE w in M. closing_value_process Mkt2 p 0 w = 0) \<and>
-      (AE w in M. 0 \<le> closing_value_process Mkt2 p m w) \<and> 0 < prob {w \<in> space M. 0 < closing_value_process Mkt2 p m w}" by auto note mprop = this
-  define eq_stock where "eq_stock = pf_replace_comp p x pf"
-  have "\<forall>n w. closing_value_process Mkt pf n w = closing_value_process Mkt2 pf n w" using assms unfolding replicating_portfolio_def
-      using coincides_closing_value_process
-      using \<open>\<forall>n w. closing_value_process Mkt pf n w = closing_value_process Mkt2 pf n w\<close> by blast
-    hence prx: "\<forall>n w. prices Mkt2 x n w = closing_value_process Mkt2 pf n w" using \<open>prices Mkt2 x = closing_value_process Mkt pf\<close> by simp
+      (AE w in M. cls_val_process Mkt2 p 0 w = 0) \<and>
+      (AE w in M. 0 \<le> cls_val_process Mkt2 p m w) \<and> 0 < prob {w \<in> space M. 0 < cls_val_process Mkt2 p m w}" by auto note mprop = this
+  define eq_stock where "eq_stock = qty_replace_comp p x pf"
+  have "\<forall>n w. cls_val_process Mkt pf n w = cls_val_process Mkt2 pf n w" using assms unfolding replicating_portfolio_def
+      using coincides_cls_val_process
+      using \<open>\<forall>n w. cls_val_process Mkt pf n w = cls_val_process Mkt2 pf n w\<close> by blast
+    hence prx: "\<forall>n w. prices Mkt2 x n w = cls_val_process Mkt2 pf n w" using \<open>prices Mkt2 x = cls_val_process Mkt pf\<close> by simp
   have "stock_portfolio Mkt2 eq_stock"
     by (metis (no_types, lifting) \<open>coincides_on Mkt Mkt2 (stocks Mkt)\<close> \<open>portfolio p\<close> \<open>support_set p \<subseteq> stocks Mkt \<union> {x}\<close>
         assms(2) coincides_on_def disc_equity_market.replicating_portfolio_def disc_equity_market_axioms eq_stock_def
         replace_comp_portfolio replace_comp_stocks stock_portfolio_def)
   moreover have "arbitrage_process Mkt2 eq_stock"
-  proof (rule arbitrage_value_process)
+  proof (rule arbitrage_val_process)
     show "arbitrage_process Mkt2 p" using \<open>arbitrage_process Mkt2 p\<close> .
-    show vp: "\<forall>n w. closing_value_process Mkt2 p n w = closing_value_process Mkt2 eq_stock n w" using replace_comp_closing_value_process
-        \<open>prices Mkt2 x = closing_value_process Mkt pf\<close> unfolding eq_stock_def
-      by (metis (no_types, lifting) \<open>\<forall>n w. closing_value_process Mkt pf n w = closing_value_process Mkt2 pf n w\<close> \<open>portfolio p\<close> assms(2) replicating_portfolio_def
+    show vp: "\<forall>n w. cls_val_process Mkt2 p n w = cls_val_process Mkt2 eq_stock n w" using replace_comp_cls_val_process
+        \<open>prices Mkt2 x = cls_val_process Mkt pf\<close> unfolding eq_stock_def
+      by (metis (no_types, lifting) \<open>\<forall>n w. cls_val_process Mkt pf n w = cls_val_process Mkt2 pf n w\<close> \<open>portfolio p\<close> assms(2) replicating_portfolio_def
           stock_portfolio_def)
     show "trading_strategy eq_stock"
       by (metis \<open>arbitrage_process Mkt2 p\<close> arbitrage_process_def assms(2) eq_stock_def
@@ -2129,7 +2038,7 @@ proof (rule ccontr)
     proof (rule replace_comp_self_financing)
       show "portfolio pf" using assms unfolding replicating_portfolio_def stock_portfolio_def by simp
       show "portfolio p" using \<open>portfolio p\<close> .
-      show "\<forall>n w. prices Mkt2 x n w = closing_value_process Mkt2 pf n w" using prx .
+      show "\<forall>n w. prices Mkt2 x n w = cls_val_process Mkt2 pf n w" using prx .
       show "self_financing Mkt2 p" using \<open>self_financing Mkt2 p\<close> .
       show "self_financing Mkt2 pf" using coincides_on_self_financing[of Mkt Mkt2 "stocks Mkt" pf]
         \<open>coincides_on Mkt Mkt2 (stocks Mkt)\<close> assms(2) (*disc_equity_market.replicating_portfolio_def
@@ -2161,7 +2070,7 @@ lemma (in disc_market_pos_stock) pos_stock_borel_adapted:
   shows "borel_adapt_stoch_proc F (prices Mkt pos_stock)"
   using assets_def readable in_stock  by auto
 
-(*todo: move with lemma on static portfolio *)
+
 definition static_quantities where
   "static_quantities p \<longleftrightarrow> (\<forall>asset \<in> support_set p. \<exists>c::real. p asset = (\<lambda> n w. c))"
 
@@ -2187,10 +2096,7 @@ proof (intro conjI ballI)
   qed
 qed
 
-lemma empty_pf_support_set:
-  assumes "p = (\<lambda> (x::'b) (n::nat) (w::'a). 0::real)"
-  shows "support_set p = {}"
-  by (simp add: assms support_set_def)
+
 
 lemma two_component_support_set:
   assumes "\<exists> n w. a n w \<noteq> 0"
@@ -2214,25 +2120,25 @@ proof
   qed
 qed
 
-lemma two_component_value_process:
+lemma two_component_val_process:
   assumes "arb_pf = ((\<lambda> (x::'b) (n::nat) (w::'a). 0::real)(x:= a, y:= b))"
   and "portfolio arb_pf"
   and "x \<noteq> y"
   and "\<exists> n w. a n w \<noteq> 0"
   and "\<exists> n w. b n w\<noteq> 0"
-  shows "value_process Mkt arb_pf n w =
+  shows "val_process Mkt arb_pf n w =
     prices Mkt y n w * b (Suc n) w + prices Mkt x n w * a (Suc n) w"
 proof -
   have "support_set arb_pf = {x,y}" using assms by (simp add:two_component_support_set)
-  have "value_process Mkt arb_pf n w = (\<Sum>x\<in>support_set arb_pf. prices Mkt x n w * arb_pf x (Suc n) w)"
-        unfolding value_process_def using \<open>portfolio arb_pf\<close> by simp
+  have "val_process Mkt arb_pf n w = (\<Sum>x\<in>support_set arb_pf. prices Mkt x n w * arb_pf x (Suc n) w)"
+        unfolding val_process_def using \<open>portfolio arb_pf\<close> by simp
   also have "... = (\<Sum>x\<in>{x, y}. prices Mkt x n w * arb_pf x (Suc n) w)" using \<open>support_set arb_pf = {x, y}\<close>
         by simp
   also have "... = (\<Sum>x\<in>{y}. prices Mkt x n w * arb_pf x (Suc n) w) + prices Mkt x n w * arb_pf x (Suc n) w"
         using sum.insert[of "{y}" x  "\<lambda>x. prices Mkt x n w * arb_pf x n w"] assms(3) by auto
   also have "... = prices Mkt y n w * arb_pf y (Suc n) w + prices Mkt x n w * arb_pf x (Suc n) w" by simp
   also have "... = prices Mkt y n w * b (Suc n) w + prices Mkt x n w * a (Suc n) w" using assms by auto
-  finally show "value_process Mkt arb_pf n w = prices Mkt y n w * b (Suc n) w + prices Mkt x n w * a (Suc n) w" .
+  finally show "val_process Mkt arb_pf n w = prices Mkt y n w * b (Suc n) w + prices Mkt x n w * a (Suc n) w" .
 qed
 
 lemma quantity_update_support_set:
@@ -2285,13 +2191,13 @@ lemma fix_asset_price:
   coincides_on Mkt Mkt2 (stocks Mkt) \<and>
   prices Mkt2 x = pr"
 proof -
-  have "\<exists>x. x\<notin> stocks Mkt" by (metis UNIV_eq_I discr_mkt_def mkt_stocks_assets)
+  have "\<exists>x. x\<notin> stocks Mkt" by (metis UNIV_eq_I stk_strict_subs_def mkt_stocks_assets)
   from this obtain x where "x\<notin> stocks Mkt" by auto
   let ?res = "discrete_market_of (stocks Mkt) ((prices Mkt)(x:=pr))"
   have "coincides_on Mkt ?res (stocks Mkt)"
   proof -
     have "stocks Mkt = stocks (discrete_market_of (stocks Mkt) ((prices Mkt)(x := pr)))"
-      by (metis (no_types) discr_mkt_def mkt_stocks_assets stocks_of)
+      by (metis (no_types) stk_strict_subs_def mkt_stocks_assets stocks_of)
     then show ?thesis
       by (simp add: \<open>x \<notin> stocks Mkt\<close> coincides_on_def prices_of)
   qed
@@ -2311,12 +2217,12 @@ lemma (in disc_market_pos_stock) arbitrage_portfolio_properties:
   and "diff_inv = (\<pi> - initial_value pf) / constant_image (prices Mkt pos_stock 0)"
   and "diff_inv \<noteq> 0"
   and "arb_pf = (\<lambda> (x::'b) (n::nat) (w::'a). 0::real)(x:= (\<lambda> n w. -1), pos_stock := (\<lambda> n w. diff_inv))"
-  and "contr_pf = pf_sum arb_pf pf"
+  and "contr_pf = qty_sum arb_pf pf"
 shows "self_financing Mkt2 contr_pf"
   and "trading_strategy contr_pf"
-  and "\<forall>w\<in> space M. closing_value_process Mkt2 contr_pf 0 w = 0"
-  and "0 < diff_inv \<longrightarrow> (AE w in M. 0 < closing_value_process Mkt2 contr_pf matur w)"
-  and "diff_inv < 0 \<longrightarrow> (AE w in M. 0 > closing_value_process Mkt2 contr_pf matur w)"
+  and "\<forall>w\<in> space M. cls_val_process Mkt2 contr_pf 0 w = 0"
+  and "0 < diff_inv \<longrightarrow> (AE w in M. 0 < cls_val_process Mkt2 contr_pf matur w)"
+  and "diff_inv < 0 \<longrightarrow> (AE w in M. 0 > cls_val_process Mkt2 contr_pf matur w)"
   and "support_set arb_pf = {x, pos_stock}"
   and "portfolio contr_pf"
 proof -
@@ -2336,11 +2242,11 @@ proof -
     ultimately show ?thesis by (simp add:two_component_support_set)
   qed
   hence "portfolio arb_pf" unfolding portfolio_def by simp
-  have arb_vp:"\<forall>n w. value_process Mkt2 arb_pf n w = prices Mkt2 pos_stock n w * diff_inv - pr n w"
+  have arb_vp:"\<forall>n w. val_process Mkt2 arb_pf n w = prices Mkt2 pos_stock n w * diff_inv - pr n w"
   proof (intro allI)
     fix n w
-    have "value_process Mkt2 arb_pf n w = prices Mkt2 pos_stock n w * (\<lambda> n w. diff_inv) n w + prices Mkt2 x n w * (\<lambda> n w. -1) n w"
-    proof (rule two_component_value_process)
+    have "val_process Mkt2 arb_pf n w = prices Mkt2 pos_stock n w * (\<lambda> n w. diff_inv) n w + prices Mkt2 x n w * (\<lambda> n w. -1) n w"
+    proof (rule two_component_val_process)
       show "x\<noteq> pos_stock" using \<open>x \<notin> stocks Mkt\<close> in_stock by auto
       show "arb_pf = (\<lambda>x n w. 0)(x := \<lambda>a b. - 1, pos_stock := \<lambda>a b. diff_inv)" using assms by simp
       show "portfolio arb_pf" using \<open>portfolio arb_pf\<close> by simp
@@ -2348,7 +2254,7 @@ proof -
       show "\<exists>n w. diff_inv \<noteq> 0" using assms by auto
     qed
     also have "... = prices Mkt2 pos_stock n w * diff_inv - pr n w" using \<open>prices Mkt2 x = pr\<close> by simp
-    finally show "value_process Mkt2 arb_pf n w = prices Mkt2 pos_stock n w * diff_inv - pr n w" .
+    finally show "val_process Mkt2 arb_pf n w = prices Mkt2 pos_stock n w * diff_inv - pr n w" .
   qed
   have "static_quantities arb_pf" unfolding static_quantities_def
   proof
@@ -2369,7 +2275,7 @@ proof -
     using \<open>portfolio arb_pf\<close> portfolio_def static_quantities_trading_strat by blast
   have "self_financing Mkt2 arb_pf"
         by (simp add: static_portfolio_self_financing \<open>arb_pf = (\<lambda>x n w. 0) (x := \<lambda>n w. -1, pos_stock := \<lambda>n w. diff_inv)\<close>)
-  hence arb_uvp: "\<forall>n w. closing_value_process Mkt2 arb_pf n w = prices Mkt2 pos_stock n w * diff_inv - pr n w" using assms arb_vp
+  hence arb_uvp: "\<forall>n w. cls_val_process Mkt2 arb_pf n w = prices Mkt2 pos_stock n w * diff_inv - pr n w" using assms arb_vp
     by (simp add:self_financingE)
   show "portfolio contr_pf" using assms
       by (metis \<open>support_set arb_pf = {x, pos_stock}\<close> replicating_portfolio_def
@@ -2385,7 +2291,7 @@ proof -
   qed
   show "self_financing Mkt2 contr_pf"
     proof -
-    have "self_financing Mkt2 (pf_sum arb_pf pf)"
+    have "self_financing Mkt2 (qty_sum arb_pf pf)"
     proof (rule sum_self_financing)
       show "portfolio arb_pf"  using  \<open>support_set arb_pf = {x, pos_stock}\<close> unfolding portfolio_def by auto
       show "portfolio pf" using assms unfolding replicating_portfolio_def stock_portfolio_def by auto
@@ -2399,22 +2305,22 @@ proof -
   qed
   show "trading_strategy contr_pf"
   proof -
-    have "trading_strategy (pf_sum arb_pf pf)"
+    have "trading_strategy (qty_sum arb_pf pf)"
     proof (rule sum_trading_strat)
       show "trading_strategy pf" using assms unfolding replicating_portfolio_def by simp
       show "trading_strategy arb_pf" using \<open>trading_strategy arb_pf\<close> .
     qed
     thus ?thesis using assms by simp
   qed
-  show "\<forall>w\<in> space M. closing_value_process Mkt2 contr_pf 0 w = 0"
+  show "\<forall>w\<in> space M. cls_val_process Mkt2 contr_pf 0 w = 0"
   proof
     fix w
     assume "w\<in> space M"
-    have "closing_value_process Mkt2 contr_pf 0 w = closing_value_process Mkt2 arb_pf 0 w + closing_value_process Mkt2 pf 0 w"
-      using sum_closing_value_process0[of arb_pf pf Mkt2]
+    have "cls_val_process Mkt2 contr_pf 0 w = cls_val_process Mkt2 arb_pf 0 w + cls_val_process Mkt2 pf 0 w"
+      using sum_cls_val_process0[of arb_pf pf Mkt2]
       using \<open>portfolio arb_pf\<close> assms replicating_portfolio_def stock_portfolio_def by blast
-    also have "... = prices Mkt2 pos_stock 0 w * diff_inv - pr 0 w + closing_value_process Mkt2 pf 0 w" using arb_uvp by simp
-    also have "... = constant_image (prices Mkt pos_stock 0) * diff_inv - pr 0 w + closing_value_process Mkt2 pf 0 w"
+    also have "... = prices Mkt2 pos_stock 0 w * diff_inv - pr 0 w + cls_val_process Mkt2 pf 0 w" using arb_uvp by simp
+    also have "... = constant_image (prices Mkt pos_stock 0) * diff_inv - pr 0 w + cls_val_process Mkt2 pf 0 w"
     proof -
       have f1: "prices Mkt pos_stock = prices Mkt2 pos_stock"
         using \<open>coincides_on Mkt Mkt2 (stocks Mkt)\<close>  in_stock unfolding coincides_on_def by blast
@@ -2423,104 +2329,104 @@ proof -
       then show ?thesis
         using f1 by simp
     qed
-    also have "... = (\<pi> - initial_value pf) - pr 0 w + closing_value_process Mkt2 pf 0 w"
+    also have "... = (\<pi> - initial_value pf) - pr 0 w + cls_val_process Mkt2 pf 0 w"
       using \<open>0 < constant_image (prices Mkt pos_stock 0)\<close> assms by simp
-    also have "... = (\<pi> - initial_value pf) - \<pi> + closing_value_process Mkt2 pf 0 w" using \<open>price_structure der matur \<pi> pr\<close>
+    also have "... = (\<pi> - initial_value pf) - \<pi> + cls_val_process Mkt2 pf 0 w" using \<open>price_structure der matur \<pi> pr\<close>
       price_structure_init[of der matur \<pi> pr] by (simp add: \<open>w \<in> space M\<close>)
     also have "... = (\<pi> - initial_value pf) - \<pi> + (initial_value pf)" using initial_valueI assms unfolding replicating_portfolio_def
-      using \<open>w \<in> space M\<close> coincides_stocks_closing_value_process self_financingE readable
+      using \<open>w \<in> space M\<close> coincides_stocks_cls_val_process self_financingE readable
       by (metis (no_types, hide_lams) support_adapt_def stock_portfolio_def subsetCE)
     also have "... = 0" by simp
-    finally show "closing_value_process Mkt2 contr_pf 0 w = 0" .
+    finally show "cls_val_process Mkt2 contr_pf 0 w = 0" .
   qed
-  show "0 < diff_inv \<longrightarrow> (AE w in M. 0 < closing_value_process Mkt2 contr_pf matur w)"
+  show "0 < diff_inv \<longrightarrow> (AE w in M. 0 < cls_val_process Mkt2 contr_pf matur w)"
   proof
     assume "0 < diff_inv"
-    show "AE w in M. 0 < closing_value_process Mkt2 contr_pf matur w"
+    show "AE w in M. 0 < cls_val_process Mkt2 contr_pf matur w"
     proof (rule AE_mp)
       have "AE w in M. prices Mkt2 x matur w = der w" using \<open>price_structure der matur \<pi> pr\<close> \<open>prices Mkt2 x = pr\<close>
         unfolding price_structure_def by auto
-      moreover have "AE w in M. closing_value_process Mkt2 pf matur  w = der w" using assms coincides_stocks_closing_value_process[of Mkt pf Mkt2]
+      moreover have "AE w in M. cls_val_process Mkt2 pf matur  w = der w" using assms coincides_stocks_cls_val_process[of Mkt pf Mkt2]
         \<open>coincides_on Mkt Mkt2 (stocks Mkt)\<close> unfolding replicating_portfolio_def by auto
-      ultimately show "AE w in M. prices Mkt2 x matur w = closing_value_process Mkt2 pf matur w" by auto
-      show "AE w in M. prices Mkt2 x matur w = closing_value_process Mkt2 pf matur w \<longrightarrow> 0 < closing_value_process Mkt2 contr_pf matur w"
+      ultimately show "AE w in M. prices Mkt2 x matur w = cls_val_process Mkt2 pf matur w" by auto
+      show "AE w in M. prices Mkt2 x matur w = cls_val_process Mkt2 pf matur w \<longrightarrow> 0 < cls_val_process Mkt2 contr_pf matur w"
       proof (rule AE_I2, rule impI)
         fix w
         assume "w\<in> space M"
-        and "prices Mkt2 x matur w = closing_value_process Mkt2 pf matur w"
-        have "closing_value_process Mkt2 contr_pf matur w = closing_value_process Mkt2 arb_pf matur w + closing_value_process Mkt2 pf matur w"
-          using sum_closing_value_process[of arb_pf pf Mkt2]
+        and "prices Mkt2 x matur w = cls_val_process Mkt2 pf matur w"
+        have "cls_val_process Mkt2 contr_pf matur w = cls_val_process Mkt2 arb_pf matur w + cls_val_process Mkt2 pf matur w"
+          using sum_cls_val_process[of arb_pf pf Mkt2]
           \<open>portfolio arb_pf\<close> assms replicating_portfolio_def stock_portfolio_def by blast
-        also have "... = prices Mkt2 pos_stock matur w * diff_inv - pr matur w + closing_value_process Mkt2 pf matur w"
+        also have "... = prices Mkt2 pos_stock matur w * diff_inv - pr matur w + cls_val_process Mkt2 pf matur w"
           using arb_uvp by simp
-        also have "... = prices Mkt2 pos_stock matur w * diff_inv - prices Mkt2 x matur w + closing_value_process Mkt2 pf matur w"
+        also have "... = prices Mkt2 pos_stock matur w * diff_inv - prices Mkt2 x matur w + cls_val_process Mkt2 pf matur w"
           using \<open>prices Mkt2 x = pr\<close> by simp
-        also have "... = prices Mkt2 pos_stock matur w * diff_inv" using \<open>prices Mkt2 x matur w = closing_value_process Mkt2 pf matur w\<close>
+        also have "... = prices Mkt2 pos_stock matur w * diff_inv" using \<open>prices Mkt2 x matur w = cls_val_process Mkt2 pf matur w\<close>
           by simp
         also have "... > 0" using positive \<open>0 < diff_inv\<close>
           by (metis \<open>coincides_on Mkt Mkt2 (stocks Mkt)\<close> coincides_on_def in_stock mult_pos_pos)
-        finally have "closing_value_process Mkt2 contr_pf matur w > 0".
-        thus "0 < closing_value_process Mkt2 contr_pf matur w" by simp
+        finally have "cls_val_process Mkt2 contr_pf matur w > 0".
+        thus "0 < cls_val_process Mkt2 contr_pf matur w" by simp
       qed
     qed
   qed
-  show "diff_inv < 0 \<longrightarrow> (AE w in M. 0 > closing_value_process Mkt2 contr_pf matur w)"
+  show "diff_inv < 0 \<longrightarrow> (AE w in M. 0 > cls_val_process Mkt2 contr_pf matur w)"
   proof
     assume "diff_inv < 0"
-    show "AE w in M. 0 > closing_value_process Mkt2 contr_pf matur w"
+    show "AE w in M. 0 > cls_val_process Mkt2 contr_pf matur w"
     proof (rule AE_mp)
       have "AE w in M. prices Mkt2 x matur w = der w" using \<open>price_structure der matur \<pi> pr\<close> \<open>prices Mkt2 x = pr\<close>
         unfolding price_structure_def by auto
-      moreover have "AE w in M. closing_value_process Mkt2 pf matur  w = der w" using assms coincides_stocks_closing_value_process[of Mkt pf Mkt2]
+      moreover have "AE w in M. cls_val_process Mkt2 pf matur  w = der w" using assms coincides_stocks_cls_val_process[of Mkt pf Mkt2]
         \<open>coincides_on Mkt Mkt2 (stocks Mkt)\<close> unfolding replicating_portfolio_def by auto
-      ultimately show "AE w in M. prices Mkt2 x matur w = closing_value_process Mkt2 pf matur w" by auto
-      show "AE w in M. prices Mkt2 x matur w = closing_value_process Mkt2 pf matur w \<longrightarrow> 0 > closing_value_process Mkt2 contr_pf matur w"
+      ultimately show "AE w in M. prices Mkt2 x matur w = cls_val_process Mkt2 pf matur w" by auto
+      show "AE w in M. prices Mkt2 x matur w = cls_val_process Mkt2 pf matur w \<longrightarrow> 0 > cls_val_process Mkt2 contr_pf matur w"
       proof (rule AE_I2, rule impI)
         fix w
         assume "w\<in> space M"
-        and "prices Mkt2 x matur w = closing_value_process Mkt2 pf matur w"
-        have "closing_value_process Mkt2 contr_pf matur w = closing_value_process Mkt2 arb_pf matur w + closing_value_process Mkt2 pf matur w"
-          using sum_closing_value_process[of arb_pf pf Mkt2]
+        and "prices Mkt2 x matur w = cls_val_process Mkt2 pf matur w"
+        have "cls_val_process Mkt2 contr_pf matur w = cls_val_process Mkt2 arb_pf matur w + cls_val_process Mkt2 pf matur w"
+          using sum_cls_val_process[of arb_pf pf Mkt2]
           \<open>portfolio arb_pf\<close> assms replicating_portfolio_def stock_portfolio_def by blast
-        also have "... = prices Mkt2 pos_stock matur w * diff_inv - pr matur w + closing_value_process Mkt2 pf matur w"
+        also have "... = prices Mkt2 pos_stock matur w * diff_inv - pr matur w + cls_val_process Mkt2 pf matur w"
           using arb_uvp by simp
-        also have "... = prices Mkt2 pos_stock matur w * diff_inv - prices Mkt2 x matur w + closing_value_process Mkt2 pf matur w"
+        also have "... = prices Mkt2 pos_stock matur w * diff_inv - prices Mkt2 x matur w + cls_val_process Mkt2 pf matur w"
           using \<open>prices Mkt2 x = pr\<close> by simp
-        also have "... = prices Mkt2 pos_stock matur w * diff_inv" using \<open>prices Mkt2 x matur w = closing_value_process Mkt2 pf matur w\<close>
+        also have "... = prices Mkt2 pos_stock matur w * diff_inv" using \<open>prices Mkt2 x matur w = cls_val_process Mkt2 pf matur w\<close>
           by simp
         also have "... < 0" using positive \<open>diff_inv < 0\<close>
           by (metis \<open>coincides_on Mkt Mkt2 (stocks Mkt)\<close> coincides_on_def in_stock mult_pos_neg)
-        finally have "closing_value_process Mkt2 contr_pf matur w < 0".
-        thus "0 > closing_value_process Mkt2 contr_pf matur w" by simp
+        finally have "cls_val_process Mkt2 contr_pf matur w < 0".
+        thus "0 > cls_val_process Mkt2 contr_pf matur w" by simp
       qed
     qed
   qed
 qed
 
-lemma (in disc_equity_market) mult_comp_closing_value_process_measurable':
-  assumes "closing_value_process Mkt2 pf n \<in>borel_measurable (F n)"
+lemma (in disc_equity_market) mult_comp_cls_val_process_measurable':
+  assumes "cls_val_process Mkt2 pf n \<in>borel_measurable (F n)"
   and "portfolio pf"
   and "qty n \<in> borel_measurable (F n)"
   and "0 \<noteq> n"
-shows "closing_value_process Mkt2 (pf_mult_comp pf qty) n \<in> borel_measurable (F n)"
+shows "cls_val_process Mkt2 (qty_mult_comp pf qty) n \<in> borel_measurable (F n)"
 proof -
   have "\<exists>m. n = Suc m" using assms by presburger
   from this obtain m where "n = Suc m" by auto
-  hence "closing_value_process Mkt2 (pf_mult_comp pf qty) (Suc m) \<in> borel_measurable (F (Suc m))"
-    using  mult_comp_closing_value_process_Suc[of pf Mkt2 qty] borel_measurable_times[of "closing_value_process Mkt2 pf (Suc m)" "F (Suc m)" "qty (Suc m)"]
+  hence "cls_val_process Mkt2 (qty_mult_comp pf qty) (Suc m) \<in> borel_measurable (F (Suc m))"
+    using  mult_comp_cls_val_process_Suc[of pf Mkt2 qty] borel_measurable_times[of "cls_val_process Mkt2 pf (Suc m)" "F (Suc m)" "qty (Suc m)"]
       assms \<open>n= Suc m\<close> by presburger
   thus ?thesis using \<open>n = Suc m\<close> by simp
 qed
 
 
-lemma (in disc_equity_market) mult_comp_closing_value_process_measurable:
-  assumes "\<forall>n. closing_value_process Mkt2 pf n \<in>borel_measurable (F n)"
+lemma (in disc_equity_market) mult_comp_cls_val_process_measurable:
+  assumes "\<forall>n. cls_val_process Mkt2 pf n \<in>borel_measurable (F n)"
   and "portfolio pf"
   and "\<forall>n. qty (Suc n) \<in> borel_measurable (F n)"
-shows "\<forall>n. closing_value_process Mkt2 (pf_mult_comp pf qty) n \<in> borel_measurable (F n)"
+shows "\<forall>n. cls_val_process Mkt2 (qty_mult_comp pf qty) n \<in> borel_measurable (F n)"
 proof
   fix n
-  show "closing_value_process Mkt2 (pf_mult_comp pf qty) n \<in> borel_measurable (F n)"
+  show "cls_val_process Mkt2 (qty_mult_comp pf qty) n \<in> borel_measurable (F n)"
   proof (cases "n=0")
     case False
     hence "\<exists>m. n = Suc m" by presburger
@@ -2528,17 +2434,17 @@ proof
     have "qty n \<in> borel_measurable (F n)"
     using Suc_n_not_le_n \<open>n = Suc m\<close> assms(3) increasing_measurable_info nat_le_linear by blast
     hence "qty (Suc m) \<in> borel_measurable (F (Suc m))" using \<open>n = Suc m\<close> by simp
-    hence "closing_value_process Mkt2 (pf_mult_comp pf qty) (Suc m) \<in> borel_measurable (F (Suc m))"
-      using  mult_comp_closing_value_process_Suc[of pf Mkt2 qty] borel_measurable_times[of "closing_value_process Mkt2 pf (Suc m)" "F (Suc m)" "qty (Suc m)"]
+    hence "cls_val_process Mkt2 (qty_mult_comp pf qty) (Suc m) \<in> borel_measurable (F (Suc m))"
+      using  mult_comp_cls_val_process_Suc[of pf Mkt2 qty] borel_measurable_times[of "cls_val_process Mkt2 pf (Suc m)" "F (Suc m)" "qty (Suc m)"]
         assms \<open>n= Suc m\<close> by presburger
     thus ?thesis using \<open>n = Suc m\<close> by simp
   next
     case True
     have "qty (Suc 0) \<in> borel_measurable (F 0)" using assms by simp
-    moreover have "closing_value_process Mkt2 pf 0 \<in> borel_measurable (F 0)" using assms  by simp
-    ultimately have "(\<lambda>w. closing_value_process Mkt2 pf 0 w * qty (Suc 0) w) \<in> borel_measurable (F 0)" by simp
-    thus ?thesis using assms(2) True mult_comp_closing_value_process0
-      by (simp add: \<open>(\<lambda>w. closing_value_process Mkt2 pf 0 w * qty (Suc 0) w) \<in> borel_measurable (F 0)\<close> mult_comp_closing_value_process0 measurable_cong)
+    moreover have "cls_val_process Mkt2 pf 0 \<in> borel_measurable (F 0)" using assms  by simp
+    ultimately have "(\<lambda>w. cls_val_process Mkt2 pf 0 w * qty (Suc 0) w) \<in> borel_measurable (F 0)" by simp
+    thus ?thesis using assms(2) True mult_comp_cls_val_process0
+      by (simp add: \<open>(\<lambda>w. cls_val_process Mkt2 pf 0 w * qty (Suc 0) w) \<in> borel_measurable (F 0)\<close> mult_comp_cls_val_process0 measurable_cong)
   qed
 qed
 
@@ -2546,12 +2452,12 @@ qed
 
 
 
-lemma (in disc_equity_market) mult_comp_value_process_measurable:
-  assumes "value_process Mkt2 pf n \<in>borel_measurable (F n)"
+lemma (in disc_equity_market) mult_comp_val_process_measurable:
+  assumes "val_process Mkt2 pf n \<in>borel_measurable (F n)"
   and "portfolio pf"
   and "qty (Suc n) \<in> borel_measurable (F n)"
-shows "value_process Mkt2 (pf_mult_comp pf qty) n \<in> borel_measurable (F n)"
-  using  mult_comp_value_process[of pf Mkt2 qty] borel_measurable_times[of "value_process Mkt2 pf n" "F n" "qty (Suc n)"]
+shows "val_process Mkt2 (qty_mult_comp pf qty) n \<in> borel_measurable (F n)"
+  using  mult_comp_val_process[of pf Mkt2 qty] borel_measurable_times[of "val_process Mkt2 pf n" "F n" "qty (Suc n)"]
   assms by presburger
 
 lemma (in disc_market_pos_stock) repl_fair_price_unique:
@@ -2584,7 +2490,7 @@ proof -
       qed
 
     define arb_pf where "arb_pf = (\<lambda> (x::'b) (n::nat) (w::'a). 0::real)(x:= (\<lambda> n w. -1), pos_stock := (\<lambda> n w. diff_inv))"
-    define contr_pf where "contr_pf = pf_sum arb_pf pf"
+    define contr_pf where "contr_pf = qty_sum arb_pf pf"
     have 1:"0 \<noteq> diff_inv \<longrightarrow> self_financing Mkt2 contr_pf"
       using arbitrage_portfolio_properties[of der matur \<pi> pr pf Mkt2 x diff_inv arb_pf contr_pf]
       using  \<open>coincides_on Mkt Mkt2 (stocks Mkt)\<close> \<open>price_structure der matur \<pi> pr\<close> \<open>prices Mkt2 x = pr\<close>
@@ -2593,15 +2499,15 @@ proof -
       using arbitrage_portfolio_properties[of der matur \<pi> pr pf Mkt2 x diff_inv arb_pf contr_pf]
       using  \<open>coincides_on Mkt Mkt2 (stocks Mkt)\<close> \<open>price_structure der matur \<pi> pr\<close> \<open>prices Mkt2 x = pr\<close>
         \<open>x \<notin> stocks Mkt\<close> arb_pf_def assms(1) contr_pf_def diff_inv_def by blast
-    have 3:"0 \<noteq> diff_inv \<longrightarrow> (\<forall>w\<in> space M. closing_value_process Mkt2 contr_pf 0 w = 0)"
+    have 3:"0 \<noteq> diff_inv \<longrightarrow> (\<forall>w\<in> space M. cls_val_process Mkt2 contr_pf 0 w = 0)"
       using arbitrage_portfolio_properties[of der matur \<pi> pr pf Mkt2 x diff_inv arb_pf contr_pf]
       using  \<open>coincides_on Mkt Mkt2 (stocks Mkt)\<close> \<open>price_structure der matur \<pi> pr\<close> \<open>prices Mkt2 x = pr\<close>
         \<open>x \<notin> stocks Mkt\<close> arb_pf_def assms(1) contr_pf_def diff_inv_def by blast
-    have 4: "0 < diff_inv \<longrightarrow> (AE w in M. 0 < closing_value_process Mkt2 contr_pf matur w)"
+    have 4: "0 < diff_inv \<longrightarrow> (AE w in M. 0 < cls_val_process Mkt2 contr_pf matur w)"
       using arbitrage_portfolio_properties[of der matur \<pi> pr pf Mkt2 x diff_inv arb_pf contr_pf]
       using  \<open>coincides_on Mkt Mkt2 (stocks Mkt)\<close> \<open>price_structure der matur \<pi> pr\<close> \<open>prices Mkt2 x = pr\<close>
         \<open>x \<notin> stocks Mkt\<close> arb_pf_def assms(1) contr_pf_def diff_inv_def by blast
-    have 5: "diff_inv < 0 \<longrightarrow> (AE w in M. 0 > closing_value_process Mkt2 contr_pf matur w)"
+    have 5: "diff_inv < 0 \<longrightarrow> (AE w in M. 0 > cls_val_process Mkt2 contr_pf matur w)"
       using arbitrage_portfolio_properties[of der matur \<pi> pr pf Mkt2 x diff_inv arb_pf contr_pf]
       using  \<open>coincides_on Mkt Mkt2 (stocks Mkt)\<close> \<open>price_structure der matur \<pi> pr\<close> \<open>prices Mkt2 x = pr\<close>
         \<open>x \<notin> stocks Mkt\<close> arb_pf_def assms(1) contr_pf_def diff_inv_def by blast
@@ -2622,7 +2528,7 @@ proof -
       using arbitrage_portfolio_properties[of der matur \<pi> pr pf Mkt2 x diff_inv arb_pf contr_pf]
       using  \<open>coincides_on Mkt Mkt2 (stocks Mkt)\<close> \<open>price_structure der matur \<pi> pr\<close> \<open>prices Mkt2 x = pr\<close>
         \<open>x \<notin> stocks Mkt\<close> arb_pf_def assms(1) contr_pf_def diff_inv_def by blast
-    have 9: "0 \<noteq> diff_inv \<longrightarrow> closing_value_process Mkt2 contr_pf matur \<in> borel_measurable (F matur)"
+    have 9: "0 \<noteq> diff_inv \<longrightarrow> cls_val_process Mkt2 contr_pf matur \<in> borel_measurable (F matur)"
     proof
       assume "0 \<noteq> diff_inv"
       have 10:"\<forall> asset \<in> support_set arb_pf \<union> support_set pf. prices Mkt2 asset matur \<in> borel_measurable (F matur)"
@@ -2656,7 +2562,7 @@ proof -
       moreover have "\<forall>asset\<in>support_set contr_pf. contr_pf asset matur \<in> borel_measurable (F matur)"
         using \<open>0 \<noteq> diff_inv \<longrightarrow>trading_strategy contr_pf\<close> \<open>0 \<noteq> diff_inv\<close>
         by (metis adapt_stoch_proc_def disc_filtr_prob_space.predict_imp_adapt disc_filtr_prob_space_axioms trading_strategy_def)
-      ultimately show "closing_value_process Mkt2 contr_pf matur \<in> borel_measurable (F matur)"
+      ultimately show "cls_val_process Mkt2 contr_pf matur \<in> borel_measurable (F matur)"
       proof-
         have "\<forall>asset\<in>support_set contr_pf. contr_pf asset (Suc matur) \<in> borel_measurable (F matur)"
            using \<open>0 \<noteq> diff_inv \<longrightarrow>trading_strategy contr_pf\<close> \<open>0 \<noteq> diff_inv\<close>
@@ -2668,7 +2574,7 @@ proof -
     qed
     {
       assume "0 > diff_inv"
-      define opp_pf where "opp_pf = pf_mult_comp contr_pf (\<lambda> n w. -1)"
+      define opp_pf where "opp_pf = qty_mult_comp contr_pf (\<lambda> n w. -1)"
       have "arbitrage_process Mkt2 opp_pf"
       proof (rule arbitrage_processI, rule exI, intro conjI)
         show "self_financing Mkt2 opp_pf" using 1 \<open>0 > diff_inv\<close> mult_time_constant_self_financing[of contr_pf] 8
@@ -2678,50 +2584,50 @@ proof -
           show "trading_strategy contr_pf" using 2 \<open>0 > diff_inv\<close> by auto
           show "borel_predict_stoch_proc F (\<lambda>n w. - 1)" by (simp add: constant_process_borel_predictable)
         qed
-        show "\<forall>w\<in>space M. closing_value_process Mkt2 opp_pf 0 w = 0"
+        show "\<forall>w\<in>space M. cls_val_process Mkt2 opp_pf 0 w = 0"
         proof
           fix w
           assume "w\<in> space M"
-          show "closing_value_process Mkt2 opp_pf 0 w = 0" using 3 8 \<open>0 > diff_inv\<close>
-            using \<open>w \<in> space M\<close> mult_comp_closing_value_process0 opp_pf_def by fastforce
+          show "cls_val_process Mkt2 opp_pf 0 w = 0" using 3 8 \<open>0 > diff_inv\<close>
+            using \<open>w \<in> space M\<close> mult_comp_cls_val_process0 opp_pf_def by fastforce
         qed
-        have "AE w in M. 0 < closing_value_process Mkt2 opp_pf matur w"
+        have "AE w in M. 0 < cls_val_process Mkt2 opp_pf matur w"
         proof (rule AE_mp)
-          show "AE w in M. 0 > closing_value_process Mkt2 contr_pf matur w" using 5 \<open>0 > diff_inv\<close> by auto
-          show "AE w in M. closing_value_process Mkt2 contr_pf matur w < 0 \<longrightarrow> 0 < closing_value_process Mkt2 opp_pf matur w"
+          show "AE w in M. 0 > cls_val_process Mkt2 contr_pf matur w" using 5 \<open>0 > diff_inv\<close> by auto
+          show "AE w in M. cls_val_process Mkt2 contr_pf matur w < 0 \<longrightarrow> 0 < cls_val_process Mkt2 opp_pf matur w"
           proof
             fix w
             assume "w\<in> space M"
-            show "closing_value_process Mkt2 contr_pf matur w < 0 \<longrightarrow> 0 < closing_value_process Mkt2 opp_pf matur w"
+            show "cls_val_process Mkt2 contr_pf matur w < 0 \<longrightarrow> 0 < cls_val_process Mkt2 opp_pf matur w"
             proof
-              assume "closing_value_process Mkt2 contr_pf matur w < 0"
-              show "0 < closing_value_process Mkt2 opp_pf matur w"
+              assume "cls_val_process Mkt2 contr_pf matur w < 0"
+              show "0 < cls_val_process Mkt2 opp_pf matur w"
               proof (cases "matur = 0")
                 case False
                 hence "\<exists>m. Suc m = matur" by presburger
                 from this obtain m where "Suc m = matur" by auto
-                hence "0 < closing_value_process Mkt2 opp_pf (Suc m) w" using 3 8 \<open>0 > diff_inv\<close> \<open>w \<in> space M\<close> mult_comp_closing_value_process_Suc  opp_pf_def
-                  using \<open>closing_value_process Mkt2 contr_pf matur w < 0\<close> by fastforce
+                hence "0 < cls_val_process Mkt2 opp_pf (Suc m) w" using 3 8 \<open>0 > diff_inv\<close> \<open>w \<in> space M\<close> mult_comp_cls_val_process_Suc  opp_pf_def
+                  using \<open>cls_val_process Mkt2 contr_pf matur w < 0\<close> by fastforce
                 thus ?thesis using \<open>Suc m = matur\<close> by simp
               next
                 case True
-                thus ?thesis using 3 8 \<open>0 > diff_inv\<close> \<open>w \<in> space M\<close> mult_comp_closing_value_process0 opp_pf_def
-                  using \<open>closing_value_process Mkt2 contr_pf matur w < 0\<close> by auto
+                thus ?thesis using 3 8 \<open>0 > diff_inv\<close> \<open>w \<in> space M\<close> mult_comp_cls_val_process0 opp_pf_def
+                  using \<open>cls_val_process Mkt2 contr_pf matur w < 0\<close> by auto
               qed
             qed
           qed
         qed
-        thus "AE w in M. 0 \<le> closing_value_process Mkt2 opp_pf matur w" by auto
-        show "0 < prob {w \<in> space M. 0 < closing_value_process Mkt2 opp_pf matur w}"
+        thus "AE w in M. 0 \<le> cls_val_process Mkt2 opp_pf matur w" by auto
+        show "0 < prob {w \<in> space M. 0 < cls_val_process Mkt2 opp_pf matur w}"
         proof -
-          let ?P = "{w\<in> space M. 0 < closing_value_process Mkt2 opp_pf matur w}"
-          have "closing_value_process Mkt2 opp_pf matur \<in> borel_measurable (F matur)" (*unfolding opp_pf_def *)
+          let ?P = "{w\<in> space M. 0 < cls_val_process Mkt2 opp_pf matur w}"
+          have "cls_val_process Mkt2 opp_pf matur \<in> borel_measurable (F matur)" (*unfolding opp_pf_def *)
           proof -
-            have "closing_value_process Mkt2 contr_pf matur \<in> borel_measurable (F matur)" using 9 \<open>0 > diff_inv\<close> by simp
+            have "cls_val_process Mkt2 contr_pf matur \<in> borel_measurable (F matur)" using 9 \<open>0 > diff_inv\<close> by simp
             moreover have "portfolio contr_pf" using 8 \<open>0 > diff_inv\<close> by simp
             moreover have "(\<lambda>w. - 1) \<in> borel_measurable (F matur)" by (simp add:constant_process_borel_adapted)
             ultimately show ?thesis
-              using mult_comp_closing_value_process_measurable
+              using mult_comp_cls_val_process_measurable
             proof -
               have "diff_inv \<noteq> 0"
                 using \<open>diff_inv < 0\<close> by blast
@@ -2729,17 +2635,17 @@ proof -
                 by (metis "1")
               then show ?thesis
                 by (metis (no_types) \<open>(\<lambda>w. - 1) \<in> borel_measurable (F matur)\<close> \<open>portfolio contr_pf\<close>
-                    \<open>self_financing Mkt2 opp_pf\<close> \<open>closing_value_process Mkt2 contr_pf matur \<in> borel_measurable (F matur)\<close>
-                    mult_comp_value_process_measurable opp_pf_def self_financingE)
+                    \<open>self_financing Mkt2 opp_pf\<close> \<open>cls_val_process Mkt2 contr_pf matur \<in> borel_measurable (F matur)\<close>
+                    mult_comp_val_process_measurable opp_pf_def self_financingE)
             qed
           qed
           moreover have "space M = space (F matur)"
             using filtration by (simp add: filtration_def subalgebra_def)
-          ultimately have "?P \<in> sets (F matur)" using borel_measurable_iff_greater[of "value_process Mkt2 contr_pf matur" "F matur"]
+          ultimately have "?P \<in> sets (F matur)" using borel_measurable_iff_greater[of "val_process Mkt2 contr_pf matur" "F matur"]
             by auto
           hence "?P \<in> sets M" by (meson filtration filtration_def subalgebra_def subsetCE)
-          hence "measure M ?P = 1" using  prob_Collect_eq_1[of "\<lambda>x. 0 < closing_value_process Mkt2 opp_pf matur x"]
-             \<open>AE w in M. 0 < closing_value_process Mkt2 opp_pf matur w\<close> \<open>0 > diff_inv\<close> by blast
+          hence "measure M ?P = 1" using  prob_Collect_eq_1[of "\<lambda>x. 0 < cls_val_process Mkt2 opp_pf matur x"]
+             \<open>AE w in M. 0 < cls_val_process Mkt2 opp_pf matur w\<close> \<open>0 > diff_inv\<close> by blast
           thus ?thesis by simp
         qed
       qed
@@ -2757,18 +2663,18 @@ proof -
         proof (rule arbitrage_processI, rule exI, intro conjI)
           show "self_financing Mkt2 contr_pf" using 1 \<open>0 < diff_inv\<close> by auto
           show "trading_strategy contr_pf" using 2 \<open>0 < diff_inv\<close> by auto
-          show "\<forall>w\<in>space M. closing_value_process Mkt2 contr_pf 0 w = 0" using 3 \<open>0 < diff_inv\<close> by auto
-          show "AE w in M. 0 \<le> closing_value_process Mkt2 contr_pf matur w" using 4 \<open>0 < diff_inv\<close> by auto
-          show "0 < prob {w \<in> space M. 0 < closing_value_process Mkt2 contr_pf matur w}"
+          show "\<forall>w\<in>space M. cls_val_process Mkt2 contr_pf 0 w = 0" using 3 \<open>0 < diff_inv\<close> by auto
+          show "AE w in M. 0 \<le> cls_val_process Mkt2 contr_pf matur w" using 4 \<open>0 < diff_inv\<close> by auto
+          show "0 < prob {w \<in> space M. 0 < cls_val_process Mkt2 contr_pf matur w}"
             proof -
-              let ?P = "{w\<in> space M. 0 < closing_value_process Mkt2 contr_pf matur w}"
-              have "closing_value_process Mkt2 contr_pf matur \<in> borel_measurable (F matur)" using 9 \<open>0 < diff_inv\<close> by auto
+              let ?P = "{w\<in> space M. 0 < cls_val_process Mkt2 contr_pf matur w}"
+              have "cls_val_process Mkt2 contr_pf matur \<in> borel_measurable (F matur)" using 9 \<open>0 < diff_inv\<close> by auto
               moreover have "space M = space (F matur)"
                 using filtration  by (simp add: filtration_def subalgebra_def)
-              ultimately have "?P \<in> sets (F matur)" using borel_measurable_iff_greater[of "value_process Mkt2 contr_pf matur" "F matur"]
+              ultimately have "?P \<in> sets (F matur)" using borel_measurable_iff_greater[of "val_process Mkt2 contr_pf matur" "F matur"]
                 by auto
               hence "?P \<in> sets M" by (meson filtration filtration_def subalgebra_def subsetCE)
-              hence "measure M ?P = 1" using  prob_Collect_eq_1[of "\<lambda>x. 0 < closing_value_process Mkt2 contr_pf matur x"]
+              hence "measure M ?P = 1" using  prob_Collect_eq_1[of "\<lambda>x. 0 < cls_val_process Mkt2 contr_pf matur x"]
                  4 \<open>0 < diff_inv\<close> by blast
               thus ?thesis by simp
             qed
@@ -2849,31 +2755,7 @@ qed
 
 
 
-(*lemma (in prob_space) disc_rfr_constant_time_pos:
-  assumes "-1 < r"
-and "init_triv_filt M F"
-shows "\<exists>c > 0. \<forall>w \<in> space (F 0).  (disc_rfr_proc r n) w = c"
-proof -
-  have "space (F 0) = space M" using assms by (simp add: init_triv_filt_def filtration_def subalgebra_def)
-  have  ex: "\<exists>c. \<forall>w \<in> space (F 0).  (disc_rfr_proc r n) w = c"
-  proof (rule triv_measurable_cst)
-    show "space (F 0) = space M" using \<open>space (F 0) = space M\<close> .
-    show "sets (F 0) = {{}, space M}" using assms by (simp add: init_triv_filt_def)
-    show "(disc_rfr_proc r n) \<in> borel_measurable (F 0)" using disc_rfr_proc_nonrandom by blast
-    show "space M \<noteq> {}" by (simp add:not_empty)
-  qed
-  from this obtain c where "\<forall>w \<in> space (F 0).  (disc_rfr_proc r n) w = c" by auto note cprops = this
-  have "c>0"
-  proof -
-    have "\<exists> w. w\<in> space M" using subprob_not_empty by blast
-    from this obtain w where "w\<in> space M" by auto
-    hence "c = disc_rfr_proc r n w" using cprops \<open>space (F 0) = space M\<close> by simp
-    also have "... > 0" using disc_rfr_proc_positive[of r n] assms by simp
-    finally show ?thesis .
-  qed
-  thus ?thesis using ex
-    using cprops by blast
-qed*)
+
 
 lemma (in prob_space) disc_rfr_constant_time_pos:
   assumes "-1 < r"
@@ -2937,18 +2819,13 @@ lemma discount_factor_positive:
   assumes "-1 < r"
   shows "\<And>n w . 0 < discount_factor r n w" using assms disc_rfr_proc_positive unfolding discount_factor_def by auto
 
-(*lemma (in disc_equity_market) discount_factor_constant_time_pos:
-  assumes "-1 < r"
-
-shows "\<exists>c > 0. \<forall>w \<in> space (F 0).  (discount_factor r n) w = c"  using disc_rfr_constant_time_pos unfolding discount_factor_def
-  by (metis assms inverse_positive_iff_positive) *)
 
 lemma (in prob_space) discount_factor_constant_time_pos:
   assumes "-1 < r"
 shows "\<exists>c > 0. \<forall>w \<in> space M.  (discount_factor r n) w = c"  using  disc_rfr_constant_time_pos unfolding discount_factor_def
   by (metis assms inverse_positive_iff_positive)
 
-(* todo: merge into one locale? *)
+
 locale rsk_free_asset =
   fixes Mkt r risk_free_asset
   assumes acceptable_rate: "-1 < r"
@@ -2968,8 +2845,7 @@ subsubsection \<open>Discounted value of a stochastic process\<close>
 definition discounted_value where
   "discounted_value r X = (\<lambda> n w. discount_factor r n w * X n w)"
 
-(*definition (in rfr_disc_equity_market) discounted_value where
-  "discounted_value value = (\<lambda> n w. discount_factor r n w * value n w)"*)
+
 
 lemma (in rfr_disc_equity_market) discounted_rfr:
   shows "discounted_value r (prices Mkt risk_free_asset) n w = 1" unfolding discounted_value_def discount_factor_def
@@ -3068,7 +2944,6 @@ lemma (in prob_space) discounted_integrable:
 proof -
   have "\<exists>c> 0. \<forall>w \<in> space M.  (discount_factor r n) w = c" using discount_factor_constant_time_pos assms by simp
   from this obtain c where "c > 0" and "\<forall>w \<in> space M.  (discount_factor r n) w = c" by auto note cprops = this
-  (*have "space (F 0) = space M" using filtration by (simp add: filtration_def subalgebra_def)*)
   hence "\<forall>w \<in> space M. discount_factor r n w = c" using cprops  by simp
   hence "\<forall>w \<in> space N. discount_factor r n w = c" using assms by simp
   thus "integrable N (\<lambda>w. discount_factor r n w * X n w)"
@@ -3083,16 +2958,16 @@ definition (in rfr_disc_equity_market) risk_neutral_prob where
   "risk_neutral_prob N \<longleftrightarrow> (prob_space N) \<and> (\<forall> asset \<in> stocks Mkt. martingale N F (discounted_value r (prices Mkt asset)))"
 
 
-lemma integrable_value_process:
+lemma integrable_val_process:
   assumes "\<forall> asset \<in> support_set pf. integrable M (\<lambda>w. prices Mkt asset n w * pf asset (Suc n) w)"
-  shows "integrable M (value_process Mkt pf n)"
+  shows "integrable M (val_process Mkt pf n)"
 proof (cases "portfolio pf")
   case False
-  thus ?thesis unfolding value_process_def by simp
+  thus ?thesis unfolding val_process_def by simp
 next
   case True
-  hence "value_process Mkt pf n = (\<lambda>w. \<Sum>x\<in>support_set pf. prices Mkt x n w * pf x (Suc n) w)"
-    unfolding value_process_def by simp
+  hence "val_process Mkt pf n = (\<lambda>w. \<Sum>x\<in>support_set pf. prices Mkt x n w * pf x (Suc n) w)"
+    unfolding val_process_def by simp
   moreover have "integrable M (\<lambda>w. \<Sum>x\<in>support_set pf. prices Mkt x n w * pf x (Suc n) w)" using assms by simp
   ultimately show ?thesis by simp
 qed
@@ -3100,10 +2975,10 @@ qed
 lemma integrable_self_fin_uvp:
   assumes "\<forall> asset \<in> support_set pf. integrable M (\<lambda>w. prices Mkt asset n w * pf asset (Suc n) w)"
   and "self_financing Mkt pf"
-shows "integrable M (closing_value_process Mkt pf n)"
+shows "integrable M (cls_val_process Mkt pf n)"
 proof -
-  have "value_process Mkt pf n = closing_value_process Mkt pf n" using assms by (simp add:self_financingE)
-  moreover have "integrable M (value_process Mkt pf n)" using assms by (simp add:integrable_value_process)
+  have "val_process Mkt pf n = cls_val_process Mkt pf n" using assms by (simp add:self_financingE)
+  moreover have "integrable M (val_process Mkt pf n)" using assms by (simp add:integrable_val_process)
   ultimately show ?thesis by simp
 qed
 
@@ -3215,57 +3090,57 @@ lemma (in rfr_disc_equity_market) self_fin_trad_strat_mart:
 and "stock_portfolio Mkt pf"
   and "\<forall>n. \<forall> asset \<in> support_set pf. integrable N (\<lambda>w. prices Mkt asset n w * pf asset (Suc n) w)"
   and "\<forall>n. \<forall> asset \<in> support_set pf. integrable N (\<lambda>w. prices Mkt asset (Suc n) w * pf asset (Suc n) w)"
-shows "martingale N F (discounted_value r (closing_value_process Mkt pf))" (*unfolding martingale_def*)
+shows "martingale N F (discounted_value r (cls_val_process Mkt pf))" (*unfolding martingale_def*)
 proof (rule disc_martingale_charact)
   show nsigfin: "\<forall>n. sigma_finite_subalgebra N (F n)" using filt_equiv_prob_space_subalgebra assms
           using filtration filtration_def risk_neutral_prob_def subalgebra_sigma_finite by fastforce
   show "filtration N F" using assms by (simp  add:filt_equiv_filtration)
-  have "borel_adapt_stoch_proc F (discounted_value r (closing_value_process Mkt pf))" using assms discounted_adapted
-    closing_value_process_adapted[of pf] stock_portfolio_def
+  have "borel_adapt_stoch_proc F (discounted_value r (cls_val_process Mkt pf))" using assms discounted_adapted
+    cls_val_process_adapted[of pf] stock_portfolio_def
     by (metis (mono_tags, hide_lams) support_adapt_def readable subsetCE)
-  thus "\<forall>m. discounted_value r (closing_value_process Mkt pf) m \<in> borel_measurable (F m)" unfolding adapt_stoch_proc_def by simp
-  show "\<forall>t. integrable N (discounted_value r (closing_value_process Mkt pf) t)"
+  thus "\<forall>m. discounted_value r (cls_val_process Mkt pf) m \<in> borel_measurable (F m)" unfolding adapt_stoch_proc_def by simp
+  show "\<forall>t. integrable N (discounted_value r (cls_val_process Mkt pf) t)"
   proof
     fix t
-    have "integrable N (closing_value_process Mkt pf t)" using assms by (simp add: integrable_self_fin_uvp)
-    thus "integrable N (discounted_value r (closing_value_process Mkt pf) t)" using assms discounted_integrable acceptable_rate
+    have "integrable N (cls_val_process Mkt pf t)" using assms by (simp add: integrable_self_fin_uvp)
+    thus "integrable N (discounted_value r (cls_val_process Mkt pf) t)" using assms discounted_integrable acceptable_rate
       by (metis filt_equiv_space)
   qed
-  show "\<forall>n. AE w in N. real_cond_exp N (F n) (discounted_value r (closing_value_process Mkt pf) (Suc n)) w =
-                   discounted_value r (closing_value_process Mkt pf) n w"
+  show "\<forall>n. AE w in N. real_cond_exp N (F n) (discounted_value r (cls_val_process Mkt pf) (Suc n)) w =
+                   discounted_value r (cls_val_process Mkt pf) n w"
   proof
     fix n
-    show "AE w in N. real_cond_exp N (F n) (discounted_value r (closing_value_process Mkt pf) (Suc n)) w =
-                    discounted_value r (closing_value_process Mkt pf) n w"
+    show "AE w in N. real_cond_exp N (F n) (discounted_value r (cls_val_process Mkt pf) (Suc n)) w =
+                    discounted_value r (cls_val_process Mkt pf) n w"
     proof -
       {
         fix w
         assume "w\<in> space M"
-        have "discounted_value r (closing_value_process Mkt pf) (Suc n) w =
+        have "discounted_value r (cls_val_process Mkt pf) (Suc n) w =
                   discount_factor r (Suc n) w * (\<Sum>x\<in>support_set pf. prices Mkt x (Suc n) w * pf x (Suc n) w)"
-          unfolding discounted_value_def closing_value_process_def using assms unfolding trading_strategy_def by simp
+          unfolding discounted_value_def cls_val_process_def using assms unfolding trading_strategy_def by simp
         also have "... = (\<Sum>x\<in>support_set pf. discount_factor r (Suc n) w * prices Mkt x (Suc n) w * pf x (Suc n) w)"
           by (metis (no_types, lifting) mult.assoc sum.cong sum_distrib_left)
-        finally have "discounted_value r (closing_value_process Mkt pf) (Suc n) w =
+        finally have "discounted_value r (cls_val_process Mkt pf) (Suc n) w =
                   (\<Sum>x\<in>support_set pf. discount_factor r (Suc n) w * prices Mkt x (Suc n) w * pf x (Suc n) w)" .
       }
-      hence space: "\<forall>w\<in> space M. discounted_value r (closing_value_process Mkt pf) (Suc n) w =
+      hence space: "\<forall>w\<in> space M. discounted_value r (cls_val_process Mkt pf) (Suc n) w =
                 (\<Sum>x\<in>support_set pf. discount_factor r (Suc n) w * prices Mkt x (Suc n) w * pf x (Suc n) w)" by simp
-      hence nspace: "\<forall>w\<in> space N. discounted_value r (closing_value_process Mkt pf) (Suc n) w =
+      hence nspace: "\<forall>w\<in> space N. discounted_value r (cls_val_process Mkt pf) (Suc n) w =
                 (\<Sum>x\<in>support_set pf. discount_factor r (Suc n) w * prices Mkt x (Suc n) w * pf x (Suc n) w)" using assms by (simp add:filt_equiv_space)
       have sup_disc: "\<forall>x \<in> support_set pf. AE w in N.
         (real_cond_exp N (F n) (discounted_value r (\<lambda>m y. prices Mkt x m y * pf x m y) (Suc n))) w =
         discounted_value r (\<lambda>m y. prices Mkt x m y * pf x (Suc m) y) n w" using assms
         by (simp add:stocks_portfolio_risk_neutral filt_equiv_imp_subalgebra stock_portfolio_def)
-      have "AE w in N. real_cond_exp N (F n) (discounted_value r (closing_value_process Mkt pf) (Suc n)) w =
+      have "AE w in N. real_cond_exp N (F n) (discounted_value r (cls_val_process Mkt pf) (Suc n)) w =
                 real_cond_exp N (F n) (\<lambda>y. \<Sum>x\<in>support_set pf. discounted_value r (\<lambda>m y. prices Mkt x m y * pf x m y) (Suc n) y) w"
       proof (rule sigma_finite_subalgebra.real_cond_exp_cong')
         show "sigma_finite_subalgebra N (F n)" using nsigfin ..
-        show "\<forall>w\<in>space N. discounted_value r (closing_value_process Mkt pf) (Suc n) w =
+        show "\<forall>w\<in>space N. discounted_value r (cls_val_process Mkt pf) (Suc n) w =
           (\<lambda>y. \<Sum>x\<in>support_set pf. discounted_value r (\<lambda>m y. prices Mkt x m y * pf x m y) (Suc n) y) w"  using nspace
           by (metis (no_types, lifting) discounted_value_def mult.assoc sum.cong)
-        show "(discounted_value r (closing_value_process Mkt pf) (Suc n)) \<in> borel_measurable N" using assms
-          using \<open>\<forall>t. integrable N (discounted_value r (closing_value_process Mkt pf) t)\<close> by blast
+        show "(discounted_value r (cls_val_process Mkt pf) (Suc n)) \<in> borel_measurable N" using assms
+          using \<open>\<forall>t. integrable N (discounted_value r (cls_val_process Mkt pf) t)\<close> by blast
       qed
       also have "AE w in N. real_cond_exp N (F n)
         (\<lambda>y. \<Sum>x\<in>support_set pf. discounted_value r (\<lambda>m y. prices Mkt x m y * pf x m y) (Suc n) y) w =
@@ -3293,22 +3168,22 @@ proof (rule disc_martingale_charact)
       qed
       also have "AE w in N.
         (\<Sum>x\<in> support_set pf. discounted_value r (\<lambda>m y. prices Mkt x m y * pf x (Suc m) y) n w) =
-        discounted_value r (closing_value_process Mkt pf) n w"
+        discounted_value r (cls_val_process Mkt pf) n w"
       proof
         fix w
         assume "w\<in> space N"
         have "(\<Sum>x\<in> support_set pf. discounted_value r (\<lambda>m y. prices Mkt x m y * pf x (Suc m) y) n w) =
           discounted_value r (\<lambda>m y. (\<Sum>x\<in> support_set pf. prices Mkt x m y * pf x (Suc m) y)) n w" using discounted_sum
           assms(3) portfolio_def trading_strategy_def by (simp add: discounted_value_def sum_distrib_left)
-        also have "... = discounted_value r (value_process Mkt pf) n w"  unfolding value_process_def
+        also have "... = discounted_value r (val_process Mkt pf) n w"  unfolding val_process_def
           by (simp add: portfolio_def)
-        also have "... = discounted_value r (closing_value_process Mkt pf) n w" using assms
+        also have "... = discounted_value r (cls_val_process Mkt pf) n w" using assms
           by (simp add:self_financingE discounted_cong)
         finally show "(\<Sum>x\<in> support_set pf. discounted_value r (\<lambda>m y. prices Mkt x m y * pf x (Suc m) y) n w) =
-          discounted_value r (closing_value_process Mkt pf) n w" .
+          discounted_value r (cls_val_process Mkt pf) n w" .
       qed
-      finally show "AE w in N. real_cond_exp N (F n) (discounted_value r (closing_value_process Mkt pf) (Suc n)) w =
-        discounted_value r (closing_value_process Mkt pf) n w" .
+      finally show "AE w in N. real_cond_exp N (F n) (discounted_value r (cls_val_process Mkt pf) (Suc n)) w =
+        discounted_value r (cls_val_process Mkt pf) n w" .
     qed
   qed
 qed
@@ -3414,7 +3289,7 @@ lemma (in rfr_disc_equity_market) self_fin_trad_strat_mart_finite:
   and "\<forall>n. \<forall> asset \<in> support_set pf. finite (prices Mkt asset n `(space M))"
   and "\<forall>n. \<forall> asset \<in> support_set pf. finite (pf asset n `(space M))"
 and "\<forall> asset\<in> stocks Mkt. borel_adapt_stoch_proc F (prices Mkt asset)"
-shows "martingale N F (discounted_value r (closing_value_process Mkt pf))"
+shows "martingale N F (discounted_value r (cls_val_process Mkt pf))"
 proof (rule self_fin_trad_strat_mart, (simp add:assms)+)
   show "\<forall>n. \<forall>asset\<in>support_set pf. integrable N (\<lambda>w. prices Mkt asset n w * pf asset (Suc n) w)"
   proof (intro allI ballI)
@@ -3511,9 +3386,9 @@ proof -
   have fn: "filtrated_prob_space N F" using assms
     by (simp add: \<open>pyf \<in> borel_measurable (F matur)\<close> filtrated_prob_space_axioms.intro
         filtrated_prob_space_def risk_neutral_prob_def filt_equiv_filtration)
-  have "discounted_value r (closing_value_process Mkt pf) matur \<in> borel_measurable N"
+  have "discounted_value r (cls_val_process Mkt pf) matur \<in> borel_measurable N"
     using assms(3) disc_equity_market.replicating_portfolio_def disc_equity_market_axioms discounted_adapted
-    filtrated_prob_space.borel_adapt_stoch_proc_borel_measurable fn closing_value_process_adapted
+    filtrated_prob_space.borel_adapt_stoch_proc_borel_measurable fn cls_val_process_adapted
     by (metis (no_types, hide_lams) support_adapt_def readable  stock_portfolio_def subsetCE)
   have "discounted_value r (\<lambda>m. pyf) matur \<in> borel_measurable N"
   proof -
@@ -3522,77 +3397,77 @@ proof -
     hence "(\<lambda>m. pyf) matur \<in> borel_measurable N" using assms by (simp add:filt_equiv_measurable)
     thus ?thesis by (simp add:discounted_measurable)
   qed
-  have mpyf: "AE w in M. closing_value_process Mkt pf matur w = pyf w" using assms unfolding replicating_portfolio_def by simp
-  have "AE w in N. closing_value_process Mkt pf matur w = pyf w"
+  have mpyf: "AE w in M. cls_val_process Mkt pf matur w = pyf w" using assms unfolding replicating_portfolio_def by simp
+  have "AE w in N. cls_val_process Mkt pf matur w = pyf w"
   proof (rule filt_equiv_borel_AE_eq)
     show "filt_equiv F M N" using assms by simp
     show "pyf \<in> borel_measurable (F matur)" using assms by simp
-    show "AE w in M. closing_value_process Mkt pf matur w = pyf w" using mpyf by simp
-    show "closing_value_process Mkt pf matur \<in> borel_measurable (F matur)"
+    show "AE w in M. cls_val_process Mkt pf matur w = pyf w" using mpyf by simp
+    show "cls_val_process Mkt pf matur \<in> borel_measurable (F matur)"
       using assms(3) price_structure_def replicating_price_process
       by (meson support_adapt_def disc_equity_market.replicating_portfolio_def disc_equity_market_axioms readable  stock_portfolio_def subsetCE)
   qed
-  hence disc:"AE w in N. discounted_value r (closing_value_process Mkt pf) matur w = discounted_value r (\<lambda>m. pyf) matur w"
+  hence disc:"AE w in N. discounted_value r (cls_val_process Mkt pf) matur w = discounted_value r (\<lambda>m. pyf) matur w"
     by (simp add:discounted_AE_cong)
-  have "AEeq N (real_cond_exp N (F 0) (discounted_value r (closing_value_process Mkt pf) matur))
+  have "AEeq N (real_cond_exp N (F 0) (discounted_value r (cls_val_process Mkt pf) matur))
     (real_cond_exp N (F 0) (discounted_value r (\<lambda>m. pyf) matur))"
   proof (rule sigma_finite_subalgebra.real_cond_exp_cong)
     show "sigma_finite_subalgebra N (F 0)"
       using filtrated_prob_space.axioms(1) filtrated_prob_space.filtration fn filtrationE1
         prob_space.subalgebra_sigma_finite by blast
-    show "AEeq N (discounted_value r (closing_value_process Mkt pf) matur) (discounted_value r (\<lambda>m. pyf) matur)" using disc by simp
-    show "discounted_value r (closing_value_process Mkt pf) matur \<in> borel_measurable N"
-      using \<open>discounted_value r (closing_value_process Mkt pf) matur \<in> borel_measurable N\<close> .
+    show "AEeq N (discounted_value r (cls_val_process Mkt pf) matur) (discounted_value r (\<lambda>m. pyf) matur)" using disc by simp
+    show "discounted_value r (cls_val_process Mkt pf) matur \<in> borel_measurable N"
+      using \<open>discounted_value r (cls_val_process Mkt pf) matur \<in> borel_measurable N\<close> .
     show "discounted_value r (\<lambda>m. pyf) matur \<in> borel_measurable N"
       using \<open>discounted_value r (\<lambda>m. pyf) matur \<in> borel_measurable N\<close> .
   qed
-  have "martingale N F (discounted_value r (closing_value_process Mkt pf))" using assms unfolding replicating_portfolio_def
+  have "martingale N F (discounted_value r (cls_val_process Mkt pf))" using assms unfolding replicating_portfolio_def
     using self_fin_trad_strat_mart[of N pf] by (simp add: stock_portfolio_def)
-  hence "AEeq N (real_cond_exp N (F 0) (discounted_value r (closing_value_process Mkt pf) matur))
-    (discounted_value r (closing_value_process Mkt pf) 0)" using martingaleAE[of N F "discounted_value r (closing_value_process Mkt pf)" 0 matur]
+  hence "AEeq N (real_cond_exp N (F 0) (discounted_value r (cls_val_process Mkt pf) matur))
+    (discounted_value r (cls_val_process Mkt pf) 0)" using martingaleAE[of N F "discounted_value r (cls_val_process Mkt pf)" 0 matur]
     fn by simp
-  also have "AE w in N. (discounted_value r (closing_value_process Mkt pf) 0 w) = initial_value pf"
+  also have "AE w in N. (discounted_value r (cls_val_process Mkt pf) 0 w) = initial_value pf"
   proof
     fix w
     assume "w\<in> space N"
-    have "discounted_value r (closing_value_process Mkt pf) 0 w = closing_value_process Mkt pf 0 w" by (simp add:discounted_init)
-    also have "... = value_process Mkt pf 0 w" unfolding closing_value_process_def using assms
+    have "discounted_value r (cls_val_process Mkt pf) 0 w = cls_val_process Mkt pf 0 w" by (simp add:discounted_init)
+    also have "... = val_process Mkt pf 0 w" unfolding cls_val_process_def using assms
       unfolding replicating_portfolio_def stock_portfolio_def by simp
     also have "... = initial_value pf" using assms unfolding replicating_portfolio_def using \<open>w\<in> space N\<close>
       by (metis (no_types, lifting) support_adapt_def filt_equiv_space initial_valueI readable stock_portfolio_def subsetCE)
-    finally show "discounted_value r (closing_value_process Mkt pf) 0 w = initial_value pf" .
+    finally show "discounted_value r (cls_val_process Mkt pf) 0 w = initial_value pf" .
   qed
-  finally have "AE w in N. (real_cond_exp N (F 0) (discounted_value r (closing_value_process Mkt pf) matur)) w =
+  finally have "AE w in N. (real_cond_exp N (F 0) (discounted_value r (cls_val_process Mkt pf) matur)) w =
     initial_value pf" .
-  moreover have "\<forall>w\<in> space N. (real_cond_exp N (F 0) (discounted_value r (closing_value_process Mkt pf) matur)) w =
-    prob_space.expectation N (discounted_value r (closing_value_process Mkt pf) matur)"
+  moreover have "\<forall>w\<in> space N. (real_cond_exp N (F 0) (discounted_value r (cls_val_process Mkt pf) matur)) w =
+    prob_space.expectation N (discounted_value r (cls_val_process Mkt pf) matur)"
   proof (rule prob_space.trivial_subalg_cond_expect_eq)
     show "prob_space N" using assms unfolding risk_neutral_prob_def by simp
     show "subalgebra N (F 0)"
       using \<open>prob_space N\<close> filtrated_prob_space.filtration fn filtrationE1 by blast
     show "sets (F 0) = {{}, space N}" using assms by (simp add:filt_equiv_space)
-    show "integrable N (discounted_value r (closing_value_process Mkt pf) matur)"
+    show "integrable N (discounted_value r (cls_val_process Mkt pf) matur)"
     proof (rule discounted_integrable)
       show "space N = space M" using assms by (simp add:filt_equiv_space)
-      show "integrable N (closing_value_process Mkt pf matur)" using assms unfolding replicating_portfolio_def
+      show "integrable N (cls_val_process Mkt pf matur)" using assms unfolding replicating_portfolio_def
         by (simp add: integrable_self_fin_uvp)
       show "-1 < r" using acceptable_rate by simp
     qed
   qed
-  ultimately have "AE w in N. prob_space.expectation N (discounted_value r (closing_value_process Mkt pf) matur) =
+  ultimately have "AE w in N. prob_space.expectation N (discounted_value r (cls_val_process Mkt pf) matur) =
      initial_value pf" by simp
-  hence "prob_space.expectation N (discounted_value r (closing_value_process Mkt pf) matur) =
+  hence "prob_space.expectation N (discounted_value r (cls_val_process Mkt pf) matur) =
     initial_value pf" using assms unfolding risk_neutral_prob_def using  prob_space.emeasure_space_1[of N]
     AE_eq_cst[of _ _ N] by simp
-  moreover have "prob_space.expectation N (discounted_value r (closing_value_process Mkt pf) matur) =
+  moreover have "prob_space.expectation N (discounted_value r (cls_val_process Mkt pf) matur) =
     prob_space.expectation N (discounted_value r (\<lambda>m. pyf) matur)"
   proof (rule integral_cong_AE)
-    show "AEeq N (discounted_value r (closing_value_process Mkt pf) matur) (discounted_value r (\<lambda>m. pyf) matur)"
+    show "AEeq N (discounted_value r (cls_val_process Mkt pf) matur) (discounted_value r (\<lambda>m. pyf) matur)"
       using disc by simp
     show "discounted_value r (\<lambda>m. pyf) matur \<in> borel_measurable N"
       using \<open>discounted_value r (\<lambda>m. pyf) matur \<in> borel_measurable N\<close> .
-    show "discounted_value r (closing_value_process Mkt pf) matur \<in> borel_measurable N"
-      using \<open>discounted_value r (closing_value_process Mkt pf) matur \<in> borel_measurable N\<close> .
+    show "discounted_value r (cls_val_process Mkt pf) matur \<in> borel_measurable N"
+      using \<open>discounted_value r (cls_val_process Mkt pf) matur \<in> borel_measurable N\<close> .
   qed
   ultimately have "prob_space.expectation N (discounted_value r (\<lambda>m. pyf) matur) = initial_value pf" by simp
   thus ?thesis using assms

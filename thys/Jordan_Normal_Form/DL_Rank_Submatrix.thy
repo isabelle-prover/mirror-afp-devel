@@ -116,8 +116,8 @@ proof -
    using det_def \<open>det (submatrix A I J) \<noteq> 0\<close> by metis
   then have full_rank:"vec_space.rank (dim_row (submatrix A I J)) (submatrix A I J) = dim_row (submatrix A I J)"
    using vec_space.low_rank_det_zero assms(2) carrier_matI by auto
-  then have distinct:"distinct (cols (submatrix A I J))" using vec_space.non_distinct_low_rank
-   using square less_irrefl carrier_matI by fastforce
+  then have distinct:"distinct (cols (submatrix A I J))" 
+    using vec_space.non_distinct_low_rank square less_irrefl carrier_matI by metis
   then have indpt:"LinearCombinations.module.lin_indpt class_ring (module_vec TYPE('a) (dim_row (submatrix A I J))) (set (cols (submatrix A I J)))"
      using vec_space.full_rank_lin_indpt[OF _ full_rank distinct] square by fastforce
 

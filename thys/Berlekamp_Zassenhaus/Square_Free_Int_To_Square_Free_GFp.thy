@@ -86,8 +86,9 @@ next
     also have "?r ?p' = pderiv (?r pp)" unfolding of_int_hom.map_poly_pderiv ..
     finally have dvd': "?r r dvd pderiv (?r pp)" by auto
     from dr have dr': "degree (?r r) \<noteq> 0" by simp
-    from square_free_coprime_pderiv[OF square_free_int_rat[OF sf']]
-    have cop: "coprime (?r pp) (pderiv (?r pp))" by simp
+    from square_free_imp_separable[OF square_free_int_rat[OF sf']]
+    have "separable (?r pp)" .
+    hence cop: "coprime (?r pp) (pderiv (?r pp))" unfolding separable_def .
     from f0 f have pp0: "pp \<noteq> 0" by auto
     from dvd dvd' have "?r r dvd gcd (?r pp) (pderiv (?r pp))" by auto
     from divides_degree[OF this] pp0 have "degree (?r r) \<le> degree (gcd (?r pp) (pderiv (?r pp)))" 
@@ -112,12 +113,12 @@ proof -
     by (auto simp add: abs_mult)
 qed
 
-definition square_free_bound :: "int poly \<Rightarrow> int" where
-  "square_free_bound f = max (abs (resultant f (pderiv f))) 
+definition separable_bound :: "int poly \<Rightarrow> int" where
+  "separable_bound f = max (abs (resultant f (pderiv f))) 
     (max (abs (lead_coeff f)) (abs (lead_coeff (pderiv f))))"
 
 lemma square_free_int_imp_resultant_non_zero_mod_ring: assumes sf: "square_free f" 
-  and large: "int CARD('a) > square_free_bound f"
+  and large: "int CARD('a) > separable_bound f"
   shows "resultant (map_poly of_int f :: 'a :: prime_card mod_ring poly) (pderiv (map_poly of_int f)) \<noteq> 0
   \<and> map_poly of_int f \<noteq> (0 :: 'a mod_ring poly)" 
 proof (intro conjI, rule notI)
@@ -140,7 +141,7 @@ proof (intro conjI, rule notI)
     assume abs: "abs (lead_coeff g) < CARD('a)"
     have "degree (?m g) = degree g" by (rule degree_map_poly, insert of_int_0[OF abs], auto)
   } note deg = this
-  note large = large[unfolded square_free_bound_def]
+  note large = large[unfolded separable_bound_def]
   from of_int_0[of "lead_coeff f"] large lf have "?i (lead_coeff f) \<noteq> 0" by auto
   thus f0: "?f \<noteq> 0" unfolding poly_eq_iff by auto  
   assume 0: "resultant ?f (pderiv ?f) = 0" 
@@ -151,19 +152,23 @@ proof (intro conjI, rule notI)
   show False using large by auto
 qed
 
-lemma square_free_int_imp_square_free_mod_ring: assumes sf: "square_free f" 
-  and large: "int CARD('a) > square_free_bound f"
-  shows "square_free (map_poly of_int f :: 'a :: prime_card mod_ring poly)" 
+lemma square_free_int_imp_separable_mod_ring: assumes sf: "square_free f" 
+  and large: "int CARD('a) > separable_bound f"
+  shows "separable (map_poly of_int f :: 'a :: prime_card mod_ring poly)" 
 proof - 
   define g where "g = map_poly (of_int :: int \<Rightarrow> 'a mod_ring) f"
   from square_free_int_imp_resultant_non_zero_mod_ring[OF sf large]
   have res: "resultant g (pderiv g) \<noteq> 0" and g: "g \<noteq> 0" unfolding g_def by auto
   from res[unfolded resultant_0_gcd] have "degree (gcd g (pderiv g)) = 0" by auto
   from degree0_coeffs[OF this]
-  have "coprime g (pderiv g)"
+  have "separable g" unfolding separable_def
     by (metis degree_pCons_0 g gcd_eq_0_iff is_unit_gcd is_unit_iff_degree)
-  with coprime_pderiv_imp_square_free have "square_free g" by auto
   thus ?thesis unfolding g_def .
 qed
+
+lemma square_free_int_imp_square_free_mod_ring: assumes sf: "square_free f" 
+  and large: "int CARD('a) > separable_bound f"
+shows "square_free (map_poly of_int f :: 'a :: prime_card mod_ring poly)" 
+  using separable_imp_square_free[OF square_free_int_imp_separable_mod_ring[OF assms]] .
 
 end

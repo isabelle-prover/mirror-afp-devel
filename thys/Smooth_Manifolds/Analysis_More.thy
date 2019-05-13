@@ -493,8 +493,6 @@ lemma openin_final_topology:
   apply (rule topology_inverse')
   unfolding istopology_def
 proof safe
-  show "openin (Y i) (f i -` {} \<inter> topspace (Y i))" for i by simp
-next
   fix S T i
   assume "\<forall>i. openin (Y i) (f i -` S \<inter> topspace (Y i))"
     "\<forall>i. openin (Y i) (f i -` T \<inter> topspace (Y i))"

@@ -617,5 +617,7 @@ lemma monom_poly_assemble:
   shows "monom_coeff p *R lp_monom 1 (monom_var p) = p"
   by (simp add: assms linear_poly_eqI monom_valuate valuate_scaleRat)
 
+lemma coeff_sum: "coeff (sum (f :: _ \<Rightarrow> linear_poly) is) x = sum (\<lambda> i. coeff (f i) x) is" 
+  by (induct "is" rule: infinite_finite_induct, auto)
 
 end

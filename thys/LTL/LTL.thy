@@ -547,22 +547,96 @@ lemma M_consts[intro, simp]:
   by force+
 
 
+subsubsection \<open>Distributivity\<close>
+
+lemma until_and_left_distrib:
+  "w \<Turnstile>\<^sub>n (\<phi>\<^sub>1 and\<^sub>n \<phi>\<^sub>2) U\<^sub>n \<psi> \<longleftrightarrow> w \<Turnstile>\<^sub>n (\<phi>\<^sub>1 U\<^sub>n \<psi>) and\<^sub>n (\<phi>\<^sub>2 U\<^sub>n \<psi>)"
+proof
+  assume "w \<Turnstile>\<^sub>n \<phi>\<^sub>1 U\<^sub>n \<psi> and\<^sub>n \<phi>\<^sub>2 U\<^sub>n \<psi>"
+
+  then obtain i1 i2 where "suffix i1 w \<Turnstile>\<^sub>n \<psi> \<and> (\<forall>j<i1. suffix j w \<Turnstile>\<^sub>n \<phi>\<^sub>1)" and "suffix i2 w \<Turnstile>\<^sub>n \<psi> \<and> (\<forall>j<i2. suffix j w \<Turnstile>\<^sub>n \<phi>\<^sub>2)"
+    by auto
+
+  then have "suffix (min i1 i2) w \<Turnstile>\<^sub>n \<psi> \<and> (\<forall>j<min i1 i2. suffix j w \<Turnstile>\<^sub>n \<phi>\<^sub>1 and\<^sub>n \<phi>\<^sub>2)"
+    by (simp add: min_def)
+
+  then show "w \<Turnstile>\<^sub>n (\<phi>\<^sub>1 and\<^sub>n \<phi>\<^sub>2) U\<^sub>n \<psi>"
+    by force
+qed auto
+
+lemma until_or_right_distrib:
+  "w \<Turnstile>\<^sub>n \<phi> U\<^sub>n (\<psi>\<^sub>1 or\<^sub>n \<psi>\<^sub>2) \<longleftrightarrow> w \<Turnstile>\<^sub>n (\<phi> U\<^sub>n \<psi>\<^sub>1) or\<^sub>n (\<phi> U\<^sub>n \<psi>\<^sub>2)"
+  by auto
+
+lemma release_and_right_distrib:
+  "w \<Turnstile>\<^sub>n \<phi> R\<^sub>n (\<psi>\<^sub>1 and\<^sub>n \<psi>\<^sub>2) \<longleftrightarrow> w \<Turnstile>\<^sub>n (\<phi> R\<^sub>n \<psi>\<^sub>1) and\<^sub>n (\<phi> R\<^sub>n \<psi>\<^sub>2)"
+  by auto
+
+lemma release_or_left_distrib:
+  "w \<Turnstile>\<^sub>n (\<phi>\<^sub>1 or\<^sub>n \<phi>\<^sub>2) R\<^sub>n \<psi> \<longleftrightarrow> w \<Turnstile>\<^sub>n (\<phi>\<^sub>1 R\<^sub>n \<psi>) or\<^sub>n (\<phi>\<^sub>2 R\<^sub>n \<psi>)"
+  by (metis not\<^sub>n.simps(6) not\<^sub>n.simps(9) not\<^sub>n_semantics until_and_left_distrib)
+
+lemma strong_release_and_right_distrib:
+  "w \<Turnstile>\<^sub>n \<phi> M\<^sub>n (\<psi>\<^sub>1 and\<^sub>n \<psi>\<^sub>2) \<longleftrightarrow> w \<Turnstile>\<^sub>n (\<phi> M\<^sub>n \<psi>\<^sub>1) and\<^sub>n (\<phi> M\<^sub>n \<psi>\<^sub>2)"
+proof
+  assume "w \<Turnstile>\<^sub>n (\<phi> M\<^sub>n \<psi>\<^sub>1) and\<^sub>n (\<phi> M\<^sub>n \<psi>\<^sub>2)"
+
+  then obtain i1 i2 where "suffix i1 w \<Turnstile>\<^sub>n \<phi> \<and> (\<forall>j\<le>i1. suffix j w \<Turnstile>\<^sub>n \<psi>\<^sub>1)" and "suffix i2 w \<Turnstile>\<^sub>n \<phi> \<and> (\<forall>j\<le>i2. suffix j w \<Turnstile>\<^sub>n \<psi>\<^sub>2)"
+    by auto
+
+  then have "suffix (min i1 i2) w \<Turnstile>\<^sub>n \<phi> \<and> (\<forall>j\<le>min i1 i2. suffix j w \<Turnstile>\<^sub>n \<psi>\<^sub>1 and\<^sub>n \<psi>\<^sub>2)"
+    by (simp add: min_def)
+
+  then show "w \<Turnstile>\<^sub>n \<phi> M\<^sub>n (\<psi>\<^sub>1 and\<^sub>n \<psi>\<^sub>2)"
+    by force
+qed auto
+
+lemma strong_release_or_left_distrib:
+  "w \<Turnstile>\<^sub>n (\<phi>\<^sub>1 or\<^sub>n \<phi>\<^sub>2) M\<^sub>n \<psi> \<longleftrightarrow> w \<Turnstile>\<^sub>n (\<phi>\<^sub>1 M\<^sub>n \<psi>) or\<^sub>n (\<phi>\<^sub>2 M\<^sub>n \<psi>)"
+  by auto
+
+lemma weak_until_and_left_distrib:
+  "w \<Turnstile>\<^sub>n (\<phi>\<^sub>1 and\<^sub>n \<phi>\<^sub>2) W\<^sub>n \<psi> \<longleftrightarrow> w \<Turnstile>\<^sub>n (\<phi>\<^sub>1 W\<^sub>n \<psi>) and\<^sub>n (\<phi>\<^sub>2 W\<^sub>n \<psi>)"
+  by auto
+
+lemma weak_until_or_right_distrib:
+  "w \<Turnstile>\<^sub>n \<phi> W\<^sub>n (\<psi>\<^sub>1 or\<^sub>n \<psi>\<^sub>2) \<longleftrightarrow> w \<Turnstile>\<^sub>n (\<phi> W\<^sub>n \<psi>\<^sub>1) or\<^sub>n (\<phi> W\<^sub>n \<psi>\<^sub>2)"
+  by (metis not\<^sub>n.simps(10) not\<^sub>n.simps(6) not\<^sub>n_semantics strong_release_and_right_distrib)
+
+
+lemma next_until_distrib:
+  "w \<Turnstile>\<^sub>n X\<^sub>n (\<phi> U\<^sub>n \<psi>) \<longleftrightarrow> w \<Turnstile>\<^sub>n (X\<^sub>n \<phi>) U\<^sub>n (X\<^sub>n \<psi>)"
+  by auto
+
+lemma next_release_distrib:
+  "w \<Turnstile>\<^sub>n X\<^sub>n (\<phi> R\<^sub>n \<psi>) \<longleftrightarrow> w \<Turnstile>\<^sub>n (X\<^sub>n \<phi>) R\<^sub>n (X\<^sub>n \<psi>)"
+  by auto
+
+lemma next_weak_until_distrib:
+  "w \<Turnstile>\<^sub>n X\<^sub>n (\<phi> W\<^sub>n \<psi>) \<longleftrightarrow> w \<Turnstile>\<^sub>n (X\<^sub>n \<phi>) W\<^sub>n (X\<^sub>n \<psi>)"
+  by auto
+
+lemma next_strong_release_distrib:
+  "w \<Turnstile>\<^sub>n X\<^sub>n (\<phi> M\<^sub>n \<psi>) \<longleftrightarrow> w \<Turnstile>\<^sub>n (X\<^sub>n \<phi>) M\<^sub>n (X\<^sub>n \<psi>)"
+  by auto
+
+
 subsubsection \<open>Nested operators\<close>
 
 lemma finally_until[simp]:
-  "(w \<Turnstile>\<^sub>n F\<^sub>n (\<phi> U\<^sub>n \<psi>)) = (w \<Turnstile>\<^sub>n F\<^sub>n \<psi>)"
+  "w \<Turnstile>\<^sub>n F\<^sub>n (\<phi> U\<^sub>n \<psi>) \<longleftrightarrow> w \<Turnstile>\<^sub>n F\<^sub>n \<psi>"
   by auto force
 
 lemma globally_release[simp]:
-  "(w \<Turnstile>\<^sub>n G\<^sub>n (\<phi> R\<^sub>n \<psi>)) = (w \<Turnstile>\<^sub>n G\<^sub>n \<psi>)"
+  "w \<Turnstile>\<^sub>n G\<^sub>n (\<phi> R\<^sub>n \<psi>) \<longleftrightarrow> w \<Turnstile>\<^sub>n G\<^sub>n \<psi>"
   by auto force
 
 lemma globally_weak_until[simp]:
-  "(w \<Turnstile>\<^sub>n G\<^sub>n (\<phi> W\<^sub>n \<psi>)) = (w \<Turnstile>\<^sub>n G\<^sub>n (\<phi> or\<^sub>n \<psi>))"
+  "w \<Turnstile>\<^sub>n G\<^sub>n (\<phi> W\<^sub>n \<psi>) \<longleftrightarrow> w \<Turnstile>\<^sub>n G\<^sub>n (\<phi> or\<^sub>n \<psi>)"
   by auto force
 
 lemma finally_strong_release[simp]:
-  "(w \<Turnstile>\<^sub>n F\<^sub>n (\<phi> M\<^sub>n \<psi>)) = (w \<Turnstile>\<^sub>n F\<^sub>n (\<phi> and\<^sub>n \<psi>))"
+  "w \<Turnstile>\<^sub>n F\<^sub>n (\<phi> M\<^sub>n \<psi>) \<longleftrightarrow> w \<Turnstile>\<^sub>n F\<^sub>n (\<phi> and\<^sub>n \<psi>)"
   by auto force
 
 

@@ -478,7 +478,7 @@ next
   then have qpP: "is_quantum_predicate P" and qpQ: "is_quantum_predicate Q" and wc1: "well_com S1" and wc2: "well_com S2" 
     and dP: "P \<in> carrier_mat d d" and dQ: "Q \<in> carrier_mat d d" and le: "P \<le>\<^sub>L Q"using is_quantum_predicate_def by auto
   have qpP2: "is_quantum_predicate (wlp S2 P)" using Seq qpP wc2 by auto
-  have qpQ2: "is_quantum_predicate (wlp S2 Q)" using Seq(2)[OF wc2 qpQ qpQ] lowner_le_refl dQ by fastforce
+  have qpQ2: "is_quantum_predicate (wlp S2 Q)" using Seq(2)[OF wc2 qpQ qpQ] lowner_le_refl dQ by blast
   have qpP1: "is_quantum_predicate (wlp S1 (wlp S2 P))" 
     using Seq(1)[OF wc1 qpP2 qpP2] qpP2 is_quantum_predicate_def[of "wlp S2 P"] lowner_le_refl by auto
   have "wlp S2 P \<le>\<^sub>L wlp S2 Q" using Seq(2) wc2 qpP qpQ le by auto

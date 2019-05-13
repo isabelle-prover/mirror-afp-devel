@@ -56,7 +56,7 @@ definition count_roots_interval :: "real poly \<Rightarrow> (real \<Rightarrow> 
 
 lemma count_roots_interval_iff: "square_free p \<Longrightarrow> count_roots_interval p = count_roots_interval_sf p"
   unfolding count_roots_interval_def count_roots_interval_sf_def sturm_squarefree_def
-    square_free_iff_coprime by (cases "p = 0", auto)
+    square_free_iff_separable separable_def by (cases "p = 0", auto)
 
 lemma count_roots_interval_sf: assumes p: "p \<noteq> 0" 
   and cr: "count_roots_interval_sf p = (cr,nr)"
