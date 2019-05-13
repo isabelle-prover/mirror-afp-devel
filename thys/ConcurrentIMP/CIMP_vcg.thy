@@ -24,8 +24,7 @@ text\<open>
 We do not develop a proper Hoare logic or full VCG for CIMP: this
 machinery merely packages up the subgoals that arise from induction
 over the reachable states (\S\ref{sec:cimp-invariants}). This is
-somewhat in the spirit of @{cite [cite_macro=citet]
-"DBLP:conf/popl/Ridge09"}.
+somewhat in the spirit of @{cite [cite_macro=citet] "Ridge:2009"}.
 
 Note that this approach is not compositional: it consults the original
 system to find matching communicating pairs, and \<open>aft\<close>
