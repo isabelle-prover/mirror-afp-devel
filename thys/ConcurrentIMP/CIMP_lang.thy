@@ -477,15 +477,14 @@ single global invariant, following @{cite [cite_macro=citet]
 (and the later @{cite [cite_macro=citet] "DBLP:books/aw/Lamport2002"})
 and closely related work by @{cite [cite_macro=citet]
 "AptFrancezDeRoever:1980"}, @{cite [cite_macro=citet]
-"DBLP:conf/icalp/CousotC80"} and @{cite [cite_macro=citet]
+"CousotCousot:1980"} and @{cite [cite_macro=citet]
 "DBLP:journals/acta/LevinG81"}, which suggest the incorporation of a
-history variable. @{cite [cite_macro=citet]
-"{DBLP:conf/icalp/CousotC80"} apparently contains a completeness
-proof.  Lamport mentions that this technique was well-known in the
-mid-80s when he proposed the use of prophecy variables (see his
-webpage bibliography). See also @{cite [cite_macro=citet]
-"DBLP:books/cu/RoeverBH2001"} for an extended discussion of some of
-this.
+history variable. @{cite [cite_macro=citet] "CousotCousot:1980"}
+apparently contains a completeness proof.  Lamport mentions that this
+technique was well-known in the mid-80s when he proposed the use of
+prophecy variables (see his webpage bibliography). See also @{cite
+[cite_macro=citet] "DBLP:books/cu/RoeverBH2001"} for an extended
+discussion of some of this.
 
 Achieving the right level of abstraction is a bit fiddly; we want to
 avoid revealing too much of the program text as it

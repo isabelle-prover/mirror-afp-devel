@@ -208,23 +208,17 @@ lemma VCG:
   shows "I (mkP s)"
 (*<*)
 proof -
-  { fix s0 s' h'
-    assume B: "s0 \<in> initial_states sys" and S: "(s0, []) s\<Rightarrow>\<^sup>* (s', h')"
-    from S have "I (mkP (s', h'))"
-    proof(induct rule: rtrancl_induct2)
-      case refl with B show ?case by (rule I[rule_format])
-    next
-      case (step s' h' s'' h'') with B V show ?case
-        apply -
-        apply (erule (1) VCG_step)
-        apply (auto simp: reachable_states_def)
-        done
-    qed }
-    with I R show ?thesis by (cases s) (clarsimp simp: reachable_states_def)
+  have "I (mkP (s', h'))" if B: "s0 \<in> initial_states sys" and S: "(s0, []) s\<Rightarrow>\<^sup>* (s', h')" for s0 s' h'
+  using S
+  proof(induct rule: rtrancl_induct2)
+    case refl with B show ?case by (rule I[rule_format])
+  next
+    case (step s' h' s'' h'') with B V show ?case
+      by - (erule (1) VCG_step; auto simp: reachable_states_def)
+  qed
+  with I R show ?thesis by (cases s) (clarsimp simp: reachable_states_def)
 qed
 (*>*)
-
-(* **************************************** *)
 
 subsubsection\<open>VCG rules\<close>
 
