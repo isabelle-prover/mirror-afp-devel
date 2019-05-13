@@ -15,12 +15,9 @@ imports
 begin
 
 (*>*)
-subsection\<open>The strong-tricolour invariant\<close>
+subsection\<open>The strong-tricolour invariant \label{sec:strong-tricolour-invariant} \<close>
 
 text\<open>
-
-\label{sec:tricolour-invariants}
-\label{sec:strong-tricolour-invariant}
 
 As the GC algorithm uses both insertion and deletion barriers, it
 preserves the \emph{strong tricolour-invariant}:
@@ -28,10 +25,10 @@ preserves the \emph{strong tricolour-invariant}:
 \<close>
 
 abbreviation points_to_white :: "'ref \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" (infix "points'_to'_white" 51) where
-  "x points_to_white y \<equiv> x points_to y and white y"
+  "x points_to_white y \<equiv> x points_to y \<^bold>\<and> white y"
 
 definition strong_tricolour_inv :: "('field, 'mut, 'ref) lsts_pred" where
-  "strong_tricolour_inv \<equiv> ALLS b w. black b imp not b points_to_white w"
+  "strong_tricolour_inv = (\<^bold>\<forall>b w. black b \<^bold>\<longrightarrow> \<^bold>\<not>(b points_to_white w))"
 
 text\<open>
 
@@ -47,11 +44,11 @@ definition has_white_path_to :: "'ref \<Rightarrow> 'ref \<Rightarrow> ('field, 
   "x has_white_path_to y \<equiv> \<lambda>s. (\<lambda>x y. (x points_to_white y) s)\<^sup>*\<^sup>* x y"
 
 definition grey_protects_white :: "'ref \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" (infix "grey'_protects'_white" 51) where
-  "g grey_protects_white w \<equiv> grey g and g has_white_path_to w"
+  "g grey_protects_white w = (grey g \<^bold>\<and> g has_white_path_to w)"
 
 definition weak_tricolour_inv :: "('field, 'mut, 'ref) lsts_pred" where
-  "weak_tricolour_inv \<equiv>
-      ALLS b w. black b and b points_to_white w imp (EXS g. g grey_protects_white w)"
+  "weak_tricolour_inv =
+     (\<^bold>\<forall>b w. black b \<^bold>\<and> b points_to_white w \<^bold>\<longrightarrow> (\<^bold>\<exists>g. g grey_protects_white w))"
 
 lemma "strong_tricolour_inv s \<Longrightarrow> weak_tricolour_inv s"
 (*<*)
@@ -66,10 +63,10 @@ objects.
 \<close>
 
 definition in_snapshot :: "'ref \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" where
-  "in_snapshot r \<equiv> black r or (EXS g. g grey_protects_white r)"
+  "in_snapshot r = (black r \<^bold>\<or> (\<^bold>\<exists>g. g grey_protects_white r))"
 
 definition (in mut_m) reachable_snapshot_inv :: "('field, 'mut, 'ref) lsts_pred" where
-  "reachable_snapshot_inv \<equiv> ALLS r. reachable r imp in_snapshot r"
+  "reachable_snapshot_inv = (\<^bold>\<forall>r. reachable r \<^bold>\<longrightarrow> in_snapshot r)"
 
 text\<open>
 
@@ -87,13 +84,13 @@ abbreviation marked_insertion :: "('field, 'ref) mem_write_action \<Rightarrow> 
   "marked_insertion w \<equiv> \<lambda>s. case w of mw_Mutate r f (Some r') \<Rightarrow> marked r' s | _ \<Rightarrow> True"
 
 definition (in mut_m) marked_insertions :: "('field, 'mut, 'ref) lsts_pred" where
-  "marked_insertions \<equiv> ALLS w. tso_pending_write (mutator m) w imp marked_insertion w"
+  "marked_insertions = (\<^bold>\<forall>w. tso_pending_write (mutator m) w \<^bold>\<longrightarrow> marked_insertion w)"
 
 abbreviation marked_deletion :: "('field, 'ref) mem_write_action \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" where
   "marked_deletion w \<equiv> \<lambda>s. case w of mw_Mutate r f opt_r' \<Rightarrow> obj_at_field_on_heap (\<lambda>r'. marked r' s) r f s | _ \<Rightarrow> True"
 
 definition (in mut_m) marked_deletions :: "('field, 'mut, 'ref) lsts_pred" where
-  "marked_deletions \<equiv> ALLS w. tso_pending_write (mutator m) w imp marked_deletion w"
+  "marked_deletions = (\<^bold>\<forall>w. tso_pending_write (mutator m) w \<^bold>\<longrightarrow> marked_deletion w)"
 
 text\<open>
 
@@ -102,24 +99,24 @@ Finally, in some phases the heap is somewhat monochrome.
 \<close>
 
 definition black_heap :: "('field, 'mut, 'ref) lsts_pred" where
-  "black_heap \<equiv> ALLS r. black r or not valid_ref r"
+  "black_heap = (\<^bold>\<forall>r. valid_ref r \<^bold>\<longrightarrow> black r)"
 
 definition white_heap :: "('field, 'mut, 'ref) lsts_pred" where
-  "white_heap \<equiv> ALLS r. white r or not valid_ref r"
+  "white_heap = (\<^bold>\<forall>r. valid_ref r \<^bold>\<longrightarrow> white r)"
 
 definition no_black_refs :: "('field, 'mut, 'ref) lsts_pred" where
-  "no_black_refs \<equiv> ALLS r. not black r"
+  "no_black_refs = (\<^bold>\<forall>r. \<^bold>\<not>(black r))"
 
 definition no_grey_refs :: "('field, 'mut, 'ref) lsts_pred" where
-  "no_grey_refs \<equiv> ALLS r. not grey r"
+  "no_grey_refs = (\<^bold>\<forall>r. \<^bold>\<not>(grey r))"
 (*<*)
 
-(* **************************************** *)
-
-text\<open>has white path to\<close>
+lemma no_black_refsD:
+  "no_black_refs s \<Longrightarrow> \<not>black r s"
+unfolding no_black_refs_def by simp
 
 lemma has_white_path_to_eq_imp:
-  "eq_imp (\<lambda>(_::unit). sys_fM \<otimes> sys_heap)
+  "eq_imp (\<lambda>(_::unit). sys_fM \<^bold>\<otimes> sys_heap)
           (x has_white_path_to y)"
 by (clarsimp simp: eq_imp_def has_white_path_to_def obj_at_def cong: option.case_cong)
 
@@ -143,7 +140,7 @@ lemma has_white_path_to_reaches[elim]:
   "(x has_white_path_to y) s \<Longrightarrow> (x reaches y) s"
 unfolding has_white_path_to_def
 by (induct rule: rtranclp.induct)
-   (auto intro: rtranclp.intros)
+   (auto intro: rtranclp.intros(2))
 
 lemma has_white_path_to_blacken[simp]:
   "(x has_white_path_to w) (s(gc := s gc\<lparr> W := gc_W s - rs \<rparr>)) \<longleftrightarrow> (x has_white_path_to w) s"
@@ -356,7 +353,7 @@ by (auto simp: mut_m.tso_write_refs_def)
 text\<open>coloured heaps\<close>
 
 lemma black_heap_eq_imp:
-  "eq_imp (\<lambda>(_::unit). (\<lambda>s. \<Union>p. WL p s) \<otimes> sys_fM \<otimes> (\<lambda>s. Option.map_option obj_mark \<circ> sys_heap s))
+  "eq_imp (\<lambda>(_::unit). (\<lambda>s. \<Union>p. WL p s) \<^bold>\<otimes> sys_fM \<^bold>\<otimes> (\<lambda>s. Option.map_option obj_mark \<circ> sys_heap s))
           black_heap"
 apply (clarsimp simp add: eq_imp_def black_heap_def black_def grey_def all_conj_distrib fun_eq_iff split: option.splits)
 apply (rename_tac s s')
@@ -381,7 +378,7 @@ apply (simp add: map_option.compositionality o_def)
 done
 
 lemma white_heap_eq_imp:
-  "eq_imp (\<lambda>(_::unit). sys_fM \<otimes> (\<lambda>s. Option.map_option obj_mark \<circ> sys_heap s))
+  "eq_imp (\<lambda>(_::unit). sys_fM \<^bold>\<otimes> (\<lambda>s. Option.map_option obj_mark \<circ> sys_heap s))
           white_heap"
 apply (clarsimp simp: all_conj_distrib eq_imp_def white_heap_def obj_at_def fun_eq_iff
                split: option.splits)
@@ -390,7 +387,7 @@ apply (metis (hide_lams, no_types) map_option_eq_Some)+
 done
 
 lemma no_black_refs_eq_imp:
-  "eq_imp (\<lambda>(_::unit). (\<lambda>s. (\<Union>p. WL p s)) \<otimes> sys_fM \<otimes> (\<lambda>s. Option.map_option obj_mark \<circ> sys_heap s))
+  "eq_imp (\<lambda>(_::unit). (\<lambda>s. (\<Union>p. WL p s)) \<^bold>\<otimes> sys_fM \<^bold>\<otimes> (\<lambda>s. Option.map_option obj_mark \<circ> sys_heap s))
           no_black_refs"
 apply (clarsimp simp add: eq_imp_def no_black_refs_def black_def grey_def all_conj_distrib fun_eq_iff set_eq_iff split: option.splits)
 apply (rename_tac s s')
@@ -532,9 +529,8 @@ apply (clarsimp simp: mut_m.reachable_def sys_read_def)
 apply (rule iffI)
  apply clarsimp
  apply (elim disjE)
-  apply metis
- apply (erule option_bind_invE)
- apply (auto dest!: fold_writes_points_to)
+   apply metis
+  apply (erule option_bind_invE; auto dest!: fold_writes_points_to)
  apply (auto elim!: converse_rtranclp_into_rtranclp[rotated]
               simp: tso_write_refs_def)
 done
@@ -588,7 +584,7 @@ lemma (in mut_m) reachable_snapshot_invI[intro]:
 by (simp add: reachable_snapshot_inv_def)
 
 lemma (in mut_m) reachable_snapshot_inv_eq_imp:
-  "eq_imp (\<lambda>r. mut_roots \<otimes> mut_ghost_honorary_root \<otimes> (\<lambda>s. r \<in> (\<Union>p. WL p s)) \<otimes> sys_fM \<otimes> sys_heap \<otimes> tso_pending_mutate (mutator m))
+  "eq_imp (\<lambda>r. mut_roots \<^bold>\<otimes> mut_ghost_honorary_root \<^bold>\<otimes> (\<lambda>s. r \<in> (\<Union>p. WL p s)) \<^bold>\<otimes> sys_fM \<^bold>\<otimes> sys_heap \<^bold>\<otimes> tso_pending_mutate (mutator m))
           reachable_snapshot_inv"
 apply (clarsimp simp: eq_imp_def mut_m.reachable_snapshot_inv_def in_snapshot_def grey_protects_white_def)
 apply (rename_tac s s')
@@ -653,12 +649,12 @@ proof
       apply (rule conjI)
        apply (rule reachable_blackD, assumption, assumption)
        apply (simp add: reachable_def)
-       apply (blast intro: rtranclp.intros)
+       apply (blast intro: rtranclp.intros(2))
       apply clarsimp
       apply (frule (1) reachable_blackD[where r=r])
        apply (simp add: reachable_def)
-       apply (blast intro: rtranclp.intros)
-      apply (auto intro: rtranclp.intros)
+       apply (blast intro: rtranclp.intros(2))
+      apply auto
       done
   qed
   then show "in_snapshot y ?s'"
@@ -673,30 +669,22 @@ lemma reachable_alloc[simp]:
   assumes rn: "sys_heap s r = None"
   shows "mut_m.reachable m r' (s(mutator m' := (s (mutator m'))\<lparr>roots := insert r (roots (s (mutator m')))\<rparr>, sys := (s sys)\<lparr>heap := (sys_heap s)(r \<mapsto> \<lparr>obj_mark = fl, obj_fields = Map.empty\<rparr>)\<rparr>))
      \<longleftrightarrow> mut_m.reachable m r' s \<or> (m' = m \<and> r' = r)" (is "?lhs \<longleftrightarrow> ?rhs")
-proof
+proof(rule iffI)
   assume ?lhs from this assms show ?rhs
-    apply (induct rule: mut_m.reachable_induct[consumes 1, case_names root ghost_honorary_root tso_root reaches])
-       apply (auto split: if_splits)[1]
-      apply (auto split: if_splits)[1]
-     apply auto[1]
-    apply clarsimp
-    apply (fastforce simp: mut_m.reachable_def elim: rtranclp.intros(2) split: obj_at_splits)
-    done
+  proof(induct rule: mut_m.reachable_induct[consumes 1, case_names root ghost_honorary_root tso_root reaches])
+    case (reaches x y) then show ?case by clarsimp (fastforce simp: mut_m.reachable_def elim: rtranclp.intros(2) split: obj_at_splits)
+  qed (auto split: if_splits)
 next
   assume ?rhs then show ?lhs
-  proof
+  proof(rule disjE)
     assume "mut_m.reachable m r' s" then show ?thesis
     proof(induct rule: mut_m.reachable_induct[consumes 1, case_names root ghost_honorary_root tso_root reaches])
-      case (root x) then show ?case by auto
-    next
-      case (ghost_honorary_root x) then show ?case by auto
-    next
       case (tso_root x) then show ?case
         by (fastforce simp: mut_m.reachable_def simp del: fun_upd_apply)
     next
       case (reaches x y) with rn show ?case
         by (fastforce simp: mut_m.reachable_def simp del: fun_upd_apply elim: rtranclp.intros(2))
-    qed
+    qed auto
   next
     assume "m' = m \<and> r' = r" with rn show ?thesis
       by (fastforce simp: mut_m.reachable_def)
@@ -710,17 +698,13 @@ lemma (in mut_m) reachable_snapshot_inv_alloc[simp]:
   assumes vri: "valid_refs_inv s"
   assumes rsi: "reachable_snapshot_inv s"
   shows "reachable_snapshot_inv (s(mutator m' := (s (mutator m'))\<lparr>roots := insert r (roots (s (mutator m')))\<rparr>, sys := (s sys)\<lparr>heap := (sys_heap s)(r \<mapsto> \<lparr>obj_mark = fl, obj_fields = Map.empty\<rparr>)\<rparr>))" (is "reachable_snapshot_inv ?s'")
-using assms
-unfolding reachable_snapshot_inv_def in_snapshot_def
-apply (auto simp del: reachable_fun_upd)
-done
+using assms unfolding reachable_snapshot_inv_def in_snapshot_def
+by (auto simp del: reachable_fun_upd)
 
 lemma (in mut_m) reachable_snapshot_inv_discard_roots[simp]:
   "\<lbrakk> reachable_snapshot_inv s; roots' \<subseteq> roots (s (mutator m)) \<rbrakk>
      \<Longrightarrow> reachable_snapshot_inv (s(mutator m := (s (mutator m))\<lparr>roots := roots'\<rparr>))"
-apply (simp add: reachable_snapshot_inv_def reachable_def in_snapshot_def grey_protects_white_def)
-apply blast
-done
+unfolding reachable_snapshot_inv_def reachable_def in_snapshot_def grey_protects_white_def by auto
 
 lemma grey_protects_white_mark[simp]:
   assumes ghg: "ghost_honorary_grey (s p) = {}"
@@ -733,7 +717,7 @@ proof
     apply (clarsimp simp: grey_protects_white_def has_white_path_to_def if_distrib cong: if_cong)
     apply (rotate_tac 2)
     apply (induct rule: rtranclp.induct)
-    apply (auto intro: rtranclp.intros)
+    apply (auto intro: rtranclp.intros(2))
     done
 next
   assume ?rhs then show ?lhs
@@ -743,15 +727,13 @@ next
       apply (clarsimp simp: grey_protects_white_def has_white_path_to_def)
       apply (rotate_tac 2)
       apply (induct rule: rtranclp.induct)
-      apply (auto intro: rtranclp.intros)
+      apply (auto intro: rtranclp.intros(2))
       done
   next
     assume "(r has_white_path_to w) s" with ghg show ?thesis
       by (auto simp: grey_protects_white_def has_white_path_to_def)
   qed
 qed
-
-(* **************************************** *)
 
 (*>*)
 subsection\<open>Invariants\<close>
@@ -772,14 +754,14 @@ primrec (in mut_m) mutator_phase_inv_aux :: "handshake_phase \<Rightarrow> ('fie
   "mutator_phase_inv_aux hp_Idle          = \<langle>True\<rangle>"
 | "mutator_phase_inv_aux hp_IdleInit      = no_black_refs"
 | "mutator_phase_inv_aux hp_InitMark      = marked_insertions"
-| "mutator_phase_inv_aux hp_Mark          = (marked_insertions and marked_deletions)"
-| "mutator_phase_inv_aux hp_IdleMarkSweep = (marked_insertions and marked_deletions and reachable_snapshot_inv)"
+| "mutator_phase_inv_aux hp_Mark          = (marked_insertions \<^bold>\<and> marked_deletions)"
+| "mutator_phase_inv_aux hp_IdleMarkSweep = (marked_insertions \<^bold>\<and> marked_deletions \<^bold>\<and> reachable_snapshot_inv)"
 
 abbreviation (in mut_m) mutator_phase_inv :: "('field, 'mut, 'ref) lsts_pred" where
   "mutator_phase_inv s \<equiv> mutator_phase_inv_aux (mut_ghost_handshake_phase s) s"
 
 abbreviation mutators_phase_inv :: "('field, 'mut, 'ref) lsts_pred" where
-  "mutators_phase_inv \<equiv> ALLS m. mut_m.mutator_phase_inv m"
+  "mutators_phase_inv \<equiv> (\<^bold>\<forall>m. mut_m.mutator_phase_inv m)"
 
 text\<open>
 
@@ -789,17 +771,15 @@ past the specified handshake, ... holds.''
 \<close>
 
 primrec sys_phase_inv_aux :: "handshake_phase \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" where
-  "sys_phase_inv_aux hp_Idle          = ( (If sys_fA eq sys_fM Then black_heap Else white_heap) and no_grey_refs )"
+  "sys_phase_inv_aux hp_Idle          = ( (If sys_fA \<^bold>= sys_fM Then black_heap Else white_heap) \<^bold>\<and> no_grey_refs )"
 | "sys_phase_inv_aux hp_IdleInit      = no_black_refs"
-| "sys_phase_inv_aux hp_InitMark      = (sys_fA neq sys_fM imp no_black_refs)"
+| "sys_phase_inv_aux hp_InitMark      = (sys_fA \<^bold>\<noteq> sys_fM \<^bold>\<longrightarrow> no_black_refs)"
 | "sys_phase_inv_aux hp_Mark          = \<langle>True\<rangle>"
-| "sys_phase_inv_aux hp_IdleMarkSweep = ( (sys_phase eq \<langle>ph_Idle\<rangle> or tso_pending_write gc (mw_Phase ph_Idle)) imp no_grey_refs )"
+| "sys_phase_inv_aux hp_IdleMarkSweep = ( (sys_phase \<^bold>= \<langle>ph_Idle\<rangle> \<^bold>\<or> tso_pending_write gc (mw_Phase ph_Idle)) \<^bold>\<longrightarrow> no_grey_refs )"
 
 abbreviation sys_phase_inv :: "('field, 'mut, 'ref) lsts_pred" where
   "sys_phase_inv s \<equiv> sys_phase_inv_aux (sys_ghost_handshake_phase s) s"
 (*<*)
-
-(* **************************************** *)
 
 declare mut_m.mutator_phase_inv_aux.simps[simp]
 case_of_simps mutator_phase_inv_aux_case: mut_m.mutator_phase_inv_aux.simps
@@ -814,7 +794,7 @@ apply (auto dest!: arg_cong[where f=set])
 done
 
 lemma (in mut_m) marked_insertions_eq_imp:
-  "eq_imp (\<lambda>(_::unit). sys_fM \<otimes> (\<lambda>s. Option.map_option obj_mark \<circ> sys_heap s) \<otimes> tso_pending_mutate (mutator m))
+  "eq_imp (\<lambda>(_::unit). sys_fM \<^bold>\<otimes> (\<lambda>s. Option.map_option obj_mark \<circ> sys_heap s) \<^bold>\<otimes> tso_pending_mutate (mutator m))
           marked_insertions"
 apply (clarsimp simp: eq_imp_def marked_insertions_def obj_at_def fun_eq_iff
                split: mem_write_action.splits)
@@ -860,7 +840,7 @@ lemma marked_insertions_free[simp]:
 by (fastforce simp: mut_m.marked_insertions_def split: mem_write_action.splits obj_at_splits option.splits)
 
 lemma (in mut_m) marked_deletions_eq_imp:
-  "eq_imp (\<lambda>(_::unit). sys_fM \<otimes> sys_heap \<otimes> tso_pending_mutate (mutator m))
+  "eq_imp (\<lambda>(_::unit). sys_fM \<^bold>\<otimes> sys_heap \<^bold>\<otimes> tso_pending_mutate (mutator m))
           marked_deletions"
 apply (clarsimp simp: eq_imp_def fun_eq_iff marked_deletions_def obj_at_field_on_heap_def)
 apply (rule iffI)
@@ -907,8 +887,6 @@ done
 
 (*>*)
 
-(* **************************************** *)
-
 subsection\<open>Lonely mutator assertions\<close>
 
 text\<open>
@@ -927,9 +905,9 @@ local_setup \<open>Cimp.locset @{thm "ghost_honorary_root_empty_locs_def"}\<clos
 
 definition (in mut_m) load_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "load_invL \<equiv>
-      at_mut ''load''         (mut_tmp_ref in mut_roots)
-  and at_mut ''hs_noop_done'' (list_null (tso_pending_mutate (mutator m)))
-  and atS_mut ghost_honorary_root_empty_locs (empty mut_ghost_honorary_root)"
+    at_mut ''load''         (mut_tmp_ref \<^bold>\<in> mut_roots)
+  \<^bold>\<and> at_mut ''hs_noop_done'' (LIST_NULL (tso_pending_mutate (mutator m)))
+  \<^bold>\<and> atS_mut ghost_honorary_root_empty_locs (EMPTY mut_ghost_honorary_root)"
 (*<*)
 
 lemma (in mut_m) load_invL[intro]: "\<lbrace> load_invL \<rbrace> mutator m"
@@ -967,7 +945,7 @@ proof(rule, clarsimp)
   next
     case (tso_root x) with t show ?case
       apply (clarsimp simp: filter_empty_conv tso_write_refs_def)
-      apply (case_tac xa, auto)
+      apply (force split: mem_write_action.splits)
       done
   next
     case (reaches x y)
@@ -1053,12 +1031,12 @@ lemma (in mut_m) reachable_snapshot_inv_deref_del[simp]:
 by (clarsimp simp: reachable_snapshot_inv_def in_snapshot_def grey_protects_white_def)
 
 lemma (in mut_m) mutator_phase_inv[intro]:
-  "\<lbrace> handshake_invL and load_invL
-       and mark_object_invL
-       and mut_get_roots.mark_object_invL m
-       and mut_store_del.mark_object_invL m
-       and mut_store_ins.mark_object_invL m
-       and LSTP (fA_rel_inv and fM_rel_inv and handshake_phase_inv and mutators_phase_inv and phase_rel_inv and strong_tricolour_inv and sys_phase_inv and valid_refs_inv and valid_W_inv) \<rbrace>
+  "\<lbrace> handshake_invL \<^bold>\<and> load_invL
+       \<^bold>\<and> mark_object_invL
+       \<^bold>\<and> mut_get_roots.mark_object_invL m
+       \<^bold>\<and> mut_store_del.mark_object_invL m
+       \<^bold>\<and> mut_store_ins.mark_object_invL m
+       \<^bold>\<and> LSTP (fA_rel_inv \<^bold>\<and> fM_rel_inv \<^bold>\<and> handshake_phase_inv \<^bold>\<and> mutators_phase_inv \<^bold>\<and> phase_rel_inv \<^bold>\<and> strong_tricolour_inv \<^bold>\<and> sys_phase_inv \<^bold>\<and> valid_refs_inv \<^bold>\<and> valid_W_inv) \<rbrace>
      mutator m
    \<lbrace> LSTP mutator_phase_inv \<rbrace>"
 apply (vcg_jackhammer dest!: handshake_phase_invD simp: fA_rel_inv_def fM_rel_inv_def)
@@ -1067,11 +1045,11 @@ apply (simp_all add: mutator_phase_inv_aux_case
 
 apply (drule_tac x=m in spec)
 apply (clarsimp simp: fM_rel_def hp_step_rel_def)
-apply (intro conjI impI, simp_all)[1]
-apply (elim disjE, auto simp: fA_rel_def)[1] (* FIXME annoying: unfolding fA_rel early leads to non-termination *)
+apply (intro conjI impI; simp)
+apply (elim disjE; force simp: fA_rel_def) (* FIXME annoying: unfolding fA_rel early leads to non-termination *)
 
 apply (rule reachable_snapshot_inv_alloc, simp_all)[1]
-apply (elim disjE, auto simp: fA_rel_def)[1] (* FIXME annoying: unfolding fA_rel early leads to non-termination *)
+apply (elim disjE; force simp: fA_rel_def) (* FIXME annoying: unfolding fA_rel early leads to non-termination *)
 
 apply (drule_tac x=m in spec)
 apply (intro conjI impI)
@@ -1134,12 +1112,12 @@ lemma (in mut_m') mutator_phase_inv[intro]:
   notes mut_m.mark_object_invL_def[inv]
   notes mut_m.handshake_invL_def[inv]
   shows
-  "\<lbrace> handshake_invL and mut_m.handshake_invL m'
-       and mut_m.mark_object_invL m'
-       and mut_get_roots.mark_object_invL m'
-       and mut_store_del.mark_object_invL m'
-       and mut_store_ins.mark_object_invL m'
-       and LSTP (fA_rel_inv and fM_rel_inv and handshake_phase_inv and mutators_phase_inv and valid_refs_inv) \<rbrace>
+  "\<lbrace> handshake_invL \<^bold>\<and> mut_m.handshake_invL m'
+       \<^bold>\<and> mut_m.mark_object_invL m'
+       \<^bold>\<and> mut_get_roots.mark_object_invL m'
+       \<^bold>\<and> mut_store_del.mark_object_invL m'
+       \<^bold>\<and> mut_store_ins.mark_object_invL m'
+       \<^bold>\<and> LSTP (fA_rel_inv \<^bold>\<and> fM_rel_inv \<^bold>\<and> handshake_phase_inv \<^bold>\<and> mutators_phase_inv \<^bold>\<and> valid_refs_inv) \<rbrace>
      mutator m'
    \<lbrace> LSTP mutator_phase_inv \<rbrace>"
 apply (vcg_jackhammer simp: fA_rel_inv_def fM_rel_inv_def dest!: handshake_phase_invD)
@@ -1549,7 +1527,6 @@ lemma (in sys) reachable_snapshot_inv_black_heap_no_grey_refs_dequeue_ref[simp]:
   assumes bh: "black_heap s"
   assumes ngr: "no_grey_refs s"
   assumes vri: "valid_refs_inv s"
-  notes o_def[simp]
   shows "mut_m.reachable_snapshot_inv m (s(sys := s sys\<lparr>heap := (sys_heap s)(r := Option.map_option (\<lambda>obj. obj\<lparr>obj_fields := (obj_fields obj)(f := opt_r')\<rparr>) (sys_heap s r)),
                                                         mem_write_buffers := (mem_write_buffers (s sys))(mutator m' := ws)\<rparr>))" (is "mut_m.reachable_snapshot_inv m ?s'")
 apply (rule mut_m.reachable_snapshot_invI)
@@ -1577,13 +1554,13 @@ apply (cases "mutator m = p")
  apply (rename_tac x)
  apply (drule_tac x=x in spec)
  apply (clarsimp split: mem_write_action.splits)
- apply (simp add: obj_at_field_on_heap_def o_def cong: option.case_cong)
+ apply (simp add: obj_at_field_on_heap_def cong: option.case_cong)
  apply (auto split: option.splits)[1]
 apply clarsimp
 apply (rename_tac x)
 apply (drule_tac x=x in spec)
 apply (clarsimp split: mem_write_action.splits)
-apply (simp add: obj_at_field_on_heap_def o_def cong: option.case_cong)
+apply (simp add: obj_at_field_on_heap_def cong: option.case_cong)
 apply (auto split: option.splits)[1]
 done
 
@@ -1596,11 +1573,11 @@ apply (cases "m = m'")
  apply clarsimp
  apply (rename_tac x)
  apply (drule_tac x=x in spec)
- apply (fastforce simp: obj_at_field_on_heap_def o_def mut_m.marked_insertions_def split: mem_write_action.splits obj_at_splits option.splits)
+ apply (fastforce simp: obj_at_field_on_heap_def mut_m.marked_insertions_def split: mem_write_action.splits obj_at_splits option.splits)
 apply clarsimp
 apply (rename_tac x)
 apply (drule_tac x=x in spec)
-apply (fastforce simp: obj_at_field_on_heap_def o_def mut_m.marked_insertions_def split: mem_write_action.splits obj_at_splits option.splits)
+apply (fastforce simp: obj_at_field_on_heap_def mut_m.marked_insertions_def split: mem_write_action.splits obj_at_splits option.splits)
 done
 
 lemma (in sys) black_heap_marked_insertions_dequeue[simp]:
@@ -1610,7 +1587,7 @@ by (auto simp: mut_m.marked_insertions_def black_heap_def black_def
          dest: valid_refs_invD)
 
 lemma (in sys) mutator_phase_inv[intro]:
-  "\<lbrace> LSTP (fA_rel_inv and fM_rel_inv and handshake_phase_inv and mutators_phase_inv and strong_tricolour_inv and sys_phase_inv and tso_writes_inv and valid_refs_inv and valid_W_inv) \<rbrace>
+  "\<lbrace> LSTP (fA_rel_inv \<^bold>\<and> fM_rel_inv \<^bold>\<and> handshake_phase_inv \<^bold>\<and> mutators_phase_inv \<^bold>\<and> strong_tricolour_inv \<^bold>\<and> sys_phase_inv \<^bold>\<and> tso_writes_inv \<^bold>\<and> valid_refs_inv \<^bold>\<and> valid_W_inv) \<rbrace>
      sys
    \<lbrace> LSTP (mut_m.mutator_phase_inv m) \<rbrace>"
 apply vcg_nihe
@@ -1626,7 +1603,7 @@ apply (erule disjE)
  apply (clarsimp simp: fM_rel_def hp_step_rel_def)
 apply clarsimp
 
-(* mess *)
+(* FIXME mess *)
 apply (frule mut_m.handshake_phase_invD[where m=m])
 apply (intro allI conjI impI)
   apply (erule disjE)
@@ -1656,8 +1633,6 @@ done
 
 (*>*)
 
-(* **************************************** *)
-
 subsection\<open>The infamous termination argument.\<close>
 
 text\<open>
@@ -1675,9 +1650,9 @@ property, or gives it more work.
 \<close>
 
 definition (in mut_m) gc_W_empty_mut_inv :: "('field, 'mut, 'ref) lsts_pred" where
-  "gc_W_empty_mut_inv \<equiv>
-      (empty sys_W and sys_ghost_handshake_in_sync m and not empty (WL (mutator m)))
-  imp (EXS m'. not (sys_ghost_handshake_in_sync m') and not empty (WL (mutator m')))"
+  "gc_W_empty_mut_inv =
+      ((EMPTY sys_W \<^bold>\<and> sys_ghost_handshake_in_sync m \<^bold>\<and> \<^bold>\<not>(EMPTY (WL (mutator m))))
+   \<^bold>\<longrightarrow> (\<^bold>\<exists>m'. \<^bold>\<not>(sys_ghost_handshake_in_sync m') \<^bold>\<and> \<^bold>\<not>(EMPTY (WL (mutator m')))))"
 
 definition (in -) gc_W_empty_locs :: "location set" where
   "gc_W_empty_locs \<equiv>
@@ -1694,17 +1669,17 @@ definition "no_grey_refs_locs \<equiv> black_heap_locs \<union> sweep_locs \<uni
 local_setup \<open>Cimp.locset @{thm "no_grey_refs_locs_def"}\<close>
 
 definition (in gc) gc_W_empty_invL :: "('field, 'mut, 'ref) gc_pred" where
-[inv]: "gc_W_empty_invL \<equiv>
-      atS_gc (hs_get_roots_locs \<union> hs_get_work_locs) (ALLS m. mut_m.gc_W_empty_mut_inv m)
-  and at_gc ''mark_loop_get_roots_load_W''          (empty sys_W imp no_grey_refs)
-  and at_gc ''mark_loop_get_work_load_W''           (empty sys_W imp no_grey_refs)
-  and at_gc ''mark_loop''                           (empty gc_W imp no_grey_refs)
-  and atS_gc no_grey_refs_locs                      no_grey_refs
-  and atS_gc gc_W_empty_locs                        (empty gc_W)"
+[inv]: "gc_W_empty_invL =
+   (atS_gc (hs_get_roots_locs \<union> hs_get_work_locs)  (\<^bold>\<forall>m. mut_m.gc_W_empty_mut_inv m)
+  \<^bold>\<and> at_gc ''mark_loop_get_roots_load_W''          (EMPTY sys_W \<^bold>\<longrightarrow> no_grey_refs)
+  \<^bold>\<and> at_gc ''mark_loop_get_work_load_W''           (EMPTY sys_W \<^bold>\<longrightarrow> no_grey_refs)
+  \<^bold>\<and> at_gc ''mark_loop''                           (EMPTY gc_W \<^bold>\<longrightarrow> no_grey_refs)
+  \<^bold>\<and> atS_gc no_grey_refs_locs                      no_grey_refs
+  \<^bold>\<and> atS_gc gc_W_empty_locs                        (EMPTY gc_W))"
 (*<*)
 
 lemma (in mut_m) gc_W_empty_mut_inv_eq_imp:
-  "eq_imp (\<lambda>m'. sys_W \<otimes> WL (mutator m') \<otimes> sys_ghost_handshake_in_sync m')
+  "eq_imp (\<lambda>m'. sys_W \<^bold>\<otimes> WL (mutator m') \<^bold>\<otimes> sys_ghost_handshake_in_sync m')
           gc_W_empty_mut_inv"
 by (simp add: eq_imp_def gc_W_empty_mut_inv_def)
 
@@ -1737,7 +1712,7 @@ apply (simp_all add: WL_def)
 done
 
 lemma (in gc) gc_W_empty_invL[intro]:
-  "\<lbrace> handshake_invL and obj_fields_marked_invL and gc_W_empty_invL and LSTP valid_W_inv \<rbrace>
+  "\<lbrace> handshake_invL \<^bold>\<and> obj_fields_marked_invL \<^bold>\<and> gc_W_empty_invL \<^bold>\<and> LSTP valid_W_inv \<rbrace>
      gc
    \<lbrace> gc_W_empty_invL \<rbrace>"
 apply vcg_jackhammer
@@ -1913,13 +1888,13 @@ done
 lemma (in mut_m) gc_W_empty_invL[intro]:
   notes gc.gc_W_empty_invL_def[inv]
   shows
-  "\<lbrace> handshake_invL and mark_object_invL and tso_lock_invL
-             and mut_get_roots.mark_object_invL m
-             and mut_store_del.mark_object_invL m
-             and mut_store_ins.mark_object_invL m
-           and gc.handshake_invL and gc.obj_fields_marked_invL
-           and gc.gc_W_empty_invL
-             and LSTP (handshake_phase_inv and mutators_phase_inv and valid_W_inv) \<rbrace>
+  "\<lbrace> handshake_invL \<^bold>\<and> mark_object_invL \<^bold>\<and> tso_lock_invL
+             \<^bold>\<and> mut_get_roots.mark_object_invL m
+             \<^bold>\<and> mut_store_del.mark_object_invL m
+             \<^bold>\<and> mut_store_ins.mark_object_invL m
+           \<^bold>\<and> gc.handshake_invL \<^bold>\<and> gc.obj_fields_marked_invL
+           \<^bold>\<and> gc.gc_W_empty_invL
+             \<^bold>\<and> LSTP (handshake_phase_inv \<^bold>\<and> mutators_phase_inv \<^bold>\<and> valid_W_inv) \<rbrace>
      mutator m
    \<lbrace> gc.gc_W_empty_invL \<rbrace>"
 apply vcg_nihe
@@ -1985,22 +1960,20 @@ done
 
 (*>*)
 
-(* **************************************** *)
-
 subsection\<open>Sweep loop invariants\<close>
 
 definition "sweep_loop_locs \<equiv> prefixed ''sweep_loop''"
 local_setup \<open>Cimp.locset @{thm "sweep_loop_locs_def"}\<close>
 
 definition (in gc) sweep_loop_invL :: "('field, 'mut, 'ref) gc_pred" where
-[inv]: "sweep_loop_invL \<equiv>
-      at_gc ''sweep_loop_check''        ( (not null gc_mark imp (\<lambda>s. obj_at (\<lambda>obj. Some (obj_mark obj) = gc_mark s) (gc_tmp_ref s) s))
-                                      and (    null gc_mark imp (marked \<triangleright> gc_tmp_ref or not valid_ref \<triangleright> gc_tmp_ref) ) )
-  and at_gc ''sweep_loop_free''         ( not null gc_mark and the \<circ> gc_mark neq gc_fM and (\<lambda>s. obj_at (\<lambda>obj. Some (obj_mark obj) = gc_mark s) (gc_tmp_ref s) s) )
-  and at_gc ''sweep_loop_ref_done''     ( marked \<triangleright> gc_tmp_ref or not valid_ref \<triangleright> gc_tmp_ref )
-  and atS_gc sweep_loop_locs            (ALLS r. not \<langle>r\<rangle> in gc_refs imp (marked r or not valid_ref r))
-  and atS_gc black_heap_locs            (ALLS r. marked r or not valid_ref r)
-  and atS_gc (prefixed ''sweep_loop_'' - { ''sweep_loop_choose_ref'' }) (gc_tmp_ref in gc_refs)"
+[inv]: "sweep_loop_invL =
+   (at_gc ''sweep_loop_check''        ( (\<^bold>\<not>(NULL gc_mark) \<^bold>\<longrightarrow> (\<lambda>s. obj_at (\<lambda>obj. Some (obj_mark obj) = gc_mark s) (gc_tmp_ref s) s))
+                                      \<^bold>\<and> (  NULL gc_mark \<^bold>\<longrightarrow> valid_ref \<^bold>$ gc_tmp_ref \<^bold>\<longrightarrow> marked \<^bold>$ gc_tmp_ref ) )
+  \<^bold>\<and> at_gc ''sweep_loop_free''         ( \<^bold>\<not>(NULL gc_mark) \<^bold>\<and> the \<circ> gc_mark \<^bold>\<noteq> gc_fM \<^bold>\<and> (\<lambda>s. obj_at (\<lambda>obj. Some (obj_mark obj) = gc_mark s) (gc_tmp_ref s) s) )
+  \<^bold>\<and> at_gc ''sweep_loop_ref_done''     (valid_ref \<^bold>$ gc_tmp_ref \<^bold>\<longrightarrow> marked \<^bold>$ gc_tmp_ref)
+  \<^bold>\<and> atS_gc sweep_loop_locs            (\<^bold>\<forall>r. \<^bold>\<not>(\<langle>r\<rangle> \<^bold>\<in> gc_refs) \<^bold>\<longrightarrow> valid_ref r \<^bold>\<longrightarrow> marked r)
+  \<^bold>\<and> atS_gc black_heap_locs            (\<^bold>\<forall>r. valid_ref r \<^bold>\<longrightarrow> marked r)
+  \<^bold>\<and> atS_gc (prefixed ''sweep_loop_'' - { ''sweep_loop_choose_ref'' }) (gc_tmp_ref \<^bold>\<in> gc_refs))"
 (*<*)
 
 lemma (in gc) sweep_loop_invL_eq_imp:
@@ -2019,15 +1992,15 @@ apply (subgoal_tac "\<forall>r. valid_ref r s\<down> \<longleftrightarrow> valid
 apply (clarsimp simp: fun_eq_iff split: obj_at_splits)
 apply (rename_tac r)
 apply (drule_tac x=r in spec, auto)[1]
-apply (metis map_option_is_None map_option_eq_Some)+
+apply (metis map_option_eq_Some)+
 done
 
 lemmas gc_sweep_loop_invL_niE[nie] =
   iffD1[OF gc.sweep_loop_invL_eq_imp[simplified eq_imp_simps, rule_format, unfolded conj_explode, rule_format], rotated -1]
 
 lemma (in gc) sweep_loop_invL[intro]:
-  "\<lbrace> fM_fA_invL and phase_invL and sweep_loop_invL and tso_lock_invL
-         and LSTP (phase_rel_inv and mutators_phase_inv and valid_W_inv) \<rbrace>
+  "\<lbrace> fM_fA_invL \<^bold>\<and> phase_invL \<^bold>\<and> sweep_loop_invL \<^bold>\<and> tso_lock_invL
+         \<^bold>\<and> LSTP (phase_rel_inv \<^bold>\<and> mutators_phase_inv \<^bold>\<and> valid_W_inv) \<rbrace>
      gc
    \<lbrace> sweep_loop_invL \<rbrace>"
 apply (vcg_jackhammer simp: no_grey_refs_def phase_rel_inv_def phase_rel_def)
@@ -2038,12 +2011,6 @@ apply (case_tac "x \<in> gc_refs s\<down>")
 apply blast
 
 apply (clarsimp split: obj_at_splits)
-apply (rename_tac s s' x obj obja)
-apply (drule_tac x=x in spec)
-apply clarsimp
-
-apply (clarsimp split: obj_at_splits)
-
 done
 
 lemma sweep_loop_sweep_locs[iff]:
@@ -2092,8 +2059,8 @@ apply (auto simp: sweep_locs_def intro: append_prefixD)
 done
 
 lemma (in sys) gc_sweep_loop_invL[intro]:
-  "\<lbrace> gc.fM_fA_invL and gc.gc_W_empty_invL and gc.handshake_invL and gc.phase_invL and gc.sweep_loop_invL
-       and LSTP (mutators_phase_inv and tso_writes_inv and valid_W_inv) \<rbrace>
+  "\<lbrace> gc.fM_fA_invL \<^bold>\<and> gc.gc_W_empty_invL \<^bold>\<and> gc.handshake_invL \<^bold>\<and> gc.phase_invL \<^bold>\<and> gc.sweep_loop_invL
+       \<^bold>\<and> LSTP (mutators_phase_inv \<^bold>\<and> tso_writes_inv \<^bold>\<and> valid_W_inv) \<rbrace>
      sys
    \<lbrace> gc.sweep_loop_invL \<rbrace>"
 apply vcg_nihe
@@ -2120,7 +2087,7 @@ apply (drule_tac x=p in spec)
 apply fastforce
 
 (* mw_Mutate *)
-apply (erule gc_sweep_loop_invL_niE, simp_all add: fun_eq_iff o_def)[1] (* FIXME should be automatic *)
+apply (erule gc_sweep_loop_invL_niE, simp_all add: fun_eq_iff)[1] (* FIXME should be automatic *)
 
 (* mw_fA *)
 apply (erule gc_sweep_loop_invL_niE, simp_all add: fun_eq_iff)[1] (* FIXME should be automatic *)
@@ -2138,8 +2105,8 @@ apply (erule gc_sweep_loop_invL_niE, simp_all add: fun_eq_iff)[1] (* FIXME shoul
 done (* FIXME weird: expect more aggressive use of gc_sweep_loop_invL_niE by clarsimp *)
 
 lemma (in mut_m) gc_sweep_loop_invL[intro]:
-  "\<lbrace> gc.fM_fA_invL and gc.handshake_invL and gc.sweep_loop_invL
-       and LSTP (mutators_phase_inv and valid_refs_inv) \<rbrace>
+  "\<lbrace> gc.fM_fA_invL \<^bold>\<and> gc.handshake_invL \<^bold>\<and> gc.sweep_loop_invL
+       \<^bold>\<and> LSTP (mutators_phase_inv \<^bold>\<and> valid_refs_inv) \<rbrace>
      mutator m
    \<lbrace> gc.sweep_loop_invL \<rbrace>"
 apply vcg_nihe
@@ -2148,32 +2115,26 @@ apply (clarsimp simp: inv gc.sweep_loop_invL_def gc.fM_fA_invL_def)
 apply (intro allI conjI impI)
  (* four subgoals *)
  apply ((erule (1) thin_locs)+)[1]
- apply (clarsimp simp: loc)
+ apply (force simp: loc)
 
  apply ((erule (1) thin_locs)+)[1]
- apply (clarsimp simp: loc)
+ apply (force simp: loc)
 
- apply (rename_tac s s' ra x)
+ apply (rename_tac s s' ra)
  apply (drule mp, erule atS_mono[OF _ sweep_loop_locs_fA_eq_locs])
  apply (drule mp, erule atS_mono[OF _ sweep_loop_locs_fM_eq_locs])
- apply clarsimp
- apply (drule_tac x=x in spec)
- apply (clarsimp split: obj_at_splits)
+ apply force
 
- apply (rename_tac s s' ra x)
+ apply (rename_tac s s' ra)
  apply (drule mp, erule atS_mono[OF _ black_heap_locs_fA_eq_locs])
  apply (drule mp, erule atS_mono[OF _ black_heap_locs_fM_eq_locs])
- apply clarsimp
- apply (drule_tac x=x in spec)
- apply (clarsimp split: obj_at_splits)
+ apply force
 done (* FIXME crappy split *)
 
-(* **************************************** *)
-
 lemma (in gc) sys_phase_inv[intro]:
-  "\<lbrace> fM_fA_invL and gc_W_empty_invL and handshake_invL and obj_fields_marked_invL
-       and phase_invL and sweep_loop_invL
-       and LSTP (phase_rel_inv and sys_phase_inv and valid_W_inv and tso_writes_inv) \<rbrace>
+  "\<lbrace> fM_fA_invL \<^bold>\<and> gc_W_empty_invL \<^bold>\<and> handshake_invL \<^bold>\<and> obj_fields_marked_invL
+       \<^bold>\<and> phase_invL \<^bold>\<and> sweep_loop_invL
+       \<^bold>\<and> LSTP (phase_rel_inv \<^bold>\<and> sys_phase_inv \<^bold>\<and> valid_W_inv \<^bold>\<and> tso_writes_inv) \<rbrace>
      gc
    \<lbrace> LSTP sys_phase_inv \<rbrace>"
 apply vcg_jackhammer
@@ -2218,9 +2179,9 @@ apply (clarsimp split: obj_at_splits)
 done
 
 lemma (in gc) mutator_phase_inv[intro]:
-  "\<lbrace> fM_fA_invL and gc_W_empty_invL and handshake_invL and obj_fields_marked_invL and sweep_loop_invL
-       and gc_mark.mark_object_invL
-       and LSTP (handshake_phase_inv and mutators_phase_inv and tso_writes_inv and valid_refs_inv and valid_W_inv) \<rbrace>
+  "\<lbrace> fM_fA_invL \<^bold>\<and> gc_W_empty_invL \<^bold>\<and> handshake_invL \<^bold>\<and> obj_fields_marked_invL \<^bold>\<and> sweep_loop_invL
+       \<^bold>\<and> gc_mark.mark_object_invL
+       \<^bold>\<and> LSTP (handshake_phase_inv \<^bold>\<and> mutators_phase_inv \<^bold>\<and> tso_writes_inv \<^bold>\<and> valid_refs_inv \<^bold>\<and> valid_W_inv) \<rbrace>
      gc
    \<lbrace> LSTP (mut_m.mutator_phase_inv m) \<rbrace>"
 apply vcg_jackhammer
@@ -2265,11 +2226,11 @@ done
 
 lemma (in mut_m) sys_phase_inv[intro]:
   "\<lbrace> handshake_invL
-             and mark_object_invL
-             and mut_get_roots.mark_object_invL m
-             and mut_store_del.mark_object_invL m
-             and mut_store_ins.mark_object_invL m
-        and LSTP (fA_rel_inv and fM_rel_inv and handshake_phase_inv and mutators_phase_inv and phase_rel_inv and sys_phase_inv and valid_refs_inv) \<rbrace>
+             \<^bold>\<and> mark_object_invL
+             \<^bold>\<and> mut_get_roots.mark_object_invL m
+             \<^bold>\<and> mut_store_del.mark_object_invL m
+             \<^bold>\<and> mut_store_ins.mark_object_invL m
+        \<^bold>\<and> LSTP (fA_rel_inv \<^bold>\<and> fM_rel_inv \<^bold>\<and> handshake_phase_inv \<^bold>\<and> mutators_phase_inv \<^bold>\<and> phase_rel_inv \<^bold>\<and> sys_phase_inv \<^bold>\<and> valid_refs_inv) \<rbrace>
      mutator m
    \<lbrace> LSTP sys_phase_inv \<rbrace>"
 apply (vcg_jackhammer simp: fA_rel_inv_def fM_rel_inv_def)
@@ -2327,7 +2288,7 @@ subgoal by (clarsimp simp: hp_step_rel_def
 subgoal
   apply (clarsimp simp: hp_step_rel_def phase_rel_def filter_empty_conv
                dest!: handshake_phase_invD phase_rel_invD)
-  apply auto[1]
+  apply auto
   done
 
 (* hs_get_roots_loop_mo_co_mark *)
@@ -2336,7 +2297,7 @@ subgoal by (clarsimp simp: hp_step_rel_def
 subgoal
   apply (clarsimp simp: hp_step_rel_def phase_rel_def filter_empty_conv
                  dest!: handshake_phase_invD phase_rel_invD)
-  apply auto[1]
+  apply auto
   done
 
 (* hs_get_work_done *)
@@ -2351,7 +2312,7 @@ subgoal by (clarsimp simp: hp_step_rel_def
 subgoal
   apply (clarsimp simp: hp_step_rel_def phase_rel_def filter_empty_conv
                dest!: handshake_phase_invD phase_rel_invD)
-  apply auto[1]
+  apply auto
   done
 done
 
@@ -2364,7 +2325,7 @@ lemma (in sys) black_heap_dequeue_ref[simp]:
   "\<lbrakk> sys_mem_write_buffers p s = mw_Mutate r f r' # ws; black_heap s \<rbrakk>
      \<Longrightarrow> black_heap (s(sys := s sys\<lparr>heap := (sys_heap s)(r := Option.map_option (\<lambda>obj. obj\<lparr>obj_fields := (obj_fields obj)(f := r')\<rparr>) (sys_heap s r)),
                                    mem_write_buffers := (mem_write_buffers (s sys))(p := ws)\<rparr>))"
-by (simp add: black_heap_def black_def o_def)
+by (simp add: black_heap_def black_def)
 
 lemma no_grey_refs_no_marks[simp]:
   "\<lbrakk> no_grey_refs s; valid_W_inv s \<rbrakk> \<Longrightarrow> \<not>sys_mem_write_buffers p s = mw_Mark r fl # ws"
@@ -2374,10 +2335,10 @@ lemma (in sys) white_heap_dequeue_ref[simp]:
   "\<lbrakk> sys_mem_write_buffers p s = mw_Mutate r f r' # ws; white_heap s \<rbrakk>
      \<Longrightarrow> white_heap (s(sys := s sys\<lparr>heap := (sys_heap s)(r := Option.map_option (\<lambda>obj. obj\<lparr>obj_fields := (obj_fields obj)(f := r')\<rparr>) (sys_heap s r)),
                                    mem_write_buffers := (mem_write_buffers (s sys))(p := ws)\<rparr>))"
-by (simp add: white_heap_def o_def)
+by (simp add: white_heap_def)
 
 lemma (in sys) sys_phase_inv[intro]:
-  "\<lbrace> LSTP (fA_rel_inv and fM_rel_inv and handshake_phase_inv and mutators_phase_inv and phase_rel_inv and sys_phase_inv and tso_writes_inv and valid_W_inv) \<rbrace>
+  "\<lbrace> LSTP (fA_rel_inv \<^bold>\<and> fM_rel_inv \<^bold>\<and> handshake_phase_inv \<^bold>\<and> mutators_phase_inv \<^bold>\<and> phase_rel_inv \<^bold>\<and> sys_phase_inv \<^bold>\<and> tso_writes_inv \<^bold>\<and> valid_W_inv) \<rbrace>
      sys
    \<lbrace> LSTP sys_phase_inv \<rbrace>"
 apply (vcg_jackhammer simp: fA_rel_inv_def fM_rel_inv_def p_not_sys)
@@ -2422,8 +2383,6 @@ apply (elim disjE, simp_all)[1]
 
 done
 
-(* **************************************** *)
-
 lemma valid_W_inv_unlockE[elim!]:
   "\<lbrakk> sys_mem_lock s = Some p; sys_mem_write_buffers p s = [];
      \<And>r. r \<in> ghost_honorary_grey (s p) \<Longrightarrow> marked r s;
@@ -2447,13 +2406,13 @@ apply (case_tac "q = p")
 done
 
 lemma (in gc) valid_W_inv[intro]:
-  notes valid_W_invD2[dest!]
-  notes valid_W_invD3[dest]
+  notes valid_W_invD2[dest!, simp]
+  notes valid_W_invD3[dest, simp]
   shows
-  "\<lbrace> fM_invL and gc_mark.mark_object_invL and gc_W_empty_invL
-       and obj_fields_marked_invL
-       and sweep_loop_invL and tso_lock_invL
-       and LSTP (tso_writes_inv and valid_W_inv) \<rbrace>
+  "\<lbrace> fM_invL \<^bold>\<and> gc_mark.mark_object_invL \<^bold>\<and> gc_W_empty_invL
+       \<^bold>\<and> obj_fields_marked_invL
+       \<^bold>\<and> sweep_loop_invL \<^bold>\<and> tso_lock_invL
+       \<^bold>\<and> LSTP (tso_writes_inv \<^bold>\<and> valid_W_inv) \<rbrace>
      gc
    \<lbrace> LSTP valid_W_inv \<rbrace>"
 apply (vcg_jackhammer simp: fM_rel_def)
@@ -2461,54 +2420,42 @@ apply (vcg_jackhammer simp: fM_rel_def)
 (* sweep loop free: what's with the case splitting? *)
 subgoal for s s'
   apply (subst valid_W_inv_def)
-  apply (intro allI conjI impI, simp_all add: p_not_sys split: if_splits)[1]
-          apply (auto split: obj_at_splits)[1]
-         apply (auto split: obj_at_splits dest: no_grey_refsD)[1]
-        apply auto[1]
-       apply auto[1]
-      apply auto[1]
-     apply (rename_tac x xb xc)
-     apply (case_tac x, auto)[1]
-     apply (rename_tac x xb xc)
-    apply (case_tac x, auto)[1]
-   apply (rename_tac x xb xc)
-   apply (case_tac x, auto simp: no_grey_refs_def)[1]
-  apply auto[1]
+  apply (intro allI conjI impI; clarsimp simp: p_not_sys split: if_splits)
+       apply blast
+      apply blast
+     apply blast
+    apply blast
+   apply (rename_tac p x)
+   apply (case_tac p; auto)
+  apply (rename_tac p)
+  apply (case_tac p; force simp: no_grey_refs_def)
   done
 
 (* mark_loop_get_work_load_W *)
-apply (subst valid_W_inv_def)
-subgoal by (auto simp: all_conj_distrib split: process_name.splits)[1]
+subgoal by (subst valid_W_inv_def) (auto simp: all_conj_distrib split: process_name.splits)
 
 (* mark_loop_blacken *)
-apply (subst valid_W_inv_def)
-subgoal by (auto simp: all_conj_distrib)[1]
+subgoal by (subst valid_W_inv_def) (auto simp: all_conj_distrib)
 
 (* mark_loop_mo_co_W *)
 subgoal
   apply (subst valid_W_inv_def)
-  apply (clarsimp simp: all_conj_distrib)
-  apply (intro allI conjI impI)
-              apply auto[1]
-             apply auto[1]
-            apply auto[1]
-           apply auto[1]
-          apply clarsimp
-          apply (drule valid_W_invD(7)[where q=gc], simp_all add: WL_def)[1]
-         apply auto[1]
-        apply auto[1]
-       apply auto[1]
-      apply auto[1]
-     apply auto[1]
-    apply auto[1]
-   apply auto[1]
-  apply auto[1]
+  apply clarsimp
+  apply blast
   done
 
 (* mark_loop_mo_co_unlock *)
 subgoal
   apply (subst valid_W_inv_def)
-  apply (auto simp: all_conj_distrib iff: p_not_sys split: if_splits)[1]
+  apply (clarsimp simp: all_conj_distrib)
+  apply (intro allI conjI impI)
+        apply blast
+       apply blast
+      apply (auto iff: p_not_sys split: if_splits)[1]
+     apply blast
+    apply blast
+   apply blast
+  apply force
   done
 
 (* mark_loop_mo_co_mark *)
@@ -2516,49 +2463,45 @@ subgoal
   apply (subst valid_W_inv_def)
   apply (clarsimp simp: all_conj_distrib)
   apply (intro allI conjI impI)
-                  apply auto[1]
-                 apply auto[1]
-                apply auto[1]
-               apply auto[1]
-              apply (frule (2) valid_W_inv_mark, auto)[1]
-             apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits) (* FIXME want a cheaper contradiction between white and marked *)
-            apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
-           apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
-          apply auto[1]
-         apply auto[1]
-        apply auto[1]
-       apply auto[1]
-      apply auto[1]
-     apply auto[1]
-    apply auto[1]
-   apply auto[1]
-  apply auto[1]
+               apply blast
+              apply blast
+             apply blast
+            apply (frule (2) valid_W_inv_mark; auto)[1]
+           apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits) (* FIXME want a cheaper contradiction between white and marked *)
+          apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
+         apply (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
+        apply blast
+       apply blast
+      apply blast
+     apply blast
+    apply blast
+   apply blast
+  apply force
   done
 
 (* mark_loop_mo_co_lock *)
 subgoal
   apply (subst valid_W_inv_def)
-  apply (auto simp: all_conj_distrib)[1]
+  apply (auto simp: all_conj_distrib)
   done
 
 (* ''mark_loop_get_roots_load_W'' *)
 subgoal
   apply (subst valid_W_inv_def)
-  apply (auto simp: all_conj_distrib split: process_name.splits)[1]
+  apply (auto simp: all_conj_distrib split: process_name.splits)
   done
 
 done
 
 lemma (in mut_m) valid_W_inv[intro]:
-  notes valid_W_invD2[dest!]
-  notes valid_W_invD3[dest]
-  notes o_def[simp]
+  notes valid_W_invD2[dest!, simp]
+  notes valid_W_invD3[dest, simp]
   shows
-  "\<lbrace> handshake_invL and mark_object_invL and tso_lock_invL
-      and mut_get_roots.mark_object_invL m
-      and mut_store_del.mark_object_invL m
-      and mut_store_ins.mark_object_invL m
-       and LSTP (fM_rel_inv and sys_phase_inv and tso_writes_inv and valid_refs_inv and valid_W_inv) \<rbrace>
+  "\<lbrace> handshake_invL \<^bold>\<and> mark_object_invL \<^bold>\<and> tso_lock_invL
+      \<^bold>\<and> mut_get_roots.mark_object_invL m
+      \<^bold>\<and> mut_store_del.mark_object_invL m
+      \<^bold>\<and> mut_store_ins.mark_object_invL m
+       \<^bold>\<and> LSTP (fM_rel_inv \<^bold>\<and> sys_phase_inv \<^bold>\<and> tso_writes_inv \<^bold>\<and> valid_refs_inv \<^bold>\<and> valid_W_inv) \<rbrace>
      mutator m
    \<lbrace> LSTP valid_W_inv \<rbrace>"
 apply (vcg_jackhammer simp: fM_rel_inv_def fM_rel_def)
@@ -2566,28 +2509,15 @@ apply (vcg_jackhammer simp: fM_rel_inv_def fM_rel_def)
 (* alloc *)
 subgoal
   apply (subst valid_W_inv_def)
-  apply auto[1]
+  apply (clarsimp simp: all_conj_distrib)
+  apply (intro allI conjI impI; auto)
   done
 
 (* store ins mo co W *)
 subgoal
   apply (subst valid_W_inv_def)
-  apply (clarsimp simp: all_conj_distrib)
-  apply (intro allI conjI impI)
-              subgoal by auto
-             subgoal by auto
-            subgoal by auto
-           subgoal by auto
-          apply clarsimp
-          apply (drule valid_W_invD(7)[where q="mutator m"], simp_all add: WL_def)[1]
-         subgoal by auto
-        subgoal by auto
-       subgoal by auto
-      subgoal by auto
-     subgoal by auto
-    subgoal by auto
-   subgoal by auto
-  subgoal by auto
+  apply clarsimp
+  apply blast
   done
 
 (* store ins mo co unlock *)
@@ -2595,16 +2525,13 @@ subgoal for s s' y
   apply (subst valid_W_inv_def)
   apply (clarsimp simp: all_conj_distrib)
   apply (intro allI conjI impI)
-        subgoal by auto
-       subgoal by auto
-      apply (rename_tac x xa)
-      apply (case_tac "x = mutator m")
-       apply (auto split: if_splits)[1]
-      subgoal by auto
-     subgoal by auto
-    subgoal by auto
-   subgoal by auto
-  subgoal by auto
+        subgoal by blast
+       subgoal by blast
+      subgoal for p x by (case_tac "p = mutator m"; force split: if_splits)
+     subgoal by blast
+    subgoal by blast
+   subgoal by blast
+  subgoal by force
   done
 
 (* store ins mo co mark *)
@@ -2612,50 +2539,43 @@ subgoal
   apply (subst valid_W_inv_def)
   apply (clarsimp simp: all_conj_distrib)
   apply (intro allI conjI impI)
-                  subgoal by auto
-                 subgoal by auto
-                subgoal by auto
-               subgoal by auto
-              subgoal by (frule (2) valid_W_inv_mark, auto)[1]
-             subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits) (* FIXME want a cheaper contradiction between white and marked *)
-            subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
-           subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
-          subgoal by auto
-         subgoal by auto
-        subgoal by auto
-       subgoal by auto
-      subgoal by auto
-     subgoal by auto
-    subgoal by auto
-   subgoal by auto
-  subgoal by auto
+               subgoal by blast
+              subgoal by blast
+             subgoal by blast
+            subgoal by (blast dest: valid_W_inv_mark)
+           subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits) (* FIXME want a cheaper contradiction between white and marked *)
+          subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
+         subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
+        subgoal by blast
+       subgoal by blast
+      subgoal by blast
+     subgoal by blast
+    subgoal by blast
+   subgoal by blast
+  subgoal by force
   done
 
 (* store ins mo co lock *)
 subgoal
   apply (subst valid_W_inv_def)
-  apply (auto simp: all_conj_distrib)[1]
+  apply (clarsimp simp: all_conj_distrib)
+  apply (intro allI conjI impI)
+          subgoal by blast
+         subgoal by blast
+        subgoal by force
+       subgoal by blast
+      subgoal by blast
+     subgoal by blast
+    subgoal by force
+   subgoal by blast
+  subgoal by force
   done
 
 (* store del mo co W *)
 subgoal
   apply (subst valid_W_inv_def)
-  apply (clarsimp simp: all_conj_distrib)
-  apply (intro allI conjI impI)
-              subgoal by auto
-             subgoal by auto
-            subgoal by auto
-           subgoal by auto
-          apply clarsimp
-          apply (drule valid_W_invD(7)[where q="mutator m"], simp_all add: WL_def)[1]
-         subgoal by auto
-        subgoal by auto
-       subgoal by auto
-      subgoal by auto
-     subgoal by auto
-    subgoal by auto
-   subgoal by auto
-  subgoal by auto
+  apply clarsimp
+  apply blast
   done
 
 (* store del mo co unlock *)
@@ -2663,16 +2583,13 @@ subgoal for s s' y
   apply (subst valid_W_inv_def)
   apply (clarsimp simp: all_conj_distrib)
   apply (intro allI conjI impI)
-        subgoal by auto
-       subgoal by auto
-      apply (rename_tac x xa)
-      apply (case_tac "x = mutator m")
-       apply (auto split: if_splits)[1]
-      subgoal by auto
-     subgoal by auto
-    subgoal by auto
-   subgoal by auto
-  subgoal by auto
+        subgoal by blast
+       subgoal by blast
+      subgoal for p x by (cases "p = mutator m") (auto split: if_splits)
+     subgoal by blast
+    subgoal by blast
+   subgoal by blast
+  subgoal by force
   done
 
 (* store del mo co mark *)
@@ -2680,58 +2597,61 @@ subgoal
   apply (subst valid_W_inv_def)
   apply (clarsimp simp: all_conj_distrib)
   apply (intro allI conjI impI)
-                  subgoal by auto
-                 subgoal by auto
-                subgoal by auto
-               subgoal by auto
-              subgoal by (frule (2) valid_W_inv_mark, auto)[1]
-             subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits) (* FIXME want a cheaper contradiction between white and marked *)
-            subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
-           subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
-          subgoal by auto
-         subgoal by auto
-        subgoal by auto
-       subgoal by auto
-      subgoal by auto
-     subgoal by auto
-    subgoal by auto
-   subgoal by auto
-  subgoal by auto
+               subgoal by blast
+              subgoal by blast
+             subgoal by blast
+            subgoal by (frule (2) valid_W_inv_mark; auto)
+           subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits) (* FIXME want a cheaper contradiction between white and marked *)
+          subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
+         subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
+        subgoal by blast
+       subgoal by blast
+      subgoal by blast
+     subgoal by blast
+    subgoal by blast
+   subgoal by blast
+  subgoal by force
   done
 
 (* store del mo co lock *)
 subgoal
   apply (subst valid_W_inv_def)
-  apply (auto simp: all_conj_distrib)[1]
+  apply (clarsimp simp: all_conj_distrib)
+  apply (intro allI conjI impI)
+          subgoal by blast
+         subgoal by blast
+        subgoal by force
+       subgoal by blast
+      subgoal by blast
+     subgoal by blast
+    subgoal by force
+   subgoal by blast
+  subgoal by force
   done
 
 (* get roots done *)
 subgoal
   apply (subst valid_W_inv_def)
-  apply (auto simp: all_conj_distrib split: if_splits obj_at_splits process_name.splits)[1]
+  apply (clarsimp simp: all_conj_distrib)
+  apply (intro allI conjI impI)
+            subgoal by blast
+           subgoal by blast
+          subgoal by blast
+         subgoal by blast
+        subgoal by (auto split: if_splits obj_at_splits process_name.splits)
+       subgoal by blast
+      subgoal by blast
+     subgoal by blast
+    subgoal by (auto split: if_splits obj_at_splits process_name.splits)
+   subgoal by blast
+  subgoal by blast
   done
 
 (* hs get roots loop mo co W *)
 subgoal
   apply (subst valid_W_inv_def)
-  apply (clarsimp simp: all_conj_distrib)
-  apply (intro allI conjI impI)
-              subgoal by auto
-             subgoal by auto
-            subgoal by auto
-           subgoal by auto
-          subgoal
-            apply clarsimp
-            apply (drule valid_W_invD(7)[where q="mutator m"], simp_all add: WL_def)[1]
-            done
-         subgoal by auto
-        subgoal by auto
-       subgoal by auto
-      subgoal by auto
-     subgoal by auto
-    subgoal by auto
-   subgoal by auto
-  subgoal by auto
+  apply clarsimp
+  apply blast
   done
 
 (* hs get roots loop mo co unlock *)
@@ -2739,16 +2659,13 @@ subgoal for s s' y
   apply (subst valid_W_inv_def)
   apply (clarsimp simp: all_conj_distrib)
   apply (intro allI conjI impI)
-        subgoal by auto
-       subgoal by auto
-      apply (rename_tac x xa)
-      apply (case_tac "x = mutator m")
-       apply (auto split: if_splits)[1]
-      subgoal by auto
-     subgoal by auto
-    subgoal by auto
-   subgoal by auto
-  subgoal by auto
+        subgoal by blast
+       subgoal by blast
+      subgoal for p x by (cases "p = mutator m") (auto split: if_splits)
+     subgoal by blast
+    subgoal by blast
+   subgoal by blast
+  subgoal by force
   done
 
 (* hs get roots loop mo co mark *)
@@ -2756,46 +2673,65 @@ subgoal
   apply (subst valid_W_inv_def)
   apply (clarsimp simp: all_conj_distrib)
   apply (intro allI conjI impI)
-                  subgoal by auto
-                 subgoal by auto
-                subgoal by auto
-               subgoal by auto
-              subgoal by (frule (2) valid_W_inv_mark, auto)[1]
-             subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits) (* FIXME want a cheaper contradiction between white and marked *)
-            subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
-           subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
-          subgoal by auto
-         subgoal by auto
-        subgoal by auto
-       subgoal by auto
-      subgoal by auto
-     subgoal by auto
-    subgoal by auto
-   subgoal by auto
-  subgoal by auto
+               subgoal by blast
+              subgoal by blast
+             subgoal by blast
+            subgoal by (frule (2) valid_W_inv_mark; auto)
+           subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits) (* FIXME want a cheaper contradiction between white and marked *)
+          subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
+         subgoal by (clarsimp dest!: valid_W_invD(1) split: obj_at_splits)
+        subgoal by blast
+       subgoal by blast
+      subgoal by blast
+     subgoal by blast
+    subgoal by blast
+   subgoal by blast
+  subgoal by force
   done
 
 (* hs get roots loop mo co lock *)
 subgoal
   apply (subst valid_W_inv_def)
-  apply (auto simp: all_conj_distrib)[1]
+  apply (clarsimp simp: all_conj_distrib)
+  apply (intro allI conjI impI)
+          subgoal by blast
+         subgoal by blast
+        subgoal by force
+       subgoal by blast
+      subgoal by blast
+     subgoal by blast
+    subgoal by force
+   subgoal by blast
+  subgoal by force
   done
 
 (* hs get work done *)
 subgoal
   apply (subst valid_W_inv_def)
-  apply (auto simp: all_conj_distrib split: if_splits obj_at_splits process_name.splits)[1]
+  apply (clarsimp simp: all_conj_distrib)
+  apply (intro allI conjI impI)
+            subgoal by blast
+           subgoal by blast
+          subgoal by blast
+         subgoal by blast
+        subgoal by (auto split: if_splits obj_at_splits process_name.splits)
+       subgoal by blast
+      subgoal by blast
+     subgoal by blast
+    subgoal by force
+   subgoal by blast
+  subgoal by blast
   done
 
 done
 
 lemma (in sys) valid_W_inv[intro]:
-  notes valid_W_invD2[dest!]
-  notes valid_W_invD3[dest]
-  notes valid_W_invD4[dest!]
+  notes valid_W_invD2[dest!, simp]
+  notes valid_W_invD3[dest, simp]
+  notes valid_W_invD4[dest!, simp]
   notes o_def[simp]
   shows
-  "\<lbrace> LSTP (fM_rel_inv and sys_phase_inv and tso_writes_inv and valid_refs_inv and valid_W_inv) \<rbrace>
+  "\<lbrace> LSTP (fM_rel_inv \<^bold>\<and> sys_phase_inv \<^bold>\<and> tso_writes_inv \<^bold>\<and> valid_refs_inv \<^bold>\<and> valid_W_inv) \<rbrace>
      sys
    \<lbrace> LSTP valid_W_inv \<rbrace>"
 apply vcg_jackhammer
@@ -2804,24 +2740,25 @@ apply (clarsimp simp: do_write_action_def all_conj_distrib fM_rel_inv_def
                split: mem_write_action.splits)
 
 (* mw_Mark *)
-apply (intro allI conjI impI)
-            apply (auto split: obj_at_splits)[1]
-           apply auto[1]
-          apply (auto split: obj_at_splits)[1]
-         apply auto[1]
-        apply (auto split: obj_at_splits)[1]
-       apply auto[1]
-      apply auto[1]
-     apply auto[1]
-    apply auto[1]
-   apply auto[1]
-  apply (auto simp: filter_empty_conv)[1]
- apply auto[1]
-apply auto[1]
+subgoal
+  apply (intro allI conjI impI)
+             apply blast
+            apply blast
+           apply blast
+          apply blast
+         apply blast
+        apply force
+       apply blast
+      apply blast
+     apply blast
+    apply (force simp: filter_empty_conv)
+   apply force
+  apply blast
+  done
 
 (* mw_Mutate, mw_fA *)
-subgoal by (intro allI conjI impI, auto)[1]
-subgoal by (intro allI conjI impI, auto)[1]
+subgoal by (intro allI conjI impI; auto)
+subgoal by (intro allI conjI impI; auto)
 
 (* mw_fM *)
 subgoal for s s' p ws bool
@@ -2829,49 +2766,40 @@ subgoal for s s' p ws bool
   apply (rule disjE[OF iffD1[OF p_not_sys]], assumption)
    prefer 2
    apply clarsimp
-  apply (case_tac "sys_ghost_handshake_phase s\<down> = hp_Idle", simp_all)
-  apply clarsimp
+  apply (case_tac "sys_ghost_handshake_phase s\<down> = hp_Idle"; clarsimp)
   apply (intro allI conjI impI)
-              subgoal by auto
-             subgoal by auto
-            subgoal by auto
-           subgoal by auto
-          subgoal by auto
-         subgoal by auto
-        subgoal by auto
-       subgoal by auto
-      subgoal by (fastforce simp: filter_empty_conv dest: no_grey_refs_no_pending_marks)
-     subgoal by auto
-    subgoal by auto
-   subgoal by (fastforce simp: filter_empty_conv dest: no_grey_refs_no_pending_marks)
-  subgoal by auto
+            subgoal by blast
+           subgoal by blast
+          subgoal by blast
+         subgoal by blast
+        subgoal by blast
+       subgoal by force
+      subgoal by (force dest: no_grey_refs_no_pending_marks)
+     subgoal by blast
+    subgoal by force
+   subgoal by (fastforce dest: no_grey_refs_no_pending_marks)
+  subgoal by (fastforce dest: no_grey_refs_no_pending_marks)
   done
 
 (* mw_Phase *)
-apply (intro allI conjI impI, auto)[1]
+apply (intro allI conjI impI; auto)
 done
 
-(* **************************************** *)
-
 lemma (in gc) strong_tricolour_inv[intro]:
-  "\<lbrace> fM_fA_invL and gc_W_empty_invL and gc_mark.mark_object_invL and obj_fields_marked_invL and sweep_loop_invL
-       and LSTP (strong_tricolour_inv and tso_writes_inv and valid_W_inv) \<rbrace>
+  "\<lbrace> fM_fA_invL \<^bold>\<and> gc_W_empty_invL \<^bold>\<and> gc_mark.mark_object_invL \<^bold>\<and> obj_fields_marked_invL \<^bold>\<and> sweep_loop_invL
+       \<^bold>\<and> LSTP (strong_tricolour_inv \<^bold>\<and> tso_writes_inv \<^bold>\<and> valid_W_inv) \<rbrace>
      gc
    \<lbrace> LSTP strong_tricolour_inv \<rbrace>"
 apply (vcg_jackhammer simp: strong_tricolour_inv_def)
 apply (fastforce elim!: obj_fields_marked_inv_blacken)
 done
 
-lemma no_black_refsD:
-  "no_black_refs s \<Longrightarrow> \<not>black r s"
-by (simp add: no_black_refs_def)
-
 lemma (in mut_m) strong_tricolour[intro]:
   "\<lbrace> mark_object_invL
-      and mut_get_roots.mark_object_invL m
-      and mut_store_del.mark_object_invL m
-      and mut_store_ins.mark_object_invL m
-      and LSTP (fA_rel_inv and fM_rel_inv and handshake_phase_inv and mutators_phase_inv and strong_tricolour_inv and sys_phase_inv and valid_refs_inv) \<rbrace>
+      \<^bold>\<and> mut_get_roots.mark_object_invL m
+      \<^bold>\<and> mut_store_del.mark_object_invL m
+      \<^bold>\<and> mut_store_ins.mark_object_invL m
+      \<^bold>\<and> LSTP (fA_rel_inv \<^bold>\<and> fM_rel_inv \<^bold>\<and> handshake_phase_inv \<^bold>\<and> mutators_phase_inv \<^bold>\<and> strong_tricolour_inv \<^bold>\<and> sys_phase_inv \<^bold>\<and> valid_refs_inv) \<rbrace>
      mutator m
    \<lbrace> LSTP strong_tricolour_inv \<rbrace>"
 apply (vcg_jackhammer simp: strong_tricolour_inv_def fA_rel_inv_def fM_rel_inv_def)
@@ -2896,27 +2824,15 @@ apply (clarsimp simp: sys_phase_inv_aux_case
 
  apply (drule spec[where x=m])
  apply (clarsimp simp: hp_step_rel_def)
- apply (elim disjE, simp_all)
-  apply (clarsimp simp: fA_rel_def fM_rel_def)
-  apply (clarsimp simp: fA_rel_def fM_rel_def)
-  apply (clarsimp split: obj_at_splits)
-  apply (clarsimp split: obj_at_splits)
+ apply (elim disjE; force simp: fA_rel_def fM_rel_def split: obj_at_splits)
 
  apply (drule spec[where x=m])
  apply (clarsimp simp: hp_step_rel_def)
- apply (elim disjE, simp_all)
-  apply (clarsimp simp: fA_rel_def fM_rel_def)
-  apply (clarsimp simp: fA_rel_def fM_rel_def)
-  apply (clarsimp simp: fA_rel_def fM_rel_def)
-  apply (clarsimp simp: fA_rel_def fM_rel_def)
-  apply (clarsimp split: obj_at_splits)
-  apply (clarsimp split: obj_at_splits)
-  apply (clarsimp split: obj_at_splits)
-  apply (clarsimp split: obj_at_splits)
+ apply (elim disjE; force simp: fA_rel_def fM_rel_def split: obj_at_splits)
 done
 
 lemma (in sys) strong_tricolour_inv[intro]:
-  "\<lbrace> LSTP (fM_rel_inv and handshake_phase_inv and mutators_phase_inv and strong_tricolour_inv and sys_phase_inv and tso_writes_inv and valid_W_inv) \<rbrace>
+  "\<lbrace> LSTP (fM_rel_inv \<^bold>\<and> handshake_phase_inv \<^bold>\<and> mutators_phase_inv \<^bold>\<and> strong_tricolour_inv \<^bold>\<and> sys_phase_inv \<^bold>\<and> tso_writes_inv \<^bold>\<and> valid_W_inv) \<rbrace>
      sys
    \<lbrace> LSTP strong_tricolour_inv \<rbrace>"
 apply (vcg_jackhammer simp: strong_tricolour_inv_def p_not_sys)
@@ -3010,8 +2926,6 @@ apply fastforce
 
 done
 
-(* **************************************** *)
-
 text\<open>Remaining non-interference proofs.\<close>
 
 lemma marked_insertionsD:
@@ -3053,8 +2967,8 @@ lemma (in sys) mut_mark_object_invL[intro]:
   notes mut_m_get_roots_no_phase_write[where m=m, simp]
   notes mut_m_ghost_handshake_phase_not_hp_Idle[where m=m, simp]
   notes atS_simps[simp]
-  shows "\<lbrace> mut_m.handshake_invL m and mut_m.mark_object_invL m
-             and LSTP (fA_rel_inv and fM_rel_inv and handshake_phase_inv and mutators_phase_inv and phase_rel_inv and valid_refs_inv and valid_W_inv and tso_writes_inv) \<rbrace>
+  shows "\<lbrace> mut_m.handshake_invL m \<^bold>\<and> mut_m.mark_object_invL m
+             \<^bold>\<and> LSTP (fA_rel_inv \<^bold>\<and> fM_rel_inv \<^bold>\<and> handshake_phase_inv \<^bold>\<and> mutators_phase_inv \<^bold>\<and> phase_rel_inv \<^bold>\<and> valid_refs_inv \<^bold>\<and> valid_W_inv \<^bold>\<and> tso_writes_inv) \<rbrace>
            sys
          \<lbrace> mut_m.mark_object_invL m \<rbrace>"
 apply vcg_nihe
@@ -3091,7 +3005,7 @@ subgoal
                  elim!: obj_at_weakenE
                  split: mem_write_action.splits)
     apply (rule conjI)
-     apply (clarsimp elim!: obj_at_weakenE)[1]
+     apply (clarsimp elim!: obj_at_weakenE)
     apply clarsimp
    apply (drule mut_m.handshake_phase_invD[where m=m])
    apply (erule disjE)
@@ -3123,7 +3037,7 @@ subgoal for s s' p w ws
      apply (frule_tac y="refa" in valid_refs_invD3, simp_all)[1]
      apply (frule_tac y="tmp_ref (s\<down> (mutator m))" in valid_refs_invD(2), simp_all)[1]
      apply (clarsimp split: obj_at_splits option.splits)
-      apply auto[1]
+      apply force
      apply (frule (1) marked_insertionsD)
      apply (auto split: obj_at_splits)[1]
     apply (erule disjE) (* super messy case *)
@@ -3208,10 +3122,10 @@ done
 lemma (in gc) mut_mark_object_invL[intro]:
   notes mut_m.mark_object_invL_def[inv]
   notes atS_simps[simp]
-  shows "\<lbrace> fM_fA_invL and gc_W_empty_invL and handshake_invL and sweep_loop_invL
-            and mut_m.handshake_invL m
-            and mut_m.mark_object_invL m
-            and LSTP (fM_rel_inv and handshake_phase_inv and mutators_phase_inv and sys_phase_inv) \<rbrace>
+  shows "\<lbrace> fM_fA_invL \<^bold>\<and> gc_W_empty_invL \<^bold>\<and> handshake_invL \<^bold>\<and> sweep_loop_invL
+            \<^bold>\<and> mut_m.handshake_invL m
+            \<^bold>\<and> mut_m.mark_object_invL m
+            \<^bold>\<and> LSTP (fM_rel_inv \<^bold>\<and> handshake_phase_inv \<^bold>\<and> mutators_phase_inv \<^bold>\<and> sys_phase_inv) \<rbrace>
            gc
          \<lbrace> mut_m.mark_object_invL m \<rbrace>"
 apply vcg_nihe
@@ -3264,10 +3178,10 @@ done
 lemma (in gc) mut_store_old_mark_object_invL[intro]:
   notes mut_m.mark_object_invL_def[inv]
   shows
-  "\<lbrace> fM_fA_invL and handshake_invL and sweep_loop_invL and gc_W_empty_invL
-      and mut_m.mark_object_invL m
-      and mut_store_del.mark_object_invL m
-      and LSTP (handshake_phase_inv and mut_m.mutator_phase_inv m) \<rbrace>
+  "\<lbrace> fM_fA_invL \<^bold>\<and> handshake_invL \<^bold>\<and> sweep_loop_invL \<^bold>\<and> gc_W_empty_invL
+      \<^bold>\<and> mut_m.mark_object_invL m
+      \<^bold>\<and> mut_store_del.mark_object_invL m
+      \<^bold>\<and> LSTP (handshake_phase_inv \<^bold>\<and> mut_m.mutator_phase_inv m) \<rbrace>
      gc
    \<lbrace> mut_store_del.mark_object_invL m \<rbrace>"
 apply vcg_nihe
@@ -3281,10 +3195,10 @@ done
 lemma (in gc) mut_store_ins_mark_object_invL[intro]:
   notes mut_m.mark_object_invL_def[inv]
   shows
-  "\<lbrace> fM_fA_invL and handshake_invL and sweep_loop_invL and gc_W_empty_invL
-      and mut_m.mark_object_invL m
-      and mut_store_ins.mark_object_invL m
-      and LSTP (handshake_phase_inv and mut_m.mutator_phase_inv m) \<rbrace>
+  "\<lbrace> fM_fA_invL \<^bold>\<and> handshake_invL \<^bold>\<and> sweep_loop_invL \<^bold>\<and> gc_W_empty_invL
+      \<^bold>\<and> mut_m.mark_object_invL m
+      \<^bold>\<and> mut_store_ins.mark_object_invL m
+      \<^bold>\<and> LSTP (handshake_phase_inv \<^bold>\<and> mut_m.mutator_phase_inv m) \<rbrace>
      gc
    \<lbrace> mut_store_ins.mark_object_invL m \<rbrace>"
 apply vcg_nihe
@@ -3370,15 +3284,14 @@ proof -
       apply (force dest: rtranclp.intros(2))
       done
   qed
-  thus ?thesis by blast
+  then show ?thesis by blast
 qed
 
 lemma (in sys) gc_obj_fields_marked_invL[intro]:
   notes gc.obj_fields_marked_invL_def[inv]
-  notes o_def[simp]
   shows
-  "\<lbrace> gc.fM_fA_invL and gc.handshake_invL and gc.obj_fields_marked_invL
-       and LSTP (fM_rel_inv and handshake_phase_inv and mutators_phase_inv and tso_writes_inv and valid_refs_inv and valid_W_inv) \<rbrace>
+  "\<lbrace> gc.fM_fA_invL \<^bold>\<and> gc.handshake_invL \<^bold>\<and> gc.obj_fields_marked_invL
+       \<^bold>\<and> LSTP (fM_rel_inv \<^bold>\<and> handshake_phase_inv \<^bold>\<and> mutators_phase_inv \<^bold>\<and> tso_writes_inv \<^bold>\<and> valid_refs_inv \<^bold>\<and> valid_W_inv) \<rbrace>
      sys
    \<lbrace> gc.obj_fields_marked_invL \<rbrace>"
 apply vcg_nihe
@@ -3387,29 +3300,34 @@ apply (vcg_ni simp: p_not_sys fM_rel_inv_def)
  apply (frule (1) handshake_obj_fields_markedD)
  apply (clarsimp simp: do_write_action_def
                 split: mem_write_action.splits)
-   (* mark *)
-   subgoal for s s' p ws x ref bool
-     apply (frule (1) valid_W_invD2)
-     apply (drule_tac x=x in spec)
-     apply clarsimp
-     apply (erule obj_at_field_on_heap_weakenE)
-     apply (clarsimp split: obj_at_splits)
-     done
-  (* ref *)
-  apply (erule disjE, clarsimp+)[1]
-  apply (rename_tac s s' ws x option m)
-  apply (drule_tac m=m in mut_m.handshake_phase_invD, clarsimp simp: hp_step_rel_def conj_disj_distribR[symmetric])
-  apply (drule_tac x=m in spec, clarsimp)
-  apply (drule_tac x=x in spec, clarsimp)
-  apply (auto split: option.splits)[1]
- (* fM *)
- subgoal for s s' p ws x x4
+
+(* mark *)
+subgoal for s s' p ws x ref bool
+ apply (frule (1) valid_W_invD2)
+ apply (drule_tac x=x in spec)
+ apply clarsimp
+ apply (erule obj_at_field_on_heap_weakenE)
+ apply (clarsimp split: obj_at_splits)
+ done
+
+(* ref *)
+subgoal for s s' p ws x x23
+  apply (erule disjE; clarsimp)
+  apply (rename_tac m)
+  apply (drule_tac m=m in mut_m.handshake_phase_invD; clarsimp simp: hp_step_rel_def conj_disj_distribR[symmetric])
+  apply (drule_tac x=m in spec; clarsimp)
+  apply (drule_tac x=x in spec; clarsimp)
+  apply (auto split: option.splits)
+  done
+
+(* fM *)
+subgoal for s s' p ws x x4
    apply (erule disjE)
     apply (auto simp: fM_rel_def filter_empty_conv)[1]
    apply clarsimp
    done
 
- subgoal for s s' p w ws
+subgoal for s s' p w ws
    apply (clarsimp simp: gc.obj_fields_marked_inv_def)
    apply (frule (1) mark_loop_mo_mark_loop_field_done_hp_phaseD)
    apply (clarsimp simp: do_write_action_def
@@ -3432,34 +3350,37 @@ apply (vcg_ni simp: p_not_sys fM_rel_inv_def)
  apply clarsimp
  done
 
+subgoal for s s' p w ws x y
  apply (clarsimp simp: do_write_action_def
                 split: mem_write_action.splits)
   (* mark *)
-  subgoal for s s' p ws x y ref bool
+  subgoal
     apply (drule_tac x=x in spec)
     apply (drule mp, erule predicate2D[OF rtranclp_mono[OF predicate2I], rotated])
      apply clarsimp
     apply assumption
     done
  (* ref *)
- subgoal for s s' p ws x y x21 x22 x23
+ subgoal
    apply (clarsimp simp: atS_un)
-   apply (erule disjE)
-    apply fastforce
-   apply clarsimp
-   apply (erule gc_marking_reaches_mw_Mutate, simp_all)[1]
+   apply (erule disjE; clarsimp)
+   apply (erule gc_marking_reaches_mw_Mutate; blast)
    done
+ done
 
 (* mark loop mark field done *)
-apply (clarsimp simp: do_write_action_def
+subgoal
+ apply (clarsimp simp: do_write_action_def
                split: mem_write_action.splits)
- (* mark *)
- apply auto[1]
-(* fM *)
-apply (clarsimp simp: gc.handshake_invL_def loc atS_simps)
-apply (erule disjE)
- apply (auto simp: fM_rel_def filter_empty_conv)[1]
-apply clarsimp
+  (* mark *)
+  apply fast
+ (* fM *)
+ apply (clarsimp simp: gc.handshake_invL_def loc atS_simps)
+ apply (erule disjE)
+  apply (auto simp: fM_rel_def filter_empty_conv)[1]
+ apply clarsimp
+ done
+
 done
 
 lemma reachable_sweep_loop_free:
@@ -3484,8 +3405,8 @@ apply (auto split: obj_at_splits)
 done
 
 lemma (in gc) valid_refs_inv[intro]:
-  "\<lbrace> fM_fA_invL and handshake_invL and gc_W_empty_invL and gc_mark.mark_object_invL and obj_fields_marked_invL and phase_invL and sweep_loop_invL
-       and LSTP (handshake_phase_inv and mutators_phase_inv and sys_phase_inv and valid_refs_inv and valid_W_inv) \<rbrace>
+  "\<lbrace> fM_fA_invL \<^bold>\<and> handshake_invL \<^bold>\<and> gc_W_empty_invL \<^bold>\<and> gc_mark.mark_object_invL \<^bold>\<and> obj_fields_marked_invL \<^bold>\<and> phase_invL \<^bold>\<and> sweep_loop_invL
+       \<^bold>\<and> LSTP (handshake_phase_inv \<^bold>\<and> mutators_phase_inv \<^bold>\<and> sys_phase_inv \<^bold>\<and> valid_refs_inv \<^bold>\<and> valid_W_inv) \<rbrace>
      gc
    \<lbrace> LSTP valid_refs_inv \<rbrace>"
 apply vcg_jackhammer
@@ -3498,9 +3419,9 @@ apply (auto simp: valid_refs_inv_def grey_reachable_def)
 done
 
 lemma (in sys) valid_refs_inv[intro]:
-  "\<lbrace> LSTP (valid_refs_inv and tso_writes_inv) \<rbrace> sys \<lbrace> LSTP valid_refs_inv \<rbrace>"
+  "\<lbrace> LSTP (valid_refs_inv \<^bold>\<and> tso_writes_inv) \<rbrace> sys \<lbrace> LSTP valid_refs_inv \<rbrace>"
 apply vcg_jackhammer
-apply (auto simp: do_write_action_def p_not_sys o_def
+apply (auto simp: do_write_action_def p_not_sys
            split: mem_write_action.splits)
 done
 
@@ -3546,11 +3467,11 @@ by (clarsimp simp: valid_refs_inv_def)
 
 lemma (in mut_m) valid_refs_inv[intro]:
   "\<lbrace> load_invL
-       and mark_object_invL
-       and mut_get_roots.mark_object_invL m
-       and mut_store_del.mark_object_invL m
-       and mut_store_ins.mark_object_invL m
-       and LSTP valid_refs_inv \<rbrace>
+       \<^bold>\<and> mark_object_invL
+       \<^bold>\<and> mut_get_roots.mark_object_invL m
+       \<^bold>\<and> mut_store_del.mark_object_invL m
+       \<^bold>\<and> mut_store_ins.mark_object_invL m
+       \<^bold>\<and> LSTP valid_refs_inv \<rbrace>
      mutator m
    \<lbrace> LSTP valid_refs_inv \<rbrace>"
 apply vcg_jackhammer
@@ -3587,7 +3508,7 @@ subgoal
 subgoal by (clarsimp simp: valid_refs_inv_def grey_reachable_def)
 
 (* get roots loop mo co mark *)
-subgoal by (auto simp: valid_refs_inv_def grey_reachable_def)[1]
+subgoal by (auto simp: valid_refs_inv_def grey_reachable_def)
 
 (* get work done *)
 subgoal by (clarsimp simp: valid_refs_inv_def grey_reachable_def)
@@ -3599,4 +3520,3 @@ done
 
 end
 (*>*)
-

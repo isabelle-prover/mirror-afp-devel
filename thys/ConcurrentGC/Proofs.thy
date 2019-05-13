@@ -15,54 +15,48 @@ imports
 begin
 
 (*>*)
-section\<open>Top-level safety\<close>
-
-text\<open>
-
-\label{sec:top-level-correctness}
-
-\<close>
+section\<open>Top-level safety \label{sec:top-level-correctness}\<close>
 
 subsection\<open>Invariants\<close>
 
 definition (in gc) invsL :: "('field, 'mut, 'ref) gc_pred" where
   "invsL \<equiv>
-      fM_fA_invL
-  and gc_mark.mark_object_invL
-  and gc_W_empty_invL
-  and handshake_invL
-  and obj_fields_marked_invL
-  and phase_invL
-  and sweep_loop_invL
-  and tso_lock_invL
-  and LSTP (fA_rel_inv and fM_rel_inv)"
+    fM_fA_invL
+  \<^bold>\<and> gc_mark.mark_object_invL
+  \<^bold>\<and> gc_W_empty_invL
+  \<^bold>\<and> handshake_invL
+  \<^bold>\<and> obj_fields_marked_invL
+  \<^bold>\<and> phase_invL
+  \<^bold>\<and> sweep_loop_invL
+  \<^bold>\<and> tso_lock_invL
+  \<^bold>\<and> LSTP (fA_rel_inv \<^bold>\<and> fM_rel_inv)"
 
 definition (in mut_m) invsL :: "('field, 'mut, 'ref) gc_pred" where
   "invsL \<equiv>
-      load_invL
-  and mark_object_invL
-  and mut_get_roots.mark_object_invL m
-  and mut_store_ins.mark_object_invL m
-  and mut_store_del.mark_object_invL m
-  and handshake_invL
-  and tso_lock_invL
-  and LSTP mutator_phase_inv"
+    load_invL
+  \<^bold>\<and> mark_object_invL
+  \<^bold>\<and> mut_get_roots.mark_object_invL m
+  \<^bold>\<and> mut_store_ins.mark_object_invL m
+  \<^bold>\<and> mut_store_del.mark_object_invL m
+  \<^bold>\<and> handshake_invL
+  \<^bold>\<and> tso_lock_invL
+  \<^bold>\<and> LSTP mutator_phase_inv"
 
 definition invs :: "('field, 'mut, 'ref) lsts_pred" where
   "invs \<equiv>
-      handshake_phase_inv
-  and phase_rel_inv
-  and strong_tricolour_inv
-  and sys_phase_inv
-  and tso_writes_inv
-  and valid_refs_inv
-  and valid_W_inv"
+    handshake_phase_inv
+  \<^bold>\<and> phase_rel_inv
+  \<^bold>\<and> strong_tricolour_inv
+  \<^bold>\<and> sys_phase_inv
+  \<^bold>\<and> tso_writes_inv
+  \<^bold>\<and> valid_refs_inv
+  \<^bold>\<and> valid_W_inv"
 
 definition I :: "('field, 'mut, 'ref) gc_pred" where
   "I \<equiv>
-      gc.invsL
-  and (ALLS m. mut_m.invsL m)
-  and LSTP invs"
+     gc.invsL
+  \<^bold>\<and> (\<^bold>\<forall>m. mut_m.invsL m)
+  \<^bold>\<and> LSTP invs"
 (*<*)
 
 lemmas I_defs = gc.invsL_def mut_m.invsL_def invs_def I_def
@@ -177,17 +171,17 @@ definition sys_initial_state :: "('field, 'mut, 'ref) lst_pred" where
    \<and> mem_lock s = None"
 
 abbreviation
-  "root_reachable y \<equiv> EXS m x. \<langle>x\<rangle> in mut_m.mut_roots m and x reaches y"
+  "root_reachable y \<equiv> \<^bold>\<exists>m x. \<langle>x\<rangle> \<^bold>\<in> mut_m.mut_roots m \<^bold>\<and> x reaches y"
 
 definition valid_refs :: "('field, 'mut, 'ref) lsts_pred" where
-  "valid_refs \<equiv> ALLS y. root_reachable y imp valid_ref y"
+  "valid_refs \<equiv> \<^bold>\<forall>y. root_reachable y \<^bold>\<longrightarrow> valid_ref y"
 
 definition gc_system_init :: "('field, 'mut, 'ref) lsts_pred" where
   "gc_system_init \<equiv>
-         (\<lambda>s. gc_initial_state (s gc))
-     and (\<lambda>s. \<forall>m. mut_initial_state (s (mutator m)))
-     and (\<lambda>s. sys_initial_state (s sys))
-     and valid_refs"
+       (\<lambda>s. gc_initial_state (s gc))
+     \<^bold>\<and> (\<lambda>s. \<forall>m. mut_initial_state (s (mutator m)))
+     \<^bold>\<and> (\<lambda>s. sys_initial_state (s sys))
+     \<^bold>\<and> valid_refs"
 
 text\<open>
 
@@ -313,7 +307,7 @@ done
 (*>*)
 text\<open>\<close>
 
-end (* locale gc_system *)
+end
 
 text\<open>
 
@@ -323,6 +317,7 @@ conditions.
 \<close>
 
 interpretation gc_system_interpretation: gc_system undefined .
+
 
 subsection\<open>A concrete system state\<close>
 
@@ -337,4 +332,3 @@ Isabelle's notation for types of a given size.
 
 end
 (*>*)
-

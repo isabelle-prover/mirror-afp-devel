@@ -51,7 +51,7 @@ where
 abbreviation valid_gc_inv_syn :: "('field, 'mut, 'ref) gc_loc_comp \<Rightarrow> ('field, 'mut, 'ref) gc_pred \<Rightarrow> ('field, 'mut, 'ref) gc_com \<Rightarrow> bool" ("_ \<Turnstile> \<lbrace>_\<rbrace>/ _") where
   "afts \<Turnstile> \<lbrace>P\<rbrace> c \<equiv> afts \<Turnstile> \<lbrace>P\<rbrace> c \<lbrace>P\<rbrace>"
 
-end (* context gc *)
+end
 
 abbreviation "gc_cas_mark s \<equiv> cas_mark (s gc)"
 abbreviation "gc_fM s \<equiv> fM (s gc)"
@@ -69,10 +69,10 @@ abbreviation "gc_the_ref \<equiv> the \<circ> gc_ref"
 abbreviation "gc_W s \<equiv> W (s gc)"
 
 abbreviation at_gc :: "location \<Rightarrow> ('field, 'mut, 'ref) lsts_pred \<Rightarrow> ('field, 'mut, 'ref) gc_pred" where
-  "at_gc l P \<equiv> at gc l imp LSTP P"
+  "at_gc l P \<equiv> at gc l \<^bold>\<longrightarrow> LSTP P"
 
 abbreviation atS_gc :: "location set \<Rightarrow> ('field, 'mut, 'ref) lsts_pred \<Rightarrow> ('field, 'mut, 'ref) gc_pred" where
-  "atS_gc ls P \<equiv> atS gc ls imp LSTP P"
+  "atS_gc ls P \<equiv> atS gc ls \<^bold>\<longrightarrow> LSTP P"
 
 context mut_m
 begin
@@ -87,10 +87,10 @@ abbreviation valid_mut_inv_syn :: "('field, 'mut, 'ref) gc_loc_comp \<Rightarrow
   "afts \<Turnstile> \<lbrace>P\<rbrace> c \<equiv> afts \<Turnstile> \<lbrace>P\<rbrace> c \<lbrace>P\<rbrace>"
 
 abbreviation at_mut :: "location \<Rightarrow> ('field, 'mut, 'ref) lsts_pred \<Rightarrow> ('field, 'mut, 'ref) gc_pred" where
-  "at_mut l P \<equiv> at (mutator m) l imp LSTP P"
+  "at_mut l P \<equiv> at (mutator m) l \<^bold>\<longrightarrow> LSTP P"
 
 abbreviation atS_mut :: "location set \<Rightarrow> ('field, 'mut, 'ref) lsts_pred \<Rightarrow> ('field, 'mut, 'ref) gc_pred" where
-  "atS_mut ls P \<equiv> atS (mutator m) ls imp LSTP P"
+  "atS_mut ls P \<equiv> atS (mutator m) ls \<^bold>\<longrightarrow> LSTP P"
 
 abbreviation "mut_cas_mark s \<equiv> cas_mark (s (mutator m))"
 abbreviation "mut_field s \<equiv> field (s (mutator m))"
@@ -109,7 +109,7 @@ abbreviation "mut_refs s \<equiv> refs (s (mutator m))"
 abbreviation "mut_roots s \<equiv> roots (s (mutator m))"
 abbreviation "mut_W s \<equiv> W (s (mutator m))"
 
-end (* context mut_m *)
+end
 
 context sys
 begin
@@ -123,7 +123,7 @@ where
 abbreviation valid_sys_inv_syn :: "('field, 'mut, 'ref) gc_loc_comp \<Rightarrow> ('field, 'mut, 'ref) gc_pred \<Rightarrow> ('field, 'mut, 'ref) gc_com \<Rightarrow> bool" ("_ \<Turnstile> \<lbrace>_\<rbrace>/ _") where
   "afts \<Turnstile> \<lbrace>P\<rbrace> c \<equiv> afts \<Turnstile> \<lbrace>P\<rbrace> c \<lbrace>P\<rbrace>"
 
-end (* context sys *)
+end
 
 abbreviation sys_heap :: "('field, 'mut, 'ref) lsts \<Rightarrow> 'ref \<Rightarrow> ('field, 'ref) object option" where "sys_heap s \<equiv> heap (s sys)"
 
@@ -140,7 +140,7 @@ abbreviation "sys_phase s \<equiv> phase (s sys)"
 abbreviation "sys_W s \<equiv> W (s sys)"
 
 abbreviation atS_sys :: "location set \<Rightarrow> ('field, 'mut, 'ref) lsts_pred \<Rightarrow> ('field, 'mut, 'ref) gc_pred" where
-  "atS_sys ls P \<equiv> atS sys ls imp LSTP P"
+  "atS_sys ls P \<equiv> atS sys ls \<^bold>\<longrightarrow> LSTP P"
 
 text\<open>Projections on TSO buffers.\<close>
 
@@ -156,7 +156,7 @@ abbreviation (input) "tso_pending_mark p \<equiv> tso_pending p is_mw_Mark"
 abbreviation (input) "tso_pending_mutate p \<equiv> tso_pending p is_mw_Mutate"
 abbreviation (input) "tso_pending_phase p \<equiv> tso_pending p is_mw_Phase"
 
-abbreviation (input) "tso_no_pending_marks \<equiv> ALLS p. list_null (tso_pending_mark p)"
+abbreviation (input) "tso_no_pending_marks \<equiv> \<^bold>\<forall>p. LIST_NULL (tso_pending_mark p)"
 
 text\<open>
 
@@ -190,11 +190,12 @@ abbreviation pred_reaches :: "'ref \<Rightarrow> 'ref \<Rightarrow> ('field, 'mu
 
 text\<open>
 
-The predicate \<open>obj_at_field_on_heap\<close> asserts that if there is
-an object at \<open>r.f\<close> on the heap, then it satisfies \<open>P\<close>.
+The predicate \<open>obj_at_field_on_heap\<close> asserts that @{term \<open>valid_ref r\<close>}
+and if \<open>f\<close> is a field of the object referred to by \<open>r\<close> then it it satisfies \<open>P\<close>.
 
 \<close>
 
+(* FIXME rename *)
 definition obj_at_field_on_heap :: "('ref \<Rightarrow> bool) \<Rightarrow> 'ref \<Rightarrow> 'field \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" where
   "obj_at_field_on_heap P r f \<equiv> \<lambda>s.
      case Option.map_option obj_fields (sys_heap s r) of

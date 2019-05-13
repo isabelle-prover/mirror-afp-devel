@@ -22,12 +22,12 @@ text\<open>
 \label{sec:one_place_buffer}
 
 To demonstrate the CIMP reasoning infrastructure, we treat the trivial
-one-place buffer example of
-\citet[\S3.3]{DBLP:journals/toplas/LamportS84}. Note that the
-semantics for our language is different to
-\citeauthor{DBLP:journals/toplas/LamportS84}'s, who treated a
-historical variant of CSP (i.e., not the one in
-\cite{Hoare:1985}).
+one-place buffer example of @{cite [cite_macro=citet]
+\<open>\S3.3\<close> "DBLP:journals/toplas/LamportS84"}. Note that the
+semantics for our language is different to @{cite
+[cite_macro=citeauthor] "DBLP:journals/toplas/LamportS84"}'s, who
+treated a historical variant of CSP (i.e., not the one in @{cite
+"Hoare:1985"}).
 
 We introduce some syntax for fixed-topology (static channel-based)
 scenarios.
@@ -64,8 +64,8 @@ where
 
 text\<open>
 
-These definitions largely follow
-\citet{DBLP:journals/toplas/LamportS84}. We have three processes
+These definitions largely follow @{cite [cite_macro=citet]
+"DBLP:journals/toplas/LamportS84"}. We have three processes
 communicating over two channels. We enumerate program locations.
 
 \<close>
@@ -103,9 +103,6 @@ abbreviation ex_system :: "ex_system" where
 
 text\<open>
 
-PeteG: I don't understand how
-\citeauthor{DBLP:journals/toplas/LamportS84} justify their invariants.
-
 The following adapts Kai Engelhardt's, from his notes titled
 \emph{Proving an Asynchronous Message Passing Program Correct},
 2011. The history variable tracks the causality of the system, which I
@@ -120,20 +117,20 @@ where
   "filter_on_channel ch \<equiv> map (snd \<circ> fst) \<circ> filter ((=) ch \<circ> fst \<circ> fst)"
 
 definition Ip1_0 :: ex_pred where
-  "Ip1_0 \<equiv> at p1 s12 imp (\<lambda>s. filter_on_channel \<xi>12 (hist s) = [])"
+  "Ip1_0 \<equiv> at p1 s12 \<^bold>\<longrightarrow> (\<lambda>s. filter_on_channel \<xi>12 (hist s) = [])"
 definition Ip1_1 :: ex_pred where
-  "Ip1_1 \<equiv> terminated p1 imp (\<lambda>s. filter_on_channel \<xi>12 (hist s) = [LST s p1])"
+  "Ip1_1 \<equiv> terminated p1 \<^bold>\<longrightarrow> (\<lambda>s. filter_on_channel \<xi>12 (hist s) = [LST s p1])"
 
 definition Ip2_0 :: ex_pred where
-  "Ip2_0 \<equiv> at p2 r12 imp (\<lambda>s. filter_on_channel \<xi>12 (hist s) = filter_on_channel \<xi>23 (hist s))"
+  "Ip2_0 \<equiv> at p2 r12 \<^bold>\<longrightarrow> (\<lambda>s. filter_on_channel \<xi>12 (hist s) = filter_on_channel \<xi>23 (hist s))"
 definition Ip2_1 :: ex_pred where
-  "Ip2_1 \<equiv> at p2 s23 imp (\<lambda>s. filter_on_channel \<xi>12 (hist s) = filter_on_channel \<xi>23 (hist s) @ [LST s p2]
+  "Ip2_1 \<equiv> at p2 s23 \<^bold>\<longrightarrow> (\<lambda>s. filter_on_channel \<xi>12 (hist s) = filter_on_channel \<xi>23 (hist s) @ [LST s p2]
                            \<and> LST s p1 = LST s p2)"
 
 definition Ip3_0 :: ex_pred where
-  "Ip3_0 \<equiv> at p3 r23 imp (\<lambda>s. filter_on_channel \<xi>23 (hist s) = [])"
+  "Ip3_0 \<equiv> at p3 r23 \<^bold>\<longrightarrow> (\<lambda>s. filter_on_channel \<xi>23 (hist s) = [])"
 definition Ip3_1 :: ex_pred where
-  "Ip3_1 \<equiv> terminated p3 imp (\<lambda>s. filter_on_channel \<xi>23 (hist s) = [LST s p2]
+  "Ip3_1 \<equiv> terminated p3 \<^bold>\<longrightarrow> (\<lambda>s. filter_on_channel \<xi>23 (hist s) = [LST s p2]
                                 \<and> LST s p1 = LST s p3)"
 
 definition I_pred :: ex_pred where
@@ -144,13 +141,14 @@ lemmas I_defs = Ip1_0_def Ip1_1_def Ip2_0_def Ip2_1_def Ip3_0_def Ip3_1_def
 text\<open>
 
 If process three terminates, then it has process one's value. This is
-stronger than \citeauthor{DBLP:journals/toplas/LamportS84}'s as we
-don't ask that the first process has also terminated.
+stronger than @{cite [cite_macro=citeauthor]
+"DBLP:journals/toplas/LamportS84"}'s as we don't ask that the first
+process has also terminated.
 
 \<close>
 
 definition Etern_pred :: ex_pred where
-  "Etern_pred \<equiv> terminated p3 imp (\<lambda>s. LST s p1 = LST s p3)"
+  "Etern_pred \<equiv> terminated p3 \<^bold>\<longrightarrow> (\<lambda>s. LST s p1 = LST s p3)"
 
 text\<open>
 

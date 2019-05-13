@@ -107,7 +107,7 @@ write_obj_part cs = unlines
 
 footer :: String
 footer = unlines
-  [ "end (* context gc_system *)"
+  [ "end"
   , ""
   , "end"
   ]

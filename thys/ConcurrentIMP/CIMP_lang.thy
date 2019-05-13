@@ -28,19 +28,21 @@ it is programmer-readable, includes sequential composition, supports a
 program logic and VCG (\S\ref{sec:cimp-vcg}), etc. These processes are
 composed in parallel at the top-level.
 
-CIMP is inspired by IMP, as presented by \citet{Winskel:1993} and
-\citet{ConcreteSemantics:2014}, and the classical process algebras CCS
-\citep{Milner:1980,Milner:1989} and CSP \citep{Hoare:1985}. Note that
-the algebraic properties of this language have not been developed.
+CIMP is inspired by IMP, as presented by @{cite [cite_macro=citet]
+"Winskel:1993"} and @{cite [cite_macro=citet]
+"ConcreteSemantics:2014"}, and the classical process algebras CCS
+@{cite [cite_macro=citep] "Milner:1980" and "Milner:1989"} and CSP
+@{cite [cite_macro=citep] "Hoare:1985"}. Note that the algebraic
+properties of this language have not been developed.
 
 As we operate in a concurrent setting, we need to provide a small-step
 semantics (\S\ref{sec:cimp-semantics}), which we give in the style of
-\emph{structural operational semantics} (SOS) as popularised by
-\citet{DBLP:journals/jlp/Plotkin04}.  The semantics of a complete
-system (\S\ref{sec:cimp-system-steps}) is presently taken simply to be
-the states reachable by interleaving the enabled steps of the
-individual processes, subject to message passing rendezvous. We leave
-a trace or branching semantics to future work.
+\emph{structural operational semantics} (SOS) as popularised by @{cite
+[cite_macro=citet] "DBLP:journals/jlp/Plotkin04"}. The semantics of a
+complete system (\S\ref{sec:cimp-system-steps}) is presently taken
+simply to be the states reachable by interleaving the enabled steps of
+the individual processes, subject to message passing rendezvous. We
+leave a trace or branching semantics to future work.
 
 \<close>
 
@@ -94,19 +96,20 @@ trickier proofs about the VCG.
 In contrast to classical process algebras, we have local state and
 distinct send and receive actions. These provide an interface to
 Isabelle/HOL's datatypes that avoids the need for binding (ala the
-$\pi$-calculus of \citet{Milner:1989}) or large non-deterministic sums
-(ala CCS \citep[\S2.8]{Milner:1980}). Intuitively the sender asks a
-@{typ "'question"} with a \<open>Request\<close> command, which upon
-rendezvous with a receiver's \<open>Response\<close> command receives an
-@{typ "'answer"}. The @{typ "'question"} is a deterministic function
-of the sender's local state, whereas a receiver can respond
+$\pi$-calculus of @{cite [cite_macro=citet] "Milner:1989"}) or large
+non-deterministic sums (ala CCS @{cite [cite_macro=citep] \<open>\S2.8\<close>
+"Milner:1980"}). Intuitively the sender asks a @{typ "'question"} with
+a \<open>Request\<close> command, which upon rendezvous with a
+receiver's \<open>Response\<close> command receives an @{typ
+"'answer"}. The @{typ "'question"} is a deterministic function of the
+sender's local state, whereas a receiver can respond
 non-deterministically. Note that CIMP does not provide a notion of
 channel; these can be modelled by a judicious choice of @{typ
 "'question"}.
 
 We also provide a binary external choice operator. Internal choice can
-be recovered in combination with local operations (see
-\citet[\S2.3]{Milner:1980}).
+be recovered in combination with local operations (see @{cite
+[cite_macro=citet] \<open>\S2.3\<close> "Milner:1980"}).
 
 We abbreviate some common commands: \<open>SKIP\<close> is a local
 operation that does nothing, and the floor brackets simplify
@@ -176,10 +179,11 @@ text\<open>
 
 We define a \emph{labelled transition system} (an LTS) using an
 execution-stack style of semantics that avoids special treatment of
-the \<open>SKIP\<close>s introduced by a traditional small step semantics
-(such as \citet[Chapter~14]{Winskel:1993}) when a basic command is
-executed. This was suggested by Thomas Sewell; \citet{PittsAM:opespe}
-gave a semantics to an ML-like language using this approach.
+the \<open>SKIP\<close>s introduced by a traditional small step
+semantics (such as @{cite [cite_macro=citet] \<open>Chapter~14\<close>
+"Winskel:1993"}) when a basic command is executed. This was suggested
+by Thomas Sewell; @{cite [cite_macro=citet] "PittsAM:opespe"} gave a
+semantics to an ML-like language using this approach.
 
 \<close>
 
@@ -268,9 +272,10 @@ which identify the \<open>basic_com\<close> commands with immediate
 externally-visible behaviour. Note that non-determinism means that
 more than one \<open>basic_com\<close> can be enabled at a time.
 
-The representation of evaluation contexts follows
-\citet{DBLP:journals/jar/Berghofer12}. This style of operational
-semantics was originated by \citet{DBLP:journals/tcs/FelleisenH92}.
+The representation of evaluation contexts follows @{cite
+[cite_macro=citet] "DBLP:journals/jar/Berghofer12"}. This style of
+operational semantics was originated by @{cite [cite_macro=citet]
+"DBLP:journals/tcs/FelleisenH92"}.
 
 \<close>
 
@@ -355,22 +360,23 @@ theorem context_decompose:
                    \<and> (c # fctxt c @ tl (cPGM s), cLST s) \<rightarrow>\<^bsub>\<alpha>\<^esub> s')"
 (*<*)(is "?lhs = ?rhs")
 proof
-  assume ?lhs thus ?rhs
+  assume ?lhs then show ?rhs
     by (induct rule: small_step.induct)
        (fastforce simp: decomposeLS_def)+
 next
-  assume rhs: ?rhs
-  { fix cs c c0 ictxt fctxt l s s'
-    assume as: "(c # fctxt c @ cs, s) \<rightarrow>\<^bsub>\<alpha>\<^esub> s'"
-    assume ds: "(c, ictxt, fctxt) \<in> decompose_com c0"
+  have gen: "(c0 # cs, s) \<rightarrow>\<^bsub>\<alpha>\<^esub> s'"
+    if as: "(c # fctxt c @ cs, s) \<rightarrow>\<^bsub>\<alpha>\<^esub> s'"
+   and ds: "(c, ictxt, fctxt) \<in> decompose_com c0"
+   for cs c c0 ictxt fctxt l s s'
+  proof -
     from ds have ic: "(ictxt, fctxt) \<in> ctxt"
       unfolding decomposeLS_def by (auto intro: decompose_ctxt split: list.splits)
     from ic as decompose_ictxt[OF ds]
-    have "(c0 # cs, s) \<rightarrow>\<^bsub>\<alpha>\<^esub> s'"
+    show "(c0 # cs, s) \<rightarrow>\<^bsub>\<alpha>\<^esub> s'"
       by (induct ictxt fctxt arbitrary: c0 cs set: ctxt)
-         (cases s', fastforce simp: fun_eq_iff dest: ctxt_inj)+ }
-  note gen = this
-  from rhs show ?lhs
+         (cases s', fastforce simp: fun_eq_iff dest: ctxt_inj)+
+  qed
+  assume ?rhs then show ?lhs
     by (cases s)
        (auto simp: decomposeLS_def split: list.splits dest!: gen)
 qed
@@ -393,7 +399,7 @@ text\<open>
 A global state maps process names to process' local states. One might
 hope to allow processes to have distinct types of local state, but
 there remains no good solution yet in a simply-typed setting; see
-\citet{DBLP:journals/entcs/SchirmerW09}.
+@{cite [cite_macro=citet] "DBLP:journals/entcs/SchirmerW09"}.
 
 \<close>
 
@@ -449,12 +455,13 @@ where
 text\<open>
 
 In classical process algebras matching communication actions yield
-\<open>\<tau>\<close> steps, which aids nested parallel composition and the
-restriction operation \citep[\S2.2]{Milner:1980}. As CIMP does not
-provide either we do not need to hide communication labels. In CCS/CSP
-it is not clear how one reasons about the communication history, and
-it seems that assertional reasoning about these languages is not
-well developed.
+\<open>\<tau>\<close> steps, which aids nested parallel composition
+and the restriction operation @{cite [cite_macro=citep]
+\<open>\S2.2\<close> "Milner:1980"}. As CIMP does not provide either
+we do not need to hide communication labels. In CCS/CSP it is not
+clear how one reasons about the communication history, and it seems
+that assertional reasoning about these languages is not well
+developed.
 
 \<close>
 
@@ -465,24 +472,27 @@ text\<open>
 \label{sec:cimp-assertions}
 
 We now develop a technique for showing that a CIMP system satisfies a
-single global invariant, following
-\citet{DBLP:journals/acta/Lamport80,DBLP:journals/toplas/LamportS84}
-(and the later \citet{DBLP:books/aw/Lamport2002}) and closely related
-work by \citet{DBLP:conf/icalp/CousotC80} and
-\citet{DBLP:journals/acta/LevinG81}, which suggest the incorporation
-of a history variable. \citet{DBLP:conf/icalp/CousotC80} apparently
-contains a completeness proof.  Lamport mentions that this technique
-was well-known in the mid-80s when he proposed the use of prophecy
-variables (see his webpage bibliography). See
-\citet{DBLP:books/cu/RoeverBH2001} for an extended discussion of some
-of this.
+single global invariant, following @{cite [cite_macro=citet]
+"DBLP:journals/acta/Lamport80" and "DBLP:journals/toplas/LamportS84"}
+(and the later @{cite [cite_macro=citet] "DBLP:books/aw/Lamport2002"})
+and closely related work by @{cite [cite_macro=citet]
+"AptFrancezDeRoever:1980"}, @{cite [cite_macro=citet]
+"DBLP:conf/icalp/CousotC80"} and @{cite [cite_macro=citet]
+"DBLP:journals/acta/LevinG81"}, which suggest the incorporation of a
+history variable. @{cite [cite_macro=citet]
+"{DBLP:conf/icalp/CousotC80"} apparently contains a completeness
+proof.  Lamport mentions that this technique was well-known in the
+mid-80s when he proposed the use of prophecy variables (see his
+webpage bibliography). See also @{cite [cite_macro=citet]
+"DBLP:books/cu/RoeverBH2001"} for an extended discussion of some of
+this.
 
 Achieving the right level of abstraction is a bit fiddly; we want to
 avoid revealing too much of the program text as it
 executes. Intuitively we wish to expose the processes's present
-control locations and local states
-only. \citeauthor{DBLP:journals/acta/Lamport80} avoids these issues by
-only providing an axiomatic semantics for his language.
+control locations and local states only. @{cite [cite_macro=citet]
+"DBLP:journals/acta/Lamport80"} avoids these issues by only providing
+an axiomatic semantics for his language.
 
 \<close>
 
@@ -492,16 +502,17 @@ text\<open>
 
 \label{sec:cimp-control-predicates}
 
-Following
-\citet{DBLP:journals/acta/Lamport80}\footnote{\citet{DBLP:books/daglib/0080029}
-also develop a theory of locations. I think Lamport attributes control
-predicates to Owicki in her PhD thesis (under Gries). I did not find a
-treatment of procedures. \citet{MannaPnueli:1991} observe that a set
-notation for spreading assertions over sets of locations reduces
-clutter significantly.}, we define the \<open>at\<close> predicate, which
+Following @{cite [cite_macro=citet]
+"DBLP:journals/acta/Lamport80"}\footnote{@{cite [cite_macro=citet]
+"MannaPnueli:1995"} also develop a theory of locations. I think
+Lamport attributes control predicates to Owicki in her PhD thesis
+(under Gries). I did not find a treatment of procedures. @{cite
+[cite_macro=citet] "MannaPnueli:1991"} observe that a set notation for
+spreading assertions over sets of locations reduces clutter
+significantly.}, we define the \<open>at\<close> predicate, which
 holds of a process when control resides at that location. Due to
-non-determinism processes can be \<open>at\<close> a set of locations; it
-is more like ``a statement with this location is enabled'', which
+non-determinism processes can be \<open>at\<close> a set of locations;
+it is more like ``a statement with this location is enabled'', which
 incidentally handles non-unique locations. Lamport's language is
 deterministic, so he doesn't have this problem. This also allows him
 to develop a stronger theory about his control predicates.
@@ -519,7 +530,7 @@ where
 | "atC (\<lbrace>l'\<rbrace> WHILE _ DO _ OD) = (\<lambda>l. l = l')"
 | "atC (LOOP DO c OD) = atC c"
 | "atC (c1;; c2) = atC c1"
-| "atC (c1 \<squnion> c2) = (atC c1 or atC c2)"
+| "atC (c1 \<squnion> c2) = (atC c1 \<^bold>\<or> atC c2)"
 
 primrec atL :: "('answer, 'location, 'question, 'state) com list \<Rightarrow> 'location \<Rightarrow> bool" where
   "atL [] = \<langle>False\<rangle>"
@@ -586,7 +597,8 @@ text\<open>
 
 Often we wish to talk about control residing at one of a set of
 locations. This stands in for, and generalises, the \<open>in\<close>
-predicate of \citet{DBLP:journals/acta/Lamport80}.
+predicate of @{cite [cite_macro=citet]
+"DBLP:journals/acta/Lamport80"}.
 
 \<close>
 
@@ -608,10 +620,10 @@ The \<open>LST\<close> operator (written as a postfix \<open>\<down>\<close>) pr
 the local states of the processes from a \<open>pred_state\<close>, i.e. it
 discards control location information.
 
-Conversely the \<open>LSTP\<close> operator lifts predicates over local
-states into predicates over \<open>pred_state\<close>.
-\citet[\S3.6]{DBLP:journals/acta/LevinG81} call such predicates
-\emph{universal assertions}.
+Conversely the \<open>LSTP\<close> operator lifts predicates over
+local states into predicates over \<open>pred_state\<close>.  @{cite
+[cite_macro=citet] \<open>\S3.6\<close> "DBLP:journals/acta/LevinG81"}
+call such predicates \emph{universal assertions}.
 
 \<close>
 
@@ -711,11 +723,10 @@ lemma reachable_states_system_step_induct[consumes 1,
   shows "P s h"
 (*<*)
 proof -
-  { fix s s' h'
-    assume "(s, []) s\<Rightarrow>\<^sup>* (s', h')" "s \<in> initial_states sys"
-    hence "P s' h'"
-      by (induct rule: rtrancl_induct2)
-         (force simp: reachable_states_def elim: system_step.cases intro: i l c)+ }
+  have "P s' h'" if "(s, []) s\<Rightarrow>\<^sup>* (s', h')" "s \<in> initial_states sys" for s s' h'
+    using that
+    by (induct rule: rtrancl_induct2)
+       (fastforce simp: reachable_states_def elim: system_step.cases intro: i l c)+
   with r show ?thesis by (clarsimp simp: reachable_states_def)
 qed
 
@@ -894,7 +905,7 @@ using assms by (fastforce split: lcond_splits)
 
 text\<open>
 
-The headline lemma allows us to constrain the initial and final states
+The headline result allows us to constrain the initial and final states
 of a given small step in terms of the original programs, provided the
 initial state is reachable.
 

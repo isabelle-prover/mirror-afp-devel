@@ -65,12 +65,12 @@ apply (clarsimp simp: gc_system_init_def
                       sys_initial_state_def)
 apply (auto simp: ran_def)
 apply (auto simp: valid_refs_def)
-apply ((erule rtranclp.cases, auto simp: ran_def split: if_splits obj_at_splits)[1])+
+apply (erule rtranclp.cases; auto simp: ran_def split: if_splits obj_at_splits)+
 done
 (*>*)
 text\<open>\<close>
 
-end (* context gc_system *)
+end
 (*<*)
 
 end

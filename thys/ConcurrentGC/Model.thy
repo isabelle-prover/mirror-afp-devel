@@ -16,11 +16,9 @@ imports
 begin
 
 (*>*)
-section\<open>The Schism garbage collector\<close>
+section\<open>The Schism garbage collector \label{sec:gc-model}\<close>
 
 text \<open>
-
-\label{sec:gc-model}
 
 The following formalises Figures~2.8 (\<open>mark_object_fn\<close>), 2.9
 (load and store but not alloc), and 2.15 (garbage collector) of
@@ -79,11 +77,11 @@ each process has participated in as ghost state. See
 \<close>
 
 datatype handshake_phase
-  = hp_Idle (* done 1 noop *)
+  = hp_Idle \<comment>\<open> done 1 noop \<close>
   | hp_IdleInit
   | hp_InitMark
-  | hp_Mark (* done 4 noops *)
-  | hp_IdleMarkSweep (* done get roots *)
+  | hp_Mark \<comment>\<open> done 4 noops \<close>
+  | hp_IdleMarkSweep \<comment>\<open> done get roots \<close>
 
 definition handshake_step :: "handshake_phase \<Rightarrow> handshake_phase" where
   "handshake_step ph \<equiv> case ph of
@@ -273,11 +271,9 @@ locale gc
 locale sys
 
 
-subsection\<open>Object marking\<close>
+subsection\<open>Object marking \label{sec:gc-marking}\<close>
 
 text\<open>
-
-\label{sec:gc-marking}
 
 Both the mutators and the garbage collector mark references, which
 indicates that a reference is live in the current round of
@@ -345,27 +341,27 @@ statement's label with a string from its callsite.
 
 definition mark_object_fn :: "location \<Rightarrow> ('field, 'mut, 'ref) gc_com" where
   "mark_object_fn l \<equiv>
-     \<lbrace>l @ ''_mo_null''\<rbrace> IF not null ref THEN
+     \<lbrace>l @ ''_mo_null''\<rbrace> IF \<^bold>\<not> (NULL ref) THEN
        \<lbrace>l @ ''_mo_mark''\<rbrace> read_mark (the \<circ> ref) mark_update ;;
        \<lbrace>l @ ''_mo_fM''\<rbrace> read_fM ;;
-       \<lbrace>l @ ''_mo_mtest''\<rbrace> IF mark neq Some \<circ> fM THEN
+       \<lbrace>l @ ''_mo_mtest''\<rbrace> IF mark \<^bold>\<noteq> Some \<circ> fM THEN
          \<lbrace>l @ ''_mo_phase''\<rbrace> read_phase ;;
-         \<lbrace>l @ ''_mo_ptest''\<rbrace> IF phase neq \<langle>ph_Idle\<rangle> THEN
+         \<lbrace>l @ ''_mo_ptest''\<rbrace> IF phase \<^bold>\<noteq> \<langle>ph_Idle\<rangle> THEN
            \<comment> \<open>CAS: claim object\<close>
            \<lbrace>l @ ''_mo_co_lock''\<rbrace> lock ;;
            \<lbrace>l @ ''_mo_co_cmark''\<rbrace> read_mark (the \<circ> ref) cas_mark_update ;;
-           \<lbrace>l @ ''_mo_co_ctest''\<rbrace> IF cas_mark eq mark THEN
+           \<lbrace>l @ ''_mo_co_ctest''\<rbrace> IF cas_mark \<^bold>= mark THEN
              \<lbrace>l @ ''_mo_co_mark''\<rbrace> write_mark (the \<circ> ref) fM
            FI ;;
            \<lbrace>l @ ''_mo_co_unlock''\<rbrace> unlock ;;
-           \<lbrace>l @ ''_mo_co_won''\<rbrace> IF cas_mark eq mark THEN
+           \<lbrace>l @ ''_mo_co_won''\<rbrace> IF cas_mark \<^bold>= mark THEN
              \<lbrace>l @ ''_mo_co_W''\<rbrace> add_to_W (the \<circ> ref)
            FI
          FI
        FI
      FI"
 
-end (* context *)
+end
 
 text\<open>
 
@@ -377,11 +373,9 @@ that mechanism next.
 
 \<close>
 
-subsection\<open>Handshakes\<close>
+subsection\<open>Handshakes \label{sec:gc_ragged_safepoints}\<close>
 
 text\<open>
-
-\label{sec:gc_ragged_safepoints}
 
 The garbage collector needs to synchronise with the mutators. In
 practice this is implemented with some thread synchronisation
@@ -480,7 +474,7 @@ definition handshake :: "('field, 'mut, 'ref) gc_com" where
       \<lbrace>''hs_get_roots''\<rbrace> hs_read_type ht_GetRoots ;;
       \<lbrace>''hs_get_roots_mfence''\<rbrace> MFENCE ;;
       \<lbrace>''hs_get_roots_refs''\<rbrace> \<acute>refs := \<acute>roots ;;
-      \<lbrace>''hs_get_roots_loop''\<rbrace> WHILE not empty refs DO
+      \<lbrace>''hs_get_roots_loop''\<rbrace> WHILE \<^bold>\<not>(EMPTY refs) DO
          \<lbrace>''hs_get_roots_loop_choose_ref''\<rbrace> \<acute>ref :\<in> Some ` \<acute>refs ;;
          \<lbrace>''hs_get_roots_loop''\<rbrace> mark_object ;;
          \<lbrace>''hs_get_roots_loop_done''\<rbrace> \<acute>refs := (\<acute>refs - {the \<acute>ref})
@@ -491,7 +485,7 @@ definition handshake :: "('field, 'mut, 'ref) gc_com" where
       \<lbrace>''hs_get_work_mfence''\<rbrace> MFENCE ;;
       \<lbrace>''hs_get_work_done''\<rbrace> hs_get_work_done W"
 
-end (* context mut_m *)
+end
 
 text\<open>
 
@@ -514,7 +508,7 @@ where
   "\<lbrace>l\<rbrace> handshake_init req \<equiv>
      \<lbrace>l @ ''_init_type''\<rbrace> set_hs_type req ;;
      \<lbrace>l @ ''_init_muts''\<rbrace> \<acute>muts := UNIV ;;
-     \<lbrace>l @ ''_init_loop''\<rbrace> WHILE not empty muts DO
+     \<lbrace>l @ ''_init_loop''\<rbrace> WHILE \<^bold>\<not> (EMPTY muts) DO
        \<lbrace>l @ ''_init_loop_choose_mut''\<rbrace> \<acute>mut :\<in> \<acute>muts ;;
        \<lbrace>l @ ''_init_loop_set_pending''\<rbrace> set_hs_pending mut ;;
        \<lbrace>l @ ''_init_loop_done''\<rbrace> \<acute>muts := (\<acute>muts - {\<acute>mut})
@@ -525,7 +519,7 @@ definition
 where
   "\<lbrace>l\<rbrace> handshake_done \<equiv>
      \<lbrace>l @ ''_done_muts''\<rbrace> \<acute>muts := UNIV ;;
-     \<lbrace>l @ ''_done_loop''\<rbrace> WHILE not empty muts DO
+     \<lbrace>l @ ''_done_loop''\<rbrace> WHILE \<^bold>\<not>(EMPTY muts) DO
        \<lbrace>l @ ''_done_loop_choose_mut''\<rbrace> \<acute>mut :\<in> \<acute>muts ;;
        \<lbrace>l @ ''_done_loop_rendezvous''\<rbrace> Request
                (\<lambda>s. (gc, ro_hs_gc_read_pending (mut s)))
@@ -563,7 +557,7 @@ where
          \<lbrace>l\<rbrace> handshake_done ;;
          \<lbrace>l\<rbrace> load_W"
 
-end (* context gc *)
+end
 
 
 subsection\<open>The system process\<close>
@@ -729,7 +723,7 @@ where
       \<squnion> handshake
     OD"
 
-end (* context sys *)
+end
 
 
 subsection\<open>Mutators\<close>
@@ -799,8 +793,8 @@ Storing a reference involves marking both the old and new references,
 i.e., both \emph{insertion} and \emph{deletion} barriers are
 installed. The deletion barrier preserves the \emph{weak tricolour
 invariant}, and the insertion barrier preserves the \emph{strong
-tricolour invariant}; see \S\ref{sec:tricolour-invariants} for further
-discussion.
+tricolour invariant}; see \S\ref{sec:strong-tricolour-invariant} for
+further discussion.
 
 Note that the the mutator reads the overwritten reference but does not
 store it in its roots.
@@ -874,14 +868,12 @@ where
       \<squnion> handshake
     OD"
 
-end (* context mut_m *)
+end
 
 
-subsection \<open>Garbage collector\<close>
+subsection \<open>Garbage collector \label{sec:gc-model-gc}\<close>
 
 text\<open>
-
-\label{sec:gc-model-gc}
 
 We abstract the primitive actions of the garbage collector thread.
 
@@ -964,11 +956,11 @@ where
 
        \<lbrace>''mark_loop_get_roots''\<rbrace> handshake_get_roots ;; \<comment> \<open>\<open>hp_IdleMarkSweep\<close>\<close>
 
-       \<lbrace>''mark_loop''\<rbrace> WHILE not empty W DO
-         \<lbrace>''mark_loop_inner''\<rbrace> WHILE not empty W DO
+       \<lbrace>''mark_loop''\<rbrace> WHILE \<^bold>\<not>(EMPTY W) DO
+         \<lbrace>''mark_loop_inner''\<rbrace> WHILE \<^bold>\<not>(EMPTY W) DO
            \<lbrace>''mark_loop_choose_ref''\<rbrace> \<acute>tmp_ref :\<in> \<acute>W ;;
            \<lbrace>''mark_loop_fields''\<rbrace> \<acute>field_set := UNIV ;;
-           \<lbrace>''mark_loop_mark_object_loop''\<rbrace> WHILE not empty field_set DO
+           \<lbrace>''mark_loop_mark_object_loop''\<rbrace> WHILE \<^bold>\<not>(EMPTY field_set) DO
              \<lbrace>''mark_loop_mark_choose_field''\<rbrace> \<acute>field :\<in> \<acute>field_set ;;
              \<lbrace>''mark_loop_mark_deref''\<rbrace> \<acute>ref := \<acute>tmp_ref\<rightarrow>\<acute>field ;;
              \<lbrace>''mark_loop''\<rbrace> mark_object ;;
@@ -984,10 +976,10 @@ where
        \<lbrace>''mark_end''\<rbrace> write_phase ph_Sweep ;;
        \<lbrace>''sweep_read_fM''\<rbrace> read_fM ;;
        \<lbrace>''sweep_refs''\<rbrace> \<acute>refs := UNIV ;;
-       \<lbrace>''sweep_loop''\<rbrace> WHILE not empty refs DO
+       \<lbrace>''sweep_loop''\<rbrace> WHILE \<^bold>\<not>(EMPTY refs) DO
          \<lbrace>''sweep_loop_choose_ref''\<rbrace> \<acute>tmp_ref :\<in> \<acute>refs ;;
          \<lbrace>''sweep_loop_read_mark''\<rbrace> \<acute>mark := \<acute>tmp_ref\<rightarrow>flag ;;
-         \<lbrace>''sweep_loop_check''\<rbrace> IF not null mark and the \<circ> mark neq fM THEN
+         \<lbrace>''sweep_loop_check''\<rbrace> IF \<^bold>\<not>(NULL mark) \<^bold>\<and> the \<circ> mark \<^bold>\<noteq> fM THEN
            \<lbrace>''sweep_loop_free''\<rbrace> free tmp_ref
          FI ;;
          \<lbrace>''sweep_loop_ref_done''\<rbrace> \<acute>refs := (\<acute>refs - {\<acute>tmp_ref})
@@ -995,7 +987,7 @@ where
        \<lbrace>''sweep_idle''\<rbrace> write_phase ph_Idle
      OD"
 
-end (* context gc *)
+end
 
 primrec
   gc_pgms :: "'mut process_name \<Rightarrow> ('field, 'mut, 'ref) gc_com"

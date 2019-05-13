@@ -24,13 +24,15 @@ text\<open>
 We do not develop a proper Hoare logic or full VCG for CIMP: this
 machinery merely packages up the subgoals that arise from induction
 over the reachable states (\S\ref{sec:cimp-invariants}). This is
-somewhat in the spirit of \citet{DBLP:conf/popl/Ridge09}.
+somewhat in the spirit of @{cite [cite_macro=citet]
+"DBLP:conf/popl/Ridge09"}.
 
 Note that this approach is not compositional: it consults the original
-system to find matching communicating pairs, and \<open>aft\<close> tracks
-the labels of possible successor statements. More serious Hoare logics
-are provided by
-\citet{DBLP:journals/acta/Lamport80,DBLP:journals/toplas/LamportS84,CousotCousot89-IC}.
+system to find matching communicating pairs, and \<open>aft\<close>
+tracks the labels of possible successor statements. More serious Hoare
+logics are provided by @{cite [cite_macro=citet]
+"DBLP:journals/acta/Lamport80" and "DBLP:journals/toplas/LamportS84"
+and "CousotCousot89-IC"}.
 
 Intuitively we need to discharge a proof obligation for either @{const
 "Request"}s or @{const "Response"}s but not both. Here we choose to
@@ -229,9 +231,9 @@ subsubsection\<open>VCG rules\<close>
 text\<open>
 
 We can develop some (but not all) of the familiar Hoare rules; see
-\citet{DBLP:journals/acta/Lamport80} and the seL4/l4.verified lemma
-buckets for inspiration. We avoid many of the issues Lamport mentions
-as we only treat basic (atomic) commands.
+@{cite [cite_macro=citet] "DBLP:journals/acta/Lamport80"} and the
+seL4/l4.verified lemma buckets for inspiration. We avoid many of the
+issues Lamport mentions as we only treat basic (atomic) commands.
 
 \<close>
 
@@ -259,7 +261,7 @@ lemma vcg_True:
 by (cases c) (fastforce elim!: vcg_inv intro: vcg.intros)+
 
 lemma vcg_conj:
-  "\<lbrakk> \<lbrace>I\<rbrace> c \<lbrace>Q\<rbrace>; \<lbrace>I\<rbrace> c \<lbrace>R\<rbrace> \<rbrakk> \<Longrightarrow> \<lbrace>I\<rbrace> c \<lbrace>Q and R\<rbrace>"
+  "\<lbrakk> \<lbrace>I\<rbrace> c \<lbrace>Q\<rbrace>; \<lbrace>I\<rbrace> c \<lbrace>R\<rbrace> \<rbrakk> \<Longrightarrow> \<lbrace>I\<rbrace> c \<lbrace>Q \<^bold>\<and> R\<rbrace>"
 by (cases c) (fastforce elim!: vcg_inv intro: vcg.intros)+
 
 lemma vcg_pre_imp:
@@ -278,14 +280,14 @@ by (cases c) (fastforce intro: vcg.intros)+
 
 lemma vcg_drop_imp:
   assumes "\<lbrace>P\<rbrace> c \<lbrace>Q\<rbrace>"
-  shows "\<lbrace>P\<rbrace> c \<lbrace>R imp Q\<rbrace>"
+  shows "\<lbrace>P\<rbrace> c \<lbrace>R \<^bold>\<longrightarrow> Q\<rbrace>"
 using assms
 by (cases c) (fastforce elim!: vcg_inv intro: vcg.intros)+
 
 lemma vcg_conj_lift:
   assumes x: "\<lbrace>P\<rbrace> c \<lbrace>Q\<rbrace>"
   assumes y: "\<lbrace>P'\<rbrace> c \<lbrace>Q'\<rbrace>"
-  shows      "\<lbrace>P and P'\<rbrace> c \<lbrace>Q and Q'\<rbrace>"
+  shows      "\<lbrace>P \<^bold>\<and> P'\<rbrace> c \<lbrace>Q \<^bold>\<and> Q'\<rbrace>"
 apply (rule vcg_conj)
  apply (rule vcg_pre[OF x], simp)
 apply (rule vcg_pre[OF y], simp)
@@ -294,14 +296,14 @@ done
 lemma vcg_disj_lift:
   assumes x: "\<lbrace>P\<rbrace>  c \<lbrace>Q\<rbrace>"
   assumes y: "\<lbrace>P'\<rbrace> c \<lbrace>Q'\<rbrace>"
-  shows      "\<lbrace>P or P'\<rbrace> c \<lbrace>Q or Q'\<rbrace>"
+  shows      "\<lbrace>P \<^bold>\<or> P'\<rbrace> c \<lbrace>Q \<^bold>\<or> Q'\<rbrace>"
 using assms
 by (cases c) (fastforce elim!: vcg_inv intro: vcg.intros)+
 
 lemma vcg_imp_lift:
-  assumes "\<lbrace>P'\<rbrace> c \<lbrace>not P\<rbrace>"
+  assumes "\<lbrace>P'\<rbrace> c \<lbrace>\<^bold>\<not> P\<rbrace>"
   assumes "\<lbrace>Q'\<rbrace> c \<lbrace>Q\<rbrace>"
-  shows "\<lbrace>P' or Q'\<rbrace> c \<lbrace>P imp Q\<rbrace>"
+  shows "\<lbrace>P' \<^bold>\<or> Q'\<rbrace> c \<lbrace>P \<^bold>\<longrightarrow> Q\<rbrace>"
 by (simp only: imp_conv_disj vcg_disj_lift[OF assms])
 
 lemma vcg_ex_lift:
@@ -434,7 +436,7 @@ lemma pres_tuple_vcg_LST:
 
 lemmas conj_explode = conj_imp_eq_imp_imp
 
-end (* context *)
+end
 (*<*)
 
 end

@@ -16,13 +16,7 @@ imports
 begin
 
 (*>*)
-section\<open>Invariants and Proofs\<close>
-
-text\<open>
-
-\label{sec:gc-invs}
-
-\<close>
+section\<open>Invariants and Proofs \label{sec:gc-invs}\<close>
 
 subsection\<open>Constructors for sets of locations.\<close>
 
@@ -52,7 +46,10 @@ where
 (*<*)
 
 lemma valid_pre:
-  "\<lbrakk> \<lbrace>Q\<rbrace> p \<lbrace>R\<rbrace>; \<And>s. P s \<Longrightarrow> Q s \<rbrakk> \<Longrightarrow> \<lbrace>P\<rbrace> p \<lbrace>R\<rbrace>"
+  assumes "\<lbrace>Q\<rbrace> p \<lbrace>R\<rbrace>"
+  assumes "\<And>s. P s \<Longrightarrow> Q s"
+  shows "\<lbrace>P\<rbrace> p \<lbrace>R\<rbrace>"
+using assms
 apply (clarsimp simp: valid_proc_def)
 apply (drule (1) bspec)
 apply (auto elim: vcg_pre)
@@ -61,7 +58,7 @@ done
 lemma valid_conj_lift:
   assumes x: "\<lbrace>P\<rbrace> p \<lbrace>Q\<rbrace>"
   assumes y: "\<lbrace>P'\<rbrace> p \<lbrace>Q'\<rbrace>"
-  shows      "\<lbrace>P and P'\<rbrace> p \<lbrace>Q and Q'\<rbrace>"
+  shows      "\<lbrace>P \<^bold>\<and> P'\<rbrace> p \<lbrace>Q \<^bold>\<and> Q'\<rbrace>"
 apply (clarsimp simp: valid_proc_def)
 apply (rule vcg_conj)
  apply (rule vcg_pre[OF spec[OF spec[OF x[unfolded Ball_def valid_proc_def split_paired_All]], simplified, rule_format]], simp, simp)
@@ -71,8 +68,7 @@ done
 lemma valid_all_lift:
   assumes "\<And>x. \<lbrace>P x\<rbrace> p \<lbrace>Q x\<rbrace>"
   shows "\<lbrace>\<lambda>s. \<forall>x. P x s\<rbrace> p \<lbrace>\<lambda>s. \<forall>x. Q x s\<rbrace>"
-using assms
-by (fastforce simp: valid_proc_def intro: vcg_all_lift)
+using assms by (fastforce simp: valid_proc_def intro: vcg_all_lift)
 
 (*>*)
 text\<open>

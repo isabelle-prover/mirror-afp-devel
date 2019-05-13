@@ -42,6 +42,6 @@ abbreviation mut_init_state1 :: concrete_local_state where
 abbreviation mut_init_state2 :: concrete_local_state where
   "mut_init_state2 \<equiv> mut_common_init_state \<lparr> roots := {2, 5} \<rparr>"
 
-end (* context gc_system *)
+end
 
 end

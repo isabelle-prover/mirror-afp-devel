@@ -40,10 +40,10 @@ definition hp_step_rel :: "(bool \<times> handshake_type \<times> handshake_phas
               , (ht_GetWork,  hp_IdleMarkSweep, hp_IdleMarkSweep) }"
 
 definition handshake_phase_inv :: "('field, 'mut, 'ref) lsts_pred" where
-  "handshake_phase_inv \<equiv> ALLS m.
-      (sys_ghost_handshake_in_sync m \<otimes> sys_handshake_type
-        \<otimes> sys_ghost_handshake_phase \<otimes> mut_m.mut_ghost_handshake_phase m) in \<langle>hp_step_rel\<rangle>
-  and (sys_handshake_pending m imp not sys_ghost_handshake_in_sync m)"
+  "handshake_phase_inv = (\<^bold>\<forall>m.
+      (sys_ghost_handshake_in_sync m \<^bold>\<otimes> sys_handshake_type
+        \<^bold>\<otimes> sys_ghost_handshake_phase \<^bold>\<otimes> mut_m.mut_ghost_handshake_phase m) \<^bold>\<in> \<langle>hp_step_rel\<rangle>
+  \<^bold>\<and> (sys_handshake_pending m \<^bold>\<longrightarrow> \<^bold>\<not>(sys_ghost_handshake_in_sync m)))"
 (*<*)
 
 (* Sanity *)
@@ -156,33 +156,32 @@ local_setup \<open>Cimp.locset @{thm "hs_init_loop_not_done_locs_def"}\<close>
 
 definition (in gc) handshake_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "handshake_invL \<equiv>
-      atS_gc hs_noop_locs         (sys_handshake_type eq \<langle>ht_NOOP\<rangle>)
-  and atS_gc hs_get_roots_locs    (sys_handshake_type eq \<langle>ht_GetRoots\<rangle>)
-  and atS_gc hs_get_work_locs     (sys_handshake_type eq \<langle>ht_GetWork\<rangle>)
+      atS_gc hs_noop_locs         (sys_handshake_type \<^bold>= \<langle>ht_NOOP\<rangle>)
+    \<^bold>\<and> atS_gc hs_get_roots_locs    (sys_handshake_type \<^bold>= \<langle>ht_GetRoots\<rangle>)
+    \<^bold>\<and> atS_gc hs_get_work_locs     (sys_handshake_type \<^bold>= \<langle>ht_GetWork\<rangle>)
 
-  and atS_gc hs_mut_in_muts_locs      (gc_mut in gc_muts)
-  and atS_gc hs_init_loop_locs        (ALLS m. not \<langle>m\<rangle> in gc_muts imp sys_handshake_pending m
-                                                                  or sys_ghost_handshake_in_sync m)
-  and atS_gc hs_init_loop_not_done_locs (ALLS m.   \<langle>m\<rangle> in gc_muts imp not sys_handshake_pending m
-                                                                 and not sys_ghost_handshake_in_sync m)
-  and atS_gc hs_init_loop_done_locs     ( (sys_handshake_pending \<triangleright> gc_mut
-                                        or sys_ghost_handshake_in_sync \<triangleright> gc_mut)
-                                      and (ALLS m. \<langle>m\<rangle> in gc_muts and \<langle>m\<rangle> neq gc_mut
-                                                                 imp not sys_handshake_pending m
-                                                                 and not sys_ghost_handshake_in_sync m) )
+    \<^bold>\<and> atS_gc hs_mut_in_muts_locs      (gc_mut \<^bold>\<in> gc_muts)
+    \<^bold>\<and> atS_gc hs_init_loop_locs        (\<^bold>\<forall>m. \<^bold>\<not>(\<langle>m\<rangle> \<^bold>\<in> gc_muts) \<^bold>\<longrightarrow> sys_handshake_pending m
+                                                                  \<^bold>\<or> sys_ghost_handshake_in_sync m)
+    \<^bold>\<and> atS_gc hs_init_loop_not_done_locs (\<^bold>\<forall>m.   \<langle>m\<rangle> \<^bold>\<in> gc_muts \<^bold>\<longrightarrow> \<^bold>\<not>(sys_handshake_pending m)
+                                                                 \<^bold>\<and> \<^bold>\<not>(sys_ghost_handshake_in_sync m))
+  \<^bold>\<and> atS_gc hs_init_loop_done_locs     ( (sys_handshake_pending \<^bold>$ gc_mut
+                                        \<^bold>\<or> sys_ghost_handshake_in_sync \<^bold>$ gc_mut)
+                                      \<^bold>\<and> (\<^bold>\<forall>m. \<langle>m\<rangle> \<^bold>\<in> gc_muts \<^bold>\<and> \<langle>m\<rangle> \<^bold>\<noteq> gc_mut
+                                                                 \<^bold>\<longrightarrow> \<^bold>\<not>(sys_handshake_pending m)
+                                                                   \<^bold>\<and> \<^bold>\<not>(sys_ghost_handshake_in_sync m)) )
+  \<^bold>\<and> atS_gc hs_done_locs       (\<^bold>\<forall>m. sys_handshake_pending m \<^bold>\<or> sys_ghost_handshake_in_sync m)
+  \<^bold>\<and> atS_gc hs_done_loop_locs  (\<^bold>\<forall>m. \<^bold>\<not>(\<langle>m\<rangle> \<^bold>\<in> gc_muts) \<^bold>\<longrightarrow> \<^bold>\<not>(sys_handshake_pending m))
+  \<^bold>\<and> atS_gc hs_none_pending_locs (\<^bold>\<forall>m. \<^bold>\<not>(sys_handshake_pending m))
+  \<^bold>\<and> atS_gc hs_in_sync_locs      (\<^bold>\<forall>m. sys_ghost_handshake_in_sync m)
+  \<^bold>\<and> atS_gc hs_out_of_sync_locs  (\<^bold>\<forall>m. \<^bold>\<not>(sys_handshake_pending m)
+                                       \<^bold>\<and> \<^bold>\<not>(sys_ghost_handshake_in_sync m))
 
-  and atS_gc hs_done_locs       (ALLS m. sys_handshake_pending m or sys_ghost_handshake_in_sync m)
-  and atS_gc hs_done_loop_locs  (ALLS m. not \<langle>m\<rangle> in gc_muts imp not sys_handshake_pending m)
-  and atS_gc hs_none_pending_locs (ALLS m. not sys_handshake_pending m)
-  and atS_gc hs_in_sync_locs      (ALLS m. sys_ghost_handshake_in_sync m)
-  and atS_gc hs_out_of_sync_locs  (ALLS m. not sys_handshake_pending m
-                                       and not sys_ghost_handshake_in_sync m)
-
-  and atS_gc hp_Idle_locs          (sys_ghost_handshake_phase eq \<langle>hp_Idle\<rangle>)
-  and atS_gc hp_IdleInit_locs      (sys_ghost_handshake_phase eq \<langle>hp_IdleInit\<rangle>)
-  and atS_gc hp_InitMark_locs      (sys_ghost_handshake_phase eq \<langle>hp_InitMark\<rangle>)
-  and atS_gc hp_IdleMarkSweep_locs (sys_ghost_handshake_phase eq \<langle>hp_IdleMarkSweep\<rangle>)
-  and atS_gc hp_Mark_locs          (sys_ghost_handshake_phase eq \<langle>hp_Mark\<rangle>)"
+  \<^bold>\<and> atS_gc hp_Idle_locs          (sys_ghost_handshake_phase \<^bold>= \<langle>hp_Idle\<rangle>)
+  \<^bold>\<and> atS_gc hp_IdleInit_locs      (sys_ghost_handshake_phase \<^bold>= \<langle>hp_IdleInit\<rangle>)
+  \<^bold>\<and> atS_gc hp_InitMark_locs      (sys_ghost_handshake_phase \<^bold>= \<langle>hp_InitMark\<rangle>)
+  \<^bold>\<and> atS_gc hp_IdleMarkSweep_locs (sys_ghost_handshake_phase \<^bold>= \<langle>hp_IdleMarkSweep\<rangle>)
+  \<^bold>\<and> atS_gc hp_Mark_locs          (sys_ghost_handshake_phase \<^bold>= \<langle>hp_Mark\<rangle>)"
 (*<*)
 
 lemma hs_get_roots_locs_subseteq_hp_IdleMarkSweep_locs:
@@ -217,7 +216,7 @@ lemma (in sys) gc_handshake_invL[intro]:
 by vcg_ni
 
 lemma (in gc) handshake_phase_inv[intro]:
-  "\<lbrace> handshake_invL and LSTP handshake_phase_inv \<rbrace> gc \<lbrace> LSTP handshake_phase_inv \<rbrace>"
+  "\<lbrace> handshake_invL \<^bold>\<and> LSTP handshake_phase_inv \<rbrace> gc \<lbrace> LSTP handshake_phase_inv \<rbrace>"
 by (vcg_jackhammer_ff simp: handshake_phase_inv_def hp_step_rel_def)
 
 (*>*)
@@ -235,10 +234,10 @@ local_setup \<open>Cimp.locset @{thm "mut_no_pending_mutates_locs_def"}\<close>
 
 definition (in mut_m) handshake_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "handshake_invL \<equiv>
-     atS_mut (prefixed ''hs_noop_'')      (sys_handshake_type eq \<langle>ht_NOOP\<rangle> and sys_handshake_pending m)
- and atS_mut (prefixed ''hs_get_roots_'') (sys_handshake_type eq \<langle>ht_GetRoots\<rangle> and sys_handshake_pending m)
- and atS_mut (prefixed ''hs_get_work_'')  (sys_handshake_type eq \<langle>ht_GetWork\<rangle> and sys_handshake_pending m)
- and atS_mut mut_no_pending_mutates_locs  (list_null (tso_pending_mutate (mutator m)))"
+    atS_mut (prefixed ''hs_noop_'')     (sys_handshake_type \<^bold>= \<langle>ht_NOOP\<rangle> \<^bold>\<and> sys_handshake_pending m)
+ \<^bold>\<and> atS_mut (prefixed ''hs_get_roots_'') (sys_handshake_type \<^bold>= \<langle>ht_GetRoots\<rangle> \<^bold>\<and> sys_handshake_pending m)
+ \<^bold>\<and> atS_mut (prefixed ''hs_get_work_'')  (sys_handshake_type \<^bold>= \<langle>ht_GetWork\<rangle> \<^bold>\<and> sys_handshake_pending m)
+ \<^bold>\<and> atS_mut mut_no_pending_mutates_locs  (LIST_NULL (tso_pending_mutate (mutator m)))"
 (*<*)
 
 lemma (in mut_m) handshake_invL_eq_imp:
@@ -261,7 +260,7 @@ done
 
 lemma (in gc) mut_handshake_invL[intro]:
   notes mut_m.handshake_invL_def[inv]
-  shows "\<lbrace> handshake_invL and mut_m.handshake_invL m \<rbrace> gc \<lbrace> mut_m.handshake_invL m \<rbrace>"
+  shows "\<lbrace> handshake_invL \<^bold>\<and> mut_m.handshake_invL m \<rbrace> gc \<lbrace> mut_m.handshake_invL m \<rbrace>"
 apply vcg_nihe
 apply vcg_ni+
 done
@@ -273,13 +272,13 @@ by (vcg_ni split: if_splits)
 
 lemma (in mut_m) gc_handshake_invL[intro]:
   notes gc.handshake_invL_def[inv]
-  shows "\<lbrace> handshake_invL and gc.handshake_invL \<rbrace> mutator m \<lbrace> gc.handshake_invL \<rbrace>"
+  shows "\<lbrace> handshake_invL \<^bold>\<and> gc.handshake_invL \<rbrace> mutator m \<lbrace> gc.handshake_invL \<rbrace>"
 apply vcg_nihe
 apply vcg_ni+
 done
 
 lemma (in mut_m) handshake_phase_inv[intro]:
-  "\<lbrace> handshake_invL and LSTP handshake_phase_inv \<rbrace> mutator m \<lbrace> LSTP handshake_phase_inv \<rbrace>"
+  "\<lbrace> handshake_invL \<^bold>\<and> LSTP handshake_phase_inv \<rbrace> mutator m \<lbrace> LSTP handshake_phase_inv \<rbrace>"
 apply (vcg_jackhammer simp: handshake_phase_inv_def)
 apply (auto simp: hp_step_rel_def)
 done
@@ -317,7 +316,7 @@ definition phase_rel :: "(bool \<times> handshake_phase \<times> gc_phase \<time
                   (hp_IdleMarkSweep, ph_Idle, ph_Sweep, [mw_Phase ph_Idle]) })"
 
 definition phase_rel_inv :: "('field, 'mut, 'ref) lsts_pred" where
-  "phase_rel_inv \<equiv> (ALLS m. sys_ghost_handshake_in_sync m) \<otimes> sys_ghost_handshake_phase \<otimes> gc_phase \<otimes> sys_phase \<otimes> tso_pending_phase gc in \<langle>phase_rel\<rangle>"
+  "phase_rel_inv = ((\<^bold>\<forall>m. sys_ghost_handshake_in_sync m) \<^bold>\<otimes> sys_ghost_handshake_phase \<^bold>\<otimes> gc_phase \<^bold>\<otimes> sys_phase \<^bold>\<otimes> tso_pending_phase gc \<^bold>\<in> \<langle>phase_rel\<rangle>)"
 (*<*)
 
 simps_of_case handshake_phase_rel_simps[simp]: handshake_phase_rel_def (splits: handshake_phase.split)
@@ -348,11 +347,11 @@ local_setup \<open>Cimp.locset @{thm "no_pending_phase_locs_def"}\<close>
 
 definition (in gc) phase_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "phase_invL \<equiv>
-      atS_gc idle_locs             (gc_phase eq \<langle>ph_Idle\<rangle>)
-  and atS_gc init_locs             (gc_phase eq \<langle>ph_Init\<rangle>)
-  and atS_gc mark_locs             (gc_phase eq \<langle>ph_Mark\<rangle>)
-  and atS_gc sweep_locs            (gc_phase eq \<langle>ph_Sweep\<rangle>)
-  and atS_gc no_pending_phase_locs (list_null (tso_pending_phase gc))"
+      atS_gc idle_locs             (gc_phase \<^bold>= \<langle>ph_Idle\<rangle>)
+  \<^bold>\<and> atS_gc init_locs             (gc_phase \<^bold>= \<langle>ph_Init\<rangle>)
+  \<^bold>\<and> atS_gc mark_locs             (gc_phase \<^bold>= \<langle>ph_Mark\<rangle>)
+  \<^bold>\<and> atS_gc sweep_locs            (gc_phase \<^bold>= \<langle>ph_Sweep\<rangle>)
+  \<^bold>\<and> atS_gc no_pending_phase_locs (LIST_NULL (tso_pending_phase gc))"
 (*<*)
 
 lemma (in gc) phase_invL_eq_imp:
@@ -364,12 +363,12 @@ lemmas gc_phase_invL_niE[nie] =
   iffD1[OF gc.phase_invL_eq_imp[simplified eq_imp_simps, rule_format, unfolded conj_explode], rotated -1]
 
 lemma (in gc) phase_invL[intro]:
-  "\<lbrace> phase_invL and LSTP phase_rel_inv \<rbrace> gc \<lbrace> phase_invL \<rbrace>"
+  "\<lbrace> phase_invL \<^bold>\<and> LSTP phase_rel_inv \<rbrace> gc \<lbrace> phase_invL \<rbrace>"
 by (vcg_jackhammer dest!: phase_rel_invD simp: phase_rel_def)
 
 lemma (in sys) gc_phase_invL[intro]:
   notes gc.phase_invL_def[inv]
-  shows "\<lbrace> gc.phase_invL and LSTP tso_writes_inv \<rbrace> sys \<lbrace> gc.phase_invL \<rbrace>"
+  shows "\<lbrace> gc.phase_invL \<^bold>\<and> LSTP tso_writes_inv \<rbrace> sys \<lbrace> gc.phase_invL \<rbrace>"
 by (vcg_ni split: if_splits)
 
 lemma (in mut_m) gc_phase_invL[intro]:
@@ -379,12 +378,12 @@ by vcg_nihe
 
 lemma (in gc) phase_rel_inv[intro]:
   notes phase_rel_inv_def[inv]
-  shows "\<lbrace> handshake_invL and phase_invL and LSTP phase_rel_inv \<rbrace> gc \<lbrace> LSTP phase_rel_inv \<rbrace>"
+  shows "\<lbrace> handshake_invL \<^bold>\<and> phase_invL \<^bold>\<and> LSTP phase_rel_inv \<rbrace> gc \<lbrace> LSTP phase_rel_inv \<rbrace>"
 by (vcg_jackhammer_ff dest!: phase_rel_invD simp: phase_rel_def)
 
 lemma (in sys) phase_rel_inv[intro]:
   notes gc.phase_invL_def[inv] phase_rel_inv_def[inv]
-  shows "\<lbrace> LSTP (phase_rel_inv and tso_writes_inv) \<rbrace> sys \<lbrace> LSTP phase_rel_inv \<rbrace>"
+  shows "\<lbrace> LSTP (phase_rel_inv \<^bold>\<and> tso_writes_inv) \<rbrace> sys \<lbrace> LSTP phase_rel_inv \<rbrace>"
 apply vcg_jackhammer
 apply (simp add: phase_rel_def p_not_sys split: if_splits)
 apply (elim disjE)
@@ -392,7 +391,7 @@ apply (elim disjE)
 done
 
 lemma (in mut_m) phase_rel_inv[intro]:
-  "\<lbrace> handshake_invL and LSTP (handshake_phase_inv and phase_rel_inv) \<rbrace>
+  "\<lbrace> handshake_invL \<^bold>\<and> LSTP (handshake_phase_inv \<^bold>\<and> phase_rel_inv) \<rbrace>
      mutator m
    \<lbrace> LSTP phase_rel_inv \<rbrace>"
 apply (vcg_jackhammer simp: phase_rel_inv_def)
@@ -402,9 +401,6 @@ apply (auto dest!: handshake_phase_invD
 done
 
 (*>*)
-
-(* **************************************** *)
-
 text\<open>
 
 Validity of @{const "sys_fM"} wrt @{const "gc_fM"} and the handshake
@@ -421,7 +417,7 @@ definition fM_rel :: "(bool \<times> handshake_phase \<times> gc_mark \<times> g
     \<union> { (in_sync, hp_Idle, \<not>fM, fM, [mw_fM (\<not>fM)], False) |fM in_sync. in_sync }"
 
 definition fM_rel_inv :: "('field, 'mut, 'ref) lsts_pred" where
-  "fM_rel_inv \<equiv> (ALLS m. sys_ghost_handshake_in_sync m) \<otimes> sys_ghost_handshake_phase \<otimes> gc_fM \<otimes> sys_fM \<otimes> tso_pending_fM gc \<otimes> (sys_mem_lock eq \<langle>Some gc\<rangle>) in \<langle>fM_rel\<rangle>"
+  "fM_rel_inv = ((\<^bold>\<forall>m. sys_ghost_handshake_in_sync m) \<^bold>\<otimes> sys_ghost_handshake_phase \<^bold>\<otimes> gc_fM \<^bold>\<otimes> sys_fM \<^bold>\<otimes> tso_pending_fM gc \<^bold>\<otimes> (sys_mem_lock \<^bold>= \<langle>Some gc\<rangle>) \<^bold>\<in> \<langle>fM_rel\<rangle>)"
 
 definition fA_rel :: "(bool \<times> handshake_phase \<times> gc_mark \<times> gc_mark \<times> ('field, 'ref) mem_write_action list) set" where
   "fA_rel =
@@ -433,7 +429,7 @@ definition fA_rel :: "(bool \<times> handshake_phase \<times> gc_mark \<times> g
     \<union> { (in_sync, hp_IdleMarkSweep, fA,  fA, []) |fA in_sync. True }"
 
 definition fA_rel_inv :: "('field, 'mut, 'ref) lsts_pred" where
-  "fA_rel_inv \<equiv> (ALLS m. sys_ghost_handshake_in_sync m) \<otimes> sys_ghost_handshake_phase \<otimes> sys_fA \<otimes> gc_fM \<otimes> tso_pending_fA gc in \<langle>fA_rel\<rangle>"
+  "fA_rel_inv = ((\<^bold>\<forall>m. sys_ghost_handshake_in_sync m) \<^bold>\<otimes> sys_ghost_handshake_phase \<^bold>\<otimes> sys_fA \<^bold>\<otimes> gc_fM \<^bold>\<otimes> tso_pending_fA gc \<^bold>\<in> \<langle>fA_rel\<rangle>)"
 
 definition fM_eq_locs :: "location set" where
   "fM_eq_locs \<equiv> (- { ''idle_write_fM'', ''idle_flip_noop_mfence'' })"
@@ -462,15 +458,15 @@ local_setup \<open>Cimp.locset @{thm "fA_neq_locs_def"}\<close>
 
 definition (in gc) fM_fA_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "fM_fA_invL \<equiv>
-      atS_gc fM_eq_locs                    (sys_fM  eq gc_fM)
-  and at_gc ''idle_write_fM''              (sys_fM neq gc_fM)
-  and at_gc ''idle_flip_noop_mfence''      (sys_fM neq gc_fM imp (not list_null (tso_pending_fM gc)))
-  and atS_gc fM_tso_empty_locs             (list_null (tso_pending_fM gc))
+      atS_gc fM_eq_locs                    (sys_fM  \<^bold>= gc_fM)
+  \<^bold>\<and> at_gc ''idle_write_fM''              (sys_fM \<^bold>\<noteq> gc_fM)
+  \<^bold>\<and> at_gc ''idle_flip_noop_mfence''      (sys_fM \<^bold>\<noteq> gc_fM \<^bold>\<longrightarrow> (\<^bold>\<not>(LIST_NULL (tso_pending_fM gc))))
+  \<^bold>\<and> atS_gc fM_tso_empty_locs             (LIST_NULL (tso_pending_fM gc))
 
-  and atS_gc fA_eq_locs                    (sys_fA  eq gc_fM)
-  and atS_gc fA_neq_locs                   (sys_fA neq gc_fM)
-  and at_gc ''mark_noop_mfence''           (sys_fA neq gc_fM imp (not list_null (tso_pending_fA gc)))
-  and atS_gc fA_tso_empty_locs             (list_null (tso_pending_fA gc))"
+  \<^bold>\<and> atS_gc fA_eq_locs                    (sys_fA  \<^bold>= gc_fM)
+  \<^bold>\<and> atS_gc fA_neq_locs                   (sys_fA \<^bold>\<noteq> gc_fM)
+  \<^bold>\<and> at_gc ''mark_noop_mfence''           (sys_fA \<^bold>\<noteq> gc_fM \<^bold>\<longrightarrow> (\<^bold>\<not>(LIST_NULL (tso_pending_fA gc))))
+  \<^bold>\<and> atS_gc fA_tso_empty_locs             (LIST_NULL (tso_pending_fA gc))"
 (*<*)
 
 lemmas fM_rel_invD = iffD1[OF fun_cong[OF fM_rel_inv_def[simplified atomize_eq]]]
@@ -502,13 +498,13 @@ lemma (in gc) fM_fA_invL[intro]:
 by vcg_jackhammer
 
 lemma (in gc) fM_rel_inv[intro]:
-  "\<lbrace> fM_fA_invL and handshake_invL and tso_lock_invL and LSTP fM_rel_inv \<rbrace>
+  "\<lbrace> fM_fA_invL \<^bold>\<and> handshake_invL \<^bold>\<and> tso_lock_invL \<^bold>\<and> LSTP fM_rel_inv \<rbrace>
      gc
    \<lbrace> LSTP fM_rel_inv \<rbrace>"
 by (vcg_jackhammer simp: fM_rel_inv_def fM_rel_def)
 
 lemma (in gc) fA_rel_inv[intro]:
-  "\<lbrace> fM_fA_invL and handshake_invL and LSTP fA_rel_inv \<rbrace>
+  "\<lbrace> fM_fA_invL \<^bold>\<and> handshake_invL \<^bold>\<and> LSTP fA_rel_inv \<rbrace>
      gc
    \<lbrace> LSTP fA_rel_inv \<rbrace>"
 apply (vcg_jackhammer simp: fA_rel_inv_def)
@@ -539,7 +535,7 @@ by (simp add: fA_neq_locs_def fA_tso_empty_locs_def loc)
 lemma (in sys) gc_fM_fA_invL[intro]:
   notes gc.fM_fA_invL_def[inv]
   shows
-  "\<lbrace> gc.fM_fA_invL and LSTP (fA_rel_inv and fM_rel_inv and tso_writes_inv) \<rbrace>
+  "\<lbrace> gc.fM_fA_invL \<^bold>\<and> LSTP (fA_rel_inv \<^bold>\<and> fM_rel_inv \<^bold>\<and> tso_writes_inv) \<rbrace>
      sys
    \<lbrace> gc.fM_fA_invL \<rbrace>"
 apply (vcg_ni simp: p_not_sys)
@@ -575,14 +571,14 @@ apply (clarsimp split: if_splits)
 done
 
 lemma (in sys) fM_rel_inv[intro]:
-  "\<lbrace> LSTP (fM_rel_inv and tso_writes_inv) \<rbrace> sys \<lbrace> LSTP fM_rel_inv \<rbrace>"
+  "\<lbrace> LSTP (fM_rel_inv \<^bold>\<and> tso_writes_inv) \<rbrace> sys \<lbrace> LSTP fM_rel_inv \<rbrace>"
 apply (vcg_ni simp: p_not_sys)
 apply (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def
                 split: mem_write_action.splits)
 done
 
 lemma (in sys) fA_rel_inv[intro]:
-  "\<lbrace> LSTP (fA_rel_inv and tso_writes_inv) \<rbrace> sys \<lbrace> LSTP fA_rel_inv \<rbrace>"
+  "\<lbrace> LSTP (fA_rel_inv \<^bold>\<and> tso_writes_inv) \<rbrace> sys \<lbrace> LSTP fA_rel_inv \<rbrace>"
 apply (vcg_ni simp: p_not_sys)
 apply (fastforce simp: do_write_action_def fA_rel_inv_def fA_rel_def
                 split: mem_write_action.splits)

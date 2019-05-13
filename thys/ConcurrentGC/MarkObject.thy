@@ -51,10 +51,10 @@ definition WL :: "'mut process_name \<Rightarrow> ('field, 'mut, 'ref) lsts \<Ri
   "WL p \<equiv> \<lambda>s. W (s p) \<union> ghost_honorary_grey (s p)"
 
 definition grey :: "'ref \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" where
-  "grey r \<equiv> EXS p. \<langle>r\<rangle> in WL p"
+  "grey r \<equiv> \<^bold>\<exists>p. \<langle>r\<rangle> \<^bold>\<in> WL p"
 
 definition black :: "'ref \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" where
-  "black r \<equiv> marked r and not grey r"
+  "black r \<equiv> marked r \<^bold>\<and> \<^bold>\<not>(grey r)"
 
 text\<open>
 
@@ -76,17 +76,17 @@ abbreviation write_refs :: "('field, 'ref) mem_write_action \<Rightarrow> 'ref s
   "write_refs w \<equiv> case w of mw_Mutate r f r' \<Rightarrow> {r} \<union> Option.set_option r' | _ \<Rightarrow> {}"
 
 definition (in mut_m) tso_write_refs :: "('field, 'mut, 'ref) lsts \<Rightarrow> 'ref set" where
-  "tso_write_refs \<equiv> \<lambda>s. \<Union>w \<in> set (sys_mem_write_buffers (mutator m) s). write_refs w"
+  "tso_write_refs = (\<lambda>s. \<Union>w \<in> set (sys_mem_write_buffers (mutator m) s). write_refs w)"
 
 definition (in mut_m) reachable :: "'ref \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" where
-  "reachable y \<equiv> EXS x. \<langle>x\<rangle> in (mut_roots union mut_ghost_honorary_root union tso_write_refs)
-                    and x reaches y"
+  "reachable y = (\<^bold>\<exists>x. \<langle>x\<rangle> \<^bold>\<in> mut_roots \<^bold>\<union> mut_ghost_honorary_root \<^bold>\<union> tso_write_refs
+                    \<^bold>\<and> x reaches y)"
 
 definition grey_reachable :: "'ref \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" where
-  "grey_reachable y \<equiv> EXS g. grey g and g reaches y"
+  "grey_reachable y = (\<^bold>\<exists>g. grey g \<^bold>\<and> g reaches y)"
 
 definition valid_refs_inv :: "('field, 'mut, 'ref) lsts_pred" where
- "valid_refs_inv \<equiv> ALLS x. ((EXS m. mut_m.reachable m x) or grey_reachable x) imp valid_ref x"
+ "valid_refs_inv = (\<^bold>\<forall>x. ((\<^bold>\<exists>m. mut_m.reachable m x) \<^bold>\<or> grey_reachable x) \<^bold>\<longrightarrow> valid_ref x)"
 
 text\<open>
 
@@ -105,17 +105,17 @@ implementation is sound.
 \<close>
 
 definition valid_W_inv :: "('field, 'mut, 'ref) lsts_pred" where
-  "valid_W_inv \<equiv> ALLS p q r.
-    (r in_W p or (sys_mem_lock neq \<langle>Some p\<rangle> and r in_ghost_honorary_grey p) imp marked r)
-  and (\<langle>p \<noteq> q\<rangle> imp not (\<langle>r\<rangle> in WL p and \<langle>r\<rangle> in WL q))
-  and (not (r in_ghost_honorary_grey p and r in_W q))
-  and (empty sys_ghost_honorary_grey)
-  and (ALLS fl. tso_pending_write p (mw_Mark r fl)
-       imp ( \<langle>fl\<rangle> eq sys_fM
-             and r in_ghost_honorary_grey p
-             and tso_locked_by p
-             and white r
-             and tso_pending_mark p eq \<langle>[mw_Mark r fl]\<rangle> ))"
+  "valid_W_inv = (\<^bold>\<forall>p q r fl.
+    (r in_W p \<^bold>\<or> (sys_mem_lock \<^bold>\<noteq> \<langle>Some p\<rangle> \<^bold>\<and> r in_ghost_honorary_grey p) \<^bold>\<longrightarrow> marked r)
+  \<^bold>\<and> (\<langle>p \<noteq> q\<rangle> \<^bold>\<longrightarrow> \<^bold>\<not>(\<langle>r\<rangle> \<^bold>\<in> WL p \<^bold>\<and> \<langle>r\<rangle> \<^bold>\<in> WL q))
+  \<^bold>\<and> (\<^bold>\<not>(r in_ghost_honorary_grey p \<^bold>\<and> r in_W q))
+  \<^bold>\<and> (EMPTY sys_ghost_honorary_grey)
+  \<^bold>\<and> (tso_pending_write p (mw_Mark r fl)
+       \<^bold>\<longrightarrow> ( \<langle>fl\<rangle> \<^bold>= sys_fM
+             \<^bold>\<and> r in_ghost_honorary_grey p
+             \<^bold>\<and> tso_locked_by p
+             \<^bold>\<and> white r
+             \<^bold>\<and> tso_pending_mark p \<^bold>= \<langle>[mw_Mark r fl]\<rangle> )))"
 
 (*<*)
 
@@ -158,7 +158,7 @@ by (auto simp: eq_imp_def elim: reaches_fields)
 lemmas reaches_fun_upd[simp] = eq_imp_fun_upd[OF reaches_eq_imp, simplified eq_imp_simps, rule_format]
 
 lemma (in mut_m) reachable_eq_imp:
-  "eq_imp (\<lambda>r'. mut_roots \<otimes> mut_ghost_honorary_root \<otimes> (\<lambda>s. Option.set_option (sys_heap s r') \<bind> ran \<circ> obj_fields) \<otimes> tso_pending_mutate (mutator m))
+  "eq_imp (\<lambda>r'. mut_roots \<^bold>\<otimes> mut_ghost_honorary_root \<^bold>\<otimes> (\<lambda>s. Option.set_option (sys_heap s r') \<bind> ran \<circ> obj_fields) \<^bold>\<otimes> tso_pending_mutate (mutator m))
           (reachable r)"
 apply (clarsimp simp: eq_imp_def reachable_def tso_write_refs_def ex_disj_distrib)
 apply (rename_tac s s')
@@ -223,7 +223,7 @@ lemma (in mut_m) mut_reachableE[consumes 1, case_names mut_root tso_write_refs]:
 by (auto simp: reachable_def)
 
 lemma grey_reachable_eq_imp:
-  "eq_imp (\<lambda>r'. (\<lambda>s. \<Union>p. WL p s) \<otimes> (\<lambda>s. Option.set_option (sys_heap s r') \<bind> ran \<circ> obj_fields))
+  "eq_imp (\<lambda>r'. (\<lambda>s. \<Union>p. WL p s) \<^bold>\<otimes> (\<lambda>s. Option.set_option (sys_heap s r') \<bind> ran \<circ> obj_fields))
           (grey_reachable r)"
 by (auto simp: eq_imp_def grey_reachable_def grey_def set_eq_iff reaches_fields)
 
@@ -241,12 +241,12 @@ by (auto simp: grey_reachable_def
 text\<open>colours and work lists\<close>
 
 lemma black_eq_imp:
-  "eq_imp (\<lambda>_::unit. (\<lambda>s. r \<in> (\<Union>p. WL p s)) \<otimes> sys_fM \<otimes> (\<lambda>s. Option.map_option obj_mark (sys_heap s r)))
+  "eq_imp (\<lambda>_::unit. (\<lambda>s. r \<in> (\<Union>p. WL p s)) \<^bold>\<otimes> sys_fM \<^bold>\<otimes> (\<lambda>s. Option.map_option obj_mark (sys_heap s r)))
           (black r)"
 by (auto simp add: eq_imp_def black_def grey_def obj_at_def split: option.splits)
 
 lemma white_eq_imp:
-  "eq_imp (\<lambda>_::unit. sys_fM \<otimes> (\<lambda>s. Option.map_option obj_mark (sys_heap s r)))
+  "eq_imp (\<lambda>_::unit. sys_fM \<^bold>\<otimes> (\<lambda>s. Option.map_option obj_mark (sys_heap s r)))
           (white r)"
 by (auto simp add: eq_imp_def obj_at_def split: option.splits)
 
@@ -280,7 +280,7 @@ by (simp_all add: black_def grey_def)
 text\<open>valid refs inv\<close>
 
 lemma valid_refs_inv_eq_imp:
-  "eq_imp (\<lambda>(m', r'). (\<lambda>s. roots (s (mutator m'))) \<otimes> (\<lambda>s. ghost_honorary_root (s (mutator m'))) \<otimes> (\<lambda>s. Option.map_option obj_fields (sys_heap s r')) \<otimes> tso_pending_mutate (mutator m') \<otimes> (\<lambda>s. \<Union>p. WL p s))
+  "eq_imp (\<lambda>(m', r'). (\<lambda>s. roots (s (mutator m'))) \<^bold>\<otimes> (\<lambda>s. ghost_honorary_root (s (mutator m'))) \<^bold>\<otimes> (\<lambda>s. Option.map_option obj_fields (sys_heap s r')) \<^bold>\<otimes> tso_pending_mutate (mutator m') \<^bold>\<otimes> (\<lambda>s. \<Union>p. WL p s))
           valid_refs_inv"
 apply (clarsimp simp: eq_imp_def valid_refs_inv_def grey_reachable_def all_conj_distrib)
 apply (rename_tac s s')
@@ -361,7 +361,7 @@ by (case_tac [!] p) (auto simp: grey_def WL_def)
 text\<open>@{const "valid_W_inv"}\<close>
 
 lemma valid_W_inv_eq_imp:
-  "eq_imp (\<lambda>(p, r). (\<lambda>s. W (s p)) \<otimes> (\<lambda>s. ghost_honorary_grey (s p)) \<otimes> sys_fM \<otimes> (\<lambda>s. Option.map_option obj_mark (sys_heap s r)) \<otimes> sys_mem_lock \<otimes> tso_pending_mark p)
+  "eq_imp (\<lambda>(p, r). (\<lambda>s. W (s p)) \<^bold>\<otimes> (\<lambda>s. ghost_honorary_grey (s p)) \<^bold>\<otimes> sys_fM \<^bold>\<otimes> (\<lambda>s. Option.map_option obj_mark (sys_heap s r)) \<^bold>\<otimes> sys_mem_lock \<^bold>\<otimes> tso_pending_mark p)
           valid_W_inv"
 apply (clarsimp simp: eq_imp_def valid_W_inv_def fun_eq_iff all_conj_distrib)
 apply (rename_tac s s')
@@ -480,49 +480,48 @@ abbreviation (input) "p_the_ref \<equiv> the \<circ> p_ref"
 abbreviation (input) "p_W s \<equiv> W (s p)"
 
 abbreviation at_p :: "location \<Rightarrow> ('field, 'mut, 'ref) lsts_pred \<Rightarrow> ('field, 'mut, 'ref) gc_pred" where
-  "at_p l' P \<equiv> at p (l @ l') imp LSTP P"
+  "at_p l' P \<equiv> at p (l @ l') \<^bold>\<longrightarrow> LSTP P"
 
-abbreviation (input) "p_en_cond P \<equiv> p_ph_enabled imp P"
+abbreviation (input) "p_en_cond P \<equiv> p_ph_enabled \<^bold>\<longrightarrow> P"
 
-abbreviation (input) "p_valid_ref \<equiv> not null p_ref and valid_ref \<triangleright> p_the_ref"
-abbreviation (input) "p_tso_no_pending_mark \<equiv> list_null (tso_pending_mark p)"
-abbreviation (input) "p_tso_no_pending_mutate \<equiv> list_null (tso_pending_mutate p)"
-
-abbreviation (input)
-  "p_valid_W_inv \<equiv> ((p_cas_mark neq p_mark or p_tso_no_pending_mark) imp marked \<triangleright> p_the_ref)
-                and (tso_pending_mark p in (\<lambda>s. {[], [mw_Mark (p_the_ref s) (p_fM s)]}) )"
+abbreviation (input) "p_valid_ref \<equiv> \<^bold>\<not>(NULL p_ref) \<^bold>\<and> valid_ref \<^bold>$ p_the_ref"
+abbreviation (input) "p_tso_no_pending_mark \<equiv> LIST_NULL (tso_pending_mark p)"
+abbreviation (input) "p_tso_no_pending_mutate \<equiv> LIST_NULL (tso_pending_mutate p)"
 
 abbreviation (input)
-  "p_mark_inv \<equiv> not null p_mark
-            and ((\<lambda>s. obj_at (\<lambda>obj. Some (obj_mark obj) = p_mark s) (p_the_ref s) s)
-              or marked \<triangleright> p_the_ref)"
+  "p_valid_W_inv \<equiv> ((p_cas_mark \<^bold>\<noteq> p_mark \<^bold>\<or> p_tso_no_pending_mark) \<^bold>\<longrightarrow> marked \<^bold>$ p_the_ref)
+                \<^bold>\<and> (tso_pending_mark p \<^bold>\<in> (\<lambda>s. {[], [mw_Mark (p_the_ref s) (p_fM s)]}) )"
+
+abbreviation (input)
+  "p_mark_inv \<equiv> \<^bold>\<not>(NULL p_mark)
+            \<^bold>\<and> ((\<lambda>s. obj_at (\<lambda>obj. Some (obj_mark obj) = p_mark s) (p_the_ref s) s)
+              \<^bold>\<or> marked \<^bold>$ p_the_ref)"
 
 abbreviation (input)
   "p_cas_mark_inv \<equiv> (\<lambda>s. obj_at (\<lambda>obj. Some (obj_mark obj) = p_cas_mark s) (p_the_ref s) s)"
 
-abbreviation (input) "p_valid_fM \<equiv> p_fM eq sys_fM"
+abbreviation (input) "p_valid_fM \<equiv> p_fM \<^bold>= sys_fM"
 
 abbreviation (input)
-  "p_ghg_eq_ref \<equiv> p_ghost_honorary_grey eq pred_singleton (the \<circ> p_ref)"
+  "p_ghg_eq_ref \<equiv> p_ghost_honorary_grey \<^bold>= pred_singleton (the \<circ> p_ref)"
 abbreviation (input)
-  "p_ghg_inv \<equiv> If p_cas_mark eq p_mark Then p_ghg_eq_ref Else empty p_ghost_honorary_grey"
+  "p_ghg_inv \<equiv> If p_cas_mark \<^bold>= p_mark Then p_ghg_eq_ref Else EMPTY p_ghost_honorary_grey"
 
 definition mark_object_invL :: "('field, 'mut, 'ref) gc_pred" where
-  "mark_object_invL \<equiv>
-      at_p ''_mo_null''        \<langle>True\<rangle>
-  and at_p ''_mo_mark''        (p_valid_ref)
-  and at_p ''_mo_fM''          (p_valid_ref and p_en_cond (p_mark_inv))
-  and at_p ''_mo_mtest''       (p_valid_ref and p_en_cond (p_mark_inv and p_valid_fM))
-  and at_p ''_mo_phase''       (p_valid_ref and p_mark neq Some \<circ> p_fM and p_en_cond (p_mark_inv and p_valid_fM))
-  and at_p ''_mo_ptest''       (p_valid_ref and p_mark neq Some \<circ> p_fM and p_en_cond (p_mark_inv and p_valid_fM))
-
-  and at_p ''_mo_co_lock''     (p_valid_ref and p_mark_inv and p_valid_fM and p_mark neq Some \<circ> p_fM and p_tso_no_pending_mark)
-  and at_p ''_mo_co_cmark''    (p_valid_ref and p_mark_inv and p_valid_fM and p_mark neq Some \<circ> p_fM and p_tso_no_pending_mark)
-  and at_p ''_mo_co_ctest''    (p_valid_ref and p_mark_inv and p_valid_fM and p_mark neq Some \<circ> p_fM and p_cas_mark_inv and p_tso_no_pending_mark)
-  and at_p ''_mo_co_mark''     (p_cas_mark eq p_mark and p_valid_ref and p_valid_fM and white \<triangleright> p_the_ref and p_tso_no_pending_mark)
-  and at_p ''_mo_co_unlock''   (p_ghg_inv and p_valid_ref and p_valid_fM and p_valid_W_inv)
-  and at_p ''_mo_co_won''      (p_ghg_inv and p_valid_ref and p_valid_fM and marked \<triangleright> p_the_ref and p_tso_no_pending_mutate)
-  and at_p ''_mo_co_W''        (p_ghg_eq_ref and p_valid_ref and p_valid_fM and marked \<triangleright> p_the_ref and p_tso_no_pending_mutate)"
+  "mark_object_invL =
+   (at_p ''_mo_null''        \<langle>True\<rangle>
+  \<^bold>\<and> at_p ''_mo_mark''        (p_valid_ref)
+  \<^bold>\<and> at_p ''_mo_fM''          (p_valid_ref \<^bold>\<and> p_en_cond (p_mark_inv))
+  \<^bold>\<and> at_p ''_mo_mtest''       (p_valid_ref \<^bold>\<and> p_en_cond (p_mark_inv \<^bold>\<and> p_valid_fM))
+  \<^bold>\<and> at_p ''_mo_phase''       (p_valid_ref \<^bold>\<and> p_mark \<^bold>\<noteq> Some \<circ> p_fM \<^bold>\<and> p_en_cond (p_mark_inv \<^bold>\<and> p_valid_fM))
+  \<^bold>\<and> at_p ''_mo_ptest''       (p_valid_ref \<^bold>\<and> p_mark \<^bold>\<noteq> Some \<circ> p_fM \<^bold>\<and> p_en_cond (p_mark_inv \<^bold>\<and> p_valid_fM))
+  \<^bold>\<and> at_p ''_mo_co_lock''     (p_valid_ref \<^bold>\<and> p_mark_inv \<^bold>\<and> p_valid_fM \<^bold>\<and> p_mark \<^bold>\<noteq> Some \<circ> p_fM \<^bold>\<and> p_tso_no_pending_mark)
+  \<^bold>\<and> at_p ''_mo_co_cmark''    (p_valid_ref \<^bold>\<and> p_mark_inv \<^bold>\<and> p_valid_fM \<^bold>\<and> p_mark \<^bold>\<noteq> Some \<circ> p_fM \<^bold>\<and> p_tso_no_pending_mark)
+  \<^bold>\<and> at_p ''_mo_co_ctest''    (p_valid_ref \<^bold>\<and> p_mark_inv \<^bold>\<and> p_valid_fM \<^bold>\<and> p_mark \<^bold>\<noteq> Some \<circ> p_fM \<^bold>\<and> p_cas_mark_inv \<^bold>\<and> p_tso_no_pending_mark)
+  \<^bold>\<and> at_p ''_mo_co_mark''     (p_cas_mark \<^bold>= p_mark \<^bold>\<and> p_valid_ref \<^bold>\<and> p_valid_fM \<^bold>\<and> white \<^bold>$ p_the_ref \<^bold>\<and> p_tso_no_pending_mark)
+  \<^bold>\<and> at_p ''_mo_co_unlock''   (p_ghg_inv \<^bold>\<and> p_valid_ref \<^bold>\<and> p_valid_fM \<^bold>\<and> p_valid_W_inv)
+  \<^bold>\<and> at_p ''_mo_co_won''      (p_ghg_inv \<^bold>\<and> p_valid_ref \<^bold>\<and> p_valid_fM \<^bold>\<and> marked \<^bold>$ p_the_ref \<^bold>\<and> p_tso_no_pending_mutate)
+  \<^bold>\<and> at_p ''_mo_co_W''        (p_ghg_eq_ref \<^bold>\<and> p_valid_ref \<^bold>\<and> p_valid_fM \<^bold>\<and> marked \<^bold>$ p_the_ref \<^bold>\<and> p_tso_no_pending_mutate))"
 (*<*)
 
 lemma mark_object_invL_eq_imp:
@@ -539,7 +538,7 @@ lemmas mark_object_invL_niE[nie] =
   iffD1[OF mark_object_invL_eq_imp[simplified eq_imp_simps, rule_format, unfolded conj_explode], rotated -1]
 (*>*)
 
-end (* locale mark_object *)
+end
 
 text\<open>
 
@@ -576,17 +575,15 @@ by an @{const "fM"} flip.
 
 \<close>
 
-interpretation mut_store_del: mark_object "mutator m" "''store_del''" "mut_m.mut_ghost_handshake_phase m neq \<langle>hp_Idle\<rangle>" for m
+interpretation mut_store_del: mark_object "mutator m" "''store_del''" "mut_m.mut_ghost_handshake_phase m \<^bold>\<noteq> \<langle>hp_Idle\<rangle>" for m
   by standard (simp add: eq_imp_def)
 
 lemmas mut_store_del_mark_object_invL_def2[inv] = mut_store_del.mark_object_invL_def[simplified]
 
-interpretation mut_store_ins: mark_object "mutator m" "''store_ins''"  "mut_m.mut_ghost_handshake_phase m neq \<langle>hp_Idle\<rangle>" for m
+interpretation mut_store_ins: mark_object "mutator m" "''store_ins''"  "mut_m.mut_ghost_handshake_phase m \<^bold>\<noteq> \<langle>hp_Idle\<rangle>" for m
   by standard (simp add: eq_imp_def)
 
 lemmas mut_store_ins_mark_object_invL_def2[inv] = mut_store_ins.mark_object_invL_def[simplified]
-
-(* **************************************** *)
 
 text\<open>
 
@@ -605,20 +602,20 @@ local_setup \<open>Cimp.locset @{thm "mut_hs_get_roots_loop_mo_locs_def"}\<close
 abbreviation "mut_async_mark_object_prefixes \<equiv> { ''store_del'', ''store_ins'' }"
 
 definition "mut_hs_not_hp_Idle_locs \<equiv>
-  \<Union>pref\<in>mut_async_mark_object_prefixes.
-  \<Union>l\<in>{''mo_co_lock'', ''mo_co_cmark'', ''mo_co_ctest'', ''mo_co_mark'', ''mo_co_unlock'', ''mo_co_won'', ''mo_co_W''}. {pref @ ''_'' @ l}"
+  (\<Union>pref\<in>mut_async_mark_object_prefixes.
+     \<Union>l\<in>{''mo_co_lock'', ''mo_co_cmark'', ''mo_co_ctest'', ''mo_co_mark'', ''mo_co_unlock'', ''mo_co_won'', ''mo_co_W''}. {pref @ ''_'' @ l})"
 local_setup \<open>Cimp.locset @{thm "mut_hs_not_hp_Idle_locs_def"}\<close>
 
 definition "mut_async_mo_ptest_locs \<equiv>
-  \<Union>pref\<in>mut_async_mark_object_prefixes. {pref @ ''_mo_ptest''}"
+  (\<Union>pref\<in>mut_async_mark_object_prefixes. {pref @ ''_mo_ptest''})"
 local_setup \<open>Cimp.locset @{thm "mut_async_mo_ptest_locs_def"}\<close>
 
 definition "mut_mo_ptest_locs \<equiv>
-  \<Union>pref\<in>mut_async_mark_object_prefixes. {pref @ ''_mo_ptest''}"
+  (\<Union>pref\<in>mut_async_mark_object_prefixes. {pref @ ''_mo_ptest''})"
 local_setup \<open>Cimp.locset @{thm "mut_mo_ptest_locs_def"}\<close>
 
 definition "mut_mo_valid_ref_locs \<equiv>
-  prefixed ''store_del'' \<union> prefixed ''store_ins'' \<union> { ''deref_del'', ''lop_store_ins''}"
+  (prefixed ''store_del'' \<union> prefixed ''store_ins'' \<union> { ''deref_del'', ''lop_store_ins''})"
 local_setup \<open>Cimp.locset @{thm "mut_mo_valid_ref_locs_def"}\<close>
 (*<*)
 
@@ -662,53 +659,53 @@ local_setup \<open>Cimp.locset @{thm "ghost_honorary_grey_empty_locs_def"}\<clos
 
 definition (in mut_m) mark_object_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "mark_object_invL \<equiv>
-      atS_mut mut_hs_get_roots_loop_locs    (mut_refs subseteq mut_roots and (ALLS r. \<langle>r\<rangle> in mut_roots diff mut_refs imp marked r))
-  and atS_mut mut_hs_get_roots_loop_mo_locs (not null mut_ref and mut_the_ref in mut_roots)
-  and at_mut ''hs_get_roots_loop_done''     (marked \<triangleright> mut_the_ref)
-  and at_mut ''hs_get_roots_loop_mo_ptest'' (mut_phase neq \<langle>ph_Idle\<rangle>)
-  and at_mut ''hs_get_roots_done''          (ALLS r. \<langle>r\<rangle> in mut_roots imp marked r)
+   (atS_mut mut_hs_get_roots_loop_locs    (mut_refs \<^bold>\<subseteq> mut_roots \<^bold>\<and> (\<^bold>\<forall>r. \<langle>r\<rangle> \<^bold>\<in> mut_roots \<^bold>- mut_refs \<^bold>\<longrightarrow> marked r))
+  \<^bold>\<and> atS_mut mut_hs_get_roots_loop_mo_locs (\<^bold>\<not>(NULL mut_ref) \<^bold>\<and> mut_the_ref \<^bold>\<in> mut_roots)
+  \<^bold>\<and> at_mut ''hs_get_roots_loop_done''     (marked \<^bold>$ mut_the_ref)
+  \<^bold>\<and> at_mut ''hs_get_roots_loop_mo_ptest'' (mut_phase \<^bold>\<noteq> \<langle>ph_Idle\<rangle>)
+  \<^bold>\<and> at_mut ''hs_get_roots_done''          (\<^bold>\<forall>r. \<langle>r\<rangle> \<^bold>\<in> mut_roots \<^bold>\<longrightarrow> marked r)
 
-  and atS_mut mut_mo_valid_ref_locs         ( (not null mut_new_ref imp mut_the_new_ref in mut_roots)
-                                          and (mut_tmp_ref in mut_roots) )
-  and at_mut ''store_del_mo_null''          (not null mut_ref imp mut_the_ref in mut_ghost_honorary_root)
-  and atS_mut (prefixed ''store_del'' - {''store_del_mo_null''}) (mut_the_ref in mut_ghost_honorary_root)
-  and atS_mut (prefixed ''store_ins'')      (mut_ref eq mut_new_ref)
+  \<^bold>\<and> atS_mut mut_mo_valid_ref_locs         ( (\<^bold>\<not>(NULL mut_new_ref) \<^bold>\<longrightarrow> mut_the_new_ref \<^bold>\<in> mut_roots)
+                                          \<^bold>\<and> (mut_tmp_ref \<^bold>\<in> mut_roots) )
+  \<^bold>\<and> at_mut ''store_del_mo_null''          (\<^bold>\<not>(NULL mut_ref) \<^bold>\<longrightarrow> mut_the_ref \<^bold>\<in> mut_ghost_honorary_root)
+  \<^bold>\<and> atS_mut (prefixed ''store_del'' - {''store_del_mo_null''}) (mut_the_ref \<^bold>\<in> mut_ghost_honorary_root)
+  \<^bold>\<and> atS_mut (prefixed ''store_ins'')      (mut_ref \<^bold>= mut_new_ref)
 
-  and atS_mut (suffixed ''_mo_ptest'')      (mut_phase neq \<langle>ph_Idle\<rangle> imp mut_ghost_handshake_phase neq \<langle>hp_Idle\<rangle>)
-  and atS_mut mut_hs_not_hp_Idle_locs       (mut_ghost_handshake_phase neq \<langle>hp_Idle\<rangle>)
+  \<^bold>\<and> atS_mut (suffixed ''_mo_ptest'')      (mut_phase \<^bold>\<noteq> \<langle>ph_Idle\<rangle> \<^bold>\<longrightarrow> mut_ghost_handshake_phase \<^bold>\<noteq> \<langle>hp_Idle\<rangle>)
+  \<^bold>\<and> atS_mut mut_hs_not_hp_Idle_locs       (mut_ghost_handshake_phase \<^bold>\<noteq> \<langle>hp_Idle\<rangle>)
 
-  and atS_mut mut_mo_ptest_locs             (mut_phase eq \<langle>ph_Idle\<rangle> imp (mut_ghost_handshake_phase in \<langle>{hp_Idle, hp_IdleInit}\<rangle>
-                                                                          or (mut_ghost_handshake_phase eq \<langle>hp_IdleMarkSweep\<rangle>
-                                                                                and sys_phase eq \<langle>ph_Idle\<rangle>)))
-
-  and atS_mut ghost_honorary_grey_empty_locs (empty mut_ghost_honorary_grey)
-
+  \<^bold>\<and> atS_mut mut_mo_ptest_locs             (mut_phase \<^bold>= \<langle>ph_Idle\<rangle> \<^bold>\<longrightarrow> (mut_ghost_handshake_phase \<^bold>\<in> \<langle>{hp_Idle, hp_IdleInit}\<rangle>
+                                                                          \<^bold>\<or> (mut_ghost_handshake_phase \<^bold>= \<langle>hp_IdleMarkSweep\<rangle>
+                                                                                \<^bold>\<and> sys_phase \<^bold>= \<langle>ph_Idle\<rangle>)))
+  \<^bold>\<and> atS_mut ghost_honorary_grey_empty_locs (EMPTY mut_ghost_honorary_grey)
 \<comment> \<open>insertion barrier\<close>
-  and at_mut ''store_ins''                  ( (mut_ghost_handshake_phase in \<langle>{hp_InitMark, hp_Mark}\<rangle>
-                                            or (mut_ghost_handshake_phase eq \<langle>hp_IdleMarkSweep\<rangle> and sys_phase neq \<langle>ph_Idle\<rangle>))
-                                           and not null mut_new_ref
-                                           imp marked \<triangleright> mut_the_new_ref )
+  \<^bold>\<and> at_mut ''store_ins''                  ( (mut_ghost_handshake_phase \<^bold>\<in> \<langle>{hp_InitMark, hp_Mark}\<rangle>
+                                            \<^bold>\<or> (mut_ghost_handshake_phase \<^bold>= \<langle>hp_IdleMarkSweep\<rangle> \<^bold>\<and> sys_phase \<^bold>\<noteq> \<langle>ph_Idle\<rangle>))
+                                           \<^bold>\<and> \<^bold>\<not>(NULL mut_new_ref)
+                                           \<^bold>\<longrightarrow> marked \<^bold>$ mut_the_new_ref )
 \<comment> \<open>deletion barrier\<close>
-  and atS_mut (prefixed ''store_del_mo'' \<union> {''lop_store_ins''})
-                                            ( (mut_ghost_handshake_phase eq \<langle>hp_Mark\<rangle>
-                                            or (mut_ghost_handshake_phase eq \<langle>hp_IdleMarkSweep\<rangle> and sys_phase neq \<langle>ph_Idle\<rangle>))
-                                          and (\<lambda>s. \<forall>opt_r'. \<not>tso_pending_write (mutator m) (mw_Mutate (mut_tmp_ref s) (mut_field s) opt_r') s)
-                                          imp (\<lambda>s. obj_at_field_on_heap (\<lambda>r. mut_ref s = Some r \<or> marked r s) (mut_tmp_ref s) (mut_field s) s))
-
-  and at_mut ''lop_store_ins''              ( (mut_ghost_handshake_phase eq \<langle>hp_Mark\<rangle>
-                                            or (mut_ghost_handshake_phase eq \<langle>hp_IdleMarkSweep\<rangle> and sys_phase neq \<langle>ph_Idle\<rangle>))
-                                          and not null mut_ref
-                                          imp marked \<triangleright> mut_the_ref )
-  and atS_mut (prefixed ''store_ins'')
-                                            ( (mut_ghost_handshake_phase eq \<langle>hp_Mark\<rangle>
-                                            or (mut_ghost_handshake_phase eq \<langle>hp_IdleMarkSweep\<rangle> and sys_phase neq \<langle>ph_Idle\<rangle>))
-                                          and (\<lambda>s. \<forall>opt_r'. \<not>tso_pending_write (mutator m) (mw_Mutate (mut_tmp_ref s) (mut_field s) opt_r') s)
-                                          imp (\<lambda>s. obj_at_field_on_heap (\<lambda>r'. marked r' s) (mut_tmp_ref s) (mut_field s) s) )"
+  \<^bold>\<and> atS_mut (prefixed ''store_del_mo'' \<union> {''lop_store_ins''})
+                                          ( (mut_ghost_handshake_phase \<^bold>= \<langle>hp_Mark\<rangle>
+                                            \<^bold>\<or> (mut_ghost_handshake_phase \<^bold>= \<langle>hp_IdleMarkSweep\<rangle> \<^bold>\<and> sys_phase \<^bold>\<noteq> \<langle>ph_Idle\<rangle>))
+                                           \<^bold>\<and> (\<lambda>s. \<forall>opt_r'. \<not>tso_pending_write (mutator m) (mw_Mutate (mut_tmp_ref s) (mut_field s) opt_r') s)
+                                          \<^bold>\<longrightarrow> (\<lambda>s. obj_at_field_on_heap (\<lambda>r. mut_ref s = Some r \<or> marked r s) (mut_tmp_ref s) (mut_field s) s))
+  \<^bold>\<and> at_mut ''lop_store_ins''              ( (mut_ghost_handshake_phase \<^bold>= \<langle>hp_Mark\<rangle>
+                                             \<^bold>\<or> (mut_ghost_handshake_phase \<^bold>= \<langle>hp_IdleMarkSweep\<rangle> \<^bold>\<and> sys_phase \<^bold>\<noteq> \<langle>ph_Idle\<rangle>))
+                                           \<^bold>\<and> \<^bold>\<not>(NULL mut_ref)
+                                          \<^bold>\<longrightarrow> marked \<^bold>$ mut_the_ref )
+  \<^bold>\<and> atS_mut (prefixed ''store_ins'')
+                                            ( (mut_ghost_handshake_phase \<^bold>= \<langle>hp_Mark\<rangle>
+                                             \<^bold>\<or> (mut_ghost_handshake_phase \<^bold>= \<langle>hp_IdleMarkSweep\<rangle> \<^bold>\<and> sys_phase \<^bold>\<noteq> \<langle>ph_Idle\<rangle>))
+                                          \<^bold>\<and> (\<lambda>s. \<forall>opt_r'. \<not>tso_pending_write (mutator m) (mw_Mutate (mut_tmp_ref s) (mut_field s) opt_r') s)
+                                          \<^bold>\<longrightarrow> (\<lambda>s. obj_at_field_on_heap (\<lambda>r'. marked r' s) (mut_tmp_ref s) (mut_field s) s) ))"
 (*<*)
 
 lemma get_roots_get_work_subseteq_ghost_honorary_grey_empty_locs:
   "hs_get_roots_locs \<union> hs_get_work_locs \<subseteq> ghost_honorary_grey_empty_locs"
-by (auto simp: hs_get_roots_locs_def hs_get_work_locs_def ghost_honorary_grey_empty_locs_def)
+unfolding ghost_honorary_grey_empty_locs_def hs_get_roots_locs_def hs_get_work_locs_def
+apply (clarsimp simp: subset_eq)
+apply (intro conjI conjI; force)
+done
 
 lemma (in mut_m) mark_object_invL_eq_imp:
   "eq_imp (\<lambda>r s. (AT s (mutator m), s\<down> (mutator m), sys_heap s\<down> r, sys_fM s\<down>, sys_phase s\<down>, tso_pending_mutate (mutator m) s\<down>))
@@ -730,17 +727,17 @@ lemmas mut_m_mark_object_invL_niE[nie] =
   iffD1[OF mut_m.mark_object_invL_eq_imp[simplified eq_imp_simps, rule_format, unfolded conj_explode], rotated -1]
 
 lemma (in mut_m) mark_object_invL[intro]:
-  "\<lbrace> handshake_invL and mark_object_invL
-      and mut_get_roots.mark_object_invL m
-      and mut_store_del.mark_object_invL m
-      and mut_store_ins.mark_object_invL m
-      and LSTP (phase_rel_inv and handshake_phase_inv and phase_rel_inv and tso_writes_inv and valid_refs_inv) \<rbrace>
+  "\<lbrace> handshake_invL \<^bold>\<and> mark_object_invL
+      \<^bold>\<and> mut_get_roots.mark_object_invL m
+      \<^bold>\<and> mut_store_del.mark_object_invL m
+      \<^bold>\<and> mut_store_ins.mark_object_invL m
+      \<^bold>\<and> LSTP (phase_rel_inv \<^bold>\<and> handshake_phase_inv \<^bold>\<and> phase_rel_inv \<^bold>\<and> tso_writes_inv \<^bold>\<and> valid_refs_inv) \<rbrace>
      mutator m
    \<lbrace> mark_object_invL \<rbrace>"
 apply vcg_jackhammer
 
 (* store_ins_mo_ptest *)
-apply (elim disjE, simp_all)[1]
+apply (elim disjE; fastforce)
 
 (* store_ins_mo_ptest *)
 apply (drule handshake_phase_invD)
@@ -795,8 +792,8 @@ apply vcg_ni
 done
 
 lemma (in mut_m) mut_store_ins_mark_object_invL[intro]:
-  "\<lbrace> mut_store_ins.mark_object_invL m and mark_object_invL and handshake_invL and tso_lock_invL
-       and LSTP (handshake_phase_inv and valid_W_inv and tso_writes_inv and valid_refs_inv) \<rbrace>
+  "\<lbrace> mut_store_ins.mark_object_invL m \<^bold>\<and> mark_object_invL \<^bold>\<and> handshake_invL \<^bold>\<and> tso_lock_invL
+       \<^bold>\<and> LSTP (handshake_phase_inv \<^bold>\<and> valid_W_inv \<^bold>\<and> tso_writes_inv \<^bold>\<and> valid_refs_inv) \<rbrace>
      mutator m
    \<lbrace> mut_store_ins.mark_object_invL m \<rbrace>"
 apply vcg_jackhammer
@@ -818,13 +815,24 @@ lemma (in sys) mut_store_ins_mark_object_invL[intro]:
   notes mut_m_not_idle_no_fM_writeD[where m=m, dest!]
   notes map_option.compositionality[simp] o_def[simp]
   shows
-  "\<lbrace> mut_m.tso_lock_invL m and mut_m.mark_object_invL m and mut_store_ins.mark_object_invL m
-       and LSTP (fM_rel_inv and handshake_phase_inv and valid_W_inv and tso_writes_inv) \<rbrace>
+  "\<lbrace> mut_m.tso_lock_invL m \<^bold>\<and> mut_m.mark_object_invL m \<^bold>\<and> mut_store_ins.mark_object_invL m
+       \<^bold>\<and> LSTP (fM_rel_inv \<^bold>\<and> handshake_phase_inv \<^bold>\<and> valid_W_inv \<^bold>\<and> tso_writes_inv) \<rbrace>
      sys
    \<lbrace> mut_store_ins.mark_object_invL m \<rbrace>"
 apply (vcg_ni simp: not_blocked_def)
-  apply (fastforce simp: do_write_action_def
-            split: mem_write_action.splits obj_at_splits)+   (* slow *)
+
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+
 done
 
 lemma (in sys) mut_get_roots_mark_object_invL[intro]:
@@ -832,14 +840,25 @@ lemma (in sys) mut_get_roots_mark_object_invL[intro]:
   notes mut_m.tso_lock_invL_def[inv]
   notes map_option.compositionality[simp] o_def[simp]
   shows
-  "\<lbrace> mut_m.tso_lock_invL m and mut_m.handshake_invL m and mut_get_roots.mark_object_invL m
-       and LSTP (fM_rel_inv and handshake_phase_inv and valid_W_inv and tso_writes_inv) \<rbrace>
+  "\<lbrace> mut_m.tso_lock_invL m \<^bold>\<and> mut_m.handshake_invL m \<^bold>\<and> mut_get_roots.mark_object_invL m
+       \<^bold>\<and> LSTP (fM_rel_inv \<^bold>\<and> handshake_phase_inv \<^bold>\<and> valid_W_inv \<^bold>\<and> tso_writes_inv) \<rbrace>
      sys
    \<lbrace> mut_get_roots.mark_object_invL m \<rbrace>"
 apply (vcg_ni simp: not_blocked_def p_not_sys
              dest!: mut_m.handshake_phase_invD[where m=m])
-apply (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def
-                split: mem_write_action.splits if_splits obj_at_splits)+   (* slow *)
+
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
+
 done
 
 lemma (in sys) mut_store_del_mark_object_invL[intro]:
@@ -848,18 +867,29 @@ lemma (in sys) mut_store_del_mark_object_invL[intro]:
   notes mut_m_not_idle_no_fM_writeD[where m=m, dest!]
   notes map_option.compositionality[simp] o_def[simp]
   shows
-  "\<lbrace> mut_m.tso_lock_invL m and mut_m.mark_object_invL m and mut_store_del.mark_object_invL m
-       and LSTP (fM_rel_inv and handshake_phase_inv and valid_W_inv and tso_writes_inv) \<rbrace>
+  "\<lbrace> mut_m.tso_lock_invL m \<^bold>\<and> mut_m.mark_object_invL m \<^bold>\<and> mut_store_del.mark_object_invL m
+       \<^bold>\<and> LSTP (fM_rel_inv \<^bold>\<and> handshake_phase_inv \<^bold>\<and> valid_W_inv \<^bold>\<and> tso_writes_inv) \<rbrace>
      sys
    \<lbrace> mut_store_del.mark_object_invL m \<rbrace>"
 apply (vcg_ni simp: not_blocked_def)
-apply (fastforce simp: do_write_action_def
-            split: mem_write_action.splits obj_at_splits)+   (* slow *)
+
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def split: mem_write_action.splits obj_at_splits)
+
 done
 
 lemma (in mut_m) mut_store_del_mark_object_invL[intro]:
-  "\<lbrace> mut_store_del.mark_object_invL m and mark_object_invL and handshake_invL and tso_lock_invL
-       and LSTP (handshake_phase_inv and valid_W_inv and tso_writes_inv and valid_refs_inv) \<rbrace>
+  "\<lbrace> mut_store_del.mark_object_invL m \<^bold>\<and> mark_object_invL \<^bold>\<and> handshake_invL \<^bold>\<and> tso_lock_invL
+       \<^bold>\<and> LSTP (handshake_phase_inv \<^bold>\<and> valid_W_inv \<^bold>\<and> tso_writes_inv \<^bold>\<and> valid_refs_inv) \<rbrace>
      mutator m
    \<lbrace> mut_store_del.mark_object_invL m \<rbrace>"
 apply vcg_jackhammer
@@ -867,8 +897,8 @@ apply (auto dest: valid_refs_invD valid_W_inv_no_mark_writes_invD split: obj_at_
 done
 
 lemma (in mut_m) mut_get_roots_mark_object_invL[intro]:
-  "\<lbrace> mut_get_roots.mark_object_invL m and mark_object_invL and handshake_invL and tso_lock_invL
-       and LSTP (handshake_phase_inv and valid_W_inv and tso_writes_inv and valid_refs_inv) \<rbrace>
+  "\<lbrace> mut_get_roots.mark_object_invL m \<^bold>\<and> mark_object_invL \<^bold>\<and> handshake_invL \<^bold>\<and> tso_lock_invL
+       \<^bold>\<and> LSTP (handshake_phase_inv \<^bold>\<and> valid_W_inv \<^bold>\<and> tso_writes_inv \<^bold>\<and> valid_refs_inv) \<rbrace>
      mutator m
    \<lbrace> mut_get_roots.mark_object_invL m \<rbrace>"
 apply vcg_jackhammer
@@ -877,33 +907,25 @@ done
 
 lemma (in mut_m') mut_get_roots_mark_object_invL[intro]:
   "\<lbrace> mut_get_roots.mark_object_invL m \<rbrace> mutator m'"
-apply vcg_nihe
-apply vcg_ni
-done
+by vcg_nihe vcg_ni
 
 lemma (in mut_m') mut_store_ins_mark_object_invL[intro]:
   "\<lbrace> mut_store_ins.mark_object_invL m \<rbrace> mutator m'"
-apply vcg_nihe
-apply vcg_ni
-done
+by vcg_nihe vcg_ni
 
 lemma (in mut_m') mut_store_del_mark_object_invL[intro]:
   "\<lbrace> mut_store_del.mark_object_invL m \<rbrace> mutator m'"
-apply vcg_nihe
-apply vcg_ni
-done
+by vcg_nihe vcg_ni
 
 lemma (in gc) mut_get_roots_mark_object_invL[intro]:
   notes mut_m.handshake_invL_def[inv]
-  shows "\<lbrace> handshake_invL and mut_m.handshake_invL m and mut_get_roots.mark_object_invL m \<rbrace> gc \<lbrace> mut_get_roots.mark_object_invL m \<rbrace>"
-apply vcg_nihe
-apply vcg_ni
-done
+  shows "\<lbrace> handshake_invL \<^bold>\<and> mut_m.handshake_invL m \<^bold>\<and> mut_get_roots.mark_object_invL m \<rbrace> gc \<lbrace> mut_get_roots.mark_object_invL m \<rbrace>"
+by vcg_nihe vcg_ni
 
 (*>*)
 text\<open>
 
-The GC's use of @{const "mark_object_fn"} is correct.
+We now show that the GC's use of @{const "mark_object_fn"} is correct.
 
 When we take grey @{const "tmp_ref"} to black, all of the objects it
 points to are marked, ergo the new black does not point to white, and
@@ -912,12 +934,12 @@ so we preserve the strong tricolour invariant.
 \<close>
 
 definition (in gc) obj_fields_marked_inv :: "('field, 'mut, 'ref) lsts_pred" where
-  "obj_fields_marked_inv \<equiv>
-     ALLS f. \<langle>f\<rangle> in (- gc_field_set) imp (\<lambda>s. obj_at_field_on_heap (\<lambda>r. marked r s) (gc_tmp_ref s) f s)"
+  "obj_fields_marked_inv =
+     (\<^bold>\<forall>f. \<langle>f\<rangle> \<^bold>\<in> (- gc_field_set) \<^bold>\<longrightarrow> (\<lambda>s. obj_at_field_on_heap (\<lambda>r. marked r s) (gc_tmp_ref s) f s))"
 (*<*)
 
 lemma (in gc) obj_fields_marked_inv_eq_imp:
-  "eq_imp (\<lambda>_::unit. gc_field_set \<otimes> gc_tmp_ref \<otimes> sys_heap \<otimes> sys_fM \<otimes> tso_pending_mutate gc)
+  "eq_imp (\<lambda>_::unit. gc_field_set \<^bold>\<otimes> gc_tmp_ref \<^bold>\<otimes> sys_heap \<^bold>\<otimes> sys_fM \<^bold>\<otimes> tso_pending_mutate gc)
           obj_fields_marked_inv"
 by (clarsimp simp: eq_imp_def obj_fields_marked_inv_def obj_at_field_on_heap_def obj_at_def
              cong: option.case_cong)
@@ -943,14 +965,14 @@ local_setup \<open>Cimp.locset @{thm "obj_fields_marked_locs_def"}\<close>
 
 definition (in gc) obj_fields_marked_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "obj_fields_marked_invL \<equiv>
-      atS_gc obj_fields_marked_locs       (obj_fields_marked_inv and gc_tmp_ref in gc_W)
-  and atS_gc (prefixed ''mark_loop_mo'' \<union> { ''mark_loop_mark_field_done'' })
+    (atS_gc obj_fields_marked_locs       (obj_fields_marked_inv \<^bold>\<and> gc_tmp_ref \<^bold>\<in> gc_W)
+  \<^bold>\<and> atS_gc (prefixed ''mark_loop_mo'' \<union> { ''mark_loop_mark_field_done'' })
                                           (\<lambda>s. obj_at_field_on_heap (\<lambda>r. gc_ref s = Some r \<or> marked r s) (gc_tmp_ref s) (gc_field s) s)
-  and atS_gc (prefixed ''mark_loop_mo'')  (ALLS y. not null gc_ref and (\<lambda>s. ((gc_the_ref s) reaches y) s) imp valid_ref y)
-  and at_gc ''mark_loop_fields''          (gc_tmp_ref in gc_W)
-  and at_gc ''mark_loop_mark_field_done'' (not null gc_ref imp marked \<triangleright> gc_the_ref)
-  and at_gc ''mark_loop_blacken''         (empty gc_field_set)
-  and atS_gc ghost_honorary_grey_empty_locs (empty gc_ghost_honorary_grey)"
+  \<^bold>\<and> atS_gc (prefixed ''mark_loop_mo'')  (\<^bold>\<forall>y. \<^bold>\<not>(NULL gc_ref) \<^bold>\<and> (\<lambda>s. ((gc_the_ref s) reaches y) s) \<^bold>\<longrightarrow> valid_ref y)
+  \<^bold>\<and> at_gc ''mark_loop_fields''          (gc_tmp_ref \<^bold>\<in> gc_W)
+  \<^bold>\<and> at_gc ''mark_loop_mark_field_done'' (\<^bold>\<not>(NULL gc_ref) \<^bold>\<longrightarrow> marked \<^bold>$ gc_the_ref)
+  \<^bold>\<and> at_gc ''mark_loop_blacken''         (EMPTY gc_field_set)
+  \<^bold>\<and> atS_gc ghost_honorary_grey_empty_locs (EMPTY gc_ghost_honorary_grey))"
 (*<*)
 
 lemma (in gc) obj_fields_marked_invL_eq_imp:
@@ -963,17 +985,15 @@ lemmas gc_obj_fields_marked_invL_niE[nie] =
   iffD1[OF gc.obj_fields_marked_invL_eq_imp[simplified eq_imp_simps, rule_format, unfolded conj_explode], rotated -1]
 
 lemma (in gc) gc_mark_mark_object_invL[intro]:
-  "\<lbrace> fM_fA_invL and gc_mark.mark_object_invL and obj_fields_marked_invL and tso_lock_invL
-        and LSTP valid_W_inv \<rbrace>
+  "\<lbrace> fM_fA_invL \<^bold>\<and> gc_mark.mark_object_invL \<^bold>\<and> obj_fields_marked_invL \<^bold>\<and> tso_lock_invL
+        \<^bold>\<and> LSTP valid_W_inv \<rbrace>
      gc
    \<lbrace> gc_mark.mark_object_invL \<rbrace>"
-apply vcg_jackhammer
-apply (auto dest: valid_W_inv_no_mark_writes_invD split: obj_at_splits)
-done
+by vcg_jackhammer (auto dest: valid_W_inv_no_mark_writes_invD split: obj_at_splits)
 
 lemma (in gc) obj_fields_marked_invL[intro]:
-  "\<lbrace> fM_fA_invL and phase_invL and obj_fields_marked_invL and gc_mark.mark_object_invL
-       and LSTP (tso_writes_inv and valid_W_inv and valid_refs_inv) \<rbrace>
+  "\<lbrace> fM_fA_invL \<^bold>\<and> phase_invL \<^bold>\<and> obj_fields_marked_invL \<^bold>\<and> gc_mark.mark_object_invL
+       \<^bold>\<and> LSTP (tso_writes_inv \<^bold>\<and> valid_W_inv \<^bold>\<and> valid_refs_inv) \<rbrace>
      gc
    \<lbrace> obj_fields_marked_invL \<rbrace>"
 apply vcg_jackhammer
@@ -1000,7 +1020,8 @@ done
 lemma (in mut_m) gc_obj_fields_marked_invL[intro]:
   notes gc.obj_fields_marked_invL_def[inv]
   notes gc.handshake_invL_def[inv]
-  shows "\<lbrace> handshake_invL and gc.handshake_invL and gc.obj_fields_marked_invL and LSTP (tso_writes_inv and valid_refs_inv) \<rbrace>
+  shows "\<lbrace> handshake_invL \<^bold>\<and> gc.handshake_invL \<^bold>\<and> gc.obj_fields_marked_invL
+             \<^bold>\<and> LSTP (tso_writes_inv \<^bold>\<and> valid_refs_inv) \<rbrace>
            mutator m
          \<lbrace> gc.obj_fields_marked_invL \<rbrace>"
 apply vcg_nihe
@@ -1022,9 +1043,7 @@ done
 
 lemma (in mut_m) gc_mark_mark_object_invL[intro]:
   "\<lbrace> gc_mark.mark_object_invL \<rbrace> mutator m"
-apply vcg_nihe
-apply vcg_ni
-done
+by vcg_nihe vcg_ni
 
 lemma (in sys) gc_mark_mark_object_invL[intro]:
   notes gc.tso_lock_invL_def[inv]
@@ -1033,14 +1052,45 @@ lemma (in sys) gc_mark_mark_object_invL[intro]:
   notes gc.handshake_invL_def[inv]
   notes map_option.compositionality[simp] o_def[simp]
   shows
-  "\<lbrace> gc.fM_fA_invL and gc.handshake_invL and gc.phase_invL and gc_mark.mark_object_invL and gc.tso_lock_invL
-       and LSTP (handshake_phase_inv and phase_rel_inv and valid_W_inv and tso_writes_inv) \<rbrace>
+  "\<lbrace> gc.fM_fA_invL \<^bold>\<and> gc.handshake_invL \<^bold>\<and> gc.phase_invL \<^bold>\<and> gc_mark.mark_object_invL \<^bold>\<and> gc.tso_lock_invL
+       \<^bold>\<and> LSTP (handshake_phase_inv \<^bold>\<and> phase_rel_inv \<^bold>\<and> valid_W_inv \<^bold>\<and> tso_writes_inv) \<rbrace>
      sys
    \<lbrace> gc_mark.mark_object_invL \<rbrace>"
 apply vcg_ni
-apply (force dest!: valid_W_invD2
+
+subgoal by (force dest!: valid_W_invD2
               simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
-             split: mem_write_action.splits if_splits)+   (* slow *)
+             split: mem_write_action.splits if_splits)
+subgoal by (force dest!: valid_W_invD2
+              simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
+             split: mem_write_action.splits if_splits)
+subgoal by (force dest!: valid_W_invD2
+              simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
+             split: mem_write_action.splits if_splits)
+subgoal by (force dest!: valid_W_invD2
+              simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
+             split: mem_write_action.splits if_splits)
+subgoal by (force dest!: valid_W_invD2
+              simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
+             split: mem_write_action.splits if_splits)
+subgoal by (force dest!: valid_W_invD2
+              simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
+             split: mem_write_action.splits if_splits)
+subgoal by (force dest!: valid_W_invD2
+              simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
+             split: mem_write_action.splits if_splits)
+subgoal by (force dest!: valid_W_invD2
+              simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
+             split: mem_write_action.splits if_splits)
+subgoal by (force dest!: valid_W_invD2
+              simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
+             split: mem_write_action.splits if_splits)
+subgoal by (force dest!: valid_W_invD2
+              simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
+             split: mem_write_action.splits if_splits)
+subgoal by (force dest!: valid_W_invD2
+              simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
+             split: mem_write_action.splits if_splits)
 done
 
 (*>*)

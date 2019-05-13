@@ -32,8 +32,8 @@ abbreviation mut_writes :: "('field, 'ref) mem_write_action \<Rightarrow> bool" 
 
 definition tso_writes_inv :: "('field, 'mut, 'ref) lsts_pred" where
   "tso_writes_inv \<equiv>
-      (ALLS w.   tso_pending_write gc          w imp \<langle>gc_writes w\<rangle>)
-  and (ALLS m w. tso_pending_write (mutator m) w imp \<langle>mut_writes w\<rangle>)"
+      (\<^bold>\<forall>w.   tso_pending_write gc          w \<^bold>\<longrightarrow> \<langle>gc_writes w\<rangle>)
+   \<^bold>\<and> (\<^bold>\<forall>m w. tso_pending_write (mutator m) w \<^bold>\<longrightarrow> \<langle>mut_writes w\<rangle>)"
 (*<*)
 
 (* **************************************** *)
@@ -151,7 +151,7 @@ local_setup \<open>Cimp.locset @{thm "gc_tso_lock_locs_def"}\<close>
 definition (in gc) tso_lock_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "tso_lock_invL \<equiv>
      atS_gc gc_tso_lock_locs (tso_locked_by gc)
- and atS_gc (- gc_tso_lock_locs) (not tso_locked_by gc)"
+   \<^bold>\<and> atS_gc (- gc_tso_lock_locs) (\<^bold>\<not> (tso_locked_by gc))"
 (*<*)
 
 lemma (in gc) tso_lock_invL[intro]:
@@ -183,7 +183,7 @@ local_setup \<open>Cimp.locset @{thm "mut_tso_lock_locs_def"}\<close>
 definition (in mut_m) tso_lock_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "tso_lock_invL \<equiv>
      atS_mut mut_tso_lock_locs     (tso_locked_by (mutator m))
- and atS_mut (- mut_tso_lock_locs) (not tso_locked_by (mutator m))"
+   \<^bold>\<and> atS_mut (- mut_tso_lock_locs) (\<^bold>\<not>(tso_locked_by (mutator m)))"
 (*<*)
 
 lemma (in mut_m) tso_lock_invL[intro]:
