@@ -14,19 +14,19 @@ context begin
       and "C\<langle>Suc OC1,CT,OC: Valid Q c2 R\<rangle>"
     shows "C\<langle>IC,CT,OC: Valid P (c1; c2) R\<rangle>"
     using assms unfolding LABEL_simps by (rule SeqRule)
-  
+
   lemma LSkipRule:
     assumes "V\<langle>(''weaken'', IC, []),CT: p \<subseteq> q\<rangle>"
     shows "C\<langle>IC,CT,IC: Valid p SKIP q\<rangle>"
     using assms unfolding LABEL_simps  by (rule SkipRule)
-  
+
   lemmas LAbortRule = LSkipRule  \<comment> \<open>dummy version\<close>
-  
+
   lemma LBasicRule:
     assumes "V\<langle>(''basic'', IC, []),CT: p \<subseteq> {s. f s \<in> q}\<rangle>"
     shows "C\<langle>IC,CT,IC: Valid p (Basic f) q\<rangle>"
     using assms unfolding LABEL_simps  by (rule BasicRule)
-  
+
   lemma LCondRule:
     fixes IC CT defines "CT' \<equiv> (''cond'', IC, []) # CT "
     assumes "V\<langle>(''vc'', IC, []),(''cond'', IC, []) # CT: p \<subseteq> {s. (s \<in> b \<longrightarrow> s \<in> w) \<and> (s \<notin> b \<longrightarrow> s \<in> w')}\<rangle>"
@@ -34,7 +34,7 @@ context begin
       and "C\<langle>Suc OC1,(''else'', Suc OC1, []) # (''cond'', IC, []) # CT,OC: Valid w' c2 q\<rangle>"
     shows "C\<langle>IC,CT,OC: Valid p (IF b THEN c1  ELSE c2 FI) q\<rangle>"
     using assms(2-) unfolding LABEL_simps by (rule CondRule)
-  
+
   lemma LWhileRule:
     fixes IC CT defines "CT' \<equiv> (''while'', IC, []) # CT"
     assumes "V\<langle>(''precondition'', IC, []),(''while'', IC, []) # CT: p \<subseteq> i\<rangle>"
@@ -42,12 +42,12 @@ context begin
       and "V\<langle>(''postcondition'', IC, []),(''while'', IC, []) # CT: i \<inter> - b \<subseteq> q\<rangle>"
     shows "C\<langle>IC,CT,OC: Valid p (While b i c) q\<rangle>"
     using assms(2-) unfolding LABEL_simps  by (rule WhileRule)
-  
+
   lemma LABELs_to_prems:
     "(C\<langle>IC, CT, OC: True\<rangle> \<Longrightarrow> P) \<Longrightarrow> C\<langle>IC, CT, OC: P\<rangle>"
     "(V\<langle>x, ct: True\<rangle> \<Longrightarrow> P) \<Longrightarrow> V\<langle>x, ct: P\<rangle>"
     unfolding LABEL_simps by simp_all
-  
+
   lemma LABELs_to_concl:
     "C\<langle>IC, CT, OC: True\<rangle> \<Longrightarrow> C\<langle>IC, CT, OC: P\<rangle> \<Longrightarrow> P"
     "V\<langle>x, ct: True\<rangle> \<Longrightarrow> V\<langle>x, ct: P\<rangle> \<Longrightarrow> P"
@@ -81,4 +81,3 @@ method_setup casified_vcg_simp = \<open>
 \<close>
 
 end
-

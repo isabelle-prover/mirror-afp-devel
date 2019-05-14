@@ -14,14 +14,14 @@ context begin
     assumes "C\<langle>inp,ct,outp': a\<rangle>" "C\<langle>outp',ct,outp: b\<rangle>"
     shows "C\<langle>inp,ct,outp: a \<and> b\<rangle>"
     using assms unfolding LABEL_simps by auto
-  
+
   lemma DC_if:
     fixes ct defines "ct' \<equiv> \<lambda>pos name. (name, pos,[]) # ct"
     assumes "H\<langle>ct' inp ''then'': a\<rangle> \<Longrightarrow> C\<langle>Suc inp,ct' inp ''then'', outp': b\<rangle>"
     assumes "H\<langle>ct' outp' ''else'': \<not>a\<rangle> \<Longrightarrow> C\<langle>Suc outp',ct' outp' ''else'', outp: c\<rangle>"
     shows "C\<langle>inp,ct,outp: if a then b else c\<rangle>"
     using assms(2-) unfolding LABEL_simps by auto
-  
+
   lemma DC_final:
     assumes "V\<langle>(''g'',inp,[]), ct: a\<rangle>"
     shows "C\<langle>inp,ct,Suc inp: a\<rangle>"
@@ -66,7 +66,7 @@ text \<open>
   The proof below fails if the @{verbatim disambig_subgoals} option is omitted: all three
   subgoals have the same conclusion and can be discharged without using their assumptions.
   If the case @{verbatim g} is solved first, it discharges instead the subgoal @{prop "a \<Longrightarrow> b"},
-  making the case @{verbatim then} fail afterwards.
+  making the case @{command then} fail afterwards.
 
   The @{verbatim disambig_subgoals} options prevents this by inserting vacuous assumptions.
 \<close>

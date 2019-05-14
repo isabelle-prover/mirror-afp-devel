@@ -898,10 +898,9 @@ to work.
 
 \<close>
 
-definition ghost_honorary_root_empty_locs :: "location set" where
+locset_definition
   "ghost_honorary_root_empty_locs \<equiv>
      - (prefixed ''store_del'' \<union> {''lop_store_ins''} \<union> prefixed ''store_ins'')"
-local_setup \<open>Cimp.locset @{thm "ghost_honorary_root_empty_locs_def"}\<close>
 
 definition (in mut_m) load_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "load_invL \<equiv>
@@ -1602,19 +1601,15 @@ definition (in mut_m) gc_W_empty_mut_inv :: "('field, 'mut, 'ref) lsts_pred" whe
       ((EMPTY sys_W \<^bold>\<and> sys_ghost_handshake_in_sync m \<^bold>\<and> \<^bold>\<not>(EMPTY (WL (mutator m))))
    \<^bold>\<longrightarrow> (\<^bold>\<exists>m'. \<^bold>\<not>(sys_ghost_handshake_in_sync m') \<^bold>\<and> \<^bold>\<not>(EMPTY (WL (mutator m')))))"
 
-definition (in -) gc_W_empty_locs :: "location set" where
+locset_definition (in -) gc_W_empty_locs :: "location set" where
   "gc_W_empty_locs \<equiv>
        idle_locs \<union> init_locs \<union> sweep_locs \<union> { ''mark_read_fM'', ''mark_write_fA'', ''mark_end'' }
      \<union> prefixed ''mark_noop''
      \<union> prefixed ''mark_loop_get_roots''
      \<union> prefixed ''mark_loop_get_work''"
-local_setup (in -) \<open>Cimp.locset @{thm "gc_W_empty_locs_def"}\<close>
 
-definition "black_heap_locs \<equiv> { ''sweep_idle'', ''idle_noop_mfence'', ''idle_noop_init_type'' }"
-local_setup \<open>Cimp.locset @{thm "black_heap_locs_def"}\<close>
-
-definition "no_grey_refs_locs \<equiv> black_heap_locs \<union> sweep_locs \<union> {''mark_end''}"
-local_setup \<open>Cimp.locset @{thm "no_grey_refs_locs_def"}\<close>
+locset_definition "black_heap_locs \<equiv> { ''sweep_idle'', ''idle_noop_mfence'', ''idle_noop_init_type'' }"
+locset_definition "no_grey_refs_locs \<equiv> black_heap_locs \<union> sweep_locs \<union> {''mark_end''}"
 
 definition (in gc) gc_W_empty_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "gc_W_empty_invL =
@@ -1910,8 +1905,7 @@ done
 
 subsection\<open>Sweep loop invariants\<close>
 
-definition "sweep_loop_locs \<equiv> prefixed ''sweep_loop''"
-local_setup \<open>Cimp.locset @{thm "sweep_loop_locs_def"}\<close>
+locset_definition "sweep_loop_locs \<equiv> prefixed ''sweep_loop''"
 
 definition (in gc) sweep_loop_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "sweep_loop_invL =
@@ -2264,22 +2258,35 @@ subgoal
   done
 done
 
-lemma (in sys) black_heap_dequeue_mark[simp]:
+lemma no_grey_refs_no_marks[simp]:
+  "\<lbrakk> no_grey_refs s; valid_W_inv s \<rbrakk> \<Longrightarrow> \<not>sys_mem_write_buffers p s = mw_Mark r fl # ws"
+by (auto simp: no_grey_refs_def)
+
+context sys
+begin
+
+lemma black_heap_dequeue_mark[iff]:
   "\<lbrakk> sys_mem_write_buffers p s = mw_Mark r fl # ws; black_heap s; valid_W_inv s \<rbrakk>
    \<Longrightarrow> black_heap (s(sys := s sys\<lparr>heap := (sys_heap s)(r := Option.map_option (obj_mark_update (\<lambda>_. fl)) (sys_heap s r)), mem_write_buffers := (mem_write_buffers (s sys))(p := ws)\<rparr>))"
 by (auto simp: black_heap_def)
 
-lemma (in sys) black_heap_dequeue_ref[simp]:
+lemma black_heap_dequeue_ref[iff]:
   "\<lbrakk> sys_mem_write_buffers p s = mw_Mutate r f r' # ws; black_heap s \<rbrakk>
      \<Longrightarrow> black_heap (s(sys := s sys\<lparr>heap := (sys_heap s)(r := Option.map_option (\<lambda>obj. obj\<lparr>obj_fields := (obj_fields obj)(f := r')\<rparr>) (sys_heap s r)),
                                    mem_write_buffers := (mem_write_buffers (s sys))(p := ws)\<rparr>))"
 by (simp add: black_heap_def black_def)
 
-lemma no_grey_refs_no_marks[simp]:
-  "\<lbrakk> no_grey_refs s; valid_W_inv s \<rbrakk> \<Longrightarrow> \<not>sys_mem_write_buffers p s = mw_Mark r fl # ws"
-by (auto simp: no_grey_refs_def)
+lemma white_heap_dequeue_fM[iff]:
+  "black_heap s\<down>
+     \<Longrightarrow> white_heap (s\<down>(sys := s\<down> sys\<lparr>fM := \<not> sys_fM s\<down>, mem_write_buffers := (mem_write_buffers (s\<down> sys))(gc := ws)\<rparr>))"
+by (auto simp: black_heap_def white_heap_def)
 
-lemma (in sys) white_heap_dequeue_ref[simp]:
+lemma black_heap_dequeue_fM[iff]:
+  "\<lbrakk> white_heap s\<down>; no_grey_refs s\<down> \<rbrakk>
+     \<Longrightarrow> black_heap (s\<down>(sys := s\<down> sys\<lparr>fM := \<not> sys_fM s\<down>, mem_write_buffers := (mem_write_buffers (s\<down> sys))(gc := ws)\<rparr>))"
+by (auto simp: black_heap_def white_heap_def no_grey_refs_def)
+
+lemma white_heap_dequeue_ref[iff]:
   "\<lbrakk> sys_mem_write_buffers p s = mw_Mutate r f r' # ws; white_heap s \<rbrakk>
      \<Longrightarrow> white_heap (s(sys := s sys\<lparr>heap := (sys_heap s)(r := Option.map_option (\<lambda>obj. obj\<lparr>obj_fields := (obj_fields obj)(f := r')\<rparr>) (sys_heap s r)),
                                    mem_write_buffers := (mem_write_buffers (s sys))(p := ws)\<rparr>))"
@@ -2289,69 +2296,24 @@ lemma (in sys) sys_phase_inv[intro]:
   "\<lbrace> LSTP (fA_rel_inv \<^bold>\<and> fM_rel_inv \<^bold>\<and> handshake_phase_inv \<^bold>\<and> mutators_phase_inv \<^bold>\<and> phase_rel_inv \<^bold>\<and> sys_phase_inv \<^bold>\<and> tso_writes_inv \<^bold>\<and> valid_W_inv) \<rbrace>
      sys
    \<lbrace> LSTP sys_phase_inv \<rbrace>"
-apply (vcg_jackhammer simp: fA_rel_inv_def fM_rel_inv_def p_not_sys)
-apply (clarsimp simp: do_write_action_def sys_phase_inv_aux_case
-               split: mem_write_action.splits handshake_phase.splits if_splits)
+by (vcg_jackhammer simp: fA_rel_inv_def fM_rel_inv_def p_not_sys)
+   (clarsimp simp: do_write_action_def sys_phase_inv_aux_case
+               split: mem_write_action.splits handshake_phase.splits if_splits;
+    erule disjE; clarsimp simp: fA_rel_def fM_rel_def; fail)
 
-apply (clarsimp simp: fA_rel_def fM_rel_def)
-apply (elim disjE, simp_all)[1]
- apply auto[1]
- apply auto[1]
- apply auto[1]
+end
 
- apply (erule disjE)
-  apply (clarsimp simp: fA_rel_def fM_rel_def)
- apply clarsimp
-
- apply (erule disjE)
-  apply (clarsimp simp: fA_rel_def fM_rel_def)
- apply clarsimp
-
- apply (erule disjE)
-  apply (clarsimp simp: fA_rel_def fM_rel_def)
-  apply (simp add: black_heap_def black_def white_heap_def split: obj_at_splits) (* FIXME rule: fM flip *)
- apply clarsimp
-
- apply (erule disjE)
-  apply (clarsimp simp: fA_rel_def fM_rel_def)
-  apply (simp add: black_heap_def black_def no_grey_refs_def white_heap_def) (* FIXME rule *)
- apply clarsimp
-
- apply (erule disjE)
-  apply (clarsimp simp: fA_rel_def fM_rel_def)
- apply clarsimp
-
- apply (erule disjE)
-  apply (clarsimp simp: fA_rel_def fM_rel_def)
- apply clarsimp
-
- apply (drule phase_rel_invD)
- apply (clarsimp simp: phase_rel_def)
- apply auto
-
-done
-
-lemma valid_W_inv_unlockE[elim!]:
+lemma valid_W_inv_unlockE[iff]:
   "\<lbrakk> sys_mem_lock s = Some p; sys_mem_write_buffers p s = [];
      \<And>r. r \<in> ghost_honorary_grey (s p) \<Longrightarrow> marked r s;
      valid_W_inv s
    \<rbrakk> \<Longrightarrow> valid_W_inv (s(sys := mem_lock_update Map.empty (s sys)))"
-apply (subst valid_W_inv_def)
-apply (cases p)
- apply clarsimp
- apply (rename_tac mut x)
- apply (case_tac [!] "x = mutator mut")
-apply (auto iff: p_not_sys)
-done (* blurk *)
+unfolding valid_W_inv_def by clarsimp (metis emptyE empty_set)
 
 lemma valid_W_inv_mark:
   "\<lbrakk> sys_mem_lock s = Some p; white w s; valid_W_inv s \<rbrakk>
      \<Longrightarrow> w \<in> ghost_honorary_grey (s p) \<or> (\<forall>q. w \<notin> WL q s)"
-apply clarsimp
-apply (rename_tac q)
-apply (case_tac "q = p")
- apply (auto simp: WL_def dest: valid_W_invD3 split: obj_at_splits)
-done
+by (metis Un_iff WL_def marked_not_white option.inject valid_W_invD(1) valid_W_invD3(2))
 
 lemma (in gc) valid_W_inv[intro]:
   notes valid_W_invD2[dest!, simp]

@@ -60,13 +60,13 @@ context begin
 
   lemma L_return[vcg_l]: "CTXT inp ct (Suc inp) (valid (P x) (return x) P)"
     unfolding LABEL_simps by (rule return)
-  
+
   lemma L_bind[vcg_l]:
     assumes "\<And>x. CTXT (Suc outp') ((''bind'',outp', [VAR x]) # ct) outp (valid (R x) (c2 x) Q)"
     assumes "CTXT inp ct outp' (valid P c1 R)"
     shows "CTXT inp ct outp (valid P (bind c1 c2) Q)"
     using assms unfolding LABEL_simps by (rule bind)
-  
+
   lemma L_while[vcg_l]:
     fixes inp ct defines "ct' \<equiv> \<lambda>x. (''while'', inp, [VAR x])  # ct"
     assumes "\<And>x. CTXT (Suc inp) (ct' x) outp'
@@ -74,14 +74,14 @@ context begin
     assumes "\<And>x. B\<langle>''inv_pre'',inp: I x\<rangle> \<and> B\<langle>''lcond'',inp: \<not>b x\<rangle> \<Longrightarrow> VC (''post'',outp' , []) (ct' x) (P x)"
     shows "CTXT inp ct (Suc outp') (valid (I x) (while b I c x) P)"
     using assms(2-) unfolding LABEL_simps by (rule while)
-  
+
   lemma L_cond[vcg_l]:
     fixes inp ct defines "ct' \<equiv> (''if'',inp,[]) # ct"
     assumes "C\<langle>Suc inp, (''then'',inp,[]) # ct',outp: valid P1 c1 Q\<rangle>"
     assumes "C\<langle>Suc outp, (''else'',outp,[]) # ct',outp': valid P2 c2 Q\<rangle>"
     shows "C\<langle>inp,ct,outp': valid (if B\<langle>''cond'',inp: b\<rangle> then B\<langle>''then'',inp: P1\<rangle> else B\<langle>''else'',inp: P2\<rangle>) (if b then c1 else c2) Q\<rangle>"
     using assms(2-) unfolding LABEL_simps by (rule cond)
-  
+
   lemma L_case_prod[vcg_l]:
     assumes "\<And>x y. v = (x,y) \<Longrightarrow> CTXT inp ct outp (valid (P x y) (B x y) Q)"
     shows "CTXT inp ct outp (valid (case v of (x,y) \<Rightarrow> P x y) (case v of (x,y) \<Rightarrow> B x y) Q)"
@@ -107,7 +107,7 @@ lemma dvd_div:
   fixes a b c :: int
   assumes "a dvd b" "c dvd b" "coprime a c"
   shows "a dvd (b div c)"
-  using assms coprime_dvd_mult_left_iff by fastforce 
+  using assms coprime_dvd_mult_left_iff by fastforce
 
 lemma divides: "
 valid
@@ -159,7 +159,7 @@ print_nested_cases
       from \<open>n dvd a\<close> \<open>even n\<close> have "n div 2 dvd a"
         by (metis dvd_div_mult_self dvd_mult_left)
       moreover
-      { fix m assume "odd m" "m dvd a" 
+      { fix m assume "odd m" "m dvd a"
         then have "m dvd n" using conseq.inv_pre(3) by simp
         moreover note \<open>even n\<close>
         moreover from \<open>odd m\<close> have "coprime m 2"
@@ -300,7 +300,7 @@ next
         using conseq by (auto dest: set_takeWhileD)
       ultimately
       have ?case using A conseq by auto
-    } 
+    }
     ultimately show ?case by blast
   next
     case post then show ?case by auto

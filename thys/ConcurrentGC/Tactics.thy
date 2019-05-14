@@ -217,7 +217,7 @@ fun HOL_ss_only thms ctxt = clear_simpset (put_simpset HOL_ss ctxt) addsimps thm
 
 fun vcg_clarsimp_tac ctxt =
         simp_tac (ss_only (@{thms vcg_fragments'_simps} @ Named_Theorems.get ctxt @{named_theorems com}) ctxt)
-  THEN' (SELECT_GOAL (safe_tac ctxt))
+  THEN' SELECT_GOAL (safe_tac ctxt)
 
 val _ =
   Theory.setup (Method.setup @{binding vcg_clarsimp}

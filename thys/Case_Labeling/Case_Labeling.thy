@@ -8,19 +8,19 @@ section \<open>Labeling Subgoals\<close>
 context begin
   qualified type_synonym prg_ctxt_var = unit
   qualified type_synonym prg_ctxt = "string \<times> nat \<times> prg_ctxt_var list"
-  
+
   text \<open>Embed variables in terms\<close>
   qualified definition VAR :: "'v \<Rightarrow> prg_ctxt_var" where
     "VAR _ = ()"
-  
+
   text \<open>Labeling of a subgoal\<close>
   qualified definition VC :: "prg_ctxt list \<Rightarrow> 'a \<Rightarrow> 'a" where
     "VC ct P \<equiv> P"
-  
+
   text \<open>Computing the statement numbers and context\<close>
   qualified definition CTXT :: "nat \<Rightarrow> prg_ctxt list \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a" where
     "CTXT inp ct outp P \<equiv> P"
-  
+
   text \<open>Labeling of a term binding or assumption\<close>
   qualified definition BIND :: "string \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a" where
     "BIND name inp P \<equiv> P"
@@ -47,7 +47,7 @@ context begin
     BIND_D: "BIND name inp P \<Longrightarrow> P" and
     VC_I: "P \<Longrightarrow> VC ct P"
     unfolding Case_Labeling.BIND_def Case_Labeling.VC_def .
-  
+
   lemma DISAMBIG_I: "(DISAMBIG n \<Longrightarrow> P) \<Longrightarrow> P"
     by (auto simp: DISAMBIG_def Case_Labeling.VC_def)
 
@@ -57,18 +57,18 @@ context begin
   text \<open>Lemmas for the tuple postprocessing\<close>
   lemma SPLIT_reflection: "SPLIT x y \<Longrightarrow> (x \<equiv> y)"
     unfolding SPLIT_def by (rule eq_reflection)
-  
+
   lemma rev_SPLIT_reflection: "(x \<equiv> y) \<Longrightarrow> SPLIT x y"
     unfolding SPLIT_def ..
-  
+
   lemma SPLIT_sym: "SPLIT x y \<Longrightarrow> SPLIT y x"
     unfolding SPLIT_def by (rule sym)
-  
+
   lemma SPLIT_thin_refl: "\<lbrakk>SPLIT x x; PROP W\<rbrakk> \<Longrightarrow> PROP W" .
-  
+
   lemma SPLIT_subst: "\<lbrakk>SPLIT x y; P x\<rbrakk> \<Longrightarrow> P y"
     unfolding SPLIT_def by hypsubst
-  
+
   lemma SPLIT_prodE:
     assumes "SPLIT (x1, y1) (x2, y2)"
     obtains "SPLIT x1 x2" "SPLIT y1 y2"
@@ -79,7 +79,7 @@ end
 
 text \<open>
   The labeling constants were qualified to not interfere with any other theory.
-  The following locale allows using a nice syntax in other theories 
+  The following locale allows using a nice syntax in other theories
 \<close>
 
 locale Labeling_Syntax begin
@@ -103,7 +103,7 @@ lemmas Suc_numeral_simps = Suc_numerals_conv add_num_simps
 section \<open>Casify\<close>
 
 text \<open>
-  Introduces a command @{verbatim print_nested_cases}. This is similar to @{verbatim print_cases},
+  Introduces a command @{command print_nested_cases}. This is similar to @{command print_cases},
   but shows also the nested cases.
 \<close>
 ML_file \<open>print_nested_cases.ML\<close>

@@ -113,8 +113,6 @@ done
 
 (*>*)
 
-(* **************************************** *)
-
 subsection\<open>Initial conditions\<close>
 
 text\<open>

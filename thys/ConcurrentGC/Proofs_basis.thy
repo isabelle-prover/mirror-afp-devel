@@ -203,37 +203,18 @@ definition obj_at_field_on_heap :: "('ref \<Rightarrow> bool) \<Rightarrow> 'ref
        | Some fs \<Rightarrow> (case fs f of None \<Rightarrow> True
                                | Some r' \<Rightarrow> P r')"
 
-(* **************************************** *)
 
-subsection\<open>Garbage collector locations.\<close>
+subsection\<open> Garbage collector locations \<close>
 
-definition idle_locs :: "location set" where
-  "idle_locs \<equiv> prefixed ''idle''"
+locset_definition "idle_locs \<equiv> prefixed ''idle''"
+locset_definition "init_locs \<equiv> prefixed ''init''"
+locset_definition "mark_locs \<equiv> prefixed ''mark''"
+locset_definition "mark_loop_locs \<equiv> prefixed ''mark_loop''"
+locset_definition "sweep_locs \<equiv> prefixed ''sweep''"
 
-definition init_locs :: "location set" where
-  "init_locs \<equiv> prefixed ''init''"
-
-definition mark_locs :: "location set" where
-  "mark_locs \<equiv> prefixed ''mark''"
-
-definition mark_loop_locs :: "location set" where
-  "mark_loop_locs \<equiv> prefixed ''mark_loop''"
-
-definition sweep_locs :: "location set" where
-  "sweep_locs \<equiv> prefixed ''sweep''"
 (*<*)
 
-local_setup \<open>Cimp.locset @{thm "idle_locs_def"}\<close>
-local_setup \<open>Cimp.locset @{thm "init_locs_def"}\<close>
-local_setup \<open>Cimp.locset @{thm "mark_locs_def"}\<close>
-local_setup \<open>Cimp.locset @{thm "mark_loop_locs_def"}\<close>
-local_setup \<open>Cimp.locset @{thm "sweep_locs_def"}\<close>
-
-(*>*)
-(* **************************************** *)
-(*<*)
-
-text\<open>Lemma bucket.\<close>
+subsection\<open> Lemma bucket \<close>
 
 lemma obj_at_split:
   "Q (obj_at P r s) = ((sys_heap s r = None \<longrightarrow> Q False) \<and> (\<forall>obj. sys_heap s r = Some obj \<longrightarrow> Q (P obj)))"
