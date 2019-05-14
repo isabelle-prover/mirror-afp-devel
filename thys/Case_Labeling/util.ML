@@ -73,7 +73,7 @@ fun SIMPLE_METHOD_CASES tac =
 (* Apply tactic to subgoals in interval, in a forward manner, skipping over
   emerging subgoals *)
 fun INTERVAL_FWD tac l u st =
-  if l>u then all_tac st 
+  if l>u then all_tac st
   else (tac l THEN (fn st' => let
       val ofs = Thm.nprems_of st' - Thm.nprems_of st;
     in
@@ -84,7 +84,7 @@ fun INTERVAL_FWD tac l u st =
 
 (* Apply tac2 to all subgoals emerged from tac1, in forward manner. *)
 fun (tac1 THEN_ALL_NEW_FWD tac2) i st =
-  (tac1 i 
+  (tac1 i
     THEN (fn st' => INTERVAL_FWD tac2 i (i + Thm.nprems_of st' - Thm.nprems_of st) st')
   ) st;
 

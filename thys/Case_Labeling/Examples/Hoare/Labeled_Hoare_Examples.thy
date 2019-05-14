@@ -160,7 +160,7 @@ text \<open>
   `A' is the array to be sorted (modelled as a list).
   Elements of A must be of class order to infer at the end
   that the elements between u and l are equal to pivot.
-  
+
   Ambiguity warnings of parser are due to := being used
   both for assignment and list update.
 \<close>
@@ -176,11 +176,11 @@ lemma Partition:
    WHILE l \<le> u
     INV {leq A l \<and> geq A u \<and> u<length A \<and> l\<le>length A}
     DO WHILE l < length A \<and> A!l \<le> pivot
-       INV {leq A l \<and> geq A u \<and> u<length A \<and> l\<le>length A}
-       DO l := l+1 OD;
+        INV {leq A l \<and> geq A u \<and> u<length A \<and> l\<le>length A}
+        DO l := l+1 OD;
        WHILE 0 < u \<and> pivot \<le> A!u
-       INV {leq A l \<and> geq A u  \<and> u<length A \<and> l\<le>length A}
-       DO u := u - 1 OD;
+        INV {leq A l \<and> geq A u  \<and> u<length A \<and> l\<le>length A}
+        DO u := u - 1 OD;
        IF l \<le> u THEN A := A[l := A!u, u := A!l] ELSE SKIP FI
     OD
    {leq A u \<and> (\<forall>k. u<k \<and> k<l \<longrightarrow> A!k = pivot) \<and> geq A l}"

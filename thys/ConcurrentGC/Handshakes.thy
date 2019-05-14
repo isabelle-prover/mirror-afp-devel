@@ -77,82 +77,65 @@ Connect @{const "sys_ghost_handshake_phase"} with locations in the GC.
 
 \<close>
 
-definition "hp_Idle_locs \<equiv>
+locset_definition "hp_Idle_locs \<equiv>
   (prefixed ''idle_noop'' - { ''idle_noop_mfence'', ''idle_noop_init_type'' })
 \<union> { ''idle_read_fM'', ''idle_invert_fM'', ''idle_write_fM'', ''idle_flip_noop_mfence'', ''idle_flip_noop_init_type'' }"
-local_setup \<open>Cimp.locset @{thm "hp_Idle_locs_def"}\<close>
 
-definition "hp_IdleInit_locs \<equiv>
+locset_definition "hp_IdleInit_locs \<equiv>
     (prefixed ''idle_flip_noop'' - { ''idle_flip_noop_mfence'', ''idle_flip_noop_init_type'' })
   \<union> { ''idle_phase_init'', ''init_noop_mfence'', ''init_noop_init_type'' }"
-local_setup \<open>Cimp.locset @{thm "hp_IdleInit_locs_def"}\<close>
 
-definition "hp_InitMark_locs \<equiv>
+locset_definition "hp_InitMark_locs \<equiv>
   (prefixed ''init_noop'' - { ''init_noop_mfence'', ''init_noop_init_type'' })
 \<union> { ''init_phase_mark'', ''mark_read_fM'', ''mark_write_fA'', ''mark_noop_mfence'', ''mark_noop_init_type'' }"
-local_setup \<open>Cimp.locset @{thm "hp_InitMark_locs_def"}\<close>
 
-definition "hp_IdleMarkSweep_locs \<equiv>
+locset_definition "hp_IdleMarkSweep_locs \<equiv>
      { ''idle_noop_mfence'', ''idle_noop_init_type'', ''mark_end'' }
   \<union>  sweep_locs
   \<union> (mark_loop_locs - { ''mark_loop_get_roots_init_type'' })"
-local_setup \<open>Cimp.locset @{thm "hp_IdleMarkSweep_locs_def"}\<close>
 
-definition "hp_Mark_locs \<equiv>
+locset_definition "hp_Mark_locs \<equiv>
     (prefixed ''mark_noop'' - { ''mark_noop_mfence'', ''mark_noop_init_type'' })
   \<union> { ''mark_loop_get_roots_init_type'' }"
-local_setup \<open>Cimp.locset @{thm "hp_Mark_locs_def"}\<close>
 
 abbreviation
   "hs_noop_prefixes \<equiv> {''idle_noop'', ''idle_flip_noop'', ''init_noop'', ''mark_noop'' }"
 
-definition "hs_noop_locs \<equiv>
+locset_definition "hs_noop_locs \<equiv>
   \<Union>l \<in> hs_noop_prefixes. prefixed l - (suffixed ''_noop_mfence'' \<union> suffixed ''_noop_init_type'')"
-local_setup \<open>Cimp.locset @{thm "hs_noop_locs_def"}\<close>
 
-definition "hs_get_roots_locs \<equiv>
+locset_definition "hs_get_roots_locs \<equiv>
   prefixed ''mark_loop_get_roots'' - {''mark_loop_get_roots_init_type''}"
-local_setup \<open>Cimp.locset @{thm "hs_get_roots_locs_def"}\<close>
 
-definition "hs_get_work_locs \<equiv>
+locset_definition "hs_get_work_locs \<equiv>
   prefixed ''mark_loop_get_work'' - {''mark_loop_get_work_init_type''}"
-local_setup \<open>Cimp.locset @{thm "hs_get_work_locs_def"}\<close>
 
 abbreviation "hs_prefixes \<equiv>
   hs_noop_prefixes \<union> { ''mark_loop_get_roots'', ''mark_loop_get_work'' }"
 
-definition "hs_init_loop_locs \<equiv> \<Union>l \<in> hs_prefixes. prefixed (l @ ''_init_loop'')"
-local_setup \<open>Cimp.locset @{thm "hs_init_loop_locs_def"}\<close>
+locset_definition "hs_init_loop_locs \<equiv> \<Union>l \<in> hs_prefixes. prefixed (l @ ''_init_loop'')"
 
-definition "hs_done_loop_locs \<equiv> \<Union>l \<in> hs_prefixes. prefixed (l @ ''_done_loop'')"
-local_setup \<open>Cimp.locset @{thm "hs_done_loop_locs_def"}\<close>
+locset_definition "hs_done_loop_locs \<equiv> \<Union>l \<in> hs_prefixes. prefixed (l @ ''_done_loop'')"
 
-definition "hs_done_locs \<equiv> \<Union>l \<in> hs_prefixes. prefixed (l @ ''_done'')"
-local_setup \<open>Cimp.locset @{thm "hs_done_locs_def"}\<close>
+locset_definition "hs_done_locs \<equiv> \<Union>l \<in> hs_prefixes. prefixed (l @ ''_done'')"
 
-definition "hs_none_pending_locs \<equiv> - (hs_init_loop_locs \<union> hs_done_locs)"
-local_setup \<open>Cimp.locset @{thm "hs_none_pending_locs_def"}\<close>
+locset_definition "hs_none_pending_locs \<equiv> - (hs_init_loop_locs \<union> hs_done_locs)"
 
-definition "hs_in_sync_locs \<equiv>
+locset_definition "hs_in_sync_locs \<equiv>
   (- ( (\<Union>l \<in> hs_prefixes. prefixed (l @ ''_init'')) \<union> hs_done_locs ))
   \<union> (\<Union>l \<in> hs_prefixes. {l @ ''_init_type''})"
-local_setup \<open>Cimp.locset @{thm "hs_in_sync_locs_def"}\<close>
 
-definition "hs_out_of_sync_locs \<equiv>
+locset_definition "hs_out_of_sync_locs \<equiv>
   \<Union>l \<in> hs_prefixes. {l @ ''_init_muts''}"
-local_setup \<open>Cimp.locset @{thm "hs_out_of_sync_locs_def"}\<close>
 
-definition "hs_mut_in_muts_locs \<equiv>
+locset_definition "hs_mut_in_muts_locs \<equiv>
   \<Union>l \<in> hs_prefixes. {l @ ''_init_loop_set_pending'', l @ ''_init_loop_done''}"
-local_setup \<open>Cimp.locset @{thm "hs_mut_in_muts_locs_def"}\<close>
 
-definition "hs_init_loop_done_locs \<equiv>
+locset_definition "hs_init_loop_done_locs \<equiv>
   \<Union>l \<in> hs_prefixes. {l @ ''_init_loop_done''}"
-local_setup \<open>Cimp.locset @{thm "hs_init_loop_done_locs_def"}\<close>
 
-definition "hs_init_loop_not_done_locs \<equiv>
+locset_definition "hs_init_loop_not_done_locs \<equiv>
   hs_init_loop_locs - (\<Union>l \<in> hs_prefixes. {l @ ''_init_loop_done''})"
-local_setup \<open>Cimp.locset @{thm "hs_init_loop_not_done_locs_def"}\<close>
 
 definition (in gc) handshake_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "handshake_invL \<equiv>
@@ -226,11 +209,10 @@ Local handshake phase invariant for the mutators.
 
 \<close>
 
-definition "mut_no_pending_mutates_locs \<equiv>
+locset_definition "mut_no_pending_mutates_locs \<equiv>
     (prefixed ''hs_noop'' - { ''hs_noop'', ''hs_noop_mfence'' })
   \<union> (prefixed ''hs_get_roots'' - { ''hs_get_roots'', ''hs_get_roots_mfence'' })
   \<union> (prefixed ''hs_get_work'' - { ''hs_get_work'', ''hs_get_work_mfence'' })"
-local_setup \<open>Cimp.locset @{thm "mut_no_pending_mutates_locs_def"}\<close>
 
 definition (in mut_m) handshake_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "handshake_invL \<equiv>
@@ -330,12 +312,11 @@ Tie the garbage collector's control location to the value of @{const
 
 \<close>
 
-definition no_pending_phase_locs :: "location set" where
+locset_definition no_pending_phase_locs :: "location set" where
   "no_pending_phase_locs \<equiv>
        (idle_locs - { ''idle_noop_mfence'' })
      \<union> (init_locs - { ''init_noop_mfence'' })
      \<union> (mark_locs - { ''mark_read_fM'', ''mark_write_fA'', ''mark_noop_mfence'' })"
-local_setup \<open>Cimp.locset @{thm "no_pending_phase_locs_def"}\<close>
 
 definition (in gc) phase_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "phase_invL \<equiv>
@@ -429,34 +410,24 @@ definition fA_rel :: "(bool \<times> handshake_phase \<times> gc_mark \<times> g
 definition fA_rel_inv :: "('field, 'mut, 'ref) lsts_pred" where
   "fA_rel_inv = ((\<^bold>\<forall>m. sys_ghost_handshake_in_sync m) \<^bold>\<otimes> sys_ghost_handshake_phase \<^bold>\<otimes> sys_fA \<^bold>\<otimes> gc_fM \<^bold>\<otimes> tso_pending_fA gc \<^bold>\<in> \<langle>fA_rel\<rangle>)"
 
-definition fM_eq_locs :: "location set" where
-  "fM_eq_locs \<equiv> (- { ''idle_write_fM'', ''idle_flip_noop_mfence'' })"
-local_setup (in -) \<open>Cimp.locset @{thm "fM_eq_locs_def"}\<close>
+locset_definition "fM_eq_locs \<equiv> (- { ''idle_write_fM'', ''idle_flip_noop_mfence'' })"
+locset_definition "fM_tso_empty_locs \<equiv> (- { ''idle_flip_noop_mfence'' })"
+locset_definition "fA_tso_empty_locs \<equiv> (- { ''mark_noop_mfence'' })"
 
-definition fM_tso_empty_locs :: "location set" where
-  "fM_tso_empty_locs \<equiv> (- { ''idle_flip_noop_mfence'' })"
-local_setup (in -) \<open>Cimp.locset @{thm "fM_tso_empty_locs_def"}\<close>
-
-definition fA_tso_empty_locs :: "location set" where
-  "fA_tso_empty_locs \<equiv> (- { ''mark_noop_mfence'' })"
-local_setup (in -) \<open>Cimp.locset @{thm "fA_tso_empty_locs_def"}\<close>
-
-definition fA_eq_locs :: "location set" where
+locset_definition
   "fA_eq_locs \<equiv> { ''idle_read_fM'', ''idle_invert_fM'' }
               \<union> prefixed ''idle_noop''
               \<union> (mark_locs - { ''mark_read_fM'', ''mark_write_fA'', ''mark_noop_mfence'' })
               \<union> sweep_locs"
-local_setup \<open>Cimp.locset @{thm "fA_eq_locs_def"}\<close>
 
-definition fA_neq_locs :: "location set" where
+locset_definition
   "fA_neq_locs \<equiv> { ''idle_phase_init'', ''idle_write_fM'', ''mark_read_fM'', ''mark_write_fA'' }
                \<union> prefixed ''idle_flip_noop''
                \<union> init_locs"
-local_setup \<open>Cimp.locset @{thm "fA_neq_locs_def"}\<close>
 
 definition (in gc) fM_fA_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "fM_fA_invL \<equiv>
-      atS_gc fM_eq_locs                    (sys_fM  \<^bold>= gc_fM)
+    atS_gc fM_eq_locs                    (sys_fM  \<^bold>= gc_fM)
   \<^bold>\<and> at_gc ''idle_write_fM''              (sys_fM \<^bold>\<noteq> gc_fM)
   \<^bold>\<and> at_gc ''idle_flip_noop_mfence''      (sys_fM \<^bold>\<noteq> gc_fM \<^bold>\<longrightarrow> (\<^bold>\<not>(LIST_NULL (tso_pending_fM gc))))
   \<^bold>\<and> atS_gc fM_tso_empty_locs             (LIST_NULL (tso_pending_fM gc))
@@ -505,9 +476,7 @@ lemma (in gc) fA_rel_inv[intro]:
   "\<lbrace> fM_fA_invL \<^bold>\<and> handshake_invL \<^bold>\<and> LSTP fA_rel_inv \<rbrace>
      gc
    \<lbrace> LSTP fA_rel_inv \<rbrace>"
-apply (vcg_jackhammer simp: fA_rel_inv_def)
-apply (auto simp: fA_rel_def)
-done (* FIXME weird *)
+by (vcg_jackhammer simp: fA_rel_inv_def; auto simp: fA_rel_def)
 
 lemma (in mut_m) gc_fM_fA_invL[intro]:
   notes gc.fM_fA_invL_def[inv]

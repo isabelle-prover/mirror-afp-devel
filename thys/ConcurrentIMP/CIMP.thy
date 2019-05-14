@@ -15,9 +15,9 @@ imports
   CIMP_lang
   CIMP_vcg
   "HOL-Library.Sublist"
+keywords
+  "locset_definition" :: thy_defn
 begin
-
-ML_file \<open>mkterm_antiquote.ML\<close>
 
 text\<open>
 
@@ -56,9 +56,8 @@ fun com_locs_map f com = com_locs_fold (fn l => fn acc => f l :: acc) [] com
 
 (* Cache location set membership facts.
 
-For each label, decide membership in the given set. We'd like an
-attribute to do this (for syntactic convenience) but these get
-executed multiple times. Solution: just invoke some ML to do the job.
+Decide membership in the given set for each label in the CIMP programs
+in the Named_Theorems "com".
 
 If the label set and com types differ, we probably get a nasty error.
 
@@ -69,26 +68,34 @@ No need to consider locations of @{const "Response"}s; could tweak
 
 fun locset thm ctxt =
   let
-    val set_name = thm |> Thm.cprop_of |> Thm.dest_equals |> fst
-    val thm_name =
-      set_name |> Thm.term_of |> dest_Const |> fst
-      |> Long_Name.base_name |> (fn def => def ^ "_membs")
-    fun mk_memb_term lthy l =
-      Thm.cterm_of lthy (@{mk_term "?x : ?S" (x, S)} (l, Thm.term_of set_name))
+    val set_name = thm |> Thm.cprop_of |> Thm.dest_equals |> fst |> Thm.term_of (* FIXME how do we handle HOL (=) as well? maybe rule_format? *)
+    val set_typ = set_name |> type_of
+    val elt_typ = case set_typ of Type ("Set.set", [t]) => t | _ => raise Fail "thm should define a set"
+    val set_name_str = case set_name of Const (c, _) => c | Free (c, _) => c | _ => raise Fail "FIXME not a constant XXX" (* FIXME `definition` spits out a thm with a Free in it *)
+    val thm_name = set_name_str |> Long_Name.base_name |> (fn def => def ^ "_membs")
+    fun mk_memb l = Thm.cterm_of ctxt (Const (@{const_name "Set.member"}, elt_typ --> set_typ --> @{typ "bool"}) $ l $ set_name)
+    val rewrite_tac = Simplifier.rewrite (ctxt addsimps ([thm] @ Named_Theorems.get ctxt @{named_theorems "loc"})) (* probably want the ambient simpset + some stuff *)
     val coms = Named_Theorems.get ctxt @{named_theorems "com"} |> map (Thm.cprop_of #> Thm.dest_equals #> snd #> Thm.term_of)
-    val memb_terms = maps (com_locs_map (mk_memb_term ctxt)) coms
-    val thms =
-      Par_List.map (Simplifier.rewrite (ctxt addsimps ([thm] @ Named_Theorems.get ctxt @{named_theorems "loc"}))) (* probably want the ambient simpset + some stuff *)
-        memb_terms
-    fun define_lemmas name attrs thm_list = Local_Theory.note ((Binding.name name, attrs), thm_list) #>> snd;
+    val attrs = [(* Attrib.internal (K (Clasimp.iff_add)), *) Attrib.internal (K (Named_Theorems.add @{named_theorems "loc"}))]
+(* Parallel *)
+    fun mk_thms coms = Par_List.map rewrite_tac (maps (com_locs_map mk_memb) coms)
+(* Sequential *)
+(*    fun mk_thms coms = List.foldl (fn (c, thms) => com_locs_fold (fn l => fn thms => rewrite_tac (mk_memb l) :: thms) thms c) [] coms *)
   in
     ctxt
-    |> define_lemmas thm_name
-        [(* Attrib.internal (K (Clasimp.iff_add)), *) Attrib.internal (K (Named_Theorems.add @{named_theorems "loc"}))] thms
+    |> (Local_Theory.note ((Binding.name thm_name, attrs), mk_thms coms) #>> snd)
     |> snd
   end;
 
 end;
+
+(* `definition` + `locset` *)
+val _ =
+  Outer_Syntax.local_theory' \<^command_keyword>\<open>locset_definition\<close> "constant definition for sets of locations"
+    (Scan.option Parse_Spec.constdecl -- (Parse_Spec.opt_thm_name ":" -- Parse.prop) --
+      Parse_Spec.if_assumes -- Parse.for_fixes >> (fn (((decl, spec), prems), params) => fn b => fn lthy =>
+        Specification.definition_cmd decl params prems spec b lthy
+        |> (fn ((_, (_, thm)), lthy) => (thm, lthy)) |> uncurry Cimp.locset));
 
 \<close>
 

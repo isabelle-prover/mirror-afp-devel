@@ -36,8 +36,6 @@ definition tso_writes_inv :: "('field, 'mut, 'ref) lsts_pred" where
    \<^bold>\<and> (\<^bold>\<forall>m w. tso_pending_write (mutator m) w \<^bold>\<longrightarrow> \<langle>mut_writes w\<rangle>)"
 (*<*)
 
-(* **************************************** *)
-
 lemma tso_writes_inv_eq_imp:
   "eq_imp (\<lambda>p s. mem_write_buffers (s sys) p)
           tso_writes_inv"
@@ -112,8 +110,6 @@ apply (rule fold_invariant[where P="\<lambda>fr. fM (fr (s sys)) = sys_fM s" and
              split: mem_write_action.splits)
 done
 
-(* **************************************** *)
-
 lemma (in sys) tso_gc_writes_inv[intro]:
   "\<lbrace> LSTP tso_writes_inv \<rbrace> sys"
 apply (vcg_jackhammer simp: tso_writes_inv_def)
@@ -144,9 +140,8 @@ The GC holds the TSO lock only during the \texttt{CAS} in @{const
 
 \<close>
 
-definition gc_tso_lock_locs :: "location set" where
+locset_definition gc_tso_lock_locs :: "location set" where
   "gc_tso_lock_locs \<equiv> \<Union>l\<in>{ ''mo_co_cmark'', ''mo_co_ctest'', ''mo_co_mark'', ''mo_co_unlock'' }. suffixed l"
-local_setup \<open>Cimp.locset @{thm "gc_tso_lock_locs_def"}\<close>
 
 definition (in gc) tso_lock_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "tso_lock_invL \<equiv>
@@ -176,9 +171,8 @@ A mutator holds the TSO lock only during the \texttt{CAS}s in @{const
 
 \<close>
 
-definition "mut_tso_lock_locs \<equiv>
+locset_definition "mut_tso_lock_locs \<equiv>
   \<Union>l\<in>{ ''mo_co_cmark'', ''mo_co_ctest'', ''mo_co_mark'', ''mo_co_unlock'' }. suffixed l"
-local_setup \<open>Cimp.locset @{thm "mut_tso_lock_locs_def"}\<close>
 
 definition (in mut_m) tso_lock_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "tso_lock_invL \<equiv>

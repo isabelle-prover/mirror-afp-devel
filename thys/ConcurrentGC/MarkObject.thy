@@ -594,32 +594,24 @@ Local invariant for the mutator's uses of @{term "mark_object"}.
 
 \<close>
 
-definition "mut_hs_get_roots_loop_locs \<equiv>
-  prefixed ''hs_get_roots_loop''"
-local_setup \<open>Cimp.locset @{thm "mut_hs_get_roots_loop_locs_def"}\<close>
-
-definition "mut_hs_get_roots_loop_mo_locs \<equiv>
+locset_definition "mut_hs_get_roots_loop_locs \<equiv> prefixed ''hs_get_roots_loop''"
+locset_definition "mut_hs_get_roots_loop_mo_locs \<equiv>
   prefixed ''hs_get_roots_loop_mo'' \<union> {''hs_get_roots_loop_done''}"
-local_setup \<open>Cimp.locset @{thm "mut_hs_get_roots_loop_mo_locs_def"}\<close>
 
 abbreviation "mut_async_mark_object_prefixes \<equiv> { ''store_del'', ''store_ins'' }"
 
-definition "mut_hs_not_hp_Idle_locs \<equiv>
+locset_definition "mut_hs_not_hp_Idle_locs \<equiv>
   (\<Union>pref\<in>mut_async_mark_object_prefixes.
      \<Union>l\<in>{''mo_co_lock'', ''mo_co_cmark'', ''mo_co_ctest'', ''mo_co_mark'', ''mo_co_unlock'', ''mo_co_won'', ''mo_co_W''}. {pref @ ''_'' @ l})"
-local_setup \<open>Cimp.locset @{thm "mut_hs_not_hp_Idle_locs_def"}\<close>
 
-definition "mut_async_mo_ptest_locs \<equiv>
+locset_definition "mut_async_mo_ptest_locs \<equiv>
   (\<Union>pref\<in>mut_async_mark_object_prefixes. {pref @ ''_mo_ptest''})"
-local_setup \<open>Cimp.locset @{thm "mut_async_mo_ptest_locs_def"}\<close>
 
-definition "mut_mo_ptest_locs \<equiv>
+locset_definition "mut_mo_ptest_locs \<equiv>
   (\<Union>pref\<in>mut_async_mark_object_prefixes. {pref @ ''_mo_ptest''})"
-local_setup \<open>Cimp.locset @{thm "mut_mo_ptest_locs_def"}\<close>
 
-definition "mut_mo_valid_ref_locs \<equiv>
+locset_definition "mut_mo_valid_ref_locs \<equiv>
   (prefixed ''store_del'' \<union> prefixed ''store_ins'' \<union> { ''deref_del'', ''lop_store_ins''})"
-local_setup \<open>Cimp.locset @{thm "mut_mo_valid_ref_locs_def"}\<close>
 (*<*)
 
 lemma mut_hs_get_roots_loop_locs_subseteq_hs_get_roots:
@@ -654,11 +646,10 @@ in TSO buffers.
 
 \<close>
 
-definition ghost_honorary_grey_empty_locs :: "location set" where
+locset_definition
   "ghost_honorary_grey_empty_locs \<equiv>
      - (\<Union>pref\<in>{ ''mark_loop'', ''hs_get_roots_loop'', ''store_del'', ''store_ins'' }.
         \<Union>l\<in>{ ''mo_co_unlock'', ''mo_co_won'', ''mo_co_W'' }. {pref @ ''_'' @ l})"
-local_setup \<open>Cimp.locset @{thm "ghost_honorary_grey_empty_locs_def"}\<close>
 
 definition (in mut_m) mark_object_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "mark_object_invL \<equiv>
@@ -950,11 +941,10 @@ by (force simp: obj_fields_marked_inv_def obj_at_field_on_heap_def split: option
 (*>*)
 text\<open>\<close>
 
-definition obj_fields_marked_locs :: "location set" where
+locset_definition
   "obj_fields_marked_locs \<equiv>
      { ''mark_loop_mark_object_loop'', ''mark_loop_mark_choose_field'', ''mark_loop_mark_deref'', ''mark_loop_mark_field_done'', ''mark_loop_blacken'' }
    \<union> prefixed ''mark_loop_mo''"
-local_setup \<open>Cimp.locset @{thm "obj_fields_marked_locs_def"}\<close>
 
 definition (in gc) obj_fields_marked_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "obj_fields_marked_invL \<equiv>
