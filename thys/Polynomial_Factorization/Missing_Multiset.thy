@@ -115,4 +115,7 @@ proof (induct vs arbitrary: ws)
   qed simp
 qed simp
 
+lemma filter_mset_inequality: "filter_mset f xs \<noteq> xs \<Longrightarrow> \<exists> x \<in># xs. \<not> f x" 
+  by (induct xs, auto)
+
 end

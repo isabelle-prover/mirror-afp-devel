@@ -13,7 +13,275 @@ text \<open>This theory provides some lemmas which we required when working with
 theory Missing_VectorSpace
 imports
   VectorSpace.VectorSpace
+  Missing_Ring
+  "HOL-Library.Multiset"
 begin
+
+
+(**** The following lemmas that could be moved to HOL/Finite_Set.thy  ****)
+
+(*This a generalization of comp_fun_commute. It is a similar definition, but restricted to a set. 
+  When "A = UNIV::'a set", we have "comp_fun_commute_on f A = comp_fun_commute f"*)
+locale comp_fun_commute_on = 
+  fixes f :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" and A::"'a set"
+  assumes comp_fun_commute_restrict: "\<forall>y\<in>A. \<forall>x\<in>A. \<forall>z\<in>A. f y (f x z) = f x (f y z)"
+  and f: "f : A \<rightarrow> A \<rightarrow> A" 
+begin
+
+lemma comp_fun_commute_on_UNIV:
+  assumes "A = (UNIV :: 'a set)"
+  shows "comp_fun_commute f"
+  unfolding comp_fun_commute_def 
+  using assms comp_fun_commute_restrict f by auto
+
+lemma fun_left_comm: 
+  assumes "y \<in> A" and "x \<in> A" and "z \<in> A" shows "f y (f x z) = f x (f y z)"
+  using comp_fun_commute_restrict assms by auto
+
+lemma commute_left_comp: 
+  assumes "y \<in> A" and "x\<in>A" and "z\<in>A" and "g \<in> A \<rightarrow> A" 
+  shows "f y (f x (g z)) = f x (f y (g z))"
+  using assms by (auto simp add: Pi_def o_assoc comp_fun_commute_restrict)
+
+lemma fold_graph_finite:
+  assumes "fold_graph f z B y"
+  shows "finite B"
+  using assms by induct simp_all
+
+lemma fold_graph_closed:
+  assumes "fold_graph f z B y" and "B \<subseteq> A" and "z \<in> A"
+  shows "y \<in> A"
+  using assms 
+proof (induct set: fold_graph)
+  case emptyI
+  then show ?case by auto
+next
+  case (insertI x B y)
+  then show ?case using insertI f by auto
+qed
+
+lemma fold_graph_insertE_aux:
+  "fold_graph f z B y \<Longrightarrow> a \<in> B \<Longrightarrow> z\<in>A
+  \<Longrightarrow> B \<subseteq> A
+  \<Longrightarrow>  \<exists>y'. y = f a y' \<and> fold_graph f z (B - {a}) y' \<and> y' \<in> A"
+proof (induct set: fold_graph)
+  case emptyI
+  then show ?case by auto
+next
+  case (insertI x B y)
+  show ?case
+  proof (cases "x = a")
+    case True 
+    show ?thesis
+    proof (rule exI[of _ y])
+      have B: "(insert x B - {a}) = B" using True insertI by auto 
+      have "f x y = f a y" by (simp add: True) 
+      moreover have "fold_graph f z (insert x B - {a}) y" by (simp add: B insertI)
+      moreover have "y \<in> A" using insertI fold_graph_closed[of z B] by auto
+      ultimately show " f x y = f a y \<and> fold_graph f z (insert x B - {a}) y \<and> y \<in> A" by simp
+    qed
+  next
+    case False
+    then obtain y' where y: "y = f a y'" and y': "fold_graph f z (B - {a}) y'" and y'_in_A: "y' \<in> A"
+      using insertI f by auto
+    have "f x y = f a (f x y')"
+      unfolding y 
+    proof (rule fun_left_comm)
+      show "x \<in> A" using insertI by auto
+      show "a \<in> A" using insertI by auto
+      show "y' \<in> A" using y'_in_A by auto
+    qed  
+    moreover have "fold_graph f z (insert x B - {a}) (f x y')"
+      using y' and \<open>x \<noteq> a\<close> and \<open>x \<notin> B\<close>
+      by (simp add: insert_Diff_if fold_graph.insertI)    
+    moreover have "(f x y') \<in> A" using insertI f y'_in_A by auto
+    ultimately show ?thesis using y'_in_A
+      by auto
+  qed
+qed
+    
+lemma fold_graph_insertE:
+  assumes "fold_graph f z (insert x B) v" and "x \<notin> B" and "insert x B \<subseteq> A" and "z\<in>A"
+  obtains y where "v = f x y" and "fold_graph f z B y"
+  using assms by (auto dest: fold_graph_insertE_aux [OF _ insertI1])
+
+lemma fold_graph_determ: "fold_graph f z B x \<Longrightarrow> fold_graph f z B y \<Longrightarrow>  B \<subseteq> A \<Longrightarrow> z\<in>A \<Longrightarrow> y = x"
+proof (induct arbitrary: y set: fold_graph)
+  case emptyI
+  then show ?case
+    by (meson empty_fold_graphE)
+next
+  case (insertI x B y v)
+  from \<open>fold_graph f z (insert x B) v\<close> and \<open>x \<notin> B\<close> and \<open>insert x B \<subseteq> A\<close> and  \<open>z \<in> A\<close>
+  obtain y' where "v = f x y'" and "fold_graph f z B y'"
+    by (rule fold_graph_insertE)
+  from \<open>fold_graph f z B y'\<close> and \<open>insert x B \<subseteq> A\<close> have "y' = y" using insertI by auto    
+  with \<open>v = f x y'\<close> show "v = f x y"
+    by simp
+qed
+
+lemma fold_equality: "fold_graph f z B y \<Longrightarrow> B \<subseteq> A \<Longrightarrow> z \<in> A \<Longrightarrow> Finite_Set.fold f z B = y"
+  by (cases "finite B") 
+  (auto simp add: Finite_Set.fold_def intro: fold_graph_determ dest: fold_graph_finite)
+    
+lemma fold_graph_fold:
+  assumes f: "finite B" and BA: "B\<subseteq>A" and z: "z \<in> A"
+  shows "fold_graph f z B (Finite_Set.fold f z B)"
+proof -
+   have "\<exists>x. fold_graph f z B x"
+    by (rule finite_imp_fold_graph[OF f])
+  moreover note fold_graph_determ
+  ultimately have "\<exists>!x. fold_graph f z B x" using f BA z by auto    
+  then have "fold_graph f z B (The (fold_graph f z B))"
+    by (rule theI')
+  with assms show ?thesis
+    by (simp add: Finite_Set.fold_def)
+qed
+  
+(*This lemma is a generalization of thm comp_fun_commute.fold_insert*)
+lemma fold_insert [simp]:
+  assumes "finite B" and "x \<notin> B" and BA: "insert x B \<subseteq> A" and z: "z \<in> A"
+  shows "Finite_Set.fold f z (insert x B) = f x (Finite_Set.fold f z B)"
+  proof (rule fold_equality[OF _ BA z])
+  from \<open>finite B\<close> have "fold_graph f z B (Finite_Set.fold f z B)"
+   using BA fold_graph_fold z by auto
+  hence "fold_graph f z (insert x B) (f x (Finite_Set.fold f z B))"
+    using BA  fold_graph.insertI assms by auto
+  then show "fold_graph f z (insert x B) (f x (Finite_Set.fold f z B))"
+    by simp
+qed
+end
+
+(*This lemma is a generalization of thm Finite_Set.fold_cong *)
+lemma fold_cong:
+  assumes f: "comp_fun_commute_on f A" and g: "comp_fun_commute_on g A"
+    and "finite S"
+    and cong: "\<And>x. x \<in> S \<Longrightarrow> f x = g x"
+    and "s = t" and "S = T" 
+    and SA: "S \<subseteq> A" and s: "s\<in>A"
+  shows "Finite_Set.fold f s S = Finite_Set.fold g t T"
+proof -
+  have "Finite_Set.fold f s S = Finite_Set.fold g s S"
+    using \<open>finite S\<close> cong SA s
+  proof (induct S)
+    case empty
+    then show ?case by simp
+  next
+    case (insert x F)
+    interpret f: comp_fun_commute_on f A by (fact f)
+    interpret g: comp_fun_commute_on g A by (fact g)
+    show ?case  using insert by auto
+  qed
+  with assms show ?thesis by simp
+qed
+                    
+context comp_fun_commute_on
+begin  
+
+lemma comp_fun_Pi: "(\<lambda>x. f x ^^ g x) \<in> A \<rightarrow> A \<rightarrow> A"
+proof -    
+  have "(f x ^^ g x) y \<in> A" if y: "y \<in> A" and x: "x \<in> A" for x y
+    using x y
+   proof (induct "g x" arbitrary: g)
+     case 0
+     then show ?case by auto
+   next
+     case (Suc n g)
+     define h where "h z = g z - 1" for z
+     have hyp: "(f x ^^ h x) y \<in> A" 
+       using h_def Suc.prems Suc.hyps diff_Suc_1 by metis
+     have "g x = Suc (h x)" unfolding h_def
+       using Suc.hyps(2) by auto     
+     then show ?case using f x hyp unfolding Pi_def by auto
+   qed 
+  thus ?thesis by (auto simp add: Pi_def)
+qed
+
+(*This lemma is a generalization of thm comp_fun_commute.comp_fun_commute_funpow *)
+lemma comp_fun_commute_funpow: "comp_fun_commute_on (\<lambda>x. f x ^^ g x) A"
+proof -
+  have f: " (f y ^^ g y) ((f x ^^ g x) z) = (f x ^^ g x) ((f y ^^ g y) z)"
+    if x: "x\<in>A" and y: "y \<in> A" and z: "z \<in> A" for x y z
+  proof (cases "x = y")
+    case False
+    show ?thesis
+    proof (induct "g x" arbitrary: g)
+      case (Suc n g)
+      have hyp1: "(f y ^^ g y) (f x k) = f x ((f y ^^ g y) k)" if k: "k \<in> A" for k
+      proof (induct "g y" arbitrary: g)
+        case 0
+        then show ?case by simp
+      next
+        case (Suc n g)       
+        define h where "h z = g z - 1" for z
+        with Suc have "n = h y"
+          by simp
+        with Suc have hyp: "(f y ^^ h y) (f x k) = f x ((f y ^^ h y) k)"
+          by auto
+        from Suc h_def have g: "g y = Suc (h y)"
+          by simp
+        have "((f y ^^ h y) k) \<in> A" using y k comp_fun_Pi[of h] unfolding Pi_def by auto
+        then show ?case
+          by (simp add: comp_assoc g hyp) (auto simp add: o_assoc comp_fun_commute_restrict x y k)
+      qed
+      define h where "h a = (if a = x then g x - 1 else g a)" for a
+      with Suc have "n = h x"
+        by simp
+      with Suc have "(f y ^^ h y) ((f x ^^ h x) z) = (f x ^^ h x) ((f y ^^ h y) z)"
+        by auto
+      with False have Suc2: "(f x ^^ h x) ((f y ^^ g y) z) = (f y ^^ g y) ((f x ^^ h x) z)"
+        using h_def by auto      
+      from Suc h_def have g: "g x = Suc (h x)"
+        by simp
+      have "(f x ^^ h x) z \<in>A" using comp_fun_Pi[of h] x z unfolding Pi_def by auto
+      hence *: "(f y ^^ g y) (f x ((f x ^^ h x) z)) = f x ((f y ^^ g y) ((f x ^^ h x) z))" 
+        using hyp1 by auto
+      thus ?case using g Suc2 by auto
+    qed simp
+  qed simp
+  thus ?thesis by (auto simp add: comp_fun_commute_on_def comp_fun_Pi o_def)
+qed
+
+(*This lemma is a generalization of thm comp_fun_commute.fold_mset_add_mset*)
+lemma fold_mset_add_mset: 
+  assumes MA: "set_mset M \<subseteq> A" and s: "s \<in> A" and x: "x \<in> A"
+  shows "fold_mset f s (add_mset x M) = f x (fold_mset f s M)"
+proof -
+  interpret mset: comp_fun_commute_on "\<lambda>y. f y ^^ count M y" A
+    by (fact comp_fun_commute_funpow)
+  interpret mset_union: comp_fun_commute_on "\<lambda>y. f y ^^ count (add_mset x M) y" A
+    by (fact comp_fun_commute_funpow)
+  show ?thesis
+  proof (cases "x \<in> set_mset M")
+    case False
+    then have *: "count (add_mset x M) x = 1"
+      by (simp add: not_in_iff)
+     have "Finite_Set.fold (\<lambda>y. f y ^^ count (add_mset x M) y) s (set_mset M) =
+      Finite_Set.fold (\<lambda>y. f y ^^ count M y) s (set_mset M)"
+       by (rule fold_cong[of _ A], auto simp add: assms False comp_fun_commute_funpow)
+    with False * s MA x show ?thesis
+      by (simp add: fold_mset_def del: count_add_mset)
+  next
+    case True
+    let ?f = "(\<lambda>xa. f xa ^^ count (add_mset x M) xa)"
+    let ?f2 = "(\<lambda>x. f x ^^ count M x)"
+    define N where "N = set_mset M - {x}"
+    have F: "Finite_Set.fold ?f s (insert x N) = ?f x (Finite_Set.fold ?f s N)" 
+      by (rule mset_union.fold_insert, auto simp add: assms N_def)
+    have F2: "Finite_Set.fold ?f2 s (insert x N) = ?f2 x (Finite_Set.fold ?f2 s N)"
+      by (rule mset.fold_insert, auto simp add: assms N_def)
+    from N_def True have *: "set_mset M = insert x N" "x \<notin> N" "finite N" by auto
+    then have "Finite_Set.fold (\<lambda>y. f y ^^ count (add_mset x M) y) s N =
+      Finite_Set.fold (\<lambda>y. f y ^^ count M y) s N" 
+      using MA N_def s 
+      by (auto intro!: fold_cong comp_fun_commute_funpow)
+    with * show ?thesis by (simp add: fold_mset_def del: count_add_mset, unfold F F2, auto)      
+  qed
+qed
+end
+
+(**** End of the lemmas that could be moved to HOL/Finite_Set.thy  ****)
+
 
 lemma Diff_not_in: "a \<notin> A - {a}" by auto
 
@@ -833,5 +1101,300 @@ shows "dim \<le> 1"
 by (metis One_nat_def assms(1) assms(2) bot.extremum card.empty card.insert empty_iff finite.intros(1)
 finite.intros(2) insert_subset vectorspace.gen_ge_dim vectorspace_axioms)
 
+definition find_indices where "find_indices x xs \<equiv> [i \<leftarrow> [0..<length xs]. xs!i = x]"
 
+lemma find_indices_Nil [simp]:
+  "find_indices x [] = []"
+  by (simp add: find_indices_def)
+
+lemma find_indices_Cons:
+  "find_indices x (y#ys) = (if x = y then Cons 0 else id) (map Suc (find_indices x ys))"
+apply (unfold find_indices_def length_Cons, subst upt_conv_Cons, simp)
+apply (fold map_Suc_upt, auto simp: filter_map o_def) done
+
+lemma find_indices_snoc [simp]:
+  "find_indices x (ys@[y]) = find_indices x ys @ (if x = y then [length ys] else [])"
+  by (unfold find_indices_def, auto intro!: filter_cong simp: nth_append)
+
+lemma mem_set_find_indices [simp]: "i \<in> set (find_indices x xs) \<longleftrightarrow> i < length xs \<and> xs!i = x"
+  by (auto simp: find_indices_def)
+
+lemma distinct_find_indices: "distinct (find_indices x xs)"
+  unfolding find_indices_def by simp 
+
+context abelian_monoid begin
+
+definition sumlist
+  where "sumlist xs \<equiv> foldr (\<oplus>) xs \<zero>"
+  (* fold is not good as it reverses the list, although the most general locale for monoids with
+     \<oplus> is already Abelian in Isabelle 2016-1. foldl is OK but it will not simplify Cons. *)
+
+lemma [simp]:
+  shows sumlist_Cons: "sumlist (x#xs) = x \<oplus> sumlist xs"
+    and sumlist_Nil: "sumlist [] = \<zero>"
+  by (simp_all add: sumlist_def)
+
+lemma sumlist_carrier [simp]:
+  assumes "set xs \<subseteq> carrier G" shows "sumlist xs \<in> carrier G"
+  using assms by (induct xs, auto)
+
+lemma sumlist_neutral:
+  assumes "set xs \<subseteq> {\<zero>}" shows "sumlist xs = \<zero>"
+proof (insert assms, induct xs)
+  case (Cons x xs)
+  then have "x = \<zero>" and "set xs \<subseteq> {\<zero>}" by auto
+  with Cons.hyps show ?case by auto
+qed simp
+
+lemma sumlist_append:
+  assumes "set xs \<subseteq> carrier G" and "set ys \<subseteq> carrier G"
+  shows "sumlist (xs @ ys) = sumlist xs \<oplus> sumlist ys"
+proof (insert assms, induct xs arbitrary: ys)
+  case (Cons x xs)
+  have "sumlist (xs @ ys) = sumlist xs \<oplus> sumlist ys"
+    using Cons.prems by (auto intro: Cons.hyps)
+  with Cons.prems show ?case by (auto intro!: a_assoc[symmetric])
+qed auto
+
+lemma sumlist_snoc:
+  assumes "set xs \<subseteq> carrier G" and "x \<in> carrier G"
+  shows "sumlist (xs @ [x]) = sumlist xs \<oplus> x"
+  by (subst sumlist_append, insert assms, auto)
+
+lemma sumlist_as_finsum:
+  assumes "set xs \<subseteq> carrier G" and "distinct xs" shows "sumlist xs = (\<Oplus>x\<in>set xs. x)"
+  using assms by (induct xs, auto intro:finsum_insert[symmetric])
+
+lemma sumlist_map_as_finsum:
+  assumes "f : set xs \<rightarrow> carrier G" and "distinct xs"
+  shows "sumlist (map f xs) = (\<Oplus>x \<in> set xs. f x)"
+  using assms by (induct xs, auto)
+
+definition summset where "summset M \<equiv> fold_mset (\<oplus>) \<zero> M"
+
+lemma summset_empty [simp]: "summset {#} = \<zero>" by (simp add: summset_def)
+
+lemma fold_mset_add_carrier: "a \<in> carrier G \<Longrightarrow> set_mset M \<subseteq> carrier G \<Longrightarrow> fold_mset (\<oplus>) a M \<in> carrier G" 
+proof (induct M arbitrary: a)
+  case (add x M)
+  thus ?case by 
+    (subst comp_fun_commute_on.fold_mset_add_mset[of _ "carrier G"], unfold_locales, auto simp: a_lcomm)
+qed simp
+
+lemma summset_carrier[intro]: "set_mset M \<subseteq> carrier G \<Longrightarrow> summset M \<in> carrier G" 
+  unfolding summset_def by (rule fold_mset_add_carrier, auto)  
+
+lemma summset_add_mset[simp]:
+  assumes a: "a \<in> carrier G" and MG: "set_mset M \<subseteq> carrier G"
+  shows "summset (add_mset a M) = a \<oplus> summset M"
+  using assms 
+  by (auto simp add: summset_def)
+   (rule comp_fun_commute_on.fold_mset_add_mset, unfold_locales, auto simp add: a_lcomm)    
+ 
+lemma sumlist_as_summset:
+  assumes "set xs \<subseteq> carrier G" shows "sumlist xs = summset (mset xs)"
+  by (insert assms, induct xs, auto)
+
+lemma sumlist_rev:
+  assumes "set xs \<subseteq> carrier G"
+  shows "sumlist (rev xs) = sumlist xs"
+  using assms by (simp add: sumlist_as_summset)
+
+lemma sumlist_as_fold:
+  assumes "set xs \<subseteq> carrier G"
+  shows "sumlist xs = fold (\<oplus>) xs \<zero>"
+  by (fold sumlist_rev[OF assms], simp add: sumlist_def foldr_conv_fold)
+
+end
+
+context Module.module begin
+
+definition lincomb_list
+where "lincomb_list c vs = sumlist (map (\<lambda>i. c i \<odot>\<^bsub>M\<^esub> vs ! i) [0..<length vs])"
+
+lemma lincomb_list_carrier:
+  assumes "set vs \<subseteq> carrier M" and "c : {0..<length vs} \<rightarrow> carrier R"
+  shows "lincomb_list c vs \<in> carrier M"
+  by (insert assms, unfold lincomb_list_def, intro sumlist_carrier, auto intro!: smult_closed)
+
+lemma lincomb_list_Nil [simp]: "lincomb_list c [] = \<zero>\<^bsub>M\<^esub>"
+  by (simp add: lincomb_list_def)
+
+lemma lincomb_list_Cons [simp]:
+  "lincomb_list c (v#vs) = c 0 \<odot>\<^bsub>M\<^esub> v \<oplus>\<^bsub>M\<^esub> lincomb_list (c o Suc) vs"
+  by (unfold lincomb_list_def length_Cons, subst upt_conv_Cons, simp, fold map_Suc_upt, simp add: o_def)
+
+lemma lincomb_list_eq_0:
+  assumes "\<And>i. i < length vs \<Longrightarrow> c i \<odot>\<^bsub>M\<^esub> vs ! i = \<zero>\<^bsub>M\<^esub>"
+  shows "lincomb_list c vs = \<zero>\<^bsub>M\<^esub>"
+proof (insert assms, induct vs arbitrary:c)
+  case (Cons v vs)
+  from Cons.prems[of 0] have [simp]: "c 0 \<odot>\<^bsub>M\<^esub> v = \<zero>\<^bsub>M\<^esub>" by auto
+  from Cons.prems[of "Suc _"] Cons.hyps have "lincomb_list (c \<circ> Suc) vs = \<zero>\<^bsub>M\<^esub>" by auto
+  then show ?case by (simp add: o_def)
+qed simp
+
+definition mk_coeff where "mk_coeff vs c v \<equiv> R.sumlist (map c (find_indices v vs))"
+
+lemma mk_coeff_carrier:
+  assumes "c : {0..<length vs} \<rightarrow> carrier R" shows "mk_coeff vs c w \<in> carrier R"
+  by (insert assms, auto simp: mk_coeff_def find_indices_def intro!:R.sumlist_carrier elim!:funcset_mem)
+
+lemma mk_coeff_Cons:
+  assumes "c : {0..<length (v#vs)} \<rightarrow> carrier R"
+  shows "mk_coeff (v#vs) c = (\<lambda>w. (if w = v then c 0 else \<zero>) \<oplus> mk_coeff vs (c o Suc) w)"
+proof-
+  from assms have "c o Suc : {0..<length vs} \<rightarrow> carrier R" by auto
+  from mk_coeff_carrier[OF this] assms
+  show ?thesis by (auto simp add: mk_coeff_def find_indices_Cons)
+qed
+
+lemma mk_coeff_0[simp]:
+  assumes "v \<notin> set vs"
+  shows "mk_coeff vs c v = \<zero>"
+proof -
+  have "(find_indices v vs) = []" using assms unfolding find_indices_def
+    by (simp add: in_set_conv_nth)
+  thus ?thesis  unfolding mk_coeff_def by auto
+qed  
+
+lemma lincomb_list_as_lincomb:
+  assumes vs_M: "set vs \<subseteq> carrier M" and c: "c : {0..<length vs} \<rightarrow> carrier R"
+  shows "lincomb_list c vs = lincomb (mk_coeff vs c) (set vs)"
+proof (insert assms, induct vs arbitrary: c)
+  case (Cons v vs)
+  have mk_coeff_Suc_closed: "mk_coeff vs (c \<circ> Suc) a \<in> carrier R" for a
+    apply (rule mk_coeff_carrier)
+    using Cons.prems unfolding Pi_def by auto
+  have x_in: "x \<in> carrier M" if x: "x\<in> set vs" for x using Cons.prems x by auto
+  show ?case apply (unfold mk_coeff_Cons[OF Cons.prems(2)] lincomb_list_Cons)
+    apply (subst Cons) using Cons apply (force, force)
+  proof (cases "v \<in> set vs", auto simp:insert_absorb)
+    case False
+    let ?f = "(\<lambda>va. ((if va = v then c 0 else \<zero>) \<oplus> mk_coeff vs (c \<circ> Suc) va) \<odot>\<^bsub>M\<^esub> va)"
+    have mk_0: "mk_coeff vs (c \<circ> Suc) v = \<zero>" using False by auto
+    have [simp]: "(c 0 \<oplus> \<zero>) = c 0"
+      using Cons.prems(2) by force
+    have finsum_rw: "(\<Oplus>\<^bsub>M\<^esub>va\<in>insert v (set vs). ?f va) = (?f v) \<oplus>\<^bsub>M\<^esub> (\<Oplus>\<^bsub>M\<^esub>va\<in>(set vs). ?f va)"
+    proof (rule finsum_insert, auto simp add: False, rule smult_closed, rule R.a_closed)
+      fix x
+      show "mk_coeff vs (c \<circ> Suc) x \<in> carrier R" 
+        using mk_coeff_Suc_closed by auto
+      show "c 0 \<odot>\<^bsub>M\<^esub> v \<in> carrier M"
+      proof (rule smult_closed)
+        show "c 0 \<in> carrier R"
+          using Cons.prems(2) by fastforce
+        show "v \<in> carrier M"
+          using Cons.prems(1) by auto
+      qed
+      show "\<zero> \<in> carrier R"
+        by simp
+      assume x: "x \<in> set vs" show "x \<in> carrier M"
+        using Cons.prems(1) x by auto
+    qed
+    have finsum_rw2: 
+      "(\<Oplus>\<^bsub>M\<^esub>va\<in>(set vs). ?f va) = (\<Oplus>\<^bsub>M\<^esub>va\<in>set vs. (mk_coeff vs (c \<circ> Suc) va) \<odot>\<^bsub>M\<^esub> va)"
+    proof (rule finsum_cong2, auto simp add: False)
+      fix i assume i: "i \<in> set vs"
+      have "c \<circ> Suc \<in> {0..<length vs} \<rightarrow> carrier R" using Cons.prems by auto
+      then have [simp]: "mk_coeff vs (c \<circ> Suc) i \<in> carrier R" 
+        using mk_coeff_Suc_closed by auto
+      have "\<zero> \<oplus> mk_coeff vs (c \<circ> Suc) i = mk_coeff vs (c \<circ> Suc) i" by (rule R.l_zero, simp)
+      then show "(\<zero> \<oplus> mk_coeff vs (c \<circ> Suc) i) \<odot>\<^bsub>M\<^esub> i = mk_coeff vs (c \<circ> Suc) i \<odot>\<^bsub>M\<^esub> i" 
+        by auto
+      show "(\<zero> \<oplus> mk_coeff vs (c \<circ> Suc) i) \<odot>\<^bsub>M\<^esub> i \<in> carrier M"
+        using Cons.prems(1) i by auto
+    qed
+    show "c 0 \<odot>\<^bsub>M\<^esub> v \<oplus>\<^bsub>M\<^esub> lincomb (mk_coeff vs (c \<circ> Suc)) (set vs) =
+    lincomb (\<lambda>a. (if a = v then c 0 else \<zero>) \<oplus> mk_coeff vs (c \<circ> Suc) a) (insert v (set vs))" 
+      unfolding lincomb_def
+      unfolding finsum_rw mk_0 
+      unfolding finsum_rw2 by auto
+  next
+    case True
+    let ?f = "\<lambda>va. ((if va = v then c 0 else \<zero>) \<oplus> mk_coeff vs (c \<circ> Suc) va) \<odot>\<^bsub>M\<^esub> va"
+    have rw: "(c 0 \<oplus> mk_coeff vs (c \<circ> Suc) v) \<odot>\<^bsub>M\<^esub> v 
+      = (c 0 \<odot>\<^bsub>M\<^esub> v) \<oplus>\<^bsub>M\<^esub> (mk_coeff vs (c \<circ> Suc) v) \<odot>\<^bsub>M\<^esub> v"      
+      using Cons.prems(1) Cons.prems(2) atLeast0_lessThan_Suc_eq_insert_0 
+      using mk_coeff_Suc_closed smult_l_distr by auto
+    have rw2: "((mk_coeff vs (c \<circ> Suc) v) \<odot>\<^bsub>M\<^esub> v) 
+      \<oplus>\<^bsub>M\<^esub> (\<Oplus>\<^bsub>M\<^esub>va\<in>(set vs - {v}). ?f va) = (\<Oplus>\<^bsub>M\<^esub>v\<in>set vs. mk_coeff vs (c \<circ> Suc) v \<odot>\<^bsub>M\<^esub> v)"
+    proof -
+      have "(\<Oplus>\<^bsub>M\<^esub>va\<in>(set vs - {v}). ?f va) = (\<Oplus>\<^bsub>M\<^esub>v\<in>set vs - {v}. mk_coeff vs (c \<circ> Suc) v \<odot>\<^bsub>M\<^esub> v)"
+        by (rule finsum_cong2, unfold Pi_def, auto simp add: mk_coeff_Suc_closed x_in)
+      moreover have "(\<Oplus>\<^bsub>M\<^esub>v\<in>set vs. mk_coeff vs (c \<circ> Suc) v \<odot>\<^bsub>M\<^esub> v) = ((mk_coeff vs (c \<circ> Suc) v) \<odot>\<^bsub>M\<^esub> v) 
+        \<oplus>\<^bsub>M\<^esub> (\<Oplus>\<^bsub>M\<^esub>v\<in>set vs - {v}. mk_coeff vs (c \<circ> Suc) v \<odot>\<^bsub>M\<^esub> v)"
+        by (rule M.add.finprod_split, auto simp add: mk_coeff_Suc_closed True x_in)
+      ultimately show ?thesis by auto
+    qed
+    have "lincomb (\<lambda>a. (if a = v then c 0 else \<zero>) \<oplus> mk_coeff vs (c \<circ> Suc) a) (set vs) 
+      = (\<Oplus>\<^bsub>M\<^esub>va\<in>set vs. ?f va)" unfolding lincomb_def ..
+    also have "... = ?f v \<oplus>\<^bsub>M\<^esub> (\<Oplus>\<^bsub>M\<^esub>va\<in>(set vs - {v}). ?f va)"
+    proof (rule M.add.finprod_split)
+      have c0_mkcoeff_in: "c 0 \<oplus> mk_coeff vs (c \<circ> Suc) v \<in> carrier R" 
+      proof (rule R.a_closed)
+        show "c 0 \<in> carrier R " using Cons.prems by auto
+        show "mk_coeff vs (c \<circ> Suc) v \<in> carrier R"
+          using mk_coeff_Suc_closed by auto
+    qed
+    moreover have "(\<zero> \<oplus> mk_coeff vs (c \<circ> Suc) va) \<odot>\<^bsub>M\<^esub> va \<in> carrier M"
+      if va: "va \<in> carrier M" for va 
+      by (rule smult_closed[OF _ va], rule R.a_closed, auto simp add: mk_coeff_Suc_closed)
+    ultimately show "?f ` set vs \<subseteq> carrier M" using Cons.prems(1) by auto        
+      show "finite (set vs)" by simp
+      show "v \<in> set vs" using True by simp
+    qed
+    also have "... = (c 0 \<oplus> mk_coeff vs (c \<circ> Suc) v) \<odot>\<^bsub>M\<^esub> v 
+      \<oplus>\<^bsub>M\<^esub> (\<Oplus>\<^bsub>M\<^esub>va\<in>(set vs - {v}). ?f va)" by auto
+    also have "... = ((c 0 \<odot>\<^bsub>M\<^esub> v) \<oplus>\<^bsub>M\<^esub> (mk_coeff vs (c \<circ> Suc) v) \<odot>\<^bsub>M\<^esub> v) 
+      \<oplus>\<^bsub>M\<^esub> (\<Oplus>\<^bsub>M\<^esub>va\<in>(set vs - {v}). ?f va)" unfolding rw by simp
+    also have "... = (c 0 \<odot>\<^bsub>M\<^esub> v) \<oplus>\<^bsub>M\<^esub> (((mk_coeff vs (c \<circ> Suc) v) \<odot>\<^bsub>M\<^esub> v) 
+      \<oplus>\<^bsub>M\<^esub> (\<Oplus>\<^bsub>M\<^esub>va\<in>(set vs - {v}). ?f va))"
+    proof (rule M.a_assoc)
+      show "c 0 \<odot>\<^bsub>M\<^esub> v \<in> carrier M" 
+        using Cons.prems(1) Cons.prems(2) by auto
+      show "mk_coeff vs (c \<circ> Suc) v \<odot>\<^bsub>M\<^esub> v \<in> carrier M"
+        using Cons.prems(1) mk_coeff_Suc_closed by auto
+      show "(\<Oplus>\<^bsub>M\<^esub>va\<in>set vs - {v}. ((if va = v then c 0 else \<zero>) 
+        \<oplus> mk_coeff vs (c \<circ> Suc) va) \<odot>\<^bsub>M\<^esub> va) \<in> carrier M"
+        by (rule M.add.finprod_closed) (auto simp add: mk_coeff_Suc_closed x_in)
+    qed
+    also have "... = c 0 \<odot>\<^bsub>M\<^esub> v \<oplus>\<^bsub>M\<^esub> (\<Oplus>\<^bsub>M\<^esub>v\<in>set vs. mk_coeff vs (c \<circ> Suc) v \<odot>\<^bsub>M\<^esub> v)"
+      unfolding rw2 ..
+    also have "... = c 0 \<odot>\<^bsub>M\<^esub> v \<oplus>\<^bsub>M\<^esub> lincomb (mk_coeff vs (c \<circ> Suc)) (set vs)" 
+      unfolding lincomb_def ..
+    finally show "c 0 \<odot>\<^bsub>M\<^esub> v \<oplus>\<^bsub>M\<^esub> lincomb (mk_coeff vs (c \<circ> Suc)) (set vs) 
+      = lincomb (\<lambda>a. (if a = v then c 0 else \<zero>) \<oplus> mk_coeff vs (c \<circ> Suc) a) (set vs)" ..         
+  qed
+qed simp
+
+definition "span_list vs \<equiv> {lincomb_list c vs | c. c : {0..<length vs} \<rightarrow> carrier R}"
+
+lemma in_span_listI:
+  assumes "c : {0..<length vs} \<rightarrow> carrier R" and "v = lincomb_list c vs"
+  shows "v \<in> span_list vs"
+  using assms by (auto simp: span_list_def)
+
+lemma in_span_listE:
+  assumes "v \<in> span_list vs"
+      and "\<And>c. c : {0..<length vs} \<rightarrow> carrier R \<Longrightarrow> v = lincomb_list c vs \<Longrightarrow> thesis"
+  shows thesis
+  using assms by (auto simp: span_list_def)
+
+lemmas lincomb_insert2 = lincomb_insert[unfolded insert_union[symmetric]]
+
+lemma lincomb_zero:
+  assumes U: "U \<subseteq> carrier M" and a: "a : U \<rightarrow> {zero R}"
+  shows "lincomb a U = zero M"
+  using U a
+proof (induct U rule: infinite_finite_induct)
+  case empty show ?case unfolding lincomb_def by auto next
+  case (insert u U)
+    hence "a \<in> insert u U \<rightarrow> carrier R" using zero_closed by force
+    thus ?case using insert by (subst lincomb_insert2; auto)
+qed (auto simp: lincomb_def)
+
+end
+
+hide_const (open) Multiset.mult
 end

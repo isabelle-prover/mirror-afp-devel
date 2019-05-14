@@ -21,6 +21,11 @@ hide_fact(open)
 
 hide_const (open) Rings.coprime
 
+lemma irreducible_uminus [simp]:
+  fixes a::"'a::idom"
+  shows "irreducible (-a) \<longleftrightarrow> irreducible a"
+  using irreducible_mult_unit_left[of "-1::'a"] by auto
+
 context comm_monoid_mult begin
 
   definition coprime :: "'a \<Rightarrow> 'a \<Rightarrow> bool"

@@ -665,7 +665,7 @@ begin
 
 abbreviation "M == \<lambda>k. module_vec TYPE('a) k"
 
-abbreviation "span == \<lambda>k. module.span class_ring (M k)"
+abbreviation "span == \<lambda>k. LinearCombinations.module.span class_ring (M k)"
 abbreviation "lincomb == \<lambda>k. module.lincomb (M k)"
 abbreviation "lin_dep == \<lambda>k. module.lin_dep class_ring (M k)"
 abbreviation "padr m v == v @\<^sub>v 0\<^sub>v m"
@@ -901,11 +901,11 @@ proof (rule, intro conjI)
 qed
 
 lemma kernel_padl:
-  assumes dD: "d : mat_kernel (D :: 'a :: field mat)"
-      and A: "A : carrier_mat nr1 nc1"
-      and C: "C : carrier_mat nr2 nc1"
-      and D: "D : carrier_mat nr2 nc2"
-  shows "padl nc1 d : mat_kernel (four_block_mat A (0\<^sub>m nr1 nc2) C D)" (is "_ : mat_kernel ?ABCD")
+  assumes dD: "d \<in> mat_kernel (D :: 'a :: field mat)"
+      and A: "A \<in> carrier_mat nr1 nc1"
+      and C: "C \<in> carrier_mat nr2 nc1"
+      and D: "D \<in> carrier_mat nr2 nc2"
+  shows "padl nc1 d \<in> mat_kernel (four_block_mat A (0\<^sub>m nr1 nc2) C D)" (is "_ \<in> mat_kernel ?ABCD")
   unfolding mat_kernel_def
 proof (rule, intro conjI)
   have [simp]: "dim_row A = nr1" "dim_row D = nr2" "dim_row ?ABCD = nr1 + nr2" using A D by auto
@@ -947,12 +947,12 @@ proof (rule, intro conjI)
 qed
 
 lemma mat_kernel_split:
-  assumes A: "A : carrier_mat n n"
-      and D: "D : carrier_mat m m"
-      and kAD: "k : mat_kernel (four_block_mat A (0\<^sub>m n m) (0\<^sub>m m n) D)"
-           (is "_ : mat_kernel ?A00D")
-  shows "vec_first k n : mat_kernel A" (is "?a : _")
-    and "vec_last k m : mat_kernel D" (is "?d : _")
+  assumes A: "A \<in> carrier_mat n n"
+      and D: "D \<in> carrier_mat m m"
+      and kAD: "k \<in> mat_kernel (four_block_mat A (0\<^sub>m n m) (0\<^sub>m m n) D)"
+           (is "_ \<in> mat_kernel ?A00D")
+  shows "vec_first k n \<in> mat_kernel A" (is "?a \<in> _")
+    and "vec_last k m \<in> mat_kernel D" (is "?d \<in> _")
 proof -
   have "0\<^sub>v n @\<^sub>v 0\<^sub>v m = 0\<^sub>v (n+m)" by auto
   also

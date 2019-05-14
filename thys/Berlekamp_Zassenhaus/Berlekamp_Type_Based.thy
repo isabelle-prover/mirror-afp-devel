@@ -19,7 +19,8 @@ imports
   "HOL-Computational_Algebra.Field_as_Ring"
 begin
 
-hide_const (open) up_ring.coeff up_ring.monom Modules.module
+hide_const (open) up_ring.coeff up_ring.monom Modules.module subspace
+  Modules.module_hom
 
 
 subsection \<open>Auxiliary lemmas\<close>
@@ -1850,7 +1851,7 @@ qed
 
 lemma linear_Poly_list_of_vec:
 shows "(Poly \<circ> list_of_vec) \<in> module_hom class_ring V (vector_space_poly.vs {v. [v^(CARD('a)) = v] (mod u)})"
-proof (auto simp add: module_hom_def Matrix.module_vec_def)
+proof (auto simp add: LinearCombinations.module_hom_def Matrix.module_vec_def)
   fix m1 m2::" 'a mod_ring vec"
   assume m1: "m1 \<in> mat_kernel (berlekamp_resulting_mat u)"
   and m2: "m2 \<in> mat_kernel (berlekamp_resulting_mat u)"
@@ -1938,7 +1939,7 @@ qed
 lemma linear_Poly_list_of_vec':
   assumes "degree u > 0"
   shows "(Poly \<circ> list_of_vec) \<in> module_hom R V W"
-proof (auto simp add: module_hom_def Matrix.module_vec_def)
+proof (auto simp add: LinearCombinations.module_hom_def Matrix.module_vec_def)
   fix m1 m2::" 'a mod_ring vec"
   assume m1: "m1 \<in> mat_kernel (berlekamp_resulting_mat u)"
   and m2: "m2 \<in> mat_kernel (berlekamp_resulting_mat u)"
@@ -2042,7 +2043,7 @@ proof -
       hence "x \<in> mat_kernel (berlekamp_resulting_mat u)" using x by auto
       hence "[Poly (list_of_vec x) ^ CARD('a) = Poly (list_of_vec x)] (mod u)"
         using linear_Poly_list_of_vec
-        unfolding module_hom_def Matrix.module_vec_def by auto
+        unfolding LinearCombinations.module_hom_def Matrix.module_vec_def by auto
   }
   thus "[v ^ CARD('a) = v] (mod u)" using v unfolding set_berlekamp_basis_eq by auto
 qed
@@ -2056,7 +2057,7 @@ proof (auto simp add: image_def)
   assume xa: "xa \<in> mat_kernel (berlekamp_resulting_mat u)"
   thus "[Poly (list_of_vec xa) ^ CARD('a) = Poly (list_of_vec xa)] (mod u)"
     using linear_Poly_list_of_vec
-    unfolding module_hom_def Matrix.module_vec_def by auto
+    unfolding LinearCombinations.module_hom_def Matrix.module_vec_def by auto
   show "degree (Poly (list_of_vec xa)) < degree u"
   proof (rule degree_Poly_list_of_vec[OF _ deg_u])
     show "xa \<in> carrier_vec (degree u)" using xa unfolding mat_kernel_def by simp
@@ -2441,7 +2442,7 @@ proof -
   interpret vec_VS: vectorspace class_ring "(module_vec TYPE('a mod_ring) n)"
     by (rule VS_Connect.vec_vs)
   interpret linear_map class_ring W "(module_vec TYPE('a mod_ring) n)" ?f
-    by (intro_locales, unfold mod_hom_axioms_def module_hom_def,
+    by (intro_locales, unfold mod_hom_axioms_def LinearCombinations.module_hom_def,
         auto simp add: vec_eq_iff module_vec_def mod_smult_left poly_mod_add_left)
   have "linear_map class_ring W (module_vec TYPE('a mod_ring) n) ?f"
     by (intro_locales)

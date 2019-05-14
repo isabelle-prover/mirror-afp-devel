@@ -15,6 +15,7 @@ theory Poly_Mod
   "HOL-Computational_Algebra.Primes"
   Polynomial_Factorization.Square_Free_Factorization
   Unique_Factorization_Poly
+  "HOL-Word.Misc_Arithmetic" 
 begin
 
 locale poly_mod = fixes m :: "int" 
@@ -872,6 +873,181 @@ proof (intro allI impI)
   qed
 qed
 
+lemma coprime_exp_mod: "coprime lu p \<Longrightarrow> n \<noteq> 0 \<Longrightarrow> lu mod p ^ n \<noteq> 0" 
+  using prime by fastforce
+
 end
+
+context poly_mod
+begin
+
+definition Dp :: "int poly \<Rightarrow> int poly" where
+  "Dp f = map_poly (\<lambda> a. a div m) f" 
+
+lemma Dp_Mp_eq: "f = Mp f + smult m (Dp f)"
+  by (rule poly_eqI, auto simp: Mp_coeff M_def Dp_def coeff_map_poly)
+
+lemma dvd_imp_dvdm:
+  assumes "a dvd b" shows "a dvdm b"
+  by (metis assms dvd_def dvdm_def)
+
+lemma dvdm_add:
+  assumes a: "u dvdm a"
+  and b: "u dvdm b"
+  shows "u dvdm (a+b)"
+proof -
+  obtain a' where a: "a =m u*a'" using a unfolding dvdm_def by auto
+  obtain b' where b: "b =m u*b'" using b unfolding dvdm_def by auto
+  have "Mp (a + b) = Mp (u*a'+u*b')" using a b
+    by (metis poly_mod.plus_Mp(1) poly_mod.plus_Mp(2))
+  also have "... = Mp (u * (a'+ b'))"
+    by (simp add: distrib_left)
+  finally show ?thesis unfolding dvdm_def by auto
+qed
+
+
+lemma monic_dvdm_constant:
+  assumes uk: "u dvdm [:k:]"
+  and u1: "monic u" and u2: "degree u > 0" 
+  shows "k mod m = 0"
+proof -
+  have d1: "degree_m [:k:] = degree [:k:]"    
+    by (metis degree_pCons_0 le_zero_eq poly_mod.degree_m_le)
+  obtain h where h: "Mp [:k:] = Mp (u * h)"
+    using uk unfolding dvdm_def by auto
+  have d2: "degree_m [:k:] = degree_m (u*h)" using h by metis
+  have d3: "degree (map_poly M (u * map_poly M h)) = degree (u * map_poly M h)" 
+    by (rule degree_map_poly)
+       (metis coeff_degree_mult leading_coeff_0_iff mult.right_neutral M_M Mp_coeff Mp_def u1)
+  thus ?thesis using assms d1 d2 d3
+    by (auto, metis M_def map_poly_pCons degree_mult_right_le h leD map_poly_0 
+        mult_poly_0_right pCons_eq_0_iff M_0 Mp_def mult_Mp(2)) 
+qed
+
+lemma div_mod_imp_dvdm:
+  assumes "\<exists>q r. b = q * a + Polynomial.smult m r"
+  shows "a dvdm b"
+proof -
+  from assms  obtain q r where b:"b = a * q + smult m r"
+    by (metis mult.commute)
+  have a: "Mp (Polynomial.smult m r) = 0" by auto
+  show ?thesis 
+  proof (unfold dvdm_def, rule exI[of _ q])
+    have "Mp (a * q + smult m r) = Mp (a * q + Mp (smult m r))" 
+      using plus_Mp(2)[of "a*q" "smult m r"] by auto
+    also have "... = Mp (a*q)" by auto
+    finally show "eq_m b (a * q)" using b by auto
+  qed
+qed
+
+lemma lead_coeff_monic_mult:
+  fixes p :: "'a :: {comm_semiring_1,semiring_no_zero_divisors} poly"
+  assumes "monic p" shows "lead_coeff (p * q) = lead_coeff q"
+  using assms by (simp add: lead_coeff_mult)
+
+lemma degree_m_mult_eq:
+  assumes p: "monic p" and q: "lead_coeff q mod m \<noteq> 0" and m1: "m > 1"
+  shows "degree (Mp (p * q)) = degree p + degree q"
+proof-
+  have "lead_coeff (p * q) mod m \<noteq> 0"
+    using q p by (auto simp: lead_coeff_monic_mult)
+  with m1 show ?thesis
+    by (auto simp: degree_m_eq intro!: degree_mult_eq)
+qed
+
+lemma dvdm_imp_degree_le:
+  assumes pq: "p dvdm q" and p: "monic p" and q0: "Mp q \<noteq> 0" and m1: "m > 1"
+  shows "degree p \<le> degree q"
+proof-
+  from q0
+  have q: "lead_coeff (Mp q) mod m \<noteq> 0"
+    by (metis Mp_Mp Mp_coeff leading_coeff_neq_0 M_def)
+  from pq obtain r where Mpq: "Mp q = Mp (p * Mp r)" by (auto elim: dvdmE)
+  with p q have "lead_coeff (Mp r) mod m \<noteq> 0"
+    by (metis Mp_Mp Mp_coeff leading_coeff_0_iff mult_poly_0_right M_def)
+  from degree_m_mult_eq[OF p this m1] Mpq
+  have "degree p \<le> degree_m q" by simp
+  thus ?thesis using degree_m_le le_trans by blast
+qed
+
+lemma dvdm_uminus [simp]:
+  "p dvdm -q \<longleftrightarrow> p dvdm q"
+  by (metis add.inverse_inverse dvdm_smult smult_1_left smult_minus_left)
+
+
+(*TODO: simp?*)
+lemma Mp_const_poly: "Mp [:a:] = [:a mod m:]"   
+  by (simp add: Mp_def M_def Polynomial.map_poly_pCons)
+
+lemma dvdm_imp_div_mod:
+  assumes "u dvdm g"
+  shows "\<exists>q r. g = q*u + smult m r"
+proof -
+  obtain q where q: "Mp g = Mp (u*q)" 
+    using assms unfolding dvdm_def by fast
+  have "(u*q) = Mp (u*q) + smult m (Dp (u*q))"
+    by (simp add: poly_mod.Dp_Mp_eq[of "u*q"])
+  hence uq: "Mp (u*q) = (u*q) - smult m (Dp (u*q))"
+    by auto  
+  have g: "g = Mp g + smult m (Dp g)"
+    by (simp add: poly_mod.Dp_Mp_eq[of "g"])
+  also have "... = poly_mod.Mp m (u*q) + smult m (Dp g)" using q by simp
+  also have "... = u * q - smult m (Dp (u * q)) + smult m (Dp g)" 
+    unfolding uq by auto
+  also have "... = u * q + smult m (-Dp (u*q)) + smult m (Dp g)" by auto  
+  also have "... = u * q + smult m (-Dp (u*q) + Dp g)" 
+    unfolding smult_add_right by auto
+  also have "... = q * u + smult m (-Dp (u*q) + Dp g)" by auto
+  finally show ?thesis by auto
+qed
+
+corollary div_mod_iff_dvdm:
+  shows "a dvdm b = (\<exists>q r. b = q * a + Polynomial.smult m r)"
+  using div_mod_imp_dvdm dvdm_imp_div_mod by blast
+
+lemma dvdmE':
+  assumes "p dvdm q" and "\<And>r. q =m p * Mp r \<Longrightarrow> thesis"
+  shows thesis
+  using assms by (auto simp: dvdm_def)
+
+end
+
+context poly_mod_2
+begin
+lemma factorization_m_mem_dvdm: assumes fact: "factorization_m f (c,fs)" 
+  and mem: "Mp g \<in># image_mset Mp fs" 
+shows "g dvdm f" 
+proof - 
+  from fact have "factorization_m f (Mf (c, fs))" by auto
+  then obtain l where f: "factorization_m f (l, image_mset Mp fs)" by (auto simp: Mf_def)
+  from multi_member_split[OF mem] obtain ls where 
+    fs: "image_mset Mp fs = {# Mp g #} + ls" by auto
+  from f[unfolded fs split factorization_m_def] show "g dvdm f" 
+    unfolding dvdm_def
+    by (intro exI[of _ "smult l (prod_mset ls)"], auto simp del: Mp_smult 
+        simp add: Mp_smult(2)[of _ "Mp g * prod_mset ls", symmetric], simp)
+qed
+
+lemma dvdm_degree: "monic u \<Longrightarrow> u dvdm f \<Longrightarrow> Mp f \<noteq> 0 \<Longrightarrow> degree u \<le> degree f"
+  using dvdm_imp_degree_le m1 by blast
+
+end
+
+lemma (in poly_mod_prime) pl_dvdm_imp_p_dvdm:
+  assumes l0: "l \<noteq> 0" 
+  and pl_dvdm: "poly_mod.dvdm (p^l) a b"
+  shows "a dvdm b"
+proof -
+  from l0 have l_gt_0: "l > 0" by auto
+  with m1 interpret pl: poly_mod_2 "p^l" by (unfold_locales, auto)
+  have p_rw: "p * p ^ (l - 1) = p ^ l" by (rule power_minus_simp[symmetric, OF l_gt_0])
+  obtain q r where b: "b = q * a + smult (p^l) r" using pl.dvdm_imp_div_mod[OF pl_dvdm] by auto
+  have "smult (p^l) r = smult p (smult (p ^ (l - 1)) r)" unfolding smult_smult p_rw ..
+  hence b2: "b = q * a + smult p (smult (p ^ (l - 1)) r)" using b by auto
+  show ?thesis
+    by (rule div_mod_imp_dvdm, rule exI[of _ q], 
+        rule exI[of _ "(smult (p ^ (l - 1)) r)"], auto simp add: b2)
+qed
+
 
 end

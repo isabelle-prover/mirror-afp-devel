@@ -476,16 +476,6 @@ proof -
   finally show ?thesis using 0 by auto
 qed
 
-context poly_mod
-begin
-
-definition Dp :: "int poly \<Rightarrow> int poly" where
-  "Dp f = map_poly (\<lambda> a. a div m) f" 
-
-lemma Dp_Mp_eq: "f = Mp f + smult m (Dp f)"
-  by (rule poly_eqI, auto simp: Mp_coeff M_def Dp_def coeff_map_poly)
-end
-
 context 
   fixes C :: "int poly" 
 begin

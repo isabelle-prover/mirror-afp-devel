@@ -271,6 +271,71 @@ end
 context poly_mod_prime
 begin
 
+lemma unique_factorization_m_factor_partition: assumes l0: "l \<noteq> 0" 
+  and uf: "poly_mod.unique_factorization_m (p^l) f (lead_coeff f, mset gs)" 
+  and f: "f = f1 * f2" 
+  and cop: "coprime (lead_coeff f) p" 
+  and sf: "square_free_m f" 
+  and part: "List.partition (\<lambda>gi. gi dvdm f1) gs = (gs1, gs2)" 
+shows "poly_mod.unique_factorization_m (p^l) f1 (lead_coeff f1, mset gs1)"
+  "poly_mod.unique_factorization_m (p^l) f2 (lead_coeff f2, mset gs2)"
+proof -
+  interpret pl: poly_mod_2 "p^l" by (standard, insert m1 l0, auto)
+  let ?I = "image_mset pl.Mp" 
+  note Mp_pow [simp] = Mp_Mp_pow_is_Mp[OF l0 m1]
+  have [simp]: "pl.Mp x dvdm u = (x dvdm u)" for x u unfolding dvdm_def using Mp_pow[of x]
+    by (metis poly_mod.mult_Mp(1))
+  have gs_split: "set gs = set gs1 \<union> set gs2" using part by auto
+  from pl.unique_factorization_m_factor[OF prime uf[unfolded f] _ _ l0 refl, folded f, OF cop sf]
+  obtain hs1 hs2 where uf': "pl.unique_factorization_m f1 (lead_coeff f1, hs1)" 
+      "pl.unique_factorization_m f2 (lead_coeff f2, hs2)"
+    and gs_hs: "?I (mset gs) = hs1 + hs2"
+    unfolding pl.Mf_def split by auto
+  have gs_gs: "?I (mset gs) = ?I (mset gs1) + ?I (mset gs2)" using part 
+    by (auto, induct gs arbitrary: gs1 gs2, auto)
+  with gs_hs have gs_hs12: "?I (mset gs1) + ?I (mset gs2) = hs1 + hs2" by auto
+  note pl_dvdm_imp_p_dvdm = pl_dvdm_imp_p_dvdm[OF l0]
+  note fact = pl.unique_factorization_m_imp_factorization[OF uf]
+  have gs1: "?I (mset gs1) = {#x \<in># ?I (mset gs). x dvdm f1#}"
+    using part by (auto, induct gs arbitrary: gs1 gs2, auto)
+  also have "\<dots> = {#x \<in># hs1. x dvdm f1#} + {#x \<in># hs2. x dvdm f1#}" unfolding gs_hs by simp
+  also have "{#x \<in># hs2. x dvdm f1#} = {#}" 
+  proof (rule ccontr)
+    assume "\<not> ?thesis" 
+    then obtain x where x: "x \<in># hs2" and dvd: "x dvdm f1" by fastforce
+    from x gs_hs have "x \<in># ?I (mset gs)" by auto
+    with fact[unfolded pl.factorization_m_def]
+    have xx: "pl.irreducible\<^sub>d_m x" "monic x" by auto
+    from square_free_m_prod_imp_coprime_m[OF sf[unfolded f]] 
+    have cop_h_f: "coprime_m f1 f2" by auto  
+    from pl.factorization_m_mem_dvdm[OF pl.unique_factorization_m_imp_factorization[OF uf'(2)], of x] x 
+    have "pl.dvdm x f2" by auto
+    hence "x dvdm f2" by (rule pl_dvdm_imp_p_dvdm)
+    from cop_h_f[unfolded coprime_m_def, rule_format, OF dvd this] 
+    have "x dvdm 1" by auto
+    from dvdm_imp_degree_le[OF this xx(2) _ m1] have "degree x = 0" by auto
+    with xx show False unfolding pl.irreducible\<^sub>d_m_def by auto
+  qed
+  also have "{#x \<in># hs1. x dvdm f1#} = hs1"
+  proof (rule ccontr)
+    assume "\<not> ?thesis" 
+    from filter_mset_inequality[OF this]
+    obtain x where x: "x \<in># hs1" and dvd: "\<not> x dvdm f1" by blast
+    from pl.factorization_m_mem_dvdm[OF pl.unique_factorization_m_imp_factorization[OF uf'(1)], 
+      of x] x dvd 
+    have "pl.dvdm x f1" by auto
+    from pl_dvdm_imp_p_dvdm[OF this] dvd show False by auto
+  qed
+  finally have gs_hs1: "?I (mset gs1) = hs1" by simp
+  with gs_hs12 have "?I (mset gs2) = hs2" by auto
+  with uf' gs_hs1 have "pl.unique_factorization_m f1 (lead_coeff f1, ?I (mset gs1))"
+     "pl.unique_factorization_m f2 (lead_coeff f2, ?I (mset gs2))" by auto
+  thus "pl.unique_factorization_m f1 (lead_coeff f1, mset gs1)"
+     "pl.unique_factorization_m f2 (lead_coeff f2, mset gs2)"
+    unfolding pl.unique_factorization_m_def 
+    by (auto simp: pl.Mf_def image_mset.compositionality o_def)
+qed
+
 lemma factorization_pn_to_factorization_p: assumes fact: "poly_mod.factorization_m (p^n) C (c,fs)"
   and sf: "square_free_m C" 
   and n: "n \<noteq> 0" 
