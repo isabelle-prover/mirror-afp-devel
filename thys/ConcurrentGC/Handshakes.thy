@@ -254,16 +254,12 @@ by vcg_jackhammer
 
 lemma (in mut_m') handshake_invL[intro]:
   "\<lbrace> handshake_invL \<rbrace> mutator m'"
-apply vcg_nihe
-apply vcg_ni+
-done
+by vcg_nihe vcg_ni+
 
 lemma (in gc) mut_handshake_invL[intro]:
   notes mut_m.handshake_invL_def[inv]
   shows "\<lbrace> handshake_invL \<^bold>\<and> mut_m.handshake_invL m \<rbrace> gc \<lbrace> mut_m.handshake_invL m \<rbrace>"
-apply vcg_nihe
-apply vcg_ni+
-done
+by vcg_nihe vcg_ni+
 
 lemma (in sys) mut_handshake_invL[intro]:
   notes mut_m.handshake_invL_def[inv]
@@ -273,15 +269,11 @@ by (vcg_ni split: if_splits)
 lemma (in mut_m) gc_handshake_invL[intro]:
   notes gc.handshake_invL_def[inv]
   shows "\<lbrace> handshake_invL \<^bold>\<and> gc.handshake_invL \<rbrace> mutator m \<lbrace> gc.handshake_invL \<rbrace>"
-apply vcg_nihe
-apply vcg_ni+
-done
+by vcg_nihe vcg_ni+
 
 lemma (in mut_m) handshake_phase_inv[intro]:
   "\<lbrace> handshake_invL \<^bold>\<and> LSTP handshake_phase_inv \<rbrace> mutator m \<lbrace> LSTP handshake_phase_inv \<rbrace>"
-apply (vcg_jackhammer simp: handshake_phase_inv_def)
-apply (auto simp: hp_step_rel_def)
-done
+by (vcg_jackhammer simp: handshake_phase_inv_def) (auto simp: hp_step_rel_def)
 
 (*>*)
 text\<open>
@@ -395,9 +387,15 @@ lemma (in mut_m) phase_rel_inv[intro]:
      mutator m
    \<lbrace> LSTP phase_rel_inv \<rbrace>"
 apply (vcg_jackhammer simp: phase_rel_inv_def)
-apply (auto dest!: handshake_phase_invD
+subgoal by (auto dest!: handshake_phase_invD
              simp: handshake_phase_rel_def phase_rel_def hp_step_rel_def
-            split: handshake_phase.splits) (* takes long *)
+            split: handshake_phase.splits)
+subgoal by (auto dest!: handshake_phase_invD
+             simp: handshake_phase_rel_def phase_rel_def hp_step_rel_def
+            split: handshake_phase.splits)
+subgoal by (auto dest!: handshake_phase_invD
+             simp: handshake_phase_rel_def phase_rel_def hp_step_rel_def
+            split: handshake_phase.splits)
 done
 
 (*>*)
@@ -518,15 +516,12 @@ by vcg_nihe
 
 lemma (in mut_m) fM_rel_inv[intro]:
   "\<lbrace> LSTP fM_rel_inv \<rbrace> mutator m"
-apply (vcg_jackhammer simp: fM_rel_inv_def fM_rel_def)
-apply ((elim disjE, auto split: if_splits)[1])+
-done (* FIXME trivial but eta reduction plays merry hell *)
+by (vcg_jackhammer simp: fM_rel_inv_def fM_rel_def; elim disjE; auto split: if_splits)
+(* FIXME trivial but eta reduction plays merry hell *)
 
 lemma (in mut_m) fA_rel_inv[intro]:
   "\<lbrace> LSTP fA_rel_inv \<rbrace> mutator m"
-apply (vcg_jackhammer simp: fA_rel_inv_def)
-apply ((simp add: fA_rel_def, elim disjE, auto split: if_splits)[1])+
-done
+by (vcg_jackhammer simp: fA_rel_inv_def; simp add: fA_rel_def; elim disjE; auto split: if_splits)
 
 lemma fA_neq_locs_diff_fA_tso_empty_locs[simp]:
   "fA_neq_locs - fA_tso_empty_locs = {}"

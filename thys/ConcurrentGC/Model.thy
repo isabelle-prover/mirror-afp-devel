@@ -20,9 +20,10 @@ section\<open>The Schism garbage collector \label{sec:gc-model}\<close>
 
 text \<open>
 
-The following formalises Figures~2.8 (\<open>mark_object_fn\<close>), 2.9
-(load and store but not alloc), and 2.15 (garbage collector) of
-\citet{Pizlo201xPhd}. See also \citet{Pizlo+2010PLDI}.
+The following formalises Figures~2.8 (\<open>mark_object_fn\<close>),
+2.9 (load and store but not alloc), and 2.15 (garbage collector) of
+@{cite [cite_macro=citet] "Pizlo201xPhd"}; see also @{cite
+[cite_macro=citet] "Pizlo+2010PLDI"}.
 
 We additionally need to model TSO memory, the handshakes and
 compare-and-swap (\texttt{CAS}).  We closely model things where
@@ -277,9 +278,9 @@ text\<open>
 
 Both the mutators and the garbage collector mark references, which
 indicates that a reference is live in the current round of
-collection. This operation is defined in
-\citet[Figure~2.8]{Pizlo201xPhd}. These definitions are parameterised
-by the name of the process.
+collection. This operation is defined in @{cite [cite_macro=citet]
+\<open>Figure~2.8\<close> "{Pizlo201xPhd"}. These definitions are
+parameterised by the name of the process.
 
 \<close>
 
@@ -566,10 +567,10 @@ text \<open>
 
 The system process models the environment in which the garbage
 collector and mutators execute.  We translate the x86-TSO memory model
-due to \citet{DBLP:journals/cacm/SewellSONM10} into a CIMP process. It
-is a reactive system: it receives requests and returns values, but
-initiates no communication itself. It can, however, autonomously
-commit a write pending in a TSO store buffer.
+due to @{cite [cite_macro=citet] "DBLP:journals/cacm/SewellSONM10"}
+into a CIMP process. It is a reactive system: it receives requests and
+returns values, but initiates no communication itself. It can,
+however, autonomously commit a write pending in a TSO store buffer.
 
 The memory bus can be locked by atomic compare-and-swap (\texttt{CAS})
 instructions (and others in general). A processor is not blocked
@@ -635,13 +636,14 @@ begin
 
 text\<open>
 
-The semantics of TSO memory following
-\citet[\S3]{DBLP:journals/cacm/SewellSONM10}. This differs from the
-earlier \citet{DBLP:conf/tphol/OwensSS09} by allowing the TSO lock to
-be taken by a process with a non-empty write buffer. We omit their
-treatment of registers; these are handled by the local states of the
-other processes. The system can autonomously take the oldest write in
-the write buffer for processor \<open>p\<close> and commit it to memory,
+The semantics of TSO memory following @{cite [cite_macro=citet]
+\<open>\S3\<close> "DBLP:journals/cacm/SewellSONM10"}. This differs
+from the earlier @{cite [cite_macro=citet]
+"DBLP:conf/tphol/OwensSS09"} by allowing the TSO lock to be taken by a
+process with a non-empty write buffer. We omit their treatment of
+registers; these are handled by the local states of the other
+processes. The system can autonomously take the oldest write in the
+write buffer for processor \<open>p\<close> and commit it to memory,
 provided \<open>p\<close> either holds the lock or no processor does.
 
 \<close>
@@ -681,9 +683,10 @@ We also arrange for the object to be marked atomically (see
 practice allocation pools enable this kind of atomicity (wrt the sweep
 loop in the GC described in \S\ref{sec:gc-model-gc}).
 
-Note that the \texttt{abort} in \citet[Figure~2.9:
-Alloc]{Pizlo201xPhd} means the atomic fails and the mutator can revert
-to activity outside of \texttt{Alloc}, avoiding deadlock.
+Note that the \texttt{abort} in @[cite [cite_macro=citet]
+\<open>Figure~2.9: Alloc\<close> "Pizlo201xPhd"} means the atomic
+fails and the mutator can revert to activity outside of
+\texttt{Alloc}, avoiding deadlock.
 
 \<close>
 
@@ -747,8 +750,9 @@ text\<open>
 
 \label{sec:mut_alloc}
 
-Allocation is defined in \citet[Figure~2.9]{Pizlo201xPhd}. See
-\S\ref{sec:sys_alloc} for how we abstract it.
+Allocation is defined in @{cite [cite_macro=citet]
+\<open>Figure~2.9\<close> "Pizlo201xPhd"}. See \S\ref{sec:sys_alloc}
+for how we abstract it.
 
 \<close>
 
@@ -772,7 +776,8 @@ abbreviation discard :: "('field, 'mut, 'ref) gc_com" where
 
 text\<open>
 
-Load and store are defined in \citet[Figure~2.9]{Pizlo201xPhd}.
+Load and store are defined in @{cite [cite_macro=citet]
+\<open>Figure~2.9\<close> "Pizlo201xPhd"}.
 
 Dereferencing a reference can increase the set of mutator roots.
 
@@ -927,7 +932,7 @@ abbreviation free :: "location \<Rightarrow> (('field, 'mut, 'ref) local_state \
 text\<open>
 
 The following CIMP program encodes the garbage collector algorithm
-proposed in Figure~2.15 of \citet{Pizlo201xPhd}.
+proposed in Figure~2.15 of @{cite [cite_macro=citet] "Pizlo201xPhd"}.
 
 \<close>
 

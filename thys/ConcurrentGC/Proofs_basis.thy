@@ -22,8 +22,8 @@ text\<open>
 
 We define a pile of predicates and accessor functions for the
 process's local states. One might hope that a more sophisticated
-approach would automate all of this (cf
-\citet{DBLP:journals/entcs/SchirmerW09}).
+approach would automate all of this (cf @{cite [cite_macro=citet]
+"DBLP:journals/entcs/SchirmerW09"}).
 
 \<close>
 

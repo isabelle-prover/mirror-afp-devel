@@ -20,8 +20,8 @@ subsection\<open>Object colours, reference validity, worklist validity\<close>
 text\<open>
 
 We adopt the classical tricolour scheme for object colours due to
-\citet{DBLP:journals/cacm/DijkstraLMSS78}, but tweak it somewhat in
-the presence of worklists and TSO. Intuitively:.
+@{cite [cite_macro=citet] "DBLP:journals/cacm/DijkstraLMSS78"}, but
+tweak it somewhat in the presence of worklists and TSO. Intuitively:
 \begin{description}
 \item[White] potential garbage, not yet reached
 \item[Grey] reached, presumed live, a source of possible new references (work)
@@ -215,6 +215,8 @@ proof(clarify)
   qed
 qed
 
+lemmas reachable_induct = mut_m.reachable_induct[consumes 1, case_names root ghost_honorary_root tso_root reaches]
+
 lemma (in mut_m) mut_reachableE[consumes 1, case_names mut_root tso_write_refs]:
   "\<lbrakk> reachable y s;
      \<And>x. \<lbrakk> (x reaches y) s; x \<in> mut_roots s \<rbrakk> \<Longrightarrow> Q;
@@ -259,7 +261,8 @@ lemmas black_fun_upd[simp] = eq_imp_fun_upd[OF black_eq_imp, simplified eq_imp_s
 lemmas grey_fun_upd[simp] = eq_imp_fun_upd[OF grey_eq_imp, simplified eq_imp_simps, rule_format]
 lemmas white_fun_upd[simp] = eq_imp_fun_upd[OF white_eq_imp, simplified eq_imp_simps, rule_format]
 
-(* This demonstrates the overlap in colours *)
+text\<open> These demonstrate the overlap in colours. \<close>
+
 lemma colours_distinct[dest]:
   "black r s \<Longrightarrow> \<not>grey r s"
   "black r s \<Longrightarrow> \<not>white r s"
@@ -737,49 +740,43 @@ lemma (in mut_m) mark_object_invL[intro]:
 apply vcg_jackhammer
 
 (* store_ins_mo_ptest *)
-apply (elim disjE; fastforce)
+subgoal by (elim disjE; fastforce)
 
 (* store_ins_mo_ptest *)
-apply (drule handshake_phase_invD)
-apply (drule phase_rel_invD)
-apply (clarsimp simp: phase_rel_def)
-apply (rename_tac s s' y)
-apply (case_tac "sys_ghost_handshake_phase s\<down>", simp_all add: hp_step_rel_def)[1]
-apply (elim disjE, auto)[1]
-apply (elim disjE, auto)[1]
-apply (elim disjE, auto)[1]
-apply (elim disjE, auto)[1]
-apply (elim disjE, auto)[1]
+subgoal for s s' y
+ apply (drule handshake_phase_invD)
+ apply (drule phase_rel_invD)
+ apply (clarsimp simp: phase_rel_def)
+ apply (case_tac "sys_ghost_handshake_phase s\<down>"; simp add: hp_step_rel_def; elim disjE; simp; force)
+ done
 
-apply auto[1]
-apply auto[1]
-apply auto[1]
+subgoal by fastforce
+subgoal by fastforce
+subgoal by fastforce
 
-apply (drule handshake_phase_invD)
-apply (drule phase_rel_invD)
-apply (clarsimp simp: phase_rel_def)
-apply (rename_tac s s' y)
-apply (case_tac "sys_ghost_handshake_phase s\<down>", simp_all add: hp_step_rel_def)[1]
-    apply auto[1]
-   apply (elim disjE, auto)[1]
-  apply (elim disjE, auto)[1]
- apply (elim disjE, auto)[1]
-apply (elim disjE, auto)[1]
+subgoal for s s' y
+ apply (drule handshake_phase_invD)
+ apply (drule phase_rel_invD)
+ apply (clarsimp simp: phase_rel_def)
+ apply (case_tac "sys_ghost_handshake_phase s\<down>"; simp add: hp_step_rel_def; elim disjE; simp; force)
+ done
 
-apply auto[1]
+subgoal by fastforce
 
-apply (auto dest: obj_at_field_on_heap_no_pending_writes)[1]
+subgoal by (auto dest: obj_at_field_on_heap_no_pending_writes)
 
 (* hs get roots loop done *)
-apply force
+subgoal by force
 
 (* hs get roots loop mo phase *)
-apply (drule handshake_phase_invD)
-apply (drule phase_rel_invD)
-apply (clarsimp simp: phase_rel_def hp_step_rel_def)
+subgoal
+ apply (drule handshake_phase_invD)
+ apply (drule phase_rel_invD)
+ apply (clarsimp simp: phase_rel_def hp_step_rel_def)
+ done
 
 (* hs get roots loop choose ref *)
-apply blast
+subgoal by blast
 
 done
 
@@ -847,17 +844,17 @@ lemma (in sys) mut_get_roots_mark_object_invL[intro]:
 apply (vcg_ni simp: not_blocked_def p_not_sys
              dest!: mut_m.handshake_phase_invD[where m=m])
 
-subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
-subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
-subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
-subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
-subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
-subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
-subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
-subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
-subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
-subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
-subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.splits if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.split if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.split if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.split if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.split if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.split if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.split if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.split if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.split if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.split if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.split if_splits obj_at_splits)
+subgoal by (fastforce simp: do_write_action_def fM_rel_inv_def fM_rel_def hp_step_rel_def split: mem_write_action.split if_splits obj_at_splits)
 
 done
 
@@ -892,18 +889,14 @@ lemma (in mut_m) mut_store_del_mark_object_invL[intro]:
        \<^bold>\<and> LSTP (handshake_phase_inv \<^bold>\<and> valid_W_inv \<^bold>\<and> tso_writes_inv \<^bold>\<and> valid_refs_inv) \<rbrace>
      mutator m
    \<lbrace> mut_store_del.mark_object_invL m \<rbrace>"
-apply vcg_jackhammer
-apply (auto dest: valid_refs_invD valid_W_inv_no_mark_writes_invD split: obj_at_splits)
-done
+by vcg_jackhammer (auto dest: valid_refs_invD valid_W_inv_no_mark_writes_invD split: obj_at_splits)
 
 lemma (in mut_m) mut_get_roots_mark_object_invL[intro]:
   "\<lbrace> mut_get_roots.mark_object_invL m \<^bold>\<and> mark_object_invL \<^bold>\<and> handshake_invL \<^bold>\<and> tso_lock_invL
        \<^bold>\<and> LSTP (handshake_phase_inv \<^bold>\<and> valid_W_inv \<^bold>\<and> tso_writes_inv \<^bold>\<and> valid_refs_inv) \<rbrace>
      mutator m
    \<lbrace> mut_get_roots.mark_object_invL m \<rbrace>"
-apply vcg_jackhammer
-apply (auto dest: valid_W_inv_no_mark_writes_invD split: obj_at_splits)
-done
+by vcg_jackhammer (auto dest: valid_W_inv_no_mark_writes_invD split: obj_at_splits)
 
 lemma (in mut_m') mut_get_roots_mark_object_invL[intro]:
   "\<lbrace> mut_get_roots.mark_object_invL m \<rbrace> mutator m'"
@@ -1060,37 +1053,37 @@ apply vcg_ni
 
 subgoal by (force dest!: valid_W_invD2
               simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
-             split: mem_write_action.splits if_splits)
+             split: mem_write_action.split if_splits)
 subgoal by (force dest!: valid_W_invD2
               simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
-             split: mem_write_action.splits if_splits)
+             split: mem_write_action.split if_splits)
 subgoal by (force dest!: valid_W_invD2
               simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
-             split: mem_write_action.splits if_splits)
+             split: mem_write_action.split if_splits)
 subgoal by (force dest!: valid_W_invD2
               simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
-             split: mem_write_action.splits if_splits)
+             split: mem_write_action.split if_splits)
 subgoal by (force dest!: valid_W_invD2
               simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
-             split: mem_write_action.splits if_splits)
+             split: mem_write_action.split if_splits)
 subgoal by (force dest!: valid_W_invD2
               simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
-             split: mem_write_action.splits if_splits)
+             split: mem_write_action.split if_splits)
 subgoal by (force dest!: valid_W_invD2
               simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
-             split: mem_write_action.splits if_splits)
+             split: mem_write_action.split if_splits)
 subgoal by (force dest!: valid_W_invD2
               simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
-             split: mem_write_action.splits if_splits)
+             split: mem_write_action.split if_splits)
 subgoal by (force dest!: valid_W_invD2
               simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
-             split: mem_write_action.splits if_splits)
+             split: mem_write_action.split if_splits)
 subgoal by (force dest!: valid_W_invD2
               simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
-             split: mem_write_action.splits if_splits)
+             split: mem_write_action.split if_splits)
 subgoal by (force dest!: valid_W_invD2
               simp: do_write_action_def not_blocked_def fM_rel_def filter_empty_conv p_not_sys
-             split: mem_write_action.splits if_splits)
+             split: mem_write_action.split if_splits)
 done
 
 (*>*)

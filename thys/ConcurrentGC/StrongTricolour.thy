@@ -222,7 +222,7 @@ lemma colours_mark[simp]:
   "\<lbrakk> ghost_honorary_grey (s p) = {} \<rbrakk> \<Longrightarrow> white w (s(p := s p\<lparr>ghost_honorary_grey := {r}\<rparr>))  \<longleftrightarrow> white w s"
 by (auto simp: black_def grey_def)
 
-lemma colours_flip_fM[iff]:
+lemma colours_flip_fM[simp]:
   "fl \<noteq> sys_fM s \<Longrightarrow> black b (s(sys := (s sys)\<lparr>fM := fl, mem_write_buffers := (mem_write_buffers (s sys))(p := ws)\<rparr>)) \<longleftrightarrow> white b s \<and> \<not>grey b s"
 by (simp_all add: black_def)
 
@@ -671,14 +671,14 @@ lemma reachable_alloc[simp]:
      \<longleftrightarrow> mut_m.reachable m r' s \<or> (m' = m \<and> r' = r)" (is "?lhs \<longleftrightarrow> ?rhs")
 proof(rule iffI)
   assume ?lhs from this assms show ?rhs
-  proof(induct rule: mut_m.reachable_induct[consumes 1, case_names root ghost_honorary_root tso_root reaches])
+  proof(induct rule: reachable_induct)
     case (reaches x y) then show ?case by clarsimp (fastforce simp: mut_m.reachable_def elim: rtranclp.intros(2) split: obj_at_splits)
   qed (auto split: if_splits)
 next
   assume ?rhs then show ?lhs
   proof(rule disjE)
     assume "mut_m.reachable m r' s" then show ?thesis
-    proof(induct rule: mut_m.reachable_induct[consumes 1, case_names root ghost_honorary_root tso_root reaches])
+    proof(induct rule: reachable_induct)
       case (tso_root x) then show ?case
         by (fastforce simp: mut_m.reachable_def simp del: fun_upd_apply)
     next
@@ -1039,72 +1039,79 @@ lemma (in mut_m) mutator_phase_inv[intro]:
        \<^bold>\<and> LSTP (fA_rel_inv \<^bold>\<and> fM_rel_inv \<^bold>\<and> handshake_phase_inv \<^bold>\<and> mutators_phase_inv \<^bold>\<and> phase_rel_inv \<^bold>\<and> strong_tricolour_inv \<^bold>\<and> sys_phase_inv \<^bold>\<and> valid_refs_inv \<^bold>\<and> valid_W_inv) \<rbrace>
      mutator m
    \<lbrace> LSTP mutator_phase_inv \<rbrace>"
-apply (vcg_jackhammer dest!: handshake_phase_invD simp: fA_rel_inv_def fM_rel_inv_def)
-apply (simp_all add: mutator_phase_inv_aux_case
-              split: handshake_phase.splits if_splits)
+apply (vcg_jackhammer dest!: handshake_phase_invD simp: fA_rel_inv_def fM_rel_inv_def;
+       simp add: mutator_phase_inv_aux_case split: handshake_phase.splits if_splits)
 
-apply (drule_tac x=m in spec)
-apply (clarsimp simp: fM_rel_def hp_step_rel_def)
-apply (intro conjI impI; simp)
-apply (elim disjE; force simp: fA_rel_def) (* FIXME annoying: unfolding fA_rel early leads to non-termination *)
+subgoal
+ apply (drule_tac x=m in spec)
+ apply (clarsimp simp: fM_rel_def hp_step_rel_def)
+ apply (intro conjI impI; simp)
+  apply (elim disjE; force simp: fA_rel_def) (* FIXME annoying: unfolding fA_rel early leads to non-termination *)
+ apply (rule reachable_snapshot_inv_alloc, simp_all)
+ apply (elim disjE; force simp: fA_rel_def) (* FIXME annoying: unfolding fA_rel early leads to non-termination *)
+ done
 
-apply (rule reachable_snapshot_inv_alloc, simp_all)[1]
-apply (elim disjE; force simp: fA_rel_def) (* FIXME annoying: unfolding fA_rel early leads to non-termination *)
-
-apply (drule_tac x=m in spec)
-apply (intro conjI impI)
-  apply clarsimp
-  apply (rule marked_deletions_store_ins, assumption) (* FIXME shuffle the following into this lemma *)
-  apply (case_tac "(\<forall>opt_r'. mw_Mutate (mut_tmp_ref s\<down>) (mut_field s\<down>) opt_r' \<notin> set (sys_mem_write_buffers (mutator m) s\<down>))")
+subgoal for s s'
+ apply (drule_tac x=m in spec)
+ apply (intro conjI impI)
    apply clarsimp
-  apply (force simp: marked_deletions_def)
+   apply (rule marked_deletions_store_ins, assumption) (* FIXME shuffle the following into this lemma *)
+    apply (cases "(\<forall>opt_r'. mw_Mutate (mut_tmp_ref s\<down>) (mut_field s\<down>) opt_r' \<notin> set (sys_mem_write_buffers (mutator m) s\<down>))")
+    apply force
+   apply (force simp: marked_deletions_def)
+  apply clarsimp
+  apply (erule marked_insertions_store_ins)
+  apply (drule phase_rel_invD)
+  apply (fastforce simp: phase_rel_def hp_step_rel_def
+                   dest: reachable_blackD
+                   elim: blackD)
  apply clarsimp
- apply (erule marked_insertions_store_ins)
- apply (drule phase_rel_invD)
- apply (fastforce simp: phase_rel_def hp_step_rel_def
-                  dest: reachable_blackD
-                  elim: blackD)
-apply clarsimp
-apply (rule marked_deletions_store_ins, assumption) (* FIXME as above *)
-apply clarsimp
-apply (erule disjE)
- apply (drule phase_rel_invD)
- apply (clarsimp simp: phase_rel_def)
- apply (elim disjE, simp_all)[1]
-  apply (clarsimp simp: hp_step_rel_def)
- apply (clarsimp simp: hp_step_rel_def)
- apply (case_tac "sys_ghost_handshake_phase s\<down>", simp_all)[1] (* FIXME invert handshake_phase_rel *)
-  apply (clarsimp simp: fA_rel_def fM_rel_def)
+ apply (rule marked_deletions_store_ins, assumption) (* FIXME as above *)
+ apply clarsimp
+ apply (erule disjE)
+  apply (drule phase_rel_invD)
+  apply (clarsimp simp: phase_rel_def)
   apply (elim disjE, simp_all)[1]
+   apply (clarsimp simp: hp_step_rel_def)
+  apply (clarsimp simp: hp_step_rel_def)
+  apply (case_tac "sys_ghost_handshake_phase s\<down>", simp_all)[1] (* FIXME invert handshake_phase_rel *)
+   apply (clarsimp simp: fA_rel_def fM_rel_def)
+   apply (elim disjE, simp_all)[1]
+   apply (clarsimp simp: obj_at_field_on_heap_def split: option.splits)
+   apply (rule conjI)
+    apply fast
+   apply clarsimp
+   apply (frule_tac r=x2a in blackD(1)[OF reachable_blackD], simp_all)[1]
+   apply (rule_tac x="mut_tmp_ref s\<down>" in reachableE; auto simp: ran_def split: obj_at_splits; fail)
   apply (clarsimp simp: obj_at_field_on_heap_def split: option.splits)
   apply (rule conjI)
-   apply auto[1]
+   apply fast
   apply clarsimp
   apply (frule_tac r=x2a in blackD(1)[OF reachable_blackD], simp_all)[1]
-  apply (rule_tac x="mut_tmp_ref s\<down>" in reachableE, auto simp: ran_def split: obj_at_splits)[1]
- apply clarsimp
- apply (clarsimp simp: obj_at_field_on_heap_def split: option.splits)
-  apply (rule conjI)
-   apply auto[1]
-  apply clarsimp
- apply (frule_tac r=x2a in blackD(1)[OF reachable_blackD], simp_all)[1]
- apply (rule_tac x="mut_tmp_ref s\<down>" in reachableE, auto simp: ran_def split: obj_at_splits)[1]
-apply (force simp: marked_deletions_def)
+  apply (rule_tac x="mut_tmp_ref s\<down>" in reachableE; auto simp: ran_def split: obj_at_splits; fail)
+ apply (force simp: marked_deletions_def)
+ done
 
 (* hs_noop_done *)
-apply (drule_tac x=m in spec)
-apply (simp add: fA_rel_def fM_rel_def hp_step_rel_def)
-apply (case_tac "mut_ghost_handshake_phase s\<down>", simp_all)[1] (* FIXME invert handshake_step *)
-apply (erule marked_insertions_store_buffer_empty) (* FIXME simp? *)
-apply (erule marked_deletions_store_buffer_empty) (* FIXME simp? *)
+subgoal for s s'
+ apply (drule_tac x=m in spec)
+ apply (simp add: fA_rel_def fM_rel_def hp_step_rel_def)
+ apply (cases "mut_ghost_handshake_phase s\<down>", simp_all)[1] (* FIXME invert handshake_step *)
+ apply (erule marked_insertions_store_buffer_empty) (* FIXME simp? *)
+ apply (erule marked_deletions_store_buffer_empty) (* FIXME simp? *)
+ done
 
 (* hs_get_roots_done *)
-apply (drule_tac x=m in spec)
-apply (simp add: fA_rel_def fM_rel_def hp_step_rel_def)
+subgoal
+ apply (drule_tac x=m in spec)
+ apply (simp add: fA_rel_def fM_rel_def hp_step_rel_def)
+ done
 
 (* hs_get_work_done *)
-apply (drule_tac x=m in spec)
-apply (simp add: fA_rel_def fM_rel_def hp_step_rel_def)
+subgoal
+ apply (drule_tac x=m in spec)
+ apply (simp add: fA_rel_def fM_rel_def hp_step_rel_def)
+ done
 
 done
 
@@ -1310,7 +1317,7 @@ lemma (in sys) reachable_snapshot_inv_dequeue_ref[simp]:
 proof(rule mut_m.reachable_snapshot_invI)
   fix y assume y: "mut_m.reachable m y ?s'"
   then have "(mut_m.reachable m y s \<or> mut_m.reachable m' y s) \<and> in_snapshot y ?s'"
-  proof(induct rule: mut_m.reachable_induct[consumes 1, case_names root ghost_honorary_root tso_root reaches])
+  proof(induct rule: reachable_induct)
     case (root x) with mi md rsi sb show ?case
       apply (clarsimp simp: mut_m.reachable_snapshot_inv_def in_snapshot_def
                   simp del: fun_upd_apply)
@@ -1363,7 +1370,7 @@ proof(rule mut_m.reachable_snapshot_invI)
 
        apply clarsimp
        apply (drule (3) strong_tricolour_invD)
-       apply (force simp: black_def)
+       apply (metis (no_types) grey_protects_whiteI marked_imp_black_or_grey(1))
 
        apply clarsimp
        apply (cases "white y s") (* FIXME lemma *)
@@ -1424,12 +1431,9 @@ lemma black_heap_reachable:
   assumes vri: "valid_refs_inv s"
   shows "black y s"
 using assms
-apply (induct rule: mut_m.reachable_induct[consumes 1, case_names root tso_root reaches])
-   apply (auto simp: black_heap_def dest: valid_refs_invD)[1]
-  apply (auto simp: black_heap_def dest: valid_refs_invD)[1]
- apply (rename_tac x)
- apply (drule_tac y=x in valid_refs_invD(3), auto simp: black_heap_def)[1]
-apply (auto dest: valid_refs_invD2 simp: black_heap_def)
+apply (induct rule: reachable_induct)
+apply (simp_all add: black_heap_def valid_refs_invD)
+apply (metis obj_at_weakenE reachableE valid_refs_inv_def)
 done
 
 lemma valid_refs_inv_dequeue_ref[simp]:
@@ -1448,74 +1452,18 @@ proof(rule valid_refs_invI)
     case base with x sb vri show ?case
       apply -
       apply (subst obj_at_fun_upd)
-      apply auto
-       apply (rule exI[where x=m])
-       apply (rule exI[where x=x])
-       apply (auto simp: mut_m.tso_write_refs_def split: if_splits)[1]
-      apply (auto simp: mut_m.tso_write_refs_def split: if_splits)[1]
-      apply (rename_tac xa)
-      apply (drule arg_cong[where f=set])
-      apply (rule_tac m=m and w=xa in valid_refs_invD(5))
-      apply auto
+       apply (auto simp: mut_m.tso_write_refs_def split: if_splits intro: valid_refs_invD(5)[where m=m])
+      apply (metis list.set_intros(2) rtranclp.rtrancl_refl)
       done (* FIXME rules *)
   next
-    case (step y z) with sb vri show ?case
+    case (step y z)
+    with sb vri show ?case
       apply -
       apply (subst obj_at_fun_upd, clarsimp)
       apply (subst (asm) obj_at_fun_upd, fastforce)
       apply (clarsimp simp: points_to_mw_Mutate simp del: fun_upd_apply)
-
-      apply (elim disjE, simp_all)
-       apply (fastforce elim: rtranclp.intros(2))
-       apply (fastforce elim: rtranclp.intros(2))
-       apply (fastforce elim: rtranclp.intros(2))
-       apply (fastforce elim: rtranclp.intros(2))
-
-       apply clarsimp
-       apply (erule disjE)
-        apply clarsimp
-        apply (rule conjI)
-         apply (rule exI[where x=m'])
-         apply (fastforce elim: rtranclp.intros(2) simp: mut_m.tso_write_refs_def)
-        apply (fastforce intro!: valid_refs_invD(5)[where m=m'])
-       apply (rule conjI)
-        apply (fastforce elim: rtranclp.intros(2) simp: mut_m.tso_write_refs_def)
-       apply (rule valid_refs_invD(5)[where m=m'], auto)[1]
-
-       apply clarsimp
-       apply (erule disjE)
-        apply clarsimp
-        apply (rule conjI)
-         apply (rule exI[where x=m'])
-         apply (fastforce elim: rtranclp.intros(2) simp: mut_m.tso_write_refs_def)
-        apply (fastforce intro!: valid_refs_invD(5)[where m=m'])
-       apply (rule conjI)
-        apply (fastforce elim: rtranclp.intros(2) simp: mut_m.tso_write_refs_def)
-       apply (rule valid_refs_invD(5)[where m=m'], auto)[1]
-
-       apply clarsimp
-       apply (erule disjE)
-        apply clarsimp
-        apply (rule conjI)
-         apply (rule exI[where x=m'])
-         apply (fastforce elim: rtranclp.intros(2) simp: mut_m.tso_write_refs_def)
-        apply (fastforce intro!: valid_refs_invD(5)[where m=m'])
-       apply (rule conjI)
-        apply (fastforce elim: rtranclp.intros(2) simp: mut_m.tso_write_refs_def)
-       apply (rule valid_refs_invD(5)[where m=m'], auto)[1]
-
-       apply clarsimp
-       apply (erule disjE)
-        apply clarsimp
-        apply (rule conjI)
-         apply (rule exI[where x=m'])
-         apply (fastforce elim: rtranclp.intros(2) simp: mut_m.tso_write_refs_def)
-        apply (fastforce intro!: valid_refs_invD(5)[where m=m'])
-       apply (rule conjI)
-        apply (fastforce elim: rtranclp.intros(2) simp: mut_m.tso_write_refs_def)
-       apply (fastforce intro!: valid_refs_invD(5)[where m=m'])
-
-       done
+      apply (fastforce elim: rtranclp.intros(2) simp: mut_m.tso_write_refs_def intro: exI[where x=m'] valid_refs_invD(5)[where m=m'])
+      done
    qed
   then show "valid_ref y ?s'" by blast
 qed
@@ -1906,7 +1854,7 @@ let val ctxt = @{context} in
 THEN
   PARALLEL_ALLGOALS (
                vcg_sem_tac ctxt
-         THEN' (SELECT_GOAL (Local_Defs.unfold_tac ctxt (Inv.get ctxt)))
+         THEN' (TRY o SELECT_GOAL (Local_Defs.unfold_tac ctxt (Named_Theorems.get ctxt @{named_theorems inv})))
          THEN' (TRY o REPEAT_ALL_NEW (Tactic.match_tac ctxt @{thms conjI})) (* expose the location predicates, do not split the consequents *)
   THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.match_tac ctxt @{thms impI}))
                    (* Preserve the label sets in atS but normalise the label in at; turn s' into s *)
@@ -1914,7 +1862,7 @@ THEN
   THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac ctxt @{thms conjE}))
                    (* The effect of vcg_pre: should be cheap *)
   THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Tactic.ematch_tac ctxt @{thms thin_locs} THEN' REPEAT1 o assume_tac ctxt))
-  THEN_ALL_NEW asm_full_simp_tac (ss_only (@{thms loc_simps} @ Loc.get ctxt) ctxt)
+  THEN_ALL_NEW asm_full_simp_tac (ss_only (@{thms loc_simps} @ Named_Theorems.get ctxt @{named_theorems loc}) ctxt)
   THEN_ALL_NEW (TRY o REPEAT_ALL_NEW (Rule_Insts.thin_tac ctxt "True" []))
   THEN_ALL_NEW clarsimp_tac ctxt)
 
