@@ -26,7 +26,7 @@ imports
 begin
 
 definition vec_inv :: "'a::conjugatable_field vec \<Rightarrow> 'a vec"
-  where "vec_inv v = 1 / (v \<bullet>c v) \<cdot>\<^sub>v conjugate\<^sub>v v"
+  where "vec_inv v = 1 / (v \<bullet>c v) \<cdot>\<^sub>v conjugate v"
 
 lemma vec_inv_closed[simp]: "v \<in> carrier_vec n \<Longrightarrow> vec_inv v \<in> carrier_vec n"
   unfolding vec_inv_def by auto
@@ -40,10 +40,10 @@ lemma vec_inv[simp]:
   shows "vec_inv v \<bullet> v = 1"
 proof -
   { assume "v \<bullet>c v = 0"
-    hence "v = 0\<^sub>v n" using vec_conjugate_square_zero[OF v] by auto
+    hence "v = 0\<^sub>v n" using conjugate_square_eq_0_vec[OF v] by auto
     hence False using v0 by auto
   }
-  moreover have "conjugate\<^sub>v v \<bullet> v = v \<bullet>c v"
+  moreover have "conjugate v \<bullet> v = v \<bullet>c v"
     apply (rule comm_scalar_prod) using v by auto
   ultimately show ?thesis
     unfolding vec_inv_def
@@ -75,7 +75,7 @@ proof -
       and j2: "j<length vs" using l_def by auto
     hence id2: "vs ! i \<in> carrier_vec n"
       and id3: "map vec_inv vs ! i \<in> carrier_vec n"
-      and id4: "conjugate\<^sub>v (vs ! i) \<in> carrier_vec n"
+      and id4: "conjugate (vs ! i) \<in> carrier_vec n"
       and jd2: "vs ! j \<in> carrier_vec n" using dim by auto
     show "(?W * ?V) $$ (i,j) = (if i = j then 1 else 0)"
       unfolding times_mat_def rW cV
@@ -94,7 +94,7 @@ definition corthogonal_inv :: "'a::conjugatable_field mat \<Rightarrow> 'a mat"
   where "corthogonal_inv A = mat_of_rows (dim_row A) (map vec_inv (cols A))"
 
 definition mat_adjoint :: "'a :: conjugatable_field mat \<Rightarrow> 'a mat"
-  where "mat_adjoint A \<equiv> mat_of_rows (dim_row A) (map conjugate\<^sub>v (cols A))"
+  where "mat_adjoint A \<equiv> mat_of_rows (dim_row A) (map conjugate (cols A))"
 
 definition corthogonal_mat :: "'a::conjugatable_field mat \<Rightarrow> bool"
   where "corthogonal_mat A \<equiv>
@@ -109,25 +109,25 @@ lemma corthogonal_matD[elim]:
 proof
   have ci: "col A i : carrier_vec (dim_row A)"
    and cj: "col A j : carrier_vec (dim_row A)" by auto
-  note [simp] = vec_conjugate_conjugate_sprod[OF ci cj]
+  note [simp] = conjugate_conjugate_sprod[OF ci cj]
 
   let ?B = "mat_adjoint A * A"
   have diag: "diagonal_mat ?B" and zero: "\<And>i. i<dim_col A \<Longrightarrow> ?B $$ (i,i) \<noteq> 0"
     using orth unfolding corthogonal_mat_def Let_def by auto
   { assume "i = j"
-    hence "conjugate\<^sub>v (col A i) \<bullet> col A j \<noteq> 0"
+    hence "conjugate (col A i) \<bullet> col A j \<noteq> 0"
       using zero[OF i] unfolding mat_adjoint_def using i by simp
-    hence "conjugate (conjugate\<^sub>v (col A i) \<bullet> col A j) \<noteq> 0"
+    hence "conjugate (conjugate (col A i) \<bullet> col A j) \<noteq> 0"
       unfolding conjugate_zero_iff.
     hence "col A i \<bullet>c col A j \<noteq> 0" by simp
   }
   thus "col A i \<bullet>c col A j = 0 \<Longrightarrow> i \<noteq> j" by auto
   { assume "i \<noteq> j"
-    hence "conjugate\<^sub>v (col A i) \<bullet> col A j = 0"
+    hence "conjugate (col A i) \<bullet> col A j = 0"
       using diag
       unfolding diagonal_mat_def
       unfolding mat_adjoint_def using i j by simp
-    hence "conjugate (conjugate\<^sub>v (col A i) \<bullet> col A j) = 0" by simp
+    hence "conjugate (conjugate (col A i) \<bullet> col A j) = 0" by simp
     thus "col A i \<bullet>c col A j = 0" by simp
   }
 qed
@@ -137,13 +137,13 @@ lemma corthogonal_matI[intro]:
   shows "corthogonal_mat A"
 proof -
   { fix i j assume i: "i < dim_col A" and j: "j < dim_col A" and ij: "i \<noteq> j"
-    have "conjugate\<^sub>v (col A i) \<bullet> col A j = 0"
-      by (metis assms col_dim i j ij vec_conjugate_sprod_comm)
+    have "conjugate (col A i) \<bullet> col A j = 0"
+      by (metis assms col_dim i j ij conjugate_vec_sprod_comm)
   }
   moreover
   { fix i assume "i < dim_col A"
-    hence "conjugate\<^sub>v (col A i) \<bullet> col A i \<noteq> 0"
-      by (metis assms comm_scalar_prod vec_conjugate_closed carrier_vecI)
+    hence "conjugate (col A i) \<bullet> col A i \<noteq> 0"
+      by (metis assms comm_scalar_prod carrier_vec_conjugate carrier_vecI)
   }
   ultimately show ?thesis
   unfolding corthogonal_mat_def Let_def
@@ -410,10 +410,10 @@ proof -
     next 
       case False
       hence z: "0 < length ws" using i ws by auto
-      note cwsi = vec_conjugate_closed[OF wsi]
-      have "vec_inv ?wsi \<bullet> v = 1 / (?wsi \<bullet>c ?wsi) * (conjugate\<^sub>v ?wsi \<bullet> v)"
+      note cwsi = carrier_vec_conjugate[OF wsi]
+      have "vec_inv ?wsi \<bullet> v = 1 / (?wsi \<bullet>c ?wsi) * (conjugate ?wsi \<bullet> v)"
         unfolding vec_inv_def unfolding smult_scalar_prod_distrib[OF cwsi v].. 
-      also have "conjugate\<^sub>v ?wsi \<bullet> v = v \<bullet>c ?wsi"
+      also have "conjugate ?wsi \<bullet> v = v \<bullet>c ?wsi"
         using comm_scalar_prod[OF cwsi v].
       also have "... = 0"
         using corthogonalD[OF ws(2) z i2] False unfolding ws0 by auto

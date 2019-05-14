@@ -50,10 +50,6 @@ lemma rev_unsimp: "rev xs @ (r # rs) = rev (r#xs) @ rs" by(induct xs,auto)
 
 
 (* TODO: unify *)
-no_notation Gram_Schmidt.cscalar_prod (infix "\<bullet>c" 70)
-
-lemma vec_conjugate_connect[simp]: "Gram_Schmidt.vec_conjugate = conjugate"
-  by (auto simp: vec_conjugate_def conjugate_vec_def)
 
 lemma corthogonal_is_orthogonal[simp]: 
   "corthogonal (xs :: 'a :: trivial_conjugatable_ordered_field vec list) = orthogonal xs"

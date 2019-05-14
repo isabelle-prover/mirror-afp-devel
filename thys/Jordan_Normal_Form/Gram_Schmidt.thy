@@ -18,118 +18,6 @@ imports
   Conjugate
 begin
 
-subsection \<open>Conjugates of Vectors\<close>
-
-definition vec_conjugate::"'a :: conjugate vec \<Rightarrow> 'a vec" ("conjugate\<^sub>v")
-  where "conjugate\<^sub>v v = vec (dim_vec v) (\<lambda>i. conjugate (v $ i))"
-
-lemma vec_conjugate_index[simp]:
-  shows "i < dim_vec v \<Longrightarrow> conjugate\<^sub>v v $ i = conjugate (v $ i)"
-    and "dim_vec (conjugate\<^sub>v v) = dim_vec v"
-  unfolding vec_conjugate_def by auto
-
-lemma vec_conjugate_closed[simp]: "v : carrier_vec n \<Longrightarrow> conjugate\<^sub>v v : carrier_vec n"
-  unfolding vec_conjugate_def by auto
-
-lemma vec_conjugate_dist_add:
-  fixes v w :: "'a :: conjugatable_ring vec"
-  assumes dim: "v : carrier_vec n" "w : carrier_vec n"
-  shows "conjugate\<^sub>v (v + w) = conjugate\<^sub>v v + conjugate\<^sub>v w"
-  by (rule, insert dim, auto simp: conjugate_dist_add)
-
-lemma vec_conjugate_uminus:
-  fixes v w :: "'a :: conjugatable_ring vec"
-  shows "- (conjugate\<^sub>v v) = conjugate\<^sub>v (- v)"
-  by (rule, auto simp:conjugate_neg)
-
-lemma vec_conjugate_zero[simp]:
-  "conjugate\<^sub>v (0\<^sub>v n :: 'a :: conjugatable_ring vec) = 0\<^sub>v n" by auto
-
-lemma vec_conjugate_id[simp]: "conjugate\<^sub>v (conjugate\<^sub>v v) = v"
-  unfolding vec_conjugate_def by auto
-
-lemma vec_conjugate_cancel_iff[simp]: "conjugate\<^sub>v v = conjugate\<^sub>v w \<longleftrightarrow> v = w"
-  (is "?v = ?w \<longleftrightarrow> _")
-proof(rule iffI)
-  assume cvw: "?v = ?w" show "v = w"
-  proof(rule)
-    have "dim_vec ?v = dim_vec ?w" using cvw by auto
-    thus dim: "dim_vec v = dim_vec w" by simp
-    fix i assume i: "i < dim_vec w"
-    hence "conjugate\<^sub>v v $ i = conjugate\<^sub>v w $ i" using cvw by auto
-    hence "conjugate (v$i) = conjugate (w $ i)" using i dim by auto
-    thus "v $ i = w $ i" by auto
-  qed
-qed auto
-
-lemma vec_conjugate_zero_iff[simp]:
-  fixes v :: "'a :: conjugatable_ring vec"
-  shows "conjugate\<^sub>v v = 0\<^sub>v n \<longleftrightarrow> v = 0\<^sub>v n"
-  using vec_conjugate_cancel_iff[of _ "0\<^sub>v n :: 'a vec"] by auto
-
-lemma vec_conjugate_dist_smult:
-  fixes k :: "'a :: conjugatable_ring"
-  shows "conjugate\<^sub>v (k \<cdot>\<^sub>v v) = conjugate k \<cdot>\<^sub>v conjugate\<^sub>v v"
-  unfolding vec_conjugate_def
-  apply(rule) using conjugate_dist_mul by auto
-
-lemma vec_conjugate_dist_sprod:
-  fixes v w :: "'a :: conjugatable_ring vec"
-  assumes v[simp]: "v : carrier_vec n" and w[simp]: "w : carrier_vec n"
-  shows "conjugate (v \<bullet> w) = conjugate\<^sub>v v \<bullet> conjugate\<^sub>v w"
-  unfolding scalar_prod_def
-  apply (subst sum_conjugate[OF finite_atLeastLessThan])
-  unfolding vec_conjugate_index
-proof (rule sum.cong[OF refl])
-  fix i assume "i : {0..<dim_vec w}"
-  hence [simp]:"i < dim_vec v" "i < dim_vec w"
-    unfolding carrier_vecD[OF v] carrier_vecD[OF w]
-    using atLeastLessThan_iff by auto
-  show "conjugate (v $ i * w $ i) = conjugate\<^sub>v v $ i * conjugate\<^sub>v w $ i"
-    using conjugate_dist_mul vec_conjugate_index by auto
-qed
-
-abbreviation cscalar_prod :: "'a vec \<Rightarrow> 'a vec \<Rightarrow> 'a :: conjugatable_ring" (infix "\<bullet>c" 70)
-  where "(\<bullet>c) == \<lambda>v w. v \<bullet> conjugate\<^sub>v w"
-
-lemma vec_conjugate_conjugate_sprod[simp]:
-  assumes v[simp]: "v : carrier_vec n" and w[simp]: "w : carrier_vec n"
-  shows "conjugate (conjugate\<^sub>v v \<bullet> w) = v \<bullet>c w"
-  apply (subst vec_conjugate_dist_sprod[of _ n]) by auto
-
-lemma vec_conjugate_sprod_comm:
-  fixes v w :: "'a :: {conjugatable_ring, comm_ring} vec"
-  assumes "v : carrier_vec n" and "w : carrier_vec n"
-  shows "v \<bullet>c w = (conjugate\<^sub>v w \<bullet> v)"
-  unfolding scalar_prod_def using assms by(subst sum.ivl_cong, auto simp: ac_simps)
-
-lemma vec_conjugate_square_zero:
-  fixes v :: "'a :: {conjugatable_ordered_ring,semiring_no_zero_divisors} vec"
-  assumes v[simp]: "v : carrier_vec n"
-  shows "v \<bullet>c v = 0 \<longleftrightarrow> v = 0\<^sub>v n"
-proof
-  have dim: "dim_vec v = dim_vec (0\<^sub>v n)" by auto
-  let ?f = "\<lambda>i. v$i * conjugate (v$i)"
-  let ?I = "{0..<dim_vec v}"
-  have f: "?f : ?I \<rightarrow> { y. y \<ge> 0 }" using conjugate_square_positive by auto
-  assume vv0: "v \<bullet>c v = 0"
-  hence fI0: "?f ` ?I \<subseteq> {0}"
-    unfolding scalar_prod_def
-    using positive_sum[OF _ f] by auto
-  { fix i assume i: "i < dim_vec v"
-    hence "?f i = 0" using fI0 by fastforce
-    hence "v $ i = 0" using conjugate_square_0 by auto
-    hence "v $ i = 0\<^sub>v n $ i" using i v by auto
-  }
-  from eq_vecI[OF this] show "v = 0\<^sub>v n" by auto
-  next assume "v = 0\<^sub>v n" thus "v \<bullet>c v = 0"
-    unfolding scalar_prod_def by auto
-qed
-
-lemma vec_conjugate_rat[simp]: "(conjugate\<^sub>v :: rat vec \<Rightarrow> rat vec) = (\<lambda>x. x)" by force
-lemma vec_conjugate_real[simp]: "(conjugate\<^sub>v :: real vec \<Rightarrow> real vec) = (\<lambda>x. x)" by force
-
-
 subsection \<open>Orthogonality with Conjugates\<close>
 
 definition "corthogonal vs \<equiv>
@@ -381,7 +269,7 @@ lemma adjust_zero:
 proof -
   define u where "u = us!i"
   have u[simp]: "u : carrier_vec n" using i U u_def by auto
-  hence cu[simp]: "conjugate\<^sub>v u : carrier_vec n" by auto
+  hence cu[simp]: "conjugate u : carrier_vec n" by auto
   have uU: "u : set us" using i u_def by auto
   let ?g = "\<lambda>u'::'a vec. (-(w \<bullet>c u')/(u' \<bullet>c u') \<cdot>\<^sub>v u')"
   have g: "?g : set us \<rightarrow> carrier_vec n" using w U by auto
@@ -391,7 +279,7 @@ proof -
   { fix u' assume u': "(u'::'a vec) : carrier_vec n"
     have [simp]: "dim_vec u = n" by auto
     have "?f u' = (- (w \<bullet>c u') / (u' \<bullet>c u')) * (u' \<bullet>c u)"
-      using scalar_prod_smult_left[of "u'" "conjugate\<^sub>v u"]
+      using scalar_prod_smult_left[of "u'" "conjugate u"]
       unfolding carrier_vecD[OF u] carrier_vecD[OF u'] by auto
   } note conv = this
   have "?f : ?U \<rightarrow> {0}"
@@ -463,7 +351,7 @@ proof
   have dist: "distinct us" using corthogonal_distinct orth by auto
   have aw[simp]: "?aw : carrier_vec n" using U dist by auto
   note adjust_nonzero[OF U dist w] wsU
-  hence aw0: "?aw \<bullet>c ?aw \<noteq> 0" using vec_conjugate_square_zero[OF aw] by auto
+  hence aw0: "?aw \<bullet>c ?aw \<noteq> 0" using conjugate_square_eq_0_vec[OF aw] by auto
   fix i j assume i: "i < length (?aw # us)" and j: "j < length (?aw # us)"
   show "((?aw # us) ! i \<bullet>c (?aw # us) ! j = 0) = (i \<noteq> j)"
   proof (cases "i = 0")
@@ -483,14 +371,14 @@ proof
       hence ifold: "i = i'+1" using False by auto
       hence i': "i' < length us" using i by auto
       have [simp]: "us ! i' : carrier_vec n" using U i' by auto
-      hence cu': "conjugate\<^sub>v (us ! i') : carrier_vec n" by auto
+      hence cu': "conjugate (us ! i') : carrier_vec n" by auto
       show ?thesis
       proof (cases "j = 0")
         case True
           { assume "?aw \<bullet>c us ! i' = 0"
             hence "conjugate (?aw \<bullet>c us ! i') = 0" using conjugate_zero by auto
-            hence "conjugate\<^sub>v ?aw \<bullet> us ! i' = 0"
-              using vec_conjugate_dist_sprod[OF aw cu'] by auto
+            hence "conjugate ?aw \<bullet> us ! i' = 0"
+              using conjugate_sprod_vec[OF aw cu'] by auto
           }
           thus ?thesis unfolding True ifold
           using adjust_zero[OF U orth w i']
