@@ -363,7 +363,7 @@ proof (rule ccontr)
         by (simp add: complex.expand)
 
       have "inner_prod v v= (\<Sum>i = 0..<m. ((v $ i) * conjugate (v $ i)))"
-        unfolding scalar_prod_def vec_conjugate_def using neg dimA by auto
+        unfolding scalar_prod_def conjugate_vec_def using neg dimA by auto
       also have "\<dots> = (\<Sum>i = 0..<m. (conjugate (v $ i) * (v $ i)))"
         by (meson mult.commute)
       also have "\<dots> = (\<Sum>i = 0..<m. cmod (conjugate (v $ i) * (v $ i)))" using vi by auto
@@ -581,7 +581,7 @@ lemma trace_adjoint_eq_u:
   fixes A :: "complex mat"
   shows "trace (A * adjoint A) = (\<Sum> i \<in> {0 ..< dim_row A}. \<Sum> j \<in> {0 ..< dim_col A}. (norm(A $$ (i,j)))\<^sup>2)"
 proof -
-  have "trace (A * adjoint A) = (\<Sum> i \<in> {0 ..< dim_row A}. row A i \<bullet> conjugate\<^sub>v (row A i))"
+  have "trace (A * adjoint A) = (\<Sum> i \<in> {0 ..< dim_row A}. row A i \<bullet> conjugate (row A i))"
     by (simp add: trace_def cmod_def adjoint_def scalar_prod_def)
   also have "\<dots> = (\<Sum> i \<in> {0 ..< dim_row A}. \<Sum> j \<in> {0 ..< dim_col A}. (norm(A $$ (i,j)))\<^sup>2)"
     proof (simp add: scalar_prod_def cmod_def)

@@ -78,10 +78,10 @@ qed
 
 subsection \<open>Conjugate of a vector\<close>
 
-lemma vec_conjugate_scalar_prod:
+lemma conjugate_scalar_prod:
   fixes v w :: "'a::conjugatable_ring vec"
   assumes "dim_vec v = dim_vec w"
-  shows "conjugate (v \<bullet> w) = vec_conjugate v \<bullet> vec_conjugate w"
+  shows "conjugate (v \<bullet> w) = conjugate v \<bullet> conjugate w"
   using assms by (simp add: scalar_prod_def sum_conjugate conjugate_dist_mul)
 
 subsection \<open>Inner product\<close>
@@ -89,13 +89,13 @@ subsection \<open>Inner product\<close>
 abbreviation inner_prod :: "'a vec \<Rightarrow> 'a vec \<Rightarrow> 'a :: conjugatable_ring"
   where "inner_prod v w \<equiv> w \<bullet>c v"
 
-lemma vec_conjugate_scalar_prod_Im [simp]:
+lemma conjugate_scalar_prod_Im [simp]:
   "Im (v \<bullet>c v) = 0"
-  by (simp add: scalar_prod_def vec_conjugate_def sum.neutral)
+  by (simp add: scalar_prod_def conjugate_vec_def sum.neutral)
 
-lemma vec_conjugate_scalar_prod_Re [simp]:
+lemma conjugate_scalar_prod_Re [simp]:
   "Re (v \<bullet>c v) \<ge> 0"
-  by (simp add: scalar_prod_def vec_conjugate_def sum_nonneg)
+  by (simp add: scalar_prod_def conjugate_vec_def sum_nonneg)
 
 lemma self_cscalar_prod_geq_0:
   fixes v ::  "'a::conjugatable_ordered_field vec"
@@ -107,10 +107,11 @@ lemma inner_prod_distrib_left:
   assumes dimu: "u \<in> carrier_vec n" and dimv:"v \<in> carrier_vec n" and dimw: "w \<in> carrier_vec n" 
   shows "inner_prod (v + w) u = inner_prod v u + inner_prod w u" (is "?lhs = ?rhs")
 proof -
-  have dimcv: "conjugate\<^sub>v v \<in> carrier_vec n" and dimcw: "conjugate\<^sub>v w \<in> carrier_vec n" using assms by auto
-  have dimvw: "conjugate\<^sub>v (v + w) \<in> carrier_vec n" using assms by auto
-  have "u \<bullet> (conjugate\<^sub>v (v + w)) = u \<bullet> conjugate\<^sub>v v + u \<bullet> conjugate\<^sub>v w"
-    by (simp add: vec_conjugate_dist_add[OF dimv dimw] scalar_prod_add_distrib[OF dimu dimcv dimcw])
+  have dimcv: "conjugate v \<in> carrier_vec n" and dimcw: "conjugate w \<in> carrier_vec n" using assms by auto
+  have dimvw: "conjugate (v + w) \<in> carrier_vec n" using assms by auto
+  have "u \<bullet> (conjugate (v + w)) = u \<bullet> conjugate v + u \<bullet> conjugate w"
+    using dimv dimw dimu dimcv dimcw 
+    by (metis conjugate_add_vec scalar_prod_add_distrib)
   then show ?thesis by auto
 qed
 
@@ -120,8 +121,8 @@ lemma inner_prod_distrib_right:
   shows "inner_prod u (v + w) = inner_prod u v + inner_prod u w" (is "?lhs = ?rhs")
 proof -
   have dimvw: "v + w \<in> carrier_vec n" using assms by auto
-  have dimcu: "conjugate\<^sub>v u \<in> carrier_vec n" using assms by auto
-  have "(v + w) \<bullet> (conjugate\<^sub>v u) = v \<bullet> conjugate\<^sub>v u + w \<bullet> conjugate\<^sub>v u"
+  have dimcu: "conjugate u \<in> carrier_vec n" using assms by auto
+  have "(v + w) \<bullet> (conjugate u) = v \<bullet> conjugate u + w \<bullet> conjugate u"
     apply (simp add: comm_scalar_prod[OF dimvw dimcu])
     apply (simp add: scalar_prod_add_distrib[OF dimcu dimv dimw])
     apply (insert dimv dimw dimcu, simp add: comm_scalar_prod[of _ n])
@@ -135,8 +136,8 @@ lemma inner_prod_minus_distrib_right:
   shows "inner_prod u (v - w) = inner_prod u v - inner_prod u w" (is "?lhs = ?rhs")
 proof -
   have dimvw: "v - w \<in> carrier_vec n" using assms by auto
-  have dimcu: "conjugate\<^sub>v u \<in> carrier_vec n" using assms by auto
-  have "(v - w) \<bullet> (conjugate\<^sub>v u) = v \<bullet> conjugate\<^sub>v u - w \<bullet> conjugate\<^sub>v u"
+  have dimcu: "conjugate u \<in> carrier_vec n" using assms by auto
+  have "(v - w) \<bullet> (conjugate u) = v \<bullet> conjugate u - w \<bullet> conjugate u"
     apply (simp add: comm_scalar_prod[OF dimvw dimcu])
     apply (simp add: scalar_prod_minus_distrib[OF dimcu dimv dimw])
     apply (insert dimv dimw dimcu, simp add: comm_scalar_prod[of _ n])
@@ -202,7 +203,7 @@ proof -
   have cnj_rw: "(cnj a) = cnj_a" 
     unfolding a_def by (simp)
   have rw_0: "cnj (inner_prod x y) + a * (inner_prod y y) = 0"
-    unfolding a_def cnj_a_def using assms(1) assms(2) vec_conjugate_square_zero by fastforce
+    unfolding a_def cnj_a_def using assms(1) assms(2) conjugate_square_eq_0_vec by fastforce
   have "0 \<le>  (inner_prod x x + a * (inner_prod x y) + (cnj a) * ((cnj (inner_prod x y)) + a * (inner_prod y y)))"
     using aux_Cauchy assms by auto
   also have "\<dots> =  (inner_prod x x + a * (inner_prod x y))" unfolding rw_0 by auto
@@ -242,13 +243,13 @@ lemma adjoint_eval:
 
 lemma adjoint_row:
   assumes "i < dim_col A"
-  shows "row (adjoint A) i = vec_conjugate (col A i)"
+  shows "row (adjoint A) i = conjugate (col A i)"
   apply (rule eq_vecI)
   using assms by (auto simp add: adjoint_eval)
 
 lemma adjoint_col:
   assumes "i < dim_row A"
-  shows "col (adjoint A) i = vec_conjugate (row A i)"
+  shows "col (adjoint A) i = conjugate (row A i)"
   apply (rule eq_vecI)
   using assms by (auto simp add: adjoint_eval)
 
@@ -310,8 +311,8 @@ lemma adjoint_mult:
 proof (rule eq_matI, auto simp add: adjoint_eval adjoint_row adjoint_col)
   fix i j
   assume "i < dim_col B" "j < dim_row A"
-  show "conjugate (row A j \<bullet> col B i) = vec_conjugate (col B i) \<bullet> vec_conjugate (row A j)"
-    using assms apply (simp add: vec_conjugate_scalar_prod)
+  show "conjugate (row A j \<bullet> col B i) = conjugate (col B i) \<bullet> conjugate (row A j)"
+    using assms apply (simp add: conjugate_scalar_prod)
     apply (subst comm_scalar_prod[where n="dim_row B"])
     by (auto simp add: carrier_vecI)
 qed
@@ -551,7 +552,7 @@ lemma vec_norm_zero:
   assumes dim: "v \<in> carrier_vec n"
   shows "vec_norm v = 0 \<longleftrightarrow> v = 0\<^sub>v n"
   unfolding vec_norm_def
-  by (subst vec_conjugate_square_zero[OF dim, symmetric], rule csqrt_eq_0)
+  by (subst conjugate_square_eq_0_vec[OF dim, symmetric], rule csqrt_eq_0)
 
 lemma vec_norm_ge_0:
   fixes v ::  "complex vec"
@@ -617,7 +618,7 @@ proof (intro conjI impI)
   with dim show "w = 0\<^sub>v (dim_vec w) \<Longrightarrow> v = 0\<^sub>v (dim_vec v) \<Longrightarrow> v \<bullet>c w = vec_norm v * vec_norm w * (v \<bullet>c w)" by auto
   {
     assume asm: "w = 0\<^sub>v n" "v \<noteq> 0\<^sub>v n"
-    then have w0: "conjugate\<^sub>v w = 0\<^sub>v n" by auto
+    then have w0: "conjugate w = 0\<^sub>v n" by auto
     with dim0 have "(1 / vec_norm v \<cdot>\<^sub>v v) \<bullet>c w = 0" by auto
     then moreover have rhs: "vec_norm v * vec_norm w * ((1 / vec_norm v \<cdot>\<^sub>v v) \<bullet>c w) = 0" by auto
     moreover have "v \<bullet>c w = 0" using w0 dim0 by auto
@@ -638,9 +639,9 @@ proof (intro conjI impI)
     then have cw: "conjugate (1 / vec_norm w) = 1 / vec_norm w" by (simp add: complex_eq_iff complex_is_Real_iff) 
     from dim0 have 
       "((1 / vec_norm v \<cdot>\<^sub>v v) \<bullet>c (1 / vec_norm w \<cdot>\<^sub>v w)) = 1 / vec_norm v * (v \<bullet>c (1 / vec_norm w \<cdot>\<^sub>v w))" by auto
-    also have "\<dots> = 1 / vec_norm v * (v \<bullet> (conjugate (1 / vec_norm w) \<cdot>\<^sub>v conjugate\<^sub>v w))"
-      by (subst vec_conjugate_dist_smult, auto)
-    also have "\<dots> = 1 / vec_norm v * conjugate (1 / vec_norm w) * (v \<bullet> conjugate\<^sub>v w)" using dim by auto
+    also have "\<dots> = 1 / vec_norm v * (v \<bullet> (conjugate (1 / vec_norm w) \<cdot>\<^sub>v conjugate w))"
+      by (subst conjugate_smult_vec, auto)
+    also have "\<dots> = 1 / vec_norm v * conjugate (1 / vec_norm w) * (v \<bullet> conjugate w)" using dim by auto
     also have "\<dots> = 1 / vec_norm v * (1 / vec_norm w) * (v \<bullet>c w)" using vec_norm_ge_0 cw by auto
     finally have eq1: "(1 / vec_norm v \<cdot>\<^sub>v v) \<bullet>c (1 / vec_norm w \<cdot>\<^sub>v w) = 1 / vec_norm v * (1 / vec_norm w) * (v \<bullet>c w)" .
     then have "vec_norm v * vec_norm w * ((1 / vec_norm v \<cdot>\<^sub>v v) \<bullet>c (1 / vec_norm w \<cdot>\<^sub>v w)) = (v \<bullet>c w)" 
@@ -657,13 +658,13 @@ lemma normalized_vec_norm :
   unfolding vec_normalize_def
 proof (simp, rule conjI)
   show "v = 0\<^sub>v (dim_vec v) \<longrightarrow> v \<bullet>c v = 1" using neq0 dim_v by auto
-  have dim_a: "(vec_normalize v) \<in> carrier_vec n" "conjugate\<^sub>v (vec_normalize v) \<in> carrier_vec n" using dim_v vec_normalize_def by auto 
+  have dim_a: "(vec_normalize v) \<in> carrier_vec n" "conjugate (vec_normalize v) \<in> carrier_vec n" using dim_v vec_normalize_def by auto 
   note dim = dim_v dim_a
   have nvge0: "vec_norm v > 0" using vec_norm_ge_0 neq0 dim_v by auto
   then have vvvv: "v \<bullet>c v = (vec_norm v) * (vec_norm v)" unfolding vec_norm_def by (metis power2_csqrt power2_eq_square)
   from nvge0 have "conjugate (vec_norm v) = vec_norm v" by (simp add: complex_eq_iff complex_is_Real_iff) 
   then have "v \<bullet>c (1 / vec_norm v \<cdot>\<^sub>v v) = 1 / vec_norm v * (v \<bullet>c v)" 
-    by (subst vec_conjugate_dist_smult, auto)
+    by (subst conjugate_smult_vec, auto)
   also have "\<dots> = 1 / vec_norm v * vec_norm v * vec_norm v" using vvvv by auto
   also have "\<dots> = vec_norm v" by auto
   finally have "v \<bullet>c (1 / vec_norm v \<cdot>\<^sub>v v) = vec_norm v".
@@ -726,7 +727,7 @@ proof (rule allI, rule impI, rule allI, rule impI, goal_cases)
   have eq1: "\<And>j k. j < ?m \<Longrightarrow> k < ?m \<Longrightarrow> ((vs ! j) \<bullet>c (vs ! k) = 0) = (j \<noteq> k)" using assms unfolding corthogonal_def by auto
   then have "\<And>k. k < ?m \<Longrightarrow> (vs ! k) \<bullet>c (vs ! k) \<noteq> 0 " by auto
   then have "\<And>k. k < ?m \<Longrightarrow> (vs ! k) \<noteq> (0\<^sub>v n)" using dim 
-    by (auto simp add: vec_conjugate_square_zero[of _ n, OF dim])
+    by (auto simp add: conjugate_square_eq_0_vec[of _ n, OF dim])
   then have vnneq0: "\<And>k. k < ?m \<Longrightarrow> vec_norm (vs ! k) \<noteq> 0" using vec_norm_zero[OF dim] by auto
   then have i0: "vec_norm (vs ! i) \<noteq> 0" and j0: "vec_norm (vs ! j) \<noteq> 0" using c by auto
   have "(vs ! i) \<bullet>c (vs ! j) = vec_norm (vs ! i) * vec_norm (vs ! j) * (vec_normalize (vs ! i) \<bullet>c vec_normalize (vs ! j))"
@@ -756,7 +757,7 @@ proof -
     have dimws: "(ws ! i) \<in> carrier_vec n" "(ws ! j) \<in> carrier_vec n" using W len i j by auto
     have "(ws ! i) \<bullet>c (ws ! i) \<noteq> 0" "(ws ! j) \<bullet>c (ws ! j) \<noteq> 0" using orth corthogonal_def[of ws] len i j by auto
     then have neq0: "(ws ! i) \<noteq> 0\<^sub>v n" "(ws ! j) \<noteq> 0\<^sub>v n"
-      by (auto simp add: vec_conjugate_square_zero[of "ws ! i" n])
+      by (auto simp add: conjugate_square_eq_0_vec[of "ws ! i" n])
     then have "vec_norm (ws ! i) > 0" "vec_norm (ws ! j) > 0" using vec_norm_ge_0 dimws by auto
     then have ge0: "vec_norm (ws ! i) * vec_norm (ws ! j) > 0" by auto
     have ws': "vs ! i = vec_normalize (ws ! i)" 
@@ -780,9 +781,9 @@ proof -
       done
     have "(mat_adjoint W * W) $$ (j, i) = row (mat_adjoint W) j \<bullet> col W i"
       by (insert dimW i j dimaW, auto)
-    also have "\<dots> = conjugate\<^sub>v (col W j) \<bullet> col W i" 
+    also have "\<dots> = conjugate (col W j) \<bullet> col W i" 
       by (insert dimW i j dimaW, auto simp add: mat_adjoint_def)
-    also have "\<dots> = col W i \<bullet> conjugate\<^sub>v (col W j)" using comm_scalar_prod[of "col W i" n] dimW by auto
+    also have "\<dots> = col W i \<bullet> conjugate (col W j)" using comm_scalar_prod[of "col W i" n] dimW by auto
     also have "\<dots> = (vs ! i) \<bullet>c (vs ! j)" using W_def col_mat_of_cols i j len cWk by auto
     finally have "(mat_adjoint W * W) $$ (j, i) = (vs ! i) \<bullet>c (vs ! j)".
     then have "(mat_adjoint W * W) $$ (j, i) = (if (j = i) then 1 else 0)"
@@ -1322,7 +1323,7 @@ proof -
   define w where "(w::complex vec) = unit_vec n i"
   have "A *\<^sub>v w = col A i" using i dimA w_def by auto
   then have 1: "inner_prod w (A *\<^sub>v w) = inner_prod w (col A i)" using w_def by auto
-  have "conjugate\<^sub>v w = w" unfolding w_def unit_vec_def vec_conjugate_def using i by auto
+  have "conjugate w = w" unfolding w_def unit_vec_def conjugate_vec_def using i by auto
   then have 2: "inner_prod w (col A i) = A$$(i, i)" using i dimA w_def by auto
   from 1 2 show "inner_prod w (A *\<^sub>v w) = A$$(i, i)" by auto
 qed
@@ -1419,7 +1420,7 @@ qed
 subsection \<open>Outer product\<close>
 
 definition outer_prod :: "'a::conjugatable_field vec \<Rightarrow> 'a vec \<Rightarrow> 'a mat" where
-  "outer_prod v w = mat (dim_vec v) 1 (\<lambda>(i, j). v $ i) * mat 1 (dim_vec w) (\<lambda>(i, j). (conjugate\<^sub>v w) $ j)"
+  "outer_prod v w = mat (dim_vec v) 1 (\<lambda>(i, j). v $ i) * mat 1 (dim_vec w) (\<lambda>(i, j). (conjugate w) $ j)"
 
 lemma outer_prod_dim[simp]:
   fixes v w :: "'a::conjugatable_field vec"
@@ -1430,7 +1431,7 @@ lemma outer_prod_dim[simp]:
 lemma mat_of_vec_mult_eq_scalar_prod:
   fixes v w :: "'a::conjugatable_field vec"
   assumes "v \<in> carrier_vec n" and "w \<in> carrier_vec n"
-  shows "mat 1 (dim_vec v) (\<lambda>(i, j). (conjugate\<^sub>v v) $ j) * mat (dim_vec w) 1 (\<lambda>(i, j). w $ i) 
+  shows "mat 1 (dim_vec v) (\<lambda>(i, j). (conjugate v) $ j) * mat (dim_vec w) 1 (\<lambda>(i, j). w $ i) 
     = mat 1 1 (\<lambda>k. inner_prod v w)"
   apply (rule eq_matI) using assms apply (simp add: scalar_prod_def) apply (rule sum.cong) by auto
 
@@ -1447,9 +1448,9 @@ lemma outer_prod_mult_outer_prod:
   shows "outer_prod a b * outer_prod c d = inner_prod b c \<cdot>\<^sub>m outer_prod a d"
 proof -
   let ?ma = "mat (dim_vec a) 1 (\<lambda>(i, j). a $ i)"
-  let ?mb = "mat 1 (dim_vec b) (\<lambda>(i, j). (conjugate\<^sub>v b) $ j)"
+  let ?mb = "mat 1 (dim_vec b) (\<lambda>(i, j). (conjugate b) $ j)"
   let ?mc = "mat (dim_vec c) 1 (\<lambda>(i, j). c $ i)"
-  let ?md = "mat 1 (dim_vec d) (\<lambda>(i, j). (conjugate\<^sub>v d) $ j)"
+  let ?md = "mat 1 (dim_vec d) (\<lambda>(i, j). (conjugate d) $ j)"
   have "(?ma * ?mb) * (?mc * ?md) = ?ma * (?mb * (?mc * ?md))"
     apply (subst assoc_mult_mat[of "?ma" d1 1 "?mb" d2 "?mc * ?md" d3] )
     using assms by auto
@@ -1474,7 +1475,7 @@ lemma index_outer_prod:
 lemma mat_of_vec_mult_vec:
   fixes a b c :: "'a::conjugatable_field vec"
   assumes a: "a \<in> carrier_vec d" and b: "b \<in> carrier_vec d"
-  shows "mat 1 d (\<lambda>(i, j). (conjugate\<^sub>v a) $ j) *\<^sub>v b = vec 1 (\<lambda>k. inner_prod a b)"
+  shows "mat 1 d (\<lambda>(i, j). (conjugate a) $ j) *\<^sub>v b = vec 1 (\<lambda>k. inner_prod a b)"
   apply (rule eq_vecI) 
    apply (simp add: scalar_prod_def carrier_vecD[OF a] carrier_vecD[OF b])
   apply (rule sum.cong) by auto
@@ -1494,10 +1495,10 @@ lemma outer_prod_mult_vec:
 proof -
   have "outer_prod a b *\<^sub>v c 
     = mat d1 1 (\<lambda>(i, j). a $ i) 
-    * mat 1 d2 (\<lambda>(i, j). (conjugate\<^sub>v b) $ j)
+    * mat 1 d2 (\<lambda>(i, j). (conjugate b) $ j)
     *\<^sub>v c" unfolding outer_prod_def using assms by auto
   also have "\<dots> = mat d1 1 (\<lambda>(i, j). a $ i) 
-    *\<^sub>v (mat 1 d2 (\<lambda>(i, j). (conjugate\<^sub>v b) $ j)
+    *\<^sub>v (mat 1 d2 (\<lambda>(i, j). (conjugate b) $ j)
     *\<^sub>v c)" apply (subst assoc_mult_mat_vec) using assms by auto
   also have "\<dots> = mat d1 1 (\<lambda>(i, j). a $ i) 
     *\<^sub>v vec 1 (\<lambda>k. inner_prod b c)" using mat_of_vec_mult_vec[of b] assms by auto
@@ -1598,8 +1599,8 @@ next
       have "inner_prod v (A *\<^sub>v v) = vec_norm v * vec_norm v * inner_prod w (A *\<^sub>v w)" using dimA dimv dimw
         apply (subst (1 2) nvw)
         apply (subst mult_mat_vec, simp, simp)
-        apply (subst scalar_prod_smult_left[of "(A *\<^sub>v w)" "conjugate\<^sub>v (vec_norm v \<cdot>\<^sub>v w)" "vec_norm v"], simp)
-        apply (simp add: vec_conjugate_dist_smult cnv)
+        apply (subst scalar_prod_smult_left[of "(A *\<^sub>v w)" "conjugate (vec_norm v \<cdot>\<^sub>v w)" "vec_norm v"], simp)
+        apply (simp add: conjugate_smult_vec cnv)
         done
       also have "\<dots> \<ge> 0" using 1 2 by auto
       finally show "0 \<le> inner_prod v (A *\<^sub>v v)" by auto
@@ -1884,9 +1885,9 @@ lemma positive_same_outer_prod:
   shows "positive (outer_prod v v)"
 proof -
   have d1: "adjoint (mat (dim_vec v) 1 (\<lambda>(i, j). v $ i)) \<in> carrier_mat 1 n" using assms by auto
-  have d2: "mat 1 (dim_vec v) (\<lambda>(i, y). conjugate\<^sub>v v $ y) \<in> carrier_mat 1 n" using assms by auto
+  have d2: "mat 1 (dim_vec v) (\<lambda>(i, y). conjugate v $ y) \<in> carrier_mat 1 n" using assms by auto
   have dv: "dim_vec v = n" using assms by auto
-  have "mat 1 (dim_vec v) (\<lambda>(i, y). conjugate\<^sub>v v $ y) = adjoint (mat (dim_vec v) 1 (\<lambda>(i, j). v $ i))" (is "?r = adjoint ?l")
+  have "mat 1 (dim_vec v) (\<lambda>(i, y). conjugate v $ y) = adjoint (mat (dim_vec v) 1 (\<lambda>(i, j). v $ i))" (is "?r = adjoint ?l")
     apply (rule eq_matI) 
     subgoal for i j by (simp add: dv adjoint_eval)
     using d1 d2 by auto
@@ -2194,18 +2195,18 @@ proof -
     apply (rule eq_matI)
     by (auto simp add: dA du scalar_prod_def)
   have conj: "conjugate a * b = conjugate ((a::complex) * conjugate b) " for a b by auto
-  have eq2: "mat 1 (dim_vec v) (\<lambda>(i, y). conjugate\<^sub>v v $ y) * B = mat 1 (dim_vec (adjoint B *\<^sub>v v)) (\<lambda>(i, y). conjugate\<^sub>v (adjoint B *\<^sub>v v) $ y)"
+  have eq2: "mat 1 (dim_vec v) (\<lambda>(i, y). conjugate v $ y) * B = mat 1 (dim_vec (adjoint B *\<^sub>v v)) (\<lambda>(i, y). conjugate (adjoint B *\<^sub>v v) $ y)"
     apply (rule eq_matI)
-      apply (auto simp add: carrier_matD[OF dB] carrier_vecD[OF dv] scalar_prod_def adjoint_def vec_conjugate_def sum_conjugate )
+      apply (auto simp add: carrier_matD[OF dB] carrier_vecD[OF dv] scalar_prod_def adjoint_def conjugate_vec_def sum_conjugate )
     apply (rule sum.cong)
     by (auto simp add: conj)
-  have "A * (mat (dim_vec u) 1 (\<lambda>(i, j). u $ i) * mat 1 (dim_vec v) (\<lambda>(i, y). conjugate\<^sub>v v $ y)) * B =
-       (A * (mat (dim_vec u) 1 (\<lambda>(i, j). u $ i))) *(mat 1 (dim_vec v) (\<lambda>(i, y). conjugate\<^sub>v v $ y)) * B"
-    using dA du dv dB assoc_mult_mat[OF dA, of "mat (dim_vec u) 1 (\<lambda>(i, j). u $ i)" 1 "mat 1 (dim_vec v) (\<lambda>(i, y). conjugate\<^sub>v v $ y)"] by fastforce
-  also have "\<dots> = (A * (mat (dim_vec u) 1 (\<lambda>(i, j). u $ i))) *((mat 1 (dim_vec v) (\<lambda>(i, y). conjugate\<^sub>v v $ y)) * B)"
+  have "A * (mat (dim_vec u) 1 (\<lambda>(i, j). u $ i) * mat 1 (dim_vec v) (\<lambda>(i, y). conjugate v $ y)) * B =
+       (A * (mat (dim_vec u) 1 (\<lambda>(i, j). u $ i))) *(mat 1 (dim_vec v) (\<lambda>(i, y). conjugate v $ y)) * B"
+    using dA du dv dB assoc_mult_mat[OF dA, of "mat (dim_vec u) 1 (\<lambda>(i, j). u $ i)" 1 "mat 1 (dim_vec v) (\<lambda>(i, y). conjugate v $ y)"] by fastforce
+  also have "\<dots> = (A * (mat (dim_vec u) 1 (\<lambda>(i, j). u $ i))) *((mat 1 (dim_vec v) (\<lambda>(i, y). conjugate v $ y)) * B)"
     using dA du dv dB assoc_mult_mat[OF _ _ dB, of "(A * (mat (dim_vec u) 1 (\<lambda>(i, j). u $ i)))" d1 1] by fastforce
-  finally show "A * (mat (dim_vec u) 1 (\<lambda>(i, j). u $ i) * mat 1 (dim_vec v) (\<lambda>(i, y). conjugate\<^sub>v v $ y)) * B =
-    mat (dim_vec (A *\<^sub>v u)) 1 (\<lambda>(i, j). (A *\<^sub>v u) $ i) * mat 1 (dim_vec (adjoint B *\<^sub>v v)) (\<lambda>(i, y). conjugate\<^sub>v (adjoint B *\<^sub>v v) $ y)" 
+  finally show "A * (mat (dim_vec u) 1 (\<lambda>(i, j). u $ i) * mat 1 (dim_vec v) (\<lambda>(i, y). conjugate v $ y)) * B =
+    mat (dim_vec (A *\<^sub>v u)) 1 (\<lambda>(i, j). (A *\<^sub>v u) $ i) * mat 1 (dim_vec (adjoint B *\<^sub>v v)) (\<lambda>(i, y). conjugate (adjoint B *\<^sub>v v) $ y)" 
     using eq1 eq2 by auto
 qed
 
@@ -2231,10 +2232,10 @@ proof
     then have "inner_prod w ((outer_prod v v) *\<^sub>v w) = inner_prod w v * inner_prod v w" 
       using inner_prod_outer_prod dimw dimv by auto
     also have "\<dots> = inner_prod w v * conjugate (inner_prod w v)" using dimw dimv
-      apply (subst vec_conjugate_scalar_prod[of v "conjugate\<^sub>v w"], simp)
-      apply (subst vec_conjugate_sprod_comm[of "vec_conjugate v" _ "vec_conjugate w"], auto)
-       apply (rule vec_conjugate_closed[OF dimv])
-      apply (rule vec_conjugate_closed[OF dimw])
+      apply (subst conjugate_scalar_prod[of v "conjugate w"], simp)
+      apply (subst conjugate_vec_sprod_comm[of "conjugate v" _ "conjugate w"], auto)
+       apply (rule carrier_vec_conjugate[OF dimv])
+      apply (rule carrier_vec_conjugate[OF dimw])
       done
     also have "\<dots> \<ge> 0" by auto
     finally show "inner_prod w ((outer_prod v v) *\<^sub>v w) \<ge> 0".
