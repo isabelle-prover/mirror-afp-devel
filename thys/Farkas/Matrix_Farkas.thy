@@ -200,10 +200,8 @@ proof -
   also have "\<dots> = (\<exists> x \<in> carrier_vec nc. x \<ge> 0\<^sub>v nc \<and> A *\<^sub>v x = b)" by blast
   also have "\<dots> = (\<exists> x \<in> carrier_vec nc. 1\<^sub>m nc *\<^sub>v x \<ge> 0\<^sub>v nc \<and> A *\<^sub>v x \<le> b \<and> A *\<^sub>v x \<ge> b)" 
     by (rule bex_cong[OF refl], insert A b, auto)
-  also have "\<dots> = (\<exists> x \<in> carrier_vec nc. - (1\<^sub>m nc *\<^sub>v x) \<le> - (0\<^sub>v nc) \<and> A *\<^sub>v x \<le> b \<and> - (A *\<^sub>v x) \<le> -b)" 
-    by (rule bex_cong[OF refl], insert A b, auto simp: less_eq_vec_def)
   also have "\<dots> = (\<exists> x \<in> carrier_vec nc. (- 1\<^sub>m nc) *\<^sub>v x \<le> 0\<^sub>v nc \<and> A *\<^sub>v x \<le> b \<and> (- A) *\<^sub>v x \<le> -b)" 
-    by (rule bex_cong[OF refl], insert A b, auto)
+    by (rule bex_cong[OF refl], insert A b, auto simp: less_eq_vec_def)
   also have "\<dots> = (\<exists> x \<in> carrier_vec nc. B *\<^sub>v x \<le> b')"
     by (rule bex_cong[OF refl], insert A b, unfold B_def b'_def, 
       subst append_rows_le[of _ ], (auto)[4], intro conj_cong[OF refl], subst append_rows_le, auto)
@@ -249,7 +247,7 @@ proof -
               0\<^sub>v nc \<le> y1 \<longrightarrow> 0\<^sub>v nr \<le> y2 \<longrightarrow> 0\<^sub>v nr \<le> y3 \<longrightarrow>
               mat_of_row y1 = mat_of_row (y2 - y3) * A
               \<longrightarrow> (y2 - y3) \<bullet> b \<ge> 0)"
-    by (intro ball_cong[OF refl] arg_cong2[of _ _ _ _ "(\<longrightarrow>)"] refl 
+    by (intro ball_cong[OF refl] imp_cong refl 
       arg_cong2[of _ _ _ _ "(\<le>)"] arg_cong2[of _ _ _ _ "(=)"],
       subst minus_mult_distrib_mat[symmetric], insert A b, auto
       simp: minus_scalar_prod_distrib mat_of_rows_def 
@@ -274,9 +272,6 @@ proof -
         auto simp: row_def)
   also have "\<dots> = (\<forall> y \<in> carrier_vec nr. row (mat_of_row y * A) 0 \<ge> 0\<^sub>v nc \<longrightarrow> y \<bullet> b \<ge> 0)" 
   proof ((standard; intro ballI impI), goal_cases)
-    case (2 y2 y3)
-    thus ?case by auto
-  next
     case (1 y)
     define y2 where "y2 = vec nr (\<lambda> i. if y $ i \<ge> 0 then y $ i else 0)" 
     define y3 where "y3 = vec nr (\<lambda> i. if y $ i \<ge> 0 then 0 else - y $ i)" 
@@ -284,7 +279,7 @@ proof -
       by (intro eq_vecI, auto)
     show ?case by (rule 1(1)[rule_format, of y2 y3, folded y, OF _ _ 1(3)],
        auto simp: y2_def y3_def less_eq_vec_def)
-  qed
+  qed auto
   also have "\<dots> = (\<forall> y \<in> carrier_vec nr. mat_of_row y * A \<ge> 0\<^sub>m 1 nc \<longrightarrow> y \<bullet> b \<ge> 0)"
     by (intro ball_cong arg_cong2[of _ _ _ _ "(\<longrightarrow>)"] refl,
       insert A, auto simp: less_eq_vec_def less_eq_mat_def)
