@@ -43,8 +43,6 @@ lemma find_index_leq_length: "find_index xs x < length xs \<longleftrightarrow> 
 
 
 (* TODO: move *)
-lemma map_mat_transpose: "(map_mat f A)\<^sup>T = map_mat f A\<^sup>T"
-  by auto
 
 lemma rev_unsimp: "rev xs @ (r # rs) = rev (r#xs) @ rs" by(induct xs,auto)
 
@@ -57,55 +55,8 @@ lemma corthogonal_is_orthogonal[simp]:
 
 
 (* TODO: move *)
-lemma vec_right_zero[simp]: 
-  "(v :: 'a :: monoid_add vec) \<in> carrier_vec n  \<Longrightarrow> v + 0\<^sub>v n = v" 
-  by auto
 
 context vec_module begin
-
-lemma sumlist_dim: assumes "\<And> x. x \<in> set xs \<Longrightarrow> x \<in> carrier_vec n"
-  shows "dim_vec (sumlist xs) = n"
-  using sumlist_carrier assms
-  by fastforce
-    
-lemma sumlist_vec_index: assumes "\<And> x. x \<in> set xs \<Longrightarrow> x \<in> carrier_vec n"
-  and "i < n" 
-shows "sumlist xs $ i = sum_list (map (\<lambda> x. x $ i) xs)" 
-  unfolding M.sumlist_def using assms(1) proof(induct xs)
-  case (Cons a xs)
-  hence cond:"\<And> x. x \<in> set xs \<Longrightarrow> x \<in> carrier_vec n" by auto
-  from Cons(1)[OF cond] have IH:"foldr (+) xs (0\<^sub>v n) $ i = (\<Sum>x\<leftarrow>xs. x $ i)" by auto
-  have "(a + foldr (+) xs (0\<^sub>v n)) $ i = a $ i + (\<Sum>x\<leftarrow>xs. x $ i)" 
-    apply(subst index_add_vec) unfolding IH
-    using sumlist_dim[OF cond,unfolded M.sumlist_def] assms by auto
-  then show ?case by auto next
-  case Nil thus ?case using assms by auto
-qed
- 
-lemma scalar_prod_left_sum_distrib: 
-  assumes vs: "\<And> v. v \<in> set vvs \<Longrightarrow> v \<in> carrier_vec n" and w: "w \<in> carrier_vec n" 
-  shows "sumlist vvs \<bullet> w = sum_list (map (\<lambda> v. v \<bullet> w) vvs)"
-  using vs
-proof (induct vvs)
-  case (Cons v vs)
-  from Cons have v: "v \<in> carrier_vec n" and vs: "sumlist vs \<in> carrier_vec n" 
-    by (auto intro!: sumlist_carrier)
-  have "sumlist (v # vs) \<bullet> w = sumlist ([v] @ vs) \<bullet> w " by auto
-  also have "\<dots> = (v + sumlist vs) \<bullet> w" 
-    by (subst sumlist_append, insert Cons v vs, auto)
-  also have "\<dots> = v \<bullet> w + (sumlist vs \<bullet> w)" 
-    by (rule add_scalar_prod_distrib[OF v vs w])
-  finally show ?case using Cons by auto
-qed (insert w, auto)   
-
-lemma scalar_prod_right_sum_distrib: 
-  assumes vs: "\<And> v. v \<in> set vvs \<Longrightarrow> v \<in> carrier_vec n" and w: "w \<in> carrier_vec n" 
-  shows "w \<bullet> sumlist vvs = sum_list (map (\<lambda> v. w \<bullet> v) vvs)"
-  by (subst comm_scalar_prod[OF w sumlist_carrier], insert vs w, force,
-  subst scalar_prod_left_sum_distrib[OF vs w], force,
-  rule arg_cong[of _ _ sum_list], rule nth_equalityI, 
-  auto simp: set_conv_nth intro!: comm_scalar_prod)
-
 
 definition lattice_of :: "'a vec list \<Rightarrow> 'a vec set" where
   "lattice_of fs = range (\<lambda> c. sumlist (map (\<lambda> i. of_int (c i) \<cdot>\<^sub>v fs ! i) [0 ..< length fs]))"
@@ -416,153 +367,6 @@ proof
     unfolding orthogonal_complement_def span_def by auto
 qed
 
-lemma lincomb_list_add_vec_2: assumes us: "set us \<subseteq> carrier_vec n" 
-  and x: "x = lincomb_list lc (us [i := us ! i + c \<cdot>\<^sub>v us ! j])"
-  and i: "j < length us" "i < length us" "i \<noteq> j" 
-shows "x = lincomb_list (lc (j := lc j + lc i * c)) us" (is "_ = ?x")
-proof -
-  let ?xx = "lc j + lc i * c" 
-  let ?i = "us ! i" 
-  let ?j = "us ! j" 
-  let ?v = "?i + c \<cdot>\<^sub>v ?j" 
-  let ?ws = "us [i := us ! i + c \<cdot>\<^sub>v us ! j]"
-  from us have usk: "k < length us \<Longrightarrow> us ! k \<in> carrier_vec n" for k by auto
-  from usk i have ij: "?i \<in> carrier_vec n" "?j \<in> carrier_vec n" by auto
-  hence v: "c \<cdot>\<^sub>v ?j \<in> carrier_vec n" "?v \<in> carrier_vec n" by auto
-  with us have ws: "set ?ws \<subseteq> carrier_vec n" unfolding set_conv_nth using i 
-    by (auto, rename_tac k, case_tac "k = i", auto)
-  from us have us': "\<forall>w\<in>set us. dim_vec w = n" by auto 
-  from ws have ws': "\<forall>w\<in>set ?ws. dim_vec w = n" by auto 
-  have mset: "mset_set {0..<length us} = {#i#} + {#j#} + (mset_set ({0..<length us} - {i,j}))" 
-    by (rule multiset_eqI, insert i, auto, rename_tac x, case_tac "x \<in> {0 ..< length us}", auto)
-  define M2 where "M2 = M.summset
-      {#lc ia \<cdot>\<^sub>v ?ws ! ia. ia \<in># mset_set ({0..<length us} - {i, j})#}" 
-  define M1 where "M1 = M.summset {#(if i = j then ?xx else lc i) \<cdot>\<^sub>v us ! i. i \<in># mset_set ({0..<length us} - {i, j})#}" 
-  have M1: "M1 \<in> carrier_vec n" unfolding M1_def using usk by fastforce
-  have M2: "M1 = M2" unfolding M2_def M1_def
-    by (rule arg_cong[of _ _ M.summset], rule multiset.map_cong0, insert i usk, auto) 
-  have x1: "x = lc j \<cdot>\<^sub>v ?j + (lc i \<cdot>\<^sub>v ?i + lc i \<cdot>\<^sub>v (c \<cdot>\<^sub>v ?j) + M1)" 
-    unfolding x lincomb_list_def M2 M2_def
-    apply (subst sumlist_as_summset, (insert us ws i v ij, auto simp: set_conv_nth)[1], insert i ij v us ws usk, 
-      simp add: mset smult_add_distrib_vec[OF ij(1) v(1)])
-    by (subst M.summset_add_mset, auto)+
-  have x2: "?x = ?xx \<cdot>\<^sub>v ?j + (lc i \<cdot>\<^sub>v ?i + M1)"
-    unfolding x lincomb_list_def M1_def
-    apply (subst sumlist_as_summset, (insert us ws i v ij, auto simp: set_conv_nth)[1], insert i ij v us ws usk, 
-      simp add: mset smult_add_distrib_vec[OF ij(1) v(1)])
-    by (subst M.summset_add_mset, auto)+
-  show ?thesis unfolding x1 x2 using M1 ij
-    by (intro eq_vecI, auto simp: field_simps)
-qed
-
-lemma lincomb_list_add_vec_1: assumes us: "set us \<subseteq> carrier_vec n" 
-  and x: "x = lincomb_list lc us"
-  and i: "j < length us" "i < length us" "i \<noteq> j" 
-shows "x = lincomb_list (lc (j := lc j - lc i * c)) (us [i := us ! i + c \<cdot>\<^sub>v us ! j])" (is "_ = ?x")
-proof -
-  let ?i = "us ! i" 
-  let ?j = "us ! j" 
-  let ?v = "?i + c \<cdot>\<^sub>v ?j" 
-  let ?ws = "us [i := us ! i + c \<cdot>\<^sub>v us ! j]"
-  from us have usk: "k < length us \<Longrightarrow> us ! k \<in> carrier_vec n" for k by auto
-  from usk i have ij: "?i \<in> carrier_vec n" "?j \<in> carrier_vec n" by auto
-  hence v: "c \<cdot>\<^sub>v ?j \<in> carrier_vec n" "?v \<in> carrier_vec n" by auto
-  with us have ws: "set ?ws \<subseteq> carrier_vec n" unfolding set_conv_nth using i 
-    by (auto, rename_tac k, case_tac "k = i", auto)
-  from us have us': "\<forall>w\<in>set us. dim_vec w = n" by auto 
-  from ws have ws': "\<forall>w\<in>set ?ws. dim_vec w = n" by auto 
-  have mset: "mset_set {0..<length us} = {#i#} + {#j#} + (mset_set ({0..<length us} - {i,j}))" 
-    by (rule multiset_eqI, insert i, auto, rename_tac x, case_tac "x \<in> {0 ..< length us}", auto)
-  define M2 where "M2 = M.summset
-      {#(if ia = j then lc j - lc i * c else lc ia) \<cdot>\<^sub>v ?ws ! ia
-      . ia \<in># mset_set ({0..<length us} - {i, j})#}" 
-  define M1 where "M1 = M.summset {#lc i \<cdot>\<^sub>v us ! i. i \<in># mset_set ({0..<length us} - {i, j})#}" 
-  have M1: "M1 \<in> carrier_vec n" unfolding M1_def using usk by fastforce
-  have M2: "M1 = M2" unfolding M2_def M1_def
-    by (rule arg_cong[of _ _ M.summset], rule multiset.map_cong0, insert i usk, auto) 
-  have x1: "x = lc j \<cdot>\<^sub>v ?j + (lc i \<cdot>\<^sub>v ?i + M1)" 
-    unfolding x lincomb_list_def M1_def
-    apply (subst sumlist_as_summset, (insert us ws i v ij, auto simp: set_conv_nth)[1], insert i ij v us ws usk, 
-      simp add: mset smult_add_distrib_vec[OF ij(1) v(1)])
-    by (subst M.summset_add_mset, auto)+
-  have x2: "?x = (lc j - lc i * c) \<cdot>\<^sub>v ?j + (lc i \<cdot>\<^sub>v ?i + lc i \<cdot>\<^sub>v (c \<cdot>\<^sub>v ?j) + M1)"
-    unfolding x lincomb_list_def M2 M2_def
-    apply (subst sumlist_as_summset, (insert us ws i v ij, auto simp: set_conv_nth)[1], insert i ij v us ws usk, 
-      simp add: mset smult_add_distrib_vec[OF ij(1) v(1)])
-    by (subst M.summset_add_mset, auto)+
-  show ?thesis unfolding x1 x2 using M1 ij
-    by (intro eq_vecI, auto simp: field_simps)
-qed
-
-lemma add_vec_span: assumes us: "set us \<subseteq> carrier_vec n" 
-  and i: "j < length us" "i < length us" "i \<noteq> j" 
-shows "span (set us) = span (set (us [i := us ! i + c \<cdot>\<^sub>v us ! j]))" (is "_ = span (set ?ws)")
-proof -
-  let ?i = "us ! i" 
-  let ?j = "us ! j" 
-  let ?v = "?i + c \<cdot>\<^sub>v ?j" 
-  from us i have ij: "?i \<in> carrier_vec n" "?j \<in> carrier_vec n" by auto
-  hence v: "?v \<in> carrier_vec n" by auto
-  with us have ws: "set ?ws \<subseteq> carrier_vec n" unfolding set_conv_nth using i 
-    by (auto, rename_tac k, case_tac "k = i", auto)
-  have "span (set us) = span_list us" unfolding span_list_as_span[OF us] ..
-  also have "\<dots> = span_list ?ws"
-  proof -
-    {
-      fix x
-      assume "x \<in> span_list us" 
-      then obtain lc where "x = lincomb_list lc us" by (metis in_span_listE)
-      from lincomb_list_add_vec_1[OF us this i, of c]
-      have "x \<in> span_list ?ws" unfolding span_list_def by auto
-    }
-    moreover
-    {
-      fix x
-      assume "x \<in> span_list ?ws" 
-      then obtain lc where "x = lincomb_list lc ?ws" by (metis in_span_listE)
-      from lincomb_list_add_vec_2[OF us this i]
-      have "x \<in> span_list us" unfolding span_list_def by auto
-    }
-    ultimately show ?thesis by blast
-  qed
-  also have "\<dots> = span (set ?ws)" unfolding span_list_as_span[OF ws] ..
-  finally show ?thesis .
-qed
-
-lemma prod_in_span[intro!]:
-  assumes "b \<in> carrier_vec n" "S \<subseteq> carrier_vec n" "a = 0 \<or> b \<in> span S"
-  shows "a \<cdot>\<^sub>v b \<in> span S"
-proof(cases "a = 0")
-  case True
-  then show ?thesis by (auto simp:lmult_0[OF assms(1)] span_zero)
-next
-  case False with assms have "b \<in> span S" by auto
-  from this[THEN in_spanE]
-  obtain aa A where a[intro!]: "b = lincomb aa A" "finite A" "A \<subseteq> S" by auto
-  hence [intro!]:"(\<lambda>v. aa v \<cdot>\<^sub>v v) \<in> A \<rightarrow> carrier_vec n" using assms by auto 
-  show ?thesis proof
-    show "a \<cdot>\<^sub>v b = lincomb (\<lambda> v. a * aa v) A" using a(1) unfolding lincomb_def smult_smult_assoc[symmetric]
-      by(subst finsum_smult[symmetric]) force+
-  qed auto
-qed
-
-lemma det_nonzero_congruence:
-  assumes eq:"A * M = B * M" and det:"det (M::'a mat) \<noteq> 0"
-  and M: "M \<in> carrier_mat n n" and carr:"A \<in> carrier_mat n n" "B \<in> carrier_mat n n"
-  shows "A = B"
-proof -
-  have "1\<^sub>m n \<in> carrier_mat n n" by auto
-  from det_non_zero_imp_unit[OF M det] gauss_jordan_check_invertable[OF M this]
-  have gj_fst:"(fst (gauss_jordan M (1\<^sub>m n)) = 1\<^sub>m n)" by metis
-  define Mi where "Mi = snd (gauss_jordan M (1\<^sub>m n))"
-  with gj_fst have gj:"gauss_jordan M (1\<^sub>m n) = (1\<^sub>m n, Mi)"
-    unfolding fst_def snd_def by (auto split:prod.split)
-  from gauss_jordan_compute_inverse(1,3)[OF M gj]
-  have Mi: "Mi \<in> carrier_mat n n" and is1:"M * Mi = 1\<^sub>m n" by metis+
-  from arg_cong[OF eq, of "\<lambda> M. M * Mi"]
-  show "A = B" unfolding carr[THEN assoc_mult_mat[OF _ M Mi]] is1 carr[THEN right_mult_one_mat].
-qed
-
 end
 
 context cof_vec_space
@@ -609,37 +413,6 @@ qed
 
 lemma basis_list_imp_lin_indpt_list: assumes "basis_list fs" shows "lin_indpt_list fs" 
   using basis_list_basis[OF assms] assms unfolding lin_indpt_list_def basis_list_def by auto
-
-lemma mat_of_rows_mult_as_finsum:
-  assumes "v \<in> carrier_vec (length lst)" "\<And> i. i < length lst \<Longrightarrow> lst ! i \<in> carrier_vec n"
-  defines "f l \<equiv> sum (\<lambda> i. if l = lst ! i then v $ i else 0) {0..<length lst}"
-  shows mat_of_cols_mult_as_finsum:"mat_of_cols n lst *\<^sub>v v = lincomb f (set lst)"
-proof -
-  from assms have "\<forall> i < length lst. lst ! i \<in> carrier_vec n" by blast
-  note an = all_nth_imp_all_set[OF this] hence slc:"set lst \<subseteq> carrier_vec n" by auto
-  hence dn [simp]:"\<And> x. x \<in> set lst \<Longrightarrow> dim_vec x = n" by auto
-  have dl [simp]:"dim_vec (lincomb f (set lst)) = n" using an by (intro lincomb_dim,auto)
-  show ?thesis proof
-    show "dim_vec (mat_of_cols n lst *\<^sub>v v) = dim_vec (lincomb f (set lst))" using assms(1,2) by auto
-    fix i assume i:"i < dim_vec (lincomb f (set lst))" hence i':"i < n" by auto
-    with an have fcarr:"(\<lambda>v. f v \<cdot>\<^sub>v v) \<in> set lst \<rightarrow> carrier_vec n" by auto
-    from i' have "(mat_of_cols n lst *\<^sub>v v) $ i = row (mat_of_cols n lst) i \<bullet> v" by auto
-    also have "\<dots> = (\<Sum>ia = 0..<dim_vec v. lst ! ia $ i * v $ ia)"
-      unfolding mat_of_cols_def row_def scalar_prod_def
-      apply(rule sum.cong[OF refl]) using i an assms(1) by auto
-    also have "\<dots> = (\<Sum>ia = 0..<length lst. lst ! ia $ i * v $ ia)" using assms(1) by auto
-    also have "\<dots> = (\<Sum>x\<in>set lst. f x * x $ i)"
-      unfolding f_def sum_distrib_right apply (subst sum.swap)
-      apply(rule sum.cong[OF refl])
-      unfolding if_distrib if_distrib_ap mult_zero_left sum.delta[OF finite_set] by auto
-    also have "\<dots> = (\<Sum>x\<in>set lst. (f x \<cdot>\<^sub>v x) $ i)"
-      apply(rule sum.cong[OF refl],subst index_smult_vec) using i slc by auto
-    also have "\<dots> = (\<Oplus>\<^bsub>V\<^esub>v\<in>set lst. f v \<cdot>\<^sub>v v) $ i"
-      unfolding finsum_index[OF i' fcarr slc] by auto
-    finally show "(mat_of_cols n lst *\<^sub>v v) $ i = lincomb f (set lst) $ i"
-      by (auto simp:lincomb_def)
-  qed
-qed
 
 lemma basis_det_nonzero:
   assumes db:"basis (set G)" and len:"length G = n"

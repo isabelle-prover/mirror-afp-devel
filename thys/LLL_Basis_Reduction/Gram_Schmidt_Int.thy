@@ -643,11 +643,6 @@ lemma abs_leq_squared: "\<bar>z::int\<bar> \<le> z\<^sup>2"
 
 end (* gram_schmidt_fs_int *)
 
-
-
-fun vec_div :: "int list \<Rightarrow> int \<Rightarrow> int list" where
-  "vec_div v n = (map (\<lambda>x. x div n) v)"
-
 context gram_schmidt_fs_int
 begin
 
@@ -1002,9 +997,6 @@ proof -
 qed
 
 end
-
-value (code) "let v = map vec_of_list [[1,2,3],[4,5,6],[7,8,10]] in (gso_array.gso_array v)"
-value (code) "gram_schmidt 3 (map vec_of_list [[1::rat,2,3],[4,5,6],[7,8,10]])"
 
 subsection \<open>Lemmas Summarizing All Bounds During GSO Computation\<close>
 

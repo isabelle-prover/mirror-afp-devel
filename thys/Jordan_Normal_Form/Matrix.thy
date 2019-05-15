@@ -301,9 +301,10 @@ lemma minus_add_uminus_vec: "(v :: 'a :: group_add vec) \<in> carrier_vec n \<Lo
 lemma comm_monoid_vec: "comm_monoid (monoid_vec TYPE ('a :: comm_monoid_add) n)"
   by (unfold_locales, auto simp: monoid_vec_def ac_simps)
 
-lemma left_zero_vec[simp]:
-  "(v :: 'a :: monoid_add vec) \<in> carrier_vec n  \<Longrightarrow> 0\<^sub>v n + v = v"
-  by (intro eq_vecI, auto)
+lemma left_zero_vec[simp]: "(v :: 'a :: monoid_add vec) \<in> carrier_vec n  \<Longrightarrow> 0\<^sub>v n + v = v" by auto
+
+lemma right_zero_vec[simp]: "(v :: 'a :: monoid_add vec) \<in> carrier_vec n  \<Longrightarrow> v + 0\<^sub>v n = v" by auto
+
 
 lemma uminus_carrier_vec[simp]:
   "(- v \<in> carrier_vec n) = (v \<in> carrier_vec n)"
@@ -2702,6 +2703,8 @@ lemma vec_carrier_vec[simp]: "vec n f \<in> carrier_vec m \<longleftrightarrow> 
   unfolding carrier_vec_def by auto
 
 notation transpose_mat ("(_\<^sup>T)" [1000])
+
+lemma map_mat_transpose: "(map_mat f A)\<^sup>T = map_mat f A\<^sup>T" by auto
 
 lemma cols_transpose[simp]: "cols A\<^sup>T = rows A" unfolding cols_def rows_def by auto
 lemma rows_transpose[simp]: "rows A\<^sup>T = cols A" unfolding cols_def rows_def by auto
