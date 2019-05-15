@@ -145,9 +145,6 @@ lemma id_imp_bij_betw:
   shows "bij_betw f A A"
   by (intro bij_betwI[OF f f], simp_all add: ff)
 
-lemma if_distrib_ap:
-  "(if x then y else z) u = (if x then y u else z u)" by auto
-
 lemma range_subsetI:
   assumes "\<And>x. f x = g (h x)" shows "range f \<subseteq> range g"
   using assms by auto
