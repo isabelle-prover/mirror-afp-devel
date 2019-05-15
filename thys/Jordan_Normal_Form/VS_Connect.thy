@@ -1091,6 +1091,12 @@ end
 
 context vec_module begin
 
+lemma R_sumlist[simp]: "R.sumlist = sum_list" 
+proof (intro ext) 
+  fix xs
+  show "R.sumlist xs = sum_list xs" by (induct xs, auto)
+qed
+
 lemma sumlist_dim: assumes "\<And> x. x \<in> set xs \<Longrightarrow> x \<in> carrier_vec n"
   shows "dim_vec (sumlist xs) = n"
   using sumlist_carrier assms
