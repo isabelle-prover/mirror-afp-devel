@@ -9,7 +9,31 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>09 May 2019 00:00:00 +0000</pubDate>
+    <pubDate>14 May 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Formalization of Generic Authenticated Data Structures</title>
+              <link>https://www.isa-afp.org/entries/LambdaAuth.html</link>
+       <guid>https://www.isa-afp.org/entries/LambdaAuth.html</guid>
+       <dc:creator> Matthias Brun, Dmitriy Traytel       </dc:creator>
+       <pubDate>14 May 2019 00:00:00 +0000</pubDate>
+       <description>
+Authenticated data structures are a technique for outsourcing data
+storage and maintenance to an untrusted server. The server is required
+to produce an efficiently checkable and cryptographically secure proof
+that it carried out precisely the requested computation. &lt;a
+href=&#34;https://doi.org/10.1145/2535838.2535851&#34;&gt;Miller et
+al.&lt;/a&gt; introduced &amp;lambda;&amp;bull; (pronounced
+&lt;i&gt;lambda auth&lt;/i&gt;)&amp;mdash;a functional programming
+language with a built-in primitive authentication construct, which
+supports a wide range of user-specified authenticated data structures
+while guaranteeing certain correctness and security properties for all
+well-typed programs. We formalize &amp;lambda;&amp;bull; and prove its
+correctness and security properties. With Isabelle&#39;s help, we
+uncover and repair several mistakes in the informal proofs and lemma
+statements. Our findings are summarized in a &lt;a
+href=&#34;http://people.inf.ethz.ch/trayteld/papers/lambdaauth/lambdaauth.pdf&#34;&gt;paper
+draft&lt;/a&gt;.</description>
+    </item>
     <item>
        <title>Multi-Party Computation</title>
               <link>https://www.isa-afp.org/entries/Multi_Party_Computation.html</link>
@@ -532,19 +556,6 @@ Generic Consistency&#34;--- is encoded and analysed in Isabelle/HOL.
 Gewirth&#39;s theory has stirred much attention in philosophy and
 ethics and has been proposed as a potential means to bound the impact
 of artificial general intelligence.</description>
-    </item>
-    <item>
-       <title>Epistemic Logic</title>
-              <link>https://www.isa-afp.org/entries/Epistemic_Logic.html</link>
-       <guid>https://www.isa-afp.org/entries/Epistemic_Logic.html</guid>
-       <dc:creator> Andreas Halkjær From       </dc:creator>
-       <pubDate>29 Oct 2018 00:00:00 +0000</pubDate>
-       <description>
-This work is a formalization of epistemic logic with countably many
-agents. It includes proofs of soundness and completeness for the axiom
-system K. The completeness proof is based on the textbook
-&#34;Reasoning About Knowledge&#34; by Fagin, Halpern, Moses and
-Vardi (MIT Press 1995).</description>
     </item>
   </channel>
 </rss>

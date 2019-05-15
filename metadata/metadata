@@ -7971,3 +7971,29 @@ abstract =
   induction and recursion principles and support for semantic
   interpretation. This work has been presented in the ITP 2017 paper “A
   Formalized General Theory of Syntax with Bindings”.
+  
+[LambdaAuth]
+title = Formalization of Generic Authenticated Data Structures
+author = Matthias Brun<>, Dmitriy Traytel <http://people.inf.ethz.ch/trayteld/>
+topic = Computer Science/Security, Computer Science/Programming Languages/Lambda Calculi
+date = 2019-05-14
+notify = traytel@inf.ethz.ch
+abstract = 
+  Authenticated data structures are a technique for outsourcing data
+  storage and maintenance to an untrusted server. The server is required
+  to produce an efficiently checkable and cryptographically secure proof
+  that it carried out precisely the requested computation. <a
+  href="https://doi.org/10.1145/2535838.2535851">Miller et
+  al.</a> introduced &lambda;&bull; (pronounced
+  <i>lambda auth</i>)&mdash;a functional programming
+  language with a built-in primitive authentication construct, which
+  supports a wide range of user-specified authenticated data structures
+  while guaranteeing certain correctness and security properties for all
+  well-typed programs. We formalize &lambda;&bull; and prove its
+  correctness and security properties. With Isabelle's help, we
+  uncover and repair several mistakes in the informal proofs and lemma
+  statements. Our findings are summarized in a <a
+  href="http://people.inf.ethz.ch/trayteld/papers/lambdaauth/lambdaauth.pdf">paper
+  draft</a>.
+
+
