@@ -206,11 +206,11 @@ definition obj_at_field_on_heap :: "('ref \<Rightarrow> bool) \<Rightarrow> 'ref
 
 subsection\<open> Garbage collector locations \<close>
 
-locset_definition "idle_locs \<equiv> prefixed ''idle''"
-locset_definition "init_locs \<equiv> prefixed ''init''"
-locset_definition "mark_locs \<equiv> prefixed ''mark''"
-locset_definition "mark_loop_locs \<equiv> prefixed ''mark_loop''"
-locset_definition "sweep_locs \<equiv> prefixed ''sweep''"
+locset_definition "idle_locs = prefixed ''idle''"
+locset_definition "init_locs = prefixed ''init''"
+locset_definition "mark_locs = prefixed ''mark''"
+locset_definition "mark_loop_locs = prefixed ''mark_loop''"
+locset_definition "sweep_locs = prefixed ''sweep''"
 
 (*<*)
 

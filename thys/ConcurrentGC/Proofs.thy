@@ -33,8 +33,7 @@ definition (in gc) invsL :: "('field, 'mut, 'ref) gc_pred" where
 
 definition (in mut_m) invsL :: "('field, 'mut, 'ref) gc_pred" where
   "invsL \<equiv>
-    load_invL
-  \<^bold>\<and> mark_object_invL
+    mark_object_invL
   \<^bold>\<and> mut_get_roots.mark_object_invL m
   \<^bold>\<and> mut_store_ins.mark_object_invL m
   \<^bold>\<and> mut_store_del.mark_object_invL m
@@ -262,7 +261,7 @@ apply (clarsimp simp: gc_system_init_def mut_initial_state_def sys_initial_state
                       valid_refs_imp_reachable_snapshot_inv
                       mut_m.invsL_def inv
                       mut_m.mark_object_invL_def
-                      mut_m.handshake_invL_def mut_m.load_invL_def mut_m.tso_lock_invL_def
+                      mut_m.handshake_invL_def mut_m.tso_lock_invL_def
                       mut_m.marked_deletions_def mut_m.marked_insertions_def
                       loc atS_simps)
 done

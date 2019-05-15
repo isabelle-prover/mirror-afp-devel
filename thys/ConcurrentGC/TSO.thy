@@ -113,12 +113,7 @@ done
 lemma (in sys) tso_gc_writes_inv[intro]:
   "\<lbrace> LSTP tso_writes_inv \<rbrace> sys"
 apply (vcg_jackhammer simp: tso_writes_inv_def)
-apply (rule conjI)
- apply force
-apply clarsimp
-apply (rename_tac x xa)
-apply (drule_tac x=x in spec) (* why??? *)
-apply simp
+apply (metis (no_types) list.set_intros(2))
 done
 
 lemma (in gc) tso_writes_inv[intro]:
@@ -143,10 +138,11 @@ The GC holds the TSO lock only during the \texttt{CAS} in @{const
 locset_definition gc_tso_lock_locs :: "location set" where
   "gc_tso_lock_locs \<equiv> \<Union>l\<in>{ ''mo_co_cmark'', ''mo_co_ctest'', ''mo_co_mark'', ''mo_co_unlock'' }. suffixed l"
 
-definition (in gc) tso_lock_invL :: "('field, 'mut, 'ref) gc_pred" where
-[inv]: "tso_lock_invL \<equiv>
+inv_definition (in gc) tso_lock_invL :: "('field, 'mut, 'ref) gc_pred" where
+  "tso_lock_invL \<equiv>
      atS_gc gc_tso_lock_locs (tso_locked_by gc)
    \<^bold>\<and> atS_gc (- gc_tso_lock_locs) (\<^bold>\<not> (tso_locked_by gc))"
+
 (*<*)
 
 lemma (in gc) tso_lock_invL[intro]:
@@ -171,13 +167,13 @@ A mutator holds the TSO lock only during the \texttt{CAS}s in @{const
 
 \<close>
 
-locset_definition "mut_tso_lock_locs \<equiv>
-  \<Union>l\<in>{ ''mo_co_cmark'', ''mo_co_ctest'', ''mo_co_mark'', ''mo_co_unlock'' }. suffixed l"
+locset_definition "mut_tso_lock_locs =
+  (\<Union>l\<in>{ ''mo_co_cmark'', ''mo_co_ctest'', ''mo_co_mark'', ''mo_co_unlock'' }. suffixed l)"
 
-definition (in mut_m) tso_lock_invL :: "('field, 'mut, 'ref) gc_pred" where
-[inv]: "tso_lock_invL \<equiv>
-     atS_mut mut_tso_lock_locs     (tso_locked_by (mutator m))
-   \<^bold>\<and> atS_mut (- mut_tso_lock_locs) (\<^bold>\<not>(tso_locked_by (mutator m)))"
+inv_definition (in mut_m) tso_lock_invL :: "('field, 'mut, 'ref) gc_pred" where
+  "tso_lock_invL =
+    (atS_mut mut_tso_lock_locs     (tso_locked_by (mutator m))
+   \<^bold>\<and> atS_mut (- mut_tso_lock_locs) (\<^bold>\<not>(tso_locked_by (mutator m))))"
 (*<*)
 
 lemma (in mut_m) tso_lock_invL[intro]:

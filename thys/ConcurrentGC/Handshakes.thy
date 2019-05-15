@@ -77,69 +77,69 @@ Connect @{const "sys_ghost_handshake_phase"} with locations in the GC.
 
 \<close>
 
-locset_definition "hp_Idle_locs \<equiv>
+locset_definition "hp_Idle_locs =
   (prefixed ''idle_noop'' - { ''idle_noop_mfence'', ''idle_noop_init_type'' })
 \<union> { ''idle_read_fM'', ''idle_invert_fM'', ''idle_write_fM'', ''idle_flip_noop_mfence'', ''idle_flip_noop_init_type'' }"
 
-locset_definition "hp_IdleInit_locs \<equiv>
+locset_definition "hp_IdleInit_locs =
     (prefixed ''idle_flip_noop'' - { ''idle_flip_noop_mfence'', ''idle_flip_noop_init_type'' })
   \<union> { ''idle_phase_init'', ''init_noop_mfence'', ''init_noop_init_type'' }"
 
-locset_definition "hp_InitMark_locs \<equiv>
+locset_definition "hp_InitMark_locs =
   (prefixed ''init_noop'' - { ''init_noop_mfence'', ''init_noop_init_type'' })
 \<union> { ''init_phase_mark'', ''mark_read_fM'', ''mark_write_fA'', ''mark_noop_mfence'', ''mark_noop_init_type'' }"
 
-locset_definition "hp_IdleMarkSweep_locs \<equiv>
+locset_definition "hp_IdleMarkSweep_locs =
      { ''idle_noop_mfence'', ''idle_noop_init_type'', ''mark_end'' }
   \<union>  sweep_locs
   \<union> (mark_loop_locs - { ''mark_loop_get_roots_init_type'' })"
 
-locset_definition "hp_Mark_locs \<equiv>
+locset_definition "hp_Mark_locs =
     (prefixed ''mark_noop'' - { ''mark_noop_mfence'', ''mark_noop_init_type'' })
   \<union> { ''mark_loop_get_roots_init_type'' }"
 
 abbreviation
   "hs_noop_prefixes \<equiv> {''idle_noop'', ''idle_flip_noop'', ''init_noop'', ''mark_noop'' }"
 
-locset_definition "hs_noop_locs \<equiv>
-  \<Union>l \<in> hs_noop_prefixes. prefixed l - (suffixed ''_noop_mfence'' \<union> suffixed ''_noop_init_type'')"
+locset_definition "hs_noop_locs =
+  (\<Union>l \<in> hs_noop_prefixes. prefixed l - (suffixed ''_noop_mfence'' \<union> suffixed ''_noop_init_type''))"
 
-locset_definition "hs_get_roots_locs \<equiv>
+locset_definition "hs_get_roots_locs =
   prefixed ''mark_loop_get_roots'' - {''mark_loop_get_roots_init_type''}"
 
-locset_definition "hs_get_work_locs \<equiv>
+locset_definition "hs_get_work_locs =
   prefixed ''mark_loop_get_work'' - {''mark_loop_get_work_init_type''}"
 
 abbreviation "hs_prefixes \<equiv>
   hs_noop_prefixes \<union> { ''mark_loop_get_roots'', ''mark_loop_get_work'' }"
 
-locset_definition "hs_init_loop_locs \<equiv> \<Union>l \<in> hs_prefixes. prefixed (l @ ''_init_loop'')"
+locset_definition "hs_init_loop_locs = (\<Union>l \<in> hs_prefixes. prefixed (l @ ''_init_loop''))"
 
-locset_definition "hs_done_loop_locs \<equiv> \<Union>l \<in> hs_prefixes. prefixed (l @ ''_done_loop'')"
+locset_definition "hs_done_loop_locs = (\<Union>l \<in> hs_prefixes. prefixed (l @ ''_done_loop''))"
 
-locset_definition "hs_done_locs \<equiv> \<Union>l \<in> hs_prefixes. prefixed (l @ ''_done'')"
+locset_definition "hs_done_locs = (\<Union>l \<in> hs_prefixes. prefixed (l @ ''_done''))"
 
-locset_definition "hs_none_pending_locs \<equiv> - (hs_init_loop_locs \<union> hs_done_locs)"
+locset_definition "hs_none_pending_locs = - (hs_init_loop_locs \<union> hs_done_locs)"
 
-locset_definition "hs_in_sync_locs \<equiv>
+locset_definition "hs_in_sync_locs =
   (- ( (\<Union>l \<in> hs_prefixes. prefixed (l @ ''_init'')) \<union> hs_done_locs ))
   \<union> (\<Union>l \<in> hs_prefixes. {l @ ''_init_type''})"
 
-locset_definition "hs_out_of_sync_locs \<equiv>
-  \<Union>l \<in> hs_prefixes. {l @ ''_init_muts''}"
+locset_definition "hs_out_of_sync_locs =
+  (\<Union>l \<in> hs_prefixes. {l @ ''_init_muts''})"
 
-locset_definition "hs_mut_in_muts_locs \<equiv>
-  \<Union>l \<in> hs_prefixes. {l @ ''_init_loop_set_pending'', l @ ''_init_loop_done''}"
+locset_definition "hs_mut_in_muts_locs =
+  (\<Union>l \<in> hs_prefixes. {l @ ''_init_loop_set_pending'', l @ ''_init_loop_done''})"
 
-locset_definition "hs_init_loop_done_locs \<equiv>
-  \<Union>l \<in> hs_prefixes. {l @ ''_init_loop_done''}"
+locset_definition "hs_init_loop_done_locs =
+  (\<Union>l \<in> hs_prefixes. {l @ ''_init_loop_done''})"
 
-locset_definition "hs_init_loop_not_done_locs \<equiv>
-  hs_init_loop_locs - (\<Union>l \<in> hs_prefixes. {l @ ''_init_loop_done''})"
+locset_definition "hs_init_loop_not_done_locs =
+  (hs_init_loop_locs - (\<Union>l \<in> hs_prefixes. {l @ ''_init_loop_done''}))"
 
-definition (in gc) handshake_invL :: "('field, 'mut, 'ref) gc_pred" where
-[inv]: "handshake_invL \<equiv>
-      atS_gc hs_noop_locs         (sys_handshake_type \<^bold>= \<langle>ht_NOOP\<rangle>)
+inv_definition (in gc) handshake_invL :: "('field, 'mut, 'ref) gc_pred" where
+  "handshake_invL =
+     (atS_gc hs_noop_locs         (sys_handshake_type \<^bold>= \<langle>ht_NOOP\<rangle>)
     \<^bold>\<and> atS_gc hs_get_roots_locs    (sys_handshake_type \<^bold>= \<langle>ht_GetRoots\<rangle>)
     \<^bold>\<and> atS_gc hs_get_work_locs     (sys_handshake_type \<^bold>= \<langle>ht_GetWork\<rangle>)
 
@@ -148,23 +148,23 @@ definition (in gc) handshake_invL :: "('field, 'mut, 'ref) gc_pred" where
                                                                   \<^bold>\<or> sys_ghost_handshake_in_sync m)
     \<^bold>\<and> atS_gc hs_init_loop_not_done_locs (\<^bold>\<forall>m.   \<langle>m\<rangle> \<^bold>\<in> gc_muts \<^bold>\<longrightarrow> \<^bold>\<not>(sys_handshake_pending m)
                                                                  \<^bold>\<and> \<^bold>\<not>(sys_ghost_handshake_in_sync m))
-  \<^bold>\<and> atS_gc hs_init_loop_done_locs     ( (sys_handshake_pending \<^bold>$ gc_mut
+    \<^bold>\<and> atS_gc hs_init_loop_done_locs     ( (sys_handshake_pending \<^bold>$ gc_mut
                                         \<^bold>\<or> sys_ghost_handshake_in_sync \<^bold>$ gc_mut)
                                       \<^bold>\<and> (\<^bold>\<forall>m. \<langle>m\<rangle> \<^bold>\<in> gc_muts \<^bold>\<and> \<langle>m\<rangle> \<^bold>\<noteq> gc_mut
                                                                  \<^bold>\<longrightarrow> \<^bold>\<not>(sys_handshake_pending m)
                                                                    \<^bold>\<and> \<^bold>\<not>(sys_ghost_handshake_in_sync m)) )
-  \<^bold>\<and> atS_gc hs_done_locs       (\<^bold>\<forall>m. sys_handshake_pending m \<^bold>\<or> sys_ghost_handshake_in_sync m)
-  \<^bold>\<and> atS_gc hs_done_loop_locs  (\<^bold>\<forall>m. \<^bold>\<not>(\<langle>m\<rangle> \<^bold>\<in> gc_muts) \<^bold>\<longrightarrow> \<^bold>\<not>(sys_handshake_pending m))
-  \<^bold>\<and> atS_gc hs_none_pending_locs (\<^bold>\<forall>m. \<^bold>\<not>(sys_handshake_pending m))
-  \<^bold>\<and> atS_gc hs_in_sync_locs      (\<^bold>\<forall>m. sys_ghost_handshake_in_sync m)
-  \<^bold>\<and> atS_gc hs_out_of_sync_locs  (\<^bold>\<forall>m. \<^bold>\<not>(sys_handshake_pending m)
-                                       \<^bold>\<and> \<^bold>\<not>(sys_ghost_handshake_in_sync m))
+    \<^bold>\<and> atS_gc hs_done_locs       (\<^bold>\<forall>m. sys_handshake_pending m \<^bold>\<or> sys_ghost_handshake_in_sync m)
+    \<^bold>\<and> atS_gc hs_done_loop_locs  (\<^bold>\<forall>m. \<^bold>\<not>(\<langle>m\<rangle> \<^bold>\<in> gc_muts) \<^bold>\<longrightarrow> \<^bold>\<not>(sys_handshake_pending m))
+    \<^bold>\<and> atS_gc hs_none_pending_locs (\<^bold>\<forall>m. \<^bold>\<not>(sys_handshake_pending m))
+    \<^bold>\<and> atS_gc hs_in_sync_locs      (\<^bold>\<forall>m. sys_ghost_handshake_in_sync m)
+    \<^bold>\<and> atS_gc hs_out_of_sync_locs  (\<^bold>\<forall>m. \<^bold>\<not>(sys_handshake_pending m)
+                                         \<^bold>\<and> \<^bold>\<not>(sys_ghost_handshake_in_sync m))
 
-  \<^bold>\<and> atS_gc hp_Idle_locs          (sys_ghost_handshake_phase \<^bold>= \<langle>hp_Idle\<rangle>)
-  \<^bold>\<and> atS_gc hp_IdleInit_locs      (sys_ghost_handshake_phase \<^bold>= \<langle>hp_IdleInit\<rangle>)
-  \<^bold>\<and> atS_gc hp_InitMark_locs      (sys_ghost_handshake_phase \<^bold>= \<langle>hp_InitMark\<rangle>)
-  \<^bold>\<and> atS_gc hp_IdleMarkSweep_locs (sys_ghost_handshake_phase \<^bold>= \<langle>hp_IdleMarkSweep\<rangle>)
-  \<^bold>\<and> atS_gc hp_Mark_locs          (sys_ghost_handshake_phase \<^bold>= \<langle>hp_Mark\<rangle>)"
+    \<^bold>\<and> atS_gc hp_Idle_locs          (sys_ghost_handshake_phase \<^bold>= \<langle>hp_Idle\<rangle>)
+    \<^bold>\<and> atS_gc hp_IdleInit_locs      (sys_ghost_handshake_phase \<^bold>= \<langle>hp_IdleInit\<rangle>)
+    \<^bold>\<and> atS_gc hp_InitMark_locs      (sys_ghost_handshake_phase \<^bold>= \<langle>hp_InitMark\<rangle>)
+    \<^bold>\<and> atS_gc hp_IdleMarkSweep_locs (sys_ghost_handshake_phase \<^bold>= \<langle>hp_IdleMarkSweep\<rangle>)
+    \<^bold>\<and> atS_gc hp_Mark_locs          (sys_ghost_handshake_phase \<^bold>= \<langle>hp_Mark\<rangle>))"
 (*<*)
 
 lemma hs_get_roots_locs_subseteq_hp_IdleMarkSweep_locs:
@@ -209,17 +209,17 @@ Local handshake phase invariant for the mutators.
 
 \<close>
 
-locset_definition "mut_no_pending_mutates_locs \<equiv>
+locset_definition "mut_no_pending_mutates_locs =
     (prefixed ''hs_noop'' - { ''hs_noop'', ''hs_noop_mfence'' })
   \<union> (prefixed ''hs_get_roots'' - { ''hs_get_roots'', ''hs_get_roots_mfence'' })
   \<union> (prefixed ''hs_get_work'' - { ''hs_get_work'', ''hs_get_work_mfence'' })"
 
-definition (in mut_m) handshake_invL :: "('field, 'mut, 'ref) gc_pred" where
-[inv]: "handshake_invL \<equiv>
-    atS_mut (prefixed ''hs_noop_'')     (sys_handshake_type \<^bold>= \<langle>ht_NOOP\<rangle> \<^bold>\<and> sys_handshake_pending m)
+inv_definition (in mut_m) handshake_invL :: "('field, 'mut, 'ref) gc_pred" where
+  "handshake_invL =
+   (atS_mut (prefixed ''hs_noop_'')     (sys_handshake_type \<^bold>= \<langle>ht_NOOP\<rangle> \<^bold>\<and> sys_handshake_pending m)
  \<^bold>\<and> atS_mut (prefixed ''hs_get_roots_'') (sys_handshake_type \<^bold>= \<langle>ht_GetRoots\<rangle> \<^bold>\<and> sys_handshake_pending m)
  \<^bold>\<and> atS_mut (prefixed ''hs_get_work_'')  (sys_handshake_type \<^bold>= \<langle>ht_GetWork\<rangle> \<^bold>\<and> sys_handshake_pending m)
- \<^bold>\<and> atS_mut mut_no_pending_mutates_locs  (LIST_NULL (tso_pending_mutate (mutator m)))"
+ \<^bold>\<and> atS_mut mut_no_pending_mutates_locs  (LIST_NULL (tso_pending_mutate (mutator m))))"
 (*<*)
 
 lemma (in mut_m) handshake_invL_eq_imp:
@@ -318,13 +318,13 @@ locset_definition no_pending_phase_locs :: "location set" where
      \<union> (init_locs - { ''init_noop_mfence'' })
      \<union> (mark_locs - { ''mark_read_fM'', ''mark_write_fA'', ''mark_noop_mfence'' })"
 
-definition (in gc) phase_invL :: "('field, 'mut, 'ref) gc_pred" where
-[inv]: "phase_invL \<equiv>
-      atS_gc idle_locs             (gc_phase \<^bold>= \<langle>ph_Idle\<rangle>)
+inv_definition (in gc) phase_invL :: "('field, 'mut, 'ref) gc_pred" where
+  "phase_invL =
+     (atS_gc idle_locs             (gc_phase \<^bold>= \<langle>ph_Idle\<rangle>)
   \<^bold>\<and> atS_gc init_locs             (gc_phase \<^bold>= \<langle>ph_Init\<rangle>)
   \<^bold>\<and> atS_gc mark_locs             (gc_phase \<^bold>= \<langle>ph_Mark\<rangle>)
   \<^bold>\<and> atS_gc sweep_locs            (gc_phase \<^bold>= \<langle>ph_Sweep\<rangle>)
-  \<^bold>\<and> atS_gc no_pending_phase_locs (LIST_NULL (tso_pending_phase gc))"
+  \<^bold>\<and> atS_gc no_pending_phase_locs (LIST_NULL (tso_pending_phase gc)))"
 (*<*)
 
 lemma (in gc) phase_invL_eq_imp:
@@ -359,8 +359,7 @@ lemma (in sys) phase_rel_inv[intro]:
   shows "\<lbrace> LSTP (phase_rel_inv \<^bold>\<and> tso_writes_inv) \<rbrace> sys \<lbrace> LSTP phase_rel_inv \<rbrace>"
 apply vcg_jackhammer
 apply (simp add: phase_rel_def p_not_sys split: if_splits)
-apply (elim disjE)
-    apply (auto split: if_splits)
+apply (elim disjE; auto split: if_splits)
 done
 
 lemma (in mut_m) phase_rel_inv[intro]:
@@ -410,9 +409,9 @@ definition fA_rel :: "(bool \<times> handshake_phase \<times> gc_mark \<times> g
 definition fA_rel_inv :: "('field, 'mut, 'ref) lsts_pred" where
   "fA_rel_inv = ((\<^bold>\<forall>m. sys_ghost_handshake_in_sync m) \<^bold>\<otimes> sys_ghost_handshake_phase \<^bold>\<otimes> sys_fA \<^bold>\<otimes> gc_fM \<^bold>\<otimes> tso_pending_fA gc \<^bold>\<in> \<langle>fA_rel\<rangle>)"
 
-locset_definition "fM_eq_locs \<equiv> (- { ''idle_write_fM'', ''idle_flip_noop_mfence'' })"
-locset_definition "fM_tso_empty_locs \<equiv> (- { ''idle_flip_noop_mfence'' })"
-locset_definition "fA_tso_empty_locs \<equiv> (- { ''mark_noop_mfence'' })"
+locset_definition "fM_eq_locs = (- { ''idle_write_fM'', ''idle_flip_noop_mfence'' })"
+locset_definition "fM_tso_empty_locs = (- { ''idle_flip_noop_mfence'' })"
+locset_definition "fA_tso_empty_locs = (- { ''mark_noop_mfence'' })"
 
 locset_definition
   "fA_eq_locs \<equiv> { ''idle_read_fM'', ''idle_invert_fM'' }
@@ -425,9 +424,9 @@ locset_definition
                \<union> prefixed ''idle_flip_noop''
                \<union> init_locs"
 
-definition (in gc) fM_fA_invL :: "('field, 'mut, 'ref) gc_pred" where
-[inv]: "fM_fA_invL \<equiv>
-    atS_gc fM_eq_locs                    (sys_fM  \<^bold>= gc_fM)
+inv_definition (in gc) fM_fA_invL :: "('field, 'mut, 'ref) gc_pred" where
+  "fM_fA_invL =
+   (atS_gc fM_eq_locs                    (sys_fM  \<^bold>= gc_fM)
   \<^bold>\<and> at_gc ''idle_write_fM''              (sys_fM \<^bold>\<noteq> gc_fM)
   \<^bold>\<and> at_gc ''idle_flip_noop_mfence''      (sys_fM \<^bold>\<noteq> gc_fM \<^bold>\<longrightarrow> (\<^bold>\<not>(LIST_NULL (tso_pending_fM gc))))
   \<^bold>\<and> atS_gc fM_tso_empty_locs             (LIST_NULL (tso_pending_fM gc))
@@ -435,7 +434,7 @@ definition (in gc) fM_fA_invL :: "('field, 'mut, 'ref) gc_pred" where
   \<^bold>\<and> atS_gc fA_eq_locs                    (sys_fA  \<^bold>= gc_fM)
   \<^bold>\<and> atS_gc fA_neq_locs                   (sys_fA \<^bold>\<noteq> gc_fM)
   \<^bold>\<and> at_gc ''mark_noop_mfence''           (sys_fA \<^bold>\<noteq> gc_fM \<^bold>\<longrightarrow> (\<^bold>\<not>(LIST_NULL (tso_pending_fA gc))))
-  \<^bold>\<and> atS_gc fA_tso_empty_locs             (LIST_NULL (tso_pending_fA gc))"
+  \<^bold>\<and> atS_gc fA_tso_empty_locs             (LIST_NULL (tso_pending_fA gc)))"
 (*<*)
 
 lemmas fM_rel_invD = iffD1[OF fun_cong[OF fM_rel_inv_def[simplified atomize_eq]]]
@@ -508,13 +507,9 @@ apply (erule disjE)
  apply (clarsimp simp: fM_rel_inv_def fM_rel_def split: if_splits)
 apply (clarsimp simp: fM_rel_inv_def fM_rel_def filter_empty_conv)
 
-apply (erule disjE)
- apply clarsimp
-apply clarsimp
+apply (erule disjE; clarsimp)
 
-apply (rule conjI)
- apply (clarsimp simp: fM_rel_inv_def fM_rel_def split: if_splits)
-apply (clarsimp simp: fM_rel_inv_def fM_rel_def split: if_splits)
+apply (rule conjI; clarsimp simp: fM_rel_inv_def fM_rel_def split: if_splits)
 
 apply (clarsimp split: if_splits)
 

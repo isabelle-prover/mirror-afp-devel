@@ -887,39 +887,7 @@ done
 
 (*>*)
 
-subsection\<open>Lonely mutator assertions\<close>
-
-text\<open>
-
-The second assertion is key: after the \<open>''init_noop''\<close>
-handshake, we need to know that there are no pending white insertions
-(mutations that insert unmarked references) for the deletion barrier
-to work.
-
-\<close>
-
-locset_definition
-  "ghost_honorary_root_empty_locs \<equiv>
-     - (prefixed ''store_del'' \<union> {''lop_store_ins''} \<union> prefixed ''store_ins'')"
-
-definition (in mut_m) load_invL :: "('field, 'mut, 'ref) gc_pred" where
-[inv]: "load_invL \<equiv>
-    at_mut ''load''         (mut_tmp_ref \<^bold>\<in> mut_roots)
-  \<^bold>\<and> at_mut ''hs_noop_done'' (LIST_NULL (tso_pending_mutate (mutator m)))
-  \<^bold>\<and> atS_mut ghost_honorary_root_empty_locs (EMPTY mut_ghost_honorary_root)"
-(*<*)
-
-lemma (in mut_m) load_invL[intro]: "\<lbrace> load_invL \<rbrace> mutator m"
-by vcg_jackhammer
-
-lemma (in gc) load_invL[intro]: "\<lbrace> mut_m.load_invL m \<rbrace> gc"
-unfolding mut_m.load_invL_def by vcg_jackhammer
-
-lemma (in mut_m') load_invL[intro]: "\<lbrace> load_invL \<rbrace> mutator m'"
-by vcg_jackhammer
-
-lemma (in sys) load_invL[intro]: "\<lbrace> mut_m.load_invL m \<rbrace> sys"
-unfolding mut_m.load_invL_def by (vcg_jackhammer split: if_splits)
+subsection\<open> Mutator proofs \<close>
 
 lemma (in mut_m) reachable_snapshot_inv_hs_get_roots_done[simp]:
   assumes sti: "strong_tricolour_inv s"
@@ -1030,7 +998,7 @@ lemma (in mut_m) reachable_snapshot_inv_deref_del[simp]:
 by (clarsimp simp: reachable_snapshot_inv_def in_snapshot_def grey_protects_white_def)
 
 lemma (in mut_m) mutator_phase_inv[intro]:
-  "\<lbrace> handshake_invL \<^bold>\<and> load_invL
+  "\<lbrace> handshake_invL
        \<^bold>\<and> mark_object_invL
        \<^bold>\<and> mut_get_roots.mark_object_invL m
        \<^bold>\<and> mut_store_del.mark_object_invL m
@@ -1061,9 +1029,7 @@ subgoal for s s'
   apply clarsimp
   apply (erule marked_insertions_store_ins)
   apply (drule phase_rel_invD)
-  apply (fastforce simp: phase_rel_def hp_step_rel_def
-                   dest: reachable_blackD
-                   elim: blackD)
+  apply (clarsimp simp: phase_rel_def hp_step_rel_def; elim disjE; fastforce dest: reachable_blackD elim: blackD)
  apply clarsimp
  apply (rule marked_deletions_store_ins, assumption) (* FIXME as above *)
  apply clarsimp
@@ -1608,11 +1574,11 @@ locset_definition (in -) gc_W_empty_locs :: "location set" where
      \<union> prefixed ''mark_loop_get_roots''
      \<union> prefixed ''mark_loop_get_work''"
 
-locset_definition "black_heap_locs \<equiv> { ''sweep_idle'', ''idle_noop_mfence'', ''idle_noop_init_type'' }"
-locset_definition "no_grey_refs_locs \<equiv> black_heap_locs \<union> sweep_locs \<union> {''mark_end''}"
+locset_definition "black_heap_locs = { ''sweep_idle'', ''idle_noop_mfence'', ''idle_noop_init_type'' }"
+locset_definition "no_grey_refs_locs = black_heap_locs \<union> sweep_locs \<union> {''mark_end''}"
 
-definition (in gc) gc_W_empty_invL :: "('field, 'mut, 'ref) gc_pred" where
-[inv]: "gc_W_empty_invL =
+inv_definition (in gc) gc_W_empty_invL :: "('field, 'mut, 'ref) gc_pred" where
+  "gc_W_empty_invL =
    (atS_gc (hs_get_roots_locs \<union> hs_get_work_locs)  (\<^bold>\<forall>m. mut_m.gc_W_empty_mut_inv m)
   \<^bold>\<and> at_gc ''mark_loop_get_roots_load_W''          (EMPTY sys_W \<^bold>\<longrightarrow> no_grey_refs)
   \<^bold>\<and> at_gc ''mark_loop_get_work_load_W''           (EMPTY sys_W \<^bold>\<longrightarrow> no_grey_refs)
@@ -1905,10 +1871,10 @@ done
 
 subsection\<open>Sweep loop invariants\<close>
 
-locset_definition "sweep_loop_locs \<equiv> prefixed ''sweep_loop''"
+locset_definition "sweep_loop_locs = prefixed ''sweep_loop''"
 
-definition (in gc) sweep_loop_invL :: "('field, 'mut, 'ref) gc_pred" where
-[inv]: "sweep_loop_invL =
+inv_definition (in gc) sweep_loop_invL :: "('field, 'mut, 'ref) gc_pred" where
+  "sweep_loop_invL =
    (at_gc ''sweep_loop_check''        ( (\<^bold>\<not>(NULL gc_mark) \<^bold>\<longrightarrow> (\<lambda>s. obj_at (\<lambda>obj. Some (obj_mark obj) = gc_mark s) (gc_tmp_ref s) s))
                                       \<^bold>\<and> (  NULL gc_mark \<^bold>\<longrightarrow> valid_ref \<^bold>$ gc_tmp_ref \<^bold>\<longrightarrow> marked \<^bold>$ gc_tmp_ref ) )
   \<^bold>\<and> at_gc ''sweep_loop_free''         ( \<^bold>\<not>(NULL gc_mark) \<^bold>\<and> the \<circ> gc_mark \<^bold>\<noteq> gc_fM \<^bold>\<and> (\<lambda>s. obj_at (\<lambda>obj. Some (obj_mark obj) = gc_mark s) (gc_tmp_ref s) s) )
@@ -2876,7 +2842,7 @@ lemma (in sys) mut_mark_object_invL[intro]:
   notes mut_m_get_roots_no_fM_write[where m=m, simp]
   notes mut_m_get_roots_no_phase_write[where m=m, simp]
   notes mut_m_ghost_handshake_phase_not_hp_Idle[where m=m, simp]
-  notes atS_simps[simp]
+  notes atS_simps[simp] filter_empty_conv[simp]
   shows "\<lbrace> mut_m.handshake_invL m \<^bold>\<and> mut_m.mark_object_invL m
              \<^bold>\<and> LSTP (fA_rel_inv \<^bold>\<and> fM_rel_inv \<^bold>\<and> handshake_phase_inv \<^bold>\<and> mutators_phase_inv \<^bold>\<and> phase_rel_inv \<^bold>\<and> valid_refs_inv \<^bold>\<and> valid_W_inv \<^bold>\<and> tso_writes_inv) \<rbrace>
            sys
@@ -2933,7 +2899,7 @@ subgoal for s s' p w ws
   apply (drule mp, erule atS_mono[OF _ subseteq_mut_mo_valid_ref_locs])
   apply ((thin_tac "atS p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
   apply ((thin_tac "at p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
-  apply (clarsimp simp: do_write_action_def filter_empty_conv p_not_sys loc
+  apply (clarsimp simp: do_write_action_def p_not_sys loc
                  split: mem_write_action.splits if_splits)
        apply (drule (1) valid_W_invD2)
        apply (erule obj_at_field_on_heap_weakenE)
@@ -2949,7 +2915,7 @@ subgoal for s s' p w ws
      apply (clarsimp split: obj_at_splits option.splits)
       apply force
      apply (frule (1) marked_insertionsD)
-     apply (auto split: obj_at_splits)[1]
+     apply (auto split: obj_at_splits; fail)[1]
     apply (erule disjE) (* super messy case *)
      apply force
     apply (rule conjI)
@@ -2962,31 +2928,29 @@ subgoal for s s' p w ws
     apply (frule spec[where x=m])
     apply (drule_tac x=ma in spec)
     apply (clarsimp simp: hp_step_rel_def)
-    apply (elim disjE, auto simp: phase_rel_def dest: marked_insertionsD)[1]
-   apply (erule disjE)
-    apply (drule mut_m.handshake_phase_invD[where m=m])
-    apply (clarsimp simp: fM_rel_inv_def fM_rel_def hp_step_rel_def)
-   apply force
-  apply (erule disjE)
+    apply (elim disjE, auto simp: phase_rel_def dest: marked_insertionsD; fail)[1]
+   apply (erule disjE; clarsimp)
    apply (drule mut_m.handshake_phase_invD[where m=m])
-   apply (drule phase_rel_invD)
-   apply (clarsimp simp: hp_step_rel_def phase_rel_def)
-  apply force
+   apply (clarsimp simp: fM_rel_inv_def fM_rel_def hp_step_rel_def)
+   apply (metis (no_types, lifting) handshake_phase.distinct(5) handshake_phase.distinct(7))
+  apply (erule disjE; clarsimp)
+  apply (drule mut_m.handshake_phase_invD[where m=m])
+  apply (drule phase_rel_invD)
+  apply (clarsimp simp: hp_step_rel_def phase_rel_def)
   done
 
 subgoal for s s' p w ws y
-  apply (clarsimp simp: do_write_action_def filter_empty_conv p_not_sys
+  apply (clarsimp simp: do_write_action_def p_not_sys
                  split: mem_write_action.splits if_splits)
-    apply (auto split: obj_at_splits)[1]
-   apply (erule disjE)
-    apply (drule mut_m.handshake_phase_invD[where m=m])
-    apply (clarsimp simp: fM_rel_inv_def fM_rel_def hp_step_rel_def)
-   apply force
-  apply (erule disjE)
+    apply (auto split: obj_at_splits; fail)[1]
+   apply (erule disjE; clarsimp)
    apply (drule mut_m.handshake_phase_invD[where m=m])
-   apply (drule phase_rel_invD)
-   apply (clarsimp simp: hp_step_rel_def phase_rel_def)
-  apply force
+   apply (clarsimp simp: fM_rel_inv_def fM_rel_def hp_step_rel_def)
+   apply (metis (no_types, lifting) handshake_phase.distinct(5) handshake_phase.distinct(7))
+  apply (erule disjE; clarsimp)
+  apply (drule mut_m.handshake_phase_invD[where m=m])
+  apply (drule phase_rel_invD)
+  apply (clarsimp simp: hp_step_rel_def phase_rel_def)
   done
 
 subgoal for s s' p w ws
@@ -2995,7 +2959,7 @@ subgoal for s s' p w ws
   apply ((thin_tac "at p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
   apply (subst do_write_action_fM[where m=m], simp_all)[1]
    apply (elim disjE, simp_all)[1]
-  apply (clarsimp simp: do_write_action_def filter_empty_conv p_not_sys
+  apply (clarsimp simp: do_write_action_def p_not_sys
                  split: mem_write_action.splits if_splits)
       apply (erule obj_at_field_on_heap_weakenE, auto)[1]
      apply (erule obj_at_field_on_heap_weakenE, auto split: obj_at_splits)[1]
@@ -3027,6 +2991,7 @@ subgoal for s s' p w ws
    apply (clarsimp simp: hp_step_rel_def phase_rel_def)
   apply force
   done
+
 done
 
 lemma (in gc) mut_mark_object_invL[intro]:
@@ -3040,49 +3005,51 @@ lemma (in gc) mut_mark_object_invL[intro]:
          \<lbrace> mut_m.mark_object_invL m \<rbrace>"
 apply vcg_nihe
 apply vcg_ni
-  subgoal
-   apply (drule (1) mut_m_handshake_invL_get_roots)
-   apply clarsimp
-   done
 
- subgoal by (simp add: mut_m.handshake_invL_def)
+subgoal
+ apply (drule (1) mut_m_handshake_invL_get_roots)
+ apply clarsimp
+ done
 
- subgoal by (fastforce simp: fM_rel_inv_def fM_rel_def hp_step_rel_def split: obj_at_splits)
+subgoal by (simp add: mut_m.handshake_invL_def)
 
- subgoal
-   apply (drule mut_m.handshake_phase_invD[where m=m])
-   apply (drule spec[where x=m])
-   apply (clarsimp simp: valid_null_ref_def hp_step_rel_def conj_disj_distribR[symmetric] split: option.splits)
-   apply (drule (1) mut_m.reachable_blackD)
-    apply blast
-   apply (clarsimp split: obj_at_splits)
-   done
+subgoal by (fastforce simp: fM_rel_inv_def fM_rel_def hp_step_rel_def split: obj_at_splits)
 
- subgoal
-   apply (drule mp, erule atS_mono[OF _ subseteq_mut_mo_valid_ref_locs])
-   apply ((thin_tac "atS p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
-   apply ((thin_tac "at p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
-   apply (drule mut_m.handshake_phase_invD[where m=m])
-   apply (drule spec[where x=m])
-   apply (clarsimp simp: valid_null_ref_def hp_step_rel_def conj_disj_distribR[symmetric] split: option.splits)
-   apply (drule (1) mut_m.reachable_blackD)
-    apply blast
-   apply (auto simp: obj_at_field_on_heap_def black_def split: obj_at_splits option.splits)[1]
-   done
+subgoal
+ apply (drule mut_m.handshake_phase_invD[where m=m])
+ apply (drule spec[where x=m])
+ apply (clarsimp simp: valid_null_ref_def hp_step_rel_def conj_disj_distribR[symmetric] split: option.splits)
+ apply (drule (1) mut_m.reachable_blackD)
+  apply blast
+ apply (clarsimp split: obj_at_splits)
+ done
 
- subgoal by (clarsimp split: obj_at_splits)
+subgoal
+ apply (drule mp, erule atS_mono[OF _ subseteq_mut_mo_valid_ref_locs])
+ apply ((thin_tac "atS p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
+ apply ((thin_tac "at p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
+ apply (drule mut_m.handshake_phase_invD[where m=m])
+ apply (drule spec[where x=m])
+ apply (clarsimp simp: valid_null_ref_def hp_step_rel_def conj_disj_distribR[symmetric] split: option.splits)
+ apply (drule (1) mut_m.reachable_blackD)
+  apply blast
+ apply (auto simp: obj_at_field_on_heap_def black_def split: obj_at_splits option.splits)[1]
+ done
 
- subgoal
-   apply (drule mp, erule atS_mono[OF _ subseteq_mut_mo_valid_ref_locs2])
-   apply ((thin_tac "atS p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
-   apply ((thin_tac "at p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
-   apply (drule mut_m.handshake_phase_invD[where m=m])
-   apply (drule spec[where x=m])
-   apply (clarsimp simp: valid_null_ref_def hp_step_rel_def conj_disj_distribR[symmetric] split: option.splits)
-   apply (drule (1) mut_m.reachable_blackD)
-    apply blast
-   apply (auto simp: obj_at_field_on_heap_def black_def split: obj_at_splits option.splits)[1]
-  done
+subgoal by (clarsimp split: obj_at_splits)
+
+subgoal
+ apply (drule mp, erule atS_mono[OF _ subseteq_mut_mo_valid_ref_locs2])
+ apply ((thin_tac "atS p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
+ apply ((thin_tac "at p ls s \<longrightarrow> Q" for p ls s Q)+)[1]
+ apply (drule mut_m.handshake_phase_invD[where m=m])
+ apply (drule spec[where x=m])
+ apply (clarsimp simp: valid_null_ref_def hp_step_rel_def conj_disj_distribR[symmetric] split: option.splits)
+ apply (drule (1) mut_m.reachable_blackD)
+  apply blast
+ apply (auto simp: obj_at_field_on_heap_def black_def split: obj_at_splits option.splits)[1]
+done
+
 done
 
 lemma (in gc) mut_store_old_mark_object_invL[intro]:
@@ -3376,8 +3343,7 @@ lemma (in mut_m) valid_refs_inv_deref_del[simp]:
 by (clarsimp simp: valid_refs_inv_def)
 
 lemma (in mut_m) valid_refs_inv[intro]:
-  "\<lbrace> load_invL
-       \<^bold>\<and> mark_object_invL
+  "\<lbrace> mark_object_invL
        \<^bold>\<and> mut_get_roots.mark_object_invL m
        \<^bold>\<and> mut_store_del.mark_object_invL m
        \<^bold>\<and> mut_store_ins.mark_object_invL m

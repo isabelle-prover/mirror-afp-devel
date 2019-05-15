@@ -279,7 +279,7 @@ text\<open>
 Both the mutators and the garbage collector mark references, which
 indicates that a reference is live in the current round of
 collection. This operation is defined in @{cite [cite_macro=citet]
-\<open>Figure~2.8\<close> "{Pizlo201xPhd"}. These definitions are
+\<open>Figure~2.8\<close> "Pizlo201xPhd"}. These definitions are
 parameterised by the name of the process.
 
 \<close>
