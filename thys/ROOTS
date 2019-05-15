@@ -225,6 +225,7 @@ LTL
 LTL_to_DRA
 LTL_to_GBA
 Lam-ml-Normalization
+LambdaAuth
 LambdaMu
 Lambda_Free_KBOs
 Lambda_Free_RPOs
