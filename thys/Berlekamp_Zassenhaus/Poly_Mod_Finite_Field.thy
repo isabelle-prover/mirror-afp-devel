@@ -31,10 +31,6 @@ proof (intro rel_funI)
   qed
 qed
 
-abbreviation "rel_some r x Y \<equiv> \<exists>y \<in> Y. r x y"
-
-
-
 
 abbreviation to_int_poly :: "'a :: finite mod_ring poly \<Rightarrow> int poly" where
   "to_int_poly \<equiv> map_poly to_int_mod_ring"
@@ -320,8 +316,7 @@ proof
     by (auto simp: Mp_f_representative)
 qed
 
-
-lemma mem_MP_Rel[transfer_rule]: "(MP_Rel ===> rel_set MP_Rel ===> (=)) (rel_some eq_m) (\<in>)"
+lemma mem_MP_Rel[transfer_rule]: "(MP_Rel ===> rel_set MP_Rel ===> (=)) (\<lambda> x Y. \<exists>y \<in> Y. eq_m x y) (\<in>)"
 proof (intro rel_funI iffI)
   fix x y X Y assume xy: "MP_Rel x y" and XY: "rel_set MP_Rel X Y"
   { assume "\<exists>x' \<in> X. x =m x'"
