@@ -211,8 +211,7 @@ lemma assoc_end_min_less_eq_max:
    fmlookup ends role = Some end \<Longrightarrow>
    assoc_end_min end \<le> assoc_end_max end"
   unfolding assoc_end_min_def assoc_end_max_def
-  using zero_enat_def one_enat_def numeral_eq_enat apply auto
-  by (metis enat_ord_number(1) numeral_One one_le_numeral)
+  using zero_enat_def one_enat_def numeral_eq_enat by auto
 
 lemma association_ends_unique:
   assumes "association_ends' classes assocs \<C> from role end\<^sub>1"
