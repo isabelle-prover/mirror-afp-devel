@@ -683,7 +683,7 @@ We also arrange for the object to be marked atomically (see
 practice allocation pools enable this kind of atomicity (wrt the sweep
 loop in the GC described in \S\ref{sec:gc-model-gc}).
 
-Note that the \texttt{abort} in @[cite [cite_macro=citet]
+Note that the \texttt{abort} in @{cite [cite_macro=citet]
 \<open>Figure~2.9: Alloc\<close> "Pizlo201xPhd"} means the atomic
 fails and the mutator can revert to activity outside of
 \texttt{Alloc}, avoiding deadlock.
