@@ -965,19 +965,8 @@ proof -
     (\<lambda>(s1, _, s3). (\<forall>x y. s1 = Inl (Some (x, y)) \<longrightarrow> length x = \<eta> \<and> length y = \<eta>) \<and> pred_cstate (\<lambda>x. length x = \<eta>) s3) \<I>"
     apply unfold_locales
     subgoal for s x y s'
-      apply(cases "(fst s, projl x)" rule: sim.cases; cases "snd (snd s)")  (*A MESS, but neither fastforce nor auto works for all 36 subgoals*)
-                          apply(fastforce simp: channel.send_oracle.simps channel.recv_oracle.simps vld_def in_nlists_UNIV \<I>_def)[1]
-                         apply(fastforce simp: channel.send_oracle.simps channel.recv_oracle.simps vld_def in_nlists_UNIV \<I>_def)[1]
-                        apply(fastforce simp: channel.send_oracle.simps channel.recv_oracle.simps vld_def in_nlists_UNIV \<I>_def)[1]
-                       apply(fastforce simp: channel.send_oracle.simps channel.recv_oracle.simps vld_def in_nlists_UNIV \<I>_def)[1]
-                      apply(fastforce simp: auth_channel.auth_oracle.simps channel.send_oracle.simps channel.recv_oracle.simps vld_def in_nlists_UNIV \<I>_def)[1]
-                     apply(fastforce simp: auth_channel.auth_oracle.simps channel.send_oracle.simps channel.recv_oracle.simps vld_def in_nlists_UNIV \<I>_def)[1]
-                    apply(fastforce simp: auth_channel.auth_oracle.simps channel.send_oracle.simps channel.recv_oracle.simps vld_def in_nlists_UNIV \<I>_def)[1]
-                   apply(fastforce simp: auth_channel.auth_oracle.simps channel.send_oracle.simps channel.recv_oracle.simps vld_def in_nlists_UNIV \<I>_def)[1]
-                  apply(auto split: if_split_asm simp add: exec_gpv_bind auth_channel.auth_oracle.simps channel.send_oracle.simps channel.recv_oracle.simps vld_def in_nlists_UNIV \<I>_def)[1]
-                 apply(auto split: if_split_asm simp add: auth_channel.auth_oracle.simps channel.send_oracle.simps channel.recv_oracle.simps vld_def in_nlists_UNIV \<I>_def)[1]
-                apply(fastforce split: if_split_asm simp add: exec_gpv_bind auth_channel.auth_oracle.simps channel.send_oracle.simps channel.recv_oracle.simps vld_def in_nlists_UNIV \<I>_def)+
-      done 
+      by(cases "(fst s, projl x)" rule: sim.cases; cases "snd (snd s)")
+        (auto split: if_split_asm simp add: exec_gpv_bind auth_channel.auth_oracle.simps channel.send_oracle.simps channel.recv_oracle.simps vld_def in_nlists_UNIV \<I>_def)
     subgoal for s
       apply(rule WT_calleeI)
       subgoal for x
