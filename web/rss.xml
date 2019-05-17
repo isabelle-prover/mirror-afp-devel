@@ -9,7 +9,72 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>16 Apr 2019 00:00:00 +0000</pubDate>
+    <pubDate>14 May 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Formalization of Generic Authenticated Data Structures</title>
+              <link>https://www.isa-afp.org/entries/LambdaAuth.html</link>
+       <guid>https://www.isa-afp.org/entries/LambdaAuth.html</guid>
+       <dc:creator> Matthias Brun, Dmitriy Traytel       </dc:creator>
+       <pubDate>14 May 2019 00:00:00 +0000</pubDate>
+       <description>
+Authenticated data structures are a technique for outsourcing data
+storage and maintenance to an untrusted server. The server is required
+to produce an efficiently checkable and cryptographically secure proof
+that it carried out precisely the requested computation. &lt;a
+href=&#34;https://doi.org/10.1145/2535838.2535851&#34;&gt;Miller et
+al.&lt;/a&gt; introduced &amp;lambda;&amp;bull; (pronounced
+&lt;i&gt;lambda auth&lt;/i&gt;)&amp;mdash;a functional programming
+language with a built-in primitive authentication construct, which
+supports a wide range of user-specified authenticated data structures
+while guaranteeing certain correctness and security properties for all
+well-typed programs. We formalize &amp;lambda;&amp;bull; and prove its
+correctness and security properties. With Isabelle&#39;s help, we
+uncover and repair several mistakes in the informal proofs and lemma
+statements. Our findings are summarized in a &lt;a
+href=&#34;http://people.inf.ethz.ch/trayteld/papers/lambdaauth/lambdaauth.pdf&#34;&gt;paper
+draft&lt;/a&gt;.</description>
+    </item>
+    <item>
+       <title>Multi-Party Computation</title>
+              <link>https://www.isa-afp.org/entries/Multi_Party_Computation.html</link>
+       <guid>https://www.isa-afp.org/entries/Multi_Party_Computation.html</guid>
+       <dc:creator> David Aspinall, David Butler       </dc:creator>
+       <pubDate>09 May 2019 00:00:00 +0000</pubDate>
+       <description>
+We use CryptHOL to consider Multi-Party Computation (MPC) protocols.
+MPC was first considered by Yao in 1983 and recent advances in
+efficiency and an increased demand mean it is now deployed in the real
+world. Security is considered using the real/ideal world paradigm. We
+first define security in the semi-honest security setting where
+parties are assumed not to deviate from the protocol transcript. In
+this setting we prove multiple Oblivious Transfer (OT) protocols
+secure and then show security for the gates of the GMW protocol. We
+then define malicious security, this is a stronger notion of security
+where parties are assumed to be fully corrupted by an adversary. In
+this setting we again consider OT, as it is a fundamental building
+block of almost all MPC protocols.</description>
+    </item>
+    <item>
+       <title>HOL-CSP Version 2.0</title>
+              <link>https://www.isa-afp.org/entries/HOL-CSP.html</link>
+       <guid>https://www.isa-afp.org/entries/HOL-CSP.html</guid>
+       <dc:creator> Safouan Taha, Lina Ye, Burkhart Wolff       </dc:creator>
+       <pubDate>26 Apr 2019 00:00:00 +0000</pubDate>
+       <description>
+This is a complete formalization of the work of Hoare and Roscoe on
+the denotational semantics of the Failure/Divergence Model of CSP. It
+follows essentially the presentation of CSP in Roscoe’s Book ”Theory
+and Practice of Concurrency” [8] and the semantic details in a joint
+Paper of Roscoe and Brooks ”An improved failures model for
+communicating processes&#34;.  The present work is based on a prior
+formalization attempt, called HOL-CSP 1.0, done in 1997 by H. Tej and
+B. Wolff with the Isabelle proof technology available at that time.
+This work revealed minor, but omnipresent foundational errors in key
+concepts like the process invariant. The present version HOL-CSP
+profits from substantially improved libraries (notably HOLCF),
+improved automated proof techniques, and structured proof techniques
+in Isar and is substantially shorter but more complete.</description>
+    </item>
     <item>
        <title>A Compositional and Unified Translation of LTL into ω-Automata</title>
               <link>https://www.isa-afp.org/entries/LTL_Master_Theorem.html</link>
@@ -500,47 +565,6 @@ type class laws for these instances. As of now, however, some manual
 proofs are still required for recursive datatypes.&lt;/p&gt;
 &lt;p&gt;Note: There are already articles in the AFP that provide
 automatic instantiation for a number of classes. Concretely, &lt;a href=&#34;https://www.isa-afp.org/entries/Deriving.html&#34;&gt;Deriving&lt;/a&gt; allows the automatic instantiation of comparators, linear orders, equality, and hashing. &lt;a href=&#34;https://www.isa-afp.org/entries/Show.html&#34;&gt;Show&lt;/a&gt; instantiates a Haskell-style &lt;i&gt;show&lt;/i&gt; class.&lt;/p&gt;&lt;p&gt;Our approach works for arbitrary classes (with some Isabelle/HOL overhead for each class), but a smaller set of datatypes.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Formalisation and Evaluation of Alan Gewirth's Proof for the Principle of Generic Consistency in Isabelle/HOL</title>
-              <link>https://www.isa-afp.org/entries/GewirthPGCProof.html</link>
-       <guid>https://www.isa-afp.org/entries/GewirthPGCProof.html</guid>
-       <dc:creator> David Fuenmayor, Christoph Benzmüller       </dc:creator>
-       <pubDate>30 Oct 2018 00:00:00 +0000</pubDate>
-       <description>
-An ambitious ethical theory ---Alan Gewirth&#39;s &#34;Principle of
-Generic Consistency&#34;--- is encoded and analysed in Isabelle/HOL.
-Gewirth&#39;s theory has stirred much attention in philosophy and
-ethics and has been proposed as a potential means to bound the impact
-of artificial general intelligence.</description>
-    </item>
-    <item>
-       <title>Epistemic Logic</title>
-              <link>https://www.isa-afp.org/entries/Epistemic_Logic.html</link>
-       <guid>https://www.isa-afp.org/entries/Epistemic_Logic.html</guid>
-       <dc:creator> Andreas Halkjær From       </dc:creator>
-       <pubDate>29 Oct 2018 00:00:00 +0000</pubDate>
-       <description>
-This work is a formalization of epistemic logic with countably many
-agents. It includes proofs of soundness and completeness for the axiom
-system K. The completeness proof is based on the textbook
-&#34;Reasoning About Knowledge&#34; by Fagin, Halpern, Moses and
-Vardi (MIT Press 1995).</description>
-    </item>
-    <item>
-       <title>Smooth Manifolds</title>
-              <link>https://www.isa-afp.org/entries/Smooth_Manifolds.html</link>
-       <guid>https://www.isa-afp.org/entries/Smooth_Manifolds.html</guid>
-       <dc:creator> Fabian Immler, Bohua Zhan       </dc:creator>
-       <pubDate>22 Oct 2018 00:00:00 +0000</pubDate>
-       <description>
-We formalize the definition and basic properties of smooth manifolds
-in Isabelle/HOL. Concepts covered include partition of unity, tangent
-and cotangent spaces, and the fundamental theorem of path integrals.
-We also examine some concrete manifolds such as spheres and projective
-spaces. The formalization makes extensive use of the analysis and
-linear algebra libraries in Isabelle/HOL, in particular its
-“types-to-sets” mechanism.</description>
     </item>
   </channel>
 </rss>
