@@ -759,7 +759,7 @@ proof (simp add:conj_commute D_hiding, intro conjI subset_antisym subsetI, simp_
         with ff0 ff1 mono_trace_hide[of "f' m"] have "trace_hide (f' m) (ev ` A) \<le> f k" 
           by (metis (mono_tags, lifting) someI_ex)
         with mono_trace_hide[OF this, of B] mono_trace_hide[OF hh, of B] 3(6)[THEN spec, of k] 3(6)
-        show ?case by auto
+        show ?case by (metis (full_types) dual_order.antisym filter_filter)
       next
         case 3 show ?case 
         proof(rule disjI2, rule_tac x="\<lambda>i. f' (m + i)" in exI, simp_all, intro conjI allI, goal_cases)
