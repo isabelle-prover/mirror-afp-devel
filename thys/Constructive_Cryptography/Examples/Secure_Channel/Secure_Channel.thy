@@ -119,7 +119,7 @@ simplified]
   show ?case by interaction_bound_converter code_simp
 
   case (5 \<eta>)
-  show ?case by (simp add: max_def) (simp add: times_enat_def)
+  show ?case by (simp add: mult_2_right)
 
   case (6 \<eta>)
   show ?case unfolding vld_def by(rule plossless_intro WT_intro[unfolded vld_def])+
