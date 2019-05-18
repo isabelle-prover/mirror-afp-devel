@@ -2,7 +2,7 @@ How the Archive Works
 ---------------------
 
 Submission is by email to afp-submit@in.tum.de which is distributed to the
-archive committee (currently GK, TN, LCP, and RT). One member will assume
+archive committee (currently GK, TN, LCP, RT, and ME). One member will assume
 responsibility. This includes refereeing the submission, communicating
 with the authors, and installing it in the archive. Once it has been
 installed, it will be announced on isabelle-users.
@@ -40,7 +40,7 @@ the main page).
 
 **Roles:**
 
--   PC / archive admins (TN, GK, LCP, RT, more)
+-   PC / archive admins (TN, GK, LCP, RT, ME, more)
     -   responsibility: refereeing and initial setup of submissions,
         releases
     -   access: everything
@@ -59,10 +59,10 @@ the main page).
 mercurial default branch). Released version of existing submissions
 should be stable.
 
-**Maintenance responsibility:** Mixed. Simple fixes by us, anything else
-by the maintainer of the contribution. We would give the maintainers
-advanced warning of a new release (after feature freeze) so they have
-time to update their contributions.
+**Maintenance responsibility:** Mixed. Simple fixes by the Isabelle team,
+anything else by the maintainer of the contribution. The editors will give the
+maintainers advanced warning of a new release (after feature freeze) so they
+have time to update their contributions.
 
 -   there should be an automated build. Important libraries nightly,
     larger developments less often (weekly?). Maintainers should be able
@@ -77,7 +77,7 @@ time to update their contributions.
     Isabelle2003, it lives from release of Isabelle2003 until
     Isabelle2004)
 -   the current release version of the archive will be updated multiple
-    times in its live: for each submission and each time a maintainer
+    times in its life: for each submission and each time a maintainer
     fixes a broken submission (broken e.g. because they did not make the
     Isabelle release deadline).
 -   submissions that do not work at release time are dropped from the
