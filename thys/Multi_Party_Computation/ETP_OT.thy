@@ -1,4 +1,4 @@
-subsection {* Oblivious transfer constructed from ETPs *}
+subsection \<open>Oblivious transfer constructed from ETPs\<close>
 
 text\<open>Here we construct the OT protocol based on ETPs given in \cite{DBLP:books/sp/17/Lindell17} (Chapter 4) and prove
 semi honest security for both parties. We show information theoretic security for Party 1 and reduce the security of 
@@ -68,7 +68,7 @@ proof-
     by(auto simp add: protocol_def funct_OT_12_def Let_def etp.B_F_inv_rewrite bind_spmf_const etp.lossless_S lossless_I lossless_weight_spmfD split_def cong: bind_spmf_cong)
 qed
 
-text {* Party 1 views *}
+text \<open>Party 1 views\<close>
 
 definition R1 :: "(bool \<times> bool) \<Rightarrow> bool \<Rightarrow> 'range viewP1"
   where "R1 input\<^sub>1 \<sigma> = do {
@@ -93,7 +93,7 @@ definition S1 :: "(bool \<times> bool) \<Rightarrow> unit \<Rightarrow> 'range v
 lemma lossless_S1: "lossless_spmf (S1 msgs ())"
   by(simp add: S1_def lossless_I split_def etp.lossless_S)
 
-text {* Party 2 views *}
+text \<open>Party 2 views\<close>
 
 definition R2 :: "(bool \<times> bool) \<Rightarrow> bool \<Rightarrow> 'index viewP2"
   where "R2 msgs \<sigma> = do {
@@ -124,7 +124,7 @@ definition S2 :: "bool \<Rightarrow> bool \<Rightarrow> 'index viewP2"
 lemma lossless_S2: "lossless_spmf (S2 \<sigma> b\<^sub>\<sigma>)"
   by(simp add: S2_def lossless_I etp.lossless_S split_def)
 
-text {* Security for Party 1 *}
+text \<open>Security for Party 1\<close>
 
 text\<open>We have information theoretic security for Party 1.\<close>
 
@@ -150,7 +150,7 @@ proof-
    ultimately show ?thesis by auto
 qed 
 
-text {* The adversary used in proof of security for party 2 *}
+text \<open>The adversary used in proof of security for party 2\<close>
 
 definition \<A> :: "('index, 'range) advP2"
   where "\<A> \<alpha> \<sigma> b\<^sub>\<sigma> D2 x = do {
@@ -187,7 +187,7 @@ lemma assm_bound_funct_OT_12_collapse:
   shows "\<bar>spmf (funct_OT_12 m1 \<sigma> \<bind> (\<lambda> (out1,out2). etp.HCP_game \<A> \<sigma> out2 D)) True - 1/2\<bar> \<le> HCP_ad"
   using assm_bound_funct_OT_12 surj_pair assms by metis 
 
-text {* To prove security for party 2 we split the proof on the cases on party 2's input *}
+text \<open>To prove security for party 2 we split the proof on the cases on party 2's input\<close>
 
 lemma R2_S2_False:
   assumes "((if \<sigma> then b0 else b1) = False)" 
@@ -397,7 +397,7 @@ qed
 
 end
 
-text {* We also consider the asymptotic case for security proofs *}
+text \<open>We also consider the asymptotic case for security proofs\<close>
 
 locale ETP_sec_para = 
   fixes I :: "nat \<Rightarrow> ('index \<times> 'trap) spmf"

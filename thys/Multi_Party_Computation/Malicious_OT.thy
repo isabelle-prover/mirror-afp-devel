@@ -1,7 +1,7 @@
-subsection {* Malicious OT *}
+subsection \<open>Malicious OT\<close>
 
-text {*Here we prove secure the 1-out-of-2 OT protocol given in \cite{DBLP:series/isc/HazayL10} (p190). 
-For party 1 reduce security to the DDH assumption and for party 2 we show information theoretic security. *}
+text \<open>Here we prove secure the 1-out-of-2 OT protocol given in \cite{DBLP:series/isc/HazayL10} (p190). 
+For party 1 reduce security to the DDH assumption and for party 2 we show information theoretic security.\<close>
 
 theory Malicious_OT imports
   "HOL-Number_Theory.Cong"
@@ -372,8 +372,8 @@ proof-
   also have "... = (\<^bold>g [^] \<alpha>0) [^] r \<otimes> inv ((\<^bold>g [^] \<alpha>1) [^] r)" by simp
   also have "... = (\<^bold>g [^] \<alpha>0) [^] r \<otimes> inv ((\<^bold>g [^] \<alpha>1)) [^] r" 
     using inverse_pow_pow by simp
-  ultimately show ?thesis 
-    using 1 2 comm_monoid.nat_pow_distr cyclic_group_commute monoid_comm_monoidI 3 by fastforce 
+  ultimately show ?thesis
+    by (simp add: cyclic_group_commute pow_mult_distrib)
 qed
 
 lemma P1_assert_correct2: 
@@ -383,8 +383,8 @@ proof-
   have in_carrier2:"\<^bold>g [^] \<alpha>1 \<in> carrier \<G>" by simp
   hence "?lhs = (\<^bold>g [^] \<alpha>0) [^] r \<otimes> inv ((\<^bold>g [^] \<alpha>1)) [^] r" 
     using inverse_pow_pow by simp
-  thus ?thesis  
-    by (simp add: cyclic_group_commute monoid_comm_monoidI  comm_monoid.nat_pow_distr)
+  thus ?thesis
+    by (simp add: cyclic_group_commute monoid_comm_monoidI pow_mult_distrib)
 qed
 
 sublocale ddh: ddh_ext  
@@ -952,7 +952,7 @@ proof-
   hence inverse_t: "[ s * (t * (fst (bezw t (order \<G>)))) = s * 1] (mod order \<G>)" 
     by (metis Num.of_nat_simps(2) Num.of_nat_simps(5) cong_scalar_left order_gt_0 inverse) 
   hence inverse_t': "[t * u0 + s * (t * (fst (bezw t (order \<G>)))) =t * u0 + s * 1] (mod order \<G>)"
-    using cong_add_lcancel_int by auto 
+    using cong_add_lcancel by fastforce
   have eq: "int (nat ((fst (bezw t (order \<G>))) mod order \<G>)) = (fst (bezw t (order \<G>))) mod order \<G>" 
   proof-
     have "(fst (bezw t (order \<G>))) mod order \<G> \<ge> 0" using order_gt_0 by simp
@@ -979,7 +979,7 @@ proof-
     by (simp add: nat_pow_mult)
 qed
 
-text {* Now we show the two end definitions are equal when the input for l (in the ideal model, the second input) is the one constructed by the simulator *}
+text \<open> Now we show the two end definitions are equal when the input for l (in the ideal model, the second input) is the one constructed by the simulator \<close>
 
 lemma P2_ideal_real_end_eq:
   assumes b0_inv_b1: "b0 \<otimes> inv b1 = (h0 \<otimes> inv h1) [^] r"
@@ -993,7 +993,7 @@ proof(cases "(b0 \<otimes> (inv (h0 [^] r))) = \<one>") \<comment> \<open> The c
   have b1_h1: "b1 = h1 [^] r" 
   proof-
     from b0_inv_b1 assert_in_carrier have "b0 \<otimes> inv b1 = h0 [^] r \<otimes> inv h1 [^] r" 
-      by (simp add: comm_monoid.nat_pow_distr cyclic_group_commute monoid_comm_monoidI)
+      by (simp add: pow_mult_distrib cyclic_group_commute monoid_comm_monoidI)
     hence "b0 \<otimes> inv h0 [^] r = b1 \<otimes> inv h1 [^] r"
       by (metis Units_eq Units_l_cancel local.inv_equality True assert_in_carrier 
               cyclic_group.inverse_pow_pow cyclic_group_axioms 
@@ -1016,7 +1016,7 @@ proof(cases "(b0 \<otimes> (inv (h0 [^] r))) = \<one>") \<comment> \<open> The c
     by (simp add: nat_pow_mult nat_pow_pow)
   have z1_rewrite: "(b1 \<otimes> inv \<^bold>g) [^] u1 \<otimes> h1 [^] v1 \<otimes> \<one> = \<^bold>g [^] (r * \<alpha> * u1 +  v1 * \<alpha>) \<otimes> inv \<^bold>g [^] u1" 
     for u1 v1 :: nat 
-    by (smt \<alpha> b1_h1 comm_monoid.nat_pow_distr cyclic_group_commute generator_closed inv_closed m_assoc m_closed monoid_comm_monoidI mult.commute nat_pow_closed nat_pow_mult nat_pow_pow r_one) 
+    by (smt \<alpha> b1_h1 pow_mult_distrib cyclic_group_commute generator_closed inv_closed m_assoc m_closed monoid_comm_monoidI mult.commute nat_pow_closed nat_pow_mult nat_pow_pow r_one) 
   have z1_rewrite': "\<^bold>g [^] (r * \<alpha> * u1 + v1 * \<alpha>) \<otimes> \<^bold>g [^] s \<otimes>  inv \<^bold>g [^] u1 = (b1 \<otimes> inv \<^bold>g) [^] u1 \<otimes> h1 [^] v1 \<otimes> x1"
     for u1 v1 
     using assert_in_carrier cyclic_group_commute m_assoc s z1_rewrite by auto
@@ -1142,7 +1142,7 @@ next
       by (metis \<alpha> generator_closed mult.commute nat_pow_pow)
     have z0_rewrite: "b0 [^] u0 \<otimes> h0 [^] v0 \<otimes> \<one> = \<^bold>g [^] (r * \<alpha> * u0 + v0 * \<alpha>) \<otimes> \<^bold>g [^] u0" 
       for u0 v0 :: nat 
-      by (smt \<alpha> \<open>b0 = \<^bold>g \<otimes> \<^bold>g [^] (r * \<alpha>)\<close> comm_monoid.nat_pow_distr cyclic_group_commute generator_closed m_assoc monoid_comm_monoidI mult.commute nat_pow_closed nat_pow_mult nat_pow_pow r_one)
+      by (smt \<alpha> \<open>b0 = \<^bold>g \<otimes> \<^bold>g [^] (r * \<alpha>)\<close> pow_mult_distrib cyclic_group_commute generator_closed m_assoc monoid_comm_monoidI mult.commute nat_pow_closed nat_pow_mult nat_pow_pow r_one)
     have z0_rewrite': "\<^bold>g [^] (r * \<alpha> * u0 + v0 * \<alpha>) \<otimes> \<^bold>g [^] (u0 + s) =  \<^bold>g [^] (r * \<alpha> * u0 + v0 * \<alpha>) \<otimes> \<^bold>g [^] u0 \<otimes> \<^bold>g [^] s"
       for u0 v0
       by (simp add: add.assoc nat_pow_mult)
@@ -1253,7 +1253,7 @@ next
     proof-
       from b0_l have "b0 [^] u0 \<otimes> h0 [^] v0 = ((b0 \<otimes> (inv (h0 [^] r))) \<otimes> h0 [^] r) [^] u0 \<otimes> h0 [^] v0" by simp
       hence "b0 [^] u0 \<otimes> h0 [^] v0 = ((b0 \<otimes> (inv (h0 [^] r)))) [^] u0 \<otimes> (h0 [^] r) [^] u0 \<otimes> h0 [^] v0" 
-        by (simp add: assert_in_carrier comm_monoid.nat_pow_distr cyclic_group_commute monoid_comm_monoidI)
+        by (simp add: assert_in_carrier pow_mult_distrib cyclic_group_commute monoid_comm_monoidI)
       hence "b0 [^] u0 \<otimes> h0 [^] v0 = ((\<^bold>g [^] \<alpha>) [^] r) [^] u0 \<otimes> (\<^bold>g [^] \<alpha>) [^] v0 \<otimes> ((b0 \<otimes> (inv (h0 [^] r)))) [^] u0" 
         using cyclic_group_assoc cyclic_group_commute assert_in_carrier \<alpha> by simp 
       hence "b0 [^] u0 \<otimes> h0 [^] v0 =  \<^bold>g [^] (r * \<alpha> * u0 + v0 * \<alpha>) \<otimes>  ((b0 \<otimes> (inv (h0 [^] r)))) [^] u0" 
@@ -1425,7 +1425,7 @@ proof-
     have in_carrier2: "inv ((\<^bold>g [^] (r  * u0 * \<alpha>0))) \<otimes> (\<^bold>g [^] (v0 * \<alpha>0)) \<in> carrier \<G>" by simp
     have "?lhs = ((\<^bold>g [^] (\<alpha>0 * r * u0))) \<otimes> (\<^bold>g [^] (\<alpha>0 * v0)) \<otimes> x0 \<otimes>
                         inv (((\<^bold>g [^] (r  * u0 * \<alpha>0)) \<otimes> \<^bold>g [^] (v0 * \<alpha>0)))" 
-      by (simp add: nat_pow_pow comm_monoid.nat_pow_distr cyclic_group_commute monoid_comm_monoidI)
+      by (simp add: nat_pow_pow pow_mult_distrib cyclic_group_commute monoid_comm_monoidI)
     also have "... = (((\<^bold>g [^] (r  * u0 * \<alpha>0))) \<otimes> (\<^bold>g [^] (v0 * \<alpha>0))) \<otimes> x0 \<otimes>
                         (inv (((\<^bold>g [^] (r  * u0 * \<alpha>0)) \<otimes> \<^bold>g [^] (v0 * \<alpha>0))))" 
       using mult.commute mult.assoc mult_com   
@@ -1449,13 +1449,13 @@ proof-
     have in_carrier2: "inv ((\<^bold>g [^] (r *  u1 * \<alpha>1)) \<otimes> (\<^bold>g [^] (v1 * \<alpha>1))) \<in> carrier \<G>" by simp
     have lhs: "?lhs = ((\<^bold>g [^] (\<alpha>1*r)) \<otimes> \<^bold>g \<otimes> inv \<^bold>g) [^] u1 \<otimes> (\<^bold>g [^] (\<alpha>1 * v1)) \<otimes> x1 \<otimes>
                                  inv ((\<^bold>g [^] (r *  u1 * \<alpha>1)) \<otimes> \<^bold>g [^] (v1*\<alpha>1))" 
-      by (simp add: nat_pow_pow comm_monoid.nat_pow_distr cyclic_group_commute monoid_comm_monoidI)
+      by (simp add: nat_pow_pow pow_mult_distrib cyclic_group_commute monoid_comm_monoidI)
     also have lhs1: "... = (\<^bold>g [^] (\<alpha>1 * r)) [^] u1 \<otimes> (\<^bold>g [^] (\<alpha>1 * v1)) \<otimes> x1 \<otimes>
                                  inv ((\<^bold>g [^] (r *  u1 * \<alpha>1)) \<otimes> \<^bold>g [^] (v1*\<alpha>1))" 
       by (simp add: cyclic_group_assoc)
     also have lhs2: "... = (\<^bold>g [^] (r *  u1 * \<alpha>1)) \<otimes> (\<^bold>g [^] (v1 * \<alpha>1)) \<otimes> x1 \<otimes>
                                  inv ((\<^bold>g [^] (r *  u1 * \<alpha>1)) \<otimes> \<^bold>g [^] (v1 * \<alpha>1))" 
-      by (simp add: nat_pow_pow comm_monoid.nat_pow_distr cyclic_group_commute monoid_comm_monoidI com1)
+      by (simp add: nat_pow_pow pow_mult_distrib cyclic_group_commute monoid_comm_monoidI com1)
     also have "... = (((\<^bold>g [^] (r *  u1 * \<alpha>1)) \<otimes> (\<^bold>g [^] (v1 * \<alpha>1))) \<otimes> x1) \<otimes>
                                  inv ((\<^bold>g [^] (r *  u1 * \<alpha>1)) \<otimes> \<^bold>g [^] (v1 * \<alpha>1))"
       using in_carrier1 in_carrier2 assms cyclic_group_assoc by blast

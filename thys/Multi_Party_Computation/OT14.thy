@@ -1,8 +1,8 @@
-subsection {* 1-out-of-2 OT to 1-out-of-4 OT *}
+subsection \<open>1-out-of-2 OT to 1-out-of-4 OT\<close>
 
-text {* Here we construct a protocol that achieves 1-out-of-4 OT from 1-out-of-2 OT. We follow the protocol
+text \<open>Here we construct a protocol that achieves 1-out-of-4 OT from 1-out-of-2 OT. We follow the protocol
 for constructing 1-out-of-n OT from 1-out-of-2 OT from \cite{DBLP:books/cu/Goldreich2004}. We assume the security
-properties on 1-out-of-2 OT. *}
+properties on 1-out-of-2 OT.\<close>
 
 theory OT14 imports
   Semi_Honest_Def

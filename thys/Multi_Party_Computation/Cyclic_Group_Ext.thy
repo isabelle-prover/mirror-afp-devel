@@ -33,9 +33,8 @@ lemma int_nat_pow:
   using assms 
 proof(cases "a > 0")
   case True 
-  show ?thesis 
-    by (smt cyclic_group.generator_closed cyclic_group_axioms group.int_pow_def2 
-              is_group mult_minus_right mult_pos_pos nat_mult_distrib nat_pow_pow of_nat_0_less_iff True)
+  show ?thesis
+    using int_pow_pow by blast
 next case False
   have "(\<^bold>g [^] (int (a ::nat))) [^] (b::int) = \<one>" using False by simp
   also have "\<^bold>g [^] (a*b) = \<one>" using False by simp
@@ -122,8 +121,7 @@ proof -
   have "a [^] r \<in> carrier G"
     using assms by blast
   then show ?thesis
-    by (metis (no_types) Group.group.axioms(1) assms comm_monoid.nat_pow_distr cyclic_group_commute
-          group.inv_closed group.r_inv group_l_invI inv_unique l_inv_ex monoid.nat_pow_one monoid_comm_monoidI nat_pow_closed)
+    by (simp add: assms nat_pow_inv)
 qed
 
 lemma l_neq_1_exp_neq_0:

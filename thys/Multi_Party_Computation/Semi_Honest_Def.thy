@@ -1,16 +1,16 @@
 section \<open>Semi-Honest Security\<close> 
 
-text {* We follow the security definitions for the semi honest setting as described in \cite{DBLP:books/sp/17/Lindell17}.
+text \<open>We follow the security definitions for the semi honest setting as described in \cite{DBLP:books/sp/17/Lindell17}.
 In the semi honest model the parties are assumed not to deviate from the protocol transcript. 
-Semi honest security guarantees that no information is leaked during the running of the protocol. *}
+Semi honest security guarantees that no information is leaked during the running of the protocol.\<close>
 
-subsection {* Security definitions *}
+subsection \<open>Security definitions\<close>
 
 theory Semi_Honest_Def imports
   CryptHOL.CryptHOL
 begin
 
-subsubsection {* Security for deterministic functionalities *}
+subsubsection \<open>Security for deterministic functionalities\<close>
 
 locale sim_det_def = 
   fixes R1 :: "'msg1 \<Rightarrow> 'msg2 \<Rightarrow> 'view1 spmf"

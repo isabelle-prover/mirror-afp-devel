@@ -1,4 +1,4 @@
-section {* Uniform Sampling *}
+section \<open>Uniform Sampling\<close>
 
 text\<open>Here we prove different one time pad lemmas based on uniform sampling we require throughout our proofs.\<close>
 
@@ -9,7 +9,7 @@ theory Uniform_Sampling
     CryptHOL.List_Bits
 begin 
 
-text {* If q is a prime we can sample from the units. *}
+text \<open>If q is a prime we can sample from the units.\<close>
 
 definition sample_uniform_units :: "nat \<Rightarrow> nat spmf"
   where "sample_uniform_units q = spmf_of_set ({..< q} - {0})"
@@ -23,7 +23,7 @@ lemma lossless_sample_uniform_units:
   apply(simp add: sample_uniform_units_def) 
   using assms by auto
 
-text {* General lemma for mapping using uniform sampling from units. *}
+text \<open>General lemma for mapping using uniform sampling from units.\<close>
 
 lemma one_time_pad_units: 
   assumes inj_on: "inj_on f ({..<q} - {0})" 
@@ -40,7 +40,7 @@ proof-
   ultimately show ?thesis using rhs by simp
 qed
 
-text {* General lemma for mapping using uniform sampling. *}
+text \<open>General lemma for mapping using uniform sampling.\<close>
 
 lemma one_time_pad: 
   assumes inj_on: "inj_on f {..<q}" 
@@ -57,7 +57,7 @@ proof-
   ultimately show ?thesis using rhs by simp
 qed
 
-text {* The addition map case. *}
+text \<open>The addition map case.\<close>
 
 lemma inj_add: 
   assumes x:  "x < q" 
@@ -92,7 +92,7 @@ lemma samp_uni_plus_one_time_pad:
   shows "map_spmf (\<lambda>b. (y + b) mod q) (sample_uniform q) = (sample_uniform q)"
   using inj_uni_samp_add surj_uni_samp one_time_pad by simp
 
-text {* The multiplicaton map case. *}
+text \<open>The multiplicaton map case.\<close>
 
 lemma inj_mult: 
   assumes coprime: "coprime x (q::nat)" 
@@ -133,7 +133,7 @@ lemma mult_one_time_pad:
   shows "map_spmf (\<lambda> b. x*b mod q) (sample_uniform q) = (sample_uniform q)"
   using inj_on_mult surj_on_mult one_time_pad coprime by simp
 
-text {* The multiplication map for sampling from units. *}
+text \<open>The multiplication map for sampling from units.\<close>
 
 lemma inj_on_mult_units: 
   assumes 1: "coprime x (q::nat)" shows "inj_on (\<lambda> b. x*b mod q) ({..<q} - {0})"
@@ -181,7 +181,7 @@ lemma mult_one_time_pad_units:
   shows "map_spmf (\<lambda> b. x*b mod q) (sample_uniform_units q) = sample_uniform_units q"
   using inj_on_mult_units surj_on_mult_units one_time_pad_units coprime by simp
 
-text {* Addition and multiplication map. *}
+text \<open>Addition and multiplication map.\<close>
 
 lemma samp_uni_add_mult: 
   assumes coprime: "coprime x (q::nat)" 
@@ -217,7 +217,7 @@ lemma add_mult_one_time_pad: assumes coprime: "coprime x q"
   shows "map_spmf (\<lambda> b. (y + x*b) mod q) (sample_uniform q) = (sample_uniform q)"
   using inj_on_add_mult surj_on_add_mult one_time_pad coprime by simp
 
-text {* Subtraction Map. *}
+text \<open>Subtraction Map.\<close>
 
 lemma inj_minus: 
   assumes x: "(x :: nat) < q" 

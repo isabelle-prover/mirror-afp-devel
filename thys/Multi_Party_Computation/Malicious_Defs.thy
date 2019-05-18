@@ -1,10 +1,10 @@
-section {* Malicious Security *}
+section \<open>Malicious Security\<close>
 
-text {* Here we define security in the malicious security setting. We follow the definitions given in 
+text \<open>Here we define security in the malicious security setting. We follow the definitions given in 
 \cite{DBLP:series/isc/HazayL10} and \cite{DBLP:books/cu/Goldreich2004}. The definition of malicious security 
-follows the real/ideal world paradigm. *}
+follows the real/ideal world paradigm.\<close>
 
-subsection {* Malicious Security Definitions *}
+subsection \<open>Malicious Security Definitions\<close>
 
 theory Malicious_Defs imports
   CryptHOL.CryptHOL

@@ -1,7 +1,7 @@
-subsection {* ETP definitions *}
+subsection \<open>ETP definitions\<close>
 
-text {* We define Extended Trapdoor Permutations (ETPs) following \cite{DBLP:books/sp/17/Lindell17} and \cite{DBLP:books/cu/Goldreich2004}. 
-In particular we consider the property of Hard Core Predicates (HCPs).*}
+text \<open>We define Extended Trapdoor Permutations (ETPs) following \cite{DBLP:books/sp/17/Lindell17} and \cite{DBLP:books/cu/Goldreich2004}. 
+In particular we consider the property of Hard Core Predicates (HCPs).\<close>
 
 theory ETP imports
   CryptHOL.CryptHOL

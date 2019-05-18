@@ -1,6 +1,6 @@
-subsection {* DHH Extension *}
+subsection \<open>DHH Extension\<close>
 
-text {* We define a variant of the DDH assumption and show it is as hard as the original DDH assumption.  *}
+text \<open>We define a variant of the DDH assumption and show it is as hard as the original DDH assumption.\<close>
 
 theory DH_Ext imports
   Game_Based_Crypto.Diffie_Hellman

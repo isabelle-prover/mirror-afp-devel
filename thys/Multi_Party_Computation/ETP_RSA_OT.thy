@@ -1,4 +1,4 @@
-subsubsection {* RSA instantiation *}
+subsubsection \<open>RSA instantiation\<close>
 
 text\<open>It is known that the RSA collection forms an ETP. Here we instantitate our proof of security for OT 
 that uses a general ETP for RSA. We use the proof of the general construction of OT. The main proof effort 
@@ -151,7 +151,7 @@ lemma dom_eq_ran: "domain index = range index"
 definition f :: "index \<Rightarrow> (nat \<Rightarrow> nat)"
   where "f index x = x ^ (snd index) mod (fst index)"
 
-text {* We must prove the RSA function is a bijection *}
+text \<open>We must prove the RSA function is a bijection\<close>
 
 lemma rsa_bijection:
   assumes coprime: "coprime e ((P-1)*(Q-1))"

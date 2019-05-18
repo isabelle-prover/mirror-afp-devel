@@ -1,4 +1,4 @@
-subsection {* Noar Pinkas OT *}
+subsection \<open>Noar Pinkas OT\<close>
 
 text\<open>Here we prove security for the Noar Pinkas OT from \cite{DBLP:conf/soda/NaorP01}.\<close>
 

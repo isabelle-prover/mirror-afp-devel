@@ -8,7 +8,7 @@ lemma bezw_inverse:
   shows "[nat e * nat ((fst (bezw e N)) mod N) = 1] (mod nat N)"
 proof-
   have "(fst (bezw e N) * e + snd (bezw e N) * N) mod N = 1 mod N"
-    using assms bezw_aux zmod_int by presburger
+    by (metis assms bezw_aux zmod_int)
   hence "(fst (bezw e N) mod N * e mod N) = 1 mod N" 
     by (simp add: mod_mult_right_eq mult.commute)
   hence cong_eq: "[(fst (bezw e N) mod N * e) = 1] (mod N)" 
@@ -34,9 +34,9 @@ lemma inverse:
   shows "[x * (fst (bezw x q)) = 1] (mod q)"
 proof-
   have int_eq: "fst (bezw  x q) * x + snd (bezw x q) * int q = 1" 
-    using bezw_aux assms int_minus by presburger 
+    by (metis assms(1) bezw_aux of_nat_1)
   hence int_eq': "(fst (bezw  x q) * x + snd (bezw x q) * int q) mod q = 1 mod q" 
-    using assms(1) bezw_aux zmod_int by presburger
+    by (metis of_nat_1 zmod_int)
   hence "(fst (bezw x q) * x) mod q = 1 mod q"
     by simp 
   hence "[(fst (bezw x q)) * x  = 1] (mod q)" 

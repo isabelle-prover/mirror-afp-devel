@@ -1,4 +1,4 @@
-subsection {* Oblivious Transfer functionalities *} 
+subsection \<open>Oblivious Transfer functionalities\<close> 
 
 text\<open>Here we define the functionalities for 1-out-of-2 and 1-out-of-4 OT.\<close>
 

@@ -1,4 +1,4 @@
-subsection {* Secure multiplication protocol *}
+subsection \<open>Secure multiplication protocol\<close>
 
 theory Secure_Multiplication imports
   CryptHOL.Cyclic_Group_SPMF   
@@ -195,7 +195,7 @@ proof-
         then show ?thesis using cong_trans neg by blast
       qed
       then have "[?h = q + q*q + q +  x*b - q + r] (mod q)" 
-        by (metis r Nat.add_diff_assoc2 Nat.diff_diff_right le_add2 less_imp_le_nat semiring_normalization_rules(23))   
+        by (metis r(1) Nat.add_diff_assoc2 Nat.diff_diff_right le_add2 less_imp_le_nat semiring_normalization_rules(23))   
       then have "[?h = q + q*q + q +  x*b + r] (mod q)" 
         apply(simp add: cong_def)  
         by (metis (no_types, lifting) add.assoc add.commute add_diff_cancel_right' diff_is_0_eq' mod_if mod_le_divisor q_gt_0)
@@ -226,7 +226,7 @@ proof-
       then have "[?h =  q + x*b + q - (q - r)] (mod q)" 
         by (simp add: add.commute)
       then have "[?h =  q + x*b + q - q + r] (mod q)" 
-        by (metis Nat.add_diff_assoc2 Nat.diff_diff_right r le_add2 less_imp_le_nat)
+        by (metis Nat.add_diff_assoc2 Nat.diff_diff_right r(1) le_add2 less_imp_le_nat)
       then have "[?h = q + x*b + r] (mod q)" by simp
       then have "[?h = q + (x*b + r)] (mod q)" 
         using add.assoc by metis

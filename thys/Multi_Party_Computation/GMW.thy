@@ -1,4 +1,4 @@
-subsection {* 1-out-of-4 OT to GMW *}
+subsection \<open>1-out-of-4 OT to GMW\<close>
 
 text\<open>We prove security for the gates of the GMW protocol in the semi honest model. We assume security on
 1-out-of-4 OT.\<close>
@@ -65,7 +65,7 @@ proof-
     by (simp add: OT_14_sim.adv_P1_def abs_minus_commute)
 qed
 
-text {* The sharing scheme *}
+text \<open>The sharing scheme\<close>
 
 definition share :: "bool \<Rightarrow> share_wire spmf"
   where "share x = do {
