@@ -239,9 +239,6 @@ lemma and_mask_arith':
   "0 < n \<Longrightarrow> w AND mask n = (w * 2^(size w - n)) div 2^(size w - n)"
   by (simp add: and_mask shiftr_div_2n_w shiftl_t2n word_size mult.commute)
 
-lemma mask_0[simp]: "mask 0 = 0"
-  unfolding mask_def by simp
-
 lemmas p2len = iffD2 [OF p2_eq_0 order_refl]
 
 lemma and_mask_arith:
