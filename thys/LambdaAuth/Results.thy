@@ -279,7 +279,7 @@ next
 next
   case (a_Lam y \<tau>\<^sub>1 e eP eV \<tau>\<^sub>2)
   from a_Lam(1,2,5,6,7-) show ?case
-    using agree_empty_fresh by (auto simp: fmap_reorder_neq_updates)
+    using agree_empty_fresh by (auto simp: fmupd_reorder_neq)
 next
   case (a_App v\<^sub>1 v\<^sub>2 v\<^sub>1P v\<^sub>2P v\<^sub>1V v\<^sub>2V \<tau>\<^sub>1 \<tau>\<^sub>2)
   from a_App(5-) show ?case
@@ -287,14 +287,14 @@ next
 next
   case (a_Let y e\<^sub>1 eP\<^sub>1 eV\<^sub>1 \<tau>\<^sub>1 e\<^sub>2 eP\<^sub>2 eV\<^sub>2 \<tau>\<^sub>2)
   then show ?case
-    using agree_empty_fresh by (auto simp: fmap_reorder_neq_updates intro!: agree.a_Let[where x=y])
+    using agree_empty_fresh by (auto simp: fmupd_reorder_neq intro!: agree.a_Let[where x=y])
 next
   case (a_Rec y z \<tau>\<^sub>1 \<tau>\<^sub>2 e eP eV)
   from a_Rec(10) have "\<forall>a::var. atom a \<sharp> v" "\<forall>a::var. atom a \<sharp> vP" "\<forall>a::var. atom a \<sharp> vV"
     by auto
   with a_Rec(1-8,10-) show ?case
-    using a_Rec(9)[OF fmap_reorder_neq_updates]
-    by (auto simp: fmap_reorder_neq_updates intro!: agree.a_Rec[where x=y])
+    using a_Rec(9)[OF fmupd_reorder_neq]
+    by (auto simp: fmupd_reorder_neq intro!: agree.a_Rec[where x=y])
 next
   case (a_Case v v\<^sub>1 v\<^sub>2 vP v\<^sub>1P v\<^sub>2P vV v\<^sub>1V v\<^sub>2V \<tau>\<^sub>1 \<tau>\<^sub>2 \<tau>)
   from a_Case(7-) show ?case
@@ -374,7 +374,7 @@ proof (atomize_elim, insert assms, nominal_induct "{$$}::tyenv" e eP eV \<tau> a
             by (auto simp: fresh_Pair)
           from Lam a_App(3,5-) AppRec Rec show "{$$} \<turnstile> e', ?eP, ?eV : \<tau>\<^sub>2"
             unfolding term.eq_iff Abs1_eq(3)
-            by (auto simp: fmap_reorder_neq_updates
+            by (auto simp: fmupd_reorder_neq
               intro!: agree.a_App[where \<Gamma>="{$$}"] a_Lam[where x=y] lemma4)
           from Lam a_App(3,5-) AppRec Rec show "\<forall>\<pi>\<^sub>P. \<lless>\<pi>\<^sub>P, App eP\<^sub>1 eP\<^sub>2\<ggreater> P\<rightarrow> \<lless>\<pi>\<^sub>P @ [], ?eP\<ggreater>"
             unfolding term.eq_iff Abs1_eq(3)

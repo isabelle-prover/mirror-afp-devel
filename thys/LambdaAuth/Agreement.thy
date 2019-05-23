@@ -108,7 +108,7 @@ qed
 lemma a_Lam_inv_P[elim]:
   assumes "{$$} \<turnstile> v, (Lam x vP'), vV : (Fun \<tau>\<^sub>1 \<tau>\<^sub>2)"
   obtains v' vV' where "v = Lam x v'" "vV = Lam x vV'" "{$$}(x $$:= \<tau>\<^sub>1) \<turnstile> v', vP', vV' : \<tau>\<^sub>2"
-  using assms 
+  using assms
 proof (atomize_elim, nominal_induct "{$$}::tyenv" v "Lam x vP'" vV "Fun \<tau>\<^sub>1 \<tau>\<^sub>2" avoiding: x vP' rule: agree.strong_induct)
   case (a_Lam x' e eP eV)
   show ?case
@@ -461,7 +461,7 @@ lemma agree_weakening_1:
 using assms proof (nominal_induct \<Gamma> e eP eV \<tau> avoiding: y \<tau>' rule: agree.strong_induct)
   case (a_Lam x \<Gamma> \<tau>\<^sub>1 e eP eV \<tau>\<^sub>2)
   then show ?case
-    by (force simp add: fresh_at_base fresh_fmap_update fmap_reorder_neq_updates)
+    by (force simp add: fresh_at_base fresh_fmap_update fmupd_reorder_neq)
 next
   case (a_App v\<^sub>1 v\<^sub>2 vP\<^sub>1 vP\<^sub>2 vV\<^sub>1 vV\<^sub>2 \<Gamma> \<tau>\<^sub>1 \<tau>\<^sub>2)
   then show ?case
@@ -469,12 +469,12 @@ next
 next
   case (a_Let x \<Gamma> e\<^sub>1 eP\<^sub>1 eV\<^sub>1 \<tau>\<^sub>1 e\<^sub>2 eP\<^sub>2 eV\<^sub>2 \<tau>\<^sub>2)
   then show ?case
-    by (auto simp add: fresh_at_base fresh_Pair fresh_fmap_update fmap_reorder_neq_updates[of y x]
+    by (auto simp add: fresh_at_base fresh_Pair fresh_fmap_update fmupd_reorder_neq[of x y]
       intro!: a_Let(10) agree.a_Let[of x])
 next
   case (a_Rec x \<Gamma> z \<tau>\<^sub>1 \<tau>\<^sub>2 e eP eV)
   then show ?case
-    by (auto simp add: fresh_at_base fresh_Pair fresh_fmap_update fmap_reorder_neq_updates[of y x]
+    by (auto simp add: fresh_at_base fresh_Pair fresh_fmap_update fmupd_reorder_neq[of x y]
       intro!: a_Rec(9) agree.a_Rec[of x])
 next
   case (a_Case v v\<^sub>1 v\<^sub>2 vP vP\<^sub>1 vP\<^sub>2 vV vV\<^sub>1 vV\<^sub>2 \<Gamma> \<tau>\<^sub>1 \<tau>\<^sub>2 \<tau>)

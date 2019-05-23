@@ -274,7 +274,7 @@ lemma type_fresh_subst[simp]: "atom x \<sharp> t \<Longrightarrow> atom x \<shar
 lemma type_subst_idle[simp]: "atom y \<sharp> t \<Longrightarrow> subst_type t s y = t"
   by (nominal_induct t avoiding: s y rule: ty.strong_induct) (auto simp: fresh_Pair fresh_at_base)
 
-lemma type_subst_subst: "atom y1 \<noteq> atom y2 \<Longrightarrow> atom y1 \<sharp> s2 \<Longrightarrow> 
+lemma type_subst_subst: "atom y1 \<noteq> atom y2 \<Longrightarrow> atom y1 \<sharp> s2 \<Longrightarrow>
   subst_type (subst_type t s1 y1) s2 y2 = subst_type (subst_type t s2 y2) (subst_type s1 s2 y2) y1"
   by (nominal_induct t avoiding: y1 y2 s1 s2 rule: ty.strong_induct) auto
 
@@ -1011,23 +1011,23 @@ lemma judge_weak_weakening_1:
   using assms proof (nominal_induct \<Gamma> e \<tau> avoiding: y \<tau>' rule: judge_weak.strong_induct)
   case (jw_Lam x \<Gamma> \<tau>\<^sub>1 e \<tau>\<^sub>2)
   from jw_Lam(5)[of y \<tau>'] jw_Lam(1-4,6) show ?case
-    by (auto simp add: fresh_at_base fmap_reorder_neq_updates fresh_fmap_update)
+    by (auto simp add: fresh_at_base fmupd_reorder_neq fresh_fmap_update)
 next
   case (jw_App v v' \<Gamma> \<tau>\<^sub>1 \<tau>\<^sub>2)
   then show ?case
-    by (force simp add: fresh_at_base fmap_reorder_neq_updates fresh_fmap_update)
+    by (force simp add: fresh_at_base fmupd_reorder_neq fresh_fmap_update)
 next
   case (jw_Let x \<Gamma> e\<^sub>1 \<tau>\<^sub>1 e\<^sub>2 \<tau>\<^sub>2)
   from jw_Let(6)[of y \<tau>'] jw_Let(8)[of y \<tau>'] jw_Let(1-5,7,9) show ?case
-    by (auto simp add: fresh_at_base fmap_reorder_neq_updates fresh_fmap_update)
+    by (auto simp add: fresh_at_base fmupd_reorder_neq fresh_fmap_update)
 next
   case (jw_Rec x \<Gamma> z \<tau>\<^sub>1 \<tau>\<^sub>2 e')
   from jw_Rec(9)[of y \<tau>'] jw_Rec(1-8,10) show ?case
-    by (auto simp add: fresh_at_base fmap_reorder_neq_updates fresh_fmap_update fresh_Pair)
+    by (auto simp add: fresh_at_base fmupd_reorder_neq fresh_fmap_update fresh_Pair)
 next
   case (jw_Case v v\<^sub>1 v\<^sub>2 \<Gamma> \<tau>\<^sub>1 \<tau>\<^sub>2 \<tau>)
   then show ?case
-    by (fastforce simp add: fresh_at_base fmap_reorder_neq_updates fresh_fmap_update)
+    by (fastforce simp add: fresh_at_base fmupd_reorder_neq fresh_fmap_update)
 next
   case (jw_Roll \<alpha> \<Gamma> v \<tau>)
   then show ?case
@@ -1074,15 +1074,15 @@ lemma judge_weak_subst[intro]:
 next
   case (jw_Lam x \<tau>\<^sub>1 e \<tau>\<^sub>2)
   then show ?case
-    by (fastforce simp: fmap_reorder_neq_updates)
+    by (fastforce simp: fmupd_reorder_neq)
 next
   case (jw_Rec x y \<tau>\<^sub>1 \<tau>\<^sub>2 e)
   then show ?case
-    by (fastforce simp: fmap_reorder_neq_updates)
+    by (fastforce simp: fmupd_reorder_neq)
 next
   case (jw_Let x e\<^sub>1 \<tau>\<^sub>1 e\<^sub>2 \<tau>\<^sub>2)
   then show ?case
-    by (fastforce simp: fmap_reorder_neq_updates)
+    by (fastforce simp: fmupd_reorder_neq)
 qed fastforce+
 
 lemma type_preservation:

@@ -91,22 +91,11 @@ proof
       (simp_all add: supp_Pair finite_supp finite_subset[OF supp_fmap_update])
 qed
 
-lemma fmap_reorder_neq_updates:
-  assumes "a \<noteq> b"
-  shows   "\<Gamma>(a $$:= x)(b $$:= y) = \<Gamma>(b $$:= y)(a $$:= x)"
-  using assms by transfer (auto simp: map_upd_def)
-
-lemma fmap_upd_upd[simp]: "\<Gamma>(x $$:= y)(x $$:= z) = \<Gamma>(x $$:= z)"
-  by transfer (simp add: map_upd_def)
-
 lemma fresh_transfer[transfer_rule]:
   "((=) ===> pcr_fmap (=) (=) ===> (=)) fresh fresh"
   unfolding fresh_def supp_def rel_fun_def pcr_fmap_def cr_fmap_def simp_thms
     option.rel_eq fun_eq_iff[symmetric]
   by (auto elim!: finite_subset[rotated] simp: fmap_ext)
-
-lemma fmmap_fmupd: "fmmap f F(x $$:= y) = (fmmap f F)(x $$:= f y)"
-  by transfer (auto simp: fun_eq_iff map_upd_def)
 
 lemma fmmap_eqvt[eqvt]: "p \<bullet> (fmmap f F) = fmmap (p \<bullet> f) (p \<bullet> F)"
   by (induct F arbitrary: f rule: fmap_induct) (auto simp add: fmap_update_eqvt fmmap_fmupd)
@@ -151,18 +140,9 @@ lemma fmdrop_eqvt: "p \<bullet> fmdrop x F = fmdrop (p \<bullet> x) (p \<bullet>
 lemma fmfilter_eqvt: "p \<bullet> fmfilter Q F = fmfilter (p \<bullet> Q) (p \<bullet> F)"
   by transfer (auto simp: map_filter_def)
 
-lemma fmdrop_fmupd: "fmdrop x F(y $$:= z) = (if x = y then fmdrop x F else (fmdrop x F)(y $$:= z))"
-  by transfer (auto simp: map_drop_def map_filter_def map_upd_def)
-
 lemma fmdrop_eq_iff:
   "fmdrop x B = fmdrop y B \<longleftrightarrow> x = y \<or> (x \<notin> fmdom' B \<and> y \<notin> fmdom' B)"
   by transfer (auto simp: map_drop_def map_filter_def fun_eq_iff, metis)
-
-lemma fmdrop_idle: "x \<notin> fmdom' B \<Longrightarrow> fmdrop x B = B"
-  by transfer (auto simp: map_drop_def map_filter_def)
-
-lemma fmdrop_fmupd_same: "fmdrop x B(x $$:= y) = fmdrop x B"
-  by transfer (auto simp: map_drop_def map_filter_def map_upd_def)
 
 lemma fresh_fun_upd:
   shows "\<lbrakk>a \<sharp> f; a \<sharp> x; a \<sharp> y\<rbrakk> \<Longrightarrow> a \<sharp> f(x := y)"
@@ -181,16 +161,13 @@ lemma fresh_fmdrop_in_fmdom: "\<lbrakk> x \<in> fmdom' B; y \<sharp> B; y \<shar
 lemma fresh_fmdrop:
   assumes "x \<sharp> B" "x \<sharp> y"
   shows   "x \<sharp> fmdrop y B"
-  using assms by (cases "y \<in> fmdom' B") (auto dest!: fresh_fmdrop_in_fmdom simp: fmdrop_idle)
+  using assms by (cases "y \<in> fmdom' B") (auto dest!: fresh_fmdrop_in_fmdom simp: fmdrop_idle')
 
 lemma fresh_fmdrop_fset:
   fixes x :: atom and A :: "(_ :: at_base) fset"
   assumes "x \<sharp> A" "x \<sharp> B"
   shows   "x \<sharp> fmdrop_fset A B"
   using assms(1) by (induct A) (auto simp: fresh_fmdrop assms(2) fresh_finsert)
-
-lemma fmdrop_fset_fmdom[simp]: "fmdrop_fset (fmdom A) A = {$$}"
-  by (induct A) (simp_all add: fmap_ext fmdom_notD)
 
 (*<*)
 end
