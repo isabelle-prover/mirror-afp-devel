@@ -1,7 +1,7 @@
 chapter AFP
 
 session "LambdaAuth" (AFP) = Nominal2 +
-  description {* Authenticated Data Structures *}
+  description \<open>Authenticated Data Structures\<close>
   options [timeout = 600]
   sessions
     "HOL-Library"
