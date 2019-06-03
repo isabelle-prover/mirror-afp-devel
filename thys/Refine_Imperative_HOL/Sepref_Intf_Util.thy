@@ -850,7 +850,7 @@ subsection \<open>ML-Level Declarations\<close>
                   |> HOLogic.mk_Trueprop
                   |> curry Logic.list_implies relconds
   
-                val ctxt = Variable.auto_fixes param_mop_t lthy 
+                val ctxt = Proof_Context.augment param_mop_t lthy 
                 
                 val tac = let
                   val p_thm = Local_Defs.unfold0 ctxt @{thms PR_CONST_def} p_thm

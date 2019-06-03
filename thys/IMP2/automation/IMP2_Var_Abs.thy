@@ -67,7 +67,7 @@ ML \<open> structure Program_Variables
         val v = Free (vname, imp_var_isa_T imp_var)
         val ctxt = Variable.declare_constraints v ctxt
       in
-        (((imp_var,isa_name),v), Variable.auto_fixes v ctxt )
+        (((imp_var,isa_name),v), Proof_Context.augment v ctxt )
       end
       
       val (vs, ctxt) = fold_map declare_impv imp_x_isa_names ctxt

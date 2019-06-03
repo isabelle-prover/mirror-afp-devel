@@ -332,7 +332,7 @@ ML \<open>
     fun declare_prio name pat0 relpos lthy = 
       let
         val pat1 = Proof_Context.cert_term lthy pat0
-        val pat2 = singleton (Variable.export_terms (Variable.auto_fixes pat1 lthy) lthy) pat1
+        val pat2 = singleton (Variable.export_terms (Proof_Context.augment pat1 lthy) lthy) pat1
       in
         lthy |> Local_Theory.declaration {syntax = false, pervasive = false}
           (fn phi =>

@@ -965,7 +965,7 @@ fun mk_terms ctxt (raw_pure, raw_ap, raw_rel, raw_set) =
     fun closed_poly_term t =
       let val poly_t = singleton (Variable.polymorphic ctxt) t;
       in case Term.add_vars (singleton
-          (Variable.export_terms (Variable.auto_fixes t ctxt) ctxt) t) [] of
+          (Variable.export_terms (Proof_Context.augment t ctxt) ctxt) t) [] of
           [] => (case (Term.hidden_polymorphism poly_t) of
               [] => poly_t
             | _ => error ("Hidden type variables in term " ^ show_term t))

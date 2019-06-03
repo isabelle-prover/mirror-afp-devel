@@ -207,7 +207,7 @@ fun supports_tac ctxt perm_simps =
 fun prove_supports_single ctxt perm_simps qtrm =
   let
     val goal = mk_supports_goal ctxt qtrm
-    val ctxt' = Variable.auto_fixes goal ctxt
+    val ctxt' = Proof_Context.augment goal ctxt
   in
     Goal.prove ctxt' [] [] goal
       (K (HEADGOAL (supports_tac ctxt perm_simps)))
