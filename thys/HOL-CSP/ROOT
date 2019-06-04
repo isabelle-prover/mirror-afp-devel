@@ -47,7 +47,7 @@ chapter AFP
 
 session "HOL-CSP" (AFP) = HOLCF +
   description {* HOL-CSP based on the original Roscoe-Book. *}
-  options [timeout = 600]
+  options [timeout = 1200]
   sessions
     "HOL-Eisbach"
   theories
