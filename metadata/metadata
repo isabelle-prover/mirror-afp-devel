@@ -6809,6 +6809,23 @@ abstract =
   significant contribution to the development of a proper grounding for
   object theory. </p>
 
+[KD_Tree]
+title = Multidimensional Binary Search Trees
+author = Martin Rau<>
+topic = Computer Science/Data Structures
+date = 2019-05-30
+notify = martin.rau@tum.de, mrtnrau@googlemail.com
+abstract = 
+  This entry provides a formalization of multidimensional binary trees,
+  also known as k-d trees. It includes a balanced build algorithm as
+  well as the nearest neighbor algorithm and the range search algorithm.
+  It is based on the papers <a
+  href="https://dl.acm.org/citation.cfm?doid=361002.361007">Multidimensional
+  binary search trees used for associative searching</a> and <a
+  href="https://dl.acm.org/citation.cfm?doid=355744.355745">
+  An Algorithm for Finding Best Matches in Logarithmic Expected
+  Time</a>.
+
 
 [Diophantine_Eqns_Lin_Hom]
 title = Homogeneous Linear Diophantine Equations
