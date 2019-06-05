@@ -9,7 +9,24 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>14 May 2019 00:00:00 +0000</pubDate>
+    <pubDate>30 May 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Multidimensional Binary Search Trees</title>
+              <link>https://www.isa-afp.org/entries/KD_Tree.html</link>
+       <guid>https://www.isa-afp.org/entries/KD_Tree.html</guid>
+       <dc:creator> Martin Rau       </dc:creator>
+       <pubDate>30 May 2019 00:00:00 +0000</pubDate>
+       <description>
+This entry provides a formalization of multidimensional binary trees,
+also known as k-d trees. It includes a balanced build algorithm as
+well as the nearest neighbor algorithm and the range search algorithm.
+It is based on the papers &lt;a
+href=&#34;https://dl.acm.org/citation.cfm?doid=361002.361007&#34;&gt;Multidimensional
+binary search trees used for associative searching&lt;/a&gt; and &lt;a
+href=&#34;https://dl.acm.org/citation.cfm?doid=355744.355745&#34;&gt;
+An Algorithm for Finding Best Matches in Logarithmic Expected
+Time&lt;/a&gt;.</description>
+    </item>
     <item>
        <title>Formalization of Generic Authenticated Data Structures</title>
               <link>https://www.isa-afp.org/entries/LambdaAuth.html</link>
@@ -548,23 +565,6 @@ combinatorial optimisation, e. g. greedy algorithms such as
 Kruskal&#39;s algorithm. The development is based on Oxley&#39;s
 &lt;a href=&#34;http://www.math.lsu.edu/~oxley/survey4.pdf&#34;&gt;`What
 is a Matroid?&#39;&lt;/a&gt;.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Deriving generic class instances for datatypes</title>
-              <link>https://www.isa-afp.org/entries/Generic_Deriving.html</link>
-       <guid>https://www.isa-afp.org/entries/Generic_Deriving.html</guid>
-       <dc:creator> Jonas Rädle, Lars Hupel       </dc:creator>
-       <pubDate>06 Nov 2018 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;We provide a framework for automatically deriving instances for
-generic type classes. Our approach is inspired by Haskell&#39;s
-&lt;i&gt;generic-deriving&lt;/i&gt; package and Scala&#39;s
-&lt;i&gt;shapeless&lt;/i&gt; library.  In addition to generating the
-code for type class functions, we also attempt to automatically prove
-type class laws for these instances. As of now, however, some manual
-proofs are still required for recursive datatypes.&lt;/p&gt;
-&lt;p&gt;Note: There are already articles in the AFP that provide
-automatic instantiation for a number of classes. Concretely, &lt;a href=&#34;https://www.isa-afp.org/entries/Deriving.html&#34;&gt;Deriving&lt;/a&gt; allows the automatic instantiation of comparators, linear orders, equality, and hashing. &lt;a href=&#34;https://www.isa-afp.org/entries/Show.html&#34;&gt;Show&lt;/a&gt; instantiates a Haskell-style &lt;i&gt;show&lt;/i&gt; class.&lt;/p&gt;&lt;p&gt;Our approach works for arbitrary classes (with some Isabelle/HOL overhead for each class), but a smaller set of datatypes.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
