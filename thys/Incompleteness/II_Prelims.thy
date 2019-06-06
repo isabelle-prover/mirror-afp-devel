@@ -6,9 +6,9 @@ begin
 
 declare IndP.simps [simp del]
 
-lemma VarP_Var [intro]: "H \<turnstile> VarP \<lceil>Var i\<rceil>"
+lemma VarP_Var [intro]: "H \<turnstile> VarP \<guillemotleft>Var i\<guillemotright>"
 proof -
-  have "{} \<turnstile> VarP \<lceil>Var i\<rceil>"
+  have "{} \<turnstile> VarP \<guillemotleft>Var i\<guillemotright>"
     by (auto simp: Sigma_fm_imp_thm [OF VarP_sf] ground_fm_aux_def supp_conv_fresh)
   thus ?thesis
     by (rule thin0)
@@ -1690,7 +1690,7 @@ proof -
     done
 qed (*>*)
 
-corollary SubstTermP_Zero: "{TermP t} \<turnstile> SubstTermP \<lceil>Var v\<rceil> t Zero Zero"
+corollary SubstTermP_Zero: "{TermP t} \<turnstile> SubstTermP \<guillemotleft>Var v\<guillemotright> t Zero Zero"
 proof -
   obtain s::name and k::name where "atom s \<sharp> (v,t,k)"  "atom k \<sharp> (v,t)"
     by (metis obtain_fresh)
@@ -1942,7 +1942,7 @@ proof -
     done
 qed (*>*)
 
-lemma SeqConstP_imp_SubstTermP: "{SeqConstP s kk c, TermP t} \<turnstile> SubstTermP \<lceil>Var w\<rceil> t c c" (*<*)
+lemma SeqConstP_imp_SubstTermP: "{SeqConstP s kk c, TermP t} \<turnstile> SubstTermP \<guillemotleft>Var w\<guillemotright> t c c" (*<*)
 proof -
   obtain j::name and k::name and l::name and sl::name and m::name and n::name and sm::name and sn::name
     where atoms: "atom j \<sharp> (s,kk,c,t,k,l,sl,m,n,sm,sn)"  "atom k \<sharp> (s,kk,c,t,l,sl,m,n,sm,sn)" 
@@ -1950,7 +1950,7 @@ proof -
                  "atom m \<sharp> (s,kk,c,t,n,sm,sn)"  "atom n \<sharp> (s,kk,c,t,sm,sn)" 
                  "atom sm \<sharp> (s,kk,c,t,sn)"      "atom sn \<sharp> (s,kk,c,t)"
     by (metis obtain_fresh)
-  have "{ OrdP (Var k), TermP t } \<turnstile> All j (SeqConstP s (Var k) (Var j) IMP SubstTermP \<lceil>Var w\<rceil> t (Var j) (Var j))"
+  have "{ OrdP (Var k), TermP t } \<turnstile> All j (SeqConstP s (Var k) (Var j) IMP SubstTermP \<guillemotleft>Var w\<guillemotright> t (Var j) (Var j))"
         (is "_ \<turnstile> ?scheme")
     proof (rule OrdIndH [where j=l])
       show "atom l \<sharp> (k, ?scheme)" using atoms
@@ -1975,17 +1975,17 @@ proof -
         apply (rule All_E [where x="Var sn"], auto)
         done
     qed
-  hence "{OrdP (Var k), TermP t} \<turnstile> (SeqConstP s (Var k) (Var j) IMP SubstTermP \<lceil>Var w\<rceil> t (Var j) (Var j))(j::=c)"
+  hence "{OrdP (Var k), TermP t} \<turnstile> (SeqConstP s (Var k) (Var j) IMP SubstTermP \<guillemotleft>Var w\<guillemotright> t (Var j) (Var j))(j::=c)"
     by (metis All_D)
-  hence "{TermP t} \<turnstile> (SeqConstP s (Var k) c IMP SubstTermP \<lceil>Var w\<rceil> t c c)"
+  hence "{TermP t} \<turnstile> (SeqConstP s (Var k) c IMP SubstTermP \<guillemotleft>Var w\<guillemotright> t c c)"
     using atoms by simp (metis Imp_cut SeqCTermP_imp_OrdP)
-  hence "{TermP t} \<turnstile> (SeqConstP s (Var k) c IMP SubstTermP \<lceil>Var w\<rceil> t c c)(k::=kk)"
+  hence "{TermP t} \<turnstile> (SeqConstP s (Var k) c IMP SubstTermP \<guillemotleft>Var w\<guillemotright> t c c)(k::=kk)"
     using atoms by (force intro!: Subst)
   thus ?thesis
     using atoms by (simp add: anti_deduction) 
 qed (*>*)
 
-theorem SubstTermP_Const: "{ConstP c, TermP t} \<turnstile> SubstTermP \<lceil>Var w\<rceil> t c c"
+theorem SubstTermP_Const: "{ConstP c, TermP t} \<turnstile> SubstTermP \<guillemotleft>Var w\<guillemotright> t c c"
 proof -
   obtain s::name and k::name where "atom s \<sharp> (c,t,w,k)" "atom k \<sharp> (c,t,w)" 
     by (metis obtain_fresh)
@@ -2793,7 +2793,7 @@ qed
 theorem PfP_implies_ModPon_PfP: "\<lbrakk>H \<turnstile> PfP (Q_Imp x y); H \<turnstile> PfP x\<rbrakk> \<Longrightarrow> H \<turnstile> PfP y" 
   by (force intro: PfP_inference [of x, THEN cut3] Disj_I1  simp add: ModPonP_def)
 
-corollary PfP_implies_ModPon_PfP_quot: "\<lbrakk>H \<turnstile> PfP \<lceil>\<alpha> IMP \<beta>\<rceil>; H \<turnstile> PfP \<lceil>\<alpha>\<rceil>\<rbrakk> \<Longrightarrow> H \<turnstile> PfP \<lceil>\<beta>\<rceil>" 
+corollary PfP_implies_ModPon_PfP_quot: "\<lbrakk>H \<turnstile> PfP \<guillemotleft>\<alpha> IMP \<beta>\<guillemotright>; H \<turnstile> PfP \<guillemotleft>\<alpha>\<guillemotright>\<rbrakk> \<Longrightarrow> H \<turnstile> PfP \<guillemotleft>\<beta>\<guillemotright>" 
   by (auto simp: quot_fm_def intro: PfP_implies_ModPon_PfP)
 
 end

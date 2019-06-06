@@ -49,7 +49,7 @@ definition decode_Var :: "hf \<Rightarrow> name"
 lemma decode_Var_q_Var [simp]: "decode_Var (q_Var i) = i"
   by (simp add: decode_Var_def q_Var_def)
 
-lemma is_Var_imp_decode_Var: "is_Var x \<Longrightarrow> x = \<lbrakk>\<lceil>Var (decode_Var x)\<rceil>\<rbrakk> e"
+lemma is_Var_imp_decode_Var: "is_Var x \<Longrightarrow> x = \<lbrakk>\<guillemotleft>Var (decode_Var x)\<guillemotright>\<rbrakk> e"
   by (simp add: is_Var_def quot_Var decode_Var_def) (metis hempty_iff succ_pred)
 
 lemma is_Var_iff: "is_Var v \<longleftrightarrow> v = succ (ord_of (nat_of_name (decode_Var v)))"
@@ -108,10 +108,10 @@ lemma is_Ind_pair_iff [simp]: "is_Ind \<langle>x, y\<rangle> \<longleftrightarro
 
 subsection \<open>Various syntactic lemmas\<close>
 
-lemma eval_Var_q: "\<lbrakk>\<lceil>Var i\<rceil>\<rbrakk> e = q_Var i"
+lemma eval_Var_q: "\<lbrakk>\<guillemotleft>Var i\<guillemotright>\<rbrakk> e = q_Var i"
   by (simp add: quot_tm_def q_Var_def)
 
-lemma is_Var_eval_Var [simp]: "is_Var \<lbrakk>\<lceil>Var i\<rceil>\<rbrakk>e"
+lemma is_Var_eval_Var [simp]: "is_Var \<lbrakk>\<guillemotleft>Var i\<guillemotright>\<rbrakk>e"
   by (metis decode_Var_q_Var is_Var_imp_decode_Var is_Var_q_Var)
 
 
@@ -266,7 +266,7 @@ lemma wf_Term_quot_dbtm [simp]: "wf_dbtm u \<Longrightarrow> Term \<lbrakk>quot_
 by (induct rule: wf_dbtm.induct)
    (auto simp: CTerm_def SeqCTerm_def q_Eats_def intro: BuildSeq_combine BuildSeq_exI)
 
-corollary Term_quot_tm [iff]: fixes t :: tm  shows "Term \<lbrakk>\<lceil>t\<rceil>\<rbrakk>e"
+corollary Term_quot_tm [iff]: fixes t :: tm  shows "Term \<lbrakk>\<guillemotleft>t\<guillemotright>\<rbrakk>e"
   by (metis quot_tm_def wf_Term_quot_dbtm wf_dbtm_trans_tm)
 
 lemma SeqCTerm_imp_wf_dbtm:
@@ -290,7 +290,7 @@ corollary Term_imp_wf_dbtm:
   assumes "Term x" obtains t where "wf_dbtm t" "x = \<lbrakk>quot_dbtm t\<rbrakk>e"
   by (metis assms SeqCTerm_imp_wf_dbtm CTerm_def)
 
-corollary Term_imp_is_tm: assumes "Term x" obtains t::tm where "x = \<lbrakk>\<lceil>t\<rceil>\<rbrakk> e"
+corollary Term_imp_is_tm: assumes "Term x" obtains t::tm where "x = \<lbrakk>\<guillemotleft>t\<guillemotright>\<rbrakk> e"
   by (metis assms Term_imp_wf_dbtm quot_tm_def wf_dbtm_imp_is_tm)
 
 lemma Term_Var: "Term (q_Var i)"
@@ -1251,11 +1251,11 @@ qed
 subsection \<open>Correctness: It Corresponds to Quotations of Real Formulas\<close>
 
 lemma AbstForm_trans_fm:
-  "AbstForm (q_Var i) 0 \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<lbrakk>quot_dbfm (trans_fm [i] A)\<rbrakk>e"
+  "AbstForm (q_Var i) 0 \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<lbrakk>quot_dbfm (trans_fm [i] A)\<rbrakk>e"
   by (metis abst_trans_fm ord_of.simps(1) quot_fm_def AbstForm_abst_dbfm)
 
 corollary AbstForm_trans_fm_eq:
-  "\<lbrakk>x = \<lbrakk>\<lceil>A\<rceil>\<rbrakk> e;  x' = \<lbrakk>quot_dbfm (trans_fm [i] A)\<rbrakk>e\<rbrakk> \<Longrightarrow> AbstForm (q_Var i) 0 x x'"
+  "\<lbrakk>x = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk> e;  x' = \<lbrakk>quot_dbfm (trans_fm [i] A)\<rbrakk>e\<rbrakk> \<Longrightarrow> AbstForm (q_Var i) 0 x x'"
   by (metis AbstForm_trans_fm)
 
 lemma wf_Form_quot_dbfm [simp]:
@@ -1293,7 +1293,7 @@ next
     by (force simp add: Form_def SeqForm_def intro: BuildSeq_combine)
 qed
 
-lemma Form_quot_fm [iff]: fixes A :: fm  shows "Form \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e"
+lemma Form_quot_fm [iff]: fixes A :: fm  shows "Form \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e"
   by (metis quot_fm_def wf_Form_quot_dbfm wf_dbfm_trans_fm)
 
 lemma Atomic_Form_is_wf_dbfm: "Atomic x \<Longrightarrow> \<exists>A. wf_dbfm A \<and> x = \<lbrakk>quot_dbfm A\<rbrakk>e"
@@ -1342,12 +1342,12 @@ lemma Form_imp_wf_dbfm:
   assumes "Form x" obtains A where "wf_dbfm A" "x = \<lbrakk>quot_dbfm A\<rbrakk>e"
   by (metis assms SeqForm_imp_wf_dbfm Form_def)
 
-lemma Form_imp_is_fm: assumes "Form x" obtains A::fm where "x = \<lbrakk>\<lceil>A\<rceil>\<rbrakk> e"
+lemma Form_imp_is_fm: assumes "Form x" obtains A::fm where "x = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk> e"
   by (metis assms Form_imp_wf_dbfm quot_fm_def wf_dbfm_imp_is_fm)
 
 lemma SubstForm_imp_subst_fm:
-  assumes "SubstForm v \<lbrakk>\<lceil>u\<rceil>\<rbrakk>e x x'" "Form x"
-  obtains A::fm where "x = \<lbrakk>\<lceil>A\<rceil>\<rbrakk> e" "x' = \<lbrakk>\<lceil>A(decode_Var v::=u)\<rceil>\<rbrakk> e"
+  assumes "SubstForm v \<lbrakk>\<guillemotleft>u\<guillemotright>\<rbrakk>e x x'" "Form x"
+  obtains A::fm where "x = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk> e" "x' = \<lbrakk>\<guillemotleft>A(decode_Var v::=u)\<guillemotright>\<rbrakk> e"
   using assms [unfolded quot_tm_def]
   by (auto simp: quot_fm_def dest!: SubstForm_imp_subst_dbfm_lemma)
      (metis Form_imp_is_fm eval_quot_dbfm_ignore quot_dbfm_inject_lemma quot_fm_def)
@@ -1355,7 +1355,7 @@ lemma SubstForm_imp_subst_fm:
 lemma SubstForm_unique:
   assumes "is_Var v" and "Term y" and "Form x"
      shows "SubstForm v y x x' \<longleftrightarrow>
-            (\<exists>t::tm. y = \<lbrakk>\<lceil>t\<rceil>\<rbrakk>e \<and> (\<exists>A::fm. x = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<and> x' = \<lbrakk>\<lceil>A(decode_Var v::=t)\<rceil>\<rbrakk>e))"
+            (\<exists>t::tm. y = \<lbrakk>\<guillemotleft>t\<guillemotright>\<rbrakk>e \<and> (\<exists>A::fm. x = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<and> x' = \<lbrakk>\<guillemotleft>A(decode_Var v::=t)\<guillemotright>\<rbrakk>e))"
   using assms
   apply (auto elim!: Term_imp_wf_dbtm [where e=e] Form_imp_is_fm [where e=e] 
                      SubstForm_imp_subst_dbfm [where e=e])
@@ -1363,10 +1363,10 @@ lemma SubstForm_unique:
   apply (metis subst_fm_trans_commute wf_dbtm_imp_is_tm)
   done
 
-lemma SubstForm_quot_unique: "SubstForm (q_Var i) \<lbrakk>\<lceil>t\<rceil>\<rbrakk>e \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e x' \<longleftrightarrow> x' = \<lbrakk>\<lceil>A(i::=t)\<rceil>\<rbrakk> e"
+lemma SubstForm_quot_unique: "SubstForm (q_Var i) \<lbrakk>\<guillemotleft>t\<guillemotright>\<rbrakk>e \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e x' \<longleftrightarrow> x' = \<lbrakk>\<guillemotleft>A(i::=t)\<guillemotright>\<rbrakk> e"
   by (subst SubstForm_unique [where e=e]) auto
 
-lemma SubstForm_quot: "SubstForm \<lbrakk>\<lceil>Var i\<rceil>\<rbrakk>e \<lbrakk>\<lceil>t\<rceil>\<rbrakk>e \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<lbrakk>\<lceil>A(i::=t)\<rceil>\<rbrakk>e"
+lemma SubstForm_quot: "SubstForm \<lbrakk>\<guillemotleft>Var i\<guillemotright>\<rbrakk>e \<lbrakk>\<guillemotleft>t\<guillemotright>\<rbrakk>e \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<lbrakk>\<guillemotleft>A(i::=t)\<guillemotright>\<rbrakk>e"
   by (metis SubstForm_quot_unique eval_Var_q)
 
 subsection \<open>The predicate \<open>VarNonOccFormP\<close> (Derived from \<open>SubstFormP\<close>)\<close>
@@ -1408,7 +1408,7 @@ proof -
 qed  
 
 corollary VarNonOccForm_imp_fresh:
-  assumes "VarNonOccForm v x"  obtains A::fm where "x = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e" "atom (decode_Var v) \<sharp> A"
+  assumes "VarNonOccForm v x"  obtains A::fm where "x = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e" "atom (decode_Var v) \<sharp> A"
   using VarNonOccForm_imp_dbfm_fresh [OF assms, where e=e]
   by (auto simp: quot_fm_def wf_dbfm_iff_is_fm)
 
@@ -1418,7 +1418,7 @@ by (auto intro: SubstForm_subst_dbfm_eq [where u=DBZero]
     simp add: VarNonOccForm_def Const_0 Const_imp_Term fresh_iff_non_subst_dbfm [symmetric]) 
 
 corollary fresh_imp_VarNonOccForm:
-  fixes A::fm  shows "atom i \<sharp> A \<Longrightarrow> VarNonOccForm (q_Var i) \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e"
+  fixes A::fm  shows "atom i \<sharp> A \<Longrightarrow> VarNonOccForm (q_Var i) \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e"
   by (simp add: quot_fm_def wf_dbfm_trans_fm VarNonOccForm_dbfm)
 
 declare VarNonOccFormP.simps [simp del]

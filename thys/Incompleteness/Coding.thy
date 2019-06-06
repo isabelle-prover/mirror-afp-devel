@@ -524,7 +524,7 @@ qed
 
 
 class quot =
-  fixes quot :: "'a \<Rightarrow> tm"  ("\<lceil>_\<rceil>")
+  fixes quot :: "'a \<Rightarrow> tm"  ("\<guillemotleft>_\<guillemotright>")
 
 instantiation tm :: quot
 begin
@@ -537,16 +537,16 @@ end
 lemma quot_dbtm_fresh [simp]: "s \<sharp> (quot_dbtm t)"
   by (induct t rule: dbtm.induct) auto
 
-lemma quot_tm_fresh [simp]: fixes t::tm shows "s \<sharp> \<lceil>t\<rceil>"
+lemma quot_tm_fresh [simp]: fixes t::tm shows "s \<sharp> \<guillemotleft>t\<guillemotright>"
   by (simp add: quot_tm_def)
 
-lemma quot_Zero [simp]: "\<lceil>Zero\<rceil> = Zero"
+lemma quot_Zero [simp]: "\<guillemotleft>Zero\<guillemotright> = Zero"
   by (simp add: quot_tm_def)
 
-lemma quot_Var: "\<lceil>Var x\<rceil> = SUCC (ORD_OF (nat_of_name x))"
+lemma quot_Var: "\<guillemotleft>Var x\<guillemotright> = SUCC (ORD_OF (nat_of_name x))"
   by (simp add: quot_tm_def)
 
-lemma quot_Eats: "\<lceil>Eats x y\<rceil> = HPair (HTuple 1) (HPair \<lceil>x\<rceil> \<lceil>y\<rceil>)"
+lemma quot_Eats: "\<guillemotleft>Eats x y\<guillemotright> = HPair (HTuple 1) (HPair \<guillemotleft>x\<guillemotright> \<guillemotleft>y\<guillemotright>)"
   by (simp add: quot_tm_def)
 
 text\<open>irrelevance of the environment for quotations, because they are ground terms\<close>
@@ -570,28 +570,28 @@ end
 lemma quot_dbfm_fresh [simp]: "s \<sharp> (quot_dbfm A)"
   by (induct A rule: dbfm.induct) auto
 
-lemma quot_fm_fresh [simp]: fixes A::fm shows "s \<sharp> \<lceil>A\<rceil>"
+lemma quot_fm_fresh [simp]: fixes A::fm shows "s \<sharp> \<guillemotleft>A\<guillemotright>"
   by (simp add: quot_fm_def)
 
-lemma quot_fm_permute [simp]: fixes A:: fm shows "p \<bullet> \<lceil>A\<rceil> = \<lceil>A\<rceil>"
+lemma quot_fm_permute [simp]: fixes A:: fm shows "p \<bullet> \<guillemotleft>A\<guillemotright> = \<guillemotleft>A\<guillemotright>"
   by (metis fresh_star_def perm_supp_eq quot_fm_fresh)
 
-lemma quot_Mem: "\<lceil>x IN y\<rceil> = HPair (HTuple 0) (HPair (\<lceil>x\<rceil>) (\<lceil>y\<rceil>))"
+lemma quot_Mem: "\<guillemotleft>x IN y\<guillemotright> = HPair (HTuple 0) (HPair (\<guillemotleft>x\<guillemotright>) (\<guillemotleft>y\<guillemotright>))"
   by (simp add: quot_fm_def quot_tm_def)
 
-lemma quot_Eq: "\<lceil>x EQ y\<rceil> = HPair (HTuple 2) (HPair (\<lceil>x\<rceil>) (\<lceil>y\<rceil>))"
+lemma quot_Eq: "\<guillemotleft>x EQ y\<guillemotright> = HPair (HTuple 2) (HPair (\<guillemotleft>x\<guillemotright>) (\<guillemotleft>y\<guillemotright>))"
   by (simp add: quot_fm_def quot_tm_def)
 
-lemma quot_Disj: "\<lceil>A OR B\<rceil> = HPair (HTuple 3) (HPair (\<lceil>A\<rceil>) (\<lceil>B\<rceil>))"
+lemma quot_Disj: "\<guillemotleft>A OR B\<guillemotright> = HPair (HTuple 3) (HPair (\<guillemotleft>A\<guillemotright>) (\<guillemotleft>B\<guillemotright>))"
   by (simp add: quot_fm_def)
 
-lemma quot_Neg: "\<lceil>Neg A\<rceil> = HPair (HTuple 4) (\<lceil>A\<rceil>)"
+lemma quot_Neg: "\<guillemotleft>Neg A\<guillemotright> = HPair (HTuple 4) (\<guillemotleft>A\<guillemotright>)"
   by (simp add: quot_fm_def)
 
-lemma quot_Ex: "\<lceil>Ex i A\<rceil> = HPair (HTuple 5) (quot_dbfm (trans_fm [i] A))"
+lemma quot_Ex: "\<guillemotleft>Ex i A\<guillemotright> = HPair (HTuple 5) (quot_dbfm (trans_fm [i] A))"
   by (simp add: quot_fm_def)
 
-lemma eval_quot_fm_ignore: fixes A:: fm shows "\<lbrakk>\<lceil>A\<rceil>\<rbrakk>e = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e'"
+lemma eval_quot_fm_ignore: fixes A:: fm shows "\<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e'"
   by (metis eval_quot_dbfm_ignore quot_fm_def)
 
 lemmas quot_simps = quot_Var quot_Eats quot_Eq quot_Mem quot_Disj quot_Neg quot_Ex
@@ -616,7 +616,7 @@ abbreviation Q_Succ :: "tm \<Rightarrow> tm"
 definition q_Succ :: "hf \<Rightarrow> hf"
   where "q_Succ x \<equiv> q_Eats x x"
 
-lemma quot_Succ: "\<lceil>SUCC x\<rceil> = Q_Succ \<lceil>x\<rceil>"
+lemma quot_Succ: "\<guillemotleft>SUCC x\<guillemotright> = Q_Succ \<guillemotleft>x\<guillemotright>"
   by (auto simp: SUCC_def quot_Eats)
 
 abbreviation Q_HPair :: "tm \<Rightarrow> tm \<Rightarrow> tm"
@@ -683,7 +683,7 @@ lemmas q_defs = q_Var_def q_Ind_def q_Eats_def q_HPair_def q_Eq_def q_Mem_def
 lemma q_Eats_iff [iff]: "q_Eats x y = q_Eats x' y' \<longleftrightarrow> x=x' \<and> y=y'"
   by (metis hpair_iff q_Eats_def)
 
-lemma quot_subst_eq: "\<lceil>A(i::=t)\<rceil> = quot_dbfm (subst_dbfm (trans_tm [] t) i (trans_fm [] A))"
+lemma quot_subst_eq: "\<guillemotleft>A(i::=t)\<guillemotright> = quot_dbfm (subst_dbfm (trans_tm [] t) i (trans_fm [] A))"
   by (metis quot_fm_def subst_fm_trans_commute)
 
 lemma Q_Succ_cong: "H \<turnstile> x EQ x' \<Longrightarrow> H \<turnstile> Q_Succ x EQ Q_Succ x'"
@@ -694,7 +694,7 @@ section\<open>Quotations are Injective\<close>
 
 subsection\<open>Terms\<close>
 
-lemma eval_tm_inject [simp]: fixes t::tm shows "\<lbrakk>\<lceil>t\<rceil>\<rbrakk> e = \<lbrakk>\<lceil>u\<rceil>\<rbrakk> e \<longleftrightarrow> t=u"
+lemma eval_tm_inject [simp]: fixes t::tm shows "\<lbrakk>\<guillemotleft>t\<guillemotright>\<rbrakk> e = \<lbrakk>\<guillemotleft>u\<guillemotright>\<rbrakk> e \<longleftrightarrow> t=u"
 proof (induct t arbitrary: u rule: tm.induct)
   case Zero thus ?case
     by (cases u rule: tm.exhaust) (auto simp: quot_Var quot_Eats)
@@ -712,7 +712,7 @@ qed
 
 subsection\<open>Formulas\<close>
 
-lemma eval_fm_inject [simp]: fixes A::fm shows "\<lbrakk>\<lceil>A\<rceil>\<rbrakk> e = \<lbrakk>\<lceil>B\<rceil>\<rbrakk> e \<longleftrightarrow> A=B"
+lemma eval_fm_inject [simp]: fixes A::fm shows "\<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk> e = \<lbrakk>\<guillemotleft>B\<guillemotright>\<rbrakk> e \<longleftrightarrow> A=B"
 proof (nominal_induct B arbitrary: A rule: fm.strong_induct)
   case (Mem tm1 tm2) thus ?case
     by (cases A rule: fm.exhaust, auto simp: quot_simps htuple_minus_1)
@@ -759,7 +759,7 @@ lemma quot_dbtm_coding [simp]: "coding_tm (quot_dbtm t)"
 lemma quot_dbfm_coding [simp]: "coding_tm (quot_dbfm fm)"
   by (induct fm rule: dbfm.induct, auto)
 
-lemma quot_fm_coding: fixes A::fm shows "coding_tm \<lceil>A\<rceil>"
+lemma quot_fm_coding: fixes A::fm shows "coding_tm \<guillemotleft>A\<guillemotright>"
   by (metis quot_dbfm_coding quot_fm_def)
 
 inductive coding_hf :: "hf \<Rightarrow> bool"
@@ -825,7 +825,7 @@ end
 lemma vquot_dbtm_empty [simp]: "vquot_dbtm {} t = quot_dbtm t"
   by (induct t rule: dbtm.induct) auto
 
-lemma vquot_tm_empty [simp]: fixes t::tm shows "\<lfloor>t\<rfloor>{} = \<lceil>t\<rceil>"
+lemma vquot_tm_empty [simp]: fixes t::tm shows "\<lfloor>t\<rfloor>{} = \<guillemotleft>t\<guillemotright>"
   by (simp add: vquot_tm_def quot_tm_def)
 
 lemma vquot_dbtm_eq: "atom ` V \<inter> supp t = atom ` W \<inter> supp t \<Longrightarrow> vquot_dbtm V t = vquot_dbtm W t"
@@ -844,7 +844,7 @@ lemma vquot_fm_fresh [simp]: fixes A::fm shows "i \<sharp> \<lfloor>A\<rfloor>V 
 lemma vquot_dbfm_empty [simp]: "vquot_dbfm {} A = quot_dbfm A"
   by (induct A rule: dbfm.induct) auto
 
-lemma vquot_fm_empty [simp]: fixes A::fm shows "\<lfloor>A\<rfloor>{} = \<lceil>A\<rceil>"
+lemma vquot_fm_empty [simp]: fixes A::fm shows "\<lfloor>A\<rfloor>{} = \<guillemotleft>A\<guillemotright>"
   by (simp add: vquot_fm_def quot_fm_def)
 
 lemma vquot_dbfm_eq: "atom ` V \<inter> supp A = atom ` W \<inter> supp A \<Longrightarrow> vquot_dbfm V A = vquot_dbfm W A"

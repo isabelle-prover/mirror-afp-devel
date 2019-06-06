@@ -518,7 +518,7 @@ theorem quote_all_PfP_ssubst:
       and s: "supp \<beta> \<subseteq> atom ` Vs"
     shows    "quote_all p V \<turnstile> PfP (ssubst \<lfloor>\<beta>\<rfloor>V V F)"
 proof -
-  have "{} \<turnstile> PfP \<lceil>\<beta>\<rceil>"
+  have "{} \<turnstile> PfP \<guillemotleft>\<beta>\<guillemotright>"
     by (metis \<beta> proved_iff_proved_PfP)
   hence "{ConstP (F i) | i. i \<in> V} \<turnstile> PfP (ssubst \<lfloor>\<beta>\<rfloor>V V F)"
     by (simp add: PfP_implies_PfP_ssubst V s)
@@ -1406,15 +1406,15 @@ qed
 
 theorem Provability: 
   assumes "Sigma_fm \<alpha>" "ground_fm \<alpha>" 
-    shows "{\<alpha>} \<turnstile> PfP \<lceil>\<alpha>\<rceil>"
+    shows "{\<alpha>} \<turnstile> PfP \<guillemotleft>\<alpha>\<guillemotright>"
 proof -
   obtain \<beta> where \<beta>: "ss_fm \<beta>" "ground_fm \<beta>" "{} \<turnstile> \<alpha> IFF \<beta>" using assms
     by (auto simp: Sigma_fm_def ground_fm_aux_def)
-  hence "{\<beta>} \<turnstile> PfP \<lceil>\<beta>\<rceil>" using star [of \<beta> 0 "{}"]
+  hence "{\<beta>} \<turnstile> PfP \<guillemotleft>\<beta>\<guillemotright>" using star [of \<beta> 0 "{}"]
     by (auto simp: ground_fm_aux_def fresh_star_def)
-  then have "{\<alpha>} \<turnstile> PfP \<lceil>\<beta>\<rceil>" using \<beta>
+  then have "{\<alpha>} \<turnstile> PfP \<guillemotleft>\<beta>\<guillemotright>" using \<beta>
     by (metis Iff_MP_left')
-  moreover have "{} \<turnstile> PfP \<lceil>\<beta> IMP \<alpha>\<rceil>" using \<beta>
+  moreover have "{} \<turnstile> PfP \<guillemotleft>\<beta> IMP \<alpha>\<guillemotright>" using \<beta>
     by (metis Conj_E2 Iff_def proved_imp_proved_PfP)
   ultimately show ?thesis
     by (metis PfP_implies_ModPon_PfP_quot thin0)

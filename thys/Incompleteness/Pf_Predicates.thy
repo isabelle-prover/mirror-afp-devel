@@ -48,11 +48,11 @@ qed
 subsection \<open>The predicate \<open>Equality_axP\<close>, for the Equality Axioms\<close>
 
 definition Equality_ax :: "hf set" where
- "Equality_ax \<equiv> { \<lbrakk>\<lceil>refl_ax\<rceil>\<rbrakk>e0, \<lbrakk>\<lceil>eq_cong_ax\<rceil>\<rbrakk>e0, \<lbrakk>\<lceil>mem_cong_ax\<rceil>\<rbrakk>e0, \<lbrakk>\<lceil>eats_cong_ax\<rceil>\<rbrakk>e0 }"
+ "Equality_ax \<equiv> { \<lbrakk>\<guillemotleft>refl_ax\<guillemotright>\<rbrakk>e0, \<lbrakk>\<guillemotleft>eq_cong_ax\<guillemotright>\<rbrakk>e0, \<lbrakk>\<guillemotleft>mem_cong_ax\<guillemotright>\<rbrakk>e0, \<lbrakk>\<guillemotleft>eats_cong_ax\<guillemotright>\<rbrakk>e0 }"
 
 function Equality_axP :: "tm \<Rightarrow> fm"
   where "Equality_axP x =
-    x EQ \<lceil>refl_ax\<rceil> OR x EQ \<lceil>eq_cong_ax\<rceil> OR x EQ \<lceil>mem_cong_ax\<rceil> OR x EQ \<lceil>eats_cong_ax\<rceil>"
+    x EQ \<guillemotleft>refl_ax\<guillemotright> OR x EQ \<guillemotleft>eq_cong_ax\<guillemotright> OR x EQ \<guillemotleft>mem_cong_ax\<guillemotright> OR x EQ \<guillemotleft>eats_cong_ax\<guillemotright>"
 by auto
 
 termination
@@ -64,10 +64,10 @@ lemma eval_fm_Equality_axP [simp]: "eval_fm e (Equality_axP x) \<longleftrightar
 subsection \<open>The predicate \<open>HF_axP\<close>, for the HF Axioms\<close>
 
 definition HF_ax :: "hf set" where
-  "HF_ax \<equiv> {\<lbrakk>\<lceil>HF1\<rceil>\<rbrakk>e0, \<lbrakk>\<lceil>HF2\<rceil>\<rbrakk>e0}"
+  "HF_ax \<equiv> {\<lbrakk>\<guillemotleft>HF1\<guillemotright>\<rbrakk>e0, \<lbrakk>\<guillemotleft>HF2\<guillemotright>\<rbrakk>e0}"
 
 function HF_axP :: "tm \<Rightarrow> fm"
-  where "HF_axP x = x EQ \<lceil>HF1\<rceil> OR x EQ \<lceil>HF2\<rceil>"
+  where "HF_axP x = x EQ \<guillemotleft>HF1\<guillemotright> OR x EQ \<guillemotleft>HF2\<guillemotright>"
 by auto
 
 termination
@@ -120,11 +120,11 @@ qed
 subsubsection \<open>Correctness (or, correspondence)\<close>
 
 lemma Special_ax_imp_special_axioms:
-  assumes "x \<in> Special_ax" shows "\<exists>A. x = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<and> A \<in> special_axioms"
+  assumes "x \<in> Special_ax" shows "\<exists>A. x = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<and> A \<in> special_axioms"
 using assms
 proof (induction rule: Special_ax.induct)
   case (I v x ax y sx)
-  obtain fm::fm and u::tm where fm: "x = \<lbrakk>\<lceil>fm\<rceil>\<rbrakk>e" and  u: "y = \<lbrakk>\<lceil>u\<rceil>\<rbrakk>e"
+  obtain fm::fm and u::tm where fm: "x = \<lbrakk>\<guillemotleft>fm\<guillemotright>\<rbrakk>e" and  u: "y = \<lbrakk>\<guillemotleft>u\<guillemotright>\<rbrakk>e"
     using I  by (auto elim!: Form_imp_is_fm Term_imp_is_tm)
   obtain B where x: "x  = \<lbrakk>quot_dbfm B\<rbrakk>e"
             and ax: "ax = \<lbrakk>quot_dbfm (abst_dbfm (decode_Var v) 0 B)\<rbrakk>e"
@@ -144,10 +144,10 @@ proof (induction rule: Special_ax.induct)
     done
 qed
 
-lemma special_axioms_into_Special_ax: "A \<in> special_axioms \<Longrightarrow> \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<in> Special_ax"
+lemma special_axioms_into_Special_ax: "A \<in> special_axioms \<Longrightarrow> \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<in> Special_ax"
 proof (induct rule: special_axioms.induct)
   case (I A i t)
-  have "\<lbrakk>\<lceil>A(i::=t) IMP SyntaxN.Ex i A\<rceil>\<rbrakk>e =
+  have "\<lbrakk>\<guillemotleft>A(i::=t) IMP SyntaxN.Ex i A\<guillemotright>\<rbrakk>e =
         q_Imp \<lbrakk>quot_dbfm (subst_dbfm (trans_tm [] t) i (trans_fm [] A))\<rbrakk>e
               (q_Ex \<lbrakk>quot_dbfm (trans_fm [i] A)\<rbrakk>e)"
     by (simp add: quot_fm_def q_defs)
@@ -159,7 +159,7 @@ proof (induct rule: special_axioms.induct)
 qed
 
 text\<open>We have precisely captured the codes of the specialisation axioms.\<close>
-corollary Special_ax_eq_special_axioms: "Special_ax = (\<Union>A \<in> special_axioms. { \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e })"
+corollary Special_ax_eq_special_axioms: "Special_ax = (\<Union>A \<in> special_axioms. { \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e })"
   by (force dest: special_axioms_into_Special_ax Special_ax_imp_special_axioms)
 
 
@@ -229,27 +229,27 @@ qed
 subsubsection \<open>Correctness (or, correspondence)\<close>
 
 lemma Induction_ax_imp_induction_axioms:
-  assumes "x \<in> Induction_ax" shows "\<exists>A. x = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<and> A \<in> induction_axioms"
+  assumes "x \<in> Induction_ax" shows "\<exists>A. x = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<and> A \<in> induction_axioms"
 using assms
 proof (induction rule: Induction_ax.induct)
   case (I v x x0 w xw xevw allw allvw ax)
   then have v: "is_Var v" and w: "is_Var w"
         and dvw [simp]: "decode_Var v \<noteq> decode_Var w"  "atom (decode_Var w) \<sharp> [decode_Var v]" 
     by (auto simp: AbstForm_def fresh_Cons)
-  obtain A::fm where A: "x = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e" and wfresh: "atom (decode_Var w) \<sharp> A"
+  obtain A::fm where A: "x = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e" and wfresh: "atom (decode_Var w) \<sharp> A"
     using I VarNonOccForm_imp_fresh  by blast
-  then obtain A' A'' where A': "q_Imp (\<lbrakk>\<lceil>A\<rceil>\<rbrakk>e) (q_Imp xw xevw) = \<lbrakk>quot_dbfm A'\<rbrakk>e"
+  then obtain A' A'' where A': "q_Imp (\<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e) (q_Imp xw xevw) = \<lbrakk>quot_dbfm A'\<rbrakk>e"
                        and A'': "q_All allw = \<lbrakk>quot_dbfm A''\<rbrakk>e"
     using I VarNonOccForm_imp_fresh by (auto dest!: AbstForm_imp_abst_dbfm)
   define Aw where "Aw = A(decode_Var v::=Var (decode_Var w))"
   define Ae where "Ae = A(decode_Var v::= Eats (Var (decode_Var v)) (Var (decode_Var w)))"
-  have x0: "x0 = \<lbrakk>\<lceil>A(decode_Var v::=Zero)\<rceil>\<rbrakk>e"  using I SubstForm_imp_subst_fm 
+  have x0: "x0 = \<lbrakk>\<guillemotleft>A(decode_Var v::=Zero)\<guillemotright>\<rbrakk>e"  using I SubstForm_imp_subst_fm 
     by (metis A Form_quot_fm eval_fm_inject eval_tm.simps(1) quot_Zero)
-  have xw: "xw = \<lbrakk>\<lceil>Aw\<rceil>\<rbrakk>e"  using I SubstForm_imp_subst_fm
+  have xw: "xw = \<lbrakk>\<guillemotleft>Aw\<guillemotright>\<rbrakk>e"  using I SubstForm_imp_subst_fm
     by (metis A Form_quot_fm eval_fm_inject is_Var_imp_decode_Var w Aw_def)
-  have "SubstForm v (\<lbrakk>\<lceil>Eats (Var (decode_Var v)) (Var (decode_Var w))\<rceil>\<rbrakk>e) x xevw"
+  have "SubstForm v (\<lbrakk>\<guillemotleft>Eats (Var (decode_Var v)) (Var (decode_Var w))\<guillemotright>\<rbrakk>e) x xevw"
     using I  by (simp add: quot_simps q_defs) (metis is_Var_iff v w)
-  hence xevw: "xevw = \<lbrakk>\<lceil>Ae\<rceil>\<rbrakk>e"
+  hence xevw: "xevw = \<lbrakk>\<guillemotleft>Ae\<guillemotright>\<rbrakk>e"
     by (metis A Ae_def Form_quot_fm SubstForm_imp_subst_fm eval_fm_inject)
   have ax: "ax = \<lbrakk>quot_dbfm (abst_dbfm (decode_Var v) 0 (trans_fm [] A))\<rbrakk>e"
     using I  by (metis A AbstForm_imp_abst_dbfm nat_of_ord_0 quot_dbfm_inject_lemma quot_fm_def)
@@ -279,10 +279,10 @@ qed
 
 
 lemma induction_axioms_into_Induction_ax:
-  "A \<in> induction_axioms \<Longrightarrow> \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<in> Induction_ax"
+  "A \<in> induction_axioms \<Longrightarrow> \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<in> Induction_ax"
 proof (induct rule: induction_axioms.induct)
   case (ind j i A)
-  hence eq: "\<lbrakk>\<lceil>A(i::=Zero) IMP All i (All j (A IMP A(i::=Var j) IMP A(i::=Eats (Var i) (Var j)))) IMP All i A\<rceil>\<rbrakk>e =
+  hence eq: "\<lbrakk>\<guillemotleft>A(i::=Zero) IMP All i (All j (A IMP A(i::=Var j) IMP A(i::=Eats (Var i) (Var j)))) IMP All i A\<guillemotright>\<rbrakk>e =
             q_Imp \<lbrakk>quot_dbfm (subst_dbfm (trans_tm [] Zero) i (trans_fm [] A))\<rbrakk>e
             (q_Imp (q_All (q_All
                   (q_Imp \<lbrakk>quot_dbfm (trans_fm [j, i] A)\<rbrakk>e
@@ -295,21 +295,21 @@ proof (induct rule: induction_axioms.induct)
     by (metis fresh_Cons fresh_Nil fresh_Pair)
   show ?case
   proof (simp only: eq, rule Induction_ax.intros [where v = "q_Var i" and w = "q_Var j"])
-    show "SubstForm (q_Var i) 0 \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e
+    show "SubstForm (q_Var i) 0 \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e
            \<lbrakk>quot_dbfm (subst_dbfm (trans_tm [] Zero) i (trans_fm [] A))\<rbrakk>e"
      by (metis SubstForm_subst_dbfm_eq Term_quot_tm eval_tm.simps(1) quot_Zero quot_fm_def quot_tm_def)
   next
-    show "SubstForm (q_Var i) (q_Var j) \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<lbrakk>quot_dbfm (subst_dbfm (DBVar j) i (trans_fm [] A))\<rbrakk>e"
+    show "SubstForm (q_Var i) (q_Var j) \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<lbrakk>quot_dbfm (subst_dbfm (DBVar j) i (trans_fm [] A))\<rbrakk>e"
       by (auto simp: quot_fm_def intro!: SubstForm_subst_dbfm_eq Term_Var)
          (metis q_Var_def)
   next
-    show "SubstForm (q_Var i) (q_Eats (q_Var i) (q_Var j)) \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e
+    show "SubstForm (q_Var i) (q_Eats (q_Var i) (q_Var j)) \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e
               \<lbrakk>quot_dbfm (subst_dbfm (DBEats (DBVar i) (DBVar j)) i (trans_fm [] A))\<rbrakk>e"
       unfolding quot_fm_def
         by (auto intro!: SubstForm_subst_dbfm_eq Term_Eats Term_Var) (simp add: q_defs)
   next
     show "AbstForm (q_Var j) 0
-           (q_Imp \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e
+           (q_Imp \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e
               (q_Imp \<lbrakk>quot_dbfm (subst_dbfm (DBVar j) i (trans_fm [] A))\<rbrakk>e
                      \<lbrakk>quot_dbfm (subst_dbfm (DBEats (DBVar i) (DBVar j)) i (trans_fm [] A))\<rbrakk>e))
            \<lbrakk>quot_dbfm (trans_fm [j] (A IMP (A(i::= Var j) IMP A(i::= Eats(Var i)(Var j)))))\<rbrakk>e"
@@ -327,33 +327,33 @@ proof (induct rule: induction_axioms.induct)
       apply (auto simp: q_defs quot_fm_def)
       done
   next
-    show "AbstForm (q_Var i) 0 (\<lbrakk>\<lceil>A\<rceil>\<rbrakk>e) \<lbrakk>quot_dbfm (trans_fm [i] A)\<rbrakk>e"
+    show "AbstForm (q_Var i) 0 (\<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e) \<lbrakk>quot_dbfm (trans_fm [i] A)\<rbrakk>e"
       by (metis AbstForm_trans_fm)
   next
     show "q_Var i \<noteq> q_Var j" using ind
       by (simp add: q_Var_def)
   next
-    show "VarNonOccForm (q_Var j) (\<lbrakk>\<lceil>A\<rceil>\<rbrakk>e)"
+    show "VarNonOccForm (q_Var j) (\<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e)"
       by (metis fresh_Pair fresh_imp_VarNonOccForm ind)
   qed
 qed
 
 text\<open>We have captured the codes of the induction axioms.\<close>
 corollary Induction_ax_eq_induction_axioms:
-  "Induction_ax = (\<Union>A \<in> induction_axioms. {\<lbrakk>\<lceil>A\<rceil>\<rbrakk>e})"
+  "Induction_ax = (\<Union>A \<in> induction_axioms. {\<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e})"
   by (force dest: induction_axioms_into_Induction_ax Induction_ax_imp_induction_axioms)
 
 
 subsection \<open>The predicate \<open>AxiomP\<close>, for any Axioms\<close>
 
 definition Extra_ax :: "hf set" where
- "Extra_ax \<equiv> {\<lbrakk>\<lceil>extra_axiom\<rceil>\<rbrakk>e0}"
+ "Extra_ax \<equiv> {\<lbrakk>\<guillemotleft>extra_axiom\<guillemotright>\<rbrakk>e0}"
 
 definition Axiom :: "hf set" where
   "Axiom \<equiv> Extra_ax \<union> Sent \<union> Equality_ax \<union> HF_ax \<union> Special_ax \<union> Induction_ax"
 
 definition AxiomP :: "tm \<Rightarrow> fm"
-  where "AxiomP x \<equiv> x EQ \<lceil>extra_axiom\<rceil> OR SentP x OR Equality_axP x OR
+  where "AxiomP x \<equiv> x EQ \<guillemotleft>extra_axiom\<guillemotright> OR SentP x OR Equality_axP x OR
                     HF_axP x OR Special_axP x OR Induction_axP x"
 
 lemma AxiomP_eqvt [eqvt]: "(p \<bullet> AxiomP x) = AxiomP (p \<bullet> x)"
@@ -442,7 +442,7 @@ subsubsection \<open>Correctness\<close>
 
 lemma Exists_imp_exists:
   assumes "Exists p q"
-  shows "\<exists>A B i. p = \<lbrakk>\<lceil>A IMP B\<rceil>\<rbrakk>e \<and> q = \<lbrakk>\<lceil>(Ex i A) IMP B\<rceil>\<rbrakk>e \<and> atom i \<sharp> B"
+  shows "\<exists>A B i. p = \<lbrakk>\<guillemotleft>A IMP B\<guillemotright>\<rbrakk>e \<and> q = \<lbrakk>\<guillemotleft>(Ex i A) IMP B\<guillemotright>\<rbrakk>e \<and> atom i \<sharp> B"
 proof -
   obtain x ax y v
     where x:    "Form x"
@@ -451,27 +451,27 @@ proof -
       and p: "p = q_Imp x y"
       and q: "q = q_Imp (q_Ex ax) y"
     using assms  by (auto simp: Exists_def)
-  then obtain B::fm where B: "y = \<lbrakk>\<lceil>B\<rceil>\<rbrakk>e" and vfresh: "atom (decode_Var v) \<sharp> B"
+  then obtain B::fm where B: "y = \<lbrakk>\<guillemotleft>B\<guillemotright>\<rbrakk>e" and vfresh: "atom (decode_Var v) \<sharp> B"
    by (metis VarNonOccForm_imp_fresh)
-  obtain A::fm where A: "x = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e" 
+  obtain A::fm where A: "x = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e" 
     by (metis Form_imp_is_fm x)
   with AbstForm_imp_abst_dbfm [OF abst, of e]
   have ax: "ax = \<lbrakk>quot_dbfm (abst_dbfm (decode_Var v) 0 (trans_fm [] A))\<rbrakk>e"
-           "p = \<lbrakk>\<lceil>A IMP B\<rceil>\<rbrakk>e" using p A B
+           "p = \<lbrakk>\<guillemotleft>A IMP B\<guillemotright>\<rbrakk>e" using p A B
     by (auto simp: quot_simps quot_fm_def q_defs)
-  have "q = \<lbrakk>\<lceil>(Ex (decode_Var v) A) IMP B\<rceil>\<rbrakk>e" using q A B ax
+  have "q = \<lbrakk>\<guillemotleft>(Ex (decode_Var v) A) IMP B\<guillemotright>\<rbrakk>e" using q A B ax
     by (auto simp: abst_trans_fm quot_simps q_defs)
   then show ?thesis using vfresh ax
     by blast
 qed
 
-lemma Exists_intro: "atom i \<sharp> B \<Longrightarrow> Exists (\<lbrakk>\<lceil>A IMP B\<rceil>\<rbrakk>e) \<lbrakk>\<lceil>(Ex i A) IMP B\<rceil>\<rbrakk>e"
+lemma Exists_intro: "atom i \<sharp> B \<Longrightarrow> Exists (\<lbrakk>\<guillemotleft>A IMP B\<guillemotright>\<rbrakk>e) \<lbrakk>\<guillemotleft>(Ex i A) IMP B\<guillemotright>\<rbrakk>e"
   by (simp add: Exists_def quot_simps q_defs)
      (metis AbstForm_trans_fm Form_quot_fm fresh_imp_VarNonOccForm)
 
 text\<open>Thus, we have precisely captured the codes of the specialisation axioms.\<close>
 corollary Exists_iff_exists:
-  "Exists p q \<longleftrightarrow> (\<exists>A B i. p = \<lbrakk>\<lceil>A IMP B\<rceil>\<rbrakk>e \<and> q = \<lbrakk>\<lceil>(Ex i A) IMP B\<rceil>\<rbrakk>e \<and> atom i \<sharp> B)"
+  "Exists p q \<longleftrightarrow> (\<exists>A B i. p = \<lbrakk>\<guillemotleft>A IMP B\<guillemotright>\<rbrakk>e \<and> q = \<lbrakk>\<guillemotleft>(Ex i A) IMP B\<guillemotright>\<rbrakk>e \<and> atom i \<sharp> B)"
   by (force dest: Exists_imp_exists Exists_intro)
 
 
@@ -519,14 +519,14 @@ subsubsection \<open>Correctness\<close>
 
 lemma Subst_imp_subst:
   assumes "Subst p q" "Form p"
-  shows "\<exists>A::fm. \<exists>i t. p = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<and> q = \<lbrakk>\<lceil>A(i::=t)\<rceil>\<rbrakk>e"
+  shows "\<exists>A::fm. \<exists>i t. p = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<and> q = \<lbrakk>\<guillemotleft>A(i::=t)\<guillemotright>\<rbrakk>e"
 proof -
   obtain v u where subst: "SubstForm v u p q" using assms
     by (auto simp: Subst_def)
-  then obtain t::tm where substt: "SubstForm v \<lbrakk>\<lceil>t\<rceil>\<rbrakk>e p q"
+  then obtain t::tm where substt: "SubstForm v \<lbrakk>\<guillemotleft>t\<guillemotright>\<rbrakk>e p q"
     by (metis SubstForm_def Term_imp_is_tm)
   with SubstForm_imp_subst_fm [OF substt] assms
-  obtain A where "p = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e"  "q = \<lbrakk>\<lceil>A(decode_Var v::=t)\<rceil>\<rbrakk>e"
+  obtain A where "p = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e"  "q = \<lbrakk>\<guillemotleft>A(decode_Var v::=t)\<guillemotright>\<rbrakk>e"
     by auto
   thus ?thesis
     by blast
@@ -631,18 +631,18 @@ section\<open>Proposition 4.4\<close>
 
 subsection\<open>Left-to-Right Proof\<close>
 
-lemma extra_axiom_imp_Pf: "Pf \<lbrakk>\<lceil>extra_axiom\<rceil>\<rbrakk>e"
+lemma extra_axiom_imp_Pf: "Pf \<lbrakk>\<guillemotleft>extra_axiom\<guillemotright>\<rbrakk>e"
 proof -
-  have "\<lbrakk>\<lceil>extra_axiom\<rceil>\<rbrakk>e \<in> Extra_ax"
+  have "\<lbrakk>\<guillemotleft>extra_axiom\<guillemotright>\<rbrakk>e \<in> Extra_ax"
     by (simp add: Extra_ax_def) (rule eval_quot_fm_ignore)
   thus ?thesis
     by (force simp add: Pf_def Prf_def Axiom_def intro: BuildSeq_exI)
 qed
 
 lemma boolean_axioms_imp_Pf:
-  assumes "\<alpha> \<in> boolean_axioms" shows "Pf \<lbrakk>\<lceil>\<alpha>\<rceil>\<rbrakk>e"
+  assumes "\<alpha> \<in> boolean_axioms" shows "Pf \<lbrakk>\<guillemotleft>\<alpha>\<guillemotright>\<rbrakk>e"
 proof -
-  have "\<lbrakk>\<lceil>\<alpha>\<rceil>\<rbrakk>e \<in> Sent" using assms
+  have "\<lbrakk>\<guillemotleft>\<alpha>\<guillemotright>\<rbrakk>e \<in> Sent" using assms
     by (rule boolean_axioms.cases)
        (auto simp: Sent_def Sent_axioms_def quot_Disj quot_Neg q_defs)
   thus ?thesis
@@ -650,36 +650,36 @@ proof -
 qed
 
 lemma equality_axioms_imp_Pf:
-  assumes "\<alpha> \<in> equality_axioms" shows "Pf \<lbrakk>\<lceil>\<alpha>\<rceil>\<rbrakk>e"
+  assumes "\<alpha> \<in> equality_axioms" shows "Pf \<lbrakk>\<guillemotleft>\<alpha>\<guillemotright>\<rbrakk>e"
 proof -
-  have "\<lbrakk>\<lceil>\<alpha>\<rceil>\<rbrakk>e \<in> Equality_ax" using assms [unfolded equality_axioms_def]
+  have "\<lbrakk>\<guillemotleft>\<alpha>\<guillemotright>\<rbrakk>e \<in> Equality_ax" using assms [unfolded equality_axioms_def]
     by (auto simp: Equality_ax_def eval_quot_fm_ignore)
   thus ?thesis
     by (force simp add: Pf_def Prf_def Axiom_def intro: BuildSeq_exI)
 qed
 
 lemma HF_axioms_imp_Pf:
-  assumes "\<alpha> \<in> HF_axioms" shows "Pf \<lbrakk>\<lceil>\<alpha>\<rceil>\<rbrakk>e"
+  assumes "\<alpha> \<in> HF_axioms" shows "Pf \<lbrakk>\<guillemotleft>\<alpha>\<guillemotright>\<rbrakk>e"
 proof -
-  have "\<lbrakk>\<lceil>\<alpha>\<rceil>\<rbrakk>e \<in> HF_ax" using assms [unfolded HF_axioms_def]
+  have "\<lbrakk>\<guillemotleft>\<alpha>\<guillemotright>\<rbrakk>e \<in> HF_ax" using assms [unfolded HF_axioms_def]
     by (auto simp: HF_ax_def eval_quot_fm_ignore)
   thus ?thesis
     by (force simp add: Pf_def Prf_def Axiom_def intro: BuildSeq_exI)
 qed
 
 lemma special_axioms_imp_Pf:
-  assumes "\<alpha> \<in> special_axioms" shows "Pf \<lbrakk>\<lceil>\<alpha>\<rceil>\<rbrakk>e"
+  assumes "\<alpha> \<in> special_axioms" shows "Pf \<lbrakk>\<guillemotleft>\<alpha>\<guillemotright>\<rbrakk>e"
 proof -
-  have "\<lbrakk>\<lceil>\<alpha>\<rceil>\<rbrakk>e \<in> Special_ax"
+  have "\<lbrakk>\<guillemotleft>\<alpha>\<guillemotright>\<rbrakk>e \<in> Special_ax"
     by (metis special_axioms_into_Special_ax assms)
   thus ?thesis
     by (force simp add: Pf_def Prf_def Axiom_def intro: BuildSeq_exI)
 qed
 
 lemma induction_axioms_imp_Pf:
-  assumes "\<alpha> \<in> induction_axioms" shows "Pf \<lbrakk>\<lceil>\<alpha>\<rceil>\<rbrakk>e"
+  assumes "\<alpha> \<in> induction_axioms" shows "Pf \<lbrakk>\<guillemotleft>\<alpha>\<guillemotright>\<rbrakk>e"
 proof -
-  have "\<lbrakk>\<lceil>\<alpha>\<rceil>\<rbrakk>e \<in> Induction_ax"
+  have "\<lbrakk>\<guillemotleft>\<alpha>\<guillemotright>\<rbrakk>e \<in> Induction_ax"
     by (metis induction_axioms_into_Induction_ax assms)
   thus ?thesis
     by (force simp add: Pf_def Prf_def Axiom_def intro: BuildSeq_exI)
@@ -688,14 +688,14 @@ qed
 lemma ModPon_imp_Pf: "\<lbrakk>Pf \<lbrakk>Q_Imp x y\<rbrakk>e; Pf \<lbrakk>x\<rbrakk>e\<rbrakk> \<Longrightarrow> Pf \<lbrakk>y\<rbrakk>e"
   by (auto simp: Pf_def Prf_def ModPon_def q_defs intro: BuildSeq_combine)
 
-lemma quot_ModPon_imp_Pf: "\<lbrakk>Pf \<lbrakk>\<lceil>\<alpha> IMP \<beta>\<rceil>\<rbrakk>e; Pf \<lbrakk>\<lceil>\<alpha>\<rceil>\<rbrakk>e\<rbrakk> \<Longrightarrow> Pf \<lbrakk>\<lceil>\<beta>\<rceil>\<rbrakk>e"
+lemma quot_ModPon_imp_Pf: "\<lbrakk>Pf \<lbrakk>\<guillemotleft>\<alpha> IMP \<beta>\<guillemotright>\<rbrakk>e; Pf \<lbrakk>\<guillemotleft>\<alpha>\<guillemotright>\<rbrakk>e\<rbrakk> \<Longrightarrow> Pf \<lbrakk>\<guillemotleft>\<beta>\<guillemotright>\<rbrakk>e"
   by (simp add: ModPon_imp_Pf quot_fm_def quot_simps q_defs)
 
-lemma quot_Exists_imp_Pf: "\<lbrakk>Pf \<lbrakk>\<lceil>\<alpha> IMP \<beta>\<rceil>\<rbrakk>e; atom i \<sharp> \<beta>\<rbrakk> \<Longrightarrow> Pf \<lbrakk>\<lceil>Ex i \<alpha> IMP \<beta>\<rceil>\<rbrakk>e"
+lemma quot_Exists_imp_Pf: "\<lbrakk>Pf \<lbrakk>\<guillemotleft>\<alpha> IMP \<beta>\<guillemotright>\<rbrakk>e; atom i \<sharp> \<beta>\<rbrakk> \<Longrightarrow> Pf \<lbrakk>\<guillemotleft>Ex i \<alpha> IMP \<beta>\<guillemotright>\<rbrakk>e"
   by (force simp: Pf_def Prf_def Exists_def quot_simps q_defs 
             intro: BuildSeq_combine AbstForm_trans_fm_eq fresh_imp_VarNonOccForm)
 
-lemma proved_imp_Pf: assumes "H \<turnstile> \<alpha>" "H={}" shows "Pf \<lbrakk>\<lceil>\<alpha>\<rceil>\<rbrakk>e"
+lemma proved_imp_Pf: assumes "H \<turnstile> \<alpha>" "H={}" shows "Pf \<lbrakk>\<guillemotleft>\<alpha>\<guillemotright>\<rbrakk>e"
 using assms
 proof (induct)
   case (Hyp A H) thus ?case
@@ -726,32 +726,32 @@ next
     by (metis quot_Exists_imp_Pf)
 qed
 
-corollary proved_imp_proved_PfP: "{} \<turnstile> \<alpha> \<Longrightarrow> {} \<turnstile> PfP \<lceil>\<alpha>\<rceil>"
+corollary proved_imp_proved_PfP: "{} \<turnstile> \<alpha> \<Longrightarrow> {} \<turnstile> PfP \<guillemotleft>\<alpha>\<guillemotright>"
   by (rule Sigma_fm_imp_thm [OF PfP_sf]) 
      (auto simp: ground_aux_def supp_conv_fresh proved_imp_Pf)
 
 subsection\<open>Right-to-Left Proof\<close>
 
 lemma Sent_imp_hfthm:
-  assumes "x \<in> Sent" shows "\<exists>A. x = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<and> {} \<turnstile> A"
+  assumes "x \<in> Sent" shows "\<exists>A. x = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<and> {} \<turnstile> A"
 proof -
   obtain y z w where "Form y" "Form z" "Form w" and axs: "Sent_axioms x y z w"
     using assms  by (auto simp: Sent_def)
   then obtain A::fm and B::fm and C::fm 
-         where A: "y = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e" and B: "z = \<lbrakk>\<lceil>B\<rceil>\<rbrakk>e" and C: "w = \<lbrakk>\<lceil>C\<rceil>\<rbrakk>e"
+         where A: "y = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e" and B: "z = \<lbrakk>\<guillemotleft>B\<guillemotright>\<rbrakk>e" and C: "w = \<lbrakk>\<guillemotleft>C\<guillemotright>\<rbrakk>e"
     by (metis Form_imp_is_fm)
-  have "\<exists>A. q_Imp y y = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<and> {} \<turnstile> A"
+  have "\<exists>A. q_Imp y y = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<and> {} \<turnstile> A"
       by (force simp add: A quot_Disj quot_Neg q_defs hfthm.Bool boolean_axioms.intros)
-  moreover have "\<exists>A. q_Imp y (q_Disj y z) = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<and> {} \<turnstile> A"
+  moreover have "\<exists>A. q_Imp y (q_Disj y z) = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<and> {} \<turnstile> A"
       by (force intro!: exI [where x="A IMP (A OR B)"]
                 simp add: A B quot_Disj quot_Neg q_defs hfthm.Bool boolean_axioms.intros)
-  moreover have "\<exists>A. q_Imp (q_Disj y y) y = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<and> {} \<turnstile> A"
+  moreover have "\<exists>A. q_Imp (q_Disj y y) y = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<and> {} \<turnstile> A"
       by (force intro!: exI [where x="(A OR A) IMP A"]
                 simp add: A quot_Disj quot_Neg q_defs hfthm.Bool boolean_axioms.intros)
-  moreover have "\<exists>A. q_Imp (q_Disj y (q_Disj z w)) (q_Disj (q_Disj y z) w) = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<and> {} \<turnstile> A"
+  moreover have "\<exists>A. q_Imp (q_Disj y (q_Disj z w)) (q_Disj (q_Disj y z) w) = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<and> {} \<turnstile> A"
       by (force intro!: exI [where x="(A OR (B OR C)) IMP ((A OR B) OR C)"]
                 simp add: A B C quot_Disj quot_Neg q_defs hfthm.Bool boolean_axioms.intros)
-  moreover have "\<exists>A. q_Imp (q_Disj y z) (q_Imp (q_Disj (q_Neg y) w) (q_Disj z w)) = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<and> {} \<turnstile> A"
+  moreover have "\<exists>A. q_Imp (q_Disj y z) (q_Imp (q_Disj (q_Neg y) w) (q_Disj z w)) = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<and> {} \<turnstile> A"
       by (force intro!: exI [where x="(A OR B) IMP ((Neg A OR C) IMP (B OR C))"]
                 simp add: A B C quot_Disj quot_Neg q_defs hfthm.Bool boolean_axioms.intros)
   ultimately show ?thesis using axs [unfolded Sent_axioms_def]
@@ -759,41 +759,41 @@ proof -
 qed
 
 lemma Extra_ax_imp_hfthm:
-  assumes "x \<in> Extra_ax" obtains A where "x = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<and> {} \<turnstile> A"
+  assumes "x \<in> Extra_ax" obtains A where "x = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<and> {} \<turnstile> A"
   using assms unfolding Extra_ax_def
   by (auto intro: eval_quot_fm_ignore hfthm.Extra)
 
 lemma Equality_ax_imp_hfthm:
-  assumes "x \<in> Equality_ax" obtains A where "x = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<and> {} \<turnstile> A"
+  assumes "x \<in> Equality_ax" obtains A where "x = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<and> {} \<turnstile> A"
   using assms unfolding Equality_ax_def
   by (auto intro: eval_quot_fm_ignore hfthm.Eq [unfolded equality_axioms_def])
 
 lemma HF_ax_imp_hfthm:
-  assumes "x \<in> HF_ax" obtains A where "x = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<and> {} \<turnstile> A"
+  assumes "x \<in> HF_ax" obtains A where "x = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<and> {} \<turnstile> A"
   using assms unfolding HF_ax_def
   by (auto intro: eval_quot_fm_ignore hfthm.HF [unfolded HF_axioms_def])
 
 lemma Special_ax_imp_hfthm:
-  assumes "x \<in> Special_ax" obtains A where "x = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e" "{} \<turnstile> A"
+  assumes "x \<in> Special_ax" obtains A where "x = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e" "{} \<turnstile> A"
   by (metis Spec Special_ax_imp_special_axioms assms)
 
 lemma Induction_ax_imp_hfthm:
-  assumes "x \<in> Induction_ax" obtains A where "x = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e" "{} \<turnstile> A"
+  assumes "x \<in> Induction_ax" obtains A where "x = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e" "{} \<turnstile> A"
   by (metis Induction_ax_imp_induction_axioms assms hfthm.Ind)
 
-lemma Exists_imp_hfthm: "\<lbrakk>Exists \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e y; {} \<turnstile> A\<rbrakk> \<Longrightarrow> \<exists>B. y = \<lbrakk>\<lceil>B\<rceil>\<rbrakk>e \<and> {} \<turnstile> B"
+lemma Exists_imp_hfthm: "\<lbrakk>Exists \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e y; {} \<turnstile> A\<rbrakk> \<Longrightarrow> \<exists>B. y = \<lbrakk>\<guillemotleft>B\<guillemotright>\<rbrakk>e \<and> {} \<turnstile> B"
   by (drule Exists_imp_exists [where e=e]) (auto intro: anti_deduction)
 
-lemma Subst_imp_hfthm:  "\<lbrakk>Subst \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e y; {} \<turnstile> A\<rbrakk> \<Longrightarrow> \<exists>B. y = \<lbrakk>\<lceil>B\<rceil>\<rbrakk>e \<and> {} \<turnstile> B"
+lemma Subst_imp_hfthm:  "\<lbrakk>Subst \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e y; {} \<turnstile> A\<rbrakk> \<Longrightarrow> \<exists>B. y = \<lbrakk>\<guillemotleft>B\<guillemotright>\<rbrakk>e \<and> {} \<turnstile> B"
   by (drule Subst_imp_subst [where e=e], auto intro: Subst)
 
-lemma eval_Neg_imp_Neg: "\<lbrakk>\<lceil>\<alpha>\<rceil>\<rbrakk>e = q_Neg x \<Longrightarrow> \<exists>A. \<alpha> = Neg A \<and> \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e = x" 
+lemma eval_Neg_imp_Neg: "\<lbrakk>\<guillemotleft>\<alpha>\<guillemotright>\<rbrakk>e = q_Neg x \<Longrightarrow> \<exists>A. \<alpha> = Neg A \<and> \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e = x" 
   by (cases \<alpha> rule: fm.exhaust) (auto simp: quot_simps q_defs htuple_minus_1)
 
-lemma eval_Disj_imp_Disj: "\<lbrakk>\<lceil>\<alpha>\<rceil>\<rbrakk>e = q_Disj x y \<Longrightarrow> \<exists>A B. \<alpha> = A OR B \<and> \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e = x \<and> \<lbrakk>\<lceil>B\<rceil>\<rbrakk>e = y"
+lemma eval_Disj_imp_Disj: "\<lbrakk>\<guillemotleft>\<alpha>\<guillemotright>\<rbrakk>e = q_Disj x y \<Longrightarrow> \<exists>A B. \<alpha> = A OR B \<and> \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e = x \<and> \<lbrakk>\<guillemotleft>B\<guillemotright>\<rbrakk>e = y"
   by (cases \<alpha> rule: fm.exhaust) (auto simp: quot_simps q_defs htuple_minus_1)
 
-lemma Prf_imp_proved: assumes "Prf s k x" shows "\<exists>A. x = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<and> {} \<turnstile> A"
+lemma Prf_imp_proved: assumes "Prf s k x" shows "\<exists>A. x = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<and> {} \<turnstile> A"
 using assms [unfolded Prf_def Axiom_def]
 proof (induction x rule: BuildSeq_induct)
   case (B x) thus ?case
@@ -801,17 +801,17 @@ proof (induction x rule: BuildSeq_induct)
                     Special_ax_imp_hfthm Induction_ax_imp_hfthm)
 next
   case (C x y z)
-  then obtain A::fm and B::fm where "y = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e" "{} \<turnstile> A" "z = \<lbrakk>\<lceil>B\<rceil>\<rbrakk>e" "{} \<turnstile> B"
+  then obtain A::fm and B::fm where "y = \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e" "{} \<turnstile> A" "z = \<lbrakk>\<guillemotleft>B\<guillemotright>\<rbrakk>e" "{} \<turnstile> B"
     by blast
   thus ?case using C.hyps ModPon_def q_Imp_def
     by (auto dest!: MP_same eval_Neg_imp_Neg eval_Disj_imp_Disj Exists_imp_hfthm Subst_imp_hfthm)
 qed
 
-corollary Pf_quot_imp_is_proved: "Pf \<lbrakk>\<lceil>\<alpha>\<rceil>\<rbrakk>e \<Longrightarrow> {} \<turnstile> \<alpha>"
+corollary Pf_quot_imp_is_proved: "Pf \<lbrakk>\<guillemotleft>\<alpha>\<guillemotright>\<rbrakk>e \<Longrightarrow> {} \<turnstile> \<alpha>"
   by (metis Pf_def Prf_imp_proved eval_fm_inject)
 
 text\<open>Proposition 4.4!\<close>
-theorem proved_iff_proved_PfP: "{} \<turnstile> \<alpha> \<longleftrightarrow> {} \<turnstile> PfP \<lceil>\<alpha>\<rceil>"
+theorem proved_iff_proved_PfP: "{} \<turnstile> \<alpha> \<longleftrightarrow> {} \<turnstile> PfP \<guillemotleft>\<alpha>\<guillemotright>"
   by (metis Pf_quot_imp_is_proved emptyE eval_fm_PfP hfthm_sound proved_imp_proved_PfP)
 
 end

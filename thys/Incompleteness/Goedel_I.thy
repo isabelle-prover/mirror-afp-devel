@@ -119,18 +119,18 @@ qed
 lemma WR_succ: "Ord i \<Longrightarrow> WR (succ i) (q_Eats y y) = WR i y"
   by (metis WR_succ_iff q_Eats_iff)
 
-lemma WR_ord_of: "WR (ord_of i) \<lbrakk>\<lceil>ORD_OF i\<rceil>\<rbrakk>e"
+lemma WR_ord_of: "WR (ord_of i) \<lbrakk>\<guillemotleft>ORD_OF i\<guillemotright>\<rbrakk>e"
   by (induct i) (auto simp: WR0_iff WR_succ_iff quot_Succ q_defs)
 
 text\<open>Lemma 6.1\<close>
-lemma WR_quot_Var: "WR \<lbrakk>\<lceil>Var x\<rceil>\<rbrakk>e \<lbrakk>\<lceil>\<lceil>Var x\<rceil>\<rceil>\<rbrakk>e"
+lemma WR_quot_Var: "WR \<lbrakk>\<guillemotleft>Var x\<guillemotright>\<rbrakk>e \<lbrakk>\<guillemotleft>\<guillemotleft>Var x\<guillemotright>\<guillemotright>\<rbrakk>e"
   by (auto simp: quot_Var quot_Succ)
      (metis One_nat_def Ord_ord_of WR_ord_of WR_succ htuple.simps q_Eats_def)
 
 lemma ground_WRP [simp]: "ground_fm (WRP x y) \<longleftrightarrow> ground x \<and> ground y"
   by (auto simp: ground_aux_def ground_fm_aux_def supp_conv_fresh)
 
-lemma prove_WRP:  "{} \<turnstile> WRP \<lceil>Var x\<rceil> \<lceil>\<lceil>Var x\<rceil>\<rceil>"
+lemma prove_WRP:  "{} \<turnstile> WRP \<guillemotleft>Var x\<guillemotright> \<guillemotleft>\<guillemotleft>Var x\<guillemotright>\<guillemotright>"
   by (auto simp: WR_quot_Var ground_aux_def supp_conv_fresh intro: Sigma_fm_imp_thm)
 
 subsection\<open>Proving that these relations are functions\<close>
@@ -239,7 +239,7 @@ lemma W0 [simp]: "W 0 = Zero"
 lemma W_succ [simp]: "Ord i \<Longrightarrow> W (succ i) = Q_Eats (W i) (W i)"
   by (rule trans [OF def_hmemrec [OF W_def]]) (auto simp: ecut_apply SUCC_def W_def)
 
-lemma W_ord_of [simp]: "W (ord_of i) = \<lceil>ORD_OF i\<rceil>"
+lemma W_ord_of [simp]: "W (ord_of i) = \<guillemotleft>ORD_OF i\<guillemotright>"
   by (induct i, auto simp: SUCC_def quot_simps)
 
 lemma WR_iff_eq_W: "Ord x \<Longrightarrow> WR x y \<longleftrightarrow> y = \<lbrakk>W x\<rbrakk>e"
@@ -554,13 +554,13 @@ proof (induct x rule: hmem_rel_induct)
 qed
 
 text\<open>Lemma 6.2\<close>
-lemma HF_quot_coding_tm: "coding_tm t \<Longrightarrow> HF \<lbrakk>t\<rbrakk>e = \<lceil>t\<rceil>"
+lemma HF_quot_coding_tm: "coding_tm t \<Longrightarrow> HF \<lbrakk>t\<rbrakk>e = \<guillemotleft>t\<guillemotright>"
   by (induct t rule: coding_tm.induct) (auto, simp add: HPair_def quot_Eats)
 
-lemma HR_quot_fm: fixes A::fm shows "HR \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<lbrakk>\<lceil>\<lceil>A\<rceil>\<rceil>\<rbrakk>e"
+lemma HR_quot_fm: fixes A::fm shows "HR \<lbrakk>\<guillemotleft>A\<guillemotright>\<rbrakk>e \<lbrakk>\<guillemotleft>\<guillemotleft>A\<guillemotright>\<guillemotright>\<rbrakk>e"
   by (metis HR_H HF_quot_coding_tm coding_tm_hf quot_fm_coding)
 
-lemma prove_HRP: fixes A::fm shows "{} \<turnstile> HRP \<lceil>A\<rceil> \<lceil>\<lceil>A\<rceil>\<rceil>"
+lemma prove_HRP: fixes A::fm shows "{} \<turnstile> HRP \<guillemotleft>A\<guillemotright> \<guillemotleft>\<guillemotleft>A\<guillemotright>\<guillemotright>"
   by (auto simp: supp_conv_fresh Sigma_fm_imp_thm ground_aux_def ground_fm_aux_def HR_quot_fm)
 
 
@@ -592,12 +592,12 @@ qed
 
 declare KRP.simps [simp del]
 
-lemma prove_SubstFormP: "{} \<turnstile> SubstFormP \<lceil>Var i\<rceil> \<lceil>\<lceil>A\<rceil>\<rceil> \<lceil>A\<rceil> \<lceil>A(i::=\<lceil>A\<rceil>)\<rceil>"
+lemma prove_SubstFormP: "{} \<turnstile> SubstFormP \<guillemotleft>Var i\<guillemotright> \<guillemotleft>\<guillemotleft>A\<guillemotright>\<guillemotright> \<guillemotleft>A\<guillemotright> \<guillemotleft>A(i::=\<guillemotleft>A\<guillemotright>)\<guillemotright>"
   by (auto simp: supp_conv_fresh Sigma_fm_imp_thm ground_aux_def SubstForm_quot)
 
-lemma prove_KRP: "{} \<turnstile> KRP \<lceil>Var i\<rceil> \<lceil>A\<rceil> \<lceil>A(i::=\<lceil>A\<rceil>)\<rceil>"
+lemma prove_KRP: "{} \<turnstile> KRP \<guillemotleft>Var i\<guillemotright> \<guillemotleft>A\<guillemotright> \<guillemotleft>A(i::=\<guillemotleft>A\<guillemotright>)\<guillemotright>"
   by (auto simp: KRP.simps [of y] 
-           intro!: Ex_I [where x="\<lceil>\<lceil>A\<rceil>\<rceil>"] prove_HRP prove_SubstFormP)
+           intro!: Ex_I [where x="\<guillemotleft>\<guillemotleft>A\<guillemotright>\<guillemotright>"] prove_HRP prove_SubstFormP)
 
 lemma KRP_unique: "{KRP v x y, KRP v x y'} \<turnstile> y' EQ y"
 proof -
@@ -609,35 +609,35 @@ proof -
                     SubstFormP_unique [THEN cut2] HRP_unique [THEN cut2])
 qed
 
-lemma KRP_subst_fm: "{KRP \<lceil>Var i\<rceil> \<lceil>\<beta>\<rceil> (Var j)} \<turnstile> Var j EQ \<lceil>\<beta>(i::=\<lceil>\<beta>\<rceil>)\<rceil>"
+lemma KRP_subst_fm: "{KRP \<guillemotleft>Var i\<guillemotright> \<guillemotleft>\<beta>\<guillemotright> (Var j)} \<turnstile> Var j EQ \<guillemotleft>\<beta>(i::=\<guillemotleft>\<beta>\<guillemotright>)\<guillemotright>"
   by (metis KRP_unique cut0 prove_KRP)
 
 
 section\<open>The Diagonal Lemma and Gödel's Theorem\<close>
 
 lemma diagonal: 
-  obtains \<delta> where "{} \<turnstile> \<delta> IFF \<alpha>(i::=\<lceil>\<delta>\<rceil>)"  "supp \<delta> = supp \<alpha> - {atom i}"
+  obtains \<delta> where "{} \<turnstile> \<delta> IFF \<alpha>(i::=\<guillemotleft>\<delta>\<guillemotright>)"  "supp \<delta> = supp \<alpha> - {atom i}"
 proof -
   obtain k::name and j::name
     where atoms: "atom k \<sharp> (i,j,\<alpha>)" "atom j \<sharp> (i,\<alpha>)"
     by (metis obtain_fresh)
-  define \<beta> where "\<beta> = Ex j (KRP \<lceil>Var i\<rceil> (Var i) (Var j) AND \<alpha>(i ::= Var j))"
-  hence 1: "{} \<turnstile> \<beta>(i ::= \<lceil>\<beta>\<rceil>) IFF (Ex j (KRP \<lceil>Var i\<rceil> (Var i) (Var j) AND \<alpha>(i ::= Var j)))(i ::= \<lceil>\<beta>\<rceil>)"
+  define \<beta> where "\<beta> = Ex j (KRP \<guillemotleft>Var i\<guillemotright> (Var i) (Var j) AND \<alpha>(i ::= Var j))"
+  hence 1: "{} \<turnstile> \<beta>(i ::= \<guillemotleft>\<beta>\<guillemotright>) IFF (Ex j (KRP \<guillemotleft>Var i\<guillemotright> (Var i) (Var j) AND \<alpha>(i ::= Var j)))(i ::= \<guillemotleft>\<beta>\<guillemotright>)"
     by (metis Iff_refl)
-  have 2: "{} \<turnstile> (Ex j (KRP \<lceil>Var i\<rceil> (Var i) (Var j) AND \<alpha>(i ::= Var j)))(i ::= \<lceil>\<beta>\<rceil>) IFF
-                Ex j (Var j EQ \<lceil>\<beta>(i::=\<lceil>\<beta>\<rceil>)\<rceil> AND \<alpha>(i::=Var j))"
+  have 2: "{} \<turnstile> (Ex j (KRP \<guillemotleft>Var i\<guillemotright> (Var i) (Var j) AND \<alpha>(i ::= Var j)))(i ::= \<guillemotleft>\<beta>\<guillemotright>) IFF
+                Ex j (Var j EQ \<guillemotleft>\<beta>(i::=\<guillemotleft>\<beta>\<guillemotright>)\<guillemotright> AND \<alpha>(i::=Var j))"
     using atoms
     apply (auto intro!: Ex_cong Conj_cong KRP_subst_fm)
     apply (rule Iff_MP_same [OF Var_Eq_subst_Iff])
     apply (auto intro: prove_KRP thin0)
     done
-  have 3: "{} \<turnstile> Ex j (Var j EQ \<lceil>\<beta>(i::=\<lceil>\<beta>\<rceil>)\<rceil> AND \<alpha>(i::=Var j)) IFF \<alpha>(i::=\<lceil>\<beta>(i::=\<lceil>\<beta>\<rceil>)\<rceil>)"
+  have 3: "{} \<turnstile> Ex j (Var j EQ \<guillemotleft>\<beta>(i::=\<guillemotleft>\<beta>\<guillemotright>)\<guillemotright> AND \<alpha>(i::=Var j)) IFF \<alpha>(i::=\<guillemotleft>\<beta>(i::=\<guillemotleft>\<beta>\<guillemotright>)\<guillemotright>)"
     using atoms
     apply auto
     apply (rule cut_same [OF Iff_MP2_same [OF Var_Eq_subst_Iff AssumeH(2)]])
-    apply (auto intro: Ex_I [where x="\<lceil>\<beta>(i::=\<lceil>\<beta>\<rceil>)\<rceil>"])
+    apply (auto intro: Ex_I [where x="\<guillemotleft>\<beta>(i::=\<guillemotleft>\<beta>\<guillemotright>)\<guillemotright>"])
     done
-  have "supp (\<beta>(i ::= \<lceil>\<beta>\<rceil>)) = supp \<alpha> - {atom i}" using atoms
+  have "supp (\<beta>(i ::= \<guillemotleft>\<beta>\<guillemotright>)) = supp \<alpha> - {atom i}" using atoms
     by (auto simp: fresh_at_base ground_fm_aux_def \<beta>_def supp_conv_fresh)
   thus ?thesis using atoms
     by (metis that 1 2 3 Iff_trans)
@@ -645,14 +645,14 @@ qed
 
 text\<open>Gödel's first incompleteness theorem: Our theory is incomplete. NB it is provably consistent\<close>
 theorem Goedel_I:
-  obtains \<delta> where "{} \<turnstile> \<delta> IFF Neg (PfP \<lceil>\<delta>\<rceil>)"  "\<not> {} \<turnstile> \<delta>"  "\<not> {} \<turnstile> Neg \<delta>"  
+  obtains \<delta> where "{} \<turnstile> \<delta> IFF Neg (PfP \<guillemotleft>\<delta>\<guillemotright>)"  "\<not> {} \<turnstile> \<delta>"  "\<not> {} \<turnstile> Neg \<delta>"  
                   "eval_fm e \<delta>"  "ground_fm \<delta>"
 proof -
   fix i::name
-  obtain \<delta> where        "{} \<turnstile> \<delta> IFF Neg ((PfP (Var i))(i::=\<lceil>\<delta>\<rceil>))"
+  obtain \<delta> where        "{} \<turnstile> \<delta> IFF Neg ((PfP (Var i))(i::=\<guillemotleft>\<delta>\<guillemotright>))"
              and suppd: "supp \<delta> = supp (Neg (PfP (Var i))) - {atom i}"
     by (metis SyntaxN.Neg diagonal)
-  then have diag: "{} \<turnstile> \<delta> IFF Neg (PfP \<lceil>\<delta>\<rceil>)"
+  then have diag: "{} \<turnstile> \<delta> IFF Neg (PfP \<guillemotleft>\<delta>\<guillemotright>)"
     by simp
   then have np: "\<not> {} \<turnstile> \<delta> \<and> \<not> {} \<turnstile> Neg \<delta>"
     by (metis Iff_MP_same NegNeg_D Neg_D Neg_cong consistent proved_iff_proved_PfP)

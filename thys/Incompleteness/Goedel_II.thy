@@ -37,32 +37,32 @@ interpretation qp0: quote_perm 0 "{}" "make_F {} 0"
   proof unfold_locales qed auto
 
 lemma MonPon_PfP_implies_PfP:
-  "\<lbrakk>{} \<turnstile> \<alpha> IMP \<beta>; ground_fm \<alpha>; ground_fm \<beta>\<rbrakk> \<Longrightarrow> {PfP \<lceil>\<alpha>\<rceil>} \<turnstile> PfP \<lceil>\<beta>\<rceil>"
+  "\<lbrakk>{} \<turnstile> \<alpha> IMP \<beta>; ground_fm \<alpha>; ground_fm \<beta>\<rbrakk> \<Longrightarrow> {PfP \<guillemotleft>\<alpha>\<guillemotright>} \<turnstile> PfP \<guillemotleft>\<beta>\<guillemotright>"
   using qp0.quote_all_MonPon_PfP_ssubst
   by auto (metis Assume PfP_implies_ModPon_PfP_quot proved_iff_proved_PfP thin0)
 
-lemma PfP_quot_contra: "ground_fm \<alpha> \<Longrightarrow> {} \<turnstile> PfP \<lceil>\<alpha>\<rceil> IMP PfP \<lceil>Neg \<alpha>\<rceil> IMP PfP \<lceil>Fls\<rceil>"
+lemma PfP_quot_contra: "ground_fm \<alpha> \<Longrightarrow> {} \<turnstile> PfP \<guillemotleft>\<alpha>\<guillemotright> IMP PfP \<guillemotleft>Neg \<alpha>\<guillemotright> IMP PfP \<guillemotleft>Fls\<guillemotright>"
   using qp0.quote_all_Contra_PfP_ssubst 
   by (auto simp: qp0.quote_all_Contra_PfP_ssubst ground_fm_aux_def)
 
 
 text\<open>Gödel's second incompleteness theorem: Our theory cannot prove its own consistency.\<close>
-theorem Goedel_II: "\<not> {} \<turnstile> Neg (PfP \<lceil>Fls\<rceil>)"
+theorem Goedel_II: "\<not> {} \<turnstile> Neg (PfP \<guillemotleft>Fls\<guillemotright>)"
 proof -
-  obtain \<delta> where diag: "{} \<turnstile> \<delta> IFF Neg (PfP \<lceil>\<delta>\<rceil>)"  "\<not> {} \<turnstile> \<delta>" and gnd:  "ground_fm \<delta>"
+  obtain \<delta> where diag: "{} \<turnstile> \<delta> IFF Neg (PfP \<guillemotleft>\<delta>\<guillemotright>)"  "\<not> {} \<turnstile> \<delta>" and gnd:  "ground_fm \<delta>"
     by (metis Goedel_I)
-  have "{PfP \<lceil>\<delta>\<rceil>} \<turnstile> PfP \<lceil>PfP \<lceil>\<delta>\<rceil>\<rceil>"
+  have "{PfP \<guillemotleft>\<delta>\<guillemotright>} \<turnstile> PfP \<guillemotleft>PfP \<guillemotleft>\<delta>\<guillemotright>\<guillemotright>"
     by (auto simp: Provability ground_fm_aux_def supp_conv_fresh)
-  moreover have "{PfP \<lceil>\<delta>\<rceil>} \<turnstile> PfP \<lceil>Neg (PfP \<lceil>\<delta>\<rceil>)\<rceil>"
+  moreover have "{PfP \<guillemotleft>\<delta>\<guillemotright>} \<turnstile> PfP \<guillemotleft>Neg (PfP \<guillemotleft>\<delta>\<guillemotright>)\<guillemotright>"
     apply (rule MonPon_PfP_implies_PfP [OF _ gnd])
     apply (metis Conj_E2 Iff_def Iff_sym diag(1))
     apply (auto simp: ground_fm_aux_def supp_conv_fresh) 
     done
-  moreover have "ground_fm (PfP \<lceil>\<delta>\<rceil>)"
+  moreover have "ground_fm (PfP \<guillemotleft>\<delta>\<guillemotright>)"
     by (auto simp: ground_fm_aux_def supp_conv_fresh)
-  ultimately have "{PfP \<lceil>\<delta>\<rceil>} \<turnstile> PfP \<lceil>Fls\<rceil>" using PfP_quot_contra  
+  ultimately have "{PfP \<guillemotleft>\<delta>\<guillemotright>} \<turnstile> PfP \<guillemotleft>Fls\<guillemotright>" using PfP_quot_contra  
     by (metis (no_types) anti_deduction cut2)
-  thus "\<not> {} \<turnstile> Neg (PfP \<lceil>Fls\<rceil>)"
+  thus "\<not> {} \<turnstile> Neg (PfP \<guillemotleft>Fls\<guillemotright>)"
     by (metis Iff_MP2_same Neg_mono cut1 diag)
 qed
 
