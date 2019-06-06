@@ -120,7 +120,7 @@ proof -
     apply (rule cut_same)
     apply (rule cut1 [OF SeqStTermP_lemma [of m2 v a "Var i" "Var j'" s' "Var k'" n2 sm2 sm2' sn2 sn2']], simp_all, blast)
     apply (rule Disj_EH Conj_EH)+
-    \<comment> \<open>case 1, both sides equal "v"\<close>
+    \<comment> \<open>case 1, both sides equal @{term v}\<close>
     apply (blast intro: Trans Sym)
     \<comment> \<open>case 2, @{term "Var i EQ v"} and also @{term "IndP (Var i) OR Var i NEQ v"}\<close>
     apply (rule Conj_EH Disj_EH)+
