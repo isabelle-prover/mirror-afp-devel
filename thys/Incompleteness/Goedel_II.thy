@@ -46,16 +46,11 @@ lemma PfP_quot_contra: "ground_fm \<alpha> \<Longrightarrow> {} \<turnstile> PfP
   by (auto simp: qp0.quote_all_Contra_PfP_ssubst ground_fm_aux_def)
 
 
-text\<open>Gödel's second incompleteness theorem:
-      If consistent, our theory cannot prove its own consistency.\<close>
-theorem Goedel_II:
-  assumes "\<not> {} \<turnstile> Fls"
-    shows "\<not> {} \<turnstile> Neg (PfP \<lceil>Fls\<rceil>)"
+text\<open>Gödel's second incompleteness theorem: Our theory cannot prove its own consistency.\<close>
+theorem Goedel_II: "\<not> {} \<turnstile> Neg (PfP \<lceil>Fls\<rceil>)"
 proof -
-  from assms Goedel_I obtain \<delta> 
-    where diag: "{} \<turnstile> \<delta> IFF Neg (PfP \<lceil>\<delta>\<rceil>)"  "\<not> {} \<turnstile> \<delta>"
-      and gnd:  "ground_fm \<delta>"
-    by metis
+  obtain \<delta> where diag: "{} \<turnstile> \<delta> IFF Neg (PfP \<lceil>\<delta>\<rceil>)"  "\<not> {} \<turnstile> \<delta>" and gnd:  "ground_fm \<delta>"
+    by (metis Goedel_I)
   have "{PfP \<lceil>\<delta>\<rceil>} \<turnstile> PfP \<lceil>PfP \<lceil>\<delta>\<rceil>\<rceil>"
     by (auto simp: Provability ground_fm_aux_def supp_conv_fresh)
   moreover have "{PfP \<lceil>\<delta>\<rceil>} \<turnstile> PfP \<lceil>Neg (PfP \<lceil>\<delta>\<rceil>)\<rceil>"

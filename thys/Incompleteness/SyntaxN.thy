@@ -1326,7 +1326,7 @@ declare Mem_Zero_E [THEN rotate7, intro!]
 declare Mem_Zero_E [THEN rotate8, intro!]
 
 
-subsection\<open>The Formula @{term Fls}\<close>
+subsection\<open>The Formula @{term Fls}; Consistency of the Calculus\<close>
 
 definition Fls  where "Fls \<equiv> Zero IN Zero"
 
@@ -1385,6 +1385,11 @@ lemma truth_provable: "H \<turnstile> (Neg Fls)"
 
 lemma ExFalso: "H \<turnstile> Fls \<Longrightarrow> H \<turnstile> A"
   by (metis Neg_D truth_provable)
+
+text\<open>Thanks to Andrei Popescu for pointing out that consistency was provable here.\<close>
+proposition consistent: "\<not> {} \<turnstile> Fls"
+  by (meson empty_iff eval_fm.simps(4) hfthm_sound truth_provable)
+
 
 subsection\<open>More properties of @{term Zero}\<close>
 

@@ -643,9 +643,8 @@ proof -
     by (metis that 1 2 3 Iff_trans)
 qed
 
-text\<open>Gödel's first incompleteness theorem: If consistent, our theory is incomplete.\<close>
+text\<open>Gödel's first incompleteness theorem: Our theory is incomplete. NB it is provably consistent\<close>
 theorem Goedel_I:
-  assumes "\<not> {} \<turnstile> Fls"
   obtains \<delta> where "{} \<turnstile> \<delta> IFF Neg (PfP \<lceil>\<delta>\<rceil>)"  "\<not> {} \<turnstile> \<delta>"  "\<not> {} \<turnstile> Neg \<delta>"  
                   "eval_fm e \<delta>"  "ground_fm \<delta>"
 proof -
@@ -656,7 +655,7 @@ proof -
   then have diag: "{} \<turnstile> \<delta> IFF Neg (PfP \<lceil>\<delta>\<rceil>)"
     by simp
   then have np: "\<not> {} \<turnstile> \<delta> \<and> \<not> {} \<turnstile> Neg \<delta>"
-    by (metis Iff_MP_same NegNeg_D Neg_D Neg_cong assms proved_iff_proved_PfP)
+    by (metis Iff_MP_same NegNeg_D Neg_D Neg_cong consistent proved_iff_proved_PfP)
   then have "eval_fm e \<delta>" using hfthm_sound [where e=e, OF diag]
     by simp (metis Pf_quot_imp_is_proved)
   moreover have "ground_fm \<delta>" using suppd  
