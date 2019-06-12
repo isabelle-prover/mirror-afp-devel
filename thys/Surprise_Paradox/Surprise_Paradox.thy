@@ -86,14 +86,14 @@ begin
 fun quot_hfm :: "hfm \<Rightarrow> tm"
   where
    "quot_hfm (HVar name) = (Var name)"
- | "quot_hfm (HFm A) = \<lceil>A\<rceil>"
+ | "quot_hfm (HFm A) = \<guillemotleft>A\<guillemotright>"
  | "quot_hfm (HDisj A B) = HPair (HTuple 3) (HPair (quot_hfm A) (quot_hfm B))"
  | "quot_hfm (HNeg A) = HPair (HTuple 4) (quot_hfm A)"
 
 instance ..
 end
 
-lemma subst_quot_hfm[simp]: "subst i \<lceil>P\<rceil> \<lceil>A\<rceil> = \<lceil>A(i:::=P)\<rceil>"
+lemma subst_quot_hfm[simp]: "subst i \<guillemotleft>P\<guillemotright> \<guillemotleft>A\<guillemotright> = \<guillemotleft>A(i:::=P)\<guillemotright>"
   by (induction A) auto
 
 fun hfm_to_fm :: "hfm \<Rightarrow> fm"
@@ -118,7 +118,7 @@ lemma closed_hfm_Conj[simp]:
   "closed_hfm (HConj A B) \<longleftrightarrow> closed_hfm A \<and> closed_hfm B"
 unfolding HConj_def by simp
 
-lemma quot_closed_hfm[simp]: "closed_hfm A \<Longrightarrow> \<lceil>A\<rceil> = \<lceil>hfm_to_fm A\<rceil>"
+lemma quot_closed_hfm[simp]: "closed_hfm A \<Longrightarrow> \<guillemotleft>A\<guillemotright> = \<guillemotleft>hfm_to_fm A\<guillemotright>"
   by (induction A) (auto simp add: quot_fm_def)
 
 declare quot_hfm.simps[simp del]
@@ -142,15 +142,15 @@ begin
   \<close>
 
   definition H :: fm where
-    "H = Q\<^sub>1 AND Neg (PfP \<lceil>HVar X0 HIMP HFm Q\<^sub>1\<rceil>) XOR 
-     Q\<^sub>2 AND Neg (PfP \<lceil>HVar X0 HAND HNeg (HFm Q\<^sub>1) HIMP (HFm Q\<^sub>2)\<rceil>)"
+    "H = Q\<^sub>1 AND Neg (PfP \<guillemotleft>HVar X0 HIMP HFm Q\<^sub>1\<guillemotright>) XOR 
+     Q\<^sub>2 AND Neg (PfP \<guillemotleft>HVar X0 HAND HNeg (HFm Q\<^sub>1) HIMP (HFm Q\<^sub>2)\<guillemotright>)"
 
-  definition P where "P = (SOME P. {} \<turnstile> P IFF H(X0 ::= \<lceil>P\<rceil>))"
+  definition P where "P = (SOME P. {} \<turnstile> P IFF H(X0 ::= \<guillemotleft>P\<guillemotright>))"
 
-  lemma P': "{} \<turnstile> P IFF H(X0 ::= \<lceil>P\<rceil>)"
+  lemma P': "{} \<turnstile> P IFF H(X0 ::= \<guillemotleft>P\<guillemotright>)"
   proof-
     from diagonal[where \<alpha> = "H" and i = X0]
-    obtain \<delta> where "{} \<turnstile> \<delta> IFF H(X0 ::= \<lceil>\<delta>\<rceil>)".
+    obtain \<delta> where "{} \<turnstile> \<delta> IFF H(X0 ::= \<guillemotleft>\<delta>\<guillemotright>)".
     thus ?thesis  unfolding P_def by (rule someI)
   qed
 
@@ -160,8 +160,8 @@ begin
   \<close>
 
   lemma 7: "{} \<turnstile> P IFF
-     (Q\<^sub>1 AND Neg (PfP \<lceil>P IMP Q\<^sub>1\<rceil>) XOR
-      Q\<^sub>2 AND Neg (PfP \<lceil>P AND Neg Q\<^sub>1 IMP Q\<^sub>2\<rceil>))"
+     (Q\<^sub>1 AND Neg (PfP \<guillemotleft>P IMP Q\<^sub>1\<guillemotright>) XOR
+      Q\<^sub>2 AND Neg (PfP \<guillemotleft>P AND Neg Q\<^sub>1 IMP Q\<^sub>2\<guillemotright>))"
     using P' unfolding H_def
     by (simp add: Q_closed forget_subst_fm[unfolded fresh_def])
   lemmas "7_E" = 7[THEN thin0, THEN Iff_MP_left', OF Conj_E, OF thin2]
@@ -173,14 +173,14 @@ begin
   lemma 8: "{} \<turnstile> (P AND Neg Q\<^sub>1) IMP Q\<^sub>2"
     by (intro propositional_calculus "7_E")
 
-  lemma 10: "{} \<turnstile> PfP \<lceil>(P AND Neg Q\<^sub>1) IMP Q\<^sub>2\<rceil>"
+  lemma 10: "{} \<turnstile> PfP \<guillemotleft>(P AND Neg Q\<^sub>1) IMP Q\<^sub>2\<guillemotright>"
     using 8 by (rule proved_imp_proved_PfP)
   lemmas "10_I" = 10[THEN thin0]
 
   lemma 11: "{} \<turnstile> P IMP Q\<^sub>1"
     by (intro propositional_calculus "7_E" "10_I")
     
-  lemma 12: "{} \<turnstile> PfP \<lceil>P IMP Q\<^sub>1\<rceil>"
+  lemma 12: "{} \<turnstile> PfP \<guillemotleft>P IMP Q\<^sub>1\<guillemotright>"
     using 11 by (rule proved_imp_proved_PfP)
   lemmas "12_I" = 12[THEN thin0]
 
@@ -203,7 +203,7 @@ lemma vquot_dbtm_fresh: "atom ` V \<sharp>* t \<Longrightarrow> vquot_dbtm V t =
 
 lemma subst_vquot_dbtm_trans_tm[simp]:
   "atom i \<sharp> is \<Longrightarrow> atom ` set is \<sharp>* t \<Longrightarrow>
-   subst i \<lceil>t\<rceil> (vquot_dbtm {i} (trans_tm is t')) =
+   subst i \<guillemotleft>t\<guillemotright> (vquot_dbtm {i} (trans_tm is t')) =
    quot_dbtm (trans_tm is (subst i t t'))"
   by (nominal_induct t' avoiding: "is" i t rule: tm.strong_induct)
      (auto simp add:  quot_tm_def lookup_notin fresh_imp_notin_env
@@ -212,13 +212,13 @@ lemma subst_vquot_dbtm_trans_tm[simp]:
 
 lemma subst_vquot_dbtm_trans_fm[simp]:
   "atom i \<sharp> is \<Longrightarrow> atom ` set is \<sharp>* t \<Longrightarrow>
-   subst i \<lceil>t\<rceil> (vquot_dbfm {i} (trans_fm is A)) =
+   subst i \<guillemotleft>t\<guillemotright> (vquot_dbfm {i} (trans_fm is A)) =
    quot_dbfm (trans_fm is (subst_fm A i t))"
   by (nominal_induct A avoiding: "is" i t rule: fm.strong_induct)
      (auto simp add: quot_fm_def fresh_Cons)
 
 lemma subst_vquot[simp]:
-  "subst i \<lceil>t\<rceil> \<lfloor>A\<rfloor>{i} = \<lceil>A(i ::= t)\<rceil>"
+  "subst i \<guillemotleft>t\<guillemotright> \<lfloor>A\<rfloor>{i} = \<guillemotleft>A(i ::= t)\<guillemotright>"
   by (nominal_induct A avoiding: i t rule: fm.strong_induct)
      (auto simp add: vquot_fm_def quot_fm_def fresh_Cons)
 
