@@ -101,7 +101,7 @@ begin
   qed
 
   definition dbail :: "('label, 'state) dba list \<Rightarrow> ('label, 'state list degen) dba" where
-    "dbail = degen \<circ> dbgail"
+    "dbail = dgbad \<circ> dbgail"
 
   lemma dbail_nodes_finite[intro]:
     assumes "list_all (finite \<circ> DBA.nodes) AA"
@@ -113,7 +113,7 @@ begin
   proof -
     have "card (DBA.nodes (dbail AA)) \<le>
       max 1 (length (dgba.accepting (dbgail AA))) * card (DGBA.nodes (dbgail AA))"
-      unfolding dbail_def using degen_nodes_card by simp
+      unfolding dbail_def using dgbad_nodes_card by simp
     also have "length (dgba.accepting (dbgail AA)) = length AA" unfolding dbgail_def by simp
     also have "card (DGBA.nodes (dbgail AA)) \<le> prod_list (map (card \<circ> DBA.nodes) AA)"
       using dbgail_nodes_card assms by this
@@ -121,7 +121,7 @@ begin
   qed
 
   lemma dbail_language[simp]: "DBA.language (dbail AA) = INTER (set AA) DBA.language"
-    unfolding dbail_def using degen_language dbgail_language by auto
+    unfolding dbail_def using dgbad_language dbgail_language by auto
 
   definition dbau :: "('label, 'state\<^sub>1) dba \<Rightarrow> ('label, 'state\<^sub>2) dba \<Rightarrow>
     ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) dba" where

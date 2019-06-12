@@ -269,7 +269,7 @@ begin
   qed
 
   definition dcaul :: "('label, 'state) dca list \<Rightarrow> ('label, 'state list degen) dca" where
-    "dcaul = degen \<circ> dcgaul"
+    "dcaul = dgcad \<circ> dcgaul"
 
   lemma dcaul_nodes_finite[intro]:
     assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
@@ -283,7 +283,7 @@ begin
   proof -
     have "card (DCA.nodes (dcaul AA)) \<le>
       max 1 (length (dgca.rejecting (dcgaul AA))) * card (DGCA.nodes (dcgaul AA))"
-      unfolding dcaul_def using degen_nodes_card by simp
+      unfolding dcaul_def using dgcad_nodes_card by simp
     also have "length (dgca.rejecting (dcgaul AA)) = length AA" unfolding dcgaul_def by simp
     also have "card (DGCA.nodes (dcgaul AA)) \<le> prod_list (map (card \<circ> DCA.nodes) AA)"
       using dcgaul_nodes_card assms by this
@@ -293,6 +293,6 @@ begin
   lemma dcaul_language[simp]:
     assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
     shows "DCA.language (dcaul AA) = UNION (set AA) DCA.language"
-    unfolding dcaul_def using degen_language dcgaul_language[OF assms] by auto
+    unfolding dcaul_def using dgcad_language dcgaul_language[OF assms] by auto
 
 end

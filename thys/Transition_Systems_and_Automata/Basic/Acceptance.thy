@@ -5,8 +5,6 @@ begin
   type_synonym 'a pred = "'a \<Rightarrow> bool"
   type_synonym 'a rabin = "'a pred \<times> 'a pred"
   type_synonym 'a gen = "'a list"
-  (* TODO: move to degeneralization theory *)
-  type_synonym 'a degen = "'a \<times> nat"
 
   definition rabin :: "'a rabin \<Rightarrow> 'a stream pred" where
     "rabin \<equiv> \<lambda> (I, F) w. infs I w \<and> fins F w"

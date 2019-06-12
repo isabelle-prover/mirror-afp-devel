@@ -3,7 +3,7 @@ section \<open>Deterministic Co-Generalized Co-Büchi Automata\<close>
 theory DGCA
 imports
   "DCA"
-  "../../Transition_Systems/Transition_System_Degeneralization"
+  "../../Basic/Degeneralization"
 begin
 
   datatype ('label, 'state) dgca = dgca
@@ -12,13 +12,11 @@ begin
     (succ: "'label \<Rightarrow> 'state \<Rightarrow> 'state")
     (rejecting: "'state pred gen")
 
-  global_interpretation dgca: transition_system_initial_generalized
-    "succ A" "\<lambda> a p. a \<in> alphabet A" "\<lambda> p. p = initial A" "rejecting A"
+  global_interpretation dgca: transition_system_initial
+    "succ A" "\<lambda> a p. a \<in> alphabet A" "\<lambda> p. p = initial A"
     for A
     defines path = dgca.path and run = dgca.run and reachable = dgca.reachable and nodes = dgca.nodes and
-      enableds = dgca.enableds and paths = dgca.paths and runs = dgca.runs and
-      dexecute = dgca.dexecute and denabled = dgca.denabled and dinitial = dgca.dinitial and
-      drejecting = dgca.dcondition
+      enableds = dgca.enableds and paths = dgca.paths and runs = dgca.runs
     by this
 
   abbreviation target where "target \<equiv> dgca.target"
@@ -58,34 +56,91 @@ begin
   lemma language_alphabet: "language A \<subseteq> streams (alphabet A)"
     unfolding language_def run_alt_def using sset_streams by auto
 
-  definition degen :: "('label, 'state) dgca \<Rightarrow> ('label, 'state degen) dca" where
-    "degen A \<equiv> dca (alphabet A) (The (dinitial A)) (dexecute A) (drejecting A)"
+  definition dgcad :: "('label, 'state) dgca \<Rightarrow> ('label, 'state degen) dca" where
+    "dgcad A \<equiv> dca
+      (alphabet A)
+      (initial A, 0)
+      (\<lambda> a (p, k). (succ A a p, count (rejecting A) p k))
+      (degen (rejecting A))"
 
-  lemma degen_simps[simp]:
-    "dca.alphabet (degen A) = alphabet A"
-    "dca.initial (degen A) = (initial A, 0)"
-    "dca.succ (degen A) = dexecute A"
-    "dca.rejecting (degen A) = drejecting A"
-    unfolding degen_def dgca.dinitial_def by auto
+  lemma dgcad_simps[simp]:
+    "dca.alphabet (dgcad A) = alphabet A"
+    "dca.initial (dgcad A) = (initial A, 0)"
+    "dca.succ (dgcad A) a (p, k) = (succ A a p, count (rejecting A) p k)"
+    "dca.rejecting (dgcad A) = degen (rejecting A)"
+    unfolding dgcad_def by auto
 
-  lemma degen_trace[simp]: "dca.trace (degen A) = dgca.degen.trace A" unfolding degen_simps by rule
-  lemma degen_run[simp]: "dca.run (degen A) = dgca.degen.run A"
-    unfolding DCA.run_def degen_simps dgca.denabled_def case_prod_beta' by rule
-  lemma degen_nodes[simp]: "DCA.nodes (degen A) = dgca.degen.nodes TYPE('label) A"
-    unfolding DCA.nodes_def degen_simps
-    unfolding dgca.denabled_def dgca.dinitial_def
-    unfolding prod_eq_iff case_prod_beta' prod.sel
-    by rule
+  lemma dgcad_target[simp]: "dca.target (dgcad A) w (p, k) =
+    (dgca.target A w p, fold (count (rejecting A)) (butlast (p # dgca.states A w p)) k)"
+    by (induct w arbitrary: p k) (auto)
+  lemma dgcad_states[simp]: "dca.states (dgcad A) w (p, k) =
+    dgca.states A w p || scan (count (rejecting A)) (p # dgca.states A w p) k"
+    by (induct w arbitrary: p k) (auto)
+  lemma dgcad_trace[simp]: "dca.trace (dgcad A) w (p, k) =
+    dgca.trace A w p ||| sscan (count (rejecting A)) (p ## dgca.trace A w p) k"
+    by (coinduction arbitrary: w p k) (auto)
+  lemma dgcad_path[iff]: "dca.path (dgcad A) w (p, k) \<longleftrightarrow> dgca.path A w p"
+    unfolding DCA.path_alt_def DGCA.path_alt_def by simp
+  lemma dgcad_run[iff]: "dca.run (dgcad A) w (p, k) \<longleftrightarrow> dgca.run A w p"
+    unfolding DCA.run_alt_def DGCA.run_alt_def by simp
 
-  lemma degen_nodes_finite[iff]: "finite (DCA.nodes (degen A)) \<longleftrightarrow> finite (DGCA.nodes A)" by simp
-  lemma degen_nodes_card: "card (DCA.nodes (degen A)) \<le> max 1 (length (rejecting A)) * card (DGCA.nodes A)"
-    using dgca.degen_nodes_card by simp
+  (* TODO: revise *)
+  lemma dgcad_nodes_fst[simp]: "fst ` DCA.nodes (dgcad A) = DGCA.nodes A"
+    unfolding dca.nodes_alt_def dca.reachable_alt_def
+    unfolding dgca.nodes_alt_def dgca.reachable_alt_def
+    unfolding image_def by simp
+  lemma dgcad_nodes_snd_empty:
+    assumes "rejecting A = []"
+    shows "snd ` DCA.nodes (dgcad A) \<subseteq> {0}"
+  proof -
+    have 2: "snd (dca.succ (dgcad A) a (p, k)) = 0" for a p k using assms by auto
+    show ?thesis using 2 by (auto elim: dca.nodes.cases)
+  qed
+  lemma dgcad_nodes_snd_nonempty:
+    assumes "rejecting A \<noteq> []"
+    shows "snd ` DCA.nodes (dgcad A) \<subseteq> {0 ..< length (rejecting A)}"
+  proof -
+    have 1: "snd (dca.initial (dgcad A)) < length (rejecting A)"
+      using assms by simp
+    have 2: "snd (dca.succ (dgcad A) a (p, k)) < length (rejecting A)" for a p k
+      using assms by auto
+    show ?thesis using 1 2 by (auto elim: dca.nodes.cases)
+  qed
+  lemma dgcad_nodes_empty:
+    assumes "rejecting A = []"
+    shows "DCA.nodes (dgcad A) = DGCA.nodes A \<times> {0}"
+  proof -
+    have "(p, k) \<in> DCA.nodes (dgcad A) \<longleftrightarrow> p \<in> fst ` DCA.nodes (dgcad A) \<and> k = 0" for p k
+      using dgcad_nodes_snd_empty[OF assms] by (force simp del: dgcad_nodes_fst)
+    then show ?thesis by auto
+  qed
+  lemma dgcad_nodes_nonempty:
+    assumes "rejecting A \<noteq> []"
+    shows "DCA.nodes (dgcad A) \<subseteq> DGCA.nodes A \<times> {0 ..< length (rejecting A)}"
+    using subset_fst_snd dgcad_nodes_fst[of A] dgcad_nodes_snd_nonempty[OF assms] by blast
+  lemma dgcad_nodes: "DCA.nodes (dgcad A) \<subseteq> DGCA.nodes A \<times> {0 ..< max 1 (length (rejecting A))}"
+    using dgcad_nodes_empty dgcad_nodes_nonempty by force
 
-  lemma degen_language[simp]: "DCA.language (degen A) = DGCA.language A"
-    unfolding DCA.language_def DGCA.language_def degen_simps
-    unfolding degen_trace degen_run
-    unfolding dgca.degen_run dgca.degen_infs cogen_def
-    unfolding ball_simps(10)
-    by rule
+  lemma dgcad_language[simp]: "DCA.language (dgcad A) = DGCA.language A" by force
+
+  lemma dgcad_nodes_finite[iff]: "finite (DCA.nodes (dgcad A)) \<longleftrightarrow> finite (DGCA.nodes A)"
+  proof
+    show "finite (DGCA.nodes A)" if "finite (DCA.nodes (dgcad A))"
+      using that by (auto simp flip: dgcad_nodes_fst)
+    show "finite (DCA.nodes (dgcad A))" if "finite (DGCA.nodes A)"
+      using dgcad_nodes that finite_subset by fastforce
+  qed
+  lemma dgcad_nodes_card: "card (DCA.nodes (dgcad A)) \<le> max 1 (length (rejecting A)) * card (DGCA.nodes A)"
+  proof (cases "finite (DGCA.nodes A)")
+    case True
+    have "card (DCA.nodes (dgcad A)) \<le> card (DGCA.nodes A \<times> {0 ..< max 1 (length (rejecting A))})"
+      using dgcad_nodes True by (blast intro: card_mono)
+    also have "\<dots> = max 1 (length (rejecting A)) * card (DGCA.nodes A)" unfolding card_cartesian_product by simp
+    finally show ?thesis by this
+  next
+    case False
+    then have "card (DGCA.nodes A) = 0" "card (DCA.nodes (dgcad A)) = 0" by auto
+    then show ?thesis by simp
+  qed
 
 end

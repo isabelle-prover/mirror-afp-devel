@@ -3,7 +3,7 @@ section \<open>Deterministic Generalized Büchi Automata\<close>
 theory DGBA
 imports
   "DBA"
-  "../../Transition_Systems/Transition_System_Degeneralization"
+  "../../Basic/Degeneralization"
 begin
 
   datatype ('label, 'state) dgba = dgba
@@ -12,13 +12,11 @@ begin
     (succ: "'label \<Rightarrow> 'state \<Rightarrow> 'state")
     (accepting: "'state pred gen")
 
-  global_interpretation dgba: transition_system_initial_generalized
-    "succ A" "\<lambda> a p. a \<in> alphabet A" "\<lambda> p. p = initial A" "accepting A"
+  global_interpretation dgba: transition_system_initial
+    "succ A" "\<lambda> a p. a \<in> alphabet A" "\<lambda> p. p = initial A"
     for A
     defines path = dgba.path and run = dgba.run and reachable = dgba.reachable and nodes = dgba.nodes and
-      enableds = dgba.enableds and paths = dgba.paths and runs = dgba.runs and
-      dexecute = dgba.dexecute and denabled = dgba.denabled and dinitial = dgba.dinitial and
-      daccepting = dgba.dcondition
+      enableds = dgba.enableds and paths = dgba.paths and runs = dgba.runs
     by this
 
   abbreviation target where "target \<equiv> dgba.target"
@@ -58,33 +56,91 @@ begin
   lemma language_alphabet: "language A \<subseteq> streams (alphabet A)"
     unfolding language_def run_alt_def using sset_streams by auto
 
-  definition degen :: "('label, 'state) dgba \<Rightarrow> ('label, 'state degen) dba" where
-    "degen A \<equiv> dba (alphabet A) (The (dinitial A)) (dexecute A) (daccepting A)"
+  definition dgbad :: "('label, 'state) dgba \<Rightarrow> ('label, 'state degen) dba" where
+    "dgbad A \<equiv> dba
+      (alphabet A)
+      (initial A, 0)
+      (\<lambda> a (p, k). (succ A a p, count (accepting A) p k))
+      (degen (accepting A))"
 
-  lemma degen_simps[simp]:
-    "dba.alphabet (degen A) = alphabet A"
-    "dba.initial (degen A) = (initial A, 0)"
-    "dba.succ (degen A) = dexecute A"
-    "dba.accepting (degen A) = daccepting A"
-    unfolding degen_def dgba.dinitial_def by auto
+  lemma dgbad_simps[simp]:
+    "dba.alphabet (dgbad A) = alphabet A"
+    "dba.initial (dgbad A) = (initial A, 0)"
+    "dba.succ (dgbad A) a (p, k) = (succ A a p, count (accepting A) p k)"
+    "dba.accepting (dgbad A) = degen (accepting A)"
+    unfolding dgbad_def by auto
 
-  lemma degen_trace[simp]: "dba.trace (degen A) = dgba.degen.trace A" unfolding degen_simps by rule
-  lemma degen_run[simp]: "dba.run (degen A) = dgba.degen.run A"
-    unfolding DBA.run_def degen_simps dgba.denabled_def case_prod_beta' by rule
-  lemma degen_nodes[simp]: "DBA.nodes (degen A) = dgba.degen.nodes TYPE('label) A"
-    unfolding DBA.nodes_def degen_simps
-    unfolding dgba.denabled_def dgba.dinitial_def
-    unfolding prod_eq_iff case_prod_beta' prod.sel
-    by rule
+  lemma dgbad_target[simp]: "dba.target (dgbad A) w (p, k) =
+    (dgba.target A w p, fold (count (accepting A)) (butlast (p # dgba.states A w p)) k)"
+    by (induct w arbitrary: p k) (auto)
+  lemma dgbad_states[simp]: "dba.states (dgbad A) w (p, k) =
+    dgba.states A w p || scan (count (accepting A)) (p # dgba.states A w p) k"
+    by (induct w arbitrary: p k) (auto)
+  lemma dgbad_trace[simp]: "dba.trace (dgbad A) w (p, k) =
+    dgba.trace A w p ||| sscan (count (accepting A)) (p ## dgba.trace A w p) k"
+    by (coinduction arbitrary: w p k) (auto)
+  lemma dgbad_path[iff]: "dba.path (dgbad A) w (p, k) \<longleftrightarrow> dgba.path A w p"
+    unfolding DBA.path_alt_def DGBA.path_alt_def by simp
+  lemma dgbad_run[iff]: "dba.run (dgbad A) w (p, k) \<longleftrightarrow> dgba.run A w p"
+    unfolding DBA.run_alt_def DGBA.run_alt_def by simp
 
-  lemma degen_nodes_finite[iff]: "finite (DBA.nodes (degen A)) \<longleftrightarrow> finite (DGBA.nodes A)" by simp
-  lemma degen_nodes_card: "card (DBA.nodes (degen A)) \<le> max 1 (length (accepting A)) * card (DGBA.nodes A)"
-    using dgba.degen_nodes_card by simp
+  (* TODO: revise *)
+  lemma dgbad_nodes_fst[simp]: "fst ` DBA.nodes (dgbad A) = DGBA.nodes A"
+    unfolding dba.nodes_alt_def dba.reachable_alt_def
+    unfolding dgba.nodes_alt_def dgba.reachable_alt_def
+    unfolding image_def by simp
+  lemma dgbad_nodes_snd_empty:
+    assumes "accepting A = []"
+    shows "snd ` DBA.nodes (dgbad A) \<subseteq> {0}"
+  proof -
+    have 2: "snd (dba.succ (dgbad A) a (p, k)) = 0" for a p k using assms by auto
+    show ?thesis using 2 by (auto elim: dba.nodes.cases)
+  qed
+  lemma dgbad_nodes_snd_nonempty:
+    assumes "accepting A \<noteq> []"
+    shows "snd ` DBA.nodes (dgbad A) \<subseteq> {0 ..< length (accepting A)}"
+  proof -
+    have 1: "snd (dba.initial (dgbad A)) < length (accepting A)"
+      using assms by simp
+    have 2: "snd (dba.succ (dgbad A) a (p, k)) < length (accepting A)" for a p k
+      using assms by auto
+    show ?thesis using 1 2 by (auto elim: dba.nodes.cases)
+  qed
+  lemma dgbad_nodes_empty:
+    assumes "accepting A = []"
+    shows "DBA.nodes (dgbad A) = DGBA.nodes A \<times> {0}"
+  proof -
+    have "(p, k) \<in> DBA.nodes (dgbad A) \<longleftrightarrow> p \<in> fst ` DBA.nodes (dgbad A) \<and> k = 0" for p k
+      using dgbad_nodes_snd_empty[OF assms] by (force simp del: dgbad_nodes_fst)
+    then show ?thesis by auto
+  qed
+  lemma dgbad_nodes_nonempty:
+    assumes "accepting A \<noteq> []"
+    shows "DBA.nodes (dgbad A) \<subseteq> DGBA.nodes A \<times> {0 ..< length (accepting A)}"
+    using subset_fst_snd dgbad_nodes_fst[of A] dgbad_nodes_snd_nonempty[OF assms] by blast
+  lemma dgbad_nodes: "DBA.nodes (dgbad A) \<subseteq> DGBA.nodes A \<times> {0 ..< max 1 (length (accepting A))}"
+    using dgbad_nodes_empty dgbad_nodes_nonempty by force
 
-  lemma degen_language[simp]: "DBA.language (degen A) = DGBA.language A"
-    unfolding DBA.language_def DGBA.language_def degen_simps
-    unfolding degen_trace degen_run
-    unfolding dgba.degen_run dgba.degen_infs gen_def
-    by rule
+  lemma dgbad_language[simp]: "DBA.language (dgbad A) = DGBA.language A" by force
+
+  lemma dgbad_nodes_finite[iff]: "finite (DBA.nodes (dgbad A)) \<longleftrightarrow> finite (DGBA.nodes A)"
+  proof
+    show "finite (DGBA.nodes A)" if "finite (DBA.nodes (dgbad A))"
+      using that by (auto simp flip: dgbad_nodes_fst)
+    show "finite (DBA.nodes (dgbad A))" if "finite (DGBA.nodes A)"
+      using dgbad_nodes that finite_subset by fastforce
+  qed
+  lemma dgbad_nodes_card: "card (DBA.nodes (dgbad A)) \<le> max 1 (length (accepting A)) * card (DGBA.nodes A)"
+  proof (cases "finite (DGBA.nodes A)")
+    case True
+    have "card (DBA.nodes (dgbad A)) \<le> card (DGBA.nodes A \<times> {0 ..< max 1 (length (accepting A))})"
+      using dgbad_nodes True by (blast intro: card_mono)
+    also have "\<dots> = max 1 (length (accepting A)) * card (DGBA.nodes A)" unfolding card_cartesian_product by simp
+    finally show ?thesis by this
+  next
+    case False
+    then have "card (DGBA.nodes A) = 0" "card (DBA.nodes (dgbad A)) = 0" by auto
+    then show ?thesis by simp
+  qed
 
 end

@@ -333,7 +333,7 @@ lemma \<AA>\<^sub>2_language:
 
 lemma \<AA>\<^sub>2_alphabet:
   "DBA.alphabet (\<AA>\<^sub>2 xs ys) = UNIV"
-  by (simp add: \<AA>\<^sub>2_def \<AA>\<^sub>\<mu>_GF_def dbail_def dbgail_def DGBA.degen_def)
+  by (simp add: \<AA>\<^sub>2_def \<AA>\<^sub>\<mu>_GF_def dbail_def dbgail_def)
 
 
 definition \<AA>\<^sub>3 :: "'a ltln list \<Rightarrow> 'a ltln list \<Rightarrow> ('a set, 'ltlq list) dca" where

@@ -14,14 +14,6 @@ begin
 
 subsection \<open>LTL to DRA\<close>
 
-lemma dgba_degen_code [code]:
-  "DGBA.degen A = dba (DGBA.alphabet A) (DGBA.initial A, 0) (DGBA.dexecute A) (DGBA.daccepting A)"
-  by (metis DGBA.degen_def DGBA.degen_simps(2) dba.sel(2))
-
-lemma dgca_degen_code [code]:
-  "DGCA.degen A = dca (DGCA.alphabet A) (DGCA.initial A, 0) (DGCA.dexecute A) (DGCA.drejecting A)"
-  by (metis DGCA.degen_def DGCA.degen_simps(2) dca.sel(2))
-
 export_code ltlc_to_draei checking
 
 
