@@ -66,7 +66,7 @@ begin
       (\<Union> p \<in> insert x T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` transition A a p)" by auto
     fix Ta xa
     assume 2: "Ta \<subseteq> alphabet A" "xa \<in> alphabet A" "xa \<notin> Ta"
-    show "finite (transition A xa x)" using 1 2 assms(1) by (meson infinite_subset nodes_succ subsetI)
+    show "finite (transition A xa x)" using 1 2 assms(1) by (meson infinite_subset nodes_step subsetI)
     show "(f ` {x} \<times> {xa} \<times> f ` transition A xa x) \<union>
       (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` transition A a x) \<union>
       (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` transition A a p) =
