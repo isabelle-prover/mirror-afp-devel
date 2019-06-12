@@ -82,7 +82,7 @@ begin
     - consolidate various binds and maps in expand_map_get_7 *)
   export_code
     nat_of_integer integer_of_nat
-    nbaei alphabetei initialei transei acceptingei
+    nbaei alphabetei initialei transitionei acceptingei
     nbaei_nbai complement_impl
     in SML module_name Complementation file_prefix Complementation_Export
 

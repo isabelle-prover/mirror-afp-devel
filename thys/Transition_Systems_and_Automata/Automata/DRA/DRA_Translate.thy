@@ -14,7 +14,7 @@ begin
   section \<open>Image on Explicit Automata\<close>
 
   definition drae_image where "drae_image f A \<equiv> drae (alphabete A) (f (initiale A))
-    ((\<lambda> (p, a, q). (f p, a, f q)) ` transe A) (map (map_prod (image f) (image f)) (acceptinge A))"
+    ((\<lambda> (p, a, q). (f p, a, f q)) ` transitione A) (map (map_prod (image f) (image f)) (acceptinge A))"
 
   lemma drae_image_param[param]: "(drae_image, drae_image) \<in> (S \<rightarrow> T) \<rightarrow> \<langle>L, S\<rangle> drae_rel \<rightarrow> \<langle>L, T\<rangle> drae_rel"
     unfolding drae_image_def by parametricity
@@ -22,14 +22,14 @@ begin
   lemma drae_image_id[simp]: "drae_image id = id" unfolding drae_image_def by auto
   lemma drae_image_dra_drae: "drae_image f (dra_drae A) = drae
     (alphabet A) (f (initial A))
-    (\<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {succ A a p})
+    (\<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {transition A a p})
     (map (\<lambda> (P, Q). (f ` {p \<in> nodes A. P p}, f ` {p \<in> nodes A. Q p})) (accepting A))"
     unfolding dra_drae_def drae_image_def drae.simps Set.filter_def by force
 
   section \<open>Exploration and Translation\<close>
 
   definition trans_spec where
-    "trans_spec A f \<equiv> \<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {succ A a p}"
+    "trans_spec A f \<equiv> \<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {transition A a p}"
 
   definition trans_algo where
     "trans_algo N L S f \<equiv>
@@ -45,32 +45,32 @@ begin
 
   lemma trans_algo_refine:
     assumes "finite (nodes A)" "finite (alphabet A)" "inj_on f (nodes A)"
-    assumes "N = nodes A" "L = alphabet A" "S = succ A"
+    assumes "N = nodes A" "L = alphabet A" "S = transition A"
     shows "(trans_algo N L S f, SPEC (HOL.eq (trans_spec A f))) \<in> \<langle>Id\<rangle> nres_rel"
   unfolding trans_algo_def trans_spec_def assms(4-6)
   proof (refine_vcg FOREACH_rule_insert_eq)
     show "finite (nodes A)" using assms(1) by this
-    show "(\<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {succ A a p}) =
-      (\<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {succ A a p})" by rule
-    show "(\<Union> p \<in> {}. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {succ A a p}) = {}" by simp
+    show "(\<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {transition A a p}) =
+      (\<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {transition A a p})" by rule
+    show "(\<Union> p \<in> {}. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {transition A a p}) = {}" by simp
     fix T x
     assume 1: "T \<subseteq> nodes A" "x \<in> nodes A" "x \<notin> T"
     show "finite (alphabet A)" using assms(2) by this
-    show "(\<Union> a \<in> {}. f ` {x} \<times> {a} \<times> f ` {succ A a x}) \<union>
-      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {succ A a p}) =
-      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {succ A a p})"
-      "(\<Union> a \<in> alphabet A. f ` {x} \<times> {a} \<times> f ` {succ A a x}) \<union>
-      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {succ A a p}) =
-      (\<Union> p \<in> insert x T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {succ A a p})" by auto
+    show "(\<Union> a \<in> {}. f ` {x} \<times> {a} \<times> f ` {transition A a x}) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {transition A a p}) =
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {transition A a p})"
+      "(\<Union> a \<in> alphabet A. f ` {x} \<times> {a} \<times> f ` {transition A a x}) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {transition A a p}) =
+      (\<Union> p \<in> insert x T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {transition A a p})" by auto
     fix Ta xa
     assume 2: "Ta \<subseteq> alphabet A" "xa \<in> alphabet A" "xa \<notin> Ta"
-    show "(f x, xa, f (succ A xa x)) \<notin> (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` {succ A a x}) \<union>
-      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {succ A a p})"
+    show "(f x, xa, f (transition A xa x)) \<notin> (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` {transition A a x}) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {transition A a p})"
       using 1 2(3) assms(3) by (auto dest: inj_onD)
-    show "(\<Union> a \<in> insert xa Ta. f ` {x} \<times> {a} \<times> f ` {succ A a x}) \<union>
-      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {succ A a p}) =
-      insert (f x, xa, f (succ A xa x)) ((\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` {succ A a x}) \<union>
-      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {succ A a p}))"
+    show "(\<Union> a \<in> insert xa Ta. f ` {x} \<times> {a} \<times> f ` {transition A a x}) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {transition A a p}) =
+      insert (f x, xa, f (transition A xa x)) ((\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` {transition A a x}) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {transition A a p}))"
       by simp
   qed
 
@@ -90,8 +90,8 @@ begin
         f \<leftarrow> op_set_enumerate N;
         ASSERT (dom f = N);
         ASSERT (f (initial A) \<noteq> None);
-        ASSERT (\<forall> a \<in> alphabet A. \<forall> p \<in> dom f. f (succ A a p) \<noteq> None);
-        T \<leftarrow> trans_algo N (alphabet A) (succ A) (\<lambda> x. the (f x));
+        ASSERT (\<forall> a \<in> alphabet A. \<forall> p \<in> dom f. f (transition A a p) \<noteq> None);
+        T \<leftarrow> trans_algo N (alphabet A) (transition A) (\<lambda> x. the (f x));
         RETURN (drae (alphabet A) ((\<lambda> x. the (f x)) (initial A)) T
           (map (\<lambda> (P, Q). ((\<lambda> x. the (f x)) ` {p \<in> N. P p}, (\<lambda> x. the (f x)) ` {p \<in> N. Q p})) (accepting A)))
       }) \<in> ?R"
@@ -118,8 +118,8 @@ begin
         f \<leftarrow> op_set_enumerate N;
         ASSERT (dom f = N);
         ASSERT (f (initial A) \<noteq> None);
-        ASSERT (\<forall> a \<in> alphabet A. \<forall> p \<in> dom f. f (succ A a p) \<noteq> None);
-        T \<leftarrow> trans_algo N (alphabet A) (succ A) (\<lambda> x. the (f x));
+        ASSERT (\<forall> a \<in> alphabet A. \<forall> p \<in> dom f. f (transition A a p) \<noteq> None);
+        T \<leftarrow> trans_algo N (alphabet A) (transition A) (\<lambda> x. the (f x));
         RETURN (drae (alphabet A) ((\<lambda> x. the (f x)) (initial A)) T
           (map (\<lambda> (P, Q). ((\<lambda> x. the (f x)) ` {p \<in> N. P p}, (\<lambda> x. the (f x)) ` {p \<in> N. Q p})) (accepting A)))
       }, do {
@@ -207,12 +207,12 @@ begin
         \<langle>Id_on (alphabet A), Id_on (f ` nodes A)\<rangle> drae_rel"
         using 1 unfolding drae_rel_def dra_drae_def drae_image_def by auto
 
-      have 3: "wft (alphabet A) (nodes A) (transe (dra_drae A))"
+      have 3: "wft (alphabet A) (nodes A) (transitione (dra_drae A))"
         using wft_transitions unfolding dra_drae_def drae.sel by this
-      have 4: "(wft (alphabet A) (f ` nodes A) (transe (drae_image f (dra_drae A))),
-        wft (alphabet A) (id ` nodes A) (transe (drae_image id (dra_drae A)))) \<in> bool_rel"
+      have 4: "(wft (alphabet A) (f ` nodes A) (transitione (drae_image f (dra_drae A))),
+        wft (alphabet A) (id ` nodes A) (transitione (drae_image id (dra_drae A)))) \<in> bool_rel"
         using dra_rel_eq by parametricity auto
-      have 5: "wft (alphabet A) (f ` nodes A) (transe (drae_image f (dra_drae A)))" using 3 4 by simp
+      have 5: "wft (alphabet A) (f ` nodes A) (transitione (drae_image f (dra_drae A)))" using 3 4 by simp
 
       have "(drae_dra (draei_drae (to_draei_impl seq bhc hms Ai)), drae_dra (id (drae_image f (dra_drae A)))) \<in>
         \<langle>Id_on (alphabet A), Id_on (f ` nodes A)\<rangle> dra_rel" using 2 5 by parametricity auto

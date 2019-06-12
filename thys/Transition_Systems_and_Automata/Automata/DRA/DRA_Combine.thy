@@ -5,13 +5,13 @@ imports "DRA" "../DBA/DBA" "../DCA/DCA"
 begin
 
   definition from_dba :: "('label, 'state) dba \<Rightarrow> ('label, 'state) dra" where
-    "from_dba A \<equiv> dra (dba.alphabet A) (dba.initial A) (dba.succ A) [(dba.accepting A, bot)]"
+    "from_dba A \<equiv> dra (dba.alphabet A) (dba.initial A) (dba.transition A) [(dba.accepting A, bot)]"
 
   lemma from_dba_language[simp]: "DRA.language (from_dba A) = DBA.language A"
     unfolding DBA.language_def DRA.language_def from_dba_def DBA.run_def DRA.run_def by (auto 0 3)
 
   definition from_dca :: "('label, 'state) dca \<Rightarrow> ('label, 'state) dra" where
-    "from_dca A \<equiv> dra (dca.alphabet A) (dca.initial A) (dca.succ A) [(top, dca.rejecting A)]"
+    "from_dca A \<equiv> dra (dca.alphabet A) (dca.initial A) (dca.transition A) [(top, dca.rejecting A)]"
 
   lemma from_dca_language[simp]: "DRA.language (from_dca A) = DCA.language A"
     unfolding DCA.language_def DRA.language_def from_dca_def DCA.run_def DRA.run_def by (auto 0 3)
@@ -20,7 +20,7 @@ begin
     "dbcrai A B \<equiv> dra
       (dba.alphabet A \<inter> dca.alphabet B)
       (dba.initial A, dca.initial B)
-      (\<lambda> a (p, q). (dba.succ A a p, dca.succ B a q))
+      (\<lambda> a (p, q). (dba.transition A a p, dca.transition B a q))
       [(dba.accepting A \<circ> fst, dca.rejecting B \<circ> snd)]"
 
   lemma dbcrai_fst[iff]: "infs (P \<circ> fst) (dra.trace (dbcrai A B) w (p, q)) \<longleftrightarrow> infs P (dba.trace A w p)"
@@ -93,7 +93,7 @@ begin
     "draul AA \<equiv> dra
       (UNION (set AA) dra.alphabet)
       (map dra.initial AA)
-      (\<lambda> a pp. map2 (\<lambda> A p. dra.succ A a p) AA pp)
+      (\<lambda> a pp. map2 (\<lambda> A p. dra.transition A a p) AA pp)
       (do { k \<leftarrow> [0 ..< length AA]; (f, g) \<leftarrow> dra.accepting (AA ! k); [(f \<circ> get k, g \<circ> get k)] })"
 
   lemma draul_get:

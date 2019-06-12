@@ -14,7 +14,7 @@ begin
   abbreviation "item_rel \<equiv> nat_rel \<times>\<^sub>r bool_rel"
   abbreviation "state_rel \<equiv> \<langle>nat_rel, item_rel\<rangle> list_map_rel"
 
-  abbreviation "pred A a q \<equiv> {p. q \<in> succ A a p}"
+  abbreviation "pred A a q \<equiv> {p. q \<in> transition A a p}"
 
   subsection \<open>Phase 1\<close>
 
@@ -63,10 +63,10 @@ begin
   definition ranks_1 ::
     "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set" where
     "ranks_1 A a f \<equiv> {g.
-      dom g = \<Union>((succ A a) ` (dom f)) \<and>
-      (\<forall> p \<in> dom f. \<forall> q \<in> succ A a p. fst (the (g q)) \<le> fst (the (f p))) \<and>
+      dom g = \<Union>((transition A a) ` (dom f)) \<and>
+      (\<forall> p \<in> dom f. \<forall> q \<in> transition A a p. fst (the (g q)) \<le> fst (the (f p))) \<and>
       (\<forall> q \<in> dom g. accepting A q \<longrightarrow> even (fst (the (g q)))) \<and>
-      cs_st g = {q \<in> \<Union>((succ A a) ` (cs_st f)). even (fst (the (g q)))}}"
+      cs_st g = {q \<in> \<Union>((transition A a) ` (cs_st f)). even (fst (the (g q)))}}"
   definition complement_succ_1 ::
     "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set" where
     "complement_succ_1 A a = ranks_1 A a \<circ> refresh_1"
@@ -89,17 +89,17 @@ begin
   unfolding complement_succ_def
   proof (simp, rule)
     have 1:
-      "dom g = \<Union>((succ A a) ` (dom f))"
-      "\<forall> p \<in> dom f. \<forall> q \<in> succ A a p. fst (the (g q)) \<le> fst (the (f p))"
+      "dom g = \<Union>((transition A a) ` (dom f))"
+      "\<forall> p \<in> dom f. \<forall> q \<in> transition A a p. fst (the (g q)) \<le> fst (the (f p))"
       "\<forall> p \<in> dom g. accepting A p \<longrightarrow> even (fst (the (g p)))"
       using assms unfolding complement_succ_1_def ranks_1_def by simp_all
     show "cs_lr g \<in> lr_succ A a (cs_lr f)"
     unfolding lr_succ_def
     proof (intro CollectI conjI ballI impI)
-      show "dom (cs_lr g) = \<Union> (succ A a ` dom (cs_lr f))" using 1 by simp
+      show "dom (cs_lr g) = \<Union> (transition A a ` dom (cs_lr f))" using 1 by simp
     next
       fix p q
-      assume 2: "p \<in> dom (cs_lr f)" "q \<in> succ A a p"
+      assume 2: "p \<in> dom (cs_lr f)" "q \<in> transition A a p"
       have 3: "q \<in> dom (cs_lr g)" using 1 2 by auto
       show "the (cs_lr g q) \<le> the (cs_lr f p)" using 1 2 3 by simp
     next
@@ -107,25 +107,25 @@ begin
       assume 2: "p \<in> dom (cs_lr g)" "accepting A p"
       show "even (the (cs_lr g p))" using 1 2 by auto
     qed
-    have 2: "cs_st g = {q \<in> \<Union> (succ A a ` cs_st (refresh_1 f)). even (fst (the (g q)))}"
+    have 2: "cs_st g = {q \<in> \<Union> (transition A a ` cs_st (refresh_1 f)). even (fst (the (g q)))}"
       using assms unfolding complement_succ_1_def ranks_1_def by simp
     show "cs_st g = st_succ A a (cs_lr g) (cs_st f)"
     proof (cases "cs_st f = {}")
       case True
-      have 3: "the (cs_lr g q) = fst (the (g q))" if "q \<in> \<Union>((succ A a) ` (dom f))" for q
+      have 3: "the (cs_lr g q) = fst (the (g q))" if "q \<in> \<Union>((transition A a) ` (dom f))" for q
         using that 1(1) by simp
       show ?thesis using 2 3 unfolding st_succ_def refresh_1_cs_st True cs_lr_dom 1(1) by force
     next
       case False
-      have 3: "the (cs_lr g q) = fst (the (g q))" if "q \<in> \<Union>((succ A a) ` (cs_st f))" for q
+      have 3: "the (cs_lr g q) = fst (the (g q))" if "q \<in> \<Union>((transition A a) ` (cs_st f))" for q
         using that 1(1) by 
           (auto intro!: cs_lr_apply)
           (metis IntE UN_iff cs_abs_rep cs_lr_dom cs_rep_st domD prod.collapse)
-      have "cs_st g = {q \<in> \<Union> (succ A a ` cs_st (refresh_1 f)). even (fst (the (g q)))}"
+      have "cs_st g = {q \<in> \<Union> (transition A a ` cs_st (refresh_1 f)). even (fst (the (g q)))}"
         using 2 by this
       also have "cs_st (refresh_1 f) = cs_st f" using False by simp
-      also have "{q \<in> \<Union>((succ A a) ` (cs_st f)). even (fst (the (g q)))} =
-        {q \<in> \<Union>((succ A a) ` (cs_st f)). even (the (cs_lr g q))}" using 3 by metis
+      also have "{q \<in> \<Union>((transition A a) ` (cs_st f)). even (fst (the (g q)))} =
+        {q \<in> \<Union>((transition A a) ` (cs_st f)). even (the (cs_lr g q))}" using 3 by metis
       also have "\<dots> = st_succ A a (cs_lr g) (cs_st f)" unfolding st_succ_def using False by simp
       finally show ?thesis by this
     qed
@@ -136,36 +136,36 @@ begin
   unfolding complement_succ_1_def ranks_1_def comp_apply
   proof (intro CollectI conjI ballI impI)
     have 1:
-      "dom g = \<Union>((succ A a) ` (dom f))"
-      "\<forall> p \<in> dom f. \<forall> q \<in> succ A a p. the (g q) \<le> the (f p)"
+      "dom g = \<Union>((transition A a) ` (dom f))"
+      "\<forall> p \<in> dom f. \<forall> q \<in> transition A a p. the (g q) \<le> the (f p)"
       "\<forall> p \<in> dom g. accepting A p \<longrightarrow> even (the (g p))"
       using assms(2) unfolding complement_succ_def lr_succ_def by simp_all
-    have 2: "Q = {q \<in> if P = {} then dom g else \<Union>((succ A a) ` P). even (the (g q))}"
+    have 2: "Q = {q \<in> if P = {} then dom g else \<Union>((transition A a) ` P). even (the (g q))}"
       using assms(2) unfolding complement_succ_def st_succ_def by simp
     have 3: "Q \<subseteq> dom g" unfolding 2 1(1) using assms(1) by auto
-    show "dom (cs_rep (g, Q)) = \<Union> (succ A a ` dom (refresh_1 (cs_rep (f, P))))" using 1 by simp
-    show "\<And> p q. p \<in> dom (refresh_1 (cs_rep (f, P))) \<Longrightarrow> q \<in> succ A a p \<Longrightarrow>
+    show "dom (cs_rep (g, Q)) = \<Union> (transition A a ` dom (refresh_1 (cs_rep (f, P))))" using 1 by simp
+    show "\<And> p q. p \<in> dom (refresh_1 (cs_rep (f, P))) \<Longrightarrow> q \<in> transition A a p \<Longrightarrow>
       fst (the (cs_rep (g, Q) q)) \<le> fst (the (refresh_1 (cs_rep (f, P)) p))"
       using 1(1, 2) by (auto) (metis UN_I cs_rep_apply domI option.sel)
     show "\<And> p. p \<in> dom (cs_rep (g, Q)) \<Longrightarrow> accepting A p \<Longrightarrow> even (fst (the (cs_rep (g, Q) p)))"
       using 1(1, 3) by auto
-    show "cs_st (cs_rep (g, Q)) = {q \<in> \<Union> (succ A a ` cs_st (refresh_1 (cs_rep (f, P)))).
+    show "cs_st (cs_rep (g, Q)) = {q \<in> \<Union> (transition A a ` cs_st (refresh_1 (cs_rep (f, P)))).
       even (fst (the (cs_rep (g, Q) q)))}"
     proof (cases "P = {}")
       case True
       have "cs_st (cs_rep (g, Q)) = Q" using 3 by auto
       also have "\<dots> = {q \<in> dom g. even (the (g q))}" unfolding 2 using True by auto
       also have "\<dots> = {q \<in> dom g. even (fst (the (cs_rep (g, Q) q)))}" using cs_rep_apply by metis
-      also have "dom g = \<Union>((succ A a) ` (dom f))" using 1(1) by this
+      also have "dom g = \<Union>((transition A a) ` (dom f))" using 1(1) by this
       also have "dom f = cs_st (refresh_1 (cs_rep (f, P)))" using True by simp
       finally show ?thesis by this
     next
       case False
-      have 4: "fst (the (cs_rep (g, Q) q)) = the (g q)" if "q \<in> \<Union>((succ A a) ` P)" for q
+      have 4: "fst (the (cs_rep (g, Q) q)) = the (g q)" if "q \<in> \<Union>((transition A a) ` P)" for q
         using 1(1) that assms(1) by (fast intro: cs_rep_apply)
       have "cs_st (cs_rep (g, Q)) = Q" using 3 by auto
-      also have "\<dots> = {q \<in> \<Union>((succ A a) ` P). even (the (g q))}" unfolding 2 using False by auto
-      also have "\<dots> = {q \<in> \<Union>((succ A a) ` P). even (fst (the (cs_rep (g, Q) q)))}" using 4 by force
+      also have "\<dots> = {q \<in> \<Union>((transition A a) ` P). even (the (g q))}" unfolding 2 using False by auto
+      also have "\<dots> = {q \<in> \<Union>((transition A a) ` P). even (fst (the (cs_rep (g, Q) q)))}" using 4 by force
       also have "P = (cs_st (refresh_1 (cs_rep (f, P))))" using assms(1) False by auto
       finally show ?thesis by simp
     qed
@@ -218,7 +218,7 @@ begin
 
   definition ranks_2 :: "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set" where
     "ranks_2 A a f \<equiv> {g.
-      dom g = \<Union>((succ A a) ` (dom f)) \<and>
+      dom g = \<Union>((transition A a) ` (dom f)) \<and>
       (\<forall> q l d. g q = Some (l, d) \<longrightarrow>
         l \<le> \<Sqinter> (fst ` Some -` f ` pred A a q) \<and>
         (d \<longleftrightarrow> \<Squnion> (snd ` Some -` f ` pred A a q) \<and> even l) \<and>
@@ -240,7 +240,7 @@ begin
     proof safe
       fix g
       assume 1: "g \<in> ranks_2 A a f"
-      have 2: "dom g = \<Union>((succ A a) ` (dom f))" using 1 unfolding ranks_2_def by auto
+      have 2: "dom g = \<Union>((transition A a) ` (dom f))" using 1 unfolding ranks_2_def by auto
       have 3: "g q = Some (l, d) \<Longrightarrow> l \<le> \<Sqinter> (fst ` Some -` f ` pred A a q)" for q l d
         using 1 unfolding ranks_2_def by auto
       have 4: "g q = Some (l, d) \<Longrightarrow> d \<longleftrightarrow> \<Squnion> (snd ` Some -` f ` pred A a q) \<and> even l" for q l d
@@ -250,10 +250,10 @@ begin
       show "g \<in> ranks_1 A a f"
       unfolding ranks_1_def
       proof (intro CollectI conjI ballI impI)
-        show "dom g = \<Union>((succ A a) ` (dom f))" using 2 by this
+        show "dom g = \<Union>((transition A a) ` (dom f))" using 2 by this
       next
         fix p q
-        assume 10: "p \<in> dom f" "q \<in> succ A a p"
+        assume 10: "p \<in> dom f" "q \<in> transition A a p"
         obtain k c where 11: "f p = Some (k, c)" using 10(1) by auto
         have 12: "q \<in> dom g" using 10 2 by auto
         obtain l d where 13: "g q = Some (l, d)" using 12 by auto
@@ -271,14 +271,14 @@ begin
         assume 10: "q \<in> dom g" "accepting A q"
         show "even (fst (the (g q)))" using 10 5 by auto
       next
-        show "cs_st g = {q \<in> \<Union>((succ A a) ` (cs_st f)). even (fst (the (g q)))}"
+        show "cs_st g = {q \<in> \<Union>((transition A a) ` (cs_st f)). even (fst (the (g q)))}"
         proof
-          show "cs_st g \<subseteq> {q \<in> \<Union>((succ A a) ` (cs_st f)). even (fst (the (g q)))}"
+          show "cs_st g \<subseteq> {q \<in> \<Union>((transition A a) ` (cs_st f)). even (fst (the (g q)))}"
             using 4 unfolding cs_st_def image_def vimage_def by auto metis+
-          show "{q \<in> \<Union>((succ A a) ` (cs_st f)). even (fst (the (g q)))} \<subseteq> cs_st g"
+          show "{q \<in> \<Union>((transition A a) ` (cs_st f)). even (fst (the (g q)))} \<subseteq> cs_st g"
           proof safe
             fix p q
-            assume 10: "even (fst (the (g q)))" "p \<in> cs_st f" "q \<in> succ A a p"
+            assume 10: "even (fst (the (g q)))" "p \<in> cs_st f" "q \<in> transition A a p"
             have 12: "q \<in> dom g" using 10 2 unfolding cs_st_def by auto
             show "q \<in> cs_st g" using 10 4 12 unfolding cs_st_def image_def by force
           qed
@@ -287,17 +287,17 @@ begin
     next
       fix g
       assume 1: "g \<in> ranks_1 A a f"
-      have 2: "dom g = \<Union>((succ A a) ` (dom f))" using 1 unfolding ranks_1_def by auto
-      have 3: "\<And> p q. p \<in> dom f \<Longrightarrow> q \<in> succ A a p \<Longrightarrow> fst (the (g q)) \<le> fst (the (f p))"
+      have 2: "dom g = \<Union>((transition A a) ` (dom f))" using 1 unfolding ranks_1_def by auto
+      have 3: "\<And> p q. p \<in> dom f \<Longrightarrow> q \<in> transition A a p \<Longrightarrow> fst (the (g q)) \<le> fst (the (f p))"
         using 1 unfolding ranks_1_def by auto
       have 4: "\<And> q. q \<in> dom g \<Longrightarrow> accepting A q \<Longrightarrow> even (fst (the (g q)))"
         using 1 unfolding ranks_1_def by auto
-      have 5: "cs_st g = {q \<in> \<Union>((succ A a) ` (cs_st f)). even (fst (the (g q)))}"
+      have 5: "cs_st g = {q \<in> \<Union>((transition A a) ` (cs_st f)). even (fst (the (g q)))}"
         using 1 unfolding ranks_1_def by auto
       show "g \<in> ranks_2 A a f"
         unfolding ranks_2_def
       proof (intro CollectI conjI allI impI)
-        show "dom g = \<Union>((succ A a) ` (dom f))" using 2 by this
+        show "dom g = \<Union>((transition A a) ` (dom f))" using 2 by this
       next
         fix q l d
         assume 10: "g q = Some (l, d)"
@@ -309,8 +309,8 @@ begin
             using 3 10 by (auto) (metis domI fst_conv option.sel)
         qed
         have "d \<longleftrightarrow> q \<in> cs_st g" unfolding cs_st_def by (force simp: 10)
-        also have "cs_st g = {q \<in> \<Union>((succ A a) ` (cs_st f)). even (fst (the (g q)))}" using 5 by this
-        also have "q \<in> \<dots> \<longleftrightarrow> (\<exists> x \<in> cs_st f. q \<in> succ A a x) \<and> even l"
+        also have "cs_st g = {q \<in> \<Union>((transition A a) ` (cs_st f)). even (fst (the (g q)))}" using 5 by this
+        also have "q \<in> \<dots> \<longleftrightarrow> (\<exists> x \<in> cs_st f. q \<in> transition A a x) \<and> even l"
           unfolding mem_Collect_eq 10 by simp
         also have "\<dots> \<longleftrightarrow> \<Squnion> (snd ` Some -` f ` pred A a q) \<and> even l"
           unfolding cs_st_def image_def vimage_def by auto metis+
@@ -343,7 +343,7 @@ begin
       (complement_succ_3 A)
       (\<lambda> f. \<forall> (p, k, c) \<in> map_to_set f. \<not> c)"
 
-  lemma bounds_3_dom[simp]: "dom (bounds_3 A a f) = \<Union>((succ A a) ` (dom f))"
+  lemma bounds_3_dom[simp]: "dom (bounds_3 A a f) = \<Union>((transition A a) ` (dom f))"
     unfolding bounds_3_def Let_def dom_def by (force split: if_splits)
 
   lemma items_3_nonempty[intro!, simp]: "items_3 A p s \<noteq> {}" unfolding items_3_def by auto
@@ -365,7 +365,7 @@ begin
     have 2: "(\<forall> S. get_3 A (bounds_3 A a f) q = Some S \<longrightarrow> g q = Some (l, d) \<longrightarrow> (l, d) \<in> S) \<longleftrightarrow>
       (g q = Some (l, d) \<longrightarrow> l \<le> \<Sqinter>(fst ` (Some -` f ` pred A a q)) \<and>
       (d \<longleftrightarrow> \<Squnion>(snd ` (Some -` f ` pred A a q)) \<and> even l) \<and> (accepting A q \<longrightarrow> even l))"
-      if 3: "dom g = \<Union>((succ A a) ` (dom f))" for q l d
+      if 3: "dom g = \<Union>((transition A a) ` (dom f))" for q l d
     proof -
       have 4: "q \<notin> dom g" if "Some -` f ` pred A a q = {}" unfolding 3 using that by force
       show ?thesis unfolding get_3_def items_3_def bounds_3_def Let_def using 4 by auto
@@ -511,8 +511,8 @@ begin
       unfolding complement_3_def complement_4_def by simp
     show "\<exists> q \<in> initial (complement_4 A). (p, q) \<in> R" if "p \<in> initial (complement_3 A)" for p
       using that unfolding complement_3_def complement_4_def R_def by simp
-    show "\<exists> g' \<in> succ (complement_4 A) a g. (f', g') \<in> R"
-      if "f' \<in> succ (complement_3 A) a f" "(f, g) \<in> R"
+    show "\<exists> g' \<in> transition (complement_4 A) a g. (f', g') \<in> R"
+      if "f' \<in> transition (complement_3 A) a f" "(f, g) \<in> R"
       for a f f' g
     proof -
       have 1: "f' \<in> expand_map (get_3 A (bounds_3 A a (refresh_1 f)))"
@@ -659,9 +659,9 @@ begin
     "bounds_5 A a f \<equiv> do
     {
       ASSUME (finite (dom f));
-      ASSUME (\<forall> p. finite (succ A a p));
+      ASSUME (\<forall> p. finite (transition A a p));
       FOREACH (map_to_set f) (\<lambda> (p, s) m.
-        FOREACH (succ A a p) (\<lambda> q f.
+        FOREACH (transition A a p) (\<lambda> q f.
           RETURN (f (q \<mapsto> merge_5 s (f q))))
         m)
       Map.empty
@@ -694,13 +694,13 @@ begin
   lemma bounds_3_empty: "bounds_3 A a Map.empty = Map.empty"
     unfolding bounds_3_def Let_def by auto
   lemma bounds_3_update: "bounds_3 A a (f (p \<mapsto> s)) =
-    override_on (bounds_3 A a f) (Some \<circ> merge_5 s \<circ> bounds_3 A a (f (p := None))) (succ A a p)"
+    override_on (bounds_3 A a f) (Some \<circ> merge_5 s \<circ> bounds_3 A a (f (p := None))) (transition A a p)"
   proof
     note fun_upd_image[simp]
     fix q
     show "bounds_3 A a (f (p \<mapsto> s)) q =
-      override_on (bounds_3 A a f) (Some \<circ> merge_5 s \<circ> bounds_3 A a (f (p := None))) (succ A a p) q"
-    proof (cases "q \<in> succ A a p")
+      override_on (bounds_3 A a f) (Some \<circ> merge_5 s \<circ> bounds_3 A a (f (p := None))) (transition A a p) q"
+    proof (cases "q \<in> transition A a p")
       case True
       define S where "S \<equiv> Some -` f ` (pred A a q - {p})"
       have 1: "Some -` f (p := Some s) ` pred A a q = insert s S" using True unfolding S_def by auto
@@ -710,7 +710,7 @@ begin
       also have "\<dots> = Some (merge_5 s (bounds_3 A a (f (p := None)) q))"
         unfolding 2 bounds_3_def merge_5_def by (cases s) (simp_all add: cInf_insert)
       also have "\<dots> = override_on (bounds_3 A a f) (Some \<circ> merge_5 s \<circ> bounds_3 A a (f (p := None)))
-        (succ A a p) q" using True by simp
+        (transition A a p) q" using True by simp
       finally show ?thesis by this
     next
       case False
@@ -798,15 +798,15 @@ begin
   context
     fixes A :: "('label, nat) nba"
     fixes succi a fi f
-    assumes succi[autoref_rules]: "(succi, succ A a) \<in> nat_rel \<rightarrow> \<langle>nat_rel\<rangle> list_set_rel"
+    assumes succi[autoref_rules]: "(succi, transition A a) \<in> nat_rel \<rightarrow> \<langle>nat_rel\<rangle> list_set_rel"
     assumes fi[autoref_rules]: "(fi, f) \<in> state_rel"
   begin
 
-    private lemma [simp]: "finite (succ A a p)"
+    private lemma [simp]: "finite (transition A a p)"
       using list_set_rel_finite succi[param_fo] unfolding finite_set_rel_def by blast
     private lemma [simp]: "finite (dom f)" using fi by force
 
-    private lemma [autoref_op_pat]: "succ A a \<equiv> OP (succ A a)" by simp
+    private lemma [autoref_op_pat]: "transition A a \<equiv> OP (transition A a)" by simp
 
     private lemma [autoref_rules]: "(min, min) \<in> nat_rel \<rightarrow> nat_rel \<rightarrow> nat_rel" by simp
 
@@ -819,7 +819,7 @@ begin
 
   concrete_definition bounds_7 uses bounds_7
 
-  lemma bounds_7_refine: "(si, succ A a) \<in> nat_rel \<rightarrow> \<langle>nat_rel\<rangle> list_set_rel \<Longrightarrow>
+  lemma bounds_7_refine: "(si, transition A a) \<in> nat_rel \<rightarrow> \<langle>nat_rel\<rangle> list_set_rel \<Longrightarrow>
     (\<lambda> p. RETURN (bounds_7 si p), bounds_5 A a) \<in>
     state_rel \<rightarrow> \<langle>\<langle>nat_rel, item_rel\<rangle> dflt_ahm_rel\<rangle> nres_rel"
     using bounds_7.refine by auto

@@ -9,11 +9,11 @@ begin
   datatype ('label, 'state) dgca = dgca
     (alphabet: "'label set")
     (initial: "'state")
-    (succ: "'label \<Rightarrow> 'state \<Rightarrow> 'state")
+    (transition: "'label \<Rightarrow> 'state \<Rightarrow> 'state")
     (rejecting: "'state pred gen")
 
   global_interpretation dgca: transition_system_initial
-    "succ A" "\<lambda> a p. a \<in> alphabet A" "\<lambda> p. p = initial A"
+    "transition A" "\<lambda> a p. a \<in> alphabet A" "\<lambda> p. p = initial A"
     for A
     defines path = dgca.path and run = dgca.run and reachable = dgca.reachable and nodes = dgca.nodes and
       enableds = dgca.enableds and paths = dgca.paths and runs = dgca.runs
@@ -60,13 +60,13 @@ begin
     "dgcad A \<equiv> dca
       (alphabet A)
       (initial A, 0)
-      (\<lambda> a (p, k). (succ A a p, count (rejecting A) p k))
+      (\<lambda> a (p, k). (transition A a p, count (rejecting A) p k))
       (degen (rejecting A))"
 
   lemma dgcad_simps[simp]:
     "dca.alphabet (dgcad A) = alphabet A"
     "dca.initial (dgcad A) = (initial A, 0)"
-    "dca.succ (dgcad A) a (p, k) = (succ A a p, count (rejecting A) p k)"
+    "dca.transition (dgcad A) a (p, k) = (transition A a p, count (rejecting A) p k)"
     "dca.rejecting (dgcad A) = degen (rejecting A)"
     unfolding dgcad_def by auto
 
@@ -93,7 +93,7 @@ begin
     assumes "rejecting A = []"
     shows "snd ` DCA.nodes (dgcad A) \<subseteq> {0}"
   proof -
-    have 2: "snd (dca.succ (dgcad A) a (p, k)) = 0" for a p k using assms by auto
+    have 2: "snd (dca.transition (dgcad A) a (p, k)) = 0" for a p k using assms by auto
     show ?thesis using 2 by (auto elim: dca.nodes.cases)
   qed
   lemma dgcad_nodes_snd_nonempty:
@@ -102,7 +102,7 @@ begin
   proof -
     have 1: "snd (dca.initial (dgcad A)) < length (rejecting A)"
       using assms by simp
-    have 2: "snd (dca.succ (dgcad A) a (p, k)) < length (rejecting A)" for a p k
+    have 2: "snd (dca.transition (dgcad A) a (p, k)) < length (rejecting A)" for a p k
       using assms by auto
     show ?thesis using 1 2 by (auto elim: dca.nodes.cases)
   qed

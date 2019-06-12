@@ -9,11 +9,11 @@ begin
   datatype ('label, 'state) dgba = dgba
     (alphabet: "'label set")
     (initial: "'state")
-    (succ: "'label \<Rightarrow> 'state \<Rightarrow> 'state")
+    (transition: "'label \<Rightarrow> 'state \<Rightarrow> 'state")
     (accepting: "'state pred gen")
 
   global_interpretation dgba: transition_system_initial
-    "succ A" "\<lambda> a p. a \<in> alphabet A" "\<lambda> p. p = initial A"
+    "transition A" "\<lambda> a p. a \<in> alphabet A" "\<lambda> p. p = initial A"
     for A
     defines path = dgba.path and run = dgba.run and reachable = dgba.reachable and nodes = dgba.nodes and
       enableds = dgba.enableds and paths = dgba.paths and runs = dgba.runs
@@ -60,13 +60,13 @@ begin
     "dgbad A \<equiv> dba
       (alphabet A)
       (initial A, 0)
-      (\<lambda> a (p, k). (succ A a p, count (accepting A) p k))
+      (\<lambda> a (p, k). (transition A a p, count (accepting A) p k))
       (degen (accepting A))"
 
   lemma dgbad_simps[simp]:
     "dba.alphabet (dgbad A) = alphabet A"
     "dba.initial (dgbad A) = (initial A, 0)"
-    "dba.succ (dgbad A) a (p, k) = (succ A a p, count (accepting A) p k)"
+    "dba.transition (dgbad A) a (p, k) = (transition A a p, count (accepting A) p k)"
     "dba.accepting (dgbad A) = degen (accepting A)"
     unfolding dgbad_def by auto
 
@@ -93,7 +93,7 @@ begin
     assumes "accepting A = []"
     shows "snd ` DBA.nodes (dgbad A) \<subseteq> {0}"
   proof -
-    have 2: "snd (dba.succ (dgbad A) a (p, k)) = 0" for a p k using assms by auto
+    have 2: "snd (dba.transition (dgbad A) a (p, k)) = 0" for a p k using assms by auto
     show ?thesis using 2 by (auto elim: dba.nodes.cases)
   qed
   lemma dgbad_nodes_snd_nonempty:
@@ -102,7 +102,7 @@ begin
   proof -
     have 1: "snd (dba.initial (dgbad A)) < length (accepting A)"
       using assms by simp
-    have 2: "snd (dba.succ (dgbad A) a (p, k)) < length (accepting A)" for a p k
+    have 2: "snd (dba.transition (dgbad A) a (p, k)) < length (accepting A)" for a p k
       using assms by auto
     show ?thesis using 1 2 by (auto elim: dba.nodes.cases)
   qed

@@ -14,7 +14,7 @@ begin
   section \<open>Image on Explicit Automata\<close>
 
   definition nbae_image where "nbae_image f A \<equiv> nbae (alphabete A) (f ` initiale A)
-    ((\<lambda> (p, a, q). (f p, a, f q)) ` transe A) (f ` acceptinge A)"
+    ((\<lambda> (p, a, q). (f p, a, f q)) ` transitione A) (f ` acceptinge A)"
 
   lemma nbae_image_param[param]: "(nbae_image, nbae_image) \<in> (S \<rightarrow> T) \<rightarrow> \<langle>L, S\<rangle> nbae_rel \<rightarrow> \<langle>L, T\<rangle> nbae_rel"
     unfolding nbae_image_def by parametricity
@@ -22,14 +22,14 @@ begin
   lemma nbae_image_id[simp]: "nbae_image id = id" unfolding nbae_image_def by auto
   lemma nbae_image_nba_nbae: "nbae_image f (nba_nbae A) = nbae
     (alphabet A) (f ` initial A)
-    (\<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)
+    (\<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` transition A a p)
     (f ` {p \<in> nodes A. accepting A p})"
     unfolding nba_nbae_def nbae_image_def nbae.simps Set.filter_def by force
 
   section \<open>Exploration and Translation\<close>
 
   definition trans_spec where
-    "trans_spec A f \<equiv> \<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p"
+    "trans_spec A f \<equiv> \<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` transition A a p"
 
   definition trans_algo where
     "trans_algo N L S f \<equiv>
@@ -47,50 +47,50 @@ begin
 
   lemma trans_algo_refine:
     assumes "finite (nodes A)" "finite (alphabet A)" "inj_on f (nodes A)"
-    assumes "N = nodes A" "L = alphabet A" "S = succ A"
+    assumes "N = nodes A" "L = alphabet A" "S = transition A"
     shows "(trans_algo N L S f, SPEC (HOL.eq (trans_spec A f))) \<in> \<langle>Id\<rangle> nres_rel"
   unfolding trans_algo_def trans_spec_def assms(4-6)
   proof (refine_vcg FOREACH_rule_insert_eq)
     show "finite (nodes A)" using assms(1) by this
-    show "(\<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p) =
-      (\<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)" by rule
-    show "(\<Union> p \<in> {}. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p) = {}" by simp
+    show "(\<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` transition A a p) =
+      (\<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` transition A a p)" by rule
+    show "(\<Union> p \<in> {}. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` transition A a p) = {}" by simp
     fix T x
     assume 1: "T \<subseteq> nodes A" "x \<in> nodes A" "x \<notin> T"
     show "finite (alphabet A)" using assms(2) by this
-    show "(\<Union> a \<in> {}. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
-      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p) =
-      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)"
-      "(\<Union> a \<in> alphabet A. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
-      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p) =
-      (\<Union> p \<in> insert x T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)" by auto
+    show "(\<Union> a \<in> {}. f ` {x} \<times> {a} \<times> f ` transition A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` transition A a p) =
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` transition A a p)"
+      "(\<Union> a \<in> alphabet A. f ` {x} \<times> {a} \<times> f ` transition A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` transition A a p) =
+      (\<Union> p \<in> insert x T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` transition A a p)" by auto
     fix Ta xa
     assume 2: "Ta \<subseteq> alphabet A" "xa \<in> alphabet A" "xa \<notin> Ta"
-    show "finite (succ A xa x)" using 1 2 assms(1) by (meson infinite_subset nodes_succ subsetI)
-    show "(f ` {x} \<times> {xa} \<times> f ` succ A xa x) \<union>
-      (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
-      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p) =
-      (\<Union> a \<in> insert xa Ta. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
-      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)"
+    show "finite (transition A xa x)" using 1 2 assms(1) by (meson infinite_subset nodes_succ subsetI)
+    show "(f ` {x} \<times> {xa} \<times> f ` transition A xa x) \<union>
+      (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` transition A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` transition A a p) =
+      (\<Union> a \<in> insert xa Ta. f ` {x} \<times> {a} \<times> f ` transition A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` transition A a p)"
       by auto
     show "(f ` {x} \<times> {xa} \<times> f ` {}) \<union>
-      (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
-      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p) =
-      (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
-      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)"
+      (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` transition A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` transition A a p) =
+      (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` transition A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` transition A a p)"
       by auto
     fix Tb xb
-    assume 3: "Tb \<subseteq> succ A xa x" "xb \<in> succ A xa x" "xb \<notin> Tb"
+    assume 3: "Tb \<subseteq> transition A xa x" "xb \<in> transition A xa x" "xb \<notin> Tb"
     show "(f x, xa, f xb) \<notin> f ` {x} \<times> {xa} \<times> f ` Tb \<union>
-      (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
-      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p)"
+      (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` transition A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` transition A a p)"
       using 1 2 3 assms(3) by (blast dest: inj_onD)
     show "f ` {x} \<times> {xa} \<times> f ` insert xb Tb \<union>
-      (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
-      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p) =
+      (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` transition A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` transition A a p) =
       insert (f x, xa, f xb) (f ` {x} \<times> {xa} \<times> f ` Tb \<union>
-      (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` succ A a x) \<union>
-      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` succ A a p))"
+      (\<Union> a \<in> Ta. f ` {x} \<times> {a} \<times> f ` transition A a x) \<union>
+      (\<Union> p \<in> T. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` transition A a p))"
       by auto
   qed
 
@@ -110,8 +110,8 @@ begin
         f \<leftarrow> op_set_enumerate N;
         ASSERT (dom f = N);
         ASSERT (\<forall> p \<in> initial A. f p \<noteq> None);
-        ASSERT (\<forall> a \<in> alphabet A. \<forall> p \<in> dom f. \<forall> q \<in> succ A a p. f q \<noteq> None);
-        T \<leftarrow> trans_algo N (alphabet A) (succ A) (\<lambda> x. the (f x));
+        ASSERT (\<forall> a \<in> alphabet A. \<forall> p \<in> dom f. \<forall> q \<in> transition A a p. f q \<noteq> None);
+        T \<leftarrow> trans_algo N (alphabet A) (transition A) (\<lambda> x. the (f x));
         RETURN (nbae (alphabet A) ((\<lambda> x. the (f x)) ` initial A) T
           ((\<lambda> x. the (f x)) ` {p \<in> N. accepting A p}))
       }) \<in> ?R"
@@ -138,8 +138,8 @@ begin
         f \<leftarrow> op_set_enumerate N;
         ASSERT (dom f = N);
         ASSERT (\<forall> p \<in> initial A. f p \<noteq> None);
-        ASSERT (\<forall> a \<in> alphabet A. \<forall> p \<in> dom f. \<forall> q \<in> succ A a p. f q \<noteq> None);
-        T \<leftarrow> trans_algo N (alphabet A) (succ A) (\<lambda> x. the (f x));
+        ASSERT (\<forall> a \<in> alphabet A. \<forall> p \<in> dom f. \<forall> q \<in> transition A a p. f q \<noteq> None);
+        T \<leftarrow> trans_algo N (alphabet A) (transition A) (\<lambda> x. the (f x));
         RETURN (nbae (alphabet A) ((\<lambda> x. the (f x)) ` initial A) T ((\<lambda> x. the (f x)) ` {p \<in> N. accepting A p}))
       }, do {
         f \<leftarrow> op_set_enumerate (nodes A);

@@ -8,7 +8,7 @@ begin
     "dbgail AA \<equiv> dgba
       (INTER (set AA) dba.alphabet)
       (map dba.initial AA)
-      (\<lambda> a pp. map2 (\<lambda> A p. dba.succ A a p) AA pp)
+      (\<lambda> a pp. map2 (\<lambda> A p. dba.transition A a p) AA pp)
       (map (\<lambda> k pp. dba.accepting (AA ! k) (pp ! k)) [0 ..< length AA])"
 
   lemma dbgail_trace_smap:
@@ -128,7 +128,7 @@ begin
     "dbau A B \<equiv> dba
       (dba.alphabet A \<union> dba.alphabet B)
       (dba.initial A, dba.initial B)
-      (\<lambda> a (p, q). (dba.succ A a p, dba.succ B a q))
+      (\<lambda> a (p, q). (dba.transition A a p, dba.transition B a q))
       (\<lambda> (p, q). dba.accepting A p \<or> dba.accepting B q)"
 
   (* TODO: can these be extracted as more general theorems about sscan? *)
@@ -205,7 +205,7 @@ begin
     "dbaul AA \<equiv> dba
       (UNION (set AA) dba.alphabet)
       (map dba.initial AA)
-      (\<lambda> a pp. map2 (\<lambda> A p. dba.succ A a p) AA pp)
+      (\<lambda> a pp. map2 (\<lambda> A p. dba.transition A a p) AA pp)
       (\<lambda> pp. \<exists> k < length AA. dba.accepting (AA ! k) (pp ! k))"
 
   lemma dbaul_trace_smap:

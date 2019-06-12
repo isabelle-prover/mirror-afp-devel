@@ -9,7 +9,7 @@ begin
     "dcai A B \<equiv> dca
       (dca.alphabet A \<inter> dca.alphabet B)
       (dca.initial A, dca.initial B)
-      (\<lambda> a (p, q). (dca.succ A a p, dca.succ B a q))
+      (\<lambda> a (p, q). (dca.transition A a p, dca.transition B a q))
       (\<lambda> (p, q). dca.rejecting A p \<or> dca.rejecting B q)"
 
   lemma dcai_fst[iff]: "infs (P \<circ> fst) (dca.trace (dcai A B) w (p, q)) \<longleftrightarrow> infs P (dca.trace A w p)"
@@ -77,7 +77,7 @@ begin
     "dcail AA \<equiv> dca
       (INTER (set AA) dca.alphabet)
       (map dca.initial AA)
-      (\<lambda> a pp. map2 (\<lambda> A p. dca.succ A a p) AA pp)
+      (\<lambda> a pp. map2 (\<lambda> A p. dca.transition A a p) AA pp)
       (\<lambda> pp. \<exists> k < length AA. dca.rejecting (AA ! k) (pp ! k))"
 
   lemma dcail_trace_smap:
@@ -173,7 +173,7 @@ begin
     "dcgaul AA \<equiv> dgca
       (UNION (set AA) dca.alphabet)
       (map dca.initial AA)
-      (\<lambda> a pp. map2 (\<lambda> A p. dca.succ A a p) AA pp)
+      (\<lambda> a pp. map2 (\<lambda> A p. dca.transition A a p) AA pp)
       (map (\<lambda> k pp. dca.rejecting (AA ! k) (pp ! k)) [0 ..< length AA])"
 
   lemma dcgaul_trace_smap:

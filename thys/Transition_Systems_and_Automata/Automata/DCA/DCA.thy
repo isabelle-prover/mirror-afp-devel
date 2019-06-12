@@ -12,11 +12,11 @@ begin
   datatype ('label, 'state) dca = dca
     (alphabet: "'label set")
     (initial: "'state")
-    (succ: "'label \<Rightarrow> 'state \<Rightarrow> 'state")
+    (transition: "'label \<Rightarrow> 'state \<Rightarrow> 'state")
     (rejecting: "'state \<Rightarrow> bool")
 
   global_interpretation dca: transition_system_initial
-    "succ A" "\<lambda> a p. a \<in> alphabet A" "\<lambda> p. p = initial A"
+    "transition A" "\<lambda> a p. a \<in> alphabet A" "\<lambda> p. p = initial A"
     for A
     defines path = dca.path and run = dca.run and reachable = dca.reachable and nodes = dca.nodes and
       enableds = dca.enableds and paths = dca.paths and runs = dca.runs

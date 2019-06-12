@@ -161,7 +161,7 @@ proof -
     by (meson af_prefix_true le_SucI order_refl)
 
   also have "\<dots> \<longleftrightarrow> infs (\<lambda>\<psi>. \<psi> = \<up>true\<^sub>n) (DBA.trace (\<AA>\<^sub>\<mu> \<phi>) (to_stream w) (Abs \<phi>))"
-    by (simp add: infs_snth \<AA>\<^sub>\<mu>_def DBA.succ_def af_lifted_semantics Abs_eq[symmetric] af_letter_lifted_semantics)
+    by (simp add: infs_snth \<AA>\<^sub>\<mu>_def DBA.transition_def af_lifted_semantics Abs_eq[symmetric] af_letter_lifted_semantics)
 
   also have "\<dots> \<longleftrightarrow> to_stream w \<in> DBA.language (\<AA>\<^sub>\<mu> \<phi>)"
     unfolding \<AA>\<^sub>\<mu>_def dba.initial_def dba.accepting_def
@@ -187,7 +187,7 @@ proof -
     by (metis less_Suc_eq_le less_imp_Suc_add)
 
   also have "\<dots> \<longleftrightarrow> infs (\<lambda>\<psi>. \<psi> = \<up>true\<^sub>n) (DBA.trace (\<AA>\<^sub>\<mu>_GF \<phi>) (to_stream w) (Abs (F\<^sub>n \<phi>)))"
-    by (simp add: infs_snth \<AA>\<^sub>\<mu>_GF_def DBA.succ_def af\<^sub>F_lifted_semantics Abs_eq[symmetric] af_letter\<^sub>F_lifted_semantics)
+    by (simp add: infs_snth \<AA>\<^sub>\<mu>_GF_def DBA.transition_def af\<^sub>F_lifted_semantics Abs_eq[symmetric] af_letter\<^sub>F_lifted_semantics)
 
   also have "\<dots> \<longleftrightarrow> to_stream w \<in> DBA.language (\<AA>\<^sub>\<mu>_GF \<phi>)"
     unfolding \<AA>\<^sub>\<mu>_GF_def dba.initial_def dba.accepting_def
@@ -209,7 +209,7 @@ proof -
     by (meson af_prefix_false le_SucI order_refl)
 
   also have "\<dots> \<longleftrightarrow> fins (\<lambda>\<psi>. \<psi> = \<up>false\<^sub>n) (DCA.trace (\<AA>\<^sub>\<nu> \<phi>) (to_stream w) (Abs \<phi>))"
-    by (simp add: infs_snth \<AA>\<^sub>\<nu>_def DBA.succ_def af_lifted_semantics Abs_eq[symmetric] af_letter_lifted_semantics)
+    by (simp add: infs_snth \<AA>\<^sub>\<nu>_def DBA.transition_def af_lifted_semantics Abs_eq[symmetric] af_letter_lifted_semantics)
 
   also have "\<dots> \<longleftrightarrow> to_stream w \<in> DCA.language (\<AA>\<^sub>\<nu> \<phi>)"
     unfolding \<AA>\<^sub>\<nu>_def dca.initial_def dca.rejecting_def
@@ -235,7 +235,7 @@ proof -
     by (metis less_Suc_eq_le less_imp_Suc_add)
 
   also have "\<dots> \<longleftrightarrow> fins (\<lambda>\<psi>. \<psi> = \<up>false\<^sub>n) (DCA.trace (\<AA>\<^sub>\<nu>_FG \<phi>) (to_stream w) (Abs (G\<^sub>n \<phi>)))"
-    by (simp add: infs_snth \<AA>\<^sub>\<nu>_FG_def DBA.succ_def af\<^sub>G_lifted_semantics Abs_eq[symmetric] af_letter\<^sub>G_lifted_semantics)
+    by (simp add: infs_snth \<AA>\<^sub>\<nu>_FG_def DBA.transition_def af\<^sub>G_lifted_semantics Abs_eq[symmetric] af_letter\<^sub>G_lifted_semantics)
 
   also have "\<dots> \<longleftrightarrow> to_stream w \<in> DCA.language (\<AA>\<^sub>\<nu>_FG \<phi>)"
     unfolding \<AA>\<^sub>\<nu>_FG_def dca.initial_def dca.rejecting_def
@@ -282,7 +282,7 @@ proof -
     using af\<^sub>\<nu>_semantics_ltr af\<^sub>\<nu>_semantics_rtl by blast
 
   also have "\<dots> \<longleftrightarrow> fins (\<lambda>p. snd p = \<up>false\<^sub>n) (DCA.trace (\<CC> \<phi> X) (to_stream w) (Abs \<phi>, Abs (\<phi>[X]\<^sub>\<nu>)))"
-    by(simp add: infs_snth \<CC>_def DCA.succ_def af\<^sub>\<nu>_lifted_semantics af_letter\<^sub>\<nu>_lifted_semantics Abs_eq)
+    by(simp add: infs_snth \<CC>_def DCA.transition_def af\<^sub>\<nu>_lifted_semantics af_letter\<^sub>\<nu>_lifted_semantics Abs_eq)
 
   also have "\<dots> \<longleftrightarrow> to_stream w \<in> DCA.language (\<CC> \<phi> X)"
     by (simp add: \<CC>_def dca.initial_def dca.rejecting_def DCA.language_def dca_run)
@@ -391,7 +391,7 @@ subsection \<open>Setting the Alphabet of a DRA\<close>
 
 definition dra_set_alphabet :: "('a set, 'b) dra \<Rightarrow> 'a set set \<Rightarrow> ('a set, 'b) dra"
 where
-  "dra_set_alphabet \<AA> \<Sigma> = dra \<Sigma> (initial \<AA>) (succ \<AA>) (accepting \<AA>)"
+  "dra_set_alphabet \<AA> \<Sigma> = dra \<Sigma> (initial \<AA>) (transition \<AA>) (accepting \<AA>)"
 
 lemma dra_set_alphabet_language:
   "\<Sigma> \<subseteq> alphabet \<AA> \<Longrightarrow> language (dra_set_alphabet \<AA> \<Sigma>) = language \<AA> \<inter> {s. sset s \<subseteq> \<Sigma>}"

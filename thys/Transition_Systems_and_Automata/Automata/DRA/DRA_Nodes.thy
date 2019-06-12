@@ -25,7 +25,7 @@ begin
     interpretation autoref_syn by this
 
     lemma dra_G_ahs: "dra_G A = \<lparr> g_V = UNIV, g_E = E_of_succ (\<lambda> p. CAST
-      ((\<lambda> a. succ A a p ::: S) ` alphabet A ::: \<langle>S\<rangle> ahs_rel bhc)), g_V0 = {initial A} \<rparr>"
+      ((\<lambda> a. transition A a p ::: S) ` alphabet A ::: \<langle>S\<rangle> ahs_rel bhc)), g_V0 = {initial A} \<rparr>"
       unfolding dra_G_def CAST_def id_apply E_of_succ_def autoref_tag_defs by auto
 
     schematic_goal drai_Gi:

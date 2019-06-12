@@ -11,7 +11,7 @@ begin
     [to_relAPP]: "nba_rel L S \<equiv> {(A\<^sub>1, A\<^sub>2).
       (alphabet A\<^sub>1, alphabet A\<^sub>2) \<in> \<langle>L\<rangle> set_rel \<and>
       (initial A\<^sub>1, initial A\<^sub>2) \<in> \<langle>S\<rangle> set_rel \<and>
-      (succ A\<^sub>1, succ A\<^sub>2) \<in> L \<rightarrow> S \<rightarrow> \<langle>S\<rangle> set_rel \<and>
+      (transition A\<^sub>1, transition A\<^sub>2) \<in> L \<rightarrow> S \<rightarrow> \<langle>S\<rangle> set_rel \<and>
       (accepting A\<^sub>1, accepting A\<^sub>2) \<in> S \<rightarrow> bool_rel}"
 
   lemma nba_param[param]:
@@ -19,7 +19,7 @@ begin
       \<langle>L, S\<rangle> nba_rel"
     "(alphabet, alphabet) \<in> \<langle>L, S\<rangle> nba_rel \<rightarrow> \<langle>L\<rangle> set_rel"
     "(initial, initial) \<in> \<langle>L, S\<rangle> nba_rel \<rightarrow> \<langle>S\<rangle> set_rel"
-    "(succ, succ) \<in> \<langle>L, S\<rangle> nba_rel \<rightarrow> L \<rightarrow> S \<rightarrow> \<langle>S\<rangle> set_rel"
+    "(transition, transition) \<in> \<langle>L, S\<rangle> nba_rel \<rightarrow> L \<rightarrow> S \<rightarrow> \<langle>S\<rangle> set_rel"
     "(accepting, accepting) \<in> \<langle>L, S\<rangle> nba_rel \<rightarrow> S \<rightarrow> bool_rel"
     unfolding nba_rel_def fun_rel_def by auto
 
@@ -31,9 +31,9 @@ begin
     have "(accepting A, accepting B) \<in> S\<^sub>1 \<rightarrow> bool_rel" by parametricity
     also have "(accepting B, accepting C) \<in> S\<^sub>2 \<rightarrow> bool_rel" by parametricity
     finally have 1: "(accepting A, accepting C) \<in> S\<^sub>1 O S\<^sub>2 \<rightarrow> bool_rel" by simp
-    have "(succ A, succ B) \<in> L\<^sub>1 \<rightarrow> S\<^sub>1 \<rightarrow> \<langle>S\<^sub>1\<rangle> set_rel" by parametricity
-    also have "(succ B, succ C) \<in> L\<^sub>2 \<rightarrow> S\<^sub>2 \<rightarrow> \<langle>S\<^sub>2\<rangle> set_rel" by parametricity
-    finally have 2: "(succ A, succ C) \<in> L\<^sub>1 O L\<^sub>2 \<rightarrow> S\<^sub>1 O S\<^sub>2 \<rightarrow> \<langle>S\<^sub>1\<rangle> set_rel O \<langle>S\<^sub>2\<rangle> set_rel" by simp
+    have "(transition A, transition B) \<in> L\<^sub>1 \<rightarrow> S\<^sub>1 \<rightarrow> \<langle>S\<^sub>1\<rangle> set_rel" by parametricity
+    also have "(transition B, transition C) \<in> L\<^sub>2 \<rightarrow> S\<^sub>2 \<rightarrow> \<langle>S\<^sub>2\<rangle> set_rel" by parametricity
+    finally have 2: "(transition A, transition C) \<in> L\<^sub>1 O L\<^sub>2 \<rightarrow> S\<^sub>1 O S\<^sub>2 \<rightarrow> \<langle>S\<^sub>1\<rangle> set_rel O \<langle>S\<^sub>2\<rangle> set_rel" by simp
     show ?thesis
       unfolding nba_rel_def mem_Collect_eq prod.case set_rel_compp
       using 1 2

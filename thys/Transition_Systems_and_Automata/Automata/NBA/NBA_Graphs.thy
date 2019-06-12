@@ -35,7 +35,7 @@ begin
     using that
     proof induct
       case (base y)
-      obtain a where 1: "a \<in> alphabet A" "y \<in> succ A a x" using base by auto
+      obtain a where 1: "a \<in> alphabet A" "y \<in> transition A a x" using base by auto
       show ?case
       proof (intro exI conjI)
         show "(x, y) = (x, target [(a, y)] x)" by simp
@@ -45,7 +45,7 @@ begin
     next
       case (step y z)
       obtain r where 1: "y = target r x" "NBA.path A r x" "r \<noteq> []" using step(3) by auto
-      obtain a where 2: "a \<in> alphabet A" "z \<in> succ A a y" using step(2) by auto
+      obtain a where 2: "a \<in> alphabet A" "z \<in> transition A a y" using step(2) by auto
       show ?case
       proof (intro exI conjI)
         show "(x, z) = (x, target (r @ [(a, z)]) x)" by simp
@@ -62,11 +62,11 @@ begin
     obtains w
     where "run A (w ||| smap (r \<circ> Suc) nats) (r 0)"
   proof -
-    have 1: "\<exists> a \<in> alphabet A. r (Suc i) \<in> succ A a (r i)" for i
+    have 1: "\<exists> a \<in> alphabet A. r (Suc i) \<in> transition A a (r i)" for i
       using assms unfolding ipath_def nba_g_def E_of_succ_def by auto
     obtain wr where 2: "run A wr (r 0)" "\<And> i. target (stake i wr) (r 0) = r i"
     proof (rule nba.invariant_run_index)
-      show "\<exists> aq. (fst aq \<in> alphabet A \<and> snd aq \<in> succ A (fst aq) p) \<and> snd aq = r (Suc i) \<and> True"
+      show "\<exists> aq. (fst aq \<in> alphabet A \<and> snd aq \<in> transition A (fst aq) p) \<and> snd aq = r (Suc i) \<and> True"
         if "p = r i" for i p using that 1 by auto
       show "r 0 = r 0" by rule
     qed auto
@@ -89,7 +89,7 @@ begin
     shows "ipath (g_E (nba_g A)) (snth (p ## r))"
   proof
     fix i
-    have 1: "w !! i \<in> alphabet A" "r !! i \<in> succ A (w !! i) (target (stake i (w ||| r)) p)"
+    have 1: "w !! i \<in> alphabet A" "r !! i \<in> transition A (w !! i) (target (stake i (w ||| r)) p)"
       using assms by (auto dest: nba.run_snth)
     have 2: "r !! i \<in> successors A ((p ## r) !! i)"
       using 1 unfolding sscan_scons_snth[symmetric] trace_alt_def by auto

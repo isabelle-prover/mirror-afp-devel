@@ -12,11 +12,11 @@ begin
   datatype ('label, 'state) dra = dra
     (alphabet: "'label set")
     (initial: "'state")
-    (succ: "'label \<Rightarrow> 'state \<Rightarrow> 'state")
+    (transition: "'label \<Rightarrow> 'state \<Rightarrow> 'state")
     (accepting: "'state rabin gen")
 
   global_interpretation dra: transition_system_initial
-    "succ A" "\<lambda> a p. a \<in> alphabet A" "\<lambda> p. p = initial A"
+    "transition A" "\<lambda> a p. a \<in> alphabet A" "\<lambda> p. p = initial A"
     for A
     defines path = dra.path and run = dra.run and reachable = dra.reachable and nodes = dra.nodes and
       enableds = dra.enableds and paths = dra.paths and runs = dra.runs

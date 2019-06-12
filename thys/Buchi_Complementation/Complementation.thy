@@ -12,14 +12,14 @@ begin
 
   definition lr_succ :: "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state lr \<Rightarrow> 'state lr set" where
     "lr_succ A a f \<equiv> {g.
-      dom g = \<Union>((succ A a) ` (dom f)) \<and>
-      (\<forall> p \<in> dom f. \<forall> q \<in> succ A a p. the (g q) \<le> the (f p)) \<and>
+      dom g = \<Union> (transition A a ` dom f) \<and>
+      (\<forall> p \<in> dom f. \<forall> q \<in> transition A a p. the (g q) \<le> the (f p)) \<and>
       (\<forall> q \<in> dom g. accepting A q \<longrightarrow> even (the (g q)))}"
 
   type_synonym 'state st = "'state set"
 
   definition st_succ :: "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state lr \<Rightarrow> 'state st \<Rightarrow> 'state st" where
-    "st_succ A a g P \<equiv> {q \<in> if P = {} then dom g else \<Union>((succ A a) ` P). even (the (g q))}"
+    "st_succ A a g P \<equiv> {q \<in> if P = {} then dom g else \<Union> (transition A a ` P). even (the (g q))}"
 
   type_synonym 'state cs = "'state lr \<times> 'state st"
 
@@ -50,11 +50,11 @@ begin
     obtain f P where 1: "fP = (f, P)" by force
     have 2: "ran f \<subseteq> {0 .. 2 * card (nodes A)}" using execute(2) unfolding 1 by auto
     obtain a g Q where 3: "agQ = (a, (g, Q))" using prod_cases3 by this
-    have 4: "p \<in> dom f \<Longrightarrow> q \<in> succ A a p \<Longrightarrow> the (g q) \<le> the (f p)" for p q
+    have 4: "p \<in> dom f \<Longrightarrow> q \<in> transition A a p \<Longrightarrow> the (g q) \<le> the (f p)" for p q
       using execute(3)
       unfolding 1 3 complement_def nba.simps complement_succ_def lr_succ_def
       by simp
-    have 8: "dom g = \<Union>((succ A a) ` (dom f))"
+    have 8: "dom g = \<Union>((transition A a) ` (dom f))"
       using execute(3)
       unfolding 1 3 complement_def nba.simps complement_succ_def lr_succ_def
       by simp
@@ -64,7 +64,7 @@ begin
       fix q k
       assume 5: "fst (snd (a, (g, Q))) q = Some k"
       have 6: "q \<in> dom g" using 5 by auto
-      obtain p where 7: "p \<in> dom f" "q \<in> succ A a p" using 6 unfolding 8 by auto
+      obtain p where 7: "p \<in> dom f" "q \<in> transition A a p" using 6 unfolding 8 by auto
       have "k = the (g q)" using 5 by auto
       also have "\<dots> \<le> the (f p)" using 4 7 by this
       also have "\<dots> \<le> 2 * card (nodes A)" using 2 7(1) by (simp add: domD ranI subset_eq)
@@ -86,7 +86,7 @@ begin
     have 11: "a \<in> alphabet A" using execute(3) unfolding 3 complement_def by auto
     have 10: "(g, Q) \<in> nodes (complement A)" using execute(1, 3) unfolding 1 3 by auto
     have 4: "dom g \<subseteq> nodes A" using dom_nodes[OF 10] by simp
-    have 5: "\<Union>((succ A a) ` P) \<subseteq> nodes A" using 2 11 by auto
+    have 5: "\<Union> (transition A a ` P) \<subseteq> nodes A" using 2 11 by auto
     have 6: "Q \<subseteq> nodes A"
       using execute(3)
       unfolding 1 3 complement_def nba.simps complement_succ_def st_succ_def
@@ -115,7 +115,7 @@ begin
       "fst (m !! Suc k) \<in> lr_succ A (w !! k) (fst (m !! k))"
       "snd (m !! Suc k) = st_succ A (w !! k) (fst (m !! Suc k)) (snd (m !! k))"
   proof
-    have 1: "r !! k \<in> succ (complement A) (w !! k) (m !! k)" using nba.run_snth assms by force
+    have 1: "r !! k \<in> transition (complement A) (w !! k) (m !! k)" using nba.run_snth assms by force
     show "fst (m !! Suc k) \<in> lr_succ A (w !! k) (fst (m !! k))"
       using assms(2) 1 unfolding complement_def complement_succ_def trace_alt_def by auto
     show "snd (m !! Suc k) = st_succ A (w !! k) (fst (m !! Suc k)) (snd (m !! k))"
@@ -148,7 +148,7 @@ begin
       then show ?case using 1(2) unfolding complement_def by auto
     next
       case (execute v u)
-      have "snd u \<in> \<Union> ((succ A (w !! fst v)) ` (dom (fst (?m !! fst v))))"
+      have "snd u \<in> \<Union> ((transition A (w !! fst v)) ` (dom (fst (?m !! fst v))))"
         using execute(2, 3) by auto
       also have "\<dots> = dom (fst (?m !! Suc (fst v)))"
         using 100 unfolding lr_succ_def by simp
@@ -157,7 +157,7 @@ begin
     qed
     have 3: "f u \<le> f v" if 10: "v \<in> gunodes A w" and 11: "u \<in> gusuccessors A w v" for u v
     proof -
-      have 15: "snd u \<in> succ A (w !! fst v) (snd v)" using 11 by auto
+      have 15: "snd u \<in> transition A (w !! fst v) (snd v)" using 11 by auto
       have 16: "snd v \<in> dom (fst (?m !! fst v))" using 2 10 by this
       have "f u = the (fst (?m !! fst u) (snd u))" unfolding f_def by (simp add: case_prod_beta)
       also have "fst u = Suc (fst v)" using 11 by auto
@@ -260,10 +260,10 @@ begin
           also have "\<dots> \<in> gusuccessors A w (gtarget (stake (Suc (l + i)) (t @- s)) u)"
             using graph.run_snth[OF 30, of "l + Suc i"] by simp
           finally have 220: "snd (gtarget (stake (Suc (Suc l + i)) (t @- s)) u) \<in>
-              succ A (w !! (Suc l + i)) (snd (gtarget (stake (Suc (l + i)) (t @- s)) u))"
+              transition A (w !! (Suc l + i)) (snd (gtarget (stake (Suc (l + i)) (t @- s)) u))"
             using 21 by auto
           have 22: "snd (gtarget (stake (Suc l + Suc i) (t @- s)) u) \<in>
-            \<Union> (succ A (w !! (Suc l + i)) ` P (Suc l + i))" using 220 Suc by auto
+            \<Union> (transition A (w !! (Suc l + i)) ` P (Suc l + i))" using 220 Suc by auto
           have "gtarget (stake (Suc l + Suc i) (t @- s)) u = gtrace (t @- s) u !! (l + Suc i)"
             unfolding sscan_snth by simp
           also have "\<dots> = gtrace s v !! (l + Suc i - length t)" using 15(1)
@@ -273,7 +273,7 @@ begin
           also have "sconst k !! (l + Suc i - length t) = k" by simp
           finally have 23: "even (f (gtarget (stake (Suc l + Suc i) (t @- s)) u))" using 13 by auto
           have "snd (gtarget (stake (Suc l + Suc i) (t @- s)) u) \<in>
-            {p \<in> \<Union> (succ A (w !! (Suc l + i)) ` P (Suc l + i)). even (f (Suc (Suc l + i), p))}"
+            {p \<in> \<Union> (transition A (w !! (Suc l + i)) ` P (Suc l + i)). even (f (Suc (Suc l + i), p))}"
             using 21 22 23 by (metis (mono_tags) add_Suc_right mem_Collect_eq prod.collapse)
           also have "\<dots> = st_succ A (w !! (Suc l + i)) (fst (?m !! Suc (Suc l + i))) (P (Suc l + i))"
             unfolding st_succ_def f_def using 20 by simp
@@ -314,7 +314,7 @@ begin
   qed
   lemma reach_Suc_succ:
     assumes "w !! n \<in> alphabet A"
-    shows "reach A w (Suc n) = \<Union>((succ A (w !! n) ` (reach A w n)))"
+    shows "reach A w (Suc n) = \<Union>((transition A (w !! n) ` (reach A w n)))"
   proof safe
     fix q
     assume 1: "q \<in> reach A w (Suc n)"
@@ -330,7 +330,7 @@ begin
       by (metis append_eq_conv_conj append_is_Nil_conv append_take_drop_id drop_map
         length_greater_0_conv length_stake stake_cycle_le stake_invert_Nil
         take_map zip_Cons_Cons zip_map_fst_snd)
-    show "q \<in> \<Union>((succ A (w !! n) ` (reach A w n)))"
+    show "q \<in> \<Union>((transition A (w !! n) ` (reach A w n)))"
     unfolding reach_def
     proof (intro UN_I CollectI exI conjI)
       show "target (take n r) p = target (take n r) p" by rule
@@ -338,11 +338,11 @@ begin
       show "p \<in> initial A" using 2(3) by this
       show "map fst (take n r) = stake n w" using 2 by (metis length_stake lessI nat.distinct(1)
         stake_cycle_le stake_invert_Nil take_map take_stake)
-      show "q \<in> succ A (w !! n) (target (take n r) p)" using 3 unfolding 6 by auto
+      show "q \<in> transition A (w !! n) (target (take n r) p)" using 3 unfolding 6 by auto
     qed
   next
     fix p q
-    assume 1: "p \<in> reach A w n" "q \<in> succ A (w !! n) p"
+    assume 1: "p \<in> reach A w n" "q \<in> transition A (w !! n) p"
     obtain r x where 2: "p = target r x" "path A r x" "x \<in> initial A" "map fst r = stake n w"
       using 1(1) unfolding reach_def by blast
     show "q \<in> reach A w (Suc n)"
@@ -356,7 +356,7 @@ begin
     qed
   qed
   lemma reach_Suc[simp]: "reach A w (Suc n) = (if w !! n \<in> alphabet A
-    then \<Union>((succ A (w !! n) ` (reach A w n))) else {})"
+    then \<Union>((transition A (w !! n) ` (reach A w n))) else {})"
     using reach_Suc_empty reach_Suc_succ by metis
   lemma reach_nodes: "reach A w i \<subseteq> nodes A" by (induct i) (auto)
   lemma reach_gunodes: "{i} \<times> reach A w i \<subseteq> gunodes A w"
@@ -417,10 +417,10 @@ begin
     have g_Suc[simp]: "g (Suc n) \<in> lr_succ A (w !! n) (g n)" for n
     unfolding lr_succ_def
     proof (intro CollectI conjI ballI impI)
-      show "dom (g (Suc n)) = \<Union> (succ A (w !! n) ` dom (g n))" using snth_in assms(2) by auto
+      show "dom (g (Suc n)) = \<Union> (transition A (w !! n) ` dom (g n))" using snth_in assms(2) by auto
     next
       fix p q
-      assume 100: "p \<in> dom (g n)" "q \<in> succ A (w !! n) p"
+      assume 100: "p \<in> dom (g n)" "q \<in> transition A (w !! n) p"
       have 101: "q \<in> reach A w (Suc n)" using snth_in assms(2) 100 by auto
       have 102: "(n, p) \<in> gunodes A w" using 100(1) reach_gunodes g_dom by blast
       have 103: "(Suc n, q) \<in> gusuccessors A w (n, p)" using snth_in assms(2) 102 100(2) by auto
@@ -466,10 +466,10 @@ begin
           unfolding complement_succ_def s_def using P_Suc by simp
         also have "\<dots> = complement_succ A (w !! k) (target (stake k (w ||| stl s)) (shd s))"
           unfolding sscan_scons_snth[symmetric] trace_alt_def by simp
-        also have "\<dots> = succ (complement A) (w !! k) (target (stake k (w ||| stl s)) (shd s))"
+        also have "\<dots> = transition (complement A) (w !! k) (target (stake k (w ||| stl s)) (shd s))"
           unfolding complement_def nba.sel by rule
         finally show "stl s !! k \<in>
-          succ (complement A) (w !! k) (target (stake k (w ||| stl s)) (shd s))" by this
+          transition (complement A) (w !! k) (target (stake k (w ||| stl s)) (shd s))" by this
       qed
       show "shd s \<in> initial (complement A)" unfolding complement_def s_def using P_0 by simp
       show "infs (accepting (complement A)) (trace (w ||| stl s) (shd s))"
@@ -478,7 +478,7 @@ begin
         proof (rule ccontr)
           assume 20: "\<not> (\<forall> n. \<exists> k \<ge> n. P k = {})"
           obtain k where 22: "P (k + n) \<noteq> {}" for n using 20 using le_add1 by blast
-          define m where "m n S \<equiv> {p \<in> \<Union>((succ A (w !! n) ` S)). even (the (g (Suc n) p))}" for n S
+          define m where "m n S \<equiv> {p \<in> \<Union>((transition A (w !! n) ` S)). even (the (g (Suc n) p))}" for n S
           define R where "R i n S \<equiv> rec_nat S (\<lambda> i. m (n + i)) i" for i n S
           have R_0[simp]: "R 0 n = id" for n unfolding R_def by auto
           have R_Suc[simp]: "R (Suc i) n = m (n + i) \<circ> R i n" for i n unfolding R_def by auto
@@ -514,7 +514,7 @@ begin
           obtain p where 3: "p \<in> P k" "\<And> i. R i k {p} \<noteq> {}" using 1[OF P_finite 2] by auto
 
           define Q where "Q n p \<equiv> (\<forall> i. R i (k + n) {p} \<noteq> {}) \<and> p \<in> P (k + n)" for n p
-          have 5: "\<exists> q \<in> succ A (w !! (k + n)) p. Q (Suc n) q" if "Q n p" for n p
+          have 5: "\<exists> q \<in> transition A (w !! (k + n)) p. Q (Suc n) q" if "Q n p" for n p
           proof -
             have 11: "p \<in> P (k + n)" "\<And> i. R i (k + n) {p} \<noteq> {}" using that unfolding Q_def by auto
             have 12: "R (Suc i) (k + n) {p} \<noteq> {}" for i using 11(2) by this
@@ -533,14 +533,14 @@ begin
               show "\<And> i. R i (k + Suc n) {q} \<noteq> {}" using 14(2) by this
               show "q \<in> P (k + Suc n)"
                 using 14(1) 11(1) 22 unfolding m_def by (auto simp add: st_succ_def)
-              show "q \<in> succ A (w !! (k + n)) p" using 14(1) unfolding m_def by simp
+              show "q \<in> transition A (w !! (k + n)) p" using 14(1) unfolding m_def by simp
             qed
           qed
           obtain r where 23:
             "run A r p" "\<And> i. Q i ((p ## trace r p) !! i)" "\<And> i. fst (r !! i) = w !! (k + i)"
           proof (rule nba.invariant_run_index[of Q 0 p A "\<lambda> n p a. fst a = w !! (k + n)"])
             show "Q 0 p" unfolding Q_def using 3 by auto
-            show "\<exists> a. (fst a \<in> alphabet A \<and> snd a \<in> succ A (fst a) p) \<and>
+            show "\<exists> a. (fst a \<in> alphabet A \<and> snd a \<in> transition A (fst a) p) \<and>
               Q (Suc n) (snd a) \<and> fst a = w !! (k + n)" if "Q n p" for n p
               using snth_in assms(2) 5 that by fastforce
           qed auto
@@ -565,7 +565,7 @@ begin
           also have "\<dots> \<subseteq> Collect odd" using 26 by this
           finally have 28: "odd (f' (Suc (k + l), r !! Suc l))" by simp
           have "r !! Suc l \<in> P (Suc (k + l))" using 23(2) by (metis add_Suc_right)
-          also have "\<dots> = {p \<in> \<Union> (succ A (w !! (k + l)) ` P (k + l)).
+          also have "\<dots> = {p \<in> \<Union> (transition A (w !! (k + l)) ` P (k + l)).
             even (the (g (Suc (k + l)) p))}" using 23(2) by (auto simp: st_succ_def)
           also have "\<dots> \<subseteq> {p. even (the (g (Suc (k + l)) p))}" by auto
           finally have 29: "even (the (g (Suc (k + l)) (r !! Suc l)))" by auto

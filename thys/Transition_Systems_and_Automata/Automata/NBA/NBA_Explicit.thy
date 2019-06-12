@@ -7,14 +7,14 @@ begin
   datatype ('label, 'state) nbae = nbae
     (alphabete: "'label set")
     (initiale: "'state set")
-    (transe: "('state \<times> 'label \<times> 'state) set")
+    (transitione: "('state \<times> 'label \<times> 'state) set")
     (acceptinge: "'state set")
 
   definition nbae_rel where
     [to_relAPP]: "nbae_rel L S \<equiv> {(A\<^sub>1, A\<^sub>2).
       (alphabete A\<^sub>1, alphabete A\<^sub>2) \<in> \<langle>L\<rangle> set_rel \<and>
       (initiale A\<^sub>1, initiale A\<^sub>2) \<in> \<langle>S\<rangle> set_rel \<and>
-      (transe A\<^sub>1, transe A\<^sub>2) \<in> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> set_rel \<and>
+      (transitione A\<^sub>1, transitione A\<^sub>2) \<in> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> set_rel \<and>
       (acceptinge A\<^sub>1, acceptinge A\<^sub>2) \<in> \<langle>S\<rangle> set_rel}"
 
   lemma nbae_param[param, autoref_rules]:
@@ -22,7 +22,7 @@ begin
       \<langle>S\<rangle> set_rel \<rightarrow> \<langle>L, S\<rangle> nbae_rel"
     "(alphabete, alphabete) \<in> \<langle>L, S\<rangle> nbae_rel \<rightarrow> \<langle>L\<rangle> set_rel"
     "(initiale, initiale) \<in> \<langle>L, S\<rangle> nbae_rel \<rightarrow> \<langle>S\<rangle> set_rel"
-    "(transe, transe) \<in> \<langle>L, S\<rangle> nbae_rel \<rightarrow> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> set_rel"
+    "(transitione, transitione) \<in> \<langle>L, S\<rangle> nbae_rel \<rightarrow> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> set_rel"
     "(acceptinge, acceptinge) \<in> \<langle>L, S\<rangle> nbae_rel \<rightarrow> \<langle>S\<rangle> set_rel"
     unfolding nbae_rel_def by auto
 
@@ -34,7 +34,7 @@ begin
     obtain a b c d where 2:
       "(alphabete A, a) \<in> \<langle>L\<^sub>1\<rangle> set_rel" "(a, alphabete B) \<in> \<langle>L\<^sub>2\<rangle> set_rel"
       "(initiale A, b) \<in> \<langle>S\<^sub>1\<rangle> set_rel" "(b, initiale B) \<in> \<langle>S\<^sub>2\<rangle> set_rel"
-      "(transe A, c) \<in> \<langle>S\<^sub>1 \<times>\<^sub>r L\<^sub>1 \<times>\<^sub>r S\<^sub>1\<rangle> set_rel" "(c, transe B) \<in> \<langle>S\<^sub>2 \<times>\<^sub>r L\<^sub>2 \<times>\<^sub>r S\<^sub>2\<rangle> set_rel"
+      "(transitione A, c) \<in> \<langle>S\<^sub>1 \<times>\<^sub>r L\<^sub>1 \<times>\<^sub>r S\<^sub>1\<rangle> set_rel" "(c, transitione B) \<in> \<langle>S\<^sub>2 \<times>\<^sub>r L\<^sub>2 \<times>\<^sub>r S\<^sub>2\<rangle> set_rel"
       "(acceptinge A, d) \<in> \<langle>S\<^sub>1\<rangle> set_rel" "(d, acceptinge B) \<in> \<langle>S\<^sub>2\<rangle> set_rel"
       using 1 unfolding nbae_rel_def prod_rel_compp set_rel_compp by auto
     show "(A, B) \<in> \<langle>L\<^sub>1, S\<^sub>1\<rangle> nbae_rel O \<langle>L\<^sub>2, S\<^sub>2\<rangle> nbae_rel"
@@ -61,7 +61,7 @@ begin
         \<langle>L, S\<rangle>\<^sub>i i_nbae_scheme"
       "alphabete ::\<^sub>i \<langle>L, S\<rangle>\<^sub>i i_nbae_scheme \<rightarrow>\<^sub>i \<langle>L\<rangle>\<^sub>i i_set"
       "initiale ::\<^sub>i \<langle>L, S\<rangle>\<^sub>i i_nbae_scheme \<rightarrow>\<^sub>i \<langle>S\<rangle>\<^sub>i i_set"
-      "transe ::\<^sub>i \<langle>L, S\<rangle>\<^sub>i i_nbae_scheme \<rightarrow>\<^sub>i \<langle>\<langle>S, \<langle>L, S\<rangle>\<^sub>i i_prod\<rangle>\<^sub>i i_prod\<rangle>\<^sub>i i_set"
+      "transitione ::\<^sub>i \<langle>L, S\<rangle>\<^sub>i i_nbae_scheme \<rightarrow>\<^sub>i \<langle>\<langle>S, \<langle>L, S\<rangle>\<^sub>i i_prod\<rangle>\<^sub>i i_prod\<rangle>\<^sub>i i_set"
       "acceptinge ::\<^sub>i \<langle>L, S\<rangle>\<^sub>i i_nbae_scheme \<rightarrow>\<^sub>i \<langle>S\<rangle>\<^sub>i i_set"
       by auto
 
@@ -70,14 +70,14 @@ begin
   datatype ('label, 'state) nbaei = nbaei
     (alphabetei: "'label list")
     (initialei: "'state list")
-    (transei: "('state \<times> 'label \<times> 'state) list")
+    (transitionei: "('state \<times> 'label \<times> 'state) list")
     (acceptingei: "'state list")
 
   definition nbaei_rel where
     [to_relAPP]: "nbaei_rel L S \<equiv> {(A\<^sub>1, A\<^sub>2).
       (alphabetei A\<^sub>1, alphabetei A\<^sub>2) \<in> \<langle>L\<rangle> list_rel \<and>
       (initialei A\<^sub>1, initialei A\<^sub>2) \<in> \<langle>S\<rangle> list_rel \<and>
-      (transei A\<^sub>1, transei A\<^sub>2) \<in> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> list_rel \<and>
+      (transitionei A\<^sub>1, transitionei A\<^sub>2) \<in> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> list_rel \<and>
       (acceptingei A\<^sub>1, acceptingei A\<^sub>2) \<in> \<langle>S\<rangle> list_rel}"
 
   lemma nbaei_param[param, autoref_rules]:
@@ -85,7 +85,7 @@ begin
       \<langle>S\<rangle> list_rel \<rightarrow> \<langle>L, S\<rangle> nbaei_rel"
     "(alphabetei, alphabetei) \<in> \<langle>L, S\<rangle> nbaei_rel \<rightarrow> \<langle>L\<rangle> list_rel"
     "(initialei, initialei) \<in> \<langle>L, S\<rangle> nbaei_rel \<rightarrow> \<langle>S\<rangle> list_rel"
-    "(transei, transei) \<in> \<langle>L, S\<rangle> nbaei_rel \<rightarrow> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> list_rel"
+    "(transitionei, transitionei) \<in> \<langle>L, S\<rangle> nbaei_rel \<rightarrow> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> list_rel"
     "(acceptingei, acceptingei) \<in> \<langle>L, S\<rangle> nbaei_rel \<rightarrow> \<langle>S\<rangle> list_rel"
     unfolding nbaei_rel_def by auto
 
@@ -93,7 +93,7 @@ begin
     [to_relAPP]: "nbaei_nbae_rel L S \<equiv> {(A\<^sub>1, A\<^sub>2).
       (alphabetei A\<^sub>1, alphabete A\<^sub>2) \<in> \<langle>L\<rangle> list_set_rel \<and>
       (initialei A\<^sub>1, initiale A\<^sub>2) \<in> \<langle>S\<rangle> list_set_rel \<and>
-      (transei A\<^sub>1, transe A\<^sub>2) \<in> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> list_set_rel \<and>
+      (transitionei A\<^sub>1, transitione A\<^sub>2) \<in> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> list_set_rel \<and>
       (acceptingei A\<^sub>1, acceptinge A\<^sub>2) \<in> \<langle>S\<rangle> list_set_rel}"
 
   lemmas [autoref_rel_intf] = REL_INTFI[of nbaei_nbae_rel i_nbae_scheme]
@@ -103,22 +103,22 @@ begin
       \<langle>S\<rangle> list_set_rel \<rightarrow> \<langle>L, S\<rangle> nbaei_nbae_rel"
     "(alphabetei, alphabete) \<in> \<langle>L, S\<rangle> nbaei_nbae_rel \<rightarrow> \<langle>L\<rangle> list_set_rel"
     "(initialei, initiale) \<in> \<langle>L, S\<rangle> nbaei_nbae_rel \<rightarrow> \<langle>S\<rangle> list_set_rel"
-    "(transei, transe) \<in> \<langle>L, S\<rangle> nbaei_nbae_rel \<rightarrow> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> list_set_rel"
+    "(transitionei, transitione) \<in> \<langle>L, S\<rangle> nbaei_nbae_rel \<rightarrow> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> list_set_rel"
     "(acceptingei, acceptinge) \<in> \<langle>L, S\<rangle> nbaei_nbae_rel \<rightarrow> \<langle>S\<rangle> list_set_rel"
     unfolding nbaei_nbae_rel_def by auto
 
   definition nbaei_nbae where
     "nbaei_nbae A \<equiv> nbae (set (alphabetei A)) (set (initialei A))
-      (set (transei A)) (set (acceptingei A))"
+      (set (transitionei A)) (set (acceptingei A))"
 
   lemma nbaei_nbae_id_param[param]: "(nbaei_nbae, id) \<in> \<langle>L, S\<rangle> nbaei_nbae_rel \<rightarrow> \<langle>L, S\<rangle> nbae_rel"
   proof
     fix Ai A
     assume 1: "(Ai, A) \<in> \<langle>L, S\<rangle> nbaei_nbae_rel"
     have 2: "nbaei_nbae Ai = nbae (set (alphabetei Ai)) (set (initialei Ai))
-      (set (transei Ai)) (set (acceptingei Ai))" unfolding nbaei_nbae_def by rule
+      (set (transitionei Ai)) (set (acceptingei Ai))" unfolding nbaei_nbae_def by rule
     have 3: "id A = nbae (id (alphabete A)) (id (initiale A))
-      (id (transe A)) (id (acceptinge A))" by simp
+      (id (transitione A)) (id (acceptinge A))" by simp
     show "(nbaei_nbae Ai, id A) \<in> \<langle>L, S\<rangle> nbae_rel" unfolding 2 3 using 1 by parametricity
   qed
 
@@ -126,9 +126,9 @@ begin
   abbreviation "succs T a p \<equiv> (T `` {p}) `` {a}"
 
   definition nba_nbae where "nba_nbae A \<equiv> nbae (alphabet A) (initial A)
-    (transitions (alphabet A) (nodes A) (succ A)) (Set.filter (accepting A) (nodes A))"
+    (transitions (alphabet A) (nodes A) (transition A)) (Set.filter (accepting A) (nodes A))"
   definition nbae_nba where "nbae_nba A \<equiv> nba (alphabete A) (initiale A)
-    (succs (transe A)) (\<lambda> p. p \<in> acceptinge A)"
+    (succs (transitione A)) (\<lambda> p. p \<in> acceptinge A)"
 
   lemma nba_nbae_param[param]: "(nba_nbae, nba_nbae) \<in> \<langle>L, S\<rangle> nba_rel \<rightarrow> \<langle>L, S\<rangle> nbae_rel"
     unfolding nba_nbae_def by parametricity
@@ -141,12 +141,12 @@ begin
     "((nbae_nba \<circ> nba_nbae) A, id A) \<in> \<langle>Id_on (alphabet A), Id_on (nodes A)\<rangle> nba_rel"
   proof -
     have "(nbae_nba \<circ> nba_nbae) A = nba (alphabet A) (initial A)
-      (succs (transitions (alphabet A) (nodes A) (succ A))) (\<lambda> p. p \<in> Set.filter (accepting A) (nodes A))"
+      (succs (transitions (alphabet A) (nodes A) (transition A))) (\<lambda> p. p \<in> Set.filter (accepting A) (nodes A))"
       unfolding nbae_nba_def nba_nbae_def by simp
-    also have "(\<dots>, nba (alphabet A) (initial A) (succ A) (accepting A)) \<in>
+    also have "(\<dots>, nba (alphabet A) (initial A) (transition A) (accepting A)) \<in>
       \<langle>Id_on (alphabet A), Id_on (nodes A)\<rangle> nba_rel"
       using nba_rel_eq by parametricity auto
-    also have  "nba (alphabet A) (initial A) (succ A) (accepting A) = id A" by simp
+    also have  "nba (alphabet A) (initial A) (transition A) (accepting A) = id A" by simp
     finally show ?thesis by this
   qed
 

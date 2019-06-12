@@ -12,7 +12,7 @@ begin
     [to_relAPP]: "dra_rel L S \<equiv> {(A\<^sub>1, A\<^sub>2).
       (alphabet A\<^sub>1, alphabet A\<^sub>2) \<in> \<langle>L\<rangle> set_rel \<and>
       (initial A\<^sub>1, initial A\<^sub>2) \<in> S \<and>
-      (succ A\<^sub>1, succ A\<^sub>2) \<in> L \<rightarrow> S \<rightarrow> S \<and>
+      (transition A\<^sub>1, transition A\<^sub>2) \<in> L \<rightarrow> S \<rightarrow> S \<and>
       (accepting A\<^sub>1, accepting A\<^sub>2) \<in> \<langle>rabin_rel S\<rangle> list_rel}"
 
   lemma dra_param[param]:
@@ -20,7 +20,7 @@ begin
       \<langle>L, S\<rangle> dra_rel"
     "(alphabet, alphabet) \<in> \<langle>L, S\<rangle> dra_rel \<rightarrow> \<langle>L\<rangle> set_rel"
     "(initial, initial) \<in> \<langle>L, S\<rangle> dra_rel \<rightarrow> S"
-    "(succ, succ) \<in> \<langle>L, S\<rangle> dra_rel \<rightarrow> L \<rightarrow> S \<rightarrow> S"
+    "(transition, transition) \<in> \<langle>L, S\<rangle> dra_rel \<rightarrow> L \<rightarrow> S \<rightarrow> S"
     "(accepting, accepting) \<in> \<langle>L, S\<rangle> dra_rel \<rightarrow> \<langle>rabin_rel S\<rangle> list_rel"
     unfolding dra_rel_def fun_rel_def by auto
 
@@ -34,9 +34,9 @@ begin
     finally have 1: "(accepting A, accepting C) \<in> \<langle>rabin_rel S\<^sub>1 O rabin_rel S\<^sub>2\<rangle> list_rel" by simp
     have 2: "rabin_rel S\<^sub>1 O rabin_rel S\<^sub>2 \<subseteq> rabin_rel (S\<^sub>1 O S\<^sub>2)" by (force simp: fun_rel_def)
     have 3: "(accepting A, accepting C) \<in> \<langle>rabin_rel (S\<^sub>1 O S\<^sub>2)\<rangle> list_rel" using 1 2 list_rel_mono by blast
-    have "(succ A, succ B) \<in> L\<^sub>1 \<rightarrow> S\<^sub>1 \<rightarrow> S\<^sub>1" by parametricity
-    also have "(succ B, succ C) \<in> L\<^sub>2 \<rightarrow> S\<^sub>2 \<rightarrow> S\<^sub>2" by parametricity
-    finally have 4: "(succ A, succ C) \<in> L\<^sub>1 O L\<^sub>2 \<rightarrow> S\<^sub>1 O S\<^sub>2 \<rightarrow> S\<^sub>1 O S\<^sub>2" by this
+    have "(transition A, transition B) \<in> L\<^sub>1 \<rightarrow> S\<^sub>1 \<rightarrow> S\<^sub>1" by parametricity
+    also have "(transition B, transition C) \<in> L\<^sub>2 \<rightarrow> S\<^sub>2 \<rightarrow> S\<^sub>2" by parametricity
+    finally have 4: "(transition A, transition C) \<in> L\<^sub>1 O L\<^sub>2 \<rightarrow> S\<^sub>1 O S\<^sub>2 \<rightarrow> S\<^sub>1 O S\<^sub>2" by this
     show ?thesis
       unfolding dra_rel_def mem_Collect_eq prod.case set_rel_compp
       using 3 4

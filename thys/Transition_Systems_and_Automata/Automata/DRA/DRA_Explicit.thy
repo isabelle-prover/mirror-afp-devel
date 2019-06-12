@@ -7,14 +7,14 @@ begin
   datatype ('label, 'state) drae = drae
     (alphabete: "'label set")
     (initiale: "'state")
-    (transe: "('state \<times> 'label \<times> 'state) set")
+    (transitione: "('state \<times> 'label \<times> 'state) set")
     (acceptinge: "('state set \<times> 'state set) list")
 
   definition drae_rel where
     [to_relAPP]: "drae_rel L S \<equiv> {(A\<^sub>1, A\<^sub>2).
       (alphabete A\<^sub>1, alphabete A\<^sub>2) \<in> \<langle>L\<rangle> set_rel \<and>
       (initiale A\<^sub>1, initiale A\<^sub>2) \<in> S \<and>
-      (transe A\<^sub>1, transe A\<^sub>2) \<in> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> set_rel \<and>
+      (transitione A\<^sub>1, transitione A\<^sub>2) \<in> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> set_rel \<and>
       (acceptinge A\<^sub>1, acceptinge A\<^sub>2) \<in> \<langle>\<langle>S\<rangle> set_rel \<times>\<^sub>r \<langle>S\<rangle> set_rel\<rangle> list_rel}"
 
   lemma drae_param[param, autoref_rules]:
@@ -22,7 +22,7 @@ begin
       \<langle>\<langle>S\<rangle> set_rel \<times>\<^sub>r \<langle>S\<rangle> set_rel\<rangle> list_rel \<rightarrow> \<langle>L, S\<rangle> drae_rel"
     "(alphabete, alphabete) \<in> \<langle>L, S\<rangle> drae_rel \<rightarrow> \<langle>L\<rangle> set_rel"
     "(initiale, initiale) \<in> \<langle>L, S\<rangle> drae_rel \<rightarrow> S"
-    "(transe, transe) \<in> \<langle>L, S\<rangle> drae_rel \<rightarrow> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> set_rel"
+    "(transitione, transitione) \<in> \<langle>L, S\<rangle> drae_rel \<rightarrow> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> set_rel"
     "(acceptinge, acceptinge) \<in> \<langle>L, S\<rangle> drae_rel \<rightarrow> \<langle>\<langle>S\<rangle> set_rel \<times>\<^sub>r \<langle>S\<rangle> set_rel\<rangle> list_rel"
     unfolding drae_rel_def by auto
 
@@ -34,7 +34,7 @@ begin
     obtain a b c d where 2:
       "(alphabete A, a) \<in> \<langle>L\<^sub>1\<rangle> set_rel" "(a, alphabete B) \<in> \<langle>L\<^sub>2\<rangle> set_rel"
       "(initiale A, b) \<in> S\<^sub>1" "(b, initiale B) \<in> S\<^sub>2"
-      "(transe A, c) \<in> \<langle>S\<^sub>1 \<times>\<^sub>r L\<^sub>1 \<times>\<^sub>r S\<^sub>1\<rangle> set_rel" "(c, transe B) \<in> \<langle>S\<^sub>2 \<times>\<^sub>r L\<^sub>2 \<times>\<^sub>r S\<^sub>2\<rangle> set_rel"
+      "(transitione A, c) \<in> \<langle>S\<^sub>1 \<times>\<^sub>r L\<^sub>1 \<times>\<^sub>r S\<^sub>1\<rangle> set_rel" "(c, transitione B) \<in> \<langle>S\<^sub>2 \<times>\<^sub>r L\<^sub>2 \<times>\<^sub>r S\<^sub>2\<rangle> set_rel"
       "(acceptinge A, d) \<in> \<langle>\<langle>S\<^sub>1\<rangle> set_rel \<times>\<^sub>r \<langle>S\<^sub>1\<rangle> set_rel\<rangle> list_rel"
       "(d, acceptinge B) \<in> \<langle>\<langle>S\<^sub>2\<rangle> set_rel \<times>\<^sub>r \<langle>S\<^sub>2\<rangle> set_rel\<rangle> list_rel"
       using 1 unfolding drae_rel_def prod_rel_compp set_rel_compp by auto
@@ -62,7 +62,7 @@ begin
         \<langle>\<langle>\<langle>S\<rangle>\<^sub>i i_set, \<langle>S\<rangle>\<^sub>i i_set\<rangle>\<^sub>i i_prod\<rangle>\<^sub>i i_list \<rightarrow>\<^sub>i \<langle>L, S\<rangle>\<^sub>i i_drae_scheme"
       "alphabete ::\<^sub>i \<langle>L, S\<rangle>\<^sub>i i_drae_scheme \<rightarrow>\<^sub>i \<langle>L\<rangle>\<^sub>i i_set"
       "initiale ::\<^sub>i \<langle>L, S\<rangle>\<^sub>i i_drae_scheme \<rightarrow>\<^sub>i S"
-      "transe ::\<^sub>i \<langle>L, S\<rangle>\<^sub>i i_drae_scheme \<rightarrow>\<^sub>i \<langle>\<langle>S, \<langle>L, S\<rangle>\<^sub>i i_prod\<rangle>\<^sub>i i_prod\<rangle>\<^sub>i i_set"
+      "transitione ::\<^sub>i \<langle>L, S\<rangle>\<^sub>i i_drae_scheme \<rightarrow>\<^sub>i \<langle>\<langle>S, \<langle>L, S\<rangle>\<^sub>i i_prod\<rangle>\<^sub>i i_prod\<rangle>\<^sub>i i_set"
       "acceptinge ::\<^sub>i \<langle>L, S\<rangle>\<^sub>i i_drae_scheme \<rightarrow>\<^sub>i \<langle>\<langle>\<langle>S\<rangle>\<^sub>i i_set, \<langle>S\<rangle>\<^sub>i i_set\<rangle>\<^sub>i i_prod\<rangle>\<^sub>i i_list"
       by auto
 
@@ -71,14 +71,14 @@ begin
   datatype ('label, 'state) draei = draei
     (alphabetei: "'label list")
     (initialei: "'state")
-    (transei: "('state \<times> 'label \<times> 'state) list")
+    (transitionei: "('state \<times> 'label \<times> 'state) list")
     (acceptingei: "('state list \<times> 'state list) list")
 
   definition draei_rel where
     [to_relAPP]: "draei_rel L S \<equiv> {(A\<^sub>1, A\<^sub>2).
       (alphabetei A\<^sub>1, alphabetei A\<^sub>2) \<in> \<langle>L\<rangle> list_rel \<and>
       (initialei A\<^sub>1, initialei A\<^sub>2) \<in> S \<and>
-      (transei A\<^sub>1, transei A\<^sub>2) \<in> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> list_rel \<and>
+      (transitionei A\<^sub>1, transitionei A\<^sub>2) \<in> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> list_rel \<and>
       (acceptingei A\<^sub>1, acceptingei A\<^sub>2) \<in> \<langle>\<langle>S\<rangle> list_rel \<times>\<^sub>r \<langle>S\<rangle> list_rel\<rangle> list_rel}"
 
   lemma draei_param[param, autoref_rules]:
@@ -86,7 +86,7 @@ begin
       \<langle>\<langle>S\<rangle> list_rel \<times>\<^sub>r \<langle>S\<rangle> list_rel\<rangle> list_rel \<rightarrow> \<langle>L, S\<rangle> draei_rel"
     "(alphabetei, alphabetei) \<in> \<langle>L, S\<rangle> draei_rel \<rightarrow> \<langle>L\<rangle> list_rel"
     "(initialei, initialei) \<in> \<langle>L, S\<rangle> draei_rel \<rightarrow> S"
-    "(transei, transei) \<in> \<langle>L, S\<rangle> draei_rel \<rightarrow> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> list_rel"
+    "(transitionei, transitionei) \<in> \<langle>L, S\<rangle> draei_rel \<rightarrow> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> list_rel"
     "(acceptingei, acceptingei) \<in> \<langle>L, S\<rangle> draei_rel \<rightarrow> \<langle>\<langle>S\<rangle> list_rel \<times>\<^sub>r \<langle>S\<rangle> list_rel\<rangle> list_rel"
     unfolding draei_rel_def by auto
 
@@ -94,7 +94,7 @@ begin
     [to_relAPP]: "draei_drae_rel L S \<equiv> {(A\<^sub>1, A\<^sub>2).
       (alphabetei A\<^sub>1, alphabete A\<^sub>2) \<in> \<langle>L\<rangle> list_set_rel \<and>
       (initialei A\<^sub>1, initiale A\<^sub>2) \<in> S \<and>
-      (transei A\<^sub>1, transe A\<^sub>2) \<in> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> list_set_rel \<and>
+      (transitionei A\<^sub>1, transitione A\<^sub>2) \<in> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> list_set_rel \<and>
       (acceptingei A\<^sub>1, acceptinge A\<^sub>2) \<in> \<langle>\<langle>S\<rangle> list_set_rel \<times>\<^sub>r \<langle>S\<rangle> list_set_rel\<rangle> list_rel}"
 
   lemmas [autoref_rel_intf] = REL_INTFI[of draei_drae_rel i_drae_scheme]
@@ -104,22 +104,22 @@ begin
       \<langle>\<langle>S\<rangle> list_set_rel \<times>\<^sub>r \<langle>S\<rangle> list_set_rel\<rangle> list_rel \<rightarrow> \<langle>L, S\<rangle> draei_drae_rel"
     "(alphabetei, alphabete) \<in> \<langle>L, S\<rangle> draei_drae_rel \<rightarrow> \<langle>L\<rangle> list_set_rel"
     "(initialei, initiale) \<in> \<langle>L, S\<rangle> draei_drae_rel \<rightarrow> S"
-    "(transei, transe) \<in> \<langle>L, S\<rangle> draei_drae_rel \<rightarrow> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> list_set_rel"
+    "(transitionei, transitione) \<in> \<langle>L, S\<rangle> draei_drae_rel \<rightarrow> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> list_set_rel"
     "(acceptingei, acceptinge) \<in> \<langle>L, S\<rangle> draei_drae_rel \<rightarrow> \<langle>\<langle>S\<rangle> list_set_rel \<times>\<^sub>r \<langle>S\<rangle> list_set_rel\<rangle> list_rel"
     unfolding draei_drae_rel_def by auto
 
   definition draei_drae where
     "draei_drae A \<equiv> drae (set (alphabetei A)) (initialei A)
-      (set (transei A)) (map (map_prod set set) (acceptingei A))"
+      (set (transitionei A)) (map (map_prod set set) (acceptingei A))"
 
   lemma draei_drae_id_param[param]: "(draei_drae, id) \<in> \<langle>L, S\<rangle> draei_drae_rel \<rightarrow> \<langle>L, S\<rangle> drae_rel"
   proof
     fix Ai A
     assume 1: "(Ai, A) \<in> \<langle>L, S\<rangle> draei_drae_rel"
     have 2: "draei_drae Ai = drae (set (alphabetei Ai)) (initialei Ai)
-      (set (transei Ai)) (map (map_prod set set) (acceptingei Ai))" unfolding draei_drae_def by rule
+      (set (transitionei Ai)) (map (map_prod set set) (acceptingei Ai))" unfolding draei_drae_def by rule
     have 3: "id A = drae (id (alphabete A)) (initiale A)
-      (id (transe A)) (map (map_prod id id) (acceptinge A))" by simp
+      (id (transitione A)) (map (map_prod id id) (acceptinge A))" by simp
     show "(draei_drae Ai, id A) \<in> \<langle>L, S\<rangle> drae_rel" unfolding 2 3 using 1 by parametricity
   qed
 
@@ -137,10 +137,10 @@ begin
   lemma wft_transitions: "wft L S (transitions L S s)" unfolding wft_def is_singleton_def by auto
 
   definition dra_drae where "dra_drae A \<equiv> drae (alphabet A) (initial A) 
-    (transitions (alphabet A) (nodes A) (succ A))
+    (transitions (alphabet A) (nodes A) (transition A))
     (map (\<lambda> (P, Q). (Set.filter P (nodes A), Set.filter Q (nodes A))) (accepting A))"
   definition drae_dra where "drae_dra A \<equiv> dra (alphabete A) (initiale A)
-    (succs (transe A)) (map (\<lambda> (I, F). (\<lambda> p. p \<in> I, \<lambda> p. p \<in> F)) (acceptinge A))"
+    (succs (transitione A)) (map (\<lambda> (I, F). (\<lambda> p. p \<in> I, \<lambda> p. p \<in> F)) (acceptinge A))"
 
   lemma set_rel_Domain_Range[intro!, simp]: "(Domain A, Range A) \<in> \<langle>A\<rangle> set_rel" unfolding set_rel_def by auto
 
@@ -148,13 +148,13 @@ begin
     unfolding dra_drae_def by parametricity
   lemma drae_dra_param[param]:
     assumes "bijective L" "bijective S"
-    assumes "wft (Range L) (Range S) (transe B)"
+    assumes "wft (Range L) (Range S) (transitione B)"
     assumes [param]: "(A, B) \<in> \<langle>L, S\<rangle> drae_rel"
     shows "(drae_dra A, drae_dra B) \<in> \<langle>L, S\<rangle> dra_rel"
   proof -
-    have 1: "(wft (Domain L) (Domain S) (transe A), wft (Range L) (Range S) (transe B)) \<in> bool_rel"
+    have 1: "(wft (Domain L) (Domain S) (transitione A), wft (Range L) (Range S) (transitione B)) \<in> bool_rel"
       using assms(1, 2) by parametricity auto
-    have 2: "wft (Domain L) (Domain S) (transe A)" using assms(3) 1 by simp
+    have 2: "wft (Domain L) (Domain S) (transitione A)" using assms(3) 1 by simp
     show ?thesis
       using assms(1 - 3) 2 assms(2)[unfolded bijective_alt]
       unfolding drae_dra_def wft_def
@@ -185,12 +185,12 @@ begin
       pred_rel (Id_on (nodes A)) \<times>\<^sub>r pred_rel (Id_on (nodes A)) \<rightarrow> rabin_rel (Id_on (nodes A))"
       unfolding fun_rel_def Id_on_def by auto
     have "(drae_dra \<circ> dra_drae) A = dra (alphabet A) (initial A)
-      ((succs \<circ> transitions (alphabet A) (nodes A)) (succ A))
+      ((succs \<circ> transitions (alphabet A) (nodes A)) (transition A))
       (map (\<lambda> (P, Q). (\<lambda> p. p \<in> Set.filter P (nodes A), \<lambda> p. p \<in> Set.filter Q (nodes A))) (accepting A))"
       unfolding drae_dra_def dra_drae_def by auto
-    also have "(\<dots>, dra (alphabet A) (initial A) (id (succ A)) (map id (accepting A))) \<in>
+    also have "(\<dots>, dra (alphabet A) (initial A) (id (transition A)) (map id (accepting A))) \<in>
       \<langle>Id_on (alphabet A), Id_on (nodes A)\<rangle> dra_rel" using dra_rel_eq by parametricity auto
-    also have "dra (alphabet A) (initial A) (id (succ A)) (map id (accepting A)) = id A" by simp
+    also have "dra (alphabet A) (initial A) (id (transition A)) (map id (accepting A)) = id A" by simp
     finally show ?thesis by this
   qed
 

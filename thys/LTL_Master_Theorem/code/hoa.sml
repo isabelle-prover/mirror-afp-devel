@@ -126,7 +126,7 @@ end = struct
   fun serialize phi aut =
     let
       val states = group_sorted (fn (x, y) => integer_of_nat (#1 x) <
-      integer_of_nat (#1 y)) (List.rev (sort_transitions (transei aut)))
+      integer_of_nat (#1 y)) (List.rev (sort_transitions (transitionei aut)))
     in
       serialize_header phi aut states
         ^ "\n--BODY--\n"

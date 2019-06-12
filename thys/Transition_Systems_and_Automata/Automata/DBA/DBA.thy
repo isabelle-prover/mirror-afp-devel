@@ -12,11 +12,11 @@ begin
   datatype ('label, 'state) dba = dba
     (alphabet: "'label set")
     (initial: "'state")
-    (succ: "'label \<Rightarrow> 'state \<Rightarrow> 'state")
+    (transition: "'label \<Rightarrow> 'state \<Rightarrow> 'state")
     (accepting: "'state pred")
 
   global_interpretation dba: transition_system_initial
-    "succ A" "\<lambda> a p. a \<in> alphabet A" "\<lambda> p. p = initial A"
+    "transition A" "\<lambda> a p. a \<in> alphabet A" "\<lambda> p. p = initial A"
     for A
     defines path = dba.path and run = dba.run and reachable = dba.reachable and nodes = dba.nodes and
       enableds = dba.enableds and paths = dba.paths and runs = dba.runs

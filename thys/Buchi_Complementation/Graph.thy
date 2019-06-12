@@ -11,7 +11,7 @@ begin
 
   global_interpretation graph: transition_system_initial
     "const"
-    "\<lambda> u (k, p). w !! k \<in> alphabet A \<and> u \<in> {Suc k} \<times> succ A (w !! k) p \<inter> V"
+    "\<lambda> u (k, p). w !! k \<in> alphabet A \<and> u \<in> {Suc k} \<times> transition A (w !! k) p \<inter> V"
     "\<lambda> v. v \<in> ginitial A \<inter> V"
     for A w V
     defines
