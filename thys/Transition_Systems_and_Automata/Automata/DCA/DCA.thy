@@ -45,15 +45,15 @@ begin
   qed
 
   definition language :: "('label, 'state) dca \<Rightarrow> 'label stream set" where
-    "language A \<equiv> {w. run A w (initial A) \<and> \<not> infs (rejecting A) (trace A w (initial A))}"
+    "language A \<equiv> {w. run A w (initial A) \<and> fins (rejecting A) (trace A w (initial A))}"
 
   lemma language[intro]:
-    assumes "run A w (initial A)" "\<not> infs (rejecting A) (trace A w (initial A))"
+    assumes "run A w (initial A)" "fins (rejecting A) (trace A w (initial A))"
     shows "w \<in> language A"
     using assms unfolding language_def by auto
   lemma language_elim[elim]:
     assumes "w \<in> language A"
-    obtains "run A w (initial A)" "\<not> infs (rejecting A) (trace A w (initial A))"
+    obtains "run A w (initial A)" "fins (rejecting A) (trace A w (initial A))"
     using assms unfolding language_def by auto
 
   lemma language_alphabet: "language A \<subseteq> streams (alphabet A)"

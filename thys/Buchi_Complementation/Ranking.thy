@@ -200,7 +200,7 @@ begin
   proof (rule ccontr)
     assume 1: "\<not> thesis"
     have 2: "\<And> v. v \<in> V \<Longrightarrow> \<exists> u \<in> greachable A w V v. gaccepting A u" using that 1 by auto
-    have 3: "\<And> r v. v \<in> initial A \<Longrightarrow> run A (w ||| r) v \<Longrightarrow> \<not> infs (accepting A) (trace (w ||| r) v)"
+    have 3: "\<And> r v. v \<in> initial A \<Longrightarrow> run A (w ||| r) v \<Longrightarrow> fins (accepting A) (trace (w ||| r) v)"
       using assms(1) by auto
     obtain v where 4: "v \<in> V" using assms(2) by force
     obtain x where 5: "x \<in> greachable A w V v" "gaccepting A x" using 2 4 by blast
@@ -236,8 +236,8 @@ begin
     have 9: "q \<in> initial A" using 100(1) 7(2) by auto
     have 91: "sset (trace (w ||| s) q) \<subseteq> reachable A q"
       using nba.reachable_trace nba.reachable.reflexive 8 by this
-    have 10: "\<not> infs (accepting A) (trace (w ||| s) q)" using 3 9 8 by this
-    have 11: "\<not> infs (accepting A) s" using 10 unfolding trace_alt_def by simp
+    have 10: "fins (accepting A) (trace (w ||| s) q)" using 3 9 8 by this
+    have 11: "fins (accepting A) s" using 10 unfolding trace_alt_def by simp
     have 12: "infs (gaccepting A) r" using infs_mono[OF _ 6(2)] by simp
     have "s = smap snd (t @- y @- r)" unfolding 7(1) by simp
     also have "infs (accepting A) \<dots>" using 12 by (simp add: comp_def)

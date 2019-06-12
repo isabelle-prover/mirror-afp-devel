@@ -208,7 +208,7 @@ proof -
   also have "\<dots> \<longleftrightarrow> (\<exists>n. \<forall>k\<ge>n. \<not> af \<phi> (w[0 \<rightarrow> Suc k]) \<sim> false\<^sub>n)"
     by (meson af_prefix_false le_SucI order_refl)
 
-  also have "\<dots> \<longleftrightarrow> \<not> infs (\<lambda>\<psi>. \<psi> = \<up>false\<^sub>n) (DCA.trace (\<AA>\<^sub>\<nu> \<phi>) (to_stream w) (Abs \<phi>))"
+  also have "\<dots> \<longleftrightarrow> fins (\<lambda>\<psi>. \<psi> = \<up>false\<^sub>n) (DCA.trace (\<AA>\<^sub>\<nu> \<phi>) (to_stream w) (Abs \<phi>))"
     by (simp add: infs_snth \<AA>\<^sub>\<nu>_def DBA.succ_def af_lifted_semantics Abs_eq[symmetric] af_letter_lifted_semantics)
 
   also have "\<dots> \<longleftrightarrow> to_stream w \<in> DCA.language (\<AA>\<^sub>\<nu> \<phi>)"
@@ -234,7 +234,7 @@ proof -
   also have "\<dots> \<longleftrightarrow> (\<exists>n. \<forall>k\<ge>n. \<not> af\<^sub>G \<phi> (G\<^sub>n \<phi>) (w[0 \<rightarrow> Suc k]) \<sim> false\<^sub>n)"
     by (metis less_Suc_eq_le less_imp_Suc_add)
 
-  also have "\<dots> \<longleftrightarrow> \<not> infs (\<lambda>\<psi>. \<psi> = \<up>false\<^sub>n) (DCA.trace (\<AA>\<^sub>\<nu>_FG \<phi>) (to_stream w) (Abs (G\<^sub>n \<phi>)))"
+  also have "\<dots> \<longleftrightarrow> fins (\<lambda>\<psi>. \<psi> = \<up>false\<^sub>n) (DCA.trace (\<AA>\<^sub>\<nu>_FG \<phi>) (to_stream w) (Abs (G\<^sub>n \<phi>)))"
     by (simp add: infs_snth \<AA>\<^sub>\<nu>_FG_def DBA.succ_def af\<^sub>G_lifted_semantics Abs_eq[symmetric] af_letter\<^sub>G_lifted_semantics)
 
   also have "\<dots> \<longleftrightarrow> to_stream w \<in> DCA.language (\<AA>\<^sub>\<nu>_FG \<phi>)"
@@ -281,7 +281,7 @@ proof -
         \<longleftrightarrow> (\<exists>m. \<forall>k\<ge>m. \<not> snd (af\<^sub>\<nu> X (\<phi>, \<phi>[X]\<^sub>\<nu>) (prefix (Suc k) w)) \<sim> false\<^sub>n)"
     using af\<^sub>\<nu>_semantics_ltr af\<^sub>\<nu>_semantics_rtl by blast
 
-  also have "\<dots> \<longleftrightarrow> \<not> infs (\<lambda>p. snd p = \<up>false\<^sub>n) (DCA.trace (\<CC> \<phi> X) (to_stream w) (Abs \<phi>, Abs (\<phi>[X]\<^sub>\<nu>)))"
+  also have "\<dots> \<longleftrightarrow> fins (\<lambda>p. snd p = \<up>false\<^sub>n) (DCA.trace (\<CC> \<phi> X) (to_stream w) (Abs \<phi>, Abs (\<phi>[X]\<^sub>\<nu>)))"
     by(simp add: infs_snth \<CC>_def DCA.succ_def af\<^sub>\<nu>_lifted_semantics af_letter\<^sub>\<nu>_lifted_semantics Abs_eq)
 
   also have "\<dots> \<longleftrightarrow> to_stream w \<in> DCA.language (\<CC> \<phi> X)"
