@@ -37,37 +37,14 @@ lemma sum_mod:
   shows "(\<Sum>a\<in>A. f a) mod b = 0"
 using assms by induct (auto simp add: mod_add_eq [symmetric])
 
-subsubsection \<open>Additions to Set-Interval Theory\<close>
-
-lemma geometric_sum_2nat:
-  "(\<Sum>i<n. (2::nat) ^ i) = (2 ^ n - 1)"
-by (induct n) auto
-
-subsubsection \<open>Additions to Nat Theory or Power Theory\<close>
-
-lemma n_leq_2_pow_n:
-  "n \<le> 2 ^ n"
-proof (induct n)
-  case (Suc n)
-  from this have approx: "2 * n \<le> 2 ^ Suc n" by auto
-  show ?case
-  proof (cases n)
-    case 0
-    from this show ?thesis by simp
-  next
-    case Suc
-    from this show ?thesis by (intro le_trans[OF _ approx]) simp
-  qed
-qed (simp)
-
 subsubsection \<open>Additions to Finite-Set Theory\<close>
 
 lemma finite_exponents:
   "finite {i. 2 ^ i \<le> (n::nat)}"
 proof -
-  have "{i::nat. 2 ^ i \<le> n} \<subseteq> {..n}"
-    using dual_order.trans n_leq_2_pow_n by auto
-  from this show ?thesis by (simp add: finite_subset)
+  have "{i::nat. 2 ^ i \<le> n} \<subseteq> {0..n}"
+    using dual_order.trans by fastforce
+  from finite_subset[OF this] show ?thesis by simp
 qed
 
 subsection \<open>Binary Encoding of Natural Numbers\<close>
@@ -82,7 +59,7 @@ unfolding bitset_def using not_less by fastforce
 
 lemma in_bitset_bound_weak:
   "b \<in> bitset n \<Longrightarrow> b \<le> n"
-by (auto dest: in_bitset_bound intro: le_trans n_leq_2_pow_n)
+by (meson order.trans in_bitset_bound self_le_ge2_pow[OF order_refl])
 
 lemma finite_bitset:
   "finite (bitset n)"
@@ -151,7 +128,7 @@ proof -
   have bound: "(\<Sum>i | i \<in> B \<and> i < j. (2::nat) ^ i) < 2 ^ j"
   proof (rule order.strict_trans1)
     show "(\<Sum>i | i \<in> B \<and> i < j. (2::nat) ^ i) \<le> (\<Sum>i<j. 2 ^ i)" by (auto intro: sum_mono2)
-    show "... < 2 ^ j" by (simp add: geometric_sum_2nat)
+    show "... < 2 ^ j" using sum_power2 by (simp add: atLeast0LessThan)
   qed
   from this have zero: "(\<Sum>i | i \<in> B \<and> i < j. (2::nat) ^ i) div (2 ^ j) = 0" by (elim div_less)
   from assms have mod0: "(\<Sum>i | i \<in> B \<and> j \<le> i. (2::nat) ^ i) mod 2 ^ j = 0"
