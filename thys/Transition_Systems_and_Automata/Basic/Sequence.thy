@@ -270,7 +270,7 @@ begin
   lemma pred_stream_streamsp[pred_set_conv]: "pred_stream = streamsp"
     unfolding stream.pred_set streams_iff_sset[to_pred] by auto
 
-  subsection \<open>The @{term scan} Function\<close>
+  subsection \<open>The scan Function\<close>
 
   primrec (transfer) scan :: "('a \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'a list \<Rightarrow> 'b \<Rightarrow> 'b list" where
     "scan f [] a = []" | "scan f (x # xs) a = f x a # scan f xs (f x a)"
@@ -288,8 +288,11 @@ begin
 
   lemma scan_length[simp]: "length (scan f xs a) = length xs"
     by (induct xs arbitrary: a) (auto)
+  (* TODO: figure out how this is used, should it be a simp rule? or flipped? also target_alt_def *)
   lemma scan_last: "last (a # scan f xs a) = fold f xs a"
     by (induct xs arbitrary: a) (auto simp: last.simps)
+  lemma scan_butlast[simp]: "scan f (butlast xs) a = butlast (scan f xs a)"
+    by (induct xs arbitrary: a) (auto simp: butlast.simps)
 
   lemma scan_const[simp]: "scan const xs a = xs"
     by (induct xs arbitrary: a) (auto)

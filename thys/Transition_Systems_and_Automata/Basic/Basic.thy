@@ -20,8 +20,7 @@ begin
     assumes "\<And> A. R A \<Longrightarrow> \<exists> B \<subset> A. R B"
     shows "infinite A"
   proof
-    assume "finite A"
-    then show "False" using assms by (induct rule: finite_psubset_induct) (auto)
+    show "False" if "finite A" using that assms by (induct rule: finite_psubset_induct) (auto)
   qed
 
   (* TODO: why are there two copies of this theorem? *)

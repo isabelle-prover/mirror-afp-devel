@@ -131,17 +131,18 @@ begin
       (\<lambda> a (p, q). (dba.succ A a p, dba.succ B a q))
       (\<lambda> (p, q). dba.accepting A p \<or> dba.accepting B q)"
 
+  (* TODO: can these be extracted as more general theorems about sscan? *)
   lemma dbau_fst[iff]: "infs (P \<circ> fst) (dba.trace (dbau A B) w (p, q)) \<longleftrightarrow> infs P (dba.trace A w p)"
   proof -
     let ?t = "dba.trace (dbau A B) w (p, q)"
-    have "infs (P \<circ> fst) ?t \<longleftrightarrow> infs P (smap fst ?t)" by simp
+    have "infs (P \<circ> fst) ?t \<longleftrightarrow> infs P (smap fst ?t)" by (simp add: comp_def)
     also have "smap fst ?t = dba.trace A w p" unfolding dbau_def by (coinduction arbitrary: w p q) (auto)
     finally show ?thesis by this
   qed
   lemma dbau_snd[iff]: "infs (P \<circ> snd) (dba.trace (dbau A B) w (p, q)) \<longleftrightarrow> infs P (dba.trace B w q)"
   proof -
     let ?t = "dba.trace (dbau A B) w (p, q)"
-    have "infs (P \<circ> snd) ?t \<longleftrightarrow> infs P (smap snd ?t)" by simp
+    have "infs (P \<circ> snd) ?t \<longleftrightarrow> infs P (smap snd ?t)" by (simp add: comp_def)
     also have "smap snd ?t = dba.trace B w q" unfolding dbau_def by (coinduction arbitrary: w p q) (auto)
     finally show ?thesis by this
   qed

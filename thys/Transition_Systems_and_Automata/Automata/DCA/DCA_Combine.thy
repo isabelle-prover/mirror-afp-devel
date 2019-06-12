@@ -15,14 +15,14 @@ begin
   lemma dcai_fst[iff]: "infs (P \<circ> fst) (dca.trace (dcai A B) w (p, q)) \<longleftrightarrow> infs P (dca.trace A w p)"
   proof -
     let ?t = "dca.trace (dcai A B) w (p, q)"
-    have "infs (P \<circ> fst) ?t \<longleftrightarrow> infs P (smap fst ?t)" by simp
+    have "infs (P \<circ> fst) ?t \<longleftrightarrow> infs P (smap fst ?t)" by (simp add: comp_def)
     also have "smap fst ?t = dca.trace A w p" unfolding dcai_def by (coinduction arbitrary: w p q) (auto)
     finally show ?thesis by this
   qed
   lemma dcai_snd[iff]: "infs (P \<circ> snd) (dca.trace (dcai A B) w (p, q)) \<longleftrightarrow> infs P (dca.trace B w q)"
   proof -
     let ?t = "dca.trace (dcai A B) w (p, q)"
-    have "infs (P \<circ> snd) ?t \<longleftrightarrow> infs P (smap snd ?t)" by simp
+    have "infs (P \<circ> snd) ?t \<longleftrightarrow> infs P (smap snd ?t)" by (simp add: comp_def)
     also have "smap snd ?t = dca.trace B w q" unfolding dcai_def by (coinduction arbitrary: w p q) (auto)
     finally show ?thesis by this
   qed

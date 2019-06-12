@@ -1,10 +1,11 @@
 theory Acceptance
-imports "Sequence_LTL"
+imports Sequence_LTL
 begin
 
   type_synonym 'a pred = "'a \<Rightarrow> bool"
   type_synonym 'a rabin = "'a pred \<times> 'a pred"
   type_synonym 'a gen = "'a list"
+  (* TODO: move to degeneralization theory *)
   type_synonym 'a degen = "'a \<times> nat"
 
   definition rabin :: "'a rabin \<Rightarrow> 'a stream pred" where
@@ -21,28 +22,30 @@ begin
     using assms unfolding rabin_def by auto
 
   definition gen :: "('a \<Rightarrow> 'b pred) \<Rightarrow> ('a gen \<Rightarrow> 'b pred)" where
-    "gen P xs w \<equiv> \<forall> x \<in> set xs. P x w"
+    "gen P cs w \<equiv> \<forall> c \<in> set cs. P c w"
 
   lemma gen[intro]:
-    assumes "\<And> x. x \<in> set xs \<Longrightarrow> P x w"
-    shows "gen P xs w"
+    assumes "\<And> c. c \<in> set cs \<Longrightarrow> P c w"
+    shows "gen P cs w"
     using assms unfolding gen_def by auto
   lemma gen_elim[elim]:
-    assumes "gen P xs w"
-    obtains "\<And> x. x \<in> set xs \<Longrightarrow> P x w"
+    assumes "gen P cs w"
+    obtains "\<And> c. c \<in> set cs \<Longrightarrow> P c w"
     using assms unfolding gen_def by auto
 
   definition cogen :: "('a \<Rightarrow> 'b pred) \<Rightarrow> ('a gen \<Rightarrow> 'b pred)" where
-    "cogen P xs w \<equiv> \<exists> x \<in> set xs. P x w"
+    "cogen P cs w \<equiv> \<exists> c \<in> set cs. P c w"
 
   lemma cogen[intro]:
-    assumes "x \<in> set xs" "P x w"
-    shows "cogen P xs w"
+    assumes "c \<in> set cs" "P c w"
+    shows "cogen P cs w"
     using assms unfolding cogen_def by auto
   lemma cogen_elim[elim]:
-    assumes "cogen P xs w"
-    obtains x
-    where "x \<in> set xs" "P x w"
+    assumes "cogen P cs w"
+    obtains c
+    where "c \<in> set cs" "P c w"
     using assms unfolding cogen_def by auto
+
+  lemma cogen_alt_def: "cogen P cs w \<longleftrightarrow> \<not> gen (\<lambda> c w. Not (P c w)) cs w" by auto
 
 end

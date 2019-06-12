@@ -26,14 +26,14 @@ begin
   lemma dbcrai_fst[iff]: "infs (P \<circ> fst) (dra.trace (dbcrai A B) w (p, q)) \<longleftrightarrow> infs P (dba.trace A w p)"
   proof -
     let ?t = "dra.trace (dbcrai A B) w (p, q)"
-    have "infs (P \<circ> fst) ?t \<longleftrightarrow> infs P (smap fst ?t)" by simp
+    have "infs (P \<circ> fst) ?t \<longleftrightarrow> infs P (smap fst ?t)" by (simp add: comp_def)
     also have "smap fst ?t = dba.trace A w p" unfolding dbcrai_def by (coinduction arbitrary: w p q) (auto)
     finally show ?thesis by this
   qed
   lemma dbcrai_snd[iff]: "infs (P \<circ> snd) (dra.trace (dbcrai A B) w (p, q)) \<longleftrightarrow> infs P (dca.trace B w q)"
   proof -
     let ?t = "dra.trace (dbcrai A B) w (p, q)"
-    have "infs (P \<circ> snd) ?t \<longleftrightarrow> infs P (smap snd ?t)" by simp
+    have "infs (P \<circ> snd) ?t \<longleftrightarrow> infs P (smap snd ?t)" by (simp add: comp_def)
     also have "smap snd ?t = dca.trace B w q" unfolding dbcrai_def by (coinduction arbitrary: w p q) (auto)
     finally show ?thesis by this
   qed
@@ -102,7 +102,7 @@ begin
       infs P (dra.trace (AA ! k) w (pp ! k))"
   proof -
     have "infs (P \<circ> get k) (dra.trace (draul AA) w pp) \<longleftrightarrow>
-      infs P (smap (get k) (dra.trace (draul AA) w pp))" by simp
+      infs P (smap (get k) (dra.trace (draul AA) w pp))" by (simp add: comp_def)
     also have "smap (get k) (dra.trace (draul AA) w pp) = dra.trace (AA ! k) w (pp ! k)"
       using assms unfolding draul_def by (coinduction arbitrary: w pp) (force)
     finally show ?thesis by this

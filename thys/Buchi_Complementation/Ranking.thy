@@ -104,12 +104,12 @@ begin
     have 9: "\<And> p. p \<in> sset (gtrace ?t ?u) \<Longrightarrow> gaccepting A p \<Longrightarrow> even (f p)" using 7 8 by auto
 
     have 19: "infs (accepting A) (smap snd ?r)" using 2(3) unfolding trace_alt_def by simp
-    have 18: "infs (gaccepting A) ?r" using 19 by force
+    have 18: "infs (gaccepting A) ?r" using 19 by (force simp: comp_def)
     have 17: "infs (gaccepting A) (gtrace ?r ?v)" using 18 unfolding gtrace_alt_def by this
     have 16: "infs (gaccepting A) (gtrace (?s @- ?t) ?v)" using 17 unfolding stake_sdrop by this
     have 15: "infs (gaccepting A) (gtrace ?t ?u)" using 16 by simp
     have 13: "infs (even \<circ> f) (gtrace ?t ?u)" using infs_mono[OF _ 15] 9 by simp
-    have 12: "infs even (smap f (gtrace ?t ?u))" using 13 by simp
+    have 12: "infs even (smap f (gtrace ?t ?u))" using 13 by (simp add: comp_def)
     have 11: "Bex (sset (smap f (gtrace ?t ?u))) even" using 12 infs_any by metis
 
     show False using 4 11 by auto
@@ -240,7 +240,7 @@ begin
     have 11: "\<not> infs (accepting A) s" using 10 unfolding trace_alt_def by simp
     have 12: "infs (gaccepting A) r" using infs_mono[OF _ 6(2)] by simp
     have "s = smap snd (t @- y @- r)" unfolding 7(1) by simp
-    also have "infs (accepting A) \<dots>" using 12 by simp
+    also have "infs (accepting A) \<dots>" using 12 by (simp add: comp_def)
     finally have 13: "infs (accepting A) s" by this
     show False using 11 13 by simp
   qed
