@@ -8081,3 +8081,22 @@ abstract =
   statements. Our findings are summarized in a <a
   href="http://people.inf.ethz.ch/trayteld/papers/lambdaauth/lambdaauth.pdf">paper
   draft</a>.
+
+[IMP2_Binary_Heap]
+title = Binary Heaps for IMP2
+author = Simon Griebel<>
+topic = Computer Science/Data Structures, Computer Science/Algorithms
+date = 2019-06-13
+notify = s.griebel@tum.de
+abstract = 
+  In this submission array-based binary minimum heaps are formalized.
+  The correctness of the following heap operations is proved: insert,
+  get-min, delete-min and make-heap. These are then used to verify an
+  in-place heapsort. The formalization is based on IMP2, an imperative
+  program verification framework implemented in Isabelle/HOL. The
+  verified heap functions are iterative versions of the partly recursive
+  functions found in "Algorithms and Data Structures – The Basic
+  Toolbox" by K. Mehlhorn and P. Sanders and "Introduction to
+  Algorithms" by T. H. Cormen, C. E. Leiserson, R. L. Rivest and C.
+  Stein.
+

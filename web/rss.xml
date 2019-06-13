@@ -9,7 +9,25 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>30 May 2019 00:00:00 +0000</pubDate>
+    <pubDate>13 Jun 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Binary Heaps for IMP2</title>
+              <link>https://www.isa-afp.org/entries/IMP2_Binary_Heap.html</link>
+       <guid>https://www.isa-afp.org/entries/IMP2_Binary_Heap.html</guid>
+       <dc:creator> Simon Griebel       </dc:creator>
+       <pubDate>13 Jun 2019 00:00:00 +0000</pubDate>
+       <description>
+In this submission array-based binary minimum heaps are formalized.
+The correctness of the following heap operations is proved: insert,
+get-min, delete-min and make-heap. These are then used to verify an
+in-place heapsort. The formalization is based on IMP2, an imperative
+program verification framework implemented in Isabelle/HOL. The
+verified heap functions are iterative versions of the partly recursive
+functions found in &#34;Algorithms and Data Structures – The Basic
+Toolbox&#34; by K. Mehlhorn and P. Sanders and &#34;Introduction to
+Algorithms&#34; by T. H. Cormen, C. E. Leiserson, R. L. Rivest and C.
+Stein.</description>
+    </item>
     <item>
        <title>Multidimensional Binary Search Trees</title>
               <link>https://www.isa-afp.org/entries/KD_Tree.html</link>
@@ -549,22 +567,6 @@ implemented as a tactic in Isabelle.  This entry contains the
 instantiation of auto2 for Isabelle/HOL, along with two basic
 examples: solutions to some of the Pelletier’s problems, and
 elementary number theory of primes.</description>
-    </item>
-    <item>
-       <title>Matroids</title>
-              <link>https://www.isa-afp.org/entries/Matroids.html</link>
-       <guid>https://www.isa-afp.org/entries/Matroids.html</guid>
-       <dc:creator> Jonas Keinholz       </dc:creator>
-       <pubDate>16 Nov 2018 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This article defines the combinatorial structures known as
-&lt;em&gt;Independence Systems&lt;/em&gt; and
-&lt;em&gt;Matroids&lt;/em&gt; and provides basic concepts and theorems
-related to them. These structures play an important role in
-combinatorial optimisation, e. g. greedy algorithms such as
-Kruskal&#39;s algorithm. The development is based on Oxley&#39;s
-&lt;a href=&#34;http://www.math.lsu.edu/~oxley/survey4.pdf&#34;&gt;`What
-is a Matroid?&#39;&lt;/a&gt;.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
