@@ -1363,13 +1363,15 @@ proof (cases x)
   proof (cases "?fr = ?fl")
     case True
     hence id1: "floor_1 x = ?fr" unfolding id by auto
-    from True have id: "floor (?r l') = floor (?r r')" unfolding real_of_rat_floor by simp
+    from True have id: "floor (?r l') = floor (?r r')"
+      by simp
     have "floor ?x \<le> floor (?r r')"
       by (rule floor_mono[OF ineq(2)])
     moreover have "floor (?r l') \<le> floor ?x"
       by (rule floor_mono[OF ineq(1)])
-    ultimately have "floor ?x = floor (?r r')" unfolding id by simp
-    thus ?thesis unfolding id1 real_of_rat_floor .
+    ultimately have "floor ?x = floor (?r r')"
+      unfolding id by (simp add: id)
+    then show ?thesis by (simp add: id1)
   next
     case False
     with id have id: "floor_1 x = (if ?fr' < l'' then ?fr else ?fl)" by simp

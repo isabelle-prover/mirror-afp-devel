@@ -347,7 +347,7 @@ lemma min_height_size_log:
 
 lemma size_log_if_complete: 
   "complete kdt \<Longrightarrow> height kdt = log 2 (size_kdt kdt)"
-  by (simp add: log2_of_power_eq size_if_complete)
+  by (simp add: size_if_complete)
 
 lemma min_height_size_log_if_incomplete:
   "\<not> complete kdt \<Longrightarrow> min_height kdt < log 2 (size_kdt kdt)"

@@ -811,14 +811,15 @@ proof -
       apply (subst log_le_cancel_iff)
       using * \<open>delta > 0\<close> \<open>a < b\<close> \<open>lambda > 0\<close> by (auto simp add: divide_simps algebra_simps)
     moreover have "log 2 (2^k) = k"
-      by (simp add: log2_of_power_eq)
+      by simp
     ultimately have A: "log 2 (lambda * (b-a)/(10 * delta)) \<ge> k" by auto
     have **: "int n = floor(log 2 (lambda * (b-a)/(10 * delta)))"
       unfolding n_def apply (rule nat_0_le) using A by auto
     then have "log 2 (2^n) \<le> log 2 (lambda * (b-a)/(10 * delta))"
       apply (subst log_nat_power, auto) by linarith
     then have I: "2^n \<le> lambda * (b-a)/(10 * delta)"
-      using \<open>0 < lambda * (b - a)\<close> \<open>0 < delta\<close> by auto
+      using \<open>0 < lambda * (b - a)\<close> \<open>0 < delta\<close>
+      by (simp add: le_log_iff powr_realpow)
     have "log 2 (lambda * (b-a)/(10 * delta)) \<le> log 2 (2^(n+1))"
       apply (subst log_nat_power, auto) using ** by linarith
     then have J: "lambda * (b-a)/(10 * delta) \<le> 2^(n+1)"

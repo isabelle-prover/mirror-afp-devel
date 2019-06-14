@@ -867,7 +867,7 @@ proof -
   assume p: "p \<noteq> 0" 
   with pq c have q: "q \<noteq> 0" by auto
   have id: "{x. rpoly p x = (0 :: complex)} = {x. ipoly q x = 0}"
-    unfolding pq by (simp add: c of_rat_of_int_poly map_poly_map_poly o_def hom_distribs)
+    unfolding pq by (simp add: c of_rat_of_int_poly hom_distribs)
   show "?l = ?r" unfolding complex_roots_of_rat_poly_def cq snd_conv id
     complex_roots_of_int_poly(1)[OF q] ..
 qed

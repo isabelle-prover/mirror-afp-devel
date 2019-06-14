@@ -31,23 +31,6 @@ begin
 lemma mod_div_equality_int: "(n :: int) div x * x = n - n mod x"
   using div_mult_mod_eq[of n x] by arith
 
-lemma log_pow_cancel[simp]: "a > 0 \<Longrightarrow> a \<noteq> 1 \<Longrightarrow> log a (a ^ b) = b" 
-  by (metis monoid_mult_class.mult.right_neutral log_eq_one log_nat_power)
-
-lemma real_of_rat_floor[simp]: "floor (real_of_rat x) = floor x"
-  by (metis Ratreal_def real_floor_code)
-
-lemma abs_of_rat[simp]: "\<bar>real_of_rat x\<bar> = real_of_rat \<bar>x\<bar>" 
-proof (cases "x \<ge> 0")
-  case False
-  define y where "y = - x"
-  from False have y: "y \<ge> 0" "x = - y" by (auto simp: y_def)
-  thus ?thesis by (auto simp: of_rat_minus)
-qed auto
-
-lemma real_of_rat_ceiling[simp]: "ceiling (real_of_rat x) = ceiling x"
-  unfolding ceiling_def by (metis of_rat_minus real_of_rat_floor)
-
 lemma div_is_floor_divide_rat: "n div y = \<lfloor>rat_of_int n / rat_of_int y\<rfloor>"
   unfolding Fract_of_int_quotient[symmetric] floor_Fract by simp
 
