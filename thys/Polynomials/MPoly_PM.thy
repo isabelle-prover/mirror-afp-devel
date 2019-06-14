@@ -437,7 +437,7 @@ lemma mindeg_min:
 subsection \<open>Indeterminates\<close>
 
 definition indets :: "(('x \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> 'x set"
-  where "indets p = UNION (keys p) keys"
+  where "indets p = \<Union> (keys ` keys p)"
 
 definition PPs :: "'x set \<Rightarrow> ('x \<Rightarrow>\<^sub>0 nat) set"  (".[(_)]")
   where "PPs X = {t. keys t \<subseteq> X}"
@@ -2840,7 +2840,7 @@ next
 qed
 
 lemma maxdeg_homogenize:
-  assumes "x \<notin> UNION F indets"
+  assumes "x \<notin> \<Union> (indets ` F)"
   shows "maxdeg (homogenize x ` F) = maxdeg F"
   unfolding maxdeg_def image_image
 proof (rule arg_cong[where f=Max], rule set_eqI)

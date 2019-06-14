@@ -238,10 +238,10 @@ proof (induction Cs)
   define \<sigma> :: "nat \<Rightarrow> ('a, nat) term"
     where "\<sigma> = (\<lambda>v. Var (\<sigma>' v))"
 
-  have "vars_clause (subst_cls C \<sigma>) \<subseteq> UNION (range \<sigma>) vars_term"
+  have "vars_clause (subst_cls C \<sigma>) \<subseteq> \<Union> (vars_term ` range \<sigma>)"
     using vars_in_instance_in_range_cls[of C "hd (renamings_apart (C # Cs))"] \<sigma>_def \<sigma>'_def
     by (auto simp: Let_def)
-  moreover have "UNION (range \<sigma>) vars_term
+  moreover have "\<Union> (vars_term ` range \<sigma>)
     \<inter> vars_clause_list (subst_cls_lists Cs (renamings_apart Cs)) = {}"
   proof -
     have "range \<sigma>' \<inter> vars_clause_list (subst_cls_lists Cs (renamings_apart Cs)) = {}"

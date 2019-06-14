@@ -6,7 +6,7 @@ begin
 
   definition dbgail :: "('label, 'state) dba list \<Rightarrow> ('label, 'state list) dgba" where
     "dbgail AA \<equiv> dgba
-      (INTER (set AA) dba.alphabet)
+      (\<Inter> (dba.alphabet ` set AA))
       (map dba.initial AA)
       (\<lambda> a pp. map2 (\<lambda> A p. dba.transition A a p) AA pp)
       (map (\<lambda> k pp. dba.accepting (AA ! k) (pp ! k)) [0 ..< length AA])"
@@ -50,7 +50,7 @@ begin
     finally show ?thesis by this
   qed
 
-  lemma dbgail_language[simp]: "DGBA.language (dbgail AA) = INTER (set AA) DBA.language"
+  lemma dbgail_language[simp]: "DGBA.language (dbgail AA) = \<Inter> (DBA.language ` set AA)"
   proof safe
     fix w A
     assume 1: "w \<in> DGBA.language (dbgail AA)" "A \<in> set AA"
@@ -76,7 +76,7 @@ begin
     qed
   next
     fix w
-    assume 1: "w \<in> INTER (set AA) DBA.language"
+    assume 1: "w \<in> \<Inter> (DBA.language ` set AA)"
     have 2: "dba.run A w (dba.initial A)" "infs (dba.accepting A) (dba.trace A w (dba.initial A))"
       if "A \<in> set AA" for A using 1 that by auto
     show "w \<in> DGBA.language (dbgail AA)"
@@ -120,8 +120,9 @@ begin
     finally show ?thesis by simp
   qed
 
-  lemma dbail_language[simp]: "DBA.language (dbail AA) = INTER (set AA) DBA.language"
-    unfolding dbail_def using dgbad_language dbgail_language by auto
+  lemma dbail_language [simp]:
+    "DBA.language (dbail AA) = \<Inter> (DBA.language ` set AA)"
+    by (simp add: dbail_def)
 
   definition dbau :: "('label, 'state\<^sub>1) dba \<Rightarrow> ('label, 'state\<^sub>2) dba \<Rightarrow>
     ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) dba" where
@@ -203,7 +204,7 @@ begin
 
   definition dbaul :: "('label, 'state) dba list \<Rightarrow> ('label, 'state list) dba" where
     "dbaul AA \<equiv> dba
-      (UNION (set AA) dba.alphabet)
+      (\<Union> (dba.alphabet ` set AA))
       (map dba.initial AA)
       (\<lambda> a pp. map2 (\<lambda> A p. dba.transition A a p) AA pp)
       (\<lambda> pp. \<exists> k < length AA. dba.accepting (AA ! k) (pp ! k))"
@@ -217,13 +218,13 @@ begin
     shows "length pp = length AA"
     using assms unfolding dbaul_def by induct auto
   lemma dbaul_nodes[intro]:
-    assumes "INTER (set AA) dba.alphabet = UNION (set AA) dba.alphabet"
+    assumes "\<Inter> (dba.alphabet ` set AA) = \<Union> (dba.alphabet ` set AA)"
     assumes "pp \<in> DBA.nodes (dbaul AA)" "k < length pp"
     shows "pp ! k \<in> DBA.nodes (AA ! k)"
     using assms(2, 3, 1) unfolding dbaul_def by induct force+
 
   lemma dbaul_nodes_finite[intro]:
-    assumes "INTER (set AA) dba.alphabet = UNION (set AA) dba.alphabet"
+    assumes "\<Inter> (dba.alphabet ` set AA) = \<Union> (dba.alphabet ` set AA)"
     assumes "list_all (finite \<circ> DBA.nodes) AA"
     shows "finite (DBA.nodes (dbaul AA))"
   proof (rule finite_subset)
@@ -234,7 +235,7 @@ begin
     then show "finite (listset (map DBA.nodes AA))" using assms(2) by (simp add: list.pred_map)
   qed
   lemma dbaul_nodes_card:
-    assumes "INTER (set AA) dba.alphabet = UNION (set AA) dba.alphabet"
+    assumes "\<Inter> (dba.alphabet ` set AA) = \<Union> (dba.alphabet ` set AA)"
     assumes "list_all (finite \<circ> DBA.nodes) AA"
     shows "card (DBA.nodes (dbaul AA)) \<le> prod_list (map (card \<circ> DBA.nodes) AA)"
   proof -
@@ -251,8 +252,8 @@ begin
   qed
 
   lemma dbaul_language[simp]:
-    assumes "INTER (set AA) dba.alphabet = UNION (set AA) dba.alphabet"
-    shows "DBA.language (dbaul AA) = UNION (set AA) DBA.language"
+    assumes "\<Inter> (dba.alphabet ` set AA) = \<Union> (dba.alphabet ` set AA)"
+    shows "DBA.language (dbaul AA) = \<Union> (DBA.language ` set AA)"
   proof safe
     fix w
     assume 1: "w \<in> DBA.language (dbaul AA)"
@@ -264,7 +265,7 @@ begin
       "k < length AA"
       "infs (\<lambda> pp. dba.accepting (AA ! k) (pp ! k)) (dba.trace (dbaul AA) w (map dba.initial AA))"
       using 2(2) unfolding dbaul_def by auto
-    show "w \<in> UNION (set AA) DBA.language"
+    show "w \<in> \<Union> (DBA.language ` set AA)"
     proof (intro UN_I DBA.language)
       show "AA ! k \<in> set AA" using 3(1) by simp
       show "dba.run (AA ! k) w (dba.initial (AA ! k))"

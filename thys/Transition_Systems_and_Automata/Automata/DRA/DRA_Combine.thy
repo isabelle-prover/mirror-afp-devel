@@ -91,7 +91,7 @@ begin
 
   definition draul :: "('label, 'state) dra list \<Rightarrow> ('label, 'state list) dra" where
     "draul AA \<equiv> dra
-      (UNION (set AA) dra.alphabet)
+      (\<Union> (dra.alphabet ` set AA))
       (map dra.initial AA)
       (\<lambda> a pp. map2 (\<lambda> A p. dra.transition A a p) AA pp)
       (do { k \<leftarrow> [0 ..< length AA]; (f, g) \<leftarrow> dra.accepting (AA ! k); [(f \<circ> get k, g \<circ> get k)] })"
@@ -112,13 +112,13 @@ begin
     shows "length pp = length AA"
     using assms unfolding draul_def by induct auto
   lemma draul_nodes[intro]:
-    assumes "INTER (set AA) dra.alphabet = UNION (set AA) dra.alphabet"
+    assumes "\<Inter> (dra.alphabet ` set AA)  = \<Union> (dra.alphabet ` set AA)"
     assumes "pp \<in> DRA.nodes (draul AA)" "k < length pp"
     shows "pp ! k \<in> DRA.nodes (AA ! k)"
     using assms(2, 3, 1) unfolding draul_def by induct force+
 
   lemma draul_nodes_finite[intro]:
-    assumes "INTER (set AA) dra.alphabet = UNION (set AA) dra.alphabet"
+    assumes "\<Inter> (dra.alphabet ` set AA)  = \<Union> (dra.alphabet ` set AA)"
     assumes "list_all (finite \<circ> DRA.nodes) AA"
     shows "finite (DRA.nodes (draul AA))"
   proof (rule finite_subset)
@@ -129,7 +129,7 @@ begin
     then show "finite (listset (map DRA.nodes AA))" using assms(2) by (simp add: list.pred_map)
   qed
   lemma draul_nodes_card:
-    assumes "INTER (set AA) dra.alphabet = UNION (set AA) dra.alphabet"
+    assumes "\<Inter> (dra.alphabet ` set AA)  = \<Union> (dra.alphabet ` set AA)"
     assumes "list_all (finite \<circ> DRA.nodes) AA"
     shows "card (DRA.nodes (draul AA)) \<le> prod_list (map (card \<circ> DRA.nodes) AA)"
   proof -
@@ -146,8 +146,8 @@ begin
   qed
 
   lemma draul_language[simp]:
-    assumes "INTER (set AA) dra.alphabet = UNION (set AA) dra.alphabet"
-    shows "DRA.language (draul AA) = UNION (set AA) DRA.language"
+    assumes "\<Inter> (dra.alphabet ` set AA)  = \<Union> (dra.alphabet ` set AA)"
+    shows "DRA.language (draul AA) = \<Union> (DRA.language ` set AA)"
   proof safe
     fix w
     assume 1: "w \<in> DRA.language (draul AA)"
@@ -163,7 +163,7 @@ begin
     obtain k P Q where 4:
       "k < length AA" "I = P \<circ> get k" "F = Q \<circ> get k" "(P, Q) \<in> set (dra.accepting (AA ! k))"
       using 3(1) unfolding draul_def List.bind_def by (auto simp: comp_def)
-    show "w \<in> UNION (set AA) DRA.language"
+    show "w \<in> \<Union> (DRA.language ` set AA)"
     proof (intro UN_I DRA.language cogen rabin)
       show "AA ! k \<in> set AA" using 4(1) by auto
       show "DRA.run (AA ! k) w (dra.initial (AA ! k))"

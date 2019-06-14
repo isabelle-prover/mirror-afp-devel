@@ -495,7 +495,7 @@ abbreviation the_lcg where
 
 lemma mk_chain_edges:
   assumes "valid_selector Rules sel"
-          "UNION Rules (edges \<circ> snd) \<subseteq> L \<times> UNIV"
+          "\<Union> ((edges o snd) ` Rules) \<subseteq> L \<times> UNIV"
           "edges (graph_of G) \<subseteq> L \<times> UNIV"
   shows "edges (graph_of (mk_chain sel Rules G i)) \<subseteq> L \<times> UNIV"
 using assms(3) proof(induct i arbitrary:G)
@@ -519,13 +519,13 @@ qed
 
 lemma the_lcg_edges:
   assumes "valid_selector Rules sel"
-          "fst ` UNION Rules (edges \<circ> snd) \<subseteq> L" (is "fst `?fR \<subseteq> _")
+          "fst ` (\<Union> ((edges o snd) ` Rules)) \<subseteq> L" (is "fst `?fR \<subseteq> _")
           "fst ` snd G \<subseteq> L"
   shows "fst ` edges (the_lcg sel Rules G) \<subseteq> L"
 proof -
   from assms have "fst `?fR \<times> UNIV \<subseteq> L \<times> UNIV" "fst `(edges (graph_of G)) \<times> UNIV \<subseteq> L \<times> UNIV"
     by auto
-  hence "UNION Rules (edges \<circ> snd) \<subseteq> L \<times> UNIV" "edges (graph_of G) \<subseteq> L \<times> UNIV"
+  hence "(\<Union> ((edges o snd) ` Rules)) \<subseteq> L \<times> UNIV" "edges (graph_of G) \<subseteq> L \<times> UNIV"
     using fst_UNIV[of ?fR] fst_UNIV[of "(edges (graph_of G))"] by blast+
   note assms = assms(1) this
   have "edges (graph_of (mk_chain sel Rules G i)) \<subseteq> L \<times> UNIV" for i

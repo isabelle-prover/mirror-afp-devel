@@ -75,7 +75,7 @@ begin
 
   definition dcail :: "('label, 'state) dca list \<Rightarrow> ('label, 'state list) dca" where
     "dcail AA \<equiv> dca
-      (INTER (set AA) dca.alphabet)
+      (\<Inter> (dca.alphabet ` set AA))
       (map dca.initial AA)
       (\<lambda> a pp. map2 (\<lambda> A p. dca.transition A a p) AA pp)
       (\<lambda> pp. \<exists> k < length AA. dca.rejecting (AA ! k) (pp ! k))"
@@ -119,7 +119,7 @@ begin
     finally show ?thesis by this
   qed
 
-  lemma dcail_language[simp]: "DCA.language (dcail AA) = INTER (set AA) DCA.language"
+  lemma dcail_language[simp]: "DCA.language (dcail AA) = \<Inter> (DCA.language ` set AA)"
   proof safe
     fix A w
     assume 1: "w \<in> DCA.language (dcail AA)" "A \<in> set AA"
@@ -145,7 +145,7 @@ begin
     qed
   next
     fix w
-    assume 1: "w \<in> INTER (set AA) DCA.language"
+    assume 1: "w \<in> \<Inter> (DCA.language `set AA)"
     have 2: "dca.run A w (dca.initial A)" "fins (dca.rejecting A) (dca.trace A w (dca.initial A))"
       if "A \<in> set AA" for A using 1 that by auto
     have 3: "fins (\<lambda> pp. dca.rejecting (AA ! k) (pp ! k)) (dca.trace (dcail AA) w (map dca.initial AA))"
@@ -171,7 +171,7 @@ begin
 
   definition dcgaul :: "('label, 'state) dca list \<Rightarrow> ('label, 'state list) dgca" where
     "dcgaul AA \<equiv> dgca
-      (UNION (set AA) dca.alphabet)
+      (\<Union> (dca.alphabet ` set AA))
       (map dca.initial AA)
       (\<lambda> a pp. map2 (\<lambda> A p. dca.transition A a p) AA pp)
       (map (\<lambda> k pp. dca.rejecting (AA ! k) (pp ! k)) [0 ..< length AA])"
@@ -185,13 +185,13 @@ begin
     shows "length pp = length AA"
     using assms unfolding dcgaul_def by induct auto
   lemma dcgaul_nodes[intro]:
-    assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
+    assumes "\<Inter> (dca.alphabet ` set AA)  = \<Union> (dca.alphabet ` set AA)"
     assumes "pp \<in> DGCA.nodes (dcgaul AA)" "k < length pp"
     shows "pp ! k \<in> DCA.nodes (AA ! k)"
     using assms(2, 3, 1) unfolding dcgaul_def by induct force+
 
   lemma dcgaul_nodes_finite[intro]:
-    assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
+    assumes "\<Inter> (dca.alphabet ` set AA)  = \<Union> (dca.alphabet ` set AA)"
     assumes "list_all (finite \<circ> DCA.nodes) AA"
     shows "finite (DGCA.nodes (dcgaul AA))"
   proof (rule finite_subset)
@@ -202,7 +202,7 @@ begin
     then show "finite (listset (map DCA.nodes AA))" using assms(2) by (simp add: list.pred_map)
   qed
   lemma dcgaul_nodes_card:
-    assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
+    assumes "\<Inter> (dca.alphabet ` set AA)  = \<Union> (dca.alphabet ` set AA)"
     assumes "list_all (finite \<circ> DCA.nodes) AA"
     shows "card (DGCA.nodes (dcgaul AA)) \<le> prod_list (map (card \<circ> DCA.nodes) AA)"
   proof -
@@ -219,8 +219,8 @@ begin
   qed
 
   lemma dcgaul_language[simp]:
-    assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
-    shows "DGCA.language (dcgaul AA) = UNION (set AA) DCA.language"
+    assumes "\<Inter> (dca.alphabet ` set AA)  = \<Union> (dca.alphabet ` set AA)"
+    shows "DGCA.language (dcgaul AA) = \<Union> (DCA.language ` set AA)"
   proof safe
     fix w
     assume 1: "w \<in> DGCA.language (dcgaul AA)"
@@ -229,7 +229,7 @@ begin
       "k < length AA"
       "fins (\<lambda> pp. dca.rejecting (AA ! k) (pp ! k)) (dgca.trace (dcgaul AA) w (dgca.initial (dcgaul AA)))"
       using 1 unfolding dcgaul_def by force
-    show "w \<in> UNION (set AA) DCA.language"
+    show "w \<in> \<Union> (DCA.language ` set AA)"
     proof (intro UN_I DCA.language)
       show "AA ! k \<in> set AA" using 2(2) by simp
       show "dca.run (AA ! k) w (dca.initial (AA ! k))"
@@ -272,12 +272,12 @@ begin
     "dcaul = dgcad \<circ> dcgaul"
 
   lemma dcaul_nodes_finite[intro]:
-    assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
+    assumes "\<Inter> (dca.alphabet ` set AA)  = \<Union> (dca.alphabet ` set AA)"
     assumes "list_all (finite \<circ> DCA.nodes) AA"
     shows "finite (DCA.nodes (dcaul AA))"
     using dcgaul_nodes_finite assms unfolding dcaul_def by auto
   lemma dcaul_nodes_card:
-    assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
+    assumes "\<Inter> (dca.alphabet ` set AA)  = \<Union> (dca.alphabet ` set AA)"
     assumes "list_all (finite \<circ> DCA.nodes) AA"
     shows "card (DCA.nodes (dcaul AA)) \<le> max 1 (length AA) * prod_list (map (card \<circ> DCA.nodes) AA)"
   proof -
@@ -291,8 +291,8 @@ begin
   qed
 
   lemma dcaul_language[simp]:
-    assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
-    shows "DCA.language (dcaul AA) = UNION (set AA) DCA.language"
+    assumes "\<Inter> (dca.alphabet ` set AA) = \<Union> (dca.alphabet ` set AA)"
+    shows "DCA.language (dcaul AA) = \<Union> (DCA.language ` set AA)"
     unfolding dcaul_def using dgcad_language dcgaul_language[OF assms] by auto
 
 end

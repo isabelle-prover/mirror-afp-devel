@@ -477,7 +477,9 @@ proof (induction ps rule: length_induct)
     have 1: "length ps = length ?l + length ?r"
       using partition_by_median_length(1) by (metis prod.collapse)+
     hence 2: "length ?l < length ps" "length ?r < length ps"
-      using False partition_by_median_length(4,5) not_le_imp_less "1.prems" by (metis prod.collapse)+
+      using False partition_by_median_length(4,5) not_le_imp_less "1.prems"
+      apply auto
+      by (metis prod.collapse)+
     hence 3: "0 < length ?l" "0 < length ?r"
       using 1 False partition_by_median_length(6,7) by simp_all
     moreover have 4: "set ps = set ?l \<union> set ?r"

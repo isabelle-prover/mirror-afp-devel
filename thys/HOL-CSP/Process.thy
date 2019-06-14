@@ -914,7 +914,7 @@ Some facts from the theory of complete partial orders:
 
 
 definition lim_proc :: "('\<alpha> process) set \<Rightarrow> '\<alpha> process"
-  where   "lim_proc (X) = Abs_process (INTER X F, INTER X D)"
+  where   "lim_proc (X) = Abs_process (\<Inter> (F ` X), \<Inter> (D ` X))"
 
 lemma min_elems3: "\<lbrakk>s @ [c] \<in> D P; s @ [c] \<notin> min_elems (D P)\<rbrakk> \<Longrightarrow> s \<in> D P"
 apply(auto simp: min_elems_def le_list_def less_list_def)
@@ -964,7 +964,7 @@ by(case_tac "i \<le> k", auto intro:chain_mono chain_mono_less)
 
 lemma is_process_REP_LUB: 
   assumes chain: "chain S"
-  shows "is_process(INTER (range S) F,INTER (range S) D)"
+  shows "is_process (\<Inter> (F ` range S), \<Inter> (D ` range S))"
 
 proof (auto simp: is_process_def)
    show   "([], {}) \<in> FAILURES (\<Inter> a::nat. F (S a), \<Inter> a::nat. D (S a))"
@@ -1066,13 +1066,13 @@ lemmas Rep_Abs_LUB = Abs_process_inverse[simplified Rep_process,
                                          simplified, OF is_process_REP_LUB,
                                          simplified]
 
-lemma F_LUB: "chain S \<Longrightarrow> F(lim_proc(range S)) = INTER (range S) F"
+lemma F_LUB: "chain S \<Longrightarrow> F(lim_proc(range S)) = \<Inter> (F ` range S)"
 by(simp add: lim_proc_def , subst F_def, auto simp: FAILURES_def Rep_Abs_LUB)
 
-lemma D_LUB: "chain S \<Longrightarrow> D(lim_proc(range S)) = INTER (range S) D"
+lemma D_LUB: "chain S \<Longrightarrow> D(lim_proc(range S)) = \<Inter> (D ` range S)"
 by(simp add: lim_proc_def , subst D_def, auto simp: DIVERGENCES_def Rep_Abs_LUB)
 
-lemma T_LUB: "chain S \<Longrightarrow> T(lim_proc(range S)) = INTER (range S) T"
+lemma T_LUB: "chain S \<Longrightarrow> T(lim_proc(range S)) = \<Inter> (T ` range S)"
 apply(simp add: lim_proc_def , subst T_def) 
 apply(simp add: TRACES_def FAILURES_def Rep_Abs_LUB)
 apply(auto intro: F_T, rule_tac x="{}" in exI, auto intro: T_F)
@@ -1187,7 +1187,7 @@ assumes *:"chain S"
 and     **:"X = range S"  \<comment>\<open>protection for range - otherwise auto unfolds and gets lost\<close>
 shows   "\<forall> u. X <| u \<longrightarrow>  min_elems(D(lim_proc X)) \<subseteq> T u"
 proof -
-  have B : "D (lim_proc X) = INTER X D" by(simp add: * ** D_LUB)
+  have B : "D (lim_proc X) = \<Inter> (D ` X)" by(simp add: * ** D_LUB)
   show ?thesis
      apply(auto simp: is_ub_def * **)
      apply(auto simp: B min_elems_def le_approx_def HOL.imp_conjR HOL.all_conj_distrib Ball_def)

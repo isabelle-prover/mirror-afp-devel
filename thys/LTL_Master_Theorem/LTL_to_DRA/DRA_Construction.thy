@@ -367,9 +367,12 @@ definition "ltl_to_dra \<phi> = draul (map (\<lambda>(xs, ys). \<AA>' \<phi> xs 
 lemma ltl_to_dra_language:
   "to_omega ` DRA.language (ltl_to_dra \<phi>) = language_ltln \<phi>"
 proof -
-  have 1: "INTER (set (map (\<lambda>(x, y). \<AA>' \<phi> x y) (advice_sets \<phi>))) dra.alphabet = UNION (set (map (\<lambda>(x, y). \<AA>' \<phi> x y) (advice_sets \<phi>))) dra.alphabet"
-    by (induction "advice_sets \<phi>") (metis advice_sets_not_empty, simp add: \<AA>'_alphabet split_def advice_sets_not_empty)
-
+  have "(\<Inter>(a, b)\<in>set (advice_sets \<phi>). dra.alphabet (\<AA>' \<phi> a b)) =
+    (\<Union>(a, b)\<in>set (advice_sets \<phi>). dra.alphabet (\<AA>' \<phi> a b))"
+    using advice_sets_not_empty by (simp add: \<AA>'_alphabet)
+  then have *: "DRA.language (draul (map (\<lambda>(x, y). \<AA>' \<phi> x y) (advice_sets \<phi>))) =
+    \<Union> (DRA.language ` set (map (\<lambda>(x, y). \<AA>' \<phi> x y) (advice_sets \<phi>)))"
+    by (simp add: split_def)
   have "language_ltln \<phi> = \<Union> {(L\<^sub>1 \<phi> X \<inter> L\<^sub>2 X Y \<inter> L\<^sub>3 X Y) | X Y. X \<subseteq> subformulas\<^sub>\<mu> \<phi> \<and> Y \<subseteq> subformulas\<^sub>\<nu> \<phi>}"
     unfolding master_theorem_language by auto
   also have "\<dots> = \<Union> {L\<^sub>1 \<phi> (set xs) \<inter> L\<^sub>2 (set xs) (set ys) \<inter> L\<^sub>3 (set xs) (set ys) | xs ys. (xs, ys) \<in> set (advice_sets \<phi>)}"
@@ -377,7 +380,7 @@ proof -
   also have "\<dots> = \<Union> {to_omega ` DRA.language (\<AA>' \<phi> xs ys) | xs ys. (xs, ys) \<in> set (advice_sets \<phi>)}"
     by (simp add: \<AA>'_language)
   finally show ?thesis
-    unfolding ltl_to_dra_def draul_language[OF 1] by auto
+    using * by (auto simp add: ltl_to_dra_def)
 qed
 
 lemma ltl_to_dra_alphabet:

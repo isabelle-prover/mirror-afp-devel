@@ -23,7 +23,7 @@ begin
 
  
 
-  abbreviation "V \<equiv> (UNION E set_uprod)"
+  abbreviation "V \<equiv> \<Union> (set_uprod ` E)"
 
 
   lemma max_node_is_Max_V: " E = \<alpha> ` set la \<Longrightarrow>  max_node la = Max (insert 0 V)"
@@ -62,8 +62,8 @@ next
   then show ?case unfolding uconnected_def apply auto 
     using epath.elims(2) by force 
 next
-  case (6 E1 E2 u v) 
-  then have "(u, v) \<in> (uconnected E1)" and uv: "u \<in> (UNION E set_uprod)" "v\<in>(UNION E set_uprod)"
+  case (6 E1 E2 u v)
+  then have "(u, v) \<in> (uconnected E1)" and uv: "u \<in> V" "v \<in> V"
     by auto
   then obtain p where 1: "epath E1 u p v" unfolding uconnected_def by auto 
   from 6 uv have 2: "\<not>(\<exists>p.  epath E2 u p v)" unfolding uconnected_def by auto
@@ -80,9 +80,9 @@ next
     assume a: "forest (insert e F) \<and> insert e F \<subseteq> E "
     have "(u, v) \<notin> uconnected F" apply(rule insert_stays_forest_means_not_connected)
       using notin a unv by auto
-    then show "((u, v) \<notin> Restr (uconnected F) (UNION E set_uprod))" by auto
+    then show "((u, v) \<notin> Restr (uconnected F) V)" by auto
   next 
-    assume a: "(u, v) \<notin> Restr (uconnected F) (UNION E set_uprod)"
+    assume a: "(u, v) \<notin> Restr (uconnected F) V"
     have "forest (insert (Upair u v) F)" apply(rule augment_forest_overedges[where E=E])
       using notin f a unv  by auto 
     moreover have "insert e F \<subseteq> E"

@@ -101,12 +101,12 @@ lemma countable_finite_power:
   "countable(A) \<Longrightarrow> countable {B. B \<subseteq> A \<and> finite(B)}"
   by (metis Collect_conj_eq Int_commute countable_Collect_finite_subset)
 
-lift_definition cINTER :: "'a cset \<Rightarrow> ('a \<Rightarrow> 'b cset) \<Rightarrow> 'b cset" is
-"\<lambda> A f. if (A = {}) then {} else INTER A f"
-  by (auto)
+lift_definition cInter :: "'a cset cset \<Rightarrow> 'a cset"  ("\<Inter>\<^sub>c_" [900] 900)
+  is "\<lambda>A. if A = {} then {} else \<Inter> A"
+  using countable_INT [of _ _ id] by auto
 
-definition cInter :: "'a cset cset \<Rightarrow> 'a cset" ("\<Inter>\<^sub>c_" [900] 900) where
-"\<Inter>\<^sub>c A = cINTER A id"
+abbreviation (input) cINTER :: "'a cset \<Rightarrow> ('a \<Rightarrow> 'b cset) \<Rightarrow> 'b cset"
+  where "cINTER A f \<equiv> cInter (cimage f A)"
 
 lift_definition cfinite :: "'a cset \<Rightarrow> bool" is finite .
 lift_definition cInfinite :: "'a cset \<Rightarrow> bool" is infinite .

@@ -10,14 +10,14 @@ begin
 (* a somewhat concrete function to get the model if one exists *)
 definition the_model where
 "the_model C Rs
-  \<equiv> let L = fst ` UNION Rs (edges o snd) \<union> {S_Bot,S_Top,S_Idt} \<union> S_Const ` C;
+  \<equiv> let L = fst ` \<Union> ((edges o snd) ` Rs) \<union> {S_Bot,S_Top,S_Idt} \<union> S_Const ` C;
         Rules = Rs \<union> (standard_rules C L);
         sel = non_constructive_selector Rules 
      in the_lcg sel Rules (0,{})"
 
 definition entailment_model where
 "entailment_model C Rs init
-  \<equiv> let L = fst ` UNION Rs (edges o snd) \<union> {S_Bot,S_Top,S_Idt} \<union> S_Const ` C \<union> fst ` edges init;
+  \<equiv> let L = fst ` \<Union> ((edges o snd) ` Rs) \<union> {S_Bot,S_Top,S_Idt} \<union> S_Const ` C \<union> fst ` edges init;
         Rules = Rs \<union> (standard_rules C L);
         sel = non_constructive_selector Rules 
      in the_lcg sel Rules (card (vertices init),edges init)"
@@ -31,7 +31,7 @@ abbreviation check_entailment where
      in (0,1) \<in> :mdl:\<lbrakk>snd R\<rbrakk> \<or> getRel S_Bot mdl \<noteq> {}"
 
 definition transl_rules where
-  "transl_rules T = UNION T (\<lambda> (x,y). {(translation x, translation (A_Int x y)),(translation y, translation (A_Int y x))})"
+  "transl_rules T = (\<Union>(x, y)\<in>T. {(translation x, translation (A_Int x y)), (translation y, translation (A_Int y x))})"
 
 lemma gr_transl_rules:
   "x \<in> transl_rules T \<Longrightarrow> graph_rule x"
@@ -45,12 +45,12 @@ lemma check_consistency:
 proof -
   from assms(1) have fin_t:"finite (transl_rules T)" unfolding transl_rules_def by fast
   define L where
-    "L = fst ` UNION (transl_rules T) (edges \<circ> snd) \<union> {S_Bot,S_Top,S_Idt} \<union> S_Const ` C"
-  have "finite (UNION (transl_rules T) (edges \<circ> snd))" using fin_t gr_transl_rules by auto
+    "L = fst ` \<Union> ((edges \<circ> snd) ` transl_rules T) \<union> {S_Bot,S_Top,S_Idt} \<union> S_Const ` C"
+  have "finite (\<Union> ((edges \<circ> snd) ` transl_rules T))" using fin_t gr_transl_rules by auto
   hence fin_l:"finite L" unfolding L_def using assms(2) by auto
   define Rules where "Rules = transl_rules T \<union> standard_rules C L"
   hence fin_r:"finite Rules" using assms(2) fin_t fin_l unfolding standard_rules_def by auto
-  have incl_L:"fst ` UNION Rules (edges o snd) \<subseteq> L"
+  have incl_L:"fst ` (\<Union> ((edges o snd) ` Rules)) \<subseteq> L"
     unfolding L_def Rules_def by (auto elim:standard_rules_edges)
   have "\<forall>R\<in>transl_rules T. graph_rule R" using gr_transl_rules by blast
   moreover have "\<forall>R\<in> constant_rules C. graph_rule R" using constant_rules_graph_rule by auto
@@ -134,13 +134,13 @@ proof -
     using verts_in_translation[of "fst S"] unfolding inv_translation_def init_def R_def by auto
   define Rs where "Rs = transl_rules T"
   define L where
-    "L = fst ` UNION Rs (edges \<circ> snd) \<union> {S_Bot,S_Top,S_Idt} \<union> S_Const ` C \<union> fst ` edges (fst R)"
-  have "finite (UNION (transl_rules T) (edges \<circ> snd))" using fin_t gr_transl_rules by auto
+    "L = fst ` (\<Union> ((edges o snd) ` Rs)) \<union> {S_Bot,S_Top,S_Idt} \<union> S_Const ` C \<union> fst ` edges (fst R)"
+  have "finite (\<Union> ((edges \<circ> snd) ` transl_rules T))" using fin_t gr_transl_rules by auto
   hence fin_l:"finite L" unfolding L_def Rs_def R_def using assms(2) by auto
   have fin_t:"finite Rs" using fin_t Rs_def by auto
   define Rules where "Rules = Rs \<union> standard_rules C L"
   hence fin_r:"finite Rules" using assms(2) fin_t fin_l unfolding standard_rules_def by auto
-  have incl_L:"fst ` UNION Rules (edges o snd) \<subseteq> L" "fst ` snd init \<subseteq> L" 
+  have incl_L:"fst ` (\<Union> ((edges o snd) ` Rules)) \<subseteq> L" "fst ` snd init \<subseteq> L" 
     unfolding L_def Rules_def init_def by (auto elim:standard_rules_edges)
   have "\<forall>R\<in>transl_rules T. graph_rule R" using gr_transl_rules by blast
   moreover have "\<forall>R\<in> constant_rules C. graph_rule R" using constant_rules_graph_rule by auto
