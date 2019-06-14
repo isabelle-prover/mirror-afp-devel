@@ -66,7 +66,7 @@ inductive "value" :: "term \<Rightarrow> bool" where
   "\<lbrakk> value v\<^sub>1; value v\<^sub>2 \<rbrakk> \<Longrightarrow> value (Pair v\<^sub>1 v\<^sub>2)" |
   "value v \<Longrightarrow> value (Roll v)" |
   "value (Hash _)" |
-  "value (Hashed _ _)"
+  "value v \<Longrightarrow> value (Hashed _ v)"
 
 declare value.intros[simp]
 declare value.intros[intro]
@@ -88,6 +88,7 @@ inductive_cases value_Inj1_inv[elim]: "value (Inj1 e)"
 inductive_cases value_Inj2_inv[elim]: "value (Inj2 e)"
 inductive_cases value_Pair_inv[elim]: "value (Pair e\<^sub>1 e\<^sub>2)"
 inductive_cases value_Roll_inv[elim]: "value (Roll e)"
+inductive_cases value_Hashed_inv[elim]: "value (Hashed h e)"
 
 abbreviation closed :: "term \<Rightarrow> bool" where
   "closed t \<equiv> (\<forall>x::var. atom x \<sharp> t)"
