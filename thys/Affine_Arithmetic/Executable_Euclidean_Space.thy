@@ -872,7 +872,7 @@ proof (rule antisym)
     also have "\<dots> \<le> norm (flip_blinfun x) * norm b"
       by (rule norm_blinfun)
     finally show ?thesis
-      by (auto simp add: divide_simps blinfun.bilinear_simps sign_simps  split: if_split_asm)
+      by (auto simp add: divide_simps blinfun.bilinear_simps algebra_simps split: if_split_asm)
   qed
   then show "?r \<le> ?l"
     by (auto intro!: norm_blinfun_bound)

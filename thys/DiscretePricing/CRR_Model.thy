@@ -1998,12 +1998,8 @@ lemma (in CRR_market) delta_price_eq:
   shows "delta_price N cash_flow T n w = (rn_price N cash_flow T (Suc n) (spick w n True) - rn_price N cash_flow T (Suc n) (spick w n False))/
     ((geom_proc n w) * (u - d))"
 proof -
-  have "(geom_proc (Suc n) (spick w n True) - geom_proc (Suc n) (spick w n False)) = u * geom_proc n w - d * geom_proc n w"
-    using geometric_process
-    by (metis geom_rand_walk_diff_induct linordered_field_class.sign_simps(39) mult.commute)
-  also have "... = geom_proc n w * (u - d)"
-    by (simp add: linordered_field_class.sign_simps(39) mult.commute)
-  finally have "(geom_proc (Suc n) (spick w n True) - geom_proc (Suc n) (spick w n False)) = geom_proc n w * (u - d)" .
+  have "(geom_proc (Suc n) (spick w n True) - geom_proc (Suc n) (spick w n False)) = geom_proc n w * (u - d)"
+    by (simp add: geom_rand_walk_diff_induct)
   then show ?thesis unfolding delta_price_def using assms spick_eq_pseudo_proj_True spick_eq_pseudo_proj_False by simp
 qed
 
@@ -2940,14 +2936,9 @@ proof -
             (geom_proc n w * (u - d)) * (u - (1 + r))"
           proof -
             have "geom_proc (Suc n) (spick w n True) - geom_proc (Suc n) (spick w n False) =
-              u * geom_proc n w - d * geom_proc n w"
-              using geometric_process
-              by (metis geom_rand_walk_diff_induct linordered_field_class.sign_simps(39) mult.commute)
-            also have "... = geom_proc n w * (u - d)"
-              by (simp add: linordered_field_class.sign_simps(39) mult.commute)
-            finally have "(geom_proc (Suc n) (spick w n True) - geom_proc (Suc n) (spick w n False)) =
-              geom_proc n w * (u - d)" .
-            thus ?thesis by simp
+              geom_proc n w * (u - d)"
+              by (simp add: geom_rand_walk_diff_induct)
+            then show ?thesis by simp
           qed
           also have "... = (1+r) * X n w + ((V (Suc n) (pseudo_proj_True n w) - V (Suc n) (pseudo_proj_False n w)))* (u - (1 + r))/ (u-d)"
           proof -
@@ -3017,17 +3008,7 @@ proof -
             using Suc V_def by (simp add: \<Delta>_def delta_price_def geom_rand_walk_diff_induct)
           also have "... = (1+r) * X n w + geom_proc n w * ((V (Suc n) (pseudo_proj_True n w) - V (Suc n) (pseudo_proj_False n w))) /
             (geom_proc n w * (u - d)) * (d - (1 + r))"
-          proof -
-            have "geom_proc (Suc n) (spick w n True) - geom_proc (Suc n) (spick w n False) =
-              u * geom_proc n w - d * geom_proc n w"
-              using geometric_process
-              by (metis geom_rand_walk_diff_induct linordered_field_class.sign_simps(39) mult.commute)
-            also have "... = geom_proc n w * (u - d)"
-              by (simp add: linordered_field_class.sign_simps(39) mult.commute)
-            finally have "(geom_proc (Suc n) (spick w n True) - geom_proc (Suc n) (spick w n False)) =
-              geom_proc n w * (u - d)" .
-            thus ?thesis by simp
-          qed
+            by (simp add: geom_rand_walk_diff_induct)
           also have "... = (1+r) * X n w + ((V (Suc n) (pseudo_proj_True n w) - V (Suc n) (pseudo_proj_False n w)))* (d - (1 + r))/ (u-d)"
           proof -
             have "geom_proc n w \<noteq> 0"

@@ -61,16 +61,16 @@ proof (eval_winding)
   and ?l4 = "linepath (Complex (Re lb) (Im ub)) lb"
   show l1: "z \<notin> path_image ?l1" 
     apply (auto intro!: not_on_closed_segmentI_complex)
-    using order_asms by (metis diff_gt_0_iff_gt mult_pos_pos order.asym zero_less_mult_pos2)
+    using order_asms by (simp add: algebra_simps crossproduct_eq)
   show l2:"z \<notin> path_image ?l2" 
     apply (auto intro!: not_on_closed_segmentI_complex)      
-    using order_asms by (metis diff_gt_0_iff_gt linordered_field_class.sign_simps(44) order.asym)
+    using order_asms by (simp add: algebra_simps crossproduct_eq)
   show l3:"z \<notin> path_image ?l3" 
     apply (auto intro!: not_on_closed_segmentI_complex)      
-    using order_asms by (metis diff_less_0_iff_less linordered_field_class.sign_simps(44) order.asym)
+    using order_asms by (simp add: algebra_simps crossproduct_eq)
   show l4:"z \<notin> path_image ?l4"  
     apply (auto intro!: not_on_closed_segmentI_complex)      
-    using order_asms by (metis diff_less_0_iff_less linordered_field_class.sign_simps(44) order.asym)
+    using order_asms by (simp add: algebra_simps crossproduct_eq)
   show "- complex_of_real (cindex_pathE ?l1 z + (cindex_pathE ?l2 z + (cindex_pathE ?l3 z +
           cindex_pathE ?l4 z))) = 2 * 1"  
   proof -

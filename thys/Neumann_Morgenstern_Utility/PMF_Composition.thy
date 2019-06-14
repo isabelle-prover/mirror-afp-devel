@@ -145,7 +145,7 @@ proof -
     have "pmf r e = \<gamma> * pmf p e + (1-\<gamma>) * pmf q e"
       using \<open>\<gamma> \<in> {0..1}\<close> g pmf_mix r by fastforce
     moreover have "... = \<gamma> * pmf p e + 1 * pmf q e - \<gamma> * pmf q e"
-      by (simp add: linordered_field_class.sign_simps(37))
+      by (simp add: algebra_simps)
     moreover have "... = pmf (mix_pmf \<gamma> p q) e"
       using calculation g r by auto
     moreover have "... = \<gamma>  * pmf p e + pmf q e - \<gamma> * pmf q e"

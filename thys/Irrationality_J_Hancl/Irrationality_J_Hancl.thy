@@ -435,7 +435,8 @@ proof (rule ccontr)
     using 8[rule_format, of "t+1",folded ff_def B_def] \<open>s\<le>t\<close> by auto
   moreover have "Max (ff ` {s..t+1})>0"
     using \<open>A \<le> B * Max (ff ` {s..t + 1})\<close> \<open>B>0\<close> \<open>A>1\<close>
-    by (smt linordered_field_class.sign_simps(44))
+      zero_less_mult_pos [of B "Max (ff ` {s..Suc t})"]
+    by simp
   ultimately show False by (auto simp add:field_simps)
 qed
 
@@ -710,8 +711,7 @@ proof-
     proof -
       have "(of_int (a n)) powr(1 / (nn n)) = sqrt(of_int (a n) powr(1 /of_int (2^n)))" for n
         unfolding nn_def using a
-        apply (simp add: powr_half_sqrt [symmetric])
-        by (simp add: powr_half_sqrt [symmetric] linordered_field_class.sign_simps(24) powr_powr)
+        by (simp add: powr_half_sqrt [symmetric] powr_powr ac_simps)
       moreover have "(( \<lambda> n. sqrt(of_int (a n) powr(1 /of_int (2^n))))\<longlongrightarrow> sqrt A) sequentially " 
         using assu1 tendsto_real_sqrt by blast
       ultimately have "(( \<lambda> n. (of_int (a n)) powr(1 /of_int (nn n)))\<longlongrightarrow> sqrt A) sequentially " 

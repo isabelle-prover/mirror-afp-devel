@@ -1040,8 +1040,10 @@ lemma closed_segment_as_isometric_image:
 proof (auto simp add: closed_segment_def image_iff)
   fix t assume H: "0 \<le> t" "t \<le> dist x y"
   show "\<exists>u. x + (t / dist x y) *\<^sub>R (y - x) = (1 - u) *\<^sub>R x + u *\<^sub>R y \<and> 0 \<le> u \<and> u \<le> 1"
-    apply (rule exI[of _ "t/dist x y"]) using H apply (auto simp add: algebra_simps divide_simps)
-    by (metis add_diff_cancel_left' add_divide_distrib dist_not_less_zero dist_pos_lt divide_eq_1_iff linordered_field_class.sign_simps(29) scaleR_left.add scaleR_one)
+    apply (rule exI[of _ "t/dist x y"])
+    using H apply (auto simp add: algebra_simps divide_simps)
+    apply (metis add_diff_cancel_left' add_diff_eq add_divide_distrib dist_eq_0_iff scaleR_add_left vector_fraction_eq_iff)
+    done
 next
   fix u::real assume H: "0 \<le> u" "u \<le> 1"
   show "\<exists>t\<in>{0..dist x y}. (1 - u) *\<^sub>R x + u *\<^sub>R y = x + (t / dist x y) *\<^sub>R (y - x)"
@@ -1816,7 +1818,7 @@ proof -
   have "lambda \<ge> 1" "C \<ge> 0" using quasi_isometry_betweenD[OF assms] by auto
 
   have "C \<le> 3 * C * lambda" using \<open>lambda \<ge> 1\<close> \<open>C \<ge> 0\<close>
-    by (metis linordered_field_class.sign_simps(24) mult_le_cancel_left1 not_less numeral_le_iff one_eq_numeral_iff order.trans semiring_norm(68))
+    by (simp add: algebra_simps mult_ge1_mono)
   then have A: "dist y (f (g y)) \<le> 3 * C * lambda" if "y \<in> Y" for y
     using *[OF that] by (simp add: dist_commute)
 

@@ -358,7 +358,8 @@ proof(rule pequivI, rule contrapos_pp)
     hence "\<And>s. ?Pc s \<le> bound_of P" by(auto)
     thus "bounded ?Pc" by(blast)
     from sP have "\<And>s. P s \<le> bound_of P" by(auto)
-    hence "\<And>s. 0 \<le> ?Pc s" by(auto simp:sign_simps)
+    hence "\<And>s. 0 \<le> ?Pc s"
+      by auto
     thus "nneg ?Pc" by(auto)
   qed
   txt \<open>We then show that @{term "wp b"} violates feasibility, and

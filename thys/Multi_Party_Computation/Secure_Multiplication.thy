@@ -317,7 +317,8 @@ proof-
     then have "[s1 + x * b = x*y + x*q - x*b + x*b + (q - r)] (mod q)" 
       by (metis add.commute add.left_commute cong_add_lcancel_nat)
     then have "[s1 + x*b = x*y + x*q + (q - r)] (mod q)" 
-      by (metis add.commute add_lessD1 add_mult_distrib b left_diff_distrib' less_imp_le linordered_field_class.sign_simps(18) linordered_semidom_class.add_diff_inverse mult.commute not_less)
+      using b by (simp add: algebra_simps)
+        (metis add_diff_inverse_nat diff_diff_left diff_mult_distrib2 less_imp_add_positive mult.commute not_add_less1 zero_less_diff)
     then have s1_xb: "[s1 + x*b = q + x*y + x*q + (q - r)] (mod q)" 
       by (smt mod_add_cong mod_add_self1 cong_def)
     then have "[x*b = q + x*y + x*q + (q - r) - s1] (mod q)"
@@ -567,7 +568,7 @@ lemma s1_s2_P1:  assumes "x < q" "xa < q" "xb < q" "xc < q" "y < q"
 
 lemma mod_minus: assumes "a - b > 0" and "c - d > 0" 
   shows "(a - b + (c - d mod q)) mod q = (a - b + (c - d)) mod q"
-  using assms 
+  using assms
   by (metis cong_def minus_mod mod_add_right_eq zero_less_diff)
 
 lemma r: 

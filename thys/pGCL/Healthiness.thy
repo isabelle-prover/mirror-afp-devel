@@ -111,7 +111,8 @@ proof(intro healthy_parts bounded_byI nnegI le_funI, simp_all add:wp_eval)
   from nQ and bQ and hf have "0 \<le> wp f Q s" by(auto)
   with uP have "0 \<le> P s * ..." by(auto intro:mult_nonneg_nonneg)
   moreover {
-    from uP have "0 \<le> 1 - P s" by(auto simp:sign_simps)
+    from uP have "0 \<le> 1 - P s"
+      by auto
     with nQ and bQ and hg have "0 \<le> ... * wp g Q s"
       by (metis healthy_nnegD2 mult_nonneg_nonneg nneg_def)
   }
@@ -124,7 +125,8 @@ proof(intro healthy_parts bounded_byI nnegI le_funI, simp_all add:wp_eval)
     by(blast intro!:mult_mono)
   moreover {
     from nQ bQ hg uP
-    have "wp g Q s \<le> b" and "0 \<le> 1 - P s" by(auto simp:sign_simps)
+    have "wp g Q s \<le> b" and "0 \<le> 1 - P s"
+      by auto
     with nQ bQ hg have "(1 - P s) * wp g Q s \<le> (1 - P s) * b"
       by(blast intro!:mult_mono)
   }
@@ -144,7 +146,8 @@ next
   moreover {
     from sQ sR le hg
     have "wp g Q s \<le> wp g R s" by(blast dest:mono_transD)
-    moreover from uP have "0 \<le> 1 - P s" by(auto simp:sign_simps)
+    moreover from uP have "0 \<le> 1 - P s"
+      by auto
     ultimately have "(1 - P s) * wp g Q s \<le> (1 - P s) * wp g R s"
       by(auto intro:mult_left_mono)
   }
@@ -176,7 +179,8 @@ proof(intro nearly_healthyI unitaryI2 nnegI bounded_byI le_funI,
   fix Q::"'s expect" and s::'s
   assume uQ: "unitary Q"
   from uQ hf hg have utQ: "unitary (wlp f Q)" "unitary (wlp g Q)" by(auto)
-  from uP have nnP: "0 \<le> P s" "0 \<le> 1 - P s" by(auto simp:sign_simps)
+  from uP have nnP: "0 \<le> P s" "0 \<le> 1 - P s"
+    by auto
   moreover from utQ have "0 \<le> wlp f Q s" "0 \<le> wlp g Q s" by(auto)
   ultimately show "0 \<le> P s * wlp f Q s + (1 - P s) * wlp g Q s"
     by(auto intro:add_nonneg_nonneg mult_nonneg_nonneg)

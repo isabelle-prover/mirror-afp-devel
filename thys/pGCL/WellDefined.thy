@@ -332,7 +332,7 @@ proof(rule sub_distrib_pconjI, unfold wp_eval, rule le_funI)
   assume uQ: "unitary Q" and uR: "unitary R"
 
   have nnA: "0 \<le> P s" and nnB: "P s \<le> 1"
-    using uP by(auto simp:sign_simps)
+    using uP by auto
   note nn = nnA nnB
 
   have "((\<lambda>s. P s * wlp a Q s + (1 - P s) * wlp b Q s) &&

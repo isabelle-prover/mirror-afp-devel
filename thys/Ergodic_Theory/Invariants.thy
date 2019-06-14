@@ -782,7 +782,7 @@ proof -
         then have "birkhoff_sum f n x = birkhoff_sum g n x + n * real_cond_exp M Invariants f x + n * \<epsilon>"
           by simp
         then have "birkhoff_sum f n x / n = birkhoff_sum g n x / n + real_cond_exp M Invariants f x + \<epsilon>"
-          using \<open>n > 0\<close> by (simp add: add_divide_eq_iff linordered_field_class.sign_simps(27))
+          using \<open>n > 0\<close> by (simp add: field_simps)
         then have "birkhoff_sum f n x / n \<le> C/n + real_cond_exp M Invariants f x + \<epsilon>"
           using C[of n] \<open>n > 0\<close> by (simp add: divide_right_mono)
         then have "ereal(birkhoff_sum f n x / n) \<le> ereal(C/n + real_cond_exp M Invariants f x + \<epsilon>)"

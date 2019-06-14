@@ -317,8 +317,7 @@ lemma float_le_infinity [simp]: "\<not> is_nan a \<Longrightarrow> a \<le> plus_
   by auto
 
 lemma zero_le_topfloat[simp]: "0 \<le> topfloat" "- 0 \<le> topfloat"
-  unfolding float_defs
-  by (auto simp: sign_simps divide_simps power_gt1_lemma)
+  by (auto simp: float_defs field_simps power_gt1_lemma)
 
 lemma LENGTH_contr:
   "Suc 0 < LENGTH('e) \<Longrightarrow> 2 ^ LENGTH('e::len) \<le> Suc (Suc 0) \<Longrightarrow> False"
@@ -456,8 +455,8 @@ proof -
     using negative_zle_0 order_trans zero_le_numeral zero_le_power by blast
   ultimately show ?thesis
     by (cases x rule: sign_cases)
-      (auto simp: bitlen_le_iff_power bitlen_ge_iff_power nat_add_distrib abs_mult sign_simps
-        add_nonneg_pos normal_mantissa_def intro!: antisym)
+      (auto simp: bitlen_le_iff_power bitlen_ge_iff_power nat_add_distrib
+        normal_mantissa_def intro!: antisym)
 qed
 
 lemma less_int_natI: "x < y" if "0 \<le> x" "nat x < nat y"
@@ -607,8 +606,7 @@ proof -
     using negative_zle_0 order_trans zero_le_numeral zero_le_power by blast
   ultimately show ?thesis
     by (cases x rule: sign_cases)
-      (auto simp: bitlen_le_iff_power nat_add_distrib abs_mult sign_simps
-        add_nonneg_pos denormal_mantissa_def intro!: antisym)
+      (auto simp: bitlen_le_iff_power denormal_mantissa_def intro!: antisym)
 qed
 
 lemma float_le_topfloat:

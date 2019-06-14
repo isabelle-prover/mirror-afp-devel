@@ -173,7 +173,8 @@ proof -
           have "y = 2 * x" unfolding x_def using True by simp
           from even[of x, folded this] have "?f y \<le> 2 ^ Suc deg * (p * p)" .
           also have "\<dots> \<le> \<dots> * inverse b"
-            unfolding mult_le_cancel_left1 using b p by (simp add:sign_simps one_le_inverse)
+            unfolding mult_le_cancel_left1 using b p
+            by (simp add: sign_simps one_le_inverse)
           also have "\<dots> = p'" unfolding p'_def by (simp add: ac_simps)
           finally show "?f y \<le> p'" .
         next

@@ -208,7 +208,8 @@ proof -
   have B: "bdd_below {u n/n | n. n>0}"
     apply (rule bdd_belowI[of _ a]) using assms(2)
     apply (auto simp add: divide_simps)
-    by (metis linordered_field_class.sign_simps(5) mult_left_le_imp_le of_nat_0_less_iff)
+    apply (metis mult.commute mult_left_le_imp_le of_nat_0_less_iff)
+    done
   define l where "l = Inf {u n/n | n. n>0}"
   have *: "u n / n \<ge> l" if "n > 0" for n
     unfolding l_def using that by (auto intro!: cInf_lower[OF _ B])
@@ -421,7 +422,8 @@ proof -
       then have "exp(e) < a/t" by (metis \<open>1 < a / t\<close> exp_less_cancel_iff exp_ln less_trans zero_less_one)
 
       obtain n where "n>0" "t = v n" using V_def v_def \<open>t \<in> V\<close> by blast
-      then have "v n * exp(e) < a" using \<open>exp(e) < a/t\<close> by (metis \<open>0 < t\<close> linordered_field_class.sign_simps(24) pos_less_divide_eq)
+      with \<open>0 < t\<close> have "v n * exp(e) < a" using \<open>exp(e) < a/t\<close>
+        by (auto simp add: field_simps)
 
       obtain N where *: "N>0" "\<And>m. m\<ge>N \<Longrightarrow> w m/m < w n/n + e"
         using eventually_subadditive_ineq[OF \<open>eventually_subadditive w 0\<close>] \<open>0 < n\<close> \<open>e>0\<close> by blast

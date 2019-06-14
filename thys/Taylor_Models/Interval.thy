@@ -646,7 +646,7 @@ lemma set_of_mul_contains_zero:
   if "0 \<in> set_of A \<or> 0 \<in> set_of B"
   for A :: "'a::linordered_idom interval"
   using that
-  by (auto simp: set_of_eq lower_times upper_times sign_simps mult_le_0_iff
+  by (auto simp: set_of_eq lower_times upper_times algebra_simps mult_le_0_iff
       mult_bounds_enclose_zero1 mult_bounds_enclose_zero2)
 
 instance "interval" :: (linordered_semiring) mult_zero

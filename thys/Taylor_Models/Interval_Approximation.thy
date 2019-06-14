@@ -469,7 +469,7 @@ proof (induction n arbitrary: b rule: less_induct)
   case (less x)
   then show ?case
     using power_down_simp[of _ _ "x - 1"]
-    by (cases x) (auto simp: sign_simps zero_le_mult_iff div2_less_self)
+    by (cases x) (auto simp add: div2_less_self)
 qed
 
 lemma power_down_nonneg_iff[simp]:
@@ -767,7 +767,7 @@ proof(induction I arbitrary: x)
   show ?case
     using Cons(1)[OF \<open>xs all_in Is\<close>]
       split_correct[OF \<open>x' \<in>\<^sub>r I\<close>]
-    apply(simp add: list_ex_iff set_of_eq)
+    apply (auto simp add: list_ex_iff set_of_eq)
     by (smt length_Cons less_Suc_eq_0_disj nth_Cons_0 nth_Cons_Suc x_decomp)
 qed simp
 

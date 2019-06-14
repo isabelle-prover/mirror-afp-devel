@@ -64,13 +64,13 @@ proof (rule real_Cauchy_convergent, intro CauchyI)
     have *: "dist (u n) (u m) < e/2" "dist (v n) (v m) < e/2"
       using Nu Nv H unfolding M_def by auto
     have "dist (u m) (v m) - dist (u n) (v n) \<le> dist (u m) (u n) + dist (v n) (v m)"
-      by (metis add.commute add.left_commute add_left_mono dist_commute dist_triangle2 dist_triangle_le linordered_field_class.sign_simps(42))
+      by (simp add: algebra_simps) (metis add_le_cancel_left dist_commute dist_triangle2 dist_triangle_le)
     also have "... < e/2 + e/2"
       using * by (simp add: dist_commute)
     finally have A: "dist (u m) (v m) - dist (u n) (v n) < e" by simp
 
     have "dist (u n) (v n) - dist (u m) (v m) \<le> dist (u m) (u n) + dist (v n) (v m)"
-      by (metis add.commute add.left_commute add_left_mono dist_commute dist_triangle2 dist_triangle_le linordered_field_class.sign_simps(42))
+      by (simp add: algebra_simps) (metis add_le_cancel_left dist_commute dist_triangle2 dist_triangle_le)
     also have "... < e/2 + e/2"
       using * by (simp add: dist_commute)
     finally have "dist (u n) (v n) - dist (u m) (v m) < e" by simp

@@ -1055,8 +1055,10 @@ proof -
     also have "... \<le> (ereal K + deltaG(TYPE('a))) + extended_Gromov_product_at basepoint (Gromov_extension (f^^n) x) (to_Gromov_completion ((f^^n) basepoint))"
       by (intro mono_intros B)
     finally have "extended_Gromov_product_at basepoint (Gromov_extension (f^^n) x) (to_Gromov_completion ((f^^n) basepoint)) \<ge> dist basepoint ((f^^n) basepoint) - (2 * deltaG(TYPE('a)) + K)"
-      unfolding ereal_minus(1)[symmetric] apply (simp only: ereal_minus_le[OF J]) apply (auto simp add: algebra_simps)
-      by (metis (no_types, hide_lams) linordered_field_class.sign_simps(1) linordered_field_class.sign_simps(3) mult_2_right plus_ereal.simps(1))
+      apply (simp only: ereal_minus_le [OF J] ereal_minus(1) [symmetric])
+      apply (auto simp add: algebra_simps)
+      apply (metis (no_types, hide_lams) add.assoc add.left_commute mult_2_right plus_ereal.simps(1))
+      done
     moreover have "dist basepoint ((f ^^ n) basepoint) - (2 * deltaG TYPE('a) + K) \<ge> M + deltaG(TYPE('a))"
       using Nd[OF n(3)] by auto
     ultimately have "extended_Gromov_product_at basepoint (Gromov_extension (f^^n) x) (to_Gromov_completion ((f^^n) basepoint)) \<ge> ereal (M + deltaG(TYPE('a)))"

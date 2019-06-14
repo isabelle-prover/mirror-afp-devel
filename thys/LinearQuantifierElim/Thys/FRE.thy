@@ -171,7 +171,8 @@ next
       have "(r - \<langle>cs,xs\<rangle>) / c < eval (between (r / c, (-1 / c) *\<^sub>s cs) (s / d, (-1 / d) *\<^sub>s ds)) xs" (is ?P)
         and "eval (between (r / c, (-1 / c) *\<^sub>s cs) (s / d, (-1 / d) *\<^sub>s ds)) xs < (s - \<langle>ds,xs\<rangle>) / d" (is ?Q)
     proof -
-      from * have [simp]: "c * (c * (d * (d * 4))) > 0" by (auto simp add: sign_simps)
+      from * have [simp]: "c * (c * (d * (d * 4))) > 0"
+        by (simp add: sign_simps)
       from * have "c * s + d * \<langle>cs,xs\<rangle> < d * r + c * \<langle>ds,xs\<rangle>"
         by (simp add: field_simps)
       with * have "(2 * c * c * d) * (d * r + c * \<langle>ds,xs\<rangle>)

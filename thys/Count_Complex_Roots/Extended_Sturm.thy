@@ -342,9 +342,8 @@ proof -
       unfolding Sturm_Tarski.sign_def
       by force
   qed  
-  ultimately show ?thesis 
-    unfolding cross_alt_def      
-    by (simp only:sign_times poly_mult poly_1 sign_simps)
+  ultimately show ?thesis
+    by (simp add: cross_alt_def sign_times)
 qed   
   
 subsection \<open>Alternative sign variation sequencse\<close>  

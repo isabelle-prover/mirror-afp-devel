@@ -404,10 +404,10 @@ proof -
     by (simp add: assms power_increasing)
 
   also have "\<dots> = 2 ^ (2 ^ n * 2 ^ (n + floorlog 2 n + 4))"
-    by (metis Rat.sign_simps(5) power_mult)
+    by (simp add: ac_simps power_mult [symmetric])
 
   also have "\<dots> = 2 ^ 2 ^ (2 * n + floorlog 2 n + 4)"
-    by (simp add: semiring_normalization_rules(26))
+    by (simp add: power_add) (simp add: mult_2 power_add)
 
   finally show ?thesis .
 qed

@@ -497,7 +497,7 @@ proof
   } moreover {
     assume "y < 0"
     with rs have False
-      by (auto simp: lex_def not_less sign_simps y ccw'_def)
+      by (auto simp: lex_def not_less algebra_simps sign_simps y ccw'_def)
   } moreover {
     assume "y = 0"
     from this rs have False

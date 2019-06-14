@@ -1262,8 +1262,8 @@ proof-
   proof(elim disjE)
     assume a: "degree a = 0"
     with l a0 have "irreducible\<^sub>d b"
-      unfolding irreducible\<^sub>d_def
-      by (smt add.left_neutral degree_mult_not_eq leading_coeff_0_iff sign_simps(4) mult_eq_0_iff)
+      by (simp add: irreducible\<^sub>d_def)
+        (metis degree_mult_eq degree_mult_eq_0 mult.left_commute plus_nat.add_0)
     with a a0 show ?thesis by auto
   next
     assume b: "degree b = 0"

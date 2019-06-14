@@ -298,7 +298,8 @@ proof(rule bd_ctsI, rule ext, simp add:o_def wp_eval)
                   (1 - p s) * Sup (range (\<lambda>i. wp b (M i) s))" by(simp)
     also have "... = Sup {(1 - p s) * x |x. x \<in> range (\<lambda>i. wp b (M i) s)}"
     proof(rule cSup_mult, blast, clarsimp)
-      from up show "0 \<le> 1 - p s" by(auto simp:sign_simps)
+      from up show "0 \<le> 1 - p s"
+        by auto
       fix i
       from sM bM hb have "bounded_by c (wp b (M i))" by(auto)
       thus "wp b (M i) s \<le> c" by(auto)
@@ -357,7 +358,8 @@ proof(rule bd_ctsI, rule ext, simp add:o_def wp_eval)
 
     from bM sM hb have "\<And>i. bounded_by c (wp b (M i))" by(auto)
     hence "\<And>i. wp b (M i) s \<le> c" by(auto)
-    moreover from up have "0 \<le> (1 - p s)" by(auto simp:sign_simps)
+    moreover from up have "0 \<le> (1 - p s)"
+      by auto
     ultimately have "\<And>i. (1 - p s) * wp b (M i) s \<le> (1 - p s) * c" by(auto intro:mult_left_mono)
     also {
       from up have "1 - p s \<le> 1" by(auto)
@@ -371,7 +373,8 @@ proof(rule bd_ctsI, rule ext, simp add:o_def wp_eval)
       fix n
       from sM chain healthy_monoD[OF hb] have "wp b (M n) \<tturnstile> wp b (M (Suc n))"
         by(auto)
-      moreover from up have "0 \<le> 1 - p s" by(auto simp:sign_simps)
+      moreover from up have "0 \<le> 1 - p s"
+        by auto
       ultimately show "(1 - p s) * wp b (M n) s \<le> (1 - p s) * wp b (M (Suc n)) s"
         by(blast intro:mult_left_mono)
       from bbM show "(1 - p s) * wp b (M n) s \<le> Sup (range (\<lambda>i. (1 - p s) * wp b (M i) s))"
@@ -437,7 +440,8 @@ proof(rule bd_ctsI, rule ext, simp add:o_def wp_eval)
       have "wp b (M i) \<tturnstile> wp b (Sup_exp (range M))" by(auto)
       hence "wp b (M i) s \<le> wp b (Sup_exp (range M)) s" by(auto)
     }
-    moreover from up have "0 \<le> p s" "0 \<le> 1 - p s" by(auto simp:sign_simps)
+    moreover from up have "0 \<le> p s" "0 \<le> 1 - p s"
+      by auto
     ultimately
     show "p s * wp a (M i) s + (1 - p s) * wp b (M i) s \<le>
           p s * wp a (Sup_exp (range M)) s + (1 - p s) * wp b (Sup_exp (range M)) s"
@@ -448,7 +452,8 @@ proof(rule bd_ctsI, rule ext, simp add:o_def wp_eval)
       by(auto)
     hence "\<And>s. 0 \<le> wp a (Sup_exp (range M)) s" "\<And>s. 0 \<le> wp b (Sup_exp (range M)) s"
       by(auto)
-    moreover from up have "\<And>s. 0 \<le> p s" "\<And>s. 0 \<le> 1 - p s" by(auto simp:sign_simps)
+    moreover from up have "\<And>s. 0 \<le> p s" "\<And>s. 0 \<le> 1 - p s"
+      by auto
     ultimately show "nneg (\<lambda>c. p c * wp a (Sup_exp (range M)) c +
                           (1 - p c) * wp b (Sup_exp (range M)) c)"
       by(blast intro:add_nonneg_nonneg mult_nonneg_nonneg)
@@ -695,7 +700,8 @@ proof(cases "supp p = {}", simp add:supp_empty SetPC_def wp_def cts_bot)
         fix y
         show "0 \<le> dist_remove p x y"
         proof(cases "y=x", simp_all add:dist_remove_def)
-          from up have "0 \<le> p y" "0 \<le> 1 - p x" by(auto simp:sign_simps)
+          from up have "0 \<le> p y" "0 \<le> 1 - p x"
+            by auto
           thus "0 \<le> p y / (1 - p x)"
             by(rule divide_nonneg_nonneg)
         qed

@@ -3160,14 +3160,14 @@ lemma int_sdiv_same_is_1 [simp]:
    apply (clarsimp simp: sdiv_int_def)
    apply (subgoal_tac "b > 0")
     apply (case_tac "a > 0")
-     apply (clarsimp simp: sgn_if sign_simps)
+     apply (clarsimp simp: sgn_if)
     apply (clarsimp simp: sign_simps not_less)
     apply (metis int_div_same_is_1 le_neq_trans minus_minus neg_0_le_iff_le neg_equal_0_iff_equal)
    apply (case_tac "a > 0")
     apply (case_tac "b = 0")
-     apply (clarsimp simp: sign_simps)
+     apply clarsimp
     apply (rule classical)
-    apply (clarsimp simp: sign_simps sgn_mult not_less)
+    apply (clarsimp simp: sgn_mult not_less)
     apply (metis le_less neg_0_less_iff_less not_less_iff_gr_or_eq pos_imp_zdiv_neg_iff)
    apply (rule classical)
    apply (clarsimp simp: sign_simps sgn_mult not_less sgn_if split: if_splits)
@@ -3187,11 +3187,11 @@ lemma int_sdiv_negated_is_minus1 [simp]:
     apply (clarsimp simp: sign_simps not_less)
    apply (rule classical)
    apply (case_tac "b = 0")
-    apply (clarsimp simp: sign_simps not_less sgn_mult)
+    apply (clarsimp simp: not_less sgn_mult)
    apply (case_tac "a > 0")
-    apply (clarsimp simp: sign_simps not_less sgn_mult)
+    apply (clarsimp simp: not_less sgn_mult)
     apply (metis less_le neg_less_0_iff_less not_less_iff_gr_or_eq pos_imp_zdiv_neg_iff)
-   apply (clarsimp simp: sign_simps not_less sgn_mult)
+   apply (clarsimp simp: not_less sgn_mult)
    apply (metis antisym_conv div_minus_right neg_imp_zdiv_nonneg_iff neg_le_0_iff_le not_less)
   apply (clarsimp simp: sgn_if)
   done
@@ -3318,14 +3318,13 @@ lemma smod_int_range:
   apply (case_tac  "b > 0")
    apply (insert pos_mod_conj [where a=a and b=b])[1]
    apply (insert pos_mod_conj [where a="-a" and b=b])[1]
-   apply (clarsimp simp: smod_int_alt_def sign_simps sgn_if
-              abs_if not_less add1_zle_eq [simplified add.commute])
-   apply (metis add_le_cancel_left monoid_add_class.add.right_neutral
-             int_one_le_iff_zero_less less_le_trans mod_minus_right neg_less_0_iff_less
-             neg_mod_conj not_less pos_mod_conj)
+   apply (auto simp: smod_int_alt_def algebra_simps sgn_if
+              abs_if not_less add1_zle_eq [simplified add.commute])[1]
+    apply (metis add_nonneg_nonneg int_one_le_iff_zero_less le_less less_add_same_cancel2 not_le pos_mod_conj)
+  apply (metis (full_types) add.inverse_inverse eucl_rel_int eucl_rel_int_iff le_less_trans neg_0_le_iff_le)
   apply (insert neg_mod_conj [where a=a and b="b"])[1]
   apply (insert neg_mod_conj [where a="-a" and b="b"])[1]
-  apply (clarsimp simp: smod_int_alt_def sign_simps sgn_if
+  apply (clarsimp simp: smod_int_alt_def algebra_simps sgn_if
             abs_if not_less add1_zle_eq [simplified add.commute])
   apply (metis neg_0_less_iff_less neg_mod_conj not_le not_less_iff_gr_or_eq order_trans pos_mod_conj)
   done

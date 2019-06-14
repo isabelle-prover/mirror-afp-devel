@@ -95,7 +95,7 @@ proof(rule sublinearI, simp add:wp_eval)
     by(rule tminus_add_mono)
   also {
       from uP have "0 \<le> P s" and "0 \<le> 1 - P s"
-        by(auto simp:sign_simps)
+        by auto
       hence "(P s * (a * wp x Q s + b * wp x R s) \<ominus> P s * c) +
              ((1 - P s) * (a * wp y Q s + b * wp y R s) \<ominus> (1 - P s) * c) =
              P s * (a * wp x Q s + b * wp x R s \<ominus> c) +
@@ -114,7 +114,7 @@ proof(rule sublinearI, simp add:wp_eval)
       by(blast)
     moreover
     from uP have "0 \<le> P s" and "0 \<le> 1 - P s"
-      by(auto simp:sign_simps)
+      by auto
     ultimately
     have "P s * (a * wp x Q s + b * wp x R s \<ominus> c) +
           (1 - P s) * (a * wp y Q s + b * wp y R s  \<ominus> c) \<le>

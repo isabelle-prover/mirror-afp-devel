@@ -368,7 +368,7 @@ lemma elems_all_maps_list:
        (metis set_map)
 
 lemma comb_planar_impl_altdef: "comb_planar_impl G = (\<exists>M\<in>set (all_maps_list G). genus_impl G M = 0)"
-  unfolding comb_planar_impl_def Let_def genus_impl_def by (cases G) (simp add:  sign_simps)
+  unfolding comb_planar_impl_def Let_def genus_impl_def by (cases G) (simp add: algebra_simps)
 
 lemma comb_planar_impl_correct:
   assumes "pair_graph (list_digraph G)"
@@ -405,7 +405,7 @@ proof -
   also have "\<dots> = (\<exists>M\<in>set (all_maps_list G). genus_impl G M = 0)"
     using ldm assms by (simp add: genus_impl_correct)
   also have "\<dots> = comb_planar_impl G"
-    unfolding comb_planar_impl_def genus_impl_def Let_def by (simp add: \<open>G = (V,A)\<close> sign_simps)
+    unfolding comb_planar_impl_def genus_impl_def Let_def by (simp add: \<open>G = (V,A)\<close> algebra_simps)
   finally show ?thesis .
 qed
 

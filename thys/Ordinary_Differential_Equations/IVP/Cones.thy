@@ -257,7 +257,7 @@ lemma vangle_le_pi2: "0 \<le> u \<bullet> v \<Longrightarrow> vangle u v \<le> p
   apply (simp del: le_divide_eq_numeral1)
   apply (intro impI arccos_le_pi2 arccos_lbound)
   using Cauchy_Schwarz_ineq2[of u v]
-  by (auto simp: divide_simps sign_simps)
+  by (auto simp: algebra_simps)
 
 lemma inner_eq_vangle: "u \<bullet> v = cos (vangle u v) * (norm u * norm v)"
   by (simp add: cos_vangle)

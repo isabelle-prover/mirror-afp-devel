@@ -373,7 +373,7 @@ proof -
       have "m < s" unfolding m_def using l by auto
       have "u n x \<le> u m x - d * l" using l m_def by auto
       also have "... \<le> abs(u m x) - d * n + d * m" unfolding m_def using l
-        by (simp add: linordered_field_class.sign_simps(38) of_nat_diff)
+        by (simp add: algebra_simps of_nat_diff)
       also have "... \<le> Max {abs(u m x) |m. m<s} - d * n + d * m"
         using \<open>m < s\<close> apply (auto) by (rule Max_ge, auto)
       also have "... \<le> Max {abs(u m x) |m. m<s} + d * s - d * n"
@@ -792,6 +792,7 @@ lemma upper_density_delta:
 proof -
   define d2 where "d2 = d/2"
   have [simp]: "d2 > 0" unfolding d2_def using assms by simp
+  then have "\<not> d2 < 0" using not_less [of d2 0] by (simp add: less_le)
   have "d2/2 > 0" by simp
   obtain c0 where c0: "c0> (0::real)" "emeasure M {x \<in> space M. upper_asymptotic_density {n. \<exists>l \<in> {1..n}. u n x - u (n-l) x \<le> - c0 * l} < d2/2} > 1 - (d2/2)"
     using upper_density_all_times[OF \<open>d2/2 > 0\<close>] by blast
@@ -1041,7 +1042,7 @@ proof -
       then have "card ({n \<in> {Nf 1..}. \<exists>l\<in>{1..n}. u n x - u (n-l) x \<le> - (c0 * l)} \<inter> {..<B}) = 0"
         by auto
       also have "... \<le> (d2/2) * B"
-        by (metis \<open>0 < d2 / 2\<close> divide_le_eq div_0 linordered_field_class.sign_simps(24) of_nat_0 of_nat_0_le_iff)
+        using \<open>\<not> d2 < 0\<close> by simp
       finally show ?thesis by simp
     qed
 
