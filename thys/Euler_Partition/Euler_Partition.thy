@@ -72,13 +72,6 @@ lemma bitset_0:
   "bitset 0 = {}"
 unfolding bitset_def by auto
 
-lemma binary_induct [case_names zero even odd]:
-  assumes "P (0 :: nat)"
-  assumes "\<And>n. P n \<Longrightarrow> P (2 * n)"
-  assumes "\<And>n. P n \<Longrightarrow> P (2 * n + 1)"
-  shows "\<And>n. P n"
-using assms parity_induct by auto
-
 lemma bitset_2n: "bitset (2 * n) = Suc ` (bitset n)"
 proof (rule set_eqI)
   fix x
@@ -101,7 +94,7 @@ by (subst bitset_Suc) (auto simp add: bitset_2n)
 
 lemma sum_bitset:
   "(\<Sum>i\<in>bitset n. 2 ^ i) = n"
-proof (induct rule: binary_induct)
+proof (induct rule: nat_parity_induct)
   case zero
   show ?case by (auto simp add: bitset_0)
 next
@@ -116,7 +109,7 @@ next
     by (subst sum.insert) (auto simp add: finite_bitset)
   also have "... = 2 * n + 1"
     using odd by (simp add: sum.reindex sum_distrib_left[symmetric])
-  finally show ?case .
+  finally show ?case by simp
 qed
 
 lemma binarysum_div:
