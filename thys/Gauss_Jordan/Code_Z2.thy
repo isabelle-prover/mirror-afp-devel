@@ -1,13 +1,13 @@
 (*  
-    Title:      Code_Bit.thy
+    Title:      Code_Z2.thy
     Author:     Jose Divasón <jose.divasonm at unirioja.es>
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section\<open>Code Generation for Bits\<close>
+section\<open>Code Generation for Z2\<close>
 
-theory Code_Bit
-imports "HOL-Library.Bit"
+theory Code_Z2
+imports "HOL-Library.Z2"
 begin
 
 text\<open>Implementation for the field of integer numbers module 2.

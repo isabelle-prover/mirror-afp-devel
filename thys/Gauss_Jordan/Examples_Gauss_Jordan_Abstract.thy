@@ -11,7 +11,7 @@ imports
   Determinants2
   Inverse
   System_Of_Equations
-  Code_Bit
+  Code_Z2
   "HOL-Library.Code_Target_Numeral"
 begin
 subsection\<open>Transforming a list of lists to an abstract matrix\<close>

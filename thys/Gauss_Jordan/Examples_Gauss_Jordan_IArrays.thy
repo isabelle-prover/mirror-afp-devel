@@ -11,7 +11,7 @@ imports
   System_Of_Equations_IArrays
   Determinants_IArrays
   Inverse_IArrays
-  Code_Bit
+  Code_Z2
   "HOL-Library.Code_Target_Numeral"
 (*"HOL-Library.Code_Real_Approx_By_Float"*)
 begin
