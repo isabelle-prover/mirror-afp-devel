@@ -236,8 +236,8 @@ lemma partition_by_median_filter:
   shows "\<forall>p \<in> set l. p!a \<le> m"
     and "\<forall>p \<in> set r. m \<le> p!a"
   using assms unfolding partition_by_median_def
-  apply (auto simp add: Let_def split: prod.splits)
-  by (metis le_less dual_order.refl in_set_takeD in_set_dropD partition_filter)+
+  by (auto simp add: Let_def le_less split: prod.splits dest!: in_set_takeD in_set_dropD)
+    (metis partition_filter)+
 
 lemma partition_by_median_length_1:
   assumes "(l, m, r) = partition_by_median a ps"
@@ -478,8 +478,9 @@ proof (induction ps rule: length_induct)
       using partition_by_median_length(1) by (metis prod.collapse)+
     hence 2: "length ?l < length ps" "length ?r < length ps"
       using False partition_by_median_length(4,5) not_le_imp_less "1.prems"
-      apply auto
-      by (metis prod.collapse)+
+        apply (auto simp add: not_le)
+       apply (metis "1" not_add_less1 not_add_less2 prod.collapse)+
+      done
     hence 3: "0 < length ?l" "0 < length ?r"
       using 1 False partition_by_median_length(6,7) by simp_all
     moreover have 4: "set ps = set ?l \<union> set ?r"
