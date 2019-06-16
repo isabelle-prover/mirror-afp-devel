@@ -94,7 +94,7 @@ by (subst bitset_Suc) (auto simp add: bitset_2n)
 
 lemma sum_bitset:
   "(\<Sum>i\<in>bitset n. 2 ^ i) = n"
-proof (induct rule: nat_parity_induct)
+proof (induct rule: nat_bit_induct)
   case zero
   show ?case by (auto simp add: bitset_0)
 next
