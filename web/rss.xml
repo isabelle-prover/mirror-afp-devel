@@ -9,7 +9,27 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>15 Jun 2019 00:00:00 +0000</pubDate>
+    <pubDate>16 Jun 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Hilbert's Nullstellensatz</title>
+              <link>https://www.isa-afp.org/entries/Nullstellensatz.html</link>
+       <guid>https://www.isa-afp.org/entries/Nullstellensatz.html</guid>
+       <dc:creator> Alexander Maletzky       </dc:creator>
+       <pubDate>16 Jun 2019 00:00:00 +0000</pubDate>
+       <description>
+This entry formalizes Hilbert&#39;s Nullstellensatz, an important
+theorem in algebraic geometry that can be viewed as the generalization
+of the Fundamental Theorem of Algebra to multivariate polynomials: If
+a set of (multivariate) polynomials over an algebraically closed field
+has no common zero, then the ideal it generates is the entire
+polynomial ring. The formalization proves several equivalent versions
+of this celebrated theorem: the weak Nullstellensatz, the strong
+Nullstellensatz (connecting algebraic varieties and radical ideals),
+and the field-theoretic Nullstellensatz. The formalization follows
+Chapter 4.1. of &lt;a
+href=&#34;https://link.springer.com/book/10.1007/978-0-387-35651-8&#34;&gt;Ideals,
+Varieties, and Algorithms&lt;/a&gt; by Cox, Little and O&#39;Shea.</description>
+    </item>
     <item>
        <title>Gröbner Bases, Macaulay Matrices and Dubé's Degree Bounds</title>
               <link>https://www.isa-afp.org/entries/Groebner_Macaulay.html</link>
@@ -561,19 +581,6 @@ that show the main premise of the paper: that consistency and
 entailment are decided through graph saturation. This formalisation
 does not give executable code, and it did not implement any of the
 optimisations suggested in the paper.</description>
-    </item>
-    <item>
-       <title>A Verified Functional Implementation of Bachmair and Ganzinger's Ordered Resolution Prover</title>
-              <link>https://www.isa-afp.org/entries/Functional_Ordered_Resolution_Prover.html</link>
-       <guid>https://www.isa-afp.org/entries/Functional_Ordered_Resolution_Prover.html</guid>
-       <dc:creator> Anders Schlichtkrull, Jasmin Christian Blanchette, Dmitriy Traytel       </dc:creator>
-       <pubDate>23 Nov 2018 00:00:00 +0000</pubDate>
-       <description>
-This Isabelle/HOL formalization refines the abstract ordered
-resolution prover  presented in Section 4.3 of Bachmair and
-Ganzinger&#39;s &#34;Resolution Theorem Proving&#34; chapter in the
-&lt;i&gt;Handbook of Automated Reasoning&lt;/i&gt;. The result is a
-functional implementation of a first-order prover.</description>
     </item>
   </channel>
 </rss>
