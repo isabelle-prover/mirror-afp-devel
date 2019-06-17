@@ -137,7 +137,7 @@ lemma set_merge_all [simp]:
   by (simp flip: set_mset_mset)
 
 lemma
-  shows mset_seqeuences [simp]: "mset (concat (sequences xs)) = mset xs"
+  shows mset_sequences [simp]: "mset (concat (sequences xs)) = mset xs"
     and mset_asc: "ascP f \<Longrightarrow> mset (concat (asc x f ys)) = {#x#} + mset (f []) + mset ys"
     and mset_desc: "mset (concat (desc x xs ys)) = {#x#} + mset xs + mset ys"
   by (induct xs and x f ys and x xs ys rule: sequences_asc_desc.induct)
