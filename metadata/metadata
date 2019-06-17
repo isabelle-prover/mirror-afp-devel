@@ -8100,3 +8100,23 @@ abstract =
   Algorithms" by T. H. Cormen, C. E. Leiserson, R. L. Rivest and C.
   Stein.
 
+[Groebner_Macaulay]
+title = Gröbner Bases, Macaulay Matrices and Dubé's Degree Bounds
+author = Alexander Maletzky <https://risc.jku.at/m/alexander-maletzky/>
+topic = Mathematics/Algebra
+date = 2019-06-15
+notify = alexander.maletzky@risc.jku.at
+abstract = 
+  This entry formalizes the connection between Gröbner bases and
+  Macaulay matrices (sometimes also referred to as `generalized
+  Sylvester matrices'). In particular, it contains a method for
+  computing Gröbner bases, which proceeds by first constructing some
+  Macaulay matrix of the initial set of polynomials, then row-reducing
+  this matrix, and finally converting the result back into a set of
+  polynomials. The output is shown to be a Gröbner basis if the Macaulay
+  matrix constructed in the first step is sufficiently large. In order
+  to obtain concrete upper bounds on the size of the matrix (and hence
+  turn the method into an effectively executable algorithm), Dubé's
+  degree bounds on Gröbner bases are utilized; consequently, they are
+  also part of the formalization.
+

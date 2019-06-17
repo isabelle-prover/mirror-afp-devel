@@ -9,7 +9,27 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>13 Jun 2019 00:00:00 +0000</pubDate>
+    <pubDate>15 Jun 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Gröbner Bases, Macaulay Matrices and Dubé's Degree Bounds</title>
+              <link>https://www.isa-afp.org/entries/Groebner_Macaulay.html</link>
+       <guid>https://www.isa-afp.org/entries/Groebner_Macaulay.html</guid>
+       <dc:creator> Alexander Maletzky       </dc:creator>
+       <pubDate>15 Jun 2019 00:00:00 +0000</pubDate>
+       <description>
+This entry formalizes the connection between Gröbner bases and
+Macaulay matrices (sometimes also referred to as `generalized
+Sylvester matrices&#39;). In particular, it contains a method for
+computing Gröbner bases, which proceeds by first constructing some
+Macaulay matrix of the initial set of polynomials, then row-reducing
+this matrix, and finally converting the result back into a set of
+polynomials. The output is shown to be a Gröbner basis if the Macaulay
+matrix constructed in the first step is sufficiently large. In order
+to obtain concrete upper bounds on the size of the matrix (and hence
+turn the method into an effectively executable algorithm), Dubé&#39;s
+degree bounds on Gröbner bases are utilized; consequently, they are
+also part of the formalization.</description>
+    </item>
     <item>
        <title>Binary Heaps for IMP2</title>
               <link>https://www.isa-afp.org/entries/IMP2_Binary_Heap.html</link>
@@ -554,19 +574,6 @@ resolution prover  presented in Section 4.3 of Bachmair and
 Ganzinger&#39;s &#34;Resolution Theorem Proving&#34; chapter in the
 &lt;i&gt;Handbook of Automated Reasoning&lt;/i&gt;. The result is a
 functional implementation of a first-order prover.</description>
-    </item>
-    <item>
-       <title>Auto2 Prover</title>
-              <link>https://www.isa-afp.org/entries/Auto2_HOL.html</link>
-       <guid>https://www.isa-afp.org/entries/Auto2_HOL.html</guid>
-       <dc:creator> Bohua Zhan       </dc:creator>
-       <pubDate>20 Nov 2018 00:00:00 +0000</pubDate>
-       <description>
-Auto2 is a saturation-based heuristic prover for higher-order logic,
-implemented as a tactic in Isabelle.  This entry contains the
-instantiation of auto2 for Isabelle/HOL, along with two basic
-examples: solutions to some of the Pelletier’s problems, and
-elementary number theory of primes.</description>
     </item>
   </channel>
 </rss>
