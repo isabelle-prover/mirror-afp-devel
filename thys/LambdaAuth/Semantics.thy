@@ -114,9 +114,18 @@ next
     by (auto simp: fresh_Pair Abs1_eq)
 qed (auto simp: subset_iff)
 
+lemma map_fixed_idle_closed:
+  "closed t \<Longrightarrow> map_fixed undefined [] t = t"
+  by (rule map_fixed_idle) auto
+
 lemma map_fixed_inj_closed:
   "closed t \<Longrightarrow> closed u \<Longrightarrow> map_fixed undefined [] t = map_fixed undefined [] u \<Longrightarrow> t = u"
-  by (erule box_equals[OF _ map_fixed_idle map_fixed_idle]) auto
+  by (rule box_equals[OF _ map_fixed_idle_closed map_fixed_idle_closed])
+
+lemma hash_eq_hash_real_closed:
+  assumes "closed t"
+  shows "hash t = hash_real t"
+  unfolding hash_def map_fixed_idle_closed[OF assms] ..
 
 subsection \<open>Substitution\<close>
 
