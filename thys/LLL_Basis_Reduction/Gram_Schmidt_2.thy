@@ -2197,12 +2197,9 @@ proof -
 qed
 
 lemma of_int_dvd:
-  assumes "b \<noteq> 0" "of_int a / (of_int b :: 'a :: field_char_0) \<in> \<int>"
-  shows "b dvd a"
-  using assms apply(elim Ints_cases)
-  unfolding dvd_def
-  by (metis nonzero_mult_div_cancel_left of_int_0_eq_iff of_int_eq_iff of_int_simps(4) times_divide_eq_right)
-
+  "b dvd a" if "of_int a / (of_int b :: 'a :: field_char_0) \<in> \<int>" "b \<noteq> 0"
+  using that by (cases rule: Ints_cases)
+    (simp add: field_simps flip: of_int_mult)
 
 lemma denom_dvd_ints:
   fixes i::int

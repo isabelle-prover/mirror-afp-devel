@@ -698,12 +698,13 @@ qed
 lemma frac_le_self:
   assumes "x \<ge> 0"
   shows "frac x \<le> x"
-using assms by (metis dual_order.trans frac_eq frac_lt_1 le_less not_le)
+  using assms less_trans [of "frac x" 1 x]
+  by (auto simp add: le_less frac_eq not_less frac_lt_1)
 
 lemma frac_le_1I:
   assumes "0 \<le> x" "x \<le> 1" "x \<le> y"
   shows "frac x \<le> y"
-using assms by (metis dual_order.trans frac_eq frac_of_int le_less of_int_simps(2))
+  using assms dual_order.trans frac_le_self by auto
 
 lemma frac_le_1I':
   assumes "0 \<le> x" "x \<le> y" "y < 1"
