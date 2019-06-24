@@ -85,6 +85,27 @@ Algorithms&#34; by T. H. Cormen, C. E. Leiserson, R. L. Rivest and C.
 Stein.</description>
     </item>
     <item>
+       <title>Differential Game Logic</title>
+              <link>https://www.isa-afp.org/entries/Differential_Game_Logic.html</link>
+       <guid>https://www.isa-afp.org/entries/Differential_Game_Logic.html</guid>
+       <dc:creator> André Platzer       </dc:creator>
+       <pubDate>03 Jun 2019 00:00:00 +0000</pubDate>
+       <description>
+This formalization provides differential game logic (dGL), a logic for
+proving properties of hybrid game. In addition to the syntax and
+semantics, it formalizes a uniform substitution calculus for dGL.
+Church&#39;s uniform substitutions substitute a term or formula for a
+function or predicate symbol everywhere. The uniform substitutions for
+dGL also substitute hybrid games for a game symbol everywhere. We
+prove soundness of one-pass uniform substitutions and the axioms of
+differential game logic with respect to their denotational semantics.
+One-pass uniform substitutions are faster by postponing
+soundness-critical admissibility checks with a linear pass homomorphic
+application and regain soundness by a variable condition at the
+replacements.  The formalization is based on prior non-mechanized
+soundness proofs for dGL.</description>
+    </item>
+    <item>
        <title>Multidimensional Binary Search Trees</title>
               <link>https://www.isa-afp.org/entries/KD_Tree.html</link>
        <guid>https://www.isa-afp.org/entries/KD_Tree.html</guid>
@@ -565,22 +586,6 @@ between relations, state transformers and predicate transformers.</description>
 These mathematical components formalise basic properties of quantales,
 together with some important models, constructions, and concepts,
 including quantic nuclei and conuclei.</description>
-    </item>
-    <item>
-       <title>Properties of Orderings and Lattices</title>
-              <link>https://www.isa-afp.org/entries/Order_Lattice_Props.html</link>
-       <guid>https://www.isa-afp.org/entries/Order_Lattice_Props.html</guid>
-       <dc:creator> Georg Struth       </dc:creator>
-       <pubDate>11 Dec 2018 00:00:00 +0000</pubDate>
-       <description>
-These components add further fundamental order and lattice-theoretic
-concepts and properties to Isabelle&#39;s libraries.  They follow by
-and large the introductory sections of the Compendium of Continuous
-Lattices,  covering directed and filtered sets, down-closed and
-up-closed sets, ideals and filters, Galois connections, closure and
-co-closure operators. Some emphasis is on duality and morphisms
-between structures, as in the Compendium.  To this end, three ad-hoc
-approaches to duality are compared.</description>
     </item>
   </channel>
 </rss>
