@@ -31,14 +31,14 @@ theorem thm_2_3_7_Dube:
 
 theorem thm_2_3_6_indets_Dube:
   fixes fs
-  defines "X \<equiv> UNION (set fs) indets"
+  defines "X \<equiv> \<Union>(indets ` set fs)"
   shows "punit.is_Groebner_basis (set (punit.Macaulay_list
                                         (deg_shifts X (Dube (Suc (card X)) (maxdeg (set fs))) fs)))"
   unfolding X_def using Dube_is_GB_cofactor_bound_indets by (rule thm_2_3_6_indets) (fact finite_set)
 
 theorem thm_2_3_7_indets_Dube:
   fixes fs
-  defines "X \<equiv> UNION (set fs) indets"
+  defines "X \<equiv> \<Union>(indets ` set fs)"
   shows "1 \<in> ideal (set fs) \<longleftrightarrow>
           1 \<in> set (punit.Macaulay_list (deg_shifts X (Dube (Suc (card X)) (maxdeg (set fs))) fs))"
   unfolding X_def using Dube_is_GB_cofactor_bound_indets by (rule thm_2_3_7_indets) (fact finite_set)

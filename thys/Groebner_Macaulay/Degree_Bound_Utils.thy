@@ -11,14 +11,14 @@ begin
 
 definition is_GB_cofactor_bound :: "(('x \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'b::field) set \<Rightarrow> nat \<Rightarrow> bool"
   where "is_GB_cofactor_bound F b \<longleftrightarrow>
-    (\<exists>G. punit.is_Groebner_basis G \<and> ideal G = ideal F \<and> UNION G indets \<subseteq> UNION F indets \<and>
+    (\<exists>G. punit.is_Groebner_basis G \<and> ideal G = ideal F \<and> (UN g:G. indets g) \<subseteq> (UN f:F. indets f) \<and>
       (\<forall>g\<in>G. \<exists>F' q. finite F' \<and> F' \<subseteq> F \<and> g = (\<Sum>f\<in>F'. q f * f) \<and> (\<forall>f\<in>F'. poly_deg (q f * f) \<le> b)))"
 
 definition is_hom_GB_bound :: "(('x \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'b::field) set \<Rightarrow> nat \<Rightarrow> bool"
   where "is_hom_GB_bound F b \<longleftrightarrow> ((\<forall>f\<in>F. homogeneous f) \<longrightarrow> (\<forall>g\<in>punit.reduced_GB F. poly_deg g \<le> b))"
 
 lemma is_GB_cofactor_boundI:
-  assumes "punit.is_Groebner_basis G" and "ideal G = ideal F" and "UNION G indets \<subseteq> UNION F indets"
+  assumes "punit.is_Groebner_basis G" and "ideal G = ideal F" and "\<Union>(indets ` G) \<subseteq> \<Union>(indets ` F)"
     and "\<And>g. g \<in> G \<Longrightarrow> \<exists>F' q. finite F' \<and> F' \<subseteq> F \<and> g = (\<Sum>f\<in>F'. q f * f) \<and> (\<forall>f\<in>F'. poly_deg (q f * f) \<le> b)"
   shows "is_GB_cofactor_bound F b"
   unfolding is_GB_cofactor_bound_def using assms by blast
@@ -26,12 +26,12 @@ lemma is_GB_cofactor_boundI:
 lemma is_GB_cofactor_boundE:
   fixes F :: "(('x \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'b::field) set"
   assumes "is_GB_cofactor_bound F b"
-  obtains G where "punit.is_Groebner_basis G" and "ideal G = ideal F" and "UNION G indets \<subseteq> UNION F indets"
+  obtains G where "punit.is_Groebner_basis G" and "ideal G = ideal F" and "\<Union>(indets ` G) \<subseteq> \<Union>(indets ` F)"
     and "\<And>g. g \<in> G \<Longrightarrow> \<exists>F' q. finite F' \<and> F' \<subseteq> F \<and> g = (\<Sum>f\<in>F'. q f * f) \<and>
-                          (\<forall>f. indets (q f) \<subseteq> UNION F indets \<and> poly_deg (q f * f) \<le> b \<and> (f \<notin> F' \<longrightarrow> q f = 0))"
+                          (\<forall>f. indets (q f) \<subseteq> \<Union>(indets ` F) \<and> poly_deg (q f * f) \<le> b \<and> (f \<notin> F' \<longrightarrow> q f = 0))"
 proof -
-  let ?X = "UNION F indets"
-  from assms obtain G where "punit.is_Groebner_basis G" and "ideal G = ideal F" and "UNION G indets \<subseteq> ?X"
+  let ?X = "\<Union>(indets ` F)"
+  from assms obtain G where "punit.is_Groebner_basis G" and "ideal G = ideal F" and "\<Union>(indets ` G) \<subseteq> ?X"
     and 1: "\<And>g. g \<in> G \<Longrightarrow> \<exists>F' q. finite F' \<and> F' \<subseteq> F \<and> g = (\<Sum>f\<in>F'. q f * f) \<and> (\<forall>f\<in>F'. poly_deg (q f * f) \<le> b)"
     by (auto simp: is_GB_cofactor_bound_def)
   from this(1, 2, 3) show ?thesis
@@ -49,7 +49,7 @@ proof -
       qed (simp_all add: q_def)
     next
       case False
-      let ?X = "UNION F indets"
+      let ?X = "\<Union>(indets ` F)"
       from \<open>g \<in> G\<close> have "\<exists>F' q. finite F' \<and> F' \<subseteq> F \<and> g = (\<Sum>f\<in>F'. q f * f) \<and> (\<forall>f\<in>F'. poly_deg (q f * f) \<le> b)"
         by (rule 1)
       then obtain F' q0 where "finite F'" and "F' \<subseteq> F" and g: "g = (\<Sum>f\<in>F'. q0 f * f)"
@@ -59,7 +59,7 @@ proof -
                                        else 1)"
       have 1: "sub x = monomial 1 (monomial 1 x)" if "x \<in> indets g" for x
       proof (simp add: sub_def, rule)
-        from that \<open>g \<in> G\<close> have "x \<in> UNION G indets" by blast
+        from that \<open>g \<in> G\<close> have "x \<in> \<Union>(indets ` G)" by blast
         also have "\<dots> \<subseteq> ?X" by fact
         finally obtain f where "f \<in> F" and "x \<in> indets f" ..
         assume "\<forall>f\<in>F. x \<notin> indets f"
@@ -138,7 +138,7 @@ lemma is_GB_cofactor_boundE_Polys:
     and "\<And>g. g \<in> G \<Longrightarrow> \<exists>F' q. finite F' \<and> F' \<subseteq> F \<and> g = (\<Sum>f\<in>F'. q f * f) \<and>
                             (\<forall>f. q f \<in> P[X] \<and> poly_deg (q f * f) \<le> b \<and> (f \<notin> F' \<longrightarrow> q f = 0))"
 proof -
-  let ?X = "UNION F indets"
+  let ?X = "\<Union>(indets ` F)"
   have "?X \<subseteq> X"
   proof
     fix x
@@ -149,7 +149,7 @@ proof -
     with \<open>x \<in> indets f\<close> show "x \<in> X" ..
   qed
   from assms(1) obtain G where "punit.is_Groebner_basis G" and "ideal G = ideal F"
-    and 1: "UNION G indets \<subseteq> ?X"
+    and 1: "\<Union>(indets ` G) \<subseteq> ?X"
     and 2: "\<And>g. g \<in> G \<Longrightarrow> \<exists>F' q. finite F' \<and> F' \<subseteq> F \<and> g = (\<Sum>f\<in>F'. q f * f) \<and>
                             (\<forall>f. indets (q f) \<subseteq> ?X \<and> poly_deg (q f * f) \<le> b \<and> (f \<notin> F' \<longrightarrow> q f = 0))"
     by (rule is_GB_cofactor_boundE) blast
@@ -159,7 +159,7 @@ proof -
     proof
       fix g
       assume "g \<in> G"
-      hence "indets g \<subseteq> UNION G indets" by blast
+      hence "indets g \<subseteq> \<Union>(indets ` G)" by blast
       also have "\<dots> \<subseteq> ?X" by fact
       also have "\<dots> \<subseteq> X" by fact
       finally show "g \<in> P[X]" by (rule PolysI_alt)

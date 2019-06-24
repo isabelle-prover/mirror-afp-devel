@@ -1475,16 +1475,16 @@ end
 
 corollary Dube_indets:
   assumes "finite F" and "\<And>f. f \<in> F \<Longrightarrow> homogeneous f" and "g \<in> punit.reduced_GB F"
-  shows "poly_deg g \<le> Dube (card (UNION F indets)) (maxdeg F)"
+  shows "poly_deg g \<le> Dube (card (\<Union>(indets ` F))) (maxdeg F)"
   using _ assms(1) _ assms(2, 3)
 proof (rule Dube)
-  from assms show "finite (UNION F indets)" by (simp add: finite_indets)
+  from assms show "finite (\<Union>(indets ` F))" by (simp add: finite_indets)
 next
-  show "F \<subseteq> P[UNION F indets]" by (auto simp: Polys_alt)
+  show "F \<subseteq> P[\<Union>(indets ` F)]" by (auto simp: Polys_alt)
 qed
 
 corollary Dube_is_hom_GB_bound_indets:
-  "finite F \<Longrightarrow> is_hom_GB_bound F (Dube (card (UNION F indets)) (maxdeg F))"
+  "finite F \<Longrightarrow> is_hom_GB_bound F (Dube (card (\<Union>(indets ` F))) (maxdeg F))"
   by (intro is_hom_GB_boundI Dube_indets)
 
 end (* pm_powerprod *)
@@ -1570,12 +1570,12 @@ qed
 
 corollary Dube_is_GB_cofactor_bound_indets:
   assumes "finite F"
-  shows "is_GB_cofactor_bound F (Dube (Suc (card (UNION F indets))) (maxdeg F))"
+  shows "is_GB_cofactor_bound F (Dube (Suc (card (\<Union>(indets ` F)))) (maxdeg F))"
   using _ assms _
 proof (rule Dube_is_GB_cofactor_bound)
-  from assms show "finite (UNION F indets)" by (simp add: finite_indets)
+  from assms show "finite (\<Union>(indets ` F))" by (simp add: finite_indets)
 next
-  show "F \<subseteq> P[UNION F indets]" by (auto simp: Polys_alt)
+  show "F \<subseteq> P[\<Union>(indets ` F)]" by (auto simp: Polys_alt)
 qed
 
 end (* extended_ord_pm_powerprod *)

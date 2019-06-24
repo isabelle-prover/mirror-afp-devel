@@ -189,22 +189,22 @@ end
 
 lemma thm_2_3_6_indets:
   assumes "is_GB_cofactor_bound (set fs) b"
-  shows "punit.is_Groebner_basis (set (punit.Macaulay_list (deg_shifts (UNION (set fs) indets) b fs)))"
+  shows "punit.is_Groebner_basis (set (punit.Macaulay_list (deg_shifts (\<Union>(indets ` (set fs))) b fs)))"
   using _ _ assms
 proof (rule thm_2_3_6)
-  from finite_set show "finite (UNION (set fs) indets)" by (simp add: finite_indets)
+  from finite_set show "finite (\<Union>(indets ` (set fs)))" by (simp add: finite_indets)
 next
-  show "set fs \<subseteq> P[UNION (set fs) indets]" by (auto simp: Polys_alt)
+  show "set fs \<subseteq> P[\<Union>(indets ` (set fs))]" by (auto simp: Polys_alt)
 qed
 
 lemma thm_2_3_7_indets:
   assumes "is_GB_cofactor_bound (set fs) b"
-  shows "1 \<in> ideal (set fs) \<longleftrightarrow> 1 \<in> set (punit.Macaulay_list (deg_shifts (UNION (set fs) indets) b fs))"
+  shows "1 \<in> ideal (set fs) \<longleftrightarrow> 1 \<in> set (punit.Macaulay_list (deg_shifts (\<Union>(indets ` (set fs))) b fs))"
   using _ _ assms
 proof (rule thm_2_3_7)
-  from finite_set show "finite (UNION (set fs) indets)" by (simp add: finite_indets)
+  from finite_set show "finite (\<Union>(indets ` (set fs)))" by (simp add: finite_indets)
 next
-  show "set fs \<subseteq> P[UNION (set fs) indets]" by (auto simp: Polys_alt)
+  show "set fs \<subseteq> P[\<Union>(indets ` (set fs))]" by (auto simp: Polys_alt)
 qed
 
 end (* pm_powerprod *)
