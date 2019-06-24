@@ -71,8 +71,7 @@ qed
 
 lemma poly_minus_rightE:
   obtains c where "poly p (x - y) = poly p x - c * (y::_::comm_ring)"
-  by (metis (no_types, hide_lams) add_uminus_conv_diff linordered_field_class.sign_simps(5)
-      mult_minus_left poly_plus_rightE)
+  by (metis add_diff_cancel_right' diff_add_cancel poly_plus_rightE)
 
 lemma map_poly_plus:
   assumes "f 0 = 0" and "\<And>a b. f (a + b) = f a + f b"
