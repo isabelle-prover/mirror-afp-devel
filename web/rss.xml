@@ -9,7 +9,23 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>16 Jun 2019 00:00:00 +0000</pubDate>
+    <pubDate>21 Jun 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Linear Inequalities</title>
+              <link>https://www.isa-afp.org/entries/Linear_Inequalities.html</link>
+       <guid>https://www.isa-afp.org/entries/Linear_Inequalities.html</guid>
+       <dc:creator> Ralph Bottesch, Alban Reynaud, René Thiemann       </dc:creator>
+       <pubDate>21 Jun 2019 00:00:00 +0000</pubDate>
+       <description>
+We formalize results about linear inqualities, mainly from
+Schrijver&#39;s book. The main results are the proof of the
+fundamental theorem on linear inequalities, Farkas&#39; lemma,
+Carathéodory&#39;s theorem, the Farkas-Minkowsky-Weyl theorem, the
+decomposition theorem of polyhedra, and Meyer&#39;s result that the
+integer hull of a polyhedron is a polyhedron itself. Several theorems
+include bounds on the appearing numbers, and in particular we provide
+an a-priori bound on mixed-integer solutions of linear inequalities.</description>
+    </item>
     <item>
        <title>Hilbert's Nullstellensatz</title>
               <link>https://www.isa-afp.org/entries/Nullstellensatz.html</link>
@@ -565,22 +581,6 @@ up-closed sets, ideals and filters, Galois connections, closure and
 co-closure operators. Some emphasis is on duality and morphisms
 between structures, as in the Compendium.  To this end, three ad-hoc
 approaches to duality are compared.</description>
-    </item>
-    <item>
-       <title>Graph Saturation</title>
-              <link>https://www.isa-afp.org/entries/Graph_Saturation.html</link>
-       <guid>https://www.isa-afp.org/entries/Graph_Saturation.html</guid>
-       <dc:creator> Sebastiaan J. C. Joosten       </dc:creator>
-       <pubDate>23 Nov 2018 00:00:00 +0000</pubDate>
-       <description>
-This is an Isabelle/HOL formalisation of graph saturation, closely
-following a &lt;a href=&#34;https://doi.org/10.1016/j.jlamp.2018.06.005&#34;&gt;paper by the author&lt;/a&gt; on graph saturation.
-Nine out of ten lemmas of the original paper are proven in this
-formalisation. The formalisation additionally includes two theorems
-that show the main premise of the paper: that consistency and
-entailment are decided through graph saturation. This formalisation
-does not give executable code, and it did not implement any of the
-optimisations suggested in the paper.</description>
     </item>
   </channel>
 </rss>

@@ -8140,3 +8140,19 @@ abstract =
   degree bounds on Gröbner bases are utilized; consequently, they are
   also part of the formalization.
 
+[Linear_Inequalities]
+title = Linear Inequalities
+author = Ralph Bottesch <http://cl-informatik.uibk.ac.at/users/bottesch/>, Alban Reynaud <>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann/>
+topic = Mathematics/Algebra
+date = 2019-06-21
+notify = rene.thiemann@uibk.ac.at
+abstract =
+  We formalize results about linear inqualities, mainly from
+  Schrijver's book. The main results are the proof of the
+  fundamental theorem on linear inequalities, Farkas' lemma,
+  Carathéodory's theorem, the Farkas-Minkowsky-Weyl theorem, the
+  decomposition theorem of polyhedra, and Meyer's result that the
+  integer hull of a polyhedron is a polyhedron itself. Several theorems
+  include bounds on the appearing numbers, and in particular we provide
+  an a-priori bound on mixed-integer solutions of linear inequalities.
+
