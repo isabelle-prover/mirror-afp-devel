@@ -5819,6 +5819,26 @@ extra-history =
 	power-products are represented as polynomial mappings.<br>
 notify = alexander.maletzky@risc.jku.at
 
+[Nullstellensatz]
+title = Hilbert's Nullstellensatz
+author = Alexander Maletzky <https://risc.jku.at/m/alexander-maletzky/>
+topic = Mathematics/Algebra, Mathematics/Geometry
+date = 2019-06-16
+notify = alexander.maletzky@risc-software.at
+abstract =
+  This entry formalizes Hilbert's Nullstellensatz, an important
+  theorem in algebraic geometry that can be viewed as the generalization
+  of the Fundamental Theorem of Algebra to multivariate polynomials: If
+  a set of (multivariate) polynomials over an algebraically closed field
+  has no common zero, then the ideal it generates is the entire
+  polynomial ring. The formalization proves several equivalent versions
+  of this celebrated theorem: the weak Nullstellensatz, the strong
+  Nullstellensatz (connecting algebraic varieties and radical ideals),
+  and the field-theoretic Nullstellensatz. The formalization follows
+  Chapter 4.1. of <a
+  href="https://link.springer.com/book/10.1007/978-0-387-35651-8">Ideals,
+  Varieties, and Algorithms</a> by Cox, Little and O'Shea.
+
 [Bell_Numbers_Spivey]
 title = Spivey's Generalized Recurrence for Bell Numbers
 author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
@@ -6815,7 +6835,7 @@ author = Martin Rau<>
 topic = Computer Science/Data Structures
 date = 2019-05-30
 notify = martin.rau@tum.de, mrtnrau@googlemail.com
-abstract = 
+abstract =
   This entry provides a formalization of multidimensional binary trees,
   also known as k-d trees. It includes a balanced build algorithm as
   well as the nearest neighbor algorithm and the range search algorithm.
@@ -8081,3 +8101,58 @@ abstract =
   statements. Our findings are summarized in a <a
   href="http://people.inf.ethz.ch/trayteld/papers/lambdaauth/lambdaauth.pdf">paper
   draft</a>.
+
+[IMP2_Binary_Heap]
+title = Binary Heaps for IMP2
+author = Simon Griebel<>
+topic = Computer Science/Data Structures, Computer Science/Algorithms
+date = 2019-06-13
+notify = s.griebel@tum.de
+abstract =
+  In this submission array-based binary minimum heaps are formalized.
+  The correctness of the following heap operations is proved: insert,
+  get-min, delete-min and make-heap. These are then used to verify an
+  in-place heapsort. The formalization is based on IMP2, an imperative
+  program verification framework implemented in Isabelle/HOL. The
+  verified heap functions are iterative versions of the partly recursive
+  functions found in "Algorithms and Data Structures – The Basic
+  Toolbox" by K. Mehlhorn and P. Sanders and "Introduction to
+  Algorithms" by T. H. Cormen, C. E. Leiserson, R. L. Rivest and C.
+  Stein.
+
+[Groebner_Macaulay]
+title = Gröbner Bases, Macaulay Matrices and Dubé's Degree Bounds
+author = Alexander Maletzky <https://risc.jku.at/m/alexander-maletzky/>
+topic = Mathematics/Algebra
+date = 2019-06-15
+notify = alexander.maletzky@risc.jku.at
+abstract =
+  This entry formalizes the connection between Gröbner bases and
+  Macaulay matrices (sometimes also referred to as `generalized
+  Sylvester matrices'). In particular, it contains a method for
+  computing Gröbner bases, which proceeds by first constructing some
+  Macaulay matrix of the initial set of polynomials, then row-reducing
+  this matrix, and finally converting the result back into a set of
+  polynomials. The output is shown to be a Gröbner basis if the Macaulay
+  matrix constructed in the first step is sufficiently large. In order
+  to obtain concrete upper bounds on the size of the matrix (and hence
+  turn the method into an effectively executable algorithm), Dubé's
+  degree bounds on Gröbner bases are utilized; consequently, they are
+  also part of the formalization.
+
+[Linear_Inequalities]
+title = Linear Inequalities
+author = Ralph Bottesch <http://cl-informatik.uibk.ac.at/users/bottesch/>, Alban Reynaud <>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann/>
+topic = Mathematics/Algebra
+date = 2019-06-21
+notify = rene.thiemann@uibk.ac.at
+abstract =
+  We formalize results about linear inqualities, mainly from
+  Schrijver's book. The main results are the proof of the
+  fundamental theorem on linear inequalities, Farkas' lemma,
+  Carathéodory's theorem, the Farkas-Minkowsky-Weyl theorem, the
+  decomposition theorem of polyhedra, and Meyer's result that the
+  integer hull of a polyhedron is a polyhedron itself. Several theorems
+  include bounds on the appearing numbers, and in particular we provide
+  an a-priori bound on mixed-integer solutions of linear inequalities.
+

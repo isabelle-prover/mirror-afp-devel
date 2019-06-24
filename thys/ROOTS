@@ -172,6 +172,7 @@ Graph_Saturation
 Graph_Theory
 Green
 Groebner_Bases
+Groebner_Macaulay
 Gromov_Hyperbolicity
 Group-Ring-Module
 HOL-CSP
@@ -190,6 +191,7 @@ HyperCTL
 IEEE_Floating_Point
 IMAP-CRDT
 IMP2
+IMP2_Binary_Heap
 IP_Addresses
 Imperative_Insertion_Sort
 Impossible_Geometry
@@ -242,6 +244,7 @@ Lehmer
 Lifting_Definition_Option
 LightweightJava
 LinearQuantifierElim
+Linear_Inequalities
 Linear_Recurrences
 Liouville_Numbers
 List-Index
@@ -296,6 +299,7 @@ Noninterference_Inductive_Unwinding
 Noninterference_Ipurge_Unwinding
 Noninterference_Sequential_Composition
 NormByEval
+Nullstellensatz
 Octonions
 Open_Induction
 OpSets

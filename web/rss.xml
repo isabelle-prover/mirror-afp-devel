@@ -9,7 +9,81 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>30 May 2019 00:00:00 +0000</pubDate>
+    <pubDate>21 Jun 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Linear Inequalities</title>
+              <link>https://www.isa-afp.org/entries/Linear_Inequalities.html</link>
+       <guid>https://www.isa-afp.org/entries/Linear_Inequalities.html</guid>
+       <dc:creator> Ralph Bottesch, Alban Reynaud, René Thiemann       </dc:creator>
+       <pubDate>21 Jun 2019 00:00:00 +0000</pubDate>
+       <description>
+We formalize results about linear inqualities, mainly from
+Schrijver&#39;s book. The main results are the proof of the
+fundamental theorem on linear inequalities, Farkas&#39; lemma,
+Carathéodory&#39;s theorem, the Farkas-Minkowsky-Weyl theorem, the
+decomposition theorem of polyhedra, and Meyer&#39;s result that the
+integer hull of a polyhedron is a polyhedron itself. Several theorems
+include bounds on the appearing numbers, and in particular we provide
+an a-priori bound on mixed-integer solutions of linear inequalities.</description>
+    </item>
+    <item>
+       <title>Hilbert's Nullstellensatz</title>
+              <link>https://www.isa-afp.org/entries/Nullstellensatz.html</link>
+       <guid>https://www.isa-afp.org/entries/Nullstellensatz.html</guid>
+       <dc:creator> Alexander Maletzky       </dc:creator>
+       <pubDate>16 Jun 2019 00:00:00 +0000</pubDate>
+       <description>
+This entry formalizes Hilbert&#39;s Nullstellensatz, an important
+theorem in algebraic geometry that can be viewed as the generalization
+of the Fundamental Theorem of Algebra to multivariate polynomials: If
+a set of (multivariate) polynomials over an algebraically closed field
+has no common zero, then the ideal it generates is the entire
+polynomial ring. The formalization proves several equivalent versions
+of this celebrated theorem: the weak Nullstellensatz, the strong
+Nullstellensatz (connecting algebraic varieties and radical ideals),
+and the field-theoretic Nullstellensatz. The formalization follows
+Chapter 4.1. of &lt;a
+href=&#34;https://link.springer.com/book/10.1007/978-0-387-35651-8&#34;&gt;Ideals,
+Varieties, and Algorithms&lt;/a&gt; by Cox, Little and O&#39;Shea.</description>
+    </item>
+    <item>
+       <title>Gröbner Bases, Macaulay Matrices and Dubé's Degree Bounds</title>
+              <link>https://www.isa-afp.org/entries/Groebner_Macaulay.html</link>
+       <guid>https://www.isa-afp.org/entries/Groebner_Macaulay.html</guid>
+       <dc:creator> Alexander Maletzky       </dc:creator>
+       <pubDate>15 Jun 2019 00:00:00 +0000</pubDate>
+       <description>
+This entry formalizes the connection between Gröbner bases and
+Macaulay matrices (sometimes also referred to as `generalized
+Sylvester matrices&#39;). In particular, it contains a method for
+computing Gröbner bases, which proceeds by first constructing some
+Macaulay matrix of the initial set of polynomials, then row-reducing
+this matrix, and finally converting the result back into a set of
+polynomials. The output is shown to be a Gröbner basis if the Macaulay
+matrix constructed in the first step is sufficiently large. In order
+to obtain concrete upper bounds on the size of the matrix (and hence
+turn the method into an effectively executable algorithm), Dubé&#39;s
+degree bounds on Gröbner bases are utilized; consequently, they are
+also part of the formalization.</description>
+    </item>
+    <item>
+       <title>Binary Heaps for IMP2</title>
+              <link>https://www.isa-afp.org/entries/IMP2_Binary_Heap.html</link>
+       <guid>https://www.isa-afp.org/entries/IMP2_Binary_Heap.html</guid>
+       <dc:creator> Simon Griebel       </dc:creator>
+       <pubDate>13 Jun 2019 00:00:00 +0000</pubDate>
+       <description>
+In this submission array-based binary minimum heaps are formalized.
+The correctness of the following heap operations is proved: insert,
+get-min, delete-min and make-heap. These are then used to verify an
+in-place heapsort. The formalization is based on IMP2, an imperative
+program verification framework implemented in Isabelle/HOL. The
+verified heap functions are iterative versions of the partly recursive
+functions found in &#34;Algorithms and Data Structures – The Basic
+Toolbox&#34; by K. Mehlhorn and P. Sanders and &#34;Introduction to
+Algorithms&#34; by T. H. Cormen, C. E. Leiserson, R. L. Rivest and C.
+Stein.</description>
+    </item>
     <item>
        <title>Multidimensional Binary Search Trees</title>
               <link>https://www.isa-afp.org/entries/KD_Tree.html</link>
@@ -507,64 +581,6 @@ up-closed sets, ideals and filters, Galois connections, closure and
 co-closure operators. Some emphasis is on duality and morphisms
 between structures, as in the Compendium.  To this end, three ad-hoc
 approaches to duality are compared.</description>
-    </item>
-    <item>
-       <title>Graph Saturation</title>
-              <link>https://www.isa-afp.org/entries/Graph_Saturation.html</link>
-       <guid>https://www.isa-afp.org/entries/Graph_Saturation.html</guid>
-       <dc:creator> Sebastiaan J. C. Joosten       </dc:creator>
-       <pubDate>23 Nov 2018 00:00:00 +0000</pubDate>
-       <description>
-This is an Isabelle/HOL formalisation of graph saturation, closely
-following a &lt;a href=&#34;https://doi.org/10.1016/j.jlamp.2018.06.005&#34;&gt;paper by the author&lt;/a&gt; on graph saturation.
-Nine out of ten lemmas of the original paper are proven in this
-formalisation. The formalisation additionally includes two theorems
-that show the main premise of the paper: that consistency and
-entailment are decided through graph saturation. This formalisation
-does not give executable code, and it did not implement any of the
-optimisations suggested in the paper.</description>
-    </item>
-    <item>
-       <title>A Verified Functional Implementation of Bachmair and Ganzinger's Ordered Resolution Prover</title>
-              <link>https://www.isa-afp.org/entries/Functional_Ordered_Resolution_Prover.html</link>
-       <guid>https://www.isa-afp.org/entries/Functional_Ordered_Resolution_Prover.html</guid>
-       <dc:creator> Anders Schlichtkrull, Jasmin Christian Blanchette, Dmitriy Traytel       </dc:creator>
-       <pubDate>23 Nov 2018 00:00:00 +0000</pubDate>
-       <description>
-This Isabelle/HOL formalization refines the abstract ordered
-resolution prover  presented in Section 4.3 of Bachmair and
-Ganzinger&#39;s &#34;Resolution Theorem Proving&#34; chapter in the
-&lt;i&gt;Handbook of Automated Reasoning&lt;/i&gt;. The result is a
-functional implementation of a first-order prover.</description>
-    </item>
-    <item>
-       <title>Auto2 Prover</title>
-              <link>https://www.isa-afp.org/entries/Auto2_HOL.html</link>
-       <guid>https://www.isa-afp.org/entries/Auto2_HOL.html</guid>
-       <dc:creator> Bohua Zhan       </dc:creator>
-       <pubDate>20 Nov 2018 00:00:00 +0000</pubDate>
-       <description>
-Auto2 is a saturation-based heuristic prover for higher-order logic,
-implemented as a tactic in Isabelle.  This entry contains the
-instantiation of auto2 for Isabelle/HOL, along with two basic
-examples: solutions to some of the Pelletier’s problems, and
-elementary number theory of primes.</description>
-    </item>
-    <item>
-       <title>Matroids</title>
-              <link>https://www.isa-afp.org/entries/Matroids.html</link>
-       <guid>https://www.isa-afp.org/entries/Matroids.html</guid>
-       <dc:creator> Jonas Keinholz       </dc:creator>
-       <pubDate>16 Nov 2018 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This article defines the combinatorial structures known as
-&lt;em&gt;Independence Systems&lt;/em&gt; and
-&lt;em&gt;Matroids&lt;/em&gt; and provides basic concepts and theorems
-related to them. These structures play an important role in
-combinatorial optimisation, e. g. greedy algorithms such as
-Kruskal&#39;s algorithm. The development is based on Oxley&#39;s
-&lt;a href=&#34;http://www.math.lsu.edu/~oxley/survey4.pdf&#34;&gt;`What
-is a Matroid?&#39;&lt;/a&gt;.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
