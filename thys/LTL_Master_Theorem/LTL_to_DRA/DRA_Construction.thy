@@ -141,12 +141,10 @@ definition \<AA>\<^sub>\<nu>_FG :: "'a ltln \<Rightarrow> ('a set, 'ltlq) dca" w
 
 
 lemma dba_run:
-  "DBA.run (dba UNIV p \<delta> \<alpha>) (to_stream w) p"
-  unfolding DBA.run_def by (rule transition_system.snth_run) fastforce
+  "DBA.run (dba UNIV p \<delta> \<alpha>) (to_stream w) p" unfolding dba.run_alt_def by simp
 
 lemma dca_run:
-  "DCA.run (dca UNIV p \<delta> \<alpha>) (to_stream w) p"
-  unfolding DCA.run_def by (rule transition_system.snth_run) fastforce
+  "DCA.run (dca UNIV p \<delta> \<alpha>) (to_stream w) p" unfolding dca.run_alt_def by simp
 
 
 lemma \<AA>\<^sub>\<mu>_language:
@@ -164,8 +162,7 @@ proof -
     by (simp add: infs_snth \<AA>\<^sub>\<mu>_def DBA.transition_def af_lifted_semantics Abs_eq[symmetric] af_letter_lifted_semantics)
 
   also have "\<dots> \<longleftrightarrow> to_stream w \<in> DBA.language (\<AA>\<^sub>\<mu> \<phi>)"
-    unfolding \<AA>\<^sub>\<mu>_def dba.initial_def dba.accepting_def
-    by (metis dba_run DBA.language DBA.language_elim dba.sel(2) dba.sel(4))
+    unfolding \<AA>\<^sub>\<mu>_def dba.initial_def dba.accepting_def by (auto simp: dba_run)
 
   finally show ?thesis
     by simp
@@ -190,8 +187,7 @@ proof -
     by (simp add: infs_snth \<AA>\<^sub>\<mu>_GF_def DBA.transition_def af\<^sub>F_lifted_semantics Abs_eq[symmetric] af_letter\<^sub>F_lifted_semantics)
 
   also have "\<dots> \<longleftrightarrow> to_stream w \<in> DBA.language (\<AA>\<^sub>\<mu>_GF \<phi>)"
-    unfolding \<AA>\<^sub>\<mu>_GF_def dba.initial_def dba.accepting_def
-    by (metis dba_run DBA.language DBA.language_elim dba.sel(2) dba.sel(4))
+    unfolding \<AA>\<^sub>\<mu>_GF_def dba.initial_def dba.accepting_def by (auto simp: dba_run)
 
   finally show ?thesis
     by simp
@@ -212,8 +208,7 @@ proof -
     by (simp add: infs_snth \<AA>\<^sub>\<nu>_def DBA.transition_def af_lifted_semantics Abs_eq[symmetric] af_letter_lifted_semantics)
 
   also have "\<dots> \<longleftrightarrow> to_stream w \<in> DCA.language (\<AA>\<^sub>\<nu> \<phi>)"
-    unfolding \<AA>\<^sub>\<nu>_def dca.initial_def dca.rejecting_def
-    by (metis dca_run DCA.language DCA.language_elim dca.sel(2) dca.sel(4))
+    unfolding \<AA>\<^sub>\<nu>_def dca.initial_def dca.rejecting_def by (auto simp: dca_run)
 
   finally show ?thesis
     by simp
@@ -238,8 +233,7 @@ proof -
     by (simp add: infs_snth \<AA>\<^sub>\<nu>_FG_def DBA.transition_def af\<^sub>G_lifted_semantics Abs_eq[symmetric] af_letter\<^sub>G_lifted_semantics)
 
   also have "\<dots> \<longleftrightarrow> to_stream w \<in> DCA.language (\<AA>\<^sub>\<nu>_FG \<phi>)"
-    unfolding \<AA>\<^sub>\<nu>_FG_def dca.initial_def dca.rejecting_def
-    by (metis dca_run DCA.language DCA.language_elim dca.sel(2) dca.sel(4))
+    unfolding \<AA>\<^sub>\<nu>_FG_def dca.initial_def dca.rejecting_def by (auto simp: dca_run)
 
   finally show ?thesis
     by simp
@@ -248,22 +242,22 @@ qed
 
 lemma \<AA>\<^sub>\<mu>_nodes:
   "DBA.nodes (\<AA>\<^sub>\<mu> \<phi>) \<subseteq> {Abs \<psi> | \<psi>. nested_prop_atoms \<psi> \<subseteq> nested_prop_atoms \<phi>}"
-  unfolding \<AA>\<^sub>\<mu>_def transition_system_initial.nodes_alt_def
+  unfolding \<AA>\<^sub>\<mu>_def
   using af_lifted_semantics af_nested_prop_atoms by fastforce
 
 lemma \<AA>\<^sub>\<mu>_GF_nodes:
   "DBA.nodes (\<AA>\<^sub>\<mu>_GF \<phi>) \<subseteq> {Abs \<psi> | \<psi>. nested_prop_atoms \<psi> \<subseteq> nested_prop_atoms (F\<^sub>n \<phi>)}"
-  unfolding \<AA>\<^sub>\<mu>_GF_def DBA.nodes_def transition_system_initial.nodes_alt_def transition_system.reachable_alt_def
+  unfolding \<AA>\<^sub>\<mu>_GF_def dba.nodes_alt_def dba.reachable_alt_def
   using af\<^sub>F_nested_prop_atoms[of "F\<^sub>n \<phi>"] by (auto simp: af\<^sub>F_lifted_semantics)
 
 lemma \<AA>\<^sub>\<nu>_nodes:
   "DCA.nodes (\<AA>\<^sub>\<nu> \<phi>) \<subseteq> {Abs \<psi> | \<psi>. nested_prop_atoms \<psi> \<subseteq> nested_prop_atoms \<phi>}"
-  unfolding \<AA>\<^sub>\<nu>_def transition_system_initial.nodes_alt_def
+  unfolding \<AA>\<^sub>\<nu>_def
   using af_lifted_semantics af_nested_prop_atoms by fastforce
 
 lemma \<AA>\<^sub>\<nu>_FG_nodes:
   "DCA.nodes (\<AA>\<^sub>\<nu>_FG \<phi>) \<subseteq> {Abs \<psi> | \<psi>. nested_prop_atoms \<psi> \<subseteq> nested_prop_atoms (G\<^sub>n \<phi>)}"
-  unfolding \<AA>\<^sub>\<nu>_FG_def DCA.nodes_def transition_system_initial.nodes_alt_def transition_system.reachable_alt_def
+  unfolding \<AA>\<^sub>\<nu>_FG_def dca.nodes_alt_def dca.reachable_alt_def
   using af\<^sub>G_nested_prop_atoms[of "G\<^sub>n \<phi>"] by (auto simp: af\<^sub>G_lifted_semantics)
 
 
@@ -285,7 +279,7 @@ proof -
     by(simp add: infs_snth \<CC>_def DCA.transition_def af\<^sub>\<nu>_lifted_semantics af_letter\<^sub>\<nu>_lifted_semantics Abs_eq)
 
   also have "\<dots> \<longleftrightarrow> to_stream w \<in> DCA.language (\<CC> \<phi> X)"
-    by (simp add: \<CC>_def dca.initial_def dca.rejecting_def DCA.language_def dca_run)
+    by (simp add: \<CC>_def dca.initial_def dca.rejecting_def dca.language_def dca_run)
 
   finally show ?thesis
     by blast
@@ -294,7 +288,7 @@ qed
 
 lemma \<CC>_nodes:
   "DCA.nodes (\<CC> \<phi> X) \<subseteq> {Abs \<psi> | \<psi>. nested_prop_atoms \<psi> \<subseteq> nested_prop_atoms \<phi>} \<times> {Abs \<psi> | \<psi>. nested_prop_atoms \<psi> \<subseteq> nested_prop_atoms\<^sub>\<nu> \<phi> X}"
-  unfolding \<CC>_def DCA.nodes_def transition_system_initial.nodes_alt_def transition_system.reachable_alt_def
+  unfolding \<CC>_def dca.nodes_alt_def dca.reachable_alt_def
   apply (auto simp add: af\<^sub>\<nu>_lifted_semantics af_letter\<^sub>\<nu>_lifted_semantics)
   using af\<^sub>\<nu>_fst_nested_prop_atoms apply force
   using GF_advice_nested_prop_atoms\<^sub>\<nu> af\<^sub>\<nu>_snd_nested_prop_atoms dra_construction_axioms by fastforce
@@ -305,11 +299,11 @@ subsection \<open>A DRA for each combination of sets X and Y\<close>
 
 lemma dba_language:
   "(\<And>w. to_stream w \<in> DBA.language \<AA> \<longleftrightarrow> w \<Turnstile>\<^sub>n \<phi>) \<Longrightarrow> DBA.language \<AA> = {w. to_omega w \<Turnstile>\<^sub>n \<phi>}"
-  by (metis (mono_tags, lifting) Collect_cong DBA.language_def mem_Collect_eq to_stream_to_omega)
+  by (metis (mono_tags, lifting) Collect_cong dba.language_def mem_Collect_eq to_stream_to_omega)
 
 lemma dca_language:
   "(\<And>w. to_stream w \<in> DCA.language \<AA> \<longleftrightarrow> w \<Turnstile>\<^sub>n \<phi>) \<Longrightarrow> DCA.language \<AA> = {w. to_omega w \<Turnstile>\<^sub>n \<phi>}"
-  by (metis (mono_tags, lifting) Collect_cong DCA.language_def mem_Collect_eq to_stream_to_omega)
+  by (metis (mono_tags, lifting) Collect_cong dca.language_def mem_Collect_eq to_stream_to_omega)
 
 
 definition \<AA>\<^sub>1 :: "'a ltln \<Rightarrow> 'a ltln list \<Rightarrow> ('a set, 'ltlq \<times> 'ltlq) dca" where
@@ -325,7 +319,7 @@ lemma \<AA>\<^sub>1_alphabet:
 
 
 definition \<AA>\<^sub>2 :: "'a ltln list \<Rightarrow> 'a ltln list \<Rightarrow> ('a set, 'ltlq list degen) dba" where
-  "\<AA>\<^sub>2 xs ys = dbail (map (\<lambda>\<psi>. \<AA>\<^sub>\<mu>_GF (\<psi>[set ys]\<^sub>\<mu>)) xs)"
+  "\<AA>\<^sub>2 xs ys = DBA_Combine.intersect_list (map (\<lambda>\<psi>. \<AA>\<^sub>\<mu>_GF (\<psi>[set ys]\<^sub>\<mu>)) xs)"
 
 lemma \<AA>\<^sub>2_language:
   "to_omega ` DBA.language (\<AA>\<^sub>2 xs ys) = L\<^sub>2 (set xs) (set ys)"
@@ -333,11 +327,11 @@ lemma \<AA>\<^sub>2_language:
 
 lemma \<AA>\<^sub>2_alphabet:
   "DBA.alphabet (\<AA>\<^sub>2 xs ys) = UNIV"
-  by (simp add: \<AA>\<^sub>2_def \<AA>\<^sub>\<mu>_GF_def dbail_def dbgail_def)
+  by (simp add: \<AA>\<^sub>2_def \<AA>\<^sub>\<mu>_GF_def)
 
 
 definition \<AA>\<^sub>3 :: "'a ltln list \<Rightarrow> 'a ltln list \<Rightarrow> ('a set, 'ltlq list) dca" where
-  "\<AA>\<^sub>3 xs ys = dcail (map (\<lambda>\<psi>. \<AA>\<^sub>\<nu>_FG (\<psi>[set xs]\<^sub>\<nu>)) ys)"
+  "\<AA>\<^sub>3 xs ys = DCA_Combine.intersect_list (map (\<lambda>\<psi>. \<AA>\<^sub>\<nu>_FG (\<psi>[set xs]\<^sub>\<nu>)) ys)"
 
 lemma \<AA>\<^sub>3_language:
   "to_omega ` DCA.language (\<AA>\<^sub>3 xs ys) = L\<^sub>3 (set xs) (set ys)"
@@ -345,10 +339,10 @@ lemma \<AA>\<^sub>3_language:
 
 lemma \<AA>\<^sub>3_alphabet:
   "DCA.alphabet (\<AA>\<^sub>3 xs ys) = UNIV"
-  by (simp add: \<AA>\<^sub>3_def \<AA>\<^sub>\<nu>_FG_def dcail_def)
+  by (simp add: \<AA>\<^sub>3_def \<AA>\<^sub>\<nu>_FG_def)
 
 
-definition "\<AA>' \<phi> xs ys = dbcrai (\<AA>\<^sub>2 xs ys) (dcai (\<AA>\<^sub>1 \<phi> xs) (\<AA>\<^sub>3 xs ys))"
+definition "\<AA>' \<phi> xs ys = intersect_bc (\<AA>\<^sub>2 xs ys) (DCA_Combine.intersect (\<AA>\<^sub>1 \<phi> xs) (\<AA>\<^sub>3 xs ys))"
 
 lemma \<AA>'_language:
   "to_omega ` DRA.language (\<AA>' \<phi> xs ys) = (L\<^sub>1 \<phi> (set xs) \<inter> L\<^sub>2 (set xs) (set ys) \<inter> L\<^sub>3 (set xs) (set ys))"
@@ -356,13 +350,13 @@ lemma \<AA>'_language:
 
 lemma \<AA>'_alphabet:
   "DRA.alphabet (\<AA>' \<phi> xs ys) = UNIV"
-  by (simp add: \<AA>'_def dbcrai_def dcai_def \<AA>\<^sub>1_alphabet \<AA>\<^sub>2_alphabet \<AA>\<^sub>3_alphabet)
+  by (simp add: \<AA>'_def \<AA>\<^sub>1_alphabet \<AA>\<^sub>2_alphabet \<AA>\<^sub>3_alphabet)
 
 
 
 subsection \<open>A DRA for @{term "L(\<phi>)"}\<close>
 
-definition "ltl_to_dra \<phi> = draul (map (\<lambda>(xs, ys). \<AA>' \<phi> xs ys) (advice_sets \<phi>))"
+definition "ltl_to_dra \<phi> = DRA_Combine.union_list (map (\<lambda>(xs, ys). \<AA>' \<phi> xs ys) (advice_sets \<phi>))"
 
 lemma ltl_to_dra_language:
   "to_omega ` DRA.language (ltl_to_dra \<phi>) = language_ltln \<phi>"
@@ -370,7 +364,7 @@ proof -
   have "(\<Inter>(a, b)\<in>set (advice_sets \<phi>). dra.alphabet (\<AA>' \<phi> a b)) =
     (\<Union>(a, b)\<in>set (advice_sets \<phi>). dra.alphabet (\<AA>' \<phi> a b))"
     using advice_sets_not_empty by (simp add: \<AA>'_alphabet)
-  then have *: "DRA.language (draul (map (\<lambda>(x, y). \<AA>' \<phi> x y) (advice_sets \<phi>))) =
+  then have *: "DRA.language (DRA_Combine.union_list (map (\<lambda>(x, y). \<AA>' \<phi> x y) (advice_sets \<phi>))) =
     \<Union> (DRA.language ` set (map (\<lambda>(x, y). \<AA>' \<phi> x y) (advice_sets \<phi>)))"
     by (simp add: split_def)
   have "language_ltln \<phi> = \<Union> {(L\<^sub>1 \<phi> X \<inter> L\<^sub>2 X Y \<inter> L\<^sub>3 X Y) | X Y. X \<subseteq> subformulas\<^sub>\<mu> \<phi> \<and> Y \<subseteq> subformulas\<^sub>\<nu> \<phi>}"
@@ -385,8 +379,7 @@ qed
 
 lemma ltl_to_dra_alphabet:
   "alphabet (ltl_to_dra \<phi>) = UNIV"
-  by (auto simp: ltl_to_dra_def draul_def \<AA>'_alphabet split: prod.split)
-     (insert advice_sets_subformulas, blast)
+  by (auto simp: ltl_to_dra_def \<AA>'_alphabet)
 
 
 
@@ -394,11 +387,11 @@ subsection \<open>Setting the Alphabet of a DRA\<close>
 
 definition dra_set_alphabet :: "('a set, 'b) dra \<Rightarrow> 'a set set \<Rightarrow> ('a set, 'b) dra"
 where
-  "dra_set_alphabet \<AA> \<Sigma> = dra \<Sigma> (initial \<AA>) (transition \<AA>) (accepting \<AA>)"
+  "dra_set_alphabet \<AA> \<Sigma> = dra \<Sigma> (initial \<AA>) (transition \<AA>) (condition \<AA>)"
 
 lemma dra_set_alphabet_language:
   "\<Sigma> \<subseteq> alphabet \<AA> \<Longrightarrow> language (dra_set_alphabet \<AA> \<Sigma>) = language \<AA> \<inter> {s. sset s \<subseteq> \<Sigma>}"
-  by (auto simp add: dra_set_alphabet_def language_def set_eq_iff DRA.run_alt_def)
+  by (auto simp add: dra_set_alphabet_def dra.language_def set_eq_iff dra.run_alt_def)
 
 lemma dra_set_alphabet_alphabet[simp]:
   "alphabet (dra_set_alphabet \<AA> \<Sigma>) = \<Sigma>"
@@ -406,8 +399,8 @@ lemma dra_set_alphabet_alphabet[simp]:
 
 lemma dra_set_alphabet_nodes:
   "\<Sigma> \<subseteq> alphabet \<AA> \<Longrightarrow> DRA.nodes (dra_set_alphabet \<AA> \<Sigma>) \<subseteq> DRA.nodes \<AA>"
-  unfolding dra_set_alphabet_def DRA.nodes_def transition_system_initial.nodes_alt_def transition_system.reachable_alt_def
-  by auto (metis DRA.path_alt_def DRA.path_def dra.sel(1) dra.sel(3) subset_trans)
+  unfolding dra_set_alphabet_def dra.nodes_alt_def dra.reachable_alt_def dra.path_alt_def
+  by auto
 
 
 

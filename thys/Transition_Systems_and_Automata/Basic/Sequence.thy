@@ -30,6 +30,11 @@ begin
 
   lemma bind_map[simp]: "map f xs \<bind> g = xs \<bind> g \<circ> f" unfolding List.bind_def by simp
 
+  lemma ball_bind[iff]: "Ball (set (xs \<bind> f)) P \<longleftrightarrow> (\<forall> x \<in> set xs. \<forall> y \<in> set (f x). P y)"
+    unfolding set_list_bind by simp
+  lemma bex_bind[iff]: "Bex (set (xs \<bind> f)) P \<longleftrightarrow> (\<exists> x \<in> set xs. \<exists> y \<in> set (f x). P y)"
+    unfolding set_list_bind by simp
+
   lemma listset_member: "ys \<in> listset XS \<longleftrightarrow> list_all2 (\<in>) ys XS"
     by (induct XS arbitrary: ys) (auto simp: set_Cons_def list_all2_Cons2)
   lemma listset_empty[iff]: "listset XS = {} \<longleftrightarrow> \<not> list_all (\<lambda> A. A \<noteq> {}) XS"

@@ -104,7 +104,7 @@ begin
     have 9: "\<And> p. p \<in> sset (gtrace ?t ?u) \<Longrightarrow> gaccepting A p \<Longrightarrow> even (f p)" using 7 8 by auto
 
     have 19: "infs (accepting A) (smap snd ?r)" using 2(3) unfolding trace_alt_def by simp
-    have 18: "infs (gaccepting A) ?r" using 19 by (force simp: comp_def)
+    have 18: "infs (gaccepting A) ?r" using 19 by simp
     have 17: "infs (gaccepting A) (gtrace ?r ?v)" using 18 unfolding gtrace_alt_def by this
     have 16: "infs (gaccepting A) (gtrace (?s @- ?t) ?v)" using 17 unfolding stake_sdrop by this
     have 15: "infs (gaccepting A) (gtrace ?t ?u)" using 16 by simp

@@ -1,304 +1,107 @@
 section \<open>Deterministic Büchi Automata Combinations\<close>
 
 theory DBA_Combine
-imports "DBA" "DGBA"
+imports DBA DGBA
 begin
 
-  definition dbgail :: "('label, 'state) dba list \<Rightarrow> ('label, 'state list) dgba" where
-    "dbgail AA \<equiv> dgba
-      (\<Inter> (dba.alphabet ` set AA))
-      (map dba.initial AA)
-      (\<lambda> a pp. map2 (\<lambda> A p. dba.transition A a p) AA pp)
-      (map (\<lambda> k pp. dba.accepting (AA ! k) (pp ! k)) [0 ..< length AA])"
+  global_interpretation degeneralization: automaton_degeneralization_trace
+    dgba dgba.alphabet dgba.initial dgba.transition dgba.accepting "gen infs"
+    dba dba.alphabet dba.initial dba.transition dba.accepting infs
+    defines degeneralize = degeneralization.degeneralize
+    by unfold_locales auto
 
-  lemma dbgail_trace_smap:
-    assumes "length pp = length AA" "k < length AA"
-    shows "smap (\<lambda> pp. pp ! k) (dgba.trace (dbgail AA) w pp) = dba.trace (AA ! k) w (pp ! k)"
-    using assms unfolding dbgail_def by (coinduction arbitrary: w pp) (force)
-  lemma dbgail_nodes_length:
-    assumes "pp \<in> DGBA.nodes (dbgail AA)"
-    shows "length pp = length AA"
-    using assms unfolding dbgail_def by induct auto
-  lemma dbgail_nodes[intro]:
-    assumes "pp \<in> DGBA.nodes (dbgail AA)" "k < length pp"
-    shows "pp ! k \<in> DBA.nodes (AA ! k)"
-    using assms unfolding dbgail_def by induct auto
+  lemmas degeneralize_language[simp] = degeneralization.degeneralize_language[folded DBA.language_def]
+  lemmas degeneralize_nodes_finite[iff] = degeneralization.degeneralize_nodes_finite[folded DBA.nodes_def]
+  lemmas degeneralize_nodes_card = degeneralization.degeneralize_nodes_card[folded DBA.nodes_def]
 
-  lemma dbgail_nodes_finite[intro]:
-    assumes "list_all (finite \<circ> DBA.nodes) AA"
-    shows "finite (DGBA.nodes (dbgail AA))"
-  proof (rule finite_subset)
-    show "DGBA.nodes (dbgail AA) \<subseteq> listset (map DBA.nodes AA)"
-      by (force simp: listset_member list_all2_conv_all_nth dbgail_nodes_length)
-    have "finite (listset (map DBA.nodes AA)) \<longleftrightarrow> list_all finite (map DBA.nodes AA)"
-      by (rule listset_finite) (auto simp: list_all_iff)
-    then show "finite (listset (map DBA.nodes AA))" using assms by (simp add: list.pred_map)
-  qed
-  lemma dbgail_nodes_card:
-    assumes "list_all (finite \<circ> DBA.nodes) AA"
-    shows "card (DGBA.nodes (dbgail AA)) \<le> prod_list (map (card \<circ> DBA.nodes) AA)"
+  global_interpretation intersection: automaton_intersection_trace
+    dba.dba dba.alphabet dba.initial dba.transition dba.accepting infs
+    dba.dba dba.alphabet dba.initial dba.transition dba.accepting infs
+    dgba.dgba dgba.alphabet dgba.initial dgba.transition dgba.accepting "gen infs"
+    "\<lambda> c\<^sub>1 c\<^sub>2. [c\<^sub>1 \<circ> fst, c\<^sub>2 \<circ> snd]"
+    defines intersect' = intersection.combine
+    by unfold_locales auto
+
+  lemmas intersect'_language[simp] = intersection.combine_language[folded DGBA.language_def]
+  lemmas intersect'_nodes_finite = intersection.combine_nodes_finite[folded DGBA.nodes_def]
+  lemmas intersect'_nodes_card = intersection.combine_nodes_card[folded DGBA.nodes_def]
+
+  global_interpretation union: automaton_union_trace
+    dba.dba dba.alphabet dba.initial dba.transition dba.accepting infs
+    dba.dba dba.alphabet dba.initial dba.transition dba.accepting infs
+    dba.dba dba.alphabet dba.initial dba.transition dba.accepting infs
+    "\<lambda> c\<^sub>1 c\<^sub>2 pq. (c\<^sub>1 \<circ> fst) pq \<or> (c\<^sub>2 \<circ> snd) pq"
+    defines union = union.combine
+    by (unfold_locales) (simp del: comp_apply)
+
+  lemmas union_language = union.combine_language
+  lemmas union_nodes_finite = union.combine_nodes_finite
+  lemmas union_nodes_card = union.combine_nodes_card
+
+  global_interpretation intersection_list: automaton_intersection_list_trace
+    dba.dba dba.alphabet dba.initial dba.transition dba.accepting infs
+    dgba.dgba dgba.alphabet dgba.initial dgba.transition dgba.accepting "gen infs"
+    "\<lambda> cs. map (\<lambda> k pp. (cs ! k) (pp ! k)) [0 ..< length cs]"
+    defines intersect_list' = intersection_list.combine
+    by (unfold_locales) (auto simp: gen_def comp_def)
+
+  lemmas intersect_list'_language[simp] = intersection_list.combine_language[folded DGBA.language_def]
+  lemmas intersect_list'_nodes_finite = intersection_list.combine_nodes_finite[folded DGBA.nodes_def]
+  lemmas intersect_list'_nodes_card = intersection_list.combine_nodes_card[folded DGBA.nodes_def]
+
+  global_interpretation union_list: automaton_union_list_trace
+    dba.dba dba.alphabet dba.initial dba.transition dba.accepting infs
+    dba.dba dba.alphabet dba.initial dba.transition dba.accepting infs
+    "\<lambda> cs pp. \<exists> k < length cs. (cs ! k) (pp ! k)"
+    defines union_list = union_list.combine
+    by (unfold_locales) (simp add: comp_def)
+
+  lemmas union_list_language = union_list.combine_language
+  lemmas union_list_nodes_finite = union_list.combine_nodes_finite
+  lemmas union_list_nodes_card = union_list.combine_nodes_card
+
+  (* TODO: these compound definitions are annoying, can we move those into Deterministic theory *)
+
+  abbreviation intersect where "intersect A B \<equiv> degeneralize (intersect' A B)"
+
+  lemma intersect_language[simp]: "DBA.language (intersect A B) = DBA.language A \<inter> DBA.language B"
+    by simp
+  lemma intersect_nodes_finite:
+    assumes "finite (DBA.nodes A)" "finite (DBA.nodes B)"
+    shows "finite (DBA.nodes (intersect A B))"
+    using intersect'_nodes_finite assms by simp
+  lemma intersect_nodes_card:
+    assumes "finite (DBA.nodes A)" "finite (DBA.nodes B)"
+    shows "card (DBA.nodes (intersect A B)) \<le> 2 * card (DBA.nodes A) * card (DBA.nodes B)"
   proof -
-    have "card (DGBA.nodes (dbgail AA)) \<le> card (listset (map DBA.nodes AA))"
-    proof (rule card_mono)
-      have "finite (listset (map DBA.nodes AA)) \<longleftrightarrow> list_all finite (map DBA.nodes AA)"
-        by (rule listset_finite) (auto simp: list_all_iff)
-      then show "finite (listset (map DBA.nodes AA))" using assms by (simp add: list.pred_map)
-      show "DGBA.nodes (dbgail AA) \<subseteq> listset (map DBA.nodes AA)"
-        by (force simp: listset_member list_all2_conv_all_nth dbgail_nodes_length)
-    qed
-    also have "\<dots> = prod_list (map (card \<circ> DBA.nodes) AA)" by simp
-    finally show ?thesis by this
-  qed
-
-  lemma dbgail_language[simp]: "DGBA.language (dbgail AA) = \<Inter> (DBA.language ` set AA)"
-  proof safe
-    fix w A
-    assume 1: "w \<in> DGBA.language (dbgail AA)" "A \<in> set AA"
-    obtain 2:
-      "dgba.run (dbgail AA) w (dgba.initial (dbgail AA))"
-      "gen infs (dgba.accepting (dbgail AA)) (dgba.trace (dbgail AA) w (dgba.initial (dbgail AA)))"
-      using 1(1) by rule
-    obtain k where 3: "A = AA ! k" "k < length AA" using 1(2) unfolding in_set_conv_nth by auto
-    have 4: "(\<lambda> pp. dba.accepting A (pp ! k)) \<in> set (dgba.accepting (dbgail AA))"
-      using 3 unfolding dbgail_def by auto
-    show "w \<in> DBA.language A"
-    proof
-      show "dba.run A w (dba.initial A)"
-        using 1(2) 2(1) unfolding DBA.run_alt_def DGBA.run_alt_def dbgail_def by auto
-      have "True \<longleftrightarrow> infs (\<lambda> pp. dba.accepting A (pp ! k)) (dgba.trace (dbgail AA) w (map dba.initial AA))"
-        using 2(2) 4 unfolding dbgail_def by auto
-      also have "\<dots> \<longleftrightarrow> infs (dba.accepting A) (smap (\<lambda> pp. pp ! k)
-        (dgba.trace (dbgail AA) w (map dba.initial AA)))" by (simp add: comp_def)
-      also have "smap (\<lambda> pp. pp ! k) (dgba.trace (dbgail AA) w (map dba.initial AA)) =
-        dba.trace (AA ! k) w (map dba.initial AA ! k)" using 3(2) by (fastforce intro: dbgail_trace_smap)
-      also have "\<dots> = dba.trace A w (dba.initial A)" using 3 by auto
-      finally show "infs (dba.accepting A) (dba.trace A w (dba.initial A))" by simp
-    qed
-  next
-    fix w
-    assume 1: "w \<in> \<Inter> (DBA.language ` set AA)"
-    have 2: "dba.run A w (dba.initial A)" "infs (dba.accepting A) (dba.trace A w (dba.initial A))"
-      if "A \<in> set AA" for A using 1 that by auto
-    show "w \<in> DGBA.language (dbgail AA)"
-    proof (intro DGBA.language ballI gen)
-      show "dgba.run (dbgail AA) w (dgba.initial (dbgail AA))"
-        using 2(1) unfolding DBA.run_alt_def DGBA.run_alt_def dbgail_def by auto
-    next
-      fix P
-      assume 3: "P \<in> set (dgba.accepting (dbgail AA))"
-      obtain k where 4: "P = (\<lambda> pp. dba.accepting (AA ! k) (pp ! k))" "k < length AA"
-        using 3 unfolding dbgail_def by auto
-      have "True \<longleftrightarrow> infs (dba.accepting (AA ! k)) (dba.trace (AA ! k) w (map dba.initial AA ! k))"
-        using 2(2) 4(2) by auto
-      also have "dba.trace (AA ! k) w (map dba.initial AA ! k) =
-        smap (\<lambda> pp. pp ! k) (dgba.trace (dbgail AA) w (map dba.initial AA))"
-        using 4(2) by (fastforce intro: dbgail_trace_smap[symmetric])
-      also have "infs (dba.accepting (AA ! k)) \<dots> \<longleftrightarrow> infs P (dgba.trace (dbgail AA) w (map dba.initial AA))"
-        unfolding 4(1) by (simp add: comp_def)
-      also have "map dba.initial AA = dgba.initial (dbgail AA)" unfolding dbgail_def by simp
-      finally show "infs P (dgba.trace (dbgail AA) w (dgba.initial (dbgail AA)))" by simp
-    qed
-  qed
-
-  definition dbail :: "('label, 'state) dba list \<Rightarrow> ('label, 'state list degen) dba" where
-    "dbail = dgbad \<circ> dbgail"
-
-  lemma dbail_nodes_finite[intro]:
-    assumes "list_all (finite \<circ> DBA.nodes) AA"
-    shows "finite (DBA.nodes (dbail AA))"
-    using dbgail_nodes_finite assms unfolding dbail_def by auto
-  lemma dbail_nodes_card:
-    assumes"list_all (finite \<circ> DBA.nodes) AA"
-    shows "card (DBA.nodes (dbail AA)) \<le> max 1 (length AA) * prod_list (map (card \<circ> DBA.nodes) AA)"
-  proof -
-    have "card (DBA.nodes (dbail AA)) \<le>
-      max 1 (length (dgba.accepting (dbgail AA))) * card (DGBA.nodes (dbgail AA))"
-      unfolding dbail_def using dgbad_nodes_card by simp
-    also have "length (dgba.accepting (dbgail AA)) = length AA" unfolding dbgail_def by simp
-    also have "card (DGBA.nodes (dbgail AA)) \<le> prod_list (map (card \<circ> DBA.nodes) AA)"
-      using dbgail_nodes_card assms by this
+    have "card (DBA.nodes (intersect A B)) \<le>
+      max 1 (length (dgba.accepting (intersect' A B))) * card (DGBA.nodes (intersect' A B))"
+      using degeneralize_nodes_card by this
+    also have "length (dgba.accepting (intersect' A B)) = 2" by simp
+    also have "card (DGBA.nodes (intersect' A B)) \<le> card (DBA.nodes A) * card (DBA.nodes B)"
+      using intersect'_nodes_card assms by this
     finally show ?thesis by simp
   qed
 
-  lemma dbail_language [simp]:
-    "DBA.language (dbail AA) = \<Inter> (DBA.language ` set AA)"
-    by (simp add: dbail_def)
+  abbreviation intersect_list where "intersect_list AA \<equiv> degeneralize (intersect_list' AA)"
 
-  definition dbau :: "('label, 'state\<^sub>1) dba \<Rightarrow> ('label, 'state\<^sub>2) dba \<Rightarrow>
-    ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) dba" where
-    "dbau A B \<equiv> dba
-      (dba.alphabet A \<union> dba.alphabet B)
-      (dba.initial A, dba.initial B)
-      (\<lambda> a (p, q). (dba.transition A a p, dba.transition B a q))
-      (\<lambda> (p, q). dba.accepting A p \<or> dba.accepting B q)"
-
-  (* TODO: can these be extracted as more general theorems about sscan? *)
-  lemma dbau_fst[iff]: "infs (P \<circ> fst) (dba.trace (dbau A B) w (p, q)) \<longleftrightarrow> infs P (dba.trace A w p)"
-  proof -
-    let ?t = "dba.trace (dbau A B) w (p, q)"
-    have "infs (P \<circ> fst) ?t \<longleftrightarrow> infs P (smap fst ?t)" by (simp add: comp_def)
-    also have "smap fst ?t = dba.trace A w p" unfolding dbau_def by (coinduction arbitrary: w p q) (auto)
-    finally show ?thesis by this
-  qed
-  lemma dbau_snd[iff]: "infs (P \<circ> snd) (dba.trace (dbau A B) w (p, q)) \<longleftrightarrow> infs P (dba.trace B w q)"
-  proof -
-    let ?t = "dba.trace (dbau A B) w (p, q)"
-    have "infs (P \<circ> snd) ?t \<longleftrightarrow> infs P (smap snd ?t)" by (simp add: comp_def)
-    also have "smap snd ?t = dba.trace B w q" unfolding dbau_def by (coinduction arbitrary: w p q) (auto)
-    finally show ?thesis by this
-  qed
-  lemma dbau_nodes_fst[intro]:
-    assumes "dba.alphabet A = dba.alphabet B"
-    shows "fst ` DBA.nodes (dbau A B) \<subseteq> DBA.nodes A"
-  proof (rule subsetI, erule imageE)
-    fix pq p
-    assume "pq \<in> DBA.nodes (dbau A B)" "p = fst pq"
-    then show "p \<in> DBA.nodes A" using assms unfolding dbau_def by (induct arbitrary: p) (auto)
-  qed
-  lemma dbau_nodes_snd[intro]:
-    assumes "dba.alphabet A = dba.alphabet B"
-    shows "snd ` DBA.nodes (dbau A B) \<subseteq> DBA.nodes B"
-  proof (rule subsetI, erule imageE)
-    fix pq q
-    assume "pq \<in> DBA.nodes (dbau A B)" "q = snd pq"
-    then show "q \<in> DBA.nodes B" using assms unfolding dbau_def by (induct arbitrary: q) (auto)
-  qed
-
-  lemma dbau_nodes_finite[intro]:
-    assumes "dba.alphabet A = dba.alphabet B"
-    assumes "finite (DBA.nodes A)" "finite (DBA.nodes B)"
-    shows "finite (DBA.nodes (dbau A B))"
-  proof (rule finite_subset)
-    show "DBA.nodes (dbau A B) \<subseteq> DBA.nodes A \<times> DBA.nodes B"
-      using dbau_nodes_fst[OF assms(1)] dbau_nodes_snd[OF assms(1)] unfolding image_subset_iff by force
-    show "finite (DBA.nodes A \<times> DBA.nodes B)" using assms(2, 3) by simp
-  qed
-  lemma dbau_nodes_card[intro]:
-    assumes "dba.alphabet A = dba.alphabet B"
-    assumes "finite (DBA.nodes A)" "finite (DBA.nodes B)"
-    shows "card (DBA.nodes (dbau A B)) \<le> card (DBA.nodes A) * card (DBA.nodes B)"
-  proof -
-    have "card (DBA.nodes (dbau A B)) \<le> card (DBA.nodes A \<times> DBA.nodes B)"
-    proof (rule card_mono)
-      show "finite (DBA.nodes A \<times> DBA.nodes B)" using assms(2, 3) by simp
-      show "DBA.nodes (dbau A B) \<subseteq> DBA.nodes A \<times> DBA.nodes B"
-        using dbau_nodes_fst[OF assms(1)] dbau_nodes_snd[OF assms(1)] unfolding image_subset_iff by force
-    qed
-    also have "\<dots> = card (DBA.nodes A) * card (DBA.nodes B)" using card_cartesian_product by this
-    finally show ?thesis by this
-  qed
-
-  lemma dbau_language[simp]:
-    assumes "dba.alphabet A = dba.alphabet B"
-    shows "DBA.language (dbau A B) = DBA.language A \<union> DBA.language B"
-  proof -
-    have 1: "dba.alphabet (dbau A B) = dba.alphabet A \<union> dba.alphabet B" unfolding dbau_def by simp
-    have 2: "dba.initial (dbau A B) = (dba.initial A, dba.initial B)" unfolding dbau_def by simp
-    have 3: "dba.accepting (dbau A B) = (\<lambda> pq. (dba.accepting A \<circ> fst) pq \<or> (dba.accepting B \<circ> snd) pq)"
-      unfolding dbau_def by auto
-    have 4: "infs (dba.accepting (dbau A B)) (DBA.trace (dbau A B) w (p, q)) \<longleftrightarrow>
-      infs (dba.accepting A) (DBA.trace A w p) \<or> infs (dba.accepting B) (DBA.trace B w q)" for w p q
-      unfolding 3 by blast
-    show ?thesis using assms unfolding DBA.language_def DBA.run_alt_def 1 2 4 by auto
-  qed
-
-  definition dbaul :: "('label, 'state) dba list \<Rightarrow> ('label, 'state list) dba" where
-    "dbaul AA \<equiv> dba
-      (\<Union> (dba.alphabet ` set AA))
-      (map dba.initial AA)
-      (\<lambda> a pp. map2 (\<lambda> A p. dba.transition A a p) AA pp)
-      (\<lambda> pp. \<exists> k < length AA. dba.accepting (AA ! k) (pp ! k))"
-
-  lemma dbaul_trace_smap:
-    assumes "length pp = length AA" "k < length AA"
-    shows "smap (\<lambda> pp. pp ! k) (dba.trace (dbaul AA) w pp) = dba.trace (AA ! k) w (pp ! k)"
-    using assms unfolding dbaul_def by (coinduction arbitrary: w pp) (force)
-  lemma dbaul_nodes_length:
-    assumes "pp \<in> DBA.nodes (dbaul AA)"
-    shows "length pp = length AA"
-    using assms unfolding dbaul_def by induct auto
-  lemma dbaul_nodes[intro]:
-    assumes "\<Inter> (dba.alphabet ` set AA) = \<Union> (dba.alphabet ` set AA)"
-    assumes "pp \<in> DBA.nodes (dbaul AA)" "k < length pp"
-    shows "pp ! k \<in> DBA.nodes (AA ! k)"
-    using assms(2, 3, 1) unfolding dbaul_def by induct force+
-
-  lemma dbaul_nodes_finite[intro]:
-    assumes "\<Inter> (dba.alphabet ` set AA) = \<Union> (dba.alphabet ` set AA)"
+  lemma intersect_list_language[simp]: "DBA.language (intersect_list AA) = \<Inter> (DBA.language ` set AA)"
+    by simp
+  lemma intersect_list_nodes_finite:
     assumes "list_all (finite \<circ> DBA.nodes) AA"
-    shows "finite (DBA.nodes (dbaul AA))"
-  proof (rule finite_subset)
-    show "DBA.nodes (dbaul AA) \<subseteq> listset (map DBA.nodes AA)"
-      using assms(1) by (force simp: listset_member list_all2_conv_all_nth dbaul_nodes_length)
-    have "finite (listset (map DBA.nodes AA)) \<longleftrightarrow> list_all finite (map DBA.nodes AA)"
-      by (rule listset_finite) (auto simp: list_all_iff)
-    then show "finite (listset (map DBA.nodes AA))" using assms(2) by (simp add: list.pred_map)
-  qed
-  lemma dbaul_nodes_card:
-    assumes "\<Inter> (dba.alphabet ` set AA) = \<Union> (dba.alphabet ` set AA)"
+    shows "finite (DBA.nodes (intersect_list AA))"
+    using intersect_list'_nodes_finite assms by simp
+  lemma intersect_list_nodes_card:
     assumes "list_all (finite \<circ> DBA.nodes) AA"
-    shows "card (DBA.nodes (dbaul AA)) \<le> prod_list (map (card \<circ> DBA.nodes) AA)"
+    shows "card (DBA.nodes (intersect_list AA)) \<le> max 1 (length AA) * prod_list (map (card \<circ> DBA.nodes) AA)"
   proof -
-    have "card (DBA.nodes (dbaul AA)) \<le> card (listset (map DBA.nodes AA))"
-    proof (rule card_mono)
-      have "finite (listset (map DBA.nodes AA)) \<longleftrightarrow> list_all finite (map DBA.nodes AA)"
-        by (rule listset_finite) (auto simp: list_all_iff)
-      then show "finite (listset (map DBA.nodes AA))" using assms(2) by (simp add: list.pred_map)
-      show "DBA.nodes (dbaul AA) \<subseteq> listset (map DBA.nodes AA)"
-        using assms(1) by (force simp: listset_member list_all2_conv_all_nth dbaul_nodes_length)
-    qed
-    also have "\<dots> = prod_list (map (card \<circ> DBA.nodes) AA)" by simp
-    finally show ?thesis by this
-  qed
-
-  lemma dbaul_language[simp]:
-    assumes "\<Inter> (dba.alphabet ` set AA) = \<Union> (dba.alphabet ` set AA)"
-    shows "DBA.language (dbaul AA) = \<Union> (DBA.language ` set AA)"
-  proof safe
-    fix w
-    assume 1: "w \<in> DBA.language (dbaul AA)"
-    obtain 2:
-      "dba.run (dbaul AA) w (dba.initial (dbaul AA))"
-      "infs (dba.accepting (dbaul AA)) (dba.trace (dbaul AA) w (dba.initial (dbaul AA)))"
-      using 1 by rule
-    obtain k where 3:
-      "k < length AA"
-      "infs (\<lambda> pp. dba.accepting (AA ! k) (pp ! k)) (dba.trace (dbaul AA) w (map dba.initial AA))"
-      using 2(2) unfolding dbaul_def by auto
-    show "w \<in> \<Union> (DBA.language ` set AA)"
-    proof (intro UN_I DBA.language)
-      show "AA ! k \<in> set AA" using 3(1) by simp
-      show "dba.run (AA ! k) w (dba.initial (AA ! k))"
-        using assms 2(1) 3(1) unfolding DBA.run_alt_def DGBA.run_alt_def dbaul_def by force
-      have "True \<longleftrightarrow> infs (\<lambda> pp. dba.accepting (AA ! k) (pp ! k))
-        (dba.trace (dbaul AA) w (map dba.initial AA))" using 3(2) by auto
-      also have "\<dots> \<longleftrightarrow> infs (dba.accepting (AA ! k))
-        (smap (\<lambda> pp. pp ! k) (dba.trace (dbaul AA) w (map dba.initial AA)))" by (simp add: comp_def)
-      also have "smap (\<lambda> pp. pp ! k) (dba.trace (dbaul AA) w (map dba.initial AA)) =
-        dba.trace (AA ! k) w (map dba.initial AA ! k)" using 3(1) by (fastforce intro: dbaul_trace_smap)
-      also have "\<dots> = dba.trace (AA ! k) w (dba.initial (AA ! k))" using 3 by auto
-      finally show "infs (dba.accepting (AA ! k)) (dba.trace (AA ! k) w (dba.initial (AA ! k)))" by simp
-    qed
-  next
-    fix A w
-    assume 1: "A \<in> set AA" "w \<in> DBA.language A"
-    obtain 2: "dba.run A w (dba.initial A)" "infs (dba.accepting A) (dba.trace A w (dba.initial A))"
-      using 1(2) by rule
-    obtain k where 3: "A = AA ! k" "k < length AA" using 1(1) unfolding in_set_conv_nth by auto
-    show "w \<in> DBA.language (dbaul AA)"
-    proof
-      show "dba.run (dbaul AA) w (dba.initial (dbaul AA))"
-        using 1(1) 2(1) unfolding DBA.run_alt_def DGBA.run_alt_def dbaul_def by auto
-      have "True \<longleftrightarrow> infs (dba.accepting (AA ! k)) (dba.trace (AA ! k) w (map dba.initial AA ! k))"
-        using 2(2) 3 by auto
-      also have "dba.trace (AA ! k) w (map dba.initial AA ! k) =
-        smap (\<lambda> pp. pp ! k) (dba.trace (dbaul AA) w (map dba.initial AA))"
-        using 3(2) by (fastforce intro: dbaul_trace_smap[symmetric])
-      also have "infs (dba.accepting (AA ! k)) \<dots> \<longleftrightarrow> infs (\<lambda> pp. dba.accepting (AA ! k) (pp ! k))
-        (dba.trace (dbaul AA) w (map dba.initial AA))" by (simp add: comp_def)
-      finally show "infs (dba.accepting (dbaul AA)) (dba.trace (dbaul AA) w (dba.initial (dbaul AA)))"
-        using 3(2) unfolding dbaul_def by auto
-    qed
+    have "card (DBA.nodes (intersect_list AA)) \<le>
+      max 1 (length (dgba.accepting (intersect_list' AA))) * card (DGBA.nodes (intersect_list' AA))"
+      using degeneralize_nodes_card by this
+    also have "length (dgba.accepting (intersect_list' AA)) = length AA" by simp
+    also have "card (DGBA.nodes (intersect_list' AA)) \<le> prod_list (map (card \<circ> DBA.nodes) AA)"
+      using intersect_list'_nodes_card assms by this
+    finally show ?thesis by simp
   qed
 
 end

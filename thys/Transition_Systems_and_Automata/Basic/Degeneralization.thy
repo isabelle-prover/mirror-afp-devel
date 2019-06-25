@@ -12,13 +12,13 @@ begin
   lemma degen_simps[iff]: "degen cs (a, k) \<longleftrightarrow> k \<ge> length cs \<or> (cs ! k) a" unfolding degen_def by simp
 
   definition count :: "'a pred gen \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> nat" where
-    "count cs a k \<equiv> if k < length cs then if (cs ! k) a then Suc k mod length cs else k else 0"
+    "count cs a k \<equiv>
+      if k < length cs
+      then if (cs ! k) a then Suc k mod length cs else k
+      else if cs = [] then k else 0"
 
-  lemma count_empty[simp]: "count [] a k = 0" unfolding count_def by simp
-  lemma count_nonempty[simp]:
-    assumes "cs \<noteq> []"
-    shows "count cs a k < length cs"
-    using assms unfolding count_def by simp
+  lemma count_empty[simp]: "count [] a k = k" unfolding count_def by simp
+  lemma count_nonempty[simp]: "cs \<noteq> [] \<Longrightarrow> count cs a k < length cs" unfolding count_def by simp
   lemma count_constant_1:
     assumes "k < length cs"
     assumes "\<And> a. a \<in> set w \<Longrightarrow> \<not> (cs ! k) a"
@@ -29,6 +29,11 @@ begin
     assumes "\<And> a. a \<in> set (w || k # scan (count cs) w k) \<Longrightarrow> \<not> degen cs a"
     shows "fold (count cs) w k = k"
     using assms unfolding count_def by (induct w) (auto)
+  lemma count_step:
+    assumes "k < length cs"
+    assumes "(cs ! k) a"
+    shows "count cs a k = Suc k mod length cs"
+    using assms unfolding count_def by simp
 
   lemma degen_skip_condition:
     assumes "k < length cs"
@@ -116,7 +121,7 @@ begin
     show ?case
     proof (rule Suc(3))
       show "w = (u @ vu @ [a]) @- vv" unfolding 2(1) 6(1) by simp
-      show "fold (count cs) (u @ vu @ [a]) k = l" using 2(2) 3 6(2, 3) 7 unfolding count_def by simp
+      show "fold (count cs) (u @ vu @ [a]) k = l" using 2(2) 3 6(2, 3) 7 count_step by simp
     qed
   qed
   lemma degen_skip_arbitrary_condition:
@@ -125,7 +130,8 @@ begin
     obtains u a v
     where "w = u @- a ## v" "fold (count cs) u k = l" "(cs ! l) a"
   proof -
-    have 1: "count cs (shd w) k < length cs" using mod_Suc assms(1) unfolding count_def by auto
+    have 0: "cs \<noteq> []" using assms(1) by auto
+    have 1: "count cs (shd w) k < length cs" using 0 by simp
     have 2: "infs (degen cs) (stl w ||| count cs (shd w) k ## sscan (count cs) (stl w) (count cs (shd w) k))"
       using assms(2) by (metis alw.cases sscan.code stream.sel(2) szip.simps(2))
     obtain u v where 3: "stl w = u @- v" "fold (count cs) u (count cs (shd w) k) = l"

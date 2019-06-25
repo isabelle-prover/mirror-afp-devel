@@ -20,7 +20,7 @@ subsection \<open>Generating the Explicit Automaton\<close>
 
 definition dra_to_drai :: "('a, 'b) dra \<Rightarrow> 'a list \<Rightarrow> ('a, 'b) drai"
 where
-  "dra_to_drai \<AA> \<Sigma> = drai \<Sigma> (initial \<AA>) (transition \<AA>) (accepting \<AA>)"
+  "dra_to_drai \<AA> \<Sigma> = drai \<Sigma> (initial \<AA>) (transition \<AA>) (condition \<AA>)"
 
 lemma dra_to_drai_language:
   "set \<Sigma> = alphabet \<AA> \<Longrightarrow> language (drai_dra (dra_to_drai \<AA> \<Sigma>)) = language \<AA>"
@@ -76,7 +76,7 @@ proof -
   have "(A, A) \<in> \<langle>Id, Id\<rangle>dra_rel"
     by simp
 
-  then have "(dra_to_drai A \<Sigma>, dra (alphabet A) (initial A) (transition A) (accepting A)) \<in> \<langle>Id, Id\<rangle>drai_dra_rel"
+  then have "(dra_to_drai A \<Sigma>, dra (alphabet A) (initial A) (transition A) (condition A)) \<in> \<langle>Id, Id\<rangle>drai_dra_rel"
     unfolding dra_to_drai_def using assms by parametricity
 
   then show ?thesis

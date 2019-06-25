@@ -11,6 +11,8 @@ begin
   text \<open>Avoid destroying the constant @{const holds} prematurely.\<close>
   lemmas [simp del] = holds.simps holds_eq1 holds_eq2 not_holds_eq
 
+  (* TODO: these cannot be applied successively to simplify infs due to introduction of \<circ>
+    avoid or add extra simplification rules for infs *)
   lemma ev_smap[iff]: "ev P (smap f w) \<longleftrightarrow> ev (P \<circ> smap f) w" using ev_smap unfolding comp_apply by this
   lemma alw_smap[iff]: "alw P (smap f w) \<longleftrightarrow> alw (P \<circ> smap f) w" using alw_smap unfolding comp_apply by this
   lemma holds_smap[iff]: "holds P (smap f w) \<longleftrightarrow> holds (P \<circ> f) w" unfolding holds.simps by simp

@@ -1,7 +1,7 @@
 section \<open>Zipping Sequences\<close>
 
 theory Sequence_Zip
-imports "Sequence"
+imports "Sequence_LTL"
 begin
 
   subsection \<open>Zipping Lists\<close>
@@ -123,6 +123,21 @@ begin
     have "sset (u ||| v) \<subseteq> sset u \<times> sset v" by simp
     also have "finite \<dots>" using 1 by simp
     finally show "finite (sset (u ||| v))" by this
+  qed
+
+  lemma infs_szip_fst[iff]: "infs (P \<circ> fst) (u ||| v) \<longleftrightarrow> infs P u"
+  proof -
+    have "infs (P \<circ> fst) (u ||| v) \<longleftrightarrow> infs P (smap fst (u ||| v))"
+      by (simp add: comp_def del: szip_smap_fst)
+    also have "\<dots> \<longleftrightarrow> infs P u" by simp
+    finally show ?thesis by this
+  qed
+  lemma infs_szip_snd[iff]: "infs (P \<circ> snd) (u ||| v) \<longleftrightarrow> infs P v"
+  proof -
+    have "infs (P \<circ> snd) (u ||| v) \<longleftrightarrow> infs P (smap snd (u ||| v))"
+      by (simp add: comp_def del: szip_smap_snd)
+    also have "\<dots> \<longleftrightarrow> infs P v" by simp
+    finally show ?thesis by this
   qed
 
 end

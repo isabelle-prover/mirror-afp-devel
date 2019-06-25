@@ -34,7 +34,7 @@ where
   "sort_transitions = sort_key fst"
 
 export_code True_ltlc Iff_ltlc ltlc_to_draei_literals
-  alphabetei initialei transitionei acceptingei
+  alphabetei initialei transitionei conditionei
   integer_of_nat atoms_ltlc_list_literals sort_transitions set
   in SML module_name LTL file_prefix LTL_to_DRA
 

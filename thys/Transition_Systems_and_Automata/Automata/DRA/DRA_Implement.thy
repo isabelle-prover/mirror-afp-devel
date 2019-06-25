@@ -10,7 +10,7 @@ begin
     (alphabeti: "'label list")
     (initiali: "'state")
     (transitioni: "'label \<Rightarrow> 'state \<Rightarrow> 'state")
-    (acceptingi: "'state rabin gen")
+    (conditioni: "'state rabin gen")
 
   definition drai_rel :: "('label\<^sub>1 \<times> 'label\<^sub>2) set \<Rightarrow> ('state\<^sub>1 \<times> 'state\<^sub>2) set \<Rightarrow>
     (('label\<^sub>1, 'state\<^sub>1) drai \<times> ('label\<^sub>2, 'state\<^sub>2) drai) set" where
@@ -18,7 +18,7 @@ begin
       (alphabeti A\<^sub>1, alphabeti A\<^sub>2) \<in> \<langle>L\<rangle> list_rel \<and>
       (initiali A\<^sub>1, initiali A\<^sub>2) \<in> S \<and>
       (transitioni A\<^sub>1, transitioni A\<^sub>2) \<in> L \<rightarrow> S \<rightarrow> S \<and>
-      (acceptingi A\<^sub>1, acceptingi A\<^sub>2) \<in> \<langle>rabin_rel S\<rangle> list_rel}"
+      (conditioni A\<^sub>1, conditioni A\<^sub>2) \<in> \<langle>rabin_rel S\<rangle> list_rel}"
 
   lemma drai_param[param]:
     "(drai, drai) \<in> \<langle>L\<rangle> list_rel \<rightarrow> S \<rightarrow> (L \<rightarrow> S \<rightarrow> S) \<rightarrow>
@@ -26,7 +26,7 @@ begin
     "(alphabeti, alphabeti) \<in> \<langle>L, S\<rangle> drai_rel \<rightarrow> \<langle>L\<rangle> list_rel"
     "(initiali, initiali) \<in> \<langle>L, S\<rangle> drai_rel \<rightarrow> S"
     "(transitioni, transitioni) \<in> \<langle>L, S\<rangle> drai_rel \<rightarrow> L \<rightarrow> S \<rightarrow> S"
-    "(acceptingi, acceptingi) \<in> \<langle>L, S\<rangle> drai_rel \<rightarrow> \<langle>rabin_rel S\<rangle> list_rel"
+    "(conditioni, conditioni) \<in> \<langle>L, S\<rangle> drai_rel \<rightarrow> \<langle>rabin_rel S\<rangle> list_rel"
     unfolding drai_rel_def fun_rel_def by auto
 
   definition drai_dra_rel :: "('label\<^sub>1 \<times> 'label\<^sub>2) set \<Rightarrow> ('state\<^sub>1 \<times> 'state\<^sub>2) set \<Rightarrow>
@@ -35,7 +35,7 @@ begin
       (alphabeti A\<^sub>1, alphabet A\<^sub>2) \<in> \<langle>L\<rangle> list_set_rel \<and>
       (initiali A\<^sub>1, initial A\<^sub>2) \<in> S \<and>
       (transitioni A\<^sub>1, transition A\<^sub>2) \<in> L \<rightarrow> S \<rightarrow> S \<and>
-      (acceptingi A\<^sub>1, accepting A\<^sub>2) \<in> \<langle>rabin_rel S\<rangle> list_rel}"
+      (conditioni A\<^sub>1, condition A\<^sub>2) \<in> \<langle>rabin_rel S\<rangle> list_rel}"
 
   lemma drai_dra_param[param, autoref_rules]:
     "(drai, dra) \<in> \<langle>L\<rangle> list_set_rel \<rightarrow> S \<rightarrow> (L \<rightarrow> S \<rightarrow> S) \<rightarrow>
@@ -43,11 +43,11 @@ begin
     "(alphabeti, alphabet) \<in> \<langle>L, S\<rangle> drai_dra_rel \<rightarrow> \<langle>L\<rangle> list_set_rel"
     "(initiali, initial) \<in> \<langle>L, S\<rangle> drai_dra_rel \<rightarrow> S"
     "(transitioni, transition) \<in> \<langle>L, S\<rangle> drai_dra_rel \<rightarrow> L \<rightarrow> S \<rightarrow> S"
-    "(acceptingi, accepting) \<in> \<langle>L, S\<rangle> drai_dra_rel \<rightarrow> \<langle>rabin_rel S\<rangle> list_rel"
+    "(conditioni, condition) \<in> \<langle>L, S\<rangle> drai_dra_rel \<rightarrow> \<langle>rabin_rel S\<rangle> list_rel"
     unfolding drai_dra_rel_def fun_rel_def by auto
 
   definition drai_dra :: "('label, 'state) drai \<Rightarrow> ('label, 'state) dra" where
-    "drai_dra A \<equiv> dra (set (alphabeti A)) (initiali A) (transitioni A) (acceptingi A)"
+    "drai_dra A \<equiv> dra (set (alphabeti A)) (initiali A) (transitioni A) (conditioni A)"
   definition drai_invar :: "('label, 'state) drai \<Rightarrow> bool" where
     "drai_invar A \<equiv> distinct (alphabeti A)"
 
@@ -55,9 +55,9 @@ begin
   proof
     fix Ai A
     assume 1: "(Ai, A) \<in> \<langle>L, S\<rangle> drai_dra_rel"
-    have 2: "drai_dra Ai = dra (set (alphabeti Ai)) (initiali Ai) (transitioni Ai) (acceptingi Ai)"
+    have 2: "drai_dra Ai = dra (set (alphabeti Ai)) (initiali Ai) (transitioni Ai) (conditioni Ai)"
       unfolding drai_dra_def by rule
-    have 3: "id A = dra (id (alphabet A)) (initial A) (transition A) (accepting A)" by simp
+    have 3: "id A = dra (id (alphabet A)) (initial A) (transition A) (condition A)" by simp
     show "(drai_dra Ai, id A) \<in> \<langle>L, S\<rangle> dra_rel" unfolding 2 3 using 1 by parametricity
   qed
 

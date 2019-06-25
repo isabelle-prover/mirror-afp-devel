@@ -95,7 +95,7 @@ lemma \<AA>\<^sub>2_nodes_finite_helper:
 
 lemma \<AA>\<^sub>2_nodes_finite:
   "finite (DBA.nodes (\<AA>\<^sub>2 xs ys))"
-  unfolding ltl_to_dra.\<AA>\<^sub>2_def using dbail_nodes_finite \<AA>\<^sub>2_nodes_finite_helper .
+  unfolding ltl_to_dra.\<AA>\<^sub>2_def using DBA_Combine.intersect_list_nodes_finite \<AA>\<^sub>2_nodes_finite_helper .
 
 lemma \<AA>\<^sub>3_nodes_finite_helper:
   "list_all (finite \<circ> DCA.nodes) (map (\<lambda>\<psi>. \<AA>\<^sub>\<nu>_FG (\<psi>[set xs]\<^sub>\<nu>)) ys)"
@@ -103,7 +103,7 @@ lemma \<AA>\<^sub>3_nodes_finite_helper:
 
 lemma \<AA>\<^sub>3_nodes_finite:
   "finite (DCA.nodes (\<AA>\<^sub>3 xs ys))"
-  unfolding ltl_to_dra.\<AA>\<^sub>3_def using dcail_finite \<AA>\<^sub>3_nodes_finite_helper .
+  unfolding ltl_to_dra.\<AA>\<^sub>3_def using DCA_Combine.intersect_list_nodes_finite \<AA>\<^sub>3_nodes_finite_helper .
 
 (* TODO add to HOL/Groups_List.thy *)
 lemma list_prod_mono:
@@ -183,7 +183,7 @@ proof -
   finally have 2: "(\<Prod>\<psi>\<leftarrow>xs. card (DBA.nodes (\<AA>\<^sub>\<mu>_GF (\<psi>[set ys]\<^sub>\<mu>)))) \<le> 2 ^ 2 ^ (Suc n + floorlog 2 n)" .
 
   have "card (DBA.nodes (\<AA>\<^sub>2 xs ys)) \<le> max 1 (length xs) * (\<Prod>\<psi>\<leftarrow>xs. card (DBA.nodes (\<AA>\<^sub>\<mu>_GF (\<psi>[set ys]\<^sub>\<mu>))))"
-    using dbail_nodes_card[OF \<AA>\<^sub>2_nodes_finite_helper]
+    using DBA_Combine.intersect_list_nodes_card[OF \<AA>\<^sub>2_nodes_finite_helper]
     by (auto simp: ltl_to_dra.\<AA>\<^sub>2_def comp_def)
 
   also have "\<dots> \<le> max 1 n * 2 ^ 2 ^ (Suc n + floorlog 2 n)"
@@ -236,7 +236,7 @@ proof -
 
 
   have "card (DCA.nodes (\<AA>\<^sub>3 xs ys)) \<le> (\<Prod>\<psi>\<leftarrow>ys. card (DCA.nodes (\<AA>\<^sub>\<nu>_FG (\<psi>[set xs]\<^sub>\<nu>))))"
-    unfolding ltl_to_dra.\<AA>\<^sub>3_def using dcail_nodes_card[OF \<AA>\<^sub>3_nodes_finite_helper]
+    unfolding ltl_to_dra.\<AA>\<^sub>3_def using DCA_Combine.intersect_list_nodes_card[OF \<AA>\<^sub>3_nodes_finite_helper]
     by (auto simp: comp_def)
 
   also have "\<dots> \<le> (2 ^ 2 ^ Suc n) ^ length ys"
@@ -299,7 +299,7 @@ qed
 lemma \<AA>'_nodes_finite:
   "finite (DRA.nodes (\<AA>' \<phi> xs ys))"
   unfolding ltl_to_dra.\<AA>'_def
-  using dcai_nodes_finite dbcrai_nodes_finite
+  using intersect_nodes_finite intersect_bc_nodes_finite
   using \<AA>\<^sub>1_nodes_finite \<AA>\<^sub>2_nodes_finite \<AA>\<^sub>3_nodes_finite
   by fast
 
@@ -326,10 +326,10 @@ proof -
 
   have "card (DRA.nodes (\<AA>' \<phi> xs ys)) \<le> card (DCA.nodes (\<AA>\<^sub>1 \<phi> xs)) * card (DBA.nodes (\<AA>\<^sub>2 xs ys)) * card (DCA.nodes (\<AA>\<^sub>3 xs ys))" (is "?lhs \<le> ?rhs")
   proof (unfold ltl_to_dra.\<AA>'_def)
-    have "card (DBA.nodes (\<AA>\<^sub>2 xs ys)) * card (DCA.nodes (dcai (\<AA>\<^sub>1 \<phi> xs) (\<AA>\<^sub>3 xs ys))) \<le> ?rhs"
-      by (simp add: dcai_nodes_card[OF \<AA>\<^sub>1_nodes_finite \<AA>\<^sub>3_nodes_finite])
-    then show "card (DRA.nodes (dbcrai (\<AA>\<^sub>2 xs ys) (dcai (\<AA>\<^sub>1 \<phi> xs) (\<AA>\<^sub>3 xs ys)))) \<le> ?rhs"
-      by (meson dbcrai_nodes_card[OF \<AA>\<^sub>2_nodes_finite dcai_nodes_finite[OF \<AA>\<^sub>1_nodes_finite \<AA>\<^sub>3_nodes_finite]] basic_trans_rules(23))
+    have "card (DBA.nodes (\<AA>\<^sub>2 xs ys)) * card (DCA.nodes (DCA_Combine.intersect (\<AA>\<^sub>1 \<phi> xs) (\<AA>\<^sub>3 xs ys))) \<le> ?rhs"
+      by (simp add: intersect_nodes_card[OF \<AA>\<^sub>1_nodes_finite \<AA>\<^sub>3_nodes_finite])
+    then show "card (DRA.nodes (intersect_bc (\<AA>\<^sub>2 xs ys) (DCA_Combine.intersect (\<AA>\<^sub>1 \<phi> xs) (\<AA>\<^sub>3 xs ys)))) \<le> ?rhs"
+      by (meson intersect_bc_nodes_card[OF \<AA>\<^sub>2_nodes_finite intersect_nodes_finite[OF \<AA>\<^sub>1_nodes_finite \<AA>\<^sub>3_nodes_finite]] basic_trans_rules(23))
   qed
 
   also have "\<dots> \<le> 2 ^ 2 ^ (n + 1) * 2 ^ 2 ^ (n + floorlog 2 n + 2) * 2 ^ 2 ^ (n + floorlog 2 n + 1)"
@@ -354,7 +354,7 @@ lemma subformula_nested_prop_atoms_subfrmlsn:
 lemma ltl_to_dra_nodes_finite:
   "finite (DRA.nodes (ltl_to_dra \<phi>))"
   unfolding ltl_to_dra.ltl_to_dra_def
-  apply (rule draul_nodes_finite)
+  apply (rule DRA_Combine.union_list_nodes_finite)
   apply (simp add: split_def ltl_to_dra.\<AA>'_alphabet advice_sets_not_empty)
   apply (simp add: list.pred_set split_def \<AA>'_nodes_finite)
   done
@@ -372,10 +372,8 @@ proof -
 
   have "card (DRA.nodes (ltl_to_dra \<phi>)) \<le> prod_list (map (card \<circ> DRA.nodes) ?map)"
     unfolding ltl_to_dra.ltl_to_dra_def
-    apply (rule draul_nodes_card)
-    unfolding set_map image_image split_def ltl_to_dra.\<AA>'_alphabet
-    apply (simp add: advice_sets_not_empty)
-    unfolding split_def list.pred_set using \<AA>'_nodes_finite by auto
+    apply (rule DRA_Combine.union_list_nodes_card)
+    unfolding list.pred_set using \<AA>'_nodes_finite by auto
 
   also have "\<dots> = (\<Prod>(x, y)\<leftarrow>advice_sets \<phi>. card (DRA.nodes (\<AA>' \<phi> x y)))"
     by (induction "advice_sets \<phi>") (auto, metis (no_types, lifting) comp_apply split_def)

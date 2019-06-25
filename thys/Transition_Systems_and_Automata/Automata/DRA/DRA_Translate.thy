@@ -14,7 +14,7 @@ begin
   section \<open>Image on Explicit Automata\<close>
 
   definition drae_image where "drae_image f A \<equiv> drae (alphabete A) (f (initiale A))
-    ((\<lambda> (p, a, q). (f p, a, f q)) ` transitione A) (map (map_prod (image f) (image f)) (acceptinge A))"
+    ((\<lambda> (p, a, q). (f p, a, f q)) ` transitione A) (map (map_prod (image f) (image f)) (conditione A))"
 
   lemma drae_image_param[param]: "(drae_image, drae_image) \<in> (S \<rightarrow> T) \<rightarrow> \<langle>L, S\<rangle> drae_rel \<rightarrow> \<langle>L, T\<rangle> drae_rel"
     unfolding drae_image_def by parametricity
@@ -23,7 +23,7 @@ begin
   lemma drae_image_dra_drae: "drae_image f (dra_drae A) = drae
     (alphabet A) (f (initial A))
     (\<Union> p \<in> nodes A. \<Union> a \<in> alphabet A. f ` {p} \<times> {a} \<times> f ` {transition A a p})
-    (map (\<lambda> (P, Q). (f ` {p \<in> nodes A. P p}, f ` {p \<in> nodes A. Q p})) (accepting A))"
+    (map (\<lambda> (P, Q). (f ` {p \<in> nodes A. P p}, f ` {p \<in> nodes A. Q p})) (condition A))"
     unfolding dra_drae_def drae_image_def drae.simps Set.filter_def by force
 
   section \<open>Exploration and Translation\<close>
@@ -93,7 +93,7 @@ begin
         ASSERT (\<forall> a \<in> alphabet A. \<forall> p \<in> dom f. f (transition A a p) \<noteq> None);
         T \<leftarrow> trans_algo N (alphabet A) (transition A) (\<lambda> x. the (f x));
         RETURN (drae (alphabet A) ((\<lambda> x. the (f x)) (initial A)) T
-          (map (\<lambda> (P, Q). ((\<lambda> x. the (f x)) ` {p \<in> N. P p}, (\<lambda> x. the (f x)) ` {p \<in> N. Q p})) (accepting A)))
+          (map (\<lambda> (P, Q). ((\<lambda> x. the (f x)) ` {p \<in> N. P p}, (\<lambda> x. the (f x)) ` {p \<in> N. Q p})) (condition A)))
       }) \<in> ?R"
     unfolding trans_algo_def by (autoref_monadic (plain))
   concrete_definition to_draei_impl uses to_draei_impl
@@ -121,12 +121,12 @@ begin
         ASSERT (\<forall> a \<in> alphabet A. \<forall> p \<in> dom f. f (transition A a p) \<noteq> None);
         T \<leftarrow> trans_algo N (alphabet A) (transition A) (\<lambda> x. the (f x));
         RETURN (drae (alphabet A) ((\<lambda> x. the (f x)) (initial A)) T
-          (map (\<lambda> (P, Q). ((\<lambda> x. the (f x)) ` {p \<in> N. P p}, (\<lambda> x. the (f x)) ` {p \<in> N. Q p})) (accepting A)))
+          (map (\<lambda> (P, Q). ((\<lambda> x. the (f x)) ` {p \<in> N. P p}, (\<lambda> x. the (f x)) ` {p \<in> N. Q p})) (condition A)))
       }, do {
         f \<leftarrow> op_set_enumerate (nodes A);
         T \<leftarrow> SPEC (HOL.eq (trans_spec A (\<lambda> x. the (f x))));
         RETURN (drae (alphabet A) ((\<lambda> x. the (f x)) (initial A)) T
-          (map (\<lambda> (P, Q). ((\<lambda> x. the (f x)) ` {p \<in> nodes A. P p}, (\<lambda> x. the (f x)) ` {p \<in> nodes A. Q p})) (accepting A)))
+          (map (\<lambda> (P, Q). ((\<lambda> x. the (f x)) ` {p \<in> nodes A. P p}, (\<lambda> x. the (f x)) ` {p \<in> nodes A. Q p})) (condition A)))
       }) \<in> \<langle>Id\<rangle> nres_rel"
       unfolding Let_def comp_apply op_set_enumerate_def using assms(1) 1
       by (refine_vcg vcg0[OF trans_algo_refine]) (auto intro!: inj_on_map_the[unfolded comp_apply])
@@ -134,7 +134,7 @@ begin
         f \<leftarrow> op_set_enumerate (nodes A);
         T \<leftarrow> SPEC (HOL.eq (trans_spec A (\<lambda> x. the (f x))));
         RETURN (drae (alphabet A) ((\<lambda> x. the (f x)) (initial A)) T
-          (map (\<lambda> (P, Q). ((\<lambda> x. the (f x)) ` {p \<in> nodes A. P p}, (\<lambda> x. the (f x)) ` {p \<in> nodes A. Q p})) (accepting A)))
+          (map (\<lambda> (P, Q). ((\<lambda> x. the (f x)) ` {p \<in> nodes A. P p}, (\<lambda> x. the (f x)) ` {p \<in> nodes A. Q p})) (condition A)))
       },  do {
         f \<leftarrow> op_set_enumerate (nodes A);
         RETURN (drae_image (the \<circ> f) (dra_drae A))

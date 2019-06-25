@@ -80,7 +80,7 @@ end = struct
       ^ "States: " ^ Int.toString (List.length states) ^ "\n"
       ^ "Start: " ^ nat_to_string (initialei aut) ^ "\n"
       ^ "AP: " ^ serialize_aps (atoms_ltlc_list_literals phi) ^ "\n"
-      ^ "Acceptance: " ^ serialize_acceptance (acceptingei aut) ^ "\n"
+      ^ "Acceptance: " ^ serialize_acceptance (conditionei aut) ^ "\n"
       ^ "acc-name: " ^ acc_name ^ "\n"
 
   (* Body *)
@@ -115,7 +115,7 @@ end = struct
 
   fun serialize_state phi aut state =
     "State: " ^ nat_to_string (#1 (List.hd state)) ^ " "
-      ^ serialize_state_labels (acceptingei aut) (#1 (List.hd state)) ^ "\n"
+      ^ serialize_state_labels (conditionei aut) (#1 (List.hd state)) ^ "\n"
       ^ String.concat (List.map (serialize_transition phi) state)
 
   fun serialize_body phi aut states =
