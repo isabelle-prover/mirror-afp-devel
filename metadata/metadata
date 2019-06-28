@@ -8177,3 +8177,24 @@ abstract =
   replacements.  The formalization is based on prior non-mechanized
   soundness proofs for dGL.
 
+[Complete_Non_Orders]
+title = Complete Non-Orders and Fixed Points
+author = Akihisa Yamada <http://group-mmm.org/~ayamada/>, Jérémy Dubut <http://group-mmm.org/~dubut/>
+topic = Mathematics/Algebra
+date = 2019-06-27
+notify = akihisayamada@nii.ac.jp, dubut@nii.ac.jp
+abstract = 
+  We develop an Isabelle/HOL library of order-theoretic concepts, such
+  as various completeness conditions and fixed-point theorems. We keep
+  our formalization as general as possible: we reprove several
+  well-known results about complete orders, often without any properties
+  of ordering, thus complete non-orders. In particular, we generalize
+  the Knaster–Tarski theorem so that we ensure the existence of a
+  quasi-fixed point of monotone maps over complete non-orders, and show
+  that the set of quasi-fixed points is complete under a mild
+  condition—attractivity—which is implied by either antisymmetry or
+  transitivity. This result generalizes and strengthens a result by
+  Stauti and Maaden. Finally, we recover Kleene’s fixed-point theorem
+  for omega-complete non-orders, again using attractivity to prove that
+  Kleene’s fixed points are least quasi-fixed points.
+

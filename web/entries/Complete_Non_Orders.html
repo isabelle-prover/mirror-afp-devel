@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Subresultants - Archive of Formal Proofs
+<title>Complete Non-Orders and Fixed Points - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,7 +61,15 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">S</font>ubresultants
+  <h1>          <font class="first">C</font>omplete
+  
+          <font class="first">N</font>on-Orders
+  
+          and
+  
+          <font class="first">F</font>ixed
+  
+          <font class="first">P</font>oints
   
 </h1>
   <p>&nbsp;</p>
@@ -70,7 +78,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Subresultants</td>
+  <td class="data" width="80%">Complete Non-Orders and Fixed Points</td>
 </tr>
 
 <tr>
@@ -78,9 +86,8 @@
           Authors:
       </td>
   <td class="data">
-                      <a href="http://sjcjoosten.nl/">Sebastiaan Joosten</a>,
-                <a href="http://cl-informatik.uibk.ac.at/~thiemann/">René Thiemann</a> and
-          <a href="http://group-mmm.org/~ayamada/">Akihisa Yamada</a>
+                    <a href="http://group-mmm.org/~ayamada/">Akihisa Yamada</a> and
+          <a href="http://group-mmm.org/~dubut/">Jérémy Dubut</a>
       </td>
 </tr>
 
@@ -88,29 +95,38 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2017-04-06</td>
+  <td class="data">2019-06-27</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-We formalize the theory of subresultants and the subresultant
-polynomial remainder sequence as described by Brown and Traub. As a
-result, we obtain efficient certified algorithms for computing the
-resultant and the greatest common divisor of polynomials.</td>
+We develop an Isabelle/HOL library of order-theoretic concepts, such
+as various completeness conditions and fixed-point theorems. We keep
+our formalization as general as possible: we reprove several
+well-known results about complete orders, often without any properties
+of ordering, thus complete non-orders. In particular, we generalize
+the Knaster–Tarski theorem so that we ensure the existence of a
+quasi-fixed point of monotone maps over complete non-orders, and show
+that the set of quasi-fixed points is complete under a mild
+condition—attractivity—which is implied by either antisymmetry or
+transitivity. This result generalizes and strengthens a result by
+Stauti and Maaden. Finally, we recover Kleene’s fixed-point theorem
+for omega-complete non-orders, again using attractivity to prove that
+Kleene’s fixed points are least quasi-fixed points.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Subresultants-AFP,
-  author  = {Sebastiaan Joosten and René Thiemann and Akihisa Yamada},
-  title   = {Subresultants},
+        <pre>@article{Complete_Non_Orders-AFP,
+  author  = {Akihisa Yamada and Jérémy Dubut},
+  title   = {Complete Non-Orders and Fixed Points},
   journal = {Archive of Formal Proofs},
-  month   = apr,
-  year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/Subresultants.html},
+  month   = jun,
+  year    = 2019,
+  note    = {\url{http://isa-afp.org/entries/Complete_Non_Orders.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -121,12 +137,8 @@ resultant and the greatest common divisor of polynomials.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Jordan_Normal_Form.html">Jordan_Normal_Form</a>, <a href="Polynomial_Factorization.html">Polynomial_Factorization</a>      </td></tr>
-          
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Berlekamp_Zassenhaus.html">Berlekamp_Zassenhaus</a>      </td></tr>
-          
+                    
+                    
 
         
   </tbody>
@@ -138,39 +150,23 @@ resultant and the greatest common divisor of polynomials.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Subresultants/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Subresultants/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Complete_Non_Orders/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Complete_Non_Orders/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Subresultants/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Complete_Non_Orders/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Subresultants-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Complete_Non_Orders-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2018:
-            <a href="../release/afp-Subresultants-2018-08-16.tar.gz">
-              afp-Subresultants-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-Subresultants-2017-10-10.tar.gz">
-              afp-Subresultants-2017-10-10.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016-1:
-            <a href="../release/afp-Subresultants-2017-04-07.tar.gz">
-              afp-Subresultants-2017-04-07.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>
