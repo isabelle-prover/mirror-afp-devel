@@ -8180,7 +8180,7 @@ abstract =
 [Complete_Non_Orders]
 title = Complete Non-Orders and Fixed Points
 author = Akihisa Yamada <http://group-mmm.org/~ayamada/>, Jérémy Dubut <http://group-mmm.org/~dubut/>
-topic = Mathematics/Algebra
+topic = Mathematics/Order
 date = 2019-06-27
 notify = akihisayamada@nii.ac.jp, dubut@nii.ac.jp
 abstract = 
