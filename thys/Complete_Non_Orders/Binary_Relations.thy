@@ -7,8 +7,8 @@ section \<open>Binary Relations\<close>
 text \<open>We start with basic properties of binary relations.\<close>
 
 theory Binary_Relations
-  imports
-    HOL.Complete_Partial_Order HOL.Wellfounded HOL.Partial_Function (* for fun_ord *)
+imports Main
+(* uses mainly concepts from the theories Complete_Partial_Order, Wellfounded, Partial_Function *)
 begin
 
 text \<open>Below we introduce an Isabelle-notation for $\{ \ldots x\ldots \mid x \in X \}$.\<close>

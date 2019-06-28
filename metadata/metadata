@@ -1722,7 +1722,7 @@ notify = viorel.preoteasa@aalto.fi
 [LatticeProperties]
 title = Lattice Properties
 author = Viorel Preoteasa <http://users.abo.fi/vpreotea/>
-topic = Mathematics/Algebra
+topic = Mathematics/Order
 date = 2011-09-22
 abstract = This formalization introduces and collects some algebraic structures based on lattices and complete lattices for use in other developments. The structures introduced are modular, and lattice ordered groups. In addition to the results proved for the new lattices, this formalization also introduces theorems about latices and complete lattices in general.
 extra-history =
