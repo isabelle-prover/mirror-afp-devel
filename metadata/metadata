@@ -7695,7 +7695,7 @@ abstract =
 [Order_Lattice_Props]
 title = Properties of Orderings and Lattices
 author = Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>
-topic = Mathematics/Algebra
+topic = Mathematics/Order
 date = 2018-12-11
 notify = g.struth@sheffield.ac.uk
 abstract =
