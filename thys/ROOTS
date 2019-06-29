@@ -337,10 +337,12 @@ Posix-Lexing
 Possibilistic_Noninterference
 Pratt_Certificate
 Presburger-Automata
+Prim_Dijkstra_Simple
 Prime_Distribution_Elementary
 Prime_Harmonic_Series
 Prime_Number_Theorem
 Priority_Queue_Braun
+Priority_Search_Trees
 Probabilistic_Noninterference
 Probabilistic_Prime_Tests
 Probabilistic_System_Zoo

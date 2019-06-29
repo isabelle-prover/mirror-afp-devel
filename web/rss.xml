@@ -32,6 +32,38 @@ for omega-complete non-orders, again using attractivity to prove that
 Kleene’s fixed points are least quasi-fixed points.</description>
     </item>
     <item>
+       <title>Priority Search Trees</title>
+              <link>https://www.isa-afp.org/entries/Priority_Search_Trees.html</link>
+       <guid>https://www.isa-afp.org/entries/Priority_Search_Trees.html</guid>
+       <dc:creator> Peter Lammich, Tobias Nipkow       </dc:creator>
+       <pubDate>25 Jun 2019 00:00:00 +0000</pubDate>
+       <description>
+We present a new, purely functional, simple and efficient data
+structure combining a search tree and a priority queue, which we call
+a &lt;em&gt;priority search tree&lt;/em&gt;. The salient feature of priority search
+trees is that they offer a decrease-key operation, something that is
+missing from other simple, purely functional priority queue
+implementations. Priority search trees can be implemented on top of
+any search tree. This entry does the implementation for red-black
+trees.  This entry formalizes the first part of our ITP-2019 proof
+pearl &lt;em&gt;Purely Functional, Simple and Efficient Priority
+Search Trees and Applications to Prim and Dijkstra&lt;/em&gt;.</description>
+    </item>
+    <item>
+       <title>Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra</title>
+              <link>https://www.isa-afp.org/entries/Prim_Dijkstra_Simple.html</link>
+       <guid>https://www.isa-afp.org/entries/Prim_Dijkstra_Simple.html</guid>
+       <dc:creator> Peter Lammich, Tobias Nipkow       </dc:creator>
+       <pubDate>25 Jun 2019 00:00:00 +0000</pubDate>
+       <description>
+We verify purely functional, simple and efficient implementations of
+Prim&#39;s and Dijkstra&#39;s algorithms. This constitutes the first
+verification of an executable and even efficient version of
+Prim&#39;s algorithm. This entry formalizes the second part of our
+ITP-2019 proof pearl &lt;em&gt;Purely Functional, Simple and Efficient
+Priority Search Trees and Applications to Prim and Dijkstra&lt;/em&gt;.</description>
+    </item>
+    <item>
        <title>Linear Inequalities</title>
               <link>https://www.isa-afp.org/entries/Linear_Inequalities.html</link>
        <guid>https://www.isa-afp.org/entries/Linear_Inequalities.html</guid>
@@ -560,42 +592,6 @@ and its separation logic framework. A major goal of this work is to
 set up automation in order to reduce the length of proof that the user
 needs to provide, both for verifying functional programs and for
 working with separation logic.</description>
-    </item>
-    <item>
-       <title>Constructive Cryptography in HOL</title>
-              <link>https://www.isa-afp.org/entries/Constructive_Cryptography.html</link>
-       <guid>https://www.isa-afp.org/entries/Constructive_Cryptography.html</guid>
-       <dc:creator> Andreas Lochbihler, S. Reza Sefidgar       </dc:creator>
-       <pubDate>17 Dec 2018 00:00:00 +0000</pubDate>
-       <description>
-Inspired by Abstract Cryptography, we extend CryptHOL, a framework for
-formalizing game-based proofs, with an abstract model of Random
-Systems and provide proof rules about their composition and equality.
-This foundation facilitates the formalization of Constructive
-Cryptography proofs, where the security of a cryptographic scheme is
-realized as a special form of construction in which a complex random
-system is built from simpler ones. This is a first step towards a
-fully-featured compositional framework, similar to Universal
-Composability framework, that supports formalization of
-simulation-based proofs.</description>
-    </item>
-    <item>
-       <title>Transformer Semantics</title>
-              <link>https://www.isa-afp.org/entries/Transformer_Semantics.html</link>
-       <guid>https://www.isa-afp.org/entries/Transformer_Semantics.html</guid>
-       <dc:creator> Georg Struth       </dc:creator>
-       <pubDate>11 Dec 2018 00:00:00 +0000</pubDate>
-       <description>
-These mathematical components formalise predicate transformer
-semantics for programs, yet currently only for partial correctness and
-in the absence of faults.  A first part for isotone (or monotone),
-Sup-preserving and Inf-preserving transformers follows Back and von
-Wright&#39;s approach, with additional emphasis on the quantalic
-structure of algebras of transformers.  The second part develops
-Sup-preserving and Inf-preserving predicate transformers from the
-powerset monad, via its Kleisli category and Eilenberg-Moore algebras,
-with emphasis on adjunctions and dualities, as well as isomorphisms
-between relations, state transformers and predicate transformers.</description>
     </item>
   </channel>
 </rss>
