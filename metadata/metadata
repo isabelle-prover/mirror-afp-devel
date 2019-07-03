@@ -3268,7 +3268,7 @@ title = Stone Algebras
 author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>
 notify = walter.guttmann@canterbury.ac.nz
 date = 2016-09-06
-topic = Mathematics/Algebra
+topic = Mathematics/Order
 abstract =
 	A range of algebras between lattices and Boolean algebras generalise
 	the notion of a complement. We develop a hierarchy of these
