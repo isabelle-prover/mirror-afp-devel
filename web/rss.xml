@@ -9,7 +9,83 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>21 Jun 2019 00:00:00 +0000</pubDate>
+    <pubDate>04 Jul 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</title>
+              <link>https://www.isa-afp.org/entries/MFOTL_Monitor.html</link>
+       <guid>https://www.isa-afp.org/entries/MFOTL_Monitor.html</guid>
+       <dc:creator> Joshua Schneider, Dmitriy Traytel       </dc:creator>
+       <pubDate>04 Jul 2019 00:00:00 +0000</pubDate>
+       <description>
+A monitor is a runtime verification tool that solves the following
+problem: Given a stream of time-stamped events and a policy formulated
+in a specification language, decide whether the policy is satisfied at
+every point in the stream. We verify the correctness of an executable
+monitor for specifications given as formulas in metric first-order
+temporal logic (MFOTL), an expressive extension of linear temporal
+logic with real-time constraints and first-order quantification. The
+verified monitor implements a simplified variant of the algorithm used
+in the efficient MonPoly monitoring tool. The formalization is
+presented in a forthcoming &lt;a
+href=&#34;http://people.inf.ethz.ch/trayteld/papers/rv19-verimon/verimon.pdf&#34;&gt;RV
+2019 paper&lt;/a&gt;, which also compares the output of the verified
+monitor to that of other monitoring tools on randomly generated
+inputs. This case study revealed several errors in the optimized but
+unverified tools.</description>
+    </item>
+    <item>
+       <title>Complete Non-Orders and Fixed Points</title>
+              <link>https://www.isa-afp.org/entries/Complete_Non_Orders.html</link>
+       <guid>https://www.isa-afp.org/entries/Complete_Non_Orders.html</guid>
+       <dc:creator> Akihisa Yamada, Jérémy Dubut       </dc:creator>
+       <pubDate>27 Jun 2019 00:00:00 +0000</pubDate>
+       <description>
+We develop an Isabelle/HOL library of order-theoretic concepts, such
+as various completeness conditions and fixed-point theorems. We keep
+our formalization as general as possible: we reprove several
+well-known results about complete orders, often without any properties
+of ordering, thus complete non-orders. In particular, we generalize
+the Knaster–Tarski theorem so that we ensure the existence of a
+quasi-fixed point of monotone maps over complete non-orders, and show
+that the set of quasi-fixed points is complete under a mild
+condition—attractivity—which is implied by either antisymmetry or
+transitivity. This result generalizes and strengthens a result by
+Stauti and Maaden. Finally, we recover Kleene’s fixed-point theorem
+for omega-complete non-orders, again using attractivity to prove that
+Kleene’s fixed points are least quasi-fixed points.</description>
+    </item>
+    <item>
+       <title>Priority Search Trees</title>
+              <link>https://www.isa-afp.org/entries/Priority_Search_Trees.html</link>
+       <guid>https://www.isa-afp.org/entries/Priority_Search_Trees.html</guid>
+       <dc:creator> Peter Lammich, Tobias Nipkow       </dc:creator>
+       <pubDate>25 Jun 2019 00:00:00 +0000</pubDate>
+       <description>
+We present a new, purely functional, simple and efficient data
+structure combining a search tree and a priority queue, which we call
+a &lt;em&gt;priority search tree&lt;/em&gt;. The salient feature of priority search
+trees is that they offer a decrease-key operation, something that is
+missing from other simple, purely functional priority queue
+implementations. Priority search trees can be implemented on top of
+any search tree. This entry does the implementation for red-black
+trees.  This entry formalizes the first part of our ITP-2019 proof
+pearl &lt;em&gt;Purely Functional, Simple and Efficient Priority
+Search Trees and Applications to Prim and Dijkstra&lt;/em&gt;.</description>
+    </item>
+    <item>
+       <title>Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra</title>
+              <link>https://www.isa-afp.org/entries/Prim_Dijkstra_Simple.html</link>
+       <guid>https://www.isa-afp.org/entries/Prim_Dijkstra_Simple.html</guid>
+       <dc:creator> Peter Lammich, Tobias Nipkow       </dc:creator>
+       <pubDate>25 Jun 2019 00:00:00 +0000</pubDate>
+       <description>
+We verify purely functional, simple and efficient implementations of
+Prim&#39;s and Dijkstra&#39;s algorithms. This constitutes the first
+verification of an executable and even efficient version of
+Prim&#39;s algorithm. This entry formalizes the second part of our
+ITP-2019 proof pearl &lt;em&gt;Purely Functional, Simple and Efficient
+Priority Search Trees and Applications to Prim and Dijkstra&lt;/em&gt;.</description>
+    </item>
     <item>
        <title>Linear Inequalities</title>
               <link>https://www.isa-afp.org/entries/Linear_Inequalities.html</link>
@@ -83,6 +159,27 @@ functions found in &#34;Algorithms and Data Structures – The Basic
 Toolbox&#34; by K. Mehlhorn and P. Sanders and &#34;Introduction to
 Algorithms&#34; by T. H. Cormen, C. E. Leiserson, R. L. Rivest and C.
 Stein.</description>
+    </item>
+    <item>
+       <title>Differential Game Logic</title>
+              <link>https://www.isa-afp.org/entries/Differential_Game_Logic.html</link>
+       <guid>https://www.isa-afp.org/entries/Differential_Game_Logic.html</guid>
+       <dc:creator> André Platzer       </dc:creator>
+       <pubDate>03 Jun 2019 00:00:00 +0000</pubDate>
+       <description>
+This formalization provides differential game logic (dGL), a logic for
+proving properties of hybrid game. In addition to the syntax and
+semantics, it formalizes a uniform substitution calculus for dGL.
+Church&#39;s uniform substitutions substitute a term or formula for a
+function or predicate symbol everywhere. The uniform substitutions for
+dGL also substitute hybrid games for a game symbol everywhere. We
+prove soundness of one-pass uniform substitutions and the axioms of
+differential game logic with respect to their denotational semantics.
+One-pass uniform substitutions are faster by postponing
+soundness-critical admissibility checks with a linear pass homomorphic
+application and regain soundness by a variable condition at the
+replacements.  The formalization is based on prior non-mechanized
+soundness proofs for dGL.</description>
     </item>
     <item>
        <title>Multidimensional Binary Search Trees</title>
@@ -500,87 +597,6 @@ independent of scheduling activity. The concurrent revisions model has
 an operational semantics, with an informal proof of determinacy. This
 document contains an Isabelle/HOL formalization of this semantics and
 the proof of determinacy.</description>
-    </item>
-    <item>
-       <title>Verifying Imperative Programs using Auto2</title>
-              <link>https://www.isa-afp.org/entries/Auto2_Imperative_HOL.html</link>
-       <guid>https://www.isa-afp.org/entries/Auto2_Imperative_HOL.html</guid>
-       <dc:creator> Bohua Zhan       </dc:creator>
-       <pubDate>21 Dec 2018 00:00:00 +0000</pubDate>
-       <description>
-This entry contains the application of auto2 to verifying functional
-and imperative programs. Algorithms and data structures that are
-verified include linked lists, binary search trees, red-black trees,
-interval trees, priority queue, quicksort, union-find, Dijkstra&#39;s
-algorithm, and a sweep-line algorithm for detecting rectangle
-intersection. The imperative verification is based on Imperative HOL
-and its separation logic framework. A major goal of this work is to
-set up automation in order to reduce the length of proof that the user
-needs to provide, both for verifying functional programs and for
-working with separation logic.</description>
-    </item>
-    <item>
-       <title>Constructive Cryptography in HOL</title>
-              <link>https://www.isa-afp.org/entries/Constructive_Cryptography.html</link>
-       <guid>https://www.isa-afp.org/entries/Constructive_Cryptography.html</guid>
-       <dc:creator> Andreas Lochbihler, S. Reza Sefidgar       </dc:creator>
-       <pubDate>17 Dec 2018 00:00:00 +0000</pubDate>
-       <description>
-Inspired by Abstract Cryptography, we extend CryptHOL, a framework for
-formalizing game-based proofs, with an abstract model of Random
-Systems and provide proof rules about their composition and equality.
-This foundation facilitates the formalization of Constructive
-Cryptography proofs, where the security of a cryptographic scheme is
-realized as a special form of construction in which a complex random
-system is built from simpler ones. This is a first step towards a
-fully-featured compositional framework, similar to Universal
-Composability framework, that supports formalization of
-simulation-based proofs.</description>
-    </item>
-    <item>
-       <title>Transformer Semantics</title>
-              <link>https://www.isa-afp.org/entries/Transformer_Semantics.html</link>
-       <guid>https://www.isa-afp.org/entries/Transformer_Semantics.html</guid>
-       <dc:creator> Georg Struth       </dc:creator>
-       <pubDate>11 Dec 2018 00:00:00 +0000</pubDate>
-       <description>
-These mathematical components formalise predicate transformer
-semantics for programs, yet currently only for partial correctness and
-in the absence of faults.  A first part for isotone (or monotone),
-Sup-preserving and Inf-preserving transformers follows Back and von
-Wright&#39;s approach, with additional emphasis on the quantalic
-structure of algebras of transformers.  The second part develops
-Sup-preserving and Inf-preserving predicate transformers from the
-powerset monad, via its Kleisli category and Eilenberg-Moore algebras,
-with emphasis on adjunctions and dualities, as well as isomorphisms
-between relations, state transformers and predicate transformers.</description>
-    </item>
-    <item>
-       <title>Quantales</title>
-              <link>https://www.isa-afp.org/entries/Quantales.html</link>
-       <guid>https://www.isa-afp.org/entries/Quantales.html</guid>
-       <dc:creator> Georg Struth       </dc:creator>
-       <pubDate>11 Dec 2018 00:00:00 +0000</pubDate>
-       <description>
-These mathematical components formalise basic properties of quantales,
-together with some important models, constructions, and concepts,
-including quantic nuclei and conuclei.</description>
-    </item>
-    <item>
-       <title>Properties of Orderings and Lattices</title>
-              <link>https://www.isa-afp.org/entries/Order_Lattice_Props.html</link>
-       <guid>https://www.isa-afp.org/entries/Order_Lattice_Props.html</guid>
-       <dc:creator> Georg Struth       </dc:creator>
-       <pubDate>11 Dec 2018 00:00:00 +0000</pubDate>
-       <description>
-These components add further fundamental order and lattice-theoretic
-concepts and properties to Isabelle&#39;s libraries.  They follow by
-and large the introductory sections of the Compendium of Continuous
-Lattices,  covering directed and filtered sets, down-closed and
-up-closed sets, ideals and filters, Galois connections, closure and
-co-closure operators. Some emphasis is on duality and morphisms
-between structures, as in the Compendium.  To this end, three ad-hoc
-approaches to duality are compared.</description>
     </item>
   </channel>
 </rss>

@@ -8156,3 +8156,100 @@ abstract =
   include bounds on the appearing numbers, and in particular we provide
   an a-priori bound on mixed-integer solutions of linear inequalities.
 
+[Differential_Game_Logic]
+title = Differential Game Logic
+author = André Platzer <http://www.cs.cmu.edu/~aplatzer/>
+topic = Computer Science/Programming Languages/Logics
+date = 2019-06-03
+notify = aplatzer@cs.cmu.edu
+abstract =
+  This formalization provides differential game logic (dGL), a logic for
+  proving properties of hybrid game. In addition to the syntax and
+  semantics, it formalizes a uniform substitution calculus for dGL.
+  Church's uniform substitutions substitute a term or formula for a
+  function or predicate symbol everywhere. The uniform substitutions for
+  dGL also substitute hybrid games for a game symbol everywhere. We
+  prove soundness of one-pass uniform substitutions and the axioms of
+  differential game logic with respect to their denotational semantics.
+  One-pass uniform substitutions are faster by postponing
+  soundness-critical admissibility checks with a linear pass homomorphic
+  application and regain soundness by a variable condition at the
+  replacements.  The formalization is based on prior non-mechanized
+  soundness proofs for dGL.
+
+[Complete_Non_Orders]
+title = Complete Non-Orders and Fixed Points
+author = Akihisa Yamada <http://group-mmm.org/~ayamada/>, Jérémy Dubut <http://group-mmm.org/~dubut/>
+topic = Mathematics/Order
+date = 2019-06-27
+notify = akihisayamada@nii.ac.jp, dubut@nii.ac.jp
+abstract =
+  We develop an Isabelle/HOL library of order-theoretic concepts, such
+  as various completeness conditions and fixed-point theorems. We keep
+  our formalization as general as possible: we reprove several
+  well-known results about complete orders, often without any properties
+  of ordering, thus complete non-orders. In particular, we generalize
+  the Knaster–Tarski theorem so that we ensure the existence of a
+  quasi-fixed point of monotone maps over complete non-orders, and show
+  that the set of quasi-fixed points is complete under a mild
+  condition—attractivity—which is implied by either antisymmetry or
+  transitivity. This result generalizes and strengthens a result by
+  Stauti and Maaden. Finally, we recover Kleene’s fixed-point theorem
+  for omega-complete non-orders, again using attractivity to prove that
+  Kleene’s fixed points are least quasi-fixed points.
+
+[Priority_Search_Trees]
+title = Priority Search Trees
+author = Peter Lammich <http://www21.in.tum.de/~lammich>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
+topic = Computer Science/Data Structures
+date = 2019-06-25
+notify = lammich@in.tum.de
+abstract =
+  We present a new, purely functional, simple and efficient data
+  structure combining a search tree and a priority queue, which we call
+  a <em>priority search tree</em>. The salient feature of priority search
+  trees is that they offer a decrease-key operation, something that is
+  missing from other simple, purely functional priority queue
+  implementations. Priority search trees can be implemented on top of
+  any search tree. This entry does the implementation for red-black
+  trees.  This entry formalizes the first part of our ITP-2019 proof
+  pearl <em>Purely Functional, Simple and Efficient Priority
+  Search Trees and Applications to Prim and Dijkstra</em>.
+
+[Prim_Dijkstra_Simple]
+title = Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra
+author = Peter Lammich <http://www21.in.tum.de/~lammich>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
+topic = Computer Science/Algorithms
+date = 2019-06-25
+notify = lammich@in.tum.de
+abstract =
+  We verify purely functional, simple and efficient implementations of
+  Prim's and Dijkstra's algorithms. This constitutes the first
+  verification of an executable and even efficient version of
+  Prim's algorithm. This entry formalizes the second part of our
+  ITP-2019 proof pearl <em>Purely Functional, Simple and Efficient
+  Priority Search Trees and Applications to Prim and Dijkstra</em>.
+  
+[MFOTL_Monitor]
+title = Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic
+author = Joshua Schneider <mailto:joshua.schneider@inf.ethz.ch>, Dmitriy Traytel <http://people.inf.ethz.ch/trayteld/>
+topic = Computer Science/Algorithms, Logic, Computer Science/Automata and Formal Languages
+date = 2019-07-04
+notify = joshua.schneider@inf.ethz.ch, traytel@inf.ethz.ch
+abstract = 
+  A monitor is a runtime verification tool that solves the following
+  problem: Given a stream of time-stamped events and a policy formulated
+  in a specification language, decide whether the policy is satisfied at
+  every point in the stream. We verify the correctness of an executable
+  monitor for specifications given as formulas in metric first-order
+  temporal logic (MFOTL), an expressive extension of linear temporal
+  logic with real-time constraints and first-order quantification. The
+  verified monitor implements a simplified variant of the algorithm used
+  in the efficient MonPoly monitoring tool. The formalization is
+  presented in a forthcoming <a
+  href="http://people.inf.ethz.ch/trayteld/papers/rv19-verimon/verimon.pdf">RV
+  2019 paper</a>, which also compares the output of the verified
+  monitor to that of other monitoring tools on randomly generated
+  inputs. This case study revealed several errors in the optimized but
+  unverified tools.
+

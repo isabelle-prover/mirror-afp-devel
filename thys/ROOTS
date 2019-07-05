@@ -73,6 +73,7 @@ Collections
 Comparison_Sort_Lower_Bound
 Compiling-Exceptions-Correctly
 Completeness
+Complete_Non_Orders
 Complx
 ComponentDependencies
 ConcurrentGC
@@ -105,6 +106,7 @@ Deriving
 Descartes_Sign_Rule
 Dict_Construction
 Differential_Dynamic_Logic
+Differential_Game_Logic
 Dijkstra_Shortest_Path
 Diophantine_Eqns_Lin_Hom
 Dirichlet_L
@@ -269,6 +271,7 @@ Matroids
 Max-Card-Matching
 Median_Of_Medians_Selection
 Menger
+MFOTL_Monitor
 MiniML
 Minimal_SSA
 Minkowskis_Theorem
@@ -335,10 +338,12 @@ Posix-Lexing
 Possibilistic_Noninterference
 Pratt_Certificate
 Presburger-Automata
+Prim_Dijkstra_Simple
 Prime_Distribution_Elementary
 Prime_Harmonic_Series
 Prime_Number_Theorem
 Priority_Queue_Braun
+Priority_Search_Trees
 Probabilistic_Noninterference
 Probabilistic_Prime_Tests
 Probabilistic_System_Zoo
