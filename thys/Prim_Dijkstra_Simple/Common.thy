@@ -95,21 +95,21 @@ lemma Inf_in:
   qed
 qed  
 
-lemma INF_of_enat_infty_iff1: "(INF x:A. enat (f x)) = \<infinity> \<longleftrightarrow> A={}"
+lemma INF_of_enat_infty_iff1: "(INF x \<in> A. enat (f x)) = \<infinity> \<longleftrightarrow> A={}"
   apply (cases "A={}")
   subgoal by (simp add: top_enat_def)
   subgoal by safe (metis INF_top_conv(2) enat.distinct(1) top_enat_def)+
   done
 
 lemma INF_of_enat_infty_iff2: 
-  "\<infinity> = (INF x:A. enat (f x)) \<longleftrightarrow> A={}"  
+  "\<infinity> = (INF x \<in> A. enat (f x)) \<longleftrightarrow> A={}"  
   by (metis INF_of_enat_infty_iff1)
 
 lemmas INF_of_enat_infty_iff[simp] = INF_of_enat_infty_iff1 INF_of_enat_infty_iff2
     
 lemma INF_of_enat_nat_conv1: 
   assumes "finite A"  
-  shows "(INF x:A. enat (f x)) = enat d \<longleftrightarrow> (\<exists>x\<in>A. d = f x \<and> (\<forall>y\<in>A. f x \<le> f y))"  
+  shows "(INF x \<in> A. enat (f x)) = enat d \<longleftrightarrow> (\<exists>x\<in>A. d = f x \<and> (\<forall>y\<in>A. f x \<le> f y))"  
 proof -
   from assms have F: "finite (enat`f`A)" by auto
 
@@ -128,7 +128,7 @@ qed
       
 lemma INF_of_enat_nat_conv2: 
   assumes "finite A"  
-  shows "enat d = (INF x:A. enat (f x)) \<longleftrightarrow> (\<exists>x\<in>A. d = f x \<and> (\<forall>y\<in>A. f x \<le> f y))"  
+  shows "enat d = (INF x \<in> A. enat (f x)) \<longleftrightarrow> (\<exists>x\<in>A. d = f x \<and> (\<forall>y\<in>A. f x \<le> f y))"  
   using INF_of_enat_nat_conv1[OF assms] by metis
 
 lemmas INF_of_enat_nat_conv = INF_of_enat_nat_conv1 INF_of_enat_nat_conv2
@@ -137,14 +137,14 @@ lemma finite_inf_linorder_ne_ex:
   fixes f :: "_ \<Rightarrow> _::{complete_lattice,linorder}"
   assumes "finite S"
   assumes "S\<noteq>{}"
-  shows "\<exists>x\<in>S. (INF x:S. f x) = f x"
+  shows "\<exists>x\<in>S. (INF x \<in> S. f x) = f x"
   using assms
   by (meson Inf_in finite_imageI imageE image_is_empty)
   
   
 
 lemma finite_linorder_eq_INF_conv: "finite S 
-  \<Longrightarrow> a = (INF x:S. f x) \<longleftrightarrow> (if S={} then a=top else \<exists>x\<in>S. a=f x \<and> (\<forall>y\<in>S. a \<le> f y))"
+  \<Longrightarrow> a = (INF x \<in> S. f x) \<longleftrightarrow> (if S={} then a=top else \<exists>x\<in>S. a=f x \<and> (\<forall>y\<in>S. a \<le> f y))"
   for a :: "_::{complete_lattice,linorder}"
   by (auto 
     simp: INF_greatest INF_lower  
@@ -207,6 +207,4 @@ lemma foldr_refine:
   using assms
   by (induction l arbitrary: s) auto
   
-
-
 end
