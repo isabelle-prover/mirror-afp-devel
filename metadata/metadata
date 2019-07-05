@@ -8229,3 +8229,27 @@ abstract =
   Prim's algorithm. This entry formalizes the second part of our
   ITP-2019 proof pearl <em>Purely Functional, Simple and Efficient
   Priority Search Trees and Applications to Prim and Dijkstra</em>.
+  
+[MFOTL_Monitor]
+title = Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic
+author = Joshua Schneider <mailto:joshua.schneider@inf.ethz.ch>, Dmitriy Traytel <http://people.inf.ethz.ch/trayteld/>
+topic = Computer Science/Algorithms, Logic, Computer Science/Automata and Formal Languages
+date = 2019-07-04
+notify = joshua.schneider@inf.ethz.ch, traytel@inf.ethz.ch
+abstract = 
+  A monitor is a runtime verification tool that solves the following
+  problem: Given a stream of time-stamped events and a policy formulated
+  in a specification language, decide whether the policy is satisfied at
+  every point in the stream. We verify the correctness of an executable
+  monitor for specifications given as formulas in metric first-order
+  temporal logic (MFOTL), an expressive extension of linear temporal
+  logic with real-time constraints and first-order quantification. The
+  verified monitor implements a simplified variant of the algorithm used
+  in the efficient MonPoly monitoring tool. The formalization is
+  presented in a forthcoming <a
+  href="http://people.inf.ethz.ch/trayteld/papers/rv19-verimon/verimon.pdf">RV
+  2019 paper</a>, which also compares the output of the verified
+  monitor to that of other monitoring tools on randomly generated
+  inputs. This case study revealed several errors in the optimized but
+  unverified tools.
+

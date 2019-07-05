@@ -9,7 +9,30 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>27 Jun 2019 00:00:00 +0000</pubDate>
+    <pubDate>04 Jul 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</title>
+              <link>https://www.isa-afp.org/entries/MFOTL_Monitor.html</link>
+       <guid>https://www.isa-afp.org/entries/MFOTL_Monitor.html</guid>
+       <dc:creator> Joshua Schneider, Dmitriy Traytel       </dc:creator>
+       <pubDate>04 Jul 2019 00:00:00 +0000</pubDate>
+       <description>
+A monitor is a runtime verification tool that solves the following
+problem: Given a stream of time-stamped events and a policy formulated
+in a specification language, decide whether the policy is satisfied at
+every point in the stream. We verify the correctness of an executable
+monitor for specifications given as formulas in metric first-order
+temporal logic (MFOTL), an expressive extension of linear temporal
+logic with real-time constraints and first-order quantification. The
+verified monitor implements a simplified variant of the algorithm used
+in the efficient MonPoly monitoring tool. The formalization is
+presented in a forthcoming &lt;a
+href=&#34;http://people.inf.ethz.ch/trayteld/papers/rv19-verimon/verimon.pdf&#34;&gt;RV
+2019 paper&lt;/a&gt;, which also compares the output of the verified
+monitor to that of other monitoring tools on randomly generated
+inputs. This case study revealed several errors in the optimized but
+unverified tools.</description>
+    </item>
     <item>
        <title>Complete Non-Orders and Fixed Points</title>
               <link>https://www.isa-afp.org/entries/Complete_Non_Orders.html</link>
@@ -574,24 +597,6 @@ independent of scheduling activity. The concurrent revisions model has
 an operational semantics, with an informal proof of determinacy. This
 document contains an Isabelle/HOL formalization of this semantics and
 the proof of determinacy.</description>
-    </item>
-    <item>
-       <title>Verifying Imperative Programs using Auto2</title>
-              <link>https://www.isa-afp.org/entries/Auto2_Imperative_HOL.html</link>
-       <guid>https://www.isa-afp.org/entries/Auto2_Imperative_HOL.html</guid>
-       <dc:creator> Bohua Zhan       </dc:creator>
-       <pubDate>21 Dec 2018 00:00:00 +0000</pubDate>
-       <description>
-This entry contains the application of auto2 to verifying functional
-and imperative programs. Algorithms and data structures that are
-verified include linked lists, binary search trees, red-black trees,
-interval trees, priority queue, quicksort, union-find, Dijkstra&#39;s
-algorithm, and a sweep-line algorithm for detecting rectangle
-intersection. The imperative verification is based on Imperative HOL
-and its separation logic framework. A major goal of this work is to
-set up automation in order to reduce the length of proof that the user
-needs to provide, both for verifying functional programs and for
-working with separation logic.</description>
     </item>
   </channel>
 </rss>
