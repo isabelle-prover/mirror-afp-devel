@@ -45,6 +45,20 @@ abstract =
   theory files that adapt the exported code to Isabelle and port proofs
   from the HOL4 formalization, e.g. termination and equivalence proofs.
 
+[CakeML_Codegen]
+title = A Verified Code Generator from Isabelle/HOL to CakeML
+author = Lars Hupel <https://lars.hupel.info/>
+topic = Computer Science/Programming Languages/Compiling, Logic/Rewriting
+date = 2019-07-08
+notify = lars@hupel.info
+abstract =
+  This entry contains the formalization that accompanies my PhD thesis
+  (see https://lars.hupel.info/research/codegen/). I develop a verified
+  compilation toolchain from executable specifications in Isabelle/HOL
+  to CakeML abstract syntax trees. This improves over the
+  state-of-the-art in Isabelle by providing a trustworthy procedure for
+  code generation.
+
 [DiscretePricing]
 title = Pricing in discrete financial models
 author = Mnacho Echenim <http://lig-membres.imag.fr/mechenim/>
@@ -8229,14 +8243,14 @@ abstract =
   Prim's algorithm. This entry formalizes the second part of our
   ITP-2019 proof pearl <em>Purely Functional, Simple and Efficient
   Priority Search Trees and Applications to Prim and Dijkstra</em>.
-  
+
 [MFOTL_Monitor]
 title = Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic
 author = Joshua Schneider <mailto:joshua.schneider@inf.ethz.ch>, Dmitriy Traytel <http://people.inf.ethz.ch/trayteld/>
 topic = Computer Science/Algorithms, Logic, Computer Science/Automata and Formal Languages
 date = 2019-07-04
 notify = joshua.schneider@inf.ethz.ch, traytel@inf.ethz.ch
-abstract = 
+abstract =
   A monitor is a runtime verification tool that solves the following
   problem: Given a stream of time-stamped events and a policy formulated
   in a specification language, decide whether the policy is satisfied at
