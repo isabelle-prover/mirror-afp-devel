@@ -115,6 +115,12 @@ lemma max_zero_mult_nonneg_le: "0 \<le> h' \<Longrightarrow> h' \<le> h \<Longri
 
 lemmas closed_segment_eq_real_ivl = closed_segment_eq_real_ivl
 
+lemma bdd_above_is_intervalI: "bdd_above I" if "is_interval I" "a \<le> b" "a \<in> I" "b \<notin> I" for I::"real set"
+  by (meson bdd_above_def is_interval_1 le_cases that)
+
+lemma bdd_below_is_intervalI: "bdd_below I" if "is_interval I" "a \<le> b" "a \<notin> I" "b \<in> I" for I::"real set"
+  by (meson bdd_below_def is_interval_1 le_cases that)
+
 
 subsection \<open>Extended Real Intervals\<close>
 

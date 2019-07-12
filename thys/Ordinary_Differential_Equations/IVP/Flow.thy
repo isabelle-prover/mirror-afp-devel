@@ -1841,6 +1841,34 @@ lemma existence_ivl_zero: "x0 \<in> X \<Longrightarrow> 0 \<in> existence_ivl0 x
 lemmas [continuous_intros del] = continuous_on_f
 lemmas continuous_on_f_comp[continuous_intros] = continuous_on_f[OF continuous_on_const _ subset_UNIV]
 
+lemma
+  flow_in_compact_right_existence:
+  assumes "\<And>t. 0 \<le> t \<Longrightarrow> t \<in> existence_ivl0 x \<Longrightarrow> flow0 x t \<in> K"
+  assumes "compact K" "K \<subseteq> X"
+  assumes "x \<in> X" "t \<ge> 0"
+  shows "t \<in> existence_ivl0 x"
+proof (rule ccontr)
+  assume "t \<notin> existence_ivl0 x"
+  have "bdd_above (existence_ivl0 x)"
+    by (rule bdd_above_is_intervalI[OF is_interval_existence_ivl \<open>0 \<le> t\<close> existence_ivl_zero]) fact+
+  from sup_existence_maximal[OF UNIV_I \<open>x \<in> X\<close> assms(1-3) this]
+  show False by auto
+qed
+
+lemma
+  flow_in_compact_left_existence:
+  assumes "\<And>t. t \<le> 0 \<Longrightarrow> t \<in> existence_ivl0 x \<Longrightarrow> flow0 x t \<in> K"
+  assumes "compact K" "K \<subseteq> X"
+  assumes "x \<in> X" "t \<le> 0"
+  shows "t \<in> existence_ivl0 x"
+proof (rule ccontr)
+  assume "t \<notin> existence_ivl0 x"
+  have "bdd_below (existence_ivl0 x)"
+    by (rule bdd_below_is_intervalI[OF is_interval_existence_ivl \<open>t \<le> 0\<close> _ existence_ivl_zero]) fact+
+  from inf_existence_minimal[OF UNIV_I \<open>x \<in> X\<close> assms(1-3) this]
+  show False by auto
+qed
+
 end
 
 locale compact_continuously_diff =
