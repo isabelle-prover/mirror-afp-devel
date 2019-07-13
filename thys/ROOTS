@@ -49,6 +49,7 @@ CISC-Kernel
 CRDT
 CYK
 CakeML
+CakeML_Codegen
 Call_Arity
 Card_Equiv_Relations
 Card_Multisets

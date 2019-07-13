@@ -9,7 +9,21 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>04 Jul 2019 00:00:00 +0000</pubDate>
+    <pubDate>08 Jul 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Verified Code Generator from Isabelle/HOL to CakeML</title>
+              <link>https://www.isa-afp.org/entries/CakeML_Codegen.html</link>
+       <guid>https://www.isa-afp.org/entries/CakeML_Codegen.html</guid>
+       <dc:creator> Lars Hupel       </dc:creator>
+       <pubDate>08 Jul 2019 00:00:00 +0000</pubDate>
+       <description>
+This entry contains the formalization that accompanies my PhD thesis
+(see https://lars.hupel.info/research/codegen/). I develop a verified
+compilation toolchain from executable specifications in Isabelle/HOL
+to CakeML abstract syntax trees. This improves over the
+state-of-the-art in Isabelle by providing a trustworthy procedure for
+code generation.</description>
+    </item>
     <item>
        <title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</title>
               <link>https://www.isa-afp.org/entries/MFOTL_Monitor.html</link>
@@ -580,23 +594,6 @@ standard. Moreover, our formalization is 1) extensible, i.e., can be
 extended without the need of re-proving already proven properties and
 2) executable, i.e., we can generate executable code from our
 specification.</description>
-    </item>
-    <item>
-       <title>Formalization of Concurrent Revisions</title>
-              <link>https://www.isa-afp.org/entries/Concurrent_Revisions.html</link>
-       <guid>https://www.isa-afp.org/entries/Concurrent_Revisions.html</guid>
-       <dc:creator> Roy Overbeek       </dc:creator>
-       <pubDate>25 Dec 2018 00:00:00 +0000</pubDate>
-       <description>
-Concurrent revisions is a concurrency control model developed by
-Microsoft Research. It has many interesting properties that
-distinguish it from other well-known models such as transactional
-memory. One of these properties is &lt;em&gt;determinacy&lt;/em&gt;:
-programs written within the model always produce the same outcome,
-independent of scheduling activity. The concurrent revisions model has
-an operational semantics, with an informal proof of determinacy. This
-document contains an Isabelle/HOL formalization of this semantics and
-the proof of determinacy.</description>
     </item>
   </channel>
 </rss>
