@@ -947,7 +947,7 @@ proof -
     using quasinorm_of[OF *] unfolding Lp_space_def by auto
 qed
 
-lemma L_zero_space:
+lemma L_zero_space [simp]:
   "space\<^sub>N (\<LL> 0 M) = borel_measurable M"
   "zero_space\<^sub>N (\<LL> 0 M) = borel_measurable M"
 apply (auto simp add: spaceN_iff zero_spaceN_iff L_zero(1))
