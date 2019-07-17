@@ -85,7 +85,8 @@ proof -
   have "b*(a-b) + (a-b)^2 = a*(a-b)" by (simp add: power2_eq_square diff_mult_distrib)
   also have "\<dots> = a*b + a^2 + (b^2 - b^2) - 2*a*b" 
     by (simp add: diff_mult_distrib2 power2_eq_square)
-  also with a2_ge_b2 have "\<dots> = a*b + (a^2 - b^2) + b^2 - 2*a*b" by simp
+  also with a2_ge_b2 have "\<dots> = a*b + (a^2 - b^2) + b^2 - 2*a*b"
+    by (simp add: power2_eq_square)
   also with ab_ge_b2 have "\<dots> = (a*b - b^2) + a^2 + b^2 - 2*a*b" by auto
   also have "\<dots> = b*(a-b) + a^2 + b^2 - 2*a*b" 
     by (simp only: diff_mult_distrib2 power2_eq_square mult.commute)
@@ -93,12 +94,7 @@ proof -
 qed
 
 private lemma nat_power_le_imp_le_base: "\<lbrakk> n \<noteq> 0; a^n \<le> b^n \<rbrakk> \<Longrightarrow> (a::nat) \<le> b"
-proof -
-  assume "n \<noteq> 0" and ab: "a^n \<le> b^n"
-  then obtain m where "n = Suc m" by (frule_tac n="n" in not0_implies_Suc, auto)
-  with ab have "a \<ge> 0" and "a^Suc m \<le> b^Suc m" and "b \<ge> 0" by auto
-  thus ?thesis by (rule_tac n="m" in power_le_imp_le_base)
-qed
+  by simp
   
 private lemma nat_power_inject_base: "\<lbrakk> n \<noteq> 0; a^n = b^n \<rbrakk> \<Longrightarrow> (a::nat) = b"
 proof -
@@ -133,7 +129,7 @@ proof -
   qed
   have b_less_c: "b < c"
   proof -
-    from abc have "b^2 \<le> c^2" by auto
+    from abc have "b^2 \<le> c^2" by linarith
     with two0 have "b \<le> c" by (rule_tac n="2" in nat_power_le_imp_le_base)
     moreover have"b \<noteq> c"
     proof
@@ -316,8 +312,8 @@ proof -
     "?a = m^2-n^2 \<and> ?b = 2*m*n \<and> ?c = m^2 + n^2 \<and> coprime m n" by auto
   have "n^2 \<le> m^2"
   proof (rule ccontr)
-    assume "\<not> n^2 \<le> m^2" hence "n^2 > m^2" by simp 
-    with mn have "?a = 0" by simp
+    assume "\<not> n^2 \<le> m^2"
+    with mn have "?a = 0" by auto
     with new_a_odd show False by simp
   qed
   moreover from mn have "int ?a = int(m^2 - n^2)" and "int ?b = int(2*m*n)" 
