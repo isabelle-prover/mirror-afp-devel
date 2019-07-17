@@ -1031,7 +1031,7 @@ qed
 
 lemma measurable_infdist [measurable]:
   "(\<lambda>x. infdist x S) \<in> borel_measurable borel"
-by (rule borel_measurable_continuous_on1, intro continuous_intros)
+by (rule borel_measurable_continuous_onI, intro continuous_intros)
 
 text \<open>The next lemma shows that, in a sigma finite measure space, sets with large measure
 can be approximated by sets with large but finite measure.\<close>
@@ -1166,7 +1166,7 @@ proof (rule ccontr)
     have "eventually (\<lambda>n. indicator (A n) x * h x = 0) sequentially"
       apply (rule eventually_mono[OF that]) unfolding indicator_def by auto
     then show ?thesis
-      unfolding eventually_sequentially using tendsto_explicit by force
+      unfolding eventually_sequentially using lim_explicit by force
   qed
   ultimately have A: "AE x in M. ((\<lambda>n. indicator (A n) x * h x) \<longlonglongrightarrow> 0)"
     by auto

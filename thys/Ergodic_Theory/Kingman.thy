@@ -482,7 +482,7 @@ proof (cases "c = 0")
   have *: "ereal (\<integral>x. (c * u n x) / n \<partial>M) = 0" if "n>0" for n
     by (subst True, auto)
   have "(\<lambda>n. ereal (\<integral>x. (c * u n x) / n \<partial>M)) \<longlonglongrightarrow> 0"
-    by (subst tendsto_explicit, metis * less_le_trans zero_less_one)
+    by (subst lim_explicit, metis * less_le_trans zero_less_one)
   moreover have "(\<lambda>n. ereal (\<integral>x. (c * u n x) / n \<partial>M)) \<longlonglongrightarrow> subcocycle_avg_ereal (\<lambda>n x. c * u n x)"
     using subcocycle_int_tendsto_avg_ereal[OF subcocycle_cmult[OF assms]] by auto
   ultimately have "subcocycle_avg_ereal (\<lambda>n x. c * u n x) = 0"
@@ -529,7 +529,7 @@ proof -
   have *: "ereal (\<integral>x. (birkhoff_sum u n x) / n \<partial>M) = (\<integral>x. u x \<partial>M)" if "n>0" for n
     using birkhoff_sum_integral(2)[OF assms] that by auto
   have "(\<lambda>n. ereal (\<integral>x. (birkhoff_sum u n x) / n \<partial>M)) \<longlonglongrightarrow> (\<integral>x. u x \<partial>M)"
-    by (subst tendsto_explicit, metis * less_le_trans zero_less_one)
+    by (subst lim_explicit, metis * less_le_trans zero_less_one)
   moreover have "(\<lambda>n. ereal (\<integral>x. (birkhoff_sum u n x) / n \<partial>M)) \<longlonglongrightarrow> subcocycle_avg_ereal (birkhoff_sum u)"
     using subcocycle_int_tendsto_avg_ereal[OF subcocycle_birkhoff[OF assms]] by auto
   ultimately show ?thesis using LIMSEQ_unique by blast
@@ -1797,7 +1797,7 @@ proof -
     have "ereal (\<integral>x. v n x / n \<partial>M) = ereal(- real K * measure M (space M))" if "n\<ge>1" for n
       unfolding v_def using that by simp
     then have "(\<lambda>n. ereal (\<integral>x. v n x / n \<partial>M)) \<longlonglongrightarrow> ereal(- real K * measure M (space M))"
-      using tendsto_explicit by force
+      using lim_explicit by force
     moreover have "(\<lambda>n. ereal (\<integral>x. v n x / n \<partial>M)) \<longlonglongrightarrow> subcocycle_avg_ereal v"
       using subcocycle_int_tendsto_avg_ereal[OF \<open>subcocycle v\<close>] by auto
     ultimately have "subcocycle_avg_ereal v = - real K * measure M (space M)"
@@ -1810,7 +1810,7 @@ proof -
       have "ereal(v n x / n) = -real K" if "n\<ge>1" for n
         unfolding v_def using that by auto
       then have "(\<lambda>n. ereal(v n x / n)) \<longlonglongrightarrow> - real K"
-        using tendsto_explicit by force
+        using lim_explicit by force
       then have "subcocycle_lim_ereal v x = -real K"
         using H LIMSEQ_unique by blast
     }

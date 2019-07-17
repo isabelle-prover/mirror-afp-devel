@@ -2829,7 +2829,7 @@ proof (rule analytic_continuation_open[where f = ?f])
   hence "eventually (\<lambda>r. -2 * \<i> * sin (pi * s) * (CLBINT x:{r..pi}. g s x) +
            (err1 s r - err2 s r) = C) (at_right 0)" by eventually_elim (use eq in auto)
   hence "((\<lambda>r. -2 * \<i> * sin (pi * s) * (CLBINT x:{r..pi}. g s x)  + (err1 s r - err2 s r)) \<longlongrightarrow> C)
-            (at_right 0)" by (rule Lim_eventually)
+            (at_right 0)" by (rule tendsto_eventually)
   ultimately have [simp]: "C = -2 * \<i> * sin (pi * s) * (CLBINT x:{0<..pi}. g s x)"
     using tendsto_unique by force
 

@@ -135,7 +135,7 @@ proof (cases "\<forall>t\<in>({0..1} - {1/2}). Re ((poly p \<circ> circlepath z0
       apply (rule exI[where x="1/2"])
       unfolding dist_real_def abs_diff_le_iff
       by (auto intro!:True[rule_format, unfolded comp_def])
-    then show ?thesis by (rule Lim_eventually)
+    then show ?thesis by (rule tendsto_eventually)
   qed
   ultimately have "Re ((poly p \<circ> circlepath z0 r) (1/2)) = 0"
     unfolding comp_def by (simp add: LIM_unique continuous_within)
@@ -1468,7 +1468,7 @@ proof (cases "a=0")
 next
   case True
   show ?thesis
-    apply (rule Lim_eventually)
+    apply (rule tendsto_eventually)
     apply (rule eventually_at_top_linorderI[of 1])
     using True by (subst Im_Ln_eq,auto simp add:Complex_eq_0) 
 qed
@@ -1512,7 +1512,7 @@ proof (cases "a=0")
 next
   case True
   show ?thesis
-    apply (rule Lim_eventually)  
+    apply (rule tendsto_eventually)  
     apply (rule eventually_at_bot_linorderI[of "-1"])
     using True by (subst Im_Ln_eq,auto simp add:Complex_eq_0)
 qed
@@ -2601,7 +2601,7 @@ next
     have t2:"(w2 \<longlongrightarrow> real (degree p) / 2) at_top"
       using Re_winding_number_poly_part_circlepath[OF \<open>degree p>0\<close>,of 0] unfolding w2_def by auto
     have t3:"(ci \<longlongrightarrow> of_int cubd) at_top"
-      apply (rule Lim_eventually)
+      apply (rule tendsto_eventually)
       using cindex_poly_ubd_eventually[of "map_poly Im p" "map_poly Re p"] 
       unfolding ci_def cubd_def by auto
     from tendsto_add[OF tendsto_add[OF tendsto_mult_left[OF t3,of "-1/2",simplified] 

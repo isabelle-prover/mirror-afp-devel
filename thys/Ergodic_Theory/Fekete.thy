@@ -375,7 +375,7 @@ proof -
     then obtain n where "u n = 0" by auto
     then have "u m = 0" if "m \<ge> n" for m by (metis that antisym_conv assms(1) assms(2) le_Suc_ex mult_zero_left)
     then have *: "v m = 0" if "m \<ge> n" for m using v_def that by simp
-    then have "v \<longlonglongrightarrow> 0" using tendsto_explicit by force
+    then have "v \<longlonglongrightarrow> 0" using lim_explicit by force
 
     have "v (Suc n) \<in> V" using V_def by blast
     moreover have "v (Suc n) = 0" using * by auto

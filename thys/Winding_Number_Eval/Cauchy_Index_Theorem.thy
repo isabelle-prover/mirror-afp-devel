@@ -2580,7 +2580,7 @@ next
     then have " \<forall>\<^sub>F x in at_left a. g x = 1" " \<forall>\<^sub>F x in at_right a. g x = 1"
       unfolding has_sgnx_def g_def by (auto elim:eventually_mono)
     then show "(g \<longlongrightarrow> 1) (at_left a)" "(g \<longlongrightarrow> 1) (at_right a)"
-      using Lim_eventually by auto
+      using tendsto_eventually by auto
   qed
     
   have "poly q x / poly p x = g x * f x" for x

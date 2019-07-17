@@ -625,7 +625,7 @@ proof -
   proof -
     have H: "continuous_on UNIV f" "\<And>x. abs(f x) \<le> Norm bcontfun\<^sub>N f"
       using bcontfun\<^sub>ND[OF \<open>f \<in> space\<^sub>N bcontfun\<^sub>N\<close>] by auto
-    then have "f \<in> borel_measurable borel" using borel_measurable_continuous_on1 by simp
+    then have "f \<in> borel_measurable borel" using borel_measurable_continuous_onI by simp
     then have "f \<in> borel_measurable M" using assms by auto
     have *: "AE x in M. \<bar>f x\<bar> \<le> Norm bcontfun\<^sub>N f" using H(2) by auto
     show ?thesis using L_infinity_I[OF \<open>f \<in> borel_measurable M\<close> * Norm_nonneg] by auto
@@ -2071,7 +2071,7 @@ next
       show ?thesis by (rule exI[of _ "max n0 n1"], auto simp add: *)
     qed
     have *: "(\<lambda>n. f x * indicator (Y n) x) \<longlonglongrightarrow> f x" if "x \<in> space M" for x
-      using *[OF that] unfolding eventually_sequentially[symmetric] by (simp add: Lim_eventually)
+      using *[OF that] unfolding eventually_sequentially[symmetric] by (simp add: tendsto_eventually)
     have "liminf (\<lambda>n. eNorm (\<LL> p M) (\<lambda>x. f x * indicator (Y n) x)) \<ge> eNorm (\<LL> p M) f"
       apply (rule Lp_AE_limit) using * by auto
     then have "liminf (\<lambda>n. eNorm (\<LL> p M) (\<lambda>x. f x * indicator (Y n) x)) > Cr" using False neq_top_trans by force

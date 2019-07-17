@@ -72,10 +72,10 @@ proof-
   hence "x0 islimpt X" unfolding islimpt_def using S_def by auto
   from this obtain x where x_def: "(\<forall>n. x n \<in> X) \<and> x \<longlonglongrightarrow> x0"
      using islimpt_sequential[of x0 X] by auto
-  hence not: "~(f \<circ> x) \<longlonglongrightarrow> (f x0)" unfolding tendsto_explicit using X_def S_def by auto
+  hence not: "~(f \<circ> x) \<longlonglongrightarrow> (f x0)" unfolding lim_explicit using X_def S_def by auto
   from compact_complete_linorder[of "f \<circ> x"] obtain l r where r_def: "strict_mono r \<and> ((f \<circ> x) \<circ> r) \<longlonglongrightarrow> l" by auto
   { assume "l : S" hence "\<exists>N. \<forall>n\<ge>N. f(x(r n)) \<in> S"
-       using r_def tendsto_explicit[of "f \<circ> x \<circ> r" l] S_def by auto
+       using r_def lim_explicit[of "f \<circ> x \<circ> r" l] S_def by auto
     hence False using x_def X_def by auto
   } hence l_prop: "l \<notin> S \<and> l\<le>f x0"
     using r_def x_def X_def Lim_bounded[of "f \<circ> x \<circ> r"]
@@ -96,10 +96,10 @@ moreover
         using hausdorff[of "f x0" A] by auto
      from this obtain T where T_def: "open T \<and> x0 : T \<and> (\<forall>x'\<in>T. (f x' \<le> f x0 \<longrightarrow> f x' \<in> S))"
        using \<open>?rhs\<close> by metis
-     from this obtain N1 where "\<forall>n\<ge>N1. x n \<in> T" using x_def tendsto_explicit[of x x0] by auto
+     from this obtain N1 where "\<forall>n\<ge>N1. x n \<in> T" using x_def lim_explicit[of x x0] by auto
      hence *: "\<forall>n\<ge>N1. (f (x n) \<le> f x0 \<longrightarrow> f(x n) \<in> S)" using T_def by auto
      from SV_def obtain N2 where "\<forall>n\<ge>N2. f(x n) \<in> V"
-        using tendsto_explicit[of "f \<circ> x" A] x_def by auto
+        using lim_explicit[of "f \<circ> x" A] x_def by auto
      hence "\<forall>n\<ge>(max N1 N2). \<not>(f(x n) \<le> f x0)" using SV_def * by auto
      hence "\<forall>n\<ge>(max N1 N2). f(x n) \<ge> f x0" by auto
      hence "f x0 \<le> A" using Lim_bounded2[of "f \<circ> x" A "max N1 N2" "f x0"] x_def by auto

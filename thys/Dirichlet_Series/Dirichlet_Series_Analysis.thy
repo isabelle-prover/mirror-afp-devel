@@ -2676,7 +2676,7 @@ proof -
       using elim by (subst prod.delta) (auto simp: divide_simps)
     finally show ?case .
   qed
-  hence "?f \<longlonglongrightarrow> 1 / (1 - fds_nth f p / nat_power p s)" by (rule Lim_eventually)
+  hence "?f \<longlonglongrightarrow> 1 / (1 - fds_nth f p / nat_power p s)" by (rule tendsto_eventually)
   ultimately show ?thesis by (rule tendsto_unique)
 qed
 

@@ -671,7 +671,7 @@ proof -
     then show "abs((F (n+1) x - F n (T x)) * indicator A x) \<le> abs(f x)" unfolding indicator_def by auto
   qed
   have b: "(\<lambda>n. (F (n+1) x - F n (T x)) * indicator A x) \<longlonglongrightarrow> f x * indicator A x" for x
-  proof (rule Lim_eventually, cases)
+  proof (rule tendsto_eventually, cases)
     assume "x \<in> A"
     then have "T x \<in> A" using Ainv A_def by auto
     then have "limsup (\<lambda>n. ereal(birkhoff_sum f n (T x))) > ereal(-f x)" unfolding A_def by simp

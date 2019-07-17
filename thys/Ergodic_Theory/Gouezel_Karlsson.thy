@@ -291,7 +291,7 @@ proof -
       then have "eventually (\<lambda>n. abs(u 1 x) * indicator {x \<in> space M. abs(u 1 x) \<ge> n} x = 0) sequentially"
         by (metis (mono_tags, lifting) eventually_at_top_linorder reals_Archimedean2 less_le_trans of_nat_le_iff)
       then have "(\<lambda>n. abs(u 1 x) * indicator {x \<in> space M. abs(u 1 x) \<ge> n} x) \<longlonglongrightarrow> 0"
-        by (rule Lim_eventually)
+        by (rule tendsto_eventually)
     }
     then show "AE x in M. (\<lambda>n. abs(u 1 x) * indicator {x \<in> space M. abs(u 1 x) \<ge> n} x) \<longlonglongrightarrow> 0"
       by simp

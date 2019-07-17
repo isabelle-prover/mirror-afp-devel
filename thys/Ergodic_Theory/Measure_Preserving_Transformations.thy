@@ -1137,7 +1137,7 @@ by (rule continuous_on_coordinatewise_then_product, auto simp add: nat_left_shif
 
 lemma nat_left_shift_measurable [intro, measurable]:
   "nat_left_shift \<in> measurable borel borel"
-by (rule borel_measurable_continuous_on1, auto)
+by (rule borel_measurable_continuous_onI, auto)
 
 definition int_left_shift::"(int \<Rightarrow> 'a) \<Rightarrow> (int \<Rightarrow> 'a)"
   where "int_left_shift x = (\<lambda>i. x (i+1))"
@@ -1155,7 +1155,7 @@ done
 lemma int_shift_measurable [intro, measurable]:
   "int_left_shift \<in> measurable borel borel"
   "int_right_shift \<in> measurable borel borel"
-by (rule borel_measurable_continuous_on1, auto)+
+by (rule borel_measurable_continuous_onI, auto)+
 
 lemma int_shift_bij:
   "bij int_left_shift" "inv int_left_shift = int_right_shift"

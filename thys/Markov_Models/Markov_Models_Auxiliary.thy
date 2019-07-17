@@ -464,7 +464,7 @@ lemma tendsto_eexp[tendsto_intros]: "(f \<longlongrightarrow> x) F \<Longrightar
   by (rule continuous_on_tendsto_compose[OF continuous_on_eexp']) auto
 
 lemma measurable_eexp[measurable]: "eexp \<in> borel \<rightarrow>\<^sub>M borel"
-  using continuous_on_eexp' by (rule borel_measurable_continuous_on1)
+  using continuous_on_eexp' by (rule borel_measurable_continuous_onI)
 
 lemma eexp_add: "\<not> ((x = \<infinity> \<and> y = -\<infinity>) \<or> (x = -\<infinity> \<and> y = \<infinity>)) \<Longrightarrow> eexp (x + y) = eexp x * eexp y"
   by (cases x; cases y; simp add: exp_add ennreal_mult ennreal_top_mult ennreal_mult_top)

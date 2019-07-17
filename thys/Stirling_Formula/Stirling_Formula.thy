@@ -412,7 +412,7 @@ proof -
         using filterlim_real_sequentially by (simp add: filterlim_at_top)
       with x have "eventually (\<lambda>n. f n x = P x) at_top"
         by (auto elim!: eventually_mono simp: f_def)
-      thus "(\<lambda>n. f n x) \<longlonglongrightarrow> P x" by (simp add: Lim_eventually)
+      thus "(\<lambda>n. f n x) \<longlonglongrightarrow> P x" by (simp add: tendsto_eventually)
     qed
   qed
 qed
