@@ -9,7 +9,21 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>08 Jul 2019 00:00:00 +0000</pubDate>
+    <pubDate>18 Jul 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Sequent Calculus for First-Order Logic</title>
+              <link>https://www.isa-afp.org/entries/FOL_Seq_Calc1.html</link>
+       <guid>https://www.isa-afp.org/entries/FOL_Seq_Calc1.html</guid>
+       <dc:creator> Andreas Halkjær From       </dc:creator>
+       <pubDate>18 Jul 2019 00:00:00 +0000</pubDate>
+       <description>
+This work formalizes soundness and completeness of a one-sided sequent
+calculus for first-order logic. The completeness is shown via a
+translation from a complete semantic tableau calculus, the proof of
+which is based on the First-Order Logic According to Fitting theory.
+The calculi and proof techniques are taken from Ben-Ari&#39;s
+Mathematical Logic for Computer Science.</description>
+    </item>
     <item>
        <title>A Verified Code Generator from Isabelle/HOL to CakeML</title>
               <link>https://www.isa-afp.org/entries/CakeML_Codegen.html</link>
@@ -572,28 +586,6 @@ every execution of the program with store buffers is sequentially
 consistent. Thus, we can show sequential consistency under TSO by
 ordinary assertional reasoning about the program, without having to
 consider store buffers at all.</description>
-    </item>
-    <item>
-       <title>A Formal Model of the Document Object Model</title>
-              <link>https://www.isa-afp.org/entries/Core_DOM.html</link>
-       <guid>https://www.isa-afp.org/entries/Core_DOM.html</guid>
-       <dc:creator> Achim D. Brucker, Michael Herzberg       </dc:creator>
-       <pubDate>26 Dec 2018 00:00:00 +0000</pubDate>
-       <description>
-In this AFP entry, we formalize the core of the Document Object Model
-(DOM).  At its core, the DOM defines a tree-like data structure for
-representing documents in general and HTML documents in particular. It
-is the heart of any modern web browser.  Formalizing the key concepts
-of the DOM is a prerequisite for the formal reasoning over client-side
-JavaScript programs and for the analysis of security concepts in
-modern web browsers.  We present a formalization of the core DOM, with
-focus on the node-tree and the operations defined on node-trees, in
-Isabelle/HOL. We use the formalization to verify the functional
-correctness of the most important functions defined in the DOM
-standard. Moreover, our formalization is 1) extensible, i.e., can be
-extended without the need of re-proving already proven properties and
-2) executable, i.e., we can generate executable code from our
-specification.</description>
     </item>
   </channel>
 </rss>

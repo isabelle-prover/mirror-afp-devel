@@ -8267,3 +8267,20 @@ abstract =
   inputs. This case study revealed several errors in the optimized but
   unverified tools.
 
+[FOL_Seq_Calc1]
+title = A Sequent Calculus for First-Order Logic
+author = Andreas Halkjær From <http://www.student.dtu.dk/~s144442/>
+contributors = Alexander Birch Jensen <https://people.compute.dtu.dk/aleje/>,
+  Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>,
+  Jørgen Villadsen <https://people.compute.dtu.dk/jovi/>
+topic = Logic
+date = 2019-07-18
+notify = s144442@student.dtu.dk
+abstract = 
+  This work formalizes soundness and completeness of a one-sided sequent
+  calculus for first-order logic. The completeness is shown via a
+  translation from a complete semantic tableau calculus, the proof of
+  which is based on the First-Order Logic According to Fitting theory.
+  The calculi and proof techniques are taken from Ben-Ari's
+  Mathematical Logic for Computer Science.
+
