@@ -405,12 +405,11 @@ proof -
       using has_integral_inverse_power_to_inf[of 2 a] a
       by (intro integrable_on_cmult_left) auto
   next
-    show "\<forall>x\<in>{a..}. (\<lambda>n. f n x) \<longlonglongrightarrow> P x"
-    proof safe
-      fix x :: real assume x: "x \<ge> a"
+    show "(\<lambda>n. f n x) \<longlonglongrightarrow> P x" if "x\<in>{a..}" for x
+    proof -
       have "eventually (\<lambda>n. real n \<ge> x) at_top"
         using filterlim_real_sequentially by (simp add: filterlim_at_top)
-      with x have "eventually (\<lambda>n. f n x = P x) at_top"
+      with that have "eventually (\<lambda>n. f n x = P x) at_top"
         by (auto elim!: eventually_mono simp: f_def)
       thus "(\<lambda>n. f n x) \<longlonglongrightarrow> P x" by (simp add: tendsto_eventually)
     qed
