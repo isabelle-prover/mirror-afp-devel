@@ -92,7 +92,7 @@ begin
         have 9: "j \<notin> liset visible (llist_of_stream u)" using 8 by auto
         show "u !! j \<notin> visible" using 9 by auto
       qed
-      show "llist_of_stream (smap int (p ## trace u p)) ? i = llist_of_stream (smap int (p ## trace u p)) ?
+      show "llist_of_stream (smap int (p ## trace u p)) ?! i = llist_of_stream (smap int (p ## trace u p)) ?!
         nth_least (lift (liset visible (llist_of_stream u))) k"
         using 6 by (metis lnth_list_of_stream snth_smap)
     next
@@ -118,7 +118,7 @@ begin
         have 9: "j \<notin> liset visible (llist_of_stream u)" using 8 by auto
         show "u !! j \<notin> visible" using 9 by auto
       qed
-      show "llist_of_stream (smap int (p ## trace u p)) ? i = llist_of_stream (smap int (p ## trace u p)) ?
+      show "llist_of_stream (smap int (p ## trace u p)) ?! i = llist_of_stream (smap int (p ## trace u p)) ?!
         Max (lift (liset visible (llist_of_stream u)))" using 4 by (metis lnth_list_of_stream snth_smap)
     qed
 
@@ -189,7 +189,7 @@ begin
             using 1 by (simp add: lselect_llength)+
           define k where "k \<equiv> nth_least (lift (liset visible (llist_of_stream u))) i"
           define l where "l \<equiv> nth_least (lift (liset visible (llist_of_stream v))) i"
-          have "lselect (lift (liset visible (llist_of_stream u))) (llist_of_stream (smap int (q ## trace u q))) ? i =
+          have "lselect (lift (liset visible (llist_of_stream u))) (llist_of_stream (smap int (q ## trace u q))) ?! i =
             int ((q ## trace u q) !! nth_least (lift (liset visible (llist_of_stream u))) i)"
             by (metis 1(1) lnth_list_of_stream lselect_lnth snth_smap)
           also have "\<dots> = int ((q ## trace u q) !! k)" unfolding k_def by rule
@@ -217,11 +217,11 @@ begin
           also have "\<dots> = int ((q ## trace v q) !! nth_least (lift (liset visible (llist_of_stream v))) i)"
             unfolding l_def by simp
           also have "\<dots> = lselect (lift (liset visible (llist_of_stream v)))
-            (llist_of_stream (smap int (q ## trace v q))) ? i"
+            (llist_of_stream (smap int (q ## trace v q))) ?! i"
             using 1 by (metis lnth_list_of_stream lselect_lnth snth_smap)
           finally show "lselect (lift (liset visible (llist_of_stream u)))
-            (llist_of_stream (smap int (q ## trace u q))) ? i = lselect (lift (liset visible (llist_of_stream v)))
-            (llist_of_stream (smap int (q ## trace v q))) ? i" by this
+            (llist_of_stream (smap int (q ## trace u q))) ?! i = lselect (lift (liset visible (llist_of_stream v)))
+            (llist_of_stream (smap int (q ## trace v q))) ?! i" by this
         qed
       qed
       show ?thesis using 1 by simp

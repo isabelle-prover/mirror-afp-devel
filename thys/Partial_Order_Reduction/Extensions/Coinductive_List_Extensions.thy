@@ -41,7 +41,7 @@ begin
   notation LCons (infixr "%" 65)
   notation lzip (infixr "\<bar>\<bar>" 51)
   notation lappend (infixr "$" 65)
-  notation lnth (infixl "?" 100)
+  notation lnth (infixl "?!" 100)
 
   syntax "_llist" :: "args \<Rightarrow> 'a llist" ("<_>")
   translations
@@ -144,12 +144,12 @@ begin
 
   lemma ltake_llast[simp]:
     assumes "enat k < llength w"
-    shows "llast (ltake (enat (Suc k)) w) = w ? k"
+    shows "llast (ltake (enat (Suc k)) w) = w ?! k"
   proof -
     have 1: "llength (ltake (enat (Suc k)) w) = eSuc (enat k)"using min.absorb_iff1 assms by auto
-    have "llast (ltake (enat (Suc k)) w) = ltake (enat (Suc k)) w ? k"
+    have "llast (ltake (enat (Suc k)) w) = ltake (enat (Suc k)) w ?! k"
       using llast_conv_lnth 1 by this
-    also have "\<dots> = w ? k" by (rule lnth_ltake, simp)
+    also have "\<dots> = w ?! k" by (rule lnth_ltake, simp)
     finally show ?thesis by this
   qed
 
@@ -160,13 +160,13 @@ begin
 
   lemma llist_nth_eqI[intro]:
     assumes "llength u = llength v"
-    assumes "\<And> i. enat i < llength u \<Longrightarrow> enat i < llength v \<Longrightarrow> u ? i = v ? i"
+    assumes "\<And> i. enat i < llength u \<Longrightarrow> enat i < llength v \<Longrightarrow> u ?! i = v ?! i"
     shows "u = v"
   using assms
   proof (coinduction arbitrary: u v)
     case Eq_llist
     have 10: "llength u = llength v" using Eq_llist by auto
-    have 11: "\<And> i. enat i < llength u \<Longrightarrow>  enat i < llength v \<Longrightarrow> u ? i = v ? i"
+    have 11: "\<And> i. enat i < llength u \<Longrightarrow>  enat i < llength v \<Longrightarrow> u ?! i = v ?! i"
       using Eq_llist by auto
     show ?case
     proof (intro conjI impI exI allI)
@@ -184,12 +184,12 @@ begin
     next
       fix i
       assume 40: "\<not> lnull u" "\<not> lnull v" "enat i < llength (ltl u)" "enat i < llength (ltl v)"
-      have 41: "u ? Suc i = v ? Suc i"
+      have 41: "u ?! Suc i = v ?! Suc i"
       proof (rule 11)
         show "enat (Suc i) < llength u" using Suc_ile_eq 40(1) 40(3) by auto
         show "enat (Suc i) < llength v" using Suc_ile_eq 40(2) 40(4) by auto
       qed
-      show "ltl u ? i = ltl v ? i" using lnth_ltl 40(1-2) 41 by metis
+      show "ltl u ?! i = ltl v ?! i" using lnth_ltl 40(1-2) 41 by metis
     qed
   qed
 
@@ -322,15 +322,15 @@ begin
   subsection \<open>Index Sets\<close>
   
     definition liset :: "'a set \<Rightarrow> 'a llist \<Rightarrow> nat set"
-      where "liset A w \<equiv> {i. enat i < llength w \<and> w ? i \<in> A}"
+      where "liset A w \<equiv> {i. enat i < llength w \<and> w ?! i \<in> A}"
 
     lemma lisetI[intro]:
-      assumes "enat i < llength w" "w ? i \<in> A"
+      assumes "enat i < llength w" "w ?! i \<in> A"
       shows "i \<in> liset A w"
       using assms unfolding liset_def by auto
     lemma lisetD[dest]:
       assumes "i \<in> liset A w"
-      shows "enat i < llength w" "w ? i \<in> A"
+      shows "enat i < llength w" "w ?! i \<in> A"
       using assms unfolding liset_def by auto
 
     lemma liset_finite:
@@ -346,10 +346,10 @@ begin
       assumes "a \<notin> A"
       shows "liset A (a % w) = Suc ` liset A w"
     proof -
-      have "liset A (a % w) = {i. enat i < llength (a % w) \<and> (a % w) ? i \<in> A}" by auto
-      also have "\<dots> = Suc ` {i. enat (Suc i) < llength (a % w) \<and> (a % w) ? Suc i \<in> A}"
+      have "liset A (a % w) = {i. enat i < llength (a % w) \<and> (a % w) ?! i \<in> A}" by auto
+      also have "\<dots> = Suc ` {i. enat (Suc i) < llength (a % w) \<and> (a % w) ?! Suc i \<in> A}"
         using Collect_split_Suc(1) assms by simp
-      also have "\<dots> = Suc ` {i. enat i < llength w \<and> w ? i \<in> A}" using Suc_ile_eq by simp
+      also have "\<dots> = Suc ` {i. enat i < llength w \<and> w ?! i \<in> A}" using Suc_ile_eq by simp
       also have "\<dots> = Suc ` liset A w" by auto
       finally show ?thesis by this
     qed
@@ -357,10 +357,10 @@ begin
       assumes "a \<in> A"
       shows "liset A (a % w) = {0} \<union> Suc ` liset A w"
     proof -
-      have "liset A (a % w) = {i. enat i < llength (a % w) \<and> (a % w) ? i \<in> A}" by auto
-      also have "\<dots> = {0} \<union> Suc ` {i. enat (Suc i) < llength (a % w) \<and> (a % w) ? Suc i \<in> A}"
+      have "liset A (a % w) = {i. enat i < llength (a % w) \<and> (a % w) ?! i \<in> A}" by auto
+      also have "\<dots> = {0} \<union> Suc ` {i. enat (Suc i) < llength (a % w) \<and> (a % w) ?! Suc i \<in> A}"
         using Collect_split_Suc(2) assms by simp
-      also have "\<dots> = {0} \<union> Suc ` {i. enat i < llength w \<and> w ? i \<in> A}" using Suc_ile_eq by simp
+      also have "\<dots> = {0} \<union> Suc ` {i. enat i < llength w \<and> w ?! i \<in> A}" using Suc_ile_eq by simp
       also have "\<dots> = {0} \<union> Suc ` liset A w" by auto
       finally show ?thesis by this
     qed
@@ -370,18 +370,18 @@ begin
       shows "i \<in> liset A u"
     unfolding liset_def
     proof (intro CollectI conjI)
-      have 1: "v ? i \<in> A" using assms(1) by auto
+      have 1: "v ?! i \<in> A" using assms(1) by auto
       show "enat i < llength u" using assms(3) by this
-      show "u ? i \<in> A" using lprefix_lnthD assms(2, 3) 1 by force
+      show "u ?! i \<in> A" using lprefix_lnthD assms(2, 3) 1 by force
     qed
     lemma liset_suffix:
       assumes "i \<in> liset A u" "u \<le> v"
       shows "i \<in> liset A v"
     unfolding liset_def
     proof (intro CollectI conjI)
-      have 1: "enat i < llength u" "u ? i \<in> A" using assms(1) by auto
+      have 1: "enat i < llength u" "u ?! i \<in> A" using assms(1) by auto
       show "enat i < llength v" using lprefix_llength_le 1(1) assms(2) by fastforce
-      show "v ? i \<in> A" using lprefix_lnthD assms(2) 1 by force
+      show "v ?! i \<in> A" using lprefix_lnthD assms(2) 1 by force
     qed
 
     lemma liset_ltake[simp]: "liset A (ltake (enat k) w) = liset A w \<inter> {..< k}"
@@ -389,13 +389,13 @@ begin
       fix i
       assume 1: "i \<in> liset A (ltake (enat k) w)"
       have 2: "enat i < enat k" using 1 by auto
-      have 3: "ltake (enat k) w ? i = w ? i" using lnth_ltake 2 by this
+      have 3: "ltake (enat k) w ?! i = w ?! i" using lnth_ltake 2 by this
       show "i \<in> liset A w \<inter> {..< k}" using 1 3 by fastforce
     next
       fix i
       assume 1: "i \<in> liset A w \<inter> {..< k}"
       have 2: "enat i < enat k" using 1 by auto
-      have 3: "ltake (enat k) w ? i = w ? i" using lnth_ltake 2 by this
+      have 3: "ltake (enat k) w ?! i = w ?! i" using lnth_ltake 2 by this
       show "i \<in> liset A (ltake (enat k) w)" using 1 3 by fastforce
     qed
 
@@ -466,14 +466,14 @@ begin
 
     lemma lselect_llength: "llength (lselect s w) = esize {i \<in> s. enat i < llength w}"
     proof -
-      have 1: "\<And> i. enat i < llength w \<Longrightarrow> (w \<bar>\<bar> iterates Suc 0) ? i = (w ? i, i)"
+      have 1: "\<And> i. enat i < llength w \<Longrightarrow> (w \<bar>\<bar> iterates Suc 0) ?! i = (w ?! i, i)"
         by (metis Suc_funpow enat.distinct(1) enat_ord_simps(4) llength_iterates lnth_iterates
           lnth_lzip monoid_add_class.add.right_neutral)
-      have 2: "{i. enat i < llength w \<and> (w \<bar>\<bar> iterates Suc 0) ? i \<in> UNIV \<times> s} =
+      have 2: "{i. enat i < llength w \<and> (w \<bar>\<bar> iterates Suc 0) ?! i \<in> UNIV \<times> s} =
         {i \<in> s. enat i < llength w}" using 1 by auto
       have "llength (lselect s w) = esize (liset (UNIV \<times> s) (w \<bar>\<bar> iterates Suc 0))"
         unfolding lselect_to_lproject by simp
-      also have "\<dots> = esize {i. enat i < llength w \<and> (w \<bar>\<bar> iterates Suc 0) ? i \<in> UNIV \<times> s}"
+      also have "\<dots> = esize {i. enat i < llength w \<and> (w \<bar>\<bar> iterates Suc 0) ?! i \<in> UNIV \<times> s}"
         unfolding liset_def by simp
       also have "\<dots> = esize {i \<in> s. enat i < llength w}" unfolding 2 by rule
       finally show ?thesis by this
@@ -525,7 +525,7 @@ begin
 
     lemma lselect_least:
       assumes "\<not> lnull (lselect s w)"
-      shows "lselect s w = w ? least s % lselect (s - {least s}) w"
+      shows "lselect s w = w ?! least s % lselect (s - {least s}) w"
     proof -
       have 0: "s \<noteq> {}" using assms by auto
       have 1: "least s \<in> s" using LeastI 0 by fast
@@ -538,19 +538,19 @@ begin
       have 7: "lselect {i. Suc (least s) + i \<in> s - {least s}} (ldropn (Suc (least s)) w) =
         lselect (s - {least s}) w" using lselect_discard_start 3 by this
       have "lselect s w = lselect (insert (least s) (s - {least s})) w" unfolding 4 by simp
-      also have "\<dots> = lselect (s - {least s}) (ltake (enat (least s)) w) $ <w ? least s> $
+      also have "\<dots> = lselect (s - {least s}) (ltake (enat (least s)) w) $ <w ?! least s> $
         lselect {m. Suc (least s) + m \<in> s - {least s}} (ldropn (Suc (least s)) w)"
         unfolding lnths_insert[OF 5] by simp
-      also have "\<dots> = <w ? least s> $
+      also have "\<dots> = <w ?! least s> $
         lselect {m. Suc (least s) + m \<in> s - {least s}} (ldropn (Suc (least s)) w)"
         unfolding 6 by simp
-      also have "\<dots> = w ? (least s) % lselect (s - {least s}) w" unfolding 7 by simp
+      also have "\<dots> = w ?! (least s) % lselect (s - {least s}) w" unfolding 7 by simp
       finally show ?thesis by this
     qed
 
     lemma lselect_lnth[simp]:
       assumes "enat i < llength (lselect s w)"
-      shows "lselect s w ? i = w ? nth_least s i"
+      shows "lselect s w ?! i = w ?! nth_least s i"
     using assms
     proof (induct i arbitrary: s)
       case 0
@@ -559,18 +559,18 @@ begin
     next
       case (Suc i)
       have 1: "\<not> lnull (lselect s w)" using Suc(2) by auto
-      have 2: "lselect s w = w ? least s % lselect (s - {least s}) w" using lselect_least 1 by this
+      have 2: "lselect s w = w ?! least s % lselect (s - {least s}) w" using lselect_least 1 by this
       have 3: "llength (lselect s w) = eSuc (llength (lselect (s - {least s}) w))" using 2 by simp
       have 4: "enat i < llength (lselect (s - {least s}) w)" using 3 Suc(2) by simp
-      have "lselect s w ? Suc i = (w ? least s % lselect (s - {least s}) w) ? Suc i" using 2 by simp
-      also have "\<dots> = lselect (s - {least s}) w ? i" by simp
-      also have "\<dots> = w ? nth_least (s - {least s}) i" using Suc(1) 4 by simp
-      also have "\<dots> = w ? nth_least s (Suc i)" by simp
+      have "lselect s w ?! Suc i = (w ?! least s % lselect (s - {least s}) w) ?! Suc i" using 2 by simp
+      also have "\<dots> = lselect (s - {least s}) w ?! i" by simp
+      also have "\<dots> = w ?! nth_least (s - {least s}) i" using Suc(1) 4 by simp
+      also have "\<dots> = w ?! nth_least s (Suc i)" by simp
       finally show ?case by this
     qed
     lemma lproject_lnth[simp]:
       assumes "enat i < llength (lproject A w)"
-      shows "lproject A w ? i = w ? nth_least (liset A w) i"
+      shows "lproject A w ?! i = w ?! nth_least (liset A w) i"
       using assms unfolding lproject_to_lselect by simp
 
     lemma lproject_ltake[simp]:
@@ -614,17 +614,17 @@ begin
         show "j \<in> liset A w \<inter> {..< Suc (nth_least (liset A w) k')} \<longleftrightarrow> j \<in> liset A w"
           using 1 7 by simp
       qed
-      have "lproject A (ltake (enat (nth_least (lift (liset A w)) k)) w) ? i =
-        ltake (enat (Suc (nth_least (liset A w) k'))) w ?
+      have "lproject A (ltake (enat (nth_least (lift (liset A w)) k)) w) ?! i =
+        ltake (enat (Suc (nth_least (liset A w) k'))) w ?!
         nth_least (liset A w \<inter> {..< Suc (nth_least (liset A w) k')}) i"
         using 1 6 by simp
-      also have "\<dots> = ltake (enat (Suc (nth_least (liset A w) k'))) w ? nth_least (liset A w) i"
+      also have "\<dots> = ltake (enat (Suc (nth_least (liset A w) k'))) w ?! nth_least (liset A w) i"
         using 8 by simp
-      also have "\<dots> = w ? nth_least (liset A w) i" using 7 by simp
-      also have "\<dots> = lproject A w ? i" using 2 by simp
-      also have "\<dots> = ltake (enat k) (lproject A w) ? i" using 2 by simp
-      finally show "lproject A (ltake (enat (nth_least (lift (liset A w)) k)) w) ? i =
-        ltake (enat k) (lproject A w) ? i" by this
+      also have "\<dots> = w ?! nth_least (liset A w) i" using 7 by simp
+      also have "\<dots> = lproject A w ?! i" using 2 by simp
+      also have "\<dots> = ltake (enat k) (lproject A w) ?! i" using 2 by simp
+      finally show "lproject A (ltake (enat (nth_least (lift (liset A w)) k)) w) ?! i =
+        ltake (enat k) (lproject A w) ?! i" by this
     qed
 
     lemma llength_less_llength_lselect_less:
@@ -653,11 +653,11 @@ begin
       have 3: "enat i < esize t" using less_le_trans 1 lselect_llength_le by this
       have 4: "\<And> i. i \<in> t \<Longrightarrow> enat i < esize s"
         using assms(2) lselect_llength_le less_le_trans by blast
-      have "lselect t (lselect s w) ? i = lselect s w ? nth_least t i" using 1 by simp
-      also have "\<dots> = w ? nth_least s (nth_least t i)" using assms(2) 3 by simp
-      also have "\<dots> = w ? nth_least (nth_least s ` t) i" using 3 4 by simp
-      also have "\<dots> = lselect (nth_least s ` t) w ? i" using 2 by simp
-      finally show "lselect t (lselect s w) ? i = lselect (nth_least s ` t) w ? i" by this
+      have "lselect t (lselect s w) ?! i = lselect s w ?! nth_least t i" using 1 by simp
+      also have "\<dots> = w ?! nth_least s (nth_least t i)" using assms(2) 3 by simp
+      also have "\<dots> = w ?! nth_least (nth_least s ` t) i" using 3 4 by simp
+      also have "\<dots> = lselect (nth_least s ` t) w ?! i" using 2 by simp
+      finally show "lselect t (lselect s w) ?! i = lselect (nth_least s ` t) w ?! i" by this
     qed
 
     lemma lselect_lselect'[simp]:
