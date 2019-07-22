@@ -57,7 +57,7 @@ begin
     unfolding dra_rel_def prod_rel_def using list_all2_same[to_set] by auto
 
   lemma enableds_param[param]: "(dra.enableds, dra.enableds) \<in> \<langle>L, S\<rangle> dra_rel \<rightarrow> S \<rightarrow> \<langle>L\<rangle> set_rel"
-    unfolding dra.enableds_def by simp parametricity
+    unfolding dra.enableds_def Collect_mem_eq by parametricity
   lemma paths_param[param]: "(dra.paths, dra.paths) \<in> \<langle>L, S\<rangle> dra_rel \<rightarrow> S \<rightarrow> \<langle>\<langle>L\<rangle> list_rel\<rangle> set_rel"
     using enableds_param[param_fo] by parametricity
   lemma runs_param[param]: "(dra.runs, dra.runs) \<in> \<langle>L, S\<rangle> dra_rel \<rightarrow> S \<rightarrow> \<langle>\<langle>L\<rangle> stream_rel\<rangle> set_rel"

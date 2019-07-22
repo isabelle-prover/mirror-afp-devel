@@ -76,7 +76,7 @@ begin
       have "smap (r \<circ> Suc) nats !! i = r (Suc i)" by simp
       also have "\<dots> = target (stake (Suc i) wr) (r 0)" unfolding 2(2) by rule
       also have "\<dots> = (r 0 ## trace wr (r 0)) !! Suc i" by simp
-      also have "\<dots> = smap snd wr !! i" unfolding trace_alt_def by simp
+      also have "\<dots> = smap snd wr !! i" unfolding nba.trace_alt_def by simp
       finally show "smap (r \<circ> Suc) nats !! i = smap snd wr !! i" by this
     qed
     show ?thesis
@@ -92,7 +92,7 @@ begin
     have 1: "w !! i \<in> alphabet A" "r !! i \<in> transition A (w !! i) (target (stake i (w ||| r)) p)"
       using assms by (auto dest: nba.run_snth)
     have 2: "r !! i \<in> successors A ((p ## r) !! i)"
-      using 1 unfolding sscan_scons_snth[symmetric] trace_alt_def by auto
+      using 1 unfolding sscan_scons_snth[symmetric] nba.trace_alt_def by auto
     show "((p ## r) !! i, (p ## r) !! Suc i) \<in> g_E (nba_g A)"
       using 2 unfolding nba_g_def graph_rec.simps E_of_succ_def by simp
   qed
@@ -118,7 +118,7 @@ begin
         using 1 unfolding is_acc_run_def graph_defs.is_run_def by auto
       obtain w where 3: "run A (w ||| smap (r \<circ> Suc) nats) (r 0)" using nba_g_ipath_run 2(2) by auto
       have 4: "r 0 ## trace (w ||| smap (r \<circ> Suc) nats) (r 0) = smap r nats"
-        unfolding trace_alt_def by (simp) (metis stream.map_comp smap_siterate)
+        unfolding nba.trace_alt_def by (simp) (metis stream.map_comp smap_siterate)
       have 5: "infs (accepting A) (r 0 ## trace (w ||| smap (r \<circ> Suc) nats) (r 0))"
         using 2(3) unfolding infs_infm is_acc_def 4 by simp
       have "w \<in> language A"
@@ -141,7 +141,7 @@ begin
       proof safe
         show "(p ## r) !! 0 \<in> V0" using nba_g_V0 2(1) by force
         show "ipath E (snth (p ## r))" using nba_g_run_ipath 2(2) by force
-        show "is_acc (snth (p ## r))" using 3 unfolding infs_infm is_acc_def trace_alt_def by simp
+        show "is_acc (snth (p ## r))" using 3 unfolding infs_infm is_acc_def nba.trace_alt_def by simp
       qed
       then show ?thesis by auto
     qed

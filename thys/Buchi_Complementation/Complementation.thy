@@ -117,9 +117,9 @@ begin
   proof
     have 1: "r !! k \<in> transition (complement A) (w !! k) (m !! k)" using nba.run_snth assms by force
     show "fst (m !! Suc k) \<in> lr_succ A (w !! k) (fst (m !! k))"
-      using assms(2) 1 unfolding complement_def complement_succ_def trace_alt_def by auto
+      using assms(2) 1 unfolding complement_def complement_succ_def nba.trace_alt_def by auto
     show "snd (m !! Suc k) = st_succ A (w !! k) (fst (m !! Suc k)) (snd (m !! k))"
-      using assms(2) 1 unfolding complement_def complement_succ_def trace_alt_def by auto
+      using assms(2) 1 unfolding complement_def complement_succ_def nba.trace_alt_def by auto
   qed
 
   subsection \<open>Word in Complement Language Implies Ranking\<close>
@@ -305,7 +305,7 @@ begin
     have 5: "map snd r = take n (map snd r) @ [q]" using 2(1, 4) 4
       by (metis One_nat_def Suc_inject Suc_neq_Zero Suc_pred append.right_neutral
         append_eq_conv_conj drop_map id_take_nth_drop last_ConsR last_conv_nth length_0_conv
-        length_map length_stake lessI nba.target_alt_def states_alt_def zero_less_Suc)
+        length_map length_stake lessI nba.target_alt_def nba.states_alt_def zero_less_Suc)
     have 6: "drop n r = [(w !! n, q)]" using 4 5
       by (metis append_eq_conv_conj append_is_Nil_conv append_take_drop_id drop_map
         length_greater_0_conv length_stake stake_cycle_le stake_invert_Nil
@@ -325,7 +325,7 @@ begin
     have 5: "map snd r = take n (map snd r) @ [q]" using 2(1, 4) 4
       by (metis One_nat_def Suc_inject Suc_neq_Zero Suc_pred append.right_neutral
         append_eq_conv_conj drop_map id_take_nth_drop last_ConsR last_conv_nth length_0_conv
-        length_map length_stake lessI nba.target_alt_def states_alt_def zero_less_Suc)
+        length_map length_stake lessI nba.target_alt_def nba.states_alt_def zero_less_Suc)
     have 6: "drop n r = [(w !! n, q)]" using 4 5
       by (metis append_eq_conv_conj append_is_Nil_conv append_take_drop_id drop_map
         length_greater_0_conv length_stake stake_cycle_le stake_invert_Nil
@@ -465,7 +465,7 @@ begin
         also have "\<dots> \<in> complement_succ A (w !! k) (s !! k)"
           unfolding complement_succ_def s_def using P_Suc by simp
         also have "\<dots> = complement_succ A (w !! k) (target (stake k (w ||| stl s)) (shd s))"
-          unfolding sscan_scons_snth[symmetric] trace_alt_def by simp
+          unfolding sscan_scons_snth[symmetric] nba.trace_alt_def by simp
         also have "\<dots> = transition (complement A) (w !! k) (target (stake k (w ||| stl s)) (shd s))"
           unfolding complement_def nba.sel by rule
         finally show "stl s !! k \<in>
@@ -546,7 +546,7 @@ begin
           qed auto
           have 20: "smap fst r = sdrop k w" using 23(3) by (intro eqI_snth) (simp add: case_prod_beta)
           have 21: "(p ## smap snd r) !! i \<in> P (k + i)" for i
-            using 23(2) unfolding Q_def unfolding trace_alt_def by simp
+            using 23(2) unfolding Q_def unfolding nba.trace_alt_def by simp
           obtain r where 23: "run A (sdrop k w ||| stl r) (shd r)" "\<And> i. r !! i \<in> P (k + i)"
             using 20 21 23(1) by (metis stream.sel(1) stream.sel(2) szip_smap)
           let ?v = "(k, shd r)"
@@ -584,7 +584,7 @@ begin
         then have "infs (\<lambda> (f, P). P = {}) (stl (smap g nats ||| smap P nats))" by blast
         then have "infs (\<lambda> (f, P). P = {}) (smap snd (w ||| stl (smap g nats ||| smap P nats)))" by simp
         then have "infs (\<lambda> (f, P). P = {}) (trace (w ||| stl s) (shd s))"
-          unfolding trace_alt_def s_def by this
+          unfolding nba.trace_alt_def s_def by this
         then show ?thesis unfolding complement_def by auto
       qed
     qed
@@ -598,7 +598,7 @@ begin
   proof (safe del: notI)
     have 1: "alphabet (complement A) = alphabet A" unfolding complement_def nba.sel by rule
     show "w \<in> streams (alphabet A)" if "w \<in> language (complement A)" for w
-      using language_alphabet that 1 by force
+      using nba.language_alphabet that 1 by force
     show "w \<notin> language A" if "w \<in> language (complement A)" for w
       using complement_ranking ranking_language that by metis
     show "w \<in> language (complement A)" if "w \<in> streams (alphabet A)" "w \<notin> language A" for w

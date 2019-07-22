@@ -53,29 +53,29 @@ begin
   lemma nba_rel_eq: "(A, A) \<in> \<langle>Id_on (alphabet A), Id_on (nodes A)\<rangle> nba_rel"
     unfolding nba_rel_def by auto
 
-  lemma enableds_param[param]: "(enableds, enableds) \<in> \<langle>L, S\<rangle> nba_rel \<rightarrow> S \<rightarrow> \<langle>L \<times>\<^sub>r S\<rangle> set_rel"
+  lemma enableds_param[param]: "(nba.enableds, nba.enableds) \<in> \<langle>L, S\<rangle> nba_rel \<rightarrow> S \<rightarrow> \<langle>L \<times>\<^sub>r S\<rangle> set_rel"
     using nba_param(2, 4) unfolding nba.enableds_def fun_rel_def set_rel_def by fastforce
-  lemma paths_param[param]: "(paths, paths) \<in> \<langle>L, S\<rangle> nba_rel \<rightarrow> S \<rightarrow> \<langle>\<langle>L \<times>\<^sub>r S\<rangle> list_rel\<rangle> set_rel"
-    unfolding paths_def by (intro fun_relI paths_param, fold enableds_def) (parametricity+)
-  lemma runs_param[param]: "(runs, runs) \<in> \<langle>L, S\<rangle> nba_rel \<rightarrow> S \<rightarrow> \<langle>\<langle>L \<times>\<^sub>r S\<rangle> stream_rel\<rangle> set_rel"
-    unfolding runs_def by (intro fun_relI runs_param, fold enableds_def) (parametricity+)
+  lemma paths_param[param]: "(nba.paths, nba.paths) \<in> \<langle>L, S\<rangle> nba_rel \<rightarrow> S \<rightarrow> \<langle>\<langle>L \<times>\<^sub>r S\<rangle> list_rel\<rangle> set_rel"
+    using enableds_param[param_fo] by parametricity
+  lemma runs_param[param]: "(nba.runs, nba.runs) \<in> \<langle>L, S\<rangle> nba_rel \<rightarrow> S \<rightarrow> \<langle>\<langle>L \<times>\<^sub>r S\<rangle> stream_rel\<rangle> set_rel"
+    using enableds_param[param_fo] by parametricity
 
   lemma reachable_param[param]: "(reachable, reachable) \<in> \<langle>L, S\<rangle> nba_rel \<rightarrow> S \<rightarrow> \<langle>S\<rangle> set_rel"
   proof -
-    have 1: "reachable A p = (\<lambda> wr. target wr p) ` paths A p" for A :: "('label, 'state) nba" and p
+    have 1: "reachable A p = (\<lambda> wr. target wr p) ` nba.paths A p" for A :: "('label, 'state) nba" and p
       unfolding nba.reachable_alt_def nba.paths_def by auto
-    show ?thesis unfolding 1 by parametricity
+    show ?thesis unfolding 1 using enableds_param[param_fo] by parametricity
   qed
   lemma nodes_param[param]: "(nodes, nodes) \<in> \<langle>L, S\<rangle> nba_rel \<rightarrow> \<langle>S\<rangle> set_rel"
     unfolding nba.nodes_alt_def Collect_mem_eq by parametricity
 
   lemma language_param[param]: "(language, language) \<in> \<langle>L, S\<rangle> nba_rel \<rightarrow> \<langle>\<langle>L\<rangle> stream_rel\<rangle> set_rel"
   proof -
-    have 1: "language A = (\<Union> p \<in> initial A. \<Union> wr \<in> runs A p.
+    have 1: "language A = (\<Union> p \<in> initial A. \<Union> wr \<in> nba.runs A p.
       if infs (accepting A) (trace wr p) then {smap fst wr} else {})"
       for A :: "('label, 'state) nba"
-      unfolding language_def nba.runs_def image_def by (auto iff: split_szip_ex)
-    show ?thesis unfolding 1 by parametricity
+      unfolding nba.language_def nba.runs_def image_def by (auto iff: split_szip_ex)
+    show ?thesis unfolding 1 using enableds_param[param_fo] by parametricity
   qed
 
 end

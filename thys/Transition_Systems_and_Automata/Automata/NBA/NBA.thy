@@ -1,12 +1,7 @@
 section \<open>Nondeterministic Büchi Automata\<close>
 
 theory NBA
-imports
-  "../../Basic/Sequence_Zip"
-  "../../Basic/Acceptance"
-  "../../Transition_Systems/Transition_System"
-  "../../Transition_Systems/Transition_System_Extra"
-  "../../Transition_Systems/Transition_System_Construction"
+imports "../Nondeterministic"
 begin
 
   datatype ('label, 'state) nba = nba
@@ -15,53 +10,17 @@ begin
     (transition: "'label \<Rightarrow> 'state \<Rightarrow> 'state set")
     (accepting: "'state pred")
 
-  global_interpretation nba: transition_system_initial
-    "\<lambda> a p. snd a" "\<lambda> a p. fst a \<in> alphabet A \<and> snd a \<in> transition A (fst a) p" "\<lambda> p. p \<in> initial A"
-    for A
-    defines path = nba.path and run = nba.run and reachable = nba.reachable and nodes = nba.nodes and
-      enableds = nba.enableds and paths = nba.paths and runs = nba.runs
-    by this
+  global_interpretation nba: automaton nba alphabet initial transition accepting
+    defines path = nba.path and run = nba.run and reachable = nba.reachable and nodes = nba.nodes
+    by unfold_locales auto
+  global_interpretation nba: automaton_trace nba alphabet initial transition accepting infs
+    defines language = nba.language
+    by standard
 
-  abbreviation "target \<equiv> nba.target"
-  abbreviation "states \<equiv> nba.states"
-  abbreviation "trace \<equiv> nba.trace"
-
-  lemma states_alt_def: "states r p = map snd r" by (induct r arbitrary: p) (auto)
-  lemma trace_alt_def: "trace r p = smap snd r" by (coinduction arbitrary: r p) (auto)
-
-  abbreviation successors :: "('label, 'state) nba \<Rightarrow> 'state \<Rightarrow> 'state set" where
-    "successors \<equiv> nba.successors TYPE('label)"
-
-  lemma successors_alt_def: "successors A p = (\<Union> a \<in> alphabet A. transition A a p)" by auto
-
-  lemma reachable_step[intro]:
-    assumes "a \<in> alphabet A" "q \<in> reachable A p" "r \<in> transition A a q"
-    shows "r \<in> reachable A p"
-    using nba.reachable.execute assms by force
-  lemma nodes_step[intro]:
-    assumes "a \<in> alphabet A" "p \<in> nodes A" "q \<in> transition A a p"
-    shows "q \<in> nodes A"
-    using nba.nodes.execute assms by force
-
-  definition language :: "('label, 'state) nba \<Rightarrow> 'label stream set" where
-    "language A \<equiv> {w |w r p. p \<in> initial A \<and> run A (w ||| r) p \<and> infs (accepting A) (trace (w ||| r) p)}"
-
-  lemma language[intro]:
-    assumes "p \<in> initial A" "run A (w ||| r) p" "infs (accepting A) (trace (w ||| r) p)"
-    shows "w \<in> language A"
-    using assms unfolding language_def by auto
-  lemma language_elim[elim]:
-    assumes "w \<in> language A"
-    obtains r p
-    where "p \<in> initial A" "run A (w ||| r) p" "infs (accepting A) (trace (w ||| r) p)"
-    using assms unfolding language_def by auto
-
-  lemma run_alphabet:
-    assumes "run A (w ||| r) p"
-    shows "w \<in> streams (alphabet A)"
-    using assms by (coinduction arbitrary: w r p) (metis nba.run.cases stream.map szip_smap szip_smap_fst)
-  lemma language_alphabet: "language A \<subseteq> streams (alphabet A)"
-    unfolding language_def by (auto dest: run_alphabet)
+  abbreviation target where "target \<equiv> nba.target"
+  abbreviation states where "states \<equiv> nba.states"
+  abbreviation trace where "trace \<equiv> nba.trace"
+  abbreviation successors where "successors \<equiv> nba.successors TYPE('label)"
 
   instantiation nba :: (type, type) order
   begin
@@ -118,7 +77,7 @@ begin
     proof (rule nba.invariant_run_index)
       have "stake k (w ||| r) @- (w !! k, target (stake (Suc k) (w ||| r)) p) ##
         sdrop (Suc k) (w ||| r) = w ||| r" for k
-        by (metis id_stake_snth_sdrop snth_szip sscan_snth szip_smap_snd trace_alt_def)
+        by (metis id_stake_snth_sdrop snth_szip sscan_snth szip_smap_snd nba.trace_alt_def)
       also have "run A \<dots> p" using 2(2) by this
       finally show "\<exists> a. (fst a \<in> alphabet B \<and> snd a \<in> transition B (fst a) q) \<and>
         P (Suc n) (snd a) \<and> fst a = w !! n" if "P n q" for n q
