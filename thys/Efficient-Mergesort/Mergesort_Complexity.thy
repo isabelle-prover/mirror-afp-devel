@@ -101,8 +101,8 @@ lemma
 
 lemma
   shows sequences_ne: "xs \<noteq> [] \<Longrightarrow> sequences key xs \<noteq> []"
-    and "ascP f \<Longrightarrow> asc key a f ys \<noteq> []"
-    and "desc key a xs ys \<noteq> []"
+    and asc_ne: "ascP f \<Longrightarrow> asc key a f ys \<noteq> []"
+    and desc_ne: "desc key a xs ys \<noteq> []"
   by (induct xs and a f ys and a xs ys taking: key rule: sequences_asc_desc.induct) simp_all
 
 lemma c_msort:
