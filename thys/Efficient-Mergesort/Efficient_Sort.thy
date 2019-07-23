@@ -77,7 +77,7 @@ fun msort_key :: "'a list \<Rightarrow> 'a list"
     "msort_key xs = merge_all (sequences xs)"
 
 
-subsection \<open>Facts about Lengths\<close>
+subsection \<open>The Functional Argument of @{const asc}\<close>
 
 definition "ascP f = (\<forall>xs ys. f (xs @ ys) = f xs @ ys)"
 
@@ -99,6 +99,9 @@ lemma ascP_f_Cons:
   shows "f (x # xs) = f [] @ x # xs"
   using assms [unfolded ascP_def, THEN spec, THEN spec, of "[]" "x # xs"] by simp
 
+
+subsection \<open>Facts about Lengths\<close>
+
 lemma
   shows length_sequences: "length (sequences xs) \<le> length xs"
     and length_asc: "ascP f \<Longrightarrow> length (asc a f ys) \<le> 1 + length ys"
@@ -114,7 +117,7 @@ subsection \<open>Functional Correctness\<close>
 
 lemma mset_merge [simp]:
   "mset (merge xs ys) = mset xs + mset ys"
-  by (induct xs ys rule: merge.induct) (simp_all add: ac_simps)
+  by (induct xs ys rule: merge.induct) simp_all
 
 lemma set_merge [simp]:
   "set (merge xs ys) = set xs \<union> set ys"
@@ -122,7 +125,7 @@ lemma set_merge [simp]:
 
 lemma mset_concat_merge_pairs [simp]:
   "mset (concat (merge_pairs xs)) = mset (concat xs)"
-  by (induct xs rule: merge_pairs.induct) (auto simp: ac_simps)
+  by (induct xs rule: merge_pairs.induct) auto
 
 lemma set_concat_merge_pairs [simp]:
   "set (concat (merge_pairs xs)) = set (concat xs)"
@@ -130,14 +133,14 @@ lemma set_concat_merge_pairs [simp]:
 
 lemma mset_merge_all [simp]:
   "mset (merge_all xs) = mset (concat xs)"
-  by (induct xs rule: merge_all.induct) (simp_all add: ac_simps)
+  by (induct xs rule: merge_all.induct) simp_all
 
 lemma set_merge_all [simp]:
   "set (merge_all xs) = set (concat xs)"
   by (simp flip: set_mset_mset)
 
 lemma
-  shows mset_sequences [simp]: "mset (concat (sequences xs)) = mset xs"
+  shows mset_seqeuences [simp]: "mset (concat (sequences xs)) = mset xs"
     and mset_asc: "ascP f \<Longrightarrow> mset (concat (asc x f ys)) = {#x#} + mset (f []) + mset ys"
     and mset_desc: "mset (concat (desc x xs ys)) = {#x#} + mset xs + mset ys"
   by (induct xs and x f ys and x xs ys rule: sequences_asc_desc.induct)
