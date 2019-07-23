@@ -79,25 +79,32 @@ fun msort_key :: "'a list \<Rightarrow> 'a list"
 
 subsection \<open>The Functional Argument of @{const asc}\<close>
 
-definition "ascP f = (\<forall>xs ys. f (xs @ ys) = f xs @ ys)"
+text \<open>\<open>f\<close> is a function that only adds some prefix to a given list.\<close>
+definition "ascP f = (\<forall>xs. f xs = f [] @ xs)"
 
 lemma ascP_Cons [simp]: "ascP ((#) x)" by (simp add: ascP_def)
 
-lemma ascP_comp_Cons [simp]: "ascP f \<Longrightarrow> ascP (\<lambda>ys. f (x # ys))"
-  by (auto simp: ascP_def simp flip: append_Cons)
-
-lemma ascP_comp_append: "ascP f \<Longrightarrow> ascP (\<lambda>xs. f [] @ x # xs)"
+lemma ascP_comp_append_Cons [simp]:
+  "ascP (\<lambda>xs. f [] @ x # xs)"
   by (auto simp: ascP_def)
-
-lemma ascP_f_singleton:
-  assumes "ascP f"
-  shows "f [x] = f [] @ [x]"
-  using assms [unfolded ascP_def, THEN spec, THEN spec, of "[]" "[x]"] by simp
 
 lemma ascP_f_Cons:
   assumes "ascP f"
   shows "f (x # xs) = f [] @ x # xs"
-  using assms [unfolded ascP_def, THEN spec, THEN spec, of "[]" "x # xs"] by simp
+  using \<open>ascP f\<close> [unfolded ascP_def, THEN spec, of "x # xs"] .
+
+lemma ascP_comp_Cons [simp]:
+  assumes "ascP f"
+  shows "ascP (\<lambda>ys. f (x # ys))"
+proof (unfold ascP_def, intro allI)
+  fix xs show "f (x # xs) = f [x] @ xs"
+    using assms by (simp add: ascP_f_Cons)
+qed
+
+lemma ascP_f_singleton:
+  assumes "ascP f"
+  shows "f [x] = f [] @ [x]"
+  by (rule ascP_f_Cons [OF assms])
 
 
 subsection \<open>Facts about Lengths\<close>
@@ -186,7 +193,7 @@ lemma
 proof (induct xs and a f ys and a xs ys rule: sequences_asc_desc.induct)
   case (4 a f b bs)
   then show ?case
-    by (auto simp: o_def ascP_f_Cons [where f = f] ascP_comp_append)
+    by (auto simp: o_def ascP_f_Cons [where f = f])
 next
   case (6 a as b bs)
   then show ?case
