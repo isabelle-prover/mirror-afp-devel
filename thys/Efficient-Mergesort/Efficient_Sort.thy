@@ -38,7 +38,7 @@ fun sequences :: "'a list \<Rightarrow> 'a list list"
   | "sequences [x] = [[x]]"
   | "sequences [] = []"
   | "asc a as (b # bs) =
-      (if \<not> key a > key b then asc b (\<lambda>ys. as (a # ys)) bs
+      (if key a \<le> key b then asc b (\<lambda>ys. as (a # ys)) bs
       else as [a] # sequences (b # bs))"
   | "asc a as [] = [as [a]]"
   | "desc a as (b # bs) =
