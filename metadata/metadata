@@ -8284,3 +8284,15 @@ abstract =
   The calculi and proof techniques are taken from Ben-Ari's
   Mathematical Logic for Computer Science.
 
+[Szpilrajn]
+title = Szpilrajn Extension Theorem
+author = Peter Zeller <mailto:p_zeller@cs.uni-kl.de>
+topic = Mathematics/Order
+date = 2019-07-27
+notify = p_zeller@cs.uni-kl.de
+abstract = 
+  We formalize the Szpilrajn extension theorem, also known as
+  order-extension principal: Every strict partial order can be extended
+  to a strict linear order.
+
+

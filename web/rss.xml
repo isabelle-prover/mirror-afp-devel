@@ -9,7 +9,18 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>18 Jul 2019 00:00:00 +0000</pubDate>
+    <pubDate>27 Jul 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Szpilrajn Extension Theorem</title>
+              <link>https://www.isa-afp.org/entries/Szpilrajn.html</link>
+       <guid>https://www.isa-afp.org/entries/Szpilrajn.html</guid>
+       <dc:creator> Peter Zeller       </dc:creator>
+       <pubDate>27 Jul 2019 00:00:00 +0000</pubDate>
+       <description>
+We formalize the Szpilrajn extension theorem, also known as
+order-extension principal: Every strict partial order can be extended
+to a strict linear order.</description>
+    </item>
     <item>
        <title>A Sequent Calculus for First-Order Logic</title>
               <link>https://www.isa-afp.org/entries/FOL_Seq_Calc1.html</link>
@@ -554,38 +565,6 @@ href=&#34;https://www.isa-afp.org/entries/Lambda_Free_RPOs.html&#34;&gt;Blanchet
 &amp;lambda;-free higher-order terms&lt;/a&gt;. Furthermore, I
 implement translation functions between de-Bruijn terms and named
 terms and prove their correctness.</description>
-    </item>
-    <item>
-       <title>A Reduction Theorem for Store Buffers</title>
-              <link>https://www.isa-afp.org/entries/Store_Buffer_Reduction.html</link>
-       <guid>https://www.isa-afp.org/entries/Store_Buffer_Reduction.html</guid>
-       <dc:creator> Ernie Cohen, Norbert Schirmer       </dc:creator>
-       <pubDate>07 Jan 2019 00:00:00 +0000</pubDate>
-       <description>
-When verifying a concurrent program, it is usual to assume that memory
-is sequentially consistent.  However, most modern multiprocessors
-depend on store buffering for efficiency, and provide native
-sequential consistency only at a substantial performance penalty.  To
-regain sequential consistency, a programmer has to follow an
-appropriate programming discipline. However, na&amp;iuml;ve disciplines,
-such as protecting all shared accesses with locks, are not flexible
-enough for building high-performance multiprocessor software.  We
-present a new discipline for concurrent programming under TSO (total
-store order, with store buffer forwarding). It does not depend on
-concurrency primitives, such as locks. Instead, threads use ghost
-operations to acquire and release ownership of memory addresses. A
-thread can write to an address only if no other thread owns it, and
-can read from an address only if it owns it or it is shared and the
-thread has flushed its store buffer since it last wrote to an address
-it did not own. This discipline covers both coarse-grained concurrency
-(where data is protected by locks) as well as fine-grained concurrency
-(where atomic operations race to memory).  We formalize this
-discipline in Isabelle/HOL, and prove that if every execution of a
-program in a system without store buffers follows the discipline, then
-every execution of the program with store buffers is sequentially
-consistent. Thus, we can show sequential consistency under TSO by
-ordinary assertional reasoning about the program, without having to
-consider store buffers at all.</description>
     </item>
   </channel>
 </rss>
