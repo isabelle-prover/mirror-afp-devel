@@ -62,8 +62,8 @@ subsection \<open>Nicer do-notation for the nres-monad\<close>
     
 abbreviation (do_notation) bind_doN where "bind_doN \<equiv> Refine_Basic.bind"
 
-notation (output) bind_doN (infixr "\<bind>" 54)
-notation (ASCII output) bind_doN (infixr ">>=" 54)
+notation (output) bind_doN (infixl "\<bind>" 54)
+notation (ASCII output) bind_doN (infixl ">>=" 54)
 
 nonterminal doN_binds and doN_bind
 syntax
@@ -73,11 +73,11 @@ syntax
   "_doN_then" :: "'a \<Rightarrow> doN_bind" ("_" [14] 13)
   "_doN_final" :: "'a \<Rightarrow> doN_binds" ("_")
   "_doN_cons" :: "[doN_bind, doN_binds] \<Rightarrow> doN_binds" ("_;//_" [13, 12] 12)
-  "_thenM" :: "['a, 'b] \<Rightarrow> 'c" (infixr "\<then>" 54)
+  "_thenM" :: "['a, 'b] \<Rightarrow> 'c" (infixl "\<then>" 54)
 
 syntax (ASCII)
   "_doN_bind" :: "[pttrn, 'a] \<Rightarrow> doN_bind" ("(2_ <-/ _)" 13)
-  "_thenM" :: "['a, 'b] \<Rightarrow> 'c" (infixr ">>" 54)
+  "_thenM" :: "['a, 'b] \<Rightarrow> 'c" (infixl ">>" 54)
 
 translations
   "_doN_block (_doN_cons (_doN_then t) (_doN_final e))"
