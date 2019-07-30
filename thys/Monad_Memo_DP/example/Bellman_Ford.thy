@@ -75,9 +75,12 @@ lemma weight_single [simp]:
   "weight [v] = W v t"
   by (simp add: weight_def)
 
+
+
 (* XXX Generalize to the right type class *)
 lemma Min_add_right:
-  "Min S + (x :: int extended) = Min ((\<lambda> y. y + x) ` S)" (is "?A = ?B") if "finite S" "S \<noteq> {}"
+  "Min S + x = Min ((\<lambda>y. y + x) ` S)" (is "?A = ?B")
+  if "finite S" "S \<noteq> {}" for x :: "('a :: linordered_ab_semigroup_add) extended"
 proof -
   have "?A \<le> ?B"
     using that by (force intro: Min.boundedI add_right_mono)
@@ -122,31 +125,37 @@ proof -
     subgoal for _ _ xs
       by (rule exI[where x = "w # xs"]) (auto simp: algebra_simps)
     done
-  have "OPT i t + W v t \<ge> OPT (Suc i) v"
-    unfolding OPT_def using subs[OF \<open>t \<le> n\<close>, of v] that
-    by (subst Min_add_right)
-       (auto 4 3
-         simp: Bellman_Ford.weight_single
-         intro: exI[where x = "[]"] finite_subset[OF _ fin[of _ "Suc i"]] intro!: Min_antimono
-       )
-  moreover have "OPT i w + W v w \<ge> OPT (Suc i) v" if "w \<le> n" \<open>w \<noteq> t\<close> \<open>t \<noteq> v\<close> for w
-    unfolding OPT_def using subs[OF \<open>w \<le> n\<close>, of v] that
-    by (subst Min_add_right)
-       (auto 4 3 intro: finite_subset[OF _ fin[of _ "Suc i"]] intro!: Min_antimono)
-  moreover have "OPT i w + W t w \<ge> OPT (Suc i) t" if "w \<le> n" \<open>w \<noteq> t\<close> for w
-    unfolding OPT_def
-    apply (subst Min_add_right)
-      prefer 3
-    using \<open>w \<noteq> t\<close>
-      apply simp
-      apply (cases "i = 0")
-       apply (simp; fail)
-    using subs[OF \<open>w \<le> n\<close>, of t]
-    by (subst (2) Min_insert)
-       (auto 4 4
-         intro: finite_subset[OF _ fin[of _ "Suc i"]] exI[where x = "[]"] intro!: Min_antimono
-       )
-  ultimately have "Min {local.OPT i w + W v w |w. w \<le> n} \<ge> OPT (Suc i) v"
+  have "OPT i w + W v w \<ge> OPT (Suc i) v" if "w \<le> n" for w
+  proof -
+    consider "w = t" | \<open>w \<noteq> t\<close> \<open>v \<noteq> t\<close> | \<open>w \<noteq> t\<close> \<open>v = t\<close> \<open>i = 0\<close> | \<open>w \<noteq> t\<close> \<open>v = t\<close> \<open>i \<noteq> 0\<close>
+      by auto
+    then show ?thesis
+      apply cases
+      subgoal
+        unfolding OPT_def using subs[OF \<open>t \<le> n\<close>, of v] that
+        by (subst Min_add_right)
+           (auto 4 3
+            simp: Bellman_Ford.weight_single
+            intro: exI[where x = "[]"] finite_subset[OF _ fin[of _ "Suc i"]] intro!: Min_antimono
+           )
+      subgoal
+        unfolding OPT_def using subs[OF \<open>w \<le> n\<close>, of v] that
+        by (subst Min_add_right)
+           (auto 4 3 intro: finite_subset[OF _ fin[of _ "Suc i"]] intro!: Min_antimono)
+      subgoal
+        unfolding OPT_def by simp
+      subgoal
+        unfolding OPT_def using subs[OF \<open>w \<le> n\<close>, of t]
+        apply (subst Min_add_right)
+          prefer 3
+          apply simp
+        by (subst (2) Min_insert)
+           (auto 4 4
+            intro: finite_subset[OF _ fin[of _ "Suc i"]] exI[where x = "[]"] intro!: Min_antimono
+           )
+      done
+  qed
+  then have "Min {OPT i w + W v w |w. w \<le> n} \<ge> OPT (Suc i) v"
     by (auto intro!: Min.boundedI)
   with \<open>OPT i v \<ge> _\<close> have "?lhs \<le> ?rhs"
     by simp
