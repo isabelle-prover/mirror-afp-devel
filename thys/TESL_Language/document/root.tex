@@ -61,8 +61,21 @@
 	\vspace{0.1\baselineskip}%
 }}
 
+\newcommand{\authorentry}[2]{%
+  \urlstyle{sf}
+	\parbox[t]{0.26\linewidth}{\centering
+		#1\\
+		\makebox[0pt][c]{\small\href{mailto:#2}{\sffamily #2}}\\
+	}%
+}
 \title{A Formal Development of a Polychronous Polytimed Coordination Language}
-\author{Hai Nguyen Van \and Fr\'ed\'eric Boulanger \and Burkhart Wolff}
+\author{%
+	\authorentry{Hai Nguyen Van}{hai.nguyenvan.phie@gmail.com}%
+	\and
+	\authorentry{Fr\'ed\'eric Boulanger}{frederic.boulanger@centralesupelec.fr}%
+	\and
+	\authorentry{Burkhart Wolff}{burkhart.wolff@lri.fr}%
+}
 \maketitle
 
 \tableofcontents
