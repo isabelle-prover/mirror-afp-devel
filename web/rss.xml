@@ -9,7 +9,43 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>27 Jul 2019 00:00:00 +0000</pubDate>
+    <pubDate>30 Jul 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Formal Development of a Polychronous Polytimed Coordination Language</title>
+              <link>https://www.isa-afp.org/entries/TESL_Language.html</link>
+       <guid>https://www.isa-afp.org/entries/TESL_Language.html</guid>
+       <dc:creator> Hai Nguyen Van, Frédéric Boulanger, Burkhart Wolff       </dc:creator>
+       <pubDate>30 Jul 2019 00:00:00 +0000</pubDate>
+       <description>
+The design of complex systems involves different formalisms for
+modeling their different parts or aspects. The global model of a
+system may therefore consist of a coordination of concurrent
+sub-models that use different paradigms.  We develop here a theory for
+a language used to specify the timed coordination of such
+heterogeneous subsystems by addressing the following issues:
+&lt;ul&gt;&lt;li&gt;the
+behavior of the sub-systems is observed only at a series of discrete
+instants,&lt;/li&gt;&lt;li&gt;events may occur in different sub-systems at unrelated
+times, leading to polychronous systems, which do not necessarily have
+a common base clock,&lt;/li&gt;&lt;li&gt;coordination between subsystems involves
+causality, so the occurrence of an event may enforce the occurrence of
+other events, possibly after a certain duration has elapsed or an
+event has occurred a given number of times,&lt;/li&gt;&lt;li&gt;the domain of time
+(discrete, rational, continuous...) may be different in the
+subsystems, leading to polytimed systems,&lt;/li&gt;&lt;li&gt;the time frames of
+different sub-systems may be related (for instance, time in a GPS
+satellite and in a GPS receiver on Earth are related although they are
+not the same).&lt;/li&gt;&lt;/ul&gt;
+Firstly, a denotational semantics of the language is
+defined. Then, in order to be able to incrementally check the behavior
+of systems, an operational semantics is given, with proofs of
+progress, soundness and completeness with regard to the denotational
+semantics. These proofs are made according to a setup that can scale
+up when new operators are added to the language. In order for
+specifications to be composed in a clean way, the language should be
+invariant by stuttering (i.e., adding observation instants at which
+nothing happens). The proof of this invariance is also given.</description>
+    </item>
     <item>
        <title>Szpilrajn Extension Theorem</title>
               <link>https://www.isa-afp.org/entries/Szpilrajn.html</link>
@@ -544,27 +580,6 @@ simple and well-documented. They are suitable to be used in a course,
 as extension to the IMP language which comes with the Isabelle
 distribution.  While this entry is limited to a simple imperative
 language, the ideas could be extended to more sophisticated languages.</description>
-    </item>
-    <item>
-       <title>An Algebra for Higher-Order Terms</title>
-              <link>https://www.isa-afp.org/entries/Higher_Order_Terms.html</link>
-       <guid>https://www.isa-afp.org/entries/Higher_Order_Terms.html</guid>
-       <dc:creator> Lars Hupel       </dc:creator>
-       <pubDate>15 Jan 2019 00:00:00 +0000</pubDate>
-       <description>
-In this formalization, I introduce a higher-order term algebra,
-generalizing the notions of free variables, matching, and
-substitution. The need arose from the work on a &lt;a
-href=&#34;http://dx.doi.org/10.1007/978-3-319-89884-1_35&#34;&gt;verified
-compiler from Isabelle to CakeML&lt;/a&gt;. Terms can be thought of as
-consisting of a generic (free variables, constants, application) and
-a specific part. As example applications, this entry provides
-instantiations for de-Bruijn terms, terms with named variables, and
-&lt;a
-href=&#34;https://www.isa-afp.org/entries/Lambda_Free_RPOs.html&#34;&gt;Blanchette’s
-&amp;lambda;-free higher-order terms&lt;/a&gt;. Furthermore, I
-implement translation functions between de-Bruijn terms and named
-terms and prove their correctness.</description>
     </item>
   </channel>
 </rss>
