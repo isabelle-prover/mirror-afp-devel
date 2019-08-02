@@ -1,9 +1,7 @@
 section \<open>Composition of correctness results\<close>
 
 theory Composition
-imports
-  "../Backend/CakeML_Correctness"
-  CakeML.Semantics
+imports "../Backend/CakeML_Correctness"
 begin
 
 hide_const (open) sem_env.v
@@ -602,10 +600,6 @@ lemma compile_prog'[unfolded combine_dec_result.simps, simplified]:
   "fun_evaluate_prog state env (compile rs) = (state, combine_dec_result (as_sem_env env) (Rval \<lparr> sem_env.v = nsEmpty, sem_env.c = nsEmpty \<rparr>))"
 unfolding compile_def fun_evaluate_prog_def no_dup_mods_def no_dup_top_types_def prog_to_mods_def prog_to_top_types_def decs_to_types_def
 using compile_sem_env' compile_group_def by simp
-
-lemma semantics_prog: "semantics_prog empty_state env (compile rs) (Terminate Success [])"
-unfolding semantics_prog_def evaluate_prog_with_clock_def
-by (auto split: prod.split option.split simp: compile_prog' empty_state_def empty_ffi_state_def initial_ffi_state_def)
 
 definition sem_env :: "v sem_env" where
 "sem_env \<equiv> extend_dec_env (as_sem_env empty_sem_env) empty_sem_env"

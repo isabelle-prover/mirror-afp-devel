@@ -53,10 +53,6 @@ session CakeML (AFP) = LEM +
     CakeML_Quickcheck
     CakeML_Compiler
 
-    "doc/Doc_Ported"
-
-    Semantics
-
   theories [condition = "ISABELLE_CAKEML_HOME,ISABELLE_CC", document = false]
     "Tests/Compiler_Test"
   theories [condition = "ISABELLE_GHC", document = false]
