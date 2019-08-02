@@ -457,7 +457,7 @@ proof -
 qed
 
 lemma is_path_shorten:
-  assumes "is_path (i # xs)" "i \<le> n" "set xs \<subseteq> {0..n}" "t \<le> n" "n > 0" "t \<noteq> i"
+  assumes "is_path (i # xs)" "i \<le> n" "set xs \<subseteq> {0..n}" "t \<le> n" "t \<noteq> i"
   obtains xs where "is_path (i # xs)" "i \<le> n" "set xs \<subseteq> {0..n}" "length xs < n"
 proof (cases "length xs < n")
   case True
@@ -513,41 +513,32 @@ qed
 lemma reaches_non_inf_path:
   assumes "reaches i" "i \<le> n" "t \<le> n"
   shows "OPT n i < \<infinity>"
-proof -
-  consider "n = 0" | "t = i" | "n > 0" "t \<noteq> i"
-    by auto
+proof (cases "t = i")
+  case True
+  with \<open>i \<le> n\<close> \<open>t \<le> n\<close> have "OPT n i \<le> 0"
+    unfolding OPT_def
+    apply -
+    apply (rule Min_le)
+     apply auto
+    sorry
   then show ?thesis
-  proof cases
-    case 1
-    with \<open>i \<le> n\<close> \<open>t \<le> n\<close> show ?thesis
-      unfolding OPT_def by (auto simp: zero_extended_def)
-  next
-    case 2
-    with \<open>i \<le> n\<close> \<open>t \<le> n\<close> have "OPT n i \<le> 0"
-      unfolding OPT_def
-      apply -
-      apply (rule Min_le)
-       apply auto
-      sorry
-    then show ?thesis
-      using less_linear by (fastforce simp: zero_extended_def)
-  next
-    case 3
-    from assms(1) guess xs
-      unfolding reaches_def by safe
-    note xs = this
-    then obtain xs where xs: "is_path (i # xs)" "i \<le> n" "set xs \<subseteq> {0..n}" "length xs < n"
-      using \<open>t \<noteq> i\<close> \<open>n > 0\<close> \<open>t \<le> n\<close> by (auto intro: is_path_shorten)
-    then have "weight (i # xs) < \<infinity>"
-      unfolding is_path_def by auto
-    with xs(2-) show ?thesis
-      unfolding OPT_def
-      apply -
-      apply (erule order.strict_trans1[rotated])
-      apply (rule Min.coboundedI)
-       apply auto
-      sorry
-  qed
+    using less_linear by (fastforce simp: zero_extended_def)
+next
+  case False
+  from assms(1) guess xs
+    unfolding reaches_def by safe
+  note xs = this
+  then obtain xs where xs: "is_path (i # xs)" "i \<le> n" "set xs \<subseteq> {0..n}" "length xs < n"
+    using \<open>t \<noteq> i\<close> \<open>t \<le> n\<close> by (auto intro: is_path_shorten)
+  then have "weight (i # xs) < \<infinity>"
+    unfolding is_path_def by auto
+  with xs(2-) show ?thesis
+    unfolding OPT_def
+    apply -
+    apply (erule order.strict_trans1[rotated])
+    apply (rule Min.coboundedI)
+     apply auto
+    sorry
 qed
 
 lemma sum_list_not_infI:
