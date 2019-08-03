@@ -8330,3 +8330,15 @@ abstract =
   specifications to be composed in a clean way, the language should be
   invariant by stuttering (i.e., adding observation instants at which
   nothing happens). The proof of this invariance is also given.
+
+[Stellar_Quorums]
+title = Stellar Quorum Systems
+author = Giuliano Losa <mailto:giuliano@galois.com>
+topic = Computer Science/Algorithms/Distributed
+date = 2019-08-01
+notify = giuliano@galois.com
+abstract = 
+  We formalize the static properties of personal Byzantine quorum
+  systems (PBQSs) and Stellar quorum systems, as described in the paper
+  ``Stellar Consensus by Reduction'' (to appear at DISC 2019).
+

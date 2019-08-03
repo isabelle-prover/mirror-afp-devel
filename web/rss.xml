@@ -9,7 +9,18 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>30 Jul 2019 00:00:00 +0000</pubDate>
+    <pubDate>01 Aug 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Stellar Quorum Systems</title>
+              <link>https://www.isa-afp.org/entries/Stellar_Quorums.html</link>
+       <guid>https://www.isa-afp.org/entries/Stellar_Quorums.html</guid>
+       <dc:creator> Giuliano Losa       </dc:creator>
+       <pubDate>01 Aug 2019 00:00:00 +0000</pubDate>
+       <description>
+We formalize the static properties of personal Byzantine quorum
+systems (PBQSs) and Stellar quorum systems, as described in the paper
+``Stellar Consensus by Reduction&#39;&#39; (to appear at DISC 2019).</description>
+    </item>
     <item>
        <title>A Formal Development of a Polychronous Polytimed Coordination Language</title>
               <link>https://www.isa-afp.org/entries/TESL_Language.html</link>
@@ -554,32 +565,6 @@ detects unsatisfiability. By reusing facts about the simplex algorithm
 we show that a set of linear constraints is unsatisfiable if and only
 if there is a linear combination of the constraints which evaluates to
 a trivially unsatisfiable inequality.</description>
-    </item>
-    <item>
-       <title>IMP2 – Simple Program Verification in Isabelle/HOL</title>
-              <link>https://www.isa-afp.org/entries/IMP2.html</link>
-       <guid>https://www.isa-afp.org/entries/IMP2.html</guid>
-       <dc:creator> Peter Lammich, Simon Wimmer       </dc:creator>
-       <pubDate>15 Jan 2019 00:00:00 +0000</pubDate>
-       <description>
-IMP2 is a simple imperative language together with Isabelle tooling to
-create a program verification environment in Isabelle/HOL. The tools
-include a C-like syntax, a verification condition generator, and
-Isabelle commands for the specification of programs. The framework is
-modular, i.e., it allows easy reuse of already proved programs within
-larger programs.  This entry comes with a quickstart guide and a large
-collection of examples, spanning basic algorithms with simple proofs
-to more advanced algorithms and proof techniques like data refinement.
-Some highlights from the examples are: &lt;ul&gt; &lt;li&gt;Bisection
-Square Root, &lt;/li&gt; &lt;li&gt;Extended Euclid,  &lt;/li&gt;
-&lt;li&gt;Exponentiation by Squaring,  &lt;/li&gt; &lt;li&gt;Binary
-Search,  &lt;/li&gt; &lt;li&gt;Insertion Sort,  &lt;/li&gt;
-&lt;li&gt;Quicksort,  &lt;/li&gt; &lt;li&gt;Depth First Search.
-&lt;/li&gt; &lt;/ul&gt;  The abstract syntax and semantics are very
-simple and well-documented. They are suitable to be used in a course,
-as extension to the IMP language which comes with the Isabelle
-distribution.  While this entry is limited to a simple imperative
-language, the ideas could be extended to more sophisticated languages.</description>
     </item>
   </channel>
 </rss>
