@@ -2,7 +2,7 @@ signature DERIVE_UTIL =
 sig
   type ctr_info = (string * (string * typ list) list) list
 
-  type rep_type_info = 
+  type rep_type_info =
     {repname : string,
      rep_type : typ,
      tFrees_mapping : (typ * typ) list,
@@ -18,7 +18,7 @@ sig
      inConst_free : term,
      inConst_type : typ,
      rep_type_instantiated : typ}
-  
+
   type type_info =
      {tname : string,
      uses_metadata : bool,
@@ -33,7 +33,7 @@ sig
      comb_info : comb_type_info option,
      iso_thm : thm option}
 
-  type class_info = 
+  type class_info =
     {classname : string,
      class : sort,
      params : (class * (string * typ)) list option,
@@ -46,7 +46,7 @@ sig
      class_def : thm option,
      equivalence_thm : thm option}
 
-  type instance_info = 
+  type instance_info =
     {defs : thm list}
 
   val is_typeT : typ -> bool
@@ -64,7 +64,7 @@ sig
     Specification.multi_specs -> Function_Common.function_config ->
     local_theory -> (Function_Common.info * Proof.context)
   val add_conversion_info : Function_Common.info -> Function_Common.info -> type_info -> type_info
-  val add_iso_info : thm option -> type_info -> type_info 
+  val add_iso_info : thm option -> type_info -> type_info
   val has_class_law : string -> theory -> bool
   val zero_tvarsT : typ -> typ
   val zero_tvars : term -> term
@@ -87,11 +87,11 @@ sig
 end
 
 structure Derive_Util : DERIVE_UTIL =
-struct   
+struct
 
-type ctr_info = (string * (string * typ list) list) list 
+type ctr_info = (string * (string * typ list) list) list
 
-type rep_type_info = 
+type rep_type_info =
   {repname : string,
    rep_type : typ,
    tFrees_mapping : (typ * typ) list,
@@ -122,7 +122,7 @@ type type_info =
    comb_info : comb_type_info option,
    iso_thm : thm option}
 
-type class_info = 
+type class_info =
     {classname : string,
      class : sort,
      params : (class * (string * typ)) list option,
@@ -135,7 +135,7 @@ type class_info =
      class_def : thm option,
      equivalence_thm : thm option}
 
-type instance_info = 
+type instance_info =
     {defs : thm list}
 
 val is_typeT = fn (Type _) => true | _ => false
@@ -143,31 +143,31 @@ val is_typeT = fn (Type _) => true | _ => false
 fun insert_application (t1 $ t2) t3 = insert_application t1 (insert_application t2 t3) |
     insert_application t         t3 = t $ t3
 
-fun add_tvars tname tvar_names = 
+fun add_tvars tname tvar_names =
       let
         fun zip_tvars [] = "" |
             zip_tvars [x] = x |
             zip_tvars (x::xs) = x ^ ", " ^ (zip_tvars xs)
       in
         case tvar_names of [] => tname | xs => "(" ^ zip_tvars xs ^ ") " ^ tname
-      end    
+      end
 
 (* replace tfree by replacement_name if it occurs in tfree_names *)
-fun replace_tfree tfree_names replacement_name tfree = 
+fun replace_tfree tfree_names replacement_name tfree =
   (case List.find (curry (op =) tfree) tfree_names
-        of SOME _ => replacement_name 
-         | NONE => tfree) 
+        of SOME _ => replacement_name
+         | NONE => tfree)
 
 (* Operations on constructor information *)
 val ctrs_arguments = (map (fn l => map snd (snd l))) #> flat #> flat
-fun collect_tfrees ctrs = map (fn (t,s) => (TFree (t,s),s)) 
+fun collect_tfrees ctrs = map (fn (t,s) => (TFree (t,s),s))
                               (fold Term.add_tfreesT (ctrs_arguments ctrs) [])
 fun collect_tfree_names ctrs = fold Term.add_tfree_namesT (ctrs_arguments ctrs) []
 
 (* Check if an instance of a type class exists *)
-fun is_instantiated thy tname class = Axclass.thynames_of_arity thy (tname,class) |> null |> not
+fun is_instantiated thy tname class = Thm.thynames_of_arity thy (tname,class) |> null |> not
 
-fun combs_to_list t = 
+fun combs_to_list t =
   let
     fun
       combs_to_list_aux (t1 $ t2) = t2 :: (combs_to_list_aux t1) |
@@ -177,7 +177,7 @@ fun combs_to_list t =
   end
 
 fun get_tvar ts =
-  case ts of 
+  case ts of
     [] => TFree ("'a", \<^sort>\<open>type\<close>) |
     (t::ts) =>
       case t of T as TFree _ => T |
@@ -192,45 +192,45 @@ fun add_fun' binding specs config lthy =
     fun prove_termination lthy =
       Function.prove_termination NONE (Function_Common.termination_prover_tac false lthy) lthy
   in
-    lthy |> 
+    lthy |>
     (Function.add_function binding specs config) pat_completeness_auto |> snd
     |> prove_termination
   end
 
-fun add_conversion_info from_info to_info (ty_info : type_info) = 
+fun add_conversion_info from_info to_info (ty_info : type_info) =
   let
     val {tname, uses_metadata, tfrees,  mutual_tnames, mutual_Ts, mutual_ctrs, mutual_sels, is_rec, is_mutually_rec, rep_info, comb_info, iso_thm} = ty_info
     val {repname, rep_type, tFrees_mapping, ...} = rep_info
   in
-   {tname = tname, uses_metadata = uses_metadata, tfrees = tfrees,  mutual_tnames = mutual_tnames, mutual_Ts = mutual_Ts, 
-    mutual_ctrs = mutual_ctrs, mutual_sels = mutual_sels, is_rec = is_rec, is_mutually_rec = is_mutually_rec, 
+   {tname = tname, uses_metadata = uses_metadata, tfrees = tfrees,  mutual_tnames = mutual_tnames, mutual_Ts = mutual_Ts,
+    mutual_ctrs = mutual_ctrs, mutual_sels = mutual_sels, is_rec = is_rec, is_mutually_rec = is_mutually_rec,
     rep_info = {repname = repname, rep_type = rep_type, tFrees_mapping = tFrees_mapping, from_info = SOME from_info, to_info =  SOME to_info}
     , comb_info = comb_info, iso_thm = iso_thm} : type_info
   end
-fun add_iso_info iso_thm (ty_info : type_info) = 
+fun add_iso_info iso_thm (ty_info : type_info) =
   let
     val {tname, uses_metadata, tfrees,  mutual_tnames, mutual_Ts, mutual_ctrs, mutual_sels, is_rec, is_mutually_rec, rep_info, comb_info, ...} = ty_info
   in
-   {tname = tname, uses_metadata = uses_metadata, tfrees = tfrees,  mutual_tnames = mutual_tnames, mutual_Ts = mutual_Ts, 
-    mutual_ctrs = mutual_ctrs, mutual_sels = mutual_sels, is_rec = is_rec, is_mutually_rec = is_mutually_rec, 
+   {tname = tname, uses_metadata = uses_metadata, tfrees = tfrees,  mutual_tnames = mutual_tnames, mutual_Ts = mutual_Ts,
+    mutual_ctrs = mutual_ctrs, mutual_sels = mutual_sels, is_rec = is_rec, is_mutually_rec = is_mutually_rec,
     rep_info = rep_info, comb_info = comb_info, iso_thm = iso_thm} : type_info
   end
 
-fun has_class_law classname thy = 
+fun has_class_law classname thy =
 let
   val class = Syntax.parse_sort (Proof_Context.init_global thy) classname |> hd
 in
   is_some (Class.rules thy class |> fst)
 end
 
-fun 
+fun
   zero_tvarsT (Type (s,ts)) = Type (s, map zero_tvarsT ts) |
   zero_tvarsT (TVar ((n,_),s)) = TVar ((n,0),s) |
   zero_tvarsT T = T
 
 fun zero_tvars t = map_types zero_tvarsT t
 
-fun 
+fun
   unique [] = [] |
   unique (x::xs) =
       let fun remove (_,[]) = []
@@ -241,8 +241,8 @@ fun
         x::unique(remove(x,xs))
       end
 
-fun get_superclasses class classname thy = 
-let 
+fun get_superclasses class classname thy =
+let
   val all_classes = (Class.these_params thy class) |> map (snd #> fst)
   val superclasses = filter (curry (op =) classname #> not) all_classes
 in
@@ -252,15 +252,15 @@ end
 fun tagged_function_termination_tac ctxt =
   let
     val prod_simp_thm = @{thm size_tagged_prod_simp}
-    fun measure_tac ctxt = Function_Relation.relation_infer_tac ctxt 
+    fun measure_tac ctxt = Function_Relation.relation_infer_tac ctxt
       ((Const (\<^const_name>\<open>measure\<close>,dummyT)) $ (Const (\<^const_name>\<open>size\<close>,dummyT)))
     fun prove_termination ctxt = auto_tac (Simplifier.add_simp prod_simp_thm ctxt)
   in
     Function.prove_termination NONE ((HEADGOAL (measure_tac ctxt)) THEN (prove_termination ctxt)) ctxt
   end
 
-fun get_mapping_function lthy T = 
-let 
+fun get_mapping_function lthy T =
+let
   val map_thms = BNF_GFP_Rec_Sugar.map_thms_of_type lthy T
   val map_const = Thm.full_prop_of (hd map_thms) |> HOLogic.dest_Trueprop |> HOLogic.dest_eq |> fst
                   |> strip_comb |> fst |> dest_Const |> apsnd (K dummyT) |> Const
