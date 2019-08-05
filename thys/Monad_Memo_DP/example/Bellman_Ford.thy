@@ -35,6 +35,12 @@ lemma fold_acc_preserv:
   shows "P (fold f xs acc)"
   using assms(2) by (induction xs arbitrary: acc) (auto intro: assms(1))
 
+lemma finite_lists_length_le1: "finite {xs. length xs \<le> i \<and> set xs \<subseteq> {0..(n::nat)}}" for i
+  by (auto intro: finite_subset[OF _ finite_lists_length_le[OF finite_atLeastAtMost]])
+
+lemma finite_lists_length_le2: "finite {xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..(n::nat)}}" for i
+  by (auto intro: finite_subset[OF _ finite_lists_length_le1[of "i"]])
+
 lemma get_return:
   "run_state (State_Monad.bind State_Monad.get (\<lambda> m. State_Monad.return (f m))) m = (f m, m)"
   by (simp add: State_Monad.bind_def State_Monad.get_def)
@@ -110,10 +116,8 @@ lemma OPT_Suc:
   "OPT (Suc i) v = min (OPT i v) (Min {OPT i w + W v w | w. w \<le> n})" (is "?lhs = ?rhs")
   if "t \<le> n"
 proof -
-  have fin': "finite {xs. length xs \<le> i \<and> set xs \<subseteq> {0..n}}" for i
-    by (auto intro: finite_subset[OF _ finite_lists_length_le[OF finite_atLeastAtMost]])
-  have fin: "finite {weight (v # xs) |xs. length xs \<le> i \<and> set xs \<subseteq> {0..n}}"
-    for v i using [[simproc add: finite_Collect]] by (auto intro: finite_subset[OF _ fin'])
+  have fin: "finite {weight (v # xs) |xs. length xs \<le> i \<and> set xs \<subseteq> {0..n}}" for v i
+    by (simp add: setcompr_eq_image finite_lists_length_le1)
   have OPT_in: "OPT i v \<in>
     {weight (v # xs) | xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}} \<union>
     {if t = v then 0 else \<infinity>}"
@@ -139,25 +143,25 @@ proof -
       subgoal
         unfolding OPT_def using subs[OF \<open>t \<le> n\<close>, of v] that
         by (subst Min_add_right)
-           (auto 4 3
+          (auto 4 3
             simp: Bellman_Ford.weight_single
             intro: exI[where x = "[]"] finite_subset[OF _ fin[of _ "Suc i"]] intro!: Min_antimono
-           )
+            )
       subgoal
         unfolding OPT_def using subs[OF \<open>w \<le> n\<close>, of v] that
         by (subst Min_add_right)
-           (auto 4 3 intro: finite_subset[OF _ fin[of _ "Suc i"]] intro!: Min_antimono)
+          (auto 4 3 intro: finite_subset[OF _ fin[of _ "Suc i"]] intro!: Min_antimono)
       subgoal
         unfolding OPT_def by simp
       subgoal
         unfolding OPT_def using subs[OF \<open>w \<le> n\<close>, of t]
         apply (subst Min_add_right)
-          prefer 3
-          apply simp
+          apply (simp add: setcompr_eq_image finite_lists_length_le2[simplified]; fail)+
+        apply simp
         by (subst (2) Min_insert)
-           (auto 4 4
+          (auto 4 4
             intro: finite_subset[OF _ fin[of _ "Suc i"]] exI[where x = "[]"] intro!: Min_antimono
-           )
+            )
       done
   qed
   then have "Min {OPT i w + W v w |w. w \<le> n} \<ge> OPT (Suc i) v"
@@ -177,8 +181,7 @@ proof -
   next
     case 2
     then have "OPT i v \<le> OPT (Suc i) v"
-      unfolding OPT_def using [[simproc add: finite_Collect]]
-      by (auto 4 4 intro: finite_subset[OF _ fin', of _ "Suc i"] intro!: Min_le)
+      unfolding OPT_def by (auto simp: setcompr_eq_image finite_lists_length_le2[simplified])
     then show ?thesis
       by (rule min.coboundedI1)
   next
@@ -205,7 +208,7 @@ proof -
         with xs have "weight xs \<ge> OPT i (hd xs)"
           unfolding OPT_def
           by (intro Min_le[rotated] UnI1 CollectI exI[where x = "tl xs"])
-             (auto 4 3 intro: finite_subset[OF _ fin, of _ "hd xs" "Suc i"] dest: list.set_sel(2))
+            (auto 4 3 intro: finite_subset[OF _ fin, of _ "hd xs" "Suc i"] dest: list.set_sel(2))
         have "Min {OPT i w + W v w |w. w \<le> n} \<le> W v (hd xs) + OPT i (hd xs)"
           using \<open>set xs \<subseteq> _\<close> \<open>xs \<noteq> []\<close> by (force simp: add.commute intro: Min_le)
         also have "\<dots> \<le> W v (hd xs) + weight xs"
@@ -517,28 +520,21 @@ proof (cases "t = i")
   case True
   with \<open>i \<le> n\<close> \<open>t \<le> n\<close> have "OPT n i \<le> 0"
     unfolding OPT_def
-    apply -
-    apply (rule Min_le)
-     apply auto
-    sorry
+    by (auto intro: Min_le simp: setcompr_eq_image finite_lists_length_le2[simplified])
   then show ?thesis
     using less_linear by (fastforce simp: zero_extended_def)
 next
   case False
-  from assms(1) guess xs
+  from assms(1) obtain xs where "is_path (i # xs)" "i \<le> n" "set xs \<subseteq> {0..n}"
     unfolding reaches_def by safe
-  note xs = this
   then obtain xs where xs: "is_path (i # xs)" "i \<le> n" "set xs \<subseteq> {0..n}" "length xs < n"
     using \<open>t \<noteq> i\<close> \<open>t \<le> n\<close> by (auto intro: is_path_shorten)
   then have "weight (i # xs) < \<infinity>"
     unfolding is_path_def by auto
   with xs(2-) show ?thesis
     unfolding OPT_def
-    apply -
-    apply (erule order.strict_trans1[rotated])
-    apply (rule Min.coboundedI)
-     apply auto
-    sorry
+    by (elim order.strict_trans1[rotated])
+       (auto simp: setcompr_eq_image finite_lists_length_le2[simplified])
 qed
 
 lemma sum_list_not_infI:
@@ -570,9 +566,7 @@ proof -
   have "OPT n i \<in>
     {weight (i # xs) |xs. length xs + 1 \<le> n \<and> set xs \<subseteq> {0..n}} \<union> {if t = i then 0 else \<infinity>}"
     unfolding OPT_def
-    apply (rule Min_in)
-    apply auto
-    sorry
+    by (rule Min_in) (auto simp: setcompr_eq_image finite_lists_length_le2[simplified])
   with that show ?thesis
     by (auto 4 3 intro!: weight_not_minfI simp: zero_extended_def)
 qed
