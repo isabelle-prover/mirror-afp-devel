@@ -575,7 +575,9 @@ lemma
   assumes has_negative_cycle "t \<le> n"
   shows "\<exists>i \<le> n. OPT (n + 1) i < OPT n i"
 proof -
-  from assms guess xs a ys
+  from assms obtain xs a ys where
+    "t \<le> n" "a \<le> n" "set xs \<subseteq> {0..n}" "set ys \<subseteq> {0..n}"
+    "weight2 (a # xs @ [a]) < 0" "is_path (a # ys)"
     unfolding has_negative_cycle_def by clarsimp
   note cycle = this
   then have "reaches a"
@@ -613,7 +615,7 @@ proof -
     with \<open>weight2 _ < 0\<close> show False
       by simp
   qed
-  then guess u v
+  then obtain u v where "u \<le> n" "v \<le> n" "OPT n v + W u v < OPT n u"
     by safe
   note relaxation = this
   then show ?thesis
