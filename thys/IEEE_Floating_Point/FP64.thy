@@ -78,4 +78,7 @@ lift_definition fp64_mul::"roundmode \<Rightarrow> fp64 \<Rightarrow> fp64 \<Rig
 lift_definition fp64_div::"roundmode \<Rightarrow> fp64 \<Rightarrow> fp64 \<Rightarrow> fp64" is
   "fdiv::roundmode\<Rightarrow>float64\<Rightarrow>float64\<Rightarrow>float64" by simp
 
+lift_definition fp64_mul_add::"roundmode \<Rightarrow> fp64 \<Rightarrow> fp64 \<Rightarrow> fp64 \<Rightarrow> fp64" is
+  "fmul_add::roundmode\<Rightarrow>float64\<Rightarrow>float64\<Rightarrow>float64\<Rightarrow>float64" by simp
+
 end

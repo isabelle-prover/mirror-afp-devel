@@ -205,6 +205,17 @@ where
      else if y > largest TYPE(('e ,'f) float) then topfloat
      else closest (valof) (\<lambda>x. True) {a. is_integral a \<and> valof a \<ge> y} y)"
 
+text \<open>Round, choosing between -0.0 or +0.0\<close>
+
+definition float_round::"roundmode \<Rightarrow> bool \<Rightarrow> real \<Rightarrow> ('e, 'f) float"
+  where "float_round mode toneg r =
+      (let x = round mode r in
+         if is_zero x
+            then if toneg
+                    then minus_zero
+                 else 0
+         else x)"
+
 text \<open>Non-standard of NaN.\<close>
 definition some_nan :: "('e ,'f) float"
   where "some_nan = (SOME a. is_nan a)"
@@ -282,6 +293,29 @@ definition fsqrt :: "roundmode \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'
      else if is_zero a \<or> is_infinity a \<and> sign a = 0 then a
      else if sign a = 1 then some_nan
      else zerosign (sign a) (round m (sqrt (valof a))))"
+
+definition fmul_add :: "roundmode \<Rightarrow> ('t ,'w) float \<Rightarrow> ('t ,'w) float \<Rightarrow> ('t ,'w) float \<Rightarrow> ('t ,'w) float"
+  where "fmul_add mode x y z =
+      (let signP = if sign x = sign y then 0 else 1 in
+      let infP = is_infinity x  \<or> is_infinity y
+      in
+         if is_nan x \<or> is_nan y \<or> is_nan z then some_nan
+         else if is_infinity x \<and> is_zero y \<or>
+                 is_zero x \<and> is_infinity y \<or>
+                 is_infinity z \<and> infP \<and> signP \<noteq> sign z then
+            some_nan
+         else if is_infinity z \<and> (sign z = 0) \<or> infP \<and> (signP = 0)
+            then plus_infinity
+         else if is_infinity z \<and> (sign z = 1) \<or> infP \<and> (signP = 1)
+            then minus_infinity
+         else
+            let r1 = valof x * valof y;
+                r2 = valof z
+            in
+              float_round mode
+                (if (r1 = 0) \<and> (r2 = 0) \<and> (signP = sign z) then
+                   signP = 1
+                 else mode = To_ninfinity) (r1 + r2))"
 
 
 subsection \<open>Comparison operations\<close>
