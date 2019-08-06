@@ -9,7 +9,23 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>01 Aug 2019 00:00:00 +0000</pubDate>
+    <pubDate>05 Aug 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Selected Problems from the International Mathematical Olympiad 2019</title>
+              <link>https://www.isa-afp.org/entries/IMO2019.html</link>
+       <guid>https://www.isa-afp.org/entries/IMO2019.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>05 Aug 2019 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This entry contains formalisations of the answers to three of
+the six problem of the International Mathematical Olympiad 2019,
+namely Q1, Q4, and Q5.&lt;/p&gt; &lt;p&gt;The reason why these
+problems were chosen is that they are particularly amenable to
+formalisation: they can be solved with minimal use of libraries. The
+remaining three concern geometry and graph theory, which, in the
+author&#39;s opinion, are more difficult to formalise resp. require a
+more complex library.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>Stellar Quorum Systems</title>
               <link>https://www.isa-afp.org/entries/Stellar_Quorums.html</link>
@@ -549,22 +565,6 @@ proves the correctness of the well-known
 &lt;em&gt;O&lt;/em&gt;(&lt;em&gt;n log n&lt;/em&gt;)
 divide-and-conquer algorithm to compute the number of
 inversions.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Farkas' Lemma and Motzkin's Transposition Theorem</title>
-              <link>https://www.isa-afp.org/entries/Farkas.html</link>
-       <guid>https://www.isa-afp.org/entries/Farkas.html</guid>
-       <dc:creator> Ralph Bottesch, Max W. Haslbeck, René Thiemann       </dc:creator>
-       <pubDate>17 Jan 2019 00:00:00 +0000</pubDate>
-       <description>
-We formalize a proof of Motzkin&#39;s transposition theorem and
-Farkas&#39; lemma in Isabelle/HOL. Our proof is based on the
-formalization of the simplex algorithm which, given a set of linear
-constraints, either returns a satisfying assignment to the problem or
-detects unsatisfiability. By reusing facts about the simplex algorithm
-we show that a set of linear constraints is unsatisfiable if and only
-if there is a linear combination of the constraints which evaluates to
-a trivially unsatisfiable inequality.</description>
     </item>
   </channel>
 </rss>

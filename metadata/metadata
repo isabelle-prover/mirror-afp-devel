@@ -8342,3 +8342,19 @@ abstract =
   systems (PBQSs) and Stellar quorum systems, as described in the paper
   ``Stellar Consensus by Reduction'' (to appear at DISC 2019).
 
+[IMO2019]
+title = Selected Problems from the International Mathematical Olympiad 2019
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Misc
+date = 2019-08-05
+notify = eberlm@in.tum.de
+abstract = 
+  <p>This entry contains formalisations of the answers to three of
+  the six problem of the International Mathematical Olympiad 2019,
+  namely Q1, Q4, and Q5.</p> <p>The reason why these
+  problems were chosen is that they are particularly amenable to
+  formalisation: they can be solved with minimal use of libraries. The
+  remaining three concern geometry and graph theory, which, in the
+  author's opinion, are more difficult to formalise resp. require a
+  more complex library.</p>
+
