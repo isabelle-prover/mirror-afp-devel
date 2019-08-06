@@ -258,9 +258,9 @@ fun instantiate_combinator_type (ty_info : type_info) (cl_info : class_info) con
         val thy = Named_Target.exit lthy
         val (T,xs) = Derive_Util.typ_and_vs_of_typname thy comb_type_name_full class
         val filtered_params = 
-          filter (fn (c,_) => 
-            (not (is_instantiated thy comb_type_name_full c)) andalso not (is_instantiated thy tname c))
-            params
+          params |> filter (fn (c,_) => 
+            not_instantiated thy comb_type_name_full c andalso
+            not_instantiated thy tname c)
         fun  
           define_operations_rec_aux _ [] lthy = lthy |
           define_operations_rec_aux ty (p::ps) lthy = define_operations_rec_aux ty ps (define_operation_rec ty p lthy)
@@ -305,7 +305,7 @@ let
   fun 
     define_operations_aux [] _ thms lthy = (thms,lthy) |
     define_operations_aux (p::ps) (tname,T) thms lthy =  
-      if not (is_instantiated (Proof_Context.theory_of lthy) tname (fst p))
+      if not_instantiated (Proof_Context.theory_of lthy) tname (fst p)
       then 
         let  
           val (thm,lthy') = define_operation lthy tname T (snd p) 

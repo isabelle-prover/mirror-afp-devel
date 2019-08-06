@@ -58,7 +58,7 @@ sig
   val collect_tfree_names : ctr_info -> string list
   val combs_to_list : term -> term list
   val get_tvar : typ list -> typ
-  val is_instantiated : theory -> string -> class -> bool
+  val not_instantiated : theory -> string -> class -> bool
   (* version of add_fun that doesn't throw away info *)
   val add_fun' : (binding * typ option * mixfix) list ->
     Specification.multi_specs -> Function_Common.function_config ->
@@ -162,8 +162,8 @@ fun collect_tfrees ctrs = map (fn (t,s) => (TFree (t,s),s))
                               (fold Term.add_tfreesT (ctrs_arguments ctrs) [])
 fun collect_tfree_names ctrs = fold Term.add_tfree_namesT (ctrs_arguments ctrs) []
 
-(* Check if an instance of a type class exists *)
-fun is_instantiated thy tname class = Thm.thynames_of_arity thy (tname,class) |> null |> not
+fun not_instantiated thy tname class =
+  null (Thm.thynames_of_arity thy (tname, class))
 
 fun combs_to_list t =
   let
