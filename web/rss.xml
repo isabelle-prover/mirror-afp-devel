@@ -9,7 +9,29 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>05 Aug 2019 00:00:00 +0000</pubDate>
+    <pubDate>06 Aug 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Communicating Concurrent Kleene Algebra for Distributed Systems Specification</title>
+              <link>https://www.isa-afp.org/entries/C2KA_DistributedSystems.html</link>
+       <guid>https://www.isa-afp.org/entries/C2KA_DistributedSystems.html</guid>
+       <dc:creator> Maxime Buyse, Jason Jaskolka       </dc:creator>
+       <pubDate>06 Aug 2019 00:00:00 +0000</pubDate>
+       <description>
+Communicating Concurrent Kleene Algebra (C²KA) is a mathematical
+framework for capturing the communicating and concurrent behaviour of
+agents in distributed systems. It extends Hoare et al.&#39;s
+Concurrent Kleene Algebra (CKA) with communication actions through the
+notions of stimuli and shared environments. C²KA has applications in
+studying system-level properties of distributed systems such as
+safety, security, and reliability. In this work, we formalize results
+about C²KA and its application for distributed systems specification.
+We first formalize the stimulus structure and behaviour structure
+(CKA). Next, we combine them to formalize C²KA and its properties.
+Then, we formalize notions and properties related to the topology of
+distributed systems and the potential for communication via stimuli
+and via shared environments of agents, all within the algebraic
+setting of C²KA.</description>
+    </item>
     <item>
        <title>Selected Problems from the International Mathematical Olympiad 2019</title>
               <link>https://www.isa-afp.org/entries/IMO2019.html</link>
@@ -551,20 +573,6 @@ programming for different languages, and put these fundamental
 theorems to work in the creation of associated verification tools,
 using calculi like Hoare logics. This document describes the
 relational core of the UTP in Isabelle/HOL.</description>
-    </item>
-    <item>
-       <title>The Inversions of a List</title>
-              <link>https://www.isa-afp.org/entries/List_Inversions.html</link>
-       <guid>https://www.isa-afp.org/entries/List_Inversions.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>01 Feb 2019 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This entry defines the set of &lt;em&gt;inversions&lt;/em&gt;
-of a list, i.e. the pairs of indices that violate sortedness. It also
-proves the correctness of the well-known
-&lt;em&gt;O&lt;/em&gt;(&lt;em&gt;n log n&lt;/em&gt;)
-divide-and-conquer algorithm to compute the number of
-inversions.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

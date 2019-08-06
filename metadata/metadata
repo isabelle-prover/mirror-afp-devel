@@ -644,6 +644,28 @@ abstract =
 	have integrated memory models for programs with pointers and a program
 	trace semantics into the weakest precondition component.
 
+[C2KA_DistributedSystems]
+title = Communicating Concurrent Kleene Algebra for Distributed Systems Specification
+author = Maxime Buyse <mailto:maxime.buyse@polytechnique.edu>, Jason Jaskolka <https://carleton.ca/jaskolka/>
+topic = Computer Science/Automata and Formal Languages, Mathematics/Algebra
+date = 2019-08-06
+notify = maxime.buyse@polytechnique.edu, jason.jaskolka@carleton.ca
+abstract =
+  Communicating Concurrent Kleene Algebra (C²KA) is a mathematical
+  framework for capturing the communicating and concurrent behaviour of
+  agents in distributed systems. It extends Hoare et al.'s
+  Concurrent Kleene Algebra (CKA) with communication actions through the
+  notions of stimuli and shared environments. C²KA has applications in
+  studying system-level properties of distributed systems such as
+  safety, security, and reliability. In this work, we formalize results
+  about C²KA and its application for distributed systems specification.
+  We first formalize the stimulus structure and behaviour structure
+  (CKA). Next, we combine them to formalize C²KA and its properties.
+  Then, we formalize notions and properties related to the topology of
+  distributed systems and the potential for communication via stimuli
+  and via shared environments of agents, all within the algebraic
+  setting of C²KA.
+
 [Card_Equiv_Relations]
 title = Cardinality of Equivalence Relations
 author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
@@ -8276,7 +8298,7 @@ contributors = Alexander Birch Jensen <https://people.compute.dtu.dk/aleje/>,
 topic = Logic
 date = 2019-07-18
 notify = s144442@student.dtu.dk
-abstract = 
+abstract =
   This work formalizes soundness and completeness of a one-sided sequent
   calculus for first-order logic. The completeness is shown via a
   translation from a complete semantic tableau calculus, the proof of
@@ -8290,7 +8312,7 @@ author = Peter Zeller <mailto:p_zeller@cs.uni-kl.de>
 topic = Mathematics/Order
 date = 2019-07-27
 notify = p_zeller@cs.uni-kl.de
-abstract = 
+abstract =
   We formalize the Szpilrajn extension theorem, also known as
   order-extension principal: Every strict partial order can be extended
   to a strict linear order.
@@ -8301,13 +8323,13 @@ author = Hai Nguyen Van <mailto:hai.nguyenvan.phie@gmail.com>, Frédéric Boulan
 topic = Computer Science/System Description Languages, Computer Science/Semantics, Computer Science/Concurrency
 date = 2019-07-30
 notify = frederic.boulanger@centralesupelec.fr, burkhart.wolff@lri.fr
-abstract = 
+abstract =
   The design of complex systems involves different formalisms for
   modeling their different parts or aspects. The global model of a
   system may therefore consist of a coordination of concurrent
   sub-models that use different paradigms.  We develop here a theory for
   a language used to specify the timed coordination of such
-  heterogeneous subsystems by addressing the following issues: 
+  heterogeneous subsystems by addressing the following issues:
   <ul><li>the
   behavior of the sub-systems is observed only at a series of discrete
   instants,</li><li>events may occur in different sub-systems at unrelated
@@ -8320,7 +8342,7 @@ abstract =
   subsystems, leading to polytimed systems,</li><li>the time frames of
   different sub-systems may be related (for instance, time in a GPS
   satellite and in a GPS receiver on Earth are related although they are
-  not the same).</li></ul>  
+  not the same).</li></ul>
   Firstly, a denotational semantics of the language is
   defined. Then, in order to be able to incrementally check the behavior
   of systems, an operational semantics is given, with proofs of
@@ -8337,7 +8359,7 @@ author = Giuliano Losa <mailto:giuliano@galois.com>
 topic = Computer Science/Algorithms/Distributed
 date = 2019-08-01
 notify = giuliano@galois.com
-abstract = 
+abstract =
   We formalize the static properties of personal Byzantine quorum
   systems (PBQSs) and Stellar quorum systems, as described in the paper
   ``Stellar Consensus by Reduction'' (to appear at DISC 2019).
@@ -8348,7 +8370,7 @@ author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Mathematics/Misc
 date = 2019-08-05
 notify = eberlm@in.tum.de
-abstract = 
+abstract =
   <p>This entry contains formalisations of the answers to three of
   the six problem of the International Mathematical Olympiad 2019,
   namely Q1, Q4, and Q5.</p> <p>The reason why these
