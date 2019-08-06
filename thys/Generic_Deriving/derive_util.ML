@@ -58,7 +58,7 @@ sig
   val collect_tfree_names : ctr_info -> string list
   val combs_to_list : term -> term list
   val get_tvar : typ list -> typ
-  val is_instantiated : theory -> string -> class -> bool
+  val not_instantiated : theory -> string -> class -> bool
   (* version of add_fun that doesn't throw away info *)
   val add_fun' : (binding * typ option * mixfix) list ->
     Specification.multi_specs -> Function_Common.function_config ->
@@ -72,8 +72,6 @@ sig
   val tagged_function_termination_tac : Proof.context -> Function.info * local_theory
   val get_mapping_function : Proof.context -> typ -> term
   val is_polymorphic : typ -> bool
-  val hash_string : string -> string
-  val mk_key : string -> bool -> string
 
   (* determines all mutual recursive types of a given BNF-least-fixpoint-type *)
   val mutual_recursive_types : string -> Proof.context -> string list * typ list
@@ -164,8 +162,8 @@ fun collect_tfrees ctrs = map (fn (t,s) => (TFree (t,s),s))
                               (fold Term.add_tfreesT (ctrs_arguments ctrs) [])
 fun collect_tfree_names ctrs = fold Term.add_tfree_namesT (ctrs_arguments ctrs) []
 
-(* Check if an instance of a type class exists *)
-fun is_instantiated thy tname class = Thm.thynames_of_arity thy (tname,class) |> null |> not
+fun not_instantiated thy tname class =
+  null (Thm.thynames_of_arity thy (tname, class))
 
 fun combs_to_list t =
   let
@@ -270,9 +268,6 @@ end
 
 fun is_polymorphic T = not (null (Term.add_tfreesT T []))
 
-fun hash_string s = string_of_int (ATP_Util.hash_string s)
-fun mk_key tname use_metadata = hash_string (tname ^ (if use_metadata then "true" else "false"))
-
 (* Code copied from generator_aux.ML in AFP entry Deriving by Sternagel and Thiemann *)
 
 fun typ_and_vs_of_typname thy typ_name sort =
@@ -306,10 +301,10 @@ end
 
 structure Type_Data = Theory_Data
 (
-  type T = Derive_Util.type_info Symtab.table;
-  val empty = Symtab.empty;
+  type T = Derive_Util.type_info Symreltab.table;
+  val empty = Symreltab.empty;
   val extend = I;
-  fun merge data : T = Symtab.merge (K true) data;
+  fun merge data : T = Symreltab.merge (K true) data;
 );
 
 structure Class_Data = Theory_Data
@@ -322,8 +317,8 @@ structure Class_Data = Theory_Data
 
 structure Instance_Data = Theory_Data
 (
-  type T = Derive_Util.instance_info Symtab.table;
-  val empty = Symtab.empty;
+  type T = Derive_Util.instance_info Symreltab.table;
+  val empty = Symreltab.empty;
   val extend = I;
-  fun merge data : T = Symtab.merge (K true) data;
+  fun merge data : T = Symreltab.merge (K true) data;
 );

@@ -18,9 +18,10 @@ end
 structure Derive : DERIVE =
 struct      
 
-fun get_type_info thy tname constr_names = Symtab.lookup (Type_Data.get thy) (mk_key tname constr_names)
+fun get_type_info thy tname constr_names =
+  Symreltab.lookup (Type_Data.get thy) (tname, Bool.toString constr_names)
 fun get_class_info thy classname = Symtab.lookup (Class_Data.get thy) classname
-fun get_inst_info thy classname tname = Symtab.lookup (Instance_Data.get thy) (hash_string (classname ^ tname))
+fun get_inst_info thy classname tname = Symreltab.lookup (Instance_Data.get thy) (classname, tname)
 fun add_params_cl_info (cl_info : class_info) params = 
   {classname = (#classname cl_info), class = (#class cl_info), params = SOME params, class_law = (#class_law cl_info), class_law_const = (#class_law_const cl_info), ops = (#ops cl_info), transfer_law = (#transfer_law cl_info), axioms = (#axioms cl_info), axioms_def = (#axioms_def cl_info), class_def = (#class_def cl_info), equivalence_thm = (#equivalence_thm cl_info)}
 fun mk_inst_info defs = 
@@ -257,9 +258,9 @@ fun instantiate_combinator_type (ty_info : type_info) (cl_info : class_info) con
         val thy = Named_Target.exit lthy
         val (T,xs) = Derive_Util.typ_and_vs_of_typname thy comb_type_name_full class
         val filtered_params = 
-          filter (fn (c,_) => 
-            (not (is_instantiated thy comb_type_name_full c)) andalso not (is_instantiated thy tname c))
-            params
+          params |> filter (fn (c,_) => 
+            not_instantiated thy comb_type_name_full c andalso
+            not_instantiated thy tname c)
         fun  
           define_operations_rec_aux _ [] lthy = lthy |
           define_operations_rec_aux ty (p::ps) lthy = define_operations_rec_aux ty ps (define_operation_rec ty p lthy)
@@ -304,7 +305,7 @@ let
   fun 
     define_operations_aux [] _ thms lthy = (thms,lthy) |
     define_operations_aux (p::ps) (tname,T) thms lthy =  
-      if not (is_instantiated (Proof_Context.theory_of lthy) tname (fst p))
+      if not_instantiated (Proof_Context.theory_of lthy) tname (fst p)
       then 
         let  
           val (thm,lthy') = define_operation lthy tname T (snd p) 
@@ -809,8 +810,10 @@ fun generate_class_info class =
 
 fun record_type_class_info ty_info cl_info inst_info thy =  
   let 
-    fun add_info info thy = Type_Data.put (Symtab.update (mk_key (#tname info) (#uses_metadata info),info) (Type_Data.get thy)) thy
-    fun add_inst_info classname tname thy = Instance_Data.put (Symtab.update (hash_string (classname^tname),inst_info) (Instance_Data.get thy)) thy
+    fun add_info info thy =
+      Type_Data.put (Symreltab.update ((#tname info, Bool.toString (#uses_metadata info)),info) (Type_Data.get thy)) thy
+    fun add_inst_info classname tname thy =
+      Instance_Data.put (Symreltab.update ((classname, tname), inst_info) (Instance_Data.get thy)) thy
     fun update_tname ({tname = _, uses_metadata = uses_metadata, tfrees = tfrees, mutual_tnames = mutual_tnames,
                      mutual_Ts = mutual_Ts, mutual_ctrs = mutual_ctrs, mutual_sels = mutual_sels, is_rec = is_rec,
                      is_mutually_rec = is_mutually_rec, rep_info = rep_info, comb_info = comb_info, iso_thm = iso_thm} : type_info)
@@ -918,6 +921,6 @@ val _ =
       let val meta = s = "metadata" in Toplevel.theory_to_proof (generate_instance_cmd c t meta) end ))
 
 fun add_inst_info classname tname thms thy = 
-  Instance_Data.put (Symtab.update (hash_string (classname^tname),{defs = thms}) (Instance_Data.get thy)) thy
+  Instance_Data.put (Symreltab.update ((classname, tname) ,{defs = thms}) (Instance_Data.get thy)) thy
 
 end
