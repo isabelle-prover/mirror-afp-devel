@@ -1148,6 +1148,16 @@ lemma differentiable_at_snd:
   using that
   by (auto simp: differentiable_def dest!: has_derivative_snd)
 
+lemmas frechet_derivative_worksI = frechet_derivative_works[THEN iffD1]
+
+lemma sin_differentiable_at: "(\<lambda>x. sin (f x::real)) differentiable at x within X"
+  if "f differentiable at x within X"
+  by (auto intro!: differentiableI derivative_eq_intros frechet_derivative_worksI[OF that])
+
+lemma cos_differentiable_at: "(\<lambda>x. cos (f x::real)) differentiable at x within X"
+  if "f differentiable at x within X"
+  by (auto intro!: differentiableI derivative_eq_intros frechet_derivative_worksI[OF that])
+
 
 subsection \<open>Frechet derivative\<close>
 
@@ -1163,9 +1173,7 @@ lemma frechet_derivative_transform_within_open:
 lemmas frechet_derivative_transform_within_open_ext =
   fun_cong[OF frechet_derivative_transform_within_open]
 
-
 lemmas frechet_derivative_at' = frechet_derivative_at[symmetric]
-lemmas frechet_derivative_worksI = frechet_derivative_works[THEN iffD1]
 
 lemma frechet_derivative_const: "frechet_derivative (\<lambda>x. c) (at a) = (\<lambda>x. 0)"
   by (rule frechet_derivative_at')
@@ -1186,6 +1194,18 @@ lemmas frechet_derivative_plus = frechet_derivative_plus_fun[unfolded plus_fun_d
 
 lemma frechet_derivative_zero_fun: "frechet_derivative 0 (at a) = 0"
   by (auto simp: frechet_derivative_const zero_fun_def)
+
+lemma frechet_derivative_sin:
+  "frechet_derivative (\<lambda>x. sin (f x)) (at x) = (\<lambda>xa. frechet_derivative f (at x) xa * cos (f x))"
+  if "f differentiable (at x)"
+  for f::"_\<Rightarrow>real"
+  by (rule frechet_derivative_at'[OF has_derivative_sin[OF frechet_derivative_worksI[OF that]]])
+
+lemma frechet_derivative_cos:
+  "frechet_derivative (\<lambda>x. cos (f x)) (at x) = (\<lambda>xa. frechet_derivative f (at x) xa * - sin (f x))"
+  if "f differentiable (at x)"
+  for f::"_\<Rightarrow>real"
+  by (rule frechet_derivative_at'[OF has_derivative_cos[OF frechet_derivative_worksI[OF that]]])
 
 lemma differentiable_sum_fun:
   "(\<And>i. i \<in> I \<Longrightarrow> (f i differentiable at a)) \<Longrightarrow> sum f I differentiable at a"

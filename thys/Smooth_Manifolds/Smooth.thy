@@ -502,6 +502,27 @@ lemma higher_differentiable_on_Pair':
       higher_differentiable_on_compose'[where f=g and T=T])
 
 
+lemma higher_differentiable_on_sin: "higher_differentiable_on S (\<lambda>x. sin (f x::real)) n"
+  and higher_differentiable_on_cos: "higher_differentiable_on S (\<lambda>x. cos (f x::real)) n"
+  if f: "higher_differentiable_on S f n" and S: "open S"
+  unfolding atomize_conj
+  using f
+proof (induction n)
+  case (Suc n)
+  then have "higher_differentiable_on S f n"
+    "higher_differentiable_on S (\<lambda>x. sin (f x)) n"
+    "higher_differentiable_on S (\<lambda>x. cos (f x)) n"
+    "\<And>x. x \<in> S \<Longrightarrow> f differentiable at x"
+    using higher_differentiable_on_SucD
+    by (auto simp: higher_differentiable_on.simps)
+  with Suc show ?case
+    by (auto simp: higher_differentiable_on.simps sin_differentiable_at cos_differentiable_at
+        frechet_derivative_sin frechet_derivative_cos S
+        intro!: higher_differentiable_on_mult higher_differentiable_on_uminus
+        cong: higher_differentiable_on_cong[OF S])
+qed (auto simp: higher_differentiable_on.simps intro!: continuous_intros)
+
+
 subsection \<open>Higher directional derivatives\<close>
 
 primrec nth_derivative :: "nat \<Rightarrow> ('a::real_normed_vector \<Rightarrow> 'b::real_normed_vector) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'b" where
@@ -1129,6 +1150,13 @@ lemma smooth_on_fst:
   using higher_differentiable_on_fst_comp that
   by (auto simp: smooth_on_def)
 
+lemma smooth_on_sin: "n-smooth_on S (\<lambda>x. sin (f x::real))" if "n-smooth_on S f" "open S"
+  using that
+  by (auto simp: smooth_on_def intro!: higher_differentiable_on_sin)
+
+lemma smooth_on_cos: "n-smooth_on S (\<lambda>x. cos (f x::real))" if "n-smooth_on S f" "open S"
+  using that
+  by (auto simp: smooth_on_def intro!: higher_differentiable_on_cos)
 
 lemma smooth_on_Taylor2E:
   fixes f::"'a::euclidean_space \<Rightarrow> real"
