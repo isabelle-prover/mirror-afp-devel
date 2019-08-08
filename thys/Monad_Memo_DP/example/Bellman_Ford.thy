@@ -851,7 +851,17 @@ lemma has_negative_cycleI:
   shows has_negative_cycle
   using assms unfolding has_negative_cycle_def by auto
 
-theorem detects_cycle_has_negative_cycle:
+lemma shortest_le_OPT:
+  assumes "v \<le> n"
+  shows "shortest v \<le> OPT i v"
+  unfolding OPT_def shortest_def
+  apply (subst Min_Inf)
+    apply (simp add: setcompr_eq_image finite_lists_length_le2[simplified]; fail)+
+  apply (rule Inf_superset_mono)
+  apply auto
+  done
+
+theorem shorter_than_OPT_n_has_negative_cycle:
   assumes "shortest v < OPT n v" "v \<le> n"
   shows has_negative_cycle
 proof -
@@ -950,151 +960,25 @@ proof -
   qed
 qed
 
-theorem detects_cycle_has_negative_cycle':
+theorem detects_cycle_has_negative_cycle:
   assumes "OPT (n + 1) v < OPT n v" "v \<le> n"
   shows has_negative_cycle
-  sledgehammer
-proof (cases rule: OPT_cases2[of v n])
-  case path
-  with assms obtain ys where ys:
-    "OPT (n + 1) v = weight (v # ys)" "length ys + 1 \<le> n + 1" "set ys \<subseteq> {0..n}"
-    using OPT_sink_le_0[of n] by (cases rule: OPT_cases[of "n + 1" v]) auto
-  { fix as assume "weight (v # as) \<le> OPT (n + 1) v" "length as + 1 \<le> n" "set as \<subseteq> {0..n}"
-    then have "OPT n v \<le> weight (v # as)"
-      unfolding OPT_def by (intro Min_le) (auto simp: finite_lists_length_le2[simplified])
-    with assms \<open>_ \<le> OPT (n + 1) v\<close> have False
-      by auto
-  } note Min_ccontr = this
-  from path have "is_path (v # ys)"
-    unfolding is_path_def using assms(1) not_less_iff_gr_or_eq ys(1) by fastforce
-  show ?thesis
-  proof (cases "length ys = n")
-    case True
-    with ys \<open>v \<le> n\<close> \<open>t \<le> n\<close> obtain a as bs cs where "v # ys @ [t] = as @ a # bs @ a # cs"
-      by - (rule list_pidgeonhole[of "v # ys @ [t]" "{0..n}"], auto)
-    then show ?thesis
-    proof (cases rule: path_eq_cycleE)
-      case Nil_Nil
-      then show ?thesis
-        using OPT_sink_le_0[of n] assms ys unfolding weight_eq has_negative_cycle_def is_path_def
-        using less_extended_def by force
-    next
-      case (Nil_Cons cs')
-      with ys have *: "OPT (n + 1) v = weight2 (a # bs @ [a]) + weight (a # cs')"
-        unfolding weight_eq by (simp add: weight2_append[of "a # bs" a "cs' @ [t]", simplified])
-      have "weight2 (a # bs @ [a]) < 0"
-      proof (rule ccontr)
-        assume "\<not> weight2 (a # bs @ [a]) < 0"
-        then have "weight2 (a # bs @ [a]) \<ge> 0"
-          by auto
-        with * have "weight (a # cs') \<le> OPT (n + 1) v"
-          by (metis add.commute add.right_neutral add_left_mono)
-        with Nil_Cons \<open>length ys = n\<close> \<open>set ys \<subseteq> _\<close> show False
-          by (intro Min_ccontr) auto
-      qed
-      with Nil_Cons \<open>set ys \<subseteq> _\<close> \<open>is_path _\<close> show ?thesis
-        by (force intro: has_negative_cycleI[of a bs ys])
-    next
-      case (Cons_Nil as')
-      with ys have *: "OPT (n + 1) v = weight (v # as') + weight2 (a # bs @ [a])"
-        unfolding weight_eq by (simp add: weight2_append[of "v # as'" t "bs @ [t]", simplified])
-      have "weight2 (a # bs @ [a]) < 0"
-      proof (rule ccontr)
-        assume "\<not> weight2 (a # bs @ [a]) < 0"
-        then have "weight2 (a # bs @ [a]) \<ge> 0"
-          by auto
-        with * have "weight (v # as') \<le> OPT (n + 1) v"
-          by (metis add.right_neutral add_left_mono)
-        with Cons_Nil \<open>length ys = n\<close> \<open>set ys \<subseteq> _\<close> show False
-          by (intro Min_ccontr) auto
-      qed
-      with Cons_Nil \<open>set ys \<subseteq> _\<close> \<open>is_path _\<close> show ?thesis
-        using is_path_appendD[of "v # as'"] by (force intro: has_negative_cycleI[of a bs bs])
-    next
-      case (Cons_Cons as' cs')
-      with ys have *: "OPT (n + 1) v = weight (v # as' @ a # cs') + weight2 (a # bs @ [a])"
-        unfolding weight_eq using
-          weight2_append[of "v # as'" a "bs @ a # cs' @ [t]"]
-          weight2_append[of "a # bs" a "cs' @ [t]"]
-          weight2_append[of "v # as'" a "cs' @ [t]"]
-        by (simp add: algebra_simps)
-      have "weight2 (a # bs @ [a]) < 0"
-      proof (rule ccontr)
-        assume "\<not> weight2 (a # bs @ [a]) < 0"
-        then have "weight2 (a # bs @ [a]) \<ge> 0"
-          by auto
-        with * have "weight (v # as' @ a # cs') \<le> OPT (n + 1) v"
-          by (metis add.right_neutral add_left_mono)
-        with Cons_Cons \<open>length ys = n\<close> \<open>set ys \<subseteq> _\<close> show False
-          by (intro Min_ccontr) force+
-      qed
-      with Cons_Cons \<open>set ys \<subseteq> _\<close> \<open>is_path _\<close> show ?thesis
-        using is_path_appendD[of "v # as'"]
-        by (force intro: has_negative_cycleI[of a bs "bs @ a # cs'"])
-    qed
-  next
-    case False
-    with ys have "OPT n v \<le> OPT (n + 1) v"
-      by (auto simp: OPT_def finite_lists_length_le2[simplified] intro!: Min_le)
-    with assms show ?thesis
-      by simp
-  qed
-next
-  case sink
-  with assms obtain ys where
-    "OPT (n + 1) v = weight (t # ys)" "length ys + 1 \<le> n + 1" "set ys \<subseteq> {0..n}"
-    by (cases rule: OPT_cases[of "n + 1" v]) auto
-  then show ?thesis
-    using assms sink \<open>t \<le> n\<close> unfolding weight_eq has_negative_cycle_def is_path_def
-    using less_extended_def by force
-next
-  case unreachable
-  with assms obtain ys where
-    "OPT (n + 1) v = weight (v # ys)" "length ys + 1 \<le> n + 1" "set ys \<subseteq> {0..n}"
-    by (cases rule: OPT_cases[of "n + 1" v]) auto
-  with assms have "is_path (v # ys)"
-    unfolding is_path_def using less_extended_def by force
-  with \<open>v \<le> n\<close> \<open>set ys \<subseteq> {0..n}\<close> \<open>t \<le> n\<close> have "reaches v"
-    unfolding reaches_def by auto
-  with \<open>OPT n v = \<infinity>\<close> show ?thesis
-    using \<open>v \<le> n\<close> \<open>t \<le> n\<close> by (auto dest: reaches_non_inf_path)
-qed
+  using assms shortest_le_OPT[of v "n + 1"] shorter_than_OPT_n_has_negative_cycle[of v] by auto
 
 theorem bellman_ford_detects_cycle:
   "has_negative_cycle \<longleftrightarrow> (\<exists>v \<le> n. OPT (n + 1) v < OPT n v)"
   using detects_cycle_has_negative_cycle detects_cycle by blast
-
-lemma shortest_le_OPT:
-  assumes "v \<le> n"
-  shows "shortest v \<le> OPT i v"
-  unfolding OPT_def shortest_def
-  apply (subst Min_Inf)
-    apply (simp add: setcompr_eq_image finite_lists_length_le2[simplified]; fail)+
-  apply (rule Inf_superset_mono)
-  apply auto
-  done
 
 theorem bellman_ford_shortest_paths:
   assumes "\<not> has_negative_cycle"
   shows "\<forall>v \<le> n. bf n v = shortest v"
 proof -
   have "OPT n v \<le> shortest v" if "v \<le> n" for v
-    using that
-    unfolding OPT_def shortest_def
-    apply (subst Min_Inf)
-      apply (simp add: setcompr_eq_image finite_lists_length_le2[simplified]; fail)+
-    apply auto
-  show ?thesis
-    thm bf_correct[OF \<open>t \<le> n\<close>]
+    using that assms shorter_than_OPT_n_has_negative_cycle[of v] by force
+  then show ?thesis
     unfolding bf_correct[OF \<open>t \<le> n\<close>, symmetric]
-    apply safe
-    apply (rule order.antisym)
-    subgoal
-      sorry
-    apply (erule shortest_le_OPT)
-    done
-    
-
+    by (safe, rule order.antisym) (auto elim: shortest_le_OPT)
+qed
 
 end (* Wellformedness *)
 
