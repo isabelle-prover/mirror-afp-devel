@@ -6,7 +6,6 @@ session LTL_to_GBA (AFP) = CAVA_Automata +
     LTL
     Stuttering_Equivalence
   theories
-    LTL_Stutter
     LTL_to_GBA
     LTL_to_GBA_impl
   theories [document = false]

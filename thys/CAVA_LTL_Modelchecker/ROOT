@@ -13,7 +13,7 @@ session SM_Base (AFP) = CAVA_Automata +
 session SM (AFP) = SM_Base +
   options [timeout = 1200]
   sessions
-    LTL_to_GBA (* TODO: only needed for LTL_to_GBA.LTL_Stutter, which should be moved to Stuttering_Equivalence *)
+    Stuttering_Equivalence
   theories [document = false]
     "SM/Lib/LTS"
     "SM/Lib/SOS_Misc_Add"

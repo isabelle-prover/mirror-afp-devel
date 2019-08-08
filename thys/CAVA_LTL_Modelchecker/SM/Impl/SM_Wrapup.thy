@@ -1,5 +1,5 @@
 theory SM_Wrapup
-imports SM_Ample_Impl LTL_to_GBA.LTL_Stutter
+imports SM_Ample_Impl Stuttering_Equivalence.PLTL
 begin
 
   export_code ty_program ltlc_next_free checking SML
@@ -94,7 +94,7 @@ begin
           unfolding sm_props_def[abs_def]
           by (auto simp: test_aprop_vars_cong)
 
-        from next_free_stutter_invariant[OF NF E2] L 
+        from ltlc_next_free_stutter_invariant[OF NF E2] L 
         have "interp_gs o w' \<in> language_ltlc \<phi>" by (auto simp: language_ltlc_def)
         with ltlc_eq_on[OF E1] show "w\<in>language_ltlc \<phi>" by (auto simp: language_ltlc_def)
       }
