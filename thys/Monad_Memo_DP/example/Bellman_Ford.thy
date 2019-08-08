@@ -98,7 +98,57 @@ qed
 end
 
 instance "extended" :: ("{conditionally_complete_lattice,linorder}") complete_linorder ..
-(* instance int :: "{conditionally_complete_lattice,linorder}" .. *)
+
+
+lemma Minf_eq_zero[simp]: "-\<infinity> = 0 \<longleftrightarrow> False" and Pinf_eq_zero[simp]: "\<infinity> = 0 \<longleftrightarrow> False"
+  unfolding zero_extended_def by auto
+
+lemma Sup_int:
+  fixes x :: int and X :: "int set"
+  assumes "X \<noteq> {}" "bdd_above X"
+  shows "Sup X \<in> X \<and> (\<forall>y\<in>X. y \<le> Sup X)"
+proof -
+  from assms obtain x y where "X \<subseteq> {..y}" "x \<in> X"
+    by (auto simp: bdd_above_def)
+  then have *: "finite (X \<inter> {x..y})" "X \<inter> {x..y} \<noteq> {}" and "x \<le> y"
+    by (auto simp: subset_eq)
+  have "\<exists>!x\<in>X. (\<forall>y\<in>X. y \<le> x)"
+  proof
+    { fix z assume "z \<in> X"
+      have "z \<le> Max (X \<inter> {x..y})"
+      proof cases
+        assume "x \<le> z" with \<open>z \<in> X\<close> \<open>X \<subseteq> {..y}\<close> *(1) show ?thesis
+          by (auto intro!: Max_ge)
+      next
+        assume "\<not> x \<le> z"
+        then have "z < x" by simp
+        also have "x \<le> Max (X \<inter> {x..y})"
+          using \<open>x \<in> X\<close> *(1) \<open>x \<le> y\<close> by (intro Max_ge) auto
+        finally show ?thesis by simp
+      qed }
+    note le = this
+    with Max_in[OF *] show ex: "Max (X \<inter> {x..y}) \<in> X \<and> (\<forall>z\<in>X. z \<le> Max (X \<inter> {x..y}))" by auto
+
+    fix z assume *: "z \<in> X \<and> (\<forall>y\<in>X. y \<le> z)"
+    with le have "z \<le> Max (X \<inter> {x..y})"
+      by auto
+    moreover have "Max (X \<inter> {x..y}) \<le> z"
+      using * ex by auto
+    ultimately show "z = Max (X \<inter> {x..y})"
+      by auto
+  qed
+  then show "Sup X \<in> X \<and> (\<forall>y\<in>X. y \<le> Sup X)"
+    unfolding Sup_int_def by (rule theI')
+qed
+
+lemmas Sup_int_in = Sup_int[THEN conjunct1]
+
+lemma Inf_int_in:
+  fixes S :: "int set"
+  assumes "S \<noteq> {}" "bdd_below S"
+  shows "Inf S \<in> S"
+  using assms unfolding Inf_int_def by (smt Sup_int_in bdd_above_uminus image_iff image_is_empty)
+
 
 lemma fold_acc_preserv:
   assumes "\<And> x acc. P acc \<Longrightarrow> P (f x acc)" "P acc"
@@ -507,7 +557,7 @@ definition
   \<exists>xs a ys. set (a # xs @ ys) \<subseteq> {0..n} \<and> weight2 (a # xs @ [a]) < 0 \<and> is_path (a # ys)"
 
 definition
-  "reaches a \<equiv> \<exists> xs. is_path (a # xs) \<and> a \<le> n \<and> set xs \<subseteq> {0..n}"
+  "reaches a \<equiv> \<exists>xs. is_path (a # xs) \<and> a \<le> n \<and> set xs \<subseteq> {0..n}"
 
 lemma fold_sum_aux':
   assumes "\<forall>u \<in> set (a # xs). \<forall>v \<in> set (xs @ [b]). f v + W u v \<ge> f u"
@@ -622,6 +672,51 @@ next
        (auto simp: setcompr_eq_image finite_lists_length_le2[simplified])
 qed
 
+lemma OPT_sink_le_0:
+  "OPT i t \<le> 0"
+  unfolding OPT_def by (auto simp: finite_lists_length_le2[simplified])
+
+lemma is_path_appendD:
+  assumes "is_path (as @ a # bs)"
+  shows "is_path (a # bs)"
+  using assms weight2_append[of as a "bs @ [t]"] unfolding is_path_def weight_eq
+  by simp (metis Pinf_add_right add.commute less_extended_simps(4) not_less_iff_gr_or_eq)
+
+lemma has_negative_cycleI:
+  assumes "set (a # xs @ ys) \<subseteq> {0..n}" "weight2 (a # xs @ [a]) < 0" "is_path (a # ys)"
+  shows has_negative_cycle
+  using assms unfolding has_negative_cycle_def by auto
+
+lemma OPT_cases:
+  obtains (path) xs where "OPT i v = weight (v # xs)" "length xs + 1 \<le> i" "set xs \<subseteq> {0..n}"
+  | (sink) "v = t" "OPT i v = 0"
+  | (unreachable) "v \<noteq> t" "OPT i v = \<infinity>"
+  unfolding OPT_def
+  using Min_in[of "{weight (v # xs) |xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}}
+    \<union> {if t = v then 0 else \<infinity>}"]
+  by (auto simp: finite_lists_length_le2[simplified] split: if_split_asm)
+
+lemma OPT_cases2:
+  obtains (path) xs where
+    "v \<noteq> t" "OPT i v \<noteq> \<infinity>" "OPT i v = weight (v # xs)" "length xs + 1 \<le> i" "set xs \<subseteq> {0..n}"
+  | (unreachable) "v \<noteq> t" "OPT i v = \<infinity>"
+  | (sink) "v = t" "OPT i v \<le> 0"
+  unfolding OPT_def
+  using Min_in[of "{weight (v # xs) |xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}}
+    \<union> {if t = v then 0 else \<infinity>}"]
+  by (cases "v = t"; force simp: finite_lists_length_le2[simplified] split: if_split_asm)
+
+lemma shortest_le_OPT:
+  assumes "v \<le> n"
+  shows "shortest v \<le> OPT i v"
+  unfolding OPT_def shortest_def
+  apply (subst Min_Inf)
+    apply (simp add: setcompr_eq_image finite_lists_length_le2[simplified]; fail)+
+  apply (rule Inf_superset_mono)
+  apply auto
+  done
+
+
 context
   assumes W_wellformed: "\<forall>i \<le> n. \<forall>j \<le> n. W i j > -\<infinity>"
   assumes "t \<le> n"
@@ -629,10 +724,9 @@ begin
 
 lemma weight_not_minfI:
   "-\<infinity> < weight xs" if "set xs \<subseteq> {0..n}"
-  using that
-  apply (induction xs rule: induct_list012)
-    apply (simp add: zero_extended_def weight_def; fail)
-  using W_wellformed \<open>t \<le> n\<close> by (auto intro: add_gt_minfI)
+  using that using W_wellformed \<open>t \<le> n\<close>
+  by (induction xs rule: induct_list012)
+     ((simp add: zero_extended_def weight_def; fail), auto intro: add_gt_minfI)
 
 lemma OPT_not_minfI:
   "OPT n i > -\<infinity>" if "i \<le> n"
@@ -702,62 +796,6 @@ corollary detects_cycle_bf:
   shows "\<exists>i \<le> n. bf (n + 1) i < bf n i"
   using detects_cycle[OF assms] unfolding bf_correct[OF \<open>t \<le> n\<close>] .
 
-lemma Sup_int:
-  fixes x :: int and X :: "int set"
-  assumes "X \<noteq> {}" "bdd_above X"
-  shows "Sup X \<in> X \<and> (\<forall>y\<in>X. y \<le> Sup X)"
-proof -
-  from assms obtain x y where "X \<subseteq> {..y}" "x \<in> X"
-    by (auto simp: bdd_above_def)
-  then have *: "finite (X \<inter> {x..y})" "X \<inter> {x..y} \<noteq> {}" and "x \<le> y"
-    by (auto simp: subset_eq)
-  have "\<exists>!x\<in>X. (\<forall>y\<in>X. y \<le> x)"
-  proof
-    { fix z assume "z \<in> X"
-      have "z \<le> Max (X \<inter> {x..y})"
-      proof cases
-        assume "x \<le> z" with \<open>z \<in> X\<close> \<open>X \<subseteq> {..y}\<close> *(1) show ?thesis
-          by (auto intro!: Max_ge)
-      next
-        assume "\<not> x \<le> z"
-        then have "z < x" by simp
-        also have "x \<le> Max (X \<inter> {x..y})"
-          using \<open>x \<in> X\<close> *(1) \<open>x \<le> y\<close> by (intro Max_ge) auto
-        finally show ?thesis by simp
-      qed }
-    note le = this
-    with Max_in[OF *] show ex: "Max (X \<inter> {x..y}) \<in> X \<and> (\<forall>z\<in>X. z \<le> Max (X \<inter> {x..y}))" by auto
-
-    fix z assume *: "z \<in> X \<and> (\<forall>y\<in>X. y \<le> z)"
-    with le have "z \<le> Max (X \<inter> {x..y})"
-      by auto
-    moreover have "Max (X \<inter> {x..y}) \<le> z"
-      using * ex by auto
-    ultimately show "z = Max (X \<inter> {x..y})"
-      by auto
-  qed
-  then show "Sup X \<in> X \<and> (\<forall>y\<in>X. y \<le> Sup X)"
-    unfolding Sup_int_def by (rule theI')
-qed
-
-lemmas Sup_int_in = Sup_int[THEN conjunct1]
-
-lemma Inf_int_in:
-  fixes S :: "int set"
-  assumes "S \<noteq> {}" "bdd_below S"
-  shows "Inf S \<in> S"
-  using assms unfolding Inf_int_def by (smt Sup_int_in bdd_above_uminus image_iff image_is_empty)
-
-lemma [simp]:
-  "-\<infinity> = 0 \<longleftrightarrow> False" (* "0 = -\<infinity> \<longleftrightarrow> False" *)
-  "\<infinity> = 0 \<longleftrightarrow> False"
-  unfolding zero_extended_def by auto
-
-lemma Minf_lowest:
-  assumes "-\<infinity> < a" "-\<infinity> = a"
-  shows False
-  using assms by auto
-
 lemma shortest_cases:
   assumes "v \<le> n"
   obtains (path) xs where "shortest v = weight (v # xs)" "set xs \<subseteq> {0..n}"
@@ -768,6 +806,8 @@ proof -
   let ?S = "{weight (v # xs) | xs. set xs \<subseteq> {0..n}} \<union> {if t = v then 0 else \<infinity>}"
   have "?S \<noteq> {}"
     by auto
+  have Minf_lowest: False if  "-\<infinity> < a" "-\<infinity> = a" for a :: "int extended"
+    using that by auto
   show ?thesis
   proof (cases "shortest v")
     case (Fin x)
@@ -802,12 +842,7 @@ proof -
         fix x :: int
         let ?m = "min x (-1)"
         from \<open>\<not> bdd_below _\<close> obtain m where "Fin m \<in> ?S" "m < ?m"
-          unfolding bdd_below_def
-          apply simp
-          apply (drule spec[of _ "?m"])
-          unfolding vimage_eq
-          apply force
-          done
+          unfolding bdd_below_def by - (simp, drule spec[of _ "?m"], force)
         then show "\<exists>xs. set xs \<subseteq> {0..n} \<and> weight (v # xs) < Fin x"
           by (auto split: if_split_asm simp: zero_extended_def) (metis less_extended_simps(1))+
       qed
@@ -817,56 +852,12 @@ proof -
   qed
 qed
 
-lemma OPT_cases:
-  obtains (path) xs where "OPT i v = weight (v # xs)" "length xs + 1 \<le> i" "set xs \<subseteq> {0..n}"
-  | (sink) "v = t" "OPT i v = 0"
-  | (unreachable) "v \<noteq> t" "OPT i v = \<infinity>"
-  unfolding OPT_def
-  using Min_in[of "{weight (v # xs) |xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}}
-    \<union> {if t = v then 0 else \<infinity>}"]
-  by (auto simp: finite_lists_length_le2[simplified] split: if_split_asm)
-
-lemma OPT_cases2:
-  obtains (path) xs where
-    "v \<noteq> t" "OPT i v \<noteq> \<infinity>" "OPT i v = weight (v # xs)" "length xs + 1 \<le> i" "set xs \<subseteq> {0..n}"
-  | (unreachable) "v \<noteq> t" "OPT i v = \<infinity>"
-  | (sink) "v = t" "OPT i v \<le> 0"
-  unfolding OPT_def
-  using Min_in[of "{weight (v # xs) |xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}}
-    \<union> {if t = v then 0 else \<infinity>}"]
-  by (cases "v = t"; force simp: finite_lists_length_le2[simplified] split: if_split_asm)
-
-lemma OPT_sink_le_0:
-  "OPT i t \<le> 0"
-  unfolding OPT_def by (auto simp: finite_lists_length_le2[simplified])
-
-lemma is_path_appendD:
-  assumes "is_path (as @ a # bs)"
-  shows "is_path (a # bs)"
-  using assms weight2_append[of as a "bs @ [t]"] unfolding is_path_def weight_eq
-  by simp (metis Pinf_add_right add.commute less_extended_simps(4) not_less_iff_gr_or_eq)
-
-lemma has_negative_cycleI:
-  assumes "set (a # xs @ ys) \<subseteq> {0..n}" "weight2 (a # xs @ [a]) < 0" "is_path (a # ys)"
-  shows has_negative_cycle
-  using assms unfolding has_negative_cycle_def by auto
-
-lemma shortest_le_OPT:
-  assumes "v \<le> n"
-  shows "shortest v \<le> OPT i v"
-  unfolding OPT_def shortest_def
-  apply (subst Min_Inf)
-    apply (simp add: setcompr_eq_image finite_lists_length_le2[simplified]; fail)+
-  apply (rule Inf_superset_mono)
-  apply auto
-  done
-
 theorem shorter_than_OPT_n_has_negative_cycle:
   assumes "shortest v < OPT n v" "v \<le> n"
   shows has_negative_cycle
 proof -
   from assms obtain ys where
-      "weight (v # ys) < OPT n v" "set ys \<subseteq> {0..n}"
+    "weight (v # ys) < OPT n v" "set ys \<subseteq> {0..n}"
     apply (cases rule: OPT_cases2[of v n]; cases rule: shortest_cases[OF \<open>v \<le> n\<close>]; simp)
       apply (metis uminus_extended.cases)
     using less_extended_simps(2) less_trans apply blast
@@ -960,16 +951,16 @@ proof -
   qed
 qed
 
-theorem detects_cycle_has_negative_cycle:
+corollary detects_cycle_has_negative_cycle:
   assumes "OPT (n + 1) v < OPT n v" "v \<le> n"
   shows has_negative_cycle
   using assms shortest_le_OPT[of v "n + 1"] shorter_than_OPT_n_has_negative_cycle[of v] by auto
 
-theorem bellman_ford_detects_cycle:
+corollary bellman_ford_detects_cycle:
   "has_negative_cycle \<longleftrightarrow> (\<exists>v \<le> n. OPT (n + 1) v < OPT n v)"
   using detects_cycle_has_negative_cycle detects_cycle by blast
 
-theorem bellman_ford_shortest_paths:
+corollary bellman_ford_shortest_paths:
   assumes "\<not> has_negative_cycle"
   shows "\<forall>v \<le> n. bf n v = shortest v"
 proof -
