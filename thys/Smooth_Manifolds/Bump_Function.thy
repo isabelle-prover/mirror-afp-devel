@@ -205,29 +205,34 @@ lemma f_differentiable_at_neg:
   by (auto simp: differentiable_def)
 
 lemma frechet_derivative_f_at_neg:
-  "x < 0 \<Longrightarrow> frechet_derivative f (at x) = (\<lambda>x. 0)"
-  by (rule frechet_derivative_at') (rule f_has_derivative_at_neg)
+  "x \<in> {..<0} \<Longrightarrow> frechet_derivative f (at x) = (\<lambda>x. 0)"
+  by (rule frechet_derivative_at') (rule f_has_derivative_at_neg, simp)
 
 lemma f_nth_derivative_lt_0:
   "higher_differentiable_on {..<0} f k \<and> (\<forall>t<0. nth_derivative k f t 1 = 0)"
 proof (induction k)
   case 0
-  then show ?case
-    apply (auto simp: higher_differentiable_on.simps f_def)
-    apply (subst continuous_on_cong[OF refl]) by auto
+  have rewr: "a \<in> {..<0} \<Longrightarrow> \<not>0 < a" for a::real by simp
+  show ?case
+    by (auto simp: higher_differentiable_on.simps f_def rewr
+        simp del: lessThan_iff
+        cong: continuous_on_cong)
 next
   case (Suc k)
-  then show ?case
-    apply (auto simp: higher_differentiable_on.simps f_differentiable_at_neg)
-     apply (rule higher_differentiable_on_cong)
-       apply simp prefer 2
-      apply (subst frechet_derivative_f_at_neg)
-       apply auto
-    apply (subst frechet_derivative_nth_derivative_commute[symmetric])
-    apply (subst frechet_derivative_transform_within_open[where X="{..<0}" and g =0])
-        apply auto
-     apply (rule differentiable_eqI[where g=0 and X="{..<0}"])
-    by (auto simp: zero_fun_def frechet_derivative_const)
+  have "t < 0 \<Longrightarrow> (\<lambda>x. nth_derivative k f x 1) differentiable at t" for t
+    by (rule differentiable_eqI[where g=0 and X="{..<0}"])
+      (auto simp: zero_fun_def frechet_derivative_const Suc.IH)
+  then have "frechet_derivative (\<lambda>x. nth_derivative k f x 1) (at t) 1 = 0" if "t < 0" for t
+    using that Suc.IH
+    by (subst frechet_derivative_transform_within_open[where X="{..<0}" and g =0])
+      (auto simp: frechet_derivative_zero_fun)
+  with Suc show ?case
+    by (auto simp: higher_differentiable_on.simps f_differentiable_at_neg
+        frechet_derivative_f_at_neg zero_fun_def
+        simp flip: frechet_derivative_nth_derivative_commute
+        simp del: lessThan_iff
+        intro!: higher_differentiable_on_const
+        cong: higher_differentiable_on_cong)
 qed
 
 lemma netlimit_at_left: "netlimit (at_left x) = x" for x::real

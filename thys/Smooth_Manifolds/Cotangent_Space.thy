@@ -616,10 +616,11 @@ proof -
     apply (auto simp: f)
     apply (rule fundamental_theorem_of_calculus)
      apply assumption
-     apply (rule has_vector_derivative_at_within)
+    apply (rule has_vector_derivative_at_within)
     unfolding o_def has_vector_derivative_def
     apply (subst frechet_derivative_at_real_eq_scaleR[symmetric])
-    apply simp
+      apply simp
+     apply simp
     apply (rule frechet_derivative_worksI)
     apply simp
     done

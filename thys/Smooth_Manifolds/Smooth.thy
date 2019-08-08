@@ -84,7 +84,7 @@ lemma higher_differentiable_on_imp_differentiable_on:
   using that
   by (cases k) (auto simp: ball_differentiable_atD)
 
-lemma higher_differentiable_on_cong:
+lemma higher_differentiable_on_congI:
   assumes "open S" "higher_differentiable_on S g n"
     and "\<And>x. x \<in> S \<Longrightarrow> f x = g x"
   shows "higher_differentiable_on S f n"
@@ -107,6 +107,13 @@ next
   from 2 3 4 show ?case
     using Suc.IH[OF 2 4] by auto
 qed
+
+lemma higher_differentiable_on_cong:
+  assumes "open S" "S = T"
+    and "\<And>x. x \<in> T \<Longrightarrow> f x = g x"
+  shows "higher_differentiable_on S f n \<longleftrightarrow> higher_differentiable_on T g n"
+  using higher_differentiable_on_congI assms by auto
+
 
 lemma higher_differentiable_on_SucD:
   "higher_differentiable_on S f n" if "higher_differentiable_on S f (Suc n)"
@@ -171,11 +178,10 @@ next
     for v
     by auto
   show ?case
-    apply (auto simp: intro!: derivative_intros f g)
-    apply (rule higher_differentiable_on_cong)
-    apply (rule that) defer
-     apply (subst frechet_derivative_plus)
-    using f g \<open>open S\<close> by (auto simp: differentiable_on_openD Suc.IH hf hg)
+    using f g \<open>open S\<close>
+    by (auto simp: frechet_derivative_plus
+        intro!: derivative_intros f g Suc.IH hf hg
+        cong: higher_differentiable_on_cong)
 qed
 
 lemma (in bounded_bilinear) differentiable:
@@ -224,26 +230,11 @@ next
     for v
     by auto
   show ?case
-    apply (auto simp: intro!: derivative_intros f g differentiable)
-     apply (rule higher_differentiable_on_cong)
-     apply (rule that) defer
-     apply (subst frechet_derivative)
-    subgoal using f \<open>open S\<close> by (auto simp: differentiable_on_openD)
-    subgoal using g \<open>open S\<close> by (auto simp: differentiable_on_openD)
-    apply simp
-    apply (rule higher_differentiable_on_add)
-    apply (rule Suc.IH)
-    apply (rule higher_differentiable_on_SucD)
-    apply (rule Suc)
-    apply (rule hg)
-    apply (rule that)
-    apply (rule Suc.IH)
-    apply (rule hf)
-    apply (rule higher_differentiable_on_SucD)
-    apply (rule Suc)
-    apply (rule that)
-    apply (rule that)
-    done
+    using f g \<open>open S\<close> Suc
+    by (auto simp: frechet_derivative
+        intro!: derivative_intros f g differentiable higher_differentiable_on_add Suc.IH
+        intro: higher_differentiable_on_SucD
+        cong: higher_differentiable_on_cong)
 qed
 
 context begin
@@ -286,31 +277,34 @@ next
     for v w
     by auto
   show ?case
-    using \<open>g ` _ \<subseteq> _\<close>
-    apply (auto simp del: o_apply intro!: differentiable_chain_within f g intro: differentiable_at_withinI)
-    using \<open>open S\<close>
-    apply (rule higher_differentiable_on_cong)
-     defer
-     apply (subst frechet_derivative_compose_eucl)
-    subgoal using g by (auto simp: differentiable_on_eq_differentiable_at \<open>open S\<close>)
-    subgoal using f by (auto simp: differentiable_on_eq_differentiable_at \<open>open T\<close>)
-     apply simp
-    using _ \<open>open S\<close>
-    apply (rule higher_differentiable_on_sum)
-    apply (rule higher_differentiable_on_scaleR)
-      apply (rule higher_differentiable_on_inner)
-    apply (rule hg)
-       apply (rule higher_differentiable_on_const)
-      apply (rule that)
-    apply (rule Suc.IH[where f="\<lambda>x. frechet_derivative f (at x) v"
-        and g = "\<lambda>x. g x" for v, unfolded o_def])
-       apply (rule hf)
-    apply (rule higher_differentiable_on_SucD)
-      apply (rule Suc.prems)
-     apply assumption
-    apply (rule that)
-    done
+    using \<open>g ` _ \<subseteq> _\<close> \<open>open S\<close> f g \<open>open T\<close> Suc
+      Suc.IH[where f="\<lambda>x. frechet_derivative f (at x) v"
+        and g = "\<lambda>x. g x" for v, unfolded o_def]
+      higher_differentiable_on_SucD[OF Suc.prems(2)]
+    by (auto
+        simp: frechet_derivative_compose_eucl subset_iff
+        simp del: o_apply
+        intro!: differentiable_chain_within higher_differentiable_on_sum
+          higher_differentiable_on_scaleR higher_differentiable_on_inner
+          higher_differentiable_on_const
+        intro: differentiable_at_withinI
+        cong: higher_differentiable_on_cong)
 qed
+
+
+lemma higher_differentiable_on_uminus:
+  "higher_differentiable_on S (\<lambda>x. - f x) n"
+  if "higher_differentiable_on S f n" "open S"
+  using higher_differentiable_on_scaleR[of S "\<lambda>x. -1" n f] that
+  by (auto simp: higher_differentiable_on_const)
+
+lemma higher_differentiable_on_minus:
+  "higher_differentiable_on S (\<lambda>x. f x - g x) n"
+  if "higher_differentiable_on S f n"
+    "higher_differentiable_on S g n"
+    "open S"
+  using higher_differentiable_on_add[OF _ higher_differentiable_on_uminus, OF that(1,2,3,3)]
+  by simp
 
 lemma higher_differentiable_on_inverse:
   "higher_differentiable_on S (\<lambda>x. inverse (f x)) n"
@@ -324,31 +318,24 @@ next
   case (Suc n)
   from Suc.prems(1) have fn: "higher_differentiable_on S f n" by (rule higher_differentiable_on_SucD)
   from Suc show ?case
-    apply (auto simp: continuous_on_inverse intro!: differentiable_inverse)
-    apply (rule higher_differentiable_on_cong)
-      apply (rule that)
-     prefer 2
-     apply (subst frechet_derivative_inverse)
-       apply force
-      apply force
-     apply (rule refl)
-    apply (rule higher_differentiable_on_mult)
-      apply (subst divide_inverse)
-      apply (rule higher_differentiable_on_mult)
-        apply (rule higher_differentiable_on_const)
-       apply (rule Suc.IH)
-    unfolding power2_eq_square
-         apply (rule higher_differentiable_on_mult)
-           apply (rule fn)
-          apply (rule fn)
-         apply assumption
-        apply force
-       apply assumption
-      apply assumption
-     apply force
-    apply assumption
-    done
+    by (auto simp: continuous_on_inverse image_iff power2_eq_square
+        frechet_derivative_inverse divide_inverse
+        intro!: differentiable_inverse higher_differentiable_on_uminus higher_differentiable_on_mult
+          Suc.IH fn
+        cong: higher_differentiable_on_cong)
 qed
+
+lemma higher_differentiable_on_divide:
+  "higher_differentiable_on S (\<lambda>x. f x / g x) n"
+  if
+    "higher_differentiable_on S f n"
+    "higher_differentiable_on S g n"
+    "\<And>x. x \<in> S \<Longrightarrow> g x \<noteq> 0"
+    "open S"
+  for f::"_\<Rightarrow>_::real_normed_field"
+  using higher_differentiable_on_mult[OF _ higher_differentiable_on_inverse, OF that(1,2) _ that(4,4)]
+    that(3)
+  by (auto simp: divide_inverse image_iff)
 
 lemma differentiable_on_open_Union:
   "f differentiable_on \<Union>S"
@@ -397,55 +384,22 @@ next
   from Suc.prems(1) have fn: "higher_differentiable_on S f n" by (rule higher_differentiable_on_SucD)
   then have "continuous_on S f"
     by (rule higher_differentiable_on_imp_continuous_on)
-  with \<open>open S\<close> have op: "open (S \<inter> f -` {0<..})"
+  with \<open>open S\<close> have op: "open (S \<inter> f -` {0<..})" (is "open ?op")
     by (rule open_continuous_vimage') simp
-  from \<open>open S\<close> \<open>continuous_on S f\<close> have on: "open (S \<inter> f -` {..<0})"
+  from \<open>open S\<close> \<open>continuous_on S f\<close> have on: "open (S \<inter> f -` {..<0})" (is "open ?on")
     by (rule open_continuous_vimage') simp
-  have i: "higher_differentiable_on (S \<inter> f -` {0<..} \<union> S \<inter> f -` {..<0}) (\<lambda>x. if 0 < f x then 1::real else - 1) n"
-    apply (rule higher_differentiable_on_open_Un)
-    subgoal
-      apply (rule higher_differentiable_on_cong)
-        apply fact
-       apply (rule higher_differentiable_on_const)
-      apply force
-      done
-    subgoal
-      apply (rule higher_differentiable_on_cong)
-        apply fact
-       apply (rule higher_differentiable_on_const)
-      apply force
-      done
-    subgoal by fact
-    subgoal by fact
-    done
-  also have "(S \<inter> f -` {0<..} \<union> S \<inter> f -` {..<0}) = S" using Suc by auto
+  have op': "higher_differentiable_on ?op (\<lambda>x. 1) n" and on': "higher_differentiable_on ?on (\<lambda>x. -1) n"
+     by (rule higher_differentiable_on_const)+
+  then have i: "higher_differentiable_on (?op \<union> ?on) (\<lambda>x. if 0 < f x then 1::real else - 1) n"
+    by (auto intro!: higher_differentiable_on_open_Un op on
+          higher_differentiable_on_congI[OF _ op'] higher_differentiable_on_congI[OF _ on'])
+  also have "?op \<union> ?on = S" using Suc by auto
   finally have i: "higher_differentiable_on S (\<lambda>x. if 0 < f x then 1::real else - 1) n" .
   from fn i Suc show ?case
-    apply (auto simp: sqrt_differentiable_on intro!: sqrt_differentiable)
-    apply (rule higher_differentiable_on_cong)
-      apply simp prefer 2
-     apply (subst frechet_derivative_sqrt)
-       apply (simp add: differentiable_on_openD)
-      apply force
-     apply (rule refl)
-    apply (rule higher_differentiable_on_mult)
-    unfolding divide_inverse
-      apply (rule higher_differentiable_on_mult)
-        apply assumption
-       apply (rule higher_differentiable_on_inverse)
-         apply (rule higher_differentiable_on_mult)
-           apply (rule higher_differentiable_on_const)
-          apply (rule Suc.IH)
-            apply assumption
-           apply force
-          apply assumption
-         apply assumption
-        apply force
-       apply assumption
-      apply assumption
-     apply force
-    apply assumption
-    done
+    by (auto simp: sqrt_differentiable_on image_iff frechet_derivative_sqrt
+        intro!: sqrt_differentiable higher_differentiable_on_mult higher_differentiable_on_inverse
+          higher_differentiable_on_divide higher_differentiable_on_const
+        cong: higher_differentiable_on_cong)
 qed
 
 
@@ -454,12 +408,6 @@ lemma higher_differentiable_on_frechet_derivativeI:
   if "higher_differentiable_on X f (Suc i)" "open X" "x \<in> X"
   using that(1)
   by (induction i arbitrary: f h) auto
-
-lemma higher_differentiable_on_uminus:
-  "higher_differentiable_on S (\<lambda>x. - f x) n"
-  if "higher_differentiable_on S f n" "open S"
-  using higher_differentiable_on_scaleR[of S "\<lambda>x. -1" n f] that
-  by (auto simp: higher_differentiable_on_const)
 
 lemma higher_differentiable_on_norm:
   "higher_differentiable_on S (\<lambda>x. norm (f x)) n"
@@ -473,95 +421,11 @@ next
   case (Suc n)
   from Suc.prems(1) have fn: "higher_differentiable_on S f n" by (rule higher_differentiable_on_SucD)
   from Suc show ?case
-    apply (auto simp: continuous_on_norm intro!: differentiable_norm_compose_at)
-    apply (rule higher_differentiable_on_cong)
-      apply (rule that)
-     prefer 2
-     apply (subst frechet_derivative_norm)
-       apply force
-      apply force
-     apply (rule refl)
-    apply (rule higher_differentiable_on_inner)
-    apply force
-      apply (subst sgn_div_norm)
-      apply (rule higher_differentiable_on_scaleR)
-        apply (rule higher_differentiable_on_inverse)
-         apply (rule Suc.IH)
-           apply (rule fn)
-          apply assumption
-         apply assumption
-        apply force
-       apply assumption
-      apply (rule fn)
-     apply assumption
-    apply assumption
-    done
-qed
-
-lemma higher_differentiable_on_minus:
-  "higher_differentiable_on S (\<lambda>x. f x - g x) n"
-  if "higher_differentiable_on S f n"
-    "higher_differentiable_on S g n"
-    "open S"
-  unfolding diff_conv_add_uminus
-  apply (rule higher_differentiable_on_add)
-    apply (rule that)
-   apply (rule higher_differentiable_on_uminus)
-    apply (rule that)
-   apply (rule that)
-  apply (rule that)
-  done
-
-lemma higher_differentiable_on_divide:
-  "higher_differentiable_on S (\<lambda>x. f x / g x) n"
-  if
-    "higher_differentiable_on S f n"
-    "higher_differentiable_on S g n"
-    "\<And>x. x \<in> S \<Longrightarrow> g x \<noteq> 0"
-    "open S"
-  for f::"_\<Rightarrow>_::real_normed_field"
-  using that
-proof (induction n arbitrary: f g)
-  case 0
-  then show ?case by (auto intro!: continuous_intros)
-next
-  case (Suc n)
-  from Suc.prems have
-    f: "\<And>x. x\<in>S \<Longrightarrow> f differentiable (at x)"
-    and hf: "higher_differentiable_on S (\<lambda>x. frechet_derivative f (at x) v) n"
-    and g: "\<And>x. x\<in>S \<Longrightarrow> g differentiable (at x)"
-    and hg: "higher_differentiable_on S (\<lambda>x. frechet_derivative g (at x) v) n"
-    for v
-    by auto
-  show ?case
-    apply (auto simp: Suc intro!: derivative_intros f g)
-    apply (rule higher_differentiable_on_cong)
-      apply (rule that) defer
-     apply (subst frechet_derivative_divide)
-    subgoal using f \<open>open S\<close> by (auto simp: differentiable_on_openD)
-    subgoal using g \<open>open S\<close> by (auto simp: differentiable_on_openD)
-    subgoal by (auto simp: Suc)
-     apply (simp add: power2_eq_square)
-    apply (rule higher_differentiable_on_minus)
-      apply (rule Suc.IH)
-         apply (rule hf)
-        apply (rule higher_differentiable_on_SucD)
-        apply (rule Suc)
-       apply (rule Suc, assumption)
-      apply (rule that)
-     apply (rule Suc.IH)
-        apply (rule higher_differentiable_on_mult)
-          apply (rule hg)
-         apply (rule higher_differentiable_on_SucD)
-         apply (rule Suc)
-        apply (rule Suc)
-       apply (rule higher_differentiable_on_mult)
-         apply (rule higher_differentiable_on_SucD)
-         apply (rule Suc)
-        apply (rule higher_differentiable_on_SucD)
-        apply (rule Suc)
-       apply (rule Suc)
-    using Suc by auto
+    by (auto simp: continuous_on_norm frechet_derivative_norm image_iff sgn_div_norm
+        cong: higher_differentiable_on_cong
+        intro!: differentiable_norm_compose_at higher_differentiable_on_inner
+          higher_differentiable_on_inverse
+          higher_differentiable_on_mult Suc.IH fn)
 qed
 
 declare higher_differentiable_on.simps [simp del]
@@ -577,11 +441,9 @@ proof (induction k arbitrary: f g)
     by (auto intro!: continuous_intros)
 next
   case (Suc k)
-  then show ?case
+  then show ?case using that
     unfolding higher_differentiable_on.simps
-    apply auto
-    apply (rule higher_differentiable_on_cong[OF that])
-    by (auto simp: frechet_derivative_pair[of f _ g])
+    by (auto simp: frechet_derivative_pair[of f _ g] cong: higher_differentiable_on_cong)
 qed
 
 lemma higher_differentiable_on_compose':
@@ -610,39 +472,34 @@ proof (induction k)
         simp: differentiable_at_snd frechet_derivative_snd frechet_derivative_id higher_differentiable_on_const)
 qed (auto simp: higher_differentiable_on.simps continuous_on_snd)
 
-lemma higher_differentiable_on_snd_comp:
-  "higher_differentiable_on S (\<lambda>x. snd (f x)) k"
-  if "higher_differentiable_on S f k" "open S"
-  using that
-  apply (induction k arbitrary: f)
-   apply (auto intro!: continuous_intros differentiable_at_snd simp: higher_differentiable_on.simps)
-  using \<open>open S\<close>
-  apply (rule higher_differentiable_on_cong) prefer 2
-   apply (subst frechet_derivative_snd)
-  by auto
-
 lemma higher_differentiable_on_fst_comp:
   "higher_differentiable_on S (\<lambda>x. fst (f x)) k"
   if "higher_differentiable_on S f k" "open S"
   using that
-  apply (induction k arbitrary: f)
-   apply (auto intro!: continuous_intros differentiable_at_fst simp: higher_differentiable_on.simps)
-  using \<open>open S\<close>
-  apply (rule higher_differentiable_on_cong) prefer 2
-   apply (subst frechet_derivative_fst)
-  by auto
+  by (induction k arbitrary: f)
+    (auto intro!: continuous_intros differentiable_at_fst
+      cong: higher_differentiable_on_cong
+      simp: higher_differentiable_on.simps frechet_derivative_fst)
+
+lemma higher_differentiable_on_snd_comp:
+  "higher_differentiable_on S (\<lambda>x. snd (f x)) k"
+  if "higher_differentiable_on S f k" "open S"
+  using that
+  by (induction k arbitrary: f)
+    (auto intro!: continuous_intros differentiable_at_snd
+      cong: higher_differentiable_on_cong
+      simp: higher_differentiable_on.simps frechet_derivative_snd)
 
 lemma higher_differentiable_on_Pair':
   "higher_differentiable_on S f k \<Longrightarrow> higher_differentiable_on T g k \<Longrightarrow>
    higher_differentiable_on (S \<times> T) (\<lambda>x. (f (fst x), g (snd x))) k"
   if S: "open S" and T: "open T"
   for f::"_::euclidean_space\<Rightarrow>_" and g::"_::euclidean_space\<Rightarrow>_"
-  using that apply (auto intro!: higher_differentiable_on_Pair open_Times)
-  apply (rule higher_differentiable_on_compose'[where f=f and T=S])
-  using that apply (auto intro: open_Times higher_differentiable_on_fst)
-  apply (rule higher_differentiable_on_compose'[where f=g and T=T])
-  using that apply (auto intro: open_Times higher_differentiable_on_snd)
-  done
+  by (auto intro!: higher_differentiable_on_Pair open_Times S T
+      higher_differentiable_on_fst
+      higher_differentiable_on_snd
+      higher_differentiable_on_compose'[where f=f and T=S]
+      higher_differentiable_on_compose'[where f=g and T=T])
 
 
 subsection \<open>Higher directional derivatives\<close>
@@ -726,7 +583,7 @@ lemma higher_differentiable_on_imp_continuous_nth_derivative:
 
 lemma frechet_derivative_at_real_eq_scaleR:
   "frechet_derivative f (at x) v = v *\<^sub>R frechet_derivative f (at x) 1"
-  if "f differentiable (at x)"
+  if "f differentiable (at x)" "NO_MATCH 1 v"
   by (simp add: frechet_derivative_eq_vector_derivative that)
 
 lemma higher_differentiable_on_real_Suc:
@@ -735,15 +592,10 @@ lemma higher_differentiable_on_real_Suc:
       (higher_differentiable_on S (\<lambda>x. frechet_derivative f (at x) 1) n)"
   if "open S"
   for S::"real set"
-  apply (auto simp: higher_differentiable_on.simps)
-  subgoal for v
-    using \<open>open S\<close>
-    apply (rule higher_differentiable_on_cong) defer
-     apply (rule frechet_derivative_at_real_eq_scaleR)
-    apply force
-    using \<open>open S\<close>
-    by (auto simp: intro!: higher_differentiable_on_scaleR higher_differentiable_on_const)
-  done
+  using \<open>open S\<close>
+  by (auto simp: higher_differentiable_on.simps frechet_derivative_at_real_eq_scaleR
+      intro!: higher_differentiable_on_scaleR higher_differentiable_on_const
+      cong: higher_differentiable_on_cong)
 
 lemma higher_differentiable_on_real_SucI:
   fixes S::"real set"
@@ -767,7 +619,7 @@ lemma higher_differentiable_on_real_Suc':
   for S::"real set"
   apply (auto simp: nth_derivative_differentiable
       dest: higher_differentiable_on_SucD
-      intro: higher_differentiable_on_real_SucI )
+      intro: higher_differentiable_on_real_SucI)
   by (auto simp: higher_differentiable_on_real_Suc higher_differentiable_on.simps(1)
       higher_differentiable_on_imp_continuous_nth_derivative)
 
@@ -1069,12 +921,7 @@ next
       using prems by auto
     show ?thesis
       using \<open>open S\<close>
-      apply (rule higher_differentiable_on_cong)
-      prefer 2
-       apply (subst *)
-        apply assumption apply (rule refl)
-      apply (rule **)
-      done
+      by (auto simp: * ** cong: higher_differentiable_on_cong)
   qed
   ultimately
   show ?case
@@ -1126,7 +973,7 @@ lemma smooth_on_cong:
     and "\<And>x. x \<in> S \<Longrightarrow> f x = g x"
   shows "k-smooth_on S f"
   using assms unfolding smooth_on_def
-  by (auto intro: higher_differentiable_on_cong)
+  by (auto cong: higher_differentiable_on_cong)
 
 lemma smooth_on_open_Un:
   "k-smooth_on S f \<Longrightarrow> k-smooth_on T f \<Longrightarrow> open S \<Longrightarrow> open T \<Longrightarrow> k-smooth_on (S \<union> T) f"
