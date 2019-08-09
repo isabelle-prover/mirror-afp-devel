@@ -212,7 +212,7 @@ fun mk_side simps inducts lthy =
 
     val alts =
       try (Goal.prove_common lthy' NONE frees [] props) tactic
-      |> Option.map (map (mk_eq o Thm.close_derivation))
+      |> Option.map (map (mk_eq o Thm.close_derivation \<^here>))
 
     val _ =
       if is_none alts then
