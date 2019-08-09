@@ -20,69 +20,6 @@ lemma (in vector_space_pair_on)
   using linear_sum[of f "\<lambda>x. if x \<in> S then g x else 0" S]
   by (auto simp: if_distrib if_distribR m1.mem_zero cong: if_cong)
 
-subsection \<open>Extensional function space\<close>
-
-text \<open>f is zero outside A. We use such functions to canonically represent
-  functions whose domain is A\<close>
-definition extensional0 :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b::zero) \<Rightarrow> bool"
-  where "extensional0 A f = (\<forall>x. x \<notin> A \<longrightarrow> f x = 0)"
-
-lemma extensional0_0[intro, simp]: "extensional0 X 0"
-  by (auto simp: extensional0_def)
-
-lemma extensional0_UNIV[intro, simp]: "extensional0 UNIV f"
-  by (auto simp: extensional0_def)
-
-lemma ext_extensional0:
-  "f = g" if "extensional0 S f" "extensional0 S g" "\<And>x. x \<in> S \<Longrightarrow> f x = g x"
-  using that by (force simp: extensional0_def fun_eq_iff)
-
-lemma extensional0_add[intro, simp]:
-  "extensional0 S f \<Longrightarrow> extensional0 S g \<Longrightarrow> extensional0 S (f + g::_\<Rightarrow>'a::comm_monoid_add)"
-  by (auto simp: extensional0_def)
-
-lemma extensinoal0_mult[intro, simp]:
-  "extensional0 S x \<Longrightarrow> extensional0 S y \<Longrightarrow> extensional0 S (x * y)"
-  for x y::"_\<Rightarrow>'a::mult_zero"
-  by (auto simp: extensional0_def)
-
-lemma extensional0_scaleR[intro, simp]: "extensional0 S f \<Longrightarrow> extensional0 S (c *\<^sub>R f::_\<Rightarrow>'a::real_vector)"
-  by (auto simp: extensional0_def)
-
-lemma extensional0_outside: "x \<notin> S \<Longrightarrow> extensional0 S f \<Longrightarrow> f x = 0"
-  by (auto simp: extensional0_def)
-
-lemma subspace_extensional0: "subspace (Collect (extensional0 X))"
-  by (auto simp: subspace_def)
-
-text \<open>Send the function f to its canonical representative as a function with domain A\<close>
-definition restrict0 :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b::zero) \<Rightarrow> 'a \<Rightarrow> 'b"
-  where "restrict0 A f x = (if x \<in> A then f x else 0)"
-
-lemma restrict0_UNIV[simp]: "restrict0 UNIV = (\<lambda>x. x)"
-  by (intro ext) (auto simp: restrict0_def)
-
-lemma extensional0_restrict0[intro, simp]: "extensional0 A (restrict0 A f)"
-  by (auto simp: extensional0_def restrict0_def)
-
-lemma restrict0_times: "restrict0 A (x * y) = restrict0 A x * restrict0 A y"
-  for x::"'a\<Rightarrow>'b::mult_zero"
-  by (auto simp: restrict0_def[abs_def])
-
-lemma restrict0_apply_in[simp]: "x \<in> A \<Longrightarrow> restrict0 A f x = f x"
-  by (auto simp: restrict0_def)
-
-lemma restrict0_apply_out[simp]: "x \<notin> A \<Longrightarrow> restrict0 A f x = 0"
-  by (auto simp: restrict0_def)
-
-lemma restrict0_scaleR: "restrict0 A (c *\<^sub>R f::_\<Rightarrow>'a::real_vector) = c *\<^sub>R restrict0 A f"
-  by (auto simp: restrict0_def[abs_def])
-
-lemma restrict0_add: "restrict0 A (f + g::_\<Rightarrow>'a::real_vector) = restrict0 A f + restrict0 A g"
-  by (auto simp: restrict0_def[abs_def])
-
-lemma restrict0_restrict0: "restrict0 X (restrict0 Y f) = restrict0 (X \<inter> Y) f"
-  by (auto simp: restrict0_def)
 
 subsection \<open>Real vector (sub)spaces\<close>
 
