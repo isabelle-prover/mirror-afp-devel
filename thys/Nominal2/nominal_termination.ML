@@ -46,7 +46,7 @@ fun prepare_termination_proof prep_term is_eqvt raw_term_opt lthy =
                    (HOLogic.mk_all ("x", domT, mk_acc domT R $ Free ("x", domT)))
       fun afterqed [[totality]] lthy =
         let
-          val totality = Thm.close_derivation totality
+          val totality = Thm.close_derivation \<^here> totality
           val remove_domain_condition =
             full_simplify (put_simpset HOL_basic_ss lthy
               addsimps [totality, @{thm True_implies_equals}])

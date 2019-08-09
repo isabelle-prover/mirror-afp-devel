@@ -355,7 +355,7 @@ fun mk_replacement_lemma ctxt h ih_elim clause =
       |> fold_rev (Thm.implies_intr o Thm.cprop_of) h_assums
       |> fold_rev (Thm.implies_intr o Thm.cprop_of) ags
       |> fold_rev Thm.forall_intr cqs
-      |> Thm.close_derivation
+      |> Thm.close_derivation \<^here>
   in
     replace_lemma
   end
@@ -382,7 +382,7 @@ fun mk_eqvt_lemma ctxt ih_eqvt clause =
     |> map (fold_rev (Thm.implies_intr o Thm.cprop_of) ags)
     |> map (Thm.implies_intr (Thm.cprop_of case_hyp))
     |> map (fold_rev Thm.forall_intr cqs)
-    |> map (Thm.close_derivation)
+    |> map (Thm.close_derivation \<^here>)
   end
 
 (* nominal *)
@@ -406,7 +406,7 @@ fun mk_invariant_lemma ctxt ih_inv clause =
     |> map (fold_rev (Thm.implies_intr o Thm.cprop_of) ags)
     |> map (Thm.implies_intr (Thm.cprop_of case_hyp))
     |> map (fold_rev Thm.forall_intr cqs)
-    |> map (Thm.close_derivation)
+    |> map (Thm.close_derivation \<^here>)
   end
 
 (* nominal *)
@@ -587,7 +587,7 @@ fun prove_stuff ctxt
 
     val goalstate =
       Conjunction.intr (Conjunction.intr (Conjunction.intr graph_is_function complete) invariant) G_eqvt
-      |> Thm.close_derivation
+      |> Thm.close_derivation \<^here>
       |> Goal.protect 0
       |> fold_rev (Thm.implies_intr o Thm.cprop_of) compat
       |> Thm.implies_intr (Thm.cprop_of complete)
