@@ -445,7 +445,7 @@ lemma regular2: "regular (mk_regular2 P F)"
 by (simp add: pointbased_implies_continuous pointbased_mk_regular2 regular_def 
   setmonotone_mk_regular2)
 
-lemma continous_comp: 
+lemma continuous_comp: 
   assumes f: "continuous f"
   assumes g: "continuous g"
   shows "continuous (g o f)"
@@ -461,7 +461,7 @@ lemma regular_comp:
   assumes f: "regular f"
   assumes g: "regular g"
   shows "regular (g o f)"
-using continous_comp f g regular_def setmonotone_comp by blast
+using continuous_comp f g regular_def setmonotone_comp by blast
 
 lemma setmonotone_id[simp]: "setmonotone id"
   by (simp add: id_def setmonotone_def)

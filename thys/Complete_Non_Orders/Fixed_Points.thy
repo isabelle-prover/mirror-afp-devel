@@ -461,7 +461,7 @@ section \<open>Kleene-Style Fixed Point Theorem\<close>
 
 text \<open>Kleene's fixed-point theorem states that,
 for a pointed directed complete partial order $\tp{A,\SLE}$
-and a Scott-continous map $f: A \to A$,
+and a Scott-continuous map $f: A \to A$,
 the supremum of $\set{f^n(\bot) \mid n\in\Nat}$ exists in $A$ and is a least 
 fixed point.
 Mashburn \cite{mashburn83} generalized the result so that
@@ -534,7 +534,7 @@ lemma scott_continuousE[elim]:
   shows "thesis"
   using assms by (auto simp: scott_continuous_def)
 
-lemma scott_continous_imp_mono_refl:
+lemma scott_continuous_imp_mono_refl:
   assumes scott: "scott_continuous f"
     and xy: "x \<sqsubseteq> y" and yy: "y \<sqsubseteq> y"
   shows "f x \<sqsubseteq> f y"
@@ -547,7 +547,7 @@ proof-
   then show "f x \<sqsubseteq> f y" by (auto simp: D_def)
 qed
 
-lemma scott_continous_imp_omega_continous:
+lemma scott_continuous_imp_omega_continuous:
   assumes scott: "scott_continuous f" shows "omega_continuous f"
 proof
   fix c :: "nat \<Rightarrow> 'a"
