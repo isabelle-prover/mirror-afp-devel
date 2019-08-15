@@ -1041,8 +1041,8 @@ proof -
     using assms by (simp add: hurwitz_zeta_def pre_zeta_def pre_zeta_aux_def
                               R_lim_def scaleR_conv_of_real)
   finally have "(\<lambda>n. C - C' + C'' - D' n + D n + R n + (I n - I' n)) \<longlonglongrightarrow> hurwitz_zeta a s" .
-  from ev and this show ?thesis
-    by (rule Lim_transform_eventually)
+  with ev show ?thesis
+    by (blast intro: Lim_transform_eventually)
 qed
 
 lemma zeta_critical_strip:
@@ -1771,7 +1771,7 @@ proof
     qed
     moreover from s have "?f \<longlonglongrightarrow> zeta s" by (intro euler_product_zeta) auto
     ultimately have "(\<lambda>_. zeta' s) \<longlonglongrightarrow> zeta s"
-      by (rule Lim_transform_eventually)
+      by (blast intro: Lim_transform_eventually)
     thus "zeta s = zeta' s" by (simp add: LIMSEQ_const_iff)
   qed (auto intro!: exI[of _ 2] open_halfspace_Re_gt connected_open_delete convex_halfspace_Re_gt 
          holomorphic_intros holo that intro: convex_connected)

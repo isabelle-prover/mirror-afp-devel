@@ -2064,7 +2064,7 @@ proof -
   have "eventually (\<lambda>x. c = (?h \<circ> of_real) x) at_top"
     using eventually_gt_ereal_at_top[OF \<open>s0 \<noteq> \<infinity>\<close>] by eventually_elim (simp add: c)
   hence "((?h \<circ> of_real) \<longlongrightarrow> c) at_top"
-    by (rule Lim_transform_eventually) auto
+    by (force intro: Lim_transform_eventually) 
   moreover have "((?h \<circ> of_real) \<longlongrightarrow> fds_nth (fds_ln l f) 1 - l) at_top"
     using \<open>conv_abscissa (fds_ln l f) \<noteq> \<infinity>\<close> and l unfolding o_def
     by (intro tendsto_intros tendsto_eval_fds_Re_at_top) (auto simp: filterlim_ident)
@@ -2133,7 +2133,7 @@ proof -
   have "eventually (\<lambda>x. c = (?h \<circ> of_real) x) at_top"
     using eventually_gt_ereal_at_top[OF \<open>s0 \<noteq> \<infinity>\<close>] by eventually_elim (simp add: c)
   hence "((?h \<circ> of_real) \<longlongrightarrow> c) at_top"
-    by (rule Lim_transform_eventually) auto
+    by (force intro: Lim_transform_eventually) 
   moreover have "((?h \<circ> of_real) \<longlongrightarrow> fds_nth f 1 * exp (-fds_nth (fds_ln l f) 1)) at_top"
     unfolding o_def using \<open>conv_abscissa (fds_ln l f) \<noteq> \<infinity>\<close> and \<open>conv_abscissa f \<noteq> \<infinity>\<close>
     by (intro tendsto_intros tendsto_eval_fds_Re_at_top) (auto simp: filterlim_ident)

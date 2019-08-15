@@ -432,7 +432,7 @@ proof -
       hence "((\<lambda>x. EM_remainder' n (f s) (real_of_int a) (real (nat x))) \<longlongrightarrow> ?L) at_top"
         by (rule filterlim_compose) (fact filterlim_nat_sequentially)
       thus "((\<lambda>x. EM_remainder' n (f s) (real_of_int a) (real_of_int x)) \<longlongrightarrow> ?L) at_top"
-        by (rule Lim_transform_eventually [rotated])
+        by (rule Lim_transform_eventually)
            (auto intro: eventually_mono[OF eventually_ge_at_top[of 0]])
     qed
   qed

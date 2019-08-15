@@ -97,7 +97,7 @@ proof -
     by (intro eventually_at_rightI[of 0 1]) (simp_all add: frac_eq eq_commute[of _ "frac x" for x])
   moreover have **: "((\<lambda>x::'a. x) \<longlongrightarrow> 0) (at_right 0)"
     by (rule tendsto_ident_at)
-  ultimately show ?thesis by (rule Lim_transform_eventually)
+  ultimately show ?thesis by (blast intro: Lim_transform_eventually)
 qed
 
 lemma tendsto_frac_at_left_1: 
@@ -107,7 +107,7 @@ proof -
     by (intro eventually_at_leftI[of 0]) (simp_all add: frac_eq eq_commute[of _ "frac x" for x])
   moreover have **: "((\<lambda>x::'a. x) \<longlongrightarrow> 1) (at_left 1)"
     by (rule tendsto_ident_at)
-  ultimately show ?thesis by (rule Lim_transform_eventually)
+  ultimately show ?thesis by (blast intro: Lim_transform_eventually)
 qed
 
 lemma continuous_on_frac [THEN continuous_on_subset, continuous_intros]: 
@@ -164,7 +164,7 @@ proof (rule periodic_continuous_onI)
       moreover from cont1 x have "(f \<longlongrightarrow> f (frac x)) (at x within {0..1})"
         by (simp add: continuous_on_def)
       ultimately show "((\<lambda>x. f (frac x)) \<longlongrightarrow> f (frac x)) (at x within {0..1})"
-        by (rule Lim_transform_eventually)
+        by (blast intro: Lim_transform_eventually)
     next
       case True
       from cont1 have **: "(f \<longlongrightarrow> f 1) (at 1 within {0..1})" by (simp add: continuous_on_def)
