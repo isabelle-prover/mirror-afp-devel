@@ -86,7 +86,7 @@ lemma tup_to_sum_app:
 unfolding tup_to_sum_def by simp
 
 text \<open>
-Generally, lambda abstractions with discrete domain are continous and can be resolved immediately.
+Generally, lambda abstractions with discrete domain are continuous and can be resolved immediately.
 \<close>
 
 lemma discr_app[simp]:

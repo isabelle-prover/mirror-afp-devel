@@ -145,7 +145,7 @@ Now we can show Lemma 12: If $F$ is the least solution to the recursive power-se
 We fix the type variable \<open>'a\<close> to be a discrete cpo, as otherwise $x \mapsto \{x\}$ is not continuous.
 \<close>
 
-(* discrete_cpo, otherwise x \<mapsto> {x} not continous *)
+(* discrete_cpo, otherwise x \<mapsto> {x} not continuous *)
 lemma theorem12':
   fixes g :: "'a::discrete_cpo \<rightarrow> 'b::type set" and R :: "'a \<rightarrow> 'a set"
   assumes F_fix: "F = fix\<cdot>(\<Lambda> F x. \<^ps>g\<cdot>x \<union> F\<cdot>(\<^ps>R\<cdot>x))"
