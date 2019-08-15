@@ -1039,15 +1039,7 @@ lemma differentiable_transform_eventually: "f differentiable (at x within X)"
   subgoal for D
     apply (rule exI[where x=D])
     apply (auto simp: has_derivative_within)
-    apply (rule Lim_transform_eventually)
-    defer
-     apply assumption
-    subgoal premises prems
-      using prems(2)
-      apply eventually_elim 
-      apply auto
-      done
-    done
+    by (simp add: eventually_mono Lim_transform_eventually)
   done
 
 lemma differentiable_within_eqI: "f differentiable at x within X"

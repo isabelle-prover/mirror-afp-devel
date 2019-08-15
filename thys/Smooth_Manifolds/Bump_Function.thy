@@ -52,11 +52,8 @@ next
     subgoal by (auto simp: eventually_at_filter)
     subgoal
       apply (rule Lim_transform_eventually[where f = "\<lambda>x. (1 + real k) * (inverse (x ^ k) / exp (inverse x))"])
-      subgoal by (auto simp: eventually_at_filter)
-      subgoal
-        apply (intro tendsto_mult_right_zero)
-        by (rule Suc)
-      done
+      using Suc.hyps tendsto_mult_right_zero apply blast
+      by (auto simp: eventually_at_filter)
     done
 qed
 
@@ -74,7 +71,7 @@ proof -
   moreover have "((\<lambda>(t::real). exp(-inverse t)) \<longlongrightarrow> 0) (at_right 0)"
     by (rule exp_inv_limit_0_right)
   ultimately show ?thesis
-    by (rule Lim_transform_eventually)
+    by (blast intro: Lim_transform_eventually)
 qed
 
 lemma f_limit_0: "(f \<longlongrightarrow> 0) (at 0)"
@@ -83,7 +80,7 @@ proof (rule filterlim_split_at_real)
   have "\<forall>\<^sub>F t in at_left 0. 0 = f t"
     by (auto simp: f_def eventually_at_filter)
   then show "(f \<longlongrightarrow> 0) (at_left 0)"
-    by (rule Lim_transform_eventually) auto
+    by (blast intro: Lim_transform_eventually) 
 qed
 
 lemma f_tendsto: "(f \<longlongrightarrow> f x) (at x)"
@@ -101,8 +98,7 @@ proof -
     then have "\<forall>\<^sub>F t in at x. 0 = f t"
       by (eventually_elim) (auto simp: f_def)
     then show ?thesis
-      apply (rule Lim_transform_eventually)
-      using \<open>x < 0\<close> by (auto simp: f_def)
+      using \<open>x < 0\<close> by (auto simp: f_def intro: Lim_transform_eventually)
   next
     case 3
     have "\<forall>\<^sub>F t in at x. t > 0"
@@ -110,9 +106,10 @@ proof -
       by (rule tendsto_intros) fact
     then have "\<forall>\<^sub>F t in at x. exp(-inverse t) = f t"
       by (eventually_elim) (auto simp: f_def)
-    then show ?thesis
-      apply (rule Lim_transform_eventually)
-      using \<open>x > 0\<close> by (auto simp: f_def intro!: tendsto_intros)
+    moreover have "(\<lambda>t. exp (- inverse t)) \<midarrow>x\<rightarrow> f x"
+      using \<open>x > 0\<close> by (auto simp: f_def tendsto_intros )
+    ultimately show ?thesis
+      by (blast intro: Lim_transform_eventually)
   qed
 qed
 
@@ -319,14 +316,14 @@ next
       unfolding has_derivative_def
       apply (auto simp: Lim_ident_at)
       apply (rule Lim_transform_eventually[where f="\<lambda>x. (pk x * (exp (- inverse x) / x ^ (2 * k + 1)))"])
-       apply (simp add: eventually_at_filter divide_simps)
-      apply (rule tendsto_eq_intros)
-        apply (rule real_polynomial_function_tendsto[THEN tendsto_eq_rhs])
-         apply fact
-        apply (rule refl)
-       apply (subst at_within_eq_at_right)
-       apply (rule exp_inv_limit_0_right_gen)
-      by simp
+       apply (rule tendsto_eq_intros)
+         apply (rule real_polynomial_function_tendsto[THEN tendsto_eq_rhs])
+          apply fact
+         apply (rule refl)
+        apply (subst at_within_eq_at_right)
+        apply (rule exp_inv_limit_0_right_gen)
+      apply (auto simp add: eventually_at_filter divide_simps)
+      done
     subgoal by force
     subgoal by (auto simp: IH(2) IH(4))
     done
@@ -373,21 +370,23 @@ next
             using neg0
             by (auto simp: eventually_at_filter)
           then show ?thesis
-            by (rule Lim_transform_eventually) auto
+            by (blast intro: Lim_transform_eventually) 
         qed
         moreover have "((\<lambda>x. nth_derivative (Suc k) f x 1) \<longlongrightarrow> 0) (at_right 0)"
         proof -
-          have "\<forall>\<^sub>F x in at_right 0. p x * (exp (- inverse x) / x ^ (2 * Suc k)) =
-            nth_derivative (Suc k) f x 1"
-            using p
-            by (auto simp: eventually_at_filter)
-          then show ?thesis
-            apply (rule Lim_transform_eventually)
+          have "((\<lambda>x. p x * (exp (- inverse x) / x ^ (2 * Suc k))) \<longlongrightarrow> 0) (at_right 0)"
             apply (rule tendsto_eq_intros)
               apply (rule real_polynomial_function_tendsto)
               apply fact
              apply (rule exp_inv_limit_0_right_gen)
             by simp
+          moreover
+          have "\<forall>\<^sub>F x in at_right 0. p x * (exp (- inverse x) / x ^ (2 * Suc k)) =
+            nth_derivative (Suc k) f x 1"
+            using p
+            by (auto simp: eventually_at_filter)
+          ultimately show ?thesis
+            by (rule Lim_transform_eventually)
         qed
         ultimately show ?thesis
           by (auto simp: continuous_def nth_Suc_zero 3 filterlim_split_at
