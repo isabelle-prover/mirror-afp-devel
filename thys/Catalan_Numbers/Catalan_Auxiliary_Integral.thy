@@ -74,7 +74,7 @@ proof -
     by (intro tendsto_intros limit2 filterlim_compose[OF tendsto_arctan_at_top] *)
   hence "(F \<longlongrightarrow> -pi) (at_right 0)" by simp
   hence G_0: "(G \<longlongrightarrow> -pi) (at_right 0)" unfolding G_def
-    by (rule Lim_transform_eventually [rotated]) (auto intro!: eventually_at_rightI[of 0 1])  
+    by (rule Lim_transform_eventually) (auto intro!: eventually_at_rightI[of 0 1])  
 
   have *: "((\<lambda>x. sqrt (4 / x - 1) * x) \<longlongrightarrow> 0) (at_left 4)"
     by (force intro: tendsto_eq_intros)
@@ -86,7 +86,7 @@ proof -
     by (intro tendsto_intros * ** filterlim_compose[OF tendsto_arctan_at_bot])
   hence "(F \<longlongrightarrow> pi) (at_left 4)" by simp
   hence G_4: "(G \<longlongrightarrow> pi) (at_left 4)" unfolding G_def
-    by (rule Lim_transform_eventually [rotated]) (auto intro!: eventually_at_leftI[of 1])
+    by (rule Lim_transform_eventually) (auto intro!: eventually_at_leftI[of 1])
   
   \<comment> \<open>The derivative of @{term G} is indeed the integrand in the interior of 
       the integration interval.\<close>

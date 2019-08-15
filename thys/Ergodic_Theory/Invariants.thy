@@ -757,7 +757,8 @@ proof -
     also have "... = (\<integral>x. f x * indicator A x - real_cond_exp M Invariants f x * indicator A x - \<epsilon> * indicator A x \<partial>M)"
       unfolding g_def by (simp add: left_diff_distrib)
     also have "... = (\<integral>x. f x * indicator A x \<partial>M) - (\<integral>x. real_cond_exp M Invariants f x * indicator A x \<partial>M) - (\<integral>x. \<epsilon> * indicator A x \<partial>M)"
-      using assms real_cond_exp_int(1)[OF assms] integrable_real_mult_indicator[OF \<open>A \<in> sets M\<close>] by auto
+      using assms real_cond_exp_int(1)[OF assms] integrable_real_mult_indicator[OF \<open>A \<in> sets M\<close>]
+      by (auto simp: simp del: integrable_mult_left_iff)
     also have "... = - (\<integral>x. \<epsilon> * indicator A x \<partial>M)"
       by (auto simp add: eq mult.commute)
     also have "... = - \<epsilon> * measure M A" by auto
@@ -956,7 +957,7 @@ proof -
     moreover have "(\<lambda>n. ereal(birkhoff_sum f n x / n) * ereal n) \<longlonglongrightarrow> ereal(real_cond_exp M Invariants f x) * \<infinity>"
       apply (intro tendsto_intros) using H by auto
     ultimately have "(\<lambda>n. ereal(birkhoff_sum f n x)) \<longlonglongrightarrow> ereal(real_cond_exp M Invariants f x) * \<infinity>"
-      by (rule Lim_transform_eventually)
+      by (blast intro: Lim_transform_eventually)
     then have "(\<lambda>n. ereal(birkhoff_sum f n x)) \<longlonglongrightarrow> \<infinity>"
       using H by auto
     then have B: "\<exists>C. \<forall>n. C \<le> birkhoff_sum f n x"

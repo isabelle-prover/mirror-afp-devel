@@ -854,7 +854,7 @@ proof (goal_cases)
       apply (rule derivative_eq_intros)
         apply (rule derivative_intros)
         apply (rule derivative_intros)
-      subgoal by (force simp: ncc_def nonempty_def)\<comment> \<open>unnecessarily slow\<close>
+      subgoal by (auto simp: ncc_def nonempty_def)
       subgoal by force
       done
     subgoal

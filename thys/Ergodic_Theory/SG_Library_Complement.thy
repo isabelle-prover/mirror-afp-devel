@@ -340,7 +340,7 @@ proof -
   with eventually_mono[OF eventually_gt_at_top[of k] this]
   have "eventually (\<lambda>n. f(n-k)/(n-k+k) = f(n-k)/n) sequentially"
     by auto
-  with Lim_transform_eventually[OF this a]
+  with Lim_transform_eventually[OF a this]
   show ?thesis by auto
 qed
 

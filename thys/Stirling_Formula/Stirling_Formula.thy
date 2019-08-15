@@ -189,7 +189,7 @@ proof -
     by (rule real_tendsto_divide_at_top tendsto_const filterlim_tendsto_pos_mult_at_top
           filterlim_tendsto_add_at_top filterlim_real_sequentially | simp)+
   ultimately have "(\<lambda>n. c n - (ln (real n) - S' n x - 1/(2*x))) \<longlonglongrightarrow> 0"
-    by (rule Lim_transform_eventually)
+    by (blast intro: Lim_transform_eventually)
   from tendsto_minus[OF this] have "(\<lambda>n. (ln (real n) - S' n x - 1/(2*x)) - c n) \<longlonglongrightarrow> 0" by simp
   moreover from Digamma_LIMSEQ[OF x] have "c \<longlonglongrightarrow> Digamma x" by (simp add: c_def) 
   ultimately show "(\<lambda>n. ln (real n) - S' n x - 1/(2*x)) \<longlonglongrightarrow> Digamma x"
@@ -242,14 +242,13 @@ qed
 private lemma p_LIMSEQ:
   assumes x: "x > 0"
   shows   "(\<lambda>n. p n x) \<longlonglongrightarrow> P x"
-proof -
+proof (rule Lim_transform_eventually)
   from D_summable[OF x] have "(\<lambda>n. D (real n + x)) sums P x" unfolding P_def
     by (simp add: sums_iff)
-  hence "(\<lambda>n. \<Sum>r<n. D (real r + x)) \<longlonglongrightarrow> P x" by (simp add: sums_def)
+  then show "(\<lambda>n. \<Sum>r<n. D (real r + x)) \<longlonglongrightarrow> P x" by (simp add: sums_def)
   moreover from eventually_gt_at_top[of 1]
-    have "eventually (\<lambda>n. (\<Sum>r<n. D (real r + x)) = p n x) at_top"
+  show "eventually (\<lambda>n. (\<Sum>r<n. D (real r + x)) = p n x) at_top"
     by eventually_elim (auto simp: p_def)
-  ultimately show ?thesis by (rule Lim_transform_eventually [rotated])
 qed
 
 text \<open>
@@ -277,7 +276,7 @@ proof -
   hence "(\<lambda>n. ln (inverse (1 + x / real n)) + ln x - 1/(2*x) - p n x) 
              \<longlonglongrightarrow> ln x - 1/(2*x) - P x" by simp
   ultimately have "(\<lambda>n. ln (real n) - S' n x - 1 / (2 * x)) \<longlonglongrightarrow> ln x - 1/(2*x) - P x"
-    by (rule Lim_transform_eventually)
+    by (blast intro: Lim_transform_eventually)
   moreover from x have "(\<lambda>n. ln (real n) - S' n x - 1 / (2 * x)) \<longlonglongrightarrow> Digamma x"
     by (intro S'_LIMSEQ_Digamma) simp_all
   ultimately show "Digamma x = ln x - 1 / (2 * x) - P x"

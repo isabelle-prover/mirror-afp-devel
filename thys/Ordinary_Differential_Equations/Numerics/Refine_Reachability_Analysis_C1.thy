@@ -2466,15 +2466,16 @@ proof goal_cases
     using contra_subsetD local.existence_ivl_reverse local.existence_ivl_trans' local.flows_reverse by fastforce
 next
   case (2)
-  have "\<forall>\<^sub>F x in at_top. x > max t 0"
-    by (simp add: max_def)
-  then have "\<forall>\<^sub>F x in at_top. flow0 (flow0 x0 t) x = flow0 x0 (t + x)"
-    apply eventually_elim
-    apply (subst flow_trans)
-    using 2
-    by auto
-  from this 2(3) have "((\<lambda>s. flow0 x0 (t + s)) \<longlongrightarrow> trap) (at_top)"
-    by (rule Lim_transform_eventually)
+  have "((\<lambda>s. flow0 x0 (t + s)) \<longlongrightarrow> trap) (at_top)"
+  proof (rule Lim_transform_eventually)
+    have "\<forall>\<^sub>F x in at_top. x > max t 0"
+      by (simp add: max_def)
+    then show "\<forall>\<^sub>F x in at_top. flow0 (flow0 x0 t) x = flow0 x0 (t + x)"
+      apply eventually_elim
+      apply (subst flow_trans)
+      using 2
+      by auto
+  qed (use 2 in auto)
   then show ?case by (simp add: tendsto_at_top_translate_iff ac_simps)
 qed
 
