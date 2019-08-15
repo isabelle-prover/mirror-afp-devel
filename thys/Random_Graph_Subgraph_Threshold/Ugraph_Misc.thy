@@ -172,7 +172,7 @@ lemma card_inj_subs: "inj_on f A \<Longrightarrow> B \<subseteq> A \<Longrightar
 by (metis card_image subset_inj_on)
 
 lemma image_comp_cong: "(\<And>a. a \<in> A \<Longrightarrow> f a = f (g a)) \<Longrightarrow> f ` A = f ` (g ` A)"
-by (auto simp: image_iff)
+  by auto
 
 abbreviation less_fun :: "(nat \<Rightarrow> real) \<Rightarrow> (nat \<Rightarrow> real) \<Rightarrow> bool" (infix "\<lless>" 50) where
 "f \<lless> g \<equiv> (\<lambda>n. f n / g n) \<longlonglongrightarrow> 0"
@@ -246,8 +246,7 @@ proof -
   hence "(\<lambda>n. (b * (f n / g n)) / c) \<longlonglongrightarrow> 0"
     by simp
   with eventually_sequentiallyI show ?thesis
-    by (rule Lim_transform_eventually) simp
-
+    by (fastforce intro: Lim_transform_eventually)
 qed
 
 lemma partition_set_of_intersecting_sets_by_card:

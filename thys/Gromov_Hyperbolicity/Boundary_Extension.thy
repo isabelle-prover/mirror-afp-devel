@@ -406,7 +406,8 @@ proof (rule homeomorphism_on_sequentially)
       have "(\<lambda>n. from_Gromov_completion (Gromov_extension f (u n))) \<longlonglongrightarrow> from_Gromov_completion (Gromov_extension f x)"
         by (rule continuous_on_tendsto_compose[OF from_Gromov_completion_continuous(2) H fx fu_in])
       then have C: "(\<lambda>n. f (from_Gromov_completion (u n))) \<longlonglongrightarrow> f (from_Gromov_completion x)"
-        unfolding B[OF fx, symmetric] apply (rule Lim_transform_eventually[rotated]) using eventually_mono[OF fu_in B] by auto
+        unfolding B[OF fx, symmetric] 
+        by (force intro: Lim_transform_eventually eventually_mono[OF fu_in B]) 
       have "(\<lambda>n. from_Gromov_completion (u n)) \<longlonglongrightarrow> from_Gromov_completion x"
         apply (rule iffD2[OF homeomorphism_on_compose[OF assms(2)] C])
         using 2 apply auto
@@ -419,7 +420,7 @@ proof (rule homeomorphism_on_sequentially)
       then have "eventually (\<lambda>n. to_Gromov_completion (from_Gromov_completion (u n)) = u n) sequentially"
         using u_in eventually_mono by force
       then have "u \<longlonglongrightarrow> to_Gromov_completion (from_Gromov_completion x)"
-        by (rule Lim_transform_eventually[OF _ L])
+        by (rule Lim_transform_eventually[OF L])
       then show "u \<longlonglongrightarrow> x"
         using ** by (simp add: x)
     next
@@ -624,7 +625,8 @@ proof (rule homeomorphism_on_sequentially)
       have "(\<lambda>n. from_Gromov_completion (Gromov_extension f (u n))) \<longlonglongrightarrow> from_Gromov_completion (Gromov_extension f x)"
         by (rule continuous_on_tendsto_compose[OF from_Gromov_completion_continuous(2) H fx fu_in])
       then have C: "(\<lambda>n. f (from_Gromov_completion (u n))) \<longlonglongrightarrow> f (from_Gromov_completion x)"
-        unfolding B[OF fx, symmetric] apply (rule Lim_transform_eventually[rotated]) using eventually_mono[OF fu_in B] by auto
+        unfolding B[OF fx, symmetric] 
+        by (force intro: Lim_transform_eventually eventually_mono[OF fu_in B])
       have "(\<lambda>n. from_Gromov_completion (u n)) \<longlonglongrightarrow> from_Gromov_completion x"
         apply (rule iffD2[OF homeomorphism_on_compose[OF isometry_on_homeomorphism(2)[OF assms]] C])
         using to_Gromov_completion by auto
@@ -636,7 +638,7 @@ proof (rule homeomorphism_on_sequentially)
       then have "eventually (\<lambda>n. to_Gromov_completion (from_Gromov_completion (u n)) = u n) sequentially"
         using u_in eventually_mono by force
       then have "u \<longlonglongrightarrow> to_Gromov_completion (from_Gromov_completion x)"
-        by (rule Lim_transform_eventually[OF _ L])
+        by (rule Lim_transform_eventually[OF L])
       then show "u \<longlonglongrightarrow> x"
         using ** by (simp add: x)
     next

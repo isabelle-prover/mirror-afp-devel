@@ -111,7 +111,7 @@ proof -
        by (auto simp: divide_simps algebra_simps min_def intro!: eventuallyI split: if_split_asm)
     from this tendsto_diff[OF v w]
     have 1: "((\<lambda>x. (v x - w x) / norm (x - x0) + (v' x0 - w' x0)) \<longlongrightarrow> 0) (at x0 within {t0<..<x0})"
-      by (rule Lim_transform_eventually[THEN tendsto_eq_rhs]) auto
+      by (force intro: tendsto_eq_rhs Lim_transform_eventually)
     moreover
     from evs have 2: "\<forall>\<^sub>F x in at x0 within {t0<..<x0}. (v x - w x) / norm (x - x0) + (v' x0 - w' x0) \<le> (v' x0 - w' x0)"
       by eventually_elim (auto simp: divide_simps intro!: less_imp_le x0(4))
@@ -342,7 +342,7 @@ proof cases
           (\<not> eventually p fa \<or> \<not> pa (rr p pa) \<or> eventually pa fa)"
         by (metis (no_types) eventually_mono)
       then show ?thesis
-        using f1 calculation by blast
+        using f1 calculation by meson
     qed
     moreover have "\<forall>\<^sub>F i in at_right (y t0). y t0 < i"
       by (simp add: eventually_at_filter)
@@ -435,7 +435,7 @@ proof cases
           (\<not> eventually p fa \<or> \<not> pa (rr p pa) \<or> eventually pa fa)"
         by (metis (no_types) eventually_mono)
       then show ?thesis
-        using f1 calculation by blast
+        using f1 calculation by meson
     qed
     moreover have "\<forall>\<^sub>F i in at_left (y t0). i < y t0"
       by (simp add: eventually_at_filter)

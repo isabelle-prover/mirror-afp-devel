@@ -788,9 +788,7 @@ proof-
   from c_ratio_tendsto
   have "(\<lambda>n. norm (b (Suc n) / a (Suc n)) / norm (b n / a n)) \<longlonglongrightarrow> 0" 
     unfolding c_def
-    apply (elim Lim_transform_eventually[rotated])
-    apply (rule eventuallyI)
-    using a b by (auto simp add:divide_simps abs_of_pos)
+    using a b by (force simp add:divide_simps abs_of_pos intro: Lim_transform_eventually)
   from summable_ratio_test_tendsto[OF _ _ this] a b 
   show "summable c" unfolding c_def
     apply auto 
