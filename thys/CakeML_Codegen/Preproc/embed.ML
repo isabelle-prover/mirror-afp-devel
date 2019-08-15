@@ -289,7 +289,7 @@ fun embed_def (binding, def_binding) terms {proof, cert} lthy =
   end
 
 fun method_text_of_tac tac =
-  Method.Basic (fn ctxt => fn _ => Method.CONTEXT_TACTIC (tac ctxt))
+  Method.Basic (fn ctxt => fn _ => Context_Tactic.CONTEXT_TACTIC (tac ctxt))
 
 fun embed_def_cmd def_binding binding raw_consts opts lthy =
   let
