@@ -146,16 +146,17 @@ proof -
   have vi: "\<exists>vi. norm vi = 1 \<and> (\<forall>l \<le> i. vi \<bullet> (T ^^ l) 0 \<le> (- A + eps i) * l)" for i
   proof -
     have L: "(\<lambda>n. ereal(u n - (A - eps i) * n)) \<longlonglongrightarrow> \<infinity>"
-    proof -
+    proof (rule Lim_transform_eventually)
       have "ereal ((u n/n - A) + eps i) * ereal n = ereal(u n - (A - eps i) * n)" if "n \<ge> 1" for n
         using that by (auto simp add: divide_simps algebra_simps)
-      then have *: "eventually (\<lambda>n. ereal ((u n/n - A) + eps i) * ereal n = ereal(u n - (A - eps i) * n)) sequentially"
+      then show "eventually (\<lambda>n. ereal ((u n/n - A) + eps i) * ereal n = ereal(u n - (A - eps i) * n)) sequentially"
         unfolding eventually_sequentially by auto
 
       have "(\<lambda>n. (ereal ((u n/n - A) + eps i)) * ereal n) \<longlonglongrightarrow> (0 + eps i) * \<infinity>"
         apply (intro tendsto_intros)
         using \<open>eps i > 0\<close> Alim by (auto simp add: LIM_zero)
-      then show ?thesis using Lim_transform_eventually[OF *] \<open>eps i > 0\<close> by simp
+      then show "(\<lambda>n. ereal (u n / real n - A + eps i) * ereal (real n)) \<longlonglongrightarrow> \<infinity>" 
+        using  \<open>eps i > 0\<close> by simp
     qed
     obtain n where n: "n \<ge> i" "\<And>l. l \<le> n \<Longrightarrow> u l - (A - eps i) * l \<le> u n - (A - eps i) * n"
       using high_scores[OF L, of i] by auto

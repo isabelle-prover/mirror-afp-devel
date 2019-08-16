@@ -356,22 +356,24 @@ proof -
       by (intro holomorphic_Dirichlet_L_weak) auto
   next
     fix s :: complex assume s: "s \<in> {1}"
-    from assms have "continuous_on {s. Re s > 0} (eval_fds (fds \<chi>))"
-      by (intro holomorphic_fds_eval holomorphic_on_imp_continuous_on)
-         (auto intro: le_less_trans[OF conv_abscissa_le_0])
-    hence "eval_fds (fds \<chi>) \<midarrow>s\<rightarrow> eval_fds (fds \<chi>) s" using s
-      by (subst (asm) continuous_on_eq_continuous_at) (auto simp: open_halfspace_Re_gt isCont_def)
-    also have "eval_fds (fds \<chi>) s = Dirichlet_L n \<chi> s"
-      using assms s by (simp add: Dirichlet_L_def)
-    finally have lim: "eval_fds (fds \<chi>) \<midarrow>s\<rightarrow> Dirichlet_L n \<chi> s" .
-    have "eventually (\<lambda>z. z \<in> {z. Re z > 0}) (nhds s)" using s
-      by (intro eventually_nhds_in_open) (auto simp: open_halfspace_Re_gt)
-    hence "eventually (\<lambda>z. z \<in> {z. Re z > 0}) (at s)"
-      unfolding eventually_at_filter by eventually_elim auto
-    hence ev: "eventually (\<lambda>z. eval_fds (fds \<chi>) z = Dirichlet_L n \<chi> z) (at s)"
-      by eventually_elim (auto intro!: eq [symmetric])
     show "Dirichlet_L n \<chi> \<midarrow>s\<rightarrow> Dirichlet_L n \<chi> s"
-      by (rule Lim_transform_eventually [OF ev lim])
+    proof (rule Lim_transform_eventually)
+      from assms have "continuous_on {s. Re s > 0} (eval_fds (fds \<chi>))"
+        by (intro holomorphic_fds_eval holomorphic_on_imp_continuous_on)
+          (auto intro: le_less_trans[OF conv_abscissa_le_0])
+      hence "eval_fds (fds \<chi>) \<midarrow>s\<rightarrow> eval_fds (fds \<chi>) s" using s
+        by (subst (asm) continuous_on_eq_continuous_at) (auto simp: open_halfspace_Re_gt isCont_def)
+      also have "eval_fds (fds \<chi>) s = Dirichlet_L n \<chi> s"
+        using assms s by (simp add: Dirichlet_L_def)
+      finally show "eval_fds (fds \<chi>) \<midarrow>s\<rightarrow> Dirichlet_L n \<chi> s" .
+    next
+      have "eventually (\<lambda>z. z \<in> {z. Re z > 0}) (nhds s)" using s
+        by (intro eventually_nhds_in_open) (auto simp: open_halfspace_Re_gt)
+      hence "eventually (\<lambda>z. z \<in> {z. Re z > 0}) (at s)"
+        unfolding eventually_at_filter by eventually_elim auto
+      then show "eventually (\<lambda>z. eval_fds (fds \<chi>) z = Dirichlet_L n \<chi> z) (at s)"
+        by eventually_elim (auto intro!: eq [symmetric])
+    qed
   qed auto
   thus "Dirichlet_L n \<chi> holomorphic_on A" by (rule holomorphic_on_subset) auto
 qed
