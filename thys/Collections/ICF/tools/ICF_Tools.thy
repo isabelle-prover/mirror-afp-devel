@@ -118,7 +118,7 @@ ML \<open>
   fun thms_from_main name = let
     val xthmref = Facts.named name;
     val thy = @{theory Main};
-    val name = Facts.name_of_ref xthmref
+    val name = Facts.ref_name xthmref
     |> Global_Theory.intern_fact thy;
     val name = case name of "_" => "Pure.asm_rl" | name => name;
 
