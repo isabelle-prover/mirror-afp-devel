@@ -127,7 +127,7 @@ proof -
     using eventually_gt_at_top[of 0] ev
     by eventually_elim (simp add: field_simps ln_mult ln_div)
   ultimately have "((\<lambda>x. ln (\<pi> x) * ?f x) \<longlongrightarrow> ln 1) at_top"
-    by (rule Lim_transform_eventually [rotated])
+    by (rule Lim_transform_eventually)
 
   moreover have "((\<lambda>x. 1 / ln (\<pi> x)) \<longlongrightarrow> 0) at_top"
     by (rule filterlim_compose[OF _ \<pi>_at_top]) real_asymp
@@ -136,7 +136,7 @@ proof -
   moreover have "eventually (\<lambda>x. ln (\<pi> x) * ?f x * (1 / ln (\<pi> x)) = ?f x) at_top"
     using ev by eventually_elim auto
   ultimately have "(?f \<longlongrightarrow> ln 1 * 0) at_top"
-    by (rule Lim_transform_eventually [rotated])
+    by (rule Lim_transform_eventually)
   hence "((\<lambda>x. 1 + ln (ln (\<pi> x)) / ln (\<pi> x) - ?f x) \<longlongrightarrow> 1 + 0 - ln 1 * 0) at_top"
     by (intro tendsto_intros filterlim_compose[OF _ \<pi>_at_top]) (real_asymp | simp)+
   hence "((\<lambda>x. ln x / ln (\<pi> x)) \<longlongrightarrow> 1) at_top"

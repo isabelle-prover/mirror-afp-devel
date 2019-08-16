@@ -80,8 +80,8 @@ proof -
       moreover have "(\<lambda>b. Re (?g b)) \<longlonglongrightarrow> Re (zeta s)"
         using hurwitz_zeta_critical_strip[of "of_real s" 1] s
         by (intro tendsto_intros) (simp add: zeta_def)
-      ultimately show "(\<lambda>b. (\<Sum>k=1..b. real k powr -s) - real b powr (1 - s) / (1 - s))
-                          \<longlonglongrightarrow> Re (zeta s)" by (rule Lim_transform_eventually)
+      ultimately show "(\<lambda>b. (\<Sum>k=1..b. real k powr -s) - real b powr (1 - s) / (1 - s)) \<longlonglongrightarrow> Re (zeta s)" 
+        by (blast intro: Lim_transform_eventually)
     qed (use s in real_asymp)
     thus "(\<lambda>b. (\<Sum>k = 1..b. f (real k)) - F (real b) -
               (\<Sum>i<2 * 0 + 1. (bernoulli' (Suc i) / fact (Suc i)) *\<^sub>R ([f, f'] ! i) (real b)))

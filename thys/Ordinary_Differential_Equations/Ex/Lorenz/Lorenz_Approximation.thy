@@ -901,9 +901,8 @@ proof (intro allI impI)
         using assms * elim by auto
       then show ?case by (simp add: ac_simps)
     qed
-    from this *(2)
-    have "((\<lambda>s. (lorenz.flow0 x0 (s + t))) \<longlongrightarrow> 0) at_top"
-      by (rule Lim_transform_eventually)
+    then have "((\<lambda>s. (lorenz.flow0 x0 (s + t))) \<longlongrightarrow> 0) at_top"
+      by (blast intro: * Lim_transform_eventually)
     then show "(lorenz.flow0 x0 \<longlongrightarrow> 0) at_top"
       unfolding aform.tendsto_at_top_translate_iff .
   next
@@ -2572,22 +2571,22 @@ qed
 
 lemma lorenz_S_return_time_has_derivative:
   assumes "(lorenz.return_time \<Sigma> has_derivative D) (at x within \<Sigma>\<^sub>l\<^sub>e)"
-        "lorenz.returns_to \<Sigma> x" "x \<in> \<Sigma>\<^sub>l\<^sub>e"
+        and "lorenz.returns_to \<Sigma> x" and "x \<in> \<Sigma>\<^sub>l\<^sub>e"
   shows "(lorenz.return_time \<Sigma> has_derivative D o lorenz_S) (at (lorenz_S x) within \<Sigma>\<^sub>l\<^sub>e)"
 proof -
   have [simp]: "\<not>trivial_limit (at x within \<Sigma>\<^sub>l\<^sub>e)"
     unfolding at_within_eq_bot_iff
     using assms
     by simp
-  have evret: "\<forall>\<^sub>F x in at x within \<Sigma>\<^sub>l\<^sub>e. (x::R3) returns_to \<Sigma>"
-    apply (rule lorenz.eventually_returns_to_continuousI[of \<Sigma> x \<Sigma>\<^sub>l\<^sub>e])
-    apply fact
-     apply (rule closed_\<Sigma>)
-    apply (rule has_derivative_continuous)
-    apply fact
-    done
   interpret bounded_linear "lorenz_S::R3\<Rightarrow>_" by (rule bl_lorenz_S)
-  show ?thesis
+  have "\<forall>\<^sub>F x in at x within \<Sigma>\<^sub>l\<^sub>e. (x::R3) returns_to \<Sigma>"
+    by (blast intro: lorenz.eventually_returns_to_continuousI has_derivative_continuous assms)
+  then have "\<forall>\<^sub>F y in at x within \<Sigma>\<^sub>l\<^sub>e.
+               inverse (norm (y - x)) * (lorenz.return_time \<Sigma> y - lorenz.return_time \<Sigma> x - D (y - x))
+             = inverse (norm (lorenz_S y - lorenz_S x)) *
+               (lorenz.return_time \<Sigma> (lorenz_S y) - lorenz.return_time \<Sigma> (lorenz_S x) - D (y - x))"
+      by eventually_elim (auto simp: lorenz_S_return_time assms diff[symmetric])
+  then show ?thesis
     using assms
     apply (subst filtermap_lorenz_S_eq[symmetric])
     apply (auto simp: has_derivative_def filterlim_filtermap)
@@ -2595,11 +2594,7 @@ proof -
      apply (rule bounded_linear_compose, assumption, rule bl_lorenz_S)
     unfolding diff lorenz_S_idem
      apply (auto simp: Lim_ident_at)
-    apply (rule Lim_transform_eventually) defer apply assumption
-    subgoal premises prems
-      using evret
-      apply (eventually_elim)
-      by (auto simp: lorenz_S_return_time assms diff[symmetric])
+    apply (blast intro: Lim_transform_eventually)
     done
 qed
 
@@ -2630,15 +2625,16 @@ proof -
     unfolding at_within_eq_bot_iff
     using assms
     by simp
-  have evret: "\<forall>\<^sub>F x in at x within \<Sigma>\<^sub>l\<^sub>e. (x::R3) returns_to \<Sigma>"
-    apply (rule lorenz.eventually_returns_to_continuousI[of \<Sigma> x \<Sigma>\<^sub>l\<^sub>e])
-    apply fact
-     apply (rule closed_\<Sigma>)
-    apply (rule has_derivative_continuous)
-    apply fact
-    done
   interpret bounded_linear "lorenz_S::R3\<Rightarrow>_" by (rule bl_lorenz_S)
-  show ?thesis
+  have "\<forall>\<^sub>F x in at x within \<Sigma>\<^sub>l\<^sub>e. (x::R3) returns_to \<Sigma>"
+    by (blast intro: lorenz.eventually_returns_to_continuousI has_derivative_continuous assms)
+  then have "\<forall>\<^sub>F y in at x within \<Sigma>\<^sub>l\<^sub>e.
+                 (lorenz_S (lorenz.poincare_map \<Sigma> y) - lorenz_S (lorenz.poincare_map \<Sigma> x) - lorenz_S (D (y - x))) /\<^sub>R
+                 norm (y - x) 
+               = (lorenz.poincare_map \<Sigma> (lorenz_S y) - lorenz.poincare_map \<Sigma> (lorenz_S x) - lorenz_S (D (y - x))) /\<^sub>R
+                 norm (lorenz_S y - lorenz_S x)"
+    by eventually_elim (auto simp: lorenz_S_return_time lorenz_S_poincare_map assms diff[symmetric])
+  then show ?thesis
     using has_derivative_compose[OF assms(1) lorenz_S_has_derivative] assms
     apply (subst filtermap_lorenz_S_eq[symmetric])
     apply (auto simp: has_derivative_def filterlim_filtermap)
@@ -2647,12 +2643,7 @@ proof -
      apply (rule bounded_linear_compose, assumption, rule bl_lorenz_S)
     unfolding diff lorenz_S_idem
      apply (auto simp: Lim_ident_at)
-    apply (rule Lim_transform_eventually) defer apply assumption
-    subgoal premises prems
-      using evret
-      apply (eventually_elim)
-      apply (auto simp: lorenz_S_return_time lorenz_S_poincare_map assms diff[symmetric])
-      done
+    apply (blast intro: Lim_transform_eventually)
     done
 qed
 
@@ -2698,18 +2689,14 @@ lemma preexpansion_mirror_result[simp]: "preexpansion (mirror_result res2) = pre
   by (cases res2) (auto simp: )
 
 lemma lorenz_S_tendsto_0I: "(lorenz.flow0 (lorenz_S x) \<longlongrightarrow> 0) at_top"
-  if "{0..} \<subseteq> lorenz.existence_ivl0 x"
-    "(lorenz.flow0 x \<longlongrightarrow> 0) at_top"
-proof -
+  if "{0..} \<subseteq> lorenz.existence_ivl0 x" "(lorenz.flow0 x \<longlongrightarrow> 0) at_top"
+proof (rule Lim_transform_eventually)
   have "\<forall>\<^sub>F s in at_top. (s::real) \<ge> 0"
     using eventually_ge_at_top by blast
-  then have "\<forall>\<^sub>F s in at_top. lorenz_S (lorenz.flow0 x s) = lorenz.flow0 (lorenz_S x) s"
+  then show "\<forall>\<^sub>F s in at_top. lorenz_S (lorenz.flow0 x s) = lorenz.flow0 (lorenz_S x) s"
     by eventually_elim (use that in auto)
-  moreover have "((\<lambda>s. lorenz_S (lorenz.flow0 x s)) \<longlongrightarrow> 0) at_top"
-    unfolding Zfun_def[symmetric]
-      by (rule bounded_linear.tendsto_zero[OF bl_lorenz_S that(2)])
-  ultimately show "(lorenz.flow0 (lorenz_S x) \<longlongrightarrow> 0) at_top"
-    by (rule Lim_transform_eventually)
+  show "((\<lambda>s. lorenz_S (lorenz.flow0 x s)) \<longlongrightarrow> 0) at_top"
+    unfolding Zfun_def[symmetric] by (rule bounded_linear.tendsto_zero[OF bl_lorenz_S that(2)])
 qed
 
 lemma lorenz_S_tendsto_0_iff:
