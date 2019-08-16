@@ -3910,6 +3910,21 @@ extra-history =
 	type
 notify = immler@in.tum.de
 
+[Laplace_Transform]
+title = Laplace Transform
+author = Fabian Immler <https://home.in.tum.de/~immler/>
+topic = Mathematics/Analysis
+date = 2019-08-14
+notify = fimmler@cs.cmu.edu
+abstract =
+  This entry formalizes the Laplace transform and concrete Laplace
+  transforms for arithmetic functions, frequency shift, integration and
+  (higher) differentiation in the time domain. It proves Lerch's
+  lemma and uniqueness of the Laplace transform for continuous
+  functions. In order to formalize the foundational assumptions, this
+  entry contains a formalization of piecewise continuous functions and
+  functions of exponential order.
+
 [Cauchy]
 title = Cauchy's Mean Theorem and the Cauchy-Schwarz Inequality
 author = Benjamin Porter <>
