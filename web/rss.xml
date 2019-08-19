@@ -9,7 +9,28 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>14 Aug 2019 00:00:00 +0000</pubDate>
+    <pubDate>16 Aug 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Formalisation of an Adaptive State Counting Algorithm</title>
+              <link>https://www.isa-afp.org/entries/Adaptive_State_Counting.html</link>
+       <guid>https://www.isa-afp.org/entries/Adaptive_State_Counting.html</guid>
+       <dc:creator> Robert Sachtleben       </dc:creator>
+       <pubDate>16 Aug 2019 00:00:00 +0000</pubDate>
+       <description>
+This entry provides a formalisation of a refinement of an adaptive
+state counting algorithm, used to test for reduction between finite
+state machines. The algorithm has been originally presented by Hierons
+in the paper &lt;a
+href=&#34;https://doi.org/10.1109/TC.2004.85&#34;&gt;Testing from a
+Non-Deterministic Finite State Machine Using Adaptive State
+Counting&lt;/a&gt;.  Definitions for finite state machines and
+adaptive test cases are given and many useful theorems are derived
+from these. The algorithm is formalised using mutually recursive
+functions, for which it is proven that the generated test suite is
+sufficient to test for reduction against finite state machines of a
+certain fault domain. Additionally, the algorithm is specified in a
+simple WHILE-language and its correctness is shown using Hoare-logic.</description>
+    </item>
     <item>
        <title>Laplace Transform</title>
               <link>https://www.isa-afp.org/entries/Laplace_Transform.html</link>
@@ -555,19 +576,6 @@ proves their correctness. It also develops some of the
 number-theoretic foundations, such as Carmichael numbers and the
 Jacobi symbol with an efficient executable algorithm to compute
 it.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Universal Turing Machine</title>
-              <link>https://www.isa-afp.org/entries/Universal_Turing_Machine.html</link>
-       <guid>https://www.isa-afp.org/entries/Universal_Turing_Machine.html</guid>
-       <dc:creator> Jian Xu, Xingyuan Zhang, Christian Urban, Sebastiaan J. C. Joosten       </dc:creator>
-       <pubDate>08 Feb 2019 00:00:00 +0000</pubDate>
-       <description>
-We formalise results from computability theory: recursive functions,
-undecidability of the halting problem, and the existence of a
-universal Turing machine. This formalisation is the AFP entry
-corresponding to the paper Mechanising Turing Machines and Computability Theory
-in Isabelle/HOL, ITP 2013.</description>
     </item>
   </channel>
 </rss>
