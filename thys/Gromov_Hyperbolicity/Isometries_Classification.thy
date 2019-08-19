@@ -386,12 +386,13 @@ proof -
     then show "\<forall>\<^sub>F n in sequentially. (real n * additive_strength f xi - 2 * deltaG TYPE('a)) / real n \<le> dist x ((f ^^ n) x) / real n"
       unfolding eventually_sequentially by auto
 
-    have A: "eventually (\<lambda>n. additive_strength f xi - (2 * deltaG(TYPE('a))) * (1/n) = (real n * additive_strength f xi - 2 * deltaG TYPE('a)) / real n) sequentially"
-      unfolding eventually_sequentially apply (rule exI[of _ 1]) by (simp add: divide_simps)
     have B: "(\<lambda>n. additive_strength f xi - (2 * deltaG(TYPE('a))) * (1/n)) \<longlonglongrightarrow> additive_strength f xi - (2 * deltaG(TYPE('a))) * 0"
       by (intro tendsto_intros)
     show "(\<lambda>n. (real n * additive_strength f xi - 2 * deltaG TYPE('a)) / real n) \<longlonglongrightarrow> additive_strength f xi"
-      using Lim_transform_eventually[OF A B] by simp
+    proof (rule Lim_transform_eventually)
+      show "eventually (\<lambda>n. additive_strength f xi - (2 * deltaG(TYPE('a))) * (1/n) = (real n * additive_strength f xi - 2 * deltaG TYPE('a)) / real n) sequentially"
+        unfolding eventually_sequentially apply (rule exI[of _ 1]) by (simp add: divide_simps)
+    qed (use B in auto)
 
     have "dist x ((f^^n) x) \<le> dist x (f x) + n * additive_strength f xi + ceiling (log 2 n) * 16 * deltaG(TYPE('a))" if "n \<ge> 1" for n
       using dist_le_additive_strength[OF assms that] by simp
@@ -400,12 +401,13 @@ proof -
     then show "\<forall>\<^sub>F n in sequentially. dist x ((f ^^ n) x) / real n \<le> (dist x (f x) + real n * additive_strength f xi + real_of_int (\<lceil>log 2 (real n)\<rceil> * 16) * deltaG TYPE('a)) / real n"
       unfolding eventually_sequentially by auto
 
-    have A: "eventually (\<lambda>n. dist x (f x) * (1/n) + additive_strength f xi + 16 * deltaG TYPE('a) * (\<lceil>log 2 n\<rceil> / n) = (dist x (f x) + real n * additive_strength f xi + real_of_int (\<lceil>log 2 (real n)\<rceil> * 16) * deltaG TYPE('a)) / real n) sequentially"
-      unfolding eventually_sequentially apply (rule exI[of _ 1]) by (simp add: algebra_simps divide_simps)
     have B: "(\<lambda>n. dist x (f x) * (1/n) + additive_strength f xi + 16 * deltaG TYPE('a) * (\<lceil>log 2 n\<rceil> / n)) \<longlonglongrightarrow> dist x (f x) * 0 + additive_strength f xi + 16 * deltaG TYPE('a) * 0"
       by (intro tendsto_intros)
     show "(\<lambda>n. (dist x (f x) + n * additive_strength f xi + real_of_int (\<lceil>log 2 n\<rceil> * 16) * deltaG TYPE('a)) / real n) \<longlonglongrightarrow> additive_strength f xi"
-      using Lim_transform_eventually[OF A B] by simp
+    proof (rule Lim_transform_eventually)
+      show "eventually (\<lambda>n. dist x (f x) * (1/n) + additive_strength f xi + 16 * deltaG TYPE('a) * (\<lceil>log 2 n\<rceil> / n) = (dist x (f x) + real n * additive_strength f xi + real_of_int (\<lceil>log 2 (real n)\<rceil> * 16) * deltaG TYPE('a)) / real n) sequentially"
+        unfolding eventually_sequentially apply (rule exI[of _ 1]) by (simp add: algebra_simps divide_simps)
+    qed (use B in auto)
   qed
   then show ?thesis
     using LIMSEQ_unique stable_translation_length_as_pointwise_limit[OF isometryD(4)[OF assms(1)]] by blast

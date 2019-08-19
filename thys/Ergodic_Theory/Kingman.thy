@@ -1684,7 +1684,7 @@ proof -
     finally have "ereal (\<integral>x. w n x / n \<partial>M) = ereal (\<integral>x. u n x / n \<partial>M)" by simp
   } note * = this
   have "(\<lambda>n. (\<integral>x. u n x / n \<partial>M)) \<longlonglongrightarrow> subcocycle_avg_ereal w"
-    apply (rule Lim_transform_eventually[OF _ subcocycle_int_tendsto_avg_ereal[OF w(1)]])
+    apply (rule Lim_transform_eventually[OF subcocycle_int_tendsto_avg_ereal[OF w(1)]])
     using * by auto
   then have "subcocycle_avg_ereal u = subcocycle_avg_ereal w"
     using subcocycle_int_tendsto_avg_ereal[OF assms(1)] LIMSEQ_unique by auto
