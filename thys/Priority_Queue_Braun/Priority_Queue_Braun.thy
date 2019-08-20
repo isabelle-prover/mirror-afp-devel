@@ -37,16 +37,8 @@ qed simp
 
 subsection "Get Minimum"
 
-lemma get_min_in:
-  "h \<noteq> Leaf \<Longrightarrow> value h \<in> set_tree h"
-by(auto simp add: neq_Leaf_iff)
-
-lemma get_min_min:
-  "\<lbrakk> heap h; x \<in> set_tree h \<rbrakk> \<Longrightarrow> value h \<le> x"
-by(cases h)(auto)
-
 lemma get_min: "\<lbrakk> heap h;  h \<noteq> Leaf \<rbrakk> \<Longrightarrow> value h = Min_mset (mset_tree h)"
-by (auto simp add: eq_Min_iff get_min_in get_min_min)
+by (auto simp add: eq_Min_iff neq_Leaf_iff)
 
 subsection \<open>Insertion\<close>
 
