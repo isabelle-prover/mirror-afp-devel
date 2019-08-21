@@ -57,7 +57,7 @@ by(induction t arbitrary: x) auto
 lemma mset_insert: "mset_tree(insert x t) = {#x#} + mset_tree t"
 by(induction t arbitrary: x) (auto simp: ac_simps)
 
-lemma set_insert[simp]: "set_tree(insert x t) = Set.insert x (set_tree t)"
+lemma set_insert[simp]: "set_tree(insert x t) = {x} \<union> (set_tree t)"
 by(induction t arbitrary: x) auto
 
 lemma braun_insert: "braun t \<Longrightarrow> braun(insert x t)"
