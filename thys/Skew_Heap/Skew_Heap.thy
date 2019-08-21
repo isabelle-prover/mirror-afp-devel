@@ -23,16 +23,8 @@ subsection "Get Minimum"
 fun get_min :: "'a::linorder heap \<Rightarrow> 'a" where
 "get_min(Node l m r) = m"
 
-lemma get_min_in:
-  "h \<noteq> Leaf \<Longrightarrow> get_min h \<in> set_tree h"
-by(auto simp add: neq_Leaf_iff)
-
-lemma get_min_min:
-  "\<lbrakk> heap h; x \<in> set_tree h \<rbrakk> \<Longrightarrow> get_min h \<le> x"
-by(cases h)(auto)
-
 lemma get_min: "\<lbrakk> heap h;  h \<noteq> Leaf \<rbrakk> \<Longrightarrow> get_min h = Min_mset (mset_tree h)"
-by (auto simp add: eq_Min_iff get_min_in get_min_min)
+by (auto simp add: eq_Min_iff neq_Leaf_iff)
 
 subsection "Merge"
 
