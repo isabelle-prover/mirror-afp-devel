@@ -16,25 +16,23 @@ fun \<Phi> :: "'a tree \<Rightarrow> real" where
 "\<Phi> Leaf = 0" |
 "\<Phi> (Node l a r) = \<Phi> l + \<Phi> r + \<phi> (Node l a r)"
 
-
 fun t_splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
-"t_splay a Leaf = 1" |
-"t_splay a (Node l b r) =
-  (if a=b
-   then 1
-   else if a < b
-        then case l of
+"t_splay x Leaf = 1" |
+"t_splay x (Node AB b CD) =
+  (case cmp x b of
+   EQ \<Rightarrow> 1 |
+   LT \<Rightarrow> (case AB of
           Leaf \<Rightarrow> 1 |
-          Node ll c lr \<Rightarrow>
-            (if a=c then 1
-             else if a < c then if ll = Leaf then 1 else t_splay a ll + 1
-                  else if lr = Leaf then 1 else t_splay a lr + 1)
-        else case r of
+          Node A a B \<Rightarrow>
+            (case cmp x a of EQ \<Rightarrow> 1 |
+             LT \<Rightarrow> if A = Leaf then 1 else t_splay x A + 1 |
+             GT \<Rightarrow> if B = Leaf then 1 else t_splay x B + 1)) |
+   GT \<Rightarrow> (case CD of
           Leaf \<Rightarrow> 1 |
-          Node rl c rr \<Rightarrow>
-            (if a=c then 1
-             else if a < c then if rl = Leaf then 1 else t_splay a rl + 1
-                  else if rr = Leaf then 1 else t_splay a rr + 1))"
+          Node C c D \<Rightarrow>
+            (case cmp x c of EQ \<Rightarrow> 1 |
+             LT \<Rightarrow> if C = Leaf then 1 else t_splay x C + 1 |
+             GT \<Rightarrow> if D = Leaf then 1 else t_splay x D + 1)))"
 
 lemma t_splay_simps[simp]:
   "t_splay a (Node l a r) = 1"

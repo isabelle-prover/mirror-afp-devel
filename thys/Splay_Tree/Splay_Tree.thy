@@ -48,31 +48,28 @@ termination splay
 by lexicographic_order
 
 lemma splay_code: "splay x (Node AB b CD) =
-  (if x=b
-   then Node AB b CD
-   else if x < b
-        then case AB of
+  (case cmp x b of
+   EQ \<Rightarrow> Node AB b CD |
+   LT \<Rightarrow> (case AB of
           Leaf \<Rightarrow> Node AB b CD |
           Node A a B \<Rightarrow>
-            (if x=a then Node A a (Node B b CD)
-             else if x < a
-                  then if A = Leaf then Node A a (Node B b CD)
+            (case cmp x a of EQ \<Rightarrow> Node A a (Node B b CD) |
+             LT \<Rightarrow>  if A = Leaf then Node A a (Node B b CD)
                        else case splay x A of
-                         Node A\<^sub>1 a' A\<^sub>2 \<Rightarrow> Node A\<^sub>1 a' (Node A\<^sub>2 a (Node B b CD))
-                  else if B = Leaf then Node A a (Node B b CD)
+                         Node A\<^sub>1 a' A\<^sub>2 \<Rightarrow> Node A\<^sub>1 a' (Node A\<^sub>2 a (Node B b CD)) |
+             GT \<Rightarrow> if B = Leaf then Node A a (Node B b CD)
                        else case splay x B of
-                         Node B\<^sub>1 b' B\<^sub>2 \<Rightarrow> Node (Node A a B\<^sub>1) b' (Node B\<^sub>2 b CD))
-        else case CD of
+                         Node B\<^sub>1 b' B\<^sub>2 \<Rightarrow> Node (Node A a B\<^sub>1) b' (Node B\<^sub>2 b CD))) |
+   GT \<Rightarrow> (case CD of
           Leaf \<Rightarrow> Node AB b CD |
           Node C c D \<Rightarrow>
-            (if x=c then Node (Node AB b C) c D
-             else if x < c
-                  then if C = Leaf then Node (Node AB b C) c D
+            (case cmp x c of EQ \<Rightarrow> Node (Node AB b C) c D |
+             LT \<Rightarrow> if C = Leaf then Node (Node AB b C) c D
                        else case splay x C of
-                         Node C\<^sub>1 c' C\<^sub>2 \<Rightarrow> Node (Node AB b C\<^sub>1) c' (Node C\<^sub>2 c D)
-                  else if D=Leaf then Node (Node AB b C) c D
+                         Node C\<^sub>1 c' C\<^sub>2 \<Rightarrow> Node (Node AB b C\<^sub>1) c' (Node C\<^sub>2 c D) |
+             GT \<Rightarrow> if D=Leaf then Node (Node AB b C) c D
                        else case splay x D of
-                         Node D\<^sub>1 d D\<^sub>2 \<Rightarrow> Node (Node (Node AB b C) c D\<^sub>1) d D\<^sub>2))"
+                         Node D\<^sub>1 d D\<^sub>2 \<Rightarrow> Node (Node (Node AB b C) c D\<^sub>1) d D\<^sub>2)))"
 by(auto split!: tree.split)
 
 definition is_root :: "'a \<Rightarrow> 'a tree \<Rightarrow> bool" where
@@ -118,9 +115,8 @@ definition delete :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" 
 "delete x t =
   (if t = Leaf then Leaf
    else case splay x t of Node l a r \<Rightarrow>
-     if x = a
-     then if l = Leaf then r else case splay_max l of Node l' m r' \<Rightarrow> Node l' m r
-     else Node l a r)"
+     if x \<noteq> a then Node l a r
+     else if l = Leaf then r else case splay_max l of Node l' m r' \<Rightarrow> Node l' m r)"
 
 
 
