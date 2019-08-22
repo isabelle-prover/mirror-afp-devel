@@ -49,8 +49,8 @@ proof -
   finally show ?thesis by simp
 qed
 
-lemma a_splay_ub: "\<lbrakk> bst t; Node lx x rx : subtrees t \<rbrakk>
-  \<Longrightarrow> a_splay x t \<le> 3 * (\<phi> t - \<phi>(Node lx x rx)) + 1"
+lemma a_splay_ub: "\<lbrakk> bst t; Node l x r : subtrees t \<rbrakk>
+  \<Longrightarrow> a_splay x t \<le> 3 * (\<phi> t - \<phi>(Node l x r)) + 1"
 proof(induction x t rule: splay.induct)
   case 1 thus ?case by simp
 next
@@ -68,98 +68,98 @@ next
 next
   case 13 hence False by(fastforce dest: in_set_tree_if) thus ?case ..
 next
-  case (3 b a lb rb ra)
-  let ?A = "Node (Node lb b rb) a ra"
-  have "b \<notin> set_tree ra" using "3.prems"(1) by auto
+  case (3 x b A B C)
+  let ?A = "Node (Node A x B) b C"
+  have "x \<notin> set_tree C" using "3.prems"(1) by auto
   with 3 show ?case using
-    log_le_cancel_iff[of 2 "size1(Node rb a ra)" "size1 ?A"]
-    log_le_cancel_iff[of 2 "size1(Node lb b rb)" "size1 ?A"]
+    log_le_cancel_iff[of 2 "size1(Node B b C)" "size1 ?A"]
+    log_le_cancel_iff[of 2 "size1(Node A x B)" "size1 ?A"]
     by (auto simp: algebra_simps simp del:log_le_cancel_iff)
 next
-  case (9 a b la lb rb)
-  let ?A = "\<langle>la, a, \<langle>lb, b, rb\<rangle>\<rangle>"
-  have "b \<notin> set_tree la" using "9.prems"(1) by auto
+  case (9 a x A B C)
+  let ?A = "\<langle>A, a, \<langle>B, x, C\<rangle>\<rangle>"
+  have "x \<notin> set_tree A" using "9.prems"(1) by auto
   with 9 show ?case using
-    log_le_cancel_iff[of 2 "size1(Node la a lb)" "size1 ?A"]
-    log_le_cancel_iff[of 2 "size1(Node lb b rb)" "size1 ?A"]
+    log_le_cancel_iff[of 2 "size1(Node A a B)" "size1 ?A"]
+    log_le_cancel_iff[of 2 "size1(Node B x C)" "size1 ?A"]
     by (auto simp: algebra_simps simp del:log_le_cancel_iff)
 next
-  case (6 x b a lb rb ra)
-  hence 0: "x \<notin> set_tree rb \<and> x \<notin> set_tree ra" using "6.prems"(1) by auto
-  hence 1: "x \<in> set_tree lb" using "6.prems" \<open>x<b\<close> by (auto)
-  obtain lu u ru where sp: "splay x lb = Node lu u ru"
-    using splay_not_Leaf[OF \<open>lb \<noteq> Leaf\<close>] by blast
-  let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node ?B a ra"
-  let ?R = lb  let ?R' = "Node lu u ru"
-  let ?A' = "Node rb a ra"  let ?B' = "Node ru b ?A'"
-  have "a_splay x ?A = a_splay x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
+  case (6 x b c AB C D)
+  hence 0: "x \<notin> set_tree C \<and> x \<notin> set_tree D" using "6.prems"(1) by auto
+  hence 1: "x \<in> set_tree AB" using "6.prems" \<open>x<b\<close> by (auto)
+  obtain A a B where sp: "splay x AB = Node A a B"
+    using splay_not_Leaf[OF \<open>AB \<noteq> Leaf\<close>] by blast
+  let ?X = "Node l x r" let ?ABC = "Node AB b C"  let ?ABCD = "Node ?ABC c D"
+  let ?AB = "Node A a B"
+  let ?CD = "Node C c D"  let ?BCD = "Node B b ?CD"
+  have "a_splay x ?ABCD = a_splay x AB + \<phi> ?BCD + \<phi> ?CD - \<phi> ?ABC - \<phi> ?AB + 1"
     using "6.prems" 1 sp
     by(auto simp: a_splay_def size_if_splay algebra_simps split: tree.split)
-  also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?X + 2"
+  also have "\<dots> \<le> 3 * \<phi> AB + \<phi> ?BCD + \<phi> ?CD - \<phi> ?ABC - \<phi> ?AB - 3 * \<phi> ?X + 2"
     using 6 0 by(auto simp: algebra_simps)
-  also have "\<dots> = 2 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - 3 * \<phi> ?X + 2"
+  also have "\<dots> = 2 * \<phi> AB + \<phi> ?BCD + \<phi> ?CD - \<phi> ?ABC - 3 * \<phi> ?X + 2"
     using sp by(simp add: size_if_splay)
-  also have "\<dots> \<le> \<phi> ?R + \<phi> ?B' + \<phi> ?A' - 3 * \<phi> ?X + 2" by(simp)
-  also have "\<dots> \<le> \<phi> ?B' + 2 * \<phi> ?A - 3 * \<phi> ?X + 1"
-    using sp ld_ld_1_less[of "size1 ?R" "size1 ?A'"]
+  also have "\<dots> \<le> \<phi> AB + \<phi> ?BCD + \<phi> ?CD - 3 * \<phi> ?X + 2" by(simp)
+  also have "\<dots> \<le> \<phi> ?BCD + 2 * \<phi> ?ABCD - 3 * \<phi> ?X + 1"
+    using sp ld_ld_1_less[of "size1 AB" "size1 ?CD"]
     by(simp add: size_if_splay)
-  also have "\<dots> \<le> 3 * \<phi> ?A - 3 * \<phi> ?X + 1"
+  also have "\<dots> \<le> 3 * \<phi> ?ABCD - 3 * \<phi> ?X + 1"
     using sp by(simp add: size_if_splay)
   finally show ?case by simp
 next
-  case (8 b x a rb lb ra)
-  hence 0: "x \<notin> set_tree lb \<and> x \<notin> set_tree ra"
-    using "8.prems"(1) \<open>x < a\<close> by(auto)
-  hence 1: "x \<in> set_tree rb" using "8.prems" \<open>b<x\<close> \<open>x<a\<close> by (auto)
-  obtain lu u ru where sp: "splay x rb = Node lu u ru"
-     using splay_not_Leaf[OF \<open>rb \<noteq> Leaf\<close>] by blast
-  let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node ?B a ra"
-  let ?R = rb  let ?R' = "Node lu u ru"
-  let ?B' = "Node lb b lu"  let ?A' = "Node ru a ra"
-  have "a_splay x ?A = a_splay x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
+  case (8 a x c BC A D)
+  hence 0: "x \<notin> set_tree A \<and> x \<notin> set_tree D"
+    using "8.prems"(1) \<open>x < c\<close> by(auto)
+  hence 1: "x \<in> set_tree BC" using "8.prems" \<open>a<x\<close> \<open>x<c\<close> by (auto)
+  obtain B b C where sp: "splay x BC = Node B b C"
+     using splay_not_Leaf[OF \<open>BC \<noteq> Leaf\<close>] by blast
+  let ?X = "Node l x r" let ?ABC = "Node A a BC"  let ?ABCD = "Node ?ABC c D"
+  let ?BC = "Node B b C"
+  let ?AB = "Node A a B"  let ?CD = "Node C c D"
+  have "a_splay x ?ABCD = a_splay x BC + \<phi> ?AB + \<phi> ?CD - \<phi> ?ABC - \<phi> ?BC + 1"
     using "8.prems" 1 sp
     by(auto simp: a_splay_def size_if_splay algebra_simps split: tree.split)
-  also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?X + 2"
+  also have "\<dots> \<le> 3 * \<phi> BC + \<phi> ?AB + \<phi> ?CD - \<phi> ?ABC - \<phi> ?BC - 3 * \<phi> ?X + 2"
     using 8 0 by(auto simp: algebra_simps)
-  also have "\<dots> = 2 * \<phi> rb + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - 3 * \<phi> ?X + 2"
+  also have "\<dots> = 2 * \<phi> BC + \<phi> ?AB + \<phi> ?CD - \<phi> ?ABC - 3 * \<phi> ?X + 2"
     using sp by(simp add: size_if_splay)
-  also have "\<dots> \<le> \<phi> rb + \<phi> ?B' + \<phi> ?A' - 3 * \<phi> ?X + 2" by(simp)
-  also have "\<dots> \<le> \<phi> rb + 2 * \<phi> ?A - 3 * \<phi> ?X + 1"
-    using sp ld_ld_1_less[of "size1 ?B'" "size1 ?A'"]
+  also have "\<dots> \<le> \<phi> BC + \<phi> ?AB + \<phi> ?CD - 3 * \<phi> ?X + 2" by(simp)
+  also have "\<dots> \<le> \<phi> BC + 2 * \<phi> ?ABCD - 3 * \<phi> ?X + 1"
+    using sp ld_ld_1_less[of "size1 ?AB" "size1 ?CD"]
     by(simp add: size_if_splay)
-  also have "\<dots> \<le> 3 * \<phi> ?A - 3 * \<phi> ?X + 1" by(simp)
+  also have "\<dots> \<le> 3 * \<phi> ?ABCD - 3 * \<phi> ?X + 1" by(simp)
   finally show ?case by simp
 next
-  case (11 a x b lb la rb)
-  hence 0: "x \<notin> set_tree rb \<and> x \<notin> set_tree la"
+  case (11 a x c BC A D)
+  hence 0: "x \<notin> set_tree D \<and> x \<notin> set_tree A"
     using "11.prems"(1) \<open>a<x\<close> by (auto)
-  hence 1: "x \<in> set_tree lb" using "11.prems" \<open>a<x\<close> \<open>x<b\<close> by (auto)
-  obtain lu u ru where sp: "splay x lb = Node lu u ru"
-    using splay_not_Leaf[OF \<open>lb \<noteq> Leaf\<close>] by blast
-  let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node la a ?B"
-  let ?R = lb  let ?R' = "Node lu u ru"
-  let ?B' = "Node ru b rb"  let ?A' = "Node la a lu"
-  have "a_splay x ?A = a_splay x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
+  hence 1: "x \<in> set_tree BC" using "11.prems" \<open>a<x\<close> \<open>x<c\<close> by (auto)
+  obtain B b C where sp: "splay x BC = Node B b C"
+    using splay_not_Leaf[OF \<open>BC \<noteq> Leaf\<close>] by blast
+  let ?X = "Node l x r" let ?BCD = "Node BC c D"  let ?ABCD = "Node A a ?BCD"
+  let ?BC = "Node B b C"
+  let ?CD = "Node C c D"  let ?AB = "Node A a B"
+  have "a_splay x ?ABCD = a_splay x BC + \<phi> ?CD + \<phi> ?AB - \<phi> ?BCD - \<phi> ?BC + 1"
     using "11.prems" 1 sp
     by(auto simp: a_splay_def size_if_splay algebra_simps split: tree.split)
-  also have "\<dots> \<le> 3 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' - 3 * \<phi> ?X + 2"
+  also have "\<dots> \<le> 3 * \<phi> BC + \<phi> ?CD + \<phi> ?AB - \<phi> ?BCD - \<phi> ?BC - 3 * \<phi> ?X + 2"
     using 11 0 by(auto simp: algebra_simps)
-  also have "\<dots> = 2 * \<phi> ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - 3 * \<phi> ?X + 2"
+  also have "\<dots> = 2 * \<phi> BC + \<phi> ?CD + \<phi> ?AB - \<phi> ?BCD - 3 * \<phi> ?X + 2"
     using sp by(simp add: size_if_splay)
-  also have "\<dots> \<le> \<phi> ?R + \<phi> ?B' + \<phi> ?A' - 3 * \<phi> ?X + 2" by(simp)
-  also have "\<dots> \<le> \<phi> ?R + 2 * \<phi> ?A - 3 * \<phi> ?X + 1"
-    using sp ld_ld_1_less[of "size1 ?B'" "size1 ?A'"]
+  also have "\<dots> \<le> \<phi> BC + \<phi> ?CD + \<phi> ?AB - 3 * \<phi> ?X + 2" by(simp)
+  also have "\<dots> \<le> \<phi> BC + 2 * \<phi> ?ABCD - 3 * \<phi> ?X + 1"
+    using sp ld_ld_1_less[of "size1 ?CD" "size1 ?AB"]
     by(simp add: size_if_splay algebra_simps)
-  also have "\<dots> \<le> 3 * \<phi> ?A - 3 * \<phi> ?X + 1" by(simp)
+  also have "\<dots> \<le> 3 * \<phi> ?ABCD - 3 * \<phi> ?X + 1" by(simp)
   finally show ?case by simp
 next
-  case (14 a x b rb la lb)
-  hence 0: "x \<notin> set_tree lb \<and> x \<notin> set_tree la"
+  case (14 a x b CD A B)
+  hence 0: "x \<notin> set_tree B \<and> x \<notin> set_tree A"
     using "14.prems"(1) \<open>b<x\<close> by(auto)
-  hence 1: "x \<in> set_tree rb" using "14.prems" \<open>b<x\<close> \<open>a<x\<close> by (auto)
-  obtain lu u ru where sp: "splay x rb = Node lu u ru"
-    using splay_not_Leaf[OF \<open>rb \<noteq> Leaf\<close>] by blast
-  from zig_zig[of rb x ru lu lx rx _ b lb a la] 14 sp 0
+  hence 1: "x \<in> set_tree CD" using "14.prems" \<open>b<x\<close> \<open>a<x\<close> by (auto)
+  obtain C c D where sp: "splay x CD = Node C c D"
+    using splay_not_Leaf[OF \<open>CD \<noteq> Leaf\<close>] by blast
+  from zig_zig[of CD x D C l r _ b B a A] 14 sp 0
   show ?case by(auto simp: a_splay_def size_if_splay algebra_simps)
 (* The explicit version:
   have "a_splay x ?A = a_splay x ?R + \<phi> ?B' + \<phi> ?A' - \<phi> ?B - \<phi> ?R' + 1"
