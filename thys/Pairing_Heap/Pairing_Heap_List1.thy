@@ -69,9 +69,13 @@ declare pass12_merge_pairs[code_unfold]
 
 subsubsection \<open>Invariants\<close>
 
+fun mset_heap :: "'a heap \<Rightarrow>'a multiset" where
+"mset_heap Empty = {#}" |
+"mset_heap (Hp x hs) = {#x#} + Union_mset(mset(map mset_heap hs))"
+
 fun pheap :: "('a :: linorder) heap \<Rightarrow> bool" where
 "pheap Empty = True" |
-"pheap (Hp x hs) = (\<forall>h \<in> set hs. (\<forall>y \<in> set_heap h. x \<le> y) \<and> pheap h)"
+"pheap (Hp x hs) = (\<forall>h \<in> set hs. (\<forall>y \<in># mset_heap h. x \<le> y) \<and> pheap h)"
 
 lemma pheap_merge: "pheap h1 \<Longrightarrow> pheap h2 \<Longrightarrow> pheap (merge h1 h2)"
 by (induction h1 h2 rule: merge.induct) fastforce+
@@ -91,24 +95,17 @@ by(induction h rule: del_min.induct) (auto intro!: pheap_pass1 pheap_pass2)
 
 subsubsection \<open>Functional Correctness\<close>
 
-fun mset_heap :: "'a heap \<Rightarrow>'a multiset" where
-"mset_heap Empty = {#}" |
-"mset_heap (Hp x hs) = {#x#} + Union_mset(mset(map mset_heap hs))"
-
-lemma set_mset_mset_heap: "set_mset (mset_heap h) = set_heap h"
-by(induction h) auto
-
 lemma mset_heap_empty_iff: "mset_heap h = {#} \<longleftrightarrow> h = Empty"
 by (cases h) auto
 
-lemma get_min_in: "h \<noteq> Empty \<Longrightarrow> get_min h \<in> set_heap(h)"
+lemma get_min_in: "h \<noteq> Empty \<Longrightarrow> get_min h \<in># mset_heap(h)"
 by(induction rule: get_min.induct)(auto)
 
-lemma get_min_min: "\<lbrakk> h \<noteq> Empty; pheap h; x \<in> set_heap(h) \<rbrakk> \<Longrightarrow> get_min h \<le> x"
+lemma get_min_min: "\<lbrakk> h \<noteq> Empty; pheap h; x \<in># mset_heap(h) \<rbrakk> \<Longrightarrow> get_min h \<le> x"
 by(induction h rule: get_min.induct)(auto)
 
 lemma get_min: "\<lbrakk> pheap h;  h \<noteq> Empty \<rbrakk> \<Longrightarrow> get_min h = Min_mset (mset_heap h)"
-by (metis Min_eqI finite_set_mset get_min_in get_min_min set_mset_mset_heap)
+by (metis Min_eqI finite_set_mset get_min_in get_min_min )
 
 lemma mset_merge: "mset_heap (merge h1 h2) = mset_heap h1 + mset_heap h2"
 by(induction h1 h2 rule: merge.induct)(auto simp: add_ac)
