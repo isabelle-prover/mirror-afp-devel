@@ -159,7 +159,7 @@ fun dp_fun_part1_cmd ((scope, tm_str), (mem_locale_instance_opt)) lthy =
       end
 
     val lthy = lthy_f lthy
-   val lthy = Transform_Data.add_tmp_cmd_info (scope, tm, mem_locale_opt') lthy
+   val lthy = Transform_Data.add_tmp_cmd_info (Binding.reset_pos scope, tm, mem_locale_opt') lthy
     
   in
     lthy
