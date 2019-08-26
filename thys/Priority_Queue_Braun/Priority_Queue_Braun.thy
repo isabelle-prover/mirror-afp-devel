@@ -176,7 +176,7 @@ proof(cases t rule: del_min.cases)
   thus ?thesis by(auto split: prod.split)
 qed (insert assms, auto)
 
-lemma mset_del_min: assumes "braun t" "heap t" "t \<noteq> Leaf"
+lemma mset_del_min: assumes "braun t" "t \<noteq> Leaf"
 shows "mset_tree(del_min t) = mset_tree t - {#value t#}"
 proof(cases t rule: del_min.cases)
   case 1 with assms show ?thesis by simp
