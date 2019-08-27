@@ -7,7 +7,7 @@
 section \<open>The Master theorem\<close>
 theory Master_Theorem
 imports
-  "HOL-Analysis.Ordered_Euclidian_Space"
+  "HOL-Analysis.Ordered_Euclidean_Space"
   Akra_Bazzi_Library
   Akra_Bazzi
 begin
