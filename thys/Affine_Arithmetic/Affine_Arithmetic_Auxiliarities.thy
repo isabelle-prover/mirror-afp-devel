@@ -1,5 +1,5 @@
 theory Affine_Arithmetic_Auxiliarities
-imports "HOL-Analysis.Analysis"
+imports "HOL-Analysis.Ordered_Euclidian_Space"
 begin
 
 subsection \<open>@{term sum_list}\<close>
