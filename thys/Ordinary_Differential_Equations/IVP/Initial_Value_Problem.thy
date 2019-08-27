@@ -885,10 +885,10 @@ lemma
 proof goal_cases
   case 1
   obtain g where
-    "tmin \<le> t \<Longrightarrow> t \<le> tmax \<Longrightarrow> apply_bcontfun g t = P_inner (apply_bcontfun x) t"
+    "t \<in> {tmin .. tmax} \<Longrightarrow> apply_bcontfun g t = P_inner (apply_bcontfun x) t"
     "apply_bcontfun g t = P_inner (apply_bcontfun x) (clamp tmin tmax t)"
     for t
-    by (metis continuous_on_interval_bcontfunE[OF cont_P_inner_ivl[OF assms(1)]])
+    by (metis continuous_on_cbox_bcontfunE cont_P_inner_ivl[OF assms(1)] cbox_interval)
   with T_def have "\<exists>g::real\<Rightarrow>\<^sub>C 'a.
     (\<forall>t \<in> T. g t = P_inner x t) \<and>
     (\<forall>t\<le>tmin. g t = P_inner x tmin) \<and>
@@ -1147,22 +1147,22 @@ lemma solves_ode_equals_fixed_point:
   shows "x t = fixed_point t"
 proof -
   from solves_ode_continuous_on[OF ode] T_def
-  have "continuous_on {tmin .. tmax} x" by simp
-  from continuous_on_interval_bcontfunE[OF this]
+  have "continuous_on (cbox tmin tmax) x" by simp
+  from continuous_on_cbox_bcontfunE[OF this]
   obtain g where g:
-    "tmin \<le> t \<Longrightarrow> t \<le> tmax \<Longrightarrow> apply_bcontfun g t = x t"
+    "t \<in> {tmin .. tmax} \<Longrightarrow> apply_bcontfun g t = x t"
     "apply_bcontfun g t = x (clamp tmin tmax t)"
     for t
-    by metis
+    by (metis interval_cbox)
   with ode T_def have ode_g: "(g solves_ode f) T X"
-    by (metis (no_types, lifting) solves_ode_cong tmax(1) tmin(1))
+    by (metis (no_types, lifting) solves_ode_cong)
   have "x t = g t"
     using t T_def
     by (intro g[symmetric]) auto
   also
   have "g t0 = x0" "g \<in> T \<rightarrow>\<^sub>C X"
     using iv g solves_odeD(2)[OF ode_g]
-    unfolding mem_PiC_iff
+    unfolding mem_PiC_iff atLeastAtMost_iff
     by blast+
   then have "g \<in> iter_space"
     by (intro iter_spaceI)
