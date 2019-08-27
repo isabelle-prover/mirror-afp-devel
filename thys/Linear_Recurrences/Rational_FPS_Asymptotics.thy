@@ -5,7 +5,6 @@
 theory Rational_FPS_Asymptotics
 imports
   "HOL-Library.Landau_Symbols"
-  "HOL-Analysis.Analysis"
   "Polynomial_Factorization.Square_Free_Factorization"
   "HOL-Real_Asymp.Real_Asymp"
   "Count_Complex_Roots.Count_Complex_Roots"
