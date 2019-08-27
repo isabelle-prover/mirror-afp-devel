@@ -1,6 +1,6 @@
 section \<open>Library Additions\<close>
 theory Analysis_More
-  imports "HOL-Analysis.Analysis"
+  imports "HOL-Analysis.Equivalence_Lebesgue_Henstock_Integration"
     "HOL-Library.Function_Algebras"
     "HOL-Types_To_Sets.Linear_Algebra_On"
 begin

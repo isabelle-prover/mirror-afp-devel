@@ -9,7 +9,7 @@ section \<open>Miscellaneous Mathematics\<close>
 
 theory Misc 
 imports 
-  "HOL-Analysis.Analysis"
+  "HOL-Analysis.Ordered_Euclidean_Space"
 begin
 
 text_raw \<open>\label{s:misc}\<close>

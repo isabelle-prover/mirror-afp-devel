@@ -1,6 +1,7 @@
 section \<open>Bump Functions\<close>
 theory Bump_Function
   imports Smooth
+    "HOL-Analysis.Weierstrass_Theorems"
 begin
 
 subsection \<open>Construction\<close>

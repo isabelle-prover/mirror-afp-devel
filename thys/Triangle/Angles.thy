@@ -8,7 +8,7 @@
 section \<open>Definition of angles\<close>
 theory Angles
 imports
-  "HOL-Analysis.Analysis"
+  "HOL-Analysis.Ordered_Euclidean_Space"
 begin
 
 lemma collinear_translate_iff: "collinear (((+) a) ` A) \<longleftrightarrow> collinear A"

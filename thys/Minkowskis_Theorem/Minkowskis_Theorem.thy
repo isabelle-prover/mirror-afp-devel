@@ -7,7 +7,7 @@
 *)
 section \<open>Minkowski's theorem\<close>
 theory Minkowskis_Theorem
-  imports "HOL-Analysis.Analysis"
+  imports "HOL-Analysis.Equivalence_Lebesgue_Henstock_Integration"
 begin
 
 (* Could be generalised to arbitrary euclidean spaces and full-dimensional lattices *)

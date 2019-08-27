@@ -6,7 +6,9 @@ and real inner product spaces. And therefore they inherit a great body of facts 
 laws, limits, continuity, etc., which must be proved explicitly in the HOL Light version. 
 The development concludes with the geometric interpretation of the product of imaginary quaternions.\<close>
 theory "Quaternions"
-  imports "HOL-Analysis.Analysis"
+  imports
+    "HOL-Analysis.Ordered_Euclidean_Space"
+    "HOL-Analysis.Cross3"
 begin
 
 subsection\<open>Basic definitions\<close>

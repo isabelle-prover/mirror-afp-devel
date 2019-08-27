@@ -4,7 +4,7 @@
 
 section \<open>The transcendence of certain infinite series\<close>
 theory "Transcendence_Series" imports
-    "HOL-Analysis.Analysis"
+    "HOL-Analysis.Ordered_Euclidean_Space"
     "HOL-Computational_Algebra.Polynomial"
     Prime_Number_Theorem.Prime_Number_Theorem_Library
 begin

@@ -1,7 +1,7 @@
 section \<open>Topology for Floating Point Numbers\<close>
 theory Float_Topology
   imports
-    "HOL-Analysis.Analysis"
+    "HOL-Analysis.Ordered_Euclidean_Space"
     "HOL-Library.Float"
 begin
 

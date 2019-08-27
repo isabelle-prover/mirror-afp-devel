@@ -4,7 +4,7 @@
 
 section \<open>Some useful lemmas in topology\<close>
 
-theory Missing_Topology imports "HOL-Analysis.Analysis"
+theory Missing_Topology imports "HOL-Analysis.Ordered_Euclidean_Space"
 begin
 
 subsection \<open>Misc\<close>    

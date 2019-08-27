@@ -4,7 +4,7 @@ section \<open>Ptolemy's Theorem\<close>
 
 theory Ptolemys_Theorem
 imports
-  "HOL-Analysis.Analysis"
+  "HOL-Analysis.Ordered_Euclidean_Space"
 begin
 
 subsection \<open>Preliminaries\<close>
