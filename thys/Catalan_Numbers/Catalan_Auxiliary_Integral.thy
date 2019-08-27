@@ -1,7 +1,7 @@
 section \<open>Catalan numbers\<close>
 
 theory Catalan_Auxiliary_Integral
-imports "HOL-Analysis.Analysis"
+imports "HOL-Analysis.Equivalence_Lebesgue_Henstock_Integration"
 begin
 
 subsection \<open>Auxiliary integral\<close>
