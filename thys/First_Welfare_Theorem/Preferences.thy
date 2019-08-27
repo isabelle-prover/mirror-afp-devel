@@ -10,7 +10,7 @@ text \<open> Preferences modeled as a set of pairs \<close>
 
 theory Preferences
   imports
-    "HOL-Analysis.Analysis"
+    "HOL-Analysis.Ordered_Euclidean_Space"
     Syntax
 begin
 

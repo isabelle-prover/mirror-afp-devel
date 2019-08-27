@@ -11,9 +11,7 @@ text \<open> Utility functions and results involving them. \<close>
 
 theory Utility_Functions
   imports
-    Syntax
     Preferences
-    "HOL-Analysis.Analysis"
 begin
 
 
