@@ -75,6 +75,7 @@ proof -
   have "(\<Sum>i = 0..degree P. coeff P i *k matpow A i) = (\<Sum>i\<in>{0..int (degree P)}. coeff P (nat i) *k matpow A (nat i))"
     by (rule sum.reindex_cong [of nat])
       (auto simp add: eq_nat_nat_iff image_iff intro: inj_onI, presburger)
+(* TODO: why does the proof step above need all of Analysis?? *)
   also have "\<dots> = ?rhs"
     by (simp add: sum_set_upto_conv_sum_list_int [symmetric])
   finally show ?thesis
