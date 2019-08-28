@@ -6,7 +6,7 @@
 section "Metric and semimetric spaces"
 
 theory Metric
-imports "HOL-Analysis.Analysis"
+imports "HOL-Analysis.Multivariate_Analysis"
 begin
 
 locale semimetric =

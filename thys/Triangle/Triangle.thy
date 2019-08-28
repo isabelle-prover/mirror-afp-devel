@@ -9,8 +9,6 @@
 section \<open>Basic Properties of Triangles\<close>
 theory Triangle
 imports
-  Complex_Main
-  "HOL-Analysis.Topology_Euclidean_Space"
   Angles
 begin
 
