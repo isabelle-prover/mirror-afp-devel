@@ -12,10 +12,23 @@ imports
   "HOL-Library.Code_Target_Numeral"
 begin
 
+subsection \<open>Hashing Sets\<close>
+
+global_interpretation comp_fun_commute "plus o cube o hashcode :: ('a :: hashable) \<Rightarrow> hashcode \<Rightarrow> hashcode"
+  by unfold_locales (auto simp: cube_def)
+
+lemma [code]:
+  "hashcode (set xs) = fold (plus o cube o hashcode) (remdups xs) (uint32_of_nat (length (remdups xs)))"
+  by (simp add: fold_set_fold_remdups length_remdups_card_conv)
+
+lemma [code]:
+  "hashcode (abs_ltln\<^sub>P \<phi>) = hashcode (min_dnf \<phi>)"
+  by simp
+
+
 subsection \<open>LTL to DRA\<close>
 
 export_code ltlc_to_draei checking
-
 
 declare ltl_to_dra.af_letter\<^sub>F_lifted_semantics [code]
 declare ltl_to_dra.af_letter\<^sub>G_lifted_semantics [code]

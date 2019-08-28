@@ -4,6 +4,7 @@ session LTL_Master_Theorem (AFP) = "Transition_Systems_and_Automata" +
   options [timeout = 600]
   sessions
     LTL
+    Deriving
   theories
     "Logical_Characterization/Master_Theorem"
     "Logical_Characterization/Asymmetric_Master_Theorem"

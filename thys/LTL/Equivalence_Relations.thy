@@ -384,6 +384,20 @@ lemma nested_prop_atoms_subfrmlsn:
   "nested_prop_atoms \<phi> \<subseteq> subfrmlsn \<phi>"
   by (induction \<phi>) auto
 
+lemma prop_atoms_notin[simp]:
+  "true\<^sub>n \<notin> prop_atoms \<phi>"
+  "false\<^sub>n \<notin> prop_atoms \<phi>"
+  "\<phi>\<^sub>1 and\<^sub>n \<phi>\<^sub>2 \<notin> prop_atoms \<phi>"
+  "\<phi>\<^sub>1 or\<^sub>n \<phi>\<^sub>2 \<notin> prop_atoms \<phi>"
+  by (induction \<phi>) auto
+
+lemma nested_prop_atoms_notin[simp]:
+  "true\<^sub>n \<notin> nested_prop_atoms \<phi>"
+  "false\<^sub>n \<notin> nested_prop_atoms \<phi>"
+  "\<phi>\<^sub>1 and\<^sub>n \<phi>\<^sub>2 \<notin> nested_prop_atoms \<phi>"
+  "\<phi>\<^sub>1 or\<^sub>n \<phi>\<^sub>2 \<notin> nested_prop_atoms \<phi>"
+  by (induction \<phi>) auto
+
 lemma prop_atoms_finite:
   "finite (prop_atoms \<phi>)"
   by (induction \<phi>) auto
@@ -392,11 +406,15 @@ lemma nested_prop_atoms_finite:
   "finite (nested_prop_atoms \<phi>)"
   by (induction \<phi>) auto
 
-lemma prop_atoms_entailment:
+lemma prop_atoms_entailment_iff:
+  "\<phi> \<in> prop_atoms \<psi> \<Longrightarrow> \<A> \<Turnstile>\<^sub>P \<phi> \<longleftrightarrow> \<phi> \<in> \<A>"
+  by (induction \<phi>) auto
+
+lemma prop_atoms_entailment_inter:
   "prop_atoms \<phi> \<subseteq> P \<Longrightarrow> (\<A> \<inter> P) \<Turnstile>\<^sub>P \<phi> = \<A> \<Turnstile>\<^sub>P \<phi>"
   by (induction \<phi>) auto
 
-lemma nested_prop_atoms_entailment:
+lemma nested_prop_atoms_entailment_inter:
   "nested_prop_atoms \<phi> \<subseteq> P \<Longrightarrow> (\<A> \<inter> P) \<Turnstile>\<^sub>P \<phi> = \<A> \<Turnstile>\<^sub>P \<phi>"
   by (induction \<phi>) auto
 
@@ -414,7 +432,7 @@ proof -
     by (auto simp: sat_models_Abs)
 
   with assms show "\<phi> \<sim>\<^sub>P \<psi>"
-    by (simp add: prop_atoms_entailment ltl_prop_equiv_def)
+    by (simp add: prop_atoms_entailment_inter ltl_prop_equiv_def)
 qed
 
 lemma sat_models_inter_inj:

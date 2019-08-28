@@ -11,15 +11,17 @@ imports
   LTL Equivalence_Relations "HOL-Library.FSet"
 begin
 
-text \<open>We use the propositional representation of LTL formulas to define
-      the minimal disjunctive normal form of our formulas. For this purpose
-      we define the minimal product $\otimes_m$ and union $\cup_m$.
-      In the end we show that for a set $\mathcal{A}$ of literals,
-      $\mathcal{A} \models \varphi$ if, and only if, there exists a subset
-      of $\mathcal{A}$ in the minimal DNF of $\varphi$.\<close>
+text \<open>
+  We use the propositional representation of LTL formulas to define
+  the minimal disjunctive normal form of our formulas. For this purpose
+  we define the minimal product \<open>\<otimes>\<^sub>m\<close> and union \<open>\<union>\<^sub>m\<close>.
+  In the end we show that for a set \<open>\<A>\<close> of literals,
+  @{term "\<A> \<Turnstile>\<^sub>P \<phi>"} if, and only if, there exists a subset
+  of \<open>\<A>\<close> in the minimal DNF of \<open>\<phi>\<close>.
+\<close>
 
 
-subsection \<open>Definition on minimum sets\<close>
+subsection \<open>Definition of Minimum Sets\<close>
 
 definition (in ord) min_set :: "'a set \<Rightarrow> 'a set" where
   "min_set X = {y \<in> X. \<forall>x \<in> X. x \<le> y \<longrightarrow> x = y}"
@@ -273,7 +275,6 @@ next
     by fastforce
 qed
 
-
 lemma min_product_set_insert[simp]:
   "finite X \<Longrightarrow> \<Otimes>\<^sub>m (insert x X) = x \<otimes>\<^sub>m (\<Otimes>\<^sub>m X)"
   unfolding min_product_set_def min_product_set_thms.fold_insert_idem ..
@@ -323,7 +324,7 @@ lemma min_union_finite:
 
 
 
-subsection \<open>Minimal Disjunctive Normal Form\<close>
+subsection \<open>Disjunctive Normal Form\<close>
 
 fun dnf :: "'a ltln \<Rightarrow> 'a ltln fset set"
 where
@@ -456,34 +457,136 @@ proof
     by auto
 qed (simp add: ltl_prop_equiv_def min_dnf_iff_prop_assignment_subset)
 
-export_code dnf min_dnf checking
+lemma min_dnf_rep_abs[simp]:
+  "min_dnf (rep_ltln\<^sub>P (abs_ltln\<^sub>P \<phi>)) = min_dnf \<phi>"
+  by (simp add: ltl_prop_equiv_min_dnf[symmetric] Quotient3_ltln\<^sub>P rep_abs_rsp_left)
 
+
+subsection \<open>Folding of \<open>and\<^sub>n\<close> and \<open>or\<^sub>n\<close> over Finite Sets\<close>
+
+definition And\<^sub>n :: "'a ltln set \<Rightarrow> 'a ltln"
+where
+  "And\<^sub>n \<Phi> \<equiv> SOME \<phi>. fold_graph And_ltln True_ltln \<Phi> \<phi>"
+
+definition Or\<^sub>n :: "'a ltln set \<Rightarrow> 'a ltln"
+where
+  "Or\<^sub>n \<Phi> \<equiv> SOME \<phi>. fold_graph Or_ltln False_ltln \<Phi> \<phi>"
+
+lemma fold_graph_And\<^sub>n:
+  "finite \<Phi> \<Longrightarrow> fold_graph And_ltln True_ltln \<Phi> (And\<^sub>n \<Phi>)"
+  unfolding And\<^sub>n_def by (rule someI2_ex[OF finite_imp_fold_graph])
+
+lemma fold_graph_Or\<^sub>n:
+  "finite \<Phi> \<Longrightarrow> fold_graph Or_ltln False_ltln \<Phi> (Or\<^sub>n \<Phi>)"
+  unfolding Or\<^sub>n_def by (rule someI2_ex[OF finite_imp_fold_graph])
+
+lemma And\<^sub>n_semantics:
+  "finite \<Phi> \<Longrightarrow> w \<Turnstile>\<^sub>n And\<^sub>n \<Phi> \<longleftrightarrow> (\<forall>\<phi> \<in> \<Phi>. w \<Turnstile>\<^sub>n \<phi>)"
+proof -
+  assume "finite \<Phi>"
+  have "\<And>\<psi>. fold_graph And_ltln True_ltln \<Phi> \<psi> \<Longrightarrow> w \<Turnstile>\<^sub>n \<psi> \<longleftrightarrow> (\<forall>\<phi> \<in> \<Phi>. w \<Turnstile>\<^sub>n \<phi>)"
+    by (rule fold_graph.induct) auto
+  then show ?thesis
+    using fold_graph_And\<^sub>n[OF \<open>finite \<Phi>\<close>] by simp
+qed
+
+lemma Or\<^sub>n_semantics:
+  "finite \<Phi> \<Longrightarrow> w \<Turnstile>\<^sub>n Or\<^sub>n \<Phi> \<longleftrightarrow> (\<exists>\<phi> \<in> \<Phi>. w \<Turnstile>\<^sub>n \<phi>)"
+proof -
+  assume "finite \<Phi>"
+  have "\<And>\<psi>. fold_graph Or_ltln False_ltln \<Phi> \<psi> \<Longrightarrow> w \<Turnstile>\<^sub>n \<psi> \<longleftrightarrow> (\<exists>\<phi> \<in> \<Phi>. w \<Turnstile>\<^sub>n \<phi>)"
+    by (rule fold_graph.induct) auto
+  then show ?thesis
+    using fold_graph_Or\<^sub>n[OF \<open>finite \<Phi>\<close>] by simp
+qed
+
+lemma And\<^sub>n_prop_semantics:
+  "finite \<Phi> \<Longrightarrow> \<A> \<Turnstile>\<^sub>P And\<^sub>n \<Phi> \<longleftrightarrow> (\<forall>\<phi> \<in> \<Phi>. \<A> \<Turnstile>\<^sub>P \<phi>)"
+proof -
+  assume "finite \<Phi>"
+  have "\<And>\<psi>. fold_graph And_ltln True_ltln \<Phi> \<psi> \<Longrightarrow> \<A> \<Turnstile>\<^sub>P \<psi> \<longleftrightarrow> (\<forall>\<phi> \<in> \<Phi>. \<A> \<Turnstile>\<^sub>P \<phi>)"
+    by (rule fold_graph.induct) auto
+  then show ?thesis
+    using fold_graph_And\<^sub>n[OF \<open>finite \<Phi>\<close>] by simp
+qed
+
+lemma Or\<^sub>n_prop_semantics:
+  "finite \<Phi> \<Longrightarrow> \<A> \<Turnstile>\<^sub>P Or\<^sub>n \<Phi> \<longleftrightarrow> (\<exists>\<phi> \<in> \<Phi>. \<A> \<Turnstile>\<^sub>P \<phi>)"
+proof -
+  assume "finite \<Phi>"
+  have "\<And>\<psi>. fold_graph Or_ltln False_ltln \<Phi> \<psi> \<Longrightarrow> \<A> \<Turnstile>\<^sub>P \<psi> \<longleftrightarrow> (\<exists>\<phi> \<in> \<Phi>. \<A> \<Turnstile>\<^sub>P \<phi>)"
+    by (rule fold_graph.induct) auto
+  then show ?thesis
+    using fold_graph_Or\<^sub>n[OF \<open>finite \<Phi>\<close>] by simp
+qed
+
+lemma Or\<^sub>n_And\<^sub>n_image_semantics:
+  assumes "finite \<A>" and "\<And>\<Phi>. \<Phi> \<in> \<A> \<Longrightarrow> finite \<Phi>"
+  shows "w \<Turnstile>\<^sub>n Or\<^sub>n (And\<^sub>n ` \<A>) \<longleftrightarrow> (\<exists>\<Phi> \<in> \<A>. \<forall>\<phi> \<in> \<Phi>. w \<Turnstile>\<^sub>n \<phi>)"
+proof -
+  have "w \<Turnstile>\<^sub>n Or\<^sub>n (And\<^sub>n ` \<A>) \<longleftrightarrow> (\<exists>\<Phi> \<in> \<A>. w \<Turnstile>\<^sub>n And\<^sub>n \<Phi>)"
+    using Or\<^sub>n_semantics assms by auto
+  then show ?thesis
+    using And\<^sub>n_semantics assms by fast
+qed
+
+lemma Or\<^sub>n_And\<^sub>n_image_prop_semantics:
+  assumes "finite \<A>" and "\<And>\<Phi>. \<Phi> \<in> \<A> \<Longrightarrow> finite \<Phi>"
+  shows "\<I> \<Turnstile>\<^sub>P Or\<^sub>n (And\<^sub>n ` \<A>) \<longleftrightarrow> (\<exists>\<Phi> \<in> \<A>. \<forall>\<phi> \<in> \<Phi>. \<I> \<Turnstile>\<^sub>P \<phi>)"
+proof -
+  have "\<I> \<Turnstile>\<^sub>P Or\<^sub>n (And\<^sub>n ` \<A>) \<longleftrightarrow> (\<exists>\<Phi> \<in> \<A>. \<I> \<Turnstile>\<^sub>P And\<^sub>n \<Phi>)"
+    using Or\<^sub>n_prop_semantics assms by blast
+  then show ?thesis
+    using And\<^sub>n_prop_semantics assms by metis
+qed
 
 
 subsection \<open>DNF to LTL conversion\<close>
 
-abbreviation And\<^sub>n :: "'a ltln list \<Rightarrow> 'a ltln"
+definition ltln_of_dnf :: "'a ltln fset set \<Rightarrow> 'a ltln"
 where
-  "And\<^sub>n xs \<equiv> foldr And_ltln xs true\<^sub>n"
+  "ltln_of_dnf \<A> = Or\<^sub>n (And\<^sub>n ` fset ` \<A>)"
 
-abbreviation Or\<^sub>n :: "'a ltln list \<Rightarrow> 'a ltln"
-where
-  "Or\<^sub>n xs \<equiv> foldr Or_ltln xs false\<^sub>n"
+lemma ltln_of_dnf_semantics:
+  assumes "finite \<A>"
+  shows "w \<Turnstile>\<^sub>n ltln_of_dnf \<A> \<longleftrightarrow> (\<exists>\<Phi> \<in> \<A>. \<forall>\<phi>. \<phi> |\<in>| \<Phi> \<longrightarrow> w \<Turnstile>\<^sub>n \<phi>)"
+proof -
+  have "finite (fset ` \<A>)"
+    using assms by blast
 
-lemma And\<^sub>n_semantics:
-  "w \<Turnstile>\<^sub>n And\<^sub>n xs \<longleftrightarrow> (\<forall>x \<in> set xs. w \<Turnstile>\<^sub>n x)"
-  by (induction xs) auto
+  then have "w \<Turnstile>\<^sub>n ltln_of_dnf \<A> \<longleftrightarrow> (\<exists>\<Phi> \<in> fset ` \<A>. \<forall>\<phi> \<in> \<Phi>. w \<Turnstile>\<^sub>n \<phi>)"
+    unfolding ltln_of_dnf_def using Or\<^sub>n_And\<^sub>n_image_semantics by fastforce
 
-lemma Or\<^sub>n_semantics:
-  "w \<Turnstile>\<^sub>n Or\<^sub>n xs \<longleftrightarrow> (\<exists>x \<in> set xs. w \<Turnstile>\<^sub>n x)"
-  by (induction xs) auto
+  then show ?thesis
+    by (metis image_iff notin_fset)
+qed
 
-lemma And\<^sub>n_prop_entailment:
-  "\<A> \<Turnstile>\<^sub>P And\<^sub>n xs \<longleftrightarrow> (\<forall>x \<in> set xs. \<A> \<Turnstile>\<^sub>P x)"
-  by (induction xs) auto
+lemma ltln_of_dnf_prop_semantics:
+  assumes "finite \<A>"
+  shows "\<I> \<Turnstile>\<^sub>P ltln_of_dnf \<A> \<longleftrightarrow> (\<exists>\<Phi> \<in> \<A>. \<forall>\<phi>. \<phi> |\<in>| \<Phi> \<longrightarrow> \<I> \<Turnstile>\<^sub>P \<phi>)"
+proof -
+  have "finite (fset ` \<A>)"
+    using assms by blast
 
-lemma Or\<^sub>n_prop_entailment:
-  "\<A> \<Turnstile>\<^sub>P Or\<^sub>n xs \<longleftrightarrow> (\<exists>x \<in> set xs. \<A> \<Turnstile>\<^sub>P x)"
-  by (induction xs) auto
+  then have "\<I> \<Turnstile>\<^sub>P ltln_of_dnf \<A> \<longleftrightarrow> (\<exists>\<Phi> \<in> fset ` \<A>. \<forall>\<phi> \<in> \<Phi>. \<I> \<Turnstile>\<^sub>P \<phi>)"
+    unfolding ltln_of_dnf_def using Or\<^sub>n_And\<^sub>n_image_prop_semantics by fastforce
+
+  then show ?thesis
+    by (metis image_iff notin_fset)
+qed
+
+lemma ltln_of_dnf_prop_equiv:
+  "ltln_of_dnf (min_dnf \<phi>) \<sim>\<^sub>P \<phi>"
+  unfolding ltl_prop_equiv_def
+proof
+  fix \<A>
+  have "\<A> \<Turnstile>\<^sub>P ltln_of_dnf (min_dnf \<phi>) \<longleftrightarrow> (\<exists>\<Phi> \<in> min_dnf \<phi>. \<forall>\<phi>. \<phi> |\<in>| \<Phi> \<longrightarrow> \<A> \<Turnstile>\<^sub>P \<phi>)"
+    using ltln_of_dnf_prop_semantics min_dnf_finite by metis
+  also have "\<dots> \<longleftrightarrow> (\<exists>\<Phi> \<in> min_dnf \<phi>. fset \<Phi> \<subseteq> \<A>)"
+    by (metis min_dnf_prop_atoms prop_atoms_entailment_iff notin_fset subset_eq)
+  also have "\<dots> \<longleftrightarrow> \<A> \<Turnstile>\<^sub>P \<phi>"
+    using min_dnf_iff_prop_assignment_subset by blast
+  finally show "\<A> \<Turnstile>\<^sub>P ltln_of_dnf (min_dnf \<phi>) = \<A> \<Turnstile>\<^sub>P \<phi>" .
+qed
 
 end
