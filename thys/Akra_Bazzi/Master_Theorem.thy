@@ -7,7 +7,7 @@
 section \<open>The Master theorem\<close>
 theory Master_Theorem
 imports
-  "HOL-Analysis.Analysis"
+  "HOL-Analysis.Equivalence_Lebesgue_Henstock_Integration"
   Akra_Bazzi_Library
   Akra_Bazzi
 begin

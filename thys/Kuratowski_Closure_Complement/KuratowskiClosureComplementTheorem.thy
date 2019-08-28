@@ -1,7 +1,7 @@
 (*<*)
 theory KuratowskiClosureComplementTheorem
 imports
-  "HOL-Analysis.Analysis"
+  "HOL-Analysis.Ordered_Euclidean_Space"
 begin
 
 (*>*)

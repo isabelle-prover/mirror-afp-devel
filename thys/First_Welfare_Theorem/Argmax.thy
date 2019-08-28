@@ -5,7 +5,7 @@ section \<open>Arg Min and Arg Max sets\<close>
 
 theory Argmax
   imports
-    "HOL-Analysis.Analysis"
+    "Complex_Main"
 begin
 
 subsection \<open> Definitions and Lemmas by Julian Parsert \<close>

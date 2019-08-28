@@ -3,9 +3,7 @@
 section \<open>Intersecting Chord Theorem\<close>
 
 theory Chord_Segments
-imports
-  "HOL-Analysis.Analysis"
-  Triangle.Triangle
+imports Triangle.Triangle
 begin
 
 subsection \<open>Preliminaries\<close>

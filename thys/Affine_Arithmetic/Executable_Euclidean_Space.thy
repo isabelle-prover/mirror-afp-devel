@@ -1,7 +1,7 @@
 section \<open>Euclidean Space: Executability\<close>
 theory Executable_Euclidean_Space
 imports
-  "HOL-Analysis.Analysis"
+  "HOL-Analysis.Ordered_Euclidean_Space"
   "List-Index.List_Index"
   "HOL-Library.Float"
   Affine_Arithmetic_Auxiliarities

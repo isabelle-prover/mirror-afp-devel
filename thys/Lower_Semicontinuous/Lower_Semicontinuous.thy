@@ -5,7 +5,7 @@
 section \<open>Lower semicontinuous functions\<close>
 
 theory Lower_Semicontinuous
-imports "HOL-Analysis.Analysis"
+imports "HOL-Analysis.Ordered_Euclidean_Space"
 begin
 
 subsection\<open>Relative interior in one dimension\<close>

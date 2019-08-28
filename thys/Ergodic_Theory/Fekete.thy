@@ -5,7 +5,7 @@
 section \<open>Subadditive and submultiplicative sequences\<close>
 
 theory Fekete
-  imports "HOL-Analysis.Analysis"
+  imports "HOL-Analysis.Ordered_Euclidean_Space"
 begin
 
 text \<open>A real sequence is subadditive if $u_{n+m} \leq u_n+u_m$. This implies the
