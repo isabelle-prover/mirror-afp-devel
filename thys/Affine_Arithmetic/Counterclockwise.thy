@@ -1,6 +1,6 @@
 section \<open>Counterclockwise\<close>
 theory Counterclockwise
-imports "HOL-Analysis.Ordered_Euclidean_Space"
+imports "HOL-Analysis.Multivariate_Analysis"
 begin
 text \<open>\label{sec:counterclockwise}\<close>
 

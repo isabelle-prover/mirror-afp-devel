@@ -7,8 +7,7 @@ laws, limits, continuity, etc., which must be proved explicitly in the HOL Light
 The development concludes with the geometric interpretation of the product of imaginary quaternions.\<close>
 theory "Quaternions"
   imports
-    "HOL-Analysis.Ordered_Euclidean_Space"
-    "HOL-Analysis.Cross3"
+    "HOL-Analysis.Multivariate_Analysis"
 begin
 
 subsection\<open>Basic definitions\<close>

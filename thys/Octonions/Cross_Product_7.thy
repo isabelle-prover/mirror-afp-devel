@@ -4,8 +4,7 @@
 *)
 section\<open>Vector Cross Product in 7 Dimensions\<close>
 theory Cross_Product_7
-  imports "HOL-Analysis.Ordered_Euclidean_Space"
-    "HOL-Analysis.Determinants"
+  imports "HOL-Analysis.Multivariate_Analysis"
 begin
 
 subsection\<open>Elementary auxiliary lemmas.\<close>
