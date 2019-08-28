@@ -11,8 +11,8 @@ text \<open> Consumption sets \<close>
 
 
 theory Consumers
-  imports
-    "HOL-Analysis.Analysis"
+  imports                 
+    "HOL-Analysis.Ordered_Euclidean_Space"
     "../Syntax"
 begin
 

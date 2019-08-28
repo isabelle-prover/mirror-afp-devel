@@ -13,7 +13,6 @@ text \<open> Model similar to Arrow-Debreu model but with fewer assumptions,
 
 theory Private_Ownership_Economy
   imports
-    "HOL-Analysis.Analysis"
     "../Preferences"
     "../Preferences"
     "../Utility_Functions"

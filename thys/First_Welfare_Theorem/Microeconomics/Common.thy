@@ -7,7 +7,6 @@ Author: Cezary Kaliszyk
 
 theory Common
   imports
-    "HOL-Analysis.Analysis"
     "../Preferences"
     "../Utility_Functions"
     "../Argmax"
