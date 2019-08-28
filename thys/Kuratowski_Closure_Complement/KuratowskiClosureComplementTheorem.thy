@@ -1,7 +1,7 @@
 (*<*)
 theory KuratowskiClosureComplementTheorem
 imports
-  "HOL-Analysis.Ordered_Euclidean_Space"
+  "HOL-Analysis.Multivariate_Analysis"
   "HOL-Analysis.Continuum_Not_Denumerable"
 begin
 
