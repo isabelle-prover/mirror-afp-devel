@@ -7,7 +7,6 @@ Author: Cezary Kaliszyk
 
 theory Exchange_Economy
   imports
-    "HOL-Analysis.Analysis"
     "../Preferences"
     "../Utility_Functions"
     "../Argmax"
