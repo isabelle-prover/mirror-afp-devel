@@ -1,7 +1,9 @@
 section \<open> Hat Functions \<close>
 
 theory Triangular_Function
-imports "HOL-Analysis.Equivalence_Lebesgue_Henstock_Integration" Grid
+imports
+ "HOL-Analysis.Equivalence_Lebesgue_Henstock_Integration"
+ Grid
 begin
 
 lemma continuous_on_max[continuous_intros]:

@@ -9,7 +9,6 @@ section \<open> Arrow-Debreu model \<close>
 
 theory Arrow_Debreu_Model
   imports
-    "HOL-Analysis.Analysis"
     "../Preferences"
     "../Preferences"
     "../Utility_Functions"

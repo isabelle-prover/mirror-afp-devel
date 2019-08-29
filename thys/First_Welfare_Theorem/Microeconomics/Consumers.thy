@@ -12,7 +12,7 @@ text \<open> Consumption sets \<close>
 
 theory Consumers
   imports                 
-    "HOL-Analysis.Ordered_Euclidean_Space"
+    "HOL-Analysis.Multivariate_Analysis"
     "../Syntax"
 begin
 
