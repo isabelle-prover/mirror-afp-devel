@@ -8415,3 +8415,18 @@ abstract =
   sufficient to test for reduction against finite state machines of a
   certain fault domain. Additionally, the algorithm is specified in a
   simple WHILE-language and its correctness is shown using Hoare-logic.
+
+[Jacobson_Basic_Algebra]
+title = A Case Study in Basic Algebra
+author = Clemens Ballarin <http://www21.in.tum.de/~ballarin/>
+topic = Mathematics/Algebra
+date = 2019-08-30
+notify = ballarin@in.tum.de
+abstract = 
+  The focus of this case study is re-use in abstract algebra.  It
+  contains locale-based formalisations of selected parts of set, group
+  and ring theory from Jacobson's <i>Basic Algebra</i>
+  leading to the respective fundamental homomorphism theorems.  The
+  study is not intended as a library base for abstract algebra.  It
+  rather explores an approach towards abstract algebra in Isabelle.
+
