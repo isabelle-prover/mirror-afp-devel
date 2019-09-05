@@ -4,6 +4,7 @@ session "Perron_Frobenius" (AFP) = Jordan_Normal_Form +
   options [timeout = 1800]
   sessions
     "HOL-Types_To_Sets"
+    "HOL-Real_Asymp"
     Polynomial_Factorization
     Rank_Nullity_Theorem
     Sturm_Sequences
