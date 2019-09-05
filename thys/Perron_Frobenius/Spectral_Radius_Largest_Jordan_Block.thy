@@ -10,6 +10,7 @@ theory Spectral_Radius_Largest_Jordan_Block
 imports 
   Jordan_Normal_Form.Jordan_Normal_Form_Uniqueness
   Perron_Frobenius_General
+  "HOL-Real_Asymp.Real_Asymp"
 begin
 
 lemma sum_root_unity: fixes x :: "'a :: {comm_ring,division_ring}" 
@@ -372,32 +373,8 @@ proof -
         have e0: "e = 0 * (of_real (if m - 1 = 0 then c else 0))" using small unfolding e_def by auto
         show ?thesis unfolding e0 unfolding e23 e2_def
         proof (rule tendsto_mult[OF _ tendsto_of_real])
-          show "(\<lambda>x. c / real x ^ (m - 1)) \<longlonglongrightarrow> (if m - 1 = 0 then c else 0)" (is "_ \<longlonglongrightarrow> ?f")
-          proof (cases "m - 1", force)
-            case (Suc k)
-            hence f: "?f = 0" by auto
-            have inve:"c / real x ^ Suc k = inverse (inverse c * real x ^ Suc k)"
-              for x using divide_real_def by auto
-            show ?thesis unfolding f unfolding Suc inve
-            proof(rule LIMSEQ_inverse_zero,standard,standard,standard)
-              fix r::real fix x::nat
-              let ?v = "ceiling c * ceiling (abs r)"
-              have inv_pos:"inverse c > 0" using c_gt_0 by simp
-              have c_int':"real_of_int \<lceil>c\<rceil> = c" using Ints_cases[OF c_int] by fastforce
-              assume "nat ?v + 1 \<le> x"
-              hence vr:"?v < real x" and "real x \<ge> 1" by linarith+
-              hence "real x ^ k \<ge> 1" "real x \<ge> 1" using one_le_power by blast+
-              hence x:"inverse c * real x \<le> inverse c * real x * real x ^ k"
-                using inv_pos by simp
-              have "inverse c * c * \<bar>r\<bar> \<le> inverse c * real_of_int (\<lceil>c\<rceil> * \<lceil>\<bar>r\<bar>\<rceil>)"
-                using inv_pos c_int'
-                by (metis c0 le_of_int_ceiling left_inverse mult.assoc mult_cancel_right2 of_int_mult)
-              with mult_strict_left_mono[OF vr inv_pos]
-              have "inverse c * c * (abs r) < inverse c * real x" by argo
-              hence "r < inverse c * real x" using c_gt_0 by simp
-              thus "r < inverse c * real x ^ Suc k" using x by simp
-            qed
-          qed
+          show "(\<lambda>x. c / real x ^ (m - 1)) \<longlonglongrightarrow> (if m - 1 = 0 then c else 0)"
+            by (cases "m - 1"; real_asymp)
           let ?laji = "inverse (la^ji)" 
           let ?f = "(\<lambda>x. (\<Prod>ia = 0..<ji. (?c x - ?c ia) / ?c (ji - ia)) * la ^ (x - ji))" 
           let ?g = "\<lambda>x. (\<Prod>ia = 0..<ji. (1 - ?c ia * inverse (?c x)) / ?c (ji - ia)) * (((?c x)^ji * la ^ x) * ?laji)" 
