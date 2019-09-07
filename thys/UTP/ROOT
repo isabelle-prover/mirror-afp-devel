@@ -9,17 +9,16 @@ chapter AFP
 
 (* UTP Mathematical Toolkit *)
 
-session "UTP-Toolkit" (AFP) = "HOL-Algebra" +
+session "UTP-Toolkit" (AFP) in "toolkit" = "HOL-Algebra" +
   options [timeout = 600]
   sessions
     Optics
   theories
-    "toolkit/utp_toolkit"
-(*  document_files
+    utp_toolkit
+  document_files
     "root.tex"
     "root.bib"
     "document.sty"
-*)
 
 (* Core UTP Framework *)
 
