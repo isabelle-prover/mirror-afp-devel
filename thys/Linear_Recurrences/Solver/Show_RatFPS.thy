@@ -5,7 +5,7 @@
 section \<open>Pretty-printing for rational formal power series\<close>
 theory Show_RatFPS
 imports
-  RatFPS
+  Linear_Recurrences.RatFPS
   Show.Show_Poly
 begin
 

@@ -6,8 +6,8 @@ section \<open>Solver for linear recurrences\<close>
 theory Linear_Recurrences_Solver
 imports
   Complex_Main
-  Linear_Homogenous_Recurrences
-  Linear_Inhomogenous_Recurrences
+  Linear_Recurrences.Linear_Homogenous_Recurrences
+  Linear_Recurrences.Linear_Inhomogenous_Recurrences
   "Algebraic_Numbers.Complex_Algebraic_Numbers"
 begin
 

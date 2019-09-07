@@ -5,7 +5,8 @@
 section \<open>Pretty-printing for linear recurrence solutions\<close>
 theory Linear_Recurrences_Pretty
 imports
-  Complex_Main Rational_FPS_Solver 
+  Complex_Main
+  Linear_Recurrences.Rational_FPS_Solver 
   "Show.Show_Complex"
   "Show.Show_Poly"
 begin
