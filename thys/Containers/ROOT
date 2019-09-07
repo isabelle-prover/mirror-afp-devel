@@ -26,16 +26,16 @@ session Containers (AFP) = "Deriving" +
     "root.tex"
     "root.bib"
 
-session "Containers-Benchmarks" (AFP) = Containers +
+session "Containers-Benchmarks" (AFP) in "ITP-2013" = Containers +
   options [timeout = 1200]
   sessions
     Trie
   theories
-    "ITP-2013/Benchmark_Bool"
-    "ITP-2013/Benchmark_LC"
-    "ITP-2013/Benchmark_Default"
-    "ITP-2013/Benchmark_ICF"
-    "ITP-2013/Benchmark_RBT"
-    "ITP-2013/Benchmark_Set_Default"
-    "ITP-2013/Benchmark_Set_LC"
-    "ITP-2013/Clauses"
+    Benchmark_Bool
+    Benchmark_LC
+    Benchmark_Default
+    Benchmark_ICF
+    Benchmark_RBT
+    Benchmark_Set_Default
+    Benchmark_Set_LC
+    Clauses

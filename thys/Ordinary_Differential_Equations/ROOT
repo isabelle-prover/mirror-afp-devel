@@ -13,7 +13,7 @@ session "Ordinary_Differential_Equations" (AFP) = "HOL-Analysis" +
     "root.bib"
     "root.tex"
 
-session "HOL-ODE-Numerics" (AFP) = Ordinary_Differential_Equations +
+session "HOL-ODE-Numerics" (AFP) in "Numerics" = Ordinary_Differential_Equations +
   options [timeout = 10800]
   sessions
     Collections
@@ -24,27 +24,27 @@ session "HOL-ODE-Numerics" (AFP) = Ordinary_Differential_Equations +
   theories
     ODE_Numerics
 
-session "Lorenz_Approximation" (AFP) = "HOL-ODE-Numerics" +
+session "Lorenz_Approximation" (AFP) in "Ex/Lorenz" = "HOL-ODE-Numerics" +
   options [timeout = 1200]
   theories
-    "Ex/Lorenz/Lorenz_Approximation"
+    Lorenz_Approximation
 
-session "HOL-ODE-Examples" (AFP large) = "HOL-ODE-Numerics" +
+session "HOL-ODE-Examples" (AFP large) in "Ex" = "HOL-ODE-Numerics" +
   options [timeout = 7200]
   theories
     ODE_Examples
 
-session "HOL-ODE-ARCH-COMP" (AFP) = "HOL-ODE-Numerics" +
+session "HOL-ODE-ARCH-COMP" (AFP) in "Ex/ARCH_COMP" = "HOL-ODE-Numerics" +
   options [timeout = 7200]
   theories
-    "Ex/Examples_ARCH_COMP"
+    "Examples_ARCH_COMP"
 
-session "Lorenz_C0" (AFP large) = "Lorenz_Approximation" +
+session "Lorenz_C0" (AFP large) in "Ex/Lorenz/C0" = "Lorenz_Approximation" +
   options [timeout = 14400]
   theories
-    "Ex/Lorenz/Lorenz_C0"
+    Lorenz_C0
 
-session "Lorenz_C1" (AFP large) = "Lorenz_Approximation" +
+session "Lorenz_C1" (AFP large) in "Ex/Lorenz/C1" = "Lorenz_Approximation" +
   options [timeout = 300 (*360000*)]
   theories
-    "Ex/Lorenz/Lorenz_C1"
+    Lorenz_C1

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Pre_BZ (AFP) = "Subresultants" +
+session Pre_BZ (AFP) in "Pre_BZ" = "Subresultants" +
   options [timeout = 600]
   sessions
     "HOL-Number_Theory"

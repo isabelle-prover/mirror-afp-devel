@@ -1,6 +1,6 @@
 chapter AFP
 
-session "JNF-AFP-Lib" (AFP) = "HOL-Algebra" +
+session "JNF-AFP-Lib" (AFP) in "Lib" = "HOL-Algebra" +
   description "Theories from HOL-Library and the Archive of Formal Proofs that are used by this entry"
   options [timeout = 600]
   sessions

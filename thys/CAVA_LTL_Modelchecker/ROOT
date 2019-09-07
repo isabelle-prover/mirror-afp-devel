@@ -1,6 +1,6 @@
 chapter AFP
 
-session SM_Base (AFP) = CAVA_Automata +
+session SM_Base (AFP) in "SM_Base" = CAVA_Automata +
   options [timeout = 1200]
   sessions
     Partial_Order_Reduction
@@ -10,17 +10,17 @@ session SM_Base (AFP) = CAVA_Automata +
     Partial_Order_Reduction.Ample_Analysis
     DFS_Framework.Feedback_Arcs
 
-session SM (AFP) = SM_Base +
+session SM (AFP) in "SM" = SM_Base +
   options [timeout = 1200]
   sessions
     Stuttering_Equivalence
   theories [document = false]
-    "SM/Lib/LTS"
-    "SM/Lib/SOS_Misc_Add"
+    "Lib/LTS"
+    "Lib/SOS_Misc_Add"
   theories
-    "SM/Impl/SM_Wrapup"
+    "Impl/SM_Wrapup"
 
-session CAVA_Setup (AFP) = CAVA_Automata +
+session CAVA_Setup (AFP) in "CAVA_Setup" = CAVA_Automata +
   options [timeout = 3600]
   sessions
     LTL_to_GBA

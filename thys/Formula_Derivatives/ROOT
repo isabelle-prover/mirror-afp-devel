@@ -18,7 +18,7 @@ session "Formula_Derivatives" (AFP) = "HOL-Library" +
   document_files (in "document")
     "root.tex"
 
-session "Formula_Derivatives-Examples" (AFP) = "Formula_Derivatives" +
+session "Formula_Derivatives-Examples" (AFP) in "Examples" = "Formula_Derivatives" +
   options [timeout = 300]
   sessions
     Show

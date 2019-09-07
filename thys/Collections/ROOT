@@ -134,7 +134,7 @@ session Collections (AFP) = Refine_Monadic +
     "root_userguide.tex"
 
 
-session Collections_Examples (AFP) = Collections +
+session Collections_Examples (AFP) in "Examples" = Collections +
   options [timeout = 1200]
 
   sessions
@@ -143,24 +143,24 @@ session Collections_Examples (AFP) = Collections +
 
   (* Examples *)
   theories
-    "Examples/Examples_Chapter"
+    "Examples_Chapter"
 
-    "Examples/Autoref/Collection_Autoref_Examples_Chapter"
-    "Examples/Autoref/Collection_Autoref_Examples"
+    "Autoref/Collection_Autoref_Examples_Chapter"
+    "Autoref/Collection_Autoref_Examples"
 
-    "Examples/Refine_Monadic/Refine_Monadic_Examples_Chapter"
-    "Examples/Refine_Monadic/Refine_Monadic_Examples"
-    
-    "Examples/ICF/ICF_Examples_Chapter"
-    "Examples/ICF/ICF_Examples"
+    "Refine_Monadic/Refine_Monadic_Examples_Chapter"
+    "Refine_Monadic/Refine_Monadic_Examples"
+
+    "ICF/ICF_Examples_Chapter"
+    "ICF/ICF_Examples"
 
   theories [document = false]
-    "Examples/ICF/PerformanceTest"
+    "ICF/PerformanceTest"
 
   theories [document = false] (* Just in case we forgot something *)
-    "Examples/Collection_Examples"
+    "Collection_Examples"
 
-  document_files
+  document_files (in "../document")
     "conclusion.tex"
     "documentation.tex"
     "intro.tex"
