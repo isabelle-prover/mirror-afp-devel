@@ -11,7 +11,7 @@ session "Flyspeck-Tame" (AFP) = HOL +
     "root.bib"
     "root.tex"
 
-session "Flyspeck-Tame-Computation" (AFP slow very_slow) = "Flyspeck-Tame" +
+session "Flyspeck-Tame-Computation" (AFP slow very_slow) in "Computation" = "Flyspeck-Tame" +
   options [timeout = 50400]
   theories
     Completeness
