@@ -8,6 +8,9 @@ session Auto2_Imperative_HOL (AFP) = Auto2_HOL +
   sessions
     "HOL-Library"
     "HOL-Imperative_HOL"
+  directories
+    "Functional"
+    "Imperative"
   theories
     (* Functional programs *)
     "Functional/BST"

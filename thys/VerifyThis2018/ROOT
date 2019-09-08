@@ -2,6 +2,8 @@ chapter AFP
 
 session VerifyThis2018 (AFP) = Sepref_IICF +
   options [timeout = 600]
+  directories
+    "lib"
   theories [document = false]
     "lib/VTcomp"
     "lib/DF_System"

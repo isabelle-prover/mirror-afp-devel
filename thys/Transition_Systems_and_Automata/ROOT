@@ -5,6 +5,16 @@ session Transition_Systems_and_Automata (AFP) = "Collections" +
   sessions
     "DFS_Framework"
     "Gabow_SCC"
+  directories
+    "Automata"
+    "Automata/DBA"
+    "Automata/DCA"
+    "Automata/DFA"
+    "Automata/DRA"
+    "Automata/NBA"
+    "Automata/NFA"
+    "Basic"
+    "Transition_Systems"
   theories
     "Basic/Basic"
     "Basic/Sequence"

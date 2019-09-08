@@ -6,6 +6,10 @@ session Consensus_Refined (AFP) = HOL +
     "HOL-Library"
     Heard_Of
     Stuttering_Equivalence
+  directories
+    "MRU"
+    "Observing"
+    "Voting"
   theories
     Infra
     Consensus_Types

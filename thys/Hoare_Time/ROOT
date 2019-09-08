@@ -6,6 +6,8 @@ session Hoare_Time (AFP) = "HOL" +
     "Separation_Algebra"
     "HOL-Library"
     "HOL-Eisbach"
+  directories
+    "SepLogAdd"
   theories
     Hoare_Time
   document_files

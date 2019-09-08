@@ -2,6 +2,9 @@ chapter AFP
 
 session Hybrid_Multi_Lane_Spatial_Logic (AFP) = HOL +
   options [timeout = 600]
+  directories
+    "perfect"
+    "regular"
   theories
     HMLSL
     "perfect/Safety_Perfect"

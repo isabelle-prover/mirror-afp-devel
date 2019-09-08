@@ -2,6 +2,9 @@ chapter AFP
 
 session Simple_Firewall (AFP) = IP_Addresses +
   options [timeout = 600]
+  directories
+    "Common"
+    "Primitives"
   theories
     Simple_Packet
     SimpleFw_Syntax

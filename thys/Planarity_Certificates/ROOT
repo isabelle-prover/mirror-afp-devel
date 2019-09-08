@@ -8,6 +8,11 @@ session Planarity_Certificates (AFP) = Simpl +
     "Transitive-Closure"
     Case_Labeling
     Graph_Theory
+  directories
+    "l4v/lib"
+    "l4v/lib/wp"
+    "Planarity"
+    "Verification"
   theories [document = false]
     "l4v/lib/OptionMonadWP"
   theories

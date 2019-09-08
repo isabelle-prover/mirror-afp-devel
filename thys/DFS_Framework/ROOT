@@ -2,6 +2,12 @@ chapter AFP
 
 session "DFS_Framework" (AFP) = "CAVA_Automata" +
   options [timeout = 1200]
+  directories
+    "Examples"
+    "Impl/Data"
+    "Impl/Structural"
+    "Invars"
+    "Misc"
   theories [document = false]
     "Misc/DFS_Framework_Refine_Aux"
     "Misc/Impl_Rev_Array_Stack"

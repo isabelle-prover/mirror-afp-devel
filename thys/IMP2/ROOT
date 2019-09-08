@@ -4,6 +4,12 @@ session IMP2 (AFP) = HOL +
   options [timeout = 600]
   sessions 
     "HOL-Library" "HOL-Eisbach"
+  directories
+    "automation"
+    "basic"
+    "doc"
+    "lib"
+    "parser"
   theories [document = false]
     "lib/IMP2_Aux_Lemmas"
     "lib/IMP2_Utils"

@@ -5,6 +5,8 @@ session "HOLCF-Prelude" (AFP) = HOLCF +
   sessions
     "HOL-Computational_Algebra"
     "HOLCF-Library"
+  directories
+    "examples"
   theories
     HOLCF_Main
     Type_Classes

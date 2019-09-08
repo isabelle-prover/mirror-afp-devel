@@ -2,6 +2,9 @@ chapter AFP
 
 session Sturm_Sequences (AFP) = "HOL-Computational_Algebra" +
   options [timeout = 600, document_variants = "document:outline=/proof,/ML:userguide"]
+  directories
+    "Lib"
+    "Examples"
   theories
     "Lib/Sturm_Library_Document"
     "Lib/Misc_Polynomial"

@@ -2,6 +2,9 @@ chapter AFP
 
 session Inductive_Confidentiality (AFP) = HOL +
   options [timeout = 600]
+  directories
+    "DolevYao"
+    "GeneralAttacker"
   theories
     "DolevYao/Message"
     "DolevYao/Event"

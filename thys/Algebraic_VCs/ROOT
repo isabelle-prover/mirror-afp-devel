@@ -6,6 +6,9 @@ session Algebraic_VCs (AFP) = KAT_and_DRA +
     "HOL-Eisbach"
     "HOL-Hoare"
     KAD
+  directories
+    "AVC_KAD"
+    "AVC_KAT"
   theories
     "AVC_KAT/VC_KAT_scratch"
     "AVC_KAD/VC_KAD_scratch"

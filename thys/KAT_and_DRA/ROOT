@@ -1,6 +1,9 @@
 chapter AFP
 session KAT_and_DRA (AFP) = Kleene_Algebra +
   options [timeout = 600]
+  directories
+    "SingleSorted"
+    "TwoSorted"
   theories
     "SingleSorted/Test_Dioid"
     "SingleSorted/Conway_Tests"

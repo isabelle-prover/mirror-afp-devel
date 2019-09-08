@@ -7,6 +7,8 @@ session Dict_Construction (AFP) = HOL +
     Automatic_Refinement
     Lazy_Case
     Show
+  directories
+    "Documentation"
   theories
     "Documentation/Introduction"
     "Documentation/Impossibility"

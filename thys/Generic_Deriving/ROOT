@@ -2,6 +2,8 @@ chapter AFP
 
 session "Generic_Deriving" (AFP) = HOL +
   options [timeout = 600]
+  directories
+    "tests"
   theories
     Derive
     Tagged_Prod_Sum

@@ -14,6 +14,12 @@ session SM (AFP) in "SM" = SM_Base +
   options [timeout = 1200]
   sessions
     Stuttering_Equivalence
+  directories
+    "Analysis"
+    "Impl"
+    "Lib"
+    "Refine"
+    "RefPoint"
   theories [document = false]
     "Lib/LTS"
     "Lib/SOS_Misc_Add"
@@ -35,6 +41,11 @@ session CAVA_Setup (AFP) in "CAVA_Setup" = CAVA_Automata +
 
 session CAVA_LTL_Modelchecker (AFP) = CAVA_Setup +
   options [timeout = 1200]
+  directories
+    "Nested_DFS"
+    "BoolProgs"
+    "BoolProgs/Programs"
+    "Examples"
   theories [document = false]
     "Nested_DFS/NDFS_SI_Statistics"
   theories

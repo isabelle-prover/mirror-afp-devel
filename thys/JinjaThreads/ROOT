@@ -13,6 +13,18 @@ session JinjaThreads (AFP slow) = HOL +
     Native_Word
     Refine_Monadic
     Trie
+  directories
+    "BV"
+    "Basic"
+    "Common"
+    "Compiler"
+    "DFA"
+    "Examples"
+    "Execute"
+    "Framework"
+    "J"
+    "JVM"
+    "MM"
   theories [document = false]
     "Basic/Basic_Main"
   theories

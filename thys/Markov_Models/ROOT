@@ -5,6 +5,8 @@ session Markov_Models (AFP) = "HOL-Probability" +
   sessions
     Coinductive
     "Gauss-Jordan-Elim-Fun"
+  directories
+    "ex"
   theories
     Markov_Models
     "ex/Example_A"

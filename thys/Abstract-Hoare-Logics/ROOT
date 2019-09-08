@@ -2,6 +2,10 @@ chapter AFP
 
 session "Abstract-Hoare-Logics" (AFP) = HOL +
   options [timeout = 600]
+  directories
+    "While"
+    "Proc"
+    "Procs"
   theories
     "While/HoareTotal"
     "Proc/PHoareTotal"

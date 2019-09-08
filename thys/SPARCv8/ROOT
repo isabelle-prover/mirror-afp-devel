@@ -4,6 +4,10 @@ session SPARCv8 (AFP) = "HOL-Word" +
   options [timeout = 1200]
   sessions
     "HOL-Eisbach"
+  directories
+    "lib"
+    "lib/wp"
+    "SparcModel_MMU"
   theories [document = false]
     "lib/WordDecl"
   theories

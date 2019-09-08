@@ -4,6 +4,11 @@ session Featherweight_OCL (AFP) = HOL +
   description "Featherweight-OCL"
   options [document_variants = "annex-a=annexa,-theory,-afp,-proof,-ML:document=afp,-annexa:outline=-annexa,afp,/proof,/ML",
            show_question_marks = false, timeout = 600]
+  directories
+    "basic_types"
+    "collection_types"
+    "examples/Employee_Model/Analysis"
+    "examples/Employee_Model/Design"
   theories
     UML_Main
     "examples/Employee_Model/Analysis/Analysis_OCL"

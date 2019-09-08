@@ -2,6 +2,9 @@ chapter AFP
 
 session Constructive_Cryptography (AFP) = CryptHOL +
   options [timeout = 1500]
+  directories
+    "Examples"
+    "Examples/Secure_Channel"
   theories
     Constructive_Cryptography
     "Examples/Examples"

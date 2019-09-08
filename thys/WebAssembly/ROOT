@@ -4,6 +4,8 @@ session WebAssembly (AFP) = "HOL-Library" +
   options [timeout=600]
   sessions
     "Native_Word"
+  directories
+    "Wasm_Printing"
   theories
     "Wasm_Soundness"
     "Wasm_Checker_Properties"
@@ -14,4 +16,3 @@ session WebAssembly (AFP) = "HOL-Library" +
   document_files
     "root.bib"
     "root.tex"
-

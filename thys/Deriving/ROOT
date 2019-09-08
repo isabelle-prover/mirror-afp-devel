@@ -4,6 +4,11 @@ session Deriving (AFP) = "HOL-Library" +
   options [timeout = 600]
   sessions
     Collections
+  directories
+    "Comparator_Generator"
+    "Countable_Generator"
+    "Equality_Generator"
+    "Hash_Generator"
   theories
     Derive_Manager
     Generator_Aux

@@ -7,15 +7,15 @@ session Auto2_HOL (AFP) = HOL +
   options [timeout = 600]
   sessions
     "HOL-Library"
+  directories
+    "HOL"
   theories [document = false]
     (* Core setup *)
     "HOL/Auto2_Test"
-
   theories
     (* Simple examples *)
     "HOL/Pelletier"
     "HOL/Primes_Ex"
-
   document_files
     "root.tex"
     "root.bib"

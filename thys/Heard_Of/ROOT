@@ -5,6 +5,13 @@ session Heard_Of (AFP) = HOL +
   sessions
     "HOL-Library"
     Stuttering_Equivalence
+  directories
+    "ate"
+    "eigbyz"
+    "lastvoting"
+    "otr"
+    "ute"
+    "uv"
   theories
     (* generic model and reduction theorem *)
     HOModel

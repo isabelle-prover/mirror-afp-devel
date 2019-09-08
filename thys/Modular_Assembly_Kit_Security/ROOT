@@ -12,6 +12,13 @@ session Modular_Assembly_Kit_Security (AFP) = HOL +
     Author: Markus Tasch, TU Darmstadt
   "
   options [timeout = 600]
+  directories
+    "Basics"
+    "SystemSpecification"
+    "SecuritySpecification"
+    "Verification/Basics"
+    "Verification/Unwinding"
+    "Verification/Compositionality"
   theories
     "Basics/Projection"
     "Basics/Prefix"

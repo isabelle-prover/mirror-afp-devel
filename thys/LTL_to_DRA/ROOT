@@ -6,6 +6,9 @@ session LTL_to_DRA (AFP) = LTL +
     "List-Index"
     Boolean_Expression_Checkers
     KBPs
+  directories
+    "Auxiliary"
+    "Impl"
   theories
     LTL_Rabin
     LTL_Rabin_Unfold_Opt

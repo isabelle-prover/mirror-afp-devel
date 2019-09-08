@@ -2,6 +2,11 @@ chapter AFP
 
 session JiveDataStoreModel (AFP) = HOL +
   options [timeout = 600]
+  directories
+    "Isa_Counter"
+    "Isa_Counter_Store"
+    "Isabelle"
+    "Isabelle_Store"
   theories
     "Isa_Counter/TypeIds"
     "Isabelle/JavaType"

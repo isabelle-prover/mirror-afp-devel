@@ -4,6 +4,9 @@ session Separation_Algebra (AFP) = "HOL-Word" +
   options [timeout = 600]
   sessions
     "HOL-Hoare"
+  directories
+    "ex"
+    "ex/capDL"
   theories
     "ex/Simple_Separation_Example"
     "ex/Sep_Tactics_Test"

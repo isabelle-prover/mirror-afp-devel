@@ -7,6 +7,11 @@ session "Network_Security_Policy_Verification" (AFP) = HOL +
     "HOL-Lattice"
     "Transitive-Closure"
     Automatic_Refinement
+  directories
+    "Lib"
+    "Security_Invariants"
+    "Examples"
+    "Examples/Tainting"
   theories [document = false]
     "Lib/ML_GraphViz_Disable"
     "Lib/FiniteListGraph_Impl"

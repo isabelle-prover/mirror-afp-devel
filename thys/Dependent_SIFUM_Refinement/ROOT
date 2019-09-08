@@ -10,6 +10,8 @@ session Dependent_SIFUM_Refinement (AFP) = Dependent_SIFUM_Type_Systems +
   options [timeout = 600]
   sessions
     "HOL-Eisbach"
+  directories
+    "Examples"
   theories
     CompositionalRefinement
   theories [document = false]

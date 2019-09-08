@@ -5,6 +5,9 @@ session LTL_Master_Theorem (AFP) = "Transition_Systems_and_Automata" +
   sessions
     LTL
     Deriving
+  directories
+    "Logical_Characterization"
+    "LTL_to_DRA"
   theories
     "Logical_Characterization/Master_Theorem"
     "Logical_Characterization/Asymmetric_Master_Theorem"

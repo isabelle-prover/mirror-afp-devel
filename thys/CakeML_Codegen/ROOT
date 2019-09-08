@@ -12,6 +12,17 @@ session CakeML_Codegen (AFP) = CakeML +
     Root_Balanced_Tree
     Show
 
+  directories
+    "Utils"
+    "Doc"
+    "Terms"
+    "CupCakeML"
+    "Rewriting"
+    "Preproc"
+    "Backend"
+    "Compiler"
+    "Test"
+
   theories [document = false]
     "Utils/ML_Utils"
     "Utils/Compiler_Utils"

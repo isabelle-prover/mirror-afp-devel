@@ -2,6 +2,8 @@ chapter AFP
 
 session pGCL (AFP) = "HOL-Analysis" +
   options [timeout = 300]
+  directories
+    "Tutorial"
   theories
     pGCL
     "Tutorial/Primitives"

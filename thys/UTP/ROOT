@@ -24,6 +24,9 @@ session "UTP-Toolkit" (AFP) in "toolkit" = "HOL-Algebra" +
 
 session "UTP" (AFP) = "UTP-Toolkit" +
   options [timeout = 600]
+  directories
+    "utp"
+    "utp/examples"
   theories [document = false]
     "utp/utp_parser_utils"
   theories 

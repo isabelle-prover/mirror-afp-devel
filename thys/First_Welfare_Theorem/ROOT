@@ -3,6 +3,8 @@ chapter AFP
 
 session First_Welfare_Theorem (AFP) = "HOL-Analysis" +
   options [timeout = 600]
+  directories
+    "Microeconomics"
   theories
     Syntax
     Argmax

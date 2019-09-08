@@ -6,6 +6,10 @@ session Automatic_Refinement (AFP) = HOL +
     "HOL-Library"
     "HOL-Eisbach"
     "HOL-ex"
+  directories
+    "Lib"
+    "Parametricity"
+    "Tool"
   theories [document = false]
     "Lib/Refine_Lib"
   theories

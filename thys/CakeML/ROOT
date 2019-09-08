@@ -16,6 +16,10 @@ session CakeML (AFP) = LEM +
     Coinductive
     IEEE_Floating_Point
     Show
+  directories
+    "doc"
+    "generated/CakeML"
+    "Tests"
   theories
     "doc/Doc_Generated"
 

@@ -7,6 +7,8 @@ session Flow_Networks (AFP) = Sepref_IICF +
     CAVA_Automata
     DFS_Framework
     Refine_Imperative_HOL
+  directories
+    "Lib"
   theories [document = false]
     DFS_Framework.DFS_Framework
     DFS_Framework.Reachable_Nodes

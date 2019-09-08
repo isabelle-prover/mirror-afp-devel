@@ -2,6 +2,10 @@ chapter AFP
 
 session "CISC-Kernel" (AFP) = HOL +
   options [timeout=600]
+  directories
+    "step"
+    "trace"
+    "trace/Rushby-with-Control"
   theories
     "trace/Rushby-with-Control/Option_Binders"
     "trace/Rushby-with-Control/List_Theorems"

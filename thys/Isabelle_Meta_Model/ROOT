@@ -3,6 +3,19 @@ chapter AFP
 session Isabelle_Meta_Model (AFP) = "HOL-Library" +
   description "Isabelle_Meta_Model containing a Toy Example"
   options [timeout = 600]
+  directories
+    "document"
+    "isabelle_home/src/HOL"
+    "isabelle_home/src/HOL/ex"
+    "isabelle_home/src/Pure/Isar"
+    "isabelle_home/src/Tools/Code"
+    "meta_isabelle"
+    "toy_example"
+    "toy_example/document_generated"
+    "toy_example/embedding"
+    "toy_example/embedding/core"
+    "toy_example/embedding/meta_toy"
+    "toy_example/generator"
   theories [document = false]
     "isabelle_home/src/HOL/Isabelle_Main0"
     "isabelle_home/src/HOL/Isabelle_Main1"
