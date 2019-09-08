@@ -7,6 +7,20 @@ session Collections (AFP) = Refine_Monadic +
     "Finger-Trees"
     Native_Word
     Trie
+  directories
+    "GenCF"
+    "GenCF/Gen"
+    "GenCF/Impl"
+    "GenCF/Intf"
+    "ICF"
+    "ICF/gen_algo"
+    "ICF/impl"
+    "ICF/spec"
+    "ICF/tools"
+    "Iterator"
+    "Lib"
+    "Userguides"
+
   theories [document = false]
   (* Prerequisites *)
     "HOL-Library.Code_Target_Numeral"
@@ -140,6 +154,11 @@ session Collections_Examples (AFP) in "Examples" = Collections +
   sessions
      CAVA_Automata
      Containers
+
+  directories
+    "Autoref"
+    "Refine_Monadic"
+    "ICF" (overlapping)
 
   (* Examples *)
   theories

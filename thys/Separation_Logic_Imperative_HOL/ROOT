@@ -9,6 +9,9 @@ session "Separation_Logic_Imperative_HOL" (AFP) = "HOL-Library" +
     Automatic_Refinement
     Collections
     Native_Word
+  directories
+    "Tools"
+    "Examples"
   theories [document = false]
     "Tools/Imperative_HOL_Add"
     "Tools/Syntax_Match"
@@ -29,6 +32,7 @@ session "Separation_Logic_Imperative_HOL" (AFP) = "HOL-Library" +
     "Examples/Union_Find"
     "Examples/Idioms"
   theories [document = false]
+    "Examples/Default_Insts"
     Sep_Examples
   document_files
     "root.bib"

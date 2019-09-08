@@ -2,7 +2,7 @@ section "Data structures as used in Promela"
 theory PromelaDatastructures
 imports
   CAVA_Base.CAVA_Base
-  "../CAVA_Automata/CAVA_Base/Lexord_List"
+  CAVA_Base.Lexord_List
   PromelaAST
   "HOL-Library.IArray"
   Deriving.Compare_Instances

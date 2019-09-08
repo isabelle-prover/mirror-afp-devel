@@ -2,7 +2,7 @@ theory IICF_MS_Array_List
 imports 
   "../Intf/IICF_List" 
   Separation_Logic_Imperative_HOL.Array_Blit
-  "../../../Separation_Logic_Imperative_HOL/Examples/Default_Insts"
+  Separation_Logic_Imperative_HOL.Default_Insts
 begin
 
   type_synonym 'a ms_array_list = "'a Heap.array \<times> nat"

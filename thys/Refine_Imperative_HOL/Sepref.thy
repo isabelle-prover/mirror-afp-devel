@@ -5,7 +5,7 @@ imports
   (*Sepref_IICF_Bindings*)
   Sepref_Foreach
   Sepref_Intf_Util
-  "../Separation_Logic_Imperative_HOL/Examples/Default_Insts"
+  Separation_Logic_Imperative_HOL.Default_Insts
   Sepref_Improper
 begin
 
