@@ -4,12 +4,17 @@ session Iptables_Semantics (AFP) = Routing +
   options [timeout = 1200]
   sessions
     Native_Word
+  directories
+    "Common"
+    "Semantics_Ternary"
+    "Primitive_Matchers"
+    "Simple_Firewall"
   theories [document = false]
     "Common/List_Misc"
     "Common/WordInterval_Lists"
   theories
     Semantics
-    "Examples/Example_Semantics"
+    Example_Semantics
     Alternative_Semantics
     Semantics_Stateful
     Semantics_Goto
@@ -22,6 +27,7 @@ session Iptables_Semantics (AFP) = Routing +
     Semantics_Stateful
     "Semantics_Ternary/Optimizing"
     "Primitive_Matchers/No_Spoof"
+    "Primitive_Matchers/Parser6"
     No_Spoof_Embeddings
     "Primitive_Matchers/Routing_IpAssmt"
     "Primitive_Matchers/Transform"
@@ -29,7 +35,7 @@ session Iptables_Semantics (AFP) = Routing +
     "Primitive_Matchers/Code_Interface"
     "Primitive_Matchers/Parser"
     "Simple_Firewall/SimpleFw_Compliance"
-    "Examples/Code_haskell"
+    Code_haskell
     Access_Matrix_Embeddings
     No_Spoof_Embeddings
     Documentation
@@ -40,6 +46,15 @@ session Iptables_Semantics (AFP) = Routing +
 
 session Iptables_Semantics_Examples (AFP) in "Examples" = Iptables_Semantics +
   options [timeout = 2400]
+  directories
+    "Parser_Test"
+    "Fail"
+    "Contrived"
+    "Synology_Diskstation_DS414"
+    "Ringofsaturn_com"
+    "SQRL_Shorewall"
+    "sns.ias.edu"
+    "medium-sized-company"
   theories
     "Parser_Test/Parser_Test"
     "Parser_Test/Parser6_Test"
@@ -58,8 +73,14 @@ session Iptables_Semantics_Examples (AFP) in "Examples" = Iptables_Semantics +
     "mathpartir.sty"
 
 session Iptables_Semantics_Examples_Big (AFP slow very_slow) in "Examples_Big" = Iptables_Semantics_Examples +
-  directories "../Examples" (overlapping)
   options [timeout = 60000]
+  directories
+    "../Examples/topoS_generated"
+    "../Examples/IPPartEval"
+    "../Examples/TUM_Net_Firewall"
+    "../Examples/containern"
+    "../Examples/TUM_Net_Firewall"
+    "../Examples/IPPartEval"
   theories
     "../Examples/topoS_generated/Analyze_topos_generated"
     "../Examples/IPPartEval/IP_Address_Space_Examples_All_Small"

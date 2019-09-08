@@ -1,7 +1,7 @@
 theory Analyze_Synology_Diskstation
 imports iptables_Ln_tuned_parsed (*2014 firewall dump*)
   Iptables_Semantics.Parser
-  "../../Primitive_Matchers/Parser6"
+  Iptables_Semantics.Parser6
 begin
 
 

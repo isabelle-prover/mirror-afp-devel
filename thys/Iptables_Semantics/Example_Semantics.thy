@@ -1,5 +1,5 @@
 theory Example_Semantics
-imports "../Call_Return_Unfolding" "../Primitive_Matchers/Common_Primitive_Matcher"
+imports Call_Return_Unfolding "Primitive_Matchers/Common_Primitive_Matcher"
 begin
 
 

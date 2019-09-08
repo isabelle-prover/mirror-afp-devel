@@ -1,7 +1,7 @@
 theory Code_haskell
 imports
   Routing.IpRoute_Parser
-  "../Primitive_Matchers/Parser"
+  "Primitive_Matchers/Parser"
 begin
 
 definition word_less_eq :: "('a::len) word \<Rightarrow> ('a::len) word \<Rightarrow> bool" where

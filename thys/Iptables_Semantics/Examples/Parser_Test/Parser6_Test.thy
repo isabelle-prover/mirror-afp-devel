@@ -1,5 +1,5 @@
 theory Parser6_Test
-imports "../../Primitive_Matchers/Parser6"
+imports Iptables_Semantics.Parser6
 begin
 
 
