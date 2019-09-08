@@ -158,7 +158,7 @@ session Collections_Examples (AFP) in "Examples" = Collections +
   directories
     "Autoref"
     "Refine_Monadic"
-    "ICF" (overlapping)
+    "ICF"
 
   (* Examples *)
   theories
