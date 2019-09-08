@@ -7,6 +7,9 @@ session "Ordinary_Differential_Equations" (AFP) = "HOL-Analysis" +
     Triangle
     "List-Index"
     Affine_Arithmetic
+  directories
+    "Library"
+    "IVP"
   theories
     ODE_Analysis
   document_files
@@ -21,6 +24,8 @@ session "HOL-ODE-Numerics" (AFP) in "Numerics" = Ordinary_Differential_Equations
     Affine_Arithmetic
     Deriving
     "HOL-Types_To_Sets"
+  directories
+    "../Refinement"
   theories
     ODE_Numerics
 

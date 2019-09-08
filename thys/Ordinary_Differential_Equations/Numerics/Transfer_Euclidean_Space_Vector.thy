@@ -1,7 +1,7 @@
 theory Transfer_Euclidean_Space_Vector
 imports
   "../Refinement/Refine_Vector_List"
-  "../Library/Transfer_ODE"
+  Transfer_ODE
 begin
 
 type_synonym 'n rvec = "(real, 'n) vec"
