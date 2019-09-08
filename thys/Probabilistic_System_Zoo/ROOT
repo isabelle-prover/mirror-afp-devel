@@ -14,11 +14,11 @@ session "Probabilistic_System_Zoo" (AFP) = "HOL-Probability" +
     "root.tex"
 
 session "Probabilistic_System_Zoo-BNFs" (AFP) in BNFs = "HOL-Analysis" +
-  directories ".." (overlapping)
   options [timeout = 600]
   sessions
     "HOL-Probability"
     "HOL-Cardinals"
+  directories ".." (overlapping)
   theories
     "../Nonempty_Bounded_Set"
     Bool_Bounded_Set
@@ -26,11 +26,11 @@ session "Probabilistic_System_Zoo-BNFs" (AFP) in BNFs = "HOL-Analysis" +
     "root.tex"
 
 session "Probabilistic_System_Zoo-Non_BNFs" (AFP) in Non_BNFs = "HOL-Probability" +
-  directories ".." (overlapping)
   options [timeout = 600]
   sessions
     "HOL-Eisbach"
     "HOL-Cardinals"
+  directories ".." (overlapping)
   theories
     "../Vardi"
   document_files
