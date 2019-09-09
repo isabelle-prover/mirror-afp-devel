@@ -1,0 +1,21 @@
+chapter AFP
+
+session Linear_Programming (AFP) = HOL +
+  options [timeout = 600]
+sessions
+    "Jordan_Normal_Form"
+    Farkas
+    Linear_Inequalities
+  theories [document = false]
+    (*
+    Simplex.Simplex_Incremental
+    Jordan_Normal_Form.Matrix_Impl
+    Farkas.Farkas
+    *)
+    "More_Jordan_Normal_Forms"
+    "Matrix_LinPoly"
+    "LP_Preliminaries"
+    "Linear_Programming"
+  document_files
+    "root.tex"
+    "root.bib"
