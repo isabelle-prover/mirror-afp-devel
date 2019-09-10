@@ -9,7 +9,23 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>30 Aug 2019 00:00:00 +0000</pubDate>
+    <pubDate>10 Sep 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Verification Components for Hybrid Systems</title>
+              <link>https://www.isa-afp.org/entries/Hybrid_Systems_VCs.html</link>
+       <guid>https://www.isa-afp.org/entries/Hybrid_Systems_VCs.html</guid>
+       <dc:creator> Jonathan Julian Huerta y Munive       </dc:creator>
+       <pubDate>10 Sep 2019 00:00:00 +0000</pubDate>
+       <description>
+These components formalise a semantic framework for the deductive
+verification of hybrid systems. They support reasoning about
+continuous evolutions of hybrid programs in the style of differential
+dynamics logic. Vector fields or flows model these evolutions, and
+their verification is done with invariants for the former or orbits
+for the latter. Laws of modal Kleene algebra or categorical predicate
+transformers implement the verification condition generation. Examples
+show the approach at work.</description>
+    </item>
     <item>
        <title>A Case Study in Basic Algebra</title>
               <link>https://www.isa-afp.org/entries/Jacobson_Basic_Algebra.html</link>
@@ -555,22 +571,6 @@ bounds for the number of distinct prime factors of
 &lt;em&gt;d(n)&lt;/em&gt;, Euler&#39;s totient function
 &lt;em&gt;&amp;phi;(n)&lt;/em&gt;, and
 lcm(1,&amp;hellip;,&lt;em&gt;n&lt;/em&gt;).&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Kruskal's Algorithm for Minimum Spanning Forest</title>
-              <link>https://www.isa-afp.org/entries/Kruskal.html</link>
-       <guid>https://www.isa-afp.org/entries/Kruskal.html</guid>
-       <dc:creator> Maximilian P.L. Haslbeck, Peter Lammich, Julian Biendarra       </dc:creator>
-       <pubDate>14 Feb 2019 00:00:00 +0000</pubDate>
-       <description>
-This Isabelle/HOL formalization defines a greedy algorithm for finding
-a minimum weight basis on a weighted matroid and proves its
-correctness. This algorithm is an abstract version of Kruskal&#39;s
-algorithm.  We interpret the abstract algorithm for the cycle matroid
-(i.e. forests in a graph) and refine it to imperative executable code
-using an efficient union-find data structure.  Our formalization can
-be instantiated for different graph representations. We provide
-instantiations for undirected graphs and symmetric directed graphs.</description>
     </item>
   </channel>
 </rss>

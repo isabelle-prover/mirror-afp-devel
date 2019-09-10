@@ -8430,3 +8430,18 @@ abstract =
   study is not intended as a library base for abstract algebra.  It
   rather explores an approach towards abstract algebra in Isabelle.
 
+[Hybrid_Systems_VCs]
+title = Verification Components for Hybrid Systems
+author = Jonathan Julian Huerta y Munive <>
+topic = Mathematics/Algebra, Mathematics/Analysis
+date = 2019-09-10
+notify = jjhuertaymunive1@sheffield.ac.uk, jonjulian23@gmail.com
+abstract = 
+  These components formalise a semantic framework for the deductive
+  verification of hybrid systems. They support reasoning about
+  continuous evolutions of hybrid programs in the style of differential
+  dynamics logic. Vector fields or flows model these evolutions, and
+  their verification is done with invariants for the former or orbits
+  for the latter. Laws of modal Kleene algebra or categorical predicate
+  transformers implement the verification condition generation. Examples
+  show the approach at work.

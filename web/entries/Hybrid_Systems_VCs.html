@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Transformer Semantics - Archive of Formal Proofs
+<title>Verification Components for Hybrid Systems - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,9 +61,15 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">T</font>ransformer
+  <h1>          <font class="first">V</font>erification
   
-          <font class="first">S</font>emantics
+          <font class="first">C</font>omponents
+  
+          for
+  
+          <font class="first">H</font>ybrid
+  
+          <font class="first">S</font>ystems
   
 </h1>
   <p>&nbsp;</p>
@@ -72,7 +78,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Transformer Semantics</td>
+  <td class="data" width="80%">Verification Components for Hybrid Systems</td>
 </tr>
 
 <tr>
@@ -80,7 +86,7 @@
           Author:
       </td>
   <td class="data">
-              <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
+              Jonathan Julian Huerta y Munive
       </td>
 </tr>
 
@@ -88,35 +94,33 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2018-12-11</td>
+  <td class="data">2019-09-10</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-These mathematical components formalise predicate transformer
-semantics for programs, yet currently only for partial correctness and
-in the absence of faults.  A first part for isotone (or monotone),
-Sup-preserving and Inf-preserving transformers follows Back and von
-Wright's approach, with additional emphasis on the quantalic
-structure of algebras of transformers.  The second part develops
-Sup-preserving and Inf-preserving predicate transformers from the
-powerset monad, via its Kleisli category and Eilenberg-Moore algebras,
-with emphasis on adjunctions and dualities, as well as isomorphisms
-between relations, state transformers and predicate transformers.</td>
+These components formalise a semantic framework for the deductive
+verification of hybrid systems. They support reasoning about
+continuous evolutions of hybrid programs in the style of differential
+dynamics logic. Vector fields or flows model these evolutions, and
+their verification is done with invariants for the former or orbits
+for the latter. Laws of modal Kleene algebra or categorical predicate
+transformers implement the verification condition generation. Examples
+show the approach at work.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Transformer_Semantics-AFP,
-  author  = {Georg Struth},
-  title   = {Transformer Semantics},
+        <pre>@article{Hybrid_Systems_VCs-AFP,
+  author  = {Jonathan Julian Huerta y Munive},
+  title   = {Verification Components for Hybrid Systems},
   journal = {Archive of Formal Proofs},
-  month   = dec,
-  year    = 2018,
-  note    = {\url{http://isa-afp.org/entries/Transformer_Semantics.html},
+  month   = sep,
+  year    = 2019,
+  note    = {\url{http://isa-afp.org/entries/Hybrid_Systems_VCs.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -128,11 +132,9 @@ between relations, state transformers and predicate transformers.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Order_Lattice_Props.html">Order_Lattice_Props</a>, <a href="Quantales.html">Quantales</a>      </td></tr>
+          <td class="data"><a href="KAD.html">KAD</a>, <a href="Ordinary_Differential_Equations.html">Ordinary_Differential_Equations</a>, <a href="Transformer_Semantics.html">Transformer_Semantics</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Hybrid_Systems_VCs.html">Hybrid_Systems_VCs</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -144,29 +146,23 @@ between relations, state transformers and predicate transformers.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Transformer_Semantics/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Transformer_Semantics/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Hybrid_Systems_VCs/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Hybrid_Systems_VCs/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Transformer_Semantics/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Hybrid_Systems_VCs/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Transformer_Semantics-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Hybrid_Systems_VCs-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2018:
-            <a href="../release/afp-Transformer_Semantics-2018-12-19.tar.gz">
-              afp-Transformer_Semantics-2018-12-19.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>
