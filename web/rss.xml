@@ -27,6 +27,19 @@ transformers implement the verification condition generation. Examples
 show the approach at work.</description>
     </item>
     <item>
+       <title>Fourier Series</title>
+              <link>https://www.isa-afp.org/entries/Fourier.html</link>
+       <guid>https://www.isa-afp.org/entries/Fourier.html</guid>
+       <dc:creator> Lawrence C Paulson       </dc:creator>
+       <pubDate>06 Sep 2019 00:00:00 +0000</pubDate>
+       <description>
+This development formalises the square integrable functions over the
+reals and the basics of Fourier series. It culminates with a proof
+that every well-behaved periodic function can be approximated by a
+Fourier series. The material is ported from HOL Light:
+https://github.com/jrh13/hol-light/blob/master/100/fourier.ml</description>
+    </item>
+    <item>
        <title>A Case Study in Basic Algebra</title>
               <link>https://www.isa-afp.org/entries/Jacobson_Basic_Algebra.html</link>
        <guid>https://www.isa-afp.org/entries/Jacobson_Basic_Algebra.html</guid>
@@ -549,28 +562,6 @@ rules in an elegant manner.&lt;/p&gt;
 &lt;p&gt;The Preliminaries Chapter of the theory defines a number of helper lemmas for
 transitive closures and tuples. It defines also a generic object model independent
 from OCL. It allows one to use the theory as a reference for formalization of analogous languages.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Elementary Facts About the Distribution of Primes</title>
-              <link>https://www.isa-afp.org/entries/Prime_Distribution_Elementary.html</link>
-       <guid>https://www.isa-afp.org/entries/Prime_Distribution_Elementary.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>21 Feb 2019 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This entry is a formalisation of Chapter 4 (and parts of
-Chapter 3) of Apostol&#39;s &lt;a
-href=&#34;https://www.springer.com/de/book/9780387901633&#34;&gt;&lt;em&gt;Introduction
-to Analytic Number Theory&lt;/em&gt;&lt;/a&gt;. The main topics that
-are addressed are properties of the distribution of prime numbers that
-can be shown in an elementary way (i.&amp;thinsp;e. without the Prime
-Number Theorem), the various equivalent forms of the PNT (which imply
-each other in elementary ways), and consequences that follow from the
-PNT in elementary ways. The latter include, most notably, asymptotic
-bounds for the number of distinct prime factors of
-&lt;em&gt;n&lt;/em&gt;, the divisor function
-&lt;em&gt;d(n)&lt;/em&gt;, Euler&#39;s totient function
-&lt;em&gt;&amp;phi;(n)&lt;/em&gt;, and
-lcm(1,&amp;hellip;,&lt;em&gt;n&lt;/em&gt;).&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

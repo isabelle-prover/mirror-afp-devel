@@ -1,3 +1,16 @@
+[Fourier]
+title = Fourier Series
+author = Lawrence C Paulson <https://www.cl.cam.ac.uk/~lp15/>
+topic = Mathematics/Analysis
+date = 2019-09-06
+notify = lp15@cam.ac.uk
+abstract = 
+  This development formalises the square integrable functions over the
+  reals and the basics of Fourier series. It culminates with a proof
+  that every well-behaved periodic function can be approximated by a
+  Fourier series. The material is ported from HOL Light:
+  https://github.com/jrh13/hol-light/blob/master/100/fourier.ml
+
 [Generic_Deriving]
 title = Deriving generic class instances for datatypes
 author = Jonas Rädle <mailto:jonas.raedle@gmail.com>, Lars Hupel <https://www21.in.tum.de/~hupel/>
