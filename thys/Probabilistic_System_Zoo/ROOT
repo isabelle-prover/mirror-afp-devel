@@ -1,37 +1,16 @@
 chapter AFP
 
 session "Probabilistic_System_Zoo" (AFP) = "HOL-Probability" +
-  options [timeout = 600]
+  options [timeout = 600, document_variants = "document:outline=/proof,/ML:bnfs:non_bnfs"]
   sessions
     "HOL-Eisbach"
     "HOL-Cardinals"
-  theories [document = false]
-    Nonempty_Bounded_Set
   theories
-    Probabilistic_Hierarchy
-    Vardi
-  document_files
-    "root.tex"
-
-session "Probabilistic_System_Zoo-BNFs" (AFP) in BNFs = "HOL-Analysis" +
-  options [timeout = 600]
-  sessions
-    "HOL-Probability"
-    "HOL-Cardinals"
-  directories ".." (overlapping)
-  theories
-    "../Nonempty_Bounded_Set"
     Bool_Bounded_Set
+    Finitely_Bounded_Set_Counterexample
+    Nonempty_Bounded_Set
+    Vardi_Counterexample
   document_files
     "root.tex"
-
-session "Probabilistic_System_Zoo-Non_BNFs" (AFP) in Non_BNFs = "HOL-Probability" +
-  options [timeout = 600]
-  sessions
-    "HOL-Eisbach"
-    "HOL-Cardinals"
-  directories ".." (overlapping)
-  theories
-    "../Vardi"
-  document_files
-    "root.tex"
+    "root_bnfs.tex"
+    "root_non_bnfs.tex"
