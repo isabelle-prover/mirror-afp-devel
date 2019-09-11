@@ -75,12 +75,10 @@ session Iptables_Semantics_Examples (AFP) in "Examples" = Iptables_Semantics +
 session Iptables_Semantics_Examples_Big (AFP slow very_slow) in "Examples_Big" = Iptables_Semantics_Examples +
   options [timeout = 60000]
   directories
-    "../Examples/topoS_generated"
     "../Examples/IPPartEval"
     "../Examples/TUM_Net_Firewall"
     "../Examples/containern"
-    "../Examples/TUM_Net_Firewall"
-    "../Examples/IPPartEval"
+    "../Examples/topoS_generated"
   theories
     "../Examples/topoS_generated/Analyze_topos_generated"
     "../Examples/IPPartEval/IP_Address_Space_Examples_All_Small"
