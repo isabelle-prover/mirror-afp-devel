@@ -74,6 +74,50 @@ abbreviation proper_filter :: "'a set \<Rightarrow> bool"
 abbreviation ultra_filter :: "'a set \<Rightarrow> bool"
   where "ultra_filter F \<equiv> proper_filter F \<and> (\<forall>G . proper_filter G \<and> F \<subseteq> G \<longrightarrow> F = G)"
 
+abbreviation filters :: "'a set set"
+  where "filters \<equiv> { F::'a set . filter F }"
+
+lemma filter_map_filter:
+  assumes "filter F"
+      and "mono f"
+      and "\<forall>x y . f x \<le> y \<longrightarrow> (\<exists>z . x \<le> z \<and> y = f z)"
+    shows "filter (f ` F)"
+proof (unfold ord_class.filter_def, intro conjI)
+  show "f ` F \<noteq> {}"
+    using assms(1) ord_class.filter_def by auto
+next
+  show "\<forall>x\<in>f ` F . \<forall>y\<in>f ` F . \<exists>z\<in>f ` F . z \<le> x \<and> z \<le> y"
+  proof (intro ballI)
+    fix x y
+    assume "x \<in> f ` F" and "y \<in> f ` F"
+    then obtain u v where 1: "x = f u \<and> u \<in> F \<and> y = f v \<and> v \<in> F"
+      by auto
+    then obtain w where "w \<le> u \<and> w \<le> v \<and> w \<in> F"
+      by (meson assms(1) ord_class.filter_def)
+    thus "\<exists>z\<in>f ` F . z \<le> x \<and> z \<le> y"
+      using 1 assms(2) mono_def image_eqI by blast
+  qed
+next
+  show "is_up_set (f ` F)"
+  proof
+    fix x
+    assume "x \<in> f ` F"
+    then obtain u where 1: "x = f u \<and> u \<in> F"
+      by auto
+    show "\<forall>y . x \<le> y \<longrightarrow> y \<in> f ` F"
+    proof (rule allI, rule impI)
+      fix y
+      assume "x \<le> y"
+      hence "f u \<le> y"
+        using 1 by simp
+      then obtain z where "u \<le> z \<and> y = f z"
+        using assms(3) by auto
+      thus "y \<in> f ` F"
+        by (meson 1 assms(1) image_iff ord_class.filter_def)
+    qed
+  qed
+qed
+
 end
 
 context order
@@ -315,7 +359,7 @@ text \<open>
 The operation \<open>filter_sup\<close> is the join operation in the lattice of filters.
 \<close>
 
-abbreviation "filter_sup F G \<equiv> { z . \<exists>x\<in>F . \<exists>y\<in>G . x \<sqinter> y \<le> z }"
+definition "filter_sup F G \<equiv> { z . \<exists>x\<in>F . \<exists>y\<in>G . x \<sqinter> y \<le> z }"
 
 lemma filter_sup:
   assumes "filter F"
@@ -325,30 +369,30 @@ proof -
   have "F \<noteq> {} \<and> G \<noteq> {}"
     using assms filter_def by blast
   hence 1: "filter_sup F G \<noteq> {}"
-    by blast
+    using filter_sup_def by blast
   have 2: "\<forall>x\<in>filter_sup F G . \<forall>y\<in>filter_sup F G . \<exists>z\<in>filter_sup F G . z \<le> x \<and> z \<le> y"
   proof
     fix x
     assume "x\<in>filter_sup F G"
     then obtain t u where 3: "t \<in> F \<and> u \<in> G \<and> t \<sqinter> u \<le> x"
-      by auto
+      using filter_sup_def by auto
     show "\<forall>y\<in>filter_sup F G . \<exists>z\<in>filter_sup F G . z \<le> x \<and> z \<le> y"
     proof
       fix y
       assume "y\<in>filter_sup F G"
       then obtain v w where 4: "v \<in> F \<and> w \<in> G \<and> v \<sqinter> w \<le> y"
-        by auto
+        using filter_sup_def by auto
       let ?z = "(t \<sqinter> v) \<sqinter> (u \<sqinter> w)"
       have 5: "?z \<le> x \<and> ?z \<le> y"
         using 3 4 by (meson order.trans inf.cobounded1 inf.cobounded2 inf_mono)
       have "?z \<in> filter_sup F G"
-        using assms 3 4 filter_inf_closed by blast
+        unfolding filter_sup_def using assms 3 4 filter_inf_closed by blast
       thus "\<exists>z\<in>filter_sup F G . z \<le> x \<and> z \<le> y"
         using 5 by blast
     qed
   qed
   have "\<forall>x\<in>filter_sup F G . \<forall>y . x \<le> y \<longrightarrow> y \<in> filter_sup F G"
-    using order_trans by blast
+    unfolding filter_sup_def using order_trans by blast
   thus ?thesis
     using 1 2 filter_def by presburger
 qed
@@ -360,12 +404,12 @@ proof -
   from assms obtain y where "y\<in>G"
     using all_not_in_conv filter_def by auto
   thus ?thesis
-    using inf.cobounded1 by blast
+    unfolding filter_sup_def using inf.cobounded1 by blast
 qed
 
 lemma filter_sup_symmetric:
   "filter_sup F G = filter_sup G F"
-  using inf.commute by fastforce
+  unfolding filter_sup_def using inf.commute by fastforce
 
 lemma filter_sup_right_upper_bound:
   "filter F \<Longrightarrow> G \<subseteq> filter_sup F G"
@@ -380,7 +424,7 @@ proof
   fix x
   assume "x \<in> filter_sup F G"
   then obtain y z where 1: "y \<in> F \<and> z \<in> G \<and> y \<sqinter> z \<le> x"
-    by auto
+    using filter_sup_def by auto
   hence "y \<in> H \<and> z \<in> H"
     using assms(2-3) by auto
   hence "y \<sqinter> z \<in> H"
@@ -391,28 +435,28 @@ qed
 
 lemma filter_sup_left_isotone:
   "G \<subseteq> H \<Longrightarrow> filter_sup G F \<subseteq> filter_sup H F"
-  by blast
+  unfolding filter_sup_def by blast
 
 lemma filter_sup_right_isotone:
   "G \<subseteq> H \<Longrightarrow> filter_sup F G \<subseteq> filter_sup F H"
-  by blast
+  unfolding filter_sup_def by blast
 
 lemma filter_sup_right_isotone_var:
   "filter_sup F (G \<inter> H) \<subseteq> filter_sup F H"
-  by blast
+  unfolding filter_sup_def by blast
 
 lemma up_dist_inf:
   "\<up>(x \<sqinter> y) = filter_sup (\<up>x) (\<up>y)"
 proof
   show "\<up>(x \<sqinter> y) \<subseteq> filter_sup (\<up>x) (\<up>y)"
-    by blast
+    unfolding filter_sup_def by blast
 next
   show "filter_sup (\<up>x) (\<up>y) \<subseteq> \<up>(x \<sqinter> y)"
   proof
     fix z
     assume "z \<in> filter_sup (\<up>x) (\<up>y)"
     then obtain u v where "u\<in>\<up>x \<and> v\<in>\<up>y \<and> u \<sqinter> v \<le> z"
-      by auto
+      using filter_sup_def by auto
     hence "x \<sqinter> y \<le> z"
       using order.trans inf_mono by blast
     thus "z \<in> \<up>(x \<sqinter> y)"
@@ -518,17 +562,18 @@ lift_definition less_filter :: "'a filter \<Rightarrow> 'a filter \<Rightarrow> 
 
 instance
   apply intro_classes
-  apply (simp add: less_eq_filter.rep_eq less_filter.rep_eq inf.less_le_not_le)
-  apply (simp add: less_eq_filter.rep_eq)
-  apply (simp add: less_eq_filter.rep_eq)
-  apply (simp add: Rep_filter_inject less_eq_filter.rep_eq)
-  apply (simp add: inf_filter.rep_eq less_eq_filter.rep_eq)
-  apply (simp add: inf_filter.rep_eq less_eq_filter.rep_eq)
-  apply (simp add: inf_filter.rep_eq less_eq_filter.rep_eq)
-  apply (simp add: less_eq_filter.rep_eq filter_sup_left_upper_bound sup_filter.rep_eq)
-  apply (simp add: less_eq_filter.rep_eq filter_sup_right_upper_bound sup_filter.rep_eq)
-  apply (simp add: less_eq_filter.rep_eq filter_sup_least_upper_bound sup_filter.rep_eq)
-  by (simp add: less_eq_filter.rep_eq top_filter.rep_eq)
+  subgoal apply transfer by (simp add: less_le_not_le)
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by (simp add: filter_sup_left_upper_bound)
+  subgoal apply transfer by (simp add: filter_sup_right_upper_bound)
+  subgoal apply transfer by (simp add: filter_sup_least_upper_bound)
+  subgoal apply transfer by simp
+  done
 
 end
 
@@ -550,7 +595,9 @@ lift_definition bot_filter :: "'a filter" is "{top}"
   by simp
 
 instance
-  by intro_classes (simp add: less_eq_filter.rep_eq bot_filter.rep_eq)
+  apply intro_classes
+  apply transfer
+  by simp
 
 end
 
@@ -600,41 +647,7 @@ lemma filter_map_filter:
   assumes "mono f"
       and "\<forall>x y . f x \<le> y \<longrightarrow> (\<exists>z . x \<le> z \<and> y = f z)"
     shows "filter (f ` Rep_filter F)"
-proof (unfold filter_def, intro conjI)
-  show "f ` Rep_filter F \<noteq> {}"
-    by (metis empty_is_image filter_def simp_filter)
-next
-  show "\<forall>x\<in>f ` Rep_filter F . \<forall>y\<in>f ` Rep_filter F . \<exists>z\<in>f ` Rep_filter F . z \<le> x \<and> z \<le> y"
-  proof (intro ballI)
-    fix x y
-    assume "x \<in> f ` Rep_filter F" and "y \<in> f ` Rep_filter F"
-    then obtain u v where 1: "x = f u \<and> u \<in> Rep_filter F \<and> y = f v \<and> v \<in> Rep_filter F"
-      by auto
-    then obtain w where "w \<le> u \<and> w \<le> v \<and> w \<in> Rep_filter F"
-      by (meson filter_def simp_filter)
-    thus "\<exists>z\<in>f ` Rep_filter F . z \<le> x \<and> z \<le> y"
-      using 1 assms(1) mono_def rev_image_eqI by blast
-  qed
-next
-  show "is_up_set (f ` Rep_filter F)"
-  proof
-    fix x
-    assume "x \<in> f ` Rep_filter F"
-    then obtain u where 1: "x = f u \<and> u \<in> Rep_filter F"
-      by auto
-    show "\<forall>y . x \<le> y \<longrightarrow> y \<in> f ` Rep_filter F"
-    proof (rule allI, rule impI)
-      fix y
-      assume "x \<le> y"
-      hence "f u \<le> y"
-        using 1 by simp
-      then obtain z where "u \<le> z \<and> y = f z"
-        using assms(2) by auto
-      thus "y \<in> f ` Rep_filter F"
-        using 1 by (meson image_iff filter_def simp_filter)
-    qed
-  qed
-qed
+  by (simp add: assms inf.filter_map_filter)
 
 subsection \<open>Distributive Lattices\<close>
 
@@ -655,14 +668,14 @@ lemma filter_sup_left_dist_inf:
     shows "filter_sup F (G \<inter> H) = filter_sup F G \<inter> filter_sup F H"
 proof
   show "filter_sup F (G \<inter> H) \<subseteq> filter_sup F G \<inter> filter_sup F H"
-    using filter_sup_right_isotone_var by blast
+    unfolding filter_sup_def using filter_sup_right_isotone_var by blast
 next
   show "filter_sup F G \<inter> filter_sup F H \<subseteq> filter_sup F (G \<inter> H)"
   proof
     fix x
     assume "x \<in> filter_sup F G \<inter> filter_sup F H"
     then obtain t u v w where 1: "t \<in> F \<and> u \<in> G \<and> v \<in> F \<and> w \<in> H \<and> t \<sqinter> u \<le> x \<and> v \<sqinter> w \<le> x"
-      by auto
+      using filter_sup_def by auto
     let ?y = "t \<sqinter> v"
     let ?z = "u \<squnion> w"
     have 2: "?y \<in> F"
@@ -676,7 +689,7 @@ next
     also have "... \<le> x"
       using 1 by (simp add: le_supI)
     finally show "x \<in> filter_sup F (G \<inter> H)"
-      using 2 3 by blast
+      unfolding filter_sup_def using 2 3 by blast
   qed
 qed
 
@@ -691,7 +704,7 @@ lemma filter_sup_principal_rep:
     shows "\<exists>x\<in>F . \<exists>y\<in>G . z = x \<sqinter> y"
 proof -
   from assms(3) obtain x y where 1: "x\<in>F \<and> y\<in>G \<and> x \<sqinter> y \<le> z"
-    using order_refl by blast
+    unfolding filter_sup_def using order_refl by blast
   hence 2: "x \<squnion> z \<in> F \<and> y \<squnion> z \<in> G"
     by (meson assms(1-2) sup_ge1 filter_def)
   have "(x \<squnion> z) \<sqinter> (y \<squnion> z) = z"
@@ -714,7 +727,7 @@ proof -
   from filter_sup_principal_rep obtain v w where 3: "v\<in>F \<and> w\<in>G \<and> x = v \<sqinter> w"
     using 1 by (meson assms(1-2))
   have "t \<in> filter_sup F G \<and> u \<in> filter_sup F G"
-    using 2 inf.cobounded1 inf.cobounded2 by blast
+    unfolding filter_sup_def using 2 inf.cobounded1 inf.cobounded2 by blast
   hence "x \<le> t \<and> x \<le> u"
     using 1 by blast
   hence 4: "(t \<sqinter> v) \<sqinter> (u \<sqinter> w) = x"
@@ -732,7 +745,7 @@ proof -
       fix z
       assume 6: "z \<in> F"
       hence "z \<in> filter_sup F G"
-        using 2 inf.cobounded1 by blast
+        unfolding filter_sup_def using 2 inf.cobounded1 by blast
       hence "x \<le> z"
         using 1 by simp
       hence 7: "(t \<sqinter> v \<sqinter> z) \<sqinter> (u \<sqinter> w) = x"
@@ -843,6 +856,37 @@ proof -
     using assms by blast
 qed
 
+lemma up_dist_inf_inter:
+  assumes "is_up_set S"
+    shows "\<up>(x \<sqinter> y) \<inter> S = filter_sup (\<up>x \<inter> S) (\<up>y \<inter> S) \<inter> S"
+proof
+  show "\<up>(x \<sqinter> y) \<inter> S \<subseteq> filter_sup (\<up>x \<inter> S) (\<up>y \<inter> S) \<inter> S"
+  proof
+    fix z
+    let ?x = "x \<squnion> z"
+    let ?y = "y \<squnion> z"
+    assume "z \<in> \<up>(x \<sqinter> y) \<inter> S"
+    hence 1: "x \<sqinter> y \<le> z \<and> z \<in> S"
+      by auto
+    hence "?x \<in> (\<up>x \<inter> S) \<and> ?y \<in> (\<up>y \<inter> S) \<and> ?x \<sqinter> ?y \<le> z"
+      using assms sup_absorb2 sup_inf_distrib2 by fastforce
+    thus "z \<in> filter_sup (\<up>x \<inter> S) (\<up>y \<inter> S) \<inter> S"
+      using filter_sup_def 1 by fastforce
+  qed
+next
+  show "filter_sup (\<up>x \<inter> S) (\<up>y \<inter> S) \<inter> S \<subseteq> \<up>(x \<sqinter> y) \<inter> S"
+  proof
+    fix z
+    assume "z \<in> filter_sup (\<up>x \<inter> S) (\<up>y \<inter> S) \<inter> S"
+    then obtain u v where 2: "u\<in>\<up>x \<and> v\<in>\<up>y \<and> u \<sqinter> v \<le> z \<and> z \<in> S"
+      using filter_sup_def by auto
+    hence "x \<sqinter> y \<le> z"
+      using order.trans inf_mono by blast
+    thus "z \<in> \<up>(x \<sqinter> y) \<inter> S"
+      using 2 by blast
+  qed
+qed
+
 end
 
 context distrib_lattice_bot
@@ -889,21 +933,9 @@ instantiation filter :: (distrib_lattice_top) bounded_distrib_lattice
 begin
 
 instance
-proof
-  fix x y z :: "'a filter"
-  have "Rep_filter (x \<squnion> (y \<sqinter> z)) = filter_sup (Rep_filter x) (Rep_filter (y \<sqinter> z))"
-    by (simp add: sup_filter.rep_eq)
-  also have "... = filter_sup (Rep_filter x) (Rep_filter y \<inter> Rep_filter z)"
-    by (simp add: inf_filter.rep_eq)
-  also have "... = filter_sup (Rep_filter x) (Rep_filter y) \<inter> filter_sup (Rep_filter x) (Rep_filter z)"
-    by (simp add: filter_sup_left_dist_inf)
-  also have "... = Rep_filter (x \<squnion> y) \<inter> Rep_filter (x \<squnion> z)"
-    by (simp add: sup_filter.rep_eq)
-  also have "... = Rep_filter ((x \<squnion> y) \<sqinter> (x \<squnion> z))"
-    by (simp add: inf_filter.rep_eq)
-  finally show "x \<squnion> (y \<sqinter> z) = (x \<squnion> y) \<sqinter> (x \<squnion> z)"
-    by (simp add: Rep_filter_inject)
-qed
+  apply intro_classes
+  apply transfer
+  by (simp add: filter_sup_left_dist_inf)
 
 end
 

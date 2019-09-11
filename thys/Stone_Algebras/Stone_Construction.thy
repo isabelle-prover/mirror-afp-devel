@@ -48,84 +48,6 @@ imports P_Algebras Filters
 
 begin
 
-subsection \<open>Triples\<close>
-
-text \<open>
-This section gives definitions of lattice homomorphisms and isomorphisms and basic properties.
-It concludes with a locale that represents triples as discussed above.
-\<close>
-
-class sup_inf_top_bot_uminus = sup + inf + top + bot + uminus
-class sup_inf_top_bot_uminus_ord = sup_inf_top_bot_uminus + ord
-
-context p_algebra
-begin
-
-subclass sup_inf_top_bot_uminus_ord .
-
-end
-
-abbreviation sup_homomorphism :: "('a::sup \<Rightarrow> 'b::sup) \<Rightarrow> bool"
-  where "sup_homomorphism f \<equiv> \<forall>x y . f (x \<squnion> y) = f x \<squnion> f y"
-
-abbreviation inf_homomorphism :: "('a::inf \<Rightarrow> 'b::inf) \<Rightarrow> bool"
-  where "inf_homomorphism f \<equiv> \<forall>x y . f (x \<sqinter> y) = f x \<sqinter> f y"
-
-abbreviation sup_inf_homomorphism :: "('a::{sup,inf} \<Rightarrow> 'b::{sup,inf}) \<Rightarrow> bool"
-  where "sup_inf_homomorphism f \<equiv> sup_homomorphism f \<and> inf_homomorphism f"
-
-abbreviation sup_inf_top_homomorphism :: "('a::{sup,inf,top} \<Rightarrow> 'b::{sup,inf,top}) \<Rightarrow> bool"
-  where "sup_inf_top_homomorphism f \<equiv> sup_inf_homomorphism f \<and> f top = top"
-
-abbreviation sup_inf_top_bot_homomorphism :: "('a::{sup,inf,top,bot} \<Rightarrow> 'b::{sup,inf,top,bot}) \<Rightarrow> bool"
-  where "sup_inf_top_bot_homomorphism f \<equiv> sup_inf_top_homomorphism f \<and> f bot = bot"
-
-abbreviation bounded_lattice_homomorphism :: "('a::bounded_lattice \<Rightarrow> 'b::bounded_lattice) \<Rightarrow> bool"
-  where "bounded_lattice_homomorphism f \<equiv> sup_inf_top_bot_homomorphism f"
-
-abbreviation sup_inf_top_bot_uminus_homomorphism :: "('a::sup_inf_top_bot_uminus \<Rightarrow> 'b::sup_inf_top_bot_uminus) \<Rightarrow> bool"
-  where "sup_inf_top_bot_uminus_homomorphism f \<equiv> sup_inf_top_bot_homomorphism f \<and> (\<forall>x . f (-x) = -f x)"
-
-abbreviation sup_inf_top_bot_uminus_ord_homomorphism :: "('a::sup_inf_top_bot_uminus_ord \<Rightarrow> 'b::sup_inf_top_bot_uminus_ord) \<Rightarrow> bool"
-  where "sup_inf_top_bot_uminus_ord_homomorphism f \<equiv> sup_inf_top_bot_uminus_homomorphism f \<and> (\<forall>x y . x \<le> y \<longrightarrow> f x \<le> f y)"
-
-abbreviation sup_inf_top_isomorphism :: "('a::{sup,inf,top} \<Rightarrow> 'b::{sup,inf,top}) \<Rightarrow> bool"
-  where "sup_inf_top_isomorphism f \<equiv> sup_inf_top_homomorphism f \<and> bij f"
-
-abbreviation bounded_lattice_top_isomorphism :: "('a::bounded_lattice_top \<Rightarrow> 'b::bounded_lattice_top) \<Rightarrow> bool"
-  where "bounded_lattice_top_isomorphism f \<equiv> sup_inf_top_isomorphism f"
-
-abbreviation sup_inf_top_bot_uminus_isomorphism :: "('a::sup_inf_top_bot_uminus \<Rightarrow> 'b::sup_inf_top_bot_uminus) \<Rightarrow> bool"
-  where "sup_inf_top_bot_uminus_isomorphism f \<equiv> sup_inf_top_bot_uminus_homomorphism f \<and> bij f"
-
-abbreviation stone_algebra_isomorphism :: "('a::stone_algebra \<Rightarrow> 'b::stone_algebra) \<Rightarrow> bool"
-  where "stone_algebra_isomorphism f \<equiv> sup_inf_top_bot_uminus_isomorphism f"
-
-abbreviation boolean_algebra_isomorphism :: "('a::boolean_algebra \<Rightarrow> 'b::boolean_algebra) \<Rightarrow> bool"
-  where "boolean_algebra_isomorphism f \<equiv> sup_inf_top_bot_uminus_isomorphism f"
-
-lemma sup_homomorphism_mono:
-  "sup_homomorphism (f::'a::semilattice_sup \<Rightarrow> 'b::semilattice_sup) \<Longrightarrow> mono f"
-  by (metis le_iff_sup monoI)
-
-lemma sup_isomorphism_ord_isomorphism:
-  assumes "sup_homomorphism (f::'a::semilattice_sup \<Rightarrow> 'b::semilattice_sup)"
-      and "bij f"
-    shows "x \<le> y \<longleftrightarrow> f x \<le> f y"
-proof
-  assume "x \<le> y"
-  thus "f x \<le> f y"
-    by (metis assms(1) le_iff_sup)
-next
-  assume "f x \<le> f y"
-  hence "f (x \<squnion> y) = f y"
-    by (simp add: assms(1) le_iff_sup)
-  hence "x \<squnion> y = y"
-    by (metis injD bij_is_inj assms(2))
-  thus "x \<le> y"
-    by (simp add: le_iff_sup)
-qed
-
 text \<open>
 A triple consists of a Boolean algebra, a distributive lattice with a greatest element, and a structure map.
 The Boolean algebra and the distributive lattice are represented as HOL types.
@@ -185,22 +107,23 @@ lift_definition less_regular :: "'a regular \<Rightarrow> 'a regular \<Rightarro
 
 instance
   apply intro_classes
-  apply (simp add: less_eq_regular.rep_eq less_regular.rep_eq inf.less_le_not_le)
-  apply (simp add: less_eq_regular.rep_eq)
-  apply (simp add: less_eq_regular.rep_eq)
-  apply (simp add: Rep_regular_inject less_eq_regular.rep_eq)
-  apply (simp add: inf_regular.rep_eq less_eq_regular.rep_eq)
-  apply (simp add: inf_regular.rep_eq less_eq_regular.rep_eq)
-  apply (simp add: inf_regular.rep_eq less_eq_regular.rep_eq)
-  apply (simp add: sup_regular.rep_eq less_eq_regular.rep_eq)
-  apply (simp add: sup_regular.rep_eq less_eq_regular.rep_eq)
-  apply (simp add: sup_regular.rep_eq less_eq_regular.rep_eq)
-  apply (simp add: bot_regular.rep_eq less_eq_regular.rep_eq)
-  apply (simp add: top_regular.rep_eq less_eq_regular.rep_eq)
-  apply (metis (mono_tags) Rep_regular_inject inf_regular.rep_eq sup_inf_distrib1 sup_regular.rep_eq)
-  apply (metis (mono_tags) Rep_regular_inverse bot_regular.abs_eq inf_regular.rep_eq inf_p uminus_regular.rep_eq)
-  apply (metis (mono_tags) top_regular.abs_eq Rep_regular_inverse simp_regular stone sup_regular.rep_eq uminus_regular.rep_eq)
-  by (metis (mono_tags) Rep_regular_inject inf_regular.rep_eq minus_regular.rep_eq uminus_regular.rep_eq)
+  subgoal apply transfer by (simp add: less_le_not_le)
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by (simp add: sup_inf_distrib1)
+  subgoal apply transfer by simp
+  subgoal apply transfer by auto
+  subgoal apply transfer by simp
+  done
 
 end
 
@@ -253,18 +176,19 @@ lift_definition less_dense :: "'a dense \<Rightarrow> 'a dense \<Rightarrow> boo
 
 instance
   apply intro_classes
-  apply (simp add: less_eq_dense.rep_eq less_dense.rep_eq inf.less_le_not_le)
-  apply (simp add: less_eq_dense.rep_eq)
-  apply (simp add: less_eq_dense.rep_eq)
-  apply (simp add: Rep_dense_inject less_eq_dense.rep_eq)
-  apply (simp add: inf_dense.rep_eq less_eq_dense.rep_eq)
-  apply (simp add: inf_dense.rep_eq less_eq_dense.rep_eq)
-  apply (simp add: inf_dense.rep_eq less_eq_dense.rep_eq)
-  apply (simp add: sup_dense.rep_eq less_eq_dense.rep_eq)
-  apply (simp add: sup_dense.rep_eq less_eq_dense.rep_eq)
-  apply (simp add: sup_dense.rep_eq less_eq_dense.rep_eq)
-  apply (simp add: top_dense.rep_eq less_eq_dense.rep_eq)
-  by (metis (mono_tags, lifting) Rep_dense_inject sup_inf_distrib1 inf_dense.rep_eq sup_dense.rep_eq)
+  subgoal apply transfer by (simp add: inf.less_le_not_le)
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by (simp add: sup_inf_distrib1)
+  done
 
 end
 
@@ -304,19 +228,20 @@ lift_definition less_dense_filter_type :: "'a dense_filter_type \<Rightarrow> 'a
 
 instance
   apply intro_classes
-  apply (simp add: less_eq_dense_filter_type.rep_eq less_dense_filter_type.rep_eq inf.less_le_not_le)
-  apply (simp add: less_eq_dense_filter_type.rep_eq)
-  apply (simp add: less_eq_dense_filter_type.rep_eq inf.order_lesseq_imp)
-  apply (simp add: Rep_dense_filter_type_inject less_eq_dense_filter_type.rep_eq)
-  apply (simp add: inf_dense_filter_type.rep_eq less_eq_dense_filter_type.rep_eq)
-  apply (simp add: inf_dense_filter_type.rep_eq less_eq_dense_filter_type.rep_eq)
-  apply (simp add: inf_dense_filter_type.rep_eq less_eq_dense_filter_type.rep_eq)
-  apply (simp add: less_eq_dense_filter_type.rep_eq sup_dense_filter_type.rep_eq)
-  apply (simp add: less_eq_dense_filter_type.rep_eq sup_dense_filter_type.rep_eq)
-  apply (simp add: less_eq_dense_filter_type.rep_eq sup_dense_filter_type.rep_eq)
-  apply (simp add: less_eq_dense_filter_type.rep_eq bot_dense_filter_type.rep_eq)
-  apply (simp add: top_dense_filter_type.rep_eq less_eq_dense_filter_type.rep_eq)
-  by (metis (mono_tags, lifting) Rep_dense_filter_type_inject sup_inf_distrib1 inf_dense_filter_type.rep_eq sup_dense_filter_type.rep_eq)
+  subgoal apply transfer by (simp add: inf.less_le_not_le)
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by simp
+  subgoal apply transfer by (simp add: sup_inf_distrib1)
+  done
 
 end
 
@@ -328,18 +253,18 @@ It maps a regular element \<open>x\<close> to the set of all dense elements abov
 This set is a filter.
 \<close>
 
-abbreviation stone_phi_set :: "'a::stone_algebra regular \<Rightarrow> 'a dense set"
-  where "stone_phi_set x \<equiv> { y . -Rep_regular x \<le> Rep_dense y }"
+abbreviation stone_phi_base :: "'a::stone_algebra regular \<Rightarrow> 'a dense set"
+  where "stone_phi_base x \<equiv> { y . -Rep_regular x \<le> Rep_dense y }"
 
-lemma stone_phi_set_filter:
-  "filter (stone_phi_set x)"
+lemma stone_phi_base_filter:
+  "filter (stone_phi_base x)"
   apply (unfold filter_def, intro conjI)
   apply (metis Collect_empty_eq top_dense.rep_eq top_greatest)
   apply (metis inf_dense.rep_eq inf_le2 le_inf_iff mem_Collect_eq)
   using order_trans less_eq_dense.rep_eq by blast
 
 definition stone_phi :: "'a::stone_algebra regular \<Rightarrow> 'a dense_filter"
-  where "stone_phi x = Abs_filter (stone_phi_set x)"
+  where "stone_phi x = Abs_filter (stone_phi_base x)"
 
 text \<open>
 To show that we obtain a triple, we only need to prove that \<open>stone_phi\<close> is a bounded lattice homomorphism.
@@ -360,15 +285,15 @@ next
   show "\<forall>x y::'a regular . stone_phi (x \<squnion> y) = stone_phi x \<squnion> stone_phi y"
   proof (intro allI)
     fix x y :: "'a regular"
-    have "stone_phi_set (x \<squnion> y) = filter_sup (stone_phi_set x) (stone_phi_set y)"
+    have "stone_phi_base (x \<squnion> y) = filter_sup (stone_phi_base x) (stone_phi_base y)"
     proof (rule set_eqI, rule iffI)
       fix z
-      assume 2: "z \<in> stone_phi_set (x \<squnion> y)"
+      assume 2: "z \<in> stone_phi_base (x \<squnion> y)"
       let ?t = "-Rep_regular x \<squnion> Rep_dense z"
       let ?u = "-Rep_regular y \<squnion> Rep_dense z"
       let ?v = "Abs_dense ?t"
       let ?w = "Abs_dense ?u"
-      have 3: "?v \<in> stone_phi_set x \<and> ?w \<in> stone_phi_set y"
+      have 3: "?v \<in> stone_phi_base x \<and> ?w \<in> stone_phi_base y"
         by (simp add: Abs_dense_inverse)
       have "?v \<sqinter> ?w = Abs_dense (?t \<sqinter> ?u)"
         by (simp add: eq_onp_def inf_dense.abs_eq)
@@ -378,13 +303,13 @@ next
         using 2 by (simp add: le_iff_sup)
       also have "... = z"
         by (simp add: Rep_dense_inverse)
-      finally show "z \<in> filter_sup (stone_phi_set x) (stone_phi_set y)"
-        using 3 mem_Collect_eq order_refl by fastforce
+      finally show "z \<in> filter_sup (stone_phi_base x) (stone_phi_base y)"
+        using 3 mem_Collect_eq order_refl filter_sup_def by fastforce
     next
       fix z
-      assume "z \<in> filter_sup (stone_phi_set x) (stone_phi_set y)"
-      then obtain v w where 4: "v \<in> stone_phi_set x \<and> w \<in> stone_phi_set y \<and> v \<sqinter> w \<le> z"
-        by auto
+      assume "z \<in> filter_sup (stone_phi_base x) (stone_phi_base y)"
+      then obtain v w where 4: "v \<in> stone_phi_base x \<and> w \<in> stone_phi_base y \<and> v \<sqinter> w \<le> z"
+        unfolding filter_sup_def by auto
       have "-Rep_regular (x \<squnion> y) = Rep_regular (-(x \<squnion> y))"
         by (metis uminus_regular.rep_eq)
       also have "... = -Rep_regular x \<sqinter> -Rep_regular y"
@@ -395,11 +320,11 @@ next
         by (simp add: inf_dense.rep_eq)
       also have "... \<le> Rep_dense z"
         using 4 by (simp add: less_eq_dense.rep_eq)
-      finally show "z \<in> stone_phi_set (x \<squnion> y)"
+      finally show "z \<in> stone_phi_base (x \<squnion> y)"
         by simp
     qed
     thus "stone_phi (x \<squnion> y) = stone_phi x \<squnion> stone_phi y"
-      by (simp add: stone_phi_def eq_onp_same_args stone_phi_set_filter sup_filter.abs_eq)
+      by (simp add: stone_phi_def eq_onp_same_args stone_phi_base_filter sup_filter.abs_eq)
   qed
 next
   show "\<forall>x y::'a regular . stone_phi (x \<sqinter> y) = stone_phi x \<sqinter> stone_phi y"
@@ -407,10 +332,10 @@ next
     fix x y :: "'a regular"
     have "\<forall>z . -Rep_regular (x \<sqinter> y) \<le> Rep_dense z \<longleftrightarrow> -Rep_regular x \<le> Rep_dense z \<and> -Rep_regular y \<le> Rep_dense z"
       by (simp add: inf_regular.rep_eq)
-    hence "stone_phi_set (x \<sqinter> y) = (stone_phi_set x) \<inter> (stone_phi_set y)"
+    hence "stone_phi_base (x \<sqinter> y) = (stone_phi_base x) \<inter> (stone_phi_base y)"
       by auto
     thus "stone_phi (x \<sqinter> y) = stone_phi x \<sqinter> stone_phi y"
-      by (simp add: stone_phi_def eq_onp_same_args stone_phi_set_filter inf_filter.abs_eq)
+      by (simp add: stone_phi_def eq_onp_same_args stone_phi_base_filter inf_filter.abs_eq)
   qed
 qed
 
@@ -455,6 +380,9 @@ fun pairs_sup :: "('a \<times> 'b filter) \<Rightarrow> ('a \<times> 'b filter) 
 
 fun pairs_inf :: "('a \<times> 'b filter) \<Rightarrow> ('a \<times> 'b filter) \<Rightarrow> ('a \<times> 'b filter)"
   where "pairs_inf (x,y) (z,w) = (x \<sqinter> z,y \<squnion> w)"
+
+fun pairs_minus :: "('a \<times> 'b filter) \<Rightarrow> ('a \<times> 'b filter) \<Rightarrow> ('a \<times> 'b filter)"
+  where "pairs_minus (x,y) (z,w) = (x \<sqinter> -z,y \<squnion> phi z)"
 
 fun pairs_uminus :: "('a \<times> 'b filter) \<Rightarrow> ('a \<times> 'b filter)"
   where "pairs_uminus (x,y) = (-x,phi x)"
@@ -1053,11 +981,37 @@ lift_definition top_stone_phi_pair :: "'a stone_phi_pair" is "triple.pairs_top"
 
 lift_definition less_eq_stone_phi_pair :: "'a stone_phi_pair \<Rightarrow> 'a stone_phi_pair \<Rightarrow> bool" is triple.pairs_less_eq .
 
-lift_definition less_stone_phi_pair :: "'a stone_phi_pair \<Rightarrow> 'a stone_phi_pair \<Rightarrow> bool" is "\<lambda>xf yf . triple.pairs_less_eq xf yf \<and> \<not> triple.pairs_less_eq yf xf" .
+lift_definition less_stone_phi_pair :: "'a stone_phi_pair \<Rightarrow> 'a stone_phi_pair \<Rightarrow> bool" is triple.pairs_less .
 
 instance ..
 
 end
+
+(*
+instantiation stone_phi_pair :: (stone_algebra) stone_algebra
+begin
+
+instance
+  apply intro_classes
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by (metis (no_types, lifting) Pair_inject compl_bot_eq heyting.implies_order stone_phi.pairs_less_eq.elims(3) stone_phi.phi_top stone_phi.triple_axioms sup_top_left top_greatest triple_def)
+  subgoal apply transfer by (metis (no_types, lifting) Pair_inject stone_phi.pairs_less_eq.elims(3) top.extremum bot_least bot_filter.abs_eq)
+  subgoal apply transfer using stone_phi.triple_axioms triple.pairs_sup_dist_inf by fastforce
+  subgoal apply transfer using stone_phi.pairs_uminus_galois by fastforce
+  subgoal apply transfer using stone_phi.pairs_stone by fastforce
+  done
+
+end
+*)
 
 text \<open>
 The result is a Stone algebra and could be proved so by repeating and specialising the above proof for lifted pairs.
@@ -1322,6 +1276,10 @@ proof -
     by (simp add: less_eq_stone_phi_pair.rep_eq)
 qed
 
+lemma stone_phi_embed_strict_order_isomorphism:
+  "x < y \<longleftrightarrow> stone_phi_embed x < stone_phi_embed y"
+  by (smt less_eq_stone_phi_pair.rep_eq less_le_not_le less_stone_phi_pair.rep_eq stone_phi.pairs_less.elims(2,3) stone_phi_embed_homomorphism stone_phi_embed_order_injective)
+
 text \<open>
 Now all Stone algebra axioms can be inherited using the embedding.
 This is due to the fact that the axioms are universally quantified equations or conditional equations (or inequalities); this is called a quasivariety in universal algebra.
@@ -1333,7 +1291,7 @@ begin
 
 instance
   apply intro_classes
-  apply (simp add: less_stone_phi_pair.rep_eq less_eq_stone_phi_pair.rep_eq)
+  apply (metis (mono_tags, lifting) stone_phi_embed_homomorphism stone_phi_embed_strict_order_isomorphism stone_phi_embed_order_injective less_le_not_le)
   apply (simp add: stone_phi_embed_order_injective)
   apply (meson order.trans stone_phi_embed_homomorphism stone_phi_embed_order_injective)
   apply (meson stone_phi_embed_homomorphism antisym stone_phi_embed_injective injD)
@@ -1378,8 +1336,8 @@ proof -
     assume "z \<in> Rep_filter (stone_phi (Abs_regular (-x)) \<sqinter> up_filter (Abs_dense (y \<squnion> -y)))"
     also have "... = Rep_filter (stone_phi (Abs_regular (-x))) \<inter> Rep_filter (up_filter (Abs_dense (y \<squnion> -y)))"
       by (simp add: inf_filter.rep_eq)
-    also have "... = stone_phi_set (Abs_regular (-x)) \<inter> \<up>(Abs_dense (y \<squnion> -y))"
-      by (metis Abs_filter_inverse mem_Collect_eq up_filter stone_phi_set_filter stone_phi_def)
+    also have "... = stone_phi_base (Abs_regular (-x)) \<inter> \<up>(Abs_dense (y \<squnion> -y))"
+      by (metis Abs_filter_inverse mem_Collect_eq up_filter stone_phi_base_filter stone_phi_def)
     finally have "--x \<le> ?r \<and> Abs_dense (y \<squnion> -y) \<le> z"
       by (metis (mono_tags, lifting) Abs_regular_inverse Int_Collect mem_Collect_eq)
     hence "--x \<le> ?r \<and> y \<squnion> -y \<le> ?r"
@@ -1404,7 +1362,7 @@ lemma stone_phi_complement:
 lemma up_dense_stone_phi:
   "up_filter (Abs_dense (x \<squnion> -x)) \<le> stone_phi (Abs_regular (--x))"
 proof -
-  have "\<up>(Abs_dense (x \<squnion> -x)) \<le> stone_phi_set (Abs_regular (--x))"
+  have "\<up>(Abs_dense (x \<squnion> -x)) \<le> stone_phi_base (Abs_regular (--x))"
   proof
     fix z :: "'a dense"
     let ?r = "Rep_dense z"
@@ -1413,11 +1371,11 @@ proof -
       by (simp add: Abs_dense_inverse less_eq_dense.rep_eq)
     hence "-Rep_regular (Abs_regular (--x)) \<le> ?r"
       by (metis (mono_tags, lifting) Abs_regular_inverse mem_Collect_eq)
-    thus "z \<in> stone_phi_set (Abs_regular (--x))"
+    thus "z \<in> stone_phi_base (Abs_regular (--x))"
       by simp
   qed
   thus ?thesis
-    by (unfold stone_phi_def, subst less_eq_filter.abs_eq, simp_all add: eq_onp_same_args stone_phi_set_filter)
+    by (unfold stone_phi_def, subst less_eq_filter.abs_eq, simp_all add: eq_onp_same_args stone_phi_base_filter)
 qed
 
 text \<open>
@@ -1465,8 +1423,8 @@ proof -
     assume "z \<in> Rep_filter (stone_phi x \<sqinter> y)"
     hence "z \<in> Rep_filter (stone_phi x)"
       by (simp add: inf_filter.rep_eq)
-    also have "... = stone_phi_set x"
-      by (simp add: stone_phi_def Abs_filter_inverse stone_phi_set_filter)
+    also have "... = stone_phi_base x"
+      by (simp add: stone_phi_def Abs_filter_inverse stone_phi_base_filter)
     finally show "-Rep_regular x \<le> ?r"
       by simp
   qed
@@ -1560,16 +1518,16 @@ next
         by (metis (mono_tags, lifting) mem_Collect_eq Abs_regular_inverse)
       also have "... \<le> Rep_dense ?u"
         by (simp add: Abs_dense_inverse)
-      finally have "?u \<in> stone_phi_set (Abs_regular (-y))"
+      finally have "?u \<in> stone_phi_base (Abs_regular (-y))"
         by simp
       hence 5: "?u \<in> Rep_filter (stone_phi (Abs_regular (-y)))"
-        by (metis mem_Collect_eq stone_phi_def stone_phi_set_filter Abs_filter_inverse)
+        by (metis mem_Collect_eq stone_phi_def stone_phi_base_filter Abs_filter_inverse)
       have "?v \<in> \<up>?v"
         by simp
       hence "?v \<in> Rep_filter (up_filter ?v)"
         by (metis Abs_filter_inverse mem_Collect_eq up_filter)
       thus "z \<in> Rep_filter (stone_phi (Abs_regular (-y)) \<squnion> up_filter ?v)"
-        using 4 5 sup_filter.rep_eq by blast
+        using 4 5 sup_filter.rep_eq filter_sup_def by blast
     qed
     hence "up_filter (Abs_dense (x \<squnion> -x \<squnion> y)) \<le> Abs_filter (Rep_filter (stone_phi (Abs_regular (-y)) \<squnion> up_filter ?v))"
       by (simp add: eq_onp_same_args less_eq_filter.abs_eq)
@@ -1743,22 +1701,23 @@ lift_definition less_lifted_boolean_algebra :: "('a,'b) lifted_boolean_algebra \
 
 instance
   apply intro_classes
-  apply (simp add: less_eq_lifted_boolean_algebra.rep_eq less_lifted_boolean_algebra.rep_eq)
-  apply (simp add: less_eq_lifted_boolean_algebra.rep_eq)
-  using less_eq_lifted_boolean_algebra.rep_eq order_trans apply fastforce
-  apply (metis less_eq_lifted_boolean_algebra.rep_eq antisym ext Rep_lifted_boolean_algebra_inject)
-  apply (simp add: inf_lifted_boolean_algebra.rep_eq less_eq_lifted_boolean_algebra.rep_eq)
-  apply (simp add: inf_lifted_boolean_algebra.rep_eq less_eq_lifted_boolean_algebra.rep_eq)
-  apply (simp add: inf_lifted_boolean_algebra.rep_eq less_eq_lifted_boolean_algebra.rep_eq)
-  apply (simp add: sup_lifted_boolean_algebra.rep_eq less_eq_lifted_boolean_algebra.rep_eq)
-  apply (simp add: less_eq_lifted_boolean_algebra.rep_eq sup_lifted_boolean_algebra.rep_eq)
-  apply (simp add: less_eq_lifted_boolean_algebra.rep_eq sup_lifted_boolean_algebra.rep_eq)
-  apply (simp add: bot_lifted_boolean_algebra.rep_eq less_eq_lifted_boolean_algebra.rep_eq)
-  apply (simp add: less_eq_lifted_boolean_algebra.rep_eq top_lifted_boolean_algebra.rep_eq)
-  apply (unfold Rep_lifted_boolean_algebra_inject[THEN sym] sup_lifted_boolean_algebra.rep_eq inf_lifted_boolean_algebra.rep_eq, simp add: sup_inf_distrib1)
-  apply (unfold Rep_lifted_boolean_algebra_inject[THEN sym] inf_lifted_boolean_algebra.rep_eq uminus_lifted_boolean_algebra.rep_eq bot_lifted_boolean_algebra.rep_eq, simp)
-  apply (unfold Rep_lifted_boolean_algebra_inject[THEN sym] sup_lifted_boolean_algebra.rep_eq uminus_lifted_boolean_algebra.rep_eq top_lifted_boolean_algebra.rep_eq, simp)
-  by (unfold Rep_lifted_boolean_algebra_inject[THEN sym] inf_lifted_boolean_algebra.rep_eq uminus_lifted_boolean_algebra.rep_eq minus_lifted_boolean_algebra.rep_eq, simp add: diff_eq)
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer using order_trans by blast
+  subgoal apply transfer using antisym ext by blast
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by (simp add: sup_inf_distrib1)
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by (simp add: diff_eq)
+  done
 
 end
 
@@ -1859,10 +1818,8 @@ lemma ba_iso:
 proof (intro conjI)
   show "Abs_lifted_boolean_algebra (\<lambda>f . fst (Rep_lifted_pair (Rep_regular bot) f)) = bot"
     by (simp add: bot_lifted_boolean_algebra_def bot_regular.rep_eq bot_lifted_pair.rep_eq)
-next
   show "Abs_lifted_boolean_algebra (\<lambda>f . fst (Rep_lifted_pair (Rep_regular top) f)) = top"
     by (simp add: top_lifted_boolean_algebra_def top_regular.rep_eq top_lifted_pair.rep_eq)
-next
   show "\<forall>pf qf . Abs_lifted_boolean_algebra (\<lambda>f::('a,'b) phi . fst (Rep_lifted_pair (Rep_regular (pf \<squnion> qf)) f)) = Abs_lifted_boolean_algebra (\<lambda>f . fst (Rep_lifted_pair (Rep_regular pf) f)) \<squnion> Abs_lifted_boolean_algebra (\<lambda>f . fst (Rep_lifted_pair (Rep_regular qf) f))"
   proof (intro allI)
     fix pf qf :: "('a,'b) lifted_pair regular"
@@ -1882,8 +1839,7 @@ next
     thus "Abs_lifted_boolean_algebra (\<lambda>f . fst (Rep_lifted_pair (Rep_regular (pf \<squnion> qf)) f)) = Abs_lifted_boolean_algebra (\<lambda>f . fst (Rep_lifted_pair (Rep_regular pf) f)) \<squnion> Abs_lifted_boolean_algebra (\<lambda>f . fst (Rep_lifted_pair (Rep_regular qf) f))"
       by (simp add: eq_onp_same_args sup_lifted_boolean_algebra.abs_eq sup_regular.rep_eq sup_lifted_boolean_algebra.rep_eq)
   qed
-next
-  show "\<forall>pf qf . Abs_lifted_boolean_algebra (\<lambda>f::('a,'b) phi . fst (Rep_lifted_pair (Rep_regular (pf \<sqinter> qf)) f)) = Abs_lifted_boolean_algebra (\<lambda>f . fst (Rep_lifted_pair (Rep_regular pf) f)) \<sqinter> Abs_lifted_boolean_algebra (\<lambda>f . fst (Rep_lifted_pair (Rep_regular qf) f))"
+  show 1: "\<forall>pf qf . Abs_lifted_boolean_algebra (\<lambda>f::('a,'b) phi . fst (Rep_lifted_pair (Rep_regular (pf \<sqinter> qf)) f)) = Abs_lifted_boolean_algebra (\<lambda>f . fst (Rep_lifted_pair (Rep_regular pf) f)) \<sqinter> Abs_lifted_boolean_algebra (\<lambda>f . fst (Rep_lifted_pair (Rep_regular qf) f))"
   proof (intro allI)
     fix pf qf :: "('a,'b) lifted_pair regular"
     {
@@ -1902,7 +1858,6 @@ next
     thus "Abs_lifted_boolean_algebra (\<lambda>f . fst (Rep_lifted_pair (Rep_regular (pf \<sqinter> qf)) f)) = Abs_lifted_boolean_algebra (\<lambda>f . fst (Rep_lifted_pair (Rep_regular pf) f)) \<sqinter> Abs_lifted_boolean_algebra (\<lambda>f . fst (Rep_lifted_pair (Rep_regular qf) f))"
       by (simp add: eq_onp_same_args inf_lifted_boolean_algebra.abs_eq inf_regular.rep_eq inf_lifted_boolean_algebra.rep_eq)
   qed
-next
   show "\<forall>pf . Abs_lifted_boolean_algebra (\<lambda>f::('a,'b) phi . fst (Rep_lifted_pair (Rep_regular (-pf)) f)) = -Abs_lifted_boolean_algebra (\<lambda>f . fst (Rep_lifted_pair (Rep_regular pf) f))"
   proof
     fix pf :: "('a,'b) lifted_pair regular"
@@ -1922,7 +1877,8 @@ next
     thus "Abs_lifted_boolean_algebra (\<lambda>f . fst (Rep_lifted_pair (Rep_regular (-pf)) f)) = -Abs_lifted_boolean_algebra (\<lambda>f . fst (Rep_lifted_pair (Rep_regular pf) f))"
       by (simp add: eq_onp_same_args uminus_lifted_boolean_algebra.abs_eq uminus_regular.rep_eq uminus_lifted_boolean_algebra.rep_eq)
   qed
-next
+  thus "\<forall>pf qf . Abs_lifted_boolean_algebra (\<lambda>f::('a,'b) phi . fst (Rep_lifted_pair (Rep_regular (pf - qf)) f)) = Abs_lifted_boolean_algebra (\<lambda>f . fst (Rep_lifted_pair (Rep_regular pf) f)) - Abs_lifted_boolean_algebra (\<lambda>f . fst (Rep_lifted_pair (Rep_regular qf) f))"
+    using 1 by (simp add: diff_eq)
   show "bij ba_iso"
     by (rule invertible_bij[where g=ba_iso_inv]) (simp_all add: ba_iso_left_invertible ba_iso_right_invertible)
 qed
@@ -1954,18 +1910,19 @@ lift_definition less_lifted_distrib_lattice_top :: "('a,'b) lifted_distrib_latti
 
 instance
   apply intro_classes
-  apply (simp add: less_eq_lifted_distrib_lattice_top.rep_eq less_lifted_distrib_lattice_top.rep_eq)
-  apply (simp add: less_eq_lifted_distrib_lattice_top.rep_eq)
-  using less_eq_lifted_distrib_lattice_top.rep_eq order_trans apply fastforce
-  apply (metis less_eq_lifted_distrib_lattice_top.rep_eq antisym ext Rep_lifted_distrib_lattice_top_inject)
-  apply (simp add: inf_lifted_distrib_lattice_top.rep_eq less_eq_lifted_distrib_lattice_top.rep_eq)
-  apply (simp add: inf_lifted_distrib_lattice_top.rep_eq less_eq_lifted_distrib_lattice_top.rep_eq)
-  apply (simp add: inf_lifted_distrib_lattice_top.rep_eq less_eq_lifted_distrib_lattice_top.rep_eq)
-  apply (simp add: sup_lifted_distrib_lattice_top.rep_eq less_eq_lifted_distrib_lattice_top.rep_eq)
-  apply (simp add: less_eq_lifted_distrib_lattice_top.rep_eq sup_lifted_distrib_lattice_top.rep_eq)
-  apply (simp add: less_eq_lifted_distrib_lattice_top.rep_eq sup_lifted_distrib_lattice_top.rep_eq)
-  apply (simp add: less_eq_lifted_distrib_lattice_top.rep_eq top_lifted_distrib_lattice_top.rep_eq)
-  by (unfold Rep_lifted_distrib_lattice_top_inject[THEN sym] sup_lifted_distrib_lattice_top.rep_eq inf_lifted_distrib_lattice_top.rep_eq, simp add: sup_inf_distrib1)
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer using order_trans by blast
+  subgoal apply transfer using antisym ext by blast
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by auto
+  subgoal apply transfer by (simp add: sup_inf_distrib1)
+  done
 
 end
 
@@ -2337,12 +2294,12 @@ proof -
   qed
   have 13: "\<forall>qf\<in>Rep_filter (stone_phi pf) . Rep_lifted_distrib_lattice_top (Abs_lifted_distrib_lattice_top (get_dense qf)) f = get_dense qf f"
     by (metis Abs_lifted_distrib_lattice_top_inverse UNIV_I UNIV_def)
-  have "Rep_filter (?r (fst (Rep_lifted_pair (Rep_regular pf) f))) = { z . \<exists>qf\<in>stone_phi_set pf . z = get_dense qf f }"
+  have "Rep_filter (?r (fst (Rep_lifted_pair (Rep_regular pf) f))) = { z . \<exists>qf\<in>stone_phi_base pf . z = get_dense qf f }"
     using 2 12 by simp
-  hence "?r (fst (Rep_lifted_pair (Rep_regular pf) f)) = Abs_filter { z . \<exists>qf\<in>stone_phi_set pf . z = get_dense qf f }"
+  hence "?r (fst (Rep_lifted_pair (Rep_regular pf) f)) = Abs_filter { z . \<exists>qf\<in>stone_phi_base pf . z = get_dense qf f }"
     by (metis Rep_filter_inverse)
   hence "?r (Rep_lifted_boolean_algebra (ba_iso pf) f) = Abs_filter { z . \<exists>qf\<in>Rep_filter (stone_phi pf) . z = Rep_lifted_distrib_lattice_top (dl_iso qf) f }"
-    using 13 by (simp add: Abs_filter_inverse stone_phi_set_filter stone_phi_def Abs_lifted_boolean_algebra_inverse)
+    using 13 by (simp add: Abs_filter_inverse stone_phi_base_filter stone_phi_def Abs_lifted_boolean_algebra_inverse)
   thus ?thesis
     by (simp add: image_def)
 qed

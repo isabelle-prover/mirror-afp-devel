@@ -3055,7 +3055,7 @@ qed
 lemma kruskal_edge_arc_1:
   assumes "e \<le> --h"
       and "h \<le> g"
-      and "symmetric h"
+      and "symmetric g"
       and "components g \<le> forest_components w"
       and "w * e\<^sup>T = bot"
     shows "e\<^sup>T \<le> w\<^sup>\<star>"
@@ -3067,7 +3067,7 @@ proof -
   have "e\<^sup>T \<le> e\<^sup>T * top \<sqinter> --h\<^sup>T"
     using assms(1) conv_complement conv_isotone top_right_mult_increasing by fastforce
   also have "... \<le> e\<^sup>T * top \<sqinter> --g"
-    using assms(2,3) inf.sup_right_isotone pp_isotone by simp
+    by (metis assms(2,3) inf.sup_right_isotone pp_isotone conv_isotone)
   also have "... \<le> e\<^sup>T * top \<sqinter> components g"
     using inf.sup_right_isotone star.circ_increasing by simp
   also have "... \<le> e\<^sup>T * top \<sqinter> forest_components w"

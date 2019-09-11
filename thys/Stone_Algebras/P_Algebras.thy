@@ -44,6 +44,8 @@ class p_algebra = bounded_lattice + uminus +
   assumes pseudo_complement: "x \<sqinter> y = bot \<longleftrightarrow> x \<le> -y"
 begin
 
+subclass sup_inf_top_bot_uminus_ord .
+
 text \<open>
 Regular elements and dense elements are frequently used in pseudocomplemented algebras.
 \<close>
@@ -776,6 +778,9 @@ lemma selection_closed_pp: "selection s x \<longrightarrow> selection (--s) x" n
 *)
 
 end
+
+abbreviation stone_algebra_isomorphism :: "('a::stone_algebra \<Rightarrow> 'b::stone_algebra) \<Rightarrow> bool"
+  where "stone_algebra_isomorphism f \<equiv> sup_inf_top_bot_uminus_isomorphism f"
 
 text \<open>
 Every bounded linear order can be expanded to a Stone algebra.

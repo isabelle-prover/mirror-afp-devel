@@ -15,9 +15,16 @@ imports Main
 
 begin
 
+subsection \<open>General Facts and Notations\<close>
+
 text \<open>
 The following results extend basic Isabelle/HOL facts.
 \<close>
+
+lemma imp_as_conj:
+  assumes "P x \<Longrightarrow> Q x"
+  shows "P x \<and> Q x \<longleftrightarrow> P x"
+  using assms by auto
 
 lemma if_distrib_2:
   "f (if c then x else y) (if c then z else w) = (if c then f x z else f y w)"
@@ -81,6 +88,8 @@ no_notation uminus ("- _" [81] 80)
 notation uminus ("- _" [80] 80)
 
 end
+
+subsection \<open>Orders\<close>
 
 text \<open>
 We use the following definition of monotonicity for operations defined in classes.
@@ -148,6 +157,8 @@ lemma finite_set_minimal:
   by (metis assms(3) insert_iff order_trans subsetD)
 
 end
+
+subsection \<open>Semilattices\<close>
 
 text \<open>
 The following are basic facts in semilattices.
@@ -230,6 +241,8 @@ sublocale inf: bounded_semilattice_sup_bot where sup = inf and less_eq = greater
   by unfold_locales (simp_all add: less_le_not_le)
 
 end
+
+subsection \<open>Lattices\<close>
 
 context lattice
 begin
@@ -316,6 +329,8 @@ next
 qed
 
 end
+
+subsection \<open>Linear Orders\<close>
 
 text \<open>
 We next consider lattices with a linear order structure.
@@ -417,6 +432,8 @@ subclass linear_bounded_lattice
 
 end
 
+subsection \<open>Non-trivial Algebras\<close>
+
 text \<open>
 Some results, such as the existence of certain filters, require that the algebras are not trivial.
 This is not an assumption of the order and lattice classes that come with Isabelle/HOL; for example, \<open>bot = top\<close> may hold in bounded lattices.
@@ -442,6 +459,100 @@ proof -
 qed
 
 end
+
+subsection \<open>Homomorphisms\<close>
+
+text \<open>
+This section gives definitions of lattice homomorphisms and isomorphisms and basic properties.
+\<close>
+
+class sup_inf_top_bot_uminus = sup + inf + top + bot + uminus
+class sup_inf_top_bot_uminus_ord = sup_inf_top_bot_uminus + ord
+
+context boolean_algebra
+begin
+
+subclass sup_inf_top_bot_uminus_ord .
+
+end
+
+abbreviation sup_homomorphism :: "('a::sup \<Rightarrow> 'b::sup) \<Rightarrow> bool"
+  where "sup_homomorphism f \<equiv> \<forall>x y . f (x \<squnion> y) = f x \<squnion> f y"
+
+abbreviation inf_homomorphism :: "('a::inf \<Rightarrow> 'b::inf) \<Rightarrow> bool"
+  where "inf_homomorphism f \<equiv> \<forall>x y . f (x \<sqinter> y) = f x \<sqinter> f y"
+
+abbreviation bot_homomorphism :: "('a::bot \<Rightarrow> 'b::bot) \<Rightarrow> bool"
+  where "bot_homomorphism f \<equiv> f bot = bot"
+
+abbreviation top_homomorphism :: "('a::top \<Rightarrow> 'b::top) \<Rightarrow> bool"
+  where "top_homomorphism f \<equiv> f top = top"
+
+abbreviation minus_homomorphism :: "('a::minus \<Rightarrow> 'b::minus) \<Rightarrow> bool"
+  where "minus_homomorphism f \<equiv> \<forall>x y . f (x - y) = f x - f y"
+
+abbreviation uminus_homomorphism :: "('a::uminus \<Rightarrow> 'b::uminus) \<Rightarrow> bool"
+  where "uminus_homomorphism f \<equiv> \<forall>x . f (-x) = -f x"
+
+abbreviation sup_inf_homomorphism :: "('a::{sup,inf} \<Rightarrow> 'b::{sup,inf}) \<Rightarrow> bool"
+  where "sup_inf_homomorphism f \<equiv> sup_homomorphism f \<and> inf_homomorphism f"
+
+abbreviation sup_inf_top_homomorphism :: "('a::{sup,inf,top} \<Rightarrow> 'b::{sup,inf,top}) \<Rightarrow> bool"
+  where "sup_inf_top_homomorphism f \<equiv> sup_inf_homomorphism f \<and> top_homomorphism f"
+
+abbreviation sup_inf_top_bot_homomorphism :: "('a::{sup,inf,top,bot} \<Rightarrow> 'b::{sup,inf,top,bot}) \<Rightarrow> bool"
+  where "sup_inf_top_bot_homomorphism f \<equiv> sup_inf_top_homomorphism f \<and> bot_homomorphism f"
+
+abbreviation bounded_lattice_homomorphism :: "('a::bounded_lattice \<Rightarrow> 'b::bounded_lattice) \<Rightarrow> bool"
+  where "bounded_lattice_homomorphism f \<equiv> sup_inf_top_bot_homomorphism f"
+
+abbreviation sup_inf_top_bot_uminus_homomorphism :: "('a::sup_inf_top_bot_uminus \<Rightarrow> 'b::sup_inf_top_bot_uminus) \<Rightarrow> bool"
+  where "sup_inf_top_bot_uminus_homomorphism f \<equiv> sup_inf_top_bot_homomorphism f \<and> uminus_homomorphism f"
+
+abbreviation sup_inf_top_bot_uminus_ord_homomorphism :: "('a::sup_inf_top_bot_uminus_ord \<Rightarrow> 'b::sup_inf_top_bot_uminus_ord) \<Rightarrow> bool"
+  where "sup_inf_top_bot_uminus_ord_homomorphism f \<equiv> sup_inf_top_bot_uminus_homomorphism f \<and> (\<forall>x y . x \<le> y \<longrightarrow> f x \<le> f y)"
+
+abbreviation sup_inf_top_isomorphism :: "('a::{sup,inf,top} \<Rightarrow> 'b::{sup,inf,top}) \<Rightarrow> bool"
+  where "sup_inf_top_isomorphism f \<equiv> sup_inf_top_homomorphism f \<and> bij f"
+
+abbreviation bounded_lattice_top_isomorphism :: "('a::bounded_lattice_top \<Rightarrow> 'b::bounded_lattice_top) \<Rightarrow> bool"
+  where "bounded_lattice_top_isomorphism f \<equiv> sup_inf_top_isomorphism f"
+
+abbreviation sup_inf_top_bot_uminus_isomorphism :: "('a::sup_inf_top_bot_uminus \<Rightarrow> 'b::sup_inf_top_bot_uminus) \<Rightarrow> bool"
+  where "sup_inf_top_bot_uminus_isomorphism f \<equiv> sup_inf_top_bot_uminus_homomorphism f \<and> bij f"
+
+abbreviation boolean_algebra_isomorphism :: "('a::boolean_algebra \<Rightarrow> 'b::boolean_algebra) \<Rightarrow> bool"
+  where "boolean_algebra_isomorphism f \<equiv> sup_inf_top_bot_uminus_isomorphism f \<and> minus_homomorphism f"
+
+lemma sup_homomorphism_mono:
+  "sup_homomorphism (f::'a::semilattice_sup \<Rightarrow> 'b::semilattice_sup) \<Longrightarrow> mono f"
+  by (metis le_iff_sup monoI)
+
+lemma sup_isomorphism_ord_isomorphism:
+  assumes "sup_homomorphism (f::'a::semilattice_sup \<Rightarrow> 'b::semilattice_sup)"
+      and "bij f"
+    shows "x \<le> y \<longleftrightarrow> f x \<le> f y"
+proof
+  assume "x \<le> y"
+  thus "f x \<le> f y"
+    by (metis assms(1) le_iff_sup)
+next
+  assume "f x \<le> f y"
+  hence "f (x \<squnion> y) = f y"
+    by (simp add: assms(1) le_iff_sup)
+  hence "x \<squnion> y = y"
+    by (metis injD bij_is_inj assms(2))
+  thus "x \<le> y"
+    by (simp add: le_iff_sup)
+qed
+
+lemma minus_homomorphism_default:
+  assumes "\<forall>x y::'a::{inf,minus,uminus} . x - y = x \<sqinter> -y"
+      and "\<forall>x y::'b::{inf,minus,uminus} . x - y = x \<sqinter> -y"
+      and "inf_homomorphism (f::'a \<Rightarrow> 'b)"
+      and "uminus_homomorphism f"
+    shows "minus_homomorphism f"
+  by (simp add: assms)
 
 end
 
