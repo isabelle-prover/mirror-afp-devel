@@ -19,8 +19,8 @@
 <!-- Navigation -->
 <td width="20%" align="center" valign="top">
   <p>&nbsp;</p>
-  <a href="http://isabelle.in.tum.de">
-    <img src="{{ ROOT_PATH }}images/isabelle.png" width="100" height="86" border=0>
+  <a href="https://www.isa-afp.org/">
+    <img src="{{ ROOT_PATH }}images/isabelle.png" width="100" height="88" border=0>
   </a>
   <p>&nbsp;</p>
   <p>&nbsp;</p>
