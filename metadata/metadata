@@ -2728,7 +2728,7 @@ notify = nipkow@in.tum.de
 title = Executable Matrix Operations on Matrices of Arbitrary Dimensions
 topic = Computer Science/Data Structures
 date = 2010-06-17
-author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
+author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
 license = LGPL
 abstract =
 	We provide the operations of matrix addition, multiplication,
@@ -3772,7 +3772,7 @@ notify = jasmin.blanchette@gmail.com
 title = Abstract Rewriting
 topic = Logic/Rewriting
 date = 2010-06-14
-author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
+author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>
 license = LGPL
 abstract =
 	We present an Isabelle formalization of abstract rewriting (see, e.g.,
@@ -3795,7 +3795,7 @@ notify = christian.sternagel@uibk.ac.at, rene.thiemann@uibk.ac.at
 
 [First_Order_Terms]
 title = First-Order Terms
-author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>
+author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>
 topic = Logic/Rewriting, Computer Science/Algorithms
 license = LGPL
 date = 2018-02-06
@@ -3940,7 +3940,7 @@ notify = immler@in.tum.de, hoelzl@in.tum.de
 
 [Polynomials]
 title = Executable Multivariate Polynomials
-author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>, Alexander Maletzky <https://risc.jku.at/m/alexander-maletzky/>, Fabian Immler <http://www21.in.tum.de/~immler>, Florian Haftmann <http://isabelle.in.tum.de/~haftmann>, Andreas Lochbihler <http://www.andreas-lochbihler.de>, Alexander Bentkamp <mailto:bentkamp@gmail.com>
+author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>, Alexander Maletzky <https://risc.jku.at/m/alexander-maletzky/>, Fabian Immler <http://www21.in.tum.de/~immler>, Florian Haftmann <http://isabelle.in.tum.de/~haftmann>, Andreas Lochbihler <http://www.andreas-lochbihler.de>, Alexander Bentkamp <mailto:bentkamp@gmail.com>
 date = 2010-08-10
 topic = Mathematics/Analysis, Mathematics/Algebra, Computer Science/Algorithms
 license = LGPL
@@ -4542,7 +4542,7 @@ notify = florian.haftmann@informatik.tu-muenchen.de
 
 [Open_Induction]
 title = Open Induction
-author = Mizuhito Ogawa <>, Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>
+author = Mizuhito Ogawa <>, Christian Sternagel <mailto:c.sternagel@gmail.com>
 date = 2012-11-02
 topic = Mathematics/Combinatorics
 abstract =
@@ -6081,7 +6081,8 @@ abstract =
 
 [Rewriting_Z]
 title = The Z Property
-author = Bertram Felgenhauer<>, Julian Nagele<>, Vincent van Oostrom<>, Christian Sternagel<>
+author = Bertram Felgenhauer<>, Julian Nagele<>, Vincent van Oostrom<>,
+Christian Sternagel <mailto:c.sternagel@gmail.com>
 notify = bertram.felgenhauer@uibk.ac.at, julian.nagele@uibk.ac.at, c.sternagel@gmail.com
 date = 2016-06-30
 topic = Logic/Rewriting
