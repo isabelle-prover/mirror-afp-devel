@@ -6081,8 +6081,7 @@ abstract =
 
 [Rewriting_Z]
 title = The Z Property
-author = Bertram Felgenhauer<>, Julian Nagele<>, Vincent van Oostrom<>,
-Christian Sternagel <mailto:c.sternagel@gmail.com>
+author = Bertram Felgenhauer<>, Julian Nagele<>, Vincent van Oostrom<>, Christian Sternagel <mailto:c.sternagel@gmail.com>
 notify = bertram.felgenhauer@uibk.ac.at, julian.nagele@uibk.ac.at, c.sternagel@gmail.com
 date = 2016-06-30
 topic = Logic/Rewriting
