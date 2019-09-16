@@ -214,7 +214,7 @@ proof -
   also have "(?g has_integral of_real 1 * f (linepath a z 1) - of_real 0 * f (linepath a z 0)) {0..1}"
     using * A
     by (intro fundamental_theorem_of_calculus)
-       (auto intro!: derivative_eq_intros has_vector_derivative_real_complex 
+       (auto intro!: derivative_eq_intros has_vector_derivative_real_field 
              simp: linepath_def scaleR_conv_of_real)
   hence "integral {0..1} ?g = f (linepath a z 1)" by (simp add: has_integral_iff)
   also have "linepath a z 1 = z" by (simp add: linepath_def)

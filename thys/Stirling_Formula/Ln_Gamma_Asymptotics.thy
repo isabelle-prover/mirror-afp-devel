@@ -195,7 +195,7 @@ proof (cases "z = 0")
 next
   case False
   have "((\<lambda>y. ln (1 + z * of_real y)) has_vector_derivative 1 * z) (at 0)"
-    by (rule has_vector_derivative_real_complex) (auto intro!: derivative_eq_intros)
+    by (rule has_vector_derivative_real_field) (auto intro!: derivative_eq_intros)
   then have "(\<lambda>y. (Ln (1 + z * of_real y) - of_real y * z) / of_real \<bar>y\<bar>) \<midarrow>0\<rightarrow> 0"
     by (auto simp add: has_vector_derivative_def has_derivative_def netlimit_at 
           scaleR_conv_of_real field_simps)
@@ -281,7 +281,7 @@ proof -
             {of_nat n..of_nat (n + 1)}" 
       using s has_integral_const_real[of 1 "of_nat n" "of_nat (n + 1)"]
       by (intro has_integral_diff has_integral_mult_right fundamental_theorem_of_calculus)
-         (auto intro!: derivative_eq_intros has_vector_derivative_real_complex
+         (auto intro!: derivative_eq_intros has_vector_derivative_real_field
                simp: has_field_derivative_iff_has_vector_derivative [symmetric] field_simps
                      complex_nonpos_Reals_iff)
     thus "((\<lambda>x. (of_nat n + 1/2 + s) * (1 / (x + s)) - 1) has_integral 
@@ -507,7 +507,7 @@ proof -
     from x s have "complex_of_real x + s \<noteq> 0" by (auto simp: complex_eq_iff)
     thus "((\<lambda>x. inverse (of_real x + s) ^ n) has_vector_derivative 
              - of_nat n * inverse (of_real x + s) ^ Suc n) (at x)" using x s assms
-      by (auto intro!: derivative_eq_intros has_vector_derivative_real_complex simp: divide_simps power_add [symmetric]
+      by (auto intro!: derivative_eq_intros has_vector_derivative_real_field simp: divide_simps power_add [symmetric]
                simp del: power_Suc)
   next
     have "complex_of_real x + s \<noteq> 0" if "x \<ge> 0" for x 
@@ -872,7 +872,7 @@ proof -
     case 0
     have "((\<lambda>x. Re (stirling_integral n (of_real x))) has_field_derivative 
                   Re (deriv (\<lambda>x. stirling_integral n x) (of_real x))) (at x)" using 0 n
-      by (auto intro!: derivative_intros has_vector_derivative_real_complex
+      by (auto intro!: derivative_intros has_vector_derivative_real_field
                  field_differentiable_derivI holomorphic_on_imp_differentiable_at[of _ ?A]
                  stirling_integral_holomorphic)
     also have "?this \<longleftrightarrow> (stirling_integral n has_field_derivative 
@@ -906,7 +906,7 @@ proof -
     have "((\<lambda>x. Re ((deriv ^^ Suc j) (stirling_integral n) (of_real x))) has_field_derivative 
              Re (deriv ((deriv ^^ Suc j) (stirling_integral n)) (of_real x))) (at x)"
       using Suc.prems n
-      by (intro derivative_intros has_vector_derivative_real_complex field_differentiable_derivI
+      by (intro derivative_intros has_vector_derivative_real_field field_differentiable_derivI
                 holomorphic_on_imp_differentiable_at[of _ ?A] stirling_integral_holomorphic
                 holomorphic_higher_deriv) auto
     also have "?this \<longleftrightarrow> ((deriv ^^ Suc j) (stirling_integral n) has_field_derivative 

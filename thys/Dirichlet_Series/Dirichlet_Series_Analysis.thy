@@ -242,7 +242,7 @@ next
 next
   fix x :: real and c :: complex assume "x > 0"
   hence "((\<lambda>y. real_power y c) has_vector_derivative c * real_power x (c - 1)) (at x)"
-    by (auto intro!: derivative_eq_intros has_vector_derivative_real_complex)
+    by (auto intro!: derivative_eq_intros has_vector_derivative_real_field)
   thus "LIM y at x. (real_power y c - real_power x c - (y - x) *\<^sub>R (c * real_power x (c - 1))) /\<^sub>R
            norm (y - x) :> INF S\<in>{S. open S \<and> 0 \<in> S}. principal S"
     by (simp add: has_vector_derivative_def has_derivative_def nhds_def)
@@ -2032,7 +2032,7 @@ proof -
   qed  
 
   have "\<exists>c. \<forall>z\<in>{z. Re z > s0}. ?h z = c"
-  proof (rule DERIV_zero_constant, goal_cases)
+  proof (rule has_field_derivative_zero_constant, goal_cases)
     case 1
     show ?case using convex_halfspace_gt[of _ "1::complex"]
       by (cases s0) auto
@@ -2101,7 +2101,7 @@ proof -
     using assms by (auto simp: max_def abs_conv_abscissa_deriv split: if_splits)
 
   have "\<exists>c. \<forall>z\<in>{z. Re z > s0}. ?h z = c"
-  proof (rule DERIV_zero_constant, goal_cases)
+  proof (rule has_field_derivative_zero_constant, goal_cases)
     case 1
     show ?case using convex_halfspace_gt[of _ "1::complex"]
       by (cases s0) auto
