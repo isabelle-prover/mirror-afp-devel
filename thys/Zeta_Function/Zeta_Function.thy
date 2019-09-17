@@ -2520,7 +2520,7 @@ proof -
   also have "\<dots> = exp (- \<i> * pi * s) * 
                     integral {r..R} (\<lambda>x. exp (-ln x * s) * exp (-a * x) / (1 - exp (-x)))"
     (is "_ = _ * ?I") unfolding integral_mult_right [symmetric] using r_R
-    by (subst integral_reflect_real [symmetric], intro integral_cong)
+    by (subst Henstock_Kurzweil_Integration.integral_reflect_real [symmetric], intro integral_cong)
        (auto simp: f_def exp_of_real Ln'_of_real_neg exp_minus exp_Reals_eq
                    exp_diff exp_add field_simps)
   also have "?I = integral {r..R} (\<lambda>x. x powr (-s) * exp (-a * x) / (1 - exp (-x)))" using r_R
@@ -2880,7 +2880,7 @@ next
                (\<lambda>s. (integral {0..pi} (\<lambda>x. h r s (-x))))" using r
       by (simp add: integral_cnj h_def exp_cnj cis_cnj Ln_Reals_eq)
     also have "\<dots> = (\<lambda>s. integral {-pi..0} (h r s))"
-      by (subst integral_reflect_real [symmetric]) simp
+      by (subst Henstock_Kurzweil_Integration.integral_reflect_real [symmetric]) simp
     finally have "(\<lambda>s. err2 s r) = \<dots>" .
     moreover have "(\<lambda>s. integral {-pi..0} (h r s)) holomorphic_on -{0}"
       using r by (intro integral_h_holomorphic) auto

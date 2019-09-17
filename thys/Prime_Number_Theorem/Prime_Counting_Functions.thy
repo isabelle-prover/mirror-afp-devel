@@ -946,7 +946,7 @@ proof -
   have "integral {2..x} (\<lambda>t. 1 / ln t ^ 2) =
           integral {2..sqrt x} (\<lambda>t. 1 / ln t ^ 2) + integral {sqrt x..x} (\<lambda>t. 1 / ln t ^ 2)"
     (is "_ = ?I1 + ?I2") using x x'
-    by (intro integral_combine [symmetric] integrable_continuous_real)
+    by (intro Henstock_Kurzweil_Integration.integral_combine [symmetric] integrable_continuous_real)
        (auto intro!: continuous_intros)
   also have "?I1 \<le> integral {2..sqrt x} (\<lambda>_. 1 / ln 2 ^ 2)" using x
     by (intro integral_le integrable_continuous_real divide_left_mono

@@ -17,7 +17,7 @@ proof -
   finally show ?thesis .
 qed
 
-(* TODO: replace in library *)
+(* TODO: replace in library *)thm real_root_decreasing
 lemma real_root_decreasing: "0 < n \<Longrightarrow> n \<le> N \<Longrightarrow> 1 \<le> x \<Longrightarrow> root N x \<le> root n x"
   by (auto simp add: order_le_less real_root_strict_decreasing)
 
@@ -1649,7 +1649,7 @@ proof (rule landau_o.smallI)
     from elim b' have integrable: "(\<lambda>x. \<bar>g' x\<bar>) integrable_on {b'..x}"
       by (intro integrable_continuous_real continuous_intros) auto
     have "integral {a..x} f = integral {a..b'} f + integral {b'..x} f"
-      using elim b' by (intro integral_combine [symmetric] assms) auto
+      using elim b' by (intro Henstock_Kurzweil_Integration.integral_combine [symmetric] assms) auto
     also have "norm \<dots> \<le> D + norm (integral {b'..x} f)"
       unfolding D_def by (rule norm_triangle_ineq)
     also have "norm (integral {b'..x} f) \<le> integral {b'..x} (\<lambda>x. c' * norm (g' x))"
@@ -1700,7 +1700,7 @@ proof -
     from elim b' have integrable: "(\<lambda>x. \<bar>g' x\<bar>) integrable_on {b'..x}"
       by (intro integrable_continuous_real continuous_intros) auto
     have "integral {a..x} f = integral {a..b'} f + integral {b'..x} f"
-      using elim b' by (intro integral_combine [symmetric] assms) auto
+      using elim b' by (intro Henstock_Kurzweil_Integration.integral_combine [symmetric] assms) auto
     also have "norm \<dots> \<le> D + norm (integral {b'..x} f)"
       unfolding D_def by (rule norm_triangle_ineq)
     also have "norm (integral {b'..x} f) \<le> integral {b'..x} (\<lambda>x. c * norm (g' x))"

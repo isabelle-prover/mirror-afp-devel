@@ -692,7 +692,7 @@ proof -
       have "f integrable_on {a..y}"
         using f y by (simp add: integrable_subinterval_real)
       then have Idiff: "?I a y - ?I a x = ?I x y"
-        using False x by (simp add: algebra_simps integral_combine)
+        using False x by (simp add: algebra_simps Henstock_Kurzweil_Integration.integral_combine)
       have fux_int: "((\<lambda>u. f u - f x) has_integral integral {x..y} f - (y-x) *\<^sub>R f x) {x..y}"
         apply (rule has_integral_diff)
         using x y apply (auto intro: integrable_integral [OF integrable_subinterval_real [OF f]])
@@ -714,7 +714,7 @@ proof -
       have "f integrable_on {a..x}"
         using f x by (simp add: integrable_subinterval_real)
       then have Idiff: "?I a x - ?I a y = ?I y x"
-        using True x y by (simp add: algebra_simps integral_combine)
+        using True x y by (simp add: algebra_simps Henstock_Kurzweil_Integration.integral_combine)
       have fux_int: "((\<lambda>u. f u - f x) has_integral integral {y..x} f - (x - y) *\<^sub>R f x) {y..x}"
         apply (rule has_integral_diff)
         using x y apply (auto intro: integrable_integral [OF integrable_subinterval_real [OF f]])
@@ -889,8 +889,7 @@ proof -
     assume "g a \<le> g b"
     note le = le this
     from cd have "integral {c..g a} f + integral {g a..g b} f = integral {c..g b} f"
-      using integral_combine f(1) le
-      by (smt atLeastatMost_subset_iff integrable_subinterval_real)
+      by (meson Henstock_Kurzweil_Integration.integral_combine atLeastatMost_subset_iff f(1) integrable_on_subinterval le(2) order_refl)
     with le show ?thesis
       by (cases "g a = g b") (simp_all add: algebra_simps)
   next
@@ -898,8 +897,7 @@ proof -
     then have "g a \<ge> g b" by simp
     note le = le this
     from cd have "integral {c..g b} f + integral {g b..g a} f = integral {c..g a} f"
-      using integral_combine f(1) le
-      by (smt atLeastatMost_subset_iff integrable_subinterval_real)
+      by (meson Henstock_Kurzweil_Integration.integral_combine atLeastatMost_subset_iff f(1) integrable_on_subinterval le(2) order_refl)
     with less show ?thesis
       by (simp_all add: algebra_simps)
   qed

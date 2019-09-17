@@ -218,12 +218,12 @@ lemma ivl_integral_combine:
 proof -
   show ?thesis
     using assms
-      integral_combine[of a b c f]
-      integral_combine[of a c b f]
-      integral_combine[of b a c f]
-      integral_combine[of b c a f]
-      integral_combine[of c a b f]
-      integral_combine[of c b a f]
+      Henstock_Kurzweil_Integration.integral_combine[of a b c f]
+      Henstock_Kurzweil_Integration.integral_combine[of a c b f]
+      Henstock_Kurzweil_Integration.integral_combine[of b a c f]
+      Henstock_Kurzweil_Integration.integral_combine[of b c a f]
+      Henstock_Kurzweil_Integration.integral_combine[of c a b f]
+      Henstock_Kurzweil_Integration.integral_combine[of c b a f]
     by (cases "a \<le> b"; cases "b \<le> c"; cases "a \<le> c")
        (auto simp: algebra_simps ivl_integral_def closed_segment_eq_real_ivl)
 qed

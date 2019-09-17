@@ -365,7 +365,7 @@ lemma EM_remainder'_combine:
 proof -
   have "integral {a..b} (\<lambda>t. pbernpoly n t *\<^sub>R f t) + integral {b..c} (\<lambda>t. pbernpoly n t *\<^sub>R f t) =
           integral {a..c} (\<lambda>t. pbernpoly n t *\<^sub>R f t)"
-    by (intro integral_combine assms integrable_EM_remainder')
+    by (intro Henstock_Kurzweil_Integration.integral_combine assms integrable_EM_remainder')
   from this [symmetric] show ?thesis by (simp add: EM_remainder'_def algebra_simps) 
 qed
 
@@ -1440,7 +1440,7 @@ proof -
     have "integral {a..x} (\<lambda>t. pbernpoly n t *\<^sub>R f t) =
             integral {a..x0} (\<lambda>t. pbernpoly n t *\<^sub>R f t) +
             integral {x0..x} (\<lambda>t. pbernpoly n t *\<^sub>R f t)" (is "_ = ?I1 + ?I2") using elim x0(1)
-      by (intro integral_combine [symmetric] integrable_EM_remainder' cont) auto
+      by (intro Henstock_Kurzweil_Integration.integral_combine [symmetric] integrable_EM_remainder' cont) auto
     also have "norm \<dots> \<le> norm ?I1 + norm ?I2" by (rule norm_triangle_ineq)
     also have "norm ?I2 \<le> integral {x0..x} (\<lambda>t. D * g' t)"
       using x0 D D_nonneg

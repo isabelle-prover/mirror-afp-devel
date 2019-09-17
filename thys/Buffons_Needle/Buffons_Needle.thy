@@ -26,14 +26,6 @@ proof -
   finally show ?thesis .
 qed
 
-lemma singleton_null_set_lborel [simp,intro]: "{x} \<in> null_sets lborel"
-  by (simp add: null_sets_def)
-
-lemma continuous_on_min [continuous_intros]:
-  fixes f g :: "'a::topological_space \<Rightarrow> 'b::linorder_topology"
-  shows "continuous_on A f \<Longrightarrow> continuous_on A g \<Longrightarrow> continuous_on A (\<lambda>x. min (f x) (g x))"
-  by (auto simp: continuous_on_def intro!: tendsto_min)
-    
 lemma integral_shift:
   fixes f :: "real \<Rightarrow> 'a::euclidean_space"
   assumes cont: "continuous_on {a + c..b + c} f"
@@ -302,7 +294,7 @@ proof -
   moreover have "A \<inter> C = {(d/2, 0)}" "B \<inter> D = {(-d/2, 0)}"
     using d l by (auto simp: case_prod_unfold buffon_set'_def A_def B_def C_def D_def)
   ultimately have AD: "A \<inter> D \<in> null_sets lborel" and BC: "B \<inter> C \<in> null_sets lborel" and
-    AC: "A \<inter> C \<in> null_sets lborel" and BD: "B \<inter> D \<in> null_sets lborel" by simp_all
+    AC: "A \<inter> C \<in> null_sets lborel" and BD: "B \<inter> D \<in> null_sets lborel" by auto
   
   note *
   also have "emeasure lborel (A \<union> B \<union> C \<union> D) = emeasure lborel (A \<union> B \<union> C) + emeasure lborel D"
@@ -435,15 +427,15 @@ proof -
   have "emeasure lborel (buffon_set' l d) = ennreal (integral {0..pi} ?f)" (is "_ = ennreal ?I")
     by (rule emeasure_buffon_set')
   also have "?I = integral {0..pi/2} ?f + integral {pi/2..pi} ?f"
-    by (rule integral_combine [symmetric]) (auto intro!: integrable_continuous_real continuous_intros)
+    by (rule Henstock_Kurzweil_Integration.integral_combine [symmetric]) (auto intro!: integrable_continuous_real continuous_intros)
   also have "integral {pi/2..pi} ?f = integral {-pi/2..0} (?f \<circ> (\<lambda>\<phi>. \<phi> + pi))"
     by (subst integral_shift) (auto intro!: continuous_intros)
   also have "\<dots> = integral {-(pi/2)..-0} (\<lambda>x. min (d / 2) (sin (-x) * l / 2))" by (simp add: o_def)
-  also have "\<dots> = integral {0..pi/2} ?f" (is "_ = ?I") by (subst integral_reflect_real) simp_all
+  also have "\<dots> = integral {0..pi/2} ?f" (is "_ = ?I") by (subst Henstock_Kurzweil_Integration.integral_reflect_real) simp_all
   also have "\<dots> + \<dots> = 2 * \<dots>" by simp
   also have "?I = integral {0..\<phi>'} ?f + integral {\<phi>'..pi/2} ?f"
     using l d l_ge_d \<phi>'_nonneg \<phi>'_le
-    by (intro integral_combine [symmetric]) (auto intro!: integrable_continuous_real continuous_intros)
+    by (intro Henstock_Kurzweil_Integration.integral_combine [symmetric]) (auto intro!: integrable_continuous_real continuous_intros)
   also have "integral {0..\<phi>'} ?f = integral {0..\<phi>'} (\<lambda>x. l / 2 * sin x)"
     using l by (intro integral_cong) (auto simp: min_def field_simps dest: le_phi')
   also have "((\<lambda>x. l / 2 * sin x) has_integral (- (l / 2 * cos \<phi>') - (- (l / 2 * cos 0)))) {0..\<phi>'}"
