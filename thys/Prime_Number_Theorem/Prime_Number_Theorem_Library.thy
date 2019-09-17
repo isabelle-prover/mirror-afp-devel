@@ -17,13 +17,6 @@ proof -
   finally show ?thesis .
 qed
 
-(* TODO: replace in library *)thm real_root_decreasing
-lemma real_root_decreasing: "0 < n \<Longrightarrow> n \<le> N \<Longrightarrow> 1 \<le> x \<Longrightarrow> root N x \<le> root n x"
-  by (auto simp add: order_le_less real_root_strict_decreasing)
-
-lemma real_root_increasing: "0 < n \<Longrightarrow> n \<le> N \<Longrightarrow> 0 \<le> x \<Longrightarrow> x \<le> 1 \<Longrightarrow> root n x \<le> root N x"
-  by (auto simp add: order_le_less real_root_strict_increasing)
-
 lemma frontier_real_Ici [simp]:
   fixes a :: real
   shows "frontier {a..} = {a}"
@@ -309,7 +302,7 @@ proof -
   also have "(\<lambda>x. f (a + b * of_real x - a * of_real x)) =
                (\<lambda>x. (f (a + b * of_real x - a * of_real x) * (b - a)) /\<^sub>R (Re b - Re a))"
     using \<open>a \<noteq> b\<close> by (auto simp: field_simps fun_eq_iff scaleR_conv_of_real)
-  also have "(\<dots> has_integral I /\<^sub>R (Re b - Re a)) {0..1} \<longleftrightarrow> 
+  also have "(\<dots> has_integral I /\<^sub>R (Re b - Re a)) {0..1} \<longleftrightarrow>
                ((\<lambda>x. f (linepath a b x) * (b - a)) has_integral I) {0..1}" using assms
     by (subst has_integral_cmul_iff) (auto simp: linepath_def scaleR_conv_of_real algebra_simps)
   also have "\<dots> \<longleftrightarrow> (f has_contour_integral I) (linepath a b)" unfolding has_contour_integral_def
@@ -875,7 +868,7 @@ proof
   finally show "(- part_circlepath c r a b) x = part_circlepath c' r a' b' x"
     by simp
 qed
-    
+
 lemma path_mirror [intro]: "path (g :: _ \<Rightarrow> 'b::topological_group_add) \<Longrightarrow> path (-g)"
   by (auto simp: path_def intro!: continuous_intros)
 
@@ -969,7 +962,7 @@ lemma winding_number_join_pos_combined':
   by (simp add: valid_path_join path_image_join winding_number_join valid_path_imp_path)
 
 lemma Union_atLeastAtMost_real_of_nat:
-  assumes "a < b" 
+  assumes "a < b"
   shows   "(\<Union>n\<in>{a..<b}. {real n..real (n + 1)}) = {real a..real b}"
 proof (intro equalityI subsetI)
   fix x assume x: "x \<in> {real a..real b}"
@@ -981,7 +974,7 @@ proof (intro equalityI subsetI)
     case False
     with x have x: "x \<ge> real a" "x < real b" by simp_all
     hence "x \<ge> real (nat \<lfloor>x\<rfloor>)" "x \<le> real (Suc (nat \<lfloor>x\<rfloor>))" by linarith+
-    moreover from x have "nat \<lfloor>x\<rfloor> \<ge> a" "nat \<lfloor>x\<rfloor> < b" by linarith+ 
+    moreover from x have "nat \<lfloor>x\<rfloor> \<ge> a" "nat \<lfloor>x\<rfloor> < b" by linarith+
     ultimately have "\<exists>n\<in>{a..<b}. x \<in> {real n..real (n + 1)}"
       by (intro bexI[of _ "nat \<lfloor>x\<rfloor>"]) simp_all
     thus ?thesis by blast
@@ -1345,7 +1338,7 @@ proof -
       using sum4[of p] p
       by (subst infsetsum_cmult_left [symmetric])
          (auto simp: abs_summable_on_nat_iff' norm_power simp del: power_Suc)
-    also have "(\<Sum>\<^sub>ak. (fds_nth f p / nat_power p s) ^ Suc k) = 
+    also have "(\<Sum>\<^sub>ak. (fds_nth f p / nat_power p s) ^ Suc k) =
                  (1 / (1 - fds_nth f p / nat_power p s) - 1)" using sum4[OF p] sums[OF p]
       by (subst infsetsum_nat')
          (auto simp: sums_iff abs_summable_on_nat_iff' norm_power simp del: power_Suc)
@@ -1355,7 +1348,7 @@ proof -
   have sum3: "(\<lambda>x. \<Sum>\<^sub>ay. - ((fds_nth f x / nat_power x s) ^ Suc y * of_real (ln (real x))))
                  abs_summable_on {p. prime p}"
     using sum2 by (rule abs_summable_on_Sigma_project1') auto
-  also have "?this \<longleftrightarrow> (\<lambda>p. -(of_real (ln (real p)) * 
+  also have "?this \<longleftrightarrow> (\<lambda>p. -(of_real (ln (real p)) *
                 (1 / (1 - fds_nth f p / nat_power p s) - 1))) abs_summable_on {p. prime p}"
     by (intro abs_summable_on_cong eq) auto
   also have "\<dots> \<longleftrightarrow> ?th1" by (subst abs_summable_on_uminus_iff) auto
@@ -1368,21 +1361,21 @@ proof -
     by (intro infsetsum_cong_neutral) (auto simp: fds_nth_fds mangoldt_def)
   also have "\<dots> = (\<Sum>\<^sub>a(p,k)\<in>(?P \<times> UNIV). -fds_nth f (p ^ Suc k) * mangoldt (p ^ Suc k) /
                                             nat_power (p ^ Suc k) s)"
-     using bij_betw_primepows unfolding case_prod_unfold 
+     using bij_betw_primepows unfolding case_prod_unfold
      by (intro infsetsum_reindex_bij_betw [symmetric])
-  also have "\<dots> = (\<Sum>\<^sub>a(p,k)\<in>(?P \<times> UNIV). 
+  also have "\<dots> = (\<Sum>\<^sub>a(p,k)\<in>(?P \<times> UNIV).
                      -((fds_nth f p / nat_power p s) ^ Suc k) * of_real (ln (real p)))"
     by (intro infsetsum_cong)
-       (auto simp: f.mult f.power mangoldt_def aprimedivisor_prime_power ln_realpow prime_gt_0_nat 
+       (auto simp: f.mult f.power mangoldt_def aprimedivisor_prime_power ln_realpow prime_gt_0_nat
           nat_power_power_left divide_simps simp del: power_Suc)
-  also have "\<dots> = (\<Sum>\<^sub>ap | prime p. \<Sum>\<^sub>ak. 
+  also have "\<dots> = (\<Sum>\<^sub>ap | prime p. \<Sum>\<^sub>ak.
                     - ((fds_nth f p / nat_power p s) ^ Suc k) * of_real (ln (real p)))"
     using sum2 by (subst infsetsum_Times) (auto simp: case_prod_unfold)
   also have "\<dots> = (\<Sum>\<^sub>ap | prime p. -(of_real (ln (real p)) *
                     (1 / (1 - fds_nth f p / nat_power p s) - 1)))"
     using eq by (intro infsetsum_cong) auto
   finally show ?th2 by (subst (asm) infsetsum_uminus)
-qed    
+qed
 
 lemma eval_fds_logderiv_zeta:
   assumes "Re s > 1"
@@ -1431,7 +1424,7 @@ lemma abs_conv_abscissa_diff_le:
   using abs_conv_abscissa_add_le[of f "-g"] by auto
 
 lemma abs_conv_abscissa_diff_leI:
-  "abs_conv_abscissa (f :: 'a :: dirichlet_series fds) \<le> d \<Longrightarrow> abs_conv_abscissa g \<le> d \<Longrightarrow> 
+  "abs_conv_abscissa (f :: 'a :: dirichlet_series fds) \<le> d \<Longrightarrow> abs_conv_abscissa g \<le> d \<Longrightarrow>
      abs_conv_abscissa (f - g) \<le> d"
   using abs_conv_abscissa_diff_le[of f g] by (auto simp: le_max_iff_disj)
 
@@ -1472,10 +1465,10 @@ proof -
     by (rule infsetsum_reindex [symmetric]) auto
   also have "range (\<lambda>n. n + a) = {a..}" by (rule range_add_nat)
   finally show "hurwitz_zeta (real a) s = (\<Sum>\<^sub>an\<in>{a..}. of_nat n powr -s)" .
-qed 
+qed
 
 lemma continuous_on_pre_zeta [continuous_intros]:
-  assumes "continuous_on A f" "a > 0" 
+  assumes "continuous_on A f" "a > 0"
   shows   "continuous_on A (\<lambda>x. pre_zeta a (f x))"
 proof -
   from assms have "continuous_on UNIV (pre_zeta a)"
@@ -1484,7 +1477,7 @@ proof -
 qed
 
 lemma continuous_pre_zeta [continuous_intros]:
-  assumes "continuous (at x within A) f" "a > 0" 
+  assumes "continuous (at x within A) f" "a > 0"
   shows   "continuous (at x within A) (\<lambda>x. pre_zeta a (f x))"
 proof -
   have "continuous (at z) (pre_zeta a)" for z
@@ -1517,7 +1510,7 @@ proof -
              simp: field_simps norm_mult norm_powr_real_powr add_eq_0_iff)
   have R: "norm R \<le> norm s / (2 * Re s) * a powr -Re s"
     unfolding R_def using spec[OF *, of 0] by simp
-  
+
   from assms have "pre_zeta a s = a powr -s / 2 + R"
     by (simp add: pre_zeta_def pre_zeta_aux_def R_def)
   also have "norm \<dots> \<le> a powr -Re s / 2 + norm s / (2 * Re s) * a powr -Re s" using a
@@ -1917,7 +1910,7 @@ proof -
   also have "?this \<longleftrightarrow> ?th1"
     by (intro abs_summable_on_cong) (auto simp: powr_Reals_eq)
   finally show ?th1 .
-  show ?th2 using assms 
+  show ?th2 using assms
     by (subst eval_fds_logderiv_zeta) (auto simp: infsetsum_of_real [symmetric] powr_Reals_eq)
 qed
 
@@ -1939,7 +1932,7 @@ proof -
   proof -
     have "1 \<le> d * a + b" by fact
     also have "\<dots> < d * x + b" using that assms
-      by (intro add_strict_right_mono mult_strict_left_mono) 
+      by (intro add_strict_right_mono mult_strict_left_mono)
     finally have gt_1: "d * x + b > 1" .
     show "(F has_field_derivative f x) (at x)" "isCont f x" using ab c d gt_1
     by (auto simp: F_def f_def divide_simps intro!: derivative_eq_intros continuous_intros)

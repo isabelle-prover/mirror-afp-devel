@@ -14,51 +14,6 @@ subsection \<open>Auxiliary material\<close>
 lemma sin_le_zero': "sin x \<le> 0" if "x \<ge> -pi" "x \<le> 0" for x
   by (metis minus_le_iff neg_0_le_iff_le sin_ge_zero sin_minus that(1) that(2))
 
-lemma emeasure_Un':
-  assumes "A \<in> sets M" "B \<in> sets M" "A \<inter> B \<in> null_sets M"
-  shows   "emeasure M (A \<union> B) = emeasure M A + emeasure M B"
-proof -
-  have "A \<union> B = A \<union> (B - A \<inter> B)" by blast
-  also have "emeasure M \<dots> = emeasure M A + emeasure M (B - A \<inter> B)"
-    using assms by (subst plus_emeasure) auto
-  also have "emeasure M (B - A \<inter> B) = emeasure M B"
-    using assms by (intro emeasure_Diff_null_set) auto
-  finally show ?thesis .
-qed
-
-lemma integral_shift:
-  fixes f :: "real \<Rightarrow> 'a::euclidean_space"
-  assumes cont: "continuous_on {a + c..b + c} f"
-  shows "integral {a..b} (f \<circ> (\<lambda>x. x + c)) = integral {a + c..b + c} f"
-proof (cases "a \<le> b")
-  case True
-  have "((\<lambda>x. 1 *\<^sub>R f (x + c)) has_integral integral {a+c..b+c} f) {a..b}"
-    using True cont
-    by (intro has_integral_substitution[where c = "a + c" and d = "b + c"])
-       (auto intro!: derivative_eq_intros)
-  thus ?thesis by (simp add: has_integral_iff o_def)
-qed auto
-
-lemma arcsin_le_iff:
-  assumes "x \<ge> -1" "x \<le> 1" "y \<ge> -pi/2" "y \<le> pi/2"
-  shows   "arcsin x \<le> y \<longleftrightarrow> x \<le> sin y"
-proof -
-  have "arcsin x \<le> y \<longleftrightarrow> sin (arcsin x) \<le> sin y"
-    using arcsin_bounded[of x] assms by (subst sin_mono_le_eq) auto
-  also from assms have "sin (arcsin x) = x" by simp
-  finally show ?thesis .
-qed
-
-lemma le_arcsin_iff:
-  assumes "x \<ge> -1" "x \<le> 1" "y \<ge> -pi/2" "y \<le> pi/2"
-  shows   "arcsin x \<ge> y \<longleftrightarrow> x \<ge> sin y"
-proof -
-  have "arcsin x \<ge> y \<longleftrightarrow> sin (arcsin x) \<ge> sin y"
-    using arcsin_bounded[of x] assms by (subst sin_mono_le_eq) auto
-  also from assms have "sin (arcsin x) = x" by simp
-  finally show ?thesis .
-qed
-
 
 subsection \<open>Problem definition\<close>
 
