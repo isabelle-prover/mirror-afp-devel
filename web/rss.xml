@@ -9,7 +9,24 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>10 Sep 2019 00:00:00 +0000</pubDate>
+    <pubDate>16 Sep 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Formalization of Multiway-Join Algorithms</title>
+              <link>https://www.isa-afp.org/entries/Generic_Join.html</link>
+       <guid>https://www.isa-afp.org/entries/Generic_Join.html</guid>
+       <dc:creator> Thibault Dardinier       </dc:creator>
+       <pubDate>16 Sep 2019 00:00:00 +0000</pubDate>
+       <description>
+Worst-case optimal multiway-join algorithms are recent seminal
+achievement of the database community. These algorithms compute the
+natural join of multiple relational databases and improve in the worst
+case over traditional query plan optimizations of nested binary joins.
+In 2014, &lt;a
+href=&#34;https://doi.org/10.1145/2590989.2590991&#34;&gt;Ngo, Ré,
+and Rudra&lt;/a&gt; gave a unified presentation of different multi-way
+join algorithms. We formalized and proved correct their &#34;Generic
+Join&#34; algorithm and extended it to support negative joins.</description>
+    </item>
     <item>
        <title>Verification Components for Hybrid Systems</title>
               <link>https://www.isa-afp.org/entries/Hybrid_Systems_VCs.html</link>
@@ -533,35 +550,6 @@ quantum programs. Then, we write down the rules of quantum Hoare logic
 for partial correctness, and show the soundness and completeness of
 the resulting proof system. As an application, we verify the
 correctness of Grover’s algorithm.</description>
-    </item>
-    <item>
-       <title>Safe OCL</title>
-              <link>https://www.isa-afp.org/entries/Safe_OCL.html</link>
-       <guid>https://www.isa-afp.org/entries/Safe_OCL.html</guid>
-       <dc:creator> Denis Nikiforov       </dc:creator>
-       <pubDate>09 Mar 2019 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;The theory is a formalization of the
-&lt;a href=&#34;https://www.omg.org/spec/OCL/&#34;&gt;OCL&lt;/a&gt; type system, its abstract
-syntax and expression typing rules. The theory does not define a concrete
-syntax and a semantics. In contrast to
-&lt;a href=&#34;https://www.isa-afp.org/entries/Featherweight_OCL.html&#34;&gt;Featherweight OCL&lt;/a&gt;,
-it is based on a deep embedding approach. The type system is defined from scratch,
-it is not based on the Isabelle HOL type system.&lt;/p&gt;
-&lt;p&gt;The Safe OCL distincts nullable and non-nullable types. Also the theory gives a
-formal definition of &lt;a href=&#34;http://ceur-ws.org/Vol-1512/paper07.pdf&#34;&gt;safe
-navigation operations&lt;/a&gt;. The Safe OCL typing rules are much stricter than rules
-given in the OCL specification. It allows one to catch more errors on a type
-checking phase.&lt;/p&gt;
-&lt;p&gt;The type theory presented is four-layered: classes, basic types, generic types,
-errorable types. We introduce the following new types: non-nullable types (T[1]),
-nullable types (T[?]), OclSuper. OclSuper is a supertype of all other types (basic
-types, collections, tuples). This type allows us to define a total supremum function,
-so types form an upper semilattice. It allows us to define rich expression typing
-rules in an elegant manner.&lt;/p&gt;
-&lt;p&gt;The Preliminaries Chapter of the theory defines a number of helper lemmas for
-transitive closures and tuples. It defines also a generic object model independent
-from OCL. It allows one to use the theory as a reference for formalization of analogous languages.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

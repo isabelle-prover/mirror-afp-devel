@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic - Archive of Formal Proofs
+<title>Formalization of Multiway-Join Algorithms - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -65,21 +65,9 @@
   
           of
   
-          a
+          <font class="first">M</font>ultiway-Join
   
-          <font class="first">M</font>onitoring
-  
-          <font class="first">A</font>lgorithm
-  
-          for
-  
-          <font class="first">M</font>etric
-  
-          <font class="first">F</font>irst-Order
-  
-          <font class="first">T</font>emporal
-  
-          <font class="first">L</font>ogic
+          <font class="first">A</font>lgorithms
   
 </h1>
   <p>&nbsp;</p>
@@ -88,16 +76,15 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</td>
+  <td class="data" width="80%">Formalization of Multiway-Join Algorithms</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Authors:
+          Author:
       </td>
   <td class="data">
-                    Joshua Schneider (joshua /dot/ schneider /at/ inf /dot/ ethz /dot/ ch) and
-          <a href="http://people.inf.ethz.ch/trayteld/">Dmitriy Traytel</a>
+              Thibault Dardinier
       </td>
 </tr>
 
@@ -105,40 +92,34 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2019-07-04</td>
+  <td class="data">2019-09-16</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-A monitor is a runtime verification tool that solves the following
-problem: Given a stream of time-stamped events and a policy formulated
-in a specification language, decide whether the policy is satisfied at
-every point in the stream. We verify the correctness of an executable
-monitor for specifications given as formulas in metric first-order
-temporal logic (MFOTL), an expressive extension of linear temporal
-logic with real-time constraints and first-order quantification. The
-verified monitor implements a simplified variant of the algorithm used
-in the efficient MonPoly monitoring tool. The formalization is
-presented in a forthcoming <a
-href="http://people.inf.ethz.ch/trayteld/papers/rv19-verimon/verimon.pdf">RV
-2019 paper</a>, which also compares the output of the verified
-monitor to that of other monitoring tools on randomly generated
-inputs. This case study revealed several errors in the optimized but
-unverified tools.</td>
+Worst-case optimal multiway-join algorithms are recent seminal
+achievement of the database community. These algorithms compute the
+natural join of multiple relational databases and improve in the worst
+case over traditional query plan optimizations of nested binary joins.
+In 2014, <a
+href="https://doi.org/10.1145/2590989.2590991">Ngo, Ré,
+and Rudra</a> gave a unified presentation of different multi-way
+join algorithms. We formalized and proved correct their "Generic
+Join" algorithm and extended it to support negative joins.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{MFOTL_Monitor-AFP,
-  author  = {Joshua Schneider and Dmitriy Traytel},
-  title   = {Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic},
+        <pre>@article{Generic_Join-AFP,
+  author  = {Thibault Dardinier},
+  title   = {Formalization of Multiway-Join Algorithms},
   journal = {Archive of Formal Proofs},
-  month   = jul,
+  month   = sep,
   year    = 2019,
-  note    = {\url{http://isa-afp.org/entries/MFOTL_Monitor.html},
+  note    = {\url{http://isa-afp.org/entries/Generic_Join.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -150,11 +131,9 @@ unverified tools.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Containers.html">Containers</a>      </td></tr>
+          <td class="data"><a href="MFOTL_Monitor.html">MFOTL_Monitor</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Generic_Join.html">Generic_Join</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -166,17 +145,17 @@ unverified tools.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/MFOTL_Monitor/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/MFOTL_Monitor/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Generic_Join/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Generic_Join/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/MFOTL_Monitor/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Generic_Join/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-MFOTL_Monitor-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Generic_Join-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
