@@ -1442,7 +1442,7 @@ proof (rule conservative_mptI)
     also have "... = emeasure M Dx + emeasure M ((T^^n)--`Cx)"
       by (simp add: T_vrestr_same_emeasure(2))
     also have "... = emeasure M (Dx \<union> ((T^^n)--`Cx)) + emeasure M (Dx \<inter> ((T^^n)--`Cx))"
-      by (rule emeasure_union_inter, auto)
+      by (rule emeasure_Un_Int, auto)
     also have "... \<le> emeasure M (space M) + emeasure M (Dx \<inter> ((T^^n)-`Cx))"
     proof -
       have "emeasure M (Dx \<union> ((T^^n)--`Cx)) \<le> emeasure M (space M)"

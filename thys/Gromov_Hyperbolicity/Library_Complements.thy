@@ -915,11 +915,6 @@ by (metis (full_types) abs_diff_le_iff diff_le_eq dist_commute infdist_triangle)
 
 text \<open>The next lemma is missing in the library, contrary to its cousin \verb+continuous_infdist+.\<close>
 
-lemma continuous_on_infdist [continuous_intros]:
-  assumes "continuous_on S f"
-  shows "continuous_on S (\<lambda>x. infdist (f x) A)"
-using assms unfolding continuous_on by (auto intro: tendsto_infdist)
-
 text \<open>The infimum of the distance to a singleton set is simply the distance to the unique
 member of the set.\<close>
 

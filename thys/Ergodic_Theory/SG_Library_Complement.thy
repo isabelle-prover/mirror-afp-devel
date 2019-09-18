@@ -43,30 +43,12 @@ lemma sym_diff_vimage [simp]:
   "f-`(A \<Delta> B) = (f-`A) \<Delta> (f-`B)"
 by auto
 
-lemma card_finite_union:
-  assumes "finite I"
-  shows "card(\<Union>i\<in>I. A i) \<le> (\<Sum>i\<in>I. card(A i))"
-using assms apply (induct, auto)
-using card_Un_le nat_add_left_cancel_le order_trans by blast
-
 
 subsection \<open>Set-Interval.thy\<close>
 
 text \<open>The next two lemmas belong naturally to \verb+Set_Interval.thy+, next to
 \verb+UN_le_add_shift+. They are not trivially equivalent to the corresponding lemmas
 with large inequalities, due to the difference when $n = 0$.\<close>
-
-lemma UN_le_add_shift_strict:
-  "(\<Union>i<n::nat. M(i+k)) = (\<Union>i\<in>{k..<n+k}. M i)" (is "?A = ?B")
-proof
-  show "?B \<subseteq> ?A"
-  proof
-    fix x assume "x \<in> ?B"
-    then obtain i where i: "i \<in> {k..<n+k}" "x \<in> M(i)" by auto
-    then have "i - k < n \<and> x \<in> M((i-k) + k)" by auto
-    then show "x \<in> ?A" using UN_le_add_shift by blast
-  qed
-qed (fastforce)
 
 lemma UN_le_eq_Un0_strict:
   "(\<Union>i<n+1::nat. M i) = (\<Union>i\<in>{1..<n+1}. M i) \<union> M 0" (is "?A = ?B")
@@ -133,14 +115,9 @@ locate it\<close>
 
 lemma tends_to_real_e:
   fixes u::"nat \<Rightarrow> real"
-  assumes "u \<longlonglongrightarrow> l"
-          "e>0"
+  assumes "u \<longlonglongrightarrow> l" "e>0"
   shows "\<exists>N. \<forall>n>N. abs(u n -l) < e"
-proof-
-  have "eventually (\<lambda>n. dist (u n) l < e) sequentially" using assms tendstoD by auto
-  then have "\<forall>\<^sub>F n in sequentially. abs(u n - l) < e" using dist_real_def by auto
-  then show ?thesis by (simp add: eventually_at_top_dense)
-qed
+  by (metis assms dist_real_def le_less lim_sequentially)
 
 lemma nat_mod_cong:
   assumes "a = b+(c::nat)"
@@ -165,7 +142,7 @@ lemma abs_Max_sum:
   fixes A::"real set"
   assumes "finite A" "A \<noteq> {}"
   shows "abs(Max A) \<le> (\<Sum>a\<in>A. abs(a))"
-using assms by (induct rule: finite_ne_induct, auto)
+  by (simp add: assms member_le_sum)
 
 lemma abs_Max_sum2:
   fixes f::"_ \<Rightarrow> real"
@@ -272,38 +249,7 @@ proof -
 qed
 
 
-subsection \<open>Connected.thy\<close>
-
-text \<open>The next lemma is missing in the library, contrary to its cousin \verb+continuous_infdist+.\<close>
-
-lemma continuous_on_infdist [continuous_intros]:
-  assumes "continuous_on S f"
-  shows "continuous_on S (\<lambda>x. infdist (f x) A)"
-using assms unfolding continuous_on by (auto intro: tendsto_infdist)
-
-
-subsection \<open>Transcendental.thy\<close>
-
-text \<open>In \verb+Transcendental.thy+, the assumptions of the next two lemmas are
-$x > 0$ and $y > 0$, while large inequalities are sufficient, with the same proof.\<close>
-
-lemma powr_divide: "0 \<le> x \<Longrightarrow> 0 \<le> y \<Longrightarrow> (x / y) powr a = (x powr a) / (y powr a)"
-  for a b x :: real
-  apply (simp add: divide_inverse positive_imp_inverse_positive powr_mult)
-  apply (simp add: powr_def exp_minus [symmetric] exp_add [symmetric] ln_inverse)
-  done
-
-lemma powr_mult_base: "0 \<le> x \<Longrightarrow>x * x powr y = x powr (1 + y)"
-  for x :: real
-  by (auto simp: powr_add)
-
-
-
 subsection \<open>Limits\<close>
-
-text \<open>\verb+lim_1_over_n+ is very useful, it could --should?-- be declared as simp and tendsto-intros.\<close>
-
-declare lim_1_over_n [tendsto_intros]
 
 text \<open>The next lemmas are not very natural, but I needed them several times\<close>
 
@@ -347,38 +293,6 @@ qed
 declare LIMSEQ_realpow_zero [tendsto_intros]
 
 subsection \<open>Topology-Euclidean-Space\<close>
-
-lemma Inf_as_limit:
-  fixes A::"'a::{linorder_topology, first_countable_topology, complete_linorder} set"
-  assumes "A \<noteq> {}"
-  shows "\<exists>u. (\<forall>n. u n \<in> A) \<and> u \<longlonglongrightarrow> Inf A"
-proof (cases "Inf A \<in> A")
-  case True
-  show ?thesis
-    by (rule exI[of _ "\<lambda>n. Inf A"], auto simp add: True)
-next
-  case False
-  obtain y where "y \<in> A" using assms by auto
-  then have "Inf A < y" using False Inf_lower less_le by auto
-  obtain F :: "nat \<Rightarrow> 'a set" where F: "\<And>i. open (F i)" "\<And>i. Inf A \<in> F i"
-                                       "\<And>u. (\<forall>n. u n \<in> F n) \<Longrightarrow> u \<longlonglongrightarrow> Inf A"
-    by (metis first_countable_topology_class.countable_basis)
-  define u where "u = (\<lambda>n. SOME z. z \<in> F n \<and> z \<in> A)"
-  have "\<exists>z. z \<in> U \<and> z \<in> A" if "Inf A \<in> U" "open U" for U
-  proof -
-    obtain b where "b > Inf A" "{Inf A ..<b} \<subseteq> U"
-      using open_right[OF \<open>open U\<close> \<open>Inf A \<in> U\<close> \<open>Inf A < y\<close>] by auto
-    obtain z where "z < b" "z \<in> A"
-      using \<open>Inf A < b\<close> Inf_less_iff by auto
-    then have "z \<in> {Inf A ..<b}"
-      by (simp add: Inf_lower)
-    then show ?thesis using \<open>z \<in> A\<close> \<open>{Inf A ..<b} \<subseteq> U\<close> by auto
-  qed
-  then have *: "u n \<in> F n \<and> u n \<in> A" for n
-    using \<open>Inf A \<in> F n\<close> \<open>open (F n)\<close> unfolding u_def by (metis (no_types, lifting) someI_ex)
-  then have "u \<longlonglongrightarrow> Inf A" using F(3) by simp
-  then show ?thesis using * by auto
-qed
 
 text \<open>A (more usable) variation around \verb+continuous_on_closure_sequentially+. The assumption
 that the spaces are metric spaces is definitely too strong, but sufficient for most applications.\<close>
@@ -604,13 +518,7 @@ using assms apply (cases x, auto) by (meson not_less reals_Archimedean2)
 lemma ennreal_archimedean:
   assumes "x \<noteq> (\<infinity>::ennreal)"
   shows "\<exists>n::nat. x \<le> n"
-proof (cases x)
-  case (real r)
-  then show ?thesis using real_arch_simple[of r] by auto
-next
-  case top
-  then show ?thesis using assms by auto
-qed
+  using assms ennreal_ge_nat_imp_PInf linear by blast
 
 lemma e2ennreal_mult:
   fixes a b::ereal
@@ -678,22 +586,6 @@ lemma const_minus_Liminf_ennreal:
   shows "F \<noteq> bot \<Longrightarrow> a - Liminf F f = Limsup F (\<lambda>x. a - f x)"
 by (intro Limsup_compose_continuous_antimono[symmetric])
    (auto simp: antimono_def ennreal_mono_minus continuous_on_id continuous_on_const_minus_ennreal)
-
-declare tendsto_ennrealI [tendsto_intros]
-
-lemma tendsto_mult_ennreal [tendsto_intros]:
-  fixes f g::"_ \<Rightarrow> ennreal"
-  assumes "(f \<longlongrightarrow> l) F" "(g \<longlongrightarrow> m) F" "\<not>((l = 0 \<and> m = \<infinity>) \<or> (m = 0 \<and> l = \<infinity>))"
-  shows "((\<lambda>x. f x * g x) \<longlongrightarrow> l * m) F"
-proof -
-  have "((\<lambda>x. enn2ereal(f x) * enn2ereal(g x)) \<longlongrightarrow> enn2ereal l * enn2ereal m) F"
-    apply (auto intro!: tendsto_intros simp add: assms)
-    by (insert assms le_zero_eq less_eq_ennreal.rep_eq, fastforce)+
-  then have "((\<lambda>x. enn2ereal(f x * g x)) \<longlongrightarrow> enn2ereal(l * m)) F"
-    using times_ennreal.rep_eq by auto
-  then show ?thesis
-    by (auto intro!: tendsto_intros)
-qed
 
 lemma tendsto_cmult_ennreal [tendsto_intros]:
   fixes c l::ennreal
@@ -769,21 +661,6 @@ qed
 
 
 subsection \<open>Measure-Space.thy\<close>
-
-lemma emeasure_union_inter:
-  assumes "A \<in> sets M" "B \<in> sets M"
-  shows "emeasure M A + emeasure M B = emeasure M (A \<union> B) + emeasure M (A \<inter> B)"
-proof -
-  have "A = (A-B) \<union> (A \<inter> B)" by auto
-  then have 1: "emeasure M A = emeasure M (A-B) + emeasure M (A \<inter> B)"
-    by (metis Diff_Diff_Int Diff_disjoint assms(1) assms(2) plus_emeasure sets.Diff)
-
-  have "A \<union> B = (A-B) \<union> B" by auto
-  then have 2: "emeasure M (A \<union> B) = emeasure M (A-B) + emeasure M B"
-    by (metis Diff_disjoint Int_commute assms(1) assms(2) plus_emeasure sets.Diff)
-
-  show ?thesis using 1 2 by (metis add.assoc add.commute)
-qed
 
 lemma AE_equal_sum:
   assumes "\<And>i. AE x in M. f i x = g i x"
@@ -1219,17 +1096,6 @@ proof -
   then show ?thesis using \<open>epsilon > 0\<close> by auto
 qed
 
-subsection \<open>Lebesgue-Measure.thy\<close>
-
-text \<open>The next lemma is the same as \verb+lborel_distr_plus+ which is only formulated
-on the real line, but on any euclidean space\<close>
-
-lemma lborel_distr_plus2:
-  fixes c :: "'a::euclidean_space"
-  shows "distr lborel borel ((+) c) = lborel"
-by (subst lborel_affine[of 1 c], auto simp: density_1)
-
-
 subsection \<open>Probability-measure.thy\<close>
 
 text \<open>The next lemmas ensure that, if sets have a probability close to $1$, then their
@@ -1240,7 +1106,7 @@ lemma (in prob_space) sum_measure_le_measure_inter:
   shows "prob A + prob B \<le> 1 + prob (A \<inter> B)"
 proof -
   have "prob A + prob B = prob (A \<union> B) + prob (A \<inter> B)"
-    by (simp add: assms(1) assms(2) fmeasurable_eq_sets measure_Un3)
+    by (simp add: assms fmeasurable_eq_sets measure_Un3)
   also have "... \<le> 1 + prob (A \<inter> B)"
     by auto
   finally show ?thesis by simp

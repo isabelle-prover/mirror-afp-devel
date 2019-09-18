@@ -369,7 +369,7 @@ proof (rule mpt_I, auto simp add: lborel.sigma_finite_measure_axioms)
   have "emeasure lborel ((\<lambda>x. x + c) -` A) = emeasure lborel ((((+))c)-`A)" by (meson add.commute)
   also have "... = emeasure lborel ((((+))c)-`A \<inter> space lborel)" by simp
   also have "... = emeasure (distr lborel borel ((+) c)) A" by (rule emeasure_distr[symmetric], auto)
-  also have "... = emeasure lborel A" using lborel_distr_plus2[of c] by simp
+  also have "... = emeasure lborel A" using lborel_distr_plus[of c] by simp
   finally show "emeasure lborel ((\<lambda>x. x + c) -` A) = emeasure lborel A" by simp
 qed
 

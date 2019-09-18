@@ -1098,7 +1098,7 @@ proof -
       by (rule card_Un_le)
     also have "... \<le> card({n \<in> {Nf 1..}. \<exists>l\<in>{1..n}. u n x - u (n-l) x \<le> - (c0 * l)} \<inter> {..<B}) +
       (\<Sum> N\<in>{2..<B}. card ({n \<in> {Nf N..}. \<exists>l \<in> {Nf N..n}. u n x - u (n-l) x \<le> - (eps N * l)} \<inter> {..<B}))"
-      by (simp del: UN_simps, rule card_finite_union, auto)
+      by (simp del: UN_simps, rule card_UN_le, auto)
     finally have "real (card(bad_times x \<inter> {..<B})) \<le>
       real(card({n \<in> {Nf 1..}. \<exists>l\<in>{1..n}. u n x - u (n-l) x \<le> - (c0 * l)} \<inter> {..<B})
       + (\<Sum> N\<in>{2..<B}. card ({n \<in> {Nf N..}. \<exists>l \<in> {Nf N..n}. u n x - u (n-l) x \<le> - (eps N * l)} \<inter> {..<B})))"
