@@ -719,7 +719,7 @@ proof-
       from tendsto_divide[OF this assu1[THEN LIMSEQ_ignore_initial_segment[where k=1]]] 
       have "(\<lambda>n. (a n / a (Suc n)) powr(1 /nn n)) \<longlonglongrightarrow> 1/sqrt A"
         using \<open>A>1\<close> a unfolding nn_def
-        by (auto simp add:powr_divide inverse_eq_divide sqrt_divide_self_eq)
+        by (auto simp add:powr_divide less_imp_le inverse_eq_divide sqrt_divide_self_eq)
       moreover have "(\<lambda>n. d (Suc n))\<longlonglongrightarrow> 1" 
         apply (rule convergent_prod_imp_LIMSEQ)
         using convergent_prod_iff_shift[of d 1] \<open>convergent_prod d\<close> by auto
@@ -1034,19 +1034,16 @@ proof-
         fix x assume "x\<ge>(1::nat)"
         have " ((1 + 8 / 9 / n1 x) powr n1 x / 2) powr n2 x 
                     = (((1 + 8 / 9 / n1 x) powr n1 x) powr n2 x) / 2 powr (4 / 3) ^ (x - 1)"
-          apply (subst powr_divide)
-            apply (simp_all add:n1_def n2_def)
-          by (smt divide_nonneg_nonneg zero_le_power)
+          by (simp add:n1_def n2_def powr_divide)
         also have "... = (1 + 8 / 9 / n1 x) powr (n1 x * n2 x) / 2 powr (4 / 3) ^ (x - 1)"
-          apply (subst powr_powr)
-          by simp
+          by (simp add: powr_powr)
         also have "... = (1 + 8 / 9 / n1 x) powr (2 ^ x) / 2 powr (4 / 3) ^ (x - 1)"
         proof -
           have "n1 x * n2 x = 2 ^ x" 
             unfolding n1_def n2_def
             apply (subst mult.assoc)
             apply (subst power_mult_distrib[symmetric])
-            using \<open>x\<ge>1\<close> by (auto simp add:power_Suc[symmetric] simp del:power_Suc)
+            using \<open>x\<ge>1\<close> by (auto simp flip:power_Suc)
           then show ?thesis by simp
         qed
         also have "... = (1 + 8 / 9 / n1 x) ^ (2 ^ x) / 2 powr (4 / 3) ^ (x - 1)"

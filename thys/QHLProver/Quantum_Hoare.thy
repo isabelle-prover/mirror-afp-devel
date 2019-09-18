@@ -1283,7 +1283,7 @@ next
       have main_leq': "?lhs \<le> trace \<rho> + seq n" for n 
         unfolding seq_def using main_leq by (simp add: algebra_simps)
       have limseq: "seq \<longlonglongrightarrow> seqlim"
-        unfolding seq_def seqlim_def using tendsto_intros(15)[OF limPm limm]  by auto
+        unfolding seq_def seqlim_def using tendsto_diff[OF limPm limm]  by auto
       have limrs: "(\<lambda>n. trace \<rho> + seq n) \<longlonglongrightarrow> (trace \<rho> + seqlim)" using tendsto_add[OF _ limseq] by auto
   
       have limrsRe: "(\<lambda>n. Re (trace \<rho> + seq n)) \<longlonglongrightarrow> Re (trace \<rho> + seqlim)" using tendsto_Re[OF limrs] by auto

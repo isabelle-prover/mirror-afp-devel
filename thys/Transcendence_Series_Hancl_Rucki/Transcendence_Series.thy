@@ -766,7 +766,7 @@ proof-
     also have "... =  2 / \<epsilon> * (bb (k + 1) / aa (k + 1)) powr (\<epsilon> / (1 + \<epsilon>))"
       unfolding tt_def 
       using \<open>\<epsilon>>0\<close> 
-      by (auto simp:powr_powr divide_simps algebra_simps powr_divide)
+      by (auto simp:powr_powr divide_simps algebra_simps powr_divide less_imp_le)
     finally show ?case .
   qed
 

@@ -1403,7 +1403,7 @@ proof -
     have "(\<lambda>n. f n $$ (i, j)) \<longlonglongrightarrow> matrix_seq.lowner_lub f $$ (i, j)" using lim1 i j by auto
     moreover have "(\<lambda>n. g n $$ (i, j)) \<longlonglongrightarrow> matrix_seq.lowner_lub g $$ (i, j)" using lim2 i j by auto
     ultimately have "(\<lambda>n. f n $$ (i, j) + g n $$ (i, j)) \<longlonglongrightarrow> matrix_seq.lowner_lub f $$ (i, j) + matrix_seq.lowner_lub g $$ (i, j)"
-      using tendsto_intros(12)[of "\<lambda>n. f n $$ (i, j)" "matrix_seq.lowner_lub f $$ (i, j)" sequentially "\<lambda>n. g n $$ (i, j)" "matrix_seq.lowner_lub g $$ (i, j)"] by auto
+      using tendsto_add[of "\<lambda>n. f n $$ (i, j)" "matrix_seq.lowner_lub f $$ (i, j)" sequentially "\<lambda>n. g n $$ (i, j)" "matrix_seq.lowner_lub g $$ (i, j)"] by auto
     moreover have "(\<lambda>n. f n $$ (i, j) + g n $$ (i, j)) \<longlonglongrightarrow> matrix_seq.lowner_lub (\<lambda>n. f n + g n) $$ (i, j)"  using add i j by auto
     ultimately show ?thesis using LIMSEQ_unique by auto
   qed
