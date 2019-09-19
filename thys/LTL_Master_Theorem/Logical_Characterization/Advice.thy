@@ -1,5 +1,6 @@
 (*
     Author:   Benedikt Seidl
+    Author:   Salomon Sickert
     License:  BSD
 *)
 
@@ -78,7 +79,51 @@ proof -
   finally show ?thesis .
 qed
 
+lemma GF_advice_monotone:
+  "X \<subseteq> Y \<Longrightarrow> w \<Turnstile>\<^sub>n \<phi>[X]\<^sub>\<nu> \<Longrightarrow> w \<Turnstile>\<^sub>n \<phi>[Y]\<^sub>\<nu>"
+proof (induction \<phi> arbitrary: w)
+  case (Until_ltln \<phi> \<psi>)
+  then show ?case
+    by (cases "\<phi> U\<^sub>n \<psi> \<in> X") (simp_all, blast)
+next
+  case (Release_ltln \<phi> \<psi>)
+  then show ?case by (simp, blast)
+next
+  case (WeakUntil_ltln \<phi> \<psi>)
+  then show ?case by (simp, blast)
+next
+  case (StrongRelease_ltln \<phi> \<psi>)
+  then show ?case
+    by (cases "\<phi> M\<^sub>n \<psi> \<in> X") (simp_all, blast)
+qed auto
 
+lemma FG_advice_monotone:
+  "X \<subseteq> Y \<Longrightarrow> w \<Turnstile>\<^sub>n \<phi>[X]\<^sub>\<mu> \<Longrightarrow> w \<Turnstile>\<^sub>n \<phi>[Y]\<^sub>\<mu>"
+proof (induction \<phi> arbitrary: w)
+  case (Until_ltln \<phi> \<psi>)
+  then show ?case by (simp, blast)
+next
+  case (Release_ltln \<phi> \<psi>)
+  then show ?case
+    by (cases "\<phi> R\<^sub>n \<psi> \<in> X") (auto, blast)
+next
+  case (WeakUntil_ltln \<phi> \<psi>)
+  then show ?case
+    by (cases "\<phi> W\<^sub>n \<psi> \<in> X") (auto, blast)
+next
+  case (StrongRelease_ltln \<phi> \<psi>)
+  then show ?case by (simp, blast)
+qed auto
+
+lemma GF_advice_ite_simps[simp]:
+  "(if P then true\<^sub>n else false\<^sub>n)[X]\<^sub>\<nu> = (if P then true\<^sub>n else false\<^sub>n)"
+  "(if P then false\<^sub>n else true\<^sub>n)[X]\<^sub>\<nu> = (if P then false\<^sub>n else true\<^sub>n)"
+  by simp_all
+
+lemma FG_advice_ite_simps[simp]:
+  "(if P then true\<^sub>n else false\<^sub>n)[Y]\<^sub>\<mu> = (if P then true\<^sub>n else false\<^sub>n)"
+  "(if P then false\<^sub>n else true\<^sub>n)[Y]\<^sub>\<mu> = (if P then false\<^sub>n else true\<^sub>n)"
+  by simp_all
 
 subsection \<open>Advice Functions on Nested Propositions\<close>
 
@@ -115,6 +160,14 @@ lemma GF_advice_nested_prop_atoms\<^sub>\<nu>:
 lemma FG_advice_nested_prop_atoms\<^sub>\<mu>:
   "nested_prop_atoms (\<phi>[Y]\<^sub>\<mu>) \<subseteq> nested_prop_atoms\<^sub>\<mu> \<phi> Y"
   by (induction \<phi>) (unfold nested_prop_atoms\<^sub>\<mu>_def, force+)
+
+lemma nested_prop_atoms\<^sub>\<nu>_subset:
+  "nested_prop_atoms \<phi> \<subseteq> nested_prop_atoms \<psi> \<Longrightarrow> nested_prop_atoms\<^sub>\<nu> \<phi> X \<subseteq> nested_prop_atoms\<^sub>\<nu> \<psi> X"
+  unfolding nested_prop_atoms\<^sub>\<nu>_def by blast
+
+lemma nested_prop_atoms\<^sub>\<mu>_subset:
+  "nested_prop_atoms \<phi> \<subseteq> nested_prop_atoms \<psi> \<Longrightarrow> nested_prop_atoms\<^sub>\<mu> \<phi> Y \<subseteq> nested_prop_atoms\<^sub>\<mu> \<psi> Y"
+  unfolding nested_prop_atoms\<^sub>\<mu>_def by blast
 
 lemma GF_advice_nested_prop_atoms_card:
   "card (nested_prop_atoms (\<phi>[X]\<^sub>\<nu>)) \<le> card (nested_prop_atoms \<phi>)"
@@ -444,7 +497,7 @@ lemma FG_advice_b3:
 
 
 
-subsection \<open>Advice functions and the after function\<close>
+subsection \<open>Advice Functions and the ``after'' Function\<close>
 
 lemma GF_advice_af_letter:
   "(x ## w) \<Turnstile>\<^sub>n \<phi>[X]\<^sub>\<nu> \<Longrightarrow> w \<Turnstile>\<^sub>n (af_letter \<phi> x)[X]\<^sub>\<nu>"
@@ -482,10 +535,414 @@ next
     using StrongRelease_ltln.IH af_letter_build by force
 qed auto
 
+lemma FG_advice_af_letter:
+  "w \<Turnstile>\<^sub>n (af_letter \<phi> x)[Y]\<^sub>\<mu> \<Longrightarrow> (x ## w) \<Turnstile>\<^sub>n \<phi>[Y]\<^sub>\<mu>"
+proof (induction \<phi>)
+  case (Prop_ltln a)
+  then show ?case
+    using semantics_ltln.simps(3) by fastforce
+next
+  case (Until_ltln \<phi>1 \<phi>2)
+  then show ?case
+    unfolding af_letter.simps FG_advice.simps semantics_ltln.simps(5,6)
+    using af_letter_build apply (cases "w \<Turnstile>\<^sub>n af_letter \<phi>2 x[Y]\<^sub>\<mu>") apply force
+    by (metis af_letter.simps(8) semantics_ltln.simps(5) semantics_ltln.simps(6))
+next
+  case (Release_ltln \<phi>1 \<phi>2)
+  then show ?case
+    apply (cases "\<phi>1 R\<^sub>n \<phi>2 \<in> Y")
+    apply simp
+    unfolding af_letter.simps FG_advice.simps semantics_ltln.simps(5,6)
+    using af_letter_build  apply (cases "w \<Turnstile>\<^sub>n af_letter \<phi>1 x[Y]\<^sub>\<mu>") apply force
+    by (metis (full_types) af_letter.simps(11) semantics_ltln.simps(5) semantics_ltln.simps(6))
+next
+  case (WeakUntil_ltln \<phi>1 \<phi>2)
+  then show ?case
+    apply (cases "\<phi>1 W\<^sub>n \<phi>2 \<in> Y")
+    apply simp
+    unfolding af_letter.simps FG_advice.simps semantics_ltln.simps(5,6)
+    using af_letter_build  apply (cases "w \<Turnstile>\<^sub>n af_letter \<phi>2 x[Y]\<^sub>\<mu>") apply force
+    by (metis (full_types) af_letter.simps(8) semantics_ltln.simps(5) semantics_ltln.simps(6))
+next
+  case (StrongRelease_ltln \<phi>1 \<phi>2)
+  then show ?case
+    unfolding af_letter.simps FG_advice.simps semantics_ltln.simps(5,6)
+    using af_letter_build apply (cases "w \<Turnstile>\<^sub>n af_letter \<phi>1 x[Y]\<^sub>\<mu>") apply force
+    by (metis af_letter.simps(11) semantics_ltln.simps(5) semantics_ltln.simps(6))
+qed auto
+
 lemma GF_advice_af:
   "(w \<frown> w') \<Turnstile>\<^sub>n \<phi>[X]\<^sub>\<nu> \<Longrightarrow> w' \<Turnstile>\<^sub>n (af \<phi> w)[X]\<^sub>\<nu>"
   by (induction w arbitrary: \<phi>) (simp, insert GF_advice_af_letter, fastforce)
 
+lemma FG_advice_af:
+  "w' \<Turnstile>\<^sub>n (af \<phi> w)[X]\<^sub>\<mu> \<Longrightarrow> (w \<frown> w') \<Turnstile>\<^sub>n \<phi>[X]\<^sub>\<mu>"
+  by (induction w arbitrary: \<phi>) (simp, insert FG_advice_af_letter, fastforce)
+
+lemma GF_advice_af_2:
+  "w \<Turnstile>\<^sub>n \<phi>[X]\<^sub>\<nu> \<Longrightarrow> suffix i w \<Turnstile>\<^sub>n (af \<phi> (prefix i w))[X]\<^sub>\<nu>"
+  using GF_advice_af by force
+
+lemma FG_advice_af_2:
+  "suffix i w \<Turnstile>\<^sub>n (af \<phi> (prefix i w))[X]\<^sub>\<mu> \<Longrightarrow> w \<Turnstile>\<^sub>n \<phi>[X]\<^sub>\<mu>"
+  using FG_advice_af by force
+
+(* TODO move to Omega_Words_Fun.thy ?? *)
+lemma prefix_suffix_subsequence: "prefix i (suffix j w) = (w [j \<rightarrow> i + j])"
+  by (simp add: add.commute)
+
+text \<open>We show this generic lemma to prove the following theorems:\<close>
+
+lemma GF_advice_sync:
+  fixes index :: "nat \<Rightarrow> nat"
+  fixes formula :: "nat \<Rightarrow> 'a ltln"
+  assumes "\<And>i. i < n \<Longrightarrow> \<exists>j. suffix ((index i) + j) w \<Turnstile>\<^sub>n af (formula i) (w [index i \<rightarrow> (index i) + j])[X]\<^sub>\<nu>"
+  shows "\<exists>k. (\<forall>i < n. k \<ge> index i \<and> suffix k w \<Turnstile>\<^sub>n af (formula i) (w [index i \<rightarrow> k])[X]\<^sub>\<nu>)"
+  using assms
+proof (induction n)
+  case (Suc n)
+
+  obtain k1 where leq1: "\<And>i. i < n \<Longrightarrow> k1 \<ge> index i"
+    and suffix1: "\<And>i. i < n \<Longrightarrow> suffix k1 w \<Turnstile>\<^sub>n af (formula i) (w [(index i) \<rightarrow> k1])[X]\<^sub>\<nu>"
+    using Suc less_SucI by blast
+
+  obtain k2 where leq2: "k2 \<ge> index n"
+    and suffix2: "suffix k2 w \<Turnstile>\<^sub>n af (formula n) (w [index n \<rightarrow> k2])[X]\<^sub>\<nu>"
+    using le_add1 Suc.prems by blast
+
+  define k where "k \<equiv> k1 + k2"
+
+  have "\<And>i. i < Suc n \<Longrightarrow> k \<ge> index i"
+    unfolding k_def by (metis leq1 leq2 less_SucE trans_le_add1 trans_le_add2)
+
+  moreover
+
+  {
+    have "\<And>i. i < n \<Longrightarrow> suffix k w \<Turnstile>\<^sub>n af (formula i) (w [(index i) \<rightarrow> k])[X]\<^sub>\<nu>"
+      unfolding k_def
+      by (metis GF_advice_af_2[OF suffix1, unfolded suffix_suffix prefix_suffix_subsequence] af_subsequence_append leq1 add.commute le_add1)
+
+    moreover
+
+    have "suffix k w \<Turnstile>\<^sub>n af (formula n) (w [index n \<rightarrow> k])[X]\<^sub>\<nu>"
+      unfolding k_def
+      by (metis GF_advice_af_2[OF suffix2, unfolded suffix_suffix prefix_suffix_subsequence] af_subsequence_append leq2 add.commute le_add1)
+
+    ultimately
+
+    have "\<And>i. i \<le> n \<Longrightarrow> suffix k w \<Turnstile>\<^sub>n af (formula i) (w [(index i) \<rightarrow> k])[X]\<^sub>\<nu>"
+      using nat_less_le by blast
+  }
+
+  ultimately
+
+  show ?case
+    by (meson less_Suc_eq_le)
+qed simp
+
+lemma GF_advice_sync_and:
+  assumes "\<exists>i. suffix i w \<Turnstile>\<^sub>n af \<phi> (prefix i w)[X]\<^sub>\<nu>"
+  assumes "\<exists>i. suffix i w \<Turnstile>\<^sub>n af \<psi> (prefix i w)[X]\<^sub>\<nu>"
+  shows "\<exists>i. suffix i w \<Turnstile>\<^sub>n af \<phi> (prefix i w)[X]\<^sub>\<nu> \<and> suffix i w \<Turnstile>\<^sub>n af \<psi> (prefix i w)[X]\<^sub>\<nu>"
+proof -
+  let ?formula = "\<lambda>i :: nat. (if (i = 0) then \<phi> else \<psi>)"
+
+  have assms: "\<And>i. i < 2 \<Longrightarrow> \<exists>j. suffix j w \<Turnstile>\<^sub>n af (?formula i) (w [0 \<rightarrow> j])[X]\<^sub>\<nu>"
+    using assms by simp
+  obtain k where k_def: "\<And>i :: nat. i < 2 \<Longrightarrow> suffix k w \<Turnstile>\<^sub>n af (if i = 0 then \<phi> else \<psi>) (prefix k w)[X]\<^sub>\<nu>"
+    using GF_advice_sync[of "2" "\<lambda>i. 0" w ?formula, simplified, OF assms, simplified] by blast
+  show ?thesis
+    using k_def[of 0] k_def[of 1] by auto
+qed
+
+lemma GF_advice_sync_less:
+  assumes "\<And>i. i < n \<Longrightarrow> \<exists>j. suffix (i + j) w \<Turnstile>\<^sub>n af \<phi> (w [i \<rightarrow> j + i])[X]\<^sub>\<nu>"
+  assumes "\<exists>j. suffix (n + j) w \<Turnstile>\<^sub>n af \<psi> (w [n \<rightarrow> j + n])[X]\<^sub>\<nu>"
+  shows "\<exists>k \<ge> n. (\<forall>j < n. suffix k w \<Turnstile>\<^sub>n af \<phi> (w [j \<rightarrow> k])[X]\<^sub>\<nu>) \<and> suffix k w \<Turnstile>\<^sub>n af \<psi> (w [n \<rightarrow> k])[X]\<^sub>\<nu>"
+proof -
+  let ?index = "\<lambda>i. min i n"
+  let ?formula = "\<lambda>i. if (i < n) then \<phi> else \<psi>"
+
+  {
+    fix i
+    assume "i < Suc n"
+    then have min_def: "min i n = i"
+      by simp
+    have "\<exists>j. suffix ((?index i) + j) w \<Turnstile>\<^sub>n af (?formula i) (w [?index i \<rightarrow> (?index i) + j])[X]\<^sub>\<nu>"
+      unfolding min_def
+      by (cases "i < n")
+         (metis (full_types) assms(1) add.commute, metis (full_types) assms(2) \<open>i < Suc n\<close> add.commute  less_SucE)
+  }
+
+  then obtain k where leq: "(\<And>i. i < Suc n \<Longrightarrow> min i n \<le> k)"
+    and suffix: "\<And>i. i < Suc n \<Longrightarrow> suffix k w \<Turnstile>\<^sub>n af (if i < n then \<phi> else \<psi>) (w [min i n \<rightarrow> k])[X]\<^sub>\<nu>"
+    using GF_advice_sync[of "Suc n" ?index w ?formula X] by metis
+
+  have "\<forall>j < n. suffix k w \<Turnstile>\<^sub>n af \<phi> (w [j \<rightarrow> k])[X]\<^sub>\<nu>"
+    using suffix by (metis (full_types) less_SucI min.strict_order_iff)
+
+  moreover
+
+  have "suffix k w \<Turnstile>\<^sub>n af \<psi> (w [n \<rightarrow> k])[X]\<^sub>\<nu>"
+    using suffix[of n, simplified] by blast
+
+  moreover
+
+  have "k \<ge> n"
+    using leq by presburger
+
+  ultimately
+  show ?thesis
+    by auto
+qed
+
+lemma GF_advice_sync_lesseq:
+  assumes "\<And>i. i \<le> n \<Longrightarrow> \<exists>j. suffix (i + j) w \<Turnstile>\<^sub>n af \<phi> (w [i \<rightarrow> j + i])[X]\<^sub>\<nu>"
+  assumes "\<exists>j. suffix (n + j) w \<Turnstile>\<^sub>n af \<psi> (w [n \<rightarrow> j + n])[X]\<^sub>\<nu>"
+  shows "\<exists>k \<ge> n. (\<forall>j \<le> n. suffix k w \<Turnstile>\<^sub>n af \<phi> (w [j \<rightarrow> k])[X]\<^sub>\<nu>) \<and> suffix k w \<Turnstile>\<^sub>n af \<psi> (w [n \<rightarrow> k])[X]\<^sub>\<nu>"
+proof -
+  let ?index = "\<lambda>i. min i n"
+  let ?formula = "\<lambda>i. if (i \<le> n) then \<phi> else \<psi>"
+
+  {
+    fix i
+    assume "i < Suc (Suc n)"
+    hence "\<exists>j. suffix ((?index i) + j) w \<Turnstile>\<^sub>n af (?formula i) (w [?index i \<rightarrow> (?index i) + j])[X]\<^sub>\<nu>"
+    proof (cases "i < Suc n")
+      case True
+      then have min_def: "min i n = i"
+        by simp
+      show ?thesis
+        unfolding min_def by (metis (full_types) assms(1) Suc_leI Suc_le_mono True add.commute)
+    next
+      case False
+      then have i_def: "i = Suc n"
+        using \<open>i < Suc (Suc n)\<close> less_antisym by blast
+      have min_def: "min i n = n"
+        unfolding i_def by simp
+      show ?thesis
+        using assms(2) False
+        by (simp add: min_def add.commute)
+    qed
+  }
+
+  then obtain k where leq: "(\<And>i. i \<le> Suc n \<Longrightarrow> min i n \<le> k)"
+    and suffix: "\<And>i :: nat. i < Suc (Suc n) \<Longrightarrow> suffix k w \<Turnstile>\<^sub>n af (if i \<le> n then \<phi> else \<psi>) (w [min i n \<rightarrow> k])[X]\<^sub>\<nu>"
+    using GF_advice_sync[of "Suc (Suc n)" ?index w ?formula X]
+    by (metis (no_types, hide_lams) less_Suc_eq min_le_iff_disj)
+
+  have "\<forall>j \<le> n. suffix k w \<Turnstile>\<^sub>n af \<phi> (w [j \<rightarrow> k])[X]\<^sub>\<nu>"
+    using suffix by (metis (full_types) le_SucI less_Suc_eq_le min.orderE)
+
+  moreover
+
+  have "suffix k w \<Turnstile>\<^sub>n af \<psi> (w [n \<rightarrow> k])[X]\<^sub>\<nu>"
+    using suffix[of "Suc n", simplified] by linarith
+
+  moreover
+
+  have "k \<ge> n"
+    using leq by presburger
+
+  ultimately
+  show ?thesis
+    by auto
+qed
+
+lemma af_subsequence_U_GF_advice:
+  assumes "i \<le> n"
+  assumes "suffix n w \<Turnstile>\<^sub>n ((af \<psi> (w [i \<rightarrow> n]))[X]\<^sub>\<nu>)"
+  assumes "\<And>j. j < i \<Longrightarrow> suffix n w \<Turnstile>\<^sub>n ((af \<phi> (w [j \<rightarrow> n]))[X]\<^sub>\<nu>)"
+  shows "suffix (Suc n) w \<Turnstile>\<^sub>n (af (\<phi> U\<^sub>n \<psi>) (prefix (Suc n) w))[X]\<^sub>\<nu>"
+  using assms
+proof (induction i arbitrary: w n)
+  case 0
+  then have A: "suffix n w \<Turnstile>\<^sub>n ((af \<psi> (w [0 \<rightarrow> n]))[X]\<^sub>\<nu>)"
+    by blast
+  then have "suffix (Suc n) w \<Turnstile>\<^sub>n (af \<psi> (w [0 \<rightarrow> Suc n]))[X]\<^sub>\<nu>"
+    using GF_advice_af_2[OF A, of 1] by simp
+  then show ?case
+    unfolding GF_advice.simps af_subsequence_U semantics_ltln.simps by blast
+next
+  case (Suc i)
+  have "suffix (Suc n) w \<Turnstile>\<^sub>n (af \<phi> (prefix (Suc n) w))[X]\<^sub>\<nu>"
+    using Suc.prems(3)[OF zero_less_Suc, THEN GF_advice_af_2, unfolded suffix_suffix, of 1]
+    by simp
+  moreover
+  have B: "(Suc (n - 1)) = n"
+    using Suc by simp
+  note Suc.IH[of "n - 1" "suffix 1 w", unfolded suffix_suffix] Suc.prems
+  then have "suffix (Suc n) w \<Turnstile>\<^sub>n (af (\<phi> U\<^sub>n \<psi>) (w [1 \<rightarrow> (Suc n)]))[X]\<^sub>\<nu>"
+    by (metis B One_nat_def Suc_le_mono Suc_mono plus_1_eq_Suc subsequence_shift)
+  ultimately
+  show ?case
+    unfolding af_subsequence_U semantics_ltln.simps GF_advice.simps by blast
+qed
+
+lemma af_subsequence_M_GF_advice:
+  assumes "i \<le> n"
+  assumes "suffix n w \<Turnstile>\<^sub>n ((af \<phi> (w [i \<rightarrow> n]))[X]\<^sub>\<nu>)"
+  assumes "\<And>j. j \<le> i \<Longrightarrow> suffix n w \<Turnstile>\<^sub>n ((af \<psi> (w [j \<rightarrow> n]))[X]\<^sub>\<nu>)"
+  shows "suffix (Suc n) w \<Turnstile>\<^sub>n (af (\<phi> M\<^sub>n \<psi>) (prefix (Suc n) w))[X]\<^sub>\<nu>"
+  using assms
+proof (induction i arbitrary: w n)
+  case 0
+  then have A: "suffix n w \<Turnstile>\<^sub>n ((af \<psi> (w [0 \<rightarrow> n]))[X]\<^sub>\<nu>)"
+    by blast
+  have "suffix (Suc n) w \<Turnstile>\<^sub>n (af \<psi> (w [0 \<rightarrow> Suc n]))[X]\<^sub>\<nu>"
+    using GF_advice_af_2[OF A, of 1] by simp
+  moreover
+  have "suffix (Suc n) w \<Turnstile>\<^sub>n (af \<phi> (w [0 \<rightarrow> Suc n]))[X]\<^sub>\<nu>"
+    using GF_advice_af_2[OF "0.prems"(2), of 1, unfolded suffix_suffix] by auto
+  ultimately
+  show ?case
+    unfolding af_subsequence_M GF_advice.simps semantics_ltln.simps by blast
+next
+  case (Suc i)
+  have "suffix 1 (suffix n w) \<Turnstile>\<^sub>n af (af \<psi> (prefix n w)) [suffix n w 0][X]\<^sub>\<nu>"
+    by (metis (no_types) GF_advice_af_2 Suc.prems(3) plus_1_eq_Suc subsequence_singleton suffix_0 suffix_suffix zero_le)
+  then have "suffix (Suc n) w \<Turnstile>\<^sub>n (af \<psi> (prefix (Suc n) w))[X]\<^sub>\<nu>"
+    using Suc.prems(3)[THEN GF_advice_af_2, unfolded suffix_suffix, of 1] by simp
+  moreover
+  have B: "(Suc (n - 1)) = n"
+    using Suc by simp
+  note Suc.IH[of _ "suffix 1 w", unfolded subsequence_shift suffix_suffix]
+  then have "suffix (Suc n) w \<Turnstile>\<^sub>n (af (\<phi> M\<^sub>n \<psi>) (w [1 \<rightarrow> (Suc n)]))[X]\<^sub>\<nu>"
+    by (metis B One_nat_def Suc_le_mono plus_1_eq_Suc Suc.prems)
+  ultimately
+  show ?case
+    unfolding af_subsequence_M semantics_ltln.simps GF_advice.simps by blast
+qed
+
+lemma af_subsequence_R_GF_advice:
+  assumes "i \<le> n"
+  assumes "suffix n w \<Turnstile>\<^sub>n ((af \<phi> (w [i \<rightarrow> n]))[X]\<^sub>\<nu>)"
+  assumes "\<And>j. j \<le> i \<Longrightarrow> suffix n w \<Turnstile>\<^sub>n ((af \<psi> (w [j \<rightarrow> n]))[X]\<^sub>\<nu>)"
+  shows "suffix (Suc n) w \<Turnstile>\<^sub>n (af (\<phi> R\<^sub>n \<psi>) (prefix (Suc n) w))[X]\<^sub>\<nu>"
+  using assms
+proof (induction i arbitrary: w n)
+  case 0
+  then have A: "suffix n w \<Turnstile>\<^sub>n ((af \<psi> (w [0 \<rightarrow> n]))[X]\<^sub>\<nu>)"
+    by blast
+  have "suffix (Suc n) w \<Turnstile>\<^sub>n (af \<psi> (w [0 \<rightarrow> Suc n]))[X]\<^sub>\<nu>"
+    using GF_advice_af_2[OF A, of 1] by simp
+  moreover
+  have "suffix (Suc n) w \<Turnstile>\<^sub>n (af \<phi> (w [0 \<rightarrow> Suc n]))[X]\<^sub>\<nu>"
+    using GF_advice_af_2[OF "0.prems"(2), of 1, unfolded suffix_suffix] by auto
+  ultimately
+  show ?case
+    unfolding af_subsequence_R GF_advice.simps semantics_ltln.simps by blast
+next
+  case (Suc i)
+  have "suffix 1 (suffix n w) \<Turnstile>\<^sub>n af (af \<psi> (prefix n w)) [suffix n w 0][X]\<^sub>\<nu>"
+    by (metis (no_types) GF_advice_af_2 Suc.prems(3) plus_1_eq_Suc subsequence_singleton suffix_0 suffix_suffix zero_le)
+  then have "suffix (Suc n) w \<Turnstile>\<^sub>n (af \<psi> (prefix (Suc n) w))[X]\<^sub>\<nu>"
+    using Suc.prems(3)[THEN GF_advice_af_2, unfolded suffix_suffix, of 1] by simp
+  moreover
+  have B: "(Suc (n - 1)) = n"
+    using Suc by simp
+  note Suc.IH[of _ "suffix 1 w", unfolded subsequence_shift suffix_suffix]
+  then have "suffix (Suc n) w \<Turnstile>\<^sub>n (af (\<phi> R\<^sub>n \<psi>) (w [1 \<rightarrow> (Suc n)]))[X]\<^sub>\<nu>"
+    by (metis B One_nat_def Suc_le_mono plus_1_eq_Suc Suc.prems)
+  ultimately
+  show ?case
+    unfolding af_subsequence_R semantics_ltln.simps GF_advice.simps by blast
+qed
+
+lemma af_subsequence_W_GF_advice:
+  assumes "i \<le> n"
+  assumes "suffix n w \<Turnstile>\<^sub>n ((af \<psi> (w [i \<rightarrow> n]))[X]\<^sub>\<nu>)"
+  assumes "\<And>j. j < i \<Longrightarrow> suffix n w \<Turnstile>\<^sub>n ((af \<phi> (w [j \<rightarrow> n]))[X]\<^sub>\<nu>)"
+  shows "suffix (Suc n) w \<Turnstile>\<^sub>n (af (\<phi> W\<^sub>n \<psi>) (prefix (Suc n) w))[X]\<^sub>\<nu>"
+  using assms
+proof (induction i arbitrary: w n)
+  case 0
+  then have A: "suffix n w \<Turnstile>\<^sub>n ((af \<psi> (w [0 \<rightarrow> n]))[X]\<^sub>\<nu>)"
+    by blast
+  have "suffix (Suc n) w \<Turnstile>\<^sub>n (af \<psi> (w [0 \<rightarrow> Suc n]))[X]\<^sub>\<nu>"
+    using GF_advice_af_2[OF A, of 1] by simp
+  then show ?case
+    unfolding af_subsequence_W GF_advice.simps semantics_ltln.simps by blast
+next
+  case (Suc i)
+  have "suffix (Suc n) w \<Turnstile>\<^sub>n (af \<phi> (prefix (Suc n) w))[X]\<^sub>\<nu>"
+    using Suc.prems(3)[OF zero_less_Suc, THEN GF_advice_af_2, unfolded suffix_suffix, of 1]
+    by simp
+  moreover
+  have B: "(Suc (n - 1)) = n"
+    using Suc by simp
+  note Suc.IH[of "n - 1" "suffix 1 w", unfolded suffix_suffix] Suc.prems
+  then have "suffix (Suc n) w \<Turnstile>\<^sub>n (af (\<phi> W\<^sub>n \<psi>) (w [1 \<rightarrow> (Suc n)]))[X]\<^sub>\<nu>"
+    by (metis B One_nat_def Suc_le_mono Suc_mono plus_1_eq_Suc subsequence_shift)
+  ultimately
+  show ?case
+    unfolding af_subsequence_W unfolding semantics_ltln.simps GF_advice.simps by simp
+qed
+
+lemma af_subsequence_R_GF_advice_connect:
+  assumes "i \<le> n"
+  assumes "suffix n w \<Turnstile>\<^sub>n af (\<phi> R\<^sub>n \<psi>) (w [i \<rightarrow> n])[X]\<^sub>\<nu>"
+  assumes "\<And>j. j \<le> i \<Longrightarrow> suffix n w \<Turnstile>\<^sub>n ((af \<psi> (w [j \<rightarrow> n]))[X]\<^sub>\<nu>)"
+  shows "suffix (Suc n) w \<Turnstile>\<^sub>n (af (\<phi> R\<^sub>n \<psi>) (prefix (Suc n) w))[X]\<^sub>\<nu>"
+  using assms
+proof (induction i arbitrary: w n)
+  case 0
+  then have A: "suffix n w \<Turnstile>\<^sub>n ((af \<psi> (w [0 \<rightarrow> n]))[X]\<^sub>\<nu>)"
+    by blast
+  have "suffix (Suc n) w \<Turnstile>\<^sub>n (af \<psi> (w [0 \<rightarrow> Suc n]))[X]\<^sub>\<nu>"
+    using GF_advice_af_2[OF A, of 1] by simp
+  moreover
+  have "suffix (Suc n) w \<Turnstile>\<^sub>n (af (\<phi> R\<^sub>n \<psi>) (w [0 \<rightarrow> Suc n]))[X]\<^sub>\<nu>"
+    using GF_advice_af_2[OF "0.prems"(2), of 1, unfolded suffix_suffix] by simp
+  ultimately
+  show ?case
+    unfolding af_subsequence_R GF_advice.simps semantics_ltln.simps by blast
+next
+  case (Suc i)
+  have "suffix 1 (suffix n w) \<Turnstile>\<^sub>n af (af \<psi> (prefix n w)) [suffix n w 0][X]\<^sub>\<nu>"
+    by (metis (no_types) GF_advice_af_2 Suc.prems(3) plus_1_eq_Suc subsequence_singleton suffix_0 suffix_suffix zero_le)
+  then have "suffix (Suc n) w \<Turnstile>\<^sub>n (af \<psi> (prefix (Suc n) w))[X]\<^sub>\<nu>"
+    using Suc.prems(3)[THEN GF_advice_af_2, unfolded suffix_suffix, of 1] by simp
+  moreover
+  have B: "(Suc (n - 1)) = n"
+    using Suc by simp
+  note Suc.IH[of _ "suffix 1 w", unfolded subsequence_shift suffix_suffix]
+  then have "suffix (Suc n) w \<Turnstile>\<^sub>n (af (\<phi> R\<^sub>n \<psi>) (w [1 \<rightarrow> (Suc n)]))[X]\<^sub>\<nu>"
+    by (metis B One_nat_def Suc_le_mono plus_1_eq_Suc Suc.prems)
+  ultimately
+  show ?case
+    unfolding af_subsequence_R semantics_ltln.simps GF_advice.simps by blast
+qed
+
+lemma af_subsequence_W_GF_advice_connect:
+  assumes "i \<le> n"
+  assumes "suffix n w \<Turnstile>\<^sub>n af (\<phi> W\<^sub>n \<psi>) (w [i \<rightarrow> n])[X]\<^sub>\<nu>"
+  assumes "\<And>j. j < i \<Longrightarrow> suffix n w \<Turnstile>\<^sub>n ((af \<phi> (w [j \<rightarrow> n]))[X]\<^sub>\<nu>)"
+  shows "suffix (Suc n) w \<Turnstile>\<^sub>n (af (\<phi> W\<^sub>n \<psi>) (prefix (Suc n) w))[X]\<^sub>\<nu>"
+  using assms
+proof (induction i arbitrary: w n)
+  case 0
+  have "suffix (Suc n) w \<Turnstile>\<^sub>n af_letter (af (\<phi> W\<^sub>n \<psi>) (prefix n w)) (w n)[X]\<^sub>\<nu>"
+    by (simp add: "0.prems"(2) GF_advice_af_letter)
+  moreover
+  have "prefix (Suc n) w = prefix n w @ [w n]"
+    using subseq_to_Suc by blast
+  ultimately show ?case
+    by (metis (no_types) foldl.simps(1) foldl.simps(2) foldl_append)
+next
+  case (Suc i)
+  have "suffix (Suc n) w \<Turnstile>\<^sub>n (af \<phi> (prefix (Suc n) w))[X]\<^sub>\<nu>"
+    using Suc.prems(3)[OF zero_less_Suc, THEN GF_advice_af_2, unfolded suffix_suffix, of 1] by simp
+  moreover
+  have "n > 0" and B: "(Suc (n - 1)) = n"
+    using Suc by simp+
+  note Suc.IH[of "n - 1" "suffix 1 w", unfolded suffix_suffix] Suc.prems
+  then have "suffix (Suc n) w \<Turnstile>\<^sub>n (af (\<phi> W\<^sub>n \<psi>) (w [1 \<rightarrow> (Suc n)]))[X]\<^sub>\<nu>"
+    by (metis B One_nat_def Suc_le_mono Suc_mono plus_1_eq_Suc subsequence_shift)
+  ultimately
+  show ?case
+    unfolding af_subsequence_W unfolding semantics_ltln.simps GF_advice.simps by simp
+qed
 
 
 subsection \<open>Advice Functions and Propositional Entailment\<close>

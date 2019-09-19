@@ -11,6 +11,7 @@ session LTL_Master_Theorem (AFP) = "Transition_Systems_and_Automata" +
   theories
     "Logical_Characterization/Master_Theorem"
     "Logical_Characterization/Asymmetric_Master_Theorem"
+    "Logical_Characterization/Restricted_Master_Theorem"
 
     "LTL_to_DRA/DRA_Construction"
     "LTL_to_DRA/DRA_Instantiation"

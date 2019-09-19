@@ -6,7 +6,7 @@
 section \<open>The ``after''-Function\<close>
 
 theory After
-imports 
+imports
   LTL.LTL LTL.Equivalence_Relations Syntactic_Fragments_and_Stability
 begin
 
@@ -42,22 +42,46 @@ lemma af_simps[simp]:
   "af (X\<^sub>n \<phi>) (x # xs) = af \<phi> xs"
   by (induction w) simp_all
 
+lemma af_ite_simps[simp]:
+  "af (if P then true\<^sub>n else false\<^sub>n) w = (if P then true\<^sub>n else false\<^sub>n)"
+  "af (if P then false\<^sub>n else true\<^sub>n) w = (if P then false\<^sub>n else true\<^sub>n)"
+  by simp_all
+
+lemma af_subsequence_append:
+  "i \<le> j \<Longrightarrow> j \<le> k \<Longrightarrow> af (af \<phi> (w [i \<rightarrow> j])) (w [j \<rightarrow> k]) = af \<phi> (w [i \<rightarrow> k])"
+  by (metis foldl_append le_Suc_ex map_append subsequence_def upt_add_eq_append)
+
 lemma af_subsequence_U:
   "af (\<phi> U\<^sub>n \<psi>) (w [0 \<rightarrow> Suc n]) = (af \<psi> (w [0 \<rightarrow> Suc n])) or\<^sub>n ((af \<phi> (w [0 \<rightarrow> Suc n])) and\<^sub>n af (\<phi> U\<^sub>n \<psi>) (w [1 \<rightarrow> Suc n]))"
   by (induction n) fastforce+
+
+lemma af_subsequence_U':
+  "af (\<phi> U\<^sub>n \<psi>) (a # xs) = (af \<psi> (a # xs)) or\<^sub>n ((af \<phi> (a # xs)) and\<^sub>n af (\<phi> U\<^sub>n \<psi>) xs)"
+  by (simp add: af_decompose)
 
 lemma af_subsequence_R:
   "af (\<phi> R\<^sub>n \<psi>) (w [0 \<rightarrow> Suc n]) = (af \<psi> (w [0 \<rightarrow> Suc n])) and\<^sub>n ((af \<phi> (w [0 \<rightarrow> Suc n])) or\<^sub>n af (\<phi> R\<^sub>n \<psi>) (w [1 \<rightarrow> Suc n]))"
   by (induction n) fastforce+
 
+lemma af_subsequence_R':
+  "af (\<phi> R\<^sub>n \<psi>) (a # xs) = (af \<psi> (a # xs)) and\<^sub>n ((af \<phi> (a # xs)) or\<^sub>n af (\<phi> R\<^sub>n \<psi>) xs)"
+  by (simp add: af_decompose)
+
 lemma af_subsequence_W:
   "af (\<phi> W\<^sub>n \<psi>) (w [0 \<rightarrow> Suc n]) = (af \<psi> (w [0 \<rightarrow> Suc n])) or\<^sub>n ((af \<phi> (w [0 \<rightarrow> Suc n])) and\<^sub>n af (\<phi> W\<^sub>n \<psi>) (w [1 \<rightarrow> Suc n]))"
   by (induction n) fastforce+
+
+lemma af_subsequence_W':
+  "af (\<phi> W\<^sub>n \<psi>) (a # xs) = (af \<psi> (a # xs)) or\<^sub>n ((af \<phi> (a # xs)) and\<^sub>n af (\<phi> W\<^sub>n \<psi>) xs)"
+  by (simp add: af_decompose)
 
 lemma af_subsequence_M:
   "af (\<phi> M\<^sub>n \<psi>) (w [0 \<rightarrow> Suc n]) = (af \<psi> (w [0 \<rightarrow> Suc n])) and\<^sub>n ((af \<phi> (w [0 \<rightarrow> Suc n])) or\<^sub>n af (\<phi> M\<^sub>n \<psi>) (w [1 \<rightarrow> Suc n]))"
   by (induction n) fastforce+
 
+lemma af_subsequence_M':
+  "af (\<phi> M\<^sub>n \<psi>) (a # xs) = (af \<psi> (a # xs)) and\<^sub>n ((af \<phi> (a # xs)) or\<^sub>n af (\<phi> M\<^sub>n \<psi>) xs)"
+  by (simp add: af_decompose)
 
 lemma suffix_build[simp]:
   "suffix (Suc n) (x ## xs) = suffix n xs"

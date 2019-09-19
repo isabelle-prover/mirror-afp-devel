@@ -374,6 +374,11 @@ where
 
 definition "language_ltln \<phi> \<equiv> {\<xi>. \<xi> \<Turnstile>\<^sub>n \<phi>}"
 
+lemma semantics_ltln_ite_simps[simp]:
+  "w \<Turnstile>\<^sub>n (if P then true\<^sub>n else false\<^sub>n) = P"
+  "w \<Turnstile>\<^sub>n (if P then false\<^sub>n else true\<^sub>n) = (\<not>P)"
+  by simp_all
+
 subsubsection \<open>Conversion\<close>
 
 fun ltlc_to_ltln' :: "bool \<Rightarrow> 'a ltlc \<Rightarrow> 'a ltln"
@@ -715,13 +720,12 @@ lemma ltln_Until_to_StrongRelease:
 subsubsection \<open>GF and FG semantics\<close>
 
 lemma GF_suffix:
-  "w \<Turnstile>\<^sub>n G\<^sub>n (F\<^sub>n \<phi>) \<Longrightarrow> suffix i w \<Turnstile>\<^sub>n G\<^sub>n (F\<^sub>n \<phi>)"
-  by simp
+  "suffix i w \<Turnstile>\<^sub>n G\<^sub>n (F\<^sub>n \<psi>) \<longleftrightarrow> w \<Turnstile>\<^sub>n G\<^sub>n (F\<^sub>n \<psi>)"
+  by auto (metis ab_semigroup_add_class.add_ac(1) add.left_commute)
 
 lemma FG_suffix:
-  "w \<Turnstile>\<^sub>n F\<^sub>n (G\<^sub>n \<phi>) \<Longrightarrow> suffix i w \<Turnstile>\<^sub>n F\<^sub>n (G\<^sub>n \<phi>)"
-  by (auto simp: algebra_simps)
-
+  "suffix i w \<Turnstile>\<^sub>n F\<^sub>n (G\<^sub>n \<psi>) \<longleftrightarrow> w \<Turnstile>\<^sub>n F\<^sub>n (G\<^sub>n \<psi>)"
+  by (auto simp: algebra_simps) (metis add.commute add.left_commute)
 
 lemma GF_Inf_many:
   "w \<Turnstile>\<^sub>n G\<^sub>n (F\<^sub>n \<phi>) \<longleftrightarrow> (\<exists>\<^sub>\<infinity> i. suffix i w \<Turnstile>\<^sub>n \<phi>)"

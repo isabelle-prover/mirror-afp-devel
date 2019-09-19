@@ -302,10 +302,11 @@ qed
 
 theorem master_theorem:
   "w \<Turnstile>\<^sub>n \<phi> \<longleftrightarrow>
-    (\<exists>X \<subseteq> subformulas\<^sub>\<mu> \<phi>. \<exists>Y \<subseteq> subformulas\<^sub>\<nu> \<phi>.
-      (\<exists>i. suffix i w \<Turnstile>\<^sub>n af \<phi> (prefix i w)[X]\<^sub>\<nu>)
-      \<and> (\<forall>\<psi> \<in> X. w \<Turnstile>\<^sub>n G\<^sub>n (F\<^sub>n \<psi>[Y]\<^sub>\<mu>))
-      \<and> (\<forall>\<psi> \<in> Y. w \<Turnstile>\<^sub>n F\<^sub>n (G\<^sub>n \<psi>[X]\<^sub>\<nu>)))"
+    (\<exists>X \<subseteq> subformulas\<^sub>\<mu> \<phi>.
+      (\<exists>Y \<subseteq> subformulas\<^sub>\<nu> \<phi>.
+        (\<exists>i. suffix i w \<Turnstile>\<^sub>n af \<phi> (prefix i w)[X]\<^sub>\<nu>)
+        \<and> (\<forall>\<psi> \<in> X. w \<Turnstile>\<^sub>n G\<^sub>n (F\<^sub>n \<psi>[Y]\<^sub>\<mu>))
+        \<and> (\<forall>\<psi> \<in> Y. w \<Turnstile>\<^sub>n F\<^sub>n (G\<^sub>n \<psi>[X]\<^sub>\<nu>))))"
   by (metis master_theorem_ltr master_theorem_rtl)
 
 

@@ -81,17 +81,12 @@ where
 | "subformulas\<^sub>\<nu> (\<phi> M\<^sub>n \<psi>) = subformulas\<^sub>\<nu> \<phi> \<union> subformulas\<^sub>\<nu> \<psi>"
 | "subformulas\<^sub>\<nu> _ = {}"
 
-abbreviation "ltln_U \<equiv> {\<phi> U\<^sub>n \<psi> | \<phi> \<psi>. True}"
-abbreviation "ltln_R \<equiv> {\<phi> R\<^sub>n \<psi> | \<phi> \<psi>. True}"
-abbreviation "ltln_W \<equiv> {\<phi> W\<^sub>n \<psi> | \<phi> \<psi>. True}"
-abbreviation "ltln_M \<equiv> {\<phi> M\<^sub>n \<psi> | \<phi> \<psi>. True}"
-
 lemma subformulas\<^sub>\<mu>_semantics:
-  "subformulas\<^sub>\<mu> \<phi> = subfrmlsn \<phi> \<inter> (ltln_U \<union> ltln_M)"
+  "subformulas\<^sub>\<mu> \<phi> = {\<psi> \<in> subfrmlsn \<phi>. \<exists>\<psi>\<^sub>1 \<psi>\<^sub>2. \<psi> = \<psi>\<^sub>1 U\<^sub>n \<psi>\<^sub>2 \<or> \<psi> = \<psi>\<^sub>1 M\<^sub>n \<psi>\<^sub>2}"
   by (induction \<phi>) auto
 
 lemma subformulas\<^sub>\<nu>_semantics:
-  "subformulas\<^sub>\<nu> \<phi> = subfrmlsn \<phi> \<inter> (ltln_R \<union> ltln_W)"
+  "subformulas\<^sub>\<nu> \<phi> = {\<psi> \<in> subfrmlsn \<phi>. \<exists>\<psi>\<^sub>1 \<psi>\<^sub>2. \<psi> = \<psi>\<^sub>1 R\<^sub>n \<psi>\<^sub>2 \<or> \<psi> = \<psi>\<^sub>1 W\<^sub>n \<psi>\<^sub>2}"
   by (induction \<phi>) auto
 
 lemma subformulas\<^sub>\<mu>_subfrmlsn:
@@ -138,113 +133,6 @@ lemma subformulas\<^sub>\<mu>\<^sub>\<nu>_subfrmlsn:
 lemma subformulas\<^sub>\<mu>\<^sub>\<nu>_card:
   "card (subformulas\<^sub>\<mu> \<phi> \<union> subformulas\<^sub>\<nu> \<phi>) = card (subformulas\<^sub>\<mu> \<phi>) + card (subformulas\<^sub>\<nu> \<phi>)"
   by (simp add: subformulas\<^sub>\<mu>\<^sub>\<nu>_disjoint subformulas\<^sub>\<mu>_finite subformulas\<^sub>\<nu>_finite card_Un_disjoint)
-
-
-text \<open>The $\mu$- and $\nu$-subformulas as lists:\<close>
-
-fun subformulas\<^sub>\<mu>_list :: "'a ltln \<Rightarrow> 'a ltln list"
-where
-  "subformulas\<^sub>\<mu>_list (\<phi> and\<^sub>n \<psi>) = List.union (subformulas\<^sub>\<mu>_list \<phi>) (subformulas\<^sub>\<mu>_list \<psi>)"
-| "subformulas\<^sub>\<mu>_list (\<phi> or\<^sub>n \<psi>) = List.union (subformulas\<^sub>\<mu>_list \<phi>) (subformulas\<^sub>\<mu>_list \<psi>)"
-| "subformulas\<^sub>\<mu>_list (X\<^sub>n \<phi>) = subformulas\<^sub>\<mu>_list \<phi>"
-| "subformulas\<^sub>\<mu>_list (\<phi> U\<^sub>n \<psi>) = List.insert (\<phi> U\<^sub>n \<psi>) (List.union (subformulas\<^sub>\<mu>_list \<phi>) (subformulas\<^sub>\<mu>_list \<psi>))"
-| "subformulas\<^sub>\<mu>_list (\<phi> R\<^sub>n \<psi>) = List.union (subformulas\<^sub>\<mu>_list \<phi>) (subformulas\<^sub>\<mu>_list \<psi>)"
-| "subformulas\<^sub>\<mu>_list (\<phi> W\<^sub>n \<psi>) = List.union (subformulas\<^sub>\<mu>_list \<phi>) (subformulas\<^sub>\<mu>_list \<psi>)"
-| "subformulas\<^sub>\<mu>_list (\<phi> M\<^sub>n \<psi>) = List.insert (\<phi> M\<^sub>n \<psi>) (List.union (subformulas\<^sub>\<mu>_list \<phi>) (subformulas\<^sub>\<mu>_list \<psi>))"
-| "subformulas\<^sub>\<mu>_list _ = []"
-
-fun subformulas\<^sub>\<nu>_list :: "'a ltln \<Rightarrow> 'a ltln list"
-where
-  "subformulas\<^sub>\<nu>_list (\<phi> and\<^sub>n \<psi>) = List.union (subformulas\<^sub>\<nu>_list \<phi>) (subformulas\<^sub>\<nu>_list \<psi>)"
-| "subformulas\<^sub>\<nu>_list (\<phi> or\<^sub>n \<psi>) = List.union (subformulas\<^sub>\<nu>_list \<phi>) (subformulas\<^sub>\<nu>_list \<psi>)"
-| "subformulas\<^sub>\<nu>_list (X\<^sub>n \<phi>) = subformulas\<^sub>\<nu>_list \<phi>"
-| "subformulas\<^sub>\<nu>_list (\<phi> U\<^sub>n \<psi>) = List.union (subformulas\<^sub>\<nu>_list \<phi>) (subformulas\<^sub>\<nu>_list \<psi>)"
-| "subformulas\<^sub>\<nu>_list (\<phi> R\<^sub>n \<psi>) = List.insert (\<phi> R\<^sub>n \<psi>) (List.union (subformulas\<^sub>\<nu>_list \<phi>) (subformulas\<^sub>\<nu>_list \<psi>))"
-| "subformulas\<^sub>\<nu>_list (\<phi> W\<^sub>n \<psi>) = List.insert (\<phi> W\<^sub>n \<psi>) (List.union (subformulas\<^sub>\<nu>_list \<phi>) (subformulas\<^sub>\<nu>_list \<psi>))"
-| "subformulas\<^sub>\<nu>_list (\<phi> M\<^sub>n \<psi>) = List.union (subformulas\<^sub>\<nu>_list \<phi>) (subformulas\<^sub>\<nu>_list \<psi>)"
-| "subformulas\<^sub>\<nu>_list _ = []"
-
-lemma subformulas\<^sub>\<mu>_list_set:
-  "set (subformulas\<^sub>\<mu>_list \<phi>) = subformulas\<^sub>\<mu> \<phi>"
-  by (induction \<phi>) auto
-
-lemma subformulas\<^sub>\<nu>_list_set:
-  "set (subformulas\<^sub>\<nu>_list \<phi>) = subformulas\<^sub>\<nu> \<phi>"
-  by (induction \<phi>) auto
-
-lemma subformulas\<^sub>\<mu>_list_distinct:
-  "distinct (subformulas\<^sub>\<mu>_list \<phi>)"
-  by (induction \<phi>) auto
-
-lemma subformulas\<^sub>\<nu>_list_distinct:
-  "distinct (subformulas\<^sub>\<nu>_list \<phi>)"
-  by (induction \<phi>) auto
-
-lemma subformulas\<^sub>\<mu>_list_length:
-  "length (subformulas\<^sub>\<mu>_list \<phi>) = card (subformulas\<^sub>\<mu> \<phi>)"
-  by (metis subformulas\<^sub>\<mu>_list_set subformulas\<^sub>\<mu>_list_distinct distinct_card)
-
-lemma subformulas\<^sub>\<nu>_list_length:
-  "length (subformulas\<^sub>\<nu>_list \<phi>) = card (subformulas\<^sub>\<nu> \<phi>)"
-  by (metis subformulas\<^sub>\<nu>_list_set subformulas\<^sub>\<nu>_list_distinct distinct_card)
-
-
-
-subsection \<open>List of Advice Sets\<close>
-
-definition advice_sets :: "'a ltln \<Rightarrow> ('a ltln list \<times> 'a ltln list) list"
-where
-  "advice_sets \<phi> = List.product (subseqs (subformulas\<^sub>\<mu>_list \<phi>)) (subseqs (subformulas\<^sub>\<nu>_list \<phi>))"
-
-lemma subset_subseq:
-  "X \<subseteq> set ys \<longleftrightarrow> (\<exists>xs. X = set xs \<and> subseq xs ys)"
-  by (metis (no_types, lifting) Pow_iff image_iff in_set_subseqs subseqs_powset)
-
-lemma subseqs_subformulas\<^sub>\<mu>_list:
-  "X \<subseteq> subformulas\<^sub>\<mu> \<phi> \<longleftrightarrow> (\<exists>xs. X = set xs \<and> xs \<in> set (subseqs (subformulas\<^sub>\<mu>_list \<phi>)))"
-  by (metis subset_subseq subformulas\<^sub>\<mu>_list_set in_set_subseqs)
-
-lemma subseqs_subformulas\<^sub>\<nu>_list:
-  "Y \<subseteq> subformulas\<^sub>\<nu> \<phi> \<longleftrightarrow> (\<exists>ys. Y = set ys \<and> ys \<in> set (subseqs (subformulas\<^sub>\<nu>_list \<phi>)))"
-  by (metis subset_subseq subformulas\<^sub>\<nu>_list_set in_set_subseqs)
-
-lemma advice_sets_subformulas:
-  "X \<subseteq> subformulas\<^sub>\<mu> \<phi> \<and> Y \<subseteq> subformulas\<^sub>\<nu> \<phi> \<longleftrightarrow> (\<exists>xs ys. X = set xs \<and> Y = set ys \<and> (xs, ys) \<in> set (advice_sets \<phi>))"
-  unfolding advice_sets_def set_product subseqs_subformulas\<^sub>\<mu>_list subseqs_subformulas\<^sub>\<nu>_list by blast
-
-(* TODO add to HOL/List.thy *)
-lemma subseqs_not_empty:
-  "subseqs xs \<noteq> []"
-  by (metis empty_iff list.set(1) subseqs_refl)
-
-(* TODO add to HOL/List.thy *)
-lemma product_not_empty:
-  "xs \<noteq> [] \<Longrightarrow> ys \<noteq> [] \<Longrightarrow> List.product xs ys \<noteq> []"
-  by (induction xs) simp_all
-
-lemma advice_sets_not_empty:
-  "advice_sets \<phi> \<noteq> []"
-  unfolding advice_sets_def using subseqs_not_empty product_not_empty by blast
-
-lemma advice_sets_length:
-  "length (advice_sets \<phi>) \<le> 2 ^ card (subfrmlsn \<phi>)"
-  unfolding advice_sets_def length_product length_subseqs subformulas\<^sub>\<mu>_list_length subformulas\<^sub>\<nu>_list_length power_add[symmetric]
-  by (metis Suc_1 card_mono lessI power_increasing_iff subformulas\<^sub>\<mu>\<^sub>\<nu>_card subformulas\<^sub>\<mu>\<^sub>\<nu>_subfrmlsn subfrmlsn_finite)
-
-lemma advice_sets_element_length:
-  "(xs, ys) \<in> set (advice_sets \<phi>) \<Longrightarrow> length xs \<le> card (subfrmlsn \<phi>)"
-  "(xs, ys) \<in> set (advice_sets \<phi>) \<Longrightarrow> length ys \<le> card (subfrmlsn \<phi>)"
-  unfolding advice_sets_def set_product
-  by (metis SigmaD1 card_mono in_set_subseqs list_emb_length order_trans subformulas\<^sub>\<mu>_list_length subformulas\<^sub>\<mu>_subfrmlsn subfrmlsn_finite)
-     (metis SigmaD2 card_mono in_set_subseqs list_emb_length order_trans subformulas\<^sub>\<nu>_list_length subformulas\<^sub>\<nu>_subfrmlsn subfrmlsn_finite)
-
-lemma advice_sets_element_subfrmlsn:
-  "(xs, ys) \<in> set (advice_sets \<phi>) \<Longrightarrow> set xs \<subseteq> subformulas\<^sub>\<mu> \<phi>"
-  "(xs, ys) \<in> set (advice_sets \<phi>) \<Longrightarrow> set ys \<subseteq> subformulas\<^sub>\<nu> \<phi>"
-  unfolding advice_sets_def set_product
-  by (meson SigmaD1 subseqs_subformulas\<^sub>\<mu>_list)
-     (meson SigmaD2 subseqs_subformulas\<^sub>\<nu>_list)
-
 
 
 subsection \<open>Stability\<close>
@@ -381,6 +269,23 @@ proof -
     by (rule MOST_mono) simp
 qed
 
+lemma \<mu>_stable_subfrmlsn:
+  "\<mu>_stable \<phi> w \<Longrightarrow> \<psi> \<in> subfrmlsn \<phi> \<Longrightarrow> \<mu>_stable \<psi> w"
+proof -
+  assume a1: "\<psi> \<in> subfrmlsn \<phi>" and a2: "\<mu>_stable \<phi> w"
+  have "subformulas\<^sub>\<mu> \<psi> \<subseteq> subformulas\<^sub>\<mu> \<phi>"
+    using a1 by (simp add: subformulas\<^sub>\<mu>_subset)
+  moreover
+  have "\<G>\<F> \<phi> w = \<F> \<phi> w"
+    using a2 by (meson \<mu>_stable_def)
+  ultimately show ?thesis
+    by (metis (no_types) Un_commute \<F>_semantics' \<G>\<F>_semantics' \<mu>_stable_def inf_left_commute inf_sup_absorb sup.orderE)
+qed
+
+lemma \<mu>_stable_suffix:
+  "\<mu>_stable \<phi> w \<Longrightarrow> \<mu>_stable \<phi> (suffix i w)"
+  by (metis \<F>_suffix \<G>\<F>_\<F>_subset \<G>\<F>_suffix \<mu>_stable_def subset_antisym)
+
 
 definition "FG_singleton w \<phi> \<equiv> if w \<Turnstile>\<^sub>n F\<^sub>n (G\<^sub>n \<phi>) then {\<phi>} else {}"
 definition "G_singleton w \<phi> \<equiv> if w \<Turnstile>\<^sub>n G\<^sub>n \<phi> then {\<phi>} else {}"
@@ -512,5 +417,132 @@ proof -
     unfolding \<nu>_stable_def \<F>\<G>_semantics \<G>_semantics
     by (rule MOST_mono) simp
 qed
+
+lemma \<nu>_stable_subfrmlsn:
+  "\<nu>_stable \<phi> w \<Longrightarrow> \<psi> \<in> subfrmlsn \<phi> \<Longrightarrow> \<nu>_stable \<psi> w"
+proof -
+  assume a1: "\<psi> \<in> subfrmlsn \<phi>" and a2: "\<nu>_stable \<phi> w"
+  have "subformulas\<^sub>\<nu> \<psi> \<subseteq> subformulas\<^sub>\<nu> \<phi>"
+    using a1 by (simp add: subformulas\<^sub>\<nu>_subset)
+  moreover
+  have "\<F>\<G> \<phi> w = \<G> \<phi> w"
+    using a2 by (meson \<nu>_stable_def)
+  ultimately show ?thesis
+    by (metis (no_types) Un_commute \<G>_semantics' \<F>\<G>_semantics' \<nu>_stable_def inf_left_commute inf_sup_absorb sup.orderE)
+qed
+
+lemma \<nu>_stable_suffix:
+  "\<nu>_stable \<phi> w \<Longrightarrow> \<nu>_stable \<phi> (suffix i w)"
+  by (metis \<F>\<G>_suffix \<G>_\<F>\<G>_subset \<G>_suffix \<nu>_stable_def antisym_conv)
+
+
+subsection \<open>Definitions with Lists for Code Export\<close>
+
+text \<open>The \<open>\<mu>\<close>- and \<open>\<nu>\<close>-subformulas as lists:\<close>
+
+fun subformulas\<^sub>\<mu>_list :: "'a ltln \<Rightarrow> 'a ltln list"
+where
+  "subformulas\<^sub>\<mu>_list (\<phi> and\<^sub>n \<psi>) = List.union (subformulas\<^sub>\<mu>_list \<phi>) (subformulas\<^sub>\<mu>_list \<psi>)"
+| "subformulas\<^sub>\<mu>_list (\<phi> or\<^sub>n \<psi>) = List.union (subformulas\<^sub>\<mu>_list \<phi>) (subformulas\<^sub>\<mu>_list \<psi>)"
+| "subformulas\<^sub>\<mu>_list (X\<^sub>n \<phi>) = subformulas\<^sub>\<mu>_list \<phi>"
+| "subformulas\<^sub>\<mu>_list (\<phi> U\<^sub>n \<psi>) = List.insert (\<phi> U\<^sub>n \<psi>) (List.union (subformulas\<^sub>\<mu>_list \<phi>) (subformulas\<^sub>\<mu>_list \<psi>))"
+| "subformulas\<^sub>\<mu>_list (\<phi> R\<^sub>n \<psi>) = List.union (subformulas\<^sub>\<mu>_list \<phi>) (subformulas\<^sub>\<mu>_list \<psi>)"
+| "subformulas\<^sub>\<mu>_list (\<phi> W\<^sub>n \<psi>) = List.union (subformulas\<^sub>\<mu>_list \<phi>) (subformulas\<^sub>\<mu>_list \<psi>)"
+| "subformulas\<^sub>\<mu>_list (\<phi> M\<^sub>n \<psi>) = List.insert (\<phi> M\<^sub>n \<psi>) (List.union (subformulas\<^sub>\<mu>_list \<phi>) (subformulas\<^sub>\<mu>_list \<psi>))"
+| "subformulas\<^sub>\<mu>_list _ = []"
+
+fun subformulas\<^sub>\<nu>_list :: "'a ltln \<Rightarrow> 'a ltln list"
+where
+  "subformulas\<^sub>\<nu>_list (\<phi> and\<^sub>n \<psi>) = List.union (subformulas\<^sub>\<nu>_list \<phi>) (subformulas\<^sub>\<nu>_list \<psi>)"
+| "subformulas\<^sub>\<nu>_list (\<phi> or\<^sub>n \<psi>) = List.union (subformulas\<^sub>\<nu>_list \<phi>) (subformulas\<^sub>\<nu>_list \<psi>)"
+| "subformulas\<^sub>\<nu>_list (X\<^sub>n \<phi>) = subformulas\<^sub>\<nu>_list \<phi>"
+| "subformulas\<^sub>\<nu>_list (\<phi> U\<^sub>n \<psi>) = List.union (subformulas\<^sub>\<nu>_list \<phi>) (subformulas\<^sub>\<nu>_list \<psi>)"
+| "subformulas\<^sub>\<nu>_list (\<phi> R\<^sub>n \<psi>) = List.insert (\<phi> R\<^sub>n \<psi>) (List.union (subformulas\<^sub>\<nu>_list \<phi>) (subformulas\<^sub>\<nu>_list \<psi>))"
+| "subformulas\<^sub>\<nu>_list (\<phi> W\<^sub>n \<psi>) = List.insert (\<phi> W\<^sub>n \<psi>) (List.union (subformulas\<^sub>\<nu>_list \<phi>) (subformulas\<^sub>\<nu>_list \<psi>))"
+| "subformulas\<^sub>\<nu>_list (\<phi> M\<^sub>n \<psi>) = List.union (subformulas\<^sub>\<nu>_list \<phi>) (subformulas\<^sub>\<nu>_list \<psi>)"
+| "subformulas\<^sub>\<nu>_list _ = []"
+
+lemma subformulas\<^sub>\<mu>_list_set:
+  "set (subformulas\<^sub>\<mu>_list \<phi>) = subformulas\<^sub>\<mu> \<phi>"
+  by (induction \<phi>) auto
+
+lemma subformulas\<^sub>\<nu>_list_set:
+  "set (subformulas\<^sub>\<nu>_list \<phi>) = subformulas\<^sub>\<nu> \<phi>"
+  by (induction \<phi>) auto
+
+lemma subformulas\<^sub>\<mu>_list_distinct:
+  "distinct (subformulas\<^sub>\<mu>_list \<phi>)"
+  by (induction \<phi>) auto
+
+lemma subformulas\<^sub>\<nu>_list_distinct:
+  "distinct (subformulas\<^sub>\<nu>_list \<phi>)"
+  by (induction \<phi>) auto
+
+lemma subformulas\<^sub>\<mu>_list_length:
+  "length (subformulas\<^sub>\<mu>_list \<phi>) = card (subformulas\<^sub>\<mu> \<phi>)"
+  by (metis subformulas\<^sub>\<mu>_list_set subformulas\<^sub>\<mu>_list_distinct distinct_card)
+
+lemma subformulas\<^sub>\<nu>_list_length:
+  "length (subformulas\<^sub>\<nu>_list \<phi>) = card (subformulas\<^sub>\<nu> \<phi>)"
+  by (metis subformulas\<^sub>\<nu>_list_set subformulas\<^sub>\<nu>_list_distinct distinct_card)
+
+
+text \<open>
+  We define the list of advice sets as the product of all subsequences
+  of the \<open>\<mu>\<close>- and \<open>\<nu>\<close>-subformulas of a formula.
+\<close>
+
+definition advice_sets :: "'a ltln \<Rightarrow> ('a ltln list \<times> 'a ltln list) list"
+where
+  "advice_sets \<phi> = List.product (subseqs (subformulas\<^sub>\<mu>_list \<phi>)) (subseqs (subformulas\<^sub>\<nu>_list \<phi>))"
+
+lemma subset_subseq:
+  "X \<subseteq> set ys \<longleftrightarrow> (\<exists>xs. X = set xs \<and> subseq xs ys)"
+  by (metis (no_types, lifting) Pow_iff image_iff in_set_subseqs subseqs_powset)
+
+lemma subseqs_subformulas\<^sub>\<mu>_list:
+  "X \<subseteq> subformulas\<^sub>\<mu> \<phi> \<longleftrightarrow> (\<exists>xs. X = set xs \<and> xs \<in> set (subseqs (subformulas\<^sub>\<mu>_list \<phi>)))"
+  by (metis subset_subseq subformulas\<^sub>\<mu>_list_set in_set_subseqs)
+
+lemma subseqs_subformulas\<^sub>\<nu>_list:
+  "Y \<subseteq> subformulas\<^sub>\<nu> \<phi> \<longleftrightarrow> (\<exists>ys. Y = set ys \<and> ys \<in> set (subseqs (subformulas\<^sub>\<nu>_list \<phi>)))"
+  by (metis subset_subseq subformulas\<^sub>\<nu>_list_set in_set_subseqs)
+
+lemma advice_sets_subformulas:
+  "X \<subseteq> subformulas\<^sub>\<mu> \<phi> \<and> Y \<subseteq> subformulas\<^sub>\<nu> \<phi> \<longleftrightarrow> (\<exists>xs ys. X = set xs \<and> Y = set ys \<and> (xs, ys) \<in> set (advice_sets \<phi>))"
+  unfolding advice_sets_def set_product subseqs_subformulas\<^sub>\<mu>_list subseqs_subformulas\<^sub>\<nu>_list by blast
+
+(* TODO add to HOL/List.thy *)
+lemma subseqs_not_empty:
+  "subseqs xs \<noteq> []"
+  by (metis empty_iff list.set(1) subseqs_refl)
+
+(* TODO add to HOL/List.thy *)
+lemma product_not_empty:
+  "xs \<noteq> [] \<Longrightarrow> ys \<noteq> [] \<Longrightarrow> List.product xs ys \<noteq> []"
+  by (induction xs) simp_all
+
+lemma advice_sets_not_empty:
+  "advice_sets \<phi> \<noteq> []"
+  unfolding advice_sets_def using subseqs_not_empty product_not_empty by blast
+
+lemma advice_sets_length:
+  "length (advice_sets \<phi>) \<le> 2 ^ card (subfrmlsn \<phi>)"
+  unfolding advice_sets_def length_product length_subseqs subformulas\<^sub>\<mu>_list_length subformulas\<^sub>\<nu>_list_length power_add[symmetric]
+  by (metis Suc_1 card_mono lessI power_increasing_iff subformulas\<^sub>\<mu>\<^sub>\<nu>_card subformulas\<^sub>\<mu>\<^sub>\<nu>_subfrmlsn subfrmlsn_finite)
+
+lemma advice_sets_element_length:
+  "(xs, ys) \<in> set (advice_sets \<phi>) \<Longrightarrow> length xs \<le> card (subfrmlsn \<phi>)"
+  "(xs, ys) \<in> set (advice_sets \<phi>) \<Longrightarrow> length ys \<le> card (subfrmlsn \<phi>)"
+  unfolding advice_sets_def set_product
+  by (metis SigmaD1 card_mono in_set_subseqs list_emb_length order_trans subformulas\<^sub>\<mu>_list_length subformulas\<^sub>\<mu>_subfrmlsn subfrmlsn_finite)
+     (metis SigmaD2 card_mono in_set_subseqs list_emb_length order_trans subformulas\<^sub>\<nu>_list_length subformulas\<^sub>\<nu>_subfrmlsn subfrmlsn_finite)
+
+lemma advice_sets_element_subfrmlsn:
+  "(xs, ys) \<in> set (advice_sets \<phi>) \<Longrightarrow> set xs \<subseteq> subformulas\<^sub>\<mu> \<phi>"
+  "(xs, ys) \<in> set (advice_sets \<phi>) \<Longrightarrow> set ys \<subseteq> subformulas\<^sub>\<nu> \<phi>"
+  unfolding advice_sets_def set_product
+  by (meson SigmaD1 subseqs_subformulas\<^sub>\<mu>_list)
+     (meson SigmaD2 subseqs_subformulas\<^sub>\<nu>_list)
 
 end

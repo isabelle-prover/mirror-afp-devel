@@ -40,7 +40,6 @@ lemma ltl_lang_equiv_or_const[intro, simp]:
   unfolding ltl_lang_equiv_def by auto
 
 
-
 subsection \<open>Propositional Equivalence\<close>
 
 fun ltl_prop_entailment :: "'a ltln set \<Rightarrow> 'a ltln \<Rightarrow> bool" (infix "\<Turnstile>\<^sub>P" 80)
@@ -58,7 +57,6 @@ lemma ltl_prop_entailment_monotonI[intro]:
 lemma ltl_models_equiv_prop_entailment:
   "w \<Turnstile>\<^sub>n \<phi> \<longleftrightarrow> {\<psi>. w \<Turnstile>\<^sub>n \<psi>} \<Turnstile>\<^sub>P \<phi>"
   by (induction \<phi>) auto
-
 
 definition ltl_prop_equiv :: "'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" (infix "\<sim>\<^sub>P" 75)
 where
@@ -109,7 +107,6 @@ lemma ltl_prop_equiv_lt_ltl_lang_equiv[simp]:
   using ltl_prop_equiv_implies_ltl_lang_equiv by blast
 
 
-
 subsection \<open>Constants Equivalence\<close>
 
 datatype tvl = Yes | No | Maybe
@@ -157,7 +154,6 @@ lemma eval_prop_entailment:
   "eval \<phi> = No \<longleftrightarrow> \<not> UNIV \<Turnstile>\<^sub>P \<phi>"
   by (induction \<phi>) auto
 
-
 definition ltl_const_equiv :: "'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool" (infix "\<sim>\<^sub>C" 75)
 where
   "\<phi> \<sim>\<^sub>C \<psi> \<equiv> \<phi> = \<psi> \<or> (eval \<phi> = eval \<psi> \<and> eval \<psi> \<noteq> Maybe)"
@@ -195,7 +191,6 @@ lemma ltl_const_equiv_other[simp]:
 lemma ltl_const_equiv_no_const_singleton:
   "eval \<psi> = Maybe \<Longrightarrow> \<phi> \<sim>\<^sub>C \<psi> \<Longrightarrow> \<phi> = \<psi>"
   unfolding ltl_const_equiv_def by fastforce
-
 
 lemma ltl_const_equiv_implies_prop_equiv:
   "\<phi> \<sim>\<^sub>C true\<^sub>n \<longleftrightarrow> \<phi> \<sim>\<^sub>P true\<^sub>n"
@@ -263,7 +258,6 @@ qed (simp_all add: ltl_const_equiv_implies_prop_equiv equivp_reflp[OF ltl_prop_e
 lemma ltl_const_equiv_lt_ltl_prop_equiv[simp]:
   "(\<sim>\<^sub>C) \<le> (\<sim>\<^sub>P)"
   using ltl_const_equiv_implies_ltl_prop_equiv by blast
-
 
 
 subsection \<open>Quotient types\<close>
