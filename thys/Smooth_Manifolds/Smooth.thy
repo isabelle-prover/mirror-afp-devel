@@ -100,10 +100,7 @@ next
   have 3: "\<forall>x\<in>S. f differentiable (at x)" using 1 Suc(3) assms(1)
     by (metis differentiable_eqI) 
   have 4: "frechet_derivative f (at x) v = frechet_derivative g (at x) v" if "x \<in> S" for x v
-    apply (rule fun_cong[where x = v])
-    apply (rule frechet_derivative_transform_within_open[OF assms(1) that Suc(3)])
-    using 3 that assms(1)
-    by (auto simp: differentiable_on_eq_differentiable_at)
+    using "3" Suc.prems(2) assms(1) frechet_derivative_transform_within_open_ext that by blast
   from 2 3 4 show ?case
     using Suc.IH[OF 2 4] by auto
 qed
@@ -157,7 +154,7 @@ lemma higher_differentiable_on_const: "higher_differentiable_on S (\<lambda>x. c
   by (induction n arbitrary: c) (auto simp: continuous_intros frechet_derivative_const)
 
 lemma higher_differentiable_on_id: "higher_differentiable_on S (\<lambda>x. x) n"
-  by (cases n) (auto simp: continuous_intros frechet_derivative_id higher_differentiable_on_const)
+  by (cases n) (auto simp: frechet_derivative_works higher_differentiable_on_const)
 
 lemma higher_differentiable_on_add:
   "higher_differentiable_on S (\<lambda>x. f x + g x) n"
@@ -712,20 +709,10 @@ proof -
   have d1: "x \<in> S \<Longrightarrow> f differentiable at x" for x
     using that
     by (auto simp: numeral_2_eq_2 higher_differentiable_on.simps dest!: differentiable_on_openD)
-  show ?thesis
-    apply (simp add: numeral_2_eq_2)
-    apply (subst frechet_derivative_componentwise[OF diff])
-    apply (rule sum.cong)
-     apply simp
-    apply simp
-    apply (rule disjI2)
-    apply (rule trans)
-    using S
-     apply (rule frechet_derivative_transform_within_open_ext)
-      apply (subst frechet_derivative_componentwise)
-       apply (rule d1, assumption)
-      apply (rule refl)
-    apply (rule diff)
+  have eq: "\<And>x. x \<in> Basis \<Longrightarrow>
+         frechet_derivative
+          (\<lambda>x. \<Sum>i\<in>Basis. v \<bullet> i * frechet_derivative f (at x) i) (at a) x =
+         (\<Sum>j\<in>Basis. frechet_derivative (\<lambda>a. frechet_derivative f (at a) j) (at a) x * (v \<bullet> j))"
     apply (subst frechet_derivative_sum)
     subgoal by (auto intro!: differentiable_mult diff)
     apply (rule sum.cong)
@@ -734,6 +721,19 @@ proof -
     subgoal by simp
     subgoal by (rule diff)
     by (simp add: frechet_derivative_const)
+  show ?thesis
+    apply (simp add: numeral_2_eq_2)
+    apply (subst frechet_derivative_componentwise[OF diff])
+    apply (rule sum.cong)
+     apply simp
+    apply simp
+    apply (rule disjI2)
+    apply (rule trans)
+     apply (rule frechet_derivative_transform_within_open_ext [OF _ S frechet_derivative_componentwise])
+    apply (simp add: diff)
+       apply (rule d1, assumption)
+    apply (simp add: eq)
+    done
 qed
 
 lemma higher_differentiable_Taylor1:
