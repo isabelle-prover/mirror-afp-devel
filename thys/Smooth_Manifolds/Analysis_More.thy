@@ -310,44 +310,6 @@ lemma homeomorphism_prod:
 
 subsection \<open>Generalizations\<close>
 
-lemma univ_second_countable:
-  obtains \<B> :: "'a::second_countable_topology set set"
-  where "countable \<B>" "\<And>C. C \<in> \<B> \<Longrightarrow> open C"
-    "\<And>S. open S \<Longrightarrow> \<exists>U. U \<subseteq> \<B> \<and> S = \<Union>U"
-  by (metis ex_countable_basis topological_basis_def)
-
-proposition Lindelof:
-  fixes \<F> :: "'a::second_countable_topology set set"
-  assumes \<F>: "\<And>S. S \<in> \<F> \<Longrightarrow> open S"
-  obtains \<F>' where "\<F>' \<subseteq> \<F>" "countable \<F>'" "\<Union>\<F>' = \<Union>\<F>"
-proof -
-  obtain \<B> :: "'a set set"
-    where "countable \<B>" "\<And>C. C \<in> \<B> \<Longrightarrow> open C"
-      and \<B>: "\<And>S. open S \<Longrightarrow> \<exists>U. U \<subseteq> \<B> \<and> S = \<Union>U"
-    using univ_second_countable by auto
-  define \<D> where "\<D> \<equiv> {S. S \<in> \<B> \<and> (\<exists>U. U \<in> \<F> \<and> S \<subseteq> U)}"
-  have "countable \<D>"
-    apply (rule countable_subset [OF _ \<open>countable \<B>\<close>])
-    apply (force simp: \<D>_def)
-    done
-  have "\<And>S. \<exists>U. S \<in> \<D> \<longrightarrow> U \<in> \<F> \<and> S \<subseteq> U"
-    by (simp add: \<D>_def)
-  then obtain G where G: "\<And>S. S \<in> \<D> \<longrightarrow> G S \<in> \<F> \<and> S \<subseteq> G S"
-    by metis
-  have "\<Union>\<F> \<subseteq> \<Union>\<D>"
-    unfolding \<D>_def by (blast dest: \<F> \<B>)
-  moreover have "\<Union>\<D> \<subseteq> \<Union>\<F>"
-    using \<D>_def by blast
-  ultimately have eq1: "\<Union>\<F> = \<Union>\<D>" ..
-  have eq2: "\<Union>\<D> = \<Union> (G ` \<D>)"
-    using G eq1 by auto
-  show ?thesis
-    apply (rule_tac \<F>' = "G ` \<D>" in that)
-    using G \<open>countable \<D>\<close>  apply (auto simp: eq1 eq2)
-    done
-qed
-
-
 lemma openin_subtopology_eq_generate_topology:
   "openin (top_of_set S) x = generate_topology (insert S ((\<lambda>B. B \<inter> S) ` BB)) x"
   if open_gen: "open = generate_topology BB" and subset: "x \<subseteq> S"
@@ -400,17 +362,8 @@ proof -
       done
   next
     case (Basis s)
-    from this(1) show ?case
-      apply rule
-      subgoal
-        apply (rule exI[where x=UNIV])
-        by (auto simp: generate_topology.UNIV)
-      subgoal
-        apply clarsimp
-        subgoal for B
-          apply (rule exI[where x="B"]) by (auto simp: generate_topology.Basis)
-        done
-      done
+    then show ?case
+      using generate_topology.UNIV generate_topology.Basis by blast
   qed
   moreover
   have "\<exists>T. generate_topology BB T \<and> UNIV = T \<inter> S" if "generate_topology (insert S ((\<lambda>B. B \<inter> S) ` BB)) x"
@@ -1144,36 +1097,19 @@ lemmas frechet_derivative_worksI = frechet_derivative_works[THEN iffD1]
 
 lemma sin_differentiable_at: "(\<lambda>x. sin (f x::real)) differentiable at x within X"
   if "f differentiable at x within X"
-  by (auto intro!: differentiableI derivative_eq_intros frechet_derivative_worksI[OF that])
+  using differentiable_def has_derivative_sin that by blast
 
 lemma cos_differentiable_at: "(\<lambda>x. cos (f x::real)) differentiable at x within X"
   if "f differentiable at x within X"
-  by (auto intro!: differentiableI derivative_eq_intros frechet_derivative_worksI[OF that])
+  using differentiable_def has_derivative_cos that by blast
 
 
 subsection \<open>Frechet derivative\<close>
-
-lemma frechet_derivative_transform_within_open:
-  "frechet_derivative f (at x) = frechet_derivative g (at x)"
-  if "open X" "x \<in> X" "\<And>x. x \<in> X \<Longrightarrow> f x = g x"
-    "f differentiable at x"
-  apply (rule frechet_derivative_at)
-  apply (rule has_derivative_transform_within_open[OF _ that(1-3)])
-  unfolding frechet_derivative_works[symmetric]
-  by fact
 
 lemmas frechet_derivative_transform_within_open_ext =
   fun_cong[OF frechet_derivative_transform_within_open]
 
 lemmas frechet_derivative_at' = frechet_derivative_at[symmetric]
-
-lemma frechet_derivative_const: "frechet_derivative (\<lambda>x. c) (at a) = (\<lambda>x. 0)"
-  by (rule frechet_derivative_at')
-    (auto intro!: derivative_eq_intros frechet_derivative_worksI)
-
-lemma frechet_derivative_id: "frechet_derivative (\<lambda>x. x) (at a) = (\<lambda>x. x)"
-  by (rule frechet_derivative_at')
-    (auto intro!: derivative_eq_intros frechet_derivative_worksI)
 
 lemma frechet_derivative_plus_fun:
   "x differentiable at a \<Longrightarrow> y differentiable at a \<Longrightarrow>
@@ -1236,13 +1172,7 @@ lemmas frechet_derivative_scaleR = frechet_derivative_scaleR_fun[unfolded scaleR
 lemma frechet_derivative_compose:
   "frechet_derivative (f o g) (at x) = frechet_derivative (f) (at (g x)) o frechet_derivative g (at x)"
   if "g differentiable at x" "f differentiable at (g x)"
-  apply (rule frechet_derivative_at')
-  apply (rule diff_chain_at)
-   apply (rule frechet_derivative_worksI)
-  apply (rule that)
-  apply (rule frechet_derivative_worksI)
-  apply (rule that)
-  done
+  by (meson diff_chain_at frechet_derivative_at' frechet_derivative_works that)
 
 lemma frechet_derivative_compose_eucl:
   "frechet_derivative (f o g) (at x) =

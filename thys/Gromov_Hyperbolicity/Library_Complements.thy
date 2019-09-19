@@ -372,15 +372,6 @@ by (intro continuous_at_extension_sequentially[OF _ assms], auto)
 
 subsubsection \<open>Homeomorphisms\<close>
 
-lemma homeomorphism_cong:
-  "homeomorphism X' Y' f' g'" if "homeomorphism X Y f g"
-    "X' = X" "Y' = Y" "\<And>x. x \<in> X \<Longrightarrow> f' x = f x" "\<And>y. y \<in> Y \<Longrightarrow> g' y = g y"
-  using that by (auto simp add: homeomorphism_def)
-
-lemma homeomorphism_empty [simp]:
-  "homeomorphism {} {} f g"
-unfolding homeomorphism_def by auto
-
 text \<open>A variant around the notion of homeomorphism, which is only expressed in terms of the
 function and not of its inverse.\<close>
 
@@ -757,7 +748,7 @@ lemma continuous_within_cong:
           "eventually (\<lambda>x. f x = g x) (at y within S)"
           "f y = g y"
   shows "continuous (at y within S) g"
-using assms(1) assms(2) Lim_transform_eventually unfolding continuous_within assms(3) by auto
+  using assms continuous_within filterlim_cong by fastforce
 
 text \<open>A function which tends to infinity at infinity, on a proper set, realizes its infimum\<close>
 
@@ -793,7 +784,7 @@ qed
 
 subsubsection \<open>Measure of balls\<close>
 
-text \<open>The image of a ball by an affine map is still a ball, with explicit center and radius.\<close>
+text \<open>The image of a ball by an affine map is still a ball, with explicit center and radius. (Now unused)\<close>
 
 lemma affine_image_ball [simp]:
   "(\<lambda>y. R *\<^sub>R y + x) ` cball 0 1 = cball (x::('a::real_normed_vector)) \<bar>R\<bar>"
@@ -833,8 +824,8 @@ lemma lebesgue_measure_ball:
   assumes "R \<ge> 0"
   shows "measure lborel (cball (x::('a::euclidean_space)) R) = R^(DIM('a)) * measure lborel (cball (0::'a) 1)"
         "emeasure lborel (cball (x::('a::euclidean_space)) R) = R^(DIM('a)) * emeasure lborel (cball (0::'a) 1)"
-using measure_lebesgue_affine[of R x "cball 0 1"] emeasure_lebesgue_affine[of R x "cball 0 1"] assms
-unfolding affine_image_ball by (auto simp add: ennreal_power)
+  apply (simp add: assms content_cball)
+  by (simp add: assms emeasure_cball ennreal_mult' ennreal_power mult.commute)
 
 text \<open>We show that the unit ball has positive measure -- this is obvious, but useful. We could
 show it by arguing that it contains a box, whose measure can be computed, but instead we say
@@ -877,12 +868,7 @@ text \<open>The distance to a set is non-increasing with the set.\<close>
 lemma infdist_mono [mono_intros]:
   assumes "A \<subseteq> B" "A \<noteq> {}"
   shows "infdist x B \<le> infdist x A"
-proof -
-  have "(INF a\<in>B. dist x a) \<le> (INF a\<in>A. dist x a)"
-    by (rule cINF_superset_mono[OF assms(2) _ assms(1)], auto)
-  then show ?thesis
-    unfolding infdist_def using assms by auto
-qed
+  by (simp add: assms infdist_eq_setdist setdist_subset_right)
 
 text \<open>If a set is proper, then the infimum of the distances to this set is attained.\<close>
 
@@ -917,10 +903,6 @@ text \<open>The next lemma is missing in the library, contrary to its cousin \ve
 
 text \<open>The infimum of the distance to a singleton set is simply the distance to the unique
 member of the set.\<close>
-
-lemma infdist_point [simp]:
-  "infdist x {y} = dist x y"
-unfolding infdist_def by (metis cInf_singleton image_empty image_insert insert_not_empty)
 
 text \<open>The closest point projection of $x$ on $A$. It is not unique, so we choose one point realizing the minimal
 distance. And if there is no such point, then we use $x$, to make some statements true without any
@@ -1021,10 +1003,6 @@ lemma ereal_of_real_of_ereal_iff [simp]:
   "x = ereal(real_of_ereal x) \<longleftrightarrow> x \<noteq> \<infinity> \<and> x \<noteq> - \<infinity>"
 by (metis MInfty_neq_ereal(1) PInfty_neq_ereal(2) real_of_ereal.elims)+
 
-lemma inverse_eq_infinity_iff_eq_zero [simp]:
-  "1/(x::ereal) = \<infinity> \<longleftrightarrow> x = 0"
-by (simp add: divide_ereal_def)
-
 declare ereal_inverse_eq_0 [simp]
 declare ereal_0_gt_inverse [simp]
 declare ereal_inverse_le_0_iff [simp]
@@ -1055,41 +1033,6 @@ unfolding divide_ereal_def by auto
 lemma ereal_divide_neg_iff [simp]:
   "0 > x/(y::ereal) \<longleftrightarrow> (y \<noteq> \<infinity> \<and> y \<noteq> -\<infinity>) \<and> ((x > 0 \<and> y < 0) \<or> (x < 0 \<and> y > 0) \<or> (y = 0 \<and> x < 0))"
 unfolding divide_ereal_def by auto
-
-lemma ereal_distrib_left:
-  fixes a b c :: ereal
-  assumes "a \<noteq> \<infinity> \<or> b \<noteq> -\<infinity>"
-    and "a \<noteq> -\<infinity> \<or> b \<noteq> \<infinity>"
-    and "\<bar>c\<bar> \<noteq> \<infinity>"
-  shows "c * (a + b) = c * a + c * b"
-using assms
-by (cases rule: ereal3_cases[of a b c]) (simp_all add: field_simps)
-
-lemma ereal_distrib_minus_left:
-  fixes a b c :: ereal
-  assumes "a \<noteq> \<infinity> \<or> b \<noteq> \<infinity>"
-    and "a \<noteq> -\<infinity> \<or> b \<noteq> -\<infinity>"
-    and "\<bar>c\<bar> \<noteq> \<infinity>"
-  shows "c * (a - b) = c * a - c * b"
-using assms
-by (cases rule: ereal3_cases[of a b c]) (simp_all add: field_simps)
-
-lemma ereal_distrib_minus_right:
-  fixes a b c :: ereal
-  assumes "a \<noteq> \<infinity> \<or> b \<noteq> \<infinity>"
-    and "a \<noteq> -\<infinity> \<or> b \<noteq> -\<infinity>"
-    and "\<bar>c\<bar> \<noteq> \<infinity>"
-  shows "(a - b) * c = a * c - b * c"
-using assms
-by (cases rule: ereal3_cases[of a b c]) (simp_all add: field_simps)
-
-text \<open>The next one is missing close to its friend \verb+Liminf_ereal_mult_right+.\<close>
-
-lemma Liminf_ereal_mult_left:
-  assumes "F \<noteq> bot" "(c::real) \<ge> 0"
-    shows "Liminf F (\<lambda>n. ereal c * f n) = ereal c * Liminf F f"
-using Liminf_ereal_mult_right[OF assms] by (subst (1 2) mult.commute)
-
 
 text \<open>More additions to \verb+mono_intros+.\<close>
 
@@ -1189,20 +1132,6 @@ unfolding ennreal_1[symmetric] by (intro tendsto_intros assms)
 
 subsection \<open>Miscellaneous\<close>
 
-declare lim_1_over_n [tendsto_intros]
-declare lim_ln_over_n [tendsto_intros]
-
-lemma lim_log_over_n [tendsto_intros]:
-  "(\<lambda>n. log k n/n) \<longlonglongrightarrow> 0"
-proof -
-  have *: "log k n/n = (1/ln k) * (ln n / n)" for n
-    unfolding log_def by auto
-  have "(\<lambda>n. (1/ln k) * (ln n / n)) \<longlonglongrightarrow> (1/ln k) * 0"
-    by (intro tendsto_intros)
-  then show ?thesis
-    unfolding * by auto
-qed
-
 lemma lim_ceiling_over_n [tendsto_intros]:
   assumes "(\<lambda>n. u n/n) \<longlonglongrightarrow> l"
   shows "(\<lambda>n. ceiling(u n)/n) \<longlonglongrightarrow> l"
@@ -1215,11 +1144,6 @@ proof (rule tendsto_sandwich[of "\<lambda>n. u n/n" _ _ "\<lambda>n. u n/n + 1/n
     by (intro tendsto_intros assms)
   then show "(\<lambda>n. u n / real n + 1 / real n) \<longlonglongrightarrow> l" by auto
 qed (simp add: assms)
-
-lemma power4_eq_xxxx:
-  fixes x::"'a::monoid_mult"
-  shows "x^4 = x * x * x * x"
-by (simp add: mult.assoc power_numeral_even)
 
 subsubsection \<open>Liminfs and Limsups\<close>
 
@@ -1404,7 +1328,7 @@ qed
 
 subsection \<open>Manipulating finite ordered sets\<close>
 
-text \<open>We will need below to contruct finite sets of real numbers with good properties expressed
+text \<open>We will need below to construct finite sets of real numbers with good properties expressed
 in terms of consecutive elements of the set. We introduce tools to manipulate such sets,
 expressing in particular the next and the previous element of the set and controlling how they
 evolve when one inserts a new element in the set. It works in fact in any linorder, and could
