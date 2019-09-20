@@ -983,14 +983,30 @@ lemma FG_advice_prop_congruent:
   "\<phi> \<sim>\<^sub>P \<psi> \<Longrightarrow> \<phi>[X]\<^sub>\<mu> \<sim>\<^sub>P \<psi>[X]\<^sub>\<mu>"
   by (metis FG_advice_subst subst_respects_ltl_prop_entailment)+
 
+
+subsection \<open>GF-advice with Equivalence Relations\<close>
+
 locale GF_advice_congruent = ltl_equivalence +
+  fixes
+    normalise :: "'a ltln \<Rightarrow> 'a ltln"
   assumes
-    GF_advice_congruent: "\<phi> \<sim> \<psi> \<Longrightarrow> \<phi>[X]\<^sub>\<nu> \<sim> \<psi>[X]\<^sub>\<nu>"
+    normalise_eq: "\<phi> \<sim> normalise \<phi>"
+  assumes
+    normalise_monotonic: "w \<Turnstile>\<^sub>n \<phi>[X]\<^sub>\<nu> \<Longrightarrow> w \<Turnstile>\<^sub>n (normalise \<phi>)[X]\<^sub>\<nu>"
+  assumes
+    normalise_eventually_equivalent:
+      "w \<Turnstile>\<^sub>n (normalise \<phi>)[X]\<^sub>\<nu> \<Longrightarrow> (\<exists>i. suffix i w \<Turnstile>\<^sub>n (af \<phi> (prefix i w))[X]\<^sub>\<nu>)"
+  assumes
+    GF_advice_congruent: "\<phi> \<sim> \<psi> \<Longrightarrow> (normalise \<phi>)[X]\<^sub>\<nu> \<sim> (normalise \<psi>)[X]\<^sub>\<nu>"
 begin
+
+lemma normalise_language_equivalent[simp]:
+  "w \<Turnstile>\<^sub>n normalise \<phi> \<longleftrightarrow> w \<Turnstile>\<^sub>n \<phi>"
+  using normalise_eq ltl_lang_equiv_def eq_implies_lang by blast
 
 end
 
-interpretation prop_GF_advice_compatible: GF_advice_congruent "(\<sim>\<^sub>P)"
-  by unfold_locales (simp add: GF_advice_prop_congruent(2))
+interpretation prop_GF_advice_compatible: GF_advice_congruent "(\<sim>\<^sub>P)" "id"
+  by unfold_locales (simp add: GF_advice_af GF_advice_prop_congruent(2))+
 
 end
