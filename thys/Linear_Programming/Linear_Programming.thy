@@ -8,7 +8,7 @@ begin
 
 section \<open> Abstract LPs \<close>
 
-text \<open> A b c, where A \<le> b are the constraints and c is the objective function \<close>
+(* A b c, where A leq b are the constraints and c is the objective function *)
 
 text \<open> Primal Problem \<close>
 definition "sat_primal A b = { x. [A *\<^sub>v x]\<le>b }"
@@ -331,9 +331,8 @@ lemma optimize_no_cond_sol_sat:
   using max_lp_in_sat_primal[OF optimize_no_cond_correct[OF assms]] by auto
   
 
-end \<comment> \<open> end of \<open> rat_LP \<close> \<close>
+end (* end of \<open> rat_LP \<close> *)
 
-term "simplex"
 
 fun maximize where 
   "maximize A b c = (if dim_vec b = dim_row A \<and> dim_vec c = dim_col A then
@@ -384,7 +383,7 @@ derive (rbt) set_impl atom QDelta
 
 
 (*export_code maximize mat_of_cols_list mat_of_rows_list mat_of_cols vec_of_list quotient_of Inr Inl Some None list_of_vec nat
-Rat.Fract int_of_integer in Haskell module_name LP \<comment> \<open> file "/home/julian/coding/ForGET/LPBenchmarks/HaskellLP/src" \<close>
+Rat.Fract int_of_integer in Haskell module_name LP  file "/home/julian/coding/ForGET/LPBenchmarks/HaskellLP/src" 
 *)
 (*
 export_code  maximize mat_of_cols_list mat_of_rows_list mat_of_cols vec_of_list quotient_of Inr Inl Some None list_of_vec nat
@@ -392,6 +391,7 @@ Rat.Fract int_of_integer in Scala
 *)
 
 
+(*
 section \<open> Testing \<close>
 lemma "(let A = mat_of_rows 3 (map vec_of_list [[1, 12, 2], [1, 5, 9], [-1,0,0], [0,-1,0],[0,0,-1]]) in
        (let b = vec_of_list [10000, 8539,0,0,0] in
@@ -404,6 +404,7 @@ lemma "(let A = mat_of_cols 4 (map vec_of_list [[2::rat, -1, -1, 1/2], [1, 2, -1
        (let c = vec_of_list [7, 1::rat] in
        maximize A b c))) = Some (Inr (vec_of_list [2::rat, 1]))"
   by eval
+*)
 
 (*
 value "(let A = mat_of_cols_list 4 [[-1::rat, -1, -0, 1], [1, -1, -1, -2]] in
@@ -415,19 +416,19 @@ value "(let A = mat_of_cols 4 (map vec_of_list [[2::rat, 2, -1, 0], [3, 1, 0, -1
        (let b = vec_of_list [1500::rat,1000,0,0] in
        (let c = vec_of_list [50, 40::rat] in
        maximize A b c)))"
-  \<comment> \<open> Sol should be 375, 250\<close>
+ (*  Sol should be 375, 250 *)
 
 value "(let A = mat_of_cols 2 (map vec_of_list [[-1::rat, 1], [-1,-1]]) in
        (let b = vec_of_list [2::rat, 2] in
        (let c = vec_of_list [0, 1::rat] in
        maximize A b c)))"
-  \<comment> \<open> Sol should be 375, 250\<close>
+  (* Sol should be 375, 250 *)
 
 value "(let A = mat_of_rows 2 (map vec_of_list [[2::rat,3],[2, 1], [-1,0],[0,-1]]) in
        (let b = vec_of_list [1500::rat,1000,0,0] in
        (let c = vec_of_list [50, 40::rat] in
        maximize A b c)))"
-  \<comment> \<open> Sol should be 375, 250\<close>
+  (* Sol should be 375, 250 *)
 *)
 
 

@@ -7,10 +7,11 @@ theory LP_Preliminaries
     "HOL-Library.Mapping"
 begin
 
-text \<open> 
+(*
         Component wise greater equal constraints for vector b starting at index 
             \<open> [x\<^sub>i\<^sub>n\<^sub>d\<^sub>e\<^sub>x, x\<^sub>i\<^sub>n\<^sub>d\<^sub>e\<^sub>x\<^sub>+\<^sub>1,\<dots>,x\<^sub>i\<^sub>n\<^sub>d\<^sub>e\<^sub>x\<^sub>+\<^sub>n] \<ge> [b\<^sub>0, b\<^sub>1,\<dots>,b\<^sub>n] \<close> 
-     \<close>
+*)
+
 fun vars_from_index_geq_vec where
   "vars_from_index_geq_vec index b = [GEQ (lp_monom 1 (i+index)) (b$i). i \<leftarrow> [0..<dim_vec b]]"
 
@@ -38,10 +39,12 @@ proof -
 qed
 
 
-text \<open> Matrix A less equal vector b (A \<le> b):
+(* Matrix A less equal vector b (A \<le> b):
            a1 b1 c1 d1 \<bullet> X \<le> b_1,
            a2 b2 c2 d2 \<bullet> X \<le> b_2,
-           ...  \<close>
+           ...
+*)
+
 fun mat_x_leq_vec where
     "mat_x_leq_vec A b = [LEQ (matrix_to_lpolies A!i) (b$i) . i <- [0..<dim_vec b]]"
 
@@ -59,10 +62,11 @@ proof -
 qed
 
 
-text \<open> Matrix A less equal vector b (A = b):
+(* Matrix A less equal vector b (A = b):
            a1 b1 c1 d1 \<bullet> X = b_1,
            a2 b2 c2 d2 \<bullet> X = b_2,
-           ...  \<close>
+           ... 
+*)
 fun x_mat_eq_vec where
     "x_mat_eq_vec b A = [EQ (matrix_to_lpolies A!i) (b$i) . i <- [0..<dim_vec b]]"
 
@@ -82,9 +86,10 @@ qed
 
 section \<open> Get different matrices into same space, without interference \<close>
 
-text \<open> Given matrix A and B create: 
+(* Given matrix A and B create: 
                A 0
-               0 B   \<close>
+               0 B  
+*)
 fun two_block_non_interfering where
   "two_block_non_interfering A B = (let z1 = 0\<^sub>m (dim_row A) (dim_col B);
                                         z2 = 0\<^sub>m (dim_row B) (dim_col A) in
@@ -209,8 +214,8 @@ proof -
 qed
 
 
-text \<open> A \<le> b
-       A = c \<close>
+(* A \<le> b   
+   A = c *)
 fun mat_leqb_eqc where
     "mat_leqb_eqc A b c = (let lst = matrix_to_lpolies (two_block_non_interfering A A\<^sup>T) in
                          [LEQ (lst!i) (b$i) . i <- [0..<dim_vec b]] @
@@ -334,8 +339,8 @@ lemma index_geq_n_simplex:
   using assms by simp
 
 
-text \<open> In the variables x_i to x_i+(length v) we synthesise a vector that is pointwise
-       greater than v \<close>
+(* In the variables x_i to x_i+(length v) we synthesise a vector that is pointwise
+       greater than v *)
 fun from_index_geq0_vector where
   "from_index_geq0_vector i v = [GEQ (lp_monom 1 (i+j)) (v$j) . j <-[0..<dim_vec v]]"
 
@@ -359,7 +364,7 @@ lemma from_index_geq0_vector_simplex2:
       le_add_diff_inverse less_diff_conv2)
 
 
-text \<open> [c1, ... cm, 01, ... 0n] * X \<ge> [01, ... 0m, b1,...,bn] * X \<close>
+(* [c1, ... cm, 01, ... 0n] * X \<ge> [01, ... 0m, b1,...,bn] * X *)
 fun x_times_c_geq_y_times_b where
   "x_times_c_geq_y_times_b c b = GEQPP (vec_to_lpoly (c @\<^sub>v 0\<^sub>v (dim_vec b)))
                                        (vec_to_lpoly (0\<^sub>v (dim_vec c) @\<^sub>v b))"
@@ -371,9 +376,9 @@ lemma x_times_c_geq_y_times_b_correct:
  using assms simplex(3) by fastforce
 
 
-text \<open> Splitting an assignment into two vectors \<close>
+(* Splitting an assignment into two vectors *)
 
-text \<open> The first [0...(i-1)] elements and [i...j] elements \<close>
+(* The first [0...(i-1)] elements and [i...j] elements *)
 definition split_i_j_x where
   "split_i_j_x i j x = (vec i \<langle>x\<rangle>, vec (j - i) (\<lambda>y. \<langle>x\<rangle> (y+i)))"
 
@@ -817,8 +822,6 @@ proof
     using mat_times_vec_leqI[of A b x, OF assms(1) *[symmetric]] by auto
 qed
 
-term "valuate"
-
 lemma completeness_mat_x_leq:
   assumes "\<exists>x. [A *\<^sub>v x]\<le>b"
   shows "\<exists>X. simplex (mat_x_leq_vec A b) = Sat X"
@@ -1100,7 +1103,7 @@ lemma sound_and_compltete_mat_leqb_eqc [iff]:
 
 section \<open> Translate Inequalities to Matrix Form \<close>
 
-text \<open> We (obviously) cannot use strict inequalities hence we use the option type \<close>
+(* We (obviously) cannot use strict inequalities hence we use the option type *)
 
 fun nonstrict_constr where 
   "nonstrict_constr (LEQ p r) = True" |

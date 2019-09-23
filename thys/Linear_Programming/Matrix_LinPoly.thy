@@ -42,7 +42,7 @@ section \<open> Translations of Jordan Normal Forms Matrix Library to Simplex po
 
 subsection \<open> Vectors \<close>
 
-text \<open> Translate \<open> rat \<close> list to linear polynomial with same coefficients \<close>
+(* Translate rat list to linear polynomial with same coefficients *)
 
 definition list_to_lpoly where
     "list_to_lpoly cs = sum_list (map2 (\<lambda> i c. lp_monom c i) [0..<length cs] cs)" 
@@ -119,7 +119,7 @@ text \<open> Transform linear polynomials to rational vectors \<close>
 
 fun dim_poly where
   "dim_poly p = (if (vars p) = {} then 0 else Max (vars p)+1)" 
-\<comment> \<open> 0, 0, 0, 3, 0, 0, \<dots> has dimension 4 , consistent with \<open> dim_vec \<close> \<close>
+(* 0, 0, 0, 3, 0, 0, \<dots> has dimension 4 , consistent with  dim vec  *)
 
 definition max_dim_poly_list where
   "max_dim_poly_list lst = Max {Max (vars p) |p. p \<in> set lst}"
@@ -217,7 +217,7 @@ proof -
 qed
 
 lemma addition_over_lin_poly_to_vec:
-  fixes x y :: "linear_poly"
+  fixes x y
   assumes "a < dim_poly x"
   assumes "dim_poly x = dim_poly y"
   shows  "(lpoly_to_vec x + lpoly_to_vec y) $ a = coeff (x + y) a"
@@ -399,7 +399,7 @@ qed
 
 section \<open> Matrices \<close>
 
-text \<open> From \<open> mat \<close> to \<open> linear_poly list \<close> \<close>
+(* \<open> From \<open> mat \<close> to \<open> linear_poly list \<close>  *)
 
 fun matrix_to_lpolies where
   "matrix_to_lpolies A = map vec_to_lpoly (rows A)" 
@@ -433,7 +433,7 @@ lemma matrix_to_lpolies_coeff_access:
   by (metis assms(1) assms(2) index_row(1) index_row(2) vec_to_lin_poly_coeff_access)
 
 
-text \<open> From \<open> linear_poly list\<close> to matrix \<close>
+text \<open> From linear polynomial list to matrix \<close>
 
 definition lin_polies_to_mat where
     "lin_polies_to_mat lst = mat (length lst) (max_dim_poly_list lst) (\<lambda>(x,y).coeff (lst!x) y)"
@@ -446,7 +446,7 @@ lemma lin_polies_to_rat_mat_coeff_index:
 
 
 lemma vec_to_lpoly_valuate_equiv_dot_prod:
-  assumes "dim_vec y = dim_vec x" \<comment> \<open> Can be \<ge> \<close>
+  assumes "dim_vec y = dim_vec x"  (* Can be \<ge> *)
   shows "(vec_to_lpoly y) \<lbrace> ($)x \<rbrace> = y \<bullet> x"
 proof -
   let ?p = "vec_to_lpoly y"

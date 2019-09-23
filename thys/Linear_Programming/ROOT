@@ -6,12 +6,7 @@ sessions
     "Jordan_Normal_Form"
     Farkas
     Linear_Inequalities
-  theories [document = false]
-    (*
-    Simplex.Simplex_Incremental
-    Jordan_Normal_Form.Matrix_Impl
-    Farkas.Farkas
-    *)
+  theories
     "More_Jordan_Normal_Forms"
     "Matrix_LinPoly"
     "LP_Preliminaries"
