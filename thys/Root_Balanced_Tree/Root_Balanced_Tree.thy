@@ -1806,8 +1806,8 @@ next
     have "t_delete2 x (t, n, dl) + \<Phi>\<^sub>d (delete2 x (t,n,dl)) - \<Phi>\<^sub>d (t,n,dl) =
       t_delete2 x (t, n, dl) - \<Phi> t - 4*dl/cd"
       using False Some
-      by(simp add: delete2_def2 t_delete2_def2 \<Phi>_wbalanced bal_tree)
-    also have "\<dots> = t_del x t + 4 * size t - \<Phi> t - 4*dl/cd"
+      by(simp add: delete2_def2 t_delete2_def2 \<Phi>_wbalanced bal_tree assms size_del)
+    also have "\<dots> = t_del x t + 4 * size t - \<Phi> t - 4*dl/cd"       
       using False assms Some by(simp add: t_delete2_def2 t_bal_tree size_del size1_size)
     also have "\<dots> \<le> (6*e+1)*height t + 4*(size t - dl/cd + 1)"
       using amor_del_Some[OF Some] \<Phi>_nn[of t] \<Phi>_nn[of t']
