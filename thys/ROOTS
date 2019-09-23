@@ -9,6 +9,7 @@ Abstract-Hoare-Logics
 Abstract-Rewriting
 Abstract_Completeness
 Abstract_Soundness
+Adaptive_State_Counting
 Affine_Arithmetic
 Aggregation_Algebras
 Akra_Bazzi
@@ -42,6 +43,7 @@ Budan_Fourier
 Buffons_Needle
 Buildings
 BytecodeLogicJmlTypes
+C2KA_DistributedSystems
 CAVA_Automata
 CAVA_LTL_Modelchecker
 CCS
@@ -135,6 +137,7 @@ FFT
 FLP
 FOL-Fitting
 FOL_Harrison
+FOL_Seq_Calc1
 Falling_Factorial_Sum
 FeatherweightJava
 Featherweight_OCL
@@ -153,6 +156,7 @@ Flyspeck-Tame
 FocusStreamsCaseStudies
 Formal_SSA
 Formula_Derivatives
+Fourier
 Free-Boolean-Algebra
 Free-Groups
 FunWithFunctions
@@ -167,6 +171,7 @@ Gauss_Jordan
 GenClock
 General-Triangle
 Generic_Deriving
+Generic_Join
 GewirthPGCProof
 Girth_Chromatic
 GoedelGod
@@ -190,9 +195,11 @@ Hoare_Time
 HotelKeyCards
 Huffman
 Hybrid_Multi_Lane_Spatial_Logic
+Hybrid_Systems_VCs
 HyperCTL
 IEEE_Floating_Point
 IMAP-CRDT
+IMO2019
 IMP2
 IMP2_Binary_Heap
 IP_Addresses
@@ -208,6 +215,7 @@ Integration
 Iptables_Semantics
 Irrationality_J_Hancl
 Isabelle_Meta_Model
+Jacobson_Basic_Algebra
 Jinja
 JinjaThreads
 JiveDataStoreModel
@@ -237,6 +245,7 @@ LambdaMu
 Lambda_Free_KBOs
 Lambda_Free_RPOs
 Landau_Symbols
+Laplace_Transform
 Latin_Square
 LatticeProperties
 Lambda_Free_EPO
@@ -423,6 +432,7 @@ Splay_Tree
 Sqrt_Babylonian
 Stable_Matching
 Statecharts
+Stellar_Quorums
 Stern_Brocot
 Stewart_Apollonius
 Stirling_Formula
@@ -442,6 +452,8 @@ SumSquares
 SuperCalc
 Surprise_Paradox
 Symmetric_Polynomials
+Szpilrajn
+TESL_Language
 TLA
 Tail_Recursive_Functions
 Tarskis_Geometry

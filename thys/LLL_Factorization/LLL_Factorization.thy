@@ -1314,6 +1314,15 @@ lift_definition one_lattice_LLL_factorization :: int_poly_factorization_algorith
 lift_definition many_lattice_LLL_factorization :: int_poly_factorization_algorithm
   is LLL_many_factorization using LLL_many_factorization by auto
 
+lemma LLL_factorization_primitive: assumes "LLL_factorization f = fs"
+  "square_free f" 
+  "0 < degree f" 
+  "primitive f" 
+shows "f = prod_list fs \<and> (\<forall>fi\<in>set fs. irreducible fi \<and> 0 < degree fi \<and> primitive fi)" 
+  using assms(1)
+  by (intro int_poly_factorization_algorithm_irreducible[of one_lattice_LLL_factorization, 
+      OF _ assms(2-)], transfer, auto)
+ 
 thm factorize_int_poly[of one_lattice_LLL_factorization]
 thm factorize_int_poly[of many_lattice_LLL_factorization]
 end

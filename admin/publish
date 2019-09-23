@@ -157,11 +157,11 @@ else
 fi
 
 if [ "$RESPONSE" == "y" ]; then
-    if [ "$TARS" != "" ]; then
-        echo
-        echo "Pushing $EXPORT to [$FILES]"
-        scp $TARS/$EXPORT.tar.gz $FILES
-    fi
+#    if [ "$TARS" != "" ]; then
+#        echo
+#        echo "Pushing $EXPORT to [$FILES]"
+#        scp $TARS/$EXPORT.tar.gz $FILES
+#    fi
     echo
     echo "Publishing to [$DEST]"
     chmod -R g-w web

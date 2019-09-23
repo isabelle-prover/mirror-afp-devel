@@ -9,7 +9,213 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>08 Jul 2019 00:00:00 +0000</pubDate>
+    <pubDate>16 Sep 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Formalization of Multiway-Join Algorithms</title>
+              <link>https://www.isa-afp.org/entries/Generic_Join.html</link>
+       <guid>https://www.isa-afp.org/entries/Generic_Join.html</guid>
+       <dc:creator> Thibault Dardinier       </dc:creator>
+       <pubDate>16 Sep 2019 00:00:00 +0000</pubDate>
+       <description>
+Worst-case optimal multiway-join algorithms are recent seminal
+achievement of the database community. These algorithms compute the
+natural join of multiple relational databases and improve in the worst
+case over traditional query plan optimizations of nested binary joins.
+In 2014, &lt;a
+href=&#34;https://doi.org/10.1145/2590989.2590991&#34;&gt;Ngo, Ré,
+and Rudra&lt;/a&gt; gave a unified presentation of different multi-way
+join algorithms. We formalized and proved correct their &#34;Generic
+Join&#34; algorithm and extended it to support negative joins.</description>
+    </item>
+    <item>
+       <title>Verification Components for Hybrid Systems</title>
+              <link>https://www.isa-afp.org/entries/Hybrid_Systems_VCs.html</link>
+       <guid>https://www.isa-afp.org/entries/Hybrid_Systems_VCs.html</guid>
+       <dc:creator> Jonathan Julian Huerta y Munive       </dc:creator>
+       <pubDate>10 Sep 2019 00:00:00 +0000</pubDate>
+       <description>
+These components formalise a semantic framework for the deductive
+verification of hybrid systems. They support reasoning about
+continuous evolutions of hybrid programs in the style of differential
+dynamics logic. Vector fields or flows model these evolutions, and
+their verification is done with invariants for the former or orbits
+for the latter. Laws of modal Kleene algebra or categorical predicate
+transformers implement the verification condition generation. Examples
+show the approach at work.</description>
+    </item>
+    <item>
+       <title>Fourier Series</title>
+              <link>https://www.isa-afp.org/entries/Fourier.html</link>
+       <guid>https://www.isa-afp.org/entries/Fourier.html</guid>
+       <dc:creator> Lawrence C Paulson       </dc:creator>
+       <pubDate>06 Sep 2019 00:00:00 +0000</pubDate>
+       <description>
+This development formalises the square integrable functions over the
+reals and the basics of Fourier series. It culminates with a proof
+that every well-behaved periodic function can be approximated by a
+Fourier series. The material is ported from HOL Light:
+https://github.com/jrh13/hol-light/blob/master/100/fourier.ml</description>
+    </item>
+    <item>
+       <title>A Case Study in Basic Algebra</title>
+              <link>https://www.isa-afp.org/entries/Jacobson_Basic_Algebra.html</link>
+       <guid>https://www.isa-afp.org/entries/Jacobson_Basic_Algebra.html</guid>
+       <dc:creator> Clemens Ballarin       </dc:creator>
+       <pubDate>30 Aug 2019 00:00:00 +0000</pubDate>
+       <description>
+The focus of this case study is re-use in abstract algebra.  It
+contains locale-based formalisations of selected parts of set, group
+and ring theory from Jacobson&#39;s &lt;i&gt;Basic Algebra&lt;/i&gt;
+leading to the respective fundamental homomorphism theorems.  The
+study is not intended as a library base for abstract algebra.  It
+rather explores an approach towards abstract algebra in Isabelle.</description>
+    </item>
+    <item>
+       <title>Formalisation of an Adaptive State Counting Algorithm</title>
+              <link>https://www.isa-afp.org/entries/Adaptive_State_Counting.html</link>
+       <guid>https://www.isa-afp.org/entries/Adaptive_State_Counting.html</guid>
+       <dc:creator> Robert Sachtleben       </dc:creator>
+       <pubDate>16 Aug 2019 00:00:00 +0000</pubDate>
+       <description>
+This entry provides a formalisation of a refinement of an adaptive
+state counting algorithm, used to test for reduction between finite
+state machines. The algorithm has been originally presented by Hierons
+in the paper &lt;a
+href=&#34;https://doi.org/10.1109/TC.2004.85&#34;&gt;Testing from a
+Non-Deterministic Finite State Machine Using Adaptive State
+Counting&lt;/a&gt;.  Definitions for finite state machines and
+adaptive test cases are given and many useful theorems are derived
+from these. The algorithm is formalised using mutually recursive
+functions, for which it is proven that the generated test suite is
+sufficient to test for reduction against finite state machines of a
+certain fault domain. Additionally, the algorithm is specified in a
+simple WHILE-language and its correctness is shown using Hoare-logic.</description>
+    </item>
+    <item>
+       <title>Laplace Transform</title>
+              <link>https://www.isa-afp.org/entries/Laplace_Transform.html</link>
+       <guid>https://www.isa-afp.org/entries/Laplace_Transform.html</guid>
+       <dc:creator> Fabian Immler       </dc:creator>
+       <pubDate>14 Aug 2019 00:00:00 +0000</pubDate>
+       <description>
+This entry formalizes the Laplace transform and concrete Laplace
+transforms for arithmetic functions, frequency shift, integration and
+(higher) differentiation in the time domain. It proves Lerch&#39;s
+lemma and uniqueness of the Laplace transform for continuous
+functions. In order to formalize the foundational assumptions, this
+entry contains a formalization of piecewise continuous functions and
+functions of exponential order.</description>
+    </item>
+    <item>
+       <title>Communicating Concurrent Kleene Algebra for Distributed Systems Specification</title>
+              <link>https://www.isa-afp.org/entries/C2KA_DistributedSystems.html</link>
+       <guid>https://www.isa-afp.org/entries/C2KA_DistributedSystems.html</guid>
+       <dc:creator> Maxime Buyse, Jason Jaskolka       </dc:creator>
+       <pubDate>06 Aug 2019 00:00:00 +0000</pubDate>
+       <description>
+Communicating Concurrent Kleene Algebra (C²KA) is a mathematical
+framework for capturing the communicating and concurrent behaviour of
+agents in distributed systems. It extends Hoare et al.&#39;s
+Concurrent Kleene Algebra (CKA) with communication actions through the
+notions of stimuli and shared environments. C²KA has applications in
+studying system-level properties of distributed systems such as
+safety, security, and reliability. In this work, we formalize results
+about C²KA and its application for distributed systems specification.
+We first formalize the stimulus structure and behaviour structure
+(CKA). Next, we combine them to formalize C²KA and its properties.
+Then, we formalize notions and properties related to the topology of
+distributed systems and the potential for communication via stimuli
+and via shared environments of agents, all within the algebraic
+setting of C²KA.</description>
+    </item>
+    <item>
+       <title>Selected Problems from the International Mathematical Olympiad 2019</title>
+              <link>https://www.isa-afp.org/entries/IMO2019.html</link>
+       <guid>https://www.isa-afp.org/entries/IMO2019.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>05 Aug 2019 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This entry contains formalisations of the answers to three of
+the six problem of the International Mathematical Olympiad 2019,
+namely Q1, Q4, and Q5.&lt;/p&gt; &lt;p&gt;The reason why these
+problems were chosen is that they are particularly amenable to
+formalisation: they can be solved with minimal use of libraries. The
+remaining three concern geometry and graph theory, which, in the
+author&#39;s opinion, are more difficult to formalise resp. require a
+more complex library.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>Stellar Quorum Systems</title>
+              <link>https://www.isa-afp.org/entries/Stellar_Quorums.html</link>
+       <guid>https://www.isa-afp.org/entries/Stellar_Quorums.html</guid>
+       <dc:creator> Giuliano Losa       </dc:creator>
+       <pubDate>01 Aug 2019 00:00:00 +0000</pubDate>
+       <description>
+We formalize the static properties of personal Byzantine quorum
+systems (PBQSs) and Stellar quorum systems, as described in the paper
+``Stellar Consensus by Reduction&#39;&#39; (to appear at DISC 2019).</description>
+    </item>
+    <item>
+       <title>A Formal Development of a Polychronous Polytimed Coordination Language</title>
+              <link>https://www.isa-afp.org/entries/TESL_Language.html</link>
+       <guid>https://www.isa-afp.org/entries/TESL_Language.html</guid>
+       <dc:creator> Hai Nguyen Van, Frédéric Boulanger, Burkhart Wolff       </dc:creator>
+       <pubDate>30 Jul 2019 00:00:00 +0000</pubDate>
+       <description>
+The design of complex systems involves different formalisms for
+modeling their different parts or aspects. The global model of a
+system may therefore consist of a coordination of concurrent
+sub-models that use different paradigms.  We develop here a theory for
+a language used to specify the timed coordination of such
+heterogeneous subsystems by addressing the following issues:
+&lt;ul&gt;&lt;li&gt;the
+behavior of the sub-systems is observed only at a series of discrete
+instants,&lt;/li&gt;&lt;li&gt;events may occur in different sub-systems at unrelated
+times, leading to polychronous systems, which do not necessarily have
+a common base clock,&lt;/li&gt;&lt;li&gt;coordination between subsystems involves
+causality, so the occurrence of an event may enforce the occurrence of
+other events, possibly after a certain duration has elapsed or an
+event has occurred a given number of times,&lt;/li&gt;&lt;li&gt;the domain of time
+(discrete, rational, continuous...) may be different in the
+subsystems, leading to polytimed systems,&lt;/li&gt;&lt;li&gt;the time frames of
+different sub-systems may be related (for instance, time in a GPS
+satellite and in a GPS receiver on Earth are related although they are
+not the same).&lt;/li&gt;&lt;/ul&gt;
+Firstly, a denotational semantics of the language is
+defined. Then, in order to be able to incrementally check the behavior
+of systems, an operational semantics is given, with proofs of
+progress, soundness and completeness with regard to the denotational
+semantics. These proofs are made according to a setup that can scale
+up when new operators are added to the language. In order for
+specifications to be composed in a clean way, the language should be
+invariant by stuttering (i.e., adding observation instants at which
+nothing happens). The proof of this invariance is also given.</description>
+    </item>
+    <item>
+       <title>Szpilrajn Extension Theorem</title>
+              <link>https://www.isa-afp.org/entries/Szpilrajn.html</link>
+       <guid>https://www.isa-afp.org/entries/Szpilrajn.html</guid>
+       <dc:creator> Peter Zeller       </dc:creator>
+       <pubDate>27 Jul 2019 00:00:00 +0000</pubDate>
+       <description>
+We formalize the Szpilrajn extension theorem, also known as
+order-extension principal: Every strict partial order can be extended
+to a strict linear order.</description>
+    </item>
+    <item>
+       <title>A Sequent Calculus for First-Order Logic</title>
+              <link>https://www.isa-afp.org/entries/FOL_Seq_Calc1.html</link>
+       <guid>https://www.isa-afp.org/entries/FOL_Seq_Calc1.html</guid>
+       <dc:creator> Andreas Halkjær From       </dc:creator>
+       <pubDate>18 Jul 2019 00:00:00 +0000</pubDate>
+       <description>
+This work formalizes soundness and completeness of a one-sided sequent
+calculus for first-order logic. The completeness is shown via a
+translation from a complete semantic tableau calculus, the proof of
+which is based on the First-Order Logic According to Fitting theory.
+The calculi and proof techniques are taken from Ben-Ari&#39;s
+Mathematical Logic for Computer Science.</description>
+    </item>
     <item>
        <title>A Verified Code Generator from Isabelle/HOL to CakeML</title>
               <link>https://www.isa-afp.org/entries/CakeML_Codegen.html</link>
@@ -344,256 +550,6 @@ quantum programs. Then, we write down the rules of quantum Hoare logic
 for partial correctness, and show the soundness and completeness of
 the resulting proof system. As an application, we verify the
 correctness of Grover’s algorithm.</description>
-    </item>
-    <item>
-       <title>Safe OCL</title>
-              <link>https://www.isa-afp.org/entries/Safe_OCL.html</link>
-       <guid>https://www.isa-afp.org/entries/Safe_OCL.html</guid>
-       <dc:creator> Denis Nikiforov       </dc:creator>
-       <pubDate>09 Mar 2019 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;The theory is a formalization of the
-&lt;a href=&#34;https://www.omg.org/spec/OCL/&#34;&gt;OCL&lt;/a&gt; type system, its abstract
-syntax and expression typing rules. The theory does not define a concrete
-syntax and a semantics. In contrast to
-&lt;a href=&#34;https://www.isa-afp.org/entries/Featherweight_OCL.html&#34;&gt;Featherweight OCL&lt;/a&gt;,
-it is based on a deep embedding approach. The type system is defined from scratch,
-it is not based on the Isabelle HOL type system.&lt;/p&gt;
-&lt;p&gt;The Safe OCL distincts nullable and non-nullable types. Also the theory gives a
-formal definition of &lt;a href=&#34;http://ceur-ws.org/Vol-1512/paper07.pdf&#34;&gt;safe
-navigation operations&lt;/a&gt;. The Safe OCL typing rules are much stricter than rules
-given in the OCL specification. It allows one to catch more errors on a type
-checking phase.&lt;/p&gt;
-&lt;p&gt;The type theory presented is four-layered: classes, basic types, generic types,
-errorable types. We introduce the following new types: non-nullable types (T[1]),
-nullable types (T[?]), OclSuper. OclSuper is a supertype of all other types (basic
-types, collections, tuples). This type allows us to define a total supremum function,
-so types form an upper semilattice. It allows us to define rich expression typing
-rules in an elegant manner.&lt;/p&gt;
-&lt;p&gt;The Preliminaries Chapter of the theory defines a number of helper lemmas for
-transitive closures and tuples. It defines also a generic object model independent
-from OCL. It allows one to use the theory as a reference for formalization of analogous languages.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Elementary Facts About the Distribution of Primes</title>
-              <link>https://www.isa-afp.org/entries/Prime_Distribution_Elementary.html</link>
-       <guid>https://www.isa-afp.org/entries/Prime_Distribution_Elementary.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>21 Feb 2019 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This entry is a formalisation of Chapter 4 (and parts of
-Chapter 3) of Apostol&#39;s &lt;a
-href=&#34;https://www.springer.com/de/book/9780387901633&#34;&gt;&lt;em&gt;Introduction
-to Analytic Number Theory&lt;/em&gt;&lt;/a&gt;. The main topics that
-are addressed are properties of the distribution of prime numbers that
-can be shown in an elementary way (i.&amp;thinsp;e. without the Prime
-Number Theorem), the various equivalent forms of the PNT (which imply
-each other in elementary ways), and consequences that follow from the
-PNT in elementary ways. The latter include, most notably, asymptotic
-bounds for the number of distinct prime factors of
-&lt;em&gt;n&lt;/em&gt;, the divisor function
-&lt;em&gt;d(n)&lt;/em&gt;, Euler&#39;s totient function
-&lt;em&gt;&amp;phi;(n)&lt;/em&gt;, and
-lcm(1,&amp;hellip;,&lt;em&gt;n&lt;/em&gt;).&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Kruskal's Algorithm for Minimum Spanning Forest</title>
-              <link>https://www.isa-afp.org/entries/Kruskal.html</link>
-       <guid>https://www.isa-afp.org/entries/Kruskal.html</guid>
-       <dc:creator> Maximilian P.L. Haslbeck, Peter Lammich, Julian Biendarra       </dc:creator>
-       <pubDate>14 Feb 2019 00:00:00 +0000</pubDate>
-       <description>
-This Isabelle/HOL formalization defines a greedy algorithm for finding
-a minimum weight basis on a weighted matroid and proves its
-correctness. This algorithm is an abstract version of Kruskal&#39;s
-algorithm.  We interpret the abstract algorithm for the cycle matroid
-(i.e. forests in a graph) and refine it to imperative executable code
-using an efficient union-find data structure.  Our formalization can
-be instantiated for different graph representations. We provide
-instantiations for undirected graphs and symmetric directed graphs.</description>
-    </item>
-    <item>
-       <title>Probabilistic Primality Testing</title>
-              <link>https://www.isa-afp.org/entries/Probabilistic_Prime_Tests.html</link>
-       <guid>https://www.isa-afp.org/entries/Probabilistic_Prime_Tests.html</guid>
-       <dc:creator> Daniel Stüwe, Manuel Eberl       </dc:creator>
-       <pubDate>11 Feb 2019 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;The most efficient known primality tests are
-&lt;em&gt;probabilistic&lt;/em&gt; in the sense that they use
-randomness and may, with some probability, mistakenly classify a
-composite number as prime &amp;ndash; but never a prime number as
-composite. Examples of this are the Miller&amp;ndash;Rabin test, the
-Solovay&amp;ndash;Strassen test, and (in most cases) Fermat&#39;s
-test.&lt;/p&gt; &lt;p&gt;This entry defines these three tests and
-proves their correctness. It also develops some of the
-number-theoretic foundations, such as Carmichael numbers and the
-Jacobi symbol with an efficient executable algorithm to compute
-it.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Universal Turing Machine</title>
-              <link>https://www.isa-afp.org/entries/Universal_Turing_Machine.html</link>
-       <guid>https://www.isa-afp.org/entries/Universal_Turing_Machine.html</guid>
-       <dc:creator> Jian Xu, Xingyuan Zhang, Christian Urban, Sebastiaan J. C. Joosten       </dc:creator>
-       <pubDate>08 Feb 2019 00:00:00 +0000</pubDate>
-       <description>
-We formalise results from computability theory: recursive functions,
-undecidability of the halting problem, and the existence of a
-universal Turing machine. This formalisation is the AFP entry
-corresponding to the paper Mechanising Turing Machines and Computability Theory
-in Isabelle/HOL, ITP 2013.</description>
-    </item>
-    <item>
-       <title>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming</title>
-              <link>https://www.isa-afp.org/entries/UTP.html</link>
-       <guid>https://www.isa-afp.org/entries/UTP.html</guid>
-       <dc:creator> Simon Foster, Frank Zeyda, Yakoub Nemouchi, Pedro Ribeiro, Burkhart Wolff       </dc:creator>
-       <pubDate>01 Feb 2019 00:00:00 +0000</pubDate>
-       <description>
-Isabelle/UTP is a mechanised theory engineering toolkit based on Hoare
-and He’s Unifying Theories of Programming (UTP). UTP enables the
-creation of denotational, algebraic, and operational semantics for
-different programming languages using an alphabetised relational
-calculus. We provide a semantic embedding of the alphabetised
-relational calculus in Isabelle/HOL, including new type definitions,
-relational constructors, automated proof tactics, and accompanying
-algebraic laws. Isabelle/UTP can be used to both capture laws of
-programming for different languages, and put these fundamental
-theorems to work in the creation of associated verification tools,
-using calculi like Hoare logics. This document describes the
-relational core of the UTP in Isabelle/HOL.</description>
-    </item>
-    <item>
-       <title>The Inversions of a List</title>
-              <link>https://www.isa-afp.org/entries/List_Inversions.html</link>
-       <guid>https://www.isa-afp.org/entries/List_Inversions.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>01 Feb 2019 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This entry defines the set of &lt;em&gt;inversions&lt;/em&gt;
-of a list, i.e. the pairs of indices that violate sortedness. It also
-proves the correctness of the well-known
-&lt;em&gt;O&lt;/em&gt;(&lt;em&gt;n log n&lt;/em&gt;)
-divide-and-conquer algorithm to compute the number of
-inversions.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Farkas' Lemma and Motzkin's Transposition Theorem</title>
-              <link>https://www.isa-afp.org/entries/Farkas.html</link>
-       <guid>https://www.isa-afp.org/entries/Farkas.html</guid>
-       <dc:creator> Ralph Bottesch, Max W. Haslbeck, René Thiemann       </dc:creator>
-       <pubDate>17 Jan 2019 00:00:00 +0000</pubDate>
-       <description>
-We formalize a proof of Motzkin&#39;s transposition theorem and
-Farkas&#39; lemma in Isabelle/HOL. Our proof is based on the
-formalization of the simplex algorithm which, given a set of linear
-constraints, either returns a satisfying assignment to the problem or
-detects unsatisfiability. By reusing facts about the simplex algorithm
-we show that a set of linear constraints is unsatisfiable if and only
-if there is a linear combination of the constraints which evaluates to
-a trivially unsatisfiable inequality.</description>
-    </item>
-    <item>
-       <title>IMP2 – Simple Program Verification in Isabelle/HOL</title>
-              <link>https://www.isa-afp.org/entries/IMP2.html</link>
-       <guid>https://www.isa-afp.org/entries/IMP2.html</guid>
-       <dc:creator> Peter Lammich, Simon Wimmer       </dc:creator>
-       <pubDate>15 Jan 2019 00:00:00 +0000</pubDate>
-       <description>
-IMP2 is a simple imperative language together with Isabelle tooling to
-create a program verification environment in Isabelle/HOL. The tools
-include a C-like syntax, a verification condition generator, and
-Isabelle commands for the specification of programs. The framework is
-modular, i.e., it allows easy reuse of already proved programs within
-larger programs.  This entry comes with a quickstart guide and a large
-collection of examples, spanning basic algorithms with simple proofs
-to more advanced algorithms and proof techniques like data refinement.
-Some highlights from the examples are: &lt;ul&gt; &lt;li&gt;Bisection
-Square Root, &lt;/li&gt; &lt;li&gt;Extended Euclid,  &lt;/li&gt;
-&lt;li&gt;Exponentiation by Squaring,  &lt;/li&gt; &lt;li&gt;Binary
-Search,  &lt;/li&gt; &lt;li&gt;Insertion Sort,  &lt;/li&gt;
-&lt;li&gt;Quicksort,  &lt;/li&gt; &lt;li&gt;Depth First Search.
-&lt;/li&gt; &lt;/ul&gt;  The abstract syntax and semantics are very
-simple and well-documented. They are suitable to be used in a course,
-as extension to the IMP language which comes with the Isabelle
-distribution.  While this entry is limited to a simple imperative
-language, the ideas could be extended to more sophisticated languages.</description>
-    </item>
-    <item>
-       <title>An Algebra for Higher-Order Terms</title>
-              <link>https://www.isa-afp.org/entries/Higher_Order_Terms.html</link>
-       <guid>https://www.isa-afp.org/entries/Higher_Order_Terms.html</guid>
-       <dc:creator> Lars Hupel       </dc:creator>
-       <pubDate>15 Jan 2019 00:00:00 +0000</pubDate>
-       <description>
-In this formalization, I introduce a higher-order term algebra,
-generalizing the notions of free variables, matching, and
-substitution. The need arose from the work on a &lt;a
-href=&#34;http://dx.doi.org/10.1007/978-3-319-89884-1_35&#34;&gt;verified
-compiler from Isabelle to CakeML&lt;/a&gt;. Terms can be thought of as
-consisting of a generic (free variables, constants, application) and
-a specific part. As example applications, this entry provides
-instantiations for de-Bruijn terms, terms with named variables, and
-&lt;a
-href=&#34;https://www.isa-afp.org/entries/Lambda_Free_RPOs.html&#34;&gt;Blanchette’s
-&amp;lambda;-free higher-order terms&lt;/a&gt;. Furthermore, I
-implement translation functions between de-Bruijn terms and named
-terms and prove their correctness.</description>
-    </item>
-    <item>
-       <title>A Reduction Theorem for Store Buffers</title>
-              <link>https://www.isa-afp.org/entries/Store_Buffer_Reduction.html</link>
-       <guid>https://www.isa-afp.org/entries/Store_Buffer_Reduction.html</guid>
-       <dc:creator> Ernie Cohen, Norbert Schirmer       </dc:creator>
-       <pubDate>07 Jan 2019 00:00:00 +0000</pubDate>
-       <description>
-When verifying a concurrent program, it is usual to assume that memory
-is sequentially consistent.  However, most modern multiprocessors
-depend on store buffering for efficiency, and provide native
-sequential consistency only at a substantial performance penalty.  To
-regain sequential consistency, a programmer has to follow an
-appropriate programming discipline. However, na&amp;iuml;ve disciplines,
-such as protecting all shared accesses with locks, are not flexible
-enough for building high-performance multiprocessor software.  We
-present a new discipline for concurrent programming under TSO (total
-store order, with store buffer forwarding). It does not depend on
-concurrency primitives, such as locks. Instead, threads use ghost
-operations to acquire and release ownership of memory addresses. A
-thread can write to an address only if no other thread owns it, and
-can read from an address only if it owns it or it is shared and the
-thread has flushed its store buffer since it last wrote to an address
-it did not own. This discipline covers both coarse-grained concurrency
-(where data is protected by locks) as well as fine-grained concurrency
-(where atomic operations race to memory).  We formalize this
-discipline in Isabelle/HOL, and prove that if every execution of a
-program in a system without store buffers follows the discipline, then
-every execution of the program with store buffers is sequentially
-consistent. Thus, we can show sequential consistency under TSO by
-ordinary assertional reasoning about the program, without having to
-consider store buffers at all.</description>
-    </item>
-    <item>
-       <title>A Formal Model of the Document Object Model</title>
-              <link>https://www.isa-afp.org/entries/Core_DOM.html</link>
-       <guid>https://www.isa-afp.org/entries/Core_DOM.html</guid>
-       <dc:creator> Achim D. Brucker, Michael Herzberg       </dc:creator>
-       <pubDate>26 Dec 2018 00:00:00 +0000</pubDate>
-       <description>
-In this AFP entry, we formalize the core of the Document Object Model
-(DOM).  At its core, the DOM defines a tree-like data structure for
-representing documents in general and HTML documents in particular. It
-is the heart of any modern web browser.  Formalizing the key concepts
-of the DOM is a prerequisite for the formal reasoning over client-side
-JavaScript programs and for the analysis of security concepts in
-modern web browsers.  We present a formalization of the core DOM, with
-focus on the node-tree and the operations defined on node-trees, in
-Isabelle/HOL. We use the formalization to verify the functional
-correctness of the most important functions defined in the DOM
-standard. Moreover, our formalization is 1) extensible, i.e., can be
-extended without the need of re-proving already proven properties and
-2) executable, i.e., we can generate executable code from our
-specification.</description>
     </item>
   </channel>
 </rss>

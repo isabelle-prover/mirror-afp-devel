@@ -112,7 +112,7 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
 
     val checks = List(
       check_timeout,
-      check_paths,
+      // check_paths,
       check_chapter,
       check_groups,
       check_presence)

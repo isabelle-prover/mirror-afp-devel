@@ -1,3 +1,16 @@
+[Fourier]
+title = Fourier Series
+author = Lawrence C Paulson <https://www.cl.cam.ac.uk/~lp15/>
+topic = Mathematics/Analysis
+date = 2019-09-06
+notify = lp15@cam.ac.uk
+abstract = 
+  This development formalises the square integrable functions over the
+  reals and the basics of Fourier series. It culminates with a proof
+  that every well-behaved periodic function can be approximated by a
+  Fourier series. The material is ported from HOL Light:
+  https://github.com/jrh13/hol-light/blob/master/100/fourier.ml
+
 [Generic_Deriving]
 title = Deriving generic class instances for datatypes
 author = Jonas Rädle <mailto:jonas.raedle@gmail.com>, Lars Hupel <https://www21.in.tum.de/~hupel/>
@@ -643,6 +656,28 @@ abstract =
 	recursive programs based on domain quantales are provided. Finally we
 	have integrated memory models for programs with pointers and a program
 	trace semantics into the weakest precondition component.
+
+[C2KA_DistributedSystems]
+title = Communicating Concurrent Kleene Algebra for Distributed Systems Specification
+author = Maxime Buyse <mailto:maxime.buyse@polytechnique.edu>, Jason Jaskolka <https://carleton.ca/jaskolka/>
+topic = Computer Science/Automata and Formal Languages, Mathematics/Algebra
+date = 2019-08-06
+notify = maxime.buyse@polytechnique.edu, jason.jaskolka@carleton.ca
+abstract =
+  Communicating Concurrent Kleene Algebra (C²KA) is a mathematical
+  framework for capturing the communicating and concurrent behaviour of
+  agents in distributed systems. It extends Hoare et al.'s
+  Concurrent Kleene Algebra (CKA) with communication actions through the
+  notions of stimuli and shared environments. C²KA has applications in
+  studying system-level properties of distributed systems such as
+  safety, security, and reliability. In this work, we formalize results
+  about C²KA and its application for distributed systems specification.
+  We first formalize the stimulus structure and behaviour structure
+  (CKA). Next, we combine them to formalize C²KA and its properties.
+  Then, we formalize notions and properties related to the topology of
+  distributed systems and the potential for communication via stimuli
+  and via shared environments of agents, all within the algebraic
+  setting of C²KA.
 
 [Card_Equiv_Relations]
 title = Cardinality of Equivalence Relations
@@ -3887,6 +3922,21 @@ extra-history =
 	[2017-09-20]: linear approximations for all symbols from the floatarith data
 	type
 notify = immler@in.tum.de
+
+[Laplace_Transform]
+title = Laplace Transform
+author = Fabian Immler <https://home.in.tum.de/~immler/>
+topic = Mathematics/Analysis
+date = 2019-08-14
+notify = fimmler@cs.cmu.edu
+abstract =
+  This entry formalizes the Laplace transform and concrete Laplace
+  transforms for arithmetic functions, frequency shift, integration and
+  (higher) differentiation in the time domain. It proves Lerch's
+  lemma and uniqueness of the Laplace transform for continuous
+  functions. In order to formalize the foundational assumptions, this
+  entry contains a formalization of piecewise continuous functions and
+  functions of exponential order.
 
 [Cauchy]
 title = Cauchy's Mean Theorem and the Cauchy-Schwarz Inequality
@@ -8266,4 +8316,163 @@ abstract =
   monitor to that of other monitoring tools on randomly generated
   inputs. This case study revealed several errors in the optimized but
   unverified tools.
+
+[FOL_Seq_Calc1]
+title = A Sequent Calculus for First-Order Logic
+author = Andreas Halkjær From <http://www.student.dtu.dk/~s144442/>
+contributors = Alexander Birch Jensen <https://people.compute.dtu.dk/aleje/>,
+  Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>,
+  Jørgen Villadsen <https://people.compute.dtu.dk/jovi/>
+topic = Logic
+date = 2019-07-18
+notify = s144442@student.dtu.dk
+abstract =
+  This work formalizes soundness and completeness of a one-sided sequent
+  calculus for first-order logic. The completeness is shown via a
+  translation from a complete semantic tableau calculus, the proof of
+  which is based on the First-Order Logic According to Fitting theory.
+  The calculi and proof techniques are taken from Ben-Ari's
+  Mathematical Logic for Computer Science.
+
+[Szpilrajn]
+title = Szpilrajn Extension Theorem
+author = Peter Zeller <mailto:p_zeller@cs.uni-kl.de>
+topic = Mathematics/Order
+date = 2019-07-27
+notify = p_zeller@cs.uni-kl.de
+abstract =
+  We formalize the Szpilrajn extension theorem, also known as
+  order-extension principal: Every strict partial order can be extended
+  to a strict linear order.
+
+[TESL_Language]
+title = A Formal Development of a Polychronous Polytimed Coordination Language
+author = Hai Nguyen Van <mailto:hai.nguyenvan.phie@gmail.com>, Frédéric Boulanger <mailto:frederic.boulanger@centralesupelec.fr>, Burkhart Wolff <mailto:burkhart.wolff@lri.fr>
+topic = Computer Science/System Description Languages, Computer Science/Semantics, Computer Science/Concurrency
+date = 2019-07-30
+notify = frederic.boulanger@centralesupelec.fr, burkhart.wolff@lri.fr
+abstract =
+  The design of complex systems involves different formalisms for
+  modeling their different parts or aspects. The global model of a
+  system may therefore consist of a coordination of concurrent
+  sub-models that use different paradigms.  We develop here a theory for
+  a language used to specify the timed coordination of such
+  heterogeneous subsystems by addressing the following issues:
+  <ul><li>the
+  behavior of the sub-systems is observed only at a series of discrete
+  instants,</li><li>events may occur in different sub-systems at unrelated
+  times, leading to polychronous systems, which do not necessarily have
+  a common base clock,</li><li>coordination between subsystems involves
+  causality, so the occurrence of an event may enforce the occurrence of
+  other events, possibly after a certain duration has elapsed or an
+  event has occurred a given number of times,</li><li>the domain of time
+  (discrete, rational, continuous...) may be different in the
+  subsystems, leading to polytimed systems,</li><li>the time frames of
+  different sub-systems may be related (for instance, time in a GPS
+  satellite and in a GPS receiver on Earth are related although they are
+  not the same).</li></ul>
+  Firstly, a denotational semantics of the language is
+  defined. Then, in order to be able to incrementally check the behavior
+  of systems, an operational semantics is given, with proofs of
+  progress, soundness and completeness with regard to the denotational
+  semantics. These proofs are made according to a setup that can scale
+  up when new operators are added to the language. In order for
+  specifications to be composed in a clean way, the language should be
+  invariant by stuttering (i.e., adding observation instants at which
+  nothing happens). The proof of this invariance is also given.
+
+[Stellar_Quorums]
+title = Stellar Quorum Systems
+author = Giuliano Losa <mailto:giuliano@galois.com>
+topic = Computer Science/Algorithms/Distributed
+date = 2019-08-01
+notify = giuliano@galois.com
+abstract =
+  We formalize the static properties of personal Byzantine quorum
+  systems (PBQSs) and Stellar quorum systems, as described in the paper
+  ``Stellar Consensus by Reduction'' (to appear at DISC 2019).
+
+[IMO2019]
+title = Selected Problems from the International Mathematical Olympiad 2019
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Misc
+date = 2019-08-05
+notify = eberlm@in.tum.de
+abstract =
+  <p>This entry contains formalisations of the answers to three of
+  the six problem of the International Mathematical Olympiad 2019,
+  namely Q1, Q4, and Q5.</p> <p>The reason why these
+  problems were chosen is that they are particularly amenable to
+  formalisation: they can be solved with minimal use of libraries. The
+  remaining three concern geometry and graph theory, which, in the
+  author's opinion, are more difficult to formalise resp. require a
+  more complex library.</p>
+
+[Adaptive_State_Counting]
+title = Formalisation of an Adaptive State Counting Algorithm
+author = Robert Sachtleben <mailto:rob_sac@uni-bremen.de>
+topic = Computer Science/Automata and Formal Languages, Computer Science/Algorithms
+date = 2019-08-16
+notify = rob_sac@uni-bremen.de
+abstract = 
+  This entry provides a formalisation of a refinement of an adaptive
+  state counting algorithm, used to test for reduction between finite
+  state machines. The algorithm has been originally presented by Hierons
+  in the paper <a
+  href="https://doi.org/10.1109/TC.2004.85">Testing from a
+  Non-Deterministic Finite State Machine Using Adaptive State
+  Counting</a>.  Definitions for finite state machines and
+  adaptive test cases are given and many useful theorems are derived
+  from these. The algorithm is formalised using mutually recursive
+  functions, for which it is proven that the generated test suite is
+  sufficient to test for reduction against finite state machines of a
+  certain fault domain. Additionally, the algorithm is specified in a
+  simple WHILE-language and its correctness is shown using Hoare-logic.
+
+[Jacobson_Basic_Algebra]
+title = A Case Study in Basic Algebra
+author = Clemens Ballarin <http://www21.in.tum.de/~ballarin/>
+topic = Mathematics/Algebra
+date = 2019-08-30
+notify = ballarin@in.tum.de
+abstract = 
+  The focus of this case study is re-use in abstract algebra.  It
+  contains locale-based formalisations of selected parts of set, group
+  and ring theory from Jacobson's <i>Basic Algebra</i>
+  leading to the respective fundamental homomorphism theorems.  The
+  study is not intended as a library base for abstract algebra.  It
+  rather explores an approach towards abstract algebra in Isabelle.
+
+[Hybrid_Systems_VCs]
+title = Verification Components for Hybrid Systems
+author = Jonathan Julian Huerta y Munive <>
+topic = Mathematics/Algebra, Mathematics/Analysis
+date = 2019-09-10
+notify = jjhuertaymunive1@sheffield.ac.uk, jonjulian23@gmail.com
+abstract = 
+  These components formalise a semantic framework for the deductive
+  verification of hybrid systems. They support reasoning about
+  continuous evolutions of hybrid programs in the style of differential
+  dynamics logic. Vector fields or flows model these evolutions, and
+  their verification is done with invariants for the former or orbits
+  for the latter. Laws of modal Kleene algebra or categorical predicate
+  transformers implement the verification condition generation. Examples
+  show the approach at work.
+
+[Generic_Join]
+title = Formalization of Multiway-Join Algorithms
+author = Thibault Dardinier<>
+topic = Computer Science/Algorithms
+date = 2019-09-16
+notify = tdardini@student.ethz.ch, traytel@inf.ethz.ch
+abstract = 
+  Worst-case optimal multiway-join algorithms are recent seminal
+  achievement of the database community. These algorithms compute the
+  natural join of multiple relational databases and improve in the worst
+  case over traditional query plan optimizations of nested binary joins.
+  In 2014, <a
+  href="https://doi.org/10.1145/2590989.2590991">Ngo, Ré,
+  and Rudra</a> gave a unified presentation of different multi-way
+  join algorithms. We formalized and proved correct their "Generic
+  Join" algorithm and extended it to support negative joins.
 
