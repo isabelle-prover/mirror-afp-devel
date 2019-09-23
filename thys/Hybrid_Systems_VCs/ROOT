@@ -6,11 +6,14 @@ session "Hybrid_Systems_VCs" (AFP) = "HOL-Analysis" +
     Ordinary_Differential_Equations
     Transformer_Semantics
     KAD
+  directories
+    "PredicateTransformers"
+    "ModalKleeneAlgebra"
   theories
     "HS_VC_Examples"
-    "PredicateTransformers/HS_VC_PT_Examples"
-    "ModalKleeneAlgebra/HS_VC_MKA_Examples_rel"
-    "ModalKleeneAlgebra/HS_VC_MKA_Examples_ndfun"
+    "HS_VC_PT_Examples"
+    "HS_VC_MKA_Examples_rel"
+    "HS_VC_MKA_Examples_ndfun"
   document_files
     "root.bib"
     "root.tex"
