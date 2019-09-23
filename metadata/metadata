@@ -8220,6 +8220,20 @@ abstract =
   include bounds on the appearing numbers, and in particular we provide
   an a-priori bound on mixed-integer solutions of linear inequalities.
 
+[Linear_Programming]
+title = Linear Programming
+author = Julian Parsert <http://www.parsert.com/>, Cezary Kaliszyk <http://cl-informatik.uibk.ac.at/cek/>
+topic = Mathematics/Algebra
+date = 2019-08-06
+notify = julian.parsert@gmail.com, cezary.kaliszyk@uibk.ac.at
+abstract =
+  We use the previous formalization of the general simplex algorithm to
+  formulate an algorithm for solving linear programs. We encode the
+  linear programs using only linear constraints. Solving these
+  constraints also solves the original linear program. This algorithm is
+  proven to be sound by applying the weak duality theorem which is also
+  part of this formalization.
+
 [Differential_Game_Logic]
 title = Differential Game Logic
 author = André Platzer <http://www.cs.cmu.edu/~aplatzer/>
@@ -8414,7 +8428,7 @@ author = Robert Sachtleben <mailto:rob_sac@uni-bremen.de>
 topic = Computer Science/Automata and Formal Languages, Computer Science/Algorithms
 date = 2019-08-16
 notify = rob_sac@uni-bremen.de
-abstract = 
+abstract =
   This entry provides a formalisation of a refinement of an adaptive
   state counting algorithm, used to test for reduction between finite
   state machines. The algorithm has been originally presented by Hierons
@@ -8435,7 +8449,7 @@ author = Clemens Ballarin <http://www21.in.tum.de/~ballarin/>
 topic = Mathematics/Algebra
 date = 2019-08-30
 notify = ballarin@in.tum.de
-abstract = 
+abstract =
   The focus of this case study is re-use in abstract algebra.  It
   contains locale-based formalisations of selected parts of set, group
   and ring theory from Jacobson's <i>Basic Algebra</i>
