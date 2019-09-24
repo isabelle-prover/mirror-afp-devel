@@ -498,7 +498,7 @@ proof (induct i)
   then show ?case
     by (auto)
       (metis (no_types, lifting) Suc_eq_plus1 gr_implies_not0 length_pos_if_in_set
-       length_us less_Suc_eq_le less_imp_le_nat linorder_antisym_conv2 not_less_eq_eq
+       length_us less_Suc_eq_le less_imp_le_nat antisym_conv2 not_less_eq_eq
        sum_list_eq_0_iff sum_list_inc_eq_sum_list_Suc sum_list_less_diff_Ex us_le)
 qed (metis Suc_eq_plus1 Suc_leI antisym_conv gr_implies_not0 sum_list_us_gt0 sum_list_us_le)
 

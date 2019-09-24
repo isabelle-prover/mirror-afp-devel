@@ -115,7 +115,7 @@ lemma I_subst_peps2:
  \<Longrightarrow> R.I (subst\<^sub>+ f (r,cs)) xs"
 proof(induct f)
   case FalseF thus ?case
-    by simp (metis linorder_antisym_conv1 linorder_neq_iff)
+    by simp (metis antisym_conv1 linorder_neq_iff)
 next
   case (Atom a)
   show ?case

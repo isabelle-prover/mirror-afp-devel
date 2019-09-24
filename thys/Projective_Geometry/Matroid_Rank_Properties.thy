@@ -155,7 +155,7 @@ proof-
     rk (X \<union> {D}) = rk X + 1"
     by (smt One_nat_def Suc_le_eq Suc_numeral Un_upper2 \<open>4 \<le> rk {A, B, C, D}\<close> 
         \<open>\<lbrakk>rk (X \<union> {A}) = rk (X \<union> {B}); rk (X \<union> {B}) = rk (X \<union> {C}); rk (X \<union> {C}) = rk (X \<union> {D}); rk (X \<union> {D}) = rk X\<rbrakk> \<Longrightarrow> rk (X \<union> {A, B, C, D}) = rk X\<close> 
-        add.right_neutral add_Suc_right assms linorder_antisym_conv1 matroid_ax_2 matroid_ax_2_alt 
+        add.right_neutral add_Suc_right assms antisym_conv1 matroid_ax_2 matroid_ax_2_alt 
         not_less semiring_norm(2) semiring_norm(8) sup.coboundedI2 sup.orderE)
   thus "\<exists>P . rk (X \<union> {P}) = rk X + 1" 
     by blast

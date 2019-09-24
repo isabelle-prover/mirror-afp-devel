@@ -78,14 +78,14 @@ lemma I_subst_peps2:
  \<Longrightarrow> DLO.I (subst\<^sub>+ \<phi> l) xs"
 proof(induct \<phi>)
   case FalseF thus ?case
-    by simp (metis linorder_antisym_conv1 linorder_neq_iff)
+    by simp (metis antisym_conv1 linorder_neq_iff)
 next
   case (Atom a)
   show ?case
   proof(cases "(l,a)" rule:asubst_peps.cases)
     case 3 thus ?thesis using Atom
       by (auto simp: nolb_def EQ_def Ball_def)
-         (metis One_nat_def linorder_antisym_conv1 not_less_iff_gr_or_eq)
+         (metis One_nat_def antisym_conv1 not_less_iff_gr_or_eq)
   qed (insert Atom, auto simp: nolb_def EQ_def Ball_def)
 next
   case Or thus ?case by(simp add: Ball_def)(metis order_refl innermost_intvl)
