@@ -147,7 +147,7 @@ proof
     by (subst measurable_lebesgue_cong [where g = "(\<lambda>x. if x \<in> S then f x else 0)"]) auto
 next
   assume ?rhs then show ?lhs
-  by (simp add: \<open>S \<in> sets lebesgue\<close> borel_measurable_If_I measurable_restrict_space1)
+  by (simp add: \<open>S \<in> sets lebesgue\<close> borel_measurable_if_I measurable_restrict_space1)
 qed
 
 
@@ -824,13 +824,6 @@ qed
 
 
 subsection\<open>HOL Light measurability\<close>
-
-definition measurable_on :: "('a::euclidean_space \<Rightarrow> 'b::real_normed_vector) \<Rightarrow> 'a set \<Rightarrow> bool"
-  (infixr "measurable'_on" 46)
-  where "f measurable_on S \<equiv>
-        \<exists>N g. negligible N \<and>
-              (\<forall>n. continuous_on UNIV (g n)) \<and>
-              (\<forall>x. x \<notin> N \<longrightarrow> (\<lambda>n. g n x) \<longlonglongrightarrow> (if x \<in> S then f x else 0))"
 
 lemma measurable_on_UNIV:
   "(\<lambda>x.  if x \<in> S then f x else 0) measurable_on UNIV \<longleftrightarrow> f measurable_on S"
@@ -1700,7 +1693,7 @@ lemma borel_measurable_diff_null:
   fixes f :: "'a::euclidean_space \<Rightarrow> 'b::euclidean_space"
   assumes N: "N \<in> null_sets (lebesgue_on S)" and S: "S \<in> sets lebesgue"
   shows "f \<in> borel_measurable (lebesgue_on (S-N)) \<longleftrightarrow> f \<in> borel_measurable (lebesgue_on S)"
-  unfolding in_borel_measurable borel_measurable_UNIV_eq [symmetric] space_lebesgue_on sets_restrict_UNIV
+  unfolding in_borel_measurable lebesgue_on_UNIV_eq space_lebesgue_on sets_restrict_UNIV
 proof (intro ball_cong iffI)
   show "f -` T \<inter> S \<in> sets (lebesgue_on S)"
     if "f -` T \<inter> (S-N) \<in> sets (lebesgue_on (S-N))" for T
@@ -1755,7 +1748,7 @@ proof -
   have "(\<lambda>x. if x \<in> S then f x else 0) measurable_on UNIV"
     using assms(1) measurable_on_UNIV by blast
   then show ?thesis
-    by (simp add: borel_measurable_If_D measurable_on_imp_borel_measurable_lebesgue_UNIV)
+    by (simp add: borel_measurable_if_D measurable_on_imp_borel_measurable_lebesgue_UNIV)
 qed
 
 
@@ -1935,7 +1928,7 @@ proof
 next
   assume "f \<in> borel_measurable (lebesgue_on S)"
   then have "(\<lambda>a. if a \<in> S then f a else 0) measurable_on UNIV"
-    by (simp add: assms borel_measurable_If_I lebesgue_measurable_imp_measurable_on)
+    by (simp add: assms borel_measurable_if_I lebesgue_measurable_imp_measurable_on)
   then show "f measurable_on S"
     using measurable_on_UNIV by blast
 qed
@@ -2099,7 +2092,7 @@ proof -
     using has_bochner_integral_lebesgue_real_affine_iff [of "-1" "(\<lambda>x. indicator {a..b} x *\<^sub>R f x)" i 0]
     by (auto simp: eq)
   then show ?thesis
-    by (auto simp: has_bochner_integral_restrict_space)
+    using assms by blast
 qed
 
 lemma has_bochner_integral_reflect_real[simp]:

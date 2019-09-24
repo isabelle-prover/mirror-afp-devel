@@ -29,7 +29,7 @@ lemmas has_derivative_sin[derivative_intros] = DERIV_sin[THEN DERIV_compose_FDER
 
 
 subsection \<open>Integrals\<close>
-  
+
 lemma negligible_real_ivlI:
   fixes a b::real
   assumes "a \<ge> b"
@@ -162,7 +162,7 @@ proof -
   have "\<forall>\<^sub>F k in at_top. k \<ge> x" for x::real
     by (simp add: eventually_ge_at_top)
   then have "\<forall>x\<in>{a..}. ((\<lambda>k. ?f k x) \<longlongrightarrow> f x) at_top"
-    by (auto intro!: Lim_transform_eventually[OF _ tendsto_const] simp: indicator_def eventually_at_top_linorder)
+    by (auto intro!: Lim_transform_eventually[OF tendsto_const] simp: indicator_def eventually_at_top_linorder)
   ultimately
   have "((\<lambda>k. integral {a..} (?f k)) \<longlongrightarrow> integral {a ..} f) at_top"
     by (rule dominated_convergence_at_top) (auto simp: indicator_def)

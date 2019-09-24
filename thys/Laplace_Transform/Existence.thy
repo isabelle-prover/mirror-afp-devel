@@ -157,7 +157,7 @@ proof -
     then have "\<forall>\<^sub>F k in at_top. laplace_integrand s t = ?f k t"
       by eventually_elim (use t in \<open>auto simp: indicator_def\<close>)
     then show "((\<lambda>k. ?f k t) \<longlongrightarrow> laplace_integrand s t) at_top" using tendsto_const
-      by (rule Lim_transform_eventually)
+      by (rule Lim_transform_eventually[rotated])
   qed
 
   show th1: ?th1
@@ -307,8 +307,8 @@ proof -
     show ?thesis
       by (rule integrable_on_superset[OF int]) (auto simp: f_def)
   qed
-  have limseq: "\<forall>x\<in>{c..}. (\<lambda>k. f k x) \<longlonglongrightarrow> exp (x *\<^sub>R - a)"
-    apply (auto intro!: Lim_transform_eventually[OF _ tendsto_const] simp: f_def)
+  have limseq: "\<And>x. x \<in>{c..} \<Longrightarrow> (\<lambda>k. f k x) \<longlonglongrightarrow> exp (x *\<^sub>R - a)"
+    apply (auto intro!: Lim_transform_eventually[OF tendsto_const] simp: f_def)
     by (meson eventually_sequentiallyI nat_ceiling_le_eq)
   have bnd: "\<And>x. x \<in> {c..} \<Longrightarrow> cmod (f k x) \<le> exp (- Re a * x)" for k
     by (auto simp: f_def)
@@ -318,6 +318,14 @@ proof -
                       (if real k \<ge> c then exp (c *\<^sub>R -a)/a - exp (k *\<^sub>R -a)/a else 0)"
     for k using integral_unique[OF has_integral_f[of k]] by simp
 
+  have "(\<lambda>k. exp (c *\<^sub>R -a)/a - exp (k *\<^sub>R -a)/a) \<longlonglongrightarrow> exp (c*\<^sub>R-a)/a - 0/a"
+    apply (intro tendsto_intros filterlim_compose[OF exp_at_bot]
+          filterlim_tendsto_neg_mult_at_bot[OF tendsto_const] filterlim_real_sequentially)+
+     apply (rule tendsto_norm_zero_cancel)
+    by (auto intro!: assms \<open>a \<noteq> 0\<close> filterlim_real_sequentially
+        filterlim_compose[OF exp_at_bot] filterlim_compose[OF filterlim_uminus_at_bot_at_top]
+        filterlim_at_top_mult_tendsto_pos[OF tendsto_const])
+  moreover
   note A = dominated_convergence[where g="\<lambda>x. exp (x *\<^sub>R -a)",
     OF integrable_fk integrable_on_exp_minus_to_infinity[where a="Re a" and c=c, OF \<open>0 < Re a\<close>]
       bnd limseq]
@@ -326,13 +334,6 @@ proof -
     by eventually_elim linarith
   hence "eventually (\<lambda>k. exp (c *\<^sub>R -a)/a - exp (k *\<^sub>R -a)/a = integral {c..} (f k)) sequentially"
     by eventually_elim (simp add: integral_f)
-  moreover have "(\<lambda>k. exp (c *\<^sub>R -a)/a - exp (k *\<^sub>R -a)/a) \<longlonglongrightarrow> exp (c*\<^sub>R-a)/a - 0/a"
-    apply (intro tendsto_intros filterlim_compose[OF exp_at_bot]
-          filterlim_tendsto_neg_mult_at_bot[OF tendsto_const] filterlim_real_sequentially)+
-     apply (rule tendsto_norm_zero_cancel)
-    by (auto intro!: assms \<open>a \<noteq> 0\<close> filterlim_real_sequentially
-        filterlim_compose[OF exp_at_bot] filterlim_compose[OF filterlim_uminus_at_bot_at_top]
-        filterlim_at_top_mult_tendsto_pos[OF tendsto_const])
   ultimately have "(\<lambda>k. integral {c..} (f k)) \<longlonglongrightarrow> exp (c *\<^sub>R -a)/a - 0/a"
     by (rule Lim_transform_eventually)
   from LIMSEQ_unique[OF A(2) this]
@@ -456,10 +457,10 @@ proof (rule has_laplaceI)
         by (rule continuous_on_vector_derivative)
           (auto simp add: intro!: f')
       then have "(f \<longlongrightarrow> f x) (at x within {0..k})"
-        using \<open>0 < x\<close> 
+        using \<open>0 < x\<close>
         by (auto simp: continuous_on_def intro: Lim_at_imp_Lim_at_within)
       ultimately show ?thesis
-        by (rule Lim_transform_eventually)
+        by (rule Lim_transform_eventually[rotated])
     qed
     done
   then have pcg: "piecewise_continuous_on 0 k {} g" for k
@@ -623,7 +624,7 @@ proof -
         using \<open>t0 > a\<close> that by auto
       done
     have "I t = integral {a .. t0} f + integral {t0 .. t} f"
-      by (smt I has_integral_integrable integral_combine integral_unique t0(2) that)
+      by (smt I \<open>a \<le> t0\<close> \<open>f integrable_on {t0..t}\<close> has_integral_combine has_integral_integrable_integral that)
     also have "norm \<dots> \<le> norm (integral {a .. t0} f) + norm (integral {t0 .. t} f)" by norm
     also
     have "norm (integral {t0 .. t} f) \<le> integral {t0 .. t} (\<lambda>t. M * exp (c * t))"
@@ -652,7 +653,7 @@ lemma integral_has_vector_derivative_piecewise_continuous:
   using assms
 proof (induction a b D f rule: piecewise_continuous_on_induct)
   case (empty a b f)
-  then show ?case 
+  then show ?case
     by (auto intro: integral_has_vector_derivative)
 next
   case (combine a i b I f1 f2 f)
@@ -682,7 +683,7 @@ next
         by auto
     qed
     have "f x = f1 x" using combine 1 by auto
-    have i_eq: "integral {a..y} f = integral {a..y} f1" if "y < i" for y 
+    have i_eq: "integral {a..y} f = integral {a..y} f1" if "y < i" for y
       using negligible_empty
       apply (rule integral_spike)
       using combine 1 that
@@ -717,16 +718,16 @@ next
         by auto
     qed
     have "f x = f2 x" using combine 2 by auto
-    have i_eq: "integral {a..y} f = integral {a..i} f + integral {i..y} f2" if "i < y" "y \<le> b" for y 
+    have i_eq: "integral {a..y} f = integral {a..i} f + integral {i..y} f2" if "i < y" "y \<le> b" for y
     proof -
       have "integral {a..y} f = integral {a..i} f + integral {i..y} f"
         apply (cases "i = y")
         subgoal by auto
         subgoal
-          apply (rule integral_combine[symmetric])
+          apply (rule Henstock_Kurzweil_Integration.integral_combine[symmetric])
           using combine that apply auto
           apply (rule integrable_Un'[where A="{a .. i}" and B="{i..y}"])
-          subgoal 
+          subgoal
             by (rule integrable_spike[where S="{i}" and f="f1"])
               (auto intro: piecewise_continuous_on_integrable)
           subgoal
@@ -859,7 +860,7 @@ next
         apply (rule differentiable_transform_within[OF _ zero_less_one])
         subgoal using that 2 by auto
         apply (auto simp: )
-        apply (subst integral_combine)
+        apply (subst Henstock_Kurzweil_Integration.integral_combine)
         using that 2 \<open>a \<le> i\<close>
         apply auto
         by (auto intro: integrable_on_subinterval f_int)
@@ -894,7 +895,7 @@ next
         apply (rule differentiable_transform_within[OF _ zero_less_one])
         subgoal using that 2 by auto
         apply (auto simp: )
-        apply (subst integral_combine)
+        apply (subst Henstock_Kurzweil_Integration.integral_combine)
         using that 2 \<open>a \<le> i\<close>
         apply auto
         by (auto intro: integrable_on_subinterval f_int)
@@ -929,7 +930,7 @@ next
         apply (rule differentiable_transform_within[OF _ zero_less_one])
         subgoal using that 2 by auto
         apply (auto simp: )
-        apply (subst integral_combine)
+        apply (subst Henstock_Kurzweil_Integration.integral_combine)
         using that 2 \<open>a \<le> i\<close>
         apply auto
         by (auto intro: integrable_on_subinterval f_int)
@@ -1027,7 +1028,7 @@ definition "ndiff n f X \<longleftrightarrow> (\<forall>i<n. \<forall>x \<in> X.
 
 lemma nderiv_zero[simp]: "nderiv 0 f X = f"
   by (auto simp: nderiv_def)
-  
+
 lemma nderiv_Suc[simp]:
   "nderiv (Suc i) f X x = vector_derivative (nderiv i f X) (at x within X)"
   by (auto simp: nderiv_def)

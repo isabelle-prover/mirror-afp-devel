@@ -408,8 +408,6 @@ proof -
     by (metis dual_order.trans integral_abs_bound)
 qed
 
-lemmas lim_explicit = tendsto_explicit
-
 lemma ennreal_tendsto_0_iff: "(\<And>n. f n \<ge> 0) \<Longrightarrow> ((\<lambda>n. ennreal (f n)) \<longlonglongrightarrow> 0) \<longleftrightarrow> (f \<longlonglongrightarrow> 0)"
   by (metis (mono_tags) ennreal_0 eventuallyI order_refl tendsto_ennreal_iff)
 

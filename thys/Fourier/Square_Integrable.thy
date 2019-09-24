@@ -1,7 +1,7 @@
 section\<open>Square integrable functions over the reals\<close>
 
 theory Square_Integrable
-  imports Lspace Fourier_Aux2 
+  imports Lspace Fourier_Aux2
 begin
 
 subsection\<open>Basic definitions\<close>
@@ -609,8 +609,7 @@ proof -
             using Lp_Norm [OF _ fnm, of 2] by (simp add: lnorm_def)
           finally show ?thesis
             using N [OF that] real finite
-            apply (simp add: Norm_def)
-            by (smt enn2real_ennreal ennreal_less_iff less_top_ennreal)
+            by (simp add: Norm_def)
         qed
       qed
     qed (simp add: finite)

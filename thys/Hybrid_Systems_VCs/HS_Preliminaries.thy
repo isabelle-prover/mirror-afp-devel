@@ -5,7 +5,7 @@
 
 section \<open> Hybrid Systems Preliminaries \<close>
 
-text \<open>Hybrid systems combine continuous dynamics with discrete control. This section contains 
+text \<open>Hybrid systems combine continuous dynamics with discrete control. This section contains
 auxiliary lemmas for verification of hybrid systems.\<close>
 
 theory HS_Preliminaries
@@ -15,7 +15,7 @@ begin
 
 subsection \<open> Real numbers \<close>
 
-lemma abs_le_eq: 
+lemma abs_le_eq:
   shows "(r::real) > 0 \<Longrightarrow> (\<bar>x\<bar> < r) = (-r < x \<and> x < r)"
     and "(r::real) > 0 \<Longrightarrow> (\<bar>x\<bar> \<le> r) = (-r \<le> x \<and> x \<le> r)"
   by linarith+
@@ -40,8 +40,8 @@ proof-
     by(simp add: power2_diff power_mult_distrib)
   also have "(x * sin t + y * cos t)\<^sup>2 = y\<^sup>2 * (cos t)\<^sup>2 + x\<^sup>2 * (sin t)\<^sup>2 + 2 * (x * cos t) * (y * sin t)"
     by(simp add: power2_sum power_mult_distrib)
-  ultimately show "(x * cos t - y * sin t)\<^sup>2 + (x * sin t + y * cos t)\<^sup>2 = x\<^sup>2 + y\<^sup>2"  
-    by (simp add: Groups.mult_ac(2) Groups.mult_ac(3) right_diff_distrib sin_squared_eq) 
+  ultimately show "(x * cos t - y * sin t)\<^sup>2 + (x * sin t + y * cos t)\<^sup>2 = x\<^sup>2 + y\<^sup>2"
+    by (simp add: Groups.mult_ac(2) Groups.mult_ac(3) right_diff_distrib sin_squared_eq)
   thus "(x * cos t + y * sin t)\<^sup>2 + (y * cos t - x * sin t)\<^sup>2 = x\<^sup>2 + y\<^sup>2"
     by (simp add: add.commute add.left_commute power2_diff power2_sum)
 qed
@@ -61,8 +61,8 @@ declare has_vderiv_on_const [poly_derivatives]
     and derivative_intros(192) [poly_derivatives]
     and derivative_intros(194) [poly_derivatives]
 
-lemma has_vderiv_on_compose_eq: 
-  assumes "D f = f' on g ` T" 
+lemma has_vderiv_on_compose_eq:
+  assumes "D f = f' on g ` T"
     and " D g = g' on T"
     and "h = (\<lambda>x. g' x *\<^sub>R f' (g x))"
   shows "D (\<lambda>t. f (g t)) = h on T"
@@ -76,39 +76,38 @@ lemma vderiv_on_compose_add [derivative_intros]:
   by(auto intro: derivative_intros)
 
 lemma has_vderiv_on_divide_cnst: "a \<noteq> 0 \<Longrightarrow> D (\<lambda>t. t/a) = (\<lambda>t. 1/a) on T"
-  unfolding has_vderiv_on_def has_vector_derivative_def 
+  unfolding has_vderiv_on_def has_vector_derivative_def
   apply clarify
   apply(rule_tac f'1="\<lambda>t. t" and g'1="\<lambda> x. 0" in derivative_eq_intros(18))
   by(auto intro: derivative_eq_intros)
 
-lemma has_vderiv_on_power: "n \<ge> 1 \<Longrightarrow> D (\<lambda>t. t ^ n) = (\<lambda>t. n * (t ^ (n - 1))) on T" 
-  unfolding has_vderiv_on_def has_vector_derivative_def 
-  apply clarify
-  by(rule_tac f'1="\<lambda> t. t" in derivative_eq_intros(15)) auto
+lemma has_vderiv_on_power: "n \<ge> 1 \<Longrightarrow> D (\<lambda>t. t ^ n) = (\<lambda>t. n * (t ^ (n - 1))) on T"
+  unfolding has_vderiv_on_def has_vector_derivative_def
+  by (auto intro!: derivative_eq_intros)
 
 lemma has_vderiv_on_exp: "D (\<lambda>t. exp t) = (\<lambda>t. exp t) on T"
   unfolding has_vderiv_on_def has_vector_derivative_def by (auto intro: derivative_intros)
 
-lemma has_vderiv_on_cos_comp: 
+lemma has_vderiv_on_cos_comp:
   "D (f::real \<Rightarrow> real) = f' on T \<Longrightarrow> D (\<lambda>t. cos (f t)) = (\<lambda>t. - (f' t) * sin (f t)) on T"
   apply(rule has_vderiv_on_compose_eq[of "\<lambda>t. cos t"])
-  unfolding has_vderiv_on_def has_vector_derivative_def 
+  unfolding has_vderiv_on_def has_vector_derivative_def
     apply clarify
   by(auto intro!: derivative_eq_intros simp: fun_eq_iff)
 
-lemma has_vderiv_on_sin_comp: 
+lemma has_vderiv_on_sin_comp:
   "D (f::real \<Rightarrow> real) = f' on T \<Longrightarrow> D (\<lambda>t. sin (f t)) = (\<lambda>t. (f' t) * cos (f t)) on T"
   apply(rule has_vderiv_on_compose_eq[of "\<lambda>t. sin t"])
-  unfolding has_vderiv_on_def has_vector_derivative_def 
+  unfolding has_vderiv_on_def has_vector_derivative_def
     apply clarify
   by(auto intro!: derivative_eq_intros simp: fun_eq_iff)
 
-lemma has_vderiv_on_exp_comp: 
+lemma has_vderiv_on_exp_comp:
   "D (f::real \<Rightarrow> real) = f' on T \<Longrightarrow> D (\<lambda>t. exp (f t)) = (\<lambda>t. (f' t) * exp (f t)) on T"
   apply(rule has_vderiv_on_compose_eq[of "\<lambda>t. exp t"])
   by (rule has_vderiv_on_exp, simp_all add: mult.commute)
 
-lemma vderiv_uminus_intro [poly_derivatives]: 
+lemma vderiv_uminus_intro [poly_derivatives]:
   "D f = f' on T \<Longrightarrow> g = (\<lambda>t. - f' t) \<Longrightarrow> D (\<lambda>t. - f t) = g on T"
   using has_vderiv_on_uminus by auto
 
@@ -123,7 +122,7 @@ lemma vderiv_npow_intro [poly_derivatives]:
   assumes "n \<ge> 1" and "D f = f' on T" and "g = (\<lambda>t. n * (f' t) * (f t)^(n-1))"
   shows "D (\<lambda>t. (f t)^n) = g on T"
   apply(rule has_vderiv_on_compose_eq[of "\<lambda>t. t^n"])
-  using assms(1) 
+  using assms(1)
     apply(rule has_vderiv_on_power)
   using assms by auto
 
@@ -150,16 +149,16 @@ lemma "D (\<lambda>t. a * t\<^sup>2 / 2 + v * t + x) = (\<lambda>t. a * t + v) o
 lemma "D (\<lambda>t. v * t - a * t\<^sup>2 / 2 + x) = (\<lambda>x. v - a * x) on T"
   by(auto intro!: poly_derivatives)
 
-lemma "c \<noteq> 0 \<Longrightarrow> D (\<lambda>t. a5 * t^5 + a3 * (t^3 / c) - a2 * exp (t^2) + a1 * cos t + a0) = 
+lemma "c \<noteq> 0 \<Longrightarrow> D (\<lambda>t. a5 * t^5 + a3 * (t^3 / c) - a2 * exp (t^2) + a1 * cos t + a0) =
   (\<lambda>t. 5 * a5 * t^4 + 3 * a3 * (t^2 / c) - 2 * a2 * t * exp (t^2) - a1 * sin t) on T"
   by(auto intro!: poly_derivatives)
 
-lemma "c \<noteq> 0 \<Longrightarrow> D (\<lambda>t. - a3 * exp (t^3 / c) + a1 * sin t + a2 * t^2) = 
+lemma "c \<noteq> 0 \<Longrightarrow> D (\<lambda>t. - a3 * exp (t^3 / c) + a1 * sin t + a2 * t^2) =
   (\<lambda>t. a1 * cos t + 2 * a2 * t - 3 * a3 * t^2 / c * exp (t^3 / c)) on T"
   apply(intro poly_derivatives)
   using poly_derivatives(1,2) by force+
 
-lemma "c \<noteq> 0 \<Longrightarrow> D (\<lambda>t. exp (a * sin (cos (t^4) / c))) = 
+lemma "c \<noteq> 0 \<Longrightarrow> D (\<lambda>t. exp (a * sin (cos (t^4) / c))) =
 (\<lambda>t. - 4 * a * t^3 * sin (t^4) / c * cos (cos (t^4) / c) * exp (a * sin (cos (t^4) / c))) on T"
   apply(intro poly_derivatives)
   using poly_derivatives(1,2) by force+
@@ -168,17 +167,17 @@ lemma "c \<noteq> 0 \<Longrightarrow> D (\<lambda>t. exp (a * sin (cos (t^4) / c
 subsection \<open> Filters \<close>
 
 lemma eventually_at_within_mono:
-  assumes "t \<in> interior T" and "T \<subseteq> S" 
+  assumes "t \<in> interior T" and "T \<subseteq> S"
     and "eventually P (at t within T)"
   shows "eventually P (at t within S)"
   by (meson assms eventually_within_interior interior_mono subsetD)
 
-lemma netlimit_at_within_mono: 
+lemma netlimit_at_within_mono:
   fixes t::"'a::{perfect_space,t2_space}"
   assumes "t \<in> interior T" and "T \<subseteq> S"
   shows "netlimit (at t within S) = t"
   using assms(1) interior_mono[OF \<open>T \<subseteq> S\<close>] netlimit_within_interior by auto
-  
+
 lemma has_derivative_at_within_mono:
   assumes "(t::real) \<in> interior T" and "T \<subseteq> S"
     and "D f \<mapsto> f' at t within T"
@@ -193,7 +192,7 @@ lemma eventually_all_finite2:
   shows "eventually (\<lambda>x. \<forall>i. P i x) F"
 proof(unfold eventually_def)
   let ?F = "Rep_filter F"
-  have obs: "\<forall>i. ?F (P i)" 
+  have obs: "\<forall>i. ?F (P i)"
     using h by auto
   have "?F (\<lambda>x. \<forall>i \<in> UNIV. P i x)"
     apply(rule finite_induct)
@@ -211,7 +210,7 @@ proof-
   have "eventually (\<lambda>x. \<forall>i. P i x) F"
     using h1 eventually_all_finite2 by blast
   thus "eventually Q F"
-    unfolding eventually_def 
+    unfolding eventually_def
     using h2 eventually_mono by auto
 qed
 
@@ -219,16 +218,16 @@ qed
 subsection \<open> Multivariable derivatives \<close>
 
 lemma frechet_vec_lambda:
-  fixes f::"real \<Rightarrow> ('a::banach)^('m::finite)" and x::real and T::"real set" 
+  fixes f::"real \<Rightarrow> ('a::banach)^('m::finite)" and x::real and T::"real set"
   defines "x\<^sub>0 \<equiv> netlimit (at x within T)" and "m \<equiv> real CARD('m)"
   assumes "\<forall>i. ((\<lambda>y. (f y $ i - f x\<^sub>0 $ i - (y - x\<^sub>0) *\<^sub>R f' x $ i) /\<^sub>R (\<parallel>y - x\<^sub>0\<parallel>)) \<longlongrightarrow> 0) (at x within T)"
   shows "((\<lambda>y. (f y - f x\<^sub>0 - (y - x\<^sub>0) *\<^sub>R f' x) /\<^sub>R (\<parallel>y - x\<^sub>0\<parallel>)) \<longlongrightarrow> 0) (at x within T)"
 proof(simp add: tendsto_iff, clarify)
-  fix \<epsilon>::real assume "0 < \<epsilon>" 
+  fix \<epsilon>::real assume "0 < \<epsilon>"
   let "?\<Delta>" = "\<lambda>y. y - x\<^sub>0" and "?\<Delta>f" = "\<lambda>y. f y - f x\<^sub>0"
-  let "?P" = "\<lambda>i e y. inverse \<bar>?\<Delta> y\<bar> * (\<parallel>f y $ i - f x\<^sub>0 $ i - ?\<Delta> y *\<^sub>R f' x $ i\<parallel>) < e" 
+  let "?P" = "\<lambda>i e y. inverse \<bar>?\<Delta> y\<bar> * (\<parallel>f y $ i - f x\<^sub>0 $ i - ?\<Delta> y *\<^sub>R f' x $ i\<parallel>) < e"
     and "?Q" = "\<lambda>y. inverse \<bar>?\<Delta> y\<bar> * (\<parallel>?\<Delta>f y - ?\<Delta> y *\<^sub>R f' x\<parallel>) < \<epsilon>"
-  have "0 < \<epsilon> / sqrt m" 
+  have "0 < \<epsilon> / sqrt m"
     using \<open>0 < \<epsilon>\<close> by (auto simp: assms)
   hence "\<forall>i. eventually (\<lambda>y. ?P i (\<epsilon> / sqrt m) y) (at x within T)"
     using assms unfolding tendsto_iff by simp
@@ -237,33 +236,33 @@ proof(simp add: tendsto_iff, clarify)
     fix t::real
     let ?c = "inverse \<bar>t - x\<^sub>0\<bar>" and "?u t" = "\<lambda>i. f t $ i - f x\<^sub>0 $ i - ?\<Delta> t *\<^sub>R f' x $ i"
     assume hyp:"\<forall>i. ?c * (\<parallel>?u t i\<parallel>) < \<epsilon> / sqrt m"
-    hence "\<forall>i. (?c *\<^sub>R (\<parallel>?u t i\<parallel>))\<^sup>2 < (\<epsilon> / sqrt m)\<^sup>2" 
+    hence "\<forall>i. (?c *\<^sub>R (\<parallel>?u t i\<parallel>))\<^sup>2 < (\<epsilon> / sqrt m)\<^sup>2"
       by (simp add: power_strict_mono)
-    hence "\<forall>i. ?c\<^sup>2 * ((\<parallel>?u t i\<parallel>))\<^sup>2 < \<epsilon>\<^sup>2 / m" 
+    hence "\<forall>i. ?c\<^sup>2 * ((\<parallel>?u t i\<parallel>))\<^sup>2 < \<epsilon>\<^sup>2 / m"
       by (simp add: power_mult_distrib power_divide assms)
-    hence "\<forall>i. ?c\<^sup>2 * ((\<parallel>?u t i\<parallel>))\<^sup>2 < \<epsilon>\<^sup>2 / m" 
+    hence "\<forall>i. ?c\<^sup>2 * ((\<parallel>?u t i\<parallel>))\<^sup>2 < \<epsilon>\<^sup>2 / m"
       by (auto simp: assms)
-    also have "({}::'m set) \<noteq> UNIV \<and> finite (UNIV :: 'm set)" 
+    also have "({}::'m set) \<noteq> UNIV \<and> finite (UNIV :: 'm set)"
       by simp
     ultimately have "(\<Sum>i\<in>UNIV. ?c\<^sup>2 * ((\<parallel>?u t i\<parallel>))\<^sup>2) < (\<Sum>(i::'m)\<in>UNIV. \<epsilon>\<^sup>2 / m)"
       by (metis (lifting) sum_strict_mono)
     moreover have "?c\<^sup>2 * (\<Sum>i\<in>UNIV. (\<parallel>?u t i\<parallel>)\<^sup>2) = (\<Sum>i\<in>UNIV. ?c\<^sup>2 *  (\<parallel>?u t i\<parallel>)\<^sup>2)"
       using sum_distrib_left by blast
-    ultimately have "?c\<^sup>2 * (\<Sum>i\<in>UNIV. (\<parallel>?u t i\<parallel>)\<^sup>2) < \<epsilon>\<^sup>2" 
+    ultimately have "?c\<^sup>2 * (\<Sum>i\<in>UNIV. (\<parallel>?u t i\<parallel>)\<^sup>2) < \<epsilon>\<^sup>2"
       by (simp add: assms)
     hence "sqrt (?c\<^sup>2 * (\<Sum>i\<in>UNIV. (\<parallel>?u t i\<parallel>)\<^sup>2)) < sqrt (\<epsilon>\<^sup>2)"
       using real_sqrt_less_iff by blast
-    also have "... = \<epsilon>" 
-      using \<open>0 < \<epsilon>\<close> by auto 
+    also have "... = \<epsilon>"
+      using \<open>0 < \<epsilon>\<close> by auto
     moreover have "?c * sqrt (\<Sum>i\<in>UNIV. (\<parallel>?u t i\<parallel>)\<^sup>2) = sqrt (?c\<^sup>2 * (\<Sum>i\<in>UNIV. (\<parallel>?u t i\<parallel>)\<^sup>2))"
-      by (simp add: real_sqrt_mult)   
-    ultimately show "?c * sqrt (\<Sum>i\<in>UNIV. (\<parallel>?u t i\<parallel>)\<^sup>2) < \<epsilon>" 
+      by (simp add: real_sqrt_mult)
+    ultimately show "?c * sqrt (\<Sum>i\<in>UNIV. (\<parallel>?u t i\<parallel>)\<^sup>2) < \<epsilon>"
       by simp
   qed
 qed
 
 lemma frechet_vec_nth:
-  fixes f::"real \<Rightarrow> ('a::real_normed_vector)^'m" and x::real and T::"real set" 
+  fixes f::"real \<Rightarrow> ('a::real_normed_vector)^'m" and x::real and T::"real set"
   defines "x\<^sub>0 \<equiv> netlimit (at x within T)"
   assumes "((\<lambda>y. (f y - f x\<^sub>0 - (y - x\<^sub>0) *\<^sub>R f' x) /\<^sub>R (\<parallel>y - x\<^sub>0\<parallel>)) \<longlongrightarrow> 0) (at x within T)"
   shows "((\<lambda>y. (f y $ i - f x\<^sub>0 $ i - (y - x\<^sub>0) *\<^sub>R f' x $ i) /\<^sub>R (\<parallel>y - x\<^sub>0\<parallel>)) \<longlongrightarrow> 0) (at x within T)"
@@ -272,7 +271,7 @@ proof(unfold tendsto_iff dist_norm, clarify)
   fix \<epsilon>::real assume "0 < \<epsilon>"
   let "?P" = "\<lambda>y. \<parallel>(?\<Delta>f y - ?\<Delta> y *\<^sub>R f' x) /\<^sub>R (\<parallel>?\<Delta> y\<parallel>) - 0\<parallel> < \<epsilon>"
   and "?Q" = "\<lambda>y. \<parallel>(f y $ i - f x\<^sub>0 $ i - ?\<Delta> y *\<^sub>R f' x $ i) /\<^sub>R (\<parallel>?\<Delta> y\<parallel>) - 0\<parallel> < \<epsilon>"
-  have "eventually ?P (at x within T)" 
+  have "eventually ?P (at x within T)"
     using \<open>0 < \<epsilon>\<close> assms unfolding tendsto_iff by auto
   thus "eventually ?Q (at x within T)"
   proof(rule_tac P="?P" in eventually_mono, simp_all)
@@ -281,9 +280,9 @@ proof(unfold tendsto_iff dist_norm, clarify)
     assume hyp:"inverse \<bar>?\<Delta> y\<bar> * (\<parallel>?\<Delta>f y - ?\<Delta> y *\<^sub>R f' x\<parallel>) < \<epsilon>"
     have "\<parallel>(?\<Delta>f y - ?\<Delta> y *\<^sub>R f' x) $ i\<parallel> \<le> \<parallel>?\<Delta>f y - ?\<Delta> y *\<^sub>R f' x\<parallel>"
       using Finite_Cartesian_Product.norm_nth_le by blast
-    also have "\<parallel>?u i\<parallel> = \<parallel>(?\<Delta>f y - ?\<Delta> y *\<^sub>R f' x) $ i\<parallel>" 
+    also have "\<parallel>?u i\<parallel> = \<parallel>(?\<Delta>f y - ?\<Delta> y *\<^sub>R f' x) $ i\<parallel>"
       by simp
-    ultimately have "\<parallel>?u i\<parallel> \<le> \<parallel>?\<Delta>f y - ?\<Delta> y *\<^sub>R f' x\<parallel>" 
+    ultimately have "\<parallel>?u i\<parallel> \<le> \<parallel>?\<Delta>f y - ?\<Delta> y *\<^sub>R f' x\<parallel>"
       by linarith
     hence "inverse \<bar>?\<Delta> y\<bar> * (\<parallel>?u i\<parallel>) \<le> inverse \<bar>?\<Delta> y\<bar> * (\<parallel>?\<Delta>f y - ?\<Delta> y *\<^sub>R f' x\<parallel>)"
       by (simp add: mult_left_mono)

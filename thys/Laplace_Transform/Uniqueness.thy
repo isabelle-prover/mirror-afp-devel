@@ -11,12 +11,12 @@ lemma laplace_transform_zero:\<comment> \<open>should also work for piecewise co
   assumes cont_f: "continuous_on {0..} f"
   assumes eo: "exponential_order M a f"
   assumes laplace: "\<And>s. Re s > a \<Longrightarrow> (f has_laplace 0) s"
-  assumes "t \<ge> 0" 
+  assumes "t \<ge> 0"
   shows "f t = 0"
 proof -
   define I where "I \<equiv> \<lambda>s k. integral {0..k} (laplace_integrand f s)"
   have bounded_image: "bounded (f ` {0..b})" for b
-    by (auto intro!: compact_imp_bounded compact_continuous_image cont_f intro: continuous_on_subset) 
+    by (auto intro!: compact_imp_bounded compact_continuous_image cont_f intro: continuous_on_subset)
   obtain B where B: "\<forall>x\<in>{0..b}. cmod (f x) \<le> B b" for b
     apply atomize_elim
     apply (rule choice)
@@ -78,7 +78,7 @@ proof -
     then have "\<forall>\<^sub>F b in at_top. I (s0 + Suc n) b = ?I n b"
     proof eventually_elim
       case (elim b)
-      have eq: "exp (t *\<^sub>R - complex_of_real (s0 + real (Suc n))) * f t = 
+      have eq: "exp (t *\<^sub>R - complex_of_real (s0 + real (Suc n))) * f t =
         complex_of_real (exp (- (real n * t)) * exp (- t) * exp (- (s0 * t))) * f t"
         for t
         by (auto simp: Euler mult_exp_exp algebra_simps simp del: of_real_mult)
@@ -103,7 +103,7 @@ proof -
     moreover have "(I (s0 + Suc n) \<longlongrightarrow> 0) at_top"
       by (rule imp) (use \<open>s0 > a\<close> in auto)
     ultimately have "(?I n \<longlongrightarrow> 0) at_top"
-      by (rule Lim_transform_eventually)
+      by (rule Lim_transform_eventually[rotated])
     then have 1: "((\<lambda>x. integral {exp (ln x)..1} ?i) \<longlongrightarrow> 0) (at_right 0)"
       unfolding at_top_mirror filtermap_ln_at_right[symmetric] filtermap_filtermap filterlim_filtermap
       by simp
@@ -111,7 +111,7 @@ proof -
       by (simp add: eventually_at_filter)
     then have "\<forall>\<^sub>F x in at_right 0. integral {exp (ln x)..1} ?i = integral {x .. 1} ?i"
       by eventually_elim (auto simp:)
-    from Lim_transform_eventually[OF this 1]
+    from Lim_transform_eventually[OF 1 this]
     have "((\<lambda>x. integral {x..1} ?i) \<longlongrightarrow> 0) (at_right 0)"
       by simp
     moreover

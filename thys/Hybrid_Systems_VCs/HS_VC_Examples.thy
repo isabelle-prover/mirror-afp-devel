@@ -5,7 +5,7 @@
 
 subsection \<open> Examples \<close>
 
-text \<open> We prove partial correctness specifications of some hybrid systems with our 
+text \<open> We prove partial correctness specifications of some hybrid systems with our
 verification components.\<close>
 
 theory HS_VC_Examples
@@ -16,7 +16,7 @@ begin
 
 subsubsection \<open>Pendulum\<close>
 
-text \<open> The ODEs @{text "x' t = y t"} and {text "y' t = - x t"} describe the circular motion of 
+text \<open> The ODEs @{text "x' t = y t"} and {text "y' t = - x t"} describe the circular motion of
 a mass attached to a string looked from above. We use @{text "s$1"} to represent the x-coordinate
 and @{text "s$2"} for the y-coordinate. We prove that this motion remains circular. \<close>
 
@@ -53,44 +53,44 @@ no_notation fpend ("f")
 
 subsubsection \<open> Bouncing Ball \<close>
 
-text \<open> A ball is dropped from rest at an initial height @{text "h"}. The motion is described with 
-the free-fall equations @{text "x' t = v t"} and @{text "v' t = g"} where @{text "g"} is the 
-constant acceleration due to gravity. The bounce is modelled with a variable assigntment that 
-flips the velocity, thus it is a completely elastic collision with the ground. We use @{text "s$1"} 
+text \<open> A ball is dropped from rest at an initial height @{text "h"}. The motion is described with
+the free-fall equations @{text "x' t = v t"} and @{text "v' t = g"} where @{text "g"} is the
+constant acceleration due to gravity. The bounce is modelled with a variable assigntment that
+flips the velocity, thus it is a completely elastic collision with the ground. We use @{text "s$1"}
 to ball's height and @{text "s$2"} for its velocity. We prove that the ball remains above ground
 and below its initial resting position. \<close>
 
-abbreviation fball :: "real \<Rightarrow> real^2 \<Rightarrow> real^2" ("f") 
+abbreviation fball :: "real \<Rightarrow> real^2 \<Rightarrow> real^2" ("f")
   where "f g s \<equiv> (\<chi> i. if i = 1 then s$2 else g)"
 
-abbreviation ball_flow :: "real \<Rightarrow> real \<Rightarrow> real^2 \<Rightarrow> real^2" ("\<phi>") 
+abbreviation ball_flow :: "real \<Rightarrow> real \<Rightarrow> real^2 \<Rightarrow> real^2" ("\<phi>")
   where "\<phi> g t s \<equiv> (\<chi> i. if i = 1 then g * t ^ 2/2 + s$2 * t + s$1 else g * t + s$2)"
 
 \<comment> \<open>Verified with differential invariants. \<close>
 
 named_theorems bb_real_arith "real arithmetic properties for the bouncing ball."
 
-lemma inv_imp_pos_le[bb_real_arith]: 
+lemma inv_imp_pos_le[bb_real_arith]:
   assumes "0 > g" and inv: "2 * g * x - 2 * g * h = v * v"
   shows "(x::real) \<le> h"
 proof-
-  have "v * v = 2 * g * x - 2 * g * h \<and> 0 > g" 
+  have "v * v = 2 * g * x - 2 * g * h \<and> 0 > g"
     using inv and \<open>0 > g\<close> by auto
-  hence obs:"v * v = 2 * g * (x - h) \<and> 0 > g \<and> v * v \<ge> 0" 
-    using left_diff_distrib mult.commute by (metis zero_le_square) 
-  hence "(v * v)/(2 * g) = (x - h)" 
-    by auto 
+  hence obs:"v * v = 2 * g * (x - h) \<and> 0 > g \<and> v * v \<ge> 0"
+    using left_diff_distrib mult.commute by (metis zero_le_square)
+  hence "(v * v)/(2 * g) = (x - h)"
+    by auto
   also from obs have "(v * v)/(2 * g) \<le> 0"
-    using divide_nonneg_neg by fastforce 
-  ultimately have "h - x \<ge> 0" 
+    using divide_nonneg_neg by fastforce
+  ultimately have "h - x \<ge> 0"
     by linarith
   thus ?thesis by auto
 qed
 
-lemma bouncing_ball_inv: "g < 0 \<Longrightarrow> h \<ge> 0 \<Longrightarrow> 
+lemma bouncing_ball_inv: "g < 0 \<Longrightarrow> h \<ge> 0 \<Longrightarrow>
   (\<lambda>s. s$1 = h \<and> s$2 = 0) \<le>
   |LOOP (
-    (x\<acute>=(f g) & (\<lambda> s. s$1 \<ge> 0) DINV (\<lambda>s. 2 * g * s$1 - 2 * g * h - s$2 * s$2 = 0)) ; 
+    (x\<acute>=(f g) & (\<lambda> s. s$1 \<ge> 0) DINV (\<lambda>s. 2 * g * s$1 - 2 * g * h - s$2 * s$2 = 0)) ;
     (IF (\<lambda> s. s$1 = 0) THEN (2 ::= (\<lambda>s. - s$2)) ELSE skip))
   INV (\<lambda>s. 0 \<le> s$1 \<and>2 * g * s$1 - 2 * g * h - s$2 * s$2 = 0)]
   (\<lambda>s. 0 \<le> s$1 \<and> s$1 \<le> h)"
@@ -109,9 +109,9 @@ proof-
     by (metis (mono_tags, hide_lams) Groups.mult_ac(1,3) mult_zero_right
         monoid_mult_class.power2_eq_square semiring_class.distrib_left)
   hence "g\<^sup>2 * \<tau>\<^sup>2 + 2 * g * v * \<tau> + v\<^sup>2 + 2 * g * h = 0"
-    using invar by (simp add: monoid_mult_class.power2_eq_square) 
+    using invar by (simp add: monoid_mult_class.power2_eq_square)
   hence obs: "(g * \<tau> + v)\<^sup>2 + 2 * g * h = 0"
-    apply(subst power2_sum) by (metis (no_types, hide_lams) Groups.add_ac(2, 3) 
+    apply(subst power2_sum) by (metis (no_types, hide_lams) Groups.add_ac(2, 3)
         Groups.mult_ac(2, 3) monoid_mult_class.power2_eq_square nat_distrib(2))
   thus "2 * g * h + (g * \<tau> + v) * (g * \<tau> + v) = 0"
     by (simp add: add.commute distrib_right power2_eq_square)
@@ -119,16 +119,15 @@ qed
 
 lemma inv_conserv_at_air[bb_real_arith]:
   assumes invar: "2 * g * x = 2 * g * h + v * v"
-  shows "2 * g * (g * \<tau>\<^sup>2 / 2 + v * \<tau> + (x::real)) = 
+  shows "2 * g * (g * \<tau>\<^sup>2 / 2 + v * \<tau> + (x::real)) =
   2 * g * h + (g * \<tau> + v) * (g * \<tau> + v)" (is "?lhs = ?rhs")
 proof-
-  have "?lhs = g\<^sup>2 * \<tau>\<^sup>2 + 2 * g * v * \<tau> + 2 * g * x" 
-    apply(subst Rat.sign_simps(18))+ 
-    by(auto simp: semiring_normalization_rules(29))
+  have "?lhs = g\<^sup>2 * \<tau>\<^sup>2 + 2 * g * v * \<tau> + 2 * g * x"
+    by(auto simp: algebra_simps semiring_normalization_rules(29))
   also have "... = g\<^sup>2 * \<tau>\<^sup>2 + 2 * g * v * \<tau> + 2 * g * h + v * v" (is "... = ?middle")
     by(subst invar, simp)
   finally have "?lhs = ?middle".
-  moreover 
+  moreover
   {have "?rhs = g * g * (\<tau> * \<tau>) + 2 * g * v * \<tau> + 2 * g * h + v * v"
     by (simp add: Groups.mult_ac(2,3) semiring_class.distrib_left)
   also have "... = ?middle"
@@ -137,10 +136,10 @@ proof-
   ultimately show ?thesis by auto
 qed
 
-lemma bouncing_ball_dyn: "g < 0 \<Longrightarrow> h \<ge> 0 \<Longrightarrow> 
+lemma bouncing_ball_dyn: "g < 0 \<Longrightarrow> h \<ge> 0 \<Longrightarrow>
   (\<lambda>s. s$1 = h \<and> s$2 = 0) \<le>
   |LOOP (
-    (EVOL (\<phi> g) (\<lambda> s. s$1 \<ge> 0) T) ; 
+    (EVOL (\<phi> g) (\<lambda> s. s$1 \<ge> 0) T) ;
     (IF (\<lambda> s. s$1 = 0) THEN (2 ::= (\<lambda>s. - s$2)) ELSE skip))
   INV (\<lambda>s. 0 \<le> s$1 \<and>2 * g * s$1 = 2 * g * h + s$2 * s$2)]
   (\<lambda>s. 0 \<le> s$1 \<and> s$1 \<le> h)"
@@ -154,10 +153,10 @@ lemma local_flow_ball: "local_flow (f g) UNIV UNIV (\<phi> g)"
     apply(simp add: dist_norm norm_vec_def L2_set_def UNIV_2)
   by (auto simp: forall_2 intro!: poly_derivatives)
 
-lemma bouncing_ball_flow: "g < 0 \<Longrightarrow> h \<ge> 0 \<Longrightarrow> 
+lemma bouncing_ball_flow: "g < 0 \<Longrightarrow> h \<ge> 0 \<Longrightarrow>
   (\<lambda>s. s$1 = h \<and> s$2 = 0) \<le>
   |LOOP (
-    (x\<acute>=(f g) & (\<lambda> s. s$1 \<ge> 0)) ; 
+    (x\<acute>=(f g) & (\<lambda> s. s$1 \<ge> 0)) ;
     (IF (\<lambda> s. s$1 = 0) THEN (2 ::= (\<lambda>s. - s$2)) ELSE skip))
   INV (\<lambda>s. 0 \<le> s$1 \<and>2 * g * s$1 = 2 * g * h + s$2 * s$2)]
   (\<lambda>s. 0 \<le> s$1 \<and> s$1 \<le> h)"
@@ -169,21 +168,21 @@ no_notation fball ("f")
 
 subsubsection \<open> Thermostat \<close>
 
-text \<open> A thermostat has a chronometer, a thermometer and a switch to turn on and off a heater. 
-At most every @{text "t"} minutes, it sets its chronometer to @{term "0::real"}, it registers 
-the room temperature, and it turns the heater on (or off) based on this reading. The temperature 
-follows the ODE @{text "T' = - a * (T - U)"} where @{text "U"} is @{text "L \<ge> 0"} when the heater 
-is on, and @{text "0"} when it is off. We use @{term "1::4"} to denote the room's temperature, 
-@{term "2::4"} is time as measured by the thermostat's chronometer, @{term "3::4"} is the 
-temperature detected by the thermometer, and @{term "4::4"} states whether the heater is on 
-(@{text "s$4 = 1"}) or off (@{text "s$4 = 0"}). We prove that the thermostat keeps the room's 
+text \<open> A thermostat has a chronometer, a thermometer and a switch to turn on and off a heater.
+At most every @{text "t"} minutes, it sets its chronometer to @{term "0::real"}, it registers
+the room temperature, and it turns the heater on (or off) based on this reading. The temperature
+follows the ODE @{text "T' = - a * (T - U)"} where @{text "U"} is @{text "L \<ge> 0"} when the heater
+is on, and @{text "0"} when it is off. We use @{term "1::4"} to denote the room's temperature,
+@{term "2::4"} is time as measured by the thermostat's chronometer, @{term "3::4"} is the
+temperature detected by the thermometer, and @{term "4::4"} states whether the heater is on
+(@{text "s$4 = 1"}) or off (@{text "s$4 = 0"}). We prove that the thermostat keeps the room's
 temperature between @{text "Tmin"} and @{text "Tmax"}. \<close>
 
 abbreviation temp_vec_field :: "real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> real^4" ("f")
   where "f a L s \<equiv> (\<chi> i. if i = 2 then 1 else (if i = 1 then - a * (s$1 - L) else 0))"
 
 abbreviation temp_flow :: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real^4 \<Rightarrow> real^4" ("\<phi>")
-  where "\<phi> a L t s \<equiv> (\<chi> i. if i = 1 then - exp(-a * t) * (L - s$1) + L else 
+  where "\<phi> a L t s \<equiv> (\<chi> i. if i = 1 then - exp(-a * t) * (L - s$1) + L else
   (if i = 2 then t + s$2 else s$i))"
 
 \<comment> \<open>Verified with the flow. \<close>
@@ -230,15 +229,15 @@ proof-
   thus "Tmin \<le> exp (-a * t) * T"
     using Thyps by (simp add: pos_divide_le_eq)
   show "exp (-a * t) * T \<le> Tmax"
-    using Thyps mult_left_le_one_le[OF _ exp_ge_zero obs(2), of T] 
+    using Thyps mult_left_le_one_le[OF _ exp_ge_zero obs(2), of T]
       less_eq_real_def order_trans_rules(23) by blast
 qed
 
 lemma temp_dyn_up_real_arith:
   assumes "a > 0" and Thyps: "Tmin \<le> T" "T \<le> Tmax" "Tmax < (L::real)"
     and thyps: "0 \<le> t" "\<forall>\<tau>\<in>{0..t}. \<tau> \<le> - (ln ((L - Tmax) / (L - T)) / a) "
-  shows "L - Tmax \<le> exp (-(a * t)) * (L - T)" 
-    and "L - exp (-(a * t)) * (L - T) \<le> Tmax" 
+  shows "L - Tmax \<le> exp (-(a * t)) * (L - T)"
+    and "L - exp (-(a * t)) * (L - T) \<le> Tmax"
     and "Tmin \<le> L - exp (-(a * t)) * (L - T)"
 proof-
   have "0 \<le> t \<and> t \<le> - (ln ((L - Tmax) / (L - T)) / a)"
@@ -263,16 +262,16 @@ qed
 
 lemmas fbox_temp_dyn = local_flow.fbox_g_ode_ivl[OF local_flow_temp _ UNIV_I]
 
-lemma thermostat: 
+lemma thermostat:
   assumes "a > 0" and "0 \<le> t" and "0 < Tmin" and "Tmax < L"
-  shows "(\<lambda>s. Tmin \<le> s$1 \<and> s$1 \<le> Tmax \<and> s$4 = 0) \<le> 
-  |LOOP 
+  shows "(\<lambda>s. Tmin \<le> s$1 \<and> s$1 \<le> Tmax \<and> s$4 = 0) \<le>
+  |LOOP
     \<comment> \<open>control\<close>
     ((2 ::= (\<lambda>s. 0));(3 ::= (\<lambda>s. s$1));
-    (IF (\<lambda>s. s$4 = 0 \<and> s$3 \<le> Tmin + 1) THEN (4 ::= (\<lambda>s.1)) ELSE 
+    (IF (\<lambda>s. s$4 = 0 \<and> s$3 \<le> Tmin + 1) THEN (4 ::= (\<lambda>s.1)) ELSE
     (IF (\<lambda>s. s$4 = 1 \<and> s$3 \<ge> Tmax - 1) THEN (4 ::= (\<lambda>s.0)) ELSE skip));
     \<comment> \<open>dynamics\<close>
-    (IF (\<lambda>s. s$4 = 0) THEN (x\<acute>=(f a 0) & (\<lambda>s. s$2 \<le> - (ln (Tmin/s$3))/a) on {0..t} UNIV @ 0) 
+    (IF (\<lambda>s. s$4 = 0) THEN (x\<acute>=(f a 0) & (\<lambda>s. s$2 \<le> - (ln (Tmin/s$3))/a) on {0..t} UNIV @ 0)
     ELSE (x\<acute>=(f a L) & (\<lambda>s. s$2 \<le> - (ln ((L-Tmax)/(L-s$3)))/a) on {0..t} UNIV @ 0)) )
   INV (\<lambda>s. Tmin \<le>s$1 \<and> s$1 \<le> Tmax \<and> (s$4 = 0 \<or> s$4 = 1))]
   (\<lambda>s. Tmin \<le> s$1 \<and> s$1 \<le> Tmax)"

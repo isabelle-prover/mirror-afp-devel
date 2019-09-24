@@ -301,7 +301,7 @@ proof -
     by eventually_elim (subst eq, use that in auto)
   then have "i \<in> I \<Longrightarrow> a < i \<Longrightarrow> i \<le> b \<Longrightarrow> (g \<longlongrightarrow> l i) (at_left i)" for i
     using *(2)
-    by (rule Lim_transform_eventually) auto
+    by (rule Lim_transform_eventually[rotated]) auto
   moreover
   have "\<forall>\<^sub>F x in at_right i. f x = g x" if "a \<le> i" "i < b" for i
     using eventually_avoid_finite[OF \<open>finite I\<close>, of i "{i<..}"]
@@ -309,7 +309,7 @@ proof -
     by eventually_elim (subst eq, use that in auto)
   then have "i \<in> I \<Longrightarrow> a \<le> i \<Longrightarrow> i < b \<Longrightarrow> (g \<longlongrightarrow> u i) (at_right i)" for i
     using *(3)
-    by (rule Lim_transform_eventually) auto
+    by (rule Lim_transform_eventually[rotated]) auto
   ultimately
   show ?thesis
     by (rule piecewise_continuous_onI) auto
@@ -336,7 +336,7 @@ proof (rule Lim_transform_eventually)
     by (auto elim!: piecewise_continuous_onE simp: continuous_on_def)
   then show "(g \<longlongrightarrow> g i) (at_left i)"
     by (metis that at_within_Icc_at_left at_within_t1_space_avoid_finite
-        greaterThanLessThan_iff)      
+        greaterThanLessThan_iff)
   show "\<forall>\<^sub>F x in at_left i. g x = f x"
     using eventually_at_left_linorder[OF \<open>a < i\<close>]
     by eventually_elim (auto simp: \<open>a < i\<close> gf)
@@ -455,7 +455,7 @@ proof -
       with insert.prems
       have "piecewise_continuous_on a b I f"
         by (auto simp: piecewise_continuous_on_def)
-      from insert.IH[OF this] show ?thesis 
+      from insert.IH[OF this] show ?thesis
         by (rule 3) fact+
     qed
   qed
@@ -545,7 +545,7 @@ qed
 
 lemma tendsto_within_eventually:
   "(f \<longlongrightarrow> l) (at x within X)"
-  if 
+  if
     "(f \<longlongrightarrow> l) (at x within Y)"
     "\<forall>\<^sub>F y in at x within X. y \<in> Y"
   using _ that(1)

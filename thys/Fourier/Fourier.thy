@@ -557,7 +557,7 @@ proof -
   let ?g = "\<lambda>x. if x = a then d\<^sup>2 else 0"
   have bmg: "?g \<in> borel_measurable (lebesgue_on {a..b})"
     apply (rule measurable_restrict_space1)
-    using borel_measurable_If_I [of _ "{a}", OF borel_measurable_const] by auto
+    using borel_measurable_if_I [of _ "{a}", OF borel_measurable_const] by auto
   have bmf: "?f k \<in> borel_measurable (lebesgue_on {a..b})" for k
   proof -
     have bm: "(\<lambda>x. (Suc k) * d * (a+1 / real (Suc k) - x))
@@ -565,7 +565,7 @@ proof -
       by (intro measurable) (auto simp: measurable_completion measurable_restrict_space1)
     show ?thesis
       apply (intro borel_measurable_power measurable_restrict_space1)
-      using borel_measurable_If_I [of _ "{.. a+1 / (Suc k)}", OF bm]  apply auto
+      using borel_measurable_if_I [of _ "{.. a+1 / (Suc k)}", OF bm]  apply auto
       done
   qed
   have int_d2: "integrable (lebesgue_on {a..b}) (\<lambda>x. d\<^sup>2)"
@@ -1378,7 +1378,7 @@ proof -
       using False t1_space_nhds by blast
     ultimately show ?thesis
       using False
-      by (force simp: Dirichlet_kernel_def continuous_at eventually_at_filter elim: Lim_transform_eventually [rotated])
+      by (force simp: Dirichlet_kernel_def continuous_at eventually_at_filter elim: Lim_transform_eventually)
   qed
   then show ?thesis
     by (simp add: continuous_on_eq_continuous_at)
@@ -1564,7 +1564,7 @@ proof -
     by (simp add: Fourier_sum_limit_Dirichlet_kernel fft periodic)
   moreover have "(\<lambda>n. (\<Sum>k\<le>n. Fourier_coefficient f k * trigonometric_set k t) - f t) \<longlonglongrightarrow> 0"
     if "?\<Phi> \<longlonglongrightarrow> 0"
-  proof (rule Lim_transform_eventually [OF eventually_sequentiallyI that])
+  proof (rule Lim_transform_eventually [OF that eventually_sequentiallyI])
     show "(\<Sum>k\<le>n. Fourier_coefficient (\<lambda>x. f x - f t) k * trigonometric_set k t)
         = (\<Sum>k\<le>n. Fourier_coefficient f k * trigonometric_set k t) - f t"
       if "Suc 0 \<le> n" for n
@@ -1678,7 +1678,7 @@ proof (rule simple_Fourier_convergence_periodic [OF f])
         by (intro continuous_imp_measurable_on_sets_lebesgue continuous_intros) auto
     qed auto
     have "(\<lambda>x. f(x + t) - f t) absolutely_integrable_on {-pi..pi}"
-      by (intro absolutely_integrable_diff fxt) (simp add: set_integrable_def)
+      by (intro set_integral_diff fxt) (simp add: set_integrable_def)
     moreover
     have "(\<lambda>x. \<bar>x\<bar> powr (a - 1)) absolutely_integrable_on {-pi..pi}"
     proof -
@@ -2271,8 +2271,8 @@ proof -
   moreover have "bounded (inverse ` {x. \<not> \<bar>x\<bar> < \<delta>})"
     using \<open>\<delta> > 0\<close> by (auto simp: divide_simps intro: boundedI [where B = "1/\<delta>"])
   ultimately have "(\<lambda>x. (if \<bar>x\<bar> < \<delta> then 0 else inverse x) * (if x \<in> {-pi..pi} then f(t+x) - l else 0)) absolutely_integrable_on UNIV"
-    apply (intro absolutely_integrable_bounded_measurable_product_real measurable absolutely_integrable_diff)
-          apply (auto simp: borel_measurable_UNIV_eq measurable_completion simp flip: absolutely_integrable_restrict_UNIV [where S = "{-pi..pi}"])
+    apply (intro absolutely_integrable_bounded_measurable_product_real measurable set_integral_diff)
+          apply (auto simp: lebesgue_on_UNIV_eq measurable_completion simp flip: absolutely_integrable_restrict_UNIV [where S = "{-pi..pi}"])
     done
   moreover have "(if x \<in> {-pi..pi} then if \<bar>x\<bar> < \<delta> then 0 else (f(t+x) - l) / x else 0)
                = (if \<bar>x\<bar> < \<delta> then 0 else inverse x) * (if x \<in> {-pi..pi} then f(t+x) - l else 0)"  for x
@@ -2444,14 +2444,14 @@ lemma absolutely_integrable_mult_Fejer_kernel_reflected_part4:
     and periodic: "\<And>x. f(x + 2*pi) = f x" and "d \<le> pi"
   shows "(\<lambda>x. Fejer_kernel n x * (f(t + x) + f(t - x))) absolutely_integrable_on {0..d}"
   unfolding distrib_left
-  by (intro absolutely_integrable_add absolutely_integrable_mult_Fejer_kernel_reflected_part1 absolutely_integrable_mult_Fejer_kernel_reflected_part2 assms)
+  by (intro set_integral_add absolutely_integrable_mult_Fejer_kernel_reflected_part1 absolutely_integrable_mult_Fejer_kernel_reflected_part2 assms)
 
 lemma absolutely_integrable_mult_Fejer_kernel_reflected_part5:
   assumes f: "f absolutely_integrable_on {-pi..pi}"
     and periodic: "\<And>x. f(x + 2*pi) = f x" and "d \<le> pi"
   shows "(\<lambda>x. Fejer_kernel n x * ((f(t + x) + f(t - x)) - c)) absolutely_integrable_on {0..d}"
   unfolding distrib_left right_diff_distrib
-  by (intro absolutely_integrable_add absolutely_integrable_diff absolutely_integrable_on_const
+  by (intro set_integral_add set_integral_diff absolutely_integrable_on_const
       absolutely_integrable_mult_Fejer_kernel_reflected_part1 absolutely_integrable_mult_Fejer_kernel_reflected_part2 assms, auto)
 
 
@@ -2577,7 +2577,7 @@ proof -
         by (simp flip: absolutely_integrable_reflect_real [where f= "(\<lambda>x. f(t+x))"])
       have h_aint: "h absolutely_integrable_on {-pi..pi}"
         unfolding h_def
-        by (intro absolutely_integrable_on_const absolutely_integrable_diff absolutely_integrable_add, auto simp: ftx ftmx)
+        by (intro absolutely_integrable_on_const set_integral_diff set_integral_add, auto simp: ftx ftmx)
       have "(\<lambda>n. LINT x|lebesgue_on {\<xi>..pi}. Fejer_kernel n x * h x) \<longlonglongrightarrow> 0"
       proof (rule Lim_null_comparison)
         define \<phi> where "\<phi> \<equiv> \<lambda>n. (LINT x|lebesgue_on {\<xi>..pi}. \<bar>h x\<bar> / (2 * sin(x/2) ^ 2)) / n"
