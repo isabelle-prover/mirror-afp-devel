@@ -22,10 +22,10 @@ subsubsection \<open>The Code\<close>
 
 datatype tcolor = Red | Black
 
-type_synonym ('k,'p) rbth = "('k\<times>'p,tcolor \<times> ('k \<times> 'p)) tree"
+type_synonym ('k,'p) rbth = "(('k\<times>'p) \<times> (tcolor \<times> ('k \<times> 'p))) tree"
 
-abbreviation R where "R mkp l a r \<equiv> Node l a (Red,mkp) r"
-abbreviation B where "B mkp l a r \<equiv> Node l a (Black,mkp) r"
+abbreviation R where "R mkp l a r \<equiv> Node l (a, Red,mkp) r"
+abbreviation B where "B mkp l a r \<equiv> Node l (a, Black,mkp) r"
 
 abbreviation "mkR \<equiv> mkNode Red"
 abbreviation "mkB \<equiv> mkNode Black"
@@ -44,7 +44,7 @@ fun baliR :: "('k,'p::linorder) rbth \<Rightarrow> 'k\<times>'p \<Rightarrow> ('
 
 fun paint :: "tcolor \<Rightarrow> ('k,'p::linorder) rbth \<Rightarrow> ('k,'p::linorder) rbth" where
 "paint c Leaf = Leaf" |
-"paint c (Node l a (_,mkp) r) = Node l a (c,mkp) r"
+"paint c (Node l (a, (_,mkp)) r) = Node l (a, (c,mkp)) r"
 
 fun baldL :: "('k,'p::linorder) rbth \<Rightarrow> 'k \<times> 'p \<Rightarrow> ('k,'p::linorder) rbth 
     \<Rightarrow> ('k,'p::linorder) rbth" 
@@ -82,7 +82,7 @@ where
 
 fun color :: "('k,'p) rbth \<Rightarrow> tcolor" where
 "color Leaf = Black" |
-"color (Node _ _ (c,_) _) = c"
+"color (Node _ (_, (c,_)) _) = c"
 
 
 fun upd :: "'a::linorder \<Rightarrow> 'b::linorder \<Rightarrow> ('a,'b) rbth \<Rightarrow> ('a,'b) rbth" where
@@ -103,7 +103,7 @@ where
 
 fun del :: "'a::linorder \<Rightarrow> ('a,'b::linorder)rbth \<Rightarrow> ('a,'b)rbth" where
 "del x Leaf = Leaf" |
-"del x (Node l (a,b) (c,_) r) = (case cmp x a of
+"del x (Node l ((a,b), (c,_)) r) = (case cmp x a of
      LT \<Rightarrow> if l \<noteq> Leaf \<and> color l = Black
            then baldL (del x l) (a,b) r else mkR (del x l) (a,b) r |
      GT \<Rightarrow> if r \<noteq> Leaf\<and> color r = Black
@@ -118,20 +118,20 @@ subsubsection \<open>Invariants\<close>
 
 fun bheight :: "('k,'p) rbth \<Rightarrow> nat" where
 "bheight Leaf = 0" |
-"bheight (Node l x (c,_) r) = (if c = Black then bheight l + 1 else bheight l)"
+"bheight (Node l (x, (c,_)) r) = (if c = Black then bheight l + 1 else bheight l)"
 
 fun invc :: "('k,'p) rbth \<Rightarrow> bool" where
 "invc Leaf = True" |
-"invc (Node l a (c,_) r) =
+"invc (Node l (a, (c,_)) r) =
   (invc l \<and> invc r \<and> (c = Red \<longrightarrow> color l = Black \<and> color r = Black))"
 
 fun invc2 :: "('k,'p) rbth \<Rightarrow> bool" \<comment> \<open>Weaker version\<close> where
 "invc2 Leaf = True" |
-"invc2 (Node l a _ r) = (invc l \<and> invc r)"
+"invc2 (Node l (a, _) r) = (invc l \<and> invc r)"
 
 fun invh :: "('k,'p) rbth \<Rightarrow> bool" where
 "invh Leaf = True" |
-"invh (Node l x _ r) = (invh l \<and> invh r \<and> bheight l = bheight r)"
+"invh (Node l (x, _) r) = (invh l \<and> invh r \<and> bheight l = bheight r)"
 
 definition rbt :: "('k,'p::linorder) rbth \<Rightarrow> bool" where
 "rbt t = (invc t \<and> invh t \<and> invpst t \<and> color t = Black)"
@@ -334,7 +334,7 @@ using assms
 by (induct l r rule: combine.induct)
    (auto simp: invc_baldL invc2I mkNode_def split: tree.splits tcolor.splits)
 
-lemma neq_LeafD: "t \<noteq> Leaf \<Longrightarrow> \<exists>c l x r. t = Node c l x r"
+lemma neq_LeafD: "t \<noteq> Leaf \<Longrightarrow> \<exists>l x c r. t = Node l (x,c) r"
 by(cases t) auto
 
 lemma del_invc_invh: "invh t \<Longrightarrow> invc t \<Longrightarrow> invh (del x t) \<and>

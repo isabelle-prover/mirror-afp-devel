@@ -20,13 +20,13 @@ text \<open>\noindent
   now make this more precise for balanced binary trees in general.
   
   We assume that our trees are either leaves of the form @{term Leaf} or nodes 
-  of the form @{term "Node l kp b r"} where \<open>l\<close> and \<open>r\<close> are subtrees, \<open>kp\<close> is 
+  of the form @{term "Node l (kp, b) r"} where \<open>l\<close> and \<open>r\<close> are subtrees, \<open>kp\<close> is 
   the contents of the node (a key-priority pair) and \<open>b\<close> is some additional 
   balance information (e.g.\ colour, height, size, \dots). Augmented nodes are 
-  of the form \<^term>\<open>Node l kp (b,kp') r\<close>.
+  of the form \<^term>\<open>Node l (kp, (b,kp')) r\<close>.
 \<close>
 
-type_synonym ('k,'p,'c) pstree = "('k\<times>'p, 'c \<times> ('k \<times> 'p)) tree"
+type_synonym ('k,'p,'c) pstree = "(('k\<times>'p) \<times> ('c \<times> ('k \<times> 'p))) tree"
  
 text \<open> 
   The following invariant states that a node annotation is actually a minimal 
@@ -35,13 +35,13 @@ text \<open>
 
 fun invpst :: "('k,'p::linorder,'c) pstree \<Rightarrow> bool" where
   "invpst Leaf = True"
-| "invpst (Node l x (_,mkp) r) \<longleftrightarrow> invpst l \<and> invpst r
+| "invpst (Node l (x, _,mkp) r) \<longleftrightarrow> invpst l \<and> invpst r
     \<and> is_min2 mkp (set (inorder l @ x # inorder r))"
 
 text \<open>The implementation of \<open>getmin\<close> is trivial:\<close>
 
 fun pst_getmin where
-"pst_getmin (Node _ _ (_,a) _) = a"
+"pst_getmin (Node _ (_, _,a) _) = a"
 
 lemma pst_getmin_ismin: 
   "invpst t \<Longrightarrow> t\<noteq>Leaf \<Longrightarrow> is_min2 (pst_getmin t) (set (inorder t))"
@@ -54,9 +54,9 @@ text \<open>
   trees into one on trees augmented with \<open>(k',p')\<close> pairs. A defining equation
   \<open>f pats = e\<close> for the original type of nodes is transformed into an equation
   \<open>f pats' = e'\<close> on the augmented type of nodes as follows:
-  \<^item> Every pattern @{term "Node l kp b r"} in \<open>pats\<close> and \<open>e\<close> is replaced by
-    @{term "Node l kp (b,DUMMY) r"} to obtain \<open>pats'\<close> and \<open>e\<^sub>2\<close>.
-  \<^item> To obtain \<open>e'\<close>, every expression @{term "Node l kp b r"} in \<open>e\<^sub>2\<close> is 
+  \<^item> Every pattern @{term "Node l (kp, b) r"} in \<open>pats\<close> and \<open>e\<close> is replaced by
+    @{term "Node l (kp, (b,DUMMY)) r"} to obtain \<open>pats'\<close> and \<open>e\<^sub>2\<close>.
+  \<^item> To obtain \<open>e'\<close>, every expression @{term "Node l (kp, b) r"} in \<open>e\<^sub>2\<close> is 
     replaced by \<open>mkNode l kp b r\<close> where:
 \<close>
   
@@ -64,11 +64,11 @@ definition "min2 \<equiv> \<lambda>(k,p) (k',p'). if p\<le>p' then (k,p) else (k
 
 definition "min_kp a l r \<equiv> case (l,r) of
   (Leaf,Leaf) \<Rightarrow> a
-| (Leaf,Node _ _ (_,kpr) _) \<Rightarrow> min2 a kpr
-| (Node _ _ (_,kpl) _,Leaf) \<Rightarrow> min2 a kpl
-| (Node _ _ (_,kpl) _,Node _ _ (_,kpr) _) \<Rightarrow> min2 a (min2 kpl kpr)"
+| (Leaf,Node _ (_, (_,kpr)) _) \<Rightarrow> min2 a kpr
+| (Node _ (_, (_,kpl)) _,Leaf) \<Rightarrow> min2 a kpl
+| (Node _ (_, (_,kpl)) _,Node _ (_, (_,kpr)) _) \<Rightarrow> min2 a (min2 kpl kpr)"
 
-definition "mkNode c l a r \<equiv> Node l a (c,min_kp a l r) r"
+definition "mkNode c l a r \<equiv> Node l (a, (c,min_kp a l r)) r"
 
 text \<open>  
   Note that this transformation does not affect the asymptotic complexity 

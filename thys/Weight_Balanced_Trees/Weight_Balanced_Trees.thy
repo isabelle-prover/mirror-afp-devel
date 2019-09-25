@@ -12,19 +12,19 @@ imports
   "HOL-Data_Structures.Isin2"
 begin
 
-lemma neq_Leaf2_iff: "t \<noteq> Leaf \<longleftrightarrow> (\<exists>n l a r. t = Node n l a r)"
+lemma neq_Leaf2_iff: "t \<noteq> Leaf \<longleftrightarrow> (\<exists>l a n r. t = Node l (a,n) r)"
 by(cases t) auto
 
-type_synonym 'a wbt = "('a,nat) tree"
+type_synonym 'a wbt = "('a * nat) tree"
 
 fun size_wbt :: "'a wbt \<Rightarrow> nat" where
 "size_wbt Leaf = 0" |
-"size_wbt (Node _ _ n _) = n"
+"size_wbt (Node _ (_, n) _) = n"
 
 text \<open>Smart constructor:\<close>
 
 fun N :: "'a wbt \<Rightarrow> 'a \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt" where
-"N l a r = Node l a (size_wbt l + size_wbt r + 1) r"
+"N l a r = Node l (a, size_wbt l + size_wbt r + 1) r"
 
 text "Basic Rotations:"
 
@@ -35,7 +35,7 @@ fun rot1R :: "'a wbt \<Rightarrow> 'a \<Rightarrow> 'a wbt \<Rightarrow> 'a \<Ri
 "rot1R A a B b C = N A a (N B b C)"
 
 fun rot2 :: "'a wbt \<Rightarrow> 'a \<Rightarrow> 'a wbt \<Rightarrow> 'a \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt" where
-"rot2 A a (Node B1 b _ B2) c C = N (N A a B1) b (N B2 c C)"
+"rot2 A a (Node B1 (b,_) B2) c C = N (N A a B1) b (N B2 c C)"
 
 
 subsection "WB trees"
@@ -109,7 +109,7 @@ text \<open>The global weight-balanced tree invariant:\<close>
 
 fun wbt :: "'a wbt \<Rightarrow> bool" where
 "wbt Leaf = True"|
-"wbt (Node l _ n r) =
+"wbt (Node l (_, n) r) =
   (n = size l + size r + 1 \<and> balanced1 l r \<and> balanced1 r l \<and> wbt l \<and> wbt r)"
 
 lemma size_wbt_eq_size[simp]: "wbt t \<Longrightarrow> size_wbt t = size t"
@@ -121,33 +121,33 @@ fun single :: "'a wbt \<Rightarrow> 'a wbt \<Rightarrow> bool" where
 subsubsection "Code"
 
 fun rotateL :: "'a wbt \<Rightarrow> 'a \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt" where
-"rotateL A a (Node B b _ C) =
+"rotateL A a (Node B (b, _) C) =
    (if single B C then rot1L A a B b C else rot2 A a B b C)"
 
 fun balanceL :: "'a wbt \<Rightarrow> 'a \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt" where
 "balanceL l a r = (if balanced1 l r then N l a r else rotateL l a r)"
 
 fun rotateR :: "'a wbt \<Rightarrow> 'a \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt" where
-"rotateR (Node A a _ B) b C =
+"rotateR (Node A (a, _) B) b C =
   (if single B A then rot1R A a B b C else rot2 A a B b C)"
 
 fun balanceR :: "'a wbt \<Rightarrow> 'a \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt" where
 "balanceR l a r = (if balanced1 r l then N l a r else rotateR l a r)"
 
 fun insert :: "'a::linorder \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt" where
-"insert x Leaf = Node Leaf x 1 Leaf" |
-"insert x (Node l a n r) =
+"insert x Leaf = Node Leaf (x, 1) Leaf" |
+"insert x (Node l (a, n) r) =
    (case cmp x a of
       LT \<Rightarrow> balanceR (insert x l) a r |
       GT \<Rightarrow> balanceL l a (insert x r) |
-      EQ \<Rightarrow> Node l a n r )"
+      EQ \<Rightarrow> Node l (a, n) r )"
 
 fun split_min :: "'a wbt \<Rightarrow> 'a * 'a wbt" where
-"split_min (Node l a _ r) =
+"split_min (Node l (a, _) r) =
    (if l = Leaf then (a,r) else let (x,l') = split_min l in (x, balanceL l' a r))"
 
 fun del_max :: "'a wbt \<Rightarrow> 'a * 'a wbt" where
-"del_max (Node l a _ r) =
+"del_max (Node l (a, _) r) =
    (if r = Leaf then (a,l) else let (x,r') = del_max r in (x, balanceR l a r'))"
 
 fun combine :: "'a wbt \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt"  where
@@ -162,7 +162,7 @@ fun combine :: "'a wbt \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt"  where
 
 fun delete :: "'a::linorder \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt" where
 "delete _ Leaf = Leaf" |
-"delete x (Node l a _ r) =
+"delete x (Node l (a, _) r) =
   (case cmp x a of
      LT \<Rightarrow> balanceL (delete x l) a r |
      GT \<Rightarrow> balanceR l a (delete x r) |
@@ -253,12 +253,12 @@ lemma size_length: "size t = length (inorder t)"
 by (induction t rule: inorder.induct) auto
 
 lemma size_insert: "size (insert x t) = (if isin t x then size t else Suc (size t))"
-by (induction t) (auto simp: not_Leaf_if_not_balanced1)
+by (induction t rule: tree2_induct) (auto simp: not_Leaf_if_not_balanced1)
 
 subsubsection "Deletion"
 
 lemma size_delete_if_isin: "isin t x \<Longrightarrow> size t = Suc (size(delete x t))"
-proof (induction t)
+proof (induction t rule: tree2_induct)
   case (Node _ a _ _)
   thus ?case
   proof (cases "cmp x a")
@@ -323,7 +323,7 @@ by (auto simp add: WBT_def)
 
 lemma wbt_insert:
   "wbt t \<Longrightarrow> wbt (insert x t)"
-proof (induction t)
+proof (induction t rule: tree2_induct)
   case Leaf show ?case by simp
 next
   case (Node l a _ r)
@@ -339,7 +339,7 @@ next
     next
       case [simp]: False
       hence "?l' \<noteq> Leaf" using not_Leaf_if_not_balanced1 by auto
-      then obtain k ll' al' rl' where [simp]: "?l' = (Node ll' al' k rl')"
+      then obtain k ll' al' rl' where [simp]: "?l' = (Node ll' (al', k) rl')"
         by(meson neq_Leaf2_iff)
       show ?thesis
       proof (cases "single rl' ll'")
@@ -347,8 +347,8 @@ next
           by (auto split: if_splits)
       next
         case isDouble: False
-        then obtain k llr' alr' rlr' where [simp]: "rl' = (Node llr' alr' k rlr')"
-          using not_Leaf_if_not_single tree.exhaust by blast
+        then obtain k llr' alr' rlr' where [simp]: "rl' = (Node llr' (alr', k) rlr')"
+          using not_Leaf_if_not_single tree2_cases by blast
         show ?thesis using isDouble Node size_insert[of x l]
           by (auto split: if_splits)
       qed
@@ -362,7 +362,7 @@ next
     next
       case [simp]: False
       hence "?r' \<noteq> Leaf" using not_Leaf_if_not_balanced1 by auto
-      then obtain k lr' ar' rr' where [simp]: "?r' = (Node lr' ar' k rr')"
+      then obtain k lr' ar' rr' where [simp]: "?r' = (Node lr' (ar', k) rr')"
         by(meson neq_Leaf2_iff)
       show ?thesis
       proof (cases "single lr' rr'")
@@ -386,7 +386,7 @@ text \<open>
 \<close>
 
 lemma wbt_balanceL:
-  assumes "wbt (Node l a n r)" "wbt l'" "size l = size l' + 1"
+  assumes "wbt (Node l (a, n) r)" "wbt l'" "size l = size l' + 1"
   shows "wbt (balanceL l' a' r)"
 proof -
   have rl'Balanced: "balanced1 r l'" using assms by auto
@@ -397,7 +397,7 @@ proof -
   next
     case notBalanced: False
     hence "r \<noteq> Leaf" using not_Leaf_if_not_balanced1 by auto
-    then obtain k lr ar rr where [simp]: "r = Node lr ar k rr" by(meson neq_Leaf2_iff)
+    then obtain k lr ar rr where [simp]: "r = Node lr (ar, k) rr" by(meson neq_Leaf2_iff)
     show ?thesis
     proof (cases "single lr rr")
       case single: True
@@ -408,7 +408,7 @@ proof -
     next
       case isDouble: False
       hence "lr \<noteq> Leaf" using not_Leaf_if_not_single by auto
-      then obtain k2 llr alr rlr where [simp]: "lr = (Node llr alr k2 rlr)"
+      then obtain k2 llr alr rlr where [simp]: "lr = (Node llr (alr, k2) rlr)"
         by(meson neq_Leaf2_iff)
       have "doubly_balanced_arith (size l') (size llr) (size rlr) (size rr)"
         using assms(1) notBalanced rl'Balanced rBalanced isDouble assms(2,3)
@@ -419,7 +419,7 @@ proof -
 qed
 
 lemma wbt_balanceR:
-  assumes "wbt (Node l a n r)" "wbt r'" "size r = size r' + 1"
+  assumes "wbt (Node l (a, n) r)" "wbt r'" "size r = size r' + 1"
   shows "wbt (balanceR l a' r')"
 proof -
   have lr'Balanced: "balanced1 l r'" using assms by auto
@@ -430,7 +430,7 @@ proof -
   next
     case notBalanced: False
     hence "l \<noteq> Leaf" using not_Leaf_if_not_balanced1 by auto
-    then obtain k ll al rl where [simp]: "l = (Node ll al k rl)" by(meson neq_Leaf2_iff)
+    then obtain k ll al rl where [simp]: "l = (Node ll (al, k) rl)" by(meson neq_Leaf2_iff)
     show ?thesis
     proof (cases "single rl ll")
       case single: True
@@ -441,7 +441,7 @@ proof -
     next
       case isDouble: False
       hence "rl \<noteq> Leaf" using not_Leaf_if_not_single by auto
-      then obtain k lrl arl rrl where [simp]: "rl = (Node lrl arl k rrl)"
+      then obtain k lrl arl rrl where [simp]: "rl = (Node lrl (arl, k) rrl)"
         by(meson neq_Leaf2_iff)
       have "doubly_balanced_arith (size ll) (size lrl) (size rrl) (size r')"
         using assms(1) notBalanced lr'Balanced lBalanced isDouble assms(2,3)
@@ -455,16 +455,16 @@ lemma wbt_split_min: "t \<noteq> Leaf \<Longrightarrow> wbt t \<Longrightarrow> 
 proof (induction t rule: split_min.induct)
   case (1 l a m r)
   show ?case
-  proof (cases l)
+  proof (cases l rule: tree2_cases)
     case Leaf thus ?thesis using "1.prems"(2) by simp
   next
     case (Node ll al n rl)
-    let ?l' = "snd (split_min (Node ll al n rl))"
-    have delBalanceL: "snd (split_min (Node l a m r)) = balanceL ?l' a r"
+    let ?l' = "snd (split_min (Node ll (al, n) rl))"
+    have delBalanceL: "snd (split_min (Node l (a, m) r)) = balanceL ?l' a r"
       using Node by(auto split: prod.splits)
     have "wbt ?l'" using "1"(1) "1.prems"(2) Node by auto
     moreover have "size l = size ?l' + 1"
-      using Node size_split_min by fastforce
+      using Node size_split_min by (metis Suc_eq_plus1 neq_Leaf2_iff)
     ultimately have "wbt (balanceL ?l' a r)"
       by (meson "1.prems"(2) wbt_balanceL)
     thus ?thesis using delBalanceL by auto
@@ -475,13 +475,13 @@ lemma wbt_del_max: "t \<noteq> Leaf \<Longrightarrow> wbt t \<Longrightarrow> wb
 proof (induction t rule: del_max.induct)
   case (1 l a m r)
   show ?case
-  proof (cases r)
+  proof (cases r rule: tree2_cases)
     case Leaf thus ?thesis using "1.prems"(2) by simp
   next
     case (Node lr ar n rr)
-    then obtain r' where delMaxR: "r' = snd (del_max (Node lr ar n rr))"
+    then obtain r' where delMaxR: "r' = snd (del_max (Node lr (ar, n) rr))"
       by simp
-    hence delBalanceR: "snd (del_max (Node l a m r)) = balanceR l a r'"
+    hence delBalanceR: "snd (del_max (Node l (a, m) r)) = balanceR l a r'"
       using Node by(auto split: prod.splits)
     have "wbt r'" using "1"(1) "1.prems"(2) Node delMaxR by auto
     moreover have "size r = size r' + 1" using size_del_max Node delMaxR
@@ -493,12 +493,12 @@ proof (induction t rule: del_max.induct)
 qed (blast)
 
 lemma wbt_delete: "wbt t \<Longrightarrow> wbt (delete x t)"
-proof (induction t)
+proof (induction t rule: tree2_induct)
   case Leaf thus ?case by simp
 next
   case (Node l a n r)
   show ?case
-  proof (cases "isin (Node l a n r) x")
+  proof (cases "isin (Node l (a, n) r) x")
     case False thus ?thesis using Node.prems delete_id_if_wbt_notin by metis
   next
     case isin: True
@@ -522,7 +522,7 @@ next
       thus ?thesis by (simp add: GT)
     next
       case [simp]: EQ
-      hence xCombine: "delete x (Node l a n r) = combine l r" by simp
+      hence xCombine: "delete x (Node l (a, n) r) = combine l r" by simp
       {
         assume "l = Leaf" "r = Leaf" hence ?thesis by simp
       }
@@ -540,7 +540,7 @@ next
       {
         assume lrNotLeaf: "l \<noteq> Leaf" "r \<noteq> Leaf"
         then obtain kl kr ll al rl lr ar rr
-          where [simp]: "l = (Node ll al kl rl)" "r = (Node lr ar kr rr)"
+          where [simp]: "l = (Node ll (al, kl) rl)" "r = (Node lr (ar, kr) rr)"
           by (meson neq_Leaf2_iff)
         have ?thesis
         proof (cases "size l > size r")
