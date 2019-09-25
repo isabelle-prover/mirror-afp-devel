@@ -9,8 +9,8 @@ begin
 section "Personal Byzantine quorum systems"
 
 locale personal_quorums =
-  fixes quorum_of :: "'node \<Rightarrow> 'node set \<Rightarrow> bool"
-  assumes quorum_assm:"\<And> p p' . \<lbrakk>p \<in> W; quorum_of p Q; p' \<in> Q\<inter>W\<rbrakk> \<Longrightarrow> quorum_of p' Q"
+  fixes quorum_of :: "'node \<Rightarrow> 'node set \<Rightarrow> bool" 
+  assumes quorum_assm:"\<And> p p' . \<lbrakk>quorum_of p Q; p' \<in> Q\<rbrakk> \<Longrightarrow> quorum_of p' Q"
     \<comment> \<open>In other words, a quorum (of some participant) is a quorum of all its members.\<close>
 begin
 
