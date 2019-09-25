@@ -3,7 +3,7 @@ section\<open>The basics of Fourier series\<close>
 text\<open>Ported from HOL Light; thanks to Manuel Eberl for help with the real asymp proof methods\<close>
 
 theory "Fourier"
-  imports Periodic Square_Integrable "HOL-Real_Asymp.Real_Asymp" Confine
+  imports Periodic Square_Integrable "HOL-Real_Asymp.Real_Asymp" Confine Fourier_Aux2
 begin
 
 subsection\<open>Orthonormal system of L2 functions and their Fourier coefficients\<close>
@@ -205,7 +205,6 @@ proof -
 qed
 
 
-
 subsection\<open>Actual trigonometric orthogonality relations\<close>
 
 lemma integrable_sin_cx:
@@ -215,6 +214,11 @@ lemma integrable_sin_cx:
 lemma integrable_cos_cx:
   "integrable (lebesgue_on {-pi..pi}) (\<lambda>x. cos(x * c))"
   by (intro continuous_imp_integrable_real continuous_intros)
+
+lemma integral_cos_Z' [simp]:
+  assumes "n \<in> \<int>"
+  shows "integral\<^sup>L (lebesgue_on {-pi..pi}) (\<lambda>x. cos(n * x)) = (if n = 0 then 2 * pi else 0)"
+  by (metis assms integral_cos_Z mult_commute_abs)
 
 lemma integral_sin_and_cos:
   fixes m n::int
@@ -276,7 +280,6 @@ lemma trigonometric_set:
 lemma trigonometric_set_even:
    "trigonometric_set(2*k) = (if k = 0 then (\<lambda>x. 1 / sqrt(2 * pi)) else (\<lambda>x. cos(k * x) / sqrt pi))"
   by (induction k) (auto simp: trigonometric_set_def add_divide_distrib split: if_split_asm)
-
 
 lemma orthonormal_system_trigonometric_set:
     "orthonormal_system {-pi..pi} trigonometric_set"
@@ -632,7 +635,7 @@ proof -
     have null_a: "{a} \<in> null_sets (lebesgue_on {a..b})"
       using \<open>a < b\<close> by (simp add: null_sets_restrict_space)
     have "LINT x|lebesgue_on {a..b}. ?g x = 0"
-      using null_AE_impI [OF null_a] by (force intro: integral_eq_zero_AE)
+      by (force intro: integral_eq_zero_AE AE_I' [OF null_a])
     then have "l2norm {a..b} ?\<phi> < sqrt (e^2)"
       unfolding l2norm_def l2product_def power2_eq_square [symmetric]
       apply (intro real_sqrt_less_mono)
@@ -1843,7 +1846,6 @@ lemma absolutely_integrable_mult_Dirichlet_kernel_reflected_part2:
   using absolutely_integrable_mult_Dirichlet_kernel_reflected_part assms
   by (simp_all add: distrib_left right_diff_distrib)
 
-
 lemma integral_reflect_and_add:
   fixes f :: "real \<Rightarrow> 'b::euclidean_space"
   assumes "integrable (lebesgue_on {-a..a}) f"
@@ -1851,7 +1853,7 @@ lemma integral_reflect_and_add:
 proof (cases "a \<ge> 0")
   case True
   have f: "integrable (lebesgue_on {0..a}) f" "integrable (lebesgue_on {-a..0}) f"
-    using integrable_subinterval_real assms by fastforce+
+    using integrable_subinterval assms by fastforce+
   then have fm: "integrable (lebesgue_on {0..a}) (\<lambda>x. f(-x))"
     using integrable_reflect_real by fastforce
   have "integral\<^sup>L (lebesgue_on {-a..a}) f = integral\<^sup>L (lebesgue_on {-a..0}) f + integral\<^sup>L (lebesgue_on {0..a}) f"
@@ -2200,7 +2202,7 @@ proof -
     have [simp]: "\<theta> 0 = 0"
       by (simp add: \<theta>_def integral_eq_zero_null_sets)
     have cont: "continuous_on {0..d} \<theta>"
-      unfolding \<theta>_def using indefinite_integral_continuous_1 int0d by blast
+      unfolding \<theta>_def using indefinite_integral_continuous_real int0d by blast
     with \<open>d > 0\<close>
     have "\<forall>e>0. \<exists>da>0. \<forall>x'\<in>{0..d}. \<bar>x' - 0\<bar> < da \<longrightarrow> \<bar>\<theta> x' - \<theta> 0\<bar> < e"
       by (force simp: continuous_on_real_range dest: bspec [where x=0])
@@ -2227,7 +2229,7 @@ proof -
             absolutely_integrable_on_subinterval [OF ftx] absolutely_integrable_on_subinterval [OF ftmx]
             absolutely_integrable_continuous_real continuous_intros, auto)
       moreover have "integrable (lebesgue_on {0..\<delta>}) (norm \<circ> (\<lambda>x. (f(t+x) + f(t-x) - 2*l) / x))"
-      proof (rule integrable_subinterval_real [of 0 d])
+      proof (rule integrable_subinterval [of 0 d])
         show "integrable (lebesgue_on {0..d}) (norm \<circ> (\<lambda>x. (f(t+x) + f(t-x) - 2*l) / x))"
           using int0d by (subst integrable_cong) (auto simp: o_def)
         show "{0..\<delta>} \<subseteq> {0..d}"
@@ -2294,7 +2296,7 @@ proof -
                = (if \<delta> \<le> x \<and> x \<le> pi then \<phi> n x else 0)" for x n
     using \<open>\<delta> > 0\<close> by auto
   ultimately have \<dagger>: "(\<lambda>n. LINT x|lebesgue_on {\<delta>..pi}. \<phi> n x) \<longlonglongrightarrow> 0"
-    by (simp flip: integral_restrict_UNIV)
+    by (simp flip: Lebesgue_Measure.integral_restrict_UNIV)
   then obtain N::nat where N: "\<And>n. n\<ge>N \<Longrightarrow> \<bar>LINT x|lebesgue_on {\<delta>..pi}. \<phi> n x\<bar> < e/2"
     unfolding lim_sequentially dist_real_def
     by (metis (full_types) \<open>0 < e\<close> diff_zero half_gt_zero_iff)
@@ -2307,11 +2309,11 @@ proof -
     moreover have "\<bar>integral\<^sup>L (lebesgue_on {0..\<delta>}) (\<phi> n)\<bar> \<le> LINT x|lebesgue_on {0..\<delta>}. \<bar>f(t + x) + f(t - x) - 2 * l\<bar> / x"
     proof (rule integral_abs_bound_integral)
       show "integrable (lebesgue_on {0..\<delta>}) (\<phi> (real n))"
-        by (meson integrable_subinterval_real \<open>\<delta> \<le> pi\<close> int atLeastatMost_subset_iff order_refl)
+        by (meson integrable_subinterval \<open>\<delta> \<le> pi\<close> int atLeastatMost_subset_iff order_refl)
       have "{0..\<delta>} \<subseteq> {0..d}"
         by (auto simp: \<delta>_def)
       then show "integrable (lebesgue_on {0..\<delta>}) (\<lambda>x. \<bar>f(t + x) + f(t - x) - 2 * l\<bar> / x)"
-        by (rule integrable_subinterval_real [OF int0d])
+        by (rule integrable_subinterval [OF int0d])
       show "\<bar>\<phi> (real n) x\<bar> \<le> \<bar>f(t + x) + f(t - x) - 2 * l\<bar> / x"
         if "x \<in> space (lebesgue_on {0..\<delta>})" for x
         using that

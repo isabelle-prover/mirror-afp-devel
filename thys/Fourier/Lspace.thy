@@ -3,7 +3,7 @@ section\<open>Lspace as it is in HOL Light\<close>
 text\<open>Mainly a repackaging of existing material from Lp\<close>
 
 theory Lspace
-  imports Lp.Lp Fourier_Aux1
+  imports Lp.Lp 
 begin
 
 abbreviation lspace :: "'a measure \<Rightarrow> ennreal \<Rightarrow> ('a \<Rightarrow> real) set"

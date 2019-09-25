@@ -1,7 +1,7 @@
 section\<open>Square integrable functions over the reals\<close>
 
 theory Square_Integrable
-  imports Lspace Fourier_Aux2
+  imports Lspace 
 begin
 
 subsection\<open>Basic definitions\<close>
@@ -183,31 +183,6 @@ lemma lnorm_minus_commute: "lnorm M p (g - f) = lnorm M p (f - g)"
 
 
 text\<open> Extending a continuous function in a periodic way\<close>
-
-lemma isCont_id [continuous_intros,iff]:
-  fixes x :: "'a::t2_space" shows "isCont id x"
-  unfolding id_def by (intro continuous_intros)
-
-lemma continuous_floor:
-  fixes x::real
-  shows "x \<notin> \<int> \<Longrightarrow> continuous (at x) (real_of_int \<circ> floor)"
-  using floor_has_real_derivative [where f=id]
-  by (auto simp: o_def has_field_derivative_def intro: has_derivative_continuous)
-
-lemma continuous_frac:
-  fixes x::real
-  assumes "x \<notin> \<int>"
-  shows "continuous (at x) frac"
-proof -
-  have "isCont (\<lambda>x. real_of_int \<lfloor>x\<rfloor>) x"
-    using continuous_floor [OF assms] by (simp add: o_def)
-  then have *: "continuous (at x) (\<lambda>x. x - real_of_int \<lfloor>x\<rfloor>)"
-    by (intro continuous_intros)
-  moreover have "\<forall>\<^sub>F x in nhds x. frac x = x - real_of_int \<lfloor>x\<rfloor>"
-    by (simp add: frac_def)
-  ultimately show ?thesis
-    by (simp add: LIM_imp_LIM frac_def isCont_def)
-qed
 
 proposition continuous_on_compose_frac:
   fixes f:: "real \<Rightarrow> real"

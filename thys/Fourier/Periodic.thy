@@ -1,8 +1,42 @@
 section\<open>Shifting the origin for integration of periodic functions\<close>
 
 theory Periodic
-  imports "HOL-Analysis.Analysis" Fourier_Aux2
+  imports "HOL-Analysis.Analysis" 
 begin
+
+lemma has_bochner_integral_null [intro]:
+  fixes f :: "'a::euclidean_space \<Rightarrow> 'b::euclidean_space"
+  assumes "N \<in> null_sets lebesgue"
+  shows "has_bochner_integral (lebesgue_on N) f 0"
+  unfolding has_bochner_integral_iff
+proof
+  show "integrable (lebesgue_on N) f"
+  proof (subst integrable_restrict_space)
+    show "N \<inter> space lebesgue \<in> sets lebesgue"
+      using assms by force
+    show "integrable lebesgue (\<lambda>x. indicat_real N x *\<^sub>R f x)"
+    proof (rule integrable_cong_AE_imp)
+      show "integrable lebesgue (\<lambda>x. 0)"
+        by simp
+      show *: "AE x in lebesgue. 0 = indicat_real N x *\<^sub>R f x"
+        using assms
+        by (simp add: indicator_def completion.null_sets_iff_AE eventually_mono)
+      show "(\<lambda>x. indicat_real N x *\<^sub>R f x) \<in> borel_measurable lebesgue"
+        by (auto intro: borel_measurable_AE [OF _ *])
+    qed
+  qed
+  show "integral\<^sup>L (lebesgue_on N) f = 0"
+  proof (rule integral_eq_zero_AE)
+    show "AE x in lebesgue_on N. f x = 0"
+      by (rule AE_I' [where N=N]) (auto simp: assms null_setsD2 null_sets_restrict_space)
+  qed
+qed
+
+lemma has_bochner_integral_null_eq[simp]:
+  fixes f :: "'a::euclidean_space \<Rightarrow> 'b::euclidean_space"
+  assumes "N \<in> null_sets lebesgue"
+  shows "has_bochner_integral (lebesgue_on N) f i \<longleftrightarrow> i = 0"
+  using assms has_bochner_integral_eq by blast
 
 lemma periodic_integer_multiple:
    "(\<forall>x. f(x + a) = f x) \<longleftrightarrow> (\<forall>x. \<forall>n \<in> \<int>. f(x + n * a) = f x)" (is "?lhs = ?rhs")
@@ -67,13 +101,13 @@ proof -
   have "{a..a + c} \<subseteq> {a..b}"
     by (simp add: assms(4))
   then have 1: "has_bochner_integral (lebesgue_on {a..a+c}) f(integral\<^sup>L (lebesgue_on {a..a+c}) f)"
-    by (meson integrable_subinterval_real f has_bochner_integral_iff)
+    by (meson integrable_subinterval f has_bochner_integral_iff)
   then have 3: "has_bochner_integral (lebesgue_on {b..b+c}) f(integral\<^sup>L (lebesgue_on {a..a+c}) f)"
     using has_integral_periodic_offset_lemma periodic by blast
   have "{a + c..b} \<subseteq> {a..b}"
     by (simp add: c)
   then have 2: "has_bochner_integral (lebesgue_on {a+c..b}) f(integral\<^sup>L (lebesgue_on {a+c..b}) f)"
-    by (meson integrable_subinterval_real f has_bochner_integral_integrable integrable.intros)
+    by (meson integrable_subinterval f has_bochner_integral_integrable integrable.intros)
   have "integral\<^sup>L (lebesgue_on {a + c..b}) f + integral\<^sup>L (lebesgue_on {a..a + c}) f = i"
     by (metis integral_combine add.commute c f has_bochner_integral_iff le_add_same_cancel1)
   then have "has_bochner_integral (lebesgue_on {a+c..b+c}) f i"
