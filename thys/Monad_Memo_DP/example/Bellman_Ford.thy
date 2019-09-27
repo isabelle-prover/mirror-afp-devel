@@ -155,11 +155,19 @@ lemma fold_acc_preserv:
   shows "P (fold f xs acc)"
   using assms(2) by (induction xs arbitrary: acc) (auto intro: assms(1))
 
+
+lemma finite_setcompr_eq_image: "finite {f x |x. P x} \<longleftrightarrow> finite (f ` {x. P x})"
+  by (simp add: setcompr_eq_image)
+
 lemma finite_lists_length_le1: "finite {xs. length xs \<le> i \<and> set xs \<subseteq> {0..(n::nat)}}" for i
   by (auto intro: finite_subset[OF _ finite_lists_length_le[OF finite_atLeastAtMost]])
 
 lemma finite_lists_length_le2: "finite {xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..(n::nat)}}" for i
   by (auto intro: finite_subset[OF _ finite_lists_length_le1[of "i"]])
+
+lemmas [simp] =
+  finite_setcompr_eq_image finite_lists_length_le2[simplified] finite_lists_length_le1
+
 
 lemma get_return:
   "run_state (State_Monad.bind State_Monad.get (\<lambda> m. State_Monad.return (f m))) m = (f m, m)"
@@ -281,17 +289,14 @@ lemma OPT_Suc:
   "OPT (Suc i) v = min (OPT i v) (Min {OPT i w + W v w | w. w \<le> n})" (is "?lhs = ?rhs")
   if "t \<le> n"
 proof -
-  have fin: "finite {weight (v # xs) |xs. length xs \<le> i \<and> set xs \<subseteq> {0..n}}" for v i
-    by (simp add: setcompr_eq_image finite_lists_length_le1)
   have OPT_in: "OPT i v \<in>
     {weight (v # xs) | xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}} \<union>
     {if t = v then 0 else \<infinity>}"
     if "i > 0" for i v
-    using that unfolding OPT_def
-    by - (rule Min_in, auto 4 3 intro: finite_subset[OF _ fin, of _ v "Suc i"])
+    using that unfolding OPT_def by - (rule Min_in, auto)
 
   have "OPT i v \<ge> OPT (Suc i) v"
-    unfolding OPT_def using fin by (auto 4 3 intro: Min_antimono)
+    unfolding OPT_def by (rule Min_antimono) auto
   have subs:
     "(\<lambda>y. y + W v w) ` {weight (w # xs) |xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}}
     \<subseteq> {weight (v # xs) |xs. length xs + 1 \<le> Suc i \<and> set xs \<subseteq> {0..n}}" if \<open>w \<le> n\<close> for v w
@@ -304,37 +309,20 @@ proof -
     consider "w = t" | \<open>w \<noteq> t\<close> \<open>v \<noteq> t\<close> | \<open>w \<noteq> t\<close> \<open>v = t\<close> \<open>i = 0\<close> | \<open>w \<noteq> t\<close> \<open>v = t\<close> \<open>i \<noteq> 0\<close>
       by auto
     then show ?thesis
-      apply cases
-      subgoal
-        unfolding OPT_def using subs[OF \<open>t \<le> n\<close>, of v] that
-        by (subst Min_add_right)
-          (auto 4 3
-            simp: Bellman_Ford.weight_single
-            intro: exI[where x = "[]"] finite_subset[OF _ fin[of _ "Suc i"]] intro!: Min_antimono
-            )
-      subgoal
-        unfolding OPT_def using subs[OF \<open>w \<le> n\<close>, of v] that
-        by (subst Min_add_right)
-          (auto 4 3 intro: finite_subset[OF _ fin[of _ "Suc i"]] intro!: Min_antimono)
-      subgoal
-        unfolding OPT_def by simp
-      subgoal
-        unfolding OPT_def using subs[OF \<open>w \<le> n\<close>, of t]
-        apply (subst Min_add_right)
-          apply (simp add: setcompr_eq_image finite_lists_length_le2[simplified]; fail)+
-        apply simp
-        by (subst (2) Min_insert)
-          (auto 4 4
-            intro: finite_subset[OF _ fin[of _ "Suc i"]] exI[where x = "[]"] intro!: Min_antimono
-            )
-      done
+      using subs[OF \<open>w \<le> n\<close>, of v] subs[OF \<open>t \<le> n\<close>, of v] that
+      by cases (auto simp: OPT_def Bellman_Ford.weight_single Min_add_right
+                intro!: Min_le intro: exI[where x = "[]"])
   qed
   then have "Min {OPT i w + W v w |w. w \<le> n} \<ge> OPT (Suc i) v"
     by (auto intro!: Min.boundedI)
   with \<open>OPT i v \<ge> _\<close> have "?lhs \<le> ?rhs"
     by simp
 
-  from OPT_in[of "Suc i" v] consider
+  have OPT_in: "OPT (Suc i) v \<in>
+    {weight (v # xs) | xs. length xs + 1 \<le> Suc i \<and> set xs \<subseteq> {0..n}} \<union>
+    {if t = v then 0 else \<infinity>}"
+    using that unfolding OPT_def by - (rule Min_in, auto)
+  then consider
     "OPT (Suc i) v = \<infinity>" | "t = v" "OPT (Suc i) v = 0" |
     xs where "OPT (Suc i) v = weight (v # xs)" "length xs \<le> i" "set xs \<subseteq> {0..n}"
     by (auto split: if_split_asm)
@@ -346,7 +334,7 @@ proof -
   next
     case 2
     then have "OPT i v \<le> OPT (Suc i) v"
-      unfolding OPT_def by (auto simp: setcompr_eq_image finite_lists_length_le2[simplified])
+      unfolding OPT_def by auto
     then show ?thesis
       by (rule min.coboundedI1)
   next
@@ -372,8 +360,7 @@ proof -
           by auto
         with xs have "weight xs \<ge> OPT i (hd xs)"
           unfolding OPT_def
-          by (intro Min_le[rotated] UnI1 CollectI exI[where x = "tl xs"])
-            (auto 4 3 intro: finite_subset[OF _ fin, of _ "hd xs" "Suc i"] dest: list.set_sel(2))
+          by (intro Min_le UnI1 CollectI exI[where x = "tl xs"]) (auto dest: list.set_sel(2))
         have "Min {OPT i w + W v w |w. w \<le> n} \<le> W v (hd xs) + OPT i (hd xs)"
           using \<open>set xs \<subseteq> _\<close> \<open>xs \<noteq> []\<close> by (force simp: add.commute intro: Min_le)
         also have "\<dots> \<le> W v (hd xs) + weight xs"
@@ -386,7 +373,7 @@ proof -
     next
       case False
       with xs have "OPT i v \<le> OPT (Suc i) v"
-        by (auto 4 4 intro: Min_le finite_subset[OF _ fin, of _ v "Suc i"] simp: OPT_def)
+        by (auto 4 3 intro: Min_le simp: OPT_def)
       then show ?thesis
         by (rule min.coboundedI1)
     qed
@@ -402,8 +389,6 @@ fun bf :: "nat \<Rightarrow> nat \<Rightarrow> int extended" where
 
 lemmas [simp del] = bf.simps
 lemmas [simp] = bf.simps[unfolded min_list_fold]
-thm bf.simps
-thm bf.induct
 
 lemma bf_correct:
   "OPT i j = bf i j" if \<open>t \<le> n\<close>
@@ -655,7 +640,7 @@ proof (cases "t = i")
   case True
   with \<open>i \<le> n\<close> \<open>t \<le> n\<close> have "OPT n i \<le> 0"
     unfolding OPT_def
-    by (auto intro: Min_le simp: setcompr_eq_image finite_lists_length_le2[simplified])
+    by (auto intro: Min_le simp: finite_lists_length_le2[simplified])
   then show ?thesis
     using less_linear by (fastforce simp: zero_extended_def)
 next
