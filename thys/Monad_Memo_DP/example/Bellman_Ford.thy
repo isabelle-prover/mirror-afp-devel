@@ -236,28 +236,29 @@ text \<open>
   chapter "Dynamic Programming" @{cite "Kleinberg-Tardos"}
 \<close>
 
-definition weight :: "nat list \<Rightarrow> int extended" where
-  "weight xs = snd (fold (\<lambda> i (j, x). (i, W i j + x)) (rev xs) (t, 0))"
+fun weight :: "nat list \<Rightarrow> int extended" where
+  "weight [s] = 0"
+| "weight (i # j # xs) = W i j + weight (j # xs)"
 
 definition
   "OPT i v = (
     Min (
-      {weight (v # xs) | xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}} \<union>
+      {weight (v # xs @ [t]) | xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}} \<union>
       {if t = v then 0 else \<infinity>}
     )
   )"
 
-lemma weight_Nil [simp]:
-  "weight [] = 0"
-  by (simp add: weight_def)
+lemma weight_alt_def':
+  "weight (s # xs) + w = snd (fold (\<lambda>j (i, x). (j, W i j + x)) xs (s, w))"
+  by (induction xs arbitrary: s w; simp; smt add.commute add.left_commute)
 
-lemma weight_Cons [simp]:
-  "weight (v # w # xs) = W v w + weight (w # xs)"
-  by (simp add: case_prod_beta' weight_def)
+lemma weight_alt_def:
+  "weight (s # xs) = snd (fold (\<lambda>j (i, x). (j, W i j + x)) xs (s, 0))"
+  by (rule weight_alt_def'[of s xs 0, simplified])
 
-lemma weight_single [simp]:
-  "weight [v] = W v t"
-  by (simp add: weight_def)
+lemma weight_append:
+  "weight (xs @ a # ys) = weight (xs @ [a]) + weight (a # ys)"
+  by (induction xs rule: weight.induct; simp add: add.assoc)
 
 
 
@@ -290,7 +291,7 @@ lemma OPT_Suc:
   if "t \<le> n"
 proof -
   have OPT_in: "OPT i v \<in>
-    {weight (v # xs) | xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}} \<union>
+    {weight (v # xs @ [t]) | xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}} \<union>
     {if t = v then 0 else \<infinity>}"
     if "i > 0" for i v
     using that unfolding OPT_def by - (rule Min_in, auto)
@@ -298,8 +299,8 @@ proof -
   have "OPT i v \<ge> OPT (Suc i) v"
     unfolding OPT_def by (rule Min_antimono) auto
   have subs:
-    "(\<lambda>y. y + W v w) ` {weight (w # xs) |xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}}
-    \<subseteq> {weight (v # xs) |xs. length xs + 1 \<le> Suc i \<and> set xs \<subseteq> {0..n}}" if \<open>w \<le> n\<close> for v w
+    "(\<lambda>y. y + W v w) ` {weight (w # xs @ [t]) |xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}}
+    \<subseteq> {weight (v # xs @ [t]) |xs. length xs + 1 \<le> Suc i \<and> set xs \<subseteq> {0..n}}" if \<open>w \<le> n\<close> for v w
     using \<open>w \<le> n\<close> apply clarify
     subgoal for _ _ xs
       by (rule exI[where x = "w # xs"]) (auto simp: algebra_simps)
@@ -310,8 +311,7 @@ proof -
       by auto
     then show ?thesis
       using subs[OF \<open>w \<le> n\<close>, of v] subs[OF \<open>t \<le> n\<close>, of v] that
-      by cases (auto simp: OPT_def Bellman_Ford.weight_single Min_add_right
-                intro!: Min_le intro: exI[where x = "[]"])
+      by cases (auto simp: OPT_def Min_add_right intro!: Min_le intro: exI[where x = "[]"])
   qed
   then have "Min {OPT i w + W v w |w. w \<le> n} \<ge> OPT (Suc i) v"
     by (auto intro!: Min.boundedI)
@@ -319,12 +319,12 @@ proof -
     by simp
 
   have OPT_in: "OPT (Suc i) v \<in>
-    {weight (v # xs) | xs. length xs + 1 \<le> Suc i \<and> set xs \<subseteq> {0..n}} \<union>
+    {weight (v # xs @ [t]) | xs. length xs + 1 \<le> Suc i \<and> set xs \<subseteq> {0..n}} \<union>
     {if t = v then 0 else \<infinity>}"
     using that unfolding OPT_def by - (rule Min_in, auto)
   then consider
     "OPT (Suc i) v = \<infinity>" | "t = v" "OPT (Suc i) v = 0" |
-    xs where "OPT (Suc i) v = weight (v # xs)" "length xs \<le> i" "set xs \<subseteq> {0..n}"
+    xs where "OPT (Suc i) v = weight (v # xs @ [t])" "length xs \<le> i" "set xs \<subseteq> {0..n}"
     by (auto split: if_split_asm)
   then have "?lhs \<ge> ?rhs"
   proof cases
@@ -358,12 +358,13 @@ proof -
         case False
         with \<open>_ = i\<close> have "xs \<noteq> []"
           by auto
-        with xs have "weight xs \<ge> OPT i (hd xs)"
+        with xs have "weight (xs @ [t]) \<ge> OPT i (hd xs)"
           unfolding OPT_def
-          by (intro Min_le UnI1 CollectI exI[where x = "tl xs"]) (auto dest: list.set_sel(2))
+          by (intro Min_le UnI1 CollectI exI[where x = "tl xs"])
+             (auto dest: list.set_sel(2) simp flip: append.append_Cons)
         have "Min {OPT i w + W v w |w. w \<le> n} \<le> W v (hd xs) + OPT i (hd xs)"
           using \<open>set xs \<subseteq> _\<close> \<open>xs \<noteq> []\<close> by (force simp: add.commute intro: Min_le)
-        also have "\<dots> \<le> W v (hd xs) + weight xs"
+        also have "\<dots> \<le> W v (hd xs) + weight (xs @ [t])"
           using \<open>_ \<ge> OPT i (hd xs)\<close> by (metis add_left_mono)
         also from \<open>xs \<noteq> []\<close> have "\<dots> = OPT (Suc i) v"
           by (cases xs) auto
@@ -483,8 +484,8 @@ lemma [intro]:
 memoize_fun bf\<^sub>h: bf
   with_memory (default_proof) dp_consistency_heap_array_pair_iterator
   where size = "n + 1"
-    and key1="fst :: nat \<times> nat \<Rightarrow> nat" and key2="snd :: nat \<times> nat \<Rightarrow> nat"
-    and k1="1 :: nat" and k2="0 :: nat"
+    and key1 = "fst :: nat \<times> nat \<Rightarrow> nat" and key2 = "snd :: nat \<times> nat \<Rightarrow> nat"
+    and k1 = "1 :: nat" and k2 = "0 :: nat"
     and to_index = "id :: nat \<Rightarrow> nat"
     and mem = mem
     and cnt = "\<lambda> (x, y). x \<le> n \<and> y \<le> n"
@@ -506,74 +507,56 @@ subsubsection \<open>Detecting Negative Cycles\<close>
 definition
   "shortest v = (
     Inf (
-      {weight (v # xs) | xs. set xs \<subseteq> {0..n}} \<union>
+      {weight (v # xs @ [t]) | xs. set xs \<subseteq> {0..n}} \<union>
       {if t = v then 0 else \<infinity>}
     )
   )"
 
-fun weight2 :: "nat list \<Rightarrow> int extended" where
-  "weight2 [s] = 0"
-| "weight2 (i # j # xs) = W i j + weight2 (j # xs)"
-
-lemma weight2_eq':
-  "weight2 (s # xs) + w = snd (fold (\<lambda>j (i, x). (j, W i j + x)) xs (s, w))"
-  by (induction xs arbitrary: s w; simp; smt add.commute add.left_commute)
-
-lemma weight2_eq:
-  "weight2 (s # xs) = snd (fold (\<lambda>j (i, x). (j, W i j + x)) xs (s, 0))"
-  by (rule weight2_eq'[of s xs 0, simplified])
-
-lemma weight_eq:
-  "weight xs = weight2 (xs @ [t])"
-  by (induction xs rule: induct_list012) auto
-
-lemma weight2_append:
-  "weight2 (xs @ a # ys) = weight2 (xs @ [a]) + weight2 (a # ys)"
-  by (induction xs rule: weight2.induct; simp add: add.assoc)
-
 definition
-  "is_path2 xs \<equiv> weight2 xs < \<infinity>"
-
-definition
-  "is_path xs \<equiv> weight xs < \<infinity>"
+  "is_path xs \<equiv> weight (xs @ [t]) < \<infinity>"
 
 definition
   "has_negative_cycle \<equiv>
-  \<exists>xs a ys. set (a # xs @ ys) \<subseteq> {0..n} \<and> weight2 (a # xs @ [a]) < 0 \<and> is_path (a # ys)"
+  \<exists>xs a ys. set (a # xs @ ys) \<subseteq> {0..n} \<and> weight (a # xs @ [a]) < 0 \<and> is_path (a # ys)"
 
 definition
   "reaches a \<equiv> \<exists>xs. is_path (a # xs) \<and> a \<le> n \<and> set xs \<subseteq> {0..n}"
 
 lemma fold_sum_aux':
   assumes "\<forall>u \<in> set (a # xs). \<forall>v \<in> set (xs @ [b]). f v + W u v \<ge> f u"
-  shows "sum_list (map f (a # xs)) \<le> sum_list (map f (xs @ [b])) + weight2 (a # xs @ [b])"
+  shows "sum_list (map f (a # xs)) \<le> sum_list (map f (xs @ [b])) + weight (a # xs @ [b])"
   using assms
   by (induction xs arbitrary: a; simp)
      (smt ab_semigroup_add_class.add_ac(1) add.left_commute add_mono)
 
 lemma fold_sum_aux:
   assumes "\<forall>u \<in> set (a # xs). \<forall>v \<in> set (a # xs). f v + W u v \<ge> f u"
-  shows "sum_list (map f (a # xs @ [a])) \<le> sum_list (map f (a # xs @ [a])) + weight2 (a # xs @ [a])"
+  shows "sum_list (map f (a # xs @ [a])) \<le> sum_list (map f (a # xs @ [a])) + weight (a # xs @ [a])"
   using fold_sum_aux'[of a xs a f] assms
   by auto (metis (no_types, hide_lams) add.assoc add.commute add_left_mono)
 
-lemma is_path2_remove_cycle:
+context
+begin
+
+private definition "is_path2 xs \<equiv> weight xs < \<infinity>"
+
+private lemma is_path2_remove_cycle:
   assumes "is_path2 (as @ a # bs @ a # cs)"
   shows "is_path2 (as @ a # cs)"
 proof -
-  have "weight2 (as @ a # bs @ a # cs) =
-    weight2 (as @ [a]) + weight2 (a # bs @ [a]) + weight2 (a # cs)"
-    by (metis Bellman_Ford.weight2_append append_Cons append_assoc)
-  with assms have "weight2 (as @ [a]) < \<infinity>" "weight2 (a # cs) < \<infinity>"
+  have "weight (as @ a # bs @ a # cs) =
+    weight (as @ [a]) + weight (a # bs @ [a]) + weight (a # cs)"
+    by (metis Bellman_Ford.weight_append append_Cons append_assoc)
+  with assms have "weight (as @ [a]) < \<infinity>" "weight (a # cs) < \<infinity>"
     unfolding is_path2_def
-    by auto (metis Pinf_add_right antisym less_extended_simps(4) not_less add.commute)+
+    by (simp, metis Pinf_add_right antisym less_extended_simps(4) not_less add.commute)+
   then show ?thesis
-    unfolding is_path2_def by (subst weight2_append) (rule add_lt_infI)
+    unfolding is_path2_def by (subst weight_append) (rule add_lt_infI)
 qed
 
-lemma is_path_eq:
+private lemma is_path_eq:
   "is_path xs \<longleftrightarrow> is_path2 (xs @ [t])"
-  unfolding is_path_def is_path2_def weight_eq ..
+  unfolding is_path_def is_path2_def ..
 
 lemma is_path_remove_cycle:
   assumes "is_path (as @ a # bs @ a # cs)"
@@ -584,6 +567,8 @@ lemma is_path_remove_cycle2:
   assumes "is_path (as @ t # cs)"
   shows "is_path as"
   using assms unfolding is_path_eq by (simp add: is_path2_remove_cycle)
+
+end (* private lemmas *)
 
 lemma is_path_shorten:
   assumes "is_path (i # xs)" "i \<le> n" "set xs \<subseteq> {0..n}" "t \<le> n" "t \<noteq> i"
@@ -649,7 +634,7 @@ next
     unfolding reaches_def by safe
   then obtain xs where xs: "is_path (i # xs)" "i \<le> n" "set xs \<subseteq> {0..n}" "length xs < n"
     using \<open>t \<noteq> i\<close> \<open>t \<le> n\<close> by (auto intro: is_path_shorten)
-  then have "weight (i # xs) < \<infinity>"
+  then have "weight (i # xs @ [t]) < \<infinity>"
     unfolding is_path_def by auto
   with xs(2-) show ?thesis
     unfolding OPT_def
@@ -664,30 +649,30 @@ lemma OPT_sink_le_0:
 lemma is_path_appendD:
   assumes "is_path (as @ a # bs)"
   shows "is_path (a # bs)"
-  using assms weight2_append[of as a "bs @ [t]"] unfolding is_path_def weight_eq
+  using assms weight_append[of as a "bs @ [t]"] unfolding is_path_def
   by simp (metis Pinf_add_right add.commute less_extended_simps(4) not_less_iff_gr_or_eq)
 
 lemma has_negative_cycleI:
-  assumes "set (a # xs @ ys) \<subseteq> {0..n}" "weight2 (a # xs @ [a]) < 0" "is_path (a # ys)"
+  assumes "set (a # xs @ ys) \<subseteq> {0..n}" "weight (a # xs @ [a]) < 0" "is_path (a # ys)"
   shows has_negative_cycle
   using assms unfolding has_negative_cycle_def by auto
 
 lemma OPT_cases:
-  obtains (path) xs where "OPT i v = weight (v # xs)" "length xs + 1 \<le> i" "set xs \<subseteq> {0..n}"
+  obtains (path) xs where "OPT i v = weight (v # xs @ [t])" "length xs + 1 \<le> i" "set xs \<subseteq> {0..n}"
   | (sink) "v = t" "OPT i v = 0"
   | (unreachable) "v \<noteq> t" "OPT i v = \<infinity>"
   unfolding OPT_def
-  using Min_in[of "{weight (v # xs) |xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}}
+  using Min_in[of "{weight (v # xs @ [t]) |xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}}
     \<union> {if t = v then 0 else \<infinity>}"]
   by (auto simp: finite_lists_length_le2[simplified] split: if_split_asm)
 
 lemma OPT_cases2:
   obtains (path) xs where
-    "v \<noteq> t" "OPT i v \<noteq> \<infinity>" "OPT i v = weight (v # xs)" "length xs + 1 \<le> i" "set xs \<subseteq> {0..n}"
+    "v \<noteq> t" "OPT i v \<noteq> \<infinity>" "OPT i v = weight (v # xs @ [t])" "length xs + 1 \<le> i" "set xs \<subseteq> {0..n}"
   | (unreachable) "v \<noteq> t" "OPT i v = \<infinity>"
   | (sink) "v = t" "OPT i v \<le> 0"
   unfolding OPT_def
-  using Min_in[of "{weight (v # xs) |xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}}
+  using Min_in[of "{weight (v # xs @ [t]) |xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}}
     \<union> {if t = v then 0 else \<infinity>}"]
   by (cases "v = t"; force simp: finite_lists_length_le2[simplified] split: if_split_asm)
 
@@ -708,19 +693,18 @@ context
 begin
 
 lemma weight_not_minfI:
-  "-\<infinity> < weight xs" if "set xs \<subseteq> {0..n}"
+  "-\<infinity> < weight xs" if "set xs \<subseteq> {0..n}" "xs \<noteq> []"
   using that using W_wellformed \<open>t \<le> n\<close>
-  by (induction xs rule: induct_list012)
-     ((simp add: zero_extended_def weight_def; fail), auto intro: add_gt_minfI)
+  by (induction xs rule: induct_list012) (auto intro: add_gt_minfI simp: zero_extended_def)
 
 lemma OPT_not_minfI:
   "OPT n i > -\<infinity>" if "i \<le> n"
 proof -
   have "OPT n i \<in>
-    {weight (i # xs) |xs. length xs + 1 \<le> n \<and> set xs \<subseteq> {0..n}} \<union> {if t = i then 0 else \<infinity>}"
+    {weight (i # xs @ [t]) |xs. length xs + 1 \<le> n \<and> set xs \<subseteq> {0..n}} \<union> {if t = i then 0 else \<infinity>}"
     unfolding OPT_def
     by (rule Min_in) (auto simp: setcompr_eq_image finite_lists_length_le2[simplified])
-  with that show ?thesis
+  with that \<open>t \<le> n\<close> show ?thesis
     by (auto 4 3 intro!: weight_not_minfI simp: zero_extended_def)
 qed
 
@@ -730,7 +714,7 @@ theorem detects_cycle:
 proof -
   from assms \<open>t \<le> n\<close> obtain xs a ys where cycle:
     "a \<le> n" "set xs \<subseteq> {0..n}" "set ys \<subseteq> {0..n}"
-    "weight2 (a # xs @ [a]) < 0" "is_path (a # ys)"
+    "weight (a # xs @ [a]) < 0" "is_path (a # ys)"
     unfolding has_negative_cycle_def by clarsimp
   then have "reaches a"
     unfolding reaches_def by auto
@@ -738,14 +722,14 @@ proof -
   proof -
     from that obtain as bs where "xs = as @ x # bs"
       by atomize_elim (rule split_list)
-    with cycle have "weight2 (x # bs @ [a]) < \<infinity>"
-      using weight2_append[of "a # as" x "bs @ [a]"]
+    with cycle have "weight (x # bs @ [a]) < \<infinity>"
+      using weight_append[of "a # as" x "bs @ [a]"]
       by simp (metis Pinf_add_right Pinf_le add.commute less_eq_extended.simps(2) not_less)
     with \<open>reaches a\<close> show ?thesis
       unfolding reaches_def is_path_def
       apply clarsimp
       subgoal for cs
-        unfolding weight_eq using weight2_append[of "x # bs" a "cs @ [t]"] cycle(2) \<open>xs = _\<close>
+        using weight_append[of "x # bs" a "cs @ [t]"] cycle(2) \<open>xs = _\<close>
         by - (rule exI[where x = "bs @ [a] @ cs"], auto intro: add_lt_infI)
       done
   qed
@@ -755,16 +739,16 @@ proof -
     assume A: "\<forall>v\<le>n. \<forall>w\<le>n. \<not> OPT n w + W v w < OPT n v"
     then have A: "\<forall>v\<le>n. \<forall>w\<le>n. OPT n w + W v w \<ge> OPT n v"
       by force
-    then have "?S \<le> ?S + weight2 (a # xs @ [a])"
+    then have "?S \<le> ?S + weight (a # xs @ [a])"
       using cycle(1-3) by (subst fold_sum_aux) (auto simp: subset_eq)
     moreover have "sum_list (map (OPT n) (a # xs @ [a])) > -\<infinity>"
       using cycle(1-4) by - (rule sum_list_not_minfI, auto intro!: OPT_not_minfI)
     moreover have "sum_list (map (OPT n) (a # xs @ [a])) < \<infinity>"
       using reaches \<open>t \<le> n\<close> cycle(1,2)
       by (intro sum_list_not_infI) (auto intro: reaches_non_inf_path \<open>reaches a\<close> simp: subset_eq)
-    ultimately have "weight2 (a # xs @ [a]) \<ge> 0"
+    ultimately have "weight (a # xs @ [a]) \<ge> 0"
       by (simp add: le_add_same_cancel1)
-    with \<open>weight2 _ < 0\<close> show False
+    with \<open>weight _ < 0\<close> show False
       by simp
   qed
   then obtain u v where "u \<le> n" "v \<le> n" "OPT n v + W u v < OPT n u"
@@ -783,12 +767,12 @@ corollary detects_cycle_bf:
 
 lemma shortest_cases:
   assumes "v \<le> n"
-  obtains (path) xs where "shortest v = weight (v # xs)" "set xs \<subseteq> {0..n}"
+  obtains (path) xs where "shortest v = weight (v # xs @ [t])" "set xs \<subseteq> {0..n}"
   | (sink) "v = t" "shortest v = 0"
   | (unreachable) "v \<noteq> t" "shortest v = \<infinity>"
-  | (negative_cycle) "shortest v = -\<infinity>" "\<forall>x. \<exists>xs. set xs \<subseteq> {0..n} \<and> weight (v # xs) < Fin x"
+  | (negative_cycle) "shortest v = -\<infinity>" "\<forall>x. \<exists>xs. set xs \<subseteq> {0..n} \<and> weight (v # xs @ [t]) < Fin x"
 proof -
-  let ?S = "{weight (v # xs) | xs. set xs \<subseteq> {0..n}} \<union> {if t = v then 0 else \<infinity>}"
+  let ?S = "{weight (v # xs @ [t]) | xs. set xs \<subseteq> {0..n}} \<union> {if t = v then 0 else \<infinity>}"
   have "?S \<noteq> {}"
     by auto
   have Minf_lowest: False if  "-\<infinity> < a" "-\<infinity> = a" for a :: "int extended"
@@ -814,11 +798,11 @@ proof -
     case Minf
     then have "?S \<noteq> {}" "?S \<noteq> {\<infinity>}" "-\<infinity> \<in> ?S \<or> \<not> bdd_below (Fin -` ?S)"
       unfolding shortest_def Inf_extended_def by (auto split: if_split_asm)
-    from this(3) have "\<forall>x. \<exists>xs. set xs \<subseteq> {0..n} \<and> weight (v # xs) < Fin x"
+    from this(3) have "\<forall>x. \<exists>xs. set xs \<subseteq> {0..n} \<and> weight (v # xs @ [t]) < Fin x"
     proof
       assume "-\<infinity> \<in> ?S"
-      then have False
-        using \<open>v \<le> n\<close> weight_not_minfI by (auto split: if_split_asm elim: Minf_lowest[rotated])
+      with weight_not_minfI have False
+        using \<open>v \<le> n\<close> \<open>t \<le> n\<close> by (auto split: if_split_asm elim: Minf_lowest[rotated])
       then show ?thesis ..
     next
       assume "\<not> bdd_below (Fin -` ?S)"
@@ -828,7 +812,7 @@ proof -
         let ?m = "min x (-1)"
         from \<open>\<not> bdd_below _\<close> obtain m where "Fin m \<in> ?S" "m < ?m"
           unfolding bdd_below_def by - (simp, drule spec[of _ "?m"], force)
-        then show "\<exists>xs. set xs \<subseteq> {0..n} \<and> weight (v # xs) < Fin x"
+        then show "\<exists>xs. set xs \<subseteq> {0..n} \<and> weight (v # xs @ [t]) < Fin x"
           by (auto split: if_split_asm simp: zero_extended_def) (metis less_extended_simps(1))+
       qed
     qed
@@ -842,7 +826,7 @@ theorem shorter_than_OPT_n_has_negative_cycle:
   shows has_negative_cycle
 proof -
   from assms obtain ys where
-    "weight (v # ys) < OPT n v" "set ys \<subseteq> {0..n}"
+    "weight (v # ys @ [t]) < OPT n v" "set ys \<subseteq> {0..n}"
     apply (cases rule: OPT_cases2[of v n]; cases rule: shortest_cases[OF \<open>v \<le> n\<close>]; simp)
       apply (metis uminus_extended.cases)
     using less_extended_simps(2) less_trans apply blast
@@ -864,63 +848,63 @@ proof -
       proof (cases rule: path_eq_cycleE)
         case Nil_Nil
         then show ?thesis
-          using OPT_sink_le_0[of n] assms ys unfolding weight_eq has_negative_cycle_def is_path_def
+          using OPT_sink_le_0[of n] assms ys unfolding has_negative_cycle_def is_path_def
           using less_extended_def by force
       next
         case (Nil_Cons cs')
-        then have *: "weight (v # ys) = weight2 (a # bs @ [a]) + weight (a # cs')"
-          unfolding weight_eq by (simp add: weight2_append[of "a # bs" a "cs' @ [t]", simplified])
+        then have *: "weight (v # ys @ [t]) = weight (a # bs @ [a]) + weight (a # cs' @ [t])"
+          by (simp add: weight_append[of "a # bs" a "cs' @ [t]", simplified])
         show ?thesis
-        proof (cases "weight2 (a # bs @ [a]) < 0")
+        proof (cases "weight (a # bs @ [a]) < 0")
           case True
           with Nil_Cons \<open>set ys \<subseteq> _\<close> path show ?thesis
             by (force intro: has_negative_cycleI[of a bs ys])
         next
           case False
-          then have "weight2 (a # bs @ [a]) \<ge> 0"
+          then have "weight (a # bs @ [a]) \<ge> 0"
             by auto
-          with * ys have "weight (a # cs') < OPT n v"
+          with * ys have "weight (a # cs' @ [t]) < OPT n v"
             using add_mono not_le by fastforce
           with Nil_Cons \<open>length ys \<ge> n\<close> \<open>set ys \<subseteq> _\<close> show ?thesis
             by (intro IH[of cs']; simp)
         qed
       next
         case (Cons_Nil as')
-        with ys have *: "weight (v # ys) = weight (v # as') + weight2 (a # bs @ [a])"
-          unfolding weight_eq by (simp add: weight2_append[of "v # as'" t "bs @ [t]", simplified])
+        with ys have *: "weight (v # ys @ [t]) = weight (v # as' @ [t]) + weight (a # bs @ [a])"
+          using weight_append[of "v # as'" t "bs @ [t]"] by simp
         show ?thesis
-        proof (cases "weight2 (a # bs @ [a]) < 0")
+        proof (cases "weight (a # bs @ [a]) < 0")
           case True
           with Cons_Nil \<open>set ys \<subseteq> _\<close> path show ?thesis
             using is_path_appendD[of "v # as'"] by (force intro: has_negative_cycleI[of a bs bs])
         next
           case False
-          then have "weight2 (a # bs @ [a]) \<ge> 0"
+          then have "weight (a # bs @ [a]) \<ge> 0"
             by auto
-          with * ys have "weight (v # as') < OPT n v"
+          with * ys have "weight (v # as' @ [t]) < OPT n v"
             by (metis add.right_neutral add_mono not_less)
           with Cons_Nil \<open>length ys \<ge> n\<close> \<open>set ys \<subseteq> _\<close> show ?thesis
             using is_path_remove_cycle2 by (intro IH[of as']) auto
         qed
       next
         case (Cons_Cons as' cs')
-        with ys have *: "weight (v # ys) = weight (v # as' @ a # cs') + weight2 (a # bs @ [a])"
-          unfolding weight_eq using
-            weight2_append[of "v # as'" a "bs @ a # cs' @ [t]"]
-            weight2_append[of "a # bs" a "cs' @ [t]"]
-            weight2_append[of "v # as'" a "cs' @ [t]"]
+        with ys have *: "weight (v # ys @ [t]) = weight (v # as' @ a # cs' @ [t]) + weight (a # bs @ [a])"
+          using
+            weight_append[of "v # as'" a "bs @ a # cs' @ [t]"]
+            weight_append[of "a # bs" a "cs' @ [t]"]
+            weight_append[of "v # as'" a "cs' @ [t]"]
           by (simp add: algebra_simps)
         show ?thesis
-        proof (cases "weight2 (a # bs @ [a]) < 0")
+        proof (cases "weight (a # bs @ [a]) < 0")
           case True
           with Cons_Cons \<open>set ys \<subseteq> _\<close> path show ?thesis
             using is_path_appendD[of "v # as'"]
             by (force intro: has_negative_cycleI[of a bs "bs @ a # cs'"])
         next
           case False
-          then have "weight2 (a # bs @ [a]) \<ge> 0"
+          then have "weight (a # bs @ [a]) \<ge> 0"
             by auto
-          with * ys have "weight (v # as' @ a # cs') < OPT n v"
+          with * ys have "weight (v # as' @ a # cs' @ [t]) < OPT n v"
             by (metis add.right_neutral add_mono not_less)
           with Cons_Cons \<open>length ys \<ge> n\<close> \<open>set ys \<subseteq> _\<close> path show ?thesis
             using is_path_remove_cycle2 apply (intro IH[of "as' @ a # cs'"]) by auto
@@ -928,7 +912,7 @@ proof -
       qed
     next
       case False
-      with \<open>set ys \<subseteq> _\<close> have "OPT n v \<le> weight (v # ys)"
+      with \<open>set ys \<subseteq> _\<close> have "OPT n v \<le> weight (v # ys @ [t])"
         by (auto simp: OPT_def finite_lists_length_le2[simplified] intro!: Min_le)
       with \<open>\<dots> < OPT n v\<close> show ?thesis
         by simp
