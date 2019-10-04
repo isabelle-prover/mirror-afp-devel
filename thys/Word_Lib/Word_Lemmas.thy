@@ -4048,17 +4048,17 @@ lemma swap_with_xor:
   by (metis word_bool_alg.xor_assoc word_bool_alg.xor_commute word_bool_alg.xor_self
             word_bool_alg.xor_zero_right)
 
-lemma scast_nop_1:
+lemma scast_nop1:
   "((scast ((of_int x)::('a::len) word))::'a sword) = of_int x"
   apply (clarsimp simp:scast_def word_of_int)
   by (metis len_signed sint_sbintrunc' word_sint.Rep_inverse)
 
-lemma scast_nop_2:
+lemma scast_nop2:
   "((scast ((of_int x)::('a::len) sword))::'a word) = of_int x"
   apply (clarsimp simp:scast_def word_of_int)
   by (metis len_signed sint_sbintrunc' word_sint.Rep_inverse)
 
-lemmas scast_nop[simp] = scast_nop_1 scast_nop_2 scast_id
+lemmas scast_nop[simp] = scast_nop1 scast_nop2 scast_id
 
 lemma le_mask_imp_and_mask:
   "(x::'a::len word) \<le> mask n \<Longrightarrow> x && mask n = x"
