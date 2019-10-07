@@ -1,13 +1,6 @@
 theory ML_GraphViz
-imports ML_GraphViz_Config
+imports Main
 begin
-
-
-ML_val\<open>
-  val _ = writeln ("using `"^Graphviz_Platform_Config.executable_pdf_viewer^"` as pdf viewer and `"^
-                   Graphviz_Platform_Config.executable_dot^"` to render graphs.");
-\<close>
-
 
 ML \<open>
 (*should we open a pdf viewer to display the generated graph?*)
@@ -40,16 +33,10 @@ structure Graphviz: GRAPHVIZ =
 struct
 
 (*if set to `DoNothing`, graphviz will not be run and not pdf will be opened. Include ML_GraphViz_Disable.thy to run in batch mode.*)
-val open_viewer = Unsynchronized.ref OpenImmediately
+val open_viewer = (* FIXME avoid mutable state *)
+  Unsynchronized.ref (if getenv "ISABELLE_DOT" = "" then DoNothing else OpenImmediately)
 
 val default_tune_node_format: term -> string -> string = (fn _ => I)
-
-fun write_to_tmpfile (t: string): Path.T = 
-  let 
-    val p = Isabelle_System.create_tmp_path "graphviz" "graph_tmp.dot"
-  in
-    writeln ("using tmpfile " ^ Path.print p); File.write p (t^"\n"); p
-  end
 
 fun evaluate_term (ctxt: Proof.context) edges = 
   case Code_Evaluation.dynamic_value ctxt edges of
@@ -102,35 +89,22 @@ fun node_to_string ctxt (tune_node_format: term -> string -> string) (n: term) :
            (Pretty.string_of (Syntax.pretty_term ctxt n)));
 
 local
-
-  (* viz is graphiz command, e.g. dot
-     viewer is a PDF viewer, e.g. xdg-open
-     retuns return code of bash command.
-     noticeable side effect: generated pdf file is not deleted (maybe still open in editor)*)
-  fun paint_graph (viewer: string) (viz: string) (f: Path.T) =
-    if (Isabelle_System.bash ("which "^viz)) <> 0 then
-      (*TODO: `which` on windows?*)
-      error "ML_GraphViz: Graphviz command not found"
-    else if (Isabelle_System.bash ("which "^viewer)) <> 0 then
-      error "ML_GraphViz: viewer command not found"
+  fun display_graph graph =
+    if getenv "ISABELLE_DOT" = "" then
+      error "Missing $ISABELLE_DOT settings variable (Graphviz \"dot\" executable)"
     else
-      let
-        val base = Path.base f;
-        val base_pdf = base |> Path.ext "pdf";
-        (*First cd to the temp directory, then only call the commands with relative paths. 
-          This is a Windows workaround if the Windows (not cygwin) version of graphviz is installed:
-            It does not understand paths such as /tmp/isabelle/.., it wants C:\tmp\..
-          Hence, we cd to the tmp directory and only use relative filenames henceforth.*)
-        val cmd =
-          "cd " ^ File.bash_path (Path.dir f) ^ "; " ^
-          viz ^ " -o "^ File.bash_path base_pdf ^ " -Tpdf " ^ File.bash_path base ^
-          " && " ^ viewer ^ " " ^ File.bash_path base_pdf;
-      in
-        writeln ("executing: "^cmd);
-        Isabelle_System.bash cmd;
-        File.rm f (*cleanup dot file, PDF file will still exist*)
-        (*some pdf viewers do not like it if we delete the pdf file they are currently displaying*)
-      end
+      Isabelle_System.with_tmp_file "graphviz" "dot" (fn graph_file =>
+        let
+          val _ = File.write graph_file graph;
+          val pdf_file = Path.explode "$ISABELLE_HOME_USER/graphviz.pdf";
+          val _ =
+            (Isabelle_System.bash o cat_lines)
+             ["set -e",
+              "cd " ^ File.bash_path (Path.dir graph_file),
+              "\"$ISABELLE_DOT\" -o " ^ Bash_Syntax.string (File.platform_path pdf_file) ^
+                " -Tpdf " ^ Bash_Syntax.string (File.platform_path graph_file),
+              "\"$PDF_VIEWER\" " ^ File.bash_path pdf_file ^ " &"];
+        in () end);
 
   fun format_dot_edges ctxt tune_node_format trm =
     let
@@ -152,9 +126,7 @@ in
       val evaluated_edges = map (fn (str, t) => (str, evaluate_term ctxt t)) Es;
       val edge_to_string = HOLogic.dest_list #> map HOLogic.dest_prod #> format_dot_edges ctxt tune_node_format #> implode;
       val formatted_edges = map (fn (str, t) => str ^ "\n" ^ edge_to_string t) evaluated_edges;
-      val execute_command = fn _ => apply_dot_header header formatted_edges
-          |> write_to_tmpfile
-          |> paint_graph Graphviz_Platform_Config.executable_pdf_viewer Graphviz_Platform_Config.executable_dot;
+      fun execute_command () = display_graph (apply_dot_header header formatted_edges);
     in
       case !open_viewer of
           DoNothing => writeln "visualization disabled (Graphviz.open_viewer)"
