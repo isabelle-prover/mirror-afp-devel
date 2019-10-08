@@ -94,10 +94,16 @@ begin
       by auto
   qed
 
+  (* TODO: this operation is fundamentally nondeterministic, model it as such, instead of
+    putting everything in the relation *)
+  (* TODO: by setting this to id, we pretend that nothing is actually happening with this
+    translation and put all the weight on the relation, it would make more sense to model
+    the fact that a translation is happening explicitly *)
   definition to_nbaei :: "('state, 'label) nba \<Rightarrow> ('state, 'label) nba"
     where "to_nbaei \<equiv> id"
 
-  (* TODO: make separate implementations for "nba_nbae" and "op_set_enumerate \<bind> nbae_image" *)
+  (* TODO: make separate implementations for "nba_nbae" and "op_set_enumerate \<bind> nbae_image"
+    make sure to do regression tests along the way *)
   schematic_goal to_nbaei_impl:
     fixes S :: "('statei \<times> 'state) set"
     assumes [simp]: "finite (nodes A)"
@@ -204,7 +210,7 @@ begin
       unfolding rel_alt_def g_def by (auto simp: in_br_conv)
     lemma rel_domain[simp]: "Domain rel = f ` nodes A" unfolding rel_def by force
     lemma rel_range[simp]: "Range rel = nodes A" unfolding rel_def by auto
-    lemma [intro!, simp]: "bijective rel" unfolding rel_inv_def by (simp add: bijective_alt)
+    lemma rel_bijective[intro!, simp]: "bijective rel" unfolding rel_inv_def by (simp add: bijective_alt)
     lemma [simp]: "Id_on (f ` nodes A) O rel = rel" unfolding rel_def by auto
     lemma [simp]: "rel O Id_on (nodes A) = rel" unfolding rel_def by auto
 
@@ -215,17 +221,25 @@ begin
     lemma [param]: "(id, g) \<in> Id_on (Domain rel) \<rightarrow> rel" unfolding rel_inv_def by (auto simp: in_br_conv)
     lemma [param]: "(g, id) \<in> rel \<rightarrow> Id_on (Range rel)" unfolding rel_inv_def by (auto simp: in_br_conv)
 
+    lemma f_refine: "(to_nbaei_impl seq bhc hms Ai, nbae_image f (nba_nbae A)) \<in>
+      \<langle>Id, nat_rel\<rangle> nbaei_nbae_rel" using f'_refine unfolding f_def by this
+
+    lemma nba_f_refine: "(nbae_nba (nbae_image f (nba_nbae A)), A) \<in> \<langle>Id_on (alphabet A), rel\<rangle> nba_rel"
+    proof -
+      have "(nbae_nba (nbae_image f (nba_nbae A)), nbae_nba (nbae_image id (nba_nbae A))) \<in>
+        \<langle>Id_on (alphabet A), rel\<rangle> nba_rel" using nba_rel_eq by parametricity auto
+      also have "nbae_nba (nbae_image id (nba_nbae A)) = (nbae_nba \<circ> nba_nbae) A" by simp
+      also have "(\<dots>, id A) \<in> \<langle>Id_on (alphabet A), Id_on (nodes A)\<rangle> nba_rel" by parametricity
+      finally show ?thesis by simp
+    qed
     lemma to_nbaei_impl_refine':
       "(to_nbaei_impl seq bhc hms Ai, to_nbaei A) \<in> \<langle>Id_on (alphabet A), rel\<rangle> nbaei_nba_rel"
     proof -
       have "(nbae_nba (nbaei_nbae (to_nbaei_impl seq bhc hms Ai)), nbae_nba (id (nbae_image f (nba_nbae A)))) \<in>
-        \<langle>Id, nat_rel\<rangle> nba_rel" using f'_refine[folded f_def] by parametricity auto
-      also have "(nbae_nba (id (nbae_image f (nba_nbae A))), nbae_nba (id (nbae_image id (nba_nbae A)))) \<in>
-        \<langle>Id_on (alphabet A), rel\<rangle> nba_rel" using nba_rel_eq by parametricity auto
-      also have "nbae_nba (id (nbae_image id (nba_nbae A))) = (nbae_nba \<circ> nba_nbae) A" by simp
-      also have "(\<dots>, id A) \<in> \<langle>Id_on (alphabet A), Id_on (nodes A)\<rangle> nba_rel" by parametricity
-      also have "id A = to_nbaei A" unfolding to_nbaei_def by simp
-      finally show ?thesis unfolding nbaei_nba_rel_def by simp
+        \<langle>Id, nat_rel\<rangle> nba_rel" using f_refine by parametricity auto
+      also have "(nbae_nba (id (nbae_image f (nba_nbae A))), A) \<in>
+        \<langle>Id_on (alphabet A), rel\<rangle> nba_rel" using nba_f_refine by simp
+      finally show ?thesis unfolding nbaei_nba_rel_def to_nbaei_def by simp
     qed
 
   end
