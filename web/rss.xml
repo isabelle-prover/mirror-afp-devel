@@ -9,7 +9,29 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>16 Sep 2019 00:00:00 +0000</pubDate>
+    <pubDate>07 Oct 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Sigma Protocols and Commitment Schemes</title>
+              <link>https://www.isa-afp.org/entries/Sigma_Commit_Crypto.html</link>
+       <guid>https://www.isa-afp.org/entries/Sigma_Commit_Crypto.html</guid>
+       <dc:creator> David Butler, Andreas Lochbihler       </dc:creator>
+       <pubDate>07 Oct 2019 00:00:00 +0000</pubDate>
+       <description>
+We use CryptHOL to formalise commitment schemes and Sigma-protocols.
+Both are widely used fundamental two party cryptographic primitives.
+Security for commitment schemes is considered using game-based
+definitions whereas the security of Sigma-protocols is considered
+using both the game-based and simulation-based security paradigms. In
+this work, we first define security for both primitives and then prove
+secure multiple case studies: the Schnorr, Chaum-Pedersen and
+Okamoto Sigma-protocols as well as a construction that allows for
+compound (AND and OR statements) Sigma-protocols and the Pedersen and
+Rivest commitment schemes. We also prove that commitment schemes can
+be constructed from Sigma-protocols. We formalise this proof at an
+abstract level, only assuming the existence of a Sigma-protocol;
+consequently, the instantiations of this result for the concrete
+Sigma-protocols we consider come for free.</description>
+    </item>
     <item>
        <title>Formalization of Multiway-Join Algorithms</title>
               <link>https://www.isa-afp.org/entries/Generic_Join.html</link>
@@ -536,20 +558,6 @@ substitution, swapping and freshness. It also includes bindings-aware
 induction and recursion principles and support for semantic
 interpretation. This work has been presented in the ITP 2017 paper “A
 Formalized General Theory of Syntax with Bindings”.</description>
-    </item>
-    <item>
-       <title>The Transcendence of Certain Infinite Series</title>
-              <link>https://www.isa-afp.org/entries/Transcendence_Series_Hancl_Rucki.html</link>
-       <guid>https://www.isa-afp.org/entries/Transcendence_Series_Hancl_Rucki.html</guid>
-       <dc:creator> Angeliki Koutsoukou-Argyraki, Wenda Li       </dc:creator>
-       <pubDate>27 Mar 2019 00:00:00 +0000</pubDate>
-       <description>
-We formalize the proofs of two transcendence criteria by J. Hančl
-and P. Rucki that assert the transcendence of the sums of certain
-infinite series built up by sequences that fulfil certain properties.
-Both proofs make use of Roth&#39;s celebrated theorem on diophantine
-approximations to algebraic numbers from 1955  which we implement as
-an assumption without having formalised its proof.</description>
     </item>
   </channel>
 </rss>

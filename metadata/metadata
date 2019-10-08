@@ -4,7 +4,7 @@ author = Lawrence C Paulson <https://www.cl.cam.ac.uk/~lp15/>
 topic = Mathematics/Analysis
 date = 2019-09-06
 notify = lp15@cam.ac.uk
-abstract = 
+abstract =
   This development formalises the square integrable functions over the
   reals and the basics of Fourier series. It culminates with a proof
   that every well-behaved periodic function can be approximated by a
@@ -283,6 +283,28 @@ abstract =
   where parties are assumed to be fully corrupted by an adversary. In
   this setting we again consider OT, as it is a fundamental building
   block of almost all MPC protocols.
+
+[Sigma_Commit_Crypto]
+title = Sigma Protocols and Commitment Schemes
+author = David Butler <https://www.turing.ac.uk/people/doctoral-students/david-butler>, Andreas Lochbihler <http://www.andreas-lochbihler.de>
+topic = Computer Science/Security/Cryptography
+date = 2019-10-07
+notify = dbutler@turing.ac.uk
+abstract =
+  We use CryptHOL to formalise commitment schemes and Sigma-protocols.
+  Both are widely used fundamental two party cryptographic primitives.
+  Security for commitment schemes is considered using game-based
+  definitions whereas the security of Sigma-protocols is considered
+  using both the game-based and simulation-based security paradigms. In
+  this work, we first define security for both primitives and then prove
+  secure multiple case studies: the Schnorr, Chaum-Pedersen and
+  Okamoto Sigma-protocols as well as a construction that allows for
+  compound (AND and OR statements) Sigma-protocols and the Pedersen and
+  Rivest commitment schemes. We also prove that commitment schemes can
+  be constructed from Sigma-protocols. We formalise this proof at an
+  abstract level, only assuming the existence of a Sigma-protocol;
+  consequently, the instantiations of this result for the concrete
+  Sigma-protocols we consider come for free.
 
 [CryptHOL]
 title = CryptHOL
@@ -8463,7 +8485,7 @@ author = Jonathan Julian Huerta y Munive <>
 topic = Mathematics/Algebra, Mathematics/Analysis
 date = 2019-09-10
 notify = jjhuertaymunive1@sheffield.ac.uk, jonjulian23@gmail.com
-abstract = 
+abstract =
   These components formalise a semantic framework for the deductive
   verification of hybrid systems. They support reasoning about
   continuous evolutions of hybrid programs in the style of differential
@@ -8479,7 +8501,7 @@ author = Thibault Dardinier<>
 topic = Computer Science/Algorithms
 date = 2019-09-16
 notify = tdardini@student.ethz.ch, traytel@inf.ethz.ch
-abstract = 
+abstract =
   Worst-case optimal multiway-join algorithms are recent seminal
   achievement of the database community. These algorithms compute the
   natural join of multiple relational databases and improve in the worst
