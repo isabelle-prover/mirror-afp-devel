@@ -11,6 +11,7 @@ begin
     by unfold_locales auto
 
   lemmas degeneralize_language[simp] = degeneralization.degeneralize_language[folded NBA.language_def]
+  lemmas degeneralize_nodes_finite[iff] = degeneralization.degeneralize_nodes_finite[folded NBA.nodes_def]
 
   global_interpretation intersection: automaton_intersection_trace
     nba nba.alphabet nba.initial nba.transition nba.accepting infs
@@ -20,7 +21,8 @@ begin
     defines intersect' = intersection.intersect
     by unfold_locales auto
 
-  lemmas intersect'_language[simp] = intersection.combine_language[folded NGBA.language_def]
+  lemmas intersect'_language[simp] = intersection.intersect_language[folded NGBA.language_def]
+  lemmas intersect'_nodes_finite[intro] = intersection.intersect_nodes_finite[folded NGBA.nodes_def]
 
   global_interpretation union: automaton_union_trace
     nba nba.alphabet nba.initial nba.transition nba.accepting infs
@@ -36,5 +38,9 @@ begin
 
   lemma intersect_language[simp]: "NBA.language (intersect A B) = NBA.language A \<inter> NBA.language B"
     by simp
+  lemma intersect_nodes_finite[intro]:
+    assumes "finite (NBA.nodes A)" "finite (NBA.nodes B)"
+    shows "finite (NBA.nodes (intersect A B))"
+    using intersect'_nodes_finite assms by simp
 
 end

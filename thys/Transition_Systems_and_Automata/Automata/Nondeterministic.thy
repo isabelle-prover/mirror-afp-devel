@@ -45,7 +45,7 @@ begin
       "restrict A \<equiv> automaton
         (alphabet A)
         (initial A)
-        (\<lambda> a. if a \<in> alphabet A then transition A a else bot)
+        (\<lambda> a p. if a \<in> alphabet A then transition A a p else {})
         (condition A)"
 
     lemma restrict_simps[simp]:
@@ -149,6 +149,40 @@ begin
         using assms by (coinduction arbitrary: w rs pk) (force elim: b.run.cases)
     qed
 
+    lemma degeneralize_nodes:
+      "b.nodes (degeneralize A) \<subseteq> a.nodes A \<times> insert 0 {0 ..< length (condition\<^sub>1 A)}"
+    proof
+      fix pk
+      assume "pk \<in> b.nodes (degeneralize A)"
+      then show "pk \<in> a.nodes A \<times> insert 0 {0 ..< length (condition\<^sub>1 A)}"
+        by (induct) (force, cases "condition\<^sub>1 A = []", auto)
+    qed
+    lemma nodes_degeneralize: "a.nodes A \<subseteq> fst ` b.nodes (degeneralize A)"
+    proof
+      fix p
+      assume "p \<in> a.nodes A"
+      then show "p \<in> fst ` b.nodes (degeneralize A)"
+      proof induct
+        case (initial p)
+        have "(p, 0) \<in> b.nodes (degeneralize A)" using initial by auto
+        then show ?case using image_iff fst_conv by force
+      next
+        case (execute p aq)
+        obtain k where "(p, k) \<in> b.nodes (degeneralize A)" using execute(2) by auto
+        then have "(snd aq, count (condition\<^sub>1 A) p k) \<in> b.nodes (degeneralize A)"
+          using execute(3) by auto
+        then show ?case using image_iff snd_conv by force
+      qed
+    qed
+
+    lemma degeneralize_nodes_finite[iff]: "finite (b.nodes (degeneralize A)) \<longleftrightarrow> finite (a.nodes A)"
+    proof
+      show "finite (a.nodes A)" if "finite (b.nodes (degeneralize A))"
+        using finite_subset nodes_degeneralize that by blast
+      show "finite (b.nodes (degeneralize A))" if "finite (a.nodes A)"
+        using finite_subset degeneralize_nodes that by blast
+    qed
+
   end
 
   locale automaton_degeneralization_trace =
@@ -234,6 +268,18 @@ begin
         using that by (coinduction arbitrary: w r s p q) (auto elim: a.run.cases b.run.cases)
     qed
 
+    lemma intersect_nodes: "c.nodes (intersect A B) \<subseteq> a.nodes A \<times> b.nodes B"
+    proof
+      fix pq
+      assume "pq \<in> c.nodes (intersect A B)"
+      then show "pq \<in> a.nodes A \<times> b.nodes B" by induct auto
+    qed
+
+    lemma intersect_nodes_finite[intro]:
+      assumes "finite (a.nodes A)" "finite (b.nodes B)"
+      shows "finite (c.nodes (intersect A B))"
+      using finite_subset intersect_nodes assms by blast
+
   end
 
   locale automaton_intersection_trace =
@@ -268,7 +314,7 @@ begin
     assumes test[iff]: "test\<^sub>3 (condition c\<^sub>1 c\<^sub>2) (u ||| v) \<longleftrightarrow> test\<^sub>1 c\<^sub>1 u \<and> test\<^sub>2 c\<^sub>2 v"
   begin
 
-    lemma combine_language[simp]: "c.language (intersect A B) = a.language A \<inter> b.language B"
+    lemma intersect_language[simp]: "c.language (intersect A B) = a.language A \<inter> b.language B"
       unfolding a.language_def b.language_def c.language_def
       unfolding a.trace_alt_def b.trace_alt_def c.trace_alt_def
       by (fastforce iff: split_szip)
