@@ -2299,11 +2299,18 @@ proof (rule singleton_contrE[OF _ upper])
   fix x y assume H: "x \<noteq> y" "x \<in> i" "y \<in> i"
   then obtain u v where uv: "x = u *\<^sub>R b + (1 - u) *\<^sub>R a" "y = v *\<^sub>R b + (1 - v) *\<^sub>R a"
     "0 \<le> u" "u \<le> 1" "0 \<le> v" "v \<le> 1"
-    by (auto simp: closed_segment_def i_def field_simps)
-  hence "u = v * (fst a - fst b) / (fst a - fst b)" using ne1 H(2,3)
-    by (auto simp: closed_segment_def field_simps i_def)
-  hence "u = v" by (simp add: ne1)
-  thus False using H uv by simp
+    by (auto simp add: closed_segment_def i_def field_simps)
+  then have "x + u *\<^sub>R a = a + u *\<^sub>R b" "y + v *\<^sub>R a = a + v *\<^sub>R b"
+    by simp_all
+  then have "fst (x + u *\<^sub>R a) = fst (a + u *\<^sub>R b)" "fst (y + v *\<^sub>R a) = fst (a + v *\<^sub>R b)"
+    by simp_all
+  then have "u = v * (fst a - fst b) / (fst a - fst b)"
+    using ne1 H(2,3) \<open>0 \<le> u\<close> \<open>u \<le> 1\<close> \<open>0 \<le> v\<close> \<open>v \<le> 1\<close>
+    by (simp add: closed_segment_def i_def field_simps)
+  then have "u = v"
+    by (simp add: ne1)
+  then show False using H uv
+    by simp
 qed
 
 lemma bound_intersect_2d_ud_segments_of_aform:

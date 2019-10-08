@@ -279,7 +279,7 @@ lemma has_integral_affinity_iff:
 proof
   assume ?lhs
   from has_integral_affinity'[OF this, of "1 / m" "-c /\<^sub>R m"] and \<open>m > 0\<close>
-    show ?rhs by (simp add: field_simps vector_add_divide_simps)
+    show ?rhs by (simp add: vector_add_divide_simps) (simp add: field_simps)
 next
   assume ?rhs
   from has_integral_affinity'[OF this, of m c] and \<open>m > 0\<close>
