@@ -6,6 +6,8 @@ session Transition_Systems_and_Automata (AFP) = "Collections" +
     "DFS_Framework"
     "Gabow_SCC"
   directories
+    "Basic"
+    "Transition_Systems"
     "Automata"
     "Automata/DBA"
     "Automata/DCA"
@@ -13,8 +15,6 @@ session Transition_Systems_and_Automata (AFP) = "Collections" +
     "Automata/DRA"
     "Automata/NBA"
     "Automata/NFA"
-    "Basic"
-    "Transition_Systems"
   theories
     "Basic/Basic"
     "Basic/Sequence"
@@ -27,7 +27,9 @@ session Transition_Systems_and_Automata (AFP) = "Collections" +
     "Transition_Systems/Transition_System_Construction"
     "Automata/DFA/DFA"
     "Automata/NFA/NFA"
+    "Automata/NBA/NBA_Combine"
     "Automata/NBA/NBA_Translate"
+    "Automata/NBA/NGBA_Algorithms"
     "Automata/DBA/DBA_Combine"
     "Automata/DCA/DCA_Combine"
     "Automata/DRA/DRA_Combine"
