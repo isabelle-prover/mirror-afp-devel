@@ -32,9 +32,9 @@ proof -
   then have "(\<lambda>x. \<Sum>i\<in>I. a i * w i x) square_integrable S"
     by (intro square_integrable_sum square_integrable_lmult w \<open>finite I\<close>)
   with assms show ?thesis
-    apply (simp add: square_integrable_diff l2norm_pow_2 orthonormal_coeff_def orthonormal_system_def)
-    apply (simp add: square_integrable_diff square_integrable_lmult l2product_rdiff l2product_sym
-           l2product_rsum l2product_rmult algebra_simps  power2_eq_square if_distrib [of "\<lambda>x. _ * x"])
+    apply (simp add: l2norm_pow_2 orthonormal_coeff_def orthonormal_system_def)
+    apply (simp add: l2product_rdiff l2product_sym
+           l2product_rsum l2product_rmult algebra_simps power2_eq_square if_distrib [of "\<lambda>x. _ * x"])
     done
 qed
 
@@ -1544,7 +1544,7 @@ proof -
                     \<longlonglongrightarrow> pi * l * inverse pi"
     by (auto simp: divide_simps)
   also have "\<dots> \<longleftrightarrow> ?rhs"
-    using real_tendsto_mult_right_iff [of "inverse pi", symmetric] by auto
+    using tendsto_mult_right_iff [of "inverse pi", symmetric] by auto
   finally show ?thesis .
 qed
 
@@ -2500,7 +2500,7 @@ proof -
     by (simp add: LIM_zero_iff)
   also have "\<dots> \<longleftrightarrow>
         (\<lambda>n. ((((\<Sum>r<n. \<Sum>k\<le>2*r.  Fourier_coefficient f k * trigonometric_set k t)) / n) - l) * pi) \<longlonglongrightarrow> 0"
-    using real_tendsto_mult_right_iff [OF pi_neq_zero] by simp
+    using tendsto_mult_right_iff [OF pi_neq_zero] by simp
   also have "\<dots> \<longleftrightarrow> ?rhs"
     apply (intro Lim_transform_eq [OF Lim_transform_eventually [of "\<lambda>n. 0"]] eventually_sequentiallyI [of 1])
     apply (simp_all add: Fourier_sum_offset_Fejer_kernel_half assms)
@@ -2710,7 +2710,7 @@ proof -
           unfolding h_def
           by (simp add: absolutely_integrable_imp_integrable absolutely_integrable_mult_Fejer_kernel_reflected_part5 assms)
         then have "LINT x|lebesgue_on {0..pi}. Fejer_kernel n x * h x
-           = (LINT x|lebesgue_on {0..\<xi>}. Fejer_kernel n x * h x) + (LINT x|lebesgue_on {\<xi>..pi}. Fejer_kernel n x * h x)"
+                 = (LINT x|lebesgue_on {0..\<xi>}. Fejer_kernel n x * h x) + (LINT x|lebesgue_on {\<xi>..pi}. Fejer_kernel n x * h x)"
           by (rule integral_combine) (use  \<open>0 < \<xi>\<close> \<open>\<xi> < pi\<close> in auto)
         then show "\<bar>LINT u|lebesgue_on {0..pi}. Fejer_kernel n u * h u\<bar> < e"
           using 1 2 3 by linarith
@@ -2722,7 +2722,7 @@ proof -
 qed
 
 corollary Fourier_Fejer_Cesaro_summable_simple:
-assumes f: "continuous_on UNIV f"
+  assumes f: "continuous_on UNIV f"
     and periodic: "\<And>x. f(x + 2*pi) = f x"
   shows "(\<lambda>n. (\<Sum>m<n. \<Sum>k\<le>2*m. Fourier_coefficient f k * trigonometric_set k x) / n) \<longlonglongrightarrow> f x"
 proof -
