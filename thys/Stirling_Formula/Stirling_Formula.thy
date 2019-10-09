@@ -560,8 +560,7 @@ proof -
       unfolding power2_eq_square by (simp add: prod.distrib prod_dividef)
     also have "(\<Prod>k = 1..n. (2 * real k)^2 / (2 * real k - 1)^2) =
                  (\<Prod>k = 1..n. (2 * real k)^4 / ((2*real k)*(2 * real k - 1))^2)"
-      by (intro prod.cong refl) 
-         (simp add: divide_simps, (simp add: field_simps power2_eq_square eval_nat_numeral))
+      by (rule prod.cong) (simp_all add: power2_eq_square eval_nat_numeral)
     also have "\<dots> = 16^n * fact n^4 / (\<Prod>k=1..n. (2*real k) * (2*real k - 1))^2"
       by (simp add: prod.distrib prod_dividef fact_prod
             prod_power_distrib [symmetric] prod_constant)

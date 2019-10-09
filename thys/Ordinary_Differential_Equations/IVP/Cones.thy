@@ -275,7 +275,7 @@ lemma vangle_scaleR:
 lemma cos_vangle_eq_zero_iff_vangle:
   "cos (vangle u v) = 0 \<longleftrightarrow> (u = 0 \<or> v = 0 \<or> u \<bullet> v = 0)"
   using Cauchy_Schwarz_ineq2[of u v]
-  by (auto simp: vangle_def divide_simps sign_simps split: if_splits)
+  by (auto simp: vangle_def divide_simps algebra_split_simps split: if_splits)
 
 lemma ortho_imp_angle_pi_half: "u \<bullet> v = 0 \<Longrightarrow> vangle u v = pi / 2"
   using orthogonal_iff_vangle[of u v]

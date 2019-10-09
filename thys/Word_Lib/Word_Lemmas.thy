@@ -3161,7 +3161,7 @@ lemma int_sdiv_same_is_1 [simp]:
    apply (subgoal_tac "b > 0")
     apply (case_tac "a > 0")
      apply (clarsimp simp: sgn_if)
-    apply (clarsimp simp: sign_simps not_less)
+    apply (clarsimp simp: algebra_split_simps not_less)
     apply (metis int_div_same_is_1 le_neq_trans minus_minus neg_0_le_iff_le neg_equal_0_iff_equal)
    apply (case_tac "a > 0")
     apply (case_tac "b = 0")
@@ -3170,7 +3170,7 @@ lemma int_sdiv_same_is_1 [simp]:
     apply (clarsimp simp: sgn_mult not_less)
     apply (metis le_less neg_0_less_iff_less not_less_iff_gr_or_eq pos_imp_zdiv_neg_iff)
    apply (rule classical)
-   apply (clarsimp simp: sign_simps sgn_mult not_less sgn_if split: if_splits)
+   apply (clarsimp simp: algebra_split_simps sgn_mult not_less sgn_if split: if_splits)
    apply (metis antisym less_le neg_imp_zdiv_nonneg_iff)
   apply (clarsimp simp: sdiv_int_def sgn_if)
   done
@@ -3181,10 +3181,10 @@ lemma int_sdiv_negated_is_minus1 [simp]:
   apply (rule iffI)
    apply (subgoal_tac "b < 0")
     apply (case_tac "a > 0")
-     apply (clarsimp simp: sgn_if sign_simps not_less)
+     apply (clarsimp simp: sgn_if algebra_split_simps not_less)
     apply (case_tac "sgn (a * b) = -1")
-     apply (clarsimp simp: not_less sign_simps)
-    apply (clarsimp simp: sign_simps not_less)
+     apply (clarsimp simp: not_less algebra_split_simps)
+    apply (clarsimp simp: algebra_split_simps not_less)
    apply (rule classical)
    apply (case_tac "b = 0")
     apply (clarsimp simp: not_less sgn_mult)
@@ -3310,7 +3310,7 @@ lemmas word_sdiv_numerals = word_sdiv_numerals_lhs[where b="numeral y" for y]
 lemma smod_int_alt_def:
      "(a::int) smod b = sgn (a) * (abs a mod abs b)"
   apply (clarsimp simp: smod_int_def sdiv_int_def)
-  apply (clarsimp simp: minus_div_mult_eq_mod [symmetric] abs_sgn sgn_mult sgn_if sign_simps)
+  apply (clarsimp simp: minus_div_mult_eq_mod [symmetric] abs_sgn sgn_mult sgn_if algebra_split_simps)
   done
 
 lemma smod_int_range:

@@ -208,7 +208,7 @@ proof (auto, goal_cases)
         apply (auto simp: ball_eq)
         apply (auto simp: subset_iff)
         apply (drule spec[where x="(c + k)/2"])
-        apply (auto simp: sign_simps not_less)
+        apply (auto simp: algebra_split_simps not_less)
         using \<open>0 \<le> c\<close> by linarith
       then have "norm (I c - J) < e" using k by auto
       moreover
