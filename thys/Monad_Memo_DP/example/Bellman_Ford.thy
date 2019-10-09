@@ -12,10 +12,35 @@ theory Bellman_Ford
     Example_Misc
     "../util/Tracing"
     "../util/Ground_Function"
-    "HOL-ex.Sketch_and_Explore"
 begin
 
 subsubsection \<open>Misc\<close>
+
+lemma nat_le_cases:
+  fixes n :: nat
+  assumes "i \<le> n"
+  obtains "i < n" | "i = n"
+  using assms by (cases "i = n") auto
+
+bundle app_syntax begin
+
+notation App (infixl "$" 999)
+notation Wrap ("\<llangle>_\<rrangle>")
+
+end
+
+context dp_consistency_iterator
+begin
+
+lemma crel_vs_iterate_state:
+  "crel_vs (=) () (iter_state f x)" if "((=) ===>\<^sub>T R) g f"
+  by (metis crel_vs_iterate_state iter_state_iterate_state that)
+
+lemma consistent_crel_vs_iterate_state:
+  "crel_vs (=) () (iter_state f x)" if "consistentDP f"
+  using consistentDP_def crel_vs_iterate_state that by simp
+
+end
 
 instance extended :: (countable) countable
 proof standard
@@ -389,7 +414,7 @@ fun bf :: "nat \<Rightarrow> nat \<Rightarrow> int extended" where
       (bf k j # [W j i + bf k i . i \<leftarrow> [0 ..< Suc n]])"
 
 lemmas [simp del] = bf.simps
-lemmas [simp] = bf.simps[unfolded min_list_fold]
+lemmas bf_simps[simp] = bf.simps[unfolded min_list_fold]
 
 lemma bf_correct:
   "OPT i j = bf i j" if \<open>t \<le> n\<close>
@@ -454,7 +479,33 @@ lemma iter_bf_unfold[code]:
 lemmas bf_memoized = bf\<^sub>m.memoized[OF bf\<^sub>m.crel]
 lemmas bf_bottom_up = bottom_up.memoized[OF bf\<^sub>m.crel, folded iter_bf_def]
 
-thm bf\<^sub>m'.simps bf_memoized
+definition
+  "bellman_ford \<equiv>
+    do {
+      _  \<leftarrow> iter_bf (n, n);
+      xs \<leftarrow> State_Main.map\<^sub>T' (\<lambda>i. bf\<^sub>m' n i) [0..<n+1];
+      ys \<leftarrow> State_Main.map\<^sub>T' (\<lambda>i. bf\<^sub>m' (n + 1) i) [0..<n+1];
+      State_Monad.return (if xs = ys then Some xs else None)
+    }"
+
+context
+  includes state_monad_syntax
+begin
+
+lemma bellman_ford_alt_def:
+  "bellman_ford \<equiv>
+    do {
+      _  \<leftarrow> iter_bf (n, n);
+      (\<langle>\<lambda>xs. \<langle>\<lambda>ys. State_Monad.return (if xs = ys then Some xs else None)\<rangle>
+      . (State_Main.map\<^sub>T . \<langle>\<lambda>i. bf\<^sub>m' (n + 1) i\<rangle> . \<langle>[0..<n+1]\<rangle>)\<rangle>)
+      . (State_Main.map\<^sub>T . \<langle>\<lambda>i. bf\<^sub>m' n i\<rangle>       . \<langle>[0..<n+1]\<rangle>)
+    }"
+  unfolding
+    State_Monad_Ext.fun_app_lifted_def bellman_ford_def State_Main.map\<^sub>T_def bind_left_identity
+  .
+
+end
+
 
 
 subsubsection \<open>Imperative Memoization\<close>
@@ -734,16 +785,14 @@ proof -
       done
   qed
   let ?S = "sum_list (map (OPT n) (a # xs @ [a]))"
-  have "\<exists>v \<le> n. \<exists>w \<le> n. OPT n w + W v w < OPT n v"
-  proof (rule ccontr , simp)
-    assume A: "\<forall>v\<le>n. \<forall>w\<le>n. \<not> OPT n w + W v w < OPT n v"
-    then have A: "\<forall>v\<le>n. \<forall>w\<le>n. OPT n w + W v w \<ge> OPT n v"
-      by force
+  obtain u v where "u \<le> n" "v \<le> n" "OPT n v + W u v < OPT n u"
+  proof (atomize_elim, rule ccontr)
+    assume "\<nexists>u v. u \<le> n \<and> v \<le> n \<and> OPT n v + W u v < OPT n u"
     then have "?S \<le> ?S + weight (a # xs @ [a])"
-      using cycle(1-3) by (subst fold_sum_aux) (auto simp: subset_eq)
-    moreover have "sum_list (map (OPT n) (a # xs @ [a])) > -\<infinity>"
-      using cycle(1-4) by - (rule sum_list_not_minfI, auto intro!: OPT_not_minfI)
-    moreover have "sum_list (map (OPT n) (a # xs @ [a])) < \<infinity>"
+      using cycle(1-3) by (subst fold_sum_aux; fastforce simp: subset_eq)
+    moreover have "?S > -\<infinity>"
+      using cycle(1-4) by (intro sum_list_not_minfI, auto intro!: OPT_not_minfI)
+    moreover have "?S < \<infinity>"
       using reaches \<open>t \<le> n\<close> cycle(1,2)
       by (intro sum_list_not_infI) (auto intro: reaches_non_inf_path \<open>reaches a\<close> simp: subset_eq)
     ultimately have "weight (a # xs @ [a]) \<ge> 0"
@@ -751,8 +800,6 @@ proof -
     with \<open>weight _ < 0\<close> show False
       by simp
   qed
-  then obtain u v where "u \<le> n" "v \<le> n" "OPT n v + W u v < OPT n u"
-    by safe
   then show ?thesis
     by -
        (rule exI[where x = u],
@@ -760,7 +807,7 @@ proof -
           simp: OPT_Suc[OF \<open>t \<le> n\<close>])
 qed
 
-corollary detects_cycle_bf:
+corollary bf_detects_cycle:
   assumes has_negative_cycle
   shows "\<exists>i \<le> n. bf (n + 1) i < bf n i"
   using detects_cycle[OF assms] unfolding bf_correct[OF \<open>t \<le> n\<close>] .
@@ -821,100 +868,123 @@ proof -
   qed
 qed
 
+lemma simple_paths:
+  assumes "\<not> has_negative_cycle" "weight (v # xs @ [t]) < \<infinity>" "set xs \<subseteq> {0..n}" "v \<le> n"
+  obtains ys where
+    "weight (v # ys @ [t]) \<le> weight (v # xs @ [t])" "set ys \<subseteq> {0..n}" "length ys < n" | "v = t"
+  using assms(2-)
+proof (atomize_elim, induction "length xs" arbitrary: xs rule: less_induct)
+  case (less ys)
+  note ys = less.prems(1,2)
+  note IH = less.hyps
+  have path: "is_path (v # ys)"
+    using is_path_def not_less_iff_gr_or_eq ys(1) by fastforce
+  show ?case
+  proof (cases "length ys \<ge> n")
+    case True
+    with ys \<open>v \<le> n\<close> \<open>t \<le> n\<close> obtain a as bs cs where "v # ys @ [t] = as @ a # bs @ a # cs"
+      by - (rule list_pidgeonhole[of "v # ys @ [t]" "{0..n}"], auto)
+    then show ?thesis
+    proof (cases rule: path_eq_cycleE)
+      case Nil_Nil
+      then show ?thesis
+        by simp
+    next
+      case (Nil_Cons cs')
+      then have *: "weight (v # ys @ [t]) = weight (a # bs @ [a]) + weight (a # cs' @ [t])"
+        by (simp add: weight_append[of "a # bs" a "cs' @ [t]", simplified])
+      show ?thesis
+      proof (cases "weight (a # bs @ [a]) < 0")
+        case True
+        with Nil_Cons \<open>set ys \<subseteq> _\<close> path show ?thesis
+          using assms(1) by (force intro: has_negative_cycleI[of a bs ys])
+      next
+        case False
+        then have "weight (a # bs @ [a]) \<ge> 0"
+          by auto
+        with * ys have "weight (a # cs' @ [t]) \<le> weight (v # ys @ [t])"
+          using add_mono not_le by fastforce
+        with Nil_Cons \<open>length ys \<ge> n\<close> ys show ?thesis
+          using IH[of cs'] by simp (meson le_less_trans order_trans)
+      qed
+    next
+      case (Cons_Nil as')
+      with ys have *: "weight (v # ys @ [t]) = weight (v # as' @ [t]) + weight (a # bs @ [a])"
+        using weight_append[of "v # as'" t "bs @ [t]"] by simp
+      show ?thesis
+      proof (cases "weight (a # bs @ [a]) < 0")
+        case True
+        with Cons_Nil \<open>set ys \<subseteq> _\<close> path assms(1) show ?thesis
+          using is_path_appendD[of "v # as'"] by (force intro: has_negative_cycleI[of a bs bs])
+      next
+        case False
+        then have "weight (a # bs @ [a]) \<ge> 0"
+          by auto
+        with * ys(1) have "weight (v # as' @ [t]) \<le> weight (v # ys @ [t])"
+          using add_left_mono by fastforce
+        with Cons_Nil \<open>length ys \<ge> n\<close> \<open>v \<le> n\<close> ys show ?thesis
+          using IH[of as'] by simp (meson le_less_trans order_trans)
+      qed
+    next
+      case (Cons_Cons as' cs')
+      with ys have *: "weight (v # ys @ [t]) = weight (v # as' @ a # cs' @ [t]) + weight (a # bs @ [a])"
+        using
+          weight_append[of "v # as'" a "bs @ a # cs' @ [t]"]
+          weight_append[of "a # bs" a "cs' @ [t]"]
+          weight_append[of "v # as'" a "cs' @ [t]"]
+        by (simp add: algebra_simps)
+      show ?thesis
+      proof (cases "weight (a # bs @ [a]) < 0")
+        case True
+        with Cons_Cons \<open>set ys \<subseteq> _\<close> path assms(1) show ?thesis
+          using is_path_appendD[of "v # as'"]
+          by (force intro: has_negative_cycleI[of a bs "bs @ a # cs'"])
+      next
+        case False
+        then have "weight (a # bs @ [a]) \<ge> 0"
+          by auto
+        with * ys have "weight (v # as' @ a # cs' @ [t]) \<le> weight (v # ys @ [t])"
+          using add_left_mono by fastforce
+        with Cons_Cons \<open>v \<le> n\<close> ys show ?thesis
+          using is_path_remove_cycle2 IH[of "as' @ a # cs'"]
+          by simp (meson le_less_trans order_trans)
+      qed
+    qed
+  next
+    case False
+    with \<open>set ys \<subseteq> _\<close> show ?thesis
+      by auto
+  qed
+qed
+
 theorem shorter_than_OPT_n_has_negative_cycle:
   assumes "shortest v < OPT n v" "v \<le> n"
   shows has_negative_cycle
 proof -
-  from assms obtain ys where
+  from assms obtain ys where ys:
     "weight (v # ys @ [t]) < OPT n v" "set ys \<subseteq> {0..n}"
     apply (cases rule: OPT_cases2[of v n]; cases rule: shortest_cases[OF \<open>v \<le> n\<close>]; simp)
       apply (metis uminus_extended.cases)
     using less_extended_simps(2) less_trans apply blast
     apply (metis less_eq_extended.elims(2) less_extended_def zero_extended_def)
     done
-  then show ?thesis
-  proof (induction "length ys" arbitrary: ys rule: less_induct)
-    case less
-    note ys = less.prems(1,2)
-    note IH = less.hyps
-    have path: "is_path (v # ys)"
-      using is_path_def not_less_iff_gr_or_eq ys(1) by fastforce
-    show ?case
-    proof (cases "length ys \<ge> n")
-      case True
-      with ys \<open>v \<le> n\<close> \<open>t \<le> n\<close> obtain a as bs cs where "v # ys @ [t] = as @ a # bs @ a # cs"
-        by - (rule list_pidgeonhole[of "v # ys @ [t]" "{0..n}"], auto)
-      then show ?thesis
-      proof (cases rule: path_eq_cycleE)
-        case Nil_Nil
-        then show ?thesis
-          using OPT_sink_le_0[of n] assms ys unfolding has_negative_cycle_def is_path_def
-          using less_extended_def by force
-      next
-        case (Nil_Cons cs')
-        then have *: "weight (v # ys @ [t]) = weight (a # bs @ [a]) + weight (a # cs' @ [t])"
-          by (simp add: weight_append[of "a # bs" a "cs' @ [t]", simplified])
-        show ?thesis
-        proof (cases "weight (a # bs @ [a]) < 0")
-          case True
-          with Nil_Cons \<open>set ys \<subseteq> _\<close> path show ?thesis
-            by (force intro: has_negative_cycleI[of a bs ys])
-        next
-          case False
-          then have "weight (a # bs @ [a]) \<ge> 0"
-            by auto
-          with * ys have "weight (a # cs' @ [t]) < OPT n v"
-            using add_mono not_le by fastforce
-          with Nil_Cons \<open>length ys \<ge> n\<close> \<open>set ys \<subseteq> _\<close> show ?thesis
-            by (intro IH[of cs']; simp)
-        qed
-      next
-        case (Cons_Nil as')
-        with ys have *: "weight (v # ys @ [t]) = weight (v # as' @ [t]) + weight (a # bs @ [a])"
-          using weight_append[of "v # as'" t "bs @ [t]"] by simp
-        show ?thesis
-        proof (cases "weight (a # bs @ [a]) < 0")
-          case True
-          with Cons_Nil \<open>set ys \<subseteq> _\<close> path show ?thesis
-            using is_path_appendD[of "v # as'"] by (force intro: has_negative_cycleI[of a bs bs])
-        next
-          case False
-          then have "weight (a # bs @ [a]) \<ge> 0"
-            by auto
-          with * ys have "weight (v # as' @ [t]) < OPT n v"
-            by (metis add.right_neutral add_mono not_less)
-          with Cons_Nil \<open>length ys \<ge> n\<close> \<open>set ys \<subseteq> _\<close> show ?thesis
-            using is_path_remove_cycle2 by (intro IH[of as']) auto
-        qed
-      next
-        case (Cons_Cons as' cs')
-        with ys have *: "weight (v # ys @ [t]) = weight (v # as' @ a # cs' @ [t]) + weight (a # bs @ [a])"
-          using
-            weight_append[of "v # as'" a "bs @ a # cs' @ [t]"]
-            weight_append[of "a # bs" a "cs' @ [t]"]
-            weight_append[of "v # as'" a "cs' @ [t]"]
-          by (simp add: algebra_simps)
-        show ?thesis
-        proof (cases "weight (a # bs @ [a]) < 0")
-          case True
-          with Cons_Cons \<open>set ys \<subseteq> _\<close> path show ?thesis
-            using is_path_appendD[of "v # as'"]
-            by (force intro: has_negative_cycleI[of a bs "bs @ a # cs'"])
-        next
-          case False
-          then have "weight (a # bs @ [a]) \<ge> 0"
-            by auto
-          with * ys have "weight (v # as' @ a # cs' @ [t]) < OPT n v"
-            by (metis add.right_neutral add_mono not_less)
-          with Cons_Cons \<open>length ys \<ge> n\<close> \<open>set ys \<subseteq> _\<close> path show ?thesis
-            using is_path_remove_cycle2 apply (intro IH[of "as' @ a # cs'"]) by auto
-        qed
-      qed
-    next
-      case False
-      with \<open>set ys \<subseteq> _\<close> have "OPT n v \<le> weight (v # ys @ [t])"
-        by (auto simp: OPT_def finite_lists_length_le2[simplified] intro!: Min_le)
-      with \<open>\<dots> < OPT n v\<close> show ?thesis
+  show ?thesis
+  proof (cases "v = t")
+    case True
+    with ys \<open>t \<le> n\<close> show ?thesis
+      using OPT_sink_le_0[of n] unfolding has_negative_cycle_def is_path_def
+      using less_extended_def by force
+  next
+    case False
+    show ?thesis
+    proof (rule ccontr)
+      assume "\<not> has_negative_cycle"
+      with False False ys \<open>v \<le> n\<close> obtain xs where
+        "weight (v # xs @ [t]) \<le> weight (v # ys @ [t])" "set xs \<subseteq> {0..n}" "length xs < n"
+        using less_extended_def by (fastforce elim!: simple_paths[of v ys])
+      then have "OPT n v \<le> weight (v # xs @ [t])"
+        unfolding OPT_def by (intro Min_le) auto
+      with \<open>_ \<le> weight (v # ys @ [t])\<close> \<open>weight (v # ys @ [t]) < OPT n v\<close> show False
         by simp
     qed
   qed
@@ -939,6 +1009,96 @@ proof -
     unfolding bf_correct[OF \<open>t \<le> n\<close>, symmetric]
     by (safe, rule order.antisym) (auto elim: shortest_le_OPT)
 qed
+
+lemma OPT_mono:
+  "OPT m v \<le> OPT n v" if \<open>v \<le> n\<close> \<open>n \<le> m\<close>
+  using that unfolding OPT_def by (intro Min_antimono) auto
+
+corollary bf_fix:
+  assumes "\<not> has_negative_cycle" "m \<ge> n"
+  shows "\<forall>v \<le> n. bf m v = bf n v"
+proof (intro allI impI)
+  fix v assume "v \<le> n"
+  from \<open>v \<le> n\<close> \<open>n \<le> m\<close> have "shortest v \<le> OPT m v"
+    by (simp add: shortest_le_OPT)
+  moreover from \<open>v \<le> n\<close> \<open>n \<le> m\<close> have "OPT m v \<le> OPT n v"
+    by (rule OPT_mono)
+  moreover from \<open>v \<le> n\<close> assms have "OPT n v \<le> shortest v"
+    using shorter_than_OPT_n_has_negative_cycle[of v] by force
+  ultimately show "bf m v = bf n v"
+    unfolding bf_correct[OF \<open>t \<le> n\<close>, symmetric] by simp
+qed
+
+lemma bellman_ford_correct':
+  "bf\<^sub>m.crel_vs (=) (if has_negative_cycle then None else Some (map shortest [0..<n+1])) bellman_ford"
+proof -
+  include state_monad_syntax app_syntax
+  let ?l = "if has_negative_cycle then None else Some (map shortest [0..<n + 1])"
+  let ?r = "(\<lambda>xs. (\<lambda>ys. (if xs = ys then Some xs else None))
+    $ (map $ \<llangle>bf (n + 1)\<rrangle> $ \<llangle>[0..<n + 1]\<rrangle>)) $ (map $ \<llangle>bf n\<rrangle> $ \<llangle>[0..<n + 1]\<rrangle>)"
+  note crel_bf\<^sub>m' = bf\<^sub>m.crel[unfolded bf\<^sub>m.consistentDP_def, THEN rel_funD,
+      of "(m, x)" "(m, y)" for m x y, unfolded prod.case]
+  have "?l = ?r"
+    unfolding Wrap_def App_def Let_def
+    supply [simp del] = bf_simps
+    apply (simp; safe)
+    using bf_detects_cycle apply (auto elim: nat_le_cases; fail)
+       apply (simp add: bellman_ford_shortest_paths; fail)+
+     apply (simp add: bf_fix[rule_format, symmetric])+
+    done
+  show ?thesis
+    unfolding bellman_ford_alt_def \<open>?l = ?r\<close>
+    apply (rule bf\<^sub>m.crel_vs_bind_ignore[rotated])
+     apply (rule bottom_up.consistent_crel_vs_iterate_state[OF bf\<^sub>m.crel, folded iter_bf_def])
+    apply (subst Transfer.Rel_def[symmetric])
+    apply (rule bf\<^sub>m.crel_vs_fun_app[of "list_all2 (=)"])
+     defer
+     apply (rule bf\<^sub>m.crel_vs_return_ext)
+     apply (rule bf\<^sub>m.rel_fun2)
+      defer
+      apply (rule bf\<^sub>m.crel_vs_fun_app[of "list_all2 (=)"])
+       defer
+       apply (rule bf\<^sub>m.crel_vs_return_ext)
+       apply (rule bf\<^sub>m.rel_fun2)
+        defer
+        apply (rule bf\<^sub>m.crel_vs_return_ext)
+        apply (rule transfer_raw)
+        apply (rule is_equality_eq)
+       apply (rule bf\<^sub>m.crel_vs_fun_app[of "list_all2 (=)"])
+        apply (rule bf\<^sub>m.crel_vs_return)
+        defer
+        apply (rule bf\<^sub>m.crel_vs_fun_app)
+         prefer 2
+         apply (subst Transfer.Rel_def)
+         apply (rule bf\<^sub>m.map\<^sub>T_transfer)
+        prefer 3
+
+        apply (rule bf\<^sub>m.crel_vs_fun_app[of "list_all2 (=)"])
+         apply (rule bf\<^sub>m.crel_vs_return)
+         defer
+         apply (rule bf\<^sub>m.crel_vs_fun_app)
+          prefer 2
+          apply (subst Transfer.Rel_def)
+          apply (rule bf\<^sub>m.map\<^sub>T_transfer)
+
+    subgoal
+      by (intro bf\<^sub>m.crel_vs_return Rel_abs; (unfold Transfer.Rel_def)?; rule crel_bf\<^sub>m')+ simp
+
+    subgoal
+      apply (rule bf\<^sub>m.crel_vs_return)
+      apply (rule Rel_abs)
+      unfolding Transfer.Rel_def
+      apply (rule crel_bf\<^sub>m')
+      apply simp
+      done
+    unfolding Rel_def list.rel_eq by (rule is_equality_eq HOL.refl)+
+qed
+
+theorem bellman_ford_correct:
+  "fst (run_state bellman_ford Mapping.empty) =
+  (if has_negative_cycle then None else Some (map shortest [0..<n+1]))"
+  using bf\<^sub>m.cmem_empty bellman_ford_correct'[unfolded bf\<^sub>m.crel_vs_def, rule_format, of Mapping.empty]
+  unfolding bf\<^sub>m.crel_vs_def by auto
 
 end (* Wellformedness *)
 
@@ -1004,6 +1164,9 @@ definition
   "G\<^sub>1_list = [[(1 :: nat,-6 :: int), (2,4), (3,5)], [(3,10)], [(3,2)], []]"
 
 definition
+  "G\<^sub>2_list = [[(1 :: nat,-6 :: int), (2,4), (3,5)], [(3,10)], [(3,2)], [(0, -5)]]"
+
+definition
   "graph_of a i j = case_option \<infinity> (Fin o snd) (List.find (\<lambda> p. fst p = j) (a !! i))"
 
 definition "test_bf = bf_impl 3 (graph_of (IArray G\<^sub>1_list)) 3 3 0"
@@ -1028,6 +1191,10 @@ definition
   )"
 
 value "fst (run_state (bf\<^sub>m' 3 (graph_of (IArray G\<^sub>1_list)) 3 3 0) Mapping.empty)"
+
+value "fst (run_state (bellman_ford 3 (graph_of (IArray G\<^sub>1_list)) 3) Mapping.empty)"
+
+value "fst (run_state (bellman_ford 3 (graph_of (IArray G\<^sub>2_list)) 3) Mapping.empty)"
 
 value "bf 3 (graph_of (IArray G\<^sub>1_list)) 3 3 0"
 
