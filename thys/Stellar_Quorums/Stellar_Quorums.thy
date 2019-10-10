@@ -94,20 +94,19 @@ definition is_cons_cluster where
   "is_cons_cluster C \<equiv> C \<subseteq> W \<and> (\<forall> p \<in> C . \<exists> Q \<subseteq> C . quorum_of p Q)
       \<and> (\<forall> Q Q' . quorum_of_set C Q \<and> quorum_of_set C Q' \<longrightarrow> W \<inter> Q \<inter> Q' \<noteq> {})"
 
-definition stellar_intact where
-  \<comment> \<open>This is equivalent to the notion of intact set presented in the Stellar Whitepaper~\cite{MazieresStellarConsensusProtocol2015}\<close>
-  "stellar_intact I \<equiv> I \<subseteq> W \<and> (\<forall> p \<in> I . \<exists> Q \<subseteq> I . quorum_of p Q)
+definition strong_consensus_cluster where
+  "strong_consensus_cluster I \<equiv> I \<subseteq> W \<and> (\<forall> p \<in> I . \<exists> Q \<subseteq> I . quorum_of p Q)
       \<and> (\<forall> Q Q' . quorum_of_set I Q \<and> quorum_of_set I Q' \<longrightarrow> I \<inter> Q \<inter> Q' \<noteq> {})"
 
-lemma stellar_intact_imp_cons_cluster:
+lemma strong_consensus_cluster_imp_cons_cluster:
 \<comment> \<open>Every intact set is a consensus cluster\<close>
-  shows "stellar_intact I \<Longrightarrow> is_cons_cluster I" 
-  unfolding stellar_intact_def is_cons_cluster_def
+  shows "strong_consensus_cluster I \<Longrightarrow> is_cons_cluster I" 
+  unfolding strong_consensus_cluster_def is_cons_cluster_def
   by blast 
 
-lemma cons_cluster_not_intact:
-  \<comment> \<open>Some consensus clusters are not intact and have no intact superset.\<close>
-  shows "is_cons_cluster C \<and> (\<forall> J . C \<subseteq> J \<longrightarrow> \<not>stellar_intact J)" nitpick[falsify=false, card 'node=3, expect=genuine]
+lemma cons_cluster_neq_cons_cluster:
+  \<comment> \<open>Some consensus clusters are not strong consensus clusters and have no superset that is a strong consensus cluster.\<close>
+  shows "is_cons_cluster I \<and> (\<forall> J . I \<subseteq> J \<longrightarrow> \<not>strong_consensus_cluster J)" nitpick[falsify=false, card 'node=3, expect=genuine]
   oops
 
 text \<open>Next we show that the union of two consensus clusters that intersect is a consensus cluster.\<close>
@@ -150,13 +149,54 @@ proof -
     unfolding is_cons_cluster_def by simp
 qed
 
+text \<open>Similarly, the union of two strong consensus clusters is a strong consensus cluster.\<close>
+lemma strong_cluster_union:
+  assumes "strong_consensus_cluster C\<^sub>1" and "strong_consensus_cluster C\<^sub>2" and "C\<^sub>1 \<inter> C\<^sub>2 \<noteq> {}"
+  shows "strong_consensus_cluster (C\<^sub>1\<union> C\<^sub>2)"
+proof -
+  have "C\<^sub>1 \<union> C\<^sub>2 \<subseteq> W"
+    using assms(1) assms(2) strong_consensus_cluster_def by auto 
+  moreover
+  have "\<forall> p \<in> (C\<^sub>1\<union>C\<^sub>2) . \<exists> Q \<subseteq> (C\<^sub>1\<union>C\<^sub>2) . quorum_of p Q" 
+    using \<open>strong_consensus_cluster C\<^sub>1\<close> \<open>strong_consensus_cluster C\<^sub>2\<close> unfolding strong_consensus_cluster_def
+    by (meson UnE le_supI1 le_supI2)
+  moreover
+  have "(C\<^sub>1\<union>C\<^sub>2) \<inter> Q\<^sub>1 \<inter> Q\<^sub>2 \<noteq> {}"
+    if "quorum_of_set (C\<^sub>1\<union>C\<^sub>2) Q\<^sub>1" and "quorum_of_set (C\<^sub>1\<union>C\<^sub>2) Q\<^sub>2" 
+    for Q\<^sub>1 Q\<^sub>2
+  proof -
+    have "C \<inter> Q\<^sub>1 \<inter> Q\<^sub>2 \<noteq> {}" if "quorum_of_set C Q\<^sub>1" and "quorum_of_set C Q\<^sub>2" and "C = C\<^sub>1 \<or> C = C\<^sub>2" for C
+      using \<open>strong_consensus_cluster C\<^sub>1\<close> \<open>strong_consensus_cluster C\<^sub>2\<close> that
+      unfolding quorum_of_set_def strong_consensus_cluster_def by metis
+    hence "(C\<^sub>1\<union>C\<^sub>2) \<inter> Q\<^sub>1 \<inter> Q\<^sub>2 \<noteq> {}" if "quorum_of_set C Q\<^sub>1" and "quorum_of_set C Q\<^sub>2" and "C = C\<^sub>1 \<or> C = C\<^sub>2" for C
+      by (metis Int_Un_distrib2 disjoint_eq_subset_Compl sup.boundedE that)
+    moreover
+    have \<open>(C\<^sub>1\<union>C\<^sub>2) \<inter> Q\<^sub>1 \<inter> Q\<^sub>2 \<noteq> {}\<close>  if "strong_consensus_cluster C\<^sub>1" and "strong_consensus_cluster C\<^sub>2"
+      and "C\<^sub>1 \<inter> C\<^sub>2 \<noteq> {}" and "quorum_of_set C\<^sub>1 Q\<^sub>1" and "quorum_of_set C\<^sub>2 Q\<^sub>2"
+    for C\<^sub>1 C\<^sub>2 \<comment> \<open>We generalize to avoid repeating the argument twice\<close>
+    proof -
+      obtain p Q where "quorum_of p Q" and "p \<in> C\<^sub>1 \<inter> C\<^sub>2" and "Q \<subseteq> C\<^sub>2" 
+        using \<open>C\<^sub>1 \<inter> C\<^sub>2 \<noteq> {}\<close> \<open>strong_consensus_cluster C\<^sub>2\<close> unfolding strong_consensus_cluster_def by blast
+      have "Q \<inter> Q\<^sub>1 \<noteq> {}" using \<open>strong_consensus_cluster C\<^sub>1\<close> \<open>quorum_of_set C\<^sub>1 Q\<^sub>1\<close> \<open>quorum_of p Q\<close> \<open>p \<in> C\<^sub>1 \<inter> C\<^sub>2\<close>
+        unfolding strong_consensus_cluster_def quorum_of_set_def
+        by (metis Int_assoc Int_iff inf_bot_right)
+      hence "quorum_of_set C\<^sub>2 Q\<^sub>1"  using \<open>Q \<subseteq> C\<^sub>2\<close> \<open>quorum_of_set C\<^sub>1 Q\<^sub>1\<close> quorum_assm unfolding quorum_of_set_def by blast 
+      thus "(C\<^sub>1\<union>C\<^sub>2) \<inter> Q\<^sub>1 \<inter> Q\<^sub>2 \<noteq> {}" using \<open>strong_consensus_cluster C\<^sub>2\<close> \<open>quorum_of_set C\<^sub>2 Q\<^sub>2\<close>
+        unfolding strong_consensus_cluster_def by blast
+    qed
+    ultimately show ?thesis using assms that unfolding quorum_of_set_def by auto 
+  qed
+  ultimately show ?thesis using assms
+    unfolding strong_consensus_cluster_def by simp
+qed
+
 end
 
 section "Stellar quorum systems"
 
 locale stellar =
   fixes slices :: "'node \<Rightarrow> 'node set set" \<comment> \<open>the quorum slices\<close>
-    and W :: "'node set" \<comment> \<open>the correct participants\<close>
+    and W :: "'node set" \<comment> \<open>the well-behaved nodes\<close>
   assumes slices_ne:"\<And>p . p \<in> W \<Longrightarrow> slices p \<noteq> {}"
 begin
 
@@ -262,7 +302,7 @@ inductive_cases not_blocked_cases:"not_blocked p R q"
 lemma l4:
   fixes Q p R
   defines "Q \<equiv> {q . not_blocked p R q}"
-  shows "quorum Q"  
+  shows "quorum Q"
 proof -
   have "\<exists> S \<in> slices n . S \<subseteq> Q" if "n\<in>Q\<inter>W" for n
   proof-
@@ -270,7 +310,7 @@ proof -
     hence "n \<notin> R" and "\<not>blocking_min R n" by (metis Int_iff not_blocked.simps that)+
     thus ?thesis  using blocking_min.intros not_blocked.intros(2) that unfolding Q_def by (simp; smt Ball_Collect)
   qed
-  thus ?thesis by (simp add: quorum_def) 
+  thus ?thesis by (simp add: quorum_def)
 qed
 
 lemma l5:
