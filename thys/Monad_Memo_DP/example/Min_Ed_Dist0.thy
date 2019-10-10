@@ -303,7 +303,7 @@ end
 
 subsubsection \<open>Test Cases\<close>
 
-abbreviation "slice xs i j \<equiv> map xs [i..<j]"
+abbreviation (input) "slice xs i j \<equiv> map xs [i..<j]"
 
 lemma min_ed_Nil1: "min_ed [] ys = length ys"
 by (induction ys) auto

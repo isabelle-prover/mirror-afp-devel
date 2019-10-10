@@ -151,7 +151,7 @@ by(simp add: atLeastLessThanSuc_atLeastAtMost set_aux del: upt_Suc)
 
 declare cyk_ix.simps(3)[simp del]
 
-abbreviation "slice f i j \<equiv> map f [i..<j]"
+abbreviation (input) "slice f i j \<equiv> map f [i..<j]"
 
 lemma slice_append_iff_take_drop1: "u \<noteq> [] \<Longrightarrow> v \<noteq> [] \<Longrightarrow>
   slice w i j = u @ v \<longleftrightarrow> (\<exists>k. 1 \<le> k \<and> k \<le> j-i-1 \<and> slice w i (i + k) = u \<and> slice w (i + k) j = v)"
