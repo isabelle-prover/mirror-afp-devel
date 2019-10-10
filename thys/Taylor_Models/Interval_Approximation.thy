@@ -478,7 +478,7 @@ proof (induction n arbitrary: b rule: less_induct)
   case (less x)
   show ?case
     using less(1)[of "x - 1" b] power_down_simp[of _ _ "x - 1"]
-    by (cases x) (auto simp: sign_simps zero_le_mult_iff)
+    by (cases x) (auto simp: algebra_split_simps zero_le_mult_iff)
 qed
 
 lemma power_down_neg_iff[simp]:
@@ -572,7 +572,7 @@ proof (induction n arbitrary: b rule: less_induct)
   case (less x)
   then show ?case
     using power_up_simp[of _ _ "x - 1"]
-    by (cases x) (auto simp: sign_simps zero_le_mult_iff div2_less_self)
+    by (cases x) (auto simp: algebra_split_simps zero_le_mult_iff div2_less_self)
 qed
 
 lemma power_up_nonneg_iff[simp]:
@@ -581,7 +581,7 @@ proof (induction n arbitrary: b rule: less_induct)
   case (less x)
   show ?case
     using less(1)[of "x - 1" b] power_up_simp[of _ _ "x - 1"]
-    by (cases x) (auto simp: sign_simps zero_le_mult_iff)
+    by (cases x) (auto simp: algebra_split_simps zero_le_mult_iff)
 qed
 
 lemma power_up_neg_iff[simp]:

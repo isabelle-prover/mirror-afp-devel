@@ -163,7 +163,7 @@ begin
       show "finite (a.nodes A)" if "finite (b.nodes (degeneralize A))"
         using that by (auto simp flip: degeneralize_nodes_fst)
       show "finite (b.nodes (degeneralize A))" if "finite (a.nodes A)"
-        using degeneralize_nodes that finite_subset by fastforce
+        using finite_subset degeneralize_nodes that by blast
     qed
     lemma degeneralize_nodes_card: "card (b.nodes (degeneralize A)) \<le>
       max 1 (length (condition\<^sub>1 A)) * card (a.nodes A)"

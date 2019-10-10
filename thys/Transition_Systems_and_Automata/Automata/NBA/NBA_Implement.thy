@@ -6,6 +6,24 @@ imports
   "../../Basic/Implement"
 begin
 
+  consts i_nba_scheme :: "interface \<Rightarrow> interface \<Rightarrow> interface"
+
+  context
+  begin
+
+    interpretation autoref_syn by this
+
+    lemma nba_scheme_itype[autoref_itype]:
+      "nba ::\<^sub>i \<langle>L\<rangle>\<^sub>i i_set \<rightarrow>\<^sub>i \<langle>S\<rangle>\<^sub>i i_set \<rightarrow>\<^sub>i (L \<rightarrow>\<^sub>i S \<rightarrow>\<^sub>i \<langle>S\<rangle>\<^sub>i i_set) \<rightarrow>\<^sub>i \<langle>S\<rangle>\<^sub>i i_set \<rightarrow>\<^sub>i
+        \<langle>L, S\<rangle>\<^sub>i i_nba_scheme"
+      "alphabet ::\<^sub>i \<langle>L, S\<rangle>\<^sub>i i_nba_scheme \<rightarrow>\<^sub>i \<langle>L\<rangle>\<^sub>i i_set"
+      "initial ::\<^sub>i \<langle>L, S\<rangle>\<^sub>i i_nba_scheme \<rightarrow>\<^sub>i \<langle>S\<rangle>\<^sub>i i_set"
+      "transition ::\<^sub>i \<langle>L, S\<rangle>\<^sub>i i_nba_scheme \<rightarrow>\<^sub>i L \<rightarrow>\<^sub>i S \<rightarrow>\<^sub>i \<langle>S\<rangle>\<^sub>i i_set"
+      "accepting ::\<^sub>i \<langle>L, S\<rangle>\<^sub>i i_nba_scheme \<rightarrow>\<^sub>i \<langle>S\<rangle>\<^sub>i i_set"
+      by auto
+
+  end
+
   datatype ('label, 'state) nbai = nbai
     (alphabeti: "'label list")
     (initiali: "'state list")
@@ -20,7 +38,7 @@ begin
       (transitioni A\<^sub>1, transitioni A\<^sub>2) \<in> L \<rightarrow> S \<rightarrow> \<langle>S\<rangle> list_rel \<and>
       (acceptingi A\<^sub>1, acceptingi A\<^sub>2) \<in> S \<rightarrow> bool_rel}"
 
-  lemma nbai_param[param]:
+  lemma nbai_param[param, autoref_rules]:
     "(nbai, nbai) \<in> \<langle>L\<rangle> list_rel \<rightarrow> \<langle>S\<rangle> list_rel \<rightarrow> (L \<rightarrow> S \<rightarrow> \<langle>S\<rangle> list_rel) \<rightarrow>
       (S \<rightarrow> bool_rel) \<rightarrow> \<langle>L, S\<rangle> nbai_rel"
     "(alphabeti, alphabeti) \<in> \<langle>L, S\<rangle> nbai_rel \<rightarrow> \<langle>L\<rangle> list_rel"
@@ -37,6 +55,9 @@ begin
       (transitioni A\<^sub>1, transition A\<^sub>2) \<in> L \<rightarrow> S \<rightarrow> \<langle>S\<rangle> list_set_rel \<and>
       (acceptingi A\<^sub>1, accepting A\<^sub>2) \<in> S \<rightarrow> bool_rel}"
 
+  lemmas [autoref_rel_intf] = REL_INTFI[of nbai_nba_rel i_nba_scheme]
+
+  (* TODO: why is there a warning? *)
   lemma nbai_nba_param[param, autoref_rules]:
     "(nbai, nba) \<in> \<langle>L\<rangle> list_set_rel \<rightarrow> \<langle>S\<rangle> list_set_rel \<rightarrow> (L \<rightarrow> S \<rightarrow> \<langle>S\<rangle> list_set_rel) \<rightarrow>
       (S \<rightarrow> bool_rel) \<rightarrow> \<langle>L, S\<rangle> nbai_nba_rel"

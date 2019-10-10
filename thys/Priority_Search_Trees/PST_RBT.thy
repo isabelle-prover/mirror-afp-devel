@@ -385,7 +385,7 @@ apply (auto simp: invc_paint_Black invh_paint color_paint_Black invpst_del)
 done
 
 lemma rbt_getmin_ismin: 
-  "rbt t \<Longrightarrow> t\<noteq>Leaf \<Longrightarrow> is_min2 (pst_getmin t) (set (inorder t))"
+  "rbt t \<Longrightarrow> t\<noteq>Leaf \<Longrightarrow> is_min2 (pst_getmin t) (set_tree t)"
 unfolding rbt_def by (simp add: pst_getmin_ismin)
 
 definition "rbt_is_empty t \<equiv> t = Leaf"

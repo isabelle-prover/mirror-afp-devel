@@ -44,7 +44,7 @@ fun pst_getmin where
 "pst_getmin (Node _ (_, _,a) _) = a"
 
 lemma pst_getmin_ismin: 
-  "invpst t \<Longrightarrow> t\<noteq>Leaf \<Longrightarrow> is_min2 (pst_getmin t) (set (inorder t))"
+  "invpst t \<Longrightarrow> t\<noteq>Leaf \<Longrightarrow> is_min2 (pst_getmin t) (set_tree t)"
 by (cases t rule: pst_getmin.cases) auto
 
   

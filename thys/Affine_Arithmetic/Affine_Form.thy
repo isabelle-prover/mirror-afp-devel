@@ -1942,7 +1942,7 @@ proof atomize_elim
       aform_val e (aform_of_ivl l u)"
     using degree_inner_scaleR_pdevs_le[of "u - l"]
     by (auto simp: aform_val_def aform_of_ivl_def pdevs_of_ivl_def map_of_zip_upto_length_eq_nth
-      e_def Let_def pdevs_val_sum field_simps
+      e_def Let_def pdevs_val_sum
       intro!: sum.cong)
   finally have "k = aform_val e (aform_of_ivl l u)" .
 

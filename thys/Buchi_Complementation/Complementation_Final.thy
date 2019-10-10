@@ -75,7 +75,7 @@ begin
   qed
 
   definition nbaei_nbai :: "(String.literal, nat) nbaei \<Rightarrow> (String.literal, nat) nbai" where
-    "nbaei_nbai \<equiv> nbae_nba_impl"
+    "nbaei_nbai \<equiv> nbae_nba_impl (=) (=)"
 
   (* TODO: possible optimizations:
     - introduce op_map_map operation for maps instead of manually iterating via FOREACH

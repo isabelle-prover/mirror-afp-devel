@@ -155,8 +155,16 @@ begin
   lemma nbaei_nba_id[param]: "(nbae_nba \<circ> nbaei_nbae, id) \<in> \<langle>L, S\<rangle> nbaei_nba_rel \<rightarrow> \<langle>L, S\<rangle> nba_rel"
     unfolding nbaei_nba_rel_def by auto
 
-  schematic_goal nbae_nba_impl: "(?f, nbae_nba) \<in> \<langle>Id, Id\<rangle> nbaei_nbae_rel \<rightarrow> \<langle>Id, Id\<rangle> nbai_nba_rel"
+  schematic_goal nbae_nba_impl:
+    assumes [autoref_rules]: "(leq, HOL.eq) \<in> L \<rightarrow> L \<rightarrow> bool_rel"
+    assumes [autoref_rules]: "(seq, HOL.eq) \<in> S \<rightarrow> S \<rightarrow> bool_rel"
+    shows "(?f, nbae_nba) \<in> \<langle>L, S\<rangle> nbaei_nbae_rel \<rightarrow> \<langle>L, S\<rangle> nbai_nba_rel"
     unfolding nbae_nba_def by autoref
   concrete_definition nbae_nba_impl uses nbae_nba_impl
+  lemma nbae_nba_impl_refine[autoref_rules]:
+    assumes "GEN_OP leq HOL.eq (L \<rightarrow> L \<rightarrow> bool_rel)"
+    assumes "GEN_OP seq HOL.eq (S \<rightarrow> S \<rightarrow> bool_rel)"
+    shows "(nbae_nba_impl leq seq, nbae_nba) \<in> \<langle>L, S\<rangle> nbaei_nbae_rel \<rightarrow> \<langle>L, S\<rangle> nbai_nba_rel"
+    using nbae_nba_impl.refine assms unfolding autoref_tag_defs by this
 
 end

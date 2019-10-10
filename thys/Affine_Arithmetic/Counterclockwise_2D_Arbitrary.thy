@@ -33,7 +33,7 @@ lemma psi_scale:
   "psi (r *\<^sub>R a) (r *\<^sub>R b) 0 = (if r > 0 then psi a b 0 else if r < 0 then psi 0 b a else True)"
   "psi (r *\<^sub>R a) 0 (r *\<^sub>R b) = (if r > 0 then psi a 0 b else if r < 0 then psi b 0 a else True)"
   "psi 0 (r *\<^sub>R a) (r *\<^sub>R b) = (if r > 0 then psi 0 a b else if r < 0 then psi b a 0 else True)"
-  by (auto simp: psi_def lex_def det3_def' not_less sign_simps)
+  by (auto simp: psi_def lex_def det3_def' not_less algebra_split_simps)
 
 lemma ccw_scale23: "ccw 0 a b \<Longrightarrow> r > 0 \<Longrightarrow> ccw 0 (r *\<^sub>R a) (r *\<^sub>R b)"
   by (auto simp: ccw_def psi_scale)
@@ -75,7 +75,7 @@ lemma lex_scale1_zero:
     "lex (v *\<^sub>R u) 0 = (if v > 0 then lex u 0 else if v < 0 then lex 0 u else True)"
   and lex_scale2_zero:
     "lex 0 (v *\<^sub>R u) = (if v > 0 then lex 0 u else if v < 0 then lex u 0 else True)"
-  by (auto simp: lex_def prod_eq_iff less_eq_prod_def sign_simps)
+  by (auto simp: lex_def prod_eq_iff less_eq_prod_def algebra_split_simps)
 
 lemma nlex_add:
   assumes "lex a 0" "lex b 0"
@@ -225,7 +225,7 @@ lemma lex_uminus0[simp]: "lex (-a) 0 = lex 0 a"
 lemma
   lex_fst_zero_imp:
   "fst x = 0 \<Longrightarrow> lex x 0 \<Longrightarrow> lex y 0 \<Longrightarrow> \<not>coll 0 x y \<Longrightarrow> ccw' 0 y x"
-  by (auto simp: ccw'_def det3_def' lex_def sign_simps)
+  by (auto simp: ccw'_def det3_def' lex_def algebra_split_simps)
 
 lemma lex_ccw_left: "lex x y \<Longrightarrow> r > 0 \<Longrightarrow> ccw y (y + (0, r)) x"
   by (auto simp: ccw_def ccw'_def det3_def' algebra_simps lex_def psi_def)
@@ -497,7 +497,7 @@ proof
   } moreover {
     assume "y < 0"
     with rs have False
-      by (auto simp: lex_def not_less algebra_simps sign_simps y ccw'_def)
+      by (auto simp: lex_def not_less algebra_simps algebra_split_simps y ccw'_def)
   } moreover {
     assume "y = 0"
     from this rs have False

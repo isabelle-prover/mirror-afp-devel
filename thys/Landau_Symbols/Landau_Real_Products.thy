@@ -1230,7 +1230,7 @@ lemma fold_fun_chain:
   "g x = (g ^^ 1) x" "(g ^^ m) ((g ^^ n) x) = (g ^^ (m+n)) x"
   by (simp_all add: funpow_add)
 
-lemma reify_ln_chain_1:
+lemma reify_ln_chain1:
   "\<Theta>(\<lambda>x. (ln ^^ n) x) = \<Theta>(eval_primfun (LnChain n, 1))"
 proof (intro landau_theta.cong)
   have "filterlim ((ln :: real \<Rightarrow> real) ^^ n) at_top at_top"
@@ -1240,7 +1240,7 @@ proof (intro landau_theta.cong)
     by eventually_elim simp
 qed
 
-lemma reify_monom_1:
+lemma reify_monom1:
   "\<Theta>(\<lambda>x::real. x) = \<Theta>(eval_primfun (LnChain 0, 1))"
 proof (intro landau_theta.cong)
   from eventually_gt_at_top[of "0::real"]
@@ -1263,7 +1263,7 @@ lemma reify_monom_powr:
   "\<Theta>(\<lambda>x::real. x powr e) = \<Theta>(eval_primfun (LnChain 0, e))"
   by (rule landau_theta.cong) simp
 
-lemmas reify_monom = reify_monom_1 reify_monom_pow reify_monom_powr
+lemmas reify_monom = reify_monom1 reify_monom_pow reify_monom_powr
 
 
 lemma reify_ln_chain_pow:
@@ -1283,7 +1283,7 @@ lemma reify_ln_chain_powr:
   "\<Theta>(\<lambda>x. (ln ^^ n) x powr e) = \<Theta>(eval_primfun (LnChain n, e))"
   by (intro landau_theta.cong) simp
 
-lemmas reify_ln_chain = reify_ln_chain_1 reify_ln_chain_pow reify_ln_chain_powr
+lemmas reify_ln_chain = reify_ln_chain1 reify_ln_chain_pow reify_ln_chain_powr
 
 lemma numeral_power_Suc: "numeral n ^ Suc a = numeral n * numeral n ^ a"
   by (rule power.simps)
