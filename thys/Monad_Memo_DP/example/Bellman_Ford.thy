@@ -311,99 +311,90 @@ lemma Pinf_add_right[simp]:
 
 subsubsection \<open>Functional Correctness\<close>
 
+lemma OPT_cases:
+  obtains (path) xs where "OPT i v = weight (v # xs @ [t])" "length xs + 1 \<le> i" "set xs \<subseteq> {0..n}"
+  | (sink) "v = t" "OPT i v = 0"
+  | (unreachable) "v \<noteq> t" "OPT i v = \<infinity>"
+  unfolding OPT_def
+  using Min_in[of "{weight (v # xs @ [t]) |xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}}
+    \<union> {if t = v then 0 else \<infinity>}"]
+  by (auto simp: finite_lists_length_le2[simplified] split: if_split_asm)
+
 lemma OPT_Suc:
   "OPT (Suc i) v = min (OPT i v) (Min {OPT i w + W v w | w. w \<le> n})" (is "?lhs = ?rhs")
   if "t \<le> n"
 proof -
-  have OPT_in: "OPT i v \<in>
-    {weight (v # xs @ [t]) | xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}} \<union>
-    {if t = v then 0 else \<infinity>}"
-    if "i > 0" for i v
-    using that unfolding OPT_def by - (rule Min_in, auto)
-
-  have "OPT i v \<ge> OPT (Suc i) v"
-    unfolding OPT_def by (rule Min_antimono) auto
-  have subs:
-    "(\<lambda>y. y + W v w) ` {weight (w # xs @ [t]) |xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}}
-    \<subseteq> {weight (v # xs @ [t]) |xs. length xs + 1 \<le> Suc i \<and> set xs \<subseteq> {0..n}}" if \<open>w \<le> n\<close> for v w
-    using \<open>w \<le> n\<close> apply clarify
-    subgoal for _ _ xs
-      by (rule exI[where x = "w # xs"]) (auto simp: algebra_simps)
-    done
   have "OPT i w + W v w \<ge> OPT (Suc i) v" if "w \<le> n" for w
-  proof -
-    consider "w = t" | \<open>w \<noteq> t\<close> \<open>v \<noteq> t\<close> | \<open>w \<noteq> t\<close> \<open>v = t\<close> \<open>i = 0\<close> | \<open>w \<noteq> t\<close> \<open>v = t\<close> \<open>i \<noteq> 0\<close>
-      by auto
+    using OPT_cases[of i w]
+  proof cases
+    case (path xs)
+    with \<open>w \<le> n\<close> show ?thesis
+      by (subst OPT_def) (auto intro!: Min_le exI[where x = "w # xs"] simp: add.commute)
+  next
+    case sink
     then show ?thesis
-      using subs[OF \<open>w \<le> n\<close>, of v] subs[OF \<open>t \<le> n\<close>, of v] that
-      by cases (auto simp: OPT_def Min_add_right intro!: Min_le intro: exI[where x = "[]"])
+      by (subst OPT_def) (auto intro!: Min_le exI[where x = "[]"])
+  next
+    case unreachable
+    then show ?thesis
+      by simp
   qed
   then have "Min {OPT i w + W v w |w. w \<le> n} \<ge> OPT (Suc i) v"
     by (auto intro!: Min.boundedI)
-  with \<open>OPT i v \<ge> _\<close> have "?lhs \<le> ?rhs"
+  moreover have "OPT i v \<ge> OPT (Suc i) v"
+    unfolding OPT_def by (rule Min_antimono) auto
+  ultimately have "?lhs \<le> ?rhs"
     by simp
 
-  have OPT_in: "OPT (Suc i) v \<in>
-    {weight (v # xs @ [t]) | xs. length xs + 1 \<le> Suc i \<and> set xs \<subseteq> {0..n}} \<union>
-    {if t = v then 0 else \<infinity>}"
-    using that unfolding OPT_def by - (rule Min_in, auto)
-  then consider
-    "OPT (Suc i) v = \<infinity>" | "t = v" "OPT (Suc i) v = 0" |
-    xs where "OPT (Suc i) v = weight (v # xs @ [t])" "length xs \<le> i" "set xs \<subseteq> {0..n}"
-    by (auto split: if_split_asm)
-  then have "?lhs \<ge> ?rhs"
+  from OPT_cases[of "Suc i" v] have "?lhs \<ge> ?rhs"
   proof cases
-    case 1
+    case (path xs)
+    note [simp] = path(1)
+    from path consider
+      (zero) "i = 0" "length xs = 0" | (new) "i > 0" "length xs = i" | (old) "length xs < i"
+      by (cases "length xs = i") auto
     then show ?thesis
-      by simp
-  next
-    case 2
-    then have "OPT i v \<le> OPT (Suc i) v"
-      unfolding OPT_def by auto
-    then show ?thesis
-      by (rule min.coboundedI1)
-  next
-    case xs: 3
-    note [simp] = xs(1)
-    show ?thesis
-    proof (cases "length xs = i")
-      case True
-      show ?thesis
-      proof (cases "i = 0")
-        case True
-        with xs have "OPT (Suc i) v = W v t"
-          by simp
-        also have "W v t = OPT i t + W v t"
-          unfolding OPT_def using \<open>i = 0\<close> by auto
-        also have "\<dots> \<ge> Min {OPT i w + W v w |w. w \<le> n}"
-          using \<open>t \<le> n\<close> by (auto intro: Min_le)
-        finally show ?thesis
-          by (rule min.coboundedI2)
-      next
-        case False
-        with \<open>_ = i\<close> have "xs \<noteq> []"
-          by auto
-        with xs have "weight (xs @ [t]) \<ge> OPT i (hd xs)"
-          unfolding OPT_def
-          by (intro Min_le UnI1 CollectI exI[where x = "tl xs"])
-             (auto dest: list.set_sel(2) simp flip: append.append_Cons)
-        have "Min {OPT i w + W v w |w. w \<le> n} \<le> W v (hd xs) + OPT i (hd xs)"
-          using \<open>set xs \<subseteq> _\<close> \<open>xs \<noteq> []\<close> by (force simp: add.commute intro: Min_le)
-        also have "\<dots> \<le> W v (hd xs) + weight (xs @ [t])"
-          using \<open>_ \<ge> OPT i (hd xs)\<close> by (metis add_left_mono)
-        also from \<open>xs \<noteq> []\<close> have "\<dots> = OPT (Suc i) v"
-          by (cases xs) auto
-        finally show ?thesis
-          by (rule min.coboundedI2)
-      qed
+    proof cases
+      case zero
+      with path have "OPT (Suc i) v = W v t"
+        by simp
+      also have "W v t = OPT i t + W v t"
+        unfolding OPT_def using \<open>i = 0\<close> by auto
+      also have "\<dots> \<ge> Min {OPT i w + W v w |w. w \<le> n}"
+        using \<open>t \<le> n\<close> by (auto intro: Min_le)
+      finally show ?thesis
+        by (rule min.coboundedI2)
     next
-      case False
-      with xs have "OPT i v \<le> OPT (Suc i) v"
+      case new
+      with \<open>_ = i\<close> obtain u ys where [simp]: "xs = u # ys"
+        by (cases xs) auto
+      from path have "OPT i u \<le> weight (u # ys @ [t])"
+        unfolding OPT_def by (intro Min_le) auto
+      from path have "Min {OPT i w + W v w |w. w \<le> n} \<le> W v u + OPT i u"
+        by (intro Min_le) (auto simp: add.commute)
+      also from \<open>OPT i u \<le> _\<close> have "\<dots> \<le> OPT (Suc i) v"
+        by (simp add: add_left_mono)
+      finally show ?thesis
+        by (rule min.coboundedI2)
+    next
+      case old
+      with path have "OPT i v \<le> OPT (Suc i) v"
         by (auto 4 3 intro: Min_le simp: OPT_def)
       then show ?thesis
         by (rule min.coboundedI1)
     qed
+  next
+    case unreachable
+    then show ?thesis
+      by simp
+  next
+    case sink
+    then have "OPT i v \<le> OPT (Suc i) v"
+      unfolding OPT_def by auto
+    then show ?thesis
+      by (rule min.coboundedI1)
   qed
+
   with \<open>?lhs \<le> ?rhs\<close> show ?thesis
     by (rule order.antisym)
 qed
@@ -707,15 +698,6 @@ lemma has_negative_cycleI:
   assumes "set (a # xs @ ys) \<subseteq> {0..n}" "weight (a # xs @ [a]) < 0" "is_path (a # ys)"
   shows has_negative_cycle
   using assms unfolding has_negative_cycle_def by auto
-
-lemma OPT_cases:
-  obtains (path) xs where "OPT i v = weight (v # xs @ [t])" "length xs + 1 \<le> i" "set xs \<subseteq> {0..n}"
-  | (sink) "v = t" "OPT i v = 0"
-  | (unreachable) "v \<noteq> t" "OPT i v = \<infinity>"
-  unfolding OPT_def
-  using Min_in[of "{weight (v # xs @ [t]) |xs. length xs + 1 \<le> i \<and> set xs \<subseteq> {0..n}}
-    \<union> {if t = v then 0 else \<infinity>}"]
-  by (auto simp: finite_lists_length_le2[simplified] split: if_split_asm)
 
 lemma OPT_cases2:
   obtains (path) xs where
@@ -1167,6 +1149,9 @@ definition
   "G\<^sub>2_list = [[(1 :: nat,-6 :: int), (2,4), (3,5)], [(3,10)], [(3,2)], [(0, -5)]]"
 
 definition
+  "G\<^sub>3_list = [[(1 :: nat,-1 :: int), (2,2)], [(2,5), (3,4)], [(3,2), (4,3)], [(2,-2), (4,2)], []]"
+
+definition
   "graph_of a i j = case_option \<infinity> (Fin o snd) (List.find (\<lambda> p. fst p = j) (a !! i))"
 
 definition "test_bf = bf_impl 3 (graph_of (IArray G\<^sub>1_list)) 3 3 0"
@@ -1195,6 +1180,8 @@ value "fst (run_state (bf\<^sub>m' 3 (graph_of (IArray G\<^sub>1_list)) 3 3 0) M
 value "fst (run_state (bellman_ford 3 (graph_of (IArray G\<^sub>1_list)) 3) Mapping.empty)"
 
 value "fst (run_state (bellman_ford 3 (graph_of (IArray G\<^sub>2_list)) 3) Mapping.empty)"
+
+value "fst (run_state (bellman_ford 4 (graph_of (IArray G\<^sub>3_list)) 4) Mapping.empty)"
 
 value "bf 3 (graph_of (IArray G\<^sub>1_list)) 3 3 0"
 
