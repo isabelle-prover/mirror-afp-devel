@@ -33,6 +33,33 @@ consequently, the instantiations of this result for the concrete
 Sigma-protocols we consider come for free.</description>
     </item>
     <item>
+       <title>Clean - An Abstract Imperative Programming Language and its Theory</title>
+              <link>https://www.isa-afp.org/entries/Clean.html</link>
+       <guid>https://www.isa-afp.org/entries/Clean.html</guid>
+       <dc:creator> Frédéric Tuong, Burkhart Wolff       </dc:creator>
+       <pubDate>04 Oct 2019 00:00:00 +0000</pubDate>
+       <description>
+Clean is based on a simple, abstract execution model for an imperative
+target language. “Abstract” is understood in contrast to “Concrete
+Semantics”; alternatively, the term “shallow-style embedding” could be
+used. It strives for a type-safe notion of program-variables, an
+incremental construction of the typed state-space, support of
+incremental verification, and open-world extensibility of new type
+definitions being intertwined with the program definitions. Clean is
+based on a “no-frills” state-exception monad with the usual
+definitions of bind and unit for the compositional glue of state-based
+computations. Clean offers conditionals and loops supporting C-like
+control-flow operators such as break and return. The state-space
+construction is based on the extensible record package. Direct
+recursion of procedures is supported. Clean’s design strives for
+extreme simplicity. It is geared towards symbolic execution and proven
+correct verification tools. The underlying libraries of this package,
+however, deliberately restrict themselves to the most elementary
+infrastructure for these tasks. The package is intended to serve as
+demonstrator semantic backend for Isabelle/C, or for the
+test-generation techniques.</description>
+    </item>
+    <item>
        <title>Formalization of Multiway-Join Algorithms</title>
               <link>https://www.isa-afp.org/entries/Generic_Join.html</link>
        <guid>https://www.isa-afp.org/entries/Generic_Join.html</guid>
@@ -540,24 +567,6 @@ asymptotically matches the known lower bound.
 &lt;p&gt;
 [1] Javier Esparza, Jan Kretínský, Salomon Sickert. One Theorem to Rule Them All:
 A Unified Translation of LTL into ω-Automata. LICS 2018</description>
-    </item>
-    <item>
-       <title>A General Theory of Syntax with Bindings</title>
-              <link>https://www.isa-afp.org/entries/Binding_Syntax_Theory.html</link>
-       <guid>https://www.isa-afp.org/entries/Binding_Syntax_Theory.html</guid>
-       <dc:creator> Lorenzo Gheri, Andrei Popescu       </dc:creator>
-       <pubDate>06 Apr 2019 00:00:00 +0000</pubDate>
-       <description>
-We formalize a theory of syntax with bindings that has been developed
-and refined over the last decade to support several large
-formalization efforts. Terms are defined for an arbitrary number of
-constructors of varying numbers of inputs, quotiented to
-alpha-equivalence and sorted according to a binding signature. The
-theory includes many properties of the standard operators on terms:
-substitution, swapping and freshness. It also includes bindings-aware
-induction and recursion principles and support for semantic
-interpretation. This work has been presented in the ITP 2017 paper “A
-Formalized General Theory of Syntax with Bindings”.</description>
     </item>
   </channel>
 </rss>
