@@ -8539,3 +8539,22 @@ abstract =
   join algorithms. We formalized and proved correct their "Generic
   Join" algorithm and extended it to support negative joins.
 
+[Aristotles_Assertoric_Syllogistic]
+title = Aristotle's Assertoric Syllogistic
+author = Angeliki Koutsoukou-Argyraki <https://www.cl.cam.ac.uk/~ak2110/>
+topic = Logic/Philosophy
+date = 2019-10-08
+notify = ak2110@cam.ac.uk
+abstract = 
+  We formalise with Isabelle/HOL some basic elements of Aristotle's
+  assertoric syllogistic following the <a
+  href="https://plato.stanford.edu/entries/aristotle-logic/">article from the Stanford Encyclopedia of Philosophy by Robin Smith.</a> To
+  this end, we use a set theoretic formulation (covering both individual
+  and general predication). In particular, we formalise the deductions
+  in the Figures and after that we present Aristotle's
+  metatheoretical observation that all deductions in the Figures can in
+  fact be reduced to either Barbara or Celarent. As the formal proofs
+  prove to be straightforward, the interest of this entry lies in
+  illustrating the functionality of Isabelle and high efficiency of
+  Sledgehammer for simple exercises in philosophy.
+

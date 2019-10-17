@@ -9,7 +9,26 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>07 Oct 2019 00:00:00 +0000</pubDate>
+    <pubDate>08 Oct 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Aristotle's Assertoric Syllogistic</title>
+              <link>https://www.isa-afp.org/entries/Aristotles_Assertoric_Syllogistic.html</link>
+       <guid>https://www.isa-afp.org/entries/Aristotles_Assertoric_Syllogistic.html</guid>
+       <dc:creator> Angeliki Koutsoukou-Argyraki       </dc:creator>
+       <pubDate>08 Oct 2019 00:00:00 +0000</pubDate>
+       <description>
+We formalise with Isabelle/HOL some basic elements of Aristotle&#39;s
+assertoric syllogistic following the &lt;a
+href=&#34;https://plato.stanford.edu/entries/aristotle-logic/&#34;&gt;article from the Stanford Encyclopedia of Philosophy by Robin Smith.&lt;/a&gt; To
+this end, we use a set theoretic formulation (covering both individual
+and general predication). In particular, we formalise the deductions
+in the Figures and after that we present Aristotle&#39;s
+metatheoretical observation that all deductions in the Figures can in
+fact be reduced to either Barbara or Celarent. As the formal proofs
+prove to be straightforward, the interest of this entry lies in
+illustrating the functionality of Isabelle and high efficiency of
+Sledgehammer for simple exercises in philosophy.</description>
+    </item>
     <item>
        <title>Sigma Protocols and Commitment Schemes</title>
               <link>https://www.isa-afp.org/entries/Sigma_Commit_Crypto.html</link>
@@ -545,28 +564,6 @@ concepts like the process invariant. The present version HOL-CSP
 profits from substantially improved libraries (notably HOLCF),
 improved automated proof techniques, and structured proof techniques
 in Isar and is substantially shorter but more complete.</description>
-    </item>
-    <item>
-       <title>A Compositional and Unified Translation of LTL into ω-Automata</title>
-              <link>https://www.isa-afp.org/entries/LTL_Master_Theorem.html</link>
-       <guid>https://www.isa-afp.org/entries/LTL_Master_Theorem.html</guid>
-       <dc:creator> Benedikt Seidl, Salomon Sickert       </dc:creator>
-       <pubDate>16 Apr 2019 00:00:00 +0000</pubDate>
-       <description>
-We present a formalisation of the unified translation approach of
-linear temporal logic (LTL) into ω-automata from [1]. This approach
-decomposes LTL formulas into ``simple&#39;&#39; languages and allows
-a clear separation of concerns: first, we formalise the purely logical
-result yielding this decomposition; second, we instantiate this
-generic theory to obtain a construction for deterministic
-(state-based) Rabin automata (DRA). We extract from this particular
-instantiation an executable tool translating LTL to DRAs. To the best
-of our knowledge this is the first verified translation from LTL to
-DRAs that is proven to be double exponential in the worst case which
-asymptotically matches the known lower bound.
-&lt;p&gt;
-[1] Javier Esparza, Jan Kretínský, Salomon Sickert. One Theorem to Rule Them All:
-A Unified Translation of LTL into ω-Automata. LICS 2018</description>
     </item>
   </channel>
 </rss>
