@@ -47,26 +47,6 @@ begin
     by (standard, auto simp: len_of_finite_3_def)
 end
 
-(* Provide wf and less_induct for word.
-   wf may be more useful in loop proofs, less_induct in recursion proofs. *)
-lemma word_less_wf: "wf {(a, b). a < (b :: ('a::len) word)}"
-  apply (rule wf_subset)
-  apply (rule wf_measure)
-  apply safe
-  apply (subst in_measure)
-  apply (erule unat_mono)
-  done
-
-lemma word_less_induct:
-  "\<lbrakk> \<And>x::('a::len) word. (\<And>y. y < x \<Longrightarrow> P y) \<Longrightarrow> P x \<rbrakk> \<Longrightarrow> P a"
-  using word_less_wf  by induct blast
-
-instantiation word :: (len) wellorder
-begin
-instance by (intro_classes) (metis word_less_induct)
-end
-
-
 lemma word_plus_mono_left:
   fixes x :: "'a :: len word"
   shows "\<lbrakk>y \<le> z; x \<le> x + z\<rbrakk> \<Longrightarrow> y + x \<le> z + x"
