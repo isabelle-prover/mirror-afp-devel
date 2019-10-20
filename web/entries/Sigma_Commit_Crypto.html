@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Multi-Party Computation - Archive of Formal Proofs
+<title>Sigma Protocols and Commitment Schemes - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,9 +61,15 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">M</font>ulti-Party
+  <h1>          <font class="first">S</font>igma
   
-          <font class="first">C</font>omputation
+          <font class="first">P</font>rotocols
+  
+          and
+  
+          <font class="first">C</font>ommitment
+  
+          <font class="first">S</font>chemes
   
 </h1>
   <p>&nbsp;</p>
@@ -72,7 +78,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Multi-Party Computation</td>
+  <td class="data" width="80%">Sigma Protocols and Commitment Schemes</td>
 </tr>
 
 <tr>
@@ -80,8 +86,8 @@
           Authors:
       </td>
   <td class="data">
-                    <a href="http://homepages.inf.ed.ac.uk/da/">David Aspinall</a> and
-          <a href="https://www.turing.ac.uk/people/doctoral-students/david-butler">David Butler</a>
+                    <a href="https://www.turing.ac.uk/people/doctoral-students/david-butler">David Butler</a> and
+          <a href="http://www.andreas-lochbihler.de">Andreas Lochbihler</a>
       </td>
 </tr>
 
@@ -89,37 +95,39 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2019-05-09</td>
+  <td class="data">2019-10-07</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-We use CryptHOL to consider Multi-Party Computation (MPC) protocols.
-MPC was first considered by Yao in 1983 and recent advances in
-efficiency and an increased demand mean it is now deployed in the real
-world. Security is considered using the real/ideal world paradigm. We
-first define security in the semi-honest security setting where
-parties are assumed not to deviate from the protocol transcript. In
-this setting we prove multiple Oblivious Transfer (OT) protocols
-secure and then show security for the gates of the GMW protocol. We
-then define malicious security, this is a stronger notion of security
-where parties are assumed to be fully corrupted by an adversary. In
-this setting we again consider OT, as it is a fundamental building
-block of almost all MPC protocols.</td>
+We use CryptHOL to formalise commitment schemes and Sigma-protocols.
+Both are widely used fundamental two party cryptographic primitives.
+Security for commitment schemes is considered using game-based
+definitions whereas the security of Sigma-protocols is considered
+using both the game-based and simulation-based security paradigms. In
+this work, we first define security for both primitives and then prove
+secure multiple case studies: the Schnorr, Chaum-Pedersen and
+Okamoto Sigma-protocols as well as a construction that allows for
+compound (AND and OR statements) Sigma-protocols and the Pedersen and
+Rivest commitment schemes. We also prove that commitment schemes can
+be constructed from Sigma-protocols. We formalise this proof at an
+abstract level, only assuming the existence of a Sigma-protocol;
+consequently, the instantiations of this result for the concrete
+Sigma-protocols we consider come for free.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Multi_Party_Computation-AFP,
-  author  = {David Aspinall and David Butler},
-  title   = {Multi-Party Computation},
+        <pre>@article{Sigma_Commit_Crypto-AFP,
+  author  = {David Butler and Andreas Lochbihler},
+  title   = {Sigma Protocols and Commitment Schemes},
   journal = {Archive of Formal Proofs},
-  month   = may,
+  month   = oct,
   year    = 2019,
-  note    = {\url{http://isa-afp.org/entries/Multi_Party_Computation.html},
+  note    = {\url{http://isa-afp.org/entries/Sigma_Commit_Crypto.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -131,7 +139,7 @@ block of almost all MPC protocols.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Game_Based_Crypto.html">Game_Based_Crypto</a>      </td></tr>
+          <td class="data"><a href="CryptHOL.html">CryptHOL</a>      </td></tr>
           
                     
 
@@ -145,29 +153,23 @@ block of almost all MPC protocols.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Multi_Party_Computation/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Multi_Party_Computation/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Sigma_Commit_Crypto/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Sigma_Commit_Crypto/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Multi_Party_Computation/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Sigma_Commit_Crypto/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Multi_Party_Computation-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Sigma_Commit_Crypto-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2018:
-            <a href="../release/afp-Multi_Party_Computation-2019-05-10.tar.gz">
-              afp-Multi_Party_Computation-2019-05-10.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>

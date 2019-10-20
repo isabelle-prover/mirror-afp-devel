@@ -9,7 +9,75 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>16 Sep 2019 00:00:00 +0000</pubDate>
+    <pubDate>08 Oct 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Aristotle's Assertoric Syllogistic</title>
+              <link>https://www.isa-afp.org/entries/Aristotles_Assertoric_Syllogistic.html</link>
+       <guid>https://www.isa-afp.org/entries/Aristotles_Assertoric_Syllogistic.html</guid>
+       <dc:creator> Angeliki Koutsoukou-Argyraki       </dc:creator>
+       <pubDate>08 Oct 2019 00:00:00 +0000</pubDate>
+       <description>
+We formalise with Isabelle/HOL some basic elements of Aristotle&#39;s
+assertoric syllogistic following the &lt;a
+href=&#34;https://plato.stanford.edu/entries/aristotle-logic/&#34;&gt;article from the Stanford Encyclopedia of Philosophy by Robin Smith.&lt;/a&gt; To
+this end, we use a set theoretic formulation (covering both individual
+and general predication). In particular, we formalise the deductions
+in the Figures and after that we present Aristotle&#39;s
+metatheoretical observation that all deductions in the Figures can in
+fact be reduced to either Barbara or Celarent. As the formal proofs
+prove to be straightforward, the interest of this entry lies in
+illustrating the functionality of Isabelle and high efficiency of
+Sledgehammer for simple exercises in philosophy.</description>
+    </item>
+    <item>
+       <title>Sigma Protocols and Commitment Schemes</title>
+              <link>https://www.isa-afp.org/entries/Sigma_Commit_Crypto.html</link>
+       <guid>https://www.isa-afp.org/entries/Sigma_Commit_Crypto.html</guid>
+       <dc:creator> David Butler, Andreas Lochbihler       </dc:creator>
+       <pubDate>07 Oct 2019 00:00:00 +0000</pubDate>
+       <description>
+We use CryptHOL to formalise commitment schemes and Sigma-protocols.
+Both are widely used fundamental two party cryptographic primitives.
+Security for commitment schemes is considered using game-based
+definitions whereas the security of Sigma-protocols is considered
+using both the game-based and simulation-based security paradigms. In
+this work, we first define security for both primitives and then prove
+secure multiple case studies: the Schnorr, Chaum-Pedersen and
+Okamoto Sigma-protocols as well as a construction that allows for
+compound (AND and OR statements) Sigma-protocols and the Pedersen and
+Rivest commitment schemes. We also prove that commitment schemes can
+be constructed from Sigma-protocols. We formalise this proof at an
+abstract level, only assuming the existence of a Sigma-protocol;
+consequently, the instantiations of this result for the concrete
+Sigma-protocols we consider come for free.</description>
+    </item>
+    <item>
+       <title>Clean - An Abstract Imperative Programming Language and its Theory</title>
+              <link>https://www.isa-afp.org/entries/Clean.html</link>
+       <guid>https://www.isa-afp.org/entries/Clean.html</guid>
+       <dc:creator> Frédéric Tuong, Burkhart Wolff       </dc:creator>
+       <pubDate>04 Oct 2019 00:00:00 +0000</pubDate>
+       <description>
+Clean is based on a simple, abstract execution model for an imperative
+target language. “Abstract” is understood in contrast to “Concrete
+Semantics”; alternatively, the term “shallow-style embedding” could be
+used. It strives for a type-safe notion of program-variables, an
+incremental construction of the typed state-space, support of
+incremental verification, and open-world extensibility of new type
+definitions being intertwined with the program definitions. Clean is
+based on a “no-frills” state-exception monad with the usual
+definitions of bind and unit for the compositional glue of state-based
+computations. Clean offers conditionals and loops supporting C-like
+control-flow operators such as break and return. The state-space
+construction is based on the extensible record package. Direct
+recursion of procedures is supported. Clean’s design strives for
+extreme simplicity. It is geared towards symbolic execution and proven
+correct verification tools. The underlying libraries of this package,
+however, deliberately restrict themselves to the most elementary
+infrastructure for these tasks. The package is intended to serve as
+demonstrator semantic backend for Isabelle/C, or for the
+test-generation techniques.</description>
+    </item>
     <item>
        <title>Formalization of Multiway-Join Algorithms</title>
               <link>https://www.isa-afp.org/entries/Generic_Join.html</link>
@@ -496,60 +564,6 @@ concepts like the process invariant. The present version HOL-CSP
 profits from substantially improved libraries (notably HOLCF),
 improved automated proof techniques, and structured proof techniques
 in Isar and is substantially shorter but more complete.</description>
-    </item>
-    <item>
-       <title>A Compositional and Unified Translation of LTL into ω-Automata</title>
-              <link>https://www.isa-afp.org/entries/LTL_Master_Theorem.html</link>
-       <guid>https://www.isa-afp.org/entries/LTL_Master_Theorem.html</guid>
-       <dc:creator> Benedikt Seidl, Salomon Sickert       </dc:creator>
-       <pubDate>16 Apr 2019 00:00:00 +0000</pubDate>
-       <description>
-We present a formalisation of the unified translation approach of
-linear temporal logic (LTL) into ω-automata from [1]. This approach
-decomposes LTL formulas into ``simple&#39;&#39; languages and allows
-a clear separation of concerns: first, we formalise the purely logical
-result yielding this decomposition; second, we instantiate this
-generic theory to obtain a construction for deterministic
-(state-based) Rabin automata (DRA). We extract from this particular
-instantiation an executable tool translating LTL to DRAs. To the best
-of our knowledge this is the first verified translation from LTL to
-DRAs that is proven to be double exponential in the worst case which
-asymptotically matches the known lower bound.
-&lt;p&gt;
-[1] Javier Esparza, Jan Kretínský, Salomon Sickert. One Theorem to Rule Them All:
-A Unified Translation of LTL into ω-Automata. LICS 2018</description>
-    </item>
-    <item>
-       <title>A General Theory of Syntax with Bindings</title>
-              <link>https://www.isa-afp.org/entries/Binding_Syntax_Theory.html</link>
-       <guid>https://www.isa-afp.org/entries/Binding_Syntax_Theory.html</guid>
-       <dc:creator> Lorenzo Gheri, Andrei Popescu       </dc:creator>
-       <pubDate>06 Apr 2019 00:00:00 +0000</pubDate>
-       <description>
-We formalize a theory of syntax with bindings that has been developed
-and refined over the last decade to support several large
-formalization efforts. Terms are defined for an arbitrary number of
-constructors of varying numbers of inputs, quotiented to
-alpha-equivalence and sorted according to a binding signature. The
-theory includes many properties of the standard operators on terms:
-substitution, swapping and freshness. It also includes bindings-aware
-induction and recursion principles and support for semantic
-interpretation. This work has been presented in the ITP 2017 paper “A
-Formalized General Theory of Syntax with Bindings”.</description>
-    </item>
-    <item>
-       <title>The Transcendence of Certain Infinite Series</title>
-              <link>https://www.isa-afp.org/entries/Transcendence_Series_Hancl_Rucki.html</link>
-       <guid>https://www.isa-afp.org/entries/Transcendence_Series_Hancl_Rucki.html</guid>
-       <dc:creator> Angeliki Koutsoukou-Argyraki, Wenda Li       </dc:creator>
-       <pubDate>27 Mar 2019 00:00:00 +0000</pubDate>
-       <description>
-We formalize the proofs of two transcendence criteria by J. Hančl
-and P. Rucki that assert the transcendence of the sums of certain
-infinite series built up by sequences that fulfil certain properties.
-Both proofs make use of Roth&#39;s celebrated theorem on diophantine
-approximations to algebraic numbers from 1955  which we implement as
-an assumption without having formalised its proof.</description>
     </item>
   </channel>
 </rss>

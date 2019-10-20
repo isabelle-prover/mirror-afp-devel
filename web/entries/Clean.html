@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Multi-Party Computation - Archive of Formal Proofs
+<title>Clean - An Abstract Imperative Programming Language and its Theory - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,9 +61,25 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">M</font>ulti-Party
+  <h1>          <font class="first">C</font>lean
   
-          <font class="first">C</font>omputation
+          <font class="first">-</font>
+  
+          <font class="first">A</font>n
+  
+          <font class="first">A</font>bstract
+  
+          <font class="first">I</font>mperative
+  
+          <font class="first">P</font>rogramming
+  
+          <font class="first">L</font>anguage
+  
+          and
+  
+          its
+  
+          <font class="first">T</font>heory
   
 </h1>
   <p>&nbsp;</p>
@@ -72,7 +88,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Multi-Party Computation</td>
+  <td class="data" width="80%">Clean - An Abstract Imperative Programming Language and its Theory</td>
 </tr>
 
 <tr>
@@ -80,8 +96,8 @@
           Authors:
       </td>
   <td class="data">
-                    <a href="http://homepages.inf.ed.ac.uk/da/">David Aspinall</a> and
-          <a href="https://www.turing.ac.uk/people/doctoral-students/david-butler">David Butler</a>
+                    Frédéric Tuong (tuong /at/ users /dot/ gforge /dot/ inria /dot/ fr) and
+          Burkhart Wolff (burkhart /dot/ wolff /at/ lri /dot/ fr)
       </td>
 </tr>
 
@@ -89,37 +105,44 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2019-05-09</td>
+  <td class="data">2019-10-04</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-We use CryptHOL to consider Multi-Party Computation (MPC) protocols.
-MPC was first considered by Yao in 1983 and recent advances in
-efficiency and an increased demand mean it is now deployed in the real
-world. Security is considered using the real/ideal world paradigm. We
-first define security in the semi-honest security setting where
-parties are assumed not to deviate from the protocol transcript. In
-this setting we prove multiple Oblivious Transfer (OT) protocols
-secure and then show security for the gates of the GMW protocol. We
-then define malicious security, this is a stronger notion of security
-where parties are assumed to be fully corrupted by an adversary. In
-this setting we again consider OT, as it is a fundamental building
-block of almost all MPC protocols.</td>
+Clean is based on a simple, abstract execution model for an imperative
+target language. “Abstract” is understood in contrast to “Concrete
+Semantics”; alternatively, the term “shallow-style embedding” could be
+used. It strives for a type-safe notion of program-variables, an
+incremental construction of the typed state-space, support of
+incremental verification, and open-world extensibility of new type
+definitions being intertwined with the program definitions. Clean is
+based on a “no-frills” state-exception monad with the usual
+definitions of bind and unit for the compositional glue of state-based
+computations. Clean offers conditionals and loops supporting C-like
+control-flow operators such as break and return. The state-space
+construction is based on the extensible record package. Direct
+recursion of procedures is supported. Clean’s design strives for
+extreme simplicity. It is geared towards symbolic execution and proven
+correct verification tools. The underlying libraries of this package,
+however, deliberately restrict themselves to the most elementary
+infrastructure for these tasks. The package is intended to serve as
+demonstrator semantic backend for Isabelle/C, or for the
+test-generation techniques.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Multi_Party_Computation-AFP,
-  author  = {David Aspinall and David Butler},
-  title   = {Multi-Party Computation},
+        <pre>@article{Clean-AFP,
+  author  = {Frédéric Tuong and Burkhart Wolff},
+  title   = {Clean - An Abstract Imperative Programming Language and its Theory},
   journal = {Archive of Formal Proofs},
-  month   = may,
+  month   = oct,
   year    = 2019,
-  note    = {\url{http://isa-afp.org/entries/Multi_Party_Computation.html},
+  note    = {\url{http://isa-afp.org/entries/Clean.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -130,9 +153,7 @@ block of almost all MPC protocols.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Game_Based_Crypto.html">Game_Based_Crypto</a>      </td></tr>
-          
+                    
                     
 
         
@@ -145,29 +166,23 @@ block of almost all MPC protocols.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Multi_Party_Computation/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Multi_Party_Computation/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Clean/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Clean/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Multi_Party_Computation/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Clean/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Multi_Party_Computation-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Clean-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2018:
-            <a href="../release/afp-Multi_Party_Computation-2019-05-10.tar.gz">
-              afp-Multi_Party_Computation-2019-05-10.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>
