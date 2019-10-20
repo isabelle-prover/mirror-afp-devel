@@ -42,18 +42,7 @@ chapter AFP
  *           Contributions by Chantal Keller
  *)
 
-session Clean_Main (AFP) = HOL +
-  options [timeout = 300]
-  theories
-    "src/Clean_Main"
-
-session Clean_examples (AFP) = Clean_Main +
-  options [timeout = 300]
-  theories
-    "examples/Quicksort_concept"
-    "examples/SquareRoot_concept"
-
-session Clean (AFP) = Clean_examples +
+session Clean (AFP) = HOL +
   options [timeout = 300]
   theories
     "src/Clean_Main"
