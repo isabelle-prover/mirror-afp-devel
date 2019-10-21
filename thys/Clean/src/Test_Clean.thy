@@ -36,7 +36,7 @@
 
 theory Test_Clean
   imports Clean_Symbex
-          "~~/src/HOL/Eisbach/Eisbach"
+          "HOL-Eisbach.Eisbach"
 
 begin
 

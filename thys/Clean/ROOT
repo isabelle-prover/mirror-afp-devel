@@ -44,10 +44,15 @@ chapter AFP
 
 session Clean (AFP) = HOL +
   options [timeout = 300]
+  sessions
+    "HOL-Eisbach"
+  directories
+    "src"
+    "examples"
   theories
-    "src/Clean_Main"
-    "examples/Quicksort_concept"
-    "examples/SquareRoot_concept"
+    "Clean_Main"
+    "Quicksort_concept"
+    "SquareRoot_concept"
   document_files
     "root.tex"
     "root.bib"
