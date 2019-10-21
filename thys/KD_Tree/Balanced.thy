@@ -239,14 +239,14 @@ lemma partition_by_median_filter:
   by (auto simp add: Let_def le_less split: prod.splits dest!: in_set_takeD in_set_dropD)
     (metis partition_filter)+
 
-lemma partition_by_median_length_1:
+lemma partition_by_median_length1:
   assumes "(l, m, r) = partition_by_median a ps"
   shows "length ps = length l + length r"
   using assms unfolding partition_by_median_def
   apply (simp add: Let_def min_def split: prod.splits)
   by (metis (no_types, lifting) add.assoc partition_length(1))
 
-lemma partition_by_median_length_2:
+lemma partition_by_median_length2:
   assumes "(l, m, r) = partition_by_median a ps" "0 < length ps"
   shows "length r - length l \<le> 1"
     and "length l \<le> length r"
@@ -274,7 +274,7 @@ proof -
   have **: "(?l, ?m, ?r) = partition_by_median a ps"
     by (auto simp add: Let_def partition_by_median_def split: prod.splits)
   hence "length ps = length ?l + length ?r"
-    using partition_by_median_length_1 by blast
+    using partition_by_median_length1 by blast
   hence "length ?l \<le> length ?r" "length ?r - length ?l \<le> 1"
     using L by linarith+
 
@@ -282,45 +282,45 @@ proof -
     using ** by (metis Pair_inject assms(1))+
 qed
 
-lemma partition_by_median_length_3: 
+lemma partition_by_median_length3: 
   assumes "(l, m, r) = partition_by_median a ps" "0 < length ps"
   shows "length l < length ps"
 proof (rule ccontr)
   assume *: "\<not> (length l < length ps)"
   have "length ps = length l + length r"
-    using partition_by_median_length_1 assms(1) by simp
+    using partition_by_median_length1 assms(1) by simp
   hence "length l = length ps" "length r = 0"
     using * by simp_all
   moreover have "length l \<le> length r"
-    using partition_by_median_length_2 assms by fastforce+
+    using partition_by_median_length2 assms by fastforce+
   ultimately show "False" using assms(2) by simp
 qed
 
-lemma partition_by_median_length_4: 
+lemma partition_by_median_length4: 
   assumes "(l, m, r) = partition_by_median a ps" "1 < length ps"
   shows "length r < length ps"
 proof (rule ccontr)
   assume *: "\<not> (length r < length ps)"
   have "length ps = length l + length r"
-    using partition_by_median_length_1 assms(1) by simp
+    using partition_by_median_length1 assms(1) by simp
   hence "length r = length ps" "length l = 0"
     using * by simp_all
   moreover have "length r - length l \<le> 1"
-    using partition_by_median_length_2 assms by fastforce+
+    using partition_by_median_length2 assms by fastforce+
   ultimately show "False" using assms(2) by simp
 qed
 
-lemma partition_by_median_length_5:
+lemma partition_by_median_length5:
   assumes "(l, m, r) = partition_by_median a ps" "1 < length ps"
   shows "0 < length l"
     and "0 < length r"
-  using assms partition_by_median_length_1 partition_by_median_length_4 apply simp
-  using assms partition_by_median_length_1 partition_by_median_length_3 by fastforce
+  using assms partition_by_median_length1 partition_by_median_length4 apply simp
+  using assms partition_by_median_length1 partition_by_median_length3 by fastforce
 
 lemmas partition_by_median_length = 
-  partition_by_median_length_1 partition_by_median_length_2
-  partition_by_median_length_3 partition_by_median_length_4
-  partition_by_median_length_5
+  partition_by_median_length1 partition_by_median_length2
+  partition_by_median_length3 partition_by_median_length4
+  partition_by_median_length5
 
 
 subsection \<open>Building the Tree\<close>
@@ -346,11 +346,11 @@ text \<open>
   Setting up different build simps for length induct.
 \<close>
 
-lemma build_simp_1:
+lemma build_simp1:
   "ps = [p] \<Longrightarrow> build k ps = Leaf p"
   by simp
 
-lemma build_simp_2:
+lemma build_simp2:
   "ps = p\<^sub>0 # p\<^sub>1 # ps' \<Longrightarrow> a = widest_spread ps \<Longrightarrow> (l, m, r) = partition_by_median a ps \<Longrightarrow> build k ps = Node a m (build k l) (build k r)"
   using build.simps(3) by (auto simp add: Let_def split: prod.splits)
 
@@ -358,11 +358,11 @@ lemma length_ps_gt_1:
   "1 < length ps \<Longrightarrow> \<exists>p\<^sub>0 p\<^sub>1 ps'. ps = p\<^sub>0 # p\<^sub>1 # ps'"
   by (induction ps) (auto simp add: neq_Nil_conv)
 
-lemma build_simp_3:
+lemma build_simp3:
   "1 < length ps \<Longrightarrow> a = widest_spread ps \<Longrightarrow> (l, m, r) = partition_by_median a ps \<Longrightarrow> build k ps = Node a m (build k l) (build k r)"
-  using build_simp_2 length_ps_gt_1 by fast
+  using build_simp2 length_ps_gt_1 by fast
 
-lemmas build_simps[simp] = build_simp_1 build_simp_3
+lemmas build_simps[simp] = build_simp1 build_simp3
 
 declare build.simps[simp del]
 
