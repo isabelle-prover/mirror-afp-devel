@@ -4339,7 +4339,7 @@ abstract = In 1927, Lehmer presented criterions for primality, based on the conv
 	<p>
 	As a side product we formalize some properties of Euler's phi-function,
 	the notion of the order of an element of a group, and the cyclicity of the multiplicative group of a finite field.
-notify = noschinl@in.tum.de, simon.wimmer@tum.de
+notify = noschinl@gmail.com, simon.wimmer@tum.de
 
 [Pratt_Certificate]
 title = Pratt's Primality Certificates
@@ -4347,7 +4347,7 @@ author = Simon Wimmer <mailto:simon.wimmer@tum.de>, Lars Noschinski <http://www2
 date = 2013-07-22
 topic = Mathematics/Number Theory
 abstract = In 1975, Pratt introduced a proof system for certifying primes. He showed that a number <i>p</i> is prime iff a primality certificate for <i>p</i> exists. By showing a logarithmic upper bound on the length of the certificates in size of the prime number, he concluded that the decision problem for prime numbers is in NP. This work formalizes soundness and completeness of Pratt's proof system as well as an upper bound for the size of the certificate.
-notify = noschinl@in.tum.de, simon.wimmer@tum.de
+notify = noschinl@gmail.com, simon.wimmer@tum.de
 
 [Monad_Memo_DP]
 title = Monadification, Memoization and Dynamic Programming
@@ -4470,7 +4470,7 @@ topic = Mathematics/Graph Theory
 abstract = This development provides a formalization of directed graphs, supporting (labelled) multi-edges and infinite graphs. A polymorphic edge type allows edges to be treated as pairs of vertices, if multi-edges are not required. Formalized properties are i.a. walks (and related concepts), connectedness and subgraphs and basic properties of isomorphisms.
 	<p>
 	This formalization is used to prove characterizations of Euler Trails, Shortest Paths and Kuratowski subgraphs.
-notify = noschinl@in.tum.de
+notify = noschinl@gmail.com
 
 [Planarity_Certificates]
 title = Planarity Certificates
@@ -4484,7 +4484,7 @@ abstract =
 	Moreover, it contains verified implementations of programs checking
 	certificates for planarity (i.e., a combinatorial map) or non-planarity
 	(i.e., a Kuratowski subgraph).
-notify = noschinl@in.tum.de
+notify = noschinl@gmail.com
 
 [Max-Card-Matching]
 title = Maximum Cardinality Matching
@@ -4517,7 +4517,7 @@ author = Lars Noschinski <http://www21.in.tum.de/~noschinl/>
 date = 2012-02-06
 topic = Mathematics/Graph Theory
 abstract = This works presents a formalization of the Girth-Chromatic number theorem in graph theory, stating that graphs with arbitrarily large girth and chromatic number exist. The proof uses the theory of Random Graphs to prove the existence with probabilistic arguments.
-notify = noschinl@in.tum.de
+notify = noschinl@gmail.com
 
 [Random_Graph_Subgraph_Threshold]
 title = Properties of Random Graphs -- Subgraph Containment
@@ -5376,7 +5376,7 @@ abstract =
 	<tt>HOL/Library</tt>, a monadic language for computations with failure
 	(inspired by the AutoCorres tool), and a language of conditional
 	expressions. These VCGs are demonstrated by a number of example programs.
-notify = noschinl@in.tum.de
+notify = noschinl@gmail.com
 
 [DPT-SAT-Solver]
 title = A Fast SAT Solver for Isabelle in Standard ML
