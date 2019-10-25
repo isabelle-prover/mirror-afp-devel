@@ -9,7 +9,20 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>08 Oct 2019 00:00:00 +0000</pubDate>
+    <pubDate>16 Oct 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>VerifyThis 2019 -- Polished Isabelle Solutions</title>
+              <link>https://www.isa-afp.org/entries/VerifyThis2019.html</link>
+       <guid>https://www.isa-afp.org/entries/VerifyThis2019.html</guid>
+       <dc:creator> Peter Lammich, Simon Wimmer       </dc:creator>
+       <pubDate>16 Oct 2019 00:00:00 +0000</pubDate>
+       <description>
+VerifyThis 2019 (http://www.pm.inf.ethz.ch/research/verifythis.html)
+was a program verification competition associated with ETAPS 2019. It
+was the 8th event in the VerifyThis competition series. In this entry,
+we present polished and completed versions of our solutions that we
+created during the competition.</description>
+    </item>
     <item>
        <title>Aristotle's Assertoric Syllogistic</title>
               <link>https://www.isa-afp.org/entries/Aristotles_Assertoric_Syllogistic.html</link>
@@ -543,27 +556,6 @@ then define malicious security, this is a stronger notion of security
 where parties are assumed to be fully corrupted by an adversary. In
 this setting we again consider OT, as it is a fundamental building
 block of almost all MPC protocols.</description>
-    </item>
-    <item>
-       <title>HOL-CSP Version 2.0</title>
-              <link>https://www.isa-afp.org/entries/HOL-CSP.html</link>
-       <guid>https://www.isa-afp.org/entries/HOL-CSP.html</guid>
-       <dc:creator> Safouan Taha, Lina Ye, Burkhart Wolff       </dc:creator>
-       <pubDate>26 Apr 2019 00:00:00 +0000</pubDate>
-       <description>
-This is a complete formalization of the work of Hoare and Roscoe on
-the denotational semantics of the Failure/Divergence Model of CSP. It
-follows essentially the presentation of CSP in Roscoe’s Book ”Theory
-and Practice of Concurrency” [8] and the semantic details in a joint
-Paper of Roscoe and Brooks ”An improved failures model for
-communicating processes&#34;.  The present work is based on a prior
-formalization attempt, called HOL-CSP 1.0, done in 1997 by H. Tej and
-B. Wolff with the Isabelle proof technology available at that time.
-This work revealed minor, but omnipresent foundational errors in key
-concepts like the process invariant. The present version HOL-CSP
-profits from substantially improved libraries (notably HOLCF),
-improved automated proof techniques, and structured proof techniques
-in Isar and is substantially shorter but more complete.</description>
     </item>
   </channel>
 </rss>

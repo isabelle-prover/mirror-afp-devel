@@ -8558,3 +8558,16 @@ abstract =
   illustrating the functionality of Isabelle and high efficiency of
   Sledgehammer for simple exercises in philosophy.
 
+[VerifyThis2019]
+title = VerifyThis 2019 -- Polished Isabelle Solutions
+author = Peter Lammich<>, Simon Wimmer<http://home.in.tum.de/~wimmers/>
+topic = Computer Science/Algorithms
+date = 2019-10-16
+notify = lammich@in.tum.de, wimmers@in.tum.de
+abstract = 
+  VerifyThis 2019 (http://www.pm.inf.ethz.ch/research/verifythis.html)
+  was a program verification competition associated with ETAPS 2019. It
+  was the 8th event in the VerifyThis competition series. In this entry,
+  we present polished and completed versions of our solutions that we
+  created during the competition.
+
