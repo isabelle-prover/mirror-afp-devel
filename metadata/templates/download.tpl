@@ -26,7 +26,7 @@
 <tr><td class="head">Mercurial access:</td></tr>
 
 <tr><td class="entry">
-  At <a href="https://bitbucket.org/isa-afp/afp-devel/">Bitbucket</a>
+  At <a href="https://bitbucket.org/isa-afp/afp-devel/">Bitbucket</a> (development version of the Archive, for the development version of Isabelle)
 </td></tr>
 
 <tr><td class="head">How to refer to AFP entries:</td></tr>
