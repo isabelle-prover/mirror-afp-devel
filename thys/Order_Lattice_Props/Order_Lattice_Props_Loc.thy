@@ -317,7 +317,7 @@ lemma downset_Sup_id: "id \<le> \<down> \<circ> Sup"
   by (simp add: Sup_upper downset_prop le_funI subsetI)
 
 lemma Inf_Sup_var: "\<Squnion>(\<Inter>x \<in> X. \<down>x) = \<Sqinter>X"
-  unfolding downset_prop by (simp add: Collect_ball_eq Inf_Sup)
+  unfolding downset_prop by (simp add: Collect_ball_eq Inf_eq_Sup)
 
 lemma Inf_pres_downset_var: "(\<Inter>x \<in> X. \<down>x) = \<down>(\<Sqinter>X)"
   unfolding downset_prop by (safe, simp_all add: le_Inf_iff)
