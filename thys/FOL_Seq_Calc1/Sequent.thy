@@ -31,7 +31,7 @@ lemma Shift: \<open>\<turnstile> rotate1 G \<Longrightarrow> \<turnstile> G\<clo
 lemma Swap: \<open>\<turnstile> B # A # G \<Longrightarrow> \<turnstile> A # B # G\<close>
   by (simp add: Order insert_commute)
 
-lemma \<open>\<turnstile> [Neg (Pred ''A'' []) , Pred ''A'' []]\<close>
+lemma \<open>\<turnstile> [Neg (Pred ''A'' []), Pred ''A'' []]\<close>
   by (rule Shift, simp) (rule Basic)
 
 lemma \<open>\<turnstile> [And (Pred ''A'' []) (Pred ''B'' []), Neg (And (Pred ''B'' []) (Pred ''A'' []))]\<close>

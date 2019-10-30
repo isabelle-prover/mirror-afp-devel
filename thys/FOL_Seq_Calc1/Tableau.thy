@@ -34,7 +34,7 @@ lemma Swap: \<open>\<stileturn> B # A # G \<Longrightarrow> \<stileturn> A # B #
 definition tableauproof :: \<open>('a, 'b) form list \<Rightarrow> ('a, 'b) form \<Rightarrow> bool\<close> where
   \<open>tableauproof ps p \<equiv> (\<stileturn> Neg p # ps)\<close>
 
-theorem tableauNotAA: \<open>\<stileturn> [Neg (Pred ''A'' []) , Pred ''A'' []]\<close>
+theorem tableauNotAA: \<open>\<stileturn> [Neg (Pred ''A'' []), Pred ''A'' []]\<close>
   by (rule Shift, simp) (rule Basic)
 
 theorem AndAnd:
