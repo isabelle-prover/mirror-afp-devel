@@ -9,7 +9,33 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>16 Oct 2019 00:00:00 +0000</pubDate>
+    <pubDate>24 Oct 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Zermelo Frankel Set Theory in Higher-Order Logic</title>
+              <link>https://www.isa-afp.org/entries/ZFC_in_HOL.html</link>
+       <guid>https://www.isa-afp.org/entries/ZFC_in_HOL.html</guid>
+       <dc:creator> Lawrence C. Paulson       </dc:creator>
+       <pubDate>24 Oct 2019 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This entry is a new formalisation of ZFC set theory in Isabelle/HOL.
+It is logically equivalent to Obua&#39;s HOLZF; the point is to have the closest possible
+integration with the rest of Isabelle/HOL, minimising the amount of new notations and
+exploiting type classes.&lt;/p&gt;
+&lt;p&gt;There is a type V of sets and a function &lt;em&gt;elts :: V =&amp;gt; V set&lt;/em&gt;
+mapping a set to its elements. Classes simply have type V set, and a predicate
+identifies the small classes: those that correspond to actual sets. Type
+classes connected with orders and lattices are used to minimise the amount of
+new notation for concepts such as the subset relation, union and intersection.
+Basic concepts — Cartesian products, disjoint sums, natural numbers,
+functions, etc. — are formalised.&lt;/p&gt;
+&lt;p&gt;More advanced set-theoretic concepts, such as transfinite induction, ordinals,
+cardinals and the transitive closure of a set, are also provided. The definition of
+addition and multiplication for general sets (not just ordinals) follows Kirby.&lt;/p&gt;
+&lt;p&gt;The theory provides two type classes with the aim of facilitating
+developments that combine V with other Isabelle/HOL types: &lt;em&gt;embeddable&lt;/em&gt;,
+the class of types that can be injected into V (including V itself as well as V*V,
+etc.), and &lt;em&gt;small&lt;/em&gt;, the class of types that correspond to some ZF set.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>VerifyThis 2019 -- Polished Isabelle Solutions</title>
               <link>https://www.isa-afp.org/entries/VerifyThis2019.html</link>
@@ -536,26 +562,6 @@ uncover and repair several mistakes in the informal proofs and lemma
 statements. Our findings are summarized in a &lt;a
 href=&#34;http://people.inf.ethz.ch/trayteld/papers/lambdaauth/lambdaauth.pdf&#34;&gt;paper
 draft&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>Multi-Party Computation</title>
-              <link>https://www.isa-afp.org/entries/Multi_Party_Computation.html</link>
-       <guid>https://www.isa-afp.org/entries/Multi_Party_Computation.html</guid>
-       <dc:creator> David Aspinall, David Butler       </dc:creator>
-       <pubDate>09 May 2019 00:00:00 +0000</pubDate>
-       <description>
-We use CryptHOL to consider Multi-Party Computation (MPC) protocols.
-MPC was first considered by Yao in 1983 and recent advances in
-efficiency and an increased demand mean it is now deployed in the real
-world. Security is considered using the real/ideal world paradigm. We
-first define security in the semi-honest security setting where
-parties are assumed not to deviate from the protocol transcript. In
-this setting we prove multiple Oblivious Transfer (OT) protocols
-secure and then show security for the gates of the GMW protocol. We
-then define malicious security, this is a stronger notion of security
-where parties are assumed to be fully corrupted by an adversary. In
-this setting we again consider OT, as it is a fundamental building
-block of almost all MPC protocols.</description>
     </item>
   </channel>
 </rss>
