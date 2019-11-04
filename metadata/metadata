@@ -8572,7 +8572,7 @@ abstract =
   created during the competition.
 
 [ZFC_in_HOL]
-title = Zermelo Frankel Set Theory in Higher-Order Logic
+title = Zermelo Fraenkel Set Theory in Higher-Order Logic
 author = Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
 topic = Mathematics/Set Theory
 date = 2019-10-24
