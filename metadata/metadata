@@ -8578,21 +8578,23 @@ topic = Mathematics/Set Theory
 date = 2019-10-24
 notify = lp15@cam.ac.uk
 abstract = 
-  <p>This entry is a new formalisation of ZFC set theory in Isabelle/HOL. 
-  It is logically equivalent to Obua's HOLZF; the point is to have the closest possible
-  integration with the rest of Isabelle/HOL, minimising the amount of new notations and
-  exploiting type classes.</p>
-  <p>There is a type V of sets and a function <em>elts :: V =&gt; V set</em>
-  mapping a set to its elements. Classes simply have type V set, and a predicate
-  identifies the small classes: those that correspond to actual sets. Type
-  classes connected with orders and lattices are used to minimise the amount of
-  new notation for concepts such as the subset relation, union and intersection.
-  Basic concepts — Cartesian products, disjoint sums, natural numbers,
-  functions, etc. — are formalised.</p>
-  <p>More advanced set-theoretic concepts, such as transfinite induction, ordinals, 
-  cardinals and the transitive closure of a set, are also provided. The definition of 
-  addition and multiplication for general sets (not just ordinals) follows Kirby.</p>
-  <p>The theory provides two type classes with the aim of facilitating 
-  developments that combine V with other Isabelle/HOL types: <em>embeddable</em>, 
-  the class of types that can be injected into V (including V itself as well as V*V,
-  etc.), and <em>small</em>, the class of types that correspond to some ZF set.</p>
+  <p>This entry is a new formalisation of ZFC set theory in Isabelle/HOL. It is
+  logically equivalent to Obua's HOLZF; the point is to have the closest
+  possible integration with the rest of Isabelle/HOL, minimising the amount of
+  new notations and exploiting type classes.</p>
+  <p>There is a type <em>V</em> of sets and a function <em>elts :: V =&gt; V
+  set</em> mapping a set to its elements. Classes simply have type <em>V
+  set</em>, and a predicate identifies the small classes: those that correspond
+  to actual sets. Type classes connected with orders and lattices are used to
+  minimise the amount of new notation for concepts such as the subset relation,
+  union and intersection. Basic concepts — Cartesian products, disjoint sums,
+  natural numbers, functions, etc. — are formalised.</p>
+  <p>More advanced set-theoretic concepts, such as transfinite induction,
+  ordinals, cardinals and the transitive closure of a set, are also provided.
+  The definition of addition and multiplication for general sets (not just
+  ordinals) follows Kirby.</p>
+  <p>The theory provides two type classes with the aim of facilitating
+  developments that combine <em>V</em> with other Isabelle/HOL types:
+  <em>embeddable</em>, the class of types that can be injected into <em>V</em>
+  (including <em>V</em> itself as well as <em>V*V</em>, etc.), and
+  <em>small</em>, the class of types that correspond to some ZF set.</p>
