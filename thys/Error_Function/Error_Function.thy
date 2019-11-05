@@ -610,8 +610,8 @@ proof -
     by (rule contour_integral_has_field_derivative[where A = UNIV])
        (auto intro!: holomorphic_intros)
   have "erf z - 2 / sqrt pi * A z = erf 0 - 2 / sqrt pi * A 0"
-    by (intro DERIV_zero_UNIV_unique[of "\<lambda>z. erf z - 2 / sqrt pi * A z"]) 
-       (auto intro!: derivative_eq_intros)
+    by (rule has_derivative_zero_unique [where f = "\<lambda>z. erf z - 2 / sqrt pi * A z" and s = UNIV])
+       (auto intro!: has_field_derivative_imp_has_derivative derivative_eq_intros)
   also have "A 0 = 0" by (simp only: A_def contour_integral_trivial)
   finally show ?thesis unfolding A_def by (simp add: algebra_simps)
 qed
