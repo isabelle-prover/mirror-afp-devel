@@ -5,6 +5,7 @@ begin
 
 instantiation interval::("{show, preorder}") "show" begin
 
+context includes interval.lifting begin
 lift_definition shows_prec_interval::
   "nat \<Rightarrow> 'a interval \<Rightarrow> char list \<Rightarrow> char list"
   is "\<lambda>p ivl s. (shows_string ''Interval'' o shows ivl) s" .
@@ -19,6 +20,7 @@ instance
   subgoal by transfer (auto simp: show_law_simps)
   subgoal by transfer (auto simp: show_law_simps)
   done
+end
 
 end
 

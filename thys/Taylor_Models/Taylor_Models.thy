@@ -1,5 +1,5 @@
 theory Taylor_Models
-  imports "Interval_Approximation"
+  imports
     "Horner_Eval"
     "Polynomial_Expression_Additional"
     "Taylor_Models_Misc"
@@ -20,10 +20,7 @@ subsection \<open>Computing interval bounds on arithmetic expressions\<close>
 text \<open>This is a wrapper around the "approx" function.
   It computes range bounds on floatarith expressions.\<close>
 fun compute_bound_fa :: "nat \<Rightarrow> floatarith \<Rightarrow> float interval list \<Rightarrow> float interval option"
-  where "compute_bound_fa prec f I =
-  (case approx prec f (map (Some o (\<lambda>x. (lower x, upper x))) I) of
-    Some (a, b) \<Rightarrow> (if a \<le> b then Some (Ivl a b) else None)
-  | _ \<Rightarrow> None)"
+  where "compute_bound_fa prec f I = approx prec f (map Some I)"
 
 lemma compute_bound_fa_correct:
   "interpret_floatarith f i \<in>\<^sub>r ivl"
@@ -31,13 +28,13 @@ lemma compute_bound_fa_correct:
     "i all_in I"
   for i::"real list"
 proof-
-  have bounded: "bounded_by i (map (Some \<circ> (\<lambda>x. (lower x, upper x))) I)"
+  have bounded: "bounded_by i (map Some I)"
     using that(2)
     unfolding bounded_by_def
     by (auto simp: bounds_of_interval_eq_lower_upper set_of_eq)
-  from that have Some: "approx prec f (map (Some \<circ> (\<lambda>x. (lower x, upper x))) I) = Some (lower ivl, upper ivl)"
+  from that have Some: "approx prec f (map Some I) = Some ivl"
     by (auto simp: lower_Interval upper_Interval min_def split: option.splits if_splits)
-  from approx[OF bounded Some[symmetric]]
+  from approx[OF bounded Some]
   show ?thesis by (auto simp: set_of_eq)
 qed
 
@@ -138,13 +135,13 @@ lemma in_set_real_minus_interval[intro, simp]:
   by (auto simp: set_of_eq)
 
 lemma real_interval_plus: "real_interval (a + b) = real_interval a + real_interval b"
-  by transfer auto
+  by (simp add: interval_eqI)
 
 lemma real_interval_uminus: "real_interval (- b) = - real_interval b"
-  by transfer auto
+  by (simp add: interval_eqI)
 
 lemma real_interval_of: "real_interval (interval_of b) = interval_of b"
-  by transfer auto
+  by (simp add: interval_eqI)
 
 lemma real_interval_minus: "real_interval (a - b) = real_interval a - real_interval b"
   using real_interval_plus[of a "-b"] real_interval_uminus[of b]
@@ -160,19 +157,16 @@ lemma in_set_neg_plus_interval[intro, simp]:
   using that
   by (auto simp: set_of_eq)
 
-lemma real_interval_times: "real_interval (a * b) = real_interval a * real_interval b"
-  by transfer (auto simp: Let_def min_def max_def)
-
 lemma in_set_real_times_interval[intro, simp]:
   "x * y \<in>\<^sub>r X * Y" if "x \<in>\<^sub>r X" "y \<in>\<^sub>r Y"
   using that
   by (auto simp: real_interval_times intro!: times_in_intervalI)
 
 lemma real_interval_one: "real_interval 1 = 1"
-  by transfer simp
+  by (simp add: interval_eqI)
 
 lemma real_interval_zero: "real_interval 0 = 0"
-  by transfer simp
+  by (simp add: interval_eqI)
 
 lemma real_interval_power: "real_interval (a ^ b) = real_interval a ^ b"
   by (induction b arbitrary: a)
@@ -576,7 +570,7 @@ proof (induction z)
 qed (auto simp: real_interval_zero)
 
 lemma zero_interval[intro,simp]: "0 \<in>\<^sub>i 0"
-  by transfer auto
+  by (simp add: set_of_eq)
 
 lemma sum_in_intervalI: "sum f X \<in>\<^sub>i sum g X" if "\<And>x. x \<in> X \<Longrightarrow> f x \<in>\<^sub>i g x"
   for f :: "_ \<Rightarrow> 'a :: ordered_comm_monoid_add"
@@ -594,19 +588,19 @@ lemma set_of_sum_subset: "set_of (sum f X) \<subseteq> set_of (sum g X)"
   by (induction X rule: infinite_finite_induct) (simp_all add: set_of_add_inc)
 
 lemma interval_of_plus: "interval_of (a + b) = interval_of a + interval_of b"
-  by transfer auto
+  by (simp add: interval_eqI)
 
 lemma interval_of_uminus: "interval_of (- a) = - interval_of a"
-  by transfer auto
+  by (simp add: interval_eqI)
 
 lemma interval_of_zero: "interval_of 0 = 0"
-  by transfer auto
+  by (simp add: interval_eqI)
 
 lemma interval_of_sum: "interval_of (sum f X) = sum (\<lambda>x. interval_of (f x)) X"
   by (induction X rule: infinite_finite_induct) (auto simp: interval_of_plus interval_of_zero)
 
 lemma interval_of_prod: "interval_of (a * b) = interval_of a * interval_of b"
-  by transfer (simp add: Let_def)
+  by (simp add: lower_times upper_times interval_eqI)
 
 lemma in_set_of_interval_of[simp]: "x \<in>\<^sub>i (interval_of y) \<longleftrightarrow> x = y" for x y::"'a::order"
   by (auto simp: set_of_eq)
@@ -627,7 +621,7 @@ lemma num_params_tmf_polys2: "num_params (snd (tmf_polys z)) \<le> Suc 0"
 lemma set_of_real_interval_subset: "set_of (real_interval x) \<subseteq> set_of (real_interval y)"
   if "set_of x \<subseteq> set_of y"
   using that
-  by transfer auto
+  by (auto simp: set_of_eq)
 
 theorem tm_floatarith:
   assumes t: "tm_floatarith prec ord I xs f = Some t"

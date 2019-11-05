@@ -438,7 +438,7 @@ lemma closed_ivl_rel[intro, simp]:  "(a, b) \<in> lvivl_rel \<Longrightarrow> cl
 
 lemma [autoref_rules]:
   "(float_of, float_of) \<in> rnv_rel \<rightarrow> Id"
-  "(approx, approx) \<in> nat_rel \<rightarrow> Id \<rightarrow> \<langle>\<langle>Id \<times>\<^sub>r Id\<rangle>option_rel\<rangle>list_rel \<rightarrow> \<langle>Id \<times>\<^sub>r Id\<rangle>option_rel"
+  "(approx, approx) \<in> nat_rel \<rightarrow> Id \<rightarrow> \<langle>\<langle>Id\<rangle>option_rel\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>option_rel"
   by auto
 
 lemma uninfo_autoref[autoref_rules]:

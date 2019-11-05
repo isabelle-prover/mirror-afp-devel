@@ -558,7 +558,7 @@ lemma Inf_aform'_le_Sup_aform'[intro]:
   by (metis Inf_aform' Inf_aform_le_Sup_aform Sup_aform' order.trans)
 
 definition
-  "ivls_of_aforms prec = map (\<lambda>a. Some (float_of (Inf_aform' prec a), float_of(Sup_aform' prec a)))"
+  "ivls_of_aforms prec = map (\<lambda>a. Interval' (float_of (Inf_aform' prec a)) (float_of(Sup_aform' prec a)))"
 
 lemma
   assumes "\<And>i. e'' i \<le> 1"
@@ -575,9 +575,9 @@ lemma InfSup_aform'_in_float[intro, simp]:
       Sup_aform'_def eucl_truncate_up_real_def)
 
 theorem ivls_of_aforms: "xs \<in> Joints XS \<Longrightarrow> bounded_by xs (ivls_of_aforms prec XS)"
-  by (auto simp: bounded_by_def ivls_of_aforms_def Affine_def valuate_def Pi_iff
+  by (auto simp: bounded_by_def ivls_of_aforms_def Affine_def valuate_def Pi_iff set_of_eq
       intro!: Inf_aform'_le Sup_aform'_le
-      dest!: nth_in_AffineI split: option.splits)
+      dest!: nth_in_AffineI split: Interval'_splits)
 
 definition "isFDERIV_aform prec N xs fas AS = isFDERIV_approx prec N xs fas (ivls_of_aforms prec AS)"
 
@@ -687,7 +687,7 @@ lemma linear_enclosure:
   using linear_lower[OF assms] linear_upper[OF assms]
   by auto
 
-definition "mid_err ivl = ((fst ivl + snd ivl::float)/2, (snd ivl - fst ivl)/2)"
+definition "mid_err ivl = ((lower ivl + upper ivl::float)/2, (upper ivl - lower ivl)/2)"
 
 lemma degree_aform_uminus_aform[simp]: "degree_aform (uminus_aform X) = degree_aform X"
   by (auto simp: uminus_aform_def)
@@ -1236,7 +1236,8 @@ qed
 
 definition "acc_err p x e \<equiv> (fst x, truncate_up p (snd x + e))"
 
-definition "ivl_err l u \<equiv> (((u + l)/2, zero_pdevs::real pdevs), (u - l) / 2)"
+definition ivl_err :: "real interval \<Rightarrow> (real \<times> real pdevs) \<times> real"
+  where "ivl_err ivl \<equiv> (((upper ivl + lower ivl)/2, zero_pdevs::real pdevs), (upper ivl - lower ivl) / 2)"
 
 lemma inverse_aform:
   fixes X::"real aform"
@@ -1715,22 +1716,37 @@ definition "split_aforms xs i = (let splits = map (\<lambda>x. split_aform x i) 
 definition "split_aforms_largest_uncond X =
   (let (i, x) = max_pdev (abssum_of_pdevs_list (map snd X)) in split_aforms X i)"
 
-definition "Inf_aform_err p Rd = (float_of (truncate_down p (Inf_aform' p (fst Rd) - (snd Rd))))"
-definition "Sup_aform_err p Rd = (float_of (truncate_up p (Sup_aform' p (fst Rd) + (snd Rd))))"
+definition "Inf_aform_err p Rd = (float_of (truncate_down p (Inf_aform' p (fst Rd) - abs(snd Rd))))"
+definition "Sup_aform_err p Rd = (float_of (truncate_up p (Sup_aform' p (fst Rd) + abs(snd Rd))))"
 
-definition "approx_un p f a = do {
-  (rd) \<leftarrow> a;
-  (l, u) \<leftarrow> f (Inf_aform_err p rd) (Sup_aform_err p rd);
-  Some (ivl_err (real_of_float l) ((real_of_float u)))
+context includes interval.lifting begin
+lift_definition ivl_of_aform_err::"nat \<Rightarrow> aform_err \<Rightarrow> float interval"
+  is "\<lambda>p Rd. (Inf_aform_err p Rd, Sup_aform_err p Rd)"
+  by (auto simp: aform_err_def  Inf_aform_err_def Sup_aform_err_def
+      intro!: truncate_down_le truncate_up_le add_increasing[OF _ Inf_aform'_le_Sup_aform'])
+lemma lower_ivl_of_aform_err: "lower (ivl_of_aform_err p Rd) = Inf_aform_err p Rd"
+  and upper_ivl_of_aform_err: "upper (ivl_of_aform_err p Rd) = Sup_aform_err p Rd"
+  by (transfer, simp)+
+end
+
+definition approx_un::"nat
+     \<Rightarrow> (float interval \<Rightarrow> float interval option)
+        \<Rightarrow> ((real \<times> real pdevs) \<times> real) option
+           \<Rightarrow> ((real \<times> real pdevs) \<times> real) option"
+  where "approx_un p f a = do {
+  rd \<leftarrow> a;
+  ivl \<leftarrow> f (ivl_of_aform_err p rd);
+  Some (ivl_err (real_interval ivl))
 }"
 
-definition interval_extension1::"(float \<Rightarrow> float \<Rightarrow> (float * float) option) \<Rightarrow> (real \<Rightarrow> real) \<Rightarrow> bool"
-  where "interval_extension1 F f \<longleftrightarrow> (\<forall>l u i s. F l u = Some (i, s) \<longrightarrow> f ` {l .. u} \<subseteq> {i .. s})"
+definition interval_extension1::"(float interval \<Rightarrow> (float interval) option) \<Rightarrow> (real \<Rightarrow> real) \<Rightarrow> bool"
+  where "interval_extension1 F f \<longleftrightarrow> (\<forall>ivl ivl'. F ivl = Some ivl' \<longrightarrow> (\<forall>x. x \<in>\<^sub>r ivl \<longrightarrow> f x \<in>\<^sub>r ivl'))"
 
 lemma interval_extension1D:
   assumes "interval_extension1 F f"
-  assumes "F l u = Some (i, s)"
-  shows "f ` {l .. u} \<subseteq> {i .. s}"
+  assumes "F ivl = Some ivl'"
+  assumes "x \<in>\<^sub>r ivl"
+  shows "f x \<in>\<^sub>r ivl'"
   using assms by (auto simp: interval_extension1_def)
 
 lemma approx_un_argE:
@@ -1748,8 +1764,8 @@ lemma degree_aform_of_ivl:
   shows "degree_aform (aform_of_ivl a b) \<le> length (Basis_list::'a list)"
   by (auto simp: aform_of_ivl_def degree_pdevs_of_ivl_le)
 
-lemma aform_err_ivl_err[simp]: "aform_err e (ivl_err (l') (u')) = {l'..u'}"
-  by (auto simp: aform_err_def ivl_err_def aform_val_def divide_simps)
+lemma aform_err_ivl_err[simp]: "aform_err e (ivl_err ivl') = set_of ivl'"
+  by (auto simp: aform_err_def ivl_err_def aform_val_def divide_simps set_of_eq)
 
 lemma Inf_Sup_aform_err:
   fixes X
@@ -1760,45 +1776,51 @@ lemma Inf_Sup_aform_err:
   by (auto simp: aform_err_def X'_def Inf_aform_err_def Sup_aform_err_def
       intro!: truncate_down_le truncate_up_le)
 
+lemma ivl_of_aform_err:
+  fixes X
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+  shows "x \<in> aform_err e X \<Longrightarrow> x \<in>\<^sub>r ivl_of_aform_err p X"
+  using Inf_Sup_aform_err[OF e, of X p]
+  by (auto simp: set_of_eq lower_ivl_of_aform_err upper_ivl_of_aform_err)
+
 lemma approx_unE:
   assumes ie: "interval_extension1 F f"
   assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
   assumes au: "approx_un p F X'err = Some Ye"
-  assumes x: "case X'err of None \<Rightarrow> True | Some X'err \<Rightarrow> x \<in> aform_err e (X'err)"
+  assumes x: "case X'err of None \<Rightarrow> True | Some X'err \<Rightarrow> x \<in> aform_err e X'err"
   shows "f x \<in> aform_err e Ye"
 proof -
-  from au obtain l' u' X' err
-    where F: " F (Inf_aform_err p (X', err)) (Sup_aform_err p (X', err)) = Some (l', u')"
-        (is "F ?i ?s = _")
-      and Y: "Ye = ivl_err (real_of_float l') (real_of_float u')"
-         (is "_ = (ivl_err ?l'  ?u')")
+  from au obtain ivl' X' err
+    where F: "F (ivl_of_aform_err p (X', err)) = Some (ivl')"
+      and Y: "Ye = ivl_err (real_interval ivl')"
      and X'err: "X'err = Some (X', err)"
     by (auto simp: approx_un_def bind_eq_Some_conv)
 
   from x
   have "x \<in> aform_err e (X', err)" by (auto simp: X'err)
-  also note Inf_Sup_aform_err[OF e, where p=p]
-  finally have "x \<in> {?i .. ?s}" .
-  then have "f x \<in> f ` {real_of_float ?i .. real_of_float ?s}" by (rule imageI)
-  also note interval_extension1D[OF ie F]
-  also have "{real_of_float l'..real_of_float u'} = aform_err e Ye" unfolding Y aform_err_ivl_err ..
+  from ivl_of_aform_err[OF e this]
+  have "x \<in>\<^sub>r ivl_of_aform_err p (X', err)" .
+  from interval_extension1D[OF ie F this]
+  have "f x \<in>\<^sub>r ivl'" .
+  also have "\<dots> = aform_err e Ye"
+    unfolding Y aform_err_ivl_err ..
   finally show ?thesis .
 qed
 
 definition "approx_bin p f rd sd = do {
-  (l, u) \<leftarrow> f (Inf_aform_err p rd) (Sup_aform_err p rd)
-             (Inf_aform_err p sd) (Sup_aform_err p sd);
-  Some (ivl_err (real_of_float l) ((real_of_float u)))
+  ivl \<leftarrow> f (ivl_of_aform_err p rd)
+             (ivl_of_aform_err p sd);
+  Some (ivl_err (real_interval ivl))
 }"
 
-definition interval_extension2::"(float \<Rightarrow> float \<Rightarrow> float \<Rightarrow> float \<Rightarrow> (float * float) option) \<Rightarrow> (real \<Rightarrow> real \<Rightarrow> real) \<Rightarrow> bool"
-  where "interval_extension2 F f \<longleftrightarrow> (\<forall>l u l' u' i s. F l u l' u' = Some (i, s) \<longrightarrow>
-    (\<lambda>(x, y). f x y) ` ({l .. u} \<times> {l' .. u'}) \<subseteq> {i .. s})"
+definition interval_extension2::"(float interval \<Rightarrow> float interval \<Rightarrow> float interval option) \<Rightarrow> (real \<Rightarrow> real \<Rightarrow> real) \<Rightarrow> bool"
+  where "interval_extension2 F f \<longleftrightarrow> (\<forall>ivl1 ivl2 ivl. F ivl1 ivl2 = Some ivl \<longrightarrow>
+    (\<forall>x y. x \<in>\<^sub>r ivl1 \<longrightarrow> y \<in>\<^sub>r ivl2 \<longrightarrow> f x y \<in>\<^sub>r ivl))"
 
 lemma interval_extension2D:
   assumes "interval_extension2 F f"
-  assumes "F l u l' u' = Some (i, s)"
-  shows "(\<lambda>(x, y). f x y) ` ({l .. u} \<times> {l' .. u'}) \<subseteq> {i .. s}"
+  assumes "F ivl1 ivl2 = Some ivl"
+  shows "x \<in>\<^sub>r ivl1 \<Longrightarrow> y \<in>\<^sub>r ivl2 \<Longrightarrow> f x y \<in>\<^sub>r ivl"
   using assms by (auto simp: interval_extension2_def)
 
 lemma approx_binE:
@@ -1809,47 +1831,33 @@ lemma approx_binE:
   assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
   shows "f w x \<in> aform_err e Ye"
 proof -
-  from ab obtain l' u'
-    where F: "F (Inf_aform_err p (W', errw)) (Sup_aform_err p (W', errw))
-        (Inf_aform_err p (X', errx)) (Sup_aform_err p (X', errx)) = Some (l', u')"
-             (is "F ?i ?s ?i' ?s' = _")
-      and Y: "Ye = ivl_err (real_of_float l') (real_of_float u')"
-      (is "_ = ivl_err ?l' ?u'")
+  from ab obtain ivl'
+    where F: "F (ivl_of_aform_err p (W', errw)) (ivl_of_aform_err p (X', errx)) = Some ivl'"
+      and Y: "Ye = ivl_err (real_interval ivl')"
     by (auto simp: approx_bin_def bind_eq_Some_conv max_def)
-  { note w
-    also note Inf_Sup_aform_err[OF e, where p=p]
-    finally have "w \<in> {?i .. ?s}" .
-  } moreover {
-    note x
-    also note Inf_Sup_aform_err[OF e, where p=p]
-    finally have "x \<in> {?i' .. ?s'}" .
-  } ultimately
-  have "f w x \<in> (\<lambda>(a, b). f a b) ` ({real_of_float ?i .. ?s} \<times> {real_of_float ?i' .. ?s'})"
-    by auto
-  also note interval_extension2D[OF ie F]
-  also have "{real_of_float l'..real_of_float u'} = aform_err e Ye" unfolding Y aform_err_ivl_err ..
+  from interval_extension2D[OF ie F
+        ivl_of_aform_err[OF e, where p=p, OF w]
+        ivl_of_aform_err[OF e, where p=p, OF x]]
+  have "f w x \<in>\<^sub>r ivl'" .
+  also have "\<dots> = aform_err e Ye" unfolding Y aform_err_ivl_err ..
   finally show ?thesis .
 qed
 
 definition "min_aform_err p a1 (a2::aform_err) =
   (let
-    i1 = Inf_aform_err p a1;
-    s1 = Sup_aform_err p a1;
-    i2 = Inf_aform_err p a2;
-    s2 = Sup_aform_err p a2
-  in if s1 < i2 then a1
-      else if s2 < i1 then a2
-      else ivl_err (min i1 i2) (min s1 s2))"
+    ivl1 = ivl_of_aform_err p a1;
+    ivl2 = ivl_of_aform_err p a2
+  in if upper ivl1 < lower ivl2 then a1
+      else if upper ivl2 < lower ivl1 then a2
+      else ivl_err (real_interval (min_interval ivl1 ivl2)))"
 
 definition "max_aform_err p a1 (a2::aform_err) =
   (let
-    i1 = Inf_aform_err p a1;
-    s1 = Sup_aform_err p a1;
-    i2 = Inf_aform_err p a2;
-    s2 = Sup_aform_err p a2
-   in if s1 < i2 then (a2)
-        else if s2 < i1 then (a1)
-        else ivl_err (max i1 i2) (max s1 s2))"
+    ivl1 = ivl_of_aform_err p a1;
+    ivl2 = ivl_of_aform_err p a2
+  in if upper ivl1 < lower ivl2 then a2
+      else if upper ivl2 < lower ivl1 then a1
+      else ivl_err (real_interval (max_interval ivl1 ivl2)))"
 
 
 subsection \<open>Approximate Min Range - Kind Of Trigonometric Functions\<close>
@@ -2079,30 +2087,26 @@ definition "range_reducer p l =
   then approx p (Pi * (Num (-2)) * (Floor (Num (l * Float 1 (-1)) / Pi))) []
   else Some 0)"
 
-lemmas approx_emptyD = approx[OF bounded_by_None[of Nil] sym, simplified]
+lemmas approx_emptyD = approx[OF bounded_by_None[of Nil], simplified]
 
 lemma range_reducerE:
-  assumes "range_reducer p l = Some (r, r')"
-  obtains n::int where "r \<le> n * (2 * pi)" "n * (2 * pi) \<le> r'"
+  assumes "range_reducer p l = Some ivl"
+  obtains n::int where "n * (2 * pi) \<in>\<^sub>r ivl"
 proof (cases "l \<ge> 0 \<and> l \<le> 2 * lb_pi p")
   case False
-  with assms have
-    "r \<le> - \<lfloor>l / (2 * pi)\<rfloor> * (2 * pi)"
-    "- \<lfloor>l / (2 * pi)\<rfloor> * (2 * pi) \<le> r'"
+  with assms have "- \<lfloor>l / (2 * pi)\<rfloor> * (2 * pi) \<in>\<^sub>r ivl"
     by (auto simp: range_reducer_def bind_eq_Some_conv inverse_eq_divide
         algebra_simps dest!: approx_emptyD)
   then show ?thesis ..
 next
-  case True then have "r \<le> real_of_int 0 * (2 * pi)" "real_of_int 0 * (2 * pi) \<le> r'" using assms
-    by (auto simp: range_reducer_def zero_prod_def)
+  case True then have "real_of_int 0 * (2 * pi) \<in>\<^sub>r ivl" using assms
+    by (auto simp: range_reducer_def zero_in_float_intervalI)
   then show ?thesis ..
 qed
 
 definition "range_reduce_aform_err p X = do {
-  let l = Inf_aform_err p X;
-  let u = Sup_aform_err p X;
-  (r, r') \<leftarrow> range_reducer p l;
-  Some (add_aform' p X (ivl_err (real_of_float r) (real_of_float r')))
+  r \<leftarrow> range_reducer p (lower (ivl_of_aform_err p X));
+  Some (add_aform' p X (ivl_err (real_interval r)))
 }"
 
 lemma range_reduce_aform_errE:
@@ -2111,16 +2115,16 @@ lemma range_reduce_aform_errE:
   assumes "range_reduce_aform_err p X = Some Y"
   obtains n::int where "x + n * (2 * pi) \<in> aform_err e Y"
 proof -
-  from assms obtain r r'
+  from assms obtain r
     where x: "x \<in> aform_err e X"
-     and r: "range_reducer p (Inf_aform_err p X) = Some (r, r')"
-     and Y:  "Y = add_aform' p X (ivl_err (real_of_float r) (real_of_float r'))"
+     and r: "range_reducer p (lower (ivl_of_aform_err p X)) = Some r"
+     and Y:  "Y = add_aform' p X (ivl_err (real_interval r))"
     by (auto simp: range_reduce_aform_err_def bind_eq_Some_conv mid_err_def split: prod.splits)
   from range_reducerE[OF r]
-  obtain n::int where "r \<le> n * (2 * pi)" "n * (2 * pi) \<le> r'"
+  obtain n::int where "n * (2 * pi) \<in>\<^sub>r r"
     by auto
-  then have "n * (2 * pi) \<in> aform_err e (ivl_err (real_of_float r) (real_of_float r'))"
-    by (auto simp: aform_val_def ac_simps divide_simps abs_real_def intro!: aform_errI)
+  then have "n * (2 * pi) \<in> aform_err e (ivl_err (real_interval r))"
+    by (auto simp: aform_val_def ac_simps divide_simps abs_real_def set_of_eq intro!: aform_errI)
   from add_aform'[OF e x this, of p]
   have "x + n * (2 * pi) \<in> aform_err e Y"
     by (auto simp: Y)
@@ -2130,13 +2134,14 @@ qed
 definition "min_range_mono p F DF l u X = do {
   let L = Num l;
   let U = Num u;
-  (a, _) \<leftarrow> approx p (Min (DF L) (DF U)) [];
+  aivl \<leftarrow> approx p (Min (DF L) (DF U)) [];
+  let a = lower aivl;
   let A = Num a;
   bivl \<leftarrow> approx p (Half (F L + F U - A * (L + U))) [];
   let (b, be) = mid_err bivl;
   let (B, Be) = (Num (float_of b), Num (float_of be));
-  (_, d) \<leftarrow> approx p ((Half (F U - F L - A * (U - L))) + Be) [];
-  Some (affine_unop p a b (real_of_float d) X)
+  divl \<leftarrow> approx p ((Half (F U - F L - A * (U - L))) + Be) [];
+  Some (affine_unop p a b (real_of_float (upper divl)) X)
 }"
 
 lemma min_range_mono:
@@ -2150,24 +2155,24 @@ lemma min_range_mono:
   assumes f'_le: "\<And>x. x \<in> {real_of_float l .. u} \<Longrightarrow> min (f' l) (f' u) \<le> f' x"
   shows "f x \<in> aform_err e Y"
 proof -
-  from assms obtain a bl bu du
-    where bl: "bl \<le> (f l + f u - a * (l + u)) / 2"
-      and bu: "(f l + f u - a * (l + u))/2 \<le> bu"
-      and Y: "Y = affine_unop p (a) ((bl + bu) / 2) (du) X"
-      and du: "(f u - f l - a * (u - l)) / 2 + (bu - bl) / 2 \<le> du"
+  from assms obtain a b be bivl divl
+    where bivl: "(f l + f u - a * (l + u))/2 \<in>\<^sub>r bivl"
+      and Y: "Y = affine_unop p a b (upper divl) X"
+      and du: "(f u - f l - a * (u - l)) / 2 + be \<in>\<^sub>r divl"
       and a: "a \<le> f' l" "a \<le> f' u"
-    by (auto simp: min_range_mono_def Let_def bind_eq_Some_conv mid_err_def
+      and b_def: "b = (lower bivl + upper bivl) / 2"
+      and be_def: "be = (upper bivl - lower bivl) / 2"
+    by (auto simp: min_range_mono_def Let_def bind_eq_Some_conv mid_err_def set_of_eq
+        simp del: eq_divide_eq_numeral1
         split: prod.splits if_splits dest!: approx_emptyD)
-  then obtain b be where b_def: "b = (bl + bu) / 2" and be_def: "be = (bu - bl) / 2"
-    by blast
   have diff_le: "real_of_float a \<le> f' y" if "real_of_float l \<le> y" "y \<le> u" for y
     using f'_le[of y] that a
     by auto
   have le_be: "\<bar>(f (l) + f (u) - a * (real_of_float l + u)) / 2 - b\<bar> \<le> be"
-    using bl bu
+    using bivl
     unfolding b_def be_def
-    by (auto simp: abs_real_def divide_simps)
-  have "\<bar>f x - (a * x + b)\<bar> \<le> du"
+    by (auto simp: abs_real_def divide_simps set_of_eq)
+  have "\<bar>f x - (a * x + b)\<bar> \<le> upper divl"
     apply (rule min_range_coeffs_ge)
         apply (rule \<open>l \<le> x\<close>)
        apply (rule \<open>x \<le> u\<close>)
@@ -2175,11 +2180,11 @@ proof -
     using diff_le apply force
     apply (rule order_trans[OF add_mono[OF order_refl]])
      apply (rule le_be)
-    using du bl bu
+    using bivl du
     unfolding b_def[symmetric] be_def[symmetric]
-    by auto
+    by (auto simp: set_of_eq)
   from affine_unop[where f=f and p = p, OF \<open>x \<in> _\<close> this e]
-  have "f x \<in> aform_err e (affine_unop p (real_of_float a) b du X)"
+  have "f x \<in> aform_err e (affine_unop p (real_of_float a) b (upper divl) X)"
     by (auto simp: Y)
   then show ?thesis
     by (simp add: Y b_def)
@@ -2188,13 +2193,14 @@ qed
 definition "min_range_antimono p F DF l u X = do {
   let L = Num l;
   let U = Num u;
-  (_, a) \<leftarrow> approx p (Max (DF L) (DF U)) [];
+  aivl \<leftarrow> approx p (Max (DF L) (DF U)) [];
+  let a = upper aivl;
   let A = Num a;
   bivl \<leftarrow> approx p (Half (F L + F U - A * (L + U))) [];
   let (b, be) = mid_err bivl;
   let (B, Be) = (Num (float_of b), Num (float_of be));
-  (_, d) \<leftarrow> approx p (Add (Half (F L - F U + A * (U - L))) Be) [];
-  Some (affine_unop p a b (real_of_float d) X)
+  divl \<leftarrow> approx p (Add (Half (F L - F U + A * (U - L))) Be) [];
+  Some (affine_unop p a b (real_of_float (upper divl)) X)
 }"
 
 lemma min_range_antimono:
@@ -2208,24 +2214,25 @@ lemma min_range_antimono:
   assumes f'_le: "\<And>x. x \<in> {real_of_float l .. u} \<Longrightarrow> f' x \<le> max (f' l) (f' u)"
   shows "f x \<in> aform_err e Y"
 proof -
-  from assms obtain a bl bu du
-    where bl: "bl \<le> (f l + f u - a * (l + u)) / 2"
-      and bu: "(f l + f u - a * (l + u))/2 \<le> bu"
-      and Y: "Y = affine_unop p (a) ((bl + bu) / 2) (du) X"
-      and du: "(f l - f u + a * (u - l)) / 2 + (bu - bl) / 2 \<le> du"
-      and a: "f' l \<le> a" "f' u \<le> a"
-    by (auto simp: min_range_antimono_def Let_def bind_eq_Some_conv mid_err_def
+  from assms obtain a b be aivl bivl divl
+    where bivl: "(f l + f u - real_of_float a * (l + u)) / 2 \<in>\<^sub>r bivl"
+    and Y: "Y = affine_unop p a b (real_of_float (upper divl)) X"
+    and du: "(f l - f u + a * (u - l)) / 2 + be \<in>\<^sub>r divl"
+    and a: "f' l \<le> a" "f' u \<le> a"
+    and a_def: "a = upper aivl"
+    and b_def: "b = (lower bivl + upper bivl) / 2"
+    and be_def: "be = (upper bivl - lower bivl) / 2"
+    by (auto simp: min_range_antimono_def Let_def bind_eq_Some_conv mid_err_def set_of_eq
+        simp del: eq_divide_eq_numeral1
         split: prod.splits if_splits dest!: approx_emptyD)
-  then obtain b be where b_def: "b = (bl + bu) / 2" and be_def: "be = (bu - bl) / 2"
-    by blast
   have diff_le: "f' y \<le> real_of_float a" if "real_of_float l \<le> y" "y \<le> u" for y
     using f'_le[of y] that a
     by auto
   have le_be: "\<bar>(f (l) + f (u) - a * (real_of_float l + u)) / 2 - b\<bar> \<le> be"
-    using bl bu
+    using bivl
     unfolding b_def be_def
-    by (auto simp: abs_real_def divide_simps)
-  have "\<bar>f x - (a * x + b)\<bar> \<le> du"
+    by (auto simp: abs_real_def divide_simps set_of_eq)
+  have "\<bar>f x - (a * x + b)\<bar> \<le> upper divl"
     apply (rule min_range_coeffs_le)
         apply (rule \<open>l \<le> x\<close>)
        apply (rule \<open>x \<le> u\<close>)
@@ -2233,11 +2240,11 @@ proof -
     using diff_le apply force
     apply (rule order_trans[OF add_mono[OF order_refl]])
      apply (rule le_be)
-    using du bl bu
+    using du bivl
     unfolding b_def[symmetric] be_def[symmetric]
-    by auto
+    by (auto simp: set_of_eq)
   from affine_unop[where f=f and p = p, OF \<open>x \<in> _\<close> this e]
-  have "f x \<in> aform_err e (affine_unop p (real_of_float a) b du X)"
+  have "f x \<in> aform_err e (affine_unop p (real_of_float a) b (upper divl) X)"
     by (auto simp: Y)
   then show ?thesis
     by (simp add: Y b_def)
@@ -2245,8 +2252,9 @@ qed
 
 definition "cos_aform_err p X = do {
   X \<leftarrow> range_reduce_aform_err p X;
-  let l = Inf_aform_err p X;
-  let u = Sup_aform_err p X;
+  let ivl = ivl_of_aform_err p X;
+  let l = lower ivl;
+  let u = upper ivl;
   let L = Num l;
   let U = Num u;
   if l \<ge> 0 \<and> u \<le> lb_pi p then
@@ -2254,8 +2262,7 @@ definition "cos_aform_err p X = do {
   else if l \<ge> ub_pi p \<and> u \<le> 2 * lb_pi p then
    min_range_mono p Cos (\<lambda>x. (Minus (Sin x))) l u X
   else do {
-    let (a, b) = (bnds_cos p l u);
-    Some (ivl_err a b)
+    Some (ivl_err (real_interval (cos_float_interval p ivl)))
   }
 }"
 
@@ -2272,19 +2279,21 @@ lemma cos_aform_err:
   assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
   shows "cos x \<in> aform_err e Y"
 proof -
-  from assms obtain X l u where
+  from assms obtain X ivl l u where
     X: "range_reduce_aform_err p X0 = Some X"
-    and l: "l = Inf_aform_err p X"
-    and u: "u = Sup_aform_err p X"
+    and ivl_def: "ivl = ivl_of_aform_err p X"
+    and l_def: "l = lower ivl"
+    and u_def: "u = upper ivl"
     by (auto simp: cos_aform_err_def bind_eq_Some_conv)
   from range_reduce_aform_errE[OF e x X]
   obtain n where xn: "x + real_of_int n * (2 * pi) \<in> aform_err e X"
     by auto
   define xn where "xn = x + n * (2 * pi)"
   with xn have xn: "xn \<in> aform_err e X" by auto
-  with l u have lxn: "l \<le> xn" and uxn: "xn \<le> u"
-    using Inf_Sup_aform_err[OF e, of X p]
-    by auto
+  from ivl_of_aform_err[OF e xn, of p, folded ivl_def]
+  have "xn \<in>\<^sub>r ivl" .
+  then have lxn: "l \<le> xn" and uxn: "xn \<le> u"
+    by (auto simp: l_def u_def set_of_eq)
   consider "l \<ge> 0" "u \<le> lb_pi p"
     | "l < 0 \<or> u > lb_pi p" "l \<ge> ub_pi p" "u \<le> 2 * lb_pi p"
     | "l < 0 \<or> u > lb_pi p" "l < ub_pi p \<or> u > 2 * lb_pi p"
@@ -2295,8 +2304,8 @@ proof -
     then have min_eq_Some: "min_range_antimono p Cos (\<lambda>x. Minus (Sin x)) l u X = Some Y"
       and bounds: "0 \<le> l" "u \<le> (lb_pi p)"
       using assms(2)
-      unfolding cos_aform_err_def X l u
-      by (auto simp: X l[symmetric] u[symmetric] split: prod.splits)
+      unfolding cos_aform_err_def X l_def u_def
+      by (auto simp: X Let_def simp flip: l_def u_def ivl_def  split: prod.splits)
     have bounds: "0 \<le> l" "u \<le> pi" using bounds pi_boundaries[of p] by auto
     have diff_le: "- sin y \<le> max (- sin (real_of_float l)) (- sin (real_of_float u))"
       if "real_of_float l \<le> y" "y \<le> real_of_float u" for y
@@ -2334,8 +2343,8 @@ proof -
     then have min_eq_Some: "min_range_mono p Cos (\<lambda>x. Minus (Sin x)) l u X = Some Y"
       and bounds: "ub_pi p \<le> l" "u \<le> 2 * lb_pi p"
       using assms(2)
-      unfolding cos_aform_err_def X l u
-      by (auto simp: X l[symmetric] u[symmetric] split: prod.splits)
+      unfolding cos_aform_err_def X
+      by (auto simp: X Let_def simp flip: l_def u_def ivl_def split: prod.splits)
     have bounds: "pi \<le> l" "u \<le> 2 * pi" using bounds pi_boundaries[of p] by auto
     have diff_le: "min (- sin (real_of_float l)) (- sin (real_of_float u)) \<le> - sin y"
       if "real_of_float l \<le> y" "y \<le> real_of_float u" for y
@@ -2372,23 +2381,24 @@ proof -
       by (simp add: )
   next
     case 3
-    then obtain l' u' where
-      "bnds_cos p l u = (l', u')"
-      "Y = ivl_err (real_of_float l') (real_of_float u')"
+    then obtain ivl' where
+      "cos_float_interval p ivl = ivl'"
+      "Y = ivl_err (real_interval ivl')"
       using assms(2)
-      unfolding cos_aform_err_def X l u
-      by (auto simp: X l[symmetric] u[symmetric] split: prod.splits)
-    with bnds_cos[of l' u' p, rule_format, of l u xn] lxn uxn
+      unfolding cos_aform_err_def X l_def u_def
+      by (auto simp: X simp flip: l_def u_def ivl_def split: prod.splits)
+    with cos_float_intervalI[OF \<open>xn \<in>\<^sub>r ivl\<close>, of p]
     show ?thesis
       by (auto simp: xn_def)
   qed
 qed
 
 definition "sqrt_aform_err p X = do {
-  let l = Inf_aform_err p X;
-  let u = Sup_aform_err p X;
+  let ivl = ivl_of_aform_err p X;
+  let l = lower ivl;
+  let u = upper ivl;
   if 0 < l then min_range_mono p Sqrt (\<lambda>x. Half (Inverse (Sqrt x))) l u X
-  else Some (ivl_err (lb_sqrt p l) (ub_sqrt p u))
+  else Some (ivl_err (real_interval (sqrt_float_interval p ivl)))
 }"
 
 lemma sqrt_aform_err:
@@ -2397,12 +2407,15 @@ lemma sqrt_aform_err:
   assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
   shows "sqrt x \<in> aform_err e Y"
 proof -
-  obtain l u where l: "l = Inf_aform_err p X"
-    and u: "u = Sup_aform_err p X"
+  obtain l u ivl
+    where ivl_def: "ivl = ivl_of_aform_err p X"
+    and l_def: "l = lower ivl"
+    and u_def: "u = upper ivl"
     by auto
-  from x l u have lx: "l \<le> x" and ux: "x \<le> u"
-    using Inf_Sup_aform_err[OF e, of X p]
-    by auto
+  from ivl_of_aform_err[OF e x, of p, folded ivl_def]
+  have ivl: "x \<in>\<^sub>r ivl" .
+  then have lx: "l \<le> x" and ux: "x \<le> u"
+    by (auto simp flip: ivl_def simp: l_def u_def set_of_eq)
   consider "l > 0" | "l \<le> 0"
     by arith
   then show ?thesis
@@ -2411,8 +2424,8 @@ proof -
     then have min_eq_Some: "min_range_mono p Sqrt (\<lambda>x. Half (Inverse (Sqrt x))) l u X = Some Y"
       and bounds: "0 < l"
       using assms(2)
-      unfolding sqrt_aform_err_def l u
-      by (auto simp: l[symmetric] u[symmetric] split: prod.splits if_splits)
+      unfolding sqrt_aform_err_def
+      by (auto simp: Let_def simp flip: l_def u_def ivl_def split: prod.splits)
     have "sqrt x \<in> aform_err e Y"
       apply (rule min_range_mono[OF x lx ux min_eq_Some e, where f'="\<lambda>x. 1 / (2 * sqrt x)"])
       subgoal by simp
@@ -2424,20 +2437,20 @@ proof -
       by (simp add: )
   next
     case 2
-    then have "Y = ivl_err (lb_sqrt p l) (ub_sqrt p u)"
+    then have "Y = ivl_err (real_interval (sqrt_float_interval p ivl))"
       using assms(2)
-      unfolding sqrt_aform_err_def l u
-      by (auto simp: l[symmetric] u[symmetric] split: prod.splits)
-    with bnds_sqrt[rule_format, OF conjI[OF refl], of x l u p] lx ux
+      unfolding sqrt_aform_err_def
+      by (auto simp: Let_def simp flip: ivl_def l_def u_def split: prod.splits)
+    with sqrt_float_intervalI[OF ivl]
     show ?thesis
-      by (auto simp: )
+      by (auto simp: set_of_eq)
   qed
 qed
 
 definition "ln_aform_err p X = do {
-  let l = Inf_aform_err p X;
-  let u = Sup_aform_err p X;
-  if 0 < l then min_range_mono p Ln inverse l u X
+  let ivl = ivl_of_aform_err p X;
+  let l = lower ivl;
+  if 0 < l then min_range_mono p Ln inverse l (upper ivl) X
   else None
 }"
 
@@ -2447,12 +2460,15 @@ lemma ln_aform_err:
   assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
   shows "ln x \<in> aform_err e Y"
 proof -
-  obtain l u where l: "l = Inf_aform_err p X"
-    and u: "u = Sup_aform_err p X"
+  obtain ivl l u
+    where l_def: "l = lower ivl"
+      and u_def: "u = upper ivl"
+      and ivl_def: "ivl = ivl_of_aform_err p X"
     by auto
-  from x l u have lx: "l \<le> x" and ux: "x \<le> u"
-    using Inf_Sup_aform_err[OF e, of X p]
-    by auto
+  from ivl_of_aform_err[OF e x, of p, folded ivl_def]
+  have "x \<in>\<^sub>r ivl" .
+  then have lx: "l \<le> x" and ux: "x \<le> u"
+    by (auto simp: set_of_eq l_def u_def)
   consider "l > 0" | "l \<le> 0"
     by arith
   then show ?thesis
@@ -2461,8 +2477,8 @@ proof -
     then have min_eq_Some: "min_range_mono p Ln inverse l u X = Some Y"
       and bounds: "0 < l"
       using assms(2)
-      unfolding ln_aform_err_def l u
-      by (auto simp: l[symmetric] u[symmetric] split: prod.splits if_splits)
+      unfolding ln_aform_err_def
+      by (auto simp: Let_def simp flip: ivl_def l_def u_def split: prod.splits if_splits)
     have "ln x \<in> aform_err e Y"
       apply (rule min_range_mono[OF x lx ux min_eq_Some e, where f'=inverse])
       subgoal by simp
@@ -2475,14 +2491,13 @@ proof -
   next
     case 2
     then show ?thesis using assms
-      by (auto simp: ln_aform_err_def Let_def l[symmetric])
+      by (auto simp: ln_aform_err_def Let_def l_def ivl_def)
   qed
 qed
 
 definition "exp_aform_err p X = do {
-  let l = Inf_aform_err p X;
-  let u = Sup_aform_err p X;
-  min_range_mono p Exp Exp l u X
+  let ivl = ivl_of_aform_err p X;
+  min_range_mono p Exp Exp (lower ivl) (upper ivl) X
 }"
 
 lemma exp_aform_err:
@@ -2491,16 +2506,19 @@ lemma exp_aform_err:
   assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
   shows "exp x \<in> aform_err e Y"
 proof -
-  obtain l u where l: "l = Inf_aform_err p X"
-    and u: "u = Sup_aform_err p X"
+  obtain l u ivl
+    where l_def: "l = lower ivl"
+      and u_def: "u = upper ivl"
+      and ivl_def: "ivl = ivl_of_aform_err p X"
     by auto
-  from x l u have lx: "l \<le> x" and ux: "x \<le> u"
-    using Inf_Sup_aform_err[OF e, of X p]
-    by auto
+  from ivl_of_aform_err[OF e x, of p, folded ivl_def]
+  have "x \<in>\<^sub>r ivl" .
+  then have lx: "l \<le> x" and ux: "x \<le> u"
+    by (auto simp: ivl_def l_def u_def set_of_eq)
   have min_eq_Some: "min_range_mono p Exp Exp l u X = Some Y"
     using assms(2)
-    unfolding exp_aform_err_def l u
-    by (auto simp: l[symmetric] u[symmetric] split: prod.splits if_splits)
+    unfolding exp_aform_err_def
+    by (auto simp: Let_def simp flip: ivl_def u_def l_def split: prod.splits if_splits)
   have "exp x \<in> aform_err e Y"
     apply (rule min_range_mono[OF x lx ux min_eq_Some e, where f'=exp])
     subgoal by simp
@@ -2576,10 +2594,11 @@ definition "power_aform_err p (X::aform_err) n =
       (Y', Y_err) = trunc_bound_pdevs p Y;
       t = tdev' p xs;
       Ye = truncate_up p (nxe * t);
-      (_, ERR) = the (approx p
+      err = the (approx p
         (Num (of_nat n) * Num xe * Abs (Num x0) ^\<^sub>e (n - 1) + 
         (Sum\<^sub>e (\<lambda>k. Num (of_nat (n choose k)) * Abs (Num x0) ^\<^sub>e (n - k) * (Num xe + Num (float_of t)) ^\<^sub>e k)
-          [2..<Suc n])) [])
+          [2..<Suc n])) []);
+      ERR = upper err
     in ((c, Y'), sum_list' p [ce, Y_err, Ye, real_of_float ERR]))"
 
 lemma bounded_by_Nil: "bounded_by [] []"
@@ -2587,13 +2606,12 @@ lemma bounded_by_Nil: "bounded_by [] []"
 
 lemma plain_floatarith_approx:
   assumes "plain_floatarith 0 f"
-  shows "interpret_floatarith f [] \<in>
-    {real_of_float (fst (the (approx p f []))) .. real_of_float (snd (the (approx p f [])))}"
+  shows "interpret_floatarith f [] \<in>\<^sub>r (the (approx p f []))"
 proof -
   from plain_floatarith_approx_not_None[OF assms(1), of Nil p]
-  obtain l u where "Some (l, u) = approx p f []"
+  obtain ivl where "approx p f [] = Some ivl"
     by auto
-  from this[symmetric] approx[OF bounded_by_Nil this]
+  from this approx[OF bounded_by_Nil this]
   show ?thesis
     by auto
 qed
@@ -2647,12 +2665,12 @@ proof -
       by (auto simp: x0_def xs_def xe_def xe'_def)
     then have xe_nonneg: "0 \<le> xe"
       by (auto simp: )
-  
+
     define t where "t = tdev' p xs"
     have t: "tdev xs \<le> t" "t \<in> float" by (auto simp add: t_def tdev'_le)
     then have t_nonneg: "0 \<le> t" using tdev_nonneg[of xs] by arith
     note t_pdevs = abs_pdevs_val_le_tdev[OF e, THEN order_trans, OF t(1)]
-  
+
     have rewr1: "{..n} = (insert 0 (insert 1 {2..n}))" using n by auto
     have "x = (pdevs_val e xs + xe') + x0"
       by (simp add: xe'_def aform_val_def)
@@ -2666,12 +2684,13 @@ proof -
       apply (simp add: algebra_simps)
       done
     also
-  
-    let ?ERR = "(Num (of_nat n) * Num (float_of xe) * Abs (Num (float_of x0)) ^\<^sub>e (n - 1) + 
+
+    let ?ERR = "(Num (of_nat n) * Num (float_of xe) * Abs (Num (float_of x0)) ^\<^sub>e (n - 1) +
           (Sum\<^sub>e (\<lambda>k. Num (of_nat (n choose k)) * Abs (Num (float_of x0)) ^\<^sub>e (n - k) *
             (Num (float_of xe) + Num (float_of t)) ^\<^sub>e k)
             [2..<Suc n]))"
-    define ERR where "ERR = snd (the (approx p ?ERR []))"
+    define err where "err = the (approx p ?ERR [])"
+    define ERR where "ERR = upper err"
     have ERR: "abs ?err \<le> ERR"
     proof -
       have err_aerr: "abs (?err) \<le> n * xe * abs x0 ^ (n - Suc 0) +
@@ -2690,17 +2709,18 @@ proof -
       from plain_floatarith_approx[OF this, of p]
       have "ERR \<ge> ?aerr"
         using n
-        by (auto simp: ERR_def sum_list_distinct_conv_sum_set rewr t x0_def algebra_simps)
+        by (auto simp: set_of_eq err_def ERR_def sum_list_distinct_conv_sum_set rewr t x0_def
+            algebra_simps)
       finally show ?thesis .
     qed
-  
+
     let ?x0n = "Num (float_of x0) ^\<^sub>e n"
     define C where "C = the (approx p ?x0n [])"
     have "plain_floatarith 0 ?x0n" by simp
     from plain_floatarith_approx[OF this, of p]
-    have C: "x0 ^ n \<in> {fst C .. snd C}"
-      by (auto simp: C_def x0_def)
-    
+    have C: "x0 ^ n \<in> {lower C .. upper C}"
+      by (auto simp: C_def x0_def set_of_eq)
+
     define c where "c = fst (mid_err C)"
     define ce where "ce = snd (mid_err C)"
     define ce' where "ce' = x0 ^ n - c"
@@ -2709,14 +2729,14 @@ proof -
       by (auto simp: ce'_def c_def ce_def abs_diff_le_iff mid_err_def divide_simps)
     have "x0 ^ n = c + ce'" by (simp add: ce'_def)
     also
-  
+
     let ?NX = "(Num (of_nat n) * (Num (float_of x0) ^\<^sub>e (n - 1)))"
     define NX where "NX = the (approx p ?NX [])"
     have "plain_floatarith 0 ?NX" by (simp add: times_floatarith_def)
     from plain_floatarith_approx[OF this, of p]
-    have NX: "n * x0 ^ (n - 1) \<in> {fst NX .. snd NX}"
-      by (auto simp: NX_def x0_def)
-    
+    have NX: "n * x0 ^ (n - 1) \<in> {lower NX .. upper NX}"
+      by (auto simp: NX_def x0_def set_of_eq)
+
     define nx where "nx = fst (mid_err NX)"
     define nxe where "nxe = snd (mid_err NX)"
     define nx' where "nx' = n * x0 ^ (n - 1) - nx"
@@ -2729,14 +2749,14 @@ proof -
       by (auto simp: Ye_def abs_mult intro!: truncate_up_le mult_mono nx t_pdevs)
     have "n * x0 ^ (n - Suc 0) = nx + nx'" by (simp add: nx'_def)
     also
-  
+
     define Y where "Y = scaleR_pdevs nx xs"
     have Y: "pdevs_val e Y = nx * pdevs_val e xs"
       by (simp add: Y_def)
     have "(nx + nx') * pdevs_val e xs = pdevs_val e Y + nx' * pdevs_val e xs"
       unfolding Y by (simp add: algebra_simps)
     also
-  
+
     define Y' where "Y' = fst (trunc_bound_pdevs p Y)"
     define Y_err where "Y_err = snd (trunc_bound_pdevs p Y)"
     have Y_err: "abs (- pdevs_val e (trunc_err_pdevs p Y)) \<le> Y_err"
@@ -2755,7 +2775,7 @@ proof -
       using n
       by (intro aform_errI)
         (auto simp: power_aform_err_def c_def Y'_def C_def Y_def ERR_def x0_def nx_def xs_def NX_def
-          ce_def Y_err_def Ye_def xe_def nxe_def t_def Let_def split_beta')
+          ce_def Y_err_def Ye_def xe_def nxe_def t_def Let_def split_beta' set_of_eq err_def)
   qed
 qed
 
@@ -2768,11 +2788,11 @@ definition "powr_aform_err p X A = (
       L \<leftarrow> ln_aform_err p X;
       exp_aform_err p (mult_aform' p A L)
     }
-    else approx_bin p (bnds_powr p) X A)"
+    else approx_bin p (powr_float_interval p) X A)"
 
-lemma interval_extension_powr: "interval_extension2 (bnds_powr p) (powr)"
-  using bnds_powr[of _ _ p]
-  by (force simp: interval_extension2_def)
+lemma interval_extension_powr: "interval_extension2 (powr_float_interval p) (powr)"
+  using powr_float_interval_eqI[of p]
+  by (auto simp: interval_extension2_def)
 
 theorem powr_aform_err:
   assumes x: "x \<in> aform_err e X"
@@ -2799,7 +2819,7 @@ proof cases
 next
   from x a have xa: "x \<in> aform_err e (fst X, snd X)" "a \<in> aform_err e (fst A, snd A)" by simp_all
   assume "\<not> Inf_aform_err p X > 0"
-  then have "approx_bin p (bnds_powr p) (fst X, snd X) (fst A, snd A) = Some Y"
+  then have "approx_bin p (powr_float_interval p) (fst X, snd X) (fst A, snd A) = Some Y"
     using Y by (auto simp: powr_aform_err_def)
   from approx_binE[OF interval_extension_powr xa this e]
   show "x powr a \<in> aform_err e Y" .
@@ -2834,12 +2854,13 @@ where
 | "approx_floatarith p (Abs a) vs =
     do {
       r \<leftarrow> approx_floatarith p a vs;
-      let i = Inf_aform_err p r;
-      let s = Sup_aform_err p r;
+      let ivl = ivl_of_aform_err p r;
+      let i = lower ivl;
+      let s = upper ivl;
       if i > 0 then Some r
       else if s < 0 then Some (apfst uminus_aform r)
       else do {
-        Some (ivl_err 0 (max (- i) \<bar>s\<bar>))
+        Some (ivl_err (real_interval (abs_interval ivl)))
       }
     }"
 | "approx_floatarith p (Min a b) vs =
@@ -2855,13 +2876,13 @@ where
       Some (max_aform_err p a1 a2)
     }"
 | "approx_floatarith p (Floor a) vs =
-    approx_un p (\<lambda>l u. Some (floor_fl l, floor_fl u)) (approx_floatarith p a vs)"
+    approx_un p (\<lambda>ivl. Some (floor_float_interval ivl)) (approx_floatarith p a vs)"
 | "approx_floatarith p (Cos a) vs =
     do {
       a \<leftarrow> approx_floatarith p a vs;
       cos_aform_err p a
     }"
-| "approx_floatarith p Pi vs = Some (ivl_err (lb_pi p) (ub_pi p))"
+| "approx_floatarith p Pi vs = Some (ivl_err (real_interval (pi_float_interval p)))"
 | "approx_floatarith p (Sqrt a) vs =
     do {
       a \<leftarrow> approx_floatarith p a vs;
@@ -2898,33 +2919,6 @@ where
 lemma uminus_aform_uminus_aform[simp]: "uminus_aform (uminus_aform z) = (z::'a::real_vector aform)"
   by (auto intro!: prod_eqI pdevs_eqI simp: uminus_aform_def)
 
-lemma interval_extension_cos: "interval_extension1 (\<lambda>l u. Some (bnds_cos p l u)) cos"
-  using bnds_cos
-  by (auto simp: interval_extension1_def) metis+
-
-lemma interval_extension_power: "interval_extension1 (\<lambda>l u. Some (float_power_bnds p n l u)) (\<lambda>x. x ^ n)"
-  using bnds_power
-  by (auto simp: interval_extension1_def bind_eq_Some_conv; metis)
-
-lemma interval_extension_ln: "interval_extension1 (\<lambda>l u. do {l' \<leftarrow> lb_ln p l; u' \<leftarrow> ub_ln p u; Some (l', u')}) ln"
-  using bnds_ln[of _ _ p]
-  by (auto simp del: lb_ln.simps ub_ln.simps simp: interval_extension1_def bind_eq_Some_conv; metis)
-
-lemma interval_extension_arctan: "interval_extension1 (\<lambda>l u. Some (lb_arctan p l, ub_arctan p u)) arctan"
-  using bnds_arctan
-  by (auto simp del: lb_arctan.simps ub_arctan.simps simp: interval_extension1_def; metis)
-
-lemma interval_extension_exp: "interval_extension1 (\<lambda>l u. Some (lb_exp p l, ub_exp p u)) exp"
-  using bnds_exp
-  by (auto simp: interval_extension1_def; metis)
-
-lemma interval_extension_sqrt: "interval_extension1 (\<lambda>l u. Some (lb_sqrt p l, ub_sqrt p u)) sqrt"
-  using bnds_sqrt
-  by (auto simp: interval_extension1_def; metis)
-
-lemma interval_extension_floor: "interval_extension1 (\<lambda>l u. Some (floor_fl l, floor_fl u)) floor"
-  by (auto simp: interval_extension1_def floor_fl.rep_eq floor_mono)
-
 lemma degree_aform_inverse_aform':
   "degree_aform X \<le> n \<Longrightarrow> degree_aform (fst (inverse_aform' p X)) \<le> n"
   unfolding inverse_aform'_def
@@ -2934,10 +2928,10 @@ lemma degree_aform_inverse_aform:
   assumes "inverse_aform p X = Some Y"
   assumes "degree_aform X \<le> n"
   shows "degree_aform (fst Y) \<le> n"
-  using assms 
+  using assms
   by (auto simp: inverse_aform_def Let_def degree_aform_inverse_aform' split: if_splits)
 
-lemma degree_aform_ivl_err[simp]: "degree_aform (fst (ivl_err a b)) = 0"
+lemma degree_aform_ivl_err[simp]: "degree_aform (fst (ivl_err a)) = 0"
   by (auto simp: ivl_err_def)
 
 lemma degree_aform_approx_bin:
@@ -3318,24 +3312,12 @@ lemma min_range_antimono_float:
   "min_range_antimono p f f' i g h = Some ((a, b), ba) \<Longrightarrow> ba \<in> float"
   by (auto simp: min_range_antimono_def Let_def bind_eq_Some_conv mid_err_def
       affine_unop_float split: prod.splits)
-  
+
 lemma min_range_mono_float:
   "min_range_mono p f f' i g h = Some ((a, b), ba) \<Longrightarrow> a \<in> float"
   "min_range_mono p f f' i g h = Some ((a, b), ba) \<Longrightarrow> ba \<in> float"
   by (auto simp: min_range_mono_def Let_def bind_eq_Some_conv mid_err_def
       affine_unop_float split: prod.splits)
-
-lemma ivl_err_float:
-  assumes "ivl_err x y = ((a, b), ba)" "x \<in> float" "y \<in> float" 
-  shows "a \<in> float" "ba \<in> float"
-proof -
-  from assms(1) have "a = (x + y) / 2" "ba = (y - x) / 2"
-    by (auto simp: ivl_err_def)
-  moreover have "(x + y) / 2 \<in> float" "(y - x) / 2 \<in> float"
-    using assms
-    by (auto intro!: )
-  ultimately show "a \<in> float" "ba \<in> float" by blast+
-qed
 
 lemma in_float_timesI: "a \<in> float" if "b = a * 2" "b \<in> float"
 proof -
@@ -3343,6 +3325,9 @@ proof -
   also have "\<dots> \<in> float" using that(2) by auto
   finally show ?thesis .
 qed
+
+lemma interval_extension_floor: "interval_extension1 (\<lambda>ivl. Some (floor_float_interval ivl)) floor"
+  by (auto simp: interval_extension1_def floor_float_intervalI)
 
 lemma approx_floatarith_Elem:
   assumes "approx_floatarith p ra VS = Some X"
@@ -3382,27 +3367,30 @@ next
   from Abs.IH[OF a]
   have mem: "interpret_floatarith fa vs \<in> aform_err e a"
     by auto
-  let ?i = "Inf_aform_err p a"
-  let ?s = "Sup_aform_err p a"
+  then have mem': "-interpret_floatarith fa vs \<in> aform_err e (apfst uminus_aform a)"
+    by (auto simp: aform_err_def)
+
+  let ?i = "lower (ivl_of_aform_err p a)"
+  let ?s = "upper (ivl_of_aform_err p a)"
   consider "?i > 0" | "?i \<le> 0" "?s < 0" | "?i \<le> 0" "?s \<ge> 0"
     by arith
   then show ?case
   proof cases
     case hyps: 1
     then show ?thesis
-      using Abs.prems mem Inf_Sup_aform_err[OF e, of a p]
-      by (auto simp: a)
+      using Abs.prems mem ivl_of_aform_err[OF e mem, of p]
+      by (auto simp: a set_of_eq)
   next
     case hyps: 2
     then show ?thesis
-      using Abs.prems mem Inf_Sup_aform_err[OF e, of "apfst uminus_aform a" p]
-          Inf_Sup_aform_err[OF e, of "a" p]
-      by (cases a) (auto simp: a abs_real_def intro!: aform_err_uminus_aform[OF e])
+      using Abs.prems mem ivl_of_aform_err[OF e mem, of p]
+          ivl_of_aform_err[OF e mem', of p]
+      by (cases a) (auto simp: a abs_real_def set_of_eq intro!: aform_err_uminus_aform[OF e])
   next
     case hyps: 3
     then show ?thesis
-      using Abs.prems mem Inf_Sup_aform_err[OF e, of a p]
-      by (auto simp: a abs_real_def max_def Let_def)
+      using Abs.prems mem ivl_of_aform_err[OF e mem, of p]
+      by (auto simp: a abs_real_def max_def Let_def set_of_eq)
   qed
 next
   case (Max ra1 ra2)
@@ -3414,33 +3402,15 @@ next
   have mem: "interpret_floatarith ra1 vs \<in> aform_err e a"
     "interpret_floatarith ra2 vs \<in> aform_err e b"
     by auto
-  let ?ia = "Inf_aform_err p a"
-  let ?sa = "Sup_aform_err p a"
-  let ?ib = "Inf_aform_err p b"
-  let ?sb = "Sup_aform_err p b"
+  let ?ia = "lower (ivl_of_aform_err p a)"
+  let ?sa = "upper (ivl_of_aform_err p a)"
+  let ?ib = "lower (ivl_of_aform_err p b)"
+  let ?sb = "upper (ivl_of_aform_err p b)"
   consider "?sa < ?ib" | "?sa \<ge> ?ib" "?sb < ?ia" | "?sa \<ge> ?ib" "?sb \<ge> ?ia"
     by arith
   then show ?case
-  proof cases
-    case hyps: 1
-    then show ?thesis
-      using Max.prems mem Inf_Sup_aform_err[OF e, of a p] Inf_Sup_aform_err[OF e, of b p]
-      by (force simp: a b max_def max_aform_err_def)
-  next
-    case hyps: 2
-    then show ?thesis
-      using Max.prems mem Inf_Sup_aform_err[OF e, of a p] Inf_Sup_aform_err[OF e, of b p]
-          Inf_Sup_aform_err[OF e, of "a" p]
-      by (force simp: a b max_def max_aform_err_def)
-  next
-    case hyps: 3
-    then show ?thesis
-      using Max.prems mem
-      apply (simp add: a b max_aform_err_def)
-      apply auto
-      using Inf_Sup_aform_err[OF e, of a p] Inf_Sup_aform_err[OF e, of b p]
-      by (auto simp: max_def)
-  qed
+    using Max.prems mem ivl_of_aform_err[OF e mem(1), of p] ivl_of_aform_err[OF e mem(2), of p]
+    by cases (auto simp: a b max_def max_aform_err_def set_of_eq)
 next
   case (Min ra1 ra2)
   from Min.prems
@@ -3451,36 +3421,18 @@ next
   have mem: "interpret_floatarith ra1 vs \<in> aform_err e a"
     "interpret_floatarith ra2 vs \<in> aform_err e b"
     by auto
-  let ?ia = "Inf_aform_err p a"
-  let ?sa = "Sup_aform_err p a"
-  let ?ib = "Inf_aform_err p b"
-  let ?sb = "Sup_aform_err p b"
+  let ?ia = "lower (ivl_of_aform_err p a)"
+  let ?sa = "upper (ivl_of_aform_err p a)"
+  let ?ib = "lower (ivl_of_aform_err p b)"
+  let ?sb = "upper (ivl_of_aform_err p b)"
   consider "?sa < ?ib" | "?sa \<ge> ?ib" "?sb < ?ia" | "?sa \<ge> ?ib" "?sb \<ge> ?ia"
     by arith
   then show ?case
-  proof cases
-    case hyps: 1
-    then show ?thesis
-      using Min.prems mem Inf_Sup_aform_err[OF e, of a p] Inf_Sup_aform_err[OF e, of b p]
-      by (force simp: a b min_def min_aform_err_def)
-  next
-    case hyps: 2
-    then show ?thesis
-      using Min.prems mem Inf_Sup_aform_err[OF e, of a p] Inf_Sup_aform_err[OF e, of b p]
-        Inf_Sup_aform_err[OF e, of "a" p]
-      by (force simp: a b min_def min_aform_err_def)
-  next
-    case hyps: 3
-    then show ?thesis
-      using Min.prems mem
-      apply (simp add: a b min_aform_err_def)
-      apply auto
-      using Inf_Sup_aform_err[OF e, of a p] Inf_Sup_aform_err[OF e, of b p]
-      by (auto simp: min_def)
-  qed
+    using Min.prems mem ivl_of_aform_err[OF e mem(1), of p] ivl_of_aform_err[OF e mem(2), of p]
+    by cases (auto simp: a b min_def min_aform_err_def set_of_eq)
 next
   case Pi
-  then show ?case using pi_boundaries
+  then show ?case using pi_float_interval
     by (auto simp: )
 next
   case (Sqrt ra)

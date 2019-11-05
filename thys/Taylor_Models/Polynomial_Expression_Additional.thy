@@ -1,5 +1,5 @@
 theory Polynomial_Expression_Additional
-  imports Interval_Approximation
+  imports
     "Polynomial_Expression"
     "HOL-Decision_Procs.Approximation"
 begin

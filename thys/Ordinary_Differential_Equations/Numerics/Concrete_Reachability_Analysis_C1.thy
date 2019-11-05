@@ -674,6 +674,10 @@ concrete_definition tolerate_error1_impl for dd Yi Ei uses tolerate_error1_impl
 lemmas tolerate_error1_refine[autoref_rules] = tolerate_error1_impl.refine[autoref_higher_order_rule(1)]
 sublocale autoref_op_pat_def tolerate_error1 .
 
+lemma lower_impl[autoref_rules]: "(lower, lower) \<in> Id \<rightarrow> Id"
+  and upper_impl[autoref_rules]: "(lower, lower) \<in> Id \<rightarrow> Id"
+  by auto
+
 schematic_goal step_adapt_time_impl:
   assumes [autoref_rules_raw]: "DIM_precond TYPE('n::enum rvec) E"
   assumes [autoref_rules_raw]: "ncc_precond TYPE('n rvec)"
