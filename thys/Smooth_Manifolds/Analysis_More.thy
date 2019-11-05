@@ -426,12 +426,12 @@ lemma support_on_nonneg_sum:
 lemma support_on_nonneg_sum_subset:
   "support_on X (\<lambda>x. \<Sum>i\<in>S. f i x) \<subseteq> (\<Union>i\<in>S. support_on X (f i))"
   for f::"_\<Rightarrow>_\<Rightarrow>_::ordered_comm_monoid_add"
-  by (cases "finite S") (auto simp: support_on_def dest!: sum_not_0)
+by (cases "finite S") (auto simp: support_on_def, meson sum.neutral)
 
 lemma support_on_nonneg_sum_subset':
   "support_on X (\<lambda>x. \<Sum>i\<in>S x. f i x) \<subseteq> (\<Union>x\<in>X. (\<Union>i\<in>S x. support_on X (f i)))"
   for f::"_\<Rightarrow>_\<Rightarrow>_::ordered_comm_monoid_add"
-  by (auto simp: support_on_def dest!: sum_not_0)
+  by (auto simp: support_on_def, meson sum.neutral)
 
 subsection \<open>Final topology (Bourbaki, General Topology I, 4.)\<close>
 

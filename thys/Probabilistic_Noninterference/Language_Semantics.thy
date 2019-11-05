@@ -699,7 +699,7 @@ proof-
   have "?L \<le> sum (\<lambda> n::nat. 1/?N) {..< ?N}"
   unfolding WtFT_def apply(rule sum_mono2) by auto
   also have "... \<le> 1"
-  by (metis div_by_0 le_cases neq0_conv not_one_le_zero of_nat_0 sum_not_0 sum_equal)
+  by (metis div_by_0 le_cases neq0_conv not_one_le_zero of_nat_0 sum.neutral sum_equal)
   finally show ?thesis .
 qed
 

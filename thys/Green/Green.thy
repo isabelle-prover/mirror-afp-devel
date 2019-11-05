@@ -2001,7 +2001,7 @@ proof -
     then have "\<forall>x\<in>\<H>. (case x of (k, g) \<Rightarrow> (k::int) * line_integral F {j} g) = 0"
       by auto
     then show "(\<Sum>x\<in>\<H>. case x of (k, g) \<Rightarrow> k * line_integral F {j} g) = 0"
-      using sum_not_0 by blast
+      by simp
   qed
   then have "one_chain_line_integral F {j} \<gamma> =
                            one_chain_line_integral F {j} (two_chain_vertical_boundary two_chain)"
