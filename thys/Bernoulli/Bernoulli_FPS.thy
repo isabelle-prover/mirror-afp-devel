@@ -10,9 +10,152 @@ section \<open>Connection of Bernoulli numbers to formal power series\<close>
 theory Bernoulli_FPS
   imports 
     Bernoulli 
-    "HOL-Computational_Algebra.Formal_Power_Series"
+    "HOL-Computational_Algebra.Computational_Algebra"
+    "HOL-Number_Theory.Number_Theory"
     "HOL-Library.Stirling"
 begin
+
+subsection \<open>Preliminaries\<close>
+
+(* TODO: Move? *)
+context semiring_gcd
+begin
+
+lemma gcd_add_dvd_right1: "a dvd b \<Longrightarrow> gcd a (b + c) = gcd a c"
+  by (elim dvdE) (simp add: gcd_add_mult mult.commute[of a])
+
+lemma gcd_add_dvd_right2: "a dvd c \<Longrightarrow> gcd a (b + c) = gcd a b"
+  using gcd_add_dvd_right1[of a c b] by (simp add: add_ac)
+
+lemma gcd_add_dvd_left1: "a dvd b \<Longrightarrow> gcd (b + c) a = gcd c a"
+  using gcd_add_dvd_right1[of a b c] by (simp add: gcd.commute)
+
+lemma gcd_add_dvd_left2: "a dvd c \<Longrightarrow> gcd (b + c) a = gcd b a"
+  using gcd_add_dvd_right2[of a c b] by (simp add: gcd.commute)
+
+end
+
+context ring_gcd
+begin
+
+lemma gcd_diff_dvd_right1: "a dvd b \<Longrightarrow> gcd a (b - c) = gcd a c"
+  using gcd_add_dvd_right1[of a b "-c"] by simp
+
+lemma gcd_diff_dvd_right2: "a dvd c \<Longrightarrow> gcd a (b - c) = gcd a b"
+  using gcd_add_dvd_right2[of a "-c" b] by simp
+
+lemma gcd_diff_dvd_left1: "a dvd b \<Longrightarrow> gcd (b - c) a = gcd c a"
+  using gcd_add_dvd_left1[of a b "-c"] by simp
+
+lemma gcd_diff_dvd_left2: "a dvd c \<Longrightarrow> gcd (b - c) a = gcd b a"
+  using gcd_add_dvd_left2[of a "-c" b] by simp
+
+end
+
+lemma cong_int: "[a = b] (mod m) \<Longrightarrow> [int a = int b] (mod m)"
+  by (simp add: cong_int_iff)
+
+lemma Rats_int_div_natE:
+  assumes "(x :: 'a :: field_char_0) \<in> \<rat>"
+  obtains m :: int and n :: nat where "n > 0" and "x = of_int m / of_nat n" and "coprime m n"
+proof -
+  from assms obtain r where [simp]: "x = of_rat r"
+    by (auto simp: Rats_def)
+  obtain a b where [simp]: "r = Rat.Fract a b" and ab: "b > 0" "coprime a b"
+    by (cases r)
+  from ab show ?thesis
+    by (intro that[of "nat b" a]) (auto simp: of_rat_rat)
+qed
+
+lemma sum_in_Ints: "(\<And>x. x \<in> A \<Longrightarrow> f x \<in> \<int>) \<Longrightarrow> sum f A \<in> \<int>"
+  by (induction A rule: infinite_finite_induct) auto
+
+lemma Ints_real_of_nat_divide: "b dvd a \<Longrightarrow> real a / real b \<in> \<int>"
+  by auto
+
+
+lemma product_dvd_fact:
+  assumes "a > 1" "b > 1" "a = b \<longrightarrow> a > 2"
+  shows   "(a * b) dvd fact (a * b - 1)"
+proof (cases "a = b")
+  case False
+  have "a * 1 < a * b" and "1 * b < a * b"
+    using assms by (intro mult_strict_left_mono mult_strict_right_mono; simp)+
+  hence ineqs: "a \<le> a * b - 1" "b \<le> a * b - 1"
+    by linarith+
+  from False have "a * b = \<Prod>{a,b}" by simp
+  also have "\<dots> dvd \<Prod>{1..a * b - 1}"
+    using assms ineqs by (intro prod_dvd_prod_subset) auto
+  finally show ?thesis by (simp add: fact_prod)
+next
+  case [simp]: True
+  from assms have "a > 2" by auto
+  hence "a * 2 < a * b" using assms by (intro mult_strict_left_mono; simp)
+  hence *: "2 * a \<le> a * b - 1" by linarith
+  have "a * a dvd (2 * a) * a" by simp
+  also have "\<dots> = \<Prod>{2*a, a}" using assms by auto
+  also have "\<dots> dvd \<Prod>{1..a * b - 1}"
+    using assms * by (intro prod_dvd_prod_subset) auto
+  finally show ?thesis by (simp add: fact_prod)
+qed
+
+lemma composite_imp_factors_nat:
+  assumes "m > 1" "\<not>prime (m::nat)"
+  shows   "\<exists>n k. m = n * k \<and> 1 < n \<and> n < m \<and> 1 < k \<and> k < m"
+proof -
+  from assms have "\<not>irreducible m"
+    by (simp flip: prime_elem_iff_irreducible )
+  then obtain a where a: "a dvd m" "\<not>m dvd a" "a \<noteq> 1"
+    using assms by (auto simp: irreducible_altdef)
+  then obtain b where [simp]: "m = a * b"
+    by auto
+  from a assms have "a \<noteq> 0" "b \<noteq> 0" "b \<noteq> 1"
+    by (auto intro!: Nat.gr0I)
+  with a have "a > 1" "b > 1" by linarith+
+  moreover from this and a have "a < m" "b < m"
+    by auto
+  ultimately show ?thesis using \<open>m = a * b\<close>
+    by blast
+qed
+
+text \<open>
+  This lemma describes what the numerator and denominator of a finite subseries of the
+  harmonic series are when it is written as a single fraction.
+\<close>
+lemma sum_inverses_conv_fraction:
+  fixes f :: "'a \<Rightarrow> 'b :: field"
+  assumes "\<And>x. x \<in> A \<Longrightarrow> f x \<noteq> 0" "finite A"
+  shows "(\<Sum>x\<in>A. 1 / f x) = (\<Sum>x\<in>A. \<Prod>y\<in>A-{x}. f y) / (\<Prod>x\<in>A. f x)"
+proof -
+  have "(\<Sum>x\<in>A. (\<Prod>y\<in>A. f y) / f x) = (\<Sum>x\<in>A. \<Prod>y\<in>A-{x}. f y)"
+    using prod.remove[of A _ f] assms by (intro sum.cong refl) (auto simp: field_simps)
+  thus ?thesis
+    using assms by (simp add: field_simps sum_distrib_right sum_distrib_left)
+qed  
+
+text \<open>
+  If all terms in the subseries are primes, this fraction is automatically on lowest terms.
+\<close>
+lemma sum_prime_inverses_fraction_coprime:
+  fixes f :: "'a \<Rightarrow> nat"
+  assumes "finite A" and primes: "\<And>x. x \<in> A \<Longrightarrow> prime (f x)" and inj: "inj_on f A"
+  defines "a \<equiv> (\<Sum>x\<in>A. \<Prod>y\<in>A-{x}. f y)"
+  shows   "coprime a (\<Prod>x\<in>A. f x)"
+proof (intro prod_coprime_right)
+  fix x assume x: "x \<in> A"
+  have "a = (\<Prod>y\<in>A-{x}. f y) + (\<Sum>y\<in>A-{x}. \<Prod>z\<in>A-{y}. f z)"
+    unfolding a_def using \<open>finite A\<close> and x by (rule sum.remove)
+  also have "gcd \<dots> (f x) = gcd (\<Prod>y\<in>A-{x}. f y) (f x)"
+    using \<open>finite A\<close> and x by (intro gcd_add_dvd_left2 dvd_sum dvd_prodI) auto
+  also from x primes inj have "coprime (\<Prod>y\<in>A-{x}. f y) (f x)"
+    by (intro prod_coprime_left) (auto intro!: primes_coprime simp: inj_on_def)
+  hence "gcd (\<Prod>y\<in>A-{x}. f y) (f x) = 1"
+    by simp
+  finally show "coprime a (f x)"
+    by (simp only: coprime_iff_gcd_eq_1)
+qed
+(* END TODO *)
+
   
 text \<open>
   In the following, we will prove the correctness of the 
@@ -400,6 +543,307 @@ proof -
   also have "fact n * \<dots> $ n = bernoulli n" by simp
   finally show ?thesis ..
 qed
+
+corollary%important bernoulli_conv_Stirling:
+  "bernoulli n = (\<Sum>k\<le>n. (-1) ^ k * fact k / real (k + 1) * Stirling n k)"
+proof -
+  have "(\<Sum>k\<le>n. (-1) ^ k * fact k / (k + 1) * Stirling n k) =
+          (\<Sum>k\<le>n. \<Sum>i\<le>k. (-1) ^ i * (k choose i) * i ^ n / real (k + 1))"
+  proof (intro sum.cong, goal_cases)
+    case (2 k)
+    have "(-1) ^ k * fact k / (k + 1) * Stirling n k =
+            (\<Sum>j\<le>k. (-1) ^ k * (-1) ^ (k - j) *  (k choose j) * j ^ n / (k + 1))"
+      by (simp add: Stirling_closed_form sum_distrib_left sum_divide_distrib mult_ac)
+    also have "\<dots> = (\<Sum>j\<le>k. (-1) ^ j *  (k choose j) * j ^ n / (k + 1))"
+      by (intro sum.cong) (auto simp: uminus_power_if split: if_splits)
+    finally show ?case .
+  qed auto
+  also have "\<dots> = bernoulli n"
+    by (simp add: bernoulli_altdef)
+  finally show ?thesis ..
+qed
+
+
+subsection \<open>Von Staudt--Clausen Theorem\<close>
+
+lemma vonStaudt_Clausen_lemma:
+  assumes "n > 0" and "prime p"
+  shows   "[(\<Sum>m<p. (-1) ^ m * ((p - 1) choose m) * m ^ (2*n)) =
+              (if (p - 1) dvd (2 * n) then -1 else 0)] (mod p)"
+proof (cases "(p - 1) dvd (2 * n)")
+  case True
+  have cong_power_2n: "[m ^ (2 * n) = 1] (mod p)" if "m > 0" "m < p" for m
+  proof -
+    from True obtain q where "2 * n = (p - 1) * q"
+      by blast
+    hence "[m ^ (2 * n) = (m ^ (p - 1)) ^ q] (mod p)"
+      by (simp add: power_mult)
+    also have "[(m ^ (p - 1)) ^ q = 1 ^ q] (mod p)"
+      using assms \<open>m > 0\<close> \<open>m < p\<close> by (intro cong_pow fermat_theorem) auto
+    finally show ?thesis by simp
+  qed
+
+  have "(\<Sum>m<p. (-1)^m * ((p - 1) choose m) * m ^ (2*n)) =
+          (\<Sum>m\<in>{0<..<p}. (-1)^m * ((p - 1) choose m) * m ^ (2*n))"
+    using \<open>n > 0\<close> by (intro sum.mono_neutral_right) auto
+  also have "[\<dots> = (\<Sum>m\<in>{0<..<p}. (-1)^m * ((p - 1) choose m) * int 1)] (mod p)"
+    by (intro cong_sum cong_mult cong_power_2n cong_int) auto
+  also have "(\<Sum>m\<in>{0<..<p}. (-1)^m * ((p - 1) choose m) * int 1) =
+               (\<Sum>m\<in>insert 0 {0<..<p}. (-1)^m * ((p - 1) choose m)) - 1"
+    by (subst sum.insert) auto
+  also have "insert 0 {0<..<p} = {..p-1}"
+    using assms prime_gt_0_nat[of p] by auto
+  also have "(\<Sum>m\<le>p-1. (-1)^m * ((p - 1) choose m)) = 0"
+    using prime_gt_1_nat[of p] assms by (subst choose_alternating_sum) auto
+  finally show ?thesis using True by simp
+next
+  case False
+  define n' where "n' = (2 * n) mod (p - 1)"
+  from assms False have "n' > 0"
+    by (auto simp: n'_def dvd_eq_mod_eq_0)
+  from False have "p \<noteq> 2" by auto
+  with assms have "odd p"
+    using prime_prime_factor two_is_prime_nat by blast
+    
+  have cong_pow_2n: "[m ^ (2*n) = m ^ n'] (mod p)" if "m > 0" "m < p" for m
+  proof -
+    from assms and that have "coprime p m"
+      by (intro prime_imp_coprime) auto
+    have "[2 * n = n'] (mod (p - 1))"
+      by (simp add: n'_def)
+    moreover have "ord p m dvd (p - 1)"
+      using order_divides_totient[of p m] \<open>coprime p m\<close> assms by (auto simp: totient_prime)
+    ultimately have "[2 * n = n'] (mod ord p m)"
+      by (rule cong_dvd_modulus_nat)
+    thus ?thesis
+      using \<open>coprime p m\<close> by (subst order_divides_expdiff) auto
+  qed
+
+  have "(\<Sum>m<p. (-1)^m * ((p - 1) choose m) * m ^ (2*n)) =
+          (\<Sum>m\<in>{0<..<p}. (-1)^m * ((p - 1) choose m) * m ^ (2*n))"
+    using \<open>n > 0\<close> by (intro sum.mono_neutral_right) auto
+  also have "[\<dots> = (\<Sum>m\<in>{0<..<p}. (-1)^m * ((p - 1) choose m) * m ^ n')] (mod p)"
+    by (intro cong_sum cong_mult cong_pow_2n cong_int) auto
+  also have "(\<Sum>m\<in>{0<..<p}. (-1)^m * ((p - 1) choose m) * m ^ n') =
+               (\<Sum>m\<le>p-1. (-1)^m * ((p - 1) choose m) * m ^ n')"
+    using \<open>n' > 0\<close> by (intro sum.mono_neutral_left) auto
+  also have "\<dots> = (\<Sum>m\<le>p-1. (-1)^(p - Suc m) * ((p - 1) choose m) * m ^ n')"
+    using \<open>n' > 0\<close> assms \<open>odd p\<close> by (intro sum.cong) (auto simp: uminus_power_if)
+  also have "\<dots> = 0"
+  proof -
+    have "of_int (\<Sum>m\<le>p-1. (-1)^(p - Suc m) * ((p - 1) choose m) * m ^ n') =
+            real (Stirling n' (p - 1)) * fact (p - 1)"
+      by (simp add: Stirling_closed_form)
+    also have "n' < p - 1"
+      using assms prime_gt_1_nat[of p] by (auto simp: n'_def)
+    hence "Stirling n' (p - 1) = 0"
+      by simp
+    finally show ?thesis by linarith
+  qed
+  finally show ?thesis using False by simp
+qed
+ 
+text \<open>
+  The Von Staudt--Clausen theorem states that for \<open>n > 0\<close>,
+    \[B_{2n} + \sum\limits_{p - 1\mid 2n} \frac{1}{p}\]
+  is an integer.
+\<close>
+theorem vonStaudt_Clausen:
+  assumes "n > 0"
+  shows   "bernoulli (2 * n) + (\<Sum>p | prime p \<and> (p - 1) dvd (2 * n). 1 / real p) \<in> \<int>"
+    (is "_ + ?P \<in> \<int>")
+proof -
+  define P :: "nat \<Rightarrow> real"
+    where "P = (\<lambda>m. if prime (m + 1) \<and> m dvd (2 * n) then 1 / (m + 1) else 0)"  
+  define P' :: "nat \<Rightarrow> int"
+    where "P' = (\<lambda>m. if prime (m + 1) \<and> m dvd (2 * n) then 1 else 0)"
+
+  have "?P = (\<Sum>p | prime (p + 1) \<and> p dvd (2 * n). 1 / real (p + 1))"
+    by (rule sum.reindex_bij_witness[of _ "\<lambda>p. p + 1" "\<lambda>p. p - 1"])
+       (use prime_gt_0_nat in auto)
+  also have "\<dots> = (\<Sum>m\<le>2*n. P m)"
+    using \<open>n > 0\<close> by (intro sum.mono_neutral_cong_left) (auto simp: P_def dest!: dvd_imp_le)
+  finally have "bernoulli (2 * n) + ?P =
+                  (\<Sum>m\<le>2*n. (-1)^m * (of_int (fact m * Stirling (2*n) m) / (m + 1)) + P m)"
+    by (simp add: sum.distrib bernoulli_conv_Stirling sum_divide_distrib algebra_simps)
+  also have "\<dots> = (\<Sum>m\<le>2*n. of_int ((-1)^m * fact m * Stirling (2*n) m + P' m) / (m + 1))"
+    by (intro sum.cong) (auto simp: P'_def P_def field_simps)
+  also have "\<dots> \<in> \<int>"
+  proof (rule sum_in_Ints, goal_cases)
+    case (1 m)
+    have "m = 0 \<or> m = 3 \<or> prime (m + 1) \<or> (\<not>prime (m + 1) \<and> m > 3)"
+      by (cases "m = 1"; cases "m = 2") (auto simp flip: numeral_2_eq_2)
+    then consider "m = 0" | "m = 3" | "prime (m + 1)" | "\<not>prime (m + 1)" "m > 3"
+      by blast
+    thus ?case
+    proof cases
+      assume "m = 0"
+      thus ?case by auto
+    next
+      assume [simp]: "m = 3"
+      have "real_of_int (fact m * Stirling (2 * n) m) =
+              real_of_int (9 ^ n + 3 - 3 * 4 ^ n)"
+        using \<open>n > 0\<close> by (auto simp: P'_def fact_numeral Stirling_closed_form power_mult
+                                     atMost_nat_numeral binomial_fact zero_power)
+      hence "int (fact m * Stirling (2 * n) m) = 9 ^ n + 3 - 3 * 4 ^ n"
+        by linarith
+      also have "[\<dots> = 1 ^ n + (-1) - 3 * 0 ^ n] (mod 4)"
+        by (intro cong_add cong_diff cong_mult cong_pow) (auto simp: cong_def)
+      finally have dvd: "4 dvd int (fact m * Stirling (2 * n) m)"
+        using \<open>n > 0\<close> by (simp add: cong_0_iff zero_power)
+
+      have "real_of_int ((- 1) ^ m * fact m * Stirling (2 * n) m + P' m) / (m + 1) =
+              -(real_of_int (int (fact m * Stirling (2 * n) m)) / real_of_int 4)"
+        using \<open>n > 0\<close> by (auto simp: P'_def)
+      also have "\<dots> \<in> \<int>"
+        by (intro Ints_minus of_int_divide_in_Ints dvd)
+      finally show ?case . 
+    next
+      assume composite: "\<not>prime (m + 1)" and "m > 3"
+      obtain a b where ab: "a * b = m + 1" "a > 1" "b > 1"
+        using \<open>m > 3\<close> composite composite_imp_factors_nat[of "m + 1"] by auto
+      have "a = b \<longrightarrow> a > 2"
+      proof
+        assume "a = b"
+        hence "a ^ 2 > 2 ^ 2"
+          using \<open>m > 3\<close> and ab by (auto simp: power2_eq_square)
+        thus "a > 2" 
+          using power_less_imp_less_base by blast
+      qed
+      hence dvd: "(m + 1) dvd fact m"
+        using product_dvd_fact[of a b] ab by auto
+
+      have "real_of_int ((- 1) ^ m * fact m * Stirling (2 * n) m + P' m) / real (m + 1) =
+              real_of_int ((- 1) ^ m * Stirling (2 * n) m) * (real (fact m) / (m + 1))"
+        using composite by (auto simp: P'_def)
+      also have "\<dots> \<in> \<int>"
+        by (intro Ints_mult Ints_real_of_nat_divide dvd) auto
+      finally show ?case .
+    next
+      assume prime: "prime (m + 1)"
+      have "real_of_int ((-1) ^ m * fact m * int (Stirling (2 * n) m)) =
+              (\<Sum>j\<le>m. (-1) ^ m * (-1) ^ (m - j) * (m choose j) * real_of_int j ^ (2 * n))"
+        by (simp add: Stirling_closed_form sum_divide_distrib sum_distrib_left mult_ac)
+      also have "\<dots> = real_of_int (\<Sum>j\<le>m. (-1) ^ j * (m choose j) * j ^ (2 * n))"
+        unfolding of_int_sum by (intro sum.cong) (auto simp: uminus_power_if)
+      finally have "(-1) ^ m * fact m * int (Stirling (2 * n) m) =
+                      (\<Sum>j\<le>m. (-1) ^ j * (m choose j) * j ^ (2 * n))" by linarith
+      also have "\<dots> = (\<Sum>j<m+1. (-1) ^ j * (m choose j) * j ^ (2 * n))"
+        by (intro sum.cong) auto
+      also have "[\<dots> = (if m dvd 2 * n then - 1 else 0)] (mod (m + 1))"
+        using vonStaudt_Clausen_lemma[of n "m + 1"] prime \<open>n > 0\<close> by simp
+      also have "(if m dvd 2 * n then - 1 else 0) = - P' m"
+        using prime by (simp add: P'_def)
+      finally have "int (m + 1) dvd ((- 1) ^ m * fact m * int (Stirling (2 * n) m) + P' m)"
+        by (simp add: cong_iff_dvd_diff)
+      hence "real_of_int ((-1)^m * fact m * int (Stirling (2*n) m) + P' m) / of_int (int (m+1)) \<in> \<int>"
+        by (intro of_int_divide_in_Ints)
+      thus ?case by simp
+    qed
+  qed
+  finally show ?thesis .
+qed
+
+
+subsection \<open>Denominators of Bernoulli numbers\<close>
+
+text \<open>
+  A consequence of the Von Staudt--Clausen theorem is that the denominator of $B_{2n}$ for $n > 0$
+  is precisely the product of all prime numbers \<open>p\<close> such that \<open>p - 1\<close> divides $2n$.
+  Since the denominator is obvious in all other cases, this fully characterises the denominator
+  of Bernoulli numbers.
+\<close>
+definition bernoulli_denom :: "nat \<Rightarrow> nat" where
+  "bernoulli_denom n =
+     (if n = 1 then 2 else if n = 0 \<or> odd n then 1 else \<Prod>{p. prime p \<and> (p - 1) dvd n})"
+
+lemma finite_bernoulli_denom_set: "n > (0 :: nat) \<Longrightarrow> finite {p. prime p \<and> (p - 1) dvd n}"
+  by (rule finite_subset[of _ "{..2*n+1}"]) (auto dest!: dvd_imp_le)
+
+lemma bernoulli_denom_0 [simp]:   "bernoulli_denom 0 = 1"
+  and bernoulli_denom_1 [simp]:   "bernoulli_denom 1 = 2"
+  and bernoulli_denom_odd [simp]: "n \<noteq> 1 \<Longrightarrow> odd n \<Longrightarrow> bernoulli_denom n = 1"
+  and bernoulli_denom_even:
+    "n > 0 \<Longrightarrow> even n \<Longrightarrow> bernoulli_denom n = \<Prod>{p. prime p \<and> (p - 1) dvd n}"
+  by (auto simp: bernoulli_denom_def)
+
+lemma bernoulli_denom_pos: "bernoulli_denom n > 0"
+  by (auto simp: bernoulli_denom_def intro!: prod_pos)
+
+corollary%important bernoulli_denom_correct:
+  obtains a :: int
+    where "coprime a (bernoulli_denom m)"
+          "bernoulli m = of_int a / of_nat (bernoulli_denom m)"
+proof -
+  consider "m = 0" | "m = 1" | "odd m" "m \<noteq> 1" | "even m" "m > 0"
+    by auto
+  thus ?thesis
+  proof cases
+    assume "m = 0"
+    thus ?thesis by (intro that[of 1]) (auto simp: bernoulli_denom_def)
+  next
+    assume "m = 1"
+    thus ?thesis by (intro that[of "-1"]) (auto simp: bernoulli_denom_def)
+  next
+    assume "odd m" "m \<noteq> 1"
+    thus ?thesis by (intro that[of 0]) (auto simp: bernoulli_denom_def bernoulli_odd_eq_0)
+  next
+    assume "even m" "m > 0"
+    define n where "n = m div 2"
+    have [simp]: "m = 2 * n" and n: "n > 0"
+      using \<open>even m\<close> \<open>m > 0\<close> by (auto simp: n_def intro!: Nat.gr0I)
+  
+    obtain a b where ab: "bernoulli (2 * n) = a / b" "coprime a (int b)" "b > 0"
+      using Rats_int_div_natE[OF bernoulli_in_Rats] by metis
+    define P where "P = {p. prime p \<and> (p - 1) dvd (2 * n)}"
+    have "finite P" unfolding P_def
+      using n by (intro finite_bernoulli_denom_set) auto
+    from vonStaudt_Clausen[of n] obtain k where k: "bernoulli (2 * n) + (\<Sum>p\<in>P. 1/p) = of_int k"
+      using \<open>n > 0\<close> by (auto simp: P_def Ints_def)
+  
+    define c where "c = (\<Sum>p\<in>P. \<Prod>(P-{p}))"
+    from \<open>finite P\<close> have "(\<Sum>p\<in>P. 1 / p) = c / \<Prod>P"
+      by (subst sum_inverses_conv_fraction) (auto simp: P_def prime_gt_0_nat c_def)
+    moreover have P_nz: "prod real P > 0"
+      using prime_gt_0_nat by (auto simp: P_def intro!: prod_pos)
+    ultimately have eq: "bernoulli (2 * n) = (k * \<Prod>P - c) / \<Prod>P"
+      using ab P_nz by (simp add: field_simps k [symmetric])
+  
+    have "gcd (k * \<Prod>P - int c) (\<Prod>P) = gcd (int c) (\<Prod>P)"
+      by (simp add: gcd_diff_dvd_left1)
+    also have "\<dots> = int (gcd c (\<Prod>P))"
+      by (simp flip: gcd_int_int_eq)
+    also have "coprime c (\<Prod>P)"
+      unfolding c_def using \<open>finite P\<close>
+      by (intro sum_prime_inverses_fraction_coprime) (auto simp: P_def)
+    hence "gcd c (\<Prod>P) = 1"
+      by simp
+    finally have coprime: "coprime (k * \<Prod>P - int c) (\<Prod>P)"
+      by (simp only: coprime_iff_gcd_eq_1)
+  
+    have eq': "\<Prod>P = bernoulli_denom (2 * n)"
+      using n by (simp add: bernoulli_denom_def P_def)
+    show ?thesis
+      by (rule that[of "k * \<Prod>P - int c"]) (use eq eq' coprime in simp_all)
+  qed
+qed
+
+text \<open>
+  Two obvious consequences from this are that the denominators of all odd Bernoulli numbers
+  except for the first one are squarefree and multiples of 6:
+\<close>
+lemma six_divides_bernoulli_denom:
+  assumes "even n" "n > 0"
+  shows   "6 dvd bernoulli_denom n"
+proof -
+  from assms have "\<Prod>{2, 3} dvd \<Prod>{p. prime p \<and> (p - 1) dvd n}"
+    by (intro prod_dvd_prod_subset finite_bernoulli_denom_set) auto
+  with assms show ?thesis by (simp add: bernoulli_denom_even)
+qed
+
+lemma squarefree_bernoulli_denom: "squarefree (bernoulli_denom n)"
+  by (auto intro!: squarefree_prod_coprime primes_coprime
+           simp: bernoulli_denom_def squarefree_prime)
 
 
 subsection \<open>Akiyama--Tanigawa algorithm\<close>
