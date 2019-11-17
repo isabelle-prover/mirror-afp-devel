@@ -17,6 +17,52 @@ begin
 
 subsection \<open>Preliminaries\<close>
 
+context factorial_semiring
+begin
+
+lemma multiplicity_prime_prime:
+  "prime p \<Longrightarrow> prime q \<Longrightarrow> multiplicity p q = (if p = q then 1 else 0)"
+  by (simp add: prime_multiplicity_other)
+
+lemma prime_prod_dvdI:
+  fixes f :: "'b \<Rightarrow> 'a"
+  assumes "finite A"
+  assumes "\<And>x. x \<in> A \<Longrightarrow> prime (f x)"
+  assumes "\<And>x. x \<in> A \<Longrightarrow> f x dvd y"
+  assumes "inj_on f A"
+  shows   "prod f A dvd y"
+proof (cases "y = 0")
+  case False
+  have nz: "f x \<noteq> 0" if "x \<in> A" for x
+    using assms(2)[of x] that by auto
+  have "prod f A \<noteq> 0"
+    using assms nz by (subst prod_zero_iff) auto
+  thus ?thesis
+  proof (rule multiplicity_le_imp_dvd)
+    fix p :: 'a assume "prime p"
+    show "multiplicity p (prod f A) \<le> multiplicity p y"
+    proof (cases "p dvd prod f A")
+      case True
+      then obtain x where x: "x \<in> A" and "p dvd f x"
+        using \<open>prime p\<close> assms by (subst (asm) prime_dvd_prod_iff) auto
+      have "multiplicity p (prod f A) = (\<Sum>x\<in>A. multiplicity p (f x))"
+        using assms \<open>prime p\<close> nz by (intro prime_elem_multiplicity_prod_distrib) auto
+      also have "\<dots> = (\<Sum>x\<in>{x}. 1 :: nat)"
+        using assms \<open>prime p\<close> \<open>p dvd f x\<close> primes_dvd_imp_eq x 
+        by (intro Groups_Big.sum.mono_neutral_cong_right)
+           (auto simp: multiplicity_prime_prime inj_on_def)
+      finally have "multiplicity p (prod f A) = 1" by simp
+      also have "1 \<le> multiplicity p y"
+        using assms nz \<open>prime p\<close> \<open>y \<noteq> 0\<close> x \<open>p dvd f x\<close>
+        by (intro multiplicity_geI) force+
+      finally show ?thesis .
+    qed (auto simp: not_dvd_imp_multiplicity_0)
+  qed
+qed auto
+
+end
+
+
 (* TODO: Move? *)
 context semiring_gcd
 begin
@@ -757,11 +803,15 @@ definition bernoulli_denom :: "nat \<Rightarrow> nat" where
   "bernoulli_denom n =
      (if n = 1 then 2 else if n = 0 \<or> odd n then 1 else \<Prod>{p. prime p \<and> (p - 1) dvd n})"
 
+definition bernoulli_num :: "nat \<Rightarrow> int" where
+  "bernoulli_num n = \<lfloor>bernoulli n * bernoulli_denom n\<rfloor>"
+
 lemma finite_bernoulli_denom_set: "n > (0 :: nat) \<Longrightarrow> finite {p. prime p \<and> (p - 1) dvd n}"
   by (rule finite_subset[of _ "{..2*n+1}"]) (auto dest!: dvd_imp_le)
 
 lemma bernoulli_denom_0 [simp]:   "bernoulli_denom 0 = 1"
   and bernoulli_denom_1 [simp]:   "bernoulli_denom 1 = 2"
+  and bernoulli_denom_Suc_0 [simp]:   "bernoulli_denom (Suc 0) = 2"
   and bernoulli_denom_odd [simp]: "n \<noteq> 1 \<Longrightarrow> odd n \<Longrightarrow> bernoulli_denom n = 1"
   and bernoulli_denom_even:
     "n > 0 \<Longrightarrow> even n \<Longrightarrow> bernoulli_denom n = \<Prod>{p. prime p \<and> (p - 1) dvd n}"
@@ -769,6 +819,29 @@ lemma bernoulli_denom_0 [simp]:   "bernoulli_denom 0 = 1"
 
 lemma bernoulli_denom_pos: "bernoulli_denom n > 0"
   by (auto simp: bernoulli_denom_def intro!: prod_pos)
+
+lemma bernoulli_denom_nonzero [simp]: "bernoulli_denom n \<noteq> 0"
+  using bernoulli_denom_pos[of n] by simp
+
+lemma bernoulli_denom_code [code]:
+  "bernoulli_denom n =
+     (if n = 1 then 2 else if n = 0 \<or> odd n then 1
+        else prod_list (filter (\<lambda>p. (p - 1) dvd n) (primes_upto (n + 1))))" (is "_ = ?rhs")
+proof (cases "even n \<and> n > 0")
+  case True
+  hence "?rhs = prod_list (filter (\<lambda>p. (p - 1) dvd n) (primes_upto (n + 1)))"
+    by auto
+  also have "\<dots> = \<Prod>(set (filter (\<lambda>p. (p - 1) dvd n) (primes_upto (n + 1))))"
+    by (subst prod.distinct_set_conv_list) auto
+  also have "(set (filter (\<lambda>p. (p - 1) dvd n) (primes_upto (n + 1)))) =
+               {p\<in>{..n+1}. prime p \<and> (p - 1) dvd n}"
+    by (auto simp: set_primes_upto)
+  also have "\<dots> = {p. prime p \<and> (p - 1) dvd n}"
+    using True by (auto dest: dvd_imp_le)
+  also have "\<Prod>\<dots> = bernoulli_denom n"
+    using True by (simp add: bernoulli_denom_even)
+  finally show ?thesis ..
+qed auto
 
 corollary%important bernoulli_denom_correct:
   obtains a :: int
@@ -828,6 +901,15 @@ proof -
   qed
 qed
 
+lemma bernoulli_conv_num_denom: "bernoulli n = bernoulli_num n / bernoulli_denom n" (is ?th1)
+  and coprime_bernoulli_num_denom: "coprime (bernoulli_num n) (bernoulli_denom n)" (is ?th2)
+proof -
+  obtain a :: int where a: "coprime a (bernoulli_denom n)" "bernoulli n = a / bernoulli_denom n"
+    using bernoulli_denom_correct[of n] by blast
+  thus ?th1 by (simp add: bernoulli_num_def)
+  with a show ?th2 by auto
+qed
+
 text \<open>
   Two obvious consequences from this are that the denominators of all odd Bernoulli numbers
   except for the first one are squarefree and multiples of 6:
@@ -844,6 +926,108 @@ qed
 lemma squarefree_bernoulli_denom: "squarefree (bernoulli_denom n)"
   by (auto intro!: squarefree_prod_coprime primes_coprime
            simp: bernoulli_denom_def squarefree_prime)
+
+text \<open>
+  Furthermore, the denominator of $B_n$ divides $2(2^n - 1)$. This also gives us an
+  upper bound on the denominators.
+\<close>
+lemma bernoulli_denom_dvd: "bernoulli_denom n dvd (2 * (2 ^ n - 1))"
+proof (cases "even n \<and> n > 0")
+  case True
+  hence "bernoulli_denom n = \<Prod>{p. prime p \<and> (p - 1) dvd n}"
+    by (auto simp: bernoulli_denom_def)
+  also have "\<dots> dvd (2 * (2 ^ n - 1))"
+  proof (rule prime_prod_dvdI; clarify?)
+    from True show "finite {p. prime p \<and> (p - 1) dvd n}"
+      by (intro finite_bernoulli_denom_set) auto
+  next
+    fix p assume p: "prime p" "(p - 1) dvd n"
+    show "p dvd (2 * (2 ^ n - 1))"
+    proof (cases "p = 2")
+      case False
+      with p have "p > 2"
+        using prime_gt_1_nat[of p] by force
+      have "[2 ^ n - 1 = 1 - 1] (mod p)"
+        using p \<open>p > 2\<close> prime_odd_nat
+        by (intro cong_diff_nat Carmichael_divides) (auto simp: Carmichael_prime)
+      hence "p dvd (2 ^ n - 1)"
+        by (simp add: cong_0_iff)
+      thus ?thesis by simp
+    qed auto
+  qed auto
+  finally show ?thesis .
+qed (auto simp: bernoulli_denom_def)
+
+corollary bernoulli_bound:
+  assumes "n > 0"
+  shows   "bernoulli_denom n \<le> 2 * (2 ^ n - 1)"
+proof -
+  from assms have "2 ^ n > (1 :: nat)"
+    by (intro one_less_power) auto
+  thus ?thesis
+    by (intro dvd_imp_le[OF bernoulli_denom_dvd]) auto
+qed
+
+text \<open>
+  It can also be shown fairly easily from the von Staudt--Clausen theorem that if \<open>p\<close> is prime
+  and \<open>2p + 1\<close> is not, then $B_{2p} \equiv \frac{1}{6}\ (\text{mod}\ 1)$ or, equivalently,
+  the denominator of $B_{2p}$ is 6 and the numerator is of the form $6k+1$.
+
+  This is the case e.\,g.\ for any primes of the form $3k+1$ or $5k+2$.
+\<close>
+lemma bernoulli_denom_prime_nonprime:
+  assumes "prime p" "\<not>prime (2 * p + 1)"
+  shows   "bernoulli (2 * p) - 1 / 6 \<in> \<int>"
+          "[bernoulli_num (2 * p) = 1] (mod 6)"
+          "bernoulli_denom (2 * p) = 6"
+proof -
+  from assms have "p > 0"
+    using prime_gt_0_nat by auto
+  define P where "P = {q. prime q \<and> (q - 1) dvd (2 * p)}"
+  have P_eq: "P = {2, 3}"
+  proof (intro equalityI subsetI)
+    fix q assume "q \<in> P"
+    hence q: "prime q" "(q - 1) dvd (2 * p)"
+      by (simp_all add: P_def)
+    have "q - 1 \<in> {1, 2, p, 2 * p}"
+    proof -
+      obtain b c where bc: "b dvd 2" "c dvd p" "q - 1 = b * c"
+        using division_decomp[OF q(2)] by auto
+      from bc have "b \<in> {1, 2}" and "c \<in> {1, p}"
+        using prime_nat_iff two_is_prime_nat \<open>prime p\<close> by blast+
+      with bc show ?thesis by auto
+    qed
+    hence "q \<in> {2, 3, p + 1, 2 * p + 1}"
+      using prime_gt_0_nat[OF \<open>prime q\<close>] by force
+    moreover have "q \<noteq> p + 1"
+    proof
+      assume [simp]: "q = p + 1"
+      have "even q \<or> even p" by auto
+      with \<open>prime q\<close> and \<open>prime p\<close> have "p = 2"
+        using prime_odd_nat[of p] prime_odd_nat[of q] prime_gt_1_nat[of p] prime_gt_1_nat[of q]
+        by force
+      with assms show False by (simp add: cong_def)
+    qed
+    ultimately show "q \<in> {2, 3}"
+      using assms \<open>prime q\<close> by auto
+  qed (auto simp: P_def)
+
+  show [simp]: "bernoulli_denom (2 * p) = 6"
+    using \<open>p > 0\<close> P_eq by (subst bernoulli_denom_even) (auto simp: P_def)
+  have "bernoulli (2 * p) + 5 / 6 \<in> \<int>"
+    using \<open>p > 0\<close> P_eq vonStaudt_Clausen[of p] by (auto simp: P_def)
+  hence "bernoulli (2 * p) + 5 / 6 - 1 \<in> \<int>"
+    by (intro Ints_diff) auto
+  thus "bernoulli (2 * p) - 1 / 6 \<in> \<int>" by simp
+  then obtain a where "of_int a = bernoulli (2 * p) - 1 / 6"
+    by (elim Ints_cases) auto
+  hence "real_of_int a = real_of_int (bernoulli_num (2 * p) - 1) / 6"
+    by (auto simp: bernoulli_conv_num_denom)
+  hence "bernoulli_num (2 * p) - 1 = 6 * a"
+    by simp
+  thus "[bernoulli_num (2 * p) = 1] (mod 6)"
+    by (auto simp: cong_iff_dvd_diff)
+qed
 
 
 subsection \<open>Akiyama--Tanigawa algorithm\<close>
