@@ -63,7 +63,8 @@ definition simple_match_to_of_match_single ::
 definition simple_match_to_of_match :: "32 simple_match \<Rightarrow> string list \<Rightarrow> of_match_field set list" where
 "simple_match_to_of_match m ifs \<equiv> (let
 	npm = (\<lambda>p. fst p = 0 \<and> snd p = max_word);
-	sb = (\<lambda>p. (if npm p then [None] else if fst p \<le> snd p then map (Some \<circ> (\<lambda>pfx. (pfxm_prefix pfx, NOT pfxm_mask pfx))) (wordinterval_CIDR_split_prefixmatch (WordInterval (fst p) (snd p))) else []))
+	sb = (\<lambda>p. (if npm p then [None] else if fst p \<le> snd p
+  then map (Some \<circ> (\<lambda>pfx. (pfxm_prefix pfx, NOT (pfxm_mask pfx)))) (wordinterval_CIDR_split_prefixmatch (WordInterval (fst p) (snd p))) else []))
 	in [simple_match_to_of_match_single m iif (proto m) sport dport.
 		iif \<leftarrow> (if iiface m = ifaceAny then [None] else [Some i. i \<leftarrow> ifs, match_iface (iiface m) i]),
 		sport \<leftarrow> sb (sports m),
@@ -235,30 +236,30 @@ proof -
 			next
 				case 1 thus ?case using ii u by simp_all (metis match_proto.elims(2))  
 			qed
-		have dpm: "di = Some (PrefixMatch x1 x2) \<Longrightarrow> p_dport p && ~~ mask (16 - x2) = x1" for x1 x2
+		have dpm: "di = Some (PrefixMatch x1 x2) \<Longrightarrow> p_dport p && ~~ (mask (16 - x2)) = x1" for x1 x2
     proof -
-      have *: "di = Some (PrefixMatch x1 x2) \<Longrightarrow> prefix_match_semantics (the di) (p_dport p) \<Longrightarrow> p_dport p && ~~ mask (16 - x2) = x1"
+      have *: "di = Some (PrefixMatch x1 x2) \<Longrightarrow> prefix_match_semantics (the di) (p_dport p) \<Longrightarrow> p_dport p && ~~ (mask (16 - x2)) = x1"
         by(clarsimp simp: prefix_match_semantics_def pfxm_mask_def word_bw_comms;fail)
       have **: "pfx \<in> set (wordinterval_CIDR_split_prefixmatch ra) \<Longrightarrow> prefix_match_semantics pfx a = (a \<in> prefix_to_wordset pfx)" for pfx ra and a :: "16 word"
         by (fact prefix_match_semantics_wordset[OF wordinterval_CIDR_split_prefixmatch_all_valid_Ball[THEN bspec, THEN conjunct1]])
       have "\<lbrakk>di = Some (PrefixMatch x1 x2); p_dport p \<in> prefix_to_wordset (PrefixMatch x1 x2); PrefixMatch x1 x2 \<in> set (wordinterval_CIDR_split_prefixmatch (uncurry WordInterval (dports r)))\<rbrakk>
-             \<Longrightarrow> p_dport p && ~~ mask (16 - x2) = x1"
+             \<Longrightarrow> p_dport p && ~~ (mask (16 - x2)) = x1"
       using di(1,2)
         using * ** by auto
-      thus "di = Some (PrefixMatch x1 x2) \<Longrightarrow> p_dport p && ~~ mask (16 - x2) = x1"  using di(1,2) by auto
+      thus "di = Some (PrefixMatch x1 x2) \<Longrightarrow> p_dport p && ~~ (mask (16 - x2)) = x1"  using di(1,2) by auto
     qed
-		have spm: "si = Some (PrefixMatch x1 x2) \<Longrightarrow> p_sport p && ~~ mask (16 - x2) = x1" for x1 x2
+		have spm: "si = Some (PrefixMatch x1 x2) \<Longrightarrow> p_sport p && ~~ (mask (16 - x2)) = x1" for x1 x2
     using si
     proof -
-      have *: "si = Some (PrefixMatch x1 x2) \<Longrightarrow> prefix_match_semantics (the si) (p_sport p) \<Longrightarrow> p_sport p && ~~ mask (16 - x2) = x1"
+      have *: "si = Some (PrefixMatch x1 x2) \<Longrightarrow> prefix_match_semantics (the si) (p_sport p) \<Longrightarrow> p_sport p && ~~ (mask (16 - x2)) = x1"
         by(clarsimp simp: prefix_match_semantics_def pfxm_mask_def word_bw_comms;fail)
       have **: "pfx \<in> set (wordinterval_CIDR_split_prefixmatch ra) \<Longrightarrow> prefix_match_semantics pfx a = (a \<in> prefix_to_wordset pfx)" for pfx ra and a :: "16 word"
         by (fact prefix_match_semantics_wordset[OF wordinterval_CIDR_split_prefixmatch_all_valid_Ball[THEN bspec, THEN conjunct1]])
       have "\<lbrakk>si = Some (PrefixMatch x1 x2); p_sport p \<in> prefix_to_wordset (PrefixMatch x1 x2); PrefixMatch x1 x2 \<in> set (wordinterval_CIDR_split_prefixmatch (uncurry WordInterval (sports r)))\<rbrakk>
-             \<Longrightarrow> p_sport p && ~~ mask (16 - x2) = x1"
+             \<Longrightarrow> p_sport p && ~~ (mask (16 - x2)) = x1"
       using si(1,2)
         using * ** by auto
-      thus "si = Some (PrefixMatch x1 x2) \<Longrightarrow> p_sport p && ~~ mask (16 - x2) = x1"  using si(1,2) by auto
+      thus "si = Some (PrefixMatch x1 x2) \<Longrightarrow> p_sport p && ~~ (mask (16 - x2)) = x1"  using si(1,2) by auto
     qed
 		show "OF_match_fields ?gr p = Some True"
 		unfolding of_safe_unsafe_match_eq[OF simple_match_to_of_match_generates_prereqs[OF mv eg]]
@@ -297,19 +298,19 @@ proof -
 
   { fix a b xc xa
       fix pp :: "16 word"
-	  have "\<lbrakk>pp && ~~ pfxm_mask xc = pfxm_prefix xc\<rbrakk>
+	  have "\<lbrakk>pp && ~~ (pfxm_mask xc) = pfxm_prefix xc\<rbrakk>
               \<Longrightarrow> prefix_match_semantics xc (pp)" for xc
       by(simp add: prefix_match_semantics_def word_bw_comms;fail)
     moreover have "pp \<in> wordinterval_to_set (WordInterval a b) \<Longrightarrow> a \<le> pp \<and> pp \<le> b" by simp
     moreover have "xc \<in> set (wordinterval_CIDR_split_prefixmatch (WordInterval a b)) \<Longrightarrow> pp \<in> prefix_to_wordset xc  \<Longrightarrow> pp \<in> wordinterval_to_set (WordInterval a b)"
 			by(subst wordinterval_CIDR_split_prefixmatch) blast
-	  moreover have "\<lbrakk>xc \<in> set (wordinterval_CIDR_split_prefixmatch (WordInterval a b)); xa = Some (pfxm_prefix xc, ~~ pfxm_mask xc); prefix_match_semantics xc (pp)\<rbrakk> \<Longrightarrow> pp \<in> prefix_to_wordset xc"
+	  moreover have "\<lbrakk>xc \<in> set (wordinterval_CIDR_split_prefixmatch (WordInterval a b)); xa = Some (pfxm_prefix xc, ~~ (pfxm_mask xc)); prefix_match_semantics xc (pp)\<rbrakk> \<Longrightarrow> pp \<in> prefix_to_wordset xc"
 			apply(subst(asm)(1) prefix_match_semantics_wordset)
 			apply(erule wordinterval_CIDR_split_prefixmatch_all_valid_Ball[THEN bspec, THEN conjunct1];fail)
 			apply assumption
 	  done
-	  ultimately have "\<lbrakk>xc \<in> set (wordinterval_CIDR_split_prefixmatch (WordInterval a b)); xa = Some (pfxm_prefix xc, ~~ pfxm_mask xc);
-               pp && ~~ pfxm_mask xc = pfxm_prefix xc\<rbrakk>
+	  ultimately have "\<lbrakk>xc \<in> set (wordinterval_CIDR_split_prefixmatch (WordInterval a b)); xa = Some (pfxm_prefix xc, ~~ (pfxm_mask xc));
+               pp && ~~ (pfxm_mask xc) = pfxm_prefix xc\<rbrakk>
               \<Longrightarrow> a \<le> pp \<and> pp \<le> b"
      by metis
 	} note l4port_logic = this
@@ -524,7 +525,7 @@ lemma distinct_simple_match_to_of_match_portlist_hlp:
     distinct
      (if fst ps = 0 \<and> snd ps = max_word then [None]
       else if fst ps \<le> snd ps
-           then map (Some \<circ> (\<lambda>pfx. (pfxm_prefix pfx, ~~ pfxm_mask pfx)))
+           then map (Some \<circ> (\<lambda>pfx. (pfxm_prefix pfx, ~~ (pfxm_mask pfx))))
                  (wordinterval_CIDR_split_prefixmatch (WordInterval (fst ps) (snd ps)))
            else [])"
 proof -
@@ -532,7 +533,7 @@ proof -
   { define wis where "wis = set (wordinterval_CIDR_split_prefixmatch (WordInterval (fst ps) (snd ps)))"
     fix x y :: "16 prefix_match"
     obtain xm xn ym yn where xyd[simp]: "x = PrefixMatch xm xn" "y = PrefixMatch ym yn" by(cases x; cases y)
-    assume iw: "x \<in> wis" "y \<in> wis" and et: "(pfxm_prefix x, ~~ pfxm_mask x) = (pfxm_prefix y, ~~ pfxm_mask y)"
+    assume iw: "x \<in> wis" "y \<in> wis" and et: "(pfxm_prefix x, ~~ (pfxm_mask x)) = (pfxm_prefix y, ~~ (pfxm_mask y))"
     hence le16: "xn \<le> 16" "yn \<le> 16" unfolding wis_def using wordinterval_CIDR_split_prefixmatch_all_valid_Ball[unfolded Ball_def, THEN spec, THEN mp] by force+
     with et have "16 - xn = 16 - yn" unfolding pfxm_mask_def by(auto intro: mask_inj_hlp1[THEN inj_onD])
     hence "x = y" using et le16 using diff_diff_cancel by simp

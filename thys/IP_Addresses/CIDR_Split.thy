@@ -361,8 +361,8 @@ private lemma interval_in_splitD: "xa \<in> foo \<Longrightarrow> prefix_to_word
 lemma cidrsplit_no_overlaps: "\<lbrakk>
         x \<in> set (wordinterval_CIDR_split_prefixmatch wi);
         xa \<in> set (wordinterval_CIDR_split_prefixmatch wi); 
-        pt && ~~ pfxm_mask x = pfxm_prefix x;
-        pt && ~~ pfxm_mask xa = pfxm_prefix xa
+        pt && ~~ (pfxm_mask x) = pfxm_prefix x;
+        pt && ~~ (pfxm_mask xa) = pfxm_prefix xa
         \<rbrakk>
        \<Longrightarrow> x = xa"
 proof(rule ccontr, goal_cases)

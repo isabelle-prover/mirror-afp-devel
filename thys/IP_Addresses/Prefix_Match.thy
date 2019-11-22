@@ -35,9 +35,9 @@ text\<open>When zeroing all least significant bits which exceed the @{const pfxm
      you get a @{const valid_prefix}\<close>
 lemma mk_valid_prefix:
   fixes base::"'a::len word"
-  shows "valid_prefix (PrefixMatch (base AND NOT mask (len_of TYPE ('a) - len)) len)"
+  shows "valid_prefix (PrefixMatch (base AND NOT (mask (len_of TYPE ('a) - len))) len)"
 proof -
-  have "mask (len - m) AND base AND NOT mask (len - m) = 0"
+  have "mask (len - m) AND base AND NOT (mask (len - m)) = 0"
     for m len and base::"'a::len word" by(simp add: word_bw_lcs)
   thus ?thesis
   by(simp add: valid_prefix_def pfxm_mask_def pfxm_length_def pfxm_prefix_def)
@@ -102,7 +102,7 @@ private lemma valid_prefix_alt: fixes p::"'a::len prefix_match"
 subsection\<open>Address Semantics\<close>
   text\<open>Matching on a @{typ "'a::len prefix_match"}. Think of routing tables.\<close>
   definition prefix_match_semantics where
-    "prefix_match_semantics m a \<equiv> pfxm_prefix m = (NOT pfxm_mask m) AND a"
+    "prefix_match_semantics m a \<equiv> pfxm_prefix m = NOT (pfxm_mask m) AND a"
 
 lemma same_length_prefixes_distinct: "valid_prefix pfx1 \<Longrightarrow> valid_prefix pfx2 \<Longrightarrow> pfx1 \<noteq> pfx2 \<Longrightarrow> pfxm_length pfx1 = pfxm_length pfx2 \<Longrightarrow> prefix_match_semantics pfx1 w \<Longrightarrow> prefix_match_semantics pfx2 w \<Longrightarrow> False"
   by (simp add: pfxm_mask_def prefix_match.expand prefix_match_semantics_def)
@@ -140,7 +140,7 @@ subsection\<open>Equivalence Proofs\<close>
     by (simp)
   
   private lemma valid_prefix_ipset_from_netmask_ipset_from_cidr:
-    shows "ipset_from_netmask (pfxm_prefix pfx) (NOT pfxm_mask pfx) =
+    shows "ipset_from_netmask (pfxm_prefix pfx) (NOT (pfxm_mask pfx)) =
             ipset_from_cidr (pfxm_prefix pfx) (pfxm_length pfx)"
     apply(cases pfx)
     apply(simp add: ipset_from_cidr_alt2 pfxm_mask_def)
@@ -149,7 +149,7 @@ subsection\<open>Equivalence Proofs\<close>
   lemma prefix_match_semantics_ipset_from_netmask:
     assumes "valid_prefix pfx"
     shows "prefix_match_semantics pfx a \<longleftrightarrow>
-            a \<in> ipset_from_netmask (pfxm_prefix pfx) (NOT pfxm_mask pfx)"
+            a \<in> ipset_from_netmask (pfxm_prefix pfx) (NOT (pfxm_mask pfx))"
     unfolding prefix_match_semantics_wordset[OF assms]
     unfolding valid_prefix_ipset_from_netmask_ipset_from_cidr
     unfolding prefix_to_wordset_def
@@ -170,28 +170,28 @@ subsection\<open>Equivalence Proofs\<close>
   proof -
     have helper3: "(x::'a::len word) OR y = x OR y AND NOT x" for x y by (simp add: word_oa_dist2)
     have prefix_match_semantics_ipset_from_netmask:
-           "(prefix_to_wordset pfx) = ipset_from_netmask (pfxm_prefix pfx) (NOT pfxm_mask pfx)"
+           "(prefix_to_wordset pfx) = ipset_from_netmask (pfxm_prefix pfx) (NOT (pfxm_mask pfx))"
       unfolding prefix_to_wordset_def ipset_from_netmask_def Let_def
       unfolding word_bool_alg.double_compl
       proof(goal_cases)
         case 1
-        have *: "pfxm_prefix pfx AND NOT pfxm_mask pfx = pfxm_prefix pfx"
+        have *: "pfxm_prefix pfx AND NOT (pfxm_mask pfx) = pfxm_prefix pfx"
           unfolding mask_eq_0_eq_x[symmetric]
           using valid_prefix_E[OF assms] word_bw_comms(1)[of "pfxm_prefix pfx"] by simp
-        hence **: "pfxm_prefix pfx AND NOT pfxm_mask pfx OR pfxm_mask pfx =
+        hence **: "pfxm_prefix pfx AND NOT (pfxm_mask pfx) OR pfxm_mask pfx =
                     pfxm_prefix pfx OR pfxm_mask pfx"
           by simp
         show ?case unfolding * ** ..
       qed
-      have "((mask len)::'a::len word) << LENGTH('a) - len = ~~ mask (LENGTH('a) - len)"
+      have "((mask len)::'a::len word) << LENGTH('a) - len = ~~ (mask (LENGTH('a) - len))"
       for len using NOT_mask_shifted_lenword by (metis word_not_not)
       from this[of "(pfxm_length pfx)"] have mask_def2_symmetric:
         "((mask (pfxm_length pfx)::'a::len word) << LENGTH('a) - pfxm_length pfx) =
-          NOT pfxm_mask pfx"
+          NOT (pfxm_mask pfx)"
         unfolding pfxm_mask_def by simp
   
       have ipset_from_netmask_prefix: 
-        "ipset_from_netmask (pfxm_prefix pfx) (NOT pfxm_mask pfx) =
+        "ipset_from_netmask (pfxm_prefix pfx) (NOT (pfxm_mask pfx)) =
           ipset_from_cidr (pfxm_prefix pfx) (pfxm_length pfx)"
        unfolding ipset_from_netmask_def ipset_from_cidr_alt
        unfolding pfxm_mask_def[symmetric]
