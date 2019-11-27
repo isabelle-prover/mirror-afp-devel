@@ -1,7 +1,7 @@
 chapter AFP
 
 session Euler_MacLaurin (AFP) = "HOL-Analysis" +
-  options [timeout = 300]
+  options [timeout = 600]
   sessions
     Bernoulli
     Landau_Symbols
