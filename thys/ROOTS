@@ -214,6 +214,7 @@ InfPathElimination
 InformationFlowSlicing
 InformationFlowSlicing_Inter
 Integration
+Interval_Arithmetic_Word32
 Iptables_Semantics
 Irrationality_J_Hancl
 Isabelle_Meta_Model
