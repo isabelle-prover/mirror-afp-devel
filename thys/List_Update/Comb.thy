@@ -178,6 +178,7 @@ proof (induct qs rule: rev_induct)
 qed simp
 
 lemma Combination:
+  fixes bit
   assumes "qs \<in> pattern" "a \<noteq> b" "{a, b} = {x, y}" "set qs \<subseteq> {a, b}"
     and "inv_COMB s a [x,y]"
     and TS: "\<And>s h. a \<noteq> b \<Longrightarrow> {a, b} = {x, y} \<Longrightarrow> TS_inv s a [x, y] \<Longrightarrow> set qs \<subseteq> {a, b}
