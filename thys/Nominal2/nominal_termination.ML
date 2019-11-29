@@ -72,7 +72,7 @@ fun prepare_termination_proof prep_term is_eqvt raw_term_opt lthy =
               lthy
               |> Local_Theory.declaration {syntax = false, pervasive = false}
                    (add_function_data o morph_function_data info')
-              |> Spec_Rules.add Spec_Rules.equational_recdef (fs, tsimps)
+              |> Spec_Rules.add "" Spec_Rules.equational_recdef fs tsimps
               |> Code.declare_default_eqns (map (rpair true) tsimps)
               |> pair info'
             end)
