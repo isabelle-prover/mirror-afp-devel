@@ -5,7 +5,7 @@
 section \<open>Cauchy's index theorem\<close>
 
 theory Cauchy_Index_Theorem imports 
-  "HOL-Analysis.Multivariate_Analysis"
+  "HOL-Complex_Analysis.Complex_Analysis"
   "Sturm_Tarski.Sturm_Tarski"
   "HOL-Computational_Algebra.Fundamental_Theorem_Algebra"
   Missing_Transcendental

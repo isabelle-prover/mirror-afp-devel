@@ -7,7 +7,7 @@
 section \<open>Complete asymptotics of the logarithmic Gamma function\<close>
 theory Ln_Gamma_Asymptotics
 imports 
-  "HOL-Analysis.Analysis"
+  "HOL-Complex_Analysis.Complex_Analysis"
   Bernoulli.Bernoulli_FPS 
   Bernoulli.Periodic_Bernpoly 
   Stirling_Formula

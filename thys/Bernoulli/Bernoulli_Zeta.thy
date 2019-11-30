@@ -1,7 +1,7 @@
 section \<open>Bernoulli numbers and the zeta function at positive integers\<close>
 theory Bernoulli_Zeta
 imports 
-  "HOL-Analysis.Analysis"
+  "HOL-Complex_Analysis.Complex_Analysis"
   Bernoulli_FPS
 begin
 

@@ -4,7 +4,8 @@
 
 section \<open>Some useful lemmas in analysis\<close>
 
-theory Missing_Analysis imports "HOL-Analysis.Analysis"
+theory Missing_Analysis
+  imports "HOL-Complex_Analysis.Complex_Analysis"
 begin  
 
 subsection \<open>More about paths\<close>
@@ -115,9 +116,7 @@ proof -
       unfolding path_image_compose using \<open>- z \<notin> path_image \<gamma>\<close> by auto
   qed
   also have "\<dots> = 1/c * contour_integral \<gamma> (\<lambda>w. 1 / (w- (-z)))"
-    apply (auto intro!:contour_integral_eq simp add:field_simps)
-    apply (subst deriv_linear[of "-1",simplified])
-    by (simp add: minus_divide_right)
+    by (auto intro!:contour_integral_eq simp add:field_simps minus_divide_right)
   also have "\<dots> = winding_number \<gamma> (-z)"
     using winding_number_valid_path[OF \<open>valid_path \<gamma>\<close> \<open>- z \<notin> path_image \<gamma>\<close>,folded c_def]
     by simp

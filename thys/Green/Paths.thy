@@ -831,12 +831,12 @@ next
       have "valid_path \<gamma>"
         using that by auto
       then have 0: "valid_path (reversepath \<gamma>)"
-        using Cauchy_Integral_Theorem.valid_path_imp_reverse
+        using valid_path_imp_reverse
         by auto
       have 1: "pathfinish (reversepath \<gamma>) = pathstart (rec_join (h#l'))"
         using that(6) k_eq_neg_1 l_nempty by auto
       show "valid_path ((reversepath \<gamma>) +++ rec_join (h#l'))"
-        using 0 1 Cauchy_Integral_Theorem.valid_path_join that(4) l_nempty by blast
+        using 0 1 valid_path_join that(4) l_nempty by blast
     qed
   qed
   have "\<forall>ps. valid_chain_list ps \<or> (\<exists>i f p psa. ps = (i, f) # p # psa \<and> ((i = 1 \<and> pathfinish f \<noteq> pathstart (rec_join (p # psa)) \<or> i \<noteq> 1 \<and> pathfinish (reversepath f) \<noteq> pathstart (rec_join (p # psa))) \<or> \<not> valid_chain_list (p # psa)))"
@@ -944,7 +944,7 @@ next
       have gamma_valid: "valid_path \<gamma>"
         using Cons aeq by auto
       then have 2: "valid_path (reversepath \<gamma>)"
-        using Cauchy_Integral_Theorem.valid_path_imp_reverse by auto
+        using valid_path_imp_reverse by auto
       have "line_integral_exists F basis \<gamma>"
         using Cons aeq by auto
       then have 0: "line_integral_exists F basis (reversepath \<gamma>)"
@@ -1042,7 +1042,7 @@ next
         "valid_path \<gamma>"
         using ass k_gamma by auto
       then have 2: "valid_path (reversepath \<gamma>)"
-        using Cauchy_Integral_Theorem.valid_path_imp_reverse by auto
+        using valid_path_imp_reverse by auto
       have "line_integral_exists F basis (reversepath \<gamma>)"
         using line_integral_exists_joinD1[OF 0 2] by auto
       then show "line_integral_exists F basis (\<gamma>)"
@@ -1243,7 +1243,7 @@ proof -
         using line_integral_on_reverse_path ass props
         by auto
       have gamma_is_valid: "valid_path (reversepath \<gamma>)"
-        using Cauchy_Integral_Theorem.valid_path_imp_reverse ass props by auto
+        using valid_path_imp_reverse ass props by auto
       have line_int_rw: "line_integral F basis (rec_join ((k, \<gamma>) # l)) = line_integral F basis ((reversepath \<gamma>) +++ rec_join l)"
       proof -
         have gam_int: "line_integral_exists F basis \<gamma>" using ass props by auto
@@ -1385,7 +1385,7 @@ proof -
         using valid_path_equiv_valid_chain_list[OF i ii iv]
         by auto
       then show ?thesis
-        using  reversepath_reversepath Cauchy_Integral_Theorem.valid_path_imp_reverse
+        using  reversepath_reversepath valid_path_imp_reverse
         by force
     qed
   qed

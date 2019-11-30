@@ -1,8 +1,7 @@
 section \<open>The Euler--MacLaurin summation formula\<close>
 theory Euler_MacLaurin
 imports 
-  "HOL-Analysis.Analysis"
-  "HOL-Library.Multiset"
+  "HOL-Complex_Analysis.Complex_Analysis"
   Bernoulli.Periodic_Bernpoly
   Bernoulli.Bernoulli_FPS
 begin

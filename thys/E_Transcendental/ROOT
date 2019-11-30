@@ -1,6 +1,6 @@
 chapter AFP
 
-session E_Transcendental (AFP) = "HOL-Analysis" +
+session E_Transcendental (AFP) = "HOL-Complex_Analysis" +
   options [timeout = 600]
   sessions
     "HOL-Number_Theory"

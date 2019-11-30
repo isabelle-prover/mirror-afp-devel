@@ -1,6 +1,6 @@
 chapter AFP
 
-session Bernoulli (AFP) = "HOL-Analysis" +
+session Bernoulli (AFP) = "HOL-Complex_Analysis" +
   options [timeout = 600]
   sessions
     "HOL-Analysis"

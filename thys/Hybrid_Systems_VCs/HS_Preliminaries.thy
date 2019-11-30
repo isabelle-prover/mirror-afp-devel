@@ -53,13 +53,15 @@ notation has_derivative ("(1(D _ \<mapsto> (_))/ _)" [65,65] 61)
 notation has_vderiv_on ("(1 D _ = (_)/ on _)" [65,65] 61)
 notation norm ("(1\<parallel>_\<parallel>)" [65] 61)
 
+thy_deps
+
 named_theorems poly_derivatives "compilation of optimised miscellaneous derivative rules."
 
 declare has_vderiv_on_const [poly_derivatives]
     and has_vderiv_on_id [poly_derivatives]
-    and derivative_intros(191) [poly_derivatives]
-    and derivative_intros(192) [poly_derivatives]
-    and derivative_intros(194) [poly_derivatives]
+    and has_vderiv_on_add[THEN has_vderiv_on_eq_rhs, poly_derivatives]
+    and has_vderiv_on_diff[THEN has_vderiv_on_eq_rhs, poly_derivatives]
+    and has_vderiv_on_mult[THEN has_vderiv_on_eq_rhs, poly_derivatives]
 
 lemma has_vderiv_on_compose_eq:
   assumes "D f = f' on g ` T"
@@ -78,7 +80,7 @@ lemma vderiv_on_compose_add [derivative_intros]:
 lemma has_vderiv_on_divide_cnst: "a \<noteq> 0 \<Longrightarrow> D (\<lambda>t. t/a) = (\<lambda>t. 1/a) on T"
   unfolding has_vderiv_on_def has_vector_derivative_def
   apply clarify
-  apply(rule_tac f'1="\<lambda>t. t" and g'1="\<lambda> x. 0" in derivative_eq_intros(18))
+  apply(rule_tac f'1="\<lambda>t. t" and g'1="\<lambda> x. 0" in has_derivative_divide[THEN has_derivative_eq_rhs])
   by(auto intro: derivative_eq_intros)
 
 lemma has_vderiv_on_power: "n \<ge> 1 \<Longrightarrow> D (\<lambda>t. t ^ n) = (\<lambda>t. n * (t ^ (n - 1))) on T"
