@@ -35,8 +35,8 @@ definition [enres_unfolds]: "CATCH m h \<equiv> do { r\<leftarrow>m; case r of I
 
 abbreviation (do_notation) bind_doE where "bind_doE \<equiv> ebind"
 
-notation (output) bind_doE (infixr "\<bind>" 54)
-notation (ASCII output) bind_doE (infixr ">>=" 54)
+notation (output) bind_doE (infixl "\<bind>" 54)
+notation (ASCII output) bind_doE (infixl ">>=" 54)
 
 
 nonterminal doE_binds and doE_bind
@@ -47,7 +47,7 @@ syntax
   "_doE_then" :: "'a \<Rightarrow> doE_bind" ("_" [14] 13)
   "_doE_final" :: "'a \<Rightarrow> doE_binds" ("_")
   "_doE_cons" :: "[doE_bind, doE_binds] \<Rightarrow> doE_binds" ("_;//_" [13, 12] 12)
-  "_thenM" :: "['a, 'b] \<Rightarrow> 'c" (infixr "\<then>" 54)
+  "_thenM" :: "['a, 'b] \<Rightarrow> 'c" (infixl "\<then>" 54)
 
 syntax (ASCII)
   "_doE_bind" :: "[pttrn, 'a] \<Rightarrow> doE_bind" ("(2_ <-/ _)" 13)

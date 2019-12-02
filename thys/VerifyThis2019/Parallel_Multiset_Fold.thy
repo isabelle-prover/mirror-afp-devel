@@ -105,7 +105,7 @@ proof -
     using \<open>finite S\<close> by - (erule finite_subset, auto intro: finite_set_of_finite_maps)
   then have [intro]: "wf ?R1"
     apply (rule finite_acyclic_wf)
-    apply (rule order_class.acyclicI_order[where f = "\<lambda>x. n - card (dom x)"])
+    apply (rule preorder_class.acyclicI_order[where f = "\<lambda>x. n - card (dom x)"])
     apply clarsimp
     by (metis (full_types) 
         cancel_ab_semigroup_add_class.diff_right_commute diff_diff_cancel domD domI
