@@ -1,8 +1,10 @@
 chapter AFP
 
 session VerifyThis2019 (AFP) = Sepref_IICF +
- options [timeout = 600]
- theories [document = false]
+  options [timeout = 600]
+  directories
+    "lib"
+  theories [document = false]
     "lib/VTcomp"
   theories
     Challenge1A
