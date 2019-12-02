@@ -486,10 +486,8 @@ lemma scale_shift_smooth:
   shows "(\<lambda>x. a + b * x) C1_differentiable_on s"
 proof -
   show "(\<lambda>x. a + b * x) C1_differentiable_on s"
-    using Cauchy_Integral_Theorem.C1_differentiable_on_mult
-      Cauchy_Integral_Theorem.C1_differentiable_on_add
-      Cauchy_Integral_Theorem.C1_differentiable_on_const
-      Cauchy_Integral_Theorem.C1_differentiable_on_ident
+    using C1_differentiable_on_mult C1_differentiable_on_add 
+      C1_differentiable_on_const C1_differentiable_on_ident
     by auto
 qed
 
