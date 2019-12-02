@@ -214,6 +214,7 @@ InfPathElimination
 InformationFlowSlicing
 InformationFlowSlicing_Inter
 Integration
+Interval_Arithmetic_Word32
 Iptables_Semantics
 Irrationality_J_Hancl
 Isabelle_Meta_Model
@@ -487,6 +488,7 @@ Valuation
 VectorSpace
 Verified-Prover
 VerifyThis2018
+VerifyThis2019
 Vickrey_Clarke_Groves
 VolpanoSmith
 WHATandWHERE_Security
@@ -498,4 +500,5 @@ Word_Lib
 WorkerWrapper
 XML
 Zeta_Function
+ZFC_in_HOL
 pGCL

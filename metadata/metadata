@@ -8558,3 +8558,63 @@ abstract =
   illustrating the functionality of Isabelle and high efficiency of
   Sledgehammer for simple exercises in philosophy.
 
+[VerifyThis2019]
+title = VerifyThis 2019 -- Polished Isabelle Solutions
+author = Peter Lammich<>, Simon Wimmer<http://home.in.tum.de/~wimmers/>
+topic = Computer Science/Algorithms
+date = 2019-10-16
+notify = lammich@in.tum.de, wimmers@in.tum.de
+abstract = 
+  VerifyThis 2019 (http://www.pm.inf.ethz.ch/research/verifythis.html)
+  was a program verification competition associated with ETAPS 2019. It
+  was the 8th event in the VerifyThis competition series. In this entry,
+  we present polished and completed versions of our solutions that we
+  created during the competition.
+
+[ZFC_in_HOL]
+title = Zermelo Fraenkel Set Theory in Higher-Order Logic
+author = Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
+topic = Mathematics/Set Theory
+date = 2019-10-24
+notify = lp15@cam.ac.uk
+abstract = 
+  <p>This entry is a new formalisation of ZFC set theory in Isabelle/HOL. It is
+  logically equivalent to Obua's HOLZF; the point is to have the closest
+  possible integration with the rest of Isabelle/HOL, minimising the amount of
+  new notations and exploiting type classes.</p>
+  <p>There is a type <em>V</em> of sets and a function <em>elts :: V =&gt; V
+  set</em> mapping a set to its elements. Classes simply have type <em>V
+  set</em>, and a predicate identifies the small classes: those that correspond
+  to actual sets. Type classes connected with orders and lattices are used to
+  minimise the amount of new notation for concepts such as the subset relation,
+  union and intersection. Basic concepts — Cartesian products, disjoint sums,
+  natural numbers, functions, etc. — are formalised.</p>
+  <p>More advanced set-theoretic concepts, such as transfinite induction,
+  ordinals, cardinals and the transitive closure of a set, are also provided.
+  The definition of addition and multiplication for general sets (not just
+  ordinals) follows Kirby.</p>
+  <p>The theory provides two type classes with the aim of facilitating
+  developments that combine <em>V</em> with other Isabelle/HOL types:
+  <em>embeddable</em>, the class of types that can be injected into <em>V</em>
+  (including <em>V</em> itself as well as <em>V*V</em>, etc.), and
+  <em>small</em>, the class of types that correspond to some ZF set.</p>
+
+[Interval_Arithmetic_Word32]
+title = Interval Arithmetic on 32-bit Words
+author = Brandon Bohrer <mailto:bbohrer@cs.cmu.edu>
+topic = Computer Science/Data Structures
+date = 2019-11-27
+notify = bjbohrer@gmail.com, bbohrer@cs.cmu.edu
+abstract = 
+  Interval_Arithmetic implements conservative interval arithmetic
+  computations, then uses this interval arithmetic to implement a simple
+  programming language where all terms have 32-bit signed word values,
+  with explicit infinities for terms outside the representable bounds.
+  Our target use case is interpreters for languages that must have a
+  well-understood low-level behavior.  We include a formalization of
+  bounded-length strings which are used for the identifiers of our
+  language. Bounded-length identifiers are useful in some applications,
+  for example the <a href="https://www.isa-afp.org/entries/Differential_Dynamic_Logic.html">Differential_Dynamic_Logic</a> article,
+  where a Euclidean space indexed by identifiers demands that identifiers
+  are finitely many.
+
