@@ -358,7 +358,7 @@ structure Locale_Code :LOCALE_CODE = struct
     val ty = fastype_of pat;
     val dpat = Const (@{const_name LC_DEL},ty --> @{typ unit})$pat;
   in 
-    Spec_Rules.add "" Spec_Rules.Unknown [dpat] []
+    Spec_Rules.add Binding.empty Spec_Rules.Unknown [dpat] []
   end
 
 
