@@ -6,6 +6,7 @@ imports
   CAVA_Base.CAVA_Code_Target
 begin
 
+
 section \<open>Automatic Refinement to Efficient Data Structures\<close>
 context fr_graph_impl_loc
 begin
@@ -45,7 +46,7 @@ begin
   concrete_definition (in -) last_seg_tr uses fr_graph_impl_loc.last_seg_tr_aux
   lemmas [refine_transfer] = last_seg_tr.refine[OF locale_this]
 
-  schematic_goal compute_SCC_tr_aux: "RETURN ?c \<le> compute_SCC_code g"
+  schematic_goal compute_SCC_tr_aux: "RETURN ?c \<le> compute_SCC_code node_eq_impl node_hash_impl node_def_hash_size g"
     unfolding compute_SCC_code_def by refine_transfer
   concrete_definition (in -) compute_SCC_tr 
     uses fr_graph_impl_loc.compute_SCC_tr_aux
@@ -58,17 +59,22 @@ section \<open>Correctness Theorem\<close>
 
 theorem compute_SCC_tr_correct:
   \<comment> \<open>Correctness theorem for the constant we extracted to SML\<close>
-  fixes Re
-  fixes G :: "('a::hashable,'more) graph_rec_scheme"
-  assumes A: "(G_impl,G)\<in>\<langle>Re,Id\<rangle>g_impl_rel_ext"
+  fixes Re and node_rel :: "('vi \<times> 'v) set"
+  fixes G :: "('v,'more) graph_rec_scheme"
+  assumes A: 
+      "(G_impl,G)\<in>\<langle>Re,node_rel\<rangle>g_impl_rel_ext"
+      "(node_eq_impl, (=)) \<in> node_rel \<rightarrow> node_rel \<rightarrow> bool_rel"
+      "is_bounded_hashcode node_rel node_eq_impl node_hash_impl"
+      "(is_valid_def_hm_size TYPE('vi) node_def_hash_size)"
+  
   assumes C: "fr_graph G"
-  shows "RETURN (compute_SCC_tr G_impl) 
-  \<le> \<Down>(\<langle>\<langle>Id\<rangle>list_set_rel\<rangle>list_rel) (fr_graph.compute_SCC_spec G)"
+  shows "RETURN (compute_SCC_tr node_eq_impl node_hash_impl node_def_hash_size G_impl) 
+  \<le> \<Down>(\<langle>\<langle>node_rel\<rangle>list_set_rel\<rangle>list_rel) (fr_graph.compute_SCC_spec G)"
 proof -
   from C interpret fr_graph G .
-  have I: "fr_graph_impl_loc Re G_impl G"
+  have I: "fr_graph_impl_loc Re node_rel node_eq_impl node_hash_impl node_def_hash_size G_impl G"
     apply unfold_locales using A .
-  then interpret fr_graph_impl_loc Re G_impl G .
+  then interpret fr_graph_impl_loc Re node_rel node_eq_impl node_hash_impl node_def_hash_size G_impl G .
 
   note compute_SCC_tr.refine[OF I]
   also note compute_SCC_code.refine[OF I, THEN nres_relD]
@@ -86,7 +92,7 @@ concrete_definition list_set_of_list uses list_set_of_list_aux
 
 term compute_SCC_tr
 
-definition compute_SCC_tr_nat :: "_ \<Rightarrow> nat list list"
+definition compute_SCC_tr_nat :: "_ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> nat list list"
   where "compute_SCC_tr_nat \<equiv> compute_SCC_tr"
 
 (*export_code 

@@ -271,17 +271,28 @@ begin
 
   section \<open>Refinement to efficient data structures\<close>
   schematic_goal wset_find_path'_refine_aux:
-    fixes U0::"'a::hashable set" and P::"'a \<Rightarrow> bool" and E::"('a\<times>'a) set"
+    fixes U0::"'a set" and P::"'a \<Rightarrow> bool" and E::"('a\<times>'a) set"
+      and Pimpl :: "'ai \<Rightarrow> bool"
+      and node_rel :: "('ai \<times> 'a) set"
+      and node_eq_impl :: "'ai \<Rightarrow> 'ai \<Rightarrow> bool"
+      and node_hash_impl
+      and node_def_hash_size
+    
     assumes [autoref_rules]: 
-      "(succi,E)\<in>\<langle>Id\<rangle>slg_rel"
-      "(U0',U0)\<in>\<langle>Id\<rangle>list_set_rel"
+      "(succi,E)\<in>\<langle>node_rel\<rangle>slg_rel"
+      "(Pimpl,P)\<in>node_rel \<rightarrow> bool_rel"
+      "(node_eq_impl, (=)) \<in> node_rel \<rightarrow> node_rel \<rightarrow> bool_rel"
+      "(U0',U0)\<in>\<langle>node_rel\<rangle>list_set_rel"
+    assumes [autoref_ga_rules]: 
+      "is_bounded_hashcode node_rel node_eq_impl node_hash_impl"  
+      "is_valid_def_hm_size TYPE('ai) node_def_hash_size"
     notes [autoref_tyrel] = 
       TYRELI[where 
-        R="\<langle>Id::(('a\<times>'a) set),\<langle>Id::(('a\<times>'a) set)\<rangle>list_rel\<rangle>list_map_rel"]
-      TYRELI[where R="\<langle>Id::(('a\<times>'a) set)\<rangle>map2set_rel dflt_ahm_rel"]
+        R="\<langle>node_rel,\<langle>node_rel\<rangle>list_rel\<rangle>list_map_rel"]
+      TYRELI[where R="\<langle>node_rel\<rangle>map2set_rel (ahm_rel node_hash_impl)"]
 
-    notes [autoref_rules] = 
-      IdI[of P, unfolded fun_rel_id_simp[symmetric]]
+    (*notes [autoref_rules] = 
+      IdI[of P, unfolded fun_rel_id_simp[symmetric]]*)
 
     shows "(?c::?'c,wset_find_path' E U0 P) \<in> ?R"
     unfolding wset_find_path'_def ws_update_foreach_def s_init_foreach_def
@@ -291,7 +302,9 @@ begin
     apply (autoref (keep_goal))
     done
 
-  concrete_definition wset_find_path_impl for succi U0' P 
+  find_theorems list_map_update  
+    
+  concrete_definition wset_find_path_impl for node_eq_impl succi U0' Pimpl 
     uses wset_find_path'_refine_aux
 
   section \<open>Autoref Setup\<close>
@@ -301,13 +314,22 @@ begin
         \<rightarrow>\<^sub>i \<langle>\<langle>\<langle>\<langle>I\<rangle>\<^sub>ii_list, I\<rangle>\<^sub>ii_prod\<rangle>\<^sub>ii_option\<rangle>\<^sub>ii_nres" by simp
 
     lemma wset_find_path_autoref[autoref_rules]:
+      fixes node_rel :: "('ai \<times> 'a) set"
+      assumes eq: "GEN_OP node_eq_impl (=) (node_rel\<rightarrow>node_rel\<rightarrow>bool_rel)"
+      assumes hash: "SIDE_GEN_ALGO (is_bounded_hashcode node_rel node_eq_impl node_hash_impl)"
+      assumes hash_dsz: "SIDE_GEN_ALGO (is_valid_def_hm_size TYPE('ai) node_def_hash_size)"
       shows "(
-        wset_find_path_impl, 
+        wset_find_path_impl node_hash_impl node_def_hash_size node_eq_impl, 
         find_path)
-        \<in> \<langle>Id\<rangle>slg_rel \<rightarrow> \<langle>Id\<rangle>list_set_rel \<rightarrow> (Id\<rightarrow>bool_rel) 
-          \<rightarrow> \<langle>\<langle>\<langle>Id\<rangle>list_rel\<times>\<^sub>rId\<rangle>option_rel\<rangle>nres_rel"
+        \<in> \<langle>node_rel\<rangle>slg_rel \<rightarrow> \<langle>node_rel\<rangle>list_set_rel \<rightarrow> (node_rel\<rightarrow>bool_rel) 
+          \<rightarrow> \<langle>\<langle>\<langle>node_rel\<rangle>list_rel\<times>\<^sub>rnode_rel\<rangle>option_rel\<rangle>nres_rel"
     proof -
-      note wset_find_path_impl.refine[THEN nres_relD]
+      note EQI = GEN_OP_D[OF eq]
+      note HASHI = SIDE_GEN_ALGO_D[OF hash]
+      note DSZI = SIDE_GEN_ALGO_D[OF hash_dsz]
+    
+    
+      note wset_find_path_impl.refine[THEN nres_relD, OF _ _ EQI _ HASHI DSZI]
       also note wset_find_path'_refine
       also note wset_find_path_correct
       finally show ?thesis 
@@ -316,7 +338,7 @@ begin
   end
     
   schematic_goal wset_find_path_transfer_aux: 
-    "RETURN ?c \<le> wset_find_path_impl E U0 P"
+    "RETURN ?c \<le> wset_find_path_impl hashi dszi eqi E U0 P"
     unfolding wset_find_path_impl_def
     by (refine_transfer (post))
   concrete_definition wset_find_path_code 
@@ -344,9 +366,15 @@ lemma find_path1_gen_correct: "find_path1_gen E u0 P \<le> find_path1 E u0 P"
   done
 
 schematic_goal find_path1_impl_aux:
-  shows "(?c::?'c,find_path1_gen::(_\<times>_::hashable) set \<Rightarrow> _)\<in>?R"
+  fixes node_rel :: "('ai \<times> 'a) set"
+  assumes [autoref_rules]: "(node_eq_impl, (=)) \<in> node_rel \<rightarrow> node_rel \<rightarrow> bool_rel"
+  assumes [autoref_ga_rules]: 
+    "is_bounded_hashcode node_rel node_eq_impl node_hash_impl"  
+    "is_valid_def_hm_size TYPE('ai) node_def_hash_size"
+
+  shows "(?c,find_path1_gen::(_\<times>_) set \<Rightarrow> _) \<in> \<langle>node_rel\<rangle>slg_rel \<rightarrow> node_rel \<rightarrow> (node_rel \<rightarrow> bool_rel) \<rightarrow> \<langle>\<langle>\<langle>node_rel\<rangle>list_rel \<times>\<^sub>r node_rel\<rangle>option_rel\<rangle>nres_rel"
   unfolding find_path1_gen_def[abs_def]
-  apply (autoref (keep_goal))
+  apply (autoref (trace,keep_goal))
   done
 
 lemma [autoref_itype]: 
@@ -356,17 +384,29 @@ lemma [autoref_itype]:
 concrete_definition find_path1_impl uses find_path1_impl_aux
 
 lemma find_path1_autoref[autoref_rules]: 
-  "(find_path1_impl,find_path1) 
-    \<in> \<langle>Id\<rangle>slg_rel \<rightarrow>Id \<rightarrow> (Id \<rightarrow> bool_rel) \<rightarrow> 
-      \<langle>\<langle>\<langle>Id\<rangle>list_rel \<times>\<^sub>r Id\<rangle>Relators.option_rel\<rangle>nres_rel"
-  apply (rule fun_relI nres_relI)+
-  apply (rule order_trans)
-  apply (erule (2) find_path1_impl.refine[param_fo, THEN nres_relD])
-  apply (simp add: find_path1_gen_correct)
-  done
+  fixes node_rel :: "('ai \<times> 'a) set"
+  assumes eq: "GEN_OP node_eq_impl (=) (node_rel\<rightarrow>node_rel\<rightarrow>bool_rel)"
+  assumes hash: "SIDE_GEN_ALGO (is_bounded_hashcode node_rel node_eq_impl node_hash_impl)"
+  assumes hash_dsz: "SIDE_GEN_ALGO (is_valid_def_hm_size TYPE('ai) node_def_hash_size)"
+  
+  shows "(find_path1_impl node_eq_impl node_hash_impl node_def_hash_size,find_path1) 
+    \<in> \<langle>node_rel\<rangle>slg_rel \<rightarrow>node_rel \<rightarrow> (node_rel \<rightarrow> bool_rel) \<rightarrow> 
+      \<langle>\<langle>\<langle>node_rel\<rangle>list_rel \<times>\<^sub>r node_rel\<rangle>Relators.option_rel\<rangle>nres_rel"
+proof -
+
+  note EQI = GEN_OP_D[OF eq]
+  note HASHI = SIDE_GEN_ALGO_D[OF hash]
+  note DSZI = SIDE_GEN_ALGO_D[OF hash_dsz]
+  
+  note R = find_path1_impl.refine[param_fo, THEN nres_relD, OF EQI HASHI DSZI]
+  
+  note R
+  also note find_path1_gen_correct
+  finally show ?thesis by (blast intro: nres_relI)
+qed
   
 schematic_goal find_path1_transfer_aux: 
-  "RETURN ?c \<le> find_path1_impl E u P"
+  "RETURN ?c \<le> find_path1_impl eqi hashi dszi E u P"
   unfolding find_path1_impl_def
   by refine_transfer
 concrete_definition find_path1_code for E u P uses find_path1_transfer_aux
