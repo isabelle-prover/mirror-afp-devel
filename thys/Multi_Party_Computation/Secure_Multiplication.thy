@@ -463,7 +463,7 @@ qed
 
 theorem P2_security:
   assumes "x < q" "y < q"
-  shows "sim_non_det_def.inf_theoretic_P2 x y"
+  shows "sim_non_det_def.perfect_sec_P2 x y"
   including monad_normalisation
 proof-
   have "((funct x y) \<bind> (\<lambda> (s1',s2'). (sim_non_det_def.Ideal2 y x s2'))) = R2 x y"
@@ -558,7 +558,7 @@ proof-
       by(simp add: s1_P2 assms Let_def cong: bind_spmf_cong_simp)
     ultimately show ?thesis by(simp add: funct_def Let_def sim_non_det_def.Ideal2_def Out2_def S2_def R2_def)
   qed
-  then show ?thesis by(simp add: sim_non_det_def.inf_theoretic_P2_def)
+  then show ?thesis by(simp add: sim_non_det_def.perfect_sec_P2_def)
 qed
 
 lemma s1_s2_P1:  assumes "x < q" "xa < q" "xb < q" "xc < q" "y < q"
@@ -704,7 +704,7 @@ qed
 
 theorem P1_security:
   assumes "x < q" "y < q"
-  shows "sim_non_det_def.inf_theoretic_P1 x y"
+  shows "sim_non_det_def.perfect_sec_P1 x y"
   including monad_normalisation
 proof-
   have "(funct x y) \<bind> (\<lambda> (s1',s2'). (sim_non_det_def.Ideal1 x y s1')) = R1 x y"
@@ -772,7 +772,7 @@ proof-
       by(simp add: samp_uni_minus_one_time_pad)
     ultimately show ?thesis by(simp add: funct_def sim_non_det_def.Ideal1_def Let_def R1_def TI_def Out1_def S1_def)
   qed
-  thus ?thesis by(simp add: sim_non_det_def.inf_theoretic_P1_def)
+  thus ?thesis by(simp add: sim_non_det_def.perfect_sec_P1_def)
 qed
 
 end
@@ -787,12 +787,12 @@ sublocale secure_mult "q n" for n
 
 theorem P1_secure:
   assumes "x < q n" "y < q n"
-  shows "sim_non_det_def.inf_theoretic_P1 n x y"
+  shows "sim_non_det_def.perfect_sec_P1 n x y"
   by (metis P1_security assms)
 
 theorem P2_secure:
   assumes "x < q n" "y < q n"
-  shows "sim_non_det_def.inf_theoretic_P2 n x y"
+  shows "sim_non_det_def.perfect_sec_P2 n x y"
   by (metis P2_security assms)
 
 end 

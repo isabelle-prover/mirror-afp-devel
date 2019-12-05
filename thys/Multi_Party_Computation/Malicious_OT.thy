@@ -1403,8 +1403,8 @@ qed
 lemma malicious_sec_P2:   
   assumes x1_in_carrier: "x1 \<in> carrier \<G>"
     and x0_in_carrier: "x0 \<in> carrier \<G>"  
-  shows "mal_def.inf_theoretic_mal_sec_P2 (x0,x1) \<sigma> z (P2_S1, P2_S2) \<A>"
-  unfolding malicious_base.inf_theoretic_mal_sec_P2_def
+  shows "mal_def.perfect_sec_P2 (x0,x1) \<sigma> z (P2_S1, P2_S2) \<A>"
+  unfolding malicious_base.perfect_sec_P2_def
   by (simp add: P2_ideal_real_eq P2_ideal_view_unfold assms)
 
 (*correctness*)
@@ -1534,7 +1534,7 @@ qed
 lemma P2_security_asym:   
   assumes x1_in_carrier: "x1 \<in> carrier (\<G> n)"
     and x0_in_carrier: "x0 \<in> carrier (\<G> n)"  
-  shows "mal_def.inf_theoretic_mal_sec_P2 n (x0,x1) \<sigma> z (P2_S1 n, P2_S2 n) \<A>"
+  shows "mal_def.perfect_sec_P2 n (x0,x1) \<sigma> z (P2_S1 n, P2_S2 n) \<A>"
   using assms malicious_sec_P2 by fast
 
 end

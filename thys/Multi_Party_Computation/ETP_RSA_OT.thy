@@ -1,4 +1,4 @@
-subsubsection \<open>RSA instantiation\<close>
+subsubsection \<open> RSA instantiation \<close>
 
 text\<open>It is known that the RSA collection forms an ETP. Here we instantitate our proof of security for OT 
 that uses a general ETP for RSA. We use the proof of the general construction of OT. The main proof effort 
@@ -8,6 +8,7 @@ RSA mapping is a bijection.\<close>
 theory ETP_RSA_OT imports
   ETP_OT
   Number_Theory_Aux
+  Uniform_Sampling
 begin
 
 type_synonym index = "(nat \<times> nat)"
@@ -41,6 +42,11 @@ lemma coprime_set_non_empty:
 definition sample_coprime :: "nat \<Rightarrow> nat spmf"
   where "sample_coprime N = spmf_of_set (coprime_set (N))" 
 
+lemma sample_coprime_e_gt_1:
+  assumes "e \<in> set_spmf (sample_coprime N)"
+  shows "e > 1"
+  using assms by(simp add: sample_coprime_def coprime_set_def)
+
 lemma lossless_sample_coprime: 
   assumes "\<not> prime N" 
     and "N > 2"
@@ -64,14 +70,6 @@ lemma lossless_sample_primes:
   shows "lossless_spmf sample_primes"
     by(simp add: sample_primes_def prime_set_non_empty finite_prime_set)
 
-definition sample_primes_excl :: "nat set \<Rightarrow> nat spmf"
-  where "sample_primes_excl P = spmf_of_set (prime_set - P)"
-
-lemma lossless_sample_primes_excl: 
-  shows "lossless_spmf (sample_primes_excl {P})"
-  apply(simp add: sample_primes_excl_def finite_prime_set) 
-  using prime_set_gt_2 subset_singletonD by fastforce
-
 lemma set_spmf_sample_primes: 
   shows "set_spmf sample_primes \<subseteq> {x. prime x \<and> x > 2}"
   by(auto simp add: sample_primes_def prime_set_ass finite_prime_set)
@@ -86,19 +84,43 @@ lemma mem_samp_primes_prime:
   apply (simp add: finite_prime_set sample_primes_def prime_set_ass)
   using prime_set_ass by blast
 
+definition sample_primes_excl :: "nat set \<Rightarrow> nat spmf"
+  where "sample_primes_excl P = spmf_of_set (prime_set - P)"
+
+lemma lossless_sample_primes_excl: 
+  shows "lossless_spmf (sample_primes_excl {P})"
+  apply(simp add: sample_primes_excl_def finite_prime_set) 
+  using prime_set_gt_2 subset_singletonD by fastforce
+
+definition sample_set_excl :: "nat set \<Rightarrow> nat set \<Rightarrow> nat spmf"
+  where "sample_set_excl Q P = spmf_of_set (Q - P)"
+
+lemma set_spmf_sample_set_excl [simp]: 
+  assumes "finite (Q - P)" 
+  shows "set_spmf (sample_set_excl Q P) = (Q - P)"
+  unfolding  sample_set_excl_def 
+  by (metis set_spmf_of_set assms)+
+
+lemma lossless_sample_set_excl: 
+  assumes "finite Q" 
+    and "card Q > 2"
+  shows "lossless_spmf (sample_set_excl Q {P})"
+  unfolding sample_set_excl_def
+  using assms subset_singletonD by fastforce
+
 lemma mem_samp_primes_excl_gt_2: 
-  shows "x \<in> set_spmf (sample_primes_excl {y}) \<Longrightarrow> x > 2" 
-  apply(simp add: finite_prime_set sample_primes_excl_def  prime_set_ass ) 
+  shows "x \<in> set_spmf (sample_set_excl prime_set {y}) \<Longrightarrow> x > 2" 
+  apply(simp add: finite_prime_set sample_set_excl_def  prime_set_ass ) 
   using prime_set_ass by blast
 
 lemma mem_samp_primes_excl_prime : 
-  shows "x \<in> set_spmf (sample_primes_excl {y}) \<Longrightarrow> prime x" 
-  apply (simp add: finite_prime_set sample_primes_excl_def)
+  shows "x \<in> set_spmf (sample_set_excl prime_set {y}) \<Longrightarrow> prime x" 
+  apply (simp add: finite_prime_set sample_set_excl_def)
   using prime_set_ass by blast
 
 lemma sample_coprime_lem: 
   assumes "x \<in> set_spmf sample_primes" 
-    and " y \<in> set_spmf (sample_primes_excl {x}) "
+    and " y \<in> set_spmf (sample_set_excl prime_set {x}) "
   shows "lossless_spmf (sample_coprime ((x - Suc 0) * (y - Suc 0)))"
 proof-
   have gt_2: "x > 2" "y > 2" 
@@ -119,7 +141,7 @@ qed
 definition I :: "(index \<times> trap) spmf"
   where "I = do {
     P \<leftarrow> sample_primes;  
-    Q \<leftarrow> sample_primes_excl {P};
+    Q \<leftarrow> sample_set_excl prime_set {P};
     let N = P*Q;
     let N' = (P-1)*(Q-1);
     e \<leftarrow> sample_coprime N';
@@ -127,14 +149,26 @@ definition I :: "(index \<times> trap) spmf"
     return_spmf ((N, e), d)}"
 
 lemma lossless_I: "lossless_spmf I"
-  by(auto simp add: I_def lossless_sample_primes lossless_sample_primes_excl Let_def sample_coprime_lem)
+  by(auto simp add: I_def lossless_sample_primes lossless_sample_set_excl finite_prime_set prime_set_gt_2 Let_def sample_coprime_lem)
 
-lemma set_spmf_I: 
+lemma set_spmf_I_N:
   assumes "((N,e),d) \<in> set_spmf I" 
-  obtains P Q where "N = P * Q" and "P \<noteq> Q"  and "prime P" and "prime Q" and "coprime e ((P - 1)*(Q - 1))"
+  obtains P Q where "N = P * Q" 
+    and "P \<noteq> Q"  
+    and "prime P" 
+    and "prime Q" 
+    and "coprime e ((P - 1)*(Q - 1))" 
+    and "d = nat (fst (bezw e ((P-1)*(Q-1))) mod int ((P-1)*(Q-1)))"
   using assms apply(auto simp add: I_def Let_def) 
-  using finite_prime_set mem_samp_primes_prime rsa_base.sample_primes_excl_def rsa_base_axioms sample_primes_def 
+  using finite_prime_set mem_samp_primes_prime sample_set_excl_def rsa_base_axioms sample_primes_def 
   by (simp add: set_spmf_sample_coprime)
+
+lemma set_spmf_I_e_d: 
+  assumes "((N,e),d) \<in> set_spmf I" 
+  shows "e > 1" and "d > 1" 
+  using assms sample_coprime_e_gt_1  
+   apply(auto simp add: I_def Let_def) 
+  by (smt Euclidean_Division.pos_mod_sign Num.of_nat_simps(5) Suc_diff_1 bezw_inverse cong_def coprime_imp_gcd_eq_1 gr0I less_1_mult less_numeral_extra(2) mem_Collect_eq mod_by_0 mod_less more_arith_simps(6) nat_0 nat_0_less_mult_iff nat_int nat_neq_iff numerals(2) of_nat_0_le_iff of_nat_1 rsa_base.mem_samp_primes_gt_2 rsa_base_axioms set_spmf_sample_coprime zero_less_diff)
 
 definition domain :: "index \<Rightarrow> nat set"
   where "domain index \<equiv> {..< fst index}"
@@ -148,10 +182,13 @@ lemma finite_range: "finite (range index)"
 lemma dom_eq_ran: "domain index = range index" 
   by(simp add: range_def domain_def)
 
-definition f :: "index \<Rightarrow> (nat \<Rightarrow> nat)"
-  where "f index x = x ^ (snd index) mod (fst index)"
+definition F :: "index \<Rightarrow> (nat \<Rightarrow> nat)"
+  where "F index x = x ^ (snd index) mod (fst index)"
 
-text \<open>We must prove the RSA function is a bijection\<close>
+definition F\<^sub>i\<^sub>n\<^sub>v :: "index \<Rightarrow> trap \<Rightarrow> nat \<Rightarrow> nat"
+  where "F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y = y ^ \<tau> mod (fst \<alpha>)" 
+
+text \<open> We must prove the RSA function is a bijection \<close>
 
 lemma rsa_bijection:
   assumes coprime: "coprime e ((P-1)*(Q-1))"
@@ -456,7 +493,7 @@ lemma rsa_bij_betw:
     and "prime P" 
     and "prime Q"   
     and "P \<noteq> Q"
-  shows "bij_betw (f ((P * Q), e)) (range ((P * Q), e)) (range ((P * Q), e))"
+  shows "bij_betw (F ((P * Q), e)) (range ((P * Q), e)) (range ((P * Q), e))"
 proof-
   have PQ_not_0: "prime P \<longrightarrow> prime Q \<longrightarrow> P * Q \<noteq> 0"
   using assms by auto
@@ -468,81 +505,197 @@ proof-
     apply(rule endo_inj_surj; auto simp add: assms(2) assms(3) image_subsetI prime_gt_0_nat PQ_not_0 inj_on_def) 
     using rsa_bijection assms by blast
   ultimately show ?thesis 
-  unfolding bij_betw_def f_def range_def by blast
+  unfolding bij_betw_def F_def range_def by blast
 qed
 
 lemma bij_betw1:
   assumes "((N,e),d) \<in> set_spmf I" 
-  shows " bij_betw (f ((N), e)) (range ((N), e)) (range ((N), e))"
+  shows "bij_betw (F ((N), e)) (range ((N), e)) (range ((N), e))"
 proof-
-  obtain P Q where "N = P * Q" and "bij_betw (f ((P*Q), e)) (range ((P*Q), e)) (range ((P*Q), e))"
+  obtain P Q where "N = P * Q" and "bij_betw (F ((P*Q), e)) (range ((P*Q), e)) (range ((P*Q), e))"
   proof-
     obtain P Q where "prime P" and "prime Q" and "N = P * Q" and "P \<noteq> Q" and "coprime e ((P - 1)*(Q - 1))"
-      using set_spmf_I assms by blast
+      using set_spmf_I_N assms by blast
     then show ?thesis
       using rsa_bij_betw that by blast
   qed
   thus ?thesis by blast 
 qed
 
-sublocale etp: etp I domain range f B 
-  by (auto simp add: etp_def dom_eq_ran finite_range bij_betw1 lossless_I; metis Iio_eq_empty_iff bot_nat_def fst_conv mult_eq_0_iff not_prime_0 range_def set_spmf_I)
+lemma 
+  assumes "P dvd x"
+shows "[x = 0] (mod P)"
+  using assms cong_def by force
 
-sublocale etp: ETP_base I domain range f B
-  apply(auto simp add: ETP_base_def dom_eq_ran finite_range local.etp.non_empty_range lossless_I)
-  using dom_eq_ran local.etp.non_empty_range bij_betw1 by auto
+lemma rsa_inv: 
+  assumes d: "d = nat (fst (bezw e ((P-1)*(Q-1))) mod int ((P-1)*(Q-1)))"
+    and coprime: "coprime e ((P-1)*(Q-1))"
+    and prime_P: "prime (P::nat)" 
+    and prime_Q: "prime Q"   
+    and P_neq_Q: "P \<noteq> Q" 
+    and e_gt_1: "e > 1"
+    and d_gt_1: "d > 1" 
+  shows "((((x) ^ e) mod (P*Q)) ^ d) mod (P*Q) = x mod (P*Q)"
+proof(cases "x = 0 \<or> x = 1")
+  case True
+  then show ?thesis 
+    by (metis assms(6) assms(7) le_simps(1) nat_power_eq_Suc_0_iff neq0_conv not_one_le_zero numeral_nat(7) power_eq_0_iff power_mod)
+next
+  case False
+  hence x_gt_1: "x > 1" by simp
+  define z where "z = (x ^ e) ^ d - x"
+  hence z_gt_0: "z > 0"
+  proof-
+    have "(x ^ e) ^ d - x = x ^ (e * d) - x"
+      by (simp add: power_mult)
+    also have "... > 0" 
+      by (metis x_gt_1 e_gt_1 d_gt_1 le_neq_implies_less less_one linorder_not_less n_less_m_mult_n not_less_zero numeral_nat(7) power_increasing_iff power_one_right zero_less_diff) 
+    ultimately  show ?thesis using z_def by argo
+  qed
+  hence "[z = 0] (mod P)" 
+  proof(cases "[x = 0] (mod P)")
+    case True
+    then show ?thesis 
+    proof -
+      have "0 \<noteq> d * e"
+        by (metis (no_types) assms assms mult_is_0 not_one_less_zero)
+      then show ?thesis
+        by (metis (no_types) Groups.add_ac(2) True add_diff_inverse_nat cong_def cong_dvd_iff cong_mult_self_right dvd_0_right dvd_def dvd_trans mod_add_self2 more_arith_simps(5) nat_diff_split power_eq_if power_mult semiring_normalization_rules(7) z_def)
+    qed
+  next
+    case False
+    have "[e * d = 1] (mod ((P - 1) * (Q - 1)))" 
+      by (metis d bezw_inverse coprime coprime_imp_gcd_eq_1 nat_int)
+    hence "[e * d = 1] (mod (P - 1))" 
+      using assms cong_modulus_mult_nat by blast
+    then obtain k where k: "e*d = 1 + k*(P-1)" 
+      using ex_k_mod assms by force
+    hence "x ^ (e * d) = x * ((x ^ (P - 1)) ^ k)" 
+      by (metis power_add power_one_right mult.commute power_mult)
+    hence "[x ^ (e * d) = x * ((x ^ (P - 1)) ^ k)] (mod P)" 
+      using cong_def by simp
+    moreover have "[x ^ (P - 1) = 1] (mod P)"
+        using prime_P fermat_theorem False
+        by (simp add: cong_0_iff)
+    moreover have "[x ^ (e * d) = x * ((1) ^ k)] (mod P)"
+      by (metis \<open>x ^ (e * d) = x * (x ^ (P - 1)) ^ k\<close> calculation(2) cong_pow cong_scalar_left)
+    hence "[x ^ (e * d) = x] (mod P)" by simp
+    thus ?thesis using z_def z_gt_0 
+      by (simp add: cong_diff_iff_cong_0_nat power_mult)
+  qed
+  moreover have "[z = 0] (mod Q)" 
+  proof(cases "[x = 0] (mod Q)")
+    case True
+    then show ?thesis 
+    proof -
+      have "0 \<noteq> d * e"
+        by (metis (no_types) assms mult_is_0 not_one_less_zero)
+      then show ?thesis
+        by (metis (no_types) Groups.add_ac(2) True add_diff_inverse_nat cong_def cong_dvd_iff cong_mult_self_right dvd_0_right dvd_def dvd_trans mod_add_self2 more_arith_simps(5) nat_diff_split power_eq_if power_mult semiring_normalization_rules(7) z_def)
+    qed
+  next
+    case False
+    have "[e * d = 1] (mod ((P - 1) * (Q - 1)))" 
+      by (metis d bezw_inverse coprime coprime_imp_gcd_eq_1 nat_int)
+    hence "[e * d = 1] (mod (Q - 1))" 
+      using assms cong_modulus_mult_nat mult.commute by metis
+    then obtain k where k: "e*d = 1 + k*(Q-1)" 
+      using ex_k_mod assms by force
+    hence "x ^ (e * d) = x * ((x ^ (Q - 1)) ^ k)" 
+      by (metis power_add power_one_right mult.commute power_mult)
+    hence "[x ^ (e * d) = x * ((x ^ (Q - 1)) ^ k)] (mod P)" 
+      using cong_def by simp
+    moreover have "[x ^ (Q - 1) = 1] (mod Q)"
+        using prime_Q fermat_theorem False
+        by (simp add: cong_0_iff)
+    moreover have "[x ^ (e * d) = x * ((1) ^ k)] (mod Q)"
+      by (metis \<open>x ^ (e * d) = x * (x ^ (Q - 1)) ^ k\<close> calculation(2) cong_pow cong_scalar_left)
+    hence "[x ^ (e * d) = x] (mod Q)" by simp
+    thus ?thesis using z_def z_gt_0 
+      by (simp add: cong_diff_iff_cong_0_nat power_mult)
+  qed
+  ultimately have "Q dvd (x ^ e) ^ d - x"
+                  "P dvd (x ^ e) ^ d - x" 
+    using z_def assms cong_0_iff by blast +
+  hence "P * Q dvd ((x ^ e) ^ d - x)" 
+    using assms divides_mult primes_coprime_nat by blast
+  hence "[(x ^ e) ^ d = x] (mod (P * Q))"
+    using z_gt_0 cong_altdef_nat z_def by auto
+  thus ?thesis 
+    by (simp add: cong_def power_mod)
+qed
 
-end 
+
+lemma rsa_inv_set_spmf_I:
+  assumes "((N, e), d) \<in> set_spmf I"
+  shows "((((x::nat) ^ e) mod N) ^ d) mod N = x mod N"
+proof-
+  obtain P Q where "N = P * Q" and "d = nat (fst (bezw e ((P-1)*(Q-1))) mod int ((P-1)*(Q-1)))"  
+    and "prime P" 
+    and "prime Q" 
+    and "coprime e ((P - 1)*(Q - 1))" 
+    and "P \<noteq> Q"
+    using assms set_spmf_I_N 
+    by blast
+  moreover have "e > 1" and "d > 1" using set_spmf_I_e_d assms by auto
+  ultimately show ?thesis using rsa_inv by blast
+qed
+  
+sublocale etp_rsa: etp I domain range F F\<^sub>i\<^sub>n\<^sub>v 
+  unfolding etp_def apply(auto simp add: etp_def dom_eq_ran finite_range bij_betw1 lossless_I)
+   apply (metis fst_conv lessThan_iff mem_simps(2) nat_0_less_mult_iff prime_gt_0_nat range_def set_spmf_I_N)
+  apply(auto simp add: F_def F\<^sub>i\<^sub>n\<^sub>v_def) using rsa_inv_set_spmf_I 
+  by (simp add: range_def)
+
+sublocale etp: ETP_base I domain range B F F\<^sub>i\<^sub>n\<^sub>v
+  unfolding ETP_base_def 
+  by (simp add: etp_rsa.etp_axioms)
+
 
 text\<open>After proving the RSA collection is an ETP the proofs of security come easily from the general proofs.\<close>
 
-locale rsa_proof = rsa_base + 
-  fixes HCP_ad :: real
-begin
+lemma correctness_rsa: "etp.OT_12.correctness m1 m2"
+  by (rule local.etp.correct)
 
-sublocale etp_proof: ETP_ot_12 I domain range f 
-   by (auto simp add: etp.ETP_base_axioms ETP_ot_12_def)
+lemma P1_security_rsa: "etp.OT_12.perfect_sec_P1 m1 m2" 
+  by(rule local.etp.P1_security_inf_the)
 
-lemma "sim_det_def.correctness funct_OT_12 etp.protocol m1 m2" 
-  by (metis etp.correctness etp_proof.OT_12.correctness_def surj_pair)
-
-lemma P1_sec: "sim_det_def.inf_theoretic_P1 etp.R1 etp.S1 funct_OT_12 m1 m2" 
-  using local.etp_proof.P1_security by auto
-
-lemma P2_sec:
+lemma P2_security_rsa:
   assumes "\<forall> a. lossless_spmf (D a)"
-    and "\<And>b\<^sub>\<sigma>. local.etp.HCP_adv etp.\<A> m2 b\<^sub>\<sigma> D \<le> HCP_ad"
-  shows "sim_det_def.adv_P2 etp.R2 etp.S2 funct_OT_12 m1 m2 D \<le> 2 * HCP_ad"
-  using assms etp_proof.P2_security by blast
+    and "\<And>b\<^sub>\<sigma>. local.etp_rsa.HCP_adv etp.\<A> m2 b\<^sub>\<sigma> D \<le> HCP_ad"
+  shows "etp.OT_12.adv_P2 m1 m2 D \<le> 2 * HCP_ad"
+  by(simp add: local.etp.P2_security assms)
 
 end 
 
 locale rsa_asym =
   fixes prime_set :: "nat \<Rightarrow> nat set"
     and B :: "index \<Rightarrow> nat \<Rightarrow> bool"
-    and hcp_advantage :: "nat \<Rightarrow> real"
-  assumes rsa_proof_assm: "\<And> n. rsa_proof (prime_set n)"
+  assumes rsa_proof_assm: "\<And> n. rsa_base (prime_set n)"
 begin
 
-sublocale rsa_proof "(prime_set n)" B "(hcp_advantage n)"  
+sublocale rsa_base "(prime_set n)" B  
   using local.rsa_proof_assm  by simp
 
-lemma P1_sec_asym: "sim_det_def.inf_theoretic_P1 (etp.R1 n) (etp.S1 n) funct_OT_12 m1 m2" 
-  using P1_sec by simp 
+lemma correctness_rsa_asymp: 
+  shows "etp.OT_12.correctness n m1 m2"
+  by(rule correctness_rsa)
+
+lemma P1_sec_asymp: "etp.OT_12.perfect_sec_P1 n m1 m2" 
+  by(rule local.P1_security_rsa)
 
 lemma P2_sec_asym: 
   assumes "\<forall> a. lossless_spmf (D a)" 
     and HCP_adv_neg: "negligible (\<lambda> n. hcp_advantage n)"
-    and hcp_adv_bound:  "\<forall>b\<^sub>\<sigma> n. local.etp.HCP_adv n etp.\<A> m2 b\<^sub>\<sigma> D \<le> hcp_advantage n"
-  shows "negligible (\<lambda> n. sim_det_def.adv_P2  (etp.R2 n) (etp.S2 n) funct_OT_12 m1 m2 D)"
+    and hcp_adv_bound:  "\<forall>b\<^sub>\<sigma> n. local.etp_rsa.HCP_adv n etp.\<A> m2 b\<^sub>\<sigma> D \<le> hcp_advantage n"
+  shows "negligible (\<lambda> n. etp.OT_12.adv_P2 n m1 m2 D)"
 proof-
   have "negligible (\<lambda> n. 2 * hcp_advantage n)" using HCP_adv_neg 
     by (simp add: negligible_cmultI)
-  moreover have "\<bar>sim_det_def.adv_P2  (etp.R2 n) (etp.S2 n) funct_OT_12 m1 m2 D\<bar> 
-            = sim_det_def.adv_P2 (etp.R2 n) (etp.S2 n) funct_OT_12 m1 m2 D" 
-    for n unfolding sim_det_def.adv_P2_def etp_proof.OT_12.adv_P2_def by linarith
-  moreover have "sim_det_def.adv_P2 (etp.R2 n) (etp.S2 n) funct_OT_12 m1 m2 D \<le> 2 * hcp_advantage n" for n
-    using P2_sec assms by blast
+  moreover have "\<bar>etp.OT_12.adv_P2 n m1 m2 D\<bar> = etp.OT_12.adv_P2 n m1 m2 D" 
+    for n unfolding sim_det_def.adv_P2_def local.etp.OT_12.adv_P2_def by linarith
+  moreover have "etp.OT_12.adv_P2 n m1 m2 D \<le> 2 * hcp_advantage n" for n
+    using P2_security_rsa assms by blast
   ultimately show ?thesis 
     using assms negligible_le by presburger 
 qed

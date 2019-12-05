@@ -231,7 +231,7 @@ qed
 
 lemma security_P2: 
   assumes "m0 \<in> carrier \<G>" "m1 \<in> carrier \<G>"
-  shows "sim_def.inf_theoretic_P2 (m0,m1) \<sigma>"
+  shows "sim_def.perfect_sec_P2 (m0,m1) \<sigma>"
 proof-
   have "R2 (m0, m1) \<sigma> = S2 \<sigma> (if \<sigma> then m1 else m0)"
     including monad_normalisation
@@ -321,7 +321,7 @@ proof-
     ultimately show ?thesis by(simp add: S2_def Let_def bind_map_spmf o_def)
   qed
   thus ?thesis 
-    by(simp add: sim_def.inf_theoretic_P2_def funct_OT_12_def)
+    by(simp add: sim_def.perfect_sec_P2_def funct_OT_12_def)
 qed
 
 end 
@@ -355,7 +355,7 @@ qed
 
 theorem security_P2_asymp: 
   assumes "m0 \<in> carrier (\<G> \<eta>)" "m1 \<in> carrier (\<G> \<eta>)"
-  shows "sim_def.inf_theoretic_P2 \<eta> (m0,m1) \<sigma>"
+  shows "sim_def.perfect_sec_P2 \<eta> (m0,m1) \<sigma>"
   by(simp add: security_P2 assms)
 
 end
