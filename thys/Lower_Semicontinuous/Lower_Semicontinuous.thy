@@ -1303,7 +1303,7 @@ lemma convex_domain:
 proof-
 have "convex (Epigraph UNIV f)" using assms convex_Epigraph by auto
 thus ?thesis unfolding domain_Epigraph_fst
-  apply (subst convex_linear_image) using fst_linear linear_conv_bounded_linear by auto
+  apply (subst convex_linear_image) using linear_fst linear_conv_bounded_linear by auto
 qed
 
 
