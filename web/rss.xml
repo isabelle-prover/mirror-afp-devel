@@ -9,7 +9,32 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>27 Nov 2019 00:00:00 +0000</pubDate>
+    <pubDate>04 Dec 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</title>
+              <link>https://www.isa-afp.org/entries/Generalized_Counting_Sort.html</link>
+       <guid>https://www.isa-afp.org/entries/Generalized_Counting_Sort.html</guid>
+       <dc:creator> Pasquale Noce       </dc:creator>
+       <pubDate>04 Dec 2019 00:00:00 +0000</pubDate>
+       <description>
+Counting sort is a well-known algorithm that sorts objects of any kind
+mapped to integer keys, or else to keys in one-to-one correspondence
+with some subset of the integers (e.g. alphabet letters). However, it
+is suitable for direct use, viz. not just as a subroutine of another
+sorting algorithm (e.g. radix sort), only if the key range is not
+significantly larger than the number of the objects to be sorted.
+This paper describes a tail-recursive generalization of counting sort
+making use of a bounded number of counters, suitable for direct use in
+case of a large, or even infinite key range of any kind, subject to
+the only constraint of being a subset of an arbitrary linear order.
+After performing a pen-and-paper analysis of how such algorithm has to
+be designed to maximize its efficiency, this paper formalizes the
+resulting generalized counting sort (GCsort) algorithm and then
+formally proves its correctness properties, namely that (a) the
+counters&#39; number is maximized never exceeding the fixed upper
+bound, (b) objects are conserved, (c) objects get sorted, and (d) the
+algorithm is stable.</description>
+    </item>
     <item>
        <title>Interval Arithmetic on 32-bit Words</title>
               <link>https://www.isa-afp.org/entries/Interval_Arithmetic_Word32.html</link>
@@ -542,23 +567,6 @@ soundness-critical admissibility checks with a linear pass homomorphic
 application and regain soundness by a variable condition at the
 replacements.  The formalization is based on prior non-mechanized
 soundness proofs for dGL.</description>
-    </item>
-    <item>
-       <title>Multidimensional Binary Search Trees</title>
-              <link>https://www.isa-afp.org/entries/KD_Tree.html</link>
-       <guid>https://www.isa-afp.org/entries/KD_Tree.html</guid>
-       <dc:creator> Martin Rau       </dc:creator>
-       <pubDate>30 May 2019 00:00:00 +0000</pubDate>
-       <description>
-This entry provides a formalization of multidimensional binary trees,
-also known as k-d trees. It includes a balanced build algorithm as
-well as the nearest neighbor algorithm and the range search algorithm.
-It is based on the papers &lt;a
-href=&#34;https://dl.acm.org/citation.cfm?doid=361002.361007&#34;&gt;Multidimensional
-binary search trees used for associative searching&lt;/a&gt; and &lt;a
-href=&#34;https://dl.acm.org/citation.cfm?doid=355744.355745&#34;&gt;
-An Algorithm for Finding Best Matches in Logarithmic Expected
-Time&lt;/a&gt;.</description>
     </item>
   </channel>
 </rss>

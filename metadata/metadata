@@ -8618,3 +8618,28 @@ abstract =
   where a Euclidean space indexed by identifiers demands that identifiers
   are finitely many.
 
+[Generalized_Counting_Sort]
+title = An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges
+author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
+topic = Computer Science/Algorithms, Computer Science/Functional Programming
+date = 2019-12-04
+notify = pasquale.noce.lavoro@gmail.com
+abstract = 
+  Counting sort is a well-known algorithm that sorts objects of any kind
+  mapped to integer keys, or else to keys in one-to-one correspondence
+  with some subset of the integers (e.g. alphabet letters). However, it
+  is suitable for direct use, viz. not just as a subroutine of another
+  sorting algorithm (e.g. radix sort), only if the key range is not
+  significantly larger than the number of the objects to be sorted.
+  This paper describes a tail-recursive generalization of counting sort
+  making use of a bounded number of counters, suitable for direct use in
+  case of a large, or even infinite key range of any kind, subject to
+  the only constraint of being a subset of an arbitrary linear order.
+  After performing a pen-and-paper analysis of how such algorithm has to
+  be designed to maximize its efficiency, this paper formalizes the
+  resulting generalized counting sort (GCsort) algorithm and then
+  formally proves its correctness properties, namely that (a) the
+  counters' number is maximized never exceeding the fixed upper
+  bound, (b) objects are conserved, (c) objects get sorted, and (d) the
+  algorithm is stable.
+
