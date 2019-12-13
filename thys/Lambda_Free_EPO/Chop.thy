@@ -28,20 +28,12 @@ lemma vars_chop: "is_App t \<Longrightarrow> vars (chop t) \<union> vars_hd (hea
 lemma ground_chop: "is_App t \<Longrightarrow> ground t \<Longrightarrow> ground (chop t)" 
   using vars_chop by auto
 
-(* TODO: move? *)
-lemma size_apps: "size (apps t ts) = size t + sum_list (map size ts) + length ts"
-  by (induct ts arbitrary:t; simp)
+lemma hsize_chop: "is_App t \<Longrightarrow> (Suc (hsize (chop t))) = hsize t"
+  unfolding hsize_args[of t, symmetric] chop_def hsize_apps
+  by (metis Nil_is_map_conv args_Nil_iff_is_Hd list.exhaust_sel list.map_sel(1) map_tl plus_1_eq_Suc sum_list.Cons)
 
-(* TODO: move? *)
-lemma size_args_plus_num_args: "1 + sum_list (map size (args t)) + num_args t = size t"
-  by (metis One_nat_def size_apps tm.size(3) tm_collapse_apps)
-
-lemma size_chop: "is_App t \<Longrightarrow> Suc (Suc (size (chop t))) = size t"
-  unfolding size_args_plus_num_args[of t, symmetric] chop_def size_apps
-  by (metis Nitpick.size_list_simp(1) ab_semigroup_add_class.add_ac(1) args_Nil_iff_is_Hd plus_1_eq_Suc size_list_conv_sum_list)
-
-lemma size_chop_lt: "is_App t \<Longrightarrow> size (chop t) < size t"
-  by (simp add: Suc_le_lessD less_or_eq_imp_le size_chop)
+lemma hsize_chop_lt: "is_App t \<Longrightarrow> hsize (chop t) < hsize t"
+  by (simp add: Suc_le_lessD less_or_eq_imp_le hsize_chop)
 
 lemma chop_fun:
   assumes "is_App t" "is_App (fun t)" 
@@ -272,7 +264,7 @@ qed
 lemma chop_position_of:
   assumes "is_App s"
   shows "position_of s (replicate (num_args (fun s)) dir.Left @ [Right])"
-  by (metis Suc_n_not_le_n assms chop_emb_step_at lessI less_imp_le_nat position_if_emb_step_at size_chop)
+  by (metis Suc_n_not_le_n assms chop_emb_step_at lessI less_imp_le_nat position_if_emb_step_at hsize_chop)
 
 subsection \<open>Chop and Substitutions\<close>
 

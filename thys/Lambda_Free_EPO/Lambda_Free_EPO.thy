@@ -107,12 +107,12 @@ lemma t_gt_chop_t: "is_App t \<Longrightarrow> t >\<^sub>t chop t"
 
 lemma gt_imp_vars: "t >\<^sub>t s \<Longrightarrow> vars t \<supseteq> vars s"
 proof (simp only: atomize_imp,
-    rule measure_induct_rule[of "\<lambda>(t, s). size t + size s"
+    rule measure_induct_rule[of "\<lambda>(t, s). hsize t + hsize s"
       "\<lambda>(t, s). t >\<^sub>t s \<longrightarrow> vars t \<supseteq> vars s" "(t, s)", simplified prod.case],
     simp only: split_paired_all prod.case atomize_imp[symmetric])
   fix t s
   assume
-    ih: "\<And>ta sa. size ta + size sa < size t + size s \<Longrightarrow> ta >\<^sub>t sa \<Longrightarrow> vars ta \<supseteq> vars sa" and
+    ih: "\<And>ta sa. hsize ta + hsize sa < hsize t + hsize s \<Longrightarrow> ta >\<^sub>t sa \<Longrightarrow> vars ta \<supseteq> vars sa" and
     t_gt_s: "t >\<^sub>t s"
   show "vars t \<supseteq> vars s"
     using t_gt_s
@@ -120,7 +120,7 @@ proof (simp only: atomize_imp,
     case (gt_chop)
     thus ?thesis
       using ih
-      by (metis add_mono_thms_linordered_field(1) le_supI1 order_refl size_chop_lt vars_chop)
+      by (metis add_mono_thms_linordered_field(1) le_supI1 order_refl hsize_chop_lt vars_chop)
   next
     case gt_diff
     show ?thesis 
@@ -132,7 +132,7 @@ proof (simp only: atomize_imp,
     next
       case (App s1 s2)
       have "vars (chop s) \<subseteq> vars t" using ih 
-        using App chkchop_def local.gt_diff(3) nat_add_left_cancel_less size_chop_lt tm.disc(2) by blast
+        using App chkchop_def local.gt_diff(3) nat_add_left_cancel_less hsize_chop_lt tm.disc(2) by blast
       thus ?thesis 
         using  App  le_sup_iff local.gt_diff(2) tm.disc(2) vars_chop
         by (metis empty_iff hd.collapse(2) hd.simps(18) subsetI)
@@ -160,7 +160,7 @@ proof (simp only: atomize_imp,
             by (metis Var args.simps(1) chkchop_def chkchop_same_def epo.extf_min_empty 
                 epo_axioms gt_hd_def gt_hd_irrefl hd.disc(1) local.gt_same(2) local.gt_same(3) tm.collapse(1) tm.disc(2))
           then have "vars (chop s) \<subseteq> vars (chop t)" using ih[OF _ \<open>chop t >\<^sub>t chop s\<close>] 
-            by (metis App add_mono_thms_linordered_field(5) args_Nil_iff_is_Hd extf_min_empty gt_hd_def gt_hd_irrefl local.gt_same(3) size_chop_lt tm.disc(2))
+            by (metis App add_mono_thms_linordered_field(5) args_Nil_iff_is_Hd extf_min_empty gt_hd_def gt_hd_irrefl local.gt_same(3) hsize_chop_lt tm.disc(2))
           then show ?thesis using  gt_same(1) vars_chop[of t] vars_chop[of s]
             by (metis App args_Nil_iff_is_Hd extf_min_empty gt_hd_def gt_hd_irrefl le_sup_iff local.gt_same(3) order_refl sup.coboundedI1 tm.disc(2))
         qed
@@ -176,7 +176,7 @@ proof (simp only: atomize_imp,
         case (App s1 s2)
         then show ?thesis unfolding chkchop_def using vars_chop ih[of t "chop s"] 
           by (metis \<open>chkchop (>\<^sub>t) t s\<close> chkchop_def le_sup_iff local.gt_same(1) 
-              nat_add_left_cancel_less size_chop_lt tm.disc(2) vars_head_subseteq)
+              nat_add_left_cancel_less hsize_chop_lt tm.disc(2) vars_head_subseteq)
       qed
     qed
   qed      
@@ -184,18 +184,18 @@ qed
 
 lemma gt_trans: "u >\<^sub>t t \<Longrightarrow> t >\<^sub>t s \<Longrightarrow> u >\<^sub>t s"
 proof (simp only: atomize_imp,
-    rule measure_induct_rule[of "\<lambda>(u, t, s). {#size u, size t, size s#}"
+    rule measure_induct_rule[of "\<lambda>(u, t, s). {#hsize u, hsize t, hsize s#}"
         "\<lambda>(u, t, s). u >\<^sub>t t \<longrightarrow> t >\<^sub>t s \<longrightarrow> u >\<^sub>t s" "(u, t, s)",
       simplified prod.case],
     simp only: split_paired_all prod.case atomize_imp[symmetric])
   fix u t s
   assume
-    ih: "\<And>ua ta sa. {#size ua, size ta, size sa#} < {#size u, size t, size s#} \<Longrightarrow>
+    ih: "\<And>ua ta sa. {#hsize ua, hsize ta, hsize sa#} < {#hsize u, hsize t, hsize s#} \<Longrightarrow>
       ua >\<^sub>t ta \<Longrightarrow> ta >\<^sub>t sa \<Longrightarrow> ua >\<^sub>t sa" and
     u_gt_t: "u >\<^sub>t t" and t_gt_s: "t >\<^sub>t s"
 
   have u_gt_s_if_ui: "chop u \<ge>\<^sub>t t \<Longrightarrow> u >\<^sub>t s" if ui_in: "is_App u"
-    using ih[of "chop u" t s, simplified] t_gt_s gt_chop size_chop_lt ui_in by blast
+    using ih[of "chop u" t s, simplified] t_gt_s gt_chop hsize_chop_lt ui_in by blast
 
   show "u >\<^sub>t s"
     using t_gt_s
@@ -203,7 +203,7 @@ proof (simp only: atomize_imp,
     case gt_chop
     have u_gt_s_if_chk_u_t: ?thesis if chk_u_t: "chkchop (>\<^sub>t) u t"
       using ih[of u "chop u" s] gt_chop chk_u_t 
-      by (metis add_mset_lt_left_lt add_mset_lt_right_lt chkchop_def ih size_chop_lt)
+      by (metis add_mset_lt_left_lt add_mset_lt_right_lt chkchop_def ih hsize_chop_lt)
     show ?thesis 
       by (metis args_Nil_iff_is_Hd chkchop_def chkchop_same_def 
           epo.extf_min_empty epo_axioms gt.simps gt_hd_def gt_hd_irrefl
@@ -221,14 +221,14 @@ proof (simp only: atomize_imp,
       have "head u >\<^sub>h\<^sub>d head s"
         using gt_diff_u_t(1) gt_diff_t_s(1) by (auto intro: gt_hd_trans)
       thus ?thesis
-        using add_mset_lt_left_lt add_mset_lt_right_lt chkchop_def  gt_diff gt_diff_t_s(3) ih size_chop_lt u_gt_t
+        using add_mset_lt_left_lt add_mset_lt_right_lt chkchop_def  gt_diff gt_diff_t_s(3) ih hsize_chop_lt u_gt_t
         by (metis gt_diff_t_s(2))
     next
       case gt_same_u_t: gt_same
       have "head u >\<^sub>h\<^sub>d head s"
         using gt_diff_t_s(1) gt_same_u_t(1) by auto
       thus ?thesis
-        using add_mset_lt_left_lt add_mset_lt_right_lt chkchop_def gt_diff gt_diff_t_s(3) ih size_chop_lt u_gt_t
+        using add_mset_lt_left_lt add_mset_lt_right_lt chkchop_def gt_diff gt_diff_t_s(3) ih hsize_chop_lt u_gt_t
         by (metis gt_diff_t_s(2))
     qed
   next
@@ -244,7 +244,7 @@ proof (simp only: atomize_imp,
       have "head u >\<^sub>h\<^sub>d head s"
         using gt_diff_u_t(1) gt_same_t_s(1) by simp
       thus ?thesis
-        using add_mset_lt_left_lt add_mset_lt_right_lt chkchop_def gt_diff gt_same_t_s ih size_chop_lt u_gt_t
+        using add_mset_lt_left_lt add_mset_lt_right_lt chkchop_def gt_diff gt_same_t_s ih hsize_chop_lt u_gt_t
         by (metis chkchop_same_def gt_diff_u_t(2))
     next
       case gt_same_u_t: gt_same
@@ -262,7 +262,7 @@ proof (simp only: atomize_imp,
         show "ua >\<^sub>t sa"
           by (auto intro!: ih[OF Max_lt_imp_lt_mset ua_gt_ta ta_gt_sa])
             (meson ua_in ta_in sa_in Un_iff max.strict_coboundedI1 max.strict_coboundedI2
-               size_in_args)+
+               hsize_in_args)+
       qed
 
       have "\<forall>f \<in> ground_heads (head u). extf f (>\<^sub>t) (args u) (args s)"
@@ -297,7 +297,7 @@ proof (simp only: atomize_imp,
               using gt_same_t_s unfolding chkchop_same_def unfolding chkchop_def using Var hd_u_s by auto
             then have "chkchop (>\<^sub>t) (chop u) s" 
               unfolding chkchop_def using ih[of "chop u" "chop t" "chop s"]
-              by (metis App \<open>chop u >\<^sub>t chop t\<close> t_App add_mset_lt_lt_le less_imp_le mset_lt_single_iff size_chop_lt tm.disc(2))
+              by (metis App \<open>chop u >\<^sub>t chop t\<close> t_App add_mset_lt_lt_le less_imp_le mset_lt_single_iff hsize_chop_lt tm.disc(2))
             then show ?thesis unfolding chkchop_same_def 
               using Var by auto
           qed
@@ -314,7 +314,7 @@ proof (simp only: atomize_imp,
            then have "t >\<^sub>t chop s"
              using Sym gt_same_t_s(1) gt_same_t_s(2) hd_u_s by auto
            then have "u >\<^sub>t chop s" using ih[of u t "chop s"] 
-             by (metis App add_mset_lt_right_lt mset_lt_single_iff size_chop_lt tm.disc(2) u_gt_t)
+             by (metis App add_mset_lt_right_lt mset_lt_single_iff hsize_chop_lt tm.disc(2) u_gt_t)
            then show ?thesis unfolding chkchop_def
              by blast
          qed
@@ -330,7 +330,7 @@ qed
 subsection \<open>Irreflexivity\<close>
 
 theorem gt_irrefl: "\<not> s >\<^sub>t s"
-proof (standard, induct s rule: measure_induct_rule[of size])
+proof (standard, induct s rule: measure_induct_rule[of hsize])
   case (less s)
   note ih = this(1) and s_gt_s = this(2)
 
@@ -339,7 +339,7 @@ proof (standard, induct s rule: measure_induct_rule[of size])
   proof cases
     case gt_chop
     then show False using ih[of "chop s"]
-      by (metis gt.gt_chop gt_trans size_chop_lt)
+      by (metis gt.gt_chop gt_trans hsize_chop_lt)
   next
     case gt_diff
     thus False
@@ -351,8 +351,8 @@ proof (standard, induct s rule: measure_induct_rule[of size])
     obtain si where si_in_args: "si \<in> set (args s)" and si_gt_si: "si >\<^sub>t si"
       using in_grounds
       by (metis (full_types) all_not_in_conv extf_irrefl_from_trans ground_heads_nonempty gt_trans)
-    have "size si < size s"
-      by (rule size_in_args[OF si_in_args])
+    have "hsize si < hsize s"
+      by (rule hsize_in_args[OF si_in_args])
     thus False
       by (rule ih[OF _ si_gt_si])
   qed
@@ -395,12 +395,12 @@ lemma gt_embedding_step_property:
   shows "t >\<^sub>t s"
   using assms 
   apply(simp only: atomize_imp)
-  apply (rule measure_induct_rule[of "\<lambda>(t, s). size t + size s"
+  apply (rule measure_induct_rule[of "\<lambda>(t, s). hsize t + hsize s"
       "\<lambda>(t, s). t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b s \<longrightarrow> t >\<^sub>t s" "(t, s)", simplified prod.case])
 proof(simp only: split_paired_all prod.case atomize_imp[symmetric])
   fix s t :: "('s,'v) tm" 
   assume "t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b s" 
-    and ih: "\<And>tt ss. size tt + size ss < size t + size s \<Longrightarrow> tt \<rightarrow>\<^sub>e\<^sub>m\<^sub>b ss \<Longrightarrow> tt >\<^sub>t ss"
+    and ih: "\<And>tt ss. hsize tt + hsize ss < hsize t + hsize s \<Longrightarrow> tt \<rightarrow>\<^sub>e\<^sub>m\<^sub>b ss \<Longrightarrow> tt >\<^sub>t ss"
   have "is_App t" 
     by (metis \<open>t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b s\<close> emb_step_at_is_App emb_step_equiv)
 
@@ -435,7 +435,7 @@ proof(simp only: split_paired_all prod.case atomize_imp[symmetric])
             using merge_emb_step_at[of "replicate (num_args (fun s)) Left" Right Nil Left t, unfolded append_Nil2 opp_simps(1) replicate_append_same]
             by (metis Left True \<open>Suc (num_args (fun s)) = num_args (fun t)\<close> \<open>emb_step_at p d t = s\<close> q_rep_t replicate_Suc)
           then show "chop t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b chop s"
-            by (metis \<open>is_App s\<close> \<open>is_App t\<close> \<open>t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b s\<close> emb_step_equiv emb_step_size nat_neq_iff size_chop)
+            by (metis \<open>is_App s\<close> \<open>is_App t\<close> \<open>t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b s\<close> emb_step_equiv emb_step_hsize nat_neq_iff hsize_chop)
         qed
       next
         case False
@@ -466,11 +466,11 @@ proof(simp only: split_paired_all prod.case atomize_imp[symmetric])
       proof (cases "is_Var (head t)")
         case True
         then show ?thesis unfolding chkchop_same_def chkchop_def  using ih[of "chop t" "chop s"] 
-           add_less_mono size_chop_lt \<open>is_App s \<Longrightarrow> chop t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b chop s\<close> by metis
+           add_less_mono hsize_chop_lt \<open>is_App s \<Longrightarrow> chop t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b chop s\<close> by metis
       next
         case False
         then show ?thesis unfolding chkchop_same_def chkchop_def 
-        using \<open>is_App t\<close> add_less_mono gt_chop ih size_chop_lt 
+        using \<open>is_App t\<close> add_less_mono gt_chop ih hsize_chop_lt 
         \<open>is_App s \<Longrightarrow> chop t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b chop s\<close> by metis
       qed
       have "\<forall>f\<in>local.ground_heads (head t). extf f (>\<^sub>t) (args t) (args s)" 
@@ -481,7 +481,7 @@ proof(simp only: split_paired_all prod.case atomize_imp[symmetric])
       text \<open>Embedding chops and might remove arguments from the left\<close>
       case Right
       show ?thesis using emb_step_at_chop
-        by (metis Right True \<open>emb_step_at p d t = s\<close> \<open>is_App t\<close> \<open>position_of t (p @ [d])\<close> add_Suc gt_chop ih less_Suc_eq size_chop)
+        by (metis Right True \<open>emb_step_at p d t = s\<close> \<open>is_App t\<close> \<open>position_of t (p @ [d])\<close> add_Suc gt_chop ih less_Suc_eq hsize_chop)
     qed
   next
     text \<open>Embedding operates under one of the arguments\<close>
@@ -525,7 +525,7 @@ proof(simp only: split_paired_all prod.case atomize_imp[symmetric])
         using swap_nested_emb_step_at[of q q' d Right t, unfolded] \<open>emb_step_at p d t = s\<close> \<open>p = q @ [Right] @ q'\<close> 
         q_rep_t q_rep_s by auto
       moreover have "chop t \<noteq> chop s"
-        by (metis \<open>is_App s\<close> \<open>is_App t\<close> \<open>t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b s\<close> emb_step_size nat_less_le size_chop)
+        by (metis \<open>is_App s\<close> \<open>is_App t\<close> \<open>t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b s\<close> emb_step_hsize nat_less_le hsize_chop)
       ultimately show "chop t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b chop s" 
         using emb_step_equiv by blast
     next
@@ -546,14 +546,14 @@ proof(simp only: split_paired_all prod.case atomize_imp[symmetric])
     proof (cases "head t")
       case (Var _)
       then have "chop t >\<^sub>t chop s" using ih[of "chop t" "chop s"]
-        by (meson \<open>chop t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b chop s\<close> \<open>is_App s\<close> \<open>is_App t\<close> add_strict_mono size_chop_lt)
+        by (meson \<open>chop t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b chop s\<close> \<open>is_App s\<close> \<open>is_App t\<close> add_strict_mono hsize_chop_lt)
       then show ?thesis  unfolding chkchop_same_def
         by (simp add: Var)
     next
       case (Sym _)
       then show ?thesis unfolding chkchop_same_def using \<open>chop t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b chop s\<close> 
          \<open>is_App t\<close> add_Suc add_Suc_shift chkchop_def gt_trans ih 
-         less_Suc_eq size_chop t_gt_chop_t 
+         less_Suc_eq hsize_chop t_gt_chop_t 
         by (metis (no_types, lifting))
     qed
       have gt2:"head t = head s"  
@@ -568,7 +568,7 @@ proof(simp only: split_paired_all prod.case atomize_imp[symmetric])
         using emb_step_under_args_emb_step[of p t d] 
         using False \<open>position_of t (p @ [d])\<close> by blast
       have compat_list1: "args t ! i >\<^sub>t args s ! i" 
-        by (metis \<open>num_args t = num_args s\<close> \<open>emb_step_at p d t = s\<close>  add_less_mono i_def(1) i_def(2) ih nth_mem size_in_args)
+        by (metis \<open>num_args t = num_args s\<close> \<open>emb_step_at p d t = s\<close>  add_less_mono i_def(1) i_def(2) ih nth_mem hsize_in_args)
       have compat_list2: "args t ! i \<noteq> args s ! i" 
         using emb_step_equiv i_def(2) \<open>emb_step_at p d t = s\<close>  by blast
       have argst:"args t = take i (args t) @ args t ! i # drop (Suc i) (args t)" 
@@ -630,12 +630,12 @@ lemma gt_compat_fun:
   assumes "t' >\<^sub>t t"
   shows "App s t' >\<^sub>t App s t"
 using assms  apply (simp only:atomize_imp)
-proof (induction rule:measure_induct_rule[of "\<lambda>(t, s). size t + size s" "\<lambda>(t, s). t' >\<^sub>t t \<longrightarrow> App s t' >\<^sub>t App s t" "(t,s)", 
+proof (induction rule:measure_induct_rule[of "\<lambda>(t, s). hsize t + hsize s" "\<lambda>(t, s). t' >\<^sub>t t \<longrightarrow> App s t' >\<^sub>t App s t" "(t,s)", 
   simplified prod.case],
   simp only: split_paired_all prod.case atomize_imp[symmetric])
 
   fix t s ::"('s, 'v) tm" 
-  assume ih:"\<And>ta sa. size ta + size sa < size t + size s \<Longrightarrow> t' >\<^sub>t ta \<Longrightarrow> App sa t' >\<^sub>t App sa ta"
+  assume ih:"\<And>ta sa. hsize ta + hsize sa < hsize t + hsize s \<Longrightarrow> t' >\<^sub>t ta \<Longrightarrow> App sa t' >\<^sub>t App sa ta"
   and t'_gt_t:"t' >\<^sub>t t" 
 
   have t'_ne_t: "t' \<noteq> t"
@@ -656,7 +656,7 @@ proof (induction rule:measure_induct_rule[of "\<lambda>(t, s). size t + size s" 
     next
       case (App s1 s2)
       then show ?thesis using ih[of t "chop s"] chop_fun 
-        by (metis nat_add_left_cancel_less size_chop_lt t'_gt_t tm.disc(2) tm.sel(4) tm.sel(6))
+        by (metis nat_add_left_cancel_less hsize_chop_lt t'_gt_t tm.disc(2) tm.sel(4) tm.sel(6))
     qed
     show "chkchop_same (>\<^sub>t) (App s t') (App s t)"
     proof (cases "is_Var (head (App s t'))")
@@ -674,14 +674,14 @@ qed
 
 theorem gt_compat_arg:
   shows "s' >\<^sub>t s \<Longrightarrow> t' \<ge>\<^sub>t t \<Longrightarrow> App s' t' >\<^sub>t App s t"
-proof (simp only:atomize_imp,induction rule:measure_induct[of "\<lambda>(s',s,t). size s' + size s + size t" "\<lambda>(s',s,t). s' >\<^sub>t s \<longrightarrow> t' \<ge>\<^sub>t t \<longrightarrow> App s' t' >\<^sub>t App s t" "(s',s,t)", simplified prod.case],
+proof (simp only:atomize_imp,induction rule:measure_induct[of "\<lambda>(s',s,t). hsize s' + hsize s + hsize t" "\<lambda>(s',s,t). s' >\<^sub>t s \<longrightarrow> t' \<ge>\<^sub>t t \<longrightarrow> App s' t' >\<^sub>t App s t" "(s',s,t)", simplified prod.case],
     simp only: split_paired_all prod.case atomize_imp[symmetric] atomize_all[symmetric])
   fix s' s t
-  assume ih:"\<And>ab ac ba. size ab + size ac + size ba < size s' + size s + size t \<Longrightarrow> ab >\<^sub>t ac \<Longrightarrow> t' \<ge>\<^sub>t ba \<Longrightarrow> App ab t' >\<^sub>t App ac ba" 
+  assume ih:"\<And>ab ac ba. hsize ab + hsize ac + hsize ba < hsize s' + hsize s + hsize t \<Longrightarrow> ab >\<^sub>t ac \<Longrightarrow> t' \<ge>\<^sub>t ba \<Longrightarrow> App ab t' >\<^sub>t App ac ba" 
     and "s' >\<^sub>t s" and "t' \<ge>\<^sub>t t" 
 
   {
-    fix s''::"('s,'v) tm" assume size_s'':"size s'' \<le> size s'"
+    fix s''::"('s,'v) tm" assume hsize_s'':"hsize s'' \<le> hsize s'"
     assume chkchop_s'_s: "chkchop (>\<^sub>t) s'' s"
     then have "chkchop (>\<^sub>t) (App s'' t') (App s t)" 
     proof (cases "is_Hd s")
@@ -691,8 +691,8 @@ proof (simp only:atomize_imp,induction rule:measure_induct[of "\<lambda>(s',s,t)
     next
       case False
       then show ?thesis using chkchop_s'_s unfolding chkchop_def
-        using ih[of s'' "chop s" t] size_s''
-        by (metis \<open>t' \<ge>\<^sub>t t\<close> add_less_mono add_mono_thms_linordered_field(1) chop_fun le_eq_less_or_eq nat_add_left_cancel_less size_chop_lt tm.sel(4) tm.sel(6))
+        using ih[of s'' "chop s" t] hsize_s''
+        by (metis \<open>t' \<ge>\<^sub>t t\<close> add_less_mono add_mono_thms_linordered_field(1) chop_fun le_eq_less_or_eq nat_add_left_cancel_less hsize_chop_lt tm.sel(4) tm.sel(6))
     qed
   }
   note chkchop_compat_arg = this
@@ -704,7 +704,7 @@ proof (simp only:atomize_imp,induction rule:measure_induct[of "\<lambda>(s',s,t)
     proof (cases "t = t'")
       case True
       show ?thesis using True gt.gt_chop[of "App s' t'" "App s t"] gt_chop chkchop_compat_arg[of "chop s'"]
-        by (metis add_strict_right_mono chop_fun ih size_chop_lt tm.disc(2) tm.sel(4) tm.sel(6))
+        by (metis add_strict_right_mono chop_fun ih hsize_chop_lt tm.disc(2) tm.sel(4) tm.sel(6))
     next
       case False
       then have "t' >\<^sub>t t"
@@ -712,7 +712,7 @@ proof (simp only:atomize_imp,induction rule:measure_induct[of "\<lambda>(s',s,t)
       have "App s' t' >\<^sub>t App (chop s') t'" 
         by (simp add: context_left emb_step_chop gt_embedding_step_property local.gt_chop(1))
       moreover have "... >\<^sub>t App s t"  using ih[of "chop s'" s t]
-        using \<open>t' >\<^sub>t t\<close> gt_compat_fun local.gt_chop(1) local.gt_chop(2) size_chop_lt by fastforce
+        using \<open>t' >\<^sub>t t\<close> gt_compat_fun local.gt_chop(1) local.gt_chop(2) hsize_chop_lt by fastforce
       ultimately show ?thesis using gt_trans by blast
     qed
   next
@@ -755,7 +755,7 @@ proof (simp only:atomize_imp,induction rule:measure_induct[of "\<lambda>(s',s,t)
     have "chkchop_same (>\<^sub>t) (App s' t') (App s t)" unfolding chkchop_same_def
       using args.simps(1) chop_fun chkchop_compat_arg[of "chop s'", unfolded le_eq_less_or_eq] 
       chkchop_compat_arg[of s'] chkchop_def chkchop_same_def 
-      size_chop_lt   epo.extf_min_empty[OF epo_axioms] gt.gt_same gt_antisym hd_s'_eq_s head_App 
+      hsize_chop_lt   epo.extf_min_empty[OF epo_axioms] gt.gt_same gt_antisym hd_s'_eq_s head_App 
       leI less_irrefl_nat local.gt_same(2) local.gt_same(3) tm.collapse(1) tm.sel(4) tm.sel(6)
       by metis
     then show ?thesis 
@@ -819,11 +819,11 @@ theorem gt_sus:
   assumes \<rho>_wary: "wary_subst \<rho>"
   assumes ghd: "\<And>x. ground_heads (Var x) = UNIV" (* This condition is only needed for gt_same, not for gt_diff ! *)
   shows "t >\<^sub>t s \<Longrightarrow> subst \<rho> t >\<^sub>t subst \<rho> s"
-proof (simp only:atomize_imp,induction rule:measure_induct[of "\<lambda>(t,s). {# size t, size s #}" "\<lambda>(t,s). t >\<^sub>t s \<longrightarrow> subst \<rho> t >\<^sub>t subst \<rho> s" "(t,s)", simplified prod.case],
+proof (simp only:atomize_imp,induction rule:measure_induct[of "\<lambda>(t,s). {# hsize t, hsize s #}" "\<lambda>(t,s). t >\<^sub>t s \<longrightarrow> subst \<rho> t >\<^sub>t subst \<rho> s" "(t,s)", simplified prod.case],
     simp only: split_paired_all prod.case atomize_imp[symmetric] atomize_all[symmetric])
   fix t s
   assume ih:"\<And>tt ss.
-               {# size tt, size ss #} < {# size t, size s #} \<Longrightarrow>
+               {# hsize tt, hsize ss #} < {# hsize t, hsize s #} \<Longrightarrow>
                tt >\<^sub>t ss \<Longrightarrow> subst \<rho> tt >\<^sub>t subst \<rho> ss" 
     and "t >\<^sub>t s" 
   show "subst \<rho> t >\<^sub>t subst \<rho> s" using \<open>t >\<^sub>t s\<close>
@@ -831,7 +831,7 @@ proof (simp only:atomize_imp,induction rule:measure_induct[of "\<lambda>(t,s). {
     case t_gt_s_chop: gt_chop
     then show ?thesis 
       using emb_step_subst emb_step_chop[OF t_gt_s_chop(1)] gt_embedding_step_property 
-       emb_step_size gt_trans ih[of "chop t" s] by (metis add_mset_lt_left_lt)
+       emb_step_hsize gt_trans ih[of "chop t" s] by (metis add_mset_lt_left_lt)
   next
     case t_gt_s_diff: gt_diff
     have gt_diff1: "head (subst \<rho> t) >\<^sub>h\<^sub>d head (subst \<rho> s)" 
@@ -847,7 +847,7 @@ proof (simp only:atomize_imp,induction rule:measure_induct[of "\<lambda>(t,s). {
     next
       case s_App: (App s1 s2)
       then show ?thesis using t_gt_s_diff unfolding chkchop_def
-        using ih[of t "chop s"] chop_subst_Sym size_chop_lt tm.disc(2)
+        using ih[of t "chop s"] chop_subst_Sym hsize_chop_lt tm.disc(2)
         by (metis add_mset_lt_left_lt add_mset_lt_right_lt)
     qed
     show ?thesis
@@ -860,7 +860,7 @@ proof (simp only:atomize_imp,induction rule:measure_induct[of "\<lambda>(t,s). {
     have extf_map_ts:"\<forall>f\<in>ground_heads (head t). extf f (>\<^sub>t) (map (subst \<rho>) (args t)) (map (subst \<rho>) (args s))"
     proof -
       have ih_args: "\<forall>y\<in>set (args t) \<union> set (args s). \<forall>x\<in>set (args t) \<union> set (args s). y >\<^sub>t x \<longrightarrow> subst \<rho> y >\<^sub>t subst \<rho> x"
-        by (metis Un_iff less_multiset_doubletons size_in_args ih)
+        by (metis Un_iff less_multiset_doubletons hsize_in_args ih)
       have "\<forall>f\<in>ground_heads (head t). extf f (>\<^sub>t) (args t) (args s)"  
         using ghd t_gt_s_same(3) by metis
       then show ?thesis
@@ -874,9 +874,9 @@ proof (simp only:atomize_imp,induction rule:measure_induct[of "\<lambda>(t,s). {
       then have "is_Var (head t)" by simp
       {
         fix u :: "('s, 'v) tm"
-        assume "ground_heads (head u) \<subseteq> ground_heads (head t)" "size u \<le> size (subst \<rho> (Hd (head t)))"
+        assume "ground_heads (head u) \<subseteq> ground_heads (head t)" "hsize u \<le> hsize (subst \<rho> (Hd (head t)))"
         then have "apps u (map (subst \<rho>) (args t)) >\<^sub>t apps u (map (subst \<rho>) (args s))" 
-        proof (induct "size u" arbitrary:u rule:less_induct)
+        proof (induct "hsize u" arbitrary:u rule:less_induct)
           case less
           then show ?case 
           proof (cases u)
@@ -897,7 +897,7 @@ proof (simp only:atomize_imp,induction rule:measure_induct[of "\<lambda>(t,s). {
               have "chop t >\<^sub>t chop s" 
                 using \<open>is_App t\<close> \<open>is_Var (head t)\<close> s_App t_gt_s_same(2) by auto
               then have "subst \<rho> (chop t) >\<^sub>t subst \<rho> (chop s)" using ih
-                by (metis \<open>is_App t\<close> less_multiset_doubletons s_App size_chop_lt tm.disc(2))
+                by (metis \<open>is_App t\<close> less_multiset_doubletons s_App hsize_chop_lt tm.disc(2))
   
               define ut where "ut = apps u (map (subst \<rho>) (args t))"
               define us where "us = apps u (map (subst \<rho>) (args s))"
@@ -928,7 +928,7 @@ proof (simp only:atomize_imp,induction rule:measure_induct[of "\<lambda>(t,s). {
             have 1:"head ?ut = head ?ut" 
               by simp
             have "apps (chop u) (map (subst \<rho>) (args t)) >\<^sub>t apps (chop u) (map (subst \<rho>) (args s))"
-              using less.hyps[of "chop u"] size_chop_lt 
+              using less.hyps[of "chop u"] hsize_chop_lt 
               by (metis Var dual_order.trans ghd less.prems(2) less_or_eq_imp_le subset_UNIV tm.disc(2) u_app)
             then have "chop ?ut >\<^sub>t chop ?us" 
               by (simp add: chop_apps u_app)
@@ -955,7 +955,7 @@ proof (simp only:atomize_imp,induction rule:measure_induct[of "\<lambda>(t,s). {
          using ih[of t "chop s"] 
          by (metis (no_types, lifting) Sym \<open>head (subst \<rho> t) = head t\<close> \<open>is_Sym (head (subst \<rho> t))\<close> 
              add_mset_commute add_mset_lt_left_lt chop_subst_Sym ground_imp_subst_iden hd.simps(18) 
-             size_chop_lt t_gt_s_same(1) tm.collapse(1) tm.simps(17))
+             hsize_chop_lt t_gt_s_same(1) tm.collapse(1) tm.simps(17))
       have gt_same3: "\<forall>f\<in>local.ground_heads (head (subst \<rho> t)). extf f (>\<^sub>t) (args (subst \<rho> t)) (args (subst \<rho> s))"
         using \<open>head (subst \<rho> t) = head t\<close> extf_compat_append_left extf_map_ts t_gt_s_same(1) by auto
       show ?thesis using gt_same gt_same1 gt_same2 gt_same3 by blast
@@ -970,12 +970,12 @@ theorem gt_total_ground:
   assumes extf_total: "\<And>f. ext_total (extf f)"
   shows "ground t \<Longrightarrow> ground s \<Longrightarrow> t >\<^sub>t s \<or> s >\<^sub>t t \<or> t = s"
 proof (simp only: atomize_imp,
-    rule measure_induct_rule[of "\<lambda>(t, s). size t + size s"
+    rule measure_induct_rule[of "\<lambda>(t, s). hsize t + hsize s"
       "\<lambda>(t, s). ground t \<longrightarrow> ground s \<longrightarrow> t >\<^sub>t s \<or> s >\<^sub>t t \<or> t = s" "(t, s)", simplified prod.case],
     simp only: split_paired_all prod.case atomize_imp[symmetric])
   fix t s :: "('s, 'v) tm"
   assume
-    ih: "\<And>ta sa. size ta + size sa < size t + size s \<Longrightarrow> ground ta \<Longrightarrow> ground sa \<Longrightarrow>
+    ih: "\<And>ta sa. hsize ta + hsize sa < hsize t + hsize s \<Longrightarrow> ground ta \<Longrightarrow> ground sa \<Longrightarrow>
       ta >\<^sub>t sa \<or> sa >\<^sub>t ta \<or> ta = sa" and
     gr_t: "ground t" and gr_s: "ground s"
 
@@ -983,10 +983,10 @@ proof (simp only: atomize_imp,
 
   have "chkchop (>\<^sub>t) t s \<or> s >\<^sub>t t"
     unfolding chkchop_def tm.case_eq_if using ih[of t "fun s"] ih[of t "arg s"]
-    by (metis gr_s gr_t gt_chop gt_imp_vars ih nat_add_left_cancel_less size_chop_lt subset_empty)
+    by (metis gr_s gr_t gt_chop gt_imp_vars ih nat_add_left_cancel_less hsize_chop_lt subset_empty)
   moreover have "chkchop (>\<^sub>t) s t \<or> t >\<^sub>t s"
     unfolding chkchop_def tm.case_eq_if using ih[of "fun t" s] ih[of "arg t" s]
-    by (metis add_less_cancel_right gr_s gr_t gt_chop gt_imp_vars ih size_chop_lt subset_empty)
+    by (metis add_less_cancel_right gr_s gr_t gt_chop gt_imp_vars ih hsize_chop_lt subset_empty)
   moreover
   {
     assume
@@ -1043,7 +1043,7 @@ proof (simp only: atomize_imp,
       ultimately have ?case
         using ih gr_ss gr_ts
           ext_total.total[OF extf_total, rule_format, of "set ?ts" "set ?ss" "(>\<^sub>t)" ?ts ?ss g]
-        by (metis add_strict_mono in_listsI size_in_args)
+        by (metis add_strict_mono in_listsI hsize_in_args)
     }
     ultimately have ?case
       using gt_sym_total by blast
@@ -1069,10 +1069,10 @@ proof -
     then obtain t where t_bad: "bad (>\<^sub>t\<^sub>g) t"
       unfolding inf_chain_def bad_def by blast
 
-    let ?ff = "worst_chain (>\<^sub>t\<^sub>g) (\<lambda>t s. size t > size s)"
+    let ?ff = "worst_chain (>\<^sub>t\<^sub>g) (\<lambda>t s. hsize t > hsize s)"
     let ?U_of = "\<lambda>i. {u. (?ff i) \<rhd>\<^sub>e\<^sub>m\<^sub>b u}"
 
-    note wf_sz = wf_app[OF wellorder_class.wf, of size, simplified]
+    note wf_sz = wf_app[OF wellorder_class.wf, of hsize, simplified]
 
     define U where "U = (\<Union>i. ?U_of i)"
 
@@ -1086,8 +1086,8 @@ proof -
       let ?ti = "?ff i"
 
       assume u_bad: "bad (>\<^sub>t\<^sub>g) u"
-      have sz_u: "size u < size ?ti"
-        using emb_size_neq u_in by blast
+      have sz_u: "hsize u < hsize ?ti"
+        using emb_hsize_neq u_in by blast
 
       show False
       proof (cases i)
@@ -1193,7 +1193,7 @@ proof -
     thm UnionI CollectI
     have "t \<in> set (args (?ff i)) \<Longrightarrow> t \<in> U" for t i
       unfolding U_def apply (rule UnionI[of "?U_of i"]) 
-      using arg_emb CollectI arg_emb size_in_args by fast+
+      using arg_emb CollectI arg_emb hsize_in_args by fast+
     moreover have "\<And>i. extf f (>\<^sub>t\<^sub>g) (args (?ff (i + k))) (args (?ff (Suc i + k)))"
       using bad_same hd_eq_f unfolding  inf_chain_def gt_same.simps f_def hd.collapse(2)[OF ground_head, OF gr]
       using extf_mono_strong[of _ _ "(>\<^sub>t)" "(\<lambda>t s. ground t \<and> t >\<^sub>t s)" ] ground_hd_in_ground_heads 

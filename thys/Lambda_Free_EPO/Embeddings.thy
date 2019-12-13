@@ -172,7 +172,7 @@ lemma emb_step_fun: "is_App t \<Longrightarrow> t \<rightarrow>\<^sub>e\<^sub>m\
 lemma emb_step_arg: "is_App t \<Longrightarrow> t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b (arg t)"
   by (metis emb_step.intros(2) tm.collapse(2))
 
-lemma emb_step_size: "t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b s \<Longrightarrow> size t > size s" 
+lemma emb_step_hsize: "t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b s \<Longrightarrow> hsize t > hsize s" 
   by (induction rule: emb_step.induct; simp_all) 
 
 lemma emb_step_vars: "t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b s \<Longrightarrow> vars s \<subseteq> vars t" 
@@ -277,10 +277,10 @@ lemma emb_trans: "t \<unrhd>\<^sub>e\<^sub>m\<^sub>b u \<Longrightarrow> u \<unr
 lemma emb_step_is_emb: "t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b s \<Longrightarrow> t \<unrhd>\<^sub>e\<^sub>m\<^sub>b s"
   by (meson emb.simps)
 
-lemma emb_size: "t \<unrhd>\<^sub>e\<^sub>m\<^sub>b s \<Longrightarrow> size t \<ge> size s" 
+lemma emb_hsize: "t \<unrhd>\<^sub>e\<^sub>m\<^sub>b s \<Longrightarrow> hsize t \<ge> hsize s" 
   apply (induction rule: emb.induct)
   apply simp
-  using emb_step_size by fastforce
+  using emb_step_hsize by fastforce
 
 lemma emb_prepend_step: "t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b u \<Longrightarrow> u \<unrhd>\<^sub>e\<^sub>m\<^sub>b s \<Longrightarrow> t \<unrhd>\<^sub>e\<^sub>m\<^sub>b s"
   using emb_step_is_emb emb_trans by blast
@@ -412,12 +412,12 @@ lemma emb_subst: "t  \<unrhd>\<^sub>e\<^sub>m\<^sub>b s \<Longrightarrow> subst 
   apply (simp add: emb.refl)
   using emb.step emb_step_subst by blast
 
-lemma emb_size_neq:
+lemma emb_hsize_neq:
   assumes
     "t \<unrhd>\<^sub>e\<^sub>m\<^sub>b s" "t \<noteq> s"
   shows 
-    "size t > size s"
-  by (metis assms(1) assms(2) emb_cases_reverse emb_size emb_step_size leD le_imp_less_or_eq)
+    "hsize t > hsize s"
+  by (metis assms(1) assms(2) emb_cases_reverse emb_hsize emb_step_hsize leD le_imp_less_or_eq)
 
 subsection \<open>How are positions preserved under embedding steps?\<close>
 
@@ -675,7 +675,7 @@ lemma sequence_prio_emb_steps:
     "\<exists>us. us\<noteq>[] \<and> hd us = t \<and> last us = s \<and> 
     (\<forall>i. Suc i < length us \<longrightarrow> (prio_emb_step prio (us ! i) s = us ! Suc i \<and> us ! i \<rightarrow>\<^sub>e\<^sub>m\<^sub>b us ! Suc i))"
   using assms   
-proof (induct t rule:measure_induct_rule[of size])
+proof (induct t rule:measure_induct_rule[of hsize])
   case (less t)
   show ?case
   proof (cases "t = s")
@@ -687,14 +687,14 @@ proof (induct t rule:measure_induct_rule[of size])
       using prio_emb_posI less by blast+
     have emb_step1:"t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b emb_step_at' (prio_emb_pos prio t s) t"
       by (simp add: False emb_step_at_if_position less.prems prio_emb_posI)
-    have "size (emb_step_at' (prio_emb_pos prio t s) t) < size t"
-      by (simp add: False emb_step_at_if_position emb_step_size less.prems(1) prio_emb_posI)
+    have "hsize (emb_step_at' (prio_emb_pos prio t s) t) < hsize t"
+      by (simp add: False emb_step_at_if_position emb_step_hsize less.prems(1) prio_emb_posI)
     then obtain us where us_def:
       "us \<noteq> []" 
       "hd us = emb_step_at' (prio_emb_pos prio t s) t" 
       "last us = s" 
       "\<forall>i. Suc i < length us \<longrightarrow> prio_emb_step prio (us ! i) s = us ! Suc i \<and> us ! i \<rightarrow>\<^sub>e\<^sub>m\<^sub>b us ! Suc i"
-      using less(1)[of "emb_step_at' (prio_emb_pos prio t s) t"] emb_step_size 
+      using less(1)[of "emb_step_at' (prio_emb_pos prio t s) t"] emb_step_hsize 
         \<open>emb_step_at' (prio_emb_pos prio t s) t \<unrhd>\<^sub>e\<^sub>m\<^sub>b s\<close> by blast
 
     have "t # us \<noteq> []" " hd (t # us) = t" "last (t # us) = s" using us_def by simp_all
@@ -872,7 +872,7 @@ lemma perform_emb_above_vars0:
     "subst \<rho> w \<unrhd>\<^sub>e\<^sub>m\<^sub>b u"
     "\<forall>w'. w \<rightarrow>\<^sub>e\<^sub>m\<^sub>b w' \<longrightarrow> \<not> subst \<rho> w' \<unrhd>\<^sub>e\<^sub>m\<^sub>b u"
   using assms   
-proof (induct s rule:measure_induct_rule[of size])
+proof (induct s rule:measure_induct_rule[of hsize])
   case (less s)
   show ?case
   proof (cases "\<forall>w'. s \<rightarrow>\<^sub>e\<^sub>m\<^sub>b w' \<longrightarrow> \<not> subst \<rho> w' \<unrhd>\<^sub>e\<^sub>m\<^sub>b u")
@@ -883,7 +883,7 @@ proof (induct s rule:measure_induct_rule[of size])
   next
     case False
     then show ?thesis 
-      by (meson emb_step_is_emb emb_step_size emb_trans less.hyps less.prems(1))
+      by (meson emb_step_is_emb emb_step_hsize emb_trans less.hyps less.prems(1))
   qed
 qed
   
@@ -927,8 +927,8 @@ proof -
         case (Suc j)
         then have "ws ! (length ws - (Suc (Suc (Suc j)))) \<rightarrow>\<^sub>e\<^sub>m\<^sub>b ws ! (length ws - Suc (Suc j))"
           by (metis Suc_diff_Suc diff_Suc_less length_greater_0_conv ws_def(1) ws_def(4))
-        then show ?case using emb_size_neq
-          by (metis Suc.IH Suc.prems Suc_lessD emb_size emb_step_is_emb emb_trans leD)
+        then show ?case using emb_hsize_neq
+          by (metis Suc.IH Suc.prems Suc_lessD emb_hsize emb_step_is_emb emb_trans leD)
       qed 
     }
     note 0 = this
