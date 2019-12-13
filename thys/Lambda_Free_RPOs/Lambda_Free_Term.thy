@@ -34,6 +34,7 @@ lemma gt_sym_antisym: "f >\<^sub>s g \<Longrightarrow> \<not> g >\<^sub>s f"
 
 end
 
+
 subsection \<open>Heads\<close>
 
 datatype (plugins del: size) (syms_hd: 's, vars_hd: 'v) hd =
@@ -206,7 +207,7 @@ lemma vars_mset_arg[intro]: "vars_mset (arg t) \<subseteq># vars_mset t"
 
 subsection \<open>hsize\<close>
 
-text \<open>The hsize of a term is the number of heads (Syms or Vars) in a term.\<close>
+text \<open>The hsize of a term is the number of heads (Syms or Vars) in the term.\<close>
 
 primrec hsize :: "('s, 'v) tm \<Rightarrow> nat" where
   "hsize (Hd \<zeta>) = 1"
@@ -235,6 +236,7 @@ lemma hsize_apps: "hsize (apps t ts) = hsize t + sum_list (map hsize ts)"
 
 lemma hsize_args: "1 + sum_list (map hsize (args t)) = hsize t"
   by (metis hsize.simps(1) hsize_apps tm_collapse_apps)
+
 
 subsection \<open>Substitutions\<close>
 
