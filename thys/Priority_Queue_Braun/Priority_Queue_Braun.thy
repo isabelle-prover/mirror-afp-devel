@@ -205,7 +205,7 @@ and mset = mset_tree
 proof(standard, goal_cases)
   case 1 show ?case by simp
 next
-  case (2 q) show ?case by (cases q) auto
+  case 2 show ?case by simp
 next
   case 3 show ?case by(simp add: mset_insert)
 next
