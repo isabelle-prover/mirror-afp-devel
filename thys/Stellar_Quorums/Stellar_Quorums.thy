@@ -308,10 +308,12 @@ proof -
   proof-
     have "not_blocked p R n" using assms that by blast
     hence "n \<notin> R" and "\<not>blocking_min R n" by (metis Int_iff not_blocked.simps that)+
-    thus ?thesis  using blocking_min.intros not_blocked.intros(2) that unfolding Q_def by (simp; smt Ball_Collect)
+    thus ?thesis  using blocking_min.intros not_blocked.intros(2) that unfolding Q_def 
+      by (simp; metis mem_Collect_eq subsetI)
   qed
   thus ?thesis by (simp add: quorum_def)
 qed
+
 
 lemma l5:
   fixes Q p R
