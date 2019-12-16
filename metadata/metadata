@@ -2583,10 +2583,13 @@ author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2014-09-04
 topic = Computer Science/Data Structures
 abstract =
-	This theory implements priority queues via Braun trees. Insertion
-	and deletion take logarithmic time and preserve the balanced nature
-	of Braun trees.
+  This entry verifies priority queues based on Braun trees. Insertion
+  and deletion take logarithmic time and preserve the balanced nature
+  of Braun trees. Two implementations of deletion are provided.
 notify = nipkow@in.tum.de
+extra-history =
+  Change history:
+	[2019-12-16]: Added theory Priority_Queue_Braun2 with second version of del_min
 
 [Binomial-Queues]
 title = Functional Binomial Queues

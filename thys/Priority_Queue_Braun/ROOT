@@ -5,7 +5,7 @@ session Priority_Queue_Braun (AFP) = "HOL-Library" +
   sessions
     "HOL-Data_Structures"
   theories
-    Priority_Queue_Braun
+    Priority_Queue_Braun2
   document_files
     "root.tex"
     "root.bib"
