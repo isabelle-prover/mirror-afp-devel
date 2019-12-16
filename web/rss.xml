@@ -9,7 +9,135 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>16 Sep 2019 00:00:00 +0000</pubDate>
+    <pubDate>27 Nov 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>Interval Arithmetic on 32-bit Words</title>
+              <link>https://www.isa-afp.org/entries/Interval_Arithmetic_Word32.html</link>
+       <guid>https://www.isa-afp.org/entries/Interval_Arithmetic_Word32.html</guid>
+       <dc:creator> Brandon Bohrer       </dc:creator>
+       <pubDate>27 Nov 2019 00:00:00 +0000</pubDate>
+       <description>
+Interval_Arithmetic implements conservative interval arithmetic
+computations, then uses this interval arithmetic to implement a simple
+programming language where all terms have 32-bit signed word values,
+with explicit infinities for terms outside the representable bounds.
+Our target use case is interpreters for languages that must have a
+well-understood low-level behavior.  We include a formalization of
+bounded-length strings which are used for the identifiers of our
+language. Bounded-length identifiers are useful in some applications,
+for example the &lt;a href=&#34;https://www.isa-afp.org/entries/Differential_Dynamic_Logic.html&#34;&gt;Differential_Dynamic_Logic&lt;/a&gt; article,
+where a Euclidean space indexed by identifiers demands that identifiers
+are finitely many.</description>
+    </item>
+    <item>
+       <title>Zermelo Fraenkel Set Theory in Higher-Order Logic</title>
+              <link>https://www.isa-afp.org/entries/ZFC_in_HOL.html</link>
+       <guid>https://www.isa-afp.org/entries/ZFC_in_HOL.html</guid>
+       <dc:creator> Lawrence C. Paulson       </dc:creator>
+       <pubDate>24 Oct 2019 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This entry is a new formalisation of ZFC set theory in Isabelle/HOL. It is
+logically equivalent to Obua&#39;s HOLZF; the point is to have the closest
+possible integration with the rest of Isabelle/HOL, minimising the amount of
+new notations and exploiting type classes.&lt;/p&gt;
+&lt;p&gt;There is a type &lt;em&gt;V&lt;/em&gt; of sets and a function &lt;em&gt;elts :: V =&amp;gt; V
+set&lt;/em&gt; mapping a set to its elements. Classes simply have type &lt;em&gt;V
+set&lt;/em&gt;, and a predicate identifies the small classes: those that correspond
+to actual sets. Type classes connected with orders and lattices are used to
+minimise the amount of new notation for concepts such as the subset relation,
+union and intersection. Basic concepts — Cartesian products, disjoint sums,
+natural numbers, functions, etc. — are formalised.&lt;/p&gt;
+&lt;p&gt;More advanced set-theoretic concepts, such as transfinite induction,
+ordinals, cardinals and the transitive closure of a set, are also provided.
+The definition of addition and multiplication for general sets (not just
+ordinals) follows Kirby.&lt;/p&gt;
+&lt;p&gt;The theory provides two type classes with the aim of facilitating
+developments that combine &lt;em&gt;V&lt;/em&gt; with other Isabelle/HOL types:
+&lt;em&gt;embeddable&lt;/em&gt;, the class of types that can be injected into &lt;em&gt;V&lt;/em&gt;
+(including &lt;em&gt;V&lt;/em&gt; itself as well as &lt;em&gt;V*V&lt;/em&gt;, etc.), and
+&lt;em&gt;small&lt;/em&gt;, the class of types that correspond to some ZF set.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>VerifyThis 2019 -- Polished Isabelle Solutions</title>
+              <link>https://www.isa-afp.org/entries/VerifyThis2019.html</link>
+       <guid>https://www.isa-afp.org/entries/VerifyThis2019.html</guid>
+       <dc:creator> Peter Lammich, Simon Wimmer       </dc:creator>
+       <pubDate>16 Oct 2019 00:00:00 +0000</pubDate>
+       <description>
+VerifyThis 2019 (http://www.pm.inf.ethz.ch/research/verifythis.html)
+was a program verification competition associated with ETAPS 2019. It
+was the 8th event in the VerifyThis competition series. In this entry,
+we present polished and completed versions of our solutions that we
+created during the competition.</description>
+    </item>
+    <item>
+       <title>Aristotle's Assertoric Syllogistic</title>
+              <link>https://www.isa-afp.org/entries/Aristotles_Assertoric_Syllogistic.html</link>
+       <guid>https://www.isa-afp.org/entries/Aristotles_Assertoric_Syllogistic.html</guid>
+       <dc:creator> Angeliki Koutsoukou-Argyraki       </dc:creator>
+       <pubDate>08 Oct 2019 00:00:00 +0000</pubDate>
+       <description>
+We formalise with Isabelle/HOL some basic elements of Aristotle&#39;s
+assertoric syllogistic following the &lt;a
+href=&#34;https://plato.stanford.edu/entries/aristotle-logic/&#34;&gt;article from the Stanford Encyclopedia of Philosophy by Robin Smith.&lt;/a&gt; To
+this end, we use a set theoretic formulation (covering both individual
+and general predication). In particular, we formalise the deductions
+in the Figures and after that we present Aristotle&#39;s
+metatheoretical observation that all deductions in the Figures can in
+fact be reduced to either Barbara or Celarent. As the formal proofs
+prove to be straightforward, the interest of this entry lies in
+illustrating the functionality of Isabelle and high efficiency of
+Sledgehammer for simple exercises in philosophy.</description>
+    </item>
+    <item>
+       <title>Sigma Protocols and Commitment Schemes</title>
+              <link>https://www.isa-afp.org/entries/Sigma_Commit_Crypto.html</link>
+       <guid>https://www.isa-afp.org/entries/Sigma_Commit_Crypto.html</guid>
+       <dc:creator> David Butler, Andreas Lochbihler       </dc:creator>
+       <pubDate>07 Oct 2019 00:00:00 +0000</pubDate>
+       <description>
+We use CryptHOL to formalise commitment schemes and Sigma-protocols.
+Both are widely used fundamental two party cryptographic primitives.
+Security for commitment schemes is considered using game-based
+definitions whereas the security of Sigma-protocols is considered
+using both the game-based and simulation-based security paradigms. In
+this work, we first define security for both primitives and then prove
+secure multiple case studies: the Schnorr, Chaum-Pedersen and
+Okamoto Sigma-protocols as well as a construction that allows for
+compound (AND and OR statements) Sigma-protocols and the Pedersen and
+Rivest commitment schemes. We also prove that commitment schemes can
+be constructed from Sigma-protocols. We formalise this proof at an
+abstract level, only assuming the existence of a Sigma-protocol;
+consequently, the instantiations of this result for the concrete
+Sigma-protocols we consider come for free.</description>
+    </item>
+    <item>
+       <title>Clean - An Abstract Imperative Programming Language and its Theory</title>
+              <link>https://www.isa-afp.org/entries/Clean.html</link>
+       <guid>https://www.isa-afp.org/entries/Clean.html</guid>
+       <dc:creator> Frédéric Tuong, Burkhart Wolff       </dc:creator>
+       <pubDate>04 Oct 2019 00:00:00 +0000</pubDate>
+       <description>
+Clean is based on a simple, abstract execution model for an imperative
+target language. “Abstract” is understood in contrast to “Concrete
+Semantics”; alternatively, the term “shallow-style embedding” could be
+used. It strives for a type-safe notion of program-variables, an
+incremental construction of the typed state-space, support of
+incremental verification, and open-world extensibility of new type
+definitions being intertwined with the program definitions. Clean is
+based on a “no-frills” state-exception monad with the usual
+definitions of bind and unit for the compositional glue of state-based
+computations. Clean offers conditionals and loops supporting C-like
+control-flow operators such as break and return. The state-space
+construction is based on the extensible record package. Direct
+recursion of procedures is supported. Clean’s design strives for
+extreme simplicity. It is geared towards symbolic execution and proven
+correct verification tools. The underlying libraries of this package,
+however, deliberately restrict themselves to the most elementary
+infrastructure for these tasks. The package is intended to serve as
+demonstrator semantic backend for Isabelle/C, or for the
+test-generation techniques.</description>
+    </item>
     <item>
        <title>Formalization of Multiway-Join Algorithms</title>
               <link>https://www.isa-afp.org/entries/Generic_Join.html</link>
@@ -431,125 +559,6 @@ binary search trees used for associative searching&lt;/a&gt; and &lt;a
 href=&#34;https://dl.acm.org/citation.cfm?doid=355744.355745&#34;&gt;
 An Algorithm for Finding Best Matches in Logarithmic Expected
 Time&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>Formalization of Generic Authenticated Data Structures</title>
-              <link>https://www.isa-afp.org/entries/LambdaAuth.html</link>
-       <guid>https://www.isa-afp.org/entries/LambdaAuth.html</guid>
-       <dc:creator> Matthias Brun, Dmitriy Traytel       </dc:creator>
-       <pubDate>14 May 2019 00:00:00 +0000</pubDate>
-       <description>
-Authenticated data structures are a technique for outsourcing data
-storage and maintenance to an untrusted server. The server is required
-to produce an efficiently checkable and cryptographically secure proof
-that it carried out precisely the requested computation. &lt;a
-href=&#34;https://doi.org/10.1145/2535838.2535851&#34;&gt;Miller et
-al.&lt;/a&gt; introduced &amp;lambda;&amp;bull; (pronounced
-&lt;i&gt;lambda auth&lt;/i&gt;)&amp;mdash;a functional programming
-language with a built-in primitive authentication construct, which
-supports a wide range of user-specified authenticated data structures
-while guaranteeing certain correctness and security properties for all
-well-typed programs. We formalize &amp;lambda;&amp;bull; and prove its
-correctness and security properties. With Isabelle&#39;s help, we
-uncover and repair several mistakes in the informal proofs and lemma
-statements. Our findings are summarized in a &lt;a
-href=&#34;http://people.inf.ethz.ch/trayteld/papers/lambdaauth/lambdaauth.pdf&#34;&gt;paper
-draft&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>Multi-Party Computation</title>
-              <link>https://www.isa-afp.org/entries/Multi_Party_Computation.html</link>
-       <guid>https://www.isa-afp.org/entries/Multi_Party_Computation.html</guid>
-       <dc:creator> David Aspinall, David Butler       </dc:creator>
-       <pubDate>09 May 2019 00:00:00 +0000</pubDate>
-       <description>
-We use CryptHOL to consider Multi-Party Computation (MPC) protocols.
-MPC was first considered by Yao in 1983 and recent advances in
-efficiency and an increased demand mean it is now deployed in the real
-world. Security is considered using the real/ideal world paradigm. We
-first define security in the semi-honest security setting where
-parties are assumed not to deviate from the protocol transcript. In
-this setting we prove multiple Oblivious Transfer (OT) protocols
-secure and then show security for the gates of the GMW protocol. We
-then define malicious security, this is a stronger notion of security
-where parties are assumed to be fully corrupted by an adversary. In
-this setting we again consider OT, as it is a fundamental building
-block of almost all MPC protocols.</description>
-    </item>
-    <item>
-       <title>HOL-CSP Version 2.0</title>
-              <link>https://www.isa-afp.org/entries/HOL-CSP.html</link>
-       <guid>https://www.isa-afp.org/entries/HOL-CSP.html</guid>
-       <dc:creator> Safouan Taha, Lina Ye, Burkhart Wolff       </dc:creator>
-       <pubDate>26 Apr 2019 00:00:00 +0000</pubDate>
-       <description>
-This is a complete formalization of the work of Hoare and Roscoe on
-the denotational semantics of the Failure/Divergence Model of CSP. It
-follows essentially the presentation of CSP in Roscoe’s Book ”Theory
-and Practice of Concurrency” [8] and the semantic details in a joint
-Paper of Roscoe and Brooks ”An improved failures model for
-communicating processes&#34;.  The present work is based on a prior
-formalization attempt, called HOL-CSP 1.0, done in 1997 by H. Tej and
-B. Wolff with the Isabelle proof technology available at that time.
-This work revealed minor, but omnipresent foundational errors in key
-concepts like the process invariant. The present version HOL-CSP
-profits from substantially improved libraries (notably HOLCF),
-improved automated proof techniques, and structured proof techniques
-in Isar and is substantially shorter but more complete.</description>
-    </item>
-    <item>
-       <title>A Compositional and Unified Translation of LTL into ω-Automata</title>
-              <link>https://www.isa-afp.org/entries/LTL_Master_Theorem.html</link>
-       <guid>https://www.isa-afp.org/entries/LTL_Master_Theorem.html</guid>
-       <dc:creator> Benedikt Seidl, Salomon Sickert       </dc:creator>
-       <pubDate>16 Apr 2019 00:00:00 +0000</pubDate>
-       <description>
-We present a formalisation of the unified translation approach of
-linear temporal logic (LTL) into ω-automata from [1]. This approach
-decomposes LTL formulas into ``simple&#39;&#39; languages and allows
-a clear separation of concerns: first, we formalise the purely logical
-result yielding this decomposition; second, we instantiate this
-generic theory to obtain a construction for deterministic
-(state-based) Rabin automata (DRA). We extract from this particular
-instantiation an executable tool translating LTL to DRAs. To the best
-of our knowledge this is the first verified translation from LTL to
-DRAs that is proven to be double exponential in the worst case which
-asymptotically matches the known lower bound.
-&lt;p&gt;
-[1] Javier Esparza, Jan Kretínský, Salomon Sickert. One Theorem to Rule Them All:
-A Unified Translation of LTL into ω-Automata. LICS 2018</description>
-    </item>
-    <item>
-       <title>A General Theory of Syntax with Bindings</title>
-              <link>https://www.isa-afp.org/entries/Binding_Syntax_Theory.html</link>
-       <guid>https://www.isa-afp.org/entries/Binding_Syntax_Theory.html</guid>
-       <dc:creator> Lorenzo Gheri, Andrei Popescu       </dc:creator>
-       <pubDate>06 Apr 2019 00:00:00 +0000</pubDate>
-       <description>
-We formalize a theory of syntax with bindings that has been developed
-and refined over the last decade to support several large
-formalization efforts. Terms are defined for an arbitrary number of
-constructors of varying numbers of inputs, quotiented to
-alpha-equivalence and sorted according to a binding signature. The
-theory includes many properties of the standard operators on terms:
-substitution, swapping and freshness. It also includes bindings-aware
-induction and recursion principles and support for semantic
-interpretation. This work has been presented in the ITP 2017 paper “A
-Formalized General Theory of Syntax with Bindings”.</description>
-    </item>
-    <item>
-       <title>The Transcendence of Certain Infinite Series</title>
-              <link>https://www.isa-afp.org/entries/Transcendence_Series_Hancl_Rucki.html</link>
-       <guid>https://www.isa-afp.org/entries/Transcendence_Series_Hancl_Rucki.html</guid>
-       <dc:creator> Angeliki Koutsoukou-Argyraki, Wenda Li       </dc:creator>
-       <pubDate>27 Mar 2019 00:00:00 +0000</pubDate>
-       <description>
-We formalize the proofs of two transcendence criteria by J. Hančl
-and P. Rucki that assert the transcendence of the sums of certain
-infinite series built up by sequences that fulfil certain properties.
-Both proofs make use of Roth&#39;s celebrated theorem on diophantine
-approximations to algebraic numbers from 1955  which we implement as
-an assumption without having formalised its proof.</description>
     </item>
   </channel>
 </rss>

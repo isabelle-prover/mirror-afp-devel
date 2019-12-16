@@ -9,7 +9,7 @@
 section \<open>Proof of the Transcendence of $e$\<close>
 theory E_Transcendental
   imports
-    "HOL-Analysis.Analysis"
+    "HOL-Complex_Analysis.Complex_Analysis"
     "HOL-Number_Theory.Number_Theory"
     "HOL-Computational_Algebra.Polynomial"
 begin

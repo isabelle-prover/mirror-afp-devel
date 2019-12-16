@@ -215,10 +215,10 @@ definition is_find_ce_algo
     \<in> igbg_impl_rel_ext unit_rel Id 
   \<rightarrow> \<langle>\<langle>\<langle>\<langle>Id\<rangle>lasso_run_rel\<rangle>Relators.option_rel\<rangle>Relators.option_rel\<rangle>plain_nres_rel"
 
-definition gabow_find_ce_code 
+definition gabow_find_ce_code :: "_ \<Rightarrow> 'a::hashable lasso option option"
   \<comment> \<open>Emptiness check based on Gabow's SCC Algorithm\<close>
   where "gabow_find_ce_code
-  \<equiv> map_option (Some o lasso_of_prpl) o Gabow_GBG_Code.find_lasso_tr"
+  \<equiv> map_option (Some o lasso_of_prpl) o Gabow_GBG_Code.find_lasso_tr (=) bounded_hashcode_nat (def_hashmap_size TYPE('a))"
 
 lemma gabow_find_ce_code_refine: "is_find_ce_algo 
   (gabow_find_ce_code 
@@ -227,7 +227,7 @@ proof -
   have AUX_EQ: 
     "\<And>gbgi::('a, unit) igbg_impl_scheme. RETURN (gabow_find_ce_code gbgi)
     = (do {
-      l \<leftarrow> RETURN (find_lasso_tr gbgi);
+      l \<leftarrow> RETURN (find_lasso_tr (=) bounded_hashcode_nat (def_hashmap_size TYPE('a)) gbgi);
       RETURN (map_option (Some \<circ> lasso_of_prpl) l)
     })" by (auto simp: gabow_find_ce_code_def)
 
@@ -240,6 +240,9 @@ proof -
     apply (rule order_trans[
       OF bind_mono(1)[OF Gabow_GBG_Code.find_lasso_tr_correct order_refl]])
     apply assumption
+    apply (simp; fail)
+    apply (rule autoref_ga_rules;simp; fail)
+    apply (rule autoref_ga_rules;simp; fail)
     apply (rule igb_fr_graphI)
     apply assumption
     apply assumption

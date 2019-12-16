@@ -396,7 +396,7 @@ definition check_nsc where "check_nsc check_s = sum_wrap (\<lambda> asitv. check
 
 definition assert_nsc where "assert_nsc assert_all_s i = (\<lambda> ((asi,tv,ui),s). 
   if i \<in> set ui then Unsat [i] else 
-  case assert_all_s (asi i) s of Unsat I \<Rightarrow> Unsat I | Inr s' \<Rightarrow> Inr ((asi,tv,ui),s'))"
+  case assert_all_s (list_map_to_fun asi i) s of Unsat I \<Rightarrow> Unsat I | Inr s' \<Rightarrow> Inr ((asi,tv,ui),s'))"
 fun checkpoint_nsc where "checkpoint_nsc checkpoint_s (asi_tv_ui,s) = checkpoint_s s" 
 fun backtrack_nsc where "backtrack_nsc backtrack_s c (asi_tv_ui,s) = (asi_tv_ui, backtrack_s c s)" 
 fun solution_nsc where "solution_nsc solution_s ((asi,tv,ui),s) = tv (solution_s s)" 
@@ -419,9 +419,10 @@ locale Incremental_Atom_Ops_For_NS_Constraint_Ops =
 begin
 
 definition "init_nsc nsc = (case preprocess nsc of (t,as,trans_v,ui) \<Rightarrow> 
-   ((list_map_to_fun (create_map as), trans_v, remdups ui), init_s t))"
+   ((create_map as, trans_v, remdups ui), init_s t))"
 
-fun invariant_as_asi where "invariant_as_asi as asi tc tc' ui ui' = (tc = tc' \<and> set ui = set ui' \<and> (\<forall> i. set (asi i) = (as \<inter> ({i} \<times> UNIV))))" 
+fun invariant_as_asi where "invariant_as_asi as asi tc tc' ui ui' = (tc = tc' \<and> set ui = set ui' \<and> 
+    (\<forall> i. set (list_map_to_fun asi i) = (as \<inter> ({i} \<times> UNIV))))" 
 
 fun invariant_nsc where 
   "invariant_nsc nsc J ((asi,tv,ui),s) = (case preprocess nsc of (t,as,tv',ui') \<Rightarrow> invariant_as_asi (set as) asi tv tv' ui ui' \<and> 
@@ -435,6 +436,7 @@ lemma i_satisfies_atom_set_inter_right: "((I, v) \<Turnstile>\<^sub>i\<^sub>a\<^
   unfolding i_satisfies_atom_set.simps
   by (rule arg_cong[of _ _ "\<lambda> x. v \<Turnstile>\<^sub>a\<^sub>s x"], auto)
 
+
 lemma ns_constraints_ops: "Incremental_NS_Constraint_Ops init_nsc (assert_nsc assert_all_s)
   (check_nsc check_s) (solution_nsc solution_s) (checkpoint_nsc checkpoint_s) (backtrack_nsc backtrack_s)
   invariant_nsc checked_nsc"
@@ -444,11 +446,11 @@ proof (unfold_locales, goal_cases)
   obtain t as tv' ui' where prep[simp]: "preprocess nsc = (t, as, tv', ui')" by (cases "preprocess nsc")
   note pre = 1[unfolded S assert_nsc_def]
   from pre(2) obtain s' where
-    ok: "assert_all_s (asi j) s = Inr s'" and S': "S' = ((asi,tv,ui),s')" and j: "j \<notin> set ui" 
+    ok: "assert_all_s (list_map_to_fun asi j) s = Inr s'" and S': "S' = ((asi,tv,ui),s')" and j: "j \<notin> set ui" 
     by (auto split: sum.splits if_splits)
   from pre(1)[simplified]
   have inv: "invariant_s t (set as \<inter> J \<times> UNIV) s" 
-    and asi: "set (asi j) = set as \<inter> {j} \<times> UNIV" "invariant_as_asi (set as) asi tv tv' ui ui'" "J \<inter> set ui = {}" by auto
+    and asi: "set (list_map_to_fun asi j) = set as \<inter> {j} \<times> UNIV" "invariant_as_asi (set as) asi tv tv' ui ui'" "J \<inter> set ui = {}" by auto
   from assert_all_s_ok[OF inv ok, unfolded asi] asi(2-) j
   show ?case unfolding invariant_nsc.simps S' prep split
     by (metis Int_insert_left Sigma_Un_distrib1 inf_sup_distrib1 insert_is_Un)
@@ -460,11 +462,11 @@ next
   show ?case
   proof (cases "j \<in> set ui")
     case False
-    with pre(2) have unsat: "assert_all_s (asi j) s = Unsat I"  
+    with pre(2) have unsat: "assert_all_s (list_map_to_fun asi j) s = Unsat I"  
       by (auto split: sum.splits)
     from pre(1)
     have inv: "invariant_s t (set as \<inter> J \<times> UNIV) s" 
-      and asi: "set (asi j) = set as \<inter> {j} \<times> UNIV" by auto
+      and asi: "set (list_map_to_fun asi j) = set as \<inter> {j} \<times> UNIV" by auto
     from assert_all_s_unsat[OF inv unsat, unfolded asi]
     have "minimal_unsat_core_tabl_atoms (set I) t (set as \<inter> J \<times> UNIV \<union> set as \<inter> {j} \<times> UNIV)" .
     also have "set as \<inter> J \<times> UNIV \<union> set as \<inter> {j} \<times> UNIV = set as \<inter> insert j J \<times> UNIV" by blast
@@ -532,7 +534,9 @@ next
 next
   case (8 nsc J S)
   then show ?case using checked_invariant_s by (cases S, auto)
-qed 
+qed
+
+
 end
 
 subsection \<open>Highest Layer: Incremental Constraints\<close>
@@ -701,7 +705,8 @@ global_interpretation Incremental_Atom_Ops_Default:
   using Incremental_State_Ops_Simplex_Default.incremental_atom_ops
   by (auto simp: assert_all_s_def)
 
-definition "init_nsc_code = (Incremental_Atom_Ops_For_NS_Constraint_Ops.init_nsc init_state preprocess :: _ \<Rightarrow> (('a :: linorder \<Rightarrow> ('a \<times> QDelta atom) list) \<times> _) \<times> ('a, QDelta) state)" 
+
+definition "init_nsc_code = (Incremental_Atom_Ops_For_NS_Constraint_Ops.init_nsc init_state preprocess :: _ \<Rightarrow> (('a :: linorder, ('a \<times> QDelta atom) list) mapping \<times> _) \<times> ('a, QDelta) state)" 
 definition "assert_nsc_code = assert_nsc assert_all_s" 
 definition "check_nsc_code = check_nsc check_s" 
 definition "checkpoint_nsc_code = checkpoint_nsc checkpoint_s" 
@@ -736,7 +741,7 @@ global_interpretation Incremental_Atom_Ops_For_NS_Constraint_Ops_Default:
       )
 
 type_synonym 'i simplex_state' = "QDelta ns_constraint list 
-  \<times> (('i \<Rightarrow> ('i \<times> QDelta atom) list) \<times> ((var,QDelta)mapping \<Rightarrow> (var,QDelta)mapping) \<times> 'i list) 
+  \<times> (('i, ('i \<times> QDelta atom) list) mapping \<times> ((var,QDelta)mapping \<Rightarrow> (var,QDelta)mapping) \<times> 'i list) 
   \<times> ('i, QDelta) state"
 
 definition "init_simplex' = (init_cs init_nsc_code to_ns :: 'i :: linorder i_constraint list \<Rightarrow> 'i simplex_state')" 
@@ -816,10 +821,10 @@ datatype 'i simplex_checkpoint = Simplex_Checkpoint "(nat, 'i \<times> QDelta) m
 fun init_simplex where "init_simplex cs =
   (let tons_cs = to_ns cs
    in Simplex_State (map snd tons_cs,
-       case preprocess tons_cs of (t, as, trans_v, ui) \<Rightarrow> ((list_map_to_fun (create_map as), trans_v, remdups ui), init_state t)))" 
+       case preprocess tons_cs of (t, as, trans_v, ui) \<Rightarrow> ((create_map as, trans_v, remdups ui), init_state t)))" 
 
 fun assert_simplex where "assert_simplex i (Simplex_State (cs, (asi, tv, ui), s)) =
-  (if i \<in> set ui then Inl [i] else case assert_all_s (asi i) s of Inl y \<Rightarrow> Inl y | Inr s' \<Rightarrow> Inr (Simplex_State (cs, (asi, tv, ui), s')))" 
+  (if i \<in> set ui then Inl [i] else case assert_all_s (list_map_to_fun asi i) s of Inl y \<Rightarrow> Inl y | Inr s' \<Rightarrow> Inr (Simplex_State (cs, (asi, tv, ui), s')))" 
 
 fun check_simplex where 
   "check_simplex (Simplex_State (cs, asi_tv, s)) = (case check_s s of Inl y \<Rightarrow> Inl y | Inr s' \<Rightarrow> Inr (Simplex_State (cs, asi_tv, s')))"
@@ -1024,5 +1029,4 @@ value (code) "let cs = [
     s7 = (case check_simplex s6 of Inr s \<Rightarrow> s | Unsat _ \<Rightarrow> undefined); \<comment> \<open>check that 1,2,3,5,6 are sat.\<close>
     sol = solution_simplex s7 \<comment> \<open>solution for 1,2,3,5,6\<close>
   in (I, map (\<lambda> x. (''x_'', x, ''='', sol x)) [0,1,2,3]) \<comment> \<open>output unsat core and solution\<close>" 
-
 end

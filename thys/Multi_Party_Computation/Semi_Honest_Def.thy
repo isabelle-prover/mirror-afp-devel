@@ -34,13 +34,13 @@ definition adv_P1 :: "'msg1 \<Rightarrow> 'msg2 \<Rightarrow> 'view1 adversary_d
   where "adv_P1 m1 m2 D \<equiv> \<bar>(spmf (R1 m1 m2 \<bind> D) True) 
             - spmf (funct m1 m2 \<bind> (\<lambda> (o1, o2). S1 m1 o1 \<bind> D)) True\<bar>"
 
-definition "inf_theoretic_P1 m1 m2 \<equiv> (R1 m1 m2 = funct m1 m2 \<bind> (\<lambda> (s1, s2). S1 m1 s1))"
+definition "perfect_sec_P1 m1 m2 \<equiv> (R1 m1 m2 = funct m1 m2 \<bind> (\<lambda> (s1, s2). S1 m1 s1))"
 
 definition adv_P2 :: "'msg1 \<Rightarrow> 'msg2 \<Rightarrow> 'view2 adversary_det \<Rightarrow> real"
   where "adv_P2 m1 m2 D = \<bar>spmf (R2 m1 m2 \<bind> (\<lambda> view. D view)) True 
             - spmf (funct m1 m2 \<bind> (\<lambda> (o1, o2). S2 m2 o2 \<bind> (\<lambda> view. D view))) True\<bar>"
 
-definition "inf_theoretic_P2 m1 m2 \<equiv> (R2 m1 m2 = funct m1 m2 \<bind> (\<lambda> (s1, s2). S2 m2 s2))"
+definition "perfect_sec_P2 m1 m2 \<equiv> (R2 m1 m2 = funct m1 m2 \<bind> (\<lambda> (s1, s2). S2 m2 s2))"
  
 text \<open>We also define the security games (for Party 1 and 2) used in EasyCrypt to define semi honest security for Party 1. 
 We then show the two definitions are equivalent.\<close>
@@ -155,12 +155,12 @@ definition Ideal2 :: "'msg2 \<Rightarrow> 'msg1 \<Rightarrow> 'out2 \<Rightarrow
 definition adv_P1 :: "'msg1 \<Rightarrow> 'msg2 \<Rightarrow> ('view1, 'out1, 'out2) adversary_non_det \<Rightarrow> real"
   where "adv_P1 m1 m2 D \<equiv> \<bar>(spmf (R1 m1 m2 \<bind> (\<lambda> view. D view)) True) - spmf (funct m1 m2 \<bind> (\<lambda> (o1, o2). Ideal1 m1 m2 o1 \<bind> (\<lambda> view. D view))) True\<bar>"
 
-definition "inf_theoretic_P1 m1 m2 \<equiv> (R1 m1 m2 = funct m1 m2 \<bind> (\<lambda> (s1, s2). Ideal1 m1 m2 s1))"
+definition "perfect_sec_P1 m1 m2 \<equiv> (R1 m1 m2 = funct m1 m2 \<bind> (\<lambda> (s1, s2). Ideal1 m1 m2 s1))"
 
 definition adv_P2 :: "'msg1 \<Rightarrow> 'msg2 \<Rightarrow> ('view2, 'out1, 'out2) adversary_non_det \<Rightarrow> real"
   where "adv_P2 m1 m2 D = \<bar>spmf (R2 m1 m2 \<bind> (\<lambda> view. D view)) True - spmf (funct m1 m2 \<bind> (\<lambda> (o1, o2). Ideal2 m2 m1 o2 \<bind> (\<lambda> view. D view))) True\<bar>"
 
-definition "inf_theoretic_P2 m1 m2 \<equiv> (R2 m1 m2 = funct m1 m2 \<bind> (\<lambda> (s1, s2). Ideal2 m2 m1 s2))"
+definition "perfect_sec_P2 m1 m2 \<equiv> (R2 m1 m2 = funct m1 m2 \<bind> (\<lambda> (s1, s2). Ideal2 m2 m1 s2))"
 
 end 
 

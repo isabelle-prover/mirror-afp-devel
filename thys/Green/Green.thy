@@ -451,7 +451,7 @@ proof -
     then have scale_shif_pw_smth: "(\<lambda>x. (a + (b - a) * x)) piecewise_C1_differentiable_on {0..1}" using C1_differentiable_imp_piecewise by blast
     have g2_smooth: "g2 piecewise_C1_differentiable_on (\<lambda>x. a + (b - a) * x) ` {0..1}" using add_scale_img[OF twoCisTypeI(1)] twoCisTypeI(6) by auto
     have "(\<lambda>x. g2 (a + (b - a) * x)) piecewise_C1_differentiable_on {0..1}"
-      using Cauchy_Integral_Theorem.piecewise_C1_differentiable_compose[OF scale_shif_pw_smth g2_smooth finite_vimg]
+      using piecewise_C1_differentiable_compose[OF scale_shif_pw_smth g2_smooth finite_vimg]
       by (auto simp add: o_def)
     then have "(\<lambda>x::real. (a + (b - a) * x, g2 (a + (b - a) * x))) piecewise_C1_differentiable_on {0..1}"
       using all_components_smooth_one_pw_smooth_is_pw_smooth[where f = "(\<lambda>x::real. (a + (b - a) * x, g2 (a + (b - a) * x)))"]
@@ -469,7 +469,7 @@ proof -
     then have scale_shif_pw_smth: "(\<lambda>x. (a + (b - a) * x)) piecewise_C1_differentiable_on {0..1}" using C1_differentiable_imp_piecewise by blast
     have g1_smooth: "g1 piecewise_C1_differentiable_on (\<lambda>x. a + (b - a) * x) ` {0..1}" using add_scale_img[OF twoCisTypeI(1)] twoCisTypeI(5) by auto
     have "(\<lambda>x. g1 (a + (b - a) * x)) piecewise_C1_differentiable_on {0..1}"
-      using Cauchy_Integral_Theorem.piecewise_C1_differentiable_compose[OF scale_shif_pw_smth g1_smooth finite_vimg]
+      using piecewise_C1_differentiable_compose[OF scale_shif_pw_smth g1_smooth finite_vimg]
       by (auto simp add: o_def)
     then have "(\<lambda>x. (a + (b - a) * x, g1 (a + (b - a) * x))) piecewise_C1_differentiable_on {0..1}"
       using all_components_smooth_one_pw_smooth_is_pw_smooth[where f = "(\<lambda>x. (a + (b - a) * x, g1 (a + (b - a) * x)))"]
@@ -702,7 +702,7 @@ proof -
       using scale_shift_smooth C1_differentiable_imp_piecewise by blast
     have g2_smooth: "g2 piecewise_C1_differentiable_on (\<lambda>x. a + (b - a) * x) ` {0..1}" using add_scale_img[OF twoCisTypeII(1)] twoCisTypeII(6) by auto
     have "(\<lambda>x. g2 (a + (b - a) * x)) piecewise_C1_differentiable_on {0..1}"
-      using Cauchy_Integral_Theorem.piecewise_C1_differentiable_compose[OF scale_shif_pw_smth g2_smooth finite_vimg]
+      using piecewise_C1_differentiable_compose[OF scale_shif_pw_smth g2_smooth finite_vimg]
       by (auto simp add: o_def)
     then have "(\<lambda>x::real. (g2 (a + (b - a) * x), a + (b - a) * x)) piecewise_C1_differentiable_on {0..1}"
       using all_components_smooth_one_pw_smooth_is_pw_smooth[where f = "(\<lambda>x::real. (g2 (a + (b - a) * x), a + (b - a) * x))"]
@@ -1445,7 +1445,7 @@ proof -
     then have scale_shif_pw_smth: "(\<lambda>x. (a + (b - a) * x)) piecewise_C1_differentiable_on {0..1}" using C1_differentiable_imp_piecewise by blast
     have g2_smooth: "g2 piecewise_C1_differentiable_on (\<lambda>x. a + (b - a) * x) ` {0..1}" using add_scale_img[OF twoCisTypeII(1)] twoCisTypeII(6) by auto
     have "(\<lambda>x. g2 (a + (b - a) * x)) piecewise_C1_differentiable_on {0..1}"
-      using Cauchy_Integral_Theorem.piecewise_C1_differentiable_compose[OF scale_shif_pw_smth g2_smooth finite_vimg]
+      using piecewise_C1_differentiable_compose[OF scale_shif_pw_smth g2_smooth finite_vimg]
       by (auto simp add: o_def)
     then have "(\<lambda>x::real. (g2 (a + (b - a) * x), a + (b - a) * x)) piecewise_C1_differentiable_on {0..1}"
       using all_components_smooth_one_pw_smooth_is_pw_smooth[where f = "(\<lambda>x::real. (g2 (a + (b - a) * x), a + (b - a) * x))"]
@@ -2001,7 +2001,7 @@ proof -
     then have "\<forall>x\<in>\<H>. (case x of (k, g) \<Rightarrow> (k::int) * line_integral F {j} g) = 0"
       by auto
     then show "(\<Sum>x\<in>\<H>. case x of (k, g) \<Rightarrow> k * line_integral F {j} g) = 0"
-      using sum_not_0 by blast
+      by simp
   qed
   then have "one_chain_line_integral F {j} \<gamma> =
                            one_chain_line_integral F {j} (two_chain_vertical_boundary two_chain)"

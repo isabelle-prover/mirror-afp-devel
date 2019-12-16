@@ -665,7 +665,7 @@ proof -
         have "(\<lambda>n. 12*k/\<epsilon> * n powr (-\<epsilon>/2)) \<longlonglongrightarrow> 0"
           using \<open>0 < \<epsilon>\<close> by (intro tendsto_mult_right_zero LIMSEQ_neg_powr) auto
         then show ?thesis
-          using \<open>0 < \<epsilon>\<close> by (auto elim: eventually_mono simp: dist_real_def dest!: tendstoD[where e=1])
+          using \<open>0 < \<epsilon>\<close> by - (drule tendstoD[where e=1], auto elim: eventually_mono)
       qed
       finally (eventually_le_le) show ?thesis .
     qed

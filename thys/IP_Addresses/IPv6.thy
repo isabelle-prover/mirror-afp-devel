@@ -470,7 +470,7 @@ subsection\<open>Semantics\<close>
      proof - (*sledgehammered for 128 word and concrete values for m and n*)
        have f1: "\<And>w wa wb. ((w::'a::len word) && wa) && wb = w && wb && wa"
          by (simp add: word_bool_alg.conj_left_commute word_bw_comms(1))
-       have "\<And>w n wa. ((w::'a::len word) && ~~ mask n) && (wa << n) = (w >> n) && wa << n"
+       have "\<And>w n wa. ((w::'a::len word) && ~~ (mask n)) && (wa << n) = (w >> n) && wa << n"
          by (simp add: and_not_mask shiftl_over_and_dist)
        then show ?thesis
         by (simp add: is_aligned_mask is_aligned_shiftr_shiftl word_bool_alg.conj.assoc)

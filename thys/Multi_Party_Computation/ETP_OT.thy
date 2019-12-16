@@ -1,4 +1,4 @@
-subsection \<open>Oblivious transfer constructed from ETPs\<close>
+subsection \<open> Oblivious transfer constructed from ETPs \<close>
 
 text\<open>Here we construct the OT protocol based on ETPs given in \cite{DBLP:books/sp/17/Lindell17} (Chapter 4) and prove
 semi honest security for both parties. We show information theoretic security for Party 1 and reduce the security of 
@@ -29,21 +29,14 @@ lemma if_else_True [simp]: "(if b then x else True) \<longleftrightarrow> (b \<l
 lemma inj_on_Not [simp]: "inj_on Not A"
   by(auto simp add: inj_on_def)
 
-locale ETP_base =
-  fixes I :: "('index \<times> 'trap) spmf"
-    and domain :: "'index \<Rightarrow> 'range set"
+locale ETP_base = etp: etp I domain range F F\<^sub>i\<^sub>n\<^sub>v B
+  for I :: "('index \<times> 'trap) spmf" \<comment> \<open>samples index and trapdoor\<close>
+    and domain :: "'index \<Rightarrow> 'range set" 
     and range :: "'index \<Rightarrow> 'range set"
-    and f :: "'index \<Rightarrow> ('range \<Rightarrow> 'range)"
-    and B :: "'index \<Rightarrow> 'range \<Rightarrow> bool"
-  assumes dom_eq_ran: "y \<in> set_spmf I \<longrightarrow> domain (fst y) = range (fst y)"
-    and finite_range: "y \<in> set_spmf I \<longrightarrow> finite (range (fst y))" 
-    and non_empty_range: "y \<in> set_spmf I \<longrightarrow> range (fst y) \<noteq> {}" 
-    and bij_betw: "y \<in> set_spmf I \<longrightarrow>  bij_betw (f (fst y)) (domain (fst y)) (range (fst y))"
-    and lossless_I: "lossless_spmf I"
+    and B :: "'index \<Rightarrow> 'range \<Rightarrow> bool" \<comment> \<open>hard core predicate\<close>
+    and F :: "'index \<Rightarrow> 'range \<Rightarrow> 'range"
+    and F\<^sub>i\<^sub>n\<^sub>v :: "'index \<Rightarrow> 'trap \<Rightarrow> 'range \<Rightarrow> 'range"
 begin
-
-sublocale etp: etp I domain range f B 
-  unfolding etp_def using dom_eq_ran finite_range non_empty_range bij_betw lossless_I by simp
 
 text\<open>The probabilistic program that defines the protocol.\<close>
 
@@ -53,22 +46,22 @@ definition protocol :: "(bool \<times> bool) \<Rightarrow> bool \<Rightarrow> (u
     (\<alpha> :: 'index, \<tau> :: 'trap) \<leftarrow> I;
     x\<^sub>\<sigma> :: 'range \<leftarrow> etp.S \<alpha>;
     y\<^sub>\<sigma>' :: 'range \<leftarrow> etp.S \<alpha>;
-    let (y\<^sub>\<sigma> :: 'range) = etp.F \<alpha> x\<^sub>\<sigma>;
-    let (x\<^sub>\<sigma> :: 'range) = etp.F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>;
-    let (x\<^sub>\<sigma>' :: 'range) = etp.F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>';
+    let (y\<^sub>\<sigma> :: 'range) = F \<alpha> x\<^sub>\<sigma>;
+    let (x\<^sub>\<sigma> :: 'range) = F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>;
+    let (x\<^sub>\<sigma>' :: 'range) = F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>';
     let (\<beta>\<^sub>\<sigma> :: bool) = xor (B \<alpha> x\<^sub>\<sigma>) b\<^sub>\<sigma>;
     let (\<beta>\<^sub>\<sigma>' :: bool) = xor (B \<alpha> x\<^sub>\<sigma>') b\<^sub>\<sigma>';
     return_spmf ((), if \<sigma> then xor (B \<alpha> x\<^sub>\<sigma>') \<beta>\<^sub>\<sigma>' else xor (B \<alpha> x\<^sub>\<sigma>) \<beta>\<^sub>\<sigma>)}"
 
 lemma correctness: "protocol (m0,m1) c = funct_OT_12 (m0,m1) c"
 proof-
-  have "(B \<alpha> (etp.F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>') = (B \<alpha> (etp.F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>') = m1)) = m1" 
+  have "(B \<alpha> (F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>') = (B \<alpha> (F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>') = m1)) = m1" 
     for \<alpha> \<tau> y\<^sub>\<sigma>'  by auto
   then show ?thesis 
-    by(auto simp add: protocol_def funct_OT_12_def Let_def etp.B_F_inv_rewrite bind_spmf_const etp.lossless_S lossless_I lossless_weight_spmfD split_def cong: bind_spmf_cong)
+    by(auto simp add: protocol_def funct_OT_12_def Let_def etp.B_F_inv_rewrite bind_spmf_const etp.lossless_S local.etp.lossless_I lossless_weight_spmfD split_def cong: bind_spmf_cong)
 qed
 
-text \<open>Party 1 views\<close>
+text \<open> Party 1 views \<close>
 
 definition R1 :: "(bool \<times> bool) \<Rightarrow> bool \<Rightarrow> 'range viewP1"
   where "R1 input\<^sub>1 \<sigma> = do {
@@ -76,11 +69,11 @@ definition R1 :: "(bool \<times> bool) \<Rightarrow> bool \<Rightarrow> 'range v
     (\<alpha>, \<tau>) \<leftarrow> I;
     x\<^sub>\<sigma> \<leftarrow> etp.S \<alpha>;
     y\<^sub>\<sigma>' \<leftarrow> etp.S \<alpha>;
-    let y\<^sub>\<sigma> = etp.F \<alpha> x\<^sub>\<sigma>;
+    let y\<^sub>\<sigma> = F \<alpha> x\<^sub>\<sigma>;
     return_spmf ((b\<^sub>0, b\<^sub>1), if \<sigma> then y\<^sub>\<sigma>' else y\<^sub>\<sigma>, if \<sigma> then y\<^sub>\<sigma> else y\<^sub>\<sigma>')}"
 
 lemma lossless_R1: "lossless_spmf (R1 msgs \<sigma>)"
-  by(simp add: R1_def lossless_I split_def etp.lossless_S Let_def)
+  by(simp add: R1_def local.etp.lossless_I split_def etp.lossless_S Let_def)
 
 definition S1 :: "(bool \<times> bool) \<Rightarrow> unit \<Rightarrow> 'range viewP1"
   where "S1 == (\<lambda> input\<^sub>1 (). do {
@@ -91,9 +84,9 @@ definition S1 :: "(bool \<times> bool) \<Rightarrow> unit \<Rightarrow> 'range v
     return_spmf ((b\<^sub>0, b\<^sub>1), y\<^sub>0, y\<^sub>1)})" 
 
 lemma lossless_S1: "lossless_spmf (S1 msgs ())"
-  by(simp add: S1_def lossless_I split_def etp.lossless_S)
+  by(simp add: S1_def local.etp.lossless_I split_def etp.lossless_S)
 
-text \<open>Party 2 views\<close>
+text \<open> Party 2 views \<close>
 
 definition R2 :: "(bool \<times> bool) \<Rightarrow> bool \<Rightarrow> 'index viewP2"
   where "R2 msgs \<sigma> = do {
@@ -101,30 +94,30 @@ definition R2 :: "(bool \<times> bool) \<Rightarrow> bool \<Rightarrow> 'index v
     (\<alpha>, \<tau>) \<leftarrow> I;
     x\<^sub>\<sigma> \<leftarrow> etp.S \<alpha>;
     y\<^sub>\<sigma>' \<leftarrow> etp.S \<alpha>;
-    let y\<^sub>\<sigma> = etp.F \<alpha> x\<^sub>\<sigma>;
-    let x\<^sub>\<sigma> = etp.F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>;
-    let x\<^sub>\<sigma>' = etp.F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>';
+    let y\<^sub>\<sigma> = F \<alpha> x\<^sub>\<sigma>;
+    let x\<^sub>\<sigma> = F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>;
+    let x\<^sub>\<sigma>' = F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>';
     let \<beta>\<^sub>\<sigma> = (B \<alpha> x\<^sub>\<sigma>) \<oplus> (if \<sigma> then b1 else b0) ;
     let \<beta>\<^sub>\<sigma>' = (B \<alpha> x\<^sub>\<sigma>') \<oplus> (if \<sigma> then b0 else b1);
     return_spmf (\<sigma>, \<alpha>,(\<beta>\<^sub>\<sigma>, \<beta>\<^sub>\<sigma>'))}"
 
 lemma lossless_R2: "lossless_spmf (R2 msgs \<sigma>)"
-  by(simp add: R2_def split_def lossless_I etp.lossless_S)
+  by(simp add: R2_def split_def local.etp.lossless_I etp.lossless_S)
 
 definition S2 :: "bool \<Rightarrow> bool \<Rightarrow> 'index viewP2"
   where "S2 \<sigma> b\<^sub>\<sigma> = do {
     (\<alpha>, \<tau>) \<leftarrow> I;
     x\<^sub>\<sigma> \<leftarrow> etp.S \<alpha>;
     y\<^sub>\<sigma>' \<leftarrow> etp.S \<alpha>;
-    let x\<^sub>\<sigma>' = etp.F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>';
+    let x\<^sub>\<sigma>' = F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>';
     let \<beta>\<^sub>\<sigma> = (B \<alpha> x\<^sub>\<sigma>) \<oplus> b\<^sub>\<sigma>;
     let \<beta>\<^sub>\<sigma>' = B \<alpha> x\<^sub>\<sigma>';
     return_spmf (\<sigma>, \<alpha>, (\<beta>\<^sub>\<sigma>, \<beta>\<^sub>\<sigma>'))}"
 
 lemma lossless_S2: "lossless_spmf (S2 \<sigma> b\<^sub>\<sigma>)"
-  by(simp add: S2_def lossless_I etp.lossless_S split_def)
+  by(simp add: S2_def local.etp.lossless_I etp.lossless_S split_def)
 
-text \<open>Security for Party 1\<close>
+text \<open> Security for Party 1 \<close>
 
 text\<open>We have information theoretic security for Party 1.\<close>
 
@@ -135,7 +128,7 @@ proof-
     let (b0,b1) = input\<^sub>1;
     (\<alpha>, \<tau>) \<leftarrow> I;
     y\<^sub>\<sigma>' :: 'range \<leftarrow> etp.S \<alpha>;
-    y\<^sub>\<sigma> \<leftarrow> map_spmf (\<lambda> x\<^sub>\<sigma>. etp.F \<alpha> x\<^sub>\<sigma>) (etp.S \<alpha>);
+    y\<^sub>\<sigma> \<leftarrow> map_spmf (\<lambda> x\<^sub>\<sigma>. F \<alpha> x\<^sub>\<sigma>) (etp.S \<alpha>);
     return_spmf ((b0,b1), if \<sigma> then y\<^sub>\<sigma>' else y\<^sub>\<sigma>, if \<sigma> then y\<^sub>\<sigma> else y\<^sub>\<sigma>')}"
      by(simp add: bind_map_spmf o_def Let_def R1_def)
    also have "... = do {
@@ -150,7 +143,7 @@ proof-
    ultimately show ?thesis by auto
 qed 
 
-text \<open>The adversary used in proof of security for party 2\<close>
+text \<open> The adversary used in proof of security for party 2 \<close>
 
 definition \<A> :: "('index, 'range) advP2"
   where "\<A> \<alpha> \<sigma> b\<^sub>\<sigma> D2 x = do {
@@ -164,12 +157,6 @@ lemma lossless_\<A>:
   assumes "\<forall> view. lossless_spmf (D2 view)"
   shows "y \<in> set_spmf I \<longrightarrow>  lossless_spmf (\<A> (fst y) \<sigma> b\<^sub>\<sigma> D2 x)"
   by(simp add: \<A>_def etp.lossless_S assms)
-
-end 
-
-locale ETP_ot_12 = ETP_base +
-  fixes HCP_ad :: real
-begin
 
 lemma assm_bound_funct_OT_12: 
   assumes "etp.HCP_adv \<A> \<sigma> (if \<sigma> then b1 else b0) D \<le> HCP_ad"
@@ -187,17 +174,17 @@ lemma assm_bound_funct_OT_12_collapse:
   shows "\<bar>spmf (funct_OT_12 m1 \<sigma> \<bind> (\<lambda> (out1,out2). etp.HCP_game \<A> \<sigma> out2 D)) True - 1/2\<bar> \<le> HCP_ad"
   using assm_bound_funct_OT_12 surj_pair assms by metis 
 
-text \<open>To prove security for party 2 we split the proof on the cases on party 2's input\<close>
+text \<open> To prove security for party 2 we split the proof on the cases on party 2's input \<close>
 
 lemma R2_S2_False:
   assumes "((if \<sigma> then b0 else b1) = False)" 
-  shows "spmf (R2 (b0,b1) \<sigma> \<bind> (D2 :: (bool \<times> 'a \<times> bool \<times> bool) \<Rightarrow> bool spmf)) True 
+  shows "spmf (R2 (b0,b1) \<sigma> \<bind> (D2 :: (bool \<times> 'index \<times> bool \<times> bool) \<Rightarrow> bool spmf)) True 
                 = spmf (funct_OT_12 (b0,b1) \<sigma> \<bind> (\<lambda> (out1,out2). S2 \<sigma> out2 \<bind> D2)) True"
 proof-
   have "\<sigma> \<Longrightarrow> \<not> b0" using assms by simp
   moreover have "\<not> \<sigma> \<Longrightarrow> \<not> b1" using assms by simp
   ultimately show ?thesis
-    by(auto simp add: R2_def S2_def split_def etp.F_def etp.F\<^sub>i\<^sub>n\<^sub>v_def assms funct_OT_12_def cong: bind_spmf_cong_simp) 
+    by(auto simp add: R2_def S2_def split_def local.etp.F_f_inv assms funct_OT_12_def cong: bind_spmf_cong_simp) 
 qed
 
 lemma R2_S2_True:
@@ -224,20 +211,20 @@ proof-
     x\<^sub>\<sigma> \<leftarrow> etp.S \<alpha>;
     x \<leftarrow> (etp.S \<alpha>);
     let \<beta>\<^sub>\<sigma> = (B \<alpha> x\<^sub>\<sigma>) \<oplus> b\<^sub>\<sigma>;
-    let \<beta>\<^sub>\<sigma>' = B \<alpha> (etp.f\<^sub>i\<^sub>n\<^sub>v \<alpha> x); 
+    let \<beta>\<^sub>\<sigma>' = B \<alpha> (F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> x); 
     d \<leftarrow> D2(\<sigma>, \<alpha>, \<beta>\<^sub>\<sigma>, \<beta>\<^sub>\<sigma>');
     let b' = (if d then \<beta>\<^sub>\<sigma>' else \<not> \<beta>\<^sub>\<sigma>');
-    let b = B \<alpha> (etp.f\<^sub>i\<^sub>n\<^sub>v \<alpha> x);
+    let b = B \<alpha> (F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> x);
     return_spmf (b = b')}"
       define HCP_game_false where "HCP_game_false == \<lambda> \<sigma> b\<^sub>\<sigma>. do {
     (\<alpha>, \<tau>) \<leftarrow> I;
     x\<^sub>\<sigma> \<leftarrow> etp.S \<alpha>;
     x \<leftarrow> (etp.S \<alpha>);
     let \<beta>\<^sub>\<sigma> = (B \<alpha> x\<^sub>\<sigma>) \<oplus> b\<^sub>\<sigma>;
-    let \<beta>\<^sub>\<sigma>' = \<not> B \<alpha> (etp.f\<^sub>i\<^sub>n\<^sub>v \<alpha> x); 
+    let \<beta>\<^sub>\<sigma>' = \<not> B \<alpha> (F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> x); 
     d \<leftarrow> D2(\<sigma>, \<alpha>, \<beta>\<^sub>\<sigma>, \<beta>\<^sub>\<sigma>');
     let b' = (if d then \<beta>\<^sub>\<sigma>' else \<not> \<beta>\<^sub>\<sigma>');
-    let b = B \<alpha> (etp.f\<^sub>i\<^sub>n\<^sub>v \<alpha> x);
+    let b = B \<alpha> (F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> x);
     return_spmf (b = b')}"
       define HCP_game_\<A> where "HCP_game_\<A> == \<lambda> \<sigma> b\<^sub>\<sigma>. do {
     \<beta>\<^sub>\<sigma>' \<leftarrow> coin_spmf;
@@ -246,12 +233,12 @@ proof-
     x' \<leftarrow> etp.S \<alpha>;
     d \<leftarrow> D2 (\<sigma>, \<alpha>, (B \<alpha> x) \<oplus> b\<^sub>\<sigma>, \<beta>\<^sub>\<sigma>');
     let b' = (if d then  \<beta>\<^sub>\<sigma>' else \<not> \<beta>\<^sub>\<sigma>');
-    return_spmf (B \<alpha> (etp.f\<^sub>i\<^sub>n\<^sub>v \<alpha> x') = b')}"
+    return_spmf (B \<alpha> (F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> x') = b')}"
       define S2D where "S2D == \<lambda> \<sigma> b\<^sub>\<sigma> . do {
       (\<alpha>, \<tau>) \<leftarrow> I;
       x\<^sub>\<sigma> \<leftarrow> etp.S \<alpha>;
       y\<^sub>\<sigma>' \<leftarrow> etp.S \<alpha>;
-      let x\<^sub>\<sigma>' = etp.F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>';
+      let x\<^sub>\<sigma>' = F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>';
       let \<beta>\<^sub>\<sigma> = (B \<alpha> x\<^sub>\<sigma>) \<oplus> b\<^sub>\<sigma>;
       let \<beta>\<^sub>\<sigma>' = B \<alpha> x\<^sub>\<sigma>';
       d :: bool \<leftarrow> D2(\<sigma>, \<alpha>, \<beta>\<^sub>\<sigma>, \<beta>\<^sub>\<sigma>');
@@ -261,9 +248,9 @@ proof-
       (\<alpha>, \<tau>) \<leftarrow> I;
       x\<^sub>\<sigma> \<leftarrow> etp.S \<alpha>;
       y\<^sub>\<sigma>' \<leftarrow> etp.S \<alpha>;
-      let y\<^sub>\<sigma> = etp.F \<alpha> x\<^sub>\<sigma>;
-      let x\<^sub>\<sigma> = etp.F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>;
-      let x\<^sub>\<sigma>' = etp.F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>';
+      let y\<^sub>\<sigma> = F \<alpha> x\<^sub>\<sigma>;
+      let x\<^sub>\<sigma> = F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>;
+      let x\<^sub>\<sigma>' = F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> y\<^sub>\<sigma>';
       let \<beta>\<^sub>\<sigma> = (B \<alpha> x\<^sub>\<sigma>) \<oplus> (if \<sigma> then b1 else b0) ;
       let \<beta>\<^sub>\<sigma>' = (B \<alpha> x\<^sub>\<sigma>') \<oplus> (if \<sigma> then b0 else b1);
       b :: bool \<leftarrow> D2(\<sigma>, \<alpha>,(\<beta>\<^sub>\<sigma>, \<beta>\<^sub>\<sigma>'));
@@ -273,7 +260,7 @@ proof-
     x\<^sub>\<sigma> \<leftarrow> etp.S \<alpha>;
     x \<leftarrow> (etp.S \<alpha>);
     let \<beta>\<^sub>\<sigma> = (B \<alpha> x\<^sub>\<sigma>) \<oplus> b\<^sub>\<sigma>;
-    let \<beta>\<^sub>\<sigma>' = B \<alpha> (etp.f\<^sub>i\<^sub>n\<^sub>v \<alpha> x);
+    let \<beta>\<^sub>\<sigma>' = B \<alpha> (F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> x);
     d :: bool \<leftarrow> D2(\<sigma>, \<alpha>, \<beta>\<^sub>\<sigma>, \<beta>\<^sub>\<sigma>');
     return_spmf d}"
       define D_false where "D_false == \<lambda> \<sigma> b\<^sub>\<sigma>. do {
@@ -281,11 +268,11 @@ proof-
     x\<^sub>\<sigma> \<leftarrow> etp.S \<alpha>;
     x \<leftarrow> etp.S \<alpha>;
     let \<beta>\<^sub>\<sigma> = (B \<alpha> x\<^sub>\<sigma>) \<oplus> b\<^sub>\<sigma>;
-    let \<beta>\<^sub>\<sigma>' = \<not> B \<alpha> (etp.f\<^sub>i\<^sub>n\<^sub>v \<alpha> x);
+    let \<beta>\<^sub>\<sigma>' = \<not> B \<alpha> (F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> x);
     d :: bool \<leftarrow> D2(\<sigma>, \<alpha>, \<beta>\<^sub>\<sigma>, \<beta>\<^sub>\<sigma>');
     return_spmf d}"
       have lossless_D_false: "lossless_spmf (D_false \<sigma> (if \<sigma> then b1 else b0))"
-        apply(auto simp add: D_false_def lossless_D lossless_I) 
+        apply(auto simp add: D_false_def lossless_D local.etp.lossless_I) 
         using local.etp.lossless_S by auto
       have "spmf (etp.HCP_game \<A> \<sigma> (if \<sigma> then b1 else b0) D2) True =  spmf (HCP_game_\<A> \<sigma> (if \<sigma> then b1 else b0)) True" 
         apply(simp add: etp.HCP_game_def HCP_game_\<A>_def \<A>_def split_def etp.F_f_inv)
@@ -309,7 +296,7 @@ proof-
         subgoal for r r\<^sub>\<sigma> \<alpha> \<tau> 
           apply(simp only: UNIV_bool spmf_of_set integral_spmf_of_set) 
           apply(simp cong: if_cong split del: if_split)
-          apply(cases "B r (etp.f\<^sub>i\<^sub>n\<^sub>v r \<tau>)") 
+          apply(cases "B r (F\<^sub>i\<^sub>n\<^sub>v r r\<^sub>\<sigma> \<tau>)") 
           by auto
         apply(rewrite in "_ = \<hole>" bind_commute_spmf)
         apply(rewrite in "bind_spmf _ \<hole>"  in "_ = \<hole>" bind_commute_spmf)
@@ -323,18 +310,18 @@ proof-
         subgoal for r r\<^sub>\<sigma> \<alpha> \<tau> 
           apply(simp only: UNIV_bool spmf_of_set integral_spmf_of_set) 
           apply(simp cong: if_cong split del: if_split)
-          apply(cases "B r (etp.f\<^sub>i\<^sub>n\<^sub>v r \<tau>)") 
+          apply(cases " B r (F\<^sub>i\<^sub>n\<^sub>v r r\<^sub>\<sigma> \<tau>)") 
           by auto
         done
       also have "... = 1/2*(spmf (HCP_game_true \<sigma> (if \<sigma> then b1 else b0)) True) + 1/2*(spmf (HCP_game_false \<sigma> (if \<sigma> then b1 else b0)) True)"
         by(simp add: spmf_bind UNIV_bool spmf_of_set integral_spmf_of_set)
       also have "... = 1/2*(spmf (D_true \<sigma> (if \<sigma> then b1 else b0)) True) + 1/2*(spmf (D_false \<sigma> (if \<sigma> then b1 else b0)) False)"   
       proof-
-        have "spmf (I \<bind> (\<lambda>(\<alpha>, \<tau>). etp.S \<alpha> \<bind> (\<lambda>x\<^sub>\<sigma>. etp.S \<alpha> \<bind> (\<lambda>x. D2 (\<sigma>, \<alpha>, B \<alpha> x\<^sub>\<sigma> = (\<not> (if \<sigma> then b1 else b0)), \<not> B \<alpha> (etp.f\<^sub>i\<^sub>n\<^sub>v \<alpha> x)) \<bind> (\<lambda>d. return_spmf (\<not> d)))))) True 
-                = spmf (I \<bind> (\<lambda>(\<alpha>, \<tau>). etp.S \<alpha> \<bind> (\<lambda>x\<^sub>\<sigma>. etp.S \<alpha> \<bind> (\<lambda>x. D2 (\<sigma>, \<alpha>, B \<alpha> x\<^sub>\<sigma> = (\<not> (if \<sigma> then b1 else b0)), \<not> B \<alpha> (etp.f\<^sub>i\<^sub>n\<^sub>v \<alpha> x)))))) False"
+        have "spmf (I \<bind> (\<lambda>(\<alpha>, \<tau>). etp.S \<alpha> \<bind> (\<lambda>x\<^sub>\<sigma>. etp.S \<alpha> \<bind> (\<lambda>x. D2 (\<sigma>, \<alpha>, B \<alpha> x\<^sub>\<sigma> = (\<not> (if \<sigma> then b1 else b0)), \<not> B \<alpha> (F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> x)) \<bind> (\<lambda>d. return_spmf (\<not> d)))))) True 
+                = spmf (I \<bind> (\<lambda>(\<alpha>, \<tau>). etp.S \<alpha> \<bind> (\<lambda>x\<^sub>\<sigma>. etp.S \<alpha> \<bind> (\<lambda>x. D2 (\<sigma>, \<alpha>, B \<alpha> x\<^sub>\<sigma> = (\<not> (if \<sigma> then b1 else b0)), \<not> B \<alpha> (F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> x)))))) False"
           (is "?lhs = ?rhs")
         proof-
-          have "?lhs = spmf (I \<bind> (\<lambda>(\<alpha>, \<tau>). etp.S \<alpha> \<bind> (\<lambda>x\<^sub>\<sigma>. etp.S \<alpha> \<bind> (\<lambda>x. D2 (\<sigma>, \<alpha>, B \<alpha> x\<^sub>\<sigma> = (\<not> (if \<sigma> then b1 else b0)), \<not> B \<alpha> (etp.f\<^sub>i\<^sub>n\<^sub>v \<alpha> x)) \<bind> (\<lambda>d. return_spmf (d)))))) False"
+          have "?lhs = spmf (I \<bind> (\<lambda>(\<alpha>, \<tau>). etp.S \<alpha> \<bind> (\<lambda>x\<^sub>\<sigma>. etp.S \<alpha> \<bind> (\<lambda>x. D2 (\<sigma>, \<alpha>, B \<alpha> x\<^sub>\<sigma> = (\<not> (if \<sigma> then b1 else b0)), \<not> B \<alpha> (F\<^sub>i\<^sub>n\<^sub>v \<alpha> \<tau> x)) \<bind> (\<lambda>d. return_spmf (d)))))) False"
             by(simp only: split_def return_True_False spmf_bind) 
           then show ?thesis by simp
         qed
@@ -345,7 +332,7 @@ proof-
       also have "... = 1/2 + 1/2* (spmf (D_true \<sigma> (if \<sigma> then b1 else b0)) True) - 1/2*(spmf (D_false \<sigma> (if \<sigma> then b1 else b0)) True)" 
         by(simp)     
       also have "... =  1/2 + 1/2* (spmf (S2D \<sigma> (if \<sigma> then b1 else b0) ) True) - 1/2*(spmf (R2D (b0,b1) \<sigma> ) True)"
-        apply(auto  simp add: etp.F\<^sub>i\<^sub>n\<^sub>v_def etp.f\<^sub>i\<^sub>n\<^sub>v_def etp.F_def S2D_def R2D_def D_true_def D_false_def  assms split_def cong: bind_spmf_cong_simp)
+        apply(auto  simp add: local.etp.F_f_inv S2D_def R2D_def D_true_def D_false_def  assms split_def cong: bind_spmf_cong_simp)
          apply(simp add: \<sigma>_true_b0_true)
         by(simp add: \<sigma>_false_b1_true)
       ultimately show ?thesis by(simp add: S2D_def R2D_def R2_def S2_def split_def)
@@ -361,15 +348,16 @@ lemma P2_adv_bound:
                          \<le> \<bar>2*((spmf (etp.HCP_game \<A> \<sigma> (if \<sigma> then b1 else b0) D2) True) - 1/2)\<bar>"
   by(cases "(if \<sigma> then b0 else b1)"; auto simp add: R2_S2_False R2_S2_True assms)
 
-sublocale OT_12: sim_det_def R1 S1 R2 S2 funct_OT_12 protocol
-  unfolding sim_det_def_def by(simp add: lossless_R1 lossless_S1 lossless_funct_OT_12 lossless_R2 lossless_S2)
+sublocale OT_12: sim_det_def R1 S1 R2 S2 funct_OT_12 protocol 
+  unfolding sim_det_def_def 
+  by(simp add: lossless_R1 lossless_S1 lossless_R2 lossless_S2 funct_OT_12_def)
 
 lemma correct: "OT_12.correctness m1 m2"
   unfolding OT_12.correctness_def  
   by (metis prod.collapse correctness)
 
-lemma P1_security: "OT_12.inf_theoretic_P1 m1 m2" 
-  unfolding OT_12.inf_theoretic_P1_def using P1_security by simp 
+lemma P1_security_inf_the: "OT_12.perfect_sec_P1 m1 m2" 
+  unfolding OT_12.perfect_sec_P1_def using P1_security by simp 
 
 lemma P2_security:
   assumes "\<forall> a. lossless_spmf (D a)"
@@ -397,26 +385,27 @@ qed
 
 end
 
-text \<open>We also consider the asymptotic case for security proofs\<close>
+text \<open> We also consider the asymptotic case for security proofs \<close>
 
 locale ETP_sec_para = 
   fixes I :: "nat \<Rightarrow> ('index \<times> 'trap) spmf"
     and domain ::  "'index \<Rightarrow> 'range set"
     and range ::  "'index \<Rightarrow> 'range set"
     and f :: "'index \<Rightarrow> ('range \<Rightarrow> 'range)"
+    and F :: "'index \<Rightarrow> 'range \<Rightarrow> 'range"
+    and F\<^sub>i\<^sub>n\<^sub>v :: "'index \<Rightarrow> 'trap \<Rightarrow> 'range \<Rightarrow> 'range"
     and B :: "'index \<Rightarrow> 'range \<Rightarrow> bool"
-    and etp_advantage :: "nat \<Rightarrow> real"
-  assumes ETP_base: "\<And> n. ETP_ot_12 (I n) domain range f"
+  assumes ETP_base: "\<And> n. ETP_base (I n) domain range F F\<^sub>i\<^sub>n\<^sub>v"
 begin
 
-sublocale ETP_ot_12 "(I n)" domain range f B "(etp_advantage n)"  
-  using local.ETP_base  by simp
+sublocale ETP_base "(I n)" domain range 
+  using ETP_base  by simp
 
 lemma correct_asym: "OT_12.correctness n m1 m2"
   by(simp add: correct)
 
-lemma P1_sec_asym: "OT_12.inf_theoretic_P1 n m1 m2"
-  using P1_security by simp 
+lemma P1_sec_asym: "OT_12.perfect_sec_P1 n m1 m2"
+  using P1_security_inf_the by simp                                                                
 
 lemma P2_sec_asym: 
   assumes "\<forall> a. lossless_spmf (D a)" 

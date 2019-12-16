@@ -31,7 +31,7 @@ lemma Shift: \<open>\<turnstile> rotate1 G \<Longrightarrow> \<turnstile> G\<clo
 lemma Swap: \<open>\<turnstile> B # A # G \<Longrightarrow> \<turnstile> A # B # G\<close>
   by (simp add: Order insert_commute)
 
-lemma \<open>\<turnstile> [Neg (Pred ''A'' []) , Pred ''A'' []]\<close>
+lemma \<open>\<turnstile> [Neg (Pred ''A'' []), Pred ''A'' []]\<close>
   by (rule Shift, simp) (rule Basic)
 
 lemma \<open>\<turnstile> [And (Pred ''A'' []) (Pred ''B'' []), Neg (And (Pred ''B'' []) (Pred ''A'' []))]\<close>
@@ -48,7 +48,7 @@ lemma \<open>\<turnstile> [And (Pred ''A'' []) (Pred ''B'' []), Neg (And (Pred '
 
 subsection \<open>Soundness\<close>
 
-lemma sc_soundness: \<open>\<turnstile> G \<Longrightarrow> \<exists>p \<in> set G. eval e f g p\<close>
+lemma SC_soundness: \<open>\<turnstile> G \<Longrightarrow> \<exists>p \<in> set G. eval e f g p\<close>
 proof (induct G arbitrary: f rule: SC.induct)
   case (DeltaForall A n G)
   then consider
@@ -185,7 +185,7 @@ qed (simp_all add: SC.intros)
 
 subsection \<open>Completeness\<close>
 
-theorem sc_completeness:
+theorem SC_completeness:
   fixes p :: \<open>(nat, nat) form\<close>
   assumes \<open>\<forall>(e :: nat \<Rightarrow> nat hterm) f g. list_all (eval e f g) ps \<longrightarrow> eval e f g p\<close>
   shows \<open>\<turnstile> p # map compl ps\<close>
@@ -200,6 +200,6 @@ corollary
   fixes p :: \<open>(nat, nat) form\<close>
   assumes \<open>\<forall>(e :: nat \<Rightarrow> nat hterm) f g. eval e f g p\<close>
   shows \<open>\<turnstile> [p]\<close>
-  using assms sc_completeness list.map(1) by metis
+  using assms SC_completeness list.map(1) by metis
 
 end

@@ -1,6 +1,6 @@
 chapter AFP
 
-session Dirichlet_Series (AFP) = "HOL-Analysis" +
+session Dirichlet_Series (AFP) = "HOL-Complex_Analysis" +
   options [timeout = 1200]
   sessions
     "HOL-Analysis"

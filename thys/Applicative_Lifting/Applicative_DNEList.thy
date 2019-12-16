@@ -52,7 +52,8 @@ subgoal by(simp add: distinct_remdups_id dnelist.list_of_dnelist[simplified] lis
 subgoal by(simp add: dlist_eq_iff Abs_dnelist_inverse)
 done
 
-lift_bnf 'a dnelist via dnelist_subtype_dlist for map: map by(simp_all add: dlist_eq_iff)
+lift_bnf (no_warn_transfer, no_warn_wits) 'a dnelist via dnelist_subtype_dlist for map: map
+  by(auto simp: dlist_eq_iff)
 hide_const (open) map
 
 context begin
@@ -124,19 +125,19 @@ proof -
     have "remdups (map (\<lambda>(x :: 'b) (y :: 'a). x) x) = map (\<lambda>(x :: 'b) (y :: 'a). x) x"
       using that by(simp add: distinct_map inj_on_def fun_eq_iff)
     hence "remdups (remdups ([\<lambda>x y. x] \<diamondop> x) \<diamondop> y) = remdups (concat (map (\<lambda>f. map f y) (map (\<lambda>x y. x) x)))"
-      by(simp add: ap_list_def List.bind_def del: remdups_id_iff_distinct) 
+      by(simp add: ap_list_def List.bind_def del: remdups_id_iff_distinct)
     also have "\<dots> = x" using that
       by(simp add: o_def map_replicate_const)(subst remdups_concat_map[symmetric], simp add: o_def remdups_replicate)
     finally show ?thesis .
   qed
-  show "pure_dnelist (\<lambda>x y. x) \<diamondop> x \<diamondop> y = x" 
+  show "pure_dnelist (\<lambda>x y. x) \<diamondop> x \<diamondop> y = x"
     for x :: "'b dnelist" and y :: "'a dnelist"
     by transfer(rule *; simp)
 qed
 
 text \<open>@{typ "_ dnelist"} does not have combinator C, so it cannot have W either.\<close>
 
-context begin 
+context begin
 private lift_definition x :: "int dnelist" is "[2,3]" by simp
 private lift_definition y :: "int dnelist" is "[5,7]" by simp
 private lemma "pure_dnelist (\<lambda>f x y. f y x) \<diamondop> pure_dnelist ((*)) \<diamondop> x \<diamondop> y \<noteq> pure_dnelist ((*)) \<diamondop> y \<diamondop> x"

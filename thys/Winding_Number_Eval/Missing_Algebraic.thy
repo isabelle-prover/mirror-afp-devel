@@ -7,7 +7,7 @@ section \<open>Some useful lemmas in algebra\<close>
 theory Missing_Algebraic imports
   "HOL-Computational_Algebra.Polynomial_Factorial"
   "HOL-Computational_Algebra.Fundamental_Theorem_Algebra"
-  "HOL-Analysis.Analysis"
+  "HOL-Complex_Analysis.Complex_Analysis"
   Missing_Topology
   "Budan_Fourier.BF_Misc"
 begin

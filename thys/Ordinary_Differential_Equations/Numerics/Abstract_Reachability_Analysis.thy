@@ -1123,9 +1123,10 @@ definition "tolerate_error Y E =
     RETURN (ea \<le> errtol, infnorm ea)
   }"
 
-definition "adapt_stepsize_fa rtol mid e h' =
-  floatarith.Num (float_of h') * floatarith.Powr (floatarith.Num (float_of (rtol)) / floatarith.Num (float_of e))
-                                (inverse (floatarith.Num (float_of (real_of_nat mid) + 1)))"
+definition "adapt_stepsize_fa rtol m e h' =
+  floatarith.Num (float_of h') *
+  floatarith.Powr (floatarith.Num (float_of (rtol)) / floatarith.Num (float_of e))
+    (inverse (floatarith.Num (float_of (real_of_nat m) + 1)))"
 
 end
 

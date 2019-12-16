@@ -61,9 +61,9 @@ subsubsection \<open>\<open>Generate_F_0_List\<close>\<close>
 
 definition "assert_option s x = (if x then Some () else (let _ = print (String.implode s) in None))"
 
-definition "get_return_grids tlist upper fg =
+definition "get_return_grids tlist uppr fg =
   (let ret = get_results (inf_retx fg) (inf_rety fg) (sup_retx fg) (sup_rety fg) tlist
-  in if upper then map mirror_upper ret else ret)"
+  in if uppr then map mirror_upper ret else ret)"
 
 definition "generate_f0_list total_list upper_list u_min u_max =
   (do {

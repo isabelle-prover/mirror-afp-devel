@@ -364,8 +364,9 @@ definition "step_adapt_time (X::'n::enum eucl1 set) h =
       method_id \<leftarrow> method_spec;
       prec \<leftarrow> precision_spec;
       case approx prec (adapt_stepsize_fa rtol method_id e h') []
-      of Some (h'', _) \<Rightarrow>
-        let _ = trace_set1 (ST ''increase step: stepsize = '' @ show (lfloat10 h'')) (None::'n eucl1 set option)
+      of Some ivl_h'' \<Rightarrow>
+        let h'' = lower ivl_h'';
+            _ = trace_set1 (ST ''increase step: stepsize = '' @ show (lfloat10 h'')) (None::'n eucl1 set option)
         in RETURN (h', CY, Y, 15/2/2/2/2 * h'')
       | None \<Rightarrow>
         let _ = trace_set1 (ST ''increase time step (failure): stepsize = '' @ show (lfloat10 h')) (None::'n eucl1 set option)

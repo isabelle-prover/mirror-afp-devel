@@ -313,7 +313,8 @@ proof
       fix X
       assume "X \<in> prod_emb UNIV ?PM {n} (Pi\<^sub>E {n} (\<lambda>x::nat. {True}))"
       hence "restrict X {n} \<in> (Pi\<^sub>E {n} (\<lambda>x::nat. {True}))" using prod_emb_iff[of X] by simp
-      hence "X n = True" by simp
+      hence "X n = True"
+        unfolding PiE_iff by auto
       hence "X \<in> ?Z" by simp
     }
     thus "prod_emb UNIV ?PM {n} (Pi\<^sub>E {n} (\<lambda>x::nat. {True})) \<subseteq> ?Z" by auto
@@ -321,7 +322,8 @@ proof
       fix X
       assume "X \<in> ?Z"
       hence "X n = True" by simp
-      hence "restrict X {n} \<in> (Pi\<^sub>E {n} (\<lambda>x::nat. {True}))" by simp
+      hence "restrict X {n} \<in> (Pi\<^sub>E {n} (\<lambda>x::nat. {True}))"
+        unfolding PiE_iff by auto
       moreover have "X \<in> extensional UNIV" by simp
       moreover have "\<forall>i \<in> UNIV. X i \<in> space (?PM i)" by auto
       ultimately have "X \<in> prod_emb UNIV ?PM {n} (Pi\<^sub>E {n} (\<lambda>x::nat. {True}))" using prod_emb_iff[of X] by simp
@@ -335,7 +337,8 @@ proof
     unfolding bernoulli_stream_def stream_space_def  by auto
   also have "... = emeasure ?wPM (prod_emb UNIV ?PM {n} (Pi\<^sub>E {n} (\<lambda>x::nat. {True})))" using inteq by simp
   also have "... =
-    (\<Prod>i\<in>{n}. emeasure (?PM i) ((\<lambda>x::nat. {True}) i))" using isps by (auto simp add: product_prob_space.emeasure_PiM_emb)
+    (\<Prod>i\<in>{n}. emeasure (?PM i) ((\<lambda>x::nat. {True}) i))" using isps
+    by (auto simp add: product_prob_space.emeasure_PiM_emb simp del: ext_funcset_to_sing_iff)
   also have "... = emeasure (?PM n) {True}" by simp
   also have "... = p" using assms by (simp add: emeasure_pmf_single)
   finally show "emeasure N ?S = p" .

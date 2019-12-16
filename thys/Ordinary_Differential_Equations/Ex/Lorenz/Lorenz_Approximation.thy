@@ -206,7 +206,7 @@ definition "mig_aform p x = mig_componentwise (Inf_aform' p x) (Sup_aform' p x)"
 
 context includes floatarith_notation begin
 
-definition "mig_aforms p x = real_of_float ((fst o the) ((approx p (Norm (map (Num o float_of o (mig_aform p)) x))) []))"
+definition "mig_aforms p x = real_of_float ((lower o the) ((approx p (Norm (map (Num o float_of o (mig_aform p)) x))) []))"
 
 definition
   "column_of_c1_info x N j = (map (\<lambda>i. the (snd x) ! i) (map (\<lambda>i. i * N + j) [0..<N]))"
@@ -512,7 +512,7 @@ concrete_definition NU\<^sub>e uses NU\<^sub>e
 definition "approx_ivls p fas xs = do {
   let xs = ivls_of_aforms p xs;
   res \<leftarrow> those (map (\<lambda>f. approx p f xs) fas);
-  Some (map (real_of_float o fst) res, map (real_of_float o snd) res)
+  Some (map (real_of_float o lower) res, map (real_of_float o upper) res)
 }"
 definition
   "deform p t exit XDX = (case XDX of (lu, (X, DX)) \<Rightarrow>

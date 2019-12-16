@@ -349,14 +349,16 @@ end
 
 lemma isCont_blinfunD:
   fixes f'::"'a::metric_space \<Rightarrow> 'b::real_normed_vector \<Rightarrow>\<^sub>L 'c::real_normed_vector"
-  assumes "isCont f' a"
-  assumes "0 < e"
+  assumes "isCont f' a" "0 < e"
   shows "\<exists>d>0. \<forall>x. dist a x < d \<longrightarrow> onorm (\<lambda>v. blinfun_apply (f' x) v - blinfun_apply (f' a) v) < e"
-  using assms
-  unfolding isCont_def
-  by (force dest!: tendstoD[OF _ \<open>0 < e\<close>]
-      simp: eventually_at dist_commute dist_norm norm_blinfun.rep_eq
-        blinfun.bilinear_simps[symmetric])
+proof -
+  have "\<forall>\<^sub>F x in at a. dist (f' x) (f' a) < e"
+    using assms isCont_def tendsto_iff by blast
+  then show ?thesis
+    using \<open>e > 0\<close> norm_eq_zero
+    by (force simp: eventually_at dist_commute dist_norm norm_blinfun.rep_eq
+        simp flip: blinfun.bilinear_simps)
+qed
 
 proposition has_derivative_locally_injective_blinfun:
   fixes f :: "'n::euclidean_space \<Rightarrow> 'm::euclidean_space"

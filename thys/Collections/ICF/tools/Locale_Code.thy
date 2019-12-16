@@ -157,11 +157,12 @@ structure Locale_Code :LOCALE_CODE = struct
         else ();
     in process_actions acc' acts end;
 
-    fun pat_eqs_of_spec thy (Spec_Rules.Equational _,(pats,thms)) = 
-      map_filter (filter_pat_eq thy thms) pats
-    | pat_eqs_of_spec thy (Spec_Rules.Unknown,
-        ([Const (@{const_name LC_DEL},_)$pat],_)) 
-        = [(DEL (Thm.global_cterm_of thy pat))]
+    fun pat_eqs_of_spec thy
+          {rough_classification = Spec_Rules.Equational _, terms = pats, rules = thms, ...} =
+        map_filter (filter_pat_eq thy thms) pats
+    | pat_eqs_of_spec thy
+          {rough_classification = Spec_Rules.Unknown, terms = [Const (@{const_name LC_DEL},_)$pat], ...} =
+        [(DEL (Thm.global_cterm_of thy pat))]
     | pat_eqs_of_spec _ _ = [];
   in
 
@@ -357,7 +358,7 @@ structure Locale_Code :LOCALE_CODE = struct
     val ty = fastype_of pat;
     val dpat = Const (@{const_name LC_DEL},ty --> @{typ unit})$pat;
   in 
-    Spec_Rules.add Spec_Rules.Unknown ([dpat],[])
+    Spec_Rules.add Binding.empty Spec_Rules.Unknown [dpat] []
   end
 
 

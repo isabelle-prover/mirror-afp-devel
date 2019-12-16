@@ -56,7 +56,7 @@ begin
   schematic_goal complement_impl:
     assumes [simp]: "finite (nodes A)"
     assumes [autoref_rules]: "(Ai, A) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
-    shows "(?f :: ?'c, RETURN (to_nbaei (complement_4 A))) \<in> ?R"
+    shows "(?f :: ?'c, op_translate (complement_4 A)) \<in> ?R"
     by (autoref_monadic (plain))
   concrete_definition complement_impl uses complement_impl[unfolded autoref_tag_defs]
 
@@ -65,12 +65,26 @@ begin
     assumes "(Ai, A) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
     shows "language (nbae_nba (nbaei_nbae (complement_impl Ai))) = streams (alphabet A) - language A"
   proof -
-    have "(language ((nbae_nba \<circ> nbaei_nbae) (complement_impl Ai)), language (id (complement_4 A))) \<in>
-      \<langle>\<langle>Id_on (alphabet (complement_4 A))\<rangle> stream_rel\<rangle> set_rel"
-      using complement_impl.refine[OF assms, unfolded to_nbaei_def id_apply, THEN RETURN_nres_relD]
-      by parametricity
-    also have "language (id (complement_4 A)) = streams (alphabet A) - language A"
-      using assms(1) complement_4_correct by simp
+    (* TODO: can we leave all this inside the nres without explicit obtain? *)
+    (* TODO: or at least avoid unfolding op_translate and reasoning about injectivity? *)
+    obtain f where 1:
+      "(complement_impl Ai, nba_nbae (nba_image f (complement_4 A))) \<in> \<langle>Id, nat_rel\<rangle> nbaei_nbae_rel"
+      "inj_on f (nodes (complement_4 A))"
+      using complement_impl.refine[OF assms, unfolded in_nres_rel_iff op_translate_def, THEN RETURN_ref_SPECD]
+      by metis
+    let ?C = "nba_image f (complement_4 A)"
+    have "(nbae_nba (nbaei_nbae (complement_impl Ai)), nbae_nba (id (nba_nbae ?C))) \<in> \<langle>Id, nat_rel\<rangle> nba_rel"
+      using 1(1) by parametricity auto
+    also have "nbae_nba (id (nba_nbae ?C)) = (nbae_nba \<circ> nba_nbae) ?C" by simp
+    also have "(\<dots>, id ?C) \<in> \<langle>Id_on (alphabet ?C), Id_on (nodes ?C)\<rangle> nba_rel" by parametricity
+    finally have 2: "(nbae_nba (nbaei_nbae (complement_impl Ai)), ?C) \<in>
+      \<langle>Id_on (alphabet ?C), Id_on (nodes ?C)\<rangle> nba_rel" by simp
+    have "(language (nbae_nba (nbaei_nbae (complement_impl Ai))), language ?C) \<in>
+      \<langle>\<langle>Id_on (alphabet ?C)\<rangle> stream_rel\<rangle> set_rel"
+      using 2 by parametricity
+    also have "language ?C = language (complement_4 A)" using 1(2) by simp
+    also have "language (complement_4 A) = streams (alphabet A) - language A"
+      using complement_4_correct assms(1) by this
     finally show ?thesis by simp
   qed
 

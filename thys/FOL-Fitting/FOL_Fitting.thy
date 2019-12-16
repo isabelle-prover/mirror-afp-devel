@@ -2223,7 +2223,7 @@ theorem deriv_consistency:
   unfolding consistency_def
 proof (intro conjI allI impI notI)
   fix S :: \<open>('a, 'b) form set\<close>
-  assume \<open>S \<in> {set G |G. \<not> G \<turnstile> FF}\<close> (is \<open>S \<in> ?C\<close>)
+  assume \<open>S \<in> {set G | G. \<not> G \<turnstile> FF}\<close> (is \<open>S \<in> ?C\<close>)
   then obtain G :: \<open>('a, 'b) form list\<close>
     where *: \<open>S = set G\<close> and \<open>\<not> G \<turnstile> FF\<close>
     by blast

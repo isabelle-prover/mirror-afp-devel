@@ -26,7 +26,7 @@ locale gmw_base =
     and protocol_14_OT :: "msgs_14_OT \<Rightarrow> choice_14_OT \<Rightarrow> (unit \<times> bool) spmf"
     and adv_14_OT :: real
   assumes P1_OT_14_adv_bound: "sim_det_def.adv_P1 R1_14_OT S1_14_OT funct_14_OT M C D \<le> adv_14_OT" \<comment> \<open>bound the advantage of party 1 in the 1-out-of-4 OT\<close>
-    and P2_OT_12_inf_theoretic: "sim_det_def.inf_theoretic_P2 R2_14_OT S2_14_OT funct_14_OT M C" \<comment> \<open>information theoretic security for party 2 in the 1-out-of-4 OT\<close>
+    and P2_OT_12_inf_theoretic: "sim_det_def.perfect_sec_P2 R2_14_OT S2_14_OT funct_14_OT M C" \<comment> \<open>information theoretic security for party 2 in the 1-out-of-4 OT\<close>
     and correct_14: "funct_OT_14 msgs C = protocol_14_OT msgs C" \<comment> \<open>correctness of the 1-out-of-4 OT\<close>
     and lossless_R1_14_OT: "lossless_spmf (R1_14_OT (m1,m2,m3,m4) (c0,c1))"
     and lossless_R2_14_OT: "lossless_spmf (R2_14_OT (m1,m2,m3,m4) (c0,c1))"
@@ -45,7 +45,7 @@ sublocale OT_14_sim: sim_det_def R1_14_OT S1_14_OT R2_14_OT S2_14_OT funct_14_OT
   by(simp add: lossless_R1_14_OT lossless_S1_14_OT lossless_funct_14_OT lossless_R2_14_OT lossless_S2_14_OT)
 
 lemma inf_th_14_OT_P4: "R2_14_OT msgs C = (funct_OT_14 msgs C \<bind> (\<lambda> (s1, s2). S2_14_OT C s2))" 
-  using P2_OT_12_inf_theoretic sim_det_def.inf_theoretic_P2_def OT_14_sim.inf_theoretic_P2_def by auto
+  using P2_OT_12_inf_theoretic sim_det_def.perfect_sec_P2_def OT_14_sim.perfect_sec_P2_def by auto
 
 lemma ass_adv_14_OT: "\<bar>spmf (bind_spmf (S1_14_OT msgs ()) (\<lambda> view. (D view))) True - 
                     spmf (bind_spmf (R1_14_OT msgs (c0,c1)) (\<lambda> view. (D view))) True \<bar> \<le> adv_14_OT"
@@ -160,11 +160,11 @@ sublocale xor_sim_det: sim_det_def  R1_xor S1_xor R2_xor S2_xor xor_funct xor_pr
   unfolding sim_det_def_def
   by(simp add: lossless_R1_xor lossless_S1_xor lossless_R2_xor lossless_S2_xor lossless_xor_funct)
 
-lemma "xor_sim_det.inf_theoretic_P1 m1 m2"
-  by(simp add: xor_sim_det.inf_theoretic_P1_def P1_xor_inf_th)
+lemma "xor_sim_det.perfect_sec_P1 m1 m2"
+  by(simp add: xor_sim_det.perfect_sec_P1_def P1_xor_inf_th)
 
-lemma "xor_sim_det.inf_theoretic_P2 m1 m2"
-  by(simp add: xor_sim_det.inf_theoretic_P2_def P2_xor_inf_th)
+lemma "xor_sim_det.perfect_sec_P2 m1 m2"
+  by(simp add: xor_sim_det.perfect_sec_P2_def P2_xor_inf_th)
 
 definition and_funct :: "(share_1 \<times> share_2) \<Rightarrow> (share_1 \<times> share_2) \<Rightarrow> share_wire spmf"
   where "and_funct A B = do {
@@ -402,7 +402,7 @@ sublocale and_secret_sharing: sim_non_det_def and_R1 S1_and out1 and_R2 S2_and o
 lemma ideal_S1_and: "and_secret_sharing.Ideal1 (a1, b1) (a2, b2) s2 = S1_and' (a1, b1) (a2, b2) s2"
   by(simp add: Let_def and_secret_sharing.Ideal1_def S1_and'_def split_def out1_def S1_and_def)
 
-lemma and_P2_security: "and_secret_sharing.inf_theoretic_P2 m1 m2"
+lemma and_P2_security: "and_secret_sharing.perfect_sec_P2 m1 m2"
 proof-
   have "and_R2 (a1, b1) (a2, b2) = and_funct (a1, b1) (a2, b2) \<bind> (\<lambda>(s1, s2). and_secret_sharing.Ideal2 (a2, b2) (a1, b1) s2)"
     for a1 a2 b1 b2
@@ -411,7 +411,7 @@ proof-
     apply auto
     by(cases b1;cases b2; cases a1; cases a2; auto) 
   thus ?thesis
-    by(simp add: and_secret_sharing.inf_theoretic_P2_def; metis  prod.collapse)
+    by(simp add: and_secret_sharing.perfect_sec_P2_def; metis  prod.collapse)
 qed
 
 lemma and_P1_security: "and_secret_sharing.adv_P1 m1 m2 D \<le> adv_14_OT"
@@ -462,11 +462,11 @@ begin
 sublocale gmw_base "(S1_14_OT n)" "(R1_14_OT n)" "(S2_14_OT n)" "(R2_14_OT n)" "(protocol_14_OT n)" "(adv_14_OT n)"
   by (simp add: gmw_base)
 
-lemma "xor_sim_det.inf_theoretic_P1 m1 m2" 
-  by (simp add: P1_xor_inf_th xor_sim_det.inf_theoretic_P1_def)
+lemma "xor_sim_det.perfect_sec_P1 m1 m2" 
+  by (simp add: P1_xor_inf_th xor_sim_det.perfect_sec_P1_def)
 
-lemma "xor_sim_det.inf_theoretic_P2 m1 m2"
-  by (simp add: P2_xor_inf_th xor_sim_det.inf_theoretic_P2_def)
+lemma "xor_sim_det.perfect_sec_P2 m1 m2"
+  by (simp add: P2_xor_inf_th xor_sim_det.perfect_sec_P2_def)
 
 lemma and_P1_adv_negligible:
   assumes "negligible (\<lambda> n. adv_14_OT n)"
@@ -478,7 +478,7 @@ proof-
     using and_secret_sharing.adv_P1_def assms negligible_le by auto
 qed
 
-lemma and_P2_security: "and_secret_sharing.inf_theoretic_P2 n m1 m2" 
+lemma and_P2_security: "and_secret_sharing.perfect_sec_P2 n m1 m2" 
   by (simp add: and_P2_security)
 
 end

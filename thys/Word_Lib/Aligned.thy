@@ -790,7 +790,7 @@ proof -
 qed
 
 lemma is_aligned_neg_mask:
-  "m \<le> n \<Longrightarrow> is_aligned (x && ~~ mask n) m"
+  "m \<le> n \<Longrightarrow> is_aligned (x && ~~ (mask n)) m"
   by (metis and_not_mask is_aligned_shift is_aligned_weaken)
 
 lemma unat_minus:
@@ -811,7 +811,7 @@ lemma is_aligned_minus:
 
 lemma add_mask_lower_bits:
   "\<lbrakk>is_aligned (x :: 'a :: len word) n;
-    \<forall>n' \<ge> n. n' < LENGTH('a) \<longrightarrow> \<not> p !! n'\<rbrakk> \<Longrightarrow> x + p && ~~mask n = x"
+    \<forall>n' \<ge> n. n' < LENGTH('a) \<longrightarrow> \<not> p !! n'\<rbrakk> \<Longrightarrow> x + p && ~~ (mask n) = x"
   apply (subst word_plus_and_or_coroll)
    apply (rule word_eqI)
    apply (clarsimp simp: word_size is_aligned_nth)
@@ -843,7 +843,7 @@ lemma is_aligned_shiftl_self:
   by (rule is_aligned_shift)
 
 lemma is_aligned_neg_mask_eq:
-  "is_aligned p n \<Longrightarrow> p && ~~ mask n = p"
+  "is_aligned p n \<Longrightarrow> p && ~~ (mask n) = p"
   by (metis add.left_neutral is_aligned_mask word_plus_and_or_coroll2)
 
 lemma is_aligned_shiftr_shiftl:

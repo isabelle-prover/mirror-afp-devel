@@ -1,6 +1,6 @@
 section \<open>Horner Evaluation\<close>
 theory Horner_Eval
-  imports Interval
+  imports "HOL-Library.Interval"
 begin
 
 text \<open>Function and lemmas for evaluating polynomials via the horner scheme.

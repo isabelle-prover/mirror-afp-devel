@@ -2295,8 +2295,7 @@ proof -
         done
       then have theBound:"\<exists>L. (\<forall>t. ?boundLP L t)" 
         unfolding bdd_above_def norm_conv_dist 
-        apply (auto simp add: norm_conv_dist real_norm_def norm_bcontfun_def dist_0_norm dist_blinfun_def)
-        by fastforce
+        by (auto simp add: Ball_def Bex_def norm_conv_dist image_iff norm_bcontfun_def dist_blinfun_def)
       then have boundLP:"\<forall>t. ?boundLP (?boundL) t" using someI[of "(\<lambda> L. \<forall>t. ?boundLP L t)"] by blast
       let ?boundMP = "(\<lambda>M t. (tm \<le> t \<and> t \<le> tM \<longrightarrow> \<bar>?f3 t\<bar> \<le> M))"
       let ?boundM = "(SOME M. (\<forall>t. ?boundMP M t))"
@@ -2321,10 +2320,9 @@ proof -
           apply(rule exI[where x="max M1 M2"])
           by fastforce
         done
-      then have theBound:"\<exists>L. (\<forall>t. ?boundMP L t)" 
-        unfolding bdd_above_def norm_conv_dist 
-        apply (auto simp add: norm_conv_dist real_norm_def norm_bcontfun_def dist_0_norm dist_blinfun_def)
-        by fastforce
+      then have theBound:"\<exists>L. (\<forall>t. ?boundMP L t)"
+        unfolding bdd_above_def norm_conv_dist
+        by (auto simp add: Ball_def Bex_def norm_conv_dist image_iff norm_bcontfun_def dist_blinfun_def)
       then have boundMP:"\<forall>t. ?boundMP (?boundM) t" using someI[of "(\<lambda> M. \<forall>t. ?boundMP M t)"] by blast
       show "\<exists>M L. \<forall>t\<in>{tm..tM}. \<forall>x. \<bar>x * ?f2 t + ?f3 t\<bar> \<le> M + L * \<bar>x\<bar>"
         apply(rule exI[where x="?boundM"])
@@ -2340,7 +2338,7 @@ proof -
         have gr0:" \<bar>x\<bar> \<ge> 0" by auto
         have leqf2x:"\<bar>?f2 t\<bar> * \<bar>x\<bar> \<le> ?boundL * \<bar>x\<bar>" using gr0 leqf2
           by (metis (no_types, lifting) real_scaleR_def scaleR_right_mono)
-        have "\<bar>x * ?f2 t + ?f3 t\<bar> \<le> \<bar>x\<bar> * \<bar>?f2 t\<bar> + \<bar>?f3 t\<bar>"                    
+        have "\<bar>x * ?f2 t + ?f3 t\<bar> \<le> \<bar>x\<bar> * \<bar>?f2 t\<bar> + \<bar>?f3 t\<bar>"
           proof -
             have f1: "\<And>r ra. \<bar>r::real\<bar> * \<bar>ra\<bar> = \<bar>r * ra\<bar>"
               by (metis norm_scaleR real_norm_def real_scaleR_def)
@@ -2369,12 +2367,12 @@ proof -
     have sol_new':"(ll_new.flow 0 r solves_ode ?yode) {0--t} UNIV"
       by(rule solves_ode_subset, rule sol_new, rule sub')
     let ?soly = "ll_new.flow 0 r"
-    let ?sol' = "(\<lambda>t. \<chi> i. if i = vid2 then ?soly t else sol t $ i)" 
+    let ?sol' = "(\<lambda>t. \<chi> i. if i = vid2 then ?soly t else sol t $ i)"
     let ?aaba' = "mk_v I (OProd (OSing vid1 ($f fid1 (\<lambda>i. if i = vid1 then trm.Var vid1 else Const 0)))
                              (OSing vid2
                                (Plus (Times ($f fid2 (\<lambda>i. if i = vid1 then trm.Var vid1 else Const 0)) (trm.Var vid2))
-                                 ($f fid3 (\<lambda>i. if i = vid1 then trm.Var vid1 else Const 0))))) 
-                         (\<chi> y. if vid2 = y then r else fst (a, b) $ y, b) 
+                                 ($f fid3 (\<lambda>i. if i = vid1 then trm.Var vid1 else Const 0)))))
+                         (\<chi> y. if vid2 = y then r else fst (a, b) $ y, b)
                          (?sol' t)"
     have duh:"(fst ?aaba', snd ?aaba') = ?aaba'" by auto
     note bigEx = spec[OF spec[OF bigAll, where x="fst ?aaba'"], where x="snd ?aaba'"]

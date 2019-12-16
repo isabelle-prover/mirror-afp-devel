@@ -23,7 +23,7 @@ locale ot14_base =
     and R2_OT12 :: "(bool \<times> bool) \<Rightarrow> bool \<Rightarrow> 'v_OT122 spmf"
     and protocol_OT12 :: "(bool \<times> bool) \<Rightarrow> bool \<Rightarrow> (unit \<times> bool) spmf"
   assumes ass_adv_OT12: "sim_det_def.adv_P1 R1_OT12 S1_OT12 funct_OT12 (m0,m1) c D \<le> adv_OT12" \<comment> \<open>bound the advantage of OT12 for party 1\<close> 
-    and inf_th_OT12_P2:  "sim_det_def.inf_theoretic_P2 R2_OT12 S2_OT12 funct_OT12 (m0,m1) \<sigma>" \<comment> \<open>information theoretic security for party 2\<close>
+    and inf_th_OT12_P2:  "sim_det_def.perfect_sec_P2 R2_OT12 S2_OT12 funct_OT12 (m0,m1) \<sigma>" \<comment> \<open>information theoretic security for party 2\<close>
     and correct: "protocol_OT12 msgs b = funct_OT_12 msgs b"
     and lossless_R1_12: "lossless_spmf (R1_OT12 m c)"
     and lossless_S1_12: "lossless_spmf (S1_OT12 m out1)"
@@ -54,7 +54,7 @@ proof-
 qed
 
 lemma OT_12_P2_assm: "R2_OT12 (m0,m1) \<sigma> = funct_OT_12 (m0,m1) \<sigma> \<bind> (\<lambda> (out1, out2). S2_OT12 \<sigma> out2)"
-  using inf_th_OT12_P2 OT_12_sim.inf_theoretic_P2_def by blast
+  using inf_th_OT12_P2 OT_12_sim.perfect_sec_P2_def by blast
 
 definition protocol_14_OT :: "input1 \<Rightarrow> input2 \<Rightarrow> (unit \<times> bool) spmf"
   where "protocol_14_OT M C = do {
@@ -693,8 +693,8 @@ lemma OT_14_correct: "OT_14.correctness M C"
   unfolding OT_14.correctness_def 
   using correctness_OT_14 by auto
 
-lemma OT_14_P2_sec: "OT_14.inf_theoretic_P2 m1 m2"
-  unfolding OT_14.inf_theoretic_P2_def
+lemma OT_14_P2_sec: "OT_14.perfect_sec_P2 m1 m2"
+  unfolding OT_14.perfect_sec_P2_def
   using P2_sec_OT_14 by blast
 
 lemma OT_14_P1_sec: "OT_14.adv_P1 m1 m2 D \<le> 3 * adv_OT12"
@@ -732,7 +732,7 @@ proof-
     by (metis (no_types, lifting) negligible_absI)
 qed
 
-theorem OT_14_P2_asym_sec: "OT_14.inf_theoretic_P2 R2_OT12 n m1 m2"
+theorem OT_14_P2_asym_sec: "OT_14.perfect_sec_P2 R2_OT12 n m1 m2"
   using OT_14_P2_sec by simp
 
 end

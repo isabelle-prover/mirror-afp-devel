@@ -1,5 +1,5 @@
 theory Cartan
-imports "HOL-Analysis.Analysis"
+imports "HOL-Complex_Analysis.Complex_Analysis"
 
 begin
 
@@ -22,7 +22,7 @@ proof -
     by (simp add: algebra_simps)
   also have "... = deriv (g o f) w"
     using assms
-    by (metis analytic_on_imp_differentiable_at analytic_on_open complex_derivative_chain image_subset_iff)
+    by (metis analytic_on_imp_differentiable_at analytic_on_open deriv_chain image_subset_iff)
   also have "... = deriv id w"
     apply (rule complex_derivative_transform_within_open [where s=S])
     apply (rule assms holomorphic_on_compose_gen holomorphic_intros)+
@@ -103,7 +103,7 @@ next
     by (blast intro: holomorphic_intros holomorphic_on_compose holf s)
   have "(deriv ^^ i) (deriv (g o f)) z = (deriv ^^ i) (\<lambda>w. deriv g (f w) * deriv f w) z"
     apply (rule higher_deriv_transform_within_open [OF 1 2 [unfolded o_def] s \<open>z \<in> s\<close>])
-    apply (rule complex_derivative_chain)
+    apply (rule deriv_chain)
     using holf Suc.prems fst apply (auto simp: holomorphic_on_imp_differentiable_at s t)
     done
   also have "... = (\<Sum>j=0..i. of_nat(i choose j) * (deriv ^^ j) (\<lambda>w. deriv g (f w)) z * (deriv ^^ (i - j)) (deriv f) z)"
@@ -191,7 +191,7 @@ next
   have der_fm [simp]: "deriv (f ^^ m) z = 1" for m
     apply (induction m, simp add: deriv_ident)
     apply (subst funpow_Suc_right)
-    apply (subst complex_derivative_chain)
+    apply (subst deriv_chain)
     using \<open>z \<in> s\<close> holfm holomorphic_on_imp_differentiable_at s f_cd_w apply auto
     done
   note Suc(3) [simp]
@@ -213,7 +213,7 @@ next
       by (rule holomorphic_on_mult [OF holdffm holdfm])
     ultimately have "(deriv ^^ n) (deriv (f ^^ m \<circ> f)) z = (deriv ^^ n) (\<lambda>w. deriv f ((f ^^ m) w) * deriv (f ^^ m) w) z"
       apply (rule higher_deriv_transform_within_open [OF _ _ s \<open>z \<in> s\<close>])
-      by (metis comp_funpow complex_derivative_chain f_cd_mw f_cd_w fms_sb funpow_swap1 image_subset_iff o_id)
+      by (metis comp_funpow deriv_chain f_cd_mw f_cd_w fms_sb funpow_swap1 image_subset_iff o_id)
     also have "... =
           (\<Sum>i=0..n. of_nat(n choose i) * (deriv ^^ i) (\<lambda>w. deriv f ((f ^^ m) w)) z *
                      (deriv ^^ (n - i)) (deriv (f ^^ m)) z)"
@@ -460,7 +460,7 @@ proof -
       by (simp add: cdg deriv_cmult)
     have der1: "deriv (\<lambda>a. f (u * g a) / u) 0 = 1"
       apply (simp add: field_class.field_divide_inverse deriv_cmult_right [OF cd_fug])
-      apply (subst complex_derivative_chain [where g=f and f = "\<lambda>a. (u * g a)", unfolded o_def])
+      apply (subst deriv_chain [where g=f and f = "\<lambda>a. (u * g a)", unfolded o_def])
       apply (rule derivative_intros cdf cdg | simp add: equ)+
       done
     have fugeq: "\<And>w. w \<in> ball 0 r \<Longrightarrow> f (u * g w) / u = w"

@@ -79,7 +79,7 @@ definition ideal_view_1 :: "'in1 \<Rightarrow> 'in2 \<Rightarrow> 'aux \<Rightar
 
 text\<open>We have information theoretic security when the real and ideal views are equal.\<close>
 
-definition "inf_theoretic_mal_sec_P1 x y z S \<A> \<longleftrightarrow> (ideal_view_1 x y z S \<A> = P1_real_view x y z \<A>)"
+definition "perfect_sec_P1 x y z S \<A> \<longleftrightarrow> (ideal_view_1 x y z S \<A> = P1_real_view x y z \<A>)"
 
 text\<open>The advantage of party 1 denotes the probability of a distinguisher distinguishing the real and 
 ideal views.\<close>
@@ -99,7 +99,7 @@ definition ideal_game_2 :: "'in1 \<Rightarrow> 'in2 \<Rightarrow> 'aux \<Rightar
 definition ideal_view_2 :: "'in1 \<Rightarrow> 'in2 \<Rightarrow> 'aux \<Rightarrow> ('P2_real_adv, 'in2, 'aux, 'out2, 'P2_S2_aux, 'adv_out2) P2_sim \<Rightarrow> 'P2_real_adv \<Rightarrow> ('out1 \<times> 'adv_out2) spmf"
   where "ideal_view_2 x y z S \<A> = (let (S1, S2) = S in (ideal_game_2 x y z (S1 \<A>, S2 \<A>)))" 
 
-definition "inf_theoretic_mal_sec_P2 x y z S \<A> \<longleftrightarrow> (ideal_view_2 x y z S \<A> = P2_real_view x y z \<A>)"
+definition "perfect_sec_P2 x y z S \<A> \<longleftrightarrow> (ideal_view_2 x y z S \<A> = P2_real_view x y z \<A>)"
 
 definition "adv_P2 x y z S \<A> (D :: ('out1 \<times> 'adv_out2) \<Rightarrow> bool spmf) = 
                 \<bar>spmf (P2_real_view x y z \<A> \<bind> (\<lambda> view. D view)) True

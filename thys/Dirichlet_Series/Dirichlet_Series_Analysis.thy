@@ -5,7 +5,7 @@
 section \<open>Analytic properties of Dirichlet series\<close>
 theory Dirichlet_Series_Analysis
 imports
-  "HOL-Analysis.Analysis"
+  "HOL-Complex_Analysis.Complex_Analysis"
   "HOL-Library.Going_To_Filter"
   "HOL-Real_Asymp.Real_Asymp"
   Dirichlet_Series

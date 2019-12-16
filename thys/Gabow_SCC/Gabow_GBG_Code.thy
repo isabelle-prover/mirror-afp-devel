@@ -11,11 +11,11 @@ begin
 section \<open>Autoref Setup\<close>
 
 locale impl_lasso_loc = igb_fr_graph G 
-  + fr_graph_impl_loc "\<langle>mrel,Id\<rangle>igbg_impl_rel_eext" G_impl G
-  for mrel and G_impl and G :: "('q::hashable,'more) igb_graph_rec_scheme"
+  + fr_graph_impl_loc "\<langle>mrel,node_rel\<rangle>igbg_impl_rel_eext" node_rel node_eq_impl node_hash_impl node_def_hash_size G_impl G
+  for mrel and node_rel and node_eq_impl node_hash_impl node_def_hash_size and G_impl and G :: "('q,'more) igb_graph_rec_scheme"
 begin
 
-  lemma locale_this: "impl_lasso_loc mrel G_impl G"
+  lemma locale_this: "impl_lasso_loc mrel node_rel node_eq_impl node_hash_impl node_def_hash_size G_impl G"
     by unfold_locales
 
   context begin interpretation autoref_syn .
@@ -41,8 +41,8 @@ begin
   end
 
   abbreviation "gGSi_rel \<equiv> \<langle>\<langle>nat_rel\<rangle>bs_set_rel\<rangle>as_rel \<times>\<^sub>r GSi_rel"
-  abbreviation (in -) "ce_rel \<equiv> \<langle>\<langle>Id\<rangle>fun_set_rel \<times>\<^sub>r \<langle>Id\<rangle>fun_set_rel\<rangle>option_rel"
-  abbreviation "goGSi_rel \<equiv> ce_rel \<times>\<^sub>r oGSi_rel"
+  abbreviation (in -) "ce_rel node_rel \<equiv> \<langle>\<langle>node_rel\<rangle>fun_set_rel \<times>\<^sub>r \<langle>node_rel\<rangle>fun_set_rel\<rangle>option_rel"
+  abbreviation "goGSi_rel \<equiv> ce_rel node_rel \<times>\<^sub>r oGSi_rel"
 end
 
 section \<open>Automatic Refinement\<close>
@@ -80,7 +80,7 @@ begin
   lemmas [autoref_rules] = gpath_is_empty_code.refine[OF locale_this]
 
   term goBrk
-  schematic_goal goBrk_code_aux: "(?c,goBrk_impl)\<in>goGSi_rel\<rightarrow>ce_rel"
+  schematic_goal goBrk_code_aux: "(?c,goBrk_impl)\<in>goGSi_rel\<rightarrow>ce_rel node_rel"
     unfolding goBrk_impl_def[abs_def] goBrk_impl_def
     using [[autoref_trace_failed_id]]
     by (autoref (trace,keep_goal))
@@ -90,7 +90,7 @@ begin
 
   term gto_outer_impl
   schematic_goal gto_outer_code_aux: 
-    "(?c,gto_outer_impl)\<in>ce_rel \<rightarrow> gGSi_rel\<rightarrow>goGSi_rel"
+    "(?c,gto_outer_impl)\<in>ce_rel node_rel \<rightarrow> gGSi_rel\<rightarrow>goGSi_rel"
     unfolding gto_outer_impl_def[abs_def] gto_outer_impl_def
     using [[autoref_trace_failed_id]]
     by (autoref (trace,keep_goal))
@@ -167,7 +167,7 @@ begin
   lemmas [autoref_rules] = last_is_acc_code.refine[OF locale_this]
 
   schematic_goal ce_code_aux: "(?c,ce_impl)
-    \<in>gGSi_rel\<rightarrow>\<langle>ce_rel \<times>\<^sub>r gGSi_rel\<rangle>nres_rel"
+    \<in>gGSi_rel\<rightarrow>\<langle>ce_rel node_rel \<times>\<^sub>r gGSi_rel\<rangle>nres_rel"
     unfolding ce_impl_def[abs_def] on_stack_less_def[abs_def] 
       on_stack_ge_def[abs_def]
     using [[autoref_trace_failed_id]]
@@ -202,7 +202,7 @@ begin
 
 
 
-  schematic_goal find_ce_code_aux: "(?c,find_ce_impl)\<in>\<langle>ce_rel\<rangle>nres_rel"
+  schematic_goal find_ce_code_aux: "(?c,find_ce_impl)\<in>\<langle>ce_rel node_rel\<rangle>nres_rel"
     unfolding find_ce_impl_def[abs_def] 
     using [[autoref_trace_failed_id]]
     apply (autoref (trace,keep_goal))
@@ -211,7 +211,7 @@ begin
     uses impl_lasso_loc.find_ce_code_aux
   lemmas [autoref_rules] = find_ce_code.refine[OF locale_this]
 
-  schematic_goal find_ce_tr_aux: "RETURN ?c \<le> find_ce_code G_impl"
+  schematic_goal find_ce_tr_aux: "RETURN ?c \<le> find_ce_code node_eq_impl node_hash_impl node_def_hash_size G_impl"
     unfolding
       find_ce_code_def
       ginitial_code_def
@@ -238,7 +238,7 @@ begin
   
   theorem find_ce_autoref[autoref_rules]:
     \<comment> \<open>Main Correctness theorem (inside locale)\<close>
-    shows "(find_ce_code G_impl, find_ce_spec) \<in> \<langle>ce_rel\<rangle>nres_rel"
+    shows "(find_ce_code node_eq_impl node_hash_impl node_def_hash_size G_impl, find_ce_spec) \<in> \<langle>ce_rel node_rel\<rangle>nres_rel"
   proof -
     note find_ce_code.refine[OF locale_this, THEN nres_relD]
     also note find_ce_impl_refine
@@ -266,9 +266,9 @@ begin
     \<langle>\<langle>node_rel\<rangle>list_rel \<times>\<^sub>r node_rel\<rangle>nres_rel"
     unfolding reconstruct_lasso_def[abs_def] reconstruct_reach_def[abs_def]
     using [[autoref_trace_failed_id]]
-
     apply (autoref (keep_goal, trace))
     done
+    
   concrete_definition (in -) reconstruct_reach_code 
     uses impl_lasso_loc.reconstruct_reach_code_aux
   lemmas [autoref_rules] = reconstruct_reach_code.refine[OF locale_this]
@@ -288,7 +288,7 @@ begin
   lemmas [autoref_rules] = reconstruct_lasso_code.refine[OF locale_this]
 
   schematic_goal reconstruct_lasso_tr_aux: 
-    "RETURN ?c \<le> reconstruct_lasso_code G_impl Vr Vl"
+    "RETURN ?c \<le> reconstruct_lasso_code eqi hi dszi G_impl Vr Vl"
     unfolding reconstruct_lasso_code_def reconstruct_reach_code_def 
     apply (refine_transfer (post))
     done
@@ -307,7 +307,7 @@ begin
   lemmas [autoref_rules] = find_lasso_code.refine[OF locale_this]
 
   schematic_goal find_lasso_tr_aux: 
-    "RETURN ?c \<le> find_lasso_code G_impl"
+    "RETURN ?c \<le> find_lasso_code node_eq_impl node_hash_impl node_def_hash_size G_impl"
     unfolding find_lasso_code_def
     apply (refine_transfer (post))
     done
@@ -321,22 +321,28 @@ export_code find_lasso_tr checking SML
 
 section \<open>Main Correctness Theorem\<close>
 
-abbreviation fl_rel :: "(_ \<times> ('a list \<times> 'b list) option) set" where  
-  "fl_rel \<equiv> \<langle>\<langle>Id\<rangle>list_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel\<rangle>Relators.option_rel"
+abbreviation fl_rel :: "_ \<Rightarrow> (_ \<times> ('a list \<times> 'a list) option) set" where  
+  "fl_rel node_rel \<equiv> \<langle>\<langle>node_rel\<rangle>list_rel \<times>\<^sub>r \<langle>node_rel\<rangle>list_rel\<rangle>Relators.option_rel"
 
 theorem find_lasso_tr_correct:
   \<comment> \<open>Correctness theorem for the constant we extracted to SML\<close>
-  fixes Re
-  assumes A: "(G_impl,G)\<in>igbg_impl_rel_ext Re Id"
+  fixes Re and node_rel :: "('vi \<times> 'v) set"
+  assumes A: "(G_impl,G)\<in>igbg_impl_rel_ext Re node_rel"
+      and node_eq_refine: "(node_eq_impl, (=)) \<in> node_rel \<rightarrow> node_rel \<rightarrow> bool_rel"
+      and node_hash: "is_bounded_hashcode node_rel node_eq_impl node_hash_impl"
+      and node_hash_def_size: "(is_valid_def_hm_size TYPE('vi) node_def_hash_size)"
+  
   assumes B: "igb_fr_graph G"
-  shows "RETURN (find_lasso_tr G_impl) 
-  \<le> \<Down>fl_rel (igb_graph.find_lasso_spec G)"
+  shows "RETURN (find_lasso_tr node_eq_impl node_hash_impl node_def_hash_size G_impl) 
+  \<le> \<Down>(fl_rel node_rel) (igb_graph.find_lasso_spec G)"
 proof -
   from B interpret igb_fr_graph G .
 
-  have I: "impl_lasso_loc Re G_impl G"
-    by unfold_locales fact
-  then interpret impl_lasso_loc Re G_impl G .
+  have I: "impl_lasso_loc Re node_rel node_eq_impl node_hash_impl node_def_hash_size G_impl G"
+    apply unfold_locales
+    by fact+
+    
+  then interpret impl_lasso_loc Re node_rel node_eq_impl node_hash_impl node_def_hash_size G_impl G .
 
   note find_lasso_tr.refine[OF I]
   also note find_lasso_code.refine[OF I, THEN nres_relD]
@@ -362,14 +368,16 @@ lemma [autoref_itype]:
   by simp
 
 lemma find_lasso_spec_autoref[autoref_rules_raw]:
-  fixes Re
-  assumes "SIDE_PRECOND (igb_fr_graph G)"
-  assumes "PREFER_id R"
-  assumes "(G_impl,G)\<in>igbg_impl_rel_ext Re R"
-  shows "(RETURN (find_lasso_tr G_impl), 
+  fixes Re and node_rel :: "('vi \<times> 'v) set" 
+  assumes GR: "SIDE_PRECOND (igb_fr_graph G)"
+  assumes eq: "GEN_OP node_eq_impl (=) (node_rel\<rightarrow>node_rel\<rightarrow>bool_rel)"
+  assumes hash: "SIDE_GEN_ALGO (is_bounded_hashcode node_rel node_eq_impl node_hash_impl)"
+  assumes hash_dsz: "SIDE_GEN_ALGO (is_valid_def_hm_size TYPE('vi) node_def_hash_size)"
+  assumes Gi: "(G_impl,G)\<in>igbg_impl_rel_ext Re node_rel"
+  shows "(RETURN (find_lasso_tr node_eq_impl node_hash_impl node_def_hash_size G_impl), 
     (OP op_find_lasso_spec 
-      ::: igbg_impl_rel_ext Re R \<rightarrow> \<langle>fl_rel\<rangle>nres_rel)$G) \<in> \<langle>fl_rel\<rangle>nres_rel"
-  using find_lasso_tr_correct assms
+      ::: igbg_impl_rel_ext Re node_rel \<rightarrow> \<langle>fl_rel node_rel\<rangle>nres_rel)$G) \<in> \<langle>fl_rel node_rel\<rangle>nres_rel"
+  using find_lasso_tr_correct[OF Gi GEN_OP_D[OF eq] SIDE_GEN_ALGO_D[OF hash] SIDE_GEN_ALGO_D[OF hash_dsz]] using GR
   apply (fastforce intro!: nres_relI)
   done
 

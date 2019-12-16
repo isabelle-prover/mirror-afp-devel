@@ -271,7 +271,7 @@ proof -
   have "open {x. x \<bullet> normal sctn < pstn sctn}" (is "open ?X")
     and "open {x. x \<bullet> normal sctn > pstn sctn}" (is "open ?Y")
     by (auto intro!: open_Collect_less continuous_intros)
-  moreover have "S \<subseteq> ?X \<union> ?Y" "?X \<inter> ?Y \<inter> S = {}"
+  moreover have "?X \<inter> ?Y \<inter> S = {}" "S \<subseteq> ?X \<union> ?Y"
     using assms by (auto simp: plane_of_def)
   ultimately have "?X \<inter> S = {} \<or> ?Y \<inter> S = {}"
     by (rule connectedD)

@@ -4,7 +4,7 @@ author = Lawrence C Paulson <https://www.cl.cam.ac.uk/~lp15/>
 topic = Mathematics/Analysis
 date = 2019-09-06
 notify = lp15@cam.ac.uk
-abstract = 
+abstract =
   This development formalises the square integrable functions over the
   reals and the basics of Fourier series. It culminates with a proof
   that every well-behaved periodic function can be approximated by a
@@ -283,6 +283,28 @@ abstract =
   where parties are assumed to be fully corrupted by an adversary. In
   this setting we again consider OT, as it is a fundamental building
   block of almost all MPC protocols.
+
+[Sigma_Commit_Crypto]
+title = Sigma Protocols and Commitment Schemes
+author = David Butler <https://www.turing.ac.uk/people/doctoral-students/david-butler>, Andreas Lochbihler <http://www.andreas-lochbihler.de>
+topic = Computer Science/Security/Cryptography
+date = 2019-10-07
+notify = dbutler@turing.ac.uk
+abstract =
+  We use CryptHOL to formalise commitment schemes and Sigma-protocols.
+  Both are widely used fundamental two party cryptographic primitives.
+  Security for commitment schemes is considered using game-based
+  definitions whereas the security of Sigma-protocols is considered
+  using both the game-based and simulation-based security paradigms. In
+  this work, we first define security for both primitives and then prove
+  secure multiple case studies: the Schnorr, Chaum-Pedersen and
+  Okamoto Sigma-protocols as well as a construction that allows for
+  compound (AND and OR statements) Sigma-protocols and the Pedersen and
+  Rivest commitment schemes. We also prove that commitment schemes can
+  be constructed from Sigma-protocols. We formalise this proof at an
+  abstract level, only assuming the existence of a Sigma-protocol;
+  consequently, the instantiations of this result for the concrete
+  Sigma-protocols we consider come for free.
 
 [CryptHOL]
 title = CryptHOL
@@ -2561,10 +2583,13 @@ author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2014-09-04
 topic = Computer Science/Data Structures
 abstract =
-	This theory implements priority queues via Braun trees. Insertion
-	and deletion take logarithmic time and preserve the balanced nature
-	of Braun trees.
+  This entry verifies priority queues based on Braun trees. Insertion
+  and deletion take logarithmic time and preserve the balanced nature
+  of Braun trees. Two implementations of deletion are provided.
 notify = nipkow@in.tum.de
+extra-history =
+  Change history:
+	[2019-12-16]: Added theory Priority_Queue_Braun2 with second version of del_min
 
 [Binomial-Queues]
 title = Functional Binomial Queues
@@ -3060,6 +3085,33 @@ abstract =
 	on which properties of the package can be proven such as termination of certain
 	transformations, correctness, etc.
 notify = tuong@users.gforge.inria.fr, wolff@lri.fr
+
+[Clean]
+title = Clean - An Abstract Imperative Programming Language and its Theory
+author = Frédéric Tuong <https://www.lri.fr/~ftuong/>, Burkhart Wolff <https://www.lri.fr/~wolff/>
+topic = Computer Science/Programming Languages, Computer Science/Semantics
+date = 2019-10-04
+notify = wolff@lri.fr, ftuong@lri.fr
+abstract =
+  Clean is based on a simple, abstract execution model for an imperative
+  target language. “Abstract” is understood in contrast to “Concrete
+  Semantics”; alternatively, the term “shallow-style embedding” could be
+  used. It strives for a type-safe notion of program-variables, an
+  incremental construction of the typed state-space, support of
+  incremental verification, and open-world extensibility of new type
+  definitions being intertwined with the program definitions. Clean is
+  based on a “no-frills” state-exception monad with the usual
+  definitions of bind and unit for the compositional glue of state-based
+  computations. Clean offers conditionals and loops supporting C-like
+  control-flow operators such as break and return. The state-space
+  construction is based on the extensible record package. Direct
+  recursion of procedures is supported. Clean’s design strives for
+  extreme simplicity. It is geared towards symbolic execution and proven
+  correct verification tools. The underlying libraries of this package,
+  however, deliberately restrict themselves to the most elementary
+  infrastructure for these tasks. The package is intended to serve as
+  demonstrator semantic backend for Isabelle/C, or for the
+  test-generation techniques.
 
 [PCF]
 title = Logical Relations for PCF
@@ -4290,7 +4342,7 @@ abstract = In 1927, Lehmer presented criterions for primality, based on the conv
 	<p>
 	As a side product we formalize some properties of Euler's phi-function,
 	the notion of the order of an element of a group, and the cyclicity of the multiplicative group of a finite field.
-notify = noschinl@in.tum.de, simon.wimmer@tum.de
+notify = noschinl@gmail.com, simon.wimmer@tum.de
 
 [Pratt_Certificate]
 title = Pratt's Primality Certificates
@@ -4298,7 +4350,7 @@ author = Simon Wimmer <mailto:simon.wimmer@tum.de>, Lars Noschinski <http://www2
 date = 2013-07-22
 topic = Mathematics/Number Theory
 abstract = In 1975, Pratt introduced a proof system for certifying primes. He showed that a number <i>p</i> is prime iff a primality certificate for <i>p</i> exists. By showing a logarithmic upper bound on the length of the certificates in size of the prime number, he concluded that the decision problem for prime numbers is in NP. This work formalizes soundness and completeness of Pratt's proof system as well as an upper bound for the size of the certificate.
-notify = noschinl@in.tum.de, simon.wimmer@tum.de
+notify = noschinl@gmail.com, simon.wimmer@tum.de
 
 [Monad_Memo_DP]
 title = Monadification, Memoization and Dynamic Programming
@@ -4421,7 +4473,7 @@ topic = Mathematics/Graph Theory
 abstract = This development provides a formalization of directed graphs, supporting (labelled) multi-edges and infinite graphs. A polymorphic edge type allows edges to be treated as pairs of vertices, if multi-edges are not required. Formalized properties are i.a. walks (and related concepts), connectedness and subgraphs and basic properties of isomorphisms.
 	<p>
 	This formalization is used to prove characterizations of Euler Trails, Shortest Paths and Kuratowski subgraphs.
-notify = noschinl@in.tum.de
+notify = noschinl@gmail.com
 
 [Planarity_Certificates]
 title = Planarity Certificates
@@ -4435,7 +4487,7 @@ abstract =
 	Moreover, it contains verified implementations of programs checking
 	certificates for planarity (i.e., a combinatorial map) or non-planarity
 	(i.e., a Kuratowski subgraph).
-notify = noschinl@in.tum.de
+notify = noschinl@gmail.com
 
 [Max-Card-Matching]
 title = Maximum Cardinality Matching
@@ -4468,7 +4520,7 @@ author = Lars Noschinski <http://www21.in.tum.de/~noschinl/>
 date = 2012-02-06
 topic = Mathematics/Graph Theory
 abstract = This works presents a formalization of the Girth-Chromatic number theorem in graph theory, stating that graphs with arbitrarily large girth and chromatic number exist. The proof uses the theory of Random Graphs to prove the existence with probabilistic arguments.
-notify = noschinl@in.tum.de
+notify = noschinl@gmail.com
 
 [Random_Graph_Subgraph_Threshold]
 title = Properties of Random Graphs -- Subgraph Containment
@@ -5327,7 +5379,7 @@ abstract =
 	<tt>HOL/Library</tt>, a monadic language for computations with failure
 	(inspired by the AutoCorres tool), and a language of conditional
 	expressions. These VCGs are demonstrated by a number of example programs.
-notify = noschinl@in.tum.de
+notify = noschinl@gmail.com
 
 [DPT-SAT-Solver]
 title = A Fast SAT Solver for Isabelle in Standard ML
@@ -8463,7 +8515,7 @@ author = Jonathan Julian Huerta y Munive <>
 topic = Mathematics/Algebra, Mathematics/Analysis
 date = 2019-09-10
 notify = jjhuertaymunive1@sheffield.ac.uk, jonjulian23@gmail.com
-abstract = 
+abstract =
   These components formalise a semantic framework for the deductive
   verification of hybrid systems. They support reasoning about
   continuous evolutions of hybrid programs in the style of differential
@@ -8479,7 +8531,7 @@ author = Thibault Dardinier<>
 topic = Computer Science/Algorithms
 date = 2019-09-16
 notify = tdardini@student.ethz.ch, traytel@inf.ethz.ch
-abstract = 
+abstract =
   Worst-case optimal multiway-join algorithms are recent seminal
   achievement of the database community. These algorithms compute the
   natural join of multiple relational databases and improve in the worst
@@ -8489,4 +8541,83 @@ abstract =
   and Rudra</a> gave a unified presentation of different multi-way
   join algorithms. We formalized and proved correct their "Generic
   Join" algorithm and extended it to support negative joins.
+
+[Aristotles_Assertoric_Syllogistic]
+title = Aristotle's Assertoric Syllogistic
+author = Angeliki Koutsoukou-Argyraki <https://www.cl.cam.ac.uk/~ak2110/>
+topic = Logic/Philosophy
+date = 2019-10-08
+notify = ak2110@cam.ac.uk
+abstract = 
+  We formalise with Isabelle/HOL some basic elements of Aristotle's
+  assertoric syllogistic following the <a
+  href="https://plato.stanford.edu/entries/aristotle-logic/">article from the Stanford Encyclopedia of Philosophy by Robin Smith.</a> To
+  this end, we use a set theoretic formulation (covering both individual
+  and general predication). In particular, we formalise the deductions
+  in the Figures and after that we present Aristotle's
+  metatheoretical observation that all deductions in the Figures can in
+  fact be reduced to either Barbara or Celarent. As the formal proofs
+  prove to be straightforward, the interest of this entry lies in
+  illustrating the functionality of Isabelle and high efficiency of
+  Sledgehammer for simple exercises in philosophy.
+
+[VerifyThis2019]
+title = VerifyThis 2019 -- Polished Isabelle Solutions
+author = Peter Lammich<>, Simon Wimmer<http://home.in.tum.de/~wimmers/>
+topic = Computer Science/Algorithms
+date = 2019-10-16
+notify = lammich@in.tum.de, wimmers@in.tum.de
+abstract = 
+  VerifyThis 2019 (http://www.pm.inf.ethz.ch/research/verifythis.html)
+  was a program verification competition associated with ETAPS 2019. It
+  was the 8th event in the VerifyThis competition series. In this entry,
+  we present polished and completed versions of our solutions that we
+  created during the competition.
+
+[ZFC_in_HOL]
+title = Zermelo Fraenkel Set Theory in Higher-Order Logic
+author = Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
+topic = Mathematics/Set Theory
+date = 2019-10-24
+notify = lp15@cam.ac.uk
+abstract = 
+  <p>This entry is a new formalisation of ZFC set theory in Isabelle/HOL. It is
+  logically equivalent to Obua's HOLZF; the point is to have the closest
+  possible integration with the rest of Isabelle/HOL, minimising the amount of
+  new notations and exploiting type classes.</p>
+  <p>There is a type <em>V</em> of sets and a function <em>elts :: V =&gt; V
+  set</em> mapping a set to its elements. Classes simply have type <em>V
+  set</em>, and a predicate identifies the small classes: those that correspond
+  to actual sets. Type classes connected with orders and lattices are used to
+  minimise the amount of new notation for concepts such as the subset relation,
+  union and intersection. Basic concepts — Cartesian products, disjoint sums,
+  natural numbers, functions, etc. — are formalised.</p>
+  <p>More advanced set-theoretic concepts, such as transfinite induction,
+  ordinals, cardinals and the transitive closure of a set, are also provided.
+  The definition of addition and multiplication for general sets (not just
+  ordinals) follows Kirby.</p>
+  <p>The theory provides two type classes with the aim of facilitating
+  developments that combine <em>V</em> with other Isabelle/HOL types:
+  <em>embeddable</em>, the class of types that can be injected into <em>V</em>
+  (including <em>V</em> itself as well as <em>V*V</em>, etc.), and
+  <em>small</em>, the class of types that correspond to some ZF set.</p>
+
+[Interval_Arithmetic_Word32]
+title = Interval Arithmetic on 32-bit Words
+author = Brandon Bohrer <mailto:bbohrer@cs.cmu.edu>
+topic = Computer Science/Data Structures
+date = 2019-11-27
+notify = bjbohrer@gmail.com, bbohrer@cs.cmu.edu
+abstract = 
+  Interval_Arithmetic implements conservative interval arithmetic
+  computations, then uses this interval arithmetic to implement a simple
+  programming language where all terms have 32-bit signed word values,
+  with explicit infinities for terms outside the representable bounds.
+  Our target use case is interpreters for languages that must have a
+  well-understood low-level behavior.  We include a formalization of
+  bounded-length strings which are used for the identifiers of our
+  language. Bounded-length identifiers are useful in some applications,
+  for example the <a href="https://www.isa-afp.org/entries/Differential_Dynamic_Logic.html">Differential_Dynamic_Logic</a> article,
+  where a Euclidean space indexed by identifiers demands that identifiers
+  are finitely many.
 

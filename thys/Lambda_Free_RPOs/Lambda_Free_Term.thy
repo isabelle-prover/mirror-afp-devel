@@ -34,6 +34,7 @@ lemma gt_sym_antisym: "f >\<^sub>s g \<Longrightarrow> \<not> g >\<^sub>s f"
 
 end
 
+
 subsection \<open>Heads\<close>
 
 datatype (plugins del: size) (syms_hd: 's, vars_hd: 'v) hd =
@@ -202,6 +203,39 @@ lemma vars_mset_fun[intro]: "vars_mset (fun t) \<subseteq># vars_mset t"
 
 lemma vars_mset_arg[intro]: "vars_mset (arg t) \<subseteq># vars_mset t"
   by (cases t) auto
+
+
+subsection \<open>hsize\<close>
+
+text \<open>The hsize of a term is the number of heads (Syms or Vars) in the term.\<close>
+
+primrec hsize :: "('s, 'v) tm \<Rightarrow> nat" where
+  "hsize (Hd \<zeta>) = 1"
+| "hsize (App s t) = hsize s + hsize t"
+
+lemma hsize_size: "hsize t * 2 = size t + 1"
+  by (induct t) auto
+
+lemma hsize_pos[simp]: "hsize t > 0"
+  by (induction t; simp)
+
+lemma hsize_fun_lt: "is_App s \<Longrightarrow> hsize (fun s) < hsize s"
+  by (cases s; simp)
+
+lemma hsize_arg_lt: "is_App s \<Longrightarrow> hsize (arg s) < hsize s"
+  by (cases s; simp)
+  
+lemma hsize_ge_num_args: "hsize s \<ge> hsize s"
+  by (induct s) auto
+
+lemma hsize_in_args: "s \<in> set (args t) \<Longrightarrow> hsize s < hsize t"
+  by (induct t) auto
+
+lemma hsize_apps: "hsize (apps t ts) = hsize t + sum_list (map hsize ts)"
+  by (induct ts arbitrary:t; simp)
+
+lemma hsize_args: "1 + sum_list (map hsize (args t)) = hsize t"
+  by (metis hsize.simps(1) hsize_apps tm_collapse_apps)
 
 
 subsection \<open>Substitutions\<close>

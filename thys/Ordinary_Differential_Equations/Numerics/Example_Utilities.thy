@@ -1535,20 +1535,20 @@ lemmas [DIM_simps] =
 lemma numeral_refl: "numeral x = numeral x" by simp
 
 lemma plain_floatarith_approx_eq_SomeD:
-  "approx prec fa [] = Some (fst (the (approx prec fa [])), snd (the (approx prec fa [])))"
+  "approx prec fa [] = Some (the (approx prec fa []))"
   if "plain_floatarith 0 fa"
   using that
   by (auto dest!: plain_floatarith_approx_not_None[where p=prec and XS=Nil])
 
-definition [simp]: "approx1 p f xs = real_of_float (fst (the (approx p f xs)))"
-definition [simp]: "approx2 p f xs = real_of_float (snd (the (approx p f xs)))"
+definition [simp]: "approx1 p f xs = real_of_float (lower (the (approx p f xs)))"
+definition [simp]: "approx2 p f xs = real_of_float (upper (the (approx p f xs)))"
 definition [simp]: "approx_defined p f xs \<longleftrightarrow> approx p f xs \<noteq> None"
 
 definition "approxs p fs xs = those (map (\<lambda>f. approx p f xs) fs)"
 definition [simp]: "approxs1 p f xs =
-  (case approxs p f xs of Some y \<Rightarrow> (map (real_of_float o fst) y) | None \<Rightarrow> replicate (length f) 0)"
+  (case approxs p f xs of Some y \<Rightarrow> (map (real_of_float o lower) y) | None \<Rightarrow> replicate (length f) 0)"
 definition [simp]: "approxs2 p f xs =
-  (case approxs p f xs of Some y \<Rightarrow> (map (real_of_float o snd) y) | None \<Rightarrow> replicate (length f) 0)"
+  (case approxs p f xs of Some y \<Rightarrow> (map (real_of_float o upper) y) | None \<Rightarrow> replicate (length f) 0)"
 definition "approxs_defined p fs xs \<longleftrightarrow> (those (map (\<lambda>f. approx p f xs) fs) \<noteq> None)"
 
 lemma length_approxs:
@@ -1561,8 +1561,7 @@ lemma real_in_approxI:
   if "x = interpret_floatarith fa []"
     "approx_defined prec fa []"
   using that
-  by (auto dest: approx_emptyD)
-
+  by (force dest: approx_emptyD simp: set_of_eq)
 
 lemma real_subset_approxI:
   "{a .. b} \<subseteq> {(approx1 prec fa []) .. (approx2 prec fb [])}"
@@ -1571,7 +1570,7 @@ lemma real_subset_approxI:
     "approx_defined prec fa []"
     "approx_defined prec fb []"
   using that
-  by (auto dest: approx_emptyD)
+  by (force dest: approx_emptyD simp: set_of_eq)
 
 
 lemma approxs_eq_Some_lengthD: "length ys = length fas" if "approxs prec fas XS = Some ys"
@@ -1579,27 +1578,27 @@ lemma approxs_eq_Some_lengthD: "length ys = length fas" if "approxs prec fas XS 
   by (auto simp: approxs_def dest!: those_eq_SomeD)
 
 lemma approxs_pointwise:
-  "interpret_floatarith (fas ! ia) xs \<in> {real_of_float (fst (ys ! ia)) .. (snd (ys ! ia))}"
+  "interpret_floatarith (fas ! ia) xs \<in> {real_of_float (lower (ys ! ia)) .. (upper (ys ! ia))}"
   if "approxs prec fas XS = Some ys" "bounded_by xs XS" "ia < length fas"
 proof -
   from those_eq_SomeD[OF that(1)[unfolded approxs_def]]
   have ys: "ys = map (the \<circ> (\<lambda>f. approx prec f XS)) fas"
     and ex: "\<exists>y. i < length fas \<longrightarrow> approx prec (fas ! i) XS = Some y" for i
     by auto
-  from ex[of ia] that obtain l u where lu: "Some (l, u) = approx prec (fas ! ia) XS" by auto
+  from ex[of ia] that obtain ivl where ivl: "approx prec (fas ! ia) XS = Some ivl" by auto
   from approx[OF that(2) this]
-  have "real_of_float l \<le> interpret_floatarith (fas ! ia) xs \<and> interpret_floatarith (fas ! ia) xs \<le> real_of_float u"
+  have "interpret_floatarith (fas ! ia) xs \<in>\<^sub>r ivl"
     by auto
   moreover
-  have "ys ! ia = (l, u)"
+  have "ys ! ia = ivl"
     unfolding ys
     apply (auto simp: o_def)
     apply (subst nth_map)
      apply (simp add: that)
-    using lu[symmetric] by simp
+    using ivl by simp
   ultimately show ?thesis
     using that
-    by (auto simp: approxs_eq_Some_lengthD split: prod.splits)
+    by (auto simp: approxs_eq_Some_lengthD set_of_eq split: prod.splits)
 qed
 
 lemmas approxs_pointwise_le = approxs_pointwise[simplified, THEN conjunct1]
@@ -1607,7 +1606,7 @@ lemmas approxs_pointwise_le = approxs_pointwise[simplified, THEN conjunct1]
 
 lemma approxs_eucl:
   "eucl_of_list (interpret_floatariths fas xs) \<in>
-    {eucl_of_list (map fst ys) .. eucl_of_list (map snd ys)::'a::executable_euclidean_space}"
+    {eucl_of_list (map lower ys) .. eucl_of_list (map upper ys)::'a::executable_euclidean_space}"
   if "approxs prec fas XS = Some ys"
     "length fas = DIM('a)"
     "bounded_by xs XS"
@@ -1621,7 +1620,7 @@ lemma plain_floatariths_approx_eq_SomeD:
   using that
   apply (induction fas)
    apply (auto simp: approxs_def split: option.splits dest!: plain_floatarith_approx_eq_SomeD)
-  subgoal for a fas aa b
+  subgoal for a fas aa
     apply (cases "those (map (\<lambda>f. approx prec f []) fas)")
     by auto
   done
@@ -2097,8 +2096,8 @@ ML \<open>val ode_numerics_conv = @{computation_check
     "Cons::_\<Rightarrow>_\<Rightarrow>string list"
     "Nil::real aform list"
     "Cons::_\<Rightarrow>_\<Rightarrow>real aform list"
-    "Nil::(float \<times> float) option list"
-    "Cons::_\<Rightarrow>_\<Rightarrow>(float \<times> float) option list"
+    "Nil::(float interval) option list"
+    "Cons::_\<Rightarrow>_\<Rightarrow>(float interval) option list"
 
     "nth::_\<Rightarrow>_\<Rightarrow>real"
     "upt"

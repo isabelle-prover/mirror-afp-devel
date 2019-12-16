@@ -13,6 +13,7 @@ begin
 
   section \<open>Image on Explicit Automata\<close>
 
+  (* TODO: this should not be needed, only use nba_image *)
   definition nbae_image where "nbae_image f A \<equiv> nbae (alphabete A) (f ` initiale A)
     ((\<lambda> (p, a, q). (f p, a, f q)) ` transitione A) (f ` acceptinge A)"
 
@@ -94,13 +95,60 @@ begin
       by auto
   qed
 
-  (* TODO: this operation is fundamentally nondeterministic, model it as such, instead of
-    putting everything in the relation *)
-  (* TODO: by setting this to id, we pretend that nothing is actually happening with this
-    translation and put all the weight on the relation, it would make more sense to model
-    the fact that a translation is happening explicitly *)
-  definition to_nbaei :: "('state, 'label) nba \<Rightarrow> ('state, 'label) nba"
-    where "to_nbaei \<equiv> id"
+  (* TODO: move this to nondeterministic automaton
+    there, it will have to be treated more elementarily
+    at least until we abstract from NBA_Refine to do that there aswell *)
+  definition nba_image :: "('state\<^sub>1 \<Rightarrow> 'state\<^sub>2) \<Rightarrow> ('label, 'state\<^sub>1) nba \<Rightarrow> ('label, 'state\<^sub>2) nba" where
+    "nba_image f A \<equiv> nba
+      (alphabet A)
+      (f ` initial A)
+      (\<lambda> a p. f ` transition A a (inv_into (nodes A) f p))
+      (\<lambda> p. accepting A (inv_into (nodes A) f p))"
+
+  lemma nba_image_rel[param]:
+    assumes "inj_on f (nodes A)"
+    shows "(A, nba_image f A) \<in> \<langle>Id_on (alphabet A), br f (\<lambda> p. p \<in> nodes A)\<rangle> nba_rel"
+  proof -
+    have "A = nba (alphabet A) (initial A) (transition A) (accepting A)" by simp
+    also have "(\<dots>, nba_image f A) \<in> \<langle>Id_on (alphabet A), br f (\<lambda> p. p \<in> nodes A)\<rangle> nba_rel"
+      using assms unfolding nba_image_def
+      by (parametricity) (auto intro: nba_rel_eq simp: in_br_conv br_set_rel_alt)
+    finally show ?thesis by this
+  qed
+
+  lemma nba_image_nodes[simp]:
+    assumes "inj_on f (nodes A)"
+    shows "nodes (nba_image f A) = f ` nodes A"
+  proof -
+    have "(nodes A, nodes (nba_image f A)) \<in> \<langle>br f (\<lambda> p. p \<in> nodes A)\<rangle> set_rel"
+      using assms by parametricity
+    then show ?thesis unfolding br_set_rel_alt by simp
+  qed
+  lemma nba_image_language[simp]:
+    assumes "inj_on f (nodes A)"
+    shows "language (nba_image f A) = language A"
+  proof -
+    have "(language A, language (nba_image f A)) \<in> \<langle>\<langle>Id_on (alphabet A)\<rangle> stream_rel\<rangle> set_rel"
+      using assms by parametricity
+    then show ?thesis by simp
+  qed
+
+  lemma nba_image_nbae:
+    assumes "inj_on f (nodes A)"
+    shows "nbae_image f (nba_nbae A) = nba_nbae (nba_image f A)"
+    unfolding nbae_image_nba_nbae
+    unfolding nba_nbae_def
+    unfolding nba_image_nodes[OF assms]
+    unfolding nbae.simps
+    unfolding nba_image_def
+    unfolding nba.sel
+    using assms by auto
+
+  (* TODO: with this, maybe much of the nbae infrastructure is obsolete?
+    since now there is very little happening in terms of relations, maybe we can even make do
+    with just the abstraction function *)
+  definition op_translate :: "('label, 'state) nba \<Rightarrow> ('label, nat) nbae nres" where
+    "op_translate A \<equiv> SPEC (\<lambda> B. \<exists> f. inj_on f (nodes A) \<and> B = nba_nbae (nba_image f A))"
 
   (* TODO: make separate implementations for "nba_nbae" and "op_set_enumerate \<bind> nbae_image"
     make sure to do regression tests along the way *)
@@ -130,10 +178,8 @@ begin
     assumes "is_valid_def_hm_size TYPE('statei) hms"
     assumes "(seq, HOL.eq) \<in> S \<rightarrow> S \<rightarrow> bool_rel"
     assumes "(Ai, A) \<in> \<langle>L, S\<rangle> nbai_nba_rel"
-    shows "(RETURN (to_nbaei_impl seq bhc hms Ai), do {
-        f \<leftarrow> op_set_enumerate (nodes A);
-        RETURN (nbae_image (the \<circ> f) (nba_nbae A))
-      }) \<in> \<langle>\<langle>L, nat_rel\<rangle> nbaei_nbae_rel\<rangle> nres_rel"
+    shows "(RETURN (to_nbaei_impl seq bhc hms Ai), op_translate A) \<in>
+      \<langle>\<langle>L, nat_rel\<rangle> nbaei_nbae_rel\<rangle> nres_rel"
   proof -
     have 1: "finite (alphabet A)"
       using nbai_nba_param(2)[param_fo, OF assms(5)] list_set_rel_finite
@@ -158,91 +204,27 @@ begin
         f \<leftarrow> op_set_enumerate (nodes A);
         T \<leftarrow> SPEC (HOL.eq (trans_spec A (\<lambda> x. the (f x))));
         RETURN (nbae (alphabet A) ((\<lambda> x. the (f x)) ` initial A) T ((\<lambda> x. the (f x)) ` {p \<in> nodes A. accepting A p}))
-      },  do {
+      }, do {
         f \<leftarrow> op_set_enumerate (nodes A);
         RETURN (nbae_image (the \<circ> f) (nba_nbae A))
       }) \<in> \<langle>Id\<rangle> nres_rel"
       unfolding trans_spec_def nbae_image_nba_nbae by refine_vcg force
+    also have "(do {
+        f \<leftarrow> op_set_enumerate (nodes A);
+        RETURN (nbae_image (the \<circ> f) (nba_nbae A))
+      }, do {
+        f \<leftarrow> op_set_enumerate (nodes A);
+        RETURN (nba_nbae (nba_image (the \<circ> f) A))
+      }) \<in> \<langle>Id\<rangle> nres_rel"
+      unfolding op_set_enumerate_def by (refine_vcg) (simp add: inj_on_map_the nba_image_nbae)
+    also have "(do {
+        f \<leftarrow> op_set_enumerate (nodes A);
+        RETURN (nba_nbae (nba_image (the \<circ> f) A))
+      }, op_translate A) \<in> \<langle>Id\<rangle> nres_rel"
+      unfolding op_set_enumerate_def op_translate_def
+      by (refine_vcg) (metis Collect_mem_eq inj_on_map_the subset_Collect_conv)
     finally show ?thesis unfolding nres_rel_comp by simp
   qed
-
-  (* TODO: generalize L *)
-  context
-    fixes Ai A
-    fixes seq bhc hms
-    fixes S :: "('statei \<times> 'state) set"
-    assumes a: "finite (nodes A)"
-    assumes b: "is_bounded_hashcode S seq bhc"
-    assumes c: "is_valid_def_hm_size TYPE('statei) hms"
-    assumes d: "(seq, HOL.eq) \<in> S \<rightarrow> S \<rightarrow> bool_rel"
-    assumes e: "(Ai, A) \<in> \<langle>Id, S\<rangle> nbai_nba_rel"
-  begin
-
-    definition f' where "f' \<equiv> SOME f'.
-      (to_nbaei_impl seq bhc hms Ai, nbae_image (the \<circ> f') (nba_nbae A)) \<in> \<langle>Id, nat_rel\<rangle> nbaei_nbae_rel \<and>
-      dom f' = nodes A \<and> inj_on f' (nodes A)"
-
-    lemma 1: "\<exists> f'. (to_nbaei_impl seq bhc hms Ai, nbae_image (the \<circ> f') (nba_nbae A)) \<in>
-      \<langle>Id, nat_rel\<rangle> nbaei_nbae_rel \<and> dom f' = nodes A \<and> inj_on f' (nodes A)"
-      using to_nbaei_impl_refine''[
-        OF a b c d e,
-        unfolded op_set_enumerate_def bind_RES_RETURN_eq,
-        THEN nres_relD,
-        THEN RETURN_ref_SPECD]
-      by force
-
-    lemma f'_refine: "(to_nbaei_impl seq bhc hms Ai, nbae_image (the \<circ> f') (nba_nbae A)) \<in>
-      \<langle>Id, nat_rel\<rangle> nbaei_nbae_rel" using someI_ex[OF 1, folded f'_def] by auto
-    lemma f'_dom: "dom f' = nodes A" using someI_ex[OF 1, folded f'_def] by auto
-    lemma f'_inj: "inj_on f' (nodes A)" using someI_ex[OF 1, folded f'_def] by auto
-
-    definition f where "f \<equiv> the \<circ> f'"
-    definition g where "g = inv_into (nodes A) f"
-    lemma inj_f[intro!, simp]: "inj_on f (nodes A)"
-      using f'_inj f'_dom unfolding f_def by (simp add: inj_on_map_the)
-    lemma inj_g[intro!, simp]: "inj_on g (f ` nodes A)"
-      unfolding g_def by (simp add: inj_on_inv_into)
-
-    definition rel where "rel \<equiv> {(f p, p) |p. p \<in> nodes A}"
-    lemma rel_alt_def: "rel = (br f (\<lambda> p. p \<in> nodes A))\<inverse>"
-      unfolding rel_def by (auto simp: in_br_conv)
-    lemma rel_inv_def: "rel = br g (\<lambda> k. k \<in> f ` nodes A)"
-      unfolding rel_alt_def g_def by (auto simp: in_br_conv)
-    lemma rel_domain[simp]: "Domain rel = f ` nodes A" unfolding rel_def by force
-    lemma rel_range[simp]: "Range rel = nodes A" unfolding rel_def by auto
-    lemma rel_bijective[intro!, simp]: "bijective rel" unfolding rel_inv_def by (simp add: bijective_alt)
-    lemma [simp]: "Id_on (f ` nodes A) O rel = rel" unfolding rel_def by auto
-    lemma [simp]: "rel O Id_on (nodes A) = rel" unfolding rel_def by auto
-
-    lemma [param]: "(f, f) \<in> Id_on (Range rel) \<rightarrow> Id_on (Domain rel)" unfolding rel_alt_def by auto
-    lemma [param]: "(g, g) \<in> Id_on (Domain rel) \<rightarrow> Id_on (Range rel)" unfolding rel_inv_def by auto
-    lemma [param]: "(id, f) \<in> rel \<rightarrow> Id_on (Domain rel)" unfolding rel_alt_def by (auto simp: in_br_conv)
-    lemma [param]: "(f, id) \<in> Id_on (Range rel) \<rightarrow> rel" unfolding rel_alt_def by (auto simp: in_br_conv)
-    lemma [param]: "(id, g) \<in> Id_on (Domain rel) \<rightarrow> rel" unfolding rel_inv_def by (auto simp: in_br_conv)
-    lemma [param]: "(g, id) \<in> rel \<rightarrow> Id_on (Range rel)" unfolding rel_inv_def by (auto simp: in_br_conv)
-
-    lemma f_refine: "(to_nbaei_impl seq bhc hms Ai, nbae_image f (nba_nbae A)) \<in>
-      \<langle>Id, nat_rel\<rangle> nbaei_nbae_rel" using f'_refine unfolding f_def by this
-
-    lemma nba_f_refine: "(nbae_nba (nbae_image f (nba_nbae A)), A) \<in> \<langle>Id_on (alphabet A), rel\<rangle> nba_rel"
-    proof -
-      have "(nbae_nba (nbae_image f (nba_nbae A)), nbae_nba (nbae_image id (nba_nbae A))) \<in>
-        \<langle>Id_on (alphabet A), rel\<rangle> nba_rel" using nba_rel_eq by parametricity auto
-      also have "nbae_nba (nbae_image id (nba_nbae A)) = (nbae_nba \<circ> nba_nbae) A" by simp
-      also have "(\<dots>, id A) \<in> \<langle>Id_on (alphabet A), Id_on (nodes A)\<rangle> nba_rel" by parametricity
-      finally show ?thesis by simp
-    qed
-    lemma to_nbaei_impl_refine':
-      "(to_nbaei_impl seq bhc hms Ai, to_nbaei A) \<in> \<langle>Id_on (alphabet A), rel\<rangle> nbaei_nba_rel"
-    proof -
-      have "(nbae_nba (nbaei_nbae (to_nbaei_impl seq bhc hms Ai)), nbae_nba (id (nbae_image f (nba_nbae A)))) \<in>
-        \<langle>Id, nat_rel\<rangle> nba_rel" using f_refine by parametricity auto
-      also have "(nbae_nba (id (nbae_image f (nba_nbae A))), A) \<in>
-        \<langle>Id_on (alphabet A), rel\<rangle> nba_rel" using nba_f_refine by simp
-      finally show ?thesis unfolding nbaei_nba_rel_def to_nbaei_def by simp
-    qed
-
-  end
 
   context
   begin
@@ -255,12 +237,11 @@ begin
       assumes "SIDE_GEN_ALGO (is_bounded_hashcode S seq bhc)"
       assumes "SIDE_GEN_ALGO (is_valid_def_hm_size TYPE('statei) hms)"
       assumes "GEN_OP seq HOL.eq (S \<rightarrow> S \<rightarrow> bool_rel)"
-      assumes "(Ai, A) \<in> \<langle>Id, S\<rangle> nbai_nba_rel"
-      shows "(to_nbaei_impl seq bhc hms Ai,
-        (OP to_nbaei ::: \<langle>Id, S\<rangle> nbai_nba_rel \<rightarrow>
-        \<langle>Id_on (alphabet A), rel Ai A seq bhc hms\<rangle> nbaei_nba_rel) $ A) \<in>
-        \<langle>Id_on (alphabet A), rel Ai A seq bhc hms\<rangle> nbaei_nba_rel"
-      using to_nbaei_impl_refine' assms unfolding autoref_tag_defs by this
+      assumes "(Ai, A) \<in> \<langle>L, S\<rangle> nbai_nba_rel"
+      shows "(RETURN (to_nbaei_impl seq bhc hms Ai),
+        (OP op_translate ::: \<langle>L, S\<rangle> nbai_nba_rel \<rightarrow> \<langle>\<langle>L, nat_rel\<rangle> nbaei_nbae_rel\<rangle> nres_rel) $ A) \<in>
+        \<langle>\<langle>L, nat_rel\<rangle> nbaei_nbae_rel\<rangle> nres_rel"
+      using to_nbaei_impl_refine'' assms unfolding autoref_tag_defs by this
 
   end
 

@@ -16,7 +16,7 @@ each node with subtrees $l$ and $r$, $size(r) \le size(l) \le
 size(r)+1$), to implement flexible arrays. Paulson \cite{Paulson}
 (based on code supplied by Okasaki)
 implemented priority queues via Braun trees. This theory verifies
-Paulsons's implementation (with small simplifications), including the logarithmic bounds.\<close>
+Paulsons's implementation, with small simplifications.\<close>
 
 text \<open>Direct proof of logarithmic height. Also follows from the fact that Braun
 trees are balanced (proved in the base theory).\<close>
@@ -84,13 +84,12 @@ lemma del_left_mset_plus:
 
 lemma del_left_mset:
   "del_left t = (x,t') \<Longrightarrow> t \<noteq> Leaf
-  \<Longrightarrow> mset_tree t' = mset_tree t - {#x#}"
-  by (auto dest: del_left_mset_plus)
+  \<Longrightarrow> x \<in># mset_tree t \<and> mset_tree t' = mset_tree t - {#x#}"
+by (simp add: del_left_mset_plus)
 
 lemma del_left_set:
   "del_left t = (x,t') \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> set_tree t = {x} \<union> set_tree t'"
-  by (induction t arbitrary: x t' rule: del_left.induct;
-    fastforce split: prod.splits)
+by(simp add: del_left_mset_plus flip: set_mset_tree)
 
 lemma del_left_heap:
   "del_left t = (x,t') \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> heap t \<Longrightarrow> heap t'"
@@ -205,7 +204,7 @@ and mset = mset_tree
 proof(standard, goal_cases)
   case 1 show ?case by simp
 next
-  case (2 q) show ?case by (cases q) auto
+  case 2 show ?case by simp
 next
   case 3 show ?case by(simp add: mset_insert)
 next

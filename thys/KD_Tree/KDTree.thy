@@ -113,7 +113,7 @@ lemma invar_set:
 
 subsection "Lemmas adapted from \<open>HOL-Library.Tree\<close> to \<open>k\<close>-d Tree"
 
-lemma size_ge0[simp]: 
+lemma size_ge_0[simp]: 
   "0 < size_kdt kdt"
   by (induction kdt) auto
 
@@ -121,7 +121,7 @@ lemma eq_size_1[simp]:
   "size_kdt kdt = 1 \<longleftrightarrow> (\<exists>p. kdt = Leaf p)"
   apply (induction kdt)
   apply (auto)
-  using size_ge0 nat_less_le apply blast+
+  using size_ge_0 nat_less_le apply blast+
   done
 
 lemma eq_1_size[simp]:
@@ -369,7 +369,7 @@ next
   hence "size_kdt kdt < 2 ^ (min_height kdt + 1)"
     by (metis * size_height_if_incomplete)
   hence "log 2 (size_kdt kdt) < min_height kdt + 1"
-    using log2_of_power_less size_ge0 by blast
+    using log2_of_power_less size_ge_0 by blast
   thus ?thesis using min_height_size_log[of kdt] by linarith
 qed
 
@@ -388,7 +388,7 @@ next
     using assms min_height_le_height[of kdt]
     by(auto simp add: balanced_def complete_iff_height)
   hence "size_kdt kdt \<le> 2 ^ (min_height kdt + 1)" by (metis size_height)
-  from  log2_of_power_le[OF this size_ge0] min_height_size_log_if_incomplete[OF *] **
+  from  log2_of_power_le[OF this size_ge_0] min_height_size_log_if_incomplete[OF *] **
   show ?thesis by linarith
 qed
 

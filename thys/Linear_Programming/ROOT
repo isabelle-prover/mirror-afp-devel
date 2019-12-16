@@ -1,9 +1,8 @@
 chapter AFP
 
-session Linear_Programming (AFP) = HOL +
+session Linear_Programming (AFP) = Jordan_Normal_Form +
   options [timeout = 600]
 sessions
-    "Jordan_Normal_Form"
     Farkas
     Linear_Inequalities
   theories

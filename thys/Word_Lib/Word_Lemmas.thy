@@ -20,53 +20,6 @@ begin
 
 text \<open>Set up quickcheck to support words\<close>
 
-quickcheck_generator word
-  constructors:
-    "zero_class.zero :: ('a::len) word",
-    "numeral :: num \<Rightarrow> ('a::len) word",
-    "uminus :: ('a::len) word \<Rightarrow> ('a::len) word"
-
-instantiation Enum.finite_1 :: len
-begin
-  definition "len_of_finite_1 (x :: Enum.finite_1 itself) \<equiv> (1 :: nat)"
-  instance
-    by (standard, auto simp: len_of_finite_1_def)
-end
-
-instantiation Enum.finite_2 :: len
-begin
-  definition "len_of_finite_2 (x :: Enum.finite_2 itself) \<equiv> (2 :: nat)"
-  instance
-    by (standard, auto simp: len_of_finite_2_def)
-end
-
-instantiation Enum.finite_3 :: len
-begin
-  definition "len_of_finite_3 (x :: Enum.finite_3 itself) \<equiv> (4 :: nat)"
-  instance
-    by (standard, auto simp: len_of_finite_3_def)
-end
-
-(* Provide wf and less_induct for word.
-   wf may be more useful in loop proofs, less_induct in recursion proofs. *)
-lemma word_less_wf: "wf {(a, b). a < (b :: ('a::len) word)}"
-  apply (rule wf_subset)
-  apply (rule wf_measure)
-  apply safe
-  apply (subst in_measure)
-  apply (erule unat_mono)
-  done
-
-lemma word_less_induct:
-  "\<lbrakk> \<And>x::('a::len) word. (\<And>y. y < x \<Longrightarrow> P y) \<Longrightarrow> P x \<rbrakk> \<Longrightarrow> P a"
-  using word_less_wf  by induct blast
-
-instantiation word :: (len) wellorder
-begin
-instance by (intro_classes) (metis word_less_induct)
-end
-
-
 lemma word_plus_mono_left:
   fixes x :: "'a :: len word"
   shows "\<lbrakk>y \<le> z; x \<le> x + z\<rbrakk> \<Longrightarrow> y + x \<le> z + x"
@@ -635,7 +588,7 @@ lemma word_add_le_dest:
   by (auto simp: word_le_nat_alt iffD1 [OF unat_add_lem] elim: add_le_mono1)
 
 lemma mask_shift:
-  "(x && ~~ mask y) >> y = x >> y"
+  "(x && ~~ (mask y)) >> y = x >> y"
   apply (rule word_eqI)
   apply (simp add: nth_shiftr word_size)
   apply safe
@@ -1722,7 +1675,7 @@ lemma shiftr_eq_0:
   done
 
 lemma shiftr_not_mask_0:
-  "n+m \<ge> LENGTH('a :: len) \<Longrightarrow> ((w::'a::len word) >> n) && ~~ mask m = 0"
+  "n+m \<ge> LENGTH('a :: len) \<Longrightarrow> ((w::'a::len word) >> n) && ~~ (mask m) = 0"
   apply (simp add: and_not_mask shiftr_less_t2n shiftr_shiftr)
   apply (subgoal_tac "w >> n + m = 0", simp)
   apply (simp add: le_mask_iff[symmetric] mask_def le_def)
@@ -1903,7 +1856,7 @@ lemma word_minus_one_le:
   done
 
 lemma mask_out_sub_mask:
-  "(x && ~~ mask n) = x - (x && mask n)"
+  "(x && ~~ (mask n)) = x - (x && (mask n))"
   by (simp add: field_simps word_plus_and_or_coroll2)
 
 lemma is_aligned_addD1:
@@ -2006,7 +1959,7 @@ lemma le_mask_shiftl_le_mask: "s = m + n \<Longrightarrow> x \<le> mask n \<Long
   by (simp add: le_mask_iff shiftl_shiftr3)
 
 lemma and_not_mask_twice:
-  "(w && ~~ mask n) && ~~ mask m = w && ~~ mask (max m n)"
+  "(w && ~~ (mask n)) && ~~ (mask m) = w && ~~ (mask (max m n))"
   apply (simp add: and_not_mask)
   apply (case_tac "n<m";
          simp add: shiftl_shiftr2 shiftl_shiftr1 not_less max_def shiftr_shiftr shiftl_shiftl)
@@ -2664,22 +2617,22 @@ lemma of_nat_mono_maybe_le:
   done
 
 lemma neg_mask_bang:
-  "(~~ mask n :: 'a :: len word) !! m = (n \<le> m \<and> m < LENGTH('a))"
+  "(~~ (mask n :: 'a :: len word)) !! m = (n \<le> m \<and> m < LENGTH('a))"
   apply (cases "m < LENGTH('a)")
    apply (simp add: word_ops_nth_size word_size not_less)
   apply (simp add: not_less bang_big  word_size)
   done
 
 lemma mask_AND_NOT_mask:
-  "(w && ~~ mask n) && mask n = 0"
+  "(w && ~~ (mask n)) && mask n = 0"
 by (rule word_eqI) (clarsimp simp add: word_size neg_mask_bang)
 
 lemma AND_NOT_mask_plus_AND_mask_eq:
-  "(w && ~~ mask n) + (w && mask n) = w"
+  "(w && ~~ (mask n)) + (w && mask n) = w"
 apply (rule word_eqI)
 apply (rename_tac m)
 apply (simp add: word_size)
-apply (cut_tac word_plus_and_or_coroll[of "w && ~~ mask n" "w && mask n"])
+apply (cut_tac word_plus_and_or_coroll[of "w && ~~ (mask n)" "w && mask n"])
  apply (simp add: word_ao_dist2[symmetric] word_size neg_mask_bang)
 apply (rule word_eqI)
 apply (rename_tac m)
@@ -2689,7 +2642,7 @@ done
 lemma mask_eqI:
   fixes x :: "'a :: len word"
   assumes m1: "x && mask n = y && mask n"
-  and     m2: "x && ~~ mask n = y && ~~ mask n"
+  and     m2: "x && ~~ (mask n) = y && ~~ (mask n)"
   shows "x = y"
 proof (subst bang_eq, rule allI)
   fix m
@@ -2705,9 +2658,9 @@ proof (subst bang_eq, rule allI)
     finally show ?thesis .
   next
     case False
-    then have "x !! m = ((x && ~~ mask n) !! m)"
+    then have "x !! m = ((x && ~~ (mask n)) !! m)"
       by (simp add: neg_mask_bang bang_conj_lt)
-    also have "\<dots> = ((y && ~~ mask n) !! m)" using m2 by simp
+    also have "\<dots> = ((y && ~~ (mask n)) !! m)" using m2 by simp
     also have "\<dots> = y !! m" using False
       by (simp add: neg_mask_bang bang_conj_lt)
     finally show ?thesis .
@@ -2810,22 +2763,22 @@ lemma word_shift_zero:
   done
 
 lemma neg_mask_mono_le:
-  "(x :: 'a :: len word) \<le> y \<Longrightarrow> x && ~~ mask n \<le> y && ~~ mask n"
+  "(x :: 'a :: len word) \<le> y \<Longrightarrow> x && ~~ (mask n) \<le> y && ~~ (mask n)"
 proof (rule ccontr, simp add: linorder_not_le, cases "n < LENGTH('a)")
   case False
-  show "y && ~~ mask n < x && ~~ mask n \<Longrightarrow> False"
+  show "y && ~~ (mask n) < x && ~~ (mask n) \<Longrightarrow> False"
     using False
     by (simp add: mask_def linorder_not_less
                   power_overflow)
 next
   case True
-  assume a: "x \<le> y" and b: "y && ~~ mask n < x && ~~ mask n"
+  assume a: "x \<le> y" and b: "y && ~~ (mask n) < x && ~~ (mask n)"
   have word_bits:
     "n < LENGTH('a)"
     using True by assumption
-  have "y \<le> (y && ~~ mask n) + (y && mask n)"
+  have "y \<le> (y && ~~ (mask n)) + (y && mask n)"
     by (simp add: word_plus_and_or_coroll2 add.commute)
-  also have "\<dots> \<le> (y && ~~ mask n) + 2 ^ n"
+  also have "\<dots> \<le> (y && ~~ (mask n)) + 2 ^ n"
     apply (rule word_plus_mono_right)
      apply (rule order_less_imp_le, rule and_mask_less_size)
      apply (simp add: word_size word_bits)
@@ -2834,7 +2787,7 @@ next
     apply (rule not_greatest_aligned, rule b)
      apply (simp_all add: is_aligned_neg_mask)
     done
-  also have "\<dots> \<le> x && ~~ mask n"
+  also have "\<dots> \<le> x && ~~ (mask n)"
     using b
     apply -
     apply (subst add.commute, rule le_plus)
@@ -3848,12 +3801,12 @@ lemma aligned_shift':
   done
 
 lemma neg_mask_add_mask:
-  "((x:: 'a :: len word) && ~~ mask n) + (2 ^ n - 1) = x || mask n"
+  "((x:: 'a :: len word) && ~~ (mask n)) + (2 ^ n - 1) = x || mask n"
   apply (simp add:mask_2pm1[symmetric])
   apply (rule word_eqI[rule_format])
   apply (rule iffI)
     apply (clarsimp simp:word_size not_less)
-    apply (cut_tac w = "((x && ~~ mask n) + mask n)" and
+    apply (cut_tac w = "((x && ~~ (mask n)) + mask n)" and
       m = n and n = "na - n" in nth_shiftr[symmetric])
     apply clarsimp
     apply (subst (asm) aligned_shift')
@@ -3863,7 +3816,7 @@ lemma neg_mask_add_mask:
     apply (subst word_plus_and_or_coroll)
     apply (rule iffD1[OF is_aligned_mask])
     apply (simp add:is_aligned_neg_mask word_size not_less)+
-  apply (cut_tac w = "((x && ~~ mask n) + mask n)" and
+  apply (cut_tac w = "((x && ~~ (mask n)) + mask n)" and
       m = n and n = "na - n" in nth_shiftr[symmetric])
   apply clarsimp
   apply (subst (asm) aligned_shift')
@@ -3871,12 +3824,12 @@ lemma neg_mask_add_mask:
 done
 
 lemma subtract_mask:
-  "p - (p && mask n) = (p && ~~ mask n)"
-  "p - (p && ~~ mask n) = (p && mask n)"
+  "p - (p && mask n) = (p && ~~ (mask n))"
+  "p - (p && ~~ (mask n)) = (p && mask n)"
   by (simp add: field_simps word_plus_and_or_coroll2)+
 
-lemma and_neg_mask_plus_mask_mono: "(p && ~~ mask n) + mask n \<ge> p"
-  apply (rule word_le_minus_cancel[where x = "p && ~~ mask n"])
+lemma and_neg_mask_plus_mask_mono: "(p && ~~ (mask n)) + mask n \<ge> p"
+  apply (rule word_le_minus_cancel[where x = "p && ~~ (mask n)"])
    apply (clarsimp simp: subtract_mask)
    using word_and_le1[where a = "mask n" and y = p]
    apply (clarsimp simp: mask_def word_le_less_eq)
@@ -3885,7 +3838,7 @@ lemma and_neg_mask_plus_mask_mono: "(p && ~~ mask n) + mask n \<ge> p"
   done
 
 lemma word_neg_and_le:
-  "ptr \<le> (ptr && ~~ mask n) + (2 ^ n - 1)"
+  "ptr \<le> (ptr && ~~ (mask n)) + (2 ^ n - 1)"
   by (simp add: and_neg_mask_plus_mask_mono mask_2pm1[symmetric])
 
 lemma aligned_less_plus_1:
@@ -3926,7 +3879,7 @@ lemma aligned_add_offset_less:
 
 lemma is_aligned_add_helper:
   "\<lbrakk> is_aligned p n; d < 2 ^ n \<rbrakk>
-     \<Longrightarrow> (p + d && mask n = d) \<and> (p + d && (~~ mask n) = p)"
+     \<Longrightarrow> (p + d && mask n = d) \<and> (p + d && (~~ (mask n)) = p)"
   apply (subst(asm) is_aligned_mask)
   apply (drule less_mask_eq)
   apply (rule context_conjI)
@@ -3945,7 +3898,7 @@ lemma is_aligned_add_helper:
 
 lemma is_aligned_sub_helper:
   "\<lbrakk> is_aligned (p - d) n; d < 2 ^ n \<rbrakk>
-     \<Longrightarrow> (p && mask n = d) \<and> (p && (~~ mask n) = p - d)"
+     \<Longrightarrow> (p && mask n = d) \<and> (p && (~~ (mask n)) = p - d)"
   by (drule(1) is_aligned_add_helper, simp)
 
 lemma mask_twice:
@@ -3969,8 +3922,8 @@ lemma and_mask_plus:
      apply simp
     apply simp
    apply simp
-  apply (subgoal_tac "(ptr + a && mask n) && ~~ mask m
-     = (ptr + a && ~~ mask m ) && mask n")
+  apply (subgoal_tac "(ptr + a && mask n) && ~~ (mask m)
+     = (ptr + a && ~~ (mask m) ) && mask n")
    apply (simp add:is_aligned_add_helper)
    apply (subst is_aligned_add_helper[THEN conjunct2])
      apply (simp add:is_aligned_after_mask)
@@ -3989,7 +3942,7 @@ lemma le_step_down_word_2:
       clarsimp,
       simp add: minus_one_helper3)
 
-lemma NOT_mask_AND_mask[simp]: "(w && mask n) && ~~ mask n = 0"
+lemma NOT_mask_AND_mask[simp]: "(w && mask n) && ~~ (mask n) = 0"
   apply (clarsimp simp:mask_def)
   by (metis word_bool_alg.conj_cancel_right word_bool_alg.conj_zero_right word_bw_comms(1) word_bw_lcs(1))
 
@@ -4065,13 +4018,13 @@ lemma le_mask_imp_and_mask:
   by (metis and_mask_eq_iff_le_mask)
 
 lemma or_not_mask_nop:
-  "((x::'a::len word) || ~~ mask n) && mask n = x && mask n"
+  "((x::'a::len word) || ~~ (mask n)) && mask n = x && mask n"
   by (metis word_and_not word_ao_dist2 word_bw_comms(1) word_log_esimps(3))
 
 lemma mask_subsume:
-  "\<lbrakk>n \<le> m\<rbrakk> \<Longrightarrow> ((x::'a::len word) || y && mask n) && ~~ mask m = x && ~~ mask m"
+  "\<lbrakk>n \<le> m\<rbrakk> \<Longrightarrow> ((x::'a::len word) || y && mask n) && ~~ (mask m) = x && ~~ (mask m)"
   apply (subst word_ao_dist)
-  apply (subgoal_tac "(y && mask n) && ~~ mask m = 0")
+  apply (subgoal_tac "(y && mask n) && ~~ (mask m) = 0")
    apply simp
   by (metis (no_types, hide_lams) is_aligned_mask is_aligned_weaken word_and_not
             word_bool_alg.conj_zero_right word_bw_comms(1) word_bw_lcs(1))
@@ -4286,7 +4239,7 @@ lemma cast_chunk_scast_assemble_id:
   done
 
 lemma mask_or_not_mask:
-  "x && mask n || x && ~~ mask n = x"
+  "x && mask n || x && ~~ (mask n) = x"
   apply (subst word_oa_dist, simp)
   apply (subst word_oa_dist2, simp)
   done
@@ -4299,7 +4252,7 @@ lemma word_gr0_conv_Suc: "(m::'a::len word) > 0 \<Longrightarrow> \<exists>n. m 
   by (metis add.commute add_minus_cancel)
 
 lemma neg_mask_add_aligned:
-  "\<lbrakk> is_aligned p n; q < 2 ^ n \<rbrakk> \<Longrightarrow> (p + q) && ~~ mask n = p && ~~ mask n"
+  "\<lbrakk> is_aligned p n; q < 2 ^ n \<rbrakk> \<Longrightarrow> (p + q) && ~~ (mask n) = p && ~~ (mask n)"
   by (metis is_aligned_add_helper is_aligned_neg_mask_eq)
 
 lemma word_sless_sint_le:"x <s y \<Longrightarrow> sint x \<le> sint y - 1"
@@ -4638,7 +4591,7 @@ lemma minus_one_word:
   by simp
 
 lemma mask_exceed:
-  "n \<ge> LENGTH('a) \<Longrightarrow> (x::'a::len word) && ~~ mask n = 0"
+  "n \<ge> LENGTH('a) \<Longrightarrow> (x::'a::len word) && ~~ (mask n) = 0"
   by (simp add: and_not_mask shiftr_eq_0)
 
 lemma two_power_strict_part_mono:
@@ -4838,7 +4791,7 @@ lemma alignUp_le[simp]:
   unfolding alignUp_def by (rule word_and_le2)
 
 lemma complement_mask:
-  "complement (2 ^ n - 1) = ~~ mask n"
+  "complement (2 ^ n - 1) = ~~ (mask n)"
   unfolding complement_def mask_def by simp
 
 lemma alignUp_idem:
@@ -5120,12 +5073,12 @@ proof
 qed
 
 lemma alignUp_def2:
-  "alignUp a sz = a + 2 ^ sz - 1 && ~~ mask sz"
+  "alignUp a sz = a + 2 ^ sz - 1 && ~~ (mask sz)"
   unfolding alignUp_def[unfolded complement_def]
   by (simp add:mask_def[symmetric,unfolded shiftl_t2n,simplified])
 
 lemma mask_out_first_mask_some:
-  "\<lbrakk> x && ~~ mask n = y; n \<le> m \<rbrakk> \<Longrightarrow> x && ~~ mask m = y && ~~ mask m"
+  "\<lbrakk> x && ~~ (mask n) = y; n \<le> m \<rbrakk> \<Longrightarrow> x && ~~ (mask m) = y && ~~ (mask m)"
   apply (rule word_eqI, rename_tac n')
   apply (drule_tac x=n' in word_eqD)
   apply (auto simp: word_ops_nth_size word_size)
@@ -5148,14 +5101,14 @@ lemma gap_between_aligned:
 
 lemma mask_out_add_aligned:
   assumes al: "is_aligned p n"
-  shows "p + (q && ~~ mask n) = (p + q) && ~~ mask n"
+  shows "p + (q && ~~ (mask n)) = (p + q) && ~~ (mask n)"
   using mask_add_aligned [OF al]
   by (simp add: mask_out_sub_mask)
 
 lemma alignUp_def3:
-  "alignUp a sz = 2^ sz + (a - 1 && ~~ mask sz)" (is "?lhs = ?rhs")
+  "alignUp a sz = 2^ sz + (a - 1 && ~~ (mask sz))" (is "?lhs = ?rhs")
   apply (simp add:alignUp_def2)
-  apply (subgoal_tac "2 ^ sz + a - 1 && ~~ mask sz = ?rhs")
+  apply (subgoal_tac "2 ^ sz + a - 1 && ~~ (mask sz) = ?rhs")
    apply (clarsimp simp:field_simps)
   apply (subst mask_out_add_aligned)
    apply (rule is_aligned_triv)
@@ -5169,7 +5122,7 @@ lemma  alignUp_plus:
   done
 
 lemma mask_lower_twice:
-  "n \<le> m \<Longrightarrow> (x && ~~ mask n) && ~~ mask m = x && ~~ mask m"
+  "n \<le> m \<Longrightarrow> (x && ~~ (mask n)) && ~~ (mask m) = x && ~~ (mask m)"
   apply (rule word_eqI)
   apply (simp add: word_size word_ops_nth_size)
   apply safe
@@ -5177,11 +5130,11 @@ lemma mask_lower_twice:
   done
 
 lemma mask_lower_twice2:
-  "(a && ~~ mask n) && ~~ mask m = a && ~~ mask (max n m)"
+  "(a && ~~ (mask n)) && ~~ (mask m) = a && ~~ (mask (max n m))"
   by (rule word_eqI, simp add: neg_mask_bang conj_comms)
 
 lemma ucast_and_neg_mask:
-  "ucast (x && ~~ mask n) = ucast x && ~~ mask n"
+  "ucast (x && ~~ (mask n)) = ucast x && ~~ (mask n)"
   apply (rule word_eqI)
   apply (simp add: word_size neg_mask_bang nth_ucast)
   apply (auto simp add: test_bit_bl word_size)
@@ -5215,7 +5168,7 @@ lemma alignUp_distance:
     apply (simp add:mask_def)
    apply simp
   apply (clarsimp simp:alignUp_def3)
-  apply (subgoal_tac "2 ^ sz - (q - (q - 1 && ~~ mask sz)) \<le> 2 ^ sz - 1")
+  apply (subgoal_tac "2 ^ sz - (q - (q - 1 && ~~ (mask sz))) \<le> 2 ^ sz - 1")
    apply (simp add:field_simps mask_def)
   apply (rule word_sub_mono)
      apply simp
@@ -5229,7 +5182,7 @@ lemma alignUp_distance:
      apply simp
     apply (fastforce)
    apply (simp add: word_sub_le_iff)
-   apply (subgoal_tac "q - 1 && ~~ mask sz = (q - 1) - (q - 1 && mask sz)")
+   apply (subgoal_tac "q - 1 && ~~ (mask sz) = (q - 1) - (q - 1 && mask sz)")
     apply simp
     apply (rule order_trans)
      apply (rule word_add_le_mono2)
@@ -5246,7 +5199,7 @@ lemma alignUp_distance:
   done
 
 lemma is_aligned_diff_neg_mask:
-  "is_aligned p sz \<Longrightarrow> (p - q && ~~ mask sz) = (p - ((alignUp q sz) && ~~ mask sz))"
+  "is_aligned p sz \<Longrightarrow> (p - q && ~~ (mask sz)) = (p - ((alignUp q sz) && ~~ (mask sz)))"
   apply (clarsimp simp only:word_and_le2 diff_conv_add_uminus)
   apply (subst mask_out_add_aligned[symmetric])
    apply simp+
@@ -5255,7 +5208,7 @@ lemma is_aligned_diff_neg_mask:
   apply (subst  mask_out_add_aligned)
    apply (simp add:is_aligned_neg_mask)
   apply simp
-  apply (subst and_not_mask[where w = "(alignUp q sz && ~~ mask sz) - q "])
+  apply (subst and_not_mask[where w = "(alignUp q sz && ~~ (mask sz)) - q "])
   apply (subst le_mask_iff[THEN iffD1])
    apply (simp add:is_aligned_neg_mask_eq)
    apply (rule alignUp_distance)
@@ -5338,7 +5291,7 @@ lemma ucast_le_ucast_eq:
 (* High bits w.r.t. mask operations. *)
 
 lemma and_neg_mask_eq_iff_not_mask_le:
-  "w && ~~ mask n = ~~ mask n \<longleftrightarrow> ~~ mask n \<le> w"
+  "w && ~~ (mask n) = ~~ (mask n) \<longleftrightarrow> ~~ (mask n) \<le> w"
   by (metis (full_types) dual_order.antisym neg_mask_mono_le word_and_le1 word_and_le2
                          word_bool_alg.conj_absorb)
 
@@ -5347,7 +5300,7 @@ lemma le_mask_high_bits:
   by (auto simp: word_size and_mask_eq_iff_le_mask[symmetric] word_eq_iff)
 
 lemma neg_mask_le_high_bits:
-  shows "~~ mask n \<le> w \<longleftrightarrow> (\<forall> i \<in> {n ..< size w}. w !! i)"
+  shows "~~ (mask n) \<le> w \<longleftrightarrow> (\<forall> i \<in> {n ..< size w}. w !! i)"
   by (auto simp: word_size and_neg_mask_eq_iff_not_mask_le[symmetric]
                  word_eq_iff neg_mask_bang)
 
@@ -5506,7 +5459,7 @@ lemmas sign_extend_bitwise_cases' = sign_extend_bitwise_cases[simplified word_si
 (* Often, it is easier to reason about an operation which does not overwrite
    the bit which determines which mask operation to apply. *)
 lemma sign_extend_def':
-  "sign_extend n w = (if w !! n then w || ~~ mask (Suc n) else w && mask (Suc n))"
+  "sign_extend n w = (if w !! n then w || ~~ (mask (Suc n)) else w && mask (Suc n))"
   by (rule word_eqI[rule_format])
      (auto simp: sign_extend_bitwise_if' word_size word_ops_nth_size dest: less_antisym)
 
@@ -5568,7 +5521,7 @@ next
 qed
 
 lemma sign_extended_neq_mask:
-  "\<lbrakk>sign_extended n ptr; m \<le> n\<rbrakk> \<Longrightarrow> sign_extended n (ptr && ~~ mask m)"
+  "\<lbrakk>sign_extended n ptr; m \<le> n\<rbrakk> \<Longrightarrow> sign_extended n (ptr && ~~ (mask m))"
   by (fastforce simp: sign_extended_def word_size neg_mask_bang)
 
 (* Uints *)
@@ -5649,11 +5602,11 @@ lemma bitmagic_zeroLast_leq_or1Last:
 lemma zero_base_lsb_imp_set_eq_as_bit_operation:
   fixes base ::"'a::len word"
   assumes valid_prefix: "mask (LENGTH('a) - len) AND base = 0"
-  shows "(base = NOT mask (LENGTH('a) - len) AND a) \<longleftrightarrow>
+  shows "(base = NOT (mask (LENGTH('a) - len)) AND a) \<longleftrightarrow>
          (a \<in> {base .. base OR mask (LENGTH('a) - len)})"
 proof
   have helper3: "x OR y = x OR y AND NOT x" for x y ::"'a::len word" by (simp add: word_oa_dist2)
-  from assms show "base = NOT mask (LENGTH('a) - len) AND a \<Longrightarrow>
+  from assms show "base = NOT (mask (LENGTH('a) - len)) AND a \<Longrightarrow>
                     a \<in> {base..base OR mask (LENGTH('a) - len)}"
     apply(simp add: word_and_le1)
     apply(metis helper3 le_word_or2 word_bw_comms(1) word_bw_comms(2))
@@ -5661,25 +5614,25 @@ proof
 next
   assume "a \<in> {base..base OR mask (LENGTH('a) - len)}"
   hence a: "base \<le> a \<and> a \<le> base OR mask (LENGTH('a) - len)" by simp
-  show "base = NOT mask (LENGTH('a) - len) AND a"
+  show "base = NOT (mask (LENGTH('a) - len)) AND a"
   proof -
-    have f2: "\<forall>x\<^sub>0. base AND NOT mask x\<^sub>0 \<le> a AND NOT mask x\<^sub>0"
+    have f2: "\<forall>x\<^sub>0. base AND NOT (mask x\<^sub>0) \<le> a AND NOT (mask x\<^sub>0)"
       using a neg_mask_mono_le by blast
-    have f3: "\<forall>x\<^sub>0. a AND NOT mask x\<^sub>0 \<le> (base OR mask (LENGTH('a) - len)) AND NOT mask x\<^sub>0"
+    have f3: "\<forall>x\<^sub>0. a AND NOT (mask x\<^sub>0) \<le> (base OR mask (LENGTH('a) - len)) AND NOT (mask x\<^sub>0)"
       using a neg_mask_mono_le by blast
-    have f4: "base = base AND NOT mask (LENGTH('a) - len)"
+    have f4: "base = base AND NOT (mask (LENGTH('a) - len))"
       using valid_prefix by (metis mask_eq_0_eq_x word_bw_comms(1))
-    hence f5: "\<forall>x\<^sub>6. (base OR x\<^sub>6) AND NOT mask (LENGTH('a) - len) =
-                      base OR x\<^sub>6 AND NOT mask (LENGTH('a) - len)"
+    hence f5: "\<forall>x\<^sub>6. (base OR x\<^sub>6) AND NOT (mask (LENGTH('a) - len)) =
+                      base OR x\<^sub>6 AND NOT (mask (LENGTH('a) - len))"
       using word_ao_dist by (metis)
-    have f6: "\<forall>x\<^sub>2 x\<^sub>3. a AND NOT mask x\<^sub>2 \<le> x\<^sub>3 \<or>
-                      \<not> (base OR mask (LENGTH('a) - len)) AND NOT mask x\<^sub>2 \<le> x\<^sub>3"
+    have f6: "\<forall>x\<^sub>2 x\<^sub>3. a AND NOT (mask x\<^sub>2) \<le> x\<^sub>3 \<or>
+                      \<not> (base OR mask (LENGTH('a) - len)) AND NOT (mask x\<^sub>2) \<le> x\<^sub>3"
       using f3 dual_order.trans by auto
-    have "base = (base OR mask (LENGTH('a) - len)) AND NOT mask (LENGTH('a) - len)"
+    have "base = (base OR mask (LENGTH('a) - len)) AND NOT (mask (LENGTH('a) - len))"
       using f5 by auto
-    hence "base = a AND NOT mask (LENGTH('a) - len)"
+    hence "base = a AND NOT (mask (LENGTH('a) - len))"
       using f2 f4 f6 by (metis eq_iff)
-    thus "base = NOT mask (LENGTH('a) - len) AND a"
+    thus "base = NOT (mask (LENGTH('a) - len)) AND a"
       by (metis word_bw_comms(1))
   qed
 qed

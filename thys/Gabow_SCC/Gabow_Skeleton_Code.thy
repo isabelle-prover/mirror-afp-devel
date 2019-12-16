@@ -96,24 +96,35 @@ consts i_node :: interface
 
 (* TODO: Move generic part of this locale to Digraph_impl *)
 locale fr_graph_impl_loc = fr_graph G
-  for mrel and G_impl and G :: "('v::hashable,'more) graph_rec_scheme"
+  for mrel and node_rel :: "('vi \<times> 'v) set" 
+    and node_eq_impl :: "'vi \<Rightarrow> 'vi \<Rightarrow> bool"
+    and node_hash_impl :: "nat \<Rightarrow> 'vi \<Rightarrow> nat"
+    and node_def_hash_size :: nat
+    and G_impl and G :: "('v,'more) graph_rec_scheme"
+     
   +
-  assumes G_refine: "(G_impl,G)\<in>\<langle>mrel,Id\<rangle>g_impl_rel_ext"
+  assumes G_refine: "(G_impl,G)\<in>\<langle>mrel,node_rel\<rangle>g_impl_rel_ext"
+      and node_eq_refine: "(node_eq_impl, (=)) \<in> node_rel \<rightarrow> node_rel \<rightarrow> bool_rel"
+      and node_hash: "is_bounded_hashcode node_rel node_eq_impl node_hash_impl"
+      and node_hash_def_size: "(is_valid_def_hm_size TYPE('vi) node_def_hash_size)"
 begin
-  abbreviation "node_rel \<equiv> Id :: ('v \<times> _) set"
+  (*abbreviation "node_rel \<equiv> Id :: ('v \<times> _) set"*)
   lemmas [autoref_rel_intf] = REL_INTFI[of node_rel i_node]
 
-  lemmas [autoref_rules] = G_refine
+  lemmas [autoref_rules] = G_refine node_eq_refine
 
-  lemma locale_this: "fr_graph_impl_loc mrel G_impl G"
+  lemmas [autoref_ga_rules] = node_hash node_hash_def_size
+  
+  
+  lemma locale_this: "fr_graph_impl_loc mrel node_rel node_eq_impl node_hash_impl node_def_hash_size G_impl G"
     by unfold_locales
 
-  abbreviation "oGSi_rel \<equiv> \<langle>node_rel,node_state_rel\<rangle>dflt_ahm_rel"
+  abbreviation "oGSi_rel \<equiv> \<langle>node_rel,node_state_rel\<rangle>(ahm_rel node_hash_impl)"
 
   abbreviation "GSi_rel \<equiv> 
     \<langle>node_rel\<rangle>as_rel 
     \<times>\<^sub>r \<langle>nat_rel\<rangle>as_rel 
-    \<times>\<^sub>r \<langle>node_rel,node_state_rel\<rangle>dflt_ahm_rel
+    \<times>\<^sub>r oGSi_rel
     \<times>\<^sub>r \<langle>nat_rel \<times>\<^sub>r \<langle>node_rel\<rangle>list_set_rel\<rangle>as_rel"
 
   lemmas [autoref_op_pat] = GS.S_def GS.B_def GS.I_def GS.P_def
@@ -121,6 +132,10 @@ begin
 end
 
 section \<open>Generating the Code\<close>
+
+
+thm autoref_ga_rules
+
 
 context fr_graph_impl_loc
 begin
@@ -200,6 +215,8 @@ begin
   
   end
 
+  find_theorems is_valid_def_hm_size
+  
   schematic_goal skeleton_code_aux:
     "(?c,skeleton_impl) \<in> \<langle>oGSi_rel\<rangle>nres_rel"
     unfolding skeleton_impl_def[abs_def] initial_impl_def GS_initial_impl_def
@@ -207,36 +224,42 @@ begin
       is_done_oimpl_def
     unfolding GS.is_on_stack_impl_def GS.is_done_impl_def
     using [[autoref_trace_failed_id]]
-
     apply (autoref (keep_goal,trace))
     done
+    
+    
+    
   concrete_definition (in -) skeleton_code 
+    for node_eq_impl G_impl
     uses fr_graph_impl_loc.skeleton_code_aux
+    
+  thm   skeleton_code.refine
+    
   lemmas [autoref_rules] = skeleton_code.refine[OF locale_this] 
   
 
-  schematic_goal pop_tr_aux: "RETURN ?c \<le> pop_code s"
+  schematic_goal pop_tr_aux: "RETURN ?c \<le> pop_code node_eq_impl node_hash_impl s"
     unfolding pop_code_def by refine_transfer
   concrete_definition (in -) pop_tr uses fr_graph_impl_loc.pop_tr_aux
   lemmas [refine_transfer] = pop_tr.refine[OF locale_this]
 
-  schematic_goal select_edge_tr_aux: "RETURN ?c \<le> select_edge_code s"
+  schematic_goal select_edge_tr_aux: "RETURN ?c \<le> select_edge_code node_eq_impl s"
     unfolding select_edge_code_def by refine_transfer
   concrete_definition (in -) select_edge_tr 
     uses fr_graph_impl_loc.select_edge_tr_aux
   lemmas [refine_transfer] = select_edge_tr.refine[OF locale_this]
 
-  schematic_goal idx_of_tr_aux: "RETURN ?c \<le> idx_of_code v s"
+  schematic_goal idx_of_tr_aux: "RETURN ?c \<le> idx_of_code node_eq_impl node_hash_impl v s"
     unfolding idx_of_code_def by refine_transfer
   concrete_definition (in -) idx_of_tr uses fr_graph_impl_loc.idx_of_tr_aux
   lemmas [refine_transfer] = idx_of_tr.refine[OF locale_this]
 
-  schematic_goal collapse_tr_aux: "RETURN ?c \<le> collapse_code v s"
+  schematic_goal collapse_tr_aux: "RETURN ?c \<le> collapse_code node_eq_impl node_hash_impl v s"
     unfolding collapse_code_def by refine_transfer
   concrete_definition (in -) collapse_tr uses fr_graph_impl_loc.collapse_tr_aux
   lemmas [refine_transfer] = collapse_tr.refine[OF locale_this]
 
-  schematic_goal skeleton_tr_aux: "RETURN ?c \<le> skeleton_code g"
+  schematic_goal skeleton_tr_aux: "RETURN ?c \<le> skeleton_code node_hash_impl node_def_hash_size node_eq_impl g"
     unfolding skeleton_code_def by refine_transfer
   concrete_definition (in -) skeleton_tr uses fr_graph_impl_loc.skeleton_tr_aux
   lemmas [refine_transfer] = skeleton_tr.refine[OF locale_this]

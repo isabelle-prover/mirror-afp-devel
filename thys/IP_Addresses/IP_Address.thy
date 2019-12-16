@@ -101,7 +101,7 @@ subsection\<open>Sets of IP Addresses\<close>
   lemma ipset_from_cidr_alt2:
     fixes base ::"'i::len word"
     shows "ipset_from_cidr base len =
-           ipset_from_netmask base (NOT mask (LENGTH('i) - len))"
+           ipset_from_netmask base (NOT (mask (LENGTH('i) - len)))"
     apply(simp add: ipset_from_cidr_def)
     using NOT_mask_shifted_lenword by(metis word_not_not)
 
@@ -115,13 +115,13 @@ subsection\<open>Sets of IP Addresses\<close>
       shows "ipset_from_cidr base l = {base .. base OR mask (LENGTH('i) - l)}"
   proof -
     have maskshift_eq_not_mask_generic:
-      "((mask l << LENGTH('i) - l) :: 'i::len word) = NOT mask (LENGTH('i) - l)"
+      "((mask l << LENGTH('i) - l) :: 'i::len word) = NOT (mask (LENGTH('i) - l))"
       using NOT_mask_shifted_lenword by (metis word_not_not)
-    have *: "base AND NOT mask (LENGTH('i) - l) = base"
+    have *: "base AND NOT (mask (LENGTH('i) - l)) = base"
       unfolding mask_eq_0_eq_x[symmetric] using assms word_bw_comms(1)[of base] by simp
-    hence **: "base AND NOT mask (LENGTH('i) - l) OR mask (LENGTH('i) - l) =
+    hence **: "base AND NOT (mask (LENGTH('i) - l)) OR mask (LENGTH('i) - l) =
                 base OR mask (LENGTH('i) - l)" by simp
-    have "ipset_from_netmask base (NOT mask (LENGTH('i) - l)) =
+    have "ipset_from_netmask base (NOT (mask (LENGTH('i) - l))) =
             {base .. base || mask (LENGTH('i) - l)}"
       by(simp add: ipset_from_netmask_def Let_def ** *)
     thus ?thesis by(simp add: ipset_from_cidr_def maskshift_eq_not_mask_generic)
@@ -142,10 +142,10 @@ subsection\<open>Sets of IP Addresses\<close>
 
   lemma ipset_from_netmask_base_mask_consume:
     fixes base :: "'i::len word"
-    shows "ipset_from_netmask (base AND NOT mask (LENGTH('i) - m))
-                              (NOT mask (LENGTH('i) - m))
+    shows "ipset_from_netmask (base AND NOT (mask (LENGTH('i) - m)))
+                              (NOT (mask (LENGTH('i) - m)))
             =
-             ipset_from_netmask base (NOT mask (LENGTH('i) - m))"
+             ipset_from_netmask base (NOT (mask (LENGTH('i) - m)))"
     unfolding ipset_from_netmask_def by(simp)
 
 
@@ -153,7 +153,7 @@ subsection\<open>Sets of IP Addresses\<close>
        All IP address which are equal on the first @{term "len - n"} bits\<close>
   definition ip_cidr_set :: "'i::len word \<Rightarrow> nat \<Rightarrow> 'i word set" where
     "ip_cidr_set i r \<equiv>
-      {j . i AND NOT mask (LENGTH('i) - r) = j AND NOT mask (LENGTH('i) - r)}"
+      {j . i AND NOT (mask (LENGTH('i) - r)) = j AND NOT (mask (LENGTH('i) - r))}"
 
   text\<open>The definitions are equal\<close>
   lemma ipset_from_cidr_eq_ip_cidr_set:
@@ -161,14 +161,14 @@ subsection\<open>Sets of IP Addresses\<close>
     shows "ipset_from_cidr base len = ip_cidr_set base len"
   proof -
     have maskshift_eq_not_mask_generic:
-      "((mask len << LENGTH('a) - len) :: 'a::len word) = NOT mask (LENGTH('a) - len)"
+      "((mask len << LENGTH('a) - len) :: 'a::len word) = NOT (mask (LENGTH('a) - len))"
       using NOT_mask_shifted_lenword by (metis word_not_not)
-    have 1: "mask (len - m) AND base AND NOT mask (len - m) = 0"
+    have 1: "mask (len - m) AND base AND NOT (mask (len - m)) = 0"
       for len m and base::"'i::len word"
       by(simp add: word_bw_lcs)
     have 2: "mask (LENGTH('i) - len) AND pfxm_p = 0 \<Longrightarrow>
-           (a \<in> ipset_from_netmask pfxm_p (NOT mask (LENGTH('i) - len))) \<longleftrightarrow>
-           (pfxm_p = NOT mask (LENGTH('i) - len) AND a)" for a::"'i::len word" and pfxm_p
+           (a \<in> ipset_from_netmask pfxm_p (NOT (mask (LENGTH('i) - len)))) \<longleftrightarrow>
+           (pfxm_p = NOT (mask (LENGTH('i) - len)) AND a)" for a::"'i::len word" and pfxm_p
     apply(subst ipset_from_cidr_alt2[symmetric])
     apply(subst zero_base_lsb_imp_set_eq_as_bit_operation)
      apply(simp; fail)
@@ -177,10 +177,10 @@ subsection\<open>Sets of IP Addresses\<close>
     apply(simp)
     done
     from 2[OF 1, of _ base] have
-      "(x \<in> ipset_from_netmask base (~~ mask (LENGTH('i) - len))) \<longleftrightarrow>
-       (base && ~~ mask (LENGTH('i) - len) = x && ~~ mask (LENGTH('i) - len))" for x
+      "(x \<in> ipset_from_netmask base (~~ (mask (LENGTH('i) - len)))) \<longleftrightarrow>
+       (base && ~~ (mask (LENGTH('i) - len)) = x && ~~ (mask (LENGTH('i) - len)))" for x
     apply(simp add: ipset_from_netmask_base_mask_consume)
-    unfolding word_bw_comms(1)[of _ " ~~ mask (LENGTH('i) - len)"] by simp
+    unfolding word_bw_comms(1)[of _ " ~~ (mask (LENGTH('i) - len))"] by simp
     then show ?thesis
       unfolding ip_cidr_set_def ipset_from_cidr_def
       by(auto simp add:  maskshift_eq_not_mask_generic)
@@ -284,13 +284,13 @@ subsection\<open>Clever Operations on IP Addresses in CIDR Notation\<close>
     (*contributed by Lars Noschinski*)
     private lemma less_and_not_mask_eq:
       fixes i :: "('a :: len) word"
-      assumes "r2 \<le> r1" "i && ~~ mask r2 = x && ~~ mask r2"
-      shows "i && ~~ mask r1 = x && ~~ mask r1"
+      assumes "r2 \<le> r1" "i && ~~ (mask r2) = x && ~~ (mask r2)"
+      shows "i && ~~ (mask r1) = x && ~~ (mask r1)"
     proof -
-      have "i AND NOT mask r1 = (i && ~~ mask r2) && ~~ mask r1" (is "_ = ?w && _")
+      have "i AND NOT (mask r1) = (i && ~~ (mask r2)) && ~~ (mask r1)" (is "_ = ?w && _")
         using \<open>r2 \<le> r1\<close> by (simp add: and_not_mask_twice max_def)
-      also have "?w = x && ~~ mask r2" by fact
-      also have "\<dots> && ~~ mask r1 = x && ~~ mask r1"
+      also have "?w = x && ~~ (mask r2)" by fact
+      also have "\<dots> && ~~ (mask r1) = x && ~~ (mask r1)"
         using \<open>r2 \<le> r1\<close> by (simp add: and_not_mask_twice max_def)
       finally show ?thesis .
     qed

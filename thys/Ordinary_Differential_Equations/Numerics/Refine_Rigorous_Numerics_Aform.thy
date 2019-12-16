@@ -703,13 +703,12 @@ definition aform_sup_inner where "aform_sup_inner prec X n =
 
 text \<open>cannot fail\<close>
 
-lemma approx_un_ne_None: "approx_un p (\<lambda>l u. Some (f l u)) (Some r) \<noteq> None"
+lemma approx_un_ne_None: "approx_un p (\<lambda>ivl. Some (f ivl)) (Some r) \<noteq> None"
   by (auto simp: approx_un_def split_beta')
 
 lemma approx_un_eq_Some:
-  "approx_un p (\<lambda>l u. Some (f l u)) (Some r) = Some s \<longleftrightarrow>
-  s = ivl_err ((fst (f (Inf_aform_err p r) (Sup_aform_err p r))))
-        ((snd (f (Inf_aform_err p r) (Sup_aform_err p r))))"
+  "approx_un p (\<lambda>ivl. Some (f ivl)) (Some r) = Some s \<longleftrightarrow>
+  s = ivl_err (real_interval (f (ivl_of_aform_err p r)))"
   using approx_un_ne_None
   by (auto simp: approx_un_def split_beta')
 
@@ -750,14 +749,16 @@ lemma is_float_min_range:
       mid_err_def affine_unop_def split: prod.splits)
 
 lemma is_float_ivl_err:
-  assumes "ivl_err (x1) (x2) = ((a, b), c)" "is_float x1" "is_float x2"
+  assumes "ivl_err x = ((a, b), c)" "is_float (lower x)" "is_float (upper x)"
   shows "is_float a" "is_float c"
 proof -
+  define x1 where "x1 = lower x"
+  define x2 where "x2 = upper x"
   have "a = (x1 + x2) / 2" "c = (x2 - x1) / 2"
-    using assms by (auto simp: ivl_err_def)
+    using assms by (auto simp: ivl_err_def x1_def x2_def)
   moreover have "(x1 + x2) / 2 \<in> float" "(x2 - x1) / 2 \<in> float"
     using assms
-    by (auto simp: is_float_def)
+    by (auto simp: is_float_def x1_def x2_def)
   ultimately show "is_float a" "is_float c"
     unfolding is_float_def by blast+
 qed
@@ -794,9 +795,11 @@ lemma approx_floatarith_Some_is_float:
   subgoal by (auto simp: bind_eq_Some_conv arctan_aform_err_def Let_def is_float_min_range
         is_float_ivl_err
         split: if_splits prod.splits)
-  subgoal by (auto simp: bind_eq_Some_conv uminus_aform_def Let_def is_float_min_range
-        is_float_ivl_err
+  subgoal apply (auto simp: bind_eq_Some_conv uminus_aform_def Let_def is_float_min_range
+        is_float_ivl_err set_of_eq real_interval_abs
         split: if_splits prod.splits)
+    apply (metis is_float_ivl_err(1) is_float_simps(3) lower_real_interval real_interval_abs upper_real_interval)
+    by (metis is_float_ivl_err(2) is_float_simps(3) lower_real_interval real_interval_abs upper_real_interval)
   subgoal by (auto simp: bind_eq_Some_conv max_aform_err_def Let_def is_float_min_range
         is_float_ivl_err max_def
         split: if_splits prod.splits)

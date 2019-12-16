@@ -47,7 +47,7 @@ declare piecewise_C1_differentiable_neg [simp, derivative_intros]
 declare piecewise_C1_differentiable_add [simp, derivative_intros]
 declare piecewise_C1_differentiable_diff [simp, derivative_intros]
 
-(*move to Cauchy_Integral_Theorem*)
+(*move to Derivative*)
 
 lemma piecewise_C1_differentiable_on_ident [simp, derivative_intros]:
   fixes f :: "real \<Rightarrow> 'a::real_normed_vector"
@@ -486,11 +486,8 @@ lemma scale_shift_smooth:
   shows "(\<lambda>x. a + b * x) C1_differentiable_on s"
 proof -
   show "(\<lambda>x. a + b * x) C1_differentiable_on s"
-    using Cauchy_Integral_Theorem.C1_differentiable_on_mult
-      Cauchy_Integral_Theorem.C1_differentiable_on_add
-      Cauchy_Integral_Theorem.C1_differentiable_on_const
-      Cauchy_Integral_Theorem.C1_differentiable_on_ident
-    by auto
+    using C1_differentiable_on_mult C1_differentiable_on_add C1_differentiable_on_const
+          C1_differentiable_on_ident by auto
 qed
 
 lemma open_diff:

@@ -564,7 +564,7 @@ lemma line_is_local_flow:
   "0 \<in> T \<Longrightarrow> is_interval T \<Longrightarrow> open T \<Longrightarrow> local_flow (\<lambda> s. c) T UNIV (\<lambda> t s. s + t *\<^sub>R c)"
   apply(unfold_locales, simp_all add: local_lipschitz_def lipschitz_on_def, clarsimp)
    apply(rule_tac x=1 in exI, clarsimp, rule_tac x="1/2" in exI, simp)
-  apply(rule_tac f'1="\<lambda> s. 0" and g'1="\<lambda> s. c" in derivative_intros(191))
+  apply(rule_tac f'1="\<lambda> s. 0" and g'1="\<lambda> s. c" in has_vderiv_on_add[THEN has_vderiv_on_eq_rhs])
     apply(rule derivative_intros, simp)+
   by simp_all
 

@@ -75,9 +75,11 @@ definition "float_to_float10_approximation f = the
     y_log \<leftarrow> approx p (Mult (Num (of_int y))
       ((Mult (Ln (Num 2))
         (Inverse (Ln (Num 10)))))) [];
-    let e_fl = floor_fl (fst y_log);
+    let e_fl = floor_fl (lower y_log);
     let e = int_floor_fl e_fl;
-    (ml, mu) \<leftarrow> approx p (Mult (Num (of_int x)) (Powr (Num 10) (Add(Var 0) (Minus (Num e_fl))))) [Some y_log];
+    m \<leftarrow> approx p (Mult (Num (of_int x)) (Powr (Num 10) (Add(Var 0) (Minus (Num e_fl))))) [Some y_log];
+    let ml = lower m;
+    let mu = upper m;
     Some (normalize_float10 (Float10 (int_floor_fl ml) e), normalize_float10 (Float10 (- int_floor_fl (- mu)) e))
   })"
 
