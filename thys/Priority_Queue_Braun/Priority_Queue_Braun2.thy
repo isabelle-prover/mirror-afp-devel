@@ -6,14 +6,14 @@ begin
 
 text \<open>This is the version verified by Jean-Christophe Filliâtre with the help of the Why3 system
 \<^url>\<open>http://toccata.lri.fr/gallery/braun_trees.en.html\<close>.
-Only the function @{const del_min} differs from Paulson's version.\<close>
+Only the deletion function (\<open>del_min2\<close> below) differs from Paulson's version.\<close>
 
 (* TODO mv *)
 lemma neq_Leaf_iff_size: "t \<noteq> Leaf \<longleftrightarrow> size t > 0"
 by (simp add: zero_less_iff_neq_zero)
 
 
-subsection "Function \<open>del_min\<close>"
+subsection "Function \<open>del_min2\<close>"
 
 fun le_root :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> bool" where
 "le_root a t = (t = Leaf \<or> a \<le> value t)"
@@ -33,9 +33,9 @@ fun merge :: "'a::linorder tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" whe
     else let (x, l') = del_left (Node l1 a1 r1)
          in Node (replace_min x (Node l2 a2 r2)) a2 l')"
 
-fun del_min where
-"del_min Leaf = Leaf" |
-"del_min (Node l x r) = merge l r"
+fun del_min2 where
+"del_min2 Leaf = Leaf" |
+"del_min2 (Node l x r) = merge l r"
 
 
 subsection "Correctness Proof"
@@ -160,7 +160,7 @@ text \<open>Last step: prove all axioms of the priority queue specification:\<cl
 
 interpretation braun: Priority_Queue
 where empty = Leaf and is_empty = "\<lambda>h. h = Leaf"
-and insert = insert and del_min = del_min
+and insert = insert and del_min = del_min2
 and get_min = "value" and invar = "\<lambda>h. braun h \<and> heap h"
 and mset = mset_tree
 proof(standard, goal_cases)
