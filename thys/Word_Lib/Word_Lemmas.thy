@@ -18,8 +18,6 @@ theory Word_Lemmas
     "HOL-Library.Sublist"
 begin
 
-text \<open>Set up quickcheck to support words\<close>
-
 lemma word_plus_mono_left:
   fixes x :: "'a :: len word"
   shows "\<lbrakk>y \<le> z; x \<le> x + z\<rbrakk> \<Longrightarrow> y + x \<le> z + x"
