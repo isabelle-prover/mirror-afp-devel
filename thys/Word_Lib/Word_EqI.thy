@@ -18,8 +18,8 @@ begin
 
 text \<open>
   Some word equalities can be solved by considering the problem bitwise for all
-  @{prop "n < LENGTH('a::len)"}, which is different to running word_bitwise and expanding into
-  an explicit list of bits.
+  @{prop "n < LENGTH('a::len)"}, which is different to running @{text word_bitwise}
+  and expanding into an explicit list of bits.
 \<close>
 
 lemma word_or_zero:
