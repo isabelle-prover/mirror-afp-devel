@@ -9,7 +9,26 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>04 Dec 2019 00:00:00 +0000</pubDate>
+    <pubDate>18 Dec 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Poincaré-Bendixson Theorem</title>
+              <link>https://www.isa-afp.org/entries/Poincare_Bendixson.html</link>
+       <guid>https://www.isa-afp.org/entries/Poincare_Bendixson.html</guid>
+       <dc:creator> Fabian Immler, Yong Kiam Tan       </dc:creator>
+       <pubDate>18 Dec 2019 00:00:00 +0000</pubDate>
+       <description>
+The Poincaré-Bendixson theorem is a classical result in the study of
+(continuous) dynamical systems. Colloquially, it restricts the
+possible behaviors of planar dynamical systems: such systems cannot be
+chaotic. In practice, it is a useful tool for proving the existence of
+(limiting) periodic behavior in planar systems. The theorem is an
+interesting and challenging benchmark for formalized mathematics
+because proofs in the literature rely on geometric sketches and only
+hint at symmetric cases. It also requires a substantial background of
+mathematical theories, e.g., the Jordan curve theorem, real analysis,
+ordinary differential equations, and limiting (long-term) behavior of
+dynamical systems.</description>
+    </item>
     <item>
        <title>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</title>
               <link>https://www.isa-afp.org/entries/Generalized_Counting_Sort.html</link>
@@ -546,27 +565,6 @@ functions found in &#34;Algorithms and Data Structures – The Basic
 Toolbox&#34; by K. Mehlhorn and P. Sanders and &#34;Introduction to
 Algorithms&#34; by T. H. Cormen, C. E. Leiserson, R. L. Rivest and C.
 Stein.</description>
-    </item>
-    <item>
-       <title>Differential Game Logic</title>
-              <link>https://www.isa-afp.org/entries/Differential_Game_Logic.html</link>
-       <guid>https://www.isa-afp.org/entries/Differential_Game_Logic.html</guid>
-       <dc:creator> André Platzer       </dc:creator>
-       <pubDate>03 Jun 2019 00:00:00 +0000</pubDate>
-       <description>
-This formalization provides differential game logic (dGL), a logic for
-proving properties of hybrid game. In addition to the syntax and
-semantics, it formalizes a uniform substitution calculus for dGL.
-Church&#39;s uniform substitutions substitute a term or formula for a
-function or predicate symbol everywhere. The uniform substitutions for
-dGL also substitute hybrid games for a game symbol everywhere. We
-prove soundness of one-pass uniform substitutions and the axioms of
-differential game logic with respect to their denotational semantics.
-One-pass uniform substitutions are faster by postponing
-soundness-critical admissibility checks with a linear pass homomorphic
-application and regain soundness by a variable condition at the
-replacements.  The formalization is based on prior non-mechanized
-soundness proofs for dGL.</description>
     </item>
   </channel>
 </rss>
