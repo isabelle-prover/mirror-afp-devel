@@ -360,46 +360,46 @@ lemmas F2bd'_card_order = card_order_csum[OF F2.bd_card_order card_of_card_order
 abbreviation SucFbd where "SucFbd \<equiv> cardSuc (F1bd' +c F2bd')"
 abbreviation ASucFbd where "ASucFbd \<equiv> ( |UNIV| +c ctwo ) ^c SucFbd"
 
-lemma F1set1_bd': "|F1set1 x| \<le>o F1bd' +c F2bd'"
+lemma F1set1_bd: "|F1set1 x| \<le>o bd_F1 +c bd_F2"
   apply (rule ordLeq_transitive)
-   apply (rule F1set1_bd_incr)
+   apply (rule F1.set_bd(1))
   apply (rule ordLeq_csum1)
-  apply (rule F1bd'_Card_order)
+  apply (rule F1.bd_Card_order)
   done
 
-lemma F1set2_bd': "|F1set2 x| \<le>o F1bd' +c F2bd'"
+lemma F1set2_bd: "|F1set2 x| \<le>o bd_F1 +c bd_F2"
   apply (rule ordLeq_transitive)
-   apply (rule F1set2_bd_incr)
+   apply (rule F1.set_bd(2))
   apply (rule ordLeq_csum1)
-  apply (rule F1bd'_Card_order)
+  apply (rule F1.bd_Card_order)
   done
 
-lemma F1set3_bd': "|F1set3 x| \<le>o F1bd' +c F2bd'"
+lemma F1set3_bd: "|F1set3 x| \<le>o bd_F1 +c bd_F2"
   apply (rule ordLeq_transitive)
-   apply (rule F1set3_bd_incr)
+   apply (rule F1.set_bd(3))
   apply (rule ordLeq_csum1)
-  apply (rule F1bd'_Card_order)
+  apply (rule F1.bd_Card_order)
   done
 
-lemma F2set1_bd': "|F2set1 x| \<le>o F1bd' +c F2bd'"
+lemma F2set1_bd: "|F2set1 x| \<le>o bd_F1 +c bd_F2"
   apply (rule ordLeq_transitive)
-   apply (rule F2set1_bd_incr)
+   apply (rule F2.set_bd(1))
   apply (rule ordLeq_csum2)
-  apply (rule F2bd'_Card_order)
+  apply (rule F2.bd_Card_order)
   done
 
-lemma F2set2_bd': "|F2set2 x| \<le>o F1bd' +c F2bd'"
+lemma F2set2_bd: "|F2set2 x| \<le>o bd_F1 +c bd_F2"
   apply (rule ordLeq_transitive)
-   apply (rule F2set2_bd_incr)
+   apply (rule F2.set_bd(2))
   apply (rule ordLeq_csum2)
-  apply (rule F2bd'_Card_order)
+  apply (rule F2.bd_Card_order)
   done
 
-lemma F2set3_bd': "|F2set3 x| \<le>o F1bd' +c F2bd'"
+lemma F2set3_bd: "|F2set3 x| \<le>o bd_F1 +c bd_F2"
   apply (rule ordLeq_transitive)
-   apply (rule F2set3_bd_incr)
+   apply (rule F2.set_bd(3))
   apply (rule ordLeq_csum2)
-  apply (rule F2bd'_Card_order)
+  apply (rule F2.bd_Card_order)
   done
 
 lemmas SucFbd_Card_order = cardSuc_Card_order[OF Card_order_csum]
@@ -2308,17 +2308,17 @@ theorem IF2map_comp: "IF2map (g o f) = IF2map g o IF2map f"
 
 text\<open>The bound\<close>
 
-abbreviation IFbd where "IFbd \<equiv> F1bd' +c F2bd'"
+abbreviation IFbd where "IFbd \<equiv> bd_F1 +c bd_F2"
 
 theorem IFbd_card_order: "card_order IFbd"
   apply (rule card_order_csum)
-   apply (rule F1bd'_card_order)
-  apply (rule F2bd'_card_order)
+   apply (rule F1.bd_card_order)
+  apply (rule F2.bd_card_order)
   done
 
 lemma IFbd_Cinfinite: "Cinfinite IFbd"
   apply (rule Cinfinite_csum1)
-  apply (rule F1bd'_Cinfinite)
+  apply (rule F1.bd_Cinfinite)
   done
 
 lemmas IFbd_cinfinite = conjunct1[OF IFbd_Cinfinite]
@@ -2574,15 +2574,15 @@ lemma IFset_bd:
     apply (rule card_of_ordIso_subst)
     apply (rule IF1set_simps)
    apply (rule Un_Cinfinite_bound)
-     apply (rule F1set1_bd')
+     apply (rule F1set1_bd)
     apply (rule Un_Cinfinite_bound)
       apply (rule UNION_Cinfinite_bound)
-        apply (rule F1set2_bd')
+        apply (rule F1set2_bd)
        apply (rule ballI)
        apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
       apply (rule IFbd_Cinfinite)
      apply (rule UNION_Cinfinite_bound)
-       apply (rule F1set3_bd')
+       apply (rule F1set3_bd)
       apply (rule ballI)
       apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
      apply (rule IFbd_Cinfinite)
@@ -2593,15 +2593,15 @@ lemma IFset_bd:
    apply (rule card_of_ordIso_subst)
    apply (rule IF2set_simps)
   apply (rule Un_Cinfinite_bound)
-    apply (rule F2set1_bd')
+    apply (rule F2set1_bd)
    apply (rule Un_Cinfinite_bound)
      apply (rule UNION_Cinfinite_bound)
-       apply (rule F2set2_bd')
+       apply (rule F2set2_bd)
       apply (rule ballI)
       apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
      apply (rule IFbd_Cinfinite)
     apply (rule UNION_Cinfinite_bound)
-      apply (rule F2set3_bd')
+      apply (rule F2set3_bd)
      apply (rule ballI)
      apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
     apply (rule IFbd_Cinfinite)
