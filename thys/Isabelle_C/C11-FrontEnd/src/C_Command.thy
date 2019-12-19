@@ -557,7 +557,7 @@ fun string_of_term ctxt s =
   let
     val t = Syntax.read_term ctxt s;
     val T = Term.type_of t;
-    val ctxt' = Variable.auto_fixes t ctxt;
+    val ctxt' = Proof_Context.augment t ctxt;
   in
     Pretty.string_of
       (Pretty.block [Pretty.quote (Syntax.pretty_term ctxt' t), Pretty.fbrk,
