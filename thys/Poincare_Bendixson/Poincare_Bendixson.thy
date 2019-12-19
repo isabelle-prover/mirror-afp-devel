@@ -622,7 +622,7 @@ proof (cases "f x \<bullet> rot (x - y) < 0")
 next
   case False
   then have "f x \<bullet> rot (x - y) > 0" using assms
-    by (auto simp: transversal_segment_def sign_simps not_less order.order_iff_strict)
+    by (auto simp: transversal_segment_def algebra_split_simps not_less order.order_iff_strict)
   from transversal_segment_posD[OF assms ends_in_segment(1) this]
   show ?thesis ..
 qed
@@ -947,8 +947,7 @@ proof -
         by (simp add: dist_prod_def)
     qed
     also from \<xi> H have "\<dots> \<le> 0"
-      by (auto simp add: sign_simps not_less split: if_splits)
-        (metis mult_zero_right real_mult_le_cancel_iff2 that(2))
+      by (auto simp add: algebra_split_simps not_less split: if_splits)
     finally show False by simp
   qed
   moreover
@@ -974,8 +973,7 @@ proof -
         by (simp add: dist_prod_def)
     qed
     also from \<xi> H have "\<dots> \<le> 0"
-      by (simp add: sign_simps algebra_simps)
-        (metis less_eq_real_def mult_less_cancel_left mult_pos_neg2 mult_zero_right that(3))
+      by (simp add: algebra_split_simps)
     finally show False by simp
   qed
   ultimately show ?thesis ..
@@ -2167,8 +2165,8 @@ proof -
   flow0 p (\<tau> p)"
     using \<open>\<tau> p = 0\<close> \<tau>_cont \<open>p \<in> X\<close>
     by (intro tendsto_eq_intros) auto
-  with ev_eq have "(flow0 x o s) \<longlonglongrightarrow> flow0 p (\<tau> p)"
-    by (rule Lim_transform_eventually)
+  then have "(flow0 x o s) \<longlonglongrightarrow> flow0 p (\<tau> p)"
+    using ev_eq by (rule Lim_transform_eventually)
   then have "(flow0 x o s) \<longlonglongrightarrow> p"
     using \<open>p \<in> X\<close> \<open>\<tau> p = 0\<close>
     by simp
@@ -2414,8 +2412,7 @@ proof (rule ccontr)
   from LIMSEQ_subseq_LIMSEQ[OF this lr(2)]
   have "((\<lambda>z. infdist z (flow0 y ` UNIV)) \<circ> (s \<circ> r)) \<longlonglongrightarrow> 0" by (simp add: o_assoc)
   moreover have "((\<lambda>z. infdist z (flow0 y ` UNIV)) \<circ> (s \<circ> r)) \<longlonglongrightarrow> infdist l (flow0 y ` UNIV)"
-    using continuous_on_sequentially lr(3) continuous_on_infdist
-    by blast
+    by (auto intro!: tendsto_eq_intros tendsto_compose_at[OF lr(3)])
   ultimately have "infdist l (flow0 y `UNIV) = 0" using LIMSEQ_unique by auto
   then have lu: "l \<in> flow0 y ` UNIV" using in_closed_iff_infdist_zero[OF y1 y2] by auto
   then have l1:"l \<in> X"
