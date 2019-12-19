@@ -1053,10 +1053,6 @@ abbreviation sequentially_at_bot::"(nat\<Rightarrow>real)\<Rightarrow>bool"
 
 subsection \<open>Paths\<close>
 
-text \<open>@{thm subpath_linear_image} is too specific\<close>
-lemma subpath_image: "subpath u v (g \<circ> h) = g \<circ> subpath u v h"
-  by (rule ext) (simp add: subpath_def)
-
 lemma subpath0_linepath:
   shows "subpath 0 u (linepath t t') = linepath t (t + u * (t' - t))"
   unfolding subpath_def linepath_def
