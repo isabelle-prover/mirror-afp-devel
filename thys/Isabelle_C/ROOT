@@ -41,6 +41,10 @@ session Isabelle_C (AFP) = HOL +
   sessions
     "HOL-ex"
     "Isar_Ref"
+  directories
+    "C11-FrontEnd"
+    "C11-FrontEnd/src"
+    "C11-FrontEnd/examples"
   theories [document = false]
     "HOL-ex.Cartouche_Examples" (* LaTeX error in Isabelle2019 *)
   theories (* a standard test suite *)
