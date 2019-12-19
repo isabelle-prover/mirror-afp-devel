@@ -102,6 +102,35 @@ developments that combine &lt;em&gt;V&lt;/em&gt; with other Isabelle/HOL types:
 &lt;em&gt;small&lt;/em&gt;, the class of types that correspond to some ZF set.&lt;/p&gt;</description>
     </item>
     <item>
+       <title>Isabelle/C</title>
+              <link>https://www.isa-afp.org/entries/Isabelle_C.html</link>
+       <guid>https://www.isa-afp.org/entries/Isabelle_C.html</guid>
+       <dc:creator> Frédéric Tuong, Burkhart Wolff       </dc:creator>
+       <pubDate>22 Oct 2019 00:00:00 +0000</pubDate>
+       <description>
+We present a framework for C code in C11 syntax deeply integrated into
+the Isabelle/PIDE development environment. Our framework provides an
+abstract interface for verification back-ends to be plugged-in
+independently. Thus, various techniques such as deductive program
+verification or white-box testing can be applied to the same source,
+which is part of an integrated PIDE document model. Semantic back-ends
+are free to choose the supported C fragment and its semantics. In
+particular, they can differ on the chosen memory model or the
+specification mechanism for framing conditions. Our framework supports
+semantic annotations of C sources in the form of comments. Annotations
+serve to locally control back-end settings, and can express the term
+focus to which an annotation refers. Both the logical and the
+syntactic context are available when semantic annotations are
+evaluated. As a consequence, a formula in an annotation can refer both
+to HOL or C variables. Our approach demonstrates the degree of
+maturity and expressive power the Isabelle/PIDE sub-system has
+achieved in recent years. Our integration technique employs Lex and
+Yacc style grammars to ensure efficient deterministic parsing.  This
+is the core-module of Isabelle/C; the AFP package for Clean and
+Clean_wrapper as well as AutoCorres and AutoCorres_wrapper (available
+via git) are applications of this front-end.</description>
+    </item>
+    <item>
        <title>VerifyThis 2019 -- Polished Isabelle Solutions</title>
               <link>https://www.isa-afp.org/entries/VerifyThis2019.html</link>
        <guid>https://www.isa-afp.org/entries/VerifyThis2019.html</guid>
@@ -547,24 +576,6 @@ to obtain concrete upper bounds on the size of the matrix (and hence
 turn the method into an effectively executable algorithm), Dubé&#39;s
 degree bounds on Gröbner bases are utilized; consequently, they are
 also part of the formalization.</description>
-    </item>
-    <item>
-       <title>Binary Heaps for IMP2</title>
-              <link>https://www.isa-afp.org/entries/IMP2_Binary_Heap.html</link>
-       <guid>https://www.isa-afp.org/entries/IMP2_Binary_Heap.html</guid>
-       <dc:creator> Simon Griebel       </dc:creator>
-       <pubDate>13 Jun 2019 00:00:00 +0000</pubDate>
-       <description>
-In this submission array-based binary minimum heaps are formalized.
-The correctness of the following heap operations is proved: insert,
-get-min, delete-min and make-heap. These are then used to verify an
-in-place heapsort. The formalization is based on IMP2, an imperative
-program verification framework implemented in Isabelle/HOL. The
-verified heap functions are iterative versions of the partly recursive
-functions found in &#34;Algorithms and Data Structures – The Basic
-Toolbox&#34; by K. Mehlhorn and P. Sanders and &#34;Introduction to
-Algorithms&#34; by T. H. Cormen, C. E. Leiserson, R. L. Rivest and C.
-Stein.</description>
     </item>
   </channel>
 </rss>

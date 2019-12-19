@@ -8545,7 +8545,7 @@ author = Angeliki Koutsoukou-Argyraki <https://www.cl.cam.ac.uk/~ak2110/>
 topic = Logic/Philosophy
 date = 2019-10-08
 notify = ak2110@cam.ac.uk
-abstract = 
+abstract =
   We formalise with Isabelle/HOL some basic elements of Aristotle's
   assertoric syllogistic following the <a
   href="https://plato.stanford.edu/entries/aristotle-logic/">article from the Stanford Encyclopedia of Philosophy by Robin Smith.</a> To
@@ -8564,7 +8564,7 @@ author = Peter Lammich<>, Simon Wimmer<http://home.in.tum.de/~wimmers/>
 topic = Computer Science/Algorithms
 date = 2019-10-16
 notify = lammich@in.tum.de, wimmers@in.tum.de
-abstract = 
+abstract =
   VerifyThis 2019 (http://www.pm.inf.ethz.ch/research/verifythis.html)
   was a program verification competition associated with ETAPS 2019. It
   was the 8th event in the VerifyThis competition series. In this entry,
@@ -8577,7 +8577,7 @@ author = Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
 topic = Mathematics/Set Theory
 date = 2019-10-24
 notify = lp15@cam.ac.uk
-abstract = 
+abstract =
   <p>This entry is a new formalisation of ZFC set theory in Isabelle/HOL. It is
   logically equivalent to Obua's HOLZF; the point is to have the closest
   possible integration with the rest of Isabelle/HOL, minimising the amount of
@@ -8605,7 +8605,7 @@ author = Brandon Bohrer <mailto:bbohrer@cs.cmu.edu>
 topic = Computer Science/Data Structures
 date = 2019-11-27
 notify = bjbohrer@gmail.com, bbohrer@cs.cmu.edu
-abstract = 
+abstract =
   Interval_Arithmetic implements conservative interval arithmetic
   computations, then uses this interval arithmetic to implement a simple
   programming language where all terms have 32-bit signed word values,
@@ -8624,7 +8624,7 @@ author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
 topic = Computer Science/Algorithms, Computer Science/Functional Programming
 date = 2019-12-04
 notify = pasquale.noce.lavoro@gmail.com
-abstract = 
+abstract =
   Counting sort is a well-known algorithm that sorts objects of any kind
   mapped to integer keys, or else to keys in one-to-one correspondence
   with some subset of the integers (e.g. alphabet letters). However, it
@@ -8649,7 +8649,7 @@ author = Fabian Immler <http://home.in.tum.de/~immler/>, Yong Kiam Tan <https://
 topic = Mathematics/Analysis
 date = 2019-12-18
 notify = fimmler@cs.cmu.edu, yongkiat@cs.cmu.edu
-abstract = 
+abstract =
   The Poincaré-Bendixson theorem is a classical result in the study of
   (continuous) dynamical systems. Colloquially, it restricts the
   possible behaviors of planar dynamical systems: such systems cannot be
@@ -8661,4 +8661,33 @@ abstract =
   mathematical theories, e.g., the Jordan curve theorem, real analysis,
   ordinary differential equations, and limiting (long-term) behavior of
   dynamical systems.
+
+[Isabelle_C]
+title = Isabelle/C
+author = Frédéric Tuong <https://www.lri.fr/~ftuong/>, Burkhart Wolff <https://www.lri.fr/~wolff/>
+topic = Computer Science/Programming Languages/Language Definitions, Computer Science/Semantics, Tools
+date = 2019-10-22
+notify = tuong@users.gforge.inria.fr, wolff@lri.fr
+abstract =
+  We present a framework for C code in C11 syntax deeply integrated into
+  the Isabelle/PIDE development environment. Our framework provides an
+  abstract interface for verification back-ends to be plugged-in
+  independently. Thus, various techniques such as deductive program
+  verification or white-box testing can be applied to the same source,
+  which is part of an integrated PIDE document model. Semantic back-ends
+  are free to choose the supported C fragment and its semantics. In
+  particular, they can differ on the chosen memory model or the
+  specification mechanism for framing conditions. Our framework supports
+  semantic annotations of C sources in the form of comments. Annotations
+  serve to locally control back-end settings, and can express the term
+  focus to which an annotation refers. Both the logical and the
+  syntactic context are available when semantic annotations are
+  evaluated. As a consequence, a formula in an annotation can refer both
+  to HOL or C variables. Our approach demonstrates the degree of
+  maturity and expressive power the Isabelle/PIDE sub-system has
+  achieved in recent years. Our integration technique employs Lex and
+  Yacc style grammars to ensure efficient deterministic parsing.  This
+  is the core-module of Isabelle/C; the AFP package for Clean and
+  Clean_wrapper as well as AutoCorres and AutoCorres_wrapper (available
+  via git) are applications of this front-end.
 
