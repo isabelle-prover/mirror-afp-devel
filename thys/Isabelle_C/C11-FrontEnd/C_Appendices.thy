@@ -355,7 +355,7 @@ registration of commands to retrieve some more or less native user-experience re
 though. Generally, the kind of content one can write in C comments should be arbitrary. The
 exhaustive list of Isabelle commands is provided in the accompanying above archive, for example in
 \<^dir>\<open>$ISABELLE_HOME/src/Doc/Isar_Ref\<close> or
-\<^file>\<open>$ISABELLE_HOME/doc/isar-ref.pdf\<close>.
+\<^url>\<open>https://isabelle.in.tum.de/doc/isar-ref.pdf\<close>.
 
 \<^item> Instead of starting from scratch, any existing C files can also be opened with Isabelle/C,
 it suffices to replace:
