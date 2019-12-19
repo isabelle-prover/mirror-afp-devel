@@ -26,8 +26,9 @@ proof -
     (1 - (u - t * (u - v))) *\<^sub>R x + (u - t * (u - v)) *\<^sub>R y"
     by (simp add: algebra_simps w_def z_def)
   also have "\<dots> \<in> {x -- y}"
-    apply (rule closed_segmentI[OF _ refl])
-    using t u v 
+    unfolding closed_segment_image_interval
+    apply (rule imageI)
+    using t u v
     apply auto
      apply (metis (full_types) diff_0_right diff_left_mono linear mult_left_le_one_le mult_nonneg_nonpos order.trans)
     by (smt mult_left_le_one_le mult_nonneg_nonneg vector_space_over_itself.scale_right_diff_distrib)
@@ -689,7 +690,7 @@ proof (rule metric_LIMSEQ_I)
   assume "e > (0::real)"
   then have "k / e > 0" using assms(1) by auto
   obtain N where N: "b^(N::nat) > k / e" using assms(2)
-    using Elementary_Topology.real_arch_pow by blast
+    using real_arch_pow by blast
   then have "norm (s n) < e" if "n \<ge> N" for n
   proof -
     have "k / b^n \<le> k / b^N"

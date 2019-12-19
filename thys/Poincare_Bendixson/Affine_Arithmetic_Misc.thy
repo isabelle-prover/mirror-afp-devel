@@ -2,7 +2,6 @@ theory Affine_Arithmetic_Misc
   imports "HOL-ODE-Numerics.ODE_Numerics"
 begin
 
-
 section \<open>Branch-And-Bound Arithmetic\<close>
 
 primrec prove_nonneg::"(nat * nat * string) list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> slp \<Rightarrow> real aform list list \<Rightarrow> bool" where

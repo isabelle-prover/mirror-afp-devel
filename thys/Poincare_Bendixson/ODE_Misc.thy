@@ -122,7 +122,7 @@ proof -
         by (rule L)
       also have "\<dots> \<le> -L * w x"
         using \<open>0 < L\<close> a0 that
-        by (force simp add: dist_real_def abs_real_def w_def sign_simps)
+        by (force simp add: dist_real_def abs_real_def w_def algebra_split_simps )
       finally show ?thesis
         by simp
     qed
@@ -134,9 +134,9 @@ proof -
           derivative_eq_intros L_w_bound simp: )
     then have "w a0 * exp (-L * a0) \<le> w d * exp (-L * d)"
       by (rule mono_onD) (use that a0 in auto)
-    also have "\<dots> < 0" using \<open>w d < 0\<close> by (simp add: sign_simps)
+    also have "\<dots> < 0" using \<open>w d < 0\<close> by (simp add: algebra_split_simps)
     finally have "w a0 * exp (- L * a0) < 0" .
-    then have "w a0 < 0" by (simp add: sign_simps)
+    then have "w a0 < 0" by (simp add: algebra_split_simps)
     have "a0 \<le> a"
     proof (rule ccontr, unfold not_le)
       assume "a < a0"
@@ -178,7 +178,7 @@ qed
 lemma local_lipschitz_mult:
   shows "local_lipschitz  (UNIV::real set) (UNIV::real set) (*)"
   apply (auto intro!: c1_implies_local_lipschitz[where f'="\<lambda>p. blinfun_mult_left (fst p)"])
-   apply (simp add: Complex_Analysis_Basics.has_derivative_mult_right mult_commute_abs)
+   apply (simp add: has_derivative_mult_right mult_commute_abs)
   by (auto intro!: continuous_intros)
 
 lemma comparison_principle_le_linear:
@@ -218,7 +218,7 @@ proof -
      apply (meson atLeastAtMost_iff general.existence_ivl_subset in_mono)
     by (simp add: general.flow_in_domain subset_iff)
   then obtain C where "t \<in> {a .. b} \<Longrightarrow> norm (f t (flow t0 x t)) \<le> C" for t
-    by (force dest!: compact_imp_bounded simp: bounded_iff image_iff)
+    by (fastforce dest!: compact_imp_bounded simp: bounded_iff intro: that)
   then have "t \<in> {a..b} \<Longrightarrow> onorm (\<lambda>i. i *\<^sub>R f t (flow t0 x t)) \<le> max 0 C" for t
     apply (subst onorm_scaleR_left) 
      apply (auto simp: onorm_id max_def)
@@ -505,12 +505,12 @@ proof -
     define a where "a = min a1 (a2/2)"
     have t1:"a > 0" unfolding a_def using \<open>a1 > 0\<close> \<open>a2 > 0\<close> by auto
     then have t3:"0 \<in>{-a--a}"
-      using Starlike.closed_segment_eq_real_ivl by auto  
+      using closed_segment_eq_real_ivl by auto
     have "{-a--a} \<subseteq> {-a1..a1}" unfolding a_def using \<open>a1 > 0\<close> \<open>a2 > 0\<close>
       using ODE_Auxiliarities.closed_segment_eq_real_ivl by auto
     then have t2:"{-a--a} \<subseteq> existence_ivl0 x" using a1 by auto
     have "{-a--a} \<subseteq> {-a2<--<a2}" unfolding a_def using \<open>a1 > 0\<close> \<open>a2 > 0\<close>
-      by (smt Diff_iff Starlike.closed_segment_eq_real_ivl atLeastAtMost_iff empty_iff half_gt_zero insert_iff pos_half_less segment(1) subset_eq)
+      by (smt Diff_iff closed_segment_eq_real_ivl atLeastAtMost_iff empty_iff half_gt_zero insert_iff pos_half_less segment(1) subset_eq)
     then have t4:"\<And>t. t \<in> {-a--a} \<Longrightarrow> norm(f (flow0 x t) - f (flow0 x 0)) \<le> norm(f x)/2" using t by auto
     show ?thesis using t1 t2 t3 t4 that by auto
   qed
@@ -527,7 +527,7 @@ proof -
     assume "dist t 0 < a" "t \<noteq> 0" "\<not> flow0 x t \<noteq> x"
     then have tx:"flow0 x t = x" by auto
     have "t \<in> {-a--a}"
-      using Starlike.closed_segment_eq_real_ivl \<open>dist t 0 < a\<close> by auto 
+      using closed_segment_eq_real_ivl \<open>dist t 0 < a\<close> by auto
     have "t > 0 \<or> t < 0" using \<open>t \<noteq> 0\<close> by linarith
     moreover {
       assume "t > 0"
@@ -1005,7 +1005,7 @@ proof cases
         subgoal
           apply (rule divide_left_mono)
           using lipschitz_onD[OF L, of "t n" tl] \<open>0 < L\<close> t(3) tl(2)
-          by (auto simp: sign_simps zero_less_divide_iff dist_norm pos_divide_le_eq
+          by (auto simp: algebra_split_simps zero_less_divide_iff dist_norm pos_divide_le_eq
               intro!: add_pos_nonneg)
         done
       done

@@ -323,11 +323,11 @@ proof (rule ccontr)
     by (metis comp_assoc)
   ultimately have "infdist l (\<omega>_limit_set x) = 0" by (simp add: \<omega>_limit_set_def)
   then have c1:"((\<lambda>y. infdist y (\<omega>_limit_set x)) \<circ> (flow0 x \<circ> s \<circ> r)) \<longlonglongrightarrow> 0"
-    using l(2) continuous_on_infdist
-    by (metis UNIV_I continuous_on_sequentially)
+    by (auto intro!: tendsto_compose_at[OF l(2)] tendsto_eq_intros)
   have c2: "\<And>i. e \<le> infdist (flow0 x ((s \<circ> r) i)) (\<omega>_limit_set x)" using s(1) by simp
   show False using c1 c2 \<open>e > 0\<close> unfolding o_def
-    using Lim_bounded2 s(1) by fastforce
+    using Lim_bounded2
+    by (metis (no_types, lifting) ball_eq_empty centre_in_ball empty_iff)
 qed
 
 lemma \<omega>_limit_set_in_compact_connected:
@@ -358,10 +358,10 @@ proof clarsimp
     obtain m where "m \<ge> (0::real)" "m > mpre"
       by (meson approximation_preproc_push_neg(1) gt_ex le_cases order_trans) 
     from ps obtain a where a:"a > m" "(flow0 x a) \<in> A"
-      using \<open>open A\<close> p unfolding tendsto_explicit filterlim_at_top eventually_sequentially
+      using \<open>open A\<close> p unfolding tendsto_def filterlim_at_top eventually_sequentially
       by (metis approximation_preproc_push_neg(1) comp_apply gt_ex le_cases order_trans)
     from qs obtain b where b:"b > a" "(flow0 x b) \<in> B"
-      using \<open>open B\<close> q unfolding tendsto_explicit filterlim_at_top eventually_sequentially
+      using \<open>open B\<close> q unfolding tendsto_def filterlim_at_top eventually_sequentially
       by (metis approximation_preproc_push_neg(1) comp_apply gt_ex le_cases order_trans)
     have "continuous_on {a..b} (flow0 x)"
       by (metis Icc_subset_Ici_iff \<open>0 \<le> m\<close> \<open>m < a\<close> approximation_preproc_push_neg(2) atMost_iff atMost_subset_iff continuous_on_subset le_cases local.flow_continuous_on props(1) subset_eq)
@@ -371,11 +371,11 @@ proof clarsimp
     proof (rule ccontr)
       assume "\<not> (\<exists>t\<in>{a..b}. flow0 x t \<notin> A \<and> flow0 x t \<notin> B)"
       then have "flow0 x ` {a..b} \<subseteq> A \<union> B" by blast
-      from connectedD[OF c \<open>open A\<close> \<open>open B\<close> this]
+      from topological_space_class.connectedD[OF c \<open>open A\<close> \<open>open B\<close> _ this]
       show False using a b disj by force
     qed
     thus "\<exists>n>mpre. flow0 x n \<notin> A \<and> flow0 x n \<notin> B"
-      by (smt \<open>mpre < m\<close> a(1) atLeastAtMost_iff) 
+      by (smt \<open>mpre < m\<close> a(1) atLeastAtMost_iff)
   qed
   from frequently_at_topE'[OF this filterlim_real_sequentially]
   obtain s where s: "\<forall>i. flow0 x (s i) \<notin> A \<and> flow0 x (s i) \<notin> B"
@@ -390,8 +390,8 @@ proof clarsimp
   have "filterlim (s \<circ> r) at_top sequentially" .
   then have "\<omega>_limit_point x l" unfolding \<omega>_limit_point_def using props(1) r
     by (metis comp_assoc)
-  moreover have "l \<notin> A" using s(1) r(3) \<open>open A\<close> unfolding tendsto_explicit by auto
-  moreover have "l \<notin> B" using s(1) r(3) \<open>open B\<close> unfolding tendsto_explicit by auto
+  moreover have "l \<notin> A" using s(1) r(3) \<open>open A\<close> unfolding tendsto_def by auto
+  moreover have "l \<notin> B" using s(1) r(3) \<open>open B\<close> unfolding tendsto_def by auto
   ultimately show False using \<open>\<omega>_limit_set x \<subseteq> A \<union> B\<close> unfolding \<omega>_limit_set_def
     by auto
 qed
