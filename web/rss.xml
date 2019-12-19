@@ -9,7 +9,51 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>27 Nov 2019 00:00:00 +0000</pubDate>
+    <pubDate>18 Dec 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Poincaré-Bendixson Theorem</title>
+              <link>https://www.isa-afp.org/entries/Poincare_Bendixson.html</link>
+       <guid>https://www.isa-afp.org/entries/Poincare_Bendixson.html</guid>
+       <dc:creator> Fabian Immler, Yong Kiam Tan       </dc:creator>
+       <pubDate>18 Dec 2019 00:00:00 +0000</pubDate>
+       <description>
+The Poincaré-Bendixson theorem is a classical result in the study of
+(continuous) dynamical systems. Colloquially, it restricts the
+possible behaviors of planar dynamical systems: such systems cannot be
+chaotic. In practice, it is a useful tool for proving the existence of
+(limiting) periodic behavior in planar systems. The theorem is an
+interesting and challenging benchmark for formalized mathematics
+because proofs in the literature rely on geometric sketches and only
+hint at symmetric cases. It also requires a substantial background of
+mathematical theories, e.g., the Jordan curve theorem, real analysis,
+ordinary differential equations, and limiting (long-term) behavior of
+dynamical systems.</description>
+    </item>
+    <item>
+       <title>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</title>
+              <link>https://www.isa-afp.org/entries/Generalized_Counting_Sort.html</link>
+       <guid>https://www.isa-afp.org/entries/Generalized_Counting_Sort.html</guid>
+       <dc:creator> Pasquale Noce       </dc:creator>
+       <pubDate>04 Dec 2019 00:00:00 +0000</pubDate>
+       <description>
+Counting sort is a well-known algorithm that sorts objects of any kind
+mapped to integer keys, or else to keys in one-to-one correspondence
+with some subset of the integers (e.g. alphabet letters). However, it
+is suitable for direct use, viz. not just as a subroutine of another
+sorting algorithm (e.g. radix sort), only if the key range is not
+significantly larger than the number of the objects to be sorted.
+This paper describes a tail-recursive generalization of counting sort
+making use of a bounded number of counters, suitable for direct use in
+case of a large, or even infinite key range of any kind, subject to
+the only constraint of being a subset of an arbitrary linear order.
+After performing a pen-and-paper analysis of how such algorithm has to
+be designed to maximize its efficiency, this paper formalizes the
+resulting generalized counting sort (GCsort) algorithm and then
+formally proves its correctness properties, namely that (a) the
+counters&#39; number is maximized never exceeding the fixed upper
+bound, (b) objects are conserved, (c) objects get sorted, and (d) the
+algorithm is stable.</description>
+    </item>
     <item>
        <title>Interval Arithmetic on 32-bit Words</title>
               <link>https://www.isa-afp.org/entries/Interval_Arithmetic_Word32.html</link>
@@ -56,6 +100,35 @@ developments that combine &lt;em&gt;V&lt;/em&gt; with other Isabelle/HOL types:
 &lt;em&gt;embeddable&lt;/em&gt;, the class of types that can be injected into &lt;em&gt;V&lt;/em&gt;
 (including &lt;em&gt;V&lt;/em&gt; itself as well as &lt;em&gt;V*V&lt;/em&gt;, etc.), and
 &lt;em&gt;small&lt;/em&gt;, the class of types that correspond to some ZF set.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>Isabelle/C</title>
+              <link>https://www.isa-afp.org/entries/Isabelle_C.html</link>
+       <guid>https://www.isa-afp.org/entries/Isabelle_C.html</guid>
+       <dc:creator> Frédéric Tuong, Burkhart Wolff       </dc:creator>
+       <pubDate>22 Oct 2019 00:00:00 +0000</pubDate>
+       <description>
+We present a framework for C code in C11 syntax deeply integrated into
+the Isabelle/PIDE development environment. Our framework provides an
+abstract interface for verification back-ends to be plugged-in
+independently. Thus, various techniques such as deductive program
+verification or white-box testing can be applied to the same source,
+which is part of an integrated PIDE document model. Semantic back-ends
+are free to choose the supported C fragment and its semantics. In
+particular, they can differ on the chosen memory model or the
+specification mechanism for framing conditions. Our framework supports
+semantic annotations of C sources in the form of comments. Annotations
+serve to locally control back-end settings, and can express the term
+focus to which an annotation refers. Both the logical and the
+syntactic context are available when semantic annotations are
+evaluated. As a consequence, a formula in an annotation can refer both
+to HOL or C variables. Our approach demonstrates the degree of
+maturity and expressive power the Isabelle/PIDE sub-system has
+achieved in recent years. Our integration technique employs Lex and
+Yacc style grammars to ensure efficient deterministic parsing.  This
+is the core-module of Isabelle/C; the AFP package for Clean and
+Clean_wrapper as well as AutoCorres and AutoCorres_wrapper (available
+via git) are applications of this front-end.</description>
     </item>
     <item>
        <title>VerifyThis 2019 -- Polished Isabelle Solutions</title>
@@ -503,62 +576,6 @@ to obtain concrete upper bounds on the size of the matrix (and hence
 turn the method into an effectively executable algorithm), Dubé&#39;s
 degree bounds on Gröbner bases are utilized; consequently, they are
 also part of the formalization.</description>
-    </item>
-    <item>
-       <title>Binary Heaps for IMP2</title>
-              <link>https://www.isa-afp.org/entries/IMP2_Binary_Heap.html</link>
-       <guid>https://www.isa-afp.org/entries/IMP2_Binary_Heap.html</guid>
-       <dc:creator> Simon Griebel       </dc:creator>
-       <pubDate>13 Jun 2019 00:00:00 +0000</pubDate>
-       <description>
-In this submission array-based binary minimum heaps are formalized.
-The correctness of the following heap operations is proved: insert,
-get-min, delete-min and make-heap. These are then used to verify an
-in-place heapsort. The formalization is based on IMP2, an imperative
-program verification framework implemented in Isabelle/HOL. The
-verified heap functions are iterative versions of the partly recursive
-functions found in &#34;Algorithms and Data Structures – The Basic
-Toolbox&#34; by K. Mehlhorn and P. Sanders and &#34;Introduction to
-Algorithms&#34; by T. H. Cormen, C. E. Leiserson, R. L. Rivest and C.
-Stein.</description>
-    </item>
-    <item>
-       <title>Differential Game Logic</title>
-              <link>https://www.isa-afp.org/entries/Differential_Game_Logic.html</link>
-       <guid>https://www.isa-afp.org/entries/Differential_Game_Logic.html</guid>
-       <dc:creator> André Platzer       </dc:creator>
-       <pubDate>03 Jun 2019 00:00:00 +0000</pubDate>
-       <description>
-This formalization provides differential game logic (dGL), a logic for
-proving properties of hybrid game. In addition to the syntax and
-semantics, it formalizes a uniform substitution calculus for dGL.
-Church&#39;s uniform substitutions substitute a term or formula for a
-function or predicate symbol everywhere. The uniform substitutions for
-dGL also substitute hybrid games for a game symbol everywhere. We
-prove soundness of one-pass uniform substitutions and the axioms of
-differential game logic with respect to their denotational semantics.
-One-pass uniform substitutions are faster by postponing
-soundness-critical admissibility checks with a linear pass homomorphic
-application and regain soundness by a variable condition at the
-replacements.  The formalization is based on prior non-mechanized
-soundness proofs for dGL.</description>
-    </item>
-    <item>
-       <title>Multidimensional Binary Search Trees</title>
-              <link>https://www.isa-afp.org/entries/KD_Tree.html</link>
-       <guid>https://www.isa-afp.org/entries/KD_Tree.html</guid>
-       <dc:creator> Martin Rau       </dc:creator>
-       <pubDate>30 May 2019 00:00:00 +0000</pubDate>
-       <description>
-This entry provides a formalization of multidimensional binary trees,
-also known as k-d trees. It includes a balanced build algorithm as
-well as the nearest neighbor algorithm and the range search algorithm.
-It is based on the papers &lt;a
-href=&#34;https://dl.acm.org/citation.cfm?doid=361002.361007&#34;&gt;Multidimensional
-binary search trees used for associative searching&lt;/a&gt; and &lt;a
-href=&#34;https://dl.acm.org/citation.cfm?doid=355744.355745&#34;&gt;
-An Algorithm for Finding Best Matches in Logarithmic Expected
-Time&lt;/a&gt;.</description>
     </item>
   </channel>
 </rss>

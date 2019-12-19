@@ -172,6 +172,7 @@ Gauss-Jordan-Elim-Fun
 Gauss_Jordan
 GenClock
 General-Triangle
+Generalized_Counting_Sort
 Generic_Deriving
 Generic_Join
 GewirthPGCProof
@@ -217,6 +218,7 @@ Integration
 Interval_Arithmetic_Word32
 Iptables_Semantics
 Irrationality_J_Hancl
+Isabelle_C
 Isabelle_Meta_Model
 Jacobson_Basic_Algebra
 Jinja
@@ -347,6 +349,7 @@ Planarity_Certificates
 Polynomial_Factorization
 Polynomial_Interpolation
 Polynomials
+Poincare_Bendixson
 Pop_Refinement
 Posix-Lexing
 Possibilistic_Noninterference
