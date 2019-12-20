@@ -421,7 +421,7 @@ to a strict linear order.</description>
        <title>A Sequent Calculus for First-Order Logic</title>
               <link>https://www.isa-afp.org/entries/FOL_Seq_Calc1.html</link>
        <guid>https://www.isa-afp.org/entries/FOL_Seq_Calc1.html</guid>
-       <dc:creator> Andreas Halkjær From       </dc:creator>
+       <dc:creator> Asta Halkjær From       </dc:creator>
        <pubDate>18 Jul 2019 00:00:00 +0000</pubDate>
        <description>
 This work formalizes soundness and completeness of a one-sided sequent

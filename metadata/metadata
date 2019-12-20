@@ -3734,7 +3734,7 @@ notify = uuomul@yahoo.com, nipkow@in.tum.de
 [FOL-Fitting]
 title = First-Order Logic According to Fitting
 author = Stefan Berghofer <http://www.in.tum.de/~berghofe>
-contributors = Andreas Halkjær From <http://www.student.dtu.dk/~s144442/>
+contributors = Asta Halkjær From <http://www.student.dtu.dk/~s144442/>
 date = 2007-08-02
 topic = Logic
 abstract = We present a formalization of parts of Melvin Fitting's book "First-Order Logic and Automated Theorem Proving". The formalization covers the syntax of first-order logic, its semantics, the model existence theorem, a natural deduction proof calculus together with a proof of correctness and completeness, as well as the Löwenheim-Skolem theorem.
@@ -3745,7 +3745,7 @@ notify = berghofe@in.tum.de
 
 [Epistemic_Logic]
 title = Epistemic Logic
-author = Andreas Halkjær From <http://www.student.dtu.dk/~s144442/>
+author = Asta Halkjær From <http://www.student.dtu.dk/~s144442/>
 topic = Logic
 date = 2018-10-29
 notify = s144442@student.dtu.dk
@@ -6635,7 +6635,7 @@ abstract =
   https://github.com/logic-tools/spa</a></p>
 extra-history =
   Change history:
-  [2018-07-21]: Proof of Pelletier's problem 34 (Andrews's Challenge) thanks to Andreas Halkjær From.
+  [2018-07-21]: Proof of Pelletier's problem 34 (Andrews's Challenge) thanks to Asta Halkjær From.
 
 [Bernoulli]
 title = Bernoulli Numbers
@@ -8385,7 +8385,7 @@ abstract =
 
 [FOL_Seq_Calc1]
 title = A Sequent Calculus for First-Order Logic
-author = Andreas Halkjær From <http://www.student.dtu.dk/~s144442/>
+author = Asta Halkjær From <http://www.student.dtu.dk/~s144442/>
 contributors = Alexander Birch Jensen <https://people.compute.dtu.dk/aleje/>,
   Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>,
   Jørgen Villadsen <https://people.compute.dtu.dk/jovi/>

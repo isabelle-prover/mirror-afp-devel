@@ -1,6 +1,6 @@
 (*
   File:      Epistemic_Logic.thy
-  Author:    Andreas Halkjær From
+  Author:    Asta Halkjær From
 
   This work is a formalization of epistemic logic with countably many agents.
   It includes proofs of soundness and completeness for the axiom system K.

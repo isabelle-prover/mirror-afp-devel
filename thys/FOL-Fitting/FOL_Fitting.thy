@@ -1,5 +1,5 @@
 (*  Author:     Stefan Berghofer, TU Muenchen, 2003
-    Author: Andreas Halkjær From, DTU Compute, 2019
+    Author: Asta Halkjær From, DTU Compute, 2019
     Thanks to John Bruntse Larsen, Anders Schlichtkrull & Jørgen Villadsen
     See also the Natural Deduction Assistant: https://nadea.compute.dtu.dk/
 *)
