@@ -10,7 +10,7 @@
 chapter AFP
 
 session Complx (AFP) = Word_Lib +
-  options [timeout = 2400]
+  options [timeout = 4800]
   directories
     "ex"
     "lib"
