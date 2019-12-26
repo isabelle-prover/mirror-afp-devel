@@ -11,7 +11,7 @@ session LEM (AFP) in "generated" = "HOL-Word" +
     Lem_string_extra
 
 session CakeML (AFP) = LEM +
-  options [timeout = 2400]
+  options [timeout = 3600]
   sessions
     Coinductive
     IEEE_Floating_Point
