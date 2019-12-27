@@ -44,6 +44,8 @@ declare[[C_lexer_trace]]
 
 section \<open>Regular C Code\<close>
 
+subsection \<open>Comments, Keywords and Pragmas\<close>
+
 C \<comment> \<open>Nesting of comments following the example suite of
       \<^url>\<open>https://gcc.gnu.org/onlinedocs/cpp/Initial-processing.html\<close>\<close> \<open>
 /* inside /* inside */ int a = "outside";
@@ -104,6 +106,8 @@ C \<comment> \<open>Directive: macro\<close> \<open>
 #endif
 \<close>
 
+subsection \<open>Scala/jEdit Latency on Multiple Bindings\<close>
+
 C \<comment> \<open>Example of obfuscated code \<^url>\<open>https://en.wikipedia.org/wiki/International_Obfuscated_C_Code_Contest\<close>\<close> \<open>
 #define _ -F<00||--F-OO--;
 int F=00,OO=00;main(){F_OO();printf("%1.3f\n",4.*-F/OO/OO);}F_OO()
@@ -126,6 +130,17 @@ _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
             _-_-_-_
 }
 \<close>
+
+text \<open> Select inside the ball, experience the latency.
+A special keyboard combination ``Ctrl-like key\<^footnote>\<open>on Apple: Cmd\<close> + Shift +
+Enter'' lets Isabelle/Scala/jEdit enter in a mode where the selected bound occurrences can be all
+simultaneously replaced by new input characters typed on the keyboard. (The ``select-entity'' action
+exists since Isabelle2016-1, see the respective section ``Prover IDE -- Isabelle/Scala/jEdit'' in
+the NEWS.)\<close>
+
+subsection \<open>Lexing and Parsing Obfuscated Sources\<close>
+
+text \<open>Another lexer/parser - stress test: parsing an obfuscated C source.\<close>
 
 C \<comment> \<open>Example of obfuscated code \<^url>\<open>https://www.ioccc.org/2018/endoh1/prog.c\<close>\<close> \<open>
         #define/*__Int3rn^ti[]n/l_()I3fusc^t3|]_C_C<>I7E_C[]nt3st__*/L/*__MMXVIII__*/for
