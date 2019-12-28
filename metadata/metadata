@@ -8691,3 +8691,18 @@ abstract =
   Clean_wrapper as well as AutoCorres and AutoCorres_wrapper (available
   via git) are applications of this front-end.
 
+[Zeta_3_Irrational]
+title = The Irrationality of ζ(3)
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory
+date = 2019-12-27
+notify = manuel.eberl@tum.de
+abstract = 
+  <p>This article provides a formalisation of Beukers's
+  straightforward analytic proof that ζ(3) is irrational. This was first
+  proven by Apéry (which is why this result is also often called
+  ‘Apéry's Theorem’) using a more algebraic approach. This
+  formalisation follows <a
+  href="http://people.math.sc.edu/filaseta/gradcourses/Math785/Math785Notes4.pdf">Filaseta's
+  presentation</a> of Beukers's proof.</p>
+

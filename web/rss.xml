@@ -9,7 +9,22 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>18 Dec 2019 00:00:00 +0000</pubDate>
+    <pubDate>27 Dec 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Irrationality of ζ(3)</title>
+              <link>https://www.isa-afp.org/entries/Zeta_3_Irrational.html</link>
+       <guid>https://www.isa-afp.org/entries/Zeta_3_Irrational.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>27 Dec 2019 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This article provides a formalisation of Beukers&#39;s
+straightforward analytic proof that ζ(3) is irrational. This was first
+proven by Apéry (which is why this result is also often called
+‘Apéry&#39;s Theorem’) using a more algebraic approach. This
+formalisation follows &lt;a
+href=&#34;http://people.math.sc.edu/filaseta/gradcourses/Math785/Math785Notes4.pdf&#34;&gt;Filaseta&#39;s
+presentation&lt;/a&gt; of Beukers&#39;s proof.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>The Poincaré-Bendixson Theorem</title>
               <link>https://www.isa-afp.org/entries/Poincare_Bendixson.html</link>
@@ -556,26 +571,6 @@ and the field-theoretic Nullstellensatz. The formalization follows
 Chapter 4.1. of &lt;a
 href=&#34;https://link.springer.com/book/10.1007/978-0-387-35651-8&#34;&gt;Ideals,
 Varieties, and Algorithms&lt;/a&gt; by Cox, Little and O&#39;Shea.</description>
-    </item>
-    <item>
-       <title>Gröbner Bases, Macaulay Matrices and Dubé's Degree Bounds</title>
-              <link>https://www.isa-afp.org/entries/Groebner_Macaulay.html</link>
-       <guid>https://www.isa-afp.org/entries/Groebner_Macaulay.html</guid>
-       <dc:creator> Alexander Maletzky       </dc:creator>
-       <pubDate>15 Jun 2019 00:00:00 +0000</pubDate>
-       <description>
-This entry formalizes the connection between Gröbner bases and
-Macaulay matrices (sometimes also referred to as `generalized
-Sylvester matrices&#39;). In particular, it contains a method for
-computing Gröbner bases, which proceeds by first constructing some
-Macaulay matrix of the initial set of polynomials, then row-reducing
-this matrix, and finally converting the result back into a set of
-polynomials. The output is shown to be a Gröbner basis if the Macaulay
-matrix constructed in the first step is sufficiently large. In order
-to obtain concrete upper bounds on the size of the matrix (and hence
-turn the method into an effectively executable algorithm), Dubé&#39;s
-degree bounds on Gröbner bases are utilized; consequently, they are
-also part of the formalization.</description>
     </item>
   </channel>
 </rss>
