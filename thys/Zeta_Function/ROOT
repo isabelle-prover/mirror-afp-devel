@@ -16,6 +16,8 @@ session Zeta_Function (AFP) = Dirichlet_Series +
     "Dirichlet_Series.Dirichlet_Series_Analysis"
   theories
     Zeta_Function
+    Zeta_Laurent_Expansion
+    Hadjicostas_Chapman
   document_files
     "root.tex"
     "root.bib"

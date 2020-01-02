@@ -10,6 +10,7 @@ imports
   "Dirichlet_Series.Dirichlet_Series_Analysis"
   "Winding_Number_Eval.Winding_Number_Eval"
   "HOL-Real_Asymp.Real_Asymp"
+  Zeta_Library
 begin
 
 subsection \<open>Preliminary facts\<close>
@@ -242,6 +243,9 @@ lemma hurwitz_zeta_1: "hurwitz_zeta c 1 = 0"
 
 lemma zeta_1: "zeta 1 = 0"
   by (simp add: zeta_def hurwitz_zeta_1)
+
+lemma zeta_minus_pole_eq: "s \<noteq> 1 \<Longrightarrow> zeta s - 1 / (s - 1) = pre_zeta 1 s"
+  by (simp add: zeta_def hurwitz_zeta_def)
 
 
 context
@@ -808,14 +812,14 @@ qed
 lemma pre_zeta_cnj [simp]: "a > 0 \<Longrightarrow> pre_zeta a (cnj z) = cnj (pre_zeta a z)"
   by (simp add: pre_zeta_def)
 
-theorem hurwitz_zeta_cnj [simp]: "a > 0 \<Longrightarrow> hurwitz_zeta a (cnj z) = cnj (hurwitz_zeta a z)"
+lemma hurwitz_zeta_cnj [simp]: "a > 0 \<Longrightarrow> hurwitz_zeta a (cnj z) = cnj (hurwitz_zeta a z)"
 proof -
   assume "a > 0"
   moreover have "cnj z = 1 \<longleftrightarrow> z = 1" by (simp add: complex_eq_iff)
   ultimately show ?thesis by (auto simp: hurwitz_zeta_def cnj_powr)
 qed
 
-theorem zeta_cnj [simp]: "zeta (cnj z) = cnj (zeta z)"
+lemma zeta_cnj [simp]: "zeta (cnj z) = cnj (zeta z)"
   by (simp add: zeta_def)
 
 corollary hurwitz_zeta_real: "a > 0 \<Longrightarrow> hurwitz_zeta a (of_real x) \<in> \<real>"
@@ -823,6 +827,9 @@ corollary hurwitz_zeta_real: "a > 0 \<Longrightarrow> hurwitz_zeta a (of_real x)
 
 corollary zeta_real: "zeta (of_real x) \<in> \<real>"
   unfolding zeta_def by (rule hurwitz_zeta_real) auto
+
+corollary zeta_real': "z \<in> \<real> \<Longrightarrow> zeta z \<in> \<real>"
+  by (elim Reals_cases) (auto simp: zeta_real)
 
 
 subsection \<open>Connection to Dirichlet series\<close>
@@ -1720,6 +1727,39 @@ proof -
     by (simp add: rGamma_inverse_Gamma field_simps)
 qed
 
+lemma Gamma_times_zeta_has_integral:
+  assumes "Re z > 1"
+  shows   "((\<lambda>x. x powr (z - 1) / (of_real (exp x) - 1)) has_integral (Gamma z * zeta z)) {0<..}"
+    (is "(?f has_integral _) _")
+proof -
+  have "(?f has_integral set_lebesgue_integral lebesgue {0<..} ?f) {0<..}"
+    using Gamma_times_zeta_integrable[OF assms]
+    by (intro has_integral_set_lebesgue) auto
+  also have "set_lebesgue_integral lebesgue {0<..} ?f = Gamma z * zeta z"
+    using Gamma_times_zeta_integral[OF assms] by simp
+  finally show ?thesis .
+qed
+
+lemma Gamma_times_zeta_has_integral_real:
+  fixes z :: real
+  assumes "z > 1"
+  shows   "((\<lambda>x. x powr (z - 1) / (exp x - 1)) has_integral (Gamma z * Re (zeta z))) {0<..}"
+proof -
+  from assms have *: "Re (of_real z) > 1" by simp
+  have "((\<lambda>x. Re (complex_of_real x powr (complex_of_real z - 1)) / (exp x - 1)) has_integral
+           Gamma z * Re (zeta (complex_of_real z))) {0<..}"
+    using has_integral_linear[OF Gamma_times_zeta_has_integral[OF *] bounded_linear_Re] 
+    by (simp add: o_def Gamma_complex_of_real)
+  also have "?this \<longleftrightarrow> ?thesis"
+    using assms by (intro has_integral_cong) (auto simp: powr_Reals_eq)
+  finally show ?thesis .
+qed
+
+lemma Gamma_integral_real':
+  assumes x: "x > (0 :: real)"
+  shows   "((\<lambda>t. t powr (x - 1) / exp t) has_integral Gamma x) {0<..}"
+  using Gamma_integral_real[OF assms] by (subst has_integral_closure [symmetric]) auto
+
 
 subsection \<open>An analytic proof of the infinitude of primes\<close>
 
@@ -1854,10 +1894,10 @@ qed
 lemma conv_abscissa_perzeta: "conv_abscissa (fds_perzeta q) \<le> 1"
   by (rule order.trans[OF conv_le_abs_conv_abscissa abs_conv_abscissa_perzeta])
 
-lemma fds_perzeta_0 [simp]: "fds_perzeta 0 = fds_zeta"
+lemma fds_perzeta__left_0 [simp]: "fds_perzeta 0 = fds_zeta"
   by (simp add: fds_perzeta_def fds_zeta_def)
 
-lemma perzeta_0 [simp]: "Re s > 1 \<Longrightarrow> perzeta 0 s = zeta s"
+lemma perzeta_0_left [simp]: "perzeta 0 s = zeta s"
   by (simp add: perzeta_def eval_fds_zeta)
 
 lemma perzeta_int: "q \<in> \<int> \<Longrightarrow> perzeta q = zeta"
@@ -1936,6 +1976,28 @@ proof (rule conv_abscissa_leI)
   qed (insert c, auto)
   thus "\<exists>s. s \<bullet> 1 = c \<and> fds_converges (fds_perzeta q) s"
     by (intro exI[of _ "of_real c"]) auto
+qed
+
+lemma fds_perzeta_one_half: "fds_perzeta (1 / 2) = fds (\<lambda>n. (-1) ^ n)"
+  using Complex.DeMoivre[of pi]
+  by (intro fds_eqI) (auto simp: fds_perzeta_def exp_eq_polar mult_ac)
+
+lemma perzeta_one_half_1 [simp]: "perzeta (1 / 2) 1 = -ln 2"
+proof (rule sums_unique2)
+  have *: "(1 / 2 :: real) \<notin> \<int>"
+    using fraction_not_in_ints[of 2 1] by auto
+  have "fds_converges (fds_perzeta (1 / 2)) 1"
+    by (rule fds_converges, rule le_less_trans, rule conv_abscissa_perzeta') (use * in auto)
+  hence "(\<lambda>n. (-1) ^ Suc n / Suc n) sums eval_fds (fds_perzeta (1 / 2)) 1"
+    unfolding fds_converges_altdef by (simp add: fds_perzeta_one_half)
+  also from * have "eval_fds (fds_perzeta (1 / 2)) 1 = perzeta (1 / 2) 1"
+    by (simp add: perzeta_def)
+  finally show "(\<lambda>n. -complex_of_real ((-1) ^ n / Suc n)) sums perzeta (1 / 2) 1"
+    by simp
+  hence "(\<lambda>n. -complex_of_real ((-1) ^ n / Suc n)) sums -of_real (ln 2)"
+    by (intro sums_minus sums_of_real alternating_harmonic_series_sums)
+  thus "(\<lambda>n. -complex_of_real ((-1) ^ n / Suc n)) sums -(ln 2)"
+    by (simp flip: Ln_of_real)
 qed
 
 
@@ -3558,7 +3620,6 @@ next
   qed
 qed (use assms in \<open>auto intro!: holomorphic_intros simp: finite_imp_closed open_halfspace_Re_gt\<close>)
 
-
 lemma perzeta_conv_hurwitz_zeta_multiplication':
   fixes k :: nat and a :: int and s :: complex
   assumes "k > 0" "s \<noteq> 1"
@@ -3628,5 +3689,15 @@ proof -
     by (simp add: sum_distrib_left sum_distrib_right mult_ac)
   finally show ?thesis .
 qed
+
+lemma perzeta_one_half_left: "s \<noteq> 1 \<Longrightarrow> perzeta (1 / 2) s = (2 powr (1-s) - 1) * zeta s"
+  using perzeta_conv_hurwitz_zeta_multiplication'[of 2 s 1]
+  by (simp add: eval_nat_numeral hurwitz_zeta_one_half_left powr_minus
+                field_simps zeta_def powr_diff)
+
+lemma perzeta_one_half_left':
+  "perzeta (1 / 2) s =
+         (if s = 1 then -ln 2 else (2 powr (1 - s) - 1) / (s - 1)) * ((s - 1) * pre_zeta 1 s + 1)"
+  by (cases "s = 1") (auto simp: perzeta_one_half_left field_simps zeta_def hurwitz_zeta_def)
   
 end
