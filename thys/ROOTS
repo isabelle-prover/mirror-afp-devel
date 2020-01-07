@@ -197,6 +197,7 @@ Higher_Order_Terms
 Hoare_Time
 HotelKeyCards
 Huffman
+Hybrid_Logic
 Hybrid_Multi_Lane_Spatial_Logic
 Hybrid_Systems_VCs
 HyperCTL
@@ -503,5 +504,6 @@ Word_Lib
 WorkerWrapper
 XML
 Zeta_Function
+Zeta_3_Irrational
 ZFC_in_HOL
 pGCL

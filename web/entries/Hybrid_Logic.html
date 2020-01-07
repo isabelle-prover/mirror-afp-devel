@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>The Transcendence of e - Archive of Formal Proofs
+<title>Formalizing a Seligman-Style Tableau System for Hybrid Logic - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,13 +61,21 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">T</font>he
+  <h1>          <font class="first">F</font>ormalizing
   
-          <font class="first">T</font>ranscendence
+          a
   
-          of
+          <font class="first">S</font>eligman-Style
   
-          e
+          <font class="first">T</font>ableau
+  
+          <font class="first">S</font>ystem
+  
+          for
+  
+          <font class="first">H</font>ybrid
+  
+          <font class="first">L</font>ogic
   
 </h1>
   <p>&nbsp;</p>
@@ -76,7 +84,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">The Transcendence of e</td>
+  <td class="data" width="80%">Formalizing a Seligman-Style Tableau System for Hybrid Logic</td>
 </tr>
 
 <tr>
@@ -84,7 +92,7 @@
           Author:
       </td>
   <td class="data">
-              <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
+              <a href="http://www.student.dtu.dk/~s144442/">Asta Halkjær From</a>
       </td>
 </tr>
 
@@ -92,30 +100,38 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2017-01-12</td>
+  <td class="data">2019-12-20</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-<p>This work contains a proof that Euler's number e is transcendental. The
-proof follows the standard approach of assuming that e is algebraic and
-then using a specific integer polynomial to derive two inconsistent bounds,
-leading to a contradiction.</p> <p>This kind of approach can be found in
-many different sources; this formalisation mostly follows a <a  href="http://planetmath.org/proofoflindemannweierstrasstheoremandthateandpiaretranscendental">PlanetMath article</a> by Roger Lipsett.</p></td>
+This work is a formalization of soundness and completeness proofs for
+a Seligman-style tableau system for hybrid logic. The completeness
+result is obtained via a synthetic approach using maximally consistent
+sets of tableau blocks. The formalization differs from the cited work
+in a few ways. First, to avoid the need to backtrack in the
+construction of a tableau, the formalized system has no unnamed
+initial segment, and therefore no Name rule. Second, I show that the
+full Bridge rule is derivable in the system. Third, I start from rules
+restricted to only extend the branch with new formulas, including only
+witnessing diamonds that are not already witnessed, and show that the
+unrestricted rules are derivable. Similarly, I start from simpler
+versions of the @-rules and derive the general ones. These
+restrictions are imposed to rule out some means of nontermination.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{E_Transcendental-AFP,
-  author  = {Manuel Eberl},
-  title   = {The Transcendence of e},
+        <pre>@article{Hybrid_Logic-AFP,
+  author  = {Asta Halkjær From},
+  title   = {Formalizing a Seligman-Style Tableau System for Hybrid Logic},
   journal = {Archive of Formal Proofs},
-  month   = jan,
-  year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/E_Transcendental.html},
+  month   = dec,
+  year    = 2019,
+  note    = {\url{http://isa-afp.org/entries/Hybrid_Logic.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -127,9 +143,7 @@ many different sources; this formalisation mostly follows a <a  href="http://pla
 
     
                     
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Pi_Transcendental.html">Pi_Transcendental</a>, <a href="Zeta_3_Irrational.html">Zeta_3_Irrational</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -141,39 +155,23 @@ many different sources; this formalisation mostly follows a <a  href="http://pla
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/E_Transcendental/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/E_Transcendental/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Hybrid_Logic/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Hybrid_Logic/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/E_Transcendental/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Hybrid_Logic/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-E_Transcendental-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Hybrid_Logic-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2018:
-            <a href="../release/afp-E_Transcendental-2018-08-16.tar.gz">
-              afp-E_Transcendental-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-E_Transcendental-2017-10-10.tar.gz">
-              afp-E_Transcendental-2017-10-10.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016-1:
-            <a href="../release/afp-E_Transcendental-2017-01-13.tar.gz">
-              afp-E_Transcendental-2017-01-13.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>

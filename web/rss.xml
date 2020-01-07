@@ -9,7 +9,43 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>18 Dec 2019 00:00:00 +0000</pubDate>
+    <pubDate>27 Dec 2019 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Irrationality of ζ(3)</title>
+              <link>https://www.isa-afp.org/entries/Zeta_3_Irrational.html</link>
+       <guid>https://www.isa-afp.org/entries/Zeta_3_Irrational.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>27 Dec 2019 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This article provides a formalisation of Beukers&#39;s
+straightforward analytic proof that ζ(3) is irrational. This was first
+proven by Apéry (which is why this result is also often called
+‘Apéry&#39;s Theorem’) using a more algebraic approach. This
+formalisation follows &lt;a
+href=&#34;http://people.math.sc.edu/filaseta/gradcourses/Math785/Math785Notes4.pdf&#34;&gt;Filaseta&#39;s
+presentation&lt;/a&gt; of Beukers&#39;s proof.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>Formalizing a Seligman-Style Tableau System for Hybrid Logic</title>
+              <link>https://www.isa-afp.org/entries/Hybrid_Logic.html</link>
+       <guid>https://www.isa-afp.org/entries/Hybrid_Logic.html</guid>
+       <dc:creator> Asta Halkjær From       </dc:creator>
+       <pubDate>20 Dec 2019 00:00:00 +0000</pubDate>
+       <description>
+This work is a formalization of soundness and completeness proofs for
+a Seligman-style tableau system for hybrid logic. The completeness
+result is obtained via a synthetic approach using maximally consistent
+sets of tableau blocks. The formalization differs from the cited work
+in a few ways. First, to avoid the need to backtrack in the
+construction of a tableau, the formalized system has no unnamed
+initial segment, and therefore no Name rule. Second, I show that the
+full Bridge rule is derivable in the system. Third, I start from rules
+restricted to only extend the branch with new formulas, including only
+witnessing diamonds that are not already witnessed, and show that the
+unrestricted rules are derivable. Similarly, I start from simpler
+versions of the @-rules and derive the general ones. These
+restrictions are imposed to rule out some means of nontermination.</description>
+    </item>
     <item>
        <title>The Poincaré-Bendixson Theorem</title>
               <link>https://www.isa-afp.org/entries/Poincare_Bendixson.html</link>
@@ -536,46 +572,6 @@ decomposition theorem of polyhedra, and Meyer&#39;s result that the
 integer hull of a polyhedron is a polyhedron itself. Several theorems
 include bounds on the appearing numbers, and in particular we provide
 an a-priori bound on mixed-integer solutions of linear inequalities.</description>
-    </item>
-    <item>
-       <title>Hilbert's Nullstellensatz</title>
-              <link>https://www.isa-afp.org/entries/Nullstellensatz.html</link>
-       <guid>https://www.isa-afp.org/entries/Nullstellensatz.html</guid>
-       <dc:creator> Alexander Maletzky       </dc:creator>
-       <pubDate>16 Jun 2019 00:00:00 +0000</pubDate>
-       <description>
-This entry formalizes Hilbert&#39;s Nullstellensatz, an important
-theorem in algebraic geometry that can be viewed as the generalization
-of the Fundamental Theorem of Algebra to multivariate polynomials: If
-a set of (multivariate) polynomials over an algebraically closed field
-has no common zero, then the ideal it generates is the entire
-polynomial ring. The formalization proves several equivalent versions
-of this celebrated theorem: the weak Nullstellensatz, the strong
-Nullstellensatz (connecting algebraic varieties and radical ideals),
-and the field-theoretic Nullstellensatz. The formalization follows
-Chapter 4.1. of &lt;a
-href=&#34;https://link.springer.com/book/10.1007/978-0-387-35651-8&#34;&gt;Ideals,
-Varieties, and Algorithms&lt;/a&gt; by Cox, Little and O&#39;Shea.</description>
-    </item>
-    <item>
-       <title>Gröbner Bases, Macaulay Matrices and Dubé's Degree Bounds</title>
-              <link>https://www.isa-afp.org/entries/Groebner_Macaulay.html</link>
-       <guid>https://www.isa-afp.org/entries/Groebner_Macaulay.html</guid>
-       <dc:creator> Alexander Maletzky       </dc:creator>
-       <pubDate>15 Jun 2019 00:00:00 +0000</pubDate>
-       <description>
-This entry formalizes the connection between Gröbner bases and
-Macaulay matrices (sometimes also referred to as `generalized
-Sylvester matrices&#39;). In particular, it contains a method for
-computing Gröbner bases, which proceeds by first constructing some
-Macaulay matrix of the initial set of polynomials, then row-reducing
-this matrix, and finally converting the result back into a set of
-polynomials. The output is shown to be a Gröbner basis if the Macaulay
-matrix constructed in the first step is sufficiently large. In order
-to obtain concrete upper bounds on the size of the matrix (and hence
-turn the method into an effectively executable algorithm), Dubé&#39;s
-degree bounds on Gröbner bases are utilized; consequently, they are
-also part of the formalization.</description>
     </item>
   </channel>
 </rss>
