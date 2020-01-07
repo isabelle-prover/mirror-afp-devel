@@ -11,22 +11,22 @@ imports
 begin
 
 text \<open>
-  Ap\'{e}ry's original proof of the irrationality of $\zeta(3)$ contained several 
+  Ap\'{e}ry's original proof of the irrationality of $\zeta(3)$ contained several
   tricky identities of sums involving binomial coefficients that are difficult to
   prove. I instead follow Beukers's proof, which consists of several fairly
   straightforward manipulations of integrals with absolutely no caveats.
 
-  Both Ap\'{e}ry and Beukers make use of an asymptotic upper bound on 
+  Both Ap\'{e}ry and Beukers make use of an asymptotic upper bound on
   $\text{lcm}\{1\ldots n\}$ -- namely $\text{lcm}\{1\ldots n\} \in o(c^n)$ for
-  any $c > e$, which is a consequence of the Prime Number Theorem (which, fortunately, 
+  any $c > e$, which is a consequence of the Prime Number Theorem (which, fortunately,
   is available in the \emph{Archive of Formal Proofs}~\cite{afp_primes1,afp_primes2}).
 
   I follow the concise presentation of Beukers's proof in Filaseta's lecture
   notes~\cite{filaseta}, which turned out to be very amenable to formalisation.
 
   There is another earlier formalisation of the irrationality of $\zeta(3)$ by
-  Mahboubi\ \emph{et al.}~\cite{mahboubi}, who followed Ap\'{e}ry's original proof, 
-  but were ultimately forced to find a more elementary way to prove the asymptotics 
+  Mahboubi\ \emph{et al.}~\cite{mahboubi}, who followed Ap\'{e}ry's original proof,
+  but were ultimately forced to find a more elementary way to prove the asymptotics
   of $\text{lcm}\{1\ldots n\}$ than the Prime Number Theorem.
 
   First, we will require some auxiliary material before we get started with the actual
@@ -191,7 +191,7 @@ lemma set_integrable_bound:
   apply (erule eventually_mono)
   apply (auto simp: indicator_def)
   done
-  
+
 lemma set_integrableI_nonneg:
   fixes f :: "'a \<Rightarrow> real"
   assumes "set_borel_measurable M A f"
@@ -413,11 +413,11 @@ proof -
   also have "\<dots> = (\<Sum>i\<le>k. smult (of_nat (k choose i))
                     ((pderiv ^^ i) (monom 1 n) * (pderiv ^^ (k - i)) (monom 1 n \<circ>\<^sub>p [:1, -1:])))"
     by (simp add: monom_altdef pcompose_pCons pcompose_power_left)
-  also have "\<dots> = (\<Sum>i\<le>k. smult ((-1) ^ (k - i) * of_nat (k choose i)) 
+  also have "\<dots> = (\<Sum>i\<le>k. smult ((-1) ^ (k - i) * of_nat (k choose i))
                    ((pderiv ^^ i) (monom 1 n) * ((pderiv ^^ (k - i)) (monom 1 n) \<circ>\<^sub>p [:1, -1:])))"
     by (simp add: * mult_ac)
-  also have "\<dots> = (\<Sum>i\<le>k. smult ((-1) ^ (k - i) * of_nat (k choose i)) 
-                   (monom (pochhammer (n - i + 1) i) (n - i) * 
+  also have "\<dots> = (\<Sum>i\<le>k. smult ((-1) ^ (k - i) * of_nat (k choose i))
+                   (monom (pochhammer (n - i + 1) i) (n - i) *
                     monom (pochhammer (n - k + i + 1) (k - i)) (n - k + i) \<circ>\<^sub>p [:1, -1:]))"
     using assms by (simp add: higher_pderiv_monom)
   also have "\<dots> = (\<Sum>i\<le>k. smult ((-1) ^ (k - i) * of_nat (k choose i) * pochhammer (n - i + 1) i * pochhammer (n - k + i + 1) (k - i))
@@ -533,10 +533,10 @@ lemma continuous_on_Shleg' [continuous_intros]:
   by (rule continuous_on_compose2[OF continuous_on_Shleg[of UNIV]]) auto
 
 lemma measurable_Gen_Shleg [measurable]: "Gen_Shleg n \<in> borel_measurable borel"
-  by (intro borel_measurable_continuous_on1 continuous_on_Gen_Shleg)
+  by (intro borel_measurable_continuous_onI continuous_on_Gen_Shleg)
 
 lemma measurable_Shleg [measurable]: "Shleg \<in> borel_measurable borel"
-  by (intro borel_measurable_continuous_on1 continuous_on_Shleg)
+  by (intro borel_measurable_continuous_onI continuous_on_Shleg)
 
 end
 
@@ -945,7 +945,7 @@ proof -
     unfolding beukers_nn_integral1_series
     by (simp only: assms power_Suc [symmetric] mult.commute[of "x ^ 2" for x] *
                    times_divide_eq_right mult_1_right add_ac flip: mult_2)
-  also have **: "(\<lambda>k. 2 / (r + k + 1) ^ 3) sums 
+  also have **: "(\<lambda>k. 2 / (r + k + 1) ^ 3) sums
               (2 * (Re (zeta 3) - (\<Sum>k=1..r. 1 / k ^ 3)))"
     using sums_mult[OF sums_Re_zeta_of_nat_offset[of 3], of 2] by simp
   hence "(\<Sum>k. ennreal (2 / (r + k + 1) ^ 3)) = ennreal \<dots>"
@@ -986,7 +986,7 @@ proof -
   also have "(\<Sum>k=1..r. 1/k^2) - (\<Sum>k=1..s. 1/k^2) = (\<Sum>k\<in>{1..r}-{1..s}. 1/k^2)"
     using assms by (subst Groups_Big.sum_diff) auto
   also have "{1..r} - {1..s} = {s<..r}" by auto
-  
+
   also have "(\<lambda>k. 1 / (r - s) * (1 / (s + k + 1) ^ 2 - 1 / (r + k + 1) ^ 2)) =
                (\<lambda>k. 1 / ((k+r+1) * (k+s+1)^2) + 1 / ((k+r+1)^2 * (k+s+1)))"
   proof (intro ext, goal_cases)
@@ -1208,7 +1208,7 @@ proof -
     by (simp add: P_def)
   hence "A > 0"
     unfolding A_def by (intro sum_pos2[of _ 0]) auto
-  
+
   ultimately show ?thesis
     by (intro that[of A "B1' + B2'"]) auto
 qed
@@ -1301,7 +1301,7 @@ proof -
   finally have *: "?lhs \<le> (x*(1-x)*y*(1-y)*z*(1-z)) / (2 * sqrt (1 - z) * sqrt x * sqrt y * sqrt z)"
     using xyz beukers_denom_ineq[of x y z]
     by (intro divide_left_mono mult_nonneg_nonneg mult_pos_pos) auto
- 
+
   have "(x*(1-x)*y*(1-y)*z*(1-z)) = (sqrt x * sqrt x * (1-x) * sqrt y * sqrt y *
                (1-y) * sqrt z * sqrt z * sqrt (1-z) * sqrt (1-z))"
     using xyz by simp
@@ -1343,7 +1343,7 @@ proof -
     unfolding lborel_prod [symmetric] case_prod_unfold
     by (subst nn_integral_cmult [symmetric])
        (auto intro!: nn_integral_cong simp: indicator_def simp flip: ennreal_mult')
-  also have "(\<integral>\<^sup>+(w,x,y)\<in>D'. (1 / (1-(1-x*y)*w)) \<partial>lborel) = 
+  also have "(\<integral>\<^sup>+(w,x,y)\<in>D'. (1 / (1-(1-x*y)*w)) \<partial>lborel) =
                (\<integral>\<^sup>+(x,y)\<in>{0<..<1}\<times>{0<..<1}. ennreal (- (ln (x * y) / (1 - x * y))) \<partial>lborel)"
     using beukers_nn_integral1_altdef[of 0 0]
     by (simp add: beukers_nn_integral1_def D'_def case_prod_unfold)
@@ -1494,11 +1494,11 @@ lemma beukers_aux_by_parts_aux:
          (LBINT y=0..1. Q (n-k) y * (fact k * (x*z)^k / (1-(1-x*y)*z) ^ (k+1)))"
   using assms(3)
 proof (induction k)
-  case (Suc k)                                    
+  case (Suc k)
   note [derivative_intros] = DERIV_chain2[OF has_field_derivative_Gen_Shleg]
   define G where "G = (\<lambda>y. -fact k * (x*z)^k / (1-(1-x*y)*z) ^ (k+1))"
   define g where "g = (\<lambda>y. fact (Suc k) * (x*z)^Suc k / (1-(1-x*y)*z) ^ (k+2))"
-  
+
   have less: "(1 - x * y) * z < 1" and neq: "(1 - x * y) * z \<noteq> 1"
     if y: "y \<in> {0..1}" for y
   proof -
@@ -1768,7 +1768,7 @@ proof -
         unfolding case_prod_unfold by (intro set_integrable_mult_right) (auto simp: D_def)
     next
       fix x y assume xy: "(x, y) \<in> D"
-      have "norm (LBINT z:{0<..<1}. norm (P x * P y / (1-(1-x*y)*z))) = 
+      have "norm (LBINT z:{0<..<1}. norm (P x * P y / (1-(1-x*y)*z))) =
               norm (LBINT z:{0<..<1}. \<bar>P x\<bar> * \<bar>P y\<bar> * (1 / (1-(1-x*y)*z)))"
       proof (intro arg_cong[where f = norm] set_lebesgue_integral_cong allI impI, goal_cases)
         case (2 z)
@@ -1806,7 +1806,7 @@ lemma beukers_aux_integrable2:
   "set_integrable lborel D' (\<lambda>(z,x,y). P x * (x*y*z)^n * (1-y)^n / (1-(1-x*y)*z) ^ (n+1))"
 proof -
   have [measurable]: "P \<in> borel_measurable borel" unfolding P_def
-    by (intro borel_measurable_continuous_on1 continuous_intros)
+    by (intro borel_measurable_continuous_onI continuous_intros)
   have "bounded (P ` {0..1})"
     unfolding P_def by (intro compact_imp_bounded compact_continuous_image continuous_intros) auto
   then obtain C where C: "\<And>x. x \<in> {0..1} \<Longrightarrow> norm (P x) \<le> C"
@@ -1842,7 +1842,7 @@ lemma beukers_aux_integrable3:
   "set_integrable lborel D' (\<lambda>(w,x,y). P x * (1-w)^n * (1-y)^n / (1-(1-x*y)*w))"
 proof -
   have [measurable]: "P \<in> borel_measurable borel" unfolding P_def
-    by (intro borel_measurable_continuous_on1 continuous_intros)
+    by (intro borel_measurable_continuous_onI continuous_intros)
   have "bounded (P ` {0..1})"
     unfolding P_def by (intro compact_imp_bounded compact_continuous_image continuous_intros) auto
   then obtain C where C: "\<And>x. x \<in> {0..1} \<Longrightarrow> norm (P x) \<le> C"
@@ -1881,7 +1881,7 @@ proof -
   have D [measurable]: "D \<in> sets borel" "D \<in> sets (borel \<Otimes>\<^sub>M borel)"
     unfolding D_def by (simp_all flip: borel_prod)
   have [measurable]: "P \<in> borel_measurable borel" unfolding P_def
-    by (intro borel_measurable_continuous_on1 continuous_intros)
+    by (intro borel_measurable_continuous_onI continuous_intros)
 
   have "beukers_integral2 = (LBINT (x,y):D. P x * P y * (LBINT z=0..1. 1 / (1-(1-x*y)*z)))"
     unfolding beukers_integral2_def case_prod_unfold
@@ -2065,7 +2065,7 @@ proof
   qed
 
   have "(\<lambda>n. 2 * b * Re (zeta 3) * real (Lcm {1..n}) ^ 3 / 27 ^ n) \<in>
-          O(\<lambda>n. real (Lcm {1..n}) ^ 3 / 27 ^ n)" 
+          O(\<lambda>n. real (Lcm {1..n}) ^ 3 / 27 ^ n)"
     using \<open>b > 0\<close> Re_zeta_ge_1[of 3] by simp
   also have "exp 1 < (3 :: real)"
     using e_approx_32 by (simp add: abs_if split: if_splits)
