@@ -162,12 +162,12 @@ primrec block_nominals :: \<open>('a, 'b) block \<Rightarrow> 'b set\<close> whe
 definition branch_nominals :: \<open>('a, 'b) branch \<Rightarrow> 'b set\<close> where
   \<open>branch_nominals branch \<equiv> (\<Union>block \<in> set branch. block_nominals block)\<close>
 
-definition new :: \<open>('a, 'b) fm \<Rightarrow> 'b \<Rightarrow> ('a, 'b) branch \<Rightarrow> bool\<close> where
-  \<open>new p a branch \<equiv> \<nexists>ps. (ps, a) \<in>. branch \<and> p on (ps, a)\<close>
-
 abbreviation at_in :: \<open>('a, 'b) fm \<Rightarrow> 'b \<Rightarrow> ('a, 'b) branch \<Rightarrow> bool\<close>
   (\<open>_ at _ in _\<close> [51, 51, 51] 50) where
   \<open>p at a in branch \<equiv> \<exists>ps. (ps, a) \<in>. branch \<and> p on (ps, a)\<close>
+
+definition new :: \<open>('a, 'b) fm \<Rightarrow> 'b \<Rightarrow> ('a, 'b) branch \<Rightarrow> bool\<close> where
+  \<open>new p a branch \<equiv> \<not> p at a in branch\<close>
 
 definition witnessed :: \<open>('a, 'b) fm \<Rightarrow> 'b \<Rightarrow> ('a, 'b) branch \<Rightarrow> bool\<close> where
   \<open>witnessed p a branch \<equiv> \<exists>i. (\<^bold>@ i p) at a in branch \<and> (\<^bold>\<diamond> Nom i) at a in branch\<close>
@@ -175,76 +175,83 @@ definition witnessed :: \<open>('a, 'b) fm \<Rightarrow> 'b \<Rightarrow> ('a, '
 text \<open>
   A branch has a closing tableau iff it is contained in the following inductively defined set.
   In that case I call the branch closeable.
+  The number in front of the turnstile is the number of available coins to spend on GoTo.
 \<close>
 
-inductive ST :: \<open>('a, 'b) branch \<Rightarrow> bool\<close> (\<open>\<turnstile> _\<close> [50] 50) where
+inductive ST :: \<open>nat \<Rightarrow> ('a, 'b) branch \<Rightarrow> bool\<close> (\<open>_ \<turnstile> _\<close> [50, 50] 50) where
   Close:
   \<open>p at i in branch \<Longrightarrow> (\<^bold>\<not> p) at i in branch \<Longrightarrow>
-   \<turnstile> branch\<close>
+   n \<turnstile> branch\<close>
 | Neg:
   \<open>(\<^bold>\<not> \<^bold>\<not> p) at a in (ps, a) # branch \<Longrightarrow>
    new p a ((ps, a) # branch) \<Longrightarrow>
-   \<turnstile> (p # ps, a) # branch \<Longrightarrow>
-   \<turnstile> (ps, a) # branch\<close>
+   Suc n \<turnstile> (p # ps, a) # branch \<Longrightarrow>
+   n \<turnstile> (ps, a) # branch\<close>
 | DisP:
   \<open>(p \<^bold>\<or> q) at a in (ps, a) # branch \<Longrightarrow>
    new p a ((ps, a) # branch) \<Longrightarrow> new q a ((ps, a) # branch) \<Longrightarrow>
-   \<turnstile> (p # ps, a) # branch \<Longrightarrow> \<turnstile> (q # ps, a) # branch \<Longrightarrow>
-   \<turnstile> (ps, a) # branch\<close>
+   Suc n \<turnstile> (p # ps, a) # branch \<Longrightarrow> Suc n \<turnstile> (q # ps, a) # branch \<Longrightarrow>
+   n \<turnstile> (ps, a) # branch\<close>
 | DisN:
   \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) at a in (ps, a) # branch \<Longrightarrow>
    new (\<^bold>\<not> p) a ((ps, a) # branch) \<or> new (\<^bold>\<not> q) a ((ps, a) # branch) \<Longrightarrow>
-   \<turnstile> ((\<^bold>\<not> q) # (\<^bold>\<not> p) # ps, a) # branch \<Longrightarrow>
-   \<turnstile> (ps, a) # branch\<close>
+   Suc n \<turnstile> ((\<^bold>\<not> q) # (\<^bold>\<not> p) # ps, a) # branch \<Longrightarrow>
+   n \<turnstile> (ps, a) # branch\<close>
 | DiaP:
   \<open>(\<^bold>\<diamond> p) at a in (ps, a) # branch \<Longrightarrow>
    i \<notin> branch_nominals ((ps, a) # branch) \<Longrightarrow>
    \<nexists>a. p = Nom a \<Longrightarrow> \<not> witnessed p a ((ps, a) # branch) \<Longrightarrow>
-   \<turnstile> ((\<^bold>@ i p) # (\<^bold>\<diamond> Nom i) # ps, a) # branch \<Longrightarrow>
-   \<turnstile> (ps, a) # branch\<close>
+   Suc n \<turnstile> ((\<^bold>@ i p) # (\<^bold>\<diamond> Nom i) # ps, a) # branch \<Longrightarrow>
+   n \<turnstile> (ps, a) # branch\<close>
 | DiaN:
   \<open>(\<^bold>\<not> (\<^bold>\<diamond> p)) at a in (ps, a) # branch \<Longrightarrow>
    (\<^bold>\<diamond> Nom i) at a in (ps, a) # branch \<Longrightarrow>
    new (\<^bold>\<not> (\<^bold>@ i p)) a ((ps, a) # branch) \<Longrightarrow>
-   \<turnstile> ((\<^bold>\<not> (\<^bold>@ i p)) # ps, a) # branch \<Longrightarrow>
-   \<turnstile> (ps, a) # branch\<close>
+   Suc n \<turnstile> ((\<^bold>\<not> (\<^bold>@ i p)) # ps, a) # branch \<Longrightarrow>
+   n \<turnstile> (ps, a) # branch\<close>
 | SatP:
   \<open>(\<^bold>@ a p) at b in (ps, a) # branch \<Longrightarrow>
    new p a ((ps, a) # branch) \<Longrightarrow>
-   \<turnstile> (p # ps, a) # branch \<Longrightarrow>
-   \<turnstile> (ps, a) # branch\<close>
+   Suc n \<turnstile> (p # ps, a) # branch \<Longrightarrow>
+   n \<turnstile> (ps, a) # branch\<close>
 | SatN:
   \<open>(\<^bold>\<not> (\<^bold>@ a p)) at b in (ps, a) # branch \<Longrightarrow>
    new (\<^bold>\<not> p) a ((ps, a) # branch) \<Longrightarrow>
-   \<turnstile> ((\<^bold>\<not> p) # ps, a) # branch \<Longrightarrow>
-   \<turnstile> (ps, a) # branch\<close>
+   Suc n \<turnstile> ((\<^bold>\<not> p) # ps, a) # branch \<Longrightarrow>
+   n \<turnstile> (ps, a) # branch\<close>
 | GoTo:
   \<open>i \<in> branch_nominals branch \<Longrightarrow>
-   \<turnstile> ([], i) # branch \<Longrightarrow>
-   \<turnstile> branch\<close>
+   n \<turnstile> ([], i) # branch \<Longrightarrow>
+   Suc n \<turnstile> branch\<close>
 | Nom:
   \<open>p at b in (ps, a) # branch \<Longrightarrow> Nom i at b in (ps, a) # branch \<Longrightarrow>
    Nom i at a in (ps, a) # branch \<Longrightarrow>
    new p a ((ps, a) # branch) \<Longrightarrow>
-   \<turnstile> (p # ps, a) # branch \<Longrightarrow>
-   \<turnstile> (ps, a) # branch\<close>
+   Suc n \<turnstile> (p # ps, a) # branch \<Longrightarrow>
+   n \<turnstile> (ps, a) # branch\<close>
+
+abbreviation ST_ex :: \<open>('a, 'b) branch \<Rightarrow> bool\<close> (\<open>\<turnstile> _\<close> [50] 50) where
+  \<open>\<turnstile> branch \<equiv> \<exists>n. n \<turnstile> branch\<close>
+
+lemma ST_Suc: \<open>n \<turnstile> branch \<Longrightarrow> Suc n \<turnstile> branch\<close>
+  by (induct n branch rule: ST.induct) (simp_all add: ST.intros)
 
 text \<open>A verified derivation in the calculus.\<close>
 
 lemma
   fixes i
   defines \<open>p \<equiv> \<^bold>\<not> (\<^bold>@ i (Nom i))\<close>
-  shows \<open>\<turnstile> [([p], a)]\<close>
+  shows \<open>Suc n \<turnstile> [([p], a)]\<close>
 proof -
   have \<open>i \<in> branch_nominals [([p], a)]\<close>
     unfolding p_def branch_nominals_def by simp
-  then have ?thesis if \<open>\<turnstile> [([], i), ([p], a)]\<close>
+  then have ?thesis if \<open>n \<turnstile> [([], i), ([p], a)]\<close>
     using that GoTo by fast
   moreover have \<open>new (\<^bold>\<not> Nom i) i [([], i), ([p], a)]\<close>
     unfolding p_def new_def by auto
   moreover have \<open>(\<^bold>\<not> (\<^bold>@ i (Nom i))) at a in [([], i), ([p], a)]\<close>
     unfolding p_def by fastforce
-  ultimately have ?thesis if \<open>\<turnstile> [([\<^bold>\<not> Nom i], i), ([p], a)]\<close>
+  ultimately have ?thesis if \<open>Suc n \<turnstile> [([\<^bold>\<not> Nom i], i), ([p], a)]\<close>
     using that SatN by fast
   then show ?thesis
     by (meson Close list.set_intros(1) on.simps)
@@ -294,7 +301,7 @@ lemma branch_sat_fresh:
 
 text \<open>If a branch has a derivation then it cannot be satisfied.\<close>
 
-lemma soundness': \<open>\<turnstile> branch \<Longrightarrow> M, g \<Turnstile>\<^sub>\<Theta> branch \<Longrightarrow> False\<close>
+lemma soundness': \<open>n \<turnstile> branch \<Longrightarrow> M, g \<Turnstile>\<^sub>\<Theta> branch \<Longrightarrow> False\<close>
 proof (induct branch arbitrary: g rule: ST.induct)
   case (Close p i branch)
   then have \<open>M, g, g i \<Turnstile> p\<close> \<open>M, g, g i \<Turnstile> \<^bold>\<not> p\<close>
@@ -413,15 +420,15 @@ lemma branch_sat:
   using assms block_sat by fast
 
 lemma soundness:
-  assumes \<open>\<turnstile> branch\<close>
+  assumes \<open>n \<turnstile> branch\<close>
   shows \<open>\<exists>block \<in> set branch. \<exists>p on block. \<not> M, g, w \<Turnstile> p\<close>
   using assms soundness' branch_sat by fast
 
-corollary \<open>\<not> \<turnstile> []\<close>
+corollary \<open>\<not> n \<turnstile> []\<close>
   using soundness by fastforce
 
 theorem soundness_fresh:
-  assumes \<open>\<turnstile> [([\<^bold>\<not> p], i)]\<close> \<open>i \<notin> nominals p\<close>
+  assumes \<open>n \<turnstile> [([\<^bold>\<not> p], i)]\<close> \<open>i \<notin> nominals p\<close>
   shows \<open>M, g, w \<Turnstile> p\<close>
 proof -
   from assms(1) have \<open>M, g, g i \<Turnstile> p\<close> for g
@@ -435,6 +442,330 @@ proof -
   then show ?thesis
     by simp
 qed
+
+section \<open>No Detours\<close>
+
+text \<open>
+  We only need to spend initial coins when we apply GoTo twice in a row.
+  Otherwise another rule will have been applied in-between that justifies the GoTo.
+  Therefore by avoiding detours we can close any closeable branch starting from 1 coin.
+\<close>
+
+primrec nonempty :: \<open>('a, 'b) block \<Rightarrow> bool\<close> where
+  \<open>nonempty (ps, i) = (ps \<noteq> [])\<close>
+
+lemma nonempty_Suc:
+  assumes
+    \<open>n \<turnstile> (ps, a) # filter nonempty left @ right\<close>
+    \<open>q at a in (ps, a) # filter nonempty left @ right\<close> \<open>q \<noteq> Nom a\<close>
+  shows \<open>Suc n \<turnstile> filter nonempty ((ps, a) # left) @ right\<close>
+proof (cases ps)
+  case Nil
+  then have \<open>a \<in> branch_nominals (filter nonempty left @ right)\<close>
+    unfolding branch_nominals_def using assms(2-3) by fastforce
+  then show ?thesis
+    using assms(1) Nil GoTo by auto
+next
+  case Cons
+  then show ?thesis
+    using assms(1) ST_Suc by auto
+qed
+
+lemma ST_nonempty:
+  \<open>n \<turnstile> left @ right \<Longrightarrow> Suc m \<turnstile> filter nonempty left @ right\<close>
+proof (induct n \<open>left @ right\<close> arbitrary: left right rule: ST.induct)
+  case (Close p i n)
+  have \<open>(\<^bold>\<not> p) at i in filter nonempty left @ right\<close>
+    using Close(2) by fastforce
+  moreover from this have \<open>p at i in filter nonempty left @ right\<close>
+    using Close(1) by fastforce
+  ultimately show ?case
+    using ST.Close by fast
+next
+  case (Neg p a ps branch n)
+  then show ?case
+  proof (cases left)
+    case Nil
+    then have \<open>Suc m \<turnstile> (p # ps, a) # branch\<close>
+      using Neg(4) by fastforce
+    then have \<open>m \<turnstile> (ps, a) # branch\<close>
+      using Neg(1-2) ST.Neg by fast
+    then show ?thesis
+      using Nil Neg(5) ST_Suc by auto
+  next
+    case (Cons _ left')
+    then have \<open>Suc m \<turnstile> (p # ps, a) # filter nonempty left' @ right\<close>
+      using Neg(4)[where left=\<open>_ # left'\<close>] Neg(5) by fastforce
+    moreover have *: \<open>(\<^bold>\<not> \<^bold>\<not> p) at a in (ps, a) # filter nonempty left' @ right\<close>
+      using Cons Neg(1, 5) by fastforce
+    moreover have \<open>new p a ((ps, a) # filter nonempty left' @ right)\<close>
+      using Cons Neg(2, 5) unfolding new_def by auto
+    ultimately have \<open>m \<turnstile> (ps, a) # filter nonempty left' @ right\<close>
+      using ST.Neg by fast
+    then have \<open>Suc m \<turnstile> filter nonempty ((ps, a) # left') @ right\<close>
+      using * nonempty_Suc by fast
+    then show ?thesis
+      using Cons Neg(5) by auto
+  qed
+next
+  case (DisP p q a ps branch n)
+  then show ?case
+  proof (cases left)
+    case Nil
+    then have \<open>Suc m \<turnstile> (p # ps, a) # branch\<close> \<open>Suc m \<turnstile> (q # ps, a) # branch\<close>
+      using DisP(5, 7) by fastforce+
+    then have \<open>m \<turnstile> (ps, a) # branch\<close>
+      using DisP(1-3) ST.DisP by fast
+    then show ?thesis
+      using Nil DisP(8) ST_Suc by auto
+  next
+    case (Cons _ left')
+    then have
+      \<open>Suc m \<turnstile> (p # ps, a) # filter nonempty left' @ right\<close>
+      \<open>Suc m \<turnstile> (q # ps, a) # filter nonempty left' @ right\<close>
+      using DisP(5, 7)[where left=\<open>_ # left'\<close>] DisP(8) by fastforce+
+    moreover have *: \<open>(p \<^bold>\<or> q) at a in (ps, a) # filter nonempty left' @ right\<close>
+      using Cons DisP(1, 8) by fastforce
+    moreover have
+      \<open>new p a ((ps, a) # filter nonempty left' @ right)\<close>
+      \<open>new q a ((ps, a) # filter nonempty left' @ right)\<close>
+      using Cons DisP(2-3, 8) unfolding new_def by auto
+    ultimately have \<open>m \<turnstile> (ps, a) # filter nonempty left' @ right\<close>
+      using ST.DisP by fast
+    then have \<open>Suc m \<turnstile> filter nonempty ((ps, a) # left') @ right\<close>
+      using * nonempty_Suc by fast
+    then show ?thesis
+      using Cons DisP(8) by auto
+  qed
+next
+  case (DisN p q a ps branch n)
+  then show ?case
+  proof (cases left)
+    case Nil
+    then have \<open>Suc m \<turnstile> ((\<^bold>\<not> q) # (\<^bold>\<not> p) # ps, a) # branch\<close>
+      using DisN(4) by fastforce
+    then have \<open>m \<turnstile> (ps, a) # branch\<close>
+      using DisN(1-2) ST.DisN by fast
+    then show ?thesis
+      using Nil DisN(5) ST_Suc by auto
+  next
+    case (Cons _ left')
+    then have \<open>Suc m \<turnstile> ((\<^bold>\<not> q) # (\<^bold>\<not> p) # ps, a) # filter nonempty left' @ right\<close>
+      using DisN(4)[where left=\<open>_ # left'\<close>] DisN(5) by fastforce
+    moreover have *: \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) at a in (ps, a) # filter nonempty left' @ right\<close>
+      using Cons DisN(1, 5) by fastforce
+    moreover consider
+      \<open>new (\<^bold>\<not> p) a ((ps, a) # filter nonempty left' @ right)\<close> |
+      \<open>new (\<^bold>\<not> q) a ((ps, a) # filter nonempty left' @ right)\<close>
+      using Cons DisN(2, 5) unfolding new_def by auto
+    ultimately have \<open>m \<turnstile> (ps, a) # filter nonempty left' @ right\<close>
+      using ST.DisN by metis
+    then have \<open>Suc m \<turnstile> filter nonempty ((ps, a) # left') @ right\<close>
+      using * nonempty_Suc by fast
+    then show ?thesis
+      using Cons DisN(5) by auto
+  qed
+next
+  case (DiaP p a ps branch i n)
+  then show ?case
+  proof (cases left)
+    case Nil
+    then have \<open>Suc m \<turnstile> ((\<^bold>@ i p) # (\<^bold>\<diamond> Nom i) # ps, a) # branch\<close>
+      using DiaP(6) by fastforce
+    then have \<open>m \<turnstile> (ps, a) # branch\<close>
+      using DiaP(1-4) ST.DiaP by fast
+    then show ?thesis
+      using Nil DiaP(7) ST_Suc by auto
+  next
+    case (Cons _ left')
+    then have \<open>Suc m \<turnstile> ((\<^bold>@ i p) # (\<^bold>\<diamond> Nom i) # ps, a) # filter nonempty left' @ right\<close>
+      using DiaP(6)[where left=\<open>_ # left'\<close>] DiaP(7) by fastforce
+    moreover have *: \<open>(\<^bold>\<diamond> p) at a in (ps, a) # filter nonempty left' @ right\<close>
+      using Cons DiaP(1, 7) by fastforce
+    moreover have \<open>i \<notin> branch_nominals ((ps, a) # filter nonempty left' @ right)\<close>
+      using Cons DiaP(2, 7) unfolding branch_nominals_def by auto
+    moreover have \<open>\<not> witnessed p a ((ps, a) # filter nonempty left' @ right)\<close>
+      using Cons DiaP(4, 7) unfolding witnessed_def by auto
+    ultimately have \<open>m \<turnstile> (ps, a) # filter nonempty left' @ right\<close>
+      using DiaP(3) ST.DiaP by fast
+    then have \<open>Suc m \<turnstile> filter nonempty ((ps, a) # left') @ right\<close>
+      using * nonempty_Suc by fast
+    then show ?thesis
+      using Cons DiaP(7) by auto
+  qed
+next
+  case (DiaN p a ps branch i n)
+  then show ?case
+  proof (cases left)
+    case Nil
+    then have \<open>Suc m \<turnstile> ((\<^bold>\<not> (\<^bold>@ i p)) # ps, a) # branch\<close>
+      using DiaN(5) by fastforce
+    then have \<open>m \<turnstile> (ps, a) # branch\<close>
+      using DiaN(1-3) ST.DiaN by fast
+    then show ?thesis
+      using Nil DiaN(6) ST_Suc by auto
+  next
+    case (Cons _ left')
+    then have \<open>Suc m \<turnstile> ((\<^bold>\<not> (\<^bold>@ i p)) # ps, a) # filter nonempty left' @ right\<close>
+      using DiaN(5)[where left=\<open>_ # left'\<close>] DiaN(6) by fastforce
+    moreover have *: \<open>(\<^bold>\<not> (\<^bold>\<diamond> p)) at a in (ps, a) # filter nonempty left' @ right\<close>
+      using Cons DiaN(1, 6) by fastforce
+    moreover have *: \<open>(\<^bold>\<diamond> Nom i) at a in (ps, a) # filter nonempty left' @ right\<close>
+      using Cons DiaN(2, 6) by fastforce
+    moreover have \<open>new (\<^bold>\<not> (\<^bold>@ i p)) a ((ps, a) # filter nonempty left' @ right)\<close>
+      using Cons DiaN(3, 6) unfolding new_def by auto
+    ultimately have \<open>m \<turnstile> (ps, a) # filter nonempty left' @ right\<close>
+      using ST.DiaN by fast
+    then have \<open>Suc m \<turnstile> filter nonempty ((ps, a) # left') @ right\<close>
+      using * nonempty_Suc by fast
+    then show ?thesis
+      using Cons DiaN(6) by auto
+  qed
+next
+  case (SatP a p b ps branch n)
+  then show ?case
+  proof (cases left)
+    case Nil
+    then have \<open>Suc m \<turnstile> (p # ps, a) # branch\<close>
+      using SatP(4) by fastforce
+    then have \<open>m \<turnstile> (ps, a) # branch\<close>
+      using SatP(1-2) ST.SatP by fast
+    then show ?thesis
+      using Nil SatP(5) ST_Suc by auto
+  next
+    case (Cons _ left')
+    then have \<open>Suc m \<turnstile> (p # ps, a) # filter nonempty left' @ right\<close>
+      using SatP(4)[where left=\<open>_ # left'\<close>] SatP(5) by fastforce
+    moreover have \<open>(\<^bold>@ a p) at b in (ps, a) # filter nonempty left' @ right\<close>
+      using Cons SatP(1, 5) by fastforce
+    moreover have \<open>new p a ((ps, a) # filter nonempty left' @ right)\<close>
+      using Cons SatP(2, 5) unfolding new_def by auto
+    ultimately have *: \<open>m \<turnstile> (ps, a) # filter nonempty left' @ right\<close>
+      using ST.SatP by fast
+    then have \<open>Suc m \<turnstile> filter nonempty ((ps, a) # left') @ right\<close>
+    proof (cases ps)
+      case Nil
+      then have \<open>a \<in> branch_nominals (filter nonempty left' @ right)\<close>
+        unfolding branch_nominals_def using SatP(1, 5) Cons by fastforce
+      then show ?thesis
+        using * Nil GoTo by fastforce
+    next
+      case Cons
+      then show ?thesis
+        using * ST_Suc by auto
+    qed
+    then show ?thesis
+      using Cons SatP(5) by auto
+  qed
+next
+  case (SatN a p b ps branch n)
+  then show ?case
+  proof (cases left)
+    case Nil
+    then have \<open>Suc m \<turnstile> ((\<^bold>\<not> p) # ps, a) # branch\<close>
+      using SatN(4) by fastforce
+    then have \<open>m \<turnstile> (ps, a) # branch\<close>
+      using SatN(1-2) ST.SatN by fast
+    then show ?thesis
+      using Nil SatN(5) ST_Suc by auto
+  next
+    case (Cons _ left')
+    then have \<open>Suc m \<turnstile> ((\<^bold>\<not> p) # ps, a) # filter nonempty left' @ right\<close>
+      using SatN(4)[where left=\<open>_ # left'\<close>] SatN(5) by fastforce
+    moreover have \<open>(\<^bold>\<not> (\<^bold>@ a p)) at b in (ps, a) # filter nonempty left' @ right\<close>
+      using Cons SatN(1, 5) by fastforce
+    moreover have \<open>new (\<^bold>\<not> p) a ((ps, a) # filter nonempty left' @ right)\<close>
+      using Cons SatN(2, 5) unfolding new_def by auto
+    ultimately have *: \<open>m \<turnstile> (ps, a) # filter nonempty left' @ right\<close>
+      using ST.SatN by fast
+    then have \<open>Suc m \<turnstile> filter nonempty ((ps, a) # left') @ right\<close>
+    proof (cases ps)
+      case Nil
+      then have \<open>a \<in> branch_nominals (filter nonempty left' @ right)\<close>
+        unfolding branch_nominals_def using SatN(1, 5) Cons by fastforce
+      then show ?thesis
+        using * Nil GoTo by fastforce
+    next
+      case Cons
+      then show ?thesis
+        using * ST_Suc by auto
+    qed
+    then show ?thesis
+      using Cons SatN(5) by auto
+  qed
+next
+  case (GoTo i n)
+  show ?case
+    using GoTo(3)[where left=\<open>([], i) # left\<close>] by simp
+next
+  case (Nom p b ps a branch i n)
+  then show ?case
+  proof (cases left)
+    case Nil
+    then have \<open>Suc m \<turnstile> (p # ps, a) # branch\<close>
+      using Nom(6) by fastforce
+    then have \<open>m \<turnstile> (ps, a) # branch\<close>
+      using Nom(1-4) ST.Nom by fast
+    then show ?thesis
+      using Nil Nom(7) ST_Suc by auto
+  next
+    case (Cons _ left')
+    then have \<open>Suc m \<turnstile> (p # ps, a) # filter nonempty left' @ right\<close>
+      using Nom(6)[where left=\<open>_ # left'\<close>] Nom(7) by fastforce
+    moreover have
+      \<open>p at b in (ps, a) # filter nonempty left' @ right\<close>
+      \<open>Nom i at b in (ps, a) # filter nonempty left' @ right\<close>
+      \<open>Nom i at a in (ps, a) # filter nonempty left' @ right\<close>
+      using Cons Nom(1-4, 7) unfolding new_def by simp_all (metis empty_iff empty_set)+
+    moreover have \<open>new p a ((ps, a) # filter nonempty left' @ right)\<close>
+      using Cons Nom(4, 7) unfolding new_def by auto
+    ultimately have *: \<open>m \<turnstile> (ps, a) # filter nonempty left' @ right\<close>
+      using ST.Nom by fast
+    then have \<open>Suc m \<turnstile> filter nonempty ((ps, a) # left') @ right\<close>
+    proof (cases ps)
+      case Nil
+      moreover have \<open>a \<noteq> b\<close>
+        using Nom(1, 4) unfolding new_def by blast
+      ultimately have \<open>a \<in> branch_nominals (filter nonempty left' @ right)\<close>
+      proof (cases \<open>i = a\<close>)
+        case True
+        then have \<open>Nom a at b in left' @ right\<close>
+          using \<open>a \<noteq> b\<close> Nom(2, 7) Cons by auto
+        then show ?thesis
+          unfolding branch_nominals_def using \<open>a \<noteq> b\<close> by fastforce
+      next
+        case False
+        then have \<open>Nom i at a in left' @ right\<close>
+          using Nom(3, 7) Nil Cons by auto
+        then show ?thesis
+          unfolding branch_nominals_def using False by fastforce
+      qed
+      then show ?thesis
+        using * Nil GoTo by auto
+    next
+      case Cons
+      then show ?thesis
+        using * ST_Suc by auto
+    qed
+    then show ?thesis
+      using Cons Nom(7) by auto
+  qed
+qed
+
+theorem ST_coins: \<open>n \<turnstile> branch \<Longrightarrow> Suc m \<turnstile> branch\<close>
+  using ST_nonempty[where left=\<open>[]\<close>] by auto
+
+corollary ST_one: \<open>n \<turnstile> branch \<Longrightarrow> 1 \<turnstile> branch\<close>
+  using ST_coins by auto
+
+subsection \<open>Free GoTo\<close>
+
+text \<open>The above result allows us to derive a version of GoTo that works "for free."\<close>
+
+lemma GoTo':
+  assumes \<open>Suc n \<turnstile> ([], i) # branch\<close> \<open>i \<in> branch_nominals branch\<close>
+  shows \<open>Suc n \<turnstile> branch\<close>
+  using assms GoTo ST_coins by fast
 
 section \<open>Indexed Mapping\<close>
 
@@ -1009,11 +1340,11 @@ qed
 subsection \<open>Induction\<close>
 
 lemma ST_Dup:
-  assumes \<open>\<turnstile> branch\<close> \<open>Dup q i branch xs\<close>
-  shows \<open>\<turnstile> omit_branch xs branch\<close>
+  assumes \<open>n \<turnstile> branch\<close> \<open>Dup q i branch xs\<close>
+  shows \<open>n \<turnstile> omit_branch xs branch\<close>
   using assms
-proof (induct branch)
-  case (Close p i' branch)
+proof (induct n branch)
+  case (Close p i' branch n)
   have \<open>p at i' in omit_branch xs branch\<close>
     using Close(1, 3) omit_branch_mem by fast
   moreover have \<open>(\<^bold>\<not> p) at i' in omit_branch xs branch\<close>
@@ -1021,13 +1352,13 @@ proof (induct branch)
   ultimately show ?case
     using ST.Close by fast
 next
-  case (Neg p a ps branch)
-  have \<open>\<turnstile> omit_branch xs ((p # ps, a) # branch)\<close>
+  case (Neg p a ps branch n)
+  have \<open>Suc n \<turnstile> omit_branch xs ((p # ps, a) # branch)\<close>
     using Neg(4-) Dup_head by fast
   moreover have \<open>(length branch, length ps) \<notin> xs\<close>
     using Neg(5) Dup_head_oob by fast
   ultimately have
-    \<open>\<turnstile> (p # omit (proj xs (length branch)) ps, a) # omit_branch xs branch\<close>
+    \<open>Suc n \<turnstile> (p # omit (proj xs (length branch)) ps, a) # omit_branch xs branch\<close>
     unfolding omit_branch_def proj_def by simp
   moreover have \<open>(\<^bold>\<not> \<^bold>\<not> p) at a in omit_branch xs ((ps, a) # branch)\<close>
     using Neg(1, 5) omit_branch_mem by fast
@@ -1036,16 +1367,16 @@ next
   ultimately show ?case
     by (simp add: omit_branch_def ST.Neg)
 next
-  case (DisP p q a ps branch)
+  case (DisP p q a ps branch n)
   have
-    \<open>\<turnstile> omit_branch xs ((p # ps, a) # branch)\<close>
-    \<open>\<turnstile> omit_branch xs ((q # ps, a) # branch)\<close>
+    \<open>Suc n \<turnstile> omit_branch xs ((p # ps, a) # branch)\<close>
+    \<open>Suc n \<turnstile> omit_branch xs ((q # ps, a) # branch)\<close>
     using DisP(4-) Dup_head by fast+
   moreover have \<open>(length branch, length ps) \<notin> xs\<close>
     using DisP(8) Dup_head_oob by fast
   ultimately have
-    \<open>\<turnstile> (p # omit (proj xs (length branch)) ps, a) # omit_branch xs branch\<close>
-    \<open>\<turnstile> (q # omit (proj xs (length branch)) ps, a) # omit_branch xs branch\<close>
+    \<open>Suc n \<turnstile> (p # omit (proj xs (length branch)) ps, a) # omit_branch xs branch\<close>
+    \<open>Suc n \<turnstile> (q # omit (proj xs (length branch)) ps, a) # omit_branch xs branch\<close>
     unfolding omit_branch_def proj_def by simp_all
   moreover have \<open>(p \<^bold>\<or> q) at a in omit_branch xs ((ps, a) # branch)\<close>
     using DisP(1, 8) omit_branch_mem by fast
@@ -1056,15 +1387,15 @@ next
   ultimately show ?case
     by (simp add: omit_branch_def ST.DisP)
 next
-  case (DisN p q a ps branch)
-  have \<open>\<turnstile> omit_branch xs (((\<^bold>\<not> q) # (\<^bold>\<not> p) # ps, a) # branch)\<close>
+  case (DisN p q a ps branch n)
+  have \<open>Suc n \<turnstile> omit_branch xs (((\<^bold>\<not> q) # (\<^bold>\<not> p) # ps, a) # branch)\<close>
     using DisN(4-) Dup_block[where ps'=\<open>[_, _]\<close>] by fastforce
   moreover have \<open>(length branch, length ps) \<notin> xs\<close>
     using DisN(5) Dup_head_oob by fast
   moreover have \<open>(length branch, 1 + length ps) \<notin> xs\<close>
     using DisN(5) Dup_head_oob' by fast
   ultimately have
-    \<open>\<turnstile> ((\<^bold>\<not> q) # (\<^bold>\<not> p) # omit (proj xs (length branch)) ps, a) #
+    \<open>Suc n \<turnstile> ((\<^bold>\<not> q) # (\<^bold>\<not> p) # omit (proj xs (length branch)) ps, a) #
       omit_branch xs branch\<close>
     unfolding omit_branch_def proj_def by simp
   moreover have \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) at a in omit_branch xs ((ps, a) # branch)\<close>
@@ -1076,15 +1407,15 @@ next
   ultimately show ?case
     by (simp add: omit_branch_def ST.DisN)
 next
-  case (DiaP p a ps branch i)
-  have \<open>\<turnstile> omit_branch xs (((\<^bold>@ i p) # (\<^bold>\<diamond> Nom i) # ps, a) # branch)\<close>
+  case (DiaP p a ps branch i n)
+  have \<open>Suc n \<turnstile> omit_branch xs (((\<^bold>@ i p) # (\<^bold>\<diamond> Nom i) # ps, a) # branch)\<close>
     using DiaP(4-) Dup_block[where ps'=\<open>[_, _]\<close>] by fastforce
   moreover have \<open>(length branch, length ps) \<notin> xs\<close>
     using DiaP(7) Dup_head_oob by fast
   moreover have \<open>(length branch, 1+ length ps) \<notin> xs\<close>
     using DiaP(7) Dup_head_oob' by fast
   ultimately have
-    \<open>\<turnstile> ((\<^bold>@ i p) # (\<^bold>\<diamond> Nom i) # omit (proj xs (length branch)) ps, a) #
+    \<open>Suc n \<turnstile> ((\<^bold>@ i p) # (\<^bold>\<diamond> Nom i) # omit (proj xs (length branch)) ps, a) #
       omit_branch xs branch\<close>
     unfolding omit_branch_def proj_def by simp
   moreover have \<open>(\<^bold>\<diamond> p) at a in omit_branch xs ((ps, a) # branch)\<close>
@@ -1096,13 +1427,13 @@ next
   ultimately show ?case
     using DiaP(3) by (simp add: omit_branch_def ST.DiaP)
 next
-  case (DiaN p a ps branch i)
-  have \<open>\<turnstile> omit_branch xs (((\<^bold>\<not> (\<^bold>@ i p)) # ps, a) # branch)\<close>
+  case (DiaN p a ps branch i n)
+  have \<open>Suc n \<turnstile> omit_branch xs (((\<^bold>\<not> (\<^bold>@ i p)) # ps, a) # branch)\<close>
     using DiaN(4-) Dup_head by fast
   moreover have \<open>(length branch, length ps) \<notin> xs\<close>
     using DiaN(6) Dup_head_oob by fast
   ultimately have
-    \<open>\<turnstile> ((\<^bold>\<not> (\<^bold>@ i p)) # omit (proj xs (length branch)) ps, a) #
+    \<open>Suc n \<turnstile> ((\<^bold>\<not> (\<^bold>@ i p)) # omit (proj xs (length branch)) ps, a) #
       omit_branch xs branch\<close>
     unfolding omit_branch_def proj_def by simp
   moreover have \<open>(\<^bold>\<not> (\<^bold>\<diamond> p)) at a in omit_branch xs ((ps, a) # branch)\<close>
@@ -1114,13 +1445,13 @@ next
   ultimately show ?case
     by (simp add: omit_branch_def ST.DiaN)
 next
-  case (SatP a p b ps branch)
-  have \<open>\<turnstile> omit_branch xs ((p # ps, a) # branch)\<close>
+  case (SatP a p b ps branch n)
+  have \<open>Suc n \<turnstile> omit_branch xs ((p # ps, a) # branch)\<close>
     using SatP(4-) Dup_head by fast
   moreover have \<open>(length branch, length ps) \<notin> xs\<close>
     using SatP(5) Dup_head_oob by fast
   ultimately have
-    \<open>\<turnstile> (p # omit (proj xs (length branch)) ps, a) # omit_branch xs branch\<close>
+    \<open>Suc n \<turnstile> (p # omit (proj xs (length branch)) ps, a) # omit_branch xs branch\<close>
     unfolding omit_branch_def proj_def by simp
   moreover have \<open>(\<^bold>@ a p) at b in omit_branch xs ((ps, a) # branch)\<close>
     using SatP(1, 5) omit_branch_mem by fast
@@ -1129,13 +1460,13 @@ next
   ultimately show ?case
     by (simp add: omit_branch_def ST.SatP)
 next
-  case (SatN a p b ps branch)
-  have \<open>\<turnstile> omit_branch xs (((\<^bold>\<not> p) # ps, a) # branch)\<close>
+  case (SatN a p b ps branch n)
+  have \<open>Suc n \<turnstile> omit_branch xs (((\<^bold>\<not> p) # ps, a) # branch)\<close>
     using SatN(4-) Dup_head by fast
   moreover have \<open>(length branch, length ps) \<notin> xs\<close>
     using SatN(5) Dup_head_oob by fast
   ultimately have
-    \<open>\<turnstile> ((\<^bold>\<not> p) # omit (proj xs (length branch)) ps, a) # omit_branch xs branch\<close>
+    \<open>Suc n \<turnstile> ((\<^bold>\<not> p) # omit (proj xs (length branch)) ps, a) # omit_branch xs branch\<close>
     unfolding omit_branch_def proj_def by simp
   moreover have \<open>(\<^bold>\<not> (\<^bold>@ a p)) at b in omit_branch xs ((ps, a) # branch)\<close>
     using SatN(1, 5) omit_branch_mem by fast
@@ -1144,23 +1475,23 @@ next
   ultimately show ?case
     by (simp add: omit_branch_def ST.SatN)
 next
-  case (GoTo i branch)
-  then have \<open>\<turnstile> omit_branch xs (([], i) # branch)\<close>
+  case (GoTo i branch n)
+  then have \<open>n \<turnstile> omit_branch xs (([], i) # branch)\<close>
     using Dup_branch[where extra=\<open>[([], i)]\<close>] by fastforce
-  then have \<open>\<turnstile> ([], i) # omit_branch xs branch\<close>
+  then have \<open>n \<turnstile> ([], i) # omit_branch xs branch\<close>
     unfolding omit_branch_def by simp
   moreover have \<open>i \<in> branch_nominals (omit_branch xs branch)\<close>
     using GoTo(1, 4) Dup_branch_nominals by fast
   ultimately show ?case
     unfolding omit_branch_def by (simp add: ST.GoTo)
 next
-  case (Nom p b ps a branch i')
-  have \<open>\<turnstile> omit_branch xs ((p # ps, a) # branch)\<close>
+  case (Nom p b ps a branch i' n)
+  have \<open>Suc n \<turnstile> omit_branch xs ((p # ps, a) # branch)\<close>
     using Nom(4-) Dup_head by fast
   moreover have \<open>(length branch, length ps) \<notin> xs\<close>
     using Nom(7) Dup_head_oob by fast
   ultimately have
-    \<open>\<turnstile> (p # omit (proj xs (length branch)) ps, a) # omit_branch xs branch\<close>
+    \<open>Suc n \<turnstile> (p # omit (proj xs (length branch)) ps, a) # omit_branch xs branch\<close>
     unfolding omit_branch_def proj_def by simp
   moreover have \<open>p at b in omit_branch xs ((ps, a) # branch)\<close>
     using Nom(1, 7) omit_branch_mem by fast
@@ -1175,8 +1506,8 @@ next
 qed
 
 theorem Dup:
-  assumes \<open>\<turnstile> (p # ps, a) # branch\<close> \<open>\<not> new p a ((ps, a) # branch)\<close>
-  shows \<open>\<turnstile> (ps, a) # branch\<close>
+  assumes \<open>n \<turnstile> (p # ps, a) # branch\<close> \<open>\<not> new p a ((ps, a) # branch)\<close>
+  shows \<open>n \<turnstile> (ps, a) # branch\<close>
 proof -
   obtain qs where qs:
     \<open>(qs, a) \<in>. (ps, a) # branch\<close> \<open>p on (qs, a)\<close>
@@ -1231,9 +1562,9 @@ proof -
     qed
   qed
 
-  then have \<open>\<turnstile> omit_branch ?xs ((p # ps, a) # branch)\<close>
+  then have \<open>n \<turnstile> omit_branch ?xs ((p # ps, a) # branch)\<close>
     using assms(1) ST_Dup by fast
-  then have \<open>\<turnstile> (omit (proj ?xs (length branch)) ps, a) # omit_branch ?xs branch\<close>
+  then have \<open>n \<turnstile> (omit (proj ?xs (length branch)) ps, a) # omit_branch ?xs branch\<close>
     unfolding omit_branch_def proj_def by simp
   moreover have \<open>omit_branch ?xs branch = omit_branch {} branch\<close>
     using omit_branch_oob by auto
@@ -1251,58 +1582,99 @@ qed
 
 subsection \<open>Unrestricted rules\<close>
 
+lemma ST_add: \<open>n \<turnstile> branch \<Longrightarrow> m + n \<turnstile> branch\<close>
+  using ST_Suc by (induct m) auto
+
+lemma ST_le: \<open>n \<turnstile> branch \<Longrightarrow> n \<le> m \<Longrightarrow> m \<turnstile> branch\<close>
+  using ST_add by (metis le_add_diff_inverse2)
+
 lemma Neg':
   assumes
     \<open>(\<^bold>\<not> \<^bold>\<not> p) at a in (ps, a) # branch\<close>
-    \<open>\<turnstile> (p # ps, a) # branch\<close>
-  shows \<open>\<turnstile> (ps, a) # branch\<close>
-  using assms Neg Dup by metis
+    \<open>n \<turnstile> (p # ps, a) # branch\<close>
+  shows \<open>n \<turnstile> (ps, a) # branch\<close>
+  using assms Neg Dup ST_Suc by metis
 
 lemma DisP':
   assumes
     \<open>(p \<^bold>\<or> q) at a in (ps, a) # branch\<close>
-    \<open>\<turnstile> (p # ps, a) # branch\<close> \<open>\<turnstile> (q # ps, a) # branch\<close>
-  shows \<open>\<turnstile> (ps, a) # branch\<close>
-  using assms DisP Dup by metis
+    \<open>n \<turnstile> (p # ps, a) # branch\<close> \<open>n \<turnstile> (q # ps, a) # branch\<close>
+  shows \<open>n \<turnstile> (ps, a) # branch\<close>
+proof (cases \<open>new p a ((ps, a) # branch) \<and> new q a ((ps, a) # branch)\<close>)
+  case True
+  then show ?thesis
+    using assms DisP ST_Suc by fast
+next
+  case False
+  then show ?thesis
+    using assms Dup by fast
+qed
+
+lemma DisP'':
+  assumes
+    \<open>(p \<^bold>\<or> q) at a in (ps, a) # branch\<close>
+    \<open>n \<turnstile> (p # ps, a) # branch\<close> \<open>m \<turnstile> (q # ps, a) # branch\<close>
+  shows \<open>max n m \<turnstile> (ps, a) # branch\<close>
+proof (cases \<open>n \<le> m\<close>)
+  case True
+  then have \<open>m \<turnstile> (p # ps, a) # branch\<close>
+    using assms(2) ST_le by blast
+  then show ?thesis
+    using assms True by (simp add: DisP' max.absorb2)
+next
+  case False
+  then have \<open>n \<turnstile> (q # ps, a) # branch\<close>
+    using assms(3) ST_le by fastforce
+  then show ?thesis
+    using assms False by (simp add: DisP' max.absorb1)
+qed
 
 lemma DisN':
   assumes
     \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) at a in (ps, a) # branch\<close>
-    \<open>\<turnstile> ((\<^bold>\<not> q) # (\<^bold>\<not> p) # ps, a) # branch\<close>
-  shows \<open>\<turnstile> (ps, a) # branch\<close>
-  using assms DisN Dup
-  by (metis (no_types, lifting) list.set_intros(1-2) new_def on.simps set_ConsD)
+    \<open>n \<turnstile> ((\<^bold>\<not> q) # (\<^bold>\<not> p) # ps, a) # branch\<close>
+  shows \<open>n \<turnstile> (ps, a) # branch\<close>
+proof (cases \<open>new (\<^bold>\<not> q) a ((ps, a) # branch) \<or> new (\<^bold>\<not> p) a ((ps, a) # branch)\<close>)
+  case True
+  then show ?thesis
+    using assms DisN ST_Suc by fast
+next
+  case False
+  then show ?thesis
+    using assms Dup
+    by (metis (no_types, lifting) list.set_intros(1-2) new_def on.simps set_ConsD)
+qed
 
 lemma DiaN':
   assumes
     \<open>(\<^bold>\<not> (\<^bold>\<diamond> p)) at a in (ps, a) # branch\<close>
     \<open>(\<^bold>\<diamond> Nom i) at a in (ps, a) # branch\<close>
-    \<open>\<turnstile> ((\<^bold>\<not> (\<^bold>@ i p)) # ps, a) # branch\<close>
-  shows \<open>\<turnstile> (ps, a) # branch\<close>
-  using assms DiaN Dup by metis
+    \<open>n \<turnstile> ((\<^bold>\<not> (\<^bold>@ i p)) # ps, a) # branch\<close>
+  shows \<open>n \<turnstile> (ps, a) # branch\<close>
+  using assms DiaN Dup ST_Suc by fast
 
 lemma SatP':
   assumes
     \<open>(\<^bold>@ a p) at b in (ps, a) # branch\<close>
-    \<open>\<turnstile> (p # ps, a) # branch\<close>
-  shows \<open>\<turnstile> (ps, a) # branch\<close>
-  using assms SatP Dup by metis
+    \<open>n \<turnstile> (p # ps, a) # branch\<close>
+  shows \<open>n \<turnstile> (ps, a) # branch\<close>
+  using assms SatP Dup ST_Suc by fast
 
 lemma SatN':
   assumes
     \<open>(\<^bold>\<not> (\<^bold>@ a p)) at b in (ps, a) # branch\<close>
-    \<open>\<turnstile> ((\<^bold>\<not> p) # ps, a) # branch\<close>
-  shows \<open>\<turnstile> (ps, a) # branch\<close>
-  using assms SatN Dup by metis
+    \<open>n \<turnstile> ((\<^bold>\<not> p) # ps, a) # branch\<close>
+  shows \<open>n \<turnstile> (ps, a) # branch\<close>
+  using assms SatN Dup ST_Suc by fast
 
 lemma Nom':
   assumes
     \<open>p at b in (ps, a) # branch\<close>
     \<open>Nom i at b in (ps, a) # branch\<close>
     \<open>Nom i at a in (ps, a) # branch\<close>
-    \<open>\<turnstile> (p # ps, a) # branch\<close>
-  shows \<open>\<turnstile> (ps, a) # branch\<close>
-  using assms Nom Dup by metis
+    \<open>n \<turnstile> (p # ps, a) # branch\<close>
+  shows \<open>n \<turnstile> (ps, a) # branch\<close>
+  using assms Nom Dup ST_Suc by fast
 
 section \<open>Substitution\<close>
 
@@ -1381,12 +1753,16 @@ lemma at_in_sub_branch:
   shows \<open>sub f p at f i in (sub_list f ps, f a) # sub_branch f branch\<close>
   using assms sub_branch_mem by fastforce
 
-text \<open>If a branch has a closing tableau then so does any branch obtained by renaming nominals.\<close>
+text \<open>
+  If a branch has a closing tableau then so does any branch obtained by renaming nominals.
+  Since some formulas on the renamed branch may no longer be new, they do not contribute
+    any fuel and so we existentially quantify over the fuel needed to close the new branch.
+\<close>
 
 lemma ST_sub':
   fixes f :: \<open>'b \<Rightarrow> 'c\<close>
   assumes \<open>\<And>(f :: 'b \<Rightarrow> 'c) i A. finite A \<Longrightarrow> i \<notin> A \<Longrightarrow> \<exists>j. j \<notin> f ` A\<close>
-  shows \<open>\<turnstile> branch \<Longrightarrow> \<turnstile> sub_branch f branch\<close>
+  shows \<open>n \<turnstile> branch \<Longrightarrow> \<turnstile> sub_branch f branch\<close>
 proof (induct branch arbitrary: f rule: ST.induct)
   case (Close p i branch)
   have \<open>sub f p at f i in sub_branch f branch\<close>
@@ -1396,33 +1772,39 @@ proof (induct branch arbitrary: f rule: ST.induct)
   ultimately show ?case
     using ST.Close by fast
 next
-  case (Neg p a ps branch)
+  case (Neg p a ps branch n)
   then have \<open>\<turnstile> (sub f p # sub_list f ps, f a) # sub_branch f branch\<close>
     unfolding sub_branch_def by simp
-  moreover have \<open>sub f (\<^bold>\<not> \<^bold>\<not> p) at f a in (sub_list f ps, f a) # sub_branch f branch\<close>
-    using Neg(1) at_in_sub_branch by fast
-  ultimately show ?case
-    unfolding sub_branch_def by (simp add: Neg')
+  moreover have \<open>(\<^bold>\<not> \<^bold>\<not> sub f p) at f a in (sub_list f ps, f a) # sub_branch f branch\<close>
+    using Neg(1) at_in_sub_branch by (metis (no_types, hide_lams) sub.simps(3))
+  ultimately have \<open>\<turnstile> (sub_list f ps, f a) # sub_branch f branch\<close>
+    using Neg' by fast
+  then show ?case
+    unfolding sub_branch_def by simp
 next
-  case (DisP p q a ps branch)
+  case (DisP p q a ps branch n)
   then have
     \<open>\<turnstile> (sub f p # sub_list f ps, f a) # sub_branch f branch\<close>
     \<open>\<turnstile> (sub f q # sub_list f ps, f a) # sub_branch f branch\<close>
     unfolding sub_branch_def by simp_all
-  moreover have \<open>sub f (p \<^bold>\<or> q) at f a in (sub_list f ps, f a) # sub_branch f branch\<close>
-    using DisP(1) at_in_sub_branch by fast
-  ultimately show ?case
-    unfolding sub_branch_def by (simp add: DisP')
+  moreover have \<open>(sub f p \<^bold>\<or> sub f q) at f a in (sub_list f ps, f a) # sub_branch f branch\<close>
+    using DisP(1) at_in_sub_branch by (metis (no_types, hide_lams) sub.simps(4))
+  ultimately have \<open>\<turnstile> (sub_list f ps, f a) # sub_branch f branch\<close>
+    using DisP'' by fast
+  then show ?case
+    unfolding sub_branch_def by simp
 next
-  case (DisN p q a ps branch)
+  case (DisN p q a ps branch n)
   then have \<open>\<turnstile> ((\<^bold>\<not> sub f q) # (\<^bold>\<not> sub f p) # sub_list f ps, f a) # sub_branch f branch\<close>
     unfolding sub_branch_def by simp
-  moreover have \<open>sub f (\<^bold>\<not> (p \<^bold>\<or> q)) at f a in (sub_list f ps, f a) # sub_branch f branch\<close>
-    using DisN(1) at_in_sub_branch by fast
-  ultimately show ?case
-    unfolding sub_branch_def by (simp add: DisN')
+  moreover have \<open>(\<^bold>\<not> (sub f p \<^bold>\<or> sub f q)) at f a in (sub_list f ps, f a) # sub_branch f branch\<close>
+    using DisN(1) at_in_sub_branch by (metis (no_types, hide_lams) sub.simps(3-4))
+  ultimately have \<open>\<turnstile> (sub_list f ps, f a) # sub_branch f branch\<close>
+    using DisN' by fast
+  then show ?case
+    unfolding sub_branch_def by simp
 next
-  case (DiaP p a ps branch i)
+  case (DiaP p a ps branch i n)
   show ?case
   proof (cases \<open>witnessed (sub f p) (f a) (sub_branch f ((ps, a) # branch))\<close>)
     case True
@@ -1453,7 +1835,7 @@ next
     then have \<open>\<turnstile> (sub_list f ps, f a) # sub_branch f branch\<close>
       using ts by (meson Nom' on.simps)
     then show ?thesis
-      unfolding sub_branch_def by simp
+      unfolding sub_branch_def by auto
   next
     case False
     have \<open>finite (branch_nominals ((ps, a) # branch))\<close>
@@ -1475,7 +1857,7 @@ next
       unfolding sub_branch_def by simp
 
     have \<open>\<turnstile> ((\<^bold>@ (?f i) (sub ?f p)) # (\<^bold>\<diamond> Nom (?f i)) # sub_list ?f ps, ?f a) # ?branch\<close>
-      using DiaP(6)[where f=\<open>?f\<close>] unfolding sub_branch_def by simp
+      using DiaP(6)[where f=\<open>?f\<close>] ST_Suc unfolding sub_branch_def by simp
     moreover have \<open>sub ?f (\<^bold>\<diamond> p) at ?f a in (sub_list ?f ps, ?f a) # sub_branch ?f branch\<close>
       using DiaP(1) at_in_sub_branch by fast
     then have \<open>(\<^bold>\<diamond> sub ?f p) at ?f a in (sub_list ?f ps, ?f a) # sub_branch ?f branch\<close>
@@ -1486,58 +1868,64 @@ next
       using * ** sub_branch_nominals unfolding sub_branch_def
       by (metis fun_upd_same list.simps(9) sub_block.simps)
     ultimately have \<open>\<turnstile> (sub_list ?f ps, ?f a) # ?branch\<close>
-      using w ST.DiaP by fast
+      using w ST.DiaP ST_Suc by fast
     then show ?thesis
       using *** unfolding sub_branch_def by simp
   qed
 next
-  case (DiaN p a ps branch i)
+  case (DiaN p a ps branch i n)
   then have \<open>\<turnstile> ((\<^bold>\<not> (\<^bold>@ (f i) (sub f p))) # sub_list f ps, f a) # sub_branch f branch\<close>
     unfolding sub_branch_def by simp
-  moreover have \<open>sub f (\<^bold>\<not> (\<^bold>\<diamond> p)) at f a in (sub_list f ps, f a) # sub_branch f branch\<close>
-    using DiaN(1) at_in_sub_branch by fast
-  moreover have \<open>sub f (\<^bold>\<diamond> Nom i) at f a in (sub_list f ps, f a) # sub_branch f branch\<close>
-    using DiaN(2) at_in_sub_branch by fast
-  ultimately show ?case
-    unfolding sub_branch_def by (simp add: DiaN')
+  moreover have \<open>(\<^bold>\<not> (\<^bold>\<diamond> sub f p)) at f a in (sub_list f ps, f a) # sub_branch f branch\<close>
+    using DiaN(1) at_in_sub_branch by (metis (no_types, hide_lams) sub.simps(3, 5))
+  moreover have \<open>(\<^bold>\<diamond> Nom (f i)) at f a in (sub_list f ps, f a) # sub_branch f branch\<close>
+    using DiaN(2) at_in_sub_branch by (metis (no_types, hide_lams) sub.simps(2, 5))
+  ultimately have \<open>\<turnstile> (sub_list f ps, f a) # sub_branch f branch\<close>
+    using DiaN' by fast
+  then show ?case
+    unfolding sub_branch_def by simp
 next
-  case (SatP a p b ps branch)
+  case (SatP a p b ps branch n)
   then have \<open>\<turnstile> (sub f p # sub_list f ps, f a) # sub_branch f branch\<close>
     unfolding sub_branch_def by simp
-  moreover have \<open>sub f (\<^bold>@ a p) at f b in (sub_list f ps, f a) # sub_branch f branch\<close>
-    using SatP(1) at_in_sub_branch by fast
-  ultimately show ?case
-    unfolding sub_branch_def by (simp add: SatP')
+  moreover have \<open>(\<^bold>@ (f a) (sub f p)) at f b in (sub_list f ps, f a) # sub_branch f branch\<close>
+    using SatP(1) at_in_sub_branch by (metis (no_types, hide_lams) sub.simps(6))
+  ultimately have \<open>\<turnstile> (sub_list f ps, f a) # sub_branch f branch\<close>
+    using SatP' by fast
+  then show ?case
+    unfolding sub_branch_def by simp
 next
-  case (SatN a p b ps branch)
+  case (SatN a p b ps branch n)
   then have \<open>\<turnstile> ((\<^bold>\<not> sub f p) # sub_list f ps, f a) # sub_branch f branch\<close>
     unfolding sub_branch_def by simp
-  moreover have \<open>sub f (\<^bold>\<not> (\<^bold>@ a p)) at f b in (sub_list f ps, f a) # sub_branch f branch\<close>
-    using SatN(1) at_in_sub_branch by fast
-  ultimately show ?case
-    unfolding sub_branch_def by (simp add: SatN')
+  moreover have \<open>(\<^bold>\<not> (\<^bold>@ (f a) (sub f p))) at f b in (sub_list f ps, f a) # sub_branch f branch\<close>
+    using SatN(1) at_in_sub_branch by (metis (no_types, hide_lams) sub.simps(3, 6))
+  ultimately have \<open>\<turnstile> (sub_list f ps, f a) # sub_branch f branch\<close>
+    using SatN' by fast
+  then show ?case
+    unfolding sub_branch_def by simp
 next
-  case (GoTo i branch)
+  case (GoTo i branch n)
   then have \<open>\<turnstile> ([], f i) # sub_branch f branch\<close>
     unfolding sub_branch_def by simp
   moreover have \<open>f i \<in> branch_nominals (sub_branch f branch)\<close>
     using GoTo(1) sub_branch_nominals by fast
-  then have \<open>f i \<in> branch_nominals (sub_branch f branch)\<close>
-    unfolding sub_branch_def by simp
   ultimately show ?case
-    by (simp add: ST.GoTo sub_branch_def)
+    using ST.GoTo by fast
 next
-  case (Nom p b ps a branch i)
+  case (Nom p b ps a branch i n)
   then have \<open>\<turnstile> (sub f p # sub_list f ps, f a) # sub_branch f branch\<close>
     unfolding sub_branch_def by simp
   moreover have \<open>sub f p at f b in (sub_list f ps, f a) # sub_branch f branch\<close>
     using Nom(1) at_in_sub_branch by fast
-  moreover have \<open>sub f (Nom i) at f b in (sub_list f ps, f a) # sub_branch f branch\<close>
-    using Nom(2) at_in_sub_branch by fast
-  moreover have \<open>sub f (Nom i) at f a in (sub_list f ps, f a) # sub_branch f branch\<close>
-    using Nom(3) at_in_sub_branch by fast
-  ultimately show ?case
-    unfolding sub_branch_def by (simp add: Nom')
+  moreover have \<open>Nom (f i) at f b in (sub_list f ps, f a) # sub_branch f branch\<close>
+    using Nom(2) at_in_sub_branch by (metis (no_types, hide_lams) sub.simps(2))
+  moreover have \<open>Nom (f i) at f a in (sub_list f ps, f a) # sub_branch f branch\<close>
+    using Nom(3) at_in_sub_branch by (metis (no_types, hide_lams) sub.simps(2))
+  ultimately have \<open>\<turnstile> (sub_list f ps, f a) # sub_branch f branch\<close>
+    using Nom' by fast
+  then show ?case
+    unfolding sub_branch_def by simp
 qed
 
 lemma ex_fresh_gt:
@@ -1553,15 +1941,15 @@ proof (rule ccontr)
     by (metis UNIV_I UNIV_eq_I card_image_le card_seteq finite_imageI image_comp subsetI)
 qed
 
-lemma ST_sub_gt:
+corollary ST_sub_gt:
   fixes f :: \<open>'b \<Rightarrow> 'c\<close>
   assumes \<open>\<exists>g :: 'c \<Rightarrow> 'b. surj g\<close> \<open>\<turnstile> branch\<close>
   shows \<open>\<turnstile> sub_branch f branch\<close>
   using assms ex_fresh_gt ST_sub' by metis
 
-lemma ST_sub_inf:
+corollary ST_sub_inf:
   fixes f :: \<open>'b \<Rightarrow> 'c\<close>
-  assumes \<open>infinite (UNIV :: 'c set)\<close> \<open>\<turnstile> branch\<close>
+  assumes \<open>infinite (UNIV :: 'c set)\<close> \<open>n \<turnstile> branch\<close>
   shows \<open>\<turnstile> sub_branch f branch\<close>
 proof -
   have \<open>finite A \<Longrightarrow> \<exists>j. j \<notin> f ` A\<close> for A and f :: \<open>'b \<Rightarrow> 'c\<close>
@@ -1570,7 +1958,7 @@ proof -
     using assms(2) ST_sub' by metis
 qed
 
-lemma ST_sub:
+corollary ST_sub:
   fixes f :: \<open>'b \<Rightarrow> 'b\<close>
   assumes \<open>\<turnstile> branch\<close>
   shows \<open>\<turnstile> sub_branch f branch\<close>
@@ -1586,8 +1974,8 @@ subsection \<open>Unrestricted \<open>(\<^bold>\<diamond>)\<close> rule\<close>
 lemma DiaP':
   assumes
     \<open>(\<^bold>\<diamond> p) at a in (ps, a) # branch\<close>
-    \<open>\<turnstile> ((\<^bold>@ i p) # (\<^bold>\<diamond> Nom i) # ps, a) # branch\<close>
     \<open>\<nexists>a. p = Nom a\<close> \<open>i \<notin> branch_nominals ((ps, a) # branch)\<close>
+    \<open>\<turnstile> ((\<^bold>@ i p) # (\<^bold>\<diamond> Nom i) # ps, a) # branch\<close>
   shows \<open>\<turnstile> (ps, a) # branch\<close>
 proof (cases \<open>witnessed p a ((ps, a) # branch)\<close>)
   case True
@@ -1601,11 +1989,11 @@ proof (cases \<open>witnessed p a ((ps, a) # branch)\<close>)
 
   let ?f = \<open>id(i := i')\<close>
   have \<open>\<turnstile> sub_branch ?f (((\<^bold>@ i p) # (\<^bold>\<diamond> Nom i) # ps, a) # branch)\<close>
-    using assms(2) ST_sub by blast
+    using assms(4) ST_sub by blast
   then have \<open>\<turnstile> ((\<^bold>@ i' (sub ?f p)) # (\<^bold>\<diamond> Nom i') # sub_list ?f ps, ?f a) # sub_branch ?f branch\<close>
     unfolding sub_branch_def by simp
   moreover have \<open>i \<notin> nominals p\<close> \<open>i \<notin> list_nominals ps\<close> \<open>i \<noteq> a\<close> \<open>i \<notin> branch_nominals branch\<close>
-    using assms(1-2, 4) unfolding branch_nominals_def by fastforce+
+    using assms(1-3) unfolding branch_nominals_def by fastforce+
   then have \<open>sub ?f p = p\<close>
     by (simp add: sub_id sub_upd_fresh)
   moreover have \<open>sub_list ?f ps = ps\<close>
@@ -1623,7 +2011,7 @@ proof (cases \<open>witnessed p a ((ps, a) # branch)\<close>)
 next
   case False
   then show ?thesis
-    using assms DiaP by fast
+    using assms DiaP ST_Suc by fast
 qed
 
 section \<open>Structural Properties\<close>
@@ -1650,8 +2038,8 @@ text \<open>
 \<close>
 
 lemma ST_drop_prefix:
-  assumes \<open>set ps \<subseteq> set qs\<close> \<open>(qs, a) \<in>. branch\<close> \<open>\<turnstile> (ps @ ps', a) # branch\<close>
-  shows \<open>\<turnstile> (ps', a) # branch\<close>
+  assumes \<open>set ps \<subseteq> set qs\<close> \<open>(qs, a) \<in>. branch\<close> \<open>n \<turnstile> (ps @ ps', a) # branch\<close>
+  shows \<open>n \<turnstile> (ps', a) # branch\<close>
 proof -
   have \<open>\<forall>p \<in> set ps. p on (qs, a)\<close>
     using assms(1) by auto
@@ -1672,8 +2060,8 @@ text \<open>We can drop a block if it is subsumed by another block.\<close>
 lemma ST_drop_block:
   assumes
     \<open>set ps \<subseteq> set ps'\<close> \<open>(ps', a) \<in>. branch\<close>
-    \<open>\<turnstile> (ps, a) # branch\<close>
-  shows \<open>\<turnstile> branch\<close>
+    \<open>n \<turnstile> (ps, a) # branch\<close>
+  shows \<open>Suc n \<turnstile> branch\<close>
   using assms
 proof (induct branch)
   case Nil
@@ -1684,11 +2072,11 @@ next
   then show ?case
   proof (cases block)
     case (Pair qs b)
-    then have \<open>\<turnstile> ([], a) # (qs, b) # branch\<close>
+    then have \<open>n \<turnstile> ([], a) # (qs, b) # branch\<close>
       using Cons(2-4) ST_drop_prefix[where branch=\<open>(qs, b) # branch\<close>] by simp
     moreover have \<open>a \<in> branch_nominals ((qs, b) # branch)\<close>
       unfolding branch_nominals_def using Cons(3) Pair by fastforce
-    ultimately have \<open>\<turnstile> (qs, b) # branch\<close>
+    ultimately have \<open>Suc n \<turnstile> (qs, b) # branch\<close>
       by (simp add: GoTo)
     then show ?thesis
       using Pair Dup by fast
@@ -1696,8 +2084,8 @@ next
 qed
 
 lemma ST_drop_block':
-  assumes \<open>\<turnstile> (ps, a) # branch\<close> \<open>(ps, a) \<in>. branch\<close>
-  shows \<open>\<turnstile> branch\<close>
+  assumes \<open>n \<turnstile> (ps, a) # branch\<close> \<open>(ps, a) \<in>. branch\<close>
+  shows \<open>Suc n \<turnstile> branch\<close>
   using assms ST_drop_block by fastforce
 
 lemma sub_branch_image: \<open>set (sub_branch f branch) = sub_block f ` set branch\<close>
@@ -1719,15 +2107,15 @@ lemma ST_struct:
   fixes branch :: \<open>('a, 'b) branch\<close>
   assumes
     inf: \<open>infinite (UNIV :: 'b set)\<close> and
-    \<open>\<turnstile> branch\<close> \<open>set branch \<subseteq> set branch'\<close>
+    \<open>n \<turnstile> branch\<close> \<open>set branch \<subseteq> set branch'\<close>
   shows \<open>\<turnstile> branch'\<close>
   using assms(2-3)
-proof (induct branch arbitrary: branch' rule: ST.induct)
+proof (induct n branch arbitrary: branch' rule: ST.induct)
   case (Close p i branch)
   then show ?case
     using ST.Close by fast
 next
-  case (Neg p a ps branch)
+  case (Neg p a ps branch n)
   have \<open>\<turnstile> (p # ps, a) # branch'\<close>
     using Neg(4-5) by (simp add: subset_code(1))
   moreover have \<open>(\<^bold>\<not> \<^bold>\<not> p) at a in (ps, a) # branch'\<close>
@@ -1745,13 +2133,13 @@ next
   moreover have \<open>(p \<^bold>\<or> q) at a in (ps, a) # branch'\<close>
     using DisP(1, 8) by auto
   ultimately have \<open>\<turnstile> (ps, a) # branch'\<close>
-    using DisP' by fast
+    using DisP'' by fast
   moreover have \<open>(ps, a) \<in>. branch'\<close>
     using DisP(8) by simp
   ultimately show ?case
     using ST_drop_block' by fast
 next
-  case (DisN p q a ps branch)
+  case (DisN p q a ps branch n)
   have \<open>\<turnstile> ((\<^bold>\<not> q) # (\<^bold>\<not> p) # ps, a)# branch'\<close>
     using DisN(4-5) by (simp add: subset_code(1))
   moreover have \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) at a in (ps, a) # branch'\<close>
@@ -1763,7 +2151,7 @@ next
   ultimately show ?case
     using ST_drop_block' by fast
 next
-  case (DiaP p a ps branch i)
+  case (DiaP p a ps branch i n)
   have \<open>finite (branch_nominals branch')\<close>
     by (simp add: finite_branch_nominals)
   then obtain j where j: \<open>j \<notin> branch_nominals branch'\<close>
@@ -1792,11 +2180,12 @@ next
     unfolding branch_nominals_def by simp
 
   have \<open>\<turnstile> ((\<^bold>@ i p) # (\<^bold>\<diamond> Nom i) # ps, a) # ?branch'\<close>
-    using DiaP(6) * by (simp add: subset_code(1))
+    using DiaP(6) *
+    by (metis (no_types, lifting) subset_code(1) insert_mono list.set(2) set_subset_Cons)
   moreover have \<open>(\<^bold>\<diamond> p) at a in (ps, a) # ?branch'\<close>
     using DiaP(1, 7) * by (meson set_subset_Cons subset_code(1))
   ultimately have \<open>\<turnstile> (ps, a) # ?branch'\<close>
-    using inf DiaP(3) i by (simp add: DiaP')
+    using inf DiaP(3) i DiaP' by metis
   then have \<open>\<turnstile> sub_branch ?f ((ps, a) # ?branch')\<close>
     using ST_sub by blast
   then have \<open>\<turnstile> (ps, a) # branch'\<close>
@@ -1806,7 +2195,7 @@ next
   ultimately show ?case
     using ST_drop_block' by fast
 next
-  case (DiaN p a ps branch i)
+  case (DiaN p a ps branch i n)
   have \<open>\<turnstile> ((\<^bold>\<not> (\<^bold>@ i p)) # ps, a) # branch'\<close>
     using DiaN(5-6) by (simp add: subset_code(1))
   moreover have
@@ -1820,7 +2209,7 @@ next
   ultimately show ?case
     using ST_drop_block' by fast
 next
-  case (SatP a p b ps branch)
+  case (SatP a p b ps branch n)
   have \<open>\<turnstile> (p # ps, a) # branch'\<close>
     using SatP(4-5) by (simp add: subset_code(1))
   moreover have \<open>(\<^bold>@ a p) at b in (ps, a) # branch'\<close>
@@ -1832,8 +2221,8 @@ next
   ultimately show ?case
     using ST_drop_block' by fast
 next
-  case (SatN a p b ps branch)
-  have \<open>\<turnstile> ((\<^bold>\<not> p) # ps, a) # branch'\<close>
+  case (SatN a p b ps branch n)
+  have\<open>\<turnstile> ((\<^bold>\<not> p) # ps, a) # branch'\<close>
     using SatN(4-5) by (simp add: subset_code(1))
   moreover have \<open>(\<^bold>\<not> (\<^bold>@ a p)) at b in (ps, a) # branch'\<close>
     using SatN(1, 5) by auto
@@ -1844,15 +2233,15 @@ next
   ultimately show ?case
     using ST_drop_block' by fast
 next
-  case (GoTo i branch)
+  case (GoTo i branch n)
   then have \<open>\<turnstile> ([], i) # branch'\<close>
     by (simp add: subset_code(1))
   moreover have \<open>i \<in> branch_nominals branch'\<close>
     using GoTo(1, 4) unfolding branch_nominals_def by auto
   ultimately show ?case
-    using GoTo(2) by (simp add: ST.GoTo)
+    using GoTo(2) ST.GoTo by fast
 next
-  case (Nom p b ps a branch i)
+  case (Nom p b ps a branch i n)
   have \<open>\<turnstile> (p # ps, a) # branch'\<close>
     using Nom(6-7) by (simp add: subset_code(1))
   moreover have \<open>p at b in (ps, a) # branch'\<close>
@@ -1878,17 +2267,17 @@ lemma ST_struct_block:
   fixes branch :: \<open>('a, 'b) branch\<close>
   assumes
     inf: \<open>infinite (UNIV :: 'b set)\<close> and
-    \<open>\<turnstile> (ps, a) # branch\<close> \<open>set ps \<subseteq> set ps'\<close>
+    \<open>n \<turnstile> (ps, a) # branch\<close> \<open>set ps \<subseteq> set ps'\<close>
   shows \<open>\<turnstile> (ps', a) # branch\<close>
   using assms(2-3)
 proof (induct \<open>(ps, a) # branch\<close> arbitrary: ps ps' rule: ST.induct)
-  case (Close p i ts ts')
+  case (Close p i n ts ts')
   then have \<open>p at i in (ts', a) # branch\<close> \<open>(\<^bold>\<not> p) at i in (ts', a) # branch\<close>
     by auto
   then show ?case
     using ST.Close by fast
 next
-  case (Neg p ps)
+  case (Neg p ps n)
   then have \<open>(\<^bold>\<not> \<^bold>\<not> p) at a in (ps', a) # branch\<close>
     by auto
   moreover have \<open>\<turnstile> (p # ps', a) # branch\<close>
@@ -1896,15 +2285,15 @@ next
   ultimately show ?case
     using Neg' by fast
 next
-  case (DisP p q ps)
+  case (DisP p q ps n)
   then have \<open>(p \<^bold>\<or> q) at a in (ps', a) # branch\<close>
     by auto
   moreover have \<open>\<turnstile> (p # ps', a) # branch\<close> \<open>\<turnstile> (q # ps', a) # branch\<close>
     using DisP(5, 7-8) by (simp_all add: subset_code(1))
   ultimately show ?case
-    using DisP' by fast
+    using DisP'' by fast
 next
-  case (DisN p q ps)
+  case (DisN p q ps n)
   then have \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) at a in (ps', a) # branch\<close>
     by auto
   moreover have \<open>\<turnstile> ((\<^bold>\<not> q) # (\<^bold>\<not> p) # ps', a) # branch\<close>
@@ -1912,7 +2301,7 @@ next
   ultimately show ?case
     using DisN' by fast
 next
-  case (DiaP p ps i)
+  case (DiaP p ps i n)
   have \<open>finite (branch_nominals ((ps', a) # branch))\<close>
     using finite_branch_nominals by blast
   then obtain j where j: \<open>j \<notin> branch_nominals ((ps', a) # branch)\<close>
@@ -1965,7 +2354,7 @@ next
   then show ?case
     using \<open>?f a = a\<close> ps' branch by simp
 next
-  case (DiaN p ps i)
+  case (DiaN p ps i n)
   then have
     \<open>(\<^bold>\<not> (\<^bold>\<diamond> p)) at a in (ps', a) # branch\<close>
     \<open>(\<^bold>\<diamond> Nom i) at a in (ps', a) # branch\<close>
@@ -1975,7 +2364,7 @@ next
   ultimately show ?case
     using DiaN' by fast
 next
-  case (SatP p b ps)
+  case (SatP p b ps n)
   then have \<open>(\<^bold>@ a p) at b in (ps', a) # branch\<close>
     by auto
   moreover have \<open>\<turnstile> (p # ps', a) # branch\<close>
@@ -1983,7 +2372,7 @@ next
   ultimately show ?case
     using SatP' by fast
 next
-  case (SatN p b ps)
+  case (SatN p b ps n)
   then have \<open>(\<^bold>\<not> (\<^bold>@ a p)) at b in (ps', a) # branch\<close>
     by auto
   moreover have \<open>\<turnstile> ((\<^bold>\<not> p) # ps', a) # branch\<close>
@@ -1991,13 +2380,15 @@ next
   ultimately show ?case
     using SatN' by fast
 next
-  case (GoTo i ps)
-  then have \<open>\<turnstile> (ps, a) # branch\<close>
+  case (GoTo i n ps)
+  then have \<open>Suc n \<turnstile> (ps, a) # branch\<close>
     using ST.GoTo by fast
-  then have \<open>\<turnstile> (ps, a) # (ps', a) # branch\<close>
+  then obtain m where \<open>m \<turnstile> (ps, a) # (ps', a) # branch\<close>
     using inf ST_struct[where branch'=\<open>(ps, a) # _ # _\<close>] by fastforce
-  then show ?case
+  then have \<open>Suc m \<turnstile> (ps', a) # branch\<close>
     using GoTo(4) by (simp add: ST_drop_block[where a=a])
+  then show ?case
+    by blast
 next
   case (Nom p b ps i)
   have \<open>p at b in (ps', a) # branch\<close>
@@ -2027,17 +2418,18 @@ proof -
   have \<open>i \<in> branch_nominals ((ps, a) # branch)\<close>
     using assms(2) unfolding branch_nominals_def by fastforce
   then have ?thesis if \<open>\<turnstile> ([], i) # (ps, a) # branch\<close>
-    using that by (simp add: GoTo)
+    using that GoTo by fast
   then have ?thesis if \<open>\<turnstile> ([Nom a], i) # (ps, a) # branch\<close>
     using that assms(3) by (meson Nom' list.set_intros(1) on.simps set_subset_Cons subsetD)
   then have ?thesis if \<open>\<turnstile> ([p, Nom a], i) # (ps, a) # branch\<close>
     using that assms(2) by (meson SatP' set_subset_Cons subsetD)
   then have ?thesis if \<open>\<turnstile> (ps, a) # ([p, Nom a], i) # branch\<close>
-    using that inf ST_struct[where branch'=\<open>_ # _ # _\<close>] by fastforce
+    using that inf ST_struct[where branch'=\<open>([p, Nom a], i) # (ps, a) # branch\<close>] by fastforce
   then have ?thesis if \<open>\<turnstile> (p # ps, a) # ([p, Nom a], i) # branch\<close>
     using that by (meson Nom' list.set_intros(1) on.simps set_subset_Cons subsetD)
   then show ?thesis
-    using inf assms(4) ST_struct[where branch'=\<open>_ # ([_, _], _) # _\<close>] by fastforce
+    using inf assms(4) ST_struct[where branch'=\<open>(p # ps, a) # ([p, Nom a], i) # branch\<close>]
+    by fastforce
 qed
 
 lemma SatN'':
@@ -2052,17 +2444,18 @@ proof -
   have \<open>i \<in> branch_nominals ((ps, a) # branch)\<close>
     using assms(2) unfolding branch_nominals_def by fastforce
   then have ?thesis if \<open>\<turnstile> ([], i) # (ps, a) # branch\<close>
-    using that by (simp add: GoTo)
+    using that GoTo by fast
   then have ?thesis if \<open>\<turnstile> ([Nom a], i) # (ps, a) # branch\<close>
     using that assms(3) by (meson Nom' list.set_intros(1) on.simps set_subset_Cons subsetD)
   then have ?thesis if \<open>\<turnstile> ([\<^bold>\<not> p, Nom a], i) # (ps, a) # branch\<close>
     using that assms(2) by (meson SatN' set_subset_Cons subsetD)
   then have ?thesis if \<open>\<turnstile> (ps, a) # ([\<^bold>\<not> p, Nom a], i) # branch\<close>
-    using that inf ST_struct[where branch'=\<open>_ # _ # _\<close>] by fastforce
+    using that inf ST_struct[where branch'=\<open>([\<^bold>\<not> p, Nom a], i) # (ps, a) # branch\<close>] by fastforce
   then have ?thesis if \<open>\<turnstile> ((\<^bold>\<not> p) # ps, a) # ([\<^bold>\<not> p, Nom a], i) # branch\<close>
     using that by (meson Nom' list.set_intros(1) on.simps set_subset_Cons subsetD)
   then show ?thesis
-    using inf assms(4) ST_struct[where branch'=\<open>_ # ([_, _], _) # _\<close>] by fastforce
+    using inf assms(4) ST_struct[where branch'=\<open>((\<^bold>\<not> p) # ps, a) # ([\<^bold>\<not> p, Nom a], i) # branch\<close>]
+    by fastforce
 qed
 
 section \<open>Bridge\<close>
@@ -2397,12 +2790,12 @@ lemma ST_bridge':
   fixes a :: 'b
   assumes
     inf: \<open>infinite (UNIV :: 'b set)\<close> and
-    \<open>\<turnstile> (ps, a) # branch\<close>
+    \<open>n \<turnstile> (ps, a) # branch\<close>
     \<open>descendants k i ((ps, a) # branch) xs\<close>
     \<open>Nom j at c in branch\<close> \<open>Nom k at c in branch\<close>
   shows \<open>\<turnstile> mapi_branch (bridge k j xs) ((ps, a) # branch)\<close>
   using assms(2-)
-proof (induct \<open>(ps, a) # branch\<close> arbitrary: ps a branch xs rule: ST.induct)
+proof (induct n \<open>(ps, a) # branch\<close> arbitrary: ps a branch xs rule: ST.induct)
   case (Close p i')
   let ?f = \<open>bridge k j xs\<close>
   let ?branch = \<open>mapi_branch ?f ((ps, a) # branch)\<close>
@@ -2462,7 +2855,7 @@ proof (induct \<open>(ps, a) # branch\<close> arbitrary: ps a branch xs rule: ST
       have \<open>i' \<in> branch_nominals ?branch\<close>
         unfolding branch_nominals_def using v by fastforce
       then have ?thesis if \<open>\<turnstile> ([], i') # ?branch\<close>
-        using that by (simp add: GoTo)
+        using that GoTo by fast
       moreover have \<open>(mapi (?f v) qs, i') \<in>. ([], i') # ?branch\<close>
         using v by simp
       moreover have \<open>(mapi (?f w) rs, i') \<in>. ([], i') # ?branch\<close>
@@ -2472,11 +2865,11 @@ proof (induct \<open>(ps, a) # branch\<close> arbitrary: ps a branch xs rule: ST
       moreover have \<open>j \<in> branch_nominals (([\<^bold>\<not> (\<^bold>@ j (Nom k))], i') # ?branch)\<close>
         unfolding branch_nominals_def by simp
       ultimately have ?thesis if \<open>\<turnstile> ([], j) # ([\<^bold>\<not> (\<^bold>@ j (Nom k))], i') # ?branch\<close>
-        using that by (simp add: GoTo)
-      moreover have
-        \<open>Nom j at c in ([], j) # ([\<^bold>\<not> (\<^bold>@ j (Nom k))], i') # ?branch\<close>
-        \<open>Nom k at c in ([], j) # ([\<^bold>\<not> (\<^bold>@ j (Nom k))], i') # ?branch\<close>
-        using j k by auto
+        using that GoTo by fast
+      moreover have \<open>Nom j at c in ([], j) # ([\<^bold>\<not> (\<^bold>@ j (Nom k))], i') # ?branch\<close>
+        using j by auto
+      moreover have \<open>Nom k at c in ([], j) # ([\<^bold>\<not> (\<^bold>@ j (Nom k))], i') # ?branch\<close>
+        using k by auto
       ultimately have ?thesis if \<open>\<turnstile> ([Nom k], j) # ([\<^bold>\<not> (\<^bold>@ j (Nom k))], i') # ?branch\<close>
         using that by (meson Nom' list.set_intros(1) on.simps)
       moreover have \<open>(\<^bold>\<not> (\<^bold>@ j (Nom k))) at i' in ([Nom k], j) # ([\<^bold>\<not> (\<^bold>@ j (Nom k))], i') # ?branch\<close>
@@ -2499,7 +2892,7 @@ proof (induct \<open>(ps, a) # branch\<close> arbitrary: ps a branch xs rule: ST
       have \<open>i' \<in> branch_nominals ?branch\<close>
         unfolding branch_nominals_def using v by fastforce
       then have ?thesis if \<open>\<turnstile> ([], i') # ?branch\<close>
-        using that by (simp add: GoTo)
+        using that GoTo by fast
       moreover have \<open>(mapi (?f w) rs, i') \<in>. ([], i') # ?branch\<close>
         using w by simp
       ultimately have ?thesis if \<open>\<turnstile> ([\<^bold>@ k r], i') # ?branch\<close>
@@ -2507,7 +2900,7 @@ proof (induct \<open>(ps, a) # branch\<close> arbitrary: ps a branch xs rule: ST
       moreover have \<open>j \<in> branch_nominals (([\<^bold>@ k r], i') # ?branch)\<close>
         unfolding branch_nominals_def using j by fastforce
       ultimately have ?thesis if \<open>\<turnstile> ([], j) # ([\<^bold>@ k r], i') # ?branch\<close>
-        using that j by (simp add: GoTo)
+        using that j GoTo by fast
       moreover have
         \<open>Nom j at c in ([], j) # ([\<^bold>@ k r], i') # ?branch\<close>
         \<open>Nom k at c in ([], j) # ([\<^bold>@ k r], i') # ?branch\<close>
@@ -2536,7 +2929,7 @@ proof (induct \<open>(ps, a) # branch\<close> arbitrary: ps a branch xs rule: ST
       have \<open>j \<in> branch_nominals ?branch\<close>
         unfolding branch_nominals_def using j by fastforce
       then have ?thesis if \<open>\<turnstile> ([], j) # ?branch\<close>
-        using that by (simp add: GoTo)
+        using that GoTo by fast
       moreover have \<open>Nom j at c in ([], j) # ?branch\<close> \<open>Nom k at c in ([], j) # ?branch\<close>
         using j k by auto
       ultimately have ?thesis if \<open>\<turnstile> ([Nom k], j) # ?branch\<close>
@@ -2581,8 +2974,10 @@ next
     using Neg(1) at_in_mapi_branch by fast
   then have \<open>(\<^bold>\<not> \<^bold>\<not> p) at a in (mapi (?f (length branch)) ps, a) # mapi_branch ?f branch\<close>
     unfolding mapi_branch_def using p by simp
-  ultimately show ?case
-    unfolding mapi_branch_def by (simp add: Neg')
+  ultimately have \<open>\<turnstile> (mapi (?f (length branch)) ps, a) # mapi_branch ?f branch\<close>
+    using Neg' by fast
+  then show ?case
+    unfolding mapi_branch_def by auto
 next
   case (DisP p q a ps branch)
   let ?f = \<open>bridge k j xs\<close>
@@ -2607,8 +3002,10 @@ next
     using DisP(1) at_in_mapi_branch by fast
   then have \<open>(p \<^bold>\<or> q) at a in (mapi (?f (length branch)) ps, a) # mapi_branch ?f branch\<close>
     unfolding mapi_branch_def using p by simp
-  ultimately show ?case
-    unfolding mapi_branch_def by (simp add: DisP')
+  ultimately have \<open>\<turnstile> (mapi (?f (length branch)) ps, a) # mapi_branch ?f branch\<close>
+    using DisP'' by fast
+  then show ?case
+    unfolding mapi_branch_def by auto
 next
   case (DisN p q a ps branch)
   let ?f = \<open>bridge k j xs\<close>
@@ -2631,8 +3028,10 @@ next
     using DisN(1) at_in_mapi_branch by fast
   then have \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) at a in (mapi (?f (length branch)) ps, a) # mapi_branch ?f branch\<close>
     unfolding mapi_branch_def using p by simp
-  ultimately show ?case
-    unfolding mapi_branch_def by (simp add: DisN')
+  ultimately have \<open>\<turnstile> (mapi (?f (length branch)) ps, a) # mapi_branch ?f branch\<close>
+    using DisN' by fast
+  then show ?case
+    unfolding mapi_branch_def by auto
 next
   case (DiaP p a ps branch i')
   let ?f = \<open>bridge k j xs\<close>
@@ -2656,14 +3055,15 @@ next
     using DiaP(7) descendants_block[where ps'=\<open>[_, _]\<close>] by fastforce
   then have \<open>\<turnstile> mapi_branch ?f (((\<^bold>@ i' p) # (\<^bold>\<diamond> Nom i') # ps, a) # branch)\<close>
     using DiaP(4-) by blast
-  then have \<open>\<turnstile> ((\<^bold>@ i' p) # (\<^bold>\<diamond> Nom i') # mapi (?f (length branch)) ps, a) # mapi_branch ?f branch\<close>
+  then have \<open>\<turnstile> ((\<^bold>@ i' p) # (\<^bold>\<diamond> Nom i') # mapi (?f (length branch)) ps, a) #
+      mapi_branch ?f branch\<close>
     unfolding mapi_branch_def using 1 by (simp add: 2)
   moreover have \<open>\<exists>l l'. ?f l l' (\<^bold>\<diamond> p) at a in mapi_branch ?f ((ps, a) # branch)\<close>
     using DiaP(1) at_in_mapi_branch by fast
   then have \<open>(\<^bold>\<diamond> p) at a in (mapi (?f (length branch)) ps, a) # mapi_branch ?f branch\<close>
     unfolding mapi_branch_def using p by simp
   ultimately have \<open>\<turnstile> (mapi (?f (length branch)) ps, a) # mapi_branch ?f branch\<close>
-    using i' DiaP(3) by (simp add: DiaP')
+    using i' DiaP(3) DiaP' by fast
   then show ?case
     unfolding mapi_branch_def by simp
 next
@@ -2737,7 +3137,8 @@ next
       using DiaN(5-) by blast
     moreover have \<open>(length branch, length ps) \<notin> xs\<close>
       using DiaN(6) descendants_oob_head by fast
-    ultimately have \<open>\<turnstile> ((\<^bold>\<not> (\<^bold>@ i' p)) # mapi (?f (length branch)) ps, a) # mapi_branch ?f branch\<close>
+    ultimately have \<open>\<turnstile> ((\<^bold>\<not> (\<^bold>@ i' p)) # mapi (?f (length branch)) ps, a) #
+        mapi_branch ?f branch\<close>
       unfolding mapi_branch_def by simp
     moreover have \<open>\<exists>l l'. ?f l l' (\<^bold>\<not> (\<^bold>\<diamond> p)) at a in mapi_branch ?f ((ps, a) # branch)\<close>
       using DiaN(1) at_in_mapi_branch by fast
@@ -2775,8 +3176,10 @@ next
     using SatP(1) at_in_mapi_branch by fast
   then have \<open>(\<^bold>@ a p) at b in (mapi (?f (length branch)) ps, a) # mapi_branch ?f branch\<close>
     unfolding mapi_branch_def using p by simp
-  ultimately show ?case
-    unfolding mapi_branch_def by (simp add: SatP')
+  ultimately have \<open>\<turnstile> (mapi (?f (length branch)) ps, a) # mapi_branch ?f branch\<close>
+    using SatP' by fast
+  then show ?case
+    unfolding mapi_branch_def by simp
 next
   case (SatN a p b ps branch)
   obtain qs where qs: \<open>(qs, b) \<in>. (ps, a) # branch\<close> \<open>(\<^bold>\<not> (\<^bold>@ a p)) on (qs, b)\<close>
@@ -2863,7 +3266,7 @@ next
       unfolding mapi_branch_def by simp
   qed
 next
-  case (GoTo i' ps a branch)
+  case (GoTo i' n ps a branch)
   let ?f = \<open>bridge k j xs\<close>
 
   have \<open>descendants k i (([], i') # (ps, a) # branch) xs\<close>
@@ -3038,7 +3441,7 @@ proof -
   ultimately have \<open>j \<in> branch_nominals (mapi_branch (bridge k j xs) branch)\<close>
     by simp
   then show ?thesis
-    using * by (simp add: GoTo)
+    using * GoTo by fast
 qed
 
 subsection \<open>Derivation\<close>
@@ -3081,6 +3484,10 @@ section \<open>Completeness\<close>
 
 subsection \<open>Hintikka\<close>
 
+abbreviation at_in' :: \<open>('a, 'b) fm \<Rightarrow> 'b \<Rightarrow> ('a, 'b) block set \<Rightarrow> bool\<close>
+  (\<open>_ at _ in' _\<close> [51, 51, 51] 50) where
+  \<open>p at a in' branch \<equiv> \<exists>ps. (ps, a) \<in> branch \<and> p on (ps, a)\<close>
+
 text \<open>
   A set of blocks is Hintikka if it satisfies the following requirements.
   Intuitively, if it corresponds to an exhausted open branch.
@@ -3088,31 +3495,36 @@ text \<open>
 
 definition hintikka :: \<open>('a, 'b) block set \<Rightarrow> bool\<close> where
   \<open>hintikka H \<equiv>
-   ((\<forall>x i j. (\<exists>ps. (ps, i) \<in> H \<and> Nom j on (ps, i)) \<longrightarrow> (\<exists>qs. (qs, j) \<in> H \<and> Pro x on (qs, j)) \<longrightarrow>
-      (\<nexists>rs. (rs, i) \<in> H \<and> (\<^bold>\<not> Pro x) on (rs, i))) \<and>
-    (\<forall>a i. (\<exists>ps. (ps, i) \<in> H \<and> Nom a on (ps, i)) \<longrightarrow> (\<nexists>qs. (qs, i) \<in> H \<and> (\<^bold>\<not> Nom a) on (qs, i))) \<and>
-    (\<forall>i j. (\<exists>ps. (ps, i) \<in> H \<and> (\<^bold>\<diamond> Nom j) on (ps, i)) \<longrightarrow>
-      (\<nexists>qs. (qs, i) \<in> H \<and> (\<^bold>\<not> (\<^bold>\<diamond> Nom j)) on (qs, i))) \<and>
-    (\<forall>p i. i \<in> nominals p \<and> (\<exists>block \<in> H. p on block) \<longrightarrow> (\<exists>qs. (qs, i) \<in> H)) \<and>
-    (\<forall>i j. (\<exists>ps. (ps, i) \<in> H \<and> Nom j on (ps, i)) \<longrightarrow> (\<exists>qs. (qs, j) \<in> H \<and> Nom i on (qs, j))) \<and>
-    (\<forall>i j k. (\<exists>ps. (ps, i) \<in> H \<and> Nom j on (ps, i)) \<longrightarrow> (\<exists>qs. (qs, j) \<in> H \<and> Nom k on (qs, j)) \<longrightarrow>
-      (\<exists>rs. (rs, i) \<in> H \<and> Nom k on (rs, i))) \<and>
-    (\<forall>i j k. (\<exists>ps. (ps, i) \<in> H \<and> (\<^bold>\<diamond> Nom j) on (ps, i)) \<longrightarrow>
-      (\<exists>qs. (qs, j) \<in> H \<and> Nom k on (qs, j)) \<longrightarrow> (\<exists>rs. (rs, i) \<in> H \<and> (\<^bold>\<diamond> Nom k) on (rs, i))) \<and>
-    (\<forall>i j k. (\<exists>ps. (ps, i) \<in> H \<and> (\<^bold>\<diamond> Nom j) on (ps, i)) \<longrightarrow>
-      (\<exists>qs. (qs, i) \<in> H \<and> Nom k on (qs, i)) \<longrightarrow> (\<exists>rs. (rs, k) \<in> H \<and> (\<^bold>\<diamond> Nom j) on (rs, k))) \<and>
-    (\<forall>p q i. (\<exists>ps. (ps, i) \<in> H \<and> (p \<^bold>\<or> q) on (ps, i)) \<longrightarrow>
-      (\<exists>qs. (qs, i) \<in> H \<and> (p on (qs, i) \<or> q on (qs, i)))) \<and>
-    (\<forall>p q i. (\<exists>ps. (ps, i) \<in> H \<and> (\<^bold>\<not> (p \<^bold>\<or> q)) on (ps, i)) \<longrightarrow>
-      (\<exists>qs. (qs, i) \<in> H \<and> (\<^bold>\<not> p) on (qs, i) \<and> (\<^bold>\<not> q) on (qs, i))) \<and>
-    (\<forall>p i. (\<exists>ps. (ps, i) \<in> H \<and> (\<^bold>\<not> \<^bold>\<not> p) on (ps, i)) \<longrightarrow> (\<exists>qs. (qs, i) \<in> H \<and> p on (qs, i))) \<and>
-    (\<forall>p i. (\<exists>block \<in> H. (\<^bold>@ i p) on block) \<longrightarrow> (\<exists>qs. (qs, i) \<in> H \<and> p on (qs, i))) \<and>
-    (\<forall>p i. (\<exists>block \<in> H. (\<^bold>\<not> (\<^bold>@ i p)) on block) \<longrightarrow> (\<exists>qs. (qs, i) \<in> H \<and> (\<^bold>\<not> p) on (qs, i))) \<and>
-    (\<forall>p i. (\<nexists>a. p = Nom a) \<longrightarrow> (\<exists>ps. (ps, i) \<in> H \<and> (\<^bold>\<diamond> p) on (ps, i)) \<longrightarrow>
-      (\<exists>j. (\<exists>qs. (qs, i) \<in> H \<and> (\<^bold>\<diamond> Nom j) on (qs, i)) \<and> (\<exists>rs. (rs, i) \<in> H \<and> (\<^bold>@ j p) on (rs, i)))) \<and>
-    (\<forall>p i j. (\<exists>ps. (ps, i) \<in> H \<and> (\<^bold>\<not> (\<^bold>\<diamond> p)) on (ps, i)) \<longrightarrow>
-      (\<exists>qs. (qs, i) \<in> H \<and> (\<^bold>\<diamond> Nom j) on (qs, i)) \<longrightarrow>
-      (\<exists>rs. (rs, i) \<in> H \<and> (\<^bold>\<not> (\<^bold>@ j p)) on (rs, i))))\<close>
+    (\<forall>x i j. Nom j at i in' H \<longrightarrow> Pro x at j in' H \<longrightarrow>
+      \<not> (\<^bold>\<not> Pro x) at i in' H) \<and>
+    (\<forall>a i. Nom a at i in' H \<longrightarrow>
+      \<not> (\<^bold>\<not> Nom a) at i in' H) \<and>
+    (\<forall>i j. (\<^bold>\<diamond> Nom j) at i in' H \<longrightarrow>
+      \<not> (\<^bold>\<not> (\<^bold>\<diamond> Nom j)) at i in' H) \<and>
+    (\<forall>p i. i \<in> nominals p \<longrightarrow> (\<exists>block \<in> H. p on block) \<longrightarrow>
+      (\<exists>ps. (ps, i) \<in> H)) \<and>
+    (\<forall>i j. Nom j at i in' H \<longrightarrow>
+      Nom i at j in' H) \<and>
+    (\<forall>i j k. Nom j at i in' H \<longrightarrow> Nom k at j in' H \<longrightarrow>
+      Nom k at i in' H) \<and>
+    (\<forall>i j k. (\<^bold>\<diamond> Nom j) at i in' H \<longrightarrow> Nom k at j in' H \<longrightarrow>
+      (\<^bold>\<diamond> Nom k) at i in' H) \<and>
+    (\<forall>i j k. (\<^bold>\<diamond> Nom j) at i in' H \<longrightarrow> Nom k at i in' H \<longrightarrow>
+      (\<^bold>\<diamond> Nom j) at k in' H) \<and>
+    (\<forall>p q i. (p \<^bold>\<or> q) at i in' H \<longrightarrow>
+      p at i in' H \<or> q at i in' H) \<and>
+    (\<forall>p q i. (\<^bold>\<not> (p \<^bold>\<or> q)) at i in' H \<longrightarrow>
+      (\<^bold>\<not> p) at i in' H \<and> (\<^bold>\<not> q) at i in' H) \<and>
+    (\<forall>p i. (\<^bold>\<not> \<^bold>\<not> p) at i in' H \<longrightarrow>
+      p at i in' H) \<and>
+    (\<forall>p i a. (\<^bold>@ i p) at a in' H \<longrightarrow>
+      p at i in' H) \<and>
+    (\<forall>p i a. (\<^bold>\<not> (\<^bold>@ i p)) at a in' H \<longrightarrow>
+      (\<^bold>\<not> p) at i in' H) \<and>
+    (\<forall>p i. (\<nexists>a. p = Nom a) \<longrightarrow> (\<^bold>\<diamond> p) at i in' H \<longrightarrow>
+      (\<exists>j. (\<^bold>\<diamond> Nom j) at i in' H \<and> (\<^bold>@ j p) at i in' H)) \<and>
+    (\<forall>p i j. (\<^bold>\<not> (\<^bold>\<diamond> p)) at i in' H \<longrightarrow> (\<^bold>\<diamond> Nom j) at i in' H \<longrightarrow>
+      (\<^bold>\<not> (\<^bold>@ j p)) at i in' H)\<close>
 
 text \<open>
   Two nominals \<open>i\<close> and \<open>j\<close> are equivalent in respect to a Hintikka set \<open>H\<close> if
@@ -3121,13 +3533,13 @@ text \<open>
 \<close>
 
 definition hequiv :: \<open>('a, 'b) block set \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool\<close> where
-  \<open>hequiv H i j \<equiv> \<exists>ps. (ps, i) \<in> H \<and> Nom j on (ps, i)\<close>
+  \<open>hequiv H i j \<equiv> Nom j at i in' H\<close>
 
 abbreviation hequiv_rel :: \<open>('a, 'b) block set \<Rightarrow> ('b \<times> 'b) set\<close> where
   \<open>hequiv_rel H \<equiv> {(i, j) |i j. hequiv H i j}\<close>
 
 definition names :: \<open>('a, 'b) block set \<Rightarrow> 'b set\<close> where
-  \<open>names H \<equiv> {i |block i. (block, i) \<in> H}\<close>
+  \<open>names H \<equiv> {i |ps i. (ps, i) \<in> H}\<close>
 
 lemma hequiv_refl: \<open>hintikka H \<Longrightarrow> i \<in> names H \<Longrightarrow> hequiv H i i\<close>
   unfolding hintikka_def hequiv_def names_def by auto
@@ -3177,13 +3589,13 @@ text \<open>
  \<close>
 
 definition assign :: \<open>('a, 'b) block set \<Rightarrow> 'b \<Rightarrow> 'b set\<close> where
-  \<open>assign H i \<equiv> Equiv_Relations.proj (hequiv_rel H) i\<close>
+  \<open>assign H i \<equiv> proj (hequiv_rel H) i\<close>
 
 definition reach :: \<open>('a, 'b) block set \<Rightarrow> 'b set \<Rightarrow> 'b set set\<close> where
-  \<open>reach H is \<equiv> {assign H j |i j ps. i \<in> is \<and> (ps, i) \<in> H \<and> (\<^bold>\<diamond> Nom j) on (ps, i)}\<close>
+  \<open>reach H is \<equiv> {assign H j |i j. i \<in> is \<and> (\<^bold>\<diamond> Nom j) at i in' H}\<close>
 
 definition val :: \<open>('a, 'b) block set \<Rightarrow> 'b set \<Rightarrow> 'a \<Rightarrow> bool\<close> where
-  \<open>val H is x \<equiv> \<exists>i \<in> is. \<exists>ps. (ps, i) \<in> H \<and> Pro x on (ps, i)\<close>
+  \<open>val H is x \<equiv> \<exists>i \<in> is. Pro x at i in' H\<close>
 
 lemma hequiv_assign: \<open>hintikka H \<Longrightarrow> hequiv H i j \<Longrightarrow> assign H i = assign H j\<close>
   unfolding proj_def assign_def using equiv_class_eq hequiv_rel by fast
@@ -3219,161 +3631,154 @@ lemma assign_sym: \<open>hintikka H \<Longrightarrow> j \<in> assign H i \<longl
   unfolding proj_def assign_def using hequiv_sym by fast
 
 lemma hintikka_model:
-  assumes \<open>hintikka H\<close> \<open>(ps, i) \<in> H\<close>
+  assumes \<open>hintikka H\<close>
   shows
-    \<open>p on (ps, i) \<Longrightarrow> Model (reach H) (val H), assign H, assign H i \<Turnstile> p\<close>
-    \<open>(\<^bold>\<not> p) on (ps, i) \<Longrightarrow> \<not> Model (reach H) (val H), assign H, assign H i \<Turnstile> p\<close>
-  using assms(2)
-proof (induct p arbitrary: i ps)
-  fix ps i
+    \<open>p at i in' H \<Longrightarrow> Model (reach H) (val H), assign H, assign H i \<Turnstile> p\<close>
+    \<open>(\<^bold>\<not> p) at i in' H \<Longrightarrow> \<not> Model (reach H) (val H), assign H, assign H i \<Turnstile> p\<close>
+proof (induct p arbitrary: i)
+  fix i
   case (Pro x)
-  assume \<open>Pro x on (ps, i)\<close> \<open>(ps, i) \<in> H\<close>
+  assume \<open>Pro x at i in' H\<close>
   then show \<open>Model (reach H) (val H), assign H, assign H i \<Turnstile> Pro x\<close>
     using assms(1) assign_refl' unfolding val_def by fastforce
 next
-  fix ps i
+  fix i
   case (Pro x)
-  assume \<open>(\<^bold>\<not> Pro x) on (ps, i)\<close> \<open>(ps, i) \<in> H\<close>
-  then have \<open>\<nexists>qs. (qs, j) \<in> H \<and> Pro x on (qs, j)\<close>
-    if \<open>\<exists>ps. (ps, i) \<in> H \<and> Nom j on (ps, i)\<close> for j
+  assume \<open>(\<^bold>\<not> Pro x) at i in' H\<close>
+  then have \<open>\<not> Pro x at j in' H\<close> if \<open>Nom j at i in' H\<close> for j
     using that assms(1) unfolding hintikka_def by meson
-  then have \<open>\<nexists>qs. (qs, j) \<in> H \<and> Pro x on (qs, j)\<close> if \<open>hequiv H i j\<close> for j
+  then have \<open>\<not> Pro x at j in' H\<close> if \<open>hequiv H i j\<close> for j
     using that unfolding hequiv_def by simp
   then have \<open>\<not> val H (assign H i) x\<close>
     unfolding proj_def val_def assign_def by blast
   then show \<open>\<not> Model (reach H) (val H), assign H, assign H i \<Turnstile> Pro x\<close>
     by simp
 next
-  fix ps i
+  fix i
   case (Nom a)
-  assume \<open>Nom a on (ps, i)\<close> \<open>(ps, i) \<in> H\<close>
+  assume \<open>Nom a at i in' H\<close>
   then have \<open>assign H a = assign H i\<close>
     using assms(1) hequiv_assign hequiv_sym unfolding hequiv_def by fast
   then show \<open>Model (reach H) (val H), assign H, assign H i \<Turnstile> Nom a\<close>
     by simp
 next
-  fix ps i
+  fix i
   case (Nom a)
-  assume \<open>(\<^bold>\<not> Nom a) on (ps, i)\<close> \<open>(ps, i) \<in> H\<close>
-  then have \<open>\<nexists>qs. (qs, i) \<in> H \<and> Nom a on (qs, i)\<close>
+  assume \<open>(\<^bold>\<not> Nom a) at i in' H\<close>
+  then have \<open>\<not> Nom a at i in' H\<close>
     using assms(1) unfolding hintikka_def by meson
   then have \<open>\<not> hequiv H i a\<close>
     unfolding hequiv_def by blast
   then have \<open>\<not> hequiv H a i\<close>
     using assms(1) hequiv_sym by fast
   moreover have \<open>hequiv H i i\<close>
-    using assms(1) \<open>(ps, i) \<in> H\<close> hequiv_refl' by fast
+    using assms(1) \<open>(\<^bold>\<not> Nom a) at i in' H\<close> hequiv_refl' by fast
   ultimately have \<open>assign H a \<noteq> assign H i\<close>
     unfolding proj_def assign_def by blast
   then show \<open>\<not> Model (reach H) (val H), assign H, assign H i \<Turnstile> Nom a\<close>
     by simp
 next
-  fix ps i
+  fix i
   case (Neg p)
-  moreover assume \<open>(\<^bold>\<not> p) on (ps, i)\<close> \<open>(ps, i) \<in> H\<close>
+  moreover assume \<open>(\<^bold>\<not> p) at i in' H\<close>
   ultimately show \<open>Model (reach H) (val H), assign H, assign H i \<Turnstile> \<^bold>\<not> p\<close>
     using assms(1) by simp
 next
-  fix ps i
+  fix i
   case (Neg p)
-  moreover assume \<open>(\<^bold>\<not> \<^bold>\<not> p) on (ps, i)\<close> \<open>(ps, i) \<in> H\<close>
-  then have \<open>\<exists>ps. (ps, i) \<in> H \<and> p on (ps, i)\<close>
+  moreover assume \<open>(\<^bold>\<not> \<^bold>\<not> p) at i in' H\<close>
+  then have \<open>p at i in' H\<close>
     using assms(1) unfolding hintikka_def by meson
   ultimately show \<open>\<not> Model (reach H) (val H), assign H, assign H i \<Turnstile> \<^bold>\<not> p\<close>
     using assms(1) by auto
 next
-  fix ps i
+  fix i
   case (Dis p q)
-  moreover assume \<open>(p \<^bold>\<or> q) on (ps, i)\<close> \<open>(ps, i) \<in> H\<close>
-  then have \<open>\<exists>ps. (ps, i) \<in> H \<and> (p on (ps, i) \<or> q on (ps, i))\<close>
+  moreover assume \<open>(p \<^bold>\<or> q) at i in' H\<close>
+  then have \<open>p at i in' H \<or> q at i in' H\<close>
     using assms(1) unfolding hintikka_def by meson
   ultimately show \<open>Model (reach H) (val H), assign H, assign H i \<Turnstile> (p \<^bold>\<or> q)\<close>
     by (meson semantics.simps(4))
 next
-  fix ps i
+  fix i
   case (Dis p q)
-  moreover assume \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) on (ps, i)\<close> \<open>(ps, i) \<in> H\<close>
-  then have \<open>\<exists>ps. (ps, i) \<in> H \<and> (\<^bold>\<not> p) on (ps, i) \<and> (\<^bold>\<not> q) on (ps, i)\<close>
-    using assms(1) unfolding hintikka_def by meson
+  moreover assume \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) at i in' H\<close>
+  then have \<open>(\<^bold>\<not> p) at i in' H\<close> \<open>(\<^bold>\<not> q) at i in' H\<close>
+    using assms(1) unfolding hintikka_def by meson+
   ultimately show \<open>\<not> Model (reach H) (val H), assign H, assign H i \<Turnstile> (p \<^bold>\<or> q)\<close>
     by auto
 next
-  fix ps i
+  fix i
   case (Dia p)
-  moreover assume \<open>(\<^bold>\<diamond> p) on (ps, i)\<close> \<open>(ps, i) \<in> H\<close>
+  moreover assume \<open>(\<^bold>\<diamond> p) at i in' H\<close>
   ultimately show \<open>Model (reach H) (val H), assign H, assign H i \<Turnstile> \<^bold>\<diamond> p\<close>
   proof (cases \<open>\<exists>j. p = Nom j\<close>)
     case True
     then obtain j where \<open>p = Nom j\<close>
       by blast
     have \<open>i \<in> assign H i\<close>
-      using assms(1) \<open>(ps, i) \<in> H\<close> assign_refl' by fast
+      using assms(1) \<open>(\<^bold>\<diamond> p) at i in' H\<close> assign_refl' by fast
     moreover have \<open>j \<in> nominals (\<^bold>\<diamond> p)\<close>
       using \<open>p = Nom j\<close> by simp
     then have \<open>(\<exists>block \<in> H. (\<^bold>\<diamond> p) on block) \<longrightarrow> (\<exists>qs. (qs, j) \<in> H)\<close>
       using assms(1) unfolding hintikka_def by meson
     then have \<open>\<exists>bl. (bl, j) \<in> H\<close>
-      using \<open>(\<^bold>\<diamond> p) on (ps, i)\<close> \<open>(ps, i) \<in> H\<close> by blast
+      using \<open>(\<^bold>\<diamond> p) at i in' H\<close> by blast
     then have \<open>j \<in> assign H j\<close>
-      using assms(1) \<open>(ps, i) \<in> H\<close> assign_refl' by fast
-    moreover have \<open>(\<^bold>\<diamond> Nom j) on (ps, i)\<close>
-      using \<open>p = Nom j\<close> \<open>(\<^bold>\<diamond> p) on (ps, i)\<close> by blast
+      using assms(1) \<open>(\<^bold>\<diamond> p) at i in' H\<close> assign_refl' by fast
+    moreover have \<open>(\<^bold>\<diamond> Nom j) at i in' H\<close>
+      using \<open>p = Nom j\<close> \<open>(\<^bold>\<diamond> p) at i in' H\<close> by blast
     ultimately have \<open>assign H j \<in> reach H (assign H i)\<close>
-      using \<open>(ps, i) \<in> H\<close> unfolding reach_def by auto
+      using \<open>(\<^bold>\<diamond> p) at i in' H\<close> unfolding reach_def by auto
     then show ?thesis
       using \<open>p = Nom j\<close> by simp
   next
     case False
-    then have \<open>\<exists>j.
-        (\<exists>qs. (qs, i) \<in> H \<and> (\<^bold>\<diamond> Nom j) on (qs, i)) \<and>
-        (\<exists>rs. (rs, i) \<in> H \<and> (\<^bold>@ j p) on (rs, i))\<close>
-      using assms \<open>(\<^bold>\<diamond> p) on (ps, i)\<close> \<open>(ps, i) \<in> H\<close> unfolding hintikka_def by blast
-    then obtain j qs rs where
-      qs: \<open>(qs, i) \<in> H\<close> \<open>(\<^bold>\<diamond> Nom j) on (qs, i)\<close> and
-      rs: \<open>(rs, i) \<in> H\<close> \<open>(\<^bold>@ j p) on (rs, i)\<close>
+    then have \<open>\<exists>j. (\<^bold>\<diamond> Nom j) at i in' H \<and> (\<^bold>@ j p) at i in' H\<close>
+      using assms \<open>(\<^bold>\<diamond> p) at i in' H\<close> unfolding hintikka_def by blast
+    then obtain j where *: \<open>(\<^bold>\<diamond> Nom j) at i in' H\<close> \<open>(\<^bold>@ j p) at i in' H\<close>
       by blast
 
-    from rs have \<open>\<exists>ts. (ts, j) \<in> H \<and> p on (ts, j)\<close>
+    from *(2) have \<open>p at j in' H\<close>
       using assms(1) unfolding hintikka_def by blast
     then have \<open>Model (reach H) (val H), assign H, assign H j \<Turnstile> p\<close>
       using Dia by blast
 
     have \<open>i \<in> assign H i\<close>
-      using assms(1) assign_refl' \<open>(ps, i) \<in> H\<close> by fast
+      using assms(1) assign_refl' \<open>(\<^bold>\<diamond> p) at i in' H\<close> by fast
     moreover have \<open>j \<in> assign H j\<close>
-      using assms(1) assign_refl' \<open>\<exists>ts. (ts, j) \<in> H \<and> p on (ts, j)\<close> by fast
+      using assms(1) assign_refl' \<open>p at j in' H\<close> by fast
     ultimately have \<open>assign H j \<in> reach H (assign H i)\<close>
-      using qs unfolding reach_def by auto
+      using *(1) unfolding reach_def by auto
     then show ?thesis
       using \<open>Model (reach H) (val H), assign H, assign H j \<Turnstile> p\<close> by auto
   qed
 next
-  fix ps i
+  fix i
   case (Dia p)
-  assume \<open>(\<^bold>\<not> (\<^bold>\<diamond> p)) on (ps, i)\<close> \<open>(ps, i) \<in> H\<close>
+  assume \<open>(\<^bold>\<not> (\<^bold>\<diamond> p)) at i in' H\<close>
   show \<open>\<not> Model (reach H) (val H), assign H, assign H i \<Turnstile> \<^bold>\<diamond> p\<close>
   proof
     assume \<open>Model (reach H) (val H), assign H, assign H i \<Turnstile> \<^bold>\<diamond> p\<close>
-    then obtain i' j qs where
+    then obtain i' j where
       \<open>Model (reach H) (val H), assign H, assign H j \<Turnstile> p\<close>
-      \<open>i' \<in> assign H i\<close> \<open>(qs, i') \<in> H\<close> \<open>(\<^bold>\<diamond> Nom j) on (qs, i')\<close>
+      \<open>i' \<in> assign H i\<close> \<open>(\<^bold>\<diamond> Nom j) at i' in' H\<close>
       unfolding reach_def by auto
 
-    have \<open>\<exists>rs. (rs, i) \<in> H \<and> Nom i' on (rs, i)\<close>
-      using \<open>i' \<in> assign H i\<close> \<open>(qs, i') \<in> H\<close>
+    have \<open>Nom i' at i in' H\<close>
+      using \<open>i' \<in> assign H i\<close> \<open>(\<^bold>\<diamond> Nom j) at i' in' H\<close>
       unfolding hequiv_def proj_def assign_def by auto
-    then have \<open>\<exists>rs. (rs, i') \<in> H \<and> Nom i on (rs, i')\<close>
+    then have \<open>Nom i at i' in' H\<close>
       using assms(1) unfolding hintikka_def by meson
-    then have \<open>\<exists>rs. (rs, i) \<in> H \<and> (\<^bold>\<diamond> Nom j) on (rs, i)\<close>
-      using assms(1) \<open>(\<^bold>\<diamond> Nom j) on (qs, i')\<close> \<open>(qs, i') \<in> H\<close>
+    then have \<open>(\<^bold>\<diamond> Nom j) at i in' H\<close>
+      using assms(1) \<open>(\<^bold>\<diamond> Nom j) at i' in' H\<close>
       unfolding hintikka_def by meson
-    then have \<open>\<exists>rs. (rs, i) \<in> H \<and> (\<^bold>\<not> (\<^bold>@ j p)) on (rs, i)\<close>
-      using assms(1) \<open>(\<^bold>\<not> (\<^bold>\<diamond> p)) on (ps, i)\<close> \<open>(ps, i) \<in> H\<close>
+    then have \<open>(\<^bold>\<not> (\<^bold>@ j p)) at i in' H\<close>
+      using assms(1) \<open>(\<^bold>\<not> (\<^bold>\<diamond> p)) at i in' H\<close>
       unfolding hintikka_def by meson
-    moreover have \<open>\<exists>qs. (qs, j) \<in> H \<and> (\<^bold>\<not> p) on (qs, j)\<close>
-      if \<open>\<exists>block \<in> H. (\<^bold>\<not> (\<^bold>@ j p)) on block\<close>
-      using that assms(1) unfolding hintikka_def by meson
-    ultimately obtain rs where \<open>(rs, j) \<in> H\<close> \<open>(\<^bold>\<not> p) on (rs, j)\<close>
+    moreover have \<open>(\<^bold>\<not> p) at j in' H\<close> if \<open>\<exists>a. (\<^bold>\<not> (\<^bold>@ j p)) at a in' H\<close>
+      using that assms(1) unfolding hintikka_def by blast
+    ultimately have \<open>(\<^bold>\<not> p) at j in' H\<close>
       by blast
     then have \<open>\<not> Model (reach H) (val H), assign H, assign H j \<Turnstile> p\<close>
       using Dia by blast
@@ -3381,24 +3786,22 @@ next
       using \<open>Model (reach H) (val H), assign H, assign H j \<Turnstile> p\<close> by blast
   qed
 next
-  fix ps i
+  fix i
   case (Sat j p)
-  assume \<open>(\<^bold>@ j p) on (ps, i)\<close> \<open>(ps, i) \<in> H\<close>
-  moreover have \<open>\<exists>qs. (qs, j) \<in> H \<and> p on (qs, j)\<close>
-    if \<open>\<exists>block \<in> H. (\<^bold>@ j p) on block\<close>
+  assume \<open>(\<^bold>@ j p) at i in' H\<close>
+  moreover have \<open>p at j in' H\<close> if \<open>\<exists>a. (\<^bold>@ j p) at a in' H\<close>
     using that assms(1) unfolding hintikka_def by meson
-  ultimately obtain qs where \<open>(qs, j) \<in> H\<close> \<open>p on (qs, j)\<close>
+  ultimately have \<open>p at j in' H\<close>
     by blast
   then show \<open>Model (reach H) (val H), assign H, assign H i \<Turnstile> \<^bold>@ j p\<close>
     using Sat by simp
 next
-  fix ps i
+  fix i
   case (Sat j p)
-  assume \<open>(\<^bold>\<not> (\<^bold>@ j p)) on (ps, i)\<close> \<open>(ps, i) \<in> H\<close>
-  moreover have \<open>\<exists>qs. (qs, j) \<in> H \<and> (\<^bold>\<not> p) on (qs, j)\<close>
-    if \<open>\<exists>block \<in> H. (\<^bold>\<not> (\<^bold>@ j p)) on block\<close>
+  assume \<open>(\<^bold>\<not> (\<^bold>@ j p)) at i in' H\<close>
+  moreover have \<open>(\<^bold>\<not> p) at j in' H\<close> if \<open>\<exists>a. (\<^bold>\<not> (\<^bold>@ j p)) at a in' H\<close>
     using that assms(1) unfolding hintikka_def by meson
-  ultimately obtain qs where \<open>(qs, j) \<in> H\<close> \<open>(\<^bold>\<not> p) on (qs, j)\<close>
+  ultimately have \<open>(\<^bold>\<not> p) at j in' H\<close>
     by blast
   then show \<open>\<not> Model (reach H) (val H), assign H, assign H i \<Turnstile> \<^bold>@ j p\<close>
     using Sat by simp
@@ -3452,11 +3855,8 @@ primrec extend ::
     (if \<not> consistent ({f n} \<union> extend S f n)
      then extend S f n
      else
-      (if \<nexists>p. (\<^bold>\<diamond> p) on f n
-       then {f n} \<union> extend S f n
-       else
-        let used = (\<Union>block \<in> {f n} \<union> extend S f n. block_nominals block)
-        in {f n, witness (f n) used} \<union> extend S f n))\<close>
+      let used = (\<Union>block \<in> {f n} \<union> extend S f n. block_nominals block)
+      in {f n, witness (f n) used} \<union> extend S f n)\<close>
 
 definition Extend ::
   \<open>('a, 'b) block set \<Rightarrow> (nat \<Rightarrow> ('a, 'b) block) \<Rightarrow> ('a, 'b) block set\<close> where
@@ -3485,15 +3885,15 @@ lemma consistent_drop_single:
   shows \<open>consistent ({(ps, a)} \<union> S)\<close>
   unfolding consistent_def
 proof
-  assume \<open>\<exists>S'. set S' \<subseteq> {(ps, a)} \<union> S \<and> \<turnstile> S'\<close>
-  then obtain S' where \<open>set S' \<subseteq> {(ps, a)} \<union> S\<close> \<open>(ps, a) \<in>. S'\<close> \<open>\<turnstile> S'\<close>
+  assume \<open>\<exists>S'. set S' \<subseteq> {(ps, a)} \<union> S \<and> (\<exists>n. n \<turnstile> S')\<close>
+  then obtain S' n where \<open>set S' \<subseteq> {(ps, a)} \<union> S\<close> \<open>(ps, a) \<in>. S'\<close> \<open>n \<turnstile> S'\<close>
     using assms unfolding consistent_def by blast
   then obtain S'' where \<open>set ((ps, a) # S'') = set S'\<close> \<open>(ps, a) \<notin> set S''\<close>
     using split_list by metis
   then have \<open>\<turnstile> (ps, a) # S''\<close>
-    using inf ST_struct \<open>\<turnstile> S'\<close> by blast
+    using inf ST_struct \<open>n \<turnstile> S'\<close> by blast
   then have \<open>\<turnstile> (p # ps, a) # S''\<close>
-    using inf ST_struct_block[where ps'=\<open>p # ps\<close>] by auto
+    using inf ST_struct_block[where ps'=\<open>p # ps\<close>] by fastforce
   moreover have \<open>set ((p # ps, a) # S'') \<subseteq> {(p # ps, a)} \<union> S\<close>
     using \<open>(ps, a) \<notin> set S''\<close> \<open>set ((ps, a) # S'') = set S'\<close> \<open>set S' \<subseteq> {(ps, a)} \<union> S\<close> by auto
   ultimately show False
@@ -3562,8 +3962,8 @@ lemma witness_used:
 
 lemma consistent_witness_list:
   fixes a :: 'b
-  assumes inf: \<open>infinite (UNIV :: 'b set)\<close> and \<open>consistent S\<close> \<open>finite S\<close>
-    \<open>(ps, a) \<in> S\<close> \<open>finite used\<close> \<open>(\<Union>block \<in> S. block_nominals block) \<subseteq> used\<close>
+  assumes inf: \<open>infinite (UNIV :: 'b set)\<close> and \<open>consistent S\<close>
+    \<open>(ps, a) \<in> S\<close> \<open>finite used\<close> \<open>(\<Union> (block_nominals ` S)) \<subseteq> used\<close>
   shows \<open>consistent ({(witness_list ps used, a)} \<union> S)\<close>
   using assms(2-)
 proof (induct ps arbitrary: used S)
@@ -3580,8 +3980,6 @@ next
     using \<open>consistent S\<close> by simp
   then have \<open>consistent ({(ps, a)} \<union> S)\<close>
     using inf consistent_drop_single by fast
-  moreover have \<open>finite ({(ps, a)} \<union> S)\<close>
-    using \<open>finite S\<close> by simp
   moreover have \<open>(ps, a) \<in> {(ps, a)} \<union> S\<close>
     by simp
   moreover have \<open>\<Union> (block_nominals ` ({(ps, a)} \<union> S)) \<subseteq> extra \<union> used\<close> for extra
@@ -3628,9 +4026,9 @@ next
     moreover have \<open>consistent ({((\<^bold>@ ?i q) # (\<^bold>\<diamond> Nom ?i) # ?tail, a)} \<union> S)\<close>
       unfolding consistent_def
     proof
-      assume \<open>\<exists>S'. set S' \<subseteq> {((\<^bold>@ ?i q) # (\<^bold>\<diamond> Nom ?i) # ?tail, a)} \<union> S \<and> \<turnstile> S'\<close>
-      then obtain S' where
-        \<open>\<turnstile> S'\<close> and S':
+      assume \<open>\<exists>S'. set S' \<subseteq> {((\<^bold>@ ?i q) # (\<^bold>\<diamond> Nom ?i) # ?tail, a)} \<union> S \<and> (\<exists>n. n \<turnstile> S')\<close>
+      then obtain S' n where
+        \<open>n \<turnstile> S'\<close> and S':
         \<open>set S' \<subseteq> {((\<^bold>@ ?i q) # (\<^bold>\<diamond> Nom ?i) # ?tail, a)} \<union> S\<close>
         \<open>((\<^bold>@ ?i q) # (\<^bold>\<diamond> Nom ?i) # ?tail, a) \<in>. S'\<close>
         using * unfolding consistent_def by blast
@@ -3639,7 +4037,7 @@ next
         \<open>((\<^bold>@ ?i q) # (\<^bold>\<diamond> Nom ?i) # ?tail, a) \<notin> set S''\<close>
         using split_list[where x=\<open>((\<^bold>@ ?i q) # (\<^bold>\<diamond> Nom ?i) # ?tail, a)\<close>] by blast
       then have \<open>\<turnstile> ((\<^bold>@ ?i q) # (\<^bold>\<diamond> Nom ?i) # ?tail, a) # S''\<close>
-        using inf ST_struct \<open>\<turnstile> S'\<close> by blast
+        using inf ST_struct \<open>n \<turnstile> S'\<close> by blast
       moreover have \<open>set (((\<^bold>@ ?i q) # (\<^bold>\<diamond> Nom ?i) # ?tail, a) # S'') \<subseteq>
         set (((\<^bold>@ ?i q) # (\<^bold>\<diamond> Nom ?i) # ?tail, a) # (p # ps, a) # S'')\<close>
         by auto
@@ -3679,29 +4077,19 @@ qed
 lemma consistent_witness:
   fixes block :: \<open>('a, 'b) block\<close>
   assumes \<open>infinite (UNIV :: 'b set)\<close>
-    \<open>consistent S\<close> \<open>finite S\<close> \<open>block \<in> S\<close>
-  shows \<open>consistent ({witness block ((\<Union>block \<in> S. block_nominals block))} \<union> S)\<close>
-  using assms
-proof (induct block)
-  case (Pair ps i)
-  then have \<open>finite (\<Union>block \<in> S. block_nominals block)\<close>
-    using finite_nominals_set by blast
-  then show ?case
-    using Pair consistent_witness_list[where ps=ps] by simp
-qed
-
-lemma finite_extend: \<open>finite S \<Longrightarrow> finite (extend S f n)\<close>
-  by (induct n) simp_all
+    \<open>consistent S\<close> \<open>finite (\<Union> (block_nominals ` S))\<close> \<open>block \<in> S\<close>
+  shows \<open>consistent ({witness block (\<Union> (block_nominals ` S))} \<union> S)\<close>
+  using assms consistent_witness_list by (cases block) fastforce
 
 lemma consistent_extend:
   fixes S :: \<open>('a, 'b) block set\<close>
-  assumes inf: \<open>infinite (UNIV :: 'b set)\<close> and \<open>consistent (extend S f n)\<close> \<open>finite S\<close>
+  assumes inf: \<open>infinite (UNIV :: 'b set)\<close> and
+    \<open>consistent (extend S f n)\<close> \<open>finite (\<Union> (block_nominals ` extend S f n))\<close>
   shows \<open>consistent (extend S f (Suc n))\<close>
 proof -
   consider
     (inconsistent) \<open>\<not> consistent ({f n} \<union> extend S f n)\<close> |
-    (clear) \<open>consistent ({f n} \<union> extend S f n) \<and> (\<nexists>p. (\<^bold>\<diamond> p) on f n)\<close> |
-    (dia) \<open>consistent ({f n} \<union> extend S f n) \<and> (\<exists>p. (\<^bold>\<diamond> p) on f n)\<close>
+    (consistent) \<open>consistent ({f n} \<union> extend S f n)\<close>
     by blast
   then show ?thesis
   proof cases
@@ -3709,19 +4097,15 @@ proof -
     then show ?thesis
       using assms by simp
   next
-    case clear
-    then show ?thesis
-      by simp
-  next
-    case dia
+    case consistent
     let ?used = \<open>\<Union>block \<in> {f n} \<union> extend S f n. block_nominals block\<close>
     have *: \<open>extend S f (n + 1) = {f n, witness (f n) ?used} \<union> extend S f n\<close>
-      using dia by simp
+      using consistent by simp
 
     have \<open>consistent ({f n} \<union> extend S f n)\<close>
-      using dia by simp
-    moreover have \<open>finite ({f n} \<union> extend S f n)\<close>
-      using \<open>finite S\<close> finite_extend by blast
+      using consistent by simp
+    moreover have \<open>finite ((\<Union> (block_nominals ` ({f n} \<union> extend S f n))))\<close>
+      using \<open>finite (\<Union> (block_nominals ` extend S f n))\<close> finite_nominals_set by force
     moreover have \<open>f n \<in> {f n} \<union> extend S f n\<close>
       by simp
     ultimately have \<open>consistent ({witness (f n) ?used} \<union> ({f n} \<union> extend S f n))\<close>
@@ -3731,11 +4115,16 @@ proof -
   qed
 qed
 
+lemma finite_nominals_extend:
+  assumes \<open>finite (\<Union> (block_nominals ` S))\<close>
+  shows \<open>finite (\<Union> (block_nominals ` extend S f n))\<close>
+  using assms by (induct n) (simp_all add: finite_block_nominals)
+
 lemma consistent_extend':
   fixes S :: \<open>('a, 'b) block set\<close>
-  assumes inf: \<open>infinite (UNIV :: 'b set)\<close> and \<open>consistent S\<close> \<open>finite S\<close>
+  assumes inf: \<open>infinite (UNIV :: 'b set)\<close> and \<open>consistent S\<close> \<open>finite (\<Union> (block_nominals ` S))\<close>
   shows \<open>consistent (extend S f n)\<close>
-  using assms by (induct n) (simp, metis consistent_extend)
+  using assms by (induct n) (simp, metis consistent_extend finite_nominals_extend)
 
 lemma UN_finite_bound:
   assumes \<open>finite A\<close> \<open>A \<subseteq> (\<Union>n. f n)\<close>
@@ -3770,13 +4159,14 @@ qed simp
 
 lemma consistent_Extend:
   fixes S :: \<open>('a, 'b) block set\<close>
-  assumes inf: \<open>infinite (UNIV :: 'b set)\<close> and \<open>consistent S\<close> \<open>finite S\<close>
+  assumes inf: \<open>infinite (UNIV :: 'b set)\<close> and
+    \<open>consistent S\<close> \<open>finite (\<Union> (block_nominals ` S))\<close>
   shows \<open>consistent (Extend S f)\<close>
   unfolding Extend_def
 proof (rule ccontr)
   assume \<open>\<not> consistent (\<Union> (range (extend S f)))\<close>
-  then obtain S' where
-    \<open>\<turnstile> S'\<close>
+  then obtain S' n where
+    \<open>n \<turnstile> S'\<close>
     \<open>set S' \<subseteq> (\<Union>n. extend S f n)\<close>
     unfolding consistent_def by blast
   moreover have \<open>finite (set S')\<close>
@@ -3788,7 +4178,7 @@ proof (rule ccontr)
   moreover have \<open>consistent (extend S f m)\<close>
     using assms consistent_extend' by blast
   ultimately show False
-    unfolding consistent_def using \<open>\<turnstile> S'\<close> by blast
+    unfolding consistent_def using \<open>n \<turnstile> S'\<close> by blast
 qed
 
 subsubsection \<open>Maximality\<close>
@@ -3805,7 +4195,8 @@ lemma extend_not_mem:
 
 lemma maximal_Extend:
   fixes S :: \<open>('a, 'b) block set\<close>
-  assumes inf: \<open>infinite (UNIV :: 'b set)\<close> and \<open>consistent S\<close> \<open>finite S\<close> \<open>surj f\<close>
+  assumes inf: \<open>infinite (UNIV :: 'b set)\<close> and
+    \<open>consistent S\<close> \<open>finite (\<Union> (block_nominals ` S))\<close> \<open>surj f\<close>
   shows \<open>maximal (Extend S f)\<close>
 proof (rule ccontr)
   assume \<open>\<not> maximal (Extend S f)\<close>
@@ -3833,10 +4224,8 @@ subsubsection \<open>Saturation\<close>
 text \<open>A set of blocks is saturated if every \<open>\<^bold>\<diamond> p\<close> is witnessed.\<close>
 
 definition saturated :: \<open>('a, 'b) block set \<Rightarrow> bool\<close> where
-  \<open>saturated S \<equiv> \<forall>(ps, i) \<in> S. \<forall>p.
-    (\<^bold>\<diamond> p) on (ps, i) \<longrightarrow> (\<nexists>a. p = Nom a) \<longrightarrow> (\<exists>j.
-      (\<exists>qs. (qs, i) \<in> S \<and> (\<^bold>@ j p) on (qs, i)) \<and>
-      (\<exists>rs. (rs, i) \<in> S \<and> (\<^bold>\<diamond> Nom j) on (rs, i)))\<close>
+  \<open>saturated S \<equiv> \<forall>p i. (\<^bold>\<diamond> p) at i in' S \<longrightarrow> (\<nexists>a. p = Nom a) \<longrightarrow>
+    (\<exists>j. (\<^bold>@ j p) at i in' S \<and> (\<^bold>\<diamond> Nom j) at i in' S)\<close>
 
 lemma witness_list_append:
   \<open>\<exists>extra. witness_list (ps @ qs) used = witness_list ps used @ witness_list qs (extra \<union> used)\<close>
@@ -3905,7 +4294,8 @@ qed simp
 
 lemma saturated_Extend:
   fixes S :: \<open>('a, 'b) block set\<close>
-  assumes inf: \<open>infinite (UNIV :: 'b set)\<close> and \<open>consistent S\<close> \<open>finite S\<close> \<open>surj f\<close>
+  assumes inf: \<open>infinite (UNIV :: 'b set)\<close> and
+    \<open>consistent S\<close> \<open>finite (\<Union> (block_nominals ` S))\<close> \<open>surj f\<close>
   shows \<open>saturated (Extend S f)\<close>
   unfolding saturated_def
 proof safe
@@ -3957,11 +4347,11 @@ proof safe
     ps: \<open>(ps, i) \<in> S\<close> \<open>Nom j on (ps, i)\<close> and
     qs: \<open>(qs, j) \<in> S\<close> \<open>Pro x on (qs, j)\<close> and
     rs: \<open>(rs, i) \<in> S\<close> \<open>(\<^bold>\<not> Pro x) on (rs, i)\<close>
-  then have \<open>\<not> \<turnstile> [(ps, i), (qs, j), (rs, i)]\<close>
+  then have \<open>\<not> n \<turnstile> [(ps, i), (qs, j), (rs, i)]\<close> for n
     using \<open>consistent S\<close> unfolding consistent_def by simp
-  moreover have \<open>\<turnstile> [(Pro x # ps, i), (qs, j), (rs, i)]\<close>
-    using ps(2) rs(2) Close[where p=\<open>Pro x\<close> and i=i] by force
-  then have \<open>\<turnstile> [(ps, i), (qs, j), (rs, i)]\<close>
+  moreover have \<open>n \<turnstile> [(Pro x # ps, i), (qs, j), (rs, i)]\<close> for n
+    using ps(2) rs(2) by (meson Close list.set_intros(1) on.simps set_subset_Cons subsetD)
+  then have \<open>n \<turnstile> [(ps, i), (qs, j), (rs, i)]\<close> for n
     using ps qs rev_nth_on
     by (meson Nom' list.set_intros(1) rev_nth_on set_subset_Cons subsetD)
   ultimately show False
@@ -3971,10 +4361,10 @@ next
   assume
     ps: \<open>(ps, i) \<in> S\<close> \<open>Nom a on (ps, i)\<close> and
     qs: \<open>(qs, i) \<in> S\<close> \<open>(\<^bold>\<not> Nom a) on (qs, i)\<close>
-  then have \<open>\<not> \<turnstile> [(ps, i), (qs, i)]\<close>
+  then have \<open>\<not> n \<turnstile> [(ps, i), (qs, i)]\<close> for n
     using \<open>consistent S\<close> unfolding consistent_def by simp
-  moreover have \<open>\<turnstile> [(ps, i), (qs, i)]\<close>
-    using ps(2) qs(2) Close[where p=\<open>Nom a\<close> and i=i] by force
+  moreover have \<open>n \<turnstile> [(ps, i), (qs, i)]\<close> for n
+    using ps(2) qs(2) by (meson Close list.set_intros(1) set_subset_Cons subset_code(1))
   ultimately show False
     by blast
 next
@@ -3982,9 +4372,9 @@ next
   assume
     ps: \<open>(ps, i) \<in> S\<close> \<open>(\<^bold>\<diamond> Nom j) on (ps, i)\<close> and
     qs: \<open>(qs, i) \<in> S\<close> \<open>(\<^bold>\<not> (\<^bold>\<diamond> Nom j)) on (qs, i)\<close>
-  then have \<open>\<not> \<turnstile> [(ps, i), (qs, i)]\<close>
+  then have \<open>\<not> n \<turnstile> [(ps, i), (qs, i)]\<close> for n
     using \<open>consistent S\<close> unfolding consistent_def by simp
-  moreover have \<open>\<turnstile> [(ps, i), (qs, i)]\<close>
+  moreover have \<open>n \<turnstile> [(ps, i), (qs, i)]\<close> for n
     using ps(2) qs(2) Close[where p=\<open>\<^bold>\<diamond> Nom j\<close> and i=i] by force
   ultimately show False
     by blast
@@ -3994,18 +4384,19 @@ next
   show \<open>\<exists>qs. (qs, i) \<in> S\<close>
   proof (rule ccontr)
     assume \<open>\<nexists>qs. (qs, i) \<in> S\<close>
-    then obtain S' where
-      \<open>\<turnstile> S'\<close> and S': \<open>set S' \<subseteq> {([], i)} \<union> S\<close> and \<open>([], i) \<in>. S'\<close>
-      using \<open>maximal S\<close> unfolding maximal_def consistent_def by fast
+    then obtain S' n where
+      \<open>n \<turnstile> S'\<close> and S': \<open>set S' \<subseteq> {([], i)} \<union> S\<close> and \<open>([], i) \<in>. S'\<close>
+      using \<open>maximal S\<close> unfolding maximal_def consistent_def
+      by (metis insert_is_Un subset_insert)
     then obtain S'' where S'':
       \<open>set (([], i) # S'') = set S'\<close> \<open>([], i) \<notin> set S''\<close>
       using split_list[where x=\<open>([], i)\<close>] by blast
     then have \<open>\<turnstile> ([], i) # (ps, a) # S''\<close>
-      using inf ST_struct[where branch'=\<open>([], i) # (ps, a) # _\<close>] \<open>\<turnstile> S'\<close> by auto
+      using inf ST_struct[where branch'=\<open>([], i) # (ps, a) # S''\<close>] \<open>n \<turnstile> S'\<close> by fastforce
     moreover have \<open>i \<in> branch_nominals ((ps, a) # S'')\<close>
       using i ps unfolding branch_nominals_def by auto
     ultimately have \<open>\<turnstile> (ps, a) # S''\<close>
-      by (simp add: GoTo)
+      using GoTo by fast
     moreover have \<open>set ((ps, a) # S'') \<subseteq> S\<close>
       using S' S'' ps by auto
     ultimately show False
@@ -4017,23 +4408,21 @@ next
   show \<open>\<exists>qs. (qs, j) \<in> S \<and> Nom i on (qs, j)\<close>
   proof (rule ccontr)
     assume \<open>\<nexists>qs. (qs, j) \<in> S \<and> Nom i on (qs, j)\<close>
-    then obtain S' where
-      \<open>\<turnstile> S'\<close> and S': \<open>set S' \<subseteq> {([Nom i], j)} \<union> S\<close> and \<open>([Nom i], j) \<in>. S'\<close>
+    then obtain S' n where
+      \<open>n \<turnstile> S'\<close> and S': \<open>set S' \<subseteq> {([Nom i], j)} \<union> S\<close> and \<open>([Nom i], j) \<in>. S'\<close>
       using \<open>maximal S\<close> unfolding maximal_def consistent_def
       by (metis insert_is_Un list.set_intros(1) on.simps subset_insert)
     then obtain S'' where S'':
       \<open>set (([Nom i], j) # S'') = set S'\<close> \<open>([Nom i], j) \<notin> set S''\<close>
       using split_list[where x=\<open>([Nom i], j)\<close>] by blast
     then have \<open>\<turnstile> ([Nom i], j) # (ps, i) # S''\<close>
-      using inf ST_struct[where branch'=\<open>([Nom i], j) # (ps, i) # _\<close>] \<open>\<turnstile> S'\<close>
-      by auto
+      using inf ST_struct[where branch'=\<open>([Nom i], j) # (ps, i) # S''\<close>] \<open>n \<turnstile> S'\<close> by fastforce
     then have \<open>\<turnstile> ([], j) # (ps, i) # S''\<close>
-      using \<open>Nom j on (ps, i)\<close>
-      by (meson Nom' list.set_intros(1) list.set_intros(2) on.simps)
+      using \<open>Nom j on (ps, i)\<close> by (meson Nom' list.set_intros(1) list.set_intros(2) on.simps)
     moreover have \<open>j \<in> branch_nominals ((ps, i) # S'')\<close>
       using \<open>Nom j on (ps, i)\<close> unfolding branch_nominals_def by fastforce
     ultimately have \<open>\<turnstile> (ps, i) # S''\<close>
-      by (simp add: GoTo)
+      using GoTo by fast
     moreover have \<open>set ((ps, i) # S'') \<subseteq> S\<close>
       using S' S'' ps by auto
     ultimately show False
@@ -4047,22 +4436,22 @@ next
   show \<open>\<exists>rs. (rs, i) \<in> S \<and> Nom k on (rs, i)\<close>
   proof (rule ccontr)
     assume \<open>\<nexists>rs. (rs, i) \<in> S \<and> Nom k on (rs, i)\<close>
-    then obtain S' where
-      \<open>\<turnstile> S'\<close> and S': \<open>set S' \<subseteq> {([Nom k], i)} \<union> S\<close> and \<open>([Nom k], i) \<in>. S'\<close>
+    then obtain S' n where
+      \<open>n \<turnstile> S'\<close> and S': \<open>set S' \<subseteq> {([Nom k], i)} \<union> S\<close> and \<open>([Nom k], i) \<in>. S'\<close>
       using \<open>maximal S\<close> unfolding maximal_def consistent_def
       by (metis insert_is_Un list.set_intros(1) on.simps subset_insert)
     then obtain S'' where S'':
       \<open>set (([Nom k], i) # S'') = set S'\<close> \<open>([Nom k], i) \<notin> set S''\<close>
       using split_list[where x=\<open>([Nom k], i)\<close>] by blast
     then have \<open>\<turnstile> ([Nom k], i) # (Nom k # ps, i) # (qs, j) # S''\<close>
-      using inf ST_struct[where branch'=\<open>([Nom k], i) # (Nom k # ps, i) # (qs, j) # _\<close>] \<open>\<turnstile> S'\<close>
-      by auto
+      using inf ST_struct[where branch'=\<open>([Nom k], i) # (Nom k # ps, i) # (qs, j) # S''\<close>] \<open>n \<turnstile> S'\<close>
+      by fastforce
     then have \<open>\<turnstile> ([], i) # (Nom k # ps, i) # (qs, j) # S''\<close>
       by (meson Nom' list.set_intros(1-2) on.simps)
     moreover have \<open>i \<in> branch_nominals ((Nom k # ps, i) # (qs, j) # S'')\<close>
       unfolding branch_nominals_def by simp
     ultimately have \<open>\<turnstile> (Nom k # ps, i) # (qs, j) # S''\<close>
-      by (simp add: GoTo)
+      using GoTo by fast
     then have \<open>\<turnstile> (ps, i) # (qs, j) # S''\<close>
       using ps qs by (meson Nom' list.set_intros(1-2) on.simps)
     moreover have \<open>set ((ps, i) # (qs, j) # S'') \<subseteq> S\<close>
@@ -4078,22 +4467,22 @@ next
   show \<open>\<exists>rs. (rs, i) \<in> S \<and> (\<^bold>\<diamond> Nom k) on (rs, i)\<close>
   proof (rule ccontr)
     assume \<open>\<nexists>rs. (rs, i) \<in> S \<and> (\<^bold>\<diamond> Nom k) on (rs, i)\<close>
-    then obtain S' where
-      \<open>\<turnstile> S'\<close> and S': \<open>set S' \<subseteq> {([\<^bold>\<diamond> Nom k], i)} \<union> S\<close> and \<open>([\<^bold>\<diamond> Nom k], i) \<in>. S'\<close>
+    then obtain S' n where
+      \<open>n \<turnstile> S'\<close> and S': \<open>set S' \<subseteq> {([\<^bold>\<diamond> Nom k], i)} \<union> S\<close> and \<open>([\<^bold>\<diamond> Nom k], i) \<in>. S'\<close>
       using \<open>maximal S\<close> unfolding maximal_def consistent_def
       by (metis insert_is_Un list.set_intros(1) on.simps subset_insert)
     then obtain S'' where S'':
       \<open>set (([\<^bold>\<diamond> Nom k], i) # S'') = set S'\<close> \<open>([\<^bold>\<diamond> Nom k], i) \<notin> set S''\<close>
       using split_list[where x=\<open>([\<^bold>\<diamond> Nom k], i)\<close>] by blast
     then have \<open>\<turnstile> ([\<^bold>\<diamond> Nom k], i) # (ps, i) # (qs, j) # S''\<close>
-      using inf ST_struct[where branch'=\<open>([\<^bold>\<diamond> Nom k], i) # (ps, i) # (qs, j) # S''\<close>] \<open>\<turnstile> S'\<close>
-      by auto
+      using inf ST_struct[where branch'=\<open>([\<^bold>\<diamond> Nom k], i) # (ps, i) # (qs, j) # S''\<close>] \<open>n \<turnstile> S'\<close>
+      by fastforce
     then have \<open>\<turnstile> ([], i) # (ps, i) # (qs, j) # S''\<close>
-      using ps qs inf by (meson Bridge list.set_intros(1) on.simps set_subset_Cons subset_iff)
+      using ps(2) qs(2) inf by (meson Bridge list.set_intros(1) on.simps set_subset_Cons subset_iff)
     moreover have \<open>i \<in> branch_nominals ((ps, i) # (qs, j) # S'')\<close>
       using ps unfolding branch_nominals_def by fastforce
     ultimately have \<open>\<turnstile> (ps, i) # (qs, j) # S''\<close>
-      by (simp add: GoTo)
+      using GoTo by fast
     moreover have \<open>set ((ps, i) # (qs, j) # S'') \<subseteq> S\<close>
       using S' S'' ps qs by auto
     ultimately show False
@@ -4107,24 +4496,24 @@ next
   show \<open>\<exists>rs. (rs, k) \<in> S \<and> (\<^bold>\<diamond> Nom j) on (rs, k)\<close>
   proof (rule ccontr)
     assume \<open>\<nexists>rs. (rs, k) \<in> S \<and> (\<^bold>\<diamond> Nom j) on (rs, k)\<close>
-    then obtain S' where
-      \<open>\<turnstile> S'\<close> and S': \<open>set S' \<subseteq> {([\<^bold>\<diamond> Nom j], k)} \<union> S\<close> and \<open>([\<^bold>\<diamond> Nom j], k) \<in>. S'\<close>
+    then obtain S' n where
+      \<open>n \<turnstile> S'\<close> and S': \<open>set S' \<subseteq> {([\<^bold>\<diamond> Nom j], k)} \<union> S\<close> and \<open>([\<^bold>\<diamond> Nom j], k) \<in>. S'\<close>
       using \<open>maximal S\<close> unfolding maximal_def consistent_def
       by (metis insert_is_Un list.set_intros(1) on.simps subset_insert)
     then obtain S'' where S'':
       \<open>set (([\<^bold>\<diamond> Nom j], k) # S'') = set S'\<close> \<open>([\<^bold>\<diamond> Nom j], k) \<notin> set S''\<close>
       using split_list[where x=\<open>([\<^bold>\<diamond> Nom j], k)\<close>] by blast
     then have \<open>\<turnstile> ([\<^bold>\<diamond> Nom j], k) # (Nom k # ps, i) # (qs, i) # S''\<close>
-      using inf ST_struct[where branch'=\<open>([\<^bold>\<diamond> Nom j], k) # (Nom k # ps, i) # (qs, i) # S''\<close>] \<open>\<turnstile> S'\<close>
-      by auto
+      using inf ST_struct[where branch'=\<open>([\<^bold>\<diamond> Nom j], k) # (Nom k # ps, i) # (qs, i) # S''\<close>] \<open>n \<turnstile> S'\<close>
+      by fastforce
     then have \<open>\<turnstile> ([], k) # (Nom k # ps, i) # (qs, i) # S''\<close>
-      using ps by (meson Nom' fm.simps(22) list.set_intros(1-2) on.simps)
+      using ps(2) by (meson Nom' fm.simps(22) list.set_intros(1-2) on.simps)
     moreover have \<open>k \<in> branch_nominals ((Nom k # ps, i) # (qs, i) # S'')\<close>
       unfolding branch_nominals_def by simp
     ultimately have \<open>\<turnstile> (Nom k # ps, i) # (qs, i) # S''\<close>
-      by (simp add: GoTo)
+      using GoTo by fast
     then have \<open>\<turnstile> (ps, i) # (qs, i) # S''\<close>
-      using ps qs by (meson Nom' list.set_intros(1-2) on.simps)
+      using ps(2) qs(2) by (meson Nom' list.set_intros(1-2) on.simps)
     moreover have \<open>set ((ps, i) # (qs, i) # S'') \<subseteq> S\<close>
       using S' S'' ps qs by auto
     ultimately show False
@@ -4132,29 +4521,29 @@ next
   qed
 next
   fix p q i ps
-  assume ps: \<open>(ps, i) \<in> S\<close> \<open>(p \<^bold>\<or> q) on (ps, i)\<close>
-  show \<open>\<exists>qs. (qs, i) \<in> S \<and> (p on (qs, i) \<or> q on (qs, i))\<close>
+  assume ps: \<open>(ps, i) \<in> S\<close> \<open>(p \<^bold>\<or> q) on (ps, i)\<close> and *: \<open>\<not> q at i in' S\<close>
+  show \<open>p at i in' S\<close>
   proof (rule ccontr)
-    assume *: \<open>\<nexists>qs. (qs, i) \<in> S \<and> (p on (qs, i) \<or> q on (qs, i))\<close>
-    then obtain Sp' where
-      \<open>\<turnstile> Sp'\<close> and Sp': \<open>set Sp' \<subseteq> {(p # ps, i)} \<union> S\<close> and \<open>(p # ps, i) \<in>. Sp'\<close>
+    assume \<open>\<not> p at i in' S\<close>
+    then obtain Sp' np where
+      \<open>np \<turnstile> Sp'\<close> and Sp': \<open>set Sp' \<subseteq> {(p # ps, i)} \<union> S\<close> and \<open>(p # ps, i) \<in>. Sp'\<close>
       using \<open>maximal S\<close> unfolding maximal_def consistent_def
       by (metis insert_is_Un list.set_intros(1) on.simps subset_insert)
     then obtain Sp'' where Sp'':
       \<open>set ((p # ps, i) # Sp'') = set Sp'\<close> \<open>(p # ps, i) \<notin> set Sp''\<close>
       using split_list[where x=\<open>(p # ps, i)\<close>] by blast
     then have \<open>\<turnstile> (p # ps, i) # Sp''\<close>
-      using \<open>\<turnstile> Sp'\<close> inf ST_struct by blast
+      using \<open>np \<turnstile> Sp'\<close> inf ST_struct by blast
 
-    obtain Sq' where
-      \<open>\<turnstile> Sq'\<close> and Sq': \<open>set Sq' \<subseteq> {(q # ps, i)} \<union> S\<close> and \<open>(q # ps, i) \<in>. Sq'\<close>
+    obtain Sq' nq where
+      \<open>nq \<turnstile> Sq'\<close> and Sq': \<open>set Sq' \<subseteq> {(q # ps, i)} \<union> S\<close> and \<open>(q # ps, i) \<in>. Sq'\<close>
       using * \<open>maximal S\<close> unfolding maximal_def consistent_def
       by (metis insert_is_Un list.set_intros(1) on.simps subset_insert)
     then obtain Sq'' where Sq'':
       \<open>set ((q # ps, i) # Sq'') = set Sq'\<close> \<open>(q # ps, i) \<notin> set Sq''\<close>
       using split_list[where x=\<open>(q # ps, i)\<close>] by blast
     then have \<open>\<turnstile> (q # ps, i) # Sq''\<close>
-      using \<open>\<turnstile> Sq'\<close> inf ST_struct by blast
+      using \<open>nq \<turnstile> Sq'\<close> inf ST_struct by blast
 
     obtain S'' where S'': \<open>set S'' = set Sp'' \<union> set Sq''\<close>
       by (meson set_union)
@@ -4165,7 +4554,7 @@ next
     then have \<open>\<turnstile> (p # ps, i) # S''\<close> \<open>\<turnstile> (q # ps, i) # S''\<close>
       using \<open>\<turnstile> (p # ps, i) # Sp''\<close> \<open>\<turnstile> (q # ps, i) # Sq''\<close> inf ST_struct by blast+
     then have \<open>\<turnstile> (ps, i) # S''\<close>
-      using ps by (meson DisP' list.set_intros(1))
+      using ps by (meson DisP'' list.set_intros(1))
     moreover have \<open>set ((ps, i) # S'') \<subseteq> S\<close>
       using ps Sp' Sp'' Sq' Sq'' S'' by auto
     ultimately show False
@@ -4174,9 +4563,35 @@ next
 next
   fix p q i ps
   assume ps: \<open>(ps, i) \<in> S\<close> \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) on (ps, i)\<close>
-  show \<open>\<exists>qs. (qs, i) \<in> S \<and> (\<^bold>\<not> p) on (qs, i) \<and> (\<^bold>\<not> q) on (qs, i)\<close>
+  show \<open>(\<^bold>\<not> p) at i in' S\<close>
   proof (rule ccontr)
-    assume \<open>\<nexists>qs. (qs, i) \<in> S \<and> (\<^bold>\<not> p) on (qs, i) \<and> (\<^bold>\<not> q) on (qs, i)\<close>
+    assume \<open>\<not> (\<^bold>\<not> p) at i in' S\<close>
+    then obtain S' where
+      \<open>\<turnstile> S'\<close> and
+      S': \<open>set S' \<subseteq> {((\<^bold>\<not> q) # (\<^bold>\<not> p) # ps, i)} \<union> S\<close> and
+      \<open>((\<^bold>\<not> q) # (\<^bold>\<not> p) # ps, i) \<in>. S'\<close>
+      using \<open>maximal S\<close> unfolding maximal_def consistent_def
+      by (metis (mono_tags, lifting) insert_is_Un insert_subset list.simps(15) on.simps
+          set_subset_Cons subset_insert)
+    then obtain S'' where S'':
+      \<open>set (((\<^bold>\<not> q) # (\<^bold>\<not> p) # ps, i) # S'') = set S'\<close>
+      \<open>((\<^bold>\<not> q) # (\<^bold>\<not> p) # ps, i) \<notin> set S''\<close>
+      using split_list[where x=\<open>((\<^bold>\<not> q) # (\<^bold>\<not> p) # ps, i)\<close>] by blast
+    then have \<open>\<turnstile> ((\<^bold>\<not> q) # (\<^bold>\<not> p) # ps, i) # S''\<close>
+      using inf ST_struct \<open>\<turnstile> S'\<close> by blast
+    then have \<open>\<turnstile> (ps, i) # S''\<close>
+      using ps by (meson DisN' list.set_intros(1))
+    moreover have \<open>set ((ps, i) # S'') \<subseteq> S\<close>
+      using S' S'' ps by auto
+    ultimately show False
+      using \<open>consistent S\<close> unfolding consistent_def by blast
+  qed
+next
+  fix p q i ps
+  assume ps: \<open>(ps, i) \<in> S\<close> \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) on (ps, i)\<close>
+  show \<open>(\<^bold>\<not> q) at i in' S\<close>
+  proof (rule ccontr)
+    assume \<open>\<not> (\<^bold>\<not> q) at i in' S\<close>
     then obtain S' where
       \<open>\<turnstile> S'\<close> and
       S': \<open>set S' \<subseteq> {((\<^bold>\<not> q) # (\<^bold>\<not> p) # ps, i)} \<union> S\<close> and
@@ -4203,15 +4618,15 @@ next
   show \<open>\<exists>qs. (qs, i) \<in> S \<and> p on (qs, i)\<close>
   proof (rule ccontr)
     assume \<open>\<nexists>qs. (qs, i) \<in> S \<and> p on (qs, i)\<close>
-    then obtain S' where
-      \<open>\<turnstile> S'\<close> and S': \<open>set S' \<subseteq> {(p # ps, i)} \<union> S\<close> and \<open>(p # ps, i) \<in>. S'\<close>
+    then obtain S' n where
+      \<open>n \<turnstile> S'\<close> and S': \<open>set S' \<subseteq> {(p # ps, i)} \<union> S\<close> and \<open>(p # ps, i) \<in>. S'\<close>
       using \<open>maximal S\<close> unfolding maximal_def consistent_def
       by (metis insert_is_Un list.set_intros(1) on.simps subset_insert)
     then obtain S'' where S'':
       \<open>set ((p # ps, i) # S'') = set S'\<close> \<open>(p # ps, i) \<notin> set S''\<close>
       using split_list[where x=\<open>(p # ps, i)\<close>] by blast
     then have \<open>\<turnstile> (p # ps, i) # S''\<close>
-      using inf ST_struct \<open>\<turnstile> S'\<close> by blast
+      using inf ST_struct \<open>n \<turnstile> S'\<close> by blast
     then have \<open>\<turnstile> (ps, i) # S''\<close>
       using ps by (meson Neg' list.set_intros(1))
     moreover have \<open>set ((ps, i) # S'') \<subseteq> S\<close>
@@ -4225,25 +4640,25 @@ next
   show \<open>\<exists>qs. (qs, i) \<in> S \<and> p on (qs, i)\<close>
   proof (rule ccontr)
     assume \<open>\<nexists>qs. (qs, i) \<in> S \<and> p on (qs, i)\<close>
-    then obtain S' where
-      \<open>\<turnstile> S'\<close> and S': \<open>set S' \<subseteq> {([p], i)} \<union> S\<close> and \<open>([p], i) \<in>. S'\<close>
+    then obtain S' n where
+      \<open>n \<turnstile> S'\<close> and S': \<open>set S' \<subseteq> {([p], i)} \<union> S\<close> and \<open>([p], i) \<in>. S'\<close>
       using \<open>maximal S\<close> unfolding maximal_def consistent_def
       by (metis insert_is_Un list.set_intros(1) on.simps subset_insert)
     then obtain S'' where S'':
       \<open>set (([p], i) # S'') = set S'\<close> \<open>([p], i) \<notin> set S''\<close>
       using split_list[where x=\<open>([p], i)\<close>] by blast
     then have \<open>\<turnstile> ([p], i) # S''\<close>
-      using inf ST_struct \<open>\<turnstile> S'\<close> by blast
+      using inf ST_struct \<open>n \<turnstile> S'\<close> by blast
     moreover have \<open>set (([p], i) # S'') \<subseteq> set (([p], i) # (ps, a) # S'')\<close>
       by auto
     ultimately have \<open>\<turnstile> ([p], i) # (ps, a) # S''\<close>
-      using inf ST_struct \<open>\<turnstile> S'\<close> by blast
+      using inf ST_struct \<open>n \<turnstile> S'\<close> by blast
     then have \<open>\<turnstile> ([], i) # (ps, a) # S''\<close>
       using ps by (metis SatP' insert_iff list.simps(15))
     moreover have \<open>i \<in> branch_nominals ((ps, a) # S'')\<close>
       using ps unfolding branch_nominals_def by fastforce
     ultimately have \<open>\<turnstile> (ps, a) # S''\<close>
-      by (simp add: GoTo)
+      using GoTo by fast
     moreover have \<open>set ((ps, a) # S'') \<subseteq> S\<close>
       using S' S'' ps by auto
     ultimately show False
@@ -4255,24 +4670,24 @@ next
   show \<open>\<exists>qs. (qs, i) \<in> S \<and> (\<^bold>\<not> p) on (qs, i)\<close>
   proof (rule ccontr)
     assume \<open>\<nexists>qs. (qs, i) \<in> S \<and> (\<^bold>\<not> p) on (qs, i)\<close>
-    then obtain S' where
-      \<open>\<turnstile> S'\<close> and S': \<open>set S' \<subseteq> {([\<^bold>\<not> p], i)} \<union> S\<close> and \<open>([\<^bold>\<not> p], i) \<in>. S'\<close>
+    then obtain S' n where
+      \<open>n \<turnstile> S'\<close> and S': \<open>set S' \<subseteq> {([\<^bold>\<not> p], i)} \<union> S\<close> and \<open>([\<^bold>\<not> p], i) \<in>. S'\<close>
       using \<open>maximal S\<close> unfolding maximal_def consistent_def
       by (metis insert_is_Un list.set_intros(1) on.simps subset_insert)
     then obtain S'' where S'':
       \<open>set (([\<^bold>\<not> p], i) # S'') = set S'\<close> \<open>([\<^bold>\<not> p], i) \<notin> set S''\<close>
       using split_list[where x=\<open>([\<^bold>\<not> p], i)\<close>] by blast
     then have \<open>\<turnstile> ([\<^bold>\<not> p], i) # S''\<close>
-      using inf ST_struct \<open>\<turnstile> S'\<close> by blast
+      using inf ST_struct \<open>n \<turnstile> S'\<close> by blast
     then have \<open>\<turnstile> ([\<^bold>\<not> p], i) # (ps, a) # S''\<close>
-      using inf ST_struct[where branch'=\<open>([\<^bold>\<not> p], i) # _ # S''\<close>] \<open>\<turnstile> S'\<close>
+      using inf ST_struct[where branch'=\<open>([\<^bold>\<not> p], i) # _ # S''\<close>] \<open>n \<turnstile> S'\<close>
       by fastforce
     then have \<open>\<turnstile> ([], i) # (ps, a) # S''\<close>
       using ps by (metis SatN' insert_iff list.simps(15))
     moreover have \<open>i \<in> branch_nominals ((ps, a) # S'')\<close>
       using ps unfolding branch_nominals_def by fastforce
     ultimately have \<open>\<turnstile> (ps, a) # S''\<close>
-      by (simp add: GoTo)
+      using GoTo by fast
     moreover have \<open>set ((ps, a) # S'') \<subseteq> S\<close>
       using S' S'' ps by auto
     ultimately show False
@@ -4295,24 +4710,24 @@ next
   show \<open>\<exists>rs. (rs, i) \<in> S \<and> (\<^bold>\<not> (\<^bold>@ j p)) on (rs, i)\<close>
   proof (rule ccontr)
     assume \<open>\<nexists>qs. (qs, i) \<in> S \<and> (\<^bold>\<not> (\<^bold>@ j p)) on (qs, i)\<close>
-    then obtain S' where
-      \<open>\<turnstile> S'\<close> and S': \<open>set S' \<subseteq> {([\<^bold>\<not> (\<^bold>@ j p)], i)} \<union> S\<close> and \<open>([\<^bold>\<not> (\<^bold>@ j p)], i) \<in>. S'\<close>
+    then obtain S' n where
+      \<open>n\<turnstile> S'\<close> and S': \<open>set S' \<subseteq> {([\<^bold>\<not> (\<^bold>@ j p)], i)} \<union> S\<close> and \<open>([\<^bold>\<not> (\<^bold>@ j p)], i) \<in>. S'\<close>
       using \<open>maximal S\<close> unfolding maximal_def consistent_def
       by (metis insert_is_Un list.set_intros(1) on.simps subset_insert)
     then obtain S'' where S'':
       \<open>set (([\<^bold>\<not> (\<^bold>@ j p)], i) # S'') = set S'\<close> \<open>([\<^bold>\<not> (\<^bold>@ j p)], i) \<notin> set S''\<close>
       using split_list[where x=\<open>([\<^bold>\<not> (\<^bold>@ j p)], i)\<close>] by blast
     then have \<open>\<turnstile> ([\<^bold>\<not> (\<^bold>@ j p)], i) # S''\<close>
-      using inf ST_struct \<open>\<turnstile> S'\<close> by blast
+      using inf ST_struct \<open>n \<turnstile> S'\<close> by blast
     then have \<open>\<turnstile> ([\<^bold>\<not> (\<^bold>@ j p)], i) # (ps, i) # (qs, i) # S''\<close>
-      using inf ST_struct[where branch'=\<open>([_], _) # (ps, i) # (qs, i) # S''\<close>] \<open>\<turnstile> S'\<close>
+      using inf ST_struct[where branch'=\<open>([_], _) # (ps, i) # (qs, i) # S''\<close>] \<open>n \<turnstile> S'\<close>
       by fastforce
     then have \<open>\<turnstile> ([], i) # (ps, i) # (qs, i) # S''\<close>
-      using ps qs by (meson DiaN' list.set_intros(1) set_subset_Cons subset_iff)
+      using ps(2) qs(2) by (meson DiaN' list.set_intros(1) set_subset_Cons subset_iff)
     moreover have \<open>i \<in> branch_nominals ((ps, i) # (qs, i) # S'')\<close>
       unfolding branch_nominals_def by simp
     ultimately have \<open>\<turnstile> (ps, i) # (qs, i) # S''\<close>
-      by (simp add: GoTo)
+      using GoTo by fast
     moreover have \<open>set ((ps, i) # (qs, i) # S'') \<subseteq> S\<close>
       using S' S'' ps qs by auto
     ultimately show False
@@ -4327,30 +4742,40 @@ theorem completeness:
   assumes
     inf: \<open>infinite (UNIV :: 'b set)\<close> and
     valid: \<open>\<forall>(M :: ('b set, 'a) model) g w. M, g, w \<Turnstile> p\<close>
-  shows \<open>\<turnstile> [([\<^bold>\<not> p], i)]\<close>
-proof (rule ccontr)
-  assume \<open>\<not> \<turnstile> [([\<^bold>\<not> p], i)]\<close>
-  then have *: \<open>consistent {([\<^bold>\<not> p], i)}\<close>
-    unfolding consistent_def using ST_struct inf by fastforce
+  shows \<open>1 \<turnstile> [([\<^bold>\<not> p], i)]\<close>
+proof -
+  have \<open>\<turnstile> [([\<^bold>\<not> p], i)]\<close>
+  proof (rule ccontr)
+    assume \<open>\<not> \<turnstile> [([\<^bold>\<not> p], i)]\<close>
+    then have *: \<open>consistent {([\<^bold>\<not> p], i)}\<close>
+      unfolding consistent_def using ST_struct inf
+      by (metis empty_set list.simps(15))
 
-  let ?S = \<open>Extend {([\<^bold>\<not> p], i)} from_nat\<close>
+    let ?S = \<open>Extend {([\<^bold>\<not> p], i)} from_nat\<close>
+    have \<open>finite {([\<^bold>\<not> p], i)}\<close>
+      by simp
+    then have fin: \<open>finite (\<Union> (block_nominals ` {([\<^bold>\<not> p], i)}))\<close>
+      using finite_nominals_set by blast
 
-  have \<open>consistent ?S\<close>
-    using consistent_Extend inf * by blast
-  moreover have \<open>maximal ?S\<close>
-    using maximal_Extend inf * by fastforce
-  moreover have \<open>saturated ?S\<close>
-    using saturated_Extend inf * by fastforce
-  ultimately have \<open>hintikka ?S\<close>
-    using hintikka_Extend inf by blast
-  moreover have \<open>([\<^bold>\<not> p], i) \<in> ?S\<close>
-    using Extend_mem by blast
-  moreover have \<open>(\<^bold>\<not> p) on ([\<^bold>\<not> p], i)\<close>
-    by simp
-  ultimately have \<open>\<not> Model (reach ?S) (val ?S), assign ?S, assign ?S i \<Turnstile> p\<close>
-    using hintikka_model by fast
-  then show False
-    using valid by blast
+    have \<open>consistent ?S\<close>
+      using consistent_Extend inf * fin by blast
+    moreover have \<open>maximal ?S\<close>
+      using maximal_Extend inf * fin by fastforce
+    moreover have \<open>saturated ?S\<close>
+      using saturated_Extend inf * fin by fastforce
+    ultimately have \<open>hintikka ?S\<close>
+      using hintikka_Extend inf by blast
+    moreover have \<open>([\<^bold>\<not> p], i) \<in> ?S\<close>
+      using Extend_mem by blast
+    moreover have \<open>(\<^bold>\<not> p) on ([\<^bold>\<not> p], i)\<close>
+      by simp
+    ultimately have \<open>\<not> Model (reach ?S) (val ?S), assign ?S, assign ?S i \<Turnstile> p\<close>
+      using hintikka_model by fast
+    then show False
+      using valid by blast
+  qed
+  then show ?thesis
+    using ST_one by blast
 qed
 
 text \<open>
@@ -4367,13 +4792,13 @@ text \<open>A formula is valid iff its negation has a closing tableau from a fre
 
 theorem main:
   assumes \<open>i \<notin> nominals p\<close>
-  shows \<open>valid p \<longleftrightarrow> \<turnstile> [([\<^bold>\<not> p], i)]\<close>
+  shows \<open>valid p \<longleftrightarrow> 1 \<turnstile> [([\<^bold>\<not> p], i)]\<close>
 proof
   assume \<open>valid p\<close>
-  then show \<open>\<turnstile> [([\<^bold>\<not> p], i)]\<close>
+  then show \<open>1 \<turnstile> [([\<^bold>\<not> p], i)]\<close>
     using completeness by blast
 next
-  assume \<open>\<turnstile> [([\<^bold>\<not> p], i)]\<close>
+  assume \<open>1 \<turnstile> [([\<^bold>\<not> p], i)]\<close>
   then show \<open>valid p\<close>
     using assms soundness_fresh by fast
 qed
