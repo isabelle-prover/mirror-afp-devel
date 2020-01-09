@@ -9,7 +9,30 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>27 Dec 2019 00:00:00 +0000</pubDate>
+    <pubDate>06 Jan 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Bicategories</title>
+              <link>https://www.isa-afp.org/entries/Bicategory.html</link>
+       <guid>https://www.isa-afp.org/entries/Bicategory.html</guid>
+       <dc:creator> Eugene W. Stark       </dc:creator>
+       <pubDate>06 Jan 2020 00:00:00 +0000</pubDate>
+       <description>
+Taking as a starting point the author&#39;s previous work on
+developing aspects of category theory in Isabelle/HOL, this article
+gives a compatible formalization of the notion of
+&#34;bicategory&#34; and develops a framework within which formal
+proofs of facts about bicategories can be given.  The framework
+includes a number of basic results, including the Coherence Theorem,
+the Strictness Theorem, pseudofunctors and biequivalence, and facts
+about internal equivalences and adjunctions in a bicategory.  As a
+driving application and demonstration of the utility of the framework,
+it is used to give a formal proof of a theorem, due to Carboni,
+Kasangian, and Street, that characterizes up to biequivalence the
+bicategories of spans in a category with pullbacks.  The formalization
+effort necessitated the filling-in of many details that were not
+evident from the brief presentation in the original paper, as well as
+identifying a few minor corrections along the way.</description>
+    </item>
     <item>
        <title>The Irrationality of ζ(3)</title>
               <link>https://www.isa-afp.org/entries/Zeta_3_Irrational.html</link>
@@ -556,22 +579,6 @@ verification of an executable and even efficient version of
 Prim&#39;s algorithm. This entry formalizes the second part of our
 ITP-2019 proof pearl &lt;em&gt;Purely Functional, Simple and Efficient
 Priority Search Trees and Applications to Prim and Dijkstra&lt;/em&gt;.</description>
-    </item>
-    <item>
-       <title>Linear Inequalities</title>
-              <link>https://www.isa-afp.org/entries/Linear_Inequalities.html</link>
-       <guid>https://www.isa-afp.org/entries/Linear_Inequalities.html</guid>
-       <dc:creator> Ralph Bottesch, Alban Reynaud, René Thiemann       </dc:creator>
-       <pubDate>21 Jun 2019 00:00:00 +0000</pubDate>
-       <description>
-We formalize results about linear inqualities, mainly from
-Schrijver&#39;s book. The main results are the proof of the
-fundamental theorem on linear inequalities, Farkas&#39; lemma,
-Carathéodory&#39;s theorem, the Farkas-Minkowsky-Weyl theorem, the
-decomposition theorem of polyhedra, and Meyer&#39;s result that the
-integer hull of a polyhedron is a polyhedron itself. Several theorems
-include bounds on the appearing numbers, and in particular we provide
-an a-priori bound on mixed-integer solutions of linear inequalities.</description>
     </item>
   </channel>
 </rss>
