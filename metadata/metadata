@@ -8726,3 +8726,27 @@ abstract =
   unrestricted rules are derivable. Similarly, I start from simpler
   versions of the @-rules and derive the general ones. These
   restrictions are imposed to rule out some means of nontermination.
+
+[Bicategory]
+title = Bicategories
+author = Eugene W. Stark <mailto:stark@cs.stonybrook.edu>
+topic = Mathematics/Category Theory
+date = 2020-01-06
+notify = stark@cs.stonybrook.edu
+abstract = 
+  Taking as a starting point the author's previous work on
+  developing aspects of category theory in Isabelle/HOL, this article
+  gives a compatible formalization of the notion of
+  "bicategory" and develops a framework within which formal
+  proofs of facts about bicategories can be given.  The framework
+  includes a number of basic results, including the Coherence Theorem,
+  the Strictness Theorem, pseudofunctors and biequivalence, and facts
+  about internal equivalences and adjunctions in a bicategory.  As a
+  driving application and demonstration of the utility of the framework,
+  it is used to give a formal proof of a theorem, due to Carboni,
+  Kasangian, and Street, that characterizes up to biequivalence the
+  bicategories of spans in a category with pullbacks.  The formalization
+  effort necessitated the filling-in of many details that were not
+  evident from the brief presentation in the original paper, as well as
+  identifying a few minor corrections along the way.
+
