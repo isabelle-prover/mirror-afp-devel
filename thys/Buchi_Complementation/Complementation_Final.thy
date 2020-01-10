@@ -29,6 +29,8 @@ begin
   definition state_hash :: "nat \<Rightarrow> Complementation_Implement.state \<Rightarrow> nat" where
     "state_hash n p \<equiv> nat_of_hashcode (list_hash p) mod n"
 
+  (* there should be a simpler way to prove this (and others) from some "state_hash is a
+    valid hash function lemma *)
   lemma state_hash_bounded_hashcode[autoref_ga_rules]: "is_bounded_hashcode state_rel
     (gen_equals (Gen_Map.gen_ball (foldli \<circ> list_map_to_list)) (list_map_lookup (=))
     (prod_eq (=) (\<longleftrightarrow>))) state_hash"
@@ -58,7 +60,7 @@ begin
     assumes [autoref_rules]: "(Ai, A) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
     shows "(?f :: ?'c, op_translate (complement_4 A)) \<in> ?R"
     by (autoref_monadic (plain))
-  concrete_definition complement_impl uses complement_impl[unfolded autoref_tag_defs]
+  concrete_definition complement_impl uses complement_impl
 
   theorem complement_impl_correct:
     assumes "finite (nodes A)"
