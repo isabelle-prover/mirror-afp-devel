@@ -9,7 +9,24 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>06 Jan 2020 00:00:00 +0000</pubDate>
+    <pubDate>09 Jan 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Skip Lists</title>
+              <link>https://www.isa-afp.org/entries/Skip_Lists.html</link>
+       <guid>https://www.isa-afp.org/entries/Skip_Lists.html</guid>
+       <dc:creator> Max W. Haslbeck, Manuel Eberl       </dc:creator>
+       <pubDate>09 Jan 2020 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt; Skip lists are sorted linked lists enhanced with shortcuts
+and are an alternative to binary search trees. A skip lists consists
+of multiple levels of sorted linked lists where a list on level n is a
+subsequence of the list on level n − 1. In the ideal case, elements
+are skipped in such a way that a lookup in a skip lists takes O(log n)
+time. In a randomised skip list the skipped elements are choosen
+randomly. &lt;/p&gt; &lt;p&gt; This entry contains formalized proofs
+of the textbook results about the expected height and the expected
+length of a search path in a randomised skip list. &lt;/p&gt;</description>
+    </item>
     <item>
        <title>Bicategories</title>
               <link>https://www.isa-afp.org/entries/Bicategory.html</link>
@@ -565,24 +582,6 @@ transitivity. This result generalizes and strengthens a result by
 Stauti and Maaden. Finally, we recover Kleene’s fixed-point theorem
 for omega-complete non-orders, again using attractivity to prove that
 Kleene’s fixed points are least quasi-fixed points.</description>
-    </item>
-    <item>
-       <title>Priority Search Trees</title>
-              <link>https://www.isa-afp.org/entries/Priority_Search_Trees.html</link>
-       <guid>https://www.isa-afp.org/entries/Priority_Search_Trees.html</guid>
-       <dc:creator> Peter Lammich, Tobias Nipkow       </dc:creator>
-       <pubDate>25 Jun 2019 00:00:00 +0000</pubDate>
-       <description>
-We present a new, purely functional, simple and efficient data
-structure combining a search tree and a priority queue, which we call
-a &lt;em&gt;priority search tree&lt;/em&gt;. The salient feature of priority search
-trees is that they offer a decrease-key operation, something that is
-missing from other simple, purely functional priority queue
-implementations. Priority search trees can be implemented on top of
-any search tree. This entry does the implementation for red-black
-trees.  This entry formalizes the first part of our ITP-2019 proof
-pearl &lt;em&gt;Purely Functional, Simple and Efficient Priority
-Search Trees and Applications to Prim and Dijkstra&lt;/em&gt;.</description>
     </item>
   </channel>
 </rss>

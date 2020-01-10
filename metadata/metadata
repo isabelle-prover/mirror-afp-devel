@@ -1834,7 +1834,7 @@ abstract =
 
 [Simple_Firewall]
 title = Simple Firewall
-author = Cornelius Diekmann <http://net.in.tum.de/~diekmann>, Julius Michaelis <http://liftm.de>, Maximilian Haslbeck<https://home.in.tum.de/~haslbecm/>
+author = Cornelius Diekmann <http://net.in.tum.de/~diekmann>, Julius Michaelis <http://liftm.de>, Maximilian Haslbeck<http://cl-informatik.uibk.ac.at/users/mhaslbeck//>
 notify = diekmann@net.in.tum.de, max.haslbeck@gmx.de
 date = 2016-08-24
 topic = Computer Science/Networks
@@ -5903,7 +5903,7 @@ abstract =
 
 [ROBDD]
 title = Algorithms for Reduced Ordered Binary Decision Diagrams
-author = Julius Michaelis <http://liftm.de>, Maximilian Haslbeck <https://home.in.tum.de/~haslbecm/>, Peter Lammich <http://www21.in.tum.de/~lammich>, Lars Hupel <https://www21.in.tum.de/~hupel/>
+author = Julius Michaelis <http://liftm.de>, Maximilian Haslbeck <http://cl-informatik.uibk.ac.at/users/mhaslbeck//>, Peter Lammich <http://www21.in.tum.de/~lammich>, Lars Hupel <https://www21.in.tum.de/~hupel/>
 date = 2016-04-27
 topic = Computer Science/Algorithms, Computer Science/Data Structures
 abstract =
@@ -7242,7 +7242,7 @@ abstract =
 
 [LLL_Basis_Reduction]
 title = A verified LLL algorithm
-author = Ralph Bottesch <>, Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Maximilian Haslbeck <>, Sebastiaan Joosten <http://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada<>
+author = Ralph Bottesch <>, Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Maximilian Haslbeck <http://cl-informatik.uibk.ac.at/users/mhaslbeck/>, Sebastiaan Joosten <http://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada<>
 topic = Computer Science/Algorithms, Mathematics/Algebra
 date = 2018-02-02
 notify = ralph.bottesch@uibk.ac.at, jose.divason@unirioja.es, maximilian.haslbeck@uibk.ac.at, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
@@ -7288,7 +7288,7 @@ abstract =
 
 [Treaps]
 title = Treaps
-author = Maximilian Haslbeck <https://home.in.tum.de/~haslbecm>, Manuel Eberl <https://www.in.tum.de/~eberlm>, Tobias Nipkow <https://www.in.tum.de/~nipkow>
+author = Maximilian Haslbeck <http://cl-informatik.uibk.ac.at/users/mhaslbeck/>, Manuel Eberl <https://www.in.tum.de/~eberlm>, Tobias Nipkow <https://www.in.tum.de/~nipkow>
 topic = Computer Science/Data Structures
 date = 2018-02-06
 notify = eberlm@in.tum.de
@@ -7309,6 +7309,23 @@ abstract =
   resulting tree is that of a random BST no matter in what order we
   insert the elements. This is the main result of this
   formalisation.</p>
+
+[Skip_Lists]
+title = Skip Lists
+author = Max W. Haslbeck <http://cl-informatik.uibk.ac.at/users/mhaslbeck/>, Manuel Eberl <https://www21.in.tum.de/~eberlm/>
+topic = Computer Science/Data Structures
+date = 2020-01-09
+notify = max.haslbeck@gmx.de
+abstract =
+  <p> Skip lists are sorted linked lists enhanced with shortcuts
+  and are an alternative to binary search trees. A skip lists consists
+  of multiple levels of sorted linked lists where a list on level n is a
+  subsequence of the list on level n − 1. In the ideal case, elements
+  are skipped in such a way that a lookup in a skip lists takes O(log n)
+  time. In a randomised skip list the skipped elements are choosen
+  randomly. </p> <p> This entry contains formalized proofs
+  of the textbook results about the expected height and the expected
+  length of a search path in a randomised skip list. </p>
 
 [Hoare_Time]
 title = Hoare Logics for Time Bounds
