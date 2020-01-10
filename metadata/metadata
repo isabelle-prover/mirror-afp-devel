@@ -5244,6 +5244,24 @@ abstract =
   developing more number-theoretic results, such as the Prime Number
   Theorem.
 
+[Gauss_Sums]
+title = Gauss Sums and the Pólya–Vinogradov Inequality
+author = Rodrigo Raya <https://people.epfl.ch/rodrigo.raya>, Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory
+date = 2019-12-10
+notify = manuel.eberl@tum.de
+abstract =
+  <p>This article provides a full formalisation of Chapter 8 of
+  Apostol's <em><a
+  href="https://www.springer.com/de/book/9780387901633">Introduction
+  to Analytic Number Theory</a></em>. Subjects that are
+  covered are:</p> <ul> <li>periodic arithmetic
+  functions and their finite Fourier series</li>
+  <li>(generalised) Ramanujan sums</li> <li>Gauss sums
+  and separable characters</li> <li>induced moduli and
+  primitive characters</li> <li>the
+  Pólya&mdash;Vinogradov inequality</li> </ul>
+
 [Zeta_Function]
 title = The Hurwitz and Riemann ζ Functions
 author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
@@ -8733,7 +8751,7 @@ author = Eugene W. Stark <mailto:stark@cs.stonybrook.edu>
 topic = Mathematics/Category Theory
 date = 2020-01-06
 notify = stark@cs.stonybrook.edu
-abstract = 
+abstract =
   Taking as a starting point the author's previous work on
   developing aspects of category theory in Isabelle/HOL, this article
   gives a compatible formalization of the notion of

@@ -89,6 +89,24 @@ ordinary differential equations, and limiting (long-term) behavior of
 dynamical systems.</description>
     </item>
     <item>
+       <title>Gauss Sums and the Pólya–Vinogradov Inequality</title>
+              <link>https://www.isa-afp.org/entries/Gauss_Sums.html</link>
+       <guid>https://www.isa-afp.org/entries/Gauss_Sums.html</guid>
+       <dc:creator> Rodrigo Raya, Manuel Eberl       </dc:creator>
+       <pubDate>10 Dec 2019 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This article provides a full formalisation of Chapter 8 of
+Apostol&#39;s &lt;em&gt;&lt;a
+href=&#34;https://www.springer.com/de/book/9780387901633&#34;&gt;Introduction
+to Analytic Number Theory&lt;/a&gt;&lt;/em&gt;. Subjects that are
+covered are:&lt;/p&gt; &lt;ul&gt; &lt;li&gt;periodic arithmetic
+functions and their finite Fourier series&lt;/li&gt;
+&lt;li&gt;(generalised) Ramanujan sums&lt;/li&gt; &lt;li&gt;Gauss sums
+and separable characters&lt;/li&gt; &lt;li&gt;induced moduli and
+primitive characters&lt;/li&gt; &lt;li&gt;the
+Pólya&amp;mdash;Vinogradov inequality&lt;/li&gt; &lt;/ul&gt;</description>
+    </item>
+    <item>
        <title>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</title>
               <link>https://www.isa-afp.org/entries/Generalized_Counting_Sort.html</link>
        <guid>https://www.isa-afp.org/entries/Generalized_Counting_Sort.html</guid>
@@ -565,20 +583,6 @@ any search tree. This entry does the implementation for red-black
 trees.  This entry formalizes the first part of our ITP-2019 proof
 pearl &lt;em&gt;Purely Functional, Simple and Efficient Priority
 Search Trees and Applications to Prim and Dijkstra&lt;/em&gt;.</description>
-    </item>
-    <item>
-       <title>Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra</title>
-              <link>https://www.isa-afp.org/entries/Prim_Dijkstra_Simple.html</link>
-       <guid>https://www.isa-afp.org/entries/Prim_Dijkstra_Simple.html</guid>
-       <dc:creator> Peter Lammich, Tobias Nipkow       </dc:creator>
-       <pubDate>25 Jun 2019 00:00:00 +0000</pubDate>
-       <description>
-We verify purely functional, simple and efficient implementations of
-Prim&#39;s and Dijkstra&#39;s algorithms. This constitutes the first
-verification of an executable and even efficient version of
-Prim&#39;s algorithm. This entry formalizes the second part of our
-ITP-2019 proof pearl &lt;em&gt;Purely Functional, Simple and Efficient
-Priority Search Trees and Applications to Prim and Dijkstra&lt;/em&gt;.</description>
     </item>
   </channel>
 </rss>

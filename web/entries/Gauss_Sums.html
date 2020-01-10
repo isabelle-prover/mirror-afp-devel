@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Dirichlet L-Functions and Dirichlet's Theorem - Archive of Formal Proofs
+<title>Gauss Sums and the Pólya–Vinogradov Inequality - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,15 +61,17 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">D</font>irichlet
+  <h1>          <font class="first">G</font>auss
   
-          <font class="first">L</font>-Functions
+          <font class="first">S</font>ums
   
           and
   
-          <font class="first">D</font>irichlet's
+          the
   
-          <font class="first">T</font>heorem
+          <font class="first">P</font>ólya–Vinogradov
+  
+          <font class="first">I</font>nequality
   
 </h1>
   <p>&nbsp;</p>
@@ -78,15 +80,16 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Dirichlet L-Functions and Dirichlet's Theorem</td>
+  <td class="data" width="80%">Gauss Sums and the Pólya–Vinogradov Inequality</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Author:
+          Authors:
       </td>
   <td class="data">
-              <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
+                    <a href="https://people.epfl.ch/rodrigo.raya">Rodrigo Raya</a> and
+          <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
       </td>
 </tr>
 
@@ -94,38 +97,35 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2017-12-21</td>
+  <td class="data">2019-12-10</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-<p>This article provides a formalisation of Dirichlet characters
-and Dirichlet <em>L</em>-functions including proofs of
-their basic properties &ndash; most notably their analyticity,
-their areas of convergence, and their non-vanishing for &Re;(s)
-&ge; 1. All of this is built in a very high-level style using
-Dirichlet series. The proof of the non-vanishing follows a very short
-and elegant proof by Newman, which we attempt to reproduce faithfully
-in a similar level of abstraction in Isabelle.</p> <p>This
-also leads to a relatively short proof of Dirichlet’s Theorem, which
-states that, if <em>h</em> and <em>n</em> are
-coprime, there are infinitely many primes <em>p</em> with
-<em>p</em> &equiv; <em>h</em> (mod
-<em>n</em>).</p></td>
+<p>This article provides a full formalisation of Chapter 8 of
+Apostol's <em><a
+href="https://www.springer.com/de/book/9780387901633">Introduction
+to Analytic Number Theory</a></em>. Subjects that are
+covered are:</p> <ul> <li>periodic arithmetic
+functions and their finite Fourier series</li>
+<li>(generalised) Ramanujan sums</li> <li>Gauss sums
+and separable characters</li> <li>induced moduli and
+primitive characters</li> <li>the
+Pólya&mdash;Vinogradov inequality</li> </ul></td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Dirichlet_L-AFP,
-  author  = {Manuel Eberl},
-  title   = {Dirichlet L-Functions and Dirichlet's Theorem},
+        <pre>@article{Gauss_Sums-AFP,
+  author  = {Rodrigo Raya and Manuel Eberl},
+  title   = {Gauss Sums and the Pólya–Vinogradov Inequality},
   journal = {Archive of Formal Proofs},
   month   = dec,
-  year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/Dirichlet_L.html},
+  year    = 2019,
+  note    = {\url{http://isa-afp.org/entries/Gauss_Sums.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -137,11 +137,9 @@ coprime, there are infinitely many primes <em>p</em> with
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Bertrands_Postulate.html">Bertrands_Postulate</a>, <a href="Dirichlet_Series.html">Dirichlet_Series</a>, <a href="Landau_Symbols.html">Landau_Symbols</a>, <a href="Zeta_Function.html">Zeta_Function</a>      </td></tr>
+          <td class="data"><a href="Dirichlet_L.html">Dirichlet_L</a>, <a href="Dirichlet_Series.html">Dirichlet_Series</a>, <a href="Polynomial_Interpolation.html">Polynomial_Interpolation</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Gauss_Sums.html">Gauss_Sums</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -153,29 +151,23 @@ coprime, there are infinitely many primes <em>p</em> with
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Dirichlet_L/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Dirichlet_L/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Gauss_Sums/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Gauss_Sums/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Dirichlet_L/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Gauss_Sums/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Dirichlet_L-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Gauss_Sums-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2018:
-            <a href="../release/afp-Dirichlet_L-2018-08-16.tar.gz">
-              afp-Dirichlet_L-2018-08-16.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>
