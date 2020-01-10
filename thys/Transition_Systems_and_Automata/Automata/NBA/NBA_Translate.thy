@@ -144,14 +144,61 @@ begin
     unfolding nba.sel
     using assms by auto
 
+  context
+  begin
+
+    interpretation autoref_syn by this
+
+    (* TODO: divide this up further? if we have the nodes and a function, we can implement nba_image? *)
+    (* TODO: move assertions out of foreach loops, quantify instead, should be easier *)
+    schematic_goal translate_impl:
+      fixes S :: "('statei \<times> 'state) set"
+      assumes [simp]: "finite (nodes A)"
+      assumes [autoref_ga_rules]: "is_bounded_hashcode S seq bhc"
+      assumes [autoref_ga_rules]: "is_valid_def_hm_size TYPE('statei) hms"
+      assumes [autoref_rules]: "(leq, HOL.eq) \<in> L \<rightarrow> L \<rightarrow> bool_rel"
+      assumes [autoref_rules]: "(seq, HOL.eq) \<in> S \<rightarrow> S \<rightarrow> bool_rel"
+      assumes [autoref_rules]: "(Ai, A) \<in> \<langle>L, S\<rangle> nbai_nba_rel"
+      shows "(?f :: ?'a, do {
+        let N = nodes A;
+        f \<leftarrow> op_set_enumerate N;
+        s \<leftarrow>
+        FOREACH N (\<lambda> p mp. do {
+          ma \<leftarrow> FOREACH (alphabet A) (\<lambda> a ma. do {
+            ASSERT (a \<notin> dom ma);
+            ASSERT (\<forall> q \<in> transition A a p. q \<in> dom f);
+            RETURN (ma (a \<mapsto> (\<lambda> x. the (f x)) ` transition A a p)) }
+          ) (Map.empty ::: \<langle>L, \<langle>nat_rel\<rangle> list_set_rel\<rangle> list_map_rel);
+          ASSERT (p \<in> dom f);
+          RETURN (mp (the (f p) \<mapsto> ma))
+          }
+        ) Map.empty;
+        a \<leftarrow> FOREACH N (\<lambda> p a. do {
+          ASSERT (p \<in> dom f);
+          RETURN (a (the (f p) \<mapsto> accepting A p))
+        }) Map.empty;
+        let s' = (\<lambda> a p. case s p of
+          Some m \<Rightarrow> (case m a of Some Q \<Rightarrow> Q | None \<Rightarrow> {}) |
+          None \<Rightarrow> {});
+        let a' = (\<lambda> p. case a p of Some b \<Rightarrow> b | None \<Rightarrow> False);
+        ASSERT (\<forall> p \<in> initial A. p \<in> dom f);
+        RETURN (nba (alphabet A) ((\<lambda> x. the (f x)) ` initial A) s' a')
+      }) \<in> ?R"
+      by (autoref_monadic (plain))
+
+  end
+
   (* TODO: with this, maybe much of the nbae infrastructure is obsolete?
     since now there is very little happening in terms of relations, maybe we can even make do
     with just the abstraction function *)
+  (* TODO: maybe the specification for translation is just that the translated automaton
+    is related in \<langle>Id_on (alphabet A), ???\<rangle> nba_rel? *)
   definition op_translate :: "('label, 'state) nba \<Rightarrow> ('label, nat) nbae nres" where
     "op_translate A \<equiv> SPEC (\<lambda> B. \<exists> f. inj_on f (nodes A) \<and> B = nba_nbae (nba_image f A))"
 
   (* TODO: make separate implementations for "nba_nbae" and "op_set_enumerate \<bind> nbae_image"
     make sure to do regression tests along the way *)
+  (* TODO: since we have translate_impl, maybe just having a good nba_nbae implementation is enough? *)
   schematic_goal to_nbaei_impl:
     fixes S :: "('statei \<times> 'state) set"
     assumes [simp]: "finite (nodes A)"
