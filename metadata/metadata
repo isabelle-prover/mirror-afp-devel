@@ -6105,7 +6105,7 @@ notify = henning.seidler@mailbox.tu-berlin.de
 [IMAP-CRDT]
 title = The IMAP CmRDT
 author = Tim Jungnickel <mailto:tim.jungnickel@tu-berlin.de>, Lennart Oldenburg <>, Matthias Loibl <>
-topic = Computer Science/Algorithms, Computer Science/Data Structures
+topic = Computer Science/Algorithms/Distributed, Computer Science/Data Structures
 date = 2017-11-09
 notify = tim.jungnickel@tu-berlin.de
 abstract =
