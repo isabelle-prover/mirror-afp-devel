@@ -1403,7 +1403,7 @@ notify = pasquale.noce.lavoro@gmail.com
 [Floyd_Warshall]
 title = The Floyd-Warshall Algorithm for Shortest Paths
 author = Simon Wimmer <http://in.tum.de/~wimmers>, Peter Lammich <http://www21.in.tum.de/~lammich>
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 date = 2017-05-08
 notify = wimmers@in.tum.de
 abstract =
@@ -1425,7 +1425,7 @@ abstract =
 title = Transitive closure according to Roy-Floyd-Warshall
 author = Makarius Wenzel <>
 date = 2014-05-23
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 abstract = This formulation of the Roy-Floyd-Warshall algorithm for the
 	transitive closure bypasses matrices and arrays, but uses a more direct
 	mathematical model with adjacency functions for immediate predecessors and
@@ -2254,7 +2254,7 @@ notify =
 
 [Transitive-Closure]
 title = Executable Transitive Closures of Finite Relations
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 date = 2011-03-14
 author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 license = LGPL
@@ -2266,7 +2266,7 @@ notify = c.sternagel@gmail.com, rene.thiemann@uibk.ac.at
 
 [Transitive-Closure-II]
 title = Executable Transitive Closures
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 date = 2012-02-29
 author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 license = LGPL
