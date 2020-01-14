@@ -592,7 +592,7 @@ title = A Framework for Verifying Depth-First Search Algorithms
 author = Peter Lammich <http://www21.in.tum.de/~lammich>, René Neumann <mailto:neumannr@in.tum.de>
 notify = lammich@in.tum.de
 date = 2016-07-05
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 abstract =
 	<p>
 	This entry presents a framework for the modular verification of
