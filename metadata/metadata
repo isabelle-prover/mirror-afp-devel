@@ -6977,6 +6977,19 @@ abstract =
   An Algorithm for Finding Best Matches in Logarithmic Expected
   Time</a>.
 
+[Closest_Pair_Points]
+title = Closest Pair of Points Algorithms
+author = Martin Rau <mailto:martin.rau@tum.de>, Tobias Nipkow <http://www.in.tum.de/~nipkow>
+topic = Computer Science/Algorithms
+date = 2020-01-13
+notify = martin.rau@tum.de, nipkow@in.tum.de
+abstract =
+  This entry provides two related verified divide-and-conquer algorithms
+  solving the fundamental <em>Closest Pair of Points</em>
+  problem in Computational Geometry. Functional correctness and the
+  optimal running time of <math>O(n log n)</math> are
+  proved. Executable code is generated which is empirically competitive
+  with handwritten reference implementations.
 
 [Diophantine_Eqns_Lin_Hom]
 title = Homogeneous Linear Diophantine Equations

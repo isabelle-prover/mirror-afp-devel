@@ -9,7 +9,21 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>09 Jan 2020 00:00:00 +0000</pubDate>
+    <pubDate>13 Jan 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Closest Pair of Points Algorithms</title>
+              <link>https://www.isa-afp.org/entries/Closest_Pair_Points.html</link>
+       <guid>https://www.isa-afp.org/entries/Closest_Pair_Points.html</guid>
+       <dc:creator> Martin Rau, Tobias Nipkow       </dc:creator>
+       <pubDate>13 Jan 2020 00:00:00 +0000</pubDate>
+       <description>
+This entry provides two related verified divide-and-conquer algorithms
+solving the fundamental &lt;em&gt;Closest Pair of Points&lt;/em&gt;
+problem in Computational Geometry. Functional correctness and the
+optimal running time of &lt;math&gt;O(n log n)&lt;/math&gt; are
+proved. Executable code is generated which is empirically competitive
+with handwritten reference implementations.</description>
+    </item>
     <item>
        <title>Skip Lists</title>
               <link>https://www.isa-afp.org/entries/Skip_Lists.html</link>
@@ -561,27 +575,6 @@ href=&#34;http://people.inf.ethz.ch/trayteld/papers/rv19-verimon/verimon.pdf&#34
 monitor to that of other monitoring tools on randomly generated
 inputs. This case study revealed several errors in the optimized but
 unverified tools.</description>
-    </item>
-    <item>
-       <title>Complete Non-Orders and Fixed Points</title>
-              <link>https://www.isa-afp.org/entries/Complete_Non_Orders.html</link>
-       <guid>https://www.isa-afp.org/entries/Complete_Non_Orders.html</guid>
-       <dc:creator> Akihisa Yamada, Jérémy Dubut       </dc:creator>
-       <pubDate>27 Jun 2019 00:00:00 +0000</pubDate>
-       <description>
-We develop an Isabelle/HOL library of order-theoretic concepts, such
-as various completeness conditions and fixed-point theorems. We keep
-our formalization as general as possible: we reprove several
-well-known results about complete orders, often without any properties
-of ordering, thus complete non-orders. In particular, we generalize
-the Knaster–Tarski theorem so that we ensure the existence of a
-quasi-fixed point of monotone maps over complete non-orders, and show
-that the set of quasi-fixed points is complete under a mild
-condition—attractivity—which is implied by either antisymmetry or
-transitivity. This result generalizes and strengthens a result by
-Stauti and Maaden. Finally, we recover Kleene’s fixed-point theorem
-for omega-complete non-orders, again using attractivity to prove that
-Kleene’s fixed points are least quasi-fixed points.</description>
     </item>
   </channel>
 </rss>
