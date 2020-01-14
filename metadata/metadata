@@ -592,7 +592,7 @@ title = A Framework for Verifying Depth-First Search Algorithms
 author = Peter Lammich <http://www21.in.tum.de/~lammich>, René Neumann <mailto:neumannr@in.tum.de>
 notify = lammich@in.tum.de
 date = 2016-07-05
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 abstract =
 	<p>
 	This entry presents a framework for the modular verification of
@@ -626,7 +626,7 @@ abstract =
 [Prpu_Maxflow]
 title = Formalizing Push-Relabel Algorithms
 author = Peter Lammich <http://www21.in.tum.de/~lammich>, S. Reza Sefidgar <>
-topic = Computer Science/Algorithms, Mathematics/Graph Theory
+topic = Computer Science/Algorithms/Graph, Mathematics/Graph Theory
 date = 2017-06-01
 notify = lammich@in.tum.de
 abstract =
@@ -1403,7 +1403,7 @@ notify = pasquale.noce.lavoro@gmail.com
 [Floyd_Warshall]
 title = The Floyd-Warshall Algorithm for Shortest Paths
 author = Simon Wimmer <http://in.tum.de/~wimmers>, Peter Lammich <http://www21.in.tum.de/~lammich>
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 date = 2017-05-08
 notify = wimmers@in.tum.de
 abstract =
@@ -1425,7 +1425,7 @@ abstract =
 title = Transitive closure according to Roy-Floyd-Warshall
 author = Makarius Wenzel <>
 date = 2014-05-23
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 abstract = This formulation of the Roy-Floyd-Warshall algorithm for the
 	transitive closure bypasses matrices and arrays, but uses a more direct
 	mathematical model with adjacency functions for immediate predecessors and
@@ -1646,7 +1646,7 @@ notify =
 [Dijkstra_Shortest_Path]
 title = Dijkstra's Shortest Path Algorithm
 author = Benedikt Nordhoff <mailto:b.n@wwu.de>, Peter Lammich <http://www21.in.tum.de/~lammich>
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 date = 2012-01-30
 abstract = We implement and prove correct Dijkstra's algorithm for the
 	single source shortest path problem, conceived in 1956 by E. Dijkstra.
@@ -1748,7 +1748,7 @@ title = Formalizing the Edmonds-Karp Algorithm
 author = Peter Lammich <mailto:lammich@in.tum.de>, S. Reza Sefidgar<>
 notify = lammich@in.tum.de
 date = 2016-08-12
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 abstract =
 	We present a formalization of the Ford-Fulkerson method for computing
 	the maximum flow in a network. Our formal proof closely follows a
@@ -2172,7 +2172,7 @@ notify = peter.lammich@uni-muenster.de, nipkow@in.tum.de
 title = Depth First Search
 author = Toshiaki Nishihara <>, Yasuhiko Minamide <>
 date = 2004-06-24
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 abstract = Depth-first search of a graph is formalized with recdef. It is shown that it visits all of the reachable nodes from a given list of nodes. Executable ML code of depth-first search is obtained using the code generation feature of Isabelle/HOL.
 notify = lp15@cam.ac.uk, krauss@in.tum.de
 
@@ -2180,7 +2180,7 @@ notify = lp15@cam.ac.uk, krauss@in.tum.de
 title = Fast Fourier Transform
 author = Clemens Ballarin <http://www21.in.tum.de/~ballarin/>
 date = 2005-10-12
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Mathematical
 abstract = We formalise a functional implementation of the FFT algorithm over the complex numbers, and its inverse. Both are shown equivalent to the usual definitions of these operations through Vandermonde matrices. They are also shown to be inverse to each other, more precisely, that composition of the inverse and the transformation yield the identity up to a scalar.
 notify = ballarin@in.tum.de
 
@@ -2188,7 +2188,7 @@ notify = ballarin@in.tum.de
 title = Gauss-Jordan Elimination for Matrices Represented as Functions
 author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2011-08-19
-topic = Computer Science/Algorithms, Mathematics/Algebra
+topic = Computer Science/Algorithms/Mathematical, Mathematics/Algebra
 abstract = This theory provides a compact formulation of Gauss-Jordan elimination for matrices represented as functions. Its distinctive feature is succinctness. It is not meant for large computations.
 notify = nipkow@in.tum.de
 
@@ -2196,7 +2196,7 @@ notify = nipkow@in.tum.de
 title = Verification of the UpDown Scheme
 author = Johannes Hölzl <mailto:hoelzl@in.tum.de>
 date = 2015-01-28
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Mathematical
 abstract =
 	The UpDown scheme is a recursive scheme used to compute the stiffness matrix
 	on a special form of sparse grids. Usually, when discretizing a Euclidean
@@ -2216,7 +2216,7 @@ notify = hoelzl@in.tum.de
 title = Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement
 author = Viorel Preoteasa <http://users.abo.fi/vpreotea/>, Ralph-Johan Back <http://users.abo.fi/Ralph-Johan.Back/>
 date = 2010-05-28
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 abstract = The verification of the Deutsch-Schorr-Waite graph marking algorithm is used as a benchmark in many formalizations of pointer programs. The main purpose of this mechanization is to show how data refinement of invariant based programs can be used in verifying practical algorithms. The verification starts with an abstract algorithm working on a graph given by a relation <i>next</i> on nodes. Gradually the abstract program is refined into Deutsch-Schorr-Waite graph marking algorithm where only one bit per graph node of additional memory is used for marking.
 extra-history =
 	Change history:
@@ -2254,7 +2254,7 @@ notify =
 
 [Transitive-Closure]
 title = Executable Transitive Closures of Finite Relations
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 date = 2011-03-14
 author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 license = LGPL
@@ -2266,7 +2266,7 @@ notify = c.sternagel@gmail.com, rene.thiemann@uibk.ac.at
 
 [Transitive-Closure-II]
 title = Executable Transitive Closures
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 date = 2012-02-29
 author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 license = LGPL
@@ -4044,7 +4044,7 @@ notify = immler@in.tum.de, hoelzl@in.tum.de
 title = Executable Multivariate Polynomials
 author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>, Alexander Maletzky <https://risc.jku.at/m/alexander-maletzky/>, Fabian Immler <http://www21.in.tum.de/~immler>, Florian Haftmann <http://isabelle.in.tum.de/~haftmann>, Andreas Lochbihler <http://www.andreas-lochbihler.de>, Alexander Bentkamp <mailto:bentkamp@gmail.com>
 date = 2010-08-10
-topic = Mathematics/Analysis, Mathematics/Algebra, Computer Science/Algorithms
+topic = Mathematics/Analysis, Mathematics/Algebra, Computer Science/Algorithms/Mathematical
 license = LGPL
 abstract =
 	We define multivariate polynomials over arbitrary (ordered) semirings in
@@ -4250,7 +4250,7 @@ notify = lammich@in.tum.de
 title = Verified Efficient Implementation of Gabow's Strongly Connected Components Algorithm
 author = Peter Lammich <http://www21.in.tum.de/~lammich>
 date = 2014-05-28
-topic = Computer Science/Algorithms, Mathematics/Graph Theory
+topic = Computer Science/Algorithms/Graph, Mathematics/Graph Theory
 abstract =
 	We present an Isabelle/HOL formalization of Gabow's algorithm for
 	finding the strongly connected components of a directed graph.
@@ -5319,7 +5319,7 @@ notify = lp15@cam.ac.uk
 [Gauss_Jordan]
 title = Gauss-Jordan Algorithm and Its Applications
 author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Jesús Aransay <http://www.unirioja.es/cu/jearansa>
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Mathematical
 date = 2014-09-03
 abstract = The Gauss-Jordan algorithm states that any matrix over a field can be transformed by means of elementary row operations to a matrix in reduced row echelon form. The formalization is based on the Rank Nullity Theorem entry of the AFP and on the HOL-Multivariate-Analysis session of Isabelle, where matrices are represented as functions over finite types. We have set up the code generator to make this representation executable. In order to improve the performance, a refinement to immutable arrays has been carried out. We have formalized some of the applications of the Gauss-Jordan algorithm. Thanks to this development, the following facts can be computed over matrices whose elements belong to a field: Ranks, Determinants, Inverses, Bases and dimensions and Solutions of systems of linear equations. Code can be exported to SML and Haskell.
 notify = jose.divasonm@unirioja.es, jesus-maria.aransay@unirioja.es
@@ -5327,7 +5327,7 @@ notify = jose.divasonm@unirioja.es, jesus-maria.aransay@unirioja.es
 [Echelon_Form]
 title = Echelon Form
 author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Jesús Aransay <http://www.unirioja.es/cu/jearansa>
-topic = Computer Science/Algorithms, Mathematics/Algebra
+topic = Computer Science/Algorithms/Mathematical, Mathematics/Algebra
 date = 2015-02-12
 abstract = We formalize an algorithm to compute the Echelon Form of a matrix. We have proved its existence over Bézout domains and made it executable over Euclidean domains, such as the integer ring and the univariate polynomials over a field. This allows us to compute determinants, inverses and characteristic polynomials of matrices. The work is based on the HOL-Multivariate Analysis library, and on both the Gauss-Jordan and Cayley-Hamilton AFP entries. As a by-product, some algebraic structures have been implemented (principal ideal domains, Bézout domains...). The algorithm has been refined to immutable arrays and code can be generated to functional languages as well.
 notify = jose.divasonm@unirioja.es, jesus-maria.aransay@unirioja.es
@@ -5335,7 +5335,7 @@ notify = jose.divasonm@unirioja.es, jesus-maria.aransay@unirioja.es
 [QR_Decomposition]
 title = QR Decomposition
 author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Jesús Aransay <http://www.unirioja.es/cu/jearansa>
-topic = Computer Science/Algorithms, Mathematics/Algebra
+topic = Computer Science/Algorithms/Mathematical, Mathematics/Algebra
 date = 2015-02-12
 abstract = QR decomposition is an algorithm to decompose a real matrix A into the product of two other matrices Q and R, where Q is orthogonal and R is invertible and upper triangular. The algorithm is useful for the least squares problem; i.e., the computation of the best approximation of an unsolvable system of linear equations. As a side-product, the Gram-Schmidt process has also been formalized. A refinement using immutable arrays is presented as well. The development relies, among others, on the AFP entry "Implementing field extensions of the form Q[sqrt(b)]" by René Thiemann, which allows execution of the algorithm using symbolic computations. Verified code can be generated and executed using floats as well.
 extra-history =
@@ -5346,7 +5346,7 @@ notify = jose.divasonm@unirioja.es, jesus-maria.aransay@unirioja.es
 [Hermite]
 title = Hermite Normal Form
 author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Jesús Aransay <http://www.unirioja.es/cu/jearansa>
-topic = Computer Science/Algorithms, Mathematics/Algebra
+topic = Computer Science/Algorithms/Mathematical, Mathematics/Algebra
 date = 2015-07-07
 abstract = Hermite Normal Form is a canonical matrix analogue of Reduced Echelon Form, but involving matrices over more general rings. In this work we formalise an algorithm to compute the Hermite Normal Form of a matrix by means of elementary row operations, taking advantage of the Echelon Form AFP entry. We have proven the correctness of such an algorithm and refined it to immutable arrays. Furthermore, we have also formalised the uniqueness of the Hermite Normal Form of a matrix. Code can be exported and some examples of execution involving integer matrices and polynomial matrices are presented as well.
 notify = jose.divasonm@unirioja.es, jesus-maria.aransay@unirioja.es
@@ -5923,7 +5923,7 @@ notify = m.stannett@sheffield.ac.uk
 title = Gröbner Bases Theory
 author = Fabian Immler <http://www21.in.tum.de/~immler>, Alexander Maletzky <https://risc.jku.at/m/alexander-maletzky/>
 date = 2016-05-02
-topic = Mathematics/Algebra, Computer Science/Algorithms
+topic = Mathematics/Algebra, Computer Science/Algorithms/Mathematical
 abstract =
 	This formalization is concerned with the theory of Gröbner bases in
 	(commutative) multivariate polynomial rings over fields, originally
@@ -6971,7 +6971,7 @@ abstract =
 [Diophantine_Eqns_Lin_Hom]
 title = Homogeneous Linear Diophantine Equations
 author = Florian Messner <mailto:florian.g.messner@uibk.ac.at>, Julian Parsert <mailto:julian.parsert@gmail.com>, Jonas Schöpf <mailto:jonas.schoepf@uibk.ac.at>,  Christian Sternagel <mailto:c.sternagel@gmail.com>
-topic = Computer Science/Algorithms, Mathematics/Number Theory, Tools
+topic = Computer Science/Algorithms/Mathematical, Mathematics/Number Theory, Tools
 license = LGPL
 date = 2017-10-14
 notify = c.sternagel@gmail.com, julian.parsert@gmail.com
@@ -7140,7 +7140,7 @@ abstract =
 [Taylor_Models]
 title = Taylor Models
 author = Christoph Traut<>, Fabian Immler <http://www21.in.tum.de/~immler>
-topic = Computer Science/Algorithms, Computer Science/Data Structures, Mathematics/Analysis, Mathematics/Algebra
+topic = Computer Science/Algorithms/Mathematical, Computer Science/Data Structures, Mathematics/Analysis, Mathematics/Algebra
 date = 2018-01-08
 notify = immler@in.tum.de
 abstract =
@@ -7233,7 +7233,7 @@ abstract =
 [LLL_Basis_Reduction]
 title = A verified LLL algorithm
 author = Ralph Bottesch <>, Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Maximilian Haslbeck <>, Sebastiaan Joosten <http://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada<>
-topic = Computer Science/Algorithms, Mathematics/Algebra
+topic = Computer Science/Algorithms/Mathematical, Mathematics/Algebra
 date = 2018-02-02
 notify = ralph.bottesch@uibk.ac.at, jose.divason@unirioja.es, maximilian.haslbeck@uibk.ac.at, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
 abstract =
@@ -7565,7 +7565,7 @@ abstract =
 [Simplex]
 title = An Incremental Simplex Algorithm with Unsatisfiable Core Generation
 author = Filip Marić <mailto:filip@matf.bg.ac.rs>, Mirko Spasić <mailto:mirko@matf.bg.ac.rs>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann/>
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Optimization
 date = 2018-08-24
 notify = rene.thiemann@uibk.ac.at
 abstract =
@@ -7694,7 +7694,7 @@ abstract =
 [Signature_Groebner]
 title = Signature-Based Gröbner Basis Algorithms
 author = Alexander Maletzky <https://risc.jku.at/m/alexander-maletzky/>
-topic = Mathematics/Algebra, Computer Science/Algorithms
+topic = Mathematics/Algebra, Computer Science/Algorithms/Mathematical
 date = 2018-09-20
 notify = alexander.maletzky@risc.jku.at
 abstract =
@@ -8052,7 +8052,7 @@ abstract =
 [Kruskal]
 title = Kruskal's Algorithm for Minimum Spanning Forest
 author = Maximilian P.L. Haslbeck <http://in.tum.de/~haslbema/>, Peter Lammich <http://www21.in.tum.de/~lammich>, Julian Biendarra<>
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 date = 2019-02-14
 notify = haslbema@in.tum.de, lammich@in.tum.de
 abstract =
@@ -8354,7 +8354,7 @@ abstract =
 [Prim_Dijkstra_Simple]
 title = Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra
 author = Peter Lammich <http://www21.in.tum.de/~lammich>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 date = 2019-06-25
 notify = lammich@in.tum.de
 abstract =
