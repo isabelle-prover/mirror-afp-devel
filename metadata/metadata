@@ -4041,7 +4041,7 @@ notify = immler@in.tum.de, hoelzl@in.tum.de
 title = Executable Multivariate Polynomials
 author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>, Alexander Maletzky <https://risc.jku.at/m/alexander-maletzky/>, Fabian Immler <http://www21.in.tum.de/~immler>, Florian Haftmann <http://isabelle.in.tum.de/~haftmann>, Andreas Lochbihler <http://www.andreas-lochbihler.de>, Alexander Bentkamp <mailto:bentkamp@gmail.com>
 date = 2010-08-10
-topic = Mathematics/Analysis, Mathematics/Algebra, Computer Science/Algorithms
+topic = Mathematics/Analysis, Mathematics/Algebra, Computer Science/Algorithms/Mathematical
 license = LGPL
 abstract =
 	We define multivariate polynomials over arbitrary (ordered) semirings in
