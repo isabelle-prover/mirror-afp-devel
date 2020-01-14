@@ -7592,7 +7592,7 @@ abstract =
 [Simplex]
 title = An Incremental Simplex Algorithm with Unsatisfiable Core Generation
 author = Filip Marić <mailto:filip@matf.bg.ac.rs>, Mirko Spasić <mailto:mirko@matf.bg.ac.rs>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann/>
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Optimization
 date = 2018-08-24
 notify = rene.thiemann@uibk.ac.at
 abstract =
