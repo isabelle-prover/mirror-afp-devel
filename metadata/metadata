@@ -626,7 +626,7 @@ abstract =
 [Prpu_Maxflow]
 title = Formalizing Push-Relabel Algorithms
 author = Peter Lammich <http://www21.in.tum.de/~lammich>, S. Reza Sefidgar <>
-topic = Computer Science/Algorithms, Mathematics/Graph Theory
+topic = Computer Science/Algorithms/Graph, Mathematics/Graph Theory
 date = 2017-06-01
 notify = lammich@in.tum.de
 abstract =
@@ -1646,7 +1646,7 @@ notify =
 [Dijkstra_Shortest_Path]
 title = Dijkstra's Shortest Path Algorithm
 author = Benedikt Nordhoff <mailto:b.n@wwu.de>, Peter Lammich <http://www21.in.tum.de/~lammich>
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 date = 2012-01-30
 abstract = We implement and prove correct Dijkstra's algorithm for the
 	single source shortest path problem, conceived in 1956 by E. Dijkstra.
@@ -1748,7 +1748,7 @@ title = Formalizing the Edmonds-Karp Algorithm
 author = Peter Lammich <mailto:lammich@in.tum.de>, S. Reza Sefidgar<>
 notify = lammich@in.tum.de
 date = 2016-08-12
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 abstract =
 	We present a formalization of the Ford-Fulkerson method for computing
 	the maximum flow in a network. Our formal proof closely follows a
@@ -2172,7 +2172,7 @@ notify = peter.lammich@uni-muenster.de, nipkow@in.tum.de
 title = Depth First Search
 author = Toshiaki Nishihara <>, Yasuhiko Minamide <>
 date = 2004-06-24
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 abstract = Depth-first search of a graph is formalized with recdef. It is shown that it visits all of the reachable nodes from a given list of nodes. Executable ML code of depth-first search is obtained using the code generation feature of Isabelle/HOL.
 notify = lp15@cam.ac.uk, krauss@in.tum.de
 
@@ -2216,7 +2216,7 @@ notify = hoelzl@in.tum.de
 title = Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement
 author = Viorel Preoteasa <http://users.abo.fi/vpreotea/>, Ralph-Johan Back <http://users.abo.fi/Ralph-Johan.Back/>
 date = 2010-05-28
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 abstract = The verification of the Deutsch-Schorr-Waite graph marking algorithm is used as a benchmark in many formalizations of pointer programs. The main purpose of this mechanization is to show how data refinement of invariant based programs can be used in verifying practical algorithms. The verification starts with an abstract algorithm working on a graph given by a relation <i>next</i> on nodes. Gradually the abstract program is refined into Deutsch-Schorr-Waite graph marking algorithm where only one bit per graph node of additional memory is used for marking.
 extra-history =
 	Change history:
@@ -4247,7 +4247,7 @@ notify = lammich@in.tum.de
 title = Verified Efficient Implementation of Gabow's Strongly Connected Components Algorithm
 author = Peter Lammich <http://www21.in.tum.de/~lammich>
 date = 2014-05-28
-topic = Computer Science/Algorithms, Mathematics/Graph Theory
+topic = Computer Science/Algorithms/Graph, Mathematics/Graph Theory
 abstract =
 	We present an Isabelle/HOL formalization of Gabow's algorithm for
 	finding the strongly connected components of a directed graph.
@@ -8079,7 +8079,7 @@ abstract =
 [Kruskal]
 title = Kruskal's Algorithm for Minimum Spanning Forest
 author = Maximilian P.L. Haslbeck <http://in.tum.de/~haslbema/>, Peter Lammich <http://www21.in.tum.de/~lammich>, Julian Biendarra<>
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 date = 2019-02-14
 notify = haslbema@in.tum.de, lammich@in.tum.de
 abstract =
@@ -8381,7 +8381,7 @@ abstract =
 [Prim_Dijkstra_Simple]
 title = Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra
 author = Peter Lammich <http://www21.in.tum.de/~lammich>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Graph
 date = 2019-06-25
 notify = lammich@in.tum.de
 abstract =
