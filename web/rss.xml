@@ -20,7 +20,7 @@
 This entry provides two related verified divide-and-conquer algorithms
 solving the fundamental &lt;em&gt;Closest Pair of Points&lt;/em&gt;
 problem in Computational Geometry. Functional correctness and the
-optimal running time of &lt;math&gt;O(n log n)&lt;/math&gt; are
+optimal running time of &lt;em&gt;O&lt;/em&gt;(&lt;em&gt;n&lt;/em&gt; log &lt;em&gt;n&lt;/em&gt;) are
 proved. Executable code is generated which is empirically competitive
 with handwritten reference implementations.</description>
     </item>
