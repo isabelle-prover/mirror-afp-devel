@@ -2180,7 +2180,7 @@ notify = lp15@cam.ac.uk, krauss@in.tum.de
 title = Fast Fourier Transform
 author = Clemens Ballarin <http://www21.in.tum.de/~ballarin/>
 date = 2005-10-12
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Mathematical
 abstract = We formalise a functional implementation of the FFT algorithm over the complex numbers, and its inverse. Both are shown equivalent to the usual definitions of these operations through Vandermonde matrices. They are also shown to be inverse to each other, more precisely, that composition of the inverse and the transformation yield the identity up to a scalar.
 notify = ballarin@in.tum.de
 
@@ -2188,7 +2188,7 @@ notify = ballarin@in.tum.de
 title = Gauss-Jordan Elimination for Matrices Represented as Functions
 author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2011-08-19
-topic = Computer Science/Algorithms, Mathematics/Algebra
+topic = Computer Science/Algorithms/Mathematical, Mathematics/Algebra
 abstract = This theory provides a compact formulation of Gauss-Jordan elimination for matrices represented as functions. Its distinctive feature is succinctness. It is not meant for large computations.
 notify = nipkow@in.tum.de
 
@@ -2196,7 +2196,7 @@ notify = nipkow@in.tum.de
 title = Verification of the UpDown Scheme
 author = Johannes Hölzl <mailto:hoelzl@in.tum.de>
 date = 2015-01-28
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Mathematical
 abstract =
 	The UpDown scheme is a recursive scheme used to compute the stiffness matrix
 	on a special form of sparse grids. Usually, when discretizing a Euclidean
@@ -5329,7 +5329,7 @@ notify = lp15@cam.ac.uk
 [Gauss_Jordan]
 title = Gauss-Jordan Algorithm and Its Applications
 author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Jesús Aransay <http://www.unirioja.es/cu/jearansa>
-topic = Computer Science/Algorithms
+topic = Computer Science/Algorithms/Mathematical
 date = 2014-09-03
 abstract = The Gauss-Jordan algorithm states that any matrix over a field can be transformed by means of elementary row operations to a matrix in reduced row echelon form. The formalization is based on the Rank Nullity Theorem entry of the AFP and on the HOL-Multivariate-Analysis session of Isabelle, where matrices are represented as functions over finite types. We have set up the code generator to make this representation executable. In order to improve the performance, a refinement to immutable arrays has been carried out. We have formalized some of the applications of the Gauss-Jordan algorithm. Thanks to this development, the following facts can be computed over matrices whose elements belong to a field: Ranks, Determinants, Inverses, Bases and dimensions and Solutions of systems of linear equations. Code can be exported to SML and Haskell.
 notify = jose.divasonm@unirioja.es, jesus-maria.aransay@unirioja.es
@@ -5337,7 +5337,7 @@ notify = jose.divasonm@unirioja.es, jesus-maria.aransay@unirioja.es
 [Echelon_Form]
 title = Echelon Form
 author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Jesús Aransay <http://www.unirioja.es/cu/jearansa>
-topic = Computer Science/Algorithms, Mathematics/Algebra
+topic = Computer Science/Algorithms/Mathematical, Mathematics/Algebra
 date = 2015-02-12
 abstract = We formalize an algorithm to compute the Echelon Form of a matrix. We have proved its existence over Bézout domains and made it executable over Euclidean domains, such as the integer ring and the univariate polynomials over a field. This allows us to compute determinants, inverses and characteristic polynomials of matrices. The work is based on the HOL-Multivariate Analysis library, and on both the Gauss-Jordan and Cayley-Hamilton AFP entries. As a by-product, some algebraic structures have been implemented (principal ideal domains, Bézout domains...). The algorithm has been refined to immutable arrays and code can be generated to functional languages as well.
 notify = jose.divasonm@unirioja.es, jesus-maria.aransay@unirioja.es
@@ -5345,7 +5345,7 @@ notify = jose.divasonm@unirioja.es, jesus-maria.aransay@unirioja.es
 [QR_Decomposition]
 title = QR Decomposition
 author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Jesús Aransay <http://www.unirioja.es/cu/jearansa>
-topic = Computer Science/Algorithms, Mathematics/Algebra
+topic = Computer Science/Algorithms/Mathematical, Mathematics/Algebra
 date = 2015-02-12
 abstract = QR decomposition is an algorithm to decompose a real matrix A into the product of two other matrices Q and R, where Q is orthogonal and R is invertible and upper triangular. The algorithm is useful for the least squares problem; i.e., the computation of the best approximation of an unsolvable system of linear equations. As a side-product, the Gram-Schmidt process has also been formalized. A refinement using immutable arrays is presented as well. The development relies, among others, on the AFP entry "Implementing field extensions of the form Q[sqrt(b)]" by René Thiemann, which allows execution of the algorithm using symbolic computations. Verified code can be generated and executed using floats as well.
 extra-history =
@@ -5356,7 +5356,7 @@ notify = jose.divasonm@unirioja.es, jesus-maria.aransay@unirioja.es
 [Hermite]
 title = Hermite Normal Form
 author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Jesús Aransay <http://www.unirioja.es/cu/jearansa>
-topic = Computer Science/Algorithms, Mathematics/Algebra
+topic = Computer Science/Algorithms/Mathematical, Mathematics/Algebra
 date = 2015-07-07
 abstract = Hermite Normal Form is a canonical matrix analogue of Reduced Echelon Form, but involving matrices over more general rings. In this work we formalise an algorithm to compute the Hermite Normal Form of a matrix by means of elementary row operations, taking advantage of the Echelon Form AFP entry. We have proven the correctness of such an algorithm and refined it to immutable arrays. Furthermore, we have also formalised the uniqueness of the Hermite Normal Form of a matrix. Code can be exported and some examples of execution involving integer matrices and polynomial matrices are presented as well.
 notify = jose.divasonm@unirioja.es, jesus-maria.aransay@unirioja.es
@@ -5933,7 +5933,7 @@ notify = m.stannett@sheffield.ac.uk
 title = Gröbner Bases Theory
 author = Fabian Immler <http://www21.in.tum.de/~immler>, Alexander Maletzky <https://risc.jku.at/m/alexander-maletzky/>
 date = 2016-05-02
-topic = Mathematics/Algebra, Computer Science/Algorithms
+topic = Mathematics/Algebra, Computer Science/Algorithms/Mathematical
 abstract =
 	This formalization is concerned with the theory of Gröbner bases in
 	(commutative) multivariate polynomial rings over fields, originally
@@ -6981,7 +6981,7 @@ abstract =
 [Diophantine_Eqns_Lin_Hom]
 title = Homogeneous Linear Diophantine Equations
 author = Florian Messner <mailto:florian.g.messner@uibk.ac.at>, Julian Parsert <mailto:julian.parsert@gmail.com>, Jonas Schöpf <mailto:jonas.schoepf@uibk.ac.at>,  Christian Sternagel <mailto:c.sternagel@gmail.com>
-topic = Computer Science/Algorithms, Mathematics/Number Theory, Tools
+topic = Computer Science/Algorithms/Mathematical, Mathematics/Number Theory, Tools
 license = LGPL
 date = 2017-10-14
 notify = c.sternagel@gmail.com, julian.parsert@gmail.com
@@ -7150,7 +7150,7 @@ abstract =
 [Taylor_Models]
 title = Taylor Models
 author = Christoph Traut<>, Fabian Immler <http://www21.in.tum.de/~immler>
-topic = Computer Science/Algorithms, Computer Science/Data Structures, Mathematics/Analysis, Mathematics/Algebra
+topic = Computer Science/Algorithms/Mathematical, Computer Science/Data Structures, Mathematics/Analysis, Mathematics/Algebra
 date = 2018-01-08
 notify = immler@in.tum.de
 abstract =
@@ -7243,7 +7243,7 @@ abstract =
 [LLL_Basis_Reduction]
 title = A verified LLL algorithm
 author = Ralph Bottesch <>, Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Maximilian Haslbeck <http://cl-informatik.uibk.ac.at/users/mhaslbeck/>, Sebastiaan Joosten <http://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada<>
-topic = Computer Science/Algorithms, Mathematics/Algebra
+topic = Computer Science/Algorithms/Mathematical, Mathematics/Algebra
 date = 2018-02-02
 notify = ralph.bottesch@uibk.ac.at, jose.divason@unirioja.es, maximilian.haslbeck@uibk.ac.at, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
 abstract =
@@ -7721,7 +7721,7 @@ abstract =
 [Signature_Groebner]
 title = Signature-Based Gröbner Basis Algorithms
 author = Alexander Maletzky <https://risc.jku.at/m/alexander-maletzky/>
-topic = Mathematics/Algebra, Computer Science/Algorithms
+topic = Mathematics/Algebra, Computer Science/Algorithms/Mathematical
 date = 2018-09-20
 notify = alexander.maletzky@risc.jku.at
 abstract =
