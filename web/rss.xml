@@ -9,7 +9,19 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>13 Jan 2020 00:00:00 +0000</pubDate>
+    <pubDate>16 Jan 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Verified Approximation Algorithms</title>
+              <link>https://www.isa-afp.org/entries/Approximation_Algorithms.html</link>
+       <guid>https://www.isa-afp.org/entries/Approximation_Algorithms.html</guid>
+       <dc:creator> Robin Eßmann, Tobias Nipkow, Simon Robillard       </dc:creator>
+       <pubDate>16 Jan 2020 00:00:00 +0000</pubDate>
+       <description>
+We present the first formal verification of approximation algorithms
+for NP-complete optimization problems: vertex cover, independent set,
+load balancing, and bin packing. The proofs correct incompletenesses
+in existing proofs and improve the approximation ratio in one case.</description>
+    </item>
     <item>
        <title>Closest Pair of Points Algorithms</title>
               <link>https://www.isa-afp.org/entries/Closest_Pair_Points.html</link>
@@ -552,29 +564,6 @@ compilation toolchain from executable specifications in Isabelle/HOL
 to CakeML abstract syntax trees. This improves over the
 state-of-the-art in Isabelle by providing a trustworthy procedure for
 code generation.</description>
-    </item>
-    <item>
-       <title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</title>
-              <link>https://www.isa-afp.org/entries/MFOTL_Monitor.html</link>
-       <guid>https://www.isa-afp.org/entries/MFOTL_Monitor.html</guid>
-       <dc:creator> Joshua Schneider, Dmitriy Traytel       </dc:creator>
-       <pubDate>04 Jul 2019 00:00:00 +0000</pubDate>
-       <description>
-A monitor is a runtime verification tool that solves the following
-problem: Given a stream of time-stamped events and a policy formulated
-in a specification language, decide whether the policy is satisfied at
-every point in the stream. We verify the correctness of an executable
-monitor for specifications given as formulas in metric first-order
-temporal logic (MFOTL), an expressive extension of linear temporal
-logic with real-time constraints and first-order quantification. The
-verified monitor implements a simplified variant of the algorithm used
-in the efficient MonPoly monitoring tool. The formalization is
-presented in a forthcoming &lt;a
-href=&#34;http://people.inf.ethz.ch/trayteld/papers/rv19-verimon/verimon.pdf&#34;&gt;RV
-2019 paper&lt;/a&gt;, which also compares the output of the verified
-monitor to that of other monitoring tools on randomly generated
-inputs. This case study revealed several errors in the optimized but
-unverified tools.</description>
     </item>
   </channel>
 </rss>

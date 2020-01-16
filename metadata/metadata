@@ -6991,6 +6991,18 @@ abstract =
   proved. Executable code is generated which is empirically competitive
   with handwritten reference implementations.
 
+[Approximation_Algorithms]
+title = Verified Approximation Algorithms
+author = Robin Eßmann <mailto:robin.essmann@tum.de>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>, Simon Robillard <https://simon-robillard.net/>
+topic = Computer Science/Algorithms/Approximation
+date = 2020-01-16
+notify = nipkow@in.tum.de
+abstract =
+  We present the first formal verification of approximation algorithms
+  for NP-complete optimization problems: vertex cover, independent set,
+  load balancing, and bin packing. The proofs correct incompletenesses
+  in existing proofs and improve the approximation ratio in one case.
+
 [Diophantine_Eqns_Lin_Hom]
 title = Homogeneous Linear Diophantine Equations
 author = Florian Messner <mailto:florian.g.messner@uibk.ac.at>, Julian Parsert <mailto:julian.parsert@gmail.com>, Jonas Schöpf <mailto:jonas.schoepf@uibk.ac.at>,  Christian Sternagel <mailto:c.sternagel@gmail.com>
