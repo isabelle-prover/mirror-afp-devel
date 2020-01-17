@@ -1,3 +1,36 @@
+[Complex_Geometry]
+title = Complex Geometry
+author = Filip Marić <http://www.matf.bg.ac.rs/~filip>, Danijela Simić <http://poincare.matf.bg.ac.rs/~danijela>
+topic = Mathematics/Geometry
+date = 2019-12-16
+notify = danijela@matf.bg.ac.rs, filip@matf.bg.ac.rs, boutry@unistra.fr
+abstract = 
+  A formalization of geometry of complex numbers is presented.
+  Fundamental objects that are investigated are the complex plane
+  extended by a single infinite point, its objects (points, lines and
+  circles), and groups of transformations that act on them (e.g.,
+  inversions and Möbius transformations). Most objects are defined
+  algebraically, but correspondence with classical geometric definitions
+  is shown.
+
+[Poincare_Disc]
+title = Poincaré Disc Model
+author = Danijela Simić <http://poincare.matf.bg.ac.rs/~danijela>,  Filip Marić <http://www.matf.bg.ac.rs/~filip>,  Pierre Boutry <mailto:boutry@unistra.fr>
+topic = Mathematics/Geometry
+date = 2019-12-16
+notify = danijela@matf.bg.ac.rs, filip@matf.bg.ac.rs, boutry@unistra.fr
+abstract = 
+  We describe formalization of the Poincaré disc model of hyperbolic
+  geometry within the Isabelle/HOL proof assistant. The model is defined
+  within the extended complex plane (one dimensional complex projectives
+  space &‌#8450;P1), formalized in the AFP entry “Complex geometry”.
+  Points, lines, congruence of pairs of points, betweenness of triples
+  of points, circles, and isometries are defined within the model. It is
+  shown that the model satisfies all Tarski's axioms except the
+  Euclid's axiom. It is shown that it satisfies its negation and
+  the limiting parallels axiom (which proves it to be a model of
+  hyperbolic geometry).
+
 [Fourier]
 title = Fourier Series
 author = Lawrence C Paulson <https://www.cl.cam.ac.uk/~lp15/>
@@ -2246,7 +2279,7 @@ notify = c.sternagel@gmail.com
 
 [SATSolverVerification]
 title = Formal Verification of Modern SAT Solvers
-author = Filip Maric <http://poincare.matf.bg.ac.rs/~filip/>
+author = Filip Marić <http://poincare.matf.bg.ac.rs/~filip/>
 date = 2008-07-23
 topic = Computer Science/Algorithms
 abstract = This document contains formal correctness proofs of modern SAT solvers. Following (Krstic et al, 2007) and (Nieuwenhuis et al., 2006), solvers are described using state-transition systems. Several different SAT solver descriptions are given and their partial correctness and termination is proved. These include: <ul> <li> a solver based on classical DPLL procedure (using only a backtrack-search with unit propagation),</li> <li> a very general solver with backjumping and learning (similar to the description given in (Nieuwenhuis et al., 2006)), and</li> <li> a solver with a specific conflict analysis algorithm (similar to the description given in (Krstic et al., 2007)).</li> </ul> Within the SAT solver correctness proofs, a large number of lemmas about propositional logic and CNF formulae are proved. This theory is self-contained and could be used for further exploring of properties of CNF based SAT algorithms.

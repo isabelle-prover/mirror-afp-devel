@@ -132,6 +132,39 @@ ordinary differential equations, and limiting (long-term) behavior of
 dynamical systems.</description>
     </item>
     <item>
+       <title>Poincaré Disc Model</title>
+              <link>https://www.isa-afp.org/entries/Poincare_Disc.html</link>
+       <guid>https://www.isa-afp.org/entries/Poincare_Disc.html</guid>
+       <dc:creator> Danijela Simić, Filip Marić, Pierre Boutry       </dc:creator>
+       <pubDate>16 Dec 2019 00:00:00 +0000</pubDate>
+       <description>
+We describe formalization of the Poincaré disc model of hyperbolic
+geometry within the Isabelle/HOL proof assistant. The model is defined
+within the extended complex plane (one dimensional complex projectives
+space &amp;‌#8450;P1), formalized in the AFP entry “Complex geometry”.
+Points, lines, congruence of pairs of points, betweenness of triples
+of points, circles, and isometries are defined within the model. It is
+shown that the model satisfies all Tarski&#39;s axioms except the
+Euclid&#39;s axiom. It is shown that it satisfies its negation and
+the limiting parallels axiom (which proves it to be a model of
+hyperbolic geometry).</description>
+    </item>
+    <item>
+       <title>Complex Geometry</title>
+              <link>https://www.isa-afp.org/entries/Complex_Geometry.html</link>
+       <guid>https://www.isa-afp.org/entries/Complex_Geometry.html</guid>
+       <dc:creator> Filip Marić, Danijela Simić       </dc:creator>
+       <pubDate>16 Dec 2019 00:00:00 +0000</pubDate>
+       <description>
+A formalization of geometry of complex numbers is presented.
+Fundamental objects that are investigated are the complex plane
+extended by a single infinite point, its objects (points, lines and
+circles), and groups of transformations that act on them (e.g.,
+inversions and Möbius transformations). Most objects are defined
+algebraically, but correspondence with classical geometric definitions
+is shown.</description>
+    </item>
+    <item>
        <title>Gauss Sums and the Pólya–Vinogradov Inequality</title>
               <link>https://www.isa-afp.org/entries/Gauss_Sums.html</link>
        <guid>https://www.isa-afp.org/entries/Gauss_Sums.html</guid>
@@ -536,34 +569,6 @@ nothing happens). The proof of this invariance is also given.</description>
 We formalize the Szpilrajn extension theorem, also known as
 order-extension principal: Every strict partial order can be extended
 to a strict linear order.</description>
-    </item>
-    <item>
-       <title>A Sequent Calculus for First-Order Logic</title>
-              <link>https://www.isa-afp.org/entries/FOL_Seq_Calc1.html</link>
-       <guid>https://www.isa-afp.org/entries/FOL_Seq_Calc1.html</guid>
-       <dc:creator> Andreas Halkjær From       </dc:creator>
-       <pubDate>18 Jul 2019 00:00:00 +0000</pubDate>
-       <description>
-This work formalizes soundness and completeness of a one-sided sequent
-calculus for first-order logic. The completeness is shown via a
-translation from a complete semantic tableau calculus, the proof of
-which is based on the First-Order Logic According to Fitting theory.
-The calculi and proof techniques are taken from Ben-Ari&#39;s
-Mathematical Logic for Computer Science.</description>
-    </item>
-    <item>
-       <title>A Verified Code Generator from Isabelle/HOL to CakeML</title>
-              <link>https://www.isa-afp.org/entries/CakeML_Codegen.html</link>
-       <guid>https://www.isa-afp.org/entries/CakeML_Codegen.html</guid>
-       <dc:creator> Lars Hupel       </dc:creator>
-       <pubDate>08 Jul 2019 00:00:00 +0000</pubDate>
-       <description>
-This entry contains the formalization that accompanies my PhD thesis
-(see https://lars.hupel.info/research/codegen/). I develop a verified
-compilation toolchain from executable specifications in Isabelle/HOL
-to CakeML abstract syntax trees. This improves over the
-state-of-the-art in Isabelle by providing a trustworthy procedure for
-code generation.</description>
     </item>
   </channel>
 </rss>
