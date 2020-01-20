@@ -4,7 +4,7 @@ author = Filip Marić <http://www.matf.bg.ac.rs/~filip>, Danijela Simić <http:/
 topic = Mathematics/Geometry
 date = 2019-12-16
 notify = danijela@matf.bg.ac.rs, filip@matf.bg.ac.rs, boutry@unistra.fr
-abstract = 
+abstract =
   A formalization of geometry of complex numbers is presented.
   Fundamental objects that are investigated are the complex plane
   extended by a single infinite point, its objects (points, lines and
@@ -19,7 +19,7 @@ author = Danijela Simić <http://poincare.matf.bg.ac.rs/~danijela>,  Filip Mari�
 topic = Mathematics/Geometry
 date = 2019-12-16
 notify = danijela@matf.bg.ac.rs, filip@matf.bg.ac.rs, boutry@unistra.fr
-abstract = 
+abstract =
   We describe formalization of the Poincaré disc model of hyperbolic
   geometry within the Isabelle/HOL proof assistant. The model is defined
   within the extended complex plane (one dimensional complex projectives
@@ -7384,6 +7384,21 @@ abstract =
   randomly. </p> <p> This entry contains formalized proofs
   of the textbook results about the expected height and the expected
   length of a search path in a randomised skip list. </p>
+
+[Mersenne_Primes]
+title = Mersenne primes and the Lucas–Lehmer test
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory
+date = 2020-01-17
+notify = eberlm@in.tum.de
+abstract =
+  <p>This article provides formal proofs of basic properties of
+  Mersenne numbers, i. e. numbers of the form
+  2<sup><em>n</em></sup> - 1, and especially of
+  Mersenne primes.</p> <p>In particular, an efficient,
+  verified, and executable version of the Lucas&ndash;Lehmer test is
+  developed. This test decides primality for Mersenne numbers in time
+  polynomial in <em>n</em>.</p>
 
 [Hoare_Time]
 title = Hoare Logics for Time Bounds

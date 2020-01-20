@@ -9,7 +9,22 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>16 Jan 2020 00:00:00 +0000</pubDate>
+    <pubDate>17 Jan 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Mersenne primes and the Lucas–Lehmer test</title>
+              <link>https://www.isa-afp.org/entries/Mersenne_Primes.html</link>
+       <guid>https://www.isa-afp.org/entries/Mersenne_Primes.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>17 Jan 2020 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This article provides formal proofs of basic properties of
+Mersenne numbers, i. e. numbers of the form
+2&lt;sup&gt;&lt;em&gt;n&lt;/em&gt;&lt;/sup&gt; - 1, and especially of
+Mersenne primes.&lt;/p&gt; &lt;p&gt;In particular, an efficient,
+verified, and executable version of the Lucas&amp;ndash;Lehmer test is
+developed. This test decides primality for Mersenne numbers in time
+polynomial in &lt;em&gt;n&lt;/em&gt;.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>Verified Approximation Algorithms</title>
               <link>https://www.isa-afp.org/entries/Approximation_Algorithms.html</link>
@@ -558,17 +573,6 @@ up when new operators are added to the language. In order for
 specifications to be composed in a clean way, the language should be
 invariant by stuttering (i.e., adding observation instants at which
 nothing happens). The proof of this invariance is also given.</description>
-    </item>
-    <item>
-       <title>Szpilrajn Extension Theorem</title>
-              <link>https://www.isa-afp.org/entries/Szpilrajn.html</link>
-       <guid>https://www.isa-afp.org/entries/Szpilrajn.html</guid>
-       <dc:creator> Peter Zeller       </dc:creator>
-       <pubDate>27 Jul 2019 00:00:00 +0000</pubDate>
-       <description>
-We formalize the Szpilrajn extension theorem, also known as
-order-extension principal: Every strict partial order can be extended
-to a strict linear order.</description>
     </item>
   </channel>
 </rss>
