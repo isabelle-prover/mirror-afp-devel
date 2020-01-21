@@ -312,7 +312,7 @@ lemma divmod_field_poly_code [code]:
             in (poly_of_list (map ((*) ilc) q), poly_of_list (rev r)))"
   unfolding divmod_field_poly_def by (rule pdivmod_via_divmod_list)
 
-definition normalise_decomp_poly :: "'a::field poly \<Rightarrow> 'a poly \<Rightarrow> nat \<Rightarrow> 'a poly \<times> 'a poly list" 
+definition normalise_decomp_poly :: "'a::field_gcd poly \<Rightarrow> 'a poly \<Rightarrow> nat \<Rightarrow> 'a poly \<times> 'a poly list" 
   where [simp]: "normalise_decomp_poly (p :: _ poly) q n = normalise_decomp p q n"
 
 lemma normalise_decomp_poly_code [code]:
@@ -350,7 +350,7 @@ lemma const_polyI: "degree p = 0 \<Longrightarrow> [:coeff p 0:] = p"
   by (elim degree_eq_zeroE) simp_all
   
 lemma snd_poly_pfd_simple:
-  "map (map (\<lambda>c. [:c :: 'a :: {field,factorial_ring_gcd,normalization_euclidean_semiring}:])) (snd (poly_pfd_simple x cs)) = 
+  "map (map (\<lambda>c. [:c :: 'a :: field_gcd:])) (snd (poly_pfd_simple x cs)) = 
       (snd (partial_fraction_decomposition x (map (\<lambda>(c,n). ([:1,-c:],n)) cs)))"
 proof -
   have "snd (poly_pfd_simple x cs) = map (map (\<lambda>p. coeff p 0))

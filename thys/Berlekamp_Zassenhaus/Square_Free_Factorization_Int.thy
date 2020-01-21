@@ -91,7 +91,7 @@ lemma yun_wrel_minus: assumes "yun_wrel F c f" "yun_wrel G c g"
   using assms unfolding yun_wrel_def by (auto simp: smult_diff_right hom_distribs)
 
 lemma gcd_smult_left: assumes "c \<noteq> 0"
-  shows "gcd (smult c f) g = gcd f (g :: 'b :: {field, factorial_ring_gcd} poly)"
+  shows "gcd (smult c f) g = gcd f (g :: 'b :: {field_gcd} poly)"
 proof -
   from assms have "normalize c = 1"
     by (meson dvd_field_iff is_unit_normalize)
@@ -99,7 +99,7 @@ proof -
     by (metis (no_types) Polynomial.normalize_smult gcd.commute gcd.left_commute gcd_left_idem gcd_self smult_1_left)
 qed
 
-lemma gcd_smult_right: "c \<noteq> 0 \<Longrightarrow> gcd f (smult c g) = gcd f (g :: 'b :: {field, factorial_ring_gcd} poly)"
+lemma gcd_smult_right: "c \<noteq> 0 \<Longrightarrow> gcd f (smult c g) = gcd f (g :: 'b :: {field_gcd} poly)"
   using gcd_smult_left[of c g f] by (simp add: gcd.commute)
 
 lemma gcd_rat_to_gcd_int: "gcd (of_int_poly f :: rat poly) (of_int_poly g) = 

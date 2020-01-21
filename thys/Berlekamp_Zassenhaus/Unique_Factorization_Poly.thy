@@ -46,6 +46,18 @@ instance
   by (standard, simp_all add: gcd_fract_def lcm_fract_def Gcd_fract_def Lcm_fract_def)
 
 end
+(*field + unique_euclidean_ring + euclidean_ring_gcd + normalization_semidom_multiplicative*)
+
+instantiation fract :: (idom) unique_euclidean_ring
+begin
+
+definition [simp]: "division_segment_fract (x :: 'a fract) = (1 :: 'a fract)"
+
+instance by standard (auto split: if_splits)
+end
+
+instance fract :: (idom) field_gcd by standard auto
+
 
 definition divides_ff :: "'a::idom fract \<Rightarrow> 'a fract \<Rightarrow> bool"
   where "divides_ff x y \<equiv> \<exists> r. y = x * to_fract r"

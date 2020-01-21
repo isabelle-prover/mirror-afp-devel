@@ -80,7 +80,7 @@ proof (cases "n = 0 \<or> d = 0")
 qed (auto simp: inverse_irred_power_poly_def)
 
 lemma solve_rat_fps_aux:
-  fixes p :: "'a :: {field_char_0,factorial_ring_gcd,normalization_euclidean_semiring} poly" and cs :: "('a \<times> nat) list"
+  fixes p :: "'a :: {field_char_0,field_gcd} poly" and cs :: "('a \<times> nat) list"
   assumes distinct: "distinct (map fst cs)"
   assumes azs: "(a, zs) = poly_pfd_simple p cs"
   assumes nz: "0 \<notin> fst ` set cs"
@@ -166,7 +166,7 @@ qed
 
 
 definition solve_factored_ratfps ::
-    "('a :: {field_char_0,factorial_ring_gcd,normalization_euclidean_semiring}) poly \<Rightarrow> ('a \<times> nat) list \<Rightarrow> 'a poly \<times> ('a poly \<times> 'a) list" where
+    "('a :: {field_char_0,field_gcd}) poly \<Rightarrow> ('a \<times> nat) list \<Rightarrow> 'a poly \<times> ('a poly \<times> 'a) list" where
   "solve_factored_ratfps p cs = (let n = length cs in case poly_pfd_simple p cs of (a, zs) \<Rightarrow>
       (a, zip_with (\<lambda>zs (c,n). ((\<Sum>(z,j) \<leftarrow> zip zs [0..<Suc n].
               inverse_irred_power_poly z (n + 1 - j)), c)) zs cs))"
@@ -189,7 +189,7 @@ definition interp_ratfps_solution where
   "interp_ratfps_solution = (\<lambda>(p,cs) n. coeff p n + (\<Sum>(q,c)\<leftarrow>cs. poly q (of_nat n) * c ^ n))"
 
 lemma solve_factored_ratfps:
-  fixes p :: "'a :: {field_char_0,factorial_ring_gcd,normalization_euclidean_semiring} poly" and cs :: "('a \<times> nat) list"
+  fixes p :: "'a :: {field_char_0,field_gcd} poly" and cs :: "('a \<times> nat) list"
   assumes distinct: "distinct (map fst cs)"
   assumes nz: "0 \<notin> fst ` set cs"
   shows "fps_of_poly p / fps_of_poly (\<Prod>(c,n)\<leftarrow>cs. [:1,-c:]^Suc n) =

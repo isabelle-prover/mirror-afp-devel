@@ -19,7 +19,8 @@ declare  [[code abort: dummy_Gcd]]
 lemma dummy_Gcd_Lcm: "Gcd x = dummy_Gcd x" "Lcm x = dummy_Lcm x" 
   unfolding dummy_Gcd_def dummy_Lcm_def by auto
 
-lemmas dummy_Gcd_Lcm_poly [code] = dummy_Gcd_Lcm [where ?'a = "'a :: factorial_ring_gcd poly"] 
+lemmas dummy_Gcd_Lcm_poly [code] = dummy_Gcd_Lcm
+  [where ?'a = "'a :: {factorial_ring_gcd,semiring_gcd_mult_normalize} poly"] 
 lemmas dummy_Gcd_Lcm_int [code] = dummy_Gcd_Lcm [where ?'a = int] 
 lemmas dummy_Gcd_Lcm_nat [code] = dummy_Gcd_Lcm [where ?'a = nat] 
 

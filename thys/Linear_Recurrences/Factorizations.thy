@@ -150,7 +150,7 @@ proof (induction A rule: infinite_finite_induct)
 qed auto
 
 lemma is_factorization_of_order:
-  fixes p :: "'a :: {field,factorial_ring_gcd} poly"
+  fixes p :: "'a :: field_gcd poly"
   assumes "p \<noteq> 0"
   assumes "is_factorization_of (a, fctrs) p"
   assumes "(c, n) \<in> set fctrs"

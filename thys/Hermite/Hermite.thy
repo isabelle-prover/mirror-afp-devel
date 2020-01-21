@@ -262,7 +262,7 @@ proof
     with A normalize_eq_0_iff[of a] normalize_eq_0_iff[of b] have "a = 0" "b = 0" by auto
     thus ?thesis by (auto intro!: exI[of _ 1] simp: Units_def)
   qed
-qed (auto simp: normalize_Units normalize_mult)
+qed (auto simp: normalize_Units Units_def)
 
 end
 
@@ -347,10 +347,15 @@ lemma ass_function_0:
 lemma ass_function_0':
   assumes r: "ass_function ass"
   shows "(ass x div x = 0) = (x=0)"
-  using assms unfolding ass_function_def pairwise_def
-  by (metis ass_function_0 associatedD2 div_self div_by_0 dvd_normalize_div
-            normalize_0 normalize_1 one_neq_zero r)
-
+proof safe
+  assume *: "ass x div x = 0"
+  from r have **: "normalize (ass x) = normalize x"
+    by (simp add: ass_function_def)
+  from associatedD2[OF this] have "x dvd ass x"
+    by simp
+  with * ** show "x = 0"
+    by (auto simp: dvd_div_eq_0_iff)
+qed auto
 
 lemma res_function_Complete_set_residues:
   assumes f: "res_function f"

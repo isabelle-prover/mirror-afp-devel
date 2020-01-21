@@ -77,7 +77,7 @@ definition separable where
   "separable f = coprime f (pderiv f)" 
 
 lemma separable_imp_square_free:
-  assumes sep: "separable (f :: 'a::{field, factorial_ring_gcd} poly)" 
+  assumes sep: "separable (f :: 'a::{field, factorial_ring_gcd, semiring_gcd_mult_normalize} poly)" 
   shows "square_free f" 
 proof (rule ccontr)
   note sep = sep[unfolded separable_def]
@@ -116,7 +116,7 @@ proof (intro conjI allI)
 qed (insert f, auto simp: square_free_def)
 
 lemma square_free_prodD: 
-  fixes fs :: "'a :: {field,euclidean_ring_gcd} poly set"
+  fixes fs :: "'a :: {field,euclidean_ring_gcd,semiring_gcd_mult_normalize} poly set"
   assumes sf: "square_free (\<Prod> fs)"
   and fin: "finite fs"
   and f: "f \<in> fs"
@@ -155,7 +155,7 @@ proof (rule square_freeI)
 qed (insert assms, auto simp: rsquarefree_def)
    
 lemma square_free_separable_main:
-  fixes f :: "'a :: {field,factorial_ring_gcd} poly"
+  fixes f :: "'a :: {field,factorial_ring_gcd,semiring_gcd_mult_normalize} poly"
   assumes "square_free f"
   and sep: "\<not> separable f"
   shows "\<exists> g k. f = g * k \<and> degree g \<noteq> 0 \<and> pderiv g = 0"
@@ -197,7 +197,7 @@ proof -
   with fgk g0 show ?thesis by auto
 qed
 
-lemma square_free_imp_separable: fixes f :: "'a :: {field_char_0,factorial_ring_gcd} poly"
+lemma square_free_imp_separable: fixes f :: "'a :: {field_char_0,factorial_ring_gcd,semiring_gcd_mult_normalize} poly"
   assumes "square_free f"
   shows "separable f"
 proof (rule ccontr)
@@ -210,7 +210,7 @@ qed
    
 
 lemma square_free_iff_separable: 
-  "square_free (f :: 'a :: {field_char_0,factorial_ring_gcd} poly) = separable f"
+  "square_free (f :: 'a :: {field_char_0,factorial_ring_gcd,semiring_gcd_mult_normalize} poly) = separable f"
   using separable_imp_square_free[of f] square_free_imp_separable[of f] by auto
 
 context
@@ -306,7 +306,7 @@ lemma yun_factorization_0[simp]: "yun_factorization 0 = (0,[])"
 end
 
 locale monic_factorization =
-  fixes as :: "('a :: {field_char_0,euclidean_ring_gcd} poly \<times> nat) set"
+  fixes as :: "('a :: {field_char_0,euclidean_ring_gcd,semiring_gcd_mult_normalize} poly \<times> nat) set"
   and p :: "'a poly"
   assumes p: "p = prod (\<lambda> (a,i). a ^ Suc i) as"
   and fin: "finite as"
@@ -358,7 +358,7 @@ lemma nonzero_gen: assumes "bs \<subseteq> as"
 lemma monic_Prod: "monic ((\<Prod>(a, i)\<in>as. a ^ i))"
   by (rule monic_prod, insert as_monic, auto intro: monic_power)
 
-lemma coprime_generic: 
+lemma coprime_generic:
   assumes bs: "bs \<subseteq> as"
   and f: "\<And> a i. (a,i) \<in> bs \<Longrightarrow> f i > 0"
   shows "coprime (\<Prod>(a, i) \<in> bs. a)
@@ -873,18 +873,20 @@ proof -
   qed
 qed
 
-lemma square_free_monic_poly: assumes "monic (p :: 'a :: {field_char_0, euclidean_ring_gcd} poly)"
+lemma square_free_monic_poly:
+  assumes "monic (p :: 'a :: {field_char_0, euclidean_ring_gcd,semiring_gcd_mult_normalize} poly)"
   shows "(poly (yun_gcd.square_free_monic_poly gcd p) x = 0) = (poly p x = 0)"
 proof -
   from monic_factorization[OF assms] obtain as where "monic_factorization as p" ..
   from monic_factorization.square_free_monic_poly[OF this] show ?thesis .
 qed
 
-lemma yun_factorization_induct: assumes base: "\<And> bn cn. bn = 1 \<Longrightarrow> P bn cn"
+lemma yun_factorization_induct: 
+  assumes base: "\<And> bn cn. bn = 1 \<Longrightarrow> P bn cn"
   and step: "\<And> bn cn. bn \<noteq> 1 \<Longrightarrow> P (bn div (gcd bn (cn - pderiv bn))) 
     ((cn - pderiv bn) div (gcd bn (cn - pderiv bn))) \<Longrightarrow> P bn cn"
   and id: "bn = p div gcd p (pderiv p)" "cn = pderiv p div gcd p (pderiv p)"
-  and monic: "monic (p :: 'a :: {field_char_0,euclidean_ring_gcd} poly)"
+  and monic: "monic (p :: 'a :: {field_char_0,euclidean_ring_gcd,semiring_gcd_mult_normalize} poly)"
   shows "P bn cn"
 proof -
   from monic_factorization[OF monic] obtain as where "monic_factorization as p" ..
@@ -908,7 +910,8 @@ next
 qed  
 
 
-lemma yun_monic_factorization: fixes p :: "'a :: {field_char_0,euclidean_ring_gcd} poly" 
+lemma yun_monic_factorization:
+  fixes p :: "'a :: {field_char_0,euclidean_ring_gcd,semiring_gcd_mult_normalize} poly" 
   assumes res: "yun_gcd.yun_monic_factorization gcd p = bs"
   and monic: "monic p"
   shows "square_free_factorization p (1,bs)" "(b,i) \<in> set bs \<Longrightarrow> monic b" "distinct (map snd bs)" 
@@ -966,7 +969,7 @@ lemma prod_list_pow_suc: "(\<Prod>x\<leftarrow>bs. (x :: 'a :: comm_monoid_mult)
 declare irreducible_linear_field_poly[intro!]
 
 context 
-  assumes "SORT_CONSTRAINT('a :: {field, factorial_ring_gcd})" 
+  assumes "SORT_CONSTRAINT('a :: {field, factorial_ring_gcd,semiring_gcd_mult_normalize})" 
 begin
 lemma square_free_factorization_order_root_mem: 
   assumes sff: "square_free_factorization p (c,bs)"
@@ -1358,7 +1361,8 @@ end
 subsection \<open>Yun factorization and homomorphisms\<close>
 
 locale field_hom_0' = field_hom hom
-  for hom :: "'a :: {field_char_0,euclidean_ring_gcd} \<Rightarrow> 'b :: {field_char_0,euclidean_ring_gcd}"
+  for hom :: "'a :: {field_char_0,field_gcd} \<Rightarrow>
+              'b :: {field_char_0,field_gcd}"
 begin
   sublocale field_hom' ..
 end
@@ -1394,7 +1398,8 @@ proof -
 qed
 
 lemma square_free_square_free_factorization: 
-  "square_free (p :: 'a :: {field,factorial_ring_gcd} poly) \<Longrightarrow> degree p \<noteq> 0 \<Longrightarrow> square_free_factorization p (1,[(p,0)])"
+  "square_free (p :: 'a :: {field,factorial_ring_gcd,semiring_gcd_mult_normalize} poly) \<Longrightarrow> 
+     degree p \<noteq> 0 \<Longrightarrow> square_free_factorization p (1,[(p,0)])"
   by (intro square_free_factorizationI', auto)
 
 lemma constant_square_free_factorization: 

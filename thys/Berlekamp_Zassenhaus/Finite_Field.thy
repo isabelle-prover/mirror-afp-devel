@@ -320,6 +320,19 @@ definition Lcm_mod_ring :: "'a mod_ring set \<Rightarrow> 'a mod_ring" where "Lc
 instance by (intro_classes, auto simp: gcd_mod_ring_def lcm_mod_ring_def Gcd_mod_ring_def Lcm_mod_ring_def)
 end
 
+instantiation mod_ring :: (prime_card) unique_euclidean_ring
+begin
+
+definition [simp]: "division_segment_mod_ring (x :: 'a mod_ring) = (1 :: 'a mod_ring)"
+
+instance by intro_classes (auto simp: euclidean_size_mod_ring_def split: if_splits)
+
+end
+
+instance mod_ring :: (prime_card) field_gcd
+  by intro_classes auto
+
+
 lemma surj_of_nat_mod_ring: "\<exists> i. i < CARD('a :: prime_card) \<and> (x :: 'a mod_ring) = of_nat i" 
   by (rule exI[of _ "nat (to_int_mod_ring x)"], unfold of_nat_of_int_mod_ring o_def,
   subst nat_0_le, transfer, simp, simp, transfer, auto) 

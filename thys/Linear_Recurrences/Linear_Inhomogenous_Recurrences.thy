@@ -166,7 +166,7 @@ lemma polyexp_fps_Cons:
      polyexp_fps xs"
   by (simp add: polyexp_fps_def)
 
-definition polyexp_ratfps :: "('a :: {field,factorial_ring_gcd}) polyexp \<Rightarrow> 'a ratfps" where
+definition polyexp_ratfps :: "('a :: field_gcd) polyexp \<Rightarrow> 'a ratfps" where
   "polyexp_ratfps xs = 
      (\<Sum>(a,k,b)\<leftarrow>xs. ratfps_of_poly (Polynomial.smult a (fps_monom_poly b k)) /
                        ratfps_of_poly ([:1, -b:] ^ (k + 1)))"
@@ -206,7 +206,7 @@ lemma polyexp_ratfps [simp]: "fps_of_ratfps (polyexp_ratfps xs) = polyexp_fps xs
 
 
 definition lir_fps :: 
-    "'a :: {field,factorial_ring_gcd} list \<Rightarrow> 'a list \<Rightarrow> 'a polyexp \<Rightarrow> ('a ratfps) option" where
+    "'a :: field_gcd list \<Rightarrow> 'a list \<Rightarrow> 'a polyexp \<Rightarrow> ('a ratfps) option" where
   "lir_fps cs fs g = (if cs = [] \<or> length fs < length cs - 1 then None else
      let m = length fs + 1 - length cs;
          p = lir_fps_numerator m cs (\<lambda>n. fs ! n) (eval_polyexp g);
@@ -214,7 +214,7 @@ definition lir_fps ::
      in  Some ((ratfps_of_poly p + polyexp_ratfps g) * inverse (ratfps_of_poly q)))"
 
 lemma lir_fps_correct:
-  fixes   f :: "nat \<Rightarrow> 'a :: {field,factorial_ring_gcd}"
+  fixes   f :: "nat \<Rightarrow> 'a :: field_gcd"
   assumes "linear_inhomogenous_recurrence f (eval_polyexp g) cs fs"
   shows   "map_option fps_of_ratfps (lir_fps cs fs g) = Some (Abs_fps f)"
 proof -

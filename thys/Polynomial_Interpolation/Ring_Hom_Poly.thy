@@ -368,7 +368,7 @@ lemma map_poly_mod[hom_distribs]: "map_poly hom (p mod q) = map_poly hom p mod m
 end
 
 locale field_hom' = field_hom hom
-  for hom :: "'a :: {field,euclidean_ring_gcd} \<Rightarrow> 'b :: {field,euclidean_ring_gcd}"
+  for hom :: "'a :: {field_gcd} \<Rightarrow> 'b :: {field_gcd}"
 begin
 
 lemma map_poly_normalize[hom_distribs]: "map_poly hom (normalize p) = normalize (map_poly hom p)"

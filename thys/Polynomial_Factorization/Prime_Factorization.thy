@@ -630,6 +630,7 @@ lemma prod_mset_multiset_prime_factorization_nat [simp]:
 
 (* TODO Move *)
 lemma prime_factorization_unique'':
+  fixes A :: "'a :: {factorial_semiring_multiplicative} multiset"
   assumes "\<And>p. p \<in># A \<Longrightarrow> prime p"
   assumes "prod_mset A = normalize x"
   shows   "prime_factorization x = A"

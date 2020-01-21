@@ -227,7 +227,7 @@ lemma order_power: "p \<noteq> 0 \<Longrightarrow> order c (p ^ n) = n * order c
   by (induction n) (auto simp: order_mult)
 
 lemma same_root_imp_not_coprime:
-  assumes "poly p x = 0" and "poly q (x :: 'a :: {factorial_ring_gcd}) = 0"
+  assumes "poly p x = 0" and "poly q (x :: 'a :: {factorial_ring_gcd,semiring_gcd_mult_normalize}) = 0"
   shows   "\<not>coprime p q"
 proof
   assume "coprime p q"

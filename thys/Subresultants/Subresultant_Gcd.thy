@@ -26,7 +26,7 @@ definition gcd_impl where
 subsection \<open>Soundness Proof for @{term "gcd_impl = gcd"}\<close>
 
 locale subresultant_prs_gcd = subresultant_prs_locale2 F n \<delta> f k \<beta> G1 G2 for
-       F :: "nat \<Rightarrow> 'a :: factorial_ring_gcd fract poly"
+       F :: "nat \<Rightarrow> 'a ::  {factorial_ring_gcd,semiring_gcd_mult_normalize} fract poly"
     and n :: "nat \<Rightarrow> nat"
     and \<delta> :: "nat \<Rightarrow> nat"
     and f :: "nat \<Rightarrow> 'a fract"

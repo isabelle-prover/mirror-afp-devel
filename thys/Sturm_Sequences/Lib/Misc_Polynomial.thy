@@ -82,7 +82,7 @@ qed
 
 (* TODO: make this less ugly *)
 lemma poly_div_gcd_squarefree_aux:
-  assumes "pderiv (p::('a::{field_char_0,euclidean_ring_gcd}) poly) \<noteq> 0"
+  assumes "pderiv (p::('a::{field_char_0,field_gcd}) poly) \<noteq> 0"
   defines "d \<equiv> gcd p (pderiv p)"
   shows "coprime (p div d) (pderiv (p div d))" and
         "\<And>x. poly (p div d) x = 0 \<longleftrightarrow> poly p x = 0"
@@ -188,7 +188,7 @@ text \<open>
   a squarefree polynomial with the same roots.
 \<close>
 lemma poly_div_gcd_squarefree:
-  assumes "(p :: ('a::{field_char_0,euclidean_ring_gcd}) poly) \<noteq> 0"
+  assumes "(p :: ('a::{field_char_0,field_gcd}) poly) \<noteq> 0"
   defines "d \<equiv> gcd p (pderiv p)"
   shows "coprime (p div d) (pderiv (p div d))" (is ?A) and
         "\<And>x. poly (p div d) x = 0 \<longleftrightarrow> poly p x = 0" (is "\<And>x. ?B x")

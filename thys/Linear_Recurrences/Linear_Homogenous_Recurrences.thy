@@ -268,7 +268,7 @@ definition
      in  ratfps_of_poly p / ratfps_of_poly q)"
 
 lemma lhr_fps_correct:
-  fixes   f :: "nat \<Rightarrow> 'a :: {field_char_0,factorial_ring_gcd}"
+  fixes   f :: "nat \<Rightarrow> 'a :: {field_char_0,field_gcd}"
   assumes "linear_homogenous_recurrence f cs fs"
   shows   "fps_of_ratfps (lhr_fps cs fs) = Abs_fps f"
 proof -

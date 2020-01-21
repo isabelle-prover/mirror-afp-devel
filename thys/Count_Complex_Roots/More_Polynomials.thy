@@ -234,7 +234,7 @@ next
 qed
 
 lemma rsquarefree_gcd_pderiv:
-  fixes p::"'a::{factorial_ring_gcd,semiring_char_0} poly"
+  fixes p::"'a::{factorial_ring_gcd,semiring_gcd_mult_normalize,semiring_char_0} poly"
   assumes "p\<noteq>0"
   shows "rsquarefree (p div (gcd p (pderiv p)))"
 proof (cases "pderiv p = 0")
@@ -276,7 +276,7 @@ next
 qed
 
 lemma poly_gcd_pderiv_iff:
-  fixes p::"'a::{semiring_char_0,factorial_ring_gcd} poly"
+  fixes p::"'a::{semiring_char_0,factorial_ring_gcd,semiring_gcd_mult_normalize} poly"
   shows "poly (p div (gcd p (pderiv p))) x =0 \<longleftrightarrow> poly p x=0"
 proof (cases "pderiv p=0")
   case True

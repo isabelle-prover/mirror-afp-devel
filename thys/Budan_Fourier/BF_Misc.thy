@@ -69,7 +69,7 @@ proof (rule poly_eqI)
 qed
 
 lemma lead_coeff_gcd_field:
-  fixes p q::"'a::{field,semidom_divide_unit_factor,factorial_ring_gcd} poly"
+  fixes p q::"'a::field_gcd poly"
   assumes "p\<noteq>0 \<or> q\<noteq>0"
   shows "lead_coeff (gcd p q) = 1"
   using assms by (metis gcd.normalize_idem gcd_eq_0_iff lead_coeff_normalize_field)
@@ -363,7 +363,7 @@ lemma proots_within_times:
   unfolding proots_within_def by auto
 
 lemma proots_within_gcd:
-  fixes s::"'a::factorial_ring_gcd set"
+  fixes s::"'a::{factorial_ring_gcd,semiring_gcd_mult_normalize} set"
   shows "proots_within (gcd p q) s= proots_within p s \<inter> proots_within q s"
   unfolding proots_within_def 
   by (auto simp add: poly_eq_0_iff_dvd) 

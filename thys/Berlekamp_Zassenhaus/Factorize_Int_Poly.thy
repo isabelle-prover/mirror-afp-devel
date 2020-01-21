@@ -224,7 +224,7 @@ proof (intro allI conjI impI notI)
   from sf[OF _ this] 0 nzq show False by simp
 qed
 
-lemma gcd_reflect_poly: fixes f :: "'a :: factorial_ring_gcd poly"
+lemma gcd_reflect_poly: fixes f :: "'a :: {factorial_ring_gcd, semiring_gcd_mult_normalize} poly"
   assumes nz: "coeff f 0 \<noteq> 0" "coeff g 0 \<noteq> 0"
   shows "gcd (reflect_poly f) (reflect_poly g) = normalize (reflect_poly (gcd f g))"
 proof (rule sym, rule gcdI)

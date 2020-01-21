@@ -146,7 +146,7 @@ proof -
 qed
 
 lemma gcd_coprime_poly:
-  fixes p q::"'a::factorial_ring_gcd poly"
+  fixes p q::"'a::{factorial_ring_gcd,semiring_gcd_mult_normalize} poly"
   assumes nz: "p \<noteq> 0 \<or> q \<noteq> 0" and p': "p = p' * gcd p q" and
     q': "q = q' * gcd p q"
   shows "coprime p' q'" 

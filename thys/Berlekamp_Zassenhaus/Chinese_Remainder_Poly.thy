@@ -16,28 +16,28 @@ imports
 begin
 
 lemma cong_add_poly:
-  "[(a::'b::{factorial_ring_gcd,field} poly) = b] (mod m) \<Longrightarrow> [c = d] (mod m) \<Longrightarrow> [a + c = b + d] (mod m)"
+  "[(a::'b::{field_gcd} poly) = b] (mod m) \<Longrightarrow> [c = d] (mod m) \<Longrightarrow> [a + c = b + d] (mod m)"
   by (fact cong_add)
 
 lemma cong_mult_poly:
-  "[(a::'b::{field, factorial_ring_gcd} poly) = b] (mod m) \<Longrightarrow> [c = d] (mod m) \<Longrightarrow> [a * c = b * d] (mod m)"
+  "[(a::'b::{field_gcd} poly) = b] (mod m) \<Longrightarrow> [c = d] (mod m) \<Longrightarrow> [a * c = b * d] (mod m)"
   by (fact cong_mult)
 
-lemma cong_mult_self_poly: "[(a::'b::{factorial_ring_gcd,field} poly) * m = 0] (mod m)"
+lemma cong_mult_self_poly: "[(a::'b::{field_gcd} poly) * m = 0] (mod m)"
   by (fact cong_mult_self_right)
 
-lemma cong_scalar2_poly: "[(a::'b::{field, factorial_ring_gcd} poly)= b] (mod m) \<Longrightarrow> [k * a = k * b] (mod m)"
+lemma cong_scalar2_poly: "[(a::'b::{field_gcd} poly)= b] (mod m) \<Longrightarrow> [k * a = k * b] (mod m)"
   by (fact cong_scalar_left)
 
 lemma cong_sum_poly:
-    "(\<And>x. x \<in> A \<Longrightarrow> [((f x)::'b::{factorial_ring_gcd,field} poly) = g x] (mod m)) \<Longrightarrow>
+    "(\<And>x. x \<in> A \<Longrightarrow> [((f x)::'b::{field_gcd} poly) = g x] (mod m)) \<Longrightarrow>
       [(\<Sum>x\<in>A. f x) = (\<Sum>x\<in>A. g x)] (mod m)"
   by (rule cong_sum)
 
-lemma cong_iff_lin_poly: "([(a::'b::{factorial_ring_gcd,field} poly) = b] (mod m)) = (\<exists>k. b = a + m * k)"
+lemma cong_iff_lin_poly: "([(a::'b::{field_gcd} poly) = b] (mod m)) = (\<exists>k. b = a + m * k)"
   using cong_diff_iff_cong_0 [of b a m] by (auto simp add: cong_0_iff dvd_def algebra_simps dest: cong_sym)
 
-lemma cong_solve_poly: "(a::'b::{normalization_euclidean_semiring, factorial_ring_gcd,field} poly) \<noteq> 0 \<Longrightarrow> \<exists>x. [a * x = gcd a n] (mod n)"
+lemma cong_solve_poly: "(a::'b::{field_gcd} poly) \<noteq> 0 \<Longrightarrow> \<exists>x. [a * x = gcd a n] (mod n)"
 proof (cases "n = 0")
   case True
   note n0=True
@@ -63,7 +63,7 @@ qed
 
 
 lemma cong_solve_coprime_poly: 
-assumes coprime_an:"coprime (a::'b::{normalization_euclidean_semiring, factorial_ring_gcd,field} poly) n"
+assumes coprime_an:"coprime (a::'b::{field_gcd} poly) n"
 shows "\<exists>x. [a * x = 1] (mod n)"
 proof (cases "a = 0")
   case True
@@ -78,12 +78,12 @@ next
 qed
   
 lemma cong_dvd_modulus_poly:
-  "[x = y] (mod m) \<Longrightarrow> n dvd m \<Longrightarrow> [x = y] (mod n)" for x y :: "'b::{factorial_ring_gcd,field} poly"
+  "[x = y] (mod m) \<Longrightarrow> n dvd m \<Longrightarrow> [x = y] (mod n)" for x y :: "'b::{field_gcd} poly"
   by (auto simp add: cong_iff_lin_poly elim!: dvdE)
 
 lemma chinese_remainder_aux_poly:
   fixes A :: "'a set"
-    and m :: "'a \<Rightarrow> 'b::{normalization_euclidean_semiring,factorial_ring_gcd,field} poly"
+    and m :: "'a \<Rightarrow> 'b::{field_gcd} poly"
   assumes fin: "finite A"
     and cop: "\<forall>i \<in> A. (\<forall>j \<in> A. i \<noteq> j \<longrightarrow> coprime (m i) (m j))"
   shows "\<exists>b. (\<forall>i \<in> A. [b i = 1] (mod m i) \<and> [b i = 0] (mod (\<Prod>j \<in> A - {i}. m j)))"
@@ -108,7 +108,7 @@ qed
 (*The Chinese Remainder Theorem for polynomials: *)
 lemma chinese_remainder_poly:
   fixes A :: "'a set"
-    and m :: "'a \<Rightarrow> 'b::{normalization_euclidean_semiring,factorial_ring_gcd,field} poly"
+    and m :: "'a \<Rightarrow> 'b::{field_gcd} poly"
     and u :: "'a \<Rightarrow> 'b poly"
   assumes fin: "finite A"
     and cop: "\<forall>i\<in>A. (\<forall>j\<in>A. i \<noteq> j \<longrightarrow> coprime (m i) (m j))"
@@ -157,27 +157,27 @@ qed
 (*********************** Now we try to prove the uniqueness **********************)
 
 lemma cong_trans_poly:
-    "[(a::'b::{factorial_ring_gcd,field} poly) = b] (mod m) \<Longrightarrow> [b = c] (mod m) \<Longrightarrow> [a = c] (mod m)"
+    "[(a::'b::{field_gcd} poly) = b] (mod m) \<Longrightarrow> [b = c] (mod m) \<Longrightarrow> [a = c] (mod m)"
   by (fact cong_trans)
 
-lemma cong_mod_poly: "(n::'b::{factorial_ring_gcd,field} poly) ~= 0 \<Longrightarrow> [a mod n = a] (mod n)"
+lemma cong_mod_poly: "(n::'b::{field_gcd} poly) ~= 0 \<Longrightarrow> [a mod n = a] (mod n)"
   by auto
 
-lemma cong_sym_poly: "[(a::'b::{factorial_ring_gcd,field} poly) = b] (mod m) \<Longrightarrow> [b = a] (mod m)"
+lemma cong_sym_poly: "[(a::'b::{field_gcd} poly) = b] (mod m) \<Longrightarrow> [b = a] (mod m)"
   by (fact cong_sym)
 
-lemma cong_1_poly: "[(a::'b::{factorial_ring_gcd,field} poly) = b] (mod 1)"
+lemma cong_1_poly: "[(a::'b::{field_gcd} poly) = b] (mod 1)"
   by (fact cong_1)
 
 lemma coprime_cong_mult_poly:
-  assumes "[(a::'b::{factorial_ring_gcd,field} poly) = b] (mod m)" and "[a = b] (mod n)" and "coprime m n"
+  assumes "[(a::'b::{field_gcd} poly) = b] (mod m)" and "[a = b] (mod n)" and "coprime m n"
   shows "[a = b] (mod m * n)"
   using divides_mult assms
   by (metis (no_types, hide_lams) cong_dvd_modulus_poly cong_iff_lin_poly dvd_mult2 dvd_refl minus_add_cancel mult.right_neutral) 
 
 lemma coprime_cong_prod_poly:
     "(\<forall>i\<in>A. (\<forall>j\<in>A. i \<noteq> j \<longrightarrow> coprime (m i) (m j))) \<Longrightarrow>
-      (\<forall>i\<in>A. [(x::'b::{factorial_ring_gcd,field} poly) = y] (mod m i)) \<Longrightarrow>
+      (\<forall>i\<in>A. [(x::'b::{field_gcd} poly) = y] (mod m i)) \<Longrightarrow>
          [x = y] (mod (\<Prod>i\<in>A. m i))"
   apply (induct A rule: infinite_finite_induct)
     apply auto
@@ -185,13 +185,13 @@ lemma coprime_cong_prod_poly:
   done
 
 lemma cong_less_modulus_unique_poly:
-    "[(x::'b::{factorial_ring_gcd,field} poly) = y] (mod m) \<Longrightarrow> degree x < degree m \<Longrightarrow> degree y < degree m \<Longrightarrow> x = y"
+    "[(x::'b::{field_gcd} poly) = y] (mod m) \<Longrightarrow> degree x < degree m \<Longrightarrow> degree y < degree m \<Longrightarrow> x = y"
     by (simp add: cong_def mod_poly_less)
 
 
 lemma chinese_remainder_unique_poly:
   fixes A :: "'a set"
-    and m :: "'a \<Rightarrow> 'b::{normalization_euclidean_semiring,factorial_ring_gcd,field} poly"
+    and m :: "'a \<Rightarrow> 'b::{field_gcd} poly"
     and u :: "'a \<Rightarrow> 'b poly"
   assumes nz: "\<forall>i\<in>A. (m i) \<noteq> 0"
     and cop: "\<forall>i\<in>A. (\<forall>j\<in>A. i \<noteq> j \<longrightarrow> coprime (m i) (m j))"

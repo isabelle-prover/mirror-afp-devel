@@ -192,7 +192,7 @@ lemma unit_factor_field [simp]:
   by (simp split: if_splits)
 
 lemma coprime_linear_poly: 
-  fixes c :: "'a :: {field,factorial_ring_gcd}"
+  fixes c :: "'a :: field_gcd"
   assumes "c \<noteq> c'"
   shows   "coprime [:c,1:] [:c',1:]"
 proof -
@@ -207,7 +207,7 @@ proof -
 qed
 
 lemma coprime_linear_poly': 
-  fixes c :: "'a :: {field,factorial_ring_gcd,normalization_euclidean_semiring}"
+  fixes c :: "'a :: field_gcd"
   assumes "c \<noteq> c'" "c \<noteq> 0" "c' \<noteq> 0"
   shows   "coprime [:1,c:] [:1,c':]"
 proof -

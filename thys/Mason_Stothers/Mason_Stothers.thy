@@ -148,7 +148,7 @@ text \<open>
   presentation~\cite{lemmermeyer05} of Snyder's proof of the Mason--Stothers theorem.
 \<close>
 lemma prime_power_dvd_pderiv:
-  fixes f p :: "'a :: {factorial_ring_gcd, field} poly"
+  fixes f p :: "'a :: field_gcd poly"
   assumes "prime_elem p"
   defines "n \<equiv> multiplicity p f - 1"
   shows   "p ^ n dvd pderiv f"
@@ -167,7 +167,7 @@ proof (cases "p dvd f \<and> f \<noteq> 0")
 qed (auto simp: n_def not_dvd_imp_multiplicity_0)
 
 lemma poly_div_radical_dvd_pderiv:
-  fixes p :: "'a :: {factorial_ring_gcd, field} poly"
+  fixes p :: "'a :: field_gcd poly"
   shows "p div radical p dvd pderiv p"
 proof (cases "pderiv p = 0")
   case False
@@ -202,7 +202,7 @@ proof -
 qed
 
 lemma Mason_Stothers_aux:
-  fixes A B C :: "'a :: {factorial_ring_gcd, field} poly"
+  fixes A B C :: "'a :: field_gcd poly"
   assumes nz: "A \<noteq> 0" "B \<noteq> 0" "C \<noteq> 0" and sum: "A + B + C = 0" and coprime: "Gcd {A, B, C} = 1" 
      and deg_ge: "degree A \<ge> degree (radical (A * B * C))"
    shows "pderiv A = 0" "pderiv B = 0" "pderiv C = 0"
@@ -300,7 +300,7 @@ proof -
 qed
 
 theorem Mason_Stothers:
-  fixes A B C :: "'a :: {factorial_ring_gcd, field} poly"
+  fixes A B C :: "'a :: field_gcd poly"
   assumes nz: "A \<noteq> 0" "B \<noteq> 0" "C \<noteq> 0" "\<exists>p\<in>{A,B,C}. pderiv p \<noteq> 0" 
       and sum: "A + B + C = 0" and coprime: "Gcd {A, B, C} = 1" 
     shows "Max {degree A, degree B, degree C} < degree (radical (A * B * C))"
@@ -321,7 +321,7 @@ text \<open>
   The result can be simplified a bit more in fields of characteristic 0:
 \<close>
 corollary Mason_Stothers_char_0:
-  fixes A B C :: "'a :: {factorial_ring_gcd, field_char_0} poly"
+  fixes A B C :: "'a :: {field_gcd, field_char_0} poly"
   assumes nz: "A \<noteq> 0" "B \<noteq> 0" "C \<noteq> 0" and deg: "\<exists>p\<in>{A,B,C}. degree p \<noteq> 0"
       and sum: "A + B + C = 0" and coprime: "Gcd {A, B, C} = 1" 
     shows "Max {degree A, degree B, degree C} < degree (radical (A * B * C))"
@@ -340,7 +340,7 @@ text \<open>
   $A$, $B$, and $C$ all being constant.
 \<close>
 corollary fermat_poly:
-  fixes A B C :: "'a :: {factorial_ring_gcd,field} poly"
+  fixes A B C :: "'a :: field_gcd poly"
   assumes sum: "A ^ n + B ^ n + C ^ n = 0" and cop: "Gcd {A, B, C} = 1"
   assumes nz:  "A \<noteq> 0" "B \<noteq> 0" "C \<noteq> 0"    and deg: "\<exists>p\<in>{A,B,C}. pderiv (p ^ n) \<noteq> 0"
   shows "n \<le> 2"
@@ -370,7 +370,7 @@ proof (rule ccontr)
 qed
 
 corollary fermat_poly_char_0:
-  fixes A B C :: "'a :: {factorial_ring_gcd,field_char_0} poly"
+  fixes A B C :: "'a :: {field_gcd,field_char_0} poly"
   assumes sum: "A ^ n + B ^ n + C ^ n = 0" and cop: "Gcd {A, B, C} = 1"
   assumes nz:  "A \<noteq> 0" "B \<noteq> 0" "C \<noteq> 0"    and deg: "\<exists>p\<in>{A,B,C}. degree p > 0"
   shows "n \<le> 2"

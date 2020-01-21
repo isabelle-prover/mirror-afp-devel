@@ -244,7 +244,7 @@ lemma unit_factor_field [simp]:
   by (cases "is_unit x") (auto simp: is_unit_unit_factor dvd_field_iff)
 
 lemma poly_gcd_monic: 
-  fixes p :: "'a :: {field,factorial_ring_gcd} poly"
+  fixes p :: "'a :: {field,factorial_ring_gcd,semiring_gcd_mult_normalize} poly"
   assumes "p \<noteq> 0 \<or> q \<noteq> 0"
   shows   "monic (gcd p q)"
 proof -
@@ -1396,6 +1396,8 @@ proof (induct "degree p" arbitrary: p rule: less_induct)
 qed
 
 lemma monic_irreducible_gcd: 
-  "monic (f::'a::{field,euclidean_ring_gcd} poly) \<Longrightarrow> irreducible f \<Longrightarrow> gcd f u \<in> {1,f}"
+  "monic (f::'a::{field,euclidean_ring_gcd,semiring_gcd_mult_normalize,
+                  normalization_euclidean_semiring_multiplicative} poly) \<Longrightarrow>
+   irreducible f \<Longrightarrow> gcd f u \<in> {1,f}"
   by (metis gcd_dvd1 irreducible_altdef insertCI is_unit_gcd_iff poly_dvd_antisym poly_gcd_monic)
 end

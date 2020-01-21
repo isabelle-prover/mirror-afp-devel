@@ -388,22 +388,22 @@ proof -
 qed
 
 lemma size_prime_factorization_eq_Suc_0_iff [simp]:
-  "size (prime_factorization n) = Suc 0 \<longleftrightarrow> prime_elem n"
+  fixes n :: "'a :: factorial_semiring_multiplicative"
+  shows "size (prime_factorization n) = Suc 0 \<longleftrightarrow> prime_elem n"
 proof
-  define u where "u = unit_factor n"
   assume size: "size (prime_factorization n) = Suc 0"
   hence [simp]: "n \<noteq> 0" by auto
   from size obtain p where *: "prime_factorization n = {#p#}"
     by (auto elim!: size_mset_SucE)
   hence p: "p \<in> prime_factors n" by auto
 
-  have "n = u * prod_mset (prime_factorization n)"
-    unfolding u_def by (rule prime_decomposition [symmetric])
-  with * have "n = u * p" by simp
-  also from p have "prime_elem \<dots>"
-    by (subst prime_elem_mult_unit_left)
-       (auto simp: u_def prime_imp_prime_elem in_prime_factors_iff)
-  finally show "prime_elem n" by auto
+  have "prime_elem (normalize p)"
+    using p by (auto simp: in_prime_factors_iff)
+  also have "p = prod_mset (prime_factorization n)"
+    using * by simp
+  also have "normalize \<dots> = normalize n"
+    by (rule prod_mset_prime_factorization_weak) auto
+  finally show "prime_elem n" by simp
 qed (auto simp: prime_factorization_prime_elem)
 (* END TODO *)
 
@@ -437,7 +437,9 @@ lemma prime_factorization_normalize [simp]:
   "prime_factorization (normalize n) = prime_factorization n"
   by (rule prime_factorization_cong) auto
 
-lemma one_prime_factor_iff_primepow: "card (prime_factors n) = Suc 0 \<longleftrightarrow> primepow (normalize n)"
+lemma one_prime_factor_iff_primepow:
+  fixes n :: "'a :: factorial_semiring_multiplicative"
+  shows "card (prime_factors n) = Suc 0 \<longleftrightarrow> primepow (normalize n)"
 proof
   assume "primepow (normalize n)"
   then obtain p k where pk: "prime p" "normalize n = p ^ k" "k > 0"
@@ -462,6 +464,7 @@ next
 qed
 
 lemma squarefree_imp_prod_prime_factors_eq:
+  fixes x :: "'a :: factorial_semiring_multiplicative"
   assumes "squarefree x"
   shows   "\<Prod>(prime_factors x) = normalize x"
 proof -

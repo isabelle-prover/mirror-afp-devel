@@ -25,7 +25,7 @@ begin
 
 
 lemma uniqueness_poly_equality:
-  fixes f g :: "'a :: factorial_ring_gcd poly"
+  fixes f g :: "'a :: {factorial_ring_gcd,semiring_gcd_mult_normalize} poly"
   assumes cop: "coprime f g"
   and deg: "B = 0 \<or> degree B < degree f" "B' = 0 \<or> degree B' < degree f"
   and f: "f \<noteq> 0" and eq: "A * f + B * g = A' * f + B' * g" 
@@ -89,7 +89,7 @@ proof -
   show "B = 0 \<or> degree B < degree D" using deg unfolding B .
 qed
 
-lemma dupe_monic_unique: fixes D :: "'a :: factorial_ring_gcd poly" 
+lemma dupe_monic_unique: fixes D :: "'a ::  {factorial_ring_gcd,semiring_gcd_mult_normalize} poly" 
   assumes 1: "D*S + H*T = 1" 
   and mon: "monic D" 
   and dupe: "dupe_monic D H S T U = (A,B)" 

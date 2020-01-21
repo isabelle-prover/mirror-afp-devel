@@ -535,7 +535,7 @@ proof (cases "p=0")
 qed auto
 
 lemma degree_of_gcd: "degree (gcd q r) \<noteq> 0 \<longleftrightarrow>
- degree (gcd (of_int_poly q :: 'a :: {field_char_0,euclidean_ring_gcd} poly) (of_int_poly r)) \<noteq> 0"
+ degree (gcd (of_int_poly q :: 'a :: {field_char_0, field_gcd} poly) (of_int_poly r)) \<noteq> 0"
 proof -
   let ?r = "of_rat :: rat \<Rightarrow> 'a"
   interpret rpoly: field_hom' ?r
@@ -598,7 +598,7 @@ end
 
 
 lemma factors_of_int_poly:
-  defines "rp \<equiv> ipoly :: int poly \<Rightarrow> 'a :: {euclidean_ring_gcd,field_char_0} \<Rightarrow> 'a"
+  defines "rp \<equiv> ipoly :: int poly \<Rightarrow> 'a :: {field_gcd,field_char_0} \<Rightarrow> 'a"
   assumes "factors_of_int_poly p = qs"
   shows "\<And> q. q \<in> set qs \<Longrightarrow> irreducible q \<and> lead_coeff q > 0 \<and> degree q \<le> degree p \<and> degree q \<noteq> 0"
   "p \<noteq> 0 \<Longrightarrow> rp p x = 0 \<longleftrightarrow> (\<exists> q \<in> set qs. rp q x = 0)"
@@ -696,7 +696,7 @@ proof -
 qed
 
 lemma factors_int_poly_represents:
-  fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
+  fixes x :: "'a :: {field_char_0,field_gcd}"
   assumes p: "p represents x"
   shows "\<exists> q \<in> set (factors_of_int_poly p).
     q represents x \<and> irreducible q \<and> lead_coeff q > 0  \<and> degree q \<le> degree p"
@@ -803,7 +803,7 @@ proof -
   then show ?thesis by (auto intro: exI[of _ ?p] simp: cf_pos_def)
 qed
 
-lemma gcd_of_int_poly: "gcd (of_int_poly f) (of_int_poly g :: 'a :: {field_char_0,euclidean_ring_gcd} poly) =
+lemma gcd_of_int_poly: "gcd (of_int_poly f) (of_int_poly g :: 'a :: {field_char_0,field_gcd} poly) =
   smult (inverse (of_int (lead_coeff (gcd f g)))) (of_int_poly (gcd f g))"
 proof -
   let ?ia = "of_int_poly :: _ \<Rightarrow> 'a poly"
@@ -817,7 +817,7 @@ proof -
 qed
 
 lemma algebraic_imp_represents_unique:
-  fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
+  fixes x :: "'a :: {field_char_0,field_gcd}"
   assumes "algebraic x"
   shows "\<exists>! p. p represents x \<and> irreducible p \<and> lead_coeff p > 0" (is "Ex1 ?p")
 proof -
@@ -852,7 +852,7 @@ proof -
 qed
 
 corollary irreducible_represents_imp_degree:
-  fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
+  fixes x :: "'a :: {field_char_0,field_gcd}"
   assumes "irreducible f" and "f represents x" and "g represents x"
   shows "degree f \<le> degree g"
 proof -
@@ -1236,7 +1236,7 @@ lemma sgn_ipoly_add_rat[simp]:
 
 
 lemma irreducible_preservation:
-  fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
+  fixes x :: "'a :: {field_char_0,field_gcd}"
   assumes irr: "irreducible p"
   and x: "p represents x"
   and y: "q represents y"
@@ -1307,7 +1307,7 @@ proof-
 qed
 
 lemma reflect_poly_irreducible:
-  fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
+  fixes x :: "'a :: {field_char_0,field_gcd}"
   assumes p: "irreducible p" and x: "p represents x" and x0: "x \<noteq> 0"
   shows "irreducible (reflect_poly p)"
 proof -

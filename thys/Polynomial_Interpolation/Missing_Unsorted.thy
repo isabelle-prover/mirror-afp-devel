@@ -259,7 +259,7 @@ lemma list_gcd_greatest: "(\<And> x. x \<in> set xs \<Longrightarrow> y dvd x) \
 lemma list_gcd_mult_int [simp]: 
   fixes xs :: "int list"
   shows "list_gcd (map (times a) xs) = \<bar>a\<bar> * list_gcd xs"
-  by (simp add: Gcd_mult)
+  by (simp add: Gcd_mult abs_mult)
 
 lemma list_lcm_simps: "list_lcm [] = 1" "list_lcm (x # xs) = lcm x (list_lcm xs)"
   by simp_all
@@ -274,12 +274,12 @@ lemma lcm_mult_distrib_nat: "(k :: nat) * lcm m n = lcm (k * m) (k * n)"
   by (simp add: lcm_mult_left)
 
 lemma lcm_mult_distrib_int: "abs (k::int) * lcm m n = lcm (k * m) (k * n)"
-  by (simp add: lcm_mult_left)
+  by (simp add: lcm_mult_left abs_mult)
 
 lemma list_lcm_mult_int [simp]:
   fixes xs :: "int list"
   shows "list_lcm (map (times a) xs) = (if xs = [] then 1 else \<bar>a\<bar> * list_lcm xs)"
-  by (simp add: Lcm_mult)
+  by (simp add: Lcm_mult abs_mult)
 
 lemma list_lcm_pos:
   "list_lcm xs \<ge> (0 :: int)"

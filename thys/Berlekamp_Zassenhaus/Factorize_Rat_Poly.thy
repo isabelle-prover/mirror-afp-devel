@@ -14,7 +14,8 @@ imports
 begin
 
 (*TODO: Move*)
-interpretation content_hom: monoid_mult_hom "content::'a::factorial_semiring_gcd poly \<Rightarrow> _"
+interpretation content_hom: monoid_mult_hom
+  "content::'a::{factorial_semiring, semiring_gcd, normalization_semidom_multiplicative} poly \<Rightarrow> _"
 by (unfold_locales, auto simp: content_mult)
 
 lemma prod_dvd_1_imp_all_dvd_1:

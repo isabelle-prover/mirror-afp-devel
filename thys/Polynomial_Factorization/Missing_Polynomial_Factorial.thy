@@ -19,7 +19,7 @@ lemma gcd_poly_code_code[code]: "gcd_poly_code p q =
               in smult (gcd c1 c2) (gcd_poly_code_aux p' q'))"
   unfolding gcd_poly_code_def Let_def primitive_part_def by simp
 
-lemma gcd_smult: fixes f g :: "'a :: factorial_ring_gcd poly"
+lemma gcd_smult: fixes f g :: "'a :: {factorial_ring_gcd,semiring_gcd_mult_normalize} poly"
   defines cf: "cf \<equiv> content f"
   and cg: "cg \<equiv> content g"
 shows "gcd (smult a f) g = (if a = 0 \<or> f = 0 then normalize g else
@@ -53,7 +53,8 @@ proof (cases "a = 0 \<or> f = 0")
     unfolding gcd_mult_unit1[OF ua] ..
   also have "gcd (?na * ?c f) (?c g) = gcd ((?na * F) * H) (G * H)"
     unfolding fh gh by (simp add: ac_simps)
-  also have "\<dots> = gcd (?na * F) G * normalize H" unfolding gcd_mult_right gcd.commute[of G] by simp
+  also have "\<dots> = gcd (?na * F) G * normalize H" unfolding gcd_mult_right gcd.commute[of G]
+    by (simp add: normalize_mult)
   also have "normalize H = H" by (metis H_def normalize_gcd)
   finally
   have "gcd (smult a f) g = smult (gcd (?na * F) G) (smult  H (gcd (?pp f) (?pp g)))" by simp
@@ -81,8 +82,10 @@ next
     by (intro exI conjI, rule refl, insert assms, auto)
 qed
 
-lemma primitive_part_idemp[simp]: "primitive_part (primitive_part f) = primitive_part f"
-  by (metis content_primitive_part primitive_part_eq_0_iff primitive_part_prim)
+lemma primitive_part_idemp[simp]:
+  fixes f :: "'a :: {semiring_gcd,normalization_semidom_multiplicative} poly"
+  shows "primitive_part (primitive_part f) = primitive_part f"
+  by (metis content_primitive_part[of f] primitive_part_eq_0_iff primitive_part_prim)
 
 lemma content_gcd_primitive:
    "f \<noteq> 0 \<Longrightarrow> content (gcd (primitive_part f) g) = 1"
@@ -126,7 +129,9 @@ lemma primitive_part_gcd: "primitive_part (gcd f g)
   normalize_eq_0_iff normalize_mult_unit_factor primitive_part_eq_0_iff
   smult_content_normalize_primitive_part unit_factor_mult_normalize)
 
-lemma primitive_part_normalize: "primitive_part (normalize f) = normalize (primitive_part f)"
+lemma primitive_part_normalize: 
+  fixes f :: "'a :: {semiring_gcd,idom_divide,normalization_semidom_multiplicative} poly"
+  shows "primitive_part (normalize f) = normalize (primitive_part f)"
 proof (cases "f = 0")
   case True
   thus ?thesis by simp
@@ -220,7 +225,7 @@ next
 qed
 
 lemma primitive_prod_list:
-  fixes fs :: "'a :: {factorial_semiring,semiring_Gcd} poly list"
+  fixes fs :: "'a :: {factorial_semiring,semiring_Gcd,normalization_semidom_multiplicative} poly list"
   assumes "primitive (prod_list fs)" and "f \<in> set fs" shows "primitive f"
 proof (insert assms, induct fs arbitrary: f)
   case (Cons f' fs)

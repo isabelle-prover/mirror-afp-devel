@@ -56,10 +56,10 @@ proof -
   with assms show ?thesis by (auto simp: coeff_0_mult)
 qed
 
-abbreviation numerator :: "'a fract \<Rightarrow> 'a::{ring_gcd,idom_divide}"
+abbreviation numerator :: "'a fract \<Rightarrow> 'a::{ring_gcd,idom_divide,semiring_gcd_mult_normalize}"
   where "numerator x \<equiv> fst (quot_of_fract x)"
 
-abbreviation denominator :: "'a fract \<Rightarrow> 'a::{ring_gcd,idom_divide}"
+abbreviation denominator :: "'a fract \<Rightarrow> 'a::{ring_gcd,idom_divide,semiring_gcd_mult_normalize}"
   where "denominator x \<equiv> snd (quot_of_fract x)"
 
 declare unit_factor_snd_quot_of_fract [simp]
@@ -75,13 +75,13 @@ lemma constant_term_denominator_nonzero_imp_constant_term_denominator_div_gcd_no
 
 subsection \<open>The type of rational formal power series\<close>
 
-typedef (overloaded) 'a :: "{field,factorial_ring_gcd}" ratfps = 
+typedef (overloaded) 'a :: field_gcd ratfps = 
   "{x :: 'a poly fract. constant_term (denominator x) \<noteq> 0}"
   by (rule exI [of _ 0]) simp
 
 setup_lifting type_definition_ratfps
 
-instantiation ratfps :: ("{field,factorial_ring_gcd}") idom
+instantiation ratfps :: (field_gcd) idom
 begin
 
 lift_definition zero_ratfps :: "'a ratfps" is "0" by simp
@@ -116,11 +116,11 @@ where
 lemma ratfps_nth_aux_correct: "ratfps_nth_aux p n = natfun_inverse (fps_of_poly p) n"
   by (induction p n rule: ratfps_nth_aux.induct) simp_all
 
-lift_definition ratfps_nth :: "'a :: {field,factorial_ring_gcd} ratfps \<Rightarrow> nat \<Rightarrow> 'a" is
+lift_definition ratfps_nth :: "'a :: field_gcd ratfps \<Rightarrow> nat \<Rightarrow> 'a" is
   "\<lambda>x n. let (a,b) = quot_of_fract x
          in  (\<Sum>i = 0..n. coeff a i * ratfps_nth_aux b (n - i))" .
 
-lift_definition ratfps_subdegree :: "'a :: {field,factorial_ring_gcd} ratfps \<Rightarrow> nat" is
+lift_definition ratfps_subdegree :: "'a :: field_gcd ratfps \<Rightarrow> nat" is
   "\<lambda>x. poly_subdegree (fst (quot_of_fract x))" . 
 
 context
@@ -140,7 +140,7 @@ lemma normalize_quot_quot_of_fract [simp]:
   by (rule normalize_quot_id, rule quot_of_fract_in_normalized_fracts)
 
 context
-assumes "SORT_CONSTRAINT('a::{field,factorial_ring_gcd})"
+assumes "SORT_CONSTRAINT('a::field_gcd)"
 begin
 
 lift_definition quot_of_ratfps :: "'a ratfps \<Rightarrow> ('a poly \<times> 'a poly)" is
@@ -198,10 +198,10 @@ lemma minus_ratfps_code [code abstract]:
       in  normalize_quot (a * d - b * c, b * d))"
   by transfer' (rule quot_of_fract_diff) 
 
-definition ratfps_cutoff :: "nat \<Rightarrow> 'a :: {field,factorial_ring_gcd} ratfps \<Rightarrow> 'a poly" where
+definition ratfps_cutoff :: "nat \<Rightarrow> 'a :: field_gcd ratfps \<Rightarrow> 'a poly" where
   "ratfps_cutoff n x = poly_of_list (map (ratfps_nth x) [0..<n])"
 
-definition ratfps_shift :: "nat \<Rightarrow> 'a :: {field,factorial_ring_gcd} ratfps \<Rightarrow> 'a ratfps" where
+definition ratfps_shift :: "nat \<Rightarrow> 'a :: field_gcd ratfps \<Rightarrow> 'a ratfps" where
   "ratfps_shift n x = (let (a, b) = quot_of_ratfps (x - ratfps_of_poly (ratfps_cutoff n x))
                        in  quot_to_ratfps (poly_shift n a, b))"
  
@@ -224,7 +224,7 @@ lemma ratfps_subdegree_code [code]:
 
 end
 
-instantiation ratfps :: ("{field,factorial_ring_gcd}") inverse
+instantiation ratfps :: ("field_gcd") inverse
 begin
 
 lift_definition inverse_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps" is
@@ -266,7 +266,7 @@ lemma equal_ratfps_code [code]: "HOL.equal x y \<longleftrightarrow> quot_of_rat
 lemma fps_of_poly_quot_normalize_quot [simp]:
   "fps_of_poly (fst (normalize_quot x)) / fps_of_poly (snd (normalize_quot x)) =
      fps_of_poly (fst x) / fps_of_poly (snd x)"
-  if "(snd x :: 'a :: {field, factorial_ring_gcd} poly) \<noteq> 0"
+  if "(snd x :: 'a :: field_gcd poly) \<noteq> 0"
 proof -
   from that obtain d where "fst x = fst (normalize_quot x) * d"
     and "snd x = snd (normalize_quot x) * d" and "d \<noteq> 0"
@@ -278,10 +278,10 @@ qed
 lemma fps_of_poly_quot_normalize_quot' [simp]:
   "fps_of_poly (fst (normalize_quot x)) / fps_of_poly (snd (normalize_quot x)) =
      fps_of_poly (fst x) / fps_of_poly (snd x)"
-  if "coeff (snd x) 0 \<noteq> (0 :: 'a :: {field,factorial_ring_gcd})"
+  if "coeff (snd x) 0 \<noteq> (0 :: 'a :: field_gcd)"
   using that by (auto intro: fps_of_poly_quot_normalize_quot)
 
-lift_definition fps_of_ratfps :: "'a :: {field,factorial_ring_gcd} ratfps \<Rightarrow> 'a fps" is
+lift_definition fps_of_ratfps :: "'a :: field_gcd ratfps \<Rightarrow> 'a fps" is
   "\<lambda>x. fps_of_poly (numerator x) / fps_of_poly (denominator x)" .
 
 lemma fps_of_ratfps_altdef: 
@@ -573,7 +573,7 @@ lemma fps_of_ratfps_divide [simp]:
            
 lemma ratfps_eqI: "fps_of_ratfps x = fps_of_ratfps y \<Longrightarrow> x = y" by simp
 
-instance ratfps :: ("{field,factorial_ring_gcd}") algebraic_semidom
+instance ratfps :: ("field_gcd") algebraic_semidom
   by standard (auto intro: ratfps_eqI)
 
 lemma fps_of_ratfps_dvd [simp]:
@@ -609,7 +609,7 @@ next
   thus "is_unit x" by (intro dvdI[of _ _ "inverse x"]) simp_all
 qed
 
-instantiation ratfps :: ("{field,factorial_ring_gcd}") normalization_semidom
+instantiation ratfps :: ("field_gcd") normalization_semidom
 begin
 
 definition unit_factor_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps" where
@@ -633,16 +633,25 @@ instance proof
           del: fps_of_ratfps_eq_iff fps_unit_factor_def fps_normalize_def)+
   show "is_unit (unit_factor a)" if "a \<noteq> 0" for a :: "'a ratfps"
     using that by (auto simp: ratfps_nth_altdef)
-  show "unit_factor (a * b) = unit_factor a * unit_factor b" for a b :: "'a ratfps"
-    by (rule ratfps_eqI, insert unit_factor_mult[of "fps_of_ratfps a" "fps_of_ratfps b"])
-       (simp del: fps_of_ratfps_eq_iff)
+  fix a b :: "'a ratfps"
+  assume "is_unit a" 
+  thus "unit_factor (a * b) = a * unit_factor b"
+    by (intro ratfps_eqI, unfold fps_of_ratfps_unit_factor fps_of_ratfps_mult,
+        subst unit_factor_mult_unit_left) (auto simp: ratfps_nth_altdef)
   show "unit_factor a = a" if "is_unit a" for a :: "'a ratfps"
     by (rule ratfps_eqI) (insert that, auto simp: fps_of_ratfps_is_unit)
 qed
 
 end
 
-instantiation ratfps :: ("{field,factorial_ring_gcd}") semidom_modulo
+instance ratfps :: ("field_gcd") normalization_semidom_multiplicative
+proof
+  show "unit_factor (a * b) = unit_factor a * unit_factor b" for a b :: "'a ratfps"
+    by (rule ratfps_eqI, insert unit_factor_mult[of "fps_of_ratfps a" "fps_of_ratfps b"])
+       (simp del: fps_of_ratfps_eq_iff)
+qed
+
+instantiation ratfps :: ("field_gcd") semidom_modulo
 begin
 
 lift_definition modulo_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps \<Rightarrow> 'a ratfps" is
@@ -659,7 +668,7 @@ instance
 
 end
 
-instantiation ratfps :: ("{field,factorial_ring_gcd}") euclidean_ring
+instantiation ratfps :: ("field_gcd") euclidean_ring
 begin
 
 definition euclidean_size_ratfps :: "'a ratfps \<Rightarrow> nat" where
@@ -679,7 +688,7 @@ qed
 
 end
 
-instantiation ratfps :: ("{field,factorial_ring_gcd}") euclidean_ring_cancel
+instantiation ratfps :: ("field_gcd") euclidean_ring_cancel
 begin
 
 instance
@@ -704,7 +713,7 @@ proof
 qed simp_all
 
 lemma fps_dvd_code [code_unfold]:
-  "x dvd y \<longleftrightarrow> y = 0 \<or> ((x::'a::{field,factorial_ring_gcd} fps) \<noteq> 0 \<and> subdegree x \<le> subdegree y)"
+  "x dvd y \<longleftrightarrow> y = 0 \<or> ((x::'a::field_gcd fps) \<noteq> 0 \<and> subdegree x \<le> subdegree y)"
   using fps_dvd_iff[of x y] by (cases "x = 0") auto
 
 lemma ratfps_dvd_code [code_unfold]: 
@@ -712,9 +721,9 @@ lemma ratfps_dvd_code [code_unfold]:
   using fps_dvd_code [of "fps_of_ratfps x" "fps_of_ratfps y"]
   by (simp add: ratfps_subdegree_altdef)
 
-instance ratfps :: ("{field,factorial_ring_gcd}") normalization_euclidean_semiring ..
+instance ratfps :: ("field_gcd") normalization_euclidean_semiring ..
 
-instantiation ratfps :: ("{field,factorial_ring_gcd}") euclidean_ring_gcd
+instantiation ratfps :: ("field_gcd") euclidean_ring_gcd
 begin
 
 definition "gcd_ratfps = (Euclidean_Algorithm.gcd :: 'a ratfps \<Rightarrow> _)"
@@ -740,7 +749,7 @@ lemma ratfps_gcd:
      (auto simp: ratfps_subdegree_altdef ratfps_dvd_code subdegree_fps_of_poly
          ratfps_of_poly_eq_0_iff normalize_ratfps_def)
 
-lemma ratfps_gcd_altdef: "gcd (f :: 'a :: {field,factorial_ring_gcd} ratfps) g =
+lemma ratfps_gcd_altdef: "gcd (f :: 'a :: field_gcd ratfps) g =
   (if f = 0 \<and> g = 0 then 0 else
    if f = 0 then ratfps_of_poly (monom 1 (ratfps_subdegree g)) else
    if g = 0 then ratfps_of_poly (monom 1 (ratfps_subdegree f)) else
@@ -754,7 +763,7 @@ lemma ratfps_lcm:
      (auto simp: ratfps_subdegree_altdef ratfps_dvd_code subdegree_fps_of_poly
          ratfps_of_poly_eq_0_iff normalize_ratfps_def)
 
-lemma ratfps_lcm_altdef: "lcm (f :: 'a :: {field,factorial_ring_gcd} ratfps) g =
+lemma ratfps_lcm_altdef: "lcm (f :: 'a :: field_gcd ratfps) g =
   (if f = 0 \<or> g = 0 then 0 else 
      ratfps_of_poly (monom 1 (max (ratfps_subdegree f) (ratfps_subdegree g))))"
   by (simp add: ratfps_lcm)
@@ -777,7 +786,7 @@ next
     by (simp add: ratfps_dvd_code ratfps_subdegree_altdef subdegree_fps_of_poly)
 qed (simp_all add: ratfps_subdegree_altdef subdegree_fps_of_poly normalize_ratfps_def)
 
-lemma ratfps_Gcd_altdef: "Gcd (A :: 'a :: {field,factorial_ring_gcd} ratfps set) =
+lemma ratfps_Gcd_altdef: "Gcd (A :: 'a :: field_gcd ratfps set) =
   (if A \<subseteq> {0} then 0 else ratfps_of_poly (monom 1 (INF f\<in>A-{0}. ratfps_subdegree f)))"
   using ratfps_Gcd by auto
 
@@ -805,7 +814,7 @@ next
 qed (simp_all add: ratfps_subdegree_altdef subdegree_fps_of_poly normalize_ratfps_def)
 
 lemma ratfps_Lcm_altdef:
-  "Lcm (A :: 'a :: {field,factorial_ring_gcd} ratfps set) =
+  "Lcm (A :: 'a :: field_gcd ratfps set) =
      (if 0 \<in> A \<or> \<not>bdd_above (ratfps_subdegree`A) then 0 else
       if A = {} then 1 else ratfps_of_poly (monom 1 (SUP f\<in>A. ratfps_subdegree f)))"
 proof (cases "bdd_above (ratfps_subdegree`A)")
@@ -843,9 +852,9 @@ lemma fps_of_ratfps_quot_to_ratfps_code_post1:
   by (simp_all add: fps_of_ratfps_quot_to_ratfps)
 
 lemma fps_of_ratfps_quot_to_ratfps_code_post2:
-  "fps_of_ratfps (quot_to_ratfps (x'::'a::{field_char_0,factorial_ring_gcd} poly,pCons (numeral n) y')) = 
+  "fps_of_ratfps (quot_to_ratfps (x'::'a::{field_char_0,field_gcd} poly,pCons (numeral n) y')) = 
      fps_of_poly x' / fps_of_poly (pCons (numeral n) y')"
-  "fps_of_ratfps (quot_to_ratfps (x'::'a::{field_char_0,factorial_ring_gcd} poly,pCons (-numeral n) y')) = 
+  "fps_of_ratfps (quot_to_ratfps (x'::'a::{field_char_0,field_gcd} poly,pCons (-numeral n) y')) = 
      fps_of_poly x' / fps_of_poly (pCons (-numeral n) y')"
   by (simp_all add: fps_of_ratfps_quot_to_ratfps)
 
@@ -875,7 +884,7 @@ lemmas fps_of_poly_code_post [code_post] =
 
 definition (in term_syntax)
   valterm_ratfps :: 
-    "'a ::{field,factorial_ring_gcd,typerep} poly \<times> (unit \<Rightarrow> Code_Evaluation.term) \<Rightarrow> 
+    "'a ::{field_gcd, typerep} poly \<times> (unit \<Rightarrow> Code_Evaluation.term) \<Rightarrow> 
      'a poly \<times> (unit \<Rightarrow> Code_Evaluation.term) \<Rightarrow> 'a ratfps \<times> (unit \<Rightarrow> Code_Evaluation.term)" where
   [code_unfold]: "valterm_ratfps k l = 
     Code_Evaluation.valtermify (/) {\<cdot>} 
@@ -886,7 +895,7 @@ definition (in term_syntax)
 notation fcomp (infixl "\<circ>>" 60)
 notation scomp (infixl "\<circ>\<rightarrow>" 60)
 
-instantiation ratfps :: ("{field,factorial_ring_gcd,random}") random
+instantiation ratfps :: ("{field_gcd,random}") random
 begin
 
 definition
@@ -917,7 +926,7 @@ instance ..
 
 end
 
-instantiation ratfps :: ("{field,factorial_ring_gcd,full_exhaustive}") full_exhaustive
+instantiation ratfps :: ("{field_gcd,full_exhaustive}") full_exhaustive
 begin
 
 definition

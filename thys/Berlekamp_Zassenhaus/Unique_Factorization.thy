@@ -911,18 +911,22 @@ sublocale as_ufd: ufd
 proof(unfold_locales, goal_cases)
   case (1 x)
   from prime_factorization_exists[OF \<open>x \<noteq> 0\<close>]
-  obtain F where f: "\<And>f. f \<in># F \<Longrightarrow> prime_elem f" and Fx: "prod_mset F = normalize x" by auto
-  from Fx have x: "x = unit_factor x * prod_mset F" by auto
+  obtain F where f: "\<And>f. f \<in># F \<Longrightarrow> prime_elem f" 
+             and Fx: "normalize (prod_mset F) = normalize x" by auto
+  from associatedE2[OF Fx] obtain u where u: "is_unit u" "x = u * prod_mset F"
+    by blast
   from \<open>\<not> is_unit x\<close> Fx have "F \<noteq> {#}" by auto
   then obtain g G where F: "F = add_mset g G" by (cases F, auto)
   then have "g \<in># F" by auto
   with f[OF this]prime_elem_iff_irreducible
     irreducible_mult_unit_left[OF unit_factor_is_unit[OF \<open>x \<noteq> 0\<close>]]
-  have g: "irreducible (unit_factor x * g)" by auto
+  have g: "irreducible (u * g)" using u(1)
+    by (subst irreducible_mult_unit_left) simp_all
   show ?case
   proof (intro exI conjI mset_factorsI)
-    from x show "prod_mset (add_mset (unit_factor x * g) G) = x" by (simp add: F ac_simps)
-    fix f assume "f \<in># add_mset (unit_factor x * g) G"
+    show "prod_mset (add_mset (u * g) G) = x"
+      using \<open>x \<noteq> 0\<close> by (simp add: F ac_simps u)
+    fix f assume "f \<in># add_mset (u * g) G"
     with f[unfolded F] g prime_elem_iff_irreducible
     show "irreducible f" by auto
   qed auto
@@ -933,17 +937,21 @@ next
   have "list_all2 (ddvd) fs (map normalize fs)" by (intro list_all2_all_nthI, auto)
   then have FH: "rel_mset (ddvd) F (image_mset normalize F)" by (unfold rel_mset_def F, force)
   also
-    have FG: "image_mset normalize F = image_mset normalize G"
-    proof (intro prime_factorization_unique')
-      from 2 have xF: "x = prod_mset F" and xG: "x = prod_mset G" by auto
-      from xF have "normalize x = prod_mset (image_mset normalize F)" by (simp add: local.normalize_prod_mset)
-      with xG have nFG: "\<dots> = prod_mset (image_mset normalize G)" by (simp_all add: local.normalize_prod_mset)
-      then show "(\<Prod>i\<in>#image_mset normalize F. i) = (\<Prod>i\<in>#image_mset normalize G. i)" by auto
-      from 2 prime_elem_iff_irreducible have "f \<in># F \<Longrightarrow> prime_elem f" "g \<in># G \<Longrightarrow> prime_elem g" for f g
-       by (auto intro: prime_elemI)
-      then show " Multiset.Ball (image_mset normalize F) prime"
-        "Multiset.Ball (image_mset normalize G) prime" by auto
-    qed
+  have FG: "image_mset normalize F = image_mset normalize G"
+  proof (intro prime_factorization_unique'')
+    from 2 have xF: "x = prod_mset F" and xG: "x = prod_mset G" by auto
+    from xF have "normalize x = normalize (prod_mset (image_mset normalize F))"
+      by (simp add: normalize_prod_mset_normalize)
+    with xG have nFG: "\<dots> = normalize (prod_mset (image_mset normalize G))"
+      by (simp_all add: normalize_prod_mset_normalize)
+    then show "normalize (\<Prod>i\<in>#image_mset normalize F. i) =
+               normalize (\<Prod>i\<in>#image_mset normalize G. i)" by auto
+  next
+    from 2 prime_elem_iff_irreducible have "f \<in># F \<Longrightarrow> prime_elem f" "g \<in># G \<Longrightarrow> prime_elem g" for f g
+     by (auto intro: prime_elemI)
+    then show " Multiset.Ball (image_mset normalize F) prime"
+      "Multiset.Ball (image_mset normalize G) prime" by auto
+  qed
   also
     obtain gs where G: "G = mset gs" by (metis ex_mset)
     have "list_all2 ((ddvd)\<inverse>\<inverse>) gs (map normalize gs)" by (intro list_all2_all_nthI, auto)

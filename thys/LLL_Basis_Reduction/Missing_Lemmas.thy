@@ -766,7 +766,7 @@ proof -
 qed
 
 lemma primitive_part_neg [simp]:
-  fixes a::"'a :: factorial_ring_gcd poly"
+  fixes a::"'a :: {factorial_ring_gcd,factorial_semiring_multiplicative} poly"
   shows "primitive_part (-a) = - primitive_part a"
 proof -
   have "primitive_part (-a) = primitive_part (smult (-1) a)" by auto

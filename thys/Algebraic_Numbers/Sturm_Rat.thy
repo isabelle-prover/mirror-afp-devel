@@ -137,7 +137,7 @@ lemma of_rat_of_int_poly: "map_poly of_rat (of_int_poly p) = of_int_poly p"
   by (subst map_poly_map_poly, auto simp: o_def)
   
 lemma square_free_of_int_poly: assumes "square_free p" 
-  shows "square_free (of_int_poly p :: 'a :: {euclidean_ring_gcd, field_char_0} poly)" 
+  shows "square_free (of_int_poly p :: 'a :: {field_gcd, field_char_0} poly)" 
 proof - 
   have "square_free (map_poly of_rat (of_int_poly p) :: 'a poly)"
     unfolding of_rat_hom.square_free_map_poly by (rule square_free_int_rat[OF assms])

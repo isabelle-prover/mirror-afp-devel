@@ -15,11 +15,11 @@ definition ratfps_parens where
 definition "show_ratfps x = (case quot_of_ratfps x of (p, q) \<Rightarrow>
   if q = 1 then show p else ratfps_parens (show p) @ '' / '' @ ratfps_parens (show q))"
 
-definition showsp_ratfps :: "'a :: {field, euclidean_ring_gcd,show} ratfps showsp"
+definition showsp_ratfps :: "'a :: {field_gcd,show} ratfps showsp"
 where
   "showsp_ratfps p x y = (show_ratfps x @ y)"
 
-instantiation ratfps:: ("{show,field,euclidean_ring_gcd}") "show"
+instantiation ratfps:: ("{show,field_gcd}") "show"
 begin
 
 definition "shows_prec p (x :: 'a ratfps) = showsp_ratfps p x"

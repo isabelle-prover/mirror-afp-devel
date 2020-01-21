@@ -315,16 +315,16 @@ next
   from p_dvd_q obtain k where q: "q = k * p" unfolding dvd_def by (auto simp: ac_simps)
   with q0 have "k \<noteq> 0" by auto
   then have "degree k = 0"
-    using  associatedD2 n p0 q
-    by (metis (no_types, lifting) mult_cancel_right1 normalize_eq_0_iff normalize_mult poly_dvd_1)
+    using degree_eq degree_mult_eq p0 q by fastforce
   then obtain c where k: "k = [: c :]" by (metis degree_0_id)
   with \<open>k \<noteq> 0\<close> have "c \<noteq> 0" by auto
   have "q = smult c p" unfolding q k by simp
   with \<open>c \<noteq> 0\<close> show ?thesis by auto
 qed
 
-
-lemma prod_list_normalize: "normalize (prod_list P) = prod_list (map normalize P)"
+lemma prod_list_normalize: 
+  fixes P :: "'b :: {idom_divide,normalization_semidom_multiplicative} poly list"
+  shows "normalize (prod_list P) = prod_list (map normalize P)"
 proof (induct P)
   case Nil
   show ?case by auto
@@ -361,7 +361,7 @@ end
 
 lemma gcd_monic_constant:
   "gcd f g \<in> {1, f}" if "monic f" and "degree g = 0"
-    for f g :: "'a :: {field,euclidean_ring_gcd} poly"
+    for f g :: "'a :: {field_gcd} poly"
 proof (cases "g = 0")
   case True
   moreover from \<open>monic f\<close> have "normalize f = f"
@@ -415,7 +415,7 @@ lemma power_poly_f_mod_binary: "power_poly_f_mod m a n = (if n = 0 then 1 mod m
     else let (d, r) = Divides.divmod_nat n 2;
        rec = power_poly_f_mod m ((a * a) mod m) d in
     if r = 0 then rec else (rec * a) mod m)"
-  for m a :: "'a :: {factorial_ring_gcd, field} poly"
+  for m a :: "'a :: {field_gcd} poly"
 proof -
   note d = power_poly_f_mod_def
   show ?thesis
@@ -706,7 +706,7 @@ proof -
 qed
 
 lemma monic_prod_gcd:
-assumes f: "finite A" and f0: "(f :: 'b :: {field,factorial_ring_gcd} poly) \<noteq> 0"
+assumes f: "finite A" and f0: "(f :: 'b :: {field_gcd} poly) \<noteq> 0"
 shows "monic (\<Prod>c\<in>A. gcd f (h - [:c:]))"
 using f
 proof (induct A)
@@ -754,7 +754,7 @@ qed auto
 
 
 lemma coprime_polynomial_factorization:
-  fixes a1 :: "'b :: {field,factorial_ring_gcd} poly"
+  fixes a1 :: "'b :: {field_gcd} poly"
   assumes  irr: "as \<subseteq> {q. irreducible q \<and> monic q}"
   and "finite as" and a1: "a1 \<in> as" and a2: "a2 \<in> as" and a1_not_a2: "a1 \<noteq> a2"
   shows "coprime a1 a2"
@@ -1589,7 +1589,7 @@ by (rule exI[of _ 0], rule exI[of _ 1], auto)
 
 lemma coprime_cong_mult_factorization_poly:
   fixes f::"'b::{field} poly"
-    and a b p :: "'c :: {factorial_ring_gcd,field} poly"
+    and a b p :: "'c :: {field_gcd} poly"
   assumes finite_P: "finite P"
     and P: "P \<subseteq> {q. irreducible q}"
     and p: "\<forall>p\<in>P. [a=b] (mod p)"
@@ -2723,7 +2723,8 @@ qed
 end
 
 lemma not_irreducible_factor_yields_prime_factors:
-  assumes uf: "u dvd (f :: 'b :: {field,euclidean_ring_gcd} poly)" and fin: "finite P" and fP: "f = \<Prod>P" and P: "P \<subseteq> {q. irreducible q \<and> monic q}"
+  assumes uf: "u dvd (f :: 'b :: {field_gcd} poly)" and fin: "finite P"
+      and fP: "f = \<Prod>P" and P: "P \<subseteq> {q. irreducible q \<and> monic q}"
     and u: "degree u > 0" "\<not> irreducible u"
   shows "\<exists> pi pj. pi \<in> P \<and> pj \<in> P \<and> pi \<noteq> pj \<and> pi dvd u \<and> pj dvd u"
 proof -

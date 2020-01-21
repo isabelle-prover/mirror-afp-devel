@@ -194,7 +194,7 @@ lemma euclid_ext_i [transfer_rule]:
 end
 
 locale field_ops = idom_divide_ops ops R + euclidean_semiring_ops ops R for ops :: "'i arith_ops_record" and
-  R :: "'i \<Rightarrow> 'a :: {field, normalization_euclidean_semiring, euclidean_ring, factorial_ring_gcd} \<Rightarrow> bool" +
+  R :: "'i \<Rightarrow> 'a :: {field_gcd} \<Rightarrow> bool" +
   assumes inverse[transfer_rule]: "(R ===> R) inverse Fields.inverse"
   
 
