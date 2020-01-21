@@ -109,9 +109,11 @@ lemma del_left_braun:
 context includes pattern_aliases
 begin
 
+text \<open>Slightly simpler definition: \<open>_\<close> instead of @{const Leaf} because of Braun invariant.\<close>
+
 function (sequential) sift_down :: "'a::linorder tree \<Rightarrow> 'a \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-"sift_down Leaf a Leaf = Node Leaf a Leaf" |
-"sift_down (Node Leaf x Leaf) a Leaf =
+"sift_down Leaf a _ = Node Leaf a Leaf" |
+"sift_down (Node Leaf x _) a Leaf =
   (if a \<le> x then Node (Node Leaf x Leaf) a Leaf
    else Node (Node Leaf a Leaf) x Leaf)" |
 "sift_down (Node l1 x1 r1 =: t1) a (Node l2 x2 r2 =: t2) =

@@ -75,7 +75,7 @@ abstract =
 [DiscretePricing]
 title = Pricing in discrete financial models
 author = Mnacho Echenim <http://lig-membres.imag.fr/mechenim/>
-topic = Mathematics/Probability Theory, Mathematics/Economics
+topic = Mathematics/Probability Theory, Mathematics/Games and Economics
 date = 2018-07-16
 notify = mnacho.echenim@univ-grenoble-alpes.fr
 abstract =
@@ -4411,7 +4411,7 @@ abstract =
 title = Arrow and Gibbard-Satterthwaite
 author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2008-09-01
-topic = Mathematics/Economics
+topic = Mathematics/Games and Economics
 abstract = This article formalizes two proofs of Arrow's impossibility theorem due to Geanakoplos and derives the Gibbard-Satterthwaite theorem as a corollary. One formalization is based on utility functions, the other one on strict partial orders.<br><br>An article about these proofs is found <a href="http://www21.in.tum.de/~nipkow/pubs/arrow.html">here</a>.
 notify = nipkow@in.tum.de
 
@@ -4419,7 +4419,7 @@ notify = nipkow@in.tum.de
 title = Some classical results in Social Choice Theory
 author = Peter Gammie <http://peteg.org>
 date = 2008-11-09
-topic = Mathematics/Economics
+topic = Mathematics/Games and Economics
 abstract = Drawing on Sen's landmark work "Collective Choice and Social Welfare" (1970), this development proves Arrow's General Possibility Theorem, Sen's Liberal Paradox and May's Theorem in a general setting. The goal was to make precise the classical statements and proofs of these results, and to provide a foundation for more recent results such as the Gibbard-Satterthwaite and Duggan-Schwartz theorems.
 notify = nipkow@in.tum.de
 
@@ -4427,7 +4427,7 @@ notify = nipkow@in.tum.de
 title = VCG - Combinatorial Vickrey-Clarke-Groves Auctions
 author = Marco B. Caminati <>, Manfred Kerber <http://www.cs.bham.ac.uk/~mmk>, Christoph Lange<mailto:math.semantic.web@gmail.com>, Colin Rowat<mailto:c.rowat@bham.ac.uk>
 date = 2015-04-30
-topic = Mathematics/Economics
+topic = Mathematics/Games and Economics
 abstract =
 	A VCG auction (named after their inventors Vickrey, Clarke, and
 	Groves) is a generalization of the single-good, second price Vickrey
@@ -5503,7 +5503,7 @@ notify = wimmers@in.tum.de
 title = Positional Determinacy of Parity Games
 author = Christoph Dittmann <http://logic.las.tu-berlin.de/Members/Dittmann/>
 date = 2015-11-02
-topic = Computer Science/Games
+topic = Mathematics/Games and Economics, Mathematics/Graph Theory
 abstract =
 	We present a formalization of parity games (a two-player game on
 	directed graphs) and a proof of their positional determinacy in
@@ -5531,7 +5531,7 @@ notify = bentkamp@gmail.com
 title = Expressiveness of Deep Learning
 author = Alexander Bentkamp <mailto:bentkamp@gmail.com>
 date = 2016-11-10
-topic = Computer Science/Algorithms
+topic = Computer Science/Machine Learning, Mathematics/Analysis
 abstract =
 	Deep learning has had a profound impact on computer science in recent years, with applications to search engines, image recognition and language processing, bioinformatics, and more. Recently, Cohen et al. provided theoretical evidence for the superiority of deep learning over shallow learning. This formalization of their work simplifies and generalizes the original proof, while working around the limitations of the Isabelle type system. To support the formalization, I developed reusable libraries of formalized mathematics, including results about the matrix rank, the Lebesgue measure, and multivariate polynomials, as well as a library for tensor analysis.
 notify = bentkamp@gmail.com
@@ -5820,7 +5820,7 @@ notify = christian.urban@kcl.ac.uk
 [First_Welfare_Theorem]
 title = Microeconomics and the First Welfare Theorem
 author = Julian Parsert <mailto:julian.parsert@gmail.com>, Cezary Kaliszyk<http://cl-informatik.uibk.ac.at/users/cek/>
-topic = Mathematics/Economics
+topic = Mathematics/Games and Economics
 license = LGPL
 date = 2017-09-01
 notify = julian.parsert@uibk.ac.at, cezary.kaliszyk@uibk.ac.at
@@ -5985,7 +5985,7 @@ notify = lukas.bulwahn@gmail.com
 title = Randomised Social Choice Theory
 author = Manuel Eberl <mailto:eberlm@in.tum.de>
 date = 2016-05-05
-topic = Mathematics/Economics
+topic = Mathematics/Games and Economics
 abstract =
 	This work contains a formalisation of basic Randomised Social Choice,
 	including Stochastic Dominance and Social Decision Schemes (SDSs)
@@ -6009,7 +6009,7 @@ notify = eberlm@in.tum.de
 title = The Incompatibility of SD-Efficiency and SD-Strategy-Proofness
 author = Manuel Eberl <mailto:eberlm@in.tum.de>
 date = 2016-05-04
-topic = Mathematics/Economics
+topic = Mathematics/Games and Economics
 abstract =
 	This formalisation contains the proof that there is no anonymous and
 	neutral Social Decision Scheme for at least four voters and
@@ -6471,7 +6471,7 @@ title = Stable Matching
 author = Peter Gammie <http://peteg.org>
 notify = peteg42@gmail.com
 date = 2016-10-24
-topic = Mathematics/Economics
+topic = Mathematics/Games and Economics
 abstract =
   We mechanize proofs of several results from the matching with
   contracts literature, which generalize those of the classical
@@ -7364,7 +7364,7 @@ abstract =
 [Fishburn_Impossibility]
 title = The Incompatibility of Fishburn-Strategyproofness and Pareto-Efficiency
 author = Felix Brandt <http://dss.in.tum.de/staff/brandt.html>, Manuel Eberl <https://www21.in.tum.de/~eberlm>, Christian Saile <http://dss.in.tum.de/staff/christian-saile.html>, Christian Stricker <http://dss.in.tum.de/staff/christian-stricker.html>
-topic = Mathematics/Economics
+topic = Mathematics/Games and Economics
 date = 2018-03-22
 notify = eberlm@in.tum.de
 abstract =
@@ -7543,7 +7543,7 @@ abstract =
 [Neumann_Morgenstern_Utility]
 title = Von-Neumann-Morgenstern Utility Theorem
 author = Julian Parsert<mailto:julian.parsert@gmail.com>, Cezary Kaliszyk<http://cl-informatik.uibk.ac.at/users/cek/>
-topic = Mathematics/Economics
+topic = Mathematics/Games and Economics
 license = LGPL
 date = 2018-07-04
 notify = julian.parsert@uibk.ac.at, cezary.kaliszyk@uibk.ac.at

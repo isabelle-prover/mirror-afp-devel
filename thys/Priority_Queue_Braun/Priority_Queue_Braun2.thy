@@ -6,7 +6,8 @@ begin
 
 text \<open>This is the version verified by Jean-Christophe Filliâtre with the help of the Why3 system
 \<^url>\<open>http://toccata.lri.fr/gallery/braun_trees.en.html\<close>.
-Only the deletion function (\<open>del_min2\<close> below) differs from Paulson's version.\<close>
+Only the deletion function (\<open>del_min2\<close> below) differs from Paulson's version.
+But the difference turns out to be minor --- see below.\<close>
 
 (* TODO mv *)
 lemma neq_Leaf_iff_size: "t \<noteq> Leaf \<longleftrightarrow> size t > 0"
@@ -40,27 +41,44 @@ fun del_min2 where
 
 subsection "Correctness Proof"
 
-text \<open>Function @{const replace_min}:\<close>
+text \<open>It turns out that @{const replace_min} is just @{const sift_down} in disguise:\<close>
+
+lemma replace_min_sift_down: "braun (Node l a r) \<Longrightarrow> replace_min x (Node l a r) = sift_down l x r"
+by(induction l x r rule: sift_down.induct)(auto)
+
+text \<open>This means that @{const del_min2} is merely a slight optimization of @{const del_min}:
+instead of calling @{const del_left} right away, @{const merge} can take advantage of the case
+where the smaller element is at the root of the left heap and can be moved up without complications.
+However, on average this is just the case on the first level.\<close>
 
 lemma mset_tree_replace_min:
   "\<lbrakk> braun t; t \<noteq> Leaf \<rbrakk> \<Longrightarrow>
   mset_tree(replace_min x t) = (mset_tree t - {#value t#}) + {#x#}"
+by(auto simp add: mset_sift_down neq_Leaf_iff replace_min_sift_down simp del: replace_min.simps)
+(* An explicit proof:
 apply(induction t)
 apply(auto simp: Let_def neq_Leaf_iff_size tree.set_sel(2))
 done
+*)
 
 lemma braun_size_replace_min:
   "\<lbrakk> braun t; t \<noteq> Leaf \<rbrakk> \<Longrightarrow> braun(replace_min x t) \<and> size(replace_min x t) = size t"
+by(auto simp add: size_sift_down braun_sift_down neq_Leaf_iff replace_min_sift_down
+        simp del: replace_min.simps)
+(* An explicit proof:
 apply(induction t)
 apply(auto simp add: Let_def neq_Leaf_iff_size)
 done
-
+*)
+(*
 lemma heap_value_least: "\<lbrakk> heap t; x \<le> value t \<rbrakk>
        \<Longrightarrow> \<forall>a \<in> set_tree t. x \<le> a \<longleftrightarrow> True"
 by (metis Min.boundedE empty_iff finite_set_tree get_min set_mset_tree tree.simps(14))
-
+*)
 lemma heap_replace_min:
   "\<lbrakk> braun t; heap t; t \<noteq> Leaf \<rbrakk> \<Longrightarrow> heap(replace_min x t)"
+by(auto simp add: heap_sift_down neq_Leaf_iff replace_min_sift_down simp del: replace_min.simps)
+(* A long explicit proof:
 proof(induction t)
   case Leaf thus ?case by simp
 next
@@ -103,6 +121,7 @@ next
     qed
   qed
 qed
+*)
 
 text \<open>Function @{const merge}:\<close>
 
@@ -121,8 +140,7 @@ next
   show ?case
   proof cases
     assume "a1 \<le> a2"
-    thus ?thesis
-      using 2 by(auto simp: Let_def Ball_def mset_tree_merge union_iff simp flip: set_mset_tree)
+    thus ?thesis using 2 by(auto simp: ball_Un mset_tree_merge simp flip: set_mset_tree)
   next
     assume "\<not> a1 \<le> a2"
     let ?l = "Node l1 a1 r1" let ?r = "Node l2 a2 r2"
@@ -132,7 +150,7 @@ next
     have hr: "heap(replace_min x ?r)" using heap_replace_min[OF \<open>braun ?r\<close> "2.prems"(3)] by simp
     have 0: "\<forall>x \<in> set_tree ?l. a2 \<le> x" using "2.prems"(2) \<open>\<not> a1 \<le> a2\<close> by (auto simp: ball_Un)
     moreover have "set_tree l' \<subseteq> set_tree ?l" "x \<in> set_tree ?l"
-     using del_left_mset[OF dl] by (auto simp flip: set_mset_tree dest:in_diffD simp: union_iff)
+      using del_left_mset[OF dl] by (auto simp flip: set_mset_tree dest:in_diffD simp: union_iff)
     ultimately have 1: "\<forall>x \<in> set_tree l'. a2 \<le> x" by blast
     have "\<forall>x \<in> set_tree ?r. a2 \<le> x" using \<open>heap ?r\<close> by auto
     thus ?thesis
@@ -180,5 +198,6 @@ next
 next
   case 8 thus ?case by(auto simp: heap_merge braun_size_merge neq_Leaf_iff)
 qed
+
 
 end
