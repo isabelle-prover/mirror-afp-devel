@@ -24,6 +24,28 @@ begin
   lemmas intersect'_language[simp] = intersection.intersect_language[folded NGBA.language_def]
   lemmas intersect'_nodes_finite[intro] = intersection.intersect_nodes_finite[folded NGBA.nodes_def]
 
+  global_interpretation intersection_list: automaton_intersection_list_trace
+    nba nba.alphabet nba.initial nba.transition nba.accepting infs
+    ngba ngba.alphabet ngba.initial ngba.transition ngba.accepting "gen infs"
+    "\<lambda> cs. map (\<lambda> k pp. (cs ! k) (pp ! k)) [0 ..< length cs]"
+    defines intersect_list' = intersection_list.intersect
+  proof unfold_locales
+    fix cs :: "('b \<Rightarrow> bool) list" and ws :: "'b stream list"
+    assume 1: "length cs = length ws"
+    have "gen infs (map (\<lambda> k pp. (cs ! k) (pp ! k)) [0 ..< length cs]) (stranspose ws) \<longleftrightarrow>
+      (\<forall> k < length cs. infs (\<lambda> pp. (cs ! k) (pp ! k)) (stranspose ws))"
+      by (auto simp: gen_def)
+    also have "\<dots> \<longleftrightarrow> (\<forall> k < length cs. infs (cs ! k) (smap (\<lambda> pp. pp ! k) (stranspose ws)))"
+      by (simp add: comp_def)
+    also have "\<dots> \<longleftrightarrow> (\<forall> k < length cs. infs (cs ! k) (ws ! k))" using 1 by simp
+    also have "\<dots> \<longleftrightarrow> list_all2 infs cs ws" using 1 unfolding list_all2_conv_all_nth by simp
+    finally show "gen infs (map (\<lambda> k pp. (cs ! k) (pp ! k)) [0 ..< length cs]) (stranspose ws) \<longleftrightarrow>
+      list_all2 infs cs ws" by this
+  qed
+
+  lemmas intersect_list'_language[simp] = intersection_list.intersect_language[folded NGBA.language_def]
+  lemmas intersect_list'_nodes_finite[intro] = intersection_list.intersect_nodes_finite[folded NGBA.nodes_def]
+
   global_interpretation union: automaton_union_trace
     nba nba.alphabet nba.initial nba.transition nba.accepting infs
     nba nba.alphabet nba.initial nba.transition nba.accepting infs
@@ -42,5 +64,14 @@ begin
     assumes "finite (NBA.nodes A)" "finite (NBA.nodes B)"
     shows "finite (NBA.nodes (intersect A B))"
     using intersect'_nodes_finite assms by simp
+
+  abbreviation intersect_list where "intersect_list AA \<equiv> degeneralize (intersect_list' AA)"
+
+  lemma intersect_list_language[simp]: "NBA.language (intersect_list AA) = \<Inter> (NBA.language ` set AA)"
+    by simp
+  lemma intersect_list_nodes_finite[intro]:
+    assumes "list_all (finite \<circ> NBA.nodes) AA"
+    shows "finite (NBA.nodes (intersect_list AA))"
+    using intersect_list'_nodes_finite assms by simp
 
 end

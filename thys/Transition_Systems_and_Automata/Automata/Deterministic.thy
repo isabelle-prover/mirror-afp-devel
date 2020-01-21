@@ -447,7 +447,7 @@ begin
       "condition\<^sub>2 (combine AA) = condition (map condition\<^sub>1 AA)"
       unfolding combine_def by auto
 
-    (* TODO: get rid of indices, express this using stranspose *)
+    (* TODO: get rid of indices, express this using stranspose and listset *)
     lemma combine_trace_smap:
       assumes "length pp = length AA" "k < length AA"
       shows "smap (\<lambda> pp. pp ! k) (b.trace (combine AA) w pp) = a.trace (AA ! k) w (pp ! k)"
@@ -465,11 +465,10 @@ begin
       assumes "list_all (finite \<circ> a.nodes) AA"
       shows "finite (b.nodes (combine AA))"
     proof (rule finite_subset)
+      (* TODO: this is used more than once, make top level theorem *)
       show "b.nodes (combine AA) \<subseteq> listset (map a.nodes AA)"
         by (force simp: listset_member list_all2_conv_all_nth combine_nodes_length)
-      have "finite (listset (map a.nodes AA)) \<longleftrightarrow> list_all finite (map a.nodes AA)"
-        by (rule listset_finite) (auto simp: list_all_iff)
-      then show "finite (listset (map a.nodes AA))" using assms by (simp add: list.pred_map)
+      show "finite (listset (map a.nodes AA))" using list.pred_map assms by auto
     qed
     lemma combine_nodes_card:
       assumes "list_all (finite \<circ> a.nodes) AA"
@@ -477,9 +476,7 @@ begin
     proof -
       have "card (b.nodes (combine AA)) \<le> card (listset (map a.nodes AA))"
       proof (rule card_mono)
-        have "finite (listset (map a.nodes AA)) \<longleftrightarrow> list_all finite (map a.nodes AA)"
-          by (rule listset_finite) (auto simp: list_all_iff)
-        then show "finite (listset (map a.nodes AA))" using assms by (simp add: list.pred_map)
+        show "finite (listset (map a.nodes AA))" using list.pred_map assms by auto
         show "b.nodes (combine AA) \<subseteq> listset (map a.nodes AA)"
           by (force simp: listset_member list_all2_conv_all_nth combine_nodes_length)
       qed

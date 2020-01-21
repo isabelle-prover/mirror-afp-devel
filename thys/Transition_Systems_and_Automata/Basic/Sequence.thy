@@ -35,6 +35,9 @@ begin
   lemma bex_bind[iff]: "Bex (set (xs \<bind> f)) P \<longleftrightarrow> (\<exists> x \<in> set xs. \<exists> y \<in> set (f x). P y)"
     unfolding set_list_bind by simp
 
+  lemma list_choice: "list_all (\<lambda> x. \<exists> y. P x y) xs \<longleftrightarrow> (\<exists> ys. list_all2 P xs ys)"
+    by (induct xs) (auto simp: list_all2_Cons1)
+
   lemma listset_member: "ys \<in> listset XS \<longleftrightarrow> list_all2 (\<in>) ys XS"
     by (induct XS arbitrary: ys) (auto simp: set_Cons_def list_all2_Cons2)
   lemma listset_empty[iff]: "listset XS = {} \<longleftrightarrow> \<not> list_all (\<lambda> A. A \<noteq> {}) XS"
@@ -56,6 +59,10 @@ begin
     also have "finite A \<and> \<dots> \<longleftrightarrow> list_all finite (A # XS)" by simp
     finally show ?case by this
   qed
+  lemma listset_finite'[intro]:
+    assumes "list_all finite XS"
+    shows "finite (listset XS)"
+    using infinite_imp_nonempty assms by blast
   lemma listset_card[simp]: "card (listset XS) = prod_list (map card XS)"
   proof (induct XS)
     case Nil
@@ -339,6 +346,26 @@ begin
     by (induct k arbitrary: a xs) (auto)
   lemma sscan_sdrop[simp]: "sdrop k (sscan f xs a) = sscan f (sdrop k xs) (fold f (stake k xs) a)"
     by (induct k arbitrary: a xs) (auto)
+
+  subsection \<open>Transposing Streams\<close>
+
+  primcorec (transfer) stranspose :: "'a stream list \<Rightarrow> 'a list stream" where
+    "stranspose ws = map shd ws ## stranspose (map stl ws)"
+
+  lemma stranspose_eq_scons[iff]: "stranspose ws = a ## w \<longleftrightarrow> map shd ws = a \<and> stranspose (map stl ws) = w"
+    using stranspose.ctr stream.inject by metis
+  lemma scons_eq_stranspose[iff]: "a ## w = stranspose ws \<longleftrightarrow> a = map shd ws \<and> w = stranspose (map stl ws)"
+    using stranspose.ctr stream.inject by metis
+
+  lemma stranspose_nil[simp]: "stranspose [] = sconst []" by coinduction auto
+  lemma stranspose_cons[simp]: "stranspose (w # ws) = smap2 Cons w (stranspose ws)"
+    by (coinduction arbitrary: w ws) (metis list.simps(9) smap2.simps stranspose.simps stream.sel)
+
+  lemma snth_stranspose[simp]: "stranspose ws !! k = map (\<lambda> w. w !! k) ws" by (induct k arbitrary: ws) (auto)
+  lemma stranspose_nth[simp]:
+    assumes "k < length ws"
+    shows "smap (\<lambda> xs. xs ! k) (stranspose ws) = ws ! k"
+    using assms by (auto intro: eqI_snth)
 
   subsection \<open>Distinct Streams\<close>
 

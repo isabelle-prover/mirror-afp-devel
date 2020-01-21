@@ -321,6 +321,180 @@ begin
 
   end
 
+  locale automaton_intersection_list =
+    a: automaton automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 +
+    b: automaton automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
+    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state set \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
+    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
+    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state set"
+    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
+    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
+    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state list set \<Rightarrow> ('label, 'state list) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
+    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
+    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state list set"
+    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state list) trans"
+    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
+    +
+    fixes condition :: "'condition\<^sub>1 list \<Rightarrow> 'condition\<^sub>2"
+  begin
+
+    definition intersect :: "'automaton\<^sub>1 list \<Rightarrow> 'automaton\<^sub>2" where
+      "intersect AA \<equiv> automaton\<^sub>2
+        (\<Inter> (alphabet\<^sub>1 ` set AA))
+        (listset (map initial\<^sub>1 AA))
+        (\<lambda> a pp. listset (map2 (\<lambda> A p. transition\<^sub>1 A a p) AA pp))
+        (condition (map condition\<^sub>1 AA))"
+
+    lemma intersect_simps[simp]:
+      "alphabet\<^sub>2 (intersect AA) = \<Inter> (alphabet\<^sub>1 ` set AA)"
+      "initial\<^sub>2 (intersect AA) = listset (map initial\<^sub>1 AA)"
+      "transition\<^sub>2 (intersect AA) a pp = listset (map2 (\<lambda> A p. transition\<^sub>1 A a p) AA pp)"
+      "condition\<^sub>2 (intersect AA) = condition (map condition\<^sub>1 AA)"
+      unfolding intersect_def by auto
+
+    lemma intersect_run_length:
+      assumes "length pp = length AA"
+      assumes "b.run (intersect AA) (w ||| r) pp"
+      assumes "qq \<in> sset r"
+      shows "length qq = length AA"
+    proof -
+      have "pred_stream (\<lambda> qq. length qq = length AA) r"
+        using assms(1, 2) by (coinduction arbitrary: w r pp)
+          (force elim: b.run.cases simp: listset_member list_all2_conv_all_nth)
+      then show ?thesis using assms(3) unfolding stream.pred_set by auto
+    qed
+    lemma intersect_run_stranspose:
+      assumes "length pp = length AA"
+      assumes "b.run (intersect AA) (w ||| r) pp"
+      obtains rr where "r = stranspose rr" "length rr = length AA"
+    proof
+      define rr where "rr \<equiv> map (\<lambda> k. smap (\<lambda> pp. pp ! k) r) [0 ..< length AA]"
+      have "length qq = length AA" if "qq \<in> sset r" for qq using intersect_run_length assms that by this
+      then show "r = stranspose rr"
+        unfolding rr_def by (coinduction arbitrary: r) (auto intro: nth_equalityI simp: comp_def)
+      show "length rr = length AA" unfolding rr_def by auto
+    qed
+
+    lemma intersect_run:
+      assumes "length rr = length AA" "length pp = length AA"
+      assumes "\<And> k. k < length AA \<Longrightarrow> a.run (AA ! k) (w ||| rr ! k) (pp ! k)"
+      shows "b.run (intersect AA) (w ||| stranspose rr) pp"
+    using assms
+    proof (coinduction arbitrary: w rr pp)
+      case (run ap r)
+      then show ?case
+      proof (intro conjI exI)
+        show "fst ap \<in> alphabet\<^sub>2 (intersect AA)"
+          using run by (force elim: a.run.cases simp: set_conv_nth)
+        show "snd ap \<in> transition\<^sub>2 (intersect AA) (fst ap) pp"
+          using run by (force elim: a.run.cases simp: listset_member list_all2_conv_all_nth)
+        show "\<forall> k < length AA. a.run' (AA ! k) (stl w ||| map stl rr ! k) (map shd rr ! k)"
+          using run by (force elim: a.run.cases)
+      qed auto
+    qed
+    lemma intersect_run_elim:
+      assumes "length rr = length AA" "length pp = length AA"
+      assumes "b.run (intersect AA) (w ||| stranspose rr) pp"
+      shows "k < length AA \<Longrightarrow> a.run (AA ! k) (w ||| rr ! k) (pp ! k)"
+    using assms
+    proof (coinduction arbitrary: w rr pp)
+      case (run ap wr)
+      then show ?case
+      proof (intro exI conjI)
+        show "fst ap \<in> alphabet\<^sub>1 (AA ! k)"
+          using run by (force elim: b.run.cases)
+        show "snd ap \<in> transition\<^sub>1 (AA ! k) (fst ap) (pp ! k)"
+          using run by (force elim: b.run.cases simp: listset_member list_all2_conv_all_nth)
+        show "b.run' (intersect AA) (stl w ||| stranspose (map stl rr)) (shd (stranspose rr))"
+          using run by (force elim: b.run.cases)
+      qed auto
+    qed
+
+    lemma intersect_nodes: "b.nodes (intersect AA) \<subseteq> listset (map a.nodes AA)"
+    proof
+      show "pp \<in> listset (map a.nodes AA)" if "pp \<in> b.nodes (intersect AA)" for pp
+        using that by (induct) (auto 0 3 simp: listset_member list_all2_conv_all_nth)
+    qed
+
+    lemma intersect_nodes_finite[intro]:
+      assumes "list_all (finite \<circ> a.nodes) AA"
+      shows "finite (b.nodes (intersect AA))"
+    proof (rule finite_subset)
+      show "b.nodes (intersect AA) \<subseteq> listset (map a.nodes AA)" using intersect_nodes by this
+      show "finite (listset (map a.nodes AA))" using list.pred_map assms by auto
+    qed
+
+  end
+
+  locale automaton_intersection_list_trace =
+    automaton_intersection_list
+      automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
+      automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 condition +
+    a: automaton_trace automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1 +
+    b: automaton_trace automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2
+    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state set \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
+    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
+    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state set"
+    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
+    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
+    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'state stream \<Rightarrow> bool"
+    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state list set \<Rightarrow> ('label, 'state list) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
+    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
+    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state list set"
+    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state list) trans"
+    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
+    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'state list stream \<Rightarrow> bool"
+    and condition :: "'condition\<^sub>1 list \<Rightarrow> 'condition\<^sub>2"
+    +
+    assumes test[iff]: "length cs = length ws \<Longrightarrow> test\<^sub>2 (condition cs) (stranspose ws) \<longleftrightarrow> list_all2 test\<^sub>1 cs ws"
+  begin
+
+    lemma intersect_language[simp]: "b.language (intersect AA) = \<Inter> (a.language ` set AA)"
+    proof safe
+      fix A w
+      assume 1: "w \<in> b.language (intersect AA)" "A \<in> set AA"
+      obtain r pp where 2:
+        "pp \<in> initial\<^sub>2 (intersect AA)"
+        "b.run (intersect AA) (w ||| r) pp"
+        "test\<^sub>2 (condition\<^sub>2 (intersect AA)) r"
+        using 1(1) unfolding b.language_def b.trace_alt_def by auto
+      have 3: "length pp = length AA" using 2(1) by (simp add: listset_member list_all2_conv_all_nth)
+      obtain rr where 4: "r = stranspose rr" "length rr = length AA"
+        using intersect_run_stranspose 3 2(2) by blast
+      obtain k where 5: "k < length AA" "A = AA ! k" using 1(2) unfolding set_conv_nth by auto
+      show "w \<in> a.language A"
+      proof
+        show "pp ! k \<in> initial\<^sub>1 A" using 2(1) 5 by (auto simp: listset_member list_all2_conv_all_nth)
+        show "a.run A (w ||| rr ! k) (pp ! k)" using intersect_run_elim 2(2) 3 4 5 by auto
+        show "test\<^sub>1 (condition\<^sub>1 A) (a.trace (w ||| rr ! k) (pp ! k))"
+          using 2(3) 4 5 unfolding a.trace_alt_def by (force simp: list_all2_iff set_conv_nth)
+      qed
+    next
+      fix w
+      assume 1: "w \<in> \<Inter> (a.language ` set AA)"
+      have 2: "\<forall> A \<in> set AA. \<exists> r p. p \<in> initial\<^sub>1 A \<and> a.run A (w ||| r) p \<and> test\<^sub>1 (condition\<^sub>1 A) r"
+        using 1 unfolding a.language_def a.trace_alt_def by auto
+      obtain rr pp where 3:
+        "length rr = length AA" "length pp = length AA"
+        "\<And> k. k < length AA \<Longrightarrow> pp ! k \<in> initial\<^sub>1 (AA ! k)"
+        "\<And> k. k < length AA \<Longrightarrow> a.run (AA ! k) (w ||| rr ! k) (pp ! k)"
+        "\<And> k. k < length AA \<Longrightarrow> test\<^sub>1 (condition\<^sub>1 (AA ! k)) (rr ! k)"
+        using 2
+        unfolding Ball_set list_choice_zip list_choice_pair
+        unfolding list.pred_set set_conv_nth
+        by force
+      show "w \<in> b.language (intersect AA)"
+      proof
+        show "pp \<in> initial\<^sub>2 (intersect AA)"
+          using 3 by (force simp: listset_member list_all2_iff set_conv_nth)
+        show "b.run (intersect AA) (w ||| stranspose rr) pp" using intersect_run 3 by auto
+        show "test\<^sub>2 (condition\<^sub>2 (intersect AA)) (b.trace (w ||| stranspose rr) pp)"
+          using 3 unfolding b.trace_alt_def by (force simp: list_all2_iff set_conv_nth)
+      qed
+    qed
+
+  end
+
   locale automaton_union =
     a: automaton automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 +
     b: automaton automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 +

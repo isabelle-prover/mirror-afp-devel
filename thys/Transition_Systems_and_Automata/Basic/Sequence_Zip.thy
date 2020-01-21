@@ -32,6 +32,22 @@ begin
     shows "u || v = r || s \<longleftrightarrow> u = r \<and> v = s"
     using assms zip_eq_conv by metis
 
+  lemma list_rel_pred_zip: "list_all2 P xs ys \<longleftrightarrow> length xs = length ys \<and> list_all (case_prod P) (xs || ys)"
+    unfolding list_all2_conv_all_nth list_all_length by auto
+
+  lemma list_choice_zip: "list_all (\<lambda> x. \<exists> y. P x y) xs \<longleftrightarrow>
+    (\<exists> ys. length ys = length xs \<and> list_all (case_prod P) (xs || ys))"
+    unfolding list_choice list_rel_pred_zip by metis
+  lemma list_choice_pair: "list_all (\<lambda> xy. case_prod (\<lambda> x y. \<exists> z. P x y z) xy) (xs || ys) \<longleftrightarrow>
+    (\<exists> zs. length zs = min (length xs) (length ys) \<and> list_all (\<lambda> (x, y, z). P x y z) (xs || ys || zs))"
+  proof -
+    have 1: "list_all (\<lambda> (xy, z). case xy of (x, y) \<Rightarrow> P x y z) ((xs || ys) || zs) \<longleftrightarrow>
+      list_all (\<lambda> (x, y, z). P x y z) (xs || ys || zs)" for zs
+      unfolding zip_assoc list.pred_map by (auto intro!: list.pred_cong)
+    have 2: "(\<lambda> (x, y). \<exists> z. P x y z) = (\<lambda> xy. \<exists> z. case xy of (x, y) \<Rightarrow> P x y z)" by auto
+    show ?thesis unfolding list_choice_zip 1 2 by force
+  qed
+
   lemma list_rel_zip[iff]:
     assumes "length u = length v" "length r = length s"
     shows "list_all2 (rel_prod A B) (u || v) (r || s) \<longleftrightarrow> list_all2 A u r \<and> list_all2 B v s"
