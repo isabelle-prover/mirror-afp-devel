@@ -564,6 +564,21 @@ begin
       show ?thesis using b 1 Inr 2 by this
     qed
 
+    lemma union_nodes:
+      assumes "alphabet\<^sub>1 A = alphabet\<^sub>2 B"
+      shows "c.nodes (union A B) \<subseteq> a.nodes A <+> b.nodes B"
+    proof
+      fix pq
+      assume "pq \<in> c.nodes (union A B)"
+      then show "pq \<in> a.nodes A <+> b.nodes B" using assms by (induct) (auto 0 3)
+    qed
+
+    lemma union_nodes_finite[intro]:
+      assumes "alphabet\<^sub>1 A = alphabet\<^sub>2 B"
+      assumes "finite (a.nodes A)" "finite (b.nodes B)"
+      shows "finite (c.nodes (union A B))"
+      using finite_subset union_nodes assms by (auto intro: finite_Plus)
+
   end
 
   locale automaton_union_trace =
@@ -664,6 +679,25 @@ begin
         using assms by (coinduction arbitrary: w r p) (force elim: b.run.cases)
       show "a.run (AA ! k) (w ||| smap snd r) p"
         using assms by (coinduction arbitrary: w r p) (force elim: b.run.cases)
+    qed
+
+    lemma union_nodes:
+      assumes "\<Inter> (alphabet\<^sub>1 ` set AA) = \<Union> (alphabet\<^sub>1 ` set AA)"
+      shows "b.nodes (union AA) \<subseteq> (\<Union> k < length AA. {k} \<times> a.nodes (AA ! k))"
+    proof
+      show "kp \<in> (\<Union> k < length AA. {k} \<times> a.nodes (AA ! k))" if "kp \<in> b.nodes (union AA)" for kp
+        using that assms by (induct) (auto 0 4)
+    qed
+
+    lemma union_nodes_finite[intro]:
+      assumes "\<Inter> (alphabet\<^sub>1 ` set AA) = \<Union> (alphabet\<^sub>1 ` set AA)"
+      assumes "list_all (finite \<circ> a.nodes) AA"
+      shows "finite (b.nodes (union AA))"
+    proof (rule finite_subset)
+      show "b.nodes (union AA) \<subseteq> (\<Union> k < length AA. {k} \<times> a.nodes (AA ! k))"
+        using union_nodes assms(1) by this
+      show "finite (\<Union> k < length AA. {k} \<times> a.nodes' (AA ! k))"
+        using assms(2) unfolding list_all_length by auto
     qed
 
   end
