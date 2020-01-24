@@ -970,23 +970,23 @@ theorem gt_total_ground:
   assumes extf_total: "\<And>f. ext_total (extf f)"
   shows "ground t \<Longrightarrow> ground s \<Longrightarrow> t >\<^sub>t s \<or> s >\<^sub>t t \<or> t = s"
 proof (simp only: atomize_imp,
-    rule measure_induct_rule[of "\<lambda>(t, s). hsize t + hsize s"
+    rule measure_induct_rule[of "\<lambda>(t, s). {# hsize t, hsize s #}"
       "\<lambda>(t, s). ground t \<longrightarrow> ground s \<longrightarrow> t >\<^sub>t s \<or> s >\<^sub>t t \<or> t = s" "(t, s)", simplified prod.case],
     simp only: split_paired_all prod.case atomize_imp[symmetric])
   fix t s :: "('s, 'v) tm"
   assume
-    ih: "\<And>ta sa. hsize ta + hsize sa < hsize t + hsize s \<Longrightarrow> ground ta \<Longrightarrow> ground sa \<Longrightarrow>
+    ih: "\<And>ta sa. {# hsize ta, hsize sa #} < {# hsize t, hsize s #} \<Longrightarrow> ground ta \<Longrightarrow> ground sa \<Longrightarrow>
       ta >\<^sub>t sa \<or> sa >\<^sub>t ta \<or> ta = sa" and
     gr_t: "ground t" and gr_s: "ground s"
 
   let ?case = "t >\<^sub>t s \<or> s >\<^sub>t t \<or> t = s"
 
   have "chkchop (>\<^sub>t) t s \<or> s >\<^sub>t t"
-    unfolding chkchop_def tm.case_eq_if using ih[of t "fun s"] ih[of t "arg s"]
-    by (metis gr_s gr_t gt_chop gt_imp_vars ih nat_add_left_cancel_less hsize_chop_lt subset_empty)
+    unfolding chkchop_def tm.case_eq_if using ih[of t "chop s"]
+    by (metis (no_types, lifting) add_mset_commute add_mset_lt_left_lt gr_s gr_t ground_chop gt_chop hsize_chop_lt)
   moreover have "chkchop (>\<^sub>t) s t \<or> t >\<^sub>t s"
-    unfolding chkchop_def tm.case_eq_if using ih[of "fun t" s] ih[of "arg t" s]
-    by (metis add_less_cancel_right gr_s gr_t gt_chop gt_imp_vars ih hsize_chop_lt subset_empty)
+    unfolding chkchop_def tm.case_eq_if using ih[of "chop t" s]
+    by (metis add_mset_lt_left_lt gr_s gr_t ground_chop gt_chop.intros gt_iff_chop_diff_same hsize_chop_lt)
   moreover
   {
     assume
@@ -1042,8 +1042,8 @@ proof (simp only: atomize_imp,
       }
       ultimately have ?case
         using ih gr_ss gr_ts
-          ext_total.total[OF extf_total, rule_format, of "set ?ts" "set ?ss" "(>\<^sub>t)" ?ts ?ss g]
-        by (metis add_strict_mono in_listsI hsize_in_args)
+          ext_total.total[OF extf_total, rule_format, of "set ?ts \<union> set ?ss" "set ?ts \<union> set ?ss" "(>\<^sub>t)" ?ts ?ss g]
+        using epo.less_multiset_doubletons epo_axioms hsize_in_args in_listsI by (metis Un_iff)
     }
     ultimately have ?case
       using gt_sym_total by blast
