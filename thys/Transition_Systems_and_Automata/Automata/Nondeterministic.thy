@@ -609,4 +609,104 @@ begin
 
   end
 
+  locale automaton_union_list =
+    a: automaton automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 +
+    b: automaton automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
+    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state set \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
+    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
+    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state set"
+    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
+    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
+    and automaton\<^sub>2 :: "'label set \<Rightarrow> (nat \<times> 'state) set \<Rightarrow> ('label, nat \<times> 'state) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
+    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
+    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> (nat \<times> 'state) set"
+    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, nat \<times> 'state) trans"
+    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
+    +
+    fixes condition :: "'condition\<^sub>1 list \<Rightarrow> 'condition\<^sub>2"
+  begin
+
+    definition union :: "'automaton\<^sub>1 list \<Rightarrow> 'automaton\<^sub>2" where
+      "union AA \<equiv> automaton\<^sub>2
+        (\<Union> (alphabet\<^sub>1 ` set AA))
+        (\<Union> k < length AA. {k} \<times> initial\<^sub>1 (AA ! k))
+        (\<lambda> a (k, p). {k} \<times> transition\<^sub>1 (AA ! k) a p)
+        (condition (map condition\<^sub>1 AA))"
+
+    lemma union_simps[simp]:
+      "alphabet\<^sub>2 (union AA) = \<Union> (alphabet\<^sub>1 ` set AA)"
+      "initial\<^sub>2 (union AA) = (\<Union> k < length AA. {k} \<times> initial\<^sub>1 (AA ! k))"
+      "transition\<^sub>2 (union AA) a (k, p) = {k} \<times> transition\<^sub>1 (AA ! k) a p"
+      "condition\<^sub>2 (union AA) = condition (map condition\<^sub>1 AA)"
+      unfolding union_def by auto
+
+    lemma union_run:
+      assumes "\<Inter> (alphabet\<^sub>1 ` set AA) = \<Union> (alphabet\<^sub>1 ` set AA)"
+      assumes "A \<in> set AA"
+      assumes "a.run A (w ||| s) p"
+      obtains k where "k < length AA" "A = AA ! k" "b.run (union AA) (w ||| sconst k ||| s) (k, p)"
+    proof -
+      obtain k where 1: "k < length AA" "A = AA ! k" using assms(2) unfolding set_conv_nth by auto
+      show ?thesis
+      proof
+        show "k < length AA" "A = AA ! k" using 1 by this
+        show "b.run (union AA) (w ||| sconst k ||| s) (k, p)"
+          using assms 1(2) by (coinduction arbitrary: w s p) (force elim: a.run.cases)
+      qed
+    qed
+    lemma run_union:
+      assumes "\<Inter> (alphabet\<^sub>1 ` set AA) = \<Union> (alphabet\<^sub>1 ` set AA)"
+      assumes "k < length AA"
+      assumes "b.run (union AA) (w ||| r) (k, p)"
+      obtains s where "r = sconst k ||| s" "a.run (AA ! k) (w ||| s) p"
+    proof
+      show "r = sconst k ||| smap snd r"
+        using assms by (coinduction arbitrary: w r p) (force elim: b.run.cases)
+      show "a.run (AA ! k) (w ||| smap snd r) p"
+        using assms by (coinduction arbitrary: w r p) (force elim: b.run.cases)
+    qed
+
+  end
+
+  locale automaton_union_list_trace =
+    automaton_union_list
+      automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
+      automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 condition +
+    a: automaton_trace automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1 +
+    b: automaton_trace automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2
+    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state set \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
+    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
+    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state set"
+    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
+    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
+    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'state stream \<Rightarrow> bool"
+    and automaton\<^sub>2 :: "'label set \<Rightarrow> (nat \<times> 'state) set \<Rightarrow> ('label, nat \<times> 'state) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
+    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
+    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> (nat \<times> 'state) set"
+    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, nat \<times> 'state) trans"
+    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
+    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> (nat \<times> 'state) stream \<Rightarrow> bool"
+    and condition :: "'condition\<^sub>1 list \<Rightarrow> 'condition\<^sub>2"
+    +
+    assumes test[iff]: "test\<^sub>2 (condition cs) (sconst k ||| w) \<longleftrightarrow> test\<^sub>1 (cs ! k) w"
+  begin
+
+    lemma union_language[simp]:
+      assumes "\<Inter> (alphabet\<^sub>1 ` set AA) = \<Union> (alphabet\<^sub>1 ` set AA)"
+      shows "b.language (union AA) = \<Union> (a.language ` set AA)"
+    proof
+      show "b.language (union AA) \<subseteq> \<Union> (a.language ` set AA)"
+        using assms
+        unfolding a.language_def b.language_def
+        unfolding a.trace_alt_def b.trace_alt_def
+        by (force elim: run_union)
+      show "\<Union> (a.language ` set AA) \<subseteq> b.language (union AA)"
+        using assms
+        unfolding a.language_def b.language_def
+        unfolding a.trace_alt_def b.trace_alt_def
+        by (force elim!: union_run)
+    qed
+
+  end
+
 end

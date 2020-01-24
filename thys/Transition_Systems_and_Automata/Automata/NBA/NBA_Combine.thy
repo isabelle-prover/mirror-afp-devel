@@ -56,6 +56,15 @@ begin
 
   lemmas union_language = union.union_language
 
+  global_interpretation union_list: automaton_union_list_trace
+    nba nba.alphabet nba.initial nba.transition nba.accepting infs
+    nba nba.alphabet nba.initial nba.transition nba.accepting infs
+    "\<lambda> cs (k, p). (cs ! k) p"
+    defines union_list = union_list.union
+    by (unfold_locales) (auto simp: szip_sconst_smap_fst comp_def)
+
+  lemmas union_list_language = union_list.union_language
+
   abbreviation intersect where "intersect A B \<equiv> degeneralize (intersect' A B)"
 
   lemma intersect_language[simp]: "NBA.language (intersect A B) = NBA.language A \<inter> NBA.language B"
