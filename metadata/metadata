@@ -5254,18 +5254,18 @@ topic = Mathematics/Number Theory, Mathematics/Analysis
 date = 2017-10-12
 notify = eberlm@in.tum.de
 abstract =
-  <p>This entry builds upon the results about formal and analytic Dirichlet 
+  <p>This entry builds upon the results about formal and analytic Dirichlet
   series to define the Hurwitz &zeta; function &zeta;(<em>a</em>,<em>s</em>) and,
   based on that, the Riemann &zeta; function &zeta;(<em>s</em>).
   This is done by first defining them for &real;(<em>z</em>) > 1
-  and then successively extending the domain to the left using the 
+  and then successively extending the domain to the left using the
   Euler&ndash;MacLaurin formula.</p>
-  <p>Apart from the most basic facts such as analyticity, the following 
+  <p>Apart from the most basic facts such as analyticity, the following
   results are provided:</p>
   <ul>
-  <li>the Stieltjes constants and the Laurent expansion of 
+  <li>the Stieltjes constants and the Laurent expansion of
     &zeta;(<em>s</em>) at <em>s</em> = 1</li>
-  <li>the non-vanishing of &zeta;(<em>s</em>) 
+  <li>the non-vanishing of &zeta;(<em>s</em>)
     for &real;(<em>z</em>) &ge; 1</li>
   <li>the relationship between &zeta;(<em>a</em>,<em>s</em>) and &Gamma;</li>
   <li>the special values at negative integers and positive even integers</li>
@@ -5273,7 +5273,7 @@ abstract =
   <li>the <a href="https://arxiv.org/abs/math/0405478">
     Hadjicostas&ndash;Chapman formula</a></li>
   </ul>
-  <p>The entry also contains Euler's analytic proof of the infinitude of primes, 
+  <p>The entry also contains Euler's analytic proof of the infinitude of primes,
   based on the fact that &zeta;(<i>s</i>) has a pole at <i>s</i> = 1.</p>
 
 [Linear_Recurrences]
@@ -8606,6 +8606,12 @@ abstract =
   <em>embeddable</em>, the class of types that can be injected into <em>V</em>
   (including <em>V</em> itself as well as <em>V*V</em>, etc.), and
   <em>small</em>, the class of types that correspond to some ZF set.</p>
+  extra-history =
+	Change history:
+	[2020-01-28]:  Generalisation of the "small" predicate to arbitrary sets;
+	Introduction of the coercion ord_of_nat :: "nat => V";
+	Addition of many new lemmas.
+
 
 [Interval_Arithmetic_Word32]
 title = Interval Arithmetic on 32-bit Words
