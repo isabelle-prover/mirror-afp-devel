@@ -800,21 +800,6 @@ lemma extf_map2:
   using gt_trans apply blast
   by (simp add: assms)+
 
-(* TODO: move ? *)
-lemma less_multiset_doubletons:
-  assumes
-    "y <  t \<or>  y <  s"  
-    "x <  t \<or>  x <  s" 
-  shows 
-    "{# y,  x#} < {# t,  s#}" 
-  unfolding less_multiset\<^sub>D\<^sub>M
-proof (intro exI)
-  let ?X = "{# t,  s#}"
-  let ?Y = "{#y, x#}"
-  show "?X \<noteq> {#} \<and> ?X \<subseteq># {#t, s#} \<and> {#y, x#} = {#t, s#} - ?X + ?Y \<and> (\<forall>k. k \<in># ?Y \<longrightarrow> (\<exists>a. a \<in># ?X \<and> k < a))"
-    using add_eq_conv_diff assms(1) assms(2) by auto
-qed
-
 theorem gt_sus: 
   assumes \<rho>_wary: "wary_subst \<rho>"
   assumes ghd: "\<And>x. ground_heads (Var x) = UNIV" (* This condition is only needed for gt_same, not for gt_diff ! *)
@@ -1042,8 +1027,8 @@ proof (simp only: atomize_imp,
       }
       ultimately have ?case
         using ih gr_ss gr_ts
-          ext_total.total[OF extf_total, rule_format, of "set ?ts \<union> set ?ss" "set ?ts \<union> set ?ss" "(>\<^sub>t)" ?ts ?ss g]
-        using epo.less_multiset_doubletons epo_axioms hsize_in_args in_listsI by (metis Un_iff)
+          ext_total.total[OF extf_total, rule_format, of "set ?ts \<union> set ?ss" "(>\<^sub>t)" ?ts ?ss g]
+        using less_multiset_doubletons epo_axioms hsize_in_args in_listsI by (metis Un_iff)
     }
     ultimately have ?case
       using gt_sym_total by blast

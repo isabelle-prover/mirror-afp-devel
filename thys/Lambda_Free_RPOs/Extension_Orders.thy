@@ -106,7 +106,7 @@ sublocale ext_compat_list_strong < ext_compat_list
   by standard (fact compat_list)
 
 locale ext_total = ext +
-  assumes total: "(\<forall>y \<in> B. \<forall>x \<in> A. gt y x \<or> gt x y \<or> y = x) \<Longrightarrow> ys \<in> lists B \<Longrightarrow> xs \<in> lists A \<Longrightarrow>
+  assumes total: "(\<forall>y \<in> A. \<forall>x \<in> A. gt y x \<or> gt x y \<or> y = x) \<Longrightarrow> ys \<in> lists A \<Longrightarrow> xs \<in> lists A \<Longrightarrow>
     ext gt ys xs \<or> ext gt xs ys \<or> ys = xs"
 
 locale ext_wf = ext +
@@ -2052,5 +2052,20 @@ interpretation cwiseext: ext_hd_or_tl cwiseext
 
 interpretation cwiseext: ext_wf_bounded cwiseext
   by standard
+
+(* TODO: move ? *)
+lemma less_multiset_doubletons:
+  assumes
+    "y <  t \<or>  y <  s"  
+    "x <  t \<or>  x <  s" 
+  shows 
+    "{# y,  x#} < {# t,  s#}" 
+  unfolding less_multiset\<^sub>D\<^sub>M
+proof (intro exI)
+  let ?X = "{# t,  s#}"
+  let ?Y = "{#y, x#}"
+  show "?X \<noteq> {#} \<and> ?X \<subseteq># {#t, s#} \<and> {#y, x#} = {#t, s#} - ?X + ?Y \<and> (\<forall>k. k \<in># ?Y \<longrightarrow> (\<exists>a. a \<in># ?X \<and> k < a))"
+    using add_eq_conv_diff assms(1) assms(2) by auto
+qed
 
 end

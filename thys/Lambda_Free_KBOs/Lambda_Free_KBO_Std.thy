@@ -950,37 +950,39 @@ qed
 subsection \<open>Totality on Ground Terms\<close>
 
 theorem gt_total_ground:
-  assumes
-    extf_total: "\<And>f. ext_total (extf f)" and
-    gr_t: "ground t" and
-    gr_s: "ground s"
-  shows "t >\<^sub>t s \<or> s >\<^sub>t t \<or> t = s"
-  using gr_t gr_s
-proof (induct t arbitrary: s rule: tm_induct_apps)
-  case t: (apps \<xi> ts)
-  note ih = this(1) and gr_t = this(2) and gr_s = this(3)
+  assumes extf_total: "\<And>f. ext_total (extf f)"
+  shows "ground t \<Longrightarrow> ground s \<Longrightarrow> t >\<^sub>t s \<or> s >\<^sub>t t \<or> t = s"
+proof (simp only: atomize_imp,
+    rule measure_induct_rule[of "\<lambda>(t, s). {# size t, size s #}"
+      "\<lambda>(t, s). ground t \<longrightarrow> ground s \<longrightarrow> t >\<^sub>t s \<or> s >\<^sub>t t \<or> t = s" "(t, s)", simplified prod.case],
+    simp only: split_paired_all prod.case atomize_imp[symmetric])
+  fix t s :: "('s, 'v) tm"
+  assume
+    ih: "\<And>ta sa. {# size ta, size sa #} < {# size t, size s #} \<Longrightarrow> ground ta \<Longrightarrow> ground sa \<Longrightarrow>
+      ta >\<^sub>t sa \<or> sa >\<^sub>t ta \<or> ta = sa" and
+    gr_t: "ground t" and gr_s: "ground s"
 
-  let ?t = "apps (Hd \<xi>) ts"
+  let ?case = "t >\<^sub>t s \<or> s >\<^sub>t t \<or> t = s"
 
   have
-    vars_t: "vars_mset ?t \<supseteq># vars_mset s" and
-    vars_s: "vars_mset s \<supseteq># vars_mset ?t"
+    vars_t: "vars_mset t \<supseteq># vars_mset s" and
+    vars_s: "vars_mset s \<supseteq># vars_mset t"
     by (simp only: vars_mset_empty_iff[THEN iffD2, OF gr_s]
       vars_mset_empty_iff[THEN iffD2, OF gr_t])+
 
   show ?case
-  proof (cases "wt ?t = wt s")
+  proof (cases "wt t = wt s")
     case False
     moreover
     {
-      assume "wt ?t > wt s"
-      hence "?t >\<^sub>t s"
+      assume "wt t > wt s"
+      hence "t >\<^sub>t s"
         by (rule gt_wt[OF vars_t])
     }
     moreover
     {
-      assume "wt s > wt ?t"
-      hence "s >\<^sub>t ?t"
+      assume "wt s > wt t"
+      hence "s >\<^sub>t t"
         by (rule gt_wt[OF vars_s])
     }
     ultimately show ?thesis
@@ -989,67 +991,66 @@ proof (induct t arbitrary: s rule: tm_induct_apps)
     case wt_t: True
     note wt_s = wt_t[symmetric]
 
-    show ?thesis
-    proof (cases s rule: tm_exhaust_apps)
-      case s: (apps \<zeta> ss)
-      obtain g where \<xi>: "\<xi> = Sym g"
-        by (metis ground_head[OF gr_t] hd.collapse(2) head_apps tm.sel(1))
-      obtain f where \<zeta>: "\<zeta> = Sym f"
-        using s by (metis ground_head[OF gr_s] hd.collapse(2) head_apps tm.sel(1))
+    obtain g where \<xi>: "head t = Sym g"
+      by (metis ground_head[OF gr_t] hd.collapse(2))
+    obtain f where \<zeta>: "head s = Sym f"
+      by (metis ground_head[OF gr_s] hd.collapse(2))
 
-      {
-        assume g_gt_f: "g >\<^sub>s f"
-        have "?t >\<^sub>t s"
-          by (rule gt_diff[OF vars_t wt_t]) (simp add: \<xi> \<zeta> s g_gt_f gt_hd_def)
-      }
-      moreover
-      {
-        assume f_gt_g: "f >\<^sub>s g"
-        have "s >\<^sub>t ?t"
-          by (rule gt_diff[OF vars_s wt_s]) (simp add: \<xi> \<zeta> s f_gt_g gt_hd_def)
-      }
-      moreover
-      {
-        assume g_eq_f: "g = f"
-        hence hd_t: "head ?t = head s"
-          using \<xi> \<zeta> t s by force
-        note hd_s = hd_t[symmetric]
+    {
+      assume g_gt_f: "g >\<^sub>s f"
+      have "t >\<^sub>t s"
+        by (rule gt_diff[OF vars_t wt_t]) (simp add: \<xi> \<zeta> g_gt_f gt_hd_def)
+    }
+    moreover
+    {
+      assume f_gt_g: "f >\<^sub>s g"
+      have "s >\<^sub>t t"
+        by (rule gt_diff[OF vars_s wt_s]) (simp add: \<xi> \<zeta> f_gt_g gt_hd_def)
+    }
+    moreover
+    {
+      assume g_eq_f: "g = f"
+      hence hd_t: "head t = head s"
+        using \<xi> \<zeta> by force
+      note hd_s = hd_t[symmetric]
 
-        have gr_ts: "\<forall>t \<in> set ts. ground t"
-          using gr_t by auto
-        have gr_ss: "\<forall>s \<in> set ss. ground s"
-          using gr_s s by auto
+      have gr_ts: "\<forall>t \<in> set (args t). ground t"
+        using gr_t ground_args by auto
+      have gr_ss: "\<forall>s \<in> set (args s). ground s"
+        using gr_s ground_args by auto
 
-        have ?thesis
-        proof (cases "ts = ss")
-          case ts_eq_ss: True
-          show ?thesis
-            using s \<xi> \<zeta> g_eq_f ts_eq_ss by blast
-        next
-          case False
-          hence "extf g (>\<^sub>t) ts ss \<or> extf g (>\<^sub>t) ss ts"
-            using ih gr_ss gr_ts
-              ext_total.total[OF extf_total, rule_format, of "set ts" "set ss" "(>\<^sub>t)" ts ss g]
-            by blast
-          moreover
-          {
-            assume extf: "extf g (>\<^sub>t) ts ss"
-            have "?t >\<^sub>t s"
-              by (rule gt_same[OF vars_t wt_t hd_t]) (simp add: extf \<xi> s)
-          }
-          moreover
-          {
-            assume extf: "extf g (>\<^sub>t) ss ts"
-            have "s >\<^sub>t ?t"
-              by (rule gt_same[OF vars_s wt_s hd_s]) (simp add: extf[unfolded g_eq_f] \<zeta> s)
-          }
-          ultimately show ?thesis
-            by sat
-        qed
-      }
-      ultimately show ?thesis
-        using gt_sym_total by blast
-    qed
+      let ?ts = "args t"
+      let ?ss = "args s"
+
+      have ?thesis
+      proof (cases "?ts = ?ss")
+        case ts_eq_ss: True
+        show ?thesis
+          using \<xi> \<zeta> g_eq_f ts_eq_ss by (simp add: tm_expand_apps)
+      next
+        case False
+        hence "extf g (>\<^sub>t) (args t) ?ss \<or> extf g (>\<^sub>t) ?ss ?ts"
+          using ih gr_ss gr_ts
+            ext_total.total[OF extf_total, rule_format, of "set ?ts \<union> set ?ss" "(>\<^sub>t)" ?ts ?ss g]
+          by (metis Un_commute Un_iff in_lists_iff_set less_multiset_doubletons size_in_args sup_ge2)
+        moreover
+        {
+          assume extf: "extf g (>\<^sub>t) ?ts ?ss"
+          have "t >\<^sub>t s"
+            by (rule gt_same[OF vars_t wt_t hd_t]) (simp add: extf \<xi>)
+        }
+        moreover
+        {
+          assume extf: "extf g (>\<^sub>t) ?ss ?ts"
+          have "s >\<^sub>t t"
+            by (rule gt_same[OF vars_s wt_s hd_s]) (simp add: extf[unfolded g_eq_f] \<zeta>)
+        }
+        ultimately show ?thesis
+          by sat
+      qed
+    }
+    ultimately show ?thesis
+      using gt_sym_total by blast
   qed
 qed
 
