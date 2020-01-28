@@ -127,11 +127,11 @@ qed
 subsection\<open>The class of small types\<close>
 
 class small =
-  assumes small: "\<exists>V_of :: 'a \<Rightarrow> V. \<exists>A. inj V_of \<and> range V_of \<le> (elts A)"
+  assumes small: "small (UNIV::'a set)"
 begin
 
- subclass embeddable
-   by intro_classes (use small in metis)
+subclass embeddable
+  by intro_classes (meson local.small small_def)
 
 end
 
@@ -144,15 +144,13 @@ proof -
     for to_nat :: "'a \<Rightarrow> nat"
     using that by (simp add: inj_compose inj_ord_of_nat)
   then show "class.small TYPE('a)"
-    apply intro_classes
-    by (metis VPow_iff * fun.set_map image_subset_iff local.ex_inj ord_of_nat_le_omega)
+    by intro_classes (metis small_image_nat local.ex_inj the_inv_into_onto)
 qed
 
 end
 
-
 lemma lepoll_UNIV_imp_small: "X \<lesssim> (UNIV::'a::small set) \<Longrightarrow> small X"
-  by (metis down inj_on_image_eqpoll_self lepoll_def lepoll_trans order_refl small small_eqcong small_iff)
+  by (meson lepoll_iff replacement small smaller_than_small)
 
 lemma lepoll_imp_small:
   fixes A :: "'a::small set"
@@ -176,8 +174,11 @@ proof -
     if "inj V_of1" "inj V_of2" "range V_of1 \<le> elts A" "range V_of2 \<le> elts B"
     for V_of1 :: "'a \<Rightarrow> V" and V_of2 :: "'b \<Rightarrow> V" and A B
     using that by (auto simp: inj_on_def)
-  then show "OFCLASS('a \<times> 'b, small_class)"
-    by intro_classes (meson small)
+  with small [where 'a='a] small [where 'a='b]
+  show "OFCLASS('a \<times> 'b, small_class)"
+    apply intro_classes
+    apply (clarsimp simp add: small_def)
+    by (metis down_raw dual_order.refl)
 qed
 
 instance sum :: (small,small) small
@@ -187,8 +188,11 @@ proof -
     if "inj V_of1" "inj V_of2" "range V_of1 \<le> elts A" "range V_of2 \<le> elts B"
     for V_of1 :: "'a \<Rightarrow> V" and V_of2 :: "'b \<Rightarrow> V" and A B
     using that by (force simp: inj_on_def split: sum.split)+
-  then show "OFCLASS('a + 'b, small_class)"
-    by intro_classes (meson small)
+  with small [where 'a='a] small [where 'a='b]
+  show "OFCLASS('a + 'b, small_class)"
+    apply intro_classes
+    apply (clarsimp simp add: small_def)
+    by (metis down_raw dual_order.refl)
 qed
 
 instance option :: (small) small
@@ -198,8 +202,11 @@ proof -
     if "inj V_of" "range V_of \<le> elts A"
     for V_of :: "'a \<Rightarrow> V" and A
     using that  by (auto simp: inj_on_def split: option.split_asm)
-  then show "OFCLASS('a option, small_class)"
-    by intro_classes (metis elts_vinsert small)
+  with small [where 'a='a]
+  show "OFCLASS('a option, small_class)"
+    apply intro_classes
+    apply (clarsimp simp add: small_def)
+    by (metis down_raw elts_vinsert subset_insertI)
 qed
 
 instance list :: (small) small
@@ -229,8 +236,11 @@ proof -
     finally show ?thesis
       by (simp add: lepoll_imp_small)
   qed
-  then show "OFCLASS('a list, small_class)"
-    by intro_classes (metis inj_V_of_list order_refl small small_iff)
+  with small [where 'a='a]
+  show "OFCLASS('a list, small_class)"
+    apply intro_classes
+    apply (clarsimp simp add: small_def)
+    by (metis inj_V_of_list order_refl small_def small_iff_range)
 qed
 
 instance "fun" :: (small,embeddable) embeddable
@@ -247,8 +257,7 @@ proof -
       by (auto simp: inj_on_def)
   qed
   then show "OFCLASS('a \<Rightarrow> 'b, embeddable_class)"
-    apply intro_classes
-    using embeddable_class.ex_inj small by auto
+    by intro_classes (metis embeddable_class.ex_inj small order_refl replacement small_iff)
 qed
 
 instance "fun" :: (small,small) small
@@ -267,8 +276,16 @@ proof -
     show "range ?\<phi> \<le> elts (VPi A (\<lambda>x. B))"
       using that by (simp add: VPi_I subset_eq)
   qed
-  then show "OFCLASS('a \<Rightarrow> 'b, small_class)"
-    by intro_classes (meson small)
+  with small [where 'a='a] small [where 'a='b]
+  show "OFCLASS('a \<Rightarrow> 'b, small_class)"
+    apply intro_classes
+    apply (clarsimp simp add: small_def)
+    by (metis down_raw dual_order.refl)
 qed
+
+lemma TC_small [iff]:
+  fixes A :: "'a::small set"
+  shows "small A"
+  using small smaller_than_small by blast
 
 end

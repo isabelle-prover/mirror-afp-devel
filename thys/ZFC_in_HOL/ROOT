@@ -6,7 +6,7 @@ session ZFC_in_HOL (AFP) = HOL +
     "HOL-Library"
     "HOL-Cardinals"
   theories
-    Kirby 
+    Ordinal_Exp 
     ZFC_Typeclasses
   document_files
     "root.tex"

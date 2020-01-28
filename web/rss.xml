@@ -135,7 +135,12 @@ ordinals) follows Kirby.&lt;/p&gt;
 developments that combine &lt;em&gt;V&lt;/em&gt; with other Isabelle/HOL types:
 &lt;em&gt;embeddable&lt;/em&gt;, the class of types that can be injected into &lt;em&gt;V&lt;/em&gt;
 (including &lt;em&gt;V&lt;/em&gt; itself as well as &lt;em&gt;V*V&lt;/em&gt;, etc.), and
-&lt;em&gt;small&lt;/em&gt;, the class of types that correspond to some ZF set.&lt;/p&gt;</description>
+&lt;em&gt;small&lt;/em&gt;, the class of types that correspond to some ZF set.&lt;/p&gt;
+extra-history =
+Change history:
+[2020-01-28]:  Generalisation of the &#34;small&#34; predicate to arbitrary sets;
+Introduction of the coercion ord_of_nat :: &#34;nat =&gt; V&#34;;
+Addition of many new lemmas. (revision 85592c2f97b1)</description>
     </item>
     <item>
        <title>Isabelle/C</title>
