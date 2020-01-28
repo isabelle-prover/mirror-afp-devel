@@ -8611,7 +8611,7 @@ abstract =
 	[2020-01-28]:  Generalisation of the "small" predicate and order types to arbitrary sets;
 	ordinal exponentiation;
 	introduction of the coercion ord_of_nat :: "nat => V";
-	numerous new lemmas. (revision 85592c2f97b1)
+	numerous new lemmas. (revision 6081d5be8d08)
 
 
 [Interval_Arithmetic_Word32]
