@@ -8,7 +8,7 @@
 section \<open>The Graceful Recursive Path Order for Lambda-Free Higher-Order Terms\<close>
 
 theory Lambda_Free_RPO_Std
-imports Lambda_Free_Term Extension_Orders
+imports Lambda_Free_Term Extension_Orders Nested_Multisets_Ordinals.Multiset_More
 abbrevs ">t" = ">\<^sub>t"
   and "\<ge>t" = "\<ge>\<^sub>t"
 begin

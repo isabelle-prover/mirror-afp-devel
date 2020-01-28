@@ -6,7 +6,7 @@
 section \<open>The Embedding Path Order for Lambda-Free Higher-Order Terms\<close>
 
 theory Lambda_Free_EPO
-imports Chop
+imports Chop Nested_Multisets_Ordinals.Multiset_More
 abbrevs ">t" = ">\<^sub>t"
   and "\<ge>t" = "\<ge>\<^sub>t"
 begin

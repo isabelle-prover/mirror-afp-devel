@@ -9,7 +9,7 @@
 section \<open>The Graceful Standard Knuth--Bendix Order for Lambda-Free Higher-Order Terms\<close>
 
 theory Lambda_Free_KBO_Std
-imports Lambda_Free_KBO_Util
+imports Lambda_Free_KBO_Util Nested_Multisets_Ordinals.Multiset_More
 abbrevs ">t" = ">\<^sub>t"
   and "\<ge>t" = "\<ge>\<^sub>t"
 begin
