@@ -2053,19 +2053,4 @@ interpretation cwiseext: ext_hd_or_tl cwiseext
 interpretation cwiseext: ext_wf_bounded cwiseext
   by standard
 
-(* TODO: move ? *)
-lemma less_multiset_doubletons:
-  assumes
-    "y <  t \<or>  y <  s"  
-    "x <  t \<or>  x <  s" 
-  shows 
-    "{# y,  x#} < {# t,  s#}" 
-  unfolding less_multiset\<^sub>D\<^sub>M
-proof (intro exI)
-  let ?X = "{# t,  s#}"
-  let ?Y = "{#y, x#}"
-  show "?X \<noteq> {#} \<and> ?X \<subseteq># {#t, s#} \<and> {#y, x#} = {#t, s#} - ?X + ?Y \<and> (\<forall>k. k \<in># ?Y \<longrightarrow> (\<exists>a. a \<in># ?X \<and> k < a))"
-    using add_eq_conv_diff assms(1) assms(2) by auto
-qed
-
 end
