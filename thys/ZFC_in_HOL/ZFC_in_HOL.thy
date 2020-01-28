@@ -27,41 +27,99 @@ axiomatization elts :: "V \<Rightarrow> V set"
    and inf_raw:         "range (g :: nat \<Rightarrow> V) \<in> range elts"
    and foundation:      "wf {(x,y). x \<in> elts y}"
 
-definition   "small X \<equiv> (X \<in> range elts)"
-text\<open>Remark: the alternative is to make this an abbreviation.
-However, then reasoning about @{term small} would invariably
-reduce to reasoning about certain (unknown) sets containing
-the elements in question. Instead we regard smallness as a primitive concept.\<close>
+lemma mem_not_refl [simp]: "i \<notin> elts i"
+  using wf_not_refl [OF foundation] by force
 
+lemma mem_not_sym: "\<not> (x \<in> elts y \<and> y \<in> elts x)"
+  using wf_not_sym [OF foundation] by force
+
+text \<open>A set is small if it can be injected into the extension of a V-set.\<close>
+definition small :: "'a set \<Rightarrow> bool" 
+  where "small X \<equiv> \<exists>V_of :: 'a \<Rightarrow> V. inj_on V_of X \<and> V_of ` X \<in> range elts"
+
+lemma small_empty [iff]: "small {}"
+  by (simp add: small_def down_raw)
+
+lemma small_iff_range: "small X \<longleftrightarrow> X \<in> range elts"
+  apply (simp add: small_def)
+  by (metis inj_on_id2 replacement_raw the_inv_into_onto)
 
 text\<open>Small classes can be mapped to sets.\<close>
 definition   "set X \<equiv> (if small X then inv elts X else inv elts {})"
 
 lemma set_of_elts [simp]: "set (elts x) = x"
-  by (simp add: ext set_def f_inv_into_f small_def)
+  by (force simp add: ext set_def f_inv_into_f small_def)
 
 lemma elts_of_set [simp]: "elts (set X) = (if small X then X else {})"
-  by (metis set_def bot.extremum down_raw f_inv_into_f small_def)
+  by (simp add: ZFC_in_HOL.set_def down_raw f_inv_into_f small_iff_range)
 
 lemma down: "Y \<subseteq> elts x \<Longrightarrow> small Y"
-  by (simp add: down_raw small_def)
+  by (simp add: down_raw small_iff_range)
 
 lemma Union [intro]: "small X \<Longrightarrow> small (Union (elts ` X))"
-  by (simp add: Union_raw small_def)
+  by (simp add: Union_raw small_iff_range)
 
 lemma Pow: "small X \<Longrightarrow> small (set ` Pow X)"
-  unfolding small_def using Pow_raw set_def down by force
+  unfolding small_iff_range using Pow_raw set_def down by force
 
-lemma replacement [intro,simp]: "small X \<Longrightarrow> small (f ` X)"
-  by (simp add: replacement_raw small_def)
+declare replacement_raw [intro,simp]
+
+lemma replacement [intro,simp]:
+  assumes "small X"
+  shows "small (f ` X)" 
+proof -
+  let ?A = "inv_into X f ` (f ` X)"
+  have AX: "?A \<subseteq> X"
+    by (simp add: image_subsetI inv_into_into)
+  have inj: "inj_on f ?A"
+    by (simp add: f_inv_into_f inj_on_def)
+  have injo: "inj_on (inv_into X f) (f ` X)"
+    using inj_on_inv_into by blast
+  have "\<exists>V_of. inj_on V_of (f ` X) \<and> V_of ` f ` X \<in> range elts"
+    if "inj_on V_of X" and "V_of ` X = elts x"
+    for V_of :: "'a \<Rightarrow> V" and x
+  proof (intro exI conjI)
+    show "inj_on (V_of \<circ> inv_into X f) (f ` X)"
+      by (meson \<open>inv_into X f ` f ` X \<subseteq> X\<close> comp_inj_on inj_on_subset injo that)
+    have "(\<lambda>x. V_of (inv_into X f (f x))) ` X = elts (set (V_of ` ?A))"
+      by (metis AX down elts_of_set image_image image_mono that(2))
+    then show "(V_of \<circ> inv_into X f) ` f ` X \<in> range elts"
+      by (metis image_comp image_image rangeI)
+  qed
+  then show ?thesis
+    using assms by (auto simp: small_def)
+qed
+
+text \<open>A little bootstrapping is needed to characterise @{term small} for sets of arbitrary type.\<close>
 
 lemma inf: "small (range (g :: nat \<Rightarrow> V))"
-  by (simp add: inf_raw small_def)
+  by (simp add: inf_raw small_iff_range)
 
-lemma inf' [simp]: "small (g ` N)" for N :: "nat set"
+lemma small_image_nat_V [simp]: "small (g ` N)" for g :: "nat \<Rightarrow> V"
   by (metis (mono_tags, hide_lams) down elts_of_set image_iff inf rangeI subsetI)
 
-lemma UN [intro]:
+lemma Finite_V:
+  fixes X :: "V set"
+  assumes "finite X" shows "small X"
+  using ex_bij_betw_nat_finite [OF assms] unfolding bij_betw_def by (metis small_image_nat_V)
+
+lemma small_insert_V:
+  fixes X :: "V set"
+  assumes "small X"
+  shows "small (insert a X)"
+proof (cases "finite X")
+  case True
+  then show ?thesis
+    by (simp add: Finite_V)
+next
+  case False
+  show ?thesis
+    using infinite_imp_bij_betw2 [OF False]
+    by (metis replacement Un_insert_right assms bij_betw_imp_surj_on sup_bot.right_neutral)
+qed
+
+lemma small_UN [simp,intro]:
+  fixes B :: "V \<Rightarrow> V set"
   assumes X: "small X" and B: "\<And>x. x \<in> X \<Longrightarrow> small (B x)"
   shows "small (\<Union>x\<in>X. B x)"
 proof -
@@ -70,31 +128,41 @@ proof -
   then show ?thesis
     using Union [OF replacement [OF X, of "\<lambda>x. set (B x)"]] by simp
 qed
+ 
+definition vinsert where "vinsert x y \<equiv> set (insert x (elts y))"
 
-lemma countable:
-  assumes "countable X" shows "small X"
-  by (metis down elts_of_set subset_range_from_nat_into inf assms)
+lemma elts_vinsert [simp]: "elts (vinsert x y) = insert x (elts y)"
+  using down small_insert_V vinsert_def by auto
+
+definition succ where "succ x \<equiv> vinsert x x"
+
+lemma elts_succ [simp]: "elts (succ x) = insert x (elts x)"
+  by (simp add: succ_def)
 
 lemma Finite:
   assumes "finite X" shows "small X"
-proof (cases "X = {}")
-  case True
-  then show ?thesis
-    by (simp add: down)
+  using assms
+proof induction
+  case empty
+  then show ?case
+    by simp
 next
-  case False
-  then have "card X > 0"
-    using assms card_gt_0_iff by blast
-  moreover obtain h where "bij_betw h {0..<card X} X"
-    using assms ex_bij_betw_nat_finite by blast
-  ultimately have "range (\<lambda>k. if k < card X then h k else h 0) = X"
-    by (auto simp: image_def bij_betw_def set_eq_iff atLeast0LessThan)
-  then show ?thesis
-    using inf by metis
+  case (insert a X)
+  then obtain V_of u where u: "inj_on V_of X" "V_of ` X = elts u"
+    by (meson small_def image_iff)
+  show ?case
+    unfolding small_def
+  proof (intro exI conjI)
+    show "inj_on (V_of(a:=u)) (insert a X)"
+      using u
+      apply (clarsimp simp add: inj_on_def)
+      by (metis image_eqI mem_not_refl)
+    have "(V_of(a:=u)) ` insert a X = elts (vinsert u u)"
+      using insert.hyps(2) u(2) by auto
+    then show "(V_of(a:=u)) ` insert a X \<in> range elts"
+      by (blast intro:  elim: )
+  qed
 qed
-
-lemma small_empty [iff]: "small {}"
-  by (blast intro: Finite)
 
 lemma small_insert:
   assumes "small X"
@@ -110,8 +178,13 @@ next
     by (metis replacement Un_insert_right assms bij_betw_imp_surj_on sup_bot.right_neutral)
 qed
 
+lemma smaller_than_small:
+  assumes "small A" "B \<subseteq> A" shows "small B"
+  using assms
+  by (metis down elts_of_set image_mono small_def small_iff_range subset_inj_on) 
+
 lemma small_insert_iff [iff]: "small (insert a X) \<longleftrightarrow> small X"
-  by (metis down elts_of_set small_insert subset_insertI)
+  by (meson small_insert smaller_than_small subset_insertI)
 
 lemma small_iff: "small X \<longleftrightarrow> (\<exists>x. X = elts x)"
   by (metis down elts_of_set subset_refl)
@@ -131,10 +204,10 @@ lemma small_Un: "small (elts x \<union> elts y)"
 lemma small_eqcong: "\<lbrakk>small X; X \<approx> Y\<rbrakk> \<Longrightarrow> small Y"
   by (metis bij_betw_imp_surj_on eqpoll_def replacement)
 
-lemma big_UNIV [simp]: "\<not> small UNIV"
+lemma big_UNIV [simp]: "\<not> small (UNIV::V set)" (is  "\<not> small ?U")
   proof
-    assume "small UNIV"
-    then have "small A" for A
+    assume "small ?U"
+    then have "small A" for A :: "V set"
       by (metis (full_types) UNIV_I down small_iff subsetI)
     then have "range elts = UNIV"
       by (meson small_iff surj_def)
@@ -160,12 +233,12 @@ end
 lemma elts_0 [simp]: "elts 0 = {}"
   by (simp add: zero_V_def)
 
-lemma set_empty: "set {} = 0"
+lemma set_empty [simp]: "set {} = 0"
   by (simp add: zero_V_def)
 
 instantiation V :: one
 begin
-definition one_V where "1 \<equiv> set {0}"
+definition one_V where "1 \<equiv> succ 0"
 instance ..
 end
 
@@ -241,13 +314,15 @@ lemma vsubsetCE [elim,no_atp]: "a \<le> b \<Longrightarrow> (c \<notin> elts a \
   \<comment> \<open>Classical elimination rule.\<close>
   using vsubsetD by blast
 
+lemma set_image_le_iff: "small A \<Longrightarrow> set (f ` A) \<le> B \<longleftrightarrow> (\<forall>x\<in>A. f x \<in> elts B)"
+  by auto
+
+lemma eq0_iff: "x = 0 \<longleftrightarrow> (\<forall>y. y \<notin> elts x)"
+  by auto
+
 lemma subset_iff_less_eq_V:
   assumes "small B" shows "A \<subseteq> B \<longleftrightarrow> set A \<le> set B \<and> small A"
   using assms down small_iff by auto
-
-lemma smaller_than_small:
-    assumes "small B" "A \<le> B" shows "small A"
-  using assms subset_iff_less_eq_V by blast
 
 lemma small_Collect [simp]: "small A \<Longrightarrow> small {x \<in> A. P x}"
   by (simp add: smaller_than_small)
@@ -272,6 +347,9 @@ lemma le_0 [iff]:
   fixes x::V shows "0 \<le> x"
   by auto
 
+lemma neq0_conv: "\<And>n::V. n \<noteq> 0 \<longleftrightarrow> 0 < n"
+  by (simp add: less_V_def)
+
 
 definition VPow :: "V \<Rightarrow> V"
   where "VPow x \<equiv> set (set ` Pow (elts x))"
@@ -288,7 +366,7 @@ lemma VPow_le_VPow_iff [simp]: "VPow a \<le> VPow b \<longleftrightarrow> a \<le
 lemma elts_VPow: "elts (VPow x) = set ` Pow (elts x)"
   by (auto simp: VPow_def Pow)
 
-lemma small_sup_iff [simp]: "small (X \<union> Y) \<longleftrightarrow> small X \<and> small Y"
+lemma small_sup_iff [simp]: "small (X \<union> Y) \<longleftrightarrow> small X \<and> small Y" for X::"V set"
   by (metis down small_Un small_iff sup_ge1 sup_ge2)
 
 lemma elts_sup_iff [simp]: "elts (x \<squnion> y) = elts x \<union> elts y"
@@ -316,8 +394,8 @@ lemma V_disjoint_iff: "x \<sqinter> y = 0 \<longleftrightarrow> elts x \<inter> 
   by (metis down elts_of_set inf_V_def inf_le1 zero_V_def)
 
 text\<open>I've no idea why @{term bdd_above} is treated differently from @{term bdd_below}, but anyway\<close>
-lemma bdd_above_iff_small [simp]: "bdd_above X = small X"
-  proof
+lemma bdd_above_iff_small [simp]: "bdd_above X = small X" for X::"V set"
+proof
   show "small X" if "bdd_above X"
   proof -
     obtain a where "\<forall>x\<in>X. x \<le> a"
@@ -350,8 +428,8 @@ instance
     if "X \<noteq> {}" "\<And>x. x \<in> X \<Longrightarrow> z \<le> x"
     for X :: "V set" and z :: V
     using that
-    apply (simp add: bdd_below_V_def Inf_V_def split: if_split_asm)
-    by (metis INF_greatest INT_lower down elts_of_set equals0I less_eq_V_def that)
+    apply (clarsimp simp add: bdd_below_V_def Inf_V_def less_eq_V_def split: if_split_asm)
+    by (meson INT_subset_iff down eq_refl equals0I)
   show "x \<le> \<Squnion> X" if "x \<in> X" and "bdd_above X" for x :: V and X :: "V set"
     using that Sup_V_def by auto
   show "\<Squnion> X \<le> (z::V)" if "X \<noteq> {}" "\<And>x. x \<in> X \<Longrightarrow> x \<le> z" for X :: "V set" and z :: V
@@ -359,7 +437,7 @@ instance
 qed
 end
 
-lemma Sup_upper: "\<lbrakk>x \<in> A; small A\<rbrakk> \<Longrightarrow> x \<le> \<Squnion>A"
+lemma Sup_upper: "\<lbrakk>x \<in> A; small A\<rbrakk> \<Longrightarrow> x \<le> \<Squnion>A" for A::"V set"
   by (auto simp: Sup_V_def SUP_upper Union less_eq_V_def)
 
 lemma Sup_least:
@@ -379,7 +457,7 @@ lemma Sup_V_insert:
   fixes x::V assumes "small A" shows "\<Squnion>(insert x A) = x \<squnion> \<Squnion>A"
   by (simp add: assms cSup_insert_If)
 
-lemma Sup_Un_distrib: "\<lbrakk>small A; small B\<rbrakk> \<Longrightarrow> \<Squnion>(A \<union> B) = \<Squnion>A \<squnion> \<Squnion>B"
+lemma Sup_Un_distrib: "\<lbrakk>small A; small B\<rbrakk> \<Longrightarrow> \<Squnion>(A \<union> B) = \<Squnion>A \<squnion> \<Squnion>B" for A::"V set"
   by auto
 
 lemma SUP_sup_distrib:
@@ -391,20 +469,21 @@ lemma SUP_const [simp]: "(SUP y \<in> A. a) = (if A = {} then (0::V) else a)"
   by simp
 
 lemma cSUP_subset_mono:
-  "\<lbrakk>small (g ` B); A \<subseteq> B; \<And>x. x \<in> A \<Longrightarrow> f x \<le> g x\<rbrakk> \<Longrightarrow> \<Squnion> (f ` A) \<le> \<Squnion> (g ` B)"
-  by (rule Sup_least) fastforce
+  fixes f :: "'a \<Rightarrow> V set" and g :: "'a \<Rightarrow> V set"
+  shows "\<lbrakk>A \<subseteq> B; \<And>x. x \<in> A \<Longrightarrow> f x \<le> g x\<rbrakk> \<Longrightarrow> \<Squnion> (f ` A) \<le> \<Squnion> (g ` B)"
+  by (simp add: SUP_subset_mono)
 
 lemma mem_Sup_iff [iff]: "x \<in> elts (\<Squnion>X) \<longleftrightarrow> x \<in> \<Union> (elts ` X) \<and> small X"
-  apply auto
-   apply (metis Sup_V_def UN_E elts_0 elts_Sup empty_iff)
-  by (metis Sup_V_def elts_0 empty_iff)
+  using Sup_V_def by auto
 
 lemma cSUP_UNION:
+  fixes B :: "V \<Rightarrow> V set" and f :: "V \<Rightarrow> V"
   assumes ne: "small A" and bdd_UN: "small (\<Union>x\<in>A. f ` B x)"
   shows "\<Squnion>(f ` (\<Union>x\<in>A. B x)) = \<Squnion>((\<lambda>x. \<Squnion>(f ` B x)) ` A)"
 proof -
   have bdd: "\<And>x. x \<in> A \<Longrightarrow> small (f ` B x)"
-    using bdd_UN subset_iff_less_eq_V by fastforce
+    using bdd_UN subset_iff_less_eq_V
+    by (meson SUP_upper smaller_than_small)
   then have bdd2: "small ((\<lambda>x. \<Squnion>(f ` B x)) ` A)"
     using ne(1) by blast
   have "\<Squnion>(f ` (\<Union>x\<in>A. B x)) \<le> \<Squnion>((\<lambda>x. \<Squnion>(f ` B x)) ` A)"
@@ -415,40 +494,62 @@ proof -
     by (rule order_antisym)
 qed
 
-lemma Sup_subset_mono: "small B \<Longrightarrow> A \<subseteq> B \<Longrightarrow> Sup A \<le> Sup B"
+lemma Sup_subset_mono: "small B \<Longrightarrow> A \<subseteq> B \<Longrightarrow> Sup A \<le> Sup B" for A::"V set"
   by auto
 
-lemma Sup_le_iff: "small S \<Longrightarrow> Sup S \<le> a \<longleftrightarrow> (\<forall>x\<in>S. x \<le> a)"
+lemma Sup_le_iff: "small A \<Longrightarrow> Sup A \<le> a \<longleftrightarrow> (\<forall>x\<in>A. x \<le> a)" for A::"V set"
   by auto
 
-lemma SUP_le_iff: "small (f ` A) \<Longrightarrow> \<Squnion>(f ` A) \<le> u \<longleftrightarrow> (\<forall>x\<in>A. f x \<le> u)"
+lemma SUP_le_iff: "small (f ` A) \<Longrightarrow> \<Squnion>(f ` A) \<le> u \<longleftrightarrow> (\<forall>x\<in>A. f x \<le> u)" for f :: "V \<Rightarrow> V"
   by blast
+
+lemma Sup_eq_0_iff [simp]: "\<Squnion>A = 0 \<longleftrightarrow> A \<subseteq> {0} \<or> \<not> small A" for A :: "V set"
+  using Sup_upper by fastforce
+
+lemma Sup_Union_commute:
+  fixes f :: "V \<Rightarrow> V set"
+  assumes "small A" "\<And>x. x\<in>A \<Longrightarrow> small (f x)"
+  shows "\<Squnion> (\<Union>x\<in>A. f x) = (SUP x\<in>A. \<Squnion> (f x))"
+  using assms 
+  by (force simp: subset_iff_less_eq_V intro!: antisym)
+
+lemma Sup_eq_Sup:
+  fixes B :: "V set"
+  assumes "B \<subseteq> A" "small A" and *: "\<And>x. x \<in> A \<Longrightarrow> \<exists>y \<in> B. x \<le> y"
+  shows "Sup A = Sup B"
+proof -
+  have "small B"
+    using assms subset_iff_less_eq_V by auto
+  moreover have "\<exists>y\<in>B. u \<in> elts y"
+    if "x \<in> A" "u \<in> elts x" for u x
+    using that "*" by blast
+  moreover have "\<exists>x\<in>A. v \<in> elts x"
+    if "y \<in> B" "v \<in> elts y" for v y
+    using that \<open>B \<subseteq> A\<close> by blast
+  ultimately show ?thesis
+    using assms by auto
+qed
 
 subsection\<open>Successor function\<close>
 
-definition vinsert where "vinsert x y \<equiv> set (insert x (elts y))"
+lemma vinsert_not_empty [simp]: "vinsert a A \<noteq> 0"
+  and empty_not_vinsert [simp]: "0 \<noteq> vinsert a A"
+  by (auto simp: vinsert_def)
 
-lemma elts_vinsert [simp]: "elts (vinsert x y) = insert x (elts y)"
-  by (simp add: vinsert_def)
-
-definition succ where "succ x \<equiv> vinsert x x"
-
-lemma elts_succ [simp]: "elts (succ x) = insert x (elts x)"
-  by (simp add: succ_def)
-
-lemma succ_not_0 [simp]: "succ n \<noteq> 0"
-  by (metis elts_0 elts_succ empty_not_insert)
+lemma succ_not_0 [simp]: "succ n \<noteq> 0" and zero_not_succ [simp]: "0 \<noteq> succ n"
+  by (auto simp: succ_def)
 
 instantiation V :: zero_neq_one
 begin
-instance by intro_classes (metis elts_0 elts_succ empty_iff insert_iff one_V_def set_of_elts)
+instance 
+  by intro_classes (metis elts_0 elts_succ empty_iff insert_iff one_V_def set_of_elts)
 end
 
-lemma mem_not_refl [simp]: "i \<notin> elts i"
-  using wf_not_refl [OF foundation] by force
-
-lemma mem_not_sym: "\<not> (x \<in> elts y \<and> y \<in> elts x)"
-  using wf_not_sym [OF foundation] by force
+instantiation V :: zero_less_one
+begin
+instance 
+  by intro_classes (simp add: less_V_def)
+end
 
 lemma succ_ne_self [simp]: "i \<noteq> succ i"
   by (metis elts_succ insertI1 mem_not_refl)
@@ -481,6 +582,8 @@ definition Transset where "Transset x \<equiv> \<forall>y \<in> elts x. y \<le> 
 definition Ord where "Ord x \<equiv> Transset x \<and> (\<forall>y \<in> elts x. Transset y)"
 
 abbreviation ON where "ON \<equiv> Collect Ord"
+
+subsubsection \<open>Transitive sets\<close>
 
 lemma Transset_0 [iff]: "Transset 0"
   by (auto simp: Transset_def)
@@ -517,6 +620,8 @@ lemma Transset_SUP: "(\<And>x. x \<in> A \<Longrightarrow> Transset (B x)) \<Lon
 lemma Transset_INT: "(\<And>x. x \<in> A \<Longrightarrow> Transset (B x)) \<Longrightarrow> Transset (\<Sqinter> (B ` A))"
   by (metis Transset_Inf imageE)
 
+
+subsubsection \<open>Zero, successor, sups\<close>
 
 lemma Ord_0 [iff]: "Ord 0"
   by (auto simp: Ord_def)
@@ -580,6 +685,14 @@ lemma Ord_is_Transset: "Ord i \<Longrightarrow> Transset i"
 lemma Ord_contains_Transset: "\<lbrakk>Ord i; j \<in> elts i\<rbrakk> \<Longrightarrow> Transset j"
   using Ord_def by blast
 
+lemma ON_imp_Ord:
+  assumes "H \<subseteq> ON" "x \<in> H"
+  shows "Ord x"
+  using assms by blast
+
+lemma elts_subset_ON: "Ord \<alpha> \<Longrightarrow> elts \<alpha> \<subseteq> ON"
+  using Ord_in_Ord by blast
+
 
 subsubsection \<open>Induction, Linearity, etc.\<close>
 
@@ -629,11 +742,34 @@ lemma union_less_iff [simp]: "\<lbrakk>Ord i; Ord j\<rbrakk> \<Longrightarrow> i
 lemma Ord_mem_iff_lt: "Ord k \<Longrightarrow> Ord l \<Longrightarrow> k \<in> elts l \<longleftrightarrow> k < l"
   by (metis Ord_linear OrdmemD less_le_not_le)
 
+lemma Ord_Collect_lt: "Ord \<alpha> \<Longrightarrow> {\<xi>. Ord \<xi> \<and> \<xi> < \<alpha>} = elts \<alpha>"
+  by (auto simp flip: Ord_mem_iff_lt elim: Ord_in_Ord OrdmemD)
+
 lemma le_succ_iff: "Ord i \<Longrightarrow> Ord j \<Longrightarrow> succ i \<le> succ j \<longleftrightarrow> i \<le> j"
   by (metis Ord_linear_le Ord_succ le_succE order_antisym)
 
 lemma zero_in_succ [simp,intro]: "Ord i \<Longrightarrow> 0 \<in> elts (succ i)"
   using mem_0_Ord by auto
+
+lemma Ord_finite_Sup: "\<lbrakk>finite A; A \<subseteq> ON; A \<noteq> {}\<rbrakk> \<Longrightarrow> \<Squnion>A \<in> A"
+proof (induction A rule: finite_induct)
+  case (insert x A)
+  then have *: "small A" "A \<subseteq> ON" "Ord x"
+    by (auto simp add: ZFC_in_HOL.Finite insert.hyps)
+  show ?case
+  proof (cases "A = {}")
+    case False
+    then have "\<Squnion>A \<in> A"
+      using insert by blast
+    then have "\<Squnion>A \<le> x" if "x \<squnion> \<Squnion>A \<notin> A"
+      using * by (metis ON_imp_Ord Ord_linear_le sup.absorb2 that)
+    then show ?thesis
+      by (fastforce simp: \<open>small A\<close> Sup_V_insert)
+  qed auto
+qed auto
+
+
+subsubsection \<open>The natural numbers\<close>
 
 primrec ord_of_nat :: "nat \<Rightarrow> V" where
   "ord_of_nat 0 = 0"
@@ -652,9 +788,12 @@ lemma Ord_ord_of_nat [simp]: "Ord (ord_of_nat k)"
   by (induct k, auto)
 
 lemma ord_of_nat_equality: "ord_of_nat n = \<Squnion> ((succ \<circ> ord_of_nat) ` {..<n})"
-  by (metis Ord_ord_of_nat elts_of_set image_comp inf'  ord_of_nat_eq_initial Ord_equality)
+  by (metis Ord_equality Ord_ord_of_nat elts_of_set image_comp small_image_nat_V ord_of_nat_eq_initial)
 
 definition \<omega> :: V where "\<omega> \<equiv> set (range ord_of_nat)"
+
+lemma elts_\<omega>: "elts \<omega> = {\<alpha>. \<exists>n. \<alpha> = ord_of_nat n}"
+  by (auto simp: \<omega>_def image_iff)
 
 lemma nat_into_Ord [simp]: "n \<in> elts \<omega> \<Longrightarrow> Ord n"
   by (metis Ord_ord_of_nat \<omega>_def elts_of_set image_iff inf)
@@ -666,16 +805,16 @@ lemma Ord_\<omega> [iff]: "Ord \<omega>"
   by (metis Ord_Sup Sup_\<omega> nat_into_Ord)
 
 lemma zero_in_omega [iff]: "0 \<in> elts \<omega>"
-  by (metis (no_types) Ord_\<omega> \<omega>_def elts_0 elts_of_set empty_iff inf' mem_0_Ord rangeI)
+  by (metis \<omega>_def elts_of_set inf ord_of_nat.simps(1) rangeI)
 
 lemma succ_in_omega [simp]: "n \<in> elts \<omega> \<Longrightarrow> succ n \<in> elts \<omega>"
-  by (metis \<omega>_def elts_of_set image_iff inf' ord_of_nat.simps(2) rangeI)
+  by (metis \<omega>_def elts_of_set image_iff small_image_nat_V ord_of_nat.simps(2) rangeI)
 
 lemma ord_of_eq_0: "ord_of_nat j = 0 \<Longrightarrow> j = 0"
   by (induct j) (auto simp: succ_neq_zero)
 
 lemma ord_of_nat_le_omega: "ord_of_nat n \<le> \<omega>"
-  by (metis Ord_\<omega> Ord_def Transset_def \<omega>_def elts_of_set inf' rangeI)
+  by (metis Sup_\<omega> ZFC_in_HOL.Sup_upper \<omega>_def elts_of_set inf rangeI)
 
 lemma ord_of_eq_0_iff [simp]: "ord_of_nat n = 0 \<longleftrightarrow> n=0"
   by (auto simp: ord_of_eq_0)
@@ -692,6 +831,23 @@ qed
 corollary inj_ord_of_nat: "inj ord_of_nat"
   by (simp add: linorder_injI)
 
+corollary countable:
+  assumes "countable X" shows "small X"
+proof -
+  have "X \<subseteq> range (from_nat_into X)"
+    by (simp add: assms subset_range_from_nat_into)
+  then show ?thesis
+    by (meson inf_raw inj_ord_of_nat replacement small_def smaller_than_small)
+qed
+
+corollary infinite_\<omega>: "infinite (elts \<omega>)"
+  using range_inj_infinite [of ord_of_nat]
+  by (simp add: \<omega>_def inj_ord_of_nat)
+
+lemma small_image_nat [simp]:
+  fixes N :: "nat set" shows "small (g ` N)"
+  by (simp add: countable)
+
 lemma finite_Ord_omega: "\<alpha> \<in> elts \<omega> \<Longrightarrow> finite (elts \<alpha>)"
   proof (clarsimp simp add: \<omega>_def)
   show "finite (elts (ord_of_nat n))" if "\<alpha> = ord_of_nat n" for n
@@ -704,6 +860,21 @@ lemma infinite_Ord_omega: "Ord \<alpha> \<Longrightarrow> infinite (elts \<alpha
 lemma ord_of_minus_1: "n > 0 \<Longrightarrow> ord_of_nat n = succ (ord_of_nat (n - 1))"
   by (metis Suc_diff_1 ord_of_nat.simps(2))
 
+lemma card_ord_of_nat [simp]: "card (elts (ord_of_nat m)) = m"
+  by (induction m) (auto simp: \<omega>_def finite_Ord_omega)
+
+lemma ord_of_nat_\<omega> [iff]:"ord_of_nat n \<in> elts \<omega>"
+  by (simp add: \<omega>_def)
+
+lemma succ_\<omega>_iff [iff]: "succ n \<in> elts \<omega> \<longleftrightarrow> n \<in> elts \<omega>"
+  by (metis Ord_\<omega> OrdmemD elts_vinsert insert_iff less_V_def succ_def succ_in_omega vsubsetD)
+
+lemma \<omega>_gt0: "\<omega> > 0"
+  by (simp add: OrdmemD)
+
+lemma \<omega>_gt1: "\<omega> > 1"
+  by (simp add: OrdmemD one_V_def)
+
 subsubsection\<open>Limit ordinals\<close>
 
 definition Limit :: "V\<Rightarrow>bool"
@@ -715,11 +886,22 @@ lemma zero_not_Limit [iff]: "\<not> Limit 0"
 lemma not_succ_Limit [simp]: "\<not> Limit(succ i)"
   by (metis Limit_def Ord_mem_iff_lt elts_succ insertI1 less_irrefl)
 
-
-lemma Limit_eq_Sup_self: "Limit i \<Longrightarrow> i = Sup (elts i)"
+lemma Limit_eq_Sup_self [simp]: "Limit i \<Longrightarrow> Sup (elts i) = i"
   apply (rule order_antisym)
-  apply (metis Limit_def Ord_equality Sup_V_def SUP_le_iff Sup_upper small_elts)
-  by (simp add: Limit_def Ord_def Transset_def Sup_least)
+  apply (simp add: Limit_def Ord_def Transset_def Sup_least)
+  by (metis Limit_def Ord_equality Sup_V_def SUP_le_iff Sup_upper small_elts)
+
+lemma zero_less_Limit: "Limit \<beta> \<Longrightarrow> 0 < \<beta>"
+  by (simp add: Limit_def OrdmemD)
+
+lemma non_Limit_ord_of_nat [iff]: "\<not> Limit (ord_of_nat m)"
+  by (metis Limit_def mem_ord_of_nat_iff not_succ_Limit ord_of_eq_0_iff ord_of_minus_1)
+
+lemma Limit_omega [iff]: "Limit \<omega>"
+  by (simp add: Limit_def)
+
+lemma omega_nonzero [simp]: "\<omega> \<noteq> 0"
+  using Limit_omega by fastforce
 
 lemma Ord_cases_lemma:
   assumes "Ord k" shows "k = 0 \<or> (\<exists>j. k = succ j) \<or> Limit k"
@@ -751,9 +933,6 @@ proof (induction k rule: Ord_induct)
   case (step k) thus ?case
     by (metis P Ord_cases Ord_linear succ_ne_self succ_notin_self)
 qed
-
-lemma small_UN [simp,intro]: "\<lbrakk>small A; \<And>x. x \<in> A \<Longrightarrow> small (B x)\<rbrakk> \<Longrightarrow> small (\<Union>x\<in>A. B x)"
-  by auto
 
 
 subsubsection\<open>Properties of LEAST for ordinals\<close>

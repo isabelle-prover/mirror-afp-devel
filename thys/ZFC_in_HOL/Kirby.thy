@@ -98,6 +98,9 @@ qed
 lemma plus_V_succ_right: "x + succ y = succ (x + y)"
   by (metis plus_vinsert succ_def)
 
+lemma succ_eq_add1: "succ x = x + 1"
+  by (simp add: plus_V_succ_right one_V_def)
+
 lemma mem_plus_V_E:
   assumes l: "l \<in> elts (x + y)"
   obtains "l \<in> elts x" | z where "z \<in> elts y" "l = x + z"
@@ -129,7 +132,7 @@ proof -
   then have "TC x \<sqinter> set ((+) x ` elts y) = set {}"
     by (metis inf_V_def)
   then show ?thesis
-    by (simp add: lift_def zero_V_def)
+    using lift_def by auto
 qed
 
 lemma lift_lift: "lift x (lift y z) = lift (x+y) z"
@@ -202,6 +205,8 @@ corollary add_less_cancel_left [iff]:
 corollary lift_le_self [simp]: "lift x y \<le> x \<longleftrightarrow> y = 0"
   by (auto simp: inf.absorb_iff2 lift_eq_lift lift_self_disjoint)
 
+lemma succ_less_\<omega>_imp: "succ x < \<omega> \<Longrightarrow> x < \<omega>"
+  by (metis add_le_cancel_left add.right_neutral le_0 le_less_trans succ_eq_add1)
 
 text\<open>Proposition 3.5\<close>
 lemma card_lift: "vcard (lift x y) = vcard y"
@@ -461,7 +466,7 @@ lemma mult_sup_distrib:
   unfolding mult [of x "y \<squnion> z"] mult [of x y] mult [of x z]
   by (simp add: Sup_Un_distrib image_Un)
 
-lemma mult_Sup_distrib: "small Y \<Longrightarrow> x * (\<Squnion>Y) = \<Squnion> ((*) x ` Y)"
+lemma mult_Sup_distrib: "small Y \<Longrightarrow> x * (\<Squnion>Y) = \<Squnion> ((*) x ` Y)" for Y:: "V set"
   unfolding mult [of x "\<Squnion>Y"]
   by (simp add: cSUP_UNION) (metis mult)
 
@@ -540,7 +545,7 @@ next
 next
   case (Limit k)
   then have "Ord (x * \<Squnion> (elts k))"
-    by (force simp: mult_Sup_distrib intro: Ord_Sup)
+    by (metis Ord_Sup imageE mult_Sup_distrib small_elts)
   then show ?case
     using Limit.hyps Limit_eq_Sup_self by auto
 qed
@@ -949,7 +954,7 @@ corollary lift_mult_TC_disjoint:
   shows "lift (a*x) (TC a) \<sqinter> lift (a*y) (TC a) = 0"
   apply (rule V_equalityI)
   using assms
-  by (force simp: less_TC_def inf_V_def zero_V_def lift_def image_iff dest: mult_cancellation_lemma)
+  by (auto simp: less_TC_def inf_V_def lift_def image_iff dest: mult_cancellation_lemma)
 
 corollary lift_mult_disjoint:
   fixes x::V

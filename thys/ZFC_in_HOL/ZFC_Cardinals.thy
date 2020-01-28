@@ -5,6 +5,9 @@ theory ZFC_Cardinals
 
 begin
 
+declare [[coercion_enabled]]
+declare [[coercion "ord_of_nat :: nat \<Rightarrow> V"]]
+
 subsection \<open>Ordered Pairs\<close>
 
 lemma singleton_eq_iff [iff]: "set {a} = set {b} \<longleftrightarrow> a=b"
@@ -89,7 +92,7 @@ lemma pairs_iff_elts: "(x,y) \<in> pairs z \<longleftrightarrow> \<langle>x,y\<r
   by (simp add: pairs_def)
 
 lemma VSigma_iff [simp]: "\<langle>a,b\<rangle> \<in> elts (VSigma A B) \<longleftrightarrow> a \<in> elts A \<and> b \<in> elts (B a)"
-  by (auto simp: VSigma_def UN UNION_singleton_eq_range)
+  by (auto simp: VSigma_def small_UN UNION_singleton_eq_range)
 
 lemma VSigmaI [intro!]: "\<lbrakk> a \<in> elts A;  b \<in> elts (B a)\<rbrakk>  \<Longrightarrow> \<langle>a,b\<rangle> \<in> elts (VSigma A B)"
   by simp
@@ -499,9 +502,12 @@ lemma rank_of_Ord: "Ord i \<Longrightarrow> rank i = i"
   apply (induction rule: Ord_induct)
   by (metis (no_types, lifting) Ord_equality SUP_cong rank_Sup)
 
+lemma Ord_iff_rank: "Ord x \<longleftrightarrow> rank x = x"
+  using Ord_rank [of x] rank_of_Ord by fastforce
+
 lemma rank_lt: "a \<in> elts b \<Longrightarrow> rank a < rank b"
   apply (subst rank [of b])
-  by (metis (no_types, lifting) Ord_mem_iff_lt Ord_rank UN UN_iff elts_of_set elts_succ insert_iff rank small_elts)
+  by (metis (no_types, lifting) Ord_mem_iff_lt Ord_rank small_UN UN_iff elts_of_set elts_succ insert_iff rank small_elts)
 
 lemma rank_0 [simp]: "rank 0 = 0"
   unfolding rank_def
@@ -519,7 +525,7 @@ qed
 
 lemma rank_mono: "a \<le> b \<Longrightarrow> rank a \<le> rank b"
   apply (rule vsubsetI)
-  using rank [of a] rank [of b] UN by auto
+  using rank [of a] rank [of b] small_UN by auto
 
 lemma VsetI: "rank b \<sqsubset> i \<Longrightarrow> b \<in> elts (Vset i)"
 proof (induction i arbitrary: b rule: eps_induct)
@@ -842,6 +848,11 @@ lemma cardinal_eqpoll: "elts (vcard a) \<approx> elts a"
   unfolding vcard_def
   using ordertype_eqpoll [of "elts a"] Ord_LeastI by (meson Ord_ordertype small_elts)
 
+lemma inj_into_vcard:
+  obtains f where "f \<in> elts A \<rightarrow> elts (vcard A)" "inj_on f (elts A)"
+  using cardinal_eqpoll [of A] inj_on_the_inv_into the_inv_into_onto
+  by (fastforce simp: Pi_iff bij_betw_def eqpoll_def)
+
 lemma cardinal_idem [simp]: "vcard (vcard a) = vcard a"
   using cardinal_cong cardinal_eqpoll by blast
 
@@ -1112,8 +1123,7 @@ proof -
   have "elts (vtimes (set {0}) \<kappa>) \<approx> elts \<kappa>"
     by (auto simp: elts_VSigma intro!: times_singleton_eqpoll)
   then show ?thesis
-    unfolding one_V_def cmult_def
-    using Card_def assms cardinal_cong by auto
+    by (metis Card_def assms cardinal_cong cmult_def elts_1 set_of_elts)
 qed
 
 subsection\<open>Some inequalities for multiplication\<close>
