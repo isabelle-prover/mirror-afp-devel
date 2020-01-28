@@ -55,6 +55,17 @@ begin
     by (unfold_locales) (auto simp: comp_def)
 
   lemmas union_language = union.union_language
+  lemmas union_nodes_finite = union.union_nodes_finite
+
+  global_interpretation union_list: automaton_union_list_trace
+    nba nba.alphabet nba.initial nba.transition nba.accepting infs
+    nba nba.alphabet nba.initial nba.transition nba.accepting infs
+    "\<lambda> cs (k, p). (cs ! k) p"
+    defines union_list = union_list.union
+    by (unfold_locales) (auto simp: szip_sconst_smap_fst comp_def)
+
+  lemmas union_list_language = union_list.union_language
+  lemmas union_list_nodes_finite = union_list.union_nodes_finite
 
   abbreviation intersect where "intersect A B \<equiv> degeneralize (intersect' A B)"
 

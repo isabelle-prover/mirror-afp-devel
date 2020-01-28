@@ -84,6 +84,11 @@ begin
   lemma szip_smap_fst[simp]: "smap fst (xs ||| ys) = xs" by (coinduction arbitrary: xs ys) (auto)
   lemma szip_smap_snd[simp]: "smap snd (xs ||| ys) = ys" by (coinduction arbitrary: xs ys) (auto)
 
+  lemma szip_sconst_smap_fst: "sconst a ||| xs = smap (Pair a) xs"
+    by (coinduction arbitrary: xs) (auto)
+  lemma szip_sconst_smap_snd: "xs ||| sconst a = smap (prod.swap \<circ> Pair a) xs"
+    by (coinduction arbitrary: xs) (auto)
+
   lemma split_szip[no_atp]: "(\<And> x. PROP P x) \<equiv> (\<And> y z. PROP P (y ||| z))"
   proof
     fix y z
