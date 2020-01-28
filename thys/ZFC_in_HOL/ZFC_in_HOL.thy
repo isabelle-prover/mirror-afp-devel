@@ -320,6 +320,9 @@ lemma set_image_le_iff: "small A \<Longrightarrow> set (f ` A) \<le> B \<longlef
 lemma eq0_iff: "x = 0 \<longleftrightarrow> (\<forall>y. y \<notin> elts x)"
   by auto
 
+lemma less_eq_V_0_iff [simp]: "x \<le> 0 \<longleftrightarrow> x = 0" for x::V
+  by auto
+
 lemma subset_iff_less_eq_V:
   assumes "small B" shows "A \<subseteq> B \<longleftrightarrow> set A \<le> set B \<and> small A"
   using assms down small_iff by auto
@@ -693,6 +696,12 @@ lemma ON_imp_Ord:
 lemma elts_subset_ON: "Ord \<alpha> \<Longrightarrow> elts \<alpha> \<subseteq> ON"
   using Ord_in_Ord by blast
 
+lemma Transset_pred [simp]: "Transset x \<Longrightarrow> \<Squnion>(elts (succ x)) = x"
+  by (fastforce simp: Transset_def)
+
+lemma Ord_pred [simp]: "Ord \<beta> \<Longrightarrow> \<Squnion> (insert \<beta> (elts \<beta>)) = \<beta>"
+  using Ord_def Transset_pred by auto
+
 
 subsubsection \<open>Induction, Linearity, etc.\<close>
 
@@ -747,6 +756,19 @@ lemma Ord_Collect_lt: "Ord \<alpha> \<Longrightarrow> {\<xi>. Ord \<xi> \<and> \
 
 lemma le_succ_iff: "Ord i \<Longrightarrow> Ord j \<Longrightarrow> succ i \<le> succ j \<longleftrightarrow> i \<le> j"
   by (metis Ord_linear_le Ord_succ le_succE order_antisym)
+
+lemma succ_le_iff: "Ord i \<Longrightarrow> Ord j \<Longrightarrow> succ i \<le> j \<longleftrightarrow> i < j"
+  using Ord_mem_iff_lt dual_order.strict_implies_order less_eq_V_def by fastforce
+
+lemma succ_in_Sup_Ord:
+  assumes eq: "succ \<beta> = \<Squnion>A" and "small A" "A \<subseteq> ON" "Ord \<beta>"
+  shows "succ \<beta> \<in> A"
+proof -
+  have "\<not> \<Squnion>A \<le> \<beta>"
+    using eq \<open>Ord \<beta>\<close> succ_le_iff by fastforce
+  then show ?thesis
+    using assms by (metis Ord_linear2 Sup_least Sup_upper eq_iff mem_Collect_eq subsetD succ_le_iff)
+qed
 
 lemma zero_in_succ [simp,intro]: "Ord i \<Longrightarrow> 0 \<in> elts (succ i)"
   using mem_0_Ord by auto
@@ -844,6 +866,9 @@ corollary infinite_\<omega>: "infinite (elts \<omega>)"
   using range_inj_infinite [of ord_of_nat]
   by (simp add: \<omega>_def inj_ord_of_nat)
 
+corollary ord_of_nat_mono_iff [iff]: "ord_of_nat i \<le> ord_of_nat j \<longleftrightarrow> i \<le> j"
+  by (metis Ord_def Ord_ord_of_nat Transset_def eq_iff mem_ord_of_nat_iff not_less ord_of_nat_inject)
+
 lemma small_image_nat [simp]:
   fixes N :: "nat set" shows "small (g ` N)"
   by (simp add: countable)
@@ -924,14 +949,15 @@ lemma non_succ_LimitI:
   using Ord_cases_lemma assms by blast
 
 lemma Ord_induct3 [consumes 1, case_names 0 succ Limit, induct type: V]:
-  assumes k: "Ord k"
-      and P: "P 0" "\<And>k. \<lbrakk>Ord k; P k\<rbrakk> \<Longrightarrow> P (succ k)"
-             "\<And>k. \<lbrakk>Limit k; \<And>j. j \<in> elts k \<Longrightarrow> P j\<rbrakk> \<Longrightarrow> P k"
-  shows "P k"
-using k
-proof (induction k rule: Ord_induct)
-  case (step k) thus ?case
-    by (metis P Ord_cases Ord_linear succ_ne_self succ_notin_self)
+  assumes \<alpha>: "Ord \<alpha>"
+    and P: "P 0" "\<And>\<alpha>. \<lbrakk>Ord \<alpha>; P \<alpha>\<rbrakk> \<Longrightarrow> P (succ \<alpha>)"
+           "\<And>\<alpha>. \<lbrakk>Limit \<alpha>; \<And>\<xi>. \<xi> \<in> elts \<alpha> \<Longrightarrow> P \<xi>\<rbrakk> \<Longrightarrow> P (SUP \<xi> \<in> elts \<alpha>. \<xi>)"
+  shows "P \<alpha>"
+  using \<alpha>
+proof (induction \<alpha> rule: Ord_induct)
+  case (step \<alpha>)
+  then show ?case
+    by (metis Limit_eq_Sup_self Ord_cases P elts_succ image_ident insertI1)
 qed
 
 

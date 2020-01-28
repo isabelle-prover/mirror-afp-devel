@@ -462,7 +462,9 @@ lemma TC_induct_down_lemma:
     shows "a \<in> elts d"
 proof -
   have "Transset (TC b \<sqinter> d)"
-    by (smt Transset_TC Transset_def less_TC_def inf.bounded_iff inf.cobounded1 inf.commute inf_idem local.step vsubsetD vsubsetI)
+    using Transset_TC
+    unfolding Transset_def
+    by (metis inf.bounded_iff less_TC_def less_eq_V_def local.step subsetI vsubsetD) 
   moreover have "b \<le> TC b \<sqinter> d"
     by (simp add: arg_subset_TC base)
   ultimately show ?thesis
@@ -714,13 +716,118 @@ lemma Linear_order_VWO: "Linear_order VWO"
 lemma wo_rel_VWO: "wo_rel VWO"
   using VWO wo_rel_def by blast
 
-subsubsection\<open>Order types\<close>
+subsubsection \<open>Transitive Closure and VWO\<close>
 
-definition ordermap :: "[V set, (V \<times> V) set, V] \<Rightarrow> V"
-    where "ordermap A r \<equiv> wfrec r (\<lambda>f x. set (f ` {y \<in> A. (y,x) \<in> r}))"
+lemma mem_imp_VWO: "x \<in> elts y \<longrightarrow> (x,y) \<in> VWO"
+  using VWO by blast
 
-definition ordertype :: "[V set, (V \<times> V) set] \<Rightarrow> V"  where
-   "ordertype A r \<equiv> set (ordermap A r ` A)"
+lemma less_TC_imp_VWO: "x \<sqsubset> y \<Longrightarrow> (x,y) \<in> VWO"
+  unfolding less_TC_def
+proof (induction y arbitrary: x rule: eps_induct)
+  case (step y' u)
+  then consider "u \<in> elts y'" | v where "v \<in> elts y'" "u \<in> elts (TC v)"
+    by (auto simp: TC [of y'])
+  then show ?case
+  proof cases
+    case 2
+    then show ?thesis
+      by (meson mem_imp_VWO step.IH transD trans_VWO)
+  qed (use mem_imp_VWO in blast)
+qed
+
+lemma le_TC_imp_VWO: "x \<sqsubseteq> y \<Longrightarrow> (x,y) \<in> VWO"
+  apply (auto simp: le_TC_def less_TC_imp_VWO)
+  by (metis Diff_iff Linear_order_VWO Linear_order_in_diff_Id UNIV_I VWO)
+
+lemma le_TC_0_iff [simp]: "x \<sqsubseteq> 0 \<longleftrightarrow> x = 0"
+  by (simp add: le_TC_def)
+
+lemma less_TC_succ: " x \<sqsubset> succ \<beta> \<longleftrightarrow> x \<sqsubset> \<beta> \<or> x = \<beta>"
+  by (metis elts_succ insert_iff le_TC_def less_TC_iff)
+
+lemma le_TC_succ: "x \<sqsubseteq> succ \<beta> \<longleftrightarrow> x \<sqsubseteq> \<beta> \<or> x = succ \<beta>"
+  by (simp add: le_TC_def less_TC_succ)
+
+lemma Transset_TC_eq [simp]: "Transset x \<Longrightarrow> TC x = x"
+  by (simp add: TC_least arg_subset_TC eq_iff)
+
+lemma Ord_TC_less_iff: "\<lbrakk>Ord \<alpha>; Ord \<beta>\<rbrakk> \<Longrightarrow> \<beta> \<sqsubset> \<alpha> \<longleftrightarrow> \<beta> < \<alpha>"
+  by (metis Ord_def Ord_mem_iff_lt Transset_TC_eq less_TC_def)
+
+lemma Ord_mem_iff_less_TC: "Ord l \<Longrightarrow> k \<in> elts l \<longleftrightarrow> k \<sqsubset> l"
+  by (simp add: Ord_def less_TC_def)
+
+lemma le_TC_Ord: "\<lbrakk>\<beta> \<sqsubseteq> \<alpha>; Ord \<alpha>\<rbrakk> \<Longrightarrow> Ord \<beta>"
+  by (metis Ord_def Ord_in_Ord Transset_TC_eq le_TC_def less_TC_def)
+
+lemma Ord_less_TC_mem:
+  assumes "Ord \<alpha>" "\<beta> \<sqsubset> \<alpha>" shows "\<beta> \<in> elts \<alpha>"
+  using Ord_def assms less_TC_def by auto
+
+lemma VWO_TC_le: "\<lbrakk>Ord \<alpha>; Ord \<beta>; (\<beta>, \<alpha>) \<in> VWO\<rbrakk> \<Longrightarrow> \<beta> \<sqsubseteq> \<alpha>"
+proof (induct \<alpha> arbitrary: \<beta> rule: Ord_induct)
+  case (step \<alpha>)
+  then show ?case
+    by (metis Diff_iff Linear_order_VWO Linear_order_in_diff_Id Ord_TC_less_iff Ord_linear2 UNIV_I VWO le_TC_def le_less less_TC_imp_VWO pair_in_Id_conv)
+qed
+
+lemma VWO_iff_Ord_le [simp]: "\<lbrakk>Ord \<alpha>; Ord \<beta>\<rbrakk> \<Longrightarrow> (\<beta>, \<alpha>) \<in> VWO \<longleftrightarrow> \<beta> \<le> \<alpha>"
+  by (metis VWO_TC_le Ord_TC_less_iff le_TC_def le_TC_imp_VWO le_less)
+
+lemma zero_TC_le [iff]: "0 \<sqsubseteq> y"
+  using le_TC_def nonzero_less_TC by auto
+
+lemma succ_le_TC_iff: "Ord j \<Longrightarrow> succ i \<sqsubseteq> j \<longleftrightarrow> i \<sqsubset> j"
+  by (metis Ord_in_Ord Ord_linear Ord_mem_iff_less_TC Ord_succ le_TC_def less_TC_succ less_asym_TC)
+
+lemma VWO_0_iff [simp]: "(x,0) \<in> VWO \<longleftrightarrow> x=0"
+proof
+  show "x = 0" if "(x, 0) \<in> VWO"
+    using zero_TC_le [of x] le_TC_imp_VWO that
+    by (metis DiffI Linear_order_VWO Linear_order_in_diff_Id UNIV_I VWO pair_in_Id_conv)
+qed auto
+
+lemma VWO_antisym:
+  assumes "(x,y) \<in> VWO" "(y,x) \<in> VWO" shows "x=y"
+  by (metis Diff_iff IdD Linear_order_VWO Linear_order_in_diff_Id UNIV_I VWO assms)
+
+subsubsection \<open>Relation VWF\<close>
+
+definition VWF where "VWF \<equiv> VWO - Id"
+
+lemma wf_VWF [iff]: "wf VWF"
+  by (simp add: VWF_def wf_VWO)
+
+lemma trans_VWF [iff]: "trans VWF"
+  by (simp add: VWF_def antisym_VWO trans_VWO trans_diff_Id)
+
+lemma asym_VWF [iff]: "asym VWF"
+  by (metis VWF_def asym.intros irrefl_diff_Id wf_VWF wf_not_sym)
+
+lemma total_VWF [iff]: "total VWF"
+  using VWF_def total_VWOId by auto
+
+lemma total_on_VWF [iff]: "total_on A VWF"
+  by (meson UNIV_I total_VWF total_on_def)
+
+lemma VWF_asym:
+  assumes "(x,y) \<in> VWF" "(y,x) \<in> VWF" shows False
+  using VWF_def assms wf_VWO wf_not_sym by fastforce
+
+lemma VWF_non_refl [iff]: "(x,x) \<notin> VWF"
+  using wf_VWF by auto
+
+lemma VWF_iff_Ord_less [simp]: "\<lbrakk>Ord \<alpha>; Ord \<beta>\<rbrakk> \<Longrightarrow> (\<alpha>,\<beta>) \<in> VWF \<longleftrightarrow> \<alpha> < \<beta>"
+  by (simp add: VWF_def less_V_def)
+
+
+subsection\<open>Order types\<close>
+
+definition ordermap :: "'a set \<Rightarrow> ('a \<times> 'a) set \<Rightarrow> 'a \<Rightarrow> V"
+  where "ordermap A r \<equiv> wfrec r (\<lambda>f x. set (f ` {y \<in> A. (y,x) \<in> r}))"
+
+definition ordertype :: "'a set \<Rightarrow> ('a \<times> 'a) set \<Rightarrow> V"
+  where "ordertype A r \<equiv> set (ordermap A r ` A)"
 
 lemma ordermap_type:
     "small A \<Longrightarrow> ordermap A r \<in> A \<rightarrow> elts (ordertype A r)"
@@ -730,7 +837,7 @@ lemma ordermap: "wf r \<Longrightarrow> ordermap A r a = set (ordermap A r ` {y 
   unfolding ordermap_def
   by (auto simp: wfrec_fixpoint adm_wf_def)
 
-lemma Ord_ordermap [iff]: assumes "wf r" "trans r" "x \<in> A" shows "Ord (ordermap A r x)"
+lemma Ord_ordermap [iff]: assumes "wf r" "trans r" shows "Ord (ordermap A r x)"
   using \<open>wf r\<close>
 proof (induction x rule: wf_induct_rule)
   case (less u)
@@ -740,8 +847,10 @@ proof (induction x rule: wf_induct_rule)
       if "small (ordermap A r ` {y \<in> A. (y, u) \<in> r})"
         and x: "x \<in> elts (ordermap A r y)" and "y \<in> A" "(y, u) \<in> r" for x y
     proof -
-      have "x \<in> ordermap A r ` {z \<in> A. (z, y) \<in> r}"
-        by (metis (no_types, lifting) elts_of_set empty_iff \<open>wf r\<close> ordermap x)
+      have "ordermap A r y = ZFC_in_HOL.set (ordermap A r ` {a \<in> A. (a, y) \<in> r})"
+        using ordermap assms(1) by force
+      then have "x \<in> ordermap A r ` {z \<in> A. (z, y) \<in> r}"
+        by (metis (no_types, lifting) elts_of_set empty_iff x)
       then have "\<exists>v. v \<in> A \<and> (v, u) \<in> r \<and> x = ordermap A r v"
         using that transD [OF \<open>trans r\<close>] by blast
       then show ?thesis
@@ -752,7 +861,7 @@ proof (induction x rule: wf_induct_rule)
     if "x \<in> elts (set (ordermap A r ` {y \<in> A. (y, u) \<in> r}))" for x
     using that less by (auto simp: split: if_split_asm)
   ultimately show ?case
-    by (metis (no_types, lifting) OrdI Ord_is_Transset \<open>wf r\<close> ordermap)
+    by (metis (full_types) Ord_def ordermap assms(1))
 qed
 
 lemma wf_Ord_ordertype: assumes "wf r" "trans r" shows "Ord(ordertype A r)"
@@ -766,17 +875,25 @@ proof -
     unfolding ordertype_def Ord_def Transset_def by simp
 qed
 
-lemma Ord_ordertype: "Ord(ordertype A (VWO - Id))"
-  using antisym_VWO trans_VWO trans_diff_Id wf_Ord_ordertype wf_VWO by blast
+lemma Ord_ordertype [simp]: "Ord(ordertype A VWF)"
+  using wf_Ord_ordertype by blast
+
 
 subsubsection\<open>@{term ordermap} preserves the orderings in both directions\<close>
 
 lemma ordermap_mono:
-     "\<lbrakk>(w, x) \<in> r; wf r; w \<in> A; small A\<rbrakk> \<Longrightarrow> ordermap A r w \<in> elts (ordermap A r x)"
-  by (simp add: ordermap [of r A])
+  assumes wx: "(w, x) \<in> r" and "wf r" "w \<in> A" "small A"
+    shows "ordermap A r w \<in> elts (ordermap A r x)"
+proof -
+  have "small {a \<in> A. (a, x) \<in> r} \<and> w \<in> A \<and> (w, x) \<in> r"
+    by (simp add: assms)
+  then show ?thesis
+    using assms ordermap [of r A]
+    by (metis (no_types, lifting) elts_of_set image_eqI mem_Collect_eq replacement)
+qed
 
 lemma converse_ordermap_mono:
-  assumes "ordermap A r y \<in> elts (ordermap A r x)" "wf r" "total r" "y \<in> A" "x \<in> A" "small A"
+  assumes "ordermap A r y \<in> elts (ordermap A r x)" "wf r" "total r" "x \<in> A" "small A"
   shows "(y, x) \<in> r"
 proof (cases "x = y")
   case True
@@ -787,34 +904,388 @@ next
   then consider "(x,y) \<in> r" | "(y,x) \<in> r"
     using \<open>total r\<close> by (meson UNIV_I total_on_def)
   then show ?thesis
-    using ordermap_mono
-    by (meson assms(1) assms(2) assms(5) assms(6) mem_not_sym)
+    by (meson ordermap_mono assms mem_not_sym)
 qed
+
 
 lemma ordermap_surj: "elts (ordertype A r) \<subseteq> ordermap A r ` A"
   unfolding ordertype_def by simp
 
 lemma ordermap_bij:
-  assumes "wf r" "total r" "small A"
+  assumes "wf r" "total_on A r" "small A"
   shows "bij_betw (ordermap A r) A (elts (ordertype A r))"
   unfolding bij_betw_def
   proof (intro conjI)
-  show "inj_on (ordermap A r) A"
-    apply (rule inj_onI)
-    by (metis UNIV_I assms mem_not_refl ordermap_mono total_on_def)
+    show "inj_on (ordermap A r) A"
+    unfolding inj_on_def by (metis assms mem_not_refl ordermap_mono total_on_def)
   show "ordermap A r ` A = elts (ordertype A r)"
-    by (simp add: assms(3) ordertype_def)
+    by (metis ordertype_def \<open>small A\<close> elts_of_set replacement)
 qed
 
 lemma wf_ordertype_eqpoll:
-  assumes "wf r" "total r" "small A"
+  assumes "wf r" "total_on A r" "small A"
   shows "elts (ordertype A r) \<approx> A"
   using assms eqpoll_def eqpoll_sym ordermap_bij by blast
 
 lemma ordertype_eqpoll:
   assumes "small A"
-  shows "elts (ordertype A (VWO - Id)) \<approx> A"
-  using assms total_VWOId wf_VWO wf_ordertype_eqpoll by auto
+  shows "elts (ordertype A VWF) \<approx> A"
+  using assms wf_ordertype_eqpoll total_VWF wf_VWF
+  by (simp add: wf_ordertype_eqpoll total_on_def)
+
+subsection \<open>More advanced @{term ordertype} and @{term ordermap} results\<close>
+
+lemma ordermap_VWF_0 [simp]: "ordermap A VWF 0 = 0"
+  by (simp add: ordermap wf_VWO VWF_def)
+
+lemma ordertype_empty [simp]: "ordertype {} r = 0"
+  by (simp add: ordertype_def)
+
+lemma ordertype_eq_0_iff [simp]: "\<lbrakk>small X; wf r\<rbrakk> \<Longrightarrow> ordertype X r = 0 \<longleftrightarrow> X = {}"
+  by (metis ordertype_def elts_of_set replacement image_is_empty zero_V_def)
+
+lemma ordermap_mono_less:
+  assumes "(w, x) \<in> r"
+      and "wf r" "trans r"
+      and "w \<in> A" "x \<in> A"
+      and "small A"
+    shows "ordermap A r w < ordermap A r x"
+  by (simp add: OrdmemD assms ordermap_mono)
+
+lemma ordermap_mono_le:
+  assumes "(w, x) \<in> r \<or> w=x"
+      and "wf r" "trans r"
+      and "w \<in> A" "x \<in> A"
+      and "small A"
+    shows "ordermap A r w \<le> ordermap A r x"
+  by (metis assms dual_order.strict_implies_order eq_refl ordermap_mono_less)
+
+lemma converse_ordermap_le_mono:
+  assumes "ordermap A r y \<le> ordermap A r x" "wf r" "total r"  "x \<in> A" "small A"
+  shows "(y, x) \<in> r \<or> y=x"
+  by (meson UNIV_I assms mem_not_refl ordermap_mono total_on_def vsubsetD)
+
+lemma ordertype_mono:
+  assumes "X \<subseteq> Y" and r: "wf r" "trans r" and "small Y"
+  shows "ordertype X r \<le> ordertype Y r"
+proof -
+  have "small X"
+    using assms smaller_than_small by fastforce 
+  have *: "ordermap X r x \<le> ordermap Y r x" for x
+    using \<open>wf r\<close>
+  proof (induction x rule: wf_induct_rule)
+    case (less x)
+    have "ordermap X r z < ordermap Y r x" if "z \<in> X" and zx: "(z,x) \<in> r" for z
+      using less [OF zx] assms
+      by (meson Ord_linear2 OrdmemD Ord_ordermap ordermap_mono in_mono leD that(1) vsubsetD zx)
+    then show ?case
+      by (auto simp add: ordermap [of _ X x] \<open>small X\<close> Ord_mem_iff_lt set_image_le_iff less_eq_V_def r)
+  qed
+  show ?thesis
+  proof -
+    have "ordermap Y r ` Y = elts (ordertype Y r)"
+      by (metis ordertype_def \<open>small Y\<close> elts_of_set replacement)
+    then have "ordertype Y r \<notin> ordermap X r ` X"
+      using "*" \<open>X \<subseteq> Y\<close> by fastforce
+    then show ?thesis
+      by (metis Ord_linear2 Ord_mem_iff_lt ordertype_def wf_Ord_ordertype \<open>small X\<close> elts_of_set replacement r)
+  qed
+qed
+
+corollary ordertype_VWF_mono:
+  assumes "X \<subseteq> Y" "small Y"
+  shows "ordertype X VWF \<le> ordertype Y VWF"
+  using assms by (simp add: ordertype_mono)
+
+
+
+lemma ordermap_inc_eq:
+  assumes "x \<in> A" "small A"
+    and \<pi>: "\<And>x y. \<lbrakk>x\<in>A; y\<in>A; (x,y) \<in> r\<rbrakk> \<Longrightarrow> (\<pi> x, \<pi> y) \<in> s"
+    and r: "wf r" "total_on A r" and "wf s" 
+  shows "ordermap (\<pi> ` A) s (\<pi> x) = ordermap A r x"
+  using \<open>wf r\<close> \<open>x \<in> A\<close>
+proof (induction x rule: wf_induct_rule)
+  case (less x)
+  then have 1: "{y \<in> A. (y, x) \<in> r} = A \<inter> {y. (y, x) \<in> r}"
+    using r by auto
+  have 2: "{y \<in> \<pi> ` A. (y, \<pi> x) \<in> s} = \<pi> ` A \<inter> {y. (y, \<pi> x) \<in> s}"
+    by auto
+  have inv\<pi>: "\<And>x y. \<lbrakk>x\<in>A; y\<in>A; (\<pi> x, \<pi> y) \<in> s\<rbrakk> \<Longrightarrow> (x, y) \<in> r"
+    by (metis \<pi> \<open>wf s\<close> \<open>total_on A r\<close> total_on_def wf_not_sym)
+  have eq: "f ` (\<pi> ` A \<inter> {y. (y, \<pi> x) \<in> s}) = (f \<circ> \<pi>) ` (A \<inter> {y. (y, x) \<in> r})" for f :: "'b \<Rightarrow> V"
+    using less by (auto simp: image_subset_iff inv\<pi> \<pi>)
+  show ?case
+    using less
+    by (simp add: ordermap [OF \<open>wf r\<close>, of _ x] ordermap [OF \<open>wf s\<close>, of _ "\<pi> x"] 1 2 eq)
+qed
+
+lemma ordertype_inc_eq:
+  assumes "small A"
+    and \<pi>: "\<And>x y. \<lbrakk>x\<in>A; y\<in>A; (x,y) \<in> r\<rbrakk> \<Longrightarrow> (\<pi> x, \<pi> y) \<in> s"
+    and r: "wf r" "total_on A r" and "wf s" 
+  shows "ordertype (\<pi> ` A) s = ordertype A r"
+proof -
+  have "ordermap (\<pi> ` A) s (\<pi> x) = ordermap A r x" if "x \<in> A" for x
+    using assms that by (auto simp: ordermap_inc_eq)
+  then show ?thesis
+    unfolding ordertype_def
+    by (metis (no_types, lifting) image_cong image_image)
+qed
+
+lemma ordertype_inc_le:
+  assumes "small A" "small B"
+    and \<pi>: "\<And>x y. \<lbrakk>x\<in>A; y\<in>A; (x,y) \<in> r\<rbrakk> \<Longrightarrow> (\<pi> x, \<pi> y) \<in> s"
+    and r: "wf r" "total_on A r" and "wf s" "trans s"
+    and "\<pi> ` A \<subseteq> B"
+  shows "ordertype A r \<le> ordertype B s"
+  by (metis assms ordertype_inc_eq ordertype_mono)
+
+corollary ordertype_VWF_inc_eq:
+  assumes "A \<subseteq> ON" "\<pi> ` A \<subseteq> ON" "small A" and "\<And>x y. \<lbrakk>x\<in>A; y\<in>A; x<y\<rbrakk> \<Longrightarrow> \<pi> x < \<pi> y"
+  shows "ordertype (\<pi> ` A) VWF = ordertype A VWF"
+proof (rule ordertype_inc_eq)
+  show "(\<pi> x, \<pi> y) \<in> VWF"
+    if "x \<in> A" "y \<in> A" "(x, y) \<in> VWF" for x y
+    using that ON_imp_Ord assms by auto
+  show "total_on A VWF"
+    by (meson UNIV_I total_VWF total_on_def)
+qed (use assms in auto)
+
+lemma ordertype_infinite_ge_\<omega>:
+  assumes "infinite A" "small A"
+  shows "ordertype A VWF \<ge> \<omega>"
+proof -
+  have "inj_on (ordermap A VWF) A"
+    by (meson ordermap_bij \<open>small A\<close> bij_betw_def total_on_VWF wf_VWF)
+  then have "infinite (ordermap A VWF ` A)"
+    using \<open>infinite A\<close> finite_image_iff by blast
+  then show ?thesis
+    using Ord_ordertype \<open>small A\<close> infinite_Ord_omega by (auto simp: ordertype_def)
+qed
+
+
+lemma ordertype_eqI:
+  assumes r: "wf r" "total_on A r" "small A"
+  assumes s: "wf s" 
+  assumes "bij_betw f A B" "(\<forall>x \<in> A. \<forall>y \<in> A. (f x, f y) \<in> s \<longleftrightarrow> (x,y) \<in> r)"
+  shows "ordertype A r = ordertype B s"
+  by (metis assms bij_betw_imp_surj_on ordertype_inc_eq)
+
+
+
+lemma ordermap_eq_self:
+  assumes "Ord \<alpha>" and x: "x \<in> elts \<alpha>" 
+  shows "ordermap (elts \<alpha>) VWF x = x" 
+  using Ord_in_Ord [OF assms] x 
+proof (induction x rule: Ord_induct)
+  case (step x)
+  have 1: "{y \<in> elts \<alpha>. (y, x) \<in> VWF} = elts x" (is "?A = _")
+  proof
+    show "?A \<subseteq> elts x"
+      using \<open>Ord \<alpha>\<close> by clarify (meson Ord_in_Ord Ord_mem_iff_lt VWF_iff_Ord_less step.hyps)
+    show "elts x \<subseteq> ?A"
+      using \<open>Ord \<alpha>\<close> by clarify (meson Ord_in_Ord Ord_trans OrdmemD VWF_iff_Ord_less step.prems)
+  qed
+  show ?case
+    using step
+    by (simp add: ordermap [OF wf_VWF, of _ x] 1 Ord_trans [of _ _ \<alpha>] step.prems \<open>Ord \<alpha>\<close> cong: image_cong)
+qed
+
+lemma ordertype_eq_Ord [simp]:
+  assumes "Ord \<alpha>" 
+  shows "ordertype (elts \<alpha>) VWF = \<alpha>"
+  using assms ordermap_eq_self [OF assms] by (simp add: ordertype_def)
+
+
+proposition ordertype_eq_iff:
+  assumes \<alpha>: "Ord \<alpha>" and r: "wf r" and "small A" "total_on A r" "trans r"
+  shows "ordertype A r = \<alpha> \<longleftrightarrow>
+         (\<exists>f. bij_betw f A (elts \<alpha>) \<and> (\<forall>x \<in> A. \<forall>y \<in> A. f x < f y \<longleftrightarrow> (x,y) \<in> r))"
+    (is "?lhs = ?rhs")
+proof safe
+  assume eq: "\<alpha> = ordertype A r"
+  show "\<exists>f. bij_betw f A (elts (ordertype A r)) \<and> (\<forall>x\<in>A. \<forall>y\<in>A. f x < f y \<longleftrightarrow> ((x, y) \<in> r))"
+  proof (intro exI conjI ballI)
+    show "bij_betw (ordermap A r) A (elts (ordertype A r))"
+      by (simp add: assms ordermap_bij)
+    then show "ordermap A r x < ordermap A r y \<longleftrightarrow> (x, y) \<in> r"
+      if "x \<in> A" "y \<in> A" for x y
+      using that assms
+      by (metis order.asym ordermap_mono_less total_on_def)
+  qed
+next
+  fix f 
+  assume f: "bij_betw f A (elts \<alpha>)" "\<forall>x\<in>A. \<forall>y\<in>A. f x < f y \<longleftrightarrow> (x, y) \<in> r"
+  have "ordertype A r = ordertype (elts \<alpha>) VWF"
+  proof (rule ordertype_eqI)
+    show "\<forall>x\<in>A. \<forall>y\<in>A. ((f x, f y) \<in> VWF) = ((x, y) \<in> r)"
+      by (meson Ord_in_Ord VWF_iff_Ord_less \<alpha> bij_betwE f)
+  qed (use assms f in auto)
+  then show ?lhs
+    by (simp add: \<alpha>)
+qed
+
+corollary ordertype_VWF_eq_iff:
+  assumes "Ord \<alpha>" "small A"
+  shows "ordertype A VWF = \<alpha> \<longleftrightarrow>
+         (\<exists>f. bij_betw f A (elts \<alpha>) \<and> (\<forall>x \<in> A. \<forall>y \<in> A. f x < f y \<longleftrightarrow> (x,y) \<in> VWF))"
+  by (metis UNIV_I assms ordertype_eq_iff total_VWF total_on_def trans_VWF wf_VWF)
+
+
+lemma ordertype_le_Ord:
+  assumes "Ord \<alpha>" "X \<subseteq> elts \<alpha>"
+  shows "ordertype X VWF \<le> \<alpha>"
+  by (metis assms ordertype_VWF_mono ordertype_eq_Ord small_elts)
+
+lemma ordertype_inc_le_Ord:
+  assumes "small A" "Ord \<alpha>"
+    and \<pi>: "\<And>x y. \<lbrakk>x\<in>A; y\<in>A; (x,y) \<in> r\<rbrakk> \<Longrightarrow> \<pi> x < \<pi> y"
+    and "wf r" "total_on A r" 
+    and sub: "\<pi> ` A \<subseteq> elts \<alpha>"
+  shows "ordertype A r \<le> \<alpha>"
+proof -
+  have "\<And>x y. \<lbrakk>x\<in>A; y\<in>A; (x,y) \<in> r\<rbrakk> \<Longrightarrow> (\<pi> x, \<pi> y) \<in> VWF"
+    by (meson Ord_in_Ord VWF_iff_Ord_less \<pi> \<open>Ord \<alpha>\<close> sub image_subset_iff)
+  with assms show ?thesis
+    by (metis ordertype_inc_eq ordertype_le_Ord wf_VWF)
+qed
+
+
+lemma ordertype_infinite_\<omega>:
+  assumes "A \<subseteq> elts \<omega>" "infinite A"
+  shows "ordertype A VWF = \<omega>"
+proof (rule antisym)
+  show "ordertype A VWF \<le> \<omega>"
+    by (simp add: assms ordertype_le_Ord)
+  show "\<omega> \<le> ordertype A VWF"
+    using assms down ordertype_infinite_ge_\<omega> by auto
+qed
+
+
+proposition ordertype_eq_ordertype:
+  assumes r: "wf r" "total_on A r" "trans r" and "small A"
+  assumes s: "wf s" "total_on B s" "trans s" and "small B"
+  shows "ordertype A r = ordertype B s \<longleftrightarrow>
+         (\<exists>f. bij_betw f A B \<and> (\<forall>x \<in> A. \<forall>y \<in> A. (f x, f y) \<in> s \<longleftrightarrow> (x,y) \<in> r))"
+    (is "?lhs = ?rhs")
+proof
+  assume L: ?lhs
+  define \<gamma> where "\<gamma> = ordertype A r"
+  have A: "bij_betw (ordermap A r) A (ordermap A r ` A)"
+    by (meson ordermap_bij assms(4) bij_betw_def r)
+  have B: "bij_betw (ordermap B s) B (ordermap B s ` B)"
+    by (meson ordermap_bij assms(8) bij_betw_def s)
+
+  define f where "f \<equiv> inv_into B (ordermap B s) o ordermap A r"
+  show ?rhs
+  proof (intro exI conjI)
+    have bijA: "bij_betw (ordermap A r) A (elts \<gamma>)"
+      unfolding \<gamma>_def using ordermap_bij \<open>small A\<close> r by blast
+    moreover have bijB: "bij_betw (ordermap B s) B (elts \<gamma>)"
+      by (simp add: L \<gamma>_def ordermap_bij \<open>small B\<close> s)
+    ultimately show bij: "bij_betw f A B"
+      unfolding f_def using bij_betw_comp_iff bij_betw_inv_into by blast
+    have invB: "\<And>\<alpha>. \<alpha> \<in> elts \<gamma> \<Longrightarrow> ordermap B s (inv_into B (ordermap B s) \<alpha>) = \<alpha>"
+      by (meson bijB bij_betw_inv_into_right)
+    have ordermap_A_\<gamma>: "\<And>a. a \<in> A \<Longrightarrow> ordermap A r a \<in> elts \<gamma>"
+      using bijA bij_betwE by auto
+    have f_in_B: "\<And>a. a \<in> A \<Longrightarrow> f a \<in> B"
+      using bij bij_betwE by fastforce
+    show "\<forall>x\<in>A. \<forall>y\<in>A. (f x, f y) \<in> s \<longleftrightarrow> (x, y) \<in> r"
+    proof (intro iffI ballI)
+      fix x y
+      assume "x \<in> A" "y \<in> A" and ins: "(f x, f y) \<in> s"
+      then have "ordermap A r x < ordermap A r y"
+        unfolding o_def 
+        by (metis (mono_tags, lifting) f_def \<open>small B\<close> comp_apply f_in_B invB ordermap_A_\<gamma> ordermap_mono_less s(1) s(3))
+      then show "(x, y) \<in> r"
+        by (metis \<open>x \<in> A\<close> \<open>y \<in> A\<close> \<open>small A\<close> order.asym ordermap_mono_less r total_on_def)
+    next
+      fix x y
+      assume "x \<in> A" "y \<in> A" and "(x, y) \<in> r"
+      then have "ordermap A r x < ordermap A r y"
+        by (simp add: \<open>small A\<close> ordermap_mono_less r)
+      then have "(f y, f x) \<notin> s"
+        by (metis (mono_tags, lifting) \<open>x \<in> A\<close> \<open>y \<in> A\<close> \<open>small B\<close> comp_apply f_def f_in_B invB order.asym ordermap_A_\<gamma> ordermap_mono_less s(1) s(3))
+      moreover have "f y \<noteq> f x"
+        by (metis \<open>(x, y) \<in> r\<close> \<open>x \<in> A\<close> \<open>y \<in> A\<close> bij bij_betw_inv_into_left r(1) wf_not_sym)
+      ultimately show "(f x, f y) \<in> s"
+        by (meson \<open>x \<in> A\<close> \<open>y \<in> A\<close> f_in_B s(2) total_on_def)
+    qed
+  qed
+next
+  assume ?rhs
+  then show ?lhs
+    using assms ordertype_eqI  by blast
+qed
+
+
+lemma ordermap_insert:
+  assumes "Ord \<alpha>" and y: "Ord y" "y \<le> \<alpha>" and U: "U \<subseteq> elts \<alpha>"
+  shows "ordermap (insert \<alpha> U) VWF y = ordermap U VWF y"
+  using y
+proof (induction rule: Ord_induct)
+  case (step y)
+  then have 1: "{u \<in> U. (u, y) \<in> VWF} = elts y \<inter> U"
+    apply (simp add: set_eq_iff)
+    by (meson Ord_in_Ord Ord_mem_iff_lt VWF_iff_Ord_less assms subsetD)
+  have 2: "{u \<in> insert \<alpha> U. (u, y) \<in> VWF} = elts y \<inter> U"
+    apply (simp add: set_eq_iff)
+    by (meson Ord_in_Ord Ord_mem_iff_lt VWF_iff_Ord_less assms leD step.hyps step.prems subsetD)
+  show ?case
+    using step
+    apply (simp only: ordermap [OF wf_VWF, of _ y] 1 2)
+    by (meson Int_lower1 Ord_is_Transset Sup.SUP_cong Transset_def assms(1) in_mono vsubsetD)
+qed
+
+
+lemma finite_ordertype_le_card:
+  assumes "finite A" "wf r" "trans r" 
+  shows "ordertype A r \<le> ord_of_nat (card A)"
+proof -
+  have "Ord (ordertype A r)"
+    by (simp add: wf_Ord_ordertype assms)
+  moreover have "ordermap A r ` A = elts (ordertype A r)"
+    by (simp add: ordertype_def ZFC_in_HOL.Finite \<open>finite A\<close>)
+  moreover have "card (ordermap A r ` A) \<le> card A"
+    using \<open>finite A\<close> card_image_le by blast
+  ultimately show ?thesis
+    by (metis Ord_linear_le Ord_ord_of_nat \<open>finite A\<close> card_ord_of_nat card_seteq finite_imageI less_eq_V_def)
+qed
+
+lemma ordertype_VWF_\<omega>:
+  assumes "finite A"
+  shows "ordertype A VWF \<in> elts \<omega>"
+proof -
+  have "finite (ordermap A VWF ` A)"
+    using assms by blast
+  then have "ordertype A VWF < \<omega>"
+    by (meson Ord_\<omega> OrdmemD trans_VWF wf_VWF assms finite_ordertype_le_card le_less_trans ord_of_nat_\<omega>)
+  then show ?thesis
+    by (simp add: Ord_mem_iff_lt)
+qed
+
+lemma ordertype_VWF_finite_nat:
+  assumes "finite A"
+  shows "ordertype A VWF = ord_of_nat (card A)"
+  by (metis Finite ordermap_bij total_on_VWF wf_VWF \<omega>_def assms bij_betw_same_card card_ord_of_nat elts_of_set f_inv_into_f inf ordertype_VWF_\<omega>)
+
+lemma finite_ordertype_eq_card:
+  assumes "finite A" "wf r" "trans r" "total_on A r"
+  shows "ordertype A r = ord_of_nat m \<longleftrightarrow> card A = m"
+proof -
+  have "Ord (ordertype A r)"
+    by (simp add: wf_Ord_ordertype assms)
+  moreover have "set (ordermap A r ` A) = (ordertype A r)"
+    by (simp add: ordertype_def ZFC_in_HOL.Finite \<open>finite A\<close>)
+  moreover have "card (ordermap A r ` A) = card A"
+    by (meson Finite ordermap_bij assms bij_betw_def card_image)
+  ultimately have "ordertype A r = card A"
+    by (metis Finite \<open>finite A\<close> elts_of_set finite_imageI ordertype_VWF_finite_nat ordertype_eq_Ord)
+  then show ?thesis
+    by simp
+qed
 
 subsection\<open>Cardinality of a set\<close>
 
@@ -837,7 +1308,7 @@ lemma Card_is_Ord:
   assumes "Card \<kappa>" shows "Ord \<kappa>"
 proof -
   obtain \<alpha> where "Ord \<alpha>" "elts \<alpha> \<approx> elts \<kappa>"
-    using Ord_ordertype ordertype_eqpoll by force
+    using Ord_ordertype ordertype_eqpoll by blast
   then have "Ord (LEAST i. Ord i \<and> elts i \<approx> elts \<kappa>)"
     by (metis Ord_Least)
   then show ?thesis
