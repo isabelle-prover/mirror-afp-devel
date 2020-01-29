@@ -85,7 +85,7 @@ next
     case gt_same_t_s: gt_same
     thus ?case
       using extf_mono[OF gt_and_basic_gt_le_basic_gt]
-      by (auto intro!: gt_same simp: basic_wt_eq_wt[symmetric])
+      by (force intro!: gt_same simp: basic_wt_eq_wt[symmetric])
   qed
 qed
 
