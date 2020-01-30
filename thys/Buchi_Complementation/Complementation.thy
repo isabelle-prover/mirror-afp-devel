@@ -132,13 +132,13 @@ begin
     obtain r p where 1:
       "run (complement A) (w ||| r) p"
       "p \<in> initial (complement A)"
-      "infs (accepting (complement A)) (trace (w ||| r) p)"
+      "infs (accepting (complement A)) r"
       using assms by rule
-    let ?m = "p ## trace (w ||| r) p"
+    let ?m = "p ## r"
     obtain 100:
       "fst (?m !! Suc k) \<in> lr_succ A (w !! k) (fst (?m !! k))"
       "snd (?m !! Suc k) = st_succ A (w !! k) (fst (?m !! Suc k)) (snd (?m !! k))"
-      for k using complement_trace_snth 1(1) by metis
+      for k using complement_trace_snth 1(1) unfolding nba.trace_alt_def szip_smap_snd by metis
     define f where "f \<equiv> \<lambda> (k, q). the (fst (?m !! k) q)"
     define P where "P k \<equiv> snd (?m !! k)" for k
     have 2: "snd v \<in> dom (fst (?m !! fst v))" if "v \<in> gunodes A w" for v
@@ -244,7 +244,7 @@ begin
           finally have 23: "even (f (gtarget (stake (Suc l) (t @- s)) u))" using 13 by simp
           have 24: "snd (gtarget (stake (Suc l) (t @- s)) u) \<in>
             {p \<in> dom (fst (?m !! Suc l)). even (f (Suc l, p))}"
-            using 21 22 23 by (metis (no_types, lifting) mem_Collect_eq prod.collapse)
+            using 21 22 23 by (metis (mono_tags, lifting) mem_Collect_eq prod.collapse)
           also have "\<dots> = st_succ A (w !! l) (fst (?m !! Suc l)) (P l)"
             unfolding 15(2) st_succ_def f_def by simp
           also have "\<dots> = P (Suc l)" using 100(2) unfolding P_def by rule
@@ -472,7 +472,7 @@ begin
           transition (complement A) (w !! k) (target (stake k (w ||| stl s)) (shd s))" by this
       qed
       show "shd s \<in> initial (complement A)" unfolding complement_def s_def using P_0 by simp
-      show "infs (accepting (complement A)) (trace (w ||| stl s) (shd s))"
+      show "infs (accepting (complement A)) (stl s)"
       proof -
         have 10: "\<forall> n. \<exists> k \<ge> n. P k = {}"
         proof (rule ccontr)
@@ -583,8 +583,7 @@ begin
           by (simp add: case_prod_beta')
         then have "infs (\<lambda> (f, P). P = {}) (stl (smap g nats ||| smap P nats))" by blast
         then have "infs (\<lambda> (f, P). P = {}) (smap snd (w ||| stl (smap g nats ||| smap P nats)))" by simp
-        then have "infs (\<lambda> (f, P). P = {}) (trace (w ||| stl s) (shd s))"
-          unfolding nba.trace_alt_def s_def by this
+        then have "infs (\<lambda> (f, P). P = {}) (stl s)" unfolding s_def by simp
         then show ?thesis unfolding complement_def by auto
       qed
     qed

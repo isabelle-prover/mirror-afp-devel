@@ -117,25 +117,22 @@ begin
       have 2: "r 0 \<in> V0" "ipath E r" "is_acc r"
         using 1 unfolding is_acc_run_def graph_defs.is_run_def by auto
       obtain w where 3: "run A (w ||| smap (r \<circ> Suc) nats) (r 0)" using nba_g_ipath_run 2(2) by auto
-      have 4: "r 0 ## trace (w ||| smap (r \<circ> Suc) nats) (r 0) = smap r nats"
-        unfolding nba.trace_alt_def by (simp) (metis stream.map_comp smap_siterate)
-      have 5: "infs (accepting A) (r 0 ## trace (w ||| smap (r \<circ> Suc) nats) (r 0))"
+      have 4: "r 0 ## smap (r \<circ> Suc) nats = smap r nats" by (simp) (metis stream.map_comp smap_siterate)
+      have 5: "infs (accepting A) (r 0 ## smap (r \<circ> Suc) nats)"
         using 2(3) unfolding infs_infm is_acc_def 4 by simp
       have "w \<in> language A"
       proof
         show "r 0 \<in> initial A" using nba_g_V0 2(1) by force
         show "run A (w ||| smap (r \<circ> Suc) nats) (r 0)" using 3 by this
-        show "infs (accepting A) (trace (w ||| smap (r \<circ> Suc) nats) (r 0))" using 5 by simp
+        show "infs (accepting A) (smap (r \<circ> Suc) nats)" using 5 by simp
       qed
       then show ?thesis by auto
     qed
     show "Ex is_acc_run" if language: "language A \<noteq> {}"
     proof -
       obtain w where 1: "w \<in> language A" using language by auto
-      obtain r p where 2:
-        "p \<in> initial A" "run A (w ||| r) p" "infs (accepting A) (trace (w ||| r) p)"
-        using 1 by rule
-      have 3: "infs (accepting A) (p ## trace (w ||| r) p)" using 2(3) by simp
+      obtain r p where 2: "p \<in> initial A" "run A (w ||| r) p" "infs (accepting A) r" using 1 by rule
+      have 3: "infs (accepting A) (p ## r)" using 2(3) by simp
       have "is_acc_run (snth (p ## r))"
       unfolding is_acc_run_def graph_defs.is_run_def
       proof safe

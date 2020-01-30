@@ -80,8 +80,7 @@ begin
     shows "w \<notin> language A"
   proof
     assume 1: "w \<in> language A"
-    obtain r p where 2: "run A (w ||| r) p" "p \<in> initial A" "infs (accepting A) (trace (w ||| r) p)"
-      using 1 by rule
+    obtain r p where 2: "run A (w ||| r) p" "p \<in> initial A" "infs (accepting A) r" using 1 by rule
     let ?r = "fromN 1 ||| r"
     let ?v = "(0, p)"
     have 3: "?v \<in> gunodes A w" "gurun A w ?r ?v" using 2(1, 2) by (auto intro: run_grun)
@@ -103,7 +102,7 @@ begin
       using assms unfolding ranking_def by auto
     have 9: "\<And> p. p \<in> sset (gtrace ?t ?u) \<Longrightarrow> gaccepting A p \<Longrightarrow> even (f p)" using 7 8 by auto
 
-    have 19: "infs (accepting A) (smap snd ?r)" using 2(3) unfolding nba.trace_alt_def by simp
+    have 19: "infs (accepting A) (smap snd ?r)" using 2(3) by simp
     have 18: "infs (gaccepting A) ?r" using 19 by simp
     have 17: "infs (gaccepting A) (gtrace ?r ?v)" using 18 unfolding gtrace_alt_def by this
     have 16: "infs (gaccepting A) (gtrace (?s @- ?t) ?v)" using 17 unfolding stake_sdrop by this
@@ -200,8 +199,7 @@ begin
   proof (rule ccontr)
     assume 1: "\<not> thesis"
     have 2: "\<And> v. v \<in> V \<Longrightarrow> \<exists> u \<in> greachable A w V v. gaccepting A u" using that 1 by auto
-    have 3: "\<And> r v. v \<in> initial A \<Longrightarrow> run A (w ||| r) v \<Longrightarrow> fins (accepting A) (trace (w ||| r) v)"
-      using assms(1) by auto
+    have 3: "\<And> r v. v \<in> initial A \<Longrightarrow> run A (w ||| r) v \<Longrightarrow> fins (accepting A) r" using assms(1) by auto
     obtain v where 4: "v \<in> V" using assms(2) by force
     obtain x where 5: "x \<in> greachable A w V v" "gaccepting A x" using 2 4 by blast
     obtain y where 50: "gpath A w V y v" "x = gtarget y v" using 5(1) by rule
@@ -236,13 +234,12 @@ begin
     have 9: "q \<in> initial A" using 100(1) 7(2) by auto
     have 91: "sset (trace (w ||| s) q) \<subseteq> reachable A q"
       using nba.reachable_trace nba.reachable.reflexive 8 by this
-    have 10: "fins (accepting A) (trace (w ||| s) q)" using 3 9 8 by this
-    have 11: "fins (accepting A) s" using 10 unfolding nba.trace_alt_def by simp
+    have 10: "fins (accepting A) s" using 3 9 8 by this
     have 12: "infs (gaccepting A) r" using infs_mono[OF _ 6(2)] by simp
     have "s = smap snd (t @- y @- r)" unfolding 7(1) by simp
     also have "infs (accepting A) \<dots>" using 12 by (simp add: comp_def)
     finally have 13: "infs (accepting A) s" by this
-    show False using 11 13 by simp
+    show False using 10 13 by simp
   qed
 
   lemma remove_run:

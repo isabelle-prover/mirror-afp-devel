@@ -48,9 +48,10 @@ begin
   lemma language_param[param]: "(language, language) \<in> \<langle>L, S\<rangle> ngba_rel \<rightarrow> \<langle>\<langle>L\<rangle> stream_rel\<rangle> set_rel"
   proof -
     have 1: "language A = (\<Union> p \<in> initial A. \<Union> wr \<in> ngba.runs A p.
-      if gen infs (accepting A) (trace wr p) then {smap fst wr} else {})"
+      if gen infs (accepting A) (smap snd wr) then {smap fst wr} else {})"
       for A :: "('label, 'state) ngba"
-      unfolding ngba.language_def ngba.runs_def image_def by (auto iff: split_szip_ex)
+      unfolding ngba.language_def ngba.runs_def image_def
+      by (auto iff: split_szip_ex simp del: alw_smap)
     show ?thesis unfolding 1 using enableds_param[param_fo] by parametricity
   qed
 
