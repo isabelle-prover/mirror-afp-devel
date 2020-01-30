@@ -13,7 +13,8 @@ begin
   global_interpretation nba: automaton nba alphabet initial transition accepting
     defines path = nba.path and run = nba.run and reachable = nba.reachable and nodes = nba.nodes
     by unfold_locales auto
-  global_interpretation nba: automaton_trace nba alphabet initial transition accepting infs
+  global_interpretation nba: automaton_trace nba alphabet initial transition accepting
+    "\<lambda> P w r p. infs P (nba.trace (w ||| r) p)"
     defines language = nba.language
     by standard
 

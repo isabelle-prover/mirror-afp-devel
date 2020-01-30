@@ -5,64 +5,65 @@ imports NBA NGBA
 begin
 
   global_interpretation degeneralization: automaton_degeneralization_trace
-    ngba ngba.alphabet ngba.initial ngba.transition ngba.accepting "gen infs"
-    nba nba.alphabet nba.initial nba.transition nba.accepting infs
+    ngba ngba.alphabet ngba.initial ngba.transition ngba.accepting "\<lambda> P w r p. gen infs P (trace (w ||| r) p)"
+    nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P (trace (w ||| r) p)"
     defines degeneralize = degeneralization.degeneralize
-    by unfold_locales auto
+    by (unfold_locales) (auto simp: nba.trace_alt_def)
 
   lemmas degeneralize_language[simp] = degeneralization.degeneralize_language[folded NBA.language_def]
   lemmas degeneralize_nodes_finite[iff] = degeneralization.degeneralize_nodes_finite[folded NBA.nodes_def]
 
   global_interpretation intersection: automaton_intersection_trace
-    nba nba.alphabet nba.initial nba.transition nba.accepting infs
-    nba nba.alphabet nba.initial nba.transition nba.accepting infs
-    ngba ngba.alphabet ngba.initial ngba.transition ngba.accepting "gen infs"
+    nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P (trace (w ||| r) p)"
+    nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P (trace (w ||| r) p)"
+    ngba ngba.alphabet ngba.initial ngba.transition ngba.accepting "\<lambda> P w r p. gen infs P (trace (w ||| r) p)"
     "\<lambda> c\<^sub>1 c\<^sub>2. [c\<^sub>1 \<circ> fst, c\<^sub>2 \<circ> snd]"
     defines intersect' = intersection.intersect
-    by unfold_locales auto
+    by (unfold_locales) (auto simp: nba.trace_alt_def)
 
   lemmas intersect'_language[simp] = intersection.intersect_language[folded NGBA.language_def]
   lemmas intersect'_nodes_finite[intro] = intersection.intersect_nodes_finite[folded NGBA.nodes_def]
 
   global_interpretation intersection_list: automaton_intersection_list_trace
-    nba nba.alphabet nba.initial nba.transition nba.accepting infs
-    ngba ngba.alphabet ngba.initial ngba.transition ngba.accepting "gen infs"
-    "\<lambda> cs. map (\<lambda> k pp. (cs ! k) (pp ! k)) [0 ..< length cs]"
+    nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P (trace (w ||| r) p)"
+    ngba ngba.alphabet ngba.initial ngba.transition ngba.accepting "\<lambda> P w r p. gen infs P (trace (w ||| r) p)"
+    "\<lambda> cs. map (\<lambda> k ps. (cs ! k) (ps ! k)) [0 ..< length cs]"
     defines intersect_list' = intersection_list.intersect
   proof unfold_locales
-    fix cs :: "('b \<Rightarrow> bool) list" and ws :: "'b stream list"
-    assume 1: "length cs = length ws"
-    have "gen infs (map (\<lambda> k pp. (cs ! k) (pp ! k)) [0 ..< length cs]) (stranspose ws) \<longleftrightarrow>
-      (\<forall> k < length cs. infs (\<lambda> pp. (cs ! k) (pp ! k)) (stranspose ws))"
+    fix cs :: "('b \<Rightarrow> bool) list" and rs :: "'b stream list" and w :: "'a stream" and ps :: "'b list"
+    assume 1: "length rs = length cs" "length ps = length cs"
+    have "gen infs (map (\<lambda> k pp. (cs ! k) (pp ! k)) [0 ..< length cs]) (stranspose rs) \<longleftrightarrow>
+      (\<forall> k < length cs. infs (\<lambda> pp. (cs ! k) (pp ! k)) (stranspose rs))"
       by (auto simp: gen_def)
-    also have "\<dots> \<longleftrightarrow> (\<forall> k < length cs. infs (cs ! k) (smap (\<lambda> pp. pp ! k) (stranspose ws)))"
+    also have "\<dots> \<longleftrightarrow> (\<forall> k < length cs. infs (cs ! k) (smap (\<lambda> pp. pp ! k) (stranspose rs)))"
       by (simp add: comp_def)
-    also have "\<dots> \<longleftrightarrow> (\<forall> k < length cs. infs (cs ! k) (ws ! k))" using 1 by simp
-    also have "\<dots> \<longleftrightarrow> list_all2 infs cs ws" using 1 unfolding list_all2_conv_all_nth by simp
-    finally show "gen infs (map (\<lambda> k pp. (cs ! k) (pp ! k)) [0 ..< length cs]) (stranspose ws) \<longleftrightarrow>
-      list_all2 infs cs ws" by this
+    also have "\<dots> \<longleftrightarrow> (\<forall> k < length cs. infs (cs ! k) (rs ! k))" using 1 by simp
+    also have "\<dots> \<longleftrightarrow> list_all (\<lambda> (c, r, p). infs c r) (cs || rs || ps)"
+      using 1 unfolding list_all_length by simp
+    finally show "gen infs (map (\<lambda> k ps. (cs ! k) (ps ! k)) [0 ..< length cs]) (NGBA.trace (w ||| stranspose rs) ps) \<longleftrightarrow> list_all (\<lambda> (c, r, p). infs c (NGBA.trace (w ||| r) p)) (cs || rs || ps)"
+      unfolding nba.trace_alt_def by simp
   qed
 
   lemmas intersect_list'_language[simp] = intersection_list.intersect_language[folded NGBA.language_def]
   lemmas intersect_list'_nodes_finite[intro] = intersection_list.intersect_nodes_finite[folded NGBA.nodes_def]
 
   global_interpretation union: automaton_union_trace
-    nba nba.alphabet nba.initial nba.transition nba.accepting infs
-    nba nba.alphabet nba.initial nba.transition nba.accepting infs
-    nba nba.alphabet nba.initial nba.transition nba.accepting infs
+    nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P (trace (w ||| r) p)"
+    nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P (trace (w ||| r) p)"
+    nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P (trace (w ||| r) p)"
     case_sum
     defines union = union.union
-    by (unfold_locales) (auto simp: comp_def)
+    by (unfold_locales) (auto simp: comp_def nba.trace_alt_def)
 
   lemmas union_language = union.union_language
   lemmas union_nodes_finite = union.union_nodes_finite
 
   global_interpretation union_list: automaton_union_list_trace
-    nba nba.alphabet nba.initial nba.transition nba.accepting infs
-    nba nba.alphabet nba.initial nba.transition nba.accepting infs
+    nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P (trace (w ||| r) p)"
+    nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P (trace (w ||| r) p)"
     "\<lambda> cs (k, p). (cs ! k) p"
     defines union_list = union_list.union
-    by (unfold_locales) (auto simp: szip_sconst_smap_fst comp_def)
+    by (unfold_locales) (auto simp: szip_sconst_smap_fst comp_def nba.trace_alt_def)
 
   lemmas union_list_language = union_list.union_language
   lemmas union_list_nodes_finite = union_list.union_nodes_finite
