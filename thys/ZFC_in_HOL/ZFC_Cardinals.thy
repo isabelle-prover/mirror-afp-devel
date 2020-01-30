@@ -1379,6 +1379,14 @@ proof -
     by (blast intro: CardI Card_is_Ord)
 qed
 
+lemma Card_\<omega> [iff]: "Card \<omega>"
+proof -
+  have "\<And>\<alpha> f. \<lbrakk>\<alpha> \<in> elts \<omega>; bij_betw f (elts \<alpha>) (elts \<omega>)\<rbrakk> \<Longrightarrow> False"
+  using bij_betw_finite finite_Ord_omega infinite_\<omega> by blast
+  then show ?thesis
+    by (meson CardI Ord_\<omega> Ord_mem_iff_lt eqpoll_def)
+qed
+
 lemma lt_Card_imp_lesspoll: "\<lbrakk>i < a; Card a; Ord i\<rbrakk> \<Longrightarrow> elts i \<prec> elts a"
   by (meson Card_iff_initial less_eq_V_def less_imp_le lesspoll_def subset_imp_lepoll)
 
@@ -1409,6 +1417,35 @@ lemma lepoll_cardinal_le: "\<lbrakk>elts A \<lesssim> elts i; Ord i\<rbrakk> \<L
 lemma lesspoll_imp_Card_less:
   assumes "elts a \<prec> elts b" shows "vcard a < vcard b"
   by (metis assms cardinal_eqpoll eqpoll_sym eqpoll_trans le_neq_trans lepoll_imp_Card_le lesspoll_def)
+
+
+lemma Card_Union [simp,intro]:
+  assumes A: "\<And>x. x \<in> A \<Longrightarrow> Card(x)" shows "Card(\<Squnion>A)"
+proof (rule CardI)
+  show "Ord(\<Squnion>A)" using A
+    by (simp add: Card_is_Ord Ord_Sup)
+next
+  fix j
+  assume j: "j < \<Squnion>A" "Ord j"
+  hence "\<exists>c\<in>A. j < c \<and> Card(c)" using A
+    by (meson Card_is_Ord Ord_linear2 ZFC_in_HOL.Sup_least leD)
+  then obtain c where c: "c\<in>A" "j < c" "Card(c)"
+    by blast
+  hence jls: "elts j \<prec> elts c"
+    using j(2) lt_Card_imp_lesspoll by blast
+  { assume eqp: "elts j \<approx> elts (\<Squnion>A)"
+    have  "elts c \<lesssim> elts (\<Squnion>A)" using c
+      using Sup_V_def ZFC_in_HOL.Sup_upper j(1) less_eq_V_def subset_imp_lepoll by fastforce
+    also have "... \<approx> elts j"  by (rule eqpoll_sym [OF eqp])
+    also have "... \<prec> elts c"  by (rule jls)
+    finally have "elts c \<prec> elts c" .
+    hence False
+      by auto
+  } thus "\<not> elts j \<approx> elts (\<Squnion>A)" by blast
+qed
+
+lemma Card_UN: "(\<And>x. x \<in> A \<Longrightarrow> Card(K x)) ==> Card(Sup (K ` A))"
+  by blast
 
 subsection\<open>Transfinite recursion for definitions based on the three cases of ordinals\<close>
 
@@ -1712,7 +1749,7 @@ definition
   where "csucc \<kappa> \<equiv> LEAST \<kappa>'. Ord \<kappa>' \<and> (Card \<kappa>' \<and> \<kappa> < \<kappa>')"
 
 
-lemma "vcard A < vcard (VPow A)"
+lemma less_vcard_VPow: "vcard A < vcard (VPow A)"
 proof (rule lesspoll_imp_Card_less)
   show "elts A \<prec> elts (VPow A)"
     by (simp add: elts_VPow down inj_on_def lesspoll_Pow_self)
@@ -1731,18 +1768,19 @@ proof -
   finally show ?thesis .
 qed
 
-lemma csucc_works:
-  assumes "Card \<kappa>" shows "Card (csucc \<kappa>) \<and> \<kappa> < csucc \<kappa>"
-  unfolding csucc_def
-  proof (rule Ord_LeastI2)
-  show "Card (vcard (VPow \<kappa>)) \<and> \<kappa> < (vcard (VPow \<kappa>))"
-    using Card_def assms greater_Card by auto
-qed auto
-
 lemma
   assumes "Card \<kappa>"
-  shows Card_csucc [simp]: "Card (csucc \<kappa>)" and less_csucc: "\<kappa> < csucc \<kappa>"
-  using csucc_works [OF assms] by auto
+  shows Card_csucc [simp]: "Card (csucc \<kappa>)" and less_csucc [simp]: "\<kappa> < csucc \<kappa>"
+proof -
+  have "Card (csucc \<kappa>) \<and> \<kappa> < csucc \<kappa>"
+    unfolding csucc_def
+  proof (rule Ord_LeastI2)
+    show "Card (vcard (VPow \<kappa>)) \<and> \<kappa> < (vcard (VPow \<kappa>))"
+      using Card_def assms greater_Card by auto
+  qed auto
+  then show "Card (csucc \<kappa>)" "\<kappa> < csucc \<kappa>"
+    by auto
+qed
 
 lemma le_csucc:
   assumes "Card \<kappa>" shows "\<kappa> \<le> csucc \<kappa>"
@@ -1910,5 +1948,60 @@ lemma InfCard_le_cadd_eq: "\<lbrakk>InfCard \<kappa>; \<mu> \<le> \<kappa>\<rbra
 
 lemma InfCard_cadd_eq: "\<lbrakk>InfCard \<kappa>; InfCard \<mu>\<rbrakk> \<Longrightarrow> \<kappa> \<oplus> \<mu> = \<kappa> \<squnion> \<mu>"
   by (metis Card_iff_initial InfCard_def InfCard_le_cadd_eq Ord_linear_le cadd_commute sup.absorb2 sup.orderE)
+
+
+subsection \<open>The Aleph-seqence\<close>
+
+text \<open>This is the well-known transfinite enumeration of the cardinal numbers.\<close>
+
+definition
+  Aleph :: "V \<Rightarrow> V"   (\<open>\<aleph>_\<close> [90] 90) 
+  where "Aleph \<equiv> transrec3 \<omega> (\<lambda>x r. csucc(r)) (\<lambda>i r . \<Squnion> (r ` elts i))"
+
+lemma Card_Aleph [simp, intro]:
+     "Ord \<alpha> \<Longrightarrow> Card(Aleph \<alpha>)"
+by (induction \<alpha> rule: Ord_induct3) (auto simp: Aleph_def)
+
+lemma Aleph_succ [simp]: "\<aleph>(succ x) = csucc (\<aleph> x)"
+  by (simp add: Aleph_def)
+
+lemma Aleph_Limit: "Limit \<gamma> \<Longrightarrow> \<aleph> \<gamma> = \<Squnion> (Aleph ` elts \<gamma>)"
+  by (simp add: Aleph_def)
+
+lemma Aleph_increasing:
+  assumes ab: "\<alpha> < \<beta>" "Ord \<alpha>" "Ord \<beta>" shows "Aleph(\<alpha>) < Aleph(\<beta>)"
+proof -
+  { fix x
+    have "\<lbrakk>Ord x; x \<in> elts \<beta>\<rbrakk> \<Longrightarrow> Aleph(x) \<in> elts (Aleph \<beta>)"
+      using \<open>Ord \<beta>\<close>
+    proof (induct \<beta> arbitrary: x rule: Ord_induct3)
+      case 0 thus ?case by simp
+    next
+      case (succ \<beta>)
+      then consider "x = \<beta>" |"x \<in> elts \<beta>"
+        using OrdmemD by auto
+      then show ?case
+      proof cases
+        case 1
+        then show ?thesis
+          by (simp add: Card_is_Ord Ord_mem_iff_lt succ.hyps(1))
+      next
+        case 2
+        with succ show ?thesis
+          by (metis Aleph_succ Card_Aleph le_csucc vsubsetD)
+      qed
+    next
+      case (Limit \<gamma>)
+      hence sc: "succ x \<in> elts \<gamma>"
+        by (simp add: Limit_def Ord_mem_iff_lt)
+      hence "\<aleph> x \<in> elts (\<Squnion> (Aleph ` elts \<gamma>))" 
+        using Limit
+        by blast
+      thus ?case using Limit
+        by (simp add: Aleph_Limit)
+    qed
+  } thus ?thesis using ab
+    by (simp add: Card_is_Ord Ord_mem_iff_lt)
+qed
 
 end

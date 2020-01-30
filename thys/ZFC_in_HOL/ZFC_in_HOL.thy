@@ -195,6 +195,9 @@ lemma small_elts [iff]: "small (elts x)"
 lemma small_diff [iff]: "small (elts a - X)"
   by (meson Diff_subset down)
 
+lemma small_set [simp]: "small (list.set xs)"
+  by (simp add: ZFC_in_HOL.Finite)
+
 lemma small_upair: "small {x,y}"
   by simp
 

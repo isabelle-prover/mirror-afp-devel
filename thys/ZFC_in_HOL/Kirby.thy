@@ -688,6 +688,9 @@ proof -
     by (simp add: \<omega>_def)
 qed
 
+lemma zero_imp_le_mult: "0 \<in> elts y \<Longrightarrow> x \<le> x*y"
+  by (auto simp: mult [of x y])
+  
 subsubsection\<open>Proposition 4.3\<close>
 
 lemma mult_zero_left [simp]:

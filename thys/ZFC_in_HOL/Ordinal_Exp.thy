@@ -537,4 +537,7 @@ next
     by (metis Limit_oexp Ord_\<omega> OrdmemD one_V_def succ_in_omega zero_in_omega)
 qed
 
+lemma \<omega>_power_succ_gtr: "Ord \<alpha> \<Longrightarrow> \<omega> \<up> \<alpha> * ord_of_nat n < \<omega> \<up> succ \<alpha>"
+  by (simp add: OrdmemD)
+
 end
