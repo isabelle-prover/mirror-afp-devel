@@ -41,6 +41,11 @@ begin
       shows "q \<in> nodes A"
       using nodes.execute assms by force
 
+    lemma run_alphabet:
+      assumes "run A (w ||| r) p"
+      shows "w \<in> streams (alphabet A)"
+      using assms by (coinduction arbitrary: w r p) (metis run.cases stream.map szip_smap szip_smap_fst)
+
     definition restrict :: "'automaton \<Rightarrow> 'automaton" where
       "restrict A \<equiv> automaton
         (alphabet A)
@@ -69,8 +74,7 @@ begin
   end
 
   (* TODO: create analogous thing for NFAs (automaton_target) *)
-  (* TODO: this should be _stream *)
-  (* TODO: remove all trace_alt_def *)
+  (* TODO: this should be _stream or _run *)
   locale automaton_trace =
     automaton automaton alphabet initial transition condition
     for automaton :: "'label set \<Rightarrow> 'state set \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition \<Rightarrow> 'automaton"
@@ -95,13 +99,7 @@ begin
       where "p \<in> initial A" "run A (w ||| r) p" "test (condition A) w r p"
       using assms unfolding language_def by auto
 
-    (* TODO: move this up in the hierarchy *)
-    lemma run_alphabet:
-      assumes "run A (w ||| r) p"
-      shows "w \<in> streams (alphabet A)"
-      using assms by (coinduction arbitrary: w r p) (metis run.cases stream.map szip_smap szip_smap_fst)
-    lemma language_alphabet: "language A \<subseteq> streams (alphabet A)"
-      unfolding language_def by (auto dest: run_alphabet)
+    lemma language_alphabet: "language A \<subseteq> streams (alphabet A)" by (auto dest: run_alphabet)
 
     lemma restrict_language[simp]: "language (restrict A) = language A" by force
 
@@ -211,8 +209,7 @@ begin
   begin
 
     lemma degeneralize_language[simp]: "b.language (degeneralize A) = a.language A"
-      unfolding a.language_def b.language_def
-      by (auto dest: run_degeneralize elim!: degeneralize_run)
+      unfolding a.language_def b.language_def by (auto dest: run_degeneralize elim!: degeneralize_run)
 
   end
 
@@ -342,77 +339,77 @@ begin
       "intersect AA \<equiv> automaton\<^sub>2
         (\<Inter> (alphabet\<^sub>1 ` set AA))
         (listset (map initial\<^sub>1 AA))
-        (\<lambda> a pp. listset (map2 (\<lambda> A p. transition\<^sub>1 A a p) AA pp))
+        (\<lambda> a ps. listset (map2 (\<lambda> A p. transition\<^sub>1 A a p) AA ps))
         (condition (map condition\<^sub>1 AA))"
 
     lemma intersect_simps[simp]:
       "alphabet\<^sub>2 (intersect AA) = \<Inter> (alphabet\<^sub>1 ` set AA)"
       "initial\<^sub>2 (intersect AA) = listset (map initial\<^sub>1 AA)"
-      "transition\<^sub>2 (intersect AA) a pp = listset (map2 (\<lambda> A p. transition\<^sub>1 A a p) AA pp)"
+      "transition\<^sub>2 (intersect AA) a ps = listset (map2 (\<lambda> A p. transition\<^sub>1 A a p) AA ps)"
       "condition\<^sub>2 (intersect AA) = condition (map condition\<^sub>1 AA)"
       unfolding intersect_def by auto
 
     lemma intersect_run_length:
-      assumes "length pp = length AA"
-      assumes "b.run (intersect AA) (w ||| r) pp"
-      assumes "qq \<in> sset r"
-      shows "length qq = length AA"
+      assumes "length ps = length AA"
+      assumes "b.run (intersect AA) (w ||| r) ps"
+      assumes "qs \<in> sset r"
+      shows "length qs = length AA"
     proof -
-      have "pred_stream (\<lambda> qq. length qq = length AA) r"
-        using assms(1, 2) by (coinduction arbitrary: w r pp)
+      have "pred_stream (\<lambda> qs. length qs = length AA) r"
+        using assms(1, 2) by (coinduction arbitrary: w r ps)
           (force elim: b.run.cases simp: listset_member list_all2_conv_all_nth)
       then show ?thesis using assms(3) unfolding stream.pred_set by auto
     qed
     lemma intersect_run_stranspose:
-      assumes "length pp = length AA"
-      assumes "b.run (intersect AA) (w ||| r) pp"
-      obtains rr where "r = stranspose rr" "length rr = length AA"
+      assumes "length ps = length AA"
+      assumes "b.run (intersect AA) (w ||| r) ps"
+      obtains rs where "r = stranspose rs" "length rs = length AA"
     proof
-      define rr where "rr \<equiv> map (\<lambda> k. smap (\<lambda> pp. pp ! k) r) [0 ..< length AA]"
-      have "length qq = length AA" if "qq \<in> sset r" for qq using intersect_run_length assms that by this
-      then show "r = stranspose rr"
-        unfolding rr_def by (coinduction arbitrary: r) (auto intro: nth_equalityI simp: comp_def)
-      show "length rr = length AA" unfolding rr_def by auto
+      define rs where "rs \<equiv> map (\<lambda> k. smap (\<lambda> ps. ps ! k) r) [0 ..< length AA]"
+      have "length qs = length AA" if "qs \<in> sset r" for qs using intersect_run_length assms that by this
+      then show "r = stranspose rs"
+        unfolding rs_def by (coinduction arbitrary: r) (auto intro: nth_equalityI simp: comp_def)
+      show "length rs = length AA" unfolding rs_def by auto
     qed
 
-    lemma intersect_run:
-      assumes "length rr = length AA" "length pp = length AA"
-      assumes "\<And> k. k < length AA \<Longrightarrow> a.run (AA ! k) (w ||| rr ! k) (pp ! k)"
-      shows "b.run (intersect AA) (w ||| stranspose rr) pp"
+    lemma run_intersect:
+      assumes "length rs = length AA" "length ps = length AA"
+      assumes "\<And> k. k < length AA \<Longrightarrow> a.run (AA ! k) (w ||| rs ! k) (ps ! k)"
+      shows "b.run (intersect AA) (w ||| stranspose rs) ps"
     using assms
-    proof (coinduction arbitrary: w rr pp)
+    proof (coinduction arbitrary: w rs ps)
       case (run ap r)
       then show ?case
       proof (intro conjI exI)
         show "fst ap \<in> alphabet\<^sub>2 (intersect AA)"
           using run by (force elim: a.run.cases simp: set_conv_nth)
-        show "snd ap \<in> transition\<^sub>2 (intersect AA) (fst ap) pp"
+        show "snd ap \<in> transition\<^sub>2 (intersect AA) (fst ap) ps"
           using run by (force elim: a.run.cases simp: listset_member list_all2_conv_all_nth)
-        show "\<forall> k < length AA. a.run' (AA ! k) (stl w ||| map stl rr ! k) (map shd rr ! k)"
+        show "\<forall> k < length AA. a.run' (AA ! k) (stl w ||| map stl rs ! k) (map shd rs ! k)"
           using run by (force elim: a.run.cases)
       qed auto
     qed
-    lemma intersect_run_elim:
-      assumes "length rr = length AA" "length pp = length AA"
-      assumes "b.run (intersect AA) (w ||| stranspose rr) pp"
-      shows "k < length AA \<Longrightarrow> a.run (AA ! k) (w ||| rr ! k) (pp ! k)"
+    lemma intersect_run:
+      assumes "length rs = length AA" "length ps = length AA"
+      assumes "b.run (intersect AA) (w ||| stranspose rs) ps"
+      shows "k < length AA \<Longrightarrow> a.run (AA ! k) (w ||| rs ! k) (ps ! k)"
     using assms
-    proof (coinduction arbitrary: w rr pp)
+    proof (coinduction arbitrary: w rs ps)
       case (run ap wr)
       then show ?case
       proof (intro exI conjI)
         show "fst ap \<in> alphabet\<^sub>1 (AA ! k)"
           using run by (force elim: b.run.cases)
-        show "snd ap \<in> transition\<^sub>1 (AA ! k) (fst ap) (pp ! k)"
+        show "snd ap \<in> transition\<^sub>1 (AA ! k) (fst ap) (ps ! k)"
           using run by (force elim: b.run.cases simp: listset_member list_all2_conv_all_nth)
-        show "b.run' (intersect AA) (stl w ||| stranspose (map stl rr)) (shd (stranspose rr))"
+        show "b.run' (intersect AA) (stl w ||| stranspose (map stl rs)) (shd (stranspose rs))"
           using run by (force elim: b.run.cases)
       qed auto
     qed
 
     lemma intersect_nodes: "b.nodes (intersect AA) \<subseteq> listset (map a.nodes AA)"
     proof
-      show "pp \<in> listset (map a.nodes AA)" if "pp \<in> b.nodes (intersect AA)" for pp
+      show "ps \<in> listset (map a.nodes AA)" if "ps \<in> b.nodes (intersect AA)" for ps
         using that by (induct) (auto 0 3 simp: listset_member list_all2_conv_all_nth)
     qed
 
@@ -447,51 +444,47 @@ begin
     and condition :: "'condition\<^sub>1 list \<Rightarrow> 'condition\<^sub>2"
     +
     assumes test[iff]: "length rs = length cs \<Longrightarrow> length ps = length cs \<Longrightarrow>
-      test\<^sub>2 (condition cs) w (stranspose rs) ps \<longleftrightarrow>
-      list_all (\<lambda> (c, r, p). test\<^sub>1 c w r p) (cs || rs || ps)"
+      test\<^sub>2 (condition cs) w (stranspose rs) ps \<longleftrightarrow> list_all (\<lambda> (c, r, p). test\<^sub>1 c w r p) (cs || rs || ps)"
   begin
 
     lemma intersect_language[simp]: "b.language (intersect AA) = \<Inter> (a.language ` set AA)"
     proof safe
       fix A w
       assume 1: "w \<in> b.language (intersect AA)" "A \<in> set AA"
-      obtain r pp where 2:
-        "pp \<in> initial\<^sub>2 (intersect AA)"
-        "b.run (intersect AA) (w ||| r) pp"
-        "test\<^sub>2 (condition\<^sub>2 (intersect AA)) w r pp"
-        using 1(1) unfolding b.language_def by auto
-      have 3: "length pp = length AA" using 2(1) by (simp add: listset_member list_all2_conv_all_nth)
-      obtain rr where 4: "r = stranspose rr" "length rr = length AA"
-        using intersect_run_stranspose 3 2(2) by blast
+      obtain r ps where 2:
+        "ps \<in> initial\<^sub>2 (intersect AA)"
+        "b.run (intersect AA) (w ||| r) ps"
+        "test\<^sub>2 (condition\<^sub>2 (intersect AA)) w r ps"
+        using 1(1) by auto
+      have 3: "length ps = length AA" using 2(1) by (simp add: listset_member list_all2_conv_all_nth)
+      obtain rs where 4: "r = stranspose rs" "length rs = length AA"
+        using intersect_run_stranspose 3 2(2) by this
       obtain k where 5: "k < length AA" "A = AA ! k" using 1(2) unfolding set_conv_nth by auto
       show "w \<in> a.language A"
       proof
-        show "pp ! k \<in> initial\<^sub>1 A" using 2(1) 5 by (auto simp: listset_member list_all2_conv_all_nth)
-        show "a.run A (w ||| rr ! k) (pp ! k)" using intersect_run_elim 2(2) 3 4 5 by auto
-        show "test\<^sub>1 (condition\<^sub>1 A) w (rr ! k) (pp ! k)"
-          using 2(3) 3 4 5 by (simp add: list_all_length)
+        show "ps ! k \<in> initial\<^sub>1 A" using 2(1) 5 by (auto simp: listset_member list_all2_conv_all_nth)
+        show "a.run A (w ||| rs ! k) (ps ! k)" using 2(2) 3 4 5 by (auto intro: intersect_run)
+        show "test\<^sub>1 (condition\<^sub>1 A) w (rs ! k) (ps ! k)" using 2(3) 3 4 5 by (simp add: list_all_length)
       qed
     next
       fix w
       assume 1: "w \<in> \<Inter> (a.language ` set AA)"
       have 2: "\<forall> A \<in> set AA. \<exists> r p. p \<in> initial\<^sub>1 A \<and> a.run A (w ||| r) p \<and> test\<^sub>1 (condition\<^sub>1 A) w r p"
-        using 1 unfolding a.language_def by auto
-      obtain rr pp where 3:
-        "length rr = length AA" "length pp = length AA"
-        "\<And> k. k < length AA \<Longrightarrow> pp ! k \<in> initial\<^sub>1 (AA ! k)"
-        "\<And> k. k < length AA \<Longrightarrow> a.run (AA ! k) (w ||| rr ! k) (pp ! k)"
-        "\<And> k. k < length AA \<Longrightarrow> test\<^sub>1 (condition\<^sub>1 (AA ! k)) w (rr ! k) (pp ! k)"
+        using 1 by blast
+      obtain rs ps where 3:
+        "length rs = length AA" "length ps = length AA"
+        "\<And> k. k < length AA \<Longrightarrow> ps ! k \<in> initial\<^sub>1 (AA ! k)"
+        "\<And> k. k < length AA \<Longrightarrow> a.run (AA ! k) (w ||| rs ! k) (ps ! k)"
+        "\<And> k. k < length AA \<Longrightarrow> test\<^sub>1 (condition\<^sub>1 (AA ! k)) w (rs ! k) (ps ! k)"
         using 2
         unfolding Ball_set list_choice_zip list_choice_pair
         unfolding list.pred_set set_conv_nth
         by force
       show "w \<in> b.language (intersect AA)"
       proof
-        show "pp \<in> initial\<^sub>2 (intersect AA)"
-          using 3 by (force simp: listset_member list_all2_iff set_conv_nth)
-        show "b.run (intersect AA) (w ||| stranspose rr) pp" using intersect_run 3 by auto
-        show "test\<^sub>2 (condition\<^sub>2 (intersect AA)) w (stranspose rr) pp"
-          using 3 by (force simp: list_all_length)
+        show "ps \<in> initial\<^sub>2 (intersect AA)" using 3 by (auto simp: listset_member list_all2_conv_all_nth)
+        show "b.run (intersect AA) (w ||| stranspose rs) ps" using 3 by (auto intro: run_intersect)
+        show "test\<^sub>2 (condition\<^sub>2 (intersect AA)) w (stranspose rs) ps" using 3 by (auto simp: list_all_length)
       qed
     qed
 
@@ -656,7 +649,7 @@ begin
       "condition\<^sub>2 (union AA) = condition (map condition\<^sub>1 AA)"
       unfolding union_def by auto
 
-    lemma union_run:
+    lemma run_union:
       assumes "\<Inter> (alphabet\<^sub>1 ` set AA) = \<Union> (alphabet\<^sub>1 ` set AA)"
       assumes "A \<in> set AA"
       assumes "a.run A (w ||| s) p"
@@ -670,7 +663,7 @@ begin
           using assms 1(2) by (coinduction arbitrary: w s p) (force elim: a.run.cases)
       qed
     qed
-    lemma run_union:
+    lemma union_run:
       assumes "\<Inter> (alphabet\<^sub>1 ` set AA) = \<Union> (alphabet\<^sub>1 ` set AA)"
       assumes "k < length AA"
       assumes "b.run (union AA) (w ||| r) (k, p)"
@@ -723,8 +716,7 @@ begin
     and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'label stream \<Rightarrow> (nat \<times> 'state) stream \<Rightarrow> nat \<times> 'state \<Rightarrow> bool"
     and condition :: "'condition\<^sub>1 list \<Rightarrow> 'condition\<^sub>2"
     +
-    (* TODO: why do we not need wellformedness here but we do in the intersection_list case? *)
-    assumes test[iff]: "test\<^sub>2 (condition cs) w (sconst k ||| r) (k, p) \<longleftrightarrow> test\<^sub>1 (cs ! k) w r p"
+    assumes test[iff]: "k < length cs \<Longrightarrow> test\<^sub>2 (condition cs) w (sconst k ||| r) (k, p) \<longleftrightarrow> test\<^sub>1 (cs ! k) w r p"
   begin
 
     lemma union_language[simp]:
@@ -732,9 +724,9 @@ begin
       shows "b.language (union AA) = \<Union> (a.language ` set AA)"
     proof
       show "b.language (union AA) \<subseteq> \<Union> (a.language ` set AA)"
-        using assms unfolding a.language_def b.language_def by (force elim: run_union)
+        using assms unfolding a.language_def b.language_def by (force elim: union_run)
       show "\<Union> (a.language ` set AA) \<subseteq> b.language (union AA)"
-        using assms unfolding a.language_def b.language_def by (force elim!: union_run)
+        using assms unfolding a.language_def b.language_def by (force elim!: run_union)
     qed
 
   end

@@ -138,7 +138,7 @@ begin
       proof safe
         show "(p ## r) !! 0 \<in> V0" using nba_g_V0 2(1) by force
         show "ipath E (snth (p ## r))" using nba_g_run_ipath 2(2) by force
-        show "is_acc (snth (p ## r))" using 3 unfolding infs_infm is_acc_def nba.trace_alt_def by simp
+        show "is_acc (snth (p ## r))" using 3 unfolding infs_infm is_acc_def by simp
       qed
       then show ?thesis by auto
     qed
