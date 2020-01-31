@@ -8858,3 +8858,18 @@ abstract =
   evident from the brief presentation in the original paper, as well as
   identifying a few minor corrections along the way.
 
+[Subset_Boolean_Algebras]
+title = A Hierarchy of Algebras for Boolean Subsets
+author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>, Bernhard Möller <https://www.informatik.uni-augsburg.de/en/chairs/dbis/pmi/staff/moeller/>
+topic = Mathematics/Algebra
+date = 2020-01-31
+notify = walter.guttmann@canterbury.ac.nz
+abstract = 
+  We present a collection of axiom systems for the construction of
+  Boolean subalgebras of larger overall algebras. The subalgebras are
+  defined as the range of a complement-like operation on a semilattice.
+  This technique has been used, for example, with the antidomain
+  operation, dynamic negation and Stone algebras. We present a common
+  ground for these constructions based on a new equational
+  axiomatisation of Boolean algebras.
+

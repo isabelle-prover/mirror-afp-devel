@@ -9,7 +9,22 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>17 Jan 2020 00:00:00 +0000</pubDate>
+    <pubDate>31 Jan 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Hierarchy of Algebras for Boolean Subsets</title>
+              <link>https://www.isa-afp.org/entries/Subset_Boolean_Algebras.html</link>
+       <guid>https://www.isa-afp.org/entries/Subset_Boolean_Algebras.html</guid>
+       <dc:creator> Walter Guttmann, Bernhard Möller       </dc:creator>
+       <pubDate>31 Jan 2020 00:00:00 +0000</pubDate>
+       <description>
+We present a collection of axiom systems for the construction of
+Boolean subalgebras of larger overall algebras. The subalgebras are
+defined as the range of a complement-like operation on a semilattice.
+This technique has been used, for example, with the antidomain
+operation, dynamic negation and Stone algebras. We present a common
+ground for these constructions based on a new equational
+axiomatisation of Boolean algebras.</description>
+    </item>
     <item>
        <title>Mersenne primes and the Lucas–Lehmer test</title>
               <link>https://www.isa-afp.org/entries/Mersenne_Primes.html</link>
@@ -537,42 +552,6 @@ more complex library.&lt;/p&gt;</description>
 We formalize the static properties of personal Byzantine quorum
 systems (PBQSs) and Stellar quorum systems, as described in the paper
 ``Stellar Consensus by Reduction&#39;&#39; (to appear at DISC 2019).</description>
-    </item>
-    <item>
-       <title>A Formal Development of a Polychronous Polytimed Coordination Language</title>
-              <link>https://www.isa-afp.org/entries/TESL_Language.html</link>
-       <guid>https://www.isa-afp.org/entries/TESL_Language.html</guid>
-       <dc:creator> Hai Nguyen Van, Frédéric Boulanger, Burkhart Wolff       </dc:creator>
-       <pubDate>30 Jul 2019 00:00:00 +0000</pubDate>
-       <description>
-The design of complex systems involves different formalisms for
-modeling their different parts or aspects. The global model of a
-system may therefore consist of a coordination of concurrent
-sub-models that use different paradigms.  We develop here a theory for
-a language used to specify the timed coordination of such
-heterogeneous subsystems by addressing the following issues:
-&lt;ul&gt;&lt;li&gt;the
-behavior of the sub-systems is observed only at a series of discrete
-instants,&lt;/li&gt;&lt;li&gt;events may occur in different sub-systems at unrelated
-times, leading to polychronous systems, which do not necessarily have
-a common base clock,&lt;/li&gt;&lt;li&gt;coordination between subsystems involves
-causality, so the occurrence of an event may enforce the occurrence of
-other events, possibly after a certain duration has elapsed or an
-event has occurred a given number of times,&lt;/li&gt;&lt;li&gt;the domain of time
-(discrete, rational, continuous...) may be different in the
-subsystems, leading to polytimed systems,&lt;/li&gt;&lt;li&gt;the time frames of
-different sub-systems may be related (for instance, time in a GPS
-satellite and in a GPS receiver on Earth are related although they are
-not the same).&lt;/li&gt;&lt;/ul&gt;
-Firstly, a denotational semantics of the language is
-defined. Then, in order to be able to incrementally check the behavior
-of systems, an operational semantics is given, with proofs of
-progress, soundness and completeness with regard to the denotational
-semantics. These proofs are made according to a setup that can scale
-up when new operators are added to the language. In order for
-specifications to be composed in a clean way, the language should be
-invariant by stuttering (i.e., adding observation instants at which
-nothing happens). The proof of this invariance is also given.</description>
     </item>
   </channel>
 </rss>
