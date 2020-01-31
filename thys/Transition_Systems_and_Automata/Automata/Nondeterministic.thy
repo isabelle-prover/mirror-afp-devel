@@ -41,6 +41,10 @@ begin
       shows "q \<in> nodes A"
       using nodes.execute assms by force
 
+    lemma path_alphabet:
+      assumes "length r = length w" "path A (w || r) p"
+      shows "w \<in> lists (alphabet A)"
+      using assms by (induct arbitrary: p rule: list_induct2) (auto)
     lemma run_alphabet:
       assumes "run A (w ||| r) p"
       shows "w \<in> streams (alphabet A)"
@@ -73,7 +77,36 @@ begin
 
   end
 
-  (* TODO: create analogous thing for NFAs (automaton_path) *)
+  locale automaton_path =
+    automaton automaton alphabet initial transition condition
+    for automaton :: "'label set \<Rightarrow> 'state set \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition \<Rightarrow> 'automaton"
+    and alphabet :: "'automaton \<Rightarrow> 'label set"
+    and initial :: "'automaton \<Rightarrow> 'state set"
+    and transition :: "'automaton \<Rightarrow> ('label, 'state) trans"
+    and condition :: "'automaton \<Rightarrow> 'condition"
+    +
+    fixes test :: "'condition \<Rightarrow> 'label list \<Rightarrow> 'state list \<Rightarrow> 'state \<Rightarrow> bool"
+  begin
+
+    definition language :: "'automaton \<Rightarrow> 'label list set" where
+      "language A \<equiv> {w |w r p. length r = length w \<and> p \<in> initial A \<and> path A (w || r) p \<and> test (condition A) w r p}"
+
+    lemma language[intro]:
+      assumes "length r = length w" "p \<in> initial A" "path A (w || r) p" "test (condition A) w r p"
+      shows "w \<in> language A"
+      using assms unfolding language_def by auto
+    lemma language_elim[elim]:
+      assumes "w \<in> language A"
+      obtains r p
+      where "length r = length w" "p \<in> initial A" "path A (w || r) p" "test (condition A) w r p"
+      using assms unfolding language_def by auto
+
+    lemma language_alphabet: "language A \<subseteq> lists (alphabet A)" by (auto dest: path_alphabet)
+
+    lemma restrict_language[simp]: "language (restrict A) = language A" by force
+
+  end
+
   (* TODO: adjust deterministic theory to the same test type *)
   locale automaton_run =
     automaton automaton alphabet initial transition condition
@@ -251,6 +284,11 @@ begin
       "condition\<^sub>3 (intersect A B) = condition (condition\<^sub>1 A) (condition\<^sub>2 B)"
       unfolding intersect_def by auto
 
+    lemma intersect_target[simp]:
+      assumes "length w = length r" "length r = length s"
+      shows "c.target (w || r || s) (p, q) = (a.target (w || r) p, b.target (w || s) q)"
+      using assms by (induct arbitrary: p q rule: list_induct3) (auto)
+
     lemma intersect_path[iff]:
       assumes "length w = length r" "length r = length s"
       shows "c.path (intersect A B) (w || r || s) (p, q) \<longleftrightarrow>
@@ -278,6 +316,44 @@ begin
       assumes "finite (a.nodes A)" "finite (b.nodes B)"
       shows "finite (c.nodes (intersect A B))"
       using finite_subset intersect_nodes assms by blast
+
+  end
+
+  locale automaton_intersection_path =
+    automaton_intersection
+      automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
+      automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
+      automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 condition +
+    a: automaton_path automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1 +
+    b: automaton_path automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2 +
+    c: automaton_path automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 test\<^sub>3
+    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state\<^sub>1 set \<Rightarrow> ('label, 'state\<^sub>1) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
+    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
+    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state\<^sub>1 set"
+    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state\<^sub>1) trans"
+    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
+    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'label list \<Rightarrow> 'state\<^sub>1 list \<Rightarrow> 'state\<^sub>1 \<Rightarrow> bool"
+    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state\<^sub>2 set \<Rightarrow> ('label, 'state\<^sub>2) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
+    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
+    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state\<^sub>2 set"
+    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans"
+    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
+    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'label list \<Rightarrow> 'state\<^sub>2 list \<Rightarrow> 'state\<^sub>2 \<Rightarrow> bool"
+    and automaton\<^sub>3 :: "'label set \<Rightarrow> ('state\<^sub>1 \<times> 'state\<^sub>2) set \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans \<Rightarrow>
+      'condition\<^sub>3 \<Rightarrow> 'automaton\<^sub>3"
+    and alphabet\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'label set"
+    and initial\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> ('state\<^sub>1 \<times> 'state\<^sub>2) set"
+    and transition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans"
+    and condition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'condition\<^sub>3"
+    and test\<^sub>3 :: "'condition\<^sub>3 \<Rightarrow> 'label list \<Rightarrow> ('state\<^sub>1 \<times> 'state\<^sub>2) list \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> bool"
+    and condition :: "'condition\<^sub>1 \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'condition\<^sub>3"
+    +
+    assumes test[iff]: "length u = length w \<Longrightarrow> length v = length w \<Longrightarrow>
+      test\<^sub>3 (condition c\<^sub>1 c\<^sub>2) w (u || v) (p, q) \<longleftrightarrow> test\<^sub>1 c\<^sub>1 w u p \<and> test\<^sub>2 c\<^sub>2 w v q"
+  begin
+
+    lemma intersect_language[simp]: "c.language (intersect A B) = a.language A \<inter> b.language B"
+      unfolding a.language_def b.language_def c.language_def by (force iff: split_zip)
 
   end
 
@@ -529,6 +605,36 @@ begin
       "condition\<^sub>3 (union A B) = condition (condition\<^sub>1 A) (condition\<^sub>2 B)"
       unfolding union_def by auto
 
+    lemma path_union_a:
+      assumes "length r = length w" "a.path A (w || r) p"
+      shows "c.path (union A B) (w || map Inl r) (Inl p)"
+      using assms by (induct arbitrary: p rule: list_induct2) (auto)
+    lemma path_union_b:
+      assumes "length s = length w" "b.path B (w || s) q"
+      shows "c.path (union A B) (w || map Inr s) (Inr q)"
+      using assms by (induct arbitrary: q rule: list_induct2) (auto)
+    lemma union_path:
+      assumes "alphabet\<^sub>1 A = alphabet\<^sub>2 B"
+      assumes "length rs = length w" "c.path (union A B) (w || rs) pq"
+      obtains
+        (a) r p where "rs = map Inl r" "pq = Inl p" "a.path A (w || r) p" |
+        (b) s q where "rs = map Inr s" "pq = Inr q" "b.path B (w || s) q"
+    proof (cases pq)
+      case (Inl p)
+      have 1: "rs = map Inl (map projl rs)"
+        using assms(2, 3) unfolding Inl by (induct arbitrary: p rule: list_induct2) (auto)
+      have 2: "a.path A (w || map projl rs) p"
+        using assms(2, 1, 3) unfolding Inl by (induct arbitrary: p rule: list_induct2) (auto)
+      show ?thesis using a 1 Inl 2 by this
+    next
+      case (Inr q)
+      have 1: "rs = map Inr (map projr rs)"
+        using assms(2, 3) unfolding Inr by (induct arbitrary: q rule: list_induct2) (auto)
+      have 2: "b.path B (w || map projr rs) q"
+        using assms(2, 1, 3) unfolding Inr by (induct arbitrary: q rule: list_induct2) (auto)
+      show ?thesis using b 1 Inr 2 by this
+    qed
+
     lemma run_union_a:
       assumes "a.run A (w ||| r) p"
       shows "c.run (union A B) (w ||| smap Inl r) (Inl p)"
@@ -537,7 +643,7 @@ begin
       assumes "b.run B (w ||| s) q"
       shows "c.run (union A B) (w ||| smap Inr s) (Inr q)"
       using assms by (coinduction arbitrary: w s q) (force elim: b.run.cases)
-    lemma run_union:
+    lemma union_run:
       assumes "alphabet\<^sub>1 A = alphabet\<^sub>2 B"
       assumes "c.run (union A B) (w ||| rs) pq"
       obtains
@@ -573,6 +679,47 @@ begin
       assumes "finite (a.nodes A)" "finite (b.nodes B)"
       shows "finite (c.nodes (union A B))"
       using finite_subset union_nodes assms by (auto intro: finite_Plus)
+
+  end
+
+  locale automaton_union_path =
+    automaton_union
+      automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
+      automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
+      automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 condition +
+    a: automaton_path automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1 +
+    b: automaton_path automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2 +
+    c: automaton_path automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 test\<^sub>3
+    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state\<^sub>1 set \<Rightarrow> ('label, 'state\<^sub>1) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
+    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
+    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state\<^sub>1 set"
+    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state\<^sub>1) trans"
+    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
+    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'label list \<Rightarrow> 'state\<^sub>1 list \<Rightarrow> 'state\<^sub>1 \<Rightarrow> bool"
+    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state\<^sub>2 set \<Rightarrow> ('label, 'state\<^sub>2) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
+    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
+    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state\<^sub>2 set"
+    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans"
+    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
+    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'label list \<Rightarrow> 'state\<^sub>2 list \<Rightarrow> 'state\<^sub>2 \<Rightarrow> bool"
+    and automaton\<^sub>3 :: "'label set \<Rightarrow> ('state\<^sub>1 + 'state\<^sub>2) set \<Rightarrow> ('label, 'state\<^sub>1 + 'state\<^sub>2) trans \<Rightarrow>
+      'condition\<^sub>3 \<Rightarrow> 'automaton\<^sub>3"
+    and alphabet\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'label set"
+    and initial\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> ('state\<^sub>1 + 'state\<^sub>2) set"
+    and transition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> ('label, 'state\<^sub>1 + 'state\<^sub>2) trans"
+    and condition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'condition\<^sub>3"
+    and test\<^sub>3 :: "'condition\<^sub>3 \<Rightarrow> 'label list \<Rightarrow> ('state\<^sub>1 + 'state\<^sub>2) list \<Rightarrow> 'state\<^sub>1 + 'state\<^sub>2 \<Rightarrow> bool"
+    and condition :: "'condition\<^sub>1 \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'condition\<^sub>3"
+    +
+    assumes test\<^sub>1[iff]: "length u = length w \<Longrightarrow> test\<^sub>3 (condition c\<^sub>1 c\<^sub>2) w (map Inl u) (Inl p) \<longleftrightarrow> test\<^sub>1 c\<^sub>1 w u p"
+    assumes test\<^sub>2[iff]: "length v = length w \<Longrightarrow> test\<^sub>3 (condition c\<^sub>1 c\<^sub>2) w (map Inr v) (Inr q) \<longleftrightarrow> test\<^sub>2 c\<^sub>2 w v q"
+  begin
+
+    lemma union_language[simp]:
+      assumes "alphabet\<^sub>1 A = alphabet\<^sub>2 B"
+      shows "c.language (union A B) = a.language A \<union> b.language B"
+      using assms unfolding a.language_def b.language_def c.language_def
+      by (force intro: path_union_a path_union_b elim!: union_path)
 
   end
 
@@ -612,9 +759,8 @@ begin
     lemma union_language[simp]:
       assumes "alphabet\<^sub>1 A = alphabet\<^sub>2 B"
       shows "c.language (union A B) = a.language A \<union> b.language B"
-      using assms
-      unfolding a.language_def b.language_def c.language_def
-      by (auto dest: run_union_a run_union_b elim!: run_union)
+      using assms unfolding a.language_def b.language_def c.language_def
+      by (auto intro: run_union_a run_union_b elim!: union_run)
 
   end
 
