@@ -46,7 +46,7 @@ begin
 
   end
 
-  (* TODO: create analogous locale for DFAs (automaton_target) *)
+  (* TODO: create analogous locale for DFAs (automaton_path) *)
   locale automaton_trace =
     automaton automaton alphabet initial transition condition
     for automaton :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition \<Rightarrow> 'automaton"

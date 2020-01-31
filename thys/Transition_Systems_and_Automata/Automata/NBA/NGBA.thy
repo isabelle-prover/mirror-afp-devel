@@ -13,7 +13,7 @@ begin
   global_interpretation ngba: automaton ngba alphabet initial transition accepting
     defines path = ngba.path and run = ngba.run and reachable = ngba.reachable and nodes = ngba.nodes
     by unfold_locales auto
-  global_interpretation ngba: automaton_trace ngba alphabet initial transition accepting "\<lambda> P w r p. gen infs P r"
+  global_interpretation ngba: automaton_run ngba alphabet initial transition accepting "\<lambda> P w r p. gen infs P r"
     defines language = ngba.language
     by standard
 

@@ -4,7 +4,7 @@ theory NBA_Combine
 imports NBA NGBA
 begin
 
-  global_interpretation degeneralization: automaton_degeneralization_trace
+  global_interpretation degeneralization: automaton_degeneralization_run
     ngba ngba.alphabet ngba.initial ngba.transition ngba.accepting "\<lambda> P w r p. gen infs P r"
     nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P r"
     defines degeneralize = degeneralization.degeneralize
@@ -13,7 +13,7 @@ begin
   lemmas degeneralize_language[simp] = degeneralization.degeneralize_language[folded NBA.language_def]
   lemmas degeneralize_nodes_finite[iff] = degeneralization.degeneralize_nodes_finite[folded NBA.nodes_def]
 
-  global_interpretation intersection: automaton_intersection_trace
+  global_interpretation intersection: automaton_intersection_run
     nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P r"
     nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P r"
     ngba ngba.alphabet ngba.initial ngba.transition ngba.accepting "\<lambda> P w r p. gen infs P r"
@@ -24,7 +24,7 @@ begin
   lemmas intersect'_language[simp] = intersection.intersect_language[folded NGBA.language_def]
   lemmas intersect'_nodes_finite[intro] = intersection.intersect_nodes_finite[folded NGBA.nodes_def]
 
-  global_interpretation intersection_list: automaton_intersection_list_trace
+  global_interpretation intersection_list: automaton_intersection_list_run
     nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P r"
     ngba ngba.alphabet ngba.initial ngba.transition ngba.accepting "\<lambda> P w r p. gen infs P r"
     "\<lambda> cs. map (\<lambda> k ps. (cs ! k) (ps ! k)) [0 ..< length cs]"
@@ -47,7 +47,7 @@ begin
   lemmas intersect_list'_language[simp] = intersection_list.intersect_language[folded NGBA.language_def]
   lemmas intersect_list'_nodes_finite[intro] = intersection_list.intersect_nodes_finite[folded NGBA.nodes_def]
 
-  global_interpretation union: automaton_union_trace
+  global_interpretation union: automaton_union_run
     nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P r"
     nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P r"
     nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P r"
@@ -58,7 +58,7 @@ begin
   lemmas union_language = union.union_language
   lemmas union_nodes_finite = union.union_nodes_finite
 
-  global_interpretation union_list: automaton_union_list_trace
+  global_interpretation union_list: automaton_union_list_run
     nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P r"
     nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P r"
     "\<lambda> cs (k, p). (cs ! k) p"
