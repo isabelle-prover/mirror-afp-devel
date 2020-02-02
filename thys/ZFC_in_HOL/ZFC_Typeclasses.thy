@@ -1,7 +1,7 @@
 section \<open>Type Classes for ZFC\<close>
 
 theory ZFC_Typeclasses
-  imports ZFC_Cardinals
+  imports ZFC_Cardinals Complex_Main
 
 begin
 
@@ -68,7 +68,7 @@ qed
 
 instance option :: (embeddable) embeddable
 proof -
-  have "inj (case_option 0 (\<lambda>x. set{V_of x}))" if "inj V_of"
+  have "inj (case_option 0 (\<lambda>x. ZFC_in_HOL.set{V_of x}))" if "inj V_of"
     for V_of :: "'a \<Rightarrow> V"
     using that by (auto simp: inj_on_def split: option.split_asm)
   then show "OFCLASS('a option, embeddable_class)"
@@ -133,6 +133,11 @@ begin
 subclass embeddable
   by intro_classes (meson local.small small_def)
 
+lemma TC_small [iff]:
+  fixes A :: "'a set"
+  shows "small A"
+  using small smaller_than_small by blast
+
 end
 
 context countable
@@ -177,7 +182,8 @@ proof -
   with small [where 'a='a] small [where 'a='b]
   show "OFCLASS('a \<times> 'b, small_class)"
     apply intro_classes
-    apply (clarsimp simp add: small_def)
+    unfolding small_def
+    apply clarify
     by (metis down_raw dual_order.refl)
 qed
 
@@ -191,21 +197,23 @@ proof -
   with small [where 'a='a] small [where 'a='b]
   show "OFCLASS('a + 'b, small_class)"
     apply intro_classes
-    apply (clarsimp simp add: small_def)
+    unfolding small_def
+    apply clarify
     by (metis down_raw dual_order.refl)
 qed
 
 instance option :: (small) small
 proof -
-  have "inj (\<lambda>x. case x of None \<Rightarrow> 0 | Some x \<Rightarrow> set {V_of x})"
-       "range (\<lambda>x. case x of None \<Rightarrow> 0 | Some x \<Rightarrow> set {V_of x}) \<le> insert 0 (elts (VPow A))"
+  have "inj (\<lambda>x. case x of None \<Rightarrow> 0 | Some x \<Rightarrow> ZFC_in_HOL.set {V_of x})"
+       "range (\<lambda>x. case x of None \<Rightarrow> 0 | Some x \<Rightarrow> ZFC_in_HOL.set {V_of x}) \<le> insert 0 (elts (VPow A))"
     if "inj V_of" "range V_of \<le> elts A"
     for V_of :: "'a \<Rightarrow> V" and A
     using that  by (auto simp: inj_on_def split: option.split_asm)
   with small [where 'a='a]
   show "OFCLASS('a option, small_class)"
     apply intro_classes
-    apply (clarsimp simp add: small_def)
+    unfolding small_def
+    apply clarify
     by (metis down_raw elts_vinsert subset_insertI)
 qed
 
@@ -239,7 +247,8 @@ proof -
   with small [where 'a='a]
   show "OFCLASS('a list, small_class)"
     apply intro_classes
-    apply (clarsimp simp add: small_def)
+    unfolding small_def
+    apply clarify
     by (metis inj_V_of_list order_refl small_def small_iff_range)
 qed
 
@@ -279,13 +288,42 @@ proof -
   with small [where 'a='a] small [where 'a='b]
   show "OFCLASS('a \<Rightarrow> 'b, small_class)"
     apply intro_classes
-    apply (clarsimp simp add: small_def)
+    unfolding small_def
+    apply clarify
     by (metis down_raw dual_order.refl)
 qed
 
-lemma TC_small [iff]:
-  fixes A :: "'a::small set"
-  shows "small A"
-  using small smaller_than_small by blast
+instance set :: (small) small 
+proof -
+  have 1: "inj (\<lambda>x. ZFC_in_HOL.set (V_of ` x))"
+    if "inj V_of" for V_of :: "'a \<Rightarrow> V" 
+    by (simp add: inj_on_def inj_image_eq_iff [OF that])
+  have 2: "range (\<lambda>x. ZFC_in_HOL.set (V_of ` x)) \<le> elts (VPow A)"
+    if "range V_of \<le> elts A" for V_of :: "'a \<Rightarrow> V" and A
+    using that by (auto simp: inj_on_def image_subset_iff)
+  from small [where 'a='a]
+  show "OFCLASS('a set, small_class)"
+    apply intro_classes
+    unfolding small_def
+    apply clarify
+    by (metis 1 2 down_raw subsetI)
+qed
+
+instance real :: small 
+proof -
+  have "small (range (Rep_real))"
+    by simp
+  then show "OFCLASS(real, small_class)"
+    by intro_classes (metis Rep_real_inverse image_inv_f_f inj_on_def replacement)
+qed
+
+instance complex :: small 
+proof -
+  have "\<And>c. c \<in> range (\<lambda>(x,y). Complex x y)"
+    by (metis case_prod_conv complex.exhaust_sel rangeI)
+  then show "OFCLASS(complex, small_class)"
+    by intro_classes (meson TC_small replacement smaller_than_small subset_eq)
+qed
+
 
 end
