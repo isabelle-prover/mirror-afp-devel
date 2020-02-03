@@ -263,35 +263,26 @@ proof(simp add: tendsto_iff, clarify)
   qed
 qed
 
+lemma tendsto_norm_bound:
+  "\<forall>x. \<parallel>G x - L\<parallel> \<le> \<parallel>F x - L\<parallel> \<Longrightarrow> (F \<longlongrightarrow> L) net \<Longrightarrow> (G \<longlongrightarrow> L) net"
+  apply(unfold tendsto_iff dist_norm, clarsimp)
+  apply(rule_tac P="\<lambda>x. \<parallel>F x - L\<parallel> < e" in eventually_mono, simp)
+  by (rename_tac e z) (erule_tac x=z in allE, simp)
+
+lemma tendsto_zero_norm_bound:
+  "\<forall>x. \<parallel>G x\<parallel> \<le> \<parallel>F x\<parallel> \<Longrightarrow> (F \<longlongrightarrow> 0) net \<Longrightarrow> (G \<longlongrightarrow> 0) net"
+  apply(unfold tendsto_iff dist_norm, clarsimp)
+  apply(rule_tac P="\<lambda>x. \<parallel>F x\<parallel> < e" in eventually_mono, simp)
+  by (rename_tac e z) (erule_tac x=z in allE, simp)
+
 lemma frechet_vec_nth:
-  fixes f::"real \<Rightarrow> ('a::real_normed_vector)^'m" and x::real and T::"real set"
-  defines "x\<^sub>0 \<equiv> netlimit (at x within T)"
-  assumes "((\<lambda>y. (f y - f x\<^sub>0 - (y - x\<^sub>0) *\<^sub>R f' x) /\<^sub>R (\<parallel>y - x\<^sub>0\<parallel>)) \<longlongrightarrow> 0) (at x within T)"
-  shows "((\<lambda>y. (f y $ i - f x\<^sub>0 $ i - (y - x\<^sub>0) *\<^sub>R f' x $ i) /\<^sub>R (\<parallel>y - x\<^sub>0\<parallel>)) \<longlongrightarrow> 0) (at x within T)"
-proof(unfold tendsto_iff dist_norm, clarify)
-  let "?\<Delta>" = "\<lambda>y. y - x\<^sub>0" and "?\<Delta>f" = "\<lambda>y. f y - f x\<^sub>0"
-  fix \<epsilon>::real assume "0 < \<epsilon>"
-  let "?P" = "\<lambda>y. \<parallel>(?\<Delta>f y - ?\<Delta> y *\<^sub>R f' x) /\<^sub>R (\<parallel>?\<Delta> y\<parallel>) - 0\<parallel> < \<epsilon>"
-  and "?Q" = "\<lambda>y. \<parallel>(f y $ i - f x\<^sub>0 $ i - ?\<Delta> y *\<^sub>R f' x $ i) /\<^sub>R (\<parallel>?\<Delta> y\<parallel>) - 0\<parallel> < \<epsilon>"
-  have "eventually ?P (at x within T)"
-    using \<open>0 < \<epsilon>\<close> assms unfolding tendsto_iff by auto
-  thus "eventually ?Q (at x within T)"
-  proof(rule_tac P="?P" in eventually_mono, simp_all)
-    fix y
-    let "?u i" = "f y $ i - f x\<^sub>0 $ i - ?\<Delta> y *\<^sub>R f' x $ i"
-    assume hyp:"inverse \<bar>?\<Delta> y\<bar> * (\<parallel>?\<Delta>f y - ?\<Delta> y *\<^sub>R f' x\<parallel>) < \<epsilon>"
-    have "\<parallel>(?\<Delta>f y - ?\<Delta> y *\<^sub>R f' x) $ i\<parallel> \<le> \<parallel>?\<Delta>f y - ?\<Delta> y *\<^sub>R f' x\<parallel>"
-      using Finite_Cartesian_Product.norm_nth_le by blast
-    also have "\<parallel>?u i\<parallel> = \<parallel>(?\<Delta>f y - ?\<Delta> y *\<^sub>R f' x) $ i\<parallel>"
-      by simp
-    ultimately have "\<parallel>?u i\<parallel> \<le> \<parallel>?\<Delta>f y - ?\<Delta> y *\<^sub>R f' x\<parallel>"
-      by linarith
-    hence "inverse \<bar>?\<Delta> y\<bar> * (\<parallel>?u i\<parallel>) \<le> inverse \<bar>?\<Delta> y\<bar> * (\<parallel>?\<Delta>f y - ?\<Delta> y *\<^sub>R f' x\<parallel>)"
-      by (simp add: mult_left_mono)
-    thus "inverse \<bar>?\<Delta> y\<bar> * (\<parallel>f y $ i - f x\<^sub>0 $ i - ?\<Delta> y *\<^sub>R f' x $ i\<parallel>) < \<epsilon>"
-      using hyp by linarith
-  qed
-qed
+  fixes f::"real \<Rightarrow> ('a::real_normed_vector)^'m"
+  assumes "((\<lambda>x. (f x - f x\<^sub>0 - (x - x\<^sub>0) *\<^sub>R f' t) /\<^sub>R (\<parallel>x - x\<^sub>0\<parallel>)) \<longlongrightarrow> 0) (at t within T)"
+  shows "((\<lambda>x. (f x $ i - f x\<^sub>0 $ i - (x - x\<^sub>0) *\<^sub>R f' t $ i) /\<^sub>R (\<parallel>x - x\<^sub>0\<parallel>)) \<longlongrightarrow> 0) (at t within T)"
+  apply(rule_tac F="(\<lambda>x. (f x - f x\<^sub>0 - (x - x\<^sub>0) *\<^sub>R f' t) /\<^sub>R (\<parallel>x - x\<^sub>0\<parallel>))" in tendsto_zero_norm_bound)
+   apply(clarsimp, rule mult_left_mono)
+    apply (metis norm_nth_le vector_minus_component vector_scaleR_component)
+  using assms by simp_all
 
 lemma has_derivative_vec_lambda:
   fixes f::"real \<Rightarrow> ('a::banach)^('n::finite)"
@@ -306,7 +297,7 @@ lemma has_derivative_vec_nth:
   shows "D (\<lambda>t. f t $ i) \<mapsto> (\<lambda>h. h *\<^sub>R f' x $ i) at x within T"
   apply(unfold has_derivative_def, safe)
    apply(force simp: bounded_linear_def bounded_linear_axioms_def)
-  using frechet_vec_nth[of x T f] assms unfolding has_derivative_def by auto
+  using frechet_vec_nth assms unfolding has_derivative_def by auto
 
 lemma has_vderiv_on_vec_eq[simp]:
   fixes x::"real \<Rightarrow> ('a::banach)^('n::finite)"
