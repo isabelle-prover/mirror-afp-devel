@@ -281,7 +281,7 @@ lemma frechet_vec_nth:
   shows "((\<lambda>x. (f x $ i - f x\<^sub>0 $ i - (x - x\<^sub>0) *\<^sub>R f' t $ i) /\<^sub>R (\<parallel>x - x\<^sub>0\<parallel>)) \<longlongrightarrow> 0) (at t within T)"
   apply(rule_tac F="(\<lambda>x. (f x - f x\<^sub>0 - (x - x\<^sub>0) *\<^sub>R f' t) /\<^sub>R (\<parallel>x - x\<^sub>0\<parallel>))" in tendsto_zero_norm_bound)
    apply(clarsimp, rule mult_left_mono)
-    apply (metis norm_nth_le vector_minus_component vector_scaleR_component)
+    apply (metis Finite_Cartesian_Product.norm_nth_le vector_minus_component vector_scaleR_component)
   using assms by simp_all
 
 lemma has_derivative_vec_lambda:
