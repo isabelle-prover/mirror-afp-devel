@@ -24,30 +24,24 @@ begin
         by (cases "snd ak < length cs") (auto 0 3)
     qed
 
-    lemma count_alt_def: "Degeneralization.count cs a k =
-      (if k < length cs
-      then if (cs ! k) a then Suc k mod length cs else k
-      else if List.null cs then k else 0)"
-      unfolding count_def null_def by rule
-
     (* TODO: move *)
     lemmas [param] = null_transfer[unfolded pred_bool_Id, to_set]
 
     (* TODO: move *)
     lemma count_param[param, autoref_rules]: "(Degeneralization.count, Degeneralization.count) \<in>
       \<langle>A \<rightarrow> bool_rel\<rangle> list_rel \<rightarrow> A \<rightarrow> nat_rel \<rightarrow> nat_rel"
-      unfolding count_alt_def by parametricity
+      unfolding count_def null_def[symmetric] by parametricity
 
     (* TODO: why do we need this? *)
-    lemma degeneralize_annotated: "degeneralize A = nba
+    lemma degeneralize_alt_def: "degeneralize A = nba
       (ngba.alphabet A)
-      (ngba.initial A \<times> ({0} ::: \<langle>nat_rel\<rangle> list_set_rel))
-      (\<lambda> a (p, k). ngba.transition A a p \<times> ({Degeneralization.count (ngba.accepting A) p k} ::: \<langle>nat_rel\<rangle> list_set_rel))
+      ((\<lambda> p. (p, 0)) ` ngba.initial A)
+      (\<lambda> a (p, k). (\<lambda> q. (q, Degeneralization.count (ngba.accepting A) p k)) ` ngba.transition A a p)
       (degen (ngba.accepting A))"
-      unfolding degeneralization.degeneralize_def by simp
+      unfolding degeneralization.degeneralize_def by auto
 
     schematic_goal ngba_degeneralize: "(?f :: ?'a, degeneralize) \<in> ?R"
-      unfolding degeneralize_annotated by autoref
+      unfolding degeneralize_alt_def by autoref
     concrete_definition ngba_degeneralize uses ngba_degeneralize
     lemmas ngba_degeneralize_refine[autoref_rules] = ngba_degeneralize.refine
 

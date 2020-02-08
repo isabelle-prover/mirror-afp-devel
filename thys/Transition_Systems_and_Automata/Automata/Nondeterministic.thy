@@ -6,8 +6,10 @@ imports
   "../Basic/Degeneralization"
 begin
 
+  (* TODO: might not be needed anymore *)
   type_synonym ('label, 'state) trans = "'label \<Rightarrow> 'state \<Rightarrow> 'state set"
 
+  (* TODO: many of these type annotations can be left out *)
   locale automaton =
     fixes automaton :: "'label set \<Rightarrow> 'state set \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition \<Rightarrow> 'automaton"
     fixes alphabet :: "'automaton \<Rightarrow> 'label set"
@@ -141,46 +143,56 @@ begin
   locale automaton_degeneralization =
     a: automaton automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 +
     b: automaton automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
-    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state set \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'state pred gen \<Rightarrow> 'automaton\<^sub>1"
+    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state set \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'item pred gen \<Rightarrow> 'automaton\<^sub>1"
     and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
     and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state set"
     and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
-    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state pred gen"
-    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state degen set \<Rightarrow> ('label, 'state degen) trans \<Rightarrow> 'state degen pred \<Rightarrow> 'automaton\<^sub>2"
+    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'item pred gen"
+    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state degen set \<Rightarrow> ('label, 'state degen) trans \<Rightarrow> 'item_degen pred \<Rightarrow> 'automaton\<^sub>2"
     and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
     and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state degen set"
     and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state degen) trans"
-    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state degen pred"
+    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'item_degen pred"
+    +
+    fixes item :: "'state \<times> 'label \<times> 'state \<Rightarrow> 'item"
+    fixes translate :: "'item_degen \<Rightarrow> 'item degen"
   begin
 
     definition degeneralize :: "'automaton\<^sub>1 \<Rightarrow> 'automaton\<^sub>2" where
       "degeneralize A \<equiv> automaton\<^sub>2
         (alphabet\<^sub>1 A)
         (initial\<^sub>1 A \<times> {0})
-        (\<lambda> a (p, k). transition\<^sub>1 A a p \<times> {count (condition\<^sub>1 A) p k})
-        (degen (condition\<^sub>1 A))"
+        (\<lambda> a (p, k). {(q, count (condition\<^sub>1 A) (item (p, a, q)) k) |q. q \<in> transition\<^sub>1 A a p})
+        (degen (condition\<^sub>1 A) \<circ> translate)"
 
     lemma degeneralize_simps[simp]:
       "alphabet\<^sub>2 (degeneralize A) = alphabet\<^sub>1 A"
       "initial\<^sub>2 (degeneralize A) = initial\<^sub>1 A \<times> {0}"
-      "transition\<^sub>2 (degeneralize A) a (p, k) = transition\<^sub>1 A a p \<times> {count (condition\<^sub>1 A) p k}"
-      "condition\<^sub>2 (degeneralize A) = degen (condition\<^sub>1 A)"
+      "transition\<^sub>2 (degeneralize A) a (p, k) =
+        {(q, count (condition\<^sub>1 A) (item (p, a, q)) k) |q. q \<in> transition\<^sub>1 A a p}"
+      "condition\<^sub>2 (degeneralize A) = degen (condition\<^sub>1 A) \<circ> translate"
       unfolding degeneralize_def by auto
+
+    abbreviation "counter cs w r p k \<equiv> sscan (count cs) (smap item (p ## r ||| w ||| r)) k"
 
     lemma run_degeneralize:
       assumes "a.run A (w ||| r) p"
-      shows "b.run (degeneralize A) (w ||| r ||| sscan (count (condition\<^sub>1 A)) (p ## r) k) (p, k)"
+      shows "b.run (degeneralize A) (w ||| r ||| counter (condition\<^sub>1 A) w r p k) (p, k)"
       using assms by (coinduction arbitrary: w r p k) (force elim: a.run.cases)
     lemma degeneralize_run:
       assumes "b.run (degeneralize A) (w ||| rs) pk"
       obtains r s p k
-      where "rs = r ||| s" "pk = (p, k)" "a.run A (w ||| r) p" "s = sscan (count (condition\<^sub>1 A)) (p ## r) k"
-    proof
-      show "rs = smap fst rs ||| smap snd rs" "pk = (fst pk, snd pk)" by auto
-      show "a.run A (w ||| smap fst rs) (fst pk)"
-        using assms by (coinduction arbitrary: w rs pk) (force elim: b.run.cases)
-      show "smap snd rs = sscan (count (condition\<^sub>1 A)) (fst pk ## smap fst rs) (snd pk)"
-        using assms by (coinduction arbitrary: w rs pk) (force elim: b.run.cases)
+      where "rs = r ||| s" "pk = (p, k)" "a.run A (w ||| r) p" "s = counter (condition\<^sub>1 A) w r p k"
+    proof -
+      obtain r s p k where 1: "rs = r ||| s" "pk = (p, k)" using szip_smap surjective_pairing by metis
+      show ?thesis
+      proof
+        show "rs = r ||| s" "pk = (p, k)" using 1 by this
+        show "a.run A (w ||| r) p"
+          using assms unfolding 1 by (coinduction arbitrary: w r s p k) (force elim: b.run.cases)
+        show "s = counter (condition\<^sub>1 A) w r p k"
+          using assms unfolding 1 by (coinduction arbitrary: w r s p k) (erule b.run.cases, force)
+      qed
     qed
 
     lemma degeneralize_nodes:
@@ -203,7 +215,7 @@ begin
       next
         case (execute p aq)
         obtain k where "(p, k) \<in> b.nodes (degeneralize A)" using execute(2) by auto
-        then have "(snd aq, count (condition\<^sub>1 A) p k) \<in> b.nodes (degeneralize A)"
+        then have "(snd aq, count (condition\<^sub>1 A) (item (p, aq)) k) \<in> b.nodes (degeneralize A)"
           using execute(3) by auto
         then show ?case using image_iff snd_conv by force
       qed
@@ -222,23 +234,26 @@ begin
   locale automaton_degeneralization_run =
     automaton_degeneralization
       automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
-      automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 +
+      automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
+      item translate +
     a: automaton_run automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1 +
     b: automaton_run automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2
-    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state set \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'state pred gen \<Rightarrow> 'automaton\<^sub>1"
+    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state set \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'item pred gen \<Rightarrow> 'automaton\<^sub>1"
     and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
     and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state set"
     and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
-    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state pred gen"
-    and test\<^sub>1 :: "'state pred gen \<Rightarrow> 'label stream \<Rightarrow> 'state stream \<Rightarrow> 'state \<Rightarrow> bool"
-    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state degen set \<Rightarrow> ('label, 'state degen) trans \<Rightarrow> 'state degen pred \<Rightarrow> 'automaton\<^sub>2"
+    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'item pred gen"
+    and test\<^sub>1 :: "'item pred gen \<Rightarrow> 'label stream \<Rightarrow> 'state stream \<Rightarrow> 'state \<Rightarrow> bool"
+    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state degen set \<Rightarrow> ('label, 'state degen) trans \<Rightarrow> 'item_degen pred \<Rightarrow> 'automaton\<^sub>2"
     and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
     and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state degen set"
     and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state degen) trans"
-    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state degen pred"
-    and test\<^sub>2 :: "'state degen pred \<Rightarrow> 'label stream \<Rightarrow> 'state degen stream \<Rightarrow> 'state degen \<Rightarrow> bool"
+    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'item_degen pred"
+    and test\<^sub>2 :: "'item_degen pred \<Rightarrow> 'label stream \<Rightarrow> 'state degen stream \<Rightarrow> 'state degen \<Rightarrow> bool"
+    and item :: "'state \<times> 'label \<times> 'state \<Rightarrow> 'item"
+    and translate :: "'item_degen \<Rightarrow> 'item degen"
     +
-    assumes test[iff]: "test\<^sub>2 (degen cs) w (r ||| sscan (count cs) (p ## r) k) (p, k) \<longleftrightarrow> test\<^sub>1 cs w r p"
+    assumes test[iff]: "test\<^sub>2 (degen cs \<circ> translate) w (r ||| counter cs w r p k) (p, k) \<longleftrightarrow> test\<^sub>1 cs w r p"
   begin
 
     lemma degeneralize_language[simp]: "b.language (degeneralize A) = a.language A"
@@ -319,6 +334,7 @@ begin
 
   end
 
+  (* TODO: format these the same as degeneralization *)
   locale automaton_intersection_path =
     automaton_intersection
       automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1

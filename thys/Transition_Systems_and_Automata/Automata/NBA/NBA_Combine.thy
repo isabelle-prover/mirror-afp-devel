@@ -7,6 +7,7 @@ begin
   global_interpretation degeneralization: automaton_degeneralization_run
     ngba ngba.alphabet ngba.initial ngba.transition ngba.accepting "\<lambda> P w r p. gen infs P r"
     nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P r"
+    fst id
     defines degeneralize = degeneralization.degeneralize
     by unfold_locales auto
 
