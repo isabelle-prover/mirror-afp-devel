@@ -5,8 +5,8 @@ imports DBA DGBA
 begin
 
   global_interpretation degeneralization: automaton_degeneralization_trace
-    dgba dgba.alphabet dgba.initial dgba.transition dgba.accepting "gen infs"
-    dba dba.alphabet dba.initial dba.transition dba.accepting infs
+    dgba dgba.alphabet dgba.initial dgba.transition dgba.accepting "\<lambda> P w r p. gen infs P r"
+    dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
     defines degeneralize = degeneralization.degeneralize
     by unfold_locales auto
 
@@ -15,9 +15,9 @@ begin
   lemmas degeneralize_nodes_card = degeneralization.degeneralize_nodes_card[folded DBA.nodes_def]
 
   global_interpretation intersection: automaton_intersection_trace
-    dba.dba dba.alphabet dba.initial dba.transition dba.accepting infs
-    dba.dba dba.alphabet dba.initial dba.transition dba.accepting infs
-    dgba.dgba dgba.alphabet dgba.initial dgba.transition dgba.accepting "gen infs"
+    dba.dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
+    dba.dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
+    dgba.dgba dgba.alphabet dgba.initial dgba.transition dgba.accepting "\<lambda> P w r p. gen infs P r"
     "\<lambda> c\<^sub>1 c\<^sub>2. [c\<^sub>1 \<circ> fst, c\<^sub>2 \<circ> snd]"
     defines intersect' = intersection.combine
     by unfold_locales auto
@@ -27,9 +27,9 @@ begin
   lemmas intersect'_nodes_card = intersection.combine_nodes_card[folded DGBA.nodes_def]
 
   global_interpretation union: automaton_union_trace
-    dba.dba dba.alphabet dba.initial dba.transition dba.accepting infs
-    dba.dba dba.alphabet dba.initial dba.transition dba.accepting infs
-    dba.dba dba.alphabet dba.initial dba.transition dba.accepting infs
+    dba.dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
+    dba.dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
+    dba.dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
     "\<lambda> c\<^sub>1 c\<^sub>2 pq. (c\<^sub>1 \<circ> fst) pq \<or> (c\<^sub>2 \<circ> snd) pq"
     defines union = union.combine
     by (unfold_locales) (simp del: comp_apply)
@@ -39,8 +39,8 @@ begin
   lemmas union_nodes_card = union.combine_nodes_card
 
   global_interpretation intersection_list: automaton_intersection_list_trace
-    dba.dba dba.alphabet dba.initial dba.transition dba.accepting infs
-    dgba.dgba dgba.alphabet dgba.initial dgba.transition dgba.accepting "gen infs"
+    dba.dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
+    dgba.dgba dgba.alphabet dgba.initial dgba.transition dgba.accepting "\<lambda> P w r p. gen infs P r"
     "\<lambda> cs. map (\<lambda> k pp. (cs ! k) (pp ! k)) [0 ..< length cs]"
     defines intersect_list' = intersection_list.combine
     by (unfold_locales) (auto simp: gen_def comp_def)
@@ -50,8 +50,8 @@ begin
   lemmas intersect_list'_nodes_card = intersection_list.combine_nodes_card[folded DGBA.nodes_def]
 
   global_interpretation union_list: automaton_union_list_trace
-    dba.dba dba.alphabet dba.initial dba.transition dba.accepting infs
-    dba.dba dba.alphabet dba.initial dba.transition dba.accepting infs
+    dba.dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
+    dba.dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
     "\<lambda> cs pp. \<exists> k < length cs. (cs ! k) (pp ! k)"
     defines union_list = union_list.combine
     by (unfold_locales) (simp add: comp_def)

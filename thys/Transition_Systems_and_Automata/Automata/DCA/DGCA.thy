@@ -13,7 +13,7 @@ begin
   global_interpretation dgca: automaton dgca alphabet initial transition rejecting
     defines path = dgca.path and run = dgca.run and reachable = dgca.reachable and nodes = dgca.nodes
     by unfold_locales auto
-  global_interpretation dgca: automaton_trace dgca alphabet initial transition rejecting "cogen fins"
+  global_interpretation dgca: automaton_trace dgca alphabet initial transition rejecting "\<lambda> P w r p. cogen fins P r"
     defines language = dgca.language
     by standard
 

@@ -29,6 +29,7 @@ begin
       defines path' = path and run' = run and reachable' = reachable and nodes' = nodes
       by this
 
+    (* TODO: maybe this should be stated in terms of the lists and streams constants (adjust language_alphabet proof) *)
     lemma path_alt_def: "path A w p \<longleftrightarrow> set w \<subseteq> alphabet A"
     unfolding lists_iff_set[symmetric]
     proof
@@ -55,19 +56,19 @@ begin
     and transition :: "'automaton \<Rightarrow> ('label, 'state) trans"
     and condition :: "'automaton \<Rightarrow> 'condition"
     +
-    fixes test :: "'condition \<Rightarrow> 'state stream \<Rightarrow> bool"
+    fixes test :: "'condition \<Rightarrow> 'label stream \<Rightarrow> 'state stream \<Rightarrow> 'state \<Rightarrow> bool"
   begin
 
     definition language :: "'automaton \<Rightarrow> 'label stream set" where
-      "language A \<equiv> {w. run A w (initial A) \<and> test (condition A) (trace A w (initial A))}"
+      "language A \<equiv> {w. run A w (initial A) \<and> test (condition A) w (trace A w (initial A)) (initial A)}"
   
     lemma language[intro]:
-      assumes "run A w (initial A)" "test (condition A) (trace A w (initial A))"
+      assumes "run A w (initial A)" "test (condition A) w (trace A w (initial A)) (initial A)"
       shows "w \<in> language A"
       using assms unfolding language_def by auto
     lemma language_elim[elim]:
       assumes "w \<in> language A"
-      obtains "run A w (initial A)" "test (condition A) (trace A w (initial A))"
+      obtains "run A w (initial A)" "test (condition A) w (trace A w (initial A)) (initial A)"
       using assms unfolding language_def by auto
   
     lemma language_alphabet: "language A \<subseteq> streams (alphabet A)"
@@ -195,15 +196,15 @@ begin
     and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state"
     and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
     and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state pred gen"
-    and test\<^sub>1 :: "'state pred gen \<Rightarrow> 'state stream \<Rightarrow> bool"
+    and test\<^sub>1 :: "'state pred gen \<Rightarrow> 'label stream \<Rightarrow> 'state stream \<Rightarrow> 'state \<Rightarrow> bool"
     and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state degen \<Rightarrow> ('label, 'state degen) trans \<Rightarrow> 'state degen pred \<Rightarrow> 'automaton\<^sub>2"
     and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
     and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state degen"
     and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state degen) trans"
     and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state degen pred"
-    and test\<^sub>2 :: "'state degen pred \<Rightarrow> 'state degen stream \<Rightarrow> bool"
+    and test\<^sub>2 :: "'state degen pred \<Rightarrow> 'label stream \<Rightarrow> 'state degen stream \<Rightarrow> 'state degen \<Rightarrow> bool"
     +
-    assumes test[iff]: "test\<^sub>2 (degen cs) (r ||| sscan (count cs) (p ## r) k) \<longleftrightarrow> test\<^sub>1 cs r"
+    assumes test[iff]: "test\<^sub>2 (degen cs) w (r ||| sscan (count cs) (p ## r) k) (p, k) \<longleftrightarrow> test\<^sub>1 cs w r p"
   begin
 
     lemma degeneralize_language[simp]: "b.language (degeneralize A) = a.language A"
@@ -352,23 +353,23 @@ begin
     and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state\<^sub>1"
     and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state\<^sub>1) trans"
     and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
-    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'state\<^sub>1 stream \<Rightarrow> bool"
+    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'label stream \<Rightarrow> 'state\<^sub>1 stream \<Rightarrow> 'state\<^sub>1 \<Rightarrow> bool"
     and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
     and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
     and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state\<^sub>2"
     and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans"
     and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
-    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'state\<^sub>2 stream \<Rightarrow> bool"
+    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'label stream \<Rightarrow> 'state\<^sub>2 stream \<Rightarrow> 'state\<^sub>2 \<Rightarrow> bool"
     and automaton\<^sub>3 :: "'label set \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans \<Rightarrow>
       'condition\<^sub>3 \<Rightarrow> 'automaton\<^sub>3"
     and alphabet\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'label set"
     and initial\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2"
     and transition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans"
     and condition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'condition\<^sub>3"
-    and test\<^sub>3 :: "'condition\<^sub>3 \<Rightarrow> ('state\<^sub>1 \<times> 'state\<^sub>2) stream \<Rightarrow> bool"
+    and test\<^sub>3 :: "'condition\<^sub>3 \<Rightarrow> 'label stream \<Rightarrow> ('state\<^sub>1 \<times> 'state\<^sub>2) stream \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> bool"
     and condition :: "'condition\<^sub>1 \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'condition\<^sub>3"
     +
-    assumes test[iff]: "test\<^sub>3 (condition c\<^sub>1 c\<^sub>2) (u ||| v) \<longleftrightarrow> test\<^sub>1 c\<^sub>1 u \<and> test\<^sub>2 c\<^sub>2 v"
+    assumes test[iff]: "test\<^sub>3 (condition c\<^sub>1 c\<^sub>2) w (r ||| s) (p, q) \<longleftrightarrow> test\<^sub>1 c\<^sub>1 w r p \<and> test\<^sub>2 c\<^sub>2 w s q"
   begin
 
     lemma combine_language[simp]: "c.language (combine A B) = a.language A \<inter> b.language B" by force
@@ -388,23 +389,23 @@ begin
     and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state\<^sub>1"
     and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state\<^sub>1) trans"
     and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
-    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'state\<^sub>1 stream \<Rightarrow> bool"
+    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'label stream \<Rightarrow> 'state\<^sub>1 stream \<Rightarrow> 'state\<^sub>1 \<Rightarrow> bool"
     and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
     and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
     and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state\<^sub>2"
     and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans"
     and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
-    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'state\<^sub>2 stream \<Rightarrow> bool"
+    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'label stream \<Rightarrow> 'state\<^sub>2 stream \<Rightarrow> 'state\<^sub>2 \<Rightarrow> bool"
     and automaton\<^sub>3 :: "'label set \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans \<Rightarrow>
       'condition\<^sub>3 \<Rightarrow> 'automaton\<^sub>3"
     and alphabet\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'label set"
     and initial\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2"
     and transition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans"
     and condition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'condition\<^sub>3"
-    and test\<^sub>3 :: "'condition\<^sub>3 \<Rightarrow> ('state\<^sub>1 \<times> 'state\<^sub>2) stream \<Rightarrow> bool"
+    and test\<^sub>3 :: "'condition\<^sub>3 \<Rightarrow> 'label stream \<Rightarrow> ('state\<^sub>1 \<times> 'state\<^sub>2) stream \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> bool"
     and condition :: "'condition\<^sub>1 \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'condition\<^sub>3"
     +
-    assumes test[iff]: "test\<^sub>3 (condition c\<^sub>1 c\<^sub>2) (u ||| v) \<longleftrightarrow> test\<^sub>1 c\<^sub>1 u \<or> test\<^sub>2 c\<^sub>2 v"
+    assumes test[iff]: "test\<^sub>3 (condition c\<^sub>1 c\<^sub>2) w (r ||| s) (p, q) \<longleftrightarrow> test\<^sub>1 c\<^sub>1 w r p \<or> test\<^sub>2 c\<^sub>2 w s q"
   begin
 
     lemma combine_language[simp]:
@@ -497,24 +498,24 @@ begin
     and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state"
     and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
     and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
-    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'state stream \<Rightarrow> bool"
+    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'label stream \<Rightarrow> 'state stream \<Rightarrow> 'state \<Rightarrow> bool"
     and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state list \<Rightarrow> ('label, 'state list) trans \<Rightarrow>
       'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
     and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
     and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state list"
     and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state list) trans"
     and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
-    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'state list stream \<Rightarrow> bool"
+    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'label stream \<Rightarrow> 'state list stream \<Rightarrow> 'state list \<Rightarrow> bool"
     and condition :: "'condition\<^sub>1 list \<Rightarrow> 'condition\<^sub>2"
     +
-    assumes test[iff]: "test\<^sub>2 (condition cs) w \<longleftrightarrow>
-      (\<forall> k < length cs. test\<^sub>1 (cs ! k) (smap (\<lambda> pp. pp ! k) w))"
+    assumes test[iff]: "test\<^sub>2 (condition cs) w rs ps \<longleftrightarrow>
+      (\<forall> k < length cs. test\<^sub>1 (cs ! k) w (smap (\<lambda> ps. ps ! k) rs) (ps ! k))"
   begin
 
     lemma combine_language[simp]: "b.language (combine AA) = \<Inter> (a.language ` set AA)"
       unfolding a.language_def b.language_def
       unfolding a.run_alt_def b.run_alt_def
-      by (auto simp: combine_trace_smap iff: in_set_conv_nth)
+      by (fastforce simp: set_conv_nth combine_trace_smap)
 
   end
 
@@ -529,18 +530,18 @@ begin
     and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state"
     and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
     and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
-    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'state stream \<Rightarrow> bool"
+    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'label stream \<Rightarrow> 'state stream \<Rightarrow> 'state \<Rightarrow> bool"
     and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state list \<Rightarrow> ('label, 'state list) trans \<Rightarrow>
       'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
     and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
     and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state list"
     and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state list) trans"
     and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
-    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'state list stream \<Rightarrow> bool"
+    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'label stream \<Rightarrow> 'state list stream \<Rightarrow> 'state list \<Rightarrow> bool"
     and condition :: "'condition\<^sub>1 list \<Rightarrow> 'condition\<^sub>2"
     +
-    assumes test[iff]: "test\<^sub>2 (condition cs) w \<longleftrightarrow>
-      (\<exists> k < length cs. test\<^sub>1 (cs ! k) (smap (\<lambda> pp. pp ! k) w))"
+    assumes test[iff]: "test\<^sub>2 (condition cs) w rs ps \<longleftrightarrow>
+      (\<exists> k < length cs. test\<^sub>1 (cs ! k) w (smap (\<lambda> ps. ps ! k) rs) (ps ! k))"
   begin
 
     lemma combine_language[simp]:
@@ -549,7 +550,7 @@ begin
       using assms
       unfolding a.language_def b.language_def
       unfolding a.run_alt_def b.run_alt_def
-      by (auto simp: combine_trace_smap iff: in_set_conv_nth) (metis INT_subset_iff in_set_conv_nth)
+      by (fastforce simp: set_conv_nth combine_trace_smap)
 
   end
 

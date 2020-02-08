@@ -109,7 +109,6 @@ begin
 
   end
 
-  (* TODO: adjust deterministic theory to the same test type *)
   locale automaton_run =
     automaton automaton alphabet initial transition condition
     for automaton :: "'label set \<Rightarrow> 'state set \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition \<Rightarrow> 'automaton"

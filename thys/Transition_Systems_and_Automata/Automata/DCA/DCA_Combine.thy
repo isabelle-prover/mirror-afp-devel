@@ -5,8 +5,8 @@ imports DCA DGCA
 begin
 
   global_interpretation degeneralization: automaton_degeneralization_trace
-    dgca dgca.alphabet dgca.initial dgca.transition dgca.rejecting "cogen fins"
-    dca dca.alphabet dca.initial dca.transition dca.rejecting fins
+    dgca dgca.alphabet dgca.initial dgca.transition dgca.rejecting "\<lambda> P w r p. cogen fins P r"
+    dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P r"
     defines degeneralize = degeneralization.degeneralize
     by unfold_locales auto
 
@@ -15,9 +15,9 @@ begin
   lemmas degeneralize_nodes_card = degeneralization.degeneralize_nodes_card[folded DCA.nodes_def]
 
   global_interpretation intersection: automaton_intersection_trace
-    dca.dca dca.alphabet dca.initial dca.transition dca.rejecting fins
-    dca.dca dca.alphabet dca.initial dca.transition dca.rejecting fins
-    dca.dca dca.alphabet dca.initial dca.transition dca.rejecting fins
+    dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P r"
+    dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P r"
+    dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P r"
     "\<lambda> c\<^sub>1 c\<^sub>2 pq. (c\<^sub>1 \<circ> fst) pq \<or> (c\<^sub>2 \<circ> snd) pq"
     defines intersect = intersection.combine
     by (unfold_locales) (simp del: comp_apply)
@@ -27,9 +27,9 @@ begin
   lemmas intersect_nodes_card = intersection.combine_nodes_card
 
   global_interpretation union: automaton_union_trace
-    dca.dca dca.alphabet dca.initial dca.transition dca.rejecting fins
-    dca.dca dca.alphabet dca.initial dca.transition dca.rejecting fins
-    dgca.dgca dgca.alphabet dgca.initial dgca.transition dgca.rejecting "cogen fins"
+    dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P r"
+    dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P r"
+    dgca.dgca dgca.alphabet dgca.initial dgca.transition dgca.rejecting "\<lambda> P w r p. cogen fins P r"
     "\<lambda> c\<^sub>1 c\<^sub>2. [c\<^sub>1 \<circ> fst, c\<^sub>2 \<circ> snd]"
     defines union' = union.combine
     by unfold_locales auto
@@ -39,8 +39,8 @@ begin
   lemmas union'_nodes_card = union.combine_nodes_card[folded DGCA.nodes_def]
 
   global_interpretation intersection_list: automaton_intersection_list_trace
-    dca.dca dca.alphabet dca.initial dca.transition dca.rejecting fins
-    dca.dca dca.alphabet dca.initial dca.transition dca.rejecting fins
+    dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P r"
+    dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P r"
     "\<lambda> cs pp. \<exists> k < length cs. (cs ! k) (pp ! k)"
     defines intersect_list = intersection_list.combine
     by (unfold_locales) (simp add: comp_def)
@@ -50,8 +50,8 @@ begin
   lemmas intersect_list_nodes_card = intersection_list.combine_nodes_card
 
   global_interpretation union_list: automaton_union_list_trace
-    dca.dca dca.alphabet dca.initial dca.transition dca.rejecting fins
-    dgca.dgca dgca.alphabet dgca.initial dgca.transition dgca.rejecting "cogen fins"
+    dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P r"
+    dgca.dgca dgca.alphabet dgca.initial dgca.transition dgca.rejecting "\<lambda> P w r p. cogen fins P r"
     "\<lambda> cs. map (\<lambda> k pp. (cs ! k) (pp ! k)) [0 ..< length cs]"
     defines union_list' = union_list.combine
     by (unfold_locales) (auto simp: cogen_def comp_def)
