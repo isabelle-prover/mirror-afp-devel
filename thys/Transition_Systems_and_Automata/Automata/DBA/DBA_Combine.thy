@@ -4,7 +4,7 @@ theory DBA_Combine
 imports DBA DGBA
 begin
 
-  global_interpretation degeneralization: automaton_degeneralization_trace
+  global_interpretation degeneralization: automaton_degeneralization_run
     dgba dgba.alphabet dgba.initial dgba.transition dgba.accepting "\<lambda> P w r p. gen infs P r"
     dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
     fst id
@@ -15,7 +15,7 @@ begin
   lemmas degeneralize_nodes_finite[iff] = degeneralization.degeneralize_nodes_finite[folded DBA.nodes_def]
   lemmas degeneralize_nodes_card = degeneralization.degeneralize_nodes_card[folded DBA.nodes_def]
 
-  global_interpretation intersection: automaton_intersection_trace
+  global_interpretation intersection: automaton_intersection_run
     dba.dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
     dba.dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
     dgba.dgba dgba.alphabet dgba.initial dgba.transition dgba.accepting "\<lambda> P w r p. gen infs P r"
@@ -27,7 +27,7 @@ begin
   lemmas intersect'_nodes_finite = intersection.combine_nodes_finite[folded DGBA.nodes_def]
   lemmas intersect'_nodes_card = intersection.combine_nodes_card[folded DGBA.nodes_def]
 
-  global_interpretation union: automaton_union_trace
+  global_interpretation union: automaton_union_run
     dba.dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
     dba.dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
     dba.dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
@@ -39,7 +39,7 @@ begin
   lemmas union_nodes_finite = union.combine_nodes_finite
   lemmas union_nodes_card = union.combine_nodes_card
 
-  global_interpretation intersection_list: automaton_intersection_list_trace
+  global_interpretation intersection_list: automaton_intersection_list_run
     dba.dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
     dgba.dgba dgba.alphabet dgba.initial dgba.transition dgba.accepting "\<lambda> P w r p. gen infs P r"
     "\<lambda> cs. map (\<lambda> k pp. (cs ! k) (pp ! k)) [0 ..< length cs]"
@@ -50,7 +50,7 @@ begin
   lemmas intersect_list'_nodes_finite = intersection_list.combine_nodes_finite[folded DGBA.nodes_def]
   lemmas intersect_list'_nodes_card = intersection_list.combine_nodes_card[folded DGBA.nodes_def]
 
-  global_interpretation union_list: automaton_union_list_trace
+  global_interpretation union_list: automaton_union_list_run
     dba.dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
     dba.dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
     "\<lambda> cs pp. \<exists> k < length cs. (cs ! k) (pp ! k)"

@@ -4,7 +4,7 @@ theory DCA_Combine
 imports DCA DGCA
 begin
 
-  global_interpretation degeneralization: automaton_degeneralization_trace
+  global_interpretation degeneralization: automaton_degeneralization_run
     dgca dgca.alphabet dgca.initial dgca.transition dgca.rejecting "\<lambda> P w r p. cogen fins P r"
     dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P r"
     fst id
@@ -15,7 +15,7 @@ begin
   lemmas degeneralize_nodes_finite[iff] = degeneralization.degeneralize_nodes_finite[folded DCA.nodes_def]
   lemmas degeneralize_nodes_card = degeneralization.degeneralize_nodes_card[folded DCA.nodes_def]
 
-  global_interpretation intersection: automaton_intersection_trace
+  global_interpretation intersection: automaton_intersection_run
     dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P r"
     dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P r"
     dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P r"
@@ -27,7 +27,7 @@ begin
   lemmas intersect_nodes_finite = intersection.combine_nodes_finite
   lemmas intersect_nodes_card = intersection.combine_nodes_card
 
-  global_interpretation union: automaton_union_trace
+  global_interpretation union: automaton_union_run
     dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P r"
     dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P r"
     dgca.dgca dgca.alphabet dgca.initial dgca.transition dgca.rejecting "\<lambda> P w r p. cogen fins P r"
@@ -39,7 +39,7 @@ begin
   lemmas union'_nodes_finite = union.combine_nodes_finite[folded DGCA.nodes_def]
   lemmas union'_nodes_card = union.combine_nodes_card[folded DGCA.nodes_def]
 
-  global_interpretation intersection_list: automaton_intersection_list_trace
+  global_interpretation intersection_list: automaton_intersection_list_run
     dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P r"
     dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P r"
     "\<lambda> cs pp. \<exists> k < length cs. (cs ! k) (pp ! k)"
@@ -50,7 +50,7 @@ begin
   lemmas intersect_list_nodes_finite = intersection_list.combine_nodes_finite
   lemmas intersect_list_nodes_card = intersection_list.combine_nodes_card
 
-  global_interpretation union_list: automaton_union_list_trace
+  global_interpretation union_list: automaton_union_list_run
     dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P r"
     dgca.dgca dgca.alphabet dgca.initial dgca.transition dgca.rejecting "\<lambda> P w r p. cogen fins P r"
     "\<lambda> cs. map (\<lambda> k pp. (cs ! k) (pp ! k)) [0 ..< length cs]"

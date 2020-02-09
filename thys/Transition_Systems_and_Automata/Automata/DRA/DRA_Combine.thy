@@ -4,7 +4,7 @@ theory DRA_Combine
 imports "DRA" "../DBA/DBA" "../DCA/DCA"
 begin
 
-  global_interpretation intersection_bc: automaton_intersection_trace
+  global_interpretation intersection_bc: automaton_intersection_run
     dba.dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
     dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P r"
     dra.dra dra.alphabet dra.initial dra.transition dra.condition "\<lambda> P w r p. cogen rabin P r"
@@ -19,7 +19,7 @@ begin
 
   (* TODO: are there some statements about the rabin constant hidden in here?
     same for gen/cogen, also in other combinations, shouldn't have to unfold those *)
-  global_interpretation union_list: automaton_union_list_trace
+  global_interpretation union_list: automaton_union_list_run
     dra.dra dra.alphabet dra.initial dra.transition dra.condition "\<lambda> P w r p. cogen rabin P r"
     dra.dra dra.alphabet dra.initial dra.transition dra.condition "\<lambda> P w r p. cogen rabin P r"
     "\<lambda> cs. do { k \<leftarrow> [0 ..< length cs]; (f, g) \<leftarrow> cs ! k; [(\<lambda> pp. f (pp ! k), \<lambda> pp. g (pp ! k))] }"

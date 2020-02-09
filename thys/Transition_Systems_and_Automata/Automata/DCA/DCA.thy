@@ -13,7 +13,7 @@ begin
   global_interpretation dca: automaton dca alphabet initial transition rejecting
     defines path = dca.path and run = dca.run and reachable = dca.reachable and nodes = dca.nodes
     by unfold_locales auto
-  global_interpretation dca: automaton_trace dca alphabet initial transition rejecting "\<lambda> P w r p. fins P r"
+  global_interpretation dca: automaton_run dca alphabet initial transition rejecting "\<lambda> P w r p. fins P r"
     defines language = dca.language
     by standard
 
