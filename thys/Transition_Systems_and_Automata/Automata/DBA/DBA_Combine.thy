@@ -7,8 +7,9 @@ begin
   global_interpretation degeneralization: automaton_degeneralization_trace
     dgba dgba.alphabet dgba.initial dgba.transition dgba.accepting "\<lambda> P w r p. gen infs P r"
     dba dba.alphabet dba.initial dba.transition dba.accepting "\<lambda> P w r p. infs P r"
+    fst id
     defines degeneralize = degeneralization.degeneralize
-    by unfold_locales auto
+    by (unfold_locales) (auto simp flip: sscan_smap)
 
   lemmas degeneralize_language[simp] = degeneralization.degeneralize_language[folded DBA.language_def]
   lemmas degeneralize_nodes_finite[iff] = degeneralization.degeneralize_nodes_finite[folded DBA.nodes_def]
