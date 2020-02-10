@@ -9,7 +9,22 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>31 Jan 2020 00:00:00 +0000</pubDate>
+    <pubDate>01 Feb 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Arithmetic progressions and relative primes</title>
+              <link>https://www.isa-afp.org/entries/Arith_Prog_Rel_Primes.html</link>
+       <guid>https://www.isa-afp.org/entries/Arith_Prog_Rel_Primes.html</guid>
+       <dc:creator> José Manuel Rodríguez Caballero       </dc:creator>
+       <pubDate>01 Feb 2020 00:00:00 +0000</pubDate>
+       <description>
+This article provides a formalization of the solution obtained by the
+author of the Problem “ARITHMETIC PROGRESSIONS” from the
+&lt;a href=&#34;https://www.ocf.berkeley.edu/~wwu/riddles/putnam.shtml&#34;&gt;
+Putnam exam problems of 2002&lt;/a&gt;. The statement of the problem is
+as follows: For which integers &lt;em&gt;n&lt;/em&gt; &gt; 1 does the set of positive
+integers less than and relatively prime to &lt;em&gt;n&lt;/em&gt; constitute an
+arithmetic progression?</description>
+    </item>
     <item>
        <title>A Hierarchy of Algebras for Boolean Subsets</title>
               <link>https://www.isa-afp.org/entries/Subset_Boolean_Algebras.html</link>
@@ -541,17 +556,6 @@ formalisation: they can be solved with minimal use of libraries. The
 remaining three concern geometry and graph theory, which, in the
 author&#39;s opinion, are more difficult to formalise resp. require a
 more complex library.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Stellar Quorum Systems</title>
-              <link>https://www.isa-afp.org/entries/Stellar_Quorums.html</link>
-       <guid>https://www.isa-afp.org/entries/Stellar_Quorums.html</guid>
-       <dc:creator> Giuliano Losa       </dc:creator>
-       <pubDate>01 Aug 2019 00:00:00 +0000</pubDate>
-       <description>
-We formalize the static properties of personal Byzantine quorum
-systems (PBQSs) and Stellar quorum systems, as described in the paper
-``Stellar Consensus by Reduction&#39;&#39; (to appear at DISC 2019).</description>
     </item>
   </channel>
 </rss>
