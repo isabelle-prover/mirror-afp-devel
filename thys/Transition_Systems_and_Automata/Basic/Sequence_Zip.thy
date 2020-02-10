@@ -80,9 +80,16 @@ begin
 
   lemmas [simp] = szip_unfold
 
+  lemma smap_szip_same: "smap f (xs ||| xs) = smap (\<lambda> x. f (x, x)) xs" by (coinduction arbitrary: xs) (auto)
+
   lemma szip_smap[simp]: "smap fst zs ||| smap snd zs = zs" by (coinduction arbitrary: zs) (auto)
   lemma szip_smap_fst[simp]: "smap fst (xs ||| ys) = xs" by (coinduction arbitrary: xs ys) (auto)
   lemma szip_smap_snd[simp]: "smap snd (xs ||| ys) = ys" by (coinduction arbitrary: xs ys) (auto)
+
+  lemma szip_smap_both: "smap f xs ||| smap g ys = smap (map_prod f g) (xs ||| ys)" by (coinduction arbitrary: xs ys) (auto)
+  lemma szip_smap_left: "smap f xs ||| ys = smap (apfst f) (xs ||| ys)" by (coinduction arbitrary: xs ys) (auto)
+  lemma szip_smap_right: "xs ||| smap f ys = smap (apsnd f) (xs ||| ys)" by (coinduction arbitrary: xs ys) (auto)
+  lemmas szip_smap_fold = szip_smap_both szip_smap_left szip_smap_right
 
   lemma szip_sconst_smap_fst: "sconst a ||| xs = smap (Pair a) xs"
     by (coinduction arbitrary: xs) (auto)
