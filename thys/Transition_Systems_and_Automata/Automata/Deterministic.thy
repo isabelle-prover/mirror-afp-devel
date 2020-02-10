@@ -44,7 +44,33 @@ begin
 
   end
 
-  (* TODO: create analogous locale for DFAs (automaton_path) *)
+  locale automaton_path =
+    automaton automaton alphabet initial transition condition
+    for automaton :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition \<Rightarrow> 'automaton"
+    and alphabet :: "'automaton \<Rightarrow> 'label set"
+    and initial :: "'automaton \<Rightarrow> 'state"
+    and transition :: "'automaton \<Rightarrow> ('label, 'state) trans"
+    and condition :: "'automaton \<Rightarrow> 'condition"
+    +
+    fixes test :: "'condition \<Rightarrow> 'label list \<Rightarrow> 'state list \<Rightarrow> 'state \<Rightarrow> bool"
+  begin
+
+    definition language :: "'automaton \<Rightarrow> 'label list set" where
+      "language A \<equiv> {w. path A w (initial A) \<and> test (condition A) w (states A w (initial A)) (initial A)}"
+
+    lemma language[intro]:
+      assumes "path A w (initial A)" "test (condition A) w (states A w (initial A)) (initial A)"
+      shows "w \<in> language A"
+      using assms unfolding language_def by auto
+    lemma language_elim[elim]:
+      assumes "w \<in> language A"
+      obtains "path A w (initial A)" "test (condition A) w (states A w (initial A)) (initial A)"
+      using assms unfolding language_def by auto
+
+    lemma language_alphabet: "language A \<subseteq> lists (alphabet A)" using path_alt_def by auto
+
+  end
+
   locale automaton_run =
     automaton automaton alphabet initial transition condition
     for automaton :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition \<Rightarrow> 'automaton"
@@ -58,7 +84,7 @@ begin
 
     definition language :: "'automaton \<Rightarrow> 'label stream set" where
       "language A \<equiv> {w. run A w (initial A) \<and> test (condition A) w (trace A w (initial A)) (initial A)}"
-  
+
     lemma language[intro]:
       assumes "run A w (initial A)" "test (condition A) w (trace A w (initial A)) (initial A)"
       shows "w \<in> language A"
@@ -67,7 +93,7 @@ begin
       assumes "w \<in> language A"
       obtains "run A w (initial A)" "test (condition A) w (trace A w (initial A)) (initial A)"
       using assms unfolding language_def by auto
-  
+
     lemma language_alphabet: "language A \<subseteq> streams (alphabet A)" using run_alt_def by auto
 
   end
@@ -340,6 +366,83 @@ begin
       have 2: "card (a.nodes A) * card (b.nodes B) = 0" using False by auto
       show ?thesis using 1 2 by simp
     qed
+
+  end
+
+  locale automaton_intersection_path =
+    automaton_combination
+      automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
+      automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
+      automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 condition +
+    a: automaton_path automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1 +
+    b: automaton_path automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2 +
+    c: automaton_path automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 test\<^sub>3
+    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state\<^sub>1 \<Rightarrow> ('label, 'state\<^sub>1) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
+    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
+    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state\<^sub>1"
+    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state\<^sub>1) trans"
+    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
+    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'label list \<Rightarrow> 'state\<^sub>1 list \<Rightarrow> 'state\<^sub>1 \<Rightarrow> bool"
+    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
+    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
+    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state\<^sub>2"
+    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans"
+    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
+    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'label list \<Rightarrow> 'state\<^sub>2 list \<Rightarrow> 'state\<^sub>2 \<Rightarrow> bool"
+    and automaton\<^sub>3 :: "'label set \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans \<Rightarrow>
+      'condition\<^sub>3 \<Rightarrow> 'automaton\<^sub>3"
+    and alphabet\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'label set"
+    and initial\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2"
+    and transition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans"
+    and condition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'condition\<^sub>3"
+    and test\<^sub>3 :: "'condition\<^sub>3 \<Rightarrow> 'label list \<Rightarrow> ('state\<^sub>1 \<times> 'state\<^sub>2) list \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> bool"
+    and condition :: "'condition\<^sub>1 \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'condition\<^sub>3"
+    +
+    assumes test[iff]: "length r = length s \<Longrightarrow>
+      test\<^sub>3 (condition c\<^sub>1 c\<^sub>2) w (r || s) (p, q) \<longleftrightarrow> test\<^sub>1 c\<^sub>1 w r p \<and> test\<^sub>2 c\<^sub>2 w s q"
+  begin
+
+    lemma combine_language[simp]: "c.language (combine A B) = a.language A \<inter> b.language B" by force
+
+  end
+
+  locale automaton_union_path =
+    automaton_combination
+      automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
+      automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
+      automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 condition +
+    a: automaton_path automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1 +
+    b: automaton_path automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2 +
+    c: automaton_path automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 test\<^sub>3
+    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state\<^sub>1 \<Rightarrow> ('label, 'state\<^sub>1) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
+    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
+    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state\<^sub>1"
+    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state\<^sub>1) trans"
+    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
+    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'label list \<Rightarrow> 'state\<^sub>1 list \<Rightarrow> 'state\<^sub>1 \<Rightarrow> bool"
+    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
+    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
+    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state\<^sub>2"
+    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans"
+    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
+    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'label list \<Rightarrow> 'state\<^sub>2 list \<Rightarrow> 'state\<^sub>2 \<Rightarrow> bool"
+    and automaton\<^sub>3 :: "'label set \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans \<Rightarrow>
+      'condition\<^sub>3 \<Rightarrow> 'automaton\<^sub>3"
+    and alphabet\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'label set"
+    and initial\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2"
+    and transition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans"
+    and condition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'condition\<^sub>3"
+    and test\<^sub>3 :: "'condition\<^sub>3 \<Rightarrow> 'label list \<Rightarrow> ('state\<^sub>1 \<times> 'state\<^sub>2) list \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> bool"
+    and condition :: "'condition\<^sub>1 \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'condition\<^sub>3"
+    +
+    assumes test[iff]: "length r = length s \<Longrightarrow>
+      test\<^sub>3 (condition c\<^sub>1 c\<^sub>2) w (r || s) (p, q) \<longleftrightarrow> test\<^sub>1 c\<^sub>1 w r p \<or> test\<^sub>2 c\<^sub>2 w s q"
+  begin
+
+    lemma combine_language[simp]:
+      assumes "alphabet\<^sub>1 A = alphabet\<^sub>2 B"
+      shows "c.language (combine A B) = a.language A \<union> b.language B"
+      using assms by (force simp: a.path_alt_def b.path_alt_def)
 
   end
 
