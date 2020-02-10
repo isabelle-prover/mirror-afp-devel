@@ -9,7 +9,7 @@ begin
     nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P r"
     fst id
     defines degeneralize = degeneralization.degeneralize
-    by unfold_locales auto
+    by (unfold_locales) (auto simp flip: sscan_smap)
 
   lemmas degeneralize_language[simp] = degeneralization.degeneralize_language[folded NBA.language_def]
   lemmas degeneralize_nodes_finite[iff] = degeneralization.degeneralize_nodes_finite[folded NBA.nodes_def]
@@ -24,6 +24,17 @@ begin
 
   lemmas intersect'_language[simp] = intersection.intersect_language[folded NGBA.language_def]
   lemmas intersect'_nodes_finite[intro] = intersection.intersect_nodes_finite[folded NGBA.nodes_def]
+
+  global_interpretation union: automaton_union_run
+    nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P r"
+    nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P r"
+    nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P r"
+    case_sum
+    defines union = union.union
+    by (unfold_locales) (auto simp: comp_def)
+
+  lemmas union_language = union.union_language
+  lemmas union_nodes_finite = union.union_nodes_finite
 
   global_interpretation intersection_list: automaton_intersection_list_run
     nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P r"
@@ -47,17 +58,6 @@ begin
 
   lemmas intersect_list'_language[simp] = intersection_list.intersect_language[folded NGBA.language_def]
   lemmas intersect_list'_nodes_finite[intro] = intersection_list.intersect_nodes_finite[folded NGBA.nodes_def]
-
-  global_interpretation union: automaton_union_run
-    nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P r"
-    nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P r"
-    nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P r"
-    case_sum
-    defines union = union.union
-    by (unfold_locales) (auto simp: comp_def)
-
-  lemmas union_language = union.union_language
-  lemmas union_nodes_finite = union.union_nodes_finite
 
   global_interpretation union_list: automaton_union_list_run
     nba nba.alphabet nba.initial nba.transition nba.accepting "\<lambda> P w r p. infs P r"

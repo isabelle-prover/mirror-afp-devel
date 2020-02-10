@@ -29,15 +29,12 @@ begin
       defines path' = path and run' = run and reachable' = reachable and nodes' = nodes
       by this
 
-    (* TODO: maybe this should be stated in terms of the lists and streams constants (adjust language_alphabet proof) *)
-    lemma path_alt_def: "path A w p \<longleftrightarrow> set w \<subseteq> alphabet A"
-    unfolding lists_iff_set[symmetric]
+    lemma path_alt_def: "path A w p \<longleftrightarrow> w \<in> lists (alphabet A)"
     proof
       show "w \<in> lists (alphabet A)" if "path A w p" using that by (induct arbitrary: p) (auto)
       show "path A w p" if "w \<in> lists (alphabet A)" using that by (induct arbitrary: p) (auto)
     qed
-    lemma run_alt_def: "run A w p \<longleftrightarrow> sset w \<subseteq> alphabet A"
-    unfolding streams_iff_sset[symmetric]
+    lemma run_alt_def: "run A w p \<longleftrightarrow> w \<in> streams (alphabet A)"
     proof
       show "w \<in> streams (alphabet A)" if "run A w p"
         using that by (coinduction arbitrary: w p) (force elim: run.cases)
@@ -71,8 +68,7 @@ begin
       obtains "run A w (initial A)" "test (condition A) w (trace A w (initial A)) (initial A)"
       using assms unfolding language_def by auto
   
-    lemma language_alphabet: "language A \<subseteq> streams (alphabet A)"
-      unfolding language_def run_alt_def using sset_streams by auto
+    lemma language_alphabet: "language A \<subseteq> streams (alphabet A)" using run_alt_def by auto
 
   end
 
@@ -445,28 +441,28 @@ begin
       "combine AA \<equiv> automaton\<^sub>2
         (\<Inter> (alphabet\<^sub>1 ` set AA))
         (map initial\<^sub>1 AA)
-        (\<lambda> a pp. map2 (\<lambda> A p. transition\<^sub>1 A a p) AA pp)
+        (\<lambda> a ps. map2 (\<lambda> A p. transition\<^sub>1 A a p) AA ps)
         (condition (map condition\<^sub>1 AA))"
 
     lemma combine_simps[simp]:
       "alphabet\<^sub>2 (combine AA) = \<Inter> (alphabet\<^sub>1 ` set AA)"
       "initial\<^sub>2 (combine AA) = map initial\<^sub>1 AA"
-      "transition\<^sub>2 (combine AA) a pp = map2 (\<lambda> A p. transition\<^sub>1 A a p) AA pp"
+      "transition\<^sub>2 (combine AA) a ps = map2 (\<lambda> A p. transition\<^sub>1 A a p) AA ps"
       "condition\<^sub>2 (combine AA) = condition (map condition\<^sub>1 AA)"
       unfolding combine_def by auto
 
     (* TODO: get rid of indices, express this using stranspose and listset *)
     lemma combine_trace_smap:
-      assumes "length pp = length AA" "k < length AA"
-      shows "smap (\<lambda> pp. pp ! k) (b.trace (combine AA) w pp) = a.trace (AA ! k) w (pp ! k)"
-      using assms by (coinduction arbitrary: w pp) (force)
+      assumes "length ps = length AA" "k < length AA"
+      shows "smap (\<lambda> ps. ps ! k) (b.trace (combine AA) w ps) = a.trace (AA ! k) w (ps ! k)"
+      using assms by (coinduction arbitrary: w ps) (force)
     lemma combine_nodes_length:
-      assumes "pp \<in> b.nodes (combine AA)"
-      shows "length pp = length AA"
+      assumes "ps \<in> b.nodes (combine AA)"
+      shows "length ps = length AA"
       using assms by induct auto
     lemma combine_nodes[intro]:
-      assumes "pp \<in> b.nodes (combine AA)" "k < length pp"
-      shows "pp ! k \<in> a.nodes (AA ! k)"
+      assumes "ps \<in> b.nodes (combine AA)" "k < length ps"
+      shows "ps ! k \<in> a.nodes (AA ! k)"
       using assms by induct auto
 
     lemma combine_nodes_finite[intro]:
@@ -521,7 +517,7 @@ begin
 
     lemma combine_language[simp]: "b.language (combine AA) = \<Inter> (a.language ` set AA)"
       unfolding a.language_def b.language_def
-      unfolding a.run_alt_def b.run_alt_def
+      unfolding a.run_alt_def b.run_alt_def streams_iff_sset
       by (fastforce simp: set_conv_nth combine_trace_smap)
 
   end
@@ -556,7 +552,7 @@ begin
       shows "b.language (combine AA) = \<Union> (a.language ` set AA)"
       using assms
       unfolding a.language_def b.language_def
-      unfolding a.run_alt_def b.run_alt_def
+      unfolding a.run_alt_def b.run_alt_def streams_iff_sset
       by (fastforce simp: set_conv_nth combine_trace_smap)
 
   end

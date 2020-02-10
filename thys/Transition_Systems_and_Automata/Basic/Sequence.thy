@@ -276,6 +276,8 @@ begin
     then have "a \<in> A" for a by simp
     then show "A = UNIV" by auto
   qed
+  lemma streams_int[simp]: "streams (A \<inter> B) = streams A \<inter> streams B" by (auto iff: streams_iff_sset)
+  lemma streams_Int[simp]: "streams (\<Inter> S) = \<Inter> (streams ` S)" by (auto iff: streams_iff_sset)
 
   lemma pred_list_listsp[pred_set_conv]: "list_all = listsp"
     unfolding list.pred_set by auto
