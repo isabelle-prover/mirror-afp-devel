@@ -660,4 +660,91 @@ begin
 
   end
 
+  locale automaton_complement =
+    a: automaton automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 +
+    b: automaton automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
+    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
+    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
+    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state"
+    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
+    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
+    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
+    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
+    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state"
+    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state) trans"
+    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
+    +
+    fixes condition :: "'condition\<^sub>1 \<Rightarrow> 'condition\<^sub>2"
+  begin
+
+    definition complement :: "'automaton\<^sub>1 \<Rightarrow> 'automaton\<^sub>2" where
+      "complement A \<equiv> automaton\<^sub>2 (alphabet\<^sub>1 A) (initial\<^sub>1 A) (transition\<^sub>1 A) (condition (condition\<^sub>1 A))"
+
+    lemma combine_simps[simp]:
+      "alphabet\<^sub>2 (complement A) = alphabet\<^sub>1 A"
+      "initial\<^sub>2 (complement A) = initial\<^sub>1 A"
+      "transition\<^sub>2 (complement A) = transition\<^sub>1 A"
+      "condition\<^sub>2 (complement A) = condition (condition\<^sub>1 A)"
+      unfolding complement_def by auto
+
+  end
+
+  locale automaton_complement_path =
+    automaton_complement
+      automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
+      automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
+      condition +
+    a: automaton_path automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1 +
+    b: automaton_path automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2
+    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
+    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
+    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state"
+    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
+    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
+    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'label list \<Rightarrow> 'state list \<Rightarrow> 'state \<Rightarrow> bool"
+    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
+    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
+    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state"
+    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state) trans"
+    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
+    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'label list \<Rightarrow> 'state list \<Rightarrow> 'state \<Rightarrow> bool"
+    and condition :: "'condition\<^sub>1 \<Rightarrow> 'condition\<^sub>2"
+    +
+    assumes test[iff]: "test\<^sub>2 (condition c) w r p \<longleftrightarrow> \<not> test\<^sub>1 c w r p"
+  begin
+
+    lemma complement_language[simp]: "b.language (complement A) = lists (alphabet\<^sub>1 A) - a.language A"
+      unfolding a.language_def b.language_def a.path_alt_def b.path_alt_def by auto
+
+  end
+
+  locale automaton_complement_run =
+    automaton_complement
+      automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
+      automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
+      condition +
+    a: automaton_run automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1 +
+    b: automaton_run automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2
+    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
+    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
+    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state"
+    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
+    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
+    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'label stream \<Rightarrow> 'state stream \<Rightarrow> 'state \<Rightarrow> bool"
+    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
+    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
+    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state"
+    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state) trans"
+    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
+    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'label stream \<Rightarrow> 'state stream \<Rightarrow> 'state \<Rightarrow> bool"
+    and condition :: "'condition\<^sub>1 \<Rightarrow> 'condition\<^sub>2"
+    +
+    assumes test[iff]: "test\<^sub>2 (condition c) w r p \<longleftrightarrow> \<not> test\<^sub>1 c w r p"
+  begin
+
+    lemma complement_language[simp]: "b.language (complement A) = streams (alphabet\<^sub>1 A) - a.language A"
+      unfolding a.language_def b.language_def a.run_alt_def b.run_alt_def by auto
+
+  end
+
 end
