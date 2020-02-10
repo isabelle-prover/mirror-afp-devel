@@ -400,7 +400,7 @@ where
 
 lemma dra_set_alphabet_language:
   "\<Sigma> \<subseteq> alphabet \<AA> \<Longrightarrow> language (dra_set_alphabet \<AA> \<Sigma>) = language \<AA> \<inter> {s. sset s \<subseteq> \<Sigma>}"
-  by (auto simp add: dra_set_alphabet_def dra.language_def set_eq_iff dra.run_alt_def)
+  by (auto simp add: dra_set_alphabet_def dra.language_def set_eq_iff dra.run_alt_def streams_iff_sset)
 
 lemma dra_set_alphabet_alphabet[simp]:
   "alphabet (dra_set_alphabet \<AA> \<Sigma>) = \<Sigma>"
