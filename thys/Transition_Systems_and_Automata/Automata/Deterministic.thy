@@ -1,3 +1,5 @@
+section \<open>Deterministic Automata\<close>
+
 theory Deterministic
 imports
   "../Transition_Systems/Transition_System"
@@ -6,15 +8,9 @@ imports
   "../Basic/Degeneralization"
 begin
 
-  type_synonym ('label, 'state) trans = "'label \<Rightarrow> 'state \<Rightarrow> 'state"
-
-  (* TODO: is there a way to be less verbose in these locales? do we need to specify all the types? *)
   locale automaton =
-    fixes automaton :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition \<Rightarrow> 'automaton"
-    fixes alphabet :: "'automaton \<Rightarrow> 'label set"
-    fixes initial :: "'automaton \<Rightarrow> 'state"
-    fixes transition :: "'automaton \<Rightarrow> ('label, 'state) trans"
-    fixes condition :: "'automaton \<Rightarrow> 'condition"
+    fixes automaton :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label \<Rightarrow> 'state \<Rightarrow> 'state) \<Rightarrow> 'condition \<Rightarrow> 'automaton"
+    fixes alphabet initial transition condition
     assumes automaton[simp]: "automaton (alphabet A) (initial A) (transition A) (condition A) = A"
     assumes alphabet[simp]: "alphabet (automaton a i t c) = a"
     assumes initial[simp]: "initial (automaton a i t c) = i"
@@ -46,11 +42,8 @@ begin
 
   locale automaton_path =
     automaton automaton alphabet initial transition condition
-    for automaton :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition \<Rightarrow> 'automaton"
-    and alphabet :: "'automaton \<Rightarrow> 'label set"
-    and initial :: "'automaton \<Rightarrow> 'state"
-    and transition :: "'automaton \<Rightarrow> ('label, 'state) trans"
-    and condition :: "'automaton \<Rightarrow> 'condition"
+    for automaton :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label \<Rightarrow> 'state \<Rightarrow> 'state) \<Rightarrow> 'condition \<Rightarrow> 'automaton"
+    and alphabet initial transition condition
     +
     fixes test :: "'condition \<Rightarrow> 'label list \<Rightarrow> 'state list \<Rightarrow> 'state \<Rightarrow> bool"
   begin
@@ -73,11 +66,8 @@ begin
 
   locale automaton_run =
     automaton automaton alphabet initial transition condition
-    for automaton :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition \<Rightarrow> 'automaton"
-    and alphabet :: "'automaton \<Rightarrow> 'label set"
-    and initial :: "'automaton \<Rightarrow> 'state"
-    and transition :: "'automaton \<Rightarrow> ('label, 'state) trans"
-    and condition :: "'automaton \<Rightarrow> 'condition"
+    for automaton :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label \<Rightarrow> 'state \<Rightarrow> 'state) \<Rightarrow> 'condition \<Rightarrow> 'automaton"
+    and alphabet initial transition condition
     +
     fixes test :: "'condition \<Rightarrow> 'label stream \<Rightarrow> 'state stream \<Rightarrow> 'state \<Rightarrow> bool"
   begin
@@ -101,16 +91,10 @@ begin
   locale automaton_degeneralization =
     a: automaton automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 +
     b: automaton automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
-    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'item pred gen \<Rightarrow> 'automaton\<^sub>1"
-    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
-    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state"
-    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
-    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'item pred gen"
-    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state degen \<Rightarrow> ('label, 'state degen) trans \<Rightarrow> 'item_degen pred \<Rightarrow> 'automaton\<^sub>2"
-    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
-    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state degen"
-    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state degen) trans"
-    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'item_degen pred"
+    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label \<Rightarrow> 'state \<Rightarrow> 'state) \<Rightarrow> 'item pred gen \<Rightarrow> 'automaton\<^sub>1"
+    and alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
+    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state degen \<Rightarrow> ('label \<Rightarrow> 'state degen \<Rightarrow> 'state degen) \<Rightarrow> 'item_degen pred \<Rightarrow> 'automaton\<^sub>2"
+    and alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
     +
     fixes item :: "'state \<times> 'label \<times> 'state \<Rightarrow> 'item"
     fixes translate :: "'item_degen \<Rightarrow> 'item degen"
@@ -218,20 +202,9 @@ begin
       item translate +
     a: automaton_run automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1 +
     b: automaton_run automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2
-    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'item pred gen \<Rightarrow> 'automaton\<^sub>1"
-    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
-    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state"
-    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
-    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'item pred gen"
-    and test\<^sub>1 :: "'item pred gen \<Rightarrow> 'label stream \<Rightarrow> 'state stream \<Rightarrow> 'state \<Rightarrow> bool"
-    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state degen \<Rightarrow> ('label, 'state degen) trans \<Rightarrow> 'item_degen pred \<Rightarrow> 'automaton\<^sub>2"
-    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
-    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state degen"
-    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state degen) trans"
-    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'item_degen pred"
-    and test\<^sub>2 :: "'item_degen pred \<Rightarrow> 'label stream \<Rightarrow> 'state degen stream \<Rightarrow> 'state degen \<Rightarrow> bool"
-    and item :: "'state \<times> 'label \<times> 'state \<Rightarrow> 'item"
-    and translate :: "'item_degen \<Rightarrow> 'item degen"
+    for automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1
+    and automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2
+    and item translate
     +
     assumes test[iff]: "test\<^sub>2 (degen cs \<circ> translate) w
       (r ||| sscan (count cs \<circ> item) (p ## r ||| w ||| r) k) (p, k) \<longleftrightarrow> test\<^sub>1 cs w r p"
@@ -245,22 +218,12 @@ begin
     a: automaton automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 +
     b: automaton automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 +
     c: automaton automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3
-    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state\<^sub>1 \<Rightarrow> ('label, 'state\<^sub>1) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
-    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
-    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state\<^sub>1"
-    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state\<^sub>1) trans"
-    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
-    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
-    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
-    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state\<^sub>2"
-    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans"
-    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
-    and automaton\<^sub>3 :: "'label set \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans \<Rightarrow>
-      'condition\<^sub>3 \<Rightarrow> 'automaton\<^sub>3"
-    and alphabet\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'label set"
-    and initial\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2"
-    and transition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans"
-    and condition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'condition\<^sub>3"
+    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state\<^sub>1 \<Rightarrow> ('label \<Rightarrow> 'state\<^sub>1 \<Rightarrow> 'state\<^sub>1) \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
+    and alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
+    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state\<^sub>2 \<Rightarrow> ('label \<Rightarrow> 'state\<^sub>2 \<Rightarrow> 'state\<^sub>2) \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
+    and alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
+    and automaton\<^sub>3 :: "'label set \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> ('label \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2) \<Rightarrow> 'condition\<^sub>3 \<Rightarrow> 'automaton\<^sub>3"
+    and alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3
     +
     fixes condition :: "'condition\<^sub>1 \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'condition\<^sub>3"
   begin
@@ -373,30 +336,15 @@ begin
     automaton_combination
       automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
       automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
-      automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 condition +
+      automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3
+      condition +
     a: automaton_path automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1 +
     b: automaton_path automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2 +
     c: automaton_path automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 test\<^sub>3
-    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state\<^sub>1 \<Rightarrow> ('label, 'state\<^sub>1) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
-    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
-    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state\<^sub>1"
-    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state\<^sub>1) trans"
-    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
-    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'label list \<Rightarrow> 'state\<^sub>1 list \<Rightarrow> 'state\<^sub>1 \<Rightarrow> bool"
-    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
-    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
-    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state\<^sub>2"
-    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans"
-    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
-    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'label list \<Rightarrow> 'state\<^sub>2 list \<Rightarrow> 'state\<^sub>2 \<Rightarrow> bool"
-    and automaton\<^sub>3 :: "'label set \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans \<Rightarrow>
-      'condition\<^sub>3 \<Rightarrow> 'automaton\<^sub>3"
-    and alphabet\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'label set"
-    and initial\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2"
-    and transition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans"
-    and condition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'condition\<^sub>3"
-    and test\<^sub>3 :: "'condition\<^sub>3 \<Rightarrow> 'label list \<Rightarrow> ('state\<^sub>1 \<times> 'state\<^sub>2) list \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> bool"
-    and condition :: "'condition\<^sub>1 \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'condition\<^sub>3"
+    for automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1
+    and automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2
+    and automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 test\<^sub>3
+    and condition
     +
     assumes test[iff]: "length r = length s \<Longrightarrow>
       test\<^sub>3 (condition c\<^sub>1 c\<^sub>2) w (r || s) (p, q) \<longleftrightarrow> test\<^sub>1 c\<^sub>1 w r p \<and> test\<^sub>2 c\<^sub>2 w s q"
@@ -410,30 +358,15 @@ begin
     automaton_combination
       automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
       automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
-      automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 condition +
+      automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3
+      condition +
     a: automaton_path automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1 +
     b: automaton_path automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2 +
     c: automaton_path automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 test\<^sub>3
-    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state\<^sub>1 \<Rightarrow> ('label, 'state\<^sub>1) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
-    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
-    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state\<^sub>1"
-    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state\<^sub>1) trans"
-    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
-    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'label list \<Rightarrow> 'state\<^sub>1 list \<Rightarrow> 'state\<^sub>1 \<Rightarrow> bool"
-    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
-    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
-    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state\<^sub>2"
-    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans"
-    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
-    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'label list \<Rightarrow> 'state\<^sub>2 list \<Rightarrow> 'state\<^sub>2 \<Rightarrow> bool"
-    and automaton\<^sub>3 :: "'label set \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans \<Rightarrow>
-      'condition\<^sub>3 \<Rightarrow> 'automaton\<^sub>3"
-    and alphabet\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'label set"
-    and initial\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2"
-    and transition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans"
-    and condition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'condition\<^sub>3"
-    and test\<^sub>3 :: "'condition\<^sub>3 \<Rightarrow> 'label list \<Rightarrow> ('state\<^sub>1 \<times> 'state\<^sub>2) list \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> bool"
-    and condition :: "'condition\<^sub>1 \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'condition\<^sub>3"
+    for automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1
+    and automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2
+    and automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 test\<^sub>3
+    and condition
     +
     assumes test[iff]: "length r = length s \<Longrightarrow>
       test\<^sub>3 (condition c\<^sub>1 c\<^sub>2) w (r || s) (p, q) \<longleftrightarrow> test\<^sub>1 c\<^sub>1 w r p \<or> test\<^sub>2 c\<^sub>2 w s q"
@@ -450,30 +383,15 @@ begin
     automaton_combination
       automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
       automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
-      automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 condition +
+      automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3
+      condition +
     a: automaton_run automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1 +
     b: automaton_run automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2 +
     c: automaton_run automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 test\<^sub>3
-    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state\<^sub>1 \<Rightarrow> ('label, 'state\<^sub>1) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
-    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
-    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state\<^sub>1"
-    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state\<^sub>1) trans"
-    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
-    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'label stream \<Rightarrow> 'state\<^sub>1 stream \<Rightarrow> 'state\<^sub>1 \<Rightarrow> bool"
-    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
-    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
-    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state\<^sub>2"
-    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans"
-    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
-    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'label stream \<Rightarrow> 'state\<^sub>2 stream \<Rightarrow> 'state\<^sub>2 \<Rightarrow> bool"
-    and automaton\<^sub>3 :: "'label set \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans \<Rightarrow>
-      'condition\<^sub>3 \<Rightarrow> 'automaton\<^sub>3"
-    and alphabet\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'label set"
-    and initial\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2"
-    and transition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans"
-    and condition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'condition\<^sub>3"
-    and test\<^sub>3 :: "'condition\<^sub>3 \<Rightarrow> 'label stream \<Rightarrow> ('state\<^sub>1 \<times> 'state\<^sub>2) stream \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> bool"
-    and condition :: "'condition\<^sub>1 \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'condition\<^sub>3"
+    for automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1
+    and automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2
+    and automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 test\<^sub>3
+    and condition
     +
     assumes test[iff]: "test\<^sub>3 (condition c\<^sub>1 c\<^sub>2) w (r ||| s) (p, q) \<longleftrightarrow> test\<^sub>1 c\<^sub>1 w r p \<and> test\<^sub>2 c\<^sub>2 w s q"
   begin
@@ -486,30 +404,15 @@ begin
     automaton_combination
       automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
       automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
-      automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 condition +
+      automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3
+      condition +
     a: automaton_run automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1 +
     b: automaton_run automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2 +
     c: automaton_run automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 test\<^sub>3
-    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state\<^sub>1 \<Rightarrow> ('label, 'state\<^sub>1) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
-    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
-    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state\<^sub>1"
-    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state\<^sub>1) trans"
-    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
-    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'label stream \<Rightarrow> 'state\<^sub>1 stream \<Rightarrow> 'state\<^sub>1 \<Rightarrow> bool"
-    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
-    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
-    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state\<^sub>2"
-    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>2) trans"
-    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
-    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'label stream \<Rightarrow> 'state\<^sub>2 stream \<Rightarrow> 'state\<^sub>2 \<Rightarrow> bool"
-    and automaton\<^sub>3 :: "'label set \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans \<Rightarrow>
-      'condition\<^sub>3 \<Rightarrow> 'automaton\<^sub>3"
-    and alphabet\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'label set"
-    and initial\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2"
-    and transition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) trans"
-    and condition\<^sub>3 :: "'automaton\<^sub>3 \<Rightarrow> 'condition\<^sub>3"
-    and test\<^sub>3 :: "'condition\<^sub>3 \<Rightarrow> 'label stream \<Rightarrow> ('state\<^sub>1 \<times> 'state\<^sub>2) stream \<Rightarrow> 'state\<^sub>1 \<times> 'state\<^sub>2 \<Rightarrow> bool"
-    and condition :: "'condition\<^sub>1 \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'condition\<^sub>3"
+    for automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1
+    and automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2
+    and automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3 test\<^sub>3
+    and condition
     +
     assumes test[iff]: "test\<^sub>3 (condition c\<^sub>1 c\<^sub>2) w (r ||| s) (p, q) \<longleftrightarrow> test\<^sub>1 c\<^sub>1 w r p \<or> test\<^sub>2 c\<^sub>2 w s q"
   begin
@@ -525,17 +428,10 @@ begin
   locale automaton_combination_list =
     a: automaton automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 +
     b: automaton automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
-    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
-    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
-    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state"
-    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
-    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
-    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state list \<Rightarrow> ('label, 'state list) trans \<Rightarrow>
-      'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
-    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
-    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state list"
-    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state list) trans"
-    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
+    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label \<Rightarrow> 'state \<Rightarrow> 'state) \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
+    and alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
+    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state list \<Rightarrow> ('label \<Rightarrow> 'state list \<Rightarrow> 'state list) \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
+    and alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
     +
     fixes condition :: "'condition\<^sub>1 list \<Rightarrow> 'condition\<^sub>2"
   begin
@@ -559,34 +455,23 @@ begin
       assumes "length ps = length AA" "k < length AA"
       shows "smap (\<lambda> ps. ps ! k) (b.trace (combine AA) w ps) = a.trace (AA ! k) w (ps ! k)"
       using assms by (coinduction arbitrary: w ps) (force)
-    lemma combine_nodes_length:
-      assumes "ps \<in> b.nodes (combine AA)"
-      shows "length ps = length AA"
-      using assms by induct auto
-    lemma combine_nodes[intro]:
-      assumes "ps \<in> b.nodes (combine AA)" "k < length ps"
-      shows "ps ! k \<in> a.nodes (AA ! k)"
-      using assms by induct auto
+
+    lemma combine_nodes: "b.nodes (combine AA) \<subseteq> listset (map a.nodes AA)"
+    proof
+      show "ps \<in> listset (map a.nodes AA)" if "ps \<in> b.nodes (combine AA)" for ps
+        using that by (induct) (auto simp: listset_member list_all2_conv_all_nth)
+    qed
 
     lemma combine_nodes_finite[intro]:
       assumes "list_all (finite \<circ> a.nodes) AA"
       shows "finite (b.nodes (combine AA))"
-    proof (rule finite_subset)
-      (* TODO: this is used more than once, make top level theorem *)
-      show "b.nodes (combine AA) \<subseteq> listset (map a.nodes AA)"
-        by (force simp: listset_member list_all2_conv_all_nth combine_nodes_length)
-      show "finite (listset (map a.nodes AA))" using list.pred_map assms by auto
-    qed
+      using list.pred_map combine_nodes assms by (blast dest: finite_subset)
     lemma combine_nodes_card:
       assumes "list_all (finite \<circ> a.nodes) AA"
       shows "card (b.nodes (combine AA)) \<le> prod_list (map (card \<circ> a.nodes) AA)"
     proof -
       have "card (b.nodes (combine AA)) \<le> card (listset (map a.nodes AA))"
-      proof (rule card_mono)
-        show "finite (listset (map a.nodes AA))" using list.pred_map assms by auto
-        show "b.nodes (combine AA) \<subseteq> listset (map a.nodes AA)"
-          by (force simp: listset_member list_all2_conv_all_nth combine_nodes_length)
-      qed
+        using list.pred_map combine_nodes assms by (blast intro: card_mono)
       also have "\<dots> = prod_list (map (card \<circ> a.nodes) AA)" by simp
       finally show ?thesis by this
     qed
@@ -596,23 +481,13 @@ begin
   locale automaton_intersection_list_run =
     automaton_combination_list
       automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
-      automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 condition +
+      automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
+      condition +
     a: automaton_run automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1 +
     b: automaton_run automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2
-    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
-    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
-    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state"
-    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
-    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
-    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'label stream \<Rightarrow> 'state stream \<Rightarrow> 'state \<Rightarrow> bool"
-    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state list \<Rightarrow> ('label, 'state list) trans \<Rightarrow>
-      'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
-    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
-    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state list"
-    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state list) trans"
-    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
-    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'label stream \<Rightarrow> 'state list stream \<Rightarrow> 'state list \<Rightarrow> bool"
-    and condition :: "'condition\<^sub>1 list \<Rightarrow> 'condition\<^sub>2"
+    for automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1
+    and automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2
+    and condition
     +
     assumes test[iff]: "test\<^sub>2 (condition cs) w rs ps \<longleftrightarrow>
       (\<forall> k < length cs. test\<^sub>1 (cs ! k) w (smap (\<lambda> ps. ps ! k) rs) (ps ! k))"
@@ -628,23 +503,13 @@ begin
   locale automaton_union_list_run =
     automaton_combination_list
       automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
-      automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 condition +
+      automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
+      condition +
     a: automaton_run automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1 +
     b: automaton_run automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2
-    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
-    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
-    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state"
-    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
-    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
-    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'label stream \<Rightarrow> 'state stream \<Rightarrow> 'state \<Rightarrow> bool"
-    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state list \<Rightarrow> ('label, 'state list) trans \<Rightarrow>
-      'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
-    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
-    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state list"
-    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state list) trans"
-    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
-    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'label stream \<Rightarrow> 'state list stream \<Rightarrow> 'state list \<Rightarrow> bool"
-    and condition :: "'condition\<^sub>1 list \<Rightarrow> 'condition\<^sub>2"
+    for automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1
+    and automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2
+    and condition
     +
     assumes test[iff]: "test\<^sub>2 (condition cs) w rs ps \<longleftrightarrow>
       (\<exists> k < length cs. test\<^sub>1 (cs ! k) w (smap (\<lambda> ps. ps ! k) rs) (ps ! k))"
@@ -663,16 +528,10 @@ begin
   locale automaton_complement =
     a: automaton automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 +
     b: automaton automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
-    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
-    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
-    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state"
-    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
-    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
-    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
-    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
-    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state"
-    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state) trans"
-    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
+    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label \<Rightarrow> 'state \<Rightarrow> 'state) \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
+    and alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
+    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label \<Rightarrow> 'state \<Rightarrow> 'state) \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
+    and alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
     +
     fixes condition :: "'condition\<^sub>1 \<Rightarrow> 'condition\<^sub>2"
   begin
@@ -696,19 +555,9 @@ begin
       condition +
     a: automaton_path automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1 +
     b: automaton_path automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2
-    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
-    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
-    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state"
-    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
-    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
-    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'label list \<Rightarrow> 'state list \<Rightarrow> 'state \<Rightarrow> bool"
-    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
-    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
-    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state"
-    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state) trans"
-    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
-    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'label list \<Rightarrow> 'state list \<Rightarrow> 'state \<Rightarrow> bool"
-    and condition :: "'condition\<^sub>1 \<Rightarrow> 'condition\<^sub>2"
+    for automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1
+    and automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2
+    and condition
     +
     assumes test[iff]: "test\<^sub>2 (condition c) w r p \<longleftrightarrow> \<not> test\<^sub>1 c w r p"
   begin
@@ -725,19 +574,9 @@ begin
       condition +
     a: automaton_run automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1 +
     b: automaton_run automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2
-    for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
-    and alphabet\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'label set"
-    and initial\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'state"
-    and transition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> ('label, 'state) trans"
-    and condition\<^sub>1 :: "'automaton\<^sub>1 \<Rightarrow> 'condition\<^sub>1"
-    and test\<^sub>1 :: "'condition\<^sub>1 \<Rightarrow> 'label stream \<Rightarrow> 'state stream \<Rightarrow> 'state \<Rightarrow> bool"
-    and automaton\<^sub>2 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label, 'state) trans \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'automaton\<^sub>2"
-    and alphabet\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'label set"
-    and initial\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'state"
-    and transition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> ('label, 'state) trans"
-    and condition\<^sub>2 :: "'automaton\<^sub>2 \<Rightarrow> 'condition\<^sub>2"
-    and test\<^sub>2 :: "'condition\<^sub>2 \<Rightarrow> 'label stream \<Rightarrow> 'state stream \<Rightarrow> 'state \<Rightarrow> bool"
-    and condition :: "'condition\<^sub>1 \<Rightarrow> 'condition\<^sub>2"
+    for automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 test\<^sub>1
+    and automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 test\<^sub>2
+    and condition
     +
     assumes test[iff]: "test\<^sub>2 (condition c) w r p \<longleftrightarrow> \<not> test\<^sub>1 c w r p"
   begin
