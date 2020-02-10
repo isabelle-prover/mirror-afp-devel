@@ -13,7 +13,7 @@ begin
   global_interpretation nba: automaton nba alphabet initial transition accepting
     defines path = nba.path and run = nba.run and reachable = nba.reachable and nodes = nba.nodes
     by unfold_locales auto
-  global_interpretation nba: automaton_run nba alphabet initial transition accepting "\<lambda> P w r p. infs P r"
+  global_interpretation nba: automaton_run nba alphabet initial transition accepting "\<lambda> P w r p. infs P (p ## r)"
     defines language = nba.language
     by standard
 
@@ -68,7 +68,7 @@ begin
   proof
     fix w
     assume 1: "w \<in> language A"
-    obtain r p where 2: "p \<in> initial A" "run A (w ||| r) p" "infs (accepting A) r" using 1 by rule
+    obtain r p where 2: "p \<in> initial A" "run A (w ||| r) p" "infs (accepting A) (p ## r)" using 1 by rule
     define P where "P n q \<equiv> (target (stake n (w ||| r)) p, q) \<in> R" for n q
     obtain q where 3: "q \<in> initial B" "(p, q) \<in> R" using assms(2) 2(1) by auto
     obtain ws where 4:
@@ -93,7 +93,7 @@ begin
         using 4(2) unfolding P_def 5 by (simp add: stream_rel_snth del: stake.simps(2))
       have 8: "stream_all2 (\<lambda> a b. accepting A a \<longrightarrow> accepting B b) r s"
         using stream.rel_mono 6 7 unfolding nba.trace_alt_def by auto
-      show "infs (accepting B) s" using infs_mono_strong 8 2(3) by this
+      show "infs (accepting B) (q ## s)" using infs_mono_strong 8 2(3) by simp
     qed
   qed
 

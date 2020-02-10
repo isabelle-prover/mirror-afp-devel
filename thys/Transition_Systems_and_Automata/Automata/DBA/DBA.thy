@@ -15,7 +15,7 @@ begin
   global_interpretation dba: automaton dba alphabet initial transition accepting
     defines path = dba.path and run = dba.run and reachable = dba.reachable and nodes = dba.nodes
     by unfold_locales auto
-  global_interpretation dba: automaton_run dba alphabet initial transition accepting "\<lambda> P w r p. infs P r"
+  global_interpretation dba: automaton_run dba alphabet initial transition accepting "\<lambda> P w r p. infs P (p ## r)"
     defines language = dba.language
     by standard
 

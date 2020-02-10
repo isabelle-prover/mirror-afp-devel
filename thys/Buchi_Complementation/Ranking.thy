@@ -80,7 +80,7 @@ begin
     shows "w \<notin> language A"
   proof
     assume 1: "w \<in> language A"
-    obtain r p where 2: "run A (w ||| r) p" "p \<in> initial A" "infs (accepting A) r" using 1 by rule
+    obtain r p where 2: "run A (w ||| r) p" "p \<in> initial A" "infs (accepting A) (p ## r)" using 1 by rule
     let ?r = "fromN 1 ||| r"
     let ?v = "(0, p)"
     have 3: "?v \<in> gunodes A w" "gurun A w ?r ?v" using 2(1, 2) by (auto intro: run_grun)
