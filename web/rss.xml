@@ -9,7 +9,118 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>27 Dec 2019 00:00:00 +0000</pubDate>
+    <pubDate>01 Feb 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Arithmetic progressions and relative primes</title>
+              <link>https://www.isa-afp.org/entries/Arith_Prog_Rel_Primes.html</link>
+       <guid>https://www.isa-afp.org/entries/Arith_Prog_Rel_Primes.html</guid>
+       <dc:creator> José Manuel Rodríguez Caballero       </dc:creator>
+       <pubDate>01 Feb 2020 00:00:00 +0000</pubDate>
+       <description>
+This article provides a formalization of the solution obtained by the
+author of the Problem “ARITHMETIC PROGRESSIONS” from the
+&lt;a href=&#34;https://www.ocf.berkeley.edu/~wwu/riddles/putnam.shtml&#34;&gt;
+Putnam exam problems of 2002&lt;/a&gt;. The statement of the problem is
+as follows: For which integers &lt;em&gt;n&lt;/em&gt; &gt; 1 does the set of positive
+integers less than and relatively prime to &lt;em&gt;n&lt;/em&gt; constitute an
+arithmetic progression?</description>
+    </item>
+    <item>
+       <title>A Hierarchy of Algebras for Boolean Subsets</title>
+              <link>https://www.isa-afp.org/entries/Subset_Boolean_Algebras.html</link>
+       <guid>https://www.isa-afp.org/entries/Subset_Boolean_Algebras.html</guid>
+       <dc:creator> Walter Guttmann, Bernhard Möller       </dc:creator>
+       <pubDate>31 Jan 2020 00:00:00 +0000</pubDate>
+       <description>
+We present a collection of axiom systems for the construction of
+Boolean subalgebras of larger overall algebras. The subalgebras are
+defined as the range of a complement-like operation on a semilattice.
+This technique has been used, for example, with the antidomain
+operation, dynamic negation and Stone algebras. We present a common
+ground for these constructions based on a new equational
+axiomatisation of Boolean algebras.</description>
+    </item>
+    <item>
+       <title>Mersenne primes and the Lucas–Lehmer test</title>
+              <link>https://www.isa-afp.org/entries/Mersenne_Primes.html</link>
+       <guid>https://www.isa-afp.org/entries/Mersenne_Primes.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>17 Jan 2020 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This article provides formal proofs of basic properties of
+Mersenne numbers, i. e. numbers of the form
+2&lt;sup&gt;&lt;em&gt;n&lt;/em&gt;&lt;/sup&gt; - 1, and especially of
+Mersenne primes.&lt;/p&gt; &lt;p&gt;In particular, an efficient,
+verified, and executable version of the Lucas&amp;ndash;Lehmer test is
+developed. This test decides primality for Mersenne numbers in time
+polynomial in &lt;em&gt;n&lt;/em&gt;.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>Verified Approximation Algorithms</title>
+              <link>https://www.isa-afp.org/entries/Approximation_Algorithms.html</link>
+       <guid>https://www.isa-afp.org/entries/Approximation_Algorithms.html</guid>
+       <dc:creator> Robin Eßmann, Tobias Nipkow, Simon Robillard       </dc:creator>
+       <pubDate>16 Jan 2020 00:00:00 +0000</pubDate>
+       <description>
+We present the first formal verification of approximation algorithms
+for NP-complete optimization problems: vertex cover, independent set,
+load balancing, and bin packing. The proofs correct incompletenesses
+in existing proofs and improve the approximation ratio in one case.</description>
+    </item>
+    <item>
+       <title>Closest Pair of Points Algorithms</title>
+              <link>https://www.isa-afp.org/entries/Closest_Pair_Points.html</link>
+       <guid>https://www.isa-afp.org/entries/Closest_Pair_Points.html</guid>
+       <dc:creator> Martin Rau, Tobias Nipkow       </dc:creator>
+       <pubDate>13 Jan 2020 00:00:00 +0000</pubDate>
+       <description>
+This entry provides two related verified divide-and-conquer algorithms
+solving the fundamental &lt;em&gt;Closest Pair of Points&lt;/em&gt;
+problem in Computational Geometry. Functional correctness and the
+optimal running time of &lt;em&gt;O&lt;/em&gt;(&lt;em&gt;n&lt;/em&gt; log &lt;em&gt;n&lt;/em&gt;) are
+proved. Executable code is generated which is empirically competitive
+with handwritten reference implementations.</description>
+    </item>
+    <item>
+       <title>Skip Lists</title>
+              <link>https://www.isa-afp.org/entries/Skip_Lists.html</link>
+       <guid>https://www.isa-afp.org/entries/Skip_Lists.html</guid>
+       <dc:creator> Max W. Haslbeck, Manuel Eberl       </dc:creator>
+       <pubDate>09 Jan 2020 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt; Skip lists are sorted linked lists enhanced with shortcuts
+and are an alternative to binary search trees. A skip lists consists
+of multiple levels of sorted linked lists where a list on level n is a
+subsequence of the list on level n − 1. In the ideal case, elements
+are skipped in such a way that a lookup in a skip lists takes O(log n)
+time. In a randomised skip list the skipped elements are choosen
+randomly. &lt;/p&gt; &lt;p&gt; This entry contains formalized proofs
+of the textbook results about the expected height and the expected
+length of a search path in a randomised skip list. &lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>Bicategories</title>
+              <link>https://www.isa-afp.org/entries/Bicategory.html</link>
+       <guid>https://www.isa-afp.org/entries/Bicategory.html</guid>
+       <dc:creator> Eugene W. Stark       </dc:creator>
+       <pubDate>06 Jan 2020 00:00:00 +0000</pubDate>
+       <description>
+Taking as a starting point the author&#39;s previous work on
+developing aspects of category theory in Isabelle/HOL, this article
+gives a compatible formalization of the notion of
+&#34;bicategory&#34; and develops a framework within which formal
+proofs of facts about bicategories can be given.  The framework
+includes a number of basic results, including the Coherence Theorem,
+the Strictness Theorem, pseudofunctors and biequivalence, and facts
+about internal equivalences and adjunctions in a bicategory.  As a
+driving application and demonstration of the utility of the framework,
+it is used to give a formal proof of a theorem, due to Carboni,
+Kasangian, and Street, that characterizes up to biequivalence the
+bicategories of spans in a category with pullbacks.  The formalization
+effort necessitated the filling-in of many details that were not
+evident from the brief presentation in the original paper, as well as
+identifying a few minor corrections along the way.</description>
+    </item>
     <item>
        <title>The Irrationality of ζ(3)</title>
               <link>https://www.isa-afp.org/entries/Zeta_3_Irrational.html</link>
@@ -64,6 +175,57 @@ hint at symmetric cases. It also requires a substantial background of
 mathematical theories, e.g., the Jordan curve theorem, real analysis,
 ordinary differential equations, and limiting (long-term) behavior of
 dynamical systems.</description>
+    </item>
+    <item>
+       <title>Poincaré Disc Model</title>
+              <link>https://www.isa-afp.org/entries/Poincare_Disc.html</link>
+       <guid>https://www.isa-afp.org/entries/Poincare_Disc.html</guid>
+       <dc:creator> Danijela Simić, Filip Marić, Pierre Boutry       </dc:creator>
+       <pubDate>16 Dec 2019 00:00:00 +0000</pubDate>
+       <description>
+We describe formalization of the Poincaré disc model of hyperbolic
+geometry within the Isabelle/HOL proof assistant. The model is defined
+within the extended complex plane (one dimensional complex projectives
+space &amp;#8450;P1), formalized in the AFP entry “Complex Geometry”.
+Points, lines, congruence of pairs of points, betweenness of triples
+of points, circles, and isometries are defined within the model. It is
+shown that the model satisfies all Tarski&#39;s axioms except the
+Euclid&#39;s axiom. It is shown that it satisfies its negation and
+the limiting parallels axiom (which proves it to be a model of
+hyperbolic geometry).</description>
+    </item>
+    <item>
+       <title>Complex Geometry</title>
+              <link>https://www.isa-afp.org/entries/Complex_Geometry.html</link>
+       <guid>https://www.isa-afp.org/entries/Complex_Geometry.html</guid>
+       <dc:creator> Filip Marić, Danijela Simić       </dc:creator>
+       <pubDate>16 Dec 2019 00:00:00 +0000</pubDate>
+       <description>
+A formalization of geometry of complex numbers is presented.
+Fundamental objects that are investigated are the complex plane
+extended by a single infinite point, its objects (points, lines and
+circles), and groups of transformations that act on them (e.g.,
+inversions and Möbius transformations). Most objects are defined
+algebraically, but correspondence with classical geometric definitions
+is shown.</description>
+    </item>
+    <item>
+       <title>Gauss Sums and the Pólya–Vinogradov Inequality</title>
+              <link>https://www.isa-afp.org/entries/Gauss_Sums.html</link>
+       <guid>https://www.isa-afp.org/entries/Gauss_Sums.html</guid>
+       <dc:creator> Rodrigo Raya, Manuel Eberl       </dc:creator>
+       <pubDate>10 Dec 2019 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This article provides a full formalisation of Chapter 8 of
+Apostol&#39;s &lt;em&gt;&lt;a
+href=&#34;https://www.springer.com/de/book/9780387901633&#34;&gt;Introduction
+to Analytic Number Theory&lt;/a&gt;&lt;/em&gt;. Subjects that are
+covered are:&lt;/p&gt; &lt;ul&gt; &lt;li&gt;periodic arithmetic
+functions and their finite Fourier series&lt;/li&gt;
+&lt;li&gt;(generalised) Ramanujan sums&lt;/li&gt; &lt;li&gt;Gauss sums
+and separable characters&lt;/li&gt; &lt;li&gt;induced moduli and
+primitive characters&lt;/li&gt; &lt;li&gt;the
+Pólya&amp;mdash;Vinogradov inequality&lt;/li&gt; &lt;/ul&gt;</description>
     </item>
     <item>
        <title>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</title>
@@ -138,9 +300,10 @@ developments that combine &lt;em&gt;V&lt;/em&gt; with other Isabelle/HOL types:
 &lt;em&gt;small&lt;/em&gt;, the class of types that correspond to some ZF set.&lt;/p&gt;
 extra-history =
 Change history:
-[2020-01-28]:  Generalisation of the &#34;small&#34; predicate to arbitrary sets;
-Introduction of the coercion ord_of_nat :: &#34;nat =&gt; V&#34;;
-Addition of many new lemmas. (revision 85592c2f97b1)</description>
+[2020-01-28]:  Generalisation of the &#34;small&#34; predicate and order types to arbitrary sets;
+ordinal exponentiation;
+introduction of the coercion ord_of_nat :: &#34;nat =&gt; V&#34;;
+numerous new lemmas. (revision 6081d5be8d08)</description>
     </item>
     <item>
        <title>Isabelle/C</title>
@@ -399,184 +562,6 @@ formalisation: they can be solved with minimal use of libraries. The
 remaining three concern geometry and graph theory, which, in the
 author&#39;s opinion, are more difficult to formalise resp. require a
 more complex library.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Stellar Quorum Systems</title>
-              <link>https://www.isa-afp.org/entries/Stellar_Quorums.html</link>
-       <guid>https://www.isa-afp.org/entries/Stellar_Quorums.html</guid>
-       <dc:creator> Giuliano Losa       </dc:creator>
-       <pubDate>01 Aug 2019 00:00:00 +0000</pubDate>
-       <description>
-We formalize the static properties of personal Byzantine quorum
-systems (PBQSs) and Stellar quorum systems, as described in the paper
-``Stellar Consensus by Reduction&#39;&#39; (to appear at DISC 2019).</description>
-    </item>
-    <item>
-       <title>A Formal Development of a Polychronous Polytimed Coordination Language</title>
-              <link>https://www.isa-afp.org/entries/TESL_Language.html</link>
-       <guid>https://www.isa-afp.org/entries/TESL_Language.html</guid>
-       <dc:creator> Hai Nguyen Van, Frédéric Boulanger, Burkhart Wolff       </dc:creator>
-       <pubDate>30 Jul 2019 00:00:00 +0000</pubDate>
-       <description>
-The design of complex systems involves different formalisms for
-modeling their different parts or aspects. The global model of a
-system may therefore consist of a coordination of concurrent
-sub-models that use different paradigms.  We develop here a theory for
-a language used to specify the timed coordination of such
-heterogeneous subsystems by addressing the following issues:
-&lt;ul&gt;&lt;li&gt;the
-behavior of the sub-systems is observed only at a series of discrete
-instants,&lt;/li&gt;&lt;li&gt;events may occur in different sub-systems at unrelated
-times, leading to polychronous systems, which do not necessarily have
-a common base clock,&lt;/li&gt;&lt;li&gt;coordination between subsystems involves
-causality, so the occurrence of an event may enforce the occurrence of
-other events, possibly after a certain duration has elapsed or an
-event has occurred a given number of times,&lt;/li&gt;&lt;li&gt;the domain of time
-(discrete, rational, continuous...) may be different in the
-subsystems, leading to polytimed systems,&lt;/li&gt;&lt;li&gt;the time frames of
-different sub-systems may be related (for instance, time in a GPS
-satellite and in a GPS receiver on Earth are related although they are
-not the same).&lt;/li&gt;&lt;/ul&gt;
-Firstly, a denotational semantics of the language is
-defined. Then, in order to be able to incrementally check the behavior
-of systems, an operational semantics is given, with proofs of
-progress, soundness and completeness with regard to the denotational
-semantics. These proofs are made according to a setup that can scale
-up when new operators are added to the language. In order for
-specifications to be composed in a clean way, the language should be
-invariant by stuttering (i.e., adding observation instants at which
-nothing happens). The proof of this invariance is also given.</description>
-    </item>
-    <item>
-       <title>Szpilrajn Extension Theorem</title>
-              <link>https://www.isa-afp.org/entries/Szpilrajn.html</link>
-       <guid>https://www.isa-afp.org/entries/Szpilrajn.html</guid>
-       <dc:creator> Peter Zeller       </dc:creator>
-       <pubDate>27 Jul 2019 00:00:00 +0000</pubDate>
-       <description>
-We formalize the Szpilrajn extension theorem, also known as
-order-extension principal: Every strict partial order can be extended
-to a strict linear order.</description>
-    </item>
-    <item>
-       <title>A Sequent Calculus for First-Order Logic</title>
-              <link>https://www.isa-afp.org/entries/FOL_Seq_Calc1.html</link>
-       <guid>https://www.isa-afp.org/entries/FOL_Seq_Calc1.html</guid>
-       <dc:creator> Asta Halkjær From       </dc:creator>
-       <pubDate>18 Jul 2019 00:00:00 +0000</pubDate>
-       <description>
-This work formalizes soundness and completeness of a one-sided sequent
-calculus for first-order logic. The completeness is shown via a
-translation from a complete semantic tableau calculus, the proof of
-which is based on the First-Order Logic According to Fitting theory.
-The calculi and proof techniques are taken from Ben-Ari&#39;s
-Mathematical Logic for Computer Science.</description>
-    </item>
-    <item>
-       <title>A Verified Code Generator from Isabelle/HOL to CakeML</title>
-              <link>https://www.isa-afp.org/entries/CakeML_Codegen.html</link>
-       <guid>https://www.isa-afp.org/entries/CakeML_Codegen.html</guid>
-       <dc:creator> Lars Hupel       </dc:creator>
-       <pubDate>08 Jul 2019 00:00:00 +0000</pubDate>
-       <description>
-This entry contains the formalization that accompanies my PhD thesis
-(see https://lars.hupel.info/research/codegen/). I develop a verified
-compilation toolchain from executable specifications in Isabelle/HOL
-to CakeML abstract syntax trees. This improves over the
-state-of-the-art in Isabelle by providing a trustworthy procedure for
-code generation.</description>
-    </item>
-    <item>
-       <title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</title>
-              <link>https://www.isa-afp.org/entries/MFOTL_Monitor.html</link>
-       <guid>https://www.isa-afp.org/entries/MFOTL_Monitor.html</guid>
-       <dc:creator> Joshua Schneider, Dmitriy Traytel       </dc:creator>
-       <pubDate>04 Jul 2019 00:00:00 +0000</pubDate>
-       <description>
-A monitor is a runtime verification tool that solves the following
-problem: Given a stream of time-stamped events and a policy formulated
-in a specification language, decide whether the policy is satisfied at
-every point in the stream. We verify the correctness of an executable
-monitor for specifications given as formulas in metric first-order
-temporal logic (MFOTL), an expressive extension of linear temporal
-logic with real-time constraints and first-order quantification. The
-verified monitor implements a simplified variant of the algorithm used
-in the efficient MonPoly monitoring tool. The formalization is
-presented in a forthcoming &lt;a
-href=&#34;http://people.inf.ethz.ch/trayteld/papers/rv19-verimon/verimon.pdf&#34;&gt;RV
-2019 paper&lt;/a&gt;, which also compares the output of the verified
-monitor to that of other monitoring tools on randomly generated
-inputs. This case study revealed several errors in the optimized but
-unverified tools.</description>
-    </item>
-    <item>
-       <title>Complete Non-Orders and Fixed Points</title>
-              <link>https://www.isa-afp.org/entries/Complete_Non_Orders.html</link>
-       <guid>https://www.isa-afp.org/entries/Complete_Non_Orders.html</guid>
-       <dc:creator> Akihisa Yamada, Jérémy Dubut       </dc:creator>
-       <pubDate>27 Jun 2019 00:00:00 +0000</pubDate>
-       <description>
-We develop an Isabelle/HOL library of order-theoretic concepts, such
-as various completeness conditions and fixed-point theorems. We keep
-our formalization as general as possible: we reprove several
-well-known results about complete orders, often without any properties
-of ordering, thus complete non-orders. In particular, we generalize
-the Knaster–Tarski theorem so that we ensure the existence of a
-quasi-fixed point of monotone maps over complete non-orders, and show
-that the set of quasi-fixed points is complete under a mild
-condition—attractivity—which is implied by either antisymmetry or
-transitivity. This result generalizes and strengthens a result by
-Stauti and Maaden. Finally, we recover Kleene’s fixed-point theorem
-for omega-complete non-orders, again using attractivity to prove that
-Kleene’s fixed points are least quasi-fixed points.</description>
-    </item>
-    <item>
-       <title>Priority Search Trees</title>
-              <link>https://www.isa-afp.org/entries/Priority_Search_Trees.html</link>
-       <guid>https://www.isa-afp.org/entries/Priority_Search_Trees.html</guid>
-       <dc:creator> Peter Lammich, Tobias Nipkow       </dc:creator>
-       <pubDate>25 Jun 2019 00:00:00 +0000</pubDate>
-       <description>
-We present a new, purely functional, simple and efficient data
-structure combining a search tree and a priority queue, which we call
-a &lt;em&gt;priority search tree&lt;/em&gt;. The salient feature of priority search
-trees is that they offer a decrease-key operation, something that is
-missing from other simple, purely functional priority queue
-implementations. Priority search trees can be implemented on top of
-any search tree. This entry does the implementation for red-black
-trees.  This entry formalizes the first part of our ITP-2019 proof
-pearl &lt;em&gt;Purely Functional, Simple and Efficient Priority
-Search Trees and Applications to Prim and Dijkstra&lt;/em&gt;.</description>
-    </item>
-    <item>
-       <title>Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra</title>
-              <link>https://www.isa-afp.org/entries/Prim_Dijkstra_Simple.html</link>
-       <guid>https://www.isa-afp.org/entries/Prim_Dijkstra_Simple.html</guid>
-       <dc:creator> Peter Lammich, Tobias Nipkow       </dc:creator>
-       <pubDate>25 Jun 2019 00:00:00 +0000</pubDate>
-       <description>
-We verify purely functional, simple and efficient implementations of
-Prim&#39;s and Dijkstra&#39;s algorithms. This constitutes the first
-verification of an executable and even efficient version of
-Prim&#39;s algorithm. This entry formalizes the second part of our
-ITP-2019 proof pearl &lt;em&gt;Purely Functional, Simple and Efficient
-Priority Search Trees and Applications to Prim and Dijkstra&lt;/em&gt;.</description>
-    </item>
-    <item>
-       <title>Linear Inequalities</title>
-              <link>https://www.isa-afp.org/entries/Linear_Inequalities.html</link>
-       <guid>https://www.isa-afp.org/entries/Linear_Inequalities.html</guid>
-       <dc:creator> Ralph Bottesch, Alban Reynaud, René Thiemann       </dc:creator>
-       <pubDate>21 Jun 2019 00:00:00 +0000</pubDate>
-       <description>
-We formalize results about linear inqualities, mainly from
-Schrijver&#39;s book. The main results are the proof of the
-fundamental theorem on linear inequalities, Farkas&#39; lemma,
-Carathéodory&#39;s theorem, the Farkas-Minkowsky-Weyl theorem, the
-decomposition theorem of polyhedra, and Meyer&#39;s result that the
-integer hull of a polyhedron is a polyhedron itself. Several theorems
-include bounds on the appearing numbers, and in particular we provide
-an a-priori bound on mixed-integer solutions of linear inequalities.</description>
     </item>
   </channel>
 </rss>

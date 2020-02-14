@@ -1,3 +1,51 @@
+[Arith_Prog_Rel_Primes]
+title = Arithmetic progressions and relative primes
+author = José Manuel Rodríguez Caballero <https://josephcmac.github.io/>
+topic = Mathematics/Number Theory
+date = 2020-02-01
+notify = jose.manuel.rodriguez.caballero@ut.ee
+abstract = 
+  This article provides a formalization of the solution obtained by the
+  author of the Problem “ARITHMETIC PROGRESSIONS” from the 
+  <a href="https://www.ocf.berkeley.edu/~wwu/riddles/putnam.shtml">
+  Putnam exam problems of 2002</a>. The statement of the problem is
+  as follows: For which integers <em>n</em> > 1 does the set of positive
+  integers less than and relatively prime to <em>n</em> constitute an
+  arithmetic progression?
+
+[Complex_Geometry]
+title = Complex Geometry
+author = Filip Marić <http://www.matf.bg.ac.rs/~filip>, Danijela Simić <http://poincare.matf.bg.ac.rs/~danijela>
+topic = Mathematics/Geometry
+date = 2019-12-16
+notify = danijela@matf.bg.ac.rs, filip@matf.bg.ac.rs, boutry@unistra.fr
+abstract =
+  A formalization of geometry of complex numbers is presented.
+  Fundamental objects that are investigated are the complex plane
+  extended by a single infinite point, its objects (points, lines and
+  circles), and groups of transformations that act on them (e.g.,
+  inversions and Möbius transformations). Most objects are defined
+  algebraically, but correspondence with classical geometric definitions
+  is shown.
+
+[Poincare_Disc]
+title = Poincaré Disc Model
+author = Danijela Simić <http://poincare.matf.bg.ac.rs/~danijela>,  Filip Marić <http://www.matf.bg.ac.rs/~filip>,  Pierre Boutry <mailto:boutry@unistra.fr>
+topic = Mathematics/Geometry
+date = 2019-12-16
+notify = danijela@matf.bg.ac.rs, filip@matf.bg.ac.rs, boutry@unistra.fr
+abstract =
+  We describe formalization of the Poincaré disc model of hyperbolic
+  geometry within the Isabelle/HOL proof assistant. The model is defined
+  within the extended complex plane (one dimensional complex projectives
+  space &#8450;P1), formalized in the AFP entry “Complex Geometry”.
+  Points, lines, congruence of pairs of points, betweenness of triples
+  of points, circles, and isometries are defined within the model. It is
+  shown that the model satisfies all Tarski's axioms except the
+  Euclid's axiom. It is shown that it satisfies its negation and
+  the limiting parallels axiom (which proves it to be a model of
+  hyperbolic geometry).
+
 [Fourier]
 title = Fourier Series
 author = Lawrence C Paulson <https://www.cl.cam.ac.uk/~lp15/>
@@ -1834,7 +1882,7 @@ abstract =
 
 [Simple_Firewall]
 title = Simple Firewall
-author = Cornelius Diekmann <http://net.in.tum.de/~diekmann>, Julius Michaelis <http://liftm.de>, Maximilian Haslbeck<https://home.in.tum.de/~haslbecm/>
+author = Cornelius Diekmann <http://net.in.tum.de/~diekmann>, Julius Michaelis <http://liftm.de>, Maximilian Haslbeck<http://cl-informatik.uibk.ac.at/users/mhaslbeck//>
 notify = diekmann@net.in.tum.de, max.haslbeck@gmx.de
 date = 2016-08-24
 topic = Computer Science/Networks
@@ -2246,7 +2294,7 @@ notify = c.sternagel@gmail.com
 
 [SATSolverVerification]
 title = Formal Verification of Modern SAT Solvers
-author = Filip Maric <http://poincare.matf.bg.ac.rs/~filip/>
+author = Filip Marić <http://poincare.matf.bg.ac.rs/~filip/>
 date = 2008-07-23
 topic = Computer Science/Algorithms
 abstract = This document contains formal correctness proofs of modern SAT solvers. Following (Krstic et al, 2007) and (Nieuwenhuis et al., 2006), solvers are described using state-transition systems. Several different SAT solver descriptions are given and their partial correctness and termination is proved. These include: <ul> <li> a solver based on classical DPLL procedure (using only a backtrack-search with unit propagation),</li> <li> a very general solver with backjumping and learning (similar to the description given in (Nieuwenhuis et al., 2006)), and</li> <li> a solver with a specific conflict analysis algorithm (similar to the description given in (Krstic et al., 2007)).</li> </ul> Within the SAT solver correctness proofs, a large number of lemmas about propositional logic and CNF formulae are proved. This theory is self-contained and could be used for further exploring of properties of CNF based SAT algorithms.
@@ -5247,6 +5295,24 @@ abstract =
   developing more number-theoretic results, such as the Prime Number
   Theorem.
 
+[Gauss_Sums]
+title = Gauss Sums and the Pólya–Vinogradov Inequality
+author = Rodrigo Raya <https://people.epfl.ch/rodrigo.raya>, Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory
+date = 2019-12-10
+notify = manuel.eberl@tum.de
+abstract =
+  <p>This article provides a full formalisation of Chapter 8 of
+  Apostol's <em><a
+  href="https://www.springer.com/de/book/9780387901633">Introduction
+  to Analytic Number Theory</a></em>. Subjects that are
+  covered are:</p> <ul> <li>periodic arithmetic
+  functions and their finite Fourier series</li>
+  <li>(generalised) Ramanujan sums</li> <li>Gauss sums
+  and separable characters</li> <li>induced moduli and
+  primitive characters</li> <li>the
+  Pólya&mdash;Vinogradov inequality</li> </ul>
+
 [Zeta_Function]
 title = The Hurwitz and Riemann ζ Functions
 author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
@@ -5893,7 +5959,7 @@ abstract =
 
 [ROBDD]
 title = Algorithms for Reduced Ordered Binary Decision Diagrams
-author = Julius Michaelis <http://liftm.de>, Maximilian Haslbeck <https://home.in.tum.de/~haslbecm/>, Peter Lammich <http://www21.in.tum.de/~lammich>, Lars Hupel <https://www21.in.tum.de/~hupel/>
+author = Julius Michaelis <http://liftm.de>, Maximilian Haslbeck <http://cl-informatik.uibk.ac.at/users/mhaslbeck//>, Peter Lammich <http://www21.in.tum.de/~lammich>, Lars Hupel <https://www21.in.tum.de/~hupel/>
 date = 2016-04-27
 topic = Computer Science/Algorithms, Computer Science/Data Structures
 abstract =
@@ -6095,7 +6161,7 @@ notify = henning.seidler@mailbox.tu-berlin.de
 [IMAP-CRDT]
 title = The IMAP CmRDT
 author = Tim Jungnickel <mailto:tim.jungnickel@tu-berlin.de>, Lennart Oldenburg <>, Matthias Loibl <>
-topic = Computer Science/Algorithms, Computer Science/Data Structures
+topic = Computer Science/Algorithms/Distributed, Computer Science/Data Structures
 date = 2017-11-09
 notify = tim.jungnickel@tu-berlin.de
 abstract =
@@ -6967,6 +7033,31 @@ abstract =
   An Algorithm for Finding Best Matches in Logarithmic Expected
   Time</a>.
 
+[Closest_Pair_Points]
+title = Closest Pair of Points Algorithms
+author = Martin Rau <mailto:martin.rau@tum.de>, Tobias Nipkow <http://www.in.tum.de/~nipkow>
+topic = Computer Science/Algorithms/Geometry
+date = 2020-01-13
+notify = martin.rau@tum.de, nipkow@in.tum.de
+abstract =
+  This entry provides two related verified divide-and-conquer algorithms
+  solving the fundamental <em>Closest Pair of Points</em>
+  problem in Computational Geometry. Functional correctness and the
+  optimal running time of <em>O</em>(<em>n</em> log <em>n</em>) are
+  proved. Executable code is generated which is empirically competitive
+  with handwritten reference implementations.
+
+[Approximation_Algorithms]
+title = Verified Approximation Algorithms
+author = Robin Eßmann <mailto:robin.essmann@tum.de>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>, Simon Robillard <https://simon-robillard.net/>
+topic = Computer Science/Algorithms/Approximation
+date = 2020-01-16
+notify = nipkow@in.tum.de
+abstract =
+  We present the first formal verification of approximation algorithms
+  for NP-complete optimization problems: vertex cover, independent set,
+  load balancing, and bin packing. The proofs correct incompletenesses
+  in existing proofs and improve the approximation ratio in one case.
 
 [Diophantine_Eqns_Lin_Hom]
 title = Homogeneous Linear Diophantine Equations
@@ -7232,7 +7323,7 @@ abstract =
 
 [LLL_Basis_Reduction]
 title = A verified LLL algorithm
-author = Ralph Bottesch <>, Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Maximilian Haslbeck <>, Sebastiaan Joosten <http://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada<>
+author = Ralph Bottesch <>, Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Maximilian Haslbeck <http://cl-informatik.uibk.ac.at/users/mhaslbeck/>, Sebastiaan Joosten <http://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada<>
 topic = Computer Science/Algorithms/Mathematical, Mathematics/Algebra
 date = 2018-02-02
 notify = ralph.bottesch@uibk.ac.at, jose.divason@unirioja.es, maximilian.haslbeck@uibk.ac.at, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
@@ -7278,7 +7369,7 @@ abstract =
 
 [Treaps]
 title = Treaps
-author = Maximilian Haslbeck <https://home.in.tum.de/~haslbecm>, Manuel Eberl <https://www.in.tum.de/~eberlm>, Tobias Nipkow <https://www.in.tum.de/~nipkow>
+author = Maximilian Haslbeck <http://cl-informatik.uibk.ac.at/users/mhaslbeck/>, Manuel Eberl <https://www.in.tum.de/~eberlm>, Tobias Nipkow <https://www.in.tum.de/~nipkow>
 topic = Computer Science/Data Structures
 date = 2018-02-06
 notify = eberlm@in.tum.de
@@ -7299,6 +7390,38 @@ abstract =
   resulting tree is that of a random BST no matter in what order we
   insert the elements. This is the main result of this
   formalisation.</p>
+
+[Skip_Lists]
+title = Skip Lists
+author = Max W. Haslbeck <http://cl-informatik.uibk.ac.at/users/mhaslbeck/>, Manuel Eberl <https://www21.in.tum.de/~eberlm/>
+topic = Computer Science/Data Structures
+date = 2020-01-09
+notify = max.haslbeck@gmx.de
+abstract =
+  <p> Skip lists are sorted linked lists enhanced with shortcuts
+  and are an alternative to binary search trees. A skip lists consists
+  of multiple levels of sorted linked lists where a list on level n is a
+  subsequence of the list on level n − 1. In the ideal case, elements
+  are skipped in such a way that a lookup in a skip lists takes O(log n)
+  time. In a randomised skip list the skipped elements are choosen
+  randomly. </p> <p> This entry contains formalized proofs
+  of the textbook results about the expected height and the expected
+  length of a search path in a randomised skip list. </p>
+
+[Mersenne_Primes]
+title = Mersenne primes and the Lucas–Lehmer test
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory
+date = 2020-01-17
+notify = eberlm@in.tum.de
+abstract =
+  <p>This article provides formal proofs of basic properties of
+  Mersenne numbers, i. e. numbers of the form
+  2<sup><em>n</em></sup> - 1, and especially of
+  Mersenne primes.</p> <p>In particular, an efficient,
+  verified, and executable version of the Lucas&ndash;Lehmer test is
+  developed. This test decides primality for Mersenne numbers in time
+  polynomial in <em>n</em>.</p>
 
 [Hoare_Time]
 title = Hoare Logics for Time Bounds
@@ -8741,3 +8864,42 @@ abstract =
   unrestricted rules are derivable. Similarly, I start from simpler
   versions of the @-rules and derive the general ones. These
   restrictions are imposed to rule out some means of nontermination.
+
+[Bicategory]
+title = Bicategories
+author = Eugene W. Stark <mailto:stark@cs.stonybrook.edu>
+topic = Mathematics/Category Theory
+date = 2020-01-06
+notify = stark@cs.stonybrook.edu
+abstract =
+  Taking as a starting point the author's previous work on
+  developing aspects of category theory in Isabelle/HOL, this article
+  gives a compatible formalization of the notion of
+  "bicategory" and develops a framework within which formal
+  proofs of facts about bicategories can be given.  The framework
+  includes a number of basic results, including the Coherence Theorem,
+  the Strictness Theorem, pseudofunctors and biequivalence, and facts
+  about internal equivalences and adjunctions in a bicategory.  As a
+  driving application and demonstration of the utility of the framework,
+  it is used to give a formal proof of a theorem, due to Carboni,
+  Kasangian, and Street, that characterizes up to biequivalence the
+  bicategories of spans in a category with pullbacks.  The formalization
+  effort necessitated the filling-in of many details that were not
+  evident from the brief presentation in the original paper, as well as
+  identifying a few minor corrections along the way.
+
+[Subset_Boolean_Algebras]
+title = A Hierarchy of Algebras for Boolean Subsets
+author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>, Bernhard Möller <https://www.informatik.uni-augsburg.de/en/chairs/dbis/pmi/staff/moeller/>
+topic = Mathematics/Algebra
+date = 2020-01-31
+notify = walter.guttmann@canterbury.ac.nz
+abstract = 
+  We present a collection of axiom systems for the construction of
+  Boolean subalgebras of larger overall algebras. The subalgebras are
+  defined as the range of a complement-like operation on a semilattice.
+  This technique has been used, for example, with the antidomain
+  operation, dynamic negation and Stone algebras. We present a common
+  ground for these constructions based on a new equational
+  axiomatisation of Boolean algebras.
+
