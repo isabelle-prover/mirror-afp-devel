@@ -86,7 +86,7 @@ proof-
               by fastforce              
           qed
           obtain m where \<open>m+1 = n\<close>
-            using \<open>1 < n\<close> less_imp_add_positive linordered_field_class.sign_simps(2) by blast
+            using add.commute assms less_imp_add_positive by blast
           have \<open>{1+j| j::nat. j < (m::nat)} =  {x | x :: nat. x \<noteq> 0 \<and> x < m+1}\<close> 
             by (metis Suc_eq_plus1   \<open>m + 1 = n\<close> gr0_implies_Suc le_simps(3)   less_nat_zero_code   linorder_not_less nat.simps(3) nat_neq_iff  plus_1_eq_Suc )
           hence  \<open>{x | x :: nat. x < n \<and> coprime x n} = {1+j| j::nat. j < (m::nat)}\<close>
