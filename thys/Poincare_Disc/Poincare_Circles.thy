@@ -80,7 +80,7 @@ proof-
       by (simp add: field_simps)
     hence "sqrt(R*(R+1)) < (2*R+1) / 2"
       using \<open>R > 0\<close>
-      by (smt arith_geo_mean_sqrt linordered_field_class.sign_simps(45) power_divide real_sqrt_four real_sqrt_pow2)
+      by (smt arith_geo_mean_sqrt power_divide real_sqrt_four real_sqrt_pow2 zero_le_mult_iff)
     hence "sqrt(R*(R+1)) - R < 1/2"
       by (simp add: field_simps)
     hence "(1 + (cmod z')) * (sqrt(R*(R+1)) - R) < (1 + (cmod z')) *  (1 / 2)"

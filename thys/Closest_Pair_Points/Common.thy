@@ -967,19 +967,8 @@ qed
 subsubsection "Pigeonhole Argument"
 
 lemma card_le_1_if_pairwise_eq:
-  assumes "\<forall>x \<in> S. \<forall>y \<in> S. x = y"
-  shows "card S \<le> 1"
-proof (rule ccontr)
-  assume "\<not> card S \<le> 1"
-  hence "2 \<le> card S"
-    by simp
-  then obtain T where *: "T \<subseteq> S \<and> card T = 2"
-    using ex_card by metis
-  then obtain x y where "x \<in> T \<and> y \<in> T \<and> x \<noteq> y"
-    using card_2_exists by metis
-  then show False
-    using * assms by blast
-qed
+  "\<forall>x \<in> S. \<forall>y \<in> S. x = y \<Longrightarrow> card S \<le> 1"
+by (metis One_nat_def card_infinite card_le_Suc0_iff_eq le_0_eq le_SucI)
 
 lemma card_Int_if_either_in:
   assumes "\<forall>x \<in> S. \<forall>y \<in> S. x = y \<or> x \<notin> T \<or> y \<notin> T" 

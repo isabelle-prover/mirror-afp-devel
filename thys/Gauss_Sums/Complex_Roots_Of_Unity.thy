@@ -110,7 +110,7 @@ qed
 
 lemma unity_root_pow: "unity_root k n ^ m = unity_root k (n * m)"
   using unity_root_def
-  by (simp add: Complex.DeMoivre linordered_field_class.sign_simps(6) mult.commute)
+  by (simp add: Complex.DeMoivre mult.commute algebra_split_simps(6))
 
 lemma unity_root_add: "unity_root k (m + n) = unity_root k m * unity_root k n"
   by (simp add: unity_root_conv_exp add_divide_distrib algebra_simps exp_add)

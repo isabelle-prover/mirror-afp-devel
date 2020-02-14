@@ -424,7 +424,7 @@ metric_space} locale.\<close>
 instantiation complex_homo :: metric_space
 begin
 definition "dist_complex_homo = dist_fs"
-definition "(uniformity_complex_homo :: (complex_homo \<times> complex_homo) filter) = (INF e:{0<..}. principal {(x, y). dist_class.dist x y < e})"
+definition "(uniformity_complex_homo :: (complex_homo \<times> complex_homo) filter) = (INF e\<in>{0<..}. principal {(x, y). dist_class.dist x y < e})"
 definition "open_complex_homo (U :: complex_homo set) = (\<forall> x \<in> U. eventually (\<lambda>(x', y). x' = x \<longrightarrow> y \<in> U) uniformity)"
 instance
 proof
@@ -664,7 +664,7 @@ an instantiation of the @{term metric_space} locale.\<close>
 instantiation riemann_sphere :: metric_space
 begin
 definition "dist_riemann_sphere = dist_riemann_sphere'"
-definition "(uniformity_riemann_sphere :: (riemann_sphere \<times> riemann_sphere) filter) = (INF e:{0<..}. principal {(x, y). dist_class.dist x y < e})"
+definition "(uniformity_riemann_sphere :: (riemann_sphere \<times> riemann_sphere) filter) = (INF e\<in>{0<..}. principal {(x, y). dist_class.dist x y < e})"
 definition "open_riemann_sphere (U :: riemann_sphere set) = (\<forall> x \<in> U. eventually (\<lambda>(x', y). x' = x \<longrightarrow> y \<in> U) uniformity)"
 instance
 proof
@@ -730,7 +730,7 @@ instance proof
         by (simp add: field_simps)
       have "2 - 2 * cos (\<alpha> - \<alpha>') \<ge> 0"
         using cos_le_one[of "\<alpha> - \<alpha>'"]
-        by (simp add: sign_simps)
+        by (simp add: algebra_split_simps)
       let ?M' = "(cos \<alpha>' * cos \<beta>,  cos \<alpha>' * sin \<beta>, sin \<alpha>')"
       have "dist_riemann_sphere_r3 M ?M' = sqrt ((cos \<alpha> - cos \<alpha>')\<^sup>2 + (sin \<alpha> - sin \<alpha>')\<^sup>2)"
         using MM * sphere_params_on_sphere[of _ \<alpha>' \<beta>]

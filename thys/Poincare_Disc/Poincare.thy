@@ -182,7 +182,7 @@ instantiation of @{term metric_space} locale.\<close>
 instantiation p_point :: metric_space
 begin
 definition "dist_p_point = p_dist"
-definition "(uniformity_p_point :: (p_point \<times> p_point) filter) = (INF e:{0<..}. principal {(x, y). dist_class.dist x y < e})"
+definition "(uniformity_p_point :: (p_point \<times> p_point) filter) = (INF e\<in>{0<..}. principal {(x, y). dist_class.dist x y < e})"
 definition "open_p_point (U :: p_point set) = (\<forall> x \<in> U. eventually (\<lambda>(x', y). x' = x \<longrightarrow> y \<in> U) uniformity)"
 instance
 proof

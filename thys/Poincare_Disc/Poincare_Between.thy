@@ -245,7 +245,7 @@ next
         using poincare_between_rev[of u "0\<^sub>h" "of_complex x"]
         using poincare_between_x_axis_u0v[of x u'] \<open>is_real x\<close>
         apply (auto simp add: cmod_eq_Re)
-        apply (rule_tac x="Re u' / Re x" in exI, simp add: divide_neg_pos sign_simps)
+        apply (rule_tac x="Re u' / Re x" in exI, simp add: divide_neg_pos algebra_split_simps)
         using mult_neg_pos mult_pos_neg
         by blast
     qed
@@ -279,7 +279,7 @@ proof-
     assume "rx * ry < 0"
     hence "rx = (rx/ry)*ry" "rx / ry < 0"
       using \<open>rx \<noteq> 0\<close> \<open>ry \<noteq> 0\<close>
-      by (auto simp add: divide_less_0_iff sign_simps)
+      by (auto simp add: divide_less_0_iff algebra_split_simps)
     thus "\<exists>k<0. cor rx = cor k * cor ry"
       using \<open>rx \<noteq> 0\<close> \<open>ry \<noteq> 0\<close>
       by (rule_tac x="rx / ry" in exI, simp)
@@ -583,8 +583,7 @@ next
       by (smt divide_less_cancel divide_nonneg_nonpos divide_nonneg_pos divide_nonpos_nonneg divide_nonpos_nonpos)
     ultimately
     have *: "Re (to_complex ?cr) < 0 \<longleftrightarrow> ?rhs"
-      by (smt linordered_field_class.sign_simps(45) minus_divide_left zero_less_divide_iff zero_less_mult_iff)
-  
+      by (smt algebra_split_simps(24) minus_divide_left zero_less_divide_iff zero_less_mult_iff)
     show ?thesis
     proof
       assume ?lhs
