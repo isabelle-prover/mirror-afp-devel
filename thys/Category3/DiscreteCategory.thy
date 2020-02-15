@@ -43,14 +43,8 @@ begin
 
     lemma domains_char:
     shows "domains f = {x. x \<in> Obj \<and> x = f}"
-    proof
-      show "{x. x \<in> Obj \<and> x = f} \<subseteq> domains f"
-        unfolding domains_def
-        using ide_char ide_def by fastforce
-      show "domains f \<subseteq> {x. x \<in> Obj \<and> x = f}"
-        unfolding domains_def
-        using ide_char by (simp add: Collect_mono comp_def null_char)
-    qed
+      unfolding domains_def
+      using ide_char ide_def comp_def null_char by metis
 
     theorem is_category:
     shows "category comp"

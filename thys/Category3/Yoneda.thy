@@ -368,15 +368,15 @@ begin
 
     interpretation Cop: dual_category C ..
     interpretation CopxC: product_category Cop.comp C ..
-    interpretation S: set_category "SetCat.comp :: 'a SetCat.arr comp"
-      using SetCat.is_set_category by auto
-    interpretation Hom: hom_functor C "SetCat.comp :: 'a SetCat.arr comp" "\<lambda>_. UP"
+    interpretation S: set_category \<open>SetCat.comp :: 'a setcat.arr comp\<close>
+      using is_set_category by auto
+    interpretation Hom: hom_functor C \<open>SetCat.comp :: 'a setcat.arr comp\<close> \<open>\<lambda>_. SetCat.UP\<close>
       apply unfold_locales
       using UP_mapsto apply auto[1]
       using inj_UP injD inj_onI by metis
 
     lemma has_hom_functor:
-    shows "hom_functor C (SetCat.comp :: 'a SetCat.arr comp) (\<lambda>_. UP)" ..
+    shows "hom_functor C (SetCat.comp :: 'a setcat.arr comp) (\<lambda>_. UP)" ..
 
   end
 
@@ -468,7 +468,7 @@ begin
 \<close>
 
     definition Y
-    where "Y f \<equiv> Cop_S.Fun (map f)"
+    where "Y f \<equiv> Cop_S.Map (map f)"
 
     lemma Y_simp [simp]:
     assumes "C.arr f"
@@ -710,7 +710,7 @@ begin
   assumes E: "e \<in> F.SET a"
   begin
 
-    interpretation \<T>e: transformation_by_components Cop.comp S "Y a" F "\<T>o e"
+    interpretation \<T>e: transformation_by_components Cop.comp S \<open>Y a\<close> F \<open>\<T>o e\<close>
       using E \<T>o_e_induces_transformation by auto
 
     lemma natural_transformation_\<T>e:
@@ -839,7 +839,7 @@ begin
     assumes "natural_transformation Cop.comp S (Y a) F \<tau>'" and "\<tau>' a = \<tau> a"
     shows "\<tau>' = \<tau>"
     proof (intro NaturalTransformation.eqI)
-      interpret \<tau>': natural_transformation Cop.comp S "Y a" F \<tau>' using assms by auto
+      interpret \<tau>': natural_transformation Cop.comp S \<open>Y a\<close> F \<tau>' using assms by auto
       interpret T': yoneda_lemma_fixed_\<tau> C S \<phi> F a \<tau>' ..
       show "natural_transformation Cop.comp S (Y a) F \<tau>" ..
       show "natural_transformation Cop.comp S (Y a) F \<tau>'" ..
@@ -865,7 +865,7 @@ begin
     proof -
       interpret yoneda_lemma_fixed_e C S \<phi> F a e
         using assms by (unfold_locales, auto)
-      interpret \<T>e: natural_transformation Cop.comp S "Y a" F "\<T> e"
+      interpret \<T>e: natural_transformation Cop.comp S \<open>Y a\<close> F \<open>\<T> e\<close>
         using natural_transformation_\<T>e by auto
       show "natural_transformation Cop.comp S (Y a) F (\<T> e)" ..
       show "\<E> (\<T> e) = e"
@@ -879,7 +879,7 @@ begin
     assumes "natural_transformation Cop.comp S (Y a) F \<tau>"
     shows "\<E> \<tau> \<in> F.SET a"
     proof -
-      interpret \<tau>: natural_transformation Cop.comp S "Y a" F \<tau> using assms by auto
+      interpret \<tau>: natural_transformation Cop.comp S \<open>Y a\<close> F \<tau> using assms by auto
       interpret yoneda_lemma_fixed_\<tau> C S \<phi> F a \<tau> ..
       show ?thesis
       proof (unfold \<E>_def)
@@ -903,12 +903,12 @@ begin
     assumes "natural_transformation Cop.comp S (Y a) F \<tau>"
     shows "\<E> \<tau> \<in> F.SET a" and "\<T> (\<E> \<tau>) = \<tau>"
     proof -
-      interpret natural_transformation Cop.comp S "Y a" F \<tau> using assms by auto
+      interpret natural_transformation Cop.comp S \<open>Y a\<close> F \<tau> using assms by auto
       interpret yoneda_lemma_fixed_\<tau> C S \<phi> F a \<tau> ..
       show 1: "\<E> \<tau> \<in> F.SET a" using assms \<E>\<tau>_in_Fa by auto
-      interpret yoneda_lemma_fixed_e C S \<phi> F a "\<E> \<tau>"
+      interpret yoneda_lemma_fixed_e C S \<phi> F a \<open>\<E> \<tau>\<close>
         using 1 by (unfold_locales, auto)
-      interpret \<T>e: natural_transformation Cop.comp S "Y a" F "\<T> (\<E> \<tau>)"
+      interpret \<T>e: natural_transformation Cop.comp S \<open>Y a\<close> F \<open>\<T> (\<E> \<tau>)\<close>
         using natural_transformation_\<T>e by auto
       show "\<T> (\<E> \<tau>) = \<tau>"
       proof (intro eqI)
@@ -965,14 +965,14 @@ begin
     proof -
       let ?\<psi>e = "\<psi> (a, a') e"
       have \<psi>e: "\<guillemotleft>?\<psi>e : a \<rightarrow> a'\<guillemotright>" using ide_a ide_a' e Hom.\<psi>_mapsto [of a a'] by auto
-      interpret Ye: natural_transformation Cop.comp S "Y a" "Y a'" "Y ?\<psi>e"
+      interpret Ye: natural_transformation Cop.comp S \<open>Y a\<close> \<open>Y a'\<close> \<open>Y ?\<psi>e\<close>
         using Y_arr_is_transformation [of ?\<psi>e] \<psi>e by (elim C.in_homE, auto)
-      interpret yoneda_lemma_fixed_e C S \<phi> "Y a'" a e
+      interpret yoneda_lemma_fixed_e C S \<phi> \<open>Y a'\<close> a e
         using ide_a ide_a' e S.set_mkIde Hom.set_map
         by (unfold_locales, simp_all)
-      interpret \<T>e: natural_transformation Cop.comp S "Y a" "Y a'" "\<T> e"
+      interpret \<T>e: natural_transformation Cop.comp S \<open>Y a\<close> \<open>Y a'\<close> \<open>\<T> e\<close>
         using natural_transformation_\<T>e by auto
-      interpret yoneda_lemma_fixed_\<tau> C S \<phi> "Y a'" a "\<T> e" ..
+      interpret yoneda_lemma_fixed_\<tau> C S \<phi> \<open>Y a'\<close> a \<open>\<T> e\<close> ..
       have "natural_transformation Cop.comp S (Y a) (Y a') (Y ?\<psi>e)" ..
       moreover have "natural_transformation Cop.comp S (Y a) (Y a') (\<T> e)" ..
       moreover have "\<T> e a = Y ?\<psi>e a"
@@ -1052,9 +1052,9 @@ begin
       assume par: "C.par f f'" and ff': "map f = map f'"
       show "f = f'"
       proof -
-        interpret Ya': yoneda_functor_fixed_object C S \<phi> "C.cod f"
+        interpret Ya': yoneda_functor_fixed_object C S \<phi> \<open>C.cod f\<close>
           using par by (unfold_locales, auto)
-        interpret yoneda_lemma_for_hom C S \<phi> "Y (C.cod f)" "C.dom f" "C.cod f"
+        interpret yoneda_lemma_for_hom C S \<phi> \<open>Y (C.cod f)\<close> \<open>C.dom f\<close> \<open>C.cod f\<close>
           using par by (unfold_locales, auto)
         show "f = f'" using par ff' Y_injective_on_homs [of f f'] by fastforce
       qed
@@ -1070,29 +1070,29 @@ begin
       proof
         interpret Ya': yoneda_functor_fixed_object C S \<phi> a'
           using a' by (unfold_locales, auto)
-        interpret yoneda_lemma_for_hom C S \<phi> "Y a'" a a'
+        interpret yoneda_lemma_for_hom C S \<phi> \<open>Y a'\<close> a a'
           using a a' by (unfold_locales, auto)
-        have NT: "natural_transformation Cop.comp S (Y a) (Y a') (Cop_S.Fun t)"
-          using t a' Y_def Cop_S.Fun_dom Cop_S.Fun_cod Cop_S.dom_simp Cop_S.cod_simp
-                Cop_S.arr_char Cop_S.in_homE
+        have NT: "natural_transformation Cop.comp S (Y a) (Y a') (Cop_S.Map t)"
+          using t a' Y_def Cop_S.Map_dom Cop_S.Map_cod Cop_S.dom_char Cop_S.cod_char
+                Cop_S.in_homE Cop_S.arrE
           by metis
-        hence 1: "\<E> (Cop_S.Fun t) \<in> Hom.set (a, a')"
+        hence 1: "\<E> (Cop_S.Map t) \<in> Hom.set (a, a')"
           using \<E>\<tau>_in_Fa ide_a ide_a' Hom.set_map by simp
-        moreover have "map (\<psi> (a, a') (\<E> (Cop_S.Fun t))) = t"
+        moreover have "map (\<psi> (a, a') (\<E> (Cop_S.Map t))) = t"
         proof (intro Cop_S.arr_eqI)
-          have 2: "\<guillemotleft>map (\<psi> (a, a') (\<E> (Cop_S.Fun t))) : map a \<rightarrow>\<^sub>[\<^sub>C\<^sub>o\<^sub>p\<^sub>,\<^sub>S\<^sub>] map a'\<guillemotright>"
+          have 2: "\<guillemotleft>map (\<psi> (a, a') (\<E> (Cop_S.Map t))) : map a \<rightarrow>\<^sub>[\<^sub>C\<^sub>o\<^sub>p\<^sub>,\<^sub>S\<^sub>] map a'\<guillemotright>"
             using 1 ide_a ide_a' Hom.\<psi>_mapsto [of a a'] by blast
           show "Cop_S.arr t" using t by blast
-          show "Cop_S.arr (map (\<psi> (a, a') (\<E> (Cop_S.Fun t))))" using 2 by blast
-          show 3: "Cop_S.Fun (map (\<psi> (a, a') (\<E> (Cop_S.Fun t)))) = Cop_S.Fun t"
+          show "Cop_S.arr (map (\<psi> (a, a') (\<E> (Cop_S.Map t))))" using 2 by blast
+          show 3: "Cop_S.Map (map (\<psi> (a, a') (\<E> (Cop_S.Map t)))) = Cop_S.Map t"
             using NT Y_surjective_on_homs Y_def by simp
-          show 4: "Cop_S.Dom (map (\<psi> (a, a') (\<E> (Cop_S.Fun t)))) = Cop_S.Dom t"
-            using t 2 natural_transformation_axioms Cop_S.Fun_dom by (metis Cop_S.in_homE)
-          show "Cop_S.Cod (map (\<psi> (a, a') (\<E> (Cop_S.Fun t)))) = Cop_S.Cod t"
-            using 2 3 4 t Cop_S.Fun_cod by (metis Cop_S.in_homE)
+          show 4: "Cop_S.Dom (map (\<psi> (a, a') (\<E> (Cop_S.Map t)))) = Cop_S.Dom t"
+            using t 2 natural_transformation_axioms Cop_S.Map_dom by (metis Cop_S.in_homE)
+          show "Cop_S.Cod (map (\<psi> (a, a') (\<E> (Cop_S.Map t)))) = Cop_S.Cod t"
+            using 2 3 4 t Cop_S.Map_cod by (metis Cop_S.in_homE)
         qed
-        ultimately show "\<guillemotleft>\<psi> (a, a') (\<E> (Cop_S.Fun t)) : a \<rightarrow> a'\<guillemotright> \<and>
-                         map (\<psi> (a, a') (\<E> (Cop_S.Fun t))) = t"
+        ultimately show "\<guillemotleft>\<psi> (a, a') (\<E> (Cop_S.Map t)) : a \<rightarrow> a'\<guillemotright> \<and>
+                         map (\<psi> (a, a') (\<E> (Cop_S.Map t))) = t"
           using ide_a ide_a' Hom.\<psi>_mapsto by auto
       qed
     qed

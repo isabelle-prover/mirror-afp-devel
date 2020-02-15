@@ -293,7 +293,7 @@ begin
     proof -
       obtain F \<eta> \<epsilon> where L: "equivalence_of_categories C C F (\<lambda>f. \<I> \<otimes> f) \<eta> \<epsilon>"
         using L.induces_equivalence unity_def by auto
-      interpret L: equivalence_of_categories C C F "\<lambda>f. \<I> \<otimes> f" \<eta> \<epsilon>
+      interpret L: equivalence_of_categories C C F \<open>\<lambda>f. \<I> \<otimes> f\<close> \<eta> \<epsilon>
         using L by auto
       let ?P = "\<lambda>f. \<guillemotleft>f : \<I> \<otimes> a \<rightarrow> a\<guillemotright> \<and> \<I> \<otimes> f = (\<iota> \<otimes> a) \<cdot> inv \<a>[\<I>, \<I>, a]"
       have "\<guillemotleft>(\<iota> \<otimes> a) \<cdot> inv \<a>[\<I>, \<I>, a] : \<I> \<otimes> \<I> \<otimes> a \<rightarrow> \<I> \<otimes> a\<guillemotright>"
@@ -386,7 +386,7 @@ begin
     proof -
       obtain F \<eta> \<epsilon> where R: "equivalence_of_categories C C F (\<lambda>f. f \<otimes> \<I>) \<eta> \<epsilon>"
         using R.induces_equivalence \<iota>_in_hom by auto
-      interpret R: equivalence_of_categories C C F "\<lambda>f. f \<otimes> \<I>" \<eta> \<epsilon>
+      interpret R: equivalence_of_categories C C F \<open>\<lambda>f. f \<otimes> \<I>\<close> \<eta> \<epsilon>
         using R by auto
       let ?P = "\<lambda>f. \<guillemotleft>f : a \<otimes> \<I> \<rightarrow> a\<guillemotright> \<and> f \<otimes> \<I> = (a \<otimes> \<iota>) \<cdot> \<a>[a, \<I>, \<I>]"
       have "\<guillemotleft>(a \<otimes> \<iota>) \<cdot> \<a>[a, \<I>, \<I>] : (a \<otimes> \<I>) \<otimes> \<I> \<rightarrow> a \<otimes> \<I>\<guillemotright>"
@@ -536,7 +536,7 @@ begin
 
     interpretation \<ll>: natural_transformation C C L map \<ll>
     proof -
-      interpret \<ll>: transformation_by_components C C L map "\<lambda>a. \<l>[a]"
+      interpret \<ll>: transformation_by_components C C L map \<open>\<lambda>a. \<l>[a]\<close>
         using lunit_in_hom lunit_naturality unity_def \<iota>_in_hom' L.is_extensional
         by (unfold_locales, auto)
       have "\<ll>.map = \<ll>"
@@ -551,7 +551,7 @@ begin
 
     interpretation \<rho>: natural_transformation C C R map \<rho>
     proof -
-      interpret \<rho>: transformation_by_components C C R map "\<lambda>a. \<r>[a]"
+      interpret \<rho>: transformation_by_components C C R map \<open>\<lambda>a. \<r>[a]\<close>
         using runit_naturality unity_def \<iota>_in_hom' R.is_extensional
         by (unfold_locales, auto)
       have "\<rho>.map = \<rho>"
@@ -1529,7 +1529,7 @@ $$\xymatrix{
 
     interpretation \<ll>: natural_isomorphism C C L\<^sub>E\<^sub>M\<^sub>C map \<ll>\<^sub>E\<^sub>M\<^sub>C
     proof -
-      interpret \<ll>: transformation_by_components C C L\<^sub>E\<^sub>M\<^sub>C map "\<lambda>a. \<l>[a]"
+      interpret \<ll>: transformation_by_components C C L\<^sub>E\<^sub>M\<^sub>C map \<open>\<lambda>a. \<l>[a]\<close>
         using lunit_naturality L\<^sub>E\<^sub>M\<^sub>C_def by (unfold_locales, auto)
       interpret \<ll>: natural_isomorphism C C L\<^sub>E\<^sub>M\<^sub>C map \<ll>.map
         using iso_lunit by (unfold_locales, simp)
@@ -1546,7 +1546,7 @@ $$\xymatrix{
 
     interpretation \<rho>: natural_isomorphism C C R\<^sub>E\<^sub>M\<^sub>C map \<rho>\<^sub>E\<^sub>M\<^sub>C
     proof -
-      interpret \<rho>: transformation_by_components C C R\<^sub>E\<^sub>M\<^sub>C map "\<lambda>a. \<r>[a]"
+      interpret \<rho>: transformation_by_components C C R\<^sub>E\<^sub>M\<^sub>C map \<open>\<lambda>a. \<r>[a]\<close>
         using runit_naturality R\<^sub>E\<^sub>M\<^sub>C_def by (unfold_locales, auto)
       interpret \<rho>: natural_isomorphism C C R\<^sub>E\<^sub>M\<^sub>C map \<rho>.map
         using iso_runit \<rho>.map_simp_ide by (unfold_locales, simp)
@@ -1605,13 +1605,13 @@ $$\xymatrix{
     lemma induces_monoidal_category:
     shows "monoidal_category C T\<^sub>E\<^sub>M\<^sub>C \<alpha> \<iota>"
     proof -
-      interpret L: equivalence_functor C C "\<lambda>f. T\<^sub>E\<^sub>M\<^sub>C (cod \<iota>, f)"
+      interpret L: equivalence_functor C C \<open>\<lambda>f. T\<^sub>E\<^sub>M\<^sub>C (cod \<iota>, f)\<close>
       proof -
         have "L\<^sub>E\<^sub>M\<^sub>C = (\<lambda>f. T\<^sub>E\<^sub>M\<^sub>C (cod \<iota>, f))" using \<iota>_in_hom L\<^sub>E\<^sub>M\<^sub>C_def by auto
         thus "equivalence_functor C C (\<lambda>f. T\<^sub>E\<^sub>M\<^sub>C (cod \<iota>, f))"
           using L.equivalence_functor_axioms T\<^sub>E\<^sub>M\<^sub>C_def L\<^sub>E\<^sub>M\<^sub>C_def by simp
       qed
-      interpret R: equivalence_functor C C "\<lambda>f. T\<^sub>E\<^sub>M\<^sub>C (f, cod \<iota>)"
+      interpret R: equivalence_functor C C \<open>\<lambda>f. T\<^sub>E\<^sub>M\<^sub>C (f, cod \<iota>)\<close>
       proof -
         have "R\<^sub>E\<^sub>M\<^sub>C = (\<lambda>f. T\<^sub>E\<^sub>M\<^sub>C (f, cod \<iota>))" using \<iota>_in_hom R\<^sub>E\<^sub>M\<^sub>C_def by auto
         thus "equivalence_functor C C (\<lambda>f. T\<^sub>E\<^sub>M\<^sub>C (f, cod \<iota>))"
@@ -1845,9 +1845,9 @@ $$\xymatrix{
       by (unfold_locales, auto)
     interpret \<alpha>: natural_isomorphism C.CCC.comp C T.ToTC T.ToCT \<alpha>
       using C.\<alpha>'.components_are_iso by (unfold_locales, simp)
-    interpret L: equivalence_functor C C "\<lambda>f. T (C.cod \<iota>, f)"
+    interpret L: equivalence_functor C C \<open>\<lambda>f. T (C.cod \<iota>, f)\<close>
       using C.R.equivalence_functor_axioms by simp
-    interpret R: equivalence_functor C C "\<lambda>f. T (f, C.cod \<iota>)"
+    interpret R: equivalence_functor C C \<open>\<lambda>f. T (f, C.cod \<iota>)\<close>
       using C.L.equivalence_functor_axioms by simp
     show "monoidal_category C T \<alpha> \<iota>"
       using C.\<iota>_in_hom C.\<iota>_is_iso C.unity_def C.pentagon' C.comp_assoc

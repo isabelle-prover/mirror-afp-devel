@@ -73,8 +73,8 @@ begin
         using terminal_def by meson
       have "iso f"
         using assms f g
-        by (metis (no_types, lifting) iso_iff_section_and_retraction retractionI sectionI
-            terminal_def comp_in_homI ide_in_hom)
+        by (metis arr_iff_in_hom cod_comp retractionI sectionI seqI' terminal_def
+            dom_comp in_homE iso_iff_section_and_retraction ide_in_hom)
       thus ?thesis using f by auto
     qed
 
@@ -86,8 +86,8 @@ begin
       from assms obtain g where g: "\<guillemotleft>g : b \<rightarrow> a\<guillemotright>" using initial_def by auto
       have "iso f"
         using assms f g
-        by (metis iso_iff_section_and_retraction retractionI sectionI
-            initial_def comp_in_homI ide_in_hom)
+        by (metis (no_types, lifting) arr_iff_in_hom cod_comp in_homE initial_def
+            retractionI sectionI dom_comp iso_iff_section_and_retraction ide_in_hom seqI')
       thus ?thesis
         using f by auto
     qed

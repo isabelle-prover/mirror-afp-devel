@@ -6,7 +6,7 @@
 chapter Functor
 
 theory Functor
-imports Category DualCategory InitialTerminal
+imports Category ConcreteCategory DualCategory InitialTerminal
 begin
 
   text\<open>
@@ -144,12 +144,9 @@ begin
       from this obtain g where g: "\<guillemotleft>g : a \<rightarrow>\<^sub>A a'\<guillemotright> \<and> F g = g'"
         using assms(1) is_full by (metis A.arrI A.ide_cod A.ide_dom A.in_homE)
       have "A.inverse_arrows f g"
-        using assms 1 g g'
-        apply (elim B.inverse_arrowsE, intro A.inverse_arrowsI, auto)
-        using B.ide_dom B.iso_is_arr locally_reflects_ide preserves_comp
-         apply (metis A.in_homI A.seqI' A.dom_comp A.cod_comp A.in_homE)
-        using B.ide_dom B.iso_is_arr locally_reflects_ide preserves_comp
-        by (metis A.in_homI A.seqI' A.dom_comp A.cod_comp A.in_homE)
+        using assms 1 g g' A.inverse_arrowsI
+        by (metis A.arr_iff_in_hom A.dom_comp A.in_homE A.seqI' B.inverse_arrowsE
+            A.cod_comp locally_reflects_ide preserves_comp)
       thus ?thesis by auto
     qed
 
@@ -326,6 +323,10 @@ begin
     show ?thesis using inv inv' by (unfold_locales, auto)
   qed
   
+  text \<open>
+    Inverse functors uniquely determine each other.
+\<close>
+
   lemma inverse_functor_unique:
   assumes "inverse_functors C D F G" and "inverse_functors C D F G'"
   shows "G = G'"
@@ -408,25 +409,49 @@ begin
     using inv_is_inverse by simp
 
   text \<open>
-    Inverse functors uniquely determine each other.
-\<close>
+    We now prove the result, advertised earlier in theory \<open>ConcreteCategory\<close>,
+    that any category is in fact isomorphic to the concrete category formed from it in
+    the obvious way.
+  \<close>
 
-  lemma inverse_functor_eq:
-  assumes "inverse_functors C D F G" and "inverse_functors C D F G'"
-  shows "G = G'"
-  proof -
-    interpret FG: inverse_functors C D F G using assms(1) by auto
-    interpret FG': inverse_functors C D F G' using assms(2) by auto
-    show "G = G'"
-      using FG.G.is_extensional FG'.G.is_extensional FG'.inv FG'.inverse_functors_axioms
-            FG.inverse_functors_axioms inverse_functor_unique
-      by metis
-  qed
+  context category
+  begin
 
-  lemma inverse_functor_eq':
-  assumes "inverse_functors C D F G" and "inverse_functors C D F' G"
-  shows "F = F'"
-    using assms inverse_functors_sym inverse_functor_eq by blast
+    interpretation CC: concrete_category \<open>Collect ide\<close> hom id \<open>\<lambda>C B A g f. g \<cdot> f\<close>
+      using comp_arr_dom comp_cod_arr comp_assoc
+      by (unfold_locales, auto)
+
+    interpretation F: "functor" C CC.COMP
+                       \<open>\<lambda>f. if arr f then CC.MkArr (dom f) (cod f) f else CC.null\<close>
+      by (unfold_locales, auto simp add: in_homI)
+
+    interpretation G: "functor" CC.COMP C \<open>\<lambda>F. if CC.arr F then CC.Map F else null\<close>
+      using CC.Map_in_Hom CC.seq_char
+      by (unfold_locales, auto)
+
+    interpretation FG: inverse_functors C CC.COMP
+                       \<open>\<lambda>f. if arr f then CC.MkArr (dom f) (cod f) f else CC.null\<close>
+                       \<open>\<lambda>F. if CC.arr F then CC.Map F else null\<close>
+    proof
+      show "(\<lambda>F. if CC.arr F then CC.Map F else null) \<circ>
+              (\<lambda>f. if arr f then CC.MkArr (dom f) (cod f) f else CC.null) =
+            map"
+        using CC.arr_char map_def by fastforce
+      show "(\<lambda>f. if arr f then CC.MkArr (dom f) (cod f) f else CC.null) \<circ>
+              (\<lambda>F. if CC.arr F then CC.Map F else null) =
+            CC.map"
+        using CC.MkArr_Map G.preserves_arr G.preserves_cod G.preserves_dom
+              CC.is_extensional
+        by auto
+    qed
+
+    interpretation isomorphic_categories C CC.COMP ..
+
+    theorem is_isomorphic_to_concrete_category:
+    shows "isomorphic_categories C CC.COMP"
+      ..
+
+  end
 
   locale dual_functor =
     F: "functor" A B F +

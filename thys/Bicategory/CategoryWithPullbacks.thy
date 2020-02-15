@@ -580,14 +580,6 @@ text \<open>
   and prj1_ext: "\<not> cospan f g \<Longrightarrow> \<p>\<^sub>1[f, g] = null"
   and pullback_commutes [intro]: "cospan f g \<Longrightarrow> commutative_square f g \<p>\<^sub>1[f, g] \<p>\<^sub>0[f, g]"
   and universal: "commutative_square f g h k \<Longrightarrow> \<exists>!l. \<p>\<^sub>1[f, g] \<cdot> l = h \<and> \<p>\<^sub>0[f, g] \<cdot> l = k"
-
-  subsection "Properties"
-
-  text \<open>
-    Next, we go on to develop the properties of an elementary category with pullbacks.
-  \<close>
-
-  context elementary_category_with_pullbacks
   begin
 
     lemma pullback_commutes':

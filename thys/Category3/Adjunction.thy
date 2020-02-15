@@ -356,16 +356,16 @@ begin
     G: "functor" C D G +
     GF: composite_functor D C D F G +
     FG: composite_functor C D C G F +
-    FGF: composite_functor D C C F "F o G" +
-    GFG: composite_functor C D D G "G o F" +
-    \<eta>: natural_transformation D D D.map "G o F" \<eta> +
-    \<epsilon>: natural_transformation C C "F o G" C.map \<epsilon> +
-    F\<eta>: horizontal_composite D D C D.map "G o F" F F \<eta> F +
-    \<eta>G: horizontal_composite C D D G G D.map "G o F" G \<eta> +
-    \<epsilon>F: horizontal_composite D C C F F "F o G" C.map F \<epsilon> +
-    G\<epsilon>: horizontal_composite C C D "F o G" C.map G G \<epsilon> G +
-    \<epsilon>FoF\<eta>: vertical_composite D C F "F o G o F" F "F o \<eta>" "\<epsilon> o F" +
-    G\<epsilon>o\<eta>G: vertical_composite C D G "G o F o G" G "\<eta> o G" "G o \<epsilon>"
+    FGF: composite_functor D C C F \<open>F o G\<close> +
+    GFG: composite_functor C D D G \<open>G o F\<close> +
+    \<eta>: natural_transformation D D D.map \<open>G o F\<close> \<eta> +
+    \<epsilon>: natural_transformation C C \<open>F o G\<close> C.map \<epsilon> +
+    F\<eta>: natural_transformation D C F \<open>F o G o F\<close> \<open>F o \<eta>\<close> +
+    \<eta>G: natural_transformation C D G \<open>G o F o G\<close> \<open>\<eta> o G\<close> +
+    \<epsilon>F: natural_transformation D C \<open>F o G o F\<close> F \<open>\<epsilon> o F\<close> +
+    G\<epsilon>: natural_transformation C D \<open>G o F o G\<close> G \<open>G o \<epsilon>\<close> +
+    \<epsilon>FoF\<eta>: vertical_composite D C F \<open>F o G o F\<close> F \<open>F o \<eta>\<close> \<open>\<epsilon> o F\<close> +
+    G\<epsilon>o\<eta>G: vertical_composite C D G \<open>G o F o G\<close> G \<open>\<eta> o G\<close> \<open>G o \<epsilon>\<close>
     for C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
     and D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
     and F :: "'d \<Rightarrow> 'c"
@@ -389,32 +389,34 @@ begin
     (* IDEA:  \<epsilon>' = \<epsilon>'FG o (FG\<epsilon> o F\<eta>G) = \<epsilon>'\<epsilon> o F\<eta>G = \<epsilon>FG o (\<epsilon>'FG o F\<eta>G) = \<epsilon> *)
     interpret Adj: unit_counit_adjunction C D F G \<eta> \<epsilon> using assms(1) by auto
     interpret Adj': unit_counit_adjunction C D F G \<eta> \<epsilon>' using assms(2) by auto
-    interpret FGFG: composite_functor C D C G "F o G o F" ..
-    interpret FG\<epsilon>: horizontal_composite C D C "G o F o G" G F F "G o \<epsilon>" F ..
-    interpret \<epsilon>'FG: horizontal_composite C D C G G "F o G o F" F G "\<epsilon>' o F" ..
-    interpret F\<eta>G: horizontal_composite C D C G G F "F o G o F" G "F o \<eta>" ..
-    interpret \<epsilon>'\<epsilon>: natural_transformation C C "F o G o F o G" Adj.C.map "\<epsilon>' o \<epsilon>"
+    interpret FGFG: composite_functor C D C G \<open>F o G o F\<close> ..
+    interpret FG\<epsilon>: natural_transformation C C \<open>(F o G) o (F o G)\<close> \<open>F o G\<close> \<open>(F o G) o \<epsilon>\<close>
+      using Adj.\<epsilon>.natural_transformation_axioms Adj.FG.natural_transformation_axioms
+            horizontal_composite Adj.FG.functor_axioms
+      by fastforce
+    interpret F\<eta>G: natural_transformation C C \<open>F o G\<close> \<open>F o G o F o G\<close> \<open>F o \<eta> o G\<close>
+      using Adj.\<eta>.natural_transformation_axioms Adj.F\<eta>.natural_transformation_axioms
+            Adj.G.natural_transformation_axioms horizontal_composite
+      by blast
+    interpret \<epsilon>'\<epsilon>: natural_transformation C C \<open>F o G o F o G\<close> Adj.C.map \<open>\<epsilon>' o \<epsilon>\<close>
     proof -
-      interpret \<epsilon>'\<epsilon>: horizontal_composite C C C "F o G" Adj.C.map "F o G" Adj.C.map \<epsilon> \<epsilon>' ..
-      have "Adj.C.map = Adj.C.map o Adj.C.map" using Adj.C.map_def by auto
-      moreover have "F o G o F o G = (F o G) o (F o G)" by auto
-      ultimately show "natural_transformation C C (F o G o F o G) Adj.C.map (\<epsilon>' o \<epsilon>)"
-        using \<epsilon>'\<epsilon>.natural_transformation_axioms by simp
+      have "natural_transformation C C ((F o G) o (F o G)) Adj.C.map (\<epsilon>' o \<epsilon>)"
+        using Adj.\<epsilon>.natural_transformation_axioms Adj'.\<epsilon>.natural_transformation_axioms
+              horizontal_composite Adj.C.is_functor comp_functor_identity
+        by (metis (no_types, lifting))
+      thus "natural_transformation C C (F o G o F o G) Adj.C.map (\<epsilon>' o \<epsilon>)"
+        using o_assoc by metis
     qed
     interpret \<epsilon>'\<epsilon>oF\<eta>G: vertical_composite
-                         C C "F o G" "F o G o F o G" Adj.C.map "F o \<eta> o G" "\<epsilon>' o \<epsilon>" ..
+                         C C \<open>F o G\<close> \<open>F o G o F o G\<close> Adj.C.map \<open>F o \<eta> o G\<close> \<open>\<epsilon>' o \<epsilon>\<close> ..
     have "\<epsilon>' = vertical_composite.map C C (F o Adj.G\<epsilon>o\<eta>G.map) \<epsilon>'"
       using vcomp_ide_dom [of C C "F o G" Adj.C.map \<epsilon>'] Adj.triangle_G
       by (simp add: Adj'.\<epsilon>.natural_transformation_axioms)
     also have "... = vertical_composite.map C C
                        (vertical_composite.map C C (F o \<eta> o G) (F o G o \<epsilon>)) \<epsilon>'"
-    proof -
-      have "F o (\<eta> o G) = F o \<eta> o G \<and> F o (G o \<epsilon>) = F o G o \<epsilon>" by auto
-      thus ?thesis
-        using hcomp_vcomp_functor [of D C F C G "G o F o G" "\<eta> o G" G "G o \<epsilon>"]
-        by (simp add: Adj.F.functor_axioms Adj.G\<epsilon>o\<eta>G.\<sigma>.natural_transformation_axioms
-                      Adj.G\<epsilon>o\<eta>G.\<tau>.natural_transformation_axioms)
-    qed
+      using whisker_left Adj.F.functor_axioms Adj.G\<epsilon>.natural_transformation_axioms
+            Adj.\<eta>G.natural_transformation_axioms o_assoc
+      by (metis (no_types, lifting))
     also have "... = vertical_composite.map C C
                        (vertical_composite.map C C (F o \<eta> o G) (\<epsilon>' o F o G)) \<epsilon>"
     proof -
@@ -422,14 +424,9 @@ begin
               (vertical_composite.map C C (F o \<eta> o G) (F o G o \<epsilon>)) \<epsilon>'
               = vertical_composite.map C C (F o \<eta> o G)
                   (vertical_composite.map C C (F o G o \<epsilon>) \<epsilon>')"
-      proof -
-        have "F \<circ> (G o F o G) = F o G o F o G \<and> F o (G o \<epsilon>) = F o G o \<epsilon>" by auto
-        thus ?thesis
-          using F\<eta>G.natural_transformation_axioms FG\<epsilon>.natural_transformation_axioms
-                Adj'.\<epsilon>.natural_transformation_axioms vcomp_assoc comp_identity_functor
-                comp_functor_identity
-          by simp
-      qed
+        using vcomp_assoc
+        by (metis (no_types, lifting) Adj'.\<epsilon>.natural_transformation_axioms
+            FG\<epsilon>.natural_transformation_axioms F\<eta>G.natural_transformation_axioms o_assoc)
       also have "... = vertical_composite.map C C (F o \<eta> o G)
                          (vertical_composite.map C C (\<epsilon>' o F o G) \<epsilon>)"
       proof -
@@ -440,23 +437,22 @@ begin
         moreover have "\<epsilon>' \<circ> (F o G) = \<epsilon>' o F \<circ> G" by auto
         ultimately show ?thesis
           using Adj'.\<epsilon>.natural_transformation_axioms Adj.\<epsilon>.natural_transformation_axioms
-                interchange [of C C "F o G" Adj.C.map \<epsilon> C "F o G" Adj.C.map \<epsilon>']
+                interchange_spc [of C C "F o G" Adj.C.map \<epsilon> C "F o G" Adj.C.map \<epsilon>']
           by simp
       qed
       also have "... = vertical_composite.map C C
                          (vertical_composite.map C C (F o \<eta> o G) (\<epsilon>' o F o G)) \<epsilon>"
-        using vcomp_assoc Adj.\<epsilon>.natural_transformation_axioms
-              F\<eta>G.natural_transformation_axioms \<epsilon>'FG.natural_transformation_axioms
-        by simp
+        using vcomp_assoc
+        by (metis Adj'.\<epsilon>F.natural_transformation_axioms Adj.G.natural_transformation_axioms
+            Adj.\<epsilon>.natural_transformation_axioms F\<eta>G.natural_transformation_axioms
+            horizontal_composite)
       finally show ?thesis by simp
     qed
     also have "... = vertical_composite.map C C
                        (vertical_composite.map D C (F o \<eta>) (\<epsilon>' o F) o G) \<epsilon>"
-      using hcomp_functor_vcomp [of C D G C F "F o G o F" "F o \<eta>" F "\<epsilon>' o F"]
-            Adj.F\<eta>.natural_transformation_axioms Adj'.\<epsilon>F.natural_transformation_axioms
-            comp_functor_identity comp_identity_functor Adj.G.functor_axioms
-            Adj'.\<epsilon>FoF\<eta>.\<tau>.natural_transformation_axioms Adj.\<epsilon>FoF\<eta>.\<sigma>.natural_transformation_axioms
-      by simp
+      using whisker_right Adj'.\<epsilon>F.natural_transformation_axioms
+            Adj.F\<eta>.natural_transformation_axioms Adj.G.functor_axioms
+      by metis
     also have "... = vertical_composite.map C C (F o G) \<epsilon>"
       using Adj'.triangle_F by simp
     also have "... = \<epsilon>"
@@ -471,40 +467,43 @@ begin
   proof -
     interpret Adj: unit_counit_adjunction C D F G \<eta> \<epsilon> using assms(1) by auto
     interpret Adj': unit_counit_adjunction C D F G \<eta>' \<epsilon> using assms(2) by auto
-    interpret GFGF: composite_functor D C D F "G o F o G" ..
-    interpret GF\<eta>: horizontal_composite D C D F "F o G o F" G G "F o \<eta>" G ..
-    interpret \<eta>'GF: horizontal_composite D C D F F G "G o F o G" F "\<eta>' o G" ..
-    interpret G\<epsilon>F: horizontal_composite D C D F F "G o F o G" G F "G o \<epsilon>" ..
-    interpret \<eta>'\<eta>: natural_transformation D D Adj.D.map "G o F o G o F" "\<eta>' o \<eta>"
+    interpret GFGF: composite_functor D C D F \<open>G o F o G\<close> ..
+    interpret GF\<eta>: natural_transformation D D \<open>G o F\<close> \<open>(G o F) o (G o F)\<close> \<open>(G o F) o \<eta>\<close>
+      using Adj.\<eta>.natural_transformation_axioms Adj.GF.functor_axioms
+            Adj.GF.natural_transformation_axioms comp_functor_identity horizontal_composite
+      by (metis (no_types, lifting))
+    interpret \<eta>'GF: natural_transformation D D \<open>G o F\<close> \<open>(G o F) o (G o F)\<close> \<open>\<eta>' o (G o F)\<close>
+      using Adj'.\<eta>.natural_transformation_axioms Adj.GF.functor_axioms
+            Adj.GF.natural_transformation_axioms comp_identity_functor horizontal_composite
+      by (metis (no_types, lifting))
+    interpret G\<epsilon>F: natural_transformation D D \<open>G o F o G o F\<close> \<open>G o F\<close> \<open>G o \<epsilon> o F\<close>
+      using Adj.\<epsilon>.natural_transformation_axioms Adj.F.natural_transformation_axioms
+            Adj.G\<epsilon>.natural_transformation_axioms horizontal_composite
+      by blast
+    interpret \<eta>'\<eta>: natural_transformation D D Adj.D.map \<open>G o F o G o F\<close> \<open>\<eta>' o \<eta>\<close>
     proof -
-      interpret \<eta>'\<eta>: horizontal_composite D D D Adj.D.map "G o F" Adj.D.map "G o F" \<eta> \<eta>' ..
-      have "Adj.D.map = Adj.D.map o Adj.D.map" using Adj.D.map_def by auto
-      moreover have "G o F o G o F = (G o F) o (G o F)" by auto
-      ultimately show "natural_transformation D D Adj.D.map (G o F o G o F) (\<eta>' o \<eta>)"
-        using \<eta>'\<eta>.natural_transformation_axioms by simp
+      have "natural_transformation D D Adj.D.map ((G o F) o (G o F)) (\<eta>' o \<eta>)"
+        using Adj.\<eta>.natural_transformation_axioms Adj'.\<eta>.natural_transformation_axioms
+              horizontal_composite Adj.D.natural_transformation_axioms hcomp_ide_cod
+        by (metis (no_types, lifting))
+      thus "natural_transformation D D Adj.D.map (G o F o G o F) (\<eta>' o \<eta>)"
+        using o_assoc by metis
     qed
     interpret G\<epsilon>Fo\<eta>'\<eta>: vertical_composite
-                         D D Adj.D.map "G o F o G o F" "G o F" "\<eta>' o \<eta>" "G o \<epsilon> o F" ..
+                         D D Adj.D.map \<open>G o F o G o F\<close> \<open>G o F\<close> \<open>\<eta>' o \<eta>\<close> \<open>G o \<epsilon> o F\<close> ..
     have "\<eta>' = vertical_composite.map D D \<eta>' (G o Adj.\<epsilon>FoF\<eta>.map)"
       using vcomp_ide_cod [of D D  Adj.D.map "G o F" \<eta>'] Adj.triangle_F
       by (simp add: Adj'.\<eta>.natural_transformation_axioms)
     also have "... = vertical_composite.map D D \<eta>'
                        (vertical_composite.map D D (G o (F o \<eta>)) (G o (\<epsilon> o F)))"
-      using hcomp_vcomp_functor [of C D G D F "F o G o F" "F o \<eta>" F "\<epsilon> o F"]
-            Adj.G.functor_axioms Adj.\<epsilon>FoF\<eta>.\<sigma>.natural_transformation_axioms
-            Adj.\<epsilon>FoF\<eta>.\<tau>.natural_transformation_axioms
-      by simp
+      using whisker_left Adj.F\<eta>.natural_transformation_axioms Adj.G.functor_axioms
+            Adj.\<epsilon>F.natural_transformation_axioms
+      by fastforce
     also have "... = vertical_composite.map D D
                        (vertical_composite.map D D \<eta>' (G o (F o \<eta>))) (G o \<epsilon> o F)"
-    proof -
-      have "G o (F o G o F) = G o F o G o F \<and> G o (\<epsilon> o F) = G o \<epsilon> o F" by auto
-      thus ?thesis
-        using vcomp_assoc
-                [of D D Adj.D.map "G o F" \<eta>' "G o F o G o F" "G o (F o \<eta>)" "G o F" "G o \<epsilon> o F"]
-              Adj'.\<eta>.natural_transformation_axioms G\<epsilon>F.natural_transformation_axioms
-              GF\<eta>.natural_transformation_axioms
-        by simp
-    qed
+      using vcomp_assoc Adj'.\<eta>.natural_transformation_axioms
+            GF\<eta>.natural_transformation_axioms G\<epsilon>F.natural_transformation_axioms o_assoc
+      by (metis (no_types, lifting))
     also have "... = vertical_composite.map D D
                        (vertical_composite.map D D \<eta> (\<eta>' o G o F)) (G o \<epsilon> o F)"
     proof -
@@ -512,34 +511,20 @@ begin
         using Adj'.\<eta>.natural_transformation_axioms hcomp_ide_dom by simp
       moreover have "\<eta>' o (G o F) = \<eta>' o G o F \<and> G o (F o \<eta>) = G o F o \<eta>" by auto
       ultimately show ?thesis
-        using interchange [of D D Adj.D.map "G o F" \<eta> D Adj.D.map "G o F" \<eta>']
+        using interchange_spc [of D D Adj.D.map "G o F" \<eta> D Adj.D.map "G o F" \<eta>']
               Adj.\<eta>.natural_transformation_axioms Adj'.\<eta>.natural_transformation_axioms
         by simp
     qed
     also have "... = vertical_composite.map D D \<eta>
                        (vertical_composite.map D D (\<eta>' o G o F) (G o \<epsilon> o F))"
-    proof -
-      have "G o (F o G o F) = G o F o G o F \<and> G o (F o \<eta>) = G o F o \<eta>" by auto
-      thus ?thesis
-        using vcomp_assoc
-                [of D D Adj.D.map "G o F" \<eta> "G o F o G o F" "\<eta>' o G o F" "G o F" "G o \<epsilon> o F"]
-              Adj.\<eta>.natural_transformation_axioms \<eta>'GF.natural_transformation_axioms
-              G\<epsilon>F.natural_transformation_axioms
-        by simp
-    qed
+      using vcomp_assoc
+      by (metis (no_types, lifting) Adj.\<eta>.natural_transformation_axioms
+          G\<epsilon>F.natural_transformation_axioms \<eta>'GF.natural_transformation_axioms o_assoc)
     also have "... = vertical_composite.map D D \<eta>
                        (vertical_composite.map C D (\<eta>' o G) (G o \<epsilon>) o F)"
-    proof -
-      have "G o (F o G) = G o F o G" by auto
-      moreover have "G \<circ> Adj.C.map = G"
-        using Functor.comp_functor_identity Adj.G.functor_axioms by simp
-      ultimately show ?thesis
-        using hcomp_functor_vcomp [of D C F D "Adj.D.map \<circ> G" "G o F o G" "\<eta>' o G"
-                                      G "G o \<epsilon>"]
-              Adj'.\<eta>G.natural_transformation_axioms Adj.G\<epsilon>.natural_transformation_axioms
-              Adj.F.functor_axioms
-        by simp
-    qed
+      using whisker_right Adj'.\<eta>G.natural_transformation_axioms Adj.F.functor_axioms
+            Adj.G\<epsilon>.natural_transformation_axioms
+      by fastforce
     also have "... = vertical_composite.map D D \<eta> (G o F)"
       using Adj'.triangle_G by simp
     also have "... = \<eta>"
@@ -580,12 +565,12 @@ begin
     Hom_DopxG: set_valued_functor DopxC.comp S Hom_DopxG.map +
     \<eta>: natural_transformation D D D.map GF.map \<eta> +
     \<epsilon>: natural_transformation C C FG.map C.map \<epsilon> +
-    F\<eta>: horizontal_composite D D C D.map "G o F" F F \<eta> F +
-    \<eta>G: horizontal_composite C D D G G D.map "G o F" G \<eta> +
-    \<epsilon>F: horizontal_composite D C C F F "F o G" C.map F \<epsilon> +
-    G\<epsilon>: horizontal_composite C C D "F o G" C.map G G \<epsilon> G +
-    \<epsilon>FoF\<eta>: vertical_composite D C F FGF.map F F\<eta>.map \<epsilon>F.map +
-    G\<epsilon>o\<eta>G: vertical_composite C D G GFG.map G \<eta>G.map G\<epsilon>.map +
+    F\<eta>: natural_transformation D C F \<open>F o G o F\<close> \<open>F o \<eta>\<close> +
+    \<eta>G: natural_transformation C D G \<open>G o F o G\<close> \<open>\<eta> o G\<close> +
+    \<epsilon>F: natural_transformation D C \<open>F o G o F\<close> F \<open>\<epsilon> o F\<close> +
+    G\<epsilon>: natural_transformation C D \<open>G o F o G\<close> G \<open>G o \<epsilon>\<close> +
+    \<epsilon>FoF\<eta>: vertical_composite D C F FGF.map F \<open>F o \<eta>\<close> \<open>\<epsilon> o F\<close> +
+    G\<epsilon>o\<eta>G: vertical_composite C D G GFG.map G \<open>\<eta> o G\<close> \<open>G o \<epsilon>\<close> +
     \<phi>\<psi>: meta_adjunction C D F G \<phi> \<psi> +
     \<eta>\<epsilon>: unit_counit_adjunction C D F G \<eta> \<epsilon> +
     \<Phi>\<Psi>: hom_adjunction C D S \<phi>C \<phi>D F G \<Phi> \<Psi>
@@ -725,24 +710,38 @@ begin
     interpretation GC: composite_functor C C D C.map G ..
     interpretation DG: composite_functor C D D G D.map ..
 
-    interpretation F\<eta>: horizontal_composite D D C D.map "G o F" F F \<eta>.map F ..
-    interpretation F\<eta>: natural_transformation D C F "F o G o F" "F o \<eta>.map"
-      apply unfold_locales using F\<eta>.is_extensional F\<eta>.is_natural_1 F\<eta>.is_natural_2 by auto
+    interpretation F\<eta>: natural_transformation D C F \<open>F o G o F\<close> \<open>F o \<eta>.map\<close>
+    proof -
+      have "natural_transformation D C F (F o (G o F)) (F o \<eta>.map)"
+        using \<eta>.natural_transformation_axioms F.natural_transformation_axioms
+              horizontal_composite
+        by fastforce
+      thus "natural_transformation D C F (F o G o F) (F o \<eta>.map)"
+        using o_assoc by metis
+    qed
 
-    interpretation \<epsilon>F: horizontal_composite D C C F F "F o G" C.map F \<epsilon>.map ..
-    interpretation \<epsilon>F: natural_transformation D C "F o G o F" F "\<epsilon>.map o F"
-      apply unfold_locales using \<epsilon>F.is_extensional \<epsilon>F.is_natural_1 \<epsilon>F.is_natural_2 by auto
+    interpretation \<epsilon>F: natural_transformation D C \<open>F o G o F\<close> F \<open>\<epsilon>.map o F\<close>
+      using \<epsilon>.natural_transformation_axioms F.natural_transformation_axioms
+            horizontal_composite
+      by fastforce
 
-    interpretation \<eta>G: horizontal_composite C D D G G D.map "G o F" G \<eta>.map ..
-    interpretation \<eta>G: natural_transformation C D G "G o F o G" "\<eta>.map o G"
-      apply unfold_locales using \<eta>G.is_extensional \<eta>G.is_natural_1 \<eta>G.is_natural_2 by auto
+    interpretation \<eta>G: natural_transformation C D G \<open>G o F o G\<close> \<open>\<eta>.map o G\<close>
+      using \<eta>.natural_transformation_axioms G.natural_transformation_axioms
+            horizontal_composite
+      by fastforce
 
-    interpretation G\<epsilon>: horizontal_composite C C D "F o G" C.map G G \<epsilon>.map G ..
-    interpretation G\<epsilon>: natural_transformation C D "G o F o G" G "G o \<epsilon>.map"
-      apply unfold_locales using G\<epsilon>.is_extensional G\<epsilon>.is_natural_1 G\<epsilon>.is_natural_2 by auto
+    interpretation G\<epsilon>: natural_transformation C D \<open>G o F o G\<close> G \<open>G o \<epsilon>.map\<close>
+    proof - 
+      have "natural_transformation C D (G o (F o G)) G (G o \<epsilon>.map)"
+        using \<epsilon>.natural_transformation_axioms G.natural_transformation_axioms
+            horizontal_composite
+        by fastforce
+      thus "natural_transformation C D (G o F o G) G (G o \<epsilon>.map)"
+        using o_assoc by metis
+    qed
 
-    interpretation \<epsilon>FoF\<eta>: vertical_composite D C F "F o G o F" F "F o \<eta>.map" "\<epsilon>.map o F" ..
-    interpretation G\<epsilon>o\<eta>G: vertical_composite C D G "G o F o G" G "\<eta>.map o G" "G o \<epsilon>.map" ..
+    interpretation \<epsilon>FoF\<eta>: vertical_composite D C F \<open>F o G o F\<close> F \<open>F o \<eta>.map\<close> \<open>\<epsilon>.map o F\<close> ..
+    interpretation G\<epsilon>o\<eta>G: vertical_composite C D G \<open>G o F o G\<close> G \<open>\<eta>.map o G\<close> \<open>G o \<epsilon>.map\<close> ..
 
     lemma unit_counit_F:
     assumes "D.ide y"
@@ -758,21 +757,13 @@ begin
     shows "unit_counit_adjunction C D F G \<eta>.map \<epsilon>.map"
     proof
       show "\<epsilon>FoF\<eta>.map = F"
-      proof (intro NaturalTransformation.eqI)
-        show "natural_transformation D C F F \<epsilon>FoF\<eta>.map"
-          using \<epsilon>FoF\<eta>.is_natural_transformation by auto
-        show "natural_transformation D C F F F" ..
-        show "\<And>y. D.ide y \<Longrightarrow> \<epsilon>FoF\<eta>.map y = F y"
-          using \<epsilon>FoF\<eta>.map_simp_ide unit_counit_F by auto
-      qed
+        using \<epsilon>FoF\<eta>.is_natural_transformation \<epsilon>FoF\<eta>.map_simp_ide unit_counit_F
+              F.natural_transformation_axioms
+        by (intro NaturalTransformation.eqI, auto)
       show "G\<epsilon>o\<eta>G.map = G"
-      proof (intro NaturalTransformation.eqI)
-        show "natural_transformation C D G G G\<epsilon>o\<eta>G.map"
-          using G\<epsilon>o\<eta>G.is_natural_transformation by auto
-        show "natural_transformation C D G G G" ..
-        show "\<And>x. C.ide x \<Longrightarrow> G\<epsilon>o\<eta>G.map x = G x"
-          using G\<epsilon>o\<eta>G.map_simp_ide unit_counit_G by auto
-      qed
+        using G\<epsilon>o\<eta>G.is_natural_transformation G\<epsilon>o\<eta>G.map_simp_ide unit_counit_G
+              G.natural_transformation_axioms
+        by (intro NaturalTransformation.eqI, auto)
     qed
 
     text\<open>
@@ -789,14 +780,16 @@ begin
     shows "\<psi> x g = \<epsilon>.map x \<cdot>\<^sub>C F g"
       using assms by (simp add: \<psi>_in_terms_of_\<epsilon>o)
 
-    abbreviation \<eta> :: "'d \<Rightarrow> 'd" where "\<eta> \<equiv> \<eta>.map"
-    abbreviation \<epsilon> :: "'c \<Rightarrow> 'c" where "\<epsilon> \<equiv> \<epsilon>.map"
+    definition \<eta> :: "'d \<Rightarrow> 'd" where "\<eta> \<equiv> \<eta>.map"
+    definition \<epsilon> :: "'c \<Rightarrow> 'c" where "\<epsilon> \<equiv> \<epsilon>.map"
 
     lemma \<eta>_is_natural_transformation:
-    shows "natural_transformation D D D.map GF.map \<eta>" ..
+    shows "natural_transformation D D D.map GF.map \<eta>"
+      unfolding \<eta>_def ..
 
     lemma \<epsilon>_is_natural_transformation:
-    shows "natural_transformation C C FG.map C.map \<epsilon>" ..
+    shows "natural_transformation C C FG.map C.map \<epsilon>"
+      unfolding \<epsilon>_def ..
 
   end
 
@@ -806,7 +799,7 @@ begin
   begin
 
     interpretation unit_counit_adjunction C D F G \<eta> \<epsilon>
-      using induces_unit_counit_adjunction by auto
+      using induces_unit_counit_adjunction \<eta>_def \<epsilon>_def by auto
 
     lemma has_terminal_arrows_from_functor:
     assumes x: "C.ide x"
@@ -814,7 +807,7 @@ begin
     and "\<And>y' f. arrow_from_functor D C F y' x f
                    \<Longrightarrow> terminal_arrow_from_functor.the_coext D C F (G x) (\<epsilon> x) y' f = \<phi> y' f"
     proof -
-      interpret \<epsilon>x: arrow_from_functor D C F "G x" x "\<epsilon> x"
+      interpret \<epsilon>x: arrow_from_functor D C F \<open>G x\<close> x \<open>\<epsilon> x\<close>
         apply unfold_locales
         using x \<epsilon>.preserves_hom G.preserves_ide by auto
       have 1: "\<And>y' f. arrow_from_functor D C F y' x f \<Longrightarrow>
@@ -823,12 +816,12 @@ begin
         fix y' :: 'd and f :: 'c
         assume f: "arrow_from_functor D C F y' x f"
         show "\<epsilon>x.is_coext y' f (\<phi> y' f)"
-          using f x \<phi>_in_hom \<psi>_\<phi> \<psi>_in_terms_of_\<epsilon> \<epsilon>x.is_coext_def arrow_from_functor.arrow
+          using f x \<epsilon>_def \<phi>_in_hom \<psi>_\<phi> \<psi>_in_terms_of_\<epsilon> \<epsilon>x.is_coext_def arrow_from_functor.arrow
           by metis
         show "\<forall>g'. \<epsilon>x.is_coext y' f g' \<longrightarrow> g' = \<phi> y' f"
-          using \<epsilon>o_def \<psi>_in_terms_of_\<epsilon>o x \<epsilon>_map_simp \<phi>_\<psi> \<epsilon>x.is_coext_def by simp
+          using \<epsilon>o_def \<psi>_in_terms_of_\<epsilon>o x \<epsilon>_map_simp \<phi>_\<psi> \<epsilon>x.is_coext_def \<epsilon>_def by simp
       qed
-      interpret \<epsilon>x: terminal_arrow_from_functor D C F "G x" x "\<epsilon> x"
+      interpret \<epsilon>x: terminal_arrow_from_functor D C F \<open>G x\<close> x \<open>\<epsilon> x\<close>
         apply unfold_locales using 1 by blast
       show "terminal_arrow_from_functor D C F (G x) x (\<epsilon> x)" ..
       show "\<And>y' f. arrow_from_functor D C F y' x f \<Longrightarrow> \<epsilon>x.the_coext y' f = \<phi> y' f"
@@ -845,7 +838,7 @@ begin
   begin
 
     interpretation unit_counit_adjunction C D F G \<eta> \<epsilon>
-      using induces_unit_counit_adjunction by auto
+      using induces_unit_counit_adjunction \<eta>_def \<epsilon>_def by auto
 
     lemma has_initial_arrows_to_functor:
     assumes y: "D.ide y"
@@ -853,7 +846,7 @@ begin
     and "\<And>x' g. arrow_to_functor C D G y x' g \<Longrightarrow>
                   initial_arrow_to_functor.the_ext C D G (F y) (\<eta> y) x' g = \<psi> x' g"
     proof -
-      interpret \<eta>y: arrow_to_functor C D G y "F y" "\<eta> y"
+      interpret \<eta>y: arrow_to_functor C D G y \<open>F y\<close> \<open>\<eta> y\<close>
         apply unfold_locales using y by auto
       have 1: "\<And>x' g. arrow_to_functor C D G y x' g \<Longrightarrow>
                          \<eta>y.is_ext x' g (\<psi> x' g) \<and> (\<forall>f'. \<eta>y.is_ext x' g f' \<longrightarrow> f' = \<psi> x' g)"
@@ -861,12 +854,12 @@ begin
         fix x' :: 'c and g :: 'd
         assume g: "arrow_to_functor C D G y x' g"
         show "\<eta>y.is_ext x' g (\<psi> x' g)"
-          using g y \<psi>_in_hom \<phi>_\<psi> \<phi>_in_terms_of_\<eta> \<eta>y.is_ext_def arrow_to_functor.arrow
+          using g y \<psi>_in_hom \<phi>_\<psi> \<phi>_in_terms_of_\<eta> \<eta>y.is_ext_def arrow_to_functor.arrow \<eta>_def
           by metis
         show "\<forall>f'. \<eta>y.is_ext x' g f' \<longrightarrow> f' = \<psi> x' g"
-          using y \<eta>o_def \<phi>_in_terms_of_\<eta>o \<eta>_map_simp \<psi>_\<phi> \<eta>y.is_ext_def by simp
+          using y \<eta>o_def \<phi>_in_terms_of_\<eta>o \<eta>_map_simp \<psi>_\<phi> \<eta>y.is_ext_def \<eta>_def by simp
       qed
-      interpret \<eta>y: initial_arrow_to_functor C D G y "F y" "\<eta> y"
+      interpret \<eta>y: initial_arrow_to_functor C D G y \<open>F y\<close> \<open>\<eta> y\<close>
         apply unfold_locales using 1 by blast
       show "initial_arrow_to_functor C D G y (F y) (\<eta> y)" ..
       show "\<And>x' g. arrow_to_functor C D G y x' g \<Longrightarrow> \<eta>y.the_ext x' g = \<psi> x' g"
@@ -986,7 +979,7 @@ begin
     assumes "C.ide x"
     shows "G x = Go x"
     proof -
-      interpret terminal_arrow_from_functor D C F "Go x" x "\<epsilon>o x"
+      interpret terminal_arrow_from_functor D C F \<open>Go x\<close> x \<open>\<epsilon>o x\<close>
         using assms ex_terminal_arrow Go_\<epsilon>o_terminal by blast
       have 1: "arrow_from_functor D C F (Go x) x (\<epsilon>o x)" ..
       have "is_coext (Go x) (\<epsilon>o x) (Go x)"
@@ -1008,9 +1001,9 @@ begin
       assume f: "C.arr f"
       let ?x = "C.dom f"
       let ?x' = "C.cod f"
-      interpret x\<epsilon>: terminal_arrow_from_functor D C F "Go ?x" "?x" "\<epsilon>o ?x"
+      interpret x\<epsilon>: terminal_arrow_from_functor D C F \<open>Go ?x\<close> \<open>?x\<close> \<open>\<epsilon>o ?x\<close>
         using f ex_terminal_arrow Go_\<epsilon>o_terminal by simp
-      interpret x'\<epsilon>: terminal_arrow_from_functor D C F "Go ?x'" "?x'" "\<epsilon>o ?x'"
+      interpret x'\<epsilon>: terminal_arrow_from_functor D C F \<open>Go ?x'\<close> \<open>?x'\<close> \<open>\<epsilon>o ?x'\<close>
         using f ex_terminal_arrow Go_\<epsilon>o_terminal by simp
       have 1: "arrow_from_functor D C F (Go ?x) ?x' (C f (\<epsilon>o ?x))"
         using f x\<epsilon>.arrow by (unfold_locales, auto)
@@ -1027,11 +1020,11 @@ begin
       let ?x = "C.dom f"
       let ?x' = "C.cod f"
       let ?x'' = "C.cod f'"
-      interpret x\<epsilon>: terminal_arrow_from_functor D C F "Go ?x" "?x" "\<epsilon>o ?x"
+      interpret x\<epsilon>: terminal_arrow_from_functor D C F \<open>Go ?x\<close> \<open>?x\<close> \<open>\<epsilon>o ?x\<close>
         using f ex_terminal_arrow Go_\<epsilon>o_terminal by simp
-      interpret x'\<epsilon>: terminal_arrow_from_functor D C F "Go ?x'" "?x'" "\<epsilon>o ?x'"
+      interpret x'\<epsilon>: terminal_arrow_from_functor D C F \<open>Go ?x'\<close> \<open>?x'\<close> \<open>\<epsilon>o ?x'\<close>
         using f ex_terminal_arrow Go_\<epsilon>o_terminal by simp
-      interpret x''\<epsilon>: terminal_arrow_from_functor D C F "Go ?x''" "?x''" "\<epsilon>o ?x''"
+      interpret x''\<epsilon>: terminal_arrow_from_functor D C F \<open>Go ?x''\<close> \<open>?x''\<close> \<open>\<epsilon>o ?x''\<close>
         using ff' ex_terminal_arrow Go_\<epsilon>o_terminal by auto
       have 1: "arrow_from_functor D C F (Go ?x) ?x' (f \<cdot>\<^sub>C \<epsilon>o ?x)"
          using f x\<epsilon>.arrow by (unfold_locales, auto)
@@ -1086,7 +1079,7 @@ begin
       assume x: "C.ide x"
       show "\<guillemotleft>\<epsilon>o x : GF.map x \<rightarrow>\<^sub>C C.map x\<guillemotright>"
       proof -
-        interpret terminal_arrow_from_functor D C F "Go x" x "\<epsilon>o x"
+        interpret terminal_arrow_from_functor D C F \<open>Go x\<close> x \<open>\<epsilon>o x\<close>
           using x Go_\<epsilon>o_terminal ex_terminal_arrow by simp
         show ?thesis using x G_ide arrow by auto
       qed
@@ -1097,9 +1090,9 @@ begin
       proof -
         let ?x = "C.dom f"
         let ?x' = "C.cod f"
-        interpret x\<epsilon>: terminal_arrow_from_functor D C F "Go ?x" ?x "\<epsilon>o ?x"
+        interpret x\<epsilon>: terminal_arrow_from_functor D C F \<open>Go ?x\<close> ?x \<open>\<epsilon>o ?x\<close>
           using f Go_\<epsilon>o_terminal ex_terminal_arrow by simp
-        interpret x'\<epsilon>: terminal_arrow_from_functor D C F "Go ?x'" ?x' "\<epsilon>o ?x'"
+        interpret x'\<epsilon>: terminal_arrow_from_functor D C F \<open>Go ?x'\<close> ?x' \<open>\<epsilon>o ?x'\<close>
           using f Go_\<epsilon>o_terminal ex_terminal_arrow by simp
         have 1: "arrow_from_functor D C F (Go ?x) ?x' (C f (\<epsilon>o ?x))"
            using f x\<epsilon>.arrow by (unfold_locales, auto)
@@ -1143,7 +1136,7 @@ begin
     assumes x: "C.ide x" and g: "\<guillemotleft>g : y \<rightarrow>\<^sub>D G x\<guillemotright>"
     shows "arrow_from_functor.is_coext D C F (G x) (\<epsilon>.map x) y (\<psi> x g) g"
     proof -
-      interpret x\<epsilon>: arrow_from_functor D C F "G x" x "\<epsilon>.map x"
+      interpret x\<epsilon>: arrow_from_functor D C F \<open>G x\<close> x \<open>\<epsilon>.map x\<close>
         using x \<epsilon>.maps_ide_in_hom by (unfold_locales, auto)
       show "x\<epsilon>.is_coext y (\<psi> x g) g"
         using x g \<psi>_def x\<epsilon>.is_coext_def G_ide by blast
@@ -1154,7 +1147,7 @@ begin
     shows "\<exists>!g. \<guillemotleft>g : y \<rightarrow>\<^sub>D G x\<guillemotright> \<and> \<psi> x g = f"
     proof
       have x: "C.ide x" using f by auto
-      interpret x\<epsilon>: terminal_arrow_from_functor D C F "Go x" x "\<epsilon>o x"
+      interpret x\<epsilon>: terminal_arrow_from_functor D C F \<open>Go x\<close> x \<open>\<epsilon>o x\<close>
         using x ex_terminal_arrow Go_\<epsilon>o_terminal by auto
       have 1: "arrow_from_functor D C F y x f"
         using y f by (unfold_locales, auto)
@@ -1253,7 +1246,7 @@ begin
     assumes "D.ide y"
     shows "F y = Fo y"
     proof -
-      interpret initial_arrow_to_functor C D G y "Fo y" "\<eta>o y"
+      interpret initial_arrow_to_functor C D G y \<open>Fo y\<close> \<open>\<eta>o y\<close>
         using assms initial_arrows_exist Fo_\<eta>o_initial by blast
       have 1: "arrow_to_functor C D G y (Fo y) (\<eta>o y)" ..
       have "is_ext (Fo y) (\<eta>o y) (Fo y)"
@@ -1276,9 +1269,9 @@ begin
       assume g: "D.arr g"
       let ?y = "D.dom g"
       let ?y' = "D.cod g"
-      interpret y\<eta>: initial_arrow_to_functor C D G ?y "Fo ?y" "\<eta>o ?y"
+      interpret y\<eta>: initial_arrow_to_functor C D G ?y \<open>Fo ?y\<close> \<open>\<eta>o ?y\<close>
         using g initial_arrows_exist Fo_\<eta>o_initial by simp
-      interpret y'\<eta>: initial_arrow_to_functor C D G ?y' "Fo ?y'" "\<eta>o ?y'"
+      interpret y'\<eta>: initial_arrow_to_functor C D G ?y' \<open>Fo ?y'\<close> \<open>\<eta>o ?y'\<close>
         using g initial_arrows_exist Fo_\<eta>o_initial by simp
       have 1: "arrow_to_functor C D G ?y (Fo ?y') (D (\<eta>o ?y') g)"
         using g y'\<eta>.arrow by (unfold_locales, auto)
@@ -1297,11 +1290,11 @@ begin
       let ?y = "D.dom g"
       let ?y' = "D.cod g"
       let ?y'' = "D.cod g'"
-      interpret y\<eta>: initial_arrow_to_functor C D G ?y "Fo ?y" "\<eta>o ?y"
+      interpret y\<eta>: initial_arrow_to_functor C D G ?y \<open>Fo ?y\<close> \<open>\<eta>o ?y\<close>
         using g initial_arrows_exist Fo_\<eta>o_initial by simp
-      interpret y'\<eta>: initial_arrow_to_functor C D G ?y' "Fo ?y'" "\<eta>o ?y'"
+      interpret y'\<eta>: initial_arrow_to_functor C D G ?y' \<open>Fo ?y'\<close> \<open>\<eta>o ?y'\<close>
         using g initial_arrows_exist Fo_\<eta>o_initial by simp
-      interpret y''\<eta>: initial_arrow_to_functor C D G ?y'' "Fo ?y''" "\<eta>o ?y''"
+      interpret y''\<eta>: initial_arrow_to_functor C D G ?y'' \<open>Fo ?y''\<close> \<open>\<eta>o ?y''\<close>
         using g' initial_arrows_exist Fo_\<eta>o_initial by auto
       have 1: "arrow_to_functor C D G ?y (Fo ?y') (\<eta>o ?y' \<cdot>\<^sub>D g)"
         using g y'\<eta>.arrow by (unfold_locales, auto)
@@ -1355,7 +1348,7 @@ begin
       assume y: "D.ide y"
       show "\<guillemotleft>\<eta>o y : D.map y \<rightarrow>\<^sub>D FG.map y\<guillemotright>"
       proof -
-        interpret initial_arrow_to_functor C D G y "Fo y" "\<eta>o y"
+        interpret initial_arrow_to_functor C D G y \<open>Fo y\<close> \<open>\<eta>o y\<close>
           using y Fo_\<eta>o_initial initial_arrows_exist by simp
         show ?thesis using y F_ide arrow by auto
       qed
@@ -1366,9 +1359,9 @@ begin
       proof -
         let ?y = "D.dom g"
         let ?y' = "D.cod g"
-        interpret y\<eta>: initial_arrow_to_functor C D G ?y "Fo ?y" "\<eta>o ?y"
+        interpret y\<eta>: initial_arrow_to_functor C D G ?y \<open>Fo ?y\<close> \<open>\<eta>o ?y\<close>
           using g Fo_\<eta>o_initial initial_arrows_exist by simp
-        interpret y'\<eta>: initial_arrow_to_functor C D G ?y' "Fo ?y'" "\<eta>o ?y'"
+        interpret y'\<eta>: initial_arrow_to_functor C D G ?y' \<open>Fo ?y'\<close> \<open>\<eta>o ?y'\<close>
           using g Fo_\<eta>o_initial initial_arrows_exist by simp
         have "arrow_to_functor C D G ?y (Fo ?y') (\<eta>o ?y' \<cdot>\<^sub>D g)"
           using g y'\<eta>.arrow by (unfold_locales, auto)
@@ -1412,7 +1405,7 @@ begin
     assumes y: "D.ide y" and f: "\<guillemotleft>f : F y \<rightarrow>\<^sub>C x\<guillemotright>"
     shows "arrow_to_functor.is_ext C D G (F y) (\<eta>.map y) x (\<phi> y f) f"
     proof -
-      interpret y\<eta>: arrow_to_functor C D G y "F y" "\<eta>.map y"
+      interpret y\<eta>: arrow_to_functor C D G y \<open>F y\<close> \<open>\<eta>.map y\<close>
         using y \<eta>.maps_ide_in_hom by (unfold_locales, auto)
       show "y\<eta>.is_ext x (\<phi> y f) f"
         using f y \<phi>_def y\<eta>.is_ext_def F_ide by (unfold_locales, auto)
@@ -1423,7 +1416,7 @@ begin
     shows "\<exists>!f. \<guillemotleft>f : F y \<rightarrow>\<^sub>C x\<guillemotright> \<and> \<phi> y f = g"
     proof
       have y: "D.ide y" using g by auto
-      interpret y\<eta>: initial_arrow_to_functor C D G y "Fo y" "\<eta>o y"
+      interpret y\<eta>: initial_arrow_to_functor C D G y \<open>Fo y\<close> \<open>\<eta>o y\<close>
         using y initial_arrows_exist Fo_\<eta>o_initial by auto
       have 1: "arrow_to_functor C D G y x g"
         using x g by (unfold_locales, auto)
@@ -1484,31 +1477,31 @@ begin
   context meta_adjunction
   begin
 
-    definition inC :: "'c \<Rightarrow> ('c+'d) SetCat.arr"
-    where "inC \<equiv> UP o Inl"
+    definition inC :: "'c \<Rightarrow> ('c+'d) setcat.arr"
+    where "inC \<equiv> SetCat.UP o Inl"
 
-    definition inD :: "'d \<Rightarrow> ('c+'d) SetCat.arr"
-    where "inD \<equiv> UP o Inr"
+    definition inD :: "'d \<Rightarrow> ('c+'d) setcat.arr"
+    where "inD \<equiv> SetCat.UP o Inr"
 
-    interpretation S: set_category "SetCat.comp :: ('c+'d) SetCat.arr comp"
+    interpretation S: set_category \<open>SetCat.comp :: ('c+'d) setcat.arr comp\<close>
       using SetCat.is_set_category by auto
     interpretation Cop: dual_category C ..
     interpretation Dop: dual_category D ..
     interpretation CopxC: product_category Cop.comp C ..
     interpretation DopxD: product_category Dop.comp D ..
     interpretation DopxC: product_category Dop.comp C ..
-    interpretation HomC: hom_functor C "SetCat.comp :: ('c+'d) SetCat.arr comp" "\<lambda>_. inC"
+    interpretation HomC: hom_functor C \<open>SetCat.comp :: ('c+'d) setcat.arr comp\<close> \<open>\<lambda>_. inC\<close>
       apply unfold_locales
       unfolding inC_def using SetCat.UP_mapsto
        apply auto[1]
       using SetCat.inj_UP
-      by (metis (no_types, lifting) injD inj_Inl inj_compose inj_onI)
-    interpretation HomD: hom_functor D "SetCat.comp :: ('c+'d) SetCat.arr comp" "\<lambda>_. inD"
+      by (metis injD inj_Inl inj_compose inj_on_def)
+    interpretation HomD: hom_functor D \<open>SetCat.comp :: ('c+'d) setcat.arr comp\<close> \<open>\<lambda>_. inD\<close>
       apply unfold_locales
       unfolding inD_def using SetCat.UP_mapsto
        apply auto[1]
       using SetCat.inj_UP
-      by (metis (no_types, lifting) injD inj_Inr inj_compose inj_onI)
+      by (metis injD inj_Inr inj_compose inj_on_def)
     interpretation Fop: dual_functor D C F ..
     interpretation FopxC: product_functor Dop.comp C Cop.comp C Fop.map C.map ..
     interpretation DopxG: product_functor Dop.comp C Dop.comp D Dop.map G ..
@@ -2568,7 +2561,7 @@ begin
     interpretation G: right_adjoint_functor C D G using has_right_adjoint_functor by auto
 
     interpretation \<eta>\<epsilon>: unit_counit_adjunction C D F G \<eta> \<epsilon>
-      using induces_unit_counit_adjunction by auto
+      using induces_unit_counit_adjunction \<eta>_def \<epsilon>_def by auto
 
     interpretation \<Phi>\<Psi>: hom_adjunction C D SetCat.comp \<phi>C \<phi>D F G \<Phi> \<Psi>
       using induces_hom_adjunction by auto
@@ -2577,7 +2570,7 @@ begin
     shows "adjunction C D SetCat.comp \<phi>C \<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<Phi> \<Psi>"
       apply (unfold_locales)
       using \<epsilon>_map_simp \<eta>_map_simp \<phi>_in_terms_of_\<eta> \<phi>_in_terms_of_\<Phi>' \<psi>_in_terms_of_\<epsilon>
-            \<psi>_in_terms_of_\<Psi>' \<Phi>_simp \<Psi>_simp
+            \<psi>_in_terms_of_\<Psi>' \<Phi>_simp \<Psi>_simp \<eta>_def \<epsilon>_def
       by auto
 
   end
@@ -2632,26 +2625,26 @@ begin
     abbreviation \<epsilon> where "\<epsilon> \<equiv> \<phi>\<psi>.\<epsilon>"
 
     interpretation \<eta>\<epsilon>: unit_counit_adjunction C D F G \<eta> \<epsilon>
-      using \<phi>\<psi>.induces_unit_counit_adjunction by auto
+      using \<phi>\<psi>.induces_unit_counit_adjunction \<phi>\<psi>.\<eta>_def \<phi>\<psi>.\<epsilon>_def by auto
 
     theorem induces_adjunction:
     shows "adjunction C D S \<phi>C \<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<Phi> \<Psi>"
     proof
       fix x
       assume "C.ide x"
-      thus "\<epsilon> x = \<psi> x (G x)" using \<phi>\<psi>.\<epsilon>_map_simp by blast
+      thus "\<epsilon> x = \<psi> x (G x)" using \<phi>\<psi>.\<epsilon>_map_simp \<phi>\<psi>.\<epsilon>_def by simp
       next
       fix y
       assume "D.ide y"
-      thus "\<eta> y = \<phi> y (F y)" using \<phi>\<psi>.\<eta>_map_simp by blast
+      thus "\<eta> y = \<phi> y (F y)" using \<phi>\<psi>.\<eta>_map_simp \<phi>\<psi>.\<eta>_def by simp
       fix x y f
       assume y: "D.ide y" and f: "\<guillemotleft>f : F y \<rightarrow>\<^sub>C x\<guillemotright>"
-      show "\<phi> y f = G f \<cdot>\<^sub>D \<eta> y" using y f \<phi>\<psi>.\<phi>_in_terms_of_\<eta> by blast
+      show "\<phi> y f = G f \<cdot>\<^sub>D \<eta> y" using y f \<phi>\<psi>.\<phi>_in_terms_of_\<eta> \<phi>\<psi>.\<eta>_def by simp
       show "\<phi> y f = (\<psi>D (y, G x) \<circ> \<Phi>.FUN (y, x) \<circ> \<phi>C (F y, x)) f" using y f \<phi>_def by auto
       next
       fix x y g
       assume x: "C.ide x" and g: "\<guillemotleft>g : y \<rightarrow>\<^sub>D G x\<guillemotright>"
-      show "\<psi> x g = \<epsilon> x \<cdot>\<^sub>C F g" using x g \<phi>\<psi>.\<psi>_in_terms_of_\<epsilon> by blast
+      show "\<psi> x g = \<epsilon> x \<cdot>\<^sub>C F g" using x g \<phi>\<psi>.\<psi>_in_terms_of_\<epsilon> \<phi>\<psi>.\<epsilon>_def by simp
       show "\<psi> x g = (\<psi>C (F y, x) \<circ> \<Psi>.FUN (y, x) \<circ> \<phi>D (y, G x)) g" using x g \<psi>_def by fast
       next
       fix x y
@@ -2787,50 +2780,42 @@ begin
       qed
     qed
 
-  end
-
-  sublocale composite_adjunction \<subseteq> meta_adjunction A C "F o F'" "G' o G"
-                                     "\<lambda>z. \<phi>' z o \<phi> (F' z)" "\<lambda>x. \<psi> x o \<psi>' (G x)"
-    using is_meta_adjunction by auto
-
-  context composite_adjunction
-  begin
-
-    interpretation K\<eta>H: natural_transformation C C "G' o F'" "G' o G o F o F'" "G' o FG.\<eta> o F'"
+    interpretation K\<eta>H: natural_transformation C C \<open>G' o F'\<close> \<open>G' o G o F o F'\<close> \<open>G' o FG.\<eta> o F'\<close>
     proof -
-      interpret \<eta>F': horizontal_composite C B B F' F' B.map "G o F" F' FG.\<eta> ..
-      interpret G'\<eta>F': horizontal_composite C B C "B.map o F'" "G o F o F'" G' G' \<eta>F'.map G' ..
-      have "natural_transformation
-              C C (G' o (B.map o F')) (G' o (G o F o F')) (G' o (FG.\<eta> o F'))" ..
-      moreover have "G' o (B.map o F') = G' o F'"
-        using F'.functor_axioms by auto
-      moreover have "G' o (G o F o F') = G' o G o F o F'" by auto
-      moreover have "G' o (FG.\<eta> o F') = G' o FG.\<eta> o F'" by auto
-      ultimately show
-          "natural_transformation C C (G' o F') (G' o G o F o F') (G' o FG.\<eta> o F')"
-        by auto
+      interpret \<eta>F': natural_transformation C B F' \<open>(G o F) o F'\<close> \<open>FG.\<eta> o F'\<close>
+        using FG.\<eta>_is_natural_transformation F'.natural_transformation_axioms
+              horizontal_composite
+        by fastforce
+      interpret G'\<eta>F': natural_transformation C C \<open>G' o F'\<close> \<open>G' o (G o F o F')\<close>
+                         \<open>G' o (FG.\<eta> o F')\<close>
+        using \<eta>F'.natural_transformation_axioms G'.natural_transformation_axioms
+              horizontal_composite
+        by blast
+      show "natural_transformation C C (G' o F') (G' o G o F o F') (G' o FG.\<eta> o F')"
+        using G'\<eta>F'.natural_transformation_axioms o_assoc by metis
     qed
-    interpretation G'\<eta>F'o\<eta>': vertical_composite C C C.map "G' o F'" "G' o G o F o F'"
-                             F'G'.\<eta> "G' o FG.\<eta> o F'" ..
+    interpretation G'\<eta>F'o\<eta>': vertical_composite C C C.map \<open>G' o F'\<close> \<open>G' o G o F o F'\<close>
+                             F'G'.\<eta> \<open>G' o FG.\<eta> o F'\<close> ..
 
-    interpretation F\<epsilon>G: natural_transformation A A "F o F' o G' o G" "F o G" "F o F'G'.\<epsilon> o G"
+    interpretation F\<epsilon>G: natural_transformation A A \<open>F o F' o G' o G\<close> \<open>F o G\<close> \<open>F o F'G'.\<epsilon> o G\<close>
     proof -
-      interpret F\<epsilon>': horizontal_composite B B A "F' o G'" B.map F F F'G'.\<epsilon> F ..
-      interpret F\<epsilon>'G: horizontal_composite A B A G G "F o (F' o G')" "F o B.map" G F\<epsilon>'.map ..
-      have "natural_transformation A A (F o (F' o G') o G) (F o B.map o G) F\<epsilon>'G.map" ..
-      moreover have "F o B.map o G = F o G"
-      proof -
-        (* Here F.functor_axioms does not refer to functor F, why? *)
-        have "functor B A F" ..
-        thus ?thesis using comp_functor_identity by auto
-      qed
-      moreover have "F o (F' o G') o G = F o F' o G' o G" by auto
-      ultimately show
-          "natural_transformation A A (F o F' o G' o G) (F o G) (F o F'G'.\<epsilon> o G)"
-        by auto
+      interpret F\<epsilon>': natural_transformation B A \<open>F o (F' o G')\<close> F \<open>F o F'G'.\<epsilon>\<close>
+        using F'G'.\<epsilon>.natural_transformation_axioms F.natural_transformation_axioms
+              horizontal_composite
+        by fastforce
+      interpret F\<epsilon>'G: natural_transformation A A \<open>F o (F' o G') o G\<close> \<open>F o G\<close> \<open>F o F'G'.\<epsilon> o G\<close>
+        using F\<epsilon>'.natural_transformation_axioms G.natural_transformation_axioms
+              horizontal_composite
+        by blast
+      show "natural_transformation A A (F o F' o G' o G) (F o G) (F o F'G'.\<epsilon> o G)"
+        using F\<epsilon>'G.natural_transformation_axioms o_assoc by metis
     qed
-    interpretation \<epsilon>oF\<epsilon>'G: vertical_composite A A "F \<circ> F' \<circ> G' \<circ> G" "F o G" A.map
-                             "F o F'G'.\<epsilon> o G" FG.\<epsilon> ..
+    interpretation \<epsilon>oF\<epsilon>'G: vertical_composite A A \<open>F \<circ> F' \<circ> G' \<circ> G\<close> \<open>F o G\<close> A.map
+                             \<open>F o F'G'.\<epsilon> o G\<close> FG.\<epsilon> ..
+
+    interpretation meta_adjunction A C \<open>F o F'\<close> \<open>G' o G\<close>
+                                   \<open>\<lambda>z. \<phi>' z o \<phi> (F' z)\<close> \<open>\<lambda>x. \<psi> x o \<psi>' (G x)\<close>
+      using is_meta_adjunction by auto
 
     lemma \<eta>_char:
     shows "\<eta> = G'\<eta>F'o\<eta>'.map"
@@ -2845,8 +2830,10 @@ begin
       fix a
       assume a: "C.ide a"
       show "\<eta> a = G'\<eta>F'o\<eta>'.map a"
+        unfolding \<eta>_def
         using a G'\<eta>F'o\<eta>'.map_def FG.\<eta>.preserves_hom [of "F' a" "F' a" "F' a"]
-              F'G'.\<phi>_in_terms_of_\<eta> FG.\<eta>_map_simp \<eta>_map_simp C.ide_in_hom
+              F'G'.\<phi>_in_terms_of_\<eta> FG.\<eta>_map_simp \<eta>_map_simp [of a] C.ide_in_hom
+              F'G'.\<eta>_def FG.\<eta>_def
         by auto
     qed
 
@@ -2867,9 +2854,11 @@ begin
         have "\<epsilon> a = \<psi> a (\<psi>' (G a) (G' (G a)))"
           using a \<epsilon>_in_terms_of_\<psi> by simp
         also have "... = FG.\<epsilon> a \<cdot>\<^sub>A F (F'G'.\<epsilon> (G a) \<cdot>\<^sub>B F' (G' (G a)))"
+          unfolding \<epsilon>_def
           using a F'G'.\<psi>_in_terms_of_\<epsilon> [of "G a" "G' (G a)" "G' (G a)"]
                 F'G'.\<epsilon>.preserves_hom [of "G a" "G a" "G a"]
                 FG.\<psi>_in_terms_of_\<epsilon> [of a "F'G'.\<epsilon> (G a) \<cdot>\<^sub>B F' (G' (G a))" "(F'G'.FG.map (G a))"]
+                F'G'.\<epsilon>_def FG.\<epsilon>_def
           by fastforce
         also have "... = \<epsilon>oF\<epsilon>'G.map a"
           using a B.comp_arr_dom \<epsilon>oF\<epsilon>'G.map_def by simp
@@ -2977,7 +2966,8 @@ $$\xymatrix{
                     G' (Adj.\<epsilon> a) \<cdot>\<^sub>D (Adj'.\<eta> (G a) \<cdot>\<^sub>D G (Adj'.\<epsilon> a)) \<cdot>\<^sub>D Adj.\<eta> (G' a)"
                 using a \<tau>.map_simp_ide Adj.\<phi>_in_terms_of_\<eta> Adj'.\<phi>_in_terms_of_\<eta>
                       Adj'.\<epsilon>.preserves_hom [of a a a] Adj.C.ide_in_hom Adj.D.comp_assoc
-                by auto
+                      Adj.\<epsilon>_def Adj.\<eta>_def
+                by simp
               also have "... = G' (Adj.\<epsilon> a) \<cdot>\<^sub>D (G' (F (G (Adj'.\<epsilon> a))) \<cdot>\<^sub>D Adj'.\<eta> (G (F (G' a)))) \<cdot>\<^sub>D
                                Adj.\<eta> (G' a)"
                 using a Adj'.\<eta>.naturality [of "G (Adj'.\<epsilon> a)"] by auto
@@ -3024,7 +3014,7 @@ $$\xymatrix{
               have "\<phi> (G' a) (Adj'.\<epsilon> a) \<cdot>\<^sub>D \<tau>.map a =
                     G (Adj'.\<epsilon> a) \<cdot>\<^sub>D (Adj.\<eta> (G' a) \<cdot>\<^sub>D G' (Adj.\<epsilon> a)) \<cdot>\<^sub>D Adj'.\<eta> (G a)"
                 using a \<tau>.map_simp_ide Adj.\<phi>_in_terms_of_\<eta> Adj'.\<epsilon>.preserves_hom [of a a a]
-                      Adj.C.ide_in_hom Adj.D.comp_assoc
+                      Adj.C.ide_in_hom Adj.D.comp_assoc Adj.\<eta>_def
                 by auto
               also have
                 "... = G (Adj'.\<epsilon> a) \<cdot>\<^sub>D (G (F (G' (Adj.\<epsilon> a))) \<cdot>\<^sub>D Adj.\<eta> (G' (F (G a)))) \<cdot>\<^sub>D

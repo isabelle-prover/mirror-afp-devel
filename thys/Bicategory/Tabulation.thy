@@ -6,7 +6,7 @@
 section "Tabulations"
 
 theory Tabulation
-imports CanonicalIsos InternalAdjunction ConcreteCategory
+imports CanonicalIsos InternalAdjunction
 begin
 
   text \<open>

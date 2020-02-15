@@ -6,7 +6,7 @@
 section "Strictness"
 
 theory Strictness
-imports ConcreteCategory Pseudofunctor CanonicalIsos
+imports Category3.ConcreteCategory Pseudofunctor CanonicalIsos
 begin
 
   text \<open>
@@ -258,8 +258,8 @@ begin
     shows "concrete_category IDE HOM EVAL (\<lambda>_ _ _ \<mu> \<nu>. \<mu> \<cdot>\<^sub>B \<nu>)"
       ..
 
-    notation comp  (infixr "\<cdot>" 55)
-    abbreviation vcomp where "vcomp \<equiv> comp"
+    abbreviation vcomp     (infixr "\<cdot>" 55)
+    where "vcomp \<equiv> COMP"
 
     lemma arr_char:
     shows "arr F \<longleftrightarrow>
@@ -372,7 +372,7 @@ begin
       proof -
         fix g f
         assume gf: "seq g f"
-        have "trg (g \<cdot> f) = MkIde (E.Trg (Dom (comp g f)))"
+        have "trg (g \<cdot> f) = MkIde (E.Trg (Dom (g \<cdot> f)))"
           using gf trg_def comp_char by simp
         also have "... = MkIde (E.Trg (Dom f))"
           using gf by (simp add: seq_char)
@@ -1851,13 +1851,13 @@ begin
     definition \<i>
     where "\<i> \<equiv> \<lambda>a. a"
 
-    sublocale bicategory comp hcomp \<a> \<i> src trg
+    sublocale bicategory vcomp hcomp \<a> \<i> src trg
       using hcomp_obj_self \<a>_def hcomp_assoc VVV.arr_char VV.arr_char
       apply unfold_locales
       by (auto simp add: \<i>_def ide_in_hom(2))
 
     lemma is_bicategory:
-    shows "bicategory comp hcomp \<a> \<i> src trg"
+    shows "bicategory vcomp hcomp \<a> \<i> src trg"
       ..
 
     sublocale strict_bicategory vcomp hcomp \<a> \<i> src trg
@@ -2157,9 +2157,13 @@ begin
             by auto
           also have "... = MkArr (\<^bold>\<langle>B.dom (fst \<mu>\<nu>)\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>B.dom (snd \<mu>\<nu>)\<^bold>\<rangle>)
                                  (\<^bold>\<langle>B.cod (fst \<mu>\<nu>) \<star>\<^sub>B B.cod (snd \<mu>\<nu>)\<^bold>\<rangle>)
+                                 ((B.cod (fst \<mu>\<nu>) \<star>\<^sub>B B.cod (snd \<mu>\<nu>)) \<cdot>\<^sub>B (fst \<mu>\<nu> \<star>\<^sub>B snd \<mu>\<nu>))"
+            using \<mu>\<nu> B.VV.arr_char arr_MkArr
+            by (intro comp_MkArr arr_MkArr, auto)
+          also have "... = MkArr (\<^bold>\<langle>B.dom (fst \<mu>\<nu>)\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>B.dom (snd \<mu>\<nu>)\<^bold>\<rangle>)
+                                 (\<^bold>\<langle>B.cod (fst \<mu>\<nu>) \<star>\<^sub>B B.cod (snd \<mu>\<nu>)\<^bold>\<rangle>)
                                  (fst \<mu>\<nu> \<star>\<^sub>B snd \<mu>\<nu>)"
-            using \<mu>\<nu> B.VV.arr_char arr_char comp_def B.comp_cod_arr
-            apply (intro arr_eqI) by auto
+            using \<mu>\<nu> B.VV.arr_char B.comp_cod_arr by auto
           finally show ?thesis by simp
         qed
         also have "... = UPoH.map \<mu>\<nu> \<cdot> \<Phi>\<^sub>o (B.VV.dom \<mu>\<nu>)"
@@ -2176,9 +2180,13 @@ begin
             by auto
           also have "... = MkArr (\<^bold>\<langle>B.dom (fst \<mu>\<nu>)\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>B.dom (snd \<mu>\<nu>)\<^bold>\<rangle>)
                                  (\<^bold>\<langle>B.cod (fst \<mu>\<nu>) \<star>\<^sub>B B.cod (snd \<mu>\<nu>)\<^bold>\<rangle>)
+                                 ((fst \<mu>\<nu> \<star>\<^sub>B snd \<mu>\<nu>) \<cdot>\<^sub>B (B.dom (fst \<mu>\<nu>) \<star>\<^sub>B B.dom (snd \<mu>\<nu>)))"
+            using \<mu>\<nu> B.VV.arr_char arr_MkArr
+            by (intro comp_MkArr arr_MkArr, auto)
+          also have "... = MkArr (\<^bold>\<langle>B.dom (fst \<mu>\<nu>)\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>B.dom (snd \<mu>\<nu>)\<^bold>\<rangle>)
+                                 (\<^bold>\<langle>B.cod (fst \<mu>\<nu>) \<star>\<^sub>B B.cod (snd \<mu>\<nu>)\<^bold>\<rangle>)
                                  (fst \<mu>\<nu> \<star>\<^sub>B snd \<mu>\<nu>)"
-            using \<mu>\<nu> B.VV.arr_char arr_char comp_def B.comp_arr_dom
-            by (intro arr_eqI, auto)
+            using \<mu>\<nu> B.VV.arr_char B.comp_arr_dom by auto
          finally show ?thesis by simp
         qed
         finally show ?thesis by simp
@@ -2271,7 +2279,16 @@ begin
           proof -
             have "MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) \<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> (f \<star>\<^sub>B g) \<cdot> MkIde (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) =
                   MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) \<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> (f \<star>\<^sub>B g)"
-              using f g fg comp_def by auto
+            proof -
+              have "MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) \<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> (f \<star>\<^sub>B g) \<cdot> MkIde (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) =
+                    MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) \<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> (f \<star>\<^sub>B g) \<cdot> MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) (f \<star>\<^sub>B g)"
+                using f g fg by simp
+              also have "... = MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) \<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> ((f \<star>\<^sub>B g) \<cdot>\<^sub>B (f \<star>\<^sub>B g))"
+                using f g fg by (intro comp_MkArr arr_MkArr, auto)
+              also have "... = MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) \<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> (f \<star>\<^sub>B g)"
+                using f g fg by simp
+              finally show ?thesis by blast
+            qed
             thus ?thesis
               using f g h fg gh arr_char src_def trg_def by auto
           qed
@@ -2296,7 +2313,15 @@ begin
             moreover have "MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) \<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> (f \<star>\<^sub>B g) \<cdot>
                              MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) (f \<star>\<^sub>B g) =
                            MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) \<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> (f \<star>\<^sub>B g)"
-              using f g fg comp_def by auto
+            proof -
+              have "MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) \<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> (f \<star>\<^sub>B g) \<cdot>
+                      MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) (f \<star>\<^sub>B g) =
+                    MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) \<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> ((f \<star>\<^sub>B g) \<cdot>\<^sub>B (f \<star>\<^sub>B g))"
+                using f g fg arr_MkArr by (intro comp_MkArr arr_MkArr, auto)
+              also have "... = MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) \<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> (f \<star>\<^sub>B g)"
+                using f g fg by simp
+              finally show ?thesis by blast
+            qed
             moreover have "B.can ((\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) = B.inv \<a>\<^sub>B[f, g, h]"
               using f g h fg gh B.canI_associator_0 B.inverse_arrows_can by simp
             ultimately show ?thesis
@@ -2309,7 +2334,7 @@ begin
                              MkArr (\<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) \<^bold>\<langle>(f \<star>\<^sub>B g) \<star>\<^sub>B h\<^bold>\<rangle> ((f \<star>\<^sub>B g) \<star>\<^sub>B h) \<cdot>
                                MkArr (\<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) (\<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) ((f \<star>\<^sub>B g) \<star>\<^sub>B h) \<cdot>
                                  MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) (\<^bold>\<langle>f \<star>\<^sub>B g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) (B.inv \<a>\<^sub>B[f, g, h])"
-            using comp_assoc by simp
+            using comp_assoc by presburger
           also have "... = MkArr (\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle>) \<^bold>\<langle>f \<star>\<^sub>B g \<star>\<^sub>B h\<^bold>\<rangle>
                                  (\<a>\<^sub>B[f, g, h] \<cdot>\<^sub>B ((f \<star>\<^sub>B g) \<star>\<^sub>B h) \<cdot>\<^sub>B ((f \<star>\<^sub>B g) \<star>\<^sub>B h) \<cdot>\<^sub>B
                                    B.inv \<a>\<^sub>B[f, g, h])"
@@ -3552,50 +3577,34 @@ begin
               (UP \<i>\<^sub>B[a] \<cdot> \<Phi> (a, a)) \<cdot> (MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a \<star> MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a)"
         proof -
           have "MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a \<cdot> \<i> (UP.map\<^sub>0 a) = MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a"
-          proof -
-            have "\<i> (UP.map\<^sub>0 a) = MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 a"
-              unfolding \<i>_def UP.map\<^sub>0_def UP_def
-              using assms 2 src_def by auto
-            moreover have "MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a \<cdot> MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 a = MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a"
-              using assms 0 1 2 comp_def by auto
-            ultimately show ?thesis by simp
-          qed
+            unfolding \<i>_def UP.map\<^sub>0_def UP_def
+            using assms 0 1 2 src_def by auto
           also have "... = (UP \<i>\<^sub>B[a] \<cdot> \<Phi> (a, a)) \<cdot> (MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a \<star> MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a)"
           proof -
-            have "UP \<i>\<^sub>B[a] = MkArr \<^bold>\<langle>a \<star>\<^sub>B a\<^bold>\<rangle> \<^bold>\<langle>a\<^bold>\<rangle> \<i>\<^sub>B[a]"
-              using assms UP_def by simp
-            moreover have "\<Phi> (a, a) = MkArr (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) \<^bold>\<langle>a \<star>\<^sub>B a\<^bold>\<rangle> (a \<star>\<^sub>B a)"
-              using assms \<Phi>_ide_simp by auto
-            ultimately have "UP \<i>\<^sub>B[a] \<cdot> \<Phi> (a, a) = MkArr (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) \<^bold>\<langle>a\<^bold>\<rangle> \<i>\<^sub>B[a]"
-              using assms comp_def B.comp_arr_dom
-              by (elim B.objE, auto)
-            moreover have "MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a \<star> MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a =
-                           MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) (B.runit' a)"
-            proof -
-              have "MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a \<star> MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a =
-                    MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>)
-                          (B.can (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) \<cdot>\<^sub>B B.can (\<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0) \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0)"
-                using assms 0 1 2 3 hcomp_def B.comp_cod_arr src_def trg_def by auto
-              moreover have
-                "B.can (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) \<cdot>\<^sub>B B.can (\<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0) \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 = B.runit' a"
-              proof -
-                have "B.can (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) \<cdot>\<^sub>B B.can (\<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0) \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 =
-                      (a \<star>\<^sub>B a) \<cdot>\<^sub>B B.inv (B.runit a)"
-                  using assms B.can_Ide_self B.canE_unitor [of "\<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0"] by auto
-                also have "... = B.runit' a"
-                  using assms B.comp_cod_arr by auto
-                finally show ?thesis by simp
-              qed
-              ultimately show ?thesis by simp
-            qed
-            ultimately have "(UP \<i>\<^sub>B[a] \<cdot> \<Phi> (a, a)) \<cdot> (MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a \<star> MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a) =
-                             MkArr (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) \<^bold>\<langle>a\<^bold>\<rangle> \<i>\<^sub>B[a] \<cdot> MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) (B.runit' a)"
-              by simp
-            also have "... = MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a"
-              using assms comp_def B.unitor_coincidence B.iso_unit B.comp_arr_inv
-                    B.inv_is_inverse
+            have "(UP \<i>\<^sub>B[a] \<cdot> \<Phi> (a, a)) \<cdot> (MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a \<star> MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a) =
+                  (MkArr \<^bold>\<langle>a \<star>\<^sub>B a\<^bold>\<rangle> \<^bold>\<langle>a\<^bold>\<rangle> \<i>\<^sub>B[a] \<cdot> MkArr (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) \<^bold>\<langle>a \<star>\<^sub>B a\<^bold>\<rangle> (a \<star>\<^sub>B a))
+                     \<cdot> (MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a \<star> MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a)"
+              using assms UP_def \<Phi>_ide_simp by auto
+            also have "... = (MkArr \<^bold>\<langle>a \<star>\<^sub>B a\<^bold>\<rangle> \<^bold>\<langle>a\<^bold>\<rangle> \<i>\<^sub>B[a] \<cdot> MkArr (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) \<^bold>\<langle>a \<star>\<^sub>B a\<^bold>\<rangle> (a \<star>\<^sub>B a))
+                               \<cdot> MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) (B.runit' a)"
+              using assms 0 1 2 3 hcomp_def B.comp_cod_arr src_def trg_def
+                    B.can_Ide_self B.canE_unitor [of "\<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0"] B.comp_cod_arr
               by auto
-            finally show ?thesis by simp
+            also have "... = MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> ((\<i>\<^sub>B[a] \<cdot>\<^sub>B (a \<star>\<^sub>B a)) \<cdot>\<^sub>B B.runit' a)"
+            proof -
+              have "MkArr \<^bold>\<langle>a \<star>\<^sub>B a\<^bold>\<rangle> \<^bold>\<langle>a\<^bold>\<rangle> \<i>\<^sub>B[a] \<cdot> MkArr (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) \<^bold>\<langle>a \<star>\<^sub>B a\<^bold>\<rangle> (a \<star>\<^sub>B a) =
+                    MkArr (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) \<^bold>\<langle>a\<^bold>\<rangle> (\<i>\<^sub>B[a] \<cdot>\<^sub>B (a \<star>\<^sub>B a))"
+                using assms by (intro comp_MkArr arr_MkArr, auto)
+              moreover have "MkArr (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) \<^bold>\<langle>a\<^bold>\<rangle> (\<i>\<^sub>B[a] \<cdot>\<^sub>B (a \<star>\<^sub>B a))
+                               \<cdot> MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) (B.runit' a) =
+                             MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> ((\<i>\<^sub>B[a] \<cdot>\<^sub>B (a \<star>\<^sub>B a)) \<cdot>\<^sub>B B.runit' a)"
+                using assms 0 by (intro comp_MkArr arr_MkArr, auto)
+              ultimately show ?thesis by argo
+            qed
+            also have "... = MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> a"
+              using assms B.comp_arr_dom B.comp_arr_inv' B.iso_unit B.unitor_coincidence(2)
+              by simp
+            finally show ?thesis by argo
           qed
           finally show ?thesis by simp
         qed
@@ -3918,7 +3927,7 @@ begin
       qed
       also have "... = ((\<epsilon> \<cdot> (f \<star> (inv \<eta> \<star> g) \<cdot> (g \<star> inv \<epsilon>))) \<star> ((f \<star> inv \<eta>) \<cdot> (inv \<epsilon> \<star> f))) \<cdot>
                         ((f \<star> g) \<star> (\<epsilon> \<star> f) \<cdot> (f \<star> \<eta>)) \<cdot> (f \<star> \<eta>)"
-        using comp_assoc by simp
+        using comp_assoc by presburger
       also have "... = ((\<epsilon> \<star> (f \<star> inv \<eta>) \<cdot> (inv \<epsilon> \<star> f)) \<cdot>
                          ((f \<star> (inv \<eta> \<star> g) \<cdot> (g \<star> inv \<epsilon>)) \<star> f)) \<cdot>
                            (f \<star> (g \<star> \<epsilon>) \<cdot> (\<eta> \<star> g) \<star> f) \<cdot> (f \<star> \<eta>)"

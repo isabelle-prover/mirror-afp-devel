@@ -2257,13 +2257,13 @@ begin
                        \<a>[f, g, src g \<star> h] \<cdot> \<a>[f \<star> g, src g, h]"
         using assms assoc'_naturality [of f "\<r>[g]" h] comp_assoc by simp
       also have "... = ((f \<star> \<r>[g]) \<star> h) \<cdot> (\<a>[f, g, src g] \<star> h)"
-            using assms pentagon [of f g "src g" h] iso_assoc inv_hcomp
-                  invert_side_of_triangle(1)
-                    [of "\<a>[f, g, src g \<star> h] \<cdot> \<a>[f \<star> g, src g, h]" "f \<star> \<a>[g, src g, h]"
-                        "\<a>[f, g \<star> src g, h] \<cdot> (\<a>[f, g, src g] \<star> h)"]
-                  invert_side_of_triangle(1)
-                    [of "(f \<star> \<a>\<^sup>-\<^sup>1[g, src g, h]) \<cdot> \<a>[f, g, src g \<star> h] \<cdot> \<a>[f \<star> g, src g, h]"
-                        "\<a>[f, g \<star> src g, h]" "\<a>[f, g, src g] \<star> h"]
+        using assms pentagon [of f g "src g" h] iso_assoc inv_hcomp
+              invert_side_of_triangle(1)
+                [of "\<a>[f, g, src g \<star> h] \<cdot> \<a>[f \<star> g, src g, h]" "f \<star> \<a>[g, src g, h]"
+                    "\<a>[f, g \<star> src g, h] \<cdot> (\<a>[f, g, src g] \<star> h)"]
+              invert_side_of_triangle(1)
+                [of "(f \<star> \<a>\<^sup>-\<^sup>1[g, src g, h]) \<cdot> \<a>[f, g, src g \<star> h] \<cdot> \<a>[f \<star> g, src g, h]"
+                    "\<a>[f, g \<star> src g, h]" "\<a>[f, g, src g] \<star> h"]
         by auto
       finally show ?thesis by blast
     qed

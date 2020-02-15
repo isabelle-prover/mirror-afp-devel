@@ -6,7 +6,7 @@
 section "Bicategories of Spans"
 
 theory BicategoryOfSpans
-imports CanonicalIsos SpanBicategory ConcreteCategory IsomorphismClass Tabulation
+imports CanonicalIsos SpanBicategory Category3.ConcreteCategory IsomorphismClass Tabulation
 begin
 
 text \<open>
@@ -2572,7 +2572,7 @@ $$
       finally show 1: "tab = (rep r \<star> tab\<^sub>0 r) \<cdot> tab\<^sub>0.trnr\<^sub>\<eta> (tab\<^sub>1 r) ((tab\<^sub>1 r) \<star> (tab\<^sub>0 r)\<^sup>*)" by simp
       have "(inv (rep r) \<star> tab\<^sub>0 r) \<cdot> tab =
             ((inv (rep r) \<star> tab\<^sub>0 r) \<cdot> (rep r \<star> tab\<^sub>0 r)) \<cdot> tab\<^sub>0.trnr\<^sub>\<eta> (tab\<^sub>1 r) ((tab\<^sub>1 r) \<star> (tab\<^sub>0 r)\<^sup>*)"
-        unfolding 1 using comp_assoc by simp
+        unfolding 1 using comp_assoc by presburger
       also have "... = tab\<^sub>0.trnr\<^sub>\<eta> (tab\<^sub>1 r) ((tab\<^sub>1 r) \<star> (tab\<^sub>0 r)\<^sup>*)"
       proof - 
         have 1: "(inv (rep r) \<star> tab\<^sub>0 r) \<cdot> (rep r \<star> tab\<^sub>0 r) = ((tab\<^sub>1 r) \<star> (tab\<^sub>0 r)\<^sup>*) \<star> tab\<^sub>0 r"
@@ -2990,15 +2990,14 @@ $$
     lemma transpose_\<phi>:
     shows "tab = \<a>\<^sup>-\<^sup>1[k\<^sup>*, h, p\<^sub>0] \<cdot> k.trnl\<^sub>\<eta> p\<^sub>1 \<phi>"
     proof -
-      have "\<a>\<^sup>-\<^sup>1[k\<^sup>*, h, p\<^sub>0] \<cdot> k.trnl\<^sub>\<eta> p\<^sub>1 \<phi> =
-            \<a>\<^sup>-\<^sup>1[k\<^sup>*, h, p\<^sub>0] \<cdot> \<a>[k\<^sup>*, h, p\<^sub>0] \<cdot> tab"
+      have "\<a>\<^sup>-\<^sup>1[k\<^sup>*, h, p\<^sub>0] \<cdot> k.trnl\<^sub>\<eta> p\<^sub>1 \<phi> = \<a>\<^sup>-\<^sup>1[k\<^sup>*, h, p\<^sub>0] \<cdot> \<a>[k\<^sup>*, h, p\<^sub>0] \<cdot> tab"
         unfolding \<phi>_def
         using k.antipar cospan
               k.adjoint_transpose_left(4)
                 [of "h \<star> p\<^sub>0" "p\<^sub>1" "\<a>[k\<^sup>*, h, p\<^sub>0] \<cdot> tab"]
         by fastforce
       also have "... = (\<a>\<^sup>-\<^sup>1[k\<^sup>*, h, p\<^sub>0] \<cdot> \<a>[k\<^sup>*, h, p\<^sub>0]) \<cdot> tab"
-        using comp_assoc by simp
+        using comp_assoc by presburger
       also have "... = tab"
         using k.antipar cospan comp_cod_arr comp_assoc_assoc' by simp
       finally show ?thesis by simp
@@ -3074,7 +3073,7 @@ $$
               \<l>[h \<star> u] \<cdot> (k.\<epsilon> \<star> h \<star> u) \<cdot> ((k \<star> k\<^sup>*) \<star> h \<star> \<theta>) \<cdot> \<a>\<^sup>-\<^sup>1[k, k\<^sup>*, h \<star> p\<^sub>0 \<star> w]"
           using assms 4 k.antipar cospan assoc'_naturality [of k "k\<^sup>*" "h \<star> \<theta>"] hseqI' by auto
         also have "... = \<l>[h \<star> u] \<cdot> ((k.\<epsilon> \<star> h \<star> u) \<cdot> ((k \<star> k\<^sup>*) \<star> h \<star> \<theta>)) \<cdot> \<a>\<^sup>-\<^sup>1[k, k\<^sup>*, h \<star> p\<^sub>0 \<star> w]"
-          using comp_assoc by simp
+          using comp_assoc by presburger
         also have "... = (\<l>[h \<star> u] \<cdot> (trg k \<star> h \<star> \<theta>)) \<cdot> (k.\<epsilon> \<star> h \<star> p\<^sub>0 \<star> w) \<cdot>
                            \<a>\<^sup>-\<^sup>1[k, k\<^sup>*, h \<star> p\<^sub>0 \<star> w]"
         proof -
@@ -3093,7 +3092,7 @@ $$
           finally have "(k.\<epsilon> \<star> h \<star> u) \<cdot> ((k \<star> k\<^sup>*) \<star> h \<star> \<theta>) = (trg k \<star> h \<star> \<theta>) \<cdot> (k.\<epsilon> \<star> h \<star> p\<^sub>0 \<star> w)"
             by simp
           thus ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         also have "... = (h \<star> \<theta>) \<cdot> \<l>[h \<star> p\<^sub>0 \<star> w] \<cdot> (k.\<epsilon> \<star> h \<star> p\<^sub>0 \<star> w) \<cdot> \<a>\<^sup>-\<^sup>1[k, k\<^sup>*, h \<star> p\<^sub>0 \<star> w]"
         proof -
@@ -3101,14 +3100,14 @@ $$
             using assms 1 4 k.antipar cospan lunit_naturality [of "h \<star> \<theta>"]
             by (metis hcomp_simps(3-4) h.ide_left hseqI' ide_char in_homE trg_hcomp')
           thus ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         finally have "\<l>[h \<star> u] \<cdot> (k.\<epsilon> \<star> h \<star> u) \<cdot> \<a>\<^sup>-\<^sup>1[k, k\<^sup>*, h \<star> u] \<cdot> (k \<star> k\<^sup>* \<star> h \<star> \<theta>) =
                       (h \<star> \<theta>) \<cdot> \<l>[h \<star> p\<^sub>0 \<star> w] \<cdot> (k.\<epsilon> \<star> h \<star> p\<^sub>0 \<star> w) \<cdot>
                         \<a>\<^sup>-\<^sup>1[k, k\<^sup>*, h \<star> p\<^sub>0 \<star> w]"
           by simp
         thus ?thesis
-          using comp_assoc by simp
+          using comp_assoc by presburger
       qed
       also have "... = (h \<star> \<theta>) \<cdot> \<a>[h, p\<^sub>0, w] \<cdot> (\<phi> \<star> w) \<cdot> \<a>\<^sup>-\<^sup>1[k, p\<^sub>1, w] \<cdot> (k \<star> \<nu>)"
       proof -
@@ -3132,7 +3131,7 @@ $$
               using assms 0 k.antipar cospan \<ll>.is_natural_1 [of "\<a>\<^sup>-\<^sup>1[h, p\<^sub>0, w]"] comp_assoc
               by simp
             also have "... = (\<a>[h, p\<^sub>0, w] \<cdot> \<a>\<^sup>-\<^sup>1[h, p\<^sub>0, w]) \<cdot> \<ll> (h \<star> p\<^sub>0 \<star> w)"
-              using comp_assoc by simp
+              using comp_assoc by presburger
             also have "... = \<ll> (h \<star> p\<^sub>0 \<star> w)"
               using assms 0 k.antipar cospan comp_cod_arr comp_assoc_assoc' by simp
             also have "... = \<l>[h \<star> p\<^sub>0 \<star> w]"
@@ -3140,7 +3139,7 @@ $$
             finally show ?thesis by simp
           qed
           thus ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         also have "... = \<a>[h, p\<^sub>0, w] \<cdot> (\<l>[h \<star> p\<^sub>0] \<star> w) \<cdot>
                \<a>\<^sup>-\<^sup>1[trg h, h \<star> p\<^sub>0, w] \<cdot>
@@ -3160,7 +3159,7 @@ $$
                   interchange [of k.\<epsilon> "k \<star> k\<^sup>*" "(h \<star> p\<^sub>0) \<star> w" "\<a>\<^sup>-\<^sup>1[h, p\<^sub>0, w]"]
             by simp
           thus ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         also have "... = \<a>[h, p\<^sub>0, w] \<cdot> (\<l>[h \<star> p\<^sub>0] \<star> w) \<cdot>
                ((k.\<epsilon> \<star> (h \<star> p\<^sub>0)) \<star> w) \<cdot> \<a>\<^sup>-\<^sup>1[k \<star> k\<^sup>*, h \<star> p\<^sub>0, w] \<cdot> 
@@ -3184,7 +3183,7 @@ $$
               using assms 0 k.antipar cospan whisker_left by auto
           qed
           thus ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         also have "... = \<a>[h, p\<^sub>0, w] \<cdot> (\<l>[h \<star> p\<^sub>0] \<star> w) \<cdot>
                            ((k.\<epsilon> \<star> (h \<star> p\<^sub>0)) \<star> w) \<cdot> (\<a>\<^sup>-\<^sup>1[k \<star> k\<^sup>*, h \<star> p\<^sub>0, w] \<cdot> 
@@ -3196,7 +3195,7 @@ $$
           proof -
             have "\<a>[k, (k\<^sup>* \<star> h) \<star> p\<^sub>0, w] \<cdot> \<a>\<^sup>-\<^sup>1[k, (k\<^sup>* \<star> h) \<star> p\<^sub>0, w] \<cdot> (k \<star> tab \<star> w) =
                   (\<a>[k, (k\<^sup>* \<star> h) \<star> p\<^sub>0, w] \<cdot> \<a>\<^sup>-\<^sup>1[k, (k\<^sup>* \<star> h) \<star> p\<^sub>0, w]) \<cdot> (k \<star> tab \<star> w)"
-              using comp_assoc by simp
+              using comp_assoc by presburger
             also have "... = (k \<star> ((k\<^sup>* \<star> h) \<star> p\<^sub>0) \<star> w) \<cdot> (k \<star> tab \<star> w)"
                using assms k.antipar 0 comp_assoc_assoc' by simp
             also have "... = k \<star> tab \<star> w"
@@ -3209,7 +3208,7 @@ $$
           finally have "k \<star> tab \<star> w = \<a>[k, (k\<^sup>* \<star> h) \<star> p\<^sub>0, w] \<cdot> ((k \<star> tab) \<star> w) \<cdot> \<a>\<^sup>-\<^sup>1[k, p\<^sub>1, w]"
             by simp
           thus ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         also have "... = \<a>[h, p\<^sub>0, w] \<cdot> (\<l>[h \<star> p\<^sub>0] \<star> w) \<cdot>
                            ((k.\<epsilon> \<star> h \<star> p\<^sub>0) \<star> w) \<cdot>
@@ -3237,7 +3236,7 @@ $$
             finally show ?thesis by simp
           qed
           thus ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         also have "... = \<a>[h, p\<^sub>0, w] \<cdot>
                            (\<l>[h \<star> p\<^sub>0] \<cdot> (k.\<epsilon> \<star> h \<star> p\<^sub>0) \<cdot>
@@ -3294,7 +3293,7 @@ $$
       also have "... = \<a>\<^sup>-\<^sup>1[k\<^sup>*, h, p\<^sub>0] \<cdot> \<a>[k\<^sup>*, h, p\<^sub>0] \<cdot> \<tau>"
         using assms k.antipar cospan k.adjoint_transpose_left(4) assoc_in_hom by simp
       also have "... = (\<a>\<^sup>-\<^sup>1[k\<^sup>*, h, p\<^sub>0] \<cdot> \<a>[k\<^sup>*, h, p\<^sub>0]) \<cdot> \<tau>"
-        using comp_assoc by simp
+        using comp_assoc by presburger
       also have "... = \<tau>"
         using assms k.antipar cospan comp_cod_arr comp_assoc_assoc' by auto
       finally show ?thesis by simp
@@ -3345,7 +3344,7 @@ $$
         proof -
           have "k.trnl\<^sub>\<epsilon> (h \<star> u) (\<a>[k\<^sup>*, h, u] \<cdot> ?\<omega>) =
                 k.trnl\<^sub>\<epsilon> (h \<star> u) ((\<a>[k\<^sup>*, h, u] \<cdot> \<a>\<^sup>-\<^sup>1[k\<^sup>*, h, u]) \<cdot> k.trnl\<^sub>\<eta> v \<mu>)"
-            using comp_assoc by simp
+            using comp_assoc by presburger
           also have "... = k.trnl\<^sub>\<epsilon> (h \<star> u) (k.trnl\<^sub>\<eta> v \<mu>)"
           proof -
             have "(\<a>[k\<^sup>*, h, u] \<cdot> \<a>\<^sup>-\<^sup>1[k\<^sup>*, h, u]) \<cdot> k.trnl\<^sub>\<eta> v \<mu> = (k\<^sup>* \<star> h \<star> u) \<cdot> k.trnl\<^sub>\<eta> v \<mu>"
@@ -3592,7 +3591,7 @@ $$
         using assms(1) by auto
       interpret w: arrow_of_spans_of_maps_to_tabulation V H \<a> \<i> src trg r\<^sub>0 \<open>dom \<omega>\<close> s \<sigma> s\<^sub>0 s\<^sub>1 w
         ..
-      interpret w': arrow_of_spans_of_maps V H \<a> \<i> src trg r\<^sub>0 "dom \<omega>" s\<^sub>0 s\<^sub>1 w'
+      interpret w': arrow_of_spans_of_maps V H \<a> \<i> src trg r\<^sub>0 \<open>dom \<omega>\<close> s\<^sub>0 s\<^sub>1 w'
         using assms(2) by auto
       interpret w': arrow_of_spans_of_maps_to_tabulation V H \<a> \<i> src trg r\<^sub>0 \<open>dom \<omega>\<close> s \<sigma> s\<^sub>0 s\<^sub>1 w'
         ..
@@ -3603,13 +3602,13 @@ $$
       proof -
         have "composite_cell w' w'.the_\<theta> \<cdot> (w'.the_\<nu> \<cdot> inv w.the_\<nu>) =
               ((composite_cell w' w'.the_\<theta>) \<cdot> w'.the_\<nu>) \<cdot> inv w.the_\<nu>"
-          using comp_assoc by simp
+          using comp_assoc by presburger
         also have "... = \<omega> \<cdot> inv w.the_\<nu>"
           using assms(2) comp_assoc by simp
         also have "... = (composite_cell w w.the_\<theta> \<cdot> w.the_\<nu>) \<cdot> inv w.the_\<nu>"
           using assms(1) comp_assoc by simp
         also have "... = composite_cell w w.the_\<theta> \<cdot> w.the_\<nu> \<cdot> inv w.the_\<nu>"
-          using comp_assoc by simp
+          using comp_assoc by presburger
         also have "... = composite_cell w w.the_\<theta>"
         proof -
           have "w.the_\<nu> \<cdot> inv w.the_\<nu> = s\<^sub>1 \<star> w"
@@ -3669,7 +3668,7 @@ $$
           proof -
             have "composite_cell (src s\<^sub>0) \<r>[s\<^sub>0] \<cdot> \<r>\<^sup>-\<^sup>1[s\<^sub>1] =
                   ((s \<star> \<r>[s\<^sub>0]) \<cdot> \<a>[s, s\<^sub>0, src s\<^sub>0]) \<cdot> (\<sigma> \<star> src s\<^sub>0) \<cdot> \<r>\<^sup>-\<^sup>1[s\<^sub>1]"
-              using comp_assoc by simp
+              using comp_assoc by presburger
             also have "... = (\<r>[s \<star> s\<^sub>0] \<cdot> (\<sigma> \<star> src s\<^sub>0)) \<cdot> \<r>\<^sup>-\<^sup>1[s\<^sub>1]"
               using runit_hcomp comp_assoc by simp
             also have "... = \<sigma> \<cdot> \<r>[s\<^sub>1] \<cdot> \<r>\<^sup>-\<^sup>1[s\<^sub>1]"
@@ -3822,7 +3821,7 @@ $$
       proof -
         have "\<a>[r, s, u] \<cdot> composite_cell w \<theta> \<cdot> \<a>\<^sup>-\<^sup>1[r\<^sub>1, p\<^sub>1, w] =
               (\<a>[r, s, u] \<cdot> ((r \<star> s) \<star> \<theta>)) \<cdot> \<a>[r \<star> s, s\<^sub>0 \<star> p\<^sub>0, w] \<cdot> (tab \<star> w) \<cdot> \<a>\<^sup>-\<^sup>1[r\<^sub>1, p\<^sub>1, w]"
-          using comp_assoc by simp
+          using comp_assoc by presburger
         also have "... = (r \<star> s \<star> \<theta>) \<cdot> \<a>[r, s, (s\<^sub>0 \<star> p\<^sub>0) \<star> w] \<cdot> \<a>[r \<star> s, s\<^sub>0 \<star> p\<^sub>0, w] \<cdot>
                            (tab \<star> w) \<cdot> \<a>\<^sup>-\<^sup>1[r\<^sub>1, p\<^sub>1, w]"
           using assoc_naturality [of r s \<theta>] composable comp_assoc by simp
@@ -3830,7 +3829,7 @@ $$
                            ((\<a>\<^sup>-\<^sup>1[r, s, s\<^sub>0 \<star> p\<^sub>0] \<cdot> (r \<star> \<a>[s, s\<^sub>0, p\<^sub>0])) \<cdot> (r \<star> \<sigma> \<star> p\<^sub>0) \<cdot>
                            \<rho>.composite_cell p\<^sub>1 r\<^sub>0s\<^sub>1.\<phi> \<star> w) \<cdot> \<a>\<^sup>-\<^sup>1[r\<^sub>1, p\<^sub>1, w]"
           unfolding tab_def
-          using comp_assoc by simp
+          using comp_assoc by presburger
         also have "... = (r \<star> s \<star> \<theta>) \<cdot> ((\<a>[r, s, (s\<^sub>0 \<star> p\<^sub>0) \<star> w] \<cdot> \<a>[r \<star> s, s\<^sub>0 \<star> p\<^sub>0, w] \<cdot>
                            (\<a>\<^sup>-\<^sup>1[r, s, s\<^sub>0 \<star> p\<^sub>0] \<cdot> (r \<star> \<a>[s, s\<^sub>0, p\<^sub>0]) \<star> w))) \<cdot>
                            ((r \<star> \<sigma> \<star> p\<^sub>0) \<cdot> \<rho>.composite_cell p\<^sub>1 r\<^sub>0s\<^sub>1.\<phi> \<star> w) \<cdot>
@@ -3875,7 +3874,7 @@ $$
             hence "\<a>\<^sup>-\<^sup>1[r \<star> r\<^sub>0, p\<^sub>1, w] =
                    (\<a>\<^sup>-\<^sup>1[r, r\<^sub>0, p\<^sub>1] \<star> w) \<cdot> \<a>\<^sup>-\<^sup>1[r, r\<^sub>0 \<star> p\<^sub>1, w] \<cdot> (r \<star> \<a>\<^sup>-\<^sup>1[r\<^sub>0, p\<^sub>1, w]) \<cdot>
                      \<a>[r, r\<^sub>0, p\<^sub>1 \<star> w]"
-              using comp_assoc by simp
+              using comp_assoc by presburger
             moreover have "seq (inv (\<a>\<^sup>-\<^sup>1[r, r\<^sub>0, p\<^sub>1] \<star> w)) \<a>\<^sup>-\<^sup>1[r \<star> r\<^sub>0, p\<^sub>1, w]"
               using \<rho>.T0.antipar(1) iso_inv_iso 1 hseqI'
               by (intro seqI hseqI, auto)
@@ -3887,7 +3886,7 @@ $$
               by fastforce
           qed
           thus ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         also have "... = (r \<star> s \<star> \<theta>) \<cdot> ((\<a>[r, s, (s\<^sub>0 \<star> p\<^sub>0) \<star> w] \<cdot> \<a>[r \<star> s, s\<^sub>0 \<star> p\<^sub>0, w] \<cdot>
                            (\<a>\<^sup>-\<^sup>1[r, s, s\<^sub>0 \<star> p\<^sub>0] \<cdot> (r \<star> \<a>[s, s\<^sub>0, p\<^sub>0]) \<star> w))) \<cdot>
@@ -3897,7 +3896,7 @@ $$
           have "((r \<star> r\<^sub>0s\<^sub>1.\<phi>) \<star> w) \<cdot> \<a>\<^sup>-\<^sup>1[r, r\<^sub>0 \<star> p\<^sub>1, w] = \<a>\<^sup>-\<^sup>1[r, s\<^sub>1 \<star> p\<^sub>0, w] \<cdot> (r \<star> r\<^sub>0s\<^sub>1.\<phi> \<star> w)"
             using assoc'_naturality [of r r\<^sub>0s\<^sub>1.\<phi> w] r\<^sub>0s\<^sub>1.cospan by auto
           thus ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         also have "... = (r \<star> s \<star> \<theta>) \<cdot>
                            (\<a>[r, s, (s\<^sub>0 \<star> p\<^sub>0) \<star> w] \<cdot> \<a>[r \<star> s, s\<^sub>0 \<star> p\<^sub>0, w] \<cdot>
@@ -3911,7 +3910,7 @@ $$
             using assoc'_naturality [of r "\<sigma> \<star> p\<^sub>0" w]
             by (simp add: composable hseqI')
           thus ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         also have "... = (r \<star> s \<star> \<theta>) \<cdot>
                            (r \<star> (s \<star> \<a>\<^sup>-\<^sup>1[s\<^sub>0, p\<^sub>0, w]) \<cdot> \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w] \<cdot> \<a>[s \<star> s\<^sub>0, p\<^sub>0, w]) \<cdot>
@@ -3937,7 +3936,7 @@ $$
             finally show ?thesis by simp
           qed
           thus ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         also have "... = (r \<star> s \<star> \<theta>) \<cdot>
                            (r \<star> (s \<star> \<a>\<^sup>-\<^sup>1[s\<^sub>0, p\<^sub>0, w]) \<cdot> \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w] \<cdot> \<a>[s \<star> s\<^sub>0, p\<^sub>0, w]) \<cdot>
@@ -4168,7 +4167,7 @@ $$
           also have "... = \<a>\<^sup>-\<^sup>1[r, s, u] \<cdot> (r \<star> (s \<star> \<theta>\<^sub>s) \<cdot> \<a>[s, s\<^sub>0, w\<^sub>s] \<cdot>
                              ((\<sigma> \<star> w\<^sub>s) \<cdot> (s\<^sub>1 \<star> \<theta>\<^sub>t)) \<cdot> \<a>[s\<^sub>1, p\<^sub>0, w] \<cdot> (r\<^sub>0s\<^sub>1.\<phi> \<star> w) \<cdot>
                              \<a>\<^sup>-\<^sup>1[r\<^sub>0, p\<^sub>1, w] \<cdot> (r\<^sub>0 \<star> \<nu>\<^sub>t)) \<cdot> \<a>[r, r\<^sub>0, w\<^sub>r] \<cdot> (\<rho> \<star> w\<^sub>r) \<cdot> \<nu>\<^sub>r"
-            using comp_assoc by simp
+            using comp_assoc by presburger
           also have "... = \<a>\<^sup>-\<^sup>1[r, s, u] \<cdot> (r \<star> (s \<star> \<theta>\<^sub>s) \<cdot> (\<a>[s, s\<^sub>0, w\<^sub>s] \<cdot>
                              ((s \<star> s\<^sub>0) \<star> \<theta>\<^sub>t)) \<cdot> (\<sigma> \<star> p\<^sub>0 \<star> w) \<cdot> \<a>[s\<^sub>1, p\<^sub>0, w] \<cdot> (r\<^sub>0s\<^sub>1.\<phi> \<star> w) \<cdot>
                              \<a>\<^sup>-\<^sup>1[r\<^sub>0, p\<^sub>1, w] \<cdot> (r\<^sub>0 \<star> \<nu>\<^sub>t)) \<cdot> \<a>[r, r\<^sub>0, w\<^sub>r] \<cdot> (\<rho> \<star> w\<^sub>r) \<cdot> \<nu>\<^sub>r"
@@ -4182,7 +4181,7 @@ $$
             finally have "(\<sigma> \<star> w\<^sub>s) \<cdot> (s\<^sub>1 \<star> \<theta>\<^sub>t) = ((s \<star> s\<^sub>0) \<star> \<theta>\<^sub>t) \<cdot> (\<sigma> \<star> p\<^sub>0 \<star> w)"
               by simp
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = \<a>\<^sup>-\<^sup>1[r, s, u] \<cdot> (r \<star> (s \<star> \<theta>\<^sub>s) \<cdot> (s \<star> s\<^sub>0 \<star> \<theta>\<^sub>t) \<cdot> \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w] \<cdot>
                              (\<sigma> \<star> p\<^sub>0 \<star> w) \<cdot> \<a>[s\<^sub>1, p\<^sub>0, w] \<cdot> (r\<^sub>0s\<^sub>1.\<phi> \<star> w) \<cdot>
@@ -4219,7 +4218,7 @@ $$
                 by simp
             qed
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = \<a>\<^sup>-\<^sup>1[r, s, u] \<cdot> (r \<star> (s \<star> \<theta>\<^sub>s) \<cdot> (s \<star> s\<^sub>0 \<star> \<theta>\<^sub>t)) \<cdot>
                              (r \<star> \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w] \<cdot> (\<sigma> \<star> p\<^sub>0 \<star> w) \<cdot> \<a>[s\<^sub>1, p\<^sub>0, w] \<cdot>
@@ -4249,7 +4248,7 @@ $$
             have "(r \<star> r\<^sub>0 \<star> \<nu>\<^sub>t) \<cdot> \<a>[r, r\<^sub>0, w\<^sub>r] = \<a>[r, r\<^sub>0, p\<^sub>1 \<star> w] \<cdot> ((r \<star> r\<^sub>0) \<star> \<nu>\<^sub>t)"
               using assoc_naturality [of r r\<^sub>0 \<nu>\<^sub>t] \<nu>\<^sub>t_in_hom by auto
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = (\<a>\<^sup>-\<^sup>1[r, s, u] \<cdot> (r \<star> (s \<star> \<theta>\<^sub>s) \<cdot> (s \<star> s\<^sub>0 \<star> \<theta>\<^sub>t))) \<cdot>
                              (r \<star> \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w] \<cdot> (\<sigma> \<star> p\<^sub>0 \<star> w) \<cdot> \<a>[s\<^sub>1, p\<^sub>0, w] \<cdot>
@@ -4266,7 +4265,7 @@ $$
                   trg_hcomp')
             finally have "((r \<star> r\<^sub>0) \<star> \<nu>\<^sub>t) \<cdot> (\<rho> \<star> w\<^sub>r) = (\<rho> \<star> p\<^sub>1 \<star> w) \<cdot> (r\<^sub>1 \<star> \<nu>\<^sub>t)" by simp
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = ((r \<star> s) \<star> \<theta>\<^sub>s \<cdot> (s\<^sub>0 \<star> \<theta>\<^sub>t)) \<cdot> \<a>\<^sup>-\<^sup>1[r, s, s\<^sub>0 \<star> p\<^sub>0 \<star> w] \<cdot> 
                              (r \<star> \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w] \<cdot> ((\<sigma> \<star> p\<^sub>0 \<star> w) \<cdot> \<a>[s\<^sub>1, p\<^sub>0, w]) \<cdot>
@@ -4302,7 +4301,7 @@ $$
               finally show ?thesis by simp
             qed
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = ((r \<star> s) \<star> \<theta>\<^sub>s \<cdot> (s\<^sub>0 \<star> \<theta>\<^sub>t)) \<cdot> \<a>\<^sup>-\<^sup>1[r, s, s\<^sub>0 \<star> p\<^sub>0 \<star> w] \<cdot> 
                              ((r \<star> \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w] \<cdot> \<a>[s \<star> s\<^sub>0, p\<^sub>0, w] \<cdot>
@@ -4312,7 +4311,7 @@ $$
             have "(\<sigma> \<star> p\<^sub>0 \<star> w) \<cdot> \<a>[s\<^sub>1, p\<^sub>0, w] = \<a>[s \<star> s\<^sub>0, p\<^sub>0, w] \<cdot> ((\<sigma> \<star> p\<^sub>0) \<star> w)"
               using assoc_naturality [of \<sigma> p\<^sub>0 w] by (simp add: w\<theta>\<^sub>t\<nu>\<^sub>t)
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = ((r \<star> s) \<star> \<theta>\<^sub>s \<cdot> (s\<^sub>0 \<star> \<theta>\<^sub>t)) \<cdot>
                              \<a>\<^sup>-\<^sup>1[r, s, s\<^sub>0 \<star> p\<^sub>0 \<star> w] \<cdot> (r \<star> \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w]) \<cdot>
@@ -4352,10 +4351,10 @@ $$
                             "(r \<star> \<a>\<^sup>-\<^sup>1[r\<^sub>0, p\<^sub>1, w]) \<cdot> \<a>[r, r\<^sub>0, p\<^sub>1 \<star> w]" "\<a>[r \<star> r\<^sub>0, p\<^sub>1, w]"]
                 using \<open>trg w = src p\<^sub>0\<close> hseqI' by simp
               thus ?thesis
-                using comp_assoc by simp
+                using comp_assoc by presburger
             qed
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = ((r \<star> s) \<star> \<theta>\<^sub>s \<cdot> (s\<^sub>0 \<star> \<theta>\<^sub>t)) \<cdot>
                              \<a>\<^sup>-\<^sup>1[r, s, s\<^sub>0 \<star> p\<^sub>0 \<star> w] \<cdot> (r \<star> \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w]) \<cdot>
@@ -4366,7 +4365,7 @@ $$
             have "\<a>\<^sup>-\<^sup>1[r \<star> r\<^sub>0, p\<^sub>1, w] \<cdot> (\<rho> \<star> p\<^sub>1 \<star> w) = ((\<rho> \<star> p\<^sub>1) \<star> w) \<cdot> \<a>\<^sup>-\<^sup>1[r\<^sub>1, p\<^sub>1, w]"
               using assoc'_naturality [of \<rho> p\<^sub>1 w] by (simp add: \<rho>.T0.antipar(1) w\<theta>\<^sub>t\<nu>\<^sub>t)
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = ((r \<star> s) \<star> \<theta>\<^sub>s \<cdot> (s\<^sub>0 \<star> \<theta>\<^sub>t)) \<cdot>
                              \<a>\<^sup>-\<^sup>1[r, s, s\<^sub>0 \<star> p\<^sub>0 \<star> w] \<cdot> (r \<star> \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w]) \<cdot>
@@ -4377,7 +4376,7 @@ $$
             have "(r \<star> r\<^sub>0s\<^sub>1.\<phi> \<star> w) \<cdot> \<a>[r, r\<^sub>0 \<star> p\<^sub>1, w] = \<a>[r, s\<^sub>1 \<star> p\<^sub>0, w] \<cdot> ((r \<star> r\<^sub>0s\<^sub>1.\<phi>) \<star> w)"
               using assoc_naturality [of r r\<^sub>0s\<^sub>1.\<phi> w] r\<^sub>0s\<^sub>1.cospan w\<theta>\<^sub>t\<nu>\<^sub>t by auto
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = ((r \<star> s) \<star> \<theta>\<^sub>s \<cdot> (s\<^sub>0 \<star> \<theta>\<^sub>t)) \<cdot>
                              \<a>\<^sup>-\<^sup>1[r, s, s\<^sub>0 \<star> p\<^sub>0 \<star> w] \<cdot> (r \<star> \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w]) \<cdot>
@@ -4390,12 +4389,12 @@ $$
                   \<a>[r, (s \<star> s\<^sub>0) \<star> p\<^sub>0, w] \<cdot> ((r \<star> \<sigma> \<star> p\<^sub>0) \<star> w)"
             proof -
               have "arr w \<and> dom w = w \<and> cod w = w"
-                using ide_char w by presburger
+                using ide_char w by blast
               then show ?thesis
                 using hseqI' assoc_naturality [of r "\<sigma> \<star> p\<^sub>0" w] composable by auto
             qed
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = ((r \<star> s) \<star> \<theta>\<^sub>s \<cdot> (s\<^sub>0 \<star> \<theta>\<^sub>t)) \<cdot>
                              (\<a>\<^sup>-\<^sup>1[r, s, s\<^sub>0 \<star> p\<^sub>0 \<star> w] \<cdot> (r \<star> \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w]) \<cdot>
@@ -4435,7 +4434,7 @@ $$
             also have "... = (r \<star> \<a>\<^sup>-\<^sup>1[s, s\<^sub>0, p\<^sub>0]) \<cdot> \<a>[r, s, s\<^sub>0 \<star> p\<^sub>0] \<cdot>
                                (\<a>\<^sup>-\<^sup>1[r, s, s\<^sub>0 \<star> p\<^sub>0]) \<cdot> (r \<star> \<a>[s, s\<^sub>0, p\<^sub>0]) \<cdot> (r \<star> \<sigma> \<star> p\<^sub>0) \<cdot>
                                (r \<star> r\<^sub>0s\<^sub>1.\<phi>) \<cdot> \<a>[r, r\<^sub>0, p\<^sub>1] \<cdot> (\<rho> \<star> p\<^sub>1) \<star> w"
-              using comp_assoc by simp
+              using comp_assoc by presburger
             also have "... = (r \<star> \<a>\<^sup>-\<^sup>1[s, s\<^sub>0, p\<^sub>0]) \<cdot> \<a>[r, s, s\<^sub>0 \<star> p\<^sub>0] \<cdot> tab \<star> w"
               using tab_def by simp
             also have "... = ((r \<star> \<a>\<^sup>-\<^sup>1[s, s\<^sub>0, p\<^sub>0]) \<star> w) \<cdot> (\<a>[r, s, s\<^sub>0 \<star> p\<^sub>0] \<star> w) \<cdot> (tab \<star> w)"
@@ -4446,7 +4445,7 @@ $$
                           ((r \<star> \<a>\<^sup>-\<^sup>1[s, s\<^sub>0, p\<^sub>0]) \<star> w) \<cdot> (\<a>[r, s, s\<^sub>0 \<star> p\<^sub>0] \<star> w) \<cdot> (tab \<star> w)"
               by simp
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = (((r \<star> s) \<star> \<theta>\<^sub>s \<cdot> (s\<^sub>0 \<star> \<theta>\<^sub>t)) \<cdot> ((r \<star> s) \<star> \<a>[s\<^sub>0, p\<^sub>0, w])) \<cdot>
                              \<a>[r \<star> s, s\<^sub>0 \<star> p\<^sub>0, w] \<cdot> (tab \<star> w) \<cdot> \<nu>"
@@ -4478,7 +4477,7 @@ $$
               using \<theta>_def w whisker_left composable
               by (metis \<theta> arrI ide_base comp_assoc)
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           finally show "((r \<star> s) \<star> \<theta>) \<cdot> \<a>[r \<star> s, s\<^sub>0 \<star> p\<^sub>0, w] \<cdot> (tab \<star> w) \<cdot> \<nu> = \<omega>"
             by simp
@@ -4606,7 +4605,7 @@ $$
           proof -
             have "\<a>[r, s, u] \<cdot> (composite_cell w' \<theta>' \<cdot> \<beta>) \<cdot> \<a>\<^sup>-\<^sup>1[r\<^sub>1, p\<^sub>1, w] =
                   \<a>[r, s, u] \<cdot> composite_cell w' \<theta>' \<cdot> \<beta> \<cdot> \<a>\<^sup>-\<^sup>1[r\<^sub>1, p\<^sub>1, w]"
-              using comp_assoc by simp
+              using comp_assoc by presburger
             also have "... = (r \<star> (s \<star> \<theta>') \<cdot> (s \<star> \<a>\<^sup>-\<^sup>1[s\<^sub>0, p\<^sub>0, w']) \<cdot> \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w'] \<cdot>
                                     (\<sigma> \<star> p\<^sub>0 \<star> w') \<cdot> \<a>[s\<^sub>1, p\<^sub>0, w'] \<cdot> (r\<^sub>0s\<^sub>1.\<phi> \<star> w') \<cdot>
                                     \<a>\<^sup>-\<^sup>1[r\<^sub>0, p\<^sub>1, w']) \<cdot>
@@ -4618,7 +4617,7 @@ $$
                 using comp_cod_arr \<rho>.T0.antipar(1) \<beta> comp_assoc_assoc' by simp
               also have "... = (\<a>[r, s, u] \<cdot> ((r \<star> s) \<star> \<theta>') \<cdot> \<a>[r \<star> s, s\<^sub>0 \<star> p\<^sub>0, w'] \<cdot> (tab \<star> w') \<cdot>
                                  \<a>\<^sup>-\<^sup>1[r\<^sub>1, p\<^sub>1, w']) \<cdot> \<a>[r\<^sub>1, p\<^sub>1, w'] \<cdot> \<beta> \<cdot> \<a>\<^sup>-\<^sup>1[r\<^sub>1, p\<^sub>1, w]"
-                using comp_assoc by simp
+                using comp_assoc by presburger
               also have "... = ((r \<star> (s \<star> \<theta>') \<cdot> (s \<star> \<a>\<^sup>-\<^sup>1[s\<^sub>0, p\<^sub>0, w']) \<cdot> \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w'] \<cdot>
                                  (\<sigma> \<star> p\<^sub>0 \<star> w') \<cdot> \<a>[s\<^sub>1, p\<^sub>0, w'] \<cdot> (r\<^sub>0s\<^sub>1.\<phi> \<star> w') \<cdot>
                                  \<a>\<^sup>-\<^sup>1[r\<^sub>0, p\<^sub>1, w']) \<cdot> \<a>[r, r\<^sub>0, p\<^sub>1 \<star> w'] \<cdot> (\<rho> \<star> p\<^sub>1 \<star> w')) \<cdot>
@@ -4631,7 +4630,7 @@ $$
               using \<theta>\<^sub>r'_def \<beta>\<^sub>r_def comp_assoc by auto
           qed
           finally show ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         have 1: "\<exists>!\<gamma>. \<guillemotleft>\<gamma> : ?w\<^sub>r \<Rightarrow> ?w\<^sub>r'\<guillemotright> \<and> \<theta>\<^sub>r = \<theta>\<^sub>r' \<cdot> (r\<^sub>0 \<star> \<gamma>) \<and> \<beta>\<^sub>r = r\<^sub>1 \<star> \<gamma>"
           using eq\<^sub>r \<rho>.T2 [of ?w\<^sub>r ?w\<^sub>r' \<theta>\<^sub>r "s \<star> u" \<theta>\<^sub>r' \<beta>\<^sub>r] w\<^sub>r w\<^sub>r' \<theta>\<^sub>r \<theta>\<^sub>r' \<beta>\<^sub>r by blast
@@ -4797,7 +4796,7 @@ $$
               thus ?thesis by simp
             qed
             also have "... = \<a>[s\<^sub>1, p\<^sub>0, w'] \<cdot> (r\<^sub>0s\<^sub>1.\<phi> \<star> w') \<cdot> \<a>\<^sup>-\<^sup>1[r\<^sub>0, p\<^sub>1, w'] \<cdot> (r\<^sub>0 \<star> \<gamma>\<^sub>r)"
-              using comp_assoc by simp
+              using comp_assoc by presburger
             also have "... = (s\<^sub>1 \<star> ?w\<^sub>s') \<cdot>
                                \<a>[s\<^sub>1, p\<^sub>0, w'] \<cdot> (r\<^sub>0s\<^sub>1.\<phi> \<star> w') \<cdot> \<a>\<^sup>-\<^sup>1[r\<^sub>0, p\<^sub>1, w'] \<cdot> (r\<^sub>0 \<star> \<gamma>\<^sub>r)"
             proof -
@@ -4857,7 +4856,7 @@ $$
                 by (metis \<gamma> \<gamma>\<^sub>r \<rho>.ide_leg1 r\<^sub>0s\<^sub>1.leg1_simps(5-6) hseqE
                     ide_char in_homE leg1_simps(2))
               also have "... = (\<a>\<^sup>-\<^sup>1[r\<^sub>1, p\<^sub>1, w'] \<cdot> \<a>[r\<^sub>1, p\<^sub>1, w']) \<cdot> ((r\<^sub>1 \<star> p\<^sub>1) \<star> \<gamma>)"
-                using comp_assoc by simp
+                using comp_assoc by presburger
               also have "... = (r\<^sub>1 \<star> p\<^sub>1) \<star> \<gamma>"
                 using comp_cod_arr
                 by (metis \<rho>.ide_leg1 r\<^sub>0s\<^sub>1.ide_leg1 calculation comp_assoc_assoc'(2) comp_ide_arr
@@ -4914,7 +4913,7 @@ $$
                           \<a>[s\<^sub>1, p\<^sub>0, w'] \<cdot> (r\<^sub>0s\<^sub>1.\<phi> \<star> w') \<cdot> \<a>\<^sup>-\<^sup>1[r\<^sub>0, p\<^sub>1, w']) \<cdot> (r\<^sub>0 \<star> p\<^sub>1 \<star> \<gamma>') =
                         (s \<star> \<theta>') \<cdot> (s \<star> \<a>\<^sup>-\<^sup>1[s\<^sub>0, p\<^sub>0, w']) \<cdot> \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w'] \<cdot> (\<sigma> \<star> p\<^sub>0 \<star> w') \<cdot>
                           \<a>[s\<^sub>1, p\<^sub>0, w'] \<cdot> (r\<^sub>0s\<^sub>1.\<phi> \<star> w') \<cdot> \<a>\<^sup>-\<^sup>1[r\<^sub>0, p\<^sub>1, w'] \<cdot> (r\<^sub>0 \<star> p\<^sub>1 \<star> \<gamma>')"
-                    using comp_assoc by simp
+                    using comp_assoc by presburger
                   also have "... = (s \<star> \<theta>') \<cdot> (s \<star> \<a>\<^sup>-\<^sup>1[s\<^sub>0, p\<^sub>0, w']) \<cdot> \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w'] \<cdot>
                                      (\<sigma> \<star> p\<^sub>0 \<star> w') \<cdot> \<a>[s\<^sub>1, p\<^sub>0, w'] \<cdot> ((r\<^sub>0s\<^sub>1.\<phi> \<star> w') \<cdot>
                                      ((r\<^sub>0 \<star> p\<^sub>1) \<star> \<gamma>')) \<cdot> \<a>\<^sup>-\<^sup>1[r\<^sub>0, p\<^sub>1, w]"
@@ -4937,7 +4936,7 @@ $$
                                   ((s\<^sub>1 \<star> p\<^sub>0) \<star> \<gamma>') \<cdot> (r\<^sub>0s\<^sub>1.\<phi> \<star> w)"
                       by simp
                     thus ?thesis
-                      using comp_assoc by simp
+                      using comp_assoc by presburger
                   qed
                   also have "... = (s \<star> \<theta>') \<cdot> (s \<star> \<a>\<^sup>-\<^sup>1[s\<^sub>0, p\<^sub>0, w']) \<cdot> \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w'] \<cdot>
                                      ((\<sigma> \<star> p\<^sub>0 \<star> w') \<cdot> (s\<^sub>1 \<star> p\<^sub>0 \<star> \<gamma>')) \<cdot> \<a>[s\<^sub>1, p\<^sub>0, w] \<cdot>
@@ -4962,7 +4961,7 @@ $$
                                   ((s \<star> s\<^sub>0) \<star> p\<^sub>0 \<star> \<gamma>') \<cdot> (\<sigma> \<star> p\<^sub>0 \<star> w)"
                       by simp
                     thus ?thesis
-                      using comp_assoc by simp
+                      using comp_assoc by presburger
                   qed
                   also have "... = (s \<star> \<theta>') \<cdot> (s \<star> \<a>\<^sup>-\<^sup>1[s\<^sub>0, p\<^sub>0, w']) \<cdot> ((s \<star> s\<^sub>0 \<star> p\<^sub>0 \<star> \<gamma>') \<cdot>
                                      \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w]) \<cdot> (\<sigma> \<star> p\<^sub>0 \<star> w) \<cdot> \<a>[s\<^sub>1, p\<^sub>0, w] \<cdot>
@@ -4971,7 +4970,7 @@ $$
                   also have "... = (s \<star> \<theta>') \<cdot> ((s \<star> \<a>\<^sup>-\<^sup>1[s\<^sub>0, p\<^sub>0, w']) \<cdot> (s \<star> s\<^sub>0 \<star> p\<^sub>0 \<star> \<gamma>')) \<cdot>
                                      \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w] \<cdot> (\<sigma> \<star> p\<^sub>0 \<star> w) \<cdot> \<a>[s\<^sub>1, p\<^sub>0, w] \<cdot>
                                      (r\<^sub>0s\<^sub>1.\<phi> \<star> w) \<cdot> \<a>\<^sup>-\<^sup>1[r\<^sub>0, p\<^sub>1, w]"
-                    using comp_assoc by simp
+                    using comp_assoc by presburger
                   also have "... = (s \<star> \<theta>') \<cdot> ((s \<star> (s\<^sub>0 \<star> p\<^sub>0) \<star> \<gamma>') \<cdot> (s \<star> \<a>\<^sup>-\<^sup>1[s\<^sub>0, p\<^sub>0, w])) \<cdot>
                                      \<a>[s, s\<^sub>0, p\<^sub>0 \<star> w] \<cdot> (\<sigma> \<star> p\<^sub>0 \<star> w) \<cdot> \<a>[s\<^sub>1, p\<^sub>0, w] \<cdot>
                                      (r\<^sub>0s\<^sub>1.\<phi> \<star> w) \<cdot> \<a>\<^sup>-\<^sup>1[r\<^sub>0, p\<^sub>1, w]"
@@ -5014,7 +5013,7 @@ $$
                     thus ?thesis by simp
                   qed
                   also have "... = (s \<star> \<theta>') \<cdot> (s \<star> (s\<^sub>0 \<star> p\<^sub>0) \<star> \<gamma>') \<cdot> ?X w"
-                    using comp_assoc by simp
+                    using comp_assoc by presburger
                   finally show ?thesis by simp
                 qed
                 also have "... = \<theta>\<^sub>r"
@@ -5031,7 +5030,7 @@ $$
                   by (metis \<rho>.leg1_simps(5-6) r\<^sub>0s\<^sub>1.leg1_simps(5-6)
                       hcomp_in_vhomE hseqE in_homE uw\<theta>w'\<theta>'\<beta>.\<beta>_simps(1) leg1_in_hom(2))
                 also have "... = (\<a>[r\<^sub>1, p\<^sub>1, w'] \<cdot> \<a>\<^sup>-\<^sup>1[r\<^sub>1, p\<^sub>1, w']) \<cdot> (r\<^sub>1 \<star> p\<^sub>1 \<star> \<gamma>')"
-                  using comp_assoc by simp
+                  using comp_assoc by presburger
                 also have "... = r\<^sub>1 \<star> p\<^sub>1 \<star> \<gamma>'"
                   using comp_cod_arr
                   by (metis (no_types, lifting) \<beta>\<^sub>r \<rho>.ide_leg1 r\<^sub>0s\<^sub>1.ide_leg1 arrI calculation
@@ -5066,7 +5065,7 @@ $$
                     by (metis \<rho>.leg0_simps(2,4-5) \<rho>.leg1_simps(3)
                         r\<^sub>0s\<^sub>1.leg1_simps(5-6) hseqE in_homE leg1_simps(2))
                   thus ?thesis
-                    using comp_assoc by simp
+                    using comp_assoc by presburger
                 qed
                 also have "... = (\<a>[s\<^sub>1, p\<^sub>0, w'] \<cdot> ((s\<^sub>1 \<star> p\<^sub>0) \<star> \<gamma>')) \<cdot> (r\<^sub>0s\<^sub>1.\<phi> \<star> w) \<cdot>
                                    \<a>\<^sup>-\<^sup>1[r\<^sub>0, p\<^sub>1, w] \<cdot> \<a>[r\<^sub>0, p\<^sub>1, w] \<cdot> (inv r\<^sub>0s\<^sub>1.\<phi> \<star> w) \<cdot>
@@ -5083,7 +5082,7 @@ $$
                                 ((s\<^sub>1 \<star> p\<^sub>0) \<star> \<gamma>') \<cdot> (r\<^sub>0s\<^sub>1.\<phi> \<star> w)"
                     by simp
                   thus ?thesis
-                    using comp_assoc by simp
+                    using comp_assoc by presburger
                 qed
                 also have "... = (s\<^sub>1 \<star> ?\<gamma>\<^sub>s') \<cdot> \<a>[s\<^sub>1, p\<^sub>0, w] \<cdot> ((r\<^sub>0s\<^sub>1.\<phi> \<star> w) \<cdot> (\<a>\<^sup>-\<^sup>1[r\<^sub>0, p\<^sub>1, w] \<cdot>
                                    \<a>[r\<^sub>0, p\<^sub>1, w]) \<cdot> (inv r\<^sub>0s\<^sub>1.\<phi> \<star> w)) \<cdot> \<a>\<^sup>-\<^sup>1[s\<^sub>1, p\<^sub>0, w]"
@@ -5091,7 +5090,7 @@ $$
                   have "\<a>[s\<^sub>1, p\<^sub>0, w'] \<cdot> ((s\<^sub>1 \<star> p\<^sub>0) \<star> \<gamma>') = (s\<^sub>1 \<star> ?\<gamma>\<^sub>s') \<cdot> \<a>[s\<^sub>1, p\<^sub>0, w]"
                     using \<gamma>' assoc_naturality [of s\<^sub>1 p\<^sub>0 \<gamma>'] \<open>hseq p\<^sub>0 \<gamma>'\<close> by auto
                   thus ?thesis
-                    using comp_assoc by simp
+                    using comp_assoc by presburger
                 qed
                 also have "... = s\<^sub>1 \<star> ?\<gamma>\<^sub>s'"
                 proof -
@@ -5609,7 +5608,8 @@ $$
      sublocale concrete_category \<open>Collect B.obj\<close> Hom B.iso_class \<open>\<lambda>_ _ _. Comp\<close>
        using is_concrete_category by simp
 
-     notation comp  (infixr "\<odot>" 55)
+     abbreviation comp  (infixr "\<odot>" 55)
+     where "comp \<equiv> COMP"
      notation in_hom  ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
      no_notation B.in_hom  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>")
 
@@ -6056,7 +6056,7 @@ $$
                in_HomD(6) [of "Map G" "Dom G" "Cod G" "REP G"]
          by auto
        have "Map (F \<odot> G) = Comp \<lbrakk>REP F\<rbrakk>\<^sub>B \<lbrakk>REP G\<rbrakk>\<^sub>B"
-         using assms comp_def seq_char null_char Comp_def
+         using assms seq_char null_char
          by (metis (no_types, lifting) CLS_REP Map.simps(1) Map_comp)
        have "Comp \<lbrakk>REP F\<rbrakk>\<^sub>B \<lbrakk>REP G\<rbrakk>\<^sub>B = \<lbrakk>REP F \<star> REP G\<rbrakk>\<^sub>B"
        proof -
@@ -6459,40 +6459,40 @@ $$
     shows "Maps.PRJ\<^sub>0 \<lbrakk>\<lbrakk>r\<^sub>0\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>s\<^sub>1\<rbrakk>\<rbrakk> = \<lbrakk>\<lbrakk>prj\<^sub>0 s\<^sub>1 r\<^sub>0\<rbrakk>\<rbrakk>"
     and "Maps.PRJ\<^sub>1 \<lbrakk>\<lbrakk>r\<^sub>0\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>s\<^sub>1\<rbrakk>\<rbrakk> = \<lbrakk>\<lbrakk>prj\<^sub>1 s\<^sub>1 r\<^sub>0\<rbrakk>\<rbrakk>"
     proof -
-      have "Maps.arr (MkArr (src s\<^sub>0) (trg s) \<lbrakk>s\<^sub>1\<rbrakk>)"
+      have "Maps.arr (Maps.MkArr (src s\<^sub>0) (trg s) \<lbrakk>s\<^sub>1\<rbrakk>)"
         using \<sigma>.leg1_in_hom Maps.CLS_in_hom \<sigma>.leg1_is_map Maps.arr_char by auto
-      moreover have "Maps.arr (MkArr (src r\<^sub>0) (trg s) \<lbrakk>r\<^sub>0\<rbrakk>)"
+      moreover have "Maps.arr (Maps.MkArr (src r\<^sub>0) (trg s) \<lbrakk>r\<^sub>0\<rbrakk>)"
         using Maps.CLS_in_hom composable r\<^sub>0s\<^sub>1.k_is_map by fastforce
-      moreover have "Maps.cod (MkArr (src r\<^sub>0) (trg s) \<lbrakk>r\<^sub>0\<rbrakk>) =
-                     Maps.cod (MkArr (src s\<^sub>0) (trg s) \<lbrakk>s\<^sub>1\<rbrakk>)"
+      moreover have "Maps.cod (Maps.MkArr (src r\<^sub>0) (trg s) \<lbrakk>r\<^sub>0\<rbrakk>) =
+                     Maps.cod (Maps.MkArr (src s\<^sub>0) (trg s) \<lbrakk>s\<^sub>1\<rbrakk>)"
         unfolding Maps.arr_char
         using \<sigma>.leg1_in_hom \<rho>.leg0_in_hom
         by (simp add: Maps.cod_char calculation(1) calculation(2))
       ultimately have "Maps.PRJ\<^sub>0 \<lbrakk>\<lbrakk>r\<^sub>0\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>s\<^sub>1\<rbrakk>\<rbrakk> =
-                       \<lbrakk>\<lbrakk>tab\<^sub>0 ((Maps.REP (MkArr (src r\<^sub>0) (trg s) \<lbrakk>r\<^sub>0\<rbrakk>))\<^sup>* \<star>
-                              Maps.REP (MkArr (src s\<^sub>0) (trg s) \<lbrakk>s\<^sub>1\<rbrakk>))\<rbrakk>\<rbrakk> \<and>
+                       \<lbrakk>\<lbrakk>tab\<^sub>0 ((Maps.REP (Maps.MkArr (src r\<^sub>0) (trg s) \<lbrakk>r\<^sub>0\<rbrakk>))\<^sup>* \<star>
+                              Maps.REP (Maps.MkArr (src s\<^sub>0) (trg s) \<lbrakk>s\<^sub>1\<rbrakk>))\<rbrakk>\<rbrakk> \<and>
                        Maps.PRJ\<^sub>1 (Maps.CLS r\<^sub>0) (Maps.CLS s\<^sub>1) =
-                       \<lbrakk>\<lbrakk>tab\<^sub>1 ((Maps.REP (MkArr (src r\<^sub>0) (trg s) \<lbrakk>r\<^sub>0\<rbrakk>))\<^sup>* \<star>
-                              Maps.REP (MkArr (src s\<^sub>0) (trg s) \<lbrakk>s\<^sub>1\<rbrakk>))\<rbrakk>\<rbrakk>"
+                       \<lbrakk>\<lbrakk>tab\<^sub>1 ((Maps.REP (Maps.MkArr (src r\<^sub>0) (trg s) \<lbrakk>r\<^sub>0\<rbrakk>))\<^sup>* \<star>
+                              Maps.REP (Maps.MkArr (src s\<^sub>0) (trg s) \<lbrakk>s\<^sub>1\<rbrakk>))\<rbrakk>\<rbrakk>"
         unfolding Maps.PRJ\<^sub>0_def Maps.PRJ\<^sub>1_def
         using Maps.CLS_in_hom \<sigma>.leg1_is_map \<rho>.leg0_is_map composable by simp
-      moreover have "r\<^sub>0\<^sup>* \<star> s\<^sub>1 \<cong> (Maps.REP (MkArr (src r\<^sub>0) (trg s) \<lbrakk>r\<^sub>0\<rbrakk>))\<^sup>* \<star>
-                                Maps.REP (MkArr (src s\<^sub>0) (trg s) \<lbrakk>s\<^sub>1\<rbrakk>)"
+      moreover have "r\<^sub>0\<^sup>* \<star> s\<^sub>1 \<cong> (Maps.REP (Maps.MkArr (src r\<^sub>0) (trg s) \<lbrakk>r\<^sub>0\<rbrakk>))\<^sup>* \<star>
+                                Maps.REP (Maps.MkArr (src s\<^sub>0) (trg s) \<lbrakk>s\<^sub>1\<rbrakk>)"
       proof -
-        have "r\<^sub>0 \<cong> Maps.REP (MkArr (src r\<^sub>0) (trg s) \<lbrakk>r\<^sub>0\<rbrakk>)"
+        have "r\<^sub>0 \<cong> Maps.REP (Maps.MkArr (src r\<^sub>0) (trg s) \<lbrakk>r\<^sub>0\<rbrakk>)"
           using Maps.REP_CLS composable isomorphic_symmetric r\<^sub>0s\<^sub>1.k_is_map by fastforce
-        hence 3: "isomorphic r\<^sub>0\<^sup>* (Maps.REP (MkArr (src r\<^sub>0) (trg s) \<lbrakk>r\<^sub>0\<rbrakk>))\<^sup>*"
+        hence 3: "isomorphic r\<^sub>0\<^sup>* (Maps.REP (Maps.MkArr (src r\<^sub>0) (trg s) \<lbrakk>r\<^sub>0\<rbrakk>))\<^sup>*"
           using \<rho>.leg0_is_map
           by (simp add: isomorphic_to_left_adjoint_implies_isomorphic_right_adjoint)
-        moreover have 4: "s\<^sub>1 \<cong> Maps.REP (MkArr (src s\<^sub>0) (trg s) \<lbrakk>s\<^sub>1\<rbrakk>)"
+        moreover have 4: "s\<^sub>1 \<cong> Maps.REP (Maps.MkArr (src s\<^sub>0) (trg s) \<lbrakk>s\<^sub>1\<rbrakk>)"
           using Maps.REP_CLS isomorphic_symmetric r\<^sub>0s\<^sub>1.h_is_map by fastforce
         ultimately show ?thesis
         proof -
           have 1: "src r\<^sub>0\<^sup>* = trg s\<^sub>1"
-            using \<rho>.T0.antipar(2) r\<^sub>0s\<^sub>1.cospan by presburger
+            using \<rho>.T0.antipar(2) r\<^sub>0s\<^sub>1.cospan by argo
           have 2: "ide s\<^sub>1"
             by simp
-          have "src (Maps.REP (MkArr (src r\<^sub>0) (trg s) \<lbrakk>r\<^sub>0\<rbrakk>))\<^sup>* = trg s\<^sub>1"
+          have "src (Maps.REP (Maps.MkArr (src r\<^sub>0) (trg s) \<lbrakk>r\<^sub>0\<rbrakk>))\<^sup>* = trg s\<^sub>1"
             by (metis 3 \<rho>.T0.antipar(2) isomorphic_implies_hpar(3) r\<^sub>0s\<^sub>1.cospan)
           thus ?thesis
             using 1 2
@@ -6834,13 +6834,9 @@ $$
             by (simp add: \<rho>.leg1_is_map)
           show "ide w'" using assms by force
           show "\<exists>\<theta>. \<guillemotleft>\<theta> : s\<^sub>0 \<star> w' \<Rightarrow> r\<^sub>0\<guillemotright>"
-          proof -
-            have "\<guillemotleft>w.the_\<theta> \<cdot> (s\<^sub>0 \<star> inv \<phi>) : s\<^sub>0 \<star> w' \<Rightarrow> r\<^sub>0\<guillemotright>"
-              using \<phi> w.the_\<theta>_props \<sigma>.leg0_in_hom(2) assms(2) comp_in_hom_simp' hcomp_in_vhom
-                    inv_in_hom isomorphic_implies_hpar(4) w.the_\<theta>_simps(4) w.w_simps(4)
-              by presburger
-            thus ?thesis by auto
-          qed
+            using \<phi> w.the_\<theta>_props \<sigma>.leg0_in_hom(2) assms(2) comp_in_hom_simp' hcomp_in_vhom
+                  inv_in_hom isomorphic_implies_hpar(4) w.the_\<theta>_simps(4) w.w_simps(4)
+            by metis
           have "\<guillemotleft>(s\<^sub>1 \<star> \<phi>) \<cdot> w.the_\<nu> : r\<^sub>1 \<Rightarrow> s\<^sub>1 \<star> w'\<guillemotright> \<and> iso ((s\<^sub>1 \<star> \<phi>) \<cdot> w.the_\<nu>)"
           proof (intro conjI)
             show "\<guillemotleft>(s\<^sub>1 \<star> \<phi>) \<cdot> w.the_\<nu> : r\<^sub>1 \<Rightarrow> s\<^sub>1 \<star> w'\<guillemotright>"
@@ -6888,7 +6884,7 @@ $$
             by simp
           also have "... = (s \<star> w.the_\<theta> \<cdot> (s\<^sub>0 \<star> inv \<phi>)) \<cdot> \<a>[s, s\<^sub>0, w'] \<cdot>
                              (\<sigma> \<star> w') \<cdot> (s\<^sub>1 \<star> \<phi>) \<cdot> w.the_\<nu>"
-            using comp_assoc by simp
+            using comp_assoc by presburger
           also have "... = (s \<star> w.the_\<theta>) \<cdot> ((s \<star> s\<^sub>0 \<star> inv \<phi>) \<cdot> \<a>[s, s\<^sub>0, w'] \<cdot>
                              (\<sigma> \<star> w') \<cdot> (s\<^sub>1 \<star> \<phi>)) \<cdot> w.the_\<nu>"
             using 1 comp_assoc w'.the_\<theta>_simps(1) whisker_left
@@ -7041,7 +7037,7 @@ $$
       proof -
         have "\<mu> \<cdot> r.T0.trnr\<^sub>\<epsilon> r r.tab =
               (\<mu> \<cdot> \<r>[r]) \<cdot> (r \<star> r.\<epsilon>) \<cdot> \<a>[r, tab\<^sub>0 r, (tab\<^sub>0 r)\<^sup>*] \<cdot> (r.tab \<star> (tab\<^sub>0 r)\<^sup>*)"
-          unfolding r.T0.trnr\<^sub>\<epsilon>_def using comp_assoc by simp
+          unfolding r.T0.trnr\<^sub>\<epsilon>_def using comp_assoc by presburger
         also have "... = \<r>[s] \<cdot> ((\<mu> \<star> src \<mu>) \<cdot> (r \<star> r.\<epsilon>)) \<cdot>
                            \<a>[r, tab\<^sub>0 r, (tab\<^sub>0 r)\<^sup>*] \<cdot> (r.tab \<star> (tab\<^sub>0 r)\<^sup>*)"
           using \<mu> runit_naturality comp_assoc
@@ -7060,7 +7056,7 @@ $$
           finally have "(\<mu> \<star> src \<mu>) \<cdot> (r \<star> r.\<epsilon>) = (s \<star> r.\<epsilon>) \<cdot> (\<mu> \<star> tab\<^sub>0 r \<star> (tab\<^sub>0 r)\<^sup>*)"
             by blast
           thus ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         also have "... = \<r>[s] \<cdot> (s \<star> r.\<epsilon>) \<cdot> \<a>[s, tab\<^sub>0 r, (tab\<^sub>0 r)\<^sup>*] \<cdot>
                            ((\<mu> \<star> tab\<^sub>0 r) \<star> (tab\<^sub>0 r)\<^sup>*) \<cdot> (r.tab \<star> (tab\<^sub>0 r)\<^sup>*)"
@@ -7071,7 +7067,7 @@ $$
             by (metis ide_char in_hom in_homE r.T0.antipar(1) r.T0.ide_right r.u_simps(3)
                 src_dom u_simps(2) u_simps(4-5))
           thus ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         also have "... = \<r>[s] \<cdot> (s \<star> r.\<epsilon>) \<cdot> \<a>[s, tab\<^sub>0 r, (tab\<^sub>0 r)\<^sup>*] \<cdot>
                            ((\<mu> \<star> tab\<^sub>0 r) \<cdot> r.tab \<star> (tab\<^sub>0 r)\<^sup>*)"
@@ -7200,14 +7196,14 @@ $$
               finally have "(\<pi> \<star> r\<^sub>0) \<cdot> (s \<star> \<mu>.the_\<theta>) = (t \<star> \<mu>.the_\<theta>) \<cdot> (\<pi> \<star> s\<^sub>0 \<star> ?f)"
                 by simp
               thus ?thesis
-                using comp_assoc by simp
+                using comp_assoc by presburger
             qed
             also have "... = (t \<star> \<mu>.the_\<theta>) \<cdot> \<a>[t, s\<^sub>0, ?f] \<cdot> (((\<pi> \<star> s\<^sub>0) \<star> ?f) \<cdot> (\<sigma> \<star> ?f)) \<cdot> \<mu>.the_\<nu>"
             proof -
               have "(\<pi> \<star> s\<^sub>0 \<star> ?f) \<cdot> \<a>[s, s\<^sub>0, ?f] = \<a>[t, s\<^sub>0, ?f] \<cdot> ((\<pi> \<star> s\<^sub>0) \<star> ?f)"
                 using f assoc_naturality [of \<pi> s\<^sub>0 ?f] \<pi>.in_hom by auto
               thus ?thesis
-                using comp_assoc by simp
+                using comp_assoc by presburger
             qed
             also have "... = (t \<star> \<mu>.the_\<theta>) \<cdot> \<a>[t, s\<^sub>0, ?f] \<cdot> (\<pi>.\<Delta> \<star> ?f) \<cdot> \<mu>.the_\<nu>"
               using whisker_right comp_assoc by simp
@@ -7222,7 +7218,7 @@ $$
             also have "... = (t \<star> \<mu>.the_\<theta>) \<cdot> (\<a>[t, s\<^sub>0, ?f] \<cdot>
                                ((t \<star> \<pi>.the_\<theta>) \<star> ?f)) \<cdot> (\<a>[t, t\<^sub>0, ?g] \<star> ?f) \<cdot> ((\<tau> \<star> ?g) \<star> ?f) \<cdot>
                                (\<pi>.the_\<nu> \<star> ?f) \<cdot> \<mu>.the_\<nu>"
-              using comp_assoc by simp
+              using comp_assoc by presburger
             also have "... = (t \<star> \<mu>.the_\<theta>) \<cdot> (t \<star> \<pi>.the_\<theta> \<star> ?f) \<cdot>
                                (\<a>[t, t\<^sub>0 \<star> ?g, ?f] \<cdot> (\<a>[t, t\<^sub>0, ?g] \<star> ?f)) \<cdot>
                                ((\<tau> \<star> ?g) \<star> ?f) \<cdot> (\<pi>.the_\<nu> \<star> ?f) \<cdot> \<mu>.the_\<nu>"
@@ -7252,7 +7248,7 @@ $$
                   by (metis \<pi>.w_simps(4) \<tau>.ide_base \<tau>.ide_leg0 \<tau>.leg0_simps(3))
               qed
               thus ?thesis
-                using comp_assoc by simp
+                using comp_assoc by presburger
             qed
             also have "... = ((t \<star> \<mu>.the_\<theta>) \<cdot> (t \<star> \<pi>.the_\<theta> \<star> ?f)) \<cdot>
                                (t \<star> \<a>\<^sup>-\<^sup>1[t\<^sub>0, ?g, ?f]) \<cdot> \<a>[t, t\<^sub>0, ?g \<star> ?f] \<cdot> (\<tau> \<star> ?g \<star> ?f) \<cdot> 
@@ -7273,7 +7269,7 @@ $$
             also have "... = ((t \<star> gf.the_\<theta>) \<cdot> \<a>[t, t\<^sub>0, ?g \<star> ?f] \<cdot> (\<tau> \<star> ?g \<star> ?f)) \<cdot> gf.the_\<nu>"
               using \<theta>_eq \<nu>_eq by (simp add: comp_assoc)
             finally show ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           thus "((t \<star> gf.the_\<theta>) \<cdot> \<a>[t, t\<^sub>0, ?g \<star> ?f] \<cdot> (\<tau> \<star> ?g \<star> ?f)) \<cdot>
                   arrow_of_spans_of_maps.the_\<nu> (\<cdot>) (\<star>) (dom ((\<pi> \<cdot> \<mu> \<star> r\<^sub>0) \<cdot> \<rho>)) t\<^sub>1 (?g \<star> ?f) =
@@ -7509,7 +7505,7 @@ $$
                   \<a>[t, t\<^sub>0, \<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1] \<cdot> (\<tau> \<star> \<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1) \<cdot> \<a>[t\<^sub>1, \<omega>.chine, \<rho>\<sigma>.p\<^sub>1] \<cdot>
                   (\<omega>.the_\<nu> \<star> \<rho>\<sigma>.p\<^sub>1)"
             unfolding LHS_def
-            using comp_assoc by simp
+            using comp_assoc by presburger
           also have "... = \<a>\<^sup>-\<^sup>1[t, u, s\<^sub>0 \<star> \<rho>\<sigma>.p\<^sub>0] \<cdot> (t \<star> \<a>[u, s\<^sub>0, \<rho>\<sigma>.p\<^sub>0]) \<cdot>
                              (t \<star> (\<chi> \<star> s\<^sub>0) \<cdot> \<sigma> \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot> (t \<star> r\<^sub>0s\<^sub>1.\<phi>) \<cdot>
                              (t \<star> \<omega>.the_\<theta> \<star> \<rho>\<sigma>.p\<^sub>1) \<cdot> (t \<star> \<a>\<^sup>-\<^sup>1[t\<^sub>0, \<omega>.chine, \<rho>\<sigma>.p\<^sub>1]) \<cdot>
@@ -7523,7 +7519,7 @@ $$
               using whisker_left \<tau>.ide_base \<theta>\<^sub>\<tau> arrI seqE
               by (metis (full_types))
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = \<a>\<^sup>-\<^sup>1[t, u, s\<^sub>0 \<star> \<rho>\<sigma>.p\<^sub>0] \<cdot> (t \<star> \<a>[u, s\<^sub>0, \<rho>\<sigma>.p\<^sub>0]) \<cdot>
                              (t \<star> (\<chi> \<star> s\<^sub>0) \<cdot> \<sigma> \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot> (t \<star> r\<^sub>0s\<^sub>1.\<phi>) \<cdot>
@@ -7537,7 +7533,7 @@ $$
               by (metis \<omega>.w_simps(2-6) \<rho>.leg1_simps(3) \<rho>\<sigma>.leg1_simps(2) \<tau>.tab_simps(1)
                   \<tau>.tab_simps(2,4-5) hseqE r\<^sub>0s\<^sub>1.leg1_simps(5) r\<^sub>0s\<^sub>1.leg1_simps(6))
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = \<a>\<^sup>-\<^sup>1[t, u, s\<^sub>0 \<star> \<rho>\<sigma>.p\<^sub>0] \<cdot> (t \<star> \<a>[u, s\<^sub>0, \<rho>\<sigma>.p\<^sub>0]) \<cdot>
                              (t \<star> (\<chi> \<star> s\<^sub>0) \<cdot> \<sigma> \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot> (t \<star> r\<^sub>0s\<^sub>1.\<phi>) \<cdot>
@@ -7562,7 +7558,7 @@ $$
                 by simp
             qed
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = \<a>\<^sup>-\<^sup>1[t, u, s\<^sub>0 \<star> \<rho>\<sigma>.p\<^sub>0] \<cdot> (t \<star> \<a>[u, s\<^sub>0, \<rho>\<sigma>.p\<^sub>0]) \<cdot>
                              (t \<star> (\<chi> \<star> s\<^sub>0) \<cdot> \<sigma> \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot> (t \<star> r\<^sub>0s\<^sub>1.\<phi>) \<cdot>
@@ -7575,7 +7571,7 @@ $$
               using assoc_naturality [of t \<omega>.the_\<theta> \<rho>\<sigma>.p\<^sub>1] \<omega>.\<theta>_simps(3) \<rho>\<sigma>.leg1_simps(2) hseq_char
               by auto
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = \<a>\<^sup>-\<^sup>1[t, u, s\<^sub>0 \<star> \<rho>\<sigma>.p\<^sub>0] \<cdot> (t \<star> \<a>[u, s\<^sub>0, \<rho>\<sigma>.p\<^sub>0]) \<cdot>
                              (t \<star> (\<chi> \<star> s\<^sub>0) \<cdot> \<sigma> \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot> (t \<star> r\<^sub>0s\<^sub>1.\<phi>) \<cdot>
@@ -7590,7 +7586,7 @@ $$
               using whisker_left whisker_right \<rho>.T0.antipar(1)
               by (metis (full_types) \<chi>.\<Delta>_simps(1) \<tau>.ide_base \<theta>\<^sub>\<tau> arrI r\<^sub>0s\<^sub>1.ide_u seqE)
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = \<a>\<^sup>-\<^sup>1[t, u, s\<^sub>0 \<star> \<rho>\<sigma>.p\<^sub>0] \<cdot> (t \<star> \<chi> \<star> s\<^sub>0 \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot>
                              (t \<star> \<a>[s, s\<^sub>0, \<rho>\<sigma>.p\<^sub>0]) \<cdot> (t \<star> \<sigma> \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot> (t \<star> r\<^sub>0s\<^sub>1.\<phi>) \<cdot>
@@ -7618,7 +7614,7 @@ $$
                 using whisker_left by simp
             qed
             finally show ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = \<a>\<^sup>-\<^sup>1[t, u, s\<^sub>0 \<star> \<rho>\<sigma>.p\<^sub>0] \<cdot> (t \<star> \<chi> \<star> s\<^sub>0 \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot>
                              (t \<star> \<a>[s, s\<^sub>0, \<rho>\<sigma>.p\<^sub>0]) \<cdot> (t \<star> \<sigma> \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot> (t \<star> r\<^sub>0s\<^sub>1.\<phi>) \<cdot>
@@ -7642,7 +7638,7 @@ $$
             finally have "(t \<star> r\<^sub>0s\<^sub>1.\<phi>) \<cdot> (\<omega> \<star> r\<^sub>0 \<star> \<rho>\<sigma>.p\<^sub>1) = (\<omega> \<star> s\<^sub>1 \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot> (r \<star> r\<^sub>0s\<^sub>1.\<phi>)"
               by simp
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = \<a>\<^sup>-\<^sup>1[t, u, s\<^sub>0 \<star> \<rho>\<sigma>.p\<^sub>0] \<cdot>
                              ((t \<star> (\<chi> \<star> s\<^sub>0 \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot> \<a>[s, s\<^sub>0, \<rho>\<sigma>.p\<^sub>0] \<cdot> (\<sigma> \<star> \<rho>\<sigma>.p\<^sub>0)) \<cdot>
@@ -7665,7 +7661,7 @@ $$
                       interchange)
             qed
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = (\<a>\<^sup>-\<^sup>1[t, u, s\<^sub>0 \<star> \<rho>\<sigma>.p\<^sub>0] \<cdot>
                              (\<omega> \<star> \<chi> \<star> s\<^sub>0 \<star> \<rho>\<sigma>.p\<^sub>0)) \<cdot> (r \<star> \<a>[s, s\<^sub>0, \<rho>\<sigma>.p\<^sub>0] \<cdot> (\<sigma> \<star> \<rho>\<sigma>.p\<^sub>0)) \<cdot>
@@ -7688,7 +7684,7 @@ $$
                by (metis in_homE)
             qed
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = ((\<omega> \<star> \<chi>) \<star> s\<^sub>0 \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot>
                              \<a>\<^sup>-\<^sup>1[r, s, s\<^sub>0 \<star> \<rho>\<sigma>.p\<^sub>0] \<cdot> (r \<star> \<a>[s, s\<^sub>0, \<rho>\<sigma>.p\<^sub>0] \<cdot> (\<sigma> \<star> \<rho>\<sigma>.p\<^sub>0)) \<cdot>
@@ -7700,7 +7696,7 @@ $$
               by (metis \<rho>\<sigma>.leg0_simps(3) assoc'_naturality hcomp_in_vhomE in_hom in_homE
                   u_simps(2) u_simps(4) u_simps(5))
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = \<Delta>"
             using whisker_left hseqI' \<rho>\<sigma>.tab_def comp_assoc by simp
@@ -7772,9 +7768,9 @@ $$
                   (t \<star> u \<star> the_\<theta>) \<cdot> (t \<star> \<a>[u, u\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>0, chine]) \<cdot>
                     (t \<star> \<a>[u, u\<^sub>0, \<tau>\<mu>.p\<^sub>0] \<star> chine) \<cdot> (t \<star> (\<mu> \<star> \<tau>\<mu>.p\<^sub>0) \<star> chine) \<cdot>
                     (t \<star> t\<^sub>0u\<^sub>1.\<phi> \<star> chine) \<cdot> (t \<star> \<a>\<^sup>-\<^sup>1[t\<^sub>0, \<tau>\<mu>.p\<^sub>1, chine])"
-              using \<theta>\<^sub>\<tau>' whisker_left hseqI' \<rho>.T0.antipar(1) seqE \<tau>.ide_base by presburger
+              using whisker_left \<rho>.T0.antipar(1) \<tau>.ide_base by presburger
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = ((t \<star> u) \<star> the_\<theta>) \<cdot> \<a>\<^sup>-\<^sup>1[t, u, (u\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>0) \<star> chine] \<cdot>
                              (t \<star> \<a>[u, u\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>0, chine]) \<cdot> (t \<star> \<a>[u, u\<^sub>0, \<tau>\<mu>.p\<^sub>0] \<star> chine) \<cdot>
@@ -7797,7 +7793,7 @@ $$
                   \<tau>\<mu>.leg1_simps(2) hseqE src_hcomp' t\<^sub>0u\<^sub>1.leg1_simps(3,5-6) w_simps(2)
                   w_simps(4-6))
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = ((t \<star> u) \<star> the_\<theta>) \<cdot> \<a>\<^sup>-\<^sup>1[t, u, (u\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>0) \<star> chine] \<cdot>
                              (t \<star> \<a>[u, u\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>0, chine]) \<cdot> (t \<star> \<a>[u, u\<^sub>0, \<tau>\<mu>.p\<^sub>0] \<star> chine) \<cdot>
@@ -7816,7 +7812,7 @@ $$
                           "\<a>[t, t\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>1, chine] \<cdot> (\<a>[t, t\<^sub>0, \<tau>\<mu>.p\<^sub>1] \<star> chine)"]
               by auto
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = ((t \<star> u) \<star> the_\<theta>) \<cdot> \<a>\<^sup>-\<^sup>1[t, u, (u\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>0) \<star> chine] \<cdot>
                              (t \<star> \<a>[u, u\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>0, chine]) \<cdot> (t \<star> \<a>[u, u\<^sub>0, \<tau>\<mu>.p\<^sub>0] \<star> chine) \<cdot>
@@ -7828,7 +7824,7 @@ $$
                   \<a>[t, u\<^sub>1 \<star> \<tau>\<mu>.p\<^sub>0, chine] \<cdot> ((t \<star> t\<^sub>0u\<^sub>1.\<phi>) \<star> chine)"
               using assoc_naturality [of t t\<^sub>0u\<^sub>1.\<phi> chine] t\<^sub>0u\<^sub>1.cospan by auto
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = ((t \<star> u) \<star> the_\<theta>) \<cdot> \<a>\<^sup>-\<^sup>1[t, u, (u\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>0) \<star> chine] \<cdot>
                              (t \<star> \<a>[u, u\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>0, chine]) \<cdot> (t \<star> \<a>[u, u\<^sub>0, \<tau>\<mu>.p\<^sub>0] \<star> chine) \<cdot>
@@ -7841,7 +7837,7 @@ $$
               using assoc_naturality [of t "\<mu> \<star> \<tau>\<mu>.p\<^sub>0" chine]
               by (simp add: \<tau>\<mu>.composable hseqI')
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = ((t \<star> u) \<star> the_\<theta>) \<cdot> \<a>\<^sup>-\<^sup>1[t, u, (u\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>0) \<star> chine] \<cdot>
                              (t \<star> \<a>[u, u\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>0, chine]) \<cdot> (t \<star> \<a>[u, u\<^sub>0, \<tau>\<mu>.p\<^sub>0] \<star> chine) \<cdot>
@@ -7889,7 +7885,7 @@ $$
                              ((\<a>\<^sup>-\<^sup>1[t, u, u\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>0] \<star> chine) \<cdot> ((t \<star> \<a>[u, u\<^sub>0, \<tau>\<mu>.p\<^sub>0]) \<star> chine) \<cdot> 
                              ((t \<star> \<mu> \<star> \<tau>\<mu>.p\<^sub>0) \<star> chine) \<cdot> ((t \<star> t\<^sub>0u\<^sub>1.\<phi>) \<star> chine) \<cdot> 
                              (\<a>[t, t\<^sub>0, \<tau>\<mu>.p\<^sub>1] \<star> chine) \<cdot> ((\<tau> \<star> \<tau>\<mu>.p\<^sub>1) \<star> chine)) \<cdot> the_\<nu>"
-            using comp_assoc by simp
+            using comp_assoc by presburger
           also have "... = ((t \<star> u) \<star> the_\<theta>) \<cdot>
                              (\<a>\<^sup>-\<^sup>1[t, u, (u\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>0) \<star> chine] \<cdot>
                              (t \<star> \<a>[u, u\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>0, chine]) \<cdot> (t \<star> \<a>[u, u\<^sub>0, \<tau>\<mu>.p\<^sub>0] \<star> chine) \<cdot>
@@ -7904,7 +7900,7 @@ $$
               using uw\<theta> whisker_right [of chine] hseqI'
               by (metis \<tau>\<mu>.tab_def \<tau>\<mu>.tab_in_vhom' arrI seqE)
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = ((t \<star> u) \<star> the_\<theta>) \<cdot> \<a>[t \<star> u, u\<^sub>0 \<star> \<tau>\<mu>.p\<^sub>0, chine] \<cdot> (\<tau>\<mu>.tab \<star> chine) \<cdot> the_\<nu>"
           proof -
@@ -7995,7 +7991,7 @@ $$
                (((t \<star> ?\<theta>\<^sub>\<tau>') \<cdot> \<a>[t, t\<^sub>0, ?w\<^sub>\<tau>'] \<cdot> (\<tau> \<star> ?w\<^sub>\<tau>')) \<cdot> ?\<beta>\<^sub>\<tau>) \<cdot> inv ?\<beta>\<^sub>\<tau>"
           by (meson invert_side_of_triangle(2) iso_\<beta>\<^sub>\<tau>)
         thus ?thesis
-          using LHS_def RHS_def eq by presburger
+          using LHS_def RHS_def eq by argo
       qed
       have 2: "\<exists>!\<gamma>. \<guillemotleft>\<gamma> : ?w\<^sub>\<tau>' \<Rightarrow> ?w\<^sub>\<tau>\<guillemotright> \<and> inv ?\<beta>\<^sub>\<tau> = t\<^sub>1 \<star> \<gamma> \<and> ?\<theta>\<^sub>\<tau>' = ?\<theta>\<^sub>\<tau> \<cdot> (t\<^sub>0 \<star> \<gamma>)"
         using u\<^sub>\<tau> w\<^sub>\<tau> w\<^sub>\<tau>' \<beta>\<^sub>\<tau> \<theta>\<^sub>\<tau> \<theta>\<^sub>\<tau>' eq' \<tau>.T2 [of ?w\<^sub>\<tau>' ?w\<^sub>\<tau> ?\<theta>\<^sub>\<tau>'?u\<^sub>\<tau> ?\<theta>\<^sub>\<tau> "inv ?\<beta>\<^sub>\<tau>"] iso_\<beta>\<^sub>\<tau> comp_assoc
@@ -8067,7 +8063,7 @@ $$
               have 1: "t\<^sub>1 \<star> \<gamma>\<^sub>\<tau> \<cdot> \<gamma>\<^sub>\<tau>' = (t\<^sub>1 \<star> \<gamma>\<^sub>\<tau>) \<cdot> (t\<^sub>1 \<star> \<gamma>\<^sub>\<tau>')"
                 by (meson \<gamma>\<^sub>\<tau> \<gamma>\<^sub>\<tau>' \<tau>.ide_leg1 seqI' whisker_left)
               have "((LHS \<cdot> inv ?\<beta>\<^sub>\<tau>) \<cdot> (t\<^sub>1 \<star> \<gamma>\<^sub>\<tau>)) \<cdot> (t\<^sub>1 \<star> \<gamma>\<^sub>\<tau>') = LHS \<cdot> inv ?\<beta>\<^sub>\<tau>"
-                using LHS_def RHS_def \<gamma>\<^sub>\<tau> \<gamma>\<^sub>\<tau>' eq eq' by presburger
+                using LHS_def RHS_def \<gamma>\<^sub>\<tau> \<gamma>\<^sub>\<tau>' eq eq' by argo
               thus ?thesis
                 unfolding LHS_def
                 using 1 by (simp add: calculation(2) eq' comp_assoc)
@@ -8150,7 +8146,7 @@ $$
                          \<a>[u\<^sub>1, \<chi>.chine, \<rho>\<sigma>.p\<^sub>0] \<cdot> (\<chi>.the_\<nu> \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot> r\<^sub>0s\<^sub>1.\<phi> \<cdot>
                          (\<omega>.the_\<theta> \<star> \<rho>\<sigma>.p\<^sub>1) \<cdot> \<a>\<^sup>-\<^sup>1[t\<^sub>0, \<omega>.chine, \<rho>\<sigma>.p\<^sub>1] \<cdot> (t\<^sub>0 \<star> inv \<gamma>\<^sub>\<tau>) \<cdot>
                          \<a>[t\<^sub>0, \<tau>\<mu>.p\<^sub>1, chine] \<cdot> (inv t\<^sub>0u\<^sub>1.\<phi> \<star> chine) \<cdot> \<a>\<^sup>-\<^sup>1[u\<^sub>1, \<tau>\<mu>.p\<^sub>0, chine]"
-            using comp_assoc by simp
+            using comp_assoc by presburger
           also have "... = (u \<star> \<chi>.the_\<theta> \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot> ((u \<star> \<a>\<^sup>-\<^sup>1[u\<^sub>0, \<chi>.chine, \<rho>\<sigma>.p\<^sub>0]) \<cdot>
                              \<a>[u, u\<^sub>0, \<chi>.chine \<star> \<rho>\<sigma>.p\<^sub>0]) \<cdot> (\<mu> \<star> \<chi>.chine \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot>
                              \<a>[u\<^sub>1, \<chi>.chine, \<rho>\<sigma>.p\<^sub>0] \<cdot> (\<chi>.the_\<nu> \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot> r\<^sub>0s\<^sub>1.\<phi> \<cdot>
@@ -8162,7 +8158,7 @@ $$
                   (u \<star> \<chi>.the_\<theta> \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot> (u \<star> \<a>\<^sup>-\<^sup>1[u\<^sub>0, \<chi>.chine, \<rho>\<sigma>.p\<^sub>0])"
               using whisker_left \<mu>.ide_base \<theta>\<^sub>\<mu>' by blast
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = ((u \<star> \<chi>.the_\<theta> \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot> \<a>[u, u\<^sub>0 \<star> \<chi>.chine, \<rho>\<sigma>.p\<^sub>0]) \<cdot>
                              (\<a>[u, u\<^sub>0, \<chi>.chine] \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot> \<a>\<^sup>-\<^sup>1[u \<star> u\<^sub>0, \<chi>.chine, \<rho>\<sigma>.p\<^sub>0] \<cdot>
@@ -8197,7 +8193,7 @@ $$
                     assoc'_eq_inv_assoc ide_hcomp r\<^sub>0s\<^sub>1.ide_u r\<^sub>0s\<^sub>1.p\<^sub>0_simps hcomp_simps(1)
               by presburger
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = \<a>[u, s\<^sub>0, \<rho>\<sigma>.p\<^sub>0] \<cdot> ((u \<star> \<chi>.the_\<theta>) \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot>
                              (\<a>[u, u\<^sub>0, \<chi>.chine] \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot> (\<a>\<^sup>-\<^sup>1[u \<star> u\<^sub>0, \<chi>.chine, \<rho>\<sigma>.p\<^sub>0] \<cdot>
@@ -8211,7 +8207,7 @@ $$
                   \<a>[u, s\<^sub>0, \<rho>\<sigma>.p\<^sub>0] \<cdot> ((u \<star> \<chi>.the_\<theta>) \<star> \<rho>\<sigma>.p\<^sub>0)"
               using assoc_naturality [of u \<chi>.the_\<theta> \<rho>\<sigma>.p\<^sub>0] \<chi>.\<theta>_simps(3) by auto
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = \<a>[u, s\<^sub>0, \<rho>\<sigma>.p\<^sub>0] \<cdot> ((u \<star> \<chi>.the_\<theta>) \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot>
                              (\<a>[u, u\<^sub>0, \<chi>.chine] \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot> ((\<mu> \<star> \<chi>.chine) \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot>
@@ -8225,7 +8221,7 @@ $$
                   ((\<mu> \<star> \<chi>.chine) \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot> \<a>\<^sup>-\<^sup>1[u\<^sub>1, \<chi>.chine, \<rho>\<sigma>.p\<^sub>0]"
               using assoc'_naturality [of \<mu> \<chi>.chine \<rho>\<sigma>.p\<^sub>0] by simp
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = \<a>[u, s\<^sub>0, \<rho>\<sigma>.p\<^sub>0] \<cdot> ((u \<star> \<chi>.the_\<theta>) \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot>
                              (\<a>[u, u\<^sub>0, \<chi>.chine] \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot> ((\<mu> \<star> \<chi>.chine) \<star> \<rho>\<sigma>.p\<^sub>0) \<cdot>
@@ -8267,12 +8263,12 @@ $$
                           (\<chi> \<star> s\<^sub>0) \<cdot> \<sigma> \<star> \<rho>\<sigma>.p\<^sub>0"
               by simp
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = (?\<theta>\<^sub>\<tau> \<cdot> (t\<^sub>0 \<star> inv \<gamma>\<^sub>\<tau>)) \<cdot>
                              \<a>[t\<^sub>0, \<tau>\<mu>.p\<^sub>1, chine] \<cdot> (inv t\<^sub>0u\<^sub>1.\<phi> \<star> chine) \<cdot>
                              \<a>\<^sup>-\<^sup>1[u\<^sub>1, \<tau>\<mu>.p\<^sub>0, chine]"
-            using comp_assoc by simp
+            using comp_assoc by presburger
           also have "... = ?\<theta>\<^sub>\<tau>' \<cdot> \<a>[t\<^sub>0, \<tau>\<mu>.p\<^sub>1, chine] \<cdot> (inv t\<^sub>0u\<^sub>1.\<phi> \<star> chine) \<cdot>
                              \<a>\<^sup>-\<^sup>1[u\<^sub>1, \<tau>\<mu>.p\<^sub>0, chine]"
             using \<gamma>\<^sub>\<tau>' \<gamma>\<^sub>\<tau>'_eq by simp
@@ -8334,7 +8330,7 @@ $$
     lemma comp_L:
     shows "Maps.seq \<lbrakk>\<lbrakk>t\<^sub>0\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1\<rbrakk>\<rbrakk>"
     and "\<lbrakk>\<lbrakk>t\<^sub>0\<rbrakk>\<rbrakk> \<odot> \<lbrakk>\<lbrakk>\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1\<rbrakk>\<rbrakk> =
-         MkArr (src (\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1)) (src t) (Maps.Comp \<lbrakk>t\<^sub>0\<rbrakk> \<lbrakk>\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1\<rbrakk>)"
+         Maps.MkArr (src (\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1)) (src t) (Maps.Comp \<lbrakk>t\<^sub>0\<rbrakk> \<lbrakk>\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1\<rbrakk>)"
     proof -
       show "Maps.seq \<lbrakk>\<lbrakk>t\<^sub>0\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1\<rbrakk>\<rbrakk>"
       proof -
@@ -8347,14 +8343,14 @@ $$
           using Maps.CLS_in_hom [of t\<^sub>0] \<tau>.leg0_is_map \<rho>\<sigma>.leg1_in_hom by auto
       qed
       thus "\<lbrakk>\<lbrakk>t\<^sub>0\<rbrakk>\<rbrakk> \<odot> \<lbrakk>\<lbrakk>\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1\<rbrakk>\<rbrakk> =
-            MkArr (src (\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1)) (src t) (Maps.Comp \<lbrakk>t\<^sub>0\<rbrakk> \<lbrakk>\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1\<rbrakk>)"
+            Maps.MkArr (src (\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1)) (src t) (Maps.Comp \<lbrakk>t\<^sub>0\<rbrakk> \<lbrakk>\<omega>.chine \<star> \<rho>\<sigma>.p\<^sub>1\<rbrakk>)"
         using Maps.comp_char by auto
     qed
 
     lemma comp_R:
     shows "Maps.seq \<lbrakk>\<lbrakk>u\<^sub>1\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>\<chi>.chine \<star> \<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk>"
     and "\<lbrakk>\<lbrakk>u\<^sub>1\<rbrakk>\<rbrakk> \<odot> \<lbrakk>\<lbrakk>\<chi>.chine \<star> \<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk> =
-         MkArr (src r\<^sub>0s\<^sub>1.p\<^sub>0) (trg u) (Maps.Comp \<lbrakk>u\<^sub>1\<rbrakk> \<lbrakk>\<chi>.chine \<star> r\<^sub>0s\<^sub>1.p\<^sub>0\<rbrakk>)"
+         Maps.MkArr (src r\<^sub>0s\<^sub>1.p\<^sub>0) (trg u) (Maps.Comp \<lbrakk>u\<^sub>1\<rbrakk> \<lbrakk>\<chi>.chine \<star> r\<^sub>0s\<^sub>1.p\<^sub>0\<rbrakk>)"
     proof -
       show "Maps.seq \<lbrakk>\<lbrakk>u\<^sub>1\<rbrakk>\<rbrakk> \<lbrakk>\<lbrakk>\<chi>.chine \<star> \<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk>"
       proof -
@@ -8367,7 +8363,7 @@ $$
           using Maps.CLS_in_hom [of u\<^sub>1] \<mu>.leg1_is_map by simp
       qed
       thus "\<lbrakk>\<lbrakk>u\<^sub>1\<rbrakk>\<rbrakk> \<odot> \<lbrakk>\<lbrakk>\<chi>.chine \<star> \<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk> =
-            MkArr (src r\<^sub>0s\<^sub>1.p\<^sub>0) (trg u) (Maps.Comp \<lbrakk>u\<^sub>1\<rbrakk> \<lbrakk>\<chi>.chine \<star> r\<^sub>0s\<^sub>1.p\<^sub>0\<rbrakk>)"
+            Maps.MkArr (src r\<^sub>0s\<^sub>1.p\<^sub>0) (trg u) (Maps.Comp \<lbrakk>u\<^sub>1\<rbrakk> \<lbrakk>\<chi>.chine \<star> r\<^sub>0s\<^sub>1.p\<^sub>0\<rbrakk>)"
         using Maps.comp_char by auto
     qed
 
@@ -8694,7 +8690,7 @@ $$
       interpret Dom': span_in_category Maps.comp 
                         \<open>\<lparr>Leg0 = \<lbrakk>\<lbrakk>tab\<^sub>0 (dom \<mu>)\<rbrakk>\<rbrakk>, Leg1 = \<lbrakk>\<lbrakk>tab\<^sub>1 (dom \<mu>)\<rbrakk>\<rbrakk>\<rparr>\<close>
         using assms Dom.span_in_category_axioms SPN_def by simp
-      interpret Cod: span_in_category Maps.comp "Cod (SPN \<mu>)"
+      interpret Cod: span_in_category Maps.comp \<open>Cod (SPN \<mu>)\<close>
       proof
         interpret s: identity_in_bicategory_of_spans V H \<a> \<i> src trg \<open>cod \<mu>\<close>
           using assms by (unfold_locales, auto)
@@ -8738,7 +8734,7 @@ $$
       proof -
         fix \<mu>
         assume \<mu>: "arr \<mu>"
-        have 1: "Maps.arr (MkArr (src (tab\<^sub>0 (dom \<mu>))) (src \<mu>) \<lbrakk>tab\<^sub>0 (dom \<mu>)\<rbrakk>)"
+        have 1: "Maps.arr (Maps.MkArr (src (tab\<^sub>0 (dom \<mu>))) (src \<mu>) \<lbrakk>tab\<^sub>0 (dom \<mu>)\<rbrakk>)"
         proof -
           have "src (tab\<^sub>0 (dom \<mu>)) \<in> Collect obj"
             using \<mu> by simp
@@ -8766,7 +8762,7 @@ $$
       proof -
         fix \<mu>
         assume \<mu>: "arr \<mu>"
-        have 1: "Maps.arr (MkArr (src (tab\<^sub>0 (cod \<mu>))) (src \<mu>) \<lbrakk>tab\<^sub>0 (cod \<mu>)\<rbrakk>)"
+        have 1: "Maps.arr (Maps.MkArr (src (tab\<^sub>0 (cod \<mu>))) (src \<mu>) \<lbrakk>tab\<^sub>0 (cod \<mu>)\<rbrakk>)"
         proof -
           have "src (tab\<^sub>0 (cod \<mu>)) \<in> Collect obj"
             using \<mu> by simp
@@ -8855,19 +8851,19 @@ $$
             qed
           qed
           have "Chn (SPN \<nu> \<bullet> SPN \<mu>) =
-                MkArr (src (tab\<^sub>0 (cod \<mu>))) (src (tab\<^sub>0 (cod \<nu>))) \<lbrakk>spn \<nu>\<rbrakk> \<odot>
-                  MkArr (src (tab\<^sub>0 (dom \<mu>))) (src (tab\<^sub>0 (cod \<mu>))) \<lbrakk>spn \<mu>\<rbrakk>"
+                Maps.MkArr (src (tab\<^sub>0 (cod \<mu>))) (src (tab\<^sub>0 (cod \<nu>))) \<lbrakk>spn \<nu>\<rbrakk> \<odot>
+                  Maps.MkArr (src (tab\<^sub>0 (dom \<mu>))) (src (tab\<^sub>0 (cod \<mu>))) \<lbrakk>spn \<mu>\<rbrakk>"
             using 1 seq SPN_def Span.vcomp_def Span.arr_char
             apply (elim seqE)
             apply simp
             by (metis (no_types, lifting) seq vseq_implies_hpar(1) vseq_implies_hpar(2))
-          also have "... = MkArr (src (tab\<^sub>0 (dom \<mu>))) (src (tab\<^sub>0 (cod \<nu>)))
-                                 (Maps.Comp \<lbrakk>spn \<nu>\<rbrakk> \<lbrakk>spn \<mu>\<rbrakk>)"
+          also have "... = Maps.MkArr (src (tab\<^sub>0 (dom \<mu>))) (src (tab\<^sub>0 (cod \<nu>)))
+                                      (Maps.Comp \<lbrakk>spn \<nu>\<rbrakk> \<lbrakk>spn \<mu>\<rbrakk>)"
           proof -
-            have "Maps.seq (MkArr (src (tab\<^sub>0 (cod \<mu>))) (src (tab\<^sub>0 (cod \<nu>))) \<lbrakk>spn \<nu>\<rbrakk>)
-                           (MkArr (src (tab\<^sub>0 (dom \<mu>))) (src (tab\<^sub>0 (cod \<mu>))) \<lbrakk>spn \<mu>\<rbrakk>)"
+            have "Maps.seq (Maps.MkArr (src (tab\<^sub>0 (cod \<mu>))) (src (tab\<^sub>0 (cod \<nu>))) \<lbrakk>spn \<nu>\<rbrakk>)
+                           (Maps.MkArr (src (tab\<^sub>0 (dom \<mu>))) (src (tab\<^sub>0 (cod \<mu>))) \<lbrakk>spn \<mu>\<rbrakk>)"
             proof
-              show "Maps.in_hom (MkArr (src (tab\<^sub>0 (local.dom \<mu>))) (src (tab\<^sub>0 (cod \<mu>))) \<lbrakk>spn \<mu>\<rbrakk>)
+              show "Maps.in_hom (Maps.MkArr (src (tab\<^sub>0 (local.dom \<mu>))) (src (tab\<^sub>0 (cod \<mu>))) \<lbrakk>spn \<mu>\<rbrakk>)
                                 (Maps.MkIde (src (tab\<^sub>0 (dom \<mu>))))
                                 (Maps.MkIde (src (tab\<^sub>0 (cod \<mu>))))"
               proof -
@@ -8881,7 +8877,7 @@ $$
                 ultimately show ?thesis
                   using Maps.MkArr_in_hom by simp
               qed
-              show "Maps.in_hom (MkArr (src (tab\<^sub>0 (cod \<mu>))) (src (tab\<^sub>0 (cod \<nu>))) \<lbrakk>spn \<nu>\<rbrakk>)
+              show "Maps.in_hom (Maps.MkArr (src (tab\<^sub>0 (cod \<mu>))) (src (tab\<^sub>0 (cod \<nu>))) \<lbrakk>spn \<nu>\<rbrakk>)
                                 (Maps.MkIde (src (tab\<^sub>0 (cod \<mu>))))
                                 (Maps.MkIde (src (tab\<^sub>0 (cod \<nu>))))"
               proof -
@@ -8898,11 +8894,11 @@ $$
             qed
             thus ?thesis
               using Maps.comp_char
-                     [of "MkArr (src (tab\<^sub>0 (cod \<mu>))) (src (tab\<^sub>0 (cod \<nu>))) \<lbrakk>spn \<nu>\<rbrakk>"
-                         "MkArr (src (tab\<^sub>0 (dom \<mu>))) (src (tab\<^sub>0 (cod \<mu>))) \<lbrakk>spn \<mu>\<rbrakk>"]
+                     [of "Maps.MkArr (src (tab\<^sub>0 (cod \<mu>))) (src (tab\<^sub>0 (cod \<nu>))) \<lbrakk>spn \<nu>\<rbrakk>"
+                         "Maps.MkArr (src (tab\<^sub>0 (dom \<mu>))) (src (tab\<^sub>0 (cod \<mu>))) \<lbrakk>spn \<mu>\<rbrakk>"]
               by simp
           qed
-          also have "... = MkArr (src (tab\<^sub>0 (dom \<mu>))) (src (tab\<^sub>0 (cod \<nu>))) \<lbrakk>spn (\<nu> \<cdot> \<mu>)\<rbrakk>"
+          also have "... = Maps.MkArr (src (tab\<^sub>0 (dom \<mu>))) (src (tab\<^sub>0 (cod \<nu>))) \<lbrakk>spn (\<nu> \<cdot> \<mu>)\<rbrakk>"
             using * by simp
           also have "... = Chn (SPN (\<nu> \<cdot> \<mu>))"
             using seq SPN_def Span.vcomp_def
@@ -8936,13 +8932,13 @@ $$
         interpret src: span_in_category Maps.comp \<open>\<lparr>Leg0 = ?src, Leg1 = ?src\<rparr>\<close>
           using src by (unfold_locales, simp)
 
-        let ?tab\<^sub>0 = "MkArr (src (tab\<^sub>0 (src \<mu>))) (src \<mu>) \<lbrakk>tab\<^sub>0 (src \<mu>)\<rbrakk>"
+        let ?tab\<^sub>0 = "Maps.MkArr (src (tab\<^sub>0 (src \<mu>))) (src \<mu>) \<lbrakk>tab\<^sub>0 (src \<mu>)\<rbrakk>"
         have tab\<^sub>0_src: "\<guillemotleft>tab\<^sub>0 (src \<mu>) : src (tab\<^sub>0 (src \<mu>)) \<rightarrow> src \<mu>\<guillemotright> \<and>
                         is_left_adjoint (tab\<^sub>0 (src \<mu>)) \<and> \<lbrakk>tab\<^sub>0 (src \<mu>)\<rbrakk> = \<lbrakk>tab\<^sub>0 (src \<mu>)\<rbrakk>"
           using \<mu> by simp
         have tab\<^sub>0: "Maps.arr ?tab\<^sub>0"
           using \<mu> Maps.arr_MkArr tab\<^sub>0_src by blast
-        let ?tab\<^sub>1 = "MkArr (src (tab\<^sub>0 (src \<mu>))) (src \<mu>) \<lbrakk>tab\<^sub>1 (src \<mu>)\<rbrakk>"
+        let ?tab\<^sub>1 = "Maps.MkArr (src (tab\<^sub>0 (src \<mu>))) (src \<mu>) \<lbrakk>tab\<^sub>1 (src \<mu>)\<rbrakk>"
         have tab\<^sub>1_src: "\<guillemotleft>tab\<^sub>1 (src \<mu>) : src (tab\<^sub>0 (src \<mu>)) \<rightarrow> src \<mu>\<guillemotright> \<and>
                         is_left_adjoint (tab\<^sub>1 (src \<mu>)) \<and> \<lbrakk>tab\<^sub>1 (src \<mu>)\<rbrakk> = \<lbrakk>tab\<^sub>1 (src \<mu>)\<rbrakk>"
           using \<mu> by simp
@@ -8969,7 +8965,7 @@ $$
         interpret SPN_src: arrow_of_spans Maps.comp \<open>SPN (src \<mu>)\<close>
           using \<mu> SPN.preserves_reflects_arr Span.arr_char by blast
         have SPN_src: "SPN (src \<mu>) =
-                       \<lparr>Chn = MkArr (src (tab\<^sub>0 (src \<mu>))) (src (tab\<^sub>0 (src \<mu>))) \<lbrakk>spn (src \<mu>)\<rbrakk>,
+                       \<lparr>Chn = Maps.MkArr (src (tab\<^sub>0 (src \<mu>))) (src (tab\<^sub>0 (src \<mu>))) \<lbrakk>spn (src \<mu>)\<rbrakk>,
                         Dom = \<lparr>Leg0 = ?tab\<^sub>0, Leg1 = ?tab\<^sub>1\<rparr>,
                         Cod = \<lparr>Leg0 = ?tab\<^sub>0, Leg1 = ?tab\<^sub>1\<rparr>\<rparr>"
           unfolding SPN_def using \<mu> by simp
@@ -8981,7 +8977,7 @@ $$
                         Dom = \<lparr>Leg0 = ?src, Leg1 = ?src\<rparr>,
                         Cod = \<lparr>Leg0 = ?src, Leg1 = ?src\<rparr>\<rparr>"
         proof -
-          let ?tab\<^sub>0_dom = "MkArr (src (tab\<^sub>0 (dom \<mu>))) (src \<mu>) \<lbrakk>tab\<^sub>0 (dom \<mu>)\<rbrakk>"
+          let ?tab\<^sub>0_dom = "Maps.MkArr (src (tab\<^sub>0 (dom \<mu>))) (src \<mu>) \<lbrakk>tab\<^sub>0 (dom \<mu>)\<rbrakk>"
           have "Maps.arr ?tab\<^sub>0_dom"
           proof -
             have "\<guillemotleft>tab\<^sub>0 (dom \<mu>) : src (tab\<^sub>0 (dom \<mu>)) \<rightarrow> src \<mu>\<guillemotright> \<and>
@@ -9075,13 +9071,13 @@ $$
         interpret trg: span_in_category Maps.comp \<open>\<lparr>Leg0 = ?trg, Leg1 = ?trg\<rparr>\<close>
           using trg by (unfold_locales, simp)
 
-        let ?tab\<^sub>0 = "MkArr (src (tab\<^sub>0 (trg \<mu>))) (trg \<mu>) \<lbrakk>tab\<^sub>0 (trg \<mu>)\<rbrakk>"
+        let ?tab\<^sub>0 = "Maps.MkArr (src (tab\<^sub>0 (trg \<mu>))) (trg \<mu>) \<lbrakk>tab\<^sub>0 (trg \<mu>)\<rbrakk>"
         have tab\<^sub>0_trg: "\<guillemotleft>tab\<^sub>0 (trg \<mu>) : src (tab\<^sub>0 (trg \<mu>)) \<rightarrow> trg \<mu>\<guillemotright> \<and>
                         is_left_adjoint (tab\<^sub>0 (trg \<mu>)) \<and> \<lbrakk>tab\<^sub>0 (trg \<mu>)\<rbrakk> = \<lbrakk>tab\<^sub>0 (trg \<mu>)\<rbrakk>"
           using \<mu> by simp
         have tab\<^sub>0: "Maps.arr ?tab\<^sub>0"
           using \<mu> Maps.arr_MkArr tab\<^sub>0_trg by blast
-        let ?tab\<^sub>1 = "MkArr (src (tab\<^sub>0 (trg \<mu>))) (trg \<mu>) \<lbrakk>tab\<^sub>1 (trg \<mu>)\<rbrakk>"
+        let ?tab\<^sub>1 = "Maps.MkArr (src (tab\<^sub>0 (trg \<mu>))) (trg \<mu>) \<lbrakk>tab\<^sub>1 (trg \<mu>)\<rbrakk>"
         have tab\<^sub>1_trg: "\<guillemotleft>tab\<^sub>1 (trg \<mu>) : src (tab\<^sub>0 (trg \<mu>)) \<rightarrow> trg \<mu>\<guillemotright> \<and>
                         is_left_adjoint (tab\<^sub>1 (trg \<mu>)) \<and> \<lbrakk>tab\<^sub>1 (trg \<mu>)\<rbrakk> = \<lbrakk>tab\<^sub>1 (trg \<mu>)\<rbrakk>"
           using \<mu> by simp
@@ -9122,7 +9118,7 @@ $$
         interpret SPN_trg: arrow_of_spans Maps.comp \<open>SPN (trg \<mu>)\<close>
           using \<mu> SPN.preserves_reflects_arr Span.arr_char by blast
         have SPN_trg: "SPN (trg \<mu>) =
-                       \<lparr>Chn = MkArr (src (tab\<^sub>1 (trg \<mu>))) (src (tab\<^sub>1 (trg \<mu>))) \<lbrakk>spn (trg \<mu>)\<rbrakk>,
+                       \<lparr>Chn = Maps.MkArr (src (tab\<^sub>1 (trg \<mu>))) (src (tab\<^sub>1 (trg \<mu>))) \<lbrakk>spn (trg \<mu>)\<rbrakk>,
                         Dom = \<lparr>Leg0 = ?tab\<^sub>0, Leg1 = ?tab\<^sub>1\<rparr>,
                         Cod = \<lparr>Leg0 = ?tab\<^sub>0, Leg1 = ?tab\<^sub>1\<rparr>\<rparr>"
           unfolding SPN_def using \<mu> by simp
@@ -9133,7 +9129,7 @@ $$
                                            Dom = \<lparr>Leg0 = ?trg, Leg1 = ?trg\<rparr>,
                                            Cod = \<lparr>Leg0 = ?trg, Leg1 = ?trg\<rparr>\<rparr>"
         proof -
-          let ?tab\<^sub>1_dom = "MkArr (src (tab\<^sub>1 (dom \<mu>))) (trg \<mu>) \<lbrakk>tab\<^sub>1 (dom \<mu>)\<rbrakk>"
+          let ?tab\<^sub>1_dom = "Maps.MkArr (src (tab\<^sub>1 (dom \<mu>))) (trg \<mu>) \<lbrakk>tab\<^sub>1 (dom \<mu>)\<rbrakk>"
           have "Maps.arr ?tab\<^sub>1_dom"
           proof -
             have "\<guillemotleft>tab\<^sub>1 (dom \<mu>) : src (tab\<^sub>1 (dom \<mu>)) \<rightarrow> trg \<mu>\<guillemotright> \<and>
@@ -9428,7 +9424,7 @@ $$
         using Maps.arr_char [of "SPN_r_SPN_s.leg0"] by simp
       moreover have "obj (Maps.Dom SPN_r_SPN_s.leg0)"
         using Maps.arr_char [of "SPN_r_SPN_s.leg0"] by simp
-      moreover have "SPN_r_SPN_s.leg0 \<noteq> Null"
+      moreover have "SPN_r_SPN_s.leg0 \<noteq> Maps.Null"
         using Maps.arr_char [of "SPN_r_SPN_s.leg0"] by simp
       moreover have "Maps.Dom SPN_r_SPN_s.leg0 = src \<rho>\<sigma>.tab"
       proof -
@@ -9491,10 +9487,8 @@ $$
             thus ?thesis by simp
           qed
           ultimately show ?thesis
-            using Maps.PRJ\<^sub>0_def Maps.CLS_in_hom Maps.dom_char composable Span.hcomp_def
-                  \<rho>\<sigma>.tab_in_hom s.leg0_is_map s.leg1_is_map Maps.span_prj
-                  r.satisfies_T0 s.satisfies_T0
-                  Maps.Dom.simps(1) RS_simps(1) RS_simps(16) RS_simps(18) RS_simps(3)
+            using Maps.PRJ\<^sub>0_def composable Maps.Dom.simps(1) RS_simps(1) RS_simps(16)
+                  RS_simps(18) RS_simps(3)
             by presburger
         qed
         also have "... = src (tab\<^sub>0 ((Maps.REP R\<^sub>0)\<^sup>* \<star> Maps.REP S\<^sub>1))"
@@ -9558,11 +9552,11 @@ $$
     \<close>
 
     lemma iso_class_cmp_in_hom:
-    shows "Maps.in_hom (MkArr (src \<rho>\<sigma>.tab) (src tab) \<lbrakk>cmp\<rbrakk>)
+    shows "Maps.in_hom (Maps.MkArr (src \<rho>\<sigma>.tab) (src tab) \<lbrakk>cmp\<rbrakk>)
                        SPN_r_SPN_s.apex SPN_rs.apex"
     and "Maps.in_hom \<lbrakk>\<lbrakk>cmp\<rbrakk>\<rbrakk> SPN_r_SPN_s.apex SPN_rs.apex"
     proof -
-      show "Maps.in_hom (MkArr (src \<rho>\<sigma>.tab) (src tab) \<lbrakk>cmp\<rbrakk>)
+      show "Maps.in_hom (Maps.MkArr (src \<rho>\<sigma>.tab) (src tab) \<lbrakk>cmp\<rbrakk>)
                         SPN_r_SPN_s.apex SPN_rs.apex"
       proof -
         have "obj (src \<rho>\<sigma>.tab)"
@@ -9692,13 +9686,6 @@ $$
         using assms VV.ide_char VV.arr_char by simp
       interpret rs: two_composable_identities_in_bicategory_of_spans V H \<a> \<i> src trg r s
         using rs VV.ide_char VV.arr_char apply unfold_locales by auto
-(*
-      interpret rs: identity_arrow_of_tabulations_in_maps V H \<a> \<i> src trg
-                      \<open>r \<star> s\<close> \<open>tab_of_ide (r \<star> s)\<close> \<open>tab\<^sub>0 (r \<star> s)\<close> \<open>tab\<^sub>1 (r \<star> s)\<close>
-                      \<open>r \<star> s\<close> \<open>tab_of_ide (r \<star> s)\<close> \<open>tab\<^sub>0 (r \<star> s)\<close> \<open>tab\<^sub>1 (r \<star> s)\<close>
-                      \<open>r \<star> s\<close>
-        apply unfold_locales by auto
-*)
       interpret cmp: arrow_of_tabulations_in_maps V H \<a> \<i> src trg
                      \<open>r \<star> s\<close> rs.\<rho>\<sigma>.tab \<open>tab\<^sub>0 s \<star> rs.\<rho>\<sigma>.p\<^sub>0\<close> \<open>tab\<^sub>1 r \<star> rs.\<rho>\<sigma>.p\<^sub>1\<close>
                      \<open>r \<star> s\<close> rs.tab \<open>tab\<^sub>0 (r \<star> s)\<close> \<open>tab\<^sub>1 (r \<star> s)\<close>
@@ -10015,29 +10002,29 @@ $$
               finally show ?thesis by blast
             qed
             have Chn_RHS_eq:
-               "Chn ?RHS = MkArr (src (tab\<^sub>0 (dom ?\<mu> \<star> dom ?\<nu>))) (src (tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>)))
-                                 \<lbrakk>\<mu>\<nu>.chine\<rbrakk> \<odot>
-                           MkArr (src dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0) (src (tab_of_ide (dom ?\<mu> \<star> dom ?\<nu>)))
-                                 \<lbrakk>dom_\<mu>_\<nu>.cmp\<rbrakk>"
+               "Chn ?RHS = Maps.MkArr (src (tab\<^sub>0 (dom ?\<mu> \<star> dom ?\<nu>))) (src (tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>)))
+                                      \<lbrakk>\<mu>\<nu>.chine\<rbrakk> \<odot>
+                           Maps.MkArr (src dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0) (src (tab_of_ide (dom ?\<mu> \<star> dom ?\<nu>)))
+                                      \<lbrakk>dom_\<mu>_\<nu>.cmp\<rbrakk>"
             proof -
               have "Chn ?RHS = Chn (SPN (?\<mu> \<star> ?\<nu>)) \<odot>
-                               MkArr (src dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0) (src (tab_of_ide (dom ?\<mu> \<star> dom ?\<nu>)))
-                                     \<lbrakk>dom_\<mu>_\<nu>.cmp\<rbrakk>"
+                               Maps.MkArr (src dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0) (src (tab_of_ide (dom ?\<mu> \<star> dom ?\<nu>)))
+                                          \<lbrakk>dom_\<mu>_\<nu>.cmp\<rbrakk>"
                 using \<mu>\<nu> RHS Span.vcomp_def VV.arr_char CMP_def Span.arr_char Span.not_arr_Null
                 by auto
               moreover have "Chn (SPN (?\<mu> \<star> ?\<nu>)) =
-                             MkArr (src (tab\<^sub>0 (dom ?\<mu> \<star> dom ?\<nu>)))
-                                   (src (tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>)))
-                                   \<lbrakk>\<mu>\<nu>.chine\<rbrakk>"
+                             Maps.MkArr (src (tab\<^sub>0 (dom ?\<mu> \<star> dom ?\<nu>)))
+                                        (src (tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>)))
+                                        \<lbrakk>\<mu>\<nu>.chine\<rbrakk>"
               proof -
                 have "Chn (SPN (?\<mu> \<star> ?\<nu>)) =
-                      MkArr (src (tab\<^sub>0 (dom ?\<mu> \<star> dom ?\<nu>)))
-                            (src (tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>)))
-                            \<lbrakk>spn ?\<mu>\<nu>\<rbrakk>"
+                      Maps.MkArr (src (tab\<^sub>0 (dom ?\<mu> \<star> dom ?\<nu>)))
+                                 (src (tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>)))
+                                 \<lbrakk>spn ?\<mu>\<nu>\<rbrakk>"
                   using \<mu>\<nu> SPN_def by simp
-                also have "... = MkArr (src (tab\<^sub>0 (dom ?\<mu> \<star> dom ?\<nu>)))
-                                       (src (tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>)))
-                                       \<lbrakk>\<mu>\<nu>.chine\<rbrakk>"
+                also have "... = Maps.MkArr (src (tab\<^sub>0 (dom ?\<mu> \<star> dom ?\<nu>)))
+                                            (src (tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>)))
+                                            \<lbrakk>\<mu>\<nu>.chine\<rbrakk>"
                   using spn_def by simp
                 finally show ?thesis by simp
               qed
@@ -10045,13 +10032,13 @@ $$
             qed
 
             let ?Chn_LHS =
-                "MkArr (src cod_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0) (src (tab_of_ide (cod ?\<mu> \<star> cod ?\<nu>)))
+                "Maps.MkArr (src cod_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0) (src (tab_of_ide (cod ?\<mu> \<star> cod ?\<nu>)))
                    \<lbrakk>cod_\<mu>_\<nu>.cmp\<rbrakk> \<odot>
                  Span.chine_hcomp (SPN ?\<mu>) (SPN ?\<nu>)"
             let ?Chn_RHS =
-                "MkArr (src (tab\<^sub>0 (dom ?\<mu> \<star> dom ?\<nu>))) (src (tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>)))
+                "Maps.MkArr (src (tab\<^sub>0 (dom ?\<mu> \<star> dom ?\<nu>))) (src (tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>)))
                    \<lbrakk>\<mu>\<nu>.chine\<rbrakk> \<odot>
-                 MkArr (src dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0) (src (tab_of_ide (dom ?\<mu> \<star> dom ?\<nu>)))
+                 Maps.MkArr (src dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0) (src (tab_of_ide (dom ?\<mu> \<star> dom ?\<nu>)))
                    \<lbrakk>dom_\<mu>_\<nu>.cmp\<rbrakk>"
 
             have "?Chn_LHS = ?Chn_RHS"
@@ -10075,7 +10062,7 @@ $$
               \<close>
               show "Maps.Dom ?Chn_LHS = Maps.Dom ?Chn_RHS"
               proof -
-                have 3: "Maps.Dom ?Chn_LHS = Maps.Dom (Maps.dom ?Chn_LHS)"
+                have "Maps.Dom ?Chn_LHS = Maps.Dom (Maps.dom ?Chn_LHS)"
                    using \<mu>\<nu> 1 Maps.Dom_dom by presburger
                 also have
                   "... = Maps.Dom (Span.chine_hcomp (SPN (dom ?\<mu>)) (SPN (dom ?\<nu>)))"
@@ -10136,12 +10123,12 @@ $$
                   have "Maps.Map ?Chn_RHS = Maps.Comp \<lbrakk>\<mu>\<nu>.chine\<rbrakk> \<lbrakk>dom_\<mu>_\<nu>.cmp\<rbrakk>"
                     using \<mu>\<nu> 2 VV.arr_char Maps.Map_comp
                           Maps.comp_char
-                            [of "MkArr (src (tab\<^sub>0 (dom ?\<mu> \<star> dom ?\<nu>)))
-                                       (src (tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>)))
-                                       \<lbrakk>\<mu>\<nu>.chine\<rbrakk>"
-                                "MkArr (src dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0)
-                                       (src (tab_of_ide (dom ?\<mu> \<star> dom ?\<nu>)))
-                                       \<lbrakk>dom_\<mu>_\<nu>.cmp\<rbrakk>"]
+                            [of "Maps.MkArr (src (tab\<^sub>0 (dom ?\<mu> \<star> dom ?\<nu>)))
+                                            (src (tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>)))
+                                            \<lbrakk>\<mu>\<nu>.chine\<rbrakk>"
+                                "Maps.MkArr (src dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0)
+                                            (src (tab_of_ide (dom ?\<mu> \<star> dom ?\<nu>)))
+                                            \<lbrakk>dom_\<mu>_\<nu>.cmp\<rbrakk>"]
                     by simp
                   also have "... = \<lbrakk>\<mu>\<nu>.chine \<star> dom_\<mu>_\<nu>.cmp\<rbrakk>"
                   proof -
@@ -10198,9 +10185,9 @@ $$
                                     (Maps.Map (Span.chine_hcomp (SPN ?\<mu>) (SPN ?\<nu>)))"
                       using \<mu>\<nu> 1 VV.arr_char Maps.Map_comp cod_\<mu>\<nu>.tab_simps(2)
                             Maps.comp_char
-                              [of "MkArr (src cod_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0)
-                                         (src (tab_of_ide (cod ?\<mu> \<star> cod ?\<nu>)))
-                                         \<lbrakk>cod_\<mu>_\<nu>.cmp\<rbrakk>"
+                              [of "Maps.MkArr (src cod_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0)
+                                              (src (tab_of_ide (cod ?\<mu> \<star> cod ?\<nu>)))
+                                              \<lbrakk>cod_\<mu>_\<nu>.cmp\<rbrakk>"
                                   "Span.chine_hcomp (SPN ?\<mu>) (SPN ?\<nu>)"]
                       by simp
                     moreover have "Span.chine_hcomp (SPN ?\<mu>) (SPN ?\<nu>) =
@@ -10211,12 +10198,12 @@ $$
                                      (Maps.CLS (spn ?\<nu> \<star> dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0))"
                     proof -
                       have "Maps.PRJ\<^sub>0
-                              (MkArr (src (tab\<^sub>0 (dom ?\<mu>))) (trg ?\<nu>) \<lbrakk>tab\<^sub>0 (dom ?\<mu>)\<rbrakk>)
-                              (MkArr (src (tab\<^sub>0 (dom ?\<nu>))) (trg ?\<nu>) \<lbrakk>tab\<^sub>1 (dom ?\<nu>)\<rbrakk>) =
+                              (Maps.MkArr (src (tab\<^sub>0 (dom ?\<mu>))) (trg ?\<nu>) \<lbrakk>tab\<^sub>0 (dom ?\<mu>)\<rbrakk>)
+                              (Maps.MkArr (src (tab\<^sub>0 (dom ?\<nu>))) (trg ?\<nu>) \<lbrakk>tab\<^sub>1 (dom ?\<nu>)\<rbrakk>) =
                             \<lbrakk>\<lbrakk>dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0\<rbrakk>\<rbrakk> \<and>
                             Maps.PRJ\<^sub>1
-                              (MkArr (src (tab\<^sub>0 (dom ?\<mu>))) (trg ?\<nu>) \<lbrakk>tab\<^sub>0 (dom ?\<mu>)\<rbrakk>)
-                              (MkArr (src (tab\<^sub>0 (dom ?\<nu>))) (trg ?\<nu>) \<lbrakk>tab\<^sub>1 (dom ?\<nu>)\<rbrakk>) =
+                              (Maps.MkArr (src (tab\<^sub>0 (dom ?\<mu>))) (trg ?\<nu>) \<lbrakk>tab\<^sub>0 (dom ?\<mu>)\<rbrakk>)
+                              (Maps.MkArr (src (tab\<^sub>0 (dom ?\<nu>))) (trg ?\<nu>) \<lbrakk>tab\<^sub>1 (dom ?\<nu>)\<rbrakk>) =
                             \<lbrakk>\<lbrakk>dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>1\<rbrakk>\<rbrakk>"
                       proof -
                         interpret X: identity_in_bicategory_of_spans V H \<a> \<i> src trg
@@ -10224,12 +10211,12 @@ $$
                           using \<mu>\<nu> VV.arr_char
                           by (unfold_locales, simp)
                         have "Maps.PRJ\<^sub>0
-                                (MkArr (src (tab\<^sub>0 (dom ?\<mu>))) (trg ?\<nu>) \<lbrakk>tab\<^sub>0 (dom ?\<mu>)\<rbrakk>)
-                                (MkArr (src (tab\<^sub>0 (dom ?\<nu>))) (trg ?\<nu>) \<lbrakk>tab\<^sub>1 (dom ?\<nu>)\<rbrakk>) =
-                              \<lbrakk>\<lbrakk>tab\<^sub>0 ((Maps.REP (MkArr (src (tab\<^sub>0 (dom ?\<mu>))) (trg (snd \<mu>\<nu>))
-                                                       \<lbrakk>tab\<^sub>0 (dom ?\<mu>)\<rbrakk>))\<^sup>* \<star>
-                                      Maps.REP (MkArr (src (tab\<^sub>0 (dom ?\<nu>))) (trg ?\<nu>)
-                                                      \<lbrakk>tab\<^sub>1 (dom ?\<nu>)\<rbrakk>))\<rbrakk>\<rbrakk>"
+                                (Maps.MkArr (src (tab\<^sub>0 (dom ?\<mu>))) (trg ?\<nu>) \<lbrakk>tab\<^sub>0 (dom ?\<mu>)\<rbrakk>)
+                                (Maps.MkArr (src (tab\<^sub>0 (dom ?\<nu>))) (trg ?\<nu>) \<lbrakk>tab\<^sub>1 (dom ?\<nu>)\<rbrakk>) =
+                              \<lbrakk>\<lbrakk>tab\<^sub>0 ((Maps.REP (Maps.MkArr (src (tab\<^sub>0 (dom ?\<mu>))) (trg (snd \<mu>\<nu>))
+                                                           \<lbrakk>tab\<^sub>0 (dom ?\<mu>)\<rbrakk>))\<^sup>* \<star>
+                                      Maps.REP (Maps.MkArr (src (tab\<^sub>0 (dom ?\<nu>))) (trg ?\<nu>)
+                                                           \<lbrakk>tab\<^sub>1 (dom ?\<nu>)\<rbrakk>))\<rbrakk>\<rbrakk>"
                           unfolding Maps.PRJ\<^sub>0_def
                           using \<mu>\<nu> VV.arr_char dom_\<mu>_\<nu>.RS_simps(1) dom_\<mu>_\<nu>.RS_simps(16)
                                 dom_\<mu>_\<nu>.RS_simps(18) dom_\<mu>_\<nu>.RS_simps(3) dom_\<mu>_\<nu>.R\<^sub>0_def
@@ -10237,37 +10224,27 @@ $$
                           by auto
                         moreover
                         have "Maps.PRJ\<^sub>1
-                                (MkArr (src (tab\<^sub>0 (dom ?\<mu>))) (trg ?\<nu>) \<lbrakk>tab\<^sub>0 (dom ?\<mu>)\<rbrakk>)
-                                (MkArr (src (tab\<^sub>0 (dom ?\<nu>))) (trg ?\<nu>) \<lbrakk>tab\<^sub>1 (dom ?\<nu>)\<rbrakk>) =
-                              \<lbrakk>\<lbrakk>tab\<^sub>1 ((Maps.REP (MkArr (src (tab\<^sub>0 (dom ?\<mu>))) (trg (snd \<mu>\<nu>))
-                                                      \<lbrakk>tab\<^sub>0 (dom ?\<mu>)\<rbrakk>))\<^sup>* \<star>
-                                     Maps.REP (MkArr (src (tab\<^sub>0 (dom ?\<nu>))) (trg ?\<nu>)
-                                                     \<lbrakk>tab\<^sub>1 (dom ?\<nu>)\<rbrakk>))\<rbrakk>\<rbrakk>"
+                                (Maps.MkArr (src (tab\<^sub>0 (dom ?\<mu>))) (trg ?\<nu>) \<lbrakk>tab\<^sub>0 (dom ?\<mu>)\<rbrakk>)
+                                (Maps.MkArr (src (tab\<^sub>0 (dom ?\<nu>))) (trg ?\<nu>) \<lbrakk>tab\<^sub>1 (dom ?\<nu>)\<rbrakk>) =
+                              \<lbrakk>\<lbrakk>tab\<^sub>1 ((Maps.REP (Maps.MkArr (src (tab\<^sub>0 (dom ?\<mu>))) (trg (snd \<mu>\<nu>))
+                                                           \<lbrakk>tab\<^sub>0 (dom ?\<mu>)\<rbrakk>))\<^sup>* \<star>
+                                     Maps.REP (Maps.MkArr (src (tab\<^sub>0 (dom ?\<nu>))) (trg ?\<nu>)
+                                                          \<lbrakk>tab\<^sub>1 (dom ?\<nu>)\<rbrakk>))\<rbrakk>\<rbrakk>"
                           unfolding Maps.PRJ\<^sub>1_def
                           using \<mu>\<nu> VV.arr_char dom_\<mu>_\<nu>.RS_simps(1) dom_\<mu>_\<nu>.RS_simps(16)
                                 dom_\<mu>_\<nu>.RS_simps(18) dom_\<mu>_\<nu>.RS_simps(3) dom_\<mu>_\<nu>.R\<^sub>0_def
                                 dom_\<mu>_\<nu>.S\<^sub>1_def
                           by auto
                         moreover
-                        have "(Maps.REP (MkArr (src (tab\<^sub>0 (dom ?\<mu>))) (trg (snd \<mu>\<nu>))
-                                               \<lbrakk>tab\<^sub>0 (dom ?\<mu>)\<rbrakk>))\<^sup>* \<star>
-                              Maps.REP (MkArr (src (tab\<^sub>0 (dom ?\<nu>))) (trg ?\<nu>)
-                                              \<lbrakk>tab\<^sub>1 (dom ?\<nu>)\<rbrakk>) \<cong>
+                        have "(Maps.REP (Maps.MkArr (src (tab\<^sub>0 (dom ?\<mu>))) (trg (snd \<mu>\<nu>))
+                                                    \<lbrakk>tab\<^sub>0 (dom ?\<mu>)\<rbrakk>))\<^sup>* \<star>
+                              Maps.REP (Maps.MkArr (src (tab\<^sub>0 (dom ?\<nu>))) (trg ?\<nu>)
+                                                   \<lbrakk>tab\<^sub>1 (dom ?\<nu>)\<rbrakk>) \<cong>
                               (tab\<^sub>0 (dom ?\<mu>))\<^sup>* \<star> tab\<^sub>1 (dom ?\<nu>)"
-                        proof -
-                          have "MkArr (src (tab\<^sub>0 (dom (fst \<mu>\<nu>)))) (trg (snd \<mu>\<nu>)) \<lbrakk>tab\<^sub>0 (dom ?\<mu>)\<rbrakk> =
-                                dom_\<mu>_\<nu>.R\<^sub>0"
-                            using VV.arr_char \<mu>\<nu> dom_\<mu>_\<nu>.R\<^sub>0_def by simp
-                          moreover have "MkArr (src (tab\<^sub>0 (dom (snd \<mu>\<nu>)))) (trg (snd \<mu>\<nu>))
-                                               \<lbrakk>tab\<^sub>1 (dom ?\<nu>)\<rbrakk> =
-                                dom_\<mu>_\<nu>.S\<^sub>1"
-                            using VV.arr_char \<mu>\<nu> dom_\<mu>_\<nu>.S\<^sub>1_def dom_\<mu>_\<nu>.s.leg1_simps(3)
-                                  dom_\<mu>_\<nu>.s.leg1_simps(4) trg_dom
-                            by presburger
-                          ultimately show ?thesis
-                            using dom_\<mu>_\<nu>.prj_tab_agreement(1) isomorphic_symmetric
-                            by presburger
-                        qed
+                          using VV.arr_char \<mu>\<nu> dom_\<mu>_\<nu>.S\<^sub>1_def dom_\<mu>_\<nu>.s.leg1_simps(3)
+                                dom_\<mu>_\<nu>.s.leg1_simps(4) trg_dom dom_\<mu>_\<nu>.R\<^sub>0_def
+                                dom_\<mu>_\<nu>.prj_tab_agreement(1) isomorphic_symmetric
+                          by simp
                         ultimately show ?thesis
                            using X.isomorphic_implies_same_tab isomorphic_symmetric by metis
                       qed
@@ -11086,8 +11063,8 @@ $$
                 (\<lbrakk>\<lbrakk>Tgh_Hgh.chine\<rbrakk>\<rbrakk> \<odot> \<lbrakk>\<lbrakk>TfTgh.p\<^sub>0\<rbrakk>\<rbrakk>)"
         proof -
           interpret f: span_in_category Maps.comp
-                         \<open>\<lparr>Leg0 = MkArr (src (tab\<^sub>0 f)) (trg g) \<lbrakk>tab\<^sub>0 f\<rbrakk>,
-                           Leg1 = MkArr (src (tab\<^sub>0 f)) (trg f) \<lbrakk>tab\<^sub>1 f\<rbrakk>\<rparr>\<close>
+                         \<open>\<lparr>Leg0 = Maps.MkArr (src (tab\<^sub>0 f)) (trg g) \<lbrakk>tab\<^sub>0 f\<rbrakk>,
+                           Leg1 = Maps.MkArr (src (tab\<^sub>0 f)) (trg f) \<lbrakk>tab\<^sub>1 f\<rbrakk>\<rparr>\<close>
             using f.determines_span
             by (simp add: Tfg.composable)
           interpret f: arrow_of_tabulations_in_maps V H \<a> \<i> src trg
@@ -11171,11 +11148,11 @@ $$
       moreover have "inv (\<a>[f, g, h] \<star> tab\<^sub>0 h \<star> TTfgh.p\<^sub>0) = \<a>\<^sup>-\<^sup>1[f, g, h] \<star> tab\<^sub>0 h \<star> TTfgh.p\<^sub>0"
         using fg gh by simp
       ultimately show ?thesis
-        using invert_side_of_triangle(1)
+        using TTfgh_TfTgh.\<Delta>_simps(1)
+              invert_side_of_triangle(1)
                 [of "TfTgh.composite_cell TTfgh_TfTgh.chine TTfgh_TfTgh.the_\<theta> \<cdot> TTfgh_TfTgh.the_\<nu>"
                     "\<a>[f, g, h] \<star> tab\<^sub>0 h \<star> TTfgh.p\<^sub>0" TTfgh.tab]
-              TTfgh_TfTgh.\<Delta>_simps(1) (* TODO: Must go last? Why? *)
-        by presburger
+        by argo
     qed
 
     text \<open>
@@ -11431,7 +11408,7 @@ $$
                        (f \<star> \<a>\<^sup>-\<^sup>1[tab\<^sub>0 f, Tfg.p\<^sub>1, TTfgh.p\<^sub>1]) \<cdot>
                        \<a>[f, tab\<^sub>0 f, Tfg.p\<^sub>1 \<star> TTfgh.p\<^sub>1] \<cdot>
                        (f.tab \<star> Tfg.p\<^sub>1 \<star> TTfgh.p\<^sub>1)"
-            using comp_assoc by simp
+            using comp_assoc by presburger
           also have "... =
                        \<a>[f, g, h \<star> tab\<^sub>0 h \<star> TTfgh.p\<^sub>0] \<cdot>
                        ((f \<star> g) \<star> \<a>[h, tab\<^sub>0 h, TTfgh.p\<^sub>0]) \<cdot>
@@ -11519,7 +11496,7 @@ $$
               finally show ?thesis by blast
             qed
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... =
                        \<a>[f, g, h \<star> tab\<^sub>0 h \<star> TTfgh.p\<^sub>0] \<cdot>
@@ -11542,7 +11519,7 @@ $$
                     assoc_naturality [of f f\<^sub>0g\<^sub>1.\<phi> TTfgh.p\<^sub>1]
               by simp
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... =
                        \<a>[f, g, h \<star> tab\<^sub>0 h \<star> TTfgh.p\<^sub>0] \<cdot>
@@ -11565,7 +11542,7 @@ $$
                     assoc_naturality [of f "g.tab \<star> Tfg.p\<^sub>0" TTfgh.p\<^sub>1]
               by simp
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... =
                        \<a>[f, g, h \<star> tab\<^sub>0 h \<star> TTfgh.p\<^sub>0] \<cdot>
@@ -11626,7 +11603,7 @@ $$
                        (\<a>[f, tab\<^sub>0 f, Tfg.p\<^sub>1] \<star> TTfgh.p\<^sub>1) \<cdot>
                        ((f.tab \<star> Tfg.p\<^sub>1) \<star> TTfgh.p\<^sub>1) \<cdot>
                        \<a>\<^sup>-\<^sup>1[tab\<^sub>1 f, Tfg.p\<^sub>1, TTfgh.p\<^sub>1]"
-            using comp_assoc by simp
+            using comp_assoc by presburger
           also have "... =
                        \<a>[f, g, h \<star> tab\<^sub>0 h \<star> TTfgh.p\<^sub>0] \<cdot>
                        ((f \<star> g) \<star> \<a>[h, tab\<^sub>0 h, TTfgh.p\<^sub>0]) \<cdot>
@@ -11675,7 +11652,7 @@ $$
                        (\<a>[f, tab\<^sub>0 f, Tfg.p\<^sub>1] \<star> TTfgh.p\<^sub>1) \<cdot>
                        ((f.tab \<star> Tfg.p\<^sub>1) \<star> TTfgh.p\<^sub>1)) \<cdot>
                        \<a>\<^sup>-\<^sup>1[tab\<^sub>1 f, Tfg.p\<^sub>1, TTfgh.p\<^sub>1]"
-            using comp_assoc by simp
+            using comp_assoc by presburger
           also have "... =
                        \<a>[f, g, h \<star> tab\<^sub>0 h \<star> TTfgh.p\<^sub>0] \<cdot>
                        ((f \<star> g) \<star> \<a>[h, tab\<^sub>0 h, TTfgh.p\<^sub>0]) \<cdot>
@@ -11736,7 +11713,7 @@ $$
                     \<a>'_def \<alpha>_def
               by simp
             finally show ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... =
                        \<a>[f, g, h \<star> tab\<^sub>0 h \<star> TTfgh.p\<^sub>0] \<cdot>
@@ -11780,7 +11757,7 @@ $$
                          (f.tab \<star> Tfg.p\<^sub>1)
                         \<star> TTfgh.p\<^sub>1)) \<cdot>
                        \<a>\<^sup>-\<^sup>1[tab\<^sub>1 f, Tfg.p\<^sub>1, TTfgh.p\<^sub>1]"
-            using comp_assoc by simp
+            using comp_assoc by presburger
           also have "... =
                        \<a>[f, g, h \<star> tab\<^sub>0 h \<star> TTfgh.p\<^sub>0] \<cdot>
                        \<a>[f \<star> g, h, tab\<^sub>0 h \<star> TTfgh.p\<^sub>0] \<cdot>
@@ -11846,7 +11823,7 @@ $$
                       (f \<star> (g.tab \<star> Tgh.p\<^sub>1) \<star> TfTgh.p\<^sub>0)"
               using fg gh hseqI' whisker_right whisker_left by simp
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... =
                        \<a>[f, g, h \<star> tab\<^sub>0 h \<star> TTfgh.p\<^sub>0] \<cdot>
@@ -11985,7 +11962,7 @@ $$
                 using whisker_right by auto
             qed
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... =
                        \<a>[f, g, h \<star> tab\<^sub>0 h \<star> TTfgh.p\<^sub>0] \<cdot>
@@ -12070,7 +12047,7 @@ $$
                     assoc'_naturality [of f.tab TfTgh.p\<^sub>1 TTfgh_TfTgh.chine]
               by simp
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... =
                        \<a>[f, g, h \<star> tab\<^sub>0 h \<star> TTfgh.p\<^sub>0] \<cdot>
@@ -12176,7 +12153,7 @@ $$
               finally show ?thesis by simp
             qed
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... =
                        \<a>[f, g, h \<star> tab\<^sub>0 h \<star> TTfgh.p\<^sub>0] \<cdot>
@@ -12271,7 +12248,7 @@ $$
                           assoc'_naturality [of f "(g.tab \<star> Tgh.p\<^sub>1) \<star> TfTgh.p\<^sub>0" TTfgh_TfTgh.chine]
                   by simp
                 thus ?thesis
-                  using comp_assoc by simp
+                  using comp_assoc by presburger
               qed
               also have "... =
                            ((f \<star> \<a>[g \<star> h, tab\<^sub>0 h \<star> Tgh.p\<^sub>0, TfTgh.p\<^sub>0]) \<star> TTfgh_TfTgh.chine) \<cdot>
@@ -12293,7 +12270,7 @@ $$
                             [of f "\<a>[g, tab\<^sub>0 g, Tgh.p\<^sub>1] \<star> TfTgh.p\<^sub>0" TTfgh_TfTgh.chine]
                   by simp
                 thus ?thesis
-                  using comp_assoc by simp
+                  using comp_assoc by presburger
               qed
               also have "... =
                            ((f \<star> \<a>[g \<star> h, tab\<^sub>0 h \<star> Tgh.p\<^sub>0, TfTgh.p\<^sub>0]) \<star> TTfgh_TfTgh.chine) \<cdot>
@@ -12314,7 +12291,7 @@ $$
                         assoc'_naturality [of f "(g \<star> g\<^sub>0h\<^sub>1.\<phi>) \<star> TfTgh.p\<^sub>0" TTfgh_TfTgh.chine]
                   by simp
                 thus ?thesis
-                  using comp_assoc by simp
+                  using comp_assoc by presburger
               qed
               also have "... =
                            (((f \<star> \<a>[g \<star> h, tab\<^sub>0 h \<star> Tgh.p\<^sub>0, TfTgh.p\<^sub>0]) \<star> TTfgh_TfTgh.chine) \<cdot>
@@ -12336,7 +12313,7 @@ $$
                           [of f "(g \<star> h.tab \<star> Tgh.p\<^sub>0) \<star> TfTgh.p\<^sub>0" TTfgh_TfTgh.chine]
                   by simp
                 thus ?thesis
-                  using comp_assoc by simp
+                  using comp_assoc by presburger
               qed
               also have "... =
                            \<a>\<^sup>-\<^sup>1[f, (g \<star> h) \<star> (tab\<^sub>0 h \<star> Tgh.p\<^sub>0) \<star> TfTgh.p\<^sub>0, TTfgh_TfTgh.chine] \<cdot>
@@ -12385,13 +12362,13 @@ $$
                         \<a>'_def \<alpha>_def
                   by simp
                 finally show ?thesis
-                  using comp_assoc by simp
+                  using comp_assoc by presburger
               qed
               finally show ?thesis
-                using comp_assoc by simp
+                using comp_assoc by presburger
             qed
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... =
                        (\<a>[f, g, h \<star> tab\<^sub>0 h \<star> TTfgh.p\<^sub>0] \<cdot>
@@ -12463,7 +12440,7 @@ $$
                 using whisker_left by simp
             qed
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... =
                        (f \<star> g \<star> h \<star> TTfgh_TfTgh.the_\<theta>) \<cdot>
@@ -12510,7 +12487,7 @@ $$
                                       "((tab\<^sub>0 h \<star> Tgh.p\<^sub>0) \<star> TfTgh.p\<^sub>0) \<star> TTfgh_TfTgh.chine"]
                 by simp
               finally show ?thesis
-                using comp_assoc by simp
+                using comp_assoc by presburger
             qed
             also have "... =
                          (\<a>[f, g, h \<star> tab\<^sub>0 h \<star> TTfgh.p\<^sub>0] \<cdot>
@@ -12527,7 +12504,7 @@ $$
               using fg gh hseqI' assoc_naturality [of f g "h \<star> TTfgh_TfTgh.the_\<theta>"] comp_assoc
               by simp
             finally show ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... =
                        ((f \<star> g \<star> h \<star> TTfgh_TfTgh.the_\<theta>) \<cdot>
@@ -12604,7 +12581,7 @@ $$
               finally show ?thesis by blast
             qed
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... =
                        (f \<star> (g \<star> h \<star> TTfgh_TfTgh.the_\<theta>) \<cdot>
@@ -12673,14 +12650,14 @@ $$
                            \<a>\<^sup>-\<^sup>1[tab\<^sub>0 f, TfTgh.p\<^sub>1, TTfgh_TfTgh.chine])"
                 using calculation by blast
               ultimately show ?thesis
-                using whisker_left 1 2 f.is_ide by simp (* 20 sec *)
+                using whisker_left f.ide_base by presburger
             qed
             thus ?thesis
-              using comp_assoc by simp
+              using comp_assoc by presburger
           qed
           also have "... = f.composite_cell w\<^sub>f' \<theta>\<^sub>f' \<cdot> \<beta>\<^sub>f"
             unfolding w\<^sub>f'_def \<theta>\<^sub>f'_def \<beta>\<^sub>f_def
-            using comp_assoc by simp
+            using comp_assoc by presburger
           finally show ?thesis by blast
         qed
         show ?thesis
@@ -12828,7 +12805,7 @@ $$
                      (g \<star> \<a>\<^sup>-\<^sup>1[tab\<^sub>0 g, Tfg.p\<^sub>0, TTfgh.p\<^sub>1]) \<cdot>
                      \<a>[g, tab\<^sub>0 g, Tfg.p\<^sub>0 \<star> TTfgh.p\<^sub>1]) \<cdot>
                      (g.tab \<star> Tfg.p\<^sub>0 \<star> TTfgh.p\<^sub>1)"
-          using comp_assoc by simp
+          using comp_assoc by presburger
         also have "... =
                    (g \<star> \<a>[h, tab\<^sub>0 h, TTfgh.p\<^sub>0]) \<cdot>
                      (g \<star> h.tab \<star> TTfgh.p\<^sub>0) \<cdot>
@@ -12876,7 +12853,7 @@ $$
                      \<a>[tab\<^sub>0 f, Tfg.p\<^sub>1, TTfgh.p\<^sub>1]) \<cdot>
                      (inv f\<^sub>0g\<^sub>1.\<phi> \<star> TTfgh.p\<^sub>1)) \<cdot>
                      \<a>\<^sup>-\<^sup>1[tab\<^sub>1 g, Tfg.p\<^sub>0, TTfgh.p\<^sub>1]"
-            using comp_assoc by simp
+            using comp_assoc by presburger
           also have "... = ((f\<^sub>0g\<^sub>1.\<phi> \<star> TTfgh.p\<^sub>1) \<cdot>
                              ((tab\<^sub>0 f \<star> Tfg.p\<^sub>1) \<star> TTfgh.p\<^sub>1) \<cdot>
                              (inv f\<^sub>0g\<^sub>1.\<phi> \<star> TTfgh.p\<^sub>1)) \<cdot>
@@ -12902,13 +12879,13 @@ $$
                      \<a>\<^sup>-\<^sup>1[tab\<^sub>1 g, Tfg.p\<^sub>0, TTfgh.p\<^sub>1] = \<a>\<^sup>-\<^sup>1[tab\<^sub>1 g, Tfg.p\<^sub>0, TTfgh.p\<^sub>1]"
             by simp
           thus ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         also have "... = \<theta>\<^sub>f \<cdot>
                            \<a>[tab\<^sub>0 f, Tfg.p\<^sub>1, TTfgh.p\<^sub>1] \<cdot>
                            (inv f\<^sub>0g\<^sub>1.\<phi> \<star> TTfgh.p\<^sub>1) \<cdot>
                            \<a>\<^sup>-\<^sup>1[tab\<^sub>1 g, Tfg.p\<^sub>0, TTfgh.p\<^sub>1]"
-          unfolding \<theta>\<^sub>f_def using comp_assoc by simp
+          unfolding \<theta>\<^sub>f_def using comp_assoc by presburger
         also have "... = \<theta>\<^sub>f' \<cdot> (tab\<^sub>0 f \<star> \<gamma>\<^sub>f) \<cdot>
                            \<a>[tab\<^sub>0 f, Tfg.p\<^sub>1, TTfgh.p\<^sub>1] \<cdot>
                            (inv f\<^sub>0g\<^sub>1.\<phi> \<star> TTfgh.p\<^sub>1) \<cdot>
@@ -12929,7 +12906,7 @@ $$
                            \<a>[tab\<^sub>0 f, Tfg.p\<^sub>1, TTfgh.p\<^sub>1] \<cdot>
                            (inv f\<^sub>0g\<^sub>1.\<phi> \<star> TTfgh.p\<^sub>1) \<cdot>
                            \<a>\<^sup>-\<^sup>1[tab\<^sub>1 g, Tfg.p\<^sub>0, TTfgh.p\<^sub>1]"
-          unfolding \<theta>\<^sub>f'_def using comp_assoc by simp
+          unfolding \<theta>\<^sub>f'_def using comp_assoc by presburger
         also have "... = (g \<star> h \<star> TTfgh_TfTgh.the_\<theta>) \<cdot>
                            can (\<^bold>\<langle>g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle> \<^bold>\<star> ((\<^bold>\<langle>tab\<^sub>0 h\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>Tgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TfTgh.p\<^sub>0\<^bold>\<rangle>)
                                   \<^bold>\<star> \<^bold>\<langle>TTfgh_TfTgh.chine\<^bold>\<rangle>)
@@ -12994,7 +12971,7 @@ $$
                   assoc'_naturality [of "(g.tab \<star> Tgh.p\<^sub>1)" TfTgh.p\<^sub>0 TTfgh_TfTgh.chine]
             by simp
           thus ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         also have "... = (g \<star> h \<star> TTfgh_TfTgh.the_\<theta>) \<cdot>
                            can (\<^bold>\<langle>g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle> \<^bold>\<star> ((\<^bold>\<langle>tab\<^sub>0 h\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>Tgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TfTgh.p\<^sub>0\<^bold>\<rangle>)
@@ -13017,7 +12994,7 @@ $$
                   assoc'_naturality [of g.tab Tgh.p\<^sub>1 "TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine"]
             by simp
           thus ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         also have "... = (g \<star> h \<star> TTfgh_TfTgh.the_\<theta>) \<cdot>
                            can (\<^bold>\<langle>g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle> \<^bold>\<star> ((\<^bold>\<langle>tab\<^sub>0 h\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>Tgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TfTgh.p\<^sub>0\<^bold>\<rangle>)
@@ -13080,7 +13057,7 @@ $$
             using g\<^sub>0h\<^sub>1.p\<^sub>1_simps f\<^sub>0gh\<^sub>1.p\<^sub>0_simps hseqI' whisker_right comp_assoc_assoc' by simp
           also have "... = (\<a>[g, tab\<^sub>0 g, Tgh.p\<^sub>1] \<star> TfTgh.p\<^sub>0) \<star> TTfgh_TfTgh.chine"
             using g\<^sub>0h\<^sub>1.p\<^sub>1_simps f\<^sub>0gh\<^sub>1.p\<^sub>0_simps hseqI' comp_cod_arr by simp
-          finally show ?thesis by simp
+          finally show ?thesis by presburger
         qed
         also have "... = (g \<star> h \<star> TTfgh_TfTgh.the_\<theta>) \<cdot>
                            can (\<^bold>\<langle>g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>h\<^bold>\<rangle> \<^bold>\<star> ((\<^bold>\<langle>tab\<^sub>0 h\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>Tgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TfTgh.p\<^sub>0\<^bold>\<rangle>)
@@ -13137,7 +13114,7 @@ $$
                            ((((g \<star> g\<^sub>0h\<^sub>1.\<phi>) \<star> TfTgh.p\<^sub>0) \<star> TTfgh_TfTgh.chine) \<cdot>
                            \<a>\<^sup>-\<^sup>1[g \<star> tab\<^sub>0 g \<star> Tgh.p\<^sub>1, TfTgh.p\<^sub>0, TTfgh_TfTgh.chine]) \<cdot>
                            \<a>\<^sup>-\<^sup>1[g, tab\<^sub>0 g \<star> Tgh.p\<^sub>1, TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine]"
-              using comp_assoc by simp
+              using comp_assoc by presburger
             also have "... = ((((g \<star> h.tab \<star> Tgh.p\<^sub>0) \<star> TfTgh.p\<^sub>0) \<star> TTfgh_TfTgh.chine) \<cdot>
                                \<a>\<^sup>-\<^sup>1[g \<star> tab\<^sub>1 h \<star> Tgh.p\<^sub>0, TfTgh.p\<^sub>0, TTfgh_TfTgh.chine]) \<cdot>
                                ((g \<star> g\<^sub>0h\<^sub>1.\<phi>) \<star> TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine) \<cdot>
@@ -13151,7 +13128,7 @@ $$
                       assoc'_naturality [of "g \<star> g\<^sub>0h\<^sub>1.\<phi>" TfTgh.p\<^sub>0 TTfgh_TfTgh.chine]
                 by simp
               thus ?thesis
-                using comp_assoc by simp
+                using comp_assoc by presburger
             qed
             also have "... = \<a>\<^sup>-\<^sup>1[g \<star> (h \<star> tab\<^sub>0 h) \<star> Tgh.p\<^sub>0, TfTgh.p\<^sub>0, TTfgh_TfTgh.chine] \<cdot>
                       ((g \<star> h.tab \<star> Tgh.p\<^sub>0) \<star> TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine) \<cdot>
@@ -13166,7 +13143,7 @@ $$
                       assoc'_naturality [of "g \<star> h.tab \<star> Tgh.p\<^sub>0" TfTgh.p\<^sub>0 TTfgh_TfTgh.chine]
                 by simp
               thus ?thesis
-                using comp_assoc by simp
+                using comp_assoc by presburger
             qed
             also have "... = \<a>\<^sup>-\<^sup>1[g \<star> (h \<star> tab\<^sub>0 h) \<star> Tgh.p\<^sub>0, TfTgh.p\<^sub>0, TTfgh_TfTgh.chine] \<cdot>
                       (((g \<star> h.tab \<star> Tgh.p\<^sub>0) \<star> TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine) \<cdot>
@@ -13181,7 +13158,7 @@ $$
                       assoc'_naturality [of g g\<^sub>0h\<^sub>1.\<phi> "TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine"]
                 by simp
               thus ?thesis
-                using comp_assoc by simp
+                using comp_assoc by presburger
             qed
             also have "... = \<a>\<^sup>-\<^sup>1[g \<star> (h \<star> tab\<^sub>0 h) \<star> Tgh.p\<^sub>0, TfTgh.p\<^sub>0, TTfgh_TfTgh.chine] \<cdot>
                     \<a>\<^sup>-\<^sup>1[g, (h \<star> tab\<^sub>0 h) \<star> Tgh.p\<^sub>0, TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine] \<cdot>
@@ -13196,12 +13173,12 @@ $$
                       assoc'_naturality [of g "h.tab \<star> Tgh.p\<^sub>0" "TfTgh.p\<^sub>0 \<star> TTfgh_TfTgh.chine"]
                 by simp
               thus ?thesis
-                using comp_assoc by simp
+                using comp_assoc by presburger
             qed
             finally show ?thesis by simp
           qed
           thus ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         also have "... = ((g \<star> h \<star> TTfgh_TfTgh.the_\<theta>) \<cdot>
                            (g \<star> can (\<^bold>\<langle>h\<^bold>\<rangle> \<^bold>\<star> ((\<^bold>\<langle>tab\<^sub>0 h\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>Tgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TfTgh.p\<^sub>0\<^bold>\<rangle>)
@@ -13286,7 +13263,7 @@ $$
             finally show ?thesis by simp
           qed
           ultimately show ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         also have "... = (g \<star>
                            (h \<star> TTfgh_TfTgh.the_\<theta>) \<cdot>
@@ -13344,7 +13321,7 @@ $$
         qed
         also have "... = g.composite_cell w\<^sub>g' \<theta>\<^sub>g' \<cdot> \<beta>\<^sub>g"
           unfolding w\<^sub>g'_def \<theta>\<^sub>g'_def
-          using comp_assoc by simp
+          using comp_assoc by presburger
         finally show ?thesis by simp
       qed
       have 6: "\<exists>!\<gamma>. \<guillemotleft>\<gamma> : w\<^sub>g \<Rightarrow> w\<^sub>g'\<guillemotright> \<and> \<beta>\<^sub>g = tab\<^sub>1 g \<star> \<gamma> \<and> \<theta>\<^sub>g = \<theta>\<^sub>g' \<cdot> (tab\<^sub>0 g \<star> \<gamma>)"
@@ -13470,7 +13447,7 @@ $$
                            \<a>[tab\<^sub>0 g, Tfg.p\<^sub>0, TTfgh.p\<^sub>1] \<cdot>
                            inv fg\<^sub>0h\<^sub>1.\<phi>"
           unfolding \<theta>\<^sub>g'_def
-          using comp_assoc by simp
+          using comp_assoc by presburger
         also have "... = (h \<star> TTfgh_TfTgh.the_\<theta>) \<cdot>
                            can (\<^bold>\<langle>h\<^bold>\<rangle> \<^bold>\<star> ((\<^bold>\<langle>tab\<^sub>0 h\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>Tgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TfTgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TTfgh_TfTgh.chine\<^bold>\<rangle>)
                                (((\<^bold>\<langle>h\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>tab\<^sub>0 h\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>Tgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TfTgh.p\<^sub>0\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>TTfgh_TfTgh.chine\<^bold>\<rangle>) \<cdot>
@@ -13600,7 +13577,7 @@ $$
                                 (\<^bold>\<langle>tab\<^sub>0 h\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>Tgh.p\<^sub>0\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>TfTgh.p\<^sub>0\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>TTfgh_TfTgh.chine\<^bold>\<rangle>)"
             by simp
           thus ?thesis
-            using comp_assoc by simp
+            using comp_assoc by presburger
         qed
         also have "... = (h \<star> TTfgh_TfTgh.the_\<theta> \<cdot>
                               can (((\<^bold>\<langle>tab\<^sub>0 h\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>Tgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TfTgh.p\<^sub>0\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>TTfgh_TfTgh.chine\<^bold>\<rangle>)
@@ -13644,7 +13621,7 @@ $$
         qed
         also have "... = h.composite_cell w\<^sub>h' \<theta>\<^sub>h' \<cdot> \<beta>\<^sub>h"
           unfolding w\<^sub>h'_def \<theta>\<^sub>h'_def \<beta>\<^sub>h_def
-          using comp_assoc by simp
+          using comp_assoc by presburger
         finally show ?thesis by simp
       qed
       have 7: "\<exists>!\<gamma>. \<guillemotleft>\<gamma> : w\<^sub>h \<Rightarrow> w\<^sub>h'\<guillemotright> \<and> \<beta>\<^sub>h = tab\<^sub>1 h \<star> \<gamma> \<and> \<theta>\<^sub>h = \<theta>\<^sub>h' \<cdot> (tab\<^sub>0 h \<star> \<gamma>)"
@@ -14545,15 +14522,14 @@ $$
               qed
               thus W: "Span.arr ?W"
                 using Span.arr_char by blast
-              interpret Dom_W: span_in_category Maps.comp
-                                 \<open>\<lparr>Leg0 = MkArr (src (tab\<^sub>0 (Maps.REP g.leg1 \<star> (Maps.REP g.leg0)\<^sup>*)))
-                                                (src (Maps.REP g.leg0)\<^sup>*)
-                                                (iso_class
-                                                  (tab\<^sub>0 (Maps.REP g.leg1 \<star> (Maps.REP g.leg0)\<^sup>*))),
-                                   Leg1 = MkArr (src (tab\<^sub>0 (Maps.REP g.leg1 \<star> (Maps.REP g.leg0)\<^sup>*)))
-                                                (Maps.Cod g.leg1)
-                                                (iso_class
-                                                  (tab\<^sub>1 (Maps.REP g.leg1 \<star> (Maps.REP g.leg0)\<^sup>*)))\<rparr>\<close>
+              interpret Dom_W:
+                span_in_category Maps.comp
+                  \<open>\<lparr>Leg0 = Maps.MkArr (src (tab\<^sub>0 (Maps.REP g.leg1 \<star> (Maps.REP g.leg0)\<^sup>*)))
+                                      (src (Maps.REP g.leg0)\<^sup>*)
+                                      (iso_class (tab\<^sub>0 (Maps.REP g.leg1 \<star> (Maps.REP g.leg0)\<^sup>*))),
+                    Leg1 = Maps.MkArr (src (tab\<^sub>0 (Maps.REP g.leg1 \<star> (Maps.REP g.leg0)\<^sup>*)))
+                                      (Maps.Cod g.leg1)
+                                      (iso_class (tab\<^sub>1 (Maps.REP g.leg1 \<star> (Maps.REP g.leg0)\<^sup>*)))\<rparr>\<close>
                 using W Span.arr_char
                 by (simp add: arrow_of_spans_def)
               interpret Cod_W: span_in_category Maps.comp \<open>Cod ?W\<close>

@@ -969,15 +969,12 @@ begin
           using comp_assoc by simp
         also have "... = (\<epsilon> \<star> f') \<cdot> (\<a>\<^sup>-\<^sup>1[f, g, f'] \<cdot> (f \<star> g \<star> \<phi>)) \<cdot> (inv \<phi> \<star> g \<star> f) \<cdot> (f' \<star> \<eta>)"
         proof -
-          have "(inv \<phi> \<star> g \<star> f') \<cdot> (f' \<star> g \<star> \<phi>) = inv \<phi> \<star> g \<star> \<phi>"
-            using assms A.antipar comp_arr_dom comp_cod_arr hseqI'
+          have "(inv \<phi> \<star> g \<star> f') \<cdot> (f' \<star> g \<star> \<phi>) = (f \<star> g \<star> \<phi>) \<cdot> (inv \<phi> \<star> g \<star> f)"
+            using assms(2-3) A.antipar comp_arr_dom comp_cod_arr hseqI'
                   interchange [of "inv \<phi>" f' "g \<star> f'" "g \<star> \<phi>"]
-            by auto
-          also have "... = (f \<star> g \<star> \<phi>) \<cdot> (inv \<phi> \<star> g \<star> f)"
-            using assms A.antipar comp_arr_dom comp_cod_arr hseqI'
                   interchange [of f "inv \<phi>" "g \<star> \<phi>" "g \<star> f"]
             by auto
-          finally show ?thesis
+          thus ?thesis
             using comp_assoc by simp
         qed
         also have "... = ((\<epsilon> \<star> f') \<cdot> ((f \<star> g) \<star> \<phi>)) \<cdot> \<a>\<^sup>-\<^sup>1[f, g, f] \<cdot> (f \<star> \<eta>) \<cdot> (inv \<phi> \<star> src f)"
@@ -1163,9 +1160,9 @@ begin
               proof -
                 have "D.inv (F \<a>\<^sub>C[f, g, f] \<cdot>\<^sub>D \<Phi> (f \<star>\<^sub>C g, f) \<cdot>\<^sub>D (\<Phi> (f, g) \<star>\<^sub>D F f)) =
                        D.inv (\<Phi> (f \<star>\<^sub>C g, f) \<cdot>\<^sub>D (\<Phi> (f, g) \<star>\<^sub>D F f)) \<cdot>\<^sub>D F \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, f]"
-                  using antipar D.isos_compose C.VV.ide_char C.VV.arr_char \<Phi>_simps(4) D.hseqI'
-                        preserves_inv D.inv_comp D.iso_is_arr
-                    by simp
+                  using antipar D.isos_compose C.VV.arr_char \<Phi>_simps(4) D.hseqI'
+                        preserves_inv D.inv_comp
+                  by simp
                 also have "... = (D.inv (\<Phi> (f, g) \<star>\<^sub>D F f) \<cdot>\<^sub>D D.inv (\<Phi> (f \<star>\<^sub>C g, f))) \<cdot>\<^sub>D
                                  F \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, f]"
                   using antipar D.inv_comp C.VV.ide_char C.VV.arr_char \<Phi>_simps(4) D.hseqI'
@@ -2679,7 +2676,7 @@ begin
         using \<xi>' by auto
       let ?\<epsilon>' = "UP.\<Psi> ?b \<cdot>\<^sub>S \<xi>' \<cdot>\<^sub>S S.inv (S.\<Phi> (f, g))"
       have \<epsilon>': "\<guillemotleft>?\<epsilon>' : S.UP (f \<star> g) \<Rightarrow>\<^sub>S S.UP ?b\<guillemotright>"
-        using assms S.UP_map\<^sub>0_obj apply (intro S.in_homI) by auto
+        using assms(2-3) S.UP_map\<^sub>0_obj apply (intro S.in_homI) by auto
       have ex_un_\<epsilon>: "\<exists>!\<epsilon>. \<guillemotleft>\<epsilon> : f \<star> g \<Rightarrow> ?b\<guillemotright> \<and> S.UP \<epsilon> = ?\<epsilon>'"
       proof -
         have "\<exists>\<epsilon>. \<guillemotleft>\<epsilon> : f \<star> g \<Rightarrow> ?b\<guillemotright> \<and> S.UP \<epsilon> = ?\<epsilon>'"
@@ -2691,8 +2688,10 @@ begin
             thus ?thesis
               using assms(2) f_in_hhom by (elim hseqE, auto)
           qed
-          thus ?thesis
-            using assms(2-3) b \<epsilon>' UP.locally_full by auto
+          moreover have "ide (f \<star> g)"
+            using assms(2-3) by auto
+          ultimately show ?thesis
+            using \<epsilon>' UP.locally_full by auto
         qed
         moreover have
           "\<And>\<mu> \<nu>. \<lbrakk> \<guillemotleft>\<mu> : f \<star> g \<Rightarrow> ?b\<guillemotright>; S.UP \<mu> = ?\<epsilon>'; \<guillemotleft>\<nu> : f \<star> g \<Rightarrow> ?b\<guillemotright>; S.UP \<nu> = ?\<epsilon>' \<rbrakk>
@@ -2730,7 +2729,13 @@ begin
       obtain \<epsilon> where \<epsilon>: "\<guillemotleft>\<epsilon> : f \<star> g \<Rightarrow> ?b\<guillemotright> \<and> S.UP \<epsilon> = ?\<epsilon>'"
         using ex_un_\<epsilon> by auto
       interpret E'': equivalence_in_bicategory V H \<a> \<i> src trg f g \<eta> \<epsilon>
-        using assms \<epsilon> iso_\<epsilon>' UP.reflects_iso apply unfold_locales by auto
+        using assms(1,3-5)
+        apply unfold_locales
+             apply simp_all
+        using assms(2) \<epsilon>
+         apply auto[1]
+        using \<epsilon> iso_\<epsilon>' UP.reflects_iso [of \<epsilon>]
+        by auto
       interpret E'': adjoint_equivalence_in_bicategory V H \<a> \<i> src trg f g \<eta> \<epsilon>
       proof
         show "(\<epsilon> \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[f, g, f] \<cdot> (f \<star> \<eta>) = \<l>\<^sup>-\<^sup>1[f] \<cdot> \<r>[f]"
@@ -2798,7 +2803,7 @@ begin
                   ultimately show ?thesis
                     using assms S.strict_assoc' S.iso_assoc S.hcomp_assoc E'.antipar
                           S.comp_arr_ide S.seqI'
-                    by simp
+                    by (metis (no_types, lifting) E'.ide_left E'.ide_right)
                 qed
                 thus ?thesis
                   using S.comp_assoc by simp
@@ -2824,7 +2829,9 @@ begin
                             (S.UP f \<star>\<^sub>S S.inv (S.\<Phi> (g, f)) \<cdot>\<^sub>S S.UP \<eta> \<cdot>\<^sub>S UP.\<Psi> ?a)"
                     proof -
                       have "S.seq (S.inv (S.\<Phi> (g, f)) \<cdot>\<^sub>S S.UP \<eta>) (UP.\<Psi> ?a)"
-                        using assms UP.\<Psi>_char UP.\<Phi>_components_are_iso by auto
+                        using assms UP.\<Psi>_char UP.\<Phi>_components_are_iso
+                              E'.unit_simps(1) S.comp_assoc
+                        by presburger 
                       hence "(S.UP f \<star>\<^sub>S S.inv (S.\<Phi> (g, f)) \<cdot>\<^sub>S S.UP \<eta>) \<cdot>\<^sub>S (S.UP f \<star>\<^sub>S UP.\<Psi> ?a) =
                              S.UP f \<star>\<^sub>S S.inv (S.\<Phi> (g, f)) \<cdot>\<^sub>S S.UP \<eta> \<cdot>\<^sub>S UP.\<Psi> ?a"
                         using assms UP.\<Psi>_char UP.\<Phi>_components_are_iso S.comp_assoc
@@ -2834,7 +2841,7 @@ begin
                     qed
                     thus ?thesis
                       using assms E'.triangle_left UP.\<Phi>_components_are_iso UP.\<Psi>_char
-                      by simp
+                      by argo
                   qed
                   also have "... = S.UP f"
                     using S.strict_lunit' S.strict_runit by simp
@@ -2846,7 +2853,9 @@ begin
                            (S.UP f \<star>\<^sub>S S.inv (S.\<Phi> (g, f)) \<cdot>\<^sub>S S.UP \<eta>) =
                          S.UP f \<cdot>\<^sub>S (S.UP f \<star>\<^sub>S S.inv (UP.\<Psi> ?a))"
                   proof -
-                    have "S.iso (S.UP f \<star>\<^sub>S UP.\<Psi> ?a)"
+                    have "S.arr (S.UP f)"
+                      using assms by simp
+                    moreover have "S.iso (S.UP f \<star>\<^sub>S UP.\<Psi> ?a)"
                       using assms UP.\<Psi>_char S.UP_map\<^sub>0_obj by auto
                     moreover have "S.inv (S.UP f \<star>\<^sub>S UP.\<Psi> ?a) = S.UP f \<star>\<^sub>S S.inv (UP.\<Psi> ?a)"
                       using assms a UP.\<Psi>_char S.UP_map\<^sub>0_obj by auto
@@ -2856,7 +2865,7 @@ begin
                               [of "S.UP f" "(\<xi>' \<star>\<^sub>S S.UP f) \<cdot>\<^sub>S S.\<a>' (S.UP f) (S.UP g) (S.UP f) \<cdot>\<^sub>S
                                               (S.UP f \<star>\<^sub>S S.inv (S.\<Phi> (g, f)) \<cdot>\<^sub>S S.UP \<eta>)"
                                   "S.UP f \<star>\<^sub>S UP.\<Psi> ?a"]
-                      by simp  (* 45 sec *)
+                      by presburger
                   qed
                   also have "... = S.UP f \<star>\<^sub>S S.inv (UP.\<Psi> ?a)"
                   proof -
@@ -2889,45 +2898,24 @@ begin
                have "S.UP f = S.UP \<l>[f] \<cdot>\<^sub>S S.\<Phi> (trg f, f) \<cdot>\<^sub>S (UP.\<Psi> (trg f) \<star>\<^sub>S S.UP f)"
                  using UP.lunit_coherence iso_lunit S.strict_lunit by simp
                thus ?thesis
-                 using UP.\<Psi>_char S.comp_arr_dom UP.preserves_iso UP.preserves_inv
-                       S.invert_side_of_triangle(1)
-                         [of "S.UP f" "S.UP \<l>[f]" "S.\<Phi> (trg f, f) \<cdot>\<^sub>S (UP.\<Psi> (trg f) \<star>\<^sub>S S.UP f)"]
-                 by auto
+                 using UP.image_of_unitor(3) ide_f by presburger
              qed
              moreover have "(S.UP f \<star>\<^sub>S S.inv (UP.\<Psi> (src f))) \<cdot>\<^sub>S S.inv (S.\<Phi> (f, src f)) =
                             S.UP \<r>[f]"
              proof -
                have "S.UP \<r>[f] \<cdot>\<^sub>S S.\<Phi> (f, src f) \<cdot>\<^sub>S (S.UP f \<star>\<^sub>S UP.\<Psi> (src f)) = S.UP f"
                  using UP.runit_coherence [of f] S.strict_runit by simp
-               moreover have 1: "S.iso (S.\<Phi> (f, src f) \<cdot>\<^sub>S (S.UP f \<star>\<^sub>S UP.\<Psi> (src f)))"
+               moreover have "S.iso (S.\<Phi> (f, src f) \<cdot>\<^sub>S (S.UP f \<star>\<^sub>S UP.\<Psi> (src f)))"
                  using UP.\<Psi>_char UP.\<Phi>_components_are_iso VV.arr_char S.hseqI' S.UP_map\<^sub>0_obj
-                 by (intro S.isos_compose S.seqI, auto)
+                 apply (intro S.isos_compose S.seqI)
+                 by simp_all
                ultimately have
                  "S.UP \<r>[f] = S.UP f \<cdot>\<^sub>S S.inv (S.\<Phi> (f, src f) \<cdot>\<^sub>S (S.UP f \<star>\<^sub>S UP.\<Psi> (src f)))"
                  using S.invert_side_of_triangle(2)
                          [of "S.UP f" "S.UP \<r>[f]" "S.\<Phi> (f, src f) \<cdot>\<^sub>S (S.UP f \<star>\<^sub>S UP.\<Psi> (src f))"]
-                 by simp
-               also have
-                 "... = (S.UP f \<cdot>\<^sub>S (S.UP f \<star>\<^sub>S S.inv (UP.\<Psi> (src f)))) \<cdot>\<^sub>S S.inv (S.\<Phi> (f, src f))"
-               proof -
-                 have "S.iso (S.UP f \<star>\<^sub>S UP.\<Psi> (src f))"
-                   using 1 UP.\<Psi>_char UP.\<Phi>_components_are_iso S.UP_map\<^sub>0_obj by simp
-                 moreover have
-                   "S.inv (S.UP f \<star>\<^sub>S UP.\<Psi> (src f)) = S.UP f \<star>\<^sub>S S.inv (UP.\<Psi> (src f))"
-                   using 1 UP.\<Psi>_char UP.\<Phi>_components_are_iso S.UP_map\<^sub>0_obj by simp
-                 moreover have "S.seq (S.\<Phi> (f, src f)) (S.UP f \<star>\<^sub>S UP.\<Psi> (src f))"
-                   using 1 S.hseqI' S.UP_map\<^sub>0_obj
-                   by (intro S.seqI S.hseqI, auto)
-                 ultimately have "S.inv (S.\<Phi> (f, src f) \<cdot>\<^sub>S (S.UP f \<star>\<^sub>S UP.\<Psi> (src f))) =
-                       (S.UP f \<star>\<^sub>S S.inv (UP.\<Psi> (src f))) \<cdot>\<^sub>S S.inv (S.\<Phi> (f, src f))"
-                   using 1 UP.\<Psi>_char UP.\<Phi>_components_are_iso S.inv_comp by auto
-                 thus ?thesis
-                   using S.comp_assoc by simp
-               qed
-               also have
-                 "... = (S.UP f \<star>\<^sub>S S.inv (UP.\<Psi> (src f))) \<cdot>\<^sub>S S.inv (S.\<Phi> (f, src f))"
-                 using UP.\<Psi>_char S.comp_cod_arr S.hcomp_arr_obj S.hseqI' S.UP_map\<^sub>0_obj by simp
-               finally show ?thesis by simp
+                       ideD(1) ide_f by blast
+               thus ?thesis
+                 using ide_f UP.image_of_unitor(2) [of f] by argo
              qed
              ultimately show ?thesis
                using S.comp_assoc by simp
@@ -3341,7 +3329,7 @@ begin
         using assms equivalence_map_extends_to_adjoint_equivalence by blast
       interpret fg: adjoint_equivalence_in_bicategory V H \<a> \<i> src trg f g \<eta> \<epsilon>
         using fg by simp
-      interpret gf: adjoint_equivalence_in_bicategory V H \<a> \<i> src trg g f "inv \<epsilon>" "inv \<eta>"
+      interpret gf: adjoint_equivalence_in_bicategory V H \<a> \<i> src trg g f \<open>inv \<epsilon>\<close> \<open>inv \<eta>\<close>
         using fg.dual_adjoint_equivalence by simp
       show "is_left_adjoint f"
         using fg.adjunction_in_bicategory_axioms adjoint_pair_def by auto

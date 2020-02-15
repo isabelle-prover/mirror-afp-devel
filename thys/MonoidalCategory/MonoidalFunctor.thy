@@ -115,41 +115,41 @@ begin
       qed
       obtain \<psi> where \<psi>: "\<guillemotleft>\<psi> : F \<I>\<^sub>C \<rightarrow>\<^sub>D \<I>\<^sub>D\<guillemotright> \<and> D.iso \<psi>"
         using 1 by blast
-      interpret L: equivalence_functor D D "\<lambda>f. (D.cod \<iota>\<^sub>1) \<otimes>\<^sub>D f"
+      interpret L: equivalence_functor D D \<open>\<lambda>f. (D.cod \<iota>\<^sub>1) \<otimes>\<^sub>D f\<close>
       proof -
-        interpret L: "functor" D D "\<lambda>f. (F \<I>\<^sub>C) \<otimes>\<^sub>D f"
+        interpret L: "functor" D D \<open>\<lambda>f. (F \<I>\<^sub>C) \<otimes>\<^sub>D f\<close>
           using D.T.fixing_ide_gives_functor_1 by simp
-        interpret L: endofunctor D "\<lambda>f. (F \<I>\<^sub>C) \<otimes>\<^sub>D f" ..
-        interpret \<psi>x: natural_transformation D D "\<lambda>f. (F \<I>\<^sub>C) \<otimes>\<^sub>D f" "\<lambda>f. \<I>\<^sub>D \<otimes>\<^sub>D f" "\<lambda>f. \<psi> \<otimes>\<^sub>D f"
+        interpret L: endofunctor D \<open>\<lambda>f. (F \<I>\<^sub>C) \<otimes>\<^sub>D f\<close> ..
+        interpret \<psi>x: natural_transformation D D \<open>\<lambda>f. (F \<I>\<^sub>C) \<otimes>\<^sub>D f\<close> \<open>\<lambda>f. \<I>\<^sub>D \<otimes>\<^sub>D f\<close> \<open>\<lambda>f. \<psi> \<otimes>\<^sub>D f\<close>
           using \<psi> D.T.fixing_arr_gives_natural_transformation_1 [of \<psi>] by auto
-        interpret \<psi>x: natural_isomorphism D D "\<lambda>f. (F \<I>\<^sub>C) \<otimes>\<^sub>D f" "\<lambda>f. \<I>\<^sub>D \<otimes>\<^sub>D f" "\<lambda>f. \<psi> \<otimes>\<^sub>D f"
+        interpret \<psi>x: natural_isomorphism D D \<open>\<lambda>f. (F \<I>\<^sub>C) \<otimes>\<^sub>D f\<close> \<open>\<lambda>f. \<I>\<^sub>D \<otimes>\<^sub>D f\<close> \<open>\<lambda>f. \<psi> \<otimes>\<^sub>D f\<close>
           apply unfold_locales using \<psi> D.tensor_preserves_iso by simp
-        interpret \<ll>\<^sub>Do\<psi>x: vertical_composite D D "\<lambda>f. (F \<I>\<^sub>C) \<otimes>\<^sub>D f" "\<lambda>f. \<I>\<^sub>D \<otimes>\<^sub>D f" D.map
-                                           "\<lambda>f. \<psi> \<otimes>\<^sub>D f" D.\<ll> ..
-        interpret \<ll>\<^sub>Do\<psi>x: natural_isomorphism D D "\<lambda>f. (F \<I>\<^sub>C) \<otimes>\<^sub>D f" D.map \<ll>\<^sub>Do\<psi>x.map
+        interpret \<ll>\<^sub>Do\<psi>x: vertical_composite D D \<open>\<lambda>f. (F \<I>\<^sub>C) \<otimes>\<^sub>D f\<close> \<open>\<lambda>f. \<I>\<^sub>D \<otimes>\<^sub>D f\<close> D.map
+                                           \<open>\<lambda>f. \<psi> \<otimes>\<^sub>D f\<close> D.\<ll> ..
+        interpret \<ll>\<^sub>Do\<psi>x: natural_isomorphism D D \<open>\<lambda>f. (F \<I>\<^sub>C) \<otimes>\<^sub>D f\<close> D.map \<ll>\<^sub>Do\<psi>x.map
           using \<psi>x.natural_isomorphism_axioms D.\<ll>.natural_isomorphism_axioms
                 natural_isomorphisms_compose by blast
-        interpret L: equivalence_functor D D "\<lambda>f. (F \<I>\<^sub>C) \<otimes>\<^sub>D f"
+        interpret L: equivalence_functor D D \<open>\<lambda>f. (F \<I>\<^sub>C) \<otimes>\<^sub>D f\<close>
           using L.isomorphic_to_identity_is_equivalence \<ll>\<^sub>Do\<psi>x.natural_isomorphism_axioms
           by simp
         show "equivalence_functor D D (\<lambda>f. (D.cod \<iota>\<^sub>1) \<otimes>\<^sub>D f)"
           using L.equivalence_functor_axioms C.\<iota>_in_hom by auto
       qed
-      interpret R: equivalence_functor D D "\<lambda>f. T\<^sub>D (f, D.cod \<iota>\<^sub>1)"
+      interpret R: equivalence_functor D D \<open>\<lambda>f. T\<^sub>D (f, D.cod \<iota>\<^sub>1)\<close>
       proof -
-        interpret R: "functor" D D "\<lambda>f. T\<^sub>D (f, F \<I>\<^sub>C)"
+        interpret R: "functor" D D \<open>\<lambda>f. T\<^sub>D (f, F \<I>\<^sub>C)\<close>
           using D.T.fixing_ide_gives_functor_2 by simp
-        interpret R: endofunctor D "\<lambda>f. T\<^sub>D (f, F \<I>\<^sub>C)" ..
-        interpret x\<psi>: natural_transformation D D "\<lambda>f. f \<otimes>\<^sub>D (F \<I>\<^sub>C)" "\<lambda>f. f \<otimes>\<^sub>D \<I>\<^sub>D" "\<lambda>f. f \<otimes>\<^sub>D \<psi>"
+        interpret R: endofunctor D \<open>\<lambda>f. T\<^sub>D (f, F \<I>\<^sub>C)\<close> ..
+        interpret x\<psi>: natural_transformation D D \<open>\<lambda>f. f \<otimes>\<^sub>D (F \<I>\<^sub>C)\<close> \<open>\<lambda>f. f \<otimes>\<^sub>D \<I>\<^sub>D\<close> \<open>\<lambda>f. f \<otimes>\<^sub>D \<psi>\<close>
           using \<psi> D.T.fixing_arr_gives_natural_transformation_2 [of \<psi>] by auto
-        interpret x\<psi>: natural_isomorphism D D "\<lambda>f. f \<otimes>\<^sub>D (F \<I>\<^sub>C)" "\<lambda>f. f \<otimes>\<^sub>D \<I>\<^sub>D" "\<lambda>f. f \<otimes>\<^sub>D \<psi>"
+        interpret x\<psi>: natural_isomorphism D D \<open>\<lambda>f. f \<otimes>\<^sub>D (F \<I>\<^sub>C)\<close> \<open>\<lambda>f. f \<otimes>\<^sub>D \<I>\<^sub>D\<close> \<open>\<lambda>f. f \<otimes>\<^sub>D \<psi>\<close>
           using \<psi> D.tensor_preserves_iso by (unfold_locales, simp)
-        interpret \<rho>\<^sub>Dox\<psi>: vertical_composite D D "\<lambda>f. f \<otimes>\<^sub>D (F \<I>\<^sub>C)" "\<lambda>f. f \<otimes>\<^sub>D \<I>\<^sub>D" D.map
-                                                "\<lambda>f. f \<otimes>\<^sub>D \<psi>" D.\<rho> ..
-        interpret \<rho>\<^sub>Dox\<psi>: natural_isomorphism D D "\<lambda>f. f \<otimes>\<^sub>D (F \<I>\<^sub>C)" D.map \<rho>\<^sub>Dox\<psi>.map
+        interpret \<rho>\<^sub>Dox\<psi>: vertical_composite D D \<open>\<lambda>f. f \<otimes>\<^sub>D (F \<I>\<^sub>C)\<close> \<open>\<lambda>f. f \<otimes>\<^sub>D \<I>\<^sub>D\<close> D.map
+                                                \<open>\<lambda>f. f \<otimes>\<^sub>D \<psi>\<close> D.\<rho> ..
+        interpret \<rho>\<^sub>Dox\<psi>: natural_isomorphism D D \<open>\<lambda>f. f \<otimes>\<^sub>D (F \<I>\<^sub>C)\<close> D.map \<rho>\<^sub>Dox\<psi>.map
           using x\<psi>.natural_isomorphism_axioms D.\<rho>.natural_isomorphism_axioms
                 natural_isomorphisms_compose by blast
-        interpret R: equivalence_functor D D "\<lambda>f. f \<otimes>\<^sub>D (F \<I>\<^sub>C)"
+        interpret R: equivalence_functor D D \<open>\<lambda>f. f \<otimes>\<^sub>D (F \<I>\<^sub>C)\<close>
           using R.isomorphic_to_identity_is_equivalence \<rho>\<^sub>Dox\<psi>.natural_isomorphism_axioms
           by simp
         show "equivalence_functor D D (\<lambda>f. f \<otimes>\<^sub>D (D.cod \<iota>\<^sub>1))"
@@ -482,12 +482,12 @@ $$\xymatrix{
     interpretation T\<^sub>D'oFF: composite_functor C.CC.comp D.CC.comp D FF.map D'.T ..
     interpretation FoT\<^sub>C': composite_functor C.CC.comp C D C'.T F ..
     interpretation \<phi>': natural_transformation C.CC.comp D T\<^sub>D'oFF.map FoT\<^sub>C'.map
-                                              "\<lambda>f. \<phi> (snd f, fst f)"
+                                              \<open>\<lambda>f. \<phi> (snd f, fst f)\<close>
       using \<phi>.is_natural_1 \<phi>.is_natural_2 \<phi>.is_extensional by (unfold_locales, auto)
     interpretation \<phi>': natural_isomorphism C.CC.comp D T\<^sub>D'oFF.map FoT\<^sub>C'.map
-                                           "\<lambda>f. \<phi> (snd f, fst f)"
+                                           \<open>\<lambda>f. \<phi> (snd f, fst f)\<close>
       by (unfold_locales, simp)
-    interpretation F': monoidal_functor C C'.T C'.\<alpha> \<iota>\<^sub>C D D'.T D'.\<alpha> \<iota>\<^sub>D F "\<lambda>f. \<phi> (snd f, fst f)"
+    interpretation F': monoidal_functor C C'.T C'.\<alpha> \<iota>\<^sub>C D D'.T D'.\<alpha> \<iota>\<^sub>D F \<open>\<lambda>f. \<phi> (snd f, fst f)\<close>
       using preserves_unity apply (unfold_locales; simp)
     proof -
       fix a b c

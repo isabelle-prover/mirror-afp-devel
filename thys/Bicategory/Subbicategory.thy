@@ -177,45 +177,51 @@ begin
         by auto
       show "Arr (\<alpha>\<^sub>S\<^sub>B \<mu>\<nu>\<tau>)"
       proof -
-        have "\<alpha>\<^sub>S\<^sub>B \<mu>\<nu>\<tau> =
-             (fst \<mu>\<nu>\<tau> \<star>\<^sub>B fst (snd \<mu>\<nu>\<tau>) \<star>\<^sub>B snd (snd \<mu>\<nu>\<tau>)) \<cdot>\<^sub>B \<alpha>\<^sub>S\<^sub>B (B.VVV.dom \<mu>\<nu>\<tau>)"
+        have "Arr (\<alpha>\<^sub>S\<^sub>B \<mu>\<nu>\<tau>) =
+              Arr ((fst \<mu>\<nu>\<tau> \<star>\<^sub>B fst (snd \<mu>\<nu>\<tau>) \<star>\<^sub>B snd (snd \<mu>\<nu>\<tau>)) \<cdot>\<^sub>B \<alpha>\<^sub>S\<^sub>B (B.VVV.dom \<mu>\<nu>\<tau>))"
           using assms B.\<alpha>_def 1 B.VVV.arr_char B.VV.arr_char B.VVV.dom_char B.VV.dom_char
                 B.assoc_is_natural_1 [of "fst \<mu>\<nu>\<tau>" "fst (snd \<mu>\<nu>\<tau>)" "snd (snd \<mu>\<nu>\<tau>)"]
                 VV.arr_char VVV.arr_char arr_dom src_dom trg_dom
           by auto
-        moreover have "Arr (fst \<mu>\<nu>\<tau> \<star>\<^sub>B fst (snd \<mu>\<nu>\<tau>) \<star>\<^sub>B snd (snd \<mu>\<nu>\<tau>))"
-          using assms 1 B.VVV.arr_char B.VV.arr_char hcomp_closed
-          by (metis (no_types, lifting) B.H.preserves_arr B.hcomp_simps(2)
-              VV.arr_char VVV.arrE arrE)
-        moreover have "Arr (\<alpha>\<^sub>S\<^sub>B (B.VVV.dom \<mu>\<nu>\<tau>))"
-        proof -
-          have "\<alpha>\<^sub>S\<^sub>B (B.VVV.dom \<mu>\<nu>\<tau>) =
-                \<a>\<^sub>B (B.dom (fst \<mu>\<nu>\<tau>)) (B.dom (fst (snd \<mu>\<nu>\<tau>))) (B.dom (snd (snd \<mu>\<nu>\<tau>)))"
-            using assms 1 B.\<alpha>_def B.VVV.dom_char B.VV.dom_char VVV.arr_char VV.arr_char
-                  B.VxVxV.dom_char inclusion
+        also have "..."
+        proof (intro comp_closed)
+          show "Arr (fst \<mu>\<nu>\<tau> \<star>\<^sub>B fst (snd \<mu>\<nu>\<tau>) \<star>\<^sub>B snd (snd \<mu>\<nu>\<tau>))"
+            using assms 1 B.VVV.arr_char B.VV.arr_char hcomp_closed
+            by (metis (no_types, lifting) B.H.preserves_arr B.hcomp_simps(2)
+                VV.arr_char VVV.arrE arrE)
+          show "B.cod (\<a> (fst (B.VVV.dom \<mu>\<nu>\<tau>)) (fst (snd (B.VVV.dom \<mu>\<nu>\<tau>)))
+                      (snd (snd (B.VVV.dom \<mu>\<nu>\<tau>)))) =
+                B.dom (fst \<mu>\<nu>\<tau> \<star>\<^sub>B fst (snd \<mu>\<nu>\<tau>) \<star>\<^sub>B snd (snd \<mu>\<nu>\<tau>))"
+            using assms 1 VVV.arr_char VV.arr_char B.VxVxV.dom_char
             apply simp
-            by (metis (no_types, lifting) B.hseqE arr_dom calculation(2) dom_char src_dom trg_dom)
-          moreover have "Arr (\<a>\<^sub>B (B.dom (fst \<mu>\<nu>\<tau>)) (B.dom (fst (snd \<mu>\<nu>\<tau>)))
-                             (B.dom (snd (snd \<mu>\<nu>\<tau>))))"
+            by (metis (no_types, lifting) B.VV.arr_char B.VVV.arrE B.\<alpha>.preserves_reflects_arr
+                B.assoc_is_natural_1 B.seqE arr_dom dom_char src_dom trg_dom)
+          show "Arr (\<a> (fst (B.VVV.dom \<mu>\<nu>\<tau>)) (fst (snd (B.VVV.dom \<mu>\<nu>\<tau>)))
+                    (snd (snd (B.VVV.dom \<mu>\<nu>\<tau>))))"
           proof -
-            have "B.VVV.ide (B.VVV.dom \<mu>\<nu>\<tau>)"
-              using 1 B.VVV.ide_dom by blast
-            thus ?thesis
-              using assms B.\<alpha>_def B.VVV.arr_char B.VV.arr_char B.VVV.ide_char B.VV.ide_char
-                    dom_closed assoc_closed
-              by (metis (no_types, lifting) "1" B.ide_dom B.src_dom B.trg_dom VV.arr_char VVV.arrE
-                  arr_char)
+            have "VVV.arr (B.VVV.dom \<mu>\<nu>\<tau>)"
+              using 1 B.VVV.dom_char B.VVV.arr_char B.VV.arr_char VVV.arr_char VV.arr_char
+              apply simp
+              by (metis (no_types, lifting) VVV.arrE arr_dom assms dom_simp src_dom trg_dom)
+            moreover have "Arr (\<a>\<^sub>B (B.dom (fst \<mu>\<nu>\<tau>)) (B.dom (fst (snd \<mu>\<nu>\<tau>)))
+                               (B.dom (snd (snd \<mu>\<nu>\<tau>))))"
+            proof -
+              have "B.VVV.ide (B.VVV.dom \<mu>\<nu>\<tau>)"
+                using 1 B.VVV.ide_dom by blast
+              thus ?thesis
+                using assms B.\<alpha>_def B.VVV.arr_char B.VV.arr_char B.VVV.ide_char B.VV.ide_char
+                      dom_closed assoc_closed
+                by (metis (no_types, lifting) "1" B.ide_dom B.src_dom B.trg_dom VV.arr_char
+                    VVV.arrE arr_char)
+            qed
+            ultimately show ?thesis
+              using 1 B.VVV.ide_dom assoc_closed B.VVV.dom_char
+              apply simp
+              by (metis (no_types, lifting) B.VV.arr_char B.VVV.arrE B.VVV.inclusion
+                  B.VxV.dom_char B.VxVxV.arrE B.VxVxV.dom_char prod.sel(1) prod.sel(2))
           qed
-          ultimately show ?thesis by argo
         qed
-        moreover have "B.seq (fst \<mu>\<nu>\<tau> \<star>\<^sub>B fst (snd \<mu>\<nu>\<tau>) \<star>\<^sub>B snd (snd \<mu>\<nu>\<tau>))
-                             (\<alpha>\<^sub>S\<^sub>B (B.VVV.dom \<mu>\<nu>\<tau>))"
-          using assms 1 VVV.arr_char VV.arr_char B.VxVxV.dom_char
-          apply simp
-          by (metis (no_types, lifting) B.VV.arrE B.VVV.arrE B.assoc_is_natural_1
-              B.\<alpha>.preserves_reflects_arr arr_dom dom_simp src_dom trg_dom)
-        ultimately show ?thesis
-          using comp_closed by auto
+        finally show ?thesis by blast
       qed
     qed
 
@@ -749,9 +755,9 @@ begin
             using 1 2 3 4 VxVxV.seqE VxVxV.comp_char VxV.comp_char seq_char arr_char
             by (metis (no_types, lifting)) 
           also have "... = VVV.comp f g"
-            using 1 2 3 5 VVV.comp_char VV.comp_char VVV.arr_char VV.arr_char arr_char
-                  src_def trg_def
-            by simp
+            using 1 VVV.comp_char VVV.arr_char VV.arr_char
+            apply simp
+            using 2 3 5 arrI arr_simps(1) arr_simps(2) by presburger
           finally show ?thesis by blast
         qed
       qed

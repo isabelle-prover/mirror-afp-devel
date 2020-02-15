@@ -2303,7 +2303,18 @@ begin
         proof -
           have 1: "VVV.in_hom (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)
                                 (\<lbrace>Dom t\<rbrace>, \<lbrace>Dom u\<rbrace>, \<lbrace>Dom v\<rbrace>) (\<lbrace>Cod t\<rbrace>, \<lbrace>Cod u\<rbrace>, \<lbrace>Cod v\<rbrace>)"
-            using t u v tuv VVV.hom_char by fastforce
+          proof -
+            have "(\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>) \<in>
+                    VxVxV.hom (\<lbrace>Dom t\<rbrace>, \<lbrace>Dom u\<rbrace>, \<lbrace>Dom v\<rbrace>) (\<lbrace>Cod t\<rbrace>, \<lbrace>Cod u\<rbrace>, \<lbrace>Cod v\<rbrace>)"
+              using t u v tuv by simp
+            moreover have "(\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>) \<in>
+                             {\<tau>\<mu>\<nu>. arr (fst \<tau>\<mu>\<nu>) \<and> VV.arr (snd \<tau>\<mu>\<nu>) \<and> 
+                                   src (fst \<tau>\<mu>\<nu>) = trg (fst (snd \<tau>\<mu>\<nu>))}"
+              using t u v tuv by fastforce
+            ultimately show ?thesis
+              using VVV.hom_char [of "(\<lbrace>Dom t\<rbrace>, \<lbrace>Dom u\<rbrace>, \<lbrace>Dom v\<rbrace>)" "(\<lbrace>Cod t\<rbrace>, \<lbrace>Cod u\<rbrace>, \<lbrace>Cod v\<rbrace>)"]
+              by blast
+          qed
           have 4: "VVV.arr (\<lbrace>Dom t\<rbrace>, \<lbrace>Dom u\<rbrace>, \<lbrace>Dom v\<rbrace>)"
             using 1 VVV.ide_dom apply (elim VVV.in_homE) by force
           have 5: "VVV.arr (\<lbrace>Cod t\<rbrace>, \<lbrace>Cod u\<rbrace>, \<lbrace>Cod v\<rbrace>)"

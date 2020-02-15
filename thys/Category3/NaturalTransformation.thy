@@ -206,7 +206,8 @@ begin
   proof -
     interpret "functor" A B F using assms by auto
     show "natural_transformation A B F F F"
-      using is_extensional B.comp_arr_dom B.comp_cod_arr by (unfold_locales, simp_all)
+      using is_extensional B.comp_arr_dom B.comp_cod_arr
+      by (unfold_locales, simp_all)
   qed
 
   sublocale "functor" \<subseteq> natural_transformation A B F F F
@@ -352,9 +353,8 @@ begin
   proof -
     fix a :: 'a
     have "vertical_composite A B F F G F \<tau>"
-      by (meson assms functor_is_transformation natural_transformation.axioms(1)
-                natural_transformation.axioms(2) natural_transformation.axioms(3)
-                natural_transformation.axioms(4) vertical_composite.intro)
+      by (meson assms functor_is_transformation natural_transformation.axioms(1-4)
+                vertical_composite.intro)
     thus "vertical_composite.map A B F \<tau> a = \<tau> a"
       using assms natural_transformation.is_extensional natural_transformation.is_natural_2
             vertical_composite.map_def
@@ -372,12 +372,11 @@ begin
     fix a :: 'a
     assume a: "partial_magma.ide A a"
     interpret Go\<tau>: vertical_composite A B F G G \<tau> G
-      by (meson assms functor_is_transformation natural_transformation.axioms(1)
-                natural_transformation.axioms(2) natural_transformation.axioms(3)
-                natural_transformation.axioms(4) vertical_composite.intro)
+      by (meson assms functor_is_transformation natural_transformation.axioms(1-4)
+                vertical_composite.intro)
     show "vertical_composite.map A B \<tau> G a = \<tau> a"
       using assms a natural_transformation.is_extensional natural_transformation.is_natural_1
-            Go\<tau>.map_simp_ide [of a] Go\<tau>.B.comp_cod_arr
+            Go\<tau>.map_simp_ide Go\<tau>.B.comp_cod_arr
       by simp
   qed
 
@@ -405,9 +404,8 @@ begin
     interpret \<rho>\<sigma>_\<tau>: vertical_composite A B F H K \<rho>\<sigma>.map \<tau> ..
     show ?thesis
       using \<rho>\<sigma>_\<tau>.is_natural_transformation \<rho>_\<sigma>\<tau>.natural_transformation_axioms
-      apply (intro eqI, simp_all)
-      using \<rho>\<sigma>.map_simp_ide \<rho>\<sigma>_\<tau>.map_simp_ide \<rho>_\<sigma>\<tau>.map_simp_ide \<sigma>\<tau>.map_simp_ide B.comp_assoc
-      by force
+            \<rho>\<sigma>.map_simp_ide \<rho>\<sigma>_\<tau>.map_simp_ide \<rho>_\<sigma>\<tau>.map_simp_ide \<sigma>\<tau>.map_simp_ide B.comp_assoc
+      by (intro eqI, auto)
   qed
 
   section "Natural Isomorphisms"
@@ -487,19 +485,13 @@ begin
         moreover have "G f' = g"
         proof -
           have "G f' = \<phi> a \<cdot>\<^sub>B ?g' \<cdot>\<^sub>B \<phi>.B.inv (\<phi> a')"
-          proof -
-            have "\<phi>.B.seq (\<phi> a) (F f')"
-              using a f' by (metis \<phi>.A.in_homE \<phi>.is_natural_2 \<phi>.preserves_reflects_arr)
-            moreover have "G f' \<cdot>\<^sub>B \<phi> a' = \<phi> a \<cdot>\<^sub>B F f'"
-              using a a' f' \<phi>.naturality [of f'] by force
-            ultimately show ?thesis
-              using a a' f' \<phi>.components_are_iso \<phi>.B.invert_side_of_triangle(2)
-              by (metis \<phi>.B.comp_assoc)
-          qed
+            using a a' f' \<phi>.naturality [of f'] \<phi>.components_are_iso \<phi>.is_natural_2
+            by (metis \<phi>.A.in_homE \<phi>.B.comp_assoc \<phi>.B.invert_side_of_triangle(2)
+                \<phi>.preserves_reflects_arr)
           also have "... = (\<phi> a \<cdot>\<^sub>B \<phi>.B.inv (\<phi> a)) \<cdot>\<^sub>B g \<cdot>\<^sub>B \<phi> a' \<cdot>\<^sub>B \<phi>.B.inv (\<phi> a')"
             using \<phi>.B.comp_assoc by auto
           also have "... = g"
-            using a a' g \<phi>.B.comp_arr_dom \<phi>.B.comp_cod_arr \<phi>.B.comp_arr_inv \<phi>.B.comp_inv_arr
+            using a a' g \<phi>.B.comp_arr_dom \<phi>.B.comp_cod_arr \<phi>.B.comp_arr_inv
                   \<phi>.B.inv_is_inverse
             by auto
           finally show ?thesis by blast
@@ -520,26 +512,11 @@ begin
       using \<phi> by auto
     interpret \<phi>.F: faithful_functor A B F
       using assms by auto
-    write A (infixr "\<cdot>\<^sub>A" 55)
-    write B (infixr "\<cdot>\<^sub>B" 55)
-    write \<phi>.A.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>A _\<guillemotright>")
-    write \<phi>.B.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>")
     show "faithful_functor A B G"
-    proof
-      fix \<mu> \<mu>'
-      assume par: "\<phi>.A.par \<mu> \<mu>'" and eq: "G \<mu> = G \<mu>'"
-      show "\<mu> = \<mu>'"
-      proof -
-        have "\<phi> (\<phi>.A.cod \<mu>) \<cdot>\<^sub>B F \<mu> = \<phi> (\<phi>.A.cod \<mu>) \<cdot>\<^sub>B F \<mu>'"
-          using par eq \<phi>.naturality by metis
-        moreover have "\<phi>.B.mono (\<phi> (\<phi>.A.cod \<mu>))"
-          using par \<phi>.components_are_iso \<phi>.B.iso_is_section \<phi>.B.section_is_mono by auto
-        ultimately have "F \<mu> = F \<mu>'"
-          using par \<phi>.B.monoE [of "\<phi> (\<phi>.A.cod \<mu>)" "F \<mu>" "F \<mu>'"] by auto
-        thus "\<mu> = \<mu>'"
-          using par \<phi>.F.is_faithful by blast
-      qed
-    qed
+      using \<phi>.naturality \<phi>.components_are_iso \<phi>.B.iso_is_section \<phi>.B.section_is_mono
+            \<phi>.B.monoE \<phi>.F.is_faithful \<phi>.is_natural_1 \<phi>.natural_transformation_axioms
+            \<phi>.preserves_reflects_arr \<phi>.A.ide_cod
+      by (unfold_locales, metis)
   qed
 
   locale inverse_transformation =
@@ -555,7 +532,7 @@ begin
   and \<tau> :: "'a \<Rightarrow> 'b"
   begin
 
-    interpretation \<tau>': transformation_by_components A B G F "\<lambda>a. B.inv (\<tau> a)"
+    interpretation \<tau>': transformation_by_components A B G F \<open>\<lambda>a. B.inv (\<tau> a)\<close>
     proof
       fix f :: 'a
       show "A.ide f \<Longrightarrow> \<guillemotleft>B.inv (\<tau> f) : G f \<rightarrow>\<^sub>B F f\<guillemotright>"
@@ -594,9 +571,8 @@ begin
     using is_natural_transformation by auto
 
   sublocale inverse_transformation \<subseteq> natural_isomorphism A B G F map
-    by (meson B.category_axioms B.iso_def category.inverse_arrows_sym inverts_components
-              natural_isomorphism.intro natural_isomorphism_axioms.intro
-              natural_transformation_axioms)
+    by (simp add: B.iso_inv_iso natural_isomorphism.intro natural_isomorphism_axioms.intro
+        natural_transformation_axioms)
 
   lemma inverse_inverse_transformation [simp]:
   assumes "natural_isomorphism A B F G \<tau>"
@@ -652,22 +628,22 @@ begin
     interpret \<sigma>\<sigma>': vertical_composite A B F G F \<sigma> \<sigma>' ..
     show "vertical_composite.map A B \<sigma> \<sigma>' = F"
       using \<sigma>\<sigma>'.is_natural_transformation inv.F.natural_transformation_axioms
-      apply (intro eqI, simp_all)
-      by (auto simp add: \<sigma>\<sigma>'.map_simp_ide inv.B.comp_inv_arr inv.inv)
+            \<sigma>\<sigma>'.map_simp_ide inv.B.comp_inv_arr inv.inv
+      by (intro eqI, simp_all)
     interpret inv': inverse_transformations A B G F \<sigma>' \<sigma>
       using assms inverse_transformations_sym by blast
     interpret \<sigma>'\<sigma>: vertical_composite A B G F G \<sigma>' \<sigma> ..
     show "vertical_composite.map A B \<sigma>' \<sigma> = G"
       using \<sigma>'\<sigma>.is_natural_transformation inv.G.natural_transformation_axioms
-      apply (intro eqI, simp_all)
-      by (auto simp add: \<sigma>'\<sigma>.map_simp_ide inv'.inv inv.B.comp_inv_arr)
+            \<sigma>'\<sigma>.map_simp_ide inv'.inv inv.B.comp_inv_arr
+      by (intro eqI, simp_all)
   qed
 
   lemma inverse_transformations_compose:
   assumes "inverse_transformations A B F G \<sigma> \<sigma>'"
   and "inverse_transformations A B G H \<tau> \<tau>'"
-  shows "inverse_transformations A B F H (vertical_composite.map A B \<sigma> \<tau>)
-                                         (vertical_composite.map A B \<tau>' \<sigma>')"
+  shows "inverse_transformations A B F H
+           (vertical_composite.map A B \<sigma> \<tau>) (vertical_composite.map A B \<tau>' \<sigma>')"
   proof -
     interpret A: category A using assms(1) inverse_transformations_def by blast
     interpret B: category B using assms(1) inverse_transformations_def by blast
@@ -689,8 +665,8 @@ begin
     interpret \<tau>\<tau>': vertical_composite A B F G F \<tau> \<tau>'.map ..
     show ?thesis
       using \<tau>\<tau>'.is_natural_transformation \<tau>.F.natural_transformation_axioms \<tau>'.inverts_components
-      apply (intro eqI, simp_all)
-      by (auto simp add: \<tau>.B.comp_inv_arr \<tau>\<tau>'.map_simp_ide)
+            \<tau>.B.comp_inv_arr \<tau>\<tau>'.map_simp_ide
+      by (intro eqI, auto)
   qed
 
   lemma vertical_composite_inverse_iso [simp]:
@@ -702,8 +678,8 @@ begin
     interpret \<tau>'\<tau>: vertical_composite A B G F G \<tau>'.map \<tau> ..    
     show ?thesis
       using \<tau>'\<tau>.is_natural_transformation \<tau>.G.natural_transformation_axioms \<tau>'.inverts_components
-            \<tau>'\<tau>.map_simp_ide
-      apply (intro eqI, auto) by fastforce
+            \<tau>'\<tau>.map_simp_ide \<tau>.B.comp_arr_inv
+      by (intro eqI, auto)
   qed
 
   lemma natural_isomorphisms_compose:
@@ -744,7 +720,7 @@ begin
     thus ?thesis using naturally_isomorphic_def by blast
   qed
 
-  lemma naturally_isomorphic_transitive:
+  lemma naturally_isomorphic_transitive [trans]:
   assumes "naturally_isomorphic A B F G"
   and "naturally_isomorphic A B G H"
   shows "naturally_isomorphic A B F H"
@@ -772,79 +748,29 @@ begin
     where functors @{term F} and @{term G} map @{term A} to @{term B} and
     @{term H} and @{term K} map @{term B} to @{term C}, to obtain a natural transformation
     from @{term "H o F"} to @{term "K o G"}.
+
+    Since horizontal composition turns out to coincide with ordinary composition of
+    natural transformations as functions, there is little point in defining a cumbersome
+    locale for horizontal composite.
 \<close>
 
-  locale horizontal_composite =
-    A: category A +
-    B: category B +
-    C: category C +
-    F: "functor" A B F +
-    G: "functor" A B G +
-    H: "functor" B C H +
-    K: "functor" B C K +
-    \<sigma>: natural_transformation A B F G \<sigma> +
-    \<tau>: natural_transformation B C H K \<tau>
-  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
-  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
-  and C :: "'c comp"      (infixr "\<cdot>\<^sub>C" 55)
-  and F :: "'a \<Rightarrow> 'b"
-  and G :: "'a \<Rightarrow> 'b"
-  and H :: "'b \<Rightarrow> 'c"
-  and K :: "'b \<Rightarrow> 'c"
-  and \<sigma> :: "'a \<Rightarrow> 'b"
-  and \<tau> :: "'b \<Rightarrow> 'c"
-  begin
-
-    no_notation C.in_hom ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
-    notation C.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>") 
-
-    abbreviation map
-    where "map \<equiv> \<tau> o \<sigma>"
-
-    lemma is_natural_transformation:
-    shows "natural_transformation A C (H o F) (K o G) map"
-    proof -
-      interpret HF: composite_functor A B C F H ..
-      interpret KG: composite_functor A B C G K ..
-      show "natural_transformation A C (H o F) (K o G) (\<tau> o \<sigma>)"
-        using \<sigma>.is_extensional \<tau>.is_extensional
-        apply (unfold_locales, auto)
-         apply (metis \<sigma>.is_natural_1 \<sigma>.preserves_reflects_arr \<tau>.preserves_comp_1)
-        by (metis \<sigma>.is_natural_2 \<sigma>.preserves_reflects_arr \<tau>.preserves_comp_2)
-    qed
-
-  end
-
-  sublocale horizontal_composite \<subseteq> natural_transformation A C "H o F" "K o G" "\<tau> o \<sigma>"
-    using is_natural_transformation by auto
-
-  context horizontal_composite
-  begin
-
-    interpretation KF: composite_functor A B C F K ..
-    interpretation HG: composite_functor A B C G H ..
-    interpretation \<tau>F: horizontal_composite A B C F F H K F \<tau> ..
-    interpretation \<tau>G: horizontal_composite A B C G G H K G \<tau> ..
-    interpretation H\<sigma>: horizontal_composite A B C F G H H \<sigma> H ..
-    interpretation K\<sigma>: horizontal_composite A B C F G K K \<sigma> K ..
-    interpretation K\<sigma>_\<tau>F: vertical_composite A C "H o F" "K o F" "K o G" "\<tau> o F" "K o \<sigma>" ..
-    interpretation \<tau>G_H\<sigma>: vertical_composite A C "H o F" "H o G" "K o G" "H o \<sigma>" "\<tau> o G" ..
-
-    lemma map_simp_1:
-    assumes "A.arr f"
-    shows "(\<tau> o \<sigma>) f = K\<sigma>_\<tau>F.map f"
-      using assms
-      by (metis K\<sigma>_\<tau>F.map_simp_1 \<sigma>.is_natural_2 \<sigma>.preserves_reflects_arr \<tau>.preserves_comp_1
-                comp_apply)
-
-    lemma map_simp_2:
-    assumes "A.arr f"
-    shows "(\<tau> o \<sigma>) f = \<tau>G_H\<sigma>.map f"
-      using assms
-      by (metis \<sigma>.is_natural_1 \<sigma>.preserves_reflects_arr \<tau>.preserves_comp_2 \<tau>G_H\<sigma>.map_simp_2
-                comp_apply)
-
-  end
+  lemma horizontal_composite:
+  assumes "natural_transformation A B F G \<sigma>"
+  and "natural_transformation B C H K \<tau>"
+  shows "natural_transformation A C (H o F) (K o G) (\<tau> o \<sigma>)"
+  proof -
+    interpret \<sigma>: natural_transformation A B F G \<sigma>
+      using assms(1) by simp
+    interpret \<tau>: natural_transformation B C H K \<tau>
+      using assms(2) by simp
+    interpret HF: composite_functor A B C F H ..
+    interpret KG: composite_functor A B C G K ..
+    show "natural_transformation A C (H o F) (K o G) (\<tau> o \<sigma>)"
+      using \<sigma>.is_extensional \<tau>.is_extensional
+      apply (unfold_locales, auto)
+       apply (metis \<sigma>.is_natural_1 \<sigma>.preserves_reflects_arr \<tau>.preserves_comp_1)
+      by (metis \<sigma>.is_natural_2 \<sigma>.preserves_reflects_arr \<tau>.preserves_comp_2)
+  qed
 
   lemma hcomp_ide_dom [simp]:
   assumes "natural_transformation A B F G \<tau>"
@@ -868,50 +794,60 @@ begin
     Horizontal composition of a functor with a vertical composite.
 \<close>
 
-  lemma hcomp_functor_vcomp:
+  lemma whisker_right:
   assumes "functor A B F"
-  and "natural_transformation B C H K \<tau>"
-  and "natural_transformation B C K L \<tau>'"
+  and "natural_transformation B C H K \<tau>" and "natural_transformation B C K L \<tau>'"
   shows "(vertical_composite.map B C \<tau> \<tau>') o F = vertical_composite.map A C (\<tau> o F) (\<tau>' o F)"
   proof -
     interpret F: "functor" A B F using assms(1) by auto
     interpret \<tau>: natural_transformation B C H K \<tau> using assms(2) by auto
     interpret \<tau>': natural_transformation B C K L \<tau>' using assms(3) by auto
-    interpret HF: composite_functor A B C F H ..
-    interpret KF: composite_functor A B C F K ..
-    interpret LF: composite_functor A B C F L ..
-    interpret \<tau>F: horizontal_composite A B C F F H K F \<tau> ..
-    interpret \<tau>'F: horizontal_composite A B C F F K L F \<tau>' ..
-    interpret \<tau>'o\<tau>: vertical_composite B C H K L \<tau> \<tau>' ..
-    interpret \<tau>'o\<tau>_F: horizontal_composite A B C F F H L F \<tau>'o\<tau>.map ..
-    interpret \<tau>'Fo\<tau>F: vertical_composite A C "H o F" "K o F" "L o F" "\<tau> o F" "\<tau>' o F" ..
+    interpret \<tau>oF: natural_transformation A C \<open>H o F\<close> \<open>K o F\<close> \<open>\<tau> o F\<close>
+      using \<tau>.natural_transformation_axioms F.natural_transformation_axioms
+            horizontal_composite
+      by blast
+    interpret \<tau>'oF: natural_transformation A C \<open>K o F\<close> \<open>L o F\<close> \<open>\<tau>' o F\<close>
+      using \<tau>'.natural_transformation_axioms F.natural_transformation_axioms
+            horizontal_composite
+      by blast
+    interpret \<tau>'\<tau>: vertical_composite B C H K L \<tau> \<tau>' ..
+    interpret \<tau>'\<tau>oF: natural_transformation A C \<open>H o F\<close> \<open>L o F\<close> \<open>\<tau>'\<tau>.map o F\<close>
+      using \<tau>'\<tau>.natural_transformation_axioms F.natural_transformation_axioms
+            horizontal_composite
+      by blast
+    interpret \<tau>'oF_\<tau>oF: vertical_composite A C \<open>H o F\<close> \<open>K o F\<close> \<open>L o F\<close> \<open>\<tau> o F\<close> \<open>\<tau>' o F\<close> ..
     show ?thesis
-      using \<tau>'Fo\<tau>F.map_def \<tau>'o\<tau>.map_def \<tau>'o\<tau>_F.is_extensional by auto
+      using \<tau>'oF_\<tau>oF.map_def \<tau>'\<tau>.map_def \<tau>'\<tau>oF.is_extensional by auto
   qed
 
   text\<open>
     Horizontal composition of a vertical composite with a functor.
 \<close>
 
-  lemma hcomp_vcomp_functor:
+  lemma whisker_left:
   assumes "functor B C K"
-  and "natural_transformation A B F G \<tau>"
-  and "natural_transformation A B G H \<tau>'"
+  and "natural_transformation A B F G \<tau>" and "natural_transformation A B G H \<tau>'"
   shows "K o (vertical_composite.map A B \<tau> \<tau>') = vertical_composite.map A C (K o \<tau>) (K o \<tau>')"
   proof -
     interpret K: "functor" B C K using assms(1) by auto
     interpret \<tau>: natural_transformation A B F G \<tau> using assms(2) by auto
     interpret \<tau>': natural_transformation A B G H \<tau>' using assms(3) by auto
-    interpret KF: composite_functor A B C F K ..
-    interpret KG: composite_functor A B C G K ..
-    interpret KH: composite_functor A B C H K ..
-    interpret \<tau>'o\<tau>: vertical_composite A B F G H \<tau> \<tau>' ..
-    interpret K\<tau>: horizontal_composite A B C F G K K \<tau> K ..
-    interpret K\<tau>': horizontal_composite A B C G H K K \<tau>' K ..
-    interpret K_\<tau>'o\<tau>: horizontal_composite A B C F H K K \<tau>'o\<tau>.map K ..
-    interpret K\<tau>'oK\<tau>: vertical_composite A C "K o F" "K o G" "K o H" "K o \<tau>" "K o \<tau>'" ..
-    show "K o \<tau>'o\<tau>.map = K\<tau>'oK\<tau>.map"
-      using K\<tau>'oK\<tau>.map_def \<tau>'o\<tau>.map_def K_\<tau>'o\<tau>.is_extensional K\<tau>'oK\<tau>.map_simp_1 \<tau>'o\<tau>.map_simp_1
+    interpret \<tau>'\<tau>: vertical_composite A B F G H \<tau> \<tau>' ..
+    interpret Ko\<tau>: natural_transformation A C \<open>K o F\<close> \<open>K o G\<close> \<open>K o \<tau>\<close>
+      using \<tau>.natural_transformation_axioms K.natural_transformation_axioms
+            horizontal_composite
+      by blast
+    interpret Ko\<tau>': natural_transformation A C \<open>K o G\<close> \<open>K o H\<close> \<open>K o \<tau>'\<close>
+      using \<tau>'.natural_transformation_axioms K.natural_transformation_axioms
+            horizontal_composite
+      by blast
+    interpret Ko\<tau>'\<tau>: natural_transformation A C \<open>K o F\<close> \<open>K o H\<close> \<open>K o \<tau>'\<tau>.map\<close>
+      using \<tau>'\<tau>.natural_transformation_axioms K.natural_transformation_axioms
+            horizontal_composite
+      by blast
+    interpret Ko\<tau>'_Ko\<tau>: vertical_composite A C \<open>K o F\<close> \<open>K o G\<close> \<open>K o H\<close> \<open>K o \<tau>\<close> \<open>K o \<tau>'\<close> ..
+    show "K o \<tau>'\<tau>.map = Ko\<tau>'_Ko\<tau>.map"
+      using Ko\<tau>'_Ko\<tau>.map_def \<tau>'\<tau>.map_def Ko\<tau>'\<tau>.is_extensional Ko\<tau>'_Ko\<tau>.map_simp_1 \<tau>'\<tau>.map_simp_1
       by auto
   qed
 
@@ -920,28 +856,82 @@ begin
 \<close>
 
   lemma interchange:
+  assumes "natural_transformation B C F G \<tau>" and "natural_transformation B C G H \<nu>"
+  and "natural_transformation C D K L \<sigma>" and "natural_transformation C D L M \<mu>"
+  shows "vertical_composite.map C D \<sigma> \<mu> \<circ> vertical_composite.map B C \<tau> \<nu> =
+         vertical_composite.map B D (\<sigma> \<circ> \<tau>) (\<mu> \<circ> \<nu>)"
+  proof -
+    interpret \<tau>: natural_transformation B C F G \<tau>
+       using assms(1) by auto
+    interpret \<nu>: natural_transformation B C G H \<nu>
+       using assms(2) by auto
+    interpret \<sigma>: natural_transformation C D K L \<sigma>
+       using assms(3) by auto
+    interpret \<mu>: natural_transformation C D L M \<mu>
+       using assms(4) by auto
+    interpret \<nu>\<tau>: vertical_composite B C F G H \<tau> \<nu> ..
+    interpret \<mu>\<sigma>: vertical_composite C D K L M \<sigma> \<mu> ..
+    interpret \<sigma>o\<tau>: natural_transformation B D \<open>K o F\<close> \<open>L o G\<close> \<open>\<sigma> o \<tau>\<close>
+      using \<sigma>.natural_transformation_axioms \<tau>.natural_transformation_axioms
+            horizontal_composite
+      by blast
+    interpret \<mu>o\<nu>: natural_transformation B D \<open>L o G\<close> \<open>M o H\<close> \<open>\<mu> o \<nu>\<close>
+      using \<mu>.natural_transformation_axioms \<nu>.natural_transformation_axioms
+            horizontal_composite
+      by blast
+    interpret \<mu>\<sigma>o\<nu>\<tau>: natural_transformation B D \<open>K o F\<close> \<open>M o H\<close> \<open>\<mu>\<sigma>.map o \<nu>\<tau>.map\<close>
+      using \<mu>\<sigma>.natural_transformation_axioms \<nu>\<tau>.natural_transformation_axioms
+            horizontal_composite
+      by blast
+    interpret \<mu>o\<nu>_\<sigma>o\<tau>: vertical_composite B D \<open>K o F\<close> \<open>L o G\<close> \<open>M o H\<close> \<open>\<sigma> o \<tau>\<close> \<open>\<mu> o \<nu>\<close> ..
+    show "\<mu>\<sigma>.map o \<nu>\<tau>.map = \<mu>o\<nu>_\<sigma>o\<tau>.map"
+    proof (intro eqI)
+      show "natural_transformation B D (K \<circ> F) (M \<circ> H) (\<mu>\<sigma>.map o \<nu>\<tau>.map)" ..
+      show "natural_transformation B D (K \<circ> F) (M \<circ> H) \<mu>o\<nu>_\<sigma>o\<tau>.map" ..
+      show "\<And>a. \<tau>.A.ide a \<Longrightarrow> (\<mu>\<sigma>.map o \<nu>\<tau>.map) a = \<mu>o\<nu>_\<sigma>o\<tau>.map a"
+      proof -
+        fix a
+        assume a: "\<tau>.A.ide a"
+        have "(\<mu>\<sigma>.map o \<nu>\<tau>.map) a = D (\<mu> (H a)) (\<sigma> (C (\<nu> a) (\<tau> a)))"
+          using a \<mu>\<sigma>.map_simp_1 \<nu>\<tau>.map_simp_2 by simp
+        also have "... = D (\<mu> (\<nu> a)) (\<sigma> (\<tau> a))"
+          using a
+          by (metis (full_types) \<mu>.is_natural_1 \<mu>\<sigma>.map_simp_1 \<mu>\<sigma>.preserves_comp_1
+              \<nu>\<tau>.map_seq \<nu>\<tau>.map_simp_1 \<nu>\<tau>.preserves_cod \<sigma>.B.comp_assoc \<tau>.A.ide_char \<tau>.B.seqE)
+        also have "... = \<mu>o\<nu>_\<sigma>o\<tau>.map a"
+          using a \<mu>o\<nu>_\<sigma>o\<tau>.map_simp_ide by simp
+        finally show "(\<mu>\<sigma>.map o \<nu>\<tau>.map) a = \<mu>o\<nu>_\<sigma>o\<tau>.map a" by blast
+      qed
+    qed
+  qed
+
+  text\<open>
+    A special-case of the interchange law in which two of the natural transformations
+    are functors.  It comes up reasonably often, and the reasoning is awkward.
+\<close>
+
+  lemma interchange_spc:
   assumes "natural_transformation B C F G \<sigma>"
   and "natural_transformation C D H K \<tau>"
-  shows "horizontal_composite.map \<sigma> \<tau> = vertical_composite.map B D (H o \<sigma>) (\<tau> o G)"
-  and "horizontal_composite.map \<sigma> \<tau> = vertical_composite.map B D (\<tau> o F) (K o \<sigma>)"
+  shows "\<tau> \<circ> \<sigma> = vertical_composite.map B D (H o \<sigma>) (\<tau> o G)"
+  and "\<tau> \<circ> \<sigma> = vertical_composite.map B D (\<tau> o F) (K o \<sigma>)"
   proof -
-    interpret \<sigma>: natural_transformation B C F G \<sigma>
-       using assms(1) by auto
-    interpret \<tau>: natural_transformation C D H K \<tau>
-       using assms(2) by auto
-    interpret \<tau>\<sigma>: horizontal_composite B C D F G H K \<sigma> \<tau> ..
-    interpret H\<sigma>: horizontal_composite B C D F G H H \<sigma> H ..
-    interpret K\<sigma>: horizontal_composite B C D F G K K \<sigma> K ..
-    interpret \<tau>G: horizontal_composite B C D G G H K G \<tau> ..
-    interpret \<tau>F: horizontal_composite B C D F F H K F \<tau> ..
-    interpret \<tau>GoH\<sigma>: vertical_composite B D "H o F" "H o G" "K o G" "H o \<sigma>" "\<tau> o G" ..
-    interpret K\<sigma>o\<tau>F: vertical_composite B D "H o F" "K o F" "K o G" "\<tau> o F" "K o \<sigma>" ..
-    show "\<tau>\<sigma>.map = \<tau>GoH\<sigma>.map"
-      using \<tau>\<sigma>.map_simp_2 \<tau>\<sigma>.natural_transformation_axioms \<tau>GoH\<sigma>.natural_transformation_axioms
-      by (intro eqI, auto)
-    show "\<tau>\<sigma>.map = K\<sigma>o\<tau>F.map"
-      using \<tau>\<sigma>.map_simp_1 \<tau>\<sigma>.natural_transformation_axioms K\<sigma>o\<tau>F.natural_transformation_axioms
-      by (intro eqI, auto)
+    show "\<tau> \<circ> \<sigma> = vertical_composite.map B D (H \<circ> \<sigma>) (\<tau> \<circ> G)"
+    proof -
+      have "vertical_composite.map C D H \<tau> \<circ> vertical_composite.map B C \<sigma> G =
+            vertical_composite.map B D (H \<circ> \<sigma>) (\<tau> \<circ> G)"
+        by (meson assms functor_is_transformation interchange natural_transformation.axioms(3-4))
+      thus ?thesis
+        using assms by force
+    qed
+    show "\<tau> \<circ> \<sigma> = vertical_composite.map B D (\<tau> \<circ> F) (K \<circ> \<sigma>)"
+    proof -
+      have "vertical_composite.map C D \<tau> K \<circ> vertical_composite.map B C F \<sigma> =
+            vertical_composite.map B D (\<tau> \<circ> F) (K \<circ> \<sigma>)"
+        by (meson assms functor_is_transformation interchange natural_transformation.axioms(3-4))
+      thus ?thesis
+        using assms by force
+    qed
   qed
 
 end

@@ -949,18 +949,18 @@ begin
             using a' \<mu> \<nu> L.arr_char L.inclusion L.dom_char L.cod_char
                   isomorphic_implies_equicomposable
             by auto
-            have "H\<^sub>L a' (L.comp \<nu> \<mu>) = a' \<star> (\<nu> \<cdot> \<mu>)"
-              using \<mu> \<nu> H\<^sub>L_def L.comp_def by fastforce
-            also have "... = (a' \<star> \<nu>) \<cdot> (a' \<star> \<mu>)"
-            proof -
-              have "seq \<nu> \<mu>"
-                using \<mu> \<nu> \<mu>\<nu> by (elim L.seqE, auto)
-              thus ?thesis
-                using a' \<nu> whisker_left right_def by blast
-            qed
-            also have "... = L.comp (H\<^sub>L a' \<nu>) (H\<^sub>L a' \<mu>)"
-              using assms \<mu> 1 2 preserves_arr L.comp_char L.inclusion H\<^sub>L_def by auto
-            finally show ?thesis by blast
+          have "H\<^sub>L a' (L.comp \<nu> \<mu>) = a' \<star> (\<nu> \<cdot> \<mu>)"
+            using \<mu> \<nu> H\<^sub>L_def L.comp_def by fastforce
+          also have "... = (a' \<star> \<nu>) \<cdot> (a' \<star> \<mu>)"
+          proof -
+            have "seq \<nu> \<mu>"
+              using \<mu> \<nu> \<mu>\<nu> by (elim L.seqE, auto)
+            thus ?thesis
+              using a' \<nu> whisker_left right_def by blast
+          qed
+          also have "... = L.comp (H\<^sub>L a' \<nu>) (H\<^sub>L a' \<mu>)"
+            using assms \<mu> 1 2 preserves_arr L.comp_char L.inclusion H\<^sub>L_def by auto
+          finally show ?thesis by blast
         qed
       qed
     qed
