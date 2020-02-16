@@ -34,7 +34,7 @@ begin
     nbta nbta.alphabet nbta.initial nbta.transition nbta.accepting "\<lambda> P w r p. infs P (p ## r ||| w ||| r)"
     ngbta ngbta.alphabet ngbta.initial ngbta.transition ngbta.accepting "\<lambda> P w r p. gen infs P (p ## r ||| w ||| r)"
     "\<lambda> c\<^sub>1 c\<^sub>2. [c\<^sub>1 \<circ> (\<lambda> ((p\<^sub>1, p\<^sub>2), a, (q\<^sub>1, q\<^sub>2)). (p\<^sub>1, a, q\<^sub>1)), c\<^sub>2 \<circ> (\<lambda> ((p\<^sub>1, p\<^sub>2), a, (q\<^sub>1, q\<^sub>2)). (p\<^sub>2, a, q\<^sub>2))]"
-    defines intersect' = intersection.intersect
+    defines intersect' = intersection.product
   proof
     fix w :: "'a stream"
     fix u :: "'b stream"
@@ -54,19 +54,19 @@ begin
       infs c\<^sub>1 (p ## u ||| w ||| u) \<and> infs c\<^sub>2 (q ## v ||| w ||| v)" by this
   qed
 
-  lemmas intersect'_language[simp] = intersection.intersect_language[folded NGBTA.language_def]
-  lemmas intersect'_nodes_finite[intro] = intersection.intersect_nodes_finite[folded NGBTA.nodes_def]
+  lemmas intersect'_language[simp] = intersection.product_language[folded NGBTA.language_def]
+  lemmas intersect'_nodes_finite[intro] = intersection.product_nodes_finite[folded NGBTA.nodes_def]
 
   global_interpretation union: automaton_union_run
     nbta nbta.alphabet nbta.initial nbta.transition nbta.accepting "\<lambda> P w r p. infs P (p ## r ||| w ||| r)"
     nbta nbta.alphabet nbta.initial nbta.transition nbta.accepting "\<lambda> P w r p. infs P (p ## r ||| w ||| r)"
     nbta nbta.alphabet nbta.initial nbta.transition nbta.accepting "\<lambda> P w r p. infs P (p ## r ||| w ||| r)"
     "\<lambda> c\<^sub>1 c\<^sub>2 m. case m of (Inl p, a, Inl q) \<Rightarrow> c\<^sub>1 (p, a, q) | (Inr p, a, Inr q) \<Rightarrow> c\<^sub>2 (p, a, q)"
-    defines union = union.union
+    defines union = union.sum
     by (unfold_locales) (auto simp add: szip_smap_fold comp_def case_prod_unfold simp flip: stream.map)
 
-  lemmas union_language = union.union_language
-  lemmas union_nodes_finite = union.union_nodes_finite
+  lemmas union_language = union.sum_language
+  lemmas union_nodes_finite = union.sum_nodes_finite
 
   abbreviation intersect where "intersect A B \<equiv> degeneralize (intersect' A B)"
 

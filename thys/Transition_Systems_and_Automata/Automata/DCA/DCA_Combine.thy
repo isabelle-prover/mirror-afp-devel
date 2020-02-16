@@ -20,46 +20,46 @@ begin
     dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P (p ## r)"
     dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P (p ## r)"
     "\<lambda> c\<^sub>1 c\<^sub>2 pq. (c\<^sub>1 \<circ> fst) pq \<or> (c\<^sub>2 \<circ> snd) pq"
-    defines intersect = intersection.combine
+    defines intersect = intersection.product
     by (unfold_locales) (simp del: comp_apply)
 
-  lemmas intersect_language = intersection.combine_language
-  lemmas intersect_nodes_finite = intersection.combine_nodes_finite
-  lemmas intersect_nodes_card = intersection.combine_nodes_card
+  lemmas intersect_language = intersection.product_language
+  lemmas intersect_nodes_finite = intersection.product_nodes_finite
+  lemmas intersect_nodes_card = intersection.product_nodes_card
 
   global_interpretation union: automaton_union_run
     dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P (p ## r)"
     dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P (p ## r)"
     dgca.dgca dgca.alphabet dgca.initial dgca.transition dgca.rejecting "\<lambda> P w r p. cogen fins P (p ## r)"
     "\<lambda> c\<^sub>1 c\<^sub>2. [c\<^sub>1 \<circ> fst, c\<^sub>2 \<circ> snd]"
-    defines union' = union.combine
+    defines union' = union.product
     by unfold_locales auto
 
-  lemmas union'_language[simp] = union.combine_language[folded DGCA.language_def]
-  lemmas union'_nodes_finite = union.combine_nodes_finite[folded DGCA.nodes_def]
-  lemmas union'_nodes_card = union.combine_nodes_card[folded DGCA.nodes_def]
+  lemmas union'_language[simp] = union.product_language[folded DGCA.language_def]
+  lemmas union'_nodes_finite = union.product_nodes_finite[folded DGCA.nodes_def]
+  lemmas union'_nodes_card = union.product_nodes_card[folded DGCA.nodes_def]
 
   global_interpretation intersection_list: automaton_intersection_list_run
     dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P (p ## r)"
     dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P (p ## r)"
     "\<lambda> cs pp. \<exists> k < length cs. (cs ! k) (pp ! k)"
-    defines intersect_list = intersection_list.combine
+    defines intersect_list = intersection_list.product
     by (unfold_locales) (simp add: comp_def)
 
-  lemmas intersect_list_language = intersection_list.combine_language
-  lemmas intersect_list_nodes_finite = intersection_list.combine_nodes_finite
-  lemmas intersect_list_nodes_card = intersection_list.combine_nodes_card
+  lemmas intersect_list_language = intersection_list.product_language
+  lemmas intersect_list_nodes_finite = intersection_list.product_nodes_finite
+  lemmas intersect_list_nodes_card = intersection_list.product_nodes_card
 
   global_interpretation union_list: automaton_union_list_run
     dca.dca dca.alphabet dca.initial dca.transition dca.rejecting "\<lambda> P w r p. fins P (p ## r)"
     dgca.dgca dgca.alphabet dgca.initial dgca.transition dgca.rejecting "\<lambda> P w r p. cogen fins P (p ## r)"
     "\<lambda> cs. map (\<lambda> k pp. (cs ! k) (pp ! k)) [0 ..< length cs]"
-    defines union_list' = union_list.combine
+    defines union_list' = union_list.product
     by (unfold_locales) (auto simp: cogen_def comp_def)
 
-  lemmas union_list'_language[simp] = union_list.combine_language[folded DGCA.language_def]
-  lemmas union_list'_nodes_finite = union_list.combine_nodes_finite[folded DGCA.nodes_def]
-  lemmas union_list'_nodes_card = union_list.combine_nodes_card[folded DGCA.nodes_def]
+  lemmas union_list'_language[simp] = union_list.product_language[folded DGCA.language_def]
+  lemmas union_list'_nodes_finite = union_list.product_nodes_finite[folded DGCA.nodes_def]
+  lemmas union_list'_nodes_card = union_list.product_nodes_card[folded DGCA.nodes_def]
 
   abbreviation union where "union A B \<equiv> degeneralize (union' A B)"
 

@@ -48,7 +48,7 @@ begin
     schematic_goal nba_intersect':
       assumes [autoref_rules]: "(seq, HOL.eq) \<in> L \<rightarrow> L \<rightarrow> bool_rel"
       shows "(?f, intersect') \<in> \<langle>L, S\<rangle> nbai_nba_rel \<rightarrow> \<langle>L, T\<rangle> nbai_nba_rel \<rightarrow> \<langle>L, S \<times>\<^sub>r T\<rangle> ngbai_ngba_rel"
-      unfolding intersection.intersect_def by autoref
+      unfolding intersection.product_def by autoref
     concrete_definition nba_intersect' uses nba_intersect'
     lemma nba_intersect'_refine[autoref_rules]:
       assumes "GEN_OP seq HOL.eq (L \<rightarrow> L \<rightarrow> bool_rel)"

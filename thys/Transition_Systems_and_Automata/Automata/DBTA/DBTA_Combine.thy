@@ -36,7 +36,7 @@ begin
     dbta.dbta dbta.alphabet dbta.initial dbta.transition dbta.accepting "\<lambda> P w r p. infs P (p ## r ||| w ||| r)"
     dgbta.dgbta dgbta.alphabet dgbta.initial dgbta.transition dgbta.accepting "\<lambda> P w r p. gen infs P (p ## r ||| w ||| r)"
     "\<lambda> c\<^sub>1 c\<^sub>2. [c\<^sub>1 \<circ> (\<lambda> ((p\<^sub>1, p\<^sub>2), a, (q\<^sub>1, q\<^sub>2)). (p\<^sub>1, a, q\<^sub>1)), c\<^sub>2 \<circ> (\<lambda> ((p\<^sub>1, p\<^sub>2), a, (q\<^sub>1, q\<^sub>2)). (p\<^sub>2, a, q\<^sub>2))]"
-    defines intersect' = intersection.combine
+    defines intersect' = intersection.product
   proof
     fix w :: "'a stream"
     fix u :: "'b stream"
@@ -56,16 +56,16 @@ begin
       infs c\<^sub>1 (p ## u ||| w ||| u) \<and> infs c\<^sub>2 (q ## v ||| w ||| v)" by this
   qed
 
-  lemmas intersect'_language[simp] = intersection.combine_language[folded DGBTA.language_def]
-  lemmas intersect'_nodes_finite = intersection.combine_nodes_finite[folded DGBTA.nodes_def]
-  lemmas intersect'_nodes_card = intersection.combine_nodes_card[folded DGBTA.nodes_def]
+  lemmas intersect'_language[simp] = intersection.product_language[folded DGBTA.language_def]
+  lemmas intersect'_nodes_finite = intersection.product_nodes_finite[folded DGBTA.nodes_def]
+  lemmas intersect'_nodes_card = intersection.product_nodes_card[folded DGBTA.nodes_def]
 
   global_interpretation union: automaton_union_run
     dbta.dbta dbta.alphabet dbta.initial dbta.transition dbta.accepting "\<lambda> P w r p. infs P (p ## r ||| w ||| r)"
     dbta.dbta dbta.alphabet dbta.initial dbta.transition dbta.accepting "\<lambda> P w r p. infs P (p ## r ||| w ||| r)"
     dbta.dbta dbta.alphabet dbta.initial dbta.transition dbta.accepting "\<lambda> P w r p. infs P (p ## r ||| w ||| r)"
     "\<lambda> c\<^sub>1 c\<^sub>2 pq. (c\<^sub>1 \<circ> (\<lambda> ((p\<^sub>1, p\<^sub>2), a, (q\<^sub>1, q\<^sub>2)). (p\<^sub>1, a, q\<^sub>1))) pq \<or> (c\<^sub>2 \<circ> (\<lambda> ((p\<^sub>1, p\<^sub>2), a, (q\<^sub>1, q\<^sub>2)). (p\<^sub>2, a, q\<^sub>2))) pq"
-    defines union = union.combine
+    defines union = union.product
   proof
     fix w :: "'a stream"
     fix u :: "'b stream"
@@ -87,9 +87,9 @@ begin
       infs c\<^sub>1 (p ## u ||| w ||| u) \<or> infs c\<^sub>2 (q ## v ||| w ||| v)" by this
   qed
 
-  lemmas union_language = union.combine_language
-  lemmas union_nodes_finite = union.combine_nodes_finite
-  lemmas union_nodes_card = union.combine_nodes_card
+  lemmas union_language = union.product_language
+  lemmas union_nodes_finite = union.product_nodes_finite
+  lemmas union_nodes_card = union.product_nodes_card
 
   abbreviation intersect where "intersect A B \<equiv> degeneralize (intersect' A B)"
 

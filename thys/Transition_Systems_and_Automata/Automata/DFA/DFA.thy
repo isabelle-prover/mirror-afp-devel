@@ -27,7 +27,7 @@ begin
     dfa alphabet initial transition accepting "\<lambda> P w r p. P (last (p # r))"
     dfa alphabet initial transition accepting "\<lambda> P w r p. P (last (p # r))"
     "\<lambda> c\<^sub>1 c\<^sub>2 (p, q). c\<^sub>1 p \<and> c\<^sub>2 q"
-    defines intersect = intersection.combine
+    defines intersect = intersection.product
     by (unfold_locales) (auto simp: zip_eq_Nil_iff)
 
   global_interpretation union: automaton_union_path
@@ -35,7 +35,7 @@ begin
     dfa alphabet initial transition accepting "\<lambda> P w r p. P (last (p # r))"
     dfa alphabet initial transition accepting "\<lambda> P w r p. P (last (p # r))"
     "\<lambda> c\<^sub>1 c\<^sub>2 (p, q). c\<^sub>1 p \<or> c\<^sub>2 q"
-    defines union = union.combine
+    defines union = union.product
     by (unfold_locales) (auto simp: zip_eq_Nil_iff)
 
   global_interpretation complement: automaton_complement_path

@@ -28,7 +28,7 @@ begin
     nfa alphabet initial transition accepting "\<lambda> P w r p. P (last (p # r))"
     nfa alphabet initial transition accepting "\<lambda> P w r p. P (last (p # r))"
     "\<lambda> c\<^sub>1 c\<^sub>2 (p, q). c\<^sub>1 p \<and> c\<^sub>2 q"
-    defines intersect = nfa.intersect
+    defines intersect = nfa.product
     by (unfold_locales) (auto simp: zip_eq_Nil_iff)
 
   global_interpretation nfa: automaton_union_path
@@ -36,7 +36,7 @@ begin
     nfa alphabet initial transition accepting "\<lambda> P w r p. P (last (p # r))"
     nfa alphabet initial transition accepting "\<lambda> P w r p. P (last (p # r))"
     case_sum
-    defines union = nfa.union
+    defines union = nfa.sum
     by (unfold_locales) (auto simp: last_map)
 
 end

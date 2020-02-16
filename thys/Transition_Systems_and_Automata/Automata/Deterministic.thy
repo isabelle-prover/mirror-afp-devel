@@ -214,7 +214,7 @@ begin
 
   end
 
-  locale automaton_combination =
+  locale automaton_product =
     a: automaton automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 +
     b: automaton automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2 +
     c: automaton automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3
@@ -228,104 +228,104 @@ begin
     fixes condition :: "'condition\<^sub>1 \<Rightarrow> 'condition\<^sub>2 \<Rightarrow> 'condition\<^sub>3"
   begin
 
-    definition combine :: "'automaton\<^sub>1 \<Rightarrow> 'automaton\<^sub>2 \<Rightarrow> 'automaton\<^sub>3" where
-      "combine A B \<equiv> automaton\<^sub>3
+    definition product :: "'automaton\<^sub>1 \<Rightarrow> 'automaton\<^sub>2 \<Rightarrow> 'automaton\<^sub>3" where
+      "product A B \<equiv> automaton\<^sub>3
         (alphabet\<^sub>1 A \<inter> alphabet\<^sub>2 B)
         (initial\<^sub>1 A, initial\<^sub>2 B)
         (\<lambda> a (p, q). (transition\<^sub>1 A a p, transition\<^sub>2 B a q))
         (condition (condition\<^sub>1 A) (condition\<^sub>2 B))"
 
-    lemma combine_simps[simp]:
-      "alphabet\<^sub>3 (combine A B) = alphabet\<^sub>1 A \<inter> alphabet\<^sub>2 B"
-      "initial\<^sub>3 (combine A B) = (initial\<^sub>1 A, initial\<^sub>2 B)"
-      "transition\<^sub>3 (combine A B) a (p, q) = (transition\<^sub>1 A a p, transition\<^sub>2 B a q)"
-      "condition\<^sub>3 (combine A B) = condition (condition\<^sub>1 A) (condition\<^sub>2 B)"
-      unfolding combine_def by auto
+    lemma product_simps[simp]:
+      "alphabet\<^sub>3 (product A B) = alphabet\<^sub>1 A \<inter> alphabet\<^sub>2 B"
+      "initial\<^sub>3 (product A B) = (initial\<^sub>1 A, initial\<^sub>2 B)"
+      "transition\<^sub>3 (product A B) a (p, q) = (transition\<^sub>1 A a p, transition\<^sub>2 B a q)"
+      "condition\<^sub>3 (product A B) = condition (condition\<^sub>1 A) (condition\<^sub>2 B)"
+      unfolding product_def by auto
 
-    lemma combine_target[simp]: "c.target (combine A B) w (p, q) = (a.target A w p, b.target B w q)"
+    lemma product_target[simp]: "c.target (product A B) w (p, q) = (a.target A w p, b.target B w q)"
       by (induct w arbitrary: p q) (auto)
-    lemma combine_states[simp]: "c.states (combine A B) w (p, q) = a.states A w p || b.states B w q"
+    lemma product_states[simp]: "c.states (product A B) w (p, q) = a.states A w p || b.states B w q"
       by (induct w arbitrary: p q) (auto)
-    lemma combine_trace[simp]: "c.trace (combine A B) w (p, q) = a.trace A w p ||| b.trace B w q"
+    lemma product_trace[simp]: "c.trace (product A B) w (p, q) = a.trace A w p ||| b.trace B w q"
       by (coinduction arbitrary: w p q) (auto)
 
-    lemma combine_path[iff]: "c.path (combine A B) w (p, q) \<longleftrightarrow> a.path A w p \<and> b.path B w q"
+    lemma product_path[iff]: "c.path (product A B) w (p, q) \<longleftrightarrow> a.path A w p \<and> b.path B w q"
       unfolding a.path_alt_def b.path_alt_def c.path_alt_def by simp
-    lemma combine_run[iff]: "c.run (combine A B) w (p, q) \<longleftrightarrow> a.run A w p \<and> b.run B w q"
+    lemma product_run[iff]: "c.run (product A B) w (p, q) \<longleftrightarrow> a.run A w p \<and> b.run B w q"
       unfolding a.run_alt_def b.run_alt_def c.run_alt_def by simp
 
-    lemma combine_reachable[simp]: "c.reachable (combine A B) (p, q) \<subseteq> a.reachable A p \<times> b.reachable B q"
+    lemma product_reachable[simp]: "c.reachable (product A B) (p, q) \<subseteq> a.reachable A p \<times> b.reachable B q"
       unfolding c.reachable_alt_def by auto
-    lemma combine_nodes[simp]: "c.nodes (combine A B) \<subseteq> a.nodes A \<times> b.nodes B"
+    lemma product_nodes[simp]: "c.nodes (product A B) \<subseteq> a.nodes A \<times> b.nodes B"
       unfolding a.nodes_alt_def b.nodes_alt_def c.nodes_alt_def by auto
-    lemma combine_reachable_fst[simp]:
+    lemma product_reachable_fst[simp]:
       assumes "alphabet\<^sub>1 A \<subseteq> alphabet\<^sub>2 B"
-      shows "fst ` c.reachable (combine A B) (p, q) = a.reachable A p"
+      shows "fst ` c.reachable (product A B) (p, q) = a.reachable A p"
       using assms
       unfolding a.reachable_alt_def a.path_alt_def
       unfolding b.reachable_alt_def b.path_alt_def
       unfolding c.reachable_alt_def c.path_alt_def
       by auto force
-    lemma combine_reachable_snd[simp]:
+    lemma product_reachable_snd[simp]:
       assumes "alphabet\<^sub>1 A \<supseteq> alphabet\<^sub>2 B"
-      shows "snd ` c.reachable (combine A B) (p, q) = b.reachable B q"
+      shows "snd ` c.reachable (product A B) (p, q) = b.reachable B q"
       using assms
       unfolding a.reachable_alt_def a.path_alt_def
       unfolding b.reachable_alt_def b.path_alt_def
       unfolding c.reachable_alt_def c.path_alt_def
       by auto force
-    lemma combine_nodes_fst[simp]:
+    lemma product_nodes_fst[simp]:
       assumes "alphabet\<^sub>1 A \<subseteq> alphabet\<^sub>2 B"
-      shows "fst ` c.nodes (combine A B) = a.nodes A"
-      using assms combine_reachable_fst
+      shows "fst ` c.nodes (product A B) = a.nodes A"
+      using assms product_reachable_fst
       unfolding a.nodes_alt_def b.nodes_alt_def c.nodes_alt_def
       by fastforce
-    lemma combine_nodes_snd[simp]:
+    lemma product_nodes_snd[simp]:
       assumes "alphabet\<^sub>1 A \<supseteq> alphabet\<^sub>2 B"
-      shows "snd ` c.nodes (combine A B) = b.nodes B"
-      using assms combine_reachable_snd
+      shows "snd ` c.nodes (product A B) = b.nodes B"
+      using assms product_reachable_snd
       unfolding a.nodes_alt_def b.nodes_alt_def c.nodes_alt_def
       by fastforce
 
-    lemma combine_nodes_finite[intro]:
+    lemma product_nodes_finite[intro]:
       assumes "finite (a.nodes A)" "finite (b.nodes B)"
-      shows "finite (c.nodes (combine A B))"
+      shows "finite (c.nodes (product A B))"
     proof (rule finite_subset)
-      show "c.nodes (combine A B) \<subseteq> a.nodes A \<times> b.nodes B" using combine_nodes by this
+      show "c.nodes (product A B) \<subseteq> a.nodes A \<times> b.nodes B" using product_nodes by this
       show "finite (a.nodes A \<times> b.nodes B)" using assms by simp
     qed
-    lemma combine_nodes_finite_strong[iff]:
+    lemma product_nodes_finite_strong[iff]:
       assumes "alphabet\<^sub>1 A = alphabet\<^sub>2 B"
-      shows "finite (c.nodes (combine A B)) \<longleftrightarrow> finite (a.nodes A) \<and> finite (b.nodes B)"
+      shows "finite (c.nodes (product A B)) \<longleftrightarrow> finite (a.nodes A) \<and> finite (b.nodes B)"
     proof safe
-      show "finite (a.nodes A)" if "finite (c.nodes (combine A B))"
-        using combine_nodes_fst assms that by (metis finite_imageI equalityD1)
-      show "finite (b.nodes B)" if "finite (c.nodes (combine A B))"
-        using combine_nodes_snd assms that by (metis finite_imageI equalityD2)
-      show "finite (c.nodes (combine A B))" if "finite (a.nodes A)" "finite (b.nodes B)"
+      show "finite (a.nodes A)" if "finite (c.nodes (product A B))"
+        using product_nodes_fst assms that by (metis finite_imageI equalityD1)
+      show "finite (b.nodes B)" if "finite (c.nodes (product A B))"
+        using product_nodes_snd assms that by (metis finite_imageI equalityD2)
+      show "finite (c.nodes (product A B))" if "finite (a.nodes A)" "finite (b.nodes B)"
         using that by rule
     qed
-    lemma combine_nodes_card[intro]:
+    lemma product_nodes_card[intro]:
       assumes "finite (a.nodes A)" "finite (b.nodes B)"
-      shows "card (c.nodes (combine A B)) \<le> card (a.nodes A) * card (b.nodes B)"
+      shows "card (c.nodes (product A B)) \<le> card (a.nodes A) * card (b.nodes B)"
     proof -
-      have "card (c.nodes (combine A B)) \<le> card (a.nodes A \<times> b.nodes B)"
+      have "card (c.nodes (product A B)) \<le> card (a.nodes A \<times> b.nodes B)"
       proof (rule card_mono)
         show "finite (a.nodes A \<times> b.nodes B)" using assms by simp
-        show "c.nodes (combine A B) \<subseteq> a.nodes A \<times> b.nodes B" using combine_nodes by this
+        show "c.nodes (product A B) \<subseteq> a.nodes A \<times> b.nodes B" using product_nodes by this
       qed
       also have "\<dots> = card (a.nodes A) * card (b.nodes B)" using card_cartesian_product by this
       finally show ?thesis by this
     qed
-    lemma combine_nodes_card_strong[intro]:
+    lemma product_nodes_card_strong[intro]:
       assumes "alphabet\<^sub>1 A = alphabet\<^sub>2 B"
-      shows "card (c.nodes (combine A B)) \<le> card (a.nodes A) * card (b.nodes B)"
+      shows "card (c.nodes (product A B)) \<le> card (a.nodes A) * card (b.nodes B)"
     proof (cases "finite (a.nodes A) \<and> finite (b.nodes B)")
       case True
       show ?thesis using True by auto
     next
       case False
-      have 1: "card (c.nodes (combine A B)) = 0" using False assms by simp
+      have 1: "card (c.nodes (product A B)) = 0" using False assms by simp
       have 2: "card (a.nodes A) * card (b.nodes B) = 0" using False by auto
       show ?thesis using 1 2 by simp
     qed
@@ -333,7 +333,7 @@ begin
   end
 
   locale automaton_intersection_path =
-    automaton_combination
+    automaton_product
       automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
       automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
       automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3
@@ -350,12 +350,12 @@ begin
       test\<^sub>3 (condition c\<^sub>1 c\<^sub>2) w (r || s) (p, q) \<longleftrightarrow> test\<^sub>1 c\<^sub>1 w r p \<and> test\<^sub>2 c\<^sub>2 w s q"
   begin
 
-    lemma combine_language[simp]: "c.language (combine A B) = a.language A \<inter> b.language B" by force
+    lemma product_language[simp]: "c.language (product A B) = a.language A \<inter> b.language B" by force
 
   end
 
   locale automaton_union_path =
-    automaton_combination
+    automaton_product
       automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
       automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
       automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3
@@ -372,15 +372,15 @@ begin
       test\<^sub>3 (condition c\<^sub>1 c\<^sub>2) w (r || s) (p, q) \<longleftrightarrow> test\<^sub>1 c\<^sub>1 w r p \<or> test\<^sub>2 c\<^sub>2 w s q"
   begin
 
-    lemma combine_language[simp]:
+    lemma product_language[simp]:
       assumes "alphabet\<^sub>1 A = alphabet\<^sub>2 B"
-      shows "c.language (combine A B) = a.language A \<union> b.language B"
+      shows "c.language (product A B) = a.language A \<union> b.language B"
       using assms by (force simp: a.path_alt_def b.path_alt_def)
 
   end
 
   locale automaton_intersection_run =
-    automaton_combination
+    automaton_product
       automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
       automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
       automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3
@@ -396,12 +396,12 @@ begin
     assumes test[iff]: "test\<^sub>3 (condition c\<^sub>1 c\<^sub>2) w (r ||| s) (p, q) \<longleftrightarrow> test\<^sub>1 c\<^sub>1 w r p \<and> test\<^sub>2 c\<^sub>2 w s q"
   begin
 
-    lemma combine_language[simp]: "c.language (combine A B) = a.language A \<inter> b.language B" by force
+    lemma product_language[simp]: "c.language (product A B) = a.language A \<inter> b.language B" by force
 
   end
 
   locale automaton_union_run =
-    automaton_combination
+    automaton_product
       automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
       automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
       automaton\<^sub>3 alphabet\<^sub>3 initial\<^sub>3 transition\<^sub>3 condition\<^sub>3
@@ -417,15 +417,15 @@ begin
     assumes test[iff]: "test\<^sub>3 (condition c\<^sub>1 c\<^sub>2) w (r ||| s) (p, q) \<longleftrightarrow> test\<^sub>1 c\<^sub>1 w r p \<or> test\<^sub>2 c\<^sub>2 w s q"
   begin
 
-    lemma combine_language[simp]:
+    lemma product_language[simp]:
       assumes "alphabet\<^sub>1 A = alphabet\<^sub>2 B"
-      shows "c.language (combine A B) = a.language A \<union> b.language B"
+      shows "c.language (product A B) = a.language A \<union> b.language B"
       using assms by (force simp: a.run_alt_def b.run_alt_def)
 
   end
 
   (* TODO: complete this in analogy to the pair case *)
-  locale automaton_combination_list =
+  locale automaton_product_list =
     a: automaton automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1 +
     b: automaton automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
     for automaton\<^sub>1 :: "'label set \<Rightarrow> 'state \<Rightarrow> ('label \<Rightarrow> 'state \<Rightarrow> 'state) \<Rightarrow> 'condition\<^sub>1 \<Rightarrow> 'automaton\<^sub>1"
@@ -436,42 +436,42 @@ begin
     fixes condition :: "'condition\<^sub>1 list \<Rightarrow> 'condition\<^sub>2"
   begin
 
-    definition combine :: "'automaton\<^sub>1 list \<Rightarrow> 'automaton\<^sub>2" where
-      "combine AA \<equiv> automaton\<^sub>2
+    definition product :: "'automaton\<^sub>1 list \<Rightarrow> 'automaton\<^sub>2" where
+      "product AA \<equiv> automaton\<^sub>2
         (\<Inter> (alphabet\<^sub>1 ` set AA))
         (map initial\<^sub>1 AA)
         (\<lambda> a ps. map2 (\<lambda> A p. transition\<^sub>1 A a p) AA ps)
         (condition (map condition\<^sub>1 AA))"
 
-    lemma combine_simps[simp]:
-      "alphabet\<^sub>2 (combine AA) = \<Inter> (alphabet\<^sub>1 ` set AA)"
-      "initial\<^sub>2 (combine AA) = map initial\<^sub>1 AA"
-      "transition\<^sub>2 (combine AA) a ps = map2 (\<lambda> A p. transition\<^sub>1 A a p) AA ps"
-      "condition\<^sub>2 (combine AA) = condition (map condition\<^sub>1 AA)"
-      unfolding combine_def by auto
+    lemma product_simps[simp]:
+      "alphabet\<^sub>2 (product AA) = \<Inter> (alphabet\<^sub>1 ` set AA)"
+      "initial\<^sub>2 (product AA) = map initial\<^sub>1 AA"
+      "transition\<^sub>2 (product AA) a ps = map2 (\<lambda> A p. transition\<^sub>1 A a p) AA ps"
+      "condition\<^sub>2 (product AA) = condition (map condition\<^sub>1 AA)"
+      unfolding product_def by auto
 
     (* TODO: get rid of indices, express this using stranspose and listset *)
-    lemma combine_trace_smap:
+    lemma product_trace_smap:
       assumes "length ps = length AA" "k < length AA"
-      shows "smap (\<lambda> ps. ps ! k) (b.trace (combine AA) w ps) = a.trace (AA ! k) w (ps ! k)"
+      shows "smap (\<lambda> ps. ps ! k) (b.trace (product AA) w ps) = a.trace (AA ! k) w (ps ! k)"
       using assms by (coinduction arbitrary: w ps) (force)
 
-    lemma combine_nodes: "b.nodes (combine AA) \<subseteq> listset (map a.nodes AA)"
+    lemma product_nodes: "b.nodes (product AA) \<subseteq> listset (map a.nodes AA)"
     proof
-      show "ps \<in> listset (map a.nodes AA)" if "ps \<in> b.nodes (combine AA)" for ps
+      show "ps \<in> listset (map a.nodes AA)" if "ps \<in> b.nodes (product AA)" for ps
         using that by (induct) (auto simp: listset_member list_all2_conv_all_nth)
     qed
 
-    lemma combine_nodes_finite[intro]:
+    lemma product_nodes_finite[intro]:
       assumes "list_all (finite \<circ> a.nodes) AA"
-      shows "finite (b.nodes (combine AA))"
-      using list.pred_map combine_nodes assms by (blast dest: finite_subset)
-    lemma combine_nodes_card:
+      shows "finite (b.nodes (product AA))"
+      using list.pred_map product_nodes assms by (blast dest: finite_subset)
+    lemma product_nodes_card:
       assumes "list_all (finite \<circ> a.nodes) AA"
-      shows "card (b.nodes (combine AA)) \<le> prod_list (map (card \<circ> a.nodes) AA)"
+      shows "card (b.nodes (product AA)) \<le> prod_list (map (card \<circ> a.nodes) AA)"
     proof -
-      have "card (b.nodes (combine AA)) \<le> card (listset (map a.nodes AA))"
-        using list.pred_map combine_nodes assms by (blast intro: card_mono)
+      have "card (b.nodes (product AA)) \<le> card (listset (map a.nodes AA))"
+        using list.pred_map product_nodes assms by (blast intro: card_mono)
       also have "\<dots> = prod_list (map (card \<circ> a.nodes) AA)" by simp
       finally show ?thesis by this
     qed
@@ -479,7 +479,7 @@ begin
   end
 
   locale automaton_intersection_list_run =
-    automaton_combination_list
+    automaton_product_list
       automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
       automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
       condition +
@@ -493,15 +493,15 @@ begin
       (\<forall> k < length cs. test\<^sub>1 (cs ! k) w (smap (\<lambda> ps. ps ! k) rs) (ps ! k))"
   begin
 
-    lemma combine_language[simp]: "b.language (combine AA) = \<Inter> (a.language ` set AA)"
+    lemma product_language[simp]: "b.language (product AA) = \<Inter> (a.language ` set AA)"
       unfolding a.language_def b.language_def
       unfolding a.run_alt_def b.run_alt_def streams_iff_sset
-      by (fastforce simp: set_conv_nth combine_trace_smap)
+      by (fastforce simp: set_conv_nth product_trace_smap)
 
   end
 
   locale automaton_union_list_run =
-    automaton_combination_list
+    automaton_product_list
       automaton\<^sub>1 alphabet\<^sub>1 initial\<^sub>1 transition\<^sub>1 condition\<^sub>1
       automaton\<^sub>2 alphabet\<^sub>2 initial\<^sub>2 transition\<^sub>2 condition\<^sub>2
       condition +
@@ -515,13 +515,13 @@ begin
       (\<exists> k < length cs. test\<^sub>1 (cs ! k) w (smap (\<lambda> ps. ps ! k) rs) (ps ! k))"
   begin
 
-    lemma combine_language[simp]:
+    lemma product_language[simp]:
       assumes "\<Inter> (alphabet\<^sub>1 ` set AA) = \<Union> (alphabet\<^sub>1 ` set AA)"
-      shows "b.language (combine AA) = \<Union> (a.language ` set AA)"
+      shows "b.language (product AA) = \<Union> (a.language ` set AA)"
       using assms
       unfolding a.language_def b.language_def
       unfolding a.run_alt_def b.run_alt_def streams_iff_sset
-      by (fastforce simp: set_conv_nth combine_trace_smap)
+      by (fastforce simp: set_conv_nth product_trace_smap)
 
   end
 
