@@ -74,20 +74,6 @@ lemma set_take_drop:
   "set xs = set (take n xs) \<union> set (drop n xs)"
   using set_take_drop_i_le_j by fast
 
-lemma
-  assumes "sorted_wrt f xs"
-  shows sorted_wrt_take: "sorted_wrt f (take n xs)"
-  and sorted_wrt_drop: "sorted_wrt f (drop n xs)"
-proof -
-  from assms have "sorted_wrt f (take n xs @ drop n xs)" by simp
-  then show "sorted_wrt f (take n xs)" and "sorted_wrt f (drop n xs)"
-    unfolding sorted_wrt_append by simp_all
-qed
-
-lemma sorted_wrt_filter:
-  "sorted_wrt f xs \<Longrightarrow> sorted_wrt f (filter P xs)"
-  by (induction xs) auto
-
 lemma sorted_wrt_take_drop:
   "sorted_wrt f xs \<Longrightarrow> \<forall>x \<in> set (take n xs). \<forall>y \<in> set (drop n xs). f x y"
   using sorted_wrt_append[of f "take n xs" "drop n xs"] by simp
