@@ -139,7 +139,7 @@ definition succ where "succ x \<equiv> vinsert x x"
 lemma elts_succ [simp]: "elts (succ x) = insert x (elts x)"
   by (simp add: succ_def)
 
-lemma Finite:
+lemma finite_imp_small:
   assumes "finite X" shows "small X"
   using assms
 proof induction
@@ -170,7 +170,7 @@ lemma small_insert:
 proof (cases "finite X")
   case True
   then show ?thesis
-    by (simp add: Finite)
+    by (simp add: finite_imp_small)
 next
   case False
   show ?thesis
@@ -196,7 +196,7 @@ lemma small_diff [iff]: "small (elts a - X)"
   by (meson Diff_subset down)
 
 lemma small_set [simp]: "small (list.set xs)"
-  by (simp add: ZFC_in_HOL.Finite)
+  by (simp add: ZFC_in_HOL.finite_imp_small)
 
 lemma small_upair: "small {x,y}"
   by simp
@@ -780,7 +780,7 @@ lemma Ord_finite_Sup: "\<lbrakk>finite A; A \<subseteq> ON; A \<noteq> {}\<rbrak
 proof (induction A rule: finite_induct)
   case (insert x A)
   then have *: "small A" "A \<subseteq> ON" "Ord x"
-    by (auto simp add: ZFC_in_HOL.Finite insert.hyps)
+    by (auto simp add: ZFC_in_HOL.finite_imp_small insert.hyps)
   show ?case
   proof (cases "A = {}")
     case False
@@ -913,6 +913,12 @@ lemma zero_not_Limit [iff]: "\<not> Limit 0"
 
 lemma not_succ_Limit [simp]: "\<not> Limit(succ i)"
   by (metis Limit_def Ord_mem_iff_lt elts_succ insertI1 less_irrefl)
+
+lemma Limit_is_Ord: "Limit \<xi> \<Longrightarrow> Ord \<xi>"
+  by (simp add: Limit_def)
+
+lemma succ_in_Limit_iff: "Limit \<xi> \<Longrightarrow> succ \<alpha> \<in> elts \<xi> \<longleftrightarrow> \<alpha> \<in> elts \<xi>"
+  by (metis Limit_def OrdmemD elts_succ insertI1 less_V_def vsubsetD)
 
 lemma Limit_eq_Sup_self [simp]: "Limit i \<Longrightarrow> Sup (elts i) = i"
   apply (rule order_antisym)

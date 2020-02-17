@@ -120,6 +120,16 @@ lemma succ_eq_add1: "succ x = x + 1"
 lemma ord_of_nat_add: "ord_of_nat (m+n) = ord_of_nat m + ord_of_nat n"
   by (induction n) (auto simp: plus_V_succ_right)
 
+lemma succ_0_plus_eq [simp]:
+  assumes "\<alpha> \<in> elts \<omega>" 
+  shows "succ 0 + \<alpha> = succ \<alpha>"
+proof -
+  obtain n where "\<alpha> = ord_of_nat n"
+    using assms elts_\<omega> by blast
+  then show ?thesis
+    by (metis One_nat_def ord_of_nat.simps ord_of_nat_add plus_1_eq_Suc)
+qed
+
 lemma omega_closed_add [intro]:
   assumes "\<alpha> \<in> elts \<omega>" "\<beta> \<in> elts \<omega>" shows "\<alpha>+\<beta> \<in> elts \<omega>"
 proof -
@@ -253,9 +263,22 @@ qed
 lemma eqpoll_lift: "elts (lift x y) \<approx> elts y"
   by (metis card_lift cardinal_eqpoll eqpoll_sym eqpoll_trans)
 
-lemma card_add: "vcard (x + y) = vcard x \<oplus> vcard y"
+lemma vcard_add: "vcard (x + y) = vcard x \<oplus> vcard y"
   using card_lift [of x y] lift_self_disjoint [of x]
   by (simp add: plus_eq_lift vcard_disjoint_sup)
+
+lemma countable_add:
+  assumes "countable (elts A)" "countable (elts B)"
+  shows "countable (elts (A+B))"
+proof -
+  have "vcard A \<le> \<aleph>0" "vcard B \<le> \<aleph>0"
+    using assms countable_iff_le_Aleph0 by blast+
+  then have "vcard (A+B) \<le> \<aleph>0"
+    unfolding vcard_add
+    by (metis Aleph_0 Card_\<omega> InfCard_cdouble_eq InfCard_def cadd_le_mono order_refl)
+  then show ?thesis
+    by (simp add: countable_iff_le_Aleph0)
+qed
 
 text\<open>Proposition 3.6\<close>
 proposition TC_add: "TC (x + y) = TC x \<squnion> lift x (TC y)"
@@ -381,6 +404,18 @@ next
   finally show ?case
     using k by simp
 qed
+
+lemma plus_\<omega>_equals_\<omega>:
+  assumes "\<alpha> \<in> elts \<omega>"  shows "\<alpha> + \<omega> = \<omega>"
+proof (rule antisym)
+  show "\<alpha> + \<omega> \<le> \<omega>"
+    using Ord_trans assms by (auto simp: elim!: mem_plus_V_E)
+  show "\<omega> \<le> \<alpha> + \<omega>"
+    by (simp add: add_le_left assms)
+qed
+
+lemma one_plus_\<omega>_equals_\<omega> [simp]: "1 + \<omega> = \<omega>"
+  by (simp add: one_V_def plus_\<omega>_equals_\<omega>)
 
 subsubsection \<open>Cancellation / set subtraction\<close>
 
@@ -516,6 +551,25 @@ proof -
   then have "Ord \<gamma>"
     using Ord_def Transset_def \<open>Ord \<beta>\<close> by force
   with \<gamma> that show thesis by blast
+qed
+
+lemma plus_Ord_le:
+  assumes "\<alpha> \<in> elts \<omega>" "Ord \<beta>" shows "\<alpha>+\<beta> \<le> \<beta>+\<alpha>"
+proof (cases "\<beta> \<in> elts \<omega>")
+  case True
+  with assms have "\<alpha>+\<beta> = \<beta>+\<alpha>"
+    by (auto simp: elts_\<omega> add.commute ord_of_nat_add [symmetric])
+  then show ?thesis by simp
+next
+  case False
+  then have "\<omega> \<le> \<beta>" 
+    using Ord_linear2 Ord_mem_iff_lt \<open>Ord \<beta>\<close> by auto
+  then obtain \<gamma> where "\<omega>+\<gamma> = \<beta>" "\<gamma> \<le> \<beta>" "Ord \<gamma>"
+    using \<open>Ord \<beta>\<close> le_Ord_diff by auto
+  then have "\<alpha>+\<beta> = \<beta>"
+    by (metis add.assoc assms(1) plus_\<omega>_equals_\<omega>)
+  then show ?thesis
+    by simp
 qed
 
 lemma add_right_mono: "\<lbrakk>\<alpha> \<le> \<beta>; Ord \<alpha>; Ord \<beta>; Ord \<gamma>\<rbrakk> \<Longrightarrow> \<alpha>+\<gamma> \<le> \<beta>+\<gamma>"
@@ -1370,6 +1424,19 @@ proof -
   then show ?thesis
     apply (subst cmult_commute)
     by (simp add: TC_mult cardinal_cong flip: vcard_mult)
+qed
+
+lemma countable_mult:
+  assumes "countable (elts A)" "countable (elts B)"
+  shows "countable (elts (A*B))"
+proof -
+  have "vcard A \<le> \<aleph>0" "vcard B \<le> \<aleph>0"
+    using assms countable_iff_le_Aleph0 by blast+
+  then have "vcard (A*B) \<le> \<aleph>0"
+    unfolding vcard_mult
+    by (metis InfCard_csquare_eq cmult_le_mono Aleph_0 Card_\<omega> InfCard_def order_refl)
+  then show ?thesis
+    by (simp add: countable_iff_le_Aleph0)
 qed
 
 subsection \<open>Ordertype properties\<close>

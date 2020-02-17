@@ -54,7 +54,6 @@ proof (induction n)
     by (simp add: mult.commute [of m]) (simp add: ord_of_nat_mult)
 qed auto
 
-
 lemma omega_closed_oexp [intro]:
   assumes "\<alpha> \<in> elts \<omega>" "\<beta> \<in> elts \<omega>" shows "\<alpha>\<up>\<beta> \<in> elts \<omega>"
 proof -
@@ -539,5 +538,34 @@ qed
 
 lemma \<omega>_power_succ_gtr: "Ord \<alpha> \<Longrightarrow> \<omega> \<up> \<alpha> * ord_of_nat n < \<omega> \<up> succ \<alpha>"
   by (simp add: OrdmemD)
+
+lemma countable_oexp:
+  assumes \<nu>: "\<alpha> \<in> elts \<omega>1" 
+  shows "\<omega> \<up> \<alpha> \<in> elts \<omega>1"
+proof -
+  have "Ord \<alpha>"
+    using Ord_\<omega>1 Ord_in_Ord assms by blast
+  then show ?thesis
+    using assms
+  proof (induction rule: Ord_induct3)
+    case 0
+    then show ?case
+      by (simp add: Ord_mem_iff_lt)
+  next
+    case (succ \<alpha>)
+    then have "countable (elts (\<omega> \<up> \<alpha> * \<omega>))"
+      by (simp add: succ_in_Limit_iff countable_mult less_\<omega>1_imp_countable)
+    then show ?case
+      using Ord_mem_iff_lt countable_iff_less_\<omega>1 succ.hyps by auto
+  next
+    case (Limit \<alpha>)
+    with Ord_\<omega>1 have "countable (\<Union>\<beta>\<in>elts \<alpha>. elts (\<omega> \<up> \<beta>))" "Ord (\<omega> \<up> \<Squnion> (elts \<alpha>))"
+      by (force simp: Limit_def intro: Ord_trans less_\<omega>1_imp_countable)+
+    then have "\<omega> \<up> \<Squnion> (elts \<alpha>) < \<omega>1"
+      using Limit.hyps countable_iff_less_\<omega>1 oexp_Limit by fastforce
+    then show ?case
+      using Limit.hyps Limit_def Ord_mem_iff_lt by auto
+  qed
+qed
 
 end
