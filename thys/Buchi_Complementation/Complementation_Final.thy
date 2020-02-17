@@ -1,11 +1,21 @@
-section \<open>Complementation to Explicit Büchi Automaton\<close>
+section \<open>Final Instantiation of Algorithms Related to Complementation\<close>
 
 theory Complementation_Final
 imports
   "Complementation_Implement"
   "Transition_Systems_and_Automata.NBA_Translate"
+  "Transition_Systems_and_Automata.NGBA_Algorithms"
   "HOL-Library.Permutation"
 begin
+
+  subsection \<open>Syntax\<close>
+
+  (* TODO: this syntax has unnecessarily high inner binding strength, requiring extra parentheses
+    the regular let syntax correctly uses inner binding strength 0: ("(2_ =/ _)" 10) *)
+  no_syntax "_do_let" :: "[pttrn, 'a] \<Rightarrow> do_bind" ("(2let _ =/ _)" [1000, 13] 13)
+  syntax "_do_let" :: "[pttrn, 'a] \<Rightarrow> do_bind" ("(2let _ =/ _)" 13)
+
+  subsection \<open>Hashcodes on Complement States\<close>
 
   definition "hci k \<equiv> uint32_of_nat k * 1103515245 + 12345"
   definition "hc \<equiv> \<lambda> (p, q, b). hci p + hci q * 31 + (if b then 1 else 0)"
@@ -29,8 +39,6 @@ begin
   definition state_hash :: "nat \<Rightarrow> Complementation_Implement.state \<Rightarrow> nat" where
     "state_hash n p \<equiv> nat_of_hashcode (list_hash p) mod n"
 
-  (* there should be a simpler way to prove this (and others) from some "state_hash is a
-    valid hash function lemma *)
   lemma state_hash_bounded_hashcode[autoref_ga_rules]: "is_bounded_hashcode state_rel
     (gen_equals (Gen_Map.gen_ball (foldli \<circ> list_map_to_list)) (list_map_lookup (=))
     (prod_eq (=) (\<longleftrightarrow>))) state_hash"
@@ -55,43 +63,110 @@ begin
     show "state_hash n x < n" if "1 < n" for n x using that unfolding state_hash_def by simp
   qed
 
+  subsection \<open>Complementation\<close>
+
   schematic_goal complement_impl:
-    assumes [simp]: "finite (nodes A)"
+    assumes [simp]: "finite (NBA.nodes A)"
     assumes [autoref_rules]: "(Ai, A) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
     shows "(?f :: ?'c, op_translate (complement_4 A)) \<in> ?R"
     by (autoref_monadic (plain))
   concrete_definition complement_impl uses complement_impl
 
   theorem complement_impl_correct:
-    assumes "finite (nodes A)"
+    assumes "finite (NBA.nodes A)"
     assumes "(Ai, A) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
-    shows "language (nbae_nba (nbaei_nbae (complement_impl Ai))) = streams (alphabet A) - language A"
+    shows "NBA.language (nbae_nba (nbaei_nbae (complement_impl Ai))) =
+      streams (nba.alphabet A) - NBA.language A"
+    using op_translate_language[OF complement_impl.refine[OF assms]]
+    using complement_4_correct[OF assms(1)]
+    by simp
+
+  subsection \<open>Language Subset\<close>
+
+  definition [simp]: "op_language_subset A B \<equiv> NBA.language A \<subseteq> NBA.language B"
+
+  lemmas [autoref_op_pat] = op_language_subset_def[symmetric]
+
+  (* TODO: maybe we can implement emptiness check on NGBAs and skip degeneralization step *)
+  schematic_goal language_subset_impl:
+    assumes [simp]: "finite (NBA.nodes B)"
+    assumes [autoref_rules]: "(Ai, A) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
+    assumes [autoref_rules]: "(Bi, B) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
+    shows "(?f :: ?'c, do {
+      let AB' = intersect A (complement_4 B);
+      ASSERT (finite (NBA.nodes AB'));
+      RETURN (NBA.language AB' = {})
+    }) \<in> ?R"
+		by (autoref_monadic (plain))
+  concrete_definition language_subset_impl uses language_subset_impl
+  lemma language_subset_impl_refine[autoref_rules]:
+    assumes "SIDE_PRECOND (finite (NBA.nodes A))"
+    assumes "SIDE_PRECOND (finite (NBA.nodes B))"
+    assumes "SIDE_PRECOND (nba.alphabet A \<subseteq> nba.alphabet B)"
+    assumes "(Ai, A) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
+    assumes "(Bi, B) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
+    shows "(language_subset_impl Ai Bi, (OP op_language_subset :::
+      \<langle>Id, nat_rel\<rangle> nbai_nba_rel \<rightarrow> \<langle>Id, nat_rel\<rangle> nbai_nba_rel \<rightarrow> bool_rel) $ A $ B) \<in> bool_rel"
   proof -
-    (* TODO: can we leave all this inside the nres without explicit obtain? *)
-    (* TODO: or at least avoid unfolding op_translate and reasoning about injectivity? *)
-    obtain f where 1:
-      "(complement_impl Ai, nba_nbae (nba_image f (complement_4 A))) \<in> \<langle>Id, nat_rel\<rangle> nbaei_nbae_rel"
-      "inj_on f (nodes (complement_4 A))"
-      using complement_impl.refine[OF assms, unfolded in_nres_rel_iff op_translate_def, THEN RETURN_ref_SPECD]
-      by metis
-    let ?C = "nba_image f (complement_4 A)"
-    have "(nbae_nba (nbaei_nbae (complement_impl Ai)), nbae_nba (id (nba_nbae ?C))) \<in> \<langle>Id, nat_rel\<rangle> nba_rel"
-      using 1(1) by parametricity auto
-    also have "nbae_nba (id (nba_nbae ?C)) = (nbae_nba \<circ> nba_nbae) ?C" by simp
-    also have "(\<dots>, id ?C) \<in> \<langle>Id_on (alphabet ?C), Id_on (nodes ?C)\<rangle> nba_rel" by parametricity
-    finally have 2: "(nbae_nba (nbaei_nbae (complement_impl Ai)), ?C) \<in>
-      \<langle>Id_on (alphabet ?C), Id_on (nodes ?C)\<rangle> nba_rel" by simp
-    have "(language (nbae_nba (nbaei_nbae (complement_impl Ai))), language ?C) \<in>
-      \<langle>\<langle>Id_on (alphabet ?C)\<rangle> stream_rel\<rangle> set_rel"
-      using 2 by parametricity
-    also have "language ?C = language (complement_4 A)" using 1(2) by simp
-    also have "language (complement_4 A) = streams (alphabet A) - language A"
-      using complement_4_correct assms(1) by this
-    finally show ?thesis by simp
+    have "(RETURN (language_subset_impl Ai Bi), do {
+      let AB' = intersect A (complement_4 B);
+      ASSERT (finite (NBA.nodes AB'));
+      RETURN (NBA.language AB' = {})
+    }) \<in> \<langle>bool_rel\<rangle> nres_rel"
+      using language_subset_impl.refine assms(2, 4, 5) unfolding autoref_tag_defs by this
+    also have "(do {
+      let AB' = intersect A (complement_4 B);
+      ASSERT (finite (NBA.nodes AB'));
+      RETURN (NBA.language AB' = {})
+    }, RETURN (NBA.language A \<subseteq> NBA.language B)) \<in> \<langle>bool_rel\<rangle> nres_rel"
+    proof refine_vcg
+      show "finite (NBA.nodes (intersect A (complement_4 B)))" using assms(1, 2) by auto
+      have 1: "NBA.language A \<subseteq> streams (nba.alphabet B)"
+        using nba.language_alphabet streams_mono2 assms(3) unfolding autoref_tag_defs by blast
+      have 2: "NBA.language (complement_4 B) = streams (nba.alphabet B) - NBA.language B"
+        using complement_4_correct assms(2) by auto
+      show "(NBA.language (intersect A (complement_4 B)) = {},
+        NBA.language A \<subseteq> NBA.language B) \<in> bool_rel" using 1 2 by auto
+    qed
+    finally show ?thesis using RETURN_nres_relD unfolding nres_rel_comp by force
   qed
 
-  definition nbaei_nbai :: "(String.literal, nat) nbaei \<Rightarrow> (String.literal, nat) nbai" where
-    "nbaei_nbai \<equiv> nbae_nba_impl (=) (=)"
+  subsection \<open>Language Equality\<close>
+
+  definition [simp]: "op_language_equal A B \<equiv> NBA.language A = NBA.language B"
+
+  lemmas [autoref_op_pat] = op_language_equal_def[symmetric]
+
+  schematic_goal language_equal_impl:
+    assumes [simp]: "finite (NBA.nodes A)"
+    assumes [simp]: "finite (NBA.nodes B)"
+    assumes [simp]: "nba.alphabet A = nba.alphabet B"
+    assumes [autoref_rules]: "(Ai, A) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
+    assumes [autoref_rules]: "(Bi, B) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
+    shows "(?f :: ?'c, NBA.language A \<subseteq> NBA.language B \<and> NBA.language B \<subseteq> NBA.language A) \<in> ?R"
+    by autoref
+  concrete_definition language_equal_impl uses language_equal_impl
+  lemma language_equal_impl_refine[autoref_rules]:
+    assumes "SIDE_PRECOND (finite (NBA.nodes A))"
+    assumes "SIDE_PRECOND (finite (NBA.nodes B))"
+    assumes "SIDE_PRECOND (nba.alphabet A = nba.alphabet B)"
+    assumes "(Ai, A) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
+    assumes "(Bi, B) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
+    shows "(language_equal_impl Ai Bi, (OP op_language_equal :::
+      \<langle>Id, nat_rel\<rangle> nbai_nba_rel \<rightarrow> \<langle>Id, nat_rel\<rangle> nbai_nba_rel \<rightarrow> bool_rel) $ A $ B) \<in> bool_rel"
+    using language_equal_impl.refine[OF assms[unfolded autoref_tag_defs]] by auto
+
+  schematic_goal product_impl:
+    assumes [simp]: "finite (NBA.nodes B)"
+    assumes [autoref_rules]: "(Ai, A) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
+    assumes [autoref_rules]: "(Bi, B) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
+    shows "(?f :: ?'c, do {
+      let AB' = intersect A (complement_4 B);
+      ASSERT (finite (NBA.nodes AB'));
+      op_translate AB'
+    }) \<in> ?R"
+		by (autoref_monadic (plain))
+  concrete_definition product_impl uses product_impl
 
   (* TODO: possible optimizations:
     - introduce op_map_map operation for maps instead of manually iterating via FOREACH
@@ -99,7 +174,7 @@ begin
   export_code
     nat_of_integer integer_of_nat
     nbaei alphabetei initialei transitionei acceptingei
-    nbaei_nbai complement_impl
-    in SML module_name Complementation file_prefix Complementation_Export
+    nbae_nba_impl complement_impl language_equal_impl
+    in SML module_name Complementation file_prefix Complementation
 
 end
