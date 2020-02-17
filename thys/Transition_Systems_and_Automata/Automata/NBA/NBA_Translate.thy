@@ -144,50 +144,6 @@ begin
     unfolding nba.sel
     using assms by auto
 
-  context
-  begin
-
-    interpretation autoref_syn by this
-
-    (* TODO: divide this up further? if we have the nodes and a function, we can implement nba_image? *)
-    (* TODO: move assertions out of foreach loops, quantify instead, should be easier *)
-    schematic_goal translate_impl:
-      fixes S :: "('statei \<times> 'state) set"
-      assumes [simp]: "finite (nodes A)"
-      assumes [autoref_ga_rules]: "is_bounded_hashcode S seq bhc"
-      assumes [autoref_ga_rules]: "is_valid_def_hm_size TYPE('statei) hms"
-      assumes [autoref_rules]: "(leq, HOL.eq) \<in> L \<rightarrow> L \<rightarrow> bool_rel"
-      assumes [autoref_rules]: "(seq, HOL.eq) \<in> S \<rightarrow> S \<rightarrow> bool_rel"
-      assumes [autoref_rules]: "(Ai, A) \<in> \<langle>L, S\<rangle> nbai_nba_rel"
-      shows "(?f :: ?'a, do {
-        let N = nodes A;
-        f \<leftarrow> op_set_enumerate N;
-        s \<leftarrow>
-        FOREACH N (\<lambda> p mp. do {
-          ma \<leftarrow> FOREACH (alphabet A) (\<lambda> a ma. do {
-            ASSERT (a \<notin> dom ma);
-            ASSERT (\<forall> q \<in> transition A a p. q \<in> dom f);
-            RETURN (ma (a \<mapsto> (\<lambda> x. the (f x)) ` transition A a p)) }
-          ) (Map.empty ::: \<langle>L, \<langle>nat_rel\<rangle> list_set_rel\<rangle> list_map_rel);
-          ASSERT (p \<in> dom f);
-          RETURN (mp (the (f p) \<mapsto> ma))
-          }
-        ) Map.empty;
-        a \<leftarrow> FOREACH N (\<lambda> p a. do {
-          ASSERT (p \<in> dom f);
-          RETURN (a (the (f p) \<mapsto> accepting A p))
-        }) Map.empty;
-        let s' = (\<lambda> a p. case s p of
-          Some m \<Rightarrow> (case m a of Some Q \<Rightarrow> Q | None \<Rightarrow> {}) |
-          None \<Rightarrow> {});
-        let a' = (\<lambda> p. case a p of Some b \<Rightarrow> b | None \<Rightarrow> False);
-        ASSERT (\<forall> p \<in> initial A. p \<in> dom f);
-        RETURN (nba (alphabet A) ((\<lambda> x. the (f x)) ` initial A) s' a')
-      }) \<in> ?R"
-      by (autoref_monadic (plain))
-
-  end
-
   (* TODO: with this, maybe much of the nbae infrastructure is obsolete?
     since now there is very little happening in terms of relations, maybe we can even make do
     with just the abstraction function *)
@@ -195,6 +151,29 @@ begin
     is related in \<langle>Id_on (alphabet A), ???\<rangle> nba_rel? *)
   definition op_translate :: "('label, 'state) nba \<Rightarrow> ('label, nat) nbae nres" where
     "op_translate A \<equiv> SPEC (\<lambda> B. \<exists> f. inj_on f (nodes A) \<and> B = nba_nbae (nba_image f A))"
+
+  lemma op_translate_language:
+    assumes "(RETURN Ai, op_translate A) \<in> \<langle>\<langle>Id, nat_rel\<rangle> nbaei_nbae_rel\<rangle> nres_rel"
+    shows "language (nbae_nba (nbaei_nbae Ai)) = language A"
+  proof -
+    (* TODO: can we leave all this inside the nres without explicit obtain? *)
+    obtain f where 1:
+      "(Ai, nba_nbae (nba_image f A)) \<in> \<langle>Id, nat_rel\<rangle> nbaei_nbae_rel" "inj_on f (nodes A)"
+      using assms[unfolded in_nres_rel_iff op_translate_def, THEN RETURN_ref_SPECD]
+      by metis
+    let ?C = "nba_image f A"
+    have "(nbae_nba (nbaei_nbae Ai), nbae_nba (id (nba_nbae ?C))) \<in> \<langle>Id, nat_rel\<rangle> nba_rel"
+      using 1(1) by parametricity auto
+    also have "nbae_nba (id (nba_nbae ?C)) = (nbae_nba \<circ> nba_nbae) ?C" by simp
+    also have "(\<dots>, id ?C) \<in> \<langle>Id_on (alphabet ?C), Id_on (nodes ?C)\<rangle> nba_rel" by parametricity
+    finally have 2: "(nbae_nba (nbaei_nbae Ai), ?C) \<in>
+      \<langle>Id_on (alphabet ?C), Id_on (nodes ?C)\<rangle> nba_rel" by simp
+    have "(language (nbae_nba (nbaei_nbae Ai)), language ?C) \<in>
+      \<langle>\<langle>Id_on (alphabet ?C)\<rangle> stream_rel\<rangle> set_rel"
+      using 2 by parametricity
+    also have "language ?C = language A" using 1(2) by simp
+    finally show ?thesis by simp
+  qed
 
   (* TODO: make separate implementations for "nba_nbae" and "op_set_enumerate \<bind> nbae_image"
     make sure to do regression tests along the way *)
@@ -218,60 +197,6 @@ begin
       }) \<in> ?R"
     unfolding trans_algo_def by (autoref_monadic (plain))
   concrete_definition to_nbaei_impl uses to_nbaei_impl
-  lemma to_nbaei_impl_refine'':
-    fixes S :: "('statei \<times> 'state) set"
-    assumes "finite (nodes A)"
-    assumes "is_bounded_hashcode S seq bhc"
-    assumes "is_valid_def_hm_size TYPE('statei) hms"
-    assumes "(seq, HOL.eq) \<in> S \<rightarrow> S \<rightarrow> bool_rel"
-    assumes "(Ai, A) \<in> \<langle>L, S\<rangle> nbai_nba_rel"
-    shows "(RETURN (to_nbaei_impl seq bhc hms Ai), op_translate A) \<in>
-      \<langle>\<langle>L, nat_rel\<rangle> nbaei_nbae_rel\<rangle> nres_rel"
-  proof -
-    have 1: "finite (alphabet A)"
-      using nbai_nba_param(2)[param_fo, OF assms(5)] list_set_rel_finite
-      unfolding finite_set_rel_def by auto
-    note to_nbaei_impl.refine[OF assms]
-    also have "(do {
-        let N = nodes A;
-        f \<leftarrow> op_set_enumerate N;
-        ASSERT (dom f = N);
-        ASSERT (\<forall> p \<in> initial A. f p \<noteq> None);
-        ASSERT (\<forall> a \<in> alphabet A. \<forall> p \<in> dom f. \<forall> q \<in> transition A a p. f q \<noteq> None);
-        T \<leftarrow> trans_algo N (alphabet A) (transition A) (\<lambda> x. the (f x));
-        RETURN (nbae (alphabet A) ((\<lambda> x. the (f x)) ` initial A) T ((\<lambda> x. the (f x)) ` {p \<in> N. accepting A p}))
-      }, do {
-        f \<leftarrow> op_set_enumerate (nodes A);
-        T \<leftarrow> SPEC (HOL.eq (trans_spec A (\<lambda> x. the (f x))));
-        RETURN (nbae (alphabet A) ((\<lambda> x. the (f x)) ` initial A) T ((\<lambda> x. the (f x)) ` {p \<in> nodes A. accepting A p}))
-      }) \<in> \<langle>Id\<rangle> nres_rel"
-      unfolding Let_def comp_apply op_set_enumerate_def using assms(1) 1
-      by (refine_vcg vcg0[OF trans_algo_refine]) (auto intro!: inj_on_map_the[unfolded comp_apply])
-    also have "(do {
-        f \<leftarrow> op_set_enumerate (nodes A);
-        T \<leftarrow> SPEC (HOL.eq (trans_spec A (\<lambda> x. the (f x))));
-        RETURN (nbae (alphabet A) ((\<lambda> x. the (f x)) ` initial A) T ((\<lambda> x. the (f x)) ` {p \<in> nodes A. accepting A p}))
-      }, do {
-        f \<leftarrow> op_set_enumerate (nodes A);
-        RETURN (nbae_image (the \<circ> f) (nba_nbae A))
-      }) \<in> \<langle>Id\<rangle> nres_rel"
-      unfolding trans_spec_def nbae_image_nba_nbae by refine_vcg force
-    also have "(do {
-        f \<leftarrow> op_set_enumerate (nodes A);
-        RETURN (nbae_image (the \<circ> f) (nba_nbae A))
-      }, do {
-        f \<leftarrow> op_set_enumerate (nodes A);
-        RETURN (nba_nbae (nba_image (the \<circ> f) A))
-      }) \<in> \<langle>Id\<rangle> nres_rel"
-      unfolding op_set_enumerate_def by (refine_vcg) (simp add: inj_on_map_the nba_image_nbae)
-    also have "(do {
-        f \<leftarrow> op_set_enumerate (nodes A);
-        RETURN (nba_nbae (nba_image (the \<circ> f) A))
-      }, op_translate A) \<in> \<langle>Id\<rangle> nres_rel"
-      unfolding op_set_enumerate_def op_translate_def
-      by (refine_vcg) (metis Collect_mem_eq inj_on_map_the subset_Collect_conv)
-    finally show ?thesis unfolding nres_rel_comp by simp
-  qed
 
   context
   begin
@@ -288,7 +213,51 @@ begin
       shows "(RETURN (to_nbaei_impl seq bhc hms Ai),
         (OP op_translate ::: \<langle>L, S\<rangle> nbai_nba_rel \<rightarrow> \<langle>\<langle>L, nat_rel\<rangle> nbaei_nbae_rel\<rangle> nres_rel) $ A) \<in>
         \<langle>\<langle>L, nat_rel\<rangle> nbaei_nbae_rel\<rangle> nres_rel"
-      using to_nbaei_impl_refine'' assms unfolding autoref_tag_defs by this
+    proof -
+      have 1: "finite (alphabet A)"
+        using nbai_nba_param(2)[param_fo, OF assms(5)] list_set_rel_finite
+        unfolding finite_set_rel_def by auto
+      note to_nbaei_impl.refine[OF assms[unfolded autoref_tag_defs]]
+      also have "(do {
+          let N = nodes A;
+          f \<leftarrow> op_set_enumerate N;
+          ASSERT (dom f = N);
+          ASSERT (\<forall> p \<in> initial A. f p \<noteq> None);
+          ASSERT (\<forall> a \<in> alphabet A. \<forall> p \<in> dom f. \<forall> q \<in> transition A a p. f q \<noteq> None);
+          T \<leftarrow> trans_algo N (alphabet A) (transition A) (\<lambda> x. the (f x));
+          RETURN (nbae (alphabet A) ((\<lambda> x. the (f x)) ` initial A) T ((\<lambda> x. the (f x)) ` {p \<in> N. accepting A p}))
+        }, do {
+          f \<leftarrow> op_set_enumerate (nodes A);
+          T \<leftarrow> SPEC (HOL.eq (trans_spec A (\<lambda> x. the (f x))));
+          RETURN (nbae (alphabet A) ((\<lambda> x. the (f x)) ` initial A) T ((\<lambda> x. the (f x)) ` {p \<in> nodes A. accepting A p}))
+        }) \<in> \<langle>Id\<rangle> nres_rel"
+        unfolding Let_def comp_apply op_set_enumerate_def using assms(1) 1
+        by (refine_vcg vcg0[OF trans_algo_refine]) (auto intro!: inj_on_map_the[unfolded comp_apply])
+      also have "(do {
+          f \<leftarrow> op_set_enumerate (nodes A);
+          T \<leftarrow> SPEC (HOL.eq (trans_spec A (\<lambda> x. the (f x))));
+          RETURN (nbae (alphabet A) ((\<lambda> x. the (f x)) ` initial A) T ((\<lambda> x. the (f x)) ` {p \<in> nodes A. accepting A p}))
+        }, do {
+          f \<leftarrow> op_set_enumerate (nodes A);
+          RETURN (nbae_image (the \<circ> f) (nba_nbae A))
+        }) \<in> \<langle>Id\<rangle> nres_rel"
+        unfolding trans_spec_def nbae_image_nba_nbae by refine_vcg force
+      also have "(do {
+          f \<leftarrow> op_set_enumerate (nodes A);
+          RETURN (nbae_image (the \<circ> f) (nba_nbae A))
+        }, do {
+          f \<leftarrow> op_set_enumerate (nodes A);
+          RETURN (nba_nbae (nba_image (the \<circ> f) A))
+        }) \<in> \<langle>Id\<rangle> nres_rel"
+        unfolding op_set_enumerate_def by (refine_vcg) (simp add: inj_on_map_the nba_image_nbae)
+      also have "(do {
+          f \<leftarrow> op_set_enumerate (nodes A);
+          RETURN (nba_nbae (nba_image (the \<circ> f) A))
+        }, op_translate A) \<in> \<langle>Id\<rangle> nres_rel"
+        unfolding op_set_enumerate_def op_translate_def
+        by (refine_vcg) (metis Collect_mem_eq inj_on_map_the subset_Collect_conv)
+      finally show ?thesis unfolding nres_rel_comp by simp
+    qed
 
   end
 
