@@ -423,7 +423,7 @@ proof -
     also have "\<dots> = \<integral>\<^sup>+x\<in>{0::real..}. ennreal (f' (nat \<lfloor>x\<rfloor> + 1))\<partial>lborel"
     proof -
       have "0 \<le> x \<Longrightarrow> (1 - q * q ^ nat \<lfloor>x\<rfloor>) ^ n = (1 - q powr (1 + real_of_int \<lfloor>x\<rfloor>)) ^ n" for x::real
-        using q by (metis greaterThanLessThan_iff powr_int powr_mult_base zero_le_floor)
+        using q by (subst powr_realpow [symmetric]) (auto simp: powr_add)
       then show ?thesis
         unfolding f_def f'_def using q
         by (auto intro!: nn_integral_cong ennreal_cong  simp add: powr_real_of_int indicator_def)

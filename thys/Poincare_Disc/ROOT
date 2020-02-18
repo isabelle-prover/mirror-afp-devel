@@ -1,6 +1,6 @@
 chapter AFP
 
-session Poincare_Disc (AFP) = HOL +
+session Poincare_Disc (AFP) = Complex_Geometry +
   options [timeout = 1200]
   sessions
     "Complex_Geometry"
