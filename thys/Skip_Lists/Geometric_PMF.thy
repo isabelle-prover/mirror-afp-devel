@@ -46,9 +46,12 @@ proof -
   have "summable (\<lambda>x. p * ((1 - p) ^ x * real x))"
     using geometric_sums_times_norm[of "1 - p"] assms
     by (intro summable_mult) (auto simp: sums_iff)
+  hence "summable (\<lambda>x. (1 - p) ^ x * real x)"
+    by (rule summable_mult_D) (use assms in auto)
   thus ?thesis
     unfolding measure_pmf_eq_density using assms
-    by (subst integrable_density) (auto simp: integrable_count_space_nat_iff mult_ac)
+    by (subst integrable_density)
+       (auto simp: integrable_count_space_nat_iff mult_ac)
 qed
 
 lemma expectation_geometric_pmf:
