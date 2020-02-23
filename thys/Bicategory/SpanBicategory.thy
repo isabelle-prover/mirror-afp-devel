@@ -1584,7 +1584,7 @@ $$\xymatrix{
         show "\<l> (cod \<mu>) \<bullet> L \<mu> = map \<mu> \<bullet> \<l> (dom \<mu>)"
         proof (intro arr_eqI)
           show par: "par (\<l> (cod \<mu>) \<bullet> L \<mu>) (map \<mu> \<bullet> \<l> (dom \<mu>))"
-            using \<mu> 0 [of "dom \<mu>"] 0 [of "cod \<mu>"] hseqI' by fastforce
+            using \<mu> 0 [of "dom \<mu>"] 0 [of "cod \<mu>"] by fastforce
           show "Chn (\<l> (cod \<mu>) \<bullet> L \<mu>) = Chn (map \<mu> \<bullet> \<l> (dom \<mu>))"
           proof -
             have "Chn (\<l> (cod \<mu>) \<bullet> L \<mu>) =
@@ -1807,7 +1807,7 @@ $$\xymatrix{
         show "\<r> (cod \<mu>) \<bullet> R \<mu> = map \<mu> \<bullet> \<r> (dom \<mu>)"
         proof (intro arr_eqI)
           show par: "par (\<r> (cod \<mu>) \<bullet> R \<mu>) (map \<mu> \<bullet> \<r> (dom \<mu>))"
-            using \<mu> 0 [of "dom \<mu>"] 0 [of "cod \<mu>"] hseqI' by force
+            using \<mu> 0 [of "dom \<mu>"] 0 [of "cod \<mu>"] by force
           show "Chn (\<r> (cod \<mu>) \<bullet> R \<mu>) = Chn (map \<mu> \<bullet> \<r> (dom \<mu>))"
           proof -
             have "Chn (\<r> (cod \<mu>) \<bullet> R \<mu>) =
@@ -2079,7 +2079,7 @@ $$\xymatrix{
     lemma composite_simps [simp]:
     shows "src (\<mu> \<star> \<nu>) = src \<nu>" and "trg (\<mu> \<star> \<nu>) = trg \<mu>"
     and "dom (\<mu> \<star> \<nu>) = dom \<mu> \<star> dom \<nu>" and "cod (\<mu> \<star> \<nu>) = cod \<mu> \<star> cod \<nu>"
-      by auto
+      by (simp_all add: composable)
 
     lemma chine_composite:
     shows "Chn (\<mu> \<star> \<nu>) = \<langle>\<mu>.chine \<cdot> \<p>\<^sub>1[\<mu>.dom.leg0, \<nu>.dom.leg1]
@@ -2263,7 +2263,7 @@ $$\xymatrix{
     and "dom ((\<mu> \<star> \<nu>) \<star> \<pi>) = (dom \<mu> \<star> dom \<nu>) \<star> dom \<pi>"
     and "cod (\<mu> \<star> \<nu> \<star> \<pi>) = cod \<mu> \<star> cod \<nu> \<star> cod \<pi>"
     and "cod ((\<mu> \<star> \<nu>) \<star> \<pi>) = (cod \<mu> \<star> cod \<nu>) \<star> cod \<pi>"
-      by auto
+      by (auto simp add: \<mu>\<nu>.composable \<nu>\<pi>.composable)
 
     lemma chine_composite:
     shows "\<mu>\<nu>\<pi>.chine =
@@ -3634,11 +3634,11 @@ $$\xymatrix{
     and "\<guillemotleft>assoc\<^sub>S\<^sub>B (\<mu> \<star> \<nu>) \<pi> \<rho> : ((\<mu> \<star> \<nu>) \<star> \<pi>) \<star> \<rho> \<Rightarrow> (\<mu> \<star> \<nu>) \<star> \<pi> \<star> \<rho>\<guillemotright>"
     proof -
       show "\<guillemotleft>\<mu> \<star> (assoc\<^sub>S\<^sub>B \<nu> \<pi> \<rho>) : \<mu> \<star> (\<nu> \<star> \<pi>) \<star> \<rho> \<Rightarrow> \<mu> \<star> \<nu> \<star> \<pi> \<star> \<rho>\<guillemotright>"
-        using \<mu>\<nu>.composable \<nu>\<pi>.composable \<pi>\<rho>.composable hseqI' by auto
+        using \<mu>\<nu>.composable \<nu>\<pi>.composable \<pi>\<rho>.composable by auto
       show "\<guillemotleft>assoc\<^sub>S\<^sub>B \<mu> (\<nu> \<star> \<pi>) \<rho> : (\<mu> \<star> \<nu> \<star> \<pi>) \<star> \<rho> \<Rightarrow> \<mu> \<star> (\<nu> \<star> \<pi>) \<star> \<rho>\<guillemotright>"
         using assoc_in_hom \<mu>\<nu>.composable \<nu>\<pi>.composable \<pi>\<rho>.composable by simp
       show "\<guillemotleft>assoc\<^sub>S\<^sub>B \<mu> \<nu> \<pi> \<star> \<rho> : ((\<mu> \<star> \<nu>) \<star> \<pi>) \<star> \<rho> \<Rightarrow> (\<mu> \<star> \<nu> \<star> \<pi>) \<star> \<rho>\<guillemotright>"
-        using \<mu>\<nu>.composable \<nu>\<pi>.composable \<pi>\<rho>.composable hseqI' by auto
+        using \<mu>\<nu>.composable \<nu>\<pi>.composable \<pi>\<rho>.composable by auto
       show "\<guillemotleft>assoc\<^sub>S\<^sub>B \<mu> \<nu> (\<pi> \<star> \<rho>) : (\<mu> \<star> \<nu>) \<star> \<pi> \<star> \<rho> \<Rightarrow> \<mu> \<star> \<nu> \<star> \<pi> \<star> \<rho>\<guillemotright>"
         using \<mu>\<nu>.composable \<nu>\<pi>.composable \<pi>\<rho>.composable
         by auto
@@ -3875,12 +3875,12 @@ $$\xymatrix{
       let ?RHS = "assoc\<^sub>S\<^sub>B \<mu> \<nu> (\<pi> \<star> \<rho>) \<bullet> assoc\<^sub>S\<^sub>B (\<mu> \<star> \<nu>) \<pi> \<rho>"
 
       have LHS_in_hom: "\<guillemotleft>?LHS : ((\<mu> \<star> \<nu>) \<star> \<pi>) \<star> \<rho> \<Rightarrow> \<mu> \<star> \<nu> \<star> \<pi> \<star> \<rho>\<guillemotright>"
-        using \<mu>\<nu>.composable \<nu>\<pi>.composable \<pi>\<rho>.composable hseqI' by auto
+        using \<mu>\<nu>.composable \<nu>\<pi>.composable \<pi>\<rho>.composable by auto
       have RHS_in_hom: "\<guillemotleft>?RHS : ((\<mu> \<star> \<nu>) \<star> \<pi>) \<star> \<rho> \<Rightarrow> \<mu> \<star> \<nu> \<star> \<pi> \<star> \<rho>\<guillemotright>"
         using \<mu>\<nu>.composable \<nu>\<pi>.composable \<pi>\<rho>.composable by auto
 
       have "arrow_of_spans (\<cdot>) ?LHS"
-        using arr_char assoc_in_homs(1) assoc_in_homs(2) assoc_in_homs(3) by blast
+        using arr_char assoc_in_homs(1-3) by blast
 
       have L: "Chn ?LHS = chine_hcomp \<mu> (assoc\<^sub>S\<^sub>B \<nu> \<pi> \<rho>) \<cdot> \<mu>_\<nu>\<pi>_\<rho>.chine_assoc \<cdot>
                             chine_hcomp (assoc\<^sub>S\<^sub>B \<mu> \<nu> \<pi>) \<rho>"
@@ -4483,7 +4483,6 @@ $$\xymatrix{
         using assms \<alpha>_ide ide_hcomp src_hcomp trg_hcomp by simp
       also have "... = ?RHS"
         using fghk.\<mu>\<nu>.composable fghk.\<nu>\<pi>.composable fghk.\<pi>\<rho>.composable fghk.chine_pentagon
-              hseqI'
         by (intro arr_eqI, auto)
       also have "... = \<alpha>\<^sub>S\<^sub>B (f, g, h \<star> k) \<bullet> \<alpha>\<^sub>S\<^sub>B (f \<star> g, h, k)"
         using assms \<alpha>_ide ide_hcomp src_hcomp trg_hcomp by simp
@@ -4493,7 +4492,7 @@ $$\xymatrix{
     lemma extends_to_bicategory:
     shows "bicategory vcomp hcomp assoc unit src trg"
       using unit_in_hom obj_char iso_unit assoc_def pentagon
-      by (unfold_locales, auto)
+      apply unfold_locales by auto
 
     sublocale bicategory vcomp hcomp assoc unit src trg
       using extends_to_bicategory by auto
@@ -4610,8 +4609,7 @@ $$\xymatrix{
                 using rf_in_hom R.preserves_hom [of ?rf "f \<star> src f" f] by simp
               ultimately show ?thesis by auto
             qed
-            thus ?thesis
-              using hseqI' by auto
+            thus ?thesis by auto
           qed
           show "Chn (?rf \<star> src f) = Chn ((f \<star> \<i>[src f]) \<bullet> \<a>[f, src f, src f])"
           proof -
@@ -4756,8 +4754,7 @@ $$\xymatrix{
                 using lf_in_hom L.preserves_hom [of ?lf "trg f \<star> f" f] by simp
               ultimately show ?thesis by auto
             qed
-            thus ?thesis
-              using hseqI' by auto
+            thus ?thesis by auto
           qed
           show "Chn (trg f \<star> ?lf) = Chn ((\<i>[trg f] \<star> f) \<bullet> \<a>\<^sup>-\<^sup>1[trg f, trg f, f])"
           proof -
@@ -5062,7 +5059,7 @@ $$\xymatrix{
       proof -
         have "Chn (\<l>[f] \<bullet> (\<epsilon> \<star> f) \<bullet> \<a>\<^sup>-\<^sup>1[f, g, f] \<bullet> (f \<star> \<eta>) \<bullet> \<r>\<^sup>-\<^sup>1[f]) =
               Chn \<l>[f] \<cdot> Chn (\<epsilon> \<star> f) \<cdot> Chn \<a>\<^sup>-\<^sup>1[f, g, f] \<cdot> Chn (f \<star> \<eta>) \<cdot> Chn \<r>\<^sup>-\<^sup>1[f]"
-          using antipar Chn_vcomp hseqI' by auto
+          using antipar Chn_vcomp by auto
         also have "... = \<p>\<^sub>0[f.dtrg, f.leg1] \<cdot> chine_hcomp \<epsilon> f \<cdot> fgf.chine_assoc' \<cdot>
                            chine_hcomp f \<eta> \<cdot> \<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle>"
           using \<alpha>_ide fg.composable gf.composable fgf.chine_assoc_inverse
@@ -5185,7 +5182,7 @@ $$\xymatrix{
       proof -
         have "Chn (\<r>[g] \<bullet> (g \<star> \<epsilon>) \<bullet> \<a>[g, f, g] \<bullet> (\<eta> \<star> g) \<bullet> \<l>\<^sup>-\<^sup>1[g]) =
               Chn \<r>[g] \<cdot> Chn (g \<star> \<epsilon>) \<cdot> Chn \<a>[g, f, g] \<cdot> Chn (\<eta> \<star> g) \<cdot> Chn \<l>\<^sup>-\<^sup>1[g]"
-          using antipar Chn_vcomp hseqI' by auto
+          using antipar Chn_vcomp by auto
         also have "... = \<p>\<^sub>1[g.leg0, g.dsrc] \<cdot> chine_hcomp g \<epsilon> \<cdot> gfg.chine_assoc \<cdot> chine_hcomp \<eta> g \<cdot>
                            \<langle>g.leg1 \<lbrakk>g.dtrg, g.leg1\<rbrakk> g.chine\<rangle>"
           using \<alpha>_ide gf.composable fg.composable runit_ide_eq hcomp_def [of g \<epsilon>]

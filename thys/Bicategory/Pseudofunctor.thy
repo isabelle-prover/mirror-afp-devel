@@ -287,7 +287,7 @@ begin
         have "C.hseq a b"
           by (simp add: assms(1-3))
         thus ?thesis
-          by (metis C.src_hcomp' C.trg_hcomp' D.in_hhom_def D.in_homE D.src_cod D.trg_cod
+          by (metis C.src_hcomp C.trg_hcomp D.in_hhom_def D.in_homE D.src_cod D.trg_cod
               \<open>\<guillemotleft>\<Phi> (a, b) : F a \<star>\<^sub>D F b \<Rightarrow>\<^sub>D F (a \<star>\<^sub>C b)\<guillemotright>\<close> preserves_src preserves_trg)
       qed
     qed
@@ -310,18 +310,18 @@ begin
       show "D.cod (\<Phi> (f, g)) = F (f \<star>\<^sub>C g)"
         using assms \<Phi>_in_hom by blast
       show "D.iso (\<Phi> (f, g))"
-        using assms \<Phi>.components_are_iso C.VV.ide_char C.VV.arr_char by simp
+        using assms C.VV.ide_char C.VV.arr_char by simp
     qed
 
     lemma \<Phi>_components_are_iso:
     assumes "C.ide f" and "C.ide g" and "src\<^sub>C f = trg\<^sub>C g"
     shows "D.iso (\<Phi> (f, g))"
-      using assms C.VV.ide_char C.VV.arr_char \<Phi>.components_are_iso by simp
+      using assms C.VV.ide_char C.VV.arr_char by simp
 
     lemma weakly_preserves_hcomp:
     assumes "C.ide f" and "C.ide g" and "src\<^sub>C f = trg\<^sub>C g"
     shows "D.isomorphic (F f \<star>\<^sub>D F g) (F (f \<star>\<^sub>C g))"
-      using assms \<Phi>_in_hom \<Phi>_components_are_iso D.isomorphic_def by auto
+      using assms D.isomorphic_def by auto
 
     text \<open>
       The following defines the image of the unit isomorphism \<open>\<i>\<^sub>C[a]\<close> under \<open>F\<close>.
@@ -373,12 +373,11 @@ begin
     shows "D.iso \<i>[a]"
     proof -
       have "D.iso (\<Phi> (a, a))"
-        using assms \<Phi>_components_are_iso by auto
+        using assms by auto
       moreover have "D.iso (F \<i>\<^sub>C[a])"
         using assms C.iso_unit preserves_iso by simp
       moreover have "D.seq (F \<i>\<^sub>C[a]) (\<Phi> (a, a))"
-        using assms \<Phi>_in_hom C.unit_in_hom(2) C.obj_self_composable(1) C.seq_if_composable
-        by blast
+        using assms C.obj_self_composable(1) C.seq_if_composable by blast
       ultimately show ?thesis by auto
     qed
 
@@ -568,13 +567,12 @@ begin
       have "lF f \<cdot>\<^sub>D (\<Psi> ?b \<star>\<^sub>D F f) = \<l>\<^sub>D[F f]"
       proof -
         have "D.par (lF f \<cdot>\<^sub>D (\<Psi> ?b \<star>\<^sub>D F f)) \<l>\<^sub>D[F f]"
-          using assms 1 D.lunit_in_hom \<Psi>_char(1-2) lF_char(1) D.ideD(1) D.hseqI'
-          by auto
+          using assms 1 D.lunit_in_hom \<Psi>_char(1-2) lF_char(1) D.ideD(1) by auto
         moreover have "map\<^sub>0 ?b \<star>\<^sub>D (lF f \<cdot>\<^sub>D (\<Psi> ?b \<star>\<^sub>D F f)) = map\<^sub>0 ?b \<star>\<^sub>D \<l>\<^sub>D[F f]"
         proof -
           have "map\<^sub>0 ?b \<star>\<^sub>D (lF f \<cdot>\<^sub>D (\<Psi> ?b \<star>\<^sub>D F f)) =
                 (map\<^sub>0 ?b \<star>\<^sub>D lF f) \<cdot>\<^sub>D (map\<^sub>0 ?b \<star>\<^sub>D \<Psi> ?b \<star>\<^sub>D F f)"
-            using assms D.objE [of "map\<^sub>0 (trg\<^sub>C f)"] D.hseqI'
+            using assms D.objE [of "map\<^sub>0 (trg\<^sub>C f)"]
                   D.whisker_left [of "map\<^sub>0 ?b" "lF f" "\<Psi> ?b \<star>\<^sub>D F f"]
             by auto
           also have "... = (map\<^sub>0 ?b \<star>\<^sub>D lF f) \<cdot>\<^sub>D
@@ -582,7 +580,7 @@ begin
           proof -
             have "(D.inv (\<Psi> ?b) \<star>\<^sub>D F ?b \<star>\<^sub>D F f) \<cdot>\<^sub>D (\<Psi> ?b \<star>\<^sub>D \<Psi> ?b \<star>\<^sub>D F f) =
                   D.inv (\<Psi> ?b) \<cdot>\<^sub>D \<Psi> ?b \<star>\<^sub>D F ?b \<cdot>\<^sub>D \<Psi> ?b \<star>\<^sub>D F f \<cdot>\<^sub>D F f"
-              using assms \<Psi>_char(1-2) D.hseqI'
+              using assms \<Psi>_char(1-2)
                     D.interchange [of "F ?b" "\<Psi> ?b" "F f" "F f"]
                     D.interchange [of "D.inv (\<Psi> ?b)" "\<Psi> ?b" "F ?b \<star>\<^sub>D F f" "\<Psi> ?b \<star>\<^sub>D F f"]
               by simp
@@ -676,7 +674,7 @@ begin
           proof -
             have 1: "D.seq (F \<a>\<^sub>C[trg\<^sub>C f, trg\<^sub>C f, f])
                            (\<Phi> (trg\<^sub>C f \<star>\<^sub>C trg\<^sub>C f, f) \<cdot>\<^sub>D (\<Phi> (trg\<^sub>C f, trg\<^sub>C f) \<star>\<^sub>D F f))"
-              using assms \<Phi>_in_hom by fastforce
+              using assms by fastforce
             hence 2: "D.inv (\<Phi> (?b, ?b \<star>\<^sub>C f)) \<cdot>\<^sub>D F \<a>\<^sub>C[?b, ?b, f] \<cdot>\<^sub>D \<Phi> (?b \<star>\<^sub>C ?b, f) \<cdot>\<^sub>D
                          (\<Phi> (?b, ?b) \<star>\<^sub>D F f)
                         = (F ?b \<star>\<^sub>D \<Phi> (?b, f)) \<cdot>\<^sub>D \<a>\<^sub>D[F ?b, F ?b, F f]"
@@ -685,7 +683,7 @@ begin
                       [of "F \<a>\<^sub>C[?b, ?b, f] \<cdot>\<^sub>D \<Phi> (?b \<star>\<^sub>C ?b, f) \<cdot>\<^sub>D (\<Phi> (?b, ?b) \<star>\<^sub>D F f)"
                           "\<Phi> (?b, ?b \<star>\<^sub>C f)"
                           "(F ?b \<star>\<^sub>D \<Phi> (?b, f)) \<cdot>\<^sub>D \<a>\<^sub>D[F ?b, F ?b, F f]"]
-                    C.ideD(1) C.ide_hcomp C.trg_hcomp' C.trg_trg C.src_trg C.trg.preserves_ide
+                    C.ideD(1) C.ide_hcomp C.trg_hcomp C.trg_trg C.src_trg C.trg.preserves_ide
               by metis
             hence "F ?b \<star>\<^sub>D \<Phi> (?b, f)
                       = (D.inv (\<Phi> (?b, ?b \<star>\<^sub>C f)) \<cdot>\<^sub>D F \<a>\<^sub>C[?b, ?b, f] \<cdot>\<^sub>D \<Phi> (?b \<star>\<^sub>C ?b, f) \<cdot>\<^sub>D
@@ -694,21 +692,19 @@ begin
               have "D.seq (D.inv (\<Phi> (trg\<^sub>C f, trg\<^sub>C f \<star>\<^sub>C f)))
                           (F \<a>\<^sub>C[trg\<^sub>C f, trg\<^sub>C f, f] \<cdot>\<^sub>D \<Phi> (trg\<^sub>C f \<star>\<^sub>C trg\<^sub>C f, f) \<cdot>\<^sub>D
                              (\<Phi> (trg\<^sub>C f, trg\<^sub>C f) \<star>\<^sub>D F f))"
-                using assms 1 \<Phi>_in_hom \<Phi>_components_are_iso preserves_hseq preserves_inv
-                      preserves_iso D.hseq_char
-                by auto
+                using assms 1 D.hseq_char by auto
               moreover have "(F (trg\<^sub>C f) \<star>\<^sub>D \<Phi> (trg\<^sub>C f, f)) \<cdot>\<^sub>D \<a>\<^sub>D[F (trg\<^sub>C f), F (trg\<^sub>C f), F f] =
                              D.inv (\<Phi> (trg\<^sub>C f, trg\<^sub>C f \<star>\<^sub>C f)) \<cdot>\<^sub>D
                                F \<a>\<^sub>C[trg\<^sub>C f, trg\<^sub>C f, f] \<cdot>\<^sub>D \<Phi> (trg\<^sub>C f \<star>\<^sub>C trg\<^sub>C f, f) \<cdot>\<^sub>D
                                (\<Phi> (trg\<^sub>C f, trg\<^sub>C f) \<star>\<^sub>D F f)"
-                using assms 2 \<Phi>_in_hom by simp
+                using assms 2 by simp
               ultimately show ?thesis
-                using assms \<Phi>_components_are_iso D.iso_assoc
+                using assms
                       D.invert_side_of_triangle(2)
                         [of "D.inv (\<Phi> (?b, ?b \<star>\<^sub>C f)) \<cdot>\<^sub>D F \<a>\<^sub>C[?b, ?b, f] \<cdot>\<^sub>D \<Phi> (?b \<star>\<^sub>C ?b, f) \<cdot>\<^sub>D
                              (\<Phi> (?b, ?b) \<star>\<^sub>D F f)"
                             "F ?b \<star>\<^sub>D \<Phi> (?b, f)" "\<a>\<^sub>D[F ?b, F ?b, F f]"]
-                by simp    
+                by fastforce
             qed
             thus ?thesis
               using D.comp_assoc by simp
@@ -719,13 +715,13 @@ begin
                            \<a>\<^sub>D\<^sup>-\<^sup>1[F ?b, F ?b, F f]"
           proof -
             have 1: "F (?b \<star>\<^sub>C \<l>\<^sub>C[f]) = F (\<i>\<^sub>C[?b] \<star>\<^sub>C f) \<cdot>\<^sub>D D.inv (F \<a>\<^sub>C[?b, ?b, f])"
-              using assms C.lunit_char(1-2) C.unit_in_hom preserves_inv C.hseqI' by auto
+              using assms C.lunit_char(1-2) C.unit_in_hom preserves_inv by auto
             have "F \<a>\<^sub>C[?b, ?b, f] = D.inv (F (?b \<star>\<^sub>C \<l>\<^sub>C[f])) \<cdot>\<^sub>D F (\<i>\<^sub>C[?b] \<star>\<^sub>C f)"
             proof -
               have "F \<a>\<^sub>C[?b, ?b, f] \<cdot>\<^sub>D D.inv (F (\<i>\<^sub>C[?b] \<star>\<^sub>C f)) =
                     D.inv (F (\<i>\<^sub>C[?b] \<star>\<^sub>C f) \<cdot>\<^sub>D D.inv (F \<a>\<^sub>C[?b, ?b, f]))"
                 using assms D.iso_inv_iso
-                by (simp add: C.hseqI' C.iso_unit D.inv_comp)
+                by (simp add: C.iso_unit D.inv_comp)
               thus ?thesis
                 using assms 1 D.invert_side_of_triangle D.iso_inv_iso
                 by (metis C.iso_hcomp C.ideD(1) C.ide_is_iso C.iso_lunit C.iso_unit
@@ -767,13 +763,9 @@ begin
           proof -
             have "D.inv (F ?b \<star>\<^sub>D F \<l>\<^sub>C[f]) =
                   D.inv (((F ?b \<star>\<^sub>D F \<l>\<^sub>C[f]) \<cdot>\<^sub>D D.inv (\<Phi> (?b, ?b \<star>\<^sub>C f))) \<cdot>\<^sub>D \<Phi> (?b, ?b \<star>\<^sub>C f))"
-            proof -
-              have "D.inv (\<Phi> (?b, ?b \<star>\<^sub>C f)) \<cdot>\<^sub>D \<Phi> (?b, ?b \<star>\<^sub>C f) = F ?b \<star>\<^sub>D F (?b \<star>\<^sub>C f)"
-                using assms D.comp_inv_arr \<Phi>_components_are_iso D.comp_inv_arr' \<Phi>_simps(4)
-                by auto
-              thus ?thesis
-                using assms D.comp_arr_dom D.comp_assoc D.hseqI' by simp
-            qed
+              using assms D.comp_inv_arr D.comp_inv_arr' \<Phi>_simps(4)
+                    D.comp_arr_dom D.comp_assoc
+              by simp
             also have "... = D.inv (D.inv (\<Phi> (?b, f)) \<cdot>\<^sub>D F (?b \<star>\<^sub>C \<l>\<^sub>C[f]) \<cdot>\<^sub>D \<Phi> (?b, ?b \<star>\<^sub>C f))"
             proof -
               have 1: "\<Phi> (?b, f) \<cdot>\<^sub>D (F ?b \<star>\<^sub>D F \<l>\<^sub>C[f]) = F (?b \<star>\<^sub>C \<l>\<^sub>C[f]) \<cdot>\<^sub>D \<Phi> (?b, ?b \<star>\<^sub>C f)"
@@ -784,13 +776,11 @@ begin
                     D.inv (\<Phi> (?b, f)) \<cdot>\<^sub>D F (?b \<star>\<^sub>C \<l>\<^sub>C[f])"
               proof -
                 have "D.seq (\<Phi> (?b, f)) (F ?b \<star>\<^sub>D F \<l>\<^sub>C[f])"
-                  using assms \<Phi>_in_hom(2) [of ?b f] D.hseqI' by auto
+                  using assms \<Phi>_in_hom(2) [of ?b f] by auto
                 moreover have "D.iso (\<Phi> (?b, f)) \<and> D.iso (\<Phi> (?b, ?b \<star>\<^sub>C f))"
-                  using assms \<Phi>_components_are_iso by simp
+                  using assms by simp
                 ultimately show ?thesis
-                using 1 D.invert_opposite_sides_of_square
-                          [of "\<Phi> (?b, f)" "F ?b \<star>\<^sub>D F \<l>\<^sub>C[f]" "F (?b \<star>\<^sub>C \<l>\<^sub>C[f])" "\<Phi> (?b, ?b \<star>\<^sub>C f)"]
-                  by simp
+                using 1 D.invert_opposite_sides_of_square by simp
               qed
               thus ?thesis
                 using D.comp_assoc by auto
@@ -798,24 +788,19 @@ begin
             also have "... = D.inv (F (?b \<star>\<^sub>C \<l>\<^sub>C[f]) \<cdot>\<^sub>D \<Phi> (?b, ?b \<star>\<^sub>C f)) \<cdot>\<^sub>D \<Phi> (?b, f)"
             proof -
               have "D.iso (F (?b \<star>\<^sub>C \<l>\<^sub>C[f]) \<cdot>\<^sub>D \<Phi> (?b, ?b \<star>\<^sub>C f))"
-                using assms \<Phi>_components_are_iso D.isos_compose C.VV.arr_char C.iso_lunit
-                      C.hseqI'
-                by simp
+                using assms D.isos_compose C.VV.arr_char C.iso_lunit by simp
               moreover have "D.iso (D.inv (\<Phi> (?b, f)))"
                 using assms D.iso_inv_iso by simp
               moreover have "D.seq (D.inv (\<Phi> (?b, f))) (F (?b \<star>\<^sub>C \<l>\<^sub>C[f]) \<cdot>\<^sub>D \<Phi> (?b, ?b \<star>\<^sub>C f))"
-                using assms \<Phi>_in_hom(2) [of ?b f] \<Phi>_components_are_iso C.VV.arr_char C.hseqI'
-                by simp
+                using assms C.VV.arr_char by simp
               ultimately show ?thesis
-                using assms \<Phi>_components_are_iso D.inv_comp by simp
+                using assms D.inv_comp by simp
             qed
             also have "... = D.inv (\<Phi> (?b, ?b \<star>\<^sub>C f)) \<cdot>\<^sub>D D.inv (F (?b \<star>\<^sub>C \<l>\<^sub>C[f])) \<cdot>\<^sub>D \<Phi> (?b, f)"
             proof -
               have "D.inv (F (?b \<star>\<^sub>C \<l>\<^sub>C[f]) \<cdot>\<^sub>D \<Phi> (?b, ?b \<star>\<^sub>C f)) =
                     D.inv (\<Phi> (?b, ?b \<star>\<^sub>C f)) \<cdot>\<^sub>D D.inv (F (?b \<star>\<^sub>C \<l>\<^sub>C[f]))"
-                using assms \<Phi>_components_are_iso D.isos_compose C.VV.arr_char C.iso_lunit
-                      D.inv_comp C.hseqI'
-                by simp
+                using assms D.isos_compose C.VV.arr_char C.iso_lunit D.inv_comp by simp
               thus ?thesis using D.comp_assoc by simp
             qed
             finally have "D.inv (F ?b \<star>\<^sub>D F \<l>\<^sub>C[f])
@@ -826,9 +811,7 @@ begin
           also have "... = ((F ?b \<star>\<^sub>D F \<l>\<^sub>C[f]) \<cdot>\<^sub>D D.inv (F ?b \<star>\<^sub>D F \<l>\<^sub>C[f])) \<cdot>\<^sub>D (F ?b \<star>\<^sub>D lF f)"
             using D.comp_assoc by simp
           also have "... = F ?b \<star>\<^sub>D lF f"
-            using assms D.comp_arr_inv' [of "F ?b \<star>\<^sub>D F \<l>\<^sub>C[f]"] D.comp_cod_arr preserves_iso
-                  D.hseqI'
-            by simp
+            using assms D.comp_arr_inv' [of "F ?b \<star>\<^sub>D F \<l>\<^sub>C[f]"] D.comp_cod_arr by simp
           finally show ?thesis by simp
         qed
         ultimately show ?thesis by simp
@@ -907,7 +890,7 @@ begin
       by (unfold_locales, auto)
 
     interpretation H: "functor" VV.comp V \<open>\<lambda>\<mu>\<nu>. fst \<mu>\<nu> \<star> snd \<mu>\<nu>\<close>
-      using VV.arr_char B.hseqI'
+      using VV.arr_char
       apply unfold_locales
           apply (metis (no_types, lifting) B.hseqE B.hseq_char')
          apply auto[3]
@@ -915,7 +898,7 @@ begin
       by (metis (no_types, lifting) B.VxV.seqE fst_conv snd_conv)
 
     interpretation horizontal_composition V H src trg
-      by (unfold_locales, simp_all)
+      by (unfold_locales, auto)
 
     interpretation VVV: subcategory B.VxVxV.comp
       \<open>\<lambda>\<tau>\<mu>\<nu>. B.arr (fst \<tau>\<mu>\<nu>) \<and> VV.arr (snd \<tau>\<mu>\<nu>) \<and> src (fst \<tau>\<mu>\<nu>) = trg (fst (snd \<tau>\<mu>\<nu>))\<close>
@@ -1189,7 +1172,7 @@ begin
     interpretation \<Phi>': natural_isomorphism C'.VV.comp V\<^sub>D H\<^sub>D'oFF.map FoH\<^sub>C'.map
                                            \<open>\<lambda>f. \<Phi> (snd f, fst f)\<close>
       using C.VV.arr_char C'.VV.arr_char C'.VV.ide_char C.VV.ide_char FF_def F'.FF_def
-            \<Phi>.is_extensional \<Phi>.is_natural_1 \<Phi>.is_natural_2 \<Phi>.components_are_iso
+            \<Phi>.is_extensional \<Phi>.is_natural_1 \<Phi>.is_natural_2
       apply unfold_locales by auto
     interpretation F': pseudofunctor V\<^sub>C C'.H C'.\<a> \<i>\<^sub>C C'.src C'.trg
                                      V\<^sub>D D'.H D'.\<a> \<i>\<^sub>D D'.src D'.trg
@@ -1209,11 +1192,9 @@ begin
           have "\<guillemotleft>F (\<a>\<^sub>C h g f) : F ((h \<star>\<^sub>C g) \<star>\<^sub>C f) \<Rightarrow>\<^sub>D F (h \<star>\<^sub>C g \<star>\<^sub>C f)\<guillemotright>"
             using f g h fg gh preserves_hom C.assoc_in_hom(2) by simp
           moreover have "\<guillemotleft>\<Phi> (g \<star>\<^sub>C\<^sup>o\<^sup>p h, f) : F (h \<star>\<^sub>C g) \<star>\<^sub>D F f \<Rightarrow>\<^sub>D F ((h \<star>\<^sub>C g) \<star>\<^sub>C f)\<guillemotright>"
-            using f g h fg gh preserves_hom \<Phi>.preserves_hom by auto
+            using f g h fg gh by auto
           moreover have "\<guillemotleft>F f \<star>\<^sub>D\<^sup>o\<^sup>p \<Phi> (h, g) : (F h \<star>\<^sub>D F g) \<star>\<^sub>D F f \<Rightarrow>\<^sub>D F (h \<star>\<^sub>C g) \<star>\<^sub>D F f\<guillemotright>"
-            using f g h fg gh preserves_hom \<Phi>.preserves_hom C.VV.in_hom_char
-                  FF_def C.VV.arr_char D.hseqI'
-            by auto
+            using f g h fg gh C.VV.in_hom_char FF_def C.VV.arr_char by auto
           ultimately show ?thesis by auto
         qed
         moreover have "D.iso (F \<a>\<^sub>C[h, g, f])"
@@ -1292,7 +1273,7 @@ begin
         moreover have "\<l>\<^sub>D[F f] = F \<l>\<^sub>C[f] \<cdot>\<^sub>D \<Phi> (trg\<^sub>C f, f) \<cdot>\<^sub>D (\<Psi> (trg\<^sub>C f) \<star>\<^sub>D F f)"
           using assms lunit_coherence by simp
         moreover have "D.iso (\<Phi> (trg\<^sub>C f, f) \<cdot>\<^sub>D (\<Psi> (trg\<^sub>C f) \<star>\<^sub>D F f))"
-          using assms \<Phi>_components_are_iso \<Psi>_char D.iso_hcomp FF_def D.hseqI'
+          using assms \<Psi>_char D.iso_hcomp FF_def
           by (intro D.isos_compose D.seqI, auto)
         ultimately show ?thesis
           using assms
@@ -1302,19 +1283,17 @@ begin
       qed
       moreover have "D.inv (\<Phi> (trg\<^sub>C f, f) \<cdot>\<^sub>D (\<Psi> (trg\<^sub>C f) \<star>\<^sub>D F f)) =
                       (D.inv (\<Psi> (trg\<^sub>C f)) \<star>\<^sub>D F f) \<cdot>\<^sub>D D.inv (\<Phi> (trg\<^sub>C f, f))"
-        using assms \<Phi>_in_hom \<Phi>_components_are_iso C.VV.arr_char \<Psi>_char
-              D.iso_hcomp FF_def D.hseqI' D.inv_comp
-        by simp
+        using assms C.VV.arr_char \<Psi>_char FF_def D.inv_comp by simp
       ultimately show "F \<l>\<^sub>C[f] =
                        \<l>\<^sub>D[F f] \<cdot>\<^sub>D (D.inv (\<Psi> (trg\<^sub>C f)) \<star>\<^sub>D F f) \<cdot>\<^sub>D D.inv (\<Phi> (trg\<^sub>C f, f))"
         by simp
       hence "F \<l>\<^sub>C\<^sup>-\<^sup>1[f] =
              D.inv (\<l>\<^sub>D[F f] \<cdot>\<^sub>D (D.inv (\<Psi> (trg\<^sub>C f)) \<star>\<^sub>D F f) \<cdot>\<^sub>D D.inv (\<Phi> (trg\<^sub>C f, f)))"
-        using assms preserves_inv C.iso_lunit by simp
+        using assms preserves_inv by simp
       also have "... = \<Phi> (trg\<^sub>C f, f) \<cdot>\<^sub>D (\<Psi> (trg\<^sub>C f) \<star>\<^sub>D F f) \<cdot>\<^sub>D \<l>\<^sub>D\<^sup>-\<^sup>1[F f]"
       proof -
         have "\<guillemotleft>\<l>\<^sub>D[F f] : map\<^sub>0 (trg\<^sub>C f) \<star>\<^sub>D F f \<Rightarrow>\<^sub>D F f\<guillemotright> \<and> D.iso \<l>\<^sub>D[F f]"
-          using assms D.iso_lunit by simp
+          using assms by simp
         moreover have "\<guillemotleft>D.inv (\<Psi> (trg\<^sub>C f)) \<star>\<^sub>D F f :
                           F (trg\<^sub>C f) \<star>\<^sub>D F f \<Rightarrow>\<^sub>D map\<^sub>0 (trg\<^sub>C f) \<star>\<^sub>D F f\<guillemotright> \<and>
                        D.iso (D.inv (\<Psi> (trg\<^sub>C f)) \<star>\<^sub>D F f)"
@@ -1328,7 +1307,8 @@ begin
           using assms \<Psi>_char [of "trg\<^sub>C f"] D.iso_inv_iso by simp
         ultimately show ?thesis
           using assms D.iso_inv_iso D.comp_assoc D.iso_hcomp D.isos_compose
-          by (elim conjE D.in_homE, auto simp add: D.inv_comp)
+          apply (elim conjE D.in_homE)
+          by (auto simp add: D.inv_comp)
       qed
       finally show "F \<l>\<^sub>C\<^sup>-\<^sup>1[f] = \<Phi> (trg\<^sub>C f, f) \<cdot>\<^sub>D (\<Psi> (trg\<^sub>C f) \<star>\<^sub>D F f) \<cdot>\<^sub>D \<l>\<^sub>D\<^sup>-\<^sup>1[F f]"
         by simp
@@ -1344,7 +1324,7 @@ begin
         have "\<r>\<^sub>D[F f] = F \<r>\<^sub>C[f] \<cdot>\<^sub>D \<Phi> (f, src\<^sub>C f) \<cdot>\<^sub>D (F f \<star>\<^sub>D \<Psi> (src\<^sub>C f))"
           using assms runit_coherence [of f] by simp
         moreover have "D.iso (\<Phi> (f, src\<^sub>C f) \<cdot>\<^sub>D (F f \<star>\<^sub>D \<Psi> (src\<^sub>C f)))"
-          using assms \<Phi>_components_are_iso \<Psi>_char D.iso_hcomp FF_def D.hseqI'
+          using assms \<Psi>_char D.iso_hcomp FF_def
           apply (intro D.isos_compose D.seqI) by auto
         moreover have "D.arr \<r>\<^sub>D[F f]"
           using assms by simp
@@ -1355,9 +1335,7 @@ begin
       qed
       moreover have "D.inv (\<Phi> (f, src\<^sub>C f) \<cdot>\<^sub>D (F f \<star>\<^sub>D \<Psi> (src\<^sub>C f))) =
                       (F f \<star>\<^sub>D D.inv (\<Psi> (src\<^sub>C f))) \<cdot>\<^sub>D D.inv (\<Phi> (f, src\<^sub>C f))"
-        using assms \<Phi>_in_hom \<Phi>_components_are_iso C.VV.arr_char \<Psi>_char
-              D.iso_hcomp FF_def D.hseqI' D.inv_comp
-        by simp
+        using assms C.VV.arr_char \<Psi>_char D.iso_hcomp FF_def D.inv_comp by simp
       ultimately show "F \<r>\<^sub>C[f] =
                        \<r>\<^sub>D[F f] \<cdot>\<^sub>D (F f \<star>\<^sub>D D.inv (\<Psi> (src\<^sub>C f))) \<cdot>\<^sub>D D.inv (\<Phi> (f, src\<^sub>C f))"
         by simp
@@ -1376,7 +1354,7 @@ begin
         moreover have
           "\<guillemotleft>D.inv (\<Phi> (f, src\<^sub>C f)) : F (f \<star>\<^sub>C src\<^sub>C f) \<Rightarrow>\<^sub>D F f \<star>\<^sub>D F (src\<^sub>C f)\<guillemotright> \<and>
            D.iso (D.inv (\<Phi> (f, src\<^sub>C f)))"
-          using assms \<Phi>_in_hom \<Phi>_components_are_iso D.iso_inv_iso by simp
+          using assms \<Phi>_in_hom D.iso_inv_iso by simp
         moreover have "D.inv (F f \<star>\<^sub>D D.inv (\<Psi> (src\<^sub>C f))) = F f \<star>\<^sub>D \<Psi> (src\<^sub>C f)"
           using assms \<Psi>_char [of "src\<^sub>C f"] D.iso_inv_iso by simp
         ultimately show ?thesis
@@ -1400,13 +1378,12 @@ begin
             \<Phi> (f, g \<star>\<^sub>C h) \<cdot>\<^sub>D (F f \<star>\<^sub>D \<Phi> (g, h)) \<cdot>\<^sub>D \<a>\<^sub>D[F f, F g, F h]"
         using assms assoc_coherence [of f g h] by simp
       moreover have "D.seq (\<Phi> (f, g \<star>\<^sub>C h)) ((F f \<star>\<^sub>D \<Phi> (g, h)) \<cdot>\<^sub>D \<a>\<^sub>D[F f, F g, F h])"
-        using assms \<Phi>_components_are_iso C.VV.arr_char FF_def D.hseqI' by auto
+        using assms C.VV.arr_char FF_def by auto
       moreover have 1: "D.iso (\<Phi> (f \<star>\<^sub>C g, h) \<cdot>\<^sub>D (\<Phi> (f, g) \<star>\<^sub>D F h))"
-        using assms \<Phi>_components_are_iso C.VV.arr_char FF_def D.hseqI' by auto
+        using assms C.VV.arr_char FF_def by auto
       moreover have "D.inv (\<Phi> (f \<star>\<^sub>C g, h) \<cdot>\<^sub>D (\<Phi> (f, g) \<star>\<^sub>D F h)) =
                     (D.inv (\<Phi> (f, g)) \<star>\<^sub>D F h) \<cdot>\<^sub>D D.inv (\<Phi> (f \<star>\<^sub>C g, h))"
-        using assms 1 \<Phi>_components_are_iso C.VV.arr_char FF_def D.inv_comp D.hseqI'
-        by simp
+        using assms 1 C.VV.arr_char FF_def D.inv_comp by simp
       ultimately show 1: "F \<a>\<^sub>C[f, g, h] =
                           \<Phi> (f, g \<star>\<^sub>C h) \<cdot>\<^sub>D (F f \<star>\<^sub>D \<Phi> (g, h)) \<cdot>\<^sub>D \<a>\<^sub>D[F f, F g, F h] \<cdot>\<^sub>D
                             (D.inv (\<Phi> (f, g)) \<star>\<^sub>D F h) \<cdot>\<^sub>D D.inv (\<Phi> (f \<star>\<^sub>C g, h))"
@@ -1423,10 +1400,10 @@ begin
                          (F f \<star>\<^sub>D D.inv (\<Phi> (g, h))) \<cdot>\<^sub>D D.inv (\<Phi> (f, g \<star>\<^sub>C h))"
       proof -
         have "\<guillemotleft>\<Phi> (f, g \<star>\<^sub>C h) : F f \<star>\<^sub>D F (g \<star>\<^sub>C h) \<Rightarrow>\<^sub>D F (f \<star>\<^sub>C g \<star>\<^sub>C h)\<guillemotright> \<and> D.iso (\<Phi> (f, g \<star>\<^sub>C h))"
-          using assms \<Phi>_components_are_iso by auto
+          using assms by auto
         moreover have "\<guillemotleft>F f \<star>\<^sub>D \<Phi> (g, h) : F f \<star>\<^sub>D F g \<star>\<^sub>D F h \<Rightarrow>\<^sub>D F f \<star>\<^sub>D F (g \<star>\<^sub>C h)\<guillemotright> \<and>
                        D.iso (F f \<star>\<^sub>D \<Phi> (g, h))"
-          using assms \<Phi>_components_are_iso
+          using assms
           by (intro conjI D.hcomp_in_vhom, auto)
         moreover have "\<guillemotleft>\<a>\<^sub>D[F f, F g, F h] : (F f \<star>\<^sub>D F g) \<star>\<^sub>D F h \<Rightarrow>\<^sub>D F f \<star>\<^sub>D F g \<star>\<^sub>D F h\<guillemotright> \<and>
                        D.iso \<a>\<^sub>D[F f, F g, F h]"
@@ -1434,16 +1411,15 @@ begin
         moreover have
           "\<guillemotleft>D.inv (\<Phi> (f, g)) \<star>\<^sub>D F h : F (f \<star>\<^sub>C g) \<star>\<^sub>D F h \<Rightarrow>\<^sub>D (F f \<star>\<^sub>D F g) \<star>\<^sub>D F h\<guillemotright> \<and>
            D.iso (D.inv (\<Phi> (f, g)) \<star>\<^sub>D F h)"
-          using assms \<Phi>_components_are_iso D.iso_inv_iso
-          by (intro conjI D.hcomp_in_vhom, auto)
+          using assms D.iso_inv_iso by auto
         moreover have
           "\<guillemotleft>D.inv (\<Phi> (f \<star>\<^sub>C g, h)) : F ((f \<star>\<^sub>C g) \<star>\<^sub>C h) \<Rightarrow>\<^sub>D F (f \<star>\<^sub>C g) \<star>\<^sub>D F h\<guillemotright> \<and>
            D.iso (D.inv (\<Phi> (f \<star>\<^sub>C g, h)))"
-          using assms \<Phi>_components_are_iso D.iso_inv_iso by auto
+          using assms D.iso_inv_iso by auto
         ultimately show ?thesis
-          using assms \<Phi>_components_are_iso D.isos_compose D.inv_comp
-                D.comp_assoc D.iso_inv_iso
-          apply (elim conjE D.in_homE) by (auto simp add: D.inv_comp)
+          using assms D.isos_compose D.comp_assoc D.iso_inv_iso
+          apply (elim conjE D.in_homE)
+          by (auto simp add: D.inv_comp)
       qed
       finally show "F \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, h] =
                     \<Phi> (f \<star>\<^sub>C g, h) \<cdot>\<^sub>D (\<Phi> (f, g) \<star>\<^sub>D F h) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F f, F g, F h] \<cdot>\<^sub>D
@@ -1500,13 +1476,12 @@ begin
              (D.inv (\<Psi> (trg\<^sub>C f)) \<cdot>\<^sub>D F \<epsilon> \<cdot>\<^sub>D \<Phi> (f, g))"
       proof
         show "D.iso (D.inv (\<Phi> (g, f)) \<cdot>\<^sub>D F \<eta> \<cdot>\<^sub>D \<Psi> (src\<^sub>C f))"
-          using antipar \<Psi>_in_hom \<Phi>_components_are_iso D.iso_inv_iso FF_def unit_is_iso
+          using antipar D.iso_inv_iso FF_def unit_is_iso
                 preserves_iso \<Psi>_char(2) D.isos_compose
           by simp
         show "D.iso (D.inv (\<Psi> (trg\<^sub>C f)) \<cdot>\<^sub>D F \<epsilon> \<cdot>\<^sub>D \<Phi> (f, g))"
-          using antipar \<Psi>_in_hom(2) \<Psi>_char(2) C.VV.ide_char C.VV.arr_char FF_def
-                \<Phi>_in_hom(2) D.iso_inv_iso counit_is_iso preserves_iso \<Phi>_components_are_iso
-                D.isos_compose
+          using antipar \<Psi>_char(2) C.VV.ide_char C.VV.arr_char FF_def
+                D.iso_inv_iso D.isos_compose
           by auto
       qed
     qed
@@ -1701,8 +1676,7 @@ begin
                     \<Psi>_char \<Phi>_in_hom \<Phi>_components_are_iso
               by (metis (mono_tags, lifting) C.ideD(1) E'.unit_in_vhom preserves_src)
             have 2: "D.iso (\<Phi> (g, f)) \<and> \<guillemotleft>\<Phi> (g, f) : F g \<star>\<^sub>D F f \<Rightarrow>\<^sub>D F (g \<star>\<^sub>C f)\<guillemotright>"
-              using 0 `C.ide f` `C.ide g` \<Phi>_in_hom \<Phi>_components_are_iso
-              by simp
+              using 0 `C.ide f` `C.ide g` \<Phi>_in_hom by simp
             have 3: "D.iso (D.inv (\<Psi> (src\<^sub>C f))) \<and>
                      \<guillemotleft>D.inv (\<Psi> (src\<^sub>C f)) : F (src\<^sub>C f) \<Rightarrow>\<^sub>D map\<^sub>0 (src\<^sub>C f)\<guillemotright>"
                using `C.ide f` \<Psi>_char D.iso_inv_iso by simp
@@ -1740,7 +1714,7 @@ begin
             have 2: "D.iso (D.inv (\<Phi> (f, g))) \<and>
                      \<guillemotleft>D.inv (\<Phi> (f, g)) : F (f \<star>\<^sub>C g) \<Rightarrow>\<^sub>D F f \<star>\<^sub>D F g\<guillemotright>"
               using 0 `C.ide f` `C.ide g` `\<guillemotleft>\<epsilon> : f \<star>\<^sub>C g \<Rightarrow>\<^sub>C src\<^sub>C g\<guillemotright>` \<Phi>_in_hom(2)
-                    \<Phi>_components_are_iso D.inv_in_hom D.iso_inv_iso
+                    D.inv_in_hom D.iso_inv_iso
               by simp
             have 3: "D.iso (\<Psi> (trg\<^sub>C f)) \<and> \<guillemotleft>\<Psi> (trg\<^sub>C f) : map\<^sub>0 (trg\<^sub>C f) \<Rightarrow>\<^sub>D F (trg\<^sub>C f)\<guillemotright>"
                using `C.ide f` \<Psi>_char by simp
@@ -1811,16 +1785,11 @@ begin
       have iso_\<eta>': "D.iso ?\<eta>'"
       proof -
         have "D.iso (\<Phi> (g, f))"
-          using assms g \<Phi>_components_are_iso by auto
+          using assms g by auto
         thus ?thesis
           using assms g \<mu> E'.antipar E''.antipar \<Phi>_in_hom \<Psi>_char
                 E'.unit_in_hom D.iso_inv_iso E'.unit_is_iso \<eta>'
-          apply (intro D.isos_compose)
-                  apply simp_all
-             apply (meson D.iso_hcomp D.hseqE D.seqE E''.unit_simps(1) components_are_iso)
-            apply (meson D.arrI D.seqE)
-           apply (meson D.arrI D.seqE)
-          by (meson D.arrI D.seqE)
+          apply (intro D.isos_compose) by auto
       qed
       let ?\<epsilon>' = "\<Psi> (src\<^sub>C g) \<cdot>\<^sub>D \<psi> \<cdot>\<^sub>D (D.inv (F f) \<star>\<^sub>D g') \<cdot>\<^sub>D (F f \<star>\<^sub>D D.inv \<mu>) \<cdot>\<^sub>D D.inv (\<Phi> (f, g))"
       have \<epsilon>': "\<guillemotleft>?\<epsilon>' : F (f \<star>\<^sub>C g) \<Rightarrow>\<^sub>D F (trg\<^sub>C f)\<guillemotright>"
@@ -2208,11 +2177,9 @@ begin
       show "\<guillemotleft>\<phi> f' : F (G f') \<Rightarrow>\<^sub>D e (trg\<^sub>D f') \<star>\<^sub>D f' \<star>\<^sub>D d (src\<^sub>D f')\<guillemotright>"
         using assms \<phi>_props G_ide by auto
       thus "\<guillemotleft>\<phi> f' : F.map\<^sub>0 (G\<^sub>0 (src\<^sub>D f')) \<rightarrow>\<^sub>D F.map\<^sub>0 (G\<^sub>0 (trg\<^sub>D f'))\<guillemotright>"
-        using assms \<phi>_props D.hseqI' d_simps e_simps D.src_cod D.trg_cod
-        apply (intro D.in_hhomI)
-          apply auto[1]
-         apply (metis D.arr_cod D.hseqI' D.ideD(1) D.in_homE D.obj_src D.hcomp_simps(1))
-        by (metis D.arr_cod D.ideD(1) D.in_homE D.obj_trg D.hcomp_simps(2))
+        using assms \<phi>_props d_simps e_simps
+              D.src_cod [of "\<phi> f'"] D.trg_cod [of "\<phi> f'"]
+        by fastforce
     qed
 
     lemma \<phi>_simps [simp]:
@@ -2226,9 +2193,9 @@ begin
     proof
       show "\<And>\<mu>'. \<not> D.arr \<mu>' \<Longrightarrow> G \<mu>' = C.null"
         using G_def by simp
-      show "\<And>\<mu>'. D.arr \<mu>' \<Longrightarrow> C.arr (G \<mu>')"
+      show A: "\<And>\<mu>'. D.arr \<mu>' \<Longrightarrow> C.arr (G \<mu>')"
         using G_props by auto
-      show "\<And>\<mu>'. D.arr \<mu>' \<Longrightarrow> C.dom (G \<mu>') = G (D.dom \<mu>')"
+      show D: "\<And>\<mu>'. D.arr \<mu>' \<Longrightarrow> C.dom (G \<mu>') = G (D.dom \<mu>')"
       proof -
         fix \<mu>'
         assume \<mu>': "D.arr \<mu>'"
@@ -2247,7 +2214,7 @@ begin
         qed
         finally show "C.dom (G \<mu>') = G (D.dom \<mu>')" by simp
       qed
-      show "\<And>\<mu>'. D.arr \<mu>' \<Longrightarrow> C.cod (G \<mu>') = G (D.cod \<mu>')"
+      show C: "\<And>\<mu>'. D.arr \<mu>' \<Longrightarrow> C.cod (G \<mu>') = G (D.cod \<mu>')"
       proof -
         fix \<mu>'
         assume \<mu>': "D.arr \<mu>'"
@@ -2292,9 +2259,7 @@ begin
                            \<phi> (D.dom (\<mu> \<cdot>\<^sub>D \<nu>))"
         proof -
           have "D.seq (\<mu> \<star>\<^sub>D d (src\<^sub>D (\<mu> \<cdot>\<^sub>D \<nu>))) (\<nu> \<star>\<^sub>D d (src\<^sub>D (\<mu> \<cdot>\<^sub>D \<nu>)))"
-            using \<mu> \<nu> \<mu>\<nu> D.obj_src G\<^sub>0_props(4)
-            apply (intro D.seqI D.hseqI, auto)
-            using D.hseqI' by fastforce
+            using \<mu> \<nu> \<mu>\<nu> D.obj_src G\<^sub>0_props(4) by fastforce
           thus ?thesis
             using \<mu>\<nu> D.obj_src D.obj_trg G\<^sub>0_props(3) D.whisker_left by metis
         qed
@@ -2311,7 +2276,7 @@ begin
         proof -
           have "\<phi> (D.dom \<mu>) \<cdot>\<^sub>D D.inv (\<phi> (D.cod \<nu>)) =
                 D.cod ((e (trg\<^sub>D \<nu>) \<star>\<^sub>D \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)) \<cdot>\<^sub>D \<phi> (D.dom \<nu>))"
-            using \<mu> \<nu> G\<^sub>0_props(3-4) D.obj_src D.obj_trg D.hseqI' \<mu>\<nu> \<phi>_props
+            using \<mu> \<nu> G\<^sub>0_props(3-4) D.obj_src D.obj_trg \<mu>\<nu> \<phi>_props
                   D.comp_arr_inv' D.ide_cod
             by auto
           thus ?thesis
@@ -2325,23 +2290,14 @@ begin
         also have "... = F (G \<mu>) \<cdot>\<^sub>D F (G \<nu>)"
           using \<mu>\<nu> G_props by auto
         also have "... = F (G \<mu> \<cdot>\<^sub>C G \<nu>)"
-          using \<mu>\<nu> G_props D.seqE \<open>\<And>\<mu>'. D.arr \<mu>' \<Longrightarrow> C.arr (G \<mu>')\<close>
-            \<open>\<And>\<mu>'. D.arr \<mu>' \<Longrightarrow> C.cod (G \<mu>') = G (D.cod \<mu>')\<close>
-            \<open>\<And>\<mu>'. D.arr \<mu>' \<Longrightarrow> C.dom (G \<mu>') = G (D.dom \<mu>')\<close>
-          by auto
+          using \<mu>\<nu> A D C G_props D.seqE by auto
         finally have "F (G (\<mu> \<cdot>\<^sub>D \<nu>)) = F (G \<mu> \<cdot>\<^sub>C G \<nu>)"
           by simp
-        thus "G (\<mu> \<cdot>\<^sub>D \<nu>) = G \<mu> \<cdot>\<^sub>C G \<nu>"
-          using \<mu>\<nu> G_props F.is_faithful [of "G (\<mu> \<cdot>\<^sub>D \<nu>)" "G \<mu> \<cdot>\<^sub>C G \<nu>"]
-          (*
-           * TODO: Here supposedly weak_arrow_of_homs_def is not used, but the proof does not
-           * succeed without it.
-           *)
-          by (metis D.seqE \<open>\<And>\<mu>'. D.arr \<mu>' \<Longrightarrow> C.arr (G \<mu>')\<close>
-              \<open>\<And>\<mu>'. D.arr \<mu>' \<Longrightarrow> C.cod (G \<mu>') = G (D.cod \<mu>')\<close>
-              \<open>\<And>\<mu>'. D.arr \<mu>' \<Longrightarrow> C.dom (G \<mu>') = G (D.dom \<mu>')\<close>
-              C.dom_comp D.dom_comp C.cod_comp D.cod_comp F.preserves_reflects_arr
-              weak_arrow_of_homs_def)
+        moreover have "C.par (G (\<mu> \<cdot>\<^sub>D \<nu>)) (G \<mu> \<cdot>\<^sub>C G \<nu>)"
+          using \<mu>\<nu> A D C G_props
+          apply (intro conjI C.seqI) by auto
+        ultimately show "G (\<mu> \<cdot>\<^sub>D \<nu>) = G \<mu> \<cdot>\<^sub>C G \<nu>"
+          using F.is_faithful [of "G (\<mu> \<cdot>\<^sub>D \<nu>)" "G \<mu> \<cdot>\<^sub>C G \<nu>"] by blast
       qed
     qed
 
@@ -2489,7 +2445,7 @@ begin
                 moreover have "D.ide (d (src\<^sub>D (\<mu>' \<cdot>\<^sub>D \<nu>')))"
                   using \<mu>'\<nu>' G\<^sub>0_props(4) D.obj_src by blast
                 ultimately show ?thesis
-                  using \<mu>'\<nu>' by auto
+                  using \<mu>'\<nu>' by fastforce
               qed
             qed
             thus ?thesis
@@ -2600,10 +2556,10 @@ begin
         using assms G\<^sub>0_props [of "trg\<^sub>D f"] by simp
       show "\<guillemotleft>LUNIT f : src\<^sub>D f \<rightarrow>\<^sub>D trg\<^sub>D f\<guillemotright>"
         unfolding LUNIT_def
-        using assms e_trg_f.unit_is_iso D.hseqI' by auto
+        using assms e_trg_f.unit_is_iso by auto
       show "\<guillemotleft>LUNIT f : TRG f \<star>\<^sub>D f \<Rightarrow>\<^sub>D f\<guillemotright>"
         unfolding LUNIT_def
-        using assms e_trg_f.unit_is_iso D.hseqI' by auto
+        using assms e_trg_f.unit_is_iso by auto
     qed
 
     lemma LUNIT_simps [simp]:
@@ -2624,10 +2580,10 @@ begin
         using assms G\<^sub>0_props [of "src\<^sub>D f"] by simp
       show "\<guillemotleft>RUNIT f : src\<^sub>D f \<rightarrow>\<^sub>D trg\<^sub>D f\<guillemotright>"
         unfolding RUNIT_def
-        using assms e_src_f.unit_is_iso D.hseqI' by auto
+        using assms e_src_f.unit_is_iso by auto
       show "\<guillemotleft>RUNIT f : f \<star>\<^sub>D SRC f \<Rightarrow>\<^sub>D f\<guillemotright>"
         unfolding RUNIT_def
-        using assms e_src_f.unit_is_iso D.hseqI' by auto
+        using assms e_src_f.unit_is_iso by auto
     qed
 
     lemma RUNIT_simps [simp]:
@@ -2751,9 +2707,7 @@ begin
       have "(f \<star>\<^sub>D RUNIT g) \<cdot>\<^sub>D \<a>\<^sub>D[f, g, SRC g] =
             (f \<star>\<^sub>D \<r>\<^sub>D[g]) \<cdot>\<^sub>D (f \<star>\<^sub>D g \<star>\<^sub>D D.inv (\<eta> (src\<^sub>D g))) \<cdot>\<^sub>D \<a>\<^sub>D[f, g, SRC g]"
         unfolding RUNIT_def
-        using assms D.whisker_left [of f "\<r>\<^sub>D[g]" "g \<star>\<^sub>D D.inv (\<eta> (src\<^sub>D g))"] e_src_g.unit_is_iso
-              D.hseqI' D.comp_assoc
-        by simp
+        using assms D.whisker_left e_src_g.unit_is_iso D.comp_assoc by simp
       also have "... = ((f \<star>\<^sub>D \<r>\<^sub>D[g]) \<cdot>\<^sub>D \<a>\<^sub>D[f, g, src\<^sub>D g]) \<cdot>\<^sub>D ((f \<star>\<^sub>D g) \<star>\<^sub>D D.inv (\<eta> (src\<^sub>D g)))"
         using assms D.assoc_naturality [of f g "D.inv (\<eta> (src\<^sub>D g))"] e_src_g.unit_is_iso
               D.comp_assoc
@@ -2816,8 +2770,7 @@ begin
         apply (unfold CMP_def, intro D.comp_in_homI)
         using assms by fastforce+
       thus "\<guillemotleft>CMP f g : F.map\<^sub>0 (G\<^sub>0 (src\<^sub>D g)) \<rightarrow>\<^sub>D F.map\<^sub>0 (G\<^sub>0 (trg\<^sub>D f))\<guillemotright>"
-        using assms D.src_cod [of "CMP f g"] D.trg_cod [of "CMP f g"] D.hseqI'
-        by fastforce
+        using assms D.src_cod D.trg_cod by fastforce
     qed
 
     lemma CMP_simps [simp]:
@@ -2878,17 +2831,13 @@ begin
                            (\<a>\<^sub>D\<^sup>-\<^sup>1[e (trg\<^sub>D \<mu>), D.dom \<mu>, d (src\<^sub>D \<mu>)] \<star>\<^sub>D XLT (D.dom \<nu>))"
         proof -
           have "D.seq ((e (trg\<^sub>D \<mu>) \<star>\<^sub>D \<mu>) \<star>\<^sub>D d (src\<^sub>D \<mu>)) \<a>\<^sub>D\<^sup>-\<^sup>1[e (trg\<^sub>D \<mu>), D.dom \<mu>, d (src\<^sub>D \<mu>)]"
-            using assms G\<^sub>0_props D.hseqI' by auto
+            using assms G\<^sub>0_props by auto
           moreover have "D.seq (XLT \<nu>) (XLT (D.dom \<nu>))"
-            using assms G\<^sub>0_props D.hseqI' by auto
+            using assms G\<^sub>0_props by auto
           moreover have "src\<^sub>D ((e (trg\<^sub>D \<mu>) \<star>\<^sub>D \<mu>) \<star>\<^sub>D d (src\<^sub>D \<mu>)) = trg\<^sub>D (XLT \<nu>)"
-            using assms G\<^sub>0_props by (simp add: D.hseqI')
+            using assms G\<^sub>0_props by simp
           ultimately show ?thesis
-             using assms G\<^sub>0_props
-                  D.interchange
-                    [of "(e (trg\<^sub>D \<mu>) \<star>\<^sub>D \<mu>) \<star>\<^sub>D d (src\<^sub>D \<mu>)" "\<a>\<^sub>D\<^sup>-\<^sup>1[e (trg\<^sub>D \<mu>), D.dom \<mu>, d (src\<^sub>D \<mu>)]"
-                        "XLT \<nu>" "XLT (D.dom \<nu>)"]
-             by simp
+             using assms G\<^sub>0_props D.interchange by simp
         qed
         finally have "(\<a>\<^sub>D\<^sup>-\<^sup>1[e (trg\<^sub>D \<mu>), D.cod \<mu>, d (src\<^sub>D \<mu>)] \<star>\<^sub>D XLT (D.cod \<nu>)) \<cdot>\<^sub>D
                         (XLT \<mu> \<star>\<^sub>D XLT \<nu>) =
@@ -2913,7 +2862,7 @@ begin
               ((e (trg\<^sub>D \<mu>) \<star>\<^sub>D \<mu>) \<star>\<^sub>D d (src\<^sub>D \<mu>) \<star>\<^sub>D XLT \<nu>) \<cdot>\<^sub>D
                 \<a>\<^sub>D[e (trg\<^sub>D \<mu>) \<star>\<^sub>D D.dom \<mu>, d (src\<^sub>D \<mu>), XLT (D.dom \<nu>)]"
           using assms D.assoc_naturality [of "e (trg\<^sub>D \<mu>) \<star>\<^sub>D \<mu>" "d (src\<^sub>D \<mu>)" "XLT \<nu>"]
-          by (simp add: D.hseqI')
+          by simp
         thus ?thesis
           using D.comp_assoc by simp
       qed
@@ -2931,7 +2880,7 @@ begin
                 ((e (trg\<^sub>D \<mu>) \<star>\<^sub>D \<mu>) \<star>\<^sub>D d (src\<^sub>D \<mu>) \<star>\<^sub>D XLT \<nu>) =
               (e (trg\<^sub>D \<mu>) \<star>\<^sub>D \<mu> \<star>\<^sub>D d (src\<^sub>D \<mu>) \<star>\<^sub>D XLT \<nu>) \<cdot>\<^sub>D
                 \<a>\<^sub>D[e (trg\<^sub>D \<mu>), D.dom \<mu>, d (src\<^sub>D \<mu>) \<star>\<^sub>D XLT (D.dom \<nu>)]"
-          using assms D.hseqI' D.assoc_naturality [of "e (trg\<^sub>D \<mu>)" \<mu> "d (src\<^sub>D \<mu>) \<star>\<^sub>D XLT \<nu>"]
+          using assms D.assoc_naturality [of "e (trg\<^sub>D \<mu>)" \<mu> "d (src\<^sub>D \<mu>) \<star>\<^sub>D XLT \<nu>"]
           by simp
         thus ?thesis
           using D.comp_assoc by simp
@@ -2958,32 +2907,32 @@ begin
              e (trg\<^sub>D \<mu>) \<star>\<^sub>D
                (D.cod \<mu> \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[d (src\<^sub>D \<mu>), e (trg\<^sub>D \<nu>), D.cod \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)]) \<cdot>\<^sub>D
                (\<mu> \<star>\<^sub>D d (src\<^sub>D \<mu>) \<star>\<^sub>D XLT \<nu>)"
-            using assms D.hseqI' G\<^sub>0_props D.whisker_left by simp
+            using assms G\<^sub>0_props D.whisker_left by simp
           also have "... = e (trg\<^sub>D \<mu>) \<star>\<^sub>D \<mu> \<star>\<^sub>D
                              \<a>\<^sub>D\<^sup>-\<^sup>1[d (src\<^sub>D \<mu>), e (trg\<^sub>D \<nu>), D.cod \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)] \<cdot>\<^sub>D
                              (d (src\<^sub>D \<mu>) \<star>\<^sub>D XLT \<nu>)"
-            using assms D.hseqI' D.comp_cod_arr
+            using assms D.comp_cod_arr
                   D.interchange
                     [of "D.cod \<mu>" \<mu> "\<a>\<^sub>D\<^sup>-\<^sup>1[d (src\<^sub>D \<mu>), e (trg\<^sub>D \<nu>), D.cod \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)]"
                         "d (src\<^sub>D \<mu>) \<star>\<^sub>D XLT \<nu>"]
             by simp
           also have "... = e (trg\<^sub>D \<mu>) \<star>\<^sub>D \<mu> \<star>\<^sub>D (TRG \<nu> \<star>\<^sub>D \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)) \<cdot>\<^sub>D
                              \<a>\<^sub>D\<^sup>-\<^sup>1[d (src\<^sub>D \<mu>), e (trg\<^sub>D \<nu>), D.dom \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)]"
-            using assms D.hseqI' G\<^sub>0_props
+            using assms G\<^sub>0_props
                   D.assoc'_naturality [of "d (src\<^sub>D \<mu>)" "e (trg\<^sub>D \<nu>)" "\<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)"]
             by simp
           also have "... = e (trg\<^sub>D \<mu>) \<star>\<^sub>D (\<mu> \<star>\<^sub>D TRG \<nu> \<star>\<^sub>D \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)) \<cdot>\<^sub>D
                              (D.dom \<mu> \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[d (src\<^sub>D \<mu>), e (trg\<^sub>D \<nu>), D.dom \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)])"
-            using assms D.hseqI' G\<^sub>0_props D.comp_arr_dom
+            using assms G\<^sub>0_props D.comp_arr_dom
                   D.interchange
                     [of \<mu> "D.dom \<mu>" "TRG \<nu> \<star>\<^sub>D \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)"
                         "\<a>\<^sub>D\<^sup>-\<^sup>1[d (src\<^sub>D \<mu>), e (trg\<^sub>D \<nu>), D.dom \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)]"]
-            by simp
+            by fastforce
           also have
             "... = (e (trg\<^sub>D \<mu>) \<star>\<^sub>D \<mu> \<star>\<^sub>D TRG \<nu> \<star>\<^sub>D \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)) \<cdot>\<^sub>D
                      (e (trg\<^sub>D \<mu>) \<star>\<^sub>D D.dom \<mu> \<star>\<^sub>D
                         \<a>\<^sub>D\<^sup>-\<^sup>1[d (src\<^sub>D \<mu>), e (trg\<^sub>D \<nu>), D.dom \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)])"
-            using assms D.hseqI' G\<^sub>0_props D.whisker_left by simp
+            using assms G\<^sub>0_props D.whisker_left by simp
           finally show ?thesis by simp
         qed
         thus ?thesis
@@ -3004,16 +2953,16 @@ begin
               e (trg\<^sub>D \<mu>) \<star>\<^sub>D \<mu> \<star>\<^sub>D
                 LUNIT (D.cod (\<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>))) \<cdot>\<^sub>D
                 ((d (src\<^sub>D \<mu>) \<star>\<^sub>D e (trg\<^sub>D \<nu>)) \<star>\<^sub>D \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>))"
-          using assms D.hseqI' D.comp_arr_dom D.comp_cod_arr D.whisker_left
+          using assms D.comp_arr_dom D.comp_cod_arr D.whisker_left
                 D.interchange [of "D.cod \<mu>" \<mu> "LUNIT (D.cod \<nu> \<star>\<^sub>D d (src\<^sub>D (D.cod \<nu>)))"
                                   "(d (src\<^sub>D \<mu>) \<star>\<^sub>D e (trg\<^sub>D \<nu>)) \<star>\<^sub>D \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)"]
           by fastforce
         also have "... =
                    e (trg\<^sub>D \<mu>) \<star>\<^sub>D \<mu> \<star>\<^sub>D (\<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)) \<cdot>\<^sub>D LUNIT (D.dom \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>))"
-          using assms D.hseqI' LUNIT_naturality [of "\<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)"] by simp
+          using assms LUNIT_naturality [of "\<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)"] by simp
         also have "... = (e (trg\<^sub>D \<mu>) \<star>\<^sub>D \<mu> \<star>\<^sub>D \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)) \<cdot>\<^sub>D 
                            (e (trg\<^sub>D \<mu>) \<star>\<^sub>D D.dom \<mu> \<star>\<^sub>D LUNIT (D.dom \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)))"
-          using assms D.hseqI' D.comp_arr_dom D.comp_cod_arr D.whisker_left
+          using assms D.comp_arr_dom D.comp_cod_arr D.whisker_left
                 D.interchange [of \<mu> "D.dom \<mu>" "\<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)" "LUNIT (D.dom \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>))"]
           by simp
         finally have
@@ -3042,14 +2991,12 @@ begin
           have "(e (trg\<^sub>D \<mu>) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[D.cod \<mu>, D.cod \<nu>, d (src\<^sub>D \<nu>)]) \<cdot>\<^sub>D
                   (e (trg\<^sub>D \<mu>) \<star>\<^sub>D \<mu> \<star>\<^sub>D \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>)) =
                 e (trg\<^sub>D \<mu>) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[D.cod \<mu>, D.cod \<nu>, d (src\<^sub>D \<nu>)] \<cdot>\<^sub>D (\<mu> \<star>\<^sub>D \<nu> \<star>\<^sub>D d (src\<^sub>D \<nu>))"
-            using assms D.hseqI'
-                  D.whisker_left [of "e (trg\<^sub>D \<mu>)" "\<a>\<^sub>D\<^sup>-\<^sup>1[D.cod \<mu>, D.cod \<nu>, d (src\<^sub>D \<nu>)]"]
-            by simp
+            using assms D.whisker_left by simp
           also have "... = e (trg\<^sub>D \<mu>) \<star>\<^sub>D ((\<mu> \<star>\<^sub>D \<nu>) \<star>\<^sub>D d (src\<^sub>D \<nu>)) \<cdot>\<^sub>D
                              \<a>\<^sub>D\<^sup>-\<^sup>1[D.dom \<mu>, D.dom \<nu>, d (src\<^sub>D \<nu>)]"
-            using assms D.hseqI' D.assoc'_naturality [of \<mu> \<nu> "d (src\<^sub>D \<nu>)"] by simp
+            using assms D.assoc'_naturality [of \<mu> \<nu> "d (src\<^sub>D \<nu>)"] by simp
           also have "... = XLT (\<mu> \<star>\<^sub>D \<nu>) \<cdot>\<^sub>D (e (trg\<^sub>D \<mu>) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[D.dom \<mu>, D.dom \<nu>, d (src\<^sub>D \<nu>)])"
-            using assms D.hseqI' D.whisker_left by simp
+            using assms D.whisker_left by simp
           finally show ?thesis by simp
         qed
         thus ?thesis
@@ -3139,7 +3086,7 @@ begin
                 (\<a>\<^sub>D[e (trg\<^sub>D f), f, d (src\<^sub>D f) \<star>\<^sub>D XLT g] \<star>\<^sub>D XLT h) \<cdot>\<^sub>D
                 (\<a>\<^sub>D[e (trg\<^sub>D f) \<star>\<^sub>D f, d (src\<^sub>D f), XLT g] \<star>\<^sub>D XLT h) \<cdot>\<^sub>D
                 ((\<a>\<^sub>D\<^sup>-\<^sup>1[e (trg\<^sub>D f), f, d (src\<^sub>D f)] \<star>\<^sub>D XLT g) \<star>\<^sub>D XLT h)"
-          using assms D.hseqI' D.whisker_right by simp (* 15 sec *)
+          using assms D.whisker_right by simp (* 15 sec *)
         thus ?thesis
           using D.comp_assoc by simp
       qed
@@ -3162,11 +3109,11 @@ begin
       proof -
         have "e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D g) \<star>\<^sub>D LUNIT (h \<star>\<^sub>D d (src\<^sub>D h)) =
               e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D g) \<star>\<^sub>D (LUNIT h \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG h, h, d (src\<^sub>D h)]"
-          using assms LUNIT_hcomp [of h "d (src\<^sub>D h)"] D.hseqI' D.invert_side_of_triangle
+          using assms LUNIT_hcomp [of h "d (src\<^sub>D h)"] D.invert_side_of_triangle
           by simp
         also have "... = (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D g) \<star>\<^sub>D LUNIT h \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D g) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG h, h, d (src\<^sub>D h)])"
-          using assms D.whisker_left D.hseqI' by simp
+          using assms D.whisker_left by simp
         finally have "e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D g) \<star>\<^sub>D LUNIT (h \<star>\<^sub>D d (src\<^sub>D h)) =
                       (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D g) \<star>\<^sub>D LUNIT h \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                         (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D g) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG h, h, d (src\<^sub>D h)])"
@@ -3194,14 +3141,14 @@ begin
         have "(e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f \<star>\<^sub>D g, h, d (src\<^sub>D h)]) \<cdot>\<^sub>D
                 (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D g) \<star>\<^sub>D LUNIT h \<star>\<^sub>D d (src\<^sub>D h)) =
               e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f \<star>\<^sub>D g, h, d (src\<^sub>D h)] \<cdot>\<^sub>D ((f \<star>\<^sub>D g) \<star>\<^sub>D LUNIT h \<star>\<^sub>D d (src\<^sub>D h))"
-          using assms D.whisker_left D.hseqI' by simp
+          using assms D.whisker_left by simp
         also have "... = e (trg\<^sub>D f) \<star>\<^sub>D
                            (((f \<star>\<^sub>D g) \<star>\<^sub>D LUNIT h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            \<a>\<^sub>D\<^sup>-\<^sup>1[f \<star>\<^sub>D g, TRG h \<star>\<^sub>D h, d (src\<^sub>D h)]"
           using assms D.assoc'_naturality [of "f \<star>\<^sub>D g" "LUNIT h" "d (src\<^sub>D h)"] by simp
         also have "... = (e (trg\<^sub>D f) \<star>\<^sub>D ((f \<star>\<^sub>D g) \<star>\<^sub>D LUNIT h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            (e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f \<star>\<^sub>D g, TRG h \<star>\<^sub>D h, d (src\<^sub>D h)])"
-          using assms D.whisker_left D.hseqI' by simp
+          using assms D.whisker_left by simp
         finally have "(e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f \<star>\<^sub>D g, h, d (src\<^sub>D h)]) \<cdot>\<^sub>D
                         (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D g) \<star>\<^sub>D LUNIT h \<star>\<^sub>D d (src\<^sub>D h)) =
                       (e (trg\<^sub>D f) \<star>\<^sub>D ((f \<star>\<^sub>D g) \<star>\<^sub>D LUNIT h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
@@ -3229,14 +3176,14 @@ begin
       proof -
         have "XLT \<a>\<^sub>D[f, g, h] \<cdot>\<^sub>D (e (trg\<^sub>D f) \<star>\<^sub>D ((f \<star>\<^sub>D g) \<star>\<^sub>D LUNIT h) \<star>\<^sub>D d (src\<^sub>D h)) =
               e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D[f, g, h] \<cdot>\<^sub>D ((f \<star>\<^sub>D g) \<star>\<^sub>D LUNIT h) \<star>\<^sub>D d (src\<^sub>D h)"
-          using assms D.hseqI' D.whisker_left D.whisker_right by simp
+          using assms D.whisker_left D.whisker_right by simp
         also have "... = e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D g \<star>\<^sub>D LUNIT h) \<cdot>\<^sub>D
                            \<a>\<^sub>D[f, g, TRG h \<star>\<^sub>D h] \<star>\<^sub>D d (src\<^sub>D h)"
-          using assms D.hseqI' D.assoc_naturality [of f g "LUNIT h"] by simp
+          using assms D.assoc_naturality [of f g "LUNIT h"] by simp
         also have
           "... = (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D g \<star>\<^sub>D LUNIT h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                    (e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D[f, g, TRG h \<star>\<^sub>D h] \<star>\<^sub>D d (src\<^sub>D h))"
-          using assms D.hseqI' D.whisker_left D.whisker_right by simp
+          using assms D.whisker_left D.whisker_right by simp
         finally have
           "XLT \<a>\<^sub>D[f, g, h] \<cdot>\<^sub>D (e (trg\<^sub>D f) \<star>\<^sub>D ((f \<star>\<^sub>D g) \<star>\<^sub>D LUNIT h) \<star>\<^sub>D d (src\<^sub>D h)) =
            (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D g \<star>\<^sub>D LUNIT h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
@@ -3265,11 +3212,11 @@ begin
         have "((e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D LUNIT (g \<star>\<^sub>D d (src\<^sub>D g))) \<star>\<^sub>D XLT h) =
               (e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g \<star>\<^sub>D d (src\<^sub>D g)) \<cdot>\<^sub>D
                               \<a>\<^sub>D\<^sup>-\<^sup>1[f, TRG g, g \<star>\<^sub>D d (src\<^sub>D g)]) \<star>\<^sub>D XLT h"
-          using assms TRIANGLE [of f "g \<star>\<^sub>D d (src\<^sub>D g)"] D.invert_side_of_triangle D.hseqI'
+          using assms TRIANGLE [of f "g \<star>\<^sub>D d (src\<^sub>D g)"] D.invert_side_of_triangle
           by simp
         also have "... = ((e (trg\<^sub>D f) \<star>\<^sub>D RUNIT f \<star>\<^sub>D g \<star>\<^sub>D d (src\<^sub>D g)) \<star>\<^sub>D XLT h) \<cdot>\<^sub>D
                          ((e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f, TRG g, g \<star>\<^sub>D d (src\<^sub>D g)]) \<star>\<^sub>D XLT h)"
-          using assms D.hseqI' D.whisker_left D.whisker_right by simp
+          using assms D.whisker_left D.whisker_right by simp
         finally have "((e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D LUNIT (g \<star>\<^sub>D d (src\<^sub>D g))) \<star>\<^sub>D XLT h) =
                       ((e (trg\<^sub>D f) \<star>\<^sub>D RUNIT f \<star>\<^sub>D g \<star>\<^sub>D d (src\<^sub>D g)) \<star>\<^sub>D XLT h) \<cdot>\<^sub>D
                         ((e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f, TRG g, g \<star>\<^sub>D d (src\<^sub>D g)])
@@ -3299,13 +3246,13 @@ begin
         have "((e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f, g, d (src\<^sub>D g)]) \<star>\<^sub>D XLT h) \<cdot>\<^sub>D
                 ((e (trg\<^sub>D f) \<star>\<^sub>D RUNIT f \<star>\<^sub>D g \<star>\<^sub>D d (src\<^sub>D g)) \<star>\<^sub>D XLT h) =
               (e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f, g, d (src\<^sub>D g)] \<cdot>\<^sub>D (RUNIT f \<star>\<^sub>D g \<star>\<^sub>D d (src\<^sub>D g))) \<star>\<^sub>D XLT h"
-          using assms D.hseqI' D.whisker_left D.whisker_right by simp
+          using assms D.whisker_left D.whisker_right by simp
         also have "... = (e (trg\<^sub>D f) \<star>\<^sub>D ((RUNIT f \<star>\<^sub>D g) \<star>\<^sub>D d (src\<^sub>D g)) \<cdot>\<^sub>D
                                         \<a>\<^sub>D\<^sup>-\<^sup>1[f \<star>\<^sub>D TRG g, g, d (src\<^sub>D g)]) \<star>\<^sub>D XLT h"
           using assms D.assoc'_naturality [of "RUNIT f" g "d (src\<^sub>D g)"] by simp
         also have "... = ((e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g) \<star>\<^sub>D d (src\<^sub>D g)) \<star>\<^sub>D XLT h) \<cdot>\<^sub>D
                            ((e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f \<star>\<^sub>D TRG g, g, d (src\<^sub>D g)]) \<star>\<^sub>D XLT h)"
-          using assms D.hseqI' D.whisker_left D.whisker_right by simp
+          using assms D.whisker_left D.whisker_right by simp
         finally have "((e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f, g, d (src\<^sub>D g)]) \<star>\<^sub>D XLT h) \<cdot>\<^sub>D
                         ((e (trg\<^sub>D f) \<star>\<^sub>D RUNIT f \<star>\<^sub>D g \<star>\<^sub>D d (src\<^sub>D g)) \<star>\<^sub>D XLT h) =
                       ((e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g) \<star>\<^sub>D d (src\<^sub>D g)) \<star>\<^sub>D XLT h) \<cdot>\<^sub>D
@@ -3336,14 +3283,14 @@ begin
                 ((e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g) \<star>\<^sub>D d (src\<^sub>D g)) \<star>\<^sub>D XLT h) =
               \<a>\<^sub>D\<^sup>-\<^sup>1[e (trg\<^sub>D f), f \<star>\<^sub>D g, d (src\<^sub>D g)] \<cdot>\<^sub>D
                 (e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g) \<star>\<^sub>D d (src\<^sub>D g)) \<star>\<^sub>D XLT h"
-          using assms D.hseqI' D.whisker_left D.whisker_right by simp
+          using assms D.whisker_left D.whisker_right by simp
         also have "... = ((e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g)) \<star>\<^sub>D d (src\<^sub>D g)) \<cdot>\<^sub>D
                             \<a>\<^sub>D\<^sup>-\<^sup>1[e (trg\<^sub>D f), (f \<star>\<^sub>D SRC f) \<star>\<^sub>D g, d (src\<^sub>D g)] \<star>\<^sub>D XLT h"
-          using assms D.hseqI' D.assoc'_naturality [of "e (trg\<^sub>D f)" "RUNIT f \<star>\<^sub>D g" "d (src\<^sub>D g)"]
+          using assms D.assoc'_naturality [of "e (trg\<^sub>D f)" "RUNIT f \<star>\<^sub>D g" "d (src\<^sub>D g)"]
           by simp
         also have "... = (((e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g)) \<star>\<^sub>D d (src\<^sub>D g)) \<star>\<^sub>D XLT h) \<cdot>\<^sub>D
                            (\<a>\<^sub>D\<^sup>-\<^sup>1[e (trg\<^sub>D f), (f \<star>\<^sub>D SRC f) \<star>\<^sub>D g, d (src\<^sub>D g)] \<star>\<^sub>D XLT h)"
-          using assms D.hseqI' D.whisker_left D.whisker_right by simp
+          using assms D.whisker_left D.whisker_right by simp
         finally have "(\<a>\<^sub>D\<^sup>-\<^sup>1[e (trg\<^sub>D f), f \<star>\<^sub>D g, d (src\<^sub>D g)] \<star>\<^sub>D XLT h) \<cdot>\<^sub>D
                         ((e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g) \<star>\<^sub>D d (src\<^sub>D g)) \<star>\<^sub>D XLT h) =
                       (((e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g)) \<star>\<^sub>D d (src\<^sub>D g)) \<star>\<^sub>D XLT h) \<cdot>\<^sub>D
@@ -3374,7 +3321,7 @@ begin
                 (((e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g)) \<star>\<^sub>D d (src\<^sub>D g)) \<star>\<^sub>D XLT h) =
               ((e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g)) \<star>\<^sub>D d (src\<^sub>D g) \<star>\<^sub>D XLT h) \<cdot>\<^sub>D
                 \<a>\<^sub>D[e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D SRC f) \<star>\<^sub>D g, d (src\<^sub>D g), XLT h]"
-          using assms D.hseqI'  
+          using assms  
                 D.assoc_naturality [of "e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g)" "d (src\<^sub>D g)" "XLT h"]
           by simp
         thus ?thesis
@@ -3402,7 +3349,7 @@ begin
                 ((e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g)) \<star>\<^sub>D d (src\<^sub>D g) \<star>\<^sub>D XLT h) =
               (e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g) \<star>\<^sub>D d (src\<^sub>D g) \<star>\<^sub>D XLT h) \<cdot>\<^sub>D
                 \<a>\<^sub>D[e (trg\<^sub>D f), (f \<star>\<^sub>D SRC f) \<star>\<^sub>D g, d (src\<^sub>D g) \<star>\<^sub>D XLT h]"
-          using assms D.hseqI'
+          using assms
                 D.assoc_naturality [of "e (trg\<^sub>D f)" "RUNIT f \<star>\<^sub>D g" "d (src\<^sub>D g) \<star>\<^sub>D XLT h"]
           by simp
         thus ?thesis
@@ -3429,12 +3376,12 @@ begin
                 (e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g) \<star>\<^sub>D d (src\<^sub>D g) \<star>\<^sub>D XLT h)) =
               e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g) \<star>\<^sub>D
                 \<a>\<^sub>D\<^sup>-\<^sup>1[d (src\<^sub>D g), e (trg\<^sub>D h), h \<star>\<^sub>D d (src\<^sub>D h)] \<cdot>\<^sub>D (d (src\<^sub>D g) \<star>\<^sub>D XLT h)"
-          using assms D.hseqI' D.comp_cod_arr D.whisker_left [of "e (trg\<^sub>D f)"]
+          using assms D.comp_cod_arr D.whisker_left
                 D.interchange [of "f \<star>\<^sub>D g" "RUNIT f \<star>\<^sub>D g"]
           by simp
         also have "... = e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g) \<star>\<^sub>D
                            \<a>\<^sub>D\<^sup>-\<^sup>1[d (src\<^sub>D g), e (trg\<^sub>D h), h \<star>\<^sub>D d (src\<^sub>D h)]"
-          using assms D.hseqI' D.comp_arr_dom by simp
+          using assms D.comp_arr_dom by simp
         finally have "((e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D g) \<star>\<^sub>D
                           \<a>\<^sub>D\<^sup>-\<^sup>1[d (src\<^sub>D g), e (trg\<^sub>D h), h \<star>\<^sub>D d (src\<^sub>D h)]) \<cdot>\<^sub>D
                         (e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g) \<star>\<^sub>D d (src\<^sub>D g) \<star>\<^sub>D XLT h)) =
@@ -3468,7 +3415,7 @@ begin
               e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g) \<star>\<^sub>D
                 \<a>\<^sub>D\<^sup>-\<^sup>1[TRG h, h, d (src\<^sub>D h)] \<cdot>\<^sub>D
                 \<a>\<^sub>D\<^sup>-\<^sup>1[d (src\<^sub>D g), e (trg\<^sub>D h), h \<star>\<^sub>D d (src\<^sub>D h)]"
-          using assms D.hseqI' D.comp_arr_dom D.comp_cod_arr D.whisker_left
+          using assms D.comp_arr_dom D.comp_cod_arr D.whisker_left
                 D.interchange [of "f \<star>\<^sub>D g" "RUNIT f \<star>\<^sub>D g"
                                   "\<a>\<^sub>D\<^sup>-\<^sup>1[TRG h, h, d (src\<^sub>D h)]"
                                   "\<a>\<^sub>D\<^sup>-\<^sup>1[d (src\<^sub>D g), e (trg\<^sub>D h), h \<star>\<^sub>D d (src\<^sub>D h)]"]
@@ -3477,7 +3424,7 @@ begin
           "... = (e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG h, h, d (src\<^sub>D h)]) \<cdot>\<^sub>D
                    (e (trg\<^sub>D f) \<star>\<^sub>D ((f \<star>\<^sub>D SRC f) \<star>\<^sub>D g) \<star>\<^sub>D
                       \<a>\<^sub>D\<^sup>-\<^sup>1[d (src\<^sub>D g), e (trg\<^sub>D h), h \<star>\<^sub>D d (src\<^sub>D h)])"
-          using assms D.hseqI' D.comp_arr_dom D.whisker_left
+          using assms D.comp_arr_dom D.whisker_left
                 D.interchange [of "RUNIT f \<star>\<^sub>D g" "(f \<star>\<^sub>D SRC f) \<star>\<^sub>D g"
                                   "\<a>\<^sub>D\<^sup>-\<^sup>1[TRG h, h, d (src\<^sub>D h)]"
                                   "\<a>\<^sub>D\<^sup>-\<^sup>1[d (src\<^sub>D g), e (trg\<^sub>D h), h \<star>\<^sub>D d (src\<^sub>D h)]"]
@@ -3515,7 +3462,7 @@ begin
                 (e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f \<star>\<^sub>D g, TRG h \<star>\<^sub>D h, d (src\<^sub>D h)]) =
               e (trg\<^sub>D f) \<star>\<^sub>D
                 (\<a>\<^sub>D[f, g, TRG h \<star>\<^sub>D h] \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f \<star>\<^sub>D g, TRG h \<star>\<^sub>D h, d (src\<^sub>D h)]"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         also have
           "... = e (trg\<^sub>D f) \<star>\<^sub>D
                    \<a>\<^sub>D\<^sup>-\<^sup>1[f, g \<star>\<^sub>D (d (trg\<^sub>D h) \<star>\<^sub>D e (trg\<^sub>D h)) \<star>\<^sub>D h, d (src\<^sub>D h)] \<cdot>\<^sub>D
@@ -3530,9 +3477,9 @@ begin
             using assms D.pentagon' D.comp_assoc by simp
           moreover have "D.inv (\<a>\<^sub>D\<^sup>-\<^sup>1[f, g, (d (trg\<^sub>D h) \<star>\<^sub>D e (trg\<^sub>D h)) \<star>\<^sub>D h] \<star>\<^sub>D d (src\<^sub>D h)) =
                          \<a>\<^sub>D[f, g, (d (trg\<^sub>D h) \<star>\<^sub>D e (trg\<^sub>D h)) \<star>\<^sub>D h] \<star>\<^sub>D d (src\<^sub>D h)"
-            using assms D.hseqI' D.iso_inv_iso by simp
+            using assms D.iso_inv_iso by simp
           ultimately show ?thesis
-            using assms D.hseqI' D.iso_inv_iso D.comp_assoc
+            using assms D.iso_inv_iso D.comp_assoc
                   D.invert_opposite_sides_of_square
                     [of "\<a>\<^sub>D\<^sup>-\<^sup>1[f, g, (d (trg\<^sub>D h) \<star>\<^sub>D e (trg\<^sub>D h)) \<star>\<^sub>D h] \<star>\<^sub>D d (src\<^sub>D h)"
                         "\<a>\<^sub>D\<^sup>-\<^sup>1[f, g \<star>\<^sub>D (d (trg\<^sub>D h) \<star>\<^sub>D e (trg\<^sub>D h)) \<star>\<^sub>D h, d (src\<^sub>D h)] \<cdot>\<^sub>D
@@ -3544,7 +3491,7 @@ begin
         also have "... = (e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f, g \<star>\<^sub>D TRG h \<star>\<^sub>D h, d (src\<^sub>D h)]) \<cdot>\<^sub>D
                            (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[g, TRG h \<star>\<^sub>D h, d (src\<^sub>D h)]) \<cdot>\<^sub>D
                            (e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D[f, g, (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)])"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         finally have "(e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D[f, g, TRG h \<star>\<^sub>D h] \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                         (e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f \<star>\<^sub>D g, TRG h \<star>\<^sub>D h, d (src\<^sub>D h)]) =
                       (e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f, g \<star>\<^sub>D TRG h \<star>\<^sub>D h, d (src\<^sub>D h)]) \<cdot>\<^sub>D
@@ -3578,7 +3525,7 @@ begin
               e (trg\<^sub>D f) \<star>\<^sub>D
                 \<a>\<^sub>D[f, g, (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)] \<cdot>\<^sub>D
                 ((RUNIT f \<star>\<^sub>D g) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG h, h, d (src\<^sub>D h)])"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         also have "... = e (trg\<^sub>D f) \<star>\<^sub>D
                            (RUNIT f \<star>\<^sub>D g \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG h, h, d (src\<^sub>D h)]) \<cdot>\<^sub>D
                            \<a>\<^sub>D[f \<star>\<^sub>D SRC f, g, TRG h \<star>\<^sub>D h \<star>\<^sub>D d (src\<^sub>D h)]"
@@ -3587,7 +3534,7 @@ begin
           by simp
         also have "... = (e (trg\<^sub>D f) \<star>\<^sub>D RUNIT f \<star>\<^sub>D g \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG h, h, d (src\<^sub>D h)]) \<cdot>\<^sub>D
                            (e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D[f \<star>\<^sub>D SRC f, g, TRG h \<star>\<^sub>D h \<star>\<^sub>D d (src\<^sub>D h)])"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         finally have "(e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D[f, g, (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)]) \<cdot>\<^sub>D
                         (e (trg\<^sub>D f) \<star>\<^sub>D (RUNIT f \<star>\<^sub>D g) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG h, h, d (src\<^sub>D h)]) =
                       (e (trg\<^sub>D f) \<star>\<^sub>D RUNIT f \<star>\<^sub>D g \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG h, h, d (src\<^sub>D h)]) \<cdot>\<^sub>D
@@ -3621,7 +3568,7 @@ begin
         have "e (trg\<^sub>D f) \<star>\<^sub>D RUNIT f \<star>\<^sub>D g \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[d (trg\<^sub>D h) \<star>\<^sub>D e (trg\<^sub>D h), h, d (src\<^sub>D h)] =
               (e (trg\<^sub>D f) \<star>\<^sub>D RUNIT f \<star>\<^sub>D g \<star>\<^sub>D (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
               (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D SRC f) \<star>\<^sub>D g \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG h, h, d (src\<^sub>D h)])"
-          using assms D.hseqI' D.whisker_left D.comp_arr_dom D.comp_cod_arr
+          using assms D.whisker_left D.comp_arr_dom D.comp_cod_arr
                 D.interchange [of "RUNIT f" "f \<star>\<^sub>D SRC f"
                                   "g \<star>\<^sub>D ((TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h))"
                                   "g \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG h, h, d (src\<^sub>D h)]"]
@@ -3630,15 +3577,14 @@ begin
                            (f \<star>\<^sub>D LUNIT (g \<star>\<^sub>D (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h))) \<cdot>\<^sub>D
                            \<a>\<^sub>D[f, d (src\<^sub>D f) \<star>\<^sub>D e (trg\<^sub>D g), g \<star>\<^sub>D (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)]) \<cdot>\<^sub>D
                          (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D SRC f) \<star>\<^sub>D g \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG h, h, d (src\<^sub>D h)])"
-          using assms D.hseqI' TRIANGLE [of f "g \<star>\<^sub>D (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)"]
-          by simp
+          using assms TRIANGLE [of f "g \<star>\<^sub>D (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)"] by simp
         also have
           "... =
            (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D LUNIT (g \<star>\<^sub>D (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h))) \<cdot>\<^sub>D
              (e (trg\<^sub>D f) \<star>\<^sub>D
                \<a>\<^sub>D[f, d (src\<^sub>D f) \<star>\<^sub>D e (trg\<^sub>D g), g \<star>\<^sub>D (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)]) \<cdot>\<^sub>D
              (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D SRC f) \<star>\<^sub>D g \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG h, h, d (src\<^sub>D h)])"
-          using assms D.hseqI' D.whisker_left D.comp_assoc by simp
+          using assms D.whisker_left D.comp_assoc by simp
         finally have
           "e (trg\<^sub>D f) \<star>\<^sub>D RUNIT f \<star>\<^sub>D g \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG h, h, d (src\<^sub>D h)] =
              (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D LUNIT (g \<star>\<^sub>D (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h))) \<cdot>\<^sub>D
@@ -3674,12 +3620,12 @@ begin
         have "e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D LUNIT (g \<star>\<^sub>D (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) =
               e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D (LUNIT g \<star>\<^sub>D (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                                   \<a>\<^sub>D\<^sup>-\<^sup>1[d (trg\<^sub>D g) \<star>\<^sub>D e (trg\<^sub>D g), g, (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)]"
-          using assms D.hseqI' LUNIT_hcomp [of g "(TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)"]
+          using assms LUNIT_hcomp [of g "(TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)"]
                 D.invert_side_of_triangle
           by simp
         also have "... = (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D LUNIT g \<star>\<^sub>D (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                          (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG g, g, (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)])"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         finally have "e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D LUNIT (g \<star>\<^sub>D (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) =
                       (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D LUNIT g \<star>\<^sub>D (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                         (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG g, g, (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)])"
@@ -3714,16 +3660,15 @@ begin
               e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D
                 \<a>\<^sub>D\<^sup>-\<^sup>1[g, TRG h \<star>\<^sub>D h, d (src\<^sub>D h)] \<cdot>\<^sub>D
                 (LUNIT g \<star>\<^sub>D (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h))"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         also have "... = e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D
                            ((LUNIT g \<star>\<^sub>D TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            \<a>\<^sub>D\<^sup>-\<^sup>1[TRG g \<star>\<^sub>D g, TRG h \<star>\<^sub>D h, d (src\<^sub>D h)]"
-          using assms D.hseqI'
-                D.assoc'_naturality [of "LUNIT g" "TRG h \<star>\<^sub>D h" "d (src\<^sub>D h)"]
+          using assms D.assoc'_naturality [of "LUNIT g" "TRG h \<star>\<^sub>D h" "d (src\<^sub>D h)"]
           by simp
         also have "... = (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D (LUNIT g \<star>\<^sub>D TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG g \<star>\<^sub>D g, TRG h \<star>\<^sub>D h, d (src\<^sub>D h)])"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         finally have "(e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[g, TRG h \<star>\<^sub>D h, d (src\<^sub>D h)]) \<cdot>\<^sub>D
                         (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D LUNIT g \<star>\<^sub>D (TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) =
                       (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D (LUNIT g \<star>\<^sub>D TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
@@ -3759,16 +3704,15 @@ begin
               e (trg\<^sub>D f) \<star>\<^sub>D
                 \<a>\<^sub>D\<^sup>-\<^sup>1[f, g \<star>\<^sub>D TRG h \<star>\<^sub>D h, d (src\<^sub>D h)] \<cdot>\<^sub>D
                 (f \<star>\<^sub>D (LUNIT g \<star>\<^sub>D TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h))"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         also have "... = e (trg\<^sub>D f) \<star>\<^sub>D
                            ((f \<star>\<^sub>D LUNIT g \<star>\<^sub>D TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            \<a>\<^sub>D\<^sup>-\<^sup>1[f, (TRG g \<star>\<^sub>D g) \<star>\<^sub>D TRG h \<star>\<^sub>D h, d (src\<^sub>D h)]"
-          using assms D.hseqI'
-                D.assoc'_naturality [of f "LUNIT g \<star>\<^sub>D TRG h \<star>\<^sub>D h" "d (src\<^sub>D h)"]
+          using assms D.assoc'_naturality [of f "LUNIT g \<star>\<^sub>D TRG h \<star>\<^sub>D h" "d (src\<^sub>D h)"]
           by simp
         also have "... = (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D LUNIT g \<star>\<^sub>D TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            (e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f, (TRG g \<star>\<^sub>D g) \<star>\<^sub>D TRG h \<star>\<^sub>D h, d (src\<^sub>D h)])"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         finally have "(e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f, g \<star>\<^sub>D TRG h \<star>\<^sub>D h, d (src\<^sub>D h)]) \<cdot>\<^sub>D
                         (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D (LUNIT g \<star>\<^sub>D TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) =
                       (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D LUNIT g \<star>\<^sub>D TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
@@ -3801,7 +3745,7 @@ begin
         have "(e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D g \<star>\<^sub>D LUNIT h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                 (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D LUNIT g \<star>\<^sub>D TRG h \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) =
               e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D LUNIT g \<star>\<^sub>D LUNIT h) \<star>\<^sub>D d (src\<^sub>D h)"
-          using assms D.hseqI' D.whisker_left D.whisker_right D.comp_arr_dom D.comp_cod_arr
+          using assms D.whisker_left D.whisker_right D.comp_arr_dom D.comp_cod_arr
                 D.interchange [of g "LUNIT g" "LUNIT h" "(d (trg\<^sub>D h) \<star>\<^sub>D e (trg\<^sub>D h)) \<star>\<^sub>D h"]
           by simp (* 10 sec *)
         thus ?thesis
@@ -3874,7 +3818,7 @@ begin
                 (XLT f \<star>\<^sub>D \<a>\<^sub>D[e (trg\<^sub>D g), g, d (src\<^sub>D g) \<star>\<^sub>D XLT h]) \<cdot>\<^sub>D
                 (XLT f \<star>\<^sub>D \<a>\<^sub>D[e (trg\<^sub>D g) \<star>\<^sub>D g, d (src\<^sub>D g), XLT h]) \<cdot>\<^sub>D
                 (XLT f \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[e (trg\<^sub>D g), g, d (src\<^sub>D g)] \<star>\<^sub>D XLT h)"
-          using assms D.hseqI' D.whisker_left by auto (* 15 sec *)
+          using assms D.whisker_left by auto (* 15 sec *)
         thus ?thesis
           using D.comp_assoc by simp
       qed
@@ -3898,12 +3842,12 @@ begin
               e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D 
                 (LUNIT (g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                 \<a>\<^sub>D\<^sup>-\<^sup>1[TRG g, g \<star>\<^sub>D h, d (src\<^sub>D h)]"
-          using assms D.hseqI' LUNIT_hcomp [of "g \<star>\<^sub>D h" "d (src\<^sub>D h)"]
+          using assms LUNIT_hcomp [of "g \<star>\<^sub>D h" "d (src\<^sub>D h)"]
                 D.invert_side_of_triangle
           by simp
         also have "... = (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D LUNIT (g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG g, g \<star>\<^sub>D h, d (src\<^sub>D h)])"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         finally have "e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D LUNIT ((g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) =
                       (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D LUNIT (g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                         (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG g, g \<star>\<^sub>D h, d (src\<^sub>D h)])"
@@ -3931,16 +3875,16 @@ begin
                 (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D LUNIT (g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) =
               e (trg\<^sub>D f) \<star>\<^sub>D
                 \<a>\<^sub>D\<^sup>-\<^sup>1[f, g \<star>\<^sub>D h, d (src\<^sub>D h)] \<cdot>\<^sub>D (f \<star>\<^sub>D LUNIT (g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h))"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         also have "... = e (trg\<^sub>D f) \<star>\<^sub>D
                            ((f \<star>\<^sub>D LUNIT (g \<star>\<^sub>D h)) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            \<a>\<^sub>D\<^sup>-\<^sup>1[f, TRG g \<star>\<^sub>D g \<star>\<^sub>D h, d (src\<^sub>D h)]"
-          using assms D.hseqI' D.assoc'_naturality [of f "LUNIT (g \<star>\<^sub>D h)" "d (src\<^sub>D h)"]
+          using assms D.assoc'_naturality [of f "LUNIT (g \<star>\<^sub>D h)" "d (src\<^sub>D h)"]
                 LUNIT_in_hom [of "g \<star>\<^sub>D h"]
           by auto
         also have "... = (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D LUNIT (g \<star>\<^sub>D h)) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            (e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f, TRG g \<star>\<^sub>D g \<star>\<^sub>D h, d (src\<^sub>D h)])"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         finally have "(e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f, g \<star>\<^sub>D h, d (src\<^sub>D h)]) \<cdot>\<^sub>D
                         (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D LUNIT (g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) =
                       (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D LUNIT (g \<star>\<^sub>D h)) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
@@ -3970,11 +3914,11 @@ begin
               XLT f \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D
                 (RUNIT g \<star>\<^sub>D h \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                 \<a>\<^sub>D\<^sup>-\<^sup>1[g, TRG h, h \<star>\<^sub>D d (src\<^sub>D h)]"
-          using assms D.hseqI' TRIANGLE [of g "h \<star>\<^sub>D d (src\<^sub>D h)"] D.invert_side_of_triangle
+          using assms TRIANGLE [of g "h \<star>\<^sub>D d (src\<^sub>D h)"] D.invert_side_of_triangle
           by simp
         also have "... = (XLT f \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D RUNIT g \<star>\<^sub>D h \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            (XLT f \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[g, TRG h, h \<star>\<^sub>D d (src\<^sub>D h)])"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         finally have "XLT f \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D g \<star>\<^sub>D LUNIT (h \<star>\<^sub>D d (src\<^sub>D h)) =
                       (XLT f \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D RUNIT g \<star>\<^sub>D h \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                         (XLT f \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[g, TRG h, h \<star>\<^sub>D d (src\<^sub>D h)])"
@@ -4002,14 +3946,14 @@ begin
         have "(XLT f \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[g, h, d (src\<^sub>D h)]) \<cdot>\<^sub>D
                 (XLT f \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D RUNIT g \<star>\<^sub>D h \<star>\<^sub>D d (src\<^sub>D h)) =
               XLT f \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[g, h, d (src\<^sub>D h)] \<cdot>\<^sub>D (RUNIT g \<star>\<^sub>D h \<star>\<^sub>D d (src\<^sub>D h))"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         also have "... = XLT f \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D
                            ((RUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            \<a>\<^sub>D\<^sup>-\<^sup>1[g \<star>\<^sub>D SRC g, h, d (src\<^sub>D h)]"
-          using assms D.hseqI' D.assoc'_naturality [of "RUNIT g" h "d (src\<^sub>D h)"] by auto
+          using assms D.assoc'_naturality [of "RUNIT g" h "d (src\<^sub>D h)"] by auto
         also have "... = (XLT f \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            (XLT f \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[g \<star>\<^sub>D SRC g, h, d (src\<^sub>D h)])"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         finally have "(XLT f \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[g, h, d (src\<^sub>D h)]) \<cdot>\<^sub>D
                         (XLT f \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D RUNIT g \<star>\<^sub>D h \<star>\<^sub>D d (src\<^sub>D h)) =
                       (XLT f \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
@@ -4041,7 +3985,7 @@ begin
         have "(\<a>\<^sub>D\<^sup>-\<^sup>1[e (trg\<^sub>D f), f, d (src\<^sub>D f)] \<star>\<^sub>D XLT (g \<star>\<^sub>D h)) \<cdot>\<^sub>D
                (XLT f \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) =
               \<a>\<^sub>D\<^sup>-\<^sup>1[e (trg\<^sub>D f), f, d (src\<^sub>D f)] \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)"
-          using assms D.hseqI' D.comp_arr_dom D.comp_cod_arr
+          using assms D.comp_arr_dom D.comp_cod_arr
                 D.interchange
                   [of "\<a>\<^sub>D\<^sup>-\<^sup>1[e (trg\<^sub>D f), f, d (src\<^sub>D f)]" "XLT f"
                       "XLT (g \<star>\<^sub>D h)" "e (trg\<^sub>D g) \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)"]
@@ -4050,7 +3994,7 @@ begin
                             e (trg\<^sub>D g) \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                          (\<a>\<^sub>D\<^sup>-\<^sup>1[e (trg\<^sub>D f), f, d (src\<^sub>D f)] \<star>\<^sub>D
                             e (trg\<^sub>D g) \<star>\<^sub>D ((g \<star>\<^sub>D SRC g) \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h))"
-          using assms D.hseqI' D.comp_arr_dom D.comp_cod_arr
+          using assms D.comp_arr_dom D.comp_cod_arr
                 D.interchange
                   [of "(e (trg\<^sub>D f) \<star>\<^sub>D f) \<star>\<^sub>D d (src\<^sub>D f)" "\<a>\<^sub>D\<^sup>-\<^sup>1[e (trg\<^sub>D f), f, d (src\<^sub>D f)]"
                       "e (trg\<^sub>D g) \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)"
@@ -4092,7 +4036,7 @@ begin
                 d (src\<^sub>D h)) =
            ((e (trg\<^sub>D f) \<star>\<^sub>D f) \<star>\<^sub>D d (src\<^sub>D f) \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
              \<a>\<^sub>D[e (trg\<^sub>D f) \<star>\<^sub>D f, d (src\<^sub>D f), XLT ((g \<star>\<^sub>D SRC g) \<star>\<^sub>D h)]"
-          using assms D.hseqI'
+          using assms
                 D.assoc_naturality
                   [of "e (trg\<^sub>D f) \<star>\<^sub>D f" "d (src\<^sub>D f)" "e (trg\<^sub>D g) \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)"]
           by simp
@@ -4124,7 +4068,7 @@ begin
                 d (src\<^sub>D h)) =
            (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D d (src\<^sub>D f) \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
              \<a>\<^sub>D[e (trg\<^sub>D f), f, d (src\<^sub>D f) \<star>\<^sub>D XLT ((g \<star>\<^sub>D SRC g) \<star>\<^sub>D h)]"
-          using assms D.hseqI'
+          using assms
                 D.assoc_naturality
                   [of "e (trg\<^sub>D f)" f "d (src\<^sub>D f) \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)"]
           by simp
@@ -4158,18 +4102,18 @@ begin
            e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D
              \<a>\<^sub>D\<^sup>-\<^sup>1[d (src\<^sub>D f), e (trg\<^sub>D g), (g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)] \<cdot>\<^sub>D
              (d (src\<^sub>D f) \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h))"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         also have "... = e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D
                            (TRG g \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            \<a>\<^sub>D\<^sup>-\<^sup>1[d (src\<^sub>D f), e (trg\<^sub>D g), ((g \<star>\<^sub>D SRC g) \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)]"
-          using assms D.hseqI'
+          using assms
                 D.assoc'_naturality [of "d (src\<^sub>D f)" "e (trg\<^sub>D g)" "(RUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)"]
           by auto
         also have
           "... = (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D SRC f \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                    (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D
                       \<a>\<^sub>D\<^sup>-\<^sup>1[d (src\<^sub>D f), e (trg\<^sub>D g), ((g \<star>\<^sub>D SRC g) \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)])"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         finally have
           "(e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[d (src\<^sub>D f), e (trg\<^sub>D g), (g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)]) \<cdot>\<^sub>D
              (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D d (src\<^sub>D f) \<star>\<^sub>D e (trg\<^sub>D g) \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) =
@@ -4204,17 +4148,16 @@ begin
               e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D
                 \<a>\<^sub>D\<^sup>-\<^sup>1[TRG g, g \<star>\<^sub>D h, d (src\<^sub>D h)] \<cdot>\<^sub>D
                 (TRG g \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h))"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         also have "... = e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D
                            ((TRG g \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h)) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            \<a>\<^sub>D\<^sup>-\<^sup>1[TRG g, (g \<star>\<^sub>D SRC g) \<star>\<^sub>D h, d (src\<^sub>D h)]"
-          using assms D.hseqI'
-                D.assoc'_naturality [of "TRG g" "RUNIT g \<star>\<^sub>D h" "d (src\<^sub>D h)"]
+          using assms D.assoc'_naturality [of "TRG g" "RUNIT g \<star>\<^sub>D h" "d (src\<^sub>D h)"]
           by simp
         also have "... = (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D (TRG g \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h)) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D
                               \<a>\<^sub>D\<^sup>-\<^sup>1[TRG g, (g \<star>\<^sub>D SRC g) \<star>\<^sub>D h, d (src\<^sub>D h)])"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         finally have "(e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG g, g \<star>\<^sub>D h, d (src\<^sub>D h)]) \<cdot>\<^sub>D
                         (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D TRG g \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) =
                       (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D (TRG g \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h)) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
@@ -4248,17 +4191,17 @@ begin
               e (trg\<^sub>D f) \<star>\<^sub>D
                 \<a>\<^sub>D\<^sup>-\<^sup>1[f, TRG g \<star>\<^sub>D g \<star>\<^sub>D h, d (src\<^sub>D h)] \<cdot>\<^sub>D
                 (f \<star>\<^sub>D (TRG g \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h)) \<star>\<^sub>D d (src\<^sub>D h))"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         also have "... = e (trg\<^sub>D f) \<star>\<^sub>D
                            ((f \<star>\<^sub>D SRC f \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h)) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            \<a>\<^sub>D\<^sup>-\<^sup>1[f, TRG g \<star>\<^sub>D (g \<star>\<^sub>D SRC g) \<star>\<^sub>D h, d (src\<^sub>D h)]"
-          using assms D.hseqI'
+          using assms
                 D.assoc'_naturality
                   [of f "(d (src\<^sub>D f) \<star>\<^sub>D e (trg\<^sub>D g)) \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h)" "d (src\<^sub>D h)"]
           by simp
         also have "... = (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D SRC f \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h)) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            (e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f, TRG g \<star>\<^sub>D (g \<star>\<^sub>D SRC g) \<star>\<^sub>D h, d (src\<^sub>D h)])"
-          using assms D.hseqI' D.whisker_left by simp
+          using assms D.whisker_left by simp
         finally have "(e (trg\<^sub>D f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[f, TRG g \<star>\<^sub>D g \<star>\<^sub>D h, d (src\<^sub>D h)]) \<cdot>\<^sub>D
                         (e (trg\<^sub>D f) \<star>\<^sub>D f \<star>\<^sub>D (TRG g \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h)) \<star>\<^sub>D d (src\<^sub>D h)) =
                       (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D TRG g \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h)) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
@@ -4290,10 +4233,10 @@ begin
       proof -
         have "e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D SRC f \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h)) \<star>\<^sub>D d (src\<^sub>D h) =
               e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D SRC f \<star>\<^sub>D(g \<star>\<^sub>D LUNIT h) \<cdot>\<^sub>D \<a>\<^sub>D[g, SRC g, h]) \<star>\<^sub>D d (src\<^sub>D h)"
-          using assms D.hseqI' TRIANGLE [of g h] by simp
+          using assms TRIANGLE [of g h] by simp
         also have "... = (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D SRC f \<star>\<^sub>D g \<star>\<^sub>D LUNIT h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D SRC f \<star>\<^sub>D \<a>\<^sub>D[g, TRG h, h]) \<star>\<^sub>D d (src\<^sub>D h))"
-          using assms D.hseqI' D.whisker_left D.whisker_right by simp
+          using assms D.whisker_left D.whisker_right by simp
         finally have "e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D SRC f \<star>\<^sub>D (RUNIT g \<star>\<^sub>D h)) \<star>\<^sub>D d (src\<^sub>D h) =
                       (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D SRC f \<star>\<^sub>D g \<star>\<^sub>D LUNIT h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                         (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D SRC f \<star>\<^sub>D \<a>\<^sub>D[g, TRG h, h]) \<star>\<^sub>D d (src\<^sub>D h))"
@@ -4325,10 +4268,10 @@ begin
       proof -
         have "e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D LUNIT (g \<star>\<^sub>D h)) \<star>\<^sub>D d (src\<^sub>D h) =
               e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D (LUNIT g \<star>\<^sub>D h) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG g, g, h]) \<star>\<^sub>D d (src\<^sub>D h)"
-          using assms D.hseqI' LUNIT_hcomp [of g h] D.invert_side_of_triangle by simp
+          using assms LUNIT_hcomp [of g h] D.invert_side_of_triangle by simp
         also have "... = (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D LUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG g, g, h]) \<star>\<^sub>D d (src\<^sub>D h))"
-          using assms D.hseqI' D.whisker_left D.whisker_right by simp
+          using assms D.whisker_left D.whisker_right by simp
         finally have "e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D LUNIT (g \<star>\<^sub>D h)) \<star>\<^sub>D d (src\<^sub>D h) =
                       (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D LUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                         (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG g, g, h]) \<star>\<^sub>D d (src\<^sub>D h))"
@@ -4362,14 +4305,14 @@ begin
           "(e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG g, g, h]) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
              (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D TRG g \<star>\<^sub>D g \<star>\<^sub>D LUNIT h) \<star>\<^sub>D d (src\<^sub>D h)) =
            e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG g, g, h] \<cdot>\<^sub>D (TRG g \<star>\<^sub>D g \<star>\<^sub>D LUNIT h)) \<star>\<^sub>D d (src\<^sub>D h)"
-          using assms D.hseqI' D.whisker_left D.whisker_right by auto
+          using assms D.whisker_left D.whisker_right by auto
         also have "... = e (trg\<^sub>D f) \<star>\<^sub>D
                            (f \<star>\<^sub>D ((TRG g \<star>\<^sub>D g) \<star>\<^sub>D LUNIT h) \<cdot>\<^sub>D
                                    \<a>\<^sub>D\<^sup>-\<^sup>1[TRG g, g, SRC g \<star>\<^sub>D h]) \<star>\<^sub>D d (src\<^sub>D h)"
-          using assms D.hseqI' D.assoc'_naturality [of "TRG g" g "LUNIT h"] by auto
+          using assms D.assoc'_naturality [of "TRG g" g "LUNIT h"] by auto
         also have "... = (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D (TRG g \<star>\<^sub>D g) \<star>\<^sub>D LUNIT h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                            (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG g, g, TRG h \<star>\<^sub>D h]) \<star>\<^sub>D d (src\<^sub>D h))"
-          using assms D.hseqI' D.whisker_left D.whisker_right by auto
+          using assms D.whisker_left D.whisker_right by auto
         finally have "(e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[TRG g, g, h]) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                         (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D TRG g \<star>\<^sub>D g \<star>\<^sub>D LUNIT h) \<star>\<^sub>D d (src\<^sub>D h)) =
                       (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D (TRG g \<star>\<^sub>D g) \<star>\<^sub>D LUNIT h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
@@ -4403,7 +4346,7 @@ begin
         have "(e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D LUNIT g \<star>\<^sub>D h) \<star>\<^sub>D d (src\<^sub>D h)) \<cdot>\<^sub>D
                 (e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D (TRG g \<star>\<^sub>D g) \<star>\<^sub>D LUNIT h) \<star>\<^sub>D d (src\<^sub>D h)) =
               e (trg\<^sub>D f) \<star>\<^sub>D (f \<star>\<^sub>D LUNIT g \<star>\<^sub>D LUNIT h) \<star>\<^sub>D d (src\<^sub>D h)"
-          using assms D.hseqI' D.whisker_left D.whisker_right D.comp_arr_dom D.comp_cod_arr
+          using assms D.whisker_left D.whisker_right D.comp_arr_dom D.comp_cod_arr
                 D.interchange [of "LUNIT g" "TRG g \<star>\<^sub>D g" h "LUNIT h"]
           by simp (* 15 sec *)
         thus ?thesis
@@ -4634,10 +4577,9 @@ begin
                 F (G \<mu> \<star>\<^sub>C G \<nu>) \<cdot>\<^sub>D \<Phi>\<^sub>F (G (D.dom \<mu>), G (D.dom \<nu>))"
             using assms C.VV.arr_char F.\<Phi>.naturality [of "(G \<mu>, G \<nu>)"] F.FF_def by simp
           moreover have "D.seq (\<Phi>\<^sub>F (G (D.cod \<mu>), G (D.cod \<nu>))) (F (G \<mu>) \<star>\<^sub>D F (G \<nu>))"
-            using assms C.hseqI' D.hseqI' F.preserves_hcomp C.VV.arr_char F.FF_def
-            by (intro D.seqI D.hseqI, auto)
+            using assms F.preserves_hcomp C.VV.arr_char F.FF_def by auto
           ultimately show ?thesis
-            using assms F.\<Phi>_components_are_iso D.invert_opposite_sides_of_square by simp
+            using assms D.invert_opposite_sides_of_square by simp
         qed
         thus ?thesis
           using D.comp_assoc by simp
@@ -4657,7 +4599,7 @@ begin
           also have "... = (XLT \<mu> \<cdot>\<^sub>D \<phi> (D.dom \<mu>)) \<star>\<^sub>D (XLT \<nu> \<cdot>\<^sub>D \<phi> (D.dom \<nu>))"
             using assms \<phi>.map_def \<phi>.naturality [of \<mu>] \<phi>.naturality [of \<nu>] by fastforce
           also have "... = (XLT \<mu> \<star>\<^sub>D XLT \<nu>) \<cdot>\<^sub>D (\<phi> (D.dom \<mu>) \<star>\<^sub>D \<phi> (D.dom \<nu>))"
-            using assms D.interchange D.hseqI' by simp
+            using assms D.interchange by simp
           finally show ?thesis by simp
         qed
         thus ?thesis
@@ -4676,7 +4618,7 @@ begin
       proof -
         have "D.inv (\<phi> (D.cod \<mu> \<star>\<^sub>D D.cod \<nu>)) \<cdot>\<^sub>D XLT (\<mu> \<star>\<^sub>D \<nu>) =
               F (G (\<mu> \<star>\<^sub>D \<nu>)) \<cdot>\<^sub>D D.inv (\<phi> (D.dom \<mu> \<star>\<^sub>D D.dom \<nu>))"
-          using assms D.hseqI' \<phi>.naturality [of "\<mu> \<star>\<^sub>D \<nu>"] \<phi>_props(2)
+          using assms \<phi>.naturality [of "\<mu> \<star>\<^sub>D \<nu>"] \<phi>_props(2)
                 D.invert_opposite_sides_of_square
                   [of "\<phi> (D.cod \<mu> \<star>\<^sub>D D.cod \<nu>)" "F (G (\<mu> \<star>\<^sub>D \<nu>))" "XLT (\<mu> \<star>\<^sub>D \<nu>)"
                       "\<phi> (D.dom \<mu> \<star>\<^sub>D D.dom \<nu>)"]
@@ -4709,7 +4651,7 @@ begin
           using \<mu>_def \<nu>_def \<mu>\<nu> D.VV.arr_char by simp
         have "F (\<Phi>\<^sub>0 (D.VV.cod \<mu>\<nu>) \<cdot>\<^sub>C H\<^sub>DoGG.map \<mu>\<nu>) =
               F (\<Phi>\<^sub>0 (D.VV.cod \<mu>\<nu>)) \<cdot>\<^sub>D F (H\<^sub>DoGG.map \<mu>\<nu>)"
-          using 1 \<mu>_def \<nu>_def \<mu> \<nu> \<mu>\<nu> \<Phi>\<^sub>0_props D.VV.arr_char C.hseqI' FF_def by simp
+          using 1 \<mu>_def \<nu>_def \<mu> \<nu> \<mu>\<nu> \<Phi>\<^sub>0_props D.VV.arr_char FF_def by simp
         also have "... = F\<Phi>\<^sub>0 (D.cod \<mu>) (D.cod \<nu>) \<cdot>\<^sub>D F (G \<mu> \<star>\<^sub>C G \<nu>)"
           using \<mu>_def \<nu>_def \<mu> \<nu> \<mu>\<nu> \<Phi>\<^sub>0_props D.VV.cod_char FF_def by auto
         also have "... = F (GoH\<^sub>D.map \<mu>\<nu>) \<cdot>\<^sub>D F\<Phi>\<^sub>0 (D.dom \<mu>) (D.dom \<nu>)"
@@ -4721,8 +4663,8 @@ begin
           by simp
         moreover have "C.par (\<Phi>\<^sub>0 (D.VV.cod \<mu>\<nu>) \<cdot>\<^sub>C H\<^sub>DoGG.map \<mu>\<nu>)
                              (GoH\<^sub>D.map \<mu>\<nu> \<cdot>\<^sub>C \<Phi>\<^sub>0 (D.VV.dom \<mu>\<nu>))"
-          using \<mu>_def \<nu>_def \<mu> \<nu> \<mu>\<nu> C.hseqI'
-                \<Phi>\<^sub>0_props D.VV.arr_char D.VV.dom_char D.VV.cod_char D.VV.ide_char FF_def
+          using \<mu>_def \<nu>_def \<mu> \<nu> \<mu>\<nu> \<Phi>\<^sub>0_props D.VV.arr_char D.VV.dom_char D.VV.cod_char
+                D.VV.ide_char FF_def
           by auto
         ultimately show "\<Phi>\<^sub>0 (D.VV.cod \<mu>\<nu>) \<cdot>\<^sub>C H\<^sub>DoGG.map \<mu>\<nu> =
                          GoH\<^sub>D.map \<mu>\<nu> \<cdot>\<^sub>C \<Phi>\<^sub>0 (D.VV.dom \<mu>\<nu>)"
@@ -4739,17 +4681,9 @@ begin
     and "\<guillemotleft>\<Phi> (\<mu>', \<nu>') : G (D.dom \<mu>') \<star>\<^sub>C G (D.dom \<nu>') \<Rightarrow>\<^sub>C G (D.cod \<mu>' \<star>\<^sub>D D.cod \<nu>')\<guillemotright>"
     proof -
       show "\<guillemotleft>\<Phi> (\<mu>', \<nu>') : G (D.dom \<mu>') \<star>\<^sub>C G (D.dom \<nu>') \<Rightarrow>\<^sub>C G (D.cod \<mu>' \<star>\<^sub>D D.cod \<nu>')\<guillemotright>"
-        using assms D.VV.arr_char D.VV.dom_char D.VV.cod_char \<Phi>.map_def FF_def
-        apply auto
-        apply (intro C.comp_in_homI, auto)
-        by (intro C.hcomp_in_vhom, auto)
+        using assms D.VV.arr_char D.VV.dom_char D.VV.cod_char \<Phi>.map_def FF_def by simp
       thus "\<guillemotleft>\<Phi> (\<mu>', \<nu>') : src\<^sub>C (G (D.dom \<nu>')) \<rightarrow>\<^sub>C trg\<^sub>C (G (D.cod \<mu>'))\<guillemotright>"
-        apply (intro C.in_hhomI)
-          apply auto
-         apply (metis (no_types, lifting) C.arr_dom C.in_homE C.hcomp_simps(1)
-                C.src_dom [of "\<Phi> (\<mu>', \<nu>')"])
-        by (metis (no_types, lifting) C.in_homE C.trg_cod D.arr_cod D.hseqI'
-            D.src_cod D.trg_cod D.trg_hcomp' assms(1-3) preserves_trg)
+        using assms C.src_dom [of "\<Phi> (\<mu>', \<nu>')"] C.trg_dom [of "\<Phi> (\<mu>', \<nu>')"] by auto
     qed
 
     lemma \<Phi>_simps [simp]:
@@ -4791,9 +4725,8 @@ begin
           using CMP_def f g fg \<Phi>\<^sub>0_props [of ?f ?g] D.VV.ide_char D.VV.arr_char D.comp_assoc
           by simp
         moreover have "D.iso ..."
-          using f g fg D.VV.arr_char D.iso_inv_iso F.\<Phi>_components_are_iso \<phi>_props D.hseqI'
-                e_trg_g.unit_is_iso iso_LUNIT
-          apply (intro D.isos_compose) by simp_all (* 17 subgoals, 40 sec. *)
+          using f g fg D.VV.arr_char D.iso_inv_iso \<phi>_props e_trg_g.unit_is_iso iso_LUNIT
+          apply (intro D.isos_compose) by simp_all (* 17 subgoals, 30 sec. *)
         ultimately show ?thesis by simp
       qed
       thus "C.iso (\<Phi> fg)"
@@ -4931,19 +4864,7 @@ begin
                              ((\<phi> f \<star>\<^sub>D \<phi> g) \<star>\<^sub>D F (G h)) \<cdot>\<^sub>D
                              (D.inv (\<Phi>\<^sub>F (G f, G g)) \<star>\<^sub>D F (G h)) \<cdot>\<^sub>D
                              D.inv (\<Phi>\<^sub>F (G f \<star>\<^sub>C G g, G h))"
-          proof -
-            have "D.inv (\<phi> (f \<star>\<^sub>D g)) \<cdot>\<^sub>D CMP f g \<cdot>\<^sub>D (\<phi> f \<star>\<^sub>D \<phi> g) \<cdot>\<^sub>D D.inv (\<Phi>\<^sub>F (G f, G g))
-                     \<star>\<^sub>D F (G h) =
-                  (D.inv (\<phi> (f \<star>\<^sub>D g)) \<star>\<^sub>D F (G h)) \<cdot>\<^sub>D
-                    (CMP f g \<star>\<^sub>D F (G h)) \<cdot>\<^sub>D 
-                    ((\<phi> f \<star>\<^sub>D \<phi> g) \<star>\<^sub>D F (G h)) \<cdot>\<^sub>D
-                    (D.inv (\<Phi>\<^sub>F (G f, G g)) \<star>\<^sub>D F (G h))"
-              using f g h fg gh F.\<Phi>_in_hom F.\<Phi>_components_are_iso \<phi>_props(2) D.hseqI'
-                    D.whisker_right
-              by auto
-            thus ?thesis
-              using D.comp_assoc by simp
-          qed
+            using f g h fg gh \<phi>_props(2) D.whisker_right D.comp_assoc by simp
           also have "... = D.inv (\<phi> (f \<star>\<^sub>D g \<star>\<^sub>D h)) \<cdot>\<^sub>D
                                XLT \<a>\<^sub>D[f, g, h] \<cdot>\<^sub>D
                                CMP (f \<star>\<^sub>D g) h \<cdot>\<^sub>D
@@ -4955,16 +4876,13 @@ begin
           proof -
             have "(\<phi> ((f \<star>\<^sub>D g) \<star>\<^sub>D h) \<cdot>\<^sub>D D.inv (\<phi> ((f \<star>\<^sub>D g) \<star>\<^sub>D h))) \<cdot>\<^sub>D CMP (f \<star>\<^sub>D g) h =
                   CMP (f \<star>\<^sub>D g) h"
-              using f g h fg gh F.\<Phi>_in_hom F.\<Phi>_components_are_iso \<phi>_props(2) D.hseqI'
-                    D.comp_arr_inv' D.comp_cod_arr
-              by simp
+              using f g h fg gh \<phi>_props(2) D.comp_arr_inv' D.comp_cod_arr by simp
             moreover have "(\<phi> (f \<star>\<^sub>D g) \<star>\<^sub>D \<phi> h) \<cdot>\<^sub>D
                              ((D.inv (\<Phi>\<^sub>F (G (f \<star>\<^sub>D g), G h)) \<cdot>\<^sub>D \<Phi>\<^sub>F (G (f \<star>\<^sub>D g), G h)) \<cdot>\<^sub>D
                              (D.inv (\<phi> (f \<star>\<^sub>D g)) \<star>\<^sub>D F (G h))) =
                            XLT (f \<star>\<^sub>D g) \<star>\<^sub>D \<phi> h"
-              using f g h fg gh F.\<Phi>_in_hom [of "G (f \<star>\<^sub>D g)" "G h"]
-                    F.\<Phi>_components_are_iso \<phi>_props(2) D.hseqI'
-                    D.comp_arr_inv' D.comp_inv_arr' D.comp_arr_dom D.comp_cod_arr
+              using f g h fg gh \<phi>_props(2) D.comp_arr_inv' D.comp_inv_arr'
+                    D.comp_arr_dom D.comp_cod_arr
                     D.interchange [of "\<phi> (f \<star>\<^sub>D g)" "D.inv (\<phi> (f \<star>\<^sub>D g))" "\<phi> h" "F (G h)"]
               by simp
             ultimately show ?thesis
@@ -4993,7 +4911,7 @@ begin
           proof -
             have "(CMP f g \<star>\<^sub>D \<phi> h) \<cdot>\<^sub>D ((\<phi> f \<star>\<^sub>D \<phi> g) \<star>\<^sub>D F (G h)) =
                   (CMP f g \<star>\<^sub>D XLT h) \<cdot>\<^sub>D ((\<phi> f \<star>\<^sub>D \<phi> g) \<star>\<^sub>D \<phi> h)"
-              using f g h fg gh D.comp_arr_dom D.comp_cod_arr D.hseqI'
+              using f g h fg gh D.comp_arr_dom D.comp_cod_arr
                     D.interchange [of "CMP f g" "\<phi> f \<star>\<^sub>D \<phi> g" "\<phi> h" "F (G h)"]
                     D.interchange [of "CMP f g" "\<phi> f \<star>\<^sub>D \<phi> g" "XLT h" "\<phi> h"]
               by simp
@@ -5062,8 +4980,7 @@ begin
                              \<a>\<^sub>D[F (G f), F (G g), F (G h)] \<cdot>\<^sub>D
                              (D.inv (\<Phi>\<^sub>F (G f, G g)) \<star>\<^sub>D F (G h)) \<cdot>\<^sub>D
                              D.inv (\<Phi>\<^sub>F (G f \<star>\<^sub>C G g, G h))"
-            using f g h fg gh F.preserves_hcomp D.comp_assoc
-            by (simp add: C.hseqI')
+            using f g h fg gh F.preserves_hcomp D.comp_assoc by simp
           also have "... = D.inv (\<phi> (f \<star>\<^sub>D g \<star>\<^sub>D h)) \<cdot>\<^sub>D
                              CMP f (g \<star>\<^sub>D h) \<cdot>\<^sub>D
                              (\<phi> f \<star>\<^sub>D \<phi> (g \<star>\<^sub>D h)) \<cdot>\<^sub>D
@@ -5094,18 +5011,8 @@ begin
                              \<a>\<^sub>D[F (G f), F (G g), F (G h)]) \<cdot>\<^sub>D
                              (D.inv (\<Phi>\<^sub>F (G f, G g)) \<star>\<^sub>D F (G h)) \<cdot>\<^sub>D
                              D.inv (\<Phi>\<^sub>F (G f \<star>\<^sub>C G g, G h))"
-          proof -
-            have "F (G f) \<star>\<^sub>D
-                    D.inv (\<phi> (g \<star>\<^sub>D h)) \<cdot>\<^sub>D CMP g h \<cdot>\<^sub>D (\<phi> g \<star>\<^sub>D \<phi> h) \<cdot>\<^sub>D D.inv (\<Phi>\<^sub>F (G g, G h)) =
-                  (F (G f) \<star>\<^sub>D D.inv (\<phi> (g \<star>\<^sub>D h))) \<cdot>\<^sub>D
-                    (F (G f) \<star>\<^sub>D CMP g h \<cdot>\<^sub>D (\<phi> g \<star>\<^sub>D \<phi> h)) \<cdot>\<^sub>D
-                    (F (G f) \<star>\<^sub>D D.inv (\<Phi>\<^sub>F (G g, G h)))"
-              using f g h fg gh F.\<Phi>_in_hom F.\<Phi>_components_are_iso \<phi>_props(2) D.hseqI'
-                    D.whisker_left
-              by (simp add: D.comp_assoc)
-            thus ?thesis
-              using D.comp_assoc by simp
-          qed
+            using f g h fg gh \<phi>_props(2) D.whisker_left
+            by (simp add: D.comp_assoc)
           also have "... = D.inv (\<phi> (f \<star>\<^sub>D g \<star>\<^sub>D h)) \<cdot>\<^sub>D
                              CMP f (g \<star>\<^sub>D h) \<cdot>\<^sub>D
                              (\<phi> f \<star>\<^sub>D CMP g h \<cdot>\<^sub>D (\<phi> g \<star>\<^sub>D \<phi> h)) \<cdot>\<^sub>D
@@ -5134,19 +5041,17 @@ begin
               also have "... = ((\<phi> f \<star>\<^sub>D \<phi> (g \<star>\<^sub>D h)) \<cdot>\<^sub>D
                                  (F (G f) \<star>\<^sub>D D.inv (\<phi> (g \<star>\<^sub>D h)))) \<cdot>\<^sub>D
                                  (F (G f) \<star>\<^sub>D CMP g h \<cdot>\<^sub>D (\<phi> g \<star>\<^sub>D \<phi> h))"
-                using f g h fg gh F.\<Phi>_in_hom F.\<Phi>_components_are_iso \<phi>_props(2) D.hseqI'
-                      D.comp_arr_inv' D.comp_inv_arr' D.comp_cod_arr
+                using f g h fg gh \<phi>_props(2) D.comp_arr_inv' D.comp_inv_arr' D.comp_cod_arr
                 by simp
               also have "... = (\<phi> f \<star>\<^sub>D XLT (g \<star>\<^sub>D h)) \<cdot>\<^sub>D (F (G f) \<star>\<^sub>D CMP g h \<cdot>\<^sub>D (\<phi> g \<star>\<^sub>D \<phi> h))"
-                using f g h fg gh F.\<Phi>_in_hom F.\<Phi>_components_are_iso \<phi>_props(2) D.hseqI'
-                      D.comp_arr_inv' D.comp_inv_arr' D.comp_arr_dom D.comp_cod_arr
+                using f g h fg gh \<phi>_props(2) D.comp_arr_inv' D.comp_inv_arr'
+                      D.comp_arr_dom D.comp_cod_arr
                       D.interchange [of "\<phi> f" "F (G f)" "\<phi> (g \<star>\<^sub>D h)" "D.inv (\<phi> (g \<star>\<^sub>D h))"]
                 by simp
               also have "... = \<phi> f \<star>\<^sub>D CMP g h \<cdot>\<^sub>D (\<phi> g \<star>\<^sub>D \<phi> h)"
-                using f g h fg gh F.\<Phi>_in_hom F.\<Phi>_components_are_iso \<phi>_props(2) D.hseqI'
-                      D.comp_arr_dom D.comp_cod_arr
+                using f g h fg gh \<phi>_props(2) D.comp_arr_dom D.comp_cod_arr
                       D.interchange [of "\<phi> f" "F (G f)" "XLT (g \<star>\<^sub>D h)" "CMP g h \<cdot>\<^sub>D (\<phi> g \<star>\<^sub>D \<phi> h)"]
-                by simp (* 15 sec *)
+                by simp
               finally show ?thesis by simp
             qed
             moreover have "(F (G f) \<star>\<^sub>D D.inv (\<Phi>\<^sub>F (G g, G h))) \<cdot>\<^sub>D
@@ -5171,23 +5076,21 @@ begin
                                  ((F (G f) \<star>\<^sub>D F (G g \<star>\<^sub>C G h)) \<cdot>\<^sub>D
                                  (F (G f) \<star>\<^sub>D \<Phi>\<^sub>F (G g, G h)))) \<cdot>\<^sub>D
                                  \<a>\<^sub>D[F (G f), F (G g), F (G h)]"
-                using f g h fg gh F.\<Phi>_in_hom F.\<Phi>_components_are_iso \<phi>_props(2) D.hseqI'
-                      D.comp_arr_inv' D.comp_inv_arr' D.comp_arr_dom D.comp_cod_arr
+                using f g h fg gh \<phi>_props(2) D.comp_arr_inv' D.comp_inv_arr'
+                      D.comp_arr_dom D.comp_cod_arr
                 by fastforce
               also have "... = ((F (G f) \<star>\<^sub>D D.inv (\<Phi>\<^sub>F (G g, G h))) \<cdot>\<^sub>D
                                  (F (G f) \<star>\<^sub>D \<Phi>\<^sub>F (G g, G h))) \<cdot>\<^sub>D
                                  \<a>\<^sub>D[F (G f), F (G g), F (G h)]"
-              proof -
+               proof -
                 have "D.seq (F (G g \<star>\<^sub>C G h)) (\<Phi>\<^sub>F (G g, G h))"
-                  using f g h fg gh
-                  apply (intro D.seqI) by auto
+                  using f g h fg gh by force
                 thus ?thesis
-                  using f g h fg gh F.\<Phi>_components_are_iso \<phi>_props(2) D.hseqI' D.comp_cod_arr
-                  by auto
+                  using f g h fg gh \<phi>_props(2) D.comp_cod_arr by auto
               qed
               also have "... = \<a>\<^sub>D[F (G f), F (G g), F (G h)]"
-                using f g h fg gh F.\<Phi>_in_hom F.\<Phi>_components_are_iso \<phi>_props(2) D.hseqI'
-                      D.comp_arr_inv' D.comp_inv_arr' D.comp_arr_dom D.comp_cod_arr
+                using f g h fg gh \<phi>_props(2) D.comp_arr_inv' D.comp_inv_arr'
+                      D.comp_arr_dom D.comp_cod_arr
                       D.whisker_left [of "F (G f)" "D.inv (\<Phi>\<^sub>F (G g, G h))" "\<Phi>\<^sub>F (G g, G h)"]
                 by auto
               finally show ?thesis by simp
@@ -5205,7 +5108,7 @@ begin
           proof -
             have "\<phi> f \<star>\<^sub>D CMP g h \<cdot>\<^sub>D (\<phi> g \<star>\<^sub>D \<phi> h) =
                   (XLT f \<star>\<^sub>D CMP g h) \<cdot>\<^sub>D (\<phi> f \<star>\<^sub>D (\<phi> g \<star>\<^sub>D \<phi> h))"
-              using f g h fg gh D.hseqI' D.comp_cod_arr
+              using f g h fg gh D.comp_cod_arr
                     D.interchange [of "XLT f" "\<phi> f" "CMP g h" "\<phi> g \<star>\<^sub>D \<phi> h"]
               by auto
             thus ?thesis
@@ -5292,10 +5195,10 @@ begin
              * Also, they are not stated in the form of elimination rules.
              *)
           thus ?thesis
-            using 2 par \<phi>_props D.iso_is_retraction D.retraction_is_epi
+            using 2 par \<phi>_props D.iso_is_retraction D.retraction_is_epi D.ide_dom
                   D.epiE [of "\<phi> (D.dom \<mu>)" "e (trg\<^sub>D \<mu>) \<star>\<^sub>D \<mu> \<star>\<^sub>D d (src\<^sub>D \<mu>)"
                              "e (trg\<^sub>D \<mu>) \<star>\<^sub>D \<mu>' \<star>\<^sub>D d (src\<^sub>D \<mu>)"]
-            by auto
+            by metis
         qed
         hence "\<mu> \<star>\<^sub>D d (src\<^sub>D \<mu>) = \<mu>' \<star>\<^sub>D d (src\<^sub>D \<mu>)"
           using \<mu> \<mu>' e_trg par
@@ -5360,10 +5263,10 @@ begin
         obtain \<phi> where \<phi>: "\<guillemotleft>\<phi> : F (G ?f) \<Rightarrow>\<^sub>D F g\<guillemotright> \<and> D.iso \<phi>"
           using 2 by auto
         have "C.isomorphic (G ?f) g"
-          using \<phi> F.reflects_iso
-          by (metis C.arrI C.isomorphic_def D.ide_hcomp D.hseqE F.locally_full
-              F.preserves_ide d_simps(1) e_simps(1) f g_in_hhom horizontal_homs.in_hhomE
-              ide_g preserves_ide preserves_src preserves_trg weak_arrow_of_homs_axioms
+          using f ide_g \<phi> F.reflects_iso F.locally_full
+          by (metis C.arrI C.isomorphic_def D.ide_hcomp D.hseqE
+              F.preserves_ide d_simps(1) e_simps(1) g_in_hhom horizontal_homs.in_hhomE
+              preserves_ide preserves_src preserves_trg weak_arrow_of_homs_axioms
               weak_arrow_of_homs_def)
         thus "\<exists>f. \<guillemotleft>f : a \<rightarrow>\<^sub>D b\<guillemotright> \<and> D.ide f \<and> C.isomorphic (G f) g"
           using f

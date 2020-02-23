@@ -378,7 +378,7 @@ begin
           using functor_axioms by argo
       qed
       show "horizontal_composition V H src trg"
-        using src_hcomp trg_hcomp composable_char\<^sub>P\<^sub>B\<^sub>H not_arr_null
+        using src_hcomp' trg_hcomp' composable_char\<^sub>P\<^sub>B\<^sub>H not_arr_null
         by (unfold_locales; metis)
     qed
 
@@ -1348,7 +1348,8 @@ begin
           have "(trg b \<star> b) \<star> b \<cong> trg b \<star> b"
           proof -
             have "iso (trg b \<star> \<phi>) \<and> \<guillemotleft>trg b \<star> \<phi> : trg b \<star> b \<star> b \<Rightarrow> trg b \<star> b\<guillemotright>"
-              using assms 0 1 \<phi> ide_in_hom(2) targetsD(1) hseqI' by auto
+              using assms 0 1 \<phi> ide_in_hom(2) targetsD(1)
+              apply (intro conjI hcomp_in_vhom) by auto
             moreover have "iso \<a>[trg b, b, b] \<and>
                            \<guillemotleft>\<a>[trg b, b, b] : (trg b \<star> b) \<star> b \<Rightarrow> trg b \<star> b \<star> b\<guillemotright>"
               using assms(2) 0 1 seq_if_composable targetsD(1-2) by auto
@@ -2077,14 +2078,14 @@ begin
             using assms lunit_char(2) by force
           also have "... = (g \<star> ((\<i>[?b] \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[?b, ?b, f]) \<cdot> \<a>[?b, ?b, f])
                              \<cdot> \<a>[g, ?b \<star> ?b, f] \<cdot> (\<a>[g, ?b, ?b] \<star> f)"
-            using assms interchange [of g g "(\<i>[?b] \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[?b, ?b, f]" "\<a>[?b, ?b, f]"] hseqI'
+            using assms interchange [of g g "(\<i>[?b] \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[?b, ?b, f]" "\<a>[?b, ?b, f]"]
             by auto
           also have "... = ((g \<star> \<i>[?b] \<star> f) \<cdot> \<a>[g, ?b \<star> ?b, f]) \<cdot> (\<a>[g, ?b, ?b] \<star> f)"
-            using assms comp_arr_dom comp_assoc_assoc' hseqI' comp_assoc by auto
+            using assms comp_arr_dom comp_assoc_assoc' comp_assoc by auto
           also have "... = (\<a>[g, ?b, f] \<cdot> ((g \<star> \<i>[?b]) \<star> f)) \<cdot> (\<a>[g, ?b, ?b] \<star> f)"
             using assms assoc_naturality [of g "\<i>[?b]" f] by simp
           also have "... = \<a>[g, ?b, f] \<cdot> ((g \<star> \<i>[?b]) \<cdot> \<a>[g, ?b, ?b] \<star> f)"
-            using assms interchange [of "g \<star> \<i>[?b]" "\<a>[g, ?b, ?b]" f f] comp_assoc hseqI' by simp
+            using assms interchange [of "g \<star> \<i>[?b]" "\<a>[g, ?b, ?b]" f f] comp_assoc by simp
           also have "... = \<a>[g, ?b, f] \<cdot> ((\<r>[g] \<star> ?b) \<star> f)"
             using assms runit_char(2) by force
           also have "... = (\<r>[g] \<star> ?b \<star> f) \<cdot> \<a>[g \<star> ?b, ?b, f]"
@@ -2096,7 +2097,7 @@ begin
           have "epi \<a>[g \<star> ?b, ?b, f]"
             using assms preserves_ide iso_assoc iso_is_retraction retraction_is_epi by force
           thus ?thesis
-            using assms 1 hseqI' by auto
+            using assms 1 by auto
         qed
       qed
       have "(g \<star> \<l>[f]) \<cdot> \<a>[g, ?b, f] = ((g \<star> \<l>[f]) \<cdot> (g \<star> \<l>[?b \<star> f]) \<cdot> (g \<star> ?b \<star> \<l>\<^sup>-\<^sup>1[f])) \<cdot>
@@ -2105,10 +2106,10 @@ begin
         have "\<a>[g, ?b, f] = (g \<star> ?b \<star> \<l>[f]) \<cdot> \<a>[g, ?b, ?b \<star> f] \<cdot> ((g \<star> ?b) \<star> \<l>\<^sup>-\<^sup>1[f])"
         proof -
           have "\<a>[g, ?b, f] = (g \<star> ?b \<star> f) \<cdot> \<a>[g, ?b, f]"
-            using assms comp_cod_arr hseqI' by simp
+            using assms comp_cod_arr by simp
           have "\<a>[g, ?b, f] = ((g \<star> ?b \<star> \<l>[f]) \<cdot> (g \<star> ?b \<star> \<l>\<^sup>-\<^sup>1[f])) \<cdot> \<a>[g, ?b, f]"
             using assms comp_cod_arr comp_arr_inv' whisker_left [of g]
-                  whisker_left [of ?b "\<l>[f]" "\<l>\<^sup>-\<^sup>1[f]"] hseqI'
+                  whisker_left [of ?b "\<l>[f]" "\<l>\<^sup>-\<^sup>1[f]"]
             by simp
           also have "... = (g \<star> ?b \<star> \<l>[f]) \<cdot> \<a>[g, ?b, ?b \<star> f] \<cdot> ((g \<star> ?b) \<star> \<l>\<^sup>-\<^sup>1[f])"
             using assms iso_lunit assoc_naturality [of g ?b "\<l>\<^sup>-\<^sup>1[f]"] comp_assoc by force
@@ -2122,12 +2123,11 @@ begin
               using assms lunit_in_hom lunit_commutes_with_L by simp
             also have "... = g \<star> ?b \<star> f"
               using assms comp_arr_inv' whisker_left [of g] whisker_left [of ?b "\<l>[f]" "\<l>\<^sup>-\<^sup>1[f]"]
-                    hseqI'
               by simp
             finally show ?thesis by blast
           qed
           thus ?thesis
-            using assms comp_arr_dom hseqI' by auto
+            using assms comp_arr_dom by auto
         qed
         ultimately show ?thesis by simp
       qed
@@ -2137,7 +2137,7 @@ begin
       also have "... = (g \<star> \<l>[f]) \<cdot> (g \<star> \<l>[?b \<star> f]) \<cdot> ((g \<star> ?b \<star> (?b \<star> f)) \<cdot>
                        \<a>[g, ?b, ?b \<star> f]) \<cdot> ((g \<star> ?b) \<star> \<l>\<^sup>-\<^sup>1[f])"
         using assms iso_lunit comp_inv_arr' interchange [of g g "?b \<star> \<l>\<^sup>-\<^sup>1[f]" "?b \<star> \<l>[f]"]
-              interchange [of ?b ?b "\<l>\<^sup>-\<^sup>1[f]" "\<l>[f]"] hseqI' comp_assoc
+              interchange [of ?b ?b "\<l>\<^sup>-\<^sup>1[f]" "\<l>[f]"] comp_assoc
         by auto
       also have "... = (g \<star> \<l>[f]) \<cdot> ((g \<star> \<l>[?b \<star> f]) \<cdot> \<a>[g, ?b, ?b \<star> f]) \<cdot> ((g \<star> ?b) \<star> \<l>\<^sup>-\<^sup>1[f])"
         using assms comp_cod_arr comp_assoc by auto
@@ -2179,16 +2179,16 @@ begin
         also have "... = \<a>[f, g, h] \<cdot> ((\<r>[f] \<star> g) \<star> h)"
           using assms assoc_naturality [of "\<r>[f]" g h] by simp
         also have "... = (\<a>[f, g, h] \<cdot> ((f \<star> \<l>[g]) \<star> h)) \<cdot> (\<a>[f, trg g, g] \<star> h)"
-          using assms triangle interchange [of "f \<star> \<l>[g]" "\<a>[f, trg g, g]" h h] comp_assoc hseqI'
+          using assms triangle interchange [of "f \<star> \<l>[g]" "\<a>[f, trg g, g]" h h] comp_assoc
           by auto
         also have "... = (f \<star> (\<l>[g] \<star> h)) \<cdot> (\<a>[f, trg g \<star> g, h] \<cdot> (\<a>[f, trg g, g] \<star> h))"
           using assms assoc_naturality [of f "\<l>[g]" h] comp_assoc by simp
         finally show ?thesis by blast
       qed
       moreover have "iso (\<a>[f, trg g \<star> g, h] \<cdot> (\<a>[f, trg g, g] \<star> h))"
-        using assms iso_assoc isos_compose hseqI' by simp
+        using assms iso_assoc isos_compose by simp
       ultimately show ?thesis
-        using assms iso_is_retraction retraction_is_epi hseqI'
+        using assms iso_is_retraction retraction_is_epi
               epiE [of "\<a>[f, trg g \<star> g, h] \<cdot> (\<a>[f, trg g, g] \<star> h)"
                          "(f \<star> \<l>[g \<star> h]) \<cdot> (f \<star> \<a>[trg g, g, h])" "f \<star> \<l>[g] \<star> h"]
          by auto
@@ -2207,7 +2207,7 @@ begin
           using assms interchange [of "trg f" "trg f" "\<l>[f \<star> g]" "\<a>[trg f, f, g]"] lunit_hcomp_gen
           by fastforce
         thus ?thesis
-          using assms L.is_faithful [of "\<l>[f \<star> g] \<cdot> \<a>[trg f, f, g]" "\<l>[f] \<star> g"] hseqI' by force
+          using assms L.is_faithful [of "\<l>[f \<star> g] \<cdot> \<a>[trg f, f, g]" "\<l>[f] \<star> g"] by force
       qed
       show "\<a>\<^sup>-\<^sup>1[trg f, f, g] \<cdot> \<l>\<^sup>-\<^sup>1[f \<star> g] = \<l>\<^sup>-\<^sup>1[f] \<star> g"
       proof -
@@ -2220,16 +2220,13 @@ begin
         finally show ?thesis by simp
       qed
       show 2: "\<l>[f \<star> g] = (\<l>[f] \<star> g) \<cdot> \<a>\<^sup>-\<^sup>1[trg f, f, g]"
-        using assms 1 invert_side_of_triangle(2) [of "\<l>[f] \<star> g" "\<l>[f \<star> g]" "\<a>[trg f, f, g]"]
-              hseqI'
-        by auto
+        using assms 1 invert_side_of_triangle(2) by auto
       show "\<l>\<^sup>-\<^sup>1[f \<star> g] = \<a>[trg f, f, g] \<cdot> (\<l>\<^sup>-\<^sup>1[f] \<star> g)"
       proof -
         have "\<l>\<^sup>-\<^sup>1[f \<star> g] = inv ((\<l>[f] \<star> g) \<cdot> \<a>\<^sup>-\<^sup>1[trg f, f, g])"
           using 2 by simp
         also have "... = \<a>[trg f, f, g] \<cdot> inv (\<l>[f] \<star> g)"
-          using assms inv_comp iso_inv_iso
-          by (simp add: hseqI')
+          using assms inv_comp iso_inv_iso by simp
         also have "... = \<a>[trg f, f, g] \<cdot> (\<l>\<^sup>-\<^sup>1[f] \<star> g)"
           using assms by simp
         finally show ?thesis by simp
@@ -2244,13 +2241,13 @@ begin
       have "\<r>[f \<star> g] \<star> h = ((f \<star> g) \<star> \<l>[h]) \<cdot> \<a>[f \<star> g, src g, h]"
         using assms triangle by simp
       also have "... = (\<a>\<^sup>-\<^sup>1[f, g, h] \<cdot> (f \<star> g \<star> \<l>[h]) \<cdot> \<a>[f, g, src g \<star> h]) \<cdot> \<a>[f \<star> g, src g, h]"
-        using assms assoc_naturality [of f g "\<l>[h]"] invert_side_of_triangle(1) hseqI'
+        using assms assoc_naturality [of f g "\<l>[h]"] invert_side_of_triangle(1)
         by simp
       also have "... = \<a>\<^sup>-\<^sup>1[f, g, h] \<cdot> (f \<star> g \<star> \<l>[h]) \<cdot> \<a>[f, g, src g \<star> h] \<cdot> \<a>[f \<star> g, src g, h]"
         using comp_assoc by simp
       also have "... = (\<a>\<^sup>-\<^sup>1[f, g, h] \<cdot> (f \<star> (\<r>[g] \<star> h))) \<cdot> (f \<star> \<a>\<^sup>-\<^sup>1[g, src g, h]) \<cdot>
                        \<a>[f, g, src g \<star> h] \<cdot> \<a>[f \<star> g, src g, h]"
-        using assms interchange [of f f] triangle comp_assoc hseqI'
+        using assms interchange [of f f] triangle comp_assoc
               invert_side_of_triangle(2) [of "\<r>[g] \<star> h" "g \<star> \<l>[h]" "\<a>[g, src g, h]"]
         by simp
       also have "... = ((f \<star> \<r>[g]) \<star> h) \<cdot> \<a>\<^sup>-\<^sup>1[f, g \<star> src g, h] \<cdot> (f \<star> \<a>\<^sup>-\<^sup>1[g, src g, h]) \<cdot>
@@ -2276,36 +2273,18 @@ begin
     and "\<a>[f, g, src g] \<cdot> \<r>\<^sup>-\<^sup>1[f \<star> g] = f \<star> \<r>\<^sup>-\<^sup>1[g]"
     proof -
       show 1: "\<r>[f \<star> g] = (f \<star> \<r>[g]) \<cdot> \<a>[f, g, src g]"
-        using assms interchange [of "f \<star> \<r>[g]" "\<a>[f, g, src g]" "src g" "src g"] hseqI'
+        using assms interchange [of "f \<star> \<r>[g]" "\<a>[f, g, src g]" "src g" "src g"]
               runit_hcomp_gen [of f g "src g"]
               R.is_faithful [of "(f \<star> \<r>[g]) \<cdot> (\<a>[f, g, src g])" "\<r>[f \<star> g]"]
         by simp
       show "\<r>\<^sup>-\<^sup>1[f \<star> g] = \<a>\<^sup>-\<^sup>1[f, g, src g] \<cdot> (f \<star> \<r>\<^sup>-\<^sup>1[g])"
-      proof -
-        have "\<r>\<^sup>-\<^sup>1[f \<star> g] = inv ((f \<star> \<r>[g]) \<cdot> \<a>[f, g, src g])"
-          using 1 by simp
-        also have "... = \<a>\<^sup>-\<^sup>1[f, g, src g] \<cdot> (f \<star> \<r>\<^sup>-\<^sup>1[g])"
-        proof -
-          have "src f = trg \<r>[g]"
-            using assms by simp
-          thus ?thesis
-            using assms 1 inv_comp inv_hcomp hseqI' by simp
-        qed
-        finally show ?thesis
-          using assms by simp
-      qed
+        using assms 1 inv_comp inv_hcomp by auto
       show 2: "\<r>[f \<star> g] \<cdot> \<a>\<^sup>-\<^sup>1[f, g, src g] = f \<star> \<r>[g]"
-      proof -
-        have "f \<star> \<r>[g] = ((f \<star> \<r>[g]) \<cdot> \<a>[f, g, src g]) \<cdot> \<a>\<^sup>-\<^sup>1[f, g, src g]"
-          using assms comp_arr_dom comp_cod_arr comp_assoc hseqI' comp_assoc_assoc' by simp
-        also have "... = \<r>[f \<star> g] \<cdot> \<a>\<^sup>-\<^sup>1[f, g, src g]"
-          using assms 1 by auto
-        finally show ?thesis by auto
-      qed
+        using assms 1 comp_arr_dom comp_cod_arr comp_assoc hseqI' comp_assoc_assoc' by auto
       show "\<a>[f, g, src g] \<cdot> \<r>\<^sup>-\<^sup>1[f \<star> g] = f \<star> \<r>\<^sup>-\<^sup>1[g]"
       proof -
         have "\<a>[f, g, src g] \<cdot> \<r>\<^sup>-\<^sup>1[f \<star> g] = inv (\<r>[f \<star> g] \<cdot> \<a>\<^sup>-\<^sup>1[f, g, src g])"
-          using assms inv_comp iso_inv_iso hseqI' by simp
+          using assms inv_comp iso_inv_iso by simp
         also have "... = inv (f \<star> \<r>[g])"
           using 2 by simp
         also have "... = f \<star> \<r>\<^sup>-\<^sup>1[g]"
@@ -2329,7 +2308,7 @@ begin
           have "(a \<star> \<l>[a]) \<cdot> \<a>[a, a, a] = ((\<i>[a] \<star> a) \<cdot> \<a>\<^sup>-\<^sup>1[a, a, a]) \<cdot> \<a>[a, a, a]"
             using assms lunit_char(2) by force
           also have "... = R \<i>[a]"
-            using assms comp_arr_dom comp_assoc hseqI' comp_assoc_assoc'
+            using assms comp_arr_dom comp_assoc comp_assoc_assoc'
             apply (elim objE)
             by (simp add: assms)
           finally show ?thesis by blast
@@ -2394,7 +2373,7 @@ begin
       show "(\<tau> \<star> \<mu>) \<star> \<nu> = \<a>\<^sup>-\<^sup>1[cod \<tau>, cod \<mu>, cod \<nu>] \<cdot> (\<tau> \<star> \<mu> \<star> \<nu>) \<cdot> \<a>[dom \<tau>, dom \<mu>, dom \<nu>]"
       proof -
         have "(\<tau> \<star> \<mu>) \<star> \<nu> = (\<a>\<^sup>-\<^sup>1[cod \<tau>, cod \<mu>, cod \<nu>] \<cdot> \<a>[cod \<tau>, cod \<mu>, cod \<nu>]) \<cdot> ((\<tau> \<star> \<mu>) \<star> \<nu>)"
-          using assms comp_assoc_assoc'(2) comp_cod_arr hseqI' by simp
+          using assms comp_assoc_assoc'(2) comp_cod_arr by simp
         also have "... = \<a>\<^sup>-\<^sup>1[cod \<tau>, cod \<mu>, cod \<nu>] \<cdot> \<a>[cod \<tau>, cod \<mu>, cod \<nu>] \<cdot> ((\<tau> \<star> \<mu>) \<star> \<nu>)"
           using comp_assoc by simp
         also have "... = \<a>\<^sup>-\<^sup>1[cod \<tau>, cod \<mu>, cod \<nu>] \<cdot> (\<tau> \<star> \<mu> \<star> \<nu>) \<cdot> \<a>[dom \<tau>, dom \<mu>, dom \<nu>]"
@@ -2404,7 +2383,7 @@ begin
       show "\<tau> \<star> \<mu> \<star> \<nu> = \<a>[cod \<tau>, cod \<mu>, cod \<nu>] \<cdot> ((\<tau> \<star> \<mu>) \<star> \<nu>) \<cdot> \<a>\<^sup>-\<^sup>1[dom \<tau>, dom \<mu>, dom \<nu>]"
       proof -
         have "\<tau> \<star> \<mu> \<star> \<nu> = (\<tau> \<star> \<mu> \<star> \<nu>) \<cdot> \<a>[dom \<tau>, dom \<mu>, dom \<nu>] \<cdot> \<a>\<^sup>-\<^sup>1[dom \<tau>, dom \<mu>, dom \<nu>]"
-          using assms comp_assoc_assoc'(1) comp_arr_dom hseqI' by simp
+          using assms comp_assoc_assoc'(1) comp_arr_dom by simp
         also have "... = ((\<tau> \<star> \<mu> \<star> \<nu>) \<cdot> \<a>[dom \<tau>, dom \<mu>, dom \<nu>]) \<cdot> \<a>\<^sup>-\<^sup>1[dom \<tau>, dom \<mu>, dom \<nu>]"
           using comp_assoc by simp
         also have "... = (\<a>[cod \<tau>, cod \<mu>, cod \<nu>] \<cdot> ((\<tau> \<star> \<mu>) \<star> \<nu>)) \<cdot> \<a>\<^sup>-\<^sup>1[dom \<tau>, dom \<mu>, dom \<nu>]"
@@ -2420,9 +2399,9 @@ begin
     shows "(f \<star> \<l>[g]) = (\<r>[f] \<star> g) \<cdot> \<a>\<^sup>-\<^sup>1[f, src f, g]"
     proof -
       have "(\<r>[f] \<star> g) \<cdot> \<a>\<^sup>-\<^sup>1[f, src f, g] = ((f \<star> \<l>[g]) \<cdot> \<a>[f, src f, g]) \<cdot> \<a>\<^sup>-\<^sup>1[f, src f, g]"
-          using assms triangle by auto
+        using assms triangle by auto
       also have "... = (f \<star> \<l>[g])"
-        using assms comp_arr_dom comp_assoc hseqI' comp_assoc_assoc' by auto
+        using assms comp_arr_dom comp_assoc comp_assoc_assoc' by auto
       finally show ?thesis by auto
     qed
 
@@ -2437,19 +2416,10 @@ begin
       proof -
         have "inv ((f \<star> \<a>[g, h, k]) \<cdot> (\<a>[f, g \<star> h, k] \<cdot> (\<a>[f, g, h] \<star> k))) =
               inv (\<a>[f, g \<star> h, k] \<cdot> (\<a>[f, g, h] \<star> k)) \<cdot> inv (f \<star> \<a>[g, h, k])"
-        proof -
-          have "iso (\<a>[f, g \<star> h, k] \<cdot> (\<a>[f, g, h] \<star> k))"
-            using assms isos_compose hseqI' by simp
-          moreover have "iso (f \<star> \<a>[g, h, k])"
-            using assms by simp
-          moreover have "seq (f \<star> \<a>[g, h, k]) (\<a>[f, g \<star> h, k] \<cdot> (\<a>[f, g, h] \<star> k))"
-            using assms hseqI' by simp
-          ultimately show ?thesis
-            using inv_comp [of "\<a>[f, g \<star> h, k] \<cdot> (\<a>[f, g, h] \<star> k)" "f \<star> \<a>[g, h, k]"]
-            by simp
-        qed
+          using assms inv_comp [of "\<a>[f, g \<star> h, k] \<cdot> (\<a>[f, g, h] \<star> k)" "f \<star> \<a>[g, h, k]"]
+          by force
         also have "... = (inv (\<a>[f, g, h] \<star> k) \<cdot> inv \<a>[f, g \<star> h, k]) \<cdot> inv (f \<star> \<a>[g, h, k])"
-          using assms iso_assoc inv_comp hseqI' by simp
+          using assms iso_assoc inv_comp by simp
         also have "... = ((\<a>\<^sup>-\<^sup>1[f, g, h] \<star> k) \<cdot> \<a>\<^sup>-\<^sup>1[f, g \<star> h, k]) \<cdot> (f \<star> \<a>\<^sup>-\<^sup>1[g, h, k])"
           using assms inv_hcomp by simp
         finally show ?thesis by simp

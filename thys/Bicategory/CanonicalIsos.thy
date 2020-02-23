@@ -345,10 +345,10 @@ begin
                   (((f \<star> g \<star> h) \<cdot> (f \<star> g \<star> h) \<cdot> \<a>[f, g, h]) \<cdot> ((f \<star> g) \<star> h) \<star> k)"
           unfolding can_def using assms \<alpha>_def \<a>'_def \<alpha>'.map_ide_simp by simp
         also have "... = \<a>\<^sup>-\<^sup>1[f, g, h \<star> k] \<cdot> (f \<star> \<a>[g, h, k]) \<cdot> \<a>[f, g \<star> h, k] \<cdot> (\<a>[f, g, h] \<star> k)"
-          using assms comp_arr_dom comp_cod_arr comp_assoc hseqI' by simp
+          using assms comp_arr_dom comp_cod_arr comp_assoc by simp
         also have "... = \<a>[f \<star> g, h, k]"
           using assms pentagon [of f g h k] invert_side_of_triangle(1) \<alpha>_def \<alpha>'.map_ide_simp
-                assoc_simps(1) assoc_simps(4) assoc_simps(5) ideD(1) iso_assoc preserves_ide seqI
+                assoc_simps(1,4-5) ideD(1) iso_assoc preserves_ide seqI
           by simp
         finally show ?thesis by simp
       qed
@@ -360,7 +360,7 @@ begin
                   ((f \<star> g \<star> h) \<star> k)"
           unfolding can_def using assms \<alpha>_def \<alpha>'.map_ide_simp \<a>'_def by simp
         also have "... = ((f \<star> \<a>\<^sup>-\<^sup>1[g, h, k]) \<cdot> (f \<star> \<a>[g, h, k])) \<cdot> \<a>[f, g \<star> h, k]"
-          using assms comp_arr_dom comp_cod_arr comp_assoc hseqI' by simp
+          using assms comp_arr_dom comp_cod_arr comp_assoc by simp
         also have "... = \<a>[f, g \<star> h, k]"
           using assms comp_cod_arr whisker_left [of f "\<a>\<^sup>-\<^sup>1[g, h, k]" "\<a>[g, h, k]"]
                 comp_assoc_assoc'

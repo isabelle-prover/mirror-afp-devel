@@ -463,21 +463,16 @@ begin
         using assms 1 codomains_comp codomains_char by blast
     qed
 
+    lemma comp_in_homI' [simp]:
+    assumes "arr f" and "arr g" and "dom f = a" and "cod g = c" and "dom g = cod f"
+    shows "\<guillemotleft>g \<cdot> f : a \<rightarrow> c\<guillemotright>"
+      using assms by auto
+
     lemma comp_in_homE [elim]:
     assumes "\<guillemotleft>g \<cdot> f : a \<rightarrow> c\<guillemotright>"
     obtains b where "\<guillemotleft>f : a \<rightarrow> b\<guillemotright>" and "\<guillemotleft>g : b \<rightarrow> c\<guillemotright>"
       using assms in_hom_def domains_comp codomains_comp
       by (metis arrI in_homI seqE)
-
-    lemma comp_in_hom_simp [simp]:
-    assumes "\<guillemotleft>f : a \<rightarrow> cod f\<guillemotright>" and "\<guillemotleft>g : cod f \<rightarrow> c\<guillemotright>"
-    shows "\<guillemotleft>g \<cdot> f : a \<rightarrow> c\<guillemotright>"
-      using assms by auto
-
-    lemma comp_in_hom_simp' [simp]:
-    assumes "\<guillemotleft>f : a \<rightarrow> dom g\<guillemotright>" and "\<guillemotleft>g : dom g \<rightarrow> c\<guillemotright>"
-    shows "\<guillemotleft>g \<cdot> f : a \<rightarrow> c\<guillemotright>"
-      using assms by auto
 
     text \<open>
       The next two rules are useful as simplifications, but they slow down the

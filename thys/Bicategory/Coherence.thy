@@ -1940,7 +1940,7 @@ begin
               using 1 2 3 4 uv by (simp add: Ide_implies_Can)
             moreover have "Dom ((u \<^bold>\<star> v) \<^bold>\<Down> w) = (u \<^bold>\<star> v) \<^bold>\<star> w"
               using 1 2 3 4 u v w uv vw I1 Ide_in_Hom Nml_HcompNml Ide_in_Hom
-              by (cases w, simp_all)
+              apply (cases w) by simp_all
             moreover have "Cod ((u \<^bold>\<star> v) \<^bold>\<Down> w) = \<^bold>\<lfloor>(u \<^bold>\<star> v) \<^bold>\<star> w\<^bold>\<rfloor>"
               using 1 2 3 4 uv
               using Nmlize_Nml apply (cases w, simp_all)
@@ -2334,7 +2334,7 @@ begin
               have "src (\<alpha> (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)) = src ((\<lbrace>Dom t\<rbrace> \<star> \<lbrace>Dom u\<rbrace>) \<star> \<lbrace>Dom v\<rbrace>)"
                 using 2 src_dom [of "\<alpha> (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] by fastforce
               also have "... = src \<lbrace>Dom v\<rbrace>"
-                using 4 VVV.arr_char VV.arr_char hseqI' by simp
+                using 4 VVV.arr_char VV.arr_char by simp
               also have "... = src (dom \<lbrace>v\<rbrace>)"
                 using v by auto
               also have "... = \<lbrace>Src v\<rbrace>"
@@ -2346,7 +2346,7 @@ begin
               have "trg (\<alpha> (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)) = trg ((\<lbrace>Dom t\<rbrace> \<star> \<lbrace>Dom u\<rbrace>) \<star> \<lbrace>Dom v\<rbrace>)"
                 using 2 trg_dom [of "\<alpha> (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] by fastforce
               also have "... = trg \<lbrace>Dom t\<rbrace>"
-                using 4 VVV.arr_char VV.arr_char hseqI' by simp
+                using 4 VVV.arr_char VV.arr_char by simp
               also have "... = trg (dom \<lbrace>t\<rbrace>)"
                 using t by auto
               also have "... = \<lbrace>Trg t\<rbrace>"
@@ -2399,7 +2399,7 @@ begin
               have "src (\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)) = src (\<lbrace>Dom t\<rbrace> \<star> \<lbrace>Dom u\<rbrace> \<star> \<lbrace>Dom v\<rbrace>)"
                 using 2 src_dom [of "\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] by auto
               also have "... = src \<lbrace>Dom v\<rbrace>"
-                using 4 VVV.arr_char VV.arr_char hseqI' by simp
+                using 4 VVV.arr_char VV.arr_char by simp
               also have "... = src (dom \<lbrace>v\<rbrace>)"
                 using v by auto
               also have "... = \<lbrace>Src v\<rbrace>"
@@ -2720,7 +2720,7 @@ begin
                 Can_implies_Arr Src_Inv Trg_Inv eval_Assoc' Dom_Inv Can_Inv cod_inv
           by presburger
         also have "... = inv ((\<lbrace>t\<rbrace> \<star> \<lbrace>u\<rbrace> \<star> \<lbrace>v\<rbrace>) \<cdot> \<alpha> (dom \<lbrace>t\<rbrace>, dom \<lbrace>u\<rbrace>, dom \<lbrace>v\<rbrace>))"
-          using tuv iso_eval_Can Can_implies_Arr eval_simps'(2) eval_simps'(3) \<alpha>_def hseqI'
+          using tuv iso_eval_Can Can_implies_Arr eval_simps'(2) eval_simps'(3) \<alpha>_def
           by (simp add: inv_comp)
         also have "... = inv (\<alpha> (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>))"
           using tuv Can_implies_Arr \<alpha>_def
@@ -2742,7 +2742,7 @@ begin
         also have "... = inv (\<a>\<^sup>-\<^sup>1[cod \<lbrace>t\<rbrace>, cod \<lbrace>u\<rbrace>, cod \<lbrace>v\<rbrace>] \<cdot> (\<lbrace>t\<rbrace> \<star> \<lbrace>u\<rbrace> \<star> \<lbrace>v\<rbrace>))"
           using tuv inv_comp [of "\<lbrace>t\<rbrace> \<star> \<lbrace>u\<rbrace> \<star> \<lbrace>v\<rbrace>" "\<a>\<^sup>-\<^sup>1[cod \<lbrace>t\<rbrace>, cod \<lbrace>u\<rbrace>, cod \<lbrace>v\<rbrace>]"]
                 Can_implies_Arr inv_inv iso_assoc iso_inv_iso \<alpha>_def
-          by (simp add: eval_simps'(2) eval_simps'(3) hseqI' iso_eval_Can)
+          by (simp add: eval_simps'(2) eval_simps'(3) iso_eval_Can)
         also have 1: "... = inv (((\<lbrace>t\<rbrace> \<star> \<lbrace>u\<rbrace>) \<star> \<lbrace>v\<rbrace>) \<cdot> \<a>\<^sup>-\<^sup>1[dom \<lbrace>t\<rbrace>, dom \<lbrace>u\<rbrace>, dom \<lbrace>v\<rbrace>])"
           using tuv assoc'_naturality [of "\<lbrace>t\<rbrace>" "\<lbrace>u\<rbrace>" "\<lbrace>v\<rbrace>"] Can_implies_Arr
                 eval_simps'(2) eval_simps'(3)
@@ -3002,7 +3002,7 @@ begin
         using t \<ll>_ide_simp lunit_naturality [of "\<lbrace>t\<^bold>\<down>\<rbrace>"] red_in_Hom
         by (simp add: eval_simps')
       also have "... = \<lbrace>\<^bold>\<lfloor>t\<^bold>\<rfloor>\<rbrace> \<cdot> \<l>[\<lbrace>\<^bold>\<lfloor>t\<^bold>\<rfloor>\<rbrace>] \<cdot> (\<lbrace>Trg t\<rbrace> \<star> \<lbrace>t\<^bold>\<down>\<rbrace>)"
-         using t 1 lunit_in_hom Nmlize_in_Hom ide_eval_Ide red_in_Hom comp_cod_arr hseqI'
+         using t 1 lunit_in_hom Nmlize_in_Hom ide_eval_Ide red_in_Hom comp_cod_arr
          by (auto simp add: eval_simps')
       also have "... = \<lbrace>\<^bold>\<lfloor>\<^bold>\<l>\<^bold>[t\<^bold>]\<^bold>\<rfloor>\<rbrace> \<cdot> \<lbrace>Dom \<^bold>\<l>\<^bold>[t\<^bold>]\<^bold>\<down>\<rbrace>"
         using 1 t Nml_Trg \<ll>_ide_simp by (cases "Trg t"; simp)
@@ -3048,8 +3048,8 @@ begin
              thus ?thesis using t Nmlize_in_Hom Nmlize_Src by simp
            qed
            moreover have "\<lbrace>t\<^bold>\<down>\<rbrace> \<star> \<lbrace>Src t\<^bold>\<down>\<rbrace> \<in> hom (\<lbrace>t\<rbrace> \<star> \<lbrace>Src t\<rbrace>) (\<lbrace>\<^bold>\<lfloor>t\<^bold>\<rfloor>\<rbrace> \<star> \<lbrace>Src t\<rbrace>)"
-             using t red_in_Hom red_Src Obj_Src hseqI'
-             by (auto simp add: eval_simps')
+             using t red_in_Hom red_Src Obj_Src eval_simps'
+             by (simp add: ide_eval_Ide ide_in_hom(2))
            ultimately show ?thesis using comp_assoc by fastforce
          qed
          also have "... = \<r>[\<lbrace>\<^bold>\<lfloor>t\<^bold>\<rfloor>\<rbrace>] \<cdot> (\<lbrace>t\<^bold>\<down>\<rbrace> \<star> \<lbrace>Src t\<^bold>\<down>\<rbrace>)"
@@ -3141,8 +3141,9 @@ begin
           have "\<guillemotleft>\<lbrace>a \<^bold>\<Down> b\<rbrace> : \<lbrace>a\<rbrace> \<star> \<lbrace>b\<rbrace> \<Rightarrow> \<lbrace>a \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> b\<rbrace>\<guillemotright>"
             using assms red2_in_Hom eval_in_hom [of "a \<^bold>\<Down> b"] by simp
           thus ?thesis
-            using assms runit_naturality
-            by (metis (no_types, lifting) arr_dom in_homE src_dom hcomp_simps(1))
+            using assms runit_naturality [of "\<lbrace>a \<^bold>\<Down> b\<rbrace>"] arr_dom in_homE src_dom src_hcomp
+                  hcomp_simps(1)
+            by (elim in_homE, metis)
         qed
         also have "... = (\<lbrace>a \<^bold>\<Down> (b \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> c)\<rbrace> \<cdot> (\<lbrace>a\<rbrace> \<star> \<lbrace>b \<^bold>\<Down> c\<rbrace>)) \<cdot> \<a>[\<lbrace>a\<rbrace>, \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>]"
         proof -
@@ -3333,7 +3334,7 @@ begin
                   using assms b c d e de eb HcompNml_in_Hom red2_in_Hom comp_cod_arr
                         Ide_HcompNml Nml_HcompNml comp_assoc
                         interchange [of "\<lbrace>d\<rbrace> \<star> \<lbrace>e \<^bold>\<Down> b\<rbrace>" "\<a>[\<lbrace>d\<rbrace>, \<lbrace>e\<rbrace>, \<lbrace>b\<rbrace>]" "\<lbrace>c\<rbrace>" "\<lbrace>c\<rbrace>"]
-                  by (auto simp add: eval_simps' hseqI')
+                  by (auto simp add: eval_simps')
                 moreover have "(\<lbrace>d\<rbrace> \<star> \<lbrace>(e \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> b) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> c\<rbrace>) \<cdot> (\<lbrace>d\<rbrace> \<star> \<lbrace>(e \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> b) \<^bold>\<Down> c\<rbrace>) \<cdot>
                                  \<a>[\<lbrace>d\<rbrace>, \<lbrace>e \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> b\<rbrace>, \<lbrace>c\<rbrace>] =
                                (\<lbrace>d\<rbrace> \<star> \<lbrace>(e \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> b) \<^bold>\<Down> c\<rbrace>) \<cdot> \<a>[\<lbrace>d\<rbrace>, \<lbrace>e \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> b\<rbrace>, \<lbrace>c\<rbrace>]"
@@ -3346,7 +3347,7 @@ begin
                   thus ?thesis
                     using assms b c d e de eb HcompNml_in_Hom red2_in_Hom
                           Ide_HcompNml Nml_HcompNml comp_cod_arr
-                    by (simp add: eval_simps' hseqI')
+                    by (simp add: eval_simps')
                 qed
                 ultimately show ?thesis by argo
               qed
@@ -3358,7 +3359,7 @@ begin
                       comp_permute [of "\<a>[\<lbrace>d\<rbrace>, \<lbrace>e \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> b\<rbrace>, \<lbrace>c\<rbrace>]" "(\<lbrace>d\<rbrace> \<star> \<lbrace>e \<^bold>\<Down> b\<rbrace>) \<star> \<lbrace>c\<rbrace>"
                                        "\<lbrace>d\<rbrace> \<star> (\<lbrace>e \<^bold>\<Down> b\<rbrace> \<star> \<lbrace>c\<rbrace>)" "\<a>[\<lbrace>d\<rbrace>, \<lbrace>e\<rbrace> \<star> \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>]"]
                       comp_assoc
-                by (simp add: eval_simps' hseqI')
+                by (simp add: eval_simps')
               also have "... = ((\<lbrace>d\<rbrace> \<star> \<lbrace>(e \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> b) \<^bold>\<Down> c\<rbrace>) \<cdot> (\<lbrace>d\<rbrace> \<star> (\<lbrace>e \<^bold>\<Down> b\<rbrace> \<star> \<lbrace>c\<rbrace>))) \<cdot>
                                \<a>[\<lbrace>d\<rbrace>, \<lbrace>e\<rbrace> \<star> \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>] \<cdot> (\<a>[\<lbrace>d\<rbrace>, \<lbrace>e\<rbrace>, \<lbrace>b\<rbrace>] \<star> \<lbrace>c\<rbrace>)"
                 using comp_assoc by simp
@@ -3368,7 +3369,7 @@ begin
                 using assms b c d e de eb I HcompNml_in_Hom red2_in_Hom
                       Ide_HcompNml Nml_HcompNml whisker_left [of "\<lbrace>d\<rbrace>"]
                       interchange [of "\<lbrace>d\<rbrace>" "\<lbrace>d\<rbrace>" "\<lbrace>(e \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> b) \<^bold>\<Down> c\<rbrace>" "\<lbrace>e \<^bold>\<Down> b\<rbrace> \<star> \<lbrace>c\<rbrace>"]
-                by (auto simp add: eval_simps' hseqI')
+                by (auto simp add: eval_simps')
               also have "... = ((\<lbrace>d\<rbrace> \<star> \<lbrace>e \<^bold>\<Down> (b \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> c)\<rbrace>) \<cdot> (\<lbrace>d\<rbrace> \<star> \<lbrace>e\<rbrace> \<star> \<lbrace>b \<^bold>\<Down> c\<rbrace>)) \<cdot>
                                ((\<lbrace>d\<rbrace> \<star> \<a>[\<lbrace>e\<rbrace>, \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>]) \<cdot>
                                 \<a>[\<lbrace>d\<rbrace>, \<lbrace>e\<rbrace> \<star> \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>] \<cdot> (\<a>[\<lbrace>d\<rbrace>, \<lbrace>e\<rbrace>, \<lbrace>b\<rbrace>] \<star> \<lbrace>c\<rbrace>))"
@@ -3386,7 +3387,7 @@ begin
                                \<a>[\<lbrace>d\<rbrace> \<star> \<lbrace>e\<rbrace>, \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>]"
                 using assms d e de HcompNml_in_Hom red2_in_Hom Ide_HcompNml Nml_HcompNml
                       assoc_naturality [of "\<lbrace>d\<rbrace>" "\<lbrace>e\<rbrace>" "\<lbrace>b \<^bold>\<Down> c\<rbrace>"] comp_cod_arr [of "\<lbrace>d\<rbrace> \<star> \<lbrace>e \<^bold>\<Down> b \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> c\<rbrace>"]
-                by (simp add: eval_simps' hseqI')
+                by (simp add: eval_simps')
               also have "... = ((\<lbrace>d\<rbrace> \<star> \<lbrace>e \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> b \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> c\<rbrace>) \<cdot> (\<lbrace>d\<rbrace> \<star> \<lbrace>e \<^bold>\<Down> b \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> c\<rbrace>) \<cdot>
                                 \<a>[\<lbrace>d\<rbrace>, \<lbrace>e\<rbrace>, \<lbrace>b \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> c\<rbrace>]) \<cdot>
                                ((\<lbrace>d\<rbrace> \<star> \<lbrace>e\<rbrace>) \<star> \<lbrace>b \<^bold>\<Down> c\<rbrace>) \<cdot> \<a>[\<lbrace>d\<rbrace> \<star> \<lbrace>e\<rbrace>, \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>]"
@@ -3449,7 +3450,7 @@ begin
                 \<a>[\<lbrace>a\<rbrace>, \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>]"
         using assms a b c red_in_Hom red2_in_Hom Nml_Nmlize Ide_Nmlize_Ide
               \<alpha>_def eval_red_Hcomp interchange [of "\<lbrace>\<^bold>\<lfloor>a\<^bold>\<rfloor>\<rbrace>" "\<lbrace>a\<^bold>\<down>\<rbrace>"] comp_cod_arr [of "\<lbrace>a\<^bold>\<down>\<rbrace>"]
-        by (simp add: eval_simps' hseqI')
+        by (simp add: eval_simps')
       also have "... = ((\<lbrace>\<^bold>\<lfloor>a\<^bold>\<rfloor> \<^bold>\<Down> (\<^bold>\<lfloor>b\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> \<^bold>\<lfloor>c\<^bold>\<rfloor>)\<rbrace> \<cdot> (\<lbrace>\<^bold>\<lfloor>a\<^bold>\<rfloor>\<rbrace> \<star> \<lbrace>\<^bold>\<lfloor>b\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>c\<^bold>\<rfloor>\<rbrace>)) \<cdot> \<a>[\<lbrace>\<^bold>\<lfloor>a\<^bold>\<rfloor>\<rbrace>, \<lbrace>\<^bold>\<lfloor>b\<^bold>\<rfloor>\<rbrace>, \<lbrace>\<^bold>\<lfloor>c\<^bold>\<rfloor>\<rbrace>]) \<cdot>
                        ((\<lbrace>a\<^bold>\<down>\<rbrace> \<star> \<lbrace>b\<^bold>\<down>\<rbrace>) \<star> \<lbrace>c\<^bold>\<down>\<rbrace>)"
         using assms red_in_Hom Ide_HcompNml assoc_naturality [of "\<lbrace>a\<^bold>\<down>\<rbrace>" "\<lbrace>b\<^bold>\<down>\<rbrace>" "\<lbrace>c\<^bold>\<down>\<rbrace>"] comp_assoc
@@ -3461,18 +3462,18 @@ begin
               Nml_Nmlize eval_red_Hcomp HcompNml_assoc
               interchange [of "\<lbrace>\<^bold>\<lfloor>a\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>b\<^bold>\<rfloor>\<rbrace>" "\<lbrace>a\<^bold>\<down>\<rbrace> \<star> \<lbrace>b\<^bold>\<down>\<rbrace>" "\<lbrace>\<^bold>\<lfloor>c\<^bold>\<rfloor>\<rbrace>" "\<lbrace>c\<^bold>\<down>\<rbrace>"]
               comp_cod_arr [of "\<lbrace>c\<^bold>\<down>\<rbrace>" "\<lbrace>\<^bold>\<lfloor>c\<^bold>\<rfloor>\<rbrace>"]
-        apply (simp add: eval_simps' hseqI')
+        apply (simp add: eval_simps')
       proof -
         have "seq \<lbrace>(\<^bold>\<lfloor>a\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> \<^bold>\<lfloor>b\<^bold>\<rfloor>) \<^bold>\<Down> \<^bold>\<lfloor>c\<^bold>\<rfloor>\<rbrace> ((\<lbrace>\<^bold>\<lfloor>a\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>b\<^bold>\<rfloor>\<rbrace> \<star> \<lbrace>\<^bold>\<lfloor>c\<^bold>\<rfloor>\<rbrace>) \<cdot> ((\<lbrace>a\<^bold>\<down>\<rbrace> \<star> \<lbrace>b\<^bold>\<down>\<rbrace>) \<star> \<lbrace>c\<^bold>\<down>\<rbrace>))"
           using assms c red_in_Hom red2_in_Hom Nml_HcompNml Ide_Nmlize_Ide Ide_HcompNml
                 Nml_Nmlize
-          by (simp_all add: eval_simps' hseqI')
+          by (simp_all add: eval_simps')
         moreover have
             "cod (\<lbrace>(\<^bold>\<lfloor>a\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> \<^bold>\<lfloor>b\<^bold>\<rfloor>) \<^bold>\<Down> \<^bold>\<lfloor>c\<^bold>\<rfloor>\<rbrace> \<cdot> (\<lbrace>\<^bold>\<lfloor>a\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>b\<^bold>\<rfloor>\<rbrace> \<star> \<lbrace>\<^bold>\<lfloor>c\<^bold>\<rfloor>\<rbrace>) \<cdot> ((\<lbrace>a\<^bold>\<down>\<rbrace> \<star> \<lbrace>b\<^bold>\<down>\<rbrace>) \<star> \<lbrace>c\<^bold>\<down>\<rbrace>)) =
              \<lbrace>\<^bold>\<lfloor>a\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> \<^bold>\<lfloor>b\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> \<^bold>\<lfloor>c\<^bold>\<rfloor>\<rbrace>"
           using assms c red_in_Hom red2_in_Hom Nml_HcompNml Ide_Nmlize_Ide Ide_HcompNml
                 Nml_Nmlize HcompNml_assoc
-          by (simp add: eval_simps' hseqI')
+          by (simp add: eval_simps')
         ultimately
         show "(\<lbrace>(\<^bold>\<lfloor>a\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> \<^bold>\<lfloor>b\<^bold>\<rfloor>) \<^bold>\<Down> \<^bold>\<lfloor>c\<^bold>\<rfloor>\<rbrace> \<cdot> (\<lbrace>\<^bold>\<lfloor>a\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>b\<^bold>\<rfloor>\<rbrace> \<star> \<lbrace>\<^bold>\<lfloor>c\<^bold>\<rfloor>\<rbrace>)) \<cdot> ((\<lbrace>a\<^bold>\<down>\<rbrace> \<star> \<lbrace>b\<^bold>\<down>\<rbrace>) \<star> \<lbrace>c\<^bold>\<down>\<rbrace>) =
               \<lbrace>\<^bold>\<lfloor>a\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> \<^bold>\<lfloor>b\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> \<^bold>\<lfloor>c\<^bold>\<rfloor>\<rbrace> \<cdot>
@@ -3527,12 +3528,14 @@ begin
           moreover have "\<lbrace>\<^bold>\<langle>C.dom f\<^bold>\<rangle> \<^bold>\<Down> Dom u\<rbrace> = E (C.dom f) \<star> dom \<lbrace>u\<rbrace>"
             using f u 1 Nml_implies_Arr
             by (cases "Dom u", simp_all add: eval_simps')
-          moreover have "E f \<star> \<lbrace>u\<rbrace> \<in> hom (E (C.dom f) \<star> \<lbrace>Dom u\<rbrace>) (E (C.cod f) \<star> \<lbrace>Cod u\<rbrace>)"
+          moreover have "\<guillemotleft>E f \<star> \<lbrace>u\<rbrace> : E (C.dom f) \<star> \<lbrace>Dom u\<rbrace> \<Rightarrow> E (C.cod f) \<star> \<lbrace>Cod u\<rbrace>\<guillemotright>"
             using f u fu Nml_implies_Arr
-            by (auto simp add: eval_simps' hseqI')
+            apply (intro hcomp_in_vhom)
+              apply auto
+            by (metis C.src_dom eval_simps(4) preserves_src trg_dom u)
           ultimately show ?thesis
             using f u comp_arr_dom comp_cod_arr
-            by (simp add: fu hseqI')
+            by (simp add: fu)
         qed
         next
         fix v w
@@ -3601,7 +3604,7 @@ begin
           also have "... = ((\<lbrace>Cod v\<rbrace> \<star> \<lbrace>Cod w \<^bold>\<Down> Cod u\<rbrace>) \<cdot> \<a>[\<lbrace>Cod v\<rbrace>, \<lbrace>Cod w\<rbrace>, \<lbrace>Cod u\<rbrace>]) \<cdot>
                            ((\<lbrace>v\<rbrace> \<star> \<lbrace>w\<rbrace>) \<star> \<lbrace>u\<rbrace>)"
             using u v w vw' wu comp_cod_arr red2_in_Hom HcompNml_in_Hom comp_reduce
-           by (simp add: eval_simps' hseqI')
+           by (simp add: eval_simps')
           also have "... = (\<lbrace>Cod v\<rbrace> \<star> \<lbrace>Cod w \<^bold>\<Down> Cod u\<rbrace>) \<cdot> \<a>[\<lbrace>Cod v\<rbrace>, \<lbrace>Cod w\<rbrace>, \<lbrace>Cod u\<rbrace>] \<cdot>
                            ((\<lbrace>v\<rbrace> \<star> \<lbrace>w\<rbrace>) \<star> \<lbrace>u\<rbrace>)"
             using comp_assoc by simp

@@ -86,7 +86,7 @@ begin
     and "\<guillemotleft>(g \<star> \<epsilon>) \<cdot> \<a>[g, f, g] \<cdot> (\<eta> \<star> g) : trg g \<star> g \<Rightarrow> g \<star> src g\<guillemotright>"
     and "\<guillemotleft>\<l>[f] \<cdot> (\<epsilon> \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[f, g, f] \<cdot> (f \<star> \<eta>) \<cdot> \<r>\<^sup>-\<^sup>1[f] : f \<Rightarrow> f\<guillemotright>"
     and "\<guillemotleft>\<r>[g] \<cdot> (g \<star> \<epsilon>) \<cdot> \<a>[g, f, g] \<cdot> (\<eta> \<star> g) \<cdot> \<l>\<^sup>-\<^sup>1[g] : g \<Rightarrow> g\<guillemotright>"
-      using antipar hseqI' by auto
+      using antipar by auto
 
     lemma triangle_equiv_form:
     shows "(\<epsilon> \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[f, g, f] \<cdot> (f \<star> \<eta>) = \<l>\<^sup>-\<^sup>1[f] \<cdot> \<r>[f] \<longleftrightarrow>
@@ -232,8 +232,8 @@ begin
         show f': "ide f'" using assms by auto
         show g': "ide g'" using assms by auto
         show 1: "\<guillemotleft>(g' \<star> \<phi>) \<cdot> (\<psi> \<star> f) \<cdot> \<eta> : src f' \<Rightarrow> g' \<star> f'\<guillemotright>"
-          using assms f' g' E.unit_in_hom E.antipar(2) vconn_implies_hpar(3) hseqI'
-          apply (intro comp_in_homI, auto)
+          using assms f' g' E.unit_in_hom E.antipar(2) vconn_implies_hpar(3)
+         apply (intro comp_in_homI, auto)
           by (intro hcomp_in_vhom, auto)
         show "iso ((g' \<star> \<phi>) \<cdot> (\<psi> \<star> f) \<cdot> \<eta>)"
           using assms 1 g' vconn_implies_hpar(3) E.antipar(2) iso_hcomp
@@ -276,17 +276,14 @@ begin
       show "ide g'"
         using assms(2) isomorphic_def by auto
       show "\<guillemotleft>(\<phi> \<star> f) \<cdot> \<eta> : src f \<Rightarrow> g' \<star> f\<guillemotright>"
-        using assms
-        apply (intro comp_in_homI)
-         apply auto[1]
-        using E.antipar(2) E.ide_left by blast
+        using assms E.antipar(2) E.ide_left by blast
       show "\<guillemotleft>\<epsilon> \<cdot> (f \<star> inv \<phi>) : f \<star> g' \<Rightarrow> src g'\<guillemotright>"
         using assms vconn_implies_hpar(3-4) E.counit_in_vhom E.antipar(1) ide_in_hom(2)
         by (intro comp_in_homI, auto)
       show "iso ((\<phi> \<star> f) \<cdot> \<eta>)"
-        using assms E.antipar hseqI' isos_compose by auto
+        using assms E.antipar isos_compose by auto
       show "iso (\<epsilon> \<cdot> (f \<star> inv \<phi>))"
-        using assms E.antipar hseqI' isos_compose iso_inv_iso by auto
+        using assms E.antipar isos_compose iso_inv_iso by auto
     qed
 
     lemma equivalence_preserved_by_iso_left:
@@ -301,16 +298,13 @@ begin
       show "ide g"
         by simp
       show "\<guillemotleft>(g \<star> \<phi>) \<cdot> \<eta> : src f' \<Rightarrow> g \<star> f'\<guillemotright>"
-        using assms E.unit_in_hom E.antipar hseqI'
-        apply (intro comp_in_homI, auto)
-        by (intro hcomp_in_vhom, auto)
+        using assms E.unit_in_hom E.antipar by auto
       show "\<guillemotleft>\<epsilon> \<cdot> (inv \<phi> \<star> g) : f' \<star> g \<Rightarrow> src g\<guillemotright>"
-        using assms E.counit_in_hom E.antipar ide_in_hom(2) vconn_implies_hpar(3) 
-        by (intro comp_in_homI, auto)
+        using assms E.counit_in_hom E.antipar ide_in_hom(2) vconn_implies_hpar(3) by auto
       show "iso ((g \<star> \<phi>) \<cdot> \<eta>)"
-        using assms E.antipar hseqI' isos_compose by auto
+        using assms E.antipar isos_compose by auto
       show "iso (\<epsilon> \<cdot> (inv \<phi> \<star> g))"
-        using assms E.antipar hseqI' isos_compose iso_inv_iso by auto
+        using assms E.antipar isos_compose iso_inv_iso by auto
     qed
 
   end
@@ -504,20 +498,19 @@ begin
     interpretation F: "functor" hom.comp hom'.comp F
     proof
       show 1: "\<And>f. hom.arr f \<Longrightarrow> hom'.arr (e\<^sub>1 \<star> f \<star> d\<^sub>0)"
-        using hom.arr_char hom'.arr_char hseqI' in_hhom_def e\<^sub>0.antipar(1) e\<^sub>0.antipar(2)
-        by simp
+        using hom.arr_char hom'.arr_char in_hhom_def e\<^sub>0.antipar(1-2) by simp
       show "\<And>f. \<not> hom.arr f \<Longrightarrow> e\<^sub>1 \<star> f \<star> d\<^sub>0 = hom'.null"
         using 1 hom.arr_char hom'.null_char in_hhom_def
         by (metis e\<^sub>0.antipar(1) hseqE hseq_char' hcomp_simps(2))
       show "\<And>f. hom.arr f \<Longrightarrow> hom'.dom (e\<^sub>1 \<star> f \<star> d\<^sub>0) = e\<^sub>1 \<star> hom.dom f \<star> d\<^sub>0"
-        using hom.arr_char hom.dom_char hom'.arr_char hom'.dom_char hseqI'
+        using hom.arr_char hom.dom_char hom'.arr_char hom'.dom_char
         by (metis 1 hcomp_simps(3) e\<^sub>0.ide_right e\<^sub>1.ide_left hom'.inclusion hseq_char ide_char)
       show "\<And>f. hom.arr f \<Longrightarrow> hom'.cod (e\<^sub>1 \<star> f \<star> d\<^sub>0) = e\<^sub>1 \<star> hom.cod f \<star> d\<^sub>0"
-        using hom.arr_char hom.cod_char hom'.arr_char hom'.cod_char hseqI'
+        using hom.arr_char hom.cod_char hom'.arr_char hom'.cod_char
         by (metis 1 hcomp_simps(4) e\<^sub>0.ide_right e\<^sub>1.ide_left hom'.inclusion hseq_char ide_char)
       show "\<And>g f. hom.seq g f \<Longrightarrow>
                    e\<^sub>1 \<star> hom.comp g f \<star> d\<^sub>0 = hom'.comp (e\<^sub>1 \<star> g \<star> d\<^sub>0) (e\<^sub>1 \<star> f \<star> d\<^sub>0)"
-        using 1 hom.seq_char hom.arr_char hom.comp_char hom'.arr_char hom'.comp_char hseqI'
+        using 1 hom.seq_char hom.arr_char hom.comp_char hom'.arr_char hom'.comp_char
               whisker_left [of e\<^sub>1] whisker_right [of d\<^sub>0]
         apply auto
          apply (metis hseq_char seqE src_vcomp)
@@ -530,20 +523,20 @@ begin
     interpretation G: "functor" hom'.comp hom.comp G
     proof
       show 1: "\<And>f. hom'.arr f \<Longrightarrow> hom.arr (d\<^sub>1 \<star> f \<star> e\<^sub>0)"
-        using hom.arr_char hom'.arr_char hseqI' in_hhom_def e\<^sub>1.antipar(1) e\<^sub>1.antipar(2)
+        using hom.arr_char hom'.arr_char in_hhom_def e\<^sub>1.antipar(1) e\<^sub>1.antipar(2)
         by simp
       show "\<And>f. \<not> hom'.arr f \<Longrightarrow> d\<^sub>1 \<star> f \<star> e\<^sub>0 = hom.null"
         using 1 hom.arr_char hom'.null_char in_hhom_def
         by (metis e\<^sub>1.antipar(2) hom'.arrI hom.null_char hseqE hseq_char' hcomp_simps(2))
       show "\<And>f. hom'.arr f \<Longrightarrow> hom.dom (d\<^sub>1 \<star> f \<star> e\<^sub>0) = d\<^sub>1 \<star> hom'.dom f \<star> e\<^sub>0"
-        using 1 hom.arr_char hom.dom_char hom'.arr_char hom'.dom_char hseqI'
+        using 1 hom.arr_char hom.dom_char hom'.arr_char hom'.dom_char
         by (metis hcomp_simps(3) e\<^sub>0.ide_left e\<^sub>1.ide_right hom.inclusion hseq_char ide_char)
       show "\<And>f. hom'.arr f \<Longrightarrow> hom.cod (d\<^sub>1 \<star> f \<star> e\<^sub>0) = d\<^sub>1 \<star> hom'.cod f \<star> e\<^sub>0"
-        using 1 hom.arr_char hom.cod_char hom'.arr_char hom'.cod_char hseqI'
+        using 1 hom.arr_char hom.cod_char hom'.arr_char hom'.cod_char
         by (metis hcomp_simps(4) e\<^sub>0.ide_left e\<^sub>1.ide_right hom.inclusion hseq_char ide_char)
       show "\<And>g f. hom'.seq g f \<Longrightarrow>
                    d\<^sub>1 \<star> hom'.comp g f \<star> e\<^sub>0 = hom.comp (d\<^sub>1 \<star> g \<star> e\<^sub>0) (d\<^sub>1 \<star> f \<star> e\<^sub>0)"
-        using 1 hom'.seq_char hom'.arr_char hom'.comp_char hom.arr_char hom.comp_char hseqI'
+        using 1 hom'.seq_char hom'.arr_char hom'.comp_char hom.arr_char hom.comp_char
               whisker_left [of d\<^sub>1] whisker_right [of e\<^sub>0]
         apply auto
          apply (metis hseq_char seqE src_vcomp)
@@ -563,8 +556,7 @@ begin
     and "\<guillemotleft>\<phi>\<^sub>0 f : f \<Rightarrow> d\<^sub>1 \<star> (e\<^sub>1 \<star> f \<star> d\<^sub>0) \<star> e\<^sub>0\<guillemotright>"
     proof -
       show "\<guillemotleft>\<phi>\<^sub>0 f : f \<Rightarrow> d\<^sub>1 \<star> (e\<^sub>1 \<star> f \<star> d\<^sub>0) \<star> e\<^sub>0\<guillemotright>"
-        using assms e\<^sub>0.antipar e\<^sub>1.antipar
-        by (intro comp_in_homI, fastforce+)
+        using assms e\<^sub>0.antipar e\<^sub>1.antipar by fastforce
       thus "\<guillemotleft>\<phi>\<^sub>0 f : src e\<^sub>0 \<rightarrow> src e\<^sub>1\<guillemotright>"
         using assms src_dom [of "\<phi>\<^sub>0 f"] trg_dom [of "\<phi>\<^sub>0 f"]
         by (metis arrI dom_comp in_hhom_def runit'_simps(4) seqE)
@@ -573,13 +565,10 @@ begin
     lemma iso_\<phi>\<^sub>0:
     assumes "\<guillemotleft>f : src e\<^sub>0 \<rightarrow> src e\<^sub>1\<guillemotright>" and "ide f"
     shows "iso (\<phi>\<^sub>0 f)"
-      using assms iso_lunit' iso_runit' e\<^sub>0.antipar e\<^sub>1.antipar hseqI'
+      using assms iso_lunit' iso_runit' e\<^sub>0.antipar e\<^sub>1.antipar
       apply (intro isos_compose)
                 apply auto
-       apply (metis assoc'_simps(3) e\<^sub>0.ide_left e\<^sub>0.ide_right e\<^sub>1.ide_left e\<^sub>1.ide_right
-          iso_hcomp ideD(1) ide_is_iso in_hhomE iso_assoc' hcomp_simps(1))
-      by (metis assoc'_simps(3) e\<^sub>0.ide_left e\<^sub>0.ide_right e\<^sub>1.ide_left e\<^sub>1.ide_right iso_hcomp
-          ide_hcomp ideD(1) ide_is_iso in_hhomE iso_assoc' hcomp_simps(1-2))
+      by fastforce+
 
     interpretation \<phi>: transformation_by_components hom.comp hom.comp hom.map \<open>G o F\<close> \<phi>\<^sub>0
     proof
@@ -659,7 +648,7 @@ begin
                     interchange [of \<mu> "dom \<mu>" "d\<^sub>0 \<star> e\<^sub>0" \<eta>\<^sub>0]
               by auto
             also have "... = ((d\<^sub>1 \<star> e\<^sub>1) \<star> \<mu> \<star> d\<^sub>0 \<star> e\<^sub>0) \<cdot> (\<eta>\<^sub>1 \<star> dom \<mu> \<star> \<eta>\<^sub>0)"
-              using \<mu> hom.arr_char comp_arr_dom comp_cod_arr hseqI'
+              using \<mu> hom.arr_char comp_arr_dom comp_cod_arr
                     interchange [of "d\<^sub>1 \<star> e\<^sub>1" \<eta>\<^sub>1 "\<mu> \<star> d\<^sub>0 \<star> e\<^sub>0" "dom \<mu> \<star> \<eta>\<^sub>0"]
                     interchange [of \<mu> "dom \<mu>" "d\<^sub>0 \<star> e\<^sub>0" \<eta>\<^sub>0]
               by (metis e\<^sub>0.unit_in_hom(1) e\<^sub>0.unit_simps(1) e\<^sub>0.unit_simps(3) e\<^sub>1.unit_simps(1)
@@ -675,7 +664,7 @@ begin
         also have "... = ((d\<^sub>1 \<star> \<a>\<^sup>-\<^sup>1[e\<^sub>1, cod \<mu> \<star> d\<^sub>0, e\<^sub>0]) \<cdot> \<a>[d\<^sub>1, e\<^sub>1, (cod \<mu> \<star> d\<^sub>0) \<star> e\<^sub>0] \<cdot>
                            ((d\<^sub>1 \<star> e\<^sub>1) \<star> (\<mu> \<star> d\<^sub>0) \<star> e\<^sub>0) \<cdot> ((d\<^sub>1 \<star> e\<^sub>1) \<star> \<a>\<^sup>-\<^sup>1[dom \<mu>, d\<^sub>0, e\<^sub>0])) \<cdot>
                            (\<eta>\<^sub>1 \<star> dom \<mu> \<star> \<eta>\<^sub>0) \<cdot> \<l>\<^sup>-\<^sup>1[dom \<mu> \<star> src e\<^sub>0] \<cdot> \<r>\<^sup>-\<^sup>1[dom \<mu>]"
-          using \<mu> hom.arr_char e\<^sub>0.antipar e\<^sub>1.antipar hseqI' assoc'_naturality [of \<mu> d\<^sub>0 e\<^sub>0]
+          using \<mu> hom.arr_char e\<^sub>0.antipar e\<^sub>1.antipar assoc'_naturality [of \<mu> d\<^sub>0 e\<^sub>0]
                 whisker_left [of "d\<^sub>1 \<star> e\<^sub>1" "\<a>\<^sup>-\<^sup>1[cod \<mu>, d\<^sub>0, e\<^sub>0]" "\<mu> \<star> d\<^sub>0 \<star> e\<^sub>0"]
                 whisker_left [of "d\<^sub>1 \<star> e\<^sub>1" "(\<mu> \<star> d\<^sub>0) \<star> e\<^sub>0" "\<a>\<^sup>-\<^sup>1[dom \<mu>, d\<^sub>0, e\<^sub>0]"]
           by auto
@@ -686,7 +675,7 @@ begin
         also have "... = ((d\<^sub>1 \<star> \<a>\<^sup>-\<^sup>1[e\<^sub>1, cod \<mu> \<star> d\<^sub>0, e\<^sub>0]) \<cdot> (d\<^sub>1 \<star> e\<^sub>1 \<star> (\<mu> \<star> d\<^sub>0) \<star> e\<^sub>0) \<cdot>
                            \<a>[d\<^sub>1, e\<^sub>1, (dom \<mu> \<star> d\<^sub>0) \<star> e\<^sub>0]) \<cdot> ((d\<^sub>1 \<star> e\<^sub>1) \<star> \<a>\<^sup>-\<^sup>1[dom \<mu>, d\<^sub>0, e\<^sub>0]) \<cdot>
                            (\<eta>\<^sub>1 \<star> dom \<mu> \<star> \<eta>\<^sub>0) \<cdot> \<l>\<^sup>-\<^sup>1[dom \<mu> \<star> src e\<^sub>0] \<cdot> \<r>\<^sup>-\<^sup>1[dom \<mu>]"
-          using \<mu> hom.arr_char e\<^sub>0.antipar e\<^sub>1.antipar hseqI'
+          using \<mu> hom.arr_char e\<^sub>0.antipar e\<^sub>1.antipar
                 assoc_naturality [of d\<^sub>1 e\<^sub>1 "(\<mu> \<star> d\<^sub>0) \<star> e\<^sub>0"]
           by auto
         also have "... = ((d\<^sub>1 \<star> \<a>\<^sup>-\<^sup>1[e\<^sub>1, cod \<mu> \<star> d\<^sub>0, e\<^sub>0]) \<cdot> (d\<^sub>1 \<star> e\<^sub>1 \<star> (\<mu> \<star> d\<^sub>0) \<star> e\<^sub>0)) \<cdot>
@@ -696,7 +685,7 @@ begin
         also have "... = ((d\<^sub>1 \<star> (e\<^sub>1 \<star> \<mu> \<star> d\<^sub>0) \<star> e\<^sub>0) \<cdot> (d\<^sub>1 \<star> \<a>\<^sup>-\<^sup>1[e\<^sub>1, dom \<mu> \<star> d\<^sub>0, e\<^sub>0])) \<cdot> 
                            \<a>[d\<^sub>1, e\<^sub>1, (dom \<mu> \<star> d\<^sub>0) \<star> e\<^sub>0] \<cdot> ((d\<^sub>1 \<star> e\<^sub>1) \<star> \<a>\<^sup>-\<^sup>1[dom \<mu>, d\<^sub>0, e\<^sub>0]) \<cdot>
                            (\<eta>\<^sub>1 \<star> dom \<mu> \<star> \<eta>\<^sub>0) \<cdot> \<l>\<^sup>-\<^sup>1[dom \<mu> \<star> src e\<^sub>0] \<cdot> \<r>\<^sup>-\<^sup>1[dom \<mu>]"
-          using \<mu> hom.arr_char e\<^sub>0.antipar e\<^sub>1.antipar hseqI'
+          using \<mu> hom.arr_char e\<^sub>0.antipar e\<^sub>1.antipar
                 assoc'_naturality [of e\<^sub>1 "\<mu> \<star> d\<^sub>0" e\<^sub>0]
                 whisker_left [of d\<^sub>1 "\<a>\<^sup>-\<^sup>1[e\<^sub>1, cod \<mu> \<star> d\<^sub>0, e\<^sub>0]" "e\<^sub>1 \<star> (\<mu> \<star> d\<^sub>0) \<star> e\<^sub>0"]
                 whisker_left [of d\<^sub>1 "(e\<^sub>1 \<star> \<mu> \<star> d\<^sub>0) \<star> e\<^sub>0" "\<a>\<^sup>-\<^sup>1[e\<^sub>1, dom \<mu> \<star> d\<^sub>0, e\<^sub>0]"]
@@ -794,9 +783,34 @@ begin
         using assms \<phi>_eq \<phi>_def hom.arr_char \<phi>.preserves_reflects_arr by presburger
       show "\<guillemotleft>\<phi> \<mu> : dom \<mu> \<Rightarrow> d\<^sub>1 \<star> (e\<^sub>1 \<star> cod \<mu> \<star> d\<^sub>0) \<star> e\<^sub>0\<guillemotright>"
         unfolding \<phi>_eq
-        using \<phi>\<^sub>0_in_hom(2) arr_iff_in_hom assms comp_in_hom_simp hom.cod_closed hom.inclusion
-              ide_cod
-        by presburger
+        using assms apply simp
+        apply (intro comp_in_homI)
+              apply auto
+      proof -
+        show "\<guillemotleft>\<r>\<^sup>-\<^sup>1[cod \<mu>] : cod \<mu> \<Rightarrow> cod \<mu> \<star> src e\<^sub>0\<guillemotright>"
+          using assms by auto
+        show "\<guillemotleft>\<l>\<^sup>-\<^sup>1[cod \<mu> \<star> src e\<^sub>0] : cod \<mu> \<star> src e\<^sub>0 \<Rightarrow> src e\<^sub>1 \<star> cod \<mu> \<star> src e\<^sub>0\<guillemotright>"
+          using assms by auto
+        show "\<guillemotleft>\<eta>\<^sub>1 \<star> cod \<mu> \<star> \<eta>\<^sub>0 : src e\<^sub>1 \<star> cod \<mu> \<star> src e\<^sub>0 \<Rightarrow> (d\<^sub>1 \<star> e\<^sub>1) \<star> cod \<mu> \<star> (d\<^sub>0 \<star> e\<^sub>0)\<guillemotright>"
+          using assms e\<^sub>0.unit_in_hom(2) e\<^sub>1.unit_in_hom(2)
+          apply (intro hcomp_in_vhom)
+              apply auto
+          by fastforce
+        show "\<guillemotleft>(d\<^sub>1 \<star> e\<^sub>1) \<star> \<a>\<^sup>-\<^sup>1[cod \<mu>, d\<^sub>0, e\<^sub>0] :
+                 (d\<^sub>1 \<star> e\<^sub>1) \<star> cod \<mu> \<star> d\<^sub>0 \<star> e\<^sub>0 \<Rightarrow> (d\<^sub>1 \<star> e\<^sub>1) \<star> (cod \<mu> \<star> d\<^sub>0) \<star> e\<^sub>0\<guillemotright>"
+          using assms assoc'_in_hom e\<^sub>0.antipar(1-2) e\<^sub>1.antipar(2)
+          apply (intro hcomp_in_vhom) by auto
+        show "\<guillemotleft>\<a>[d\<^sub>1, e\<^sub>1, (cod \<mu> \<star> d\<^sub>0) \<star> e\<^sub>0] :
+                (d\<^sub>1 \<star> e\<^sub>1) \<star> (cod \<mu> \<star> d\<^sub>0) \<star> e\<^sub>0 \<Rightarrow> d\<^sub>1 \<star> e\<^sub>1 \<star> (cod \<mu> \<star> d\<^sub>0) \<star> e\<^sub>0\<guillemotright>"
+          using assms assoc_in_hom e\<^sub>0.antipar(1-2) e\<^sub>1.antipar(2) by auto
+        show "\<guillemotleft>d\<^sub>1 \<star> \<a>\<^sup>-\<^sup>1[e\<^sub>1, cod \<mu> \<star> d\<^sub>0, e\<^sub>0] :
+                 d\<^sub>1 \<star> e\<^sub>1 \<star> (cod \<mu> \<star> d\<^sub>0) \<star> e\<^sub>0 \<Rightarrow> d\<^sub>1 \<star> (e\<^sub>1 \<star> cod \<mu> \<star> d\<^sub>0) \<star> e\<^sub>0\<guillemotright>"
+          using assms assoc'_in_hom [of "d\<^sub>1" "e\<^sub>1 \<star> cod \<mu> \<star> d\<^sub>0" "e\<^sub>0"]
+                e\<^sub>0.antipar(1-2) e\<^sub>1.antipar(1-2)
+          apply (intro hcomp_in_vhom)
+            apply auto
+          by fastforce
+      qed
     qed
 
     lemma \<phi>_simps [simp]:
@@ -856,7 +870,7 @@ begin
         moreover have "iso \<l>\<^sup>-\<^sup>1[f' \<star> trg e\<^sub>0]"
           using assms iso_lunit' by auto
         moreover have "iso (inv \<epsilon>\<^sub>1 \<star> f' \<star> inv \<epsilon>\<^sub>0)"
-          using assms e\<^sub>0.antipar(2) e\<^sub>1.antipar(2) hseqI' in_hhom_def by simp
+          using assms e\<^sub>0.antipar(2) e\<^sub>1.antipar(2) in_hhom_def by simp
         moreover have "iso ((e\<^sub>1 \<star> d\<^sub>1) \<star> \<a>\<^sup>-\<^sup>1[f', e\<^sub>0, d\<^sub>0])"
           using assms e\<^sub>0.antipar e\<^sub>1.antipar(1) e\<^sub>1.antipar(2) in_hhom_def iso_hcomp
           by (metis calculation(1) e\<^sub>0.ide_left e\<^sub>0.ide_right e\<^sub>1.ide_left e\<^sub>1.ide_right hseqE
@@ -892,16 +906,10 @@ begin
           moreover have "src f' = trg (inv \<epsilon>\<^sub>0)"
             using assms(1) e\<^sub>0.antipar(2) by auto
           ultimately show ?thesis
-            using assms(2) e\<^sub>0.counit_is_iso e\<^sub>1.counit_is_iso hseqI' by simp
+            using assms(2) e\<^sub>0.counit_is_iso e\<^sub>1.counit_is_iso by simp
         qed
-        moreover have "inv ((e\<^sub>1 \<star> d\<^sub>1) \<star> \<a>\<^sup>-\<^sup>1[f', e\<^sub>0, d\<^sub>0]) = (e\<^sub>1 \<star> d\<^sub>1) \<star> \<a>[f', e\<^sub>0, d\<^sub>0]"
-          using assms e\<^sub>0.antipar e\<^sub>1.antipar hseqI' iso_inv_iso by auto
-        moreover have "inv \<a>[e\<^sub>1, d\<^sub>1, (f' \<star> e\<^sub>0) \<star> d\<^sub>0] = \<a>\<^sup>-\<^sup>1[e\<^sub>1, d\<^sub>1, (f' \<star> e\<^sub>0) \<star> d\<^sub>0]"
-          using assms e\<^sub>0.antipar e\<^sub>1.antipar hseqI' by auto
-        moreover have "inv (e\<^sub>1 \<star> \<a>\<^sup>-\<^sup>1[d\<^sub>1, f' \<star> e\<^sub>0, d\<^sub>0]) = e\<^sub>1 \<star> \<a>[d\<^sub>1, f' \<star> e\<^sub>0, d\<^sub>0]"
-          using assms e\<^sub>0.antipar e\<^sub>1.antipar iso_assoc hseqI' iso_inv_iso
-          by auto
-        ultimately show ?thesis by simp
+        ultimately show ?thesis
+          using assms e\<^sub>0.antipar e\<^sub>1.antipar iso_inv_iso by auto
       qed
       finally show ?thesis
         using \<psi>_def by simp
@@ -966,7 +974,7 @@ begin
       show "\<guillemotleft>\<psi> \<mu>' : trg e\<^sub>0 \<rightarrow> trg e\<^sub>1\<guillemotright>"
         using 1 hom'.arr_char by blast
       show "\<guillemotleft>\<psi> \<mu>' : e\<^sub>1 \<star> (d\<^sub>1 \<star> dom \<mu>' \<star> e\<^sub>0) \<star> d\<^sub>0 \<Rightarrow> cod \<mu>'\<guillemotright>"
-        using assms 0 1 \<psi>.preserves_hom hom'.in_hom_char hom'.arr_char hseqI'
+        using assms 0 1 \<psi>.preserves_hom hom'.in_hom_char hom'.arr_char
               e\<^sub>0.antipar e\<^sub>1.antipar \<psi>.preserves_dom \<psi>.preserves_cod hom'.dom_char
         apply (intro in_homI)
           apply auto[1]

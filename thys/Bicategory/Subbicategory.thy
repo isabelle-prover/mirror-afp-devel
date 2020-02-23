@@ -187,8 +187,8 @@ begin
         proof (intro comp_closed)
           show "Arr (fst \<mu>\<nu>\<tau> \<star>\<^sub>B fst (snd \<mu>\<nu>\<tau>) \<star>\<^sub>B snd (snd \<mu>\<nu>\<tau>))"
             using assms 1 B.VVV.arr_char B.VV.arr_char hcomp_closed
-            by (metis (no_types, lifting) B.H.preserves_arr B.hcomp_simps(2)
-                VV.arr_char VVV.arrE arrE)
+            by (metis (no_types, lifting) B.H.preserves_reflects_arr B.trg_hcomp
+                VV.arr_char VVV.arrE arr_char)
           show "B.cod (\<a> (fst (B.VVV.dom \<mu>\<nu>\<tau>)) (fst (snd (B.VVV.dom \<mu>\<nu>\<tau>)))
                       (snd (snd (B.VVV.dom \<mu>\<nu>\<tau>)))) =
                 B.dom (fst \<mu>\<nu>\<tau> \<star>\<^sub>B fst (snd \<mu>\<nu>\<tau>) \<star>\<^sub>B snd (snd \<mu>\<nu>\<tau>))"
@@ -446,9 +446,9 @@ begin
             have "B.inv (B.\<ll> f) \<cdot>\<^sub>B B.\<ll> f = trg\<^sub>B f \<star>\<^sub>B f"
               using f ide_char B.comp_inv_arr B.inv_is_inverse by auto
             moreover have "B.dom (trg\<^sub>B ?\<mu> \<star>\<^sub>B ?\<mu>) = trg\<^sub>B f \<star>\<^sub>B f"
-              using f \<mu> \<mu>_eq ide_char arr_char B.trg_dom [of ?\<mu>] B.hseqI' by fastforce
+              using f \<mu> \<mu>_eq ide_char arr_char B.trg_dom [of ?\<mu>] by fastforce
             ultimately show ?thesis
-              using \<mu> \<mu>_eq B.comp_arr_dom in_hom_char B.hseqI' by auto
+              using \<mu> \<mu>_eq B.comp_arr_dom in_hom_char by auto
           qed
           also have "... = ((trg\<^sub>B ?\<mu> \<star>\<^sub>B ?\<mu>) \<cdot>\<^sub>B B.inv (B.\<ll> f)) \<cdot>\<^sub>B B.\<ll> f"
             using B.comp_assoc by simp
@@ -532,9 +532,9 @@ begin
             have "B.inv (B.\<rr> f) \<cdot>\<^sub>B B.\<rr> f = f \<star>\<^sub>B src\<^sub>B f"
               using f ide_char B.comp_inv_arr B.inv_is_inverse by auto
             moreover have "B.dom (?\<mu> \<star>\<^sub>B src\<^sub>B ?\<mu>) = f \<star>\<^sub>B src\<^sub>B f"
-              using f \<mu> \<mu>_eq ide_char arr_char B.src_dom [of ?\<mu>] B.hseqI' by fastforce
+              using f \<mu> \<mu>_eq ide_char arr_char B.src_dom [of ?\<mu>] by fastforce
             ultimately show ?thesis
-              using \<mu> \<mu>_eq B.comp_arr_dom in_hom_char B.hseqI' by auto
+              using \<mu> \<mu>_eq B.comp_arr_dom in_hom_char by auto
           qed
           also have "... = ((?\<mu> \<star>\<^sub>B src\<^sub>B ?\<mu>) \<cdot>\<^sub>B B.inv (B.\<rr> f)) \<cdot>\<^sub>B B.\<rr> f"
             using B.comp_assoc by simp
@@ -799,9 +799,9 @@ begin
       show "hseq (fst (w, f)) (snd (w, f))"
         using f hseq_char arr_char src_def trg_def \<omega>_in_vhom cod_char by simp
       show "dom (fst (w, f) \<star> snd (w, f)) = fst (w, dom f) \<star> snd (w, dom f)"
-        using f arr_char hcomp_def B.hseqI' by simp
+        using f arr_char hcomp_def by simp
       show "cod (fst (w, f) \<star> snd (w, f)) = fst (w, cod f) \<star> snd (w, cod f)"
-        using f arr_char hcomp_def B.hseqI' by simp
+        using f arr_char hcomp_def by simp
       next
       fix f g
       assume fg: "seq g f"
@@ -828,37 +828,25 @@ begin
           apply simp
           using comp_null(2) hcomp_def by fastforce
         assume \<mu>: "arr \<mu>"
-        have 1: "hseq \<phi> (dom \<mu>)"
-        proof (intro hseqI)
-          show "in_hhom (dom \<mu>) a a"
-            using \<mu> arr_char src_dom trg_dom src_def trg_def by simp
-          show "in_hhom \<phi> a a"
-            using \<phi> arr_char src_dom trg_dom src_def trg_def by auto
-        qed
+        have 0: "in_hhom (dom \<mu>) a a"
+          using \<mu> arr_char src_dom trg_dom src_def trg_def by simp
+        have 1: "in_hhom \<phi> a a"
+          using \<phi> arr_char src_dom trg_dom src_def trg_def by auto
         have 2: "hseq \<phi> (B.dom \<mu>)"
-        proof (intro hseqI)
-          show "in_hhom (B.dom \<mu>) a a"
-            using \<mu> arr_char src_dom trg_dom src_def trg_def by simp
-          show "in_hhom \<phi> a a"
-            using \<phi> arr_char src_dom trg_dom src_def trg_def by auto
-        qed
+          using \<mu> 0 1 by auto
         have 3: "seq (\<ll> \<mu>) (\<phi> \<star> dom \<mu>)"
-          using \<mu> \<phi> 1 2
-            apply (intro seqI hseqI')
-              apply auto
-        proof -
-          have "B.dom (\<ll> \<mu>) = a \<star> dom \<mu>"
-            using \<mu> 2 \<ll>.preserves_dom arr_simps(2) by auto
-          also have "... = B.cod (\<phi> \<star> B.dom \<mu>)"
-            using \<mu> \<phi> 2 hcomp_simps(4) cod_dom in_homE by auto
-          finally show "B.dom (\<ll> \<mu>) = B.cod (\<phi> \<star> B.dom \<mu>)"
-            by blast
+        proof (intro seqI')
+          show "\<guillemotleft>\<phi> \<star> dom \<mu> : w \<star> dom \<mu> \<Rightarrow> a \<star> dom \<mu>\<guillemotright>"
+            by (metis (no_types, lifting) 0 \<mu> \<phi> hcomp_in_vhom ide_dom ide_in_hom(2)
+                in_hhom_def w_simps(3))
+          show "\<guillemotleft>\<ll> \<mu> : a \<star> dom \<mu> \<Rightarrow> cod \<mu>\<guillemotright>"
+            using \<mu> 2 \<ll>.preserves_hom [of \<mu> "dom \<mu>" "cod \<mu>"] arr_simps(2) arr_cod by fastforce
         qed
         show "dom (\<ll> \<mu> \<cdot> (\<phi> \<star> dom \<mu>)) = fst (w, dom \<mu>) \<star> snd (w, dom \<mu>)"
         proof -
           have "dom (\<ll> \<mu> \<cdot> (\<phi> \<star> dom \<mu>)) = dom \<phi> \<star> dom \<mu>"
-            using \<mu> 3 hcomp_simps(3) dom_comp
-            by (metis (no_types, lifting) dom_dom seqE)
+            using \<mu> 3 hcomp_simps(3) dom_comp dom_dom
+            apply (elim seqE) by auto
           also have "... = fst (w, dom \<mu>) \<star> snd (w, dom \<mu>)"
             using \<omega>_in_vhom \<phi>
             by (metis (no_types, lifting) in_homE prod.sel(1) prod.sel(2))
@@ -901,8 +889,8 @@ begin
             moreover have 2: "seq (B.cod \<mu>) \<mu>"
               using \<mu> seq_char by (simp add: comp_cod_arr)
             moreover have "src \<phi> = trg (B.cod \<mu>)"
-              using \<mu> \<phi> 1 2
-              by (metis (no_types, lifting) hseqE trg_dom vseq_implies_hpar(2))
+              using \<mu> \<phi> 2
+              by (metis (no_types, lifting) arr_simps(2) seqE vconn_implies_hpar(1) w_simps(3))
             ultimately show ?thesis
               using interchange comp_assoc by simp
           qed
@@ -977,9 +965,9 @@ begin
               B.isomorphic_def in_hom_char
         by simp
       show "dom (fst (f, w) \<star> snd (f, w)) = fst (dom f, w) \<star> snd (dom f, w)"
-        using f arr_char dom_char cod_char hcomp_def \<omega>_in_vhom B.hseqI' by simp
+        using f arr_char dom_char cod_char hcomp_def \<omega>_in_vhom by simp
       show "cod (fst (f, w) \<star> snd (f, w)) = fst (cod f, w) \<star> snd (cod f, w)"
-        using f arr_char dom_char cod_char hcomp_def \<omega>_in_vhom B.hseqI' by simp
+        using f arr_char dom_char cod_char hcomp_def \<omega>_in_vhom by simp
       next
       fix f g
       assume fg: "seq g f"
@@ -1008,34 +996,25 @@ begin
           apply simp
           using comp_null(2) hcomp_def by fastforce
         assume \<mu>: "arr \<mu>"
-        have 1: "hseq \<phi> (dom \<mu>)"
-        proof (intro hseqI)
-          show "in_hhom (dom \<mu>) a a"
-            using \<mu> arr_char src_dom trg_dom src_def trg_def by simp
-          show "in_hhom \<phi> a a"
-            using \<phi> arr_char src_dom trg_dom src_def trg_def by auto
-        qed
+        have 0: "in_hhom (dom \<mu>) a a"
+          using \<mu> arr_char src_dom trg_dom src_def trg_def by simp
+        have 1: "in_hhom \<phi> a a"
+          using \<phi> arr_char src_dom trg_dom src_def trg_def by auto
         have 2: "hseq (B.dom \<mu>) \<phi>"
-          using \<mu> \<phi> 1 src_dom [of \<mu>]
-          apply (intro hseqI')
-          by (auto simp add: arr_simps(1) vconn_implies_hpar(2))
+          using \<mu> 0 1 by auto
         have 3: "seq (\<rr> \<mu>) (dom \<mu> \<star> \<phi>)"
-          using \<mu> \<phi> 1 2
-          apply (intro seqI hseqI')
-              apply auto
-        proof -
-          have "B.dom (\<rr> \<mu>) = dom \<mu> \<star> a"
-            using \<mu> 2 \<rr>.preserves_dom arr_simps(1) by auto
-          also have "... = B.cod (B.dom \<mu> \<star> \<phi>)"
-            using \<mu> \<phi> 2 hcomp_simps(4) cod_dom in_homE by auto
-          finally show "B.dom (\<rr> \<mu>) = B.cod (B.dom \<mu> \<star> \<phi>)"
-            by blast
+        proof (intro seqI')
+          show "\<guillemotleft>dom \<mu> \<star> \<phi> : dom \<mu> \<star> w \<Rightarrow> dom \<mu> \<star> a\<guillemotright>"
+            by (metis (no_types, lifting) "0" "1" \<mu> \<phi> hcomp_in_vhom hseqI hseq_char
+                ide_dom ide_in_hom(2) vconn_implies_hpar(2))
+          show "\<guillemotleft>\<rr> \<mu> : dom \<mu> \<star> a \<Rightarrow> cod \<mu>\<guillemotright>"
+            using \<mu> 2 \<rr>.preserves_hom [of \<mu> "dom \<mu>" "cod \<mu>"] arr_simps(2) arr_cod by fastforce
         qed
         show "dom (\<rr> \<mu> \<cdot> (dom \<mu> \<star> \<phi>)) = fst (dom \<mu>, w) \<star> snd (dom \<mu>, w)"
         proof -
           have "dom (\<rr> \<mu> \<cdot> (dom \<mu> \<star> \<phi>)) = dom \<mu> \<star> dom \<phi>"
-            using \<mu> 3 hcomp_simps(3) dom_comp
-            by (metis (no_types, lifting) dom_dom seqE)
+            using \<mu> 3 hcomp_simps(3) dom_comp dom_dom
+            apply (elim seqE) by auto
           also have "... = fst (dom \<mu>, w) \<star> snd (dom \<mu>, w)"
             using \<omega>_in_vhom \<phi>
             by (metis (no_types, lifting) in_homE prod.sel(1) prod.sel(2))
@@ -1170,7 +1149,7 @@ begin
           by auto
         have 3: "VVV.arr (f, g, h \<star> k)"
           using f g h k 1 VVV.arr_char VV.arr_char src_def trg_def ide_char arr_char
-                VxV.arrI VxVxV.arrI VxVxV_comp_eq_VVV_comp hseqI' H.preserves_reflects_arr
+                VxV.arrI VxVxV.arrI VxVxV_comp_eq_VVV_comp H.preserves_reflects_arr hseqI'
           by auto
         have 4: "VVV.arr (f \<star> g, h, k)"
           using f g h k VVV.arr_char VV.arr_char src_def trg_def ide_char arr_char hseq_char
@@ -1201,7 +1180,7 @@ begin
                 apply simp_all
           proof -
             have 1: "B.arr (\<a>\<^sub>B f (g \<star>\<^sub>B h) k \<cdot>\<^sub>B \<a>\<^sub>B f g h \<star>\<^sub>B k)"
-              using f g h k ide_char arr_char B.hseqI' B.HoHV_def B.HoVH_def
+              using f g h k ide_char arr_char B.HoHV_def B.HoVH_def
               apply (intro B.seqI)
               by auto
             show "src\<^sub>B (\<a>\<^sub>B f (g \<star>\<^sub>B h) k \<cdot>\<^sub>B \<a>\<^sub>B f g h \<star>\<^sub>B k) = a"
@@ -1274,7 +1253,7 @@ begin
        apply (metis src_cod in_homE isomorphic_implies_hpar(3) objE)
       by (metis trg_cod in_homE isomorphic_implies_hpar(4) objE)
     interpret S: subbicategory V H \<a> \<i> src trg \<open>\<lambda>\<mu>. arr \<mu> \<and> src \<mu> = a \<and> trg \<mu> = a\<close>
-      using assms iso_unit in_homE isoE isomorphicE VVV.arr_char VV.arr_char hseqI'
+      using assms iso_unit in_homE isoE isomorphicE VVV.arr_char VV.arr_char
       apply unfold_locales
                  apply auto[7]
     proof

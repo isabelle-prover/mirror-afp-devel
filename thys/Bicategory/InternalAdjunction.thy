@@ -64,7 +64,7 @@ begin
       have "\<epsilon> = \<epsilon> \<cdot> (f \<star> \<r>[g] \<cdot> (g \<star> \<epsilon>') \<cdot> \<a>[g, f, g] \<cdot> (\<eta> \<star> g) \<cdot> \<l>\<^sup>-\<^sup>1[g])"
         using E'.triangle_right' comp_arr_dom by simp
       also have "... = \<epsilon> \<cdot> (f \<star> \<r>[g]) \<cdot> (f \<star> g \<star> \<epsilon>') \<cdot> (f \<star> \<a>[g, f, g]) \<cdot> (f \<star> \<eta> \<star> g) \<cdot> (f \<star> \<l>\<^sup>-\<^sup>1[g])"
-        using E.antipar whisker_left hseqI' by simp
+        using E.antipar whisker_left by simp
       also have "... = \<epsilon> \<cdot> ((f \<star> \<r>[g]) \<cdot> (f \<star> g \<star> \<epsilon>')) \<cdot> (f \<star> \<a>[g, f, g]) \<cdot> (f \<star> \<eta> \<star> g) \<cdot> (f \<star> \<l>\<^sup>-\<^sup>1[g])"
         using comp_assoc by simp
       also have "... = \<epsilon> \<cdot> \<r>[f \<star> g] \<cdot> (\<a>\<^sup>-\<^sup>1[f, g, src g] \<cdot> (f \<star> g \<star> \<epsilon>')) \<cdot>
@@ -130,13 +130,13 @@ begin
           also have "... = inv ((f \<star> \<l>[g]) \<cdot> \<a>[f, trg g, g])"
             using E.antipar by (simp add: triangle)
           also have "... = \<a>\<^sup>-\<^sup>1[f, trg g, g] \<cdot> (f \<star> \<l>\<^sup>-\<^sup>1[g])"
-            using E.antipar hseqI' inv_comp by simp
+            using E.antipar inv_comp by simp
           finally show ?thesis by simp
         qed
         thus ?thesis by simp
       qed
       also have "... = \<epsilon>' \<cdot> (\<l>[f] \<cdot> (\<epsilon> \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[f, g, f] \<cdot> (f \<star> \<eta>) \<cdot> \<r>\<^sup>-\<^sup>1[f] \<star> g)"
-        using E.antipar whisker_right hseqI' by simp
+        using E.antipar whisker_right by simp
       also have "... = \<epsilon>'"
         using E.triangle_left' comp_arr_dom by simp
       finally show ?thesis by simp
@@ -187,7 +187,7 @@ begin
           using trnl\<^sub>\<eta>_def trnl\<^sub>\<epsilon>_def by simp
         also have "... = \<l>[u] \<cdot> (\<epsilon> \<star> u) \<cdot> (\<a>\<^sup>-\<^sup>1[f, g, u] \<cdot> (f \<star> g \<star> \<mu>)) \<cdot> (f \<star> \<a>[g, f, v]) \<cdot>
                            (f \<star> \<eta> \<star> v) \<cdot> (f \<star> \<l>\<^sup>-\<^sup>1[v])"
-          using assms \<mu> antipar whisker_left comp_assoc hseqI' by auto
+          using assms \<mu> antipar whisker_left comp_assoc by auto
         also have "... = \<l>[u] \<cdot> ((\<epsilon> \<star> u) \<cdot> ((f \<star> g) \<star> \<mu>)) \<cdot> \<a>\<^sup>-\<^sup>1[f, g, f \<star> v] \<cdot> (f \<star> \<a>[g, f, v]) \<cdot>
                            (f \<star> \<eta> \<star> v) \<cdot> (f \<star> \<l>\<^sup>-\<^sup>1[v])"
           using assms \<mu> antipar assoc'_naturality [of f g \<mu>] comp_assoc by fastforce
@@ -243,7 +243,7 @@ begin
                                  \<a>\<^sup>-\<^sup>1[f, trg v, v]"
               using comp_assoc by simp
             also have "... = \<a>[trg f, f, v] \<cdot> ((\<epsilon> \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[f, g, f] \<cdot> (f \<star> \<eta>) \<star> v) \<cdot> \<a>\<^sup>-\<^sup>1[f, trg v, v]"
-              using assms \<mu> antipar whisker_right hseqI' by simp
+              using assms \<mu> antipar whisker_right by simp
             finally show ?thesis by simp
           qed
           show ?thesis
@@ -274,7 +274,7 @@ begin
           using trnl\<^sub>\<eta>_def trnl\<^sub>\<epsilon>_def by simp
         also have "... = (g \<star> \<l>[u]) \<cdot> (g \<star> \<epsilon> \<star> u) \<cdot> (g \<star> \<a>\<^sup>-\<^sup>1[f, g, u]) \<cdot> (g \<star> f \<star> \<nu>) \<cdot>
                            \<a>[g, f, v] \<cdot> (\<eta> \<star> v) \<cdot> \<l>\<^sup>-\<^sup>1[v]"
-          using assms \<nu> antipar interchange [of g "g \<cdot> g \<cdot> g"] comp_assoc hseqI' by auto
+          using assms \<nu> antipar interchange [of g "g \<cdot> g \<cdot> g"] comp_assoc by auto
         also have "... = ((g \<star> \<l>[u]) \<cdot> (g \<star> \<epsilon> \<star> u) \<cdot> (g \<star> \<a>\<^sup>-\<^sup>1[f, g, u]) \<cdot>
                            \<a>[g, f, g \<star> u] \<cdot> (\<eta> \<star> g \<star> u)) \<cdot> (trg v \<star> \<nu>) \<cdot> \<l>\<^sup>-\<^sup>1[v]"
         proof -
@@ -315,7 +315,7 @@ begin
               have "(g \<star> \<l>[u]) \<cdot> (g \<star> \<epsilon> \<star> u) \<cdot> (g \<star> \<a>\<^sup>-\<^sup>1[f, g, u]) \<cdot> \<a>[g, f, g \<star> u] \<cdot> (\<eta> \<star> g \<star> u) =
                     (g \<star> \<l>[u]) \<cdot> (g \<star> \<epsilon> \<star> u) \<cdot> (g \<star> \<a>\<^sup>-\<^sup>1[f, g, u]) \<cdot> \<a>[g, f, g \<star> u] \<cdot>
                        ((\<eta> \<star> g \<star> u) \<cdot> \<a>[trg v, g, u]) \<cdot> \<a>\<^sup>-\<^sup>1[trg v, g, u]"
-                using assms antipar comp_arr_dom comp_assoc hseqI' comp_assoc_assoc'(1) by simp
+                using assms antipar comp_arr_dom comp_assoc comp_assoc_assoc'(1) by simp
               also have "... = (g \<star> \<l>[u]) \<cdot> (g \<star> \<epsilon> \<star> u) \<cdot> (g \<star> \<a>\<^sup>-\<^sup>1[f, g, u]) \<cdot> \<a>[g, f, g \<star> u] \<cdot>
                                  (\<a>[g \<star> f, g, u] \<cdot> ((\<eta> \<star> g) \<star> u)) \<cdot> \<a>\<^sup>-\<^sup>1[trg v, g, u]"
                 using assms antipar assoc_naturality [of \<eta> g u] by simp
@@ -328,7 +328,7 @@ begin
                                    ((\<eta> \<star> g) \<star> u) \<cdot> \<a>\<^sup>-\<^sup>1[trg v, g, u]"
               proof -
                 have "(\<a>[g, trg u, u] \<cdot> \<a>\<^sup>-\<^sup>1[g, trg u, u]) \<cdot> (g \<star> \<epsilon> \<star> u) = g \<star> \<epsilon> \<star> u"
-                  using assms antipar comp_cod_arr hseqI' comp_assoc_assoc'(1) by simp
+                  using assms antipar comp_cod_arr comp_assoc_assoc'(1) by simp
                 thus ?thesis
                   using comp_assoc by simp
               qed
@@ -353,7 +353,7 @@ begin
                           (\<a>\<^sup>-\<^sup>1[g, f \<star> g, u] \<cdot> (g \<star> \<a>\<^sup>-\<^sup>1[f, g, u]) \<cdot> \<a>[g, f, g \<star> u] \<cdot> \<a>[g \<star> f, g, u]) \<cdot>
                              ((\<eta> \<star> g) \<star> u) =
                        (g \<star> \<epsilon>) \<cdot> \<a>[g, f, g] \<cdot> (\<eta> \<star> g) \<star> u"
-                  using assms antipar whisker_right hseqI' by simp
+                  using assms antipar whisker_right by simp
                 thus ?thesis by simp
               qed
               finally show ?thesis by blast
@@ -422,7 +422,7 @@ begin
           unfolding trnr\<^sub>\<epsilon>_def trnr\<^sub>\<eta>_def by simp
         also have "... = \<r>[u] \<cdot> (u \<star> \<epsilon>) \<cdot> (\<a>[u, f, g] \<cdot> ((\<mu> \<star> f) \<star> g)) \<cdot>
                            (\<a>\<^sup>-\<^sup>1[v, g, f] \<star> g) \<cdot> ((v \<star> \<eta>) \<star> g) \<cdot> (\<r>\<^sup>-\<^sup>1[v] \<star> g)"
-          using assms \<mu> antipar whisker_right comp_assoc hseqI' by auto
+          using assms \<mu> antipar whisker_right comp_assoc by auto
         also have "... = \<r>[u] \<cdot> (u \<star> \<epsilon>) \<cdot> ((\<mu> \<star> f \<star> g) \<cdot> \<a>[v \<star> g, f, g]) \<cdot>
                            (\<a>\<^sup>-\<^sup>1[v, g, f] \<star> g) \<cdot> ((v \<star> \<eta>) \<star> g) \<cdot> (\<r>\<^sup>-\<^sup>1[v] \<star> g)"
           using assms \<mu> antipar assoc_naturality [of \<mu> f g] by auto
@@ -453,7 +453,15 @@ begin
             have "((v \<star> g) \<star> \<epsilon>) \<cdot> \<a>[v \<star> g, f, g] \<cdot> (\<a>\<^sup>-\<^sup>1[v, g, f] \<star> g) \<cdot> ((v \<star> \<eta>) \<star> g) =
                     ((\<a>\<^sup>-\<^sup>1[v, g, src u] \<cdot> \<a>[v, g, src u]) \<cdot> ((v \<star> g) \<star> \<epsilon>)) \<cdot>
                       \<a>[v \<star> g, f, g] \<cdot> (\<a>\<^sup>-\<^sup>1[v, g, f] \<star> g) \<cdot> ((v \<star> \<eta>) \<star> g)"
-              using assms antipar comp_cod_arr hseqI' comp_assoc_assoc'(2) by simp
+            proof -
+              have "arr v \<and> dom v = v \<and> cod v = v"
+                using assms(2) ide_char by blast
+              moreover have "arr g \<and> dom g = g \<and> cod g = g"
+                using ide_right ide_char by blast
+              ultimately show ?thesis
+                by (metis (no_types) antipar(2) assms(3-4) assoc_naturality
+                    counit_simps(1,3,5) hcomp_reassoc(1) comp_assoc)
+            qed
             also have "... = \<a>\<^sup>-\<^sup>1[v, g, src u] \<cdot> (\<a>[v, g, src u] \<cdot> ((v \<star> g) \<star> \<epsilon>)) \<cdot>
                                \<a>[v \<star> g, f, g] \<cdot> (\<a>\<^sup>-\<^sup>1[v, g, f] \<star> g) \<cdot> ((v \<star> \<eta>) \<star> g)"
               using comp_assoc by simp
@@ -464,7 +472,7 @@ begin
               have "\<a>[v, g, src u] \<cdot> ((v \<star> g) \<star> \<epsilon>) = (v \<star> g \<star> \<epsilon>) \<cdot> \<a>[v, g, f \<star> g]"
                 using assms antipar assoc_naturality [of v g \<epsilon>] by simp
               moreover have "(\<a>\<^sup>-\<^sup>1[v, g \<star> f, g] \<cdot> \<a>[v, g \<star> f, g]) \<cdot> ((v \<star> \<eta>) \<star> g) = (v \<star> \<eta>) \<star> g"
-                using assms antipar comp_cod_arr hseqI' comp_assoc_assoc'(2) by simp
+                using assms antipar comp_cod_arr comp_assoc_assoc'(2) by simp
               ultimately show ?thesis by simp
             qed
             also have "... = \<a>\<^sup>-\<^sup>1[v, g, src u] \<cdot> (v \<star> g \<star> \<epsilon>) \<cdot>
@@ -490,7 +498,7 @@ begin
             also have "... = \<a>\<^sup>-\<^sup>1[v, g, src u] \<cdot>
                                (v \<star> (g \<star> \<epsilon>) \<cdot> \<a>[g, f, g] \<cdot> (\<eta> \<star> g)) \<cdot>
                                  \<a>[v, src v, g]"
-              using assms antipar whisker_left hseqI' by simp
+              using assms antipar whisker_left by simp
             finally show ?thesis by simp
           qed
           thus ?thesis by auto
@@ -539,7 +547,7 @@ begin
           unfolding trnr\<^sub>\<eta>_def trnr\<^sub>\<epsilon>_def by simp
         also have "... = (\<r>[u] \<star> f) \<cdot> ((u \<star> \<epsilon>) \<star> f) \<cdot> (\<a>[u, f, g] \<star> f) \<cdot>
                           (((\<nu> \<star> g) \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[v, g, f]) \<cdot> (v \<star> \<eta>) \<cdot> \<r>\<^sup>-\<^sup>1[v]"
-          using assms \<nu> antipar whisker_right [of f] comp_assoc hseqI' by auto
+          using assms \<nu> antipar whisker_right comp_assoc by auto
         also have "... = (\<r>[u] \<star> f) \<cdot> ((u \<star> \<epsilon>) \<star> f) \<cdot> (\<a>[u, f, g] \<star> f) \<cdot>
                           (\<a>\<^sup>-\<^sup>1[u \<star> f, g, f] \<cdot> (\<nu> \<star> g \<star> f)) \<cdot> (v \<star> \<eta>) \<cdot> \<r>\<^sup>-\<^sup>1[v]"
           using assms \<nu> antipar assoc'_naturality [of \<nu> g f] by auto
@@ -581,7 +589,7 @@ begin
         also have "... = (\<r>[u] \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[u, src u, f] \<cdot>
                            (u \<star> (\<epsilon> \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[f, g, f] \<cdot> (f \<star> \<eta>)) \<cdot> \<a>[u, f, src f] \<cdot>
                              (\<nu> \<star> src v) \<cdot> \<r>\<^sup>-\<^sup>1[v]"
-          using assms antipar whisker_left hseqI' by auto
+          using assms antipar whisker_left by auto
         also have "... = ((\<r>[u] \<star> f) \<cdot> (\<a>\<^sup>-\<^sup>1[u, src u, f] \<cdot> (u \<star> \<l>\<^sup>-\<^sup>1[f] \<cdot> \<r>[f]) \<cdot> \<a>[u, f, src f])) \<cdot>
                            (\<nu> \<star> src v) \<cdot> \<r>\<^sup>-\<^sup>1[v]"
           using assms antipar triangle_left comp_assoc by simp
@@ -642,7 +650,7 @@ begin
     and "\<mu> \<in> hom (v \<star> g) u"
     shows "trnr\<^sub>\<eta> v \<mu> = (\<mu> \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[v, g, f] \<cdot> (v \<star> \<eta>)"
       unfolding trnr\<^sub>\<eta>_def
-      using assms antipar strict_runit' comp_arr_ide [of "\<r>\<^sup>-\<^sup>1[v]" "v \<star> \<eta>"] hcomp_arr_obj hseqI'
+      using assms antipar strict_runit' comp_arr_ide [of "\<r>\<^sup>-\<^sup>1[v]" "v \<star> \<eta>"] hcomp_arr_obj
       by auto
 
     lemma trnr\<^sub>\<epsilon>_eq:
@@ -651,21 +659,21 @@ begin
     and "\<nu> \<in> hom v (u \<star> f)"
     shows "trnr\<^sub>\<epsilon> u \<nu> = (u \<star> \<epsilon>) \<cdot> \<a>[u, f, g] \<cdot> (\<nu> \<star> g)"
       unfolding trnr\<^sub>\<epsilon>_def
-      using assms antipar strict_runit comp_ide_arr hcomp_arr_obj hseqI' by auto
+      using assms antipar strict_runit comp_ide_arr hcomp_arr_obj by auto
 
     lemma trnl\<^sub>\<eta>_eq:
     assumes "ide u" and "ide v"
     and "src f = trg v" and "src g = trg u"
     and "\<mu> \<in> hom (f \<star> v) u"
     shows "trnl\<^sub>\<eta> v \<mu> = (g \<star> \<mu>) \<cdot> \<a>[g, f, v] \<cdot> (\<eta> \<star> v)"
-      using assms trnl\<^sub>\<eta>_def antipar strict_lunit comp_arr_dom hcomp_obj_arr hseqI' by auto
+      using assms trnl\<^sub>\<eta>_def antipar strict_lunit comp_arr_dom hcomp_obj_arr by auto
 
     lemma trnl\<^sub>\<epsilon>_eq:
     assumes "ide u" and "ide v"
     and "src f = trg v" and "src g = trg u"
     and "\<nu> \<in> hom v (g \<star> u)"
     shows "trnl\<^sub>\<epsilon> u \<nu> = (\<epsilon> \<star> u) \<cdot> \<a>\<^sup>-\<^sup>1[f, g, u] \<cdot> (f \<star> \<nu>)"
-      using assms trnl\<^sub>\<epsilon>_def antipar strict_lunit comp_cod_arr hcomp_obj_arr hseqI' by auto
+      using assms trnl\<^sub>\<epsilon>_def antipar strict_lunit comp_cod_arr hcomp_obj_arr by auto
 
   end
 
@@ -699,7 +707,7 @@ begin
           have "ide \<a>\<^sup>-\<^sup>1[v, g, f]"
             using assms antipar strict_assoc' by simp
           moreover have "seq \<a>\<^sup>-\<^sup>1[v, g, f] (v \<star> \<eta>)"
-            using assms antipar hseqI' by simp
+            using assms antipar by simp
           ultimately show ?thesis
             using comp_ide_arr by simp
         qed
@@ -743,8 +751,7 @@ begin
       also have "... = (g \<star> \<mu>) \<cdot> (\<eta> \<star> v)"
       proof -
         have "seq \<a>[g, f, v] (\<eta> \<star> v)"
-          using assms antipar unit_in_hom hseqI'
-          apply (intro seqI hseqI) by auto
+          using assms antipar unit_in_hom by simp
         thus ?thesis
           using assms antipar trnl\<^sub>\<eta>_eq strict_assoc comp_ide_arr [of "\<a>[g, f, v]" "\<eta> \<star> v"]
           by simp
@@ -765,8 +772,7 @@ begin
       also have "... = (\<epsilon> \<star> u) \<cdot> (f \<star> \<nu>)"
       proof -
         have "seq (\<epsilon> \<star> u) \<a>\<^sup>-\<^sup>1[f, g, u]"
-          using assms antipar unit_in_hom hseqI'
-          apply (intro seqI hseqI) by auto
+          using assms antipar unit_in_hom by simp
         thus ?thesis
           using assms antipar trnl\<^sub>\<epsilon>_eq strict_assoc' comp_arr_ide ide_left ide_right
           by metis
@@ -846,17 +852,17 @@ begin
       proof -
         have "(\<epsilon> \<cdot> (f \<star> inv \<phi>) \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[f, g', f] \<cdot> (f \<star> (\<phi> \<star> f) \<cdot> \<eta>) =
               (\<epsilon> \<star> f) \<cdot> (((f \<star> inv \<phi>) \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[f, g', f]) \<cdot> (f \<star> \<phi> \<star> f) \<cdot> (f \<star> \<eta>)"
-          using assms A.antipar whisker_right whisker_left hseqI' comp_assoc by auto
+          using assms A.antipar whisker_right whisker_left comp_assoc by auto
         also have "... = (\<epsilon> \<star> f) \<cdot> (\<a>\<^sup>-\<^sup>1[f, g, f] \<cdot> (f \<star> inv \<phi> \<star> f)) \<cdot> (f \<star> \<phi> \<star> f) \<cdot> (f \<star> \<eta>)"
           using assms A.antipar assoc'_naturality [of f "inv \<phi>" f] by auto
         also have "... = (\<epsilon> \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[f, g, f] \<cdot> ((f \<star> inv \<phi> \<star> f) \<cdot> (f \<star> \<phi> \<star> f)) \<cdot> (f \<star> \<eta>)"
           using comp_assoc by simp
         also have "... = (\<epsilon> \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[f, g, f] \<cdot> (f \<star> g \<star> f) \<cdot> (f \<star> \<eta>)"
-          using assms A.antipar comp_inv_arr inv_is_inverse hseqI' whisker_left
+          using assms A.antipar comp_inv_arr inv_is_inverse whisker_left
                 whisker_right [of f "inv \<phi>" \<phi>]
           by auto
         also have "... = (\<epsilon> \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[f, g, f] \<cdot> (f \<star> \<eta>)"
-          using assms A.antipar comp_cod_arr hseqI' by simp
+          using assms A.antipar comp_cod_arr by simp
         also have "... = \<l>\<^sup>-\<^sup>1[f] \<cdot> \<r>[f]"
           using A.triangle_left by simp
         finally show ?thesis by simp
@@ -865,7 +871,7 @@ begin
       proof -
         have "(g' \<star> \<epsilon> \<cdot> (f \<star> inv \<phi>)) \<cdot> \<a>[g', f, g'] \<cdot> ((\<phi> \<star> f) \<cdot> \<eta> \<star> g') =
               (g' \<star> \<epsilon>) \<cdot> ((g' \<star> f \<star> inv \<phi>) \<cdot> \<a>[g', f, g']) \<cdot> ((\<phi> \<star> f) \<star> g') \<cdot> (\<eta> \<star> g')"
-            using assms hseqI' A.antipar whisker_left whisker_right comp_assoc by auto
+            using assms A.antipar whisker_left whisker_right comp_assoc by auto
         also have "... = (g' \<star> \<epsilon>) \<cdot> (\<a>[g', f, g] \<cdot> ((g' \<star> f) \<star> inv \<phi>)) \<cdot> ((\<phi> \<star> f) \<star> g') \<cdot> (\<eta> \<star> g')"
           using assms A.antipar assoc_naturality [of g' f "inv \<phi>"] by auto
         also have "... = (g' \<star> \<epsilon>) \<cdot> \<a>[g', f, g] \<cdot> (((g' \<star> f) \<star> inv \<phi>) \<cdot> ((\<phi> \<star> f) \<star> g')) \<cdot> (\<eta> \<star> g')"
@@ -873,12 +879,12 @@ begin
         also have "... = (g' \<star> \<epsilon>) \<cdot> (\<a>[g', f, g] \<cdot> ((\<phi> \<star> f) \<star> g)) \<cdot> ((g \<star> f) \<star> inv \<phi>) \<cdot> (\<eta> \<star> g')"
         proof -
           have "((g' \<star> f) \<star> inv \<phi>) \<cdot> ((\<phi> \<star> f) \<star> g') = (\<phi> \<star> f) \<star> inv \<phi>"
-            using assms A.antipar comp_arr_dom comp_cod_arr hseqI'
+            using assms A.antipar comp_arr_dom comp_cod_arr
                   interchange [of "g' \<star> f" "\<phi> \<star> f" "inv \<phi>" g']
             by auto
           also have "... = ((\<phi> \<star> f) \<star> g) \<cdot> ((g \<star> f) \<star> inv \<phi>)"
             using assms A.antipar comp_arr_dom comp_cod_arr
-                  interchange [of "\<phi> \<star> f" "g \<star> f" g "inv \<phi>"] hseqI'
+                  interchange [of "\<phi> \<star> f" "g \<star> f" g "inv \<phi>"]
             by auto
           finally show ?thesis
             using comp_assoc by simp
@@ -942,17 +948,17 @@ begin
       proof -
         have "(g \<star> \<epsilon> \<cdot> (inv \<phi> \<star> g)) \<cdot> \<a>[g, f', g] \<cdot> ((g \<star> \<phi>) \<cdot> \<eta> \<star> g) =
               (g \<star> \<epsilon>) \<cdot> ((g \<star> inv \<phi> \<star> g) \<cdot> \<a>[g, f', g]) \<cdot> ((g \<star> \<phi>) \<star> g) \<cdot> (\<eta> \<star> g)"
-          using assms A.antipar whisker_left whisker_right hseqI' comp_assoc by auto
+          using assms A.antipar whisker_left whisker_right comp_assoc by auto
         also have "... = (g \<star> \<epsilon>) \<cdot> (\<a>[g, f, g] \<cdot> ((g \<star> inv \<phi>) \<star> g)) \<cdot> ((g \<star> \<phi>) \<star> g) \<cdot> (\<eta> \<star> g)"
           using assms A.antipar assoc_naturality [of g "inv \<phi>" g] by auto
         also have "... = (g \<star> \<epsilon>) \<cdot> \<a>[g, f, g] \<cdot> (((g \<star> inv \<phi>) \<star> g) \<cdot> ((g \<star> \<phi>) \<star> g)) \<cdot> (\<eta> \<star> g)"
           using comp_assoc by simp
         also have "... = (g \<star> \<epsilon>) \<cdot> \<a>[g, f, g] \<cdot> ((g \<star> f) \<star> g) \<cdot> (\<eta> \<star> g)"
-          using assms A.antipar comp_inv_arr inv_is_inverse hseqI' whisker_right
+          using assms A.antipar comp_inv_arr inv_is_inverse whisker_right
                 whisker_left [of g "inv \<phi>" \<phi>]
           by auto
         also have "... = (g \<star> \<epsilon>) \<cdot> \<a>[g, f, g] \<cdot> (\<eta> \<star> g)"
-          using assms A.antipar comp_cod_arr hseqI' by simp
+          using assms A.antipar comp_cod_arr by simp
         also have "... = \<r>\<^sup>-\<^sup>1[g] \<cdot> \<l>[g]"
           using A.triangle_right by simp
         finally show ?thesis by simp
@@ -961,7 +967,7 @@ begin
       proof -
         have "(\<epsilon> \<cdot> (inv \<phi> \<star> g) \<star> f') \<cdot> \<a>\<^sup>-\<^sup>1[f', g, f'] \<cdot> (f' \<star> (g \<star> \<phi>) \<cdot> \<eta>) =
               (\<epsilon> \<star> f') \<cdot> (((inv \<phi> \<star> g) \<star> f') \<cdot> \<a>\<^sup>-\<^sup>1[f', g, f']) \<cdot> (f' \<star> g \<star> \<phi>) \<cdot> (f' \<star> \<eta>)"
-          using assms hseqI' A.antipar whisker_right whisker_left comp_assoc
+          using assms A.antipar whisker_right whisker_left comp_assoc
           by auto
         also have "... = (\<epsilon> \<star> f') \<cdot> (\<a>\<^sup>-\<^sup>1[f, g, f'] \<cdot> (inv \<phi> \<star> g \<star> f')) \<cdot> (f' \<star> g \<star> \<phi>) \<cdot> (f' \<star> \<eta>)"
           using assms A.antipar assoc'_naturality [of "inv \<phi>" g f'] by auto
@@ -970,7 +976,7 @@ begin
         also have "... = (\<epsilon> \<star> f') \<cdot> (\<a>\<^sup>-\<^sup>1[f, g, f'] \<cdot> (f \<star> g \<star> \<phi>)) \<cdot> (inv \<phi> \<star> g \<star> f) \<cdot> (f' \<star> \<eta>)"
         proof -
           have "(inv \<phi> \<star> g \<star> f') \<cdot> (f' \<star> g \<star> \<phi>) = (f \<star> g \<star> \<phi>) \<cdot> (inv \<phi> \<star> g \<star> f)"
-            using assms(2-3) A.antipar comp_arr_dom comp_cod_arr hseqI'
+            using assms(2-3) A.antipar comp_arr_dom comp_cod_arr
                   interchange [of "inv \<phi>" f' "g \<star> f'" "g \<star> \<phi>"]
                   interchange [of f "inv \<phi>" "g \<star> \<phi>" "g \<star> f"]
             by auto
@@ -991,7 +997,7 @@ begin
         also have "... = ((trg f \<star> \<phi>) \<cdot> (\<epsilon> \<star> f)) \<cdot> \<a>\<^sup>-\<^sup>1[f, g, f] \<cdot> (f \<star> \<eta>) \<cdot> (inv \<phi> \<star> src f)"
           using assms A.antipar comp_arr_dom comp_cod_arr
                 interchange [of \<epsilon> "f \<star> g" f' \<phi>] interchange [of "trg f" \<epsilon> \<phi> f]
-            by auto
+          by (metis A.counit_simps(1) A.counit_simps(2) A.counit_simps(3) in_homE)
         also have "... = (trg f \<star> \<phi>) \<cdot> ((\<epsilon> \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[f, g, f] \<cdot> (f \<star> \<eta>)) \<cdot> (inv \<phi> \<star> src f)"
           using comp_assoc by simp
         also have "... = ((trg f \<star> \<phi>) \<cdot> \<l>\<^sup>-\<^sup>1[f]) \<cdot> \<r>[f] \<cdot> (inv \<phi> \<star> src f)"
@@ -1148,7 +1154,7 @@ begin
                 ultimately show ?thesis by simp
               qed
               moreover have 2: "D.iso (F \<a>\<^sub>C[f, g, f] \<cdot>\<^sub>D \<Phi> (f \<star>\<^sub>C g, f) \<cdot>\<^sub>D (\<Phi> (f, g) \<star>\<^sub>D F f))"
-                using antipar D.isos_compose C.VV.ide_char C.VV.arr_char \<Phi>_simps(4) D.hseqI'
+                using antipar D.isos_compose C.VV.ide_char C.VV.arr_char \<Phi>_simps(4)
                 by simp
               ultimately have "\<a>\<^sub>D\<^sup>-\<^sup>1[F f, F g, F f] =
                                D.inv (F \<a>\<^sub>C[f, g, f] \<cdot>\<^sub>D \<Phi> (f \<star>\<^sub>C g, f) \<cdot>\<^sub>D (\<Phi> (f, g) \<star>\<^sub>D F f)) \<cdot>\<^sub>D
@@ -1160,12 +1166,12 @@ begin
               proof -
                 have "D.inv (F \<a>\<^sub>C[f, g, f] \<cdot>\<^sub>D \<Phi> (f \<star>\<^sub>C g, f) \<cdot>\<^sub>D (\<Phi> (f, g) \<star>\<^sub>D F f)) =
                        D.inv (\<Phi> (f \<star>\<^sub>C g, f) \<cdot>\<^sub>D (\<Phi> (f, g) \<star>\<^sub>D F f)) \<cdot>\<^sub>D F \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, f]"
-                  using antipar D.isos_compose C.VV.arr_char \<Phi>_simps(4) D.hseqI'
+                  using antipar D.isos_compose C.VV.arr_char \<Phi>_simps(4)
                         preserves_inv D.inv_comp
                   by simp
                 also have "... = (D.inv (\<Phi> (f, g) \<star>\<^sub>D F f) \<cdot>\<^sub>D D.inv (\<Phi> (f \<star>\<^sub>C g, f))) \<cdot>\<^sub>D
                                  F \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, f]"
-                  using antipar D.inv_comp C.VV.ide_char C.VV.arr_char \<Phi>_simps(4) D.hseqI'
+                  using antipar D.inv_comp C.VV.ide_char C.VV.arr_char \<Phi>_simps(4)
                   by simp
                 also have "... = ((D.inv (\<Phi> (f, g)) \<star>\<^sub>D F f) \<cdot>\<^sub>D D.inv (\<Phi> (f \<star>\<^sub>C g, f))) \<cdot>\<^sub>D
                                  F \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, f]"
@@ -1257,11 +1263,11 @@ begin
                 using antipar D.comp_assoc D.whisker_left D.whisker_right \<Psi>_char(2)
                 by simp
             moreover have "F \<epsilon> \<star>\<^sub>D F f = D.inv (\<Phi> (trg\<^sub>C f, f)) \<cdot>\<^sub>D F (\<epsilon> \<star>\<^sub>C f) \<cdot>\<^sub>D \<Phi> (f \<star>\<^sub>C g, f)"
-              using antipar \<Phi>.naturality [of "(\<epsilon>, f)"] C.VV.arr_char FF_def C.hseqI'
+              using antipar \<Phi>.naturality [of "(\<epsilon>, f)"] C.VV.arr_char FF_def
                     D.invert_side_of_triangle(1)
               by simp
             moreover have "F f \<star>\<^sub>D F \<eta> = D.inv (\<Phi> (f, g \<star>\<^sub>C f)) \<cdot>\<^sub>D F (f \<star>\<^sub>C \<eta>) \<cdot>\<^sub>D \<Phi> (f, src\<^sub>C f)"
-              using antipar \<Phi>.naturality [of "(f, \<eta>)"] C.VV.arr_char FF_def C.hseqI'
+              using antipar \<Phi>.naturality [of "(f, \<eta>)"] C.VV.arr_char FF_def
                     D.invert_side_of_triangle(1)
               by simp
             ultimately show ?thesis
@@ -1270,7 +1276,7 @@ begin
           also have "... = ((D.inv (\<Psi> (trg\<^sub>C f)) \<star>\<^sub>D F f) \<cdot>\<^sub>D D.inv (\<Phi> (trg\<^sub>C f, f))) \<cdot>\<^sub>D
                              (F (\<epsilon> \<star>\<^sub>C f) \<cdot>\<^sub>D F \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, f] \<cdot>\<^sub>D F (f \<star>\<^sub>C \<eta>)) \<cdot>\<^sub>D
                              \<Phi> (f, src\<^sub>C f) \<cdot>\<^sub>D (F f \<star>\<^sub>D \<Psi> (src\<^sub>C f))"
-            using antipar D.comp_arr_inv' D.comp_cod_arr C.hseqI' D.comp_assoc by simp
+            using antipar D.comp_arr_inv' D.comp_cod_arr D.comp_assoc by simp
           also have "... = D.inv (\<Phi> (trg\<^sub>C f, f) \<cdot>\<^sub>D (\<Psi> (trg\<^sub>C f) \<star>\<^sub>D F f)) \<cdot>\<^sub>D
                              F ((\<epsilon> \<star>\<^sub>C f) \<cdot>\<^sub>C \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, f] \<cdot>\<^sub>C (f \<star>\<^sub>C \<eta>)) \<cdot>\<^sub>D
                              \<Phi> (f, src\<^sub>C f) \<cdot>\<^sub>D (F f \<star>\<^sub>D \<Psi> (src\<^sub>C f))"
@@ -1290,7 +1296,7 @@ begin
             qed
             moreover have "F (\<epsilon> \<star>\<^sub>C f) \<cdot>\<^sub>D F \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, f] \<cdot>\<^sub>D F (f \<star>\<^sub>C \<eta>) =
                            F ((\<epsilon> \<star>\<^sub>C f) \<cdot>\<^sub>C \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, f] \<cdot>\<^sub>C (f \<star>\<^sub>C \<eta>))"
-              using antipar C.hseqI' by simp
+              using antipar by simp
             ultimately show ?thesis by simp
           qed
           also have "... = (D.lunit' (F f) \<cdot>\<^sub>D F \<l>\<^sub>C[f]) \<cdot>\<^sub>D
@@ -1303,7 +1309,7 @@ begin
                            D.lunit' (F f) \<cdot>\<^sub>D F \<l>\<^sub>C[f]"
             proof -
               have 0: "D.iso (\<Phi> (trg\<^sub>C f, f) \<cdot>\<^sub>D (\<Psi> (trg\<^sub>C f) \<star>\<^sub>D F f))"
-                using \<Psi>_char(2) D.hseqI'
+                using \<Psi>_char(2)
                 apply (intro D.isos_compose D.seqI) by auto
               show ?thesis
               proof -
@@ -1343,14 +1349,16 @@ begin
           proof -
             have "D.iso (\<Phi> (g, f \<star>\<^sub>C g) \<cdot>\<^sub>D (F g \<star>\<^sub>D \<Phi> (f, g)))"
               using antipar D.iso_is_arr
-              by (intro D.isos_compose D.seqI, auto)
+              apply (intro D.isos_compose, auto)
+              by (metis C.iso_assoc D.comp_assoc D.seqE ide_left ide_right
+                  preserves_assoc(1) preserves_iso)
             have "F \<a>\<^sub>C[g, f, g] \<cdot>\<^sub>D \<Phi> (g \<star>\<^sub>C f, g) \<cdot>\<^sub>D (\<Phi> (g, f) \<star>\<^sub>D F g) =
                    \<Phi> (g, f \<star>\<^sub>C g) \<cdot>\<^sub>D (F g \<star>\<^sub>D \<Phi> (f, g)) \<cdot>\<^sub>D \<a>\<^sub>D[F g, F f, F g]"
               using antipar assoc_coherence by simp
             moreover have "D.seq (F \<a>\<^sub>C[g, f, g]) (\<Phi> (g \<star>\<^sub>C f, g) \<cdot>\<^sub>D (\<Phi> (g, f) \<star>\<^sub>D F g))"
             proof (intro D.seqI)
               show 1: "D.hseq (\<Phi> (g, f)) (F g)"
-                using antipar C.VV.arr_char D.hseqI' by simp
+                using antipar C.VV.arr_char by simp
               show "D.arr (\<Phi> (g \<star>\<^sub>C f, g))"
                 using antipar C.VV.arr_char by simp
               show "D.dom (\<Phi> (g \<star>\<^sub>C f, g)) = D.cod (\<Phi> (g, f) \<star>\<^sub>D F g)"
@@ -1360,9 +1368,10 @@ begin
                 moreover have "D.iso (\<Phi> (g \<star>\<^sub>C f, g))"
                   using antipar by simp
                 ultimately show ?thesis
-                  using ide_left ide_right A.ide_right antipar D.iso_is_arr D.ide_char
-                        C.ide_hcomp C.ideD(1) C.src_hcomp' D.hcomp_simps(4) \<Phi>_simps(4-5)
-                  by metis
+                  by (metis C.iso_assoc D.comp_assoc D.iso_is_arr D.seqE
+                      \<open>F \<a>\<^sub>C[g, f, g] \<cdot>\<^sub>D \<Phi> (g \<star>\<^sub>C f, g) \<cdot>\<^sub>D (\<Phi> (g, f) \<star>\<^sub>D F g) =
+                       \<Phi> (g, f \<star>\<^sub>C g) \<cdot>\<^sub>D (F g \<star>\<^sub>D \<Phi> (f, g)) \<cdot>\<^sub>D \<a>\<^sub>D[F g, F f, F g]\<close>
+                      antipar(1) antipar(2) ide_left ide_right preserves_assoc(1) preserves_iso)
               qed
               show "D.arr (F \<a>\<^sub>C[g, f, g])"
                 using antipar by simp
@@ -1371,7 +1380,8 @@ begin
                 have "D.iso (\<Phi> (g, f) \<star>\<^sub>D F g)"
                   using antipar by simp
                 moreover have "D.seq (\<Phi> (g \<star>\<^sub>C f, g)) (\<Phi> (g, f) \<star>\<^sub>D F g)"
-                  using antipar D.iso_is_arr by (intro D.seqI, auto)
+                  using antipar D.iso_is_arr
+                  apply (intro D.seqI) by auto
                 ultimately show ?thesis
                   using antipar by simp
               qed
@@ -1445,7 +1455,7 @@ begin
                       D.whisker_right [of "F g" "\<Phi> (g, f)" "D.inv (\<Phi> (g, f))"]
                 by simp
               thus ?thesis
-                using antipar D.comp_cod_arr D.whisker_right D.hseqI' by simp
+                using antipar D.comp_cod_arr D.whisker_right by simp
             qed
             moreover have "((F g \<star>\<^sub>D \<Phi> (f, g)) \<cdot>\<^sub>D D.inv (F g \<star>\<^sub>D \<Phi> (f, g))) \<cdot>\<^sub>D
                              D.inv (\<Phi> (g, f \<star>\<^sub>C g)) =
@@ -1466,7 +1476,7 @@ begin
                              \<Phi> (trg\<^sub>C g, g) \<cdot>\<^sub>D (\<Psi> (src\<^sub>C f) \<star>\<^sub>D F g)"
           proof -
             have "(F g \<star>\<^sub>D F \<epsilon>) \<cdot>\<^sub>D D.inv (\<Phi> (g, f \<star>\<^sub>C g)) = D.inv (\<Phi> (g, src\<^sub>C g)) \<cdot>\<^sub>D F (g \<star>\<^sub>C \<epsilon>)"
-              using antipar C.VV.arr_char \<Phi>.naturality [of "(g, \<epsilon>)"] FF_def C.hseqI'
+              using antipar C.VV.arr_char \<Phi>.naturality [of "(g, \<epsilon>)"] FF_def 
                     D.invert_opposite_sides_of_square
               by simp
             moreover have "\<Phi> (g \<star>\<^sub>C f, g) \<cdot>\<^sub>D (F \<eta> \<star>\<^sub>D F g) = F (\<eta> \<star>\<^sub>C g) \<cdot>\<^sub>D \<Phi> (trg\<^sub>C g, g)"
@@ -1499,8 +1509,8 @@ begin
                   have "D.iso (F \<r>\<^sub>C[g])"
                     using preserves_iso by simp
                   moreover have 1: "D.iso (\<Phi> (g, src\<^sub>C g) \<cdot>\<^sub>D (F g \<star>\<^sub>D \<Psi> (src\<^sub>C g)))"
-                    using preserves_iso \<Psi>_char(2) D.arrI D.seqE ide_right runit_coherence D.hseqI'
-                    by (intro D.isos_compose D.seqI D.hseqI, auto)
+                    using preserves_iso \<Psi>_char(2) D.arrI D.seqE ide_right runit_coherence
+                    by (intro D.isos_compose D.seqI, auto)
                   moreover have "D.seq (F \<r>\<^sub>C[g]) (\<Phi> (g, src\<^sub>C g) \<cdot>\<^sub>D (F g \<star>\<^sub>D \<Psi> (src\<^sub>C g)))"
                     using ide_right A.ide_right D.runit_simps(1) runit_coherence by metis
                   ultimately have "D.inv (F \<r>\<^sub>C[g] \<cdot>\<^sub>D \<Phi> (g, src\<^sub>C g) \<cdot>\<^sub>D (F g \<star>\<^sub>D \<Psi> (src\<^sub>C g))) =
@@ -1573,7 +1583,7 @@ begin
         show "(\<epsilon> \<star>\<^sub>C f) \<cdot>\<^sub>C \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, f] \<cdot>\<^sub>C (f \<star>\<^sub>C \<eta>) = \<l>\<^sub>C\<^sup>-\<^sup>1[f] \<cdot>\<^sub>C \<r>\<^sub>C[f]"
         proof -
           have 1: "C.par ((\<epsilon> \<star>\<^sub>C f) \<cdot>\<^sub>C \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, f] \<cdot>\<^sub>C (f \<star>\<^sub>C \<eta>)) (\<l>\<^sub>C\<^sup>-\<^sup>1[f] \<cdot>\<^sub>C \<r>\<^sub>C[f])"
-            using assms A.antipar C.hseqI' by simp
+            using assms A.antipar by simp
           moreover have "F ((\<epsilon> \<star>\<^sub>C f) \<cdot>\<^sub>C \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, f] \<cdot>\<^sub>C (f \<star>\<^sub>C \<eta>)) = F (\<l>\<^sub>C\<^sup>-\<^sup>1[f] \<cdot>\<^sub>C \<r>\<^sub>C[f])"
           proof -
             have "F ((\<epsilon> \<star>\<^sub>C f) \<cdot>\<^sub>C \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, f] \<cdot>\<^sub>C (f \<star>\<^sub>C \<eta>)) =
@@ -1599,7 +1609,7 @@ begin
                   by simp
                 thus ?thesis
                   using assms A.antipar \<Phi>_components_are_iso C.VV.arr_char \<Phi>_in_hom
-                        FF_def D.hseqI'
+                        FF_def
                         D.invert_opposite_sides_of_square
                           [of "\<Phi> (f, g \<star>\<^sub>C f)" "F f \<star>\<^sub>D F \<eta>" "F (f \<star>\<^sub>C \<eta>)" "\<Phi> (f, src\<^sub>C f)"]
                   by fastforce
@@ -1657,7 +1667,7 @@ begin
         show "(g \<star>\<^sub>C \<epsilon>) \<cdot>\<^sub>C \<a>\<^sub>C[g, f, g] \<cdot>\<^sub>C (\<eta> \<star>\<^sub>C g) = \<r>\<^sub>C\<^sup>-\<^sup>1[g] \<cdot>\<^sub>C \<l>\<^sub>C[g]"
         proof -
           have 1: "C.par ((g \<star>\<^sub>C \<epsilon>) \<cdot>\<^sub>C \<a>\<^sub>C g f g \<cdot>\<^sub>C (\<eta> \<star>\<^sub>C g)) (\<r>\<^sub>C\<^sup>-\<^sup>1[g] \<cdot>\<^sub>C \<l>\<^sub>C[g])"
-            using assms A.antipar C.hseqI' by auto
+            using assms A.antipar by auto
           moreover have "F ((g \<star>\<^sub>C \<epsilon>) \<cdot>\<^sub>C \<a>\<^sub>C[g, f, g] \<cdot>\<^sub>C (\<eta> \<star>\<^sub>C g)) = F (\<r>\<^sub>C\<^sup>-\<^sup>1[g] \<cdot>\<^sub>C \<l>\<^sub>C[g])"
           proof -
             have "F ((g \<star>\<^sub>C \<epsilon>) \<cdot>\<^sub>C \<a>\<^sub>C g f g \<cdot>\<^sub>C (\<eta> \<star>\<^sub>C g)) =
@@ -1680,7 +1690,7 @@ begin
                   using assms \<Phi>.naturality [of "(\<eta>, g)"] FF_def C.VV.arr_char A.antipar
                   by auto
                 thus ?thesis
-                  using assms A.antipar \<Phi>_components_are_iso C.VV.arr_char FF_def D.hseqI'
+                  using assms A.antipar \<Phi>_components_are_iso C.VV.arr_char FF_def
                         D.invert_opposite_sides_of_square
                           [of "\<Phi> (g \<star>\<^sub>C f, g)" "F \<eta> \<star>\<^sub>D F g" "F (\<eta> \<star>\<^sub>C g)" "\<Phi> (trg\<^sub>C g, g)"]
                   by fastforce
@@ -1868,7 +1878,7 @@ begin
         proof -
           have "\<guillemotleft>g \<star> \<sigma> \<star> f : g \<star> trg f \<star> f \<Rightarrow> g \<star> (k \<star> h) \<star> f\<guillemotright>"
             using fg.antipar hk.antipar composable hk.unit_in_hom
-            by (simp add: ide_in_hom(2))
+            apply (intro hcomp_in_vhom) by auto
           thus ?thesis
             using hcomp_obj_arr hcomp_assoc by fastforce
         qed
@@ -1903,21 +1913,22 @@ begin
           by simp
         also have "... = (\<tau> \<star> h \<star> f) \<cdot> (h \<star> (\<xi> \<star> (k \<star> h)) \<cdot> ((f \<star> g) \<star> \<sigma>) \<star> f) \<cdot> (h \<star> f \<star> \<zeta>)"
           using fg.antipar hk.antipar composable whisker_left whisker_right hcomp_assoc
-          by (simp add: hseqI')
+          by simp
         also have "... = (\<tau> \<star> h \<star> f) \<cdot> (h \<star> (trg f \<star> \<sigma>) \<cdot> (\<xi> \<star> trg f) \<star> f) \<cdot> (h \<star> f \<star> \<zeta>)"
           using fg.antipar hk.antipar composable comp_arr_dom comp_cod_arr
                 interchange [of \<xi> "f \<star> g" "k \<star> h" \<sigma>] interchange [of "trg f" \<xi> \<sigma> "trg f"]
-          by auto
+          by (metis fg.counit_simps(1) fg.counit_simps(2) fg.counit_simps(3)
+              hk.unit_simps(1) hk.unit_simps(2) hk.unit_simps(3))
         also have "... = (\<tau> \<star> h \<star> f) \<cdot> (h \<star> \<sigma> \<cdot> \<xi> \<star> f) \<cdot> (h \<star> f \<star> \<zeta>)"
           using fg.antipar hk.antipar composable hcomp_obj_arr hcomp_arr_obj
           by (metis fg.counit_simps(1) fg.counit_simps(4) hk.unit_simps(1) hk.unit_simps(5)
               obj_src)
         also have "... = ((\<tau> \<star> h \<star> f) \<cdot> (h \<star> \<sigma> \<star> f)) \<cdot> ((h \<star> \<xi> \<star> f) \<cdot> (h \<star> f \<star> \<zeta>))"
           using fg.antipar hk.antipar composable whisker_left whisker_right comp_assoc
-          by (simp add: hseqI')
+          by simp
         also have "... = ((\<tau> \<star> h) \<cdot> (h \<star> \<sigma>) \<star> f) \<cdot> (h \<star> (\<xi> \<star> f) \<cdot> (f \<star> \<zeta>))"
           using fg.antipar hk.antipar composable whisker_left whisker_right hcomp_assoc
-          by (simp add: hseqI')
+          by simp
         also have "... = h \<star> f"
           using fg.antipar hk.antipar composable fg.triangle_left hk.triangle_left
           by simp
@@ -1938,21 +1949,22 @@ begin
           by simp
         also have "... = (g \<star> k \<star> \<tau>) \<cdot> (g \<star> ((k \<star> h) \<star> \<xi>) \<cdot> (\<sigma> \<star> f \<star> g) \<star> k) \<cdot> (\<zeta> \<star> g \<star> k)"
             using fg.antipar hk.antipar composable whisker_left whisker_right hcomp_assoc
-            by (simp add: hseqI')
+            by simp
         also have "... = (g \<star> k \<star> \<tau>) \<cdot> (g \<star> (\<sigma> \<star> src g) \<cdot> (src g \<star> \<xi>) \<star> k) \<cdot> (\<zeta> \<star> g \<star> k)"
           using fg.antipar hk.antipar composable interchange [of "k \<star> h" \<sigma> \<xi> "f \<star> g"]
                 interchange [of \<sigma> "src g" "src g" \<xi>] comp_arr_dom comp_cod_arr
-          by simp
+          by (metis fg.counit_simps(1) fg.counit_simps(2) fg.counit_simps(3)
+              hk.unit_simps(1) hk.unit_simps(2) hk.unit_simps(3))
         also have "... = (g \<star> k \<star> \<tau>) \<cdot> (g \<star> \<sigma> \<cdot> \<xi> \<star> k) \<cdot> (\<zeta> \<star> g \<star> k)"
           using fg.antipar hk.antipar composable hcomp_obj_arr [of "src g" \<xi>]
                 hcomp_arr_obj [of \<sigma> "src g"]
           by simp
         also have "... = ((g \<star> k \<star> \<tau>) \<cdot> (g \<star> \<sigma> \<star> k)) \<cdot> (g \<star> \<xi> \<star> k) \<cdot> (\<zeta> \<star> g \<star> k)"
           using fg.antipar hk.antipar composable whisker_left whisker_right comp_assoc
-          by (simp add: hseqI')
+          by simp
         also have "... = (g \<star> (k \<star> \<tau>) \<cdot> (\<sigma> \<star> k)) \<cdot> ((g \<star> \<xi>) \<cdot> (\<zeta> \<star> g) \<star> k)"
           using fg.antipar hk.antipar composable whisker_left whisker_right hcomp_assoc
-          by (simp add: hseqI')
+          by simp
         also have "... = g \<star> k"
           using fg.antipar hk.antipar composable fg.triangle_right hk.triangle_right
           by simp
@@ -2187,13 +2199,11 @@ begin
         proof -
           have "(inv \<eta> \<star> g) \<cdot> \<a>\<^sup>-\<^sup>1[g, f, g] \<cdot> (g \<star> inv \<epsilon>) =
                 inv ((g \<star> \<epsilon>) \<cdot> \<a>[g, f, g] \<cdot> (\<eta> \<star> g))"
-            using antipar inv_comp counit_is_iso iso_inv_iso isos_compose unit_is_iso
-                  comp_assoc hseqI'
-            by simp
+            using antipar inv_comp iso_inv_iso isos_compose comp_assoc by simp
           also have "... = inv (\<r>\<^sup>-\<^sup>1[g] \<cdot> \<l>[g])"
             using triangle_right by simp
           also have "... = \<l>\<^sup>-\<^sup>1[g] \<cdot> \<r>[g]"
-            using iso_lunit iso_runit iso_inv_iso inv_comp by simp
+            using iso_inv_iso inv_comp by simp
           finally show ?thesis
             by blast
         qed
@@ -2201,13 +2211,11 @@ begin
         proof -
           have "(f \<star> inv \<eta>) \<cdot> \<a>[f, g, f] \<cdot> (inv \<epsilon> \<star> f) =
                 inv ((\<epsilon> \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[f, g, f] \<cdot> (f \<star> \<eta>))"
-            using antipar inv_comp counit_is_iso iso_inv_iso isos_compose unit_is_iso
-                  comp_assoc hseqI'
-            by simp
+            using antipar inv_comp iso_inv_iso isos_compose comp_assoc by simp
           also have "... = inv (\<l>\<^sup>-\<^sup>1[f] \<cdot> \<r>[f])"
             using triangle_left by simp
           also have "... = \<r>\<^sup>-\<^sup>1[f] \<cdot> \<l>[f]"
-            using iso_lunit iso_runit iso_inv_iso inv_comp by simp
+            using iso_inv_iso inv_comp by simp
           finally show ?thesis by blast
         qed
       qed
@@ -2314,7 +2322,7 @@ begin
           moreover have "(f \<star> g) \<star> f \<star> g = f \<star> g \<star> f \<star> g"
             using hcomp_assoc by simp
           moreover have "?b \<star> f \<star> g = f \<star> g"
-            using f_in_hhom g_in_hhom b hcomp_obj_arr [of ?b "f \<star> g"] hseqI' by fastforce
+            using f_in_hhom g_in_hhom b hcomp_obj_arr [of ?b "f \<star> g"] by fastforce
           ultimately show ?thesis by simp
         qed
         ultimately show "\<guillemotleft>?\<epsilon> : f \<star> g \<Rightarrow> ?b\<guillemotright>"
@@ -2322,35 +2330,8 @@ begin
       qed
       have "iso ?\<epsilon>"
         using f_in_hhom g_in_hhom \<eta>_in_hhom ide_f ide_g \<eta>_in_hom iso_\<eta> \<xi>_in_hhom \<xi>_in_hom iso_\<xi>
-              iso_inv_iso hseqI'
-        apply (intro isos_compose)
-            apply auto
-           apply fastforce
-          apply fastforce
-      proof -
-        have 1: "\<guillemotleft>(f \<star> inv \<eta> \<star> g) \<cdot> (inv \<xi> \<star> f \<star> g) : ?b \<star> f \<star> g \<Rightarrow> f \<star> ?a \<star> g\<guillemotright>"
-        proof
-          have "\<guillemotleft>inv \<xi> \<star> f \<star> g : ?b \<star> f \<star> g \<Rightarrow> (f \<star> g) \<star> f \<star> g\<guillemotright>"
-            using f_in_hhom g_in_hhom ide_f ide_g \<xi>_in_hhom \<xi>_in_hom iso_\<xi>
-            by (intro hcomp_in_vhom, auto)
-          thus "\<guillemotleft>inv \<xi> \<star> f \<star> g : ?b \<star> f \<star> g \<Rightarrow> f \<star> g \<star> f \<star> g\<guillemotright>"
-            using hcomp_assoc by simp
-          have "\<guillemotleft>f \<star> inv \<eta> \<star> g : f \<star> (g \<star> f) \<star> g \<Rightarrow> f \<star> ?a \<star> g\<guillemotright>"
-            using f_in_hhom g_in_hhom ide_f ide_g \<eta>_in_hhom \<eta>_in_hom iso_\<eta>
-            by (intro hcomp_in_vhom, auto)
-          thus "\<guillemotleft>f \<star> inv \<eta> \<star> g : f \<star> g \<star> f \<star> g \<Rightarrow> f \<star> ?a \<star> g\<guillemotright>"
-            using hcomp_assoc by simp
-        qed
-        show "seq (f \<star> inv \<eta> \<star> g) (inv \<xi> \<star> f \<star> g)"
-          using 1 by auto
-        show "seq \<xi> ((f \<star> inv \<eta> \<star> g) \<cdot> (inv \<xi> \<star> f \<star> g))"
-        proof -
-          have "f \<star> ?a \<star> g = f \<star> g"
-            using a f_in_hhom g_in_hhom hcomp_obj_arr by fastforce
-          thus ?thesis
-            using 1 \<xi>_in_hom by auto
-        qed
-      qed
+              iso_inv_iso isos_compose
+        by (metis \<epsilon>_in_hom arrI hseqE ide_is_iso iso_hcomp seqE)
       have 4: "\<guillemotleft>inv \<xi> \<star> f : ?b \<star> f \<Rightarrow> f \<star> g \<star> f\<guillemotright>"
       proof -
         have "\<guillemotleft>inv \<xi> \<star> f : ?b \<star> f \<Rightarrow> (f \<star> g) \<star> f\<guillemotright>"
@@ -2367,7 +2348,7 @@ begin
         have "(?\<epsilon> \<star> f) \<cdot> (f \<star> \<eta>) = (\<xi> \<star> f) \<cdot> (f \<star> inv \<eta> \<star> g \<star> f) \<cdot> (inv \<xi> \<star> f \<star> g \<star> f) \<cdot> (?b \<star> f \<star> \<eta>)"
         proof -
           have "f \<star> \<eta> = ?b \<star> f \<star> \<eta>"
-            using b \<eta>_in_hhom hcomp_obj_arr [of ?b "f \<star> \<eta>"] hseqI' by fastforce
+            using b \<eta>_in_hhom hcomp_obj_arr [of ?b "f \<star> \<eta>"] by fastforce
           moreover have "\<xi> \<cdot> (f \<star> inv \<eta> \<star> g) \<cdot> (inv \<xi> \<star> f \<star> g) \<star> f =
                          (\<xi> \<star> f) \<cdot> ((f \<star> inv \<eta> \<star> g) \<star> f) \<cdot> ((inv \<xi> \<star> f \<star> g) \<star> f)"
             using ide_f ide_g \<xi>_in_hhom \<xi>_in_hom iso_\<xi> \<eta>_in_hhom \<eta>_in_hom iso_\<eta> whisker_right
@@ -2434,7 +2415,7 @@ begin
             have "seq ((inv \<eta> \<star> g) \<star> f) ((g \<star> f) \<star> \<eta>)"
             proof -
               have "seq (inv \<eta> \<star> g \<star> f) ((g \<star> f) \<star> \<eta>)"
-                using f_in_hhom ide_f g_in_hhom ide_g \<eta>_in_hhom \<eta>_in_hom iso_\<eta> hseqI'
+                using f_in_hhom ide_f g_in_hhom ide_g \<eta>_in_hhom \<eta>_in_hom iso_\<eta>
                 apply (intro seqI)
                   apply blast
                  apply blast
@@ -2513,7 +2494,7 @@ begin
                 using hcomp_assoc by simp
             qed
             moreover have "f \<star> g \<star> f = cod (inv \<xi> \<star> f)"
-              using \<xi>_in_hhom iso_\<xi> hcomp_assoc hseqI' calculation by auto
+              using \<xi>_in_hhom iso_\<xi> hcomp_assoc calculation by auto
             ultimately show ?thesis
               using comp_cod_arr by auto
           qed
@@ -2556,10 +2537,10 @@ begin
             have "(?\<epsilon> \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[f, g, f] \<cdot> (f \<star> \<eta>) = (?\<epsilon> \<star> f) \<cdot> (f \<star> \<eta>)"
             proof -
               have "seq \<a>\<^sup>-\<^sup>1[f, g, f] (f \<star> \<eta>)"
-                using E.antipar hseqI'
-                by (intro seqI hseqI, auto)
+                using E.antipar
+                by (intro seqI, auto)
               hence "\<a>\<^sup>-\<^sup>1[f, g, f] \<cdot> (f \<star> \<eta>) = f \<star> \<eta>"
-                using ide_f ide_g E.antipar triangle_right strict_assoc' comp_ide_arr hseqI'
+                using ide_f ide_g E.antipar triangle_right strict_assoc' comp_ide_arr
                 by presburger
               thus ?thesis by simp
             qed
@@ -2574,10 +2555,10 @@ begin
             have "(g \<star> ?\<epsilon>) \<cdot> \<a>[g, f, g] \<cdot> (\<eta> \<star> g) = (g \<star> ?\<epsilon>) \<cdot> (\<eta> \<star> g)"
             proof -
               have "seq \<a>[g, f, g] (\<eta> \<star> g)"
-                using E.antipar hseqI'
-                by (intro seqI hseqI, auto)
+                using E.antipar
+                by (intro seqI, auto)
               hence "\<a>[g, f, g] \<cdot> (\<eta> \<star> g) = \<eta> \<star> g"
-                using ide_f ide_g E.antipar triangle_right strict_assoc comp_ide_arr hseqI'
+                using ide_f ide_g E.antipar triangle_right strict_assoc comp_ide_arr
                 by presburger
               thus ?thesis by simp
             qed
@@ -2906,7 +2887,7 @@ begin
                have "S.UP \<r>[f] \<cdot>\<^sub>S S.\<Phi> (f, src f) \<cdot>\<^sub>S (S.UP f \<star>\<^sub>S UP.\<Psi> (src f)) = S.UP f"
                  using UP.runit_coherence [of f] S.strict_runit by simp
                moreover have "S.iso (S.\<Phi> (f, src f) \<cdot>\<^sub>S (S.UP f \<star>\<^sub>S UP.\<Psi> (src f)))"
-                 using UP.\<Psi>_char UP.\<Phi>_components_are_iso VV.arr_char S.hseqI' S.UP_map\<^sub>0_obj
+                 using UP.\<Psi>_char UP.\<Phi>_components_are_iso VV.arr_char S.UP_map\<^sub>0_obj
                  apply (intro S.isos_compose S.seqI)
                  by simp_all
                ultimately have
@@ -2987,7 +2968,7 @@ begin
       let ?\<phi> = "A'.trnl\<^sub>\<eta> g \<epsilon>"
       have "\<guillemotleft>?\<phi>: g \<Rightarrow> g'\<guillemotright>"
         using A'.trnl\<^sub>\<eta>_eq A'.adjoint_transpose_left(1) [of "trg f" g] A.antipar A'.antipar
-              hcomp_arr_obj hseqI'
+              hcomp_arr_obj
         by auto
       moreover have "iso ?\<phi>"
       proof (intro isoI)
@@ -3008,10 +2989,10 @@ begin
                 using A.antipar A'.antipar hcomp_arr_obj hcomp_obj_arr [of "src f" "g \<star> \<epsilon>'"]
                       hseqI'
                 by (metis A'.counit_simps(1) A'.counit_simps(5) A.ide_right ideD(1)
-                    obj_trg trg_hcomp')
+                    obj_trg trg_hcomp)
               also have "... = \<eta>' \<star> g \<star> \<epsilon>'"
                 using A.antipar A'.antipar interchange [of \<eta>' "src f" "g \<star> trg f" "g \<star> \<epsilon>'"]
-                      whisker_left comp_arr_dom comp_cod_arr hseqI'
+                      whisker_left comp_arr_dom comp_cod_arr
                 by simp
               also have "... = ((g' \<star> f) \<star> g \<star> \<epsilon>') \<cdot> (\<eta>' \<star> g \<star> (f \<star> g'))"
                 using A.ide_left A.ide_right A'.ide_right A.antipar A'.antipar
@@ -3035,7 +3016,7 @@ begin
                     by (metis A'.counit_simps(1,3) A.counit_simps(1-2,4) hcomp_assoc)
                   thus ?thesis
                     using A.antipar A'.antipar whisker_left [of g' \<epsilon> "f \<star> g \<star> \<epsilon>'"]
-                    by (simp add: hcomp_assoc hseqI')
+                    by (simp add: hcomp_assoc)
                 qed
                 also have "... = (g' \<star> \<epsilon>') \<cdot> (g' \<star> \<epsilon> \<star> f \<star> g')"
                 proof -
@@ -3062,7 +3043,7 @@ begin
                     by (metis A'.unit_simps(1-2,4) A.unit_simps(1,3,5) hcomp_obj_arr obj_trg)
                   thus ?thesis
                     using A.antipar A'.antipar whisker_right [of g' "\<eta>' \<star> g \<star> f" \<eta>]
-                    by (simp add: hcomp_assoc hseqI')
+                    by (simp add: hcomp_assoc)
                 qed
                 also have "... = (g' \<star> f \<star> \<eta> \<star> g') \<cdot> (\<eta>' \<star> g')"
                 proof -
@@ -3092,7 +3073,7 @@ begin
                   by (metis A'.ide_right A.triangle_left hseqI' ideD(1) whisker_right)
                 also have "... = g' \<star> (\<epsilon> \<star> f) \<cdot> (f \<star> \<eta>) \<star> g'"
                   using A.antipar A'.antipar whisker_right [of g' "\<epsilon> \<star> f" "f \<star> \<eta>"]
-                  by (simp add: A.triangle_left hseqI')
+                  by (simp add: A.triangle_left)
                 also have "... = g' \<star> f \<star> g'"
                   using A.triangle_left by simp
                 finally show ?thesis by simp
@@ -3102,8 +3083,8 @@ begin
             qed
             also have "... = (g' \<star> \<epsilon>') \<cdot> (\<eta>' \<star> g')"
               using A.antipar A'.antipar A'.unit_in_hom A'.counit_in_hom comp_cod_arr
-              by (metis A'.triangle_in_hom(4) A'.triangle_right' hcomp_simps(4) comp_null(2)
-                  hseq_char' in_homE)
+              by (metis A'.ide_right A'.triangle_in_hom(2) A.ide_left arrI assoc_is_natural_2
+                  ide_char seqE strict_assoc)
             also have "... = g'"
               using A'.triangle_right by simp
             finally have "?\<phi> \<cdot> ?\<psi> = g'" by simp
@@ -3148,7 +3129,7 @@ begin
                     by (metis A.counit_simps(1,3) A'.counit_simps(1-2,4))
                   thus ?thesis
                     using A.antipar A'.antipar whisker_left [of g \<epsilon>' "f \<star> g' \<star> \<epsilon>"]
-                    by (simp add: hcomp_assoc hseqI')
+                    by (simp add: hcomp_assoc)
                 qed
                 also have "... = (g \<star> \<epsilon>) \<cdot> (g \<star> \<epsilon>' \<star> f \<star> g)"
                 proof -
@@ -3174,7 +3155,7 @@ begin
                     by (metis A'.unit_simps(1,3,5) A.unit_simps(1-2,4) obj_trg)
                   thus ?thesis
                     using A.antipar A'.antipar whisker_right [of g "\<eta> \<star> g' \<star> f" \<eta>']
-                    by (simp add: hcomp_assoc hseqI')
+                    by (simp add: hcomp_assoc)
                 qed
                 also have "... = ((g \<star> f) \<star> \<eta>' \<star> g) \<cdot> (\<eta> \<star> src f \<star> g)"
                   using A.ide_left A.ide_right A'.ide_right A.antipar A'.antipar A.unit_in_hom
@@ -3199,7 +3180,7 @@ begin
                   by (metis A'.triangle_left hseqI' ideD(1) whisker_right)
                 also have "... = g \<star> (\<epsilon>' \<star> f) \<cdot> (f \<star> \<eta>') \<star> g"
                   using A.antipar A'.antipar whisker_right [of g "\<epsilon>' \<star> f" "f \<star> \<eta>'"]
-                  by (simp add: A'.triangle_left hseqI')
+                  by (simp add: A'.triangle_left)
                 also have "... = g \<star> f \<star> g"
                   using A'.triangle_left by simp
                 finally show ?thesis by simp
@@ -3209,8 +3190,8 @@ begin
             qed
             also have "... = (g \<star> \<epsilon>) \<cdot> (\<eta> \<star> g)"
               using A.antipar A'.antipar A.unit_in_hom A.counit_in_hom comp_cod_arr
-              by (metis A.triangle_in_hom(4) A.triangle_right' hcomp_simps(4) comp_null(2)
-                  hseq_char' in_homE)
+              by (metis A.ide_left A.ide_right A.triangle_in_hom(2) arrI assoc_is_natural_2
+                  ide_char seqE strict_assoc)
             also have "... = g"
               using A.triangle_right by simp
             finally have "?\<psi> \<cdot> ?\<phi> = g" by simp

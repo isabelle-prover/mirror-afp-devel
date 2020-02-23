@@ -2513,8 +2513,8 @@ begin
     horizontal_homs +
   assumes src_in_sources: "arr \<mu> \<Longrightarrow> src \<mu> \<in> sources \<mu>"
   and trg_in_targets: "arr \<mu> \<Longrightarrow> trg \<mu> \<in> targets \<mu>"
-  and src_hcomp: "\<nu> \<star> \<mu> \<noteq> null \<Longrightarrow> src (\<nu> \<star> \<mu>) = src \<mu>"
-  and trg_hcomp: "\<nu> \<star> \<mu> \<noteq> null \<Longrightarrow> trg (\<nu> \<star> \<mu>) = trg \<nu>"
+  and src_hcomp': "\<nu> \<star> \<mu> \<noteq> null \<Longrightarrow> src (\<nu> \<star> \<mu>) = src \<mu>"
+  and trg_hcomp': "\<nu> \<star> \<mu> \<noteq> null \<Longrightarrow> trg (\<nu> \<star> \<mu>) = trg \<nu>"
   and seq_if_composable: "\<nu> \<star> \<mu> \<noteq> null \<Longrightarrow> src \<nu> = trg \<mu>"
 
   locale prebicategory_with_homs =
@@ -2968,8 +2968,8 @@ begin
   and H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"   (infixr "\<star>" 53)
   and src :: "'a \<Rightarrow> 'a"
   and trg :: "'a \<Rightarrow> 'a" +
-  assumes src_hcomp': "arr (\<mu> \<star> \<nu>) \<Longrightarrow> src (\<mu> \<star> \<nu>) = src \<nu>"
-  and trg_hcomp': "arr (\<mu> \<star> \<nu>) \<Longrightarrow> trg (\<mu> \<star> \<nu>) = trg \<mu>"
+  assumes src_hcomp: "arr (\<mu> \<star> \<nu>) \<Longrightarrow> src (\<mu> \<star> \<nu>) = src \<nu>"
+  and trg_hcomp: "arr (\<mu> \<star> \<nu>) \<Longrightarrow> trg (\<mu> \<star> \<nu>) = trg \<mu>"
   begin
     (* TODO: Why does this get re-introduced? *)
     no_notation in_hom        ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
@@ -3023,11 +3023,7 @@ begin
     shows "hseq \<nu> \<mu> \<longleftrightarrow> \<nu> \<star> \<mu> \<noteq> null"
       using VV.arr_char H.preserves_arr H.is_extensional hseq_char [of \<nu> \<mu>] by auto
 
-    (*
-     * The following is pretty useful as a simp, but it really slows things down,
-     * so it is not one by default.
-     *)
-    lemma hseqI' (* [simp] *):
+    lemma hseqI' [simp]:
     assumes "arr \<mu>" and "arr \<nu>" and "src \<nu> = trg \<mu>"
     shows "hseq \<nu> \<mu>"
       using assms hseq_char by simp
@@ -3047,8 +3043,8 @@ begin
     assumes "hseq \<nu> \<mu>"
     shows "src (\<nu> \<star> \<mu>) = src \<mu>" and "trg (\<nu> \<star> \<mu>) = trg \<nu>"
     and "dom (\<nu> \<star> \<mu>) = dom \<nu> \<star> dom \<mu>" and "cod (\<nu> \<star> \<mu>) = cod \<nu> \<star> cod \<mu>"
-      using assms VV.arr_char src_hcomp' apply force
-      using assms VV.arr_char trg_hcomp' apply force
+      using assms VV.arr_char src_hcomp apply blast
+      using assms VV.arr_char trg_hcomp apply blast
       using assms VV.arr_char H.preserves_dom apply force
       using assms VV.arr_char H.preserves_cod by force
 
@@ -3068,10 +3064,17 @@ begin
     shows T
       using assms in_hhom_def by fastforce
 
-    lemma hcomp_in_vhom [intro, simp]:
+    lemma hcomp_in_vhom [intro]:
     assumes "\<guillemotleft>\<mu> : f \<Rightarrow> g\<guillemotright>" and "\<guillemotleft>\<nu> : h \<Rightarrow> k\<guillemotright>" and "src h = trg f"
     shows "\<guillemotleft>\<nu> \<star> \<mu> : h \<star> f \<Rightarrow> k \<star> g\<guillemotright>"
-      using assms hseqI' by fastforce
+      using assms by fastforce
+
+    lemma hcomp_in_vhom' [simp]:
+    assumes "hseq \<nu> \<mu>"
+    and "dom \<mu> = f" and "dom \<nu> = h" and "cod \<mu> = g" and "cod \<nu> = k"
+    assumes "\<guillemotleft>\<mu> : f \<Rightarrow> g\<guillemotright>" and "\<guillemotleft>\<nu> : h \<Rightarrow> k\<guillemotright>" and "src h = trg f"
+    shows "\<guillemotleft>\<nu> \<star> \<mu> : h \<star> f \<Rightarrow> k \<star> g\<guillemotright>"
+      using assms by fastforce
 
     lemma hcomp_in_vhomE [elim]:
     assumes "\<guillemotleft>\<nu> \<star> \<mu> : f \<Rightarrow> g\<guillemotright>"
@@ -3079,7 +3082,7 @@ begin
            trg \<nu> = trg f; trg \<nu> = trg g \<rbrakk> \<Longrightarrow> T"
     shows T
       using assms in_hom_def
-      by (metis in_homE hseqE src_cod src_dom src_hcomp' trg_cod trg_dom trg_hcomp')
+      by (metis in_homE hseqE src_cod src_dom src_hcomp trg_cod trg_dom trg_hcomp)
 
     text \<open>
       A horizontal composition yields a weak composition by simply forgetting
@@ -3248,8 +3251,7 @@ begin
     lemma functor_HoHV:
     shows "functor VVV.comp V HoHV"
       apply unfold_locales
-      using VVV.arr_char VV.arr_char VVV.dom_char VVV.cod_char VVV.comp_char
-            HoHV_def hseqI'
+      using VVV.arr_char VV.arr_char VVV.dom_char VVV.cod_char VVV.comp_char HoHV_def
           apply auto[4]
     proof -
       fix f g
@@ -3277,7 +3279,7 @@ begin
     shows "functor VVV.comp V HoVH"
       apply unfold_locales
       using VVV.arr_char VV.arr_char VVV.dom_char VVV.cod_char VVV.comp_char
-            HoHV_def HoVH_def hseqI'
+            HoHV_def HoVH_def
           apply auto[4]
     proof -
       fix f g
@@ -3315,12 +3317,12 @@ begin
 
     lemma endofunctor_L:
     shows "endofunctor V L"
-      using hseqI' vseq_implies_hpar(2) whisker_left
+      using vseq_implies_hpar(2) whisker_left
       by (unfold_locales, auto)
 
     lemma endofunctor_R:
     shows "endofunctor V R"
-      using hseqI' vseq_implies_hpar(1) whisker_right
+      using vseq_implies_hpar(1) whisker_right
       by (unfold_locales, auto)
 
   end

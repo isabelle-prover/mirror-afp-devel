@@ -3458,8 +3458,7 @@ begin
                       by fastforce
                     fix j
                     have "\<not>Obj.arr j \<Longrightarrow> \<Delta>o.cones_map (e \<cdot> h') \<pi>o j = \<Delta>o.mkCone \<tau> j"
-                      using 2 e_in_hom h'_in_hom \<pi>o.cone_axioms
-                      by (auto simp del: comp_in_hom_simp')
+                      using 2 e_in_hom h'_in_hom \<pi>o.cone_axioms by auto
                     moreover have "Obj.arr j \<Longrightarrow> \<Delta>o.cones_map (e \<cdot> h') \<pi>o j = \<Delta>o.mkCone \<tau> j"
                     proof -
                       assume j: "Obj.arr j"

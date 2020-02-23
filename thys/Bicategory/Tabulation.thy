@@ -66,8 +66,9 @@ $$\xymatrix{
     lemma tab_in_hom [intro]:
     shows "\<guillemotleft>\<rho> : src f \<rightarrow> trg r\<guillemotright>" and "\<guillemotleft>\<rho> : g \<Rightarrow> r \<star> f\<guillemotright>"
       using tab_in_vhom' src_dom [of \<rho>] trg_dom [of \<rho>] base_in_hom apply auto
-      by (metis arr_cod comp_cod_arr hcomp_simps(1-2) in_hhom_def in_homE src_cod
-          vseq_implies_hpar(2))
+      by (metis arrI hcomp_simps(1) hcomp_simps(2) in_hhomI not_arr_null
+          src.is_extensional src.preserves_hom vconn_implies_hpar(1)
+          vconn_implies_hpar(2) vconn_implies_hpar(3) vconn_implies_hpar(4))
 
     lemma ide_leg1:
     shows "ide g"
@@ -122,9 +123,7 @@ $$\xymatrix{
       show "\<guillemotleft>\<a>[r, f, w] : (r \<star> f) \<star> w \<Rightarrow> r \<star> f \<star> w\<guillemotright>"
         using assms ide_base ide_leg0 tab_in_hom by fastforce
       show "\<guillemotleft>r \<star> \<theta> : r \<star> f \<star> w \<Rightarrow> r \<star> u\<guillemotright>"
-        using assms ide_base ide_leg0 tab_in_hom hseqI'
-        apply (elim conjE in_hhomE in_homE)
-        by (intro hcomp_in_vhom, auto)
+        using assms ide_base ide_leg0 tab_in_hom by fastforce
     qed
 
     text \<open>
@@ -258,11 +257,11 @@ $$
     shows "\<guillemotleft>T0.trnr\<^sub>\<epsilon> r \<rho> : g \<star> f\<^sup>* \<Rightarrow> r\<guillemotright>"
     proof (unfold T0.trnr\<^sub>\<epsilon>_def, intro comp_in_homI)
       show "\<guillemotleft>\<rho> \<star> f\<^sup>* : g \<star> f\<^sup>* \<Rightarrow> (r \<star> f) \<star> f\<^sup>*\<guillemotright>"
-        using tab_in_hom T0.antipar(1) hseqI' by auto
+        using tab_in_hom T0.antipar(1) by auto
       show "\<guillemotleft>\<a>[r, f, f\<^sup>*] : (r \<star> f) \<star> f\<^sup>* \<Rightarrow> r \<star> f \<star> f\<^sup>*\<guillemotright>"
-        using T0.antipar(1) T0.antipar(2) by auto
+        using T0.antipar(1-2) by auto
       show "\<guillemotleft>r \<star> \<epsilon> : r \<star> f \<star> f\<^sup>* \<Rightarrow> r \<star> src r\<guillemotright>"
-        using T0.antipar by (intro hcomp_in_vhom, auto)
+        using T0.antipar by auto
       show "\<guillemotleft>\<r>[r] : r \<star> src r \<Rightarrow> r\<guillemotright>"
         by auto
     qed
@@ -474,7 +473,7 @@ $$
     shows "\<guillemotleft>u : src u \<rightarrow> src r\<guillemotright>"
       using uw\<theta> ide_u ide_cod [of \<theta>] hseq_char [of f w]
       apply (intro in_hhomI, simp_all)
-      by (metis arr_dom leg0_simps(3) in_homE trg_cod trg_dom hcomp_simps(2))
+      by (metis arr_dom in_homE leg0_simps(3) trg_hcomp vconn_implies_hpar(4))
 
     lemma u_simps [simp]:
     shows "ide u" and "arr u"
@@ -729,8 +728,8 @@ $$
         using f\<^sub>a by simp
       have 1: "src f\<^sub>a = trg f"
         using f\<^sub>a f\<^sub>a' comp_assoc
-        by (metis arr_inv leg0_simps(3) ide_base in_homE iso_runit seqE src_dom
-            hcomp_simps(1) vseq_implies_hpar(1))
+        by (metis ide_base leg0_simps(3) runit'_simps(1) seqE src_hcomp vconn_implies_hpar(1)
+            vseq_implies_hpar(1))
       have 2: "trg f\<^sub>a = src g"
         using f\<^sub>a by force
       have \<epsilon>: "\<guillemotleft>\<epsilon> : f \<star> f\<^sub>a \<Rightarrow> trg f\<guillemotright> \<and> \<guillemotleft>\<epsilon> : trg f \<rightarrow> trg f\<guillemotright> \<and>
@@ -808,7 +807,7 @@ $$
                 have "(composite_cell (f\<^sub>a \<star> f) ?\<theta>' \<cdot> \<a>[g, f\<^sub>a, f]) \<cdot> (\<nu> \<star> f) =
                       (r \<star> \<l>[f]) \<cdot> (r \<star> \<epsilon> \<star> f) \<cdot>
                         composite_cell (f\<^sub>a \<star> f) \<a>\<^sup>-\<^sup>1[f, f\<^sub>a, f] \<cdot> (\<a>[g, f\<^sub>a, f] \<cdot> (\<nu> \<star> f))"
-                  using f\<^sub>a 1 2 \<epsilon> hseqI' whisker_left comp_assoc by auto
+                  using f\<^sub>a 1 2 \<epsilon> whisker_left comp_assoc by auto
                 also have "... = (\<r>[r] \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[r, src r, f] \<cdot> (r \<star> \<epsilon> \<star> f) \<cdot>
                                    composite_cell (f\<^sub>a \<star> f) \<a>\<^sup>-\<^sup>1[f, f\<^sub>a, f] \<cdot> (\<a>[g, f\<^sub>a, f] \<cdot> (\<nu> \<star> f))"
                   using f\<^sub>a 1 2 comp_assoc by (simp add: triangle')
@@ -870,7 +869,7 @@ $$
                   have "\<a>\<^sup>-\<^sup>1[g, f\<^sub>a, f] \<cdot> \<a>[g, f\<^sub>a, f] = (g \<star> f\<^sub>a) \<star> f"
                     using f\<^sub>a 1 2 comp_assoc_assoc' by auto
                   moreover have "((g \<star> f\<^sub>a) \<star> f) \<cdot> (\<nu> \<star> f) = \<nu> \<star> f"
-                    by (simp add: \<nu> comp_cod_arr hseqI')
+                    by (simp add: \<nu> comp_cod_arr)
                   ultimately show ?thesis
                     using comp_assoc by metis
                 qed
@@ -961,7 +960,7 @@ $$
                 have "(\<a>[f \<star> f\<^sub>a, f, f\<^sub>a] \<cdot> ((\<a>\<^sup>-\<^sup>1[f, f\<^sub>a, f] \<star> f\<^sub>a) \<cdot> \<a>\<^sup>-\<^sup>1[f, f\<^sub>a \<star> f, f\<^sub>a])) \<cdot>
                         (f \<star> \<a>\<^sup>-\<^sup>1[f\<^sub>a, f, f\<^sub>a]) =
                       \<a>\<^sup>-\<^sup>1[f, f\<^sub>a, f \<star> f\<^sub>a]"
-                  using 1 2 \<open>ide f\<^sub>a\<close> ide_leg0 iso_inv_iso iso_assoc hseqI'
+                  using 1 2 \<open>ide f\<^sub>a\<close> ide_leg0 iso_inv_iso iso_assoc
                         invert_side_of_triangle(1)
                           [of "((\<a>\<^sup>-\<^sup>1[f, f\<^sub>a, f] \<star> f\<^sub>a) \<cdot> \<a>\<^sup>-\<^sup>1[f, f\<^sub>a \<star> f, f\<^sub>a]) \<cdot> (f \<star> \<a>\<^sup>-\<^sup>1[f\<^sub>a, f, f\<^sub>a])"
                               "\<a>\<^sup>-\<^sup>1[f \<star> f\<^sub>a, f, f\<^sub>a]" "\<a>\<^sup>-\<^sup>1[f, f\<^sub>a, f \<star> f\<^sub>a]"]
@@ -1038,9 +1037,9 @@ $$
             finally show ?thesis by simp
           qed
           have \<theta>: "\<guillemotleft>?\<theta> : f \<star> ?w \<Rightarrow> ?u\<guillemotright>"
-            using 1 2 \<open>ide f\<^sub>a\<close> \<eta>_in_hom \<epsilon> hseqI' by fastforce
+            using 1 2 \<open>ide f\<^sub>a\<close> \<eta>_in_hom \<epsilon> by fastforce
           have \<theta>': "\<guillemotleft>?\<theta>' : f \<star> ?w' \<Rightarrow> ?u\<guillemotright>"
-            using f\<^sub>a 1 2 \<epsilon> assoc'_in_hom(2) hseqI' by auto
+            using f\<^sub>a 1 2 \<epsilon> by auto
           have ww': "ide ?w \<and> ide ?w'"
             by (simp add: 1 2 \<open>ide f\<^sub>a\<close>)
           have "\<exists>!\<gamma>. \<guillemotleft>\<gamma> : ?w \<Rightarrow> ?w'\<guillemotright> \<and> ?\<beta> = g \<star> \<gamma> \<and> ?\<theta> = ?\<theta>' \<cdot> (f \<star> \<gamma>)"
@@ -1067,7 +1066,7 @@ $$
                       have "seq (f\<^sub>a \<star> trg f) (\<r>\<^sup>-\<^sup>1[f\<^sub>a] \<cdot> \<l>[f\<^sub>a])"
                         using f\<^sub>a 1 2 ww' by auto
                       thus ?thesis
-                        using interchange comp_arr_dom comp_cod_arr 1 2 \<open>ide f\<^sub>a\<close> hseqI'
+                        using interchange comp_arr_dom comp_cod_arr 1 2 \<open>ide f\<^sub>a\<close>
                         by (metis ww' comp_ide_arr dom_comp leg1_simps(3)
                                   lunit_simps(4) tab_simps(1) tab_simps(5))
                     qed
@@ -1187,7 +1186,7 @@ $$
                                  (g \<star> \<r>\<^sup>-\<^sup>1[f\<^sub>a])) \<cdot> (\<r>[g] \<star> f\<^sub>a) \<cdot> \<a>\<^sup>-\<^sup>1[g, src f, f\<^sub>a]"
                 using f\<^sub>a "2" runit_hcomp \<open>ide f\<^sub>a\<close> comp_assoc by simp
               also have "... = (g \<star> \<r>\<^sup>-\<^sup>1[f\<^sub>a]) \<cdot> (g \<star> \<l>[f\<^sub>a])"
-                using 1 2 comp_cod_arr \<open>ide f\<^sub>a\<close> comp_assoc_assoc' hseqI' triangle' by simp
+                using 1 2 comp_cod_arr \<open>ide f\<^sub>a\<close> comp_assoc_assoc' triangle' by simp
               also have "... = ?\<beta>"
                 using 2 \<open>ide f\<^sub>a\<close> whisker_left by simp
               finally show ?thesis by simp
@@ -1356,7 +1355,8 @@ $$
       show \<psi>_in_hom: "\<guillemotleft>T0.trnr\<^sub>\<epsilon> r \<rho> : g \<star> f\<^sup>* \<Rightarrow> r\<guillemotright>"
         using ide_base T0.trnr\<^sub>\<epsilon>_def rep_in_hom by simp
       have A: "\<guillemotleft>\<nu> \<cdot> ?\<psi> : g \<star> f\<^sup>* \<Rightarrow> g \<star> w\<guillemotright>"
-        using ide_base T0.antipar hseq_char T0.trnr\<^sub>\<epsilon>_def rep_in_hom w\<theta>'\<nu> by auto
+        using ide_base T0.antipar hseq_char T0.trnr\<^sub>\<epsilon>_def rep_in_hom w\<theta>'\<nu>
+        apply (intro comp_in_homI') by auto
       have B: "composite_cell f\<^sup>* \<epsilon> = composite_cell w \<theta>' \<cdot> \<nu> \<cdot> ?\<psi>"
           using ide_base T0.antipar w\<theta>'\<nu> comp_assoc
           by (metis A arrI invert_side_of_triangle(1) iso_runit)
@@ -1414,7 +1414,7 @@ $$
             also have "... = \<r>[f\<^sup>*] \<cdot> (f\<^sup>* \<star> \<theta>') \<cdot> ((f\<^sup>* \<star> f \<star> \<gamma>) \<cdot> \<a>[f\<^sup>*, f, f\<^sup>*]) \<cdot> (\<eta> \<star> f\<^sup>*) \<cdot> \<l>\<^sup>-\<^sup>1[f\<^sup>*]"
               using \<gamma> assoc_naturality [of "f\<^sup>*" f \<gamma>] trg_\<gamma>_eq T0.antipar by auto
             also have "... = \<r>[f\<^sup>*] \<cdot> ((f\<^sup>* \<star> \<epsilon>) \<cdot> \<a>[f\<^sup>*, f, f\<^sup>*] \<cdot> (\<eta> \<star> f\<^sup>*)) \<cdot> \<l>\<^sup>-\<^sup>1[f\<^sup>*]"
-              using \<gamma> whisker_left trg_\<gamma>_eq hseqI' T0.antipar comp_assoc by auto
+              using \<gamma> whisker_left trg_\<gamma>_eq T0.antipar comp_assoc by auto
             also have "... =  \<r>[f\<^sup>*] \<cdot> (\<r>\<^sup>-\<^sup>1[f\<^sup>*] \<cdot> \<l>[f\<^sup>*]) \<cdot> \<l>\<^sup>-\<^sup>1[f\<^sup>*]"
               using T0.triangle_right by simp
             also have "... = f\<^sup>*"
@@ -1423,7 +1423,7 @@ $$
           qed
           thus ?thesis
             using \<gamma> whisker_left [of g "\<r>[f\<^sup>*] \<cdot> (f\<^sup>* \<star> \<theta>') \<cdot> \<a>[f\<^sup>*, f, w] \<cdot> (\<eta> \<star> w) \<cdot> \<l>\<^sup>-\<^sup>1[w]" \<gamma>]
-                  hseqI' T0.antipar
+                  T0.antipar
             by simp
         qed
         thus "ide ((g \<star> \<r>[f\<^sup>*] \<cdot> (f\<^sup>* \<star> \<theta>') \<cdot> \<a>[f\<^sup>*, f, w] \<cdot> (\<eta> \<star> w) \<cdot> \<l>\<^sup>-\<^sup>1[w]) \<cdot> (g \<star> \<gamma>))"
@@ -1433,8 +1433,7 @@ $$
       proof
         have "\<guillemotleft>(g \<star> \<gamma>) \<cdot> (g \<star> \<r>[f\<^sup>*]) \<cdot> (g \<star> f\<^sup>* \<star> \<theta>') \<cdot> (g \<star> \<a>[f\<^sup>*, f, w]) \<cdot> (g \<star> \<eta> \<star> w) \<cdot> (g \<star> \<l>\<^sup>-\<^sup>1[w]) :
                  g \<star> w \<Rightarrow> g \<star> w\<guillemotright>"
-          using \<gamma> T0.antipar hseq_char
-          by (intro comp_in_hom_simp, auto)
+          using \<gamma> T0.antipar hseq_char by force
         hence **: "arr ((g \<star> \<gamma>) \<cdot> (g \<star> \<r>[f\<^sup>*]) \<cdot> (g \<star> f\<^sup>* \<star> \<theta>') \<cdot> (g \<star> \<a>[f\<^sup>*, f, w]) \<cdot>
                         (g \<star> \<eta> \<star> w) \<cdot> (g \<star> \<l>\<^sup>-\<^sup>1[w]))"
           by auto
@@ -1476,11 +1475,11 @@ $$
                     by (metis comp_assoc)
                 qed
                 also have "... = ((r \<star> f) \<star> \<r>[f\<^sup>*]) \<cdot> (\<rho> \<star> f\<^sup>* \<star> \<theta>')"
-                  using comp_arr_dom comp_cod_arr hseqI' T0.antipar
+                  using comp_arr_dom comp_cod_arr T0.antipar
                         interchange [of \<rho> g "f\<^sup>* \<star> src f\<^sup>*" "f\<^sup>* \<star> \<theta>'"]
                   by simp
                 also have "... = ((r \<star> f) \<star> \<r>[f\<^sup>*]) \<cdot> ((r \<star> f) \<star> f\<^sup>* \<star> \<theta>') \<cdot> (\<rho> \<star> f\<^sup>* \<star> f \<star> w)"
-                  using comp_arr_dom comp_cod_arr hseqI' T0.antipar
+                  using comp_arr_dom comp_cod_arr T0.antipar
                         interchange [of "r \<star> f" \<rho> "f\<^sup>* \<star> \<theta>'" "f\<^sup>* \<star> f \<star> w"]
                   by simp
                 finally show ?thesis by simp
@@ -1511,7 +1510,7 @@ $$
                   qed
                   also have "... = (r \<star> \<epsilon>) \<cdot> (r \<star> f \<star> \<r>[f\<^sup>*]) \<cdot> (r \<star> f \<star> f\<^sup>* \<star> \<theta>') \<cdot>
                                      \<a>[r, f, f\<^sup>* \<star> f \<star> w]"
-                    using assoc_naturality [of r f "f\<^sup>* \<star> \<theta>'"] T0.antipar by force
+                    using assoc_naturality [of r f "f\<^sup>* \<star> \<theta>'"] T0.antipar by fastforce
                   also have "... = (r \<star> \<r>[src f\<^sup>*]) \<cdot> (r \<star> \<epsilon> \<star> src f\<^sup>*) \<cdot> (r \<star> \<a>\<^sup>-\<^sup>1[f, f\<^sup>*, src f\<^sup>*]) \<cdot>
                                    (r \<star> f \<star> f\<^sup>* \<star> \<theta>') \<cdot> \<a>[r, f, f\<^sup>* \<star> f \<star> w]"
                   proof -
@@ -1519,16 +1518,16 @@ $$
                           (r \<star> \<r>[src f\<^sup>*]) \<cdot> (r \<star> \<epsilon> \<star> src f\<^sup>*) \<cdot> (r \<star> \<a>\<^sup>-\<^sup>1[f, f\<^sup>*, src f\<^sup>*])"
                     proof -
                       have "(r \<star> \<epsilon>) \<cdot> (r \<star> f \<star> \<r>[f\<^sup>*]) = r \<star> (\<epsilon> \<cdot> (f \<star> \<r>[f\<^sup>*]))"
-                        using whisker_left hseqI' T0.antipar by simp
+                        using whisker_left T0.antipar by simp
                       also have "... =
                                  (r \<star> \<r>[src f\<^sup>*]) \<cdot> (r \<star> \<epsilon> \<star> src f\<^sup>*) \<cdot> (r \<star> \<a>\<^sup>-\<^sup>1[f, f\<^sup>*, src f\<^sup>*])"
                       proof -
                         have "\<epsilon> \<cdot> (f \<star> \<r>[f\<^sup>*]) = \<r>[src f\<^sup>*] \<cdot> (\<epsilon> \<star> src f\<^sup>*) \<cdot> \<a>\<^sup>-\<^sup>1[f, f\<^sup>*, src f\<^sup>*]"
                           using ide_leg0 T0.antipar runit_hcomp invert_side_of_triangle(2)
-                                hseqI' runit_naturality comp_assoc
+                                runit_naturality comp_assoc
                           by (metis (no_types, lifting) T0.counit_simps(1-4) T0.ide_right)
                         thus ?thesis
-                          using whisker_left hseqI' T0.antipar by simp
+                          using whisker_left T0.antipar by simp
                       qed
                       finally show ?thesis by simp
                     qed
@@ -1548,11 +1547,11 @@ $$
                     proof -
                       have "(r \<star> \<a>\<^sup>-\<^sup>1[f, f\<^sup>*, src f\<^sup>*]) \<cdot> (r \<star> f \<star> f\<^sup>* \<star> \<theta>') =
                             r \<star> \<a>\<^sup>-\<^sup>1[f, f\<^sup>*, src f\<^sup>*] \<cdot> (f \<star> f\<^sup>* \<star> \<theta>')"
-                        using whisker_left hseqI' T0.antipar by simp
+                        using whisker_left T0.antipar by simp
                       also have "... = r \<star> ((f \<star> f\<^sup>*) \<star> \<theta>') \<cdot> \<a>\<^sup>-\<^sup>1[f, f\<^sup>*, f \<star> w]"
                         using assoc'_naturality [of f "f\<^sup>*" \<theta>'] T0.antipar by auto
                       also have "... = (r \<star> (f \<star> f\<^sup>*) \<star> \<theta>') \<cdot> (r \<star> \<a>\<^sup>-\<^sup>1[f, f\<^sup>*, f \<star> w])"
-                        using whisker_left hseqI' T0.antipar by auto
+                        using whisker_left T0.antipar by auto
                       finally show ?thesis by simp
                     qed
                     thus ?thesis by simp
@@ -1572,7 +1571,7 @@ $$
                     proof -
                       have "(r \<star> \<epsilon> \<star> src f\<^sup>*) \<cdot> (r \<star> (f \<star> f\<^sup>*) \<star> \<theta>') =
                             r \<star> (\<epsilon> \<star> src f\<^sup>*) \<cdot> ((f \<star> f\<^sup>*) \<star> \<theta>')"
-                        using whisker_left hseqI' T0.antipar by simp
+                        using whisker_left T0.antipar by simp
                       also have "... = r \<star> \<epsilon> \<star> \<theta>'"
                         using interchange [of \<epsilon> "f \<star> f\<^sup>*" "src f\<^sup>*" \<theta>']
                               T0.antipar comp_arr_dom comp_cod_arr
@@ -1582,7 +1581,7 @@ $$
                               T0.antipar comp_arr_dom comp_cod_arr
                         by auto
                       also have "... = (r \<star> src f\<^sup>* \<star> \<theta>') \<cdot> (r \<star> \<epsilon> \<star> f \<star> w)"
-                        using whisker_left hseqI' T0.antipar by simp
+                        using whisker_left T0.antipar by simp
                       finally show ?thesis by blast
                     qed
                     thus ?thesis by simp
@@ -1634,7 +1633,7 @@ $$
                       also have "... = ((r \<star> f) \<star> \<eta> \<star> w) \<cdot> (\<rho> \<star> trg w \<star> w)"
                         using interchange [of "r \<star> f" \<rho> "\<eta> \<star> w" "trg w \<star> w"]
                               interchange [of \<eta> "trg w" w w]
-                              comp_arr_dom comp_cod_arr T0.unit_in_hom hseqI'
+                              comp_arr_dom comp_cod_arr T0.unit_in_hom
                         by auto
                       finally show ?thesis by simp
                     qed
@@ -1662,13 +1661,13 @@ $$
                   have "r \<star> \<epsilon> \<star> f \<star> w =
                         ((r \<star> \<a>[src r, f, w]) \<cdot> (r \<star> \<a>\<^sup>-\<^sup>1[src r, f, w])) \<cdot> (r \<star> \<epsilon> \<star> f \<star> w)"
                     using T0.antipar whisker_left [of r "\<a>[src r, f, w]" "\<a>\<^sup>-\<^sup>1[src r, f, w]"]
-                          comp_cod_arr hseqI' comp_assoc_assoc'
+                          comp_cod_arr comp_assoc_assoc'
                     by simp
                  also have "... = (r \<star> \<a>[src r, f, w]) \<cdot> (r \<star> (\<epsilon> \<star> f) \<star> w) \<cdot>
                                      (r \<star> \<a>\<^sup>-\<^sup>1[f \<star> f\<^sup>*, f, w])"
                     using assoc'_naturality [of \<epsilon> f w]
                           whisker_left [of r "\<a>\<^sup>-\<^sup>1[src r, f, w]" "\<epsilon> \<star> f \<star> w"]
-                          whisker_left comp_assoc hseqI' T0.antipar
+                          whisker_left comp_assoc T0.antipar
                     by simp
                   finally show ?thesis
                     using T0.antipar by simp
@@ -1686,25 +1685,25 @@ $$
                   proof -
                     have "ide r" by simp
                     moreover have "seq \<a>[f, f\<^sup>* \<star> f, w] \<a>\<^sup>-\<^sup>1[f, f\<^sup>* \<star> f, w]"
-                      using T0.antipar comp_cod_arr hseqI' ide_base by simp
+                      using T0.antipar comp_cod_arr ide_base by simp
                     ultimately have "(r \<star> \<a>[f, f\<^sup>* \<star> f, w]) \<cdot> (r \<star> \<a>\<^sup>-\<^sup>1[f, f\<^sup>* \<star> f, w]) =
                                      r \<star> \<a>[f, f\<^sup>* \<star> f, w] \<cdot> \<a>\<^sup>-\<^sup>1[f, f\<^sup>* \<star> f, w]"
                       using whisker_left by metis
                     thus ?thesis
-                      using T0.antipar comp_cod_arr hseqI' comp_assoc_assoc' by simp
+                      using T0.antipar comp_cod_arr comp_assoc_assoc' by simp
                   qed
                   also have "... =
                              \<a>\<^sup>-\<^sup>1[r, f, (f\<^sup>* \<star> f) \<star> w] \<cdot>
                                (r \<star> \<a>[f, f\<^sup>* \<star> f, w]) \<cdot> ((r \<star> \<a>\<^sup>-\<^sup>1[f, f\<^sup>* \<star> f, w]) \<cdot>
                                  (r \<star> f \<star> \<eta> \<star> w)) \<cdot>
                                    \<a>[r, f, trg w \<star> w]"
-                    using assoc_naturality [of r f "\<eta> \<star> w"] hseqI' comp_assoc by fastforce
+                    using assoc_naturality [of r f "\<eta> \<star> w"] comp_assoc by fastforce
                   also have "... =
                              \<a>\<^sup>-\<^sup>1[r, f, (f\<^sup>* \<star> f) \<star> w] \<cdot>
                                (r \<star> \<a>[f, f\<^sup>* \<star> f, w]) \<cdot> (r \<star> (f \<star> \<eta>) \<star> w) \<cdot>
                                  (r \<star> \<a>\<^sup>-\<^sup>1[f, trg w, w]) \<cdot>
                                    \<a>[r, f, trg w \<star> w]"
-                    using assoc'_naturality [of f \<eta> w] hseqI' T0.antipar comp_assoc
+                    using assoc'_naturality [of f \<eta> w] T0.antipar comp_assoc
                           whisker_left [of r "\<a>\<^sup>-\<^sup>1[f, f\<^sup>* \<star> f, w]" "f \<star> \<eta> \<star> w"]
                           whisker_left [of r "(f \<star> \<eta>) \<star> w" "\<a>\<^sup>-\<^sup>1[f, trg w, w]"]
                     by simp
@@ -1763,7 +1762,7 @@ $$
                 proof -
                   have "(r \<star> (\<epsilon> \<star> f) \<star> w) \<cdot> (r \<star> \<a>\<^sup>-\<^sup>1[f, f\<^sup>*, f] \<star> w) \<cdot> (r \<star> (f \<star> \<eta>) \<star> w) =
                         r \<star> (\<epsilon> \<star> f) \<cdot> \<a>\<^sup>-\<^sup>1[f, f\<^sup>*, f] \<cdot> (f \<star> \<eta>) \<star> w"
-                    using whisker_left whisker_right hseqI' T0.antipar by simp
+                    using whisker_left whisker_right T0.antipar by simp
                   also have "... = r \<star> \<l>\<^sup>-\<^sup>1[f] \<cdot> \<r>[f] \<star> w"
                     using T0.triangle_left by simp
                   finally show ?thesis by blast
@@ -1792,7 +1791,7 @@ $$
               have "(r \<star> \<r>[src r]) \<cdot> (r \<star> src r \<star> \<theta>') = (r \<star> \<theta>') \<cdot> (r \<star> \<l>[f \<star> w])"
               proof -
                 have "(r \<star> \<r>[src r]) \<cdot> (r \<star> src r \<star> \<theta>') = r \<star> \<r>[src r] \<cdot> (src r \<star> \<theta>')"
-                  using whisker_left hseqI' by simp
+                  using whisker_left by simp
                 also have "... = r \<star> \<theta>' \<cdot> \<l>[f \<star> w]"
                   using lunit_naturality [of \<theta>'] unitor_coincidence by simp
                 also have "... = (r \<star> \<theta>') \<cdot> (r \<star> \<l>[f \<star> w])"
@@ -1856,7 +1855,9 @@ $$
                     finally show ?thesis by blast
                   qed
                   thus ?thesis
-                    using comp_cod_arr by auto
+                    using comp_cod_arr
+                    by (metis assoc_is_natural_1 base_simps(2-3) leg0_simps(2-4)
+                        w_simps(2) w_simps(4) w_simps(5))
                 qed
                 finally show ?thesis by blast
               qed
@@ -1886,7 +1887,7 @@ $$
           using w\<theta>'\<nu> \<gamma> iso_runit
           by (elim conjE in_homE, intro iso_inv_iso isos_compose, auto)
         thus ?thesis
-          using 1 w\<theta>'\<nu> \<gamma> trg_\<gamma>_eq isos_compose iso_inv_iso hseqI'
+          using 1 w\<theta>'\<nu> \<gamma> trg_\<gamma>_eq isos_compose iso_inv_iso
           by (elim conjE in_homE, auto)
       qed
       moreover have "inv (\<nu> \<cdot> \<r>[r]) \<cdot> (g \<star> \<gamma>) = composite_cell f\<^sup>* \<epsilon>"
@@ -1962,9 +1963,7 @@ $$
           have 1: "src g = trg u"
             using \<omega> by (metis arr_cod in_homE not_arr_null seq_if_composable)
           have 2: "src f = trg v"
-            using \<omega> 1 u ide_right antipar(1)
-            by (metis horizontal_homs.trg_cod horizontal_homs.trg_dom horizontal_homs_axioms
-                hseqI' ideD(1) in_homE hcomp_simps(2))
+            using \<omega> 1 u ide_right antipar(1) vconn_implies_hpar(4) by force
           text \<open>It seems clear that we need to take \<open>w = v\<close> and \<open>\<nu> = \<l>\<^sup>-\<^sup>1[v]\<close>. \<close>
           let ?w = v
           let ?\<nu> = "\<l>\<^sup>-\<^sup>1[v]"
@@ -2047,7 +2046,7 @@ $$
                   also have "... = T.composite_cell w \<theta> \<cdot> (\<l>\<^sup>-\<^sup>1[w] \<cdot> \<l>[w])"
                     using comp_assoc by simp
                   also have 4: "... = T.composite_cell w \<theta>"
-                    using comp_arr_dom by (simp add: comp_inv_arr' hseqI')
+                    using comp_arr_dom by (simp add: comp_inv_arr')
                   also have "... = T.composite_cell w' \<theta>' \<cdot> \<beta>"
                     using E by simp
                   also have "... = (T.composite_cell w' \<theta>' \<cdot> \<l>\<^sup>-\<^sup>1[w']) \<cdot> \<l>[w'] \<cdot> \<beta>"
@@ -2085,7 +2084,7 @@ $$
               finally show ?thesis by simp
             qed
             hence "\<exists>\<gamma>. \<guillemotleft>\<gamma> : w \<Rightarrow> w'\<guillemotright> \<and> \<beta> = src f \<star> \<gamma> \<and> \<theta> = \<theta>' \<cdot> (f \<star> \<gamma>)"
-              using \<gamma> 3 hcomp_obj_arr by auto
+              using \<gamma> 3 hcomp_obj_arr by blast
             moreover have "\<And>\<gamma> \<gamma>'. \<guillemotleft>\<gamma> : w \<Rightarrow> w'\<guillemotright> \<and> \<beta> = src f \<star> \<gamma> \<and> \<theta> = \<theta>' \<cdot> (f \<star> \<gamma>) \<and>
                                    \<guillemotleft>\<gamma>' : w \<Rightarrow> w'\<guillemotright> \<and> \<beta> = src f \<star> \<gamma>' \<and> \<theta> = \<theta>' \<cdot> (f \<star> \<gamma>') \<Longrightarrow> \<gamma> = \<gamma>'"
             proof -
@@ -2264,7 +2263,7 @@ $$
               proof -
                 have "seq (\<theta>' \<cdot> (\<phi> \<star> w')) (f \<star> \<gamma>)"
                   using assms(2) \<phi>_w \<phi>_w' \<gamma> \<beta> \<theta>
-                  apply (intro seqI hseqI')
+                  apply (intro seqI)
                           apply auto
                   by (metis seqE seqI')
                 thus ?thesis
@@ -2472,7 +2471,8 @@ $$
           have fw: "hseq f w"
             using \<theta> ide_dom [of \<theta>] by fastforce
           have r\<theta>: "hseq r \<theta>"
-            using \<theta> ide_base ide_dom [of \<theta>] trg_dom [of \<theta>] by fastforce
+            using \<theta> ide_base ide_dom [of \<theta>] trg_dom [of \<theta>]
+            using arrI fw vconn_implies_hpar(2) by auto
           have "((\<phi> \<star> u) \<cdot> (r \<star> \<theta>)) \<cdot> \<a>[r, f, w] \<cdot> (\<rho> \<star> w) \<cdot> \<nu> =
                 ((r' \<star> \<theta>) \<cdot> (\<phi> \<star> f \<star> w)) \<cdot> \<a>[r, f, w] \<cdot> (\<rho> \<star> w) \<cdot> \<nu>"
             using assms u w ide_base ide_leg0 \<theta> interchange comp_arr_dom comp_cod_arr
@@ -2724,8 +2724,7 @@ $$
         have "composite_cell (w' \<star> w) ?\<theta>\<theta>' \<cdot> (?\<nu>'\<nu> \<cdot> \<r>[g]) =
               ((r \<star> \<theta>) \<cdot> (r \<star> \<theta>' \<star> w) \<cdot> (r \<star> \<a>\<^sup>-\<^sup>1[f, w', w])) \<cdot>
                 \<a>[r, f, w' \<star> w] \<cdot> ((\<rho> \<star> w' \<star> w) \<cdot> \<a>[g, w', w]) \<cdot> (\<nu>' \<star> w) \<cdot> \<nu> \<cdot> \<r>[g]"
-          using whisker_left comp_assoc
-          by (simp add: hseqI')
+          using whisker_left comp_assoc by simp
         also have "... = ((r \<star> \<theta>) \<cdot> (r \<star> \<theta>' \<star> w) \<cdot> (r \<star> \<a>\<^sup>-\<^sup>1[f, w', w])) \<cdot>
                            \<a>[r, f, w' \<star> w] \<cdot> (\<a>[r \<star> f, w', w] \<cdot>
                            ((\<rho> \<star> w') \<star> w)) \<cdot> (\<nu>' \<star> w) \<cdot> \<nu> \<cdot> \<r>[g]"
@@ -2803,7 +2802,7 @@ $$
       have \<nu>'\<nu>_r: "\<guillemotleft>?\<nu>'\<nu> \<cdot> \<r>[g] : g \<star> src f \<Rightarrow> g \<star> w' \<star> w\<guillemotright>"
           by force
       have inv_\<nu>'\<nu>_r: "\<guillemotleft>inv (?\<nu>'\<nu> \<cdot> \<r>[g]) : g \<star> w' \<star> w \<Rightarrow> g \<star> src f\<guillemotright>"
-        using \<nu>'\<nu> iso_\<nu>'\<nu>_r by simp
+        using \<nu>'\<nu> iso_\<nu>'\<nu>_r by auto
 
       let ?P = "\<lambda>\<gamma>. \<guillemotleft>\<gamma> : src f \<Rightarrow> w' \<star> w\<guillemotright> \<and> ?\<nu>'\<nu> \<cdot> \<r>[g] = dom \<rho> \<star> \<gamma> \<and> \<r>[f] = ?\<theta>\<theta>' \<cdot> (f \<star> \<gamma>)"
       let ?\<gamma> = "THE \<gamma>. ?P \<gamma>"
@@ -2822,7 +2821,9 @@ $$
       have "?P' ?\<gamma>'"
       proof -
         have "\<exists>!\<gamma>. ?P' \<gamma>"
-          using inv_\<nu>'\<nu>_r \<theta>\<theta>' eq' T2 comp_assoc by simp
+          using inv_\<nu>'\<nu>_r \<theta>\<theta>' eq'
+                T2 [of "w' \<star> w" "src f" "\<theta> \<cdot> (\<theta>' \<star> w) \<cdot> \<a>\<^sup>-\<^sup>1[f, w', w]" f] comp_assoc
+          by simp
         thus ?thesis
           using the1_equality [of ?P'] by blast
       qed
@@ -2838,8 +2839,12 @@ $$
           moreover have "\<guillemotleft>\<r>[f] : f \<star> src f \<Rightarrow> f\<guillemotright>" by simp
           moreover have "\<guillemotleft>dom \<rho> \<star> src f : g \<star> src f \<Rightarrow> g \<star> src f\<guillemotright>" by auto
           moreover have "(\<rho> \<star> src f) \<cdot> (dom \<rho> \<star> src f) = \<rho> \<star> src f"
-            using comp_arr_dom hcomp_simps(3) [of \<rho> "src f"]
-            by (metis (full_types) R.preserves_arr tab_simps(1) tab_simps(2) dom_src)
+          proof -
+            have "(\<rho> \<star> src \<rho>) \<cdot> (dom \<rho> \<star> src (dom \<rho>)) = \<rho> \<star> src \<rho>"
+              using R.is_natural_1 arr_dom tab_simps(1) by presburger
+            thus ?thesis
+              by simp
+          qed
           ultimately show ?thesis
             using comp_arr_dom T2 [of "src f" "src f" "\<r>[f]" f "\<r>[f]" "dom \<rho> \<star> src f"]
                   comp_assoc
@@ -2894,7 +2899,7 @@ $$
               using comp_assoc by simp
           qed
           ultimately show ?thesis
-            using T2 by auto
+            using T2 by presburger
         qed
         moreover have "?Q' (w' \<star> w)"
           using \<theta>\<theta>' comp_arr_dom by auto
@@ -2963,10 +2968,10 @@ $$
         using w\<theta>\<nu> w'\<theta>'\<nu>' T'.apex_equivalence_lemma tab_in_hom comp_assoc by metis
       have 1: "src f = src w"
         using \<phi> src_dom [of \<phi>] hcomp_simps(1) [of w' w]
-        by (metis arr_cod leg0_simps(2) in_homE src_cod src_src)
+        by (metis arr_cod in_homE leg0_simps(2) src_hcomp src_src vconn_implies_hpar(3))
       have 2: "src f' = src w'"
         using \<psi> src_dom [of \<psi>] hcomp_simps(1) [of w w']
-        by (metis arr_cod T'.leg0_simps(2) in_homE src_cod src_src)
+        by (metis T'.leg0_simps(2) arr_cod in_homE src_hcomp src_src vconn_implies_hpar(3))
       interpret E: equivalence_in_bicategory V H \<a> \<i> src trg w' w \<psi> \<open>inv \<phi>\<close>
         using \<phi> \<psi> 1 2 w\<theta>\<nu> w'\<theta>'\<nu>' iso_inv_iso
         apply unfold_locales by auto
@@ -3040,7 +3045,7 @@ $$
           have [simp]: "src\<^sub>D u' = a'"
             using a'_def \<omega>'
             by (metis D.arr_cod D.ide_char D.in_homE D.src.preserves_cod D.src_dom
-                D.src_hcomp' v')
+                D.src_hcomp v')
           have [simp]: "trg\<^sub>D u' = src\<^sub>D (F r)"
             using \<omega>'
             by (metis D.cod_trg D.in_homE D.not_arr_null D.seq_if_composable D.trg.is_extensional
@@ -3048,9 +3053,7 @@ $$
           have [simp]: "src\<^sub>D v' = a'"
             using v'_def \<omega>' a'_def by auto
           have [simp]: "trg\<^sub>D v' = trg\<^sub>D (F r)"
-            using v'_def
-            by (metis D.cod_trg D.hseqI' D.ideD(1) D.in_homE D.trg.preserves_hom D.trg_dom
-                D.hcomp_simps(2) T'.base_simps(2) \<omega>' \<open>trg\<^sub>D u' = src\<^sub>D (F r)\<close> u')
+            using v'_def D.vconn_implies_hpar(4) \<omega>' u' by force
 
           have [simp]: "src\<^sub>D \<omega>' = a'"
             using \<omega>' a'_def by blast
@@ -3110,7 +3113,7 @@ $$
           have [simp]: "trg\<^sub>D \<phi> = trg\<^sub>D u'"
             using \<phi>
             by (metis D.cod_trg D.hseqI D.in_homE D.isomorphic_implies_hpar(4)
-                D.trg.preserves_cod D.trg_hcomp' e' u u'_in_hhom)
+                D.trg.preserves_cod D.trg_hcomp e' u u'_in_hhom)
           have [simp]: "src\<^sub>D \<psi> = map\<^sub>0 a"
             using \<psi>
             by (metis C.in_hhomE D.in_homE D.src_dom \<open>src\<^sub>D e' = map\<^sub>0 a\<close> preserves_src v)
@@ -3138,11 +3141,11 @@ $$
 
           obtain \<omega> where \<omega>: "\<guillemotleft>\<omega> : v \<Rightarrow>\<^sub>C r \<star>\<^sub>C u\<guillemotright> \<and> F \<omega> = F\<omega>"
             using u v \<omega>' \<phi> \<psi> F\<omega> locally_full [of v "r \<star>\<^sub>C u" F\<omega>]
-            by (metis C.ide_hcomp C.hseqI C.in_hhomE C.src_hcomp' C.trg_hcomp'
+            by (metis C.ide_hcomp C.hseqI C.in_hhomE C.src_hcomp C.trg_hcomp
                 T.ide_base T.base_in_hom(1))
           have [simp]: "src\<^sub>C \<omega> = src\<^sub>C u"
             using \<omega>
-            by (metis C.hseqI C.in_homE C.src_cod C.src_hcomp' T.base_in_hom(1) u)
+            by (metis C.hseqI C.in_homE C.src_cod C.src_hcomp T.base_in_hom(1) u)
           have [simp]: "trg\<^sub>C \<omega> = trg\<^sub>C r"
             using \<omega>
             by (metis C.ide_char C.ide_trg C.in_homE C.trg.preserves_hom \<open>trg\<^sub>C v = trg\<^sub>C r\<close>)
@@ -3200,7 +3203,7 @@ F (
 $$
           \<close>
           have [simp]: "src\<^sub>C w = src\<^sub>C u"
-            by (metis C.arrI C.seqE C.src_hcomp' C.src_vcomp C.vseq_implies_hpar(1)
+            by (metis C.arrI C.seqE C.src_hcomp C.src_vcomp C.vseq_implies_hpar(1)
                 \<omega> \<open>src\<^sub>C \<omega> = src\<^sub>C u\<close> w\<theta>\<nu>)
           have [simp]: "trg\<^sub>C w = src\<^sub>C f"
             by (metis C.arrI C.hseq_char C.seqE T.tab_simps(2) \<omega> w\<theta>\<nu>)
@@ -3314,26 +3317,22 @@ $$
                     by (metis C.arrI C.hseq_char C.seqE C.hcomp_simps(1) T.tab_simps(2)
                         T.leg0_simps(2) T.leg0_simps(3))
                   hence "D.seq (\<Phi> (r \<star>\<^sub>C f, w)) (F \<rho> \<star>\<^sub>D F w)"
-                    using \<omega> w\<theta>\<nu> \<Phi>_in_hom(2) [of "r \<star>\<^sub>C f" w] C.VV.arr_char FF_def
-                    apply (intro D.seqI D.hseqI')
-                        apply auto
-                    using \<omega> w\<theta>\<nu> T.tab_in_hom preserves_cod [of "\<rho> \<star>\<^sub>C w"] D.hseqI'
-                    by force
+                    using \<omega> w\<theta>\<nu> \<Phi>_in_hom(2) [of "r \<star>\<^sub>C f" w] C.VV.arr_char FF_def by auto
                   moreover have "\<Phi> (r \<star>\<^sub>C f, w) \<cdot>\<^sub>D (F \<rho> \<star>\<^sub>D F w) = F (\<rho> \<star>\<^sub>C w) \<cdot>\<^sub>D \<Phi> (g, w)"
                     using \<omega> w\<theta>\<nu> \<Phi>.naturality [of "(\<rho>, w)"] \<Phi>_components_are_iso FF_def
                           C.VV.arr_char
                     by simp
                   moreover have "D.iso (\<Phi> (r \<star>\<^sub>C f, w))"
                     using w\<theta>\<nu> \<Phi>_components_are_iso
-                    by (metis C.arrI C.ide_hcomp C.hseqE C.hseqI' C.seqE C.src_hcomp'
-                        T.tab_simps(2) T.ide_leg0 T.ide_base T.leg0_simps(2) T.leg0_simps(3) \<omega>)
+                    by (metis C.arrI C.ide_hcomp C.hseqE C.hseqI' C.seqE C.src_hcomp
+                        T.tab_simps(2) T.ide_leg0 T.ide_base T.leg0_simps(2-3) \<omega>)
                   moreover have "D.iso (\<Phi> (g, w))"
                     using w\<theta>\<nu> \<Phi>_components_are_iso
                     by (metis C.arrI C.hseqE C.seqE T.tab_simps(2) T.ide_leg1 T.leg1_simps(3) \<omega>)
                   ultimately show ?thesis
                     using \<omega> w\<theta>\<nu> \<Phi>.naturality \<Phi>_components_are_iso FF_def C.VV.arr_char
                           D.invert_opposite_sides_of_square
-                    by simp
+                    by presburger
                 qed
                 thus ?thesis
                   using D.comp_assoc by simp
@@ -3519,7 +3518,7 @@ $$
               proof -
                 have "(F r \<star>\<^sub>D \<Phi> (f, w) \<star>\<^sub>D d') \<cdot>\<^sub>D \<a>\<^sub>D[F r, F f \<star>\<^sub>D F w, d'] =
                       \<a>\<^sub>D[F r, F (f \<star>\<^sub>C w), d'] \<cdot>\<^sub>D ((F r \<star>\<^sub>D \<Phi> (f, w)) \<star>\<^sub>D d')"
-                  using 1 w\<theta>\<nu> D.assoc_naturality [of "F r" "\<Phi> (f, w)" d'] D.hseqI'
+                  using 1 w\<theta>\<nu> D.assoc_naturality [of "F r" "\<Phi> (f, w)" d']
                         \<open>trg\<^sub>C w = src\<^sub>C f\<close> e'.ide_right
                   by (metis D.arrI D.hseq_char D.ide_char D.seqE T'.base_simps(3)
                       T'.base_simps(4) T'.leg0_simps(3) T.ide_leg0 \<Phi>_simps(1-5) w'_def)
@@ -3534,9 +3533,7 @@ $$
                 have "src\<^sub>D (F r) = trg\<^sub>D (F \<theta>)"
                   using w\<theta>\<nu> by (metis C.arrI C.hseqE C.seqE \<omega> preserves_hseq)
                 moreover have "src\<^sub>D (F \<theta>) = trg\<^sub>D d'"
-                  using w\<theta>\<nu>
-                  by (metis C.arrI C.seqE C.hcomp_simps(1) C.src_vcomp \<omega> \<open>src\<^sub>C \<omega> = src\<^sub>C u\<close>
-                      \<open>src\<^sub>C u = a\<close> \<open>trg\<^sub>D d' = map\<^sub>0 a\<close> preserves_src)
+                  using w\<theta>\<nu> C.arrI C.vconn_implies_hpar(1) by auto
                 ultimately
                 have "(F r \<star>\<^sub>D F \<theta> \<star>\<^sub>D d') \<cdot>\<^sub>D \<a>\<^sub>D[F r, F (f \<star>\<^sub>C w), d'] =
                       \<a>\<^sub>D[F r, F u, d'] \<cdot>\<^sub>D ((F r \<star>\<^sub>D F \<theta>) \<star>\<^sub>D d')"
@@ -3782,7 +3779,7 @@ $$
               also have "... = (F r \<star>\<^sub>D \<phi>') \<cdot>\<^sub>D (F r \<star>\<^sub>D \<phi> \<star>\<^sub>D d') \<cdot>\<^sub>D \<a>\<^sub>D[F r, u' \<star>\<^sub>D e', d'] \<cdot>\<^sub>D
                                  ((\<a>\<^sub>D[F r, u', e'] \<star>\<^sub>D d') \<cdot>\<^sub>D (\<a>\<^sub>D\<^sup>-\<^sup>1[F r \<star>\<^sub>D u', e', d'] \<cdot>\<^sub>D
                                  (\<omega>' \<star>\<^sub>D e' \<star>\<^sub>D d') \<cdot>\<^sub>D \<a>\<^sub>D[v', e', d'])) \<cdot>\<^sub>D (\<psi> \<star>\<^sub>D d') \<cdot>\<^sub>D \<psi>'"
-                using F\<omega> F\<omega>_def \<omega>' D.comp_assoc D.hseqI' D.hcomp_reassoc(1) [of \<omega>' e' d']
+                using F\<omega> F\<omega>_def \<omega>' D.comp_assoc D.hcomp_reassoc(1) [of \<omega>' e' d']
                 by (elim D.in_homE, simp)
               also have "... = (F r \<star>\<^sub>D \<phi>') \<cdot>\<^sub>D (F r \<star>\<^sub>D \<phi> \<star>\<^sub>D d') \<cdot>\<^sub>D (F r \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[u', e', d']) \<cdot>\<^sub>D
                                   \<a>\<^sub>D[F r, u', e' \<star>\<^sub>D d'] \<cdot>\<^sub>D (\<omega>' \<star>\<^sub>D e' \<star>\<^sub>D d') \<cdot>\<^sub>D \<a>\<^sub>D[v', e', d'] \<cdot>\<^sub>D
@@ -3790,7 +3787,7 @@ $$
                proof -
                  have "D.seq (F r \<star>\<^sub>D \<a>\<^sub>D[u', e', d'])
                              (\<a>\<^sub>D[F r, u' \<star>\<^sub>D e', d'] \<cdot>\<^sub>D (\<a>\<^sub>D[F r, u', e'] \<star>\<^sub>D d'))"
-                   using u' by (simp add: D.hseqI')
+                   using u' by simp
                  moreover have "(F r \<star>\<^sub>D \<a>\<^sub>D[u', e', d']) \<cdot>\<^sub>D \<a>\<^sub>D[F r, u' \<star>\<^sub>D e', d'] \<cdot>\<^sub>D
                                   (\<a>\<^sub>D[F r, u', e'] \<star>\<^sub>D d') =
                                 \<a>\<^sub>D[F r, u', e' \<star>\<^sub>D d'] \<cdot>\<^sub>D \<a>\<^sub>D[F r \<star>\<^sub>D u', e', d']"
@@ -3802,7 +3799,7 @@ $$
                  ultimately
                  have "\<a>\<^sub>D[F r, u' \<star>\<^sub>D e', d'] \<cdot>\<^sub>D (\<a>\<^sub>D[F r, u', e'] \<star>\<^sub>D d') \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F r \<star>\<^sub>D u', e', d'] =
                          (F r \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[u', e', d']) \<cdot>\<^sub>D \<a>\<^sub>D[F r, u', e' \<star>\<^sub>D d']"
-                   using u' D.comp_assoc D.hseqI'
+                   using u' D.comp_assoc
                          D.invert_opposite_sides_of_square
                            [of "F r \<star>\<^sub>D \<a>\<^sub>D[u', e', d']"
                                "\<a>\<^sub>D[F r, u' \<star>\<^sub>D e', d'] \<cdot>\<^sub>D (\<a>\<^sub>D[F r, u', e'] \<star>\<^sub>D d')"
@@ -3855,7 +3852,7 @@ $$
                       F r \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[u', e', d']"
                 proof -
                 have "(F r \<star>\<^sub>D D.inv \<phi> \<star>\<^sub>D d') \<cdot>\<^sub>D (F r \<star>\<^sub>D \<phi> \<star>\<^sub>D d') = F r \<star>\<^sub>D D.inv \<phi> \<cdot>\<^sub>D \<phi> \<star>\<^sub>D d'"
-                  using u u' \<phi> 1 2 D.src_dom e'.antipar D.hseqI' D.whisker_left D.whisker_right
+                  using u u' \<phi> 1 2 D.src_dom e'.antipar D.whisker_left D.whisker_right
                   by auto
                 also have "... = F r \<star>\<^sub>D (u' \<star>\<^sub>D e') \<star>\<^sub>D d'"
                   using \<phi> D.comp_inv_arr' by auto
@@ -4013,18 +4010,16 @@ $$
           have [simp]: "src\<^sub>D \<theta> = a"
             using \<theta> a_def
             by (metis D.dom_src D.in_homE D.src.preserves_dom D.src.preserves_reflects_arr
-              D.src_hcomp')
+              D.src_hcomp)
           have [simp]: "trg\<^sub>D \<theta> = trg\<^sub>D (F f)"
             using \<theta>
-            by (metis D.dom_trg D.hseq_char' D.ideD(1) D.ide_trg D.in_homE D.trg.is_extensional
-              D.trg.preserves_dom D.hcomp_simps(2))
+            by (metis D.arr_dom D.in_homE D.trg_hcomp D.vconn_implies_hpar(2))
           have [simp]: "src\<^sub>D \<theta>' = a"
             using \<theta>' a_def
             by (metis D.horizontal_homs_axioms D.in_homE \<open>src\<^sub>D \<theta> = a\<close> \<theta> horizontal_homs.src_cod)
           have [simp]: "trg\<^sub>D \<theta>' = trg\<^sub>D (F f)"
             using \<theta>'
-            by (metis D.dom_trg D.hseq_char' D.ideD(1) D.ide_trg D.in_homE D.trg.is_extensional
-              D.trg.preserves_dom D.hcomp_simps(2))
+            by (metis D.vconn_implies_hpar(2) D.vconn_implies_hpar(4) \<open>trg\<^sub>D \<theta> = trg\<^sub>D (F f)\<close> \<theta>)
           have [simp]: "src\<^sub>D w = a"
             using a_def by simp
           have [simp]: "trg\<^sub>D w = map\<^sub>0 (src\<^sub>C \<rho>)"
@@ -4032,8 +4027,9 @@ $$
               \<theta> category.ideD(1) category.ide_dom horizontal_homs_def preserves_src)
           have [simp]: "src\<^sub>D w' = a"
             using a_def
-            by (metis D.dom_src D.hseq_char' D.ideD(1) D.in_homE D.src.is_extensional
-                D.src.preserves_dom D.src.preserves_ide \<open>src\<^sub>D \<theta>' = a\<close> \<theta>' D.hcomp_simps(1) w)
+            by (metis D.ideD(1) D.in_homE D.src_hcomp D.vconn_implies_hpar(1) \<open>src\<^sub>D \<theta>' = a\<close>
+                \<theta>' category.ide_dom horizontal_homs_def weak_arrow_of_homs_axioms
+                weak_arrow_of_homs_def)
           have [simp]: "trg\<^sub>D w' = map\<^sub>0 (src\<^sub>C \<rho>)"
             by (metis D.horizontal_homs_axioms D.hseq_char D.in_homE T.tab_simps(2) T.leg0_simps(2)
                 \<theta>' category.ideD(1) category.ide_dom horizontal_homs_def preserves_src)
@@ -4231,13 +4227,12 @@ $$
                 have
                   "(D.inv (\<Phi> (r \<star>\<^sub>C f, w\<^sub>C)) \<cdot>\<^sub>D \<Phi> (r \<star>\<^sub>C f, w\<^sub>C)) \<cdot>\<^sub>D (F \<rho> \<star>\<^sub>D F w\<^sub>C) = F \<rho> \<star>\<^sub>D F w\<^sub>C"
                   using w\<^sub>C \<open>trg\<^sub>C w\<^sub>C = src\<^sub>C \<rho>\<close> D.comp_inv_arr' \<Phi>_in_hom \<Phi>_components_are_iso
-                        D.comp_cod_arr D.hseqI'
+                        D.comp_cod_arr
                   by simp
                 moreover have
                   "((D.inv (\<Phi> (r, f \<star>\<^sub>C w\<^sub>C))) \<cdot>\<^sub>D (\<Phi> (r, f \<star>\<^sub>C w\<^sub>C))) \<cdot>\<^sub>D (F r \<star>\<^sub>D \<Phi> (f, w\<^sub>C)) =
                    F r \<star>\<^sub>D \<Phi> (f, w\<^sub>C)"
-                  using w\<^sub>C \<Phi>_in_hom \<Phi>_components_are_iso D.comp_cod_arr
-                        D.comp_inv_arr' D.hseqI' \<Phi>_simps(1) \<Phi>_simps(4) by auto
+                  using w\<^sub>C D.comp_cod_arr D.comp_inv_arr'  \<Phi>_simps(1,4) by auto
                 ultimately show ?thesis
                   using D.comp_assoc by simp
               qed
@@ -4309,9 +4304,8 @@ $$
                   using \<phi> w\<^sub>C D.comp_arr_dom D.comp_cod_arr by auto
                 also have "... = (?\<rho>' \<star>\<^sub>D w \<star>\<^sub>D e) \<cdot>\<^sub>D (F g \<star>\<^sub>D \<phi>)"
                   using \<phi> D.interchange
-                  by (metis D.comp_arr_dom D.hcomp_simps(3) D.ide_char D.in_hhomE D.in_homE
-                      D.seqI T'.tab_in_hom(2) T.tab_simps(2) T.leg0_simps(2) e.ide_left
-                      preserves_src w we)
+                  by (metis D.comp_arr_ide D.comp_cod_arr D.in_homE D.seqI' T'.ide_leg1
+                      T'.leg1_in_hom(2) T'.tab_in_vhom')
                 finally have
                   "((F r \<star>\<^sub>D F f) \<star>\<^sub>D \<phi>) \<cdot>\<^sub>D (?\<rho>' \<star>\<^sub>D F w\<^sub>C) = (?\<rho>' \<star>\<^sub>D w \<star>\<^sub>D e) \<cdot>\<^sub>D (F g \<star>\<^sub>D \<phi>)"
                   by simp
@@ -4327,8 +4321,7 @@ $$
                   using w by simp
                 moreover have "D.seq (F r \<star>\<^sub>D \<a>\<^sub>D[F f, w, e])
                                      (\<a>\<^sub>D[F r, F f \<star>\<^sub>D w, e] \<cdot>\<^sub>D (\<a>\<^sub>D[F r, F f, w] \<star>\<^sub>D e))"
-                  using w D.hseqI'
-                  by (intro D.seqI D.hseqI, auto)
+                  using w by simp
                 moreover have
                   "(F r \<star>\<^sub>D \<a>\<^sub>D[F f, w, e]) \<cdot>\<^sub>D \<a>\<^sub>D[F r, F f \<star>\<^sub>D w, e] \<cdot>\<^sub>D (\<a>\<^sub>D[F r, F f, w] \<star>\<^sub>D e) =
                    \<a>\<^sub>D[F r, F f, w \<star>\<^sub>D e] \<cdot>\<^sub>D \<a>\<^sub>D[F r \<star>\<^sub>D F f, w, e]"
@@ -4396,7 +4389,7 @@ $$
                 have "C.hseq r \<theta>\<^sub>C' \<and> C.hseq \<rho> w\<^sub>C'"
                   using par by blast
                 thus ?thesis
-                  using w\<^sub>C' \<theta>\<^sub>C' \<beta>\<^sub>C F\<beta>\<^sub>C_def preserves_assoc [of r f w\<^sub>C'] preserves_hcomp C.hseqI'
+                  using w\<^sub>C' \<theta>\<^sub>C' \<beta>\<^sub>C F\<beta>\<^sub>C_def preserves_assoc [of r f w\<^sub>C'] preserves_hcomp
                   by force
               qed
               also have "... = \<Phi> (r, u\<^sub>C) \<cdot>\<^sub>D (F r \<star>\<^sub>D F \<theta>\<^sub>C') \<cdot>\<^sub>D ((D.inv (\<Phi> (r, f \<star>\<^sub>C w\<^sub>C'))) \<cdot>\<^sub>D
@@ -4422,7 +4415,7 @@ $$
                         D.cod (\<Phi> (r, f \<star>\<^sub>C w\<^sub>C') \<cdot>\<^sub>D (F r \<star>\<^sub>D \<Phi> (f, w\<^sub>C')))"
                     by (metis D.seqE calculation par preserves_arr)
                   thus ?thesis
-                    using C.ide_hcomp C.ideD(1) C.trg_hcomp' D.invert_side_of_triangle(1)
+                    using C.ide_hcomp C.ideD(1) C.trg_hcomp D.invert_side_of_triangle(1)
                           T.ide_base T.ide_leg0 T.leg0_simps(3) T.tab_simps(2) \<Phi>_components_are_iso
                           \<open>trg\<^sub>C w\<^sub>C' = src\<^sub>C \<rho>\<close> w\<^sub>C'
                     by presburger
@@ -4451,8 +4444,9 @@ $$
                     using w\<^sub>C' \<beta>\<^sub>C F\<beta>\<^sub>C_def \<Phi>_components_are_iso D.comp_inv_arr' by simp
                   also have "... = F g \<star>\<^sub>D D.inv \<phi>'"
                     using D.comp_cod_arr [of "F g \<star>\<^sub>D D.inv \<phi>'" "F g \<star>\<^sub>D F w\<^sub>C'"]
-                    by (metis D.hcomp_simps(4) D.cod_inv D.comp_null(2) D.hseq_char' D.in_homE
-                        T'.leg1_simps(6) \<phi>')
+                    by (metis D.cod_inv D.comp_null(2) D.hseq_char' D.in_homE
+                        D.is_weak_composition T'.leg1_simps(6) \<phi>'
+                        weak_composition.hcomp_simps\<^sub>W\<^sub>C(3))
                   finally show ?thesis by blast
                 qed
                 ultimately show ?thesis
@@ -4557,8 +4551,7 @@ $$
                   using w' by simp
                 moreover have "D.seq (F r \<star>\<^sub>D \<a>\<^sub>D[F f, w', e])
                                      (\<a>\<^sub>D[F r, F f \<star>\<^sub>D w', e] \<cdot>\<^sub>D (\<a>\<^sub>D[F r, F f, w'] \<star>\<^sub>D e))"
-                  using w' D.hseqI'
-                  by (intro D.seqI D.hseqI, auto)
+                  using w' by simp
                 moreover have "D.iso (F r \<star>\<^sub>D \<a>\<^sub>D[F f, w', e])"
                   using w' by simp
                 moreover have "D.iso \<a>\<^sub>D[F r \<star>\<^sub>D F f, w', e]"
@@ -4589,7 +4582,7 @@ $$
                   using D.assoc_naturality [of "F r" \<theta>' e] \<theta>' by auto
                 moreover have "\<a>\<^sub>D\<^sup>-\<^sup>1[F r \<star>\<^sub>D F f, w', e] \<cdot>\<^sub>D (?\<rho>' \<star>\<^sub>D w' \<star>\<^sub>D e) =
                                ((?\<rho>' \<star>\<^sub>D w') \<star>\<^sub>D e) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F g, w', e]"
-                  using w' w'e D.assoc'_naturality [of ?\<rho>' w' e] D.hseqI' by simp
+                  using w' w'e D.assoc'_naturality [of ?\<rho>' w' e] by simp
                 ultimately show ?thesis
                   using D.comp_assoc by simp
               qed
@@ -4608,9 +4601,10 @@ $$
                 moreover have "(\<a>\<^sub>D\<^sup>-\<^sup>1[F g, w', e] \<cdot>\<^sub>D \<a>\<^sub>D[F g, w', e]) \<cdot>\<^sub>D (\<beta> \<star>\<^sub>D e) = \<beta> \<star>\<^sub>D e"
                   using w' \<beta> e.ide_left \<open>src\<^sub>D w' = a\<close> \<open>trg\<^sub>D e = a\<close> F\<beta>\<^sub>C F\<beta>\<^sub>C_def D.comp_cod_arr
                         D.comp_arr_inv'
-                  by (metis (no_types, lifting) D.hcomp_simps(4) D.comp_assoc_assoc'(2) D.ide_char
-                      D.in_homE D.seqE T'.ide_leg1 T'.leg1_simps(3) T.leg0_simps(2) T.tab_simps(2)
-                      \<open>trg\<^sub>D w' = map\<^sub>0 (src\<^sub>C \<rho>)\<close> preserves_src)
+                  by (metis (no_types, lifting) D.comp_assoc_assoc'(2) D.hcomp_simps(1)
+                      D.hcomp_simps(4) D.hseqI' D.ide_char D.in_homE D.vconn_implies_hpar(1)
+                      D.vconn_implies_hpar(3) T'.ide_leg1 T.leg1_simps(2) T.leg1_simps(3)
+                      T.tab_simps(2) \<open>trg\<^sub>D w' = map\<^sub>0 (src\<^sub>C \<rho>)\<close> preserves_src)
                 ultimately show ?thesis
                   using D.comp_assoc by simp
               qed
@@ -4728,7 +4722,7 @@ $$
                   by (metis D.hseqE D.ide_is_iso D.inv_hcomp D.inv_ide D.inv_inv D.iso_inv_iso
                       D.iso_is_arr T'.ide_leg1 \<phi>' calculation(2))
                 ultimately show ?thesis
-                  using 2 \<phi> \<phi>' D.hseqI'
+                  using 2 \<phi> \<phi>'
                         D.invert_side_of_triangle(1)
                           [of "F g \<star>\<^sub>D F \<gamma>\<^sub>C" "F g \<star>\<^sub>D D.inv \<phi>'"
                               "(\<a>\<^sub>D[F g, w', e] \<cdot>\<^sub>D (\<beta> \<star>\<^sub>D e) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F g, w, e]) \<cdot>\<^sub>D (F g \<star>\<^sub>D \<phi>)"]
@@ -4863,9 +4857,18 @@ $$
                     using \<beta>\<^sub>C F\<beta>\<^sub>C_def D.comp_assoc by simp
                   finally show ?thesis by simp
                 qed
-                thus ?thesis using is_faithful
-                  by (metis C.hcomp_simps(3-4) C.in_homE D.arrI D.not_arr_null
-                      F\<beta>\<^sub>C T.leg1_simps(5) T.leg1_simps(6) \<beta>\<^sub>C \<gamma>\<^sub>C' is_extensional)
+                moreover have "C.par \<beta>\<^sub>C (g \<star>\<^sub>C \<gamma>\<^sub>C')"
+                proof (intro conjI)
+                  show "C.arr \<beta>\<^sub>C"
+                    using \<beta>\<^sub>C by blast
+                  show 2: "C.hseq g \<gamma>\<^sub>C'"
+                    using F\<beta>\<^sub>C \<beta>\<^sub>C calculation by fastforce
+                  show "C.dom \<beta>\<^sub>C = C.dom (g \<star>\<^sub>C \<gamma>\<^sub>C')"
+                    using 2 \<beta>\<^sub>C \<gamma>\<^sub>C' by fastforce
+                  show "C.cod \<beta>\<^sub>C = C.cod (g \<star>\<^sub>C \<gamma>\<^sub>C')"
+                    using 2 \<beta>\<^sub>C \<gamma>\<^sub>C' by fastforce
+                qed
+                ultimately show ?thesis using is_faithful by blast
               qed
               have 2: "\<theta>\<^sub>C = \<theta>\<^sub>C' \<cdot>\<^sub>C (f \<star>\<^sub>C \<gamma>\<^sub>C')"
               proof -
@@ -4902,7 +4905,7 @@ $$
                     ultimately have "(D.inv (\<Phi> (f, w\<^sub>C')) \<cdot>\<^sub>D \<Phi> (f, w\<^sub>C')) \<cdot>\<^sub>D (F f \<star>\<^sub>D D.inv \<phi>') =
                                      F f \<star>\<^sub>D D.inv \<phi>'"
                       using w\<^sub>C' \<phi>' D.comp_cod_arr [of "F f \<star>\<^sub>D D.inv \<phi>'" "F f \<star>\<^sub>D F w\<^sub>C'"]
-                      by auto
+                      by fastforce
                     hence "((F f \<star>\<^sub>D \<phi>') \<cdot>\<^sub>D (D.inv (\<Phi> (f, w\<^sub>C')) \<cdot>\<^sub>D \<Phi> (f, w\<^sub>C')) \<cdot>\<^sub>D
                              (F f \<star>\<^sub>D D.inv \<phi>')) \<cdot>\<^sub>D (F f \<star>\<^sub>D \<gamma>) =
                            ((F f \<star>\<^sub>D \<phi>') \<cdot>\<^sub>D (F f \<star>\<^sub>D D.inv \<phi>')) \<cdot>\<^sub>D (F f \<star>\<^sub>D \<gamma>)"
@@ -4924,9 +4927,20 @@ $$
                     using \<theta>\<^sub>C F\<theta>\<^sub>C_def by simp
                   finally show ?thesis by simp
                 qed
-                thus ?thesis using is_faithful [of \<theta>\<^sub>C "\<theta>\<^sub>C' \<cdot>\<^sub>C (f \<star>\<^sub>C \<gamma>\<^sub>C')"]
-                  by (metis C.cod_comp C.dom_comp C.hcomp_simps(3) C.in_homE C.seqE
-                      D.not_arr_null T.leg0_simps(4) \<gamma>\<^sub>C' \<theta>\<^sub>C \<theta>\<^sub>C' is_extensional preserves_arr)
+                moreover have "C.par \<theta>\<^sub>C (\<theta>\<^sub>C' \<cdot>\<^sub>C (f \<star>\<^sub>C \<gamma>\<^sub>C'))"
+                proof (intro conjI)
+                  show "C.arr \<theta>\<^sub>C"
+                    using \<theta>\<^sub>C by auto
+                  show 1: "C.seq \<theta>\<^sub>C' (f \<star>\<^sub>C \<gamma>\<^sub>C')"
+                    using \<theta>\<^sub>C' \<gamma>\<^sub>C'
+                    by (metis C.arrI \<theta>\<^sub>C calculation preserves_reflects_arr)
+                  show "C.dom \<theta>\<^sub>C = C.dom (\<theta>\<^sub>C' \<cdot>\<^sub>C (f \<star>\<^sub>C \<gamma>\<^sub>C'))"
+                    using 1 \<theta>\<^sub>C \<gamma>\<^sub>C' by fastforce
+                  show "C.cod \<theta>\<^sub>C = C.cod (\<theta>\<^sub>C' \<cdot>\<^sub>C (f \<star>\<^sub>C \<gamma>\<^sub>C'))"
+                    using 1 \<theta>\<^sub>C \<gamma>\<^sub>C' \<gamma>\<^sub>C by auto
+                qed
+                ultimately show ?thesis
+                  using is_faithful by blast
               qed
               have "F \<gamma>\<^sub>C' = F \<gamma>\<^sub>C"
                 using ** \<gamma>\<^sub>C \<gamma>\<^sub>C' 1 2 by blast
@@ -4948,9 +4962,12 @@ $$
                         (w \<star>\<^sub>D D.inv \<epsilon>) \<cdot>\<^sub>D \<r>\<^sub>D\<^sup>-\<^sup>1[w]"
             have \<gamma>: "\<guillemotleft>?\<gamma> : w \<Rightarrow>\<^sub>D w'\<guillemotright>"
               using P\<gamma>e w w' e.counit_in_hom(2) e.counit_is_iso
-              apply (intro D.comp_in_homI, auto)
-                apply (intro D.hcomp_in_vhom, auto simp add: D.vconn_implies_hpar(4))
-              by (intro D.hcomp_in_vhom, auto)
+              apply (intro D.comp_in_homI)
+                    apply auto[2]
+                   apply fastforce
+                  apply auto[3]
+                apply fastforce
+              by auto
             moreover have "\<beta> = F g \<star>\<^sub>D ?\<gamma>"
             proof -
               have "F g \<star>\<^sub>D ?\<gamma> =
@@ -4977,12 +4994,11 @@ $$
                 proof -
                   have "(\<a>\<^sub>D[F g, w' \<star>\<^sub>D e, d] \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F g, w' \<star>\<^sub>D e, d]) \<cdot>\<^sub>D (F g \<star>\<^sub>D \<gamma>e \<star>\<^sub>D d) =
                         (F g \<star>\<^sub>D (w' \<star>\<^sub>D e) \<star>\<^sub>D d) \<cdot>\<^sub>D (F g \<star>\<^sub>D \<gamma>e \<star>\<^sub>D d)"
-                    using D.isomorphic_implies_ide(2) w\<^sub>C' D.comp_assoc_assoc' by auto
-                 also have "... = F g \<star>\<^sub>D \<gamma>e \<star>\<^sub>D d"
+                    using w'e D.isomorphic_implies_ide(2) w\<^sub>C' D.comp_assoc_assoc'(1) by auto
+                  also have "... = F g \<star>\<^sub>D \<gamma>e \<star>\<^sub>D d"
                   proof -
                     have "\<guillemotleft>F g \<star>\<^sub>D \<gamma>e \<star>\<^sub>D d : F g \<star>\<^sub>D (w \<star>\<^sub>D e) \<star>\<^sub>D d \<Rightarrow>\<^sub>D F g \<star>\<^sub>D (w' \<star>\<^sub>D e) \<star>\<^sub>D d\<guillemotright>"
-                      using we e.ide_right e.antipar P\<gamma>e D.hseqI'
-                      by (intro D.hcomp_in_vhom, auto)
+                      using we e.ide_right e.antipar P\<gamma>e by fastforce
                     thus ?thesis
                       using D.comp_cod_arr by auto
                   qed
@@ -5033,7 +5049,7 @@ $$
                 proof -
                   have "src\<^sub>D \<beta> = trg\<^sub>D e"
                     using \<beta>
-                    by (metis D.dom_trg D.hseq_char' D.in_homE D.src_dom D.src_hcomp'
+                    by (metis D.dom_trg D.hseq_char' D.in_homE D.src_dom D.src_hcomp
                         D.trg.is_extensional D.trg.preserves_arr D.trg.preserves_dom
                         \<open>trg\<^sub>D e = a\<close> a_def)
                   moreover have "src\<^sub>D (F g) = trg\<^sub>D w"
@@ -5080,8 +5096,7 @@ $$
                 proof -
                   have "D.seq (F g \<star>\<^sub>D \<a>\<^sub>D[w', e, d])
                               (\<a>\<^sub>D[F g, w' \<star>\<^sub>D e, d] \<cdot>\<^sub>D (\<a>\<^sub>D[F g, w', e] \<star>\<^sub>D d))"
-                    using w w' e e.antipar D.hseqI'
-                    by (intro D.seqI D.hseqI, auto)
+                    using w w' e e.antipar by simp
                   thus ?thesis
                     using w w' e e.antipar D.pentagon [of "F g" w' e d] D.invert_side_of_triangle(2)
                           D.assoc'_eq_inv_assoc D.comp_assoc D.ide_hcomp D.ideD(1)
@@ -5097,15 +5112,14 @@ $$
                 proof -
                   have "D.seq (\<a>\<^sub>D\<^sup>-\<^sup>1[F g, w, e] \<star>\<^sub>D d)
                               (\<a>\<^sub>D\<^sup>-\<^sup>1[F g, w \<star>\<^sub>D e, d] \<cdot>\<^sub>D (F g \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[w, e, d]))"
-                    using w w' e e.antipar D.hseqI'
-                    by (intro D.seqI D.hseqI, auto)
+                    using w w' e e.antipar by simp
                   moreover have "D.inv \<a>\<^sub>D\<^sup>-\<^sup>1[F g \<star>\<^sub>D w, e, d] = \<a>\<^sub>D[F g \<star>\<^sub>D w, e, d]"
                     using w w' e e.antipar D.iso_inv_iso D.inv_inv by simp
                   ultimately show ?thesis
                     using w w' e e.antipar D.pentagon' [of "F g" w e d]
                           D.iso_inv_iso D.inv_inv D.comp_assoc D.invert_side_of_triangle(1)
                     by (metis D.assoc'_simps(3) D.comp_null(2) D.ide_hcomp D.ideD(1)
-                        D.iso_assoc' D.not_arr_null D.seq_if_composable D.src_hcomp' T'.ide_leg1
+                        D.iso_assoc' D.not_arr_null D.seq_if_composable D.src_hcomp T'.ide_leg1
                         \<open>trg\<^sub>D e = a\<close> a_def e.ide_left e.ide_right)
                 qed
                 ultimately show ?thesis
@@ -5151,8 +5165,10 @@ $$
                     by (simp add: D.comp_arr_inv')
                   also have "... = \<beta> \<star>\<^sub>D trg\<^sub>D e"
                     using \<beta> D.comp_cod_arr D.hseqI'
-                    by (metis D.hcomp_simps(4) D.comp_null(2) D.hseq_char' D.in_homE
-                        D.src.preserves_cod D.src_cod e.counit_in_hom(2) e.counit_simps(4))
+                    by (metis D.cod_cod D.hcomp_simps(1) D.hcomp_simps(4)
+                        D.in_homE D.trg.preserves_reflects_arr D.vconn_implies_hpar(1)
+                        D.vconn_implies_hpar(2) D.vconn_implies_hpar(3) D.vconn_implies_hpar(4)
+                        \<open>src\<^sub>D w' = a\<close> \<open>trg\<^sub>D e = a\<close> e.counit_in_hom(2) e.counit_simps(5))
                   finally show ?thesis by blast
                 qed
                 thus ?thesis
@@ -5163,7 +5179,7 @@ $$
               also have "... = \<r>\<^sub>D[F g \<star>\<^sub>D w'] \<cdot>\<^sub>D \<r>\<^sub>D\<^sup>-\<^sup>1[F g \<star>\<^sub>D w'] \<cdot>\<^sub>D \<beta>"
                 using \<beta> D.runit'_naturality
                 by (metis D.arr_cod D.arr_dom D.cod_dom D.in_homE D.src.preserves_cod
-                  D.src_dom D.src_hcomp' \<open>src\<^sub>D w' = a\<close> \<open>trg\<^sub>D e = a\<close>)
+                  D.src_dom D.src_hcomp \<open>src\<^sub>D w' = a\<close> \<open>trg\<^sub>D e = a\<close>)
               also have "... = (\<r>\<^sub>D[F g \<star>\<^sub>D w'] \<cdot>\<^sub>D \<r>\<^sub>D\<^sup>-\<^sup>1[F g \<star>\<^sub>D w']) \<cdot>\<^sub>D \<beta>"
                 using D.comp_assoc by simp
               also have "... = \<beta>"
@@ -5196,13 +5212,12 @@ $$
                 proof -
                   have "(\<a>\<^sub>D[F f, w' \<star>\<^sub>D e, d] \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F f, w' \<star>\<^sub>D e, d]) \<cdot>\<^sub>D (F f \<star>\<^sub>D \<gamma>e \<star>\<^sub>D d) =
                         (F f \<star>\<^sub>D (w' \<star>\<^sub>D e) \<star>\<^sub>D d) \<cdot>\<^sub>D (F f \<star>\<^sub>D \<gamma>e \<star>\<^sub>D d)"
-                    using 1 2 e.antipar D.isomorphic_implies_ide(2) w\<^sub>C' D.comp_assoc_assoc'
-                    by force
+                    using 1 2 e.antipar D.isomorphic_implies_ide(2) w\<^sub>C' w'e D.comp_assoc_assoc'
+                    by auto
                   also have "... = F f \<star>\<^sub>D \<gamma>e \<star>\<^sub>D d"
                   proof -
                     have "\<guillemotleft>F f \<star>\<^sub>D \<gamma>e \<star>\<^sub>D d : F f \<star>\<^sub>D (w \<star>\<^sub>D e) \<star>\<^sub>D d \<Rightarrow>\<^sub>D F f \<star>\<^sub>D (w' \<star>\<^sub>D e) \<star>\<^sub>D d\<guillemotright>"
-                      using we 1 2 e.antipar P\<gamma>e D.hseqI'
-                      by (intro D.hcomp_in_vhom, auto)
+                      using we 1 2 e.antipar P\<gamma>e by fastforce
                     thus ?thesis
                       using D.comp_cod_arr by blast
                   qed
@@ -5273,7 +5288,7 @@ $$
               proof -
                 have "(\<a>\<^sub>D[F f, w \<star>\<^sub>D e, d] \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F f, w \<star>\<^sub>D e, d]) \<cdot>\<^sub>D (F f \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[w, e, d]) =
                       F f \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[w, e, d]"
-                  using w D.comp_cod_arr D.comp_assoc_assoc' by (simp add: D.hseqI')
+                  using w D.comp_cod_arr D.comp_assoc_assoc' by simp
                 thus ?thesis
                   using D.comp_assoc by simp
               qed
@@ -5299,7 +5314,7 @@ $$
                     "... = (\<a>\<^sub>D[F f, w' \<star>\<^sub>D e, d] \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F f, w' \<star>\<^sub>D e, d]) \<cdot>\<^sub>D (F f \<star>\<^sub>D \<gamma>e \<star>\<^sub>D d)"
                     using D.comp_assoc by simp
                   also have "... = (F f \<star>\<^sub>D (w' \<star>\<^sub>D e) \<star>\<^sub>D d) \<cdot>\<^sub>D (F f \<star>\<^sub>D \<gamma>e \<star>\<^sub>D d)"
-                    using D.isomorphic_implies_ide(2) w\<^sub>C' D.comp_assoc_assoc' by auto
+                    using w'e D.isomorphic_implies_ide(2) w\<^sub>C' D.comp_assoc_assoc' by auto
                   also have "... = F f \<star>\<^sub>D \<gamma>e \<star>\<^sub>D d"
                     using D.comp_cod_arr
                     by (metis D.comp_cod_arr D.comp_null(2) D.hseq_char D.hseq_char'
@@ -5449,7 +5464,7 @@ $$
                         T.leg1_simps(2-3) T.tab_simps(2) \<open>trg\<^sub>D w = map\<^sub>0 (src\<^sub>C \<rho>)\<close>
                         d.unit_in_vhom e.counit_in_hom(2) e.counit_simps(3) preserves_src)
                   also have "... = \<a>\<^sub>D\<^sup>-\<^sup>1[F f, w, trg\<^sub>D e]"
-                    using w D.comp_cod_arr D.assoc'_in_hom(2) [of "F f" w "trg\<^sub>D e"] D.hseqI'
+                    using w D.comp_cod_arr D.assoc'_in_hom(2) [of "F f" w "trg\<^sub>D e"]
                           \<open>trg\<^sub>D e = a\<close> \<open>trg\<^sub>D w = map\<^sub>0 (src\<^sub>C \<rho>)\<close>
                     by (metis D.assoc'_is_natural_1 D.ideD(1) D.ideD(2) D.trg.preserves_ide
                         D.trg_trg T'.leg0_simps(2,4) T'.leg1_simps(3)
@@ -5629,7 +5644,7 @@ $$
             using u \<omega> w\<theta>\<nu> by (simp add: hseq_Ff_w)
           have w: "\<guillemotleft>w : map\<^sub>0 (src\<^sub>C \<omega>) \<rightarrow>\<^sub>D map\<^sub>0 (src\<^sub>C f)\<guillemotright>"
               using u \<omega> w\<theta>\<nu> hseq_Fg_w
-              by (metis "1" C.arrI D.arrI D.hseqI' D.ideD(1) D.in_hhom_def D.src_hcomp'
+              by (metis "1" C.arrI D.arrI D.hseqI' D.ideD(1) D.in_hhom_def D.src_hcomp
                   D.src_vcomp D.vconn_implies_hpar(1) D.vconn_implies_hpar(3)
                   D.vseq_implies_hpar(1) \<rho>'.leg1_simps(2) \<rho>.leg0_simps(2) hseq_Ff_w
                   preserves_src)
@@ -5639,14 +5654,14 @@ $$
             using w' D.isomorphic_def by blast
           have src_fw': "src\<^sub>C (f \<star>\<^sub>C w') = src\<^sub>C u"
             using u w' \<omega>
-            by (metis C.cod_src C.hseqI' C.ideD(1) C.in_hhom_def C.in_homE C.src.preserves_cod
-                C.hcomp_simps(1) \<rho>.leg0_in_hom(1) \<rho>.base_simps(2) hseq_ru)
+            by (metis C.hseqI' C.ideD(1) C.in_hhomE C.src_hcomp C.vconn_implies_hpar(1)
+                C.vconn_implies_hpar(3) \<rho>.base_simps(2) \<rho>.leg0_in_hom(1) hseq_ru)
           have 3: "\<guillemotleft>\<theta> \<cdot>\<^sub>D (F f \<star>\<^sub>D \<phi>) \<cdot>\<^sub>D D.inv (\<Phi> (f, w')) : F (f \<star>\<^sub>C w') \<Rightarrow>\<^sub>D F u\<guillemotright>"
           proof (intro D.comp_in_homI)
             show "\<guillemotleft>D.inv (\<Phi> (f, w')) : F (f \<star>\<^sub>C w') \<Rightarrow>\<^sub>D F f \<star>\<^sub>D F w'\<guillemotright>"
               using assms w' \<Phi>_in_hom \<Phi>_components_are_iso by auto
             show "\<guillemotleft>F f \<star>\<^sub>D \<phi> : F f \<star>\<^sub>D F w' \<Rightarrow>\<^sub>D F f \<star>\<^sub>D w\<guillemotright>"
-              using \<phi> \<rho>'.leg0_in_hom(2) w' by auto
+              using \<phi> \<rho>'.leg0_in_hom(2) w' by fastforce
             show "\<guillemotleft>\<theta> : F f \<star>\<^sub>D w \<Rightarrow>\<^sub>D F u\<guillemotright>"
               using w\<theta>\<nu> by simp
           qed
@@ -5740,14 +5755,13 @@ $$
                   have "(D.inv (\<Phi> (r, f \<star>\<^sub>C w')) \<cdot>\<^sub>D \<Phi> (r, f \<star>\<^sub>C w')) \<cdot>\<^sub>D (F r \<star>\<^sub>D \<Phi> (f, w')) =
                         F r \<star>\<^sub>D \<Phi> (f, w')"
                     using w' \<Phi>_components_are_iso D.comp_cod_arr C.hseqI' D.hseqI'
-                          C.in_hhom_def C.trg_hcomp' D.comp_inv_arr' C.ide_hcomp
+                          C.in_hhom_def C.trg_hcomp D.comp_inv_arr' C.ide_hcomp
                     by (metis C.ideD(1) D.hcomp_simps(4) \<Phi>_simps(1,3-5)
                         \<rho>'.leg0_simps(3) \<rho>'.base_simps(2,4) \<rho>.ide_leg0 \<rho>.ide_base
                         \<rho>.leg0_simps(3))
                   moreover have "(D.inv (\<Phi> (r \<star>\<^sub>C f, w')) \<cdot>\<^sub>D \<Phi> (r \<star>\<^sub>C f, w')) \<cdot>\<^sub>D (F \<rho> \<star>\<^sub>D F w') =
                                  F \<rho> \<star>\<^sub>D F w'"
-                    using w' D.comp_inv_arr' \<Phi>_components_are_iso D.hseqI' hseq_Fg_w D.comp_cod_arr
-                    by auto
+                    using w' D.comp_inv_arr' hseq_Fg_w D.comp_cod_arr by auto
                   ultimately show ?thesis by simp
                 qed
                 also have "... = \<Phi> (r, u) \<cdot>\<^sub>D ((F r \<star>\<^sub>D \<theta> \<cdot>\<^sub>D (F f \<star>\<^sub>D \<phi>) \<cdot>\<^sub>D D.inv (\<Phi> (f, w'))) \<cdot>\<^sub>D
@@ -5787,7 +5801,7 @@ $$
                   have "(F f \<star>\<^sub>D \<phi>) \<cdot>\<^sub>D D.inv (\<Phi> (f, w')) \<cdot>\<^sub>D \<Phi> (f, w') = F f \<star>\<^sub>D \<phi>"
                     using assms(2) w' \<phi> 3 \<Phi>_components_are_iso \<Phi>_in_hom D.hseqI' D.comp_inv_arr'
                           D.comp_arr_dom
-                    by (metis C.in_hhom_def D.hcomp_simps(3) D.in_homE D.seqE \<rho>'.leg0_simps(4))
+                    by (metis C.in_hhom_def D.arrI D.cod_inv D.seqE)
                   moreover have "(D.inv (\<Phi> (g, w')) \<cdot>\<^sub>D \<Phi> (g, w')) \<cdot>\<^sub>D (F g \<star>\<^sub>D D.inv \<phi>) =
                                  F g \<star>\<^sub>D D.inv \<phi>"
                     using assms w' \<phi> 3 \<Phi>_components_are_iso \<Phi>_in_hom D.hseqI' D.comp_inv_arr'
@@ -5873,8 +5887,8 @@ $$
           proof -
             have hseq_ru: "src\<^sub>C r = trg\<^sub>C u"
             using w \<theta>
-            by (metis C.horizontal_homs_axioms C.ideD(1) C.in_homE C.hcomp_simps(2)
-                C.vconn_implies_hpar(4) \<rho>.leg0_simps(3) category.ide_dom horizontal_homs_def)
+            by (metis C.hseq_char' C.in_homE C.trg.is_extensional C.trg.preserves_hom
+                C.trg_hcomp C.vconn_implies_hpar(2) C.vconn_implies_hpar(4) \<rho>.leg0_simps(3))
             have hseq_fw: "src\<^sub>C f = trg\<^sub>C w \<and> src\<^sub>C f = trg\<^sub>C w'"
               using w w' \<rho>.ide_leg0 \<theta> \<theta>'
               by (metis C.horizontal_homs_axioms C.ideD(1) C.in_homE C.not_arr_null
@@ -5894,7 +5908,7 @@ $$
               moreover have
                 "\<guillemotleft>D.inv (\<Phi> (g, w')) \<cdot>\<^sub>D F \<beta> \<cdot>\<^sub>D \<Phi> (g, w) : F g \<star>\<^sub>D F w \<Rightarrow>\<^sub>D F g \<star>\<^sub>D F w'\<guillemotright>"
                 using w w' \<beta> \<rho>.ide_leg1 \<Phi>_in_hom \<Phi>_components_are_iso hseq_gw preserves_hom
-                by force
+                by fastforce
               moreover have "\<rho>'.composite_cell (F w) (F \<theta> \<cdot>\<^sub>D \<Phi> (f, w)) =
                              \<rho>'.composite_cell (F w') (F \<theta>' \<cdot>\<^sub>D \<Phi> (f, w')) \<cdot>\<^sub>D
                                D.inv (\<Phi> (g, w')) \<cdot>\<^sub>D F \<beta> \<cdot>\<^sub>D \<Phi> (g, w)"
@@ -5920,15 +5934,13 @@ $$
                   have "(D.inv (\<Phi> (r, f \<star>\<^sub>C w')) \<cdot>\<^sub>D \<Phi> (r, f \<star>\<^sub>C w')) \<cdot>\<^sub>D (F r \<star>\<^sub>D \<Phi> (f, w')) =
                         F r \<star>\<^sub>D \<Phi> (f, w')"
                     using w' \<Phi>_components_are_iso D.comp_cod_arr C.hseqI' D.hseqI'
-                          C.in_hhom_def C.trg_hcomp' D.comp_inv_arr' C.ide_hcomp
+                          C.in_hhom_def C.trg_hcomp D.comp_inv_arr' C.ide_hcomp
                     by (metis C.ideD(1) D.hcomp_simps(4) \<Phi>_simps(1) \<Phi>_simps(3-5)
                         \<rho>'.leg0_simps(3) \<rho>'.base_simps(2,4) \<rho>.ide_leg0 \<rho>.ide_base
                         \<rho>.leg0_simps(3) hseq_fw)
                   moreover have "(D.inv (\<Phi> (r \<star>\<^sub>C f, w')) \<cdot>\<^sub>D \<Phi> (r \<star>\<^sub>C f, w')) \<cdot>\<^sub>D (F \<rho> \<star>\<^sub>D F w') =
                                  F \<rho> \<star>\<^sub>D F w'"
-                    using w' D.comp_inv_arr' \<Phi>_in_hom \<Phi>_components_are_iso D.hseqI'
-                          D.comp_cod_arr hseq_fw
-                    by auto
+                    using w' D.comp_inv_arr' D.comp_cod_arr hseq_fw by auto
                   ultimately show ?thesis
                     using D.comp_assoc by simp
                 qed
@@ -5941,9 +5953,7 @@ $$
                                    D.inv (\<Phi> (g, w'))) \<cdot>\<^sub>D F \<beta> \<cdot>\<^sub>D \<Phi> (g, w)"
                 proof -
                   have "(D.inv (\<Phi> (r, u)) \<cdot>\<^sub>D \<Phi> (r, u)) \<cdot>\<^sub>D (F r \<star>\<^sub>D F \<theta>') = F r \<star>\<^sub>D F \<theta>'"
-                    using assms(1) \<theta>' \<Phi>_components_are_iso D.comp_cod_arr D.hseqI' hseq_ru
-                          D.comp_inv_arr'
-                    by auto
+                    using assms(1) \<theta>' D.comp_cod_arr hseq_ru D.comp_inv_arr' by auto
                   thus ?thesis
                     using D.comp_assoc by metis
                 qed
@@ -5952,19 +5962,19 @@ $$
                                   F \<beta> \<cdot>\<^sub>D \<Phi> (g, w)"
                 proof -
                   have "F (r \<star>\<^sub>C \<theta>') = \<Phi> (r, u) \<cdot>\<^sub>D (F r \<star>\<^sub>D F \<theta>') \<cdot>\<^sub>D D.inv (\<Phi> (r, f \<star>\<^sub>C w'))"
-                    using w' \<theta>' preserves_hcomp C.hseqI' hseq_ru by auto
+                    using w' \<theta>' preserves_hcomp hseq_ru by auto
                   moreover have "F \<a>\<^sub>C[r, f, w'] =
                                  \<Phi> (r, f \<star>\<^sub>C w') \<cdot>\<^sub>D (F r \<star>\<^sub>D \<Phi> (f, w')) \<cdot>\<^sub>D \<a>\<^sub>D[F r, F f, F w'] \<cdot>\<^sub>D
                                    (D.inv (\<Phi> (r, f)) \<star>\<^sub>D F w') \<cdot>\<^sub>D D.inv (\<Phi> (r \<star>\<^sub>C f, w'))"
                     using w' preserves_assoc(1) hseq_fw by force
                   moreover have
                     "F (\<rho> \<star>\<^sub>C w') = \<Phi> (r \<star>\<^sub>C f, w') \<cdot>\<^sub>D (F \<rho> \<star>\<^sub>D F w') \<cdot>\<^sub>D D.inv (\<Phi> (g, w'))"
-                    using w' preserves_hcomp C.hseqI' hseq_fw by fastforce
+                    using w' preserves_hcomp hseq_fw by fastforce
                   ultimately show ?thesis
                     using D.comp_assoc by auto
                 qed
                 also have "... = D.inv (\<Phi> (r, u)) \<cdot>\<^sub>D F (\<rho>.composite_cell w' \<theta>') \<cdot>\<^sub>D F \<beta> \<cdot>\<^sub>D \<Phi> (g, w)"
-                  using w' \<theta>' C.comp_assoc hseq_ru hseq_fw C.hseqI' by auto
+                  using w' \<theta>' C.comp_assoc hseq_ru hseq_fw by auto
                 also have "... = D.inv (\<Phi> (r, u)) \<cdot>\<^sub>D (F (\<rho>.composite_cell w' \<theta>') \<cdot>\<^sub>D F \<beta>) \<cdot>\<^sub>D \<Phi> (g, w)"
                   using D.comp_assoc by simp
                 also have "... = D.inv (\<Phi> (r, u)) \<cdot>\<^sub>D F (\<rho>.composite_cell w' \<theta>' \<cdot>\<^sub>C \<beta>) \<cdot>\<^sub>D \<Phi> (g, w)"
@@ -5973,14 +5983,14 @@ $$
                     using w w' \<theta>' \<beta> \<rho>.composite_cell_in_hom
                           preserves_comp [of "\<rho>.composite_cell w' \<theta>'" \<beta>]
                     by (metis C.dom_comp C.hcomp_simps(3) C.ide_char C.in_homE C.seqE C.seqI
-                        D.ext D.seqE \<rho>.tab_in_hom(2) is_extensional preserves_reflects_arr)
+                        D.ext D.seqE \<rho>.tab_simps(4) is_extensional preserves_reflects_arr)
                   thus ?thesis by simp
                 qed
                 also have "... = D.inv (\<Phi> (r, u)) \<cdot>\<^sub>D F (\<rho>.composite_cell w \<theta>) \<cdot>\<^sub>D \<Phi> (g, w)"
                   using eq by simp
                 also have "... = D.inv (\<Phi> (r, u)) \<cdot>\<^sub>D
                                    F (r \<star>\<^sub>C \<theta>) \<cdot>\<^sub>D F \<a>\<^sub>C[r, f, w] \<cdot>\<^sub>D F (\<rho> \<star>\<^sub>C w) \<cdot>\<^sub>D \<Phi> (g, w)"
-                  using w \<theta> C.comp_assoc hseq_ru hseq_fw C.hseqI' D.comp_assoc by auto
+                  using w \<theta> C.comp_assoc hseq_ru hseq_fw D.comp_assoc by auto
                 also have "... = ((D.inv (\<Phi> (r, u)) \<cdot>\<^sub>D
                                    \<Phi> (r, u)) \<cdot>\<^sub>D (F r \<star>\<^sub>D F \<theta>)) \<cdot>\<^sub>D ((D.inv (\<Phi> (r, f \<star>\<^sub>C w)) \<cdot>\<^sub>D
                                    \<Phi> (r, f \<star>\<^sub>C w)) \<cdot>\<^sub>D (F r \<star>\<^sub>D \<Phi> (f, w))) \<cdot>\<^sub>D
@@ -5989,14 +5999,14 @@ $$
                                    \<Phi> (r \<star>\<^sub>C f, w)) \<cdot>\<^sub>D (F \<rho> \<star>\<^sub>D F w)) \<cdot>\<^sub>D D.inv (\<Phi> (g, w)) \<cdot>\<^sub>D \<Phi> (g, w)"
                 proof -
                   have "F (r \<star>\<^sub>C \<theta>) = \<Phi> (r, u) \<cdot>\<^sub>D (F r \<star>\<^sub>D F \<theta>) \<cdot>\<^sub>D D.inv (\<Phi> (r, f \<star>\<^sub>C w))"
-                    using w \<theta> preserves_hcomp C.hseqI' hseq_ru by auto
+                    using w \<theta> preserves_hcomp hseq_ru by auto
                   moreover have "F \<a>\<^sub>C[r, f, w] =
                         \<Phi> (r, f \<star>\<^sub>C w) \<cdot>\<^sub>D (F r \<star>\<^sub>D \<Phi> (f, w)) \<cdot>\<^sub>D \<a>\<^sub>D[F r, F f, F w] \<cdot>\<^sub>D
                          (D.inv (\<Phi> (r, f)) \<star>\<^sub>D F w) \<cdot>\<^sub>D D.inv (\<Phi> (r \<star>\<^sub>C f, w))"
                     using w preserves_assoc(1) hseq_fw by force
                   moreover have
                     "F (\<rho> \<star>\<^sub>C w) = \<Phi> (r \<star>\<^sub>C f, w) \<cdot>\<^sub>D (F \<rho> \<star>\<^sub>D F w) \<cdot>\<^sub>D D.inv (\<Phi> (g, w))"
-                    using w preserves_hcomp C.hseqI' hseq_fw by fastforce
+                    using w preserves_hcomp hseq_fw by fastforce
                   ultimately show ?thesis
                     using D.comp_assoc by simp
                 qed
@@ -6004,25 +6014,20 @@ $$
                                    (D.inv (\<Phi> (r, f)) \<star>\<^sub>D F w) \<cdot>\<^sub>D (F \<rho> \<star>\<^sub>D F w)"
                 proof -
                   have "(D.inv (\<Phi> (r, u)) \<cdot>\<^sub>D \<Phi> (r, u)) \<cdot>\<^sub>D (F r \<star>\<^sub>D F \<theta>) = F r \<star>\<^sub>D F \<theta>"
-                    using \<theta> \<Phi>_in_hom \<Phi>_components_are_iso D.comp_cod_arr hseq_ru D.hseqI'
-                          D.comp_inv_arr'
-                    by auto
+                    using \<theta> D.comp_cod_arr hseq_ru D.comp_inv_arr' by auto
                   moreover have
                     "(D.inv (\<Phi> (r, f \<star>\<^sub>C w)) \<cdot>\<^sub>D \<Phi> (r, f \<star>\<^sub>C w)) \<cdot>\<^sub>D (F r \<star>\<^sub>D \<Phi> (f, w)) =
                      F r \<star>\<^sub>D \<Phi> (f, w)"
                     using w \<Phi>_components_are_iso D.comp_cod_arr C.hseqI' D.hseqI'
-                          C.in_hhom_def C.trg_hcomp' D.comp_inv_arr' C.ide_hcomp
+                          C.in_hhom_def C.trg_hcomp D.comp_inv_arr' C.ide_hcomp
                     by (metis C.ideD(1) D.hcomp_simps(4) \<Phi>_simps(1) \<Phi>_simps(3-5)
                         \<rho>'.leg0_simps(3) \<rho>'.base_simps(2,4) \<rho>.ide_leg0 \<rho>.ide_base
                         \<rho>.leg0_simps(3) hseq_fw)
                   moreover have "(D.inv (\<Phi> (r \<star>\<^sub>C f, w)) \<cdot>\<^sub>D \<Phi> (r \<star>\<^sub>C f, w)) \<cdot>\<^sub>D (F \<rho> \<star>\<^sub>D F w) =
                                  F \<rho> \<star>\<^sub>D F w"
-                    using w D.comp_inv_arr' \<Phi>_components_are_iso D.hseqI' D.comp_cod_arr hseq_fw
-                    by simp
+                    using w D.comp_inv_arr' D.comp_cod_arr hseq_fw by simp
                   moreover have "(F \<rho> \<star>\<^sub>D F w) \<cdot>\<^sub>D D.inv (\<Phi> (g, w)) \<cdot>\<^sub>D \<Phi> (g, w) = F \<rho> \<star>\<^sub>D F w"
-                    using w \<theta> \<Phi>_components_are_iso D.comp_arr_dom D.comp_inv_arr'
-                          hseq_gw D.hseqI'
-                    by simp
+                    using w \<theta> D.comp_arr_dom D.comp_inv_arr' hseq_gw by simp
                   ultimately show ?thesis
                     using D.comp_assoc by simp
                 qed
@@ -6043,7 +6048,7 @@ $$
               using * by auto
             obtain \<gamma> where \<gamma>: "\<guillemotleft>\<gamma> : w \<Rightarrow>\<^sub>C w'\<guillemotright> \<and> F \<gamma> = \<gamma>'"
               using \<theta> \<theta> w w' \<gamma>' locally_full [of w w' \<gamma>']
-              by (metis C.hseqI' C.ideD(1) C.src_hcomp' C.vconn_implies_hpar(3)
+              by (metis C.hseqI' C.ideD(1) C.src_hcomp C.vconn_implies_hpar(3)
                   \<rho>.leg0_simps(2) \<theta>' hseq_fw)
             have "\<theta> = \<theta>' \<cdot>\<^sub>C (f \<star>\<^sub>C \<gamma>)"
             proof -
@@ -6058,15 +6063,13 @@ $$
                         D.comp_arr_inv'
                   by (metis C.hseqI' C.in_homE C.trg_cod \<gamma> \<rho>.leg0_in_hom(2))
                 also have "... = F (\<theta>' \<cdot>\<^sub>C (f \<star>\<^sub>C \<gamma>))"
-                  using \<gamma> \<theta>' hseq_fw C.hseqI' preserves_comp
-                  by (metis C.hcomp_simps(4) C.in_homE C.seqI D.seqE \<rho>.leg0_simps(5) \<theta>
-                      calculation preserves_reflects_arr)
+                  using \<gamma> \<theta> \<theta>' hseq_fw C.hseqI' preserves_comp by force
                 finally show ?thesis by simp
               qed
-              thus ?thesis
-                using \<gamma> \<theta> \<theta>' is_faithful
-                by (metis (mono_tags, lifting) C.cod_comp C.dom_comp C.hcomp_simps(3)
-                    C.in_homE C.seqE \<rho>.leg0_simps(4) preserves_reflects_arr)
+              moreover have "C.par \<theta> (\<theta>' \<cdot>\<^sub>C (f \<star>\<^sub>C \<gamma>))"
+                using \<gamma> \<theta> \<theta>' hseq_fw by fastforce
+              ultimately show ?thesis
+                using is_faithful by blast
             qed
             moreover have "\<beta> = g \<star>\<^sub>C \<gamma>"
             proof -
@@ -6082,9 +6085,19 @@ $$
                       \<rho>.leg1_simps(2) \<rho>.leg1_simps(5) \<rho>.leg1_simps(6) \<theta> hseq_fw)
                 finally show ?thesis by simp
               qed
-              thus ?thesis
-                using \<gamma> \<beta> is_faithful
-                by (metis C.hcomp_simps(3-4) C.in_homE \<rho>.leg1_simps(5-6) preserves_reflects_arr)
+              moreover have "C.par \<beta> (g \<star>\<^sub>C \<gamma>)"
+              proof (intro conjI)
+                show "C.arr \<beta>"
+                  using \<beta> by blast
+                show 1: "C.hseq g \<gamma>"
+                  using \<gamma> hseq_gw by fastforce
+                show "C.dom \<beta> = C.dom (g \<star>\<^sub>C \<gamma>)"
+                  using \<gamma> \<beta> 1 by fastforce
+                show "C.cod \<beta> = C.cod (g \<star>\<^sub>C \<gamma>)"
+                  using \<gamma> \<beta> 1 by fastforce
+              qed
+              ultimately show ?thesis
+                using is_faithful by blast
             qed
             ultimately have "\<exists>\<gamma>. \<guillemotleft>\<gamma> : w \<Rightarrow>\<^sub>C w'\<guillemotright> \<and> \<beta> = g \<star>\<^sub>C \<gamma> \<and> \<theta> = \<theta>' \<cdot>\<^sub>C (f \<star>\<^sub>C \<gamma>)"
               using \<gamma> by blast
@@ -6130,7 +6143,7 @@ $$
                   using \<gamma>\<^sub>1 \<theta> by auto
                 also have
                   "... = (F \<theta>' \<cdot>\<^sub>D \<Phi> (f, w') \<cdot>\<^sub>D (F f \<star>\<^sub>D F \<gamma>\<^sub>1) \<cdot>\<^sub>D D.inv (\<Phi> (f, w))) \<cdot>\<^sub>D \<Phi> (f, w)"
-                  using C.hseqI' \<gamma>\<^sub>1 hseq_fw preserves_hcomp by auto
+                  using \<gamma>\<^sub>1 hseq_fw preserves_hcomp by auto
                 also have
                   "... = F \<theta>' \<cdot>\<^sub>D \<Phi> (f, w') \<cdot>\<^sub>D (F f \<star>\<^sub>D F \<gamma>\<^sub>1) \<cdot>\<^sub>D D.inv (\<Phi> (f, w)) \<cdot>\<^sub>D \<Phi> (f, w)"
                   using D.comp_assoc by simp
@@ -6149,7 +6162,7 @@ $$
                   using \<gamma>\<^sub>2 \<theta> by auto
                 also have
                   "... = (F \<theta>' \<cdot>\<^sub>D \<Phi> (f, w') \<cdot>\<^sub>D (F f \<star>\<^sub>D F \<gamma>\<^sub>2) \<cdot>\<^sub>D D.inv (\<Phi> (f, w))) \<cdot>\<^sub>D \<Phi> (f, w)"
-                  using C.hseqI' \<gamma>\<^sub>2 hseq_fw preserves_hcomp by auto
+                  using \<gamma>\<^sub>2 hseq_fw preserves_hcomp by auto
                 also have
                   "... = F \<theta>' \<cdot>\<^sub>D \<Phi> (f, w') \<cdot>\<^sub>D (F f \<star>\<^sub>D F \<gamma>\<^sub>2) \<cdot>\<^sub>D D.inv (\<Phi> (f, w)) \<cdot>\<^sub>D \<Phi> (f, w)"
                   using D.comp_assoc by simp
