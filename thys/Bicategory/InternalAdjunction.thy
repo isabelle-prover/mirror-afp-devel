@@ -1079,7 +1079,7 @@ begin
         using assms 1 by fastforce
       show "(\<r>[a] \<star> a) \<cdot> \<a>\<^sup>-\<^sup>1[a, a, a] \<cdot> (a \<star> \<l>\<^sup>-\<^sup>1[a]) = \<l>\<^sup>-\<^sup>1[a] \<cdot> \<r>[a]"
         using assms 1 canI_unitor_1 canI_associator_1(2) canI_associator_3
-              whisker_can_right_1 whisker_can_left_1 can_Ide_self
+              whisker_can_right_1 whisker_can_left_1 can_Ide_self obj_simps
         by simp
       show "(a \<star> \<r>[a]) \<cdot> \<a>[a, a, a] \<cdot> (\<l>\<^sup>-\<^sup>1[a] \<star> a) = \<r>\<^sup>-\<^sup>1[a] \<cdot> \<l>[a]"
         using assms 1 canI_unitor_1 canI_associator_1(2) canI_associator_3

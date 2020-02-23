@@ -5883,7 +5883,7 @@ $$
      lemma ide_CLS_obj:
      assumes "B.obj a"
      shows "ide \<lbrakk>\<lbrakk>a\<rbrakk>\<rbrakk>"
-       by (simp add: assms)
+       by (simp add: assms B.obj_simps)
 
      lemma CLS_in_hom:
      assumes "B.is_left_adjoint f"
@@ -14177,7 +14177,7 @@ $$
               moreover have "Span.arr (SPN (Maps.Dom (Chn a')))"
                 using a a' SPN_in_hom by auto
               ultimately show ?thesis
-                using a a' SPN_def Span.src_def Maps.cod_char by simp
+                using a a' SPN_def Span.src_def Maps.cod_char obj_simps by simp
             qed
             also have "... = Chn a'"
               using a' Maps.MkIde_Dom Span.obj_char Span.ide_char by simp
@@ -14243,7 +14243,7 @@ $$
                 also have "... = src (Maps.REP \<lbrakk>\<lbrakk>b\<rbrakk>\<rbrakk>)"
                   using b by fastforce
                 also have "... = b"
-                  using b by auto
+                  using b obj_simps by auto
                 finally show ?thesis by simp
               qed
               ultimately show ?thesis by argo
@@ -14261,7 +14261,7 @@ $$
                 also have "... = src (Maps.REP \<lbrakk>\<lbrakk>a\<rbrakk>\<rbrakk>)"
                   using a by fastforce
                 also have "... = a"
-                  using a by auto
+                  using a obj_simps by auto
                 finally show ?thesis by fast
               qed
               thus ?thesis

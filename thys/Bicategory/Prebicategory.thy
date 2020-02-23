@@ -2324,7 +2324,7 @@ begin
     qed
 
     (* TODO: Can't add "arr a" or "ide a" due to looping. *)
-    lemma obj_simps [simp]:
+    lemma obj_simps (* [simp] *):
     assumes "obj a"
     shows "src a = a" and "trg a = a"
       using assms by auto
@@ -3053,8 +3053,13 @@ begin
     shows "ide (\<nu> \<star> \<mu>)"
       using assms VV.ide_char VV.arr_char H.preserves_ide [of "(\<nu>, \<mu>)"] by auto
 
-    lemma hcomp_in_hhom [intro, simp]:
+    lemma hcomp_in_hhom [intro]:
     assumes "\<guillemotleft>\<mu> : a \<rightarrow> b\<guillemotright>" and "\<guillemotleft>\<nu> : b \<rightarrow> c\<guillemotright>"
+    shows "\<guillemotleft>\<nu> \<star> \<mu> : a \<rightarrow> c\<guillemotright>"
+      using assms hseq_char by fastforce
+
+    lemma hcomp_in_hhom' (* [simp] *):
+    assumes "arr \<mu>" and "arr \<nu>" and "src \<mu> = a" and "trg \<nu> = c" and "src \<nu> = trg \<mu>"
     shows "\<guillemotleft>\<nu> \<star> \<mu> : a \<rightarrow> c\<guillemotright>"
       using assms hseq_char by fastforce
 

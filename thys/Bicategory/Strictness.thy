@@ -2024,7 +2024,7 @@ begin
            apply blast
       using assms obj_UP\<^sub>0
           apply blast
-      using assms obj_UP\<^sub>0
+      using assms obj_UP\<^sub>0 obj_simps
          apply simp_all
       using ideD(2) obj_UP\<^sub>0
        apply blast
@@ -3481,7 +3481,8 @@ begin
               have "src\<^sub>B g = src\<^sub>B (DN.map\<^sub>0 a)"
                 using a g B.in_hhom_def by simp
               also have "... = Map a"
-                using a Map_preserves_objects DN.map\<^sub>0_def DN_def B.src_src by auto
+                using a Map_preserves_objects DN.map\<^sub>0_def DN_def B.src_src B.obj_simps
+                by auto
               finally have "src\<^sub>B g = Map a" by simp
               hence "MkArr \<^bold>\<langle>src\<^sub>B g\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>src\<^sub>B g\<^bold>\<rangle>\<^sub>0 (src\<^sub>B g) = MkArr \<^bold>\<langle>Map a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>Map a\<^bold>\<rangle>\<^sub>0 (Map a)"
                 by simp
@@ -3501,7 +3502,8 @@ begin
               have "trg\<^sub>B g = trg\<^sub>B (DN.map\<^sub>0 b)"
                 using b g B.in_hhom_def by simp
               also have "... = Map b"
-                using b Map_preserves_objects DN.map\<^sub>0_def DN_def B.src_src by auto
+                using b Map_preserves_objects DN.map\<^sub>0_def DN_def B.src_src B.obj_simps
+                by auto
               finally have "trg\<^sub>B g = Map b" by simp
               hence "MkArr \<^bold>\<langle>trg\<^sub>B g\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>trg\<^sub>B g\<^bold>\<rangle>\<^sub>0 (trg\<^sub>B g) = MkArr \<^bold>\<langle>Map b\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>Map b\<^bold>\<rangle>\<^sub>0 (Map b)"
                 by simp
@@ -3591,9 +3593,7 @@ begin
               have "MkArr \<^bold>\<langle>a \<star>\<^sub>B a\<^bold>\<rangle> \<^bold>\<langle>a\<^bold>\<rangle> \<i>\<^sub>B[a] \<cdot> MkArr (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) \<^bold>\<langle>a \<star>\<^sub>B a\<^bold>\<rangle> (a \<star>\<^sub>B a) =
                     MkArr (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) \<^bold>\<langle>a\<^bold>\<rangle> (\<i>\<^sub>B[a] \<cdot>\<^sub>B (a \<star>\<^sub>B a))"
                 using assms
-                apply (intro comp_MkArr arr_MkArr)
-                     apply auto
-                by fastforce
+                by (intro comp_MkArr arr_MkArr) auto
               moreover have "MkArr (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) \<^bold>\<langle>a\<^bold>\<rangle> (\<i>\<^sub>B[a] \<cdot>\<^sub>B (a \<star>\<^sub>B a))
                                \<cdot> MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 (\<^bold>\<langle>a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>a\<^bold>\<rangle>) (B.runit' a) =
                              MkArr \<^bold>\<langle>a\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a\<^bold>\<rangle> ((\<i>\<^sub>B[a] \<cdot>\<^sub>B (a \<star>\<^sub>B a)) \<cdot>\<^sub>B B.runit' a)"
