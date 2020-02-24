@@ -1069,6 +1069,30 @@ proof (rule ordertype_inc_eq)
     by (meson UNIV_I total_VWF total_on_def)
 qed (use assms in auto)
 
+lemma ordertype_image_ordermap:
+  assumes "small A" "X \<subseteq> A" "wf r" "trans r" "total_on X r"
+  shows "ordertype (ordermap A r ` X) VWF = ordertype X r"
+proof (rule ordertype_inc_eq)
+  show "small X"
+    by (meson assms smaller_than_small)
+  show "(ordermap A r x, ordermap A r y) \<in> VWF"
+    if "x \<in> X" "y \<in> X" "(x, y) \<in> r" for x y
+    by (meson that Ord_ordermap VWF_iff_Ord_less assms ordermap_mono_less subsetD)
+qed (use assms in auto)
+    
+lemma ordertype_map_image:
+  assumes "B \<subseteq> A" "small A"
+  shows "ordertype (ordermap A VWF ` A - ordermap A VWF ` B) VWF = ordertype (A - B) VWF"
+proof -
+  have "ordermap A VWF ` A - ordermap A VWF ` B = ordermap A VWF ` (A - B)"
+    using assms by auto
+  then have "ordertype (ordermap A VWF ` A - ordermap A VWF ` B) VWF = ordertype (ordermap A VWF ` (A - B)) VWF"
+    by simp
+  also have "\<dots> = ordertype (A - B) VWF"
+    using \<open>small A\<close> ordertype_image_ordermap by fastforce
+  finally show ?thesis .
+qed
+
 lemma ordertype_infinite_ge_\<omega>:
   assumes "infinite A" "small A"
   shows "ordertype A VWF \<ge> \<omega>"

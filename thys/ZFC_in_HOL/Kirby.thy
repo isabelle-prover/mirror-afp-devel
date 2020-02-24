@@ -578,6 +578,9 @@ lemma add_right_mono: "\<lbrakk>\<alpha> \<le> \<beta>; Ord \<alpha>; Ord \<beta
 lemma add_strict_mono: "\<lbrakk>\<alpha> < \<beta>; \<gamma> < \<delta>; Ord \<alpha>; Ord \<beta>; Ord \<gamma>; Ord \<delta>\<rbrakk> \<Longrightarrow> \<alpha>+\<gamma> < \<beta>+\<delta>"
   by (metis order.strict_implies_order add_less_cancel_left add_right_mono le_less_trans)
 
+lemma add_right_strict_mono: "\<lbrakk>\<alpha> \<le> \<beta>; \<gamma> < \<delta>; Ord \<alpha>; Ord \<beta>; Ord \<gamma>; Ord \<delta>\<rbrakk> \<Longrightarrow> \<alpha>+\<gamma> < \<beta>+\<delta>"
+  using add_strict_mono le_imp_less_or_eq by blast
+
 lemma Limit_add_Limit [simp]:
   assumes "Limit \<mu>" "Ord \<beta>" shows "Limit (\<beta> + \<mu>)"
   unfolding Limit_def
@@ -678,12 +681,14 @@ next
     by (simp add: not_vle_imp_odiff_0)
 qed
 
-lemma Ord_odiff_le_odiff: "\<lbrakk>\<alpha> \<le> x; x \<le> y; Ord x; Ord y; Ord \<alpha>\<rbrakk> \<Longrightarrow> odiff x \<alpha> \<le> odiff y \<alpha>"
+lemma Ord_odiff_le_odiff: "\<lbrakk>x \<le> y; Ord x; Ord y\<rbrakk> \<Longrightarrow> odiff x \<alpha> \<le> odiff y \<alpha>"
   by (simp add: odiff_le_odiff vle_iff_le_Ord)
 
 lemma Ord_odiff_less_odiff: "\<lbrakk>\<alpha> \<le> x; x < y; Ord x; Ord y; Ord \<alpha>\<rbrakk> \<Longrightarrow> odiff x \<alpha> < odiff y \<alpha>"
   by (metis Ord_odiff_eq Ord_odiff_le_odiff dual_order.strict_trans less_V_def)
 
+lemma Ord_odiff_less_imp_less: "\<lbrakk>odiff x \<alpha> < odiff y \<alpha>; Ord x; Ord y\<rbrakk> \<Longrightarrow> x < y"
+  by (meson Ord_linear2 leD odiff_le_odiff vle_iff_le_Ord)
 
 lemma odiff_add_cancel [simp]: "odiff (x + y) x = y"
   by (simp add: odiff_eq_iff vle_def)
@@ -1323,6 +1328,12 @@ lemma mult_add_mem_0 [simp]: "a*x \<in> elts (a*y) \<longleftrightarrow> x \<in>
   ultimately show ?thesis
     by (metis mult_eq_0_iff add.right_neutral mult_add_mem(2) nonzero_less_TC)
 qed
+
+lemma zero_mem_mult_iff: "0 \<in> elts (x*y) \<longleftrightarrow> 0 \<in> elts x \<and> 0 \<in> elts y" 
+  by (metis Kirby.mult_zero_right mult_add_mem_0)
+
+lemma zero_less_mult_iff [simp]: "0 < x*y \<longleftrightarrow> 0 < x \<and> 0 < y" if "Ord x" 
+  using Kirby.mult_eq_0_iff ZFC_in_HOL.neq0_conv by blast
 
 lemma mult_cancel_less_iff [simp]:
   "\<lbrakk>Ord \<alpha>; Ord \<beta>; Ord \<gamma>\<rbrakk> \<Longrightarrow> \<alpha>*\<beta> < \<alpha>*\<gamma> \<longleftrightarrow> \<beta> < \<gamma> \<and> 0 < \<alpha>"

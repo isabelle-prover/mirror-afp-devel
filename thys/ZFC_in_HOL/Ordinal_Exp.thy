@@ -226,6 +226,9 @@ proof safe
     using that by (simp add: assms oexp_less)
 qed
 
+lemma \<omega>_oexp_iff [simp]: "\<lbrakk>Ord \<alpha>; Ord \<beta>\<rbrakk> \<Longrightarrow> \<omega>\<up>\<alpha> = \<omega>\<up>\<beta> \<longleftrightarrow> \<alpha>=\<beta>"
+  by (metis Ord_\<omega> Ord_linear \<omega>_gt1 less_irrefl oexp_less)
+
 lemma Limit_oexp:
   assumes "Limit \<gamma>" "Ord \<alpha>" "\<alpha> > 1" shows "Limit (\<alpha>\<up>\<gamma>)"
   unfolding Limit_def
