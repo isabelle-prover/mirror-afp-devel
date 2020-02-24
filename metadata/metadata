@@ -8888,3 +8888,18 @@ abstract =
   ground for these constructions based on a new equational
   axiomatisation of Boolean algebras.
 
+[Goodstein_Lambda]
+title = Implementing the Goodstein Function in &lambda;-Calculus
+author = Bertram Felgenhauer <mailto:int-e@gmx.de>
+topic = Logic/Rewriting
+date = 2020-02-21
+notify = int-e@gmx.de
+abstract = 
+  In this formalization, we develop an implementation of the Goodstein
+  function G in plain &lambda;-calculus, linked to a concise, self-contained
+  specification. The implementation works on a Church-encoded
+  representation of countable ordinals. The initial conversion to
+  hereditary base 2 is not covered, but the material is sufficient to
+  compute the particular value G(16), and easily extends to other fixed
+  arguments.
+

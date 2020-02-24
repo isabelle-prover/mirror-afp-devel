@@ -9,7 +9,22 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>01 Feb 2020 00:00:00 +0000</pubDate>
+    <pubDate>21 Feb 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Implementing the Goodstein Function in &lambda;-Calculus</title>
+              <link>https://www.isa-afp.org/entries/Goodstein_Lambda.html</link>
+       <guid>https://www.isa-afp.org/entries/Goodstein_Lambda.html</guid>
+       <dc:creator> Bertram Felgenhauer       </dc:creator>
+       <pubDate>21 Feb 2020 00:00:00 +0000</pubDate>
+       <description>
+In this formalization, we develop an implementation of the Goodstein
+function G in plain &amp;lambda;-calculus, linked to a concise, self-contained
+specification. The implementation works on a Church-encoded
+representation of countable ordinals. The initial conversion to
+hereditary base 2 is not covered, but the material is sufficient to
+compute the particular value G(16), and easily extends to other fixed
+arguments.</description>
+    </item>
     <item>
        <title>Arithmetic progressions and relative primes</title>
               <link>https://www.isa-afp.org/entries/Arith_Prog_Rel_Primes.html</link>
@@ -540,22 +555,6 @@ Then, we formalize notions and properties related to the topology of
 distributed systems and the potential for communication via stimuli
 and via shared environments of agents, all within the algebraic
 setting of C²KA.</description>
-    </item>
-    <item>
-       <title>Selected Problems from the International Mathematical Olympiad 2019</title>
-              <link>https://www.isa-afp.org/entries/IMO2019.html</link>
-       <guid>https://www.isa-afp.org/entries/IMO2019.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>05 Aug 2019 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This entry contains formalisations of the answers to three of
-the six problem of the International Mathematical Olympiad 2019,
-namely Q1, Q4, and Q5.&lt;/p&gt; &lt;p&gt;The reason why these
-problems were chosen is that they are particularly amenable to
-formalisation: they can be solved with minimal use of libraries. The
-remaining three concern geometry and graph theory, which, in the
-author&#39;s opinion, are more difficult to formalise resp. require a
-more complex library.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
