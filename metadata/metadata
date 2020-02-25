@@ -8903,3 +8903,17 @@ abstract =
   compute the particular value G(16), and easily extends to other fixed
   arguments.
 
+[VeriComp]
+title = A Generic Framework for Verified Compilers
+author = Martin Desharnais <https://martin.desharnais.me>
+topic = Computer Science/Programming Languages/Compiling
+date = 2020-02-10
+notify = martin.desharnais@unibw.de
+abstract = 
+  This is a generic framework for formalizing compiler transformations.
+  It leverages Isabelle/HOL’s locales to abstract over concrete
+  languages and transformations. It states common definitions for
+  language semantics, program behaviours, forward and backward
+  simulations, and compilers. We provide generic operations, such as
+  simulation and compiler composition, and prove general (partial)
+  correctness theorems, resulting in reusable proof components.

@@ -26,6 +26,21 @@ compute the particular value G(16), and easily extends to other fixed
 arguments.</description>
     </item>
     <item>
+       <title>A Generic Framework for Verified Compilers</title>
+              <link>https://www.isa-afp.org/entries/VeriComp.html</link>
+       <guid>https://www.isa-afp.org/entries/VeriComp.html</guid>
+       <dc:creator> Martin Desharnais       </dc:creator>
+       <pubDate>10 Feb 2020 00:00:00 +0000</pubDate>
+       <description>
+This is a generic framework for formalizing compiler transformations.
+It leverages Isabelle/HOL’s locales to abstract over concrete
+languages and transformations. It states common definitions for
+language semantics, program behaviours, forward and backward
+simulations, and compilers. We provide generic operations, such as
+simulation and compiler composition, and prove general (partial)
+correctness theorems, resulting in reusable proof components.</description>
+    </item>
+    <item>
        <title>Arithmetic progressions and relative primes</title>
               <link>https://www.isa-afp.org/entries/Arith_Prog_Rel_Primes.html</link>
        <guid>https://www.isa-afp.org/entries/Arith_Prog_Rel_Primes.html</guid>
@@ -533,28 +548,6 @@ linear programs using only linear constraints. Solving these
 constraints also solves the original linear program. This algorithm is
 proven to be sound by applying the weak duality theorem which is also
 part of this formalization.</description>
-    </item>
-    <item>
-       <title>Communicating Concurrent Kleene Algebra for Distributed Systems Specification</title>
-              <link>https://www.isa-afp.org/entries/C2KA_DistributedSystems.html</link>
-       <guid>https://www.isa-afp.org/entries/C2KA_DistributedSystems.html</guid>
-       <dc:creator> Maxime Buyse, Jason Jaskolka       </dc:creator>
-       <pubDate>06 Aug 2019 00:00:00 +0000</pubDate>
-       <description>
-Communicating Concurrent Kleene Algebra (C²KA) is a mathematical
-framework for capturing the communicating and concurrent behaviour of
-agents in distributed systems. It extends Hoare et al.&#39;s
-Concurrent Kleene Algebra (CKA) with communication actions through the
-notions of stimuli and shared environments. C²KA has applications in
-studying system-level properties of distributed systems such as
-safety, security, and reliability. In this work, we formalize results
-about C²KA and its application for distributed systems specification.
-We first formalize the stimulus structure and behaviour structure
-(CKA). Next, we combine them to formalize C²KA and its properties.
-Then, we formalize notions and properties related to the topology of
-distributed systems and the potential for communication via stimuli
-and via shared environments of agents, all within the algebraic
-setting of C²KA.</description>
     </item>
   </channel>
 </rss>
