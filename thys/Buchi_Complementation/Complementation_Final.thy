@@ -3,6 +3,7 @@ section \<open>Final Instantiation of Algorithms Related to Complementation\<clo
 theory Complementation_Final
 imports
   "Complementation_Implement"
+  "Formula"
   "Transition_Systems_and_Automata.NBA_Translate"
   "Transition_Systems_and_Automata.NGBA_Algorithms"
   "HOL-Library.Permutation"
@@ -172,9 +173,12 @@ begin
     - introduce op_map_map operation for maps instead of manually iterating via FOREACH
     - consolidate various binds and maps in expand_map_get_7 *)
   export_code
+    Set.empty Set.insert Set.member
+    "Inf :: 'a set set \<Rightarrow> 'a set" "Sup :: 'a set set \<Rightarrow> 'a set" image Pow set
     nat_of_integer integer_of_nat
+    Variable Negation Conjunction Disjunction satisfies
     nbaei alphabetei initialei transitionei acceptingei
-    nbae_nba_impl complement_impl language_equal_impl
+    nbae_nba_impl complement_impl language_equal_impl product_impl
     in SML module_name Complementation file_prefix Complementation
 
 end

@@ -6,7 +6,6 @@ begin
 
 external_file \<open>code/Autool.mlb\<close>
 external_file \<open>code/Prelude.sml\<close>
-external_file \<open>code/Automaton.sml\<close>
 external_file \<open>code/Autool.sml\<close>
 
 compile_generated_files \<^marker>\<open>contributor Makarius\<close>
@@ -14,12 +13,8 @@ compile_generated_files \<^marker>\<open>contributor Makarius\<close>
   external_files
     \<open>code/Autool.mlb\<close>
     \<open>code/Prelude.sml\<close>
-    \<open>code/Automaton.sml\<close>
     \<open>code/Autool.sml\<close>
-  export_files
-    \<open>code/Autool\<close> (exe)
-    and
-    \<open>code/Complementation.sml\<close>
+  export_files \<open>code/Complementation.sml\<close> and \<open>code/Autool\<close> (exe)
   where \<open>fn dir =>
     let
       val exec = Generated_Files.execute (Path.append dir (Path.basic "code"));
