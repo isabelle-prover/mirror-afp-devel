@@ -833,6 +833,9 @@ lemma ordermap_type:
     "small A \<Longrightarrow> ordermap A r \<in> A \<rightarrow> elts (ordertype A r)"
   by (simp add: ordertype_def)
 
+lemma ordermap_in_ordertype [intro]: "\<lbrakk>a \<in> A; small A\<rbrakk> \<Longrightarrow> ordermap A r a \<in> elts (ordertype A r)"
+  by (simp add: ordertype_def)
+
 lemma ordermap: "wf r \<Longrightarrow> ordermap A r a = set (ordermap A r ` {y \<in> A. (y,a) \<in> r})"
   unfolding ordermap_def
   by (auto simp: wfrec_fixpoint adm_wf_def)
@@ -920,6 +923,20 @@ lemma ordermap_bij:
     unfolding inj_on_def by (metis assms mem_not_refl ordermap_mono total_on_def)
   show "ordermap A r ` A = elts (ordertype A r)"
     by (metis ordertype_def \<open>small A\<close> elts_of_set replacement)
+qed
+
+lemma ordermap_eq_iff [simp]: 
+  "\<lbrakk>x \<in> A; y \<in> A; wf r; total_on A r; small A\<rbrakk> \<Longrightarrow> ordermap A r x = ordermap A r y \<longleftrightarrow> x = y"
+  by (metis bij_betw_iff_bijections ordermap_bij)
+
+lemma ordertype_nat_imp_finite:
+  assumes "ordertype A r = ord_of_nat m" "small A" "wf r" "total_on A r"
+  shows "finite A"
+proof -
+  have "A \<approx> elts m"
+    using eqpoll_def assms ordermap_bij by fastforce 
+  then show ?thesis
+    using eqpoll_finite_iff finite_Ord_omega by blast
 qed
 
 lemma wf_ordertype_eqpoll:
@@ -1052,6 +1069,30 @@ proof (rule ordertype_inc_eq)
     by (meson UNIV_I total_VWF total_on_def)
 qed (use assms in auto)
 
+lemma ordertype_image_ordermap:
+  assumes "small A" "X \<subseteq> A" "wf r" "trans r" "total_on X r"
+  shows "ordertype (ordermap A r ` X) VWF = ordertype X r"
+proof (rule ordertype_inc_eq)
+  show "small X"
+    by (meson assms smaller_than_small)
+  show "(ordermap A r x, ordermap A r y) \<in> VWF"
+    if "x \<in> X" "y \<in> X" "(x, y) \<in> r" for x y
+    by (meson that Ord_ordermap VWF_iff_Ord_less assms ordermap_mono_less subsetD)
+qed (use assms in auto)
+    
+lemma ordertype_map_image:
+  assumes "B \<subseteq> A" "small A"
+  shows "ordertype (ordermap A VWF ` A - ordermap A VWF ` B) VWF = ordertype (A - B) VWF"
+proof -
+  have "ordermap A VWF ` A - ordermap A VWF ` B = ordermap A VWF ` (A - B)"
+    using assms by auto
+  then have "ordertype (ordermap A VWF ` A - ordermap A VWF ` B) VWF = ordertype (ordermap A VWF ` (A - B)) VWF"
+    by simp
+  also have "\<dots> = ordertype (A - B) VWF"
+    using \<open>small A\<close> ordertype_image_ordermap by fastforce
+  finally show ?thesis .
+qed
+
 lemma ordertype_infinite_ge_\<omega>:
   assumes "infinite A" "small A"
   shows "ordertype A VWF \<ge> \<omega>"
@@ -1064,15 +1105,11 @@ proof -
     using Ord_ordertype \<open>small A\<close> infinite_Ord_omega by (auto simp: ordertype_def)
 qed
 
-
 lemma ordertype_eqI:
-  assumes r: "wf r" "total_on A r" "small A"
-  assumes s: "wf s" 
-  assumes "bij_betw f A B" "(\<forall>x \<in> A. \<forall>y \<in> A. (f x, f y) \<in> s \<longleftrightarrow> (x,y) \<in> r)"
+  assumes "wf r" "total_on A r" "small A" "wf s" 
+          "bij_betw f A B" "(\<forall>x \<in> A. \<forall>y \<in> A. (f x, f y) \<in> s \<longleftrightarrow> (x,y) \<in> r)"
   shows "ordertype A r = ordertype B s"
   by (metis assms bij_betw_imp_surj_on ordertype_inc_eq)
-
-
 
 lemma ordermap_eq_self:
   assumes "Ord \<alpha>" and x: "x \<in> elts \<alpha>" 
@@ -1151,6 +1188,32 @@ proof -
     by (metis ordertype_inc_eq ordertype_le_Ord wf_VWF)
 qed
 
+lemma le_ordertype_obtains_subset:
+  assumes \<alpha>: "\<beta> \<le> \<alpha>" "ordertype H VWF = \<alpha>" and "small H" "Ord \<beta>"
+  obtains G where "G \<subseteq> H" "ordertype G VWF = \<beta>" 
+proof (intro exI conjI that)
+  let ?f = "ordermap H VWF"
+  show \<ddagger>: "inv_into H ?f ` elts \<beta> \<subseteq> H"
+    unfolding image_subset_iff
+    by (metis \<alpha> inv_into_into ordermap_surj subsetD vsubsetD)
+  have "\<exists>f. bij_betw f (inv_into H ?f ` elts \<beta>) (elts \<beta>) \<and> (\<forall>x\<in>inv_into H ?f ` elts \<beta>. \<forall>y\<in>inv_into H ?f ` elts \<beta>. (f x < f y) = ((x, y) \<in> VWF))"
+  proof (intro exI conjI ballI iffI)
+    show "bij_betw ?f (inv_into H ?f ` elts \<beta>) (elts \<beta>)"
+      using ordermap_bij [OF wf_VWF total_on_VWF \<open>small H\<close>] \<alpha> 
+      by (metis bij_betw_inv_into_RIGHT bij_betw_subset less_eq_V_def \<ddagger>)
+  next
+    fix x y
+    assume x: "x \<in> inv_into H ?f ` elts \<beta>"
+        and y: "y \<in> inv_into H ?f ` elts \<beta>"
+    show "?f x < ?f y" if "(x,y) \<in> VWF"
+      using that \<ddagger> \<open>small H\<close> in_mono ordermap_mono_less x y by fastforce
+    show "(x,y) \<in> VWF" if "?f x < ?f y"
+      using that \<ddagger> \<open>small H\<close> in_mono ordermap_mono_less [OF _ wf_VWF trans_VWF] x y
+      by (metis UNIV_I less_imp_not_less total_VWF total_on_def)
+  qed
+  then show "ordertype (inv_into H ?f ` elts \<beta>) VWF = \<beta>"
+    by (subst ordertype_eq_iff) (use assms in auto)
+qed
 
 lemma ordertype_infinite_\<omega>:
   assumes "A \<subseteq> elts \<omega>" "infinite A"
@@ -1239,6 +1302,23 @@ proof (induction rule: Ord_induct)
     by (meson Int_lower1 Ord_is_Transset Sup.SUP_cong Transset_def assms(1) in_mono vsubsetD)
 qed
 
+lemma ordertype_insert:
+  assumes "Ord \<alpha>" and U: "U \<subseteq> elts \<alpha>"
+  shows "ordertype (insert \<alpha> U) VWF = succ (ordertype U VWF)"
+proof -
+  have \<dagger>: "{y \<in> insert \<alpha> U. (y, \<alpha>) \<in> VWF} = U" "{y \<in> U. (y, \<alpha>) \<in> VWF} = U"
+    using Ord_in_Ord OrdmemD assms by auto
+  have eq: "\<And>x. x \<in> U \<Longrightarrow> ordermap (insert \<alpha> U) VWF x = ordermap U VWF x"
+    by (meson Ord_in_Ord Ord_is_Transset Transset_def U assms(1) in_mono ordermap_insert)
+  have "ordertype (insert \<alpha> U) VWF =
+        ZFC_in_HOL.set (insert (ordermap U VWF \<alpha>) (ordermap U VWF ` U))"
+    by (simp add: ordertype_def ordermap_insert assms eq)
+  also have "\<dots> = succ (ZFC_in_HOL.set (ordermap U VWF ` U))"
+    using "\<dagger>" U by (simp add: ordermap [OF wf_VWF, of _ \<alpha>] down succ_def vinsert_def)
+  also have "\<dots> = succ (ordertype U VWF)"
+    by (simp add: ordertype_def)
+  finally show ?thesis .
+qed
 
 lemma finite_ordertype_le_card:
   assumes "finite A" "wf r" "trans r" 
@@ -1247,7 +1327,7 @@ proof -
   have "Ord (ordertype A r)"
     by (simp add: wf_Ord_ordertype assms)
   moreover have "ordermap A r ` A = elts (ordertype A r)"
-    by (simp add: ordertype_def ZFC_in_HOL.Finite \<open>finite A\<close>)
+    by (simp add: ordertype_def finite_imp_small \<open>finite A\<close>)
   moreover have "card (ordermap A r ` A) \<le> card A"
     using \<open>finite A\<close> card_image_le by blast
   ultimately show ?thesis
@@ -1269,23 +1349,21 @@ qed
 lemma ordertype_VWF_finite_nat:
   assumes "finite A"
   shows "ordertype A VWF = ord_of_nat (card A)"
-  by (metis Finite ordermap_bij total_on_VWF wf_VWF \<omega>_def assms bij_betw_same_card card_ord_of_nat elts_of_set f_inv_into_f inf ordertype_VWF_\<omega>)
+  by (metis finite_imp_small ordermap_bij total_on_VWF wf_VWF \<omega>_def assms bij_betw_same_card card_ord_of_nat elts_of_set f_inv_into_f inf ordertype_VWF_\<omega>)
 
 lemma finite_ordertype_eq_card:
-  assumes "finite A" "wf r" "trans r" "total_on A r"
-  shows "ordertype A r = ord_of_nat m \<longleftrightarrow> card A = m"
+  assumes "small A" "wf r" "trans r" "total_on A r"
+  shows "ordertype A r = ord_of_nat m \<longleftrightarrow> finite A \<and> card A = m"
+  using ordermap_bij [OF \<open>wf r\<close>]
 proof -
-  have "Ord (ordertype A r)"
-    by (simp add: wf_Ord_ordertype assms)
-  moreover have "set (ordermap A r ` A) = (ordertype A r)"
-    by (simp add: ordertype_def ZFC_in_HOL.Finite \<open>finite A\<close>)
+  have *: "bij_betw (ordermap A r) A (elts (ordertype A r))"
+    by (simp add: assms ordermap_bij)
   moreover have "card (ordermap A r ` A) = card A"
-    by (meson Finite ordermap_bij assms bij_betw_def card_image)
-  ultimately have "ordertype A r = card A"
-    by (metis Finite \<open>finite A\<close> elts_of_set finite_imageI ordertype_VWF_finite_nat ordertype_eq_Ord)
-  then show ?thesis
-    by simp
+    by (meson bij_betw_def * card_image)
+  ultimately show ?thesis
+    using assms bij_betw_finite bij_betw_imp_surj_on finite_Ord_omega ordertype_VWF_finite_nat wf_Ord_ordertype by fastforce
 qed
+
 
 subsection\<open>Cardinality of a set\<close>
 
@@ -1413,6 +1491,9 @@ qed
 
 lemma lepoll_cardinal_le: "\<lbrakk>elts A \<lesssim> elts i; Ord i\<rbrakk> \<Longrightarrow> vcard A \<le> i"
   by (metis Ord_Least Ord_linear2 dual_order.trans eqpoll_refl lepoll_imp_Card_le not_less_Ord_Least vcard_def)
+
+lemma cardinal_le_lepoll: "vcard A \<le> \<alpha> \<Longrightarrow> elts A \<lesssim> elts \<alpha>"
+  by (meson cardinal_eqpoll eqpoll_sym lepoll_trans1 less_eq_V_def subset_imp_lepoll)
 
 lemma lesspoll_imp_Card_less:
   assumes "elts a \<prec> elts b" shows "vcard a < vcard b"
@@ -1806,20 +1887,23 @@ lemma finite_csucc: "a \<in> elts \<omega> \<Longrightarrow> csucc a = succ a"
 qed
 
 lemma Finite_imp_cardinal_cons [simp]:
-  assumes FA: "finite(A)" and a: "a \<notin> A"
+  assumes FA: "finite A" and a: "a \<notin> A"
   shows "vcard (set (insert a A)) = csucc(vcard (set A))"
 proof -
   show ?thesis
     unfolding csucc_def
   proof (rule Least_equality [THEN sym])
-    show "Ord (vcard (set (insert a A))) \<and> Card (vcard (set (insert a A))) \<and> vcard (set A) < vcard (set (insert a A))"
-      apply (auto simp: Card_def)
-      by (metis FA Finite finite_insert_lepoll FA a elts_of_set eqpoll_imp_lepoll eqpoll_sym lesspoll_def lesspoll_imp_Card_less small_insert subset_imp_lepoll subset_insertI)
+    have "small A"
+      by (simp add: FA Finite_V)
+    then have "\<not> elts (set A) \<approx> elts (set (insert a A))"
+      using FA a eqpoll_imp_lepoll eqpoll_sym finite_insert_lepoll by fastforce
+    then show "Ord (vcard (set (insert a A))) \<and> Card (vcard (set (insert a A))) \<and> vcard (set A) < vcard (set (insert a A))"
+      by (simp add: Card_def lesspoll_imp_Card_less lesspoll_def subset_imp_lepoll subset_insertI)
     show "vcard (set (insert a A)) \<le> i"
       if "Ord i \<and> Card i \<and> vcard (set A) < i" for i
     proof -
       have "elts (vcard (set A)) \<approx> A"
-        by (metis FA Finite cardinal_eqpoll elts_of_set)
+        by (metis FA finite_imp_small cardinal_eqpoll elts_of_set)
       then have less: "A \<prec> elts i"
         using eq_lesspoll_trans eqpoll_sym lt_Card_imp_lesspoll that by blast
       show ?thesis
@@ -1962,11 +2046,17 @@ lemma Card_Aleph [simp, intro]:
      "Ord \<alpha> \<Longrightarrow> Card(Aleph \<alpha>)"
 by (induction \<alpha> rule: Ord_induct3) (auto simp: Aleph_def)
 
+lemma Aleph_0 [simp]: "\<aleph>0 = \<omega>"
+  by (simp add: Aleph_def)
+
 lemma Aleph_succ [simp]: "\<aleph>(succ x) = csucc (\<aleph> x)"
   by (simp add: Aleph_def)
 
 lemma Aleph_Limit: "Limit \<gamma> \<Longrightarrow> \<aleph> \<gamma> = \<Squnion> (Aleph ` elts \<gamma>)"
   by (simp add: Aleph_def)
+
+lemma mem_Aleph_succ: "Ord \<alpha> \<Longrightarrow> \<aleph>(\<alpha>) \<in> elts (\<aleph>(succ \<alpha>))"
+  by (simp add: Card_is_Ord Ord_mem_iff_lt)
 
 lemma Aleph_increasing:
   assumes ab: "\<alpha> < \<beta>" "Ord \<alpha>" "Ord \<beta>" shows "Aleph(\<alpha>) < Aleph(\<beta>)"
@@ -2003,5 +2093,63 @@ proof -
   } thus ?thesis using ab
     by (simp add: Card_is_Ord Ord_mem_iff_lt)
 qed
+
+lemma countable_iff_le_Aleph0: "countable (elts A) \<longleftrightarrow> vcard A \<le> \<aleph>0"
+proof
+  show "vcard A \<le> \<aleph>0"
+    if "countable (elts A)"
+  proof (cases "finite (elts A)")
+    case True
+    then show ?thesis
+      using vcard_finite_set by fastforce
+  next
+    case False
+    then have "elts \<omega> \<approx> elts A"
+      using countableE_infinite [OF that]     
+      by (simp add: eqpoll_def \<omega>_def) (meson bij_betw_def bij_betw_inv bij_betw_trans inj_ord_of_nat)
+    then show ?thesis
+      using Card_\<omega> Card_def cardinal_cong vcard_def by auto
+  qed
+  show "countable (elts A)"
+    if "vcard A \<le> \<aleph>0"
+  proof -
+    have "elts A \<lesssim> elts \<omega>"
+      using cardinal_le_lepoll [OF that] by simp
+    then show ?thesis
+      by (simp add: countable_iff_lepoll \<omega>_def inj_ord_of_nat)
+  qed
+qed
+
+subsection \<open>The ordinal @{term "\<omega>1"}\<close>
+
+abbreviation "\<omega>1 \<equiv> Aleph 1"
+
+lemma Ord_\<omega>1 [simp]: "Ord \<omega>1"
+  by (simp add: Card_is_Ord)
+
+lemma omega_\<omega>1 [iff]: "\<omega> \<in> elts \<omega>1"
+  using mem_Aleph_succ one_V_def by fastforce
+
+lemma ord_of_nat_\<omega>1 [iff]: "ord_of_nat n \<in> elts \<omega>1"
+  using Ord_\<omega>1 Ord_trans by blast
+
+lemma countable_iff_less_\<omega>1:
+  assumes "Ord \<alpha>"
+  shows "countable (elts \<alpha>) \<longleftrightarrow> \<alpha> < \<omega>1"
+  by (simp add: assms countable_iff_le_Aleph0 lt_csucc_iff one_V_def)
+
+lemma less_\<omega>1_imp_countable:
+  assumes "\<alpha> \<in> elts \<omega>1"
+  shows "countable (elts \<alpha>)"
+  using Ord_\<omega>1 Ord_in_Ord OrdmemD assms countable_iff_less_\<omega>1 by blast
+
+lemma \<omega>1_gt0 [simp]: "\<omega>1 > 0"
+  using Ord_\<omega>1 Ord_trans OrdmemD by blast
+
+lemma \<omega>1_gt1 [simp]: "\<omega>1 > 1"
+  using Ord_\<omega>1 OrdmemD \<omega>_gt1 less_trans by blast
+
+lemma Limit_\<omega>1 [simp]: "Limit \<omega>1"
+  by (simp add: InfCard_def InfCard_is_Limit le_csucc one_V_def)
 
 end

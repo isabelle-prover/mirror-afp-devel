@@ -19,14 +19,14 @@ begin
     transparent.
 \<close>
 
-  type_synonym ('a1, 'a2) arr = "'a1 * 'a2"
-
   locale product_category =
     C1: category C1 +
     C2: category C2
   for C1 :: "'a1 comp"      (infixr "\<cdot>\<^sub>1" 55)
   and C2 :: "'a2 comp"      (infixr "\<cdot>\<^sub>2" 55)
   begin
+
+    type_synonym ('aa1, 'aa2) arr = "'aa1 * 'aa2"
 
     notation C1.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>1 _\<guillemotright>")
     notation C2.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>2 _\<guillemotright>")
@@ -180,7 +180,7 @@ begin
       show "seq g f \<Longrightarrow> seq h g \<Longrightarrow> seq (h \<cdot> g) f"
         using comp_def null_char seq_char by (elim seqE C1.seqE C2.seqE, simp)
       show "seq g f \<Longrightarrow> seq h g \<Longrightarrow> (h \<cdot> g) \<cdot> f = h \<cdot> g \<cdot> f"
-        using comp_def null_char seq_char C1.comp_assoc C2.comp_assoc comp_assoc
+        using comp_def null_char seq_char C1.comp_assoc C2.comp_assoc
         by (elim seqE C1.seqE C2.seqE, simp)
     qed
 

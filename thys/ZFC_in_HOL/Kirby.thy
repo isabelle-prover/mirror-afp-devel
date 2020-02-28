@@ -120,6 +120,16 @@ lemma succ_eq_add1: "succ x = x + 1"
 lemma ord_of_nat_add: "ord_of_nat (m+n) = ord_of_nat m + ord_of_nat n"
   by (induction n) (auto simp: plus_V_succ_right)
 
+lemma succ_0_plus_eq [simp]:
+  assumes "\<alpha> \<in> elts \<omega>" 
+  shows "succ 0 + \<alpha> = succ \<alpha>"
+proof -
+  obtain n where "\<alpha> = ord_of_nat n"
+    using assms elts_\<omega> by blast
+  then show ?thesis
+    by (metis One_nat_def ord_of_nat.simps ord_of_nat_add plus_1_eq_Suc)
+qed
+
 lemma omega_closed_add [intro]:
   assumes "\<alpha> \<in> elts \<omega>" "\<beta> \<in> elts \<omega>" shows "\<alpha>+\<beta> \<in> elts \<omega>"
 proof -
@@ -253,9 +263,22 @@ qed
 lemma eqpoll_lift: "elts (lift x y) \<approx> elts y"
   by (metis card_lift cardinal_eqpoll eqpoll_sym eqpoll_trans)
 
-lemma card_add: "vcard (x + y) = vcard x \<oplus> vcard y"
+lemma vcard_add: "vcard (x + y) = vcard x \<oplus> vcard y"
   using card_lift [of x y] lift_self_disjoint [of x]
   by (simp add: plus_eq_lift vcard_disjoint_sup)
+
+lemma countable_add:
+  assumes "countable (elts A)" "countable (elts B)"
+  shows "countable (elts (A+B))"
+proof -
+  have "vcard A \<le> \<aleph>0" "vcard B \<le> \<aleph>0"
+    using assms countable_iff_le_Aleph0 by blast+
+  then have "vcard (A+B) \<le> \<aleph>0"
+    unfolding vcard_add
+    by (metis Aleph_0 Card_\<omega> InfCard_cdouble_eq InfCard_def cadd_le_mono order_refl)
+  then show ?thesis
+    by (simp add: countable_iff_le_Aleph0)
+qed
 
 text\<open>Proposition 3.6\<close>
 proposition TC_add: "TC (x + y) = TC x \<squnion> lift x (TC y)"
@@ -381,6 +404,18 @@ next
   finally show ?case
     using k by simp
 qed
+
+lemma plus_\<omega>_equals_\<omega>:
+  assumes "\<alpha> \<in> elts \<omega>"  shows "\<alpha> + \<omega> = \<omega>"
+proof (rule antisym)
+  show "\<alpha> + \<omega> \<le> \<omega>"
+    using Ord_trans assms by (auto simp: elim!: mem_plus_V_E)
+  show "\<omega> \<le> \<alpha> + \<omega>"
+    by (simp add: add_le_left assms)
+qed
+
+lemma one_plus_\<omega>_equals_\<omega> [simp]: "1 + \<omega> = \<omega>"
+  by (simp add: one_V_def plus_\<omega>_equals_\<omega>)
 
 subsubsection \<open>Cancellation / set subtraction\<close>
 
@@ -518,11 +553,33 @@ proof -
   with \<gamma> that show thesis by blast
 qed
 
+lemma plus_Ord_le:
+  assumes "\<alpha> \<in> elts \<omega>" "Ord \<beta>" shows "\<alpha>+\<beta> \<le> \<beta>+\<alpha>"
+proof (cases "\<beta> \<in> elts \<omega>")
+  case True
+  with assms have "\<alpha>+\<beta> = \<beta>+\<alpha>"
+    by (auto simp: elts_\<omega> add.commute ord_of_nat_add [symmetric])
+  then show ?thesis by simp
+next
+  case False
+  then have "\<omega> \<le> \<beta>" 
+    using Ord_linear2 Ord_mem_iff_lt \<open>Ord \<beta>\<close> by auto
+  then obtain \<gamma> where "\<omega>+\<gamma> = \<beta>" "\<gamma> \<le> \<beta>" "Ord \<gamma>"
+    using \<open>Ord \<beta>\<close> le_Ord_diff by auto
+  then have "\<alpha>+\<beta> = \<beta>"
+    by (metis add.assoc assms(1) plus_\<omega>_equals_\<omega>)
+  then show ?thesis
+    by simp
+qed
+
 lemma add_right_mono: "\<lbrakk>\<alpha> \<le> \<beta>; Ord \<alpha>; Ord \<beta>; Ord \<gamma>\<rbrakk> \<Longrightarrow> \<alpha>+\<gamma> \<le> \<beta>+\<gamma>"
   by (metis add_le_cancel_left add.assoc add_le_left le_Ord_diff)
 
 lemma add_strict_mono: "\<lbrakk>\<alpha> < \<beta>; \<gamma> < \<delta>; Ord \<alpha>; Ord \<beta>; Ord \<gamma>; Ord \<delta>\<rbrakk> \<Longrightarrow> \<alpha>+\<gamma> < \<beta>+\<delta>"
   by (metis order.strict_implies_order add_less_cancel_left add_right_mono le_less_trans)
+
+lemma add_right_strict_mono: "\<lbrakk>\<alpha> \<le> \<beta>; \<gamma> < \<delta>; Ord \<alpha>; Ord \<beta>; Ord \<gamma>; Ord \<delta>\<rbrakk> \<Longrightarrow> \<alpha>+\<gamma> < \<beta>+\<delta>"
+  using add_strict_mono le_imp_less_or_eq by blast
 
 lemma Limit_add_Limit [simp]:
   assumes "Limit \<mu>" "Ord \<beta>" shows "Limit (\<beta> + \<mu>)"
@@ -624,12 +681,14 @@ next
     by (simp add: not_vle_imp_odiff_0)
 qed
 
-lemma Ord_odiff_le_odiff: "\<lbrakk>\<alpha> \<le> x; x \<le> y; Ord x; Ord y; Ord \<alpha>\<rbrakk> \<Longrightarrow> odiff x \<alpha> \<le> odiff y \<alpha>"
+lemma Ord_odiff_le_odiff: "\<lbrakk>x \<le> y; Ord x; Ord y\<rbrakk> \<Longrightarrow> odiff x \<alpha> \<le> odiff y \<alpha>"
   by (simp add: odiff_le_odiff vle_iff_le_Ord)
 
 lemma Ord_odiff_less_odiff: "\<lbrakk>\<alpha> \<le> x; x < y; Ord x; Ord y; Ord \<alpha>\<rbrakk> \<Longrightarrow> odiff x \<alpha> < odiff y \<alpha>"
   by (metis Ord_odiff_eq Ord_odiff_le_odiff dual_order.strict_trans less_V_def)
 
+lemma Ord_odiff_less_imp_less: "\<lbrakk>odiff x \<alpha> < odiff y \<alpha>; Ord x; Ord y\<rbrakk> \<Longrightarrow> x < y"
+  by (meson Ord_linear2 leD odiff_le_odiff vle_iff_le_Ord)
 
 lemma odiff_add_cancel [simp]: "odiff (x + y) x = y"
   by (simp add: odiff_eq_iff vle_def)
@@ -1270,6 +1329,12 @@ lemma mult_add_mem_0 [simp]: "a*x \<in> elts (a*y) \<longleftrightarrow> x \<in>
     by (metis mult_eq_0_iff add.right_neutral mult_add_mem(2) nonzero_less_TC)
 qed
 
+lemma zero_mem_mult_iff: "0 \<in> elts (x*y) \<longleftrightarrow> 0 \<in> elts x \<and> 0 \<in> elts y" 
+  by (metis Kirby.mult_zero_right mult_add_mem_0)
+
+lemma zero_less_mult_iff [simp]: "0 < x*y \<longleftrightarrow> 0 < x \<and> 0 < y" if "Ord x" 
+  using Kirby.mult_eq_0_iff ZFC_in_HOL.neq0_conv by blast
+
 lemma mult_cancel_less_iff [simp]:
   "\<lbrakk>Ord \<alpha>; Ord \<beta>; Ord \<gamma>\<rbrakk> \<Longrightarrow> \<alpha>*\<beta> < \<alpha>*\<gamma> \<longleftrightarrow> \<beta> < \<gamma> \<and> 0 < \<alpha>"
   using mult_add_mem_0 [of \<alpha> \<beta> \<gamma>]
@@ -1370,6 +1435,19 @@ proof -
   then show ?thesis
     apply (subst cmult_commute)
     by (simp add: TC_mult cardinal_cong flip: vcard_mult)
+qed
+
+lemma countable_mult:
+  assumes "countable (elts A)" "countable (elts B)"
+  shows "countable (elts (A*B))"
+proof -
+  have "vcard A \<le> \<aleph>0" "vcard B \<le> \<aleph>0"
+    using assms countable_iff_le_Aleph0 by blast+
+  then have "vcard (A*B) \<le> \<aleph>0"
+    unfolding vcard_mult
+    by (metis InfCard_csquare_eq cmult_le_mono Aleph_0 Card_\<omega> InfCard_def order_refl)
+  then show ?thesis
+    by (simp add: countable_iff_le_Aleph0)
 qed
 
 subsection \<open>Ordertype properties\<close>

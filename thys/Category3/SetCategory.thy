@@ -43,9 +43,10 @@ begin
   section "Some Lemmas about Restriction"
 
     text\<open>
+      \sloppypar
       The development of the \<open>set_category\<close> locale makes heavy use of the
       theory @{theory "HOL-Library.FuncSet"}.  However, in some cases, I found that
-      @{theory "HOL-Library.FuncSet"} did not provide results about restriction in the form that was
+      that theory did not provide results about restriction in the form that was
       most useful to me. I used the following additional results in various places.
 \<close>
 

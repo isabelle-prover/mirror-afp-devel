@@ -13,7 +13,7 @@ begin
   global_interpretation dra: automaton dra alphabet initial transition condition
     defines path = dra.path and run = dra.run and reachable = dra.reachable and nodes = dra.nodes
     by unfold_locales auto
-  global_interpretation dra: automaton_trace dra alphabet initial transition condition "cogen rabin"
+  global_interpretation dra: automaton_run dra alphabet initial transition condition "\<lambda> P w r p. cogen rabin P (p ## r)"
     defines language = dra.language
     by standard
 

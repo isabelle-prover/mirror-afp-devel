@@ -124,14 +124,14 @@ begin
       proof
         show "r 0 \<in> initial A" using nba_g_V0 2(1) by force
         show "run A (w ||| smap (r \<circ> Suc) nats) (r 0)" using 3 by this
-        show "infs (accepting A) (smap (r \<circ> Suc) nats)" using 5 by simp
+        show "infs (accepting A) (r 0 ## smap (r \<circ> Suc) nats)" using 5 by simp
       qed
       then show ?thesis by auto
     qed
     show "Ex is_acc_run" if language: "language A \<noteq> {}"
     proof -
       obtain w where 1: "w \<in> language A" using language by auto
-      obtain r p where 2: "p \<in> initial A" "run A (w ||| r) p" "infs (accepting A) r" using 1 by rule
+      obtain r p where 2: "p \<in> initial A" "run A (w ||| r) p" "infs (accepting A) (p ## r)" using 1 by rule
       have 3: "infs (accepting A) (p ## r)" using 2(3) by simp
       have "is_acc_run (snth (p ## r))"
       unfolding is_acc_run_def graph_defs.is_run_def

@@ -19,8 +19,10 @@ Allen_Calculus
 Amortized_Complexity
 AnselmGod
 Applicative_Lifting
+Approximation_Algorithms
 Architectural_Design_Patterns
 Aristotles_Assertoric_Syllogistic
+Arith_Prog_Rel_Primes
 ArrowImpossibilityGS
 AutoFocus-Stream
 Automatic_Refinement
@@ -31,6 +33,7 @@ Bell_Numbers_Spivey
 Berlekamp_Zassenhaus
 Bernoulli
 Bertrands_Postulate
+Bicategory
 BinarySearchTree
 Binding_Syntax_Theory
 Binomial-Heaps
@@ -71,6 +74,7 @@ Chord_Segments
 Circus
 Clean
 ClockSynchInst
+Closest_Pair_Points
 CofGroups
 Coinductive
 Coinductive_Languages
@@ -79,6 +83,7 @@ Comparison_Sort_Lower_Bound
 Compiling-Exceptions-Correctly
 Completeness
 Complete_Non_Orders
+Complex_Geometry
 Complx
 ComponentDependencies
 ConcurrentGC
@@ -170,6 +175,7 @@ Gabow_SCC
 Game_Based_Crypto
 Gauss-Jordan-Elim-Fun
 Gauss_Jordan
+Gauss_Sums
 GenClock
 General-Triangle
 Generalized_Counting_Sort
@@ -288,6 +294,7 @@ Matroids
 Max-Card-Matching
 Median_Of_Medians_Selection
 Menger
+Mersenne_Primes
 MFOTL_Monitor
 MiniML
 Minimal_SSA
@@ -351,6 +358,7 @@ Polynomial_Factorization
 Polynomial_Interpolation
 Polynomials
 Poincare_Bendixson
+Poincare_Disc
 Pop_Refinement
 Posix-Lexing
 Possibilistic_Noninterference
@@ -432,6 +440,7 @@ Simpl
 Simple_Firewall
 Simplex
 Skew_Heap
+Skip_Lists
 Slicing
 Smooth_Manifolds
 Sort_Encodings
@@ -457,6 +466,7 @@ Sturm_Sequences
 Sturm_Tarski
 Stuttering_Equivalence
 Subresultants
+Subset_Boolean_Algebras
 SumSquares
 SuperCalc
 Surprise_Paradox

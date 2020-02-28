@@ -132,7 +132,7 @@ begin
     obtain r p where 1:
       "run (complement A) (w ||| r) p"
       "p \<in> initial (complement A)"
-      "infs (accepting (complement A)) r"
+      "infs (accepting (complement A)) (p ## r)"
       using assms by rule
     let ?m = "p ## r"
     obtain 100:
@@ -472,7 +472,7 @@ begin
           transition (complement A) (w !! k) (target (stake k (w ||| stl s)) (shd s))" by this
       qed
       show "shd s \<in> initial (complement A)" unfolding complement_def s_def using P_0 by simp
-      show "infs (accepting (complement A)) (stl s)"
+      show "infs (accepting (complement A)) (shd s ## stl s)"
       proof -
         have 10: "\<forall> n. \<exists> k \<ge> n. P k = {}"
         proof (rule ccontr)

@@ -157,7 +157,7 @@ begin
      assumes "retraction e" and "retraction e'" and "seq e' e"
      shows "retraction (e' \<cdot> e)"
      proof -
-       from assms(1) assms(2) obtain m m'
+       from assms(1-2) obtain m m'
        where *: "ide (e \<cdot> m) \<and> ide (e' \<cdot> m')"
          using retraction_def by auto
        hence "seq m m'"
@@ -183,8 +183,7 @@ begin
      proof -
        have "inj_on (\<lambda>g. g \<cdot> (e' \<cdot> e)) {g. seq g (e' \<cdot> e)}"
          unfolding inj_on_def
-         using assms
-         by (metis CollectD seqI seqE cod_comp epiE comp_assoc')
+         using assms by (metis CollectD epiE match_2 comp_assoc)
        thus ?thesis using assms(3) epi_def by force
      qed           
 
@@ -231,19 +230,8 @@ begin
         assume f: "mono f \<and> retraction f"
         from f obtain g where g: "ide (f \<cdot> g)" by blast
         have "inverse_arrows f g"
-        proof
-          show "ide (f \<cdot> g)" by fact
-          show "ide (g \<cdot> f)"
-          proof -
-            have "f \<cdot> g \<cdot> f = f \<cdot> dom f"
-              using f g comp_arr_dom comp_cod_arr
-              by (metis comp_assoc ide_compE mono_implies_arr)
-            hence "g \<cdot> f = dom f"
-              using f g monoE
-              by (metis (full_types) comp_arr_dom ide_compE seqE)
-            thus ?thesis using f by force
-          qed
-        qed
+          using f g comp_arr_dom comp_cod_arr comp_assoc inverse_arrowsI
+          by (metis ide_char' ide_compE monoE mono_implies_arr)
         thus "iso f" by auto
       qed
     qed
@@ -258,30 +246,17 @@ begin
         assume f: "section f \<and> epi f"
         from f obtain g where g: "ide (g \<cdot> f)" by blast
         have "inverse_arrows f g"
-        proof
-          show "ide (g \<cdot> f)" by fact
-          show "ide (f \<cdot> g)"
-          proof -
-            have "f \<cdot> g \<cdot> f = cod f \<cdot> f"
-              using f g comp_arr_dom comp_cod_arr epi_implies_arr by auto
-            hence "f \<cdot> g = cod f"
-              using f g epiE
-              by (metis comp_assoc comp_cod_arr epi_implies_arr ide_compE)
-            thus ?thesis using f by force
-          qed
-        qed
+          using f g comp_arr_dom comp_cod_arr epi_implies_arr
+                comp_assoc ide_compE inverse_arrowsI epiE ide_char'
+          by metis
         thus "iso f" by auto
       qed
     qed
 
     lemma iso_iff_section_and_retraction:
     shows "iso f \<longleftrightarrow> section f \<and> retraction f"
-    proof
-      show "iso f \<Longrightarrow> section f \<and> retraction f"
-         by (simp add: iso_is_retraction iso_is_section)
-      show "section f \<and> retraction f \<Longrightarrow> iso f"
-        using iso_iff_mono_and_retraction section_is_mono by simp
-    qed
+      using iso_is_retraction iso_is_section iso_iff_mono_and_retraction section_is_mono
+      by auto
 
     lemma isos_compose [intro]:
     assumes "iso f" and "iso f'" and "seq f' f"
@@ -290,13 +265,8 @@ begin
       from assms(1) obtain g where g: "inverse_arrows f g" by blast
       from assms(2) obtain g' where g': "inverse_arrows f' g'" by blast
       have "inverse_arrows (f' \<cdot> f) (g \<cdot> g')"
-      proof
-        show "ide ((f' \<cdot> f) \<cdot> (g \<cdot> g'))"
-          using assms g g'
-          by (meson seqE ide_compE inverse_arrows_def section_retraction_compose)
-        show "ide ((g \<cdot> g') \<cdot> (f' \<cdot> f))"
-          using assms g g' inverse_arrows_def section_retraction_compose by simp
-      qed
+        using assms g g inverse_arrowsI inverse_arrowsE section_retraction_compose
+        by (simp add: g' inverse_arrows_compose)
       thus ?thesis using iso_def by auto
     qed
 
@@ -399,15 +369,10 @@ begin
     shows "isomorphic g f"
       using assms iso_inv_iso inv_in_hom by blast
 
-    lemma isomorphic_transitive:
+    lemma isomorphic_transitive [trans]:
     assumes "isomorphic f g" and "isomorphic g h"
     shows "isomorphic f h"
-    proof -
-      obtain \<phi> where \<phi>: "iso \<phi> \<and> \<guillemotleft>\<phi> : f \<rightarrow> g\<guillemotright>" using assms isomorphic_def by blast
-      obtain \<psi> where \<psi>: "iso \<psi> \<and> \<guillemotleft>\<psi> : g \<rightarrow> h\<guillemotright>" using assms isomorphic_def by blast
-      have "iso (\<psi> \<cdot> \<phi>) \<and> \<guillemotleft>\<psi> \<cdot> \<phi> : f \<rightarrow> h\<guillemotright>" using \<phi> \<psi> isos_compose by blast
-      thus "isomorphic f h" using isomorphic_def by auto
-    qed
+      using assms isomorphic_def isos_compose by auto
 
     text \<open>
       A section or retraction of an isomorphism is in fact an inverse.
@@ -419,12 +384,11 @@ begin
     and "ide (f \<cdot> g) \<Longrightarrow> inverse_arrows f g"
     proof -
       show "ide (g \<cdot> f) \<Longrightarrow> inverse_arrows f g"
-        using assms iso_is_retraction retraction_is_epi epiE inv_is_inverse inverse_arrowsE
-              ide_compE
-        by metis
+        using assms
+        by (metis comp_inv_arr' epiE ide_compE inv_is_inverse iso_iff_section_and_epi)
       show "ide (f \<cdot> g) \<Longrightarrow> inverse_arrows f g"
-        using assms iso_is_section section_is_mono monoE inv_is_inverse inverse_arrowsE ide_compE
-        by metis
+        using assms
+        by (metis ide_compE comp_arr_inv' inv_is_inverse iso_iff_mono_and_retraction monoE)
     qed
 
     text \<open>

@@ -13,7 +13,7 @@ begin
   global_interpretation dgba: automaton dgba alphabet initial transition accepting
     defines path = dgba.path and run = dgba.run and reachable = dgba.reachable and nodes = dgba.nodes
     by unfold_locales auto
-  global_interpretation dgba: automaton_trace dgba alphabet initial transition accepting "gen infs"
+  global_interpretation dgba: automaton_run dgba alphabet initial transition accepting "\<lambda> P w r p. gen infs P (p ## r)"
     defines language = dgba.language
     by standard
 

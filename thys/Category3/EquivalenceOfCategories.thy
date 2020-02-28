@@ -97,8 +97,8 @@ begin
         by blast
     qed
 
-    interpretation \<epsilon>_inv: inverse_transformation C C "F o G" C.map \<epsilon> ..
-    interpretation \<eta>_inv: inverse_transformation D D D.map "G o F" \<eta> ..
+    interpretation \<epsilon>_inv: inverse_transformation C C \<open>F o G\<close> C.map \<epsilon> ..
+    interpretation \<eta>_inv: inverse_transformation D D D.map \<open>G o F\<close> \<eta> ..
     interpretation GF: equivalence_of_categories D C G F \<epsilon>_inv.map \<eta>_inv.map ..
 
     lemma F_is_faithful:
@@ -155,8 +155,8 @@ begin
   context equivalence_of_categories
   begin
 
-    interpretation \<epsilon>_inv: inverse_transformation C C "F o G" C.map \<epsilon> ..
-    interpretation \<eta>_inv: inverse_transformation D D D.map "G o F" \<eta> ..
+    interpretation \<epsilon>_inv: inverse_transformation C C \<open>F o G\<close> C.map \<epsilon> ..
+    interpretation \<eta>_inv: inverse_transformation D D D.map \<open>G o F\<close> \<eta> ..
     interpretation GF: equivalence_of_categories D C G F \<epsilon>_inv.map \<eta>_inv.map ..
 
     lemma F_is_full:
@@ -229,21 +229,22 @@ begin
       interpret \<phi>: natural_isomorphism A A F A.map \<phi>
          using assms by auto
       interpret \<phi>': inverse_transformation A A F A.map \<phi> ..
-      interpret F\<phi>': natural_isomorphism A A F "F o F" "F o \<phi>'.map"
+      interpret F\<phi>': natural_isomorphism A A F \<open>F o F\<close> \<open>F o \<phi>'.map\<close>
       proof -
-        interpret \<tau>: horizontal_composite A A A A.map F F F \<phi>'.map F ..
-        interpret F\<phi>': natural_transformation A A F "F o F" "F o \<phi>'.map"
-          using comp_identity_functor functor_axioms \<tau>.natural_transformation_axioms by simp
+        interpret F\<phi>': natural_transformation A A F \<open>F o F\<close> \<open>F o \<phi>'.map\<close>
+          using \<phi>'.natural_transformation_axioms functor_axioms
+                horizontal_composite [of A A A.map F \<phi>'.map A F F F]
+          by simp
         show "natural_isomorphism A A F (F o F) (F o \<phi>'.map)"
           apply unfold_locales
           using \<phi>'.components_are_iso by fastforce
       qed
-      interpret F\<phi>'o\<phi>': vertical_composite A A A.map F "F o F" \<phi>'.map "F o \<phi>'.map" ..
-      interpret F\<phi>'o\<phi>': natural_isomorphism A A A.map "F o F" F\<phi>'o\<phi>'.map
+      interpret F\<phi>'o\<phi>': vertical_composite A A A.map F \<open>F o F\<close> \<phi>'.map \<open>F o \<phi>'.map\<close> ..
+      interpret F\<phi>'o\<phi>': natural_isomorphism A A A.map \<open>F o F\<close> F\<phi>'o\<phi>'.map
         using \<phi>'.natural_isomorphism_axioms F\<phi>'.natural_isomorphism_axioms
               natural_isomorphisms_compose
         by fast
-      interpret inv_F\<phi>'o\<phi>': inverse_transformation A A A.map "F o F" F\<phi>'o\<phi>'.map ..
+      interpret inv_F\<phi>'o\<phi>': inverse_transformation A A A.map \<open>F o F\<close> F\<phi>'o\<phi>'.map ..
       interpret F: equivalence_of_categories A A F F F\<phi>'o\<phi>'.map inv_F\<phi>'o\<phi>'.map ..
       show ?thesis ..
     qed
@@ -311,35 +312,36 @@ begin
                                        (inverse_transformation.map D D (G o F) \<eta>)"
     proof -
       interpret adjoint_equivalence C D F G \<eta> \<epsilon> using assms by auto
-      interpret \<epsilon>': inverse_transformation C C "F o G" C.map \<epsilon> ..
-      interpret \<eta>': inverse_transformation D D D.map "G o F" \<eta> ..
-      have 1: "G o (F o G) = (G o F) o G \<and> F o (G o F) = (F o G) o F" by auto
-      interpret G\<epsilon>': natural_transformation C D G "(G o F) o G" "G o \<epsilon>'.map"
+      interpret \<epsilon>': inverse_transformation C C \<open>F o G\<close> C.map \<epsilon> ..
+      interpret \<eta>': inverse_transformation D D D.map \<open>G o F\<close> \<eta> ..
+      interpret G\<epsilon>': natural_transformation C D G \<open>G o F o G\<close> \<open>G o \<epsilon>'.map\<close>
       proof -
-        interpret G\<epsilon>': horizontal_composite C C D C.map "F o G" G G \<epsilon>'.map G ..
-        show "natural_transformation C D G ((G o F) o G) (G o \<epsilon>'.map)"
-          using 1 G\<epsilon>'.natural_transformation_axioms G.natural_transformation_axioms by auto
+        have "natural_transformation C D G (G o (F o G)) (G o \<epsilon>'.map)"
+          using G.natural_transformation_axioms \<epsilon>'.natural_transformation_axioms
+                horizontal_composite
+          by fastforce
+        thus "natural_transformation C D G (G o F o G) (G o \<epsilon>'.map)"
+          using o_assoc by metis
       qed
-      interpret \<eta>'G: natural_transformation C D "(G o F) o G" G "\<eta>'.map o G"
+      interpret \<eta>'G: natural_transformation C D \<open>G o F o G\<close> G \<open>\<eta>'.map o G\<close>
+        using \<eta>'.natural_transformation_axioms G.natural_transformation_axioms
+              horizontal_composite
+        by fastforce
+      interpret \<epsilon>'F: natural_transformation D C F \<open>F o G o F\<close> \<open>\<epsilon>'.map o F\<close>
+        using \<epsilon>'.natural_transformation_axioms F.natural_transformation_axioms
+              horizontal_composite
+        by fastforce
+      interpret F\<eta>': natural_transformation D C \<open>F o G o F\<close> F \<open>F o \<eta>'.map\<close>
       proof -
-        interpret \<eta>'G: horizontal_composite C D D G G "G o F" D.map G \<eta>'.map ..
-        show "natural_transformation C D ((G o F) o G) G (\<eta>'.map o G)"
-          using 1 \<eta>'G.natural_transformation_axioms G.natural_transformation_axioms by auto
+        have "natural_transformation D C (F o (G o F)) F (F o \<eta>'.map)"
+          using \<eta>'.natural_transformation_axioms F.natural_transformation_axioms
+                horizontal_composite
+          by fastforce
+        thus "natural_transformation D C (F o G o F) F (F o \<eta>'.map)"
+          using o_assoc by metis
       qed
-      interpret \<epsilon>'F: natural_transformation D C F "((F o G) o F)" "\<epsilon>'.map o F"
-      proof -
-        interpret \<epsilon>'F: horizontal_composite D C C F F C.map "F o G" F \<epsilon>'.map ..
-        show "natural_transformation D C F ((F o G) o F) (\<epsilon>'.map o F)"
-          using 1 \<epsilon>'F.natural_transformation_axioms F.natural_transformation_axioms by auto
-      qed
-      interpret F\<eta>': natural_transformation D C "(F o G) o F" F "F o \<eta>'.map"
-      proof -
-        interpret F\<eta>': horizontal_composite D D C "G o F" D.map F F \<eta>'.map F ..
-        show "natural_transformation D C ((F o G) o F) F (F o \<eta>'.map)"
-          using 1 F\<eta>'.natural_transformation_axioms F.natural_transformation_axioms by auto
-      qed
-      interpret F\<eta>'o\<epsilon>'F: vertical_composite D C F "(F o G) o F" F "\<epsilon>'.map o F" "F o \<eta>'.map" ..
-      interpret \<eta>'GoG\<epsilon>': vertical_composite C D G "G o F o G" G "G o \<epsilon>'.map" "\<eta>'.map o G" ..
+      interpret F\<eta>'o\<epsilon>'F: vertical_composite D C F \<open>(F o G) o F\<close> F \<open>\<epsilon>'.map o F\<close> \<open>F o \<eta>'.map\<close> ..
+      interpret \<eta>'GoG\<epsilon>': vertical_composite C D G \<open>G o F o G\<close> G \<open>G o \<epsilon>'.map\<close> \<open>\<eta>'.map o G\<close> ..
       show ?thesis
       proof
         show "\<eta>'GoG\<epsilon>'.map = G"
@@ -507,7 +509,7 @@ begin
         proof -
           fix a
           assume a: "C.ide a"
-          interpret \<epsilon>a: terminal_arrow_from_functor D C F "G a" a "\<epsilon> a"
+          interpret \<epsilon>a: terminal_arrow_from_functor D C F \<open>G a\<close> a \<open>\<epsilon> a\<close>
             using a \<phi>\<psi>.has_terminal_arrows_from_functor [of a] by blast
           have "C.retraction (\<epsilon> a)"
           proof -
@@ -573,10 +575,10 @@ begin
                 using a f \<phi> is_full [of "G a" b' "f \<cdot>\<^sub>C \<phi>"] by auto
               obtain g' where g': "\<guillemotleft>g' : b' \<rightarrow>\<^sub>D G a\<guillemotright> \<and> F g' = f' \<cdot>\<^sub>C \<phi>"
                 using a f' par \<phi> is_full [of "G a" b' "f' \<cdot>\<^sub>C \<phi>"] by auto
-              interpret f\<phi>: arrow_from_functor D C F b' a "\<epsilon> a \<cdot>\<^sub>C f \<cdot>\<^sub>C \<phi>"
+              interpret f\<phi>: arrow_from_functor D C F b' a \<open>\<epsilon> a \<cdot>\<^sub>C f \<cdot>\<^sub>C \<phi>\<close>
                 using a \<phi> f \<epsilon>.preserves_hom [of a a a]
                 by (unfold_locales, fastforce)
-              interpret f'\<phi>: arrow_from_functor D C F b' a "\<epsilon> a \<cdot>\<^sub>C f' \<cdot>\<^sub>C \<phi>"
+              interpret f'\<phi>: arrow_from_functor D C F b' a \<open>\<epsilon> a \<cdot>\<^sub>C f' \<cdot>\<^sub>C \<phi>\<close>
                 using a \<phi> f' par \<epsilon>.preserves_hom [of a a a]
                 by (unfold_locales, fastforce)
               have "\<epsilon>a.is_coext b' (\<epsilon> a \<cdot>\<^sub>C f \<cdot>\<^sub>C \<phi>) g"
@@ -599,21 +601,21 @@ begin
           ultimately show "C.iso (\<epsilon> a)"
             using C.iso_iff_mono_and_retraction by simp
         qed
-        interpret \<epsilon>: natural_isomorphism C C "F o G" C.map \<epsilon>
+        interpret \<epsilon>: natural_isomorphism C C \<open>F o G\<close> C.map \<epsilon>
           using 1 by (unfold_locales, auto)
-        interpret \<epsilon>F: natural_isomorphism D C "F o G o F" F "\<epsilon>F.map"
+        interpret \<epsilon>F: natural_isomorphism D C \<open>F o G o F\<close> F \<open>\<epsilon> o F\<close>
           using \<epsilon>.components_are_iso by (unfold_locales, simp)
         show "\<And>a. D.ide a \<Longrightarrow> D.iso (\<eta> a)"
         proof -
           fix a
           assume a: "D.ide a"
-          have 1: "C.iso (\<epsilon>F.map a)"
+          have 1: "C.iso ((\<epsilon> o F) a)"
             using a \<epsilon>.components_are_iso by simp
-          moreover have "\<epsilon>F.map a \<cdot>\<^sub>C F\<eta>.map a = F a"
+          moreover have "(\<epsilon> o F) a \<cdot>\<^sub>C (F o \<eta>) a = F a"
             using a \<eta>\<epsilon>.triangle_F \<epsilon>FoF\<eta>.map_simp_ide by simp
-          ultimately have "C.inverse_arrows (\<epsilon>F.map a) (F\<eta>.map a)"
+          ultimately have "C.inverse_arrows ((\<epsilon> o F) a) ((F o \<eta>) a)"
             using a C.section_retraction_of_iso by simp
-          hence "C.iso (F\<eta>.map a)"
+          hence "C.iso ((F o \<eta>) a)"
             using C.iso_inv_iso by blast
           thus "D.iso (\<eta> a)"
             using a reflects_iso [of "\<eta> a"] by fastforce
@@ -625,8 +627,8 @@ begin
        * TODO: Maybe re-work this later.
        *)
       interpret adjoint_equivalence C D F G \<eta> \<epsilon> ..
-      interpret \<epsilon>': inverse_transformation C C "F o G" C.map \<epsilon> ..
-      interpret \<eta>': inverse_transformation D D D.map "G o F" \<eta> ..
+      interpret \<epsilon>': inverse_transformation C C \<open>F o G\<close> C.map \<epsilon> ..
+      interpret \<eta>': inverse_transformation D D D.map \<open>G o F\<close> \<eta> ..
       interpret E: adjoint_equivalence D C G F \<epsilon>'.map \<eta>'.map
         using adjoint_equivalence_axioms dual_equivalence by blast
       have "equivalence_of_categories D C G F \<epsilon>'.map \<eta>'.map" ..

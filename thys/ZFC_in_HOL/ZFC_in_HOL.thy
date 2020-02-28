@@ -90,6 +90,9 @@ proof -
     using assms by (auto simp: small_def)
 qed
 
+lemma small_image_iff [simp]: "inj_on f A \<Longrightarrow> small (f ` A) \<longleftrightarrow> small A"
+  by (metis replacement the_inv_into_onto)
+
 text \<open>A little bootstrapping is needed to characterise @{term small} for sets of arbitrary type.\<close>
 
 lemma inf: "small (range (g :: nat \<Rightarrow> V))"
@@ -139,7 +142,7 @@ definition succ where "succ x \<equiv> vinsert x x"
 lemma elts_succ [simp]: "elts (succ x) = insert x (elts x)"
   by (simp add: succ_def)
 
-lemma Finite:
+lemma finite_imp_small:
   assumes "finite X" shows "small X"
   using assms
 proof induction
@@ -170,7 +173,7 @@ lemma small_insert:
 proof (cases "finite X")
   case True
   then show ?thesis
-    by (simp add: Finite)
+    by (simp add: finite_imp_small)
 next
   case False
   show ?thesis
@@ -196,7 +199,7 @@ lemma small_diff [iff]: "small (elts a - X)"
   by (meson Diff_subset down)
 
 lemma small_set [simp]: "small (list.set xs)"
-  by (simp add: ZFC_in_HOL.Finite)
+  by (simp add: ZFC_in_HOL.finite_imp_small)
 
 lemma small_upair: "small {x,y}"
   by simp
@@ -352,6 +355,12 @@ lemma not_less_0 [iff]:
 lemma le_0 [iff]:
   fixes x::V shows "0 \<le> x"
   by auto
+
+lemma min_0L [simp]: "min 0 n = 0" for n :: V
+  by (simp add: min_absorb1)
+
+lemma min_0R [simp]: "min n 0 = 0" for n :: V
+  by (simp add: min_absorb2)
 
 lemma neq0_conv: "\<And>n::V. n \<noteq> 0 \<longleftrightarrow> 0 < n"
   by (simp add: less_V_def)
@@ -780,7 +789,7 @@ lemma Ord_finite_Sup: "\<lbrakk>finite A; A \<subseteq> ON; A \<noteq> {}\<rbrak
 proof (induction A rule: finite_induct)
   case (insert x A)
   then have *: "small A" "A \<subseteq> ON" "Ord x"
-    by (auto simp add: ZFC_in_HOL.Finite insert.hyps)
+    by (auto simp add: ZFC_in_HOL.finite_imp_small insert.hyps)
   show ?case
   proof (cases "A = {}")
     case False
@@ -805,6 +814,9 @@ lemma ord_of_nat_eq_initial: "ord_of_nat n = set (ord_of_nat ` {..<n})"
 
 lemma mem_ord_of_nat_iff [simp]: "x \<in> elts (ord_of_nat n) \<longleftrightarrow> (\<exists>m<n. x = ord_of_nat m)"
   by (subst ord_of_nat_eq_initial) auto
+
+lemma elts_ord_of_nat: "elts (ord_of_nat k) = ord_of_nat ` {..<k}"
+  by auto
 
 lemma Ord_equality: "Ord i \<Longrightarrow> i = \<Squnion> (succ ` elts i)"
   by (force intro: Ord_trans)
@@ -913,6 +925,12 @@ lemma zero_not_Limit [iff]: "\<not> Limit 0"
 
 lemma not_succ_Limit [simp]: "\<not> Limit(succ i)"
   by (metis Limit_def Ord_mem_iff_lt elts_succ insertI1 less_irrefl)
+
+lemma Limit_is_Ord: "Limit \<xi> \<Longrightarrow> Ord \<xi>"
+  by (simp add: Limit_def)
+
+lemma succ_in_Limit_iff: "Limit \<xi> \<Longrightarrow> succ \<alpha> \<in> elts \<xi> \<longleftrightarrow> \<alpha> \<in> elts \<xi>"
+  by (metis Limit_def OrdmemD elts_succ insertI1 less_V_def vsubsetD)
 
 lemma Limit_eq_Sup_self [simp]: "Limit i \<Longrightarrow> Sup (elts i) = i"
   apply (rule order_antisym)

@@ -215,15 +215,15 @@ begin
     shows "(\<lambda>f2. F (f1' \<cdot>\<^sub>A\<^sub>1 f1, f2)) =
                  vertical_composite.map A2 B (\<lambda>f2. F (f1, f2)) (\<lambda>f2. F (f1', f2))"
     proof -
-      interpret \<tau>: natural_transformation A2 B "\<lambda>f2. F (A1.dom f1, f2)" "\<lambda>f2. F (A1.cod f1, f2)"
-                                               "\<lambda>f2. F (f1, f2)"
+      interpret \<tau>: natural_transformation A2 B \<open>\<lambda>f2. F (A1.dom f1, f2)\<close> \<open>\<lambda>f2. F (A1.cod f1, f2)\<close>
+                                               \<open>\<lambda>f2. F (f1, f2)\<close>
         using assms fixing_arr_gives_natural_transformation_1 by blast
-      interpret \<tau>': natural_transformation A2 B "\<lambda>f2. F (A1.cod f1, f2)" "\<lambda>f2. F (A1.cod f1', f2)"
-                                                "\<lambda>f2. F (f1', f2)"
+      interpret \<tau>': natural_transformation A2 B \<open>\<lambda>f2. F (A1.cod f1, f2)\<close> \<open>\<lambda>f2. F (A1.cod f1', f2)\<close>
+                                                \<open>\<lambda>f2. F (f1', f2)\<close>
         using assms fixing_arr_gives_natural_transformation_1 A1.seqE by metis
       interpret \<tau>'o\<tau>: vertical_composite A2 B
-                        "\<lambda>f2. F (A1.dom f1, f2)" "\<lambda>f2. F (A1.cod f1, f2)" "\<lambda>f2. F (A1.cod f1', f2)"
-                        "\<lambda>f2. F (f1, f2)" "\<lambda>f2. F (f1', f2)" ..
+                        \<open>\<lambda>f2. F (A1.dom f1, f2)\<close> \<open>\<lambda>f2. F (A1.cod f1, f2)\<close> \<open>\<lambda>f2. F (A1.cod f1', f2)\<close>
+                        \<open>\<lambda>f2. F (f1, f2)\<close> \<open>\<lambda>f2. F (f1', f2)\<close> ..
       show "(\<lambda>f2. F (f1' \<cdot>\<^sub>A\<^sub>1 f1, f2)) = \<tau>'o\<tau>.map"
       proof
         fix f2
@@ -287,9 +287,9 @@ begin
     assumes "A1.ide a1"
     shows "natural_transformation A2 B (\<lambda>f2. F (a1, f2)) (\<lambda>f2. G (a1, f2)) (\<lambda>f2. \<tau> (a1, f2))"
     proof -
-      interpret Fa1: "functor" A2 B "\<lambda>f2. F (a1, f2)"
+      interpret Fa1: "functor" A2 B \<open>\<lambda>f2. F (a1, f2)\<close>
         using assms F.fixing_ide_gives_functor_1 by simp
-      interpret Ga1: "functor" A2 B "\<lambda>f2. G (a1, f2)"
+      interpret Ga1: "functor" A2 B \<open>\<lambda>f2. G (a1, f2)\<close>
         using assms "G.fixing_ide_gives_functor_1" by simp
       show ?thesis
         using assms is_extensional is_natural_1 is_natural_2
@@ -302,9 +302,9 @@ begin
     assumes "A2.ide a2"
     shows "natural_transformation A1 B (\<lambda>f1. F (f1, a2)) (\<lambda>f1. G (f1, a2)) (\<lambda>f1. \<tau> (f1, a2))"
     proof -
-      interpret Fa2: "functor" A1 B "\<lambda>f1. F (f1, a2)"
+      interpret Fa2: "functor" A1 B \<open>\<lambda>f1. F (f1, a2)\<close>
         using assms F.fixing_ide_gives_functor_2 by simp
-      interpret Ga2: "functor" A1 B "\<lambda>f1. G (f1, a2)"
+      interpret Ga2: "functor" A1 B \<open>\<lambda>f1. G (f1, a2)\<close>
         using assms "G.fixing_ide_gives_functor_2" by simp
       show ?thesis
         using assms is_extensional is_natural_1 is_natural_2

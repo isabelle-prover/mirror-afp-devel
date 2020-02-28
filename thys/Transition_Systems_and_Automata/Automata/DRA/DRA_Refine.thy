@@ -79,7 +79,7 @@ begin
   lemma language_param[param]: "(language, language) \<in> \<langle>L, S\<rangle> dra_rel \<rightarrow> \<langle>\<langle>L\<rangle> stream_rel\<rangle> set_rel"
   proof -
     have 1: "language A = (\<Union> w \<in> dra.runs A (initial A).
-      if cogen rabin (condition A) (trace A w (initial A)) then {w} else {})"
+      if cogen rabin (condition A) (initial A ## trace A w (initial A)) then {w} else {})"
       for A :: "('label, 'state) dra"
       unfolding dra.language_def dra.runs_def by auto
     show ?thesis unfolding 1 using enableds_param[param_fo] by parametricity

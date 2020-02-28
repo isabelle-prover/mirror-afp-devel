@@ -164,7 +164,7 @@ class Builder():
                 articles_years[article.publish_date.year] = 1
                 loc_years[article.publish_date.year] = article.loc
         # Count new authors per year
-        author_years = dict()
+        author_years = dict.fromkeys(articles_years.keys(), 0)
         for author in self.afp_entries.authors.values():
             first_year = min([e.publish_date.year for e in author.articles])
             try:
