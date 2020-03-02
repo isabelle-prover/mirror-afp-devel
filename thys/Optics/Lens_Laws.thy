@@ -17,6 +17,12 @@ record ('a, 'b) lens =
 type_notation
   lens (infixr "\<Longrightarrow>" 0)
 
+text \<open> Alternative parameters ordering, inspired by Back and von Wright's refinement 
+  calculus~\cite{Back1998}, which similarly uses two functions to characterise updates to variables. \<close>
+
+abbreviation (input) lens_set :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'b" ("lset\<index>") where
+"lens_set \<equiv> (\<lambda> X v s. put\<^bsub>X\<^esub> s v)"
+
 text \<open>
   \begin{figure}
   \begin{center}
@@ -37,7 +43,7 @@ text \<open>
 
 named_theorems lens_defs
 
-text \<open> \<open>lens_source\<close> gives the set of constructible sources; that is those that can be built
+text \<open> @{text lens_source} gives the set of constructible sources; that is those that can be built
   by putting a value into an arbitrary source. \<close>
 
 definition lens_source :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'b set" ("\<S>\<index>") where
@@ -51,6 +57,27 @@ definition lens_create :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'a \<Rightarr
 
 text \<open> Function $\lcreate_X~v$ creates an instance of the source type of $X$ by injecting $v$
   as the view, and leaving the remaining context arbitrary. \<close>
+    
+definition lens_update :: "('a \<Longrightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('b \<Rightarrow> 'b)" ("update\<index>") where
+[lens_defs]: "lens_update X f \<sigma> = put\<^bsub>X\<^esub> \<sigma> (f (get\<^bsub>X\<^esub> \<sigma>))"
+
+text \<open> The update function is analogous to the record update function which lifts a function
+  on a view type to one on the source type. \<close>
+
+definition lens_obs_eq :: "('b \<Longrightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<simeq>\<index>" 50) where
+[lens_defs]: "s\<^sub>1 \<simeq>\<^bsub>X\<^esub> s\<^sub>2 = (s\<^sub>1 = put\<^bsub>X\<^esub> s\<^sub>2 (get\<^bsub>X\<^esub> s\<^sub>1))"
+
+text \<open> This relation states that two sources are equivalent outside of the region characterised
+  by lens $X$. \<close>
+
+definition lens_override :: "('b \<Longrightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<triangleleft>\<index>" 95) where
+[lens_defs]: "S\<^sub>1 \<triangleleft>\<^bsub>X\<^esub> S\<^sub>2 = put\<^bsub>X\<^esub> S\<^sub>1 (get\<^bsub>X\<^esub> S\<^sub>2)"
+
+abbreviation (input) lens_override' :: "'a \<Rightarrow> 'a \<Rightarrow> ('b \<Longrightarrow> 'a) \<Rightarrow> 'a" ("_ \<oplus>\<^sub>L _ on _" [95,0,96] 95) where
+"S\<^sub>1 \<oplus>\<^sub>L S\<^sub>2 on X \<equiv> S\<^sub>1 \<triangleleft>\<^bsub>X\<^esub> S\<^sub>2"
+
+text \<open>Lens override uses a lens to replace part of a source type with a given value for the
+  corresponding view.\<close>
 
 subsection \<open>Weak Lenses\<close>
 
@@ -80,14 +107,8 @@ begin
   lemma create_inj: "inj create"
     by (metis create_get injI)
 
-  text \<open> The update function is analogous to the record update function which lifts a function
-    on a view type to one on the source type. \<close>
-    
-  definition update :: "('a \<Rightarrow> 'a) \<Rightarrow> ('b \<Rightarrow> 'b)" where
-  [lens_defs]: "update f \<sigma> = put \<sigma> (f (get \<sigma>))"
-
   lemma get_update: "get (update f \<sigma>) = f (get \<sigma>)"
-    by (simp add: put_get update_def)
+    by (simp add: put_get lens_update_def)
 
   lemma view_determination: 
     assumes "put \<sigma> u = put \<rho> v"
@@ -96,6 +117,7 @@ begin
     
   lemma put_inj: "inj (put \<sigma>)"
     by (simp add: injI view_determination)
+
 end
 
 declare weak_lens.put_get [simp]
@@ -139,7 +161,7 @@ locale mwb_lens = weak_lens +
 begin
 
   lemma update_comp: "update f (update g \<sigma>) = update (f \<circ> g) \<sigma>"
-    by (simp add: put_get put_put update_def)
+    by (simp add: put_get put_put lens_update_def)
 
   text \<open> Mainly well-behaved lenses give rise to a weakened version of the $get-put$ law, 
     where the source must be within the set of constructible sources. \<close>
@@ -164,6 +186,8 @@ begin
 
 end
 
+abbreviation (input) "partial_lens \<equiv> mwb_lens"
+
 declare mwb_lens.put_put [simp]
 declare mwb_lens.weak_get_put [simp]
 
@@ -173,7 +197,9 @@ lemma mwb_lens_weak [simp]:
 
 subsection \<open>Very Well-behaved Lenses\<close>
 
-text \<open>Very well-behaved lenses combine all three laws, as in the literature~\cite{Foster09,Fischer2015}.\<close>
+text \<open>Very well-behaved lenses combine all three laws, as in the literature~\cite{Foster09,Fischer2015}.
+  The same set of axioms can be found in Back and von Wright's refinement calculus~\cite{Back1998}, 
+  though with different names for the functions. \<close>
 
 locale vwb_lens = wb_lens + mwb_lens
 begin
@@ -193,13 +219,41 @@ begin
   lemma get_via_put: "get s = (THE v. put s v = s)"
     by (simp add: weak_get_via_put)
 
+  lemma get_surj: "surj get"
+    by (metis put_get surjI)
+
+  text \<open> Observation equivalence is an equivalence relation. \<close>
+
+  lemma lens_obs_equiv: "equivp (\<simeq>)"
+  proof (rule equivpI)
+    show "reflp (\<simeq>)"
+      by (rule reflpI, simp add: lens_obs_eq_def get_put)
+    show "symp (\<simeq>)"
+      by (rule sympI, simp add: lens_obs_eq_def, metis get_put put_put)
+    show "transp (\<simeq>)"
+      by (rule transpI, simp add: lens_obs_eq_def, metis put_put)
+  qed
+
 end
+
+abbreviation (input) "total_lens \<equiv> vwb_lens"
 
 lemma vwb_lens_wb [simp]: "vwb_lens x \<Longrightarrow> wb_lens x"
   by (simp add: vwb_lens_def)
 
 lemma vwb_lens_mwb [simp]: "vwb_lens x \<Longrightarrow> mwb_lens x"
   using vwb_lens_def by auto
+
+lemma mwb_UNIV_src_is_vwb_lens: 
+  "\<lbrakk> mwb_lens X; \<S>\<^bsub>X\<^esub> = UNIV \<rbrakk> \<Longrightarrow> vwb_lens X"
+  using vwb_lens_def wb_lens_axioms_def wb_lens_def by fastforce
+
+text \<open> Alternative characterisation: a very well-behaved (i.e. total) lens is a mainly well-behaved
+  (i.e. partial) lens whose source is the universe set. \<close>
+
+lemma vwb_lens_iff_mwb_UNIV_src: 
+  "vwb_lens X \<longleftrightarrow> (mwb_lens X \<and> \<S>\<^bsub>X\<^esub> = UNIV)"
+  by (meson mwb_UNIV_src_is_vwb_lens vwb_lens_def wb_lens.source_UNIV)
 
 subsection \<open> Ineffectual Lenses \<close>
 
@@ -227,6 +281,38 @@ end
 
 abbreviation "eff_lens X \<equiv> (weak_lens X \<and> (\<not> ief_lens X))"
 
+subsection \<open> Partially Bijective Lenses \<close>
+
+locale pbij_lens = weak_lens +
+  assumes put_det: "put \<sigma> v = put \<rho> v"
+begin
+
+  sublocale mwb_lens
+  proof
+    fix \<sigma> v u
+    show "put (put \<sigma> v) u = put \<sigma> u"
+      using put_det by blast
+  qed
+  
+  lemma put_is_create: "put \<sigma> v = create v"
+    by (simp add: lens_create_def put_det)
+
+  lemma partial_get_put: "\<rho> \<in> \<S> \<Longrightarrow> put \<sigma> (get \<rho>) = \<rho>"
+    by (metis put_det weak_get_put)
+
+end
+
+lemma pbij_lens_weak [simp]:
+  "pbij_lens x \<Longrightarrow> weak_lens x"
+  by (simp_all add: pbij_lens_def)
+
+lemma pbij_lens_mwb [simp]: "pbij_lens x \<Longrightarrow> mwb_lens x"
+  by (simp add: mwb_lens_axioms.intro mwb_lens_def pbij_lens.put_is_create)
+
+lemma pbij_alt_intro:
+  "\<lbrakk> weak_lens X; \<And> s. s \<in> \<S>\<^bsub>X\<^esub> \<Longrightarrow> create\<^bsub>X\<^esub> (get\<^bsub>X\<^esub> s) = s \<rbrakk> \<Longrightarrow> pbij_lens X"
+  by (metis pbij_lens_axioms_def pbij_lens_def weak_lens.put_closure weak_lens.put_get)
+
 subsection \<open> Bijective Lenses \<close>
 
 text \<open>Bijective lenses characterise the situation where the source and view type are equivalent:
@@ -239,22 +325,24 @@ locale bij_lens = weak_lens +
   assumes strong_get_put: "put \<sigma> (get \<rho>) = \<rho>"
 begin
 
+sublocale pbij_lens
+proof
+  fix \<sigma> v \<rho>
+  show "put \<sigma> v = put \<rho> v"
+    by (metis put_get strong_get_put)
+qed
+
 sublocale vwb_lens
 proof
   fix \<sigma> v u
   show "put \<sigma> (get \<sigma>) = \<sigma>"
     by (simp add: strong_get_put)
-  show "put (put \<sigma> v) u = put \<sigma> u"
-    by (metis bij_lens.strong_get_put bij_lens_axioms put_get)
 qed
-    
+
   lemma put_bij: "bij_betw (put \<sigma>) UNIV UNIV"
     by (metis bijI put_inj strong_get_put surj_def)
 
-  lemma put_is_create: "\<sigma> \<in> \<S> \<Longrightarrow> put \<sigma> v = create v"
-    by (metis create_get strong_get_put)
-
-  lemma get_create: "\<sigma> \<in> \<S> \<Longrightarrow> create (get \<sigma>) = \<sigma>"
+  lemma get_create: "create (get \<sigma>) = \<sigma>"
     by (simp add: lens_create_def strong_get_put)
     
 end
@@ -266,8 +354,23 @@ lemma bij_lens_weak [simp]:
   "bij_lens x \<Longrightarrow> weak_lens x"
   by (simp_all add: bij_lens_def)
 
+lemma bij_lens_pbij [simp]:
+  "bij_lens x \<Longrightarrow> pbij_lens x"
+  by (metis bij_lens.get_create bij_lens_def pbij_lens_axioms.intro pbij_lens_def weak_lens.put_get)
+
 lemma bij_lens_vwb [simp]: "bij_lens x \<Longrightarrow> vwb_lens x"
   by (metis bij_lens.strong_get_put bij_lens_weak mwb_lens.intro mwb_lens_axioms.intro vwb_lens_def wb_lens.intro wb_lens_axioms.intro weak_lens.put_get)
+
+text \<open> Alternative characterisation: a bijective lens is a partial bijective lens that is also
+  very well-behaved (i.e. total). \<close>
+
+lemma pbij_vwb_is_bij_lens:
+  "\<lbrakk> pbij_lens X; vwb_lens X \<rbrakk> \<Longrightarrow> bij_lens X"
+  by (unfold_locales, simp_all, meson pbij_lens.put_det vwb_lens.put_eq)
+
+lemma bij_lens_iff_pbij_vwb:
+  "bij_lens X \<longleftrightarrow> (pbij_lens X \<and> vwb_lens X)"
+  using pbij_vwb_is_bij_lens by auto
 
 subsection \<open>Lens Independence\<close>
 
@@ -295,9 +398,9 @@ locale lens_indep =
 notation lens_indep (infix "\<bowtie>" 50)
 
 lemma lens_indepI:
-  "\<lbrakk> \<And> u v \<sigma>. lens_put x (lens_put y \<sigma> v) u = lens_put y (lens_put x \<sigma> u) v;
-     \<And> v \<sigma>. lens_get x (lens_put y \<sigma> v) = lens_get x \<sigma>;
-     \<And> u \<sigma>. lens_get y (lens_put x \<sigma> u) = lens_get y \<sigma> \<rbrakk> \<Longrightarrow> x \<bowtie> y"
+  "\<lbrakk> \<And> u v \<sigma>. put\<^bsub>x\<^esub> (put\<^bsub>y\<^esub> \<sigma> v) u = put\<^bsub>y\<^esub> (put\<^bsub>x\<^esub> \<sigma> u) v;
+     \<And> v \<sigma>. get\<^bsub>x\<^esub> (put\<^bsub>y\<^esub> \<sigma> v) = get\<^bsub>x\<^esub> \<sigma>;
+     \<And> u \<sigma>. get\<^bsub>y\<^esub> (put\<^bsub>x\<^esub> \<sigma> u) = get\<^bsub>y\<^esub> \<sigma> \<rbrakk> \<Longrightarrow> x \<bowtie> y"
   by (simp add: lens_indep_def)
 
 text \<open>Lens independence is symmetric.\<close>
@@ -306,12 +409,53 @@ lemma lens_indep_sym:  "x \<bowtie> y \<Longrightarrow> y \<bowtie> x"
   by (simp add: lens_indep_def)
 
 lemma lens_indep_comm:
-  "x \<bowtie> y \<Longrightarrow> lens_put x (lens_put y \<sigma> v) u = lens_put y (lens_put x \<sigma> u) v"
+  "x \<bowtie> y \<Longrightarrow> put\<^bsub>x\<^esub> (put\<^bsub>y\<^esub> \<sigma> v) u = put\<^bsub>y\<^esub> (put\<^bsub>x\<^esub> \<sigma> u) v"
   by (simp add: lens_indep_def)
 
 lemma lens_indep_get [simp]:
   assumes "x \<bowtie> y"
-  shows "lens_get x (lens_put y \<sigma> v) = lens_get x \<sigma>"
+  shows "get\<^bsub>x\<^esub> (put\<^bsub>y\<^esub> \<sigma> v) = get\<^bsub>x\<^esub> \<sigma>"
   using assms lens_indep_def by fastforce
+
+text \<open> Characterisation of independence for two very well-behaved lenses \<close>
+
+lemma lens_indep_vwb_iff:
+  assumes "vwb_lens x" "vwb_lens y"
+  shows "x \<bowtie> y \<longleftrightarrow> (\<forall> u v \<sigma>. put\<^bsub>x\<^esub> (put\<^bsub>y\<^esub> \<sigma> v) u = put\<^bsub>y\<^esub> (put\<^bsub>x\<^esub> \<sigma> u) v)"
+proof
+  assume "x \<bowtie> y"
+  thus "\<forall> u v \<sigma>. put\<^bsub>x\<^esub> (put\<^bsub>y\<^esub> \<sigma> v) u = put\<^bsub>y\<^esub> (put\<^bsub>x\<^esub> \<sigma> u) v"
+    by (simp add: lens_indep_comm)
+next
+  assume a: "\<forall> u v \<sigma>. put\<^bsub>x\<^esub> (put\<^bsub>y\<^esub> \<sigma> v) u = put\<^bsub>y\<^esub> (put\<^bsub>x\<^esub> \<sigma> u) v"
+  show "x \<bowtie> y"
+  proof (unfold_locales)
+    fix \<sigma> v u
+    from a show "put\<^bsub>x\<^esub> (put\<^bsub>y\<^esub> \<sigma> v) u = put\<^bsub>y\<^esub> (put\<^bsub>x\<^esub> \<sigma> u) v" 
+      by auto
+    show "get\<^bsub>x\<^esub> (put\<^bsub>y\<^esub> \<sigma> v) = get\<^bsub>x\<^esub> \<sigma>"
+      by (metis a assms(1) vwb_lens.put_eq vwb_lens_wb wb_lens_def weak_lens.put_get)
+    show "get\<^bsub>y\<^esub> (put\<^bsub>x\<^esub> \<sigma> u) = get\<^bsub>y\<^esub> \<sigma>"
+      by (metis a assms(2) vwb_lens.put_eq vwb_lens_wb wb_lens_def weak_lens.put_get)
+  qed
+qed
+
+subsection \<open> Lens Compatibility \<close>
+
+text \<open> Lens compatibility is a weaker notion than independence. It allows that two lenses can overlap
+  so long as they manipulate the source in the same way in that region. It is most easily defined
+  in terms of a function for copying a region from one source to another using a lens. \<close>
+
+definition lens_compat (infix "##\<^sub>L" 50) where
+[lens_defs]: "lens_compat X Y = (\<forall>s\<^sub>1 s\<^sub>2. s\<^sub>1 \<triangleleft>\<^bsub>X\<^esub> s\<^sub>2 \<triangleleft>\<^bsub>Y\<^esub> s\<^sub>2 = s\<^sub>1 \<triangleleft>\<^bsub>Y\<^esub> s\<^sub>2 \<triangleleft>\<^bsub>X\<^esub> s\<^sub>2)"
+
+lemma lens_compat_idem [simp]: "x ##\<^sub>L x"
+  by (simp add: lens_defs)
+
+lemma lens_compat_sym: "x ##\<^sub>L y \<Longrightarrow> y ##\<^sub>L x"
+  by (simp add: lens_defs)
+
+lemma lens_indep_compat [simp]: "x \<bowtie> y \<Longrightarrow> x ##\<^sub>L y"
+  by (simp add: lens_override_def lens_compat_def lens_indep_comm)
 
 end

@@ -41,9 +41,9 @@ lemma sublens_trans [trans]:
   using comp_vwb_lens apply blast
 done
 
-text \<open>Sublens has a least element -- \<open>0\<^sub>L\<close> -- and a greatest element -- \<open>1\<^sub>L\<close>. 
+text \<open>Sublens has a least element -- @{text "0\<^sub>L"} -- and a greatest element -- @{text "1\<^sub>L"}. 
   Intuitively, this shows that sublens orders how large a portion of the source type a particular
-  lens views, with \<open>0\<^sub>L\<close> observing the least, and \<open>1\<^sub>L\<close> observing the most.\<close>
+  lens views, with @{text "0\<^sub>L"} observing the least, and @{text "1\<^sub>L"} observing the most.\<close>
   
 lemma sublens_least: "wb_lens X \<Longrightarrow> 0\<^sub>L \<subseteq>\<^sub>L X"
   using sublens_def unit_vwb_lens by fastforce
@@ -71,6 +71,14 @@ lemma sublens_pres_indep:
   apply (auto intro!:lens_indepI simp add: sublens_def lens_comp_def lens_indep_comm)
   apply (simp add: lens_indep_sym)
 done
+
+lemma sublens_pres_indep':
+  "\<lbrakk> X \<subseteq>\<^sub>L Y; Z \<bowtie> Y \<rbrakk> \<Longrightarrow> Z \<bowtie> X"
+  by (meson lens_indep_sym sublens_pres_indep)
+
+lemma sublens_compat: "\<lbrakk> vwb_lens X; vwb_lens Y; X \<subseteq>\<^sub>L Y \<rbrakk> \<Longrightarrow> X ##\<^sub>L Y"
+  unfolding lens_compat_def lens_override_def
+  by (metis (no_types, hide_lams) sublens_obs_get sublens_put_put vwb_lens_mwb vwb_lens_wb wb_lens.get_put)
 
 text \<open>Well-behavedness of lens quotient has sublens as a proviso. This is because we can only
   remove $X$ from $Y$ if $X$ is smaller than $Y$. \<close>
@@ -104,6 +112,18 @@ lemma lens_equiv_sym:
 lemma lens_equiv_trans [trans]:
   "\<lbrakk> X \<approx>\<^sub>L Y; Y \<approx>\<^sub>L Z \<rbrakk> \<Longrightarrow> X \<approx>\<^sub>L Z"
   by (auto intro: sublens_trans simp add: lens_equiv_def)
+
+lemma lens_equiv_pres_indep:
+  "\<lbrakk> X \<approx>\<^sub>L Y; Y \<bowtie> Z \<rbrakk> \<Longrightarrow> X \<bowtie> Z"
+  using lens_equiv_def sublens_pres_indep by blast
+
+lemma lens_equiv_pres_indep':
+  "\<lbrakk> X \<approx>\<^sub>L Y; Z \<bowtie> Y \<rbrakk> \<Longrightarrow> Z \<bowtie> X"
+  using lens_equiv_def sublens_pres_indep' by blast
+
+lemma lens_comp_cong_1: "X \<approx>\<^sub>L Y \<Longrightarrow> X ;\<^sub>L Z \<approx>\<^sub>L Y ;\<^sub>L Z"
+  unfolding lens_equiv_def
+  by (metis (no_types, lifting) lens_comp_assoc sublens_def)
 
 subsection \<open>Further Algebraic Laws\<close>
 
@@ -193,6 +213,8 @@ done
 lemma lens_plus_comm: "X \<bowtie> Y \<Longrightarrow> X +\<^sub>L Y \<approx>\<^sub>L Y +\<^sub>L X"
   by (simp add: lens_equivI lens_indep_sym lens_plus_sub_comm)
 
+
+
 text \<open>Any composite lens is larger than an element of the lens, as demonstrated by the following
   four laws.\<close>
     
@@ -205,9 +227,9 @@ lemma lens_plus_right_sublens:
   apply (rename_tac Z')
   apply (rule_tac x="Z' ;\<^sub>L snd\<^sub>L" in exI)
   apply (auto)
-   using comp_vwb_lens snd_vwb_lens apply blast
-  apply (simp add: lens_comp_assoc snd_lens_plus)
-done
+  using comp_vwb_lens snd_vwb_lens apply blast
+  apply (metis lens_comp_assoc snd_lens_plus vwb_lens_def)
+  done
     
 lemma lens_plus_mono_left:
   "\<lbrakk> Y \<bowtie> Z; X \<subseteq>\<^sub>L Y \<rbrakk> \<Longrightarrow> X +\<^sub>L Z \<subseteq>\<^sub>L Y +\<^sub>L Z"
@@ -217,7 +239,7 @@ lemma lens_plus_mono_left:
   apply (subst prod_lens_comp_plus)
    apply (simp_all)
   using id_vwb_lens prod_vwb_lens apply blast
-done
+  done
     
 lemma lens_plus_mono_right:
   "\<lbrakk> X \<bowtie> Z; Y \<subseteq>\<^sub>L Z \<rbrakk> \<Longrightarrow> X +\<^sub>L Y \<subseteq>\<^sub>L X +\<^sub>L Z"
@@ -229,7 +251,12 @@ text \<open>If we compose a lens $X$ with lens $Y$ then naturally the resulting 
 lemma lens_comp_lb [simp]: "vwb_lens X \<Longrightarrow> X ;\<^sub>L Y \<subseteq>\<^sub>L Y"
   by (auto simp add: sublens_def)
 
-text \<open>We can now also show that \<open>0\<^sub>L\<close> is the unit of lens plus\<close>
+lemma sublens_comp [simp]:
+  assumes "vwb_lens b" "c \<subseteq>\<^sub>L a"
+  shows "(b ;\<^sub>L c) \<subseteq>\<^sub>L a"
+  by (metis assms sublens_def sublens_trans)
+
+text \<open>We can now also show that @{text "0\<^sub>L"} is the unit of lens plus\<close>
     
 lemma lens_unit_plus_sublens_1: "X \<subseteq>\<^sub>L 0\<^sub>L +\<^sub>L X"
   by (metis lens_comp_lb snd_lens_plus snd_vwb_lens zero_lens_indep unit_wb_lens)
@@ -238,8 +265,6 @@ lemma lens_unit_prod_sublens_2: "0\<^sub>L +\<^sub>L X \<subseteq>\<^sub>L X"
   apply (auto simp add: sublens_def)
   apply (rule_tac x="0\<^sub>L +\<^sub>L 1\<^sub>L" in exI)
   apply (auto)
-   apply (rule plus_vwb_lens)
-     apply (simp_all)
   apply (auto simp add: lens_plus_def zero_lens_def lens_comp_def id_lens_def prod.case_eq_if comp_def)
   apply (rule ext)
   apply (rule ext)
@@ -381,6 +406,10 @@ lemma bij_lens_equiv:
   "\<lbrakk> bij_lens X; X \<approx>\<^sub>L Y \<rbrakk> \<Longrightarrow> bij_lens Y"
   by (meson bij_lens_equiv_id lens_equiv_def sublens_trans)
 
+lemma bij_lens_cong:
+  "X \<approx>\<^sub>L Y \<Longrightarrow> bij_lens X = bij_lens Y"
+  by (meson bij_lens_equiv lens_equiv_sym)
+
 text \<open>We can also show that the identity lens @{term "1\<^sub>L"} is unique. That is to say it is the only
   lens which when compose with $Y$ will yield $Y$.\<close>
     
@@ -393,7 +422,7 @@ lemma lens_id_unique:
   apply (metis select_convs(1) select_convs(2) weak_lens.put_get)
 done
 
-text \<open>Consequently, if composition of two lenses $X$ and $Y$ yields \<open>1\<^sub>L\<close>, then both
+text \<open>Consequently, if composition of two lenses $X$ and $Y$ yields @{text "1\<^sub>L"}, then both
   of the composed lenses must be bijective.\<close>
   
 lemma bij_lens_via_comp_id_left:
@@ -431,7 +460,6 @@ lemma lens_equiv_via_bij:
   apply (rule_tac x="lens_inv Z" in exI)
   apply (auto simp add: lens_comp_assoc bij_lens_inv_left)
    using bij_lens_vwb lens_inv_bij apply blast
-  apply (simp add: bij_lens_inv_left lens_comp_assoc[THEN sym])
 done
 
 text \<open>Indeed, we actually have a stronger result than this -- the equivalent lenses are precisely
@@ -452,6 +480,12 @@ lemma lens_equiv_iff_bij:
   using lens_equiv_via_bij apply blast
 done
 
+lemma pbij_plus_commute:
+  "\<lbrakk> a \<bowtie> b; mwb_lens a; mwb_lens b; pbij_lens (b +\<^sub>L a) \<rbrakk> \<Longrightarrow> pbij_lens (a +\<^sub>L b)"
+  apply (unfold_locales, simp_all add:lens_defs lens_indep_sym prod.case_eq_if)
+  using lens_indep.lens_put_comm pbij_lens.put_det apply fastforce
+  done
+
 subsection \<open>Lens Override Laws\<close>
   
 text \<open>The following laws are analogus to the equivalent laws for functions.\<close>
@@ -468,6 +502,11 @@ lemma lens_override_overshadow:
   assumes "mwb_lens Y"  "X \<subseteq>\<^sub>L Y"
   shows "(S\<^sub>1 \<oplus>\<^sub>L S\<^sub>2 on X) \<oplus>\<^sub>L S\<^sub>3 on Y = S\<^sub>1 \<oplus>\<^sub>L S\<^sub>3 on Y"
   using assms by (simp add: lens_override_def sublens_put_put)
+
+lemma lens_override_irr:
+  assumes "X \<bowtie> Y"
+  shows "S\<^sub>1 \<oplus>\<^sub>L (S\<^sub>2 \<oplus>\<^sub>L S\<^sub>3 on Y) on X = S\<^sub>1 \<oplus>\<^sub>L S\<^sub>2 on X"
+  using assms by (simp add: lens_override_def)
 
 lemma lens_override_overshadow_left:
   assumes "mwb_lens X"
@@ -578,5 +617,18 @@ lemma sublens_iff_sublens':
   assumes "vwb_lens X" "vwb_lens Y"
   shows "X \<subseteq>\<^sub>L Y \<longleftrightarrow> X \<subseteq>\<^sub>L' Y"
   using assms sublens'_implies_sublens sublens_implies_sublens' by blast
+
+subsection \<open> Alternative Equivalence Characterisation \<close>
+
+definition lens_equiv' :: "('a \<Longrightarrow> 'c) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> bool" (infix "\<approx>\<^sub>L''" 51) where
+[lens_defs]: "lens_equiv' X Y = (\<forall> s\<^sub>1 s\<^sub>2. (s\<^sub>1 \<oplus>\<^sub>L s\<^sub>2 on X = s\<^sub>1 \<oplus>\<^sub>L s\<^sub>2 on Y))"
+
+lemma lens_equiv_iff_lens_equiv':
+  assumes "vwb_lens X" "vwb_lens Y"
+  shows "X \<approx>\<^sub>L Y \<longleftrightarrow> X \<approx>\<^sub>L' Y"
+  apply (simp add: lens_equiv_def sublens_iff_sublens' assms)
+  apply (auto simp add: lens_defs assms)
+  apply (metis assms(2) mwb_lens.put_put vwb_lens_mwb vwb_lens_wb wb_lens.get_put)
+  done
 
 end

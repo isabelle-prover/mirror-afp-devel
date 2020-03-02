@@ -1,7 +1,7 @@
 section \<open>Lens Instances\<close>
 
 theory Lens_Instances
-  imports Lens_Order "HOL-Eisbach.Eisbach"
+  imports Lens_Order Lens_Symmetric "HOL-Eisbach.Eisbach"
   keywords "alphabet" :: "thy_defn"
 begin
 
@@ -17,7 +17,7 @@ text \<open>A function lens views the valuation associated with a particular dom
 definition fun_lens :: "'a \<Rightarrow> ('b::two \<Longrightarrow> ('a \<Rightarrow> 'b))" where
 [lens_defs]: "fun_lens x = \<lparr> lens_get = (\<lambda> f. f x), lens_put = (\<lambda> f u. f(x := u)) \<rparr>"
 
-lemma fun_wb_lens: "wb_lens (fun_lens x)"
+lemma fun_vwb_lens: "vwb_lens (fun_lens x)"
   by (unfold_locales, simp_all add: fun_lens_def)
 
 text \<open>Two function lenses are independent if and only if the domain elements are different.\<close>
@@ -107,9 +107,9 @@ lemma list_augment_0 [simp]:
 lemma list_augment_Suc [simp]:
   "list_augment (x # xs) (Suc n) y = x # list_augment xs n y"
   by (simp add: list_augment_def list_pad_out_def)
-    
+
 lemma list_augment_twice:
-  "list_augment (list_augment xs i u) j v = (list_pad_out xs (max i j))[i := u, j := v]"
+  "list_augment (list_augment xs i u) j v = (list_pad_out xs (max i j))[i:=u, j:=v]"
   apply (auto simp add: list_augment_def list_pad_out_def list_update_append_lemma1 replicate_add[THEN sym] max_def)
   apply (metis Suc_le_mono add.commute diff_diff_add diff_le_mono le_add_diff_inverse2)
 done
@@ -161,9 +161,9 @@ definition list_lens :: "nat \<Rightarrow> ('a::two \<Longrightarrow> 'a list)" 
 [lens_defs]: "list_lens i = \<lparr> lens_get = (\<lambda> xs. nth' xs i)
                             , lens_put = (\<lambda> xs x. list_augment xs i x) \<rparr>"
 
-abbreviation "hd_lens \<equiv> list_lens 0"
+abbreviation hd_lens ("hd\<^sub>L") where "hd_lens \<equiv> list_lens 0"
 
-definition tl_lens :: "'a list \<Longrightarrow> 'a list" where
+definition tl_lens :: "'a list \<Longrightarrow> 'a list" ("tl\<^sub>L") where
 [lens_defs]: "tl_lens = \<lparr> lens_get = (\<lambda> xs. tl xs)
                         , lens_put = (\<lambda> xs xs'. hd xs # xs') \<rparr>"
 
@@ -180,10 +180,10 @@ lemma source_list_lens: "\<S>\<^bsub>list_lens i\<^esub> = {xs. length xs > i}"
   done
 
 lemma tail_lens_mwb:
-  "mwb_lens tl_lens"
+  "mwb_lens tl\<^sub>L"
   by (unfold_locales, simp_all add: tl_lens_def)
 
-lemma source_tail_lens: "\<S>\<^bsub>tl_lens\<^esub> = {xs. xs \<noteq> []}"
+lemma source_tail_lens: "\<S>\<^bsub>tl\<^sub>L\<^esub> = {xs. xs \<noteq> []}"
   using list.exhaust_sel by (auto simp add: tl_lens_def lens_source_def)
   
 text \<open>Independence of list lenses follows when the two indices are different.\<close>
@@ -193,13 +193,16 @@ lemma list_lens_indep:
   by (simp add: list_lens_def lens_indep_def list_augment_commute nth'_list_augment_diff)
 
 lemma hd_tl_lens_indep [simp]:
-  "hd_lens \<bowtie> tl_lens"
+  "hd\<^sub>L \<bowtie> tl\<^sub>L"
   apply (rule lens_indepI)
     apply (simp_all add: list_lens_def tl_lens_def)
     apply (metis hd_conv_nth hd_def length_greater_0_conv list.case(1) nth'_def nth'_list_augment)
    apply (metis (full_types) hd_conv_nth hd_def length_greater_0_conv list.case(1) nth'_def)
-  apply (metis Nitpick.size_list_simp(2) One_nat_def add_Suc_right append.simps(1) append_Nil2 diff_Suc_Suc diff_zero hd_Cons_tl list.inject list.size(4) list_augment_0 list_augment_def list_augment_same_twice list_pad_out_def nth_list_augment replicate.simps(1) replicate.simps(2) tl_Nil)
+  apply (metis One_nat_def diff_Suc_Suc diff_zero length_0_conv length_list_augment_1 length_tl linorder_not_less list.exhaust list.sel(2) list.sel(3) list_augment_0 not_less_zero)
 done
+
+lemma hd_tl_lens_pbij: "pbij_lens (hd\<^sub>L +\<^sub>L tl\<^sub>L)"
+  by (unfold_locales, auto simp add: lens_defs)
 
 subsection \<open>Record Field Lenses\<close>
 
@@ -211,8 +214,32 @@ text \<open>We also add support for record lenses. Every record created can yiel
   
 abbreviation (input) "fld_put f \<equiv> (\<lambda> \<sigma> u. f (\<lambda>_. u) \<sigma>)"
 
-syntax "_FLDLENS" :: "id \<Rightarrow> ('a \<Longrightarrow> 'r)"  ("FLDLENS _")
-translations "FLDLENS x" => "\<lparr> lens_get = x, lens_put = CONST fld_put (_update_name x) \<rparr>"
+syntax 
+  "_FLDLENS" :: "id \<Rightarrow> logic"  ("FLDLENS _")
+translations 
+  "FLDLENS x" => "\<lparr> lens_get = x, lens_put = CONST fld_put (_update_name x) \<rparr>"
+
+text \<open> We also allow the extraction of the "base lens", which characterises all the fields added
+  by a record without the extension. \<close>
+
+syntax
+  "_BASELENS" :: "id \<Rightarrow> logic"  ("BASELENS _")
+
+abbreviation (input) "base_lens t e m \<equiv> \<lparr> lens_get = t, lens_put = \<lambda> s v. e v (m s) \<rparr>"
+
+ML \<open>
+  fun baselens_tr [Free (name, _)] =
+    let
+      val extend = Free (name ^ ".extend", dummyT);
+      val truncate = Free (name ^ ".truncate", dummyT);
+      val more = Free (name ^ ".more", dummyT);
+    in
+      Const (@{const_syntax "base_lens"}, dummyT) $ truncate $ extend $ more
+    end
+  | baselens_tr _ = raise Match;
+\<close>
+
+parse_translation \<open>[(@{syntax_const "_BASELENS"}, K baselens_tr)]\<close>  
 
 text \<open>We also introduce the \textbf{alphabet} command that creates a record with lenses for each field.
   For each field a lens is created together with a proof that it is very well-behaved, and for each 
@@ -225,6 +252,28 @@ text \<open>The following theorem attribute stores splitting theorems for alphab
   for proof automation.\<close>
 
 named_theorems alpha_splits
+
+subsection \<open>Type Definition Lens\<close>
+
+text \<open> Every type defined by a \<^bold>\<open>typedef\<close> command induces a partial bijective lens constructed
+  using the abstraction and representation functions. \<close>
+
+context type_definition
+begin
+
+definition typedef_lens :: "'b \<Longrightarrow> 'a" ("typedef\<^sub>L") where
+[lens_defs]: "typedef\<^sub>L = \<lparr> lens_get = Abs, lens_put = (\<lambda> s. Rep) \<rparr>"
+
+lemma pbij_typedef_lens [simp]: "pbij_lens typedef\<^sub>L"
+  by (unfold_locales, simp_all add: lens_defs Rep_inverse)
+
+lemma source_typedef_lens: "\<S>\<^bsub>typedef\<^sub>L\<^esub> = A"
+  using Rep_cases by (auto simp add: lens_source_def lens_defs Rep)
+
+lemma bij_typedef_lens_UNIV: "A = UNIV \<Longrightarrow> bij_lens typedef\<^sub>L"
+  by (auto intro: pbij_vwb_is_bij_lens simp add: mwb_UNIV_src_is_vwb_lens source_typedef_lens)
+
+end
 
 subsection \<open>Mapper Lenses\<close>
 

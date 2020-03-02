@@ -19,7 +19,7 @@ text \<open>
   Lens composition, illustrated in Figure~\ref{fig:Comp}, constructs a lens by composing the source 
   of one lens with the view of another.\<close>
 
-definition lens_comp :: "('a \<Longrightarrow> 'b) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> ('a \<Longrightarrow> 'c)" (infixr ";\<^sub>L" 80) where
+definition lens_comp :: "('a \<Longrightarrow> 'b) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> ('a \<Longrightarrow> 'c)" (infixl ";\<^sub>L" 80) where
 [lens_defs]: "lens_comp Y X = \<lparr> lens_get = get\<^bsub>Y\<^esub> \<circ> lens_get X
                               , lens_put = (\<lambda> \<sigma> v. lens_put X \<sigma> (lens_put Y (lens_get X \<sigma>) v)) \<rparr>"
 
@@ -83,12 +83,6 @@ text \<open>The quotient operator $X \lquot Y$ shortens lens $X$ by cutting off 
 definition lens_quotient :: "('a \<Longrightarrow> 'c) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> 'a \<Longrightarrow> 'b" (infixr "'/\<^sub>L" 90) where
 [lens_defs]: "X /\<^sub>L Y = \<lparr> lens_get = \<lambda> \<sigma>. get\<^bsub>X\<^esub> (create\<^bsub>Y\<^esub> \<sigma>)
                        , lens_put = \<lambda> \<sigma> v. get\<^bsub>Y\<^esub> (put\<^bsub>X\<^esub> (create\<^bsub>Y\<^esub> \<sigma>) v) \<rparr>"
-
-text \<open>Lens override uses a lens to replace part of a source type with a given value for the
-  corresponding view.\<close>
-
-definition lens_override :: "'a \<Rightarrow> 'a \<Rightarrow> ('b \<Longrightarrow> 'a) \<Rightarrow> 'a" ("_ \<oplus>\<^sub>L _ on _" [95,0,96] 95) where
-[lens_defs]: "S\<^sub>1 \<oplus>\<^sub>L S\<^sub>2 on X = put\<^bsub>X\<^esub> S\<^sub>1 (get\<^bsub>X\<^esub> S\<^sub>2)"
 
 text \<open>Lens inverse take a bijective lens and swaps the source and view types.\<close>
 
@@ -154,7 +148,7 @@ lemma plus_wb_lens:
   apply (simp add: lens_indep_sym prod.case_eq_if)
 done
 
-lemma plus_vwb_lens:
+lemma plus_vwb_lens [simp]:
   assumes "vwb_lens x" "vwb_lens y" "x \<bowtie> y"
   shows "vwb_lens (x +\<^sub>L y)"
   using assms
@@ -199,6 +193,12 @@ lemma id_bij_lens: "bij_lens 1\<^sub>L"
 lemma inv_id_lens: "inv\<^sub>L 1\<^sub>L = 1\<^sub>L"
   by (auto simp add: lens_inv_def id_lens_def lens_create_def)
 
+lemma inv_inv_lens: "bij_lens X \<Longrightarrow> inv\<^sub>L (inv\<^sub>L X) = X"
+  apply (cases X)
+  apply (auto simp add: lens_defs fun_eq_iff)
+  apply (metis (no_types) bij_lens.strong_get_put bij_lens_def select_convs(2) weak_lens.put_get)
+  done
+
 lemma lens_inv_bij: "bij_lens X \<Longrightarrow> bij_lens (inv\<^sub>L X)"
   by (unfold_locales, simp_all add: lens_inv_def lens_create_def)
 
@@ -210,7 +210,7 @@ subsection \<open>Composition Laws\<close>
 text \<open>Lens composition is monoidal, with unit @{term "1\<^sub>L"}, as the following theorems demonstrate. 
   It also has @{term "0\<^sub>L"} as a right annihilator. \<close>
   
-lemma lens_comp_assoc: "(X ;\<^sub>L Y) ;\<^sub>L Z = X ;\<^sub>L (Y ;\<^sub>L Z)"
+lemma lens_comp_assoc: "X ;\<^sub>L (Y ;\<^sub>L Z) = (X ;\<^sub>L Y) ;\<^sub>L Z"
   by (auto simp add: lens_comp_def)
 
 lemma lens_comp_left_id [simp]: "1\<^sub>L ;\<^sub>L X = X"
@@ -220,6 +220,9 @@ lemma lens_comp_right_id [simp]: "X ;\<^sub>L 1\<^sub>L = X"
   by (simp add: id_lens_def lens_comp_def)
 
 lemma lens_comp_anhil [simp]: "wb_lens X \<Longrightarrow> 0\<^sub>L ;\<^sub>L X = 0\<^sub>L"
+  by (simp add: zero_lens_def lens_comp_def comp_def)
+
+lemma lens_comp_anhil_right [simp]: "wb_lens X \<Longrightarrow> X ;\<^sub>L 0\<^sub>L = 0\<^sub>L"
   by (simp add: zero_lens_def lens_comp_def comp_def)
 
 subsection \<open>Independence Laws\<close>
@@ -322,7 +325,15 @@ lemma lens_indep_prod:
   apply (rule lens_indepI)
     apply (auto simp add: lens_prod_def prod.case_eq_if lens_indep_comm map_prod_def)
    apply (simp_all add: lens_indep_sym)
-done
+  done
+
+subsection \<open> Compatibility Laws \<close>
+
+lemma zero_lens_compat [simp]: "0\<^sub>L ##\<^sub>L X"
+  by (auto simp add: zero_lens_def lens_override_def lens_compat_def)
+
+lemma id_lens_compat [simp]: "vwb_lens X \<Longrightarrow> 1\<^sub>L ##\<^sub>L X"
+  by (auto simp add: id_lens_def lens_override_def lens_compat_def)
 
 subsection \<open>Algebraic Laws\<close>
 
@@ -395,5 +406,13 @@ lemma lens_quotient_id_denom: "X /\<^sub>L 1\<^sub>L = X"
 lemma lens_quotient_unit: "weak_lens X \<Longrightarrow> (0\<^sub>L /\<^sub>L X) = 0\<^sub>L"
   by (simp add: lens_quotient_def zero_lens_def)
 
-    
+lemma lens_obs_eq_zero: "s\<^sub>1 \<simeq>\<^bsub>0\<^sub>L\<^esub> s\<^sub>2 = (s\<^sub>1 = s\<^sub>2)"
+  by (simp add: lens_defs)
+
+lemma lens_obs_eq_one: "s\<^sub>1 \<simeq>\<^bsub>1\<^sub>L\<^esub> s\<^sub>2"
+  by (simp add: lens_defs)
+
+lemma lens_obs_eq_as_override: "vwb_lens X \<Longrightarrow> s\<^sub>1 \<simeq>\<^bsub>X\<^esub> s\<^sub>2 \<longleftrightarrow> (s\<^sub>2 = s\<^sub>1 \<oplus>\<^sub>L s\<^sub>2 on X)"
+  by (auto simp add: lens_defs; metis vwb_lens.put_eq)
+
 end
