@@ -25,14 +25,14 @@ subsection "Definition of Validity"
   
 (* this definition refines the normal Hoare Triple Validity *)
 definition hoare2o_valid :: "qassn \<Rightarrow> com \<Rightarrow> qassn \<Rightarrow> bool"
-  ("\<Turnstile>\<^sub>2\<^sub>' {(1_)}/ (_)/ {(1_)}" 50) where
+  ("\<Turnstile>\<^sub>2\<^sub>'' {(1_)}/ (_)/ {(1_)}" 50) where
 "\<Turnstile>\<^sub>2\<^sub>' {P} c {Q}  \<longleftrightarrow>  (\<exists>k>0. (\<forall>s.  P s < \<infinity> \<longrightarrow> (\<exists>t p. ((c,s) \<Rightarrow> p \<Down> t) \<and> enat k * P s \<ge> p + enat k * Q t)))"
 
 
 subsection "Hoare Rules"
 
 inductive
-  hoareQ :: "qassn \<Rightarrow> com \<Rightarrow> qassn \<Rightarrow> bool" ("\<turnstile>\<^sub>2\<^sub>' ({(1_)}/ (_)/ {(1_)})" 50)
+  hoareQ :: "qassn \<Rightarrow> com \<Rightarrow> qassn \<Rightarrow> bool" ("\<turnstile>\<^sub>2\<^sub>'' ({(1_)}/ (_)/ {(1_)})" 50)
 where
 
 Skip:  "\<turnstile>\<^sub>2\<^sub>' {%s. eSuc (P s)} SKIP {P}"  |

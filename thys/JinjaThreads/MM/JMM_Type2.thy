@@ -140,22 +140,22 @@ interpretation jmm': heap_base
   jmm_empty jmm_allocate "jmm_typeof_addr P" "jmm_heap_read_typed P" jmm_heap_write
   for P .
 
-abbreviation jmm'_hext :: "'m prog \<Rightarrow> JMM_heap \<Rightarrow> JMM_heap \<Rightarrow> bool" ("_ \<turnstile> _ \<unlhd>jmm' _" [51,51,51] 50)
+abbreviation jmm'_hext :: "'m prog \<Rightarrow> JMM_heap \<Rightarrow> JMM_heap \<Rightarrow> bool" ("_ \<turnstile> _ \<unlhd>jmm'' _" [51,51,51] 50)
 where "jmm'_hext \<equiv> jmm'.hext TYPE('m)"
 
 abbreviation jmm'_conf :: "'m prog \<Rightarrow> JMM_heap \<Rightarrow> addr val \<Rightarrow> ty \<Rightarrow> bool" 
-  ("_,_ \<turnstile>jmm' _ :\<le> _"  [51,51,51,51] 50)
+  ("_,_ \<turnstile>jmm'' _ :\<le> _"  [51,51,51,51] 50)
 where "jmm'_conf P \<equiv> jmm'.conf TYPE('m) P P"
 
 abbreviation jmm'_addr_loc_type :: "'m prog \<Rightarrow> JMM_heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> ty \<Rightarrow> bool" 
-  ("_,_ \<turnstile>jmm' _@_ : _" [50, 50, 50, 50, 50] 51)
+  ("_,_ \<turnstile>jmm'' _@_ : _" [50, 50, 50, 50, 50] 51)
 where "jmm'_addr_loc_type P \<equiv> jmm'.addr_loc_type TYPE('m) P P"
 
 abbreviation jmm'_confs :: "'m prog \<Rightarrow> JMM_heap \<Rightarrow> addr val list \<Rightarrow> ty list \<Rightarrow> bool"
-  ("_,_ \<turnstile>jmm' _ [:\<le>] _"  [51,51,51,51] 50)
+  ("_,_ \<turnstile>jmm'' _ [:\<le>] _"  [51,51,51,51] 50)
 where "jmm'_confs P \<equiv> jmm'.confs TYPE('m) P P"
 
-abbreviation jmm'_tconf :: "'m prog \<Rightarrow> JMM_heap \<Rightarrow> addr \<Rightarrow> bool" ("_,_ \<turnstile>jmm' _ \<surd>t" [51,51,51] 50)
+abbreviation jmm'_tconf :: "'m prog \<Rightarrow> JMM_heap \<Rightarrow> addr \<Rightarrow> bool" ("_,_ \<turnstile>jmm'' _ \<surd>t" [51,51,51] 50)
 where "jmm'_tconf P \<equiv> jmm'.tconf TYPE('m) P P"
 
 subsection \<open>Heap locale interpretations\<close>
@@ -386,7 +386,7 @@ by(rule jmm'_allocated_heap)
 
 subsection \<open>Syntax translations\<close>
 
-notation jmm'.external_WT' ("_,_ \<turnstile>jmm' (_\<bullet>_'(_')) : _" [50,0,0,0,50] 60)
+notation jmm'.external_WT' ("_,_ \<turnstile>jmm'' (_\<bullet>_'(_')) : _" [50,0,0,0,50] 60)
 
 abbreviation jmm'_red_external :: 
   "'m prog \<Rightarrow> thread_id \<Rightarrow> JMM_heap \<Rightarrow> addr \<Rightarrow> mname \<Rightarrow> addr val list
@@ -398,7 +398,7 @@ abbreviation jmm'_red_external_syntax ::
   "'m prog \<Rightarrow> thread_id \<Rightarrow> addr \<Rightarrow> mname \<Rightarrow> addr val list \<Rightarrow> JMM_heap
   \<Rightarrow> (addr, thread_id, JMM_heap) external_thread_action 
   \<Rightarrow> addr extCallRet \<Rightarrow> JMM_heap \<Rightarrow> bool"
-  ("_,_ \<turnstile>jmm' (\<langle>(_\<bullet>_'(_')),/_\<rangle>) -_\<rightarrow>ext (\<langle>(_),/(_)\<rangle>)" [50, 0, 0, 0, 0, 0, 0, 0, 0] 51)
+  ("_,_ \<turnstile>jmm'' (\<langle>(_\<bullet>_'(_')),/_\<rangle>) -_\<rightarrow>ext (\<langle>(_),/(_)\<rangle>)" [50, 0, 0, 0, 0, 0, 0, 0, 0] 51)
 where
   "P,t \<turnstile>jmm' \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle> \<equiv> jmm'_red_external P t h a M vs ta va h'"
 

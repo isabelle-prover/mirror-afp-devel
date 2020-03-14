@@ -56,7 +56,7 @@ where
   "sup_state P \<equiv> Product.le (Listn.le (widen P)) (Listn.le (sup_ty_opt P))"
 
 definition sup_state_opt :: "['c prog,ty\<^sub>i',ty\<^sub>i'] \<Rightarrow> bool" 
-  ("_ \<turnstile> _ \<le>' _" [71,71,71] 70)
+  ("_ \<turnstile> _ \<le>'' _" [71,71,71] 70)
 where
   "sup_state_opt P \<equiv> Opt.le (sup_state P)"
 

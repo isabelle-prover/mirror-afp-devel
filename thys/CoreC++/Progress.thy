@@ -88,7 +88,7 @@ text\<open>Derivation of new induction scheme for well typing:\<close>
 
 inductive
   WTrt' :: "[prog,env,heap,expr,     ty     ] \<Rightarrow> bool"
-        ("_,_,_ \<turnstile> _ :' _"   [51,51,51]50)
+        ("_,_,_ \<turnstile> _ :'' _"   [51,51,51]50)
   and WTrts':: "[prog,env,heap,expr list,ty list] \<Rightarrow> bool"
         ("_,_,_ \<turnstile> _ [:''] _" [51,51,51]50)
   for P :: prog

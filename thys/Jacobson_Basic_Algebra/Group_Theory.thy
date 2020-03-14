@@ -1321,8 +1321,8 @@ text \<open>Jacobson notes that @{thm [source] commutes_with_unit} is not necess
 text \<open>p 58, l 33; p 59, ll 1--2\<close>
 notation source.invertible ("invertible _" [100] 100)
 notation source.inverse ("inverse _" [100] 100)
-notation target.invertible ("invertible' _" [100] 100)
-notation target.inverse ("inverse' _" [100] 100)
+notation target.invertible ("invertible'' _" [100] 100)
+notation target.inverse ("inverse'' _" [100] 100)
 
 end (* monoid_homomorphism *)
 

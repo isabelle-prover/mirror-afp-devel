@@ -31,7 +31,7 @@ inductive
   WTrt' :: "[J_prog,heap,env,expr,ty] \<Rightarrow> bool"
   and WTrts' :: "[J_prog,heap,env,expr list, ty list] \<Rightarrow> bool"
   and WTrt2' :: "[J_prog,env,heap,expr,ty] \<Rightarrow> bool"
-        ("_,_,_ \<turnstile> _ :' _"   [51,51,51]50)
+        ("_,_,_ \<turnstile> _ :'' _"   [51,51,51]50)
   and WTrts2' :: "[J_prog,env,heap,expr list, ty list] \<Rightarrow> bool"
         ("_,_,_ \<turnstile> _ [:''] _" [51,51,51]50)
   for P :: J_prog and h :: heap

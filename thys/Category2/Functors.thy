@@ -238,7 +238,7 @@ proof(intro_locales)
 qed
 
 definition 
-  IdentityFunctor' :: "('o,'m,'a) Category_scheme \<Rightarrow> ('o,'o,'m,'m,'a,'a) Functor" ("FId' _" [70]) where
+  IdentityFunctor' :: "('o,'m,'a) Category_scheme \<Rightarrow> ('o,'o,'m,'m,'a,'a) Functor" ("FId'' _" [70]) where
   "IdentityFunctor' C \<equiv> \<lparr>CatDom = C , CatCod = C , MapM = (\<lambda> f . f) \<rparr>"
 
 definition 

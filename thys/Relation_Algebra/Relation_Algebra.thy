@@ -26,7 +26,7 @@ Kleene algebras (cf.~\emph{relation-algebra-rtc}).\<close>
 class relation_algebra = boolean_algebra +
   fixes composition :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  (infixl ";" 75)
     and converse :: "'a \<Rightarrow> 'a" ("(_\<^sup>\<smile>)" [1000] 999)
-    and unit :: "'a" ("1'")
+    and unit :: "'a" ("1''")
   assumes comp_assoc: "(x ; y) ; z = x ; (y ; z)"
     and comp_unitr [simp]: "x ; 1' = x"
     and comp_distr: "(x + y) ; z = x ; z + y ; z"

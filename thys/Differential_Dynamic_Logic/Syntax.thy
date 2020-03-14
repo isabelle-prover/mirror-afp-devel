@@ -40,7 +40,7 @@ datatype ('a, 'c) trm =
 | Times "('a, 'c) trm" "('a, 'c) trm"
 \<comment> \<open>A (real-valued) variable standing for a differential, such as \<open>x'\<close>, given meaning by the state\<close>
 \<comment> \<open>and modified by programs.\<close>
-| DiffVar 'c ("$'")
+| DiffVar 'c ("$''")
 \<comment> \<open>The differential of an arbitrary term \<open>(\<theta>)'\<close>\<close>
 | Differential "('a, 'c) trm"
 

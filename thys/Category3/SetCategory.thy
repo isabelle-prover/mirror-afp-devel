@@ -702,7 +702,7 @@ begin
   begin
 
     notation S.in_hom     ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
-    notation S'.in_hom    ("\<guillemotleft>_ : _ \<rightarrow>' _\<guillemotright>")
+    notation S'.in_hom    ("\<guillemotleft>_ : _ \<rightarrow>'' _\<guillemotright>")
 
     abbreviation \<psi>
     where "\<psi> \<equiv> inv_into S.Univ \<phi>"

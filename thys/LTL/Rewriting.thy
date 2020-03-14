@@ -84,7 +84,7 @@ definition mk_next
 where
   "mk_next x \<equiv> case x of true\<^sub>n \<Rightarrow> true\<^sub>n | false\<^sub>n \<Rightarrow> false\<^sub>n | _ \<Rightarrow> X\<^sub>n x"
 
-definition mk_next_pow ("X\<^sub>n'")
+definition mk_next_pow ("X\<^sub>n''")
 where
   "mk_next_pow n x \<equiv> case x of true\<^sub>n \<Rightarrow> true\<^sub>n | false\<^sub>n \<Rightarrow> false\<^sub>n | _ \<Rightarrow> (Next_ltln ^^ n) x"
 

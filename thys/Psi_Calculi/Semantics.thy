@@ -7,7 +7,7 @@ theory Semantics
 begin
 
 nominal_datatype ('a, 'b, 'c) boundOutput = 
-  BOut "'a::fs_name" "('a, 'b::fs_name, 'c::fs_name) psi" ("_ \<prec>' _" [110, 110] 110)
+  BOut "'a::fs_name" "('a, 'b::fs_name, 'c::fs_name) psi" ("_ \<prec>'' _" [110, 110] 110)
 | BStep "\<guillemotleft>name\<guillemotright> ('a, 'b, 'c) boundOutput"                ("\<lparr>\<nu>_\<rparr>_" [110, 110] 110)
 
 primrec BOresChain :: "name list \<Rightarrow> ('a::fs_name, 'b::fs_name, 'c::fs_name) boundOutput \<Rightarrow> 

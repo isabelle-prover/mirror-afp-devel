@@ -8,7 +8,7 @@ begin
 subsection \<open>Definition of Validity\<close>
           
 definition hoare3o_valid :: "assn2 \<Rightarrow> com \<Rightarrow> assn2 \<Rightarrow> bool"
-  ("\<Turnstile>\<^sub>3\<^sub>' {(1_)}/ (_)/ { (1_)}" 50) where
+  ("\<Turnstile>\<^sub>3\<^sub>'' {(1_)}/ (_)/ { (1_)}" 50) where
 "\<Turnstile>\<^sub>3\<^sub>' { P } c { Q }  \<longleftrightarrow>
     (\<exists> k>0. (\<forall>ps n. P (ps,n)
  \<longrightarrow> (\<exists>ps' ps'' m e e'. ((c,ps) \<Rightarrow>\<^sub>A m \<Down> ps' + ps'') 
@@ -57,7 +57,7 @@ conseq: "\<lbrakk> \<turnstile>\<^sub>3\<^sub>b {P}c{Q} ; \<And>s n. P' (s,n) \<
   
   
 inductive
-  hoare3' :: "assn2 \<Rightarrow> com \<Rightarrow> assn2 \<Rightarrow> bool" ("\<turnstile>\<^sub>3\<^sub>' ({(1_)}/ (_)/ { (1_)})" 50)
+  hoare3' :: "assn2 \<Rightarrow> com \<Rightarrow> assn2 \<Rightarrow> bool" ("\<turnstile>\<^sub>3\<^sub>'' ({(1_)}/ (_)/ { (1_)})" 50)
 where
 
 Skip:  "\<turnstile>\<^sub>3\<^sub>' {$1} SKIP { $0}"  |
@@ -847,7 +847,7 @@ lemma weakenpreR:  "\<lbrakk> \<turnstile>\<^sub>3\<^sub>a {P}c{Q} ; \<And>s. P'
 subsection "Completeness"
     
     
-definition wp3' :: "com \<Rightarrow> assn2 \<Rightarrow> assn2" ("wp\<^sub>3\<^sub>'") where 
+definition wp3' :: "com \<Rightarrow> assn2 \<Rightarrow> assn2" ("wp\<^sub>3\<^sub>''") where 
 "wp\<^sub>3\<^sub>' c Q  =  (\<lambda>(s,n). \<exists>t m. n\<ge>m \<and> (c,s) \<Rightarrow>\<^sub>A m \<Down> t \<and> Q (t,n-m))" 
     
 lemma wp3Skip[simp]: "wp\<^sub>3\<^sub>' SKIP Q = (Q ** $1)"

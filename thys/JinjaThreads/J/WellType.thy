@@ -360,7 +360,7 @@ code_pred
   is_lub_sup
 .
 
-definition WT_code :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr \<Rightarrow> ty \<Rightarrow> bool" ("_,_ \<turnstile> _ ::' _" [51,51,51] 50)
+definition WT_code :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr \<Rightarrow> ty \<Rightarrow> bool" ("_,_ \<turnstile> _ ::'' _" [51,51,51] 50)
 where "WT_code P \<equiv> WT (is_lub_sup P) P"
 
 definition WTs_code :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr list \<Rightarrow> ty list \<Rightarrow> bool" ("_,_ \<turnstile> _ [::''] _" [51,51,51] 50)

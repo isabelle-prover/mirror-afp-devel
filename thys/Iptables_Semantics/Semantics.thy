@@ -493,7 +493,7 @@ locale iptables_bigstep_fixedbackground =
   begin
 
   inductive iptables_bigstep' :: "'p \<Rightarrow> 'a rule list \<Rightarrow> state \<Rightarrow> state \<Rightarrow> bool"
-    ("_\<turnstile>' \<langle>_, _\<rangle> \<Rightarrow> _"  [60,20,98,98] 89)
+    ("_\<turnstile>'' \<langle>_, _\<rangle> \<Rightarrow> _"  [60,20,98,98] 89)
     for p where
   skip:    "p\<turnstile>' \<langle>[], t\<rangle> \<Rightarrow> t" |
   accept:  "matches \<gamma> m p \<Longrightarrow> p\<turnstile>' \<langle>[Rule m Accept], Undecided\<rangle> \<Rightarrow> Decision FinalAllow" |

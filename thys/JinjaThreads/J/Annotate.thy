@@ -230,7 +230,7 @@ qed(fastforce dest: sees_field_fun)+
 
 subsection \<open>Code generation\<close>
 
-definition Anno_code :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr \<Rightarrow> 'addr expr \<Rightarrow> bool" ("_,_ \<turnstile> _ \<leadsto>' _"   [51,0,0,51]50)
+definition Anno_code :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr \<Rightarrow> 'addr expr \<Rightarrow> bool" ("_,_ \<turnstile> _ \<leadsto>'' _"   [51,0,0,51]50)
 where "Anno_code P = Anno (is_lub_sup P) P"
 
 definition Annos_code :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr list \<Rightarrow> 'addr expr list \<Rightarrow> bool" ("_,_ \<turnstile> _ [\<leadsto>''] _" [51,0,0,51]50)

@@ -3485,7 +3485,7 @@ section \<open>Completeness\<close>
 subsection \<open>Hintikka\<close>
 
 abbreviation at_in' :: \<open>('a, 'b) fm \<Rightarrow> 'b \<Rightarrow> ('a, 'b) block set \<Rightarrow> bool\<close>
-  (\<open>_ at _ in' _\<close> [51, 51, 51] 50) where
+  (\<open>_ at _ in'' _\<close> [51, 51, 51] 50) where
   \<open>p at a in' branch \<equiv> \<exists>ps. (ps, a) \<in> branch \<and> p on (ps, a)\<close>
 
 text \<open>

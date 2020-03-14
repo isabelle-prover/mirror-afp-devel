@@ -1084,7 +1084,7 @@ text \<open>
 The pseudocomplement of tests is given by the following operation.
 \<close>
 
-abbreviation coreflexive_complement :: "'a \<Rightarrow> 'a" ("_ '" [80] 80)
+abbreviation coreflexive_complement :: "'a \<Rightarrow> 'a" ("_ ''" [80] 80)
   where "x ' \<equiv> -x \<sqinter> 1"
 
 lemma coreflexive_comp_top_coreflexive_complement:
