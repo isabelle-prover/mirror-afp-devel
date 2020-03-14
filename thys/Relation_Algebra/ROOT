@@ -2,7 +2,6 @@ chapter AFP
 
 session Relation_Algebra (AFP) = Kleene_Algebra +
   options [timeout = 600]
-
   theories
     More_Boolean_Algebra
     Relation_Algebra
@@ -12,7 +11,6 @@ session Relation_Algebra (AFP) = Kleene_Algebra +
     Relation_Algebra_Direct_Products
     Relation_Algebra_RTC
     Relation_Algebra_Models
-
   document_files
     "root.bib"
     "root.tex"
