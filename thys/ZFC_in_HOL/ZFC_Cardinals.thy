@@ -718,7 +718,7 @@ lemma wo_rel_VWO: "wo_rel VWO"
 
 subsubsection \<open>Transitive Closure and VWO\<close>
 
-lemma mem_imp_VWO: "x \<in> elts y \<longrightarrow> (x,y) \<in> VWO"
+lemma mem_imp_VWO: "x \<in> elts y \<Longrightarrow> (x,y) \<in> VWO"
   using VWO by blast
 
 lemma less_TC_imp_VWO: "x \<sqsubset> y \<Longrightarrow> (x,y) \<in> VWO"
@@ -815,10 +815,13 @@ lemma VWF_asym:
   using VWF_def assms wf_VWO wf_not_sym by fastforce
 
 lemma VWF_non_refl [iff]: "(x,x) \<notin> VWF"
-  using wf_VWF by auto
+  by simp
 
 lemma VWF_iff_Ord_less [simp]: "\<lbrakk>Ord \<alpha>; Ord \<beta>\<rbrakk> \<Longrightarrow> (\<alpha>,\<beta>) \<in> VWF \<longleftrightarrow> \<alpha> < \<beta>"
   by (simp add: VWF_def less_V_def)
+
+lemma mem_imp_VWF: "x \<in> elts y \<Longrightarrow> (x,y) \<in> VWF"
+  using VWF_def mem_imp_VWO by fastforce
 
 
 subsection\<open>Order types\<close>
@@ -1014,7 +1017,40 @@ corollary ordertype_VWF_mono:
   shows "ordertype X VWF \<le> ordertype Y VWF"
   using assms by (simp add: ordertype_mono)
 
+lemma inv_ordermap_mono_less:
+  assumes "(inv_into M (ordermap M r) \<alpha>, inv_into M (ordermap M r) \<beta>) \<in> r" 
+    and "small M" and \<alpha>: "\<alpha> \<in> elts (ordertype M r)" and \<beta>: "\<beta> \<in> elts (ordertype M r)"
+    and "wf r" "trans r"
+  shows "\<alpha> < \<beta>"
+proof -
+  have "\<alpha> = ordermap M r (inv_into M (ordermap M r) \<alpha>)"
+    by (metis \<alpha> f_inv_into_f ordermap_surj subset_eq)
+  also have "\<dots> < ordermap M r (inv_into M (ordermap M r) \<beta>)"
+    by (meson \<alpha> \<beta> assms in_mono inv_into_into ordermap_mono_less ordermap_surj)
+  also have "\<dots> = \<beta>"
+    by (meson \<beta> f_inv_into_f in_mono ordermap_surj)
+  finally show ?thesis .
+qed
 
+lemma inv_ordermap_mono_eq:
+  assumes "inv_into M (ordermap M r) \<alpha> = inv_into M (ordermap M r) \<beta>" 
+    and "\<alpha> \<in> elts (ordertype M r)" "\<beta> \<in> elts (ordertype M r)"
+  shows "\<alpha> = \<beta>"
+  by (metis assms f_inv_into_f ordermap_surj subsetD)
+
+lemma inv_ordermap_VWF_mono_le:
+  assumes "inv_into M (ordermap M VWF) \<alpha> \<le> inv_into M (ordermap M VWF) \<beta>" 
+    and "M \<subseteq> ON" "small M" and \<alpha>: "\<alpha> \<in> elts (ordertype M VWF)" and \<beta>: "\<beta> \<in> elts (ordertype M VWF)"
+  shows "\<alpha> \<le> \<beta>"
+proof -
+  have "\<alpha> = ordermap M VWF (inv_into M (ordermap M VWF) \<alpha>)"
+    by (metis \<alpha> f_inv_into_f ordermap_surj subset_eq)
+  also have "\<dots> \<le> ordermap M VWF (inv_into M (ordermap M VWF) \<beta>)"
+    by (metis ON_imp_Ord VWF_iff_Ord_less assms dual_order.strict_implies_order elts_of_set eq_refl inv_into_into order.not_eq_order_implies_strict ordermap_mono_less ordertype_def replacement trans_VWF wf_VWF)
+  also have "\<dots> = \<beta>"
+    by (meson \<beta> f_inv_into_f in_mono ordermap_surj)
+  finally show ?thesis .
+qed
 
 lemma ordermap_inc_eq:
   assumes "x \<in> A" "small A"
@@ -1091,6 +1127,59 @@ proof -
   also have "\<dots> = ordertype (A - B) VWF"
     using \<open>small A\<close> ordertype_image_ordermap by fastforce
   finally show ?thesis .
+qed
+
+proposition ordertype_le_ordertype:
+  assumes r: "wf r" "total_on A r" and "small A"
+  assumes s: "wf s" "total_on B s" "trans s" and "small B"
+  shows "ordertype A r \<le> ordertype B s \<longleftrightarrow>
+         (\<exists>f \<in> A \<rightarrow> B. inj_on f A \<and> (\<forall>x \<in> A. \<forall>y \<in> A. ((x,y) \<in> r \<longrightarrow> (f x, f y) \<in> s)))"
+    (is "?lhs = ?rhs")
+proof
+  assume L: ?lhs
+  define f where "f \<equiv> inv_into B (ordermap B s) \<circ> ordermap A r"
+  show ?rhs
+  proof (intro bexI conjI ballI impI)
+    have AB: "elts (ordertype A r) \<subseteq> ordermap B s ` B"
+      by (metis L assms(7) ordertype_def replacement set_of_elts small_elts subset_iff_less_eq_V)
+    have bijA: "bij_betw (ordermap A r) A (elts (ordertype A r))"
+      using ordermap_bij \<open>small A\<close> r by blast
+    have "inv_into B (ordermap B s) (ordermap A r i) \<in> B" if "i \<in> A" for i
+      by (meson L \<open>small A\<close> inv_into_into ordermap_in_ordertype ordermap_surj subsetD that vsubsetD)
+    then show "f \<in> A \<rightarrow> B"
+      by (auto simp: Pi_iff f_def)
+    show "inj_on f A"
+    proof (clarsimp simp add: f_def inj_on_def)
+      fix x y
+      assume "x \<in> A" "y \<in> A"
+        and "inv_into B (ordermap B s) (ordermap A r x) = inv_into B (ordermap B s) (ordermap A r y)"
+      then have "ordermap A r x = ordermap A r y"
+        by (meson AB \<open>small A\<close> inv_into_injective ordermap_in_ordertype subsetD)
+      then show "x = y"
+        by (metis \<open>x \<in> A\<close> \<open>y \<in> A\<close> bijA bij_betw_inv_into_left)
+    qed
+  next
+    fix x y
+    assume "x \<in> A" "y \<in> A" and "(x, y) \<in> r"
+    have \<ddagger>: "ordermap A r y \<in> ordermap B s ` B"
+      by (meson L \<open>y \<in> A\<close> \<open>small A\<close> in_mono ordermap_in_ordertype ordermap_surj vsubsetD)
+    moreover have \<dagger>: "\<And>x. inv_into B (ordermap B s) (ordermap A r x) = f x"
+      by (simp add: f_def)
+    then have *: "ordermap B s (f y) = ordermap A r y"
+      using \<ddagger> by (metis f_inv_into_f)
+    moreover have "ordermap A r x \<in> ordermap B s ` B"
+      by (meson L \<open>x \<in> A\<close> \<open>small A\<close> in_mono ordermap_in_ordertype ordermap_surj vsubsetD)
+    moreover have "ordermap A r x < ordermap A r y"
+      using * r s by (metis (no_types) Ord_ordermap OrdmemD \<open>(x, y) \<in> r\<close> \<open>x \<in> A\<close> \<open>small A\<close> ordermap_mono)
+    ultimately show "(f x, f y) \<in> s"
+      using \<dagger> s by (metis assms(7) f_inv_into_f inv_into_into less_asym ordermap_mono_less total_on_def)
+  qed
+next
+  assume R: ?rhs
+  then obtain f where f: "f\<in>A \<rightarrow> B" "inj_on f A" "\<forall>x\<in>A. \<forall>y\<in>A. (x, y) \<in> r \<longrightarrow> (f x, f y) \<in> s"
+    by blast
+  show ?lhs
+    by (rule ordertype_inc_le [where \<pi>=f]) (use f assms in auto)
 qed
 
 lemma ordertype_infinite_ge_\<omega>:
@@ -1362,6 +1451,56 @@ proof -
     by (meson bij_betw_def * card_image)
   ultimately show ?thesis
     using assms bij_betw_finite bij_betw_imp_surj_on finite_Ord_omega ordertype_VWF_finite_nat wf_Ord_ordertype by fastforce
+qed
+
+
+lemma ex_bij_betw_strict_mono_card:
+  assumes "finite M" "M \<subseteq> ON"
+  obtains h where "bij_betw h {..<card M} M" and "strict_mono_on h {..<card M}"
+proof -
+  have bij: "bij_betw (ordermap M VWF) M (elts (card M))"
+    using Finite_V \<open>finite M\<close> ordermap_bij ordertype_VWF_finite_nat by fastforce
+  let ?h = "(inv_into M (ordermap M VWF)) \<circ> ord_of_nat"
+  show thesis
+  proof
+    show bijh: "bij_betw ?h {..<card M} M"
+    proof (rule bij_betw_trans)
+      show "bij_betw ord_of_nat {..<card M} (elts (card M))"
+        by (simp add: bij_betw_def elts_ord_of_nat inj_on_def)
+      show "bij_betw (inv_into M (ordermap M VWF)) (elts (card M)) M"
+        using Finite_V assms bij_betw_inv_into ordermap_bij ordertype_VWF_finite_nat by fastforce
+    qed
+    show "strict_mono_on ?h {..<card M}"
+    proof -
+      have "?h m < ?h n"
+        if "m < n" "n < card M" for m n
+      proof (rule ccontr)
+        obtain mn: "m \<in> elts (ordertype M VWF)" "n \<in> elts (ordertype M VWF)"
+          using \<open>m < n\<close> \<open>n < card M\<close> \<open>finite M\<close> ordertype_VWF_finite_nat by auto
+        have ord: "Ord (?h m)" "Ord (?h n)"
+          using bijh assms(2) bij_betwE that by fastforce+
+        moreover
+        assume "\<not> ?h m < ?h n"
+        ultimately consider "?h m = ?h n" | "?h m > ?h n"
+          using Ord_linear_lt by blast
+        then show False
+        proof cases
+          case 1
+          then have "m = n"
+            by (metis inv_ordermap_mono_eq mn comp_apply ord_of_nat_inject)
+          with \<open>m < n\<close> show False by blast 
+        next
+          case 2
+          then have "ord_of_nat n \<le> ord_of_nat m"
+            by (metis Finite_V mn assms comp_def inv_ordermap_VWF_mono_le less_imp_le)
+          then show ?thesis
+            using leD \<open>m < n\<close> by blast
+        qed
+      qed
+      with assms show ?thesis
+        by (auto simp: strict_mono_on_def)
+    qed
+  qed
 qed
 
 

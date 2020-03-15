@@ -766,6 +766,12 @@ lemma Ord_mem_iff_lt: "Ord k \<Longrightarrow> Ord l \<Longrightarrow> k \<in> e
 lemma Ord_Collect_lt: "Ord \<alpha> \<Longrightarrow> {\<xi>. Ord \<xi> \<and> \<xi> < \<alpha>} = elts \<alpha>"
   by (auto simp flip: Ord_mem_iff_lt elim: Ord_in_Ord OrdmemD)
 
+lemma Ord_not_less: "\<lbrakk>Ord x; Ord y\<rbrakk> \<Longrightarrow> \<not> x < y \<longleftrightarrow> y \<le> x"
+  by (metis (no_types) Ord_linear2 leD)
+
+lemma Ord_not_le: "\<lbrakk>Ord x; Ord y\<rbrakk> \<Longrightarrow> \<not> x \<le> y \<longleftrightarrow> y < x"
+  by (metis (no_types) Ord_linear2 leD)
+
 lemma le_succ_iff: "Ord i \<Longrightarrow> Ord j \<Longrightarrow> succ i \<le> succ j \<longleftrightarrow> i \<le> j"
   by (metis Ord_linear_le Ord_succ le_succE order_antisym)
 
@@ -884,6 +890,9 @@ corollary infinite_\<omega>: "infinite (elts \<omega>)"
 corollary ord_of_nat_mono_iff [iff]: "ord_of_nat i \<le> ord_of_nat j \<longleftrightarrow> i \<le> j"
   by (metis Ord_def Ord_ord_of_nat Transset_def eq_iff mem_ord_of_nat_iff not_less ord_of_nat_inject)
 
+corollary ord_of_nat_strict_mono_iff [iff]: "ord_of_nat i < ord_of_nat j \<longleftrightarrow> i < j"
+  by (simp add: less_le_not_le)
+
 lemma small_image_nat [simp]:
   fixes N :: "nat set" shows "small (g ` N)"
   by (simp add: countable)
@@ -983,6 +992,7 @@ qed
 
 
 subsubsection\<open>Properties of LEAST for ordinals\<close>
+
 lemma
   assumes "Ord k" "P k"
   shows Ord_LeastI: "P (LEAST i. Ord i \<and> P i)" and Ord_Least_le: "(LEAST i. Ord i \<and> P i) \<le> k"
@@ -1071,6 +1081,38 @@ next
     from not_less_Ord_Least[OF m] have "\<not> P \<beta>" . }
   ultimately show ?rhs
     using Ord_LeastI_ex[OF H] by blast
+qed
+
+lemma Ord_mono_imp_increasing:
+  assumes fun_hD: "h \<in> D \<rightarrow> D"
+    and mono_h: "strict_mono_on h D" 
+    and "D \<subseteq> ON" and \<nu>: "\<nu> \<in> D"
+  shows "\<nu> \<le> h \<nu>"
+proof (rule ccontr)
+  assume non: "\<not> \<nu> \<le> h \<nu>"
+  define \<mu> where "\<mu> \<equiv> LEAST \<mu>. Ord \<mu> \<and> \<not> \<mu> \<le> h \<mu> \<and> \<mu> \<in> D"
+  have "Ord \<nu>"
+    using \<nu> \<open>D \<subseteq> ON\<close> by blast
+  then have \<mu>: "\<not> \<mu> \<le> h \<mu> \<and> \<mu> \<in> D"
+    unfolding \<mu>_def by (rule Ord_LeastI) (simp add: \<nu> non)
+  have "Ord (h \<nu>)"
+    using assms by auto
+  then have "Ord (h (h \<nu>))"
+    by (meson ON_imp_Ord \<nu> assms funcset_mem)
+  have "Ord \<mu>"
+    using \<mu> \<open>D \<subseteq> ON\<close> by blast
+  then have "h \<mu> < \<mu>"
+    by (metis ON_imp_Ord Ord_linear2 PiE \<mu> \<open>D \<subseteq> ON\<close> fun_hD)
+  then have "\<not> h \<mu> \<le> h (h \<mu>)"
+    using \<mu> fun_hD mono_h by (force simp: strict_mono_on_def)
+  moreover have *: "h \<mu> \<in> D"
+    using \<mu> fun_hD by auto
+  moreover have "Ord (h \<mu>)"
+    using \<open>D \<subseteq> ON\<close> * by blast
+  ultimately have "\<mu> \<le> h \<mu>"
+    by (simp add: \<mu>_def Ord_Least_le)
+  then show False
+    using \<mu> by blast
 qed
 
 lemma le_Sup_iff:

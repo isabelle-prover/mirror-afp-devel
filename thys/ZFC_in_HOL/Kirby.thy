@@ -1361,6 +1361,29 @@ proof -
   finally show ?thesis .
 qed
 
+lemma add_mult_less_add_mult:
+  assumes "x < y" "x \<in> elts \<beta>" "y \<in> elts \<beta>" "\<mu> \<in> elts \<alpha>" "\<nu> \<in> elts \<alpha>" "Ord \<alpha>" "Ord \<beta>"
+    shows "\<alpha>*x + \<mu> < \<alpha>*y + \<nu>"
+proof -
+  obtain "Ord x" "Ord y"
+    using Ord_in_Ord assms by blast
+  then obtain \<delta> where "0 \<in> elts \<delta>" "y = x + \<delta>"
+    by (metis add.right_neutral \<open>x < y\<close> le_Ord_diff less_V_def mem_0_Ord)
+  then show ?thesis
+    apply (simp add: add_mult_distrib add.assoc)
+    by (meson OrdmemD add_le_cancel_left0 \<open>\<mu> \<in> elts \<alpha>\<close> \<open>Ord \<alpha>\<close> less_le_trans zero_imp_le_mult)
+qed
+
+lemma add_mult_less:
+  assumes "\<gamma> \<in> elts \<alpha>" "\<nu> \<in> elts \<beta>" "Ord \<alpha>" "Ord \<beta>"
+    shows "\<alpha> * \<nu> + \<gamma> \<in> elts (\<alpha> * \<beta>)"
+proof -
+  have "Ord \<nu>" 
+    using Ord_in_Ord assms by blast
+  with assms show ?thesis
+    by (metis Ord_mem_iff_lt Ord_succ add_mem_right_cancel mult_cancel_le_iff mult_succ succ_le_iff vsubsetD)
+qed
+
 lemma vcard_mult: "vcard (x * y) = vcard x \<otimes> vcard y"
 proof -
   have 1: "elts (lift (x * u) x) \<approx> elts x" if "u \<in> elts y" for u
@@ -1451,6 +1474,21 @@ proof -
 qed
 
 subsection \<open>Ordertype properties\<close>
+
+lemma ordertype_image_plus:
+  assumes "Ord \<alpha>"
+  shows "ordertype ((+) u ` elts \<alpha>) VWF = \<alpha>"
+proof (subst ordertype_VWF_eq_iff)
+    have 1: "(u + x, u + y) \<in> VWF" if "x \<in> elts \<alpha>" "y \<in> elts \<alpha>" "x < y" for x y
+      using that
+      by (meson Ord_in_Ord Ord_mem_iff_lt add_mem_right_cancel assms mem_imp_VWF)
+  then have 2: "x < y"
+    if "x \<in> elts \<alpha>" "y \<in> elts \<alpha>" "(u + x, u + y) \<in> VWF" for x y
+    using that by (metis Ord_in_Ord Ord_linear_lt VWF_asym assms)
+  show "\<exists>f. bij_betw f ((+) u ` elts \<alpha>) (elts \<alpha>) \<and> (\<forall>x\<in>(+) u ` elts \<alpha>. \<forall>y\<in>(+) u ` elts \<alpha>. (f x < f y) = ((x, y) \<in> VWF))"
+    using 1 2 unfolding bij_betw_def inj_on_def
+    by (rule_tac x="\<lambda>x. odiff x u" in exI) (auto simp: image_iff)
+qed (use assms in auto)
 
 lemma ordertype_diff:
   assumes "\<beta> + \<delta> = \<alpha>" and \<alpha>: "\<delta> \<in> elts \<alpha>" "Ord \<alpha>"
