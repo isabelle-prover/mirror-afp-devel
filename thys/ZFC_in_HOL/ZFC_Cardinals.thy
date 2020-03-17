@@ -1052,6 +1052,21 @@ proof -
   finally show ?thesis .
 qed
 
+lemma strict_mono_on_ordertype:
+  assumes "M \<subseteq> ON" "small M"
+  obtains f where "f \<in> elts (ordertype M VWF) \<rightarrow> M" "strict_mono_on f (elts (ordertype M VWF))"
+proof 
+  show "inv_into M (ordermap M VWF) \<in> elts (ordertype M VWF) \<rightarrow> M"
+    by (meson Pi_I' in_mono inv_into_into ordermap_surj)
+  show "strict_mono_on (inv_into M (ordermap M VWF)) (elts (ordertype M VWF))"
+  proof (clarsimp simp: strict_mono_on_def)
+    fix x y
+    assume "x \<in> elts (ordertype M VWF)" "y \<in> elts (ordertype M VWF)" "x < y"
+    then show "inv_into M (ordermap M VWF) x < inv_into M (ordermap M VWF) y"
+      using assms by (meson ON_imp_Ord Ord_linear2 inv_into_into inv_ordermap_VWF_mono_le leD ordermap_surj subsetD)
+  qed
+qed
+
 lemma ordermap_inc_eq:
   assumes "x \<in> A" "small A"
     and \<pi>: "\<And>x y. \<lbrakk>x\<in>A; y\<in>A; (x,y) \<in> r\<rbrakk> \<Longrightarrow> (\<pi> x, \<pi> y) \<in> s"
