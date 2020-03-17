@@ -625,7 +625,7 @@ next
     by (simp add: add_right_strict_mono oexp_mono_le)
 qed
 
-text \<open>Something like Lemma 5.2 for \<omega>_sum\<close>
+text \<open>Something like Lemma 5.2 for @{term \<omega>_sum}\<close>
 lemma \<omega>_sum_less_\<omega>_power:
   assumes "\<omega>_dec (\<alpha>#\<alpha>s)" "List.set (\<alpha>#\<alpha>s) \<subseteq> ON"
   shows "\<omega>_sum \<alpha>s < \<omega>\<up>\<alpha> * \<omega>"
@@ -874,7 +874,7 @@ proof (intro conjI ballI)
 qed (use assms in auto)
 
 
-text \<open>This proof uses Cantor normal form_split, yet still is rather long\<close>
+text \<open>This proof uses Cantor normal form, yet still is rather long\<close>
 proposition indecomposable_is_\<omega>_power:
   assumes inc: "indecomposable \<mu>"
   obtains "\<mu> = 0" | \<delta> where "Ord \<delta>" "\<mu> = \<omega>\<up>\<delta>"
