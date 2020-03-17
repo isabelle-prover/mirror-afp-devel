@@ -20,7 +20,6 @@ text \<open>
   of \<open>\<A>\<close> in the minimal DNF of \<open>\<phi>\<close>.
 \<close>
 
-
 subsection \<open>Definition of Minimum Sets\<close>
 
 definition (in ord) min_set :: "'a set \<Rightarrow> 'a set" where
@@ -77,11 +76,14 @@ definition product :: "'a fset set \<Rightarrow> 'a fset set \<Rightarrow> 'a fs
 definition min_product :: "'a fset set \<Rightarrow> 'a fset set \<Rightarrow> 'a fset set" (infixr "\<otimes>\<^sub>m" 65)
   where "A \<otimes>\<^sub>m B = min_set (A \<otimes> B)"
 
-definition min_product_set :: "'a fset set set \<Rightarrow> 'a fset set" ("\<Otimes>\<^sub>m")
-  where "\<Otimes>\<^sub>m X = Finite_Set.fold min_product {{||}} X"
-
 definition min_union :: "'a fset set \<Rightarrow> 'a fset set \<Rightarrow> 'a fset set" (infixr "\<union>\<^sub>m" 65)
   where "A \<union>\<^sub>m B = min_set (A \<union> B)"
+
+definition product_set :: "'a fset set set \<Rightarrow> 'a fset set" ("\<Otimes>")
+  where "\<Otimes> X = Finite_Set.fold product {{||}} X"
+
+definition min_product_set :: "'a fset set set \<Rightarrow> 'a fset set" ("\<Otimes>\<^sub>m")
+  where "\<Otimes>\<^sub>m X = Finite_Set.fold min_product {{||}} X"
 
 
 lemma min_product_idem[simp]:
@@ -108,10 +110,6 @@ lemma min_union_empty[simp]:
   "{} \<union>\<^sub>m A = min_set A"
   by (simp_all add: min_union_def)
 
-lemma min_product_set_empty[simp]:
-  "\<Otimes>\<^sub>m {} = {{||}}"
-  by (simp add: min_product_set_def)
-
 lemma product_empty_singleton[simp]:
   "A \<otimes> {{||}} = A"
   "{{||}} \<otimes> A = A"
@@ -121,6 +119,39 @@ lemma min_product_empty_singleton[simp]:
   "A \<otimes>\<^sub>m {{||}} = min_set A"
   "{{||}} \<otimes>\<^sub>m A = min_set A"
   by (simp_all add: min_product_def)
+
+lemma product_singleton_singleton:
+  "A \<otimes> {{|x|}} = finsert x ` A"
+  "{{|x|}} \<otimes> A = finsert x ` A"
+  unfolding product_def by blast+
+
+lemma product_mono:
+  "A \<subseteq> B \<Longrightarrow> A \<otimes> C \<subseteq> B \<otimes> C"
+  "B \<subseteq> C \<Longrightarrow> A \<otimes> B \<subseteq> A \<otimes> C"
+  unfolding product_def by auto
+
+
+
+lemma product_finite:
+  "finite A \<Longrightarrow> finite B \<Longrightarrow> finite (A \<otimes> B)"
+  by (simp add: product_def finite_image_set2)
+
+lemma min_product_finite:
+  "finite A \<Longrightarrow> finite B \<Longrightarrow> finite (A \<otimes>\<^sub>m B)"
+  by (metis min_product_def product_finite min_set_finite)
+
+lemma min_union_finite:
+  "finite A \<Longrightarrow> finite B \<Longrightarrow> finite (A \<union>\<^sub>m B)"
+  by (simp add: min_union_def min_set_finite)
+
+
+lemma product_set_infinite[simp]:
+  "infinite X \<Longrightarrow> \<Otimes> X = {{||}}"
+  by (simp add: product_set_def)
+
+lemma min_product_set_infinite[simp]:
+  "infinite X \<Longrightarrow> \<Otimes>\<^sub>m X = {{||}}"
+  by (simp add: min_product_set_def)
 
 
 lemma product_comm:
@@ -223,7 +254,6 @@ proof (unfold product_def, safe)
     using `a \<in> A` by (metis (no_types) inf_sup_aci(5) sup_left_commute)
 qed (metis (mono_tags, lifting) mem_Collect_eq sup_assoc)
 
-
 lemma min_product_assoc[simp]:
   "(A \<otimes>\<^sub>m B) \<otimes>\<^sub>m C = A \<otimes>\<^sub>m (B \<otimes>\<^sub>m C)"
   unfolding min_product_def[of A B] min_product_def[of B C]
@@ -243,6 +273,15 @@ lemma min_union_comp:
   "a \<in> A \<Longrightarrow> \<exists>c. c |\<subseteq>| a \<and> c \<in> A \<union>\<^sub>m B"
   by (metis Un_iff min_set_obtains min_union_def)
 
+
+interpretation product_set_thms: Finite_Set.comp_fun_commute product
+proof unfold_locales
+  have "\<And>x y z. x \<otimes> (y \<otimes> z) = y \<otimes> (x \<otimes> z)"
+    by (simp only: product_assoc[symmetric]) (simp only: product_comm)
+
+  then show "\<And>x y. (\<otimes>) y \<circ> (\<otimes>) x = (\<otimes>) x \<circ> (\<otimes>) y"
+    by fastforce
+qed
 
 interpretation min_product_set_thms: Finite_Set.comp_fun_idem min_product
 proof unfold_locales
@@ -275,6 +314,31 @@ next
     by fastforce
 qed
 
+
+lemma product_set_empty[simp]:
+  "\<Otimes> {} = {{||}}"
+  "\<Otimes> {{}} = {}"
+  "\<Otimes> {{{||}}} = {{||}}"
+  by (simp_all add: product_set_def)
+
+lemma min_product_set_empty[simp]:
+  "\<Otimes>\<^sub>m {} = {{||}}"
+  "\<Otimes>\<^sub>m {{}} = {}"
+  "\<Otimes>\<^sub>m {{{||}}} = {{||}}"
+  by (simp_all add: min_product_set_def)
+
+lemma product_set_code[code]:
+  "\<Otimes> (set xs) = fold product (remdups xs) {{||}}"
+  by (simp add: product_set_def product_set_thms.fold_set_fold_remdups)
+
+lemma min_product_set_code[code]:
+  "\<Otimes>\<^sub>m (set xs) = fold min_product (remdups xs) {{||}}"
+  by (simp add: min_product_set_def min_product_set_thms.fold_set_fold_remdups)
+
+lemma product_set_insert[simp]:
+  "finite X \<Longrightarrow> \<Otimes> (insert x X) = x \<otimes> (\<Otimes> (X - {x}))"
+  unfolding product_set_def product_set_thms.fold_insert_remove ..
+
 lemma min_product_set_insert[simp]:
   "finite X \<Longrightarrow> \<Otimes>\<^sub>m (insert x X) = x \<otimes>\<^sub>m (\<Otimes>\<^sub>m X)"
   unfolding min_product_set_def min_product_set_thms.fold_insert_idem ..
@@ -287,40 +351,39 @@ lemma min_product_set_subseteq:
   "finite X \<Longrightarrow> x \<in> \<Otimes>\<^sub>m X \<Longrightarrow> A \<in> X \<Longrightarrow> \<exists>a \<in> A. a |\<subseteq>| x"
   by (induction X rule: finite_induct) (blast, metis finite_insert insert_absorb min_product_set_insert min_product_subseteq)
 
+lemma min_set_product_set:
+  "\<Otimes>\<^sub>m A = min_set (\<Otimes> A)"
+  by (cases "finite A", induction A rule: finite_induct) (simp_all add: min_product_set_def product_set_def, metis min_product_def)
+
 
 lemma min_product_min_set[simp]:
   "min_set (A \<otimes>\<^sub>m B) = A \<otimes>\<^sub>m B"
   by (simp add: min_product_def)
 
-lemma min_product_set_min_set[simp]:
-  "finite X \<Longrightarrow> min_set (\<Otimes>\<^sub>m X) = \<Otimes>\<^sub>m X"
-  by (induction X rule: finite_induct) (auto simp add: min_product_set_def min_set_iff)
-
 lemma min_union_min_set[simp]:
   "min_set (A \<union>\<^sub>m B) = A \<union>\<^sub>m B"
   by (simp add: min_union_def)
 
+lemma min_product_set_min_set[simp]:
+  "finite X \<Longrightarrow> min_set (\<Otimes>\<^sub>m X) = \<Otimes>\<^sub>m X"
+  by (induction X rule: finite_induct, auto simp add: min_product_set_def min_set_iff)
+
+lemma min_set_min_product_set[simp]:
+  "finite X \<Longrightarrow> \<Otimes>\<^sub>m (min_set ` X) = \<Otimes>\<^sub>m X"
+  by (induction X rule: finite_induct) simp_all
 
 lemma min_product_set_union[simp]:
   "finite X \<Longrightarrow> finite Y \<Longrightarrow> \<Otimes>\<^sub>m (X \<union> Y) = (\<Otimes>\<^sub>m X) \<otimes>\<^sub>m (\<Otimes>\<^sub>m Y)"
   by (induction X rule: finite_induct) simp_all
 
 
-lemma product_finite:
-  "finite A \<Longrightarrow> finite B \<Longrightarrow> finite (A \<otimes> B)"
-  by (simp add: product_def finite_image_set2)
-
-lemma min_product_finite:
-  "finite A \<Longrightarrow> finite B \<Longrightarrow> finite (A \<otimes>\<^sub>m B)"
-  by (metis min_product_def product_finite min_set_finite)
+lemma product_set_finite:
+  "(\<And>x. x \<in> X \<Longrightarrow> finite x) \<Longrightarrow> finite (\<Otimes> X)"
+  by (cases "finite X", rotate_tac, induction X rule: finite_induct) (simp_all add: product_set_def, insert product_finite, blast)
 
 lemma min_product_set_finite:
-  "finite X \<Longrightarrow> (\<And>x. x \<in> X \<Longrightarrow> finite x) \<Longrightarrow> finite (\<Otimes>\<^sub>m X)"
-  by (induction X rule: finite_induct) (simp_all add: min_product_set_def, insert min_product_finite, blast)
-
-lemma min_union_finite:
-  "finite A \<Longrightarrow> finite B \<Longrightarrow> finite (A \<union>\<^sub>m B)"
-  by (simp add: min_union_def min_set_finite)
+  "(\<And>x. x \<in> X \<Longrightarrow> finite x) \<Longrightarrow> finite (\<Otimes>\<^sub>m X)"
+  by (cases "finite X", rotate_tac, induction X rule: finite_induct) (simp_all add: min_product_set_def, insert min_product_finite, blast)
 
 
 
@@ -363,12 +426,32 @@ lemma min_dnf_Abs_fset[simp]:
   by (simp add: min_dnf_finite Abs_fset_inverse)
 
 lemma dnf_prop_atoms:
-  "A \<in> dnf \<phi> \<Longrightarrow> fset A \<subseteq> prop_atoms \<phi>"
-  by (induction \<phi> arbitrary: A) (auto simp: product_def, blast+)
+  "\<Phi> \<in> dnf \<phi> \<Longrightarrow> fset \<Phi> \<subseteq> prop_atoms \<phi>"
+  by (induction \<phi> arbitrary: \<Phi>) (auto simp: product_def, blast+)
 
 lemma min_dnf_prop_atoms:
-  "A \<in> min_dnf \<phi> \<Longrightarrow> fset A \<subseteq> prop_atoms \<phi>"
-  by (induction \<phi> arbitrary: A) (simp_all add: min_product_iff min_union_iff, fastforce+)
+  "\<Phi> \<in> min_dnf \<phi> \<Longrightarrow> fset \<Phi> \<subseteq> prop_atoms \<phi>"
+  using dnf_min_set dnf_prop_atoms min_set_subset by blast
+
+lemma min_dnf_atoms_dnf:
+  "\<Phi> \<in> min_dnf \<psi> \<Longrightarrow> \<phi> \<in> fset \<Phi> \<Longrightarrow> dnf \<phi> = {{|\<phi>|}}"
+proof (induction \<phi>)
+  case True_ltln
+  then show ?case
+    using min_dnf_prop_atoms prop_atoms_notin(1) by blast
+next
+  case False_ltln
+  then show ?case
+    using min_dnf_prop_atoms prop_atoms_notin(2) by blast
+next
+  case (And_ltln \<phi>1 \<phi>2)
+  then show ?case
+    using min_dnf_prop_atoms prop_atoms_notin(3) by force
+next
+  case (Or_ltln \<phi>1 \<phi>2)
+  then show ?case
+    using min_dnf_prop_atoms prop_atoms_notin(4) by force
+qed auto
 
 lemma min_dnf_min_set[simp]:
   "min_set (min_dnf \<phi>) = min_dnf \<phi>"
@@ -480,6 +563,113 @@ lemma fold_graph_Or\<^sub>n:
   "finite \<Phi> \<Longrightarrow> fold_graph Or_ltln False_ltln \<Phi> (Or\<^sub>n \<Phi>)"
   unfolding Or\<^sub>n_def by (rule someI2_ex[OF finite_imp_fold_graph])
 
+lemma Or\<^sub>n_empty[simp]:
+  "Or\<^sub>n {} = False_ltln"
+  by (metis empty_fold_graphE finite.emptyI fold_graph_Or\<^sub>n)
+
+lemma And\<^sub>n_empty[simp]:
+  "And\<^sub>n {} = True_ltln"
+  by (metis empty_fold_graphE finite.emptyI fold_graph_And\<^sub>n)
+
+interpretation dnf_union_thms: Finite_Set.comp_fun_commute "\<lambda>\<phi>. (\<union>) (f \<phi>)"
+  by unfold_locales fastforce
+
+interpretation dnf_product_thms: Finite_Set.comp_fun_commute "\<lambda>\<phi>. (\<otimes>) (f \<phi>)"
+  by unfold_locales (simp add: product_set_thms.comp_fun_commute)
+
+\<comment> \<open>Copied from locale @{locale comp_fun_commute}\<close>
+lemma fold_graph_finite:
+  assumes "fold_graph f z A y"
+  shows "finite A"
+  using assms by induct simp_all
+
+
+text \<open>Taking the DNF of @{const And\<^sub>n} and @{const Or\<^sub>n} is the same as folding over the individual DNFs.\<close>
+
+lemma And\<^sub>n_dnf:
+  "finite \<Phi> \<Longrightarrow> dnf (And\<^sub>n \<Phi>) = Finite_Set.fold (\<lambda>\<phi>. (\<otimes>) (dnf \<phi>)) {{||}} \<Phi>"
+proof (drule fold_graph_And\<^sub>n, induction rule: fold_graph.induct)
+  case (insertI x A y)
+
+  then have "finite A"
+    using fold_graph_finite by fast
+
+  then show ?case
+    using insertI by auto
+qed simp
+
+lemma Or\<^sub>n_dnf:
+  "finite \<Phi> \<Longrightarrow> dnf (Or\<^sub>n \<Phi>) = Finite_Set.fold (\<lambda>\<phi>. (\<union>) (dnf \<phi>)) {} \<Phi>"
+proof (drule fold_graph_Or\<^sub>n, induction rule: fold_graph.induct)
+  case (insertI x A y)
+
+  then have "finite A"
+    using fold_graph_finite by fast
+
+  then show ?case
+    using insertI by auto
+qed simp
+
+
+text \<open>@{const And\<^sub>n} and @{const Or\<^sub>n} are injective on finite sets.\<close>
+
+lemma And\<^sub>n_inj:
+  "inj_on And\<^sub>n {s. finite s}"
+proof (standard, simp)
+  fix x y :: "'a ltln set"
+  assume "finite x" and "finite y"
+
+  then have 1: "fold_graph And_ltln True_ltln x (And\<^sub>n x)" and 2: "fold_graph And_ltln True_ltln y (And\<^sub>n y)"
+    using fold_graph_And\<^sub>n by blast+
+
+  assume "And\<^sub>n x = And\<^sub>n y"
+
+  with 1 show "x = y"
+  proof (induction rule: fold_graph.induct)
+    case emptyI
+    then show ?case
+      using 2 fold_graph.cases by force
+  next
+    case (insertI x A y)
+    with 2 show ?case
+    proof (induction arbitrary: x A y rule: fold_graph.induct)
+      case (insertI x A y)
+      then show ?case
+        by (metis fold_graph.cases insertI1 ltln.distinct(7) ltln.inject(3))
+    qed blast
+  qed
+qed
+
+lemma Or\<^sub>n_inj:
+  "inj_on Or\<^sub>n {s. finite s}"
+proof (standard, simp)
+  fix x y :: "'a ltln set"
+  assume "finite x" and "finite y"
+
+  then have 1: "fold_graph Or_ltln False_ltln x (Or\<^sub>n x)" and 2: "fold_graph Or_ltln False_ltln y (Or\<^sub>n y)"
+    using fold_graph_Or\<^sub>n by blast+
+
+  assume "Or\<^sub>n x = Or\<^sub>n y"
+
+  with 1 show "x = y"
+  proof (induction rule: fold_graph.induct)
+    case emptyI
+    then show ?case
+      using 2 fold_graph.cases by force
+  next
+    case (insertI x A y)
+    with 2 show ?case
+    proof (induction arbitrary: x A y rule: fold_graph.induct)
+      case (insertI x A y)
+      then show ?case
+        by (metis fold_graph.cases insertI1 ltln.distinct(27) ltln.inject(4))
+    qed blast
+  qed
+qed
+
+
+text \<open>The semantics of @{const And\<^sub>n} and @{const Or\<^sub>n} can be expressed using quantifiers.\<close>
+
 lemma And\<^sub>n_semantics:
   "finite \<Phi> \<Longrightarrow> w \<Turnstile>\<^sub>n And\<^sub>n \<Phi> \<longleftrightarrow> (\<forall>\<phi> \<in> \<Phi>. w \<Turnstile>\<^sub>n \<phi>)"
 proof -
@@ -587,6 +777,316 @@ proof
   also have "\<dots> \<longleftrightarrow> \<A> \<Turnstile>\<^sub>P \<phi>"
     using min_dnf_iff_prop_assignment_subset by blast
   finally show "\<A> \<Turnstile>\<^sub>P ltln_of_dnf (min_dnf \<phi>) = \<A> \<Turnstile>\<^sub>P \<phi>" .
+qed
+
+lemma min_dnf_ltln_of_dnf[simp]:
+  "min_dnf (ltln_of_dnf (min_dnf \<phi>)) = min_dnf \<phi>"
+  using ltl_prop_equiv_min_dnf ltln_of_dnf_prop_equiv by blast
+
+
+subsection \<open>Substitution in DNF formulas\<close>
+
+definition subst_clause :: "'a ltln fset \<Rightarrow> ('a ltln \<rightharpoonup> 'a ltln) \<Rightarrow> 'a ltln fset set"
+where
+  "subst_clause \<Phi> m = \<Otimes>\<^sub>m {min_dnf (subst \<phi> m) | \<phi>. \<phi> \<in> fset \<Phi>}"
+
+definition subst_dnf :: "'a ltln fset set \<Rightarrow> ('a ltln \<rightharpoonup> 'a ltln) \<Rightarrow> 'a ltln fset set"
+where
+  "subst_dnf \<A> m = (\<Union>\<Phi> \<in> \<A>. subst_clause \<Phi> m)"
+
+lemma subst_clause_empty[simp]:
+  "subst_clause {||} m = {{||}}"
+  by (simp add: subst_clause_def)
+
+lemma subst_dnf_empty[simp]:
+  "subst_dnf {} m = {}"
+  by (simp add: subst_dnf_def)
+
+lemma subst_clause_inner_finite:
+  "finite {min_dnf (subst \<phi> m) | \<phi>. \<phi> \<in> \<Phi>}" if "finite \<Phi>"
+  using that by simp
+
+lemma subst_clause_finite:
+  "finite (subst_clause \<Phi> m)"
+  unfolding subst_clause_def
+  by (auto intro: min_dnf_finite min_product_set_finite)
+
+lemma subst_dnf_finite:
+  "finite \<A> \<Longrightarrow> finite (subst_dnf \<A> m)"
+  unfolding subst_dnf_def using subst_clause_finite by blast
+
+lemma subst_dnf_mono:
+  "\<A> \<subseteq> \<B> \<Longrightarrow> subst_dnf \<A> m \<subseteq> subst_dnf \<B> m"
+  unfolding subst_dnf_def by blast
+
+lemma subst_clause_min_set[simp]:
+  "min_set (subst_clause \<Phi> m) = subst_clause \<Phi> m"
+  unfolding subst_clause_def by simp
+
+lemma subst_clause_finsert[simp]:
+  "subst_clause (finsert \<phi> \<Phi>) m = (min_dnf (subst \<phi> m)) \<otimes>\<^sub>m (subst_clause \<Phi> m)"
+proof -
+  have "{min_dnf (subst \<psi> m) | \<psi>. \<psi> \<in> fset (finsert \<phi> \<Phi>)}
+    = insert (min_dnf (subst \<phi> m)) {min_dnf (subst \<psi> m) | \<psi>. \<psi> \<in> fset \<Phi>}"
+    by auto
+
+  then show ?thesis
+    by (simp add: subst_clause_def)
+qed
+
+lemma subst_clause_funion[simp]:
+  "subst_clause (\<Phi> |\<union>| \<Psi>) m = (subst_clause \<Phi> m) \<otimes>\<^sub>m (subst_clause \<Psi> m)"
+proof (induction \<Psi>)
+  case (insert x F)
+  then show ?case
+    using min_product_set_thms.fun_left_comm by fastforce
+qed simp
+
+
+text \<open>For the proof of correctness, we redefine the @{const product} operator on lists.\<close>
+
+definition list_product :: "'a list set \<Rightarrow> 'a list set \<Rightarrow> 'a list set" (infixl "\<otimes>\<^sub>l" 65)
+where
+  "A \<otimes>\<^sub>l B = {a @ b | a b. a \<in> A \<and> b \<in> B}"
+
+lemma list_product_fset_of_list[simp]:
+  "fset_of_list ` (A \<otimes>\<^sub>l B) = (fset_of_list ` A) \<otimes> (fset_of_list ` B)"
+  unfolding list_product_def product_def image_def by fastforce
+
+lemma list_product_finite:
+  "finite A \<Longrightarrow> finite B \<Longrightarrow> finite (A \<otimes>\<^sub>l B)"
+  unfolding list_product_def by (simp add: finite_image_set2)
+
+lemma list_product_iff:
+  "x \<in> A \<otimes>\<^sub>l B \<longleftrightarrow> (\<exists>a b. a \<in> A \<and> b \<in> B \<and> x = a @ b)"
+  unfolding list_product_def by blast
+
+lemma list_product_assoc[simp]:
+  "A \<otimes>\<^sub>l (B \<otimes>\<^sub>l C) = A \<otimes>\<^sub>l B \<otimes>\<^sub>l C"
+  unfolding set_eq_iff list_product_iff by fastforce
+
+
+text \<open>Furthermore, we introduct DNFs where the clauses are represented as lists.\<close>
+
+fun list_dnf :: "'a ltln \<Rightarrow> 'a ltln list set"
+where
+  "list_dnf true\<^sub>n = {[]}"
+| "list_dnf false\<^sub>n = {}"
+| "list_dnf (\<phi> and\<^sub>n \<psi>) = (list_dnf \<phi>) \<otimes>\<^sub>l (list_dnf \<psi>)"
+| "list_dnf (\<phi> or\<^sub>n \<psi>) = (list_dnf \<phi>) \<union> (list_dnf \<psi>)"
+| "list_dnf \<phi> = {[\<phi>]}"
+
+definition list_dnf_to_dnf :: "'a list set \<Rightarrow> 'a fset set"
+where
+  "list_dnf_to_dnf X = fset_of_list ` X"
+
+lemma list_dnf_to_dnf_list_dnf[simp]:
+  "list_dnf_to_dnf (list_dnf \<phi>) = dnf \<phi>"
+  by (induction \<phi>) (simp_all add: list_dnf_to_dnf_def image_Un)
+
+lemma list_dnf_finite:
+  "finite (list_dnf \<phi>)"
+  by (induction \<phi>) (simp_all add: list_product_finite)
+
+
+text \<open>We use this to redefine @{const subst_clause} and @{const subst_dnf} on list DNFs.\<close>
+
+definition subst_clause' :: "'a ltln list \<Rightarrow> ('a ltln \<rightharpoonup> 'a ltln) \<Rightarrow> 'a ltln list set"
+where
+  "subst_clause' \<Phi> m = fold (\<lambda>\<phi> acc. acc \<otimes>\<^sub>l list_dnf (subst \<phi> m)) \<Phi> {[]}"
+
+definition subst_dnf' :: "'a ltln list set \<Rightarrow> ('a ltln \<rightharpoonup> 'a ltln) \<Rightarrow> 'a ltln list set"
+where
+  "subst_dnf' \<A> m = (\<Union>\<Phi> \<in> \<A>. subst_clause' \<Phi> m)"
+
+lemma subst_clause'_finite:
+  "finite (subst_clause' \<Phi> m)"
+  by (induction \<Phi> rule: rev_induct) (simp_all add: subst_clause'_def list_dnf_finite list_product_finite)
+
+lemma subst_clause'_nil[simp]:
+  "subst_clause' [] m = {[]}"
+  by (simp add: subst_clause'_def)
+
+lemma subst_clause'_cons[simp]:
+  "subst_clause' (xs @ [x]) m = subst_clause' xs m \<otimes>\<^sub>l list_dnf (subst x m)"
+  by (simp add: subst_clause'_def)
+
+lemma subst_clause'_append[simp]:
+  "subst_clause' (A @ B) m = subst_clause' A m \<otimes>\<^sub>l subst_clause' B m"
+proof (induction B rule: rev_induct)
+  case (snoc x xs)
+  then show ?case
+    by simp (metis append_assoc subst_clause'_cons)
+qed(simp add: list_product_def)
+
+
+lemma subst_dnf'_iff:
+  "x \<in> subst_dnf' A m \<longleftrightarrow> (\<exists>\<Phi> \<in> A. x \<in> subst_clause' \<Phi> m)"
+  by (simp add: subst_dnf'_def)
+
+lemma subst_dnf'_product:
+  "subst_dnf' (A \<otimes>\<^sub>l B) m = (subst_dnf' A m) \<otimes>\<^sub>l (subst_dnf' B m)" (is "?lhs = ?rhs")
+proof (unfold set_eq_iff, safe)
+  fix x
+  assume "x \<in> ?lhs"
+
+  then obtain \<Phi> where "\<Phi> \<in> A \<otimes>\<^sub>l B" and "x \<in> subst_clause' \<Phi> m"
+    unfolding subst_dnf'_iff by blast
+
+  then obtain a b where "a \<in> A" and "b \<in> B" and "\<Phi> = a @ b"
+    unfolding list_product_def by blast
+
+  then have "x \<in> (subst_clause' a m) \<otimes>\<^sub>l (subst_clause' b m)"
+    using \<open>x \<in> subst_clause' \<Phi> m\<close> by simp
+
+  then obtain a' b' where "a' \<in> subst_clause' a m" and "b' \<in> subst_clause' b m" and "x = a' @ b'"
+    unfolding list_product_iff by blast
+
+  then have "a' \<in> subst_dnf' A m" and "b' \<in> subst_dnf' B m"
+    unfolding subst_dnf'_iff using \<open>a \<in> A\<close> \<open>b \<in> B\<close> by auto
+
+  then have "\<exists>a\<in>subst_dnf' A m. \<exists>b\<in>subst_dnf' B m. x = a @ b"
+    using \<open>x = a' @ b'\<close> by blast
+
+  then show "x \<in> ?rhs"
+    unfolding list_product_iff by blast
+next
+  fix x
+  assume "x \<in> ?rhs"
+
+  then obtain a b where "a \<in> subst_dnf' A m" and "b \<in> subst_dnf' B m" and "x = a @ b"
+    unfolding list_product_iff by blast
+
+  then obtain a' b' where "a' \<in> A" and "b' \<in> B" and a: "a \<in> subst_clause' a' m" and b: "b \<in> subst_clause' b' m"
+    unfolding subst_dnf'_iff by blast
+
+  then have "x \<in> (subst_clause' a' m) \<otimes>\<^sub>l (subst_clause' b' m)"
+    unfolding list_product_iff using \<open>x = a @ b\<close> by blast
+
+  moreover
+
+  have "a' @ b' \<in> A \<otimes>\<^sub>l B"
+    unfolding list_product_iff using \<open>a' \<in> A\<close> \<open>b' \<in> B\<close> by blast
+
+  ultimately show "x \<in> ?lhs"
+    unfolding subst_dnf'_iff by force
+qed
+
+lemma subst_dnf'_list_dnf:
+  "subst_dnf' (list_dnf \<phi>) m = list_dnf (subst \<phi> m)"
+proof (induction \<phi>)
+  case (And_ltln \<phi>1 \<phi>2)
+  then show ?case
+    by (simp add: subst_dnf'_product)
+qed (simp_all add: subst_dnf'_def subst_clause'_def list_product_def)
+
+
+lemma min_set_Union:
+  "finite X \<Longrightarrow> min_set (\<Union> (min_set ` X)) = min_set (\<Union> X)" for X :: "'a fset set set"
+  by (induction X rule: finite_induct) (force, metis Sup_insert image_insert min_set_min_union min_union_def)
+
+lemma min_set_Union_image:
+  "finite X \<Longrightarrow> min_set (\<Union>x \<in> X. min_set (f x)) = min_set (\<Union>x \<in> X. f x)" for f :: "'b \<Rightarrow> 'a fset set"
+proof -
+  assume "finite X"
+
+  then have *: "finite (f ` X)" by auto
+
+  with min_set_Union show ?thesis
+    unfolding image_image by fastforce
+qed
+
+lemma subst_clause_fset_of_list:
+  "subst_clause (fset_of_list \<Phi>) m = min_set (list_dnf_to_dnf (subst_clause' \<Phi> m))"
+  unfolding list_dnf_to_dnf_def subst_clause'_def
+proof (induction \<Phi> rule: rev_induct)
+  case (snoc x xs)
+  then show ?case
+    by simp (metis (no_types, lifting) dnf_min_set list_dnf_to_dnf_def list_dnf_to_dnf_list_dnf min_product_comm min_product_def min_set_min_product(1))
+qed simp
+
+lemma min_set_list_dnf_to_dnf_subst_dnf':
+  "finite X \<Longrightarrow> min_set (list_dnf_to_dnf (subst_dnf' X m)) = min_set (subst_dnf (list_dnf_to_dnf X) m)"
+  by (simp add: subst_dnf'_def subst_dnf_def subst_clause_fset_of_list list_dnf_to_dnf_def min_set_Union_image image_Union)
+
+lemma subst_dnf_dnf:
+  "min_set (subst_dnf (dnf \<phi>) m) = min_dnf (subst \<phi> m)"
+  unfolding dnf_min_set
+  unfolding list_dnf_to_dnf_list_dnf[symmetric]
+  unfolding subst_dnf'_list_dnf[symmetric]
+  unfolding min_set_list_dnf_to_dnf_subst_dnf'[OF list_dnf_finite]
+  by simp
+
+
+text \<open>This is almost the lemma we need. However, we need to show that the same holds for @{term "min_dnf \<phi>"}, too.\<close>
+
+lemma fold_product:
+  "Finite_Set.fold (\<lambda>x. (\<otimes>) {{|x|}}) {{||}} (fset x) = {x}"
+  by (induction x) (simp_all add: notin_fset, simp add: product_singleton_singleton)
+
+lemma fold_union:
+  "Finite_Set.fold (\<lambda>x. (\<union>) {x}) {} (fset x) = fset x"
+  by (induction x) (simp_all add: notin_fset comp_fun_idem.fold_insert_idem comp_fun_idem_insert)
+
+lemma fold_union_fold_product:
+  assumes "finite X" and "\<And>\<Psi> \<psi>. \<Psi> \<in> X \<Longrightarrow> \<psi> \<in> fset \<Psi> \<Longrightarrow> dnf \<psi> = {{|\<psi>|}}"
+  shows "Finite_Set.fold (\<lambda>x. (\<union>) (Finite_Set.fold (\<lambda>\<phi>. (\<otimes>) (dnf \<phi>)) {{||}} (fset x))) {} X = X" (is "?lhs = X")
+proof -
+  from assms have "?lhs = Finite_Set.fold (\<lambda>x. (\<union>) (Finite_Set.fold (\<lambda>\<phi>. (\<otimes>) {{|\<phi>|}}) {{||}} (fset x))) {} X"
+  proof (induction X rule: finite_induct)
+    case (insert \<Phi> X)
+
+    from insert.prems have 1: "\<And>\<Psi> \<psi>. \<lbrakk>\<Psi> \<in> X; \<psi> \<in> fset \<Psi>\<rbrakk> \<Longrightarrow> dnf \<psi> = {{|\<psi>|}}"
+      by force
+
+    from insert.prems have "Finite_Set.fold (\<lambda>\<phi>. (\<otimes>) (dnf \<phi>)) {{||}} (fset \<Phi>) = Finite_Set.fold (\<lambda>\<phi>. (\<otimes>) {{|\<phi>|}}) {{||}} (fset \<Phi>)"
+      by (induction \<Phi>) (force simp: notin_fset)+
+
+    with insert 1 show ?case
+      by simp
+  qed simp
+
+  with \<open>finite X\<close> show ?thesis
+    unfolding fold_product by (metis fset_to_fset fold_union)
+qed
+
+lemma dnf_ltln_of_dnf_min_dnf:
+  "dnf (ltln_of_dnf (min_dnf \<phi>)) = min_dnf \<phi>"
+proof -
+  have 1: "finite (And\<^sub>n ` fset ` min_dnf \<phi>)"
+    using min_dnf_finite by blast
+
+  have 2: "inj_on And\<^sub>n (fset ` min_dnf \<phi>)"
+    by (metis (mono_tags, lifting) And\<^sub>n_inj f_inv_into_f fset inj_onI inj_on_contraD)
+
+  have 3: "inj_on fset (min_dnf \<phi>)"
+    by (meson fset_inject inj_onI)
+
+  show ?thesis
+    unfolding ltln_of_dnf_def
+    unfolding Or\<^sub>n_dnf[OF 1]
+    unfolding fold_image[OF 2]
+    unfolding fold_image[OF 3]
+    unfolding comp_def
+    unfolding And\<^sub>n_dnf[OF finite_fset]
+    by (metis fold_union_fold_product min_dnf_finite min_dnf_atoms_dnf)
+qed
+
+lemma min_dnf_subst:
+  "min_set (subst_dnf (min_dnf \<phi>) m) = min_dnf (subst \<phi> m)" (is "?lhs = ?rhs")
+proof -
+  let ?\<phi>' = "ltln_of_dnf (min_dnf \<phi>)"
+
+  have "?lhs = min_set (subst_dnf (dnf ?\<phi>') m)"
+    unfolding dnf_ltln_of_dnf_min_dnf ..
+
+  also have "\<dots> = min_dnf (subst ?\<phi>' m)"
+    unfolding subst_dnf_dnf ..
+
+  also have "\<dots> = min_dnf (subst \<phi> m)"
+    using ltl_prop_equiv_min_dnf ltln_of_dnf_prop_equiv subst_respects_ltl_prop_entailment(2) by blast
+
+  finally show ?thesis .
 qed
 
 end
