@@ -84,6 +84,11 @@ lemma conv_plus_commute:
   "x\<^sup>+\<^sup>T = x\<^sup>T\<^sup>+"
   by (simp add: conv_dist_comp conv_star_commute star_plus)
 
+lemma reflexive_inf_star:
+  assumes "reflexive y"
+    shows "y \<sqinter> x\<^sup>\<star> = 1 \<squnion> (y \<sqinter> x\<^sup>+)"
+  by (simp add: assms star_left_unfold_equal sup.absorb2 sup_inf_distrib1)
+
 text \<open>
 The following results are variants of a separation lemma of Kleene algebras.
 \<close>
@@ -388,7 +393,7 @@ qed
 
 lemma acyclic_asymmetric:
   "acyclic w \<Longrightarrow> asymmetric w"
-  by (simp add: local.dual_order.trans local.pseudo_complement local.schroeder_5_p local.star.circ_increasing)
+  by (simp add: dual_order.trans pseudo_complement schroeder_5_p star.circ_increasing)
 
 lemma forest_separate:
   assumes "forest x"
@@ -892,7 +897,7 @@ lemma exchange_injective_6:
     shows "(prim_P w v e)\<^sup>T * e\<^sup>T = bot"
 proof -
   have "e\<^sup>T * top * e \<le> --1"
-    by (simp add: assms(1) local.p_antitone local.p_antitone_iff local.point_injective)
+    by (simp add: assms(1) p_antitone p_antitone_iff point_injective)
   hence 1: "e * -1 * e\<^sup>T \<le> bot"
     by (metis conv_involutive p_top triple_schroeder_p)
   have "(prim_P w v e)\<^sup>T * e\<^sup>T \<le> (w \<sqinter> top * e * w\<^sup>T\<^sup>\<star>)\<^sup>T * e\<^sup>T"
@@ -1078,7 +1083,7 @@ proof -
     also have "... \<le> top * -v * -v\<^sup>T \<sqinter> top * top * e * w\<^sup>T\<^sup>\<star>"
       by (simp add: comp_inf_covector mult_assoc)
     also have "... \<le> top * -v\<^sup>T \<sqinter> top * e * w\<^sup>T\<^sup>\<star>"
-      using mult_left_isotone top.extremum local.inf_mono by presburger
+      using mult_left_isotone top.extremum inf_mono by presburger
     also have "... = -v\<^sup>T \<sqinter> top * e * w\<^sup>T\<^sup>\<star>"
       by (simp add: assms(1) vector_conv_compl)
     finally have "top * (prim_P w v e) \<le> -(w \<sqinter> -prim_EP w v e)"
@@ -1341,12 +1346,57 @@ proof -
   hence "t \<le> w \<sqinter> -(prim_EP w v e)"
     using assms(1) by simp
   thus ?thesis
-    using local.le_supI1 by blast
+    using le_supI1 by blast
 qed
 
 lemma mst_extends_new_tree:
   "t \<le> w \<Longrightarrow> t \<le> v * v\<^sup>T \<Longrightarrow> vector v \<Longrightarrow> t \<squnion> e \<le> prim_W w v e"
   using mst_extends_old_tree by auto
+
+lemma forests_bot_1:
+  assumes "equivalence e"
+      and "forest f"
+    shows "(-e \<sqinter> f) * (e \<sqinter> f)\<^sup>T = bot"
+proof -
+  have "f * f\<^sup>T \<le> e"
+    using assms dual_order.trans by blast
+  hence "f * (e \<sqinter> f)\<^sup>T \<le> e"
+    by (metis conv_dist_inf inf.boundedE inf.cobounded2 inf.orderE mult_right_isotone)
+  hence "-e \<sqinter> f * (e \<sqinter> f)\<^sup>T = bot"
+    by (simp add: p_antitone pseudo_complement)
+  thus ?thesis
+    by (metis assms(1) comp_isotone conv_dist_inf equivalence_comp_right_complement inf.boundedI inf.cobounded1 inf.cobounded2 le_bot)
+qed
+
+lemma forests_bot_2:
+  assumes "equivalence e"
+      and "forest f"
+    shows "(-e \<sqinter> f\<^sup>T) * x \<sqinter> (e \<sqinter> f\<^sup>T) * y = bot"
+proof -
+  have "(-e \<sqinter> f) * (e \<sqinter> f\<^sup>T) = bot"
+    using assms forests_bot_1 conv_dist_inf by simp
+  thus ?thesis
+    by (smt assms(1) comp_associative comp_inf.semiring.mult_not_zero conv_complement conv_dist_comp conv_dist_inf conv_involutive dedekind_1 inf.cobounded2 inf.sup_monoid.add_commute le_bot mult_right_zero p_antitone_iff pseudo_complement semiring.mult_not_zero symmetric_top_closed top.extremum)
+qed
+
+lemma forests_bot_3:
+  assumes "equivalence e"
+      and "forest f"
+    shows "x * (-e \<sqinter> f) \<sqinter> y * (e \<sqinter> f) = bot"
+proof -
+  have "(e \<sqinter> f) * (-e \<sqinter> f\<^sup>T) = bot"
+    using assms forests_bot_1 conv_dist_inf conv_complement by (smt conv_dist_comp conv_involutive conv_order coreflexive_bot_closed coreflexive_symmetric)
+  hence "y * (e \<sqinter> f) * (-e \<sqinter> f\<^sup>T) = bot"
+    by (simp add: comp_associative)
+  hence 1: "x \<sqinter> y * (e \<sqinter> f) * (-e \<sqinter> f\<^sup>T) = bot"
+    using comp_inf.semiring.mult_not_zero by blast
+  hence "(x \<sqinter> y * (e \<sqinter> f) * (-e \<sqinter> f\<^sup>T)) * (-e \<sqinter> f) = bot"
+    using semiring.mult_not_zero by blast
+  hence "x * (-e \<sqinter> f\<^sup>T)\<^sup>T \<sqinter> y * (e \<sqinter> f) = bot"
+    using 1 dedekind_2 inf_commute schroeder_2 by auto
+  thus ?thesis
+    by (simp add: assms(1) conv_complement conv_dist_inf)
+qed
 
 end
 
@@ -1367,6 +1417,10 @@ lemma regular_closed_star:
 lemma components_idempotent:
   "components (components x) = components x"
   using pp_dist_star star_involutive by auto
+
+lemma fc_comp_eq_fc:
+  "-forest_components (--f) = -forest_components f"
+  by (metis conv_complement p_comp_pp p_pp_comp pp_dist_star)
 
 text \<open>
 The following lemma shows that the nodes reachable in the tree after exchange contain the nodes reachable in the tree before exchange.
@@ -2135,7 +2189,7 @@ proof -
   finally have 7: "w * r \<sqinter> w\<^sup>T\<^sup>+ * r = bot"
     .
   have "-1 * r \<le> -r"
-    using assms(2) local.dual_order.trans local.pp_increasing local.schroeder_4_p by blast
+    using assms(2) dual_order.trans pp_increasing schroeder_4_p by blast
   hence "-1 * r * top \<le> -r"
     by (simp add: assms(1) comp_associative)
   hence 8: "r\<^sup>T * -1 * r \<le> bot"

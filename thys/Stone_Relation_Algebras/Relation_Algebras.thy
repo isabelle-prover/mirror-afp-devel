@@ -837,6 +837,25 @@ proof -
     by (metis comp_inf_vector_1 conv_dist_comp conv_involutive conv_top inf.absorb1 top_right_mult_increasing)
 qed
 
+lemma arc_eq_1:
+  assumes "arc x"
+    shows "x = x * x\<^sup>T * x"
+proof -
+  have "x * x\<^sup>T * x \<le> x * top * x"
+    by (simp add: mult_left_isotone mult_right_isotone)
+  also have "... \<le> x"
+    by (simp add: assms arc_top_arc)
+  finally have "x * x\<^sup>T * x \<le> x"
+    by simp
+  thus ?thesis
+    by (simp add: antisym ex231c)
+qed
+
+lemma arc_eq_2:
+  assumes "arc x"
+    shows "x\<^sup>T = x\<^sup>T * x * x\<^sup>T"
+  using arc_eq_1 assms conv_involutive by fastforce
+
 end
 
 subsection \<open>Single-Object Pseudocomplemented Distributive Allegories\<close>
@@ -1781,6 +1800,76 @@ proof -
     by (simp add: assms(2) inf_absorb1 shunting_1_pp)
   thus ?thesis
     using assms(1) arc_in_partition by auto
+qed
+
+lemma point_in_vector_or_pseudo_complement:
+  assumes "point p"
+      and "vector v"
+    shows "p \<le> --v \<or> p \<le> -v"
+proof (rule disjCI)
+  assume "\<not>(p \<le> -v)"
+  hence "top * (p \<sqinter> --v) = top"
+    by (smt assms bijective_regular regular_closed_inf regular_closed_p shunting_1_pp tarski vector_complement_closed vector_inf_closed vector_mult_closed)
+  thus "p \<le> --v"
+    by (metis assms(1) epm_3 inf.absorb_iff1 inf.cobounded1 inf_top.right_neutral)
+qed
+
+lemma point_in_vector_or_complement:
+  assumes "point p"
+      and "vector v"
+      and "regular v"
+    shows "p \<le> v \<or> p \<le> -v"
+  using assms point_in_vector_or_pseudo_complement by fastforce
+
+lemma point_in_vector_sup:
+  assumes "point p"
+      and "vector v"
+      and "regular v"
+      and "p \<le> v \<squnion> w"
+    shows "p \<le> v \<or> p \<le> w"
+  by (metis assms inf.absorb1 shunting_var_p sup_commute point_in_vector_or_complement)
+
+lemma arc_in_arc_or_complement:
+  assumes "arc x"
+      and "arc y"
+      and "\<not> x \<le> y"
+    shows "x \<le> -y"
+  using assms arc_in_partition arc_regular by force
+
+lemma arc_in_sup_arc:
+  assumes "arc x"
+      and "arc y"
+      and "x \<le> z \<squnion> y"
+    shows "x \<le> z \<or> x \<le> y"
+proof (cases "x \<le> y")
+  case True
+  thus ?thesis
+    by simp
+next
+  case False
+  hence "x \<le> -y"
+    using assms(1,2) arc_in_arc_or_complement by blast
+  hence "x \<le> -y \<sqinter> (z \<squnion> y)"
+    using assms(3) by simp
+  hence "x \<le> z"
+    by (metis inf.boundedE inf.sup_monoid.add_commute maddux_3_13 sup_commute)
+  thus ?thesis
+    by simp
+qed
+
+lemma different_arc_in_sup_arc:
+  assumes "arc x"
+      and "arc y"
+      and "x \<le> z \<squnion> y"
+      and "x \<noteq> y"
+    shows "x \<le> z"
+proof -
+  have "x \<le> -y"
+    using arc_in_arc_or_complement assms(1,2,4) eq_iff p_antitone_iff by blast
+  hence "x \<le> -y \<sqinter> (z \<squnion> y)"
+    using assms arc_in_sup_arc by simp
+  thus ?thesis
+    by (metis order_lesseq_imp p_inf_sup_below sup_commute)
 qed
 
 end

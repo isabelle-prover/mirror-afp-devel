@@ -582,7 +582,20 @@ lemma cancel_separate_1_sup:
   assumes "x * y \<le> 1"
       and "y * x \<le> 1"
   shows "(x \<squnion> y)\<^sup>\<star> = x\<^sup>\<star> \<squnion> y\<^sup>\<star>"
-  by (simp add: assms cancel_separate_1 cancel_separate_eq local.sup_commute)
+  by (simp add: assms cancel_separate_1 cancel_separate_eq sup_commute)
+
+lemma star_separate_3:
+  assumes "y * x\<^sup>\<star> * y \<le> y"
+    shows "(x \<squnion> y)\<^sup>\<star> = x\<^sup>\<star> \<squnion> x\<^sup>\<star> * y * x\<^sup>\<star>"
+proof (rule antisym)
+  have "x\<^sup>\<star> * y * (x\<^sup>\<star> * y)\<^sup>\<star> * x\<^sup>\<star> \<le> x\<^sup>\<star> * y * x\<^sup>\<star>"
+    by (metis assms mult_left_isotone mult_right_isotone star_right_induct_mult mult_assoc)
+  thus "(x \<squnion> y)\<^sup>\<star> \<le> x\<^sup>\<star> \<squnion> x\<^sup>\<star> * y * x\<^sup>\<star>"
+    by (metis antisym semiring.add_left_mono star.circ_sup_2 star.circ_sup_sub star.circ_unfold_sum star_decompose_3 star_slide mult_assoc)
+next
+  show "x\<^sup>\<star> \<squnion> x\<^sup>\<star> * y * x\<^sup>\<star> \<le> (x \<squnion> y)\<^sup>\<star>"
+    using mult_isotone star.circ_increasing star.circ_sub_dist star.circ_sup_9 by auto
+qed
 
 end
 
