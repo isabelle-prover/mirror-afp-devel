@@ -1,11 +1,7 @@
 (*
- * Copyright 2014, NICTA
+ * Copyright 2020, Data61, CSIRO (ABN 41 687 119 230)
  *
- * This software may be distributed and modified according to the terms of
- * the BSD 2-Clause license. Note that NO WARRANTY is provided.
- * See "LICENSE_BSD2.txt" for details.
- *
- * @TAG(NICTA_BSD)
+ * SPDX-License-Identifier: BSD-2-Clause
  *)
 
 (* Author: Thomas Sewell *)
@@ -54,10 +50,10 @@ proof -
   show ?thesis by (simp add: fromEnum_def enum_word_def)
 qed
 
-lemma length_word_enum: "length (enum :: ('a :: len) word list) = 2 ^ LENGTH('a)"
+lemma length_word_enum: "length (enum :: 'a :: len word list) = 2 ^ LENGTH('a)"
   by (simp add: enum_word_def)
 
-lemma toEnum_of_nat[simp]: "n < 2 ^ LENGTH('a) \<Longrightarrow> ((toEnum n) :: ('a :: len) word) = of_nat n"
+lemma toEnum_of_nat[simp]: "n < 2 ^ LENGTH('a) \<Longrightarrow> (toEnum n :: 'a :: len word) = of_nat n"
   by (simp add: toEnum_def length_word_enum enum_word_def)
 
 declare of_nat_diff [simp]
