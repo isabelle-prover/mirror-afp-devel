@@ -33,7 +33,7 @@ lemma len64: "len_of (x :: 64 itself) = 64" by simp
 
 
 abbreviation
-  wordNOT  :: "'a::len0 word \<Rightarrow> 'a word"      ("~~")
+  wordNOT  :: "'a::len0 word \<Rightarrow> 'a word"      ("~~ _" [70] 71)
 where
   "~~ x == NOT x"
 
