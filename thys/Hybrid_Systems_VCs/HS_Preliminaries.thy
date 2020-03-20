@@ -166,6 +166,49 @@ lemma "c \<noteq> 0 \<Longrightarrow> D (\<lambda>t. exp (a * sin (cos (t^4) / c
   using poly_derivatives(1,2) by force+
 
 
+subsection \<open> Intermediate Value Theorem \<close>
+
+lemma IVT_two_functions:
+  fixes f :: "('a::{linear_continuum_topology, real_vector}) \<Rightarrow> 
+  ('b::{linorder_topology,real_normed_vector,ordered_ab_group_add})"
+  assumes conts: "continuous_on {a..b} f" "continuous_on {a..b} g"
+      and ahyp: "f a < g a" and bhyp: "g b < f b " and "a \<le> b"
+    shows "\<exists>x\<in>{a..b}. f x = g x"
+proof-
+  let "?h x" = "f x - g x"
+  have "?h a \<le> 0" and "?h b \<ge> 0"
+    using ahyp bhyp by simp_all
+  also have "continuous_on {a..b} ?h"
+    using conts continuous_on_diff by blast 
+  ultimately obtain x where "a \<le> x" "x \<le> b" and "?h x = 0"
+    using IVT'[of "?h"] \<open>a \<le> b\<close> by blast
+  thus ?thesis
+    using \<open>a \<le> b\<close> by auto
+qed
+
+lemma IVT_two_functions_real_ivl:
+  fixes f :: "real \<Rightarrow> real"
+  assumes conts: "continuous_on {a--b} f" "continuous_on {a--b} g"
+      and ahyp: "f a < g a" and bhyp: "g b < f b "
+    shows "\<exists>x\<in>{a--b}. f x = g x"
+proof(cases "a \<le> b")
+  case True
+  then show ?thesis 
+    using IVT_two_functions assms 
+    unfolding closed_segment_eq_real_ivl by auto
+next
+  case False
+  hence "a \<ge> b"
+    by auto
+  hence "continuous_on {b..a} f" "continuous_on {b..a} g"
+    using conts False unfolding closed_segment_eq_real_ivl by auto
+  hence "\<exists>x\<in>{b..a}. g x = f x"
+    using IVT_two_functions[of b a g f] assms(3,4) False by auto
+  then show ?thesis  
+    using \<open>a \<ge> b\<close> unfolding closed_segment_eq_real_ivl by auto force
+qed
+
+
 subsection \<open> Filters \<close>
 
 lemma eventually_at_within_mono:

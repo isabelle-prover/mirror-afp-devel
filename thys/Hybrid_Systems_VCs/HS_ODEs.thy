@@ -190,6 +190,71 @@ proof(simp add: diff_invariant_eq ivp_sols_def, clarsimp)
     using x_ivp by blast
 qed
 
+lemma diff_invariant_nleq_rule:
+  fixes \<mu>::"'a::banach \<Rightarrow> real"
+  shows "diff_invariant (\<lambda>s. \<not> \<nu> s \<le> \<mu> s) f T S t\<^sub>0 G \<longleftrightarrow> diff_invariant (\<lambda>s. \<nu> s > \<mu> s) f T S t\<^sub>0 G"
+  unfolding diff_invariant_eq apply safe
+  by (clarsimp, erule_tac x=s in allE, simp, erule_tac x=X in ballE, force, force)+
+
+lemma diff_invariant_neq_rule [diff_invariant_rules]:
+  fixes \<mu>::"'a::banach \<Rightarrow> real"
+  assumes "diff_invariant (\<lambda>s. \<nu> s < \<mu> s) f T S t\<^sub>0 G"
+    and "diff_invariant (\<lambda>s. \<nu> s > \<mu> s) f T S t\<^sub>0 G"
+  shows "diff_invariant (\<lambda>s. \<nu> s \<noteq> \<mu> s) f T S t\<^sub>0 G"
+proof(unfold diff_invariant_eq, clarsimp)
+  fix s::'a and X::"real \<Rightarrow> 'a" and t::real
+  assume "\<nu> s \<noteq> \<mu> s" and Xhyp: "X \<in> Sols (\<lambda>t. f) T S t\<^sub>0 s" 
+     and thyp: "t \<in> T" and Ghyp: "\<forall>\<tau>. \<tau> \<in> T \<and> \<tau> \<le> t \<longrightarrow> G (X \<tau>)"
+  hence "\<nu> s < \<mu> s \<or> \<nu> s > \<mu> s"
+    by linarith
+  moreover have "\<nu> s < \<mu> s \<Longrightarrow> \<nu> (X t) < \<mu> (X t)"
+    using assms(1) Xhyp thyp Ghyp unfolding diff_invariant_eq by auto
+  moreover have "\<nu> s > \<mu> s \<Longrightarrow> \<nu> (X t) > \<mu> (X t)"
+    using assms(2) Xhyp thyp Ghyp unfolding diff_invariant_eq by auto
+  ultimately show "\<nu> (X t) = \<mu> (X t) \<Longrightarrow> False"
+    by auto
+qed
+
+lemma diff_invariant_neq_rule_converse:
+  fixes \<mu>::"'a::banach \<Rightarrow> real"
+  assumes Thyp: "is_interval T" "t\<^sub>0 \<in> T" "\<forall>t\<in>T. t\<^sub>0 \<le> t"
+      and conts: "\<forall>X. (D X = (\<lambda>\<tau>. f (X \<tau>)) on T) \<longrightarrow> 
+  continuous_on (\<P> X T) \<nu> \<and> continuous_on (\<P> X T) \<mu>"
+      and dIhyp:"diff_invariant (\<lambda>s. \<nu> s \<noteq> \<mu> s) f T S t\<^sub>0 G"
+    shows "diff_invariant (\<lambda>s. \<nu> s < \<mu> s) f T S t\<^sub>0 G"
+proof(unfold diff_invariant_eq, clarsimp)
+  fix s::'a and X::"real \<Rightarrow> 'a" and t::real
+  assume ineq0: "\<nu> s < \<mu> s" and Xhyp: "X \<in> Sols (\<lambda>t. f) T S t\<^sub>0 s"
+    and Ghyp: "\<forall>\<tau>. \<tau> \<in> T \<and> \<tau> \<le> t \<longrightarrow> G (X \<tau>)" and thyp: "t\<in>T"
+  hence ineq1: "\<nu> (X t\<^sub>0) < \<mu> (X t\<^sub>0)"
+    by (auto simp: ivp_solsD)
+  have "t\<^sub>0 \<le> t" and "\<mu> (X t) \<noteq> \<nu> (X t)"
+    using \<open>t \<in> T\<close> Thyp dIhyp thyp Xhyp Ghyp ineq0 
+    unfolding diff_invariant_eq by force+
+  moreover
+  {assume ineq2:"\<nu> (X t) > \<mu> (X t)"
+    note continuous_on_compose[OF vderiv_on_continuous_on[OF ivp_solsD(1)[OF Xhyp]]]
+    hence "continuous_on T (\<nu> \<circ> X)" and "continuous_on T (\<mu> \<circ> X)"
+      using ivp_solsD(1)[OF Xhyp] conts by auto
+    also have "{t\<^sub>0--t} \<subseteq> T"
+      using Thyp thyp by (simp add: closed_segment_subset_interval)
+    ultimately have "continuous_on {t\<^sub>0--t} (\<lambda>\<tau>. \<nu> (X \<tau>))" 
+      and "continuous_on {t\<^sub>0--t} (\<lambda>\<tau>. \<mu> (X \<tau>))"
+      using continuous_on_subset by auto
+    then obtain \<tau> where "\<tau> \<in> {t\<^sub>0--t}" "\<mu> (X \<tau>) = \<nu> (X \<tau>)"
+      using IVT_two_functions_real_ivl[OF _ _ ineq1 ineq2] by force
+    hence "\<forall>r\<in>down T \<tau>. G (X r)" and "\<tau> \<in> T"
+      using Ghyp \<open>\<tau> \<in> {t\<^sub>0--t}\<close> \<open>t\<^sub>0 \<le> t\<close> \<open>{t\<^sub>0--t} \<subseteq> T\<close> 
+      by (auto simp: closed_segment_eq_real_ivl)
+    hence "\<mu> (X \<tau>) \<noteq> \<nu> (X \<tau>)"
+      using dIhyp Xhyp \<open>\<nu> s < \<mu> s\<close> 
+      unfolding diff_invariant_eq by force
+    hence "False"
+      using \<open>\<mu> (X \<tau>) = \<nu> (X \<tau>)\<close> by blast}
+  ultimately show "\<nu> (X t) < \<mu> (X t)"
+    by fastforce
+qed
+
 lemma diff_invariant_conj_rule [diff_invariant_rules]:
 assumes "diff_invariant I\<^sub>1 f T S t\<^sub>0 G" 
     and "diff_invariant I\<^sub>2 f T S t\<^sub>0 G"
