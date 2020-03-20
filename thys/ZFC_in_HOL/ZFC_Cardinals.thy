@@ -92,7 +92,7 @@ lemma pairs_iff_elts: "(x,y) \<in> pairs z \<longleftrightarrow> \<langle>x,y\<r
   by (simp add: pairs_def)
 
 lemma VSigma_iff [simp]: "\<langle>a,b\<rangle> \<in> elts (VSigma A B) \<longleftrightarrow> a \<in> elts A \<and> b \<in> elts (B a)"
-  by (auto simp: VSigma_def small_UN UNION_singleton_eq_range)
+  by (auto simp: VSigma_def UNION_singleton_eq_range)
 
 lemma VSigmaI [intro!]: "\<lbrakk> a \<in> elts A;  b \<in> elts (B a)\<rbrakk>  \<Longrightarrow> \<langle>a,b\<rangle> \<in> elts (VSigma A B)"
   by simp
@@ -148,7 +148,7 @@ lemma Inl_nonzero [simp]:"Inl x \<noteq> 0"
 lemma Inr_nonzero [simp]:"Inr x \<noteq> 0"
   by (metis Inr_def vpair_nonzero)
 
-text\<open>Introduction rules for the injections (as equivalences)\<close>
+subsubsection\<open>Equivalences for the injections and an elimination rule\<close>
 
 lemma Inl_in_sum_iff [iff]: "Inl a \<in> elts (A \<Uplus> B) \<longleftrightarrow> a \<in> elts A"
   by (auto simp: sum_defs)
@@ -156,14 +156,12 @@ lemma Inl_in_sum_iff [iff]: "Inl a \<in> elts (A \<Uplus> B) \<longleftrightarro
 lemma Inr_in_sum_iff [iff]: "Inr b \<in> elts (A \<Uplus> B) \<longleftrightarrow> b \<in> elts B"
   by (auto simp: sum_defs)
 
-text \<open>Elimination rule\<close>
-
 lemma sumE [elim!]:
   assumes u: "u \<in> elts (A \<Uplus> B)"
   obtains x where "x \<in> elts A" "u=Inl x" | y where "y \<in> elts B" "u=Inr y" using u
   by (auto simp: sum_defs)
 
-text \<open>Injection and freeness equivalences, for rewriting\<close>
+subsubsection \<open>Injection and freeness equivalences, for rewriting\<close>
 
 lemma Inl_iff [iff]: "Inl a=Inl b \<longleftrightarrow> a=b"
   by (simp add: sum_defs)
@@ -227,6 +225,55 @@ lemma sum_case_split_asm:
   "P (sum_case f g a) \<longleftrightarrow> \<not> ((\<exists>x. a = Inl x \<and> \<not> P(f x)) \<or> (\<exists>y. a = Inr y \<and> \<not> P(g y)) \<or> (\<not> is_sum a \<and> \<not> P undefined))"
   by (auto simp: sum_case_split)
 
+subsubsection \<open>Applications of disjoint sums and pairs: general union theorems for small sets\<close>
+
+lemma small_Un:
+  assumes X: "small X" and Y: "small Y"
+  shows "small (X \<union> Y)"
+proof -
+  obtain f g :: "'a\<Rightarrow>V" where f: "inj_on f X" and g: "inj_on g Y" 
+    by (meson assms small_def)
+  define h where "h \<equiv> \<lambda>z. if z \<in> X then Inl (f z) else Inr (g z)"
+  show ?thesis
+    unfolding small_def
+  proof (intro exI conjI)
+    show "inj_on h (X \<union> Y)"
+      using f g by (auto simp add: inj_on_def h_def)
+    show "h ` (X \<union> Y) \<in> range elts"
+      by (metis X Y image_Un replacement small_iff_range small_sup_iff)
+  qed
+qed
+
+lemma small_UN [simp,intro]:
+  assumes X: "small X" and B: "\<And>x. x \<in> X \<Longrightarrow> small (B x)"
+  shows "small (\<Union>x\<in>X. B x)"
+proof -
+  obtain f :: "'a\<Rightarrow>V" where f: "inj_on f X" 
+    by (meson assms small_def)
+  have "\<exists>g. inj_on g (B x) \<and> g ` (B x) \<in> range elts" if "x \<in> X" for x
+    using B small_def that by auto
+  then obtain g::"'a \<Rightarrow> 'b \<Rightarrow> V" where g: "\<And>x. x \<in> X \<Longrightarrow> inj_on (g x) (B x)" 
+    by metis
+  define \<phi> where "\<phi> \<equiv> \<lambda>y. @x. x \<in> X \<and> y \<in> B x"
+  have \<phi>: "\<phi> y \<in> X \<and> y \<in> B (\<phi> y)" if "y \<in> (\<Union>x\<in>X. B x)" for y
+    unfolding \<phi>_def by (metis (mono_tags, lifting) UN_E someI that)
+  define h where "h \<equiv> \<lambda>y. \<langle>f (\<phi> y), g (\<phi> y) y\<rangle>"
+  show ?thesis
+    unfolding small_def
+  proof (intro exI conjI)
+    show "inj_on h (\<Union> (B ` X))"
+      using f g \<phi> unfolding h_def inj_on_def by (metis vpair_inject)
+  have "small (h ` \<Union> (B ` X))"
+    by (simp add: B X image_UN)
+  then show "h ` \<Union> (B ` X) \<in> range elts"
+    using small_iff_range by blast
+  qed
+qed
+
+lemma small_Union [simp,intro]:
+  assumes "\<A> \<subseteq> Collect small" "small \<A>"
+  shows "small (\<Union> \<A>)"
+  using small_UN [of \<A> "\<lambda>x. x"] assms by (simp add: subset_iff)
 
 subsection\<open>Generalised function space and lambda\<close>
 
@@ -884,6 +931,16 @@ qed
 lemma Ord_ordertype [simp]: "Ord(ordertype A VWF)"
   using wf_Ord_ordertype by blast
 
+lemma ordertype_singleton [simp]:
+  assumes "wf r" 
+  shows "ordertype {x} r = 1"
+proof -
+  have \<dagger>: "{y. y = x \<and> (y, x) \<in> r} = {}"
+    using assms by auto
+  show ?thesis
+    by (auto simp add: ordertype_def assms \<dagger> ordermap [where a=x])
+qed
+
 
 subsubsection\<open>@{term ordermap} preserves the orderings in both directions\<close>
 
@@ -899,7 +956,7 @@ proof -
 qed
 
 lemma converse_ordermap_mono:
-  assumes "ordermap A r y \<in> elts (ordermap A r x)" "wf r" "total r" "x \<in> A" "small A"
+  assumes "ordermap A r y \<in> elts (ordermap A r x)" "wf r" "total_on A r" "x \<in> A" "y \<in> A" "small A"
   shows "(y, x) \<in> r"
 proof (cases "x = y")
   case True
@@ -908,11 +965,10 @@ proof (cases "x = y")
 next
   case False
   then consider "(x,y) \<in> r" | "(y,x) \<in> r"
-    using \<open>total r\<close> by (meson UNIV_I total_on_def)
+    using \<open>total_on A r\<close> assms by (meson UNIV_I total_on_def)
   then show ?thesis
     by (meson ordermap_mono assms mem_not_sym)
 qed
-
 
 lemma ordermap_surj: "elts (ordertype A r) \<subseteq> ordermap A r ` A"
   unfolding ordertype_def by simp
@@ -1016,6 +1072,11 @@ corollary ordertype_VWF_mono:
   assumes "X \<subseteq> Y" "small Y"
   shows "ordertype X VWF \<le> ordertype Y VWF"
   using assms by (simp add: ordertype_mono)
+
+lemma ordertype_UNION_ge:
+  assumes "A \<in> \<A>" "wf r" "trans r" "\<A> \<subseteq> Collect small" "small \<A>"
+  shows "ordertype A r \<le> ordertype (\<Union>\<A>) r" 
+  by (rule ordertype_mono) (use assms in auto)
 
 lemma inv_ordermap_mono_less:
   assumes "(inv_into M (ordermap M r) \<alpha>, inv_into M (ordermap M r) \<beta>) \<in> r" 

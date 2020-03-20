@@ -121,15 +121,15 @@ next
     by (metis replacement Un_insert_right assms bij_betw_imp_surj_on sup_bot.right_neutral)
 qed
 
-lemma small_UN [simp,intro]:
-  fixes B :: "V \<Rightarrow> V set"
+lemma small_UN_V [simp,intro]:
+  fixes B :: "'a \<Rightarrow> V set"
   assumes X: "small X" and B: "\<And>x. x \<in> X \<Longrightarrow> small (B x)"
   shows "small (\<Union>x\<in>X. B x)"
 proof -
-  have "(\<Union> (elts ` (\<lambda>x. set (B x)) ` X)) = (\<Union> (B ` X))"
+  have "(\<Union> (elts ` (\<lambda>x. ZFC_in_HOL.set (B x)) ` X)) = (\<Union> (B ` X))"
     using B by force
   then show ?thesis
-    using Union [OF replacement [OF X, of "\<lambda>x. set (B x)"]] by simp
+    using Union [OF replacement [OF X, of "\<lambda>x. ZFC_in_HOL.set (B x)"]] by simp
 qed
  
 definition vinsert where "vinsert x y \<equiv> set (insert x (elts y))"
@@ -204,7 +204,7 @@ lemma small_set [simp]: "small (list.set xs)"
 lemma small_upair: "small {x,y}"
   by simp
 
-lemma small_Un: "small (elts x \<union> elts y)"
+lemma small_Un_elts: "small (elts x \<union> elts y)"
   using Union [OF small_upair] by auto
 
 lemma small_eqcong: "\<lbrakk>small X; X \<approx> Y\<rbrakk> \<Longrightarrow> small Y"
@@ -255,6 +255,9 @@ lemma insert_neq_0 [simp]: "set (insert a X) = 0 \<longleftrightarrow> \<not> sm
   unfolding zero_V_def
   by (metis elts_of_set empty_not_insert set_of_elts small_insert_iff)
 
+lemma elts_eq_empty_iff [simp]: "elts x = {} \<longleftrightarrow> x=0"
+  by (auto simp: ZFC_in_HOL.ext)
+
 instantiation V :: distrib_lattice
 begin
 
@@ -287,18 +290,16 @@ proof
     then show ?thesis
       using elts_of_set inf_V_def less_eq_V_def that by auto
   qed
-  show "x \<le> x \<squnion> y" for x y :: V
-    by (simp add: less_eq_V_def small_Un sup_V_def)
-  show "y \<le> x \<squnion> y" for x y :: V
-    by (simp add: less_eq_V_def small_Un sup_V_def)
-  show "sup y z \<le> x" if "y \<le> x" "(z::V) \<le> x" for x y z :: V
-    using elts_of_set less_eq_V_def small_Un sup_V_def that by auto
+  show "x \<le> x \<squnion> y" "y \<le> x \<squnion> y" for x y :: V
+    by (simp_all add: less_eq_V_def small_Un_elts sup_V_def)
+  show "sup y z \<le> x" if "y \<le> x" "z \<le> x" for x y z :: V
+    using less_eq_V_def sup_V_def that by auto
   show "sup x (inf y z) = inf (x \<squnion> y) (sup x z)" for x y z :: V
   proof -
     have "small (elts y \<inter> elts z)"
       by (meson down inf.cobounded2)
     then show ?thesis
-      by (simp add: Un_Int_distrib inf_V_def small_Un sup_V_def)
+      by (simp add: Un_Int_distrib inf_V_def small_Un_elts sup_V_def)
   qed
 qed
 end
@@ -382,10 +383,10 @@ lemma elts_VPow: "elts (VPow x) = set ` Pow (elts x)"
   by (auto simp: VPow_def Pow)
 
 lemma small_sup_iff [simp]: "small (X \<union> Y) \<longleftrightarrow> small X \<and> small Y" for X::"V set"
-  by (metis down small_Un small_iff sup_ge1 sup_ge2)
+  by (metis down elts_of_set small_Un_elts sup_ge1 sup_ge2)
 
 lemma elts_sup_iff [simp]: "elts (x \<squnion> y) = elts x \<union> elts y"
-  by (auto simp: sup_V_def small_Un)
+  by (simp add: sup_V_def)
 
 lemma trad_foundation:
   assumes z: "z \<noteq> 0" shows "\<exists>w. w \<in> elts z \<and> w \<sqinter> z = 0"
@@ -663,7 +664,7 @@ lemma Ord_sup:
   proof (clarsimp simp: Ord_def)
   show "Transset (x \<squnion> y) \<and> (\<forall>y\<in>elts x \<union> elts y. Transset y)"
     if "Transset x" "Transset y" "\<forall>y\<in>elts x. Transset y" "\<forall>y\<in>elts y. Transset y"
-    using that small_Un sup_V_def Transset_sup by auto
+    using Ord_def Transset_sup assms by auto
 qed
 
 lemma big_ON [simp]: "\<not> small ON"
