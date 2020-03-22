@@ -40,7 +40,7 @@ fixes A::"'a::{field}^'cols::{finite, wellorder}^'rows"
 assumes inv_P: "invertible P"
 shows "col_rank A = col_rank (P**A)"
   using rank_nullity_theorem_matrices unfolding ncols_def 
-  by (metis col_rank_def inv_P nat_add_left_cancel null_space_is_preserved) 
+  by (metis col_rank_def inv_P add_left_cancel null_space_is_preserved) 
 
 end
 

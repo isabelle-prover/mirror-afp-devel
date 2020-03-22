@@ -24,7 +24,7 @@ begin
     fixes k :: nat
     assumes "P k" "\<And> k. P k \<Longrightarrow> k \<le> l"
     shows "P (GREATEST k. P k)"
-  proof (rule GreatestI_nat, safe)
+  proof (rule GreatestI_nat)
     show "P k" using assms(1) by this
     show "k \<le> l" if "P k" for k using assms(2) that by force
   qed
@@ -32,7 +32,7 @@ begin
     fixes k :: nat
     assumes "P k" "\<And> k. P k \<Longrightarrow> k \<le> l"
     shows "k \<le> (GREATEST k. P k)"
-  proof (rule Greatest_le_nat, safe)
+  proof (rule Greatest_le_nat)
     show "P k" using assms(1) by this
     show "k \<le> l" if "P k" for k using assms(2) that by force
   qed

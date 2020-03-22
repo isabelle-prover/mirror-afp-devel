@@ -1397,7 +1397,7 @@ proof (induct index arbitrary: n)
        LeftDerivation \<delta> (derivation_shift (drop m' D') (length w1) 0) w2" by blast
     have "length D' \<le> length D - m" by (simp add: D')
     then have "m' \<le> length D - m" using w12 dual_order.trans by blast   
-    then have m_m'_leq_n: "m + m' \<le> n" using n_def m_leq_n Nat.le_diff_conv2 add.commute 
+    then have m_m'_leq_n: "m + m' \<le> n" using n_def m_leq_n le_diff_conv2 add.commute 
       by linarith  
     obtain \<beta> where \<beta>: "\<beta> = b1 @ ([U] @ w1)" by blast
     have "is_sentence ([U] @ v')"

@@ -110,7 +110,7 @@ lemma nat_plus_le_to_less2 [backward1]: "a \<noteq> 0 \<Longrightarrow> (a::nat)
 setup \<open>add_forward_prfstep @{thm add_right_imp_eq}\<close>
 setup \<open>add_forward_prfstep @{thm add_left_imp_eq}\<close>
 
-setup \<open>add_rewrite_rule_cond @{thm Nat.le_diff_conv2} [with_term "?i + ?k"]\<close>
+setup \<open>add_rewrite_rule_cond @{thm le_diff_conv2} [with_term "?i + ?k"]\<close>
 lemma nat_less_diff_conv: "(i::nat) < j - k \<Longrightarrow> i + k < j" by simp
 setup \<open>add_forward_prfstep_cond @{thm nat_less_diff_conv} [with_cond "?k \<noteq> ?NUMC", with_term "?i + ?k"]\<close>
 lemma Nat_le_diff_conv2_same [forward]: "i \<ge> j \<Longrightarrow> (i::nat) \<le> i - j \<Longrightarrow> j = 0" by simp
