@@ -233,7 +233,7 @@ thm
   ord_zero_le_diff
 
 thm
-  Nat.le_add_diff
+  le_add_diff
   add_diff_le
   less_add_diff
   add_diff_less
@@ -280,8 +280,8 @@ thm
 thm
   Nat.nat_add_left_cancel_less
   Nat.nat_add_left_cancel_le
-  Nat.nat_add_right_cancel
-  Nat.add_left_cancel
+  nat_add_right_cancel
+  add_left_cancel
   Nat.eq_diff_iff
   Nat.less_diff_iff
   Nat.le_diff_iff
@@ -304,7 +304,7 @@ thm
   eq_diff_left_iff
 
 thm
-  Nat.nat_add_right_cancel Nat.add_left_cancel
+  nat_add_right_cancel add_left_cancel
   Nat.diff_le_mono
   eq_imp_diff_eq
 
