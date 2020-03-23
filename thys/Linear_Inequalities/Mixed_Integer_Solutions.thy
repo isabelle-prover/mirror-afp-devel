@@ -39,7 +39,7 @@ locale gram_schmidt_floor = gram_schmidt n f_ty
     trivial_conjugatable_linordered_field} itself"
 begin
 
-lemma small_mixed_integer_solution: fixes A\<^sub>1 :: "'a mat"
+lemma small_mixed_integer_solution_main: fixes A\<^sub>1 :: "'a mat"
   assumes A1: "A\<^sub>1 \<in> carrier_mat nr\<^sub>1 n"
     and A2: "A\<^sub>2 \<in> carrier_mat nr\<^sub>2 n"
     and b1: "b\<^sub>1 \<in> carrier_vec nr\<^sub>1"
@@ -219,6 +219,75 @@ proof -
   qed (insert sol, auto)
 qed
 
+text \<open>We get rid of the max-1 operation, by showing that a smaller value of Bnd 
+  can only occur in very special cases where the theorem is trivially satisfied.\<close>
+
+lemma small_mixed_integer_solution: fixes A\<^sub>1 :: "'a mat"
+  assumes A1: "A\<^sub>1 \<in> carrier_mat nr\<^sub>1 n"
+    and A2: "A\<^sub>2 \<in> carrier_mat nr\<^sub>2 n"
+    and b1: "b\<^sub>1 \<in> carrier_vec nr\<^sub>1"
+    and b2: "b\<^sub>2 \<in> carrier_vec nr\<^sub>2"
+    and A1Bnd: "A\<^sub>1 \<in> \<int>\<^sub>m \<inter> Bounded_mat Bnd"
+    and b1Bnd: "b\<^sub>1 \<in> \<int>\<^sub>v \<inter> Bounded_vec Bnd"
+    and A2Bnd: "A\<^sub>2 \<in> \<int>\<^sub>m \<inter> Bounded_mat Bnd"
+    and b2Bnd: "b\<^sub>2 \<in> \<int>\<^sub>v \<inter> Bounded_vec Bnd"
+    and x: "x \<in> carrier_vec n"
+    and xI: "x \<in> indexed_Ints_vec I"
+    and sol_nonstrict: "A\<^sub>1 *\<^sub>v x \<le> b\<^sub>1"
+    and sol_strict: "A\<^sub>2 *\<^sub>v x <\<^sub>v b\<^sub>2"
+    and non_degenerate: "nr\<^sub>1 \<noteq> 0 \<or> nr\<^sub>2 \<noteq> 0 \<or> Bnd \<ge> 0" 
+  shows "\<exists> x.
+  x \<in> carrier_vec n \<and>
+  x \<in> indexed_Ints_vec I \<and>
+  A\<^sub>1 *\<^sub>v x \<le> b\<^sub>1 \<and>
+  A\<^sub>2 *\<^sub>v x <\<^sub>v b\<^sub>2 \<and>
+  x \<in> Bounded_vec (fact (n+1) * Bnd^n)"
+proof (cases "Bnd \<ge> 1")
+  case True
+  hence "max 1 Bnd = Bnd" by auto
+  with small_mixed_integer_solution_main[OF assms(1-12)] True show ?thesis by auto
+next
+  case trivial: False
+  show ?thesis 
+  proof (cases "n = 0")
+    case True
+    with x have "x \<in> Bounded_vec (fact (n+1) * Bnd^n)" unfolding Bounded_vec_def by auto
+    with xI x sol_nonstrict sol_strict show ?thesis by blast
+  next
+    case n: False
+    {
+      fix A nr
+      assume A: "A \<in> carrier_mat nr n" and Bnd: "A \<in> \<int>\<^sub>m \<inter> Bounded_mat Bnd"
+      {
+        fix i j
+        assume "i < nr" "j < n" 
+        with Bnd A have *: "A $$ (i,j) \<in> \<int>" "abs (A $$ (i,j)) \<le> Bnd" 
+          unfolding Bounded_mat_def Ints_mat_def by auto
+        with trivial have "Bnd \<ge> 0" "A $$ (i,j) = 0" by (auto simp: Ints_nonzero_abs_less1)
+      } note main = this      
+      have A0: "A = 0\<^sub>m nr n" 
+        by (intro eq_matI, insert main A, auto)
+      have "nr \<noteq> 0 \<Longrightarrow> Bnd \<ge> 0" using main[of 0 0] n by auto
+      note A0 this
+    } note main = this
+    from main[OF A1 A1Bnd] have A1: "A\<^sub>1 = 0\<^sub>m nr\<^sub>1 n" and nr1: "nr\<^sub>1 \<noteq> 0 \<Longrightarrow> Bnd \<ge> 0" 
+      by auto
+    from main[OF A2 A2Bnd] have A2: "A\<^sub>2 = 0\<^sub>m nr\<^sub>2 n" and nr2: "nr\<^sub>2 \<noteq> 0 \<Longrightarrow> Bnd \<ge> 0" 
+      by auto
+    let ?x = "0\<^sub>v n" 
+    show ?thesis
+    proof (intro exI[of _ ?x] conjI)
+      show "A\<^sub>1 *\<^sub>v ?x \<le> b\<^sub>1" using sol_nonstrict x unfolding A1 by auto
+      show "A\<^sub>2 *\<^sub>v ?x <\<^sub>v b\<^sub>2" using sol_strict x unfolding A2 by auto
+      show "?x \<in> carrier_vec n" by auto
+      show "?x \<in> indexed_Ints_vec I" unfolding indexed_Ints_vec_def by auto
+      from nr1 nr2 non_degenerate have Bnd: "Bnd \<ge> 0" by auto
+      hence "fact (n + 1) * Bnd ^ n \<ge> 0" by simp
+      thus "?x \<in> Bounded_vec (fact (n + 1) * Bnd ^ n)" by (auto simp: Bounded_vec_def)
+    qed
+  qed
+qed      
+
 corollary small_integer_solution_nonstrict: fixes A :: "'a mat"
   assumes A: "A \<in> carrier_mat nr n"
     and b: "b \<in> carrier_vec nr"
@@ -227,18 +296,20 @@ corollary small_integer_solution_nonstrict: fixes A :: "'a mat"
     and x: "x \<in> carrier_vec n"
     and xI: "x \<in> \<int>\<^sub>v"
     and sol: "A *\<^sub>v x \<le> b"
+    and non_degenerate: "nr \<noteq> 0 \<or> Bnd \<ge> 0" 
   shows "\<exists> y.
   y \<in> carrier_vec n \<and>
   y \<in> \<int>\<^sub>v \<and>
   A *\<^sub>v y \<le> b \<and>
-  y \<in> Bounded_vec (fact (n+1) * (max 1 Bnd)^n)"
+  y \<in> Bounded_vec (fact (n+1) * Bnd^n)"
 proof -
   let ?A2 = "0\<^sub>m 0 n :: 'a mat"
   let ?b2 = "0\<^sub>v 0 :: 'a vec"
+  from non_degenerate have degen: "nr \<noteq> 0 \<or> (0 :: nat) \<noteq> 0 \<or> Bnd \<ge> 0" by auto
   have "\<exists>y. y \<in> carrier_vec n \<and> y \<in> \<int>\<^sub>v \<and> A *\<^sub>v y \<le> b \<and> ?A2 *\<^sub>v y <\<^sub>v ?b2
-  \<and> y \<in> Bounded_vec (fact (n + 1) * max 1 Bnd ^ n)"
+  \<and> y \<in> Bounded_vec (fact (n + 1) * Bnd ^ n)"
     by (rule small_mixed_integer_solution[OF A _ b _ ABnd bBnd _ _ x _ sol, of ?A2 0 ?b2 UNIV,
-          folded indexed_Ints_vec_UNIV], insert xI,
+          folded indexed_Ints_vec_UNIV], insert xI degen,
         auto simp: Ints_vec_def Ints_mat_def Bounded_mat_def Bounded_vec_def less_vec_def)
   thus ?thesis by blast
 qed
