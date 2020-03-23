@@ -9,7 +9,21 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>21 Feb 2020 00:00:00 +0000</pubDate>
+    <pubDate>07 Mar 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Hello World</title>
+              <link>https://www.isa-afp.org/entries/Hello_World.html</link>
+       <guid>https://www.isa-afp.org/entries/Hello_World.html</guid>
+       <dc:creator> Cornelius Diekmann, Lars Hupel       </dc:creator>
+       <pubDate>07 Mar 2020 00:00:00 +0000</pubDate>
+       <description>
+In this article, we present a formalization of the well-known
+&#34;Hello, World!&#34; code, including a formal framework for
+reasoning about IO. Our model is inspired by the handling of IO in
+Haskell. We start by formalizing the 🌍 and embrace the IO monad
+afterwards. Then we present a sample main :: IO (), followed by its
+proof of correctness.</description>
+    </item>
     <item>
        <title>Implementing the Goodstein Function in &lambda;-Calculus</title>
               <link>https://www.isa-afp.org/entries/Goodstein_Lambda.html</link>
@@ -534,20 +548,6 @@ lemma and uniqueness of the Laplace transform for continuous
 functions. In order to formalize the foundational assumptions, this
 entry contains a formalization of piecewise continuous functions and
 functions of exponential order.</description>
-    </item>
-    <item>
-       <title>Linear Programming</title>
-              <link>https://www.isa-afp.org/entries/Linear_Programming.html</link>
-       <guid>https://www.isa-afp.org/entries/Linear_Programming.html</guid>
-       <dc:creator> Julian Parsert, Cezary Kaliszyk       </dc:creator>
-       <pubDate>06 Aug 2019 00:00:00 +0000</pubDate>
-       <description>
-We use the previous formalization of the general simplex algorithm to
-formulate an algorithm for solving linear programs. We encode the
-linear programs using only linear constraints. Solving these
-constraints also solves the original linear program. This algorithm is
-proven to be sound by applying the weak duality theorem which is also
-part of this formalization.</description>
     </item>
   </channel>
 </rss>

@@ -8917,3 +8917,18 @@ abstract =
   simulations, and compilers. We provide generic operations, such as
   simulation and compiler composition, and prove general (partial)
   correctness theorems, resulting in reusable proof components.
+  
+[Hello_World]
+title = Hello World
+author = Cornelius Diekmann <http://net.in.tum.de/~diekmann>, Lars Hupel <https://www21.in.tum.de/~hupel/>
+topic = Computer Science/Functional Programming
+date = 2020-03-07
+notify = diekmann@net.in.tum.de
+abstract = 
+  In this article, we present a formalization of the well-known
+  "Hello, World!" code, including a formal framework for
+  reasoning about IO. Our model is inspired by the handling of IO in
+  Haskell. We start by formalizing the 🌍 and embrace the IO monad
+  afterwards. Then we present a sample main :: IO (), followed by its
+  proof of correctness.
+
