@@ -110,14 +110,14 @@ lemma nat_plus_le_to_less2 [backward1]: "a \<noteq> 0 \<Longrightarrow> (a::nat)
 setup \<open>add_forward_prfstep @{thm add_right_imp_eq}\<close>
 setup \<open>add_forward_prfstep @{thm add_left_imp_eq}\<close>
 
-setup \<open>add_rewrite_rule_cond @{thm le_diff_conv2} [with_term "?i + ?k"]\<close>
+setup \<open>add_rewrite_rule_cond @{thm Nat.le_diff_conv2} [with_term "?i + ?k"]\<close>
 lemma nat_less_diff_conv: "(i::nat) < j - k \<Longrightarrow> i + k < j" by simp
 setup \<open>add_forward_prfstep_cond @{thm nat_less_diff_conv} [with_cond "?k \<noteq> ?NUMC", with_term "?i + ?k"]\<close>
 lemma Nat_le_diff_conv2_same [forward]: "i \<ge> j \<Longrightarrow> (i::nat) \<le> i - j \<Longrightarrow> j = 0" by simp
 lemma nat_gt_zero [forward]: "b - a > 0 \<Longrightarrow> b > (a::nat)" by simp
 lemma n_minus_1_less_n: "(n::nat) \<ge> 1 \<Longrightarrow> n - 1 < n" by simp
 setup \<open>add_forward_prfstep_cond @{thm n_minus_1_less_n} [with_term "?n - 1"]\<close>
-  
+
 (* Monotonicity of ordering *)
 setup \<open>add_backward_prfstep @{thm Nat.diff_le_mono}\<close>
 setup \<open>add_backward2_prfstep @{thm Nat.diff_less_mono}\<close>

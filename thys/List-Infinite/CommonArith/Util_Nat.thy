@@ -280,7 +280,7 @@ thm
 thm
   Nat.nat_add_left_cancel_less
   Nat.nat_add_left_cancel_le
-  nat_add_right_cancel
+  add_right_cancel
   add_left_cancel
   Nat.eq_diff_iff
   Nat.less_diff_iff
@@ -304,7 +304,7 @@ thm
   eq_diff_left_iff
 
 thm
-  nat_add_right_cancel add_left_cancel
+  add_right_cancel add_left_cancel
   Nat.diff_le_mono
   eq_imp_diff_eq
 

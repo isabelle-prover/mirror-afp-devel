@@ -274,8 +274,7 @@ proof -
     have "F(%i. Lab):Lin" using \<open>F:SWF\<close> \<open>Lab:Lin\<close> by(simp add:Prof_def Pi_def)
     ultimately have 2: "(a,b) \<in> F(?Pi N)" using u \<open>(a,b) : Lab\<close> \<open>Lab:Lin\<close>
       by(simp add:unanimity_def const_Lin_Prof)
-    with ex_least_nat_less[of "%n. (a,b) : F(?Pi n)",OF 1 2]
-      notin_Lin_iff[OF 0 \<open>a\<noteq>b\<close>]
+    with ex_least_nat_less[of "%n. (a,b) : F(?Pi n)"] 1 2 notin_Lin_iff[OF 0 \<open>a\<noteq>b\<close>]
     show ?thesis by simp
   qed
   then obtain n where n: "n<N" "\<forall>m\<le>n. (b,a) : F(?Pi m)" "(a,b) : F(?Pi(n+1))"
