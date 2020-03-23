@@ -1,0 +1,12 @@
+session Hello_World = HOL +
+  options [timeout = 600]
+  sessions
+    "HOL-Library"
+  theories
+    IO
+    HelloWorld
+    HelloWorld_Proof
+  theories [document = false]
+    RunningCodeFromIsabelle
+  document_files
+    "root.tex"
