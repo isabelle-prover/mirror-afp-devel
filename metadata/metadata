@@ -3798,7 +3798,7 @@ notify = uuomul@yahoo.com, nipkow@in.tum.de
 [FOL-Fitting]
 title = First-Order Logic According to Fitting
 author = Stefan Berghofer <http://www.in.tum.de/~berghofe>
-contributors = Asta Halkjær From <http://www.student.dtu.dk/~s144442/>
+contributors = Asta Halkjær From <https://people.compute.dtu.dk/ahfrom/>
 date = 2007-08-02
 topic = Logic
 abstract = We present a formalization of parts of Melvin Fitting's book "First-Order Logic and Automated Theorem Proving". The formalization covers the syntax of first-order logic, its semantics, the model existence theorem, a natural deduction proof calculus together with a proof of correctness and completeness, as well as the Löwenheim-Skolem theorem.
@@ -3809,10 +3809,10 @@ notify = berghofe@in.tum.de
 
 [Epistemic_Logic]
 title = Epistemic Logic
-author = Asta Halkjær From <http://www.student.dtu.dk/~s144442/>
+author = Asta Halkjær From <https://people.compute.dtu.dk/ahfrom/>
 topic = Logic
 date = 2018-10-29
-notify = s144442@student.dtu.dk
+notify = ahfrom@dtu.dk
 abstract =
   This work is a formalization of epistemic logic with countably many
   agents. It includes proofs of soundness and completeness for the axiom
@@ -6283,7 +6283,7 @@ abstract =
 
 [Resolution_FOL]
 title = The Resolution Calculus for First-Order Logic
-author = Anders Schlichtkrull <https://people.compute.dtu.dk/andschl>
+author = Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>
 notify = andschl@dtu.dk
 date = 2016-06-30
 topic = Logic
@@ -6633,7 +6633,7 @@ extra-history =
 
 [Paraconsistency]
 title = Paraconsistency
-author = Anders Schlichtkrull <https://people.compute.dtu.dk/andschl>, Jørgen Villadsen <https://people.compute.dtu.dk/jovi/>
+author = Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>, Jørgen Villadsen <https://people.compute.dtu.dk/jovi/>
 topic = Logic
 date = 2016-12-07
 notify = andschl@dtu.dk, jovi@dtu.dk
@@ -6701,7 +6701,7 @@ abstract =
 
 [FOL_Harrison]
 title = First-Order Logic According to Harrison
-author = Alexander Birch Jensen <https://people.compute.dtu.dk/aleje/>, Anders Schlichtkrull <https://people.compute.dtu.dk/andschl>, Jørgen Villadsen <https://people.compute.dtu.dk/jovi/>
+author = Alexander Birch Jensen <https://people.compute.dtu.dk/aleje/>, Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>, Jørgen Villadsen <https://people.compute.dtu.dk/jovi/>
 topic = Logic
 date = 2017-01-01
 notify = aleje@dtu.dk, andschl@dtu.dk, jovi@dtu.dk
@@ -7306,7 +7306,7 @@ abstract =
 
 [Ordered_Resolution_Prover]
 title = Formalization of Bachmair and Ganzinger's Ordered Resolution Prover
-author = Anders Schlichtkrull <mailto:andschl@dtu.dk>, Jasmin Christian Blanchette <mailto:j.c.blanchette@vu.nl>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>, Uwe Waldmann <mailto:uwe@mpi-inf.mpg.de>
+author = Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>, Jasmin Christian Blanchette <mailto:j.c.blanchette@vu.nl>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>, Uwe Waldmann <mailto:uwe@mpi-inf.mpg.de>
 topic = Logic
 date = 2018-01-18
 notify = andschl@dtu.dk, j.c.blanchette@vu.nl
@@ -7928,7 +7928,7 @@ abstract =
 
 [Functional_Ordered_Resolution_Prover]
 title = A Verified Functional Implementation of Bachmair and Ganzinger's Ordered Resolution Prover
-author = Anders Schlichtkrull <mailto:andschl@dtu.dk>, Jasmin Christian Blanchette <mailto:j.c.blanchette@vu.nl>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>
+author = Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>, Jasmin Christian Blanchette <mailto:j.c.blanchette@vu.nl>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>
 topic = Logic
 date = 2018-11-23
 notify = andschl@dtu.dk,j.c.blanchette@vu.nl,traytel@inf.ethz.ch
@@ -8529,13 +8529,13 @@ abstract =
 
 [FOL_Seq_Calc1]
 title = A Sequent Calculus for First-Order Logic
-author = Asta Halkjær From <http://www.student.dtu.dk/~s144442/>
+author = Asta Halkjær From <https://people.compute.dtu.dk/ahfrom/>
 contributors = Alexander Birch Jensen <https://people.compute.dtu.dk/aleje/>,
   Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>,
   Jørgen Villadsen <https://people.compute.dtu.dk/jovi/>
 topic = Logic
 date = 2019-07-18
-notify = s144442@student.dtu.dk
+notify = ahfrom@dtu.dk
 abstract =
   This work formalizes soundness and completeness of a one-sided sequent
   calculus for first-order logic. The completeness is shown via a
@@ -8862,10 +8862,10 @@ abstract =
 
 [Hybrid_Logic]
 title = Formalizing a Seligman-Style Tableau System for Hybrid Logic
-author = Asta Halkjær From <http://www.student.dtu.dk/~s144442/>
+author = Asta Halkjær From <https://people.compute.dtu.dk/ahfrom/>
 topic = Logic
 date = 2019-12-20
-notify = andro.from@gmail.com
+notify = ahfrom@dtu.dk
 abstract =
   This work is a formalization of soundness and completeness proofs for
   a Seligman-style tableau system for hybrid logic. The completeness
