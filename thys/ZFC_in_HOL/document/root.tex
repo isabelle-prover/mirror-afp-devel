@@ -27,7 +27,7 @@ This entry is a new formalisation of ZFC set theory in Isabelle/HOL\@.
 It is logically equivalent to Obua's HOLZF~\cite{obua-partizan-games}; the point is to have the closest possible integration
 with the rest of Isabelle/HOL, minimising the amount of new notations and exploiting type classes.
 
-There is a type \isa{V} of sets and a function 
+There is a type \isa{V} of sets and a function
 \isa{elts :: V\ {\isasymRightarrow}\ V\ set} mapping a set to its elements.
 Classes simply have type \isa{V\ set}, and the predicate \isa{small} identifies those classes that correspond to actual sets.
 Type classes connected with orders and lattices are used to minimise the amount of new notation
@@ -54,6 +54,9 @@ facilitating developments that combine \isa{V} with other Isabelle/HOL types:
 % generated text of all theories
 \newpage
 \input{session}
+
+\section{Acknowledgements}
+The author was supported by the ERC Advanced Grant ALEXANDRIA (Project 742178) funded by the European Research Council.
 
 \bibliographystyle{abbrv}
 \bibliography{root.bib}
