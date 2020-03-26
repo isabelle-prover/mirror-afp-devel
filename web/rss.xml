@@ -26,6 +26,26 @@ consistency property was verified only for a bounded model to date. We
 contribute a formal proof for WOOTs strong eventual consistency.</description>
     </item>
     <item>
+       <title>An Under-Approximate Relational Logic</title>
+              <link>https://www.isa-afp.org/entries/Relational-Incorrectness-Logic.html</link>
+       <guid>https://www.isa-afp.org/entries/Relational-Incorrectness-Logic.html</guid>
+       <dc:creator> Toby Murray       </dc:creator>
+       <pubDate>12 Mar 2020 00:00:00 +0000</pubDate>
+       <description>
+Recently, authors have proposed under-approximate logics for reasoning
+about programs. So far, all such logics have been confined to
+reasoning about individual program behaviours. Yet there exist many
+over-approximate relational logics for reasoning about pairs of
+programs and relating their behaviours. We present the first
+under-approximate relational logic, for the simple imperative language
+IMP. We prove our logic is both sound and complete. Additionally, we
+show how reasoning in this logic can be decomposed into non-relational
+reasoning in an under-approximate Hoare logic, mirroring Beringer’s
+result for over-approximate relational logics. We illustrate the
+application of our logic on some small examples in which we provably
+demonstrate the presence of insecurity.</description>
+    </item>
+    <item>
        <title>Hello World</title>
               <link>https://www.isa-afp.org/entries/Hello_World.html</link>
        <guid>https://www.isa-afp.org/entries/Hello_World.html</guid>
@@ -527,27 +547,6 @@ and ring theory from Jacobson&#39;s &lt;i&gt;Basic Algebra&lt;/i&gt;
 leading to the respective fundamental homomorphism theorems.  The
 study is not intended as a library base for abstract algebra.  It
 rather explores an approach towards abstract algebra in Isabelle.</description>
-    </item>
-    <item>
-       <title>Formalisation of an Adaptive State Counting Algorithm</title>
-              <link>https://www.isa-afp.org/entries/Adaptive_State_Counting.html</link>
-       <guid>https://www.isa-afp.org/entries/Adaptive_State_Counting.html</guid>
-       <dc:creator> Robert Sachtleben       </dc:creator>
-       <pubDate>16 Aug 2019 00:00:00 +0000</pubDate>
-       <description>
-This entry provides a formalisation of a refinement of an adaptive
-state counting algorithm, used to test for reduction between finite
-state machines. The algorithm has been originally presented by Hierons
-in the paper &lt;a
-href=&#34;https://doi.org/10.1109/TC.2004.85&#34;&gt;Testing from a
-Non-Deterministic Finite State Machine Using Adaptive State
-Counting&lt;/a&gt;.  Definitions for finite state machines and
-adaptive test cases are given and many useful theorems are derived
-from these. The algorithm is formalised using mutually recursive
-functions, for which it is proven that the generated test suite is
-sufficient to test for reduction against finite state machines of a
-certain fault domain. Additionally, the algorithm is specified in a
-simple WHILE-language and its correctness is shown using Hoare-logic.</description>
     </item>
   </channel>
 </rss>
