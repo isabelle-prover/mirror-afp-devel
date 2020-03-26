@@ -9,7 +9,22 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>07 Mar 2020 00:00:00 +0000</pubDate>
+    <pubDate>25 Mar 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Strong Eventual Consistency of the Collaborative Editing Framework WOOT</title>
+              <link>https://www.isa-afp.org/entries/WOOT_Strong_Eventual_Consistency.html</link>
+       <guid>https://www.isa-afp.org/entries/WOOT_Strong_Eventual_Consistency.html</guid>
+       <dc:creator> Emin Karayel, Edgar Gonzàlez       </dc:creator>
+       <pubDate>25 Mar 2020 00:00:00 +0000</pubDate>
+       <description>
+Commutative Replicated Data Types (CRDTs) are a promising new class of
+data structures for large-scale shared mutable content in applications
+that only require eventual consistency. The WithOut Operational
+Transforms (WOOT) framework is a CRDT for collaborative text editing
+introduced by Oster et al. (CSCW 2006) for which the eventual
+consistency property was verified only for a bounded model to date. We
+contribute a formal proof for WOOTs strong eventual consistency.</description>
+    </item>
     <item>
        <title>Hello World</title>
               <link>https://www.isa-afp.org/entries/Hello_World.html</link>
@@ -533,21 +548,6 @@ functions, for which it is proven that the generated test suite is
 sufficient to test for reduction against finite state machines of a
 certain fault domain. Additionally, the algorithm is specified in a
 simple WHILE-language and its correctness is shown using Hoare-logic.</description>
-    </item>
-    <item>
-       <title>Laplace Transform</title>
-              <link>https://www.isa-afp.org/entries/Laplace_Transform.html</link>
-       <guid>https://www.isa-afp.org/entries/Laplace_Transform.html</guid>
-       <dc:creator> Fabian Immler       </dc:creator>
-       <pubDate>14 Aug 2019 00:00:00 +0000</pubDate>
-       <description>
-This entry formalizes the Laplace transform and concrete Laplace
-transforms for arithmetic functions, frequency shift, integration and
-(higher) differentiation in the time domain. It proves Lerch&#39;s
-lemma and uniqueness of the Laplace transform for continuous
-functions. In order to formalize the foundational assumptions, this
-entry contains a formalization of piecewise continuous functions and
-functions of exponential order.</description>
     </item>
   </channel>
 </rss>

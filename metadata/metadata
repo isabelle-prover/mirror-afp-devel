@@ -8932,3 +8932,18 @@ abstract =
   afterwards. Then we present a sample main :: IO (), followed by its
   proof of correctness.
 
+[WOOT_Strong_Eventual_Consistency]
+title = Strong Eventual Consistency of the Collaborative Editing Framework WOOT
+author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>, Edgar Gonzàlez <mailto:edgargip@google.com>
+topic = Computer Science/Algorithms/Distributed
+date = 2020-03-25
+notify = eminkarayel@google.com, edgargip@google.com, me@eminkarayel.de
+abstract = 
+  Commutative Replicated Data Types (CRDTs) are a promising new class of
+  data structures for large-scale shared mutable content in applications
+  that only require eventual consistency. The WithOut Operational
+  Transforms (WOOT) framework is a CRDT for collaborative text editing
+  introduced by Oster et al. (CSCW 2006) for which the eventual
+  consistency property was verified only for a bounded model to date. We
+  contribute a formal proof for WOOTs strong eventual consistency.
+
