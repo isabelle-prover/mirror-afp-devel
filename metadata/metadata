@@ -8967,3 +8967,22 @@ abstract =
   consistency property was verified only for a bounded model to date. We
   contribute a formal proof for WOOTs strong eventual consistency.
 
+[Furstenberg_Topology]
+title = Furstenberg's topology and his proof of the infinitude of primes
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory
+date = 2020-03-22
+notify = manuel.eberl@tum.de
+abstract = 
+  <p>This article gives a formal version of Furstenberg's
+  topological proof of the infinitude of primes. He defines a topology
+  on the integers based on arithmetic progressions (or, equivalently,
+  residue classes). Using some fairly obvious properties of this
+  topology, the infinitude of primes is then easily obtained.</p>
+  <p>Apart from this, this topology is also fairly `nice' in
+  general: it is second countable, metrizable, and perfect. All of these
+  (well-known) facts are formally proven, including an explicit metric
+  for the topology given by Zulfeqarr.</p>
+
+
+

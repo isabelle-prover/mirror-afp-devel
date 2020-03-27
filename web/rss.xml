@@ -26,6 +26,23 @@ consistency property was verified only for a bounded model to date. We
 contribute a formal proof for WOOTs strong eventual consistency.</description>
     </item>
     <item>
+       <title>Furstenberg's topology and his proof of the infinitude of primes</title>
+              <link>https://www.isa-afp.org/entries/Furstenberg_Topology.html</link>
+       <guid>https://www.isa-afp.org/entries/Furstenberg_Topology.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>22 Mar 2020 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This article gives a formal version of Furstenberg&#39;s
+topological proof of the infinitude of primes. He defines a topology
+on the integers based on arithmetic progressions (or, equivalently,
+residue classes). Using some fairly obvious properties of this
+topology, the infinitude of primes is then easily obtained.&lt;/p&gt;
+&lt;p&gt;Apart from this, this topology is also fairly `nice&#39; in
+general: it is second countable, metrizable, and perfect. All of these
+(well-known) facts are formally proven, including an explicit metric
+for the topology given by Zulfeqarr.&lt;/p&gt;</description>
+    </item>
+    <item>
        <title>An Under-Approximate Relational Logic</title>
               <link>https://www.isa-afp.org/entries/Relational-Incorrectness-Logic.html</link>
        <guid>https://www.isa-afp.org/entries/Relational-Incorrectness-Logic.html</guid>
@@ -533,20 +550,6 @@ reals and the basics of Fourier series. It culminates with a proof
 that every well-behaved periodic function can be approximated by a
 Fourier series. The material is ported from HOL Light:
 https://github.com/jrh13/hol-light/blob/master/100/fourier.ml</description>
-    </item>
-    <item>
-       <title>A Case Study in Basic Algebra</title>
-              <link>https://www.isa-afp.org/entries/Jacobson_Basic_Algebra.html</link>
-       <guid>https://www.isa-afp.org/entries/Jacobson_Basic_Algebra.html</guid>
-       <dc:creator> Clemens Ballarin       </dc:creator>
-       <pubDate>30 Aug 2019 00:00:00 +0000</pubDate>
-       <description>
-The focus of this case study is re-use in abstract algebra.  It
-contains locale-based formalisations of selected parts of set, group
-and ring theory from Jacobson&#39;s &lt;i&gt;Basic Algebra&lt;/i&gt;
-leading to the respective fundamental homomorphism theorems.  The
-study is not intended as a library base for abstract algebra.  It
-rather explores an approach towards abstract algebra in Isabelle.</description>
     </item>
   </channel>
 </rss>
