@@ -8,7 +8,7 @@ lemma \<P>_wellformed: "p \<in> \<P> k u \<Longrightarrow> wellformed_tokens p"
 using \<P>_are_admissible admissible_wellformed_tokens by blast
 
 lemma \<X>_token_length: "t \<in> \<X> k \<Longrightarrow> k + length (chars_of_token t) \<le> length Doc"
-by (metis le_diff_conv2 \<X>_is_prefix add.commute chars_of_token_def empty_\<X> 
+by (metis Nat.le_diff_conv2 \<X>_is_prefix add.commute chars_of_token_def empty_\<X> 
   empty_iff is_prefix_length le_neq_implies_less length_drop linear)
 
 lemma mono_Scan: "mono (Scan T k)"

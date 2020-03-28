@@ -122,7 +122,7 @@ next
       then obtain n where "i \<le> x * 2 ^ n" by blast
       with x show ?case
         by (clarsimp intro!: exI[where x="Suc n"] simp: field_simps mult_2)
-           (metis Nat.add_0_right Suc_leI linorder_neqE_nat mult_eq_0_iff add_left_cancel not_le numeral_2_eq_2 old.nat.distinct(2) power_not_zero trans_le_add2)
+           (metis Nat.add_0_right Suc_leI linorder_neqE_nat mult_eq_0_iff nat_add_left_cancel not_le numeral_2_eq_2 old.nat.distinct(2) power_not_zero trans_le_add2)
     qed simp } note ex = this
   have "(LEAST j. lambda \<le> 2 ^ (i + 1) * 2 ^ j) < (LEAST j. lambda \<le> 2 ^ i * 2 ^ j)"
   proof(rule LeastI2_wellorder_ex[OF ex, rotated], rule LeastI2_wellorder_ex[OF ex, rotated])

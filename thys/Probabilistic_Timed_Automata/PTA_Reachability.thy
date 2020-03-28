@@ -1137,7 +1137,7 @@ proof -
   from assms have 3: "stream_trans (sdrop i xs)" by (intro pairwise_sdropD)
   from assms have 4:
     "\<forall>k\<le>j - i. zero x ([sdrop i xs !! k]\<^sub>\<R>)"
-  by (simp add: le_diff_conv2 assms(6))
+  by (simp add: Nat.le_diff_conv2 assms(6))
   from resets_mono_0'[OF 2 1 3 4 assms(5,6)] \<open>i \<le> j\<close> show ?thesis by simp
 qed
 

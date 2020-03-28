@@ -346,7 +346,7 @@ next
     with Cons have "\<exists>i. leftmost i a \<and> i \<le> k - 1" by (metis is_sentence_cons)
     then show ?thesis
       apply (auto simp add: leftmost_cons_terminal[OF x])
-      by (metis le_diff_conv2 Suc_leI add_Suc_right add_diff_cancel_right' k 
+      by (metis Nat.le_diff_conv2 Suc_leI add_Suc_right add_diff_cancel_right' k 
           le_0_eq le_imp_less_Suc nat_le_linear)
   qed
 qed

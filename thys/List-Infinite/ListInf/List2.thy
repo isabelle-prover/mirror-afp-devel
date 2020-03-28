@@ -262,7 +262,7 @@ apply (rule_tac
    in subst)
   apply (rule fun_eq_iff[THEN iffD2])
   apply (fastforce simp: nth_append1)
- apply (rule add_left_cancel[THEN iffD2])
+ apply (rule nat_add_left_cancel[THEN iffD2])
  apply (rule_tac
    t = "\<lambda>i. i = length xs \<and> i \<le> k \<and> P ((xs @ [x]) ! i)" and
    s = "\<lambda>i. i = length xs \<and> i \<le> k \<and> P x"

@@ -821,7 +821,7 @@ proof -
   proof (rule column_Gram_Schmidt_upt_k_preserves2[symmetric])
     show "k \<le> from_nat (to_nat k)" unfolding from_nat_to_nat_id ..
     show "to_nat k \<le> ncols A - 1" unfolding ncols_def using to_nat_less_card[where ?'a='n]
-      by (metis le_diff_conv2 add_leE less_diff_conv less_imp_le_nat  less_le_not_le
+      by (metis Nat.le_diff_conv2 add_leE less_diff_conv less_imp_le_nat  less_le_not_le
         nat_le_linear suc_not_zero to_nat_plus_one_less_card')
     show "ncols A - 1 < ncols A" unfolding ncols_def by auto
   qed
@@ -876,7 +876,7 @@ proof (rule ccontr)
   also have "... \<le> card (UNIV - {ia})" unfolding columns_rw by (rule card_image_le, simp)
   also have "... = card (UNIV::'n set) - 1" by (simp add: card_Diff_singleton)
   finally show False unfolding ncols_def
-    by (metis Nat.add_0_right le_diff_conv2 One_nat_def Suc_n_not_le_n add_Suc_right one_le_card_finite)
+    by (metis Nat.add_0_right Nat.le_diff_conv2 One_nat_def Suc_n_not_le_n add_Suc_right one_le_card_finite)
 qed
 
 lemma scaleR_columns_Gram_Schmidt_matrix:

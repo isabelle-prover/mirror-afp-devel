@@ -353,7 +353,7 @@ proof (rule ccontr)
   also have "... \<le> card (UNIV - {ia})" unfolding columns_rw by (rule card_image_le, simp)
   also have "... = card (UNIV::'n set) - 1" by (simp add: card_Diff_singleton)
   finally show False unfolding ncols_def
-    by (metis Nat.add_0_right le_diff_conv2 One_nat_def Suc_n_not_le_n add_Suc_right one_le_card_finite)
+    by (metis Nat.add_0_right Nat.le_diff_conv2 One_nat_def Suc_n_not_le_n add_Suc_right one_le_card_finite)
 qed
 
 corollary column_QR_decomposition:

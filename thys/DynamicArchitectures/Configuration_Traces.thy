@@ -1478,9 +1478,9 @@ lemma lActive_active:
     and "\<forall>n' > n. \<not> (\<parallel>c\<parallel>\<^bsub>t n'\<^esub>)"
   shows "\<parallel>c\<parallel>\<^bsub>t (\<langle>c \<and> t\<rangle>)\<^esub>"
 proof -
-  from assms obtain i' where "\<parallel>c\<parallel>\<^bsub>t i'\<^esub>" and "\<And>y. \<parallel>c\<parallel>\<^bsub>t y\<^esub> \<Longrightarrow> y \<le> i'"
+  from assms obtain i' where "\<parallel>c\<parallel>\<^bsub>t i'\<^esub>" and "(\<forall>y. \<parallel>c\<parallel>\<^bsub>t y\<^esub> \<longrightarrow> y \<le> i')"
     using boundedGreatest[of "\<lambda>i'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" i n] by blast
-  thus ?thesis using lActive_def Nat.GreatestI_nat[of "\<lambda>i'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>"] by metis
+  thus ?thesis using lActive_def Nat.GreatestI_nat[of "\<lambda>i'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>"] by simp
 qed
 
 lemma lActive_less:
@@ -1499,9 +1499,9 @@ lemma lActive_greatest:
     and "\<forall>n' > n. \<not> (\<parallel>c\<parallel>\<^bsub>t n'\<^esub>)"
   shows "i \<le> \<langle>c \<and> t\<rangle>"
 proof -
-  from assms obtain i' where "\<parallel>c\<parallel>\<^bsub>t i'\<^esub>" and "\<And>y. \<parallel>c\<parallel>\<^bsub>t y\<^esub> \<Longrightarrow> y \<le> i'"
+  from assms obtain i' where "\<parallel>c\<parallel>\<^bsub>t i'\<^esub>" and "(\<forall>y. \<parallel>c\<parallel>\<^bsub>t y\<^esub> \<longrightarrow> y \<le> i')"
     using boundedGreatest[of "\<lambda>i'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" i n] by blast
-  with assms show ?thesis using lActive_def Nat.Greatest_le_nat[of "\<lambda>i'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" i] by metis
+  with assms show ?thesis using lActive_def Nat.Greatest_le_nat[of "\<lambda>i'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" i] by simp
 qed
   
 lemma lActive_greater_active:
