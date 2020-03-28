@@ -170,6 +170,7 @@ FunWithFunctions
 FunWithTilings
 Functional-Automata
 Functional_Ordered_Resolution_Prover
+Furstenberg_Topology
 GPU_Kernel_PL
 Gabow_SCC
 Game_Based_Crypto
@@ -184,6 +185,7 @@ Generic_Join
 GewirthPGCProof
 Girth_Chromatic
 GoedelGod
+Goodstein_Lambda
 GraphMarkingIBP
 Graph_Saturation
 Graph_Theory
@@ -196,6 +198,7 @@ HOL-CSP
 HOLCF-Prelude
 HRB-Slicing
 Heard_Of
+Hello_World
 HereditarilyFinite
 Hermite
 Hidden_Markov_Models
@@ -408,6 +411,7 @@ Regex_Equivalence
 Regular-Sets
 Regular_Algebras
 Relation_Algebra
+Relational-Incorrectness-Logic
 Rep_Fin_Groups
 Residuated_Lattices
 Resolution_FOL
@@ -500,6 +504,7 @@ UpDown_Scheme
 UTP
 Valuation
 VectorSpace
+VeriComp
 Verified-Prover
 VerifyThis2018
 VerifyThis2019
@@ -510,6 +515,7 @@ WebAssembly
 Weight_Balanced_Trees
 Well_Quasi_Orders
 Winding_Number_Eval
+WOOT_Strong_Eventual_Consistency
 Word_Lib
 WorkerWrapper
 XML

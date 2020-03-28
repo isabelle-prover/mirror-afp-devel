@@ -4,9 +4,9 @@ author = José Manuel Rodríguez Caballero <https://josephcmac.github.io/>
 topic = Mathematics/Number Theory
 date = 2020-02-01
 notify = jose.manuel.rodriguez.caballero@ut.ee
-abstract = 
+abstract =
   This article provides a formalization of the solution obtained by the
-  author of the Problem “ARITHMETIC PROGRESSIONS” from the 
+  author of the Problem “ARITHMETIC PROGRESSIONS” from the
   <a href="https://www.ocf.berkeley.edu/~wwu/riddles/putnam.shtml">
   Putnam exam problems of 2002</a>. The statement of the problem is
   as follows: For which integers <em>n</em> > 1 does the set of positive
@@ -3350,6 +3350,26 @@ extra-history =
 	[2016-09-02]:
 	TobyM extended "simple" refinement theory to be usable for all bisimulations.
 	(revision 547f31c25f60)
+
+[Relational-Incorrectness-Logic]
+title = An Under-Approximate Relational Logic
+author = Toby Murray <https://people.eng.unimelb.edu.au/tobym/>
+topic = Computer Science/Programming Languages/Logics, Computer Science/Security
+date = 2020-03-12
+notify = toby.murray@unimelb.edu.au
+abstract =
+  Recently, authors have proposed under-approximate logics for reasoning
+  about programs. So far, all such logics have been confined to
+  reasoning about individual program behaviours. Yet there exist many
+  over-approximate relational logics for reasoning about pairs of
+  programs and relating their behaviours. We present the first
+  under-approximate relational logic, for the simple imperative language
+  IMP. We prove our logic is both sound and complete. Additionally, we
+  show how reasoning in this logic can be decomposed into non-relational
+  reasoning in an under-approximate Hoare logic, mirroring Beringer’s
+  result for over-approximate relational logics. We illustrate the
+  application of our logic on some small examples in which we provably
+  demonstrate the presence of insecurity.
 
 [Strong_Security]
 title = A Formalization of Strong Security
@@ -8920,7 +8940,7 @@ author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>, Be
 topic = Mathematics/Algebra
 date = 2020-01-31
 notify = walter.guttmann@canterbury.ac.nz
-abstract = 
+abstract =
   We present a collection of axiom systems for the construction of
   Boolean subalgebras of larger overall algebras. The subalgebras are
   defined as the range of a complement-like operation on a semilattice.
@@ -8928,4 +8948,82 @@ abstract =
   operation, dynamic negation and Stone algebras. We present a common
   ground for these constructions based on a new equational
   axiomatisation of Boolean algebras.
+
+[Goodstein_Lambda]
+title = Implementing the Goodstein Function in &lambda;-Calculus
+author = Bertram Felgenhauer <mailto:int-e@gmx.de>
+topic = Logic/Rewriting
+date = 2020-02-21
+notify = int-e@gmx.de
+abstract =
+  In this formalization, we develop an implementation of the Goodstein
+  function G in plain &lambda;-calculus, linked to a concise, self-contained
+  specification. The implementation works on a Church-encoded
+  representation of countable ordinals. The initial conversion to
+  hereditary base 2 is not covered, but the material is sufficient to
+  compute the particular value G(16), and easily extends to other fixed
+  arguments.
+
+[VeriComp]
+title = A Generic Framework for Verified Compilers
+author = Martin Desharnais <https://martin.desharnais.me>
+topic = Computer Science/Programming Languages/Compiling
+date = 2020-02-10
+notify = martin.desharnais@unibw.de
+abstract =
+  This is a generic framework for formalizing compiler transformations.
+  It leverages Isabelle/HOL’s locales to abstract over concrete
+  languages and transformations. It states common definitions for
+  language semantics, program behaviours, forward and backward
+  simulations, and compilers. We provide generic operations, such as
+  simulation and compiler composition, and prove general (partial)
+  correctness theorems, resulting in reusable proof components.
+
+[Hello_World]
+title = Hello World
+author = Cornelius Diekmann <http://net.in.tum.de/~diekmann>, Lars Hupel <https://www21.in.tum.de/~hupel/>
+topic = Computer Science/Functional Programming
+date = 2020-03-07
+notify = diekmann@net.in.tum.de
+abstract =
+  In this article, we present a formalization of the well-known
+  "Hello, World!" code, including a formal framework for
+  reasoning about IO. Our model is inspired by the handling of IO in
+  Haskell. We start by formalizing the 🌍 and embrace the IO monad
+  afterwards. Then we present a sample main :: IO (), followed by its
+  proof of correctness.
+
+[WOOT_Strong_Eventual_Consistency]
+title = Strong Eventual Consistency of the Collaborative Editing Framework WOOT
+author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>, Edgar Gonzàlez <mailto:edgargip@google.com>
+topic = Computer Science/Algorithms/Distributed
+date = 2020-03-25
+notify = eminkarayel@google.com, edgargip@google.com, me@eminkarayel.de
+abstract =
+  Commutative Replicated Data Types (CRDTs) are a promising new class of
+  data structures for large-scale shared mutable content in applications
+  that only require eventual consistency. The WithOut Operational
+  Transforms (WOOT) framework is a CRDT for collaborative text editing
+  introduced by Oster et al. (CSCW 2006) for which the eventual
+  consistency property was verified only for a bounded model to date. We
+  contribute a formal proof for WOOTs strong eventual consistency.
+
+[Furstenberg_Topology]
+title = Furstenberg's topology and his proof of the infinitude of primes
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory
+date = 2020-03-22
+notify = manuel.eberl@tum.de
+abstract = 
+  <p>This article gives a formal version of Furstenberg's
+  topological proof of the infinitude of primes. He defines a topology
+  on the integers based on arithmetic progressions (or, equivalently,
+  residue classes). Using some fairly obvious properties of this
+  topology, the infinitude of primes is then easily obtained.</p>
+  <p>Apart from this, this topology is also fairly `nice' in
+  general: it is second countable, metrizable, and perfect. All of these
+  (well-known) facts are formally proven, including an explicit metric
+  for the topology given by Zulfeqarr.</p>
+
+
 

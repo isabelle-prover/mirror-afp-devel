@@ -9,7 +9,103 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>01 Feb 2020 00:00:00 +0000</pubDate>
+    <pubDate>25 Mar 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Strong Eventual Consistency of the Collaborative Editing Framework WOOT</title>
+              <link>https://www.isa-afp.org/entries/WOOT_Strong_Eventual_Consistency.html</link>
+       <guid>https://www.isa-afp.org/entries/WOOT_Strong_Eventual_Consistency.html</guid>
+       <dc:creator> Emin Karayel, Edgar Gonzàlez       </dc:creator>
+       <pubDate>25 Mar 2020 00:00:00 +0000</pubDate>
+       <description>
+Commutative Replicated Data Types (CRDTs) are a promising new class of
+data structures for large-scale shared mutable content in applications
+that only require eventual consistency. The WithOut Operational
+Transforms (WOOT) framework is a CRDT for collaborative text editing
+introduced by Oster et al. (CSCW 2006) for which the eventual
+consistency property was verified only for a bounded model to date. We
+contribute a formal proof for WOOTs strong eventual consistency.</description>
+    </item>
+    <item>
+       <title>Furstenberg's topology and his proof of the infinitude of primes</title>
+              <link>https://www.isa-afp.org/entries/Furstenberg_Topology.html</link>
+       <guid>https://www.isa-afp.org/entries/Furstenberg_Topology.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>22 Mar 2020 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This article gives a formal version of Furstenberg&#39;s
+topological proof of the infinitude of primes. He defines a topology
+on the integers based on arithmetic progressions (or, equivalently,
+residue classes). Using some fairly obvious properties of this
+topology, the infinitude of primes is then easily obtained.&lt;/p&gt;
+&lt;p&gt;Apart from this, this topology is also fairly `nice&#39; in
+general: it is second countable, metrizable, and perfect. All of these
+(well-known) facts are formally proven, including an explicit metric
+for the topology given by Zulfeqarr.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>An Under-Approximate Relational Logic</title>
+              <link>https://www.isa-afp.org/entries/Relational-Incorrectness-Logic.html</link>
+       <guid>https://www.isa-afp.org/entries/Relational-Incorrectness-Logic.html</guid>
+       <dc:creator> Toby Murray       </dc:creator>
+       <pubDate>12 Mar 2020 00:00:00 +0000</pubDate>
+       <description>
+Recently, authors have proposed under-approximate logics for reasoning
+about programs. So far, all such logics have been confined to
+reasoning about individual program behaviours. Yet there exist many
+over-approximate relational logics for reasoning about pairs of
+programs and relating their behaviours. We present the first
+under-approximate relational logic, for the simple imperative language
+IMP. We prove our logic is both sound and complete. Additionally, we
+show how reasoning in this logic can be decomposed into non-relational
+reasoning in an under-approximate Hoare logic, mirroring Beringer’s
+result for over-approximate relational logics. We illustrate the
+application of our logic on some small examples in which we provably
+demonstrate the presence of insecurity.</description>
+    </item>
+    <item>
+       <title>Hello World</title>
+              <link>https://www.isa-afp.org/entries/Hello_World.html</link>
+       <guid>https://www.isa-afp.org/entries/Hello_World.html</guid>
+       <dc:creator> Cornelius Diekmann, Lars Hupel       </dc:creator>
+       <pubDate>07 Mar 2020 00:00:00 +0000</pubDate>
+       <description>
+In this article, we present a formalization of the well-known
+&#34;Hello, World!&#34; code, including a formal framework for
+reasoning about IO. Our model is inspired by the handling of IO in
+Haskell. We start by formalizing the 🌍 and embrace the IO monad
+afterwards. Then we present a sample main :: IO (), followed by its
+proof of correctness.</description>
+    </item>
+    <item>
+       <title>Implementing the Goodstein Function in &lambda;-Calculus</title>
+              <link>https://www.isa-afp.org/entries/Goodstein_Lambda.html</link>
+       <guid>https://www.isa-afp.org/entries/Goodstein_Lambda.html</guid>
+       <dc:creator> Bertram Felgenhauer       </dc:creator>
+       <pubDate>21 Feb 2020 00:00:00 +0000</pubDate>
+       <description>
+In this formalization, we develop an implementation of the Goodstein
+function G in plain &amp;lambda;-calculus, linked to a concise, self-contained
+specification. The implementation works on a Church-encoded
+representation of countable ordinals. The initial conversion to
+hereditary base 2 is not covered, but the material is sufficient to
+compute the particular value G(16), and easily extends to other fixed
+arguments.</description>
+    </item>
+    <item>
+       <title>A Generic Framework for Verified Compilers</title>
+              <link>https://www.isa-afp.org/entries/VeriComp.html</link>
+       <guid>https://www.isa-afp.org/entries/VeriComp.html</guid>
+       <dc:creator> Martin Desharnais       </dc:creator>
+       <pubDate>10 Feb 2020 00:00:00 +0000</pubDate>
+       <description>
+This is a generic framework for formalizing compiler transformations.
+It leverages Isabelle/HOL’s locales to abstract over concrete
+languages and transformations. It states common definitions for
+language semantics, program behaviours, forward and backward
+simulations, and compilers. We provide generic operations, such as
+simulation and compiler composition, and prove general (partial)
+correctness theorems, resulting in reusable proof components.</description>
+    </item>
     <item>
        <title>Arithmetic progressions and relative primes</title>
               <link>https://www.isa-afp.org/entries/Arith_Prog_Rel_Primes.html</link>
@@ -143,19 +239,23 @@ presentation&lt;/a&gt; of Beukers&#39;s proof.&lt;/p&gt;</description>
        <dc:creator> Asta Halkjær From       </dc:creator>
        <pubDate>20 Dec 2019 00:00:00 +0000</pubDate>
        <description>
-This work is a formalization of soundness and completeness proofs for
-a Seligman-style tableau system for hybrid logic. The completeness
-result is obtained via a synthetic approach using maximally consistent
-sets of tableau blocks. The formalization differs from the cited work
-in a few ways. First, to avoid the need to backtrack in the
-construction of a tableau, the formalized system has no unnamed
+This work is a formalization of soundness and completeness proofs
+for a Seligman-style tableau system for hybrid logic. The completeness
+result is obtained via a synthetic approach using maximally
+consistent sets of tableau blocks. The formalization differs from
+the cited work in a few ways. First, to avoid the need to backtrack in
+the construction of a tableau, the formalized system has no unnamed
 initial segment, and therefore no Name rule. Second, I show that the
-full Bridge rule is derivable in the system. Third, I start from rules
+full Bridge rule is admissible in the system. Third, I start from rules
 restricted to only extend the branch with new formulas, including only
-witnessing diamonds that are not already witnessed, and show that the
-unrestricted rules are derivable. Similarly, I start from simpler
-versions of the @-rules and derive the general ones. These
-restrictions are imposed to rule out some means of nontermination.</description>
+witnessing diamonds that are not already witnessed, and show that
+the unrestricted rules are admissible. Similarly, I start from simpler
+versions of the @-rules and show the general ones admissible. Finally,
+the GoTo rule is restricted using a notion of coins such that each
+application consumes a coin and coins are earned through applications of
+the remaining rules. I show that if a branch can be closed then it can
+be closed starting from a single coin. These restrictions are imposed
+to rule out some means of nontermination.</description>
     </item>
     <item>
        <title>The Poincaré-Bendixson Theorem</title>
@@ -460,108 +560,6 @@ reals and the basics of Fourier series. It culminates with a proof
 that every well-behaved periodic function can be approximated by a
 Fourier series. The material is ported from HOL Light:
 https://github.com/jrh13/hol-light/blob/master/100/fourier.ml</description>
-    </item>
-    <item>
-       <title>A Case Study in Basic Algebra</title>
-              <link>https://www.isa-afp.org/entries/Jacobson_Basic_Algebra.html</link>
-       <guid>https://www.isa-afp.org/entries/Jacobson_Basic_Algebra.html</guid>
-       <dc:creator> Clemens Ballarin       </dc:creator>
-       <pubDate>30 Aug 2019 00:00:00 +0000</pubDate>
-       <description>
-The focus of this case study is re-use in abstract algebra.  It
-contains locale-based formalisations of selected parts of set, group
-and ring theory from Jacobson&#39;s &lt;i&gt;Basic Algebra&lt;/i&gt;
-leading to the respective fundamental homomorphism theorems.  The
-study is not intended as a library base for abstract algebra.  It
-rather explores an approach towards abstract algebra in Isabelle.</description>
-    </item>
-    <item>
-       <title>Formalisation of an Adaptive State Counting Algorithm</title>
-              <link>https://www.isa-afp.org/entries/Adaptive_State_Counting.html</link>
-       <guid>https://www.isa-afp.org/entries/Adaptive_State_Counting.html</guid>
-       <dc:creator> Robert Sachtleben       </dc:creator>
-       <pubDate>16 Aug 2019 00:00:00 +0000</pubDate>
-       <description>
-This entry provides a formalisation of a refinement of an adaptive
-state counting algorithm, used to test for reduction between finite
-state machines. The algorithm has been originally presented by Hierons
-in the paper &lt;a
-href=&#34;https://doi.org/10.1109/TC.2004.85&#34;&gt;Testing from a
-Non-Deterministic Finite State Machine Using Adaptive State
-Counting&lt;/a&gt;.  Definitions for finite state machines and
-adaptive test cases are given and many useful theorems are derived
-from these. The algorithm is formalised using mutually recursive
-functions, for which it is proven that the generated test suite is
-sufficient to test for reduction against finite state machines of a
-certain fault domain. Additionally, the algorithm is specified in a
-simple WHILE-language and its correctness is shown using Hoare-logic.</description>
-    </item>
-    <item>
-       <title>Laplace Transform</title>
-              <link>https://www.isa-afp.org/entries/Laplace_Transform.html</link>
-       <guid>https://www.isa-afp.org/entries/Laplace_Transform.html</guid>
-       <dc:creator> Fabian Immler       </dc:creator>
-       <pubDate>14 Aug 2019 00:00:00 +0000</pubDate>
-       <description>
-This entry formalizes the Laplace transform and concrete Laplace
-transforms for arithmetic functions, frequency shift, integration and
-(higher) differentiation in the time domain. It proves Lerch&#39;s
-lemma and uniqueness of the Laplace transform for continuous
-functions. In order to formalize the foundational assumptions, this
-entry contains a formalization of piecewise continuous functions and
-functions of exponential order.</description>
-    </item>
-    <item>
-       <title>Linear Programming</title>
-              <link>https://www.isa-afp.org/entries/Linear_Programming.html</link>
-       <guid>https://www.isa-afp.org/entries/Linear_Programming.html</guid>
-       <dc:creator> Julian Parsert, Cezary Kaliszyk       </dc:creator>
-       <pubDate>06 Aug 2019 00:00:00 +0000</pubDate>
-       <description>
-We use the previous formalization of the general simplex algorithm to
-formulate an algorithm for solving linear programs. We encode the
-linear programs using only linear constraints. Solving these
-constraints also solves the original linear program. This algorithm is
-proven to be sound by applying the weak duality theorem which is also
-part of this formalization.</description>
-    </item>
-    <item>
-       <title>Communicating Concurrent Kleene Algebra for Distributed Systems Specification</title>
-              <link>https://www.isa-afp.org/entries/C2KA_DistributedSystems.html</link>
-       <guid>https://www.isa-afp.org/entries/C2KA_DistributedSystems.html</guid>
-       <dc:creator> Maxime Buyse, Jason Jaskolka       </dc:creator>
-       <pubDate>06 Aug 2019 00:00:00 +0000</pubDate>
-       <description>
-Communicating Concurrent Kleene Algebra (C²KA) is a mathematical
-framework for capturing the communicating and concurrent behaviour of
-agents in distributed systems. It extends Hoare et al.&#39;s
-Concurrent Kleene Algebra (CKA) with communication actions through the
-notions of stimuli and shared environments. C²KA has applications in
-studying system-level properties of distributed systems such as
-safety, security, and reliability. In this work, we formalize results
-about C²KA and its application for distributed systems specification.
-We first formalize the stimulus structure and behaviour structure
-(CKA). Next, we combine them to formalize C²KA and its properties.
-Then, we formalize notions and properties related to the topology of
-distributed systems and the potential for communication via stimuli
-and via shared environments of agents, all within the algebraic
-setting of C²KA.</description>
-    </item>
-    <item>
-       <title>Selected Problems from the International Mathematical Olympiad 2019</title>
-              <link>https://www.isa-afp.org/entries/IMO2019.html</link>
-       <guid>https://www.isa-afp.org/entries/IMO2019.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>05 Aug 2019 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This entry contains formalisations of the answers to three of
-the six problem of the International Mathematical Olympiad 2019,
-namely Q1, Q4, and Q5.&lt;/p&gt; &lt;p&gt;The reason why these
-problems were chosen is that they are particularly amenable to
-formalisation: they can be solved with minimal use of libraries. The
-remaining three concern geometry and graph theory, which, in the
-author&#39;s opinion, are more difficult to formalise resp. require a
-more complex library.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
