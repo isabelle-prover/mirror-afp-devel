@@ -410,7 +410,7 @@ proof
 qed  
 
 text \<open>
-  Since the Fürstenberg topology is $T_2$ and every arithmetic progression is also closed,
+  Since the Furstenberg topology is $T_2$ and every arithmetic progression is also closed,
   we can now easily show that it is also $T_3$ (i.\,e.\ regular). 
   Again, we do not really need this proof, but here it is:
 \<close>
@@ -817,7 +817,7 @@ end
 
 
 text \<open>
-  We now show that the Fürstenberg space is a metric space with this metric (with \<open>q = 2\<close>),
+  We now show that the Furstenberg space is a metric space with this metric (with \<open>q = 2\<close>),
   which essentially only amounts to plugging together all the results from above.
 \<close>
 
