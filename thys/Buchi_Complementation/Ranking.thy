@@ -399,8 +399,8 @@ begin
   unfolding rank_def
   proof (rule GreatestI_nat)
     show "v \<in> graph A w 0" using assms(3) by simp
-    show "\<And>k. v \<in> graph A w k \<Longrightarrow> k \<le> 2 * card (nodes A)"
-      using graph_le assms(1, 2) by blast
+    show "k \<le> 2 * card (nodes A)" if "v \<in> graph A w k" for k
+      using graph_le assms(1, 2) that by blast
   qed
   lemma rank_removed:
     assumes "finite (nodes A)" "w \<notin> language A"
@@ -426,8 +426,8 @@ begin
       show "u \<in> gusuccessors A w v" using assms(4) by this
       show "u \<in> graph A w (rank A w u)" using rank_member assms(1, 2) 2 by this
     qed
-    show "\<And>k. v \<in> graph A w k \<Longrightarrow> k \<le> 2 * card (nodes A)" 
-      using graph_le assms(1, 2) by blast
+    show "k \<le> 2 * card (nodes A)" if "v \<in> graph A w k" for k
+      using graph_le assms(1, 2) that by blast
   qed
 
   lemma language_ranking:

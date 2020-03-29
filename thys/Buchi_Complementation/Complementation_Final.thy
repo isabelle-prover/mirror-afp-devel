@@ -176,7 +176,7 @@ begin
     Set.empty Set.insert Set.member
     "Inf :: 'a set set \<Rightarrow> 'a set" "Sup :: 'a set set \<Rightarrow> 'a set" image Pow set
     nat_of_integer integer_of_nat
-    Variable Negation Conjunction Disjunction satisfies
+    Variable Negation Conjunction Disjunction satisfies map_formula
     nbaei alphabetei initialei transitionei acceptingei
     nbae_nba_impl complement_impl language_equal_impl product_impl
     in SML module_name Complementation file_prefix Complementation

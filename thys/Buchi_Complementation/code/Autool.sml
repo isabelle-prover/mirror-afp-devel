@@ -99,7 +99,8 @@ datatype hoaProperty =
   HoaAcceptanceConditionName of string |
   HoaAcceptanceCondition of string |
   HoaStartState of nat |
-  HoaStateCount of nat
+  HoaStateCount of nat |
+  HoaProperty of string * string
 datatype hoaTransition = HoaTransition of nat formula * nat
 datatype hoaState = HoaState of nat * nat list * hoaTransition list
 datatype hoaAutomaton = HoaAutomaton of hoaProperty list * hoaState list
@@ -113,6 +114,7 @@ fun showHoaAutomaton (HoaAutomaton (ps, ss)) = let
     | showProperty (HoaAcceptanceCondition w) = "Acceptance: " ^ w ^ "\n"
     | showProperty (HoaStartState p) = "Start: " ^ showNat p ^ "\n"
     | showProperty (HoaStateCount n) = "States: " ^ showNat n ^ "\n"
+    | showProperty (HoaProperty (name, value)) = name ^ ": " ^ value ^ "\n"
   fun showTransition (HoaTransition (a, q)) = "[" ^ showFormula showNat a ^ "]" ^ " " ^ showNat q ^ "\n"
   fun showState (HoaState (p, cs, ts)) = "State: " ^ showNat p ^ " " ^ showSet showNat (Set cs) ^ "\n" ^ String.concat (map showTransition ts)
   in String.concat (map showProperty ps) ^ "--BODY--" ^ "\n" ^ String.concat (map showState ss) ^ "--END--" ^ "\n" end
@@ -128,7 +130,8 @@ fun parseHoaAutomaton path = let
 	  ["acc-name", u] => HoaAcceptanceConditionName u |
 	  ["Acceptance", u] => HoaAcceptanceCondition u |
 	  ["Start", u] => HoaStartState (parseNat u) |
-	  ["States", u] => HoaStateCount (parseNat u)
+	  ["States", u] => HoaStateCount (parseNat u) |
+	  [name, value] => HoaProperty (name, value)
 	fun parseProperties input = case inputLine input of w =>
 	  if w = "--BODY--" then []
 	  else parseProperty w :: parseProperties input
@@ -158,13 +161,14 @@ fun toNbaei (HoaAutomaton (properties, states)) = let
   fun atomicPropositions (HoaAtomicPropositions (_, ps) :: properties) = ps
     | atomicPropositions (_ :: properties) = atomicPropositions properties
   val aps = atomicPropositions properties
-  val alphabet = case pow {equal = eq} (image nat_of_integer (Set (upto (length aps)))) of Set pps => pps
+  val alphabet = case pow {equal = eq} (Set aps) of Set pps => pps
   fun startStates [] = []
     | startStates (HoaStartState p :: properties) = p :: startStates properties
     | startStates (property :: properties) = startStates properties
   val initial = startStates properties
+  fun mapFormula f = map_formula (fn k => nth (aps, integer_of_nat k)) f
   fun expandTransition p f q = map (fn P => (p, (P, q))) (filter (fn x => satisfies {equal = eq} x f) alphabet)
-  fun stateTransitions (HoaState (p, cs, ts)) = concat (map (fn HoaTransition (f, q) => expandTransition p f q) ts)
+  fun stateTransitions (HoaState (p, cs, ts)) = concat (map (fn HoaTransition (f, q) => expandTransition p (mapFormula f) q) ts)
   val transitions = concat (map stateTransitions states)
   val accepting = map (fn HoaState (p, cs, ts) => p) (filter (fn HoaState (p, cs, ts) => not (null cs)) states)
   in (aps, Nbaei (alphabet, initial, transitions, accepting)) end
@@ -179,8 +183,9 @@ fun toHoaAutomaton aps (Nbaei (a, i, t, c)) = let
     [HoaAcceptanceCondition "1 Inf(0)"] @
     map HoaStartState i @
     [HoaStateCount (nat_of_integer (length nodes))]
-  fun literal ps ap = if member {equal = eq} ap ps then Variable ap else Negation (Variable ap)
-  fun formula ps = foldl' True Conjunction (map (literal ps) (map nat_of_integer (upto (length aps))))
+  fun literal ps k = if member {equal = eq} (nth (aps, k)) ps
+    then Variable (nat_of_integer k) else Negation (Variable (nat_of_integer k))
+  fun formula ps = foldl' True Conjunction (map (literal ps) (upto (length aps)))
   fun transitions p = map (fn (p, (a, q)) => HoaTransition (formula a, q)) (filter (fn (p', (a, q)) => p' = p) t)
   fun state p = HoaState (p, if member {equal = eq} p (Set c) then [nat_of_integer 0] else [], transitions p)
   val states = map state nodes
@@ -199,8 +204,6 @@ fun write_automaton f path automaton = let
 	val _ = TextIO.closeOut output
 	in () end
 
-(* TODO: output number of explored states in emptiness check *)
-
 val parameters = CommandLine.arguments ()
 val _ = case hd parameters of
 	"help" => println "Available Commands: help | complement <automaton> | equivalence <automaton1> <automaton2>" |
@@ -213,7 +216,7 @@ val _ = case hd parameters of
 	  val (aps, nbaei) = toNbaei (parseHoaAutomaton (nth (parameters, 1)))
 	  val nbai = nbae_nba_impl eq eq nbaei
 	  val complement = complement_impl nbai
-	  in write_automaton (showSet showNat) (nth (parameters, 2)) complement end |
+	  in write_automaton (showSet showString) (nth (parameters, 2)) complement end |
 	"equivalence" => let
 	  val (aps1, nbaei1) = toNbaei (parseHoaAutomaton (nth (parameters, 1)))
 	  val (aps2, nbaei2) = toNbaei (parseHoaAutomaton (nth (parameters, 2)))
@@ -226,9 +229,9 @@ val _ = case hd parameters of
 	  val nbai1 = nbae_nba_impl eq eq nbaei1
 	  val nbai2 = nbae_nba_impl eq eq nbaei2
 	  val product = product_impl {equal = eq} nbai1 nbai2
-	  in write_automaton (showSet showNat) (nth (parameters, 3)) product end |
+	  in write_automaton (showSet showString) (nth (parameters, 3)) product end |
 	"parse" => let
 	  val ha = parseHoaAutomaton (nth (parameters, 1))
 	  val (aps, nbaei) = toNbaei ha
-	  val _ = println (showNbaei (showSet showNat) showNat nbaei)
+	  val _ = println (showNbaei (showSet showString) showNat nbaei)
 	  in print (showHoaAutomaton (toHoaAutomaton aps nbaei)) end
