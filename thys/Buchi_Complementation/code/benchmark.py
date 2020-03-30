@@ -85,8 +85,7 @@ if sys.argv[1] == "equivalence_translate":
 	while True:
 		formula = spot_generate_formula(4)
 		print(formula)
-		write("a.hoa", owl_formula_to_nba(formula))
-		write("b.hoa", owl_formula_to_dra(formula))
-		write("c.hoa", spot_simplify_automaton("b.hoa"))
-		if not read("c.hoa"): continue
-		equivalence("a.hoa", "c.hoa")
+		write("a.hoa", spot_formula_to_nba(formula))
+		write("b.hoa", owl_formula_to_nba(formula))
+		if not read("b.hoa"): continue
+		equivalence("a.hoa", "b.hoa")
