@@ -150,12 +150,12 @@ qualified abbreviation Bex :: "'a zmultiset \<Rightarrow> ('a \<Rightarrow> bool
 end
 
 syntax
-  "_MBall" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool" ("(3\<forall>_\<in>#\<^sub>z_./ _)" [0, 0, 10] 10)
-  "_MBex" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool" ("(3\<exists>_\<in>#\<^sub>z_./ _)" [0, 0, 10] 10)
+  "_ZMBall" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool" ("(3\<forall>_\<in>#\<^sub>z_./ _)" [0, 0, 10] 10)
+  "_ZMBex" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool" ("(3\<exists>_\<in>#\<^sub>z_./ _)" [0, 0, 10] 10)
 
 syntax (ASCII)
-  "_MBall" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool" ("(3\<forall>_:#\<^sub>z_./ _)" [0, 0, 10] 10)
-  "_MBex" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool" ("(3\<exists>_:#\<^sub>z_./ _)" [0, 0, 10] 10)
+  "_ZMBall" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool" ("(3\<forall>_:#\<^sub>z_./ _)" [0, 0, 10] 10)
+  "_ZMBex" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> bool \<Rightarrow> bool" ("(3\<exists>_:#\<^sub>z_./ _)" [0, 0, 10] 10)
 
 translations
   "\<forall>x\<in>#\<^sub>zA. P" \<rightleftharpoons> "CONST Signed_Multiset.Ball A (\<lambda>x. P)"
@@ -553,9 +553,9 @@ lift_definition filter_zmset :: "('a \<Rightarrow> bool) \<Rightarrow> 'a zmulti
   by (auto simp del: filter_union_mset simp: equiv_zmset_def filter_union_mset[symmetric])
 
 syntax (ASCII)
-  "_MCollect" :: "pttrn \<Rightarrow> 'a zmultiset \<Rightarrow> bool \<Rightarrow> 'a zmultiset" ("(1{#_ :#z _./ _#})")
+  "_ZMCollect" :: "pttrn \<Rightarrow> 'a zmultiset \<Rightarrow> bool \<Rightarrow> 'a zmultiset" ("(1{#_ :#z _./ _#})")
 syntax
-  "_MCollect" :: "pttrn \<Rightarrow> 'a zmultiset \<Rightarrow> bool \<Rightarrow> 'a zmultiset" ("(1{#_ \<in>#\<^sub>z _./ _#})")
+  "_ZMCollect" :: "pttrn \<Rightarrow> 'a zmultiset \<Rightarrow> bool \<Rightarrow> 'a zmultiset" ("(1{#_ \<in>#\<^sub>z _./ _#})")
 translations
   "{#x \<in>#\<^sub>z M. P#}" == "CONST filter_zmset (\<lambda>x. P) M"
 
@@ -585,7 +585,7 @@ lemma zmultiset_filter_mono:
   shows "filter_zmset f A \<subseteq>#\<^sub>z filter_zmset f B"
   using assms by (simp add: subseteq_zmset_def)
 
-lemma filter_filter_zmset: "filter_zmset P (filter_zmset Q M) = {#x \<in># M. Q x \<and> P x#}"
+lemma filter_filter_zmset: "filter_zmset P (filter_zmset Q M) = {#x \<in>#\<^sub>z M. Q x \<and> P x#}"
   by (auto simp: zmultiset_eq_iff)
 
 lemma
