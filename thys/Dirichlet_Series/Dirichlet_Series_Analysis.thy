@@ -390,7 +390,8 @@ proof (cases "B = {}")
     define norm_B where "norm_B = norm_B_aux + norm s0"
     from norm_B_aux have norm_B: "norm (s - s0) \<le> norm_B" if "s \<in> B" for s
       using norm_triangle_ineq4[of s s0] norm_B_aux[OF that] by (simp add: norm_B_def)
-      
+    then have "0 \<le> norm_B"
+      by (meson \<open>\<sigma> \<in> (\<lambda>s. s \<bullet> 1) ` B\<close> imageE norm_ge_zero order.trans)
     define A where "A = sum_upto (\<lambda>k. fds_nth f k / nat_power k s0)"
     from bounded obtain C_aux where C_aux: "\<And>n. norm (\<Sum>k\<le>n. fds_nth f k / nat_power k s0) \<le> C_aux"
       by (auto simp: Bseq_def)
@@ -482,9 +483,9 @@ proof (cases "B = {}")
                    2 * C * nat_power m ((s0 - s) \<bullet> 1) * (1 + norm (s - s0) / ((s - s0) \<bullet> 1))"
         by (simp add: algebra_simps norm_minus_commute)
       also have "\<dots> \<le> 2 * C * nat_power m (-\<delta>) * (1 + norm_B / \<delta>)" 
-        using C_pos s mn \<sigma>_le[of s] \<open>s \<in> B\<close> \<sigma>_gt unfolding nat_power_real_def
-        by (intro mult_mono mult_nonneg_nonneg powr_mono frac_le add_mono norm_B)
-           (simp_all add: inner_diff_left \<delta>_def)
+        using C_pos s mn \<sigma>_le[of s] \<open>s \<in> B\<close> \<sigma>_gt \<open>0 \<le> norm_B\<close> 
+        unfolding nat_power_real_def \<delta>_def
+        by (intro mult_mono powr_mono frac_le add_mono norm_B; simp add: inner_diff_left)
       also have "\<dots> = 2 * C * (1 + norm_B / \<delta>) * real m powr (-\<delta>)" by simp
       also from \<open>m \<ge> M\<close> have "\<dots> < \<epsilon>" by (rule M)
       finally show ?case by - simp_all
