@@ -399,8 +399,10 @@ proof -
   have "\<bar>f x\<bar> \<le> c' * \<bar>g x\<bar>" if "x \<ge> x0" for x
   proof (cases "x \<ge> b")
     case False
-    hence "\<bar>f x\<bar> / \<bar>g x\<bar> \<le> C / cg"
-      using that by (intro frac_le assms C) auto
+    then have "\<bar>f x\<bar> \<le> C"
+      using C that by auto
+    with False have "\<bar>f x\<bar> / \<bar>g x\<bar> \<le> C / cg"
+      by (meson abs_ge_zero assms frac_le landau_omega.R_trans that)
     also have "\<dots> \<le> c'" by (simp add: c'_def)
     finally show "\<bar>f x\<bar> \<le> c' * \<bar>g x\<bar>"
       using that False assms(2)[of x] assms(3) by (auto simp add: divide_simps split: if_splits)
