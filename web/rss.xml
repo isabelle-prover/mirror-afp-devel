@@ -9,7 +9,31 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>25 Mar 2020 00:00:00 +0000</pubDate>
+    <pubDate>09 Apr 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Comprehensive Framework for Saturation Theorem Proving</title>
+              <link>https://www.isa-afp.org/entries/Saturation_Framework.html</link>
+       <guid>https://www.isa-afp.org/entries/Saturation_Framework.html</guid>
+       <dc:creator> Sophie Tourret       </dc:creator>
+       <pubDate>09 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+This Isabelle/HOL formalization is the companion of the technical
+report “A comprehensive framework for saturation theorem proving”,
+itself companion of the eponym IJCAR 2020 paper, written by Uwe
+Waldmann, Sophie Tourret, Simon Robillard and Jasmin Blanchette. It
+verifies a framework for formal refutational completeness proofs of
+abstract provers that implement saturation calculi, such as ordered
+resolution or superposition, and allows to model entire prover
+architectures in such a way that the static refutational completeness
+of a calculus immediately implies the dynamic  refutational
+completeness of a prover implementing the calculus using a variant of
+the given clause loop.  The technical report “A comprehensive
+framework for saturation theorem proving” is available &lt;a
+href=&#34;http://matryoshka.gforge.inria.fr/pubs/satur_report.pdf&#34;&gt;on
+the Matryoshka website&lt;/a&gt;. The names of the Isabelle lemmas and
+theorems corresponding to the results in the report are indicated in
+the margin of the report.</description>
+    </item>
     <item>
        <title>Strong Eventual Consistency of the Collaborative Editing Framework WOOT</title>
               <link>https://www.isa-afp.org/entries/WOOT_Strong_Eventual_Consistency.html</link>
@@ -537,19 +561,6 @@ their verification is done with invariants for the former or orbits
 for the latter. Laws of modal Kleene algebra or categorical predicate
 transformers implement the verification condition generation. Examples
 show the approach at work.</description>
-    </item>
-    <item>
-       <title>Fourier Series</title>
-              <link>https://www.isa-afp.org/entries/Fourier.html</link>
-       <guid>https://www.isa-afp.org/entries/Fourier.html</guid>
-       <dc:creator> Lawrence C Paulson       </dc:creator>
-       <pubDate>06 Sep 2019 00:00:00 +0000</pubDate>
-       <description>
-This development formalises the square integrable functions over the
-reals and the basics of Fourier series. It culminates with a proof
-that every well-behaved periodic function can be approximated by a
-Fourier series. The material is ported from HOL Light:
-https://github.com/jrh13/hol-light/blob/master/100/fourier.ml</description>
     </item>
   </channel>
 </rss>
