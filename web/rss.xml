@@ -35,6 +35,33 @@ theorems corresponding to the results in the report are indicated in
 the margin of the report.</description>
     </item>
     <item>
+       <title>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</title>
+              <link>https://www.isa-afp.org/entries/MFODL_Monitor_Optimized.html</link>
+       <guid>https://www.isa-afp.org/entries/MFODL_Monitor_Optimized.html</guid>
+       <dc:creator> Thibault Dardinier, Lukas Heimes, Martin Raszyk, Joshua Schneider, Dmitriy Traytel       </dc:creator>
+       <pubDate>09 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+A monitor is a runtime verification tool that solves the following
+problem: Given a stream of time-stamped events and a policy formulated
+in a specification language, decide whether the policy is satisfied at
+every point in the stream. We verify the correctness of an executable
+monitor for specifications given as formulas in metric first-order
+dynamic logic (MFODL), which combines the features of metric
+first-order temporal logic (MFOTL) and metric dynamic logic. Thus,
+MFODL supports real-time constraints, first-order parameters, and
+regular expressions. Additionally, the monitor supports aggregation
+operations such as count and sum. This formalization, which is
+described in a &lt;a
+href=&#34;http://people.inf.ethz.ch/trayteld/papers/ijcar20-verimonplus/verimonplus.pdf&#34;&gt;
+forthcoming paper at IJCAR 2020&lt;/a&gt;, significantly extends &lt;a
+href=&#34;https://www.isa-afp.org/entries/MFOTL_Monitor.html&#34;&gt;previous
+work on a verified monitor&lt;/a&gt; for MFOTL. Apart from the
+addition of regular expressions and aggregations, we implemented &lt;a
+href=&#34;https://www.isa-afp.org/entries/Generic_Join.html&#34;&gt;multi-way
+joins&lt;/a&gt; and a specialized sliding window algorithm to further
+optimize the monitor.</description>
+    </item>
+    <item>
        <title>Strong Eventual Consistency of the Collaborative Editing Framework WOOT</title>
               <link>https://www.isa-afp.org/entries/WOOT_Strong_Eventual_Consistency.html</link>
        <guid>https://www.isa-afp.org/entries/WOOT_Strong_Eventual_Consistency.html</guid>
@@ -545,22 +572,6 @@ href=&#34;https://doi.org/10.1145/2590989.2590991&#34;&gt;Ngo, Ré,
 and Rudra&lt;/a&gt; gave a unified presentation of different multi-way
 join algorithms. We formalized and proved correct their &#34;Generic
 Join&#34; algorithm and extended it to support negative joins.</description>
-    </item>
-    <item>
-       <title>Verification Components for Hybrid Systems</title>
-              <link>https://www.isa-afp.org/entries/Hybrid_Systems_VCs.html</link>
-       <guid>https://www.isa-afp.org/entries/Hybrid_Systems_VCs.html</guid>
-       <dc:creator> Jonathan Julian Huerta y Munive       </dc:creator>
-       <pubDate>10 Sep 2019 00:00:00 +0000</pubDate>
-       <description>
-These components formalise a semantic framework for the deductive
-verification of hybrid systems. They support reasoning about
-continuous evolutions of hybrid programs in the style of differential
-dynamics logic. Vector fields or flows model these evolutions, and
-their verification is done with invariants for the former or orbits
-for the latter. Laws of modal Kleene algebra or categorical predicate
-transformers implement the verification condition generation. Examples
-show the approach at work.</description>
     </item>
   </channel>
 </rss>
