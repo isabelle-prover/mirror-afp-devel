@@ -23,4 +23,4 @@ session MFODL_Monitor_Optimized (AFP) = Containers +
     "root.tex"
     "root.bib"
   export_files (in ".") [2]
-    "Optimized_MFODL_Monitor.Monitor_Code:code/**"
+    "MFODL_Monitor_Optimized.Monitor_Code:code/**"
