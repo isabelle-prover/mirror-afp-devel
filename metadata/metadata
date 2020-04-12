@@ -9035,4 +9035,21 @@ abstract =
   joins</a> and a specialized sliding window algorithm to further
   optimize the monitor.
 
+[Sliding_Window_Algorithm]
+title = Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows
+author = Lukas Heimes<>, Dmitriy Traytel <http://people.inf.ethz.ch/trayteld/>, Joshua Schneider<>
+topic = Computer Science/Algorithms
+date = 2020-04-10
+notify = heimesl@student.ethz.ch, traytel@inf.ethz.ch, joshua.schneider@inf.ethz.ch
+abstract = 
+  Basin et al.'s <a
+  href="https://doi.org/10.1016/j.ipl.2014.09.009">sliding
+  window algorithm (SWA)</a> is an algorithm for combining the
+  elements of subsequences of a sequence with an associative operator.
+  It is greedy and minimizes the number of operator applications. We
+  formalize the algorithm and verify its functional correctness. We
+  extend the algorithm with additional operations and provide an
+  alternative interface to the slide operation that does not require the
+  entire input sequence.
+
 

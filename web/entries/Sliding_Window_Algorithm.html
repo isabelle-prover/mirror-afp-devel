@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Bounded Natural Functors with Covariance and Contravariance - Archive of Formal Proofs
+<title>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,19 +61,29 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">B</font>ounded
+  <h1>          <font class="first">F</font>ormalization
   
-          <font class="first">N</font>atural
+          of
   
-          <font class="first">F</font>unctors
+          an
   
-          with
+          <font class="first">A</font>lgorithm
   
-          <font class="first">C</font>ovariance
+          for
   
-          and
+          <font class="first">G</font>reedily
   
-          <font class="first">C</font>ontravariance
+          <font class="first">C</font>omputing
+  
+          <font class="first">A</font>ssociative
+  
+          <font class="first">A</font>ggregations
+  
+          on
+  
+          <font class="first">S</font>liding
+  
+          <font class="first">W</font>indows
   
 </h1>
   <p>&nbsp;</p>
@@ -82,7 +92,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Bounded Natural Functors with Covariance and Contravariance</td>
+  <td class="data" width="80%">Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</td>
 </tr>
 
 <tr>
@@ -90,7 +100,8 @@
           Authors:
       </td>
   <td class="data">
-                    <a href="http://www.andreas-lochbihler.de">Andreas Lochbihler</a> and
+                      Lukas Heimes,
+                <a href="http://people.inf.ethz.ch/trayteld/">Dmitriy Traytel</a> and
           Joshua Schneider
       </td>
 </tr>
@@ -99,43 +110,34 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2018-04-24</td>
+  <td class="data">2020-04-10</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-Bounded natural functors (BNFs) provide a modular framework for the
-construction of (co)datatypes in higher-order logic.  Their functorial
-operations, the mapper and relator, are restricted to a subset of the
-parameters, namely those where recursion can take place.  For certain
-applications, such as free theorems, data refinement, quotients, and
-generalised rewriting, it is desirable that these operations do not
-ignore the other parameters.  In this article, we formalise the
-generalisation BNF<sub>CC</sub> that extends the mapper
-and relator to covariant and contravariant parameters.  We show that
-<ol> <li> BNF<sub>CC</sub>s are closed under
-functor composition and least and greatest fixpoints,</li>
-<li> subtypes inherit the BNF<sub>CC</sub> structure
-under conditions that generalise those for the BNF case,
-and</li> <li> BNF<sub>CC</sub>s preserve
-quotients under mild conditions.</li> </ol> These proofs
-are carried out for abstract BNF<sub>CC</sub>s similar to
-the AFP entry BNF Operations.  In addition, we apply the
-BNF<sub>CC</sub> theory to several concrete functors.</td>
+Basin et al.'s <a
+href="https://doi.org/10.1016/j.ipl.2014.09.009">sliding
+window algorithm (SWA)</a> is an algorithm for combining the
+elements of subsequences of a sequence with an associative operator.
+It is greedy and minimizes the number of operator applications. We
+formalize the algorithm and verify its functional correctness. We
+extend the algorithm with additional operations and provide an
+alternative interface to the slide operation that does not require the
+entire input sequence.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{BNF_CC-AFP,
-  author  = {Andreas Lochbihler and Joshua Schneider},
-  title   = {Bounded Natural Functors with Covariance and Contravariance},
+        <pre>@article{Sliding_Window_Algorithm-AFP,
+  author  = {Lukas Heimes and Dmitriy Traytel and Joshua Schneider},
+  title   = {Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows},
   journal = {Archive of Formal Proofs},
   month   = apr,
-  year    = 2018,
-  note    = {\url{http://isa-afp.org/entries/BNF_CC.html},
+  year    = 2020,
+  note    = {\url{http://isa-afp.org/entries/Sliding_Window_Algorithm.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -159,34 +161,23 @@ BNF<sub>CC</sub> theory to several concrete functors.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/BNF_CC/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/BNF_CC/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Sliding_Window_Algorithm/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Sliding_Window_Algorithm/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/BNF_CC/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Sliding_Window_Algorithm/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-BNF_CC-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Sliding_Window_Algorithm-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2018:
-            <a href="../release/afp-BNF_CC-2018-08-16.tar.gz">
-              afp-BNF_CC-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-BNF_CC-2018-04-25.tar.gz">
-              afp-BNF_CC-2018-04-25.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>

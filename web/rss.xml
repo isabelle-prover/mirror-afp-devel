@@ -9,7 +9,24 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>09 Apr 2020 00:00:00 +0000</pubDate>
+    <pubDate>10 Apr 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</title>
+              <link>https://www.isa-afp.org/entries/Sliding_Window_Algorithm.html</link>
+       <guid>https://www.isa-afp.org/entries/Sliding_Window_Algorithm.html</guid>
+       <dc:creator> Lukas Heimes, Dmitriy Traytel, Joshua Schneider       </dc:creator>
+       <pubDate>10 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+Basin et al.&#39;s &lt;a
+href=&#34;https://doi.org/10.1016/j.ipl.2014.09.009&#34;&gt;sliding
+window algorithm (SWA)&lt;/a&gt; is an algorithm for combining the
+elements of subsequences of a sequence with an associative operator.
+It is greedy and minimizes the number of operator applications. We
+formalize the algorithm and verify its functional correctness. We
+extend the algorithm with additional operations and provide an
+alternative interface to the slide operation that does not require the
+entire input sequence.</description>
+    </item>
     <item>
        <title>A Comprehensive Framework for Saturation Theorem Proving</title>
               <link>https://www.isa-afp.org/entries/Saturation_Framework.html</link>
@@ -555,23 +572,6 @@ however, deliberately restrict themselves to the most elementary
 infrastructure for these tasks. The package is intended to serve as
 demonstrator semantic backend for Isabelle/C, or for the
 test-generation techniques.</description>
-    </item>
-    <item>
-       <title>Formalization of Multiway-Join Algorithms</title>
-              <link>https://www.isa-afp.org/entries/Generic_Join.html</link>
-       <guid>https://www.isa-afp.org/entries/Generic_Join.html</guid>
-       <dc:creator> Thibault Dardinier       </dc:creator>
-       <pubDate>16 Sep 2019 00:00:00 +0000</pubDate>
-       <description>
-Worst-case optimal multiway-join algorithms are recent seminal
-achievement of the database community. These algorithms compute the
-natural join of multiple relational databases and improve in the worst
-case over traditional query plan optimizations of nested binary joins.
-In 2014, &lt;a
-href=&#34;https://doi.org/10.1145/2590989.2590991&#34;&gt;Ngo, Ré,
-and Rudra&lt;/a&gt; gave a unified presentation of different multi-way
-join algorithms. We formalized and proved correct their &#34;Generic
-Join&#34; algorithm and extended it to support negative joins.</description>
     </item>
   </channel>
 </rss>
