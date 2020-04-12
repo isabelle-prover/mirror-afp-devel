@@ -252,7 +252,7 @@ abstract =
 [Propositional_Proof_Systems]
 title = Propositional Proof Systems
 author = Julius Michaelis <http://liftm.de>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
-topic = Logic
+topic = Logic/Classical propositional logic
 date = 2017-06-21
 notify = maintainafpppt@liftm.de
 abstract =
@@ -2128,7 +2128,7 @@ notify = maksym.bortin@nicta.com.au
 title = Boolean Expression Checkers
 author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2014-06-08
-topic = Computer Science/Algorithms, Logic
+topic = Computer Science/Algorithms, Logic/Classical propositional logic
 abstract =
 	This entry provides executable checkers for the following properties of
 	boolean expressions: satisfiability, tautology and equivalence. Internally,
@@ -3855,7 +3855,7 @@ abstract = This document presents the formalization of introductory material fro
 notify = MichaelNedzelsky@yandex.ru
 
 [Free-Boolean-Algebra]
-topic = Logic
+topic = Logic/Classical propositional logic
 title = Free Boolean Algebra
 author = Brian Huffman <http://web.cecs.pdx.edu/~brianh/>
 date = 2010-03-29
@@ -5820,7 +5820,7 @@ title = Propositional Resolution and Prime Implicates Generation
 author = Nicolas Peltier <http://membres-lig.imag.fr/peltier/>
 notify = Nicolas.Peltier@imag.fr
 date = 2016-03-11
-topic = Logic
+topic = Logic/Classical propositional logic
 abstract =
 	We provide formal proofs in Isabelle-HOL (using mostly structured Isar
 	proofs) of the soundness and completeness of the Resolution rule in
