@@ -2101,7 +2101,7 @@ notify = christian.urban@kcl.ac.uk
 [Universal_Turing_Machine]
 title = Universal Turing Machine
 author = Jian Xu<>, Xingyuan Zhang<>, Christian Urban <https://nms.kcl.ac.uk/christian.urban/>, Sebastiaan J. C. Joosten <http://sjcjoosten.nl/>
-topic = Logic, Computer Science/Automata and Formal Languages
+topic = Logic/Computability, Computer Science/Automata and Formal Languages
 date = 2019-02-08
 notify = sjcjoosten@gmail.com, christian.urban@kcl.ac.uk
 abstract =
@@ -8297,7 +8297,7 @@ abstract =
 [Binding_Syntax_Theory]
 title = A General Theory of Syntax with Bindings
 author = Lorenzo Gheri <mailto:lor.gheri@gmail.com>, Andrei Popescu <mailto:a.popescu@mdx.ac.uk>
-topic = Computer Science/Programming Languages/Lambda Calculi, Computer Science/Functional Programming, Logic
+topic = Computer Science/Programming Languages/Lambda Calculi, Computer Science/Functional Programming, Logic/Mechanization of proofs
 date = 2019-04-06
 notify = a.popescu@mdx.ac.uk, lor.gheri@gmail.com
 abstract =
@@ -9011,7 +9011,7 @@ abstract =
 [MFODL_Monitor_Optimized]
 title = Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations
 author = Thibault Dardinier<>, Lukas Heimes<>, Martin Raszyk <mailto:martin.raszyk@inf.ethz.ch>, Joshua Schneider <mailto:joshua.schneider@inf.ethz.ch>, Dmitriy Traytel <http://people.inf.ethz.ch/trayteld/>
-topic = Computer Science/Algorithms, Logic, Computer Science/Automata and Formal Languages
+topic = Computer Science/Algorithms, Logic/Modal logic, Computer Science/Automata and Formal Languages
 date = 2020-04-09
 notify = martin.raszyk@inf.ethz.ch, joshua.schneider@inf.ethz.ch, traytel@inf.ethz.ch
 abstract = 
