@@ -2044,7 +2044,7 @@ notify = nipkow@in.tum.de, traytel@in.tum.de
 [MSO_Regex_Equivalence]
 title = Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions
 author = Dmitriy Traytel <mailto:traytel@in.tum.de>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
-topic = Computer Science/Automata and Formal Languages, Logic/Decidability of theories
+topic = Computer Science/Automata and Formal Languages, Logic/General logic/Decidability of theories
 date = 2014-06-12
 abstract =
 	Monadic second-order logic on finite words (MSO) is a decidable yet
@@ -2069,7 +2069,7 @@ notify = traytel@in.tum.de, nipkow@in.tum.de
 [Formula_Derivatives]
 title = Derivatives of Logical Formulas
 author = Dmitriy Traytel <http://www21.in.tum.de/~traytel>
-topic = Computer Science/Automata and Formal Languages, Logic/Decidability of theories
+topic = Computer Science/Automata and Formal Languages, Logic/General logic/Decidability of theories
 date = 2015-05-28
 abstract =
 	We formalize new decision procedures for WS1S, M2L(Str), and Presburger
@@ -2128,7 +2128,7 @@ notify = maksym.bortin@nicta.com.au
 title = Boolean Expression Checkers
 author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2014-06-08
-topic = Computer Science/Algorithms, Logic/Mechanization of proofs
+topic = Computer Science/Algorithms, Logic/General logic/Mechanization of proofs
 abstract =
 	This entry provides executable checkers for the following properties of
 	boolean expressions: satisfiability, tautology and equivalence. Internally,
@@ -2142,7 +2142,7 @@ notify = nipkow@in.tum.de
 title = Formalizing the Logic-Automaton Connection
 author = Stefan Berghofer <http://www.in.tum.de/~berghofe>, Markus Reiter <>
 date = 2009-12-03
-topic = Computer Science/Automata and Formal Languages, Logic/Decidability of theories
+topic = Computer Science/Automata and Formal Languages, Logic/General logic/Decidability of theories
 abstract = This work presents a formalization of a library for automata on bit strings. It forms the basis of a reflection-based decision procedure for Presburger arithmetic, which is efficiently executable thanks to Isabelle's code generator. With this work, we therefore provide a mechanized proof of a well-known connection between logic and automata theory. The formalization is also described in a publication [TPHOLs 2009].
 notify = berghofe@in.tum.de
 
@@ -3765,7 +3765,7 @@ notify = maria.spichkova@rmit.edu.au
 title = A Mechanically Verified, Efficient, Sound and Complete Theorem Prover For First Order Logic
 author = Tom Ridge <>
 date = 2004-09-28
-topic = Logic/Mechanization of proofs
+topic = Logic/General logic/Mechanization of proofs
 abstract = Soundness and completeness for a system of first order logic are formally proved, building on James Margetson's formalization of work by Wainer and Wallen. The completeness proofs naturally suggest an algorithm to derive proofs. This algorithm, which can be implemented tail recursively, is formalized in Isabelle/HOL. The algorithm can be executed via the rewriting tactics of Isabelle. Alternatively, the definitions can be exported to OCaml, yielding a directly executable program.
 notify = lp15@cam.ac.uk
 
@@ -3801,7 +3801,7 @@ title = First-Order Logic According to Fitting
 author = Stefan Berghofer <http://www.in.tum.de/~berghofe>
 contributors = Andreas Halkjær From <http://www.student.dtu.dk/~s144442/>
 date = 2007-08-02
-topic = Logic/Classical first-order logic
+topic = Logic/General logic/Classical first-order logic
 abstract = We present a formalization of parts of Melvin Fitting's book "First-Order Logic and Automated Theorem Proving". The formalization covers the syntax of first-order logic, its semantics, the model existence theorem, a natural deduction proof calculus together with a proof of correctness and completeness, as well as the Löwenheim-Skolem theorem.
 extra-history =
   Change history:
@@ -3811,7 +3811,7 @@ notify = berghofe@in.tum.de
 [Epistemic_Logic]
 title = Epistemic Logic
 author = Andreas Halkjær From <http://www.student.dtu.dk/~s144442/>
-topic = Logic/Logics of knowledge and belief
+topic = Logic/General logic/Logics of knowledge and belief
 date = 2018-10-29
 notify = s144442@student.dtu.dk
 abstract =
@@ -3834,7 +3834,7 @@ notify = pc@cs.st-andrews.ac.uk, nipkow@in.tum.de
 title = Quantifier Elimination for Linear Arithmetic
 author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2008-01-11
-topic = Logic/Decidability of theories
+topic = Logic/General logic/Decidability of theories
 abstract = This article formalizes quantifier elimination procedures for dense linear orders, linear real arithmetic and Presburger arithmetic. In each case both a DNF-based non-elementary algorithm and one or more (doubly) exponential NNF-based algorithms are formalized, including the well-known algorithms by Ferrante and Rackoff and by Cooper. The NNF-based algorithms for dense linear orders are new but based on Ferrante and Rackoff and on an algorithm by Loos and Weisspfenning which simulates infenitesimals. All algorithms are directly executable. In particular, they yield reflective quantifier elimination procedures for HOL itself. The formalization makes heavy use of locales and is therefore highly modular.
 notify = nipkow@in.tum.de
 
@@ -3842,7 +3842,7 @@ notify = nipkow@in.tum.de
 title = Interval Temporal Logic on Natural Numbers
 author = David Trachtenherz <>
 date = 2011-02-23
-topic = Logic/Decidability of theories
+topic = Logic/General logic/Decidability of theories
 abstract = We introduce a theory of temporal logic operators using sets of natural numbers as time domain, formalized in a shallow embedding manner. The theory comprises special natural intervals (theory IL_Interval: open and closed intervals, continuous and modulo intervals, interval traversing results), operators for shifting intervals to left/right on the number axis as well as expanding/contracting intervals by constant factors (theory IL_IntervalOperators.thy), and ultimately definitions and results for unary and binary temporal operators on arbitrary natural sets (theory IL_TemporalOperators).
 notify = nipkow@in.tum.de
 
@@ -3855,7 +3855,7 @@ abstract = This document presents the formalization of introductory material fro
 notify = MichaelNedzelsky@yandex.ru
 
 [Free-Boolean-Algebra]
-topic = Logic/Classical propositional logic
+topic = Logic/General logic/Classical propositional logic
 title = Free Boolean Algebra
 author = Brian Huffman <http://web.cecs.pdx.edu/~brianh/>
 date = 2010-03-29
@@ -3866,7 +3866,7 @@ notify = brianh@cs.pdx.edu
 title = Sound and Complete Sort Encodings for First-Order Logic
 author = Jasmin Christian Blanchette <http://www21.in.tum.de/~blanchet>, Andrei Popescu <http://www21.in.tum.de/~popescua>
 date = 2013-06-27
-topic = Logic/Mechanization of proofs
+topic = Logic/General logic/Mechanization of proofs
 abstract =
 	This is a formalization of the soundness and completeness properties
 	for various efficient encodings of sorts in unsorted first-order logic
@@ -4277,7 +4277,7 @@ title = Linear Temporal Logic
 author = Salomon Sickert <https://www7.in.tum.de/~sickert>
 contributors = Benedikt Seidl <mailto:benedikt.seidl@tum.de>
 date = 2016-03-01
-topic = Logic/Temporal logic, Computer Science/Automata and Formal Languages
+topic = Logic/General logic/Temporal logic, Computer Science/Automata and Formal Languages
 abstract =
 	This theory provides a formalisation of linear temporal logic (LTL)
 	and unifies previous formalisations within the AFP. This entry
@@ -5144,7 +5144,7 @@ notify = hoelzl@in.tum.de
 title = A shallow embedding of HyperCTL*
 author = Markus N. Rabe <http://www.react.uni-saarland.de/people/rabe.html>, Peter Lammich <http://www21.in.tum.de/~lammich>, Andrei Popescu <http://www21.in.tum.de/~popescua>
 date = 2014-04-16
-topic = Computer Science/Security, Logic/Temporal logic
+topic = Computer Science/Security, Logic/General logic/Temporal logic
 abstract = We formalize HyperCTL*, a temporal logic for expressing security properties. We
 	first define a shallow embedding of HyperCTL*, within which we prove inductive and coinductive
 	rules for the operators. Then we show that a HyperCTL* formula captures Goguen-Meseguer
@@ -5820,7 +5820,7 @@ title = Propositional Resolution and Prime Implicates Generation
 author = Nicolas Peltier <http://membres-lig.imag.fr/peltier/>
 notify = Nicolas.Peltier@imag.fr
 date = 2016-03-11
-topic = Logic/Mechanization of proofs
+topic = Logic/General logic/Mechanization of proofs
 abstract =
 	We provide formal proofs in Isabelle-HOL (using mostly structured Isar
 	proofs) of the soundness and completeness of the Resolution rule in
@@ -6282,7 +6282,7 @@ title = The Resolution Calculus for First-Order Logic
 author = Anders Schlichtkrull <https://people.compute.dtu.dk/andschl>
 notify = andschl@dtu.dk
 date = 2016-06-30
-topic = Logic/Mechanization of proofs
+topic = Logic/General logic/Mechanization of proofs
 abstract =
 	This theory is a formalization of the resolution calculus for
 	first-order logic. It is proven sound and complete. The soundness
@@ -6444,7 +6444,7 @@ title = Allen's Interval Calculus
 author = Fadoua Ghourabi <>
 notify = fadouaghourabi@gmail.com
 date = 2016-09-29
-topic = Logic/Temporal logic, Mathematics/Order
+topic = Logic/General logic/Temporal logic, Mathematics/Order
 abstract =
 	Allen’s interval calculus is a qualitative temporal representation of
 	time events. Allen introduced 13 binary relations that describe all
@@ -6562,7 +6562,7 @@ title = Modal Logics for Nominal Transition Systems
 author = Tjark Weber <mailto:tjark.weber@it.uu.se>, Lars-Henrik Eriksson <mailto:lhe@it.uu.se>, Joachim Parrow <mailto:joachim.parrow@it.uu.se>, Johannes Borgström <mailto:johannes.borgstrom@it.uu.se>, Ramunas Gutkovas <mailto:ramunas.gutkovas@it.uu.se>
 notify = tjark.weber@it.uu.se
 date = 2016-10-25
-topic = Computer Science/Concurrency/Process Calculi, Logic/Modal logic
+topic = Computer Science/Concurrency/Process Calculi, Logic/General logic/Modal logic
 abstract =
   We formalize a uniform semantic substrate for a wide variety of
   process calculi where states and action labels can be from arbitrary
@@ -6630,7 +6630,7 @@ extra-history =
 [Paraconsistency]
 title = Paraconsistency
 author = Anders Schlichtkrull <https://people.compute.dtu.dk/andschl>, Jørgen Villadsen <https://people.compute.dtu.dk/jovi/>
-topic = Logic/Paraconsistent logics
+topic = Logic/General logic/Paraconsistent logics
 date = 2016-12-07
 notify = andschl@dtu.dk, jovi@dtu.dk
 abstract =
@@ -6698,7 +6698,7 @@ abstract =
 [FOL_Harrison]
 title = First-Order Logic According to Harrison
 author = Alexander Birch Jensen <https://people.compute.dtu.dk/aleje/>, Anders Schlichtkrull <https://people.compute.dtu.dk/andschl>, Jørgen Villadsen <https://people.compute.dtu.dk/jovi/>
-topic = Logic/Mechanization of proofs
+topic = Logic/General logic/Mechanization of proofs
 date = 2017-01-01
 notify = aleje@dtu.dk, andschl@dtu.dk, jovi@dtu.dk
 abstract =
@@ -6796,7 +6796,7 @@ abstract =
 [Differential_Dynamic_Logic]
 title = Differential Dynamic Logic
 author = Brandon Bohrer <mailto:bbohrer@cs.cmu.edu>
-topic = Logic/Modal logic, Computer Science/Programming Languages/Logics
+topic = Logic/General logic/Modal logic, Computer Science/Programming Languages/Logics
 date = 2017-02-13
 notify = bbohrer@cs.cmu.edu
 abstract =
@@ -6954,7 +6954,7 @@ abstract =
 [LambdaMu]
 title = The LambdaMu-calculus
 author = Cristina Matache <mailto:cris.matache@gmail.com>, Victor B. F. Gomes <mailto:victorborgesfg@gmail.com>, Dominic P. Mulligan <mailto:dominic.p.mulligan@googlemail.com>
-topic = Computer Science/Programming Languages/Lambda Calculi, Logic/Lambda calculus
+topic = Computer Science/Programming Languages/Lambda Calculi, Logic/General logic/Lambda calculus
 date = 2017-08-16
 notify = victorborgesfg@gmail.com, dominic.p.mulligan@googlemail.com
 abstract =
@@ -7172,7 +7172,7 @@ abstract =
 [Hybrid_Multi_Lane_Spatial_Logic]
 title = Hybrid Multi-Lane Spatial Logic
 author = Sven Linker <mailto:s.linker@liverpool.ac.uk>
-topic = Logic/Modal logic
+topic = Logic/General logic/Modal logic
 date = 2017-11-06
 notify = s.linker@liverpool.ac.uk
 abstract =
@@ -7303,7 +7303,7 @@ abstract =
 [Ordered_Resolution_Prover]
 title = Formalization of Bachmair and Ganzinger's Ordered Resolution Prover
 author = Anders Schlichtkrull <mailto:andschl@dtu.dk>, Jasmin Christian Blanchette <mailto:j.c.blanchette@vu.nl>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>, Uwe Waldmann <mailto:uwe@mpi-inf.mpg.de>
-topic = Logic/Mechanization of proofs
+topic = Logic/General logic/Mechanization of proofs
 date = 2018-01-18
 notify = andschl@dtu.dk, j.c.blanchette@vu.nl
 abstract =
@@ -7925,7 +7925,7 @@ abstract =
 [Functional_Ordered_Resolution_Prover]
 title = A Verified Functional Implementation of Bachmair and Ganzinger's Ordered Resolution Prover
 author = Anders Schlichtkrull <mailto:andschl@dtu.dk>, Jasmin Christian Blanchette <mailto:j.c.blanchette@vu.nl>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>
-topic = Logic/Mechanization of proofs
+topic = Logic/General logic/Mechanization of proofs
 date = 2018-11-23
 notify = andschl@dtu.dk,j.c.blanchette@vu.nl,traytel@inf.ethz.ch
 abstract =
@@ -8297,7 +8297,7 @@ abstract =
 [Binding_Syntax_Theory]
 title = A General Theory of Syntax with Bindings
 author = Lorenzo Gheri <mailto:lor.gheri@gmail.com>, Andrei Popescu <mailto:a.popescu@mdx.ac.uk>
-topic = Computer Science/Programming Languages/Lambda Calculi, Computer Science/Functional Programming, Logic/Mechanization of proofs
+topic = Computer Science/Programming Languages/Lambda Calculi, Computer Science/Functional Programming, Logic/General logic/Mechanization of proofs
 date = 2019-04-06
 notify = a.popescu@mdx.ac.uk, lor.gheri@gmail.com
 abstract =
@@ -8503,7 +8503,7 @@ abstract =
 [MFOTL_Monitor]
 title = Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic
 author = Joshua Schneider <mailto:joshua.schneider@inf.ethz.ch>, Dmitriy Traytel <http://people.inf.ethz.ch/trayteld/>
-topic = Computer Science/Algorithms, Logic/Temporal logic, Computer Science/Automata and Formal Languages
+topic = Computer Science/Algorithms, Logic/General logic/Temporal logic, Computer Science/Automata and Formal Languages
 date = 2019-07-04
 notify = joshua.schneider@inf.ethz.ch, traytel@inf.ethz.ch
 abstract =
@@ -8852,7 +8852,7 @@ abstract =
 [Hybrid_Logic]
 title = Formalizing a Seligman-Style Tableau System for Hybrid Logic
 author = Asta Halkjær From <http://www.student.dtu.dk/~s144442/>
-topic = Logic/Modal logic
+topic = Logic/General logic/Modal logic
 date = 2019-12-20
 notify = andro.from@gmail.com
 abstract =
@@ -8987,7 +8987,7 @@ abstract =
 [Saturation_Framework]
 title = A Comprehensive Framework for Saturation Theorem Proving
 author = Sophie Tourret <https://www.mpi-inf.mpg.de/departments/automation-of-logic/people/sophie-tourret/>
-topic = Logic/Mechanization of proofs
+topic = Logic/General logic/Mechanization of proofs
 date = 2020-04-09
 notify = stourret@mpi-inf.mpg.de
 abstract = 
@@ -9011,7 +9011,7 @@ abstract =
 [MFODL_Monitor_Optimized]
 title = Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations
 author = Thibault Dardinier<>, Lukas Heimes<>, Martin Raszyk <mailto:martin.raszyk@inf.ethz.ch>, Joshua Schneider <mailto:joshua.schneider@inf.ethz.ch>, Dmitriy Traytel <http://people.inf.ethz.ch/trayteld/>
-topic = Computer Science/Algorithms, Logic/Modal logic, Computer Science/Automata and Formal Languages
+topic = Computer Science/Algorithms, Logic/General logic/Modal logic, Computer Science/Automata and Formal Languages
 date = 2020-04-09
 notify = martin.raszyk@inf.ethz.ch, joshua.schneider@inf.ethz.ch, traytel@inf.ethz.ch
 abstract = 
