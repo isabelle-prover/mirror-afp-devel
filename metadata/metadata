@@ -3781,7 +3781,7 @@ notify = lp15@cam.ac.uk
 title = Countable Ordinals
 author = Brian Huffman <http://web.cecs.pdx.edu/~brianh/>
 date = 2005-11-11
-topic = Logic/Set tyheory
+topic = Logic/Set theory
 abstract = This development defines a well-ordered type of countable ordinals. It includes notions of continuous and normal functions, recursively defined functions over ordinals, least fixed-points, and derivatives. Much of ordinal arithmetic is formalized, including exponentials and logarithms. The development concludes with formalizations of Cantor Normal Form and Veblen hierarchies over normal functions.
 notify = lcp@cl.cam.ac.uk
 
@@ -3789,7 +3789,7 @@ notify = lcp@cl.cam.ac.uk
 title = Ordinals and Cardinals
 author = Andrei Popescu <>
 date = 2009-09-01
-topic = Logic/Set tyheory
+topic = Logic/Set theory
 abstract = We develop a basic theory of ordinals and cardinals in Isabelle/HOL, up to the point where some cardinality facts relevant for the ``working mathematician" become available. Unlike in set theory, here we do not have at hand canonical notions of ordinal and cardinal. Therefore, here an ordinal is merely a well-order relation and a cardinal is an ordinal minim w.r.t. order embedding on its field.
 extra-history =
 	Change history:
@@ -4924,7 +4924,7 @@ notify = bertram.felgenhauer@uibk.ac.at
 title = Gödel's God in Isabelle/HOL
 author = Christoph Benzmüller <http://page.mi.fu-berlin.de/cbenzmueller/>, Bruno Woltzenlogel Paleo <http://www.logic.at/staff/bruno/>
 date = 2013-11-12
-topic = Logic/Philosophy
+topic = Logic/Philosophical aspects
 abstract = Dana Scott's version of Gödel's proof of God's existence is formalized in quantified
 	modal logic KB (QML KB).
 	QML KB is modeled as a fragment of classical higher-order logic (HOL);
@@ -4934,7 +4934,7 @@ notify = lp15@cam.ac.uk, c.benzmueller@fu-berlin.de
 [Types_Tableaus_and_Goedels_God]
 title = Types, Tableaus and Gödel’s God in Isabelle/HOL
 author = David Fuenmayor <mailto:davfuenmayor@gmail.com>, Christoph Benzmüller <http://www.christoph-benzmueller.de>
-topic = Logic/Philosophy
+topic = Logic/Philosophical aspects
 date = 2017-05-01
 notify = davfuenmayor@gmail.com, c.benzmueller@gmail.com
 abstract =
@@ -4953,7 +4953,7 @@ abstract =
 [GewirthPGCProof]
 title = Formalisation and Evaluation of Alan Gewirth's Proof for the Principle of Generic Consistency in Isabelle/HOL
 author = David Fuenmayor <mailto:davfuenmayor@gmail.com>, Christoph Benzmüller <http://christoph-benzmueller.de>
-topic = Logic/Philosophy
+topic = Logic/Philosophical aspects
 date = 2018-10-30
 notify = davfuenmayor@gmail.com, c.benzmueller@gmail.com
 abstract =
@@ -4971,7 +4971,7 @@ extra-history =
 [Lowe_Ontological_Argument]
 title = Computer-assisted Reconstruction and Assessment of E. J. Lowe's Modal Ontological Argument
 author = David Fuenmayor <mailto:davfuenmayor@gmail.com>, Christoph Benzmüller <http://www.christoph-benzmueller.de>
-topic = Logic/Philosophy
+topic = Logic/Philosophical aspects
 date = 2017-09-21
 notify = davfuenmayor@gmail.com, c.benzmueller@gmail.com
 abstract =
@@ -4987,7 +4987,7 @@ abstract =
 [AnselmGod]
 title = Anselm's God in Isabelle/HOL
 author = Ben Blumson <https://philpapers.org/profile/805>
-topic = Logic/Philosophy
+topic = Logic/Philosophical aspects
 date = 2017-09-06
 notify = benblumson@gmail.com
 abstract =
@@ -6796,7 +6796,7 @@ abstract =
 [Differential_Dynamic_Logic]
 title = Differential Dynamic Logic
 author = Brandon Bohrer <mailto:bbohrer@cs.cmu.edu>
-topic = Logic/Model logic, Computer Science/Programming Languages/Logics
+topic = Logic/Modal logic, Computer Science/Programming Languages/Logics
 date = 2017-02-13
 notify = bbohrer@cs.cmu.edu
 abstract =
@@ -6986,7 +6986,7 @@ abstract =
 [PLM]
 title = Representation and Partial Automation of the Principia Logico-Metaphysica in Isabelle/HOL
 author = Daniel Kirchner <mailto:daniel@ekpyron.org>
-topic = Logic/Philosophy
+topic = Logic/Philosophical aspects
 date = 2017-09-17
 notify = daniel@ekpyron.org
 abstract =
@@ -8529,7 +8529,7 @@ author = Andreas Halkjær From <http://www.student.dtu.dk/~s144442/>
 contributors = Alexander Birch Jensen <https://people.compute.dtu.dk/aleje/>,
   Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>,
   Jørgen Villadsen <https://people.compute.dtu.dk/jovi/>
-topic = Logic/Proof tyheory
+topic = Logic/Proof theory
 date = 2019-07-18
 notify = s144442@student.dtu.dk
 abstract =
@@ -8685,7 +8685,7 @@ abstract =
 [Aristotles_Assertoric_Syllogistic]
 title = Aristotle's Assertoric Syllogistic
 author = Angeliki Koutsoukou-Argyraki <https://www.cl.cam.ac.uk/~ak2110/>
-topic = Logic/Philosophy
+topic = Logic/Philosophical aspects
 date = 2019-10-08
 notify = ak2110@cam.ac.uk
 abstract =
@@ -8852,7 +8852,7 @@ abstract =
 [Hybrid_Logic]
 title = Formalizing a Seligman-Style Tableau System for Hybrid Logic
 author = Asta Halkjær From <http://www.student.dtu.dk/~s144442/>
-topic = Logic/Model logic
+topic = Logic/Modal logic
 date = 2019-12-20
 notify = andro.from@gmail.com
 abstract =
