@@ -209,7 +209,7 @@ definition \<G>_Inf_L_q :: \<open>'q \<Rightarrow> ('f \<times> 'l) inference \<
   \<open>\<G>_Inf_L_q q \<iota>\<^sub>F\<^sub>L = \<G>_Inf_q q (to_F \<iota>\<^sub>F\<^sub>L)\<close>
 
 definition \<G>_set_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> 'g set" where
-  "\<G>_set_L_q q N \<equiv> UNION N (\<G>_F_L_q q)"
+  "\<G>_set_L_q q N \<equiv> \<Union> (\<G>_F_L_q q ` N)"
 
 definition Red_Inf_\<G>_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) inference set" where
   "Red_Inf_\<G>_L_q q N = {\<iota> \<in> Inf_FL. ((\<G>_Inf_L_q q \<iota>) \<noteq> None \<and> the (\<G>_Inf_L_q q \<iota>) \<subseteq> Red_Inf_q q (\<G>_set_L_q q N))

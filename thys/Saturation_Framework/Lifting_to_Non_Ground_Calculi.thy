@@ -38,7 +38,7 @@ locale standard_lifting = Non_ground: inference_system Inf_F +
 begin
 
 abbreviation \<G>_set :: \<open>'f set \<Rightarrow> 'g set\<close> where
-  \<open>\<G>_set N \<equiv> UNION N \<G>_F\<close>
+  \<open>\<G>_set N \<equiv> \<Union> (\<G>_F ` N)\<close>
 
 lemma \<G>_subset: \<open>N1 \<subseteq> N2 \<Longrightarrow> \<G>_set N1 \<subseteq> \<G>_set N2\<close> by auto
 
@@ -600,7 +600,7 @@ locale standard_lifting_with_red_crit_family = Non_ground: inference_system Inf_
 begin
 
 definition \<G>_set_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'g set" where
-  "\<G>_set_q q N \<equiv> UNION N (\<G>_F_q q)"
+  "\<G>_set_q q N \<equiv> \<Union> (\<G>_F_q q ` N)"
 
 definition Red_Inf_\<G>_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f inference set" where
   "Red_Inf_\<G>_q q N = {\<iota> \<in> Inf_F. (\<G>_Inf_q q \<iota> \<noteq> None \<and> the (\<G>_Inf_q q \<iota>) \<subseteq> Red_Inf_q q (\<G>_set_q q N))
