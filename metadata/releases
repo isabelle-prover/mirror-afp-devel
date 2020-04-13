@@ -59,6 +59,7 @@ afp-Abstract_Soundness-2017-02-13.tar.gz
 afp-Abstract_Soundness-2017-10-10.tar.gz
 afp-Abstract_Soundness-2018-08-16.tar.gz
 afp-Abstract_Soundness-2019-06-11.tar.gz
+afp-Adaptive_State_Counting-2019-08-19.tar.gz
 afp-Affine_Arithmetic-2014-08-28.tar.gz
 afp-Affine_Arithmetic-2015-05-27.tar.gz
 afp-Affine_Arithmetic-2016-02-22.tar.gz
@@ -92,6 +93,7 @@ afp-Allen_Calculus-2016-12-17.tar.gz
 afp-Allen_Calculus-2017-10-10.tar.gz
 afp-Allen_Calculus-2018-08-16.tar.gz
 afp-Allen_Calculus-2019-06-11.tar.gz
+afp-Allen_Calculus-2019-06-28.tar.gz
 afp-Amortized_Complexity-2014-08-28.tar.gz
 afp-Amortized_Complexity-2015-05-19.tar.gz
 afp-Amortized_Complexity-2015-05-27.tar.gz
@@ -121,9 +123,12 @@ afp-Applicative_Lifting-2016-12-17.tar.gz
 afp-Applicative_Lifting-2017-10-10.tar.gz
 afp-Applicative_Lifting-2018-08-16.tar.gz
 afp-Applicative_Lifting-2019-06-11.tar.gz
+afp-Approximation_Algorithms-2020-01-16.tar.gz
 afp-Architectural_Design_Patterns-2018-03-01.tar.gz
 afp-Architectural_Design_Patterns-2018-08-16.tar.gz
 afp-Architectural_Design_Patterns-2019-06-11.tar.gz
+afp-Aristotles_Assertoric_Syllogistic-2019-10-17.tar.gz
+afp-Arith_Prog_Rel_Primes-2020-02-10.tar.gz
 afp-ArrowImpossibilityGS-2009-04-29.tar.gz
 afp-ArrowImpossibilityGS-2009-09-29.tar.gz
 afp-ArrowImpossibilityGS-2009-12-12.tar.gz
@@ -238,6 +243,7 @@ afp-Bertrands_Postulate-2017-01-18.tar.gz
 afp-Bertrands_Postulate-2017-10-10.tar.gz
 afp-Bertrands_Postulate-2018-08-16.tar.gz
 afp-Bertrands_Postulate-2019-06-11.tar.gz
+afp-Bicategory-2020-01-09.tar.gz
 afp-BinarySearchTree-2004-04-20.tar.gz
 afp-BinarySearchTree-2004-04-21.tar.gz
 afp-BinarySearchTree-2004-09-21.tar.gz
@@ -353,8 +359,10 @@ afp-BytecodeLogicJmlTypes-2016-12-17.tar.gz
 afp-BytecodeLogicJmlTypes-2017-10-10.tar.gz
 afp-BytecodeLogicJmlTypes-2018-08-16.tar.gz
 afp-BytecodeLogicJmlTypes-2019-06-11.tar.gz
+afp-C2KA_DistributedSystems-2019-08-06.tar.gz
 afp-CakeML-2018-08-16.tar.gz
 afp-CakeML-2019-06-11.tar.gz
+afp-CakeML_Codegen-2019-07-11.tar.gz
 afp-Call_Arity-2015-02-20.tar.gz
 afp-Call_Arity-2015-02-21.tar.gz
 afp-Call_Arity-2015-05-11.tar.gz
@@ -531,6 +539,7 @@ afp-CISC-Kernel-2016-12-17.tar.gz
 afp-CISC-Kernel-2017-10-10.tar.gz
 afp-CISC-Kernel-2018-08-16.tar.gz
 afp-CISC-Kernel-2019-06-11.tar.gz
+afp-Clean-2019-10-16.tar.gz
 afp-ClockSynchInst-2006-03-15.tar.gz
 afp-ClockSynchInst-2007-11-27.tar.gz
 afp-ClockSynchInst-2008-06-10.tar.gz
@@ -551,6 +560,7 @@ afp-ClockSynchInst-2016-12-17.tar.gz
 afp-ClockSynchInst-2017-10-10.tar.gz
 afp-ClockSynchInst-2018-08-16.tar.gz
 afp-ClockSynchInst-2019-06-11.tar.gz
+afp-Closest_Pair_Points-2020-01-14.tar.gz
 afp-CofGroups-2009-08-09.tar.gz
 afp-CofGroups-2009-09-05.tar.gz
 afp-CofGroups-2009-12-12.tar.gz
@@ -661,6 +671,8 @@ afp-Completeness-2016-12-17.tar.gz
 afp-Completeness-2017-10-10.tar.gz
 afp-Completeness-2018-08-16.tar.gz
 afp-Completeness-2019-06-11.tar.gz
+afp-Complete_Non_Orders-2019-06-28.tar.gz
+afp-Complex_Geometry-2020-01-17.tar.gz
 afp-Complx-2016-11-29.tar.gz
 afp-Complx-2016-12-17.tar.gz
 afp-Complx-2017-10-10.tar.gz
@@ -879,6 +891,7 @@ afp-DFS_Framework-2016-12-17.tar.gz
 afp-DFS_Framework-2017-10-10.tar.gz
 afp-DFS_Framework-2018-08-16.tar.gz
 afp-DFS_Framework-2019-06-11.tar.gz
+afp-DFS_Framework-2020-01-14.tar.gz
 afp-Dict_Construction-2017-10-10.tar.gz
 afp-Dict_Construction-2018-08-16.tar.gz
 afp-Dict_Construction-2019-06-11.tar.gz
@@ -886,6 +899,7 @@ afp-Differential_Dynamic_Logic-2017-02-14.tar.gz
 afp-Differential_Dynamic_Logic-2017-10-10.tar.gz
 afp-Differential_Dynamic_Logic-2018-08-16.tar.gz
 afp-Differential_Dynamic_Logic-2019-06-11.tar.gz
+afp-Differential_Game_Logic-2019-06-24.tar.gz
 afp-Dijkstra_Shortest_Path-2012-02-10.tar.gz
 afp-Dijkstra_Shortest_Path-2012-03-15.tar.gz
 afp-Dijkstra_Shortest_Path-2012-05-24.tar.gz
@@ -1177,6 +1191,7 @@ afp-Flow_Networks-2017-06-02.tar.gz
 afp-Flow_Networks-2017-10-10.tar.gz
 afp-Flow_Networks-2018-08-16.tar.gz
 afp-Flow_Networks-2019-06-11.tar.gz
+afp-Flow_Networks-2020-01-14.tar.gz
 afp-Floyd_Warshall-2017-05-09.tar.gz
 afp-Floyd_Warshall-2017-10-10.tar.gz
 afp-Floyd_Warshall-2018-08-16.tar.gz
@@ -1238,6 +1253,7 @@ afp-FOL_Harrison-2017-01-04.tar.gz
 afp-FOL_Harrison-2017-10-10.tar.gz
 afp-FOL_Harrison-2018-08-16.tar.gz
 afp-FOL_Harrison-2019-06-11.tar.gz
+afp-FOL_Seq_Calc1-2019-07-18.tar.gz
 afp-Formal_SSA-2016-02-08.tar.gz
 afp-Formal_SSA-2016-02-22.tar.gz
 afp-Formal_SSA-2016-12-17.tar.gz
@@ -1250,6 +1266,7 @@ afp-Formula_Derivatives-2016-12-17.tar.gz
 afp-Formula_Derivatives-2017-10-10.tar.gz
 afp-Formula_Derivatives-2018-08-16.tar.gz
 afp-Formula_Derivatives-2019-06-11.tar.gz
+afp-Fourier-2019-09-11.tar.gz
 afp-Free-Boolean-Algebra-2010-03-29.tar.gz
 afp-Free-Boolean-Algebra-2010-06-30.tar.gz
 afp-Free-Boolean-Algebra-2011-02-11.tar.gz
@@ -1337,6 +1354,7 @@ afp-FunWithTilings-2016-12-17.tar.gz
 afp-FunWithTilings-2017-10-10.tar.gz
 afp-FunWithTilings-2018-08-16.tar.gz
 afp-FunWithTilings-2019-06-11.tar.gz
+afp-Furstenberg_Topology-2020-03-27.tar.gz
 afp-Gabow_SCC-2014-05-29.tar.gz
 afp-Gabow_SCC-2014-08-28.tar.gz
 afp-Gabow_SCC-2015-05-27.tar.gz
@@ -1369,6 +1387,8 @@ afp-Gauss-Jordan-Elim-Fun-2016-12-17.tar.gz
 afp-Gauss-Jordan-Elim-Fun-2017-10-10.tar.gz
 afp-Gauss-Jordan-Elim-Fun-2018-08-16.tar.gz
 afp-Gauss-Jordan-Elim-Fun-2019-06-11.tar.gz
+afp-Gauss-Jordan-Elim-Fun-2020-01-14.tar.gz
+afp-Gauss_Sums-2020-01-10.tar.gz
 afp-GenClock-2005-06-24.tar.gz
 afp-GenClock-2005-10-14.tar.gz
 afp-GenClock-2007-11-27.tar.gz
@@ -1389,6 +1409,7 @@ afp-GenClock-2016-12-17.tar.gz
 afp-GenClock-2017-10-10.tar.gz
 afp-GenClock-2018-08-16.tar.gz
 afp-GenClock-2019-06-11.tar.gz
+afp-Generalized_Counting_Sort-2019-12-09.tar.gz
 afp-General-Triangle-2011-04-01.tar.gz
 afp-General-Triangle-2011-10-11.tar.gz
 afp-General-Triangle-2012-05-24.tar.gz
@@ -1404,6 +1425,7 @@ afp-General-Triangle-2018-08-16.tar.gz
 afp-General-Triangle-2019-06-11.tar.gz
 afp-Generic_Deriving-2018-11-21.tar.gz
 afp-Generic_Deriving-2019-06-11.tar.gz
+afp-Generic_Join-2019-09-18.tar.gz
 afp-GewirthPGCProof-2018-10-31.tar.gz
 afp-GewirthPGCProof-2019-06-11.tar.gz
 afp-Girth_Chromatic-2012-02-06.tar.gz
@@ -1428,6 +1450,7 @@ afp-GoedelGod-2016-12-17.tar.gz
 afp-GoedelGod-2017-10-10.tar.gz
 afp-GoedelGod-2018-08-16.tar.gz
 afp-GoedelGod-2019-06-11.tar.gz
+afp-Goodstein_Lambda-2020-02-24.tar.gz
 afp-GPU_Kernel_PL-2014-04-06.tar.gz
 afp-GPU_Kernel_PL-2014-08-28.tar.gz
 afp-GPU_Kernel_PL-2015-05-27.tar.gz
@@ -1472,6 +1495,7 @@ afp-Groebner_Bases-2016-12-17.tar.gz
 afp-Groebner_Bases-2017-10-10.tar.gz
 afp-Groebner_Bases-2018-08-16.tar.gz
 afp-Groebner_Bases-2019-06-11.tar.gz
+afp-Groebner_Macaulay-2019-06-17.tar.gz
 afp-Gromov_Hyperbolicity-2018-08-16.tar.gz
 afp-Gromov_Hyperbolicity-2019-06-11.tar.gz
 afp-Group-Ring-Module-2004-05-19.tar.gz
@@ -1509,6 +1533,7 @@ afp-Heard_Of-2016-12-17.tar.gz
 afp-Heard_Of-2017-10-10.tar.gz
 afp-Heard_Of-2018-08-16.tar.gz
 afp-Heard_Of-2019-06-11.tar.gz
+afp-Hello_World-2020-03-23.tar.gz
 afp-HereditarilyFinite-2013-11-17.tar.gz
 afp-HereditarilyFinite-2013-12-11.tar.gz
 afp-HereditarilyFinite-2014-08-28.tar.gz
@@ -1591,9 +1616,11 @@ afp-Huffman-2016-12-17.tar.gz
 afp-Huffman-2017-10-10.tar.gz
 afp-Huffman-2018-08-16.tar.gz
 afp-Huffman-2019-06-11.tar.gz
+afp-Hybrid_Logic-2020-01-07.tar.gz
 afp-Hybrid_Multi_Lane_Spatial_Logic-2017-11-09.tar.gz
 afp-Hybrid_Multi_Lane_Spatial_Logic-2018-08-16.tar.gz
 afp-Hybrid_Multi_Lane_Spatial_Logic-2019-06-11.tar.gz
+afp-Hybrid_Systems_VCs-2019-09-10.tar.gz
 afp-HyperCTL-2014-04-16.tar.gz
 afp-HyperCTL-2014-08-28.tar.gz
 afp-HyperCTL-2015-05-27.tar.gz
@@ -1615,8 +1642,11 @@ afp-IEEE_Floating_Point-2019-06-11.tar.gz
 afp-IMAP-CRDT-2017-11-10.tar.gz
 afp-IMAP-CRDT-2018-08-16.tar.gz
 afp-IMAP-CRDT-2019-06-11.tar.gz
+afp-IMAP-CRDT-2020-01-14.tar.gz
+afp-IMO2019-2019-08-06.tar.gz
 afp-IMP2-2019-01-15.tar.gz
 afp-IMP2-2019-06-11.tar.gz
+afp-IMP2_Binary_Heap-2019-06-13.tar.gz
 afp-Imperative_Insertion_Sort-2014-09-25.tar.gz
 afp-Imperative_Insertion_Sort-2015-05-27.tar.gz
 afp-Imperative_Insertion_Sort-2016-02-22.tar.gz
@@ -1708,6 +1738,7 @@ afp-Integration-2016-12-17.tar.gz
 afp-Integration-2017-10-10.tar.gz
 afp-Integration-2018-08-16.tar.gz
 afp-Integration-2019-06-11.tar.gz
+afp-Interval_Arithmetic_Word32-2019-11-28.tar.gz
 afp-IP_Addresses-2016-06-28.tar.gz
 afp-IP_Addresses-2016-12-17.tar.gz
 afp-IP_Addresses-2017-10-10.tar.gz
@@ -1721,6 +1752,7 @@ afp-Iptables_Semantics-2019-06-11.tar.gz
 afp-Irrationality_J_Hancl-2018-05-26.tar.gz
 afp-Irrationality_J_Hancl-2018-08-16.tar.gz
 afp-Irrationality_J_Hancl-2019-06-11.tar.gz
+afp-Isabelle_C-2019-12-19.tar.gz
 afp-Isabelle_Meta_Model-2015-09-25.tar.gz
 afp-Isabelle_Meta_Model-2015-09-28.tar.gz
 afp-Isabelle_Meta_Model-2016-02-22.tar.gz
@@ -1728,6 +1760,7 @@ afp-Isabelle_Meta_Model-2016-12-17.tar.gz
 afp-Isabelle_Meta_Model-2017-10-10.tar.gz
 afp-Isabelle_Meta_Model-2018-08-16.tar.gz
 afp-Isabelle_Meta_Model-2019-06-11.tar.gz
+afp-Jacobson_Basic_Algebra-2019-09-01.tar.gz
 afp-Jinja-2005-10-14.tar.gz
 afp-Jinja-2006-08-08.tar.gz
 afp-Jinja-2007-11-27.tar.gz
@@ -1905,6 +1938,7 @@ afp-Landau_Symbols-2016-12-17.tar.gz
 afp-Landau_Symbols-2017-10-10.tar.gz
 afp-Landau_Symbols-2018-08-16.tar.gz
 afp-Landau_Symbols-2019-06-11.tar.gz
+afp-Laplace_Transform-2019-08-16.tar.gz
 afp-Latin_Square-2015-12-03.tar.gz
 afp-Latin_Square-2016-02-22.tar.gz
 afp-Latin_Square-2016-12-17.tar.gz
@@ -1924,6 +1958,7 @@ afp-LatticeProperties-2016-12-17.tar.gz
 afp-LatticeProperties-2017-10-10.tar.gz
 afp-LatticeProperties-2018-08-16.tar.gz
 afp-LatticeProperties-2019-06-11.tar.gz
+afp-LatticeProperties-2019-06-28.tar.gz
 afp-Launchbury-2013-02-24.tar.gz
 afp-Launchbury-2013-02-25.tar.gz
 afp-Launchbury-2013-11-17.tar.gz
@@ -1991,6 +2026,8 @@ afp-LightweightJava-2016-12-17.tar.gz
 afp-LightweightJava-2017-10-10.tar.gz
 afp-LightweightJava-2018-08-16.tar.gz
 afp-LightweightJava-2019-06-11.tar.gz
+afp-Linear_Inequalities-2019-06-24.tar.gz
+afp-Linear_Programming-2019-09-23.tar.gz
 afp-LinearQuantifierElim-2008-01-11.tar.gz
 afp-LinearQuantifierElim-2008-01-24.tar.gz
 afp-LinearQuantifierElim-2008-02-12.tar.gz
@@ -2215,11 +2252,13 @@ afp-Menger-2017-02-27.tar.gz
 afp-Menger-2017-10-10.tar.gz
 afp-Menger-2018-08-16.tar.gz
 afp-Menger-2019-06-11.tar.gz
+afp-Mersenne_Primes-2020-01-20.tar.gz
 afp-MFMC_Countable-2016-05-09.tar.gz
 afp-MFMC_Countable-2016-12-17.tar.gz
 afp-MFMC_Countable-2017-10-10.tar.gz
 afp-MFMC_Countable-2018-08-16.tar.gz
 afp-MFMC_Countable-2019-06-11.tar.gz
+afp-MFOTL_Monitor-2019-07-05.tar.gz
 afp-Minimal_SSA-2017-01-19.tar.gz
 afp-Minimal_SSA-2017-10-10.tar.gz
 afp-Minimal_SSA-2018-08-16.tar.gz
@@ -2449,6 +2488,7 @@ afp-NormByEval-2016-12-17.tar.gz
 afp-NormByEval-2017-10-10.tar.gz
 afp-NormByEval-2018-08-16.tar.gz
 afp-NormByEval-2019-06-11.tar.gz
+afp-Nullstellensatz-2019-06-17.tar.gz
 afp-Octonions-2018-09-16.tar.gz
 afp-Octonions-2019-06-11.tar.gz
 afp-Open_Induction-2013-02-16.tar.gz
@@ -2481,6 +2521,7 @@ afp-Ordered_Resolution_Prover-2018-08-16.tar.gz
 afp-Ordered_Resolution_Prover-2019-06-11.tar.gz
 afp-Order_Lattice_Props-2018-12-19.tar.gz
 afp-Order_Lattice_Props-2019-06-11.tar.gz
+afp-Order_Lattice_Props-2019-06-28.tar.gz
 afp-Ordinal-2005-11-16.tar.gz
 afp-Ordinal-2007-11-27.tar.gz
 afp-Ordinal-2008-06-10.tar.gz
@@ -2623,6 +2664,8 @@ afp-PLM-2017-09-19.tar.gz
 afp-PLM-2017-10-10.tar.gz
 afp-PLM-2018-08-16.tar.gz
 afp-PLM-2019-06-11.tar.gz
+afp-Poincare_Bendixson-2019-12-18.tar.gz
+afp-Poincare_Disc-2020-01-17.tar.gz
 afp-Polynomial_Factorization-2016-02-22.tar.gz
 afp-Polynomial_Factorization-2016-12-17.tar.gz
 afp-Polynomial_Factorization-2017-10-10.tar.gz
@@ -2647,6 +2690,7 @@ afp-Polynomials-2016-12-17.tar.gz
 afp-Polynomials-2017-10-10.tar.gz
 afp-Polynomials-2018-08-16.tar.gz
 afp-Polynomials-2019-06-11.tar.gz
+afp-Polynomials-2020-01-14.tar.gz
 afp-POPLmark-deBruijn-2007-11-27.tar.gz
 afp-POPLmark-deBruijn-2008-06-10.tar.gz
 afp-POPLmark-deBruijn-2009-04-29.tar.gz
@@ -2716,6 +2760,7 @@ afp-Presburger-Automata-2016-12-17.tar.gz
 afp-Presburger-Automata-2017-10-10.tar.gz
 afp-Presburger-Automata-2018-08-16.tar.gz
 afp-Presburger-Automata-2019-06-11.tar.gz
+afp-Prim_Dijkstra_Simple-2019-06-29.tar.gz
 afp-Prime_Distribution_Elementary-2019-02-22.tar.gz
 afp-Prime_Distribution_Elementary-2019-06-11.tar.gz
 afp-Prime_Harmonic_Series-2016-01-05.tar.gz
@@ -2733,6 +2778,7 @@ afp-Priority_Queue_Braun-2016-12-17.tar.gz
 afp-Priority_Queue_Braun-2017-10-10.tar.gz
 afp-Priority_Queue_Braun-2018-08-16.tar.gz
 afp-Priority_Queue_Braun-2019-06-11.tar.gz
+afp-Priority_Search_Trees-2019-06-29.tar.gz
 afp-Probabilistic_Noninterference-2014-03-16.tar.gz
 afp-Probabilistic_Noninterference-2014-08-28.tar.gz
 afp-Probabilistic_Noninterference-2015-05-27.tar.gz
@@ -2803,6 +2849,7 @@ afp-Prpu_Maxflow-2017-06-02.tar.gz
 afp-Prpu_Maxflow-2017-10-10.tar.gz
 afp-Prpu_Maxflow-2018-08-16.tar.gz
 afp-Prpu_Maxflow-2019-06-11.tar.gz
+afp-Prpu_Maxflow-2020-01-14.tar.gz
 afp-PSemigroupsConvolution-2017-06-13.tar.gz
 afp-PSemigroupsConvolution-2017-10-10.tar.gz
 afp-PSemigroupsConvolution-2018-08-16.tar.gz
@@ -2995,6 +3042,7 @@ afp-Relation_Algebra-2016-12-17.tar.gz
 afp-Relation_Algebra-2017-10-10.tar.gz
 afp-Relation_Algebra-2018-08-16.tar.gz
 afp-Relation_Algebra-2019-06-11.tar.gz
+afp-Relational-Incorrectness-Logic-2020-03-26.tar.gz
 afp-Rep_Fin_Groups-2015-08-12.tar.gz
 afp-Rep_Fin_Groups-2016-02-22.tar.gz
 afp-Rep_Fin_Groups-2016-12-17.tar.gz
@@ -3008,6 +3056,7 @@ afp-Residuated_Lattices-2016-12-17.tar.gz
 afp-Residuated_Lattices-2017-10-10.tar.gz
 afp-Residuated_Lattices-2018-08-16.tar.gz
 afp-Residuated_Lattices-2019-06-11.tar.gz
+afp-Residuated_Lattices-2019-06-28.tar.gz
 afp-Resolution_FOL-2016-06-30.tar.gz
 afp-Resolution_FOL-2016-12-17.tar.gz
 afp-Resolution_FOL-2017-10-10.tar.gz
@@ -3080,6 +3129,7 @@ afp-Roy_Floyd_Warshall-2016-12-17.tar.gz
 afp-Roy_Floyd_Warshall-2017-10-10.tar.gz
 afp-Roy_Floyd_Warshall-2018-08-16.tar.gz
 afp-Roy_Floyd_Warshall-2019-06-11.tar.gz
+afp-Roy_Floyd_Warshall-2020-01-14.tar.gz
 afp-RSAPSS-2005-10-14.tar.gz
 afp-RSAPSS-2007-11-27.tar.gz
 afp-RSAPSS-2008-06-10.tar.gz
@@ -3267,6 +3317,7 @@ afp-SIFUM_Type_Systems-2016-12-17.tar.gz
 afp-SIFUM_Type_Systems-2017-10-10.tar.gz
 afp-SIFUM_Type_Systems-2018-08-16.tar.gz
 afp-SIFUM_Type_Systems-2019-06-11.tar.gz
+afp-Sigma_Commit_Crypto-2019-10-08.tar.gz
 afp-Signature_Groebner-2018-09-20.tar.gz
 afp-Signature_Groebner-2019-06-11.tar.gz
 afp-Simpl-2008-03-07.tar.gz
@@ -3295,6 +3346,7 @@ afp-Simple_Firewall-2018-08-16.tar.gz
 afp-Simple_Firewall-2019-06-11.tar.gz
 afp-Simplex-2018-08-27.tar.gz
 afp-Simplex-2019-06-11.tar.gz
+afp-Simplex-2020-01-14.tar.gz
 afp-Skew_Heap-2014-08-28.tar.gz
 afp-Skew_Heap-2014-08-29.tar.gz
 afp-Skew_Heap-2015-05-27.tar.gz
@@ -3303,6 +3355,7 @@ afp-Skew_Heap-2016-12-17.tar.gz
 afp-Skew_Heap-2017-10-10.tar.gz
 afp-Skew_Heap-2018-08-16.tar.gz
 afp-Skew_Heap-2019-06-11.tar.gz
+afp-Skip_Lists-2020-01-10.tar.gz
 afp-Slicing-2008-09-22.tar.gz
 afp-Slicing-2009-04-29.tar.gz
 afp-Slicing-2009-04-30.tar.gz
@@ -3389,6 +3442,7 @@ afp-Statecharts-2016-12-17.tar.gz
 afp-Statecharts-2017-10-10.tar.gz
 afp-Statecharts-2018-08-16.tar.gz
 afp-Statecharts-2019-06-11.tar.gz
+afp-Stellar_Quorums-2019-08-03.tar.gz
 afp-Stern_Brocot-2015-12-22.tar.gz
 afp-Stern_Brocot-2016-02-22.tar.gz
 afp-Stern_Brocot-2016-12-17.tar.gz
@@ -3411,6 +3465,7 @@ afp-Stone_Algebras-2016-12-17.tar.gz
 afp-Stone_Algebras-2017-10-10.tar.gz
 afp-Stone_Algebras-2018-08-16.tar.gz
 afp-Stone_Algebras-2019-06-11.tar.gz
+afp-Stone_Algebras-2019-06-28.tar.gz
 afp-Stone_Kleene_Relation_Algebras-2017-10-10.tar.gz
 afp-Stone_Kleene_Relation_Algebras-2018-08-16.tar.gz
 afp-Stone_Kleene_Relation_Algebras-2019-06-11.tar.gz
@@ -3486,6 +3541,7 @@ afp-Subresultants-2017-04-07.tar.gz
 afp-Subresultants-2017-10-10.tar.gz
 afp-Subresultants-2018-08-16.tar.gz
 afp-Subresultants-2019-06-11.tar.gz
+afp-Subset_Boolean_Algebras-2020-01-31.tar.gz
 afp-SumSquares-2007-11-27.tar.gz
 afp-SumSquares-2008-06-10.tar.gz
 afp-SumSquares-2009-04-29.tar.gz
@@ -3516,6 +3572,7 @@ afp-Surprise_Paradox-2018-08-16.tar.gz
 afp-Surprise_Paradox-2019-06-11.tar.gz
 afp-Symmetric_Polynomials-2018-09-26.tar.gz
 afp-Symmetric_Polynomials-2019-06-11.tar.gz
+afp-Szpilrajn-2019-07-28.tar.gz
 afp-Tail_Recursive_Functions-2013-12-02.tar.gz
 afp-Tail_Recursive_Functions-2013-12-11.tar.gz
 afp-Tail_Recursive_Functions-2014-08-28.tar.gz
@@ -3541,6 +3598,7 @@ afp-Tarskis_Geometry-2019-06-11.tar.gz
 afp-Taylor_Models-2018-01-08.tar.gz
 afp-Taylor_Models-2018-08-16.tar.gz
 afp-Taylor_Models-2019-06-11.tar.gz
+afp-TESL_Language-2019-07-31.tar.gz
 afp-Timed_Automata-2016-03-11.tar.gz
 afp-Timed_Automata-2016-12-17.tar.gz
 afp-Timed_Automata-2017-10-10.tar.gz
@@ -3734,6 +3792,7 @@ afp-VectorSpace-2016-12-17.tar.gz
 afp-VectorSpace-2017-10-10.tar.gz
 afp-VectorSpace-2018-08-16.tar.gz
 afp-VectorSpace-2019-06-11.tar.gz
+afp-VeriComp-2020-02-25.tar.gz
 afp-Verified-Prover-2004-09-28.tar.gz
 afp-Verified-Prover-2005-10-14.tar.gz
 afp-Verified-Prover-2007-11-27.tar.gz
@@ -3758,6 +3817,7 @@ afp-Verified-Prover-2019-06-11.tar.gz
 afp-VerifyThis2018-2018-04-30.tar.gz
 afp-VerifyThis2018-2018-08-16.tar.gz
 afp-VerifyThis2018-2019-06-11.tar.gz
+afp-VerifyThis2019-2019-10-25.tar.gz
 afp-Vickrey_Clarke_Groves-2015-04-30.tar.gz
 afp-Vickrey_Clarke_Groves-2015-05-09.tar.gz
 afp-Vickrey_Clarke_Groves-2015-05-27.tar.gz
@@ -3812,6 +3872,7 @@ afp-WHATandWHERE_Security-2019-06-11.tar.gz
 afp-Winding_Number_Eval-2017-10-18.tar.gz
 afp-Winding_Number_Eval-2018-08-16.tar.gz
 afp-Winding_Number_Eval-2019-06-11.tar.gz
+afp-WOOT_Strong_Eventual_Consistency-2020-03-26.tar.gz
 afp-Word_Lib-2016-06-09.tar.gz
 afp-Word_Lib-2016-12-17.tar.gz
 afp-Word_Lib-2017-10-10.tar.gz
@@ -3841,6 +3902,8 @@ afp-XML-2016-12-17.tar.gz
 afp-XML-2017-10-10.tar.gz
 afp-XML-2018-08-16.tar.gz
 afp-XML-2019-06-11.tar.gz
+afp-Zeta_3_Irrational-2019-12-28.tar.gz
 afp-Zeta_Function-2017-10-16.tar.gz
 afp-Zeta_Function-2018-08-16.tar.gz
 afp-Zeta_Function-2019-06-11.tar.gz
+afp-ZFC_in_HOL-2019-11-04.tar.gz

@@ -9,7 +9,75 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>25 Mar 2020 00:00:00 +0000</pubDate>
+    <pubDate>10 Apr 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</title>
+              <link>https://www.isa-afp.org/entries/Sliding_Window_Algorithm.html</link>
+       <guid>https://www.isa-afp.org/entries/Sliding_Window_Algorithm.html</guid>
+       <dc:creator> Lukas Heimes, Dmitriy Traytel, Joshua Schneider       </dc:creator>
+       <pubDate>10 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+Basin et al.&#39;s &lt;a
+href=&#34;https://doi.org/10.1016/j.ipl.2014.09.009&#34;&gt;sliding
+window algorithm (SWA)&lt;/a&gt; is an algorithm for combining the
+elements of subsequences of a sequence with an associative operator.
+It is greedy and minimizes the number of operator applications. We
+formalize the algorithm and verify its functional correctness. We
+extend the algorithm with additional operations and provide an
+alternative interface to the slide operation that does not require the
+entire input sequence.</description>
+    </item>
+    <item>
+       <title>A Comprehensive Framework for Saturation Theorem Proving</title>
+              <link>https://www.isa-afp.org/entries/Saturation_Framework.html</link>
+       <guid>https://www.isa-afp.org/entries/Saturation_Framework.html</guid>
+       <dc:creator> Sophie Tourret       </dc:creator>
+       <pubDate>09 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+This Isabelle/HOL formalization is the companion of the technical
+report “A comprehensive framework for saturation theorem proving”,
+itself companion of the eponym IJCAR 2020 paper, written by Uwe
+Waldmann, Sophie Tourret, Simon Robillard and Jasmin Blanchette. It
+verifies a framework for formal refutational completeness proofs of
+abstract provers that implement saturation calculi, such as ordered
+resolution or superposition, and allows to model entire prover
+architectures in such a way that the static refutational completeness
+of a calculus immediately implies the dynamic  refutational
+completeness of a prover implementing the calculus using a variant of
+the given clause loop.  The technical report “A comprehensive
+framework for saturation theorem proving” is available &lt;a
+href=&#34;http://matryoshka.gforge.inria.fr/pubs/satur_report.pdf&#34;&gt;on
+the Matryoshka website&lt;/a&gt;. The names of the Isabelle lemmas and
+theorems corresponding to the results in the report are indicated in
+the margin of the report.</description>
+    </item>
+    <item>
+       <title>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</title>
+              <link>https://www.isa-afp.org/entries/MFODL_Monitor_Optimized.html</link>
+       <guid>https://www.isa-afp.org/entries/MFODL_Monitor_Optimized.html</guid>
+       <dc:creator> Thibault Dardinier, Lukas Heimes, Martin Raszyk, Joshua Schneider, Dmitriy Traytel       </dc:creator>
+       <pubDate>09 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+A monitor is a runtime verification tool that solves the following
+problem: Given a stream of time-stamped events and a policy formulated
+in a specification language, decide whether the policy is satisfied at
+every point in the stream. We verify the correctness of an executable
+monitor for specifications given as formulas in metric first-order
+dynamic logic (MFODL), which combines the features of metric
+first-order temporal logic (MFOTL) and metric dynamic logic. Thus,
+MFODL supports real-time constraints, first-order parameters, and
+regular expressions. Additionally, the monitor supports aggregation
+operations such as count and sum. This formalization, which is
+described in a &lt;a
+href=&#34;http://people.inf.ethz.ch/trayteld/papers/ijcar20-verimonplus/verimonplus.pdf&#34;&gt;
+forthcoming paper at IJCAR 2020&lt;/a&gt;, significantly extends &lt;a
+href=&#34;https://www.isa-afp.org/entries/MFOTL_Monitor.html&#34;&gt;previous
+work on a verified monitor&lt;/a&gt; for MFOTL. Apart from the
+addition of regular expressions and aggregations, we implemented &lt;a
+href=&#34;https://www.isa-afp.org/entries/Generic_Join.html&#34;&gt;multi-way
+joins&lt;/a&gt; and a specialized sliding window algorithm to further
+optimize the monitor.</description>
+    </item>
     <item>
        <title>Strong Eventual Consistency of the Collaborative Editing Framework WOOT</title>
               <link>https://www.isa-afp.org/entries/WOOT_Strong_Eventual_Consistency.html</link>
@@ -37,7 +105,7 @@ topological proof of the infinitude of primes. He defines a topology
 on the integers based on arithmetic progressions (or, equivalently,
 residue classes). Using some fairly obvious properties of this
 topology, the infinitude of primes is then easily obtained.&lt;/p&gt;
-&lt;p&gt;Apart from this, this topology is also fairly `nice&#39; in
+&lt;p&gt;Apart from this, this topology is also fairly ‘nice’ in
 general: it is second countable, metrizable, and perfect. All of these
 (well-known) facts are formally proven, including an explicit metric
 for the topology given by Zulfeqarr.&lt;/p&gt;</description>
@@ -514,52 +582,6 @@ however, deliberately restrict themselves to the most elementary
 infrastructure for these tasks. The package is intended to serve as
 demonstrator semantic backend for Isabelle/C, or for the
 test-generation techniques.</description>
-    </item>
-    <item>
-       <title>Formalization of Multiway-Join Algorithms</title>
-              <link>https://www.isa-afp.org/entries/Generic_Join.html</link>
-       <guid>https://www.isa-afp.org/entries/Generic_Join.html</guid>
-       <dc:creator> Thibault Dardinier       </dc:creator>
-       <pubDate>16 Sep 2019 00:00:00 +0000</pubDate>
-       <description>
-Worst-case optimal multiway-join algorithms are recent seminal
-achievement of the database community. These algorithms compute the
-natural join of multiple relational databases and improve in the worst
-case over traditional query plan optimizations of nested binary joins.
-In 2014, &lt;a
-href=&#34;https://doi.org/10.1145/2590989.2590991&#34;&gt;Ngo, Ré,
-and Rudra&lt;/a&gt; gave a unified presentation of different multi-way
-join algorithms. We formalized and proved correct their &#34;Generic
-Join&#34; algorithm and extended it to support negative joins.</description>
-    </item>
-    <item>
-       <title>Verification Components for Hybrid Systems</title>
-              <link>https://www.isa-afp.org/entries/Hybrid_Systems_VCs.html</link>
-       <guid>https://www.isa-afp.org/entries/Hybrid_Systems_VCs.html</guid>
-       <dc:creator> Jonathan Julian Huerta y Munive       </dc:creator>
-       <pubDate>10 Sep 2019 00:00:00 +0000</pubDate>
-       <description>
-These components formalise a semantic framework for the deductive
-verification of hybrid systems. They support reasoning about
-continuous evolutions of hybrid programs in the style of differential
-dynamics logic. Vector fields or flows model these evolutions, and
-their verification is done with invariants for the former or orbits
-for the latter. Laws of modal Kleene algebra or categorical predicate
-transformers implement the verification condition generation. Examples
-show the approach at work.</description>
-    </item>
-    <item>
-       <title>Fourier Series</title>
-              <link>https://www.isa-afp.org/entries/Fourier.html</link>
-       <guid>https://www.isa-afp.org/entries/Fourier.html</guid>
-       <dc:creator> Lawrence C Paulson       </dc:creator>
-       <pubDate>06 Sep 2019 00:00:00 +0000</pubDate>
-       <description>
-This development formalises the square integrable functions over the
-reals and the basics of Fourier series. It culminates with a proof
-that every well-behaved periodic function can be approximated by a
-Fourier series. The material is ported from HOL Light:
-https://github.com/jrh13/hol-light/blob/master/100/fourier.ml</description>
     </item>
   </channel>
 </rss>

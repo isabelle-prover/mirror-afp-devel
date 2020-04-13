@@ -298,6 +298,7 @@ Max-Card-Matching
 Median_Of_Medians_Selection
 Menger
 Mersenne_Primes
+MFODL_Monitor_Optimized
 MFOTL_Monitor
 MiniML
 Minimal_SSA
@@ -421,12 +422,13 @@ Robbins-Conjecture
 Root_Balanced_Tree
 Routing
 Roy_Floyd_Warshall
-Safe_OCL
 SATSolverVerification
 SDS_Impossibility
 SIFPL
 SIFUM_Type_Systems
 SPARCv8
+Safe_OCL
+Saturation_Framework
 Secondary_Sylow
 Security_Protocol_Refinement
 Selection_Heap_Sort
@@ -446,6 +448,7 @@ Simplex
 Skew_Heap
 Skip_Lists
 Slicing
+Sliding_Window_Algorithm
 Smooth_Manifolds
 Sort_Encodings
 Source_Coding_Theorem
