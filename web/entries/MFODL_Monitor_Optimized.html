@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic - Archive of Formal Proofs
+<title>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -65,7 +65,9 @@
   
           of
   
-          a
+          an
+  
+          <font class="first">O</font>ptimized
   
           <font class="first">M</font>onitoring
   
@@ -77,9 +79,13 @@
   
           <font class="first">F</font>irst-Order
   
-          <font class="first">T</font>emporal
+          <font class="first">D</font>ynamic
   
           <font class="first">L</font>ogic
+  
+          with
+  
+          <font class="first">A</font>ggregations
   
 </h1>
   <p>&nbsp;</p>
@@ -88,7 +94,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</td>
+  <td class="data" width="80%">Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</td>
 </tr>
 
 <tr>
@@ -96,7 +102,10 @@
           Authors:
       </td>
   <td class="data">
-                    Joshua Schneider and
+                      Thibault Dardinier,
+                  Lukas Heimes,
+                  Martin Raszyk (martin /dot/ raszyk /at/ inf /dot/ ethz /dot/ ch),
+                Joshua Schneider and
           <a href="http://people.inf.ethz.ch/trayteld/">Dmitriy Traytel</a>
       </td>
 </tr>
@@ -105,7 +114,7 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2019-07-04</td>
+  <td class="data">2020-04-09</td>
 </tr>
 
 <tr>
@@ -116,29 +125,33 @@ problem: Given a stream of time-stamped events and a policy formulated
 in a specification language, decide whether the policy is satisfied at
 every point in the stream. We verify the correctness of an executable
 monitor for specifications given as formulas in metric first-order
-temporal logic (MFOTL), an expressive extension of linear temporal
-logic with real-time constraints and first-order quantification. The
-verified monitor implements a simplified variant of the algorithm used
-in the efficient MonPoly monitoring tool. The formalization is
-presented in a forthcoming <a
-href="http://people.inf.ethz.ch/trayteld/papers/rv19-verimon/verimon.pdf">RV
-2019 paper</a>, which also compares the output of the verified
-monitor to that of other monitoring tools on randomly generated
-inputs. This case study revealed several errors in the optimized but
-unverified tools.</td>
+dynamic logic (MFODL), which combines the features of metric
+first-order temporal logic (MFOTL) and metric dynamic logic. Thus,
+MFODL supports real-time constraints, first-order parameters, and
+regular expressions. Additionally, the monitor supports aggregation
+operations such as count and sum. This formalization, which is
+described in a <a
+href="http://people.inf.ethz.ch/trayteld/papers/ijcar20-verimonplus/verimonplus.pdf">
+forthcoming paper at IJCAR 2020</a>, significantly extends <a
+href="https://www.isa-afp.org/entries/MFOTL_Monitor.html">previous
+work on a verified monitor</a> for MFOTL. Apart from the
+addition of regular expressions and aggregations, we implemented <a
+href="https://www.isa-afp.org/entries/Generic_Join.html">multi-way
+joins</a> and a specialized sliding window algorithm to further
+optimize the monitor.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{MFOTL_Monitor-AFP,
-  author  = {Joshua Schneider and Dmitriy Traytel},
-  title   = {Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic},
+        <pre>@article{MFODL_Monitor_Optimized-AFP,
+  author  = {Thibault Dardinier and Lukas Heimes and Martin Raszyk and Joshua Schneider and Dmitriy Traytel},
+  title   = {Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations},
   journal = {Archive of Formal Proofs},
-  month   = jul,
-  year    = 2019,
-  note    = {\url{http://isa-afp.org/entries/MFOTL_Monitor.html},
+  month   = apr,
+  year    = 2020,
+  note    = {\url{http://isa-afp.org/entries/MFODL_Monitor_Optimized.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -150,11 +163,9 @@ unverified tools.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Containers.html">Containers</a>      </td></tr>
+          <td class="data"><a href="Containers.html">Containers</a>, <a href="Generic_Join.html">Generic_Join</a>, <a href="IEEE_Floating_Point.html">IEEE_Floating_Point</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Generic_Join.html">Generic_Join</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -166,17 +177,17 @@ unverified tools.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/MFOTL_Monitor/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/MFOTL_Monitor/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/MFODL_Monitor_Optimized/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/MFODL_Monitor_Optimized/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/MFOTL_Monitor/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/MFODL_Monitor_Optimized/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-MFOTL_Monitor-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-MFODL_Monitor_Optimized-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
