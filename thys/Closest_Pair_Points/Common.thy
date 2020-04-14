@@ -1,16 +1,30 @@
 section "Common"
 
 theory Common
-imports
+  imports
   "HOL-Library.Going_To_Filter"
   "Akra_Bazzi.Akra_Bazzi_Method"
   "Akra_Bazzi.Akra_Bazzi_Approximation"
   "HOL-Library.Code_Target_Numeral"
+  "Root_Balanced_Tree.Time_Monad"
 begin
 
 type_synonym point = "int * int"
 
 subsection "Auxiliary Functions and Lemmas"
+
+subsubsection "Time Monad"
+
+lemma time_distrib_bind:
+  "time (bind_tm tm f) = time tm + time (f (val tm))"
+  unfolding bind_tm_def by (simp split: tm.split)
+
+lemmas time_simps = time_distrib_bind tick_def
+
+lemma bind_tm_cong[fundef_cong]:
+  assumes "\<And>v. v = val n \<Longrightarrow> f v = g v" "m = n"
+  shows "bind_tm m f = bind_tm n g"
+  using assms unfolding bind_tm_def by (auto split: tm.split)
 
 subsubsection "Landau Auxiliary"
 
@@ -44,6 +58,32 @@ proof -
   have 3: "t' o m \<in> O[m going_to at_top within A](f o m)"
     using landau_o.big.filter_mono[OF _2] going_to_mono[OF _subset_UNIV] by blast
   show ?thesis by(rule landau_o.big_trans[OF 1 3])
+qed
+
+lemma const_1_bigo_n_ln_n:
+  "(\<lambda>(n::nat). 1) \<in> O(\<lambda>n. n * ln n)"
+proof -
+  have "\<exists>N. \<forall>(n::nat) \<ge> N. (\<lambda>x. 1 \<le> x * ln x) n"
+  proof -
+    have "\<forall>(n::nat) \<ge> 3. (\<lambda>x. 1 \<le> x * ln x) n"
+    proof standard
+      fix n
+      show "3 \<le> n \<longrightarrow> 1 \<le> real n * ln (real n)"
+      proof standard
+        assume "3 \<le> n"
+        hence "1 \<le> real n"
+          by simp
+        moreover have "1 \<le> ln (real n)" 
+          using ln_ln_nonneg' \<open>3 \<le> n\<close> by simp
+        ultimately show "1 \<le> real n * ln (real n)"
+          by (auto simp: order_trans)
+      qed
+    qed
+    thus ?thesis
+      by blast
+  qed
+  thus ?thesis
+    by auto
 qed
 
 subsubsection "Miscellaneous Lemmas"
@@ -118,18 +158,25 @@ lemma length_filter_P_impl_Q:
 
 lemma filter_Un:
   "set xs = A \<union> B \<Longrightarrow> set (filter P xs) = { x \<in> A. P x } \<union> { x \<in> B. P x }"
-  apply (induction xs)
-  apply (auto) by (metis UnI1 UnI2 insert_iff)+
+  by (induction xs) (auto, metis UnI1 insert_iff, metis UnI2 insert_iff)
 
 subsubsection \<open>@{const length}\<close>
 
-fun t_length :: "'a list \<Rightarrow> nat" where
-  "t_length [] = 0"
-| "t_length (x#xs) = 1 + t_length xs"
+fun length_tm :: "'a list \<Rightarrow> nat tm" where
+  "length_tm [] =1 return 0"
+| "length_tm (x # xs) =1
+    do {
+      l <- length_tm xs;
+      return (1 + l)
+    }"
 
-lemma t_length:
-  "t_length xs = length xs"
+lemma length_eq_val_length_tm:
+  "val (length_tm xs) = length xs"
   by (induction xs) auto
+
+lemma time_length_tm:
+  "time (length_tm xs) = length xs + 1"
+  by (induction xs) (auto simp: time_simps)
 
 fun length_it' :: "nat \<Rightarrow> 'a list \<Rightarrow> nat" where
   "length_it' acc [] = acc"
@@ -165,27 +212,46 @@ lemma rev_conv_rev_it[code_unfold]:
 
 subsubsection \<open>@{const take}\<close>
 
-fun t_take :: "nat \<Rightarrow> 'a list \<Rightarrow> nat" where
-  "t_take n [] = 0"
-| "t_take n (x#xs) = 1 + (
-    case n of
-      0 \<Rightarrow> 0
-    | Suc m \<Rightarrow> t_take m xs
-  )"
+fun take_tm :: "nat \<Rightarrow> 'a list \<Rightarrow> 'a list tm" where
+  "take_tm n [] =1 return []"
+| "take_tm n (x # xs) =1
+    (case n of
+       0 \<Rightarrow> return []
+     | Suc m \<Rightarrow> do {
+         ys <- take_tm m xs;
+         return (x # ys)
+       }
+    )"
 
-lemma t_take:
-  "t_take n xs \<le> min (n + 1) (length xs)"
+lemma take_eq_val_take_tm:
+  "val (take_tm n xs) = take n xs"
   by (induction xs arbitrary: n) (auto split: nat.split)
+
+lemma time_take_tm:
+  "time (take_tm n xs) = min n (length xs) + 1"
+  by (induction xs arbitrary: n) (auto simp: time_simps split: nat.split)
 
 subsubsection \<open>@{const filter}\<close>
 
-fun t_filter :: "('a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> nat" where
-  "t_filter P [] = 0"
-| "t_filter P (x#xs) = 1 + (if P x then t_filter P xs else t_filter P xs)"
+fun filter_tm :: "('a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list tm" where
+  "filter_tm P [] =1 return []"
+| "filter_tm P (x # xs) =1
+    (if P x then
+       do {
+         ys <- filter_tm P xs;
+         return (x # ys)
+       }
+     else
+       filter_tm P xs
+    )"
 
-lemma t_filter:
-  "t_filter P xs = length xs"
+lemma filter_eq_val_filter_tm:
+  "val (filter_tm P xs) = filter P xs"
   by (induction xs) auto
+
+lemma time_filter_tm:
+  "time (filter_tm P xs) = length xs + 1"
+  by (induction xs) (auto simp: time_simps)
 
 fun filter_it' :: "'a list \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list" where
   "filter_it' acc P [] = rev acc"
@@ -209,31 +275,39 @@ lemma filter_conv_filter_it[code_unfold]:
 
 subsubsection \<open>\<open>split_at\<close>\<close>
 
-fun split_at :: "nat \<Rightarrow> 'a list \<Rightarrow> ('a list * 'a list)" where
+fun split_at_tm :: "nat \<Rightarrow> 'a list \<Rightarrow> ('a list \<times> 'a list) tm" where
+  "split_at_tm n [] =1 return ([], [])"
+| "split_at_tm n (x # xs) =1 (
+    case n of
+      0 \<Rightarrow> return ([], x # xs)
+    | Suc m \<Rightarrow>
+      do {
+        (xs', ys') <- split_at_tm m xs;
+        return (x # xs', ys')
+      }
+  )"
+
+fun split_at :: "nat \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list" where
   "split_at n [] = ([], [])"
 | "split_at n (x # xs) = (
-    case n of
+    case n of 
       0 \<Rightarrow> ([], x # xs)
-    | Suc m \<Rightarrow>
-      let (xs', ys') = split_at m xs in
-      (x # xs', ys')
+    | Suc m \<Rightarrow> 
+        let (xs', ys') = split_at m xs in
+        (x # xs', ys')
   )"
+
+lemma split_at_eq_val_split_at_tm:
+  "val (split_at_tm n xs) = split_at n xs"
+  by (induction xs arbitrary: n) (auto split: nat.split prod.split)
 
 lemma split_at_take_drop_conv:
   "split_at n xs = (take n xs, drop n xs)"
-  by (induction xs arbitrary: n) (auto split: nat.split)
+  by (induction xs arbitrary: n) (auto simp: split: nat.split)
 
-fun t_split_at :: "nat \<Rightarrow> 'a list \<Rightarrow> nat" where
-  "t_split_at n [] = 0"
-| "t_split_at n (x#xs) = 1 + (
-    case n of
-      0 \<Rightarrow> 0
-    | Suc m \<Rightarrow> t_split_at m xs
-  )"
-
-lemma t_split_at:
-  "t_split_at n xs \<le> length xs"
-  by (induction xs arbitrary: n) (auto split: nat.split)
+lemma time_split_at_tm:
+  "time (split_at_tm n xs) = min n (length xs) + 1"
+  by (induction xs arbitrary: n) (auto simp: time_simps split: nat.split prod.split)
 
 fun split_at_it' :: "'a list \<Rightarrow> nat \<Rightarrow> 'a list \<Rightarrow> ('a list * 'a list)" where
   "split_at_it' acc n [] = (rev acc, [])"
@@ -247,13 +321,12 @@ definition split_at_it :: "nat \<Rightarrow> 'a list \<Rightarrow> ('a list * 'a
   "split_at_it n xs = split_at_it' [] n xs"
 
 lemma split_at_conv_split_at_it':
-  assumes "(ts, ds) = split_at n xs" "(tsi, dsi) = split_at_it' acc n xs"
-  shows "rev acc @ ts = tsi"
-    and "ds = dsi"
+  assumes "(ts, ds) = split_at n xs" "(ts', ds') = split_at_it' acc n xs"
+  shows "rev acc @ ts = ts'"
+    and "ds = ds'"
   using assms
-  apply (induction acc n xs arbitrary: ts rule: split_at_it'.induct)
-  apply (auto simp: split_at.simps split: prod.splits nat.splits)
-  done
+  by (induction acc n xs arbitrary: ts rule: split_at_it'.induct)
+     (auto simp: split: prod.splits nat.splits)
 
 lemma split_at_conv_split_at_it_prod:
   assumes "(ts, ds) = split_at n xs" "(ts', ds') = split_at_it n xs"
@@ -264,6 +337,9 @@ lemma split_at_conv_split_at_it_prod:
 lemma split_at_conv_split_at_it[code_unfold]:
   "split_at n xs = split_at_it n xs"
   using split_at_conv_split_at_it_prod surj_pair by metis
+
+declare split_at_tm.simps [simp del]
+declare split_at.simps [simp del]
 
 
 subsection "Mergesort"
@@ -276,6 +352,22 @@ definition sorted_fst :: "point list \<Rightarrow> bool" where
 definition sorted_snd :: "point list \<Rightarrow> bool" where
   "sorted_snd ps = sorted_wrt (\<lambda>p\<^sub>0 p\<^sub>1. snd p\<^sub>0 \<le> snd p\<^sub>1) ps"
 
+fun merge_tm :: "('b \<Rightarrow> 'a::linorder) \<Rightarrow> 'b list \<Rightarrow> 'b list \<Rightarrow> 'b list tm" where
+  "merge_tm f (x # xs) (y # ys) =1 (
+    if f x \<le> f y then
+      do {
+        tl <- merge_tm f xs (y # ys);
+        return (x # tl)
+      }
+    else
+      do {
+        tl <- merge_tm f (x # xs) ys;
+        return (y # tl)
+      }
+  )"
+| "merge_tm f [] ys =1 return ys"
+| "merge_tm f xs [] =1 return xs"
+
 fun merge :: "('b \<Rightarrow> 'a::linorder) \<Rightarrow> 'b list \<Rightarrow> 'b list \<Rightarrow> 'b list" where
   "merge f (x # xs) (y # ys) = (
     if f x \<le> f y then
@@ -285,6 +377,10 @@ fun merge :: "('b \<Rightarrow> 'a::linorder) \<Rightarrow> 'b list \<Rightarrow
   )"
 | "merge f [] ys = ys"
 | "merge f xs [] = xs"
+
+lemma merge_eq_val_merge_tm:
+  "val (merge_tm f xs ys) = merge f xs ys"
+  by (induction f xs ys rule: merge.induct) auto
 
 lemma length_merge:
   "length (merge f xs ys) = length xs + length ys"
@@ -304,20 +400,40 @@ lemma sorted_merge:
   shows "sorted_wrt P (merge f xs ys) \<longleftrightarrow> sorted_wrt P xs \<and> sorted_wrt P ys"
   using assms by (induction f xs ys rule: merge.induct) (auto simp: set_merge)
 
-function mergesort :: "('b \<Rightarrow> 'a::linorder) \<Rightarrow> 'b list \<Rightarrow> 'b list" where
+declare split_at_take_drop_conv [simp]
+
+function (sequential) mergesort_tm :: "('b \<Rightarrow> 'a::linorder) \<Rightarrow> 'b list \<Rightarrow> 'b list tm" where
+  "mergesort_tm f [] =1 return []"
+| "mergesort_tm f [x] =1 return [x]"
+| "mergesort_tm f xs =1 (
+    do {
+      n <- length_tm xs;
+      (xs\<^sub>l, xs\<^sub>r) <- split_at_tm (n div 2) xs;
+      l <- mergesort_tm f xs\<^sub>l;
+      r <- mergesort_tm f xs\<^sub>r;
+      merge_tm f l r
+    }
+  )"
+  by pat_completeness auto
+termination mergesort_tm
+  by (relation "Wellfounded.measure (\<lambda>(_, xs). length xs)")
+     (auto simp add: length_eq_val_length_tm split_at_eq_val_split_at_tm)
+
+fun mergesort :: "('b \<Rightarrow> 'a::linorder) \<Rightarrow> 'b list \<Rightarrow> 'b list" where
   "mergesort f [] = []"
 | "mergesort f [x] = [x]"
-| "mergesort f (x # y # xs') = ( 
-    let xs = x # y # xs' in
+| "mergesort f xs = ( 
     let n = length xs div 2 in
     let (l, r) = split_at n xs in
     merge f (mergesort f l) (mergesort f r)
   )"
-  by pat_completeness auto
-termination mergesort
-  apply (relation "Wellfounded.measure (\<lambda>(_, xs). length xs)")
-  apply (auto simp: split_at_take_drop_conv Let_def)
-  done
+
+declare split_at_take_drop_conv [simp del]
+
+lemma mergesort_eq_val_mergesort_tm:
+  "val (mergesort_tm f xs) = mergesort f xs"
+  by (induction f xs rule: mergesort.induct)
+     (auto simp add: length_eq_val_length_tm split_at_eq_val_split_at_tm merge_eq_val_merge_tm split: prod.split)
 
 lemma sorted_wrt_mergesort:
   "sorted_wrt (\<lambda>x y. f x \<le> f y) (mergesort f xs)"
@@ -325,9 +441,8 @@ lemma sorted_wrt_mergesort:
 
 lemma set_mergesort:
   "set (mergesort f xs) = set xs"
-  apply (induction f xs rule: mergesort.induct)
-  apply (simp_all add: set_merge split_at_take_drop_conv)
-  using set_take_drop by (metis list.simps(15))
+  by (induction f xs rule: mergesort.induct)
+     (simp_all add: set_merge split_at_take_drop_conv, metis list.simps(15) set_take_drop)
 
 lemma length_mergesort:
   "length (mergesort f xs) = length xs"
@@ -364,43 +479,15 @@ lemma sorted_fst_hd_drop_less_drop:
 
 subsubsection "Time Complexity Proof"
 
-fun t_merge' :: "('b \<Rightarrow> 'a::linorder) \<Rightarrow> 'b list \<Rightarrow> 'b list \<Rightarrow> nat" where
-  "t_merge' f (x#xs) (y#ys) = 1 + (
-    if f x \<le> f y then
-      t_merge' f xs (y#ys)
-    else
-      t_merge' f (x#xs) ys
-  )"
-| "t_merge' f xs [] = 0"
-| "t_merge' f [] ys = 0"
-
-definition t_merge :: "('b \<Rightarrow> 'a::linorder) \<Rightarrow> ('b list * 'b list) \<Rightarrow> nat" where
-  "t_merge f xys = t_merge' f (fst xys) (snd xys)"
-
-lemma t_merge:
-  "t_merge f (xs, ys) \<le> length xs + length ys"
-  unfolding t_merge_def by (induction f xs ys rule: t_merge'.induct) auto
-
-function t_mergesort :: "('b \<Rightarrow> 'a::linorder) \<Rightarrow> 'b list \<Rightarrow> nat" where
-  "t_mergesort f [] = 0"
-| "t_mergesort f [_] = 1"
-| "t_mergesort f (x # y # xs') = (
-    let xs = x # y # xs' in
-    let (l, r) = split_at (length xs div 2) xs in
-    t_length xs + t_split_at (length xs div 2) xs +
-    t_mergesort f l + t_mergesort f r + t_merge f (l, r)
-  )"
-  by pat_completeness auto
-termination t_mergesort
-  apply (relation "Wellfounded.measure (\<lambda>(_, xs). length xs)")
-  apply (auto simp: split_at_take_drop_conv Let_def)
-  done
+lemma time_merge_tm:
+  "time (merge_tm f xs ys) \<le> length xs + length ys + 1"
+  by (induction f xs ys rule: merge_tm.induct) (auto simp: time_simps)
 
 function mergesort_recurrence :: "nat \<Rightarrow> real" where
-  "mergesort_recurrence 0 = 0"
+  "mergesort_recurrence 0 = 1"
 | "mergesort_recurrence 1 = 1"
-| "2 \<le> n \<Longrightarrow> mergesort_recurrence n = mergesort_recurrence (nat \<lfloor>real n / 2\<rfloor>) + 
-    mergesort_recurrence (nat \<lceil>real n / 2\<rceil>) + 3 * n"
+| "2 \<le> n \<Longrightarrow> mergesort_recurrence n = 4 + 3 * n + mergesort_recurrence (nat \<lfloor>real n / 2\<rfloor>) + 
+    mergesort_recurrence (nat \<lceil>real n / 2\<rceil>)"
   by force simp_all
 termination by akra_bazzi_termination simp_all
 
@@ -408,66 +495,67 @@ lemma mergesort_recurrence_nonneg[simp]:
   "0 \<le> mergesort_recurrence n"
   by (induction n rule: mergesort_recurrence.induct) (auto simp del: One_nat_def)
 
-lemma t_mergesort_conv_mergesort_recurrence:
-  "t_mergesort f xs \<le> mergesort_recurrence (length xs)"
-proof (induction f xs rule: t_mergesort.induct)
+lemma time_mergesort_conv_mergesort_recurrence:
+  "time (mergesort_tm f xs) \<le> mergesort_recurrence (length xs)"
+proof (induction f xs rule: mergesort_tm.induct)
+  case (1 f)
+  thus ?case by (auto simp: time_simps)
+next
   case (2 f x)
-  thus ?case
-    using mergesort_recurrence.simps(2) by auto
+  thus ?case using mergesort_recurrence.simps(2) by (auto simp: time_simps)
 next
   case (3 f x y xs')
 
-  define XS where "XS = x # y # xs'"
-  define N where "N = length XS"
-  obtain L R where LR_def: "(L, R) = split_at (N div 2) XS"
+  define xs where "xs = x # y # xs'"
+  define n where "n = length xs"
+  obtain l r where lr_def: "(l, r) = split_at (n div 2) xs"
     using prod.collapse by blast
-  note defs = XS_def N_def LR_def
+  define l' where "l' = mergesort f l"
+  define r' where "r' = mergesort f r"
+  note defs = xs_def n_def lr_def l'_def r'_def
 
-  let ?LHS = "t_length XS + t_split_at (N div 2) XS + t_mergesort f L + t_mergesort f R + t_merge f (L, R)"
-  let ?RHS = "mergesort_recurrence (nat \<lfloor>real N / 2\<rfloor>) + mergesort_recurrence (nat \<lceil>real N / 2\<rceil>) + 3 * N"
+  have IHL: "time (mergesort_tm f l) \<le> mergesort_recurrence (length l)"
+    using defs "3.IH"(1) by (auto simp: length_eq_val_length_tm split_at_eq_val_split_at_tm)
+  have IHR: "time (mergesort_tm f r) \<le> mergesort_recurrence (length r)"
+    using defs "3.IH"(2) by (auto simp: length_eq_val_length_tm split_at_eq_val_split_at_tm)
 
-  have IHL: "t_mergesort f L \<le> mergesort_recurrence (length L)"
-    using defs "3.IH"(1) prod.collapse by blast
-  have IHR: "t_mergesort f R \<le> mergesort_recurrence (length R)"
-    using defs "3.IH"(2) prod.collapse by blast
-
-  have *: "length L = N div 2" "length R = N - N div 2"
+  have *: "length l = n div 2" "length r = n - n div 2"
     using defs by (auto simp: split_at_take_drop_conv)
-  hence "(nat \<lfloor>real N / 2\<rfloor>) = length L" "(nat \<lceil>real N / 2\<rceil>) = length R"
+  hence "(nat \<lfloor>real n / 2\<rfloor>) = length l" "(nat \<lceil>real n / 2\<rceil>) = length r"
     by linarith+
-  hence IH: "t_mergesort f L \<le> mergesort_recurrence (nat \<lfloor>real N / 2\<rfloor>)"
-            "t_mergesort f R \<le> mergesort_recurrence (nat \<lceil>real N / 2\<rceil>)"
+  hence IH: "time (mergesort_tm f l) \<le> mergesort_recurrence (nat \<lfloor>real n / 2\<rfloor>)"
+            "time (mergesort_tm f r) \<le> mergesort_recurrence (nat \<lceil>real n / 2\<rceil>)"
     using IHL IHR by simp_all
 
-  have "N = length L + length R"
+  have "n = length l + length r"
     using * by linarith
-  hence "t_merge f (L, R) \<le> N"
-    using t_merge by simp
-  moreover have "t_length XS = N"
-    using t_length N_def by blast
-  moreover have "t_split_at (N div 2) XS \<le> N"
-    using t_split_at N_def by blast
-  ultimately have *: "?LHS \<le> ?RHS"
+  hence "time (merge_tm f l' r') \<le> n + 1"
+    using time_merge_tm defs by (metis length_mergesort)
+  
+  have "time (mergesort_tm f xs) = 1 + time (length_tm xs) + time (split_at_tm (n div 2) xs) + 
+          time (mergesort_tm f l) + time (mergesort_tm f r) + time (merge_tm f l' r')"
+    using defs by (auto simp add: time_simps length_eq_val_length_tm  mergesort_eq_val_mergesort_tm 
+                                  split_at_eq_val_split_at_tm 
+                        split: prod.split)
+  also have "... \<le> 4 + 3 * n + time (mergesort_tm f l) + time (mergesort_tm f r)"
+    using time_length_tm[of xs] time_split_at_tm[of "n div 2" xs] n_def \<open>time (merge_tm f l' r') \<le> n + 1\<close> by simp
+  also have "... \<le> 4 + 3 * n + mergesort_recurrence (nat \<lfloor>real n / 2\<rfloor>) + mergesort_recurrence (nat \<lceil>real n / 2\<rceil>)"
     using IH by simp
-  moreover have "t_mergesort f XS = ?LHS"
-    using defs by (auto simp: Let_def split: prod.split)
-  moreover have "mergesort_recurrence N = ?RHS"
-    by (simp add: defs)
-  ultimately have "t_mergesort f XS \<le> mergesort_recurrence N"
-    by presburger 
-  thus ?case
-    using XS_def N_def by blast
-qed auto
+  also have "... = mergesort_recurrence n"
+    using defs by simp
+  finally show ?case
+    using defs by simp
+qed
 
 theorem mergesort_recurrence:
   "mergesort_recurrence \<in> \<Theta>(\<lambda>n. n * ln n)"
   by (master_theorem) auto
 
-theorem t_mergesort_bigo:
-  "t_mergesort f \<in> O[length going_to at_top]((\<lambda>n. n * ln n) o length)"
+theorem time_mergesort_tm_bigo:
+  "(\<lambda>xs. time (mergesort_tm f xs)) \<in> O[length going_to at_top]((\<lambda>n. n * ln n) o length)"
 proof -
-  have 0: "\<And>xs. t_mergesort f xs \<le> (mergesort_recurrence o length) xs"
-    unfolding comp_def using t_mergesort_conv_mergesort_recurrence by blast
+  have 0: "\<And>xs. time (mergesort_tm f xs) \<le> (mergesort_recurrence o length) xs"
+    unfolding comp_def using time_mergesort_conv_mergesort_recurrence by blast
   show ?thesis
     using bigo_measure_trans[OF 0] by (simp add: bigthetaD1 mergesort_recurrence)
 qed
@@ -515,7 +603,7 @@ lemma sparse_update:
   assumes "sparse \<delta> (set ps)"
   assumes "dist p\<^sub>0 p\<^sub>1 \<le> \<delta>" "\<forall>p \<in> set ps. dist p\<^sub>0 p\<^sub>1 \<le> dist p\<^sub>0 p"
   shows "sparse (dist p\<^sub>0 p\<^sub>1) (set (p\<^sub>0 # ps))"
-  using assms apply (auto simp: dist_commute sparse_def) by force+
+  using assms by (auto simp: dist_commute sparse_def, force+)
 
 lemma sparse_mono:
   "sparse \<Delta> P \<Longrightarrow> \<delta> \<le> \<Delta> \<Longrightarrow> sparse \<delta> P"
@@ -581,6 +669,19 @@ subsection "Brute Force Closest Pair Algorithm"
 
 subsubsection "Functional Correctness Proof"
 
+fun find_closest_bf_tm :: "point \<Rightarrow> point list \<Rightarrow> point tm" where
+  "find_closest_bf_tm _ [] =1 return undefined"
+| "find_closest_bf_tm _ [p] =1 return p"
+| "find_closest_bf_tm p (p\<^sub>0 # ps) =1 (
+    do {
+      p\<^sub>1 <- find_closest_bf_tm p ps;
+      if dist p p\<^sub>0 < dist p p\<^sub>1 then
+        return p\<^sub>0
+      else
+        return p\<^sub>1
+    }
+  )"
+
 fun find_closest_bf :: "point \<Rightarrow> point list \<Rightarrow> point" where
   "find_closest_bf _ [] = undefined"
 | "find_closest_bf _ [p] = p"
@@ -592,6 +693,10 @@ fun find_closest_bf :: "point \<Rightarrow> point list \<Rightarrow> point" wher
       p\<^sub>1
   )"
 
+lemma find_closest_bf_eq_val_find_closest_bf_tm:
+  "val (find_closest_bf_tm p ps) = find_closest_bf p ps"
+  by (induction p ps rule: find_closest_bf.induct) (auto simp: Let_def)
+
 lemma find_closest_bf_set:
   "0 < length ps \<Longrightarrow> find_closest_bf p ps \<in> set ps"
   by (induction p ps rule: find_closest_bf.induct)
@@ -601,6 +706,21 @@ lemma find_closest_bf_dist:
   "\<forall>q \<in> set ps. dist p (find_closest_bf p ps) \<le> dist p q"
   by (induction p ps rule: find_closest_bf.induct)
      (auto split: prod.splits)
+
+fun closest_pair_bf_tm :: "point list \<Rightarrow> (point \<times> point) tm" where
+  "closest_pair_bf_tm [] =1 return undefined"
+| "closest_pair_bf_tm [_] =1 return undefined"
+| "closest_pair_bf_tm [p\<^sub>0, p\<^sub>1] =1 return (p\<^sub>0, p\<^sub>1)"
+| "closest_pair_bf_tm (p\<^sub>0 # ps) =1 (
+    do {
+      (c\<^sub>0::point, c\<^sub>1::point) <- closest_pair_bf_tm ps;
+      p\<^sub>1 <- find_closest_bf_tm p\<^sub>0 ps;
+      if dist c\<^sub>0 c\<^sub>1 \<le> dist p\<^sub>0 p\<^sub>1 then
+        return (c\<^sub>0, c\<^sub>1)
+      else
+        return (p\<^sub>0, p\<^sub>1)
+    }
+  )"
 
 fun closest_pair_bf :: "point list \<Rightarrow> (point * point)" where
   "closest_pair_bf [] = undefined"
@@ -614,6 +734,11 @@ fun closest_pair_bf :: "point list \<Rightarrow> (point * point)" where
     else
       (p\<^sub>0, p\<^sub>1) 
   )"
+
+lemma closest_pair_bf_eq_val_closest_pair_bf_tm:
+  "val (closest_pair_bf_tm ps) = closest_pair_bf ps"
+  by (induction ps rule: closest_pair_bf.induct) 
+     (auto simp: Let_def find_closest_bf_eq_val_find_closest_bf_tm split: prod.split)
 
 lemma closest_pair_bf_c0:
   "1 < length ps \<Longrightarrow> (c\<^sub>0, c\<^sub>1) = closest_pair_bf ps \<Longrightarrow> c\<^sub>0 \<in> set ps"
@@ -692,43 +817,26 @@ qed (auto simp: dist_commute sparse_def)
 
 subsubsection "Time Complexity Proof"
 
-fun t_find_closest_bf :: "point \<Rightarrow> point list \<Rightarrow> nat" where
-  "t_find_closest_bf _ [] = 0"
-| "t_find_closest_bf _ [_] = 1"
-| "t_find_closest_bf p (p\<^sub>0 # ps) = 1 + (
-    let p\<^sub>1 = find_closest_bf p ps in
-    t_find_closest_bf p ps + (
-    if dist p p\<^sub>0 < dist p p\<^sub>1 then 0 else 0
-    )
-  )"
+lemma time_find_closest_bf_tm:
+  "time (find_closest_bf_tm p ps) \<le> length ps + 1"
+  by (induction p ps rule: find_closest_bf_tm.induct) (auto simp: time_simps)
 
-lemma t_find_closest_bf:
-  "t_find_closest_bf p ps = length ps"
-  by (induction p ps rule: t_find_closest_bf.induct) auto
-
-fun t_closest_pair_bf :: "point list \<Rightarrow> nat" where
-  "t_closest_pair_bf [] = 0"
-| "t_closest_pair_bf [_] = 1"
-| "t_closest_pair_bf [_, _] = 2"
-| "t_closest_pair_bf (p\<^sub>0 # ps) = 1 + (
-    let (c\<^sub>0, c\<^sub>1) = closest_pair_bf ps in
-    t_closest_pair_bf ps + (
-    let p\<^sub>1 = find_closest_bf p\<^sub>0 ps in
-    t_find_closest_bf p\<^sub>0 ps + (
-    if dist c\<^sub>0 c\<^sub>1 \<le> dist p\<^sub>0 p\<^sub>1 then 0 else 0
-    ))
-  )"
-
-lemma t_closest_pair_bf:
-  "t_closest_pair_bf ps \<le> length ps * length ps"
-proof (induction rule: t_closest_pair_bf.induct)
+lemma time_closest_pair_bf_tm:
+  "time (closest_pair_bf_tm ps) \<le> length ps * length ps + 1"
+proof (induction ps rule: closest_pair_bf_tm.induct)
   case (4 p\<^sub>0 p\<^sub>2 p\<^sub>3 ps)
   let ?ps = "p\<^sub>2 # p\<^sub>3 # ps"
-  have "t_closest_pair_bf ?ps \<le> length ?ps * length ?ps"
-    using 4 prod_cases3 by metis
-  thus ?case
-    using "4.prems" t_find_closest_bf by simp
-qed auto
+  have "time (closest_pair_bf_tm (p\<^sub>0 # ?ps)) = 1 + time (find_closest_bf_tm p\<^sub>0 ?ps) + time (closest_pair_bf_tm ?ps)"
+    by (auto simp: time_simps split: prod.split)
+  also have "... \<le> 2 + length ?ps + time (closest_pair_bf_tm ?ps)"
+    using time_find_closest_bf_tm[of p\<^sub>0 ?ps] by simp
+  also have "... \<le> 2 + length ?ps + length ?ps * length ?ps + 1"
+    using "4.IH" by simp
+  also have "... \<le> length (p\<^sub>0 # ?ps) * length (p\<^sub>0 # ?ps) + 1"
+    by auto
+  finally show ?case
+    by blast
+qed (auto simp: time_simps)
 
 subsubsection "Code Export"
 
@@ -967,8 +1075,19 @@ qed
 subsubsection "Pigeonhole Argument"
 
 lemma card_le_1_if_pairwise_eq:
-  "\<forall>x \<in> S. \<forall>y \<in> S. x = y \<Longrightarrow> card S \<le> 1"
-by (metis One_nat_def card_infinite card_le_Suc0_iff_eq le_0_eq le_SucI)
+  assumes "\<forall>x \<in> S. \<forall>y \<in> S. x = y"
+  shows "card S \<le> 1"
+proof (rule ccontr)
+  assume "\<not> card S \<le> 1"
+  hence "2 \<le> card S"
+    by simp
+  then obtain T where *: "T \<subseteq> S \<and> card T = 2"
+    using ex_card by metis
+  then obtain x y where "x \<in> T \<and> y \<in> T \<and> x \<noteq> y"
+    by (meson card_2_iff')
+  then show False
+    using * assms by blast
+qed
 
 lemma card_Int_if_either_in:
   assumes "\<forall>x \<in> S. \<forall>y \<in> S. x = y \<or> x \<notin> T \<or> y \<notin> T" 
