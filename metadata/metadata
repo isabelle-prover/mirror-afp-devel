@@ -7082,6 +7082,9 @@ abstract =
   optimal running time of <em>O</em>(<em>n</em> log <em>n</em>) are
   proved. Executable code is generated which is empirically competitive
   with handwritten reference implementations.
+extra-history =
+	Change history:
+	[2020-14-04]: Incorporate Time_Monad of the AFP entry Root_Balanced_Tree.
 
 [Approximation_Algorithms]
 title = Verified Approximation Algorithms
