@@ -1,12 +1,12 @@
 chapter AFP
 
-session "KD_Tree" (AFP) = Median_Of_Medians_Selection +
+session "KD_Tree" (AFP) = "HOL-Analysis" +
   options [timeout = 600]
   sessions
-    "HOL-Library"
+    Median_Of_Medians_Selection
   theories
-    KDTree
-    Balanced
+    KD_Tree
+    Build
     Range_Search
     Nearest_Neighbors
   document_files

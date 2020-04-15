@@ -7068,6 +7068,11 @@ abstract =
   href="https://dl.acm.org/citation.cfm?doid=355744.355745">
   An Algorithm for Finding Best Matches in Logarithmic Expected
   Time</a>.
+extra-history =
+	Change history:
+	[2020-15-04]: Change representation of k-dimensional points from 'list' to
+                HOL-Analysis.Finite_Cartesian_Product 'vec'. Update proofs
+                to incorporate HOL-Analysis 'dist' and 'cbox' primitives.
 
 [Closest_Pair_Points]
 title = Closest Pair of Points Algorithms
