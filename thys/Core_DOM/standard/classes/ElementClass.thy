@@ -31,8 +31,8 @@ section\<open>Element\<close>
 text\<open>In this theory, we introduce the types for the Element  class.\<close>
 theory ElementClass
   imports
-    NodeClass
-    "../pointers/ShadowRootPointer"
+    "NodeClass"
+    "ShadowRootPointer"
 begin
 text\<open>The type @{type "DOMString"} is a type synonym for @{type "string"}, define 
      in \autoref{sec:Core_DOM_Basic_Datatypes}.\<close>

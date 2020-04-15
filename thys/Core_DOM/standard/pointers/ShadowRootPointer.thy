@@ -34,7 +34,7 @@ We only include them here, as they are required for future work and they cannot 
 following the object-oriented extensibility of our data model.\<close>   
 theory ShadowRootPointer
   imports
-    DocumentPointer
+    "DocumentPointer"
 begin
 
 datatype 'shadow_root_ptr shadow_root_ptr = Ref (the_ref: ref) | Ext 'shadow_root_ptr

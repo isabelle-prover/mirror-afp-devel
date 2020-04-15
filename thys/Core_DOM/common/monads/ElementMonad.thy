@@ -32,7 +32,7 @@ text\<open>In this theory, we introduce the monadic method setup for the Element
 theory ElementMonad
   imports
     NodeMonad
-    "../classes/ElementClass"
+    "ElementClass"
 begin
 
 type_synonym ('object_ptr, 'node_ptr, 'element_ptr, 'character_data_ptr, 'document_ptr, 
