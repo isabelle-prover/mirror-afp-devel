@@ -244,4 +244,15 @@ proof -
     using object_ptr_kinds_preserved_small by blast
 qed
 
+
+lemma reads_writes_preserved2:
+  assumes "writes SW setter h h'"
+  assumes "h \<turnstile> setter \<rightarrow>\<^sub>h h'"
+  assumes "\<And>h h' x. \<forall>w \<in> SW. h \<turnstile> w \<rightarrow>\<^sub>h h' \<longrightarrow> preserved (get_M\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t ptr getter) h h'"
+  shows "preserved (get_M ptr getter) h h'"
+  apply(clarsimp simp add: preserved_def)
+  using reads_singleton assms(1) assms(2)
+  apply(rule reads_writes_preserved)
+  using assms(3)
+  by(auto simp add: preserved_def)
 end

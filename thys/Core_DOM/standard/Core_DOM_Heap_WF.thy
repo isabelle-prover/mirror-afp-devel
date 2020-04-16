@@ -47,30 +47,75 @@ locale l_heap_is_wellformed\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^su
 begin
 definition a_owner_document_valid :: "(_) heap \<Rightarrow> bool"
   where
-    "a_owner_document_valid h = (\<forall>node_ptr. node_ptr |\<in>| node_ptr_kinds h \<longrightarrow>
+    "a_owner_document_valid h \<longleftrightarrow> (\<forall>node_ptr \<in> fset (node_ptr_kinds h).
       ((\<exists>document_ptr. document_ptr |\<in>| document_ptr_kinds h 
          \<and> node_ptr \<in> set |h \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r)
     \<or> (\<exists>parent_ptr. parent_ptr |\<in>| object_ptr_kinds h 
             \<and> node_ptr \<in> set |h \<turnstile> get_child_nodes parent_ptr|\<^sub>r)))"
 
+lemma a_owner_document_valid_code [code]: "a_owner_document_valid h \<longleftrightarrow> node_ptr_kinds h |\<subseteq>|
+  fset_of_list (concat (map (\<lambda>parent. |h \<turnstile> get_child_nodes parent|\<^sub>r) (sorted_list_of_fset (object_ptr_kinds h)) @ map (\<lambda>parent. |h \<turnstile> get_disconnected_nodes parent|\<^sub>r) (sorted_list_of_fset (document_ptr_kinds h))))
+"
+  apply(auto simp add: a_owner_document_valid_def l_heap_is_wellformed\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs.a_owner_document_valid_def)[1]
+proof -
+  fix x
+  assume 1: " \<forall>node_ptr\<in>fset (node_ptr_kinds h). 
+            (\<exists>document_ptr. document_ptr |\<in>| document_ptr_kinds h \<and> node_ptr \<in> set |h \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r) \<or>
+            (\<exists>parent_ptr. parent_ptr |\<in>| object_ptr_kinds h \<and> node_ptr \<in> set |h \<turnstile> get_child_nodes parent_ptr|\<^sub>r)"
+  assume 2: "x |\<in>| node_ptr_kinds h"
+  assume 3: "x |\<notin>| fset_of_list (concat (map (\<lambda>parent. |h \<turnstile> get_disconnected_nodes parent|\<^sub>r) (sorted_list_of_fset (document_ptr_kinds h))))"
+  have "\<not>(\<exists>document_ptr. document_ptr |\<in>| document_ptr_kinds h \<and> x \<in> set |h \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r)"
+    using 1 2 3
+    by (smt UN_I fset_of_list_elem image_eqI notin_fset set_concat set_map sorted_list_of_fset_simps(1))
+  then
+  have "(\<exists>parent_ptr. parent_ptr |\<in>| object_ptr_kinds h \<and> x \<in> set |h \<turnstile> get_child_nodes parent_ptr|\<^sub>r)"
+    using 1 2
+    by auto
+  then obtain parent_ptr where parent_ptr: "parent_ptr |\<in>| object_ptr_kinds h \<and> x \<in> set |h \<turnstile> get_child_nodes parent_ptr|\<^sub>r"
+    by auto
+  moreover have "parent_ptr \<in> set (sorted_list_of_fset (object_ptr_kinds h))"
+    using parent_ptr by auto
+  moreover have "|h \<turnstile> get_child_nodes parent_ptr|\<^sub>r \<in> set (map (\<lambda>parent. |h \<turnstile> get_child_nodes parent|\<^sub>r) (sorted_list_of_fset (object_ptr_kinds h)))"
+    using calculation(2) by auto
+  ultimately
+  show "x |\<in>| fset_of_list (concat (map (\<lambda>parent. |h \<turnstile> get_child_nodes parent|\<^sub>r) (sorted_list_of_fset (object_ptr_kinds h))))"
+    using fset_of_list_elem by fastforce
+next
+  fix node_ptr
+  assume 1: "node_ptr_kinds h |\<subseteq>| fset_of_list (concat (map (\<lambda>parent. |h \<turnstile> get_child_nodes parent|\<^sub>r) (sorted_list_of_fset (object_ptr_kinds h)))) |\<union>| fset_of_list (concat (map (\<lambda>parent. |h \<turnstile> get_disconnected_nodes parent|\<^sub>r) (sorted_list_of_fset (document_ptr_kinds h))))"
+  assume 2: "node_ptr |\<in>| node_ptr_kinds h"
+  assume 3: "\<forall>parent_ptr. parent_ptr |\<in>| object_ptr_kinds h \<longrightarrow> node_ptr \<notin> set |h \<turnstile> get_child_nodes parent_ptr|\<^sub>r"
+  have "node_ptr \<in> set (concat (map (\<lambda>parent. |h \<turnstile> get_child_nodes parent|\<^sub>r) (sorted_list_of_fset (object_ptr_kinds h)))) \<or> node_ptr \<in> set (concat (map (\<lambda>parent. |h \<turnstile> get_disconnected_nodes parent|\<^sub>r) (sorted_list_of_fset (document_ptr_kinds h))))"
+    using 1 2
+    by (meson fin_mono fset_of_list_elem funion_iff)
+  then
+  show "\<exists>document_ptr. document_ptr |\<in>| document_ptr_kinds h \<and> node_ptr \<in> set |h \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r"
+    using 3
+    by auto
+qed
 
 definition a_parent_child_rel :: "(_) heap \<Rightarrow> ((_) object_ptr \<times> (_) object_ptr) set"
   where
     "a_parent_child_rel h = {(parent, child). parent |\<in>| object_ptr_kinds h 
                             \<and> child \<in> cast ` set |h \<turnstile> get_child_nodes parent|\<^sub>r}"
 
+lemma a_parent_child_rel_code [code]: "a_parent_child_rel h = set (concat (map
+  (\<lambda>parent. map
+    (\<lambda>child. (parent, cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r child))
+    |h \<turnstile> get_child_nodes parent|\<^sub>r)
+  (sorted_list_of_fset (object_ptr_kinds h)))
+)"
+  by(auto simp add: a_parent_child_rel_def)
+
 definition a_acyclic_heap :: "(_) heap \<Rightarrow> bool"
   where
     "a_acyclic_heap h = acyclic (a_parent_child_rel h)"
 
-
 definition a_all_ptrs_in_heap :: "(_) heap \<Rightarrow> bool"
   where
-    "a_all_ptrs_in_heap h = ((\<forall>ptr children. (h \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children) 
-    \<longrightarrow> fset_of_list children |\<subseteq>| node_ptr_kinds h)
-      \<and> (\<forall>document_ptr disc_node_ptrs. (h \<turnstile> get_disconnected_nodes document_ptr \<rightarrow>\<^sub>r disc_node_ptrs) 
-         \<longrightarrow> fset_of_list disc_node_ptrs |\<subseteq>| node_ptr_kinds h))"
-
+    "a_all_ptrs_in_heap h \<longleftrightarrow>
+      (\<forall>ptr \<in> fset (object_ptr_kinds h). set |h \<turnstile> get_child_nodes ptr|\<^sub>r \<subseteq> fset (node_ptr_kinds h)) \<and>
+      (\<forall>document_ptr \<in> fset (document_ptr_kinds h). set |h \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r \<subseteq> fset (node_ptr_kinds h))"
 
 definition a_distinct_lists :: "(_) heap \<Rightarrow> bool"
   where                     
@@ -94,6 +139,10 @@ global_interpretation l_heap_is_wellformed\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub
 defines heap_is_wellformed = "l_heap_is_wellformed\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs.a_heap_is_wellformed get_child_nodes 
                      get_disconnected_nodes"
       and parent_child_rel = "l_heap_is_wellformed\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs.a_parent_child_rel get_child_nodes"
+      and acyclic_heap = a_acyclic_heap
+      and all_ptrs_in_heap = a_all_ptrs_in_heap
+      and distinct_lists = a_distinct_lists
+      and owner_document_valid = a_owner_document_valid
   .
 
 locale l_heap_is_wellformed\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M =
@@ -218,7 +267,7 @@ lemma heap_is_wellformed_children_in_heap:
   shows "child |\<in>| node_ptr_kinds h"
   using assms
   apply(auto simp add: heap_is_wellformed_def a_all_ptrs_in_heap_def)[1]
-  by (meson fset_of_list_elem fset_rev_mp)
+  by (metis (no_types, lifting) finite_set_in is_OK_returns_result_I local.get_child_nodes_ptr_in_heap select_result_I2 subsetD)
 
 lemma heap_is_wellformed_one_parent:
   assumes "heap_is_wellformed h"
@@ -267,12 +316,12 @@ lemma parent_child_rel_child_in_heap:
     \<Longrightarrow> (parent, child_ptr) \<in> parent_child_rel h \<Longrightarrow> child_ptr |\<in>| object_ptr_kinds h"
   apply(auto simp add: heap_is_wellformed_def parent_child_rel_def a_all_ptrs_in_heap_def)[1]
   using get_child_nodes_ok
-  by (meson fin_mono fset_of_list_elem returns_result_select_result)
+  by (meson finite_set_in subsetD)
 
 lemma heap_is_wellformed_disc_nodes_in_heap: 
   "heap_is_wellformed h \<Longrightarrow> h \<turnstile> get_disconnected_nodes document_ptr \<rightarrow>\<^sub>r disc_nodes 
    \<Longrightarrow> node \<in> set disc_nodes \<Longrightarrow> node |\<in>| node_ptr_kinds h"
-  by (meson fset_mp fset_of_list_elem local.a_all_ptrs_in_heap_def local.heap_is_wellformed_def)
+  by (metis (no_types, lifting) finite_set_in is_OK_returns_result_I local.a_all_ptrs_in_heap_def local.get_disconnected_nodes_ptr_in_heap local.heap_is_wellformed_def select_result_I2 subsetD)
 
 lemma heap_is_wellformed_one_disc_parent: 
   "heap_is_wellformed h \<Longrightarrow> h \<turnstile> get_disconnected_nodes document_ptr \<rightarrow>\<^sub>r disc_nodes 
@@ -517,8 +566,8 @@ proof -
   proof (induct rule: wf_induct_rule)
     case (less parent)
     then show ?case
-      using assms child_parent_dual parent_child_rel_parent
-      by (meson converse_iff parent_child_rel_child)
+      using assms parent_child_rel_child
+      by (meson converse_iff)
   qed
 qed
 
@@ -667,8 +716,7 @@ proof -
   moreover have "a_all_ptrs_in_heap h"
     using heap_is_wellformed by (simp add: heap_is_wellformed_def)
   then have "a_all_ptrs_in_heap h'"
-    by(auto simp add: a_all_ptrs_in_heap_def node_ptr_kinds_def node_ptr_kinds_eq2 
-                      object_ptr_kinds_eq3 children_eq disconnected_nodes_eq)
+    by (simp add: children_eq2 disconnected_nodes_eq2 document_ptr_kinds_eq3 l_heap_is_wellformed\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs.a_all_ptrs_in_heap_def node_ptr_kinds_eq3 object_ptr_kinds_eq3)
 
   moreover have h0: "a_distinct_lists h"
     using heap_is_wellformed by (simp add: heap_is_wellformed_def)
@@ -1764,9 +1812,6 @@ locale l_get_root_node_wf = l_heap_is_wellformed_defs + l_get_root_node_defs + l
   assumes get_root_node_same_no_parent: 
     "heap_is_wellformed h \<Longrightarrow> type_wf h \<Longrightarrow> known_ptrs h 
                           \<Longrightarrow> h \<turnstile> get_root_node ptr \<rightarrow>\<^sub>r cast child \<Longrightarrow> h \<turnstile> get_parent child \<rightarrow>\<^sub>r None"
-  assumes get_root_node_not_node_same: 
-    "ptr |\<in>| object_ptr_kinds h \<Longrightarrow> \<not>is_node_ptr_kind ptr 
-                                \<Longrightarrow> h \<turnstile> get_root_node ptr \<rightarrow>\<^sub>r ptr"
   assumes get_root_node_parent_same: 
     "h \<turnstile> get_parent child \<rightarrow>\<^sub>r Some ptr 
         \<Longrightarrow> h \<turnstile> get_root_node (cast child) \<rightarrow>\<^sub>r root \<longleftrightarrow> h \<turnstile> get_root_node ptr \<rightarrow>\<^sub>r root"
@@ -1805,17 +1850,11 @@ lemma get_root_node_wf_is_l_get_root_node_wf [instances]:
   using get_root_node_root_in_heap apply blast
   using get_ancestors_same_root_node apply(blast, blast)
   using get_root_node_same_no_parent apply blast
-  using get_root_node_not_node_same apply blast
   using get_root_node_parent_same apply (blast, blast)
   done
 
 
 subsection \<open>to\_tree\_order\<close>
-(* lemma to_tree_order_reads:
-  assumes "a_heap_is_wellformed h"
-  shows "reads (all_ptrs (getter_preserved_set_ext \<union> {get_M\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_preserved document_element} 
-         \<union> {get_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_preserved Element.child_nodes})) (to_tree_order ptr) h h'"
-  oops *)
 
 locale l_to_tree_order_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M = 
   l_to_tree_order\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M +
@@ -2374,13 +2413,8 @@ lemma to_tree_order_wf_is_l_to_tree_order_wf [instances]:
 subsubsection \<open>get\_root\_node\<close>
 
 locale l_to_tree_order_wf_get_root_node_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M =
-  l_get_ancestors
-  + l_get_ancestors_wf
-  + l_get_root_node
-  + l_get_root_node_wf
+  l_get_root_node_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M
   + l_to_tree_order_wf
-  + l_get_parent
-  + l_get_parent_wf
 begin
 lemma to_tree_order_get_root_node:
   assumes "heap_is_wellformed h" and "type_wf h" and "known_ptrs h"
@@ -2467,9 +2501,7 @@ qed
 end
 
 interpretation i_to_tree_order_wf_get_root_node_wf?: l_to_tree_order_wf_get_root_node_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M 
-               get_ancestors get_ancestors_locs heap_is_wellformed parent_child_rel known_ptr 
-               known_ptrs type_wf get_child_nodes get_child_nodes_locs get_parent get_parent_locs 
-               get_root_node get_root_node_locs to_tree_order
+  known_ptr type_wf known_ptrs heap_is_wellformed parent_child_rel get_child_nodes get_child_nodes_locs get_disconnected_nodes get_disconnected_nodes_locs get_parent get_parent_locs get_ancestors get_ancestors_locs get_root_node get_root_node_locs to_tree_order
   using instances
   by(simp add: l_to_tree_order_wf_get_root_node_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_def)
 
@@ -2501,11 +2533,12 @@ subsection \<open>get\_owner\_document\<close>
 locale l_get_owner_document_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M =
   l_known_ptrs
   + l_heap_is_wellformed
-  + l_get_root_node
+  + l_get_root_node\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M
   + l_get_ancestors
   + l_get_ancestors_wf
   + l_get_parent
   + l_get_parent_wf
+  + l_get_root_node_wf
   + l_get_owner_document\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M
 begin
 
@@ -2629,8 +2662,7 @@ proof -
     by (metis (no_types, hide_lams))
   moreover have "node_ptr |\<in>| node_ptr_kinds h"
     using assms(2) get_parent_ptr_in_heap by blast
-  thm heap_is_wellformed_children_disc_nodes_different
-  ultimately 
+  ultimately
   have 0: "\<exists>document_ptr\<in>set |h \<turnstile> document_ptr_kinds_M|\<^sub>r. node_ptr \<in> set |h \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r"
     by (metis DocumentMonad.ptr_kinds_ptr_kinds_M assms(1) finite_set_in heap_is_wellformed_children_disc_nodes)
   then  obtain document_ptr where
@@ -2643,6 +2675,286 @@ proof -
           returns_result_select_result select_result_I2
     by (metis (no_types, hide_lams) )
 qed
+
+lemma get_owner_document_owner_document_in_heap: 
+  assumes "heap_is_wellformed h" and "type_wf h" and "known_ptrs h"
+  assumes "h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document"
+  shows "owner_document |\<in>| document_ptr_kinds h"
+  using assms
+  apply(auto simp add: get_owner_document_def a_get_owner_document_tups_def)[1]
+  apply(split invoke_split_asm)+
+proof -
+  assume "h \<turnstile> invoke [] ptr () \<rightarrow>\<^sub>r owner_document"
+  then show "owner_document |\<in>| document_ptr_kinds h"
+    by (meson invoke_empty is_OK_returns_result_I)
+next
+  assume "h \<turnstile> Heap_Error_Monad.bind (check_in_heap ptr)
+          (\<lambda>_. (local.a_get_owner_document\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r \<circ> the \<circ> cast\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r) ptr ())
+    \<rightarrow>\<^sub>r owner_document"
+  then show "owner_document |\<in>| document_ptr_kinds h"
+    by(auto simp add: a_get_owner_document\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def elim!: bind_returns_result_E2 split: if_splits)
+next
+  assume 0: "heap_is_wellformed h"
+    and 1: "type_wf h"
+    and 2: "known_ptrs h"
+    and 3: "\<not> is_element_ptr\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r ptr"
+    and 4: "is_character_data_ptr\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r ptr"
+    and 5: "h \<turnstile> Heap_Error_Monad.bind (check_in_heap ptr) (\<lambda>_. (local.a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r \<circ> the \<circ> cast\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r) ptr ()) \<rightarrow>\<^sub>r owner_document"
+  then obtain root where
+    root: "h \<turnstile> get_root_node ptr \<rightarrow>\<^sub>r root"
+    by(auto simp add: a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def elim!: bind_returns_result_E2  split: option.splits)
+
+  then show ?thesis
+  proof (cases "is_document_ptr root")
+    case True
+    then show ?thesis
+      using 4 5 root 
+      apply(auto simp add: a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def elim!:  bind_returns_result_E2 intro!: filter_M_pure_I bind_pure_I split: option.splits)[1] 
+       apply(drule(1) returns_result_eq) apply(auto)[1]
+      using "0" "1" "2" document_ptr_kinds_commutes local.get_root_node_root_in_heap by blast
+  next
+    case False
+    have "known_ptr root"
+      using "0" "1" "2" local.get_root_node_root_in_heap local.known_ptrs_known_ptr root by blast
+    have "root |\<in>| object_ptr_kinds h"
+      using root
+      using "0" "1" "2" local.get_root_node_root_in_heap
+      by blast
+    then have "is_node_ptr_kind root"
+      using False \<open>known_ptr root\<close>
+      apply(simp add: known_ptr_impl known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs)
+      using is_node_ptr_kind_none by force
+    then
+    have "(\<exists>document_ptr \<in> fset (document_ptr_kinds h). root \<in> cast ` set |h \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r)"
+      by (metis (no_types, lifting) "0" "1" "2" \<open>root |\<in>| object_ptr_kinds h\<close> local.child_parent_dual local.get_child_nodes_ok local.get_root_node_same_no_parent local.heap_is_wellformed_children_disc_nodes local.known_ptrs_known_ptr node_ptr_casts_commute3 node_ptr_inclusion node_ptr_kinds_commutes notin_fset option.distinct(1) returns_result_eq returns_result_select_result root)
+    then obtain some_owner_document where
+      "some_owner_document |\<in>| document_ptr_kinds h" and
+      "root \<in> cast ` set |h \<turnstile> get_disconnected_nodes some_owner_document|\<^sub>r"
+      by auto
+    then
+    obtain candidates where
+      candidates: "h \<turnstile> filter_M
+             (\<lambda>document_ptr.
+                 Heap_Error_Monad.bind (get_disconnected_nodes document_ptr)
+                  (\<lambda>disconnected_nodes. return (root \<in> cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r ` set disconnected_nodes)))
+             (sorted_list_of_set (fset (document_ptr_kinds h)))
+       \<rightarrow>\<^sub>r candidates"
+      by (metis (no_types, lifting) "1" bind_is_OK_I2 bind_pure_I filter_M_is_OK_I finite_fset is_OK_returns_result_E local.get_disconnected_nodes_ok local.get_disconnected_nodes_pure notin_fset return_ok return_pure sorted_list_of_set(1))
+    then have "some_owner_document \<in> set candidates"
+      apply(rule filter_M_in_result_if_ok)
+      using \<open>some_owner_document |\<in>| document_ptr_kinds h\<close> \<open>root \<in> cast ` set |h \<turnstile> get_disconnected_nodes some_owner_document|\<^sub>r\<close>
+        apply(auto intro!: bind_pure_I bind_pure_returns_result_I)[1]
+       apply (simp add: \<open>some_owner_document |\<in>| document_ptr_kinds h\<close>)
+      using "1" \<open>root \<in> cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r ` set |h \<turnstile> get_disconnected_nodes some_owner_document|\<^sub>r\<close> \<open>some_owner_document |\<in>| document_ptr_kinds h\<close> 
+            local.get_disconnected_nodes_ok by auto 
+    then have "candidates \<noteq> []"
+      by auto
+    then have "owner_document \<in> set candidates"
+      using 5 root 4
+      apply(auto simp add: a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def elim!:  bind_returns_result_E2 intro!: filter_M_pure_I bind_pure_I split: option.splits)[1] 
+       apply (metis candidates list.set_sel(1) returns_result_eq)
+      by (metis \<open>is_node_ptr_kind root\<close> node_ptr_no_document_ptr_cast returns_result_eq)
+
+    then show ?thesis
+      using candidates
+      by (meson bind_pure_I bind_returns_result_E2 filter_M_holds_for_result is_OK_returns_result_I local.get_disconnected_nodes_ptr_in_heap local.get_disconnected_nodes_pure return_pure)
+  qed
+next
+  assume 0: "heap_is_wellformed h"
+    and 1: "type_wf h"
+    and 2: "known_ptrs h"
+    and 3: "is_element_ptr\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r ptr"
+    and 4: "h \<turnstile> Heap_Error_Monad.bind (check_in_heap ptr) (\<lambda>_. (local.a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r \<circ> the \<circ> cast\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r) ptr ()) \<rightarrow>\<^sub>r owner_document"
+  then obtain root where
+    root: "h \<turnstile> get_root_node ptr \<rightarrow>\<^sub>r root"
+    by(auto simp add: a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def elim!: bind_returns_result_E2  split: option.splits)
+
+  then show ?thesis
+  proof (cases "is_document_ptr root")
+    case True
+    then show ?thesis
+      using 3 4 root 
+      apply(auto simp add: a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def elim!:  bind_returns_result_E2 intro!: filter_M_pure_I bind_pure_I split: option.splits)[1] 
+       apply(drule(1) returns_result_eq) apply(auto)[1]
+      using "0" "1" "2" document_ptr_kinds_commutes local.get_root_node_root_in_heap by blast
+  next
+    case False
+    have "known_ptr root"
+      using "0" "1" "2" local.get_root_node_root_in_heap local.known_ptrs_known_ptr root by blast
+    have "root |\<in>| object_ptr_kinds h"
+      using root
+      using "0" "1" "2" local.get_root_node_root_in_heap
+      by blast
+    then have "is_node_ptr_kind root"
+      using False \<open>known_ptr root\<close>
+      apply(simp add: known_ptr_impl known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs)
+      using is_node_ptr_kind_none by force
+    then
+    have "(\<exists>document_ptr \<in> fset (document_ptr_kinds h). root \<in> cast ` set |h \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r)"
+      by (metis (no_types, lifting) "0" "1" "2" \<open>root |\<in>| object_ptr_kinds h\<close> local.child_parent_dual local.get_child_nodes_ok local.get_root_node_same_no_parent local.heap_is_wellformed_children_disc_nodes local.known_ptrs_known_ptr node_ptr_casts_commute3 node_ptr_inclusion node_ptr_kinds_commutes notin_fset option.distinct(1) returns_result_eq returns_result_select_result root)
+    then obtain some_owner_document where
+      "some_owner_document |\<in>| document_ptr_kinds h" and
+      "root \<in> cast ` set |h \<turnstile> get_disconnected_nodes some_owner_document|\<^sub>r"
+      by auto
+    then
+    obtain candidates where
+      candidates: "h \<turnstile> filter_M
+             (\<lambda>document_ptr.
+                 Heap_Error_Monad.bind (get_disconnected_nodes document_ptr)
+                  (\<lambda>disconnected_nodes. return (root \<in> cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r ` set disconnected_nodes)))
+             (sorted_list_of_set (fset (document_ptr_kinds h)))
+       \<rightarrow>\<^sub>r candidates"
+      by (metis (no_types, lifting) "1" bind_is_OK_I2 bind_pure_I filter_M_is_OK_I finite_fset is_OK_returns_result_E local.get_disconnected_nodes_ok local.get_disconnected_nodes_pure notin_fset return_ok return_pure sorted_list_of_set(1))
+    then have "some_owner_document \<in> set candidates"
+      apply(rule filter_M_in_result_if_ok)
+      using \<open>some_owner_document |\<in>| document_ptr_kinds h\<close> \<open>root \<in> cast ` set |h \<turnstile> get_disconnected_nodes some_owner_document|\<^sub>r\<close>
+        apply(auto intro!: bind_pure_I bind_pure_returns_result_I)
+      by (simp add: "1" local.get_disconnected_nodes_ok)
+
+    then have "candidates \<noteq> []"
+      by auto
+    then have "owner_document \<in> set candidates"
+      using 4 root 3
+      apply(auto simp add: a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def elim!:  bind_returns_result_E2 intro!: filter_M_pure_I bind_pure_I split: option.splits)[1] 
+       apply (metis candidates list.set_sel(1) returns_result_eq)
+      by (metis \<open>is_node_ptr_kind root\<close> node_ptr_no_document_ptr_cast returns_result_eq)
+
+    then show ?thesis
+      using candidates
+      by (meson bind_pure_I bind_returns_result_E2 filter_M_holds_for_result is_OK_returns_result_I local.get_disconnected_nodes_ptr_in_heap local.get_disconnected_nodes_pure return_pure)
+  qed
+qed
+
+lemma get_owner_document_ok: 
+  assumes "heap_is_wellformed h"  "known_ptrs h" "type_wf h"
+  assumes "ptr |\<in>| object_ptr_kinds h"
+  shows "h \<turnstile> ok (get_owner_document ptr)"
+proof -
+  have "known_ptr ptr"
+    using assms(2) assms(4) local.known_ptrs_known_ptr
+    by blast
+  then show ?thesis
+    apply(auto simp add: get_owner_document_def a_get_owner_document_tups_def)[1]
+    apply(split invoke_splits, (rule conjI | rule impI)+)+
+       apply(auto simp add: known_ptr_impl)[1]
+    using NodeClass.a_known_ptr_def known_ptr_not_character_data_ptr known_ptr_not_document_ptr known_ptr_not_element_ptr 
+       apply blast
+    using assms(4)
+      apply(auto simp add: a_get_owner_document\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def intro!: bind_is_OK_pure_I)[1]
+        apply (metis (no_types, lifting) document_ptr_casts_commute3 document_ptr_kinds_commutes is_document_ptr_kind_none option.case_eq_if)
+    using assms(4)
+     apply(auto simp add: a_get_owner_document\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def intro!: bind_is_OK_pure_I)[1]
+       apply (metis (no_types, lifting) assms(1) assms(2) assms(3) is_node_ptr_kind_none local.get_root_node_ok node_ptr_casts_commute3 option.case_eq_if)
+    using assms(4)
+     apply(auto simp add: a_get_owner_document\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def intro!: bind_is_OK_pure_I)[1]
+     apply(auto split: option.splits intro!: bind_is_OK_pure_I filter_M_pure_I bind_pure_I filter_M_is_OK_I)[1]
+    using assms(3) local.get_disconnected_nodes_ok 
+     apply blast
+     apply (simp add: assms(1) assms(2) assms(3) local.get_root_node_ok)
+    using assms(4)
+    apply(auto simp add: a_get_owner_document\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def intro!: bind_is_OK_pure_I)[1]
+     apply(auto split: option.splits intro!: bind_is_OK_pure_I filter_M_pure_I bind_pure_I filter_M_is_OK_I)[1]
+     apply (simp add: assms(1) assms(2) assms(3) local.get_root_node_ok)[1]
+    apply(auto split: option.splits intro!: bind_is_OK_pure_I filter_M_pure_I bind_pure_I filter_M_is_OK_I)[1]
+    using assms(3) local.get_disconnected_nodes_ok by blast
+qed
+
+lemma get_owner_document_child_same:
+  assumes "heap_is_wellformed h"  "known_ptrs h" "type_wf h"
+  assumes "h \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children"
+  assumes "child \<in> set children"
+  shows "h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document \<longleftrightarrow> h \<turnstile> get_owner_document (cast child) \<rightarrow>\<^sub>r owner_document"
+proof -
+  have "ptr |\<in>| object_ptr_kinds h"
+    by (meson assms(4) is_OK_returns_result_I local.get_child_nodes_ptr_in_heap) 
+  then have "known_ptr ptr"
+    using assms(2) local.known_ptrs_known_ptr by blast 
+
+  have "cast child |\<in>| object_ptr_kinds h"
+    using assms(1) assms(4) assms(5) local.heap_is_wellformed_children_in_heap node_ptr_kinds_commutes by blast 
+  then
+  have "known_ptr (cast child)"
+    using assms(2) local.known_ptrs_known_ptr by blast 
+
+  obtain root where root: "h \<turnstile> get_root_node ptr \<rightarrow>\<^sub>r root"
+    by (meson \<open>ptr |\<in>| object_ptr_kinds h\<close> assms(1) assms(2) assms(3) is_OK_returns_result_E local.get_root_node_ok) 
+  then have "h \<turnstile> get_root_node (cast child) \<rightarrow>\<^sub>r root"
+    using assms(1) assms(2) assms(3) assms(4) assms(5) local.child_parent_dual local.get_root_node_parent_same by blast 
+
+  have "h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document \<longleftrightarrow> h \<turnstile> a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r child () \<rightarrow>\<^sub>r owner_document"
+  proof (cases "is_document_ptr ptr")
+    case True
+    then obtain document_ptr where document_ptr: "cast\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r document_ptr = ptr"
+      using case_optionE document_ptr_casts_commute by blast 
+    then have "root = cast document_ptr"
+      using root
+      by(auto simp add: get_root_node_def get_ancestors_def elim!: bind_returns_result_E2 split: option.splits)
+       
+    then have "h \<turnstile> a_get_owner_document\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r document_ptr () \<rightarrow>\<^sub>r owner_document \<longleftrightarrow> h \<turnstile> a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r child () \<rightarrow>\<^sub>r owner_document"
+      using document_ptr \<open>h \<turnstile> get_root_node (cast child) \<rightarrow>\<^sub>r root\<close>[simplified \<open>root = cast document_ptr\<close> document_ptr] 
+      apply(auto simp add:  a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def a_get_owner_document\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def elim!: bind_returns_result_E2 dest!: bind_returns_result_E3[rotated, OF \<open>h \<turnstile> get_root_node (cast child) \<rightarrow>\<^sub>r root\<close>[simplified \<open>root = cast document_ptr\<close> document_ptr], rotated] intro!: bind_pure_returns_result_I filter_M_pure_I bind_pure_I split: if_splits option.splits)[1]
+      using \<open>ptr |\<in>| object_ptr_kinds h\<close> document_ptr_kinds_commutes by blast
+    then show ?thesis
+      using \<open>known_ptr ptr\<close>
+      apply(auto simp add: get_owner_document_def a_get_owner_document_tups_def known_ptr_impl)[1]
+       apply(split invoke_splits, ((rule conjI | rule impI)+)?)+
+          apply(drule(1) known_ptr_not_document_ptr[folded known_ptr_impl])
+          apply(drule(1)  known_ptr_not_character_data_ptr)
+          apply(drule(1)  known_ptr_not_element_ptr)
+          apply(simp add: NodeClass.known_ptr_defs)
+      using \<open>ptr |\<in>| object_ptr_kinds h\<close> True
+      by(auto simp add: document_ptr[symmetric] intro!: bind_pure_returns_result_I split: option.splits)
+  next
+    case False
+    then obtain node_ptr where node_ptr: "cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r node_ptr = ptr"
+      using \<open>known_ptr ptr\<close>
+      by(auto simp add: known_ptr_impl DocumentClass.known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
+    then have "h \<turnstile> a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r node_ptr () \<rightarrow>\<^sub>r owner_document \<longleftrightarrow> h \<turnstile> a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r child () \<rightarrow>\<^sub>r owner_document"
+      using root \<open>h \<turnstile> get_root_node (cast child) \<rightarrow>\<^sub>r root\<close>
+      unfolding a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def
+      by (meson bind_pure_returns_result_I bind_returns_result_E3 local.get_root_node_pure)
+    then show ?thesis
+      using \<open>known_ptr ptr\<close>
+      apply(auto simp add: get_owner_document_def a_get_owner_document_tups_def known_ptr_impl)
+       apply(split invoke_splits, ((rule conjI | rule impI)+)?)+
+          apply(drule(1) known_ptr_not_document_ptr[folded known_ptr_impl])
+          apply(drule(1)  known_ptr_not_character_data_ptr)
+          apply(drule(1)  known_ptr_not_element_ptr)
+          apply(simp add: NodeClass.known_ptr_defs)
+      using \<open>cast child |\<in>| object_ptr_kinds h\<close> \<open>ptr |\<in>| object_ptr_kinds h\<close> False
+         apply(auto simp add: node_ptr[symmetric] intro!: bind_pure_returns_result_I split: )[1]
+      using \<open>cast child |\<in>| object_ptr_kinds h\<close> \<open>ptr |\<in>| object_ptr_kinds h\<close> False
+        apply(auto simp add: node_ptr[symmetric] intro!: bind_pure_returns_result_I split: )[1]
+      using \<open>cast child |\<in>| object_ptr_kinds h\<close> \<open>ptr |\<in>| object_ptr_kinds h\<close> False
+       apply(auto simp add: node_ptr[symmetric] intro!: bind_pure_returns_result_I split: )[1]
+      using \<open>cast child |\<in>| object_ptr_kinds h\<close> \<open>ptr |\<in>| object_ptr_kinds h\<close> False
+      apply(auto simp add: node_ptr[symmetric] intro!: bind_pure_returns_result_I split: )[1]
+      apply(split invoke_splits, ((rule conjI | rule impI)+)?)+
+         apply(auto simp add: node_ptr[symmetric] intro!: bind_pure_returns_result_I split: )[1]
+         apply (meson invoke_empty is_OK_returns_result_I)
+        apply(auto simp add: node_ptr[symmetric] intro!: bind_pure_returns_result_I split: )[1]
+      apply(auto simp add: node_ptr[symmetric] intro!: bind_pure_returns_result_I split: )[1]
+     by(auto simp add: node_ptr[symmetric] intro!: bind_pure_returns_result_I split: )[1]
+  qed
+  then show ?thesis
+    using \<open>known_ptr (cast child)\<close>
+    apply(auto simp add: get_owner_document_def[of "cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r child"] a_get_owner_document_tups_def known_ptr_impl)[1]
+     apply(split invoke_splits, ((rule conjI | rule impI)+)?)+
+        apply(drule(1) known_ptr_not_document_ptr[folded known_ptr_impl])
+        apply(drule(1)  known_ptr_not_character_data_ptr)
+        apply(drule(1)  known_ptr_not_element_ptr)
+        apply(simp add: NodeClass.known_ptr_defs)
+    using \<open>cast child |\<in>| object_ptr_kinds h\<close> \<open>ptr |\<in>| object_ptr_kinds h\<close>
+       apply(auto intro!: bind_pure_returns_result_I split: option.splits)[1]
+    using \<open>cast child |\<in>| object_ptr_kinds h\<close> \<open>ptr |\<in>| object_ptr_kinds h\<close>
+      apply(auto intro!: bind_pure_returns_result_I split: option.splits)[1]
+    using \<open>cast child |\<in>| object_ptr_kinds h\<close> \<open>ptr |\<in>| object_ptr_kinds h\<close>
+     apply(auto intro!: bind_pure_returns_result_I split: option.splits)[1]
+    using \<open>cast child |\<in>| object_ptr_kinds h\<close> \<open>ptr |\<in>| object_ptr_kinds h\<close>
+    apply(auto intro!: bind_pure_returns_result_I split: option.splits)[1]
+    by (smt \<open>cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r child |\<in>| object_ptr_kinds h\<close> cast_document_ptr_not_node_ptr(1) comp_apply invoke_empty invoke_not invoke_returns_result is_OK_returns_result_I node_ptr_casts_commute2 option.sel)
+qed
+
 end
 
 locale l_get_owner_document_wf = l_heap_is_wellformed_defs + l_type_wf + l_known_ptrs 
@@ -2663,36 +2975,223 @@ locale l_get_owner_document_wf = l_heap_is_wellformed_defs + l_type_wf + l_known
     known_ptrs h \<Longrightarrow>
     type_wf h\<Longrightarrow>
     node_ptr \<in> set disc_nodes"
+ assumes get_owner_document_owner_document_in_heap: 
+    "heap_is_wellformed h \<Longrightarrow> type_wf h \<Longrightarrow> known_ptrs h \<Longrightarrow> h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document \<Longrightarrow> owner_document |\<in>| document_ptr_kinds h"
+ assumes get_owner_document_ok: 
+    "heap_is_wellformed h \<Longrightarrow> known_ptrs h \<Longrightarrow> type_wf h \<Longrightarrow> ptr |\<in>| object_ptr_kinds h 
+                          \<Longrightarrow> h \<turnstile> ok (get_owner_document ptr)"
 
-interpretation i_get_owner_document_wf?:
-  l_get_owner_document_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M known_ptr known_ptrs type_wf heap_is_wellformed parent_child_rel 
-  get_child_nodes get_child_nodes_locs get_disconnected_nodes get_disconnected_nodes_locs 
-  get_root_node get_root_node_locs get_parent get_parent_locs get_ancestors get_ancestors_locs 
-  get_owner_document
-  using known_ptrs_is_l_known_ptrs
-  using heap_is_wellformed_is_l_heap_is_wellformed
-  using get_root_node_is_l_get_root_node
-  using get_ancestors_is_l_get_ancestors
-  using get_ancestors_wf_is_l_get_ancestors_wf
-  using get_parent_is_l_get_parent
-  using get_ancestors_wf_is_l_get_ancestors_wf
-  using get_parent_wf_is_l_get_parent_wf
-  using l_get_owner_document\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms
-  by(simp add: l_get_owner_document_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_def)
-
-
+interpretation i_get_owner_document_wf?: l_get_owner_document_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M
+    known_ptr known_ptrs type_wf heap_is_wellformed parent_child_rel get_child_nodes get_child_nodes_locs get_disconnected_nodes get_disconnected_nodes_locs get_parent get_parent_locs get_ancestors get_ancestors_locs get_root_node get_root_node_locs get_owner_document
+  by(auto simp add: l_get_owner_document_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_def instances)
+declare l_get_owner_document_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms [instances]
 
 lemma get_owner_document_wf_is_l_get_owner_document_wf [instances]:
   "l_get_owner_document_wf heap_is_wellformed type_wf known_ptr known_ptrs get_disconnected_nodes 
                            get_owner_document get_parent"
   using known_ptrs_is_l_known_ptrs
-  apply(simp add: l_get_owner_document_wf_def l_get_owner_document_wf_axioms_def)
-  using get_owner_document_disconnected_nodes in_disconnected_nodes_no_parent
-  by fast
+  apply(auto simp add: l_get_owner_document_wf_def l_get_owner_document_wf_axioms_def)[1]
+  using get_owner_document_disconnected_nodes apply fast
+  using  in_disconnected_nodes_no_parent apply fast
+  using get_owner_document_owner_document_in_heap apply fast
+  using get_owner_document_ok apply fast
+  done
+
+
+subsubsection \<open>get\_root\_node\<close>
+
+locale l_get_owner_document_wf_get_root_node_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M =
+  l_get_root_node\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M +
+  l_get_root_node_wf +
+  l_get_owner_document\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M +
+  l_get_owner_document_wf
+begin
+
+lemma get_root_node_document:
+  assumes "heap_is_wellformed h" and "type_wf h" and "known_ptrs h"
+  assumes "h \<turnstile> get_root_node ptr \<rightarrow>\<^sub>r root"
+  assumes "is_document_ptr_kind root"
+  shows "h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r the (cast root)"
+proof -
+  have "ptr |\<in>| object_ptr_kinds h"
+    using assms(4)
+    by (meson is_OK_returns_result_I local.get_root_node_ptr_in_heap)
+  then have "known_ptr ptr"
+    using assms(3) local.known_ptrs_known_ptr by blast
+  {
+    assume "is_document_ptr_kind ptr"
+    then have "ptr = root"
+      using assms(4)
+      by(auto simp add: get_root_node_def get_ancestors_def elim!: bind_returns_result_E2 split: option.splits)
+    then have ?thesis
+      using \<open>is_document_ptr_kind ptr\<close> \<open>known_ptr ptr\<close> \<open>ptr |\<in>| object_ptr_kinds h\<close>
+      apply(auto simp add: known_ptr_impl get_owner_document_def a_get_owner_document_tups_def)[1]
+      apply(split invoke_splits, (rule conjI | rule impI)+)+
+         apply(drule(1) known_ptr_not_document_ptr[folded known_ptr_impl])
+         apply(drule(1) known_ptr_not_character_data_ptr)
+         apply(drule(1) known_ptr_not_element_ptr)
+         apply(simp add: NodeClass.known_ptr_defs)
+      by(auto simp add: a_get_owner_document\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def intro!: bind_pure_returns_result_I split: option.splits)
+  }
+  moreover
+  {
+    assume "is_node_ptr_kind ptr"
+    then have ?thesis
+      using \<open>known_ptr ptr\<close> \<open>ptr |\<in>| object_ptr_kinds h\<close>
+      apply(auto simp add: known_ptr_impl get_owner_document_def a_get_owner_document_tups_def)
+      apply(split invoke_splits, (rule conjI | rule impI)+)+
+         apply(drule(1) known_ptr_not_document_ptr[folded known_ptr_impl])
+         apply(drule(1) known_ptr_not_character_data_ptr)
+         apply(drule(1) known_ptr_not_element_ptr)
+         apply(simp add: NodeClass.known_ptr_defs)
+        apply(auto split: option.splits)[1]
+      using \<open>h \<turnstile> get_root_node ptr \<rightarrow>\<^sub>r root\<close> assms(5)
+      by(auto simp add: a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def is_document_ptr_kind_def intro!: bind_pure_returns_result_I  split: option.splits)[2]
+  }
+  ultimately 
+  show ?thesis
+    using \<open>known_ptr ptr\<close>
+    by(auto simp add: known_ptr_impl DocumentClass.known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
+qed
+
+lemma get_root_node_same_owner_document:
+  assumes "heap_is_wellformed h" and "type_wf h" and "known_ptrs h"
+  assumes "h \<turnstile> get_root_node ptr \<rightarrow>\<^sub>r root"
+  shows "h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document \<longleftrightarrow> h \<turnstile> get_owner_document root \<rightarrow>\<^sub>r owner_document"
+proof -
+  have "ptr |\<in>| object_ptr_kinds h"
+    by (meson assms(4) is_OK_returns_result_I local.get_root_node_ptr_in_heap)
+  have "root |\<in>| object_ptr_kinds h"
+    using assms(1) assms(2) assms(3) assms(4) local.get_root_node_root_in_heap by blast
+  have "known_ptr ptr"
+    using \<open>ptr |\<in>| object_ptr_kinds h\<close> assms(3) local.known_ptrs_known_ptr by blast
+  have "known_ptr root"
+    using \<open>root |\<in>| object_ptr_kinds h\<close> assms(3) local.known_ptrs_known_ptr by blast
+  show ?thesis
+  proof (cases "is_document_ptr_kind ptr")
+    case True
+    then
+    have "ptr = root"
+      using assms(4)
+      apply(auto simp add: get_root_node_def elim!: bind_returns_result_E2)[1]
+      by (metis document_ptr_casts_commute3 last_ConsL local.get_ancestors_not_node node_ptr_no_document_ptr_cast)
+    then show ?thesis
+      by auto
+  next
+    case False
+    then have "is_node_ptr_kind ptr"
+      using \<open>known_ptr ptr\<close>
+      by(auto simp add: known_ptr_impl DocumentClass.known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
+    then obtain node_ptr where node_ptr: "ptr = cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r node_ptr"
+      by (metis node_ptr_casts_commute3)
+    show ?thesis
+    proof
+      assume "h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document"
+      then have "h \<turnstile> local.a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r node_ptr () \<rightarrow>\<^sub>r owner_document"
+        using node_ptr
+        apply(auto simp add: get_owner_document_def a_get_owner_document_tups_def)[1]
+        apply(split invoke_splits)+
+           apply (meson invoke_empty is_OK_returns_result_I)
+        by(auto  elim!: bind_returns_result_E2 split: option.splits)
+
+      show "h \<turnstile> get_owner_document root \<rightarrow>\<^sub>r owner_document"
+      proof (cases "is_document_ptr_kind root")
+        case True
+        have "is_document_ptr root"
+          using True \<open>known_ptr root\<close>
+          by(auto simp add: known_ptr_impl DocumentClass.known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
+        have "root = cast owner_document"
+          using True 
+          by (smt \<open>h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document\<close> assms(1) assms(2) assms(3) assms(4) document_ptr_casts_commute3 get_root_node_document returns_result_eq)
+        then show ?thesis
+          apply(auto simp add: get_owner_document_def a_get_owner_document_tups_def)
+          apply(split invoke_splits, (rule conjI | rule impI)+)+
+          using \<open>is_document_ptr\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r root\<close> apply blast
+          using \<open>root |\<in>| object_ptr_kinds h\<close>
+          by(auto simp add: a_get_owner_document\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def is_node_ptr_kind_none)
+
+      next
+        case False
+        then have "is_node_ptr_kind root"
+          using \<open>known_ptr root\<close>
+          by(auto simp add: known_ptr_impl DocumentClass.known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
+        then obtain root_node_ptr where root_node_ptr: "root = cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r root_node_ptr"
+          by (metis node_ptr_casts_commute3)
+        then have "h \<turnstile> local.a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r root_node_ptr () \<rightarrow>\<^sub>r owner_document"
+          using \<open>h \<turnstile> local.a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r node_ptr () \<rightarrow>\<^sub>r owner_document\<close> assms(4)
+          apply(auto simp add: a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def elim!: bind_returns_result_E2 intro!: bind_pure_returns_result_I filter_M_pure_I bind_pure_I split: option.splits)
+           apply (metis assms(1) assms(2) assms(3) local.get_root_node_no_parent local.get_root_node_same_no_parent node_ptr returns_result_eq)
+          using \<open>is_node_ptr_kind root\<close> node_ptr returns_result_eq by fastforce
+        then show ?thesis
+          apply(auto simp add: get_owner_document_def a_get_owner_document_tups_def)
+          apply(split invoke_splits, (rule conjI | rule impI)+)+
+          using \<open>is_node_ptr_kind root\<close> \<open>known_ptr root\<close>
+             apply(auto simp add: known_ptr_impl DocumentClass.known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)[2]
+          using \<open>root |\<in>| object_ptr_kinds h\<close>
+          by(auto simp add: root_node_ptr)
+      qed
+    next
+      assume "h \<turnstile> get_owner_document root \<rightarrow>\<^sub>r owner_document"
+      show "h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document"
+      proof (cases "is_document_ptr_kind root")
+        case True
+        have "root = cast owner_document"
+          using \<open>h \<turnstile> get_owner_document root \<rightarrow>\<^sub>r owner_document\<close>
+          apply(auto simp add: get_owner_document_def a_get_owner_document_tups_def)
+          apply(split invoke_splits)+
+             apply (meson invoke_empty is_OK_returns_result_I)
+            apply(auto simp add: True a_get_owner_document\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def elim!: bind_returns_result_E2 split: if_splits)
+           apply (metis True cast_document_ptr_not_node_ptr(2) is_document_ptr_kind_obtains is_node_ptr_kind_none node_ptr_casts_commute3 option.case_eq_if)
+          by (metis True cast_document_ptr_not_node_ptr(1) document_ptr_casts_commute3 is_node_ptr_kind_none node_ptr_casts_commute3 option.case_eq_if)
+        then show ?thesis
+          using assms(1) assms(2) assms(3) assms(4) get_root_node_document
+          by fastforce
+      next
+        case False
+        then have "is_node_ptr_kind root"
+          using \<open>known_ptr root\<close>
+          by(auto simp add: known_ptr_impl DocumentClass.known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
+        then obtain root_node_ptr where root_node_ptr: "root = cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r root_node_ptr"
+          by (metis node_ptr_casts_commute3)
+        then have "h \<turnstile> local.a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r root_node_ptr () \<rightarrow>\<^sub>r owner_document"
+          using \<open>h \<turnstile> get_owner_document root \<rightarrow>\<^sub>r owner_document\<close>
+          apply(auto simp add: get_owner_document_def a_get_owner_document_tups_def)
+          apply(split invoke_splits)+
+             apply (meson invoke_empty is_OK_returns_result_I)
+          by(auto simp add: is_document_ptr_kind_none elim!: bind_returns_result_E2)
+        then have "h \<turnstile> local.a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r node_ptr () \<rightarrow>\<^sub>r owner_document"
+          apply(auto simp add: a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def elim!: bind_returns_result_E2 intro!: bind_pure_returns_result_I filter_M_pure_I bind_pure_I split: option.splits)
+          using assms(1) assms(2) assms(3) assms(4) local.get_root_node_no_parent local.get_root_node_same_no_parent node_ptr returns_result_eq root_node_ptr 
+          by fastforce+
+        then show ?thesis
+          apply(auto simp add: get_owner_document_def a_get_owner_document_tups_def)
+          apply(split invoke_splits, (rule conjI | rule impI)+)+
+          using node_ptr  \<open>known_ptr ptr\<close> \<open>ptr |\<in>| object_ptr_kinds h\<close>
+
+          by(auto simp add: known_ptr_impl DocumentClass.known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs intro!: bind_pure_returns_result_I split: option.splits)
+      qed
+    qed
+  qed
+qed
+end
+
+interpretation get_owner_document_wf_get_root_node_wf?: l_get_owner_document_wf_get_root_node_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M type_wf known_ptr known_ptrs get_parent get_parent_locs get_child_nodes get_child_nodes_locs get_ancestors get_ancestors_locs get_root_node get_root_node_locs heap_is_wellformed parent_child_rel get_disconnected_nodes get_disconnected_nodes_locs get_owner_document
+  by(auto simp add: l_get_owner_document_wf_get_root_node_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_def instances)
+declare l_get_owner_document_wf_get_root_node_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms [instances]
+
+locale l_get_owner_document_wf_get_root_node_wf = l_heap_is_wellformed_defs + l_type_wf + l_known_ptrs + l_get_root_node_defs + l_get_owner_document_defs +
+  assumes get_root_node_document: "heap_is_wellformed h \<Longrightarrow> type_wf h \<Longrightarrow> known_ptrs h \<Longrightarrow> h \<turnstile> get_root_node ptr \<rightarrow>\<^sub>r root \<Longrightarrow> is_document_ptr_kind root \<Longrightarrow> h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r the (cast root)"
+  assumes get_root_node_same_owner_document: "heap_is_wellformed h \<Longrightarrow> type_wf h \<Longrightarrow> known_ptrs h \<Longrightarrow> h \<turnstile> get_root_node ptr \<rightarrow>\<^sub>r root \<Longrightarrow> h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document \<longleftrightarrow> h \<turnstile> get_owner_document root \<rightarrow>\<^sub>r owner_document"
+
+lemma get_owner_document_wf_get_root_node_wf_is_l_get_owner_document_wf_get_root_node_wf [instances]:
+  "l_get_owner_document_wf_get_root_node_wf heap_is_wellformed type_wf known_ptr known_ptrs get_root_node get_owner_document"
+  apply(auto simp add: l_get_owner_document_wf_get_root_node_wf_def l_get_owner_document_wf_get_root_node_wf_axioms_def instances)
+  using get_root_node_document apply blast
+  using get_root_node_same_owner_document apply (blast, blast)
+  done
 
 
 subsection \<open>Preserving heap-wellformedness\<close>
-
 
 subsection \<open>set\_attribute\<close>
 
@@ -3095,20 +3594,9 @@ have "type_wf h2"
     using assms(1)  by (simp add: heap_is_wellformed_def)
   then have "a_all_ptrs_in_heap h'"
     apply(auto simp add: a_all_ptrs_in_heap_def node_ptr_kinds_eq3 disconnected_nodes_eq)[1]
-     apply (metis (no_types, lifting) type_wf assms(3) children_eq2 children_h children_h' 
-                    fset_of_list_subset fsubsetD get_child_nodes_ok get_child_nodes_ptr_in_heap 
-                    is_OK_returns_result_E is_OK_returns_result_I local.known_ptrs_known_ptr 
-                    object_ptr_kinds_eq3 select_result_I2 set_remove1_subset)
-    by (metis (no_types, lifting) 
-       \<open>\<And>thesis. (\<And>owner_document children_h h2 disconnected_nodes_h. 
-             \<lbrakk>h \<turnstile> get_owner_document (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r child) \<rightarrow>\<^sub>r owner_document; 
-              h \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children_h; child \<in> set children_h; 
-              h \<turnstile> get_disconnected_nodes owner_document \<rightarrow>\<^sub>r disconnected_nodes_h; 
-              h \<turnstile> set_disconnected_nodes owner_document (child # disconnected_nodes_h) \<rightarrow>\<^sub>h h2; 
-             h2 \<turnstile> set_child_nodes ptr (remove1 child children_h) \<rightarrow>\<^sub>h h'\<rbrakk> \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close> 
-       disconnected_nodes_h disconnected_nodes_eq disconnected_nodes_h' fset_mp fset_of_list_elem 
-       returns_result_eq set_ConsD)
-
+    apply (metis (no_types, lifting) \<open>type_wf h'\<close> assms(2) assms(3) local.get_child_nodes_ok local.known_ptrs_known_ptr local.remove_child_children_subset notin_fset object_ptr_kinds_eq3 returns_result_select_result subset_code(1) type_wf)
+  apply (metis (no_types, lifting) assms(2) disconnected_nodes_eq2 disconnected_nodes_h disconnected_nodes_h' document_ptr_kinds_eq3 finite_set_in local.remove_child_child_in_heap node_ptr_kinds_eq3 select_result_I2 set_ConsD subset_code(1))
+    done
   moreover have "a_owner_document_valid h"
     using assms(1)  by (simp add: heap_is_wellformed_def)
   then have "a_owner_document_valid h'"
@@ -3116,14 +3604,9 @@ have "type_wf h2"
                          node_ptr_kinds_eq3)[1]
   proof -
     fix node_ptr
-    assume 0: "\<forall>node_ptr. node_ptr |\<in>| node_ptr_kinds h' 
-               \<longrightarrow> (\<exists>document_ptr. document_ptr |\<in>| document_ptr_kinds h' 
-                     \<and> node_ptr \<in> set |h \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r) 
-                          \<or> (\<exists>parent_ptr. parent_ptr |\<in>| object_ptr_kinds h'
-                               \<and> node_ptr \<in> set |h \<turnstile> get_child_nodes parent_ptr|\<^sub>r)"
-      and 1: "node_ptr |\<in>| node_ptr_kinds h'"
-      and 2: "\<forall>parent_ptr. parent_ptr |\<in>| object_ptr_kinds h' 
-                      \<longrightarrow> node_ptr \<notin> set |h' \<turnstile> get_child_nodes parent_ptr|\<^sub>r"
+assume 0: "\<forall>node_ptr\<in>fset (node_ptr_kinds h'). (\<exists>document_ptr. document_ptr |\<in>| document_ptr_kinds h' \<and> node_ptr \<in> set |h \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r) \<or> (\<exists>parent_ptr. parent_ptr |\<in>| object_ptr_kinds h' \<and> node_ptr \<in> set |h \<turnstile> get_child_nodes parent_ptr|\<^sub>r)"
+    and 1: "node_ptr |\<in>| node_ptr_kinds h'"
+    and 2: "\<forall>parent_ptr. parent_ptr |\<in>| object_ptr_kinds h' \<longrightarrow> node_ptr \<notin> set |h' \<turnstile> get_child_nodes parent_ptr|\<^sub>r"
     then show "\<exists>document_ptr. document_ptr |\<in>| document_ptr_kinds h' 
                        \<and> node_ptr \<in> set |h' \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r"
     proof (cases "node_ptr = child")
@@ -3139,7 +3622,7 @@ have "type_wf h2"
         using 0 1 2 children_eq2 children_h children_h' disconnected_nodes_eq2 disconnected_nodes_h 
               disconnected_nodes_h' 
         apply(auto simp add: children_eq2 disconnected_nodes_eq2 dest!: select_result_I2)[1]
-        by (metis children_eq2 disconnected_nodes_eq2 in_set_remove1 list.set_intros(2))
+        by (metis children_eq2 disconnected_nodes_eq2 finite_set_in in_set_remove1 list.set_intros(2))
     qed
   qed
 
@@ -3437,6 +3920,15 @@ assume 1: "xa \<in> fset (object_ptr_kinds h')"
     using heap_is_wellformed_def by blast
 qed
 
+lemma remove_heap_is_wellformed_preserved:
+  assumes "heap_is_wellformed h"
+    and "h \<turnstile> remove child \<rightarrow>\<^sub>h h'"
+    and "known_ptrs h"
+    and type_wf: "type_wf h"
+  shows "type_wf h'" and "known_ptrs h'" and "heap_is_wellformed h'"
+  using assms
+  by(auto simp add: remove_def intro: remove_child_heap_is_wellformed_preserved elim!: bind_returns_heap_E2 split: option.splits)
+
 lemma remove_child_removes_child:
   assumes wellformed: "heap_is_wellformed h"
     and remove_child: "h \<turnstile> remove_child ptr' child \<rightarrow>\<^sub>h h'"
@@ -3469,7 +3961,7 @@ proof -
     using writes_small_big[where P="\<lambda>h h'. type_wf h \<longrightarrow> type_wf h'", OF remove_child_writes assms(2)]
     using set_child_nodes_types_preserved set_disconnected_nodes_types_preserved type_wf
     unfolding remove_child_locs_def
-    apply(auto simp add: reflp_def transp_def)
+    apply(auto simp add: reflp_def transp_def)[1]
     by blast
   ultimately show ?thesis
     using remove_child_removes_parent remove_child_heap_is_wellformed_preserved child_parent_dual
@@ -3590,6 +4082,15 @@ locale l_remove_child_wf2 = l_type_wf + l_known_ptrs + l_remove_child_defs + l_h
   assumes remove_child_heap_is_wellformed_preserved:
     "type_wf h \<Longrightarrow> known_ptrs h \<Longrightarrow> heap_is_wellformed h \<Longrightarrow> h \<turnstile> remove_child ptr child \<rightarrow>\<^sub>h h'
                \<Longrightarrow> heap_is_wellformed h'"
+  assumes remove_preserves_type_wf: 
+    "heap_is_wellformed h \<Longrightarrow> type_wf h \<Longrightarrow> known_ptrs h \<Longrightarrow> h \<turnstile> remove child \<rightarrow>\<^sub>h h' 
+                          \<Longrightarrow> type_wf h'"
+  assumes remove_preserves_known_ptrs: 
+    "heap_is_wellformed h \<Longrightarrow> type_wf h \<Longrightarrow> known_ptrs h \<Longrightarrow> h \<turnstile> remove child \<rightarrow>\<^sub>h h' 
+                          \<Longrightarrow> known_ptrs h'"
+  assumes remove_heap_is_wellformed_preserved:
+    "type_wf h \<Longrightarrow> known_ptrs h \<Longrightarrow> heap_is_wellformed h \<Longrightarrow> h \<turnstile> remove child \<rightarrow>\<^sub>h h'
+               \<Longrightarrow> heap_is_wellformed h'"
   assumes remove_child_removes_child:
     "heap_is_wellformed h \<Longrightarrow> h \<turnstile> remove_child ptr' child \<rightarrow>\<^sub>h h' \<Longrightarrow> h' \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children
                           \<Longrightarrow> known_ptrs h \<Longrightarrow> type_wf h
@@ -3618,6 +4119,7 @@ lemma remove_child_wf2_is_l_remove_child_wf2 [instances]:
   "l_remove_child_wf2 type_wf known_ptr known_ptrs remove_child heap_is_wellformed get_child_nodes remove"
   apply(auto simp add: l_remove_child_wf2_def l_remove_child_wf2_axioms_def instances)[1]
   using remove_child_heap_is_wellformed_preserved apply(fast, fast, fast)
+  using remove_heap_is_wellformed_preserved apply(fast, fast, fast)
   using remove_child_removes_child apply fast
   using remove_child_removes_first_child apply fast
   using remove_removes_child apply fast
@@ -3631,6 +4133,7 @@ subsection \<open>adopt\_node\<close>
 locale l_adopt_node_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M =
   l_adopt_node\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M +
   l_get_parent_wf +
+  l_get_owner_document_wf +
   l_remove_child_wf2 +
   l_heap_is_wellformed
 begin
@@ -3664,6 +4167,65 @@ proof -
     by(auto elim!: bind_returns_heap_E bind_returns_heap_E2[rotated, OF get_disconnected_nodes_pure, rotated] 
             dest!: reads_writes_separate_forwards[OF get_child_nodes_reads set_disconnected_nodes_writes] 
             split: if_splits)
+qed
+
+
+lemma adopt_node_document_in_heap: 
+  assumes "heap_is_wellformed h" and "known_ptrs h" and "type_wf h"
+  assumes "h \<turnstile> ok (adopt_node owner_document node)"
+  shows "owner_document |\<in>| document_ptr_kinds h"
+proof -
+  obtain old_document parent_opt h2 h' where
+    old_document: "h \<turnstile> get_owner_document (cast node) \<rightarrow>\<^sub>r old_document" and
+    parent_opt: "h \<turnstile> get_parent node \<rightarrow>\<^sub>r parent_opt" and
+    h2: "h \<turnstile> (case parent_opt of Some parent \<Rightarrow> do { remove_child parent node } | None \<Rightarrow> do { return ()}) \<rightarrow>\<^sub>h h2" 
+    and
+    h': "h2 \<turnstile> (if owner_document \<noteq> old_document then do {
+        old_disc_nodes \<leftarrow> get_disconnected_nodes old_document;
+        set_disconnected_nodes old_document (remove1 node old_disc_nodes);
+        disc_nodes \<leftarrow> get_disconnected_nodes owner_document;
+        set_disconnected_nodes owner_document (node # disc_nodes)
+      } else do { return () }) \<rightarrow>\<^sub>h h'"
+    using assms(4)
+    by(auto simp add: adopt_node_def 
+            elim!: bind_returns_heap_E 
+            dest!: pure_returns_heap_eq[rotated, OF get_owner_document_pure] 
+            pure_returns_heap_eq[rotated, OF get_parent_pure])
+  show ?thesis
+  proof (cases "owner_document = old_document")
+    case True
+    then show ?thesis
+      using old_document get_owner_document_owner_document_in_heap assms(1) assms(2) assms(3)
+      by auto
+  next
+    case False
+
+    then obtain h3 old_disc_nodes disc_nodes where
+      old_disc_nodes: "h2 \<turnstile> get_disconnected_nodes old_document \<rightarrow>\<^sub>r old_disc_nodes" and
+      h3: "h2 \<turnstile> set_disconnected_nodes old_document (remove1 node old_disc_nodes) \<rightarrow>\<^sub>h h3" and
+      old_disc_nodes: "h3 \<turnstile> get_disconnected_nodes owner_document \<rightarrow>\<^sub>r disc_nodes" and
+      h': "h3 \<turnstile> set_disconnected_nodes owner_document (node # disc_nodes) \<rightarrow>\<^sub>h h'"
+      using h'
+      by(auto elim!: bind_returns_heap_E 
+          bind_returns_heap_E2[rotated, OF get_disconnected_nodes_pure, rotated] ) 
+    then have "owner_document |\<in>| document_ptr_kinds h3"
+      by (meson is_OK_returns_result_I local.get_disconnected_nodes_ptr_in_heap)
+
+    moreover have "object_ptr_kinds h = object_ptr_kinds h2"
+      using h2 apply(simp split: option.splits)
+      apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h = object_ptr_kinds h'", 
+            OF remove_child_writes])
+      using remove_child_pointers_preserved
+      by (auto simp add: reflp_def transp_def)
+    moreover have "object_ptr_kinds h2 = object_ptr_kinds h3"
+      apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h = object_ptr_kinds h'", 
+            OF set_disconnected_nodes_writes h3])
+      using set_disconnected_nodes_pointers_preserved set_child_nodes_pointers_preserved 
+      by (auto simp add: reflp_def transp_def)
+
+    ultimately show ?thesis
+      by(auto simp add: document_ptr_kinds_def)
+  qed
 qed
 end
                      
@@ -3724,12 +4286,19 @@ proof -
   qed
 qed
 
+lemma adopt_node_removes_child_thesis:
+  assumes "heap_is_wellformed h" and "known_ptrs h" and "type_wf h"
+  assumes "h \<turnstile> adopt_node owner_document node_ptr \<rightarrow>\<^sub>h h'"
+shows "\<And>ptr' children'.
+  h' \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r children' \<Longrightarrow> node_ptr \<notin> set children'"
+  using adopt_node_removes_child assms by blast
+
 lemma adopt_node_preserves_wellformedness:
   assumes "heap_is_wellformed h"
     and "h \<turnstile> adopt_node document_ptr child \<rightarrow>\<^sub>h h'"
     and known_ptrs: "known_ptrs h"
     and type_wf: "type_wf h"
-  shows "heap_is_wellformed h'"
+  shows "heap_is_wellformed h'" and "known_ptrs h'" and "type_wf h'"
 proof -
   obtain old_document parent_opt h2 where
     old_document: "h \<turnstile> get_owner_document (cast child) \<rightarrow>\<^sub>r old_document" 
@@ -3768,11 +4337,17 @@ proof -
   have wellformed_h2: "heap_is_wellformed h2"
     using h2 remove_child_heap_is_wellformed_preserved known_ptrs type_wf
     by (metis (no_types, lifting) assms(1) option.case_eq_if pure_returns_heap_eq return_pure) 
-  then show ?thesis
+  have "type_wf h2"
+    using h2 remove_child_preserves_type_wf known_ptrs type_wf
+    by (metis (no_types, lifting) assms(1) option.case_eq_if pure_returns_heap_eq return_pure) 
+  have "known_ptrs h2"
+    using h2 remove_child_preserves_known_ptrs known_ptrs type_wf
+    by (metis (no_types, lifting) assms(1) option.case_eq_if pure_returns_heap_eq return_pure) 
+  have "heap_is_wellformed h' \<and> known_ptrs h' \<and> type_wf h'"
   proof(cases "document_ptr = old_document")
     case True
     then show ?thesis
-      using h' wellformed_h2 by auto
+      using h' wellformed_h2 \<open>type_wf h2\<close> \<open>known_ptrs h2\<close> by auto
   next
     case False
     then obtain h3 old_disc_nodes disc_nodes_document_ptr_h3 where
@@ -3881,6 +4456,11 @@ proof -
       using  set_disconnected_nodes_types_preserved  
       by(auto simp add: reflp_def transp_def)
 
+    have "known_ptrs h3"
+      using known_ptrs local.known_ptrs_preserved object_ptr_kinds_h2_eq3 object_ptr_kinds_h_eq3 by blast
+    then have "known_ptrs h'"
+      using local.known_ptrs_preserved object_ptr_kinds_h3_eq3 by blast
+
     have disconnected_nodes_eq_h3: 
       "\<And>doc_ptr disc_nodes. document_ptr \<noteq> doc_ptr 
        \<Longrightarrow> h3 \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes = h' \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes"
@@ -3964,15 +4544,12 @@ proof -
       using wellformed_h2 by (simp add: heap_is_wellformed_def)
     then have "a_all_ptrs_in_heap h3"
       apply(auto simp add: a_all_ptrs_in_heap_def node_ptr_kinds_eq3_h2 children_eq_h2)[1]
-      by (metis (mono_tags, lifting) disc_nodes_old_document_h2 disc_nodes_old_document_h3 
-                disconnected_nodes_eq_h2 fset_of_list_elem fset_rev_mp returns_result_eq 
-                set_remove1_subset subsetCE)
+       apply (simp add: children_eq2_h2 object_ptr_kinds_h2_eq3 subset_code(1))
+      by (metis (no_types, lifting) \<open>child \<in> set disc_nodes_old_document_h2\<close> \<open>type_wf h2\<close> disc_nodes_old_document_h2 disc_nodes_old_document_h3 disconnected_nodes_eq2_h2 document_ptr_kinds_eq3_h2 in_set_remove1 local.get_disconnected_nodes_ok local.heap_is_wellformed_disc_nodes_in_heap node_ptr_kinds_eq3_h2 returns_result_select_result select_result_I2 wellformed_h2)
     then have "a_all_ptrs_in_heap h'"   
       apply(auto simp add: a_all_ptrs_in_heap_def node_ptr_kinds_eq3_h3 children_eq_h3)[1]
-      by (metis (no_types) NodeMonad.ptr_kinds_ptr_kinds_M child_in_heap disc_nodes_document_ptr_h' 
-                disc_nodes_document_ptr_h3 disconnected_nodes_eq_h3 fset_mp fset_of_list_elem 
-                node_ptr_kinds_eq_h node_ptr_kinds_eq_h2 node_ptr_kinds_eq_h3 select_result_I2 
-                set_ConsD)
+      apply (simp add: children_eq2_h3 object_ptr_kinds_h3_eq3 subset_code(1))
+      by (metis (no_types, lifting) \<open>child \<in> set disc_nodes_old_document_h2\<close> disc_nodes_document_ptr_h' disc_nodes_document_ptr_h2 disc_nodes_old_document_h2 disconnected_nodes_eq2_h3 document_ptr_kinds_eq3_h3 finite_set_in local.heap_is_wellformed_disc_nodes_in_heap node_ptr_kinds_eq3_h2 node_ptr_kinds_eq3_h3 select_result_I2 set_ConsD subset_code(1) wellformed_h2)
 
     moreover have "a_owner_document_valid h2"
       using wellformed_h2 by (simp add: heap_is_wellformed_def)
@@ -3980,7 +4557,7 @@ proof -
       apply(simp add: a_owner_document_valid_def node_ptr_kinds_eq_h2 node_ptr_kinds_eq3_h3 
                       object_ptr_kinds_eq_h2 object_ptr_kinds_eq_h3 document_ptr_kinds_eq2_h2 
                       document_ptr_kinds_eq2_h3 children_eq2_h2 children_eq2_h3 )
-      by (metis (no_types) disc_nodes_document_ptr_h' disc_nodes_document_ptr_h2 
+      by (smt  disc_nodes_document_ptr_h' disc_nodes_document_ptr_h2 
                            disc_nodes_old_document_h2 disc_nodes_old_document_h3 
                            disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3 document_ptr_in_heap 
                            document_ptr_kinds_eq3_h2 document_ptr_kinds_eq3_h3 in_set_remove1
@@ -4244,8 +4821,10 @@ proof -
       qed
     qed
     ultimately show ?thesis
-      using \<open>type_wf h'\<close> \<open>a_owner_document_valid h'\<close> heap_is_wellformed_def by blast
+      using \<open>type_wf h'\<close> \<open>known_ptrs h'\<close> \<open>a_owner_document_valid h'\<close> heap_is_wellformed_def by blast
   qed
+  then show "heap_is_wellformed h'" and "known_ptrs h'" and "type_wf h'"
+    by auto
 qed
 
 lemma adopt_node_node_in_disconnected_nodes:
@@ -4343,6 +4922,16 @@ locale l_adopt_node_wf = l_heap_is_wellformed + l_known_ptrs + l_type_wf + l_ado
                          \<Longrightarrow> h \<turnstile> adopt_node owner_document node \<rightarrow>\<^sub>h h' 
                          \<Longrightarrow> h \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r node # children 
                          \<Longrightarrow> h' \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r children"
+  assumes adopt_node_document_in_heap: "heap_is_wellformed h \<Longrightarrow> known_ptrs h \<Longrightarrow> type_wf h
+                        \<Longrightarrow> h \<turnstile> ok (adopt_node owner_document node)
+                        \<Longrightarrow> owner_document |\<in>| document_ptr_kinds h"
+  assumes adopt_node_preserves_type_wf:
+    "heap_is_wellformed h \<Longrightarrow> h \<turnstile> adopt_node document_ptr child \<rightarrow>\<^sub>h h' \<Longrightarrow> known_ptrs h 
+                          \<Longrightarrow> type_wf h \<Longrightarrow> type_wf h'"
+  assumes adopt_node_preserves_known_ptrs:
+    "heap_is_wellformed h \<Longrightarrow> h \<turnstile> adopt_node document_ptr child \<rightarrow>\<^sub>h h' \<Longrightarrow> known_ptrs h 
+                          \<Longrightarrow> type_wf h \<Longrightarrow> known_ptrs h'"
+
 
 lemma adopt_node_wf_is_l_adopt_node_wf [instances]: 
   "l_adopt_node_wf type_wf known_ptr heap_is_wellformed parent_child_rel get_child_nodes
@@ -4353,6 +4942,9 @@ lemma adopt_node_wf_is_l_adopt_node_wf [instances]:
   using adopt_node_removes_child apply blast
   using adopt_node_node_in_disconnected_nodes apply blast
   using adopt_node_removes_first_child apply blast
+  using adopt_node_document_in_heap apply blast
+  using adopt_node_preserves_wellformedness apply blast
+  using adopt_node_preserves_wellformedness apply blast
   done
 
 
@@ -4439,8 +5031,248 @@ locale l_insert_before_wf2\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub
   l_set_disconnected_nodes_get_ancestors +
   l_get_ancestors_wf +
   l_get_owner_document +
-  l_heap_is_wellformed\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M
+  l_heap_is_wellformed\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M +
+  l_get_owner_document_wf
 begin
+
+lemma insert_before_preserves_acyclitity_thesis:
+  assumes "heap_is_wellformed h" and "known_ptrs h" and "type_wf h"
+  assumes "h \<turnstile> insert_before ptr node child \<rightarrow>\<^sub>h h'"
+shows "acyclic (parent_child_rel h')"
+proof -
+  obtain ancestors reference_child owner_document h2 h3
+    disconnected_nodes_h2
+  where
+    ancestors: "h \<turnstile> get_ancestors ptr \<rightarrow>\<^sub>r ancestors" and
+    node_not_in_ancestors: "cast node \<notin> set ancestors" and
+    reference_child:
+       "h \<turnstile> (if Some node = child then a_next_sibling node
+         else return child) \<rightarrow>\<^sub>r reference_child" and
+    owner_document: "h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document" and
+    h2: "h \<turnstile> adopt_node owner_document node \<rightarrow>\<^sub>h h2" and
+    disconnected_nodes_h2: "h2 \<turnstile> get_disconnected_nodes owner_document
+      \<rightarrow>\<^sub>r disconnected_nodes_h2" and
+    h3: "h2 \<turnstile> set_disconnected_nodes owner_document
+      (remove1 node disconnected_nodes_h2) \<rightarrow>\<^sub>h h3" and
+    h': "h3 \<turnstile> a_insert_node ptr node reference_child \<rightarrow>\<^sub>h h'"
+      using assms(4)
+    by(auto simp add: insert_before_def a_ensure_pre_insertion_validity_def 
+            elim!: bind_returns_heap_E bind_returns_result_E
+                 bind_returns_heap_E2[rotated, OF get_parent_pure, rotated]
+                 bind_returns_heap_E2[rotated, OF get_child_nodes_pure, rotated]
+                 bind_returns_heap_E2[rotated, OF get_disconnected_nodes_pure, rotated]
+                 bind_returns_heap_E2[rotated, OF get_ancestors_pure, rotated]
+                 bind_returns_heap_E2[rotated, OF next_sibling_pure, rotated]
+                 bind_returns_heap_E2[rotated, OF get_owner_document_pure, rotated]
+          split: if_splits option.splits)
+
+  have "known_ptr ptr"
+    by (meson get_owner_document_ptr_in_heap is_OK_returns_result_I assms 
+              l_known_ptrs.known_ptrs_known_ptr l_known_ptrs_axioms owner_document)
+
+  have "type_wf h2"
+    using writes_small_big[where P="\<lambda>h h'. type_wf h \<longrightarrow> type_wf h'", OF adopt_node_writes h2]
+    using assms adopt_node_types_preserved
+    by(auto simp add: a_remove_child_locs_def reflp_def transp_def)
+  then have "type_wf h3"
+    using writes_small_big[where P="\<lambda>h h'. type_wf h \<longrightarrow> type_wf h'", OF set_disconnected_nodes_writes h3]
+    using  set_disconnected_nodes_types_preserved  
+    by(auto simp add: reflp_def transp_def)
+  then have "type_wf h'"
+    using writes_small_big[where P="\<lambda>h h'. type_wf h \<longrightarrow> type_wf h'", OF insert_node_writes h']
+    using set_child_nodes_types_preserved  
+    by(auto simp add: reflp_def transp_def)
+
+  have object_ptr_kinds_M_eq3_h: "object_ptr_kinds h = object_ptr_kinds h2"
+    apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h = object_ptr_kinds h'", 
+                                OF adopt_node_writes h2])
+    using adopt_node_pointers_preserved
+    apply blast
+    by (auto simp add: reflp_def transp_def)
+  then have object_ptr_kinds_M_eq_h: "\<And>ptrs. h \<turnstile> object_ptr_kinds_M \<rightarrow>\<^sub>r ptrs = h2 \<turnstile> object_ptr_kinds_M \<rightarrow>\<^sub>r ptrs"
+    by(simp add: object_ptr_kinds_M_defs )
+  then have object_ptr_kinds_M_eq2_h: "|h \<turnstile> object_ptr_kinds_M|\<^sub>r = |h2 \<turnstile> object_ptr_kinds_M|\<^sub>r"
+    by simp
+  then have node_ptr_kinds_eq2_h: "|h \<turnstile> node_ptr_kinds_M|\<^sub>r = |h2 \<turnstile> node_ptr_kinds_M|\<^sub>r"
+    using node_ptr_kinds_M_eq by blast
+
+  have "known_ptrs h2"
+    using assms object_ptr_kinds_M_eq3_h known_ptrs_preserved by blast
+
+  have wellformed_h2: "heap_is_wellformed h2"
+    using adopt_node_preserves_wellformedness[OF assms(1) h2] assms by simp
+
+  have object_ptr_kinds_M_eq3_h2: "object_ptr_kinds h2 = object_ptr_kinds h3"
+    apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h = object_ptr_kinds h'", 
+                                OF set_disconnected_nodes_writes h3])  
+    unfolding a_remove_child_locs_def
+    using set_disconnected_nodes_pointers_preserved 
+    by (auto simp add: reflp_def transp_def)
+  then have object_ptr_kinds_M_eq_h2: "\<And>ptrs. h2 \<turnstile> object_ptr_kinds_M \<rightarrow>\<^sub>r ptrs = h3 \<turnstile> object_ptr_kinds_M \<rightarrow>\<^sub>r ptrs"
+    by(simp add: object_ptr_kinds_M_defs)
+  then have object_ptr_kinds_M_eq2_h2: "|h2 \<turnstile> object_ptr_kinds_M|\<^sub>r = |h3 \<turnstile> object_ptr_kinds_M|\<^sub>r"
+    by simp
+  then have node_ptr_kinds_eq2_h2: "|h2 \<turnstile> node_ptr_kinds_M|\<^sub>r = |h3 \<turnstile> node_ptr_kinds_M|\<^sub>r"
+    using node_ptr_kinds_M_eq by blast
+  have document_ptr_kinds_eq2_h2: "|h2 \<turnstile> document_ptr_kinds_M|\<^sub>r = |h3 \<turnstile> document_ptr_kinds_M|\<^sub>r"
+    using object_ptr_kinds_M_eq2_h2 document_ptr_kinds_M_eq by auto
+
+  have "known_ptrs h3"
+    using object_ptr_kinds_M_eq3_h2 known_ptrs_preserved \<open>known_ptrs h2\<close> by blast
+  
+  have object_ptr_kinds_M_eq3_h': "object_ptr_kinds h3 = object_ptr_kinds h'"
+    apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h = object_ptr_kinds h'", 
+                                OF insert_node_writes h']) 
+    unfolding a_remove_child_locs_def
+    using set_child_nodes_pointers_preserved 
+    by (auto simp add: reflp_def transp_def)
+  then have object_ptr_kinds_M_eq_h3: 
+    "\<And>ptrs. h3 \<turnstile> object_ptr_kinds_M \<rightarrow>\<^sub>r ptrs = h' \<turnstile> object_ptr_kinds_M \<rightarrow>\<^sub>r ptrs"
+    by(simp add: object_ptr_kinds_M_defs)
+  then have object_ptr_kinds_M_eq2_h3: 
+    "|h3 \<turnstile> object_ptr_kinds_M|\<^sub>r = |h' \<turnstile> object_ptr_kinds_M|\<^sub>r"
+    by simp
+  then have node_ptr_kinds_eq2_h3: "|h3 \<turnstile> node_ptr_kinds_M|\<^sub>r = |h' \<turnstile> node_ptr_kinds_M|\<^sub>r"
+    using node_ptr_kinds_M_eq by blast
+  have document_ptr_kinds_eq2_h3: "|h3 \<turnstile> document_ptr_kinds_M|\<^sub>r = |h' \<turnstile> document_ptr_kinds_M|\<^sub>r"
+    using object_ptr_kinds_M_eq2_h3 document_ptr_kinds_M_eq by auto
+
+  have "known_ptrs h'"
+    using object_ptr_kinds_M_eq3_h' known_ptrs_preserved \<open>known_ptrs h3\<close> by blast
+
+  have disconnected_nodes_eq_h2: 
+    "\<And>doc_ptr disc_nodes. owner_document \<noteq> doc_ptr 
+      \<Longrightarrow> h2 \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes = h3 \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes"
+    using get_disconnected_nodes_reads set_disconnected_nodes_writes h3
+    apply(rule reads_writes_preserved)
+    by (auto simp add: set_disconnected_nodes_get_disconnected_nodes_different_pointers)
+  then have disconnected_nodes_eq2_h2: 
+     "\<And>doc_ptr. doc_ptr \<noteq> owner_document 
+     \<Longrightarrow> |h2 \<turnstile> get_disconnected_nodes doc_ptr|\<^sub>r = |h3 \<turnstile> get_disconnected_nodes doc_ptr|\<^sub>r"
+    using select_result_eq by force
+  have disconnected_nodes_h3: 
+   "h3 \<turnstile> get_disconnected_nodes owner_document \<rightarrow>\<^sub>r remove1 node disconnected_nodes_h2"
+    using h3 set_disconnected_nodes_get_disconnected_nodes
+    by blast
+
+  have disconnected_nodes_eq_h3: 
+    "\<And>doc_ptr disc_nodes. h3 \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes 
+                                        = h' \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes"
+    using get_disconnected_nodes_reads insert_node_writes  h'
+    apply(rule reads_writes_preserved)
+    using set_child_nodes_get_disconnected_nodes by fast
+  then have disconnected_nodes_eq2_h3: 
+    "\<And>doc_ptr. |h3 \<turnstile> get_disconnected_nodes doc_ptr|\<^sub>r = |h' \<turnstile> get_disconnected_nodes doc_ptr|\<^sub>r"
+    using select_result_eq by force
+
+  have children_eq_h2: 
+     "\<And>ptr' children. h2 \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r children = h3 \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r children"
+    using get_child_nodes_reads set_disconnected_nodes_writes h3
+    apply(rule reads_writes_preserved)
+    by (auto simp add: set_disconnected_nodes_get_child_nodes)
+  then have children_eq2_h2: 
+     "\<And>ptr'. |h2 \<turnstile> get_child_nodes ptr'|\<^sub>r = |h3 \<turnstile> get_child_nodes ptr'|\<^sub>r"
+    using select_result_eq by force
+
+  have children_eq_h3: 
+    "\<And>ptr' children. ptr \<noteq> ptr' 
+        \<Longrightarrow> h3 \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r children = h' \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r children"
+    using get_child_nodes_reads insert_node_writes h'
+    apply(rule reads_writes_preserved)
+    by (auto simp add: set_child_nodes_get_child_nodes_different_pointers)
+  then have children_eq2_h3: 
+     "\<And>ptr'. ptr \<noteq> ptr' \<Longrightarrow> |h3 \<turnstile> get_child_nodes ptr'|\<^sub>r = |h' \<turnstile> get_child_nodes ptr'|\<^sub>r"
+    using select_result_eq by force
+  obtain children_h3 where children_h3: "h3 \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children_h3"
+    using h' a_insert_node_def by auto
+  have children_h': "h' \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r insert_before_list node reference_child children_h3"
+    using h' \<open>type_wf h3\<close> \<open>known_ptr ptr\<close>
+    by(auto simp add: a_insert_node_def elim!: bind_returns_heap_E2 
+            dest!: set_child_nodes_get_child_nodes returns_result_eq[OF children_h3])
+
+  have ptr_in_heap: "ptr |\<in>| object_ptr_kinds h3"
+    using children_h3 get_child_nodes_ptr_in_heap by blast
+  have node_in_heap: "node |\<in>| node_ptr_kinds h"
+    using h2 adopt_node_child_in_heap by fast
+  have child_not_in_any_children: 
+    "\<And>p children. h2 \<turnstile> get_child_nodes p \<rightarrow>\<^sub>r children \<Longrightarrow> node \<notin> set children"
+    using assms h2 adopt_node_removes_child by auto
+  have "node \<in> set disconnected_nodes_h2"
+    using disconnected_nodes_h2 h2 adopt_node_node_in_disconnected_nodes assms(1) 
+          \<open>type_wf h\<close> \<open>known_ptrs h\<close> by blast
+  have node_not_in_disconnected_nodes: 
+       "\<And>d. d |\<in>| document_ptr_kinds h3 \<Longrightarrow> node \<notin> set |h3 \<turnstile> get_disconnected_nodes d|\<^sub>r"
+  proof -
+    fix d
+    assume "d |\<in>| document_ptr_kinds h3"
+    show "node \<notin> set |h3 \<turnstile> get_disconnected_nodes d|\<^sub>r"
+    proof (cases "d = owner_document")
+      case True
+      then show ?thesis
+        using disconnected_nodes_h2 wellformed_h2 h3 remove_from_disconnected_nodes_removes 
+              wellformed_h2 \<open>d |\<in>| document_ptr_kinds h3\<close> disconnected_nodes_h3 
+        by fastforce
+    next
+      case False
+      then have 
+        "set |h2 \<turnstile> get_disconnected_nodes d|\<^sub>r \<inter> set |h2 \<turnstile> get_disconnected_nodes owner_document|\<^sub>r = {}"
+        using distinct_concat_map_E(1) wellformed_h2
+        by (metis (no_types, lifting) \<open>d |\<in>| document_ptr_kinds h3\<close> \<open>type_wf h2\<close> 
+                  disconnected_nodes_h2 document_ptr_kinds_M_def document_ptr_kinds_eq2_h2 
+                  l_ptr_kinds_M.ptr_kinds_ptr_kinds_M local.get_disconnected_nodes_ok 
+                  local.heap_is_wellformed_one_disc_parent returns_result_select_result 
+                  select_result_I2) 
+      then show ?thesis
+        using disconnected_nodes_eq2_h2[OF False] \<open>node \<in> set disconnected_nodes_h2\<close> 
+              disconnected_nodes_h2 by fastforce
+    qed
+  qed
+
+  have "cast node \<noteq> ptr"                         
+    using ancestors node_not_in_ancestors get_ancestors_ptr
+    by fast
+
+  obtain ancestors_h2 where ancestors_h2: "h2 \<turnstile> get_ancestors ptr \<rightarrow>\<^sub>r ancestors_h2"
+    using get_ancestors_ok object_ptr_kinds_M_eq2_h2 \<open>known_ptrs h2\<close> \<open>type_wf h2\<close>
+    by (metis is_OK_returns_result_E object_ptr_kinds_M_eq3_h2 ptr_in_heap wellformed_h2)
+  have ancestors_h3: "h3 \<turnstile> get_ancestors ptr \<rightarrow>\<^sub>r ancestors_h2"
+    using get_ancestors_reads set_disconnected_nodes_writes h3
+    apply(rule reads_writes_separate_forwards)
+    using \<open>heap_is_wellformed h2\<close> ancestors_h2  
+    by (auto simp add: set_disconnected_nodes_get_ancestors)
+  have node_not_in_ancestors_h2: "cast node \<notin> set ancestors_h2"
+    apply(rule get_ancestors_remains_not_in_ancestors[OF assms(1) wellformed_h2 ancestors ancestors_h2])
+    using adopt_node_children_subset using h2 \<open>known_ptrs h\<close> \<open> type_wf h\<close> apply(blast)
+    using node_not_in_ancestors apply(blast)
+    using object_ptr_kinds_M_eq3_h apply(blast)
+    using \<open>known_ptrs h\<close> apply(blast)
+    using \<open>type_wf h\<close> apply(blast)
+    using \<open>type_wf h2\<close> by blast
+
+    have "acyclic (parent_child_rel h2)"
+      using wellformed_h2  by (simp add: heap_is_wellformed_def acyclic_heap_def)
+    then have "acyclic (parent_child_rel h3)"
+      by(auto simp add: parent_child_rel_def object_ptr_kinds_M_eq3_h2 children_eq2_h2)
+    moreover
+
+  have "cast node \<notin> {x. (x, ptr) \<in> (parent_child_rel h2)\<^sup>*}"
+    using adopt_node_removes_child
+    using ancestors node_not_in_ancestors
+    using \<open>known_ptrs h2\<close> \<open>type_wf h2\<close> ancestors_h2 local.get_ancestors_parent_child_rel node_not_in_ancestors_h2 wellformed_h2
+    by blast
+  then have "cast node \<notin> {x. (x, ptr) \<in> (parent_child_rel h3)\<^sup>*}"
+    by(auto simp add: parent_child_rel_def object_ptr_kinds_M_eq3_h2 children_eq2_h2)
+  moreover have "parent_child_rel h'
+      = insert (ptr, cast node) ((parent_child_rel h3))"
+    using  children_h3 children_h' ptr_in_heap
+    apply(auto simp add: parent_child_rel_def object_ptr_kinds_M_eq3_h' children_eq2_h3  
+        insert_before_list_node_in_set)[1] 
+     apply (metis (no_types, lifting) children_eq2_h3 insert_before_list_in_set select_result_I2)
+    by (metis (no_types, lifting) children_eq2_h3 imageI insert_before_list_in_set select_result_I2)
+  ultimately show "acyclic (parent_child_rel h')"
+    by (auto simp add: heap_is_wellformed_def)
+qed
+
 lemma insert_before_heap_is_wellformed_preserved:
   assumes wellformed: "heap_is_wellformed h"
     and insert_before: "h \<turnstile> insert_before ptr node child \<rightarrow>\<^sub>h h'"
@@ -4684,13 +5516,14 @@ proof -
                            children_eq_h2)[1]
       using disconnected_nodes_eq2_h2 disconnected_nodes_h2 disconnected_nodes_h3
       using node_ptr_kinds_eq2_h2 apply auto[1]
-      by (metis (no_types, lifting) NodeMonad.ptr_kinds_ptr_kinds_M disconnected_nodes_eq_h2 
-                disconnected_nodes_h2 disconnected_nodes_h3 fset_mp fset_of_list_subset 
-                node_ptr_kinds_eq2_h2 select_result_I2 set_remove1_subset) 
+       apply (metis \<open>known_ptrs h2\<close> \<open>type_wf h3\<close> children_eq_h2 local.get_child_nodes_ok local.heap_is_wellformed_children_in_heap local.known_ptrs_known_ptr object_ptr_kinds_M_eq3_h2 returns_result_select_result wellformed_h2)
+      by (metis (no_types, lifting) disconnected_nodes_eq2_h2 disconnected_nodes_h2 disconnected_nodes_h3 document_ptr_kinds_commutes finite_set_in node_ptr_kinds_commutes object_ptr_kinds_M_eq3_h2 select_result_I2 set_remove1_subset subsetD)
+
     have "set children_h3  \<subseteq> set |h' \<turnstile> node_ptr_kinds_M|\<^sub>r"
       using children_h3 \<open>a_all_ptrs_in_heap h3\<close> 
       apply(auto simp add: a_all_ptrs_in_heap_def node_ptr_kinds_eq2_h3)[1]
-      by (metis (no_types, hide_lams) fset_mp fset_of_list_elem node_ptr_kinds_commutes object_ptr_kinds_M_eq3_h')
+      by (metis children_eq_h2 l_heap_is_wellformed.heap_is_wellformed_children_in_heap local.l_heap_is_wellformed_axioms node_ptr_kinds_commutes object_ptr_kinds_M_eq3_h' object_ptr_kinds_M_eq3_h2 wellformed_h2)
+
     then have "set (insert_before_list node reference_child children_h3) \<subseteq> set |h' \<turnstile> node_ptr_kinds_M|\<^sub>r"
       using node_in_heap
       apply(auto simp add: node_ptr_kinds_eq2_h node_ptr_kinds_eq2_h2 node_ptr_kinds_eq2_h3)[1]
@@ -4702,12 +5535,9 @@ proof -
       apply(auto simp add: object_ptr_kinds_M_eq3_h' a_all_ptrs_in_heap_def node_ptr_kinds_def 
                            node_ptr_kinds_eq2_h3 disconnected_nodes_eq_h3)[1]
       using children_eq_h3 children_h'
-      by (metis (no_types, hide_lams) NodeMonad.ptr_kinds_ptr_kinds_M 
-                \<open>set (insert_before_list node reference_child children_h3) \<subseteq> set |h' \<turnstile> node_ptr_kinds_M|\<^sub>r\<close> 
-                fset.map_comp fset_mp fset_of_list_elem node_ptr_kinds_def node_ptr_kinds_eq2_h3 
-                returns_result_eq subsetCE)
+       apply (metis (no_types, lifting) children_eq2_h3 finite_set_in select_result_I2 subsetD)
+      by (metis (no_types) \<open>type_wf h'\<close> disconnected_nodes_eq2_h3 disconnected_nodes_eq_h3 finite_set_in is_OK_returns_result_I local.get_disconnected_nodes_ok local.get_disconnected_nodes_ptr_in_heap returns_result_select_result subsetD)
   qed
-
 
   moreover have "a_distinct_lists h2"
     using wellformed_h2  by (simp add: heap_is_wellformed_def)
@@ -4900,30 +5730,322 @@ proof -
                          object_ptr_kinds_M_eq2_h2[simplified] object_ptr_kinds_M_eq2_h3[simplified] 
                          node_ptr_kinds_eq2_h2[simplified] node_ptr_kinds_eq2_h3[simplified])[1]
     apply(auto simp add: disconnected_nodes_eq2_h3[symmetric])[1]
-  proof -
-    fix node_ptr
-    assume 0: "\<forall>node_ptr. node_ptr |\<in>| node_ptr_kinds h' 
-               \<longrightarrow> (\<exists>document_ptr. document_ptr |\<in>| document_ptr_kinds h' 
-                         \<and> node_ptr \<in> set |h2 \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r) 
-                                      \<or> (\<exists>parent_ptr. parent_ptr |\<in>| object_ptr_kinds h' 
-                                          \<and> node_ptr \<in> set |h3 \<turnstile> get_child_nodes parent_ptr|\<^sub>r)"
-      and 1: "node_ptr |\<in>| node_ptr_kinds h'"
-      and 2: "\<forall>parent_ptr. parent_ptr |\<in>| object_ptr_kinds h' 
-                                          \<longrightarrow> node_ptr \<notin> set |h' \<turnstile> get_child_nodes parent_ptr|\<^sub>r"
-    then have "(\<exists>document_ptr. document_ptr |\<in>| document_ptr_kinds h' 
-                                   \<and> node_ptr \<in> set |h2 \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r)"
-      by (metis (no_types, lifting) children_eq2_h3 children_h' children_h3 
-                                   insert_before_list_in_set select_result_I2)
-    then show "\<exists>document_ptr. document_ptr |\<in>| document_ptr_kinds h' 
-                                     \<and> node_ptr \<in> set |h3 \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r"
-      by (metis (no_types, hide_lams) "2" children_h' disconnected_nodes_eq2_h2 
-                                      disconnected_nodes_h2 disconnected_nodes_h3 in_set_remove1 
-                                      insert_before_list_in_set object_ptr_kinds_M_eq3_h' 
-                                      ptr_in_heap select_result_I2)
-  qed
+    by (smt children_eq2_h3 children_h' children_h3 disconnected_nodes_eq2_h2 disconnected_nodes_h2 disconnected_nodes_h3 finite_set_in in_set_remove1 insert_before_list_in_set object_ptr_kinds_M_eq3_h' ptr_in_heap select_result_I2)
 
   ultimately show "heap_is_wellformed h'"
     by (simp add: heap_is_wellformed_def)
+qed
+
+lemma adopt_node_children_remain_distinct_thesis:
+  assumes "heap_is_wellformed h" and "known_ptrs h" and "type_wf h"
+  assumes "h \<turnstile> adopt_node owner_document node_ptr \<rightarrow>\<^sub>h h'"
+shows "\<And>ptr' children'.
+  h' \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r children' \<Longrightarrow> distinct children'"
+  using assms(1) assms(2) assms(3) assms(4) local.adopt_node_preserves_wellformedness local.heap_is_wellformed_children_distinct
+  by blast
+
+
+lemma insert_node_children_remain_distinct_thesis:
+  assumes "heap_is_wellformed h" and "known_ptrs h" and "type_wf h"
+  assumes "h \<turnstile> a_insert_node ptr new_child reference_child_opt \<rightarrow>\<^sub>h h'"
+  assumes "h \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children"
+  assumes "new_child \<notin> set children"
+shows "\<And>children'.
+  h' \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children' \<Longrightarrow> distinct children'"
+proof -
+  fix children'
+  assume a1: "h' \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children'"
+  have "h' \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r (insert_before_list new_child reference_child_opt children)"
+    using assms(4) assms(5) apply(auto simp add: a_insert_node_def elim!: bind_returns_heap_E)[1]
+    using returns_result_eq set_child_nodes_get_child_nodes assms(2) assms(3)
+    by (metis is_OK_returns_result_I local.get_child_nodes_ptr_in_heap local.get_child_nodes_pure local.known_ptrs_known_ptr pure_returns_heap_eq)
+  moreover have "a_distinct_lists h"
+    using assms local.heap_is_wellformed_def by blast
+  then have "\<And>children. h \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children
+    \<Longrightarrow> distinct children"
+    using assms local.heap_is_wellformed_children_distinct by blast
+  ultimately show "h' \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children' \<Longrightarrow> distinct children'"
+    using assms(5) assms(6) insert_before_list_distinct returns_result_eq by fastforce
+qed
+
+lemma insert_before_children_remain_distinct_thesis:
+  assumes "heap_is_wellformed h" and "known_ptrs h" and "type_wf h"
+  assumes "h \<turnstile> insert_before ptr new_child child_opt \<rightarrow>\<^sub>h h'"
+shows "\<And>ptr' children'.
+  h' \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r children' \<Longrightarrow> distinct children'"
+proof -
+  obtain reference_child owner_document h2 h3 disconnected_nodes_h2 where
+    reference_child:
+       "h \<turnstile> (if Some new_child = child_opt then a_next_sibling new_child else return child_opt) \<rightarrow>\<^sub>r reference_child" and
+    owner_document: "h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document" and
+    h2: "h \<turnstile> adopt_node owner_document new_child \<rightarrow>\<^sub>h h2" and
+    disconnected_nodes_h2: "h2 \<turnstile> get_disconnected_nodes owner_document \<rightarrow>\<^sub>r disconnected_nodes_h2" and
+    h3: "h2 \<turnstile> set_disconnected_nodes owner_document (remove1 new_child disconnected_nodes_h2) \<rightarrow>\<^sub>h h3" and
+    h': "h3 \<turnstile> a_insert_node ptr new_child reference_child \<rightarrow>\<^sub>h h'"
+    using assms(4)
+    by(auto simp add: insert_before_def a_ensure_pre_insertion_validity_def 
+            elim!: bind_returns_heap_E bind_returns_result_E
+                 bind_returns_heap_E2[rotated, OF get_parent_pure, rotated]
+                 bind_returns_heap_E2[rotated, OF get_child_nodes_pure, rotated]
+                 bind_returns_heap_E2[rotated, OF get_disconnected_nodes_pure, rotated]
+                 bind_returns_heap_E2[rotated, OF get_ancestors_pure, rotated]
+                 bind_returns_heap_E2[rotated, OF next_sibling_pure, rotated]
+                 bind_returns_heap_E2[rotated, OF get_owner_document_pure, rotated]
+          split: if_splits option.splits)
+
+  have "\<And>ptr children. h2 \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children
+      \<Longrightarrow> distinct children"
+    using adopt_node_children_remain_distinct_thesis
+    using assms(1) assms(2) assms(3) h2
+    by blast
+  moreover have "\<And>ptr children. h2 \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children
+      \<Longrightarrow> new_child \<notin> set children"
+    using adopt_node_removes_child
+    using assms(1) assms(2) assms(3) h2
+    by blast
+  moreover have "\<And>ptr children. h2 \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children = h3 \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children"
+    using get_child_nodes_reads set_disconnected_nodes_writes h3
+    apply(rule reads_writes_preserved)
+    by (auto simp add: set_disconnected_nodes_get_child_nodes)
+  ultimately show "\<And>ptr children. h' \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children
+      \<Longrightarrow> distinct children"
+    using insert_node_children_remain_distinct
+    by (meson assms(1) assms(2) assms(3) assms(4) insert_before_heap_is_wellformed_preserved(1) local.heap_is_wellformed_children_distinct)
+qed
+
+
+lemma insert_before_removes_child_thesis:
+  assumes "heap_is_wellformed h" and "known_ptrs h" and "type_wf h"
+  assumes "h \<turnstile> insert_before ptr node child \<rightarrow>\<^sub>h h'"
+  assumes "ptr \<noteq> ptr'"
+  shows "\<And>children'. h' \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r children' \<Longrightarrow> node \<notin> set children'"
+proof -
+  fix children'
+  assume a1: "h' \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r children'"
+  obtain ancestors reference_child owner_document h2 h3 disconnected_nodes_h2 where
+    ancestors: "h \<turnstile> get_ancestors ptr \<rightarrow>\<^sub>r ancestors" and
+    node_not_in_ancestors: "cast node \<notin> set ancestors" and
+    reference_child:
+       "h \<turnstile> (if Some node = child then a_next_sibling node else return child) \<rightarrow>\<^sub>r reference_child" and
+    owner_document: "h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document" and
+    h2: "h \<turnstile> adopt_node owner_document node \<rightarrow>\<^sub>h h2" and
+    disconnected_nodes_h2: "h2 \<turnstile> get_disconnected_nodes owner_document \<rightarrow>\<^sub>r disconnected_nodes_h2" and
+    h3: "h2 \<turnstile> set_disconnected_nodes owner_document (remove1 node disconnected_nodes_h2) \<rightarrow>\<^sub>h h3" and
+    h': "h3 \<turnstile> a_insert_node ptr node reference_child \<rightarrow>\<^sub>h h'"
+    using assms(4)
+    by(auto simp add: insert_before_def a_ensure_pre_insertion_validity_def 
+            elim!: bind_returns_heap_E bind_returns_result_E
+                 bind_returns_heap_E2[rotated, OF get_parent_pure, rotated]
+                 bind_returns_heap_E2[rotated, OF get_child_nodes_pure, rotated]
+                 bind_returns_heap_E2[rotated, OF get_disconnected_nodes_pure, rotated]
+                 bind_returns_heap_E2[rotated, OF get_ancestors_pure, rotated]
+                 bind_returns_heap_E2[rotated, OF next_sibling_pure, rotated]
+                 bind_returns_heap_E2[rotated, OF get_owner_document_pure, rotated]
+          split: if_splits option.splits)
+
+  have "known_ptr ptr"
+    by (meson get_owner_document_ptr_in_heap is_OK_returns_result_I assms(2) 
+              l_known_ptrs.known_ptrs_known_ptr l_known_ptrs_axioms owner_document)
+
+  have "type_wf h2"
+    using writes_small_big[where P="\<lambda>h h'. type_wf h \<longrightarrow> type_wf h'", OF adopt_node_writes h2]
+    using assms(3) adopt_node_types_preserved
+    by(auto simp add: a_remove_child_locs_def reflp_def transp_def)
+  then have "type_wf h3"
+    using writes_small_big[where P="\<lambda>h h'. type_wf h \<longrightarrow> type_wf h'", OF set_disconnected_nodes_writes h3]
+    using  set_disconnected_nodes_types_preserved  
+    by(auto simp add: reflp_def transp_def)
+  then have "type_wf h'"
+    using writes_small_big[where P="\<lambda>h h'. type_wf h \<longrightarrow> type_wf h'", OF insert_node_writes h']
+    using set_child_nodes_types_preserved  
+    by(auto simp add: reflp_def transp_def)
+
+  have object_ptr_kinds_M_eq3_h: "object_ptr_kinds h = object_ptr_kinds h2"
+    apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h = object_ptr_kinds h'", 
+                                OF adopt_node_writes h2])
+    using adopt_node_pointers_preserved
+    apply blast
+    by (auto simp add: reflp_def transp_def)
+  then have object_ptr_kinds_M_eq_h: "\<And>ptrs. h \<turnstile> object_ptr_kinds_M \<rightarrow>\<^sub>r ptrs = h2 \<turnstile> object_ptr_kinds_M \<rightarrow>\<^sub>r ptrs"
+    by(simp add: object_ptr_kinds_M_defs )
+  then have object_ptr_kinds_M_eq2_h: "|h \<turnstile> object_ptr_kinds_M|\<^sub>r = |h2 \<turnstile> object_ptr_kinds_M|\<^sub>r"
+    by simp
+  then have node_ptr_kinds_eq2_h: "|h \<turnstile> node_ptr_kinds_M|\<^sub>r = |h2 \<turnstile> node_ptr_kinds_M|\<^sub>r"
+    using node_ptr_kinds_M_eq by blast
+
+  have "known_ptrs h2"
+    using assms object_ptr_kinds_M_eq3_h known_ptrs_preserved by blast
+
+  have wellformed_h2: "heap_is_wellformed h2"
+    using adopt_node_preserves_wellformedness[OF assms(1) h2] assms by simp
+
+  have object_ptr_kinds_M_eq3_h2: "object_ptr_kinds h2 = object_ptr_kinds h3"
+    apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h = object_ptr_kinds h'", 
+                                OF set_disconnected_nodes_writes h3])  
+    unfolding a_remove_child_locs_def
+    using set_disconnected_nodes_pointers_preserved 
+    by (auto simp add: reflp_def transp_def)
+  then have object_ptr_kinds_M_eq_h2: "\<And>ptrs. h2 \<turnstile> object_ptr_kinds_M \<rightarrow>\<^sub>r ptrs = h3 \<turnstile> object_ptr_kinds_M \<rightarrow>\<^sub>r ptrs"
+    by(simp add: object_ptr_kinds_M_defs)
+  then have object_ptr_kinds_M_eq2_h2: "|h2 \<turnstile> object_ptr_kinds_M|\<^sub>r = |h3 \<turnstile> object_ptr_kinds_M|\<^sub>r"
+    by simp
+  then have node_ptr_kinds_eq2_h2: "|h2 \<turnstile> node_ptr_kinds_M|\<^sub>r = |h3 \<turnstile> node_ptr_kinds_M|\<^sub>r"
+    using node_ptr_kinds_M_eq by blast
+  have document_ptr_kinds_eq2_h2: "|h2 \<turnstile> document_ptr_kinds_M|\<^sub>r = |h3 \<turnstile> document_ptr_kinds_M|\<^sub>r"
+    using object_ptr_kinds_M_eq2_h2 document_ptr_kinds_M_eq by auto
+
+  have "known_ptrs h3"
+    using object_ptr_kinds_M_eq3_h2 known_ptrs_preserved \<open>known_ptrs h2\<close> by blast
+  
+  have object_ptr_kinds_M_eq3_h': "object_ptr_kinds h3 = object_ptr_kinds h'"
+    apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h = object_ptr_kinds h'", 
+                                OF insert_node_writes h']) 
+    unfolding a_remove_child_locs_def
+    using set_child_nodes_pointers_preserved 
+    by (auto simp add: reflp_def transp_def)
+  then have object_ptr_kinds_M_eq_h3: 
+    "\<And>ptrs. h3 \<turnstile> object_ptr_kinds_M \<rightarrow>\<^sub>r ptrs = h' \<turnstile> object_ptr_kinds_M \<rightarrow>\<^sub>r ptrs"
+    by(simp add: object_ptr_kinds_M_defs)
+  then have object_ptr_kinds_M_eq2_h3: 
+    "|h3 \<turnstile> object_ptr_kinds_M|\<^sub>r = |h' \<turnstile> object_ptr_kinds_M|\<^sub>r"
+    by simp
+  then have node_ptr_kinds_eq2_h3: "|h3 \<turnstile> node_ptr_kinds_M|\<^sub>r = |h' \<turnstile> node_ptr_kinds_M|\<^sub>r"
+    using node_ptr_kinds_M_eq by blast
+  have document_ptr_kinds_eq2_h3: "|h3 \<turnstile> document_ptr_kinds_M|\<^sub>r = |h' \<turnstile> document_ptr_kinds_M|\<^sub>r"
+    using object_ptr_kinds_M_eq2_h3 document_ptr_kinds_M_eq by auto
+
+  have "known_ptrs h'"
+    using object_ptr_kinds_M_eq3_h' known_ptrs_preserved \<open>known_ptrs h3\<close> by blast
+
+  have disconnected_nodes_eq_h2: 
+    "\<And>doc_ptr disc_nodes. owner_document \<noteq> doc_ptr 
+      \<Longrightarrow> h2 \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes = h3 \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes"
+    using get_disconnected_nodes_reads set_disconnected_nodes_writes h3
+    apply(rule reads_writes_preserved)
+    by (auto simp add: set_disconnected_nodes_get_disconnected_nodes_different_pointers)
+  then have disconnected_nodes_eq2_h2: 
+     "\<And>doc_ptr. doc_ptr \<noteq> owner_document 
+     \<Longrightarrow> |h2 \<turnstile> get_disconnected_nodes doc_ptr|\<^sub>r = |h3 \<turnstile> get_disconnected_nodes doc_ptr|\<^sub>r"
+    using select_result_eq by force
+  have disconnected_nodes_h3: 
+   "h3 \<turnstile> get_disconnected_nodes owner_document \<rightarrow>\<^sub>r remove1 node disconnected_nodes_h2"
+    using h3 set_disconnected_nodes_get_disconnected_nodes
+    by blast
+
+  have disconnected_nodes_eq_h3: 
+    "\<And>doc_ptr disc_nodes. h3 \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes 
+                                        = h' \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes"
+    using get_disconnected_nodes_reads insert_node_writes  h'
+    apply(rule reads_writes_preserved)
+    using set_child_nodes_get_disconnected_nodes by fast
+  then have disconnected_nodes_eq2_h3: 
+    "\<And>doc_ptr. |h3 \<turnstile> get_disconnected_nodes doc_ptr|\<^sub>r = |h' \<turnstile> get_disconnected_nodes doc_ptr|\<^sub>r"
+    using select_result_eq by force
+
+  have children_eq_h2: 
+     "\<And>ptr' children. h2 \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r children = h3 \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r children"
+    using get_child_nodes_reads set_disconnected_nodes_writes h3
+    apply(rule reads_writes_preserved)
+    by (auto simp add: set_disconnected_nodes_get_child_nodes)
+  then have children_eq2_h2: 
+     "\<And>ptr'. |h2 \<turnstile> get_child_nodes ptr'|\<^sub>r = |h3 \<turnstile> get_child_nodes ptr'|\<^sub>r"
+    using select_result_eq by force
+
+  have children_eq_h3: 
+    "\<And>ptr' children. ptr \<noteq> ptr' 
+        \<Longrightarrow> h3 \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r children = h' \<turnstile> get_child_nodes ptr' \<rightarrow>\<^sub>r children"
+    using get_child_nodes_reads insert_node_writes h'
+    apply(rule reads_writes_preserved)
+    by (auto simp add: set_child_nodes_get_child_nodes_different_pointers)
+  then have children_eq2_h3: 
+     "\<And>ptr'. ptr \<noteq> ptr' \<Longrightarrow> |h3 \<turnstile> get_child_nodes ptr'|\<^sub>r = |h' \<turnstile> get_child_nodes ptr'|\<^sub>r"
+    using select_result_eq by force
+  obtain children_h3 where children_h3: "h3 \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children_h3"
+    using h' a_insert_node_def by auto
+  have children_h': "h' \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r insert_before_list node reference_child children_h3"
+    using h' \<open>type_wf h3\<close> \<open>known_ptr ptr\<close>
+    by(auto simp add: a_insert_node_def elim!: bind_returns_heap_E2 
+            dest!: set_child_nodes_get_child_nodes returns_result_eq[OF children_h3])
+
+  have ptr_in_heap: "ptr |\<in>| object_ptr_kinds h3"
+    using children_h3 get_child_nodes_ptr_in_heap by blast
+  have node_in_heap: "node |\<in>| node_ptr_kinds h"
+    using h2 adopt_node_child_in_heap by fast
+  have child_not_in_any_children: 
+    "\<And>p children. h2 \<turnstile> get_child_nodes p \<rightarrow>\<^sub>r children \<Longrightarrow> node \<notin> set children"
+    using assms(1) assms(2) assms(3) h2 local.adopt_node_removes_child by blast
+  show "node \<notin> set children'"
+    using a1 assms(5) child_not_in_any_children children_eq_h2 children_eq_h3 by blast
+qed
+
+lemma ensure_pre_insertion_validity_ok:
+  assumes "heap_is_wellformed h" and "known_ptrs h" and "type_wf h"
+  assumes "ptr |\<in>| object_ptr_kinds h"
+  assumes "\<not>is_character_data_ptr_kind parent"
+  assumes "cast node \<notin> set |h \<turnstile> get_ancestors parent|\<^sub>r"
+  assumes "h \<turnstile> get_parent ref \<rightarrow>\<^sub>r Some parent"
+  assumes "is_document_ptr parent \<Longrightarrow> h \<turnstile> get_child_nodes parent \<rightarrow>\<^sub>r []"
+  assumes "is_document_ptr parent \<Longrightarrow> \<not>is_character_data_ptr_kind node"
+  shows "h \<turnstile> ok (a_ensure_pre_insertion_validity node parent (Some ref))"
+proof -
+  have "h \<turnstile> (if is_character_data_ptr_kind parent
+        then error HierarchyRequestError else return ()) \<rightarrow>\<^sub>r ()"
+    using assms
+    by (simp add: assms(4))
+  moreover have "h \<turnstile> do {
+      ancestors \<leftarrow> get_ancestors parent;
+      (if cast node \<in> set ancestors then error HierarchyRequestError else return ())
+  } \<rightarrow>\<^sub>r ()"
+    using assms(6)
+    apply(auto intro!: bind_pure_returns_result_I)[1]
+    using assms(1) assms(2) assms(3) assms(7) local.get_ancestors_ok local.get_parent_parent_in_heap by auto
+    
+  moreover have "h \<turnstile> do {
+      (case Some ref of
+        Some child \<Rightarrow> do {
+          child_parent \<leftarrow> get_parent child;
+          (if child_parent \<noteq> Some parent then error NotFoundError else return ())}
+      | None \<Rightarrow> return ())
+  } \<rightarrow>\<^sub>r ()"
+    using assms(7)
+    by(auto split: option.splits)
+  moreover have "h \<turnstile> do {
+      children \<leftarrow> get_child_nodes parent;
+      (if children \<noteq> [] \<and> is_document_ptr parent
+        then error HierarchyRequestError else return ())
+  } \<rightarrow>\<^sub>r ()"
+    using assms(8)
+    by (smt assms(5) assms(7) bind_pure_returns_result_I2 calculation(1) is_OK_returns_result_I local.get_child_nodes_pure local.get_parent_child_dual returns_result_eq)
+
+  moreover have "h \<turnstile> do {
+      (if is_character_data_ptr node \<and> is_document_ptr parent
+        then error HierarchyRequestError else return ())
+  } \<rightarrow>\<^sub>r ()"
+    using assms
+    using is_character_data_ptr_kind_none by force
+  ultimately show ?thesis
+    unfolding a_ensure_pre_insertion_validity_def
+    apply(intro bind_is_OK_pure_I)
+                apply auto[1]
+               apply auto[1]
+              apply auto[1]
+    using assms(1) assms(2) assms(3) assms(7) local.get_ancestors_ok local.get_parent_parent_in_heap 
+             apply blast
+            apply auto[1]
+           apply auto[1]
+    using assms(6)
+           apply auto[1] 
+    using assms(1) assms(2) assms(3) assms(7) local.get_ancestors_ok local.get_parent_parent_in_heap 
+          apply auto[1] 
+          apply (smt bind_returns_heap_E is_OK_returns_heap_E local.get_parent_pure pure_def 
+                     pure_returns_heap_eq return_returns_heap returns_result_eq) 
+         apply(blast)
+    using local.get_child_nodes_pure 
+        apply blast 
+     apply (meson assms(7) is_OK_returns_result_I local.get_parent_child_dual)
+      apply (simp)
+     apply (smt assms(5) assms(8) is_OK_returns_result_I returns_result_eq) 
+    by(auto)       
 qed
 end
 
@@ -4957,13 +6079,470 @@ lemma insert_before_wf2_is_l_insert_before_wf2 [instances]:
   using insert_before_heap_is_wellformed_preserved apply(fast, fast, fast)
   done
 
+
+
+locale l_insert_before_wf3\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M =
+  l_insert_before_wf2\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M +
+  l_adopt_node\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M +
+  l_set_child_nodes_get_child_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M +
+  l_remove_child_wf2
+begin
+
+lemma next_sibling_ok:
+  assumes "heap_is_wellformed h" and "known_ptrs h" and "type_wf h"
+  assumes "node_ptr |\<in>| node_ptr_kinds h"
+  shows "h \<turnstile> ok (a_next_sibling node_ptr)"
+proof -
+  have "known_ptr (cast node_ptr)"
+    using assms(2) assms(4) local.known_ptrs_known_ptr node_ptr_kinds_commutes by blast
+  then show ?thesis
+  using assms
+  apply(auto simp add: a_next_sibling_def intro!: bind_is_OK_pure_I split: option.splits list.splits)
+  using get_child_nodes_ok local.get_parent_parent_in_heap local.known_ptrs_known_ptr by blast
+qed
+
+lemma remove_child_ok:
+  assumes "heap_is_wellformed h" and "known_ptrs h" and "type_wf h"
+  assumes "h \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children"
+  assumes "child \<in> set children"
+  shows "h \<turnstile> ok (remove_child ptr child)"
+proof -
+
+  have "ptr |\<in>| object_ptr_kinds h"
+    using assms(4) local.get_child_nodes_ptr_in_heap by blast
+  have "child |\<in>| node_ptr_kinds h"
+    using assms(1) assms(4) assms(5) local.heap_is_wellformed_children_in_heap by blast
+  have "\<not>is_character_data_ptr ptr"
+  proof (rule ccontr, simp)
+    assume "is_character_data_ptr ptr"
+    then have "h \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r []"
+      using \<open>ptr |\<in>| object_ptr_kinds h\<close>
+      apply(simp add: get_child_nodes_def a_get_child_nodes_tups_def)
+      apply(split invoke_splits)+
+      by(auto simp add: get_child_nodes\<^sub>c\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>_\<^sub>d\<^sub>a\<^sub>t\<^sub>a\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def intro!: bind_pure_returns_result_I split: option.splits)
+    then
+    show False
+      using assms returns_result_eq by fastforce
+    qed
+  have "is_character_data_ptr child \<Longrightarrow> \<not>is_document_ptr_kind ptr"
+  proof (rule ccontr, simp)
+    assume "is_character_data_ptr\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r child"
+    and "is_document_ptr_kind ptr"
+    then show False
+      using assms
+      using \<open>ptr |\<in>| object_ptr_kinds h\<close>
+      apply(simp add: get_child_nodes_def a_get_child_nodes_tups_def)
+      apply(split invoke_splits)+
+         apply(auto split: option.splits)
+        apply (meson invoke_empty is_OK_returns_result_I)
+       apply (meson invoke_empty is_OK_returns_result_I)
+      by(auto simp add: get_child_nodes\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def elim!: bind_returns_result_E2 split: option.splits)
+  qed
+
+  obtain owner_document where
+    owner_document: "h \<turnstile> get_owner_document (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r child) \<rightarrow>\<^sub>r owner_document"
+    by (meson \<open>child |\<in>| node_ptr_kinds h\<close> assms(1) assms(2) assms(3) is_OK_returns_result_E local.get_owner_document_ok node_ptr_kinds_commutes)
+  obtain disconnected_nodes_h where
+    disconnected_nodes_h: "h \<turnstile> get_disconnected_nodes owner_document \<rightarrow>\<^sub>r disconnected_nodes_h" 
+    by (meson assms(1) assms(2) assms(3) is_OK_returns_result_E local.get_disconnected_nodes_ok local.get_owner_document_owner_document_in_heap owner_document)
+  obtain h2 where
+    h2: "h \<turnstile> set_disconnected_nodes owner_document (child # disconnected_nodes_h) \<rightarrow>\<^sub>h h2"
+    by (meson assms(1) assms(2) assms(3) is_OK_returns_heap_E l_set_disconnected_nodes.set_disconnected_nodes_ok local.get_owner_document_owner_document_in_heap local.l_set_disconnected_nodes_axioms owner_document)
+
+  have "known_ptr ptr"
+    using assms(2) assms(4) local.known_ptrs_known_ptr
+      using \<open>ptr |\<in>| object_ptr_kinds h\<close> by blast
+
+    have "type_wf h2"
+    using writes_small_big[where P="\<lambda>h h'. type_wf h \<longrightarrow> type_wf h'", OF set_disconnected_nodes_writes h2]
+    using set_disconnected_nodes_types_preserved assms(3)
+    by(auto simp add: reflp_def transp_def)
+
+  have "object_ptr_kinds h = object_ptr_kinds h2"
+    using h2
+    apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h = object_ptr_kinds h'", 
+                                OF set_disconnected_nodes_writes])
+    using set_disconnected_nodes_pointers_preserved
+    by (auto simp add: reflp_def transp_def)
+
+  have "h2 \<turnstile> ok (set_child_nodes ptr (remove1 child children))"
+  proof (cases "is_element_ptr_kind ptr")
+    case True
+    then show ?thesis
+      using set_child_nodes_element_ok \<open>known_ptr ptr\<close> \<open>object_ptr_kinds h = object_ptr_kinds h2\<close> \<open>type_wf h2\<close> assms(4)
+      using \<open>ptr |\<in>| object_ptr_kinds h\<close> by blast
+  next
+    case False
+    then have "is_document_ptr_kind ptr"
+      using \<open>known_ptr ptr\<close> \<open>ptr |\<in>| object_ptr_kinds h\<close> \<open>\<not>is_character_data_ptr ptr\<close>
+      by(auto simp add:known_ptr_impl known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
+    moreover have "is_document_ptr ptr"
+      using \<open>known_ptr ptr\<close> \<open>ptr |\<in>| object_ptr_kinds h\<close> False  \<open>\<not>is_character_data_ptr ptr\<close>
+      by(auto simp add: known_ptr_impl known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
+    ultimately show ?thesis
+      using assms(4)
+      apply(auto simp add: get_child_nodes_def a_get_child_nodes_tups_def)
+      apply(split invoke_splits)+
+         apply(auto elim!: bind_returns_result_E2 split: option.splits)
+      apply(auto simp add: get_child_nodes\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def elim!: bind_returns_result_E2 split: option.splits)
+      using \<open>ptr |\<in>| object_ptr_kinds h\<close> \<open>is_document_ptr_kind ptr\<close> \<open>known_ptr ptr\<close> \<open>object_ptr_kinds h = object_ptr_kinds h2\<close> \<open>type_wf h2\<close> assms(4) local.set_child_nodes_document1_ok apply blast
+      using \<open>ptr |\<in>| object_ptr_kinds h\<close> \<open>is_document_ptr_kind ptr\<close> \<open>known_ptr ptr\<close> \<open>object_ptr_kinds h = object_ptr_kinds h2\<close> \<open>type_wf h2\<close> assms(4) local.set_child_nodes_document1_ok apply blast
+      using \<open>ptr |\<in>| object_ptr_kinds h\<close> \<open>is_document_ptr_kind ptr\<close> \<open>known_ptr ptr\<close> \<open>object_ptr_kinds h = object_ptr_kinds h2\<close> \<open>type_wf h2\<close> assms(4) is_element_ptr_kind_cast local.set_child_nodes_document2_ok by blast
+  qed
+  then
+  obtain h' where
+    h': "h2 \<turnstile> set_child_nodes ptr (remove1 child children) \<rightarrow>\<^sub>h h'"
+    by auto
+
+  show ?thesis
+    using assms
+    apply(auto simp add: remove_child_def
+        simp add: is_OK_returns_heap_I[OF h2] is_OK_returns_heap_I[OF h'] is_OK_returns_result_I[OF assms(4)] is_OK_returns_result_I[OF owner_document] is_OK_returns_result_I[OF disconnected_nodes_h]
+        intro!: bind_is_OK_pure_I[OF get_owner_document_pure]
+        bind_is_OK_pure_I[OF get_child_nodes_pure]
+        bind_is_OK_pure_I[OF get_disconnected_nodes_pure]
+        bind_is_OK_I[rotated, OF h2]
+        dest!: returns_result_eq[OF assms(4)] returns_result_eq[OF owner_document] returns_result_eq[OF disconnected_nodes_h]
+)
+    using h2 returns_result_select_result by force
+qed
+
+lemma adopt_node_ok:
+  assumes "heap_is_wellformed h" and "known_ptrs h" and "type_wf h"
+  assumes "document_ptr |\<in>| document_ptr_kinds h"
+  assumes "child |\<in>| node_ptr_kinds h"
+  shows "h \<turnstile> ok (adopt_node document_ptr child)"
+proof -
+  obtain old_document where
+    old_document: "h \<turnstile> get_owner_document (cast child) \<rightarrow>\<^sub>r old_document" 
+    by (meson assms(1) assms(2) assms(3) assms(5) is_OK_returns_result_E local.get_owner_document_ok node_ptr_kinds_commutes)
+  then have "h \<turnstile> ok (get_owner_document (cast child))"
+    by auto
+  obtain parent_opt where
+    parent_opt: "h \<turnstile> get_parent child \<rightarrow>\<^sub>r parent_opt"
+    by (meson assms(2) assms(3) is_OK_returns_result_I l_get_owner_document.get_owner_document_ptr_in_heap 
+              local.get_parent_ok local.l_get_owner_document_axioms node_ptr_kinds_commutes old_document 
+              returns_result_select_result)
+  then have "h \<turnstile> ok (get_parent child)"
+    by auto
+
+  have "h \<turnstile> ok (case parent_opt of Some parent \<Rightarrow> remove_child parent child | None \<Rightarrow> return ())"
+    apply(auto split: option.splits)[1]
+    using remove_child_ok
+    by (metis assms(1) assms(2) assms(3) local.get_parent_child_dual parent_opt)
+  then
+  obtain h2 where
+    h2: "h \<turnstile> (case parent_opt of Some parent \<Rightarrow> remove_child parent child | None \<Rightarrow> return ()) \<rightarrow>\<^sub>h h2" 
+    by auto
+
+  have "object_ptr_kinds h = object_ptr_kinds h2"
+    using h2 apply(simp split: option.splits)
+    apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h = object_ptr_kinds h'", 
+                                OF remove_child_writes])
+    using remove_child_pointers_preserved
+    by (auto simp add: reflp_def transp_def)
+  then
+  have "old_document |\<in>| document_ptr_kinds h2"
+    using assms(1) assms(2) assms(3) document_ptr_kinds_commutes local.get_owner_document_owner_document_in_heap old_document by blast
+
+  
+  have wellformed_h2: "heap_is_wellformed h2"
+    using h2 remove_child_heap_is_wellformed_preserved assms
+    by(auto split: option.splits) 
+  have "type_wf h2"
+    using h2 remove_child_preserves_type_wf assms
+    by(auto split: option.splits) 
+  have "known_ptrs h2"
+    using h2 remove_child_preserves_known_ptrs assms
+    by(auto split: option.splits) 
+
+ 
+  have "object_ptr_kinds h = object_ptr_kinds h2"
+    using h2 apply(simp split: option.splits)
+    apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h = object_ptr_kinds h'", 
+                                OF remove_child_writes])
+    using remove_child_pointers_preserved
+    by (auto simp add: reflp_def transp_def)
+  then have "document_ptr_kinds h = document_ptr_kinds h2"
+    by(auto simp add: document_ptr_kinds_def)
+
+  have "h2 \<turnstile> ok (if document_ptr \<noteq> old_document then do {
+        old_disc_nodes \<leftarrow> get_disconnected_nodes old_document;
+        set_disconnected_nodes old_document (remove1 child old_disc_nodes);
+        disc_nodes \<leftarrow> get_disconnected_nodes document_ptr;
+        set_disconnected_nodes document_ptr (child # disc_nodes)
+      } else do {
+        return ()
+      })"
+  proof(cases "document_ptr = old_document")
+    case True
+    then show ?thesis
+      by simp
+  next
+    case False
+    then have "h2 \<turnstile> ok (get_disconnected_nodes old_document)"
+      by (simp add: \<open>old_document |\<in>| document_ptr_kinds h2\<close> \<open>type_wf h2\<close> local.get_disconnected_nodes_ok)
+    then obtain old_disc_nodes where
+      old_disc_nodes: "h2 \<turnstile> get_disconnected_nodes old_document \<rightarrow>\<^sub>r old_disc_nodes"
+      by auto
+
+    have "h2 \<turnstile> ok (set_disconnected_nodes old_document (remove1 child old_disc_nodes))"
+      by (simp add: \<open>old_document |\<in>| document_ptr_kinds h2\<close> \<open>type_wf h2\<close> local.set_disconnected_nodes_ok)
+    then obtain h3 where
+      h3: "h2 \<turnstile> set_disconnected_nodes old_document (remove1 child old_disc_nodes) \<rightarrow>\<^sub>h h3"
+      by auto
+
+
+    have object_ptr_kinds_h2_eq3: "object_ptr_kinds h2 = object_ptr_kinds h3"
+      apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h = object_ptr_kinds h'", 
+                                  OF set_disconnected_nodes_writes h3])
+      using set_disconnected_nodes_pointers_preserved set_child_nodes_pointers_preserved 
+      by (auto simp add: reflp_def transp_def)
+    then have object_ptr_kinds_M_eq_h2: 
+              "\<And>ptrs. h2 \<turnstile> object_ptr_kinds_M \<rightarrow>\<^sub>r ptrs = h3 \<turnstile> object_ptr_kinds_M \<rightarrow>\<^sub>r ptrs"
+      by(simp add: object_ptr_kinds_M_defs)
+    then have object_ptr_kinds_eq_h2: "|h2 \<turnstile> object_ptr_kinds_M|\<^sub>r = |h3 \<turnstile> object_ptr_kinds_M|\<^sub>r"
+      by(simp)
+    then have node_ptr_kinds_eq_h2: "|h2 \<turnstile> node_ptr_kinds_M|\<^sub>r = |h3 \<turnstile> node_ptr_kinds_M|\<^sub>r"
+      using node_ptr_kinds_M_eq by blast
+    then have node_ptr_kinds_eq3_h2: "node_ptr_kinds h2 = node_ptr_kinds h3"
+      by auto
+    have document_ptr_kinds_eq2_h2: "|h2 \<turnstile> document_ptr_kinds_M|\<^sub>r = |h3 \<turnstile> document_ptr_kinds_M|\<^sub>r"
+      using object_ptr_kinds_eq_h2 document_ptr_kinds_M_eq by auto
+    then have document_ptr_kinds_eq3_h2: "document_ptr_kinds h2 = document_ptr_kinds h3"
+      using object_ptr_kinds_eq_h2 document_ptr_kinds_M_eq by auto
+    have children_eq_h2: 
+      "\<And>ptr children. h2 \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children = h3 \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children"
+      using get_child_nodes_reads set_disconnected_nodes_writes h3
+      apply(rule reads_writes_preserved)
+      by (simp add: set_disconnected_nodes_get_child_nodes)
+    then have children_eq2_h2: "\<And>ptr. |h2 \<turnstile> get_child_nodes ptr|\<^sub>r = |h3 \<turnstile> get_child_nodes ptr|\<^sub>r"
+      using select_result_eq by force
+
+    have "type_wf h3"
+      using \<open>type_wf h2\<close>
+      using writes_small_big[where P="\<lambda>h h'. type_wf h \<longrightarrow> type_wf h'", OF set_disconnected_nodes_writes h3]
+      using  set_disconnected_nodes_types_preserved  
+      by(auto simp add: reflp_def transp_def)
+    moreover have "document_ptr |\<in>| document_ptr_kinds h3"
+      using \<open>document_ptr_kinds h = document_ptr_kinds h2\<close> assms(4) document_ptr_kinds_eq3_h2 by auto
+    ultimately have "h3 \<turnstile> ok (get_disconnected_nodes document_ptr)"
+      by (simp add: local.get_disconnected_nodes_ok)
+
+    then obtain disc_nodes where
+      disc_nodes: "h3 \<turnstile> get_disconnected_nodes document_ptr \<rightarrow>\<^sub>r disc_nodes"
+      by auto
+
+
+    have "h3 \<turnstile> ok (set_disconnected_nodes document_ptr (child # disc_nodes))"
+      using \<open>document_ptr |\<in>| document_ptr_kinds h3\<close> \<open>type_wf h3\<close> local.set_disconnected_nodes_ok by auto
+    then obtain h' where
+      h': "h3 \<turnstile> set_disconnected_nodes document_ptr (child # disc_nodes) \<rightarrow>\<^sub>h h'"
+      by auto
+
+    then show ?thesis
+      using False
+      using \<open>h2 \<turnstile> ok get_disconnected_nodes old_document\<close>
+      using \<open>h3 \<turnstile> ok get_disconnected_nodes document_ptr\<close>
+      apply(auto dest!: returns_result_eq[OF old_disc_nodes] returns_result_eq[OF disc_nodes]
+          intro!: bind_is_OK_I[rotated, OF h3] bind_is_OK_pure_I[OF get_disconnected_nodes_pure] )
+      using \<open>h2 \<turnstile> ok set_disconnected_nodes old_document (remove1 child old_disc_nodes)\<close> by auto
+  qed
+  then obtain h' where
+    h': "h2 \<turnstile> (if document_ptr \<noteq> old_document then do {
+        old_disc_nodes \<leftarrow> get_disconnected_nodes old_document;
+        set_disconnected_nodes old_document (remove1 child old_disc_nodes);
+        disc_nodes \<leftarrow> get_disconnected_nodes document_ptr;
+        set_disconnected_nodes document_ptr (child # disc_nodes)
+      } else do {
+        return ()
+      }) \<rightarrow>\<^sub>h h'"
+    by auto
+
+  show ?thesis
+    using \<open>h \<turnstile> ok (get_owner_document (cast child))\<close>
+    using \<open>h \<turnstile> ok (get_parent child)\<close>
+    using h2 h'
+    apply(auto simp add: adopt_node_def
+        simp add: is_OK_returns_heap_I[OF h2]
+        intro!: bind_is_OK_pure_I[OF get_owner_document_pure]
+        bind_is_OK_pure_I[OF get_parent_pure]
+        bind_is_OK_I[rotated, OF h2]
+        dest!: returns_result_eq[OF parent_opt] returns_result_eq[OF old_document])
+    using \<open>h \<turnstile> ok (case parent_opt of None \<Rightarrow> return () | Some parent \<Rightarrow> remove_child parent child)\<close>
+    by auto
+qed
+
+lemma insert_node_ok:
+  assumes "known_ptr parent" and "type_wf h"
+  assumes "parent |\<in>| object_ptr_kinds h"
+  assumes "\<not>is_character_data_ptr_kind parent"
+  assumes "is_document_ptr parent \<Longrightarrow> h \<turnstile> get_child_nodes parent \<rightarrow>\<^sub>r []"
+  assumes "is_document_ptr parent \<Longrightarrow> \<not>is_character_data_ptr_kind node"
+  assumes "known_ptr (cast node)"
+  shows "h \<turnstile> ok (a_insert_node parent node ref)"
+proof(auto simp add: a_insert_node_def get_child_nodes_ok[OF assms(1) assms(2) assms(3)] intro!: bind_is_OK_pure_I)
+  fix children'
+  assume "h \<turnstile> get_child_nodes parent \<rightarrow>\<^sub>r children'"
+
+  show "h \<turnstile> ok set_child_nodes parent (insert_before_list node ref children')"
+  proof (cases "is_element_ptr_kind parent")
+    case True
+    then show ?thesis 
+      using set_child_nodes_element_ok
+      using assms(1) assms(2) assms(3) by blast
+  next
+    case False
+    then have "is_document_ptr_kind parent"
+      using assms(4) assms(1)
+      by(auto simp add: known_ptr_impl DocumentClass.known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
+    then have "is_document_ptr parent"
+      using assms(1)
+      by(auto simp add: known_ptr_impl DocumentClass.known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
+    then obtain children where children: "h \<turnstile> get_child_nodes parent \<rightarrow>\<^sub>r children" and "children = []"
+      using assms(5) by blast
+
+    have "insert_before_list node ref children' = [node]"
+      by (metis \<open>children = []\<close> \<open>h \<turnstile> get_child_nodes parent \<rightarrow>\<^sub>r children'\<close> append.left_neutral children insert_Nil l_insert_before\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs.insert_before_list.elims l_insert_before\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs.insert_before_list.simps(3) neq_Nil_conv returns_result_eq)
+    moreover have "\<not>is_character_data_ptr_kind node"
+      using \<open>is_document_ptr\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r parent\<close> assms(6) by blast
+      then have "is_element_ptr_kind node"
+      by (metis (no_types, lifting) CharacterDataClass.a_known_ptr_def DocumentClass.a_known_ptr_def ElementClass.a_known_ptr_def NodeClass.a_known_ptr_def assms(7) cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_inject document_ptr_no_node_ptr_cast is_character_data_ptr_kind_none is_document_ptr_kind_none is_element_ptr_implies_kind is_node_ptr_kind_cast local.known_ptr_impl node_ptr_casts_commute3 option.case_eq_if)
+    ultimately
+    show ?thesis
+      using set_child_nodes_document2_ok
+      by (metis \<open>is_document_ptr\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r parent\<close> assms(1) assms(2) assms(3) assms(5) is_document_ptr_kind_none option.case_eq_if)
+  qed
+qed
+
+lemma insert_before_ok:
+  assumes "heap_is_wellformed h" and "known_ptrs h" and "type_wf h"
+  assumes "parent |\<in>| object_ptr_kinds h"
+  assumes "node |\<in>| node_ptr_kinds h"
+  assumes "\<not>is_character_data_ptr_kind parent"
+  assumes "cast node \<notin> set |h \<turnstile> get_ancestors parent|\<^sub>r"
+  assumes "h \<turnstile> get_parent ref \<rightarrow>\<^sub>r Some parent"
+  assumes "is_document_ptr parent \<Longrightarrow> h \<turnstile> get_child_nodes parent \<rightarrow>\<^sub>r []"
+  assumes "is_document_ptr parent \<Longrightarrow> \<not>is_character_data_ptr_kind node"
+  shows "h \<turnstile> ok (insert_before parent node (Some ref))"
+proof -
+  have "h \<turnstile> ok (a_ensure_pre_insertion_validity node parent (Some ref))"
+    using assms ensure_pre_insertion_validity_ok by blast
+  have "h \<turnstile> ok (if Some node = Some ref
+        then a_next_sibling node                                         
+        else return (Some ref))" (is "h \<turnstile> ok ?P")
+    apply(auto split: if_splits)[1]
+    using assms(1) assms(2) assms(3) assms(5) next_sibling_ok by blast
+
+  then obtain reference_child where
+    reference_child: "h \<turnstile> ?P \<rightarrow>\<^sub>r reference_child"
+    by auto
+
+  obtain owner_document where
+    owner_document: "h \<turnstile> get_owner_document parent \<rightarrow>\<^sub>r owner_document"
+    using assms get_owner_document_ok
+    by (meson returns_result_select_result)
+  then have "h \<turnstile> ok (get_owner_document parent)"
+    by auto
+  have "owner_document |\<in>| document_ptr_kinds h"
+    using assms(1) assms(2) assms(3) local.get_owner_document_owner_document_in_heap owner_document by blast
+
+  obtain h2 where 
+    h2: "h \<turnstile> adopt_node owner_document node \<rightarrow>\<^sub>h h2"
+    by (meson assms(1) assms(2) assms(3) assms(5) is_OK_returns_heap_E adopt_node_ok l_insert_before_wf2\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms 
+              local.get_owner_document_owner_document_in_heap owner_document)
+  then have "h \<turnstile> ok (adopt_node owner_document node)"
+    by auto
+  have "object_ptr_kinds h = object_ptr_kinds h2"
+    apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h = object_ptr_kinds h'", 
+                                OF adopt_node_writes h2])
+    using adopt_node_pointers_preserved
+    apply blast
+    by (auto simp add: reflp_def transp_def)
+  then have "document_ptr_kinds h = document_ptr_kinds h2"
+    by(auto simp add: document_ptr_kinds_def)
+  have "heap_is_wellformed h2"
+    using h2 adopt_node_preserves_wellformedness assms by blast
+  have "known_ptrs h2"
+    using h2 adopt_node_preserves_known_ptrs assms by blast
+  have "type_wf h2"
+    using h2 adopt_node_preserves_type_wf assms by blast
+
+  obtain disconnected_nodes_h2 where
+    disconnected_nodes_h2: "h2 \<turnstile> get_disconnected_nodes owner_document \<rightarrow>\<^sub>r disconnected_nodes_h2"
+    by (metis \<open>document_ptr_kinds h = document_ptr_kinds h2\<close> \<open>type_wf h2\<close> assms(1) assms(2) assms(3) is_OK_returns_result_E local.get_disconnected_nodes_ok local.get_owner_document_owner_document_in_heap owner_document)
+  
+  obtain h3 where
+    h3: "h2 \<turnstile> set_disconnected_nodes owner_document (remove1 node disconnected_nodes_h2) \<rightarrow>\<^sub>h h3"
+    by (metis \<open>document_ptr_kinds h = document_ptr_kinds h2\<close> \<open>owner_document |\<in>| document_ptr_kinds h\<close> \<open>type_wf h2\<close> document_ptr_kinds_def is_OK_returns_heap_E l_set_disconnected_nodes.set_disconnected_nodes_ok local.l_set_disconnected_nodes_axioms)
+
+  have "type_wf h3"
+    using \<open>type_wf h2\<close>
+    using writes_small_big[where P="\<lambda>h h'. type_wf h \<longrightarrow> type_wf h'", OF set_disconnected_nodes_writes h3]
+    using  set_disconnected_nodes_types_preserved  
+    by(auto simp add: reflp_def transp_def)
+
+  have object_ptr_kinds_M_eq3_h2: "object_ptr_kinds h2 = object_ptr_kinds h3"
+    apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h = object_ptr_kinds h'", 
+                                OF set_disconnected_nodes_writes h3])  
+    unfolding a_remove_child_locs_def
+    using set_disconnected_nodes_pointers_preserved 
+    by (auto simp add: reflp_def transp_def)
+
+  have "parent |\<in>| object_ptr_kinds h3"
+    using \<open>object_ptr_kinds h = object_ptr_kinds h2\<close> assms(4) object_ptr_kinds_M_eq3_h2 by blast
+  moreover have "known_ptr parent"
+    using assms(2) assms(4) local.known_ptrs_known_ptr by blast
+  moreover have "known_ptr (cast node)"
+    using assms(2) assms(5) local.known_ptrs_known_ptr node_ptr_kinds_commutes by blast
+  moreover have "is_document_ptr parent \<Longrightarrow> h3 \<turnstile> get_child_nodes parent \<rightarrow>\<^sub>r []"
+    by (metis assms(8) assms(9) distinct.simps(2) distinct_singleton local.get_parent_child_dual returns_result_eq)
+  ultimately obtain h' where
+    h': "h3 \<turnstile> a_insert_node parent node reference_child \<rightarrow>\<^sub>h h'"
+    using insert_node_ok \<open>type_wf h3\<close> assms by blast
+
+  show ?thesis
+    using \<open>h \<turnstile> ok (a_ensure_pre_insertion_validity node parent (Some ref))\<close>
+    using reference_child \<open>h \<turnstile> ok (get_owner_document parent)\<close> \<open>h \<turnstile> ok (adopt_node owner_document node)\<close> h3 h'
+    apply(auto simp add: insert_before_def
+        simp add: is_OK_returns_result_I[OF disconnected_nodes_h2] 
+        simp add: is_OK_returns_heap_I[OF h3] is_OK_returns_heap_I[OF h']
+        intro!: bind_is_OK_I2
+        bind_is_OK_pure_I[OF ensure_pre_insertion_validity_pure]
+        bind_is_OK_pure_I[OF next_sibling_pure]
+        bind_is_OK_pure_I[OF get_owner_document_pure]
+        bind_is_OK_pure_I[OF get_disconnected_nodes_pure]
+        dest!: returns_result_eq[OF owner_document] returns_result_eq[OF disconnected_nodes_h2] returns_heap_eq[OF h2] returns_heap_eq[OF h3] 
+        dest!: sym[of node ref]
+        )
+    using returns_result_eq by fastforce
+qed
+end
+
+interpretation i_insert_before_wf3?: l_insert_before_wf3\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M
+    get_parent get_parent_locs get_child_nodes get_child_nodes_locs set_child_nodes set_child_nodes_locs get_ancestors get_ancestors_locs adopt_node adopt_node_locs set_disconnected_nodes set_disconnected_nodes_locs get_disconnected_nodes get_disconnected_nodes_locs get_owner_document insert_before insert_before_locs append_child type_wf known_ptr known_ptrs heap_is_wellformed parent_child_rel remove_child remove_child_locs get_root_node get_root_node_locs remove
+  by(auto simp add: l_insert_before_wf3\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_def instances)
+declare l_insert_before_wf3\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms [instances]
+
+
 locale l_append_child_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M =
   l_adopt_node\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M +
-  l_insert_before_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M  +
-  l_insert_before_wf2  +
+  l_insert_before\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M +
   l_append_child\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M +
+  l_insert_before_wf +
+  l_insert_before_wf2  +
   l_get_child_nodes
 begin
+
+
+lemma append_child_heap_is_wellformed_preserved:
+  assumes wellformed: "heap_is_wellformed h"
+    and append_child: "h \<turnstile> append_child ptr node \<rightarrow>\<^sub>h h'"
+    and known_ptrs: "known_ptrs h"
+    and type_wf: "type_wf h"
+  shows "heap_is_wellformed h'" and "type_wf h'" and "known_ptrs h'"
+  using assms
+  by(auto simp add: append_child_def intro: insert_before_preserves_type_wf insert_before_preserves_known_ptrs insert_before_heap_is_wellformed_preserved)
 
 lemma append_child_children:
   assumes "heap_is_wellformed h" and "type_wf h" and "known_ptrs h"
@@ -5087,6 +6666,17 @@ lemma append_child_for_all_on_no_children:
   by force
 end
 
+locale l_append_child_wf = l_type_wf + l_known_ptrs + l_append_child_defs + l_heap_is_wellformed_defs +
+  assumes append_child_preserves_type_wf: 
+    "heap_is_wellformed h \<Longrightarrow> type_wf h \<Longrightarrow> known_ptrs h \<Longrightarrow> h \<turnstile> append_child ptr child \<rightarrow>\<^sub>h h' 
+                          \<Longrightarrow> type_wf h'"
+  assumes append_child_preserves_known_ptrs: 
+    "heap_is_wellformed h \<Longrightarrow> type_wf h \<Longrightarrow> known_ptrs h \<Longrightarrow> h \<turnstile> append_child ptr child \<rightarrow>\<^sub>h h' 
+                          \<Longrightarrow> known_ptrs h'"
+  assumes append_child_heap_is_wellformed_preserved:
+    "type_wf h \<Longrightarrow> known_ptrs h \<Longrightarrow> heap_is_wellformed h \<Longrightarrow> h \<turnstile> append_child ptr child \<rightarrow>\<^sub>h h'
+               \<Longrightarrow> heap_is_wellformed h'"
+
 interpretation i_append_child_wf?: l_append_child_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M get_owner_document get_parent 
                                    get_parent_locs remove_child remove_child_locs 
                                    get_disconnected_nodes get_disconnected_nodes_locs 
@@ -5098,6 +6688,9 @@ interpretation i_append_child_wf?: l_append_child_wf\<^sub>C\<^sub>o\<^sub>r\<^s
                                    parent_child_rel
   by(auto simp add: l_append_child_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_def instances)
 
+lemma append_child_wf_is_l_append_child_wf [instances]: "l_append_child_wf type_wf known_ptr known_ptrs append_child heap_is_wellformed"
+  apply(auto simp add: l_append_child_wf_def l_append_child_wf_axioms_def instances)[1]
+  using append_child_heap_is_wellformed_preserved by fast+
 
 
 subsection \<open>create\_element\<close>
@@ -5110,7 +6703,7 @@ locale l_create_element_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub
   l_set_tag_type_get_disconnected_nodes type_wf set_tag_type set_tag_type_locs 
                              get_disconnected_nodes get_disconnected_nodes_locs +
   l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M get_disconnected_nodes get_disconnected_nodes_locs set_disconnected_nodes 
-                        set_disconnected_nodes_locs set_tag_type set_tag_type_locs create_element +
+                        set_disconnected_nodes_locs set_tag_type set_tag_type_locs type_wf create_element known_ptr +
   l_new_element_get_child_nodes type_wf known_ptr get_child_nodes get_child_nodes_locs +
   l_set_tag_type_get_child_nodes type_wf set_tag_type set_tag_type_locs known_ptr 
                           get_child_nodes get_child_nodes_locs +
@@ -5141,7 +6734,7 @@ lemma create_element_preserves_wellformedness:
     and "h \<turnstile> create_element document_ptr tag \<rightarrow>\<^sub>h h'"
     and "type_wf h"
     and "known_ptrs h"
-  shows "heap_is_wellformed h'"
+  shows "heap_is_wellformed h'" and "type_wf h'" and "known_ptrs h'"
 proof -
   obtain new_element_ptr h2 h3 disc_nodes_h3 where
     new_element_ptr: "h \<turnstile> new_element \<rightarrow>\<^sub>r new_element_ptr" and
@@ -5153,6 +6746,11 @@ proof -
     by(auto simp add: create_element_def
             elim!: bind_returns_heap_E 
                    bind_returns_heap_E2[rotated, OF get_disconnected_nodes_pure, rotated] )
+  then have "h \<turnstile> create_element document_ptr tag \<rightarrow>\<^sub>r new_element_ptr"
+    apply(auto simp add: create_element_def intro!: bind_returns_result_I)[1]
+    apply (metis is_OK_returns_heap_I is_OK_returns_result_E old.unit.exhaust)
+    apply (metis is_OK_returns_heap_E is_OK_returns_result_I local.get_disconnected_nodes_pure pure_returns_heap_eq)
+    by (metis is_OK_returns_heap_I is_OK_returns_result_E old.unit.exhaust)
 
   have "new_element_ptr \<notin> set |h \<turnstile> element_ptr_kinds_M|\<^sub>r"
     using new_element_ptr ElementMonad.ptr_kinds_ptr_kinds_M h2
@@ -5197,6 +6795,19 @@ proof -
   have node_ptr_kinds_eq_h3: "node_ptr_kinds h' = node_ptr_kinds h3"
     using object_ptr_kinds_eq_h3
     by(auto simp add: node_ptr_kinds_def)
+
+  have "known_ptr (cast new_element_ptr)"
+    using \<open>h \<turnstile> create_element document_ptr tag \<rightarrow>\<^sub>r new_element_ptr\<close> local.create_element_known_ptr by blast
+  then
+  have "known_ptrs h2"
+    using known_ptrs_new_ptr object_ptr_kinds_eq_h \<open>known_ptrs h\<close> h2
+    by blast
+  then
+  have "known_ptrs h3"
+    using known_ptrs_preserved object_ptr_kinds_eq_h2 by blast
+  then
+  show "known_ptrs h'"
+    using known_ptrs_preserved object_ptr_kinds_eq_h3 by blast
 
 
   have "document_ptr |\<in>| document_ptr_kinds h"
@@ -5250,7 +6861,7 @@ proof -
     using writes_small_big[where P="\<lambda>h h'. type_wf h \<longrightarrow> type_wf h'", OF set_tag_type_writes h3]
     using  set_tag_type_types_preserved  
     by(auto simp add: reflp_def transp_def)
-  then have "type_wf h'"
+  then show "type_wf h'"
     using writes_small_big[where P="\<lambda>h h'. type_wf h \<longrightarrow> type_wf h'", OF set_disconnected_nodes_writes h']
     using  set_disconnected_nodes_types_preserved  
     by(auto simp add: reflp_def transp_def)
@@ -5282,7 +6893,7 @@ proof -
     using \<open>heap_is_wellformed h\<close> 
     using \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close> 
           a_all_ptrs_in_heap_def heap_is_wellformed_def
-    by (meson NodeMonad.ptr_kinds_ptr_kinds_M fset_mp fset_of_list_elem )
+    using NodeMonad.ptr_kinds_ptr_kinds_M local.heap_is_wellformed_disc_nodes_in_heap by blast
 
   have "acyclic (parent_child_rel h)"
     using \<open>heap_is_wellformed h\<close> 
@@ -5328,21 +6939,12 @@ proof -
     using \<open>heap_is_wellformed h\<close>  by (simp add: heap_is_wellformed_def)
   then have "a_all_ptrs_in_heap h2"
     apply(auto simp add: a_all_ptrs_in_heap_def)[1]
-    using node_ptr_kinds_eq_h 
-          \<open>cast new_element_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close> 
-          \<open>h2 \<turnstile> get_child_nodes (cast new_element_ptr) \<rightarrow>\<^sub>r []\<close>
-     apply (metis (no_types, hide_lams) children_eq_h fempty_iff fset_mp fset_of_list_simps(1) 
-                  funionCI select_result_I2)
-    by (simp add: disconnected_nodes_eq_h fset_rev_mp node_ptr_kinds_eq_h)
+    apply (metis \<open>known_ptrs h2\<close> \<open>parent_child_rel h = parent_child_rel h2\<close> \<open>type_wf h2\<close> assms(1) assms(3) funion_iff local.get_child_nodes_ok local.known_ptrs_known_ptr local.parent_child_rel_child_in_heap local.parent_child_rel_child_nodes2 node_ptr_kinds_commutes node_ptr_kinds_eq_h returns_result_select_result)
+    by (metis assms(1) assms(3) disconnected_nodes_eq2_h document_ptr_kinds_eq_h funion_iff local.get_disconnected_nodes_ok local.heap_is_wellformed_disc_nodes_in_heap node_ptr_kinds_eq_h returns_result_select_result)
   then have "a_all_ptrs_in_heap h3"
-    by(auto simp add: a_all_ptrs_in_heap_def object_ptr_kinds_eq_h2 node_ptr_kinds_def 
-                      children_eq_h2 disconnected_nodes_eq_h2)
+  by (simp add: children_eq2_h2 disconnected_nodes_eq2_h2 document_ptr_kinds_eq_h2 local.a_all_ptrs_in_heap_def node_ptr_kinds_eq_h2 object_ptr_kinds_eq_h2)
   then have "a_all_ptrs_in_heap h'"
-    apply(auto simp add: a_all_ptrs_in_heap_def object_ptr_kinds_eq_h3 node_ptr_kinds_def children_eq_h3 )[1]
-    using disconnected_nodes_eq_h3 object_ptr_kinds_eq_h object_ptr_kinds_eq_h2
-    by (metis (no_types, lifting) disc_nodes_h3 finsertCI fset.map_comp fset_mp fset_of_list_elem 
-              funion_finsert_right h' local.set_disconnected_nodes_get_disconnected_nodes 
-              node_ptr_kinds_def node_ptr_kinds_eq_h select_result_I2 set_ConsD)
+    by (smt \<open>h2 \<turnstile> get_child_nodes (cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr) \<rightarrow>\<^sub>r []\<close> children_eq2_h3 disc_nodes_document_ptr_h2 disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3 document_ptr_kinds_eq_h3 finite_set_in h' is_OK_returns_result_I l_set_disconnected_nodes_get_disconnected_nodes.set_disconnected_nodes_get_disconnected_nodes local.a_all_ptrs_in_heap_def local.get_child_nodes_ptr_in_heap local.l_set_disconnected_nodes_get_disconnected_nodes_axioms node_ptr_kinds_commutes object_ptr_kinds_eq_h2 object_ptr_kinds_eq_h3 select_result_I2 set_ConsD subset_code(1))
 
   have "\<And>p. p |\<in>| object_ptr_kinds h \<Longrightarrow> cast new_element_ptr \<notin> set |h \<turnstile> get_child_nodes p|\<^sub>r"
     using \<open>heap_is_wellformed h\<close> \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close> 
@@ -5411,24 +7013,18 @@ proof -
     ultimately show "False"
       apply(-)
       apply(cases "x = document_ptr")
-       apply (metis (no_types) NodeMonad.ptr_kinds_ptr_kinds_M 
-                    \<open>a_all_ptrs_in_heap h\<close> 
-                    \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close> 
-                    a_all_ptrs_in_heap_def assms(3) disc_nodes_h3 disconnected_nodes_eq2_h 
-                    disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3 disjoint_iff_not_equal 
-                    document_ptr_kinds_eq_h document_ptr_kinds_eq_h2 fset_mp fset_of_list_elem 
-                    get_disconnected_nodes_ok h' returns_result_select_result select_result_I2 
-                    set_ConsD set_disconnected_nodes_get_disconnected_nodes)
-      apply(cases "y = document_ptr" )
-      apply (metis (no_types) NodeMonad.ptr_kinds_ptr_kinds_M 
-                   \<open>a_all_ptrs_in_heap h\<close> 
-                   \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close> 
-                   a_all_ptrs_in_heap_def assms(3) disc_nodes_h3 disconnected_nodes_eq2_h 
-                   disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3 disjoint_iff_not_equal 
-                   document_ptr_kinds_eq_h document_ptr_kinds_eq_h2 fset_mp fset_of_list_elem 
-                   get_disconnected_nodes_ok h' returns_result_select_result select_result_I2 
-                   set_ConsD set_disconnected_nodes_get_disconnected_nodes)
-      using disconnected_nodes_eq2_h3 by auto
+      apply (smt NodeMonad.ptr_kinds_ptr_kinds_M \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close> \<open>local.a_all_ptrs_in_heap h\<close> 
+                 disc_nodes_h3 disconnected_nodes_eq2_h disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3 
+                 disjoint_iff_not_equal document_ptr_kinds_eq_h document_ptr_kinds_eq_h2 finite_set_in h' 
+                 l_set_disconnected_nodes_get_disconnected_nodes.set_disconnected_nodes_get_disconnected_nodes 
+                 local.a_all_ptrs_in_heap_def local.l_set_disconnected_nodes_get_disconnected_nodes_axioms 
+                 select_result_I2 set_ConsD subsetD)
+      by (smt NodeMonad.ptr_kinds_ptr_kinds_M \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close> \<open>local.a_all_ptrs_in_heap h\<close> 
+              disc_nodes_document_ptr_h2 disconnected_nodes_eq2_h disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3
+              disjoint_iff_not_equal document_ptr_kinds_eq_h document_ptr_kinds_eq_h2 finite_set_in h' 
+              l_set_disconnected_nodes_get_disconnected_nodes.set_disconnected_nodes_get_disconnected_nodes 
+              local.a_all_ptrs_in_heap_def local.l_set_disconnected_nodes_get_disconnected_nodes_axioms 
+              select_result_I2 set_ConsD subsetD)
   next
     fix x xa xb
     assume 2: "(\<Union>x\<in>fset (object_ptr_kinds h3). set |h' \<turnstile> get_child_nodes x|\<^sub>r) 
@@ -5467,27 +7063,8 @@ proof -
      apply (metis (no_types, lifting) document_ptr_kinds_eq_h h' list.set_intros(1) 
         local.set_disconnected_nodes_get_disconnected_nodes select_result_I2) 
     apply(simp add: object_ptr_kinds_eq_h)
-  proof -
-    fix node_ptr :: "(_) node_ptr"
-    assume a1: "\<forall>node_ptr. node_ptr |\<in>| node_ptr_kinds h \<longrightarrow> (\<exists>document_ptr. document_ptr |\<in>| document_ptr_kinds h \<and> node_ptr \<in> set |h \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r) \<or> (\<exists>parent_ptr. parent_ptr |\<in>| object_ptr_kinds h \<and> node_ptr \<in> set |h \<turnstile> get_child_nodes parent_ptr|\<^sub>r)"
-    assume a2: "node_ptr |\<in>| node_ptr_kinds h"
-    assume a3: "\<forall>parent_ptr. (parent_ptr = cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<longrightarrow> node_ptr \<notin> set |h' \<turnstile> get_child_nodes (cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr)|\<^sub>r) \<and> (parent_ptr |\<in>| object_ptr_kinds h \<longrightarrow> node_ptr \<notin> set |h' \<turnstile> get_child_nodes parent_ptr|\<^sub>r)"
-    assume a4: "document_ptr |\<in>| document_ptr_kinds h"
-    assume a5: "h3 \<turnstile> get_disconnected_nodes document_ptr \<rightarrow>\<^sub>r disc_nodes_h3"
-    obtain dd :: "(_) node_ptr \<Rightarrow> (_) document_ptr" where
-      "\<forall>x0. (\<exists>v1. v1 |\<in>| document_ptr_kinds h \<and> x0 \<in> set |h \<turnstile> get_disconnected_nodes v1|\<^sub>r) = (dd x0 |\<in>| document_ptr_kinds h \<and> x0 \<in> set |h \<turnstile> get_disconnected_nodes (dd x0)|\<^sub>r)"
-      by moura
-    then have f6: "dd node_ptr |\<in>| document_ptr_kinds h \<and> node_ptr \<in> set |h \<turnstile> get_disconnected_nodes (dd node_ptr)|\<^sub>r"
-      using a3 a2 a1 by (metis (no_types) \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile> object_ptr_kinds_M|\<^sub>r\<close> children_eq2_h children_eq2_h2 children_eq2_h3 l_ptr_kinds_M.ptr_kinds_ptr_kinds_M object_ptr_kinds_M_def)
-    moreover
-    { assume "|h \<turnstile> get_disconnected_nodes (dd node_ptr)|\<^sub>r \<noteq> disc_nodes_h3"
-      then have "document_ptr \<noteq> dd node_ptr"
-        using a5 disconnected_nodes_eq2_h disconnected_nodes_eq2_h2 by force
-      then have "\<exists>d. d |\<in>| document_ptr_kinds h2 \<and> node_ptr \<in> set |h' \<turnstile> get_disconnected_nodes d|\<^sub>r"
-        using f6 disconnected_nodes_eq2_h disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3 document_ptr_kinds_eq_h by auto }
-    ultimately show "\<exists>d. d |\<in>| document_ptr_kinds h2 \<and> node_ptr \<in> set |h' \<turnstile> get_disconnected_nodes d|\<^sub>r"
-      using a4 by (metis (no_types) document_ptr_kinds_eq_h h' insert_iff list.set(2) local.set_disconnected_nodes_get_disconnected_nodes select_result_I2)
-  qed
+    by(metis (no_types, lifting) NodeMonad.ptr_kinds_ptr_kinds_M \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close> children_eq2_h children_eq2_h2 children_eq2_h3 disconnected_nodes_eq2_h disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3 document_ptr_kinds_eq_h finite_set_in h' l_set_disconnected_nodes_get_disconnected_nodes.set_disconnected_nodes_get_disconnected_nodes list.set_intros(2) local.l_set_disconnected_nodes_get_disconnected_nodes_axioms node_ptr_kinds_commutes select_result_I2)
+
   show "heap_is_wellformed h'"
     using \<open>a_acyclic_heap h'\<close> \<open>a_all_ptrs_in_heap h'\<close> \<open>a_distinct_lists h'\<close> \<open>a_owner_document_valid h'\<close>
     by(simp add: heap_is_wellformed_def)
@@ -5515,8 +7092,8 @@ locale l_create_character_data_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>
   + l_set_val_get_disconnected_nodes
     type_wf set_val set_val_locs get_disconnected_nodes get_disconnected_nodes_locs
   + l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M
-    set_val set_val_locs get_disconnected_nodes get_disconnected_nodes_locs set_disconnected_nodes
-    set_disconnected_nodes_locs create_character_data
+    get_disconnected_nodes get_disconnected_nodes_locs set_disconnected_nodes
+    set_disconnected_nodes_locs set_val set_val_locs type_wf create_character_data known_ptr
   + l_new_character_data_get_child_nodes
     type_wf known_ptr get_child_nodes get_child_nodes_locs
   + l_set_val_get_child_nodes
@@ -5555,7 +7132,7 @@ lemma create_character_data_preserves_wellformedness:
     and "h \<turnstile> create_character_data document_ptr text \<rightarrow>\<^sub>h h'"
     and "type_wf h"
     and "known_ptrs h"
-  shows "heap_is_wellformed h'"
+  shows "heap_is_wellformed h'" and "type_wf h'" and "known_ptrs h'"
 proof -
   obtain new_character_data_ptr h2 h3 disc_nodes_h3 where
     new_character_data_ptr: "h \<turnstile> new_character_data \<rightarrow>\<^sub>r new_character_data_ptr" and
@@ -5567,6 +7144,12 @@ proof -
     by(auto simp add: create_character_data_def 
             elim!: bind_returns_heap_E 
                    bind_returns_heap_E2[rotated, OF get_disconnected_nodes_pure, rotated] )
+  then
+  have "h \<turnstile> create_character_data document_ptr text \<rightarrow>\<^sub>r new_character_data_ptr"
+    apply(auto simp add: create_character_data_def intro!: bind_returns_result_I)
+    apply (metis is_OK_returns_heap_I is_OK_returns_result_E old.unit.exhaust)
+    apply (metis is_OK_returns_heap_E is_OK_returns_result_I local.get_disconnected_nodes_pure pure_returns_heap_eq)
+    by (metis is_OK_returns_heap_I is_OK_returns_result_E old.unit.exhaust)
 
 
   have "new_character_data_ptr \<notin> set |h \<turnstile> character_data_ptr_kinds_M|\<^sub>r"
@@ -5729,7 +7312,7 @@ proof -
     using writes_small_big[where P="\<lambda>h h'. type_wf h \<longrightarrow> type_wf h'", OF set_val_writes h3]
     using  set_val_types_preserved  
     by(auto simp add: reflp_def transp_def)
-  then have "type_wf h'"
+  then show "type_wf h'"
     using writes_small_big[where P="\<lambda>h h'. type_wf h \<longrightarrow> type_wf h'", OF set_disconnected_nodes_writes h']
     using  set_disconnected_nodes_types_preserved  
     by(auto simp add: reflp_def transp_def)
@@ -5759,7 +7342,7 @@ proof -
   then have "cast new_character_data_ptr \<notin> set disc_nodes_h3"
     using \<open>heap_is_wellformed h\<close> using \<open>cast new_character_data_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close>
            a_all_ptrs_in_heap_def heap_is_wellformed_def
-    by (meson NodeMonad.ptr_kinds_ptr_kinds_M fset_mp fset_of_list_elem )
+    using NodeMonad.ptr_kinds_ptr_kinds_M local.heap_is_wellformed_disc_nodes_in_heap by blast
 
   have "acyclic (parent_child_rel h)"
     using \<open>heap_is_wellformed h\<close> 
@@ -5806,20 +7389,23 @@ proof -
     apply(auto simp add: a_all_ptrs_in_heap_def)[1]
     using node_ptr_kinds_eq_h \<open>cast new_character_data_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close> 
           \<open>h2 \<turnstile> get_child_nodes (cast new_character_data_ptr) \<rightarrow>\<^sub>r []\<close>
-     apply (metis (no_types, hide_lams) children_eq_h fempty_iff fset_mp fset_of_list_simps(1) 
-                  funionCI select_result_I2)
-    by (simp add: disconnected_nodes_eq_h fset_rev_mp node_ptr_kinds_eq_h)
+     apply (metis (no_types, lifting) NodeMonad.ptr_kinds_ptr_kinds_M \<open>parent_child_rel h = parent_child_rel h2\<close> 
+                  children_eq2_h finite_set_in finsert_iff funion_finsert_right local.parent_child_rel_child 
+                  local.parent_child_rel_parent_in_heap node_ptr_kinds_commutes object_ptr_kinds_eq_h 
+                  select_result_I2 subsetD sup_bot.right_neutral)
+    by (metis assms(1) assms(3) disconnected_nodes_eq2_h document_ptr_kinds_eq_h funionI1 
+                   local.get_disconnected_nodes_ok local.heap_is_wellformed_disc_nodes_in_heap 
+                   node_ptr_kinds_eq_h returns_result_select_result)
   then have "a_all_ptrs_in_heap h3"
-    by(auto simp add: a_all_ptrs_in_heap_def object_ptr_kinds_eq_h2 node_ptr_kinds_def 
-                      children_eq_h2 disconnected_nodes_eq_h2)
+    by (simp add: children_eq2_h2 disconnected_nodes_eq2_h2 document_ptr_kinds_eq_h2 
+                  local.a_all_ptrs_in_heap_def node_ptr_kinds_eq_h2 object_ptr_kinds_eq_h2)
   then have "a_all_ptrs_in_heap h'"
-    apply(auto simp add: a_all_ptrs_in_heap_def object_ptr_kinds_eq_h3 node_ptr_kinds_def 
-                         children_eq_h3 )[1]
-    using disconnected_nodes_eq_h3 object_ptr_kinds_eq_h object_ptr_kinds_eq_h2
-    by (metis (no_types, lifting) disc_nodes_h3 finsertCI fset.map_comp fset_mp fset_of_list_elem 
-              funion_finsert_right h' local.set_disconnected_nodes_get_disconnected_nodes 
-              node_ptr_kinds_def node_ptr_kinds_eq_h select_result_I2 set_ConsD)
-
+    by (smt   character_data_ptr_kinds_commutes children_eq2_h3 disc_nodes_document_ptr_h2 
+              disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3 document_ptr_kinds_eq_h3 
+              finite_set_in h' h2 local.a_all_ptrs_in_heap_def 
+              local.set_disconnected_nodes_get_disconnected_nodes new_character_data_ptr 
+              new_character_data_ptr_in_heap node_ptr_kinds_eq_h2 node_ptr_kinds_eq_h3 
+              object_ptr_kinds_eq_h3 select_result_I2 set_ConsD subset_code(1))
   have "\<And>p. p |\<in>| object_ptr_kinds h \<Longrightarrow> cast new_character_data_ptr \<notin> set |h \<turnstile> get_child_nodes p|\<^sub>r"
     using \<open>heap_is_wellformed h\<close> \<open>cast new_character_data_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close>
           heap_is_wellformed_children_in_heap
@@ -5882,25 +7468,13 @@ proof -
     moreover have "set |h3 \<turnstile> get_disconnected_nodes x|\<^sub>r \<inter> set |h3 \<turnstile> get_disconnected_nodes y|\<^sub>r = {}"
       using calculation by(auto dest: distinct_concat_map_E(1))
     ultimately show "False"
-      apply(cases "x = document_ptr")
-       apply (metis (no_types) NodeMonad.ptr_kinds_ptr_kinds_M \<open>a_all_ptrs_in_heap h\<close> 
-                                \<open>cast new_character_data_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close> 
-                                a_all_ptrs_in_heap_def assms(3) disc_nodes_h3 
-                                disconnected_nodes_eq2_h disconnected_nodes_eq2_h2 
-                                disconnected_nodes_eq2_h3 disjoint_iff_not_equal 
-                                document_ptr_kinds_eq_h document_ptr_kinds_eq_h2 fset_mp 
-                                fset_of_list_elem get_disconnected_nodes_ok h' 
-                                returns_result_select_result select_result_I2 set_ConsD 
-                                set_disconnected_nodes_get_disconnected_nodes)
-      apply(cases "y = document_ptr" )
-      apply (metis (no_types) NodeMonad.ptr_kinds_ptr_kinds_M 
-                   \<open>a_all_ptrs_in_heap h\<close> \<open>cast new_character_data_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close> 
-                   a_all_ptrs_in_heap_def assms(3) disc_nodes_h3 disconnected_nodes_eq2_h 
-                   disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3 disjoint_iff_not_equal 
-                   document_ptr_kinds_eq_h document_ptr_kinds_eq_h2 fset_mp fset_of_list_elem 
-                   get_disconnected_nodes_ok h' returns_result_select_result select_result_I2 set_ConsD 
-                   set_disconnected_nodes_get_disconnected_nodes)
-      using disconnected_nodes_eq2_h3 by auto
+      by (smt NodeMonad.ptr_kinds_ptr_kinds_M \<open>cast\<^sub>c\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>_\<^sub>d\<^sub>a\<^sub>t\<^sub>a\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_character_data_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close> 
+              \<open>local.a_all_ptrs_in_heap h\<close> disc_nodes_document_ptr_h2 disconnected_nodes_eq2_h 
+              disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3 disjoint_iff_not_equal 
+              document_ptr_kinds_eq_h document_ptr_kinds_eq_h2 finite_set_in h' 
+              l_set_disconnected_nodes_get_disconnected_nodes.set_disconnected_nodes_get_disconnected_nodes 
+              local.a_all_ptrs_in_heap_def local.l_set_disconnected_nodes_get_disconnected_nodes_axioms 
+              select_result_I2 set_ConsD subsetD)
   next
     fix x xa xb
     assume 2: "(\<Union>x\<in>fset (object_ptr_kinds h3). set |h' \<turnstile> get_child_nodes x|\<^sub>r) 
@@ -5936,10 +7510,25 @@ proof -
      apply (metis (no_types, lifting) document_ptr_kinds_eq_h h' list.set_intros(1) 
                           local.set_disconnected_nodes_get_disconnected_nodes select_result_I2) 
     apply(simp add: object_ptr_kinds_eq_h)
-    by (metis (no_types, lifting) ObjectMonad.ptr_kinds_ptr_kinds_M
-                \<open>cast\<^sub>c\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>_\<^sub>d\<^sub>a\<^sub>t\<^sub>a\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_character_data_ptr \<notin> set |h \<turnstile> object_ptr_kinds_M|\<^sub>r\<close> 
-                children_eq2_h disconnected_nodes_eq2_h3 document_ptr_kinds_eq_h h' list.set_intros(2) 
-                local.set_disconnected_nodes_get_disconnected_nodes select_result_I2)
+    by (metis (mono_tags, lifting) \<open>cast\<^sub>c\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>_\<^sub>d\<^sub>a\<^sub>t\<^sub>a\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_character_data_ptr \<notin> set |h \<turnstile> object_ptr_kinds_M|\<^sub>r\<close> 
+              children_eq2_h disconnected_nodes_eq2_h3 document_ptr_kinds_eq_h finite_set_in h' 
+              l_ptr_kinds_M.ptr_kinds_ptr_kinds_M 
+              l_set_disconnected_nodes_get_disconnected_nodes.set_disconnected_nodes_get_disconnected_nodes 
+              list.set_intros(2) local.l_set_disconnected_nodes_get_disconnected_nodes_axioms object_ptr_kinds_M_def 
+              select_result_I2)
+
+  have "known_ptr (cast new_character_data_ptr)"
+    using \<open>h \<turnstile> create_character_data document_ptr text \<rightarrow>\<^sub>r new_character_data_ptr\<close> local.create_character_data_known_ptr by blast
+  then
+  have "known_ptrs h2"
+    using known_ptrs_new_ptr object_ptr_kinds_eq_h \<open>known_ptrs h\<close> h2
+    by blast
+  then
+  have "known_ptrs h3"
+    using known_ptrs_preserved object_ptr_kinds_eq_h2 by blast
+  then
+  show "known_ptrs h'"
+    using known_ptrs_preserved object_ptr_kinds_eq_h3 by blast
 
   show "heap_is_wellformed h'"
     using \<open>a_acyclic_heap h'\<close> \<open>a_all_ptrs_in_heap h'\<close> \<open>a_distinct_lists h'\<close> \<open>a_owner_document_valid h'\<close>
@@ -5953,6 +7542,7 @@ interpretation i_create_character_data_wf?: l_create_character_data_wf\<^sub>C\<
      set_disconnected_nodes_locs create_character_data known_ptrs
   using instances
   by (auto simp add: l_create_character_data_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_def)
+declare l_create_character_data_wf\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms [instances]
 
 
 subsection \<open>create\_document\<close>
@@ -6098,22 +7688,20 @@ proof -
 
   have "a_all_ptrs_in_heap h"
     using \<open>heap_is_wellformed h\<close>  by (simp add: heap_is_wellformed_def)
-  then have "a_all_ptrs_in_heap h'"
+  then have "a_all_ptrs_in_heap h'" 
     apply(auto simp add: a_all_ptrs_in_heap_def)[1]
-     apply (metis ObjectMonad.ptr_kinds_ptr_kinds_M 
-                  \<open>cast\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_document_ptr \<notin> set |h \<turnstile> object_ptr_kinds_M|\<^sub>r\<close> 
-                  \<open>parent_child_rel h = parent_child_rel h'\<close> assms(1) children_eq fset_of_list_elem 
-                  local.heap_is_wellformed_children_in_heap local.parent_child_rel_child 
-                  local.parent_child_rel_parent_in_heap node_ptr_kinds_eq)
-    by (metis (no_types, lifting) ObjectMonad.ptr_kinds_ptr_kinds_M 
-                  \<open>cast\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_document_ptr \<notin> set |h \<turnstile> object_ptr_kinds_M|\<^sub>r\<close> 
-                  \<open>h' \<turnstile> get_child_nodes (cast\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_document_ptr) \<rightarrow>\<^sub>r []\<close> 
-                  \<open>parent_child_rel h = parent_child_rel h'\<close> assms(1) disconnected_nodes_eq_h
-                  fset_of_list_elem h' local.heap_is_wellformed_disc_nodes_in_heap
-                  local.new_document_no_disconnected_nodes local.parent_child_rel_child 
-                  local.parent_child_rel_parent_in_heap new_document_ptr node_ptr_kinds_eq
-                  select_result_I2)
-
+    using ObjectMonad.ptr_kinds_ptr_kinds_M 
+          \<open>cast\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_document_ptr \<notin> set |h \<turnstile> object_ptr_kinds_M|\<^sub>r\<close> 
+          \<open>parent_child_rel h = parent_child_rel h'\<close> assms(1) children_eq fset_of_list_elem 
+          local.heap_is_wellformed_children_in_heap local.parent_child_rel_child 
+          local.parent_child_rel_parent_in_heap node_ptr_kinds_eq
+     apply (metis (no_types, lifting) \<open>h' \<turnstile> get_child_nodes (cast\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_document_ptr) \<rightarrow>\<^sub>r []\<close> 
+                  children_eq2 finite_set_in finsert_iff funion_finsert_right object_ptr_kinds_eq select_result_I2 subsetD sup_bot.right_neutral)
+    by (metis (no_types, lifting) \<open>cast\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_document_ptr |\<notin>| object_ptr_kinds h\<close> 
+              \<open>h' \<turnstile> get_child_nodes (cast\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_document_ptr) \<rightarrow>\<^sub>r []\<close> 
+              \<open>h' \<turnstile> get_disconnected_nodes new_document_ptr \<rightarrow>\<^sub>r []\<close> \<open>parent_child_rel h = parent_child_rel h'\<close> \<open>type_wf h'\<close> assms(1) disconnected_nodes_eq_h local.get_disconnected_nodes_ok 
+              local.heap_is_wellformed_disc_nodes_in_heap local.parent_child_rel_child local.parent_child_rel_parent_in_heap 
+              node_ptr_kinds_eq returns_result_select_result select_result_I2) 
   have "a_distinct_lists h"
     using \<open>heap_is_wellformed h\<close> 
     by (simp add: heap_is_wellformed_def)
@@ -6182,12 +7770,7 @@ proof -
   then have "a_owner_document_valid h'"
     apply(auto simp add: a_owner_document_valid_def)[1]
     by (metis \<open>cast\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_document_ptr |\<notin>| object_ptr_kinds h\<close> 
-              \<open>new_document_ptr |\<notin>| document_ptr_kinds h\<close> assms(3) assms(4) children_eq 
-              children_eq2 disconnected_nodes_eq2_h disconnected_nodes_eq_h
-              is_OK_returns_result_E is_OK_returns_result_I local.get_child_nodes_ok 
-              local.get_child_nodes_ptr_in_heap local.get_disconnected_nodes_ok 
-              local.get_disconnected_nodes_ptr_in_heap local.known_ptrs_known_ptr node_ptr_kinds_eq)
-  
+              children_eq2 disconnected_nodes_eq2_h document_ptr_kinds_commutes finite_set_in funion_iff node_ptr_kinds_eq object_ptr_kinds_eq)
   show "heap_is_wellformed h'"
     using \<open>a_acyclic_heap h'\<close> \<open>a_all_ptrs_in_heap h'\<close> \<open>a_distinct_lists h'\<close> \<open>a_owner_document_valid h'\<close>
     by(simp add: heap_is_wellformed_def)

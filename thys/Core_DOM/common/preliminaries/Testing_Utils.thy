@@ -33,7 +33,60 @@ begin
 ML \<open>
 val _ = Theory.setup 
   (Method.setup @{binding timed_code_simp}
-    (Scan.succeed (SIMPLE_METHOD' o (CHANGED_PROP oo (fn a => fn b => Timeout.apply (seconds 3600.0) (Code_Simp.dynamic_tac a b)))))
-    "simplification with code equations, aborts after 1 hour");
+    (Scan.succeed (SIMPLE_METHOD' o (CHANGED_PROP oo (fn a => fn b => fn tac =>
+      let 
+        val start = Time.now ();
+        val result = Code_Simp.dynamic_tac a b tac;
+        val t = Time.now() - start;
+      in
+        (if length (Seq.list_of result) > 0 then Output.information ("Took " ^ (Time.toString t)) else ());
+        result
+      end))))
+    "timed simplification with code equations");
+
+val _ = Theory.setup
+  (Method.setup @{binding timed_eval}
+    (Scan.succeed (SIMPLE_METHOD' o (fn a => fn b => fn tac =>
+      let
+        val eval = CONVERSION (Conv.params_conv ~1 (K (Conv.concl_conv ~1 (Code_Runtime.dynamic_holds_conv a))) a) THEN'
+          resolve_tac a [TrueI];
+        val start = Time.now ();
+        val result = eval b tac
+        val t = Time.now() - start;
+      in
+        (if length (Seq.list_of result) > 0 then Output.information ("Took " ^ (Time.toString t)) else ());
+        result
+      end)))
+    "timed evaluation");
+
+val _ = Theory.setup
+  (Method.setup @{binding timed_eval_and_code_simp}
+    (Scan.succeed (SIMPLE_METHOD' o (fn a => fn b => fn tac =>
+      let
+        val eval = CONVERSION (Conv.params_conv ~1 (K (Conv.concl_conv ~1 (Code_Runtime.dynamic_holds_conv a))) a) THEN'
+          resolve_tac a [TrueI];
+        val start = Time.now ();
+        val result = eval b tac
+        val t = Time.now() - start;
+
+        val start2 = Time.now ();
+        val result2_opt =
+          Timeout.apply (seconds 600.0) (fn _ => SOME (Code_Simp.dynamic_tac a b tac)) ()
+          handle Timeout.TIMEOUT _ => NONE;
+        val t2 = Time.now() - start2;
+      in
+        if length (Seq.list_of result) > 0 then (Output.information ("eval took " ^ (Time.toString t)); File.append (Path.explode "/tmp/isabellebench") (Time.toString t ^ ",")) else ();
+        (case result2_opt of
+          SOME result2 => 
+            (if length (Seq.list_of result2) > 0 then (Output.information ("code_simp took " ^ (Time.toString t2));  File.append (Path.explode "/tmp/isabellebench") (Time.toString t2 ^ "\n")) else ())
+        | NONE => (Output.information "code_simp timed out after 600s"; File.append (Path.explode "/tmp/isabellebench") (">600.000\n")));
+        result
+      end)))
+    "timed evaluation and simplification with code equations with file output");
 \<close>
+
+(* To run the DOM test cases with timing information output, simply replace the use *)
+(* of "eval" with either "timed_code_simp", "timed_eval", or, to run both and write the results *)
+(* to /tmp/isabellebench, "timed_eval_and_code_simp". *)
+
 end

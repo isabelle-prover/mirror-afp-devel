@@ -76,9 +76,8 @@ lemma node_ptr_kinds_M_reads:
   "reads (\<Union>object_ptr. {preserved (get_M\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t object_ptr RObject.nothing)}) node_ptr_kinds_M h h'"
   using object_ptr_kinds_M_reads
   apply (simp add: reads_def node_ptr_kinds_M_defs node_ptr_kinds_def
-    object_ptr_kinds_M_reads preserved_def cong del: image_cong_simp)
-  apply (metis (mono_tags, hide_lams)  object_ptr_kinds_preserved_small old.unit.exhaust preserved_def)
-  done
+      object_ptr_kinds_M_reads preserved_def)
+  by (smt object_ptr_kinds_preserved_small preserved_def unit_all_impI)
 
 global_interpretation l_put_M type_wf node_ptr_kinds get\<^sub>N\<^sub>o\<^sub>d\<^sub>e put\<^sub>N\<^sub>o\<^sub>d\<^sub>e 
   rewrites "a_get_M = get_M\<^sub>N\<^sub>o\<^sub>d\<^sub>e" 
@@ -167,7 +166,7 @@ lemma type_wf_put_ptr_in_heap_E:
   shows "type_wf h"
   using assms
   apply(auto simp add: type_wf_defs split: option.splits if_splits)
-  by (metis ObjectClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf bind.bind_lunit get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def is_node_kind_def option.collapse)
+  by (metis ObjectClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf bind.bind_lunit finite_set_in get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def is_node_kind_def option.exhaust_sel)
 
 
 subsection\<open>Preserving Types\<close>
@@ -195,7 +194,8 @@ lemma type_wf_preserved_small:
   using type_wf_preserved allI[OF assms(2), of id, simplified]
   apply(auto simp add: type_wf_defs)
    apply(auto simp add: preserved_def get_M_defs node_ptr_kinds_small[OF assms(1)]
-      split: option.splits, force)[1]
+      split: option.splits)[1]
+  apply (metis notin_fset option.simps(3))
   by(auto simp add: preserved_def get_M_defs node_ptr_kinds_small[OF assms(1)]
       split: option.splits, force)[1]
 

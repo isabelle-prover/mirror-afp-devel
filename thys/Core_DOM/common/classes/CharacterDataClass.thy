@@ -65,6 +65,7 @@ type_synonym ('object_ptr, 'node_ptr, 'element_ptr, 'character_data_ptr, 'docume
       'Object, 'CharacterData option RCharacterData_ext + 'Node, 'Element) heap"
 register_default_tvars "('object_ptr, 'node_ptr, 'element_ptr, 'character_data_ptr, 'document_ptr, 
                          'shadow_root_ptr, 'Object, 'Node, 'Element, 'CharacterData) heap"  
+type_synonym heap\<^sub>f\<^sub>i\<^sub>n\<^sub>a\<^sub>l = "(unit, unit, unit, unit, unit, unit, unit, unit, unit, unit) heap"
 
 
 definition character_data_ptr_kinds :: "(_) heap \<Rightarrow> (_) character_data_ptr fset"
@@ -139,8 +140,8 @@ begin
 definition a_type_wf :: "(_) heap \<Rightarrow> bool"
   where
     "a_type_wf h = (ElementClass.type_wf h
-                 \<and> (\<forall>character_data_ptr. character_data_ptr |\<in>| character_data_ptr_kinds h 
-                 \<longrightarrow> get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a character_data_ptr h \<noteq> None))"
+                 \<and> (\<forall>character_data_ptr \<in> fset (character_data_ptr_kinds h).
+                     get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a character_data_ptr h \<noteq> None))"
 end
 global_interpretation l_type_wf_def\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a defines type_wf = a_type_wf .
 lemmas type_wf_defs = a_type_wf_def
@@ -163,8 +164,7 @@ lemma get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>
           \<longleftrightarrow> get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a character_data_ptr h \<noteq> None"
   using l_type_wf\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_axioms assms
   apply(simp add: type_wf_defs get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_def l_type_wf\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_def)
-  by (metis NodeClass.get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_type_wf bind_eq_None_conv character_data_ptr_kinds_commutes 
-      l_type_wf\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def local.l_type_wf\<^sub>N\<^sub>o\<^sub>d\<^sub>e_axioms option.distinct(1))
+  by (metis assms bind.bind_lzero character_data_ptr_kinds_commutes fmember.rep_eq local.get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_type_wf option.exhaust option.simps(3))
 end
 
 global_interpretation l_get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_lemmas type_wf
@@ -325,23 +325,26 @@ locale l_known_ptrs\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^su
 begin
 definition a_known_ptrs :: "(_) heap \<Rightarrow> bool"
   where
-    "a_known_ptrs h = (\<forall>ptr. ptr |\<in>| object_ptr_kinds h \<longrightarrow> known_ptr ptr)"
+    "a_known_ptrs h = (\<forall>ptr \<in> fset (object_ptr_kinds h). known_ptr ptr)"
 
 lemma known_ptrs_known_ptr: "a_known_ptrs h \<Longrightarrow> ptr |\<in>| object_ptr_kinds h \<Longrightarrow> known_ptr ptr"
-  by(simp add: a_known_ptrs_def)
+  apply(simp add: a_known_ptrs_def)
+  using notin_fset by fastforce
 
 lemma known_ptrs_preserved: 
   "object_ptr_kinds h = object_ptr_kinds h' \<Longrightarrow> a_known_ptrs h = a_known_ptrs h'"
   by(auto simp add: a_known_ptrs_def)
 lemma known_ptrs_subset: 
   "object_ptr_kinds h' |\<subseteq>| object_ptr_kinds h \<Longrightarrow> a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
-  by(auto simp add: a_known_ptrs_def)
+  by(simp add: a_known_ptrs_def less_eq_fset.rep_eq subsetD)
+lemma known_ptrs_new_ptr: "object_ptr_kinds h' = object_ptr_kinds h |\<union>| {|new_ptr|} \<Longrightarrow> known_ptr new_ptr \<Longrightarrow> a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
+  by(simp add: a_known_ptrs_def)
 end
 global_interpretation l_known_ptrs\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a known_ptr defines known_ptrs = a_known_ptrs .
 lemmas known_ptrs_defs = a_known_ptrs_def
 
 lemma known_ptrs_is_l_known_ptrs: "l_known_ptrs known_ptr known_ptrs"
-  using known_ptrs_known_ptr known_ptrs_preserved l_known_ptrs_def known_ptrs_subset
+  using known_ptrs_known_ptr known_ptrs_preserved known_ptrs_subset known_ptrs_new_ptr l_known_ptrs_def
   by blast
 
 end

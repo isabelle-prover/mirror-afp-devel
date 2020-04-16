@@ -79,8 +79,27 @@ definition
   where
     "returns_heap h p h' \<longleftrightarrow> (case h \<turnstile> p of Inr (_ , h'') \<Rightarrow> h' = h'' | Inl _ \<Rightarrow> False)"
 
+fun select_heap ("|(_)|\<^sub>h")
+  where
+    "select_heap (Inr ( _, h)) = h"
+  | "select_heap (Inl _) = undefined"
+
 lemma returns_heap_eq [elim]: "h \<turnstile> f \<rightarrow>\<^sub>h h' \<Longrightarrow> h \<turnstile> f \<rightarrow>\<^sub>h h'' \<Longrightarrow> h' = h''"
   by(auto simp add: returns_heap_def split: sum.splits)
+
+definition 
+  returns_result_heap :: "'heap \<Rightarrow> ('heap, 'e, 'result) prog \<Rightarrow> 'result \<Rightarrow> 'heap \<Rightarrow> bool" 
+  ("((_)/ \<turnstile> (_)/ \<rightarrow>\<^sub>r (_) \<rightarrow>\<^sub>h (_))" [60, 35, 61, 62] 65)
+  where
+    "returns_result_heap h p r h' \<longleftrightarrow> h \<turnstile> p \<rightarrow>\<^sub>r r \<and> h \<turnstile> p \<rightarrow>\<^sub>h h'"
+
+lemma return_result_heap_code [code]: "returns_result_heap h p r h' \<longleftrightarrow> (case h \<turnstile> p of Inr (r', h'') \<Rightarrow> r = r' \<and> h' = h'' | Inl _ \<Rightarrow> False)" 
+  by(auto simp add: returns_result_heap_def returns_result_def returns_heap_def split: sum.splits)
+
+fun select_result_heap ("|(_)|\<^sub>r\<^sub>h")
+  where
+    "select_result_heap (Inr (r, h)) = (r, h)"
+  | "select_result_heap (Inl _) = undefined"
 
 definition 
   returns_error :: "'heap \<Rightarrow> ('heap, 'e, 'result) prog \<Rightarrow> 'e \<Rightarrow> bool" 
@@ -710,6 +729,11 @@ subsection \<open>Reasoning About Reads and Writes\<close>
 definition preserved :: "('heap, 'e, 'result) prog \<Rightarrow> 'heap \<Rightarrow> 'heap \<Rightarrow> bool"
   where
     "preserved f h h' \<longleftrightarrow> (\<forall>x. h \<turnstile> f \<rightarrow>\<^sub>r x \<longleftrightarrow> h' \<turnstile> f \<rightarrow>\<^sub>r x)"
+
+lemma preserved_code [code]: "preserved f h h' = (((h \<turnstile> ok f) \<and> (h' \<turnstile> ok f) \<and> |h \<turnstile> f|\<^sub>r = |h' \<turnstile> f|\<^sub>r) \<or> ((\<not>h \<turnstile> ok f) \<and> (\<not>h' \<turnstile> ok f)))"
+  apply(auto simp add: preserved_def)[1]
+   apply (meson is_OK_returns_result_E is_OK_returns_result_I)+
+  done
 
 lemma reflp_preserved_f [simp]: "reflp (preserved f)"
   by(auto simp add: preserved_def reflp_def)

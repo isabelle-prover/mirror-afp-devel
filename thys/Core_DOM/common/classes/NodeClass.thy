@@ -51,6 +51,7 @@ type_synonym ('object_ptr, 'node_ptr, 'Object, 'Node) heap
   = "('node_ptr node_ptr + 'object_ptr, 'Node RNode_ext + 'Object) heap"
 register_default_tvars
   "('object_ptr, 'node_ptr, 'Object, 'Node) heap" 
+type_synonym heap\<^sub>f\<^sub>i\<^sub>n\<^sub>a\<^sub>l = "(unit, unit, unit, unit) heap"
 
 
 definition node_ptr_kinds :: "(_) heap \<Rightarrow> (_) node_ptr fset"
@@ -89,8 +90,7 @@ begin
 definition a_type_wf :: "(_) heap \<Rightarrow> bool"
   where
     "a_type_wf h = (ObjectClass.type_wf h 
-                    \<and> (\<forall>node_ptr. node_ptr |\<in>| node_ptr_kinds h 
-                                     \<longrightarrow> get\<^sub>N\<^sub>o\<^sub>d\<^sub>e node_ptr h \<noteq> None))"
+                    \<and> (\<forall>node_ptr \<in> fset( node_ptr_kinds h). get\<^sub>N\<^sub>o\<^sub>d\<^sub>e node_ptr h \<noteq> None))"
 end
 global_interpretation l_type_wf_def\<^sub>N\<^sub>o\<^sub>d\<^sub>e defines type_wf = a_type_wf .
 lemmas type_wf_defs = a_type_wf_def
@@ -110,9 +110,8 @@ lemma get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_type_wf:
   shows "node_ptr |\<in>| node_ptr_kinds h \<longleftrightarrow> get\<^sub>N\<^sub>o\<^sub>d\<^sub>e node_ptr h \<noteq> None"
   using l_type_wf\<^sub>N\<^sub>o\<^sub>d\<^sub>e_axioms assms
   apply(simp add: type_wf_defs get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def l_type_wf\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def)
-  by (metis (mono_tags, lifting) bind_eq_None_conv ffmember_filter fimage_eqI 
-      is_node_ptr_kind_cast get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf local.l_type_wf\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_axioms 
-      node_ptr_casts_commute2 node_ptr_kinds_def option.sel option.simps(3))
+  by (metis bind_eq_None_conv ffmember_filter fimage_eqI fmember.rep_eq is_node_ptr_kind_cast 
+            get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf node_ptr_casts_commute2 node_ptr_kinds_def option.sel option.simps(3))
 end
 
 global_interpretation l_get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_lemmas type_wf
@@ -177,21 +176,24 @@ locale l_known_ptrs\<^sub>N\<^sub>o\<^sub>d\<^sub>e = l_known_ptr known_ptr for 
 begin
 definition a_known_ptrs :: "(_) heap \<Rightarrow> bool"
   where
-    "a_known_ptrs h = (\<forall>ptr. ptr |\<in>| object_ptr_kinds h \<longrightarrow> known_ptr ptr)"
+    "a_known_ptrs h = (\<forall>ptr \<in> fset (object_ptr_kinds h). known_ptr ptr)"
 
 lemma known_ptrs_known_ptr: "a_known_ptrs h \<Longrightarrow> ptr |\<in>| object_ptr_kinds h \<Longrightarrow> known_ptr ptr"
-  by(simp add: a_known_ptrs_def)
-
+  apply(simp add: a_known_ptrs_def)
+  using notin_fset by fastforce
 lemma known_ptrs_preserved: "object_ptr_kinds h = object_ptr_kinds h' \<Longrightarrow> a_known_ptrs h = a_known_ptrs h'"
   by(auto simp add: a_known_ptrs_def)
 lemma known_ptrs_subset: "object_ptr_kinds h' |\<subseteq>| object_ptr_kinds h \<Longrightarrow> a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
-  by(auto simp add: a_known_ptrs_def)
+  by(simp add: a_known_ptrs_def less_eq_fset.rep_eq subsetD)
+lemma known_ptrs_new_ptr: "object_ptr_kinds h' = object_ptr_kinds h |\<union>| {|new_ptr|} \<Longrightarrow> known_ptr new_ptr \<Longrightarrow> a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
+  by(simp add: a_known_ptrs_def)
 end
 global_interpretation l_known_ptrs\<^sub>N\<^sub>o\<^sub>d\<^sub>e known_ptr defines known_ptrs = a_known_ptrs .
 lemmas known_ptrs_defs = a_known_ptrs_def
 
 lemma known_ptrs_is_l_known_ptrs: "l_known_ptrs known_ptr known_ptrs"
-  using known_ptrs_known_ptr known_ptrs_preserved l_known_ptrs_def known_ptrs_subset by blast
+  using known_ptrs_known_ptr known_ptrs_preserved l_known_ptrs_def known_ptrs_subset known_ptrs_new_ptr
+  by blast
 
 lemma get_node_ptr_simp1 [simp]: "get\<^sub>N\<^sub>o\<^sub>d\<^sub>e node_ptr (put\<^sub>N\<^sub>o\<^sub>d\<^sub>e node_ptr node h) = Some node"
   by(auto simp add: get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def put\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def)

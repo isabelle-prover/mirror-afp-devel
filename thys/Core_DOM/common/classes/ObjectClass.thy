@@ -45,6 +45,7 @@ register_default_tvars "'Object Object"
 
 datatype ('object_ptr, 'Object) heap = Heap (the_heap: "((_) object_ptr, (_) Object) fmap")
 register_default_tvars "('object_ptr, 'Object) heap"  
+type_synonym heap\<^sub>f\<^sub>i\<^sub>n\<^sub>a\<^sub>l = "(unit, unit) heap"
 
 definition object_ptr_kinds :: "(_) heap \<Rightarrow> (_) object_ptr fset"
   where
@@ -128,27 +129,32 @@ locale l_known_ptrs = l_known_ptr known_ptr for known_ptr :: "(_) object_ptr \<R
   assumes known_ptrs_known_ptr: "known_ptrs h \<Longrightarrow> ptr |\<in>| object_ptr_kinds h \<Longrightarrow> known_ptr ptr"
   assumes known_ptrs_preserved: "object_ptr_kinds h = object_ptr_kinds h' \<Longrightarrow> known_ptrs h = known_ptrs h'"
   assumes known_ptrs_subset: "object_ptr_kinds h' |\<subseteq>| object_ptr_kinds h \<Longrightarrow> known_ptrs h \<Longrightarrow> known_ptrs h'"
+  assumes known_ptrs_new_ptr: "object_ptr_kinds h' = object_ptr_kinds h |\<union>| {|new_ptr|} \<Longrightarrow> known_ptr new_ptr \<Longrightarrow> known_ptrs h \<Longrightarrow> known_ptrs h'"
 
 locale l_known_ptrs\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t = l_known_ptr known_ptr for known_ptr :: "(_) object_ptr \<Rightarrow> bool"
 begin
 definition a_known_ptrs :: "(_) heap \<Rightarrow> bool"
   where
-    "a_known_ptrs h = (\<forall>ptr. ptr |\<in>| object_ptr_kinds h \<longrightarrow> known_ptr ptr)"
+    "a_known_ptrs h = (\<forall>ptr \<in> fset (object_ptr_kinds h). known_ptr ptr)"
 
 lemma known_ptrs_known_ptr: 
   "a_known_ptrs h \<Longrightarrow> ptr |\<in>| object_ptr_kinds h \<Longrightarrow> known_ptr ptr"
-  by(simp add: a_known_ptrs_def)
+  apply(simp add: a_known_ptrs_def)
+  using notin_fset by fastforce
 
 lemma known_ptrs_preserved: "object_ptr_kinds h = object_ptr_kinds h' \<Longrightarrow> a_known_ptrs h = a_known_ptrs h'"
   by(auto simp add: a_known_ptrs_def)
 lemma known_ptrs_subset: "object_ptr_kinds h' |\<subseteq>| object_ptr_kinds h \<Longrightarrow> a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
-  by(auto simp add: a_known_ptrs_def)
+  by(simp add: a_known_ptrs_def less_eq_fset.rep_eq subsetD)
+lemma known_ptrs_new_ptr: "object_ptr_kinds h' = object_ptr_kinds h |\<union>| {|new_ptr|} \<Longrightarrow> known_ptr new_ptr \<Longrightarrow> a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
+  by(simp add: a_known_ptrs_def)
 end
 global_interpretation l_known_ptrs\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t known_ptr defines known_ptrs = a_known_ptrs .
 lemmas known_ptrs_defs = a_known_ptrs_def
 
 lemma known_ptrs_is_l_known_ptrs: "l_known_ptrs known_ptr known_ptrs"
-  using known_ptrs_known_ptr known_ptrs_preserved l_known_ptrs_def known_ptrs_subset by blast
+  using known_ptrs_known_ptr known_ptrs_preserved l_known_ptrs_def known_ptrs_subset known_ptrs_new_ptr
+  by blast
 
 
 lemma get_object_ptr_simp1 [simp]: "get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t object_ptr (put\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t object_ptr object h) = Some object"
@@ -187,5 +193,25 @@ lemma delete\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_ok:
   shows "delete\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t ptr h \<noteq> None"
   using assms
   by(auto simp add: delete\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def object_ptr_kinds_def split: if_splits)
+
+
+subsection \<open>Code Generator Setup\<close>
+
+definition "create_heap xs = Heap (fmap_of_list xs)"
+
+code_datatype ObjectClass.heap.Heap create_heap
+
+lemma object_ptr_kinds_code3 [code]: 
+  "fmlookup (the_heap (create_heap xs)) x = map_of xs x"
+  by(auto simp add: create_heap_def fmlookup_of_list)
+
+lemma object_ptr_kinds_code4 [code]: 
+  "the_heap (create_heap xs) = fmap_of_list xs"
+  by(simp add: create_heap_def)
+
+lemma object_ptr_kinds_code5 [code]: 
+  "the_heap (Heap x) = x"
+  by simp
+
 
 end

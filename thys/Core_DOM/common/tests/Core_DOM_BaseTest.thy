@@ -79,39 +79,6 @@ definition removeWhiteSpaceOnlyTextNodes :: "((_) object_ptr option) \<Rightarro
     "removeWhiteSpaceOnlyTextNodes _ = return ()"
 
 
-subsection \<open>create\_heap\<close>
-
-(* We use this construction because partially applied functions such as "map_of xs" don't play
-   well together with the code generator. *)
-definition "create_heap xs = Heap (fmap_of_list xs)"
-
-code_datatype ObjectClass.heap.Heap create_heap
-
-lemma object_ptr_kinds_code1 [code]: 
-  "object_ptr_kinds (Heap (fmap_of_list xs)) = object_ptr_kinds (create_heap xs)"
-  by(simp add: create_heap_def)
-
-lemma object_ptr_kinds_code2 [code]: 
-  "object_ptr_kinds (create_heap xs) = fset_of_list (map fst xs)"
-  by (simp add: object_ptr_kinds_def create_heap_def dom_map_of_conv_image_fst)
-
-lemma object_ptr_kinds_code3 [code]: 
-  "fmlookup (the_heap (create_heap xs)) x = map_of xs x"
-  by(auto simp add: create_heap_def fmlookup_of_list)
-
-lemma object_ptr_kinds_code4 [code]: 
-  "the_heap (create_heap xs) = fmap_of_list xs"
-  by(simp add: create_heap_def)
-
-lemma object_ptr_kinds_code5 [code]: 
-  "the_heap (Heap x) = x"
-  by simp
-
-lemma object_ptr_kinds_code6 [code]: 
-  "noop = return ()"
-  by(simp add: noop_def)
-
-
 subsection \<open>Making the functions under test compatible with untyped languages such as JavaScript\<close>
 
 fun set_attribute_with_null :: "((_) object_ptr option) \<Rightarrow> attr_key \<Rightarrow> attr_value \<Rightarrow> (_, unit) dom_prog"

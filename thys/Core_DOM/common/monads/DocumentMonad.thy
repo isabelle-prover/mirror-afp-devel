@@ -322,8 +322,7 @@ lemma type_wf_put_ptr_in_heap_E:
   using assms
   apply(auto simp add: type_wf_defs elim!: CharacterDataMonad.type_wf_put_ptr_in_heap_E 
       split: option.splits if_splits)[1]
-  by (metis (no_types, lifting) CharacterDataClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf bind.bind_lunit get\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def 
-      is_document_kind_def option.collapse)
+  by (metis (no_types, lifting) CharacterDataClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf bind.bind_lunit get\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def is_document_kind_def notin_fset option.exhaust_sel)
 
 
 
@@ -361,9 +360,8 @@ lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_tag_type_typ
   apply(auto simp add: is_node_kind_def type_wf_defs ElementClass.type_wf_defs NodeClass.type_wf_defs
       ElementMonad.get_M_defs ObjectClass.type_wf_defs
       CharacterDataClass.type_wf_defs split: option.splits)[1]
-   apply (metis (no_types, lifting) Option.bind_cong bind_rzero 
-      get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def option.distinct(1))
-  by metis
+  apply (metis NodeClass.a_type_wf_def NodeClass.get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_type_wf ObjectClass.a_type_wf_def bind.bind_lzero finite_set_in get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def l_type_wf_def\<^sub>N\<^sub>o\<^sub>d\<^sub>e.a_type_wf_def option.collapse option.distinct(1) option.simps(3))
+  by (metis fmember.rep_eq)
 
 lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_child_nodes_type_wf_preserved [simp]: 
   "h \<turnstile> put_M element_ptr child_nodes_update v \<rightarrow>\<^sub>h h' \<Longrightarrow> type_wf h = type_wf h'"
@@ -378,8 +376,8 @@ lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_child_nodes_
   apply(auto simp add: is_node_kind_def type_wf_defs ElementClass.type_wf_defs
       NodeClass.type_wf_defs ElementMonad.get_M_defs ObjectClass.type_wf_defs 
       CharacterDataClass.type_wf_defs split: option.splits)[1]
-   apply (metis (no_types, lifting) Option.bind_cong bind_rzero get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def option.distinct(1))
-  by metis
+  apply (metis NodeClass.a_type_wf_def NodeClass.get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_type_wf ObjectClass.a_type_wf_def bind.bind_lzero finite_set_in get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def l_type_wf_def\<^sub>N\<^sub>o\<^sub>d\<^sub>e.a_type_wf_def option.collapse option.distinct(1) option.simps(3))
+  by (metis fmember.rep_eq)
 
 lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_attrs_type_wf_preserved [simp]: 
   "h \<turnstile> put_M element_ptr attrs_update v \<rightarrow>\<^sub>h h' \<Longrightarrow> type_wf h = type_wf h'"
@@ -394,8 +392,8 @@ lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_attrs_type_w
   apply(auto simp add: is_node_kind_def type_wf_defs ElementClass.type_wf_defs
       NodeClass.type_wf_defs ElementMonad.get_M_defs ObjectClass.type_wf_defs 
       CharacterDataClass.type_wf_defs split: option.splits)[1]
-   apply (metis (no_types, lifting) Option.bind_cong bind_rzero get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def option.distinct(1))
-  by metis
+  apply (metis NodeClass.a_type_wf_def NodeClass.get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_type_wf ObjectClass.a_type_wf_def bind.bind_lzero finite_set_in get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def l_type_wf_def\<^sub>N\<^sub>o\<^sub>d\<^sub>e.a_type_wf_def option.collapse option.distinct(1) option.simps(3))
+  by (metis fmember.rep_eq)
 
 lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_shadow_root_opt_type_wf_preserved [simp]:
   "h \<turnstile> put_M element_ptr shadow_root_opt_update v \<rightarrow>\<^sub>h h' \<Longrightarrow> type_wf h = type_wf h'"
@@ -410,8 +408,8 @@ lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_shadow_root_
   apply(auto simp add: is_node_kind_def type_wf_defs ElementClass.type_wf_defs
       NodeClass.type_wf_defs ElementMonad.get_M_defs ObjectClass.type_wf_defs 
       CharacterDataClass.type_wf_defs split: option.splits)[1]
-   apply (metis (no_types, lifting) Option.bind_cong bind_rzero get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def option.distinct(1))
-  by metis
+  apply (metis NodeClass.a_type_wf_def NodeClass.get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_type_wf ObjectClass.a_type_wf_def bind.bind_lzero finite_set_in get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def l_type_wf_def\<^sub>N\<^sub>o\<^sub>d\<^sub>e.a_type_wf_def option.collapse option.distinct(1) option.simps(3))
+  by (metis fmember.rep_eq)
 
 lemma new_character_data_type_wf_preserved [simp]: 
   "h \<turnstile> new_character_data \<rightarrow>\<^sub>h h' \<Longrightarrow> type_wf h = type_wf h'"
@@ -440,13 +438,11 @@ lemma put_M\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^su
       intro!: type_wf_put_I CharacterDataMonad.type_wf_put_I ElementMonad.type_wf_put_I 
       NodeMonad.type_wf_put_I ObjectMonad.type_wf_put_I)[1]
   apply(auto simp add: is_node_kind_def type_wf_defs ElementClass.type_wf_defs 
-      NodeClass.type_wf_defs ElementMonad.get_M_defs ObjectClass.type_wf_defs 
+      NodeClass.type_wf_defs CharacterDataMonad.get_M_defs ObjectClass.type_wf_defs 
       CharacterDataClass.type_wf_defs split: option.splits)[1]
-   apply (metis (no_types, lifting) CharacterDataMonad.a_get_M_def bind_eq_None_conv 
-      error_returns_result get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_def get_heap_returns_result option.exhaust_sel 
-      option.simps(4))
-  by (metis (no_types, lifting) CharacterDataMonad.a_get_M_def error_returns_result 
-      get_heap_returns_result option.exhaust_sel option.simps(4))
+  apply (metis bind.bind_lzero finite_set_in get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_def option.distinct(1) option.exhaust_sel)
+  by (metis finite_set_in)
+
 
 lemma new_document_type_wf_preserved [simp]: "h \<turnstile> new_document \<rightarrow>\<^sub>h h' \<Longrightarrow> type_wf h = type_wf h'"
   apply(auto simp add: new_document_def new\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def Let_def put\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def 
@@ -460,7 +456,10 @@ lemma new_document_type_wf_preserved [simp]: "h \<turnstile> new_document \<righ
    apply(auto simp add: type_wf_defs ElementClass.type_wf_defs CharacterDataClass.type_wf_defs 
       NodeClass.type_wf_defs ObjectClass.type_wf_defs is_document_kind_def 
       split: option.splits)[1]
-  by (meson new\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def new\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_ptr_not_in_heap)
+  using document_ptrs_def apply fastforce
+   apply (simp add: is_document_kind_def)
+  apply (metis Suc_n_not_le_n document_ptr.sel(1) document_ptrs_def fMax_ge ffmember_filter fimage_eqI is_document_ptr_ref)
+  done
 
 locale l_new_document = l_type_wf +
   assumes new_document_types_preserved: "h \<turnstile> new_document \<rightarrow>\<^sub>h h' \<Longrightarrow> type_wf h = type_wf h'"
@@ -500,7 +499,7 @@ lemma put_M\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_doct
       NodeClass.type_wf_defs ElementMonad.get_M_defs ObjectClass.type_wf_defs 
       CharacterDataClass.type_wf_defs split: option.splits)[1]
   apply(auto simp add: get_M_defs)
-  by (metis (no_types, lifting)  error_returns_result option.exhaust_sel option.simps(4))
+  by (metis (mono_tags) error_returns_result finite_set_in option.exhaust_sel option.simps(4))
 
 lemma put_M\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_document_element_type_wf_preserved [simp]: 
   "h \<turnstile> put_M document_ptr document_element_update v \<rightarrow>\<^sub>h h' \<Longrightarrow> type_wf h = type_wf h'"
@@ -519,7 +518,7 @@ lemma put_M\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_docu
       NodeClass.type_wf_defs ElementMonad.get_M_defs ObjectClass.type_wf_defs 
       CharacterDataClass.type_wf_defs 
       split: option.splits)[1]
-  by (metis)
+  by (metis finite_set_in)
 
 lemma put_M\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_disconnected_nodes_type_wf_preserved [simp]: 
   "h \<turnstile> put_M document_ptr disconnected_nodes_update v \<rightarrow>\<^sub>h h' \<Longrightarrow> type_wf h = type_wf h'"
@@ -538,7 +537,7 @@ lemma put_M\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_disc
   apply(auto simp add: is_document_kind_def get_M_defs type_wf_defs ElementClass.type_wf_defs 
       NodeClass.type_wf_defs ElementMonad.get_M_defs ObjectClass.type_wf_defs 
       CharacterDataClass.type_wf_defs split: option.splits)[1]
-  by (metis)
+  by (metis finite_set_in)
 
 lemma document_ptr_kinds_small:
   assumes "\<And>object_ptr. preserved (get_M\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t object_ptr RObject.nothing) h h'"
@@ -600,6 +599,5 @@ lemma type_wf_drop: "type_wf h \<Longrightarrow> type_wf (Heap (fmdrop ptr (the_
   apply(auto simp add: type_wf_defs)[1]
   using type_wf_drop
    apply blast
-  by (metis (mono_tags, lifting) comp_apply document_ptr_kinds_commutes ffmember_filter fmdom_filter 
-      fmfilter_alt_defs(1) fmlookup_drop get\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def heap.sel object_ptr_kinds_def)
+  by (metis (no_types, lifting) CharacterDataClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf CharacterDataMonad.type_wf_drop document_ptr_kinds_commutes finite_set_in fmlookup_drop get\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def heap.sel)
 end

@@ -620,6 +620,62 @@ lemma set_child_nodes_get_child_nodes_different_pointers:
   apply(rule is_element_ptr_kind_obtains) 
    apply(auto)
   done
+
+lemma set_child_nodes_element_ok [simp]:
+  assumes "known_ptr ptr"
+  assumes "type_wf h"
+  assumes "ptr |\<in>| object_ptr_kinds h"
+  assumes "is_element_ptr_kind ptr"
+  shows "h \<turnstile> ok (set_child_nodes ptr children)"
+proof -
+  have "is_element_ptr ptr"
+    using \<open>known_ptr ptr\<close> assms(4)
+    by(auto simp add: known_ptr_impl known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
+  then show ?thesis
+    using assms
+    apply(auto simp add: set_child_nodes_def a_set_child_nodes_tups_def set_child_nodes\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def split: option.splits)[1]
+    by (simp add: DocumentMonad.put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_ok local.type_wf_impl)
+qed
+
+lemma set_child_nodes_document1_ok [simp]:
+  assumes "known_ptr ptr"
+  assumes "type_wf h"
+  assumes "ptr |\<in>| object_ptr_kinds h"
+  assumes "is_document_ptr_kind ptr"
+  assumes "children = []"
+  shows "h \<turnstile> ok (set_child_nodes ptr children)"
+proof -
+  have "is_document_ptr ptr"
+    using \<open>known_ptr ptr\<close> assms(4)
+    by(auto simp add: known_ptr_impl known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
+  then show ?thesis
+    using assms
+    apply(auto simp add: set_child_nodes_def a_set_child_nodes_tups_def set_child_nodes\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def split: option.splits)[1]
+    by (simp add: DocumentMonad.put_M\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_ok local.type_wf_impl)
+qed
+
+lemma set_child_nodes_document2_ok [simp]:
+  assumes "known_ptr ptr"
+  assumes "type_wf h"
+  assumes "ptr |\<in>| object_ptr_kinds h"
+  assumes "is_document_ptr_kind ptr"
+  assumes "children = [child]"
+  assumes "is_element_ptr_kind child"
+  shows "h \<turnstile> ok (set_child_nodes ptr children)"
+proof -
+  have "is_document_ptr ptr"
+    using \<open>known_ptr ptr\<close> assms(4)
+    by(auto simp add: known_ptr_impl known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
+  then show ?thesis
+    using assms
+    apply(auto simp add: set_child_nodes_def a_set_child_nodes_tups_def set_child_nodes\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def)
+    apply(split invoke_splits, rule conjI)+
+       apply(auto simp add: is_element_ptr_kind\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def set_child_nodes\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def split: option.splits)[1]
+      apply(auto simp add: is_element_ptr_kind\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def set_child_nodes\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def split: option.splits)[1]
+      apply (simp add: local.type_wf_impl put_M\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_ok)
+     apply(auto simp add: is_element_ptr_kind\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def set_child_nodes\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def split: option.splits)[1]
+    by(auto simp add: is_element_ptr_kind\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def set_child_nodes\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def split: option.splits)[1]
+qed
 end
 
 locale l_set_child_nodes_get_child_nodes = l_get_child_nodes + l_set_child_nodes +
@@ -2358,6 +2414,15 @@ proof -
     using assms(1) get_child_nodes_ptr_in_heap by blast 
 qed
 
+
+lemma remove_child_child_in_heap:
+  assumes "h \<turnstile> remove_child ptr' child \<rightarrow>\<^sub>h h'"
+  shows "child |\<in>| node_ptr_kinds h"
+  using assms
+  apply(auto simp add: remove_child_def elim!: bind_returns_heap_E bind_returns_heap_E2[rotated, OF get_child_nodes_pure, rotated] split: if_splits)[1]
+  by (meson is_OK_returns_result_I local.get_owner_document_ptr_in_heap node_ptr_kinds_commutes)
+
+
 lemma remove_child_in_disconnected_nodes:
   (* assumes "known_ptrs h" *)
   assumes "h \<turnstile> remove_child ptr child \<rightarrow>\<^sub>h h'"
@@ -2490,6 +2555,7 @@ locale l_remove_child = l_type_wf + l_known_ptrs + l_remove_child_defs + l_get_o
     \<Longrightarrow> h' \<turnstile> get_disconnected_nodes owner_document \<rightarrow>\<^sub>r disc_nodes
     \<Longrightarrow> child \<in> set disc_nodes"
   assumes remove_child_ptr_in_heap: "h \<turnstile> ok (remove_child ptr child) \<Longrightarrow> ptr |\<in>| object_ptr_kinds h"
+  assumes remove_child_child_in_heap: "h \<turnstile> remove_child ptr' child \<rightarrow>\<^sub>h h' \<Longrightarrow> child |\<in>| node_ptr_kinds h"
   assumes remove_child_children_subset:
     "known_ptrs h \<Longrightarrow> type_wf h \<Longrightarrow> h \<turnstile> remove_child parent child \<rightarrow>\<^sub>h h'
     \<Longrightarrow> h \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children
@@ -2535,6 +2601,7 @@ lemma remove_child_is_l_remove_child [instances]:
   using remove_child_types_preserved apply(blast)
   using remove_child_in_disconnected_nodes apply(blast)
   using remove_child_ptr_in_heap  apply(blast)
+  using remove_child_child_in_heap  apply(blast)
   using remove_child_children_subset  apply(blast)
   done
 
@@ -2975,8 +3042,8 @@ lemma insert_before_list_in_set: "x \<in> set (insert_before_list v ref xs) \<lo
   by(auto)
 
 lemma insert_before_list_distinct: "x \<notin> set xs \<Longrightarrow> distinct xs \<Longrightarrow> distinct (insert_before_list x ref xs)"
-  by (induct x ref xs rule: insert_before_list.induct)
-     (auto simp add: insert_before_list_in_set)
+  apply(induct x ref xs rule: insert_before_list.induct)
+  by(auto simp add: insert_before_list_in_set)
 
 lemma insert_before_list_subset: "set xs \<subseteq> set (insert_before_list x ref xs)"
   apply(induct x ref xs rule: insert_before_list.induct)
@@ -3011,6 +3078,13 @@ proof -
   then show ?thesis
     unfolding insert_before_def by auto
 qed
+
+lemma insert_before_ptr_in_heap:
+  assumes "h \<turnstile> ok (insert_before ptr node reference_child)"
+  shows "ptr |\<in>| object_ptr_kinds h"
+  using assms
+  apply(auto simp add: insert_before_def elim!: bind_is_OK_E)[1]
+  by (metis (mono_tags, lifting) ensure_pre_insertion_validity_pure is_OK_returns_result_I local.get_owner_document_ptr_in_heap next_sibling_pure pure_returns_heap_eq return_returns_heap)
 
 lemma insert_before_child_in_heap:
   assumes "h \<turnstile> ok (insert_before ptr node reference_child)"
@@ -3166,20 +3240,76 @@ global_interpretation l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<
   .
 
 locale l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M =
-  l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs +
-  l_create_element_defs +
+  l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs get_disconnected_nodes get_disconnected_nodes_locs set_disconnected_nodes set_disconnected_nodes_locs set_tag_type set_tag_type_locs +
+  l_get_disconnected_nodes type_wf get_disconnected_nodes get_disconnected_nodes_locs +
+  l_set_tag_type type_wf set_tag_type set_tag_type_locs +
+  l_create_element_defs create_element +
+  l_known_ptr known_ptr
+  for get_disconnected_nodes :: "(_) document_ptr \<Rightarrow> ((_) heap, exception, (_) node_ptr list) prog"
+  and get_disconnected_nodes_locs :: "(_) document_ptr \<Rightarrow> ((_) heap \<Rightarrow> (_) heap \<Rightarrow> bool) set"
+  and set_disconnected_nodes :: "(_) document_ptr \<Rightarrow> (_) node_ptr list \<Rightarrow> ((_) heap, exception, unit) prog"
+  and set_disconnected_nodes_locs :: "(_) document_ptr \<Rightarrow> ((_) heap, exception, unit) prog set"
+  and set_tag_type :: "(_) element_ptr \<Rightarrow> char list \<Rightarrow> ((_) heap, exception, unit) prog"
+  and set_tag_type_locs :: "(_) element_ptr \<Rightarrow> ((_) heap, exception, unit) prog set"
+  and type_wf :: "(_) heap \<Rightarrow> bool"
+  and create_element :: "(_) document_ptr \<Rightarrow> char list \<Rightarrow> ((_) heap, exception, (_) element_ptr) prog"
+  and known_ptr :: "(_) object_ptr \<Rightarrow> bool" +
+  assumes known_ptr_impl: "known_ptr = a_known_ptr"
   assumes create_element_impl: "create_element = a_create_element"
 begin
 lemmas create_element_def = a_create_element_def[folded create_element_impl]
+
+lemma create_element_document_in_heap:
+  assumes "h \<turnstile> ok (create_element document_ptr tag)"
+  shows "document_ptr |\<in>| document_ptr_kinds h"
+proof -
+  obtain h' where "h \<turnstile> create_element document_ptr tag \<rightarrow>\<^sub>h h'"
+    using assms(1)
+    by auto
+  then
+  obtain new_element_ptr h2 h3 disc_nodes_h3 where
+    new_element_ptr: "h \<turnstile> new_element \<rightarrow>\<^sub>r new_element_ptr" and
+    h2: "h \<turnstile> new_element \<rightarrow>\<^sub>h h2" and
+    h3: "h2 \<turnstile> set_tag_type new_element_ptr tag \<rightarrow>\<^sub>h h3" and
+    disc_nodes_h3: "h3 \<turnstile> get_disconnected_nodes document_ptr \<rightarrow>\<^sub>r disc_nodes_h3" and
+    h': "h3 \<turnstile> set_disconnected_nodes document_ptr (cast new_element_ptr # disc_nodes_h3) \<rightarrow>\<^sub>h h'"
+    by(auto simp add: create_element_def
+            elim!: bind_returns_heap_E 
+                   bind_returns_heap_E2[rotated, OF get_disconnected_nodes_pure, rotated] )
+
+  have object_ptr_kinds_eq_h: "object_ptr_kinds h2 = object_ptr_kinds h |\<union>| {|cast new_element_ptr|}"
+    using new_element_new_ptr h2 new_element_ptr by blast
+  
+  moreover have object_ptr_kinds_eq_h2: "object_ptr_kinds h3 = object_ptr_kinds h2"
+    apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h' = object_ptr_kinds h", OF set_tag_type_writes h3])
+    using set_tag_type_pointers_preserved
+    by (auto simp add: reflp_def transp_def)
+  moreover have "document_ptr |\<in>| document_ptr_kinds h3"
+    by (meson disc_nodes_h3 is_OK_returns_result_I local.get_disconnected_nodes_ptr_in_heap)
+
+  ultimately show ?thesis
+    by (auto simp add: document_ptr_kinds_def)
+qed
+
+lemma create_element_known_ptr:
+  assumes "h \<turnstile> create_element document_ptr tag \<rightarrow>\<^sub>r new_element_ptr"
+  shows "known_ptr (cast new_element_ptr)"
+proof -
+  have "is_element_ptr new_element_ptr"
+    using assms
+    apply(auto simp add: create_element_def elim!: bind_returns_result_E)[1]
+    using new_element_is_element_ptr
+    by blast
+  then show ?thesis
+    by(auto simp add: known_ptr_impl DocumentClass.known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs)
+qed
 end
 
 locale l_create_element = l_create_element_defs
 
 interpretation
-  i_create_element?: l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M get_disconnected_nodes get_disconnected_nodes_locs 
-                     set_disconnected_nodes set_disconnected_nodes_locs set_tag_type 
-                     set_tag_type_locs create_element
-  by unfold_locales (simp add: create_element_def)
+  i_create_element?: l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M get_disconnected_nodes get_disconnected_nodes_locs set_disconnected_nodes set_disconnected_nodes_locs set_tag_type set_tag_type_locs type_wf create_element known_ptr
+  by(auto simp add: l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_def l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms_def create_element_def instances)
 declare l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms[instances]
 
 
@@ -3217,20 +3347,76 @@ global_interpretation l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^
   .
 
 locale l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M =
-  l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs +
-  l_create_character_data_defs +
+  l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs set_val set_val_locs get_disconnected_nodes get_disconnected_nodes_locs set_disconnected_nodes set_disconnected_nodes_locs +
+  l_get_disconnected_nodes type_wf get_disconnected_nodes get_disconnected_nodes_locs +
+  l_set_val type_wf set_val set_val_locs +
+  l_create_character_data_defs create_character_data +
+  l_known_ptr known_ptr
+  for get_disconnected_nodes :: "(_) document_ptr \<Rightarrow> ((_) heap, exception, (_) node_ptr list) prog"
+  and get_disconnected_nodes_locs :: "(_) document_ptr \<Rightarrow> ((_) heap \<Rightarrow> (_) heap \<Rightarrow> bool) set"
+  and set_disconnected_nodes :: "(_) document_ptr \<Rightarrow> (_) node_ptr list \<Rightarrow> ((_) heap, exception, unit) prog"
+  and set_disconnected_nodes_locs :: "(_) document_ptr \<Rightarrow> ((_) heap, exception, unit) prog set"
+  and set_val :: "(_) character_data_ptr \<Rightarrow> char list \<Rightarrow> ((_) heap, exception, unit) prog"
+  and set_val_locs :: "(_) character_data_ptr \<Rightarrow> ((_) heap, exception, unit) prog set"
+  and type_wf :: "(_) heap \<Rightarrow> bool"
+  and create_character_data :: "(_) document_ptr \<Rightarrow> char list \<Rightarrow> ((_) heap, exception, (_) character_data_ptr) prog"
+  and known_ptr :: "(_) object_ptr \<Rightarrow> bool" +
+  assumes known_ptr_impl: "known_ptr = a_known_ptr"
   assumes create_character_data_impl: "create_character_data = a_create_character_data"
 begin
 lemmas create_character_data_def = a_create_character_data_def[folded create_character_data_impl] 
+
+lemma create_character_data_document_in_heap:
+  assumes "h \<turnstile> ok (create_character_data document_ptr text)"
+  shows "document_ptr |\<in>| document_ptr_kinds h"
+proof -
+  obtain h' where "h \<turnstile> create_character_data document_ptr text \<rightarrow>\<^sub>h h'"
+    using assms(1)
+    by auto
+  then
+  obtain new_character_data_ptr h2 h3 disc_nodes_h3 where
+    new_character_data_ptr: "h \<turnstile> new_character_data \<rightarrow>\<^sub>r new_character_data_ptr" and
+    h2: "h \<turnstile> new_character_data \<rightarrow>\<^sub>h h2" and
+    h3: "h2 \<turnstile> set_val new_character_data_ptr text \<rightarrow>\<^sub>h h3" and
+    disc_nodes_h3: "h3 \<turnstile> get_disconnected_nodes document_ptr \<rightarrow>\<^sub>r disc_nodes_h3" and
+    h': "h3 \<turnstile> set_disconnected_nodes document_ptr (cast new_character_data_ptr # disc_nodes_h3) \<rightarrow>\<^sub>h h'"
+    by(auto simp add: create_character_data_def
+            elim!: bind_returns_heap_E 
+                   bind_returns_heap_E2[rotated, OF get_disconnected_nodes_pure, rotated] )
+
+  have object_ptr_kinds_eq_h: "object_ptr_kinds h2 = object_ptr_kinds h |\<union>| {|cast new_character_data_ptr|}"
+    using new_character_data_new_ptr h2 new_character_data_ptr by blast
+  
+  moreover have object_ptr_kinds_eq_h2: "object_ptr_kinds h3 = object_ptr_kinds h2"
+    apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h' = object_ptr_kinds h", OF set_val_writes h3])
+    using set_val_pointers_preserved
+    by (auto simp add: reflp_def transp_def)
+  moreover have "document_ptr |\<in>| document_ptr_kinds h3"
+    by (meson disc_nodes_h3 is_OK_returns_result_I local.get_disconnected_nodes_ptr_in_heap)
+
+  ultimately show ?thesis
+    by (auto simp add: document_ptr_kinds_def)
+qed
+
+lemma create_character_data_known_ptr:
+  assumes "h \<turnstile> create_character_data document_ptr text \<rightarrow>\<^sub>r new_character_data_ptr"
+  shows "known_ptr (cast new_character_data_ptr)"
+proof -
+  have "is_character_data_ptr new_character_data_ptr"
+    using assms
+    apply(auto simp add: create_character_data_def elim!: bind_returns_result_E)[1]
+    using new_character_data_is_character_data_ptr
+    by blast
+  then show ?thesis
+    by(auto simp add: known_ptr_impl DocumentClass.known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs)
+qed
 end
 
 locale l_create_character_data = l_create_character_data_defs
 
 interpretation
-  i_create_character_data?: l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M set_val set_val_locs get_disconnected_nodes 
-                            get_disconnected_nodes_locs set_disconnected_nodes 
-                            set_disconnected_nodes_locs create_character_data
-  by unfold_locales (simp add: create_character_data_def)
+  i_create_character_data?: l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M get_disconnected_nodes get_disconnected_nodes_locs set_disconnected_nodes set_disconnected_nodes_locs set_val set_val_locs type_wf create_character_data known_ptr
+  by(auto simp add: l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_def l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms_def create_character_data_def instances)
 declare l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms [instances]
 
 
@@ -3481,6 +3667,30 @@ lemma get_element_by_id_result_in_tree_order:
   shows "cast element_ptr \<in> set to"
   using assms 
   by(auto simp add: get_element_by_id_def first_in_tree_order_def  
+               elim!: map_filter_M_pure_E[where y=element_ptr]  bind_returns_result_E2 
+               dest!: bind_returns_result_E3[rotated, OF assms(2), rotated] 
+               intro!: map_filter_M_pure map_M_pure_I bind_pure_I 
+               split: option.splits list.splits if_splits)
+
+lemma get_elements_by_class_name_result_in_tree_order:
+  assumes "h \<turnstile> get_elements_by_class_name ptr name \<rightarrow>\<^sub>r results"
+  assumes "h \<turnstile> to_tree_order ptr \<rightarrow>\<^sub>r to"
+  assumes "element_ptr \<in> set results"
+  shows "cast element_ptr \<in> set to"
+  using assms 
+  by(auto simp add: get_elements_by_class_name_def first_in_tree_order_def  
+               elim!: map_filter_M_pure_E[where y=element_ptr]  bind_returns_result_E2 
+               dest!: bind_returns_result_E3[rotated, OF assms(2), rotated] 
+               intro!: map_filter_M_pure map_M_pure_I bind_pure_I 
+               split: option.splits list.splits if_splits)
+
+lemma get_elements_by_tag_name_result_in_tree_order:
+  assumes "h \<turnstile> get_elements_by_tag_name ptr name \<rightarrow>\<^sub>r results"
+  assumes "h \<turnstile> to_tree_order ptr \<rightarrow>\<^sub>r to"
+  assumes "element_ptr \<in> set results"
+  shows "cast element_ptr \<in> set to"
+  using assms 
+  by(auto simp add: get_elements_by_tag_name_def first_in_tree_order_def  
                elim!: map_filter_M_pure_E[where y=element_ptr]  bind_returns_result_E2 
                dest!: bind_returns_result_E3[rotated, OF assms(2), rotated] 
                intro!: map_filter_M_pure map_M_pure_I bind_pure_I 
