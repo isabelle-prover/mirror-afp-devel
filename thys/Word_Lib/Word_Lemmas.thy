@@ -8,7 +8,6 @@ section "Lemmas with Generic Word Length"
 
 theory Word_Lemmas
   imports
-    Complex_Main
     Word_EqI
     Word_Enum
     "HOL-Library.Sublist"
@@ -5750,7 +5749,7 @@ lemma small_powers_of_2:
   by (induct x; simp add: suc_le_pow_2)
 
 lemma word_clz_sint_upper[simp]:
-  "LENGTH('a) \<ge> 3 \<Longrightarrow> sint (of_nat (word_clz (w :: 'a :: len word)) :: 'a sword) \<le> LENGTH('a)"
+  "LENGTH('a) \<ge> 3 \<Longrightarrow> sint (of_nat (word_clz (w :: 'a :: len word)) :: 'a sword) \<le> int (LENGTH('a))"
   using small_powers_of_2
   by (smt One_nat_def diff_less le_less_trans len_gt_0 len_signed lessI n_less_equal_power_2
            not_msb_from_less of_nat_mono sint_eq_uint uint_nat unat_of_nat_eq unat_power_lower
@@ -5758,7 +5757,7 @@ lemma word_clz_sint_upper[simp]:
 
 lemma word_clz_sint_lower[simp]:
   "LENGTH('a) \<ge> 3
-   \<Longrightarrow> - sint (of_nat (word_clz (w :: 'a :: len word)) :: 'a signed word) \<le> LENGTH('a)"
+   \<Longrightarrow> - sint (of_nat (word_clz (w :: 'a :: len word)) :: 'a signed word) \<le> int (LENGTH('a))"
   apply (subst sint_eq_uint)
    using small_powers_of_2 uint_nat
    apply (simp add: order_le_less_trans[OF word_clz_max] not_msb_from_less word_of_nat_less
@@ -6108,7 +6107,7 @@ lemma int_eq_sint:
 lemma sint_ctz:
   "LENGTH('a) > 2
    \<Longrightarrow> 0 \<le> sint (of_nat (word_ctz (x :: 'a :: len word)) :: 'a signed word)
-        \<and> sint (of_nat (word_ctz x) :: 'a signed word) \<le> LENGTH('a)"
+        \<and> sint (of_nat (word_ctz x) :: 'a signed word) \<le> int (LENGTH('a))"
   apply (subgoal_tac "LENGTH('a) < 2 ^ (LENGTH('a) - 1)")
    apply (rule conjI)
     apply (metis len_signed order_le_less_trans sint_of_nat_ge_zero word_ctz_le)
