@@ -2258,6 +2258,8 @@ afp-MFMC_Countable-2016-12-17.tar.gz
 afp-MFMC_Countable-2017-10-10.tar.gz
 afp-MFMC_Countable-2018-08-16.tar.gz
 afp-MFMC_Countable-2019-06-11.tar.gz
+afp-MFODL_Monitor_Optimized-2020-04-11.tar.gz
+afp-MFODL_Monitor_Optimized-2020-04-12.tar.gz
 afp-MFOTL_Monitor-2019-07-05.tar.gz
 afp-Minimal_SSA-2017-01-19.tar.gz
 afp-Minimal_SSA-2017-10-10.tar.gz
@@ -3170,6 +3172,7 @@ afp-SATSolverVerification-2016-12-17.tar.gz
 afp-SATSolverVerification-2017-10-10.tar.gz
 afp-SATSolverVerification-2018-08-16.tar.gz
 afp-SATSolverVerification-2019-06-11.tar.gz
+afp-Saturation_Framework-2020-04-10.tar.gz
 afp-SDS_Impossibility-2016-05-05.tar.gz
 afp-SDS_Impossibility-2016-12-17.tar.gz
 afp-SDS_Impossibility-2017-10-10.tar.gz
@@ -3374,6 +3377,7 @@ afp-Slicing-2016-12-17.tar.gz
 afp-Slicing-2017-10-10.tar.gz
 afp-Slicing-2018-08-16.tar.gz
 afp-Slicing-2019-06-11.tar.gz
+afp-Sliding_Window_Algorithm-2020-04-12.tar.gz
 afp-Smooth_Manifolds-2018-10-23.tar.gz
 afp-Smooth_Manifolds-2019-06-11.tar.gz
 afp-Sort_Encodings-2013-07-01.tar.gz
