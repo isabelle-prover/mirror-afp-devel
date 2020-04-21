@@ -21,9 +21,9 @@ locale standard_redundancy_criterion =
 begin
 
 definition redundant_infer :: "'a clause set \<Rightarrow> 'a inference \<Rightarrow> bool" where
-  "redundant_infer N \<gamma> \<equiv>
-   \<exists>DD. set_mset DD \<subseteq> N \<and> (\<forall>I. I \<Turnstile>m DD + side_prems_of \<gamma> \<longrightarrow> I \<Turnstile> concl_of \<gamma>)
-      \<and> (\<forall>D. D \<in># DD \<longrightarrow> D < main_prem_of \<gamma>)"
+  "redundant_infer N \<gamma> \<longleftrightarrow>
+   (\<exists>DD. set_mset DD \<subseteq> N \<and> (\<forall>I. I \<Turnstile>m DD + side_prems_of \<gamma> \<longrightarrow> I \<Turnstile> concl_of \<gamma>)
+      \<and> (\<forall>D. D \<in># DD \<longrightarrow> D < main_prem_of \<gamma>))"
 
 definition Rf :: "'a clause set \<Rightarrow> 'a clause set" where
   "Rf N = {C. \<exists>DD. set_mset DD \<subseteq> N \<and> (\<forall>I. I \<Turnstile>m DD \<longrightarrow> I \<Turnstile> C) \<and> (\<forall>D. D \<in># DD \<longrightarrow> D < C)}"

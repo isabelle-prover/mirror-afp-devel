@@ -35,7 +35,7 @@ locale calculus_with_red_crit = inference_system Inf + consequence_relation Bot 
     Red_Inf_of_Inf_to_N: "\<iota> \<in> Inf \<Longrightarrow> concl_of \<iota> \<in> N \<Longrightarrow> \<iota> \<in> Red_Inf N"
 begin
 
-lemma Red_Inf_of_Inf_to_N_subset: "{\<iota> \<in> Inf. (concl_of \<iota> \<in> N)} \<subseteq> Red_Inf N"
+lemma Red_Inf_of_Inf_to_N_subset: "{\<iota> \<in> Inf. concl_of \<iota> \<in> N} \<subseteq> Red_Inf N"
   using Red_Inf_of_Inf_to_N by blast
 
 (* lem:red-concl-implies-red-inf *)
@@ -252,9 +252,9 @@ proof
     bot_elem: \<open>B \<in> Bot\<close> and
     deriv: \<open>chain (\<rhd>Red) D\<close> and
     fair: \<open>fair D\<close> and
-    unsat: \<open>(lnth D 0) \<Turnstile> {B}\<close>
+    unsat: \<open>lnth D 0 \<Turnstile> {B}\<close>
     have non_empty: \<open>\<not> lnull D\<close> using chain_not_lnull[OF deriv] .
-    have subs: \<open>(lnth D 0) \<subseteq> Sup_llist D\<close>
+    have subs: \<open>lnth D 0 \<subseteq> Sup_llist D\<close>
       using lhd_subset_Sup_llist[of D] non_empty by (simp add: lhd_conv_lnth)
     have \<open>Sup_llist D \<Turnstile> {B}\<close>
       using unsat subset_entailed[OF subs] entails_trans[of "Sup_llist D" "lnth D 0"] by auto
