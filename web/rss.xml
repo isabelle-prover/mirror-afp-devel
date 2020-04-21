@@ -88,7 +88,7 @@ optimize the monitor.</description>
 This work presents a formalisation of a generating function proof for
 Lucas&#39;s theorem. We first outline extensions to the existing
 Formal Power Series (FPS) library, including an equivalence relation
-for coefficients modulo $n$, an alternate binomial theorem statement,
+for coefficients modulo &lt;em&gt;n&lt;/em&gt;, an alternate binomial theorem statement,
 and a formalised proof of the Freshman&#39;s dream (mod &lt;em&gt;p&lt;/em&gt;) lemma.
 The second part of the work presents the formal proof of Lucas&#39;s
 Theorem. Working backwards, the formalisation first proves a well
