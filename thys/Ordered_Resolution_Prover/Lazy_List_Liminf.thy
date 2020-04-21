@@ -54,7 +54,8 @@ lemma Sup_upto_llist_mono: "j \<le> k \<Longrightarrow> Sup_upto_llist Xs j \<su
 lemma Sup_upto_llist_subset_Sup_llist: "j \<le> k \<Longrightarrow> Sup_upto_llist Xs j \<subseteq> Sup_llist Xs"
   unfolding Sup_llist_def Sup_upto_llist_def by auto
 
-lemma elem_Sup_llist_imp_Sup_upto_llist: "x \<in> Sup_llist Xs \<Longrightarrow> \<exists>j. x \<in> Sup_upto_llist Xs j"
+lemma elem_Sup_llist_imp_Sup_upto_llist:
+	"x \<in> Sup_llist Xs \<Longrightarrow> \<exists>j < llength Xs. x \<in> Sup_upto_llist Xs j"
   unfolding Sup_llist_def Sup_upto_llist_def by blast
 
 lemma finite_Sup_llist_imp_Sup_upto_llist:

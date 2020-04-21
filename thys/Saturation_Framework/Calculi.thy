@@ -88,11 +88,6 @@ definition fair :: "'f set llist \<Rightarrow> bool" where
 inductive "derive" :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<rhd>Red" 50) where
   derive: "M - N \<subseteq> Red_F N \<Longrightarrow> M \<rhd>Red N"
 
-text \<open>TODO: replace in \<^theory>\<open>Ordered_Resolution_Prover.Lazy_List_Liminf\<close>.\<close>
-lemma (in-) elem_Sup_llist_imp_Sup_upto_llist':
-  "x \<in> Sup_llist Xs \<Longrightarrow> \<exists>j < llength Xs. x \<in> Sup_upto_llist Xs j"
-  unfolding Sup_llist_def Sup_upto_llist_def by blast
-
 lemma gt_Max_notin: \<open>finite A \<Longrightarrow> A \<noteq> {} \<Longrightarrow> x > Max A \<Longrightarrow> x \<notin> A\<close> by auto
 
 lemma equiv_Sup_Liminf:
@@ -103,7 +98,7 @@ lemma equiv_Sup_Liminf:
     "\<exists> i \<in> {i. enat (Suc i) < llength D}. C \<in> lnth D i - lnth D (Suc i)"
 proof -
   obtain i where C_D_i: "C \<in> Sup_upto_llist D i" and "i < llength D"
-    using elem_Sup_llist_imp_Sup_upto_llist' in_Sup by fast
+    using elem_Sup_llist_imp_Sup_upto_llist in_Sup by fast
   then obtain j where j: "j \<ge> i \<and> enat j < llength D \<and> C \<notin> lnth D j" using not_in_Liminf
     unfolding Sup_llist_def chain_def Liminf_llist_def by auto
   obtain k where k: "C \<in> lnth D k" "enat k < llength D" "k \<le> i" using C_D_i
