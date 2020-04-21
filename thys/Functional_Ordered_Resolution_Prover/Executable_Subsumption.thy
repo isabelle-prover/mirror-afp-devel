@@ -85,7 +85,7 @@ proof (safe, goal_cases left_right right_left)
       simp: insert_subset_eq_iff subst_lit_def  intro!: extends_subst_cong_lit)
 next
   case (right_left K \<tau> \<tau>')
-  then show ?case 
+  then show ?case
     by (intro bexI[of _ "L \<cdot>lit subst_of_map Var \<tau>"] exI[of _ \<tau>'], intro conjI exI[of _ \<tau>])
      (auto simp: insert_subset_eq_iff subst_lit_def extends_subst_cong_lit
        intro: extends_subst_trans)
@@ -104,7 +104,7 @@ lemma match_term_list_sound: "match_term_list tus \<sigma> = Some \<tau> \<Longr
 proof (induct tus \<sigma> rule: match_term_list.induct)
   case (2 x t P \<sigma>)
   then show ?case
-    by (auto 0 3 simp: extends_subst_fun_upd_new extends_subst_fun_upd_matching 
+    by (auto 0 3 simp: extends_subst_fun_upd_new extends_subst_fun_upd_matching
       subst_of_map_def dest: extends_subst_extends simp del: fun_upd_apply
       split: if_splits option.splits)
 next
@@ -125,7 +125,7 @@ lemma match_term_list_complete: "match_term_list tus \<sigma> = None \<Longright
 proof (induct tus \<sigma> arbitrary: \<tau> rule: match_term_list.induct)
   case (2 x t P \<sigma>)
   then show ?case
-    by (auto simp: extends_subst_fun_upd_new extends_subst_fun_upd_matching 
+    by (auto simp: extends_subst_fun_upd_new extends_subst_fun_upd_matching
       subst_of_map_def dest: extends_subst_extends simp del: fun_upd_apply
       split: if_splits option.splits)
 next
