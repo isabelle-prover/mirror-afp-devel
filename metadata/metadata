@@ -9101,4 +9101,26 @@ abstract =
   alternative interface to the slide operation that does not require the
   entire input sequence.
 
+[Lucas_Theorem]
+title = Lucas's Theorem
+author = Chelsea Edmonds <mailto:cle47@cam.ac.uk>
+topic = Mathematics/Number Theory
+date = 2020-04-07
+notify = cle47@cam.ac.uk
+abstract = 
+  This work presents a formalisation of a generating function proof for
+  Lucas's theorem. We first outline extensions to the existing
+  Formal Power Series (FPS) library, including an equivalence relation
+  for coefficients modulo $n$, an alternate binomial theorem statement,
+  and a formalised proof of the Freshman's dream (mod <em>p</em>) lemma.
+  The second part of the work presents the formal proof of Lucas's
+  Theorem. Working backwards, the formalisation first proves a well
+  known corollary of the theorem which is easier to formalise, and then
+  applies induction to prove the original theorem statement. The proof
+  of the corollary aims to provide a good example of a formalised
+  generating function equivalence proof using the FPS library. The final
+  theorem statement is intended to be integrated into the formalised
+  proof of Hilbert's 10th Problem.
+
+
 

@@ -79,6 +79,27 @@ joins&lt;/a&gt; and a specialized sliding window algorithm to further
 optimize the monitor.</description>
     </item>
     <item>
+       <title>Lucas's Theorem</title>
+              <link>https://www.isa-afp.org/entries/Lucas_Theorem.html</link>
+       <guid>https://www.isa-afp.org/entries/Lucas_Theorem.html</guid>
+       <dc:creator> Chelsea Edmonds       </dc:creator>
+       <pubDate>07 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+This work presents a formalisation of a generating function proof for
+Lucas&#39;s theorem. We first outline extensions to the existing
+Formal Power Series (FPS) library, including an equivalence relation
+for coefficients modulo $n$, an alternate binomial theorem statement,
+and a formalised proof of the Freshman&#39;s dream (mod &lt;em&gt;p&lt;/em&gt;) lemma.
+The second part of the work presents the formal proof of Lucas&#39;s
+Theorem. Working backwards, the formalisation first proves a well
+known corollary of the theorem which is easier to formalise, and then
+applies induction to prove the original theorem statement. The proof
+of the corollary aims to provide a good example of a formalised
+generating function equivalence proof using the FPS library. The final
+theorem statement is intended to be integrated into the formalised
+proof of Hilbert&#39;s 10th Problem.</description>
+    </item>
+    <item>
        <title>Strong Eventual Consistency of the Collaborative Editing Framework WOOT</title>
               <link>https://www.isa-afp.org/entries/WOOT_Strong_Eventual_Consistency.html</link>
        <guid>https://www.isa-afp.org/entries/WOOT_Strong_Eventual_Consistency.html</guid>
@@ -555,33 +576,6 @@ be constructed from Sigma-protocols. We formalise this proof at an
 abstract level, only assuming the existence of a Sigma-protocol;
 consequently, the instantiations of this result for the concrete
 Sigma-protocols we consider come for free.</description>
-    </item>
-    <item>
-       <title>Clean - An Abstract Imperative Programming Language and its Theory</title>
-              <link>https://www.isa-afp.org/entries/Clean.html</link>
-       <guid>https://www.isa-afp.org/entries/Clean.html</guid>
-       <dc:creator> Frédéric Tuong, Burkhart Wolff       </dc:creator>
-       <pubDate>04 Oct 2019 00:00:00 +0000</pubDate>
-       <description>
-Clean is based on a simple, abstract execution model for an imperative
-target language. “Abstract” is understood in contrast to “Concrete
-Semantics”; alternatively, the term “shallow-style embedding” could be
-used. It strives for a type-safe notion of program-variables, an
-incremental construction of the typed state-space, support of
-incremental verification, and open-world extensibility of new type
-definitions being intertwined with the program definitions. Clean is
-based on a “no-frills” state-exception monad with the usual
-definitions of bind and unit for the compositional glue of state-based
-computations. Clean offers conditionals and loops supporting C-like
-control-flow operators such as break and return. The state-space
-construction is based on the extensible record package. Direct
-recursion of procedures is supported. Clean’s design strives for
-extreme simplicity. It is geared towards symbolic execution and proven
-correct verification tools. The underlying libraries of this package,
-however, deliberately restrict themselves to the most elementary
-infrastructure for these tasks. The package is intended to serve as
-demonstrator semantic backend for Isabelle/C, or for the
-test-generation techniques.</description>
     </item>
   </channel>
 </rss>
