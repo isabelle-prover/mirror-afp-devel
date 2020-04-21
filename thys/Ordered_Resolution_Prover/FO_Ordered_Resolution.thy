@@ -2,6 +2,7 @@
     Author:      Anders Schlichtkrull <andschl at dtu.dk>, 2016, 2017
     Author:      Jasmin Blanchette <j.c.blanchette at vu.nl>, 2014, 2017
     Author:      Dmitriy Traytel <traytel at inf.ethz.ch>, 2014
+    Author:      Sophie Tourret <stourret at mpi-inf.mpg.de>, 2020
     Maintainer:  Anders Schlichtkrull <andschl at dtu.dk>
 *)
 
@@ -211,7 +212,7 @@ proof (cases rule: ord_resolve.cases)
 qed
 
 text \<open>
-The previous lemma is not only used to prove soundness, but also the following lemma which is 
+The previous lemma is not only used to prove soundness, but also the following lemma which is
 used to prove Lemma 4.10.
 \<close>
 
@@ -251,17 +252,17 @@ proof (use res_e in \<open>cases rule: ord_resolve.cases\<close>)
 qed
 
 lemma subst_sound:
-  assumes 
+  assumes
     "\<And>\<sigma>. is_ground_subst \<sigma> \<Longrightarrow> I \<Turnstile> (C \<cdot> \<sigma>)" and
     "is_ground_subst \<eta>"
   shows "I \<Turnstile> (C \<cdot> \<rho>) \<cdot> \<eta>"
-  using assms is_ground_comp_subst subst_cls_comp_subst by metis 
+  using assms is_ground_comp_subst subst_cls_comp_subst by metis
 
 lemma subst_sound_scl:
   assumes
     len: "length P = length CAs" and
     true_cas: "\<And>\<sigma>. is_ground_subst \<sigma> \<Longrightarrow> I \<Turnstile>m (mset CAs) \<cdot>cm \<sigma>" and
-    ground_subst_\<eta>: "is_ground_subst \<eta>" 
+    ground_subst_\<eta>: "is_ground_subst \<eta>"
   shows "I \<Turnstile>m mset (CAs \<cdot>\<cdot>cl P) \<cdot>cm \<eta>"
 proof -
   from true_cas have "\<And>CA. CA\<in># mset CAs \<Longrightarrow> (\<And>\<sigma>. is_ground_subst \<sigma> \<Longrightarrow> I \<Turnstile> CA \<cdot> \<sigma>)"
@@ -738,7 +739,7 @@ proof (cases rule: ord_resolve.cases)
       ultimately show "\<exists>AA0. AA0 \<cdot>am \<eta>s0 ! i = AAs ! i \<and> poss AA0 \<subseteq># CAs0 ! i"
         by blast
     qed
-    then obtain AAs0f where 
+    then obtain AAs0f where
       AAs0f_p: "\<forall>i < n. AAs0f i \<cdot>am \<eta>s0 ! i = AAs ! i \<and> (poss (AAs0f i)) \<subseteq># CAs0 ! i"
       by metis
 
@@ -769,7 +770,7 @@ proof (cases rule: ord_resolve.cases)
       using \<open>CAs0 \<cdot>\<cdot>cl \<eta>s0 = CAs\<close> AAs0_AAs cas n by (auto intro: nth_equalityI)
 
     show ?thesis
-      using that 
+      using that
         \<open>AAs0 \<cdot>\<cdot>aml \<eta>s0 = AAs\<close> \<open>Cs0 \<cdot>\<cdot>cl \<eta>s0 = Cs\<close> \<open>\<forall>i < n. CAs0 ! i = Cs0 ! i + poss (AAs0 ! i)\<close>
         \<open>length AAs0 = n\<close> \<open>length Cs0 = n\<close>
       by blast
@@ -778,7 +779,7 @@ proof (cases rule: ord_resolve.cases)
   \<comment> \<open>Obtain FO main premise\<close>
   have "\<exists>DA0 \<eta>0. DA0 \<in> M \<and> DA = DA0 \<cdot> \<eta>0 \<and> S DA0 \<cdot> \<eta>0 = S_M S M DA \<and> is_ground_subst \<eta>0"
     using grounding S_M_grounding_of_clss select by (metis le_supE singletonI subsetCE)
-  then obtain DA0 \<eta>0 where 
+  then obtain DA0 \<eta>0 where
     DA0_\<eta>0_p: "DA0 \<in> M \<and> DA = DA0 \<cdot> \<eta>0 \<and> S DA0 \<cdot> \<eta>0 = S_M S M DA \<and> is_ground_subst \<eta>0"
     by auto
   \<comment> \<open>The properties we need of the FO main premise\<close>
@@ -886,9 +887,9 @@ lemma ord_resolve_rename_lifting:
     "is_ground_subst_list \<eta>s"
     "is_ground_subst \<eta>2"
     "ord_resolve_rename S CAs0 DA0 AAs0 As0 \<tau> E0"
-    (* In the previous proofs we have CAs and DA on lhs of equality... which is better? *)
-    "CAs0 \<cdot>\<cdot>cl \<eta>s = CAs" "DA0 \<cdot> \<eta> = DA" "E0 \<cdot> \<eta>2 = E" 
+    "CAs0 \<cdot>\<cdot>cl \<eta>s = CAs" "DA0 \<cdot> \<eta> = DA" "E0 \<cdot> \<eta>2 = E"
     "{DA0} \<union> set CAs0 \<subseteq> M"
+    "length CAs0 = length CAs"
   using res_e
 proof (cases rule: ord_resolve.cases)
   case (ord_resolve n Cs D)
@@ -1068,8 +1069,10 @@ proof (cases rule: ord_resolve.cases)
     show "length (As0' \<cdot>al \<eta>) = length As"
       using n by auto
   next
-    show "(As0' \<cdot>al \<eta>) ! i = As ! i" if a: "i < length (As0' \<cdot>al \<eta>)" for i
+    fix i
+    show "i<length (As0' \<cdot>al \<eta>) \<Longrightarrow> (As0' \<cdot>al \<eta>) ! i = As ! i"
     proof -
+      assume a: "i < length (As0' \<cdot>al \<eta>)"
       have A_eq: "\<forall>A. A \<in> atms_of DA0' \<longrightarrow> A \<cdot>a \<eta>0' = A \<cdot>a \<eta>"
         using \<eta>_p_atm n by force
       have "As0' ! i \<in> atms_of DA0'"
@@ -1081,6 +1084,9 @@ proof (cases rule: ord_resolve.cases)
         using As0'_As \<open>length As0' = n\<close> a by auto
     qed
   qed
+
+  interpret selection
+    by (rule select)
 
   have "S DA0' \<cdot> \<eta> = S_M S M DA"
     using \<open>S DA0' \<cdot> \<eta>0' = S_M S M DA\<close> \<eta>_p S.S_selects_subseteq by auto
@@ -1104,10 +1110,12 @@ proof (cases rule: ord_resolve.cases)
     show "length (Cs0' \<cdot>cl \<eta>) = length Cs"
       using n by auto
   next
-    show "(Cs0' \<cdot>cl \<eta>) ! i = Cs ! i" if "i < length (Cs0' \<cdot>cl \<eta>)" for i
+    fix i
+    show "i<length (Cs0' \<cdot>cl \<eta>) \<Longrightarrow> (Cs0' \<cdot>cl \<eta>) ! i = Cs ! i"
     proof -
-      have a: "i < n"
-        using that n by force
+      assume "i < length (Cs0' \<cdot>cl \<eta>)"
+      then have a: "i < n"
+        using n by force
       have "(Cs0' \<cdot>\<cdot>cl \<eta>s0') ! i = Cs ! i"
         using Cs0'_Cs a n by force
       moreover
@@ -1127,10 +1135,12 @@ proof (cases rule: ord_resolve.cases)
     show "length (AAs0' \<cdot>aml \<eta>) = length AAs"
       using n by auto
   next
-    show "(AAs0' \<cdot>aml \<eta>) ! i = AAs ! i" if a: "i < length (AAs0' \<cdot>aml \<eta>)" for i
+    fix i
+    show "i<length (AAs0' \<cdot>aml \<eta>) \<Longrightarrow> (AAs0' \<cdot>aml \<eta>) ! i = AAs ! i"
     proof -
-      have "i < n"
-        using that n by force
+      assume a: "i < length (AAs0' \<cdot>aml \<eta>)"
+      then have "i < n"
+        using n by force
       then have "\<forall>A. A \<in> atms_of ((DA0' # CAs0') ! Suc i) \<longrightarrow> A \<cdot>a (\<eta>0' # \<eta>s0') ! Suc i = A \<cdot>a \<eta>"
         using \<eta>_p_atm n by force
       then have A_eq: "\<forall>A. A \<in> atms_of (CAs0' ! i) \<longrightarrow> A \<cdot>a \<eta>s0' ! i = A \<cdot>a \<eta>"
@@ -1241,7 +1251,7 @@ proof (cases rule: ord_resolve.cases)
 
   \<comment> \<open>Resolve the lifted clauses\<close>
   define E0' where
-    "E0' = (\<Union># (mset Cs0') + D0') \<cdot> \<tau>"
+    "E0' = ((\<Union># (mset Cs0')) + D0') \<cdot> \<tau>"
 
   have res_e0': "ord_resolve S CAs0' DA0' AAs0' As0' \<tau> E0'"
     using ord_resolve.intros[of CAs0' n Cs0' AAs0' As0' \<tau> S D0',
@@ -1252,7 +1262,7 @@ proof (cases rule: ord_resolve.cases)
   \<comment> \<open>Prove resolvent instantiates to ground resolvent\<close>
   have e0'\<phi>e: "E0' \<cdot> \<phi> = E"
   proof -
-    have "E0' \<cdot> \<phi> = (\<Union># (mset Cs0') + D0') \<cdot> (\<tau> \<odot> \<phi>)"
+    have "E0' \<cdot> \<phi> = ((\<Union># (mset Cs0')) + D0') \<cdot> (\<tau> \<odot> \<phi>)"
       unfolding E0'_def by auto
     also have "\<dots> = (\<Union># (mset Cs0') + D0') \<cdot> (\<eta> \<odot> \<sigma>)"
       using \<tau>\<phi> by auto
@@ -1276,6 +1286,7 @@ proof (cases rule: ord_resolve.cases)
       using that e0'\<phi>e make_ground_subst by auto
   qed
 
+  have \<open>length CAs0 = length CAs\<close> using n by simp
 
   \<comment> \<open>Wrap up the proof\<close>
   have "ord_resolve S (CAs0 \<cdot>\<cdot>cl \<rho>s) (DA0 \<cdot> \<rho>) (AAs0 \<cdot>\<cdot>aml \<rho>s) (As0 \<cdot>al \<rho>) \<tau> E0'"
@@ -1289,7 +1300,8 @@ proof (cases rule: ord_resolve.cases)
   then show thesis
     using that[of \<eta>0 \<eta>s0 \<eta>2 CAs0 DA0] \<open>is_ground_subst \<eta>0\<close> \<open>is_ground_subst_list \<eta>s0\<close>
       \<open>is_ground_subst \<eta>2\<close> \<open>CAs0 \<cdot>\<cdot>cl \<eta>s0 = CAs\<close> \<open>DA0 \<cdot> \<eta>0 = DA\<close> \<open>E0' \<cdot> \<eta>2 = E\<close> \<open>DA0 \<in> M\<close>
-      \<open>\<forall>CA \<in> set CAs0. CA \<in> M\<close> by blast
+      \<open>\<forall>CA \<in> set CAs0. CA \<in> M\<close> \<open>length CAs0 = length CAs\<close>
+  by blast
 qed
 
 end

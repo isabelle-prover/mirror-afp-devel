@@ -372,7 +372,7 @@ private lemma pick[simp]:
   unfolding pick_def using tranclp_imp_exists_finite_chain_list[THEN someI_ex, OF assms] by auto
 
 private friend_of_corec prepend where
-  "prepend xs ys = (case xs of [] \<Rightarrow> 
+  "prepend xs ys = (case xs of [] \<Rightarrow>
     (case ys of LNil \<Rightarrow> LNil | LCons x xs \<Rightarrow> LCons x xs) | x # xs' \<Rightarrow> LCons x (prepend xs' ys))"
   by (simp split: list.splits llist.splits) transfer_prover
 

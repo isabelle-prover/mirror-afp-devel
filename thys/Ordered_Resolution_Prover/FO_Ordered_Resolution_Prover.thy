@@ -17,7 +17,6 @@ Bachmair and Ganzinger's chapter. Specifically, it formalizes the RP prover defi
 its related lemmas and theorems, including Lemmas 4.10 and 4.11 and Theorem 4.13 (completeness).
 \<close>
 
-(* FIXME: Used only twice, really -- inline? *)
 definition is_least :: "(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> bool" where
   "is_least P n \<longleftrightarrow> P n \<and> (\<forall>n' < n. \<not> P n')"
 
@@ -148,7 +147,7 @@ context
     Sts :: "'a state llist"
   assumes
     deriv: "chain (\<leadsto>) Sts" and
-    empty_Q0: "Q_of_state (lhd Sts) = {}" 
+    empty_Q0: "Q_of_state (lhd Sts) = {}"
     (* FIXME: make hypothesis empty_Q0 more local---and is it really needed? *)
 begin
 
@@ -213,7 +212,7 @@ proof -
     using sub by (simp add: subset_imp_less_mset)
   moreover have "D \<cdot> \<sigma> \<in> grounding_of_cls D"
     using ground_\<sigma> by (metis (mono_tags, lifting) mem_Collect_eq substitution_ops.grounding_of_cls_def)
-  ultimately have "set_mset {#D \<cdot> \<sigma>#} \<subseteq> grounding_of_cls D" 
+  ultimately have "set_mset {#D \<cdot> \<sigma>#} \<subseteq> grounding_of_cls D"
     "(\<forall>I. I \<Turnstile>m {#D \<cdot> \<sigma>#} \<longrightarrow> I \<Turnstile> C)"
     "(\<forall>D'. D' \<in># {#D \<cdot> \<sigma>#} \<longrightarrow> D' < C)"
     by auto
@@ -237,7 +236,7 @@ proof -
 qed
 
 lemma strict_subset_subsumption_grounding_redundant_clss:
-  assumes 
+  assumes
     D\<sigma>_subset_C: "D \<cdot> \<sigma> \<subset># C" and
     D_in_St: "D \<in> CC"
   shows "grounding_of_cls C \<subseteq> sr.Rf (grounding_of_clss CC)"
@@ -250,7 +249,7 @@ proof
   have D\<sigma>\<mu>C\<mu>: "D \<cdot> \<sigma> \<cdot> \<mu> \<subset># C \<cdot> \<mu>"
     using D\<sigma>_subset_C subst_subset_mono by auto
   then show "C\<mu> \<in> sr.Rf (grounding_of_clss CC)"
-    using \<mu>_p strict_subset_subsumption_redundant_clss[of D "\<sigma> \<odot> \<mu>" "C \<cdot> \<mu>"] D_in_St 
+    using \<mu>_p strict_subset_subsumption_redundant_clss[of D "\<sigma> \<odot> \<mu>" "C \<cdot> \<mu>"] D_in_St
     unfolding clss_of_state_def by auto
 qed
 
@@ -270,8 +269,8 @@ proof
 qed
 
 lemma derive_if_remove_subsumed:
-  assumes 
-    "D \<in> clss_of_state St" and  
+  assumes
+    "D \<in> clss_of_state St" and
     "subsumes D C"
   shows "sr_ext.derive (grounding_of_state St \<union> grounding_of_cls C) (grounding_of_state St)"
 proof -
@@ -300,14 +299,14 @@ qed
 
 (* FIXME: better name *)
 lemma reduction_in_concls_of:
-  assumes 
+  assumes
     "C\<mu> \<in> grounding_of_cls C" and
     "D + {#L'#} \<in> CC" and
     "- L = L' \<cdot>l \<sigma>" and
     "D \<cdot> \<sigma> \<subseteq># C"
   shows "C\<mu> \<in> concls_of (sr_ext.inferences_from (grounding_of_clss (CC \<union> {C + {#L#}})))"
 proof -
-  from assms 
+  from assms
   obtain \<mu> where
     \<mu>_p: "C\<mu> = C \<cdot> \<mu> \<and> is_ground_subst \<mu>"
     unfolding grounding_of_cls_def by auto
@@ -316,7 +315,7 @@ proof -
     "\<gamma> = Infer {#(C + {#L#})\<cdot> \<mu>#} ((D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu>) (C \<cdot> \<mu>)"
 
   have "(D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu> \<in> grounding_of_clss (CC \<union> {C + {#L#}})"
-    unfolding grounding_of_clss_def grounding_of_cls_def 
+    unfolding grounding_of_clss_def grounding_of_cls_def
     by (rule UN_I[of "D + {#L'#}"], use assms(2) clss_of_state_def in simp,
         metis (mono_tags, lifting) \<mu>_p is_ground_comp_subst mem_Collect_eq subst_cls_comp_subst)
   moreover have "(C + {#L#}) \<cdot> \<mu> \<in> grounding_of_clss (CC \<union> {C + {#L#}})"
@@ -325,7 +324,7 @@ proof -
     by auto
   then have "\<forall>I. I \<Turnstile> (D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu> \<longrightarrow> I \<Turnstile> (C + {#L#}) \<cdot> \<mu> \<longrightarrow> I \<Turnstile> D \<cdot> \<sigma> \<cdot> \<mu> + C \<cdot> \<mu>"
     using assms
-    by (metis add_mset_add_single subst_cls_add_mset subst_cls_union subst_minus) 
+    by (metis add_mset_add_single subst_cls_add_mset subst_cls_union subst_minus)
   then have "\<forall>I. I \<Turnstile> (D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu> \<longrightarrow> I \<Turnstile> (C + {#L#}) \<cdot> \<mu> \<longrightarrow> I \<Turnstile> C \<cdot> \<mu>"
     using assms by (metis (no_types, lifting) subset_mset.le_iff_add subst_cls_union true_cls_union)
   then have "\<forall>I. I \<Turnstile>m {#(D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu>#} \<longrightarrow> I \<Turnstile> (C + {#L#}) \<cdot> \<mu> \<longrightarrow> I \<Turnstile> C \<cdot> \<mu>"
@@ -345,19 +344,19 @@ lemma reduction_derivable:
     "D \<cdot> \<sigma> \<subseteq># C"
   shows "sr_ext.derive (grounding_of_clss (CC \<union> {C + {#L#}})) (grounding_of_clss (CC \<union> {C}))"
 proof -
-  from assms have "grounding_of_clss (CC \<union> {C}) - grounding_of_clss (CC \<union> {C + {#L#}}) 
+  from assms have "grounding_of_clss (CC \<union> {C}) - grounding_of_clss (CC \<union> {C + {#L#}})
     \<subseteq> concls_of (sr_ext.inferences_from (grounding_of_clss (CC \<union> {C + {#L#}})))"
-    using reduction_in_concls_of unfolding grounding_of_clss_def clss_of_state_def 
+    using reduction_in_concls_of unfolding grounding_of_clss_def clss_of_state_def
     by auto
   moreover
   have "grounding_of_cls (C + {#L#}) \<subseteq> sr.Rf (grounding_of_clss (CC \<union> {C}))"
     using strict_subset_subsumption_grounding_redundant_clss[of C "id_subst"]
     by auto
-  then have "grounding_of_clss (CC \<union> {C + {#L#}}) - grounding_of_clss (CC \<union> {C}) 
+  then have "grounding_of_clss (CC \<union> {C + {#L#}}) - grounding_of_clss (CC \<union> {C})
     \<subseteq> sr.Rf (grounding_of_clss (CC \<union> {C}))"
     unfolding clss_of_state_def grounding_of_clss_def by auto
   ultimately show "sr_ext.derive (grounding_of_clss (CC \<union> {C + {#L#}}))  (grounding_of_clss (CC \<union> {C}))"
-    using sr_ext.derive.intros[of "grounding_of_clss (CC \<union> {C})" 
+    using sr_ext.derive.intros[of "grounding_of_clss (CC \<union> {C})"
         "grounding_of_clss (CC \<union> {C + {#L#}})"]
     by auto
 qed
@@ -456,14 +455,14 @@ next
         by simp
       then have "D \<cdot> \<rho> \<cdot> \<sigma> \<cdot> \<mu> \<in> grounding_of_cls C \<or> (\<exists>x \<in> Q. D \<cdot> \<rho> \<cdot> \<sigma> \<cdot> \<mu> \<in> grounding_of_cls x)"
         using E_\<mu>_p
-        unfolding grounding_of_cls_def 
+        unfolding grounding_of_cls_def
         by (metis (mono_tags, lifting) is_ground_comp_subst mem_Collect_eq subst_cls_comp_subst)
-      then have "(D \<cdot> \<rho> \<cdot> \<sigma> \<cdot> \<mu> \<in> grounding_of_cls C \<or> 
-        (\<exists>x \<in> P. D \<cdot> \<rho> \<cdot> \<sigma> \<cdot> \<mu> \<in> grounding_of_cls x) \<or> 
+      then have "(D \<cdot> \<rho> \<cdot> \<sigma> \<cdot> \<mu> \<in> grounding_of_cls C \<or>
+        (\<exists>x \<in> P. D \<cdot> \<rho> \<cdot> \<sigma> \<cdot> \<mu> \<in> grounding_of_cls x) \<or>
         (\<exists>x \<in> Q. D \<cdot> \<rho> \<cdot> \<sigma> \<cdot> \<mu> \<in> grounding_of_cls x))"
         by metis
-      moreover have "\<forall>i < length (CAs \<cdot>\<cdot>cl \<rho>s \<cdot>cl \<sigma> \<cdot>cl \<mu>). ((CAs \<cdot>\<cdot>cl \<rho>s \<cdot>cl \<sigma> \<cdot>cl \<mu>) ! i) \<in> 
-        {C \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>} \<union> 
+      moreover have "\<forall>i < length (CAs \<cdot>\<cdot>cl \<rho>s \<cdot>cl \<sigma> \<cdot>cl \<mu>). ((CAs \<cdot>\<cdot>cl \<rho>s \<cdot>cl \<sigma> \<cdot>cl \<mu>) ! i) \<in>
+        {C \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>} \<union>
         ((\<Union>C \<in> P. {C \<cdot> \<sigma> | \<sigma>. is_ground_subst \<sigma>}) \<union> (\<Union>C\<in>Q. {C \<cdot> \<sigma> | \<sigma>. is_ground_subst \<sigma>}))"
       proof (rule, rule)
         fix i
@@ -472,11 +471,11 @@ next
           by simp
         moreover from a have "CAs ! i \<in> {C} \<union> Q"
           using \<gamma>_p2 \<gamma>_p unfolding infer_from_def
-          by (metis (no_types, lifting) Un_subset_iff inference.sel(1) set_mset_union 
+          by (metis (no_types, lifting) Un_subset_iff inference.sel(1) set_mset_union
               sup_commute nth_mem_mset subsetCE)
-        ultimately have "(CAs \<cdot>\<cdot>cl \<rho>s \<cdot>cl \<sigma> \<cdot>cl \<mu>) ! i \<in> 
-          {C \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>} \<or> 
-          ((CAs \<cdot>\<cdot>cl \<rho>s \<cdot>cl \<sigma> \<cdot>cl \<mu>) ! i \<in> (\<Union>C\<in>P. {C \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>}) \<or> 
+        ultimately have "(CAs \<cdot>\<cdot>cl \<rho>s \<cdot>cl \<sigma> \<cdot>cl \<mu>) ! i \<in>
+          {C \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>} \<or>
+          ((CAs \<cdot>\<cdot>cl \<rho>s \<cdot>cl \<sigma> \<cdot>cl \<mu>) ! i \<in> (\<Union>C\<in>P. {C \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>}) \<or>
           (CAs \<cdot>\<cdot>cl \<rho>s \<cdot>cl \<sigma> \<cdot>cl \<mu>) ! i \<in> (\<Union>C \<in> Q. {C \<cdot> \<sigma> | \<sigma>. is_ground_subst \<sigma>}))"
           unfolding \<gamma>_ground_def using E_\<mu>_p \<gamma>_p2 \<gamma>_p unfolding infer_from_def
           unfolding clss_of_state_def grounding_of_clss_def
@@ -503,14 +502,14 @@ next
               done
             done
           done
-        then show "(CAs \<cdot>\<cdot>cl \<rho>s \<cdot>cl \<sigma> \<cdot>cl \<mu>) ! i \<in> {C \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>} \<union> 
+        then show "(CAs \<cdot>\<cdot>cl \<rho>s \<cdot>cl \<sigma> \<cdot>cl \<mu>) ! i \<in> {C \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>} \<union>
           ((\<Union>C \<in> P. {C \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>}) \<union> (\<Union>C \<in> Q. {C \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>}))"
           by blast
       qed
-      then have "\<forall>x \<in># mset (CAs \<cdot>\<cdot>cl \<rho>s \<cdot>cl \<sigma> \<cdot>cl \<mu>). x \<in> {C \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>} \<union> 
+      then have "\<forall>x \<in># mset (CAs \<cdot>\<cdot>cl \<rho>s \<cdot>cl \<sigma> \<cdot>cl \<mu>). x \<in> {C \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>} \<union>
         ((\<Union>C \<in> P. {C \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>}) \<union> (\<Union>C \<in> Q. {C \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>}))"
         by (metis (lifting) in_set_conv_nth set_mset_mset)
-      then have "set_mset (mset (CAs \<cdot>\<cdot>cl \<rho>s) \<cdot>cm \<sigma> \<cdot>cm \<mu>) \<subseteq> 
+      then have "set_mset (mset (CAs \<cdot>\<cdot>cl \<rho>s) \<cdot>cm \<sigma> \<cdot>cm \<mu>) \<subseteq>
         grounding_of_cls C \<union> grounding_of_clss P \<union> grounding_of_clss Q"
         unfolding grounding_of_cls_def grounding_of_clss_def
         using mset_subst_cls_list_subst_cls_mset by auto
@@ -523,13 +522,13 @@ next
     then have "E\<mu> \<in> concls_of (sr_ext.inferences_from (grounding_of_state ({}, P \<union> {C}, Q)))"
       using E_\<mu>_p by auto
   }
-  then have "grounding_of_state (N, P, Q \<union> {C}) - grounding_of_state ({}, P \<union> {C}, Q) 
+  then have "grounding_of_state (N, P, Q \<union> {C}) - grounding_of_state ({}, P \<union> {C}, Q)
     \<subseteq> concls_of (sr_ext.inferences_from (grounding_of_state ({}, P \<union> {C}, Q)))"
     unfolding clss_of_state_def grounding_of_clss_def by auto
   moreover have "grounding_of_state ({}, P \<union> {C}, Q) - grounding_of_state (N, P, Q \<union> {C}) = {}"
     unfolding clss_of_state_def grounding_of_clss_def by auto
   ultimately show ?case
-    using sr_ext.derive.intros[of "(grounding_of_state (N, P, Q \<union> {C}))" 
+    using sr_ext.derive.intros[of "(grounding_of_state (N, P, Q \<union> {C}))"
         "(grounding_of_state ({}, P \<union> {C}, Q))"] by auto
 qed
 
@@ -670,7 +669,7 @@ lemma instance_if_subsumed_and_in_limit:
     ns: "Gs = lmap grounding_of_state Sts" and
     c: "C \<in> Liminf_llist Gs - sr.Rf (Liminf_llist Gs)" and
     (* FIXME: use clss_of_state below *)
-    d: "D \<in> N_of_state (lnth Sts i) \<union> P_of_state (lnth Sts i) \<union> Q_of_state (lnth Sts i)" 
+    d: "D \<in> N_of_state (lnth Sts i) \<union> P_of_state (lnth Sts i) \<union> Q_of_state (lnth Sts i)"
       "enat i < llength Sts" "subsumes D C"
   shows "\<exists>\<sigma>. D \<cdot> \<sigma> = C \<and> is_ground_subst \<sigma>"
 proof -
@@ -762,7 +761,7 @@ proof -
           using d subsumes_trans unfolding strictly_subsumes_def by blast
         moreover from backward_subsumption_Q have "D_subsumes \<in> clss_of_state (Sup_state Sts)"
           using D_subsumes_p llen
-          by (metis (no_types) UnI1 clss_of_state_def N_of_state.simps llength_lmap lnth_lmap 
+          by (metis (no_types) UnI1 clss_of_state_def N_of_state.simps llength_lmap lnth_lmap
               lnth_subset_Sup_llist rev_subsetD Sup_state_def)
         ultimately have False
           using d_least unfolding subsumes_def by auto
@@ -849,7 +848,7 @@ proof -
   proof (cases rule: RP.cases)
     case (backward_subsumption_P D' N D_twin P Q)
     note lrhs = this(1,2) and D'_p = this(3,4)
-    then have twins: "D_twin = D" "?Ns (Suc l) = N" "?Ns l = N"  "?Ps (Suc l) = P" 
+    then have twins: "D_twin = D" "?Ns (Suc l) = N" "?Ns l = N"  "?Ps (Suc l) = P"
       "?Ps l = P \<union> {D_twin}" "?Qs (Suc l) = Q" "?Qs l = Q"
       using l_p by auto
     note D'_p = D'_p[unfolded twins(1)]
@@ -866,7 +865,7 @@ proof -
       by auto
   next
     case (backward_reduction_P E L' N L \<sigma> D' P Q)
-    then have twins: "D' + {#L#} = D" "?Ns (Suc l) = N" "?Ns l = N"  "?Ps (Suc l) = P \<union> {D'}" 
+    then have twins: "D' + {#L#} = D" "?Ns (Suc l) = N" "?Ns l = N"  "?Ps (Suc l) = P \<union> {D'}"
       "?Ps l = P \<union> {D' + {#L#}}" "?Qs (Suc l) = Q" "?Qs l = Q"
       using l_p by auto
     then have D'_p: "strictly_subsumes D' D \<and> D' \<in> ?Ps (Suc l)"
@@ -882,7 +881,7 @@ proof -
       by auto
   next
     case (inference_computation N Q D_twin P)
-    then have twins: "D_twin = D" "?Ps (Suc l) = P" "?Ps l = P \<union> {D_twin}" 
+    then have twins: "D_twin = D" "?Ps (Suc l) = P" "?Ps l = P \<union> {D_twin}"
       "?Qs (Suc l) = Q \<union> {D_twin}" "?Qs l = Q"
       using l_p by auto
     then show ?thesis
@@ -941,9 +940,9 @@ lemma from_N_to_P_or_Q:
     c: "C \<in> Liminf_llist Gs - sr.Rf (Liminf_llist Gs)" and
     d: "D \<in> N_of_state (lnth Sts i)" "enat i < llength Sts" "subsumes D C" and
     d_least: "\<forall>E \<in> {E. E \<in> (clss_of_state (Sup_state Sts)) \<and> subsumes E C}. \<not> strictly_subsumes E D"
-  shows "\<exists>l D' \<sigma>'. D' \<in> P_of_state (lnth Sts l) \<union> Q_of_state (lnth Sts l) \<and> 
-    enat l < llength Sts \<and> 
-    (\<forall>E \<in> {E. E \<in> (clss_of_state (Sup_state Sts)) \<and> subsumes E C}. \<not> strictly_subsumes E D') \<and> 
+  shows "\<exists>l D' \<sigma>'. D' \<in> P_of_state (lnth Sts l) \<union> Q_of_state (lnth Sts l) \<and>
+    enat l < llength Sts \<and>
+    (\<forall>E \<in> {E. E \<in> (clss_of_state (Sup_state Sts)) \<and> subsumes E C}. \<not> strictly_subsumes E D') \<and>
     D' \<cdot> \<sigma>' = C \<and> is_ground_subst \<sigma>' \<and> subsumes D' C"
 proof -
   let ?Ns = "\<lambda>i. N_of_state (lnth Sts i)"
@@ -989,7 +988,7 @@ proof -
   next
     case (forward_subsumption D' P Q D_twin N)
     note lrhs = this(1,2) and D'_p = this(3,4)
-    then have twins: "D_twin = D" "?Ns (Suc l) = N" "?Ns l = N \<union> {D_twin}"  "?Ps (Suc l) = P " 
+    then have twins: "D_twin = D" "?Ns (Suc l) = N" "?Ns l = N \<union> {D_twin}"  "?Ps (Suc l) = P "
       "?Ps l = P" "?Qs (Suc l) = Q" "?Qs l = Q"
       using l_p by auto
     note D'_p = D'_p[unfolded twins(1)]
@@ -1019,7 +1018,7 @@ proof -
       using D'_p twins l_p subs mini \<sigma>'_p by auto
   next
     case (forward_reduction E L' P Q L \<sigma> D' N)
-    then have twins: "D' + {#L#} = D" "?Ns (Suc l) = N \<union> {D'}" "?Ns l = N \<union> {D' + {#L#}}" 
+    then have twins: "D' + {#L#} = D" "?Ns (Suc l) = N \<union> {D'}" "?Ns l = N \<union> {D' + {#L#}}"
       "?Ps (Suc l) = P " "?Ps l = P" "?Qs (Suc l) = Q" "?Qs l = Q"
       using l_p by auto
     then have D'_p: "strictly_subsumes D' D \<and> D' \<in> ?Ns (Suc l)"
@@ -1035,7 +1034,7 @@ proof -
       by auto
   next
     case (clause_processing N D_twin P Q)
-    then have twins:  "D_twin = D" "?Ns (Suc l) = N" "?Ns l = N \<union> {D}"  "?Ps (Suc l) = P \<union> {D}" 
+    then have twins:  "D_twin = D" "?Ns (Suc l) = N" "?Ns l = N \<union> {D}"  "?Ps (Suc l) = P \<union> {D}"
       "?Ps l = P" "?Qs (Suc l) = Q" "?Qs l = Q"
       using l_p by auto
     then show ?thesis
@@ -1180,7 +1179,7 @@ lemma subseteq_Liminf_state_eventually_always:
     "CC \<subseteq> Q_of_state (Liminf_state Sts)"
   shows "\<exists>j. enat j < llength Sts \<and> (\<forall>j' \<ge> enat j. j' < llength Sts \<longrightarrow> CC \<subseteq> Q_of_state (lnth Sts j'))"
 proof -
-  from assms(3) have "\<forall>C \<in> CC. \<exists>j. enat j < llength Sts \<and> 
+  from assms(3) have "\<forall>C \<in> CC. \<exists>j. enat j < llength Sts \<and>
     (\<forall>j' \<ge> enat j. j' < llength Sts \<longrightarrow> C \<in> Q_of_state (lnth Sts j'))"
     unfolding Liminf_state_def Liminf_llist_def by force
   then obtain f where
@@ -1230,8 +1229,8 @@ proof
   then obtain D \<sigma> where
     D_\<sigma>_p: "D \<in> clss_of_state (Liminf_state Sts)" "D \<cdot> \<sigma> = C" "is_ground_subst \<sigma>"
     unfolding clss_of_state_def grounding_of_clss_def grounding_of_cls_def by auto
-  then have ii: "D \<in> Liminf_llist (lmap N_of_state Sts) \<or> 
-    D \<in> Liminf_llist (lmap P_of_state Sts) \<or> 
+  then have ii: "D \<in> Liminf_llist (lmap N_of_state Sts) \<or>
+    D \<in> Liminf_llist (lmap P_of_state Sts) \<or>
     D \<in> Liminf_llist (lmap Q_of_state Sts)"
     unfolding clss_of_state_def  Liminf_state_def by simp
   then have "C \<in> Liminf_llist (lmap grounding_of_clss (lmap N_of_state Sts)) \<or>
@@ -1275,8 +1274,8 @@ proof -
     unfolding lhd_lmap_Sts .
 qed
 
-lemma ground_ord_resolve_ground: 
-  assumes 
+lemma ground_ord_resolve_ground:
+  assumes
     CAs_p: "gr.ord_resolve CAs DA AAs As E" and
     ground_cas: "is_ground_cls_list CAs" and
     ground_da: "is_ground_cls DA"
@@ -1323,7 +1322,7 @@ proof -
     let ?CC = "side_prems_of \<gamma>"
     let ?DA = "main_prem_of \<gamma>"
     let ?E = "concl_of \<gamma>"
-    assume a: "set_mset ?CC \<union> {?DA} 
+    assume a: "set_mset ?CC \<union> {?DA}
       \<subseteq> Liminf_llist (lmap grounding_of_state Sts) - sr.Rf (Liminf_llist (lmap grounding_of_state Sts))"
 
     have ground_ground_Liminf: "is_ground_clss (Liminf_llist (lmap grounding_of_state Sts))"
