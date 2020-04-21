@@ -379,7 +379,7 @@ proof (induction rule: RP.induct)
     then have "Neg (A \<cdot>a \<sigma>) \<in># C\<sigma> \<and> Pos (A \<cdot>a \<sigma>) \<in># C\<sigma>"
       using tautology_deletion Neg_Melem_subst_atm_subst_cls Pos_Melem_subst_atm_subst_cls by auto
     then have "C\<sigma> \<in> sr.Rf (grounding_of_state (N, P, Q))"
-      using sr.tautology_redundant by auto
+      using sr.tautology_Rf by auto
   }
   then have "grounding_of_state (N \<union> {C}, P, Q) - grounding_of_state (N, P, Q)
     \<subseteq> sr.Rf (grounding_of_state (N, P, Q))"
@@ -963,7 +963,7 @@ proof -
     by auto
 
   from c have no_taut: "\<not> (\<exists>A. Pos A \<in># C \<and> Neg A \<in># C)"
-    using sr.tautology_redundant by auto
+    using sr.tautology_Rf by auto
 
   have "\<exists>l. D \<in> N_of_state (lnth Sts l) \<and> D \<notin> N_of_state (lnth Sts (Suc l)) \<and> i \<le> l \<and> enat (Suc l) < llength Sts"
     using fair using eventually_removed_from_N d unfolding ns by auto

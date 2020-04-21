@@ -20,8 +20,7 @@ locale standard_redundancy_criterion =
   inference_system \<Gamma> for \<Gamma> :: "('a :: wellorder) inference set"
 begin
 
-(* FIXME: Make a definition *)
-abbreviation redundant_infer :: "'a clause set \<Rightarrow> 'a inference \<Rightarrow> bool" where
+definition redundant_infer :: "'a clause set \<Rightarrow> 'a inference \<Rightarrow> bool" where
   "redundant_infer N \<gamma> \<equiv>
    \<exists>DD. set_mset DD \<subseteq> N \<and> (\<forall>I. I \<Turnstile>m DD + side_prems_of \<gamma> \<longrightarrow> I \<Turnstile> concl_of \<gamma>)
       \<and> (\<forall>D. D \<in># DD \<longrightarrow> D < main_prem_of \<gamma>)"
@@ -32,7 +31,7 @@ definition Rf :: "'a clause set \<Rightarrow> 'a clause set" where
 definition Ri :: "'a clause set \<Rightarrow> 'a inference set" where
   "Ri N = {\<gamma> \<in> \<Gamma>. redundant_infer N \<gamma>}"
 
-lemma tautology_redundant:
+lemma tautology_Rf:
   assumes "Pos A \<in># C"
   assumes "Neg A \<in># C"
   shows "C \<in> Rf N"
@@ -42,6 +41,13 @@ proof -
   then show "C \<in> Rf N"
     unfolding Rf_def by blast
 qed
+
+lemma tautology_redundant_infer:
+  assumes
+    pos: "Pos A \<in># concl_of \<iota>" and
+    neg: "Neg A \<in># concl_of \<iota>"
+  shows "redundant_infer N \<iota>"
+  by (metis empty_iff empty_subsetI neg pos pos_neg_in_imp_true redundant_infer_def set_mset_empty)
 
 lemma contradiction_Rf: "{#} \<in> N \<Longrightarrow> Rf N = UNIV - {{#}}"
   unfolding Rf_def by force
@@ -145,7 +151,7 @@ The following results correspond to Lemma 4.6.
 \<close>
 
 lemma Ri_mono: "N \<subseteq> N' \<Longrightarrow> Ri N \<subseteq> Ri N'"
-  unfolding Ri_def by auto
+  unfolding Ri_def redundant_infer_def by auto
 
 lemma Ri_subs_Ri_diff_Rf: "Ri N \<subseteq> Ri (N - Rf N)"
 proof
@@ -157,12 +163,12 @@ proof
     unfolding \<gamma> by simp_all
   obtain DD where
     "set_mset DD \<subseteq> N" and "\<forall>I. I \<Turnstile>m DD + CC \<longrightarrow> I \<Turnstile> E" and "\<forall>C. C \<in># DD \<longrightarrow> C < D"
-    using \<gamma>_ri unfolding Ri_def cc d e by blast
+    using \<gamma>_ri unfolding Ri_def redundant_infer_def cc d e by blast
   then obtain DD' where
     "set_mset DD' \<subseteq> N - Rf N" and "\<forall>I. I \<Turnstile>m DD' + CC \<longrightarrow> I \<Turnstile> E" and "\<forall>D'. D' \<in># DD' \<longrightarrow> D' < D"
     using wlog_non_Rf by atomize_elim blast
   then show "\<gamma> \<in> Ri (N - Rf N)"
-    using \<gamma>_ri unfolding Ri_def d cc e by blast
+    using \<gamma>_ri unfolding Ri_def redundant_infer_def d cc e by blast
 qed
 
 lemma Ri_eq_Ri_diff_Rf: "Ri N = Ri (N - Rf N)"
@@ -231,7 +237,7 @@ proof -
       "set_mset {#E#} \<subseteq> N" and "\<forall>I. I \<Turnstile>m {#E#} + CC \<longrightarrow> I \<Turnstile> E" and "\<forall>D'. D' \<in># {#E#} \<longrightarrow> D' < D"
       by simp_all
     then have "redundant_infer N \<gamma>"
-      using cc d e by blast
+      using redundant_infer_def cc d e by blast
   }
   moreover
   {
@@ -244,7 +250,7 @@ proof -
     from dd_lt_e have "\<forall>Da. Da \<in># DD \<longrightarrow> Da < D"
       using d e in_\<gamma> \<Gamma>_reductive less_trans by blast
     then have "redundant_infer N \<gamma>"
-      using dd_sset dd_imp_e cc d e by blast
+      using redundant_infer_def dd_sset dd_imp_e cc d e by blast
   }
   ultimately show "\<gamma> \<in> Ri N"
     using in_\<gamma> e_in_n_un_rf_n unfolding Ri_def by blast
@@ -255,7 +261,7 @@ sublocale effective_redundancy_criterion \<Gamma> Rf Ri
   by (intro conjI redundancy_criterion_axioms, unfold_locales, rule Ri_effective)
 
 lemma contradiction_Rf: "{#} \<in> N \<Longrightarrow> Ri N = \<Gamma>"
-  unfolding Ri_def using \<Gamma>_reductive le_multiset_empty_right
+  unfolding Ri_def redundant_infer_def using \<Gamma>_reductive le_multiset_empty_right
   by (force intro: exI[of _ "{#{#}#}"] le_multiset_empty_left)
 
 end
@@ -309,7 +315,7 @@ proof (rule ccontr)
       dd_subs_m: "set_mset DD \<subseteq> M" and
       dd_cc_imp_d: "\<forall>I. I \<Turnstile>m DD + CC \<longrightarrow> I \<Turnstile> E" and
       dd_lt_d: "\<forall>C. C \<in># DD \<longrightarrow> C < D"
-      unfolding Ri_def cc d e by blast
+      unfolding Ri_def redundant_infer_def cc d e by blast
     from dd_subs_m dd_lt_d have "I_of M \<Turnstile>m DD"
       using d_min unfolding true_cls_mset_def by (metis contra_subsetD)
     then have "I_of M \<Turnstile> E"
