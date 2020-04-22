@@ -1,5 +1,5 @@
-{% set ROOT_PATH = '../' %}
 {% extends "base.tpl" %}
+{% set ROOT_PATH = '../' %}
 
 {# Print first letter bigger if uppercase #}
 {% macro first_bigger(text) %}
@@ -16,7 +16,7 @@
 {% endblock %}
 
 {% block extrahead %}
-{% include 'mathjax.tpl' with context %}
+{% include 'mathjax.tpl' with ROOT_PATH='../' %}
 {% endblock %}
 
 {% block headline %}
