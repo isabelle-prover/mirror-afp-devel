@@ -6877,9 +6877,14 @@ topic = Mathematics/Analysis, Mathematics/Number Theory
 date = 2004-02-25
 notify = kleing@cse.unsw.edu.au
 abstract =
-  This is an example submission to the Archive of Formal Proofs. It shows
+  <p>This is an example submission to the Archive of Formal Proofs. It shows
   submission requirements and explains the structure of a simple typical
-  submission.
+  submission.</p>
+  <p>Note that you can use <em>HTML tags</em> and LaTeX formulae like
+  $\sum_{n=1}^\infty \frac{1}{n^2} = \frac{\pi^2}{6}$ in the abstract. Display formulae like
+  $$ \int_0^1 x^{-x}\,\text{d}x = \sum_{n=1}^\infty n^{-n}$$
+  are also possible. Please read the
+  <a href="submitting.html">submission guidelines</a> before using this.</p>  
 extra-no-index = no-index: true
 
 [CRDT]
