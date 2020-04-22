@@ -88,15 +88,14 @@ begin
 
   lemmas [autoref_op_pat] = op_language_subset_def[symmetric]
 
-  (* TODO: maybe we can implement emptiness check on NGBAs and skip degeneralization step *)
   schematic_goal language_subset_impl:
     assumes [simp]: "finite (NBA.nodes B)"
     assumes [autoref_rules]: "(Ai, A) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
     assumes [autoref_rules]: "(Bi, B) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
     shows "(?f :: ?'c, do {
-      let AB' = intersect A (complement_4 B);
-      ASSERT (finite (NBA.nodes AB'));
-      RETURN (NBA.language AB' = {})
+      let AB' = intersect' A (complement_4 B);
+      ASSERT (finite (NGBA.nodes AB'));
+      RETURN (NGBA.language AB' = {})
     }) \<in> ?R"
 		by (autoref_monadic (plain))
   concrete_definition language_subset_impl uses language_subset_impl
@@ -110,23 +109,23 @@ begin
       \<langle>Id, nat_rel\<rangle> nbai_nba_rel \<rightarrow> \<langle>Id, nat_rel\<rangle> nbai_nba_rel \<rightarrow> bool_rel) $ A $ B) \<in> bool_rel"
   proof -
     have "(RETURN (language_subset_impl Ai Bi), do {
-      let AB' = intersect A (complement_4 B);
-      ASSERT (finite (NBA.nodes AB'));
-      RETURN (NBA.language AB' = {})
+      let AB' = intersect' A (complement_4 B);
+      ASSERT (finite (NGBA.nodes AB'));
+      RETURN (NGBA.language AB' = {})
     }) \<in> \<langle>bool_rel\<rangle> nres_rel"
       using language_subset_impl.refine assms(2, 4, 5) unfolding autoref_tag_defs by this
     also have "(do {
-      let AB' = intersect A (complement_4 B);
-      ASSERT (finite (NBA.nodes AB'));
-      RETURN (NBA.language AB' = {})
+      let AB' = intersect' A (complement_4 B);
+      ASSERT (finite (NGBA.nodes AB'));
+      RETURN (NGBA.language AB' = {})
     }, RETURN (NBA.language A \<subseteq> NBA.language B)) \<in> \<langle>bool_rel\<rangle> nres_rel"
     proof refine_vcg
-      show "finite (NBA.nodes (intersect A (complement_4 B)))" using assms(1, 2) by auto
+      show "finite (NGBA.nodes (intersect' A (complement_4 B)))" using assms(1, 2) by auto
       have 1: "NBA.language A \<subseteq> streams (nba.alphabet B)"
         using nba.language_alphabet streams_mono2 assms(3) unfolding autoref_tag_defs by blast
       have 2: "NBA.language (complement_4 B) = streams (nba.alphabet B) - NBA.language B"
         using complement_4_correct assms(2) by auto
-      show "(NBA.language (intersect A (complement_4 B)) = {},
+      show "(NGBA.language (intersect' A (complement_4 B)) = {},
         NBA.language A \<subseteq> NBA.language B) \<in> bool_rel" using 1 2 by auto
     qed
     finally show ?thesis using RETURN_nres_relD unfolding nres_rel_comp by force
