@@ -137,11 +137,13 @@ class Builder():
         template = self.j2_env.get_template("entry.tpl")
         for name, entry in self.afp_entries.items():
             self.write_file(os.path.join("entries", name + ".html"), template,
-                            {'entry': entry, 'is_devel': self.options.is_devel})
+                            {'entry': entry, 'is_devel': self.options.is_devel,
+                             'ROOT_PATH': '../'})
             counter += 1
         for name, entry in self.afp_entries.no_index.items():
             self.write_file(os.path.join("entries", name + ".html"), template,
-                            {'entry': entry, 'is_devel': self.options.is_devel})
+                            {'entry': entry, 'is_devel': self.options.is_devel,
+                             'ROOT_PATH': '../'})
             counter += 1
         terminal.success("Generated html files for {:d} entries".format(counter))
 
