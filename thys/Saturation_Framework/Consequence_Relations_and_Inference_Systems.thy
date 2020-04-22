@@ -8,8 +8,7 @@ text \<open>This section introduces the most basic notions upon which the framew
   of a family of consequence relations. This corresponds to section 2.1 of the report.\<close>
 
 theory Consequence_Relations_and_Inference_Systems
-  imports
-    Main
+  imports Main
 begin
 
 subsection \<open>Consequence Relations\<close>
@@ -40,6 +39,9 @@ lemma entail_unions: "(\<forall>i \<in> I. N \<Turnstile> Ni i) \<longleftrighta
 
 lemma entail_all_bot: "(\<exists>B \<in> Bot. N \<Turnstile> {B}) \<Longrightarrow> (\<forall>B' \<in> Bot. N \<Turnstile> {B'})"
   using bot_implies_all entails_trans by blast
+
+lemma subset_entailed_strong: "N1 \<Turnstile> N2 \<Longrightarrow> N1 \<union> N2 \<Turnstile> N3 \<Longrightarrow> N1 \<Turnstile> N3"
+  by (meson entail_union entails_trans order_refl subset_entailed)
 
 end
 
