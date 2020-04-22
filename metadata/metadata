@@ -6862,7 +6862,7 @@ abstract =
   $\sum_{n=1}^\infty \frac{1}{n^2} = \frac{\pi^2}{6}$ in the abstract. Display formulae like
   $$ \int_0^1 x^{-x}\,\text{d}x = \sum_{n=1}^\infty n^{-n}$$
   are also possible. Please read the
-  <a href="submitting.html">submission guidelines</a> before using this.</p>  
+  <a href="../submitting.html">submission guidelines</a> before using this.</p>  
 extra-no-index = no-index: true
 
 [CRDT]
