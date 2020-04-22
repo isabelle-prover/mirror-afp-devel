@@ -189,6 +189,8 @@ begin
     list.pred_transfer[unfolded pred_bool_Id, to_set, folded pred_list_listsp]
     list.rel_transfer[unfolded pred_bool_Id, to_set]
 
+  lemmas null_param[param] = null_transfer[unfolded pred_bool_Id, to_set]
+
   (* TODO Peter: param_set is too restrictive *)
   thm param_set list.set_transfer[to_set]
 

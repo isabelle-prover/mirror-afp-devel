@@ -2,9 +2,10 @@ section \<open>Algorithms on Nondeterministic Generalized Büchi Automata\<close
 
 theory NGBA_Algorithms
 imports
-  NBA_Algorithms
   NGBA_Implement
   NBA_Combine
+  NBA_Algorithms
+  Degeneralization_Refine
 begin
 
   subsection \<open>Implementations\<close>
@@ -14,25 +15,6 @@ begin
 
     interpretation autoref_syn by this
 
-    (* TODO: move *)
-    lemma degen_param[param, autoref_rules]: "(degen, degen) \<in> \<langle>S \<rightarrow> bool_rel\<rangle> list_rel \<rightarrow> S \<times>\<^sub>r nat_rel \<rightarrow> bool_rel"
-    proof (intro fun_relI)
-      fix cs ds ak bl
-      assume "(cs, ds) \<in> \<langle>S \<rightarrow> bool_rel\<rangle> list_rel" "(ak, bl) \<in>  S \<times>\<^sub>r nat_rel"
-      then show "(degen cs ak, degen ds bl) \<in> bool_rel"
-        unfolding degen_def list_rel_def fun_rel_def list_all2_conv_all_nth
-        by (cases "snd ak < length cs") (auto 0 3)
-    qed
-
-    (* TODO: move *)
-    lemmas [param] = null_transfer[unfolded pred_bool_Id, to_set]
-
-    (* TODO: move *)
-    lemma count_param[param, autoref_rules]: "(Degeneralization.count, Degeneralization.count) \<in>
-      \<langle>A \<rightarrow> bool_rel\<rangle> list_rel \<rightarrow> A \<rightarrow> nat_rel \<rightarrow> nat_rel"
-      unfolding count_def null_def[symmetric] by parametricity
-
-    (* TODO: why do we need this? *)
     lemma degeneralize_alt_def: "degeneralize A = nba
       (ngba.alphabet A)
       ((\<lambda> p. (p, 0)) ` ngba.initial A)
@@ -41,7 +23,9 @@ begin
       unfolding degeneralization.degeneralize_def by auto
 
     schematic_goal ngba_degeneralize: "(?f :: ?'a, degeneralize) \<in> ?R"
-      unfolding degeneralize_alt_def by autoref
+      unfolding degeneralize_alt_def
+      using degen_param[autoref_rules] count_param[autoref_rules]
+      by autoref
     concrete_definition ngba_degeneralize uses ngba_degeneralize
     lemmas ngba_degeneralize_refine[autoref_rules] = ngba_degeneralize.refine
 
