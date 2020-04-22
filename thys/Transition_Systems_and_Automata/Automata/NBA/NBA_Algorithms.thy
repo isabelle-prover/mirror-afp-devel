@@ -19,7 +19,7 @@ begin
 
   subsection \<open>Operations\<close>
 
-  definition [simp]: "op_language_empty A \<equiv> language A = {}"
+  definition op_language_empty where [simp]: "op_language_empty A \<equiv> language A = {}"
 
   lemmas [autoref_op_pat] = op_language_empty_def[symmetric]
 

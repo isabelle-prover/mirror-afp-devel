@@ -132,13 +132,12 @@ begin
     proof -
       obtain w where 1: "w \<in> language A" using language by auto
       obtain r p where 2: "p \<in> initial A" "run A (w ||| r) p" "infs (accepting A) (p ## r)" using 1 by rule
-      have 3: "infs (accepting A) (p ## r)" using 2(3) by simp
       have "is_acc_run (snth (p ## r))"
       unfolding is_acc_run_def graph_defs.is_run_def
       proof safe
         show "(p ## r) !! 0 \<in> V0" using nba_g_V0 2(1) by force
         show "ipath E (snth (p ## r))" using nba_g_run_ipath 2(2) by force
-        show "is_acc (snth (p ## r))" using 3 unfolding infs_infm is_acc_def by simp
+        show "is_acc (snth (p ## r))" using 2(3) unfolding infs_infm is_acc_def by simp
       qed
       then show ?thesis by auto
     qed
