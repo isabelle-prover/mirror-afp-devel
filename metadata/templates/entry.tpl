@@ -105,7 +105,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"><div class="mathjax_process">{{ entry.abstract }}</div></td>
+  <td class="abstract mathjax_process">{{ entry.abstract }}</td>
 </tr>
 
 {# Extra datafields #}
