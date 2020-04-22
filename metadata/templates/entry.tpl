@@ -15,6 +15,10 @@
 {{ entry.title }} - Archive of Formal Proofs
 {% endblock %}
 
+{% block extrahead %}
+{% include 'mathjax.tpl' %}
+{% endblock %}
+
 {% block headline %}
 {% for s in entry.title|split %}
   {{ first_bigger(s) }}
@@ -102,7 +106,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">{{ entry.abstract }}</td>
+  <td class="abstract"><div class="mathjax_process">{{ entry.abstract }}</div></td>
 </tr>
 
 {# Extra datafields #}
