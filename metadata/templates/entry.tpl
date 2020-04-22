@@ -16,7 +16,7 @@
 {% endblock %}
 
 {% block extrahead %}
-{% include 'mathjax.tpl' %}
+{% include 'mathjax.tpl' with context %}
 {% endblock %}
 
 {% block headline %}
