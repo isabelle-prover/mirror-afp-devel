@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -94,14 +107,14 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">This is a formalization of bounded-deducibility security (BD
+  <td class="abstract"><div class="mathjax_process">This is a formalization of bounded-deducibility security (BD
 security), a flexible notion of information-flow security applicable
 to arbitrary input-output automata. It generalizes Sutherland's
 classic notion of nondeducibility by factoring in declassification
 bounds and trigger, whereas nondeducibility states that, in a
 system, information cannot flow between specified sources and sinks,
 BD security indicates upper bounds for the flow and triggers under
-which these upper bounds are no longer guaranteed.</td>
+which these upper bounds are no longer guaranteed.</div></td>
 </tr>
 
 

@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -101,13 +114,13 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 The focus of this case study is re-use in abstract algebra.  It
 contains locale-based formalisations of selected parts of set, group
 and ring theory from Jacobson's <i>Basic Algebra</i>
 leading to the respective fundamental homomorphism theorems.  The
 study is not intended as a library base for abstract algebra.  It
-rather explores an approach towards abstract algebra in Isabelle.</td>
+rather explores an approach towards abstract algebra in Isabelle.</div></td>
 </tr>
 
 

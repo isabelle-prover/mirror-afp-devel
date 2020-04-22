@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -93,13 +106,13 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 Isabelle's code generator performs various adaptations for target
 languages. Among others, constructor applications have to be fully
 saturated. That means that for constructor calls occuring as arguments
 to higher-order functions, synthetic lambdas have to be inserted. This
 entry provides tooling to avoid this construction altogether by
-introducing constructor functions.</td>
+introducing constructor functions.</div></td>
 </tr>
 
 

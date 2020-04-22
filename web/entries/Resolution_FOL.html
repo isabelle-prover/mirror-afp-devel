@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -101,7 +114,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 This theory is a formalization of the resolution calculus for
 first-order logic. It is proven sound and complete. The soundness
 proof uses the substitution lemma, which shows a correspondence
@@ -135,7 +148,7 @@ Leitsch. <i>The Resolution Calculus</i>. Texts in theoretical computer
 science. Springer, 1997.<br> <a name="IsaFoL"></a>[IsaFoL]
 IsaFoL authors. <a href="https://bitbucket.org/jasmin_blanchette/isafol">
 IsaFoL: Isabelle Formalization of Logic</a>.
-<a href="https://bitbucket.org/jasmin_blanchette/isafol">https://bitbucket.org/jasmin_blanchette/isafol</a>.</td>
+<a href="https://bitbucket.org/jasmin_blanchette/isafol">https://bitbucket.org/jasmin_blanchette/isafol</a>.</div></td>
 </tr>
 
   <tr>

@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -102,7 +115,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 A VCG auction (named after their inventors Vickrey, Clarke, and
 Groves) is a generalization of the single-good, second price Vickrey
 auction to the case of a combinatorial auction (multiple goods, from
@@ -113,7 +126,7 @@ well-defined. Furthermore we show that the allocation function
 allocates goods only to participants, only goods in the auction are
 allocated, and no good is allocated twice. We also show that the price
 function is non-negative. These properties also hold for the
-automatically extracted Scala code.</td>
+automatically extracted Scala code.</div></td>
 </tr>
 
 

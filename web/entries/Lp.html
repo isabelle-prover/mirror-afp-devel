@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -93,8 +106,8 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
-Lp is the space of functions whose p-th power is integrable. It is one of the most fundamental Banach spaces that is used in analysis and probability. We develop a framework for function spaces, and then implement the Lp spaces in this framework using the existing integration theory in Isabelle/HOL. Our development contains most fundamental properties of Lp spaces, notably the Hölder and Minkowski inequalities, completeness of Lp, duality, stability under almost sure convergence, multiplication of functions in Lp and Lq, stability under conditional expectation.</td>
+  <td class="abstract"><div class="mathjax_process">
+Lp is the space of functions whose p-th power is integrable. It is one of the most fundamental Banach spaces that is used in analysis and probability. We develop a framework for function spaces, and then implement the Lp spaces in this framework using the existing integration theory in Isabelle/HOL. Our development contains most fundamental properties of Lp spaces, notably the Hölder and Minkowski inequalities, completeness of Lp, duality, stability under almost sure convergence, multiplication of functions in Lp and Lq, stability under conditional expectation.</div></td>
 </tr>
 
 

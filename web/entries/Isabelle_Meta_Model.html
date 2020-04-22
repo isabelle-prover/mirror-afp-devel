@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -102,7 +115,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 We represent a theory <i>of</i> (a fragment of) Isabelle/HOL <i>in</i>
 Isabelle/HOL. The purpose of this exercise is to write packages for
 domain-specific specifications such as class models, B-machines, ...,
@@ -133,7 +146,7 @@ as well as the generation of ".thy"-files for debugging purposes.
 Gained experience from this project shows that the compiled code is sufficiently
 efficient for practical purposes while being based on a formal <i>model</i>
 on which properties of the package can be proven such as termination of certain
-transformations, correctness, etc.</td>
+transformations, correctness, etc.</div></td>
 </tr>
 
 

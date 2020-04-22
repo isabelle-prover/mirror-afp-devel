@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -100,7 +113,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 We use CryptHOL to formalise commitment schemes and Sigma-protocols.
 Both are widely used fundamental two party cryptographic primitives.
 Security for commitment schemes is considered using game-based
@@ -114,7 +127,7 @@ Rivest commitment schemes. We also prove that commitment schemes can
 be constructed from Sigma-protocols. We formalise this proof at an
 abstract level, only assuming the existence of a Sigma-protocol;
 consequently, the instantiations of this result for the concrete
-Sigma-protocols we consider come for free.</td>
+Sigma-protocols we consider come for free.</div></td>
 </tr>
 
 

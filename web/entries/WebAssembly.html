@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -91,13 +104,13 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 This is a mechanised specification of the WebAssembly language, drawn
 mainly from the previously published paper formalisation of Haas et
 al. Also included is a full proof of soundness of the type system,
 together with a verified type checker and interpreter. We include only
 a partial procedure for the extraction of the type checker and
-interpreter here. For more details, please see our paper in CPP 2018.</td>
+interpreter here. For more details, please see our paper in CPP 2018.</div></td>
 </tr>
 
 

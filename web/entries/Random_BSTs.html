@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -103,7 +116,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 <p>This entry contains proofs for the textbook results about the
 distributions of the height and internal path length of random binary
 search trees (BSTs), i.&thinsp;e. BSTs that are formed by taking
@@ -112,7 +125,7 @@ order.</p>  <p>In particular, we prove a logarithmic upper
 bound on the expected height and the <em>Θ(n log n)</em>
 closed-form solution for the expected internal path length in terms of
 the harmonic numbers. We also show how the internal path length
-relates to the average-case cost of a lookup in a BST.</p></td>
+relates to the average-case cost of a lookup in a BST.</p></div></td>
 </tr>
 
 

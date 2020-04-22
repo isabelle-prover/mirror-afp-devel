@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -92,7 +105,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 Paraconsistency is about handling inconsistency in a coherent way. In
 classical and intuitionistic logic everything follows from an
 inconsistent theory. A paraconsistent logic avoids the explosion.
@@ -107,7 +120,7 @@ on so-called key equalities and has a countably infinite number of
 truth values. We prove theorems in the logic using the definition of
 validity. We verify truth tables and also counterexamples for
 non-theorems. We prove meta-theorems about the logic and finally we
-investigate a case study.</td>
+investigate a case study.</div></td>
 </tr>
 
 

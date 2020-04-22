@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -115,7 +128,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 Basin et al.'s <a
 href="https://doi.org/10.1016/j.ipl.2014.09.009">sliding
 window algorithm (SWA)</a> is an algorithm for combining the
@@ -124,7 +137,7 @@ It is greedy and minimizes the number of operator applications. We
 formalize the algorithm and verify its functional correctness. We
 extend the algorithm with additional operations and provide an
 alternative interface to the slide operation that does not require the
-entire input sequence.</td>
+entire input sequence.</div></td>
 </tr>
 
 

@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -94,14 +107,14 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 The theory of residuated lattices, first proposed by Ward and Dilworth, is
 formalised in Isabelle/HOL. This includes concepts of residuated functions;
 their adjoints and conjugates. It also contains necessary and sufficient
 conditions for the existence of these operations in an arbitrary lattice.
 The mathematical components for residuated lattices are linked to the AFP
 entry for relation algebra. In particular, we prove Jonsson and Tsinakis
-conditions for a residuated boolean algebra to form a relation algebra.</td>
+conditions for a residuated boolean algebra to form a relation algebra.</div></td>
 </tr>
 
 

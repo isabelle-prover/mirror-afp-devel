@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -93,7 +106,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 <p> A Treap is a binary tree whose nodes contain pairs
 consisting of some payload and an associated priority. It must have
 the search-tree property w.r.t. the payloads and the heap property
@@ -109,7 +122,7 @@ insertion of an element, we can pretend that we inserted the elements
 in <em>random order</em>, so that the shape of the
 resulting tree is that of a random BST no matter in what order we
 insert the elements. This is the main result of this
-formalisation.</p></td>
+formalisation.</p></div></td>
 </tr>
 
 

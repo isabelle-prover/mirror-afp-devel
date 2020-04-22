@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -97,7 +110,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 <p>This article formalizes signature-based algorithms for computing
 Gr&ouml;bner bases. Such algorithms are, in general, superior to
 other algorithms in terms of efficiency, and have not been formalized
@@ -113,7 +126,7 @@ that under certain conditions they a-priori detect and avoid all
 useless zero-reductions, and always return 'minimal' (in
 some sense) Gr&ouml;bner bases if an input parameter is chosen in
 the right way.</p><p>The formalization follows the recent survey article by
-Eder and Faug&egrave;re.</p></td>
+Eder and Faug&egrave;re.</p></div></td>
 </tr>
 
 

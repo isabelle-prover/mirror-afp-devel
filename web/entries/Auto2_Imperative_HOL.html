@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -99,7 +112,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 This entry contains the application of auto2 to verifying functional
 and imperative programs. Algorithms and data structures that are
 verified include linked lists, binary search trees, red-black trees,
@@ -109,7 +122,7 @@ intersection. The imperative verification is based on Imperative HOL
 and its separation logic framework. A major goal of this work is to
 set up automation in order to reduce the length of proof that the user
 needs to provide, both for verifying functional programs and for
-working with separation logic.</td>
+working with separation logic.</div></td>
 </tr>
 
 

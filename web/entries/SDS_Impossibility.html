@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -101,7 +114,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 This formalisation contains the proof that there is no anonymous and
 neutral Social Decision Scheme for at least four voters and
 alternatives that fulfils both SD-Efficiency and SD-Strategy-
@@ -114,7 +127,7 @@ alternatives to the general case is also not machine-checked.  In this
 Isabelle proof, on the other hand, all of these steps are  fully
 proven and machine-checked. This is particularly important seeing as a
 previously published informal proof of a weaker statement contained a
-mistake in precisely this lifting step.</td>
+mistake in precisely this lifting step.</div></td>
 </tr>
 
 

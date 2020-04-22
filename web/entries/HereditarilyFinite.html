@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -97,7 +110,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">The theory of hereditarily finite sets is formalised, following
+  <td class="abstract"><div class="mathjax_process">The theory of hereditarily finite sets is formalised, following
 the <a href="http://journals.impan.gov.pl/dm/Inf/422-0-1.html">development</a> of Swierczkowski.
 An HF set is a finite collection of other HF sets; they enjoy an induction principle
 and satisfy all the axioms of ZF set theory apart from the axiom of infinity, which is negated.
@@ -105,7 +118,7 @@ All constructions that are possible in ZF set theory (Cartesian products, disjoi
 functions) without using infinite sets are possible here.
 The definition of addition for the HF sets follows Kirby.
 This development forms the foundation for the Isabelle proof of Gödel's incompleteness theorems,
-which has been <a href="Incompleteness.html">formalised separately</a>.</td>
+which has been <a href="Incompleteness.html">formalised separately</a>.</div></td>
 </tr>
 
   <tr>

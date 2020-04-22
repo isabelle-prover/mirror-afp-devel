@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -106,7 +119,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 Communicating Concurrent Kleene Algebra (C²KA) is a mathematical
 framework for capturing the communicating and concurrent behaviour of
 agents in distributed systems. It extends Hoare et al.'s
@@ -120,7 +133,7 @@ We first formalize the stimulus structure and behaviour structure
 Then, we formalize notions and properties related to the topology of
 distributed systems and the potential for communication via stimuli
 and via shared environments of agents, all within the algebraic
-setting of C²KA.</td>
+setting of C²KA.</div></td>
 </tr>
 
 

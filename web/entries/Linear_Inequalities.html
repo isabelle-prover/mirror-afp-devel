@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -95,7 +108,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 We formalize results about linear inqualities, mainly from
 Schrijver's book. The main results are the proof of the
 fundamental theorem on linear inequalities, Farkas' lemma,
@@ -103,7 +116,7 @@ Carathéodory's theorem, the Farkas-Minkowsky-Weyl theorem, the
 decomposition theorem of polyhedra, and Meyer's result that the
 integer hull of a polyhedron is a polyhedron itself. Several theorems
 include bounds on the appearing numbers, and in particular we provide
-an a-priori bound on mixed-integer solutions of linear inequalities.</td>
+an a-priori bound on mixed-integer solutions of linear inequalities.</div></td>
 </tr>
 
 

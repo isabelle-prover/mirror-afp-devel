@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -112,7 +125,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 <p>Intransitive noninterference has been a widely studied topic in the last
 few decades. Several well-established methodologies apply interactive
 theorem proving to formulate a noninterference theorem over abstract
@@ -126,7 +139,7 @@ realistic and industrial systems such as PikeOS. Using a refinement-based
 theorem proving approach, we ensure that proofs remain manageable.</p>
 <p>
 This document corresponds to the deliverable D31.1 of the EURO-MILS
-Project <a href="http://www.euromils.eu">http://www.euromils.eu</a>.</p></td>
+Project <a href="http://www.euromils.eu">http://www.euromils.eu</a>.</p></div></td>
 </tr>
 
 

@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -99,7 +112,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 These components add further fundamental order and lattice-theoretic
 concepts and properties to Isabelle's libraries.  They follow by
 and large the introductory sections of the Compendium of Continuous
@@ -107,7 +120,7 @@ Lattices,  covering directed and filtered sets, down-closed and
 up-closed sets, ideals and filters, Galois connections, closure and
 co-closure operators. Some emphasis is on duality and morphisms
 between structures, as in the Compendium.  To this end, three ad-hoc
-approaches to duality are compared.</td>
+approaches to duality are compared.</div></td>
 </tr>
 
 

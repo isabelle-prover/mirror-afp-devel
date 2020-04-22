@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -97,7 +110,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 This is a complete formalization of the work of Hoare and Roscoe on
 the denotational semantics of the Failure/Divergence Model of CSP. It
 follows essentially the presentation of CSP in Roscoe’s Book ”Theory
@@ -110,7 +123,7 @@ This work revealed minor, but omnipresent foundational errors in key
 concepts like the process invariant. The present version HOL-CSP
 profits from substantially improved libraries (notably HOLCF),
 improved automated proof techniques, and structured proof techniques
-in Isar and is substantially shorter but more complete.</td>
+in Isar and is substantially shorter but more complete.</div></td>
 </tr>
 
 

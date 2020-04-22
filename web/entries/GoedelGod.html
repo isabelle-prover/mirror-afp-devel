@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -98,10 +111,10 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">Dana Scott's version of Gödel's proof of God's existence is formalized in quantified
+  <td class="abstract"><div class="mathjax_process">Dana Scott's version of Gödel's proof of God's existence is formalized in quantified
 modal logic KB (QML KB).
 QML KB is modeled as a fragment of classical higher-order logic (HOL);
-thus, the formalization is essentially a formalization in HOL.</td>
+thus, the formalization is essentially a formalization in HOL.</div></td>
 </tr>
 
 

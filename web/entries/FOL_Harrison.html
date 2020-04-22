@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -101,7 +114,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 <p>We present a certified declarative first-order prover with equality
 based on John Harrison's Handbook of Practical Logic and
 Automated Reasoning, Cambridge University Press, 2009. ML code
@@ -115,7 +128,7 @@ Anders Schlichtkrull & Jørgen Villadsen. AI Communications 31:281-299
 https://content.iospress.com/articles/ai-communications/aic764</a></p>
 <p>See also: Students' Proof Assistant (SPA).
 <a href=https://github.com/logic-tools/spa>
-https://github.com/logic-tools/spa</a></p></td>
+https://github.com/logic-tools/spa</a></p></div></td>
 </tr>
 
   <tr>

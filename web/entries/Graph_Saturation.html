@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -93,7 +106,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 This is an Isabelle/HOL formalisation of graph saturation, closely
 following a <a href="https://doi.org/10.1016/j.jlamp.2018.06.005">paper by the author</a> on graph saturation.
 Nine out of ten lemmas of the original paper are proven in this
@@ -101,7 +114,7 @@ formalisation. The formalisation additionally includes two theorems
 that show the main premise of the paper: that consistency and
 entailment are decided through graph saturation. This formalisation
 does not give executable code, and it did not implement any of the
-optimisations suggested in the paper.</td>
+optimisations suggested in the paper.</div></td>
 </tr>
 
 

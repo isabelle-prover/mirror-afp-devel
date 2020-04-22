@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -95,7 +108,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 <p>This article provides a formalisation of Snyder’s simple and
 elegant proof of the Mason&ndash;Stothers theorem, which is the
 polynomial analogue of the famous abc Conjecture for integers.
@@ -117,7 +130,7 @@ except for trivial cases,
 <em>C<sup>n</sup></em> = 0 implies
 n&nbsp;&le;&nbsp;2 for coprime polynomials
 <em>A</em>, <em>B</em>, <em>C</em>
-over a field.</em></p></td>
+over a field.</em></p></div></td>
 </tr>
 
 

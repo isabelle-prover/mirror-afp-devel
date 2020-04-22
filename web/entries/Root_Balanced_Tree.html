@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -93,7 +106,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 <p>
 Andersson introduced <em>general balanced trees</em>,
 search trees based on the design principle of partial rebuilding:
@@ -109,7 +122,7 @@ This is the Isabelle formalization of the material decribed in the APLAS 2017 ar
 <a href="http://www21.in.tum.de/~nipkow/pubs/aplas17.html">Verified Root-Balanced Trees</a>
 by the same author, which also presents experimental results that show
 competitiveness of root-balanced with AVL and red-black trees.
-</p></td>
+</p></div></td>
 </tr>
 
 

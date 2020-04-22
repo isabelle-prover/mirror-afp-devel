@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -108,14 +121,14 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 Commutative Replicated Data Types (CRDTs) are a promising new class of
 data structures for large-scale shared mutable content in applications
 that only require eventual consistency. The WithOut Operational
 Transforms (WOOT) framework is a CRDT for collaborative text editing
 introduced by Oster et al. (CSCW 2006) for which the eventual
 consistency property was verified only for a bounded model to date. We
-contribute a formal proof for WOOTs strong eventual consistency.</td>
+contribute a formal proof for WOOTs strong eventual consistency.</div></td>
 </tr>
 
 

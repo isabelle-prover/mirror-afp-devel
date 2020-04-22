@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -106,7 +119,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 We provide the operations of matrix addition, multiplication,
 transposition, and matrix comparisons as executable functions over
 ordered semirings. Moreover, it is proven that strongly normalizing
@@ -118,7 +131,7 @@ formalization is part of the <a
 href="http://cl-informatik.uibk.ac.at/software/ceta">CeTA</a> system
 which contains several termination techniques. The provided theories have
 been essential to formalize matrix-interpretations and arctic
-interpretations.</td>
+interpretations.</div></td>
 </tr>
 
   <tr>

@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -99,7 +112,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 <p>In this AFP entry, we show how to specify game-based cryptographic
 security notions and formally prove secure several cryptographic
 constructions from the literature using the CryptHOL framework. Among
@@ -115,7 +128,7 @@ Shoup and Bellare and Rogaway, from which most of the examples have
 been taken. We generalise some of their results such that they can be
 reused in other proofs. Thanks to CryptHOL's integration with
 Isabelle's parametricity infrastructure, many simple hops are easily
-justified using the theory of representation independence.</p></td>
+justified using the theory of representation independence.</p></div></td>
 </tr>
 
   <tr>

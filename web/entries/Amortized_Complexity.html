@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -95,7 +108,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 A framework for the analysis of the amortized complexity of functional
 data structures is formalized in Isabelle/HOL and applied to a number of
 standard examples and to the folowing non-trivial ones: skew heaps,
@@ -105,7 +118,7 @@ A preliminary version of this work (without pairing heaps) is described
 in a <a href="http://www21.in.tum.de/~nipkow/pubs/itp15.html">paper</a>
 published in the proceedings of the conference on Interactive
 Theorem Proving ITP 2015. An extended version of this publication
-is available <a href="http://www21.in.tum.de/~nipkow/pubs/jfp16.html">here</a>.</td>
+is available <a href="http://www21.in.tum.de/~nipkow/pubs/jfp16.html">here</a>.</div></td>
 </tr>
 
   <tr>

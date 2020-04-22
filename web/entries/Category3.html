@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -101,7 +114,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 This article attempts to develop a usable framework for doing category
 theory in Isabelle/HOL.  Our point of view, which to some extent
 differs from that of the previous AFP articles on the subject, is to
@@ -134,7 +147,7 @@ that limits can be constructed via products and equalizers.  We
 characterize the conditions under which limits exist in a set
 category. We also examine the case of limits in a functor category,
 ultimately culminating in a proof that the Yoneda embedding preserves
-limits.</td>
+limits.</div></td>
 </tr>
 
   <tr>

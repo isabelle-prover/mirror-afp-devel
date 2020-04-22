@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -97,7 +110,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 This entry provides a very abstract theory of transition systems that
 can be instantiated to express various types of automata. A transition
 system is typically instantiated by providing a set of initial states,
@@ -107,7 +120,7 @@ paths as well as the set of reachable states, among other things. Many
 useful theorems, from basic path manipulation rules to coinduction and
 run construction rules, are proven in this abstract transition system
 context. The library comes with instantiations for DFAs, NFAs, and
-Büchi automata.</td>
+Büchi automata.</div></td>
 </tr>
 
 

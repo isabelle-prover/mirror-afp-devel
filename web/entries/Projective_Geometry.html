@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -93,7 +106,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 We formalize the basics of projective geometry. In particular, we give
 a proof of the so-called Hessenberg's theorem in projective plane
 geometry. We also provide a proof of the so-called Desargues's
@@ -101,7 +114,7 @@ theorem based on an axiomatization of (higher) projective space
 geometry using the notion of rank of a matroid. This last approach
 allows to handle incidence relations in an homogeneous way dealing
 only with points and without the need of talking explicitly about
-lines, planes or any higher entity.</td>
+lines, planes or any higher entity.</div></td>
 </tr>
 
 

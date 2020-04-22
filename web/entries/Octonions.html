@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -91,7 +104,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 We develop the basic theory of Octonions, including various identities
 and properties of the octonions and of the octonionic product, a
 description of 7D isometries and representations of orthogonal
@@ -99,7 +112,7 @@ transformations. To this end we first develop the theory of the vector
 cross product in 7 dimensions. The development of the theory of
 Octonions is inspired by that of the theory of Quaternions by Lawrence
 Paulson. However, we do not work within the type class real_algebra_1
-because the octonionic product is not associative.</td>
+because the octonionic product is not associative.</div></td>
 </tr>
 
 

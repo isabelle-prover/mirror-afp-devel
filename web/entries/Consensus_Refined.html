@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -94,7 +107,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 Algorithms for solving the consensus problem are fundamental to
 distributed computing. Despite their brevity, their
 ability to operate in concurrent, asynchronous and failure-prone
@@ -110,7 +123,7 @@ In this work, we combine stepwise refinement and
 lockstep models to provide an abstract and unified
 view of a sizeable family of consensus algorithms. Our models
 provide insights into the design choices underlying the different
-algorithms, and classify them based on those choices.</td>
+algorithms, and classify them based on those choices.</div></td>
 </tr>
 
 

@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -105,7 +118,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">This set of theories presents an Isabelle/HOL formalisation of stream processing components introduced
+  <td class="abstract"><div class="mathjax_process">This set of theories presents an Isabelle/HOL formalisation of stream processing components introduced
 in Focus,
 a framework for formal specification and development of interactive systems.
 This is an extended and updated version of the formalisation, which was
@@ -113,7 +126,7 @@ elaborated within the methodology "Focus on Isabelle".
 In addition, we also applied the formalisation on three case studies
 that cover different application areas: process control (Steam Boiler System),
 data transmission (FlexRay communication protocol),
-memory and processing components (Automotive-Gateway System).</td>
+memory and processing components (Automotive-Gateway System).</div></td>
 </tr>
 
 

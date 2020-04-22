@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -98,7 +111,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 <p>This article provides a short proof of the Prime Number
 Theorem in several equivalent forms, most notably
 &pi;(<em>x</em>) ~ <em>x</em>/ln
@@ -133,7 +146,7 @@ while it requires more powerful mathematical tools, it is considerably
 shorter and clearer. This article attempts to provide a short and
 clear formalisation of all components of that proof using the full
 range of mathematical machinery available in Isabelle, staying as
-close as possible to Newman's simple paper proof.</p></td>
+close as possible to Newman's simple paper proof.</p></div></td>
 </tr>
 
 

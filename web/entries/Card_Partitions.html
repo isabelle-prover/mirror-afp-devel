@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -97,7 +110,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 The theory's main theorem states that the cardinality of set partitions of
 size k on a carrier set of size n is expressed by Stirling numbers of the
 second kind. In Isabelle, Stirling numbers of the second kind are defined
@@ -106,7 +119,7 @@ relation. The main theorem relates them to the alternative definition as
 cardinality of set partitions. The proof follows the simple and short
 explanation in Richard P. Stanley's `Enumerative Combinatorics: Volume 1`
 and Wikipedia, and unravels the full details and implicit reasoning steps
-of these explanations.</td>
+of these explanations.</div></td>
 </tr>
 
 

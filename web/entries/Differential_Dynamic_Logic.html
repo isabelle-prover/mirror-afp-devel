@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -95,7 +108,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 We formalize differential dynamic logic, a logic for proving
 properties of hybrid systems. The proof calculus in this formalization
 is based on the uniform substitution principle. We show it is sound
@@ -104,7 +117,7 @@ confidence in the correctness of the KeYmaera X theorem prover based
 on this calculus. As an application, we include a proof term checker
 embedded in Isabelle/HOL with several example proofs.  Published in:
 Brandon Bohrer, Vincent Rahli, Ivana Vukotic, Marcus Völp, André
-Platzer: Formally verified differential dynamic logic. CPP 2017.</td>
+Platzer: Formally verified differential dynamic logic. CPP 2017.</div></td>
 </tr>
 
 

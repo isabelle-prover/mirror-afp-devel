@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -102,7 +115,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 Partial Semigroups are relevant to the foundations of quantum
 mechanics and combinatorics as well as to interval and separation
 logics. Convolution algebras can be understood either as algebras of
@@ -117,7 +130,7 @@ applications. These mathematical components for partial semigroups and
 convolution algebras provide uniform foundations from which models of
 computation based on relations, program traces or pomsets, and
 verification components for separation or interval temporal logics can
-be built with little effort.</td>
+be built with little effort.</div></td>
 </tr>
 
 

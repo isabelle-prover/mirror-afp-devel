@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -105,7 +118,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 We bring the labelled sequent calculus $LS_{PASL}$ for propositional
 abstract separation logic to Isabelle. The tactics given here are
 directly applied on an extension of the Separation Algebra in the AFP.
@@ -115,7 +128,7 @@ such as indivisible unit, disjointness, and cross-split. The tactics
 are essentially a proof search procedure for the calculus $LS_{PASL}$.
 We wrap the tactics in an Isabelle method called separata, and give a
 few examples of separation logic formulae which are provable by
-separata.</td>
+separata.</div></td>
 </tr>
 
 

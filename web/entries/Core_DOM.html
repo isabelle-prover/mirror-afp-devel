@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -106,7 +119,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 In this AFP entry, we formalize the core of the Document Object Model
 (DOM).  At its core, the DOM defines a tree-like data structure for
 representing documents in general and HTML documents in particular. It
@@ -120,7 +133,7 @@ correctness of the most important functions defined in the DOM
 standard. Moreover, our formalization is 1) extensible, i.e., can be
 extended without the need of re-proving already proven properties and
 2) executable, i.e., we can generate executable code from our
-specification.</td>
+specification.</div></td>
 </tr>
 
 

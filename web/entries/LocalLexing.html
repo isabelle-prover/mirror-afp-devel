@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -93,7 +106,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 This formalisation accompanies the paper <a
 href="https://arxiv.org/abs/1702.03277">Local
 Lexing</a> which introduces a novel parsing concept of the same
@@ -102,7 +115,7 @@ an extension of Earley's algorithm. This formalisation proves the
 algorithm to be correct with respect to its local lexing semantics. As
 a special case, this formalisation thus also contains a proof of the
 correctness of Earley's algorithm. The paper contains a short
-outline of how this formalisation is organised.</td>
+outline of how this formalisation is organised.</div></td>
 </tr>
 
 

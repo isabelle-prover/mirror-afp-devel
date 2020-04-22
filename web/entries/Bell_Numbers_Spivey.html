@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -101,7 +114,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 This entry defines the Bell numbers as the cardinality of set partitions for
 a carrier set of given size, and derives Spivey's generalized recurrence
 relation for Bell numbers following his elegant and intuitive combinatorial
@@ -114,7 +127,7 @@ The introduced proof structure allows us to compose the combinatorial argument
 from its subparts, and supports to keep track how the detailed proof steps are
 related to the overall argument. To obtain this structure, this entry uses set
 monad notation for the set construction's definition, introduces suitable
-predicates and rules, and follows a repeating structure in its Isar proof.</td>
+predicates and rules, and follows a repeating structure in its Isar proof.</div></td>
 </tr>
 
 

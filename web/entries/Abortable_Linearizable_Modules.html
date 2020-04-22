@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -97,7 +110,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 We define the Abortable Linearizable Module automaton (ALM for short)
 and prove its key composition property using the IOA theory of
 HOLCF. The ALM is at the heart of the Speculative Linearizability
@@ -108,7 +121,7 @@ particularly useful when working in a distributed environment, where
 the need to tolerate faults and asynchrony has made current
 monolithic protocols so intricate that it is no longer tractable to
 check their correctness. Our theory contains a typical example of a
-refinement proof in the I/O-automata framework of Lynch and Tuttle.</td>
+refinement proof in the I/O-automata framework of Lynch and Tuttle.</div></td>
 </tr>
 
 

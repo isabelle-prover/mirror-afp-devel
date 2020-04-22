@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -97,7 +110,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 Recently, authors have proposed under-approximate logics for reasoning
 about programs. So far, all such logics have been confined to
 reasoning about individual program behaviours. Yet there exist many
@@ -109,7 +122,7 @@ show how reasoning in this logic can be decomposed into non-relational
 reasoning in an under-approximate Hoare logic, mirroring Beringer’s
 result for over-approximate relational logics. We illustrate the
 application of our logic on some small examples in which we provably
-demonstrate the presence of insecurity.</td>
+demonstrate the presence of insecurity.</div></td>
 </tr>
 
 

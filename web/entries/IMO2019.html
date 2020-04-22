@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -105,7 +118,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 <p>This entry contains formalisations of the answers to three of
 the six problem of the International Mathematical Olympiad 2019,
 namely Q1, Q4, and Q5.</p> <p>The reason why these
@@ -113,7 +126,7 @@ problems were chosen is that they are particularly amenable to
 formalisation: they can be solved with minimal use of libraries. The
 remaining three concern geometry and graph theory, which, in the
 author's opinion, are more difficult to formalise resp. require a
-more complex library.</p></td>
+more complex library.</p></div></td>
 </tr>
 
 

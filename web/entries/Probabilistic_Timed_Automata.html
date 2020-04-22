@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -96,7 +109,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 We present a formalization of probabilistic timed automata (PTA) for
 which we try to follow the formula MDP + TA = PTA as far as possible:
 our work starts from our existing formalizations of Markov decision
@@ -107,7 +120,7 @@ the probabilistic setting. In particular, this allows us to prove that
 minimum and maximum reachability probabilities can be computed via a
 reduction to MDP model checking, including the case where one wants to
 disregard unrealizable behavior. Further information can be found in
-our ITP paper [2].</td>
+our ITP paper [2].</div></td>
 </tr>
 
 

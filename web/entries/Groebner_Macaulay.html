@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -105,7 +118,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 This entry formalizes the connection between Gröbner bases and
 Macaulay matrices (sometimes also referred to as `generalized
 Sylvester matrices'). In particular, it contains a method for
@@ -117,7 +130,7 @@ matrix constructed in the first step is sufficiently large. In order
 to obtain concrete upper bounds on the size of the matrix (and hence
 turn the method into an effectively executable algorithm), Dubé's
 degree bounds on Gröbner bases are utilized; consequently, they are
-also part of the formalization.</td>
+also part of the formalization.</div></td>
 </tr>
 
 

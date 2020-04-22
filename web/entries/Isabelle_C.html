@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -92,7 +105,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 We present a framework for C code in C11 syntax deeply integrated into
 the Isabelle/PIDE development environment. Our framework provides an
 abstract interface for verification back-ends to be plugged-in
@@ -113,7 +126,7 @@ achieved in recent years. Our integration technique employs Lex and
 Yacc style grammars to ensure efficient deterministic parsing.  This
 is the core-module of Isabelle/C; the AFP package for Clean and
 Clean_wrapper as well as AutoCorres and AutoCorres_wrapper (available
-via git) are applications of this front-end.</td>
+via git) are applications of this front-end.</div></td>
 </tr>
 
 

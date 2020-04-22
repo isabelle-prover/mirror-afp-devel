@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -94,7 +107,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 We formalize basic results on first-order terms, including matching and a
 first-order unification algorithm, as well as well-foundedness of the
 subsumption order. This entry is part of the <i>Isabelle
@@ -103,7 +116,7 @@ href="http://cl-informatik.uibk.ac.at/isafor">IsaFoR</a>,
 where first-order terms are omni-present: the unification algorithm is
 used to certify several confluence and termination techniques, like
 critical-pair computation and dependency graph approximations; and the
-subsumption order is a crucial ingredient for completion.</td>
+subsumption order is a crucial ingredient for completion.</div></td>
 </tr>
 
 

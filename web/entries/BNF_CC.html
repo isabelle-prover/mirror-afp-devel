@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -104,7 +117,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 Bounded natural functors (BNFs) provide a modular framework for the
 construction of (co)datatypes in higher-order logic.  Their functorial
 operations, the mapper and relator, are restricted to a subset of the
@@ -122,7 +135,7 @@ and</li> <li> BNF<sub>CC</sub>s preserve
 quotients under mild conditions.</li> </ol> These proofs
 are carried out for abstract BNF<sub>CC</sub>s similar to
 the AFP entry BNF Operations.  In addition, we apply the
-BNF<sub>CC</sub> theory to several concrete functors.</td>
+BNF<sub>CC</sub> theory to several concrete functors.</div></td>
 </tr>
 
 

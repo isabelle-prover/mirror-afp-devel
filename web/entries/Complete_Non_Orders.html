@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -100,7 +113,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 We develop an Isabelle/HOL library of order-theoretic concepts, such
 as various completeness conditions and fixed-point theorems. We keep
 our formalization as general as possible: we reprove several
@@ -113,7 +126,7 @@ condition—attractivity—which is implied by either antisymmetry or
 transitivity. This result generalizes and strengthens a result by
 Stauti and Maaden. Finally, we recover Kleene’s fixed-point theorem
 for omega-complete non-orders, again using attractivity to prove that
-Kleene’s fixed points are least quasi-fixed points.</td>
+Kleene’s fixed points are least quasi-fixed points.</div></td>
 </tr>
 
 

@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -95,7 +108,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 These files contain a formalisation of variants of Kleene algebras and
 their most important models as axiomatic type classes in Isabelle/HOL.
 Kleene algebras are foundational structures in computing with
@@ -117,7 +130,7 @@ of Kleene algebras that covers a wide range of variants and the core
 theorems in a structured and modular way and provides readable proofs
 at text book level. On the other hand, we intend to use this algebraic
 hierarchy and its models as a generic algebraic middle-layer from which
-programming applications can quickly be explored, implemented and verified.</td>
+programming applications can quickly be explored, implemented and verified.</div></td>
 </tr>
 
 

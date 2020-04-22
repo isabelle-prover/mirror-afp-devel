@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -106,7 +119,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 Distributed computing is inherently based on replication, promising
 increased tolerance to failures of individual computing nodes or
 communication channels. Realizing this promise, however, involves
@@ -131,7 +144,7 @@ these through a reduction theorem that allows us to verify algorithms in the
 coarse-grained semantics (where proofs are easier) and infer their correctness
 for the fine-grained one (which corresponds to actual executions). We
 instantiate the framework by verifying six Consensus algorithms that differ in
-the underlying algorithmic mechanisms and the kinds of faults they tolerate.</td>
+the underlying algorithmic mechanisms and the kinds of faults they tolerate.</div></td>
 </tr>
 
 

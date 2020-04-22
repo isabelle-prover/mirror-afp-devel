@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -115,7 +128,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">Soundness and completeness for a system of first order logic are formally proved, building on James Margetson's formalization of work by Wainer and Wallen. The completeness proofs naturally suggest an algorithm to derive proofs. This algorithm, which can be implemented tail recursively, is formalized in Isabelle/HOL. The algorithm can be executed via the rewriting tactics of Isabelle. Alternatively, the definitions can be exported to OCaml, yielding a directly executable program.</td>
+  <td class="abstract"><div class="mathjax_process">Soundness and completeness for a system of first order logic are formally proved, building on James Margetson's formalization of work by Wainer and Wallen. The completeness proofs naturally suggest an algorithm to derive proofs. This algorithm, which can be implemented tail recursively, is formalized in Isabelle/HOL. The algorithm can be executed via the rewriting tactics of Isabelle. Alternatively, the definitions can be exported to OCaml, yielding a directly executable program.</div></td>
 </tr>
 
 

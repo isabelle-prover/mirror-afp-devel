@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -103,7 +116,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 This Isabelle/HOL formalization defines a greedy algorithm for finding
 a minimum weight basis on a weighted matroid and proves its
 correctness. This algorithm is an abstract version of Kruskal's
@@ -111,7 +124,7 @@ algorithm.  We interpret the abstract algorithm for the cycle matroid
 (i.e. forests in a graph) and refine it to imperative executable code
 using an efficient union-find data structure.  Our formalization can
 be instantiated for different graph representations. We provide
-instantiations for undirected graphs and symmetric directed graphs.</td>
+instantiations for undirected graphs and symmetric directed graphs.</div></td>
 </tr>
 
 

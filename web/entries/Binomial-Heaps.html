@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -103,7 +116,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 We implement and prove correct binomial heaps and skew binomial heaps.
 Both are data-structures for priority queues.
 While binomial heaps have logarithmic <em>findMin</em>, <em>deleteMin</em>,
@@ -113,7 +126,7 @@ and <em>meld</em> operations, and only the <em>deleteMin</em>-operation is
 logarithmic. This is achieved by using <em>skew links</em> to avoid
 cascading linking on <em>insert</em>-operations, and <em>data-structural
 bootstrapping</em> to get constant-time <em>findMin</em> and <em>meld</em>
-operations.  Our implementation follows the paper by Brodal and Okasaki.</td>
+operations.  Our implementation follows the paper by Brodal and Okasaki.</div></td>
 </tr>
 
 

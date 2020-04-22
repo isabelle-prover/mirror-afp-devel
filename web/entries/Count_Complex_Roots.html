@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -101,14 +114,14 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 Based on evaluating Cauchy indices through remainder sequences, this
 entry provides an effective procedure to count the number of complex
 roots (with multiplicity) of a polynomial within a rectangle box or a
 half-plane. Potential applications of this entry include certified
 complex root isolation (of a polynomial) and testing the Routh-Hurwitz
 stability criterion (i.e., to check whether all the roots of some
-characteristic polynomial have negative real parts).</td>
+characteristic polynomial have negative real parts).</div></td>
 </tr>
 
 

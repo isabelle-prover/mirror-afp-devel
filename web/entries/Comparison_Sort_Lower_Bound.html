@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -101,7 +114,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 <p>This article contains a formal proof of the well-known fact
 that number of comparisons that a comparison-based sorting algorithm
 needs to perform to sort a list of length <em>n</em> is at
@@ -113,7 +126,7 @@ sorting algorithm is a recursive datatype containing either a HOL
 function or a query of a comparison oracle with a continuation
 containing the remaining computation. This makes it possible to force
 the algorithm to use only comparisons and to track the number of
-comparisons made.</p></td>
+comparisons made.</p></div></td>
 </tr>
 
 

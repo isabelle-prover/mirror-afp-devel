@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -110,7 +123,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 A completeness threshold is required to guarantee the completeness of
 planning as satisfiability, and bounded model checking of safety
 properties. One valid completeness threshold is the diameter of the
@@ -127,7 +140,7 @@ exploits acyclicity in the state space to achieve compositionality,
 and it was introduced by Abdulaziz et. al. The formalisation that we
 port is described as a part of another paper by Abdulaziz et. al. As a
 part of this porting we developed a libray about transition systems,
-which shall be of use in future related mechanisation efforts.</td>
+which shall be of use in future related mechanisation efforts.</div></td>
 </tr>
 
 

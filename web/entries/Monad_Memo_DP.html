@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -101,7 +114,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 We present a lightweight framework for the automatic verified
 (functional or imperative) memoization of recursive functions. Our
 tool can turn a pure Isabelle/HOL function definition into a
@@ -111,7 +124,7 @@ implementations for the two types of monads. A number of simple
 techniques allow us to achieve bottom-up computation and
 space-efficient memoization. The framework’s utility is demonstrated
 on a number of representative dynamic programming problems. A detailed
-description of our work can be found in the accompanying paper [2].</td>
+description of our work can be found in the accompanying paper [2].</div></td>
 </tr>
 
 

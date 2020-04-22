@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -92,14 +105,14 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 This entry provides an XML library for Isabelle/HOL. This includes parsing
 and pretty printing of XML trees as well as combinators for transforming XML
 trees into arbitrary user-defined data. The main contribution of this entry is
 an interface (fit for code generation) that allows for communication between
 verified programs formalized in Isabelle/HOL and the outside world via XML.
 This library was developed as part of the IsaFoR/CeTA project
-to which we refer for examples of its usage.</td>
+to which we refer for examples of its usage.</div></td>
 </tr>
 
 

@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -110,7 +123,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
+  <td class="abstract"><div class="mathjax_process">
 The paper "Compositional Verification and Refinement of Concurrent
 Value-Dependent Noninterference" by Murray et. al. (CSF 2016) presents
 a dependent security type system for compositionally verifying a
@@ -119,7 +132,7 @@ value-dependent noninterference property, defined in (Murray, PLAS
 security definition, the type system and its soundness proof, and
 demonstrates its application on some small examples. It was derived
 from the SIFUM_Type_Systems AFP entry, by Sylvia Grewe, Heiko Mantel
-and Daniel Schoepe, and whose structure it inherits.</td>
+and Daniel Schoepe, and whose structure it inherits.</div></td>
 </tr>
 
   <tr>
