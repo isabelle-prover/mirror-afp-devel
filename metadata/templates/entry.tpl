@@ -1,5 +1,4 @@
 {% extends "base.tpl" %}
-{% set ROOT_PATH = '../' %}
 
 {# Print first letter bigger if uppercase #}
 {% macro first_bigger(text) %}
@@ -16,7 +15,7 @@
 {% endblock %}
 
 {% block extrahead %}
-{% include 'mathjax.tpl' with ROOT_PATH='../' %}
+{% include 'mathjax.tpl' with context %}
 {% endblock %}
 
 {% block headline %}
@@ -106,7 +105,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"><div class="mathjax_process">{{ entry.abstract }}</div></td>
+  <td class="abstract mathjax_process">{{ entry.abstract }}</td>
 </tr>
 
 {# Extra datafields #}

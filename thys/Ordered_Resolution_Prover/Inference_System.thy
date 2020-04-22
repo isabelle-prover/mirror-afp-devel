@@ -33,7 +33,6 @@ abbreviation prems_of :: "'a inference \<Rightarrow> 'a clause multiset" where
 abbreviation concls_of :: "'a inference set \<Rightarrow> 'a clause set" where
   "concls_of \<Gamma> \<equiv> concl_of ` \<Gamma>"
 
-(* FIXME: make an abbreviation *)
 definition infer_from :: "'a clause set \<Rightarrow> 'a inference \<Rightarrow> bool" where
   "infer_from CC \<gamma> \<longleftrightarrow> set_mset (prems_of \<gamma>) \<subseteq> CC"
 
@@ -146,9 +145,6 @@ theorem saturated_model:
     ec_ni_n: "{#} \<notin> N"
   shows "I_of N \<Turnstile>s N"
 proof -
-  have ec_ni_n: "{#} \<notin> N"
-    using ec_ni_n by auto
-
   {
     assume "\<not> I_of N \<Turnstile>s N"
     then obtain D where

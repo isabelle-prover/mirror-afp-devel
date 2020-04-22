@@ -132,7 +132,7 @@ proof
   have "\<forall>D. D \<in># CC \<longrightarrow> D \<notin> Rf N"
     using cc_subs by (simp add: subset_iff)
   then have cc_nr:
-    "\<And>C DD. C \<in># CC \<Longrightarrow> set_mset DD \<subseteq> N \<Longrightarrow> \<forall>I. I \<Turnstile>m DD \<longrightarrow> I \<Turnstile> C \<Longrightarrow> \<exists>D. D \<in># DD \<and> ~ D < C"
+    "\<And>C DD. C \<in># CC \<Longrightarrow> set_mset DD \<subseteq> N \<Longrightarrow> \<forall>I. I \<Turnstile>m DD \<longrightarrow> I \<Turnstile> C \<Longrightarrow> \<exists>D. D \<in># DD \<and> \<not> D < C"
       unfolding Rf_def by auto metis
   have "set_mset CC \<subseteq> N"
     using cc_subs by auto
