@@ -1636,7 +1636,7 @@ proof -
     using not_lnull_sswSts by simp
 
   have gr_st0: "wrp.grounding_of_wstate (wstate_of_dstate St0) = grounded_N0"
-    by (simp add: clss_of_state_def comp_def)
+    unfolding comp_def by simp
 
   have "?saturated \<and> ?model"
   proof (cases "[] \<in> set R")
@@ -1646,7 +1646,7 @@ proof -
 
     have "grounded_R \<subseteq> wrp.grounding_of_wstate (llast sswSts)"
       unfolding r llast_sswSts
-      by (simp add: last_sts llast_lmap[OF lfinite_Sts] clss_of_state_def grounding_of_clss_def)
+      by (simp add: last_sts llast_lmap[OF lfinite_Sts] grounding_of_clss_def)
     then have gr_last_st: "grounded_R \<subseteq> wrp.grounding_of_wstate (wstate_of_dstate (llast Sts))"
       by (simp add: lfinite_Sts llast_lmap llast_sswSts)
 
@@ -1670,8 +1670,7 @@ proof -
     case False
     then have gr_last: "wrp.grounding_of_wstate (llast sswSts) = grounded_R"
       using final unfolding r llast_sswSts
-      by (simp add: last_sts llast_lmap[OF lfinite_Sts] clss_of_state_def comp_def
-          is_final_dstate.simps)
+      by (simp add: last_sts llast_lmap[OF lfinite_Sts] comp_def is_final_dstate.simps)
     then have gr_last_st: "wrp.grounding_of_wstate (wstate_of_dstate (llast Sts)) = grounded_R"
       by (simp add: lfinite_Sts llast_lmap llast_sswSts)
 
@@ -1715,7 +1714,7 @@ proof (rule ccontr)
   assume unsat: "\<not> satisfiable grounded_N0"
 
   have unsat_wSts0: "\<not> satisfiable (wrp.grounding_of_wstate (lhd wSts))"
-    using unsat by (subst derivation_from.code) (simp add: clss_of_state_def comp_def)
+    using unsat by (subst derivation_from.code) (simp add: comp_def)
 
   have bot_in_ss: "{#} \<in> Q_of_state (wrp.Liminf_wstate sswSts)"
     by (rule wrp.weighted_RP_complete[OF sswSts_thms unsat_wSts0[folded lhd_sswSts]])

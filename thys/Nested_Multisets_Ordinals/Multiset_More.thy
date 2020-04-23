@@ -799,7 +799,7 @@ lemma Sigma_mset_transfer[transfer_rule]:
 
 subsection \<open>Even More about Multisets\<close>
 
-subsubsection \<open>Multisets and functions\<close>
+subsubsection \<open>Multisets and Functions\<close>
 
 lemma range_image_mset:
   assumes "set_mset Ds \<subseteq> range f"
@@ -819,7 +819,10 @@ proof -
 qed
 
 
-subsubsection \<open>Multisets and lists\<close>
+subsubsection \<open>Multisets and Lists\<close>
+
+lemma length_sorted_list_of_multiset[simp]: "length (sorted_list_of_multiset A) = size A"
+  by (metis mset_sorted_list_of_multiset size_mset)
 
 definition list_of_mset :: "'a multiset \<Rightarrow> 'a list" where
   "list_of_mset m = (SOME l. m = mset l)"
@@ -827,8 +830,11 @@ definition list_of_mset :: "'a multiset \<Rightarrow> 'a list" where
 lemma list_of_mset_exi: "\<exists>l. m = mset l"
   using ex_mset by metis
 
-lemma [simp]: "mset (list_of_mset m) = m"
+lemma mset_list_of_mset [simp]: "mset (list_of_mset m) = m"
   by (metis (mono_tags, lifting) ex_mset list_of_mset_def someI_ex)
+
+lemma length_list_of_mset[simp]: "length (list_of_mset A) = size A"
+  unfolding list_of_mset_def by (metis (mono_tags) ex_mset size_mset someI_ex)
 
 lemma range_mset_map:
   assumes "set_mset Ds \<subseteq> range f"
@@ -890,7 +896,7 @@ next
 qed
 
 
-subsubsection \<open>More on multisets and functions\<close>
+subsubsection \<open>More on Multisets and Functions\<close>
 
 lemma subseteq_mset_size_eql: "X \<subseteq># Y \<Longrightarrow> size Y = size X \<Longrightarrow> X = Y"
   using mset_subset_size subset_mset_def by fastforce
@@ -967,7 +973,8 @@ proof -
     by auto
 qed
 
-subsubsection \<open>More on multiset order\<close>
+
+subsubsection \<open>More on Multiset Order\<close>
 
 lemma less_multiset_doubletons:
   assumes

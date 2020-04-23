@@ -185,7 +185,7 @@ context
 begin
 
 lemma finite_Sts0: "finite (clss_of_wstate (lhd Sts))"
-  unfolding clss_of_state_def by (cases "lhd Sts") auto
+  by (cases "lhd Sts") auto
 
 lemmas deriv = full_chain_imp_chain[OF full_deriv]
 lemmas lhd_lmap_Sts = llist.map_sel(1)[OF chain_not_lnull[OF deriv]]
@@ -212,8 +212,7 @@ abbreviation S_gQ :: "'a clause \<Rightarrow> 'a clause" where
   "S_gQ \<equiv> S_Q (lmap state_of_wstate Sts)"
 
 interpretation sq: selection S_gQ
-  unfolding S_Q_def[OF deriv_RP empty_Q0_RP]
-  using S_M_selects_subseteq S_M_selects_neg_lits selection_axioms
+  unfolding S_Q_def[OF deriv_RP] using S_M_selects_subseteq S_M_selects_neg_lits selection_axioms
   by unfold_locales auto
 
 interpretation gd: ground_resolution_with_selection S_gQ
@@ -233,7 +232,7 @@ lemmas ord_\<Gamma>_contradiction_Rf = src.contradiction_Rf
 theorem weighted_RP_sound:
   assumes "{#} \<in> clss_of_state (Liminf_wstate Sts)"
   shows "\<not> satisfiable (grounding_of_wstate (lhd Sts))"
-  by (rule RP_sound[OF deriv_RP empty_Q0_RP assms, unfolded lhd_lmap_Sts])
+  by (rule RP_sound[OF deriv_RP assms, unfolded lhd_lmap_Sts])
 
 abbreviation RP_filtered_measure :: "('a wclause \<Rightarrow> bool) \<Rightarrow> 'a wstate \<Rightarrow> nat \<times> nat \<times> nat" where
   "RP_filtered_measure \<equiv> \<lambda>p (N, P, Q, n).
@@ -842,13 +841,12 @@ proof (rule ccontr)
 qed
 
 corollary weighted_RP_saturated: "src.saturated_upto (Liminf_llist (lmap grounding_of_wstate Sts))"
-  using RP_saturated_if_fair[OF deriv_RP empty_Q0_RP weighted_RP_fair, unfolded llist.map_comp]
+  using RP_saturated_if_fair[OF deriv_RP weighted_RP_fair empty_Q0_RP, unfolded llist.map_comp]
   by simp
 
 corollary weighted_RP_complete:
   "\<not> satisfiable (grounding_of_wstate (lhd Sts)) \<Longrightarrow> {#} \<in> Q_of_state (Liminf_wstate Sts)"
-  using RP_complete_if_fair[OF deriv_RP empty_Q0_RP weighted_RP_fair, simplified lhd_lmap_Sts]
-  by simp
+  using RP_complete_if_fair[OF deriv_RP weighted_RP_fair empty_Q0_RP, simplified lhd_lmap_Sts] .
 
 end
 

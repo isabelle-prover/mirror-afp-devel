@@ -21,7 +21,6 @@ Conventions: \<open>'s\<close> substitutions, \<open>'a\<close> atoms.
 
 subsection \<open>Library\<close>
 
-(* TODO: move to Isabelle? *)
 lemma f_Suc_decr_eventually_const:
   fixes f :: "nat \<Rightarrow> nat"
   assumes leq: "\<forall>i. f (Suc i) \<le> f i"
@@ -152,7 +151,6 @@ definition subsumes :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" wh
 definition strictly_subsumes :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" where
   "strictly_subsumes C D \<longleftrightarrow> subsumes C D \<and> \<not> subsumes D C"
 
-(* FIXME: define as exists renaming from one to the other? *)
 definition variants :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" where
   "variants C D \<longleftrightarrow> generalizes_cls C D \<and> generalizes_cls D C"
 

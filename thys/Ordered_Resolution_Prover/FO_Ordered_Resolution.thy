@@ -41,11 +41,6 @@ subsection \<open>Library\<close>
 lemma Bex_cartesian_product: "(\<exists>xy \<in> A \<times> B. P xy) \<equiv> (\<exists>x \<in> A. \<exists>y \<in> B. P (x, y))"
   by simp
 
-(* FIXME: Move to "Multiset.thy" *)
-lemma length_sorted_list_of_multiset[simp]: "length (sorted_list_of_multiset A) = size A"
-  by (metis mset_sorted_list_of_multiset size_mset)
-
-(* FIXME: move? or avoid? *)
 lemma eql_map_neg_lit_eql_atm:
   assumes "map (\<lambda>L. L \<cdot>l \<eta>) (map Neg As') = map Neg As"
   shows "As' \<cdot>al \<eta> = As"
@@ -97,7 +92,6 @@ definition strictly_maximal_wrt :: "'a \<Rightarrow> 'a literal multiset \<Right
 lemma strictly_maximal_wrt_maximal_wrt: "strictly_maximal_wrt A C \<Longrightarrow> maximal_wrt A C"
   unfolding maximal_wrt_def strictly_maximal_wrt_def by auto
 
-(* FIXME: use hd instead of ! 0 *)
 inductive eligible :: "'s \<Rightarrow> 'a list \<Rightarrow> 'a clause \<Rightarrow> bool" where
   eligible:
     "S DA = negs (mset As) \<or> S DA = {#} \<and> length As = 1 \<and> maximal_wrt (As ! 0 \<cdot>a \<sigma>) (DA \<cdot> \<sigma>) \<Longrightarrow>
@@ -563,8 +557,7 @@ proof (induction n arbitrary: AAs' As')
   case (Suc n)
   then have "map2 add_mset (tl (As' \<cdot>al \<eta>)) (tl (AAs' \<cdot>aml \<eta>)) = map2 add_mset (tl As') (tl AAs') \<cdot>aml \<eta>"
     by simp
-  moreover
-  have Succ: "length (As' \<cdot>al \<eta>) = Suc n" "length (AAs' \<cdot>aml \<eta>) = Suc n"
+  moreover have Succ: "length (As' \<cdot>al \<eta>) = Suc n" "length (AAs' \<cdot>aml \<eta>) = Suc n"
     using Suc(3) Suc(2) by auto
   then have "length (tl (As' \<cdot>al \<eta>)) = n" "length (tl (AAs' \<cdot>aml \<eta>)) = n"
     by auto
@@ -869,12 +862,6 @@ proof (cases rule: ord_resolve.cases)
         \<open>length AAs0 = n\<close>]
     by auto
 qed
-
-lemma
-  assumes "Pos A \<in># C"
-  shows "A \<in> atms_of C"
-  using assms
-  by (simp add: atm_iff_pos_or_neg_lit)
 
 lemma ord_resolve_rename_lifting:
   assumes

@@ -32,7 +32,7 @@ The following inductive definition corresponds to Figure 2.
 \<close>
 
 definition maximal_wrt :: "'a \<Rightarrow> 'a literal multiset \<Rightarrow> bool" where
-  "maximal_wrt A DA \<equiv> A = Max (atms_of DA)" (* FIXME: change definition so that it returns true if DA is empty *)
+  "maximal_wrt A DA \<longleftrightarrow> DA = {#} \<or> A = Max (atms_of DA)"
 
 definition strictly_maximal_wrt :: "'a \<Rightarrow> 'a literal multiset \<Rightarrow> bool" where
   "strictly_maximal_wrt A CA \<longleftrightarrow> (\<forall>B \<in> atms_of CA. B < A)"
@@ -44,7 +44,6 @@ inductive eligible :: "'a list \<Rightarrow> 'a clause \<Rightarrow> bool" where
 lemma "(S DA = negs (mset As) \<or> S DA = {#} \<and> length As = 1 \<and> maximal_wrt (As ! 0) DA) \<longleftrightarrow>
     eligible As DA"
   using eligible.intros ground_resolution_with_selection.eligible.cases ground_resolution_with_selection_axioms by blast
-
 
 inductive
   ord_resolve :: "'a clause list \<Rightarrow> 'a clause \<Rightarrow> 'a multiset list \<Rightarrow> 'a list \<Rightarrow> 'a clause \<Rightarrow> bool"
@@ -128,7 +127,8 @@ proof (cases rule: ord_resolve.cases)
   next
     case False
 
-    define max_A_of_Cs where "max_A_of_Cs = Max (atms_of (\<Union># (mset Cs)))"
+    define max_A_of_Cs where
+      "max_A_of_Cs = Max (atms_of (\<Union># (mset Cs)))"
 
     have
       mc_in: "max_A_of_Cs \<in> atms_of (\<Union># (mset Cs))" and
@@ -199,10 +199,11 @@ proof -
     have na_in_d: "Neg A \<in># DA"
       unfolding A_def using s_d_e d_ne d_in_n d_cex d_min
       by (metis Max_in_lits Max_lit_eq_pos_or_neg_Max_atm max_pos_imp_Interp Interp_imp_INTERP)
-    then have das: "DA = D + negs (mset As)" unfolding D_def As_def by auto
+    then have das: "DA = D + negs (mset As)"
+      unfolding D_def As_def by auto
     moreover from na_in_d have "negs (mset As) \<subseteq># DA"
       by (simp add: As_def)
-    moreover have "As ! 0 = Max (atms_of (D + negs (mset As)))"
+    moreover have hd: "As ! 0 = Max (atms_of (D + negs (mset As)))"
       using A_def As_def das by auto
     then have "eligible As DA"
       using eligible s_d_e As_def das maximal_wrt_def by auto
