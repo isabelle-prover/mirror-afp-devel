@@ -14,7 +14,10 @@ executable functions for auxiliary notions.
 \<close>
 
 theory Deterministic_FO_Ordered_Resolution_Prover
-  imports Polynomial_Factorization.Missing_List Weighted_FO_Ordered_Resolution_Prover
+  imports
+    Polynomial_Factorization.Missing_List
+    Weighted_FO_Ordered_Resolution_Prover
+    Lambda_Free_RPOs.Lambda_Free_Util
 begin
 
 
@@ -29,26 +32,6 @@ lemma apfst_comp_rpair_const: "apfst f \<circ> (\<lambda>x. (x, y)) = (\<lambda>
 (* TODO: Move to Isabelle's "List.thy"? *)
 lemma length_remove1_less[termination_simp]: "x \<in> set xs \<Longrightarrow> length (remove1 x xs) < length xs"
   by (induct xs) auto
-
-(* TODO: Move to "Multiset_More.thy". *)
-lemma subset_mset_imp_subset_add_mset: "A \<subseteq># B \<Longrightarrow> A \<subseteq># add_mset x B"
-  by (metis add_mset_diff_bothsides diff_subset_eq_self multiset_inter_def subset_mset.inf.absorb2)
-
-(* TODO: Move to "Multiset_More.thy"? *)
-lemma subseq_mset_subseteq_mset: "subseq xs ys \<Longrightarrow> mset xs \<subseteq># mset ys"
-proof (induct xs arbitrary: ys)
-  case (Cons x xs)
-  note Outer_Cons = this
-  then show ?case
-  proof (induct ys)
-    case (Cons y ys)
-    have "subseq xs ys"
-      by (metis Cons.prems(2) subseq_Cons' subseq_Cons2_iff)
-    then show ?case
-      using Cons by (metis mset.simps(2) mset_subset_eq_add_mset_cancel subseq_Cons2_iff
-          subset_mset_imp_subset_add_mset)
-  qed simp
-qed simp
 
 lemma map_filter_neq_eq_filter_map:
   "map f (filter (\<lambda>y. f x \<noteq> f y) xs) = filter (\<lambda>z. f x \<noteq> z) (map f xs)"
@@ -72,14 +55,6 @@ proof -
   then show ?thesis
     by simp
 qed
-
-(* FIXME: This is a clone of "Lambda_Free_RPOs". *)
-lemma wf_app: "wf r \<Longrightarrow> wf {(x, y). (f x, f y) \<in> r}"
-  unfolding wf_eq_minimal by (intro allI, drule spec[of _ "f ` Q" for Q]) fast
-
-(* FIXME: This is a clone of "Lambda_Free_RPOs". *)
-lemma wfP_app: "wfP p \<Longrightarrow> wfP (\<lambda>x y. p (f x) (f y))"
-  unfolding wfP_def by (rule wf_app[of "{(x, y). p x y}" f, simplified])
 
 (* TODO: Move to Isabelle? *)
 lemma funpow_fixpoint: "f x = x \<Longrightarrow> (f ^^ n) x = x"
@@ -485,7 +460,7 @@ proof (induct "length P'" arbitrary: P P' rule: less_induct)
         by (subst (2) p') (simp add: case_prod_beta)
       also have "\<dots> =
         image_mset (apfst mset) (mset (filter (\<lambda>(E, l). mset E \<noteq> mset (fst ?Dj)) ?P''))"
-        by (auto simp: image_mset_filter_swap[symmetric] mset_filter case_prod_beta)
+        by (auto simp: image_mset_filter_swap[symmetric] case_prod_beta)
       finally have p'_filtered:
         "{#(E, k) \<in># image_mset (apfst mset) (mset P'). E \<noteq> mset (fst ?Dj)#} =
         image_mset (apfst mset) (mset (filter (\<lambda>(E, l). mset E \<noteq> mset (fst ?Dj)) ?P''))"

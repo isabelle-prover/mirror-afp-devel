@@ -17,59 +17,6 @@ theory Weighted_FO_Ordered_Resolution_Prover
 begin
 
 
-subsection \<open>Library\<close>
-
-(* TODO: Move to "Coinductive"? *)
-lemma ldrop_Suc_conv_ltl: "ldrop (enat (Suc k)) xs = ltl (ldrop (enat k) xs)"
-  by (metis eSuc_enat ldrop_eSuc_conv_ltl)
-
-(* TODO: Move to "Coinductive"? *)
-lemma lhd_ldrop':
-  assumes "enat k < llength xs"
-  shows "lhd (ldrop (enat k) xs) = lnth xs k"
-  using assms by (simp add: lhd_ldrop)
-
-(* TODO: Move to "Multiset_More.thy". *)
-lemma filter_mset_empty_if_finite_and_filter_set_empty:
-  assumes
-    "{x \<in> X. P x} = {}" and
-    "finite X"
-  shows "{#x \<in># mset_set X. P x#} = {#}"
-proof -
-  have empty_empty: "\<And>Y. set_mset Y = {} \<Longrightarrow> Y = {#}"
-    by auto
-  from assms have "set_mset {#x \<in># mset_set X. P x#} = {}"
-    by auto
-  then show ?thesis
-    by (rule empty_empty)
-qed
-
-(* TODO: Move to "Lazy_List_Chain.thy". *)
-lemma inf_chain_ltl_chain: "chain R xs \<Longrightarrow> llength xs = \<infinity> \<Longrightarrow> chain R (ltl xs)"
-  unfolding chain.simps[of R xs] llength_eq_infty_conv_lfinite
-  by (metis lfinite_code(1) lfinite_ltl llist.sel(3))
-
-(* TODO: Move to "Lazy_List_Chain.thy". *)
-lemma inf_chain_ldrop_chain:
-  assumes
-    chain: "chain R xs" and
-    inf: "\<not> lfinite xs"
-  shows "chain R (ldrop (enat k) xs)"
-proof (induction k)
-  case 0
-  then show ?case
-    using zero_enat_def chain by auto
-next
-  case (Suc k)
-  have "llength (ldrop (enat k) xs) = \<infinity>"
-    using inf by (simp add: not_lfinite_llength)
-  with Suc have "chain R (ltl (ldrop (enat k) xs))"
-    using inf_chain_ltl_chain[of R "(ldrop (enat k) xs)"] by auto
-  then show ?case
-    using ldrop_Suc_conv_ltl[of k xs] by auto
-qed
-
-
 subsection \<open>Prover\<close>
 
 type_synonym 'a wclause = "'a clause \<times> nat"
@@ -795,7 +742,7 @@ proof (rule ccontr)
       unfolding Liminf_llist_def
       by auto
     have chain_drop_Sts: "chain (\<leadsto>\<^sub>w) (ldrop k Sts)"
-      using deriv inf inff inf_chain_ldrop_chain by auto
+      using deriv inf inff by (simp add: inf_chain_ldropn_chain ldrop_enat)
     have in_N_j: "\<And>j. \<exists>i. (C, i) \<in># wN_of_wstate (lnth (ldrop k Sts) j)"
       using k_p by (simp add: add.commute inf)
     then have "chain (\<lambda>x y. (x, y) \<in> RP_filtered_relation)\<inverse>\<inverse> (lmap (RP_filtered_measure (\<lambda>Ci. True))
@@ -825,7 +772,7 @@ proof (rule ccontr)
     then have Ci_inn: "\<forall>k'. (C, i) \<in># (wP_of_wstate) (lnth (ldrop k Sts) k')"
       by auto
     have "chain (\<leadsto>\<^sub>w) (ldrop k Sts)"
-      using deriv inf_chain_ldrop_chain inf inff by auto
+      using deriv inf_chain_ldropn_chain inf inff by (simp add: inf_chain_ldropn_chain ldrop_enat)
     then have "chain (\<lambda>x y. (x, y) \<in> RP_combined_relation)\<inverse>\<inverse>
       (lmap (RP_combined_measure (weight (C, i))) (ldrop k Sts))"
       using inff inf Ci_in weighted_RP_measure_decreasing_P

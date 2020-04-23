@@ -4,9 +4,10 @@ session Functional_Ordered_Resolution_Prover (AFP) = "HOL-Library" +
   options [timeout = 600]
   sessions
     First_Order_Terms
+    Lambda_Free_RPOs
     Nested_Multisets_Ordinals
-    Ordered_Resolution_Prover
     Open_Induction
+    Ordered_Resolution_Prover
     Polynomial_Factorization
   theories
     Deterministic_FO_Ordered_Resolution_Prover

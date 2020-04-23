@@ -73,6 +73,12 @@ lemma chain_ldropn:
   by (induct n arbitrary: xs, simp,
       metis chain.cases ldrop_eSuc_ltl ldropn_LNil ldropn_eq_LNil ltl_simps(2) not_less)
 
+lemma inf_chain_ldropn_chain: "chain R xs \<Longrightarrow> \<not> lfinite xs \<Longrightarrow> chain R (ldropn n xs)"
+  using chain.simps[of R xs] by (simp add: chain_ldropn not_lfinite_llength)
+
+lemma inf_chain_ltl_chain: "chain R xs \<Longrightarrow> \<not> lfinite xs \<Longrightarrow> chain R (ltl xs)"
+  by (metis inf_chain_ldropn_chain ldropn_0 ldropn_ltl)
+
 lemma chain_lnth_rel:
   assumes
     chain: "chain R xs" and
@@ -204,6 +210,9 @@ qed
 inductive_cases chain_consE: "chain R (LCons x xs)"
 inductive_cases chain_nontrivE: "chain R (LCons x (LCons y xs))"
 
+
+subsection \<open>A Coinductive Puzzle\<close>
+
 primrec prepend where
   "prepend [] ys = ys"
 | "prepend (x # xs) ys = LCons x (prepend xs ys)"
@@ -293,7 +302,8 @@ next
     case (less ys)
     from less.prems \<open>lfinite ys\<close> show ?case
       by (cases xs)
-        (auto simp: eSuc_enat elim!: emb_LNil1E emb_LConsE less.IH[rotated] dest!: lfinite_llength_enat)
+        (auto simp: eSuc_enat elim!: emb_LNil1E emb_LConsE less.IH[rotated]
+          dest!: lfinite_llength_enat)
   qed
 qed
 

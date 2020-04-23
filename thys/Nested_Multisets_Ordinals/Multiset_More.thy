@@ -9,7 +9,9 @@
 section \<open>More about Multisets\<close>
 
 theory Multiset_More
-imports "HOL-Library.Multiset_Order"
+  imports
+    "HOL-Library.Multiset_Order"
+    "HOL-Library.Sublist"
 begin
 
 text \<open>
@@ -40,6 +42,9 @@ declare
 
 subsection \<open>Lemmas about Intersection, Union and Pointwise Inclusion\<close>
 
+lemma subset_mset_imp_subset_add_mset: "A \<subseteq># B \<Longrightarrow> A \<subseteq># add_mset x B"
+  by (metis add_mset_diff_bothsides diff_subset_eq_self multiset_inter_def subset_mset.inf.absorb2)
+
 lemma subset_add_mset_notin_subset_mset: \<open>A \<subseteq># add_mset b B \<Longrightarrow> b \<notin># A \<Longrightarrow> A \<subseteq># B\<close>
   by (simp add: subset_mset.le_iff_sup)
 
@@ -59,6 +64,21 @@ proof -
 qed
 
 declare subset_msetE [elim!]
+
+lemma subseq_mset_subseteq_mset: "subseq xs ys \<Longrightarrow> mset xs \<subseteq># mset ys"
+proof (induct xs arbitrary: ys)
+  case (Cons x xs)
+  note Outer_Cons = this
+  then show ?case
+  proof (induct ys)
+    case (Cons y ys)
+    have "subseq xs ys"
+      by (metis Cons.prems(2) subseq_Cons' subseq_Cons2_iff)
+    then show ?case
+      using Cons by (metis mset.simps(2) mset_subset_eq_add_mset_cancel subseq_Cons2_iff
+          subset_mset_imp_subset_add_mset)
+  qed simp
+qed simp
 
 
 subsection \<open>Lemmas about Filter and Image\<close>
@@ -133,7 +153,7 @@ proof (induct M)
 qed simp
 
 lemma mset_filter_compl: "mset (filter p xs) + mset (filter (Not \<circ> p) xs) = mset xs"
-  by (induction xs) (auto simp: mset_filter ac_simps)
+  by (induction xs) (auto simp: ac_simps)
 
 text \<open>Near duplicate of @{thm [source] filter_eq_replicate_mset}: @{thm filter_eq_replicate_mset}.\<close>
 
@@ -172,6 +192,20 @@ lemma image_mset_filter_swap2: \<open>{#C \<in># {#P x. x \<in># D#}. Q C #} = {
   by (simp add: image_mset_filter_swap)
 
 declare image_mset_cong2 [cong]
+
+lemma filter_mset_empty_if_finite_and_filter_set_empty:
+  assumes
+    "{x \<in> X. P x} = {}" and
+    "finite X"
+  shows "{#x \<in># mset_set X. P x#} = {#}"
+proof -
+  have empty_empty: "\<And>Y. set_mset Y = {} \<Longrightarrow> Y = {#}"
+    by auto
+  from assms have "set_mset {#x \<in># mset_set X. P x#} = {}"
+    by auto
+  then show ?thesis
+    by (rule empty_empty)
+qed
 
 
 subsection \<open>Lemmas about Sum\<close>
