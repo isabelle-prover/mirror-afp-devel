@@ -60,7 +60,7 @@ begin
     assumes "ranking A w f"
     assumes "v \<in> gunodes A w" "gurun A w r v"
     obtains n
-    where "sset (smap f (gtrace (sdrop n r) (gtarget (stake n r) v))) \<subseteq> Collect odd"
+    where "Ball (sset (smap f (gtrace (sdrop n r) (gtarget (stake n r) v)))) odd"
   proof -
     obtain n k where 1: "smap f (gtrace (sdrop n r) (gtarget (stake n r) v)) = sconst k"
       using ranking_stuck assms by this
@@ -69,10 +69,9 @@ begin
     have 3: "gurun A w (sdrop n r) (gtarget (stake n r) v)"
       using assms(2, 3) by (simp add: graph.run_sdrop)
     have 4: "odd k" using 1 2 3 assms(1) unfolding ranking_def by meson
-    have "sset (smap f (gtrace (sdrop n r) (gtarget (stake n r) v))) = sset (sconst k)"
-      unfolding 1 by rule
-    also have "\<dots> \<subseteq> Collect odd" using 4 by simp
-    finally show ?thesis using that by simp
+    have 5: "Ball (sset (smap f (gtrace (sdrop n r) (gtarget (stake n r) v)))) odd"
+      unfolding 1 using 4 by simp
+    show ?thesis using that 5 by this
   qed
 
   lemma ranking_language:
@@ -85,7 +84,7 @@ begin
     let ?v = "(0, p)"
     have 3: "?v \<in> gunodes A w" "gurun A w ?r ?v" using 2(1, 2) by (auto intro: run_grun)
 
-    obtain n where 4: "sset (smap f (gtrace (sdrop n ?r) (gtarget (stake n ?r) ?v))) \<subseteq> {a. odd a}"
+    obtain n where 4: "Ball (sset (smap f (gtrace (sdrop n ?r) (gtarget (stake n ?r) ?v)))) odd"
       using ranking_stuck_odd assms 3 by this
     let ?s = "stake n ?r"
     let ?t = "sdrop n ?r"
@@ -114,7 +113,7 @@ begin
     show False using 4 11 by auto
   qed
 
-  subsection \<open>Word not in Language implies Ranking\<close>
+  subsection \<open>Word not in Language Implies Ranking\<close>
 
   subsubsection \<open>Removal of Endangered Nodes\<close>
 
