@@ -556,14 +556,13 @@ begin
           also have "\<dots> \<subseteq> reach A w k" using P_reach by this
           finally have 24: "?v \<in> gunodes A w" using reach_gunodes by blast
           have 25: "gurun A w ?r ?v" using run_grun 23(1) by this
-          obtain l where 26: "sset (smap f' (gtrace (sdrop l ?r) (gtarget (stake l ?r) ?v))) \<subseteq>
-            Collect odd" using ranking_stuck_odd 0 24 25 by this
+          obtain l where 26: "Ball (sset (smap f' (gtrace (sdrop l ?r) (gtarget (stake l ?r) ?v)))) odd"
+            using ranking_stuck_odd 0 24 25 by this
           have 27: "f' (Suc (k + l), r !! Suc l) =
             shd (smap f' (gtrace (sdrop l ?r) (gtarget (stake l ?r) ?v)))" by (simp add: algebra_simps)
           also have "\<dots> \<in> sset (smap f' (gtrace (sdrop l ?r) (gtarget (stake l ?r) ?v)))"
             using shd_sset by this
-          also have "\<dots> \<subseteq> Collect odd" using 26 by this
-          finally have 28: "odd (f' (Suc (k + l), r !! Suc l))" by simp
+          finally have 28: "odd (f' (Suc (k + l), r !! Suc l))" using 26 by auto
           have "r !! Suc l \<in> P (Suc (k + l))" using 23(2) by (metis add_Suc_right)
           also have "\<dots> = {p \<in> \<Union> (transition A (w !! (k + l)) ` P (k + l)).
             even (the (g (Suc (k + l)) p))}" using 23(2) by (auto simp: st_succ_def)
