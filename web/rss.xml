@@ -9,7 +9,29 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>16 Apr 2020 00:00:00 +0000</pubDate>
+    <pubDate>27 Apr 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Attack Trees in Isabelle for GDPR compliance of IoT healthcare systems</title>
+              <link>https://www.isa-afp.org/entries/Attack_Trees.html</link>
+       <guid>https://www.isa-afp.org/entries/Attack_Trees.html</guid>
+       <dc:creator> Florian Kammueller       </dc:creator>
+       <pubDate>27 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+In this article, we present a proof theory for Attack Trees. Attack
+Trees are a well established and useful model for the construction of
+attacks on systems since they allow a stepwise exploration of high
+level attacks in application scenarios. Using the expressiveness of
+Higher Order Logic in Isabelle, we develop a generic
+theory of Attack Trees with a state-based semantics based on Kripke
+structures and CTL. The resulting framework
+allows mechanically supported logic analysis of the meta-theory of the
+proof calculus of Attack Trees and at the same time the developed
+proof theory enables application to case studies. A central
+correctness and completeness result proved in Isabelle establishes a
+connection between the notion of Attack Tree validity and CTL. The
+application is illustrated on the example of a healthcare IoT system
+and GDPR compliance verification.</description>
+    </item>
     <item>
        <title>Authenticated Data Structures As Functors</title>
               <link>https://www.isa-afp.org/entries/ADS_Functor.html</link>
@@ -561,25 +583,6 @@ was a program verification competition associated with ETAPS 2019. It
 was the 8th event in the VerifyThis competition series. In this entry,
 we present polished and completed versions of our solutions that we
 created during the competition.</description>
-    </item>
-    <item>
-       <title>Aristotle's Assertoric Syllogistic</title>
-              <link>https://www.isa-afp.org/entries/Aristotles_Assertoric_Syllogistic.html</link>
-       <guid>https://www.isa-afp.org/entries/Aristotles_Assertoric_Syllogistic.html</guid>
-       <dc:creator> Angeliki Koutsoukou-Argyraki       </dc:creator>
-       <pubDate>08 Oct 2019 00:00:00 +0000</pubDate>
-       <description>
-We formalise with Isabelle/HOL some basic elements of Aristotle&#39;s
-assertoric syllogistic following the &lt;a
-href=&#34;https://plato.stanford.edu/entries/aristotle-logic/&#34;&gt;article from the Stanford Encyclopedia of Philosophy by Robin Smith.&lt;/a&gt; To
-this end, we use a set theoretic formulation (covering both individual
-and general predication). In particular, we formalise the deductions
-in the Figures and after that we present Aristotle&#39;s
-metatheoretical observation that all deductions in the Figures can in
-fact be reduced to either Barbara or Celarent. As the formal proofs
-prove to be straightforward, the interest of this entry lies in
-illustrating the functionality of Isabelle and high efficiency of
-Sledgehammer for simple exercises in philosophy.</description>
     </item>
   </channel>
 </rss>

@@ -3087,6 +3087,28 @@ topic = Computer Science/Programming Languages/Language Definitions
 abstract = We present a Theory of Objects based on the original functional sigma-calculus by Abadi and Cardelli but with an additional parameter to methods. We prove confluence of the operational semantics following the outline of Nipkow's proof of confluence for the lambda-calculus reusing his theory Commutation, a generic diamond lemma reduction. We furthermore formalize a simple type system for our sigma-calculus including a proof of type safety. The entire development uses the concept of Locally Nameless representation for binders. We reuse an earlier proof of confluence for a simpler sigma-calculus based on de Bruijn indices and lists to represent objects.
 notify = nipkow@in.tum.de
 
+[Attack_Trees]
+title = Attack Trees in Isabelle for GDPR compliance of IoT healthcare systems
+author = Florian Kammueller <http://www.cs.mdx.ac.uk/people/florian-kammueller/>
+topic = Computer Science/Security
+date = 2020-04-27
+notify = florian.kammuller@gmail.com
+abstract =
+  In this article, we present a proof theory for Attack Trees. Attack
+  Trees are a well established and useful model for the construction of
+  attacks on systems since they allow a stepwise exploration of high
+  level attacks in application scenarios. Using the expressiveness of
+  Higher Order Logic in Isabelle, we develop a generic
+  theory of Attack Trees with a state-based semantics based on Kripke
+  structures and CTL. The resulting framework
+  allows mechanically supported logic analysis of the meta-theory of the
+  proof calculus of Attack Trees and at the same time the developed
+  proof theory enables application to case studies. A central
+  correctness and completeness result proved in Isabelle establishes a
+  connection between the notion of Attack Tree validity and CTL. The
+  application is illustrated on the example of a healthcare IoT system
+  and GDPR compliance verification.
+
 [AutoFocus-Stream]
 title = AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics
 author = David Trachtenherz <>
@@ -9107,7 +9129,7 @@ author = Chelsea Edmonds <mailto:cle47@cam.ac.uk>
 topic = Mathematics/Number Theory
 date = 2020-04-07
 notify = cle47@cam.ac.uk
-abstract = 
+abstract =
   This work presents a formalisation of a generating function proof for
   Lucas's theorem. We first outline extensions to the existing
   Formal Power Series (FPS) library, including an equivalence relation
@@ -9128,7 +9150,7 @@ author = Andreas Lochbihler <http://www.andreas-lochbihler.de>, Ognjen Marić <m
 topic = Computer Science/Data Structures
 date = 2020-04-16
 notify = andreas.lochbihler@digitalasset.com, mail@andreas-lochbihler.de
-abstract = 
+abstract =
   Authenticated data structures allow several systems to convince each
   other that they are referring to the same data structure, even if each
   of them knows only a part of the data structure. Using inclusion

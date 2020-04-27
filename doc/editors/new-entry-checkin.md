@@ -68,7 +68,7 @@ Everything happens in the release branch `afp/release`.
 
          ../admin/publish <name>
 
-    This will check out the Isabelle201X (=release) version of the
+    This will check out the Isabelle202X (=release) version of the
     archive from bitbucket, will run the session `name` to generate
     HTML, produce a `.tar.gz` for the archive and for the entry, and
     will update the web pages on the server. The script will ask before
