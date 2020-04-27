@@ -9122,5 +9122,29 @@ abstract =
   theorem statement is intended to be integrated into the formalised
   proof of Hilbert's 10th Problem.
 
-
+[ADS_Functor]
+title = Authenticated Data Structures As Functors
+author = Andreas Lochbihler <http://www.andreas-lochbihler.de>, Ognjen Marić <mailto:ogi.afp@mynosefroze.com>
+topic = Computer Science/Data Structures
+date = 2020-04-16
+notify = andreas.lochbihler@digitalasset.com, mail@andreas-lochbihler.de
+abstract = 
+  Authenticated data structures allow several systems to convince each
+  other that they are referring to the same data structure, even if each
+  of them knows only a part of the data structure. Using inclusion
+  proofs, knowledgeable systems can selectively share their knowledge
+  with other systems and the latter can verify the authenticity of what
+  is being shared.  In this article, we show how to modularly define
+  authenticated data structures, their inclusion proofs, and operations
+  thereon as datatypes in Isabelle/HOL, using a shallow embedding.
+  Modularity allows us to construct complicated trees from reusable
+  building blocks, which we call Merkle functors. Merkle functors
+  include sums, products, and function spaces and are closed under
+  composition and least fixpoints.  As a practical application, we model
+  the hierarchical transactions of <a
+  href="https://www.canton.io">Canton</a>, a
+  practical interoperability protocol for distributed ledgers, as
+  authenticated data structures. This is a first step towards
+  formalizing the Canton protocol and verifying its integrity and
+  security guarantees.
 

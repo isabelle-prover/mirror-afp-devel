@@ -9,7 +9,33 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>10 Apr 2020 00:00:00 +0000</pubDate>
+    <pubDate>16 Apr 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Authenticated Data Structures As Functors</title>
+              <link>https://www.isa-afp.org/entries/ADS_Functor.html</link>
+       <guid>https://www.isa-afp.org/entries/ADS_Functor.html</guid>
+       <dc:creator> Andreas Lochbihler, Ognjen Marić       </dc:creator>
+       <pubDate>16 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+Authenticated data structures allow several systems to convince each
+other that they are referring to the same data structure, even if each
+of them knows only a part of the data structure. Using inclusion
+proofs, knowledgeable systems can selectively share their knowledge
+with other systems and the latter can verify the authenticity of what
+is being shared.  In this article, we show how to modularly define
+authenticated data structures, their inclusion proofs, and operations
+thereon as datatypes in Isabelle/HOL, using a shallow embedding.
+Modularity allows us to construct complicated trees from reusable
+building blocks, which we call Merkle functors. Merkle functors
+include sums, products, and function spaces and are closed under
+composition and least fixpoints.  As a practical application, we model
+the hierarchical transactions of &lt;a
+href=&#34;https://www.canton.io&#34;&gt;Canton&lt;/a&gt;, a
+practical interoperability protocol for distributed ledgers, as
+authenticated data structures. This is a first step towards
+formalizing the Canton protocol and verifying its integrity and
+security guarantees.</description>
+    </item>
     <item>
        <title>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</title>
               <link>https://www.isa-afp.org/entries/Sliding_Window_Algorithm.html</link>
@@ -554,28 +580,6 @@ fact be reduced to either Barbara or Celarent. As the formal proofs
 prove to be straightforward, the interest of this entry lies in
 illustrating the functionality of Isabelle and high efficiency of
 Sledgehammer for simple exercises in philosophy.</description>
-    </item>
-    <item>
-       <title>Sigma Protocols and Commitment Schemes</title>
-              <link>https://www.isa-afp.org/entries/Sigma_Commit_Crypto.html</link>
-       <guid>https://www.isa-afp.org/entries/Sigma_Commit_Crypto.html</guid>
-       <dc:creator> David Butler, Andreas Lochbihler       </dc:creator>
-       <pubDate>07 Oct 2019 00:00:00 +0000</pubDate>
-       <description>
-We use CryptHOL to formalise commitment schemes and Sigma-protocols.
-Both are widely used fundamental two party cryptographic primitives.
-Security for commitment schemes is considered using game-based
-definitions whereas the security of Sigma-protocols is considered
-using both the game-based and simulation-based security paradigms. In
-this work, we first define security for both primitives and then prove
-secure multiple case studies: the Schnorr, Chaum-Pedersen and
-Okamoto Sigma-protocols as well as a construction that allows for
-compound (AND and OR statements) Sigma-protocols and the Pedersen and
-Rivest commitment schemes. We also prove that commitment schemes can
-be constructed from Sigma-protocols. We formalise this proof at an
-abstract level, only assuming the existence of a Sigma-protocol;
-consequently, the instantiations of this result for the concrete
-Sigma-protocols we consider come for free.</description>
     </item>
   </channel>
 </rss>
