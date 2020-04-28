@@ -908,6 +908,10 @@ lemma in_mset_sum_list2:
     "L \<in># LL"
   using assms by (induction Ci) auto
 
+(* TODO: Make [simp]. *)
+lemma in_mset_sum_list_iff: "a \<in># sum_list \<A> \<longleftrightarrow> (\<exists>A \<in> set \<A>. a \<in># A)"
+  by (metis in_mset_sum_list in_mset_sum_list2)
+
 lemma subseteq_list_Union_mset:
   assumes "length Ci = n"
   assumes "length CAi = n"
@@ -1012,16 +1016,17 @@ subsubsection \<open>More on Multiset Order\<close>
 
 lemma less_multiset_doubletons:
   assumes
-    "y <  t \<or>  y <  s"  
-    "x <  t \<or>  x <  s" 
+    "y < t \<or> y < s"  
+    "x < t \<or> x < s" 
   shows 
-    "{# y,  x#} < {# t,  s#}" 
+    "{#y, x#} < {#t, s#}" 
   unfolding less_multiset\<^sub>D\<^sub>M
 proof (intro exI)
-  let ?X = "{# t,  s#}"
+  let ?X = "{#t, s#}"
   let ?Y = "{#y, x#}"
-  show "?X \<noteq> {#} \<and> ?X \<subseteq># {#t, s#} \<and> {#y, x#} = {#t, s#} - ?X + ?Y \<and> (\<forall>k. k \<in># ?Y \<longrightarrow> (\<exists>a. a \<in># ?X \<and> k < a))"
-    using add_eq_conv_diff assms(1) assms(2) by auto
+  show "?X \<noteq> {#} \<and> ?X \<subseteq># {#t, s#} \<and> {#y, x#} = {#t, s#} - ?X + ?Y
+    \<and> (\<forall>k. k \<in># ?Y \<longrightarrow> (\<exists>a. a \<in># ?X \<and> k < a))"
+    using add_eq_conv_diff assms by auto
 qed
 
 end

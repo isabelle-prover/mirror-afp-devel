@@ -463,7 +463,7 @@ lemma subst_clss_empty_iff[simp]: "CC \<cdot>cs \<eta> = {} \<longleftrightarrow
 lemma subst_cls_list_empty_iff[simp]: "Cs \<cdot>cl \<eta> = [] \<longleftrightarrow> Cs = []"
   unfolding subst_cls_list_def by auto
 
-lemma subst_cls_lists_empty_iff[simp]: "Cs \<cdot>\<cdot>cl \<eta>s = [] \<longleftrightarrow> (Cs = [] \<or> \<eta>s = [])"
+lemma subst_cls_lists_empty_iff[simp]: "Cs \<cdot>\<cdot>cl \<eta>s = [] \<longleftrightarrow> Cs = [] \<or> \<eta>s = []"
   using map2_empty_iff subst_cls_lists_def by auto
 
 lemma subst_cls_mset_empty_iff[simp]: "CC \<cdot>cm \<eta> = {#} \<longleftrightarrow> CC = {#}"
@@ -496,6 +496,11 @@ lemma subst_clss_union[simp]: "(CC \<union> DD) \<cdot>cs \<sigma> = CC \<cdot>c
 lemma subst_cls_list_append[simp]: "(Cs @ Ds) \<cdot>cl \<sigma> = Cs \<cdot>cl \<sigma> @ Ds \<cdot>cl \<sigma>"
   unfolding subst_cls_list_def by auto
 
+lemma subst_cls_lists_append[simp]:
+  "length Cs = length \<sigma>s \<Longrightarrow> length Cs' = length \<sigma>s' \<Longrightarrow>
+   (Cs @ Cs') \<cdot>\<cdot>cl (\<sigma>s @ \<sigma>s') = Cs \<cdot>\<cdot>cl \<sigma>s @ Cs' \<cdot>\<cdot>cl \<sigma>s'"
+  unfolding subst_cls_lists_def by auto
+
 lemma subst_cls_mset_union[simp]: "(CC + DD) \<cdot>cm \<sigma> = CC \<cdot>cm \<sigma> + DD \<cdot>cm \<sigma>"
   unfolding subst_cls_mset_def by auto
 
@@ -526,6 +531,9 @@ lemma subst_clss_single[simp]: "{C} \<cdot>cs \<sigma> = {C \<cdot> \<sigma>}"
 lemma subst_cls_list_single[simp]: "[C] \<cdot>cl \<sigma> = [C \<cdot> \<sigma>]"
   unfolding subst_cls_list_def by auto
 
+lemma subst_cls_lists_single[simp]: "[C] \<cdot>\<cdot>cl [\<sigma>] = [C \<cdot> \<sigma>]"
+  unfolding subst_cls_lists_def by auto
+
 lemma subst_cls_mset_single[simp]: "{#C#} \<cdot>cm \<sigma> = {#C \<cdot> \<sigma>#}"
   by simp
 
@@ -550,11 +558,17 @@ lemma subst_cls_lists_Cons[simp]: "(C # Cs) \<cdot>\<cdot>cl (\<sigma> # \<sigma
 
 subsubsection \<open>Substitution on @{term tl}\<close>
 
-lemma subst_atm_list_tl[simp]: "tl (As \<cdot>al \<eta>) = tl As \<cdot>al \<eta>"
-  by (induction As) auto
+lemma subst_atm_list_tl[simp]: "tl (As \<cdot>al \<sigma>) = tl As \<cdot>al \<sigma>"
+  by (cases As) auto
 
-lemma subst_atm_mset_list_tl[simp]: "tl (AAs \<cdot>aml \<eta>) = tl AAs \<cdot>aml \<eta>"
-  by (induction AAs) auto
+lemma subst_atm_mset_list_tl[simp]: "tl (AAs \<cdot>aml \<sigma>) = tl AAs \<cdot>aml \<sigma>"
+  by (cases AAs) auto
+
+lemma subst_cls_list_tl[simp]: "tl (Cs \<cdot>cl \<sigma>) = tl Cs \<cdot>cl \<sigma>"
+  by (cases Cs) auto
+
+lemma subst_cls_lists_tl[simp]: "length Cs = length \<sigma>s \<Longrightarrow> tl (Cs \<cdot>\<cdot>cl \<sigma>s) = tl Cs \<cdot>\<cdot>cl tl \<sigma>s"
+  by (cases Cs; cases \<sigma>s) auto
 
 
 subsubsection \<open>Substitution on @{term nth}\<close>
@@ -662,7 +676,8 @@ lemma is_renaming_inv_renaming_cancel_atm_mset_list[simp]: "is_renaming \<rho> \
 
 lemma is_renaming_list_inv_renaming_cancel_atm_mset_lists[simp]:
   "length AAs = length \<rho>s \<Longrightarrow> is_renaming_list \<rho>s \<Longrightarrow> AAs \<cdot>\<cdot>aml \<rho>s \<cdot>\<cdot>aml map inv_renaming \<rho>s = AAs"
-  by (metis inv_renaming_cancel_r_list subst_atm_mset_lists_comp_substs subst_atm_mset_lists_id_subst)
+  by (metis inv_renaming_cancel_r_list subst_atm_mset_lists_comp_substs
+      subst_atm_mset_lists_id_subst)
 
 lemma is_renaming_inv_renaming_cancel_lit[simp]: "is_renaming \<rho> \<Longrightarrow> (L \<cdot>l \<rho>) \<cdot>l inv_renaming \<rho> = L"
   by (metis inv_renaming_cancel_r subst_lit_comp_subst subst_lit_id_subst)
@@ -670,17 +685,20 @@ lemma is_renaming_inv_renaming_cancel_lit[simp]: "is_renaming \<rho> \<Longright
 lemma is_renaming_inv_renaming_cancel_cls[simp]: "is_renaming \<rho> \<Longrightarrow> C  \<cdot> \<rho> \<cdot> inv_renaming \<rho> = C"
   by (metis inv_renaming_cancel_r subst_cls_comp_subst subst_cls_id_subst)
 
-lemma is_renaming_inv_renaming_cancel_clss[simp]: "is_renaming \<rho> \<Longrightarrow> CC \<cdot>cs \<rho> \<cdot>cs inv_renaming \<rho> = CC"
+lemma is_renaming_inv_renaming_cancel_clss[simp]:
+  "is_renaming \<rho> \<Longrightarrow> CC \<cdot>cs \<rho> \<cdot>cs inv_renaming \<rho> = CC"
   by (metis inv_renaming_cancel_r subst_clss_id_subst subst_clsscomp_subst)
 
-lemma is_renaming_inv_renaming_cancel_cls_list[simp]: "is_renaming \<rho> \<Longrightarrow> Cs \<cdot>cl \<rho> \<cdot>cl inv_renaming \<rho> = Cs"
+lemma is_renaming_inv_renaming_cancel_cls_list[simp]:
+  "is_renaming \<rho> \<Longrightarrow> Cs \<cdot>cl \<rho> \<cdot>cl inv_renaming \<rho> = Cs"
   by (metis inv_renaming_cancel_r subst_cls_list_comp_subst subst_cls_list_id_subst)
 
 lemma is_renaming_list_inv_renaming_cancel_cls_list[simp]:
   "length Cs = length \<rho>s \<Longrightarrow> is_renaming_list \<rho>s \<Longrightarrow> Cs \<cdot>\<cdot>cl \<rho>s \<cdot>\<cdot>cl map inv_renaming \<rho>s = Cs"
   by (metis inv_renaming_cancel_r_list subst_cls_lists_comp_substs subst_cls_lists_id_subst)
 
-lemma is_renaming_inv_renaming_cancel_cls_mset[simp]: "is_renaming \<rho> \<Longrightarrow> CC \<cdot>cm \<rho> \<cdot>cm inv_renaming \<rho> = CC"
+lemma is_renaming_inv_renaming_cancel_cls_mset[simp]:
+  "is_renaming \<rho> \<Longrightarrow> CC \<cdot>cm \<rho> \<cdot>cm inv_renaming \<rho> = CC"
   by (metis inv_renaming_cancel_r subst_cls_mset_comp_subst subst_cls_mset_id_subst)
 
 
@@ -1049,9 +1067,22 @@ lemma strict_subset_subst_strictly_subsumes:
   by (metis c\<eta>_sub leD mset_subset_size size_mset_mono size_subst strictly_subsumes_def
       subset_mset.dual_order.strict_implies_order substitution_ops.subsumes_def)
 
+lemma subsumes_refl: "subsumes C C"
+  unfolding subsumes_def by (rule exI[of _ id_subst]) auto
+
 lemma subsumes_trans: "subsumes C D \<Longrightarrow> subsumes D E \<Longrightarrow> subsumes C E"
   unfolding subsumes_def
   by (metis (no_types) subset_mset.order.trans subst_cls_comp_subst subst_cls_mono_mset)
+
+lemma strictly_subsumes_irrefl: "\<not> strictly_subsumes C C"
+  unfolding strictly_subsumes_def by blast
+
+lemma strictly_subsumes_antisym: "strictly_subsumes C D \<Longrightarrow> \<not> strictly_subsumes D C"
+  unfolding strictly_subsumes_def by blast
+
+lemma strictly_subsumes_trans:
+  "strictly_subsumes C D \<Longrightarrow> strictly_subsumes D E \<Longrightarrow> strictly_subsumes C E"
+  unfolding strictly_subsumes_def using subsumes_trans by blast
 
 lemma subset_strictly_subsumes: "C \<subset># D \<Longrightarrow> strictly_subsumes C D"
   using strict_subset_subst_strictly_subsumes[of C id_subst] by auto
@@ -1091,8 +1122,8 @@ proof (rule ccontr)
     by metis
   then have "\<forall>l' \<ge> l. strictly_generalizes_cls (c (Suc l')) (c l')"
     using ps unfolding strictly_generalizes_cls_def generalizes_cls_def
-    by (metis size_subst less_irrefl strictly_subsumes_def mset_subset_size
-        subset_mset_def subsumes_def strictly_subsumes_neq)
+    by (metis size_subst less_irrefl strictly_subsumes_def mset_subset_size subset_mset_def
+        subsumes_def strictly_subsumes_neq)
   then have "\<forall>i. strictly_generalizes_cls (c (Suc i + l)) (c (i + l))"
     unfolding strictly_generalizes_cls_def generalizes_cls_def by auto
   then have "\<exists>f. \<forall>i. strictly_generalizes_cls (f (Suc i)) (f i)"
@@ -1102,6 +1133,9 @@ proof (rule ccontr)
       wf_iff_no_infinite_down_chain[of "{(x, y). strictly_generalizes_cls x y}"]
     unfolding wfP_def by auto
 qed
+
+lemma wf_strictly_subsumes: "wfP strictly_subsumes"
+  using strictly_subsumes_has_minimum by (metis equals0D wfP_eq_minimal)
 
 end
 
