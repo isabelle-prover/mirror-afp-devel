@@ -877,6 +877,7 @@ lemma ord_resolve_rename_lifting:
     "CAs0 \<cdot>\<cdot>cl \<eta>s = CAs" "DA0 \<cdot> \<eta> = DA" "E0 \<cdot> \<eta>2 = E"
     "{DA0} \<union> set CAs0 \<subseteq> M"
     "length CAs0 = length CAs"
+    "length \<eta>s = length CAs"
   using res_e
 proof (cases rule: ord_resolve.cases)
   case (ord_resolve n Cs D)
@@ -1273,7 +1274,11 @@ proof (cases rule: ord_resolve.cases)
       using that e0'\<phi>e make_ground_subst by auto
   qed
 
-  have \<open>length CAs0 = length CAs\<close> using n by simp
+  have \<open>length CAs0 = length CAs\<close>
+    using n by simp
+
+  have \<open>length \<eta>s0 = length CAs\<close>
+    using n by simp
 
   \<comment> \<open>Wrap up the proof\<close>
   have "ord_resolve S (CAs0 \<cdot>\<cdot>cl \<rho>s) (DA0 \<cdot> \<rho>) (AAs0 \<cdot>\<cdot>aml \<rho>s) (As0 \<cdot>al \<rho>) \<tau> E0'"
@@ -1287,8 +1292,8 @@ proof (cases rule: ord_resolve.cases)
   then show thesis
     using that[of \<eta>0 \<eta>s0 \<eta>2 CAs0 DA0] \<open>is_ground_subst \<eta>0\<close> \<open>is_ground_subst_list \<eta>s0\<close>
       \<open>is_ground_subst \<eta>2\<close> \<open>CAs0 \<cdot>\<cdot>cl \<eta>s0 = CAs\<close> \<open>DA0 \<cdot> \<eta>0 = DA\<close> \<open>E0' \<cdot> \<eta>2 = E\<close> \<open>DA0 \<in> M\<close>
-      \<open>\<forall>CA \<in> set CAs0. CA \<in> M\<close> \<open>length CAs0 = length CAs\<close>
-  by blast
+      \<open>\<forall>CA \<in> set CAs0. CA \<in> M\<close> \<open>length CAs0 = length CAs\<close> \<open>length \<eta>s0 = length CAs\<close>
+    by blast
 qed
 
 end
