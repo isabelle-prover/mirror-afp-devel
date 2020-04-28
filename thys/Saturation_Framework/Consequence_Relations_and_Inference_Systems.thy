@@ -50,21 +50,25 @@ subsection \<open>Families of Consequence Relations\<close>
 locale consequence_relation_family =
   fixes
     Bot :: "'f set" and
-    Q :: "'q itself" and
+    Q :: "'q set" and
     entails_q :: "'q \<Rightarrow> ('f set \<Rightarrow> 'f set \<Rightarrow> bool)"
   assumes
-    Bot_not_empty: "Bot \<noteq> {}" and
-    q_cons_rel: "consequence_relation Bot (entails_q q)"
+    Q_nonempty: "Q \<noteq> {}" and
+    q_cons_rel: "\<forall>q \<in> Q. consequence_relation Bot (entails_q q)"
 begin
 
+lemma bot_not_empty: "Bot \<noteq> {}"
+  using Q_nonempty consequence_relation.bot_not_empty consequence_relation_family.q_cons_rel
+    consequence_relation_family_axioms by blast
+
 definition entails_Q :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>Q" 50) where
-  "(N1 \<Turnstile>Q N2) = (\<forall>q. entails_q q N1 N2)"
+  "N1 \<Turnstile>Q N2 \<longleftrightarrow> (\<forall>q \<in> Q. entails_q q N1 N2)"
 
 (* lem:intersection-of-conseq-rel *)
 lemma intersect_cons_rel_family: "consequence_relation Bot entails_Q"
   unfolding consequence_relation_def
 proof (intro conjI)
-  show \<open>Bot \<noteq> {}\<close> using Bot_not_empty .
+  show \<open>Bot \<noteq> {}\<close> using bot_not_empty .
 next
   show "\<forall>B N. B \<in> Bot \<longrightarrow> {B} \<Turnstile>Q N"
     unfolding entails_Q_def by (metis consequence_relation_def q_cons_rel)

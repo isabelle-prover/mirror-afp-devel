@@ -19,7 +19,7 @@ locale Prover_Architecture_Basis = labeled_lifting_with_red_crit_family Bot_F In
     Bot_F :: "'f set"
     and Inf_F :: "'f inference set"
     and Bot_G :: "'g set"
-    and Q :: "'q itself"
+    and Q :: "'q set"
     and entails_q :: "'q \<Rightarrow> ('g set \<Rightarrow> 'g set \<Rightarrow> bool)"
     and Inf_G :: \<open>'g inference set\<close>
     and Red_Inf_q :: "'q \<Rightarrow> ('g set \<Rightarrow> 'g inference set)"
@@ -36,19 +36,19 @@ locale Prover_Architecture_Basis = labeled_lifting_with_red_crit_family Bot_F In
     equiv_F_is_equiv_rel: "equiv UNIV Equiv_F" and
     wf_prec_F: "minimal_element (Prec_F) UNIV" and
     wf_prec_l: "minimal_element (Prec_l) UNIV" and
-    compat_equiv_prec: "(C1,D1) \<in> equiv_F \<Longrightarrow> (C2,D2) \<in> equiv_F \<Longrightarrow> C1 \<cdot>\<succ> C2 \<Longrightarrow> D1 \<cdot>\<succ> D2" and
-    equiv_F_grounding: "(C1,C2) \<in> equiv_F \<Longrightarrow> \<G>_F_q q C1 = \<G>_F_q q C2" and
-    prec_F_grounding: "C1 \<cdot>\<succ> C2 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
+    compat_equiv_prec: "(C1, D1) \<in> equiv_F \<Longrightarrow> (C2,D2) \<in> equiv_F \<Longrightarrow> C1 \<cdot>\<succ> C2 \<Longrightarrow> D1 \<cdot>\<succ> D2" and
+    equiv_F_grounding: "q \<in> Q \<Longrightarrow> (C1, C2) \<in> equiv_F \<Longrightarrow> \<G>_F_q q C1 = \<G>_F_q q C2" and
+    prec_F_grounding: "q \<in> Q \<Longrightarrow> C1 \<cdot>\<succ> C2 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
     static_ref_comp: "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>)
       no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q
       no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_F_Q"
 begin
 
 definition equiv_F_fun :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) where
-  "equiv_F_fun C D \<equiv> (C,D) \<in> Equiv_F"
+  "equiv_F_fun C D \<equiv> (C, D) \<in> Equiv_F"
 
 definition Prec_eq_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<cdot>\<succeq>" 50) where
-  "Prec_eq_F C D \<equiv> ((C,D) \<in> Equiv_F \<or> C \<cdot>\<succ> D)"
+  "Prec_eq_F C D \<equiv> ((C, D) \<in> Equiv_F \<or> C \<cdot>\<succ> D)"
 
 definition Prec_FL :: "('f \<times> 'l) \<Rightarrow> ('f \<times> 'l) \<Rightarrow> bool" (infix "\<sqsubset>" 50) where
   "Prec_FL Cl1 Cl2 \<equiv> (fst Cl1 \<cdot>\<succ> fst Cl2) \<or> (fst Cl1 \<doteq> fst Cl2 \<and> snd Cl1 \<sqsubset>l snd Cl2)"
@@ -108,16 +108,17 @@ lemma labeled_static_ref_comp:
   "static_refutational_complete_calculus Bot_FL Inf_FL (\<Turnstile>\<inter>L) with_labels.Red_Inf_Q with_labels.Red_F_Q"
   using labeled_static_ref[OF static_ref_comp] .
 
-lemma standard_labeled_lifting_family: "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G
-  (entails_q q) Inf_G (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Prec_FL)"
+lemma standard_labeled_lifting_family:
+  assumes q_in: "q \<in> Q"
+  shows "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G
+    (entails_q q) Inf_G (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Prec_FL)"
 proof -
-  fix q
   have "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G (entails_q q) Inf_G
     (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Labeled_Empty_Order)"
-    using ord_fam_lifted_q .
+    using ord_fam_lifted_q[OF q_in] .
   then have "standard_lifting Bot_FL Inf_FL Bot_G Inf_G (entails_q q) (Red_Inf_q q) (Red_F_q q)
     (\<G>_F_L_q q) (\<G>_Inf_L_q q)"
-    using lifted_q by blast
+    using lifted_q[OF q_in] by blast
   then show "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G (entails_q q) Inf_G (Red_Inf_q q)
     (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Prec_FL)"
     using wf_prec_FL
@@ -189,17 +190,18 @@ lemma labeled_ordered_dynamic_ref_comp:
 (* lem:redundant-labeled-inferences *)
 lemma labeled_red_inf_eq_red_inf: "\<iota> \<in> Inf_FL \<Longrightarrow>
   \<iota> \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_Inf_Q N \<equiv>
-  (to_F \<iota>) \<in> no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` N)" for \<iota>
+  to_F \<iota> \<in> no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` N)" for \<iota>
 proof -
   fix \<iota>
   assume i_in: "\<iota> \<in> Inf_FL"
   have "\<iota> \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_Inf_Q N \<Longrightarrow>
-    (to_F \<iota>) \<in> no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` N)"
+    to_F \<iota> \<in> no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` N)"
   proof -
     assume i_in2: "\<iota> \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_Inf_Q N"
-    then have "X \<in> labeled_ord_red_crit_fam.Red_Inf_\<G>_q ` UNIV \<Longrightarrow> \<iota> \<in> X N" for X
+    then have "X \<in> labeled_ord_red_crit_fam.Red_Inf_\<G>_q ` Q \<Longrightarrow> \<iota> \<in> X N" for X
       unfolding labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_Inf_Q_def by blast
-    obtain X0 where "X0 \<in> labeled_ord_red_crit_fam.Red_Inf_\<G>_q ` UNIV" by blast
+    obtain X0 where "X0 \<in> labeled_ord_red_crit_fam.Red_Inf_\<G>_q ` Q"
+      using with_labels.Q_nonempty by blast
     then obtain q0 where x0_is: "X0 N = labeled_ord_red_crit_fam.Red_Inf_\<G>_q q0 N" by blast
     then obtain Y0 where y0_is: "Y0 (fst ` N) = to_F ` (X0 N)" by auto
     have "Y0 (fst ` N) = no_labels.Red_Inf_\<G>_q q0 (fst ` N)"
@@ -272,7 +274,7 @@ proof -
            using x0_is i0_to_i0_FL i0_in2 by blast
        qed
      qed
-    then have "Y \<in> no_labels.Red_Inf_\<G>_q ` UNIV \<Longrightarrow> (to_F \<iota>) \<in> Y (fst ` N)" for Y
+    then have "Y \<in> no_labels.Red_Inf_\<G>_q ` Q \<Longrightarrow> (to_F \<iota>) \<in> Y (fst ` N)" for Y
       using i_in2 no_labels.lifted_calc_w_red_crit_family.Red_Inf_Q_def
         red_inf_equiv2 red_inf_impl by fastforce
     then show "(to_F \<iota>) \<in> no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` N)"
@@ -284,11 +286,11 @@ proof -
     \<iota> \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_Inf_Q N"
   proof -
     assume to_F_in: "to_F \<iota> \<in> no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` N)"
-    have imp_to_F: "X \<in> no_labels.Red_Inf_\<G>_q ` UNIV \<Longrightarrow> to_F \<iota> \<in> X (fst ` N)" for X
+    have imp_to_F: "X \<in> no_labels.Red_Inf_\<G>_q ` Q \<Longrightarrow> to_F \<iota> \<in> X (fst ` N)" for X
       using to_F_in unfolding no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q_def
       by blast
-    then have to_F_in2: "to_F \<iota> \<in> no_labels.Red_Inf_\<G>_q q (fst ` N)" for q
-      by fast
+    then have to_F_in2: "to_F \<iota> \<in> no_labels.Red_Inf_\<G>_q q (fst ` N)" if "q \<in> Q" for q
+      using that by auto
     have "labeled_ord_red_crit_fam.Red_Inf_\<G>_q q N =
       {\<iota>0_FL \<in> Inf_FL. to_F \<iota>0_FL \<in> no_labels.Red_Inf_\<G>_q q (fst ` N)}" for q
     proof
@@ -337,8 +339,8 @@ proof -
           by blast
       qed
     qed
-    then have "\<iota> \<in> labeled_ord_red_crit_fam.Red_Inf_\<G>_q q N" for q
-      using to_F_in2 i_in
+    then have "\<iota> \<in> labeled_ord_red_crit_fam.Red_Inf_\<G>_q q N" if "q \<in> Q" for q
+      using that to_F_in2 i_in
       unfolding labeled_ord_red_crit_fam.Red_Inf_\<G>_q_def
         no_labels.Red_Inf_\<G>_q_def \<G>_Inf_L_q_def labeled_ord_red_crit_fam.\<G>_set_q_def
         no_labels.\<G>_set_q_def \<G>_F_L_q_def
@@ -348,14 +350,14 @@ proof -
       by blast
   qed
   ultimately show "\<iota> \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_Inf_Q N \<equiv>
-    (to_F \<iota>) \<in> no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` N)"
+    to_F \<iota> \<in> no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` N)"
     by argo
 qed
 
 (* lem:redundant-labeled-formulas *)
 lemma red_labeled_clauses: \<open>C \<in> no_labels.Red_F_\<G>_empty (fst ` N) \<or> (\<exists>C' \<in> (fst ` N). C \<cdot>\<succ> C') \<or>
-  (\<exists>(C',L') \<in> N. (L' \<sqsubset>l L \<and> C \<cdot>\<succeq> C')) \<Longrightarrow>
-  (C,L) \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q N\<close>
+  (\<exists>(C', L') \<in> N. (L' \<sqsubset>l L \<and> C \<cdot>\<succeq> C')) \<Longrightarrow>
+  (C, L) \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q N\<close>
 proof -
   assume \<open>C \<in> no_labels.Red_F_\<G>_empty (fst ` N) \<or>
     (\<exists>C' \<in> (fst ` N). C \<cdot>\<succ> C') \<or> (\<exists>(C',L') \<in> N. (L' \<sqsubset>l L \<and> C \<cdot>\<succeq> C'))\<close>
@@ -363,14 +365,14 @@ proof -
     (C,L) \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q N\<close>
   proof -
     assume "C \<in> no_labels.Red_F_\<G>_empty (fst ` N)"
-    then have "C \<in> no_labels.Red_F_\<G>_empty_q q (fst ` N)" for q
-      unfolding no_labels.Red_F_\<G>_empty_def by fast
-    then have g_in_red: "\<G>_F_q q C \<subseteq> Red_F_q q (no_labels.\<G>_set_q q (fst ` N))" for q
-      unfolding no_labels.Red_F_\<G>_empty_q_def by blast
+    then have "C \<in> no_labels.Red_F_\<G>_empty_q q (fst ` N)" if "q \<in> Q" for q
+      unfolding no_labels.Red_F_\<G>_empty_def using that by fast
+    then have g_in_red: "\<G>_F_q q C \<subseteq> Red_F_q q (no_labels.\<G>_set_q q (fst ` N))" if "q \<in> Q" for q
+      unfolding no_labels.Red_F_\<G>_empty_q_def using that by blast
     have "no_labels.\<G>_set_q q (fst ` N) = labeled_ord_red_crit_fam.\<G>_set_q q N" for q
       unfolding no_labels.\<G>_set_q_def labeled_ord_red_crit_fam.\<G>_set_q_def \<G>_F_L_q_def by simp
-    then have "\<G>_F_L_q q (C,L) \<subseteq> Red_F_q q (labeled_ord_red_crit_fam.\<G>_set_q q N)" for q
-      using g_in_red unfolding \<G>_F_L_q_def by simp
+    then have "\<G>_F_L_q q (C,L) \<subseteq> Red_F_q q (labeled_ord_red_crit_fam.\<G>_set_q q N)" if "q \<in> Q" for q
+      using that g_in_red unfolding \<G>_F_L_q_def by simp
     then show "(C,L) \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q N"
       unfolding labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q_def
         labeled_ord_red_crit_fam.Red_F_\<G>_q_g_def by blast
@@ -383,19 +385,20 @@ proof -
     obtain L' where c'_l'_in: "(C',L') \<in> N" using c'_in by auto
     have c'_l'_prec: "(C',L') \<sqsubset> (C,L)"
       using c_prec_c' unfolding Prec_FL_def by (meson UNIV_I compat_equiv_prec)
-    have c_in_c'_g: "\<G>_F_q q C \<subseteq> \<G>_F_q q C'" for q
-      using prec_F_grounding[OF c_prec_c'] by presburger
-    then have "\<G>_F_L_q q (C,L) \<subseteq> \<G>_F_L_q q (C',L')" for q
-      unfolding no_labels.\<G>_set_q_def labeled_ord_red_crit_fam.\<G>_set_q_def \<G>_F_L_q_def by auto
-    then have "(C,L) \<in> labeled_ord_red_crit_fam.Red_F_\<G>_q_g q N" for q
-      unfolding labeled_ord_red_crit_fam.Red_F_\<G>_q_g_def using c'_l'_in c'_l'_prec by blast
-    then show "(C,L) \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q N"
+    have c_in_c'_g: "\<G>_F_q q C \<subseteq> \<G>_F_q q C'" if "q \<in> Q" for q
+      using prec_F_grounding[OF that c_prec_c'] by presburger
+    then have "\<G>_F_L_q q (C,L) \<subseteq> \<G>_F_L_q q (C',L')" if "q \<in> Q" for q
+      unfolding no_labels.\<G>_set_q_def labeled_ord_red_crit_fam.\<G>_set_q_def \<G>_F_L_q_def
+      using that by auto
+    then have "(C, L) \<in> labeled_ord_red_crit_fam.Red_F_\<G>_q_g q N" if "q \<in> Q" for q
+      unfolding labeled_ord_red_crit_fam.Red_F_\<G>_q_g_def using that c'_l'_in c'_l'_prec by blast
+    then show "(C, L) \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q N"
       unfolding labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q_def by blast
   qed
-  moreover have iii: \<open>\<exists>(C',L') \<in> N. (L' \<sqsubset>l L \<and> C \<cdot>\<succeq> C')  \<Longrightarrow>
+  moreover have iii: \<open>\<exists>(C', L') \<in> N. (L' \<sqsubset>l L \<and> C \<cdot>\<succeq> C')  \<Longrightarrow>
     (C,L) \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q N\<close>
   proof -
-    assume "\<exists>(C',L') \<in> N. (L' \<sqsubset>l L \<and> C \<cdot>\<succeq> C')"
+    assume "\<exists>(C', L') \<in> N. L' \<sqsubset>l L \<and> C \<cdot>\<succeq> C'"
     then obtain C' L' where c'_l'_in: "(C',L') \<in> N" and l'_sub_l: "L' \<sqsubset>l L" and c'_sub_c: "C \<cdot>\<succeq> C'"
       by fast
     have "(C,L) \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q N" if "C \<cdot>\<succ> C'"
@@ -406,12 +409,13 @@ proof -
         using equiv_F_is_equiv_rel equiv_F_fun_def equiv_class_eq_iff by fastforce
       then have c'_l'_prec: "(C',L') \<sqsubset> (C,L)"
         using l'_sub_l unfolding Prec_FL_def by simp
-      have "\<G>_F_q q C = \<G>_F_q q C'" for q
-        using equiv_F_grounding equiv_c'_c by blast
-      then have "\<G>_F_L_q q (C,L) = \<G>_F_L_q q (C',L')" for q
-        unfolding no_labels.\<G>_set_q_def labeled_ord_red_crit_fam.\<G>_set_q_def \<G>_F_L_q_def by auto
-      then have "(C,L) \<in> labeled_ord_red_crit_fam.Red_F_\<G>_q_g q N" for q
-        unfolding labeled_ord_red_crit_fam.Red_F_\<G>_q_g_def using c'_l'_in c'_l'_prec by blast
+      have "\<G>_F_q q C = \<G>_F_q q C'" if "q \<in> Q" for q
+        using that equiv_F_grounding equiv_c'_c by blast
+      then have "\<G>_F_L_q q (C,L) = \<G>_F_L_q q (C',L')" if "q \<in> Q" for q
+        unfolding no_labels.\<G>_set_q_def labeled_ord_red_crit_fam.\<G>_set_q_def \<G>_F_L_q_def
+        using that by auto
+      then have "(C,L) \<in> labeled_ord_red_crit_fam.Red_F_\<G>_q_g q N" if "q \<in> Q" for q
+        unfolding labeled_ord_red_crit_fam.Red_F_\<G>_q_g_def using that c'_l'_in c'_l'_prec by blast
       then have "(C,L) \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q N"
         unfolding labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q_def by blast
     }
@@ -432,7 +436,7 @@ locale Given_Clause = Prover_Architecture_Basis Bot_F Inf_F Bot_G Q entails_q In
     Bot_F :: "'f set" and
     Inf_F :: "'f inference set" and
     Bot_G :: "'g set" and
-    Q :: "'q itself" and
+    Q :: "'q set" and
     entails_q :: "'q \<Rightarrow> ('g set \<Rightarrow> 'g set \<Rightarrow> bool)" and
     Inf_G :: \<open>'g inference set\<close> and
     Red_Inf_q :: "'q \<Rightarrow> ('g set \<Rightarrow> 'g inference set)" and
@@ -630,42 +634,6 @@ proof -
         using c_is njm_prec_all_suc njm_prec_smaller_d by (metis (mono_tags, lifting)
           active_subset_def mem_Collect_eq nj_prec_is njm_smaller_D snd_conv)
     qed
-    have uniq_nj: "j \<in> {0..<m} \<Longrightarrow>
-      (enat (Suc nj1) < llength D \<and>
-      (prems_of \<iota>)!j \<notin> active_subset (lnth D nj1) \<and>
-      (\<forall>k. k > nj1 \<longrightarrow> enat k < llength D \<longrightarrow> (prems_of \<iota>)!j \<in> active_subset (lnth D k))) \<Longrightarrow>
-      (enat (Suc nj2) < llength D \<and>
-      (prems_of \<iota>)!j \<notin> active_subset (lnth D nj2) \<and>
-      (\<forall>k. k > nj2 \<longrightarrow> enat k < llength D \<longrightarrow> (prems_of \<iota>)!j \<in> active_subset (lnth D k))) \<Longrightarrow> nj1=nj2"
-    proof (clarify, rule ccontr)
-      fix j nj1 nj2
-      assume "j \<in> {0..<m}" and
-        nj1_d: "enat (Suc nj1) < llength D" and
-        nj2_d: "enat (Suc nj2) < llength D" and
-        nj1_notin: "prems_of \<iota> ! j \<notin> active_subset (lnth D nj1)" and
-        k_nj1: "\<forall>k>nj1. enat k < llength D \<longrightarrow> prems_of \<iota> ! j \<in> active_subset (lnth D k)" and
-        nj2_notin: "prems_of \<iota> ! j \<notin> active_subset (lnth D nj2)" and
-        k_nj2: "\<forall>k>nj2. enat k < llength D \<longrightarrow> prems_of \<iota> ! j \<in> active_subset (lnth D k)" and
-        diff_12: "nj1 \<noteq> nj2"
-      have "nj1 < nj2 \<Longrightarrow> False"
-      proof -
-        assume prec_12: "nj1 < nj2"
-        have "enat nj2 < llength D" using nj2_d using Suc_ile_eq less_trans by blast
-        then have "prems_of \<iota> ! j \<in> active_subset (lnth D nj2)"
-          using k_nj1 prec_12 by simp
-        then show False using nj2_notin by simp
-      qed
-      moreover have "nj1 > nj2 \<Longrightarrow> False"
-      proof -
-        assume prec_21: "nj2 < nj1"
-        have "enat nj1 < llength D" using nj1_d using Suc_ile_eq less_trans by blast
-        then have "prems_of \<iota> ! j \<in> active_subset (lnth D nj1)"
-          using k_nj2 prec_21
-          by simp
-        then show False using nj1_notin by simp
-      qed
-      ultimately show False using diff_12 by linarith
-    qed
     define nj_set where "nj_set = {nj. (\<exists>j\<in>{0..<m}. enat (Suc nj) < llength D \<and>
       (prems_of \<iota>)!j \<notin> active_subset (lnth D nj) \<and>
       (\<forall>k. k > nj \<longrightarrow> enat k < llength D \<longrightarrow> (prems_of \<iota>)!j \<in> active_subset (lnth D k)))}"
@@ -680,7 +648,7 @@ proof -
       then show "nj_set \<noteq> {}" by auto
     qed
     have nj_finite: "finite nj_set"
-      using uniq_nj all_ex_finite_set[OF exist_nj]
+      using all_ex_finite_set[OF exist_nj]
       by (metis (no_types, lifting) Suc_ile_eq dual_order.strict_implies_order
         linorder_neqE_nat nj_set_def)
     (* the n below in the n-1 from the pen-and-paper proof *)
@@ -763,7 +731,7 @@ proof -
       by force
     then have "to_F \<iota> \<in> no_labels.lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` (lnth D (Suc n)))"
       using suc_nth_d_is inf_from_subs by fastforce
-    then have "\<forall>q. (\<G>_Inf_q q (to_F \<iota>) \<noteq> None \<and>
+    then have "\<forall>q \<in> Q. (\<G>_Inf_q q (to_F \<iota>) \<noteq> None \<and>
       the (\<G>_Inf_q q (to_F \<iota>)) \<subseteq> Red_Inf_q q (\<Union> (\<G>_F_q q ` (fst ` (lnth D (Suc n))))))
       \<or> (\<G>_Inf_q q (to_F \<iota>) = None \<and>
       \<G>_F_q q (concl_of (to_F \<iota>)) \<subseteq> (\<Union> (\<G>_F_q q ` (fst ` (lnth D (Suc n))))) \<union>
@@ -819,7 +787,7 @@ locale Lazy_Given_Clause = Prover_Architecture_Basis Bot_F Inf_F Bot_G Q entails
     Bot_F :: "'f set" and
     Inf_F :: "'f inference set" and
     Bot_G :: "'g set" and
-    Q :: "'q itself" and
+    Q :: "'q set" and
     entails_q :: "'q \<Rightarrow> ('g set \<Rightarrow> 'g set \<Rightarrow> bool)" and
     Inf_G :: \<open>'g inference set\<close> and
     Red_Inf_q :: "'q \<Rightarrow> ('g set \<Rightarrow> 'g inference set)" and
@@ -845,8 +813,8 @@ definition active_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l)
 definition non_active_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
   "non_active_subset M = {CL \<in> M. snd CL \<noteq> active}"
 
-inductive Lazy_Given_Clause_step :: "('f inference set) \<times> (('f \<times> 'l) set) \<Rightarrow>
-  ('f inference set) \<times> (('f \<times> 'l) set) \<Rightarrow> bool" (infix "\<Longrightarrow>LGC" 50) where
+inductive Lazy_Given_Clause_step :: "'f inference set \<times> ('f \<times> 'l) set \<Rightarrow>
+  'f inference set \<times> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<Longrightarrow>LGC" 50) where
   process: "N1 = N \<union> M \<Longrightarrow> N2 = N \<union> M' \<Longrightarrow> N \<inter> M = {} \<Longrightarrow>
     M \<subseteq>  labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q (N \<union> M') \<Longrightarrow>
     active_subset M' = {} \<Longrightarrow> (T,N1) \<Longrightarrow>LGC (T,N2)" |
@@ -1282,7 +1250,7 @@ proof -
       using i_in_p i_notin_suc_p by fastforce
     have "to_F \<iota> \<in> no_labels.lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` (snd (lnth D (Suc p))))"
       using i_in_red_inf suc_p_is n2p_is by fastforce
-    then have "\<forall>q. (\<G>_Inf_q q (to_F \<iota>) \<noteq> None \<and>
+    then have "\<forall>q \<in> Q. (\<G>_Inf_q q (to_F \<iota>) \<noteq> None \<and>
       the (\<G>_Inf_q q (to_F \<iota>)) \<subseteq> Red_Inf_q q (\<Union> (\<G>_F_q q ` (fst ` (snd (lnth D (Suc p)))))))
       \<or> (\<G>_Inf_q q (to_F \<iota>) = None \<and>
       \<G>_F_q q (concl_of (to_F \<iota>)) \<subseteq> (\<Union> (\<G>_F_q q ` (fst ` (snd (lnth D (Suc p)))))) \<union>
@@ -1313,7 +1281,7 @@ proof -
     not_empty_d: "llength D > 0" and
     init_state: "active_subset (snd (lnth D 0)) = {}" and
     final_state: "non_active_subset (Liminf_llist (lmap snd D)) = {}" and
-    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> (fst (lnth D 0))" and
+    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> fst (lnth D 0)" and
     final_schedule: "Liminf_llist (lmap fst D) = {}" and
     b_in: "B \<in> Bot_F" and
     bot_entailed: "no_labels.entails_\<G>_Q (fst ` (snd (lnth D 0))) {B}"
