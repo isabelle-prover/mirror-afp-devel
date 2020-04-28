@@ -14,7 +14,7 @@ begin
 subsection \<open>Basis of the Prover Architectures\<close>
 
 locale Prover_Architecture_Basis = labeled_lifting_with_red_crit_family Bot_F Inf_F Bot_G Q entails_q Inf_G
-  Red_Inf_q Red_F_q \<G>_F_q \<G>_Inf_q l Inf_FL
+  Red_Inf_q Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL
   for
     Bot_F :: "'f set"
     and Inf_F :: "'f inference set"
@@ -26,7 +26,6 @@ locale Prover_Architecture_Basis = labeled_lifting_with_red_crit_family Bot_F In
     and Red_F_q :: "'q \<Rightarrow> ('g set \<Rightarrow> 'g set)"
     and \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set"
     and \<G>_Inf_q :: "'q \<Rightarrow> 'f inference \<Rightarrow> 'g inference set option"
-    and l :: "'l itself"
     and Inf_FL :: \<open>('f \<times> 'l) inference set\<close>
   + fixes
     Equiv_F :: "('f \<times> 'f) set" and
@@ -431,7 +430,7 @@ end
 subsection \<open>Given Clause Architecture\<close>
 
 locale Given_Clause = Prover_Architecture_Basis Bot_F Inf_F Bot_G Q entails_q Inf_G Red_Inf_q
-  Red_F_q \<G>_F_q \<G>_Inf_q l Inf_FL Equiv_F Prec_F Prec_l
+  Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL Equiv_F Prec_F Prec_l
   for
     Bot_F :: "'f set" and
     Inf_F :: "'f inference set" and
@@ -443,7 +442,6 @@ locale Given_Clause = Prover_Architecture_Basis Bot_F Inf_F Bot_G Q entails_q In
     Red_F_q :: "'q \<Rightarrow> ('g set \<Rightarrow> 'g set)" and
     \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set"  and
     \<G>_Inf_q :: "'q \<Rightarrow> 'f inference \<Rightarrow> 'g inference set option" and
-    l :: "'l itself" and
     Inf_FL :: \<open>('f \<times> 'l) inference set\<close> and
     Equiv_F :: "('f \<times> 'f) set" and
     Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<cdot>\<succ>" 50) and
@@ -782,7 +780,7 @@ end
 subsection \<open>Lazy Given Clause Architecture\<close>
 
 locale Lazy_Given_Clause = Prover_Architecture_Basis Bot_F Inf_F Bot_G Q entails_q Inf_G Red_Inf_q
-  Red_F_q \<G>_F_q \<G>_Inf_q l Inf_FL Equiv_F Prec_F Prec_l
+  Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL Equiv_F Prec_F Prec_l
   for
     Bot_F :: "'f set" and
     Inf_F :: "'f inference set" and
@@ -794,7 +792,6 @@ locale Lazy_Given_Clause = Prover_Architecture_Basis Bot_F Inf_F Bot_G Q entails
     Red_F_q :: "'q \<Rightarrow> ('g set \<Rightarrow> 'g set)" and
     \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set"  and
     \<G>_Inf_q :: "'q \<Rightarrow> 'f inference \<Rightarrow> 'g inference set option" and
-    l :: "'l itself" and
     Inf_FL :: \<open>('f \<times> 'l) inference set\<close> and
     Equiv_F :: "('f \<times> 'f) set" and
     Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<cdot>\<succ>" 50) and

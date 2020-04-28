@@ -26,7 +26,6 @@ locale labeled_lifting_w_wf_ord_family =
     \<G>_Inf :: "'f inference \<Rightarrow> 'g inference set option" and
     Prec_F :: "'g \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> bool"  (infix "\<sqsubset>" 50)
   + fixes
-    l :: \<open>'l itself\<close> and
     Inf_FL :: \<open>('f \<times> 'l) inference set\<close>
   assumes
     Inf_F_to_Inf_FL: \<open>\<iota>\<^sub>F \<in> Inf_F \<Longrightarrow> length (Ll :: 'l list) = length (prems_of \<iota>\<^sub>F) \<Longrightarrow>
@@ -191,7 +190,6 @@ locale labeled_lifting_with_red_crit_family = no_labels: standard_lifting_with_r
     \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set" and
     \<G>_Inf_q :: "'q \<Rightarrow> 'f inference \<Rightarrow> 'g inference set option"
   + fixes
-    l :: "'l itself" and
     Inf_FL :: \<open>('f \<times> 'l) inference set\<close>
   assumes
     Inf_F_to_Inf_FL: \<open>\<iota>\<^sub>F \<in> Inf_F \<Longrightarrow> length (Ll :: 'l list) = length (prems_of \<iota>\<^sub>F) \<Longrightarrow> \<exists>L0. Infer (zip (prems_of \<iota>\<^sub>F) Ll) (concl_of \<iota>\<^sub>F, L0) \<in> Inf_FL\<close> and
@@ -247,7 +245,7 @@ lemma lifted_q:
     (\<G>_F_L_q q) (\<G>_Inf_L_q q)"
 proof -
   interpret q_lifting: labeled_lifting_w_wf_ord_family Bot_F Inf_F Bot_G "entails_q q" Inf_G
-    "Red_Inf_q q" "Red_F_q q" "\<G>_F_q q" "\<G>_Inf_q q" "\<lambda>g. Empty_Order" l Inf_FL
+    "Red_Inf_q q" "Red_F_q q" "\<G>_F_q q" "\<G>_Inf_q q" "\<lambda>g. Empty_Order" Inf_FL
     using lifting_q[OF q_in] .
   have "\<G>_F_L_q q = q_lifting.\<G>_F_L"
     unfolding \<G>_F_L_q_def q_lifting.\<G>_F_L_def by simp
