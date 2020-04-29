@@ -5425,6 +5425,32 @@ abstract =
   recurrences and derive a fully executable solver for them that can be
   exported to programming languages like Haskell. </p>
 
+[Lambert_W]
+title = The Lambert W Function on the Reals
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Analysis
+date = 2020-04-24
+notify = eberlm@in.tum.de
+abstract =
+  <p>The Lambert <em>W</em> function is a multi-valued
+  function defined as the inverse function of <em>x</em>
+  &#x21A6; <em>x</em>
+  e<sup><em>x</em></sup>. Besides numerous
+  applications in combinatorics, physics, and engineering, it also
+  frequently occurs when solving equations containing both
+  e<sup><em>x</em></sup> and
+  <em>x</em>, or both <em>x</em> and log
+  <em>x</em>.</p> <p>This article provides a
+  definition of the two real-valued branches
+  <em>W</em><sub>0</sub>(<em>x</em>)
+  and
+  <em>W</em><sub>-1</sub>(<em>x</em>)
+  and proves various properties such as basic identities and
+  inequalities, monotonicity, differentiability, asymptotic expansions,
+  and the MacLaurin series of
+  <em>W</em><sub>0</sub>(<em>x</em>)
+  at <em>x</em> = 0.</p>
+
 [Cartan_FP]
 title = The Cartan Fixed Point Theorems
 author = Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
@@ -6884,7 +6910,7 @@ abstract =
   $\sum_{n=1}^\infty \frac{1}{n^2} = \frac{\pi^2}{6}$ in the abstract. Display formulae like
   $$ \int_0^1 x^{-x}\,\text{d}x = \sum_{n=1}^\infty n^{-n}$$
   are also possible. Please read the
-  <a href="../submitting.html">submission guidelines</a> before using this.</p>  
+  <a href="../submitting.html">submission guidelines</a> before using this.</p>
 extra-no-index = no-index: true
 
 [CRDT]

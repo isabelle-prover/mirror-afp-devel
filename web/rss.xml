@@ -33,6 +33,32 @@ application is illustrated on the example of a healthcare IoT system
 and GDPR compliance verification.</description>
     </item>
     <item>
+       <title>The Lambert W Function on the Reals</title>
+              <link>https://www.isa-afp.org/entries/Lambert_W.html</link>
+       <guid>https://www.isa-afp.org/entries/Lambert_W.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>24 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;The Lambert &lt;em&gt;W&lt;/em&gt; function is a multi-valued
+function defined as the inverse function of &lt;em&gt;x&lt;/em&gt;
+&amp;#x21A6; &lt;em&gt;x&lt;/em&gt;
+e&lt;sup&gt;&lt;em&gt;x&lt;/em&gt;&lt;/sup&gt;. Besides numerous
+applications in combinatorics, physics, and engineering, it also
+frequently occurs when solving equations containing both
+e&lt;sup&gt;&lt;em&gt;x&lt;/em&gt;&lt;/sup&gt; and
+&lt;em&gt;x&lt;/em&gt;, or both &lt;em&gt;x&lt;/em&gt; and log
+&lt;em&gt;x&lt;/em&gt;.&lt;/p&gt; &lt;p&gt;This article provides a
+definition of the two real-valued branches
+&lt;em&gt;W&lt;/em&gt;&lt;sub&gt;0&lt;/sub&gt;(&lt;em&gt;x&lt;/em&gt;)
+and
+&lt;em&gt;W&lt;/em&gt;&lt;sub&gt;-1&lt;/sub&gt;(&lt;em&gt;x&lt;/em&gt;)
+and proves various properties such as basic identities and
+inequalities, monotonicity, differentiability, asymptotic expansions,
+and the MacLaurin series of
+&lt;em&gt;W&lt;/em&gt;&lt;sub&gt;0&lt;/sub&gt;(&lt;em&gt;x&lt;/em&gt;)
+at &lt;em&gt;x&lt;/em&gt; = 0.&lt;/p&gt;</description>
+    </item>
+    <item>
        <title>Authenticated Data Structures As Functors</title>
               <link>https://www.isa-afp.org/entries/ADS_Functor.html</link>
        <guid>https://www.isa-afp.org/entries/ADS_Functor.html</guid>
@@ -570,19 +596,6 @@ Yacc style grammars to ensure efficient deterministic parsing.  This
 is the core-module of Isabelle/C; the AFP package for Clean and
 Clean_wrapper as well as AutoCorres and AutoCorres_wrapper (available
 via git) are applications of this front-end.</description>
-    </item>
-    <item>
-       <title>VerifyThis 2019 -- Polished Isabelle Solutions</title>
-              <link>https://www.isa-afp.org/entries/VerifyThis2019.html</link>
-       <guid>https://www.isa-afp.org/entries/VerifyThis2019.html</guid>
-       <dc:creator> Peter Lammich, Simon Wimmer       </dc:creator>
-       <pubDate>16 Oct 2019 00:00:00 +0000</pubDate>
-       <description>
-VerifyThis 2019 (http://www.pm.inf.ethz.ch/research/verifythis.html)
-was a program verification competition associated with ETAPS 2019. It
-was the 8th event in the VerifyThis competition series. In this entry,
-we present polished and completed versions of our solutions that we
-created during the competition.</description>
     </item>
   </channel>
 </rss>
