@@ -19,7 +19,7 @@ locale consequence_relation =
     entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50)
   assumes
     bot_not_empty: "Bot \<noteq> {}" and
-    bot_implies_all: "B \<in> Bot \<Longrightarrow> {B} \<Turnstile> N1" and
+    bot_entails_all: "B \<in> Bot \<Longrightarrow> {B} \<Turnstile> N1" and
     subset_entailed: "N2 \<subseteq> N1 \<Longrightarrow> N1 \<Turnstile> N2" and
     all_formulas_entailed: "(\<forall>C \<in> N2. N1 \<Turnstile> {C}) \<Longrightarrow> N1 \<Turnstile> N2" and
     entails_trans [trans]: "N1 \<Turnstile> N2 \<Longrightarrow> N2 \<Turnstile> N3 \<Longrightarrow> N1 \<Turnstile> N3"
@@ -38,7 +38,7 @@ lemma entail_unions: "(\<forall>i \<in> I. N \<Turnstile> Ni i) \<longleftrighta
   by meson
 
 lemma entail_all_bot: "(\<exists>B \<in> Bot. N \<Turnstile> {B}) \<Longrightarrow> (\<forall>B' \<in> Bot. N \<Turnstile> {B'})"
-  using bot_implies_all entails_trans by blast
+  using bot_entails_all entails_trans by blast
 
 lemma subset_entailed_strong: "N1 \<Turnstile> N2 \<Longrightarrow> N1 \<union> N2 \<Turnstile> N3 \<Longrightarrow> N1 \<Turnstile> N3"
   by (meson entail_union entails_trans order_refl subset_entailed)

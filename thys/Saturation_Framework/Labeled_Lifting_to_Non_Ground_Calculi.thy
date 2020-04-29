@@ -10,11 +10,6 @@ theory Labeled_Lifting_to_Non_Ground_Calculi
   imports Lifting_to_Non_Ground_Calculi
 begin
 
-subsection \<open>Library\<close>
-
-lemma subset_fst: "A \<subseteq> fst ` AB \<Longrightarrow> \<forall>x \<in> A. \<exists>y. (x, y) \<in> AB"
-  by fastforce
-
 subsection \<open>Labeled Lifting with a Family of Well-founded Orderings\<close>
 
 locale labeled_lifting_w_wf_ord_family =
@@ -115,7 +110,7 @@ proof clarify
     i_prems: "set (prems_of \<iota>) \<subseteq> fst ` NL"
   define Lli where "Lli i \<equiv> (SOME x. ((prems_of \<iota>)!i,x) \<in> NL)" for i
   have [simp]:"((prems_of \<iota>)!i,Lli i) \<in> NL" if "i < length (prems_of \<iota>)" for i
-    using that subset_fst[OF i_prems] unfolding Lli_def by (meson nth_mem someI_ex)
+    using that i_prems unfolding Lli_def by (metis nth_mem someI_ex DomainE Domain_fst subset_eq)
   define Ll where "Ll \<equiv> map Lli [0..<length (prems_of \<iota>)]"
   have Ll_length: "length Ll = length (prems_of \<iota>)" unfolding Ll_def by auto
   have subs_NL: "set (zip (prems_of \<iota>) Ll) \<subseteq> NL" unfolding Ll_def by (auto simp:in_set_zip)
@@ -369,7 +364,7 @@ proof clarify
     iF_prems: "set (prems_of \<iota>F) \<subseteq> fst ` NL"
   define Lli where "Lli i \<equiv> (SOME x. ((prems_of \<iota>F)!i,x) \<in> NL)" for i
   have [simp]:"((prems_of \<iota>F)!i,Lli i) \<in> NL" if "i < length (prems_of \<iota>F)" for i
-    using that iF_prems nth_mem someI_ex unfolding Lli_def by (metis subset_fst)
+    using that iF_prems nth_mem someI_ex unfolding Lli_def by (metis DomainE Domain_fst subset_eq)
   define Ll where "Ll \<equiv> map Lli [0..<length (prems_of \<iota>F)]"
   have Ll_length: "length Ll = length (prems_of \<iota>F)" unfolding Ll_def by auto
   have subs_NL: "set (zip (prems_of \<iota>F) Ll) \<subseteq> NL" unfolding Ll_def by (auto simp:in_set_zip)

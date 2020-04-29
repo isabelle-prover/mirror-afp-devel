@@ -53,7 +53,7 @@ lemma subs_Bot_G_entails:
 proof -
   have \<open>\<exists>B. B \<in> sB\<close> using not_empty by auto
   then obtain B where B_in: \<open>B \<in> sB\<close> by auto
-  then have r_trans: \<open>{B} \<Turnstile>G N\<close> using Ground.bot_implies_all in_bot by auto
+  then have r_trans: \<open>{B} \<Turnstile>G N\<close> using Ground.bot_entails_all in_bot by auto
   have l_trans: \<open>sB \<Turnstile>G {B}\<close> using B_in Ground.subset_entailed by auto
   then show ?thesis using r_trans Ground.entails_trans[of sB "{B}"] by auto
 qed
@@ -68,7 +68,7 @@ next
   proof -
     assume \<open>B \<in> Bot_F\<close>
     then show \<open>{B} \<Turnstile>\<G> N\<close>
-      using Bot_map Ground.bot_implies_all[of _ "\<G>_set N"] subs_Bot_G_entails Bot_map_not_empty
+      using Bot_map Ground.bot_entails_all[of _ "\<G>_set N"] subs_Bot_G_entails Bot_map_not_empty
       unfolding entails_\<G>_def
       by auto
   qed
@@ -689,7 +689,7 @@ next
     fix B N1
     assume "B \<in> Bot_F"
     then show "entails_\<G>_q qi {B} N1"
-      using ent_eq lift.lifted_consequence_relation.bot_implies_all by auto
+      using ent_eq lift.lifted_consequence_relation.bot_entails_all by auto
   next
     fix N2 N1::"'f set"
     assume "N2 \<subseteq> N1"
