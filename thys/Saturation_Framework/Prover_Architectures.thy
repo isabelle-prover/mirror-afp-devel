@@ -187,7 +187,7 @@ lemma empty_red_f_equiv: "labeled_ord_red_crit_fam.empty_ord_lifted_calc_w_red_c
   with_labels.Red_F_Q N"
   unfolding labeled_ord_red_crit_fam.empty_ord_lifted_calc_w_red_crit_family.Red_F_Q_def
     with_labels.Red_F_Q_def labeled_ord_red_crit_fam.Red_F_\<G>_empty_q_def Red_F_\<G>_empty_L_q_def
-    labeled_ord_red_crit_fam.\<G>_set_q_def \<G>_set_L_q_def Labeled_Empty_Order_def
+    labeled_ord_red_crit_fam.\<G>_set_q_def \<G>_set_L_q_def
   by simp
 
 lemma empty_red_f_equiv2: "labeled_ord_red_crit_fam.empty_ord_lifted_calc_w_red_crit_family.Red_F_Q =

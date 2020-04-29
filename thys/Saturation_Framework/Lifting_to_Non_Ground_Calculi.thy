@@ -484,6 +484,9 @@ end
 abbreviation Empty_Order where
   "Empty_Order C1 C2 \<equiv> False"
 
+lemma wf_Empty_Order: "minimal_element Empty_Order UNIV"
+  by (simp add: minimal_element.intro po_on_def transp_onI wfp_on_imp_irreflp_on)
+
 lemma any_to_empty_order_lifting:
   "lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F
     \<G>_Inf Prec_F_g \<Longrightarrow> lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
@@ -496,12 +499,9 @@ proof -
     lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F
       \<G>_Inf Prec_F_g
     by auto
-  have empty_wf: "minimal_element ((\<lambda>g. Empty_Order) g) UNIV"
-    by (simp add: lift_g.all_wf minimal_element.intro po_on_def transp_on_def wfp_on_def
-      wfp_on_imp_irreflp_on)
-  then show "lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G
+  show "lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G
     \<G>_F \<G>_Inf (\<lambda>g. Empty_Order)"
-    by (simp add: empty_wf lift_g.standard_lifting_axioms
+    by (simp add: wf_Empty_Order lift_g.standard_lifting_axioms
       lifting_with_wf_ordering_family_axioms.intro lifting_with_wf_ordering_family_def)
 qed
 
