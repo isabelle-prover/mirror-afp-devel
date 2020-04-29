@@ -110,8 +110,7 @@ locale inference_system_family =
     Q :: "'q set" and
     Inf_q :: "'q \<Rightarrow> 'f inference set"
   assumes
-    Q_nonempty: "Q \<noteq> {}" and
-    q_cons_rel: "\<forall>q \<in> Q. inference_system (Inf_q q)"
+    Q_nonempty: "Q \<noteq> {}"
 begin
 
 definition Inf_from_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f inference set" where
