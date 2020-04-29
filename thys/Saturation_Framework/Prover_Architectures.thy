@@ -38,7 +38,7 @@ locale Prover_Architecture_Basis = labeled_lifting_with_red_crit_family Bot_F In
     wf_prec_F: "minimal_element (\<prec>\<cdot>) UNIV" and
     wf_prec_l: "minimal_element (\<sqsubset>l) UNIV" and
     compat_equiv_prec: "C1 \<doteq> D1 \<Longrightarrow> C2 \<doteq> D2 \<Longrightarrow> C1 \<prec>\<cdot> C2 \<Longrightarrow> D1 \<prec>\<cdot> D2" and
-    equiv_F_grounding: "q \<in> Q \<Longrightarrow> C1 \<doteq> C2 \<Longrightarrow> \<G>_F_q q C1 = \<G>_F_q q C2" and
+    equiv_F_grounding: "q \<in> Q \<Longrightarrow> C1 \<doteq> C2 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
     prec_F_grounding: "q \<in> Q \<Longrightarrow> C2 \<prec>\<cdot> C1 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
     static_ref_comp: "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>)
       no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q
@@ -433,19 +433,19 @@ proof -
     have "(C, L) \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q N" if "C' \<prec>\<cdot> C"
       using that c'_l'_in ii by fastforce
     moreover {
-      assume "C \<doteq> C'"
+      assume equiv_c_c': "C \<doteq> C'"
       then have equiv_c'_c: "C' \<doteq> C"
         using equiv_equiv_F by (simp add: equivp_symp)
       then have c'_l'_prec: "(C', L') \<sqsubset> (C, L)"
         using l'_sub_l unfolding Prec_FL_def by simp
       have "\<G>_F_q q C = \<G>_F_q q C'" if "q \<in> Q" for q
-        using that equiv_F_grounding equiv_c'_c by blast
+        using that equiv_F_grounding equiv_c_c' equiv_c'_c by (simp add: set_eq_subset)
       then have "\<G>_F_L_q q (C, L) = \<G>_F_L_q q (C', L')" if "q \<in> Q" for q
         unfolding no_labels.\<G>_set_q_def labeled_ord_red_crit_fam.\<G>_set_q_def \<G>_F_L_q_def
         using that by auto
       then have "(C, L) \<in> labeled_ord_red_crit_fam.Red_F_\<G>_q_g q N" if "q \<in> Q" for q
         unfolding labeled_ord_red_crit_fam.Red_F_\<G>_q_g_def using that c'_l'_in c'_l'_prec by blast
-      then have "(C, L) \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q N"
+      then have ?thesis
         unfolding labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q_def by blast
     }
     ultimately show ?thesis
@@ -1258,7 +1258,7 @@ theorem lgc_complete:
     final_schedule: "Liminf_llist (lmap fst D) = {}" and
     b_in: "B \<in> Bot_F" and
     bot_entailed: "no_labels.entails_\<G>_Q (fst ` (snd (lnth D 0))) {B}"
-  shows "\<exists>i. enat i < llength D \<and> (\<exists>BL\<in> Bot_FL. BL \<in> (snd (lnth D i)))"
+  shows "\<exists>i. enat i < llength D \<and> (\<exists>BL \<in> Bot_FL. BL \<in> snd (lnth D i))"
 proof -
   have labeled_b_in: "(B, active) \<in> Bot_FL" unfolding Bot_FL_def using b_in by simp
   have not_empty_d2: "\<not> lnull (lmap snd D)" using not_empty_d by force
