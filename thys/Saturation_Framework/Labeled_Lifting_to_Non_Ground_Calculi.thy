@@ -10,6 +10,11 @@ theory Labeled_Lifting_to_Non_Ground_Calculi
   imports Lifting_to_Non_Ground_Calculi
 begin
 
+subsection \<open>Library\<close>
+
+lemma subset_fst: "A \<subseteq> fst ` AB \<Longrightarrow> \<forall>x \<in> A. \<exists>y. (x, y) \<in> AB"
+  by fastforce
+
 subsection \<open>Labeled Lifting with a Family of Well-founded Orderings\<close>
 
 locale labeled_lifting_w_wf_ord_family =
@@ -90,8 +95,6 @@ notation "labeled_standard_lifting.entails_\<G>" (infix "\<Turnstile>\<G>L" 50)
 (* lem:labeled-consequence *)
 lemma labeled_entailment_lifting: "NL1 \<Turnstile>\<G>L NL2 \<longleftrightarrow> fst ` NL1 \<Turnstile>\<G> fst ` NL2"
   unfolding labeled_standard_lifting.entails_\<G>_def \<G>_F_L_def entails_\<G>_def by auto
-
-lemma (in-) subset_fst: "A \<subseteq> fst ` AB \<Longrightarrow> \<forall>x \<in> A. \<exists>y. (x,y) \<in> AB" by fastforce
 
 lemma red_inf_impl: "\<iota> \<in> labeled_lifting_w_empty_ord_family.Red_Inf_\<G> NL \<Longrightarrow> to_F \<iota> \<in> Red_Inf_\<G> (fst ` NL)"
   unfolding labeled_lifting_w_empty_ord_family.Red_Inf_\<G>_def Red_Inf_\<G>_def \<G>_Inf_L_def \<G>_F_L_def to_F_def
@@ -177,14 +180,14 @@ end
 subsection \<open>Labeled Lifting with a Family of Redundancy Criteria\<close>
 
 locale labeled_lifting_with_red_crit_family = no_labels: standard_lifting_with_red_crit_family Inf_F
-  Bot_G Inf_G Q entails_q Red_Inf_q Red_F_q Bot_F \<G>_F_q \<G>_Inf_q "\<lambda>g. Empty_Order"
+  Bot_G Q Inf_G_q entails_q Red_Inf_q Red_F_q Bot_F \<G>_F_q \<G>_Inf_q "\<lambda>g. Empty_Order"
   for
     Bot_F :: "'f set" and
     Inf_F :: "'f inference set" and
     Bot_G :: "'g set" and
     Q :: "'q set" and
     entails_q :: "'q \<Rightarrow> 'g set \<Rightarrow> 'g set \<Rightarrow> bool"  and
-    Inf_G :: "'g inference set" and
+    Inf_G_q :: "'q \<Rightarrow> 'g inference set" and
     Red_Inf_q :: "'q \<Rightarrow> 'g set \<Rightarrow> 'g inference set" and
     Red_F_q :: "'q \<Rightarrow> 'g set \<Rightarrow> 'g set" and
     \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set" and
@@ -192,7 +195,9 @@ locale labeled_lifting_with_red_crit_family = no_labels: standard_lifting_with_r
   + fixes
     Inf_FL :: \<open>('f \<times> 'l) inference set\<close>
   assumes
-    Inf_F_to_Inf_FL: \<open>\<iota>\<^sub>F \<in> Inf_F \<Longrightarrow> length (Ll :: 'l list) = length (prems_of \<iota>\<^sub>F) \<Longrightarrow> \<exists>L0. Infer (zip (prems_of \<iota>\<^sub>F) Ll) (concl_of \<iota>\<^sub>F, L0) \<in> Inf_FL\<close> and
+    Inf_F_to_Inf_FL:
+      \<open>\<iota>\<^sub>F \<in> Inf_F \<Longrightarrow> length (Ll :: 'l list) = length (prems_of \<iota>\<^sub>F) \<Longrightarrow>
+       \<exists>L0. Infer (zip (prems_of \<iota>\<^sub>F) Ll) (concl_of \<iota>\<^sub>F, L0) \<in> Inf_FL\<close> and
     Inf_FL_to_Inf_F: \<open>\<iota>\<^sub>F\<^sub>L \<in> Inf_FL \<Longrightarrow> Infer (map fst (prems_of \<iota>\<^sub>F\<^sub>L)) (fst (concl_of \<iota>\<^sub>F\<^sub>L)) \<in> Inf_F\<close>
 begin
 
@@ -234,17 +239,17 @@ definition entails_\<G>_L_Q :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 
 
 lemma lifting_q:
   assumes "q \<in> Q"
-  shows "labeled_lifting_w_wf_ord_family Bot_F Inf_F Bot_G (entails_q q) Inf_G (Red_Inf_q q)
+  shows "labeled_lifting_w_wf_ord_family Bot_F Inf_F Bot_G (entails_q q) (Inf_G_q q) (Red_Inf_q q)
     (Red_F_q q) (\<G>_F_q q) (\<G>_Inf_q q) (\<lambda>g. Empty_Order) Inf_FL"
   using assms no_labels.standard_lifting_family Inf_F_to_Inf_FL Inf_FL_to_Inf_F
   by (simp add: labeled_lifting_w_wf_ord_family_axioms_def labeled_lifting_w_wf_ord_family_def)
 
 lemma lifted_q:
   assumes q_in: "q \<in> Q"
-  shows "standard_lifting Bot_FL Inf_FL Bot_G Inf_G (entails_q q) (Red_Inf_q q) (Red_F_q q)
+  shows "standard_lifting Bot_FL Inf_FL Bot_G (Inf_G_q q) (entails_q q) (Red_Inf_q q) (Red_F_q q)
     (\<G>_F_L_q q) (\<G>_Inf_L_q q)"
 proof -
-  interpret q_lifting: labeled_lifting_w_wf_ord_family Bot_F Inf_F Bot_G "entails_q q" Inf_G
+  interpret q_lifting: labeled_lifting_w_wf_ord_family Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q"
     "Red_Inf_q q" "Red_F_q q" "\<G>_F_q q" "\<G>_Inf_q q" "\<lambda>g. Empty_Order" Inf_FL
     using lifting_q[OF q_in] .
   have "\<G>_F_L_q q = q_lifting.\<G>_F_L"
@@ -253,24 +258,22 @@ proof -
     unfolding \<G>_Inf_L_q_def q_lifting.\<G>_Inf_L_def to_F_def q_lifting.to_F_def by simp
   moreover have "Bot_FL = q_lifting.Bot_FL"
     unfolding Bot_FL_def q_lifting.Bot_FL_def by simp
-  ultimately show "standard_lifting Bot_FL Inf_FL Bot_G Inf_G (entails_q q) (Red_Inf_q q) (Red_F_q q)
-    (\<G>_F_L_q q) (\<G>_Inf_L_q q)"
+  ultimately show ?thesis
     using q_lifting.labeled_standard_lifting.standard_lifting_axioms by simp
 qed
 
 lemma ord_fam_lifted_q:
   assumes q_in: "q \<in> Q"
-  shows "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G (entails_q q) Inf_G (Red_Inf_q q)
+  shows "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q) (Red_Inf_q q)
     (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Labeled_Empty_Order)"
 proof -
-  interpret standard_q_lifting: standard_lifting Bot_FL Inf_FL Bot_G Inf_G "entails_q q"
+  interpret standard_q_lifting: standard_lifting Bot_FL Inf_FL Bot_G "Inf_G_q q" "entails_q q"
     "Red_Inf_q q" "Red_F_q q" "\<G>_F_L_q q" "\<G>_Inf_L_q q"
     using lifted_q[OF q_in] .
   have "minimal_element Labeled_Empty_Order UNIV"
     unfolding Labeled_Empty_Order_def
     by (simp add: minimal_element.intro po_on_def transp_onI wfp_on_imp_irreflp_on)
-  then show "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G (entails_q q) Inf_G
-    (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Labeled_Empty_Order)"
+  then show ?thesis
     using standard_q_lifting.standard_lifting_axioms
     by (simp add: lifting_with_wf_ordering_family_axioms.intro lifting_with_wf_ordering_family_def)
 qed
@@ -280,8 +283,8 @@ lemma all_lifted_red_crit:
   shows "calculus_with_red_crit Bot_FL Inf_FL (entails_\<G>_L_q q) (Red_Inf_\<G>_L_q q)
     (Red_F_\<G>_empty_L_q q)"
 proof -
-  interpret ord_q_lifting: lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G "entails_q q" Inf_G
-    "Red_Inf_q q" "Red_F_q q" "\<G>_F_L_q q" "\<G>_Inf_L_q q" "\<lambda>g. Labeled_Empty_Order"
+  interpret ord_q_lifting: lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G "entails_q q"
+    "Inf_G_q q" "Red_Inf_q q" "Red_F_q q" "\<G>_F_L_q q" "\<G>_Inf_L_q q" "\<lambda>g. Labeled_Empty_Order"
     using ord_fam_lifted_q[OF q_in] .
   have "entails_\<G>_L_q q = ord_q_lifting.entails_\<G>"
     unfolding entails_\<G>_L_q_def \<G>_set_L_q_def ord_q_lifting.entails_\<G>_def by simp
@@ -289,8 +292,7 @@ proof -
     unfolding Red_Inf_\<G>_L_q_def ord_q_lifting.Red_Inf_\<G>_def \<G>_set_L_q_def by simp
   moreover have "Red_F_\<G>_empty_L_q q = ord_q_lifting.Red_F_\<G>"
     unfolding Red_F_\<G>_empty_L_q_def ord_q_lifting.Red_F_\<G>_def \<G>_set_L_q_def by simp
-  ultimately show "calculus_with_red_crit Bot_FL Inf_FL (entails_\<G>_L_q q) (Red_Inf_\<G>_L_q q)
-    (Red_F_\<G>_empty_L_q q)"
+  ultimately show ?thesis
     using ord_q_lifting.lifted_calculus_with_red_crit.calculus_with_red_crit_axioms by argo
 qed
 
@@ -301,7 +303,7 @@ proof -
   interpret q_red_crit: calculus_with_red_crit Bot_FL Inf_FL "entails_\<G>_L_q q" "Red_Inf_\<G>_L_q q"
     "Red_F_\<G>_empty_L_q q"
     using all_lifted_red_crit[OF q_in] .
-  show "consequence_relation Bot_FL (entails_\<G>_L_q q)"
+  show ?thesis
     using q_red_crit.consequence_relation_axioms .
 qed
 
@@ -325,8 +327,6 @@ lemma labeled_entailment_lifting: "NL1 \<Turnstile>\<inter>L NL2 \<longleftright
   unfolding no_labels.entails_\<G>_Q_def no_labels.entails_\<G>_q_def no_labels.\<G>_set_q_def
     entails_\<G>_L_Q_def entails_\<G>_L_q_def \<G>_set_L_q_def \<G>_F_L_q_def
   by force
-
-lemma subset_fst: "A \<subseteq> fst ` AB \<Longrightarrow> \<forall>x \<in> A. \<exists>y. (x,y) \<in> AB" by fastforce
 
 lemma red_inf_impl: "\<iota> \<in> with_labels.Red_Inf_Q NL \<Longrightarrow>
   to_F \<iota> \<in> no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` NL)"
@@ -369,8 +369,7 @@ proof clarify
     iF_prems: "set (prems_of \<iota>F) \<subseteq> fst ` NL"
   define Lli where "Lli i \<equiv> (SOME x. ((prems_of \<iota>F)!i,x) \<in> NL)" for i
   have [simp]:"((prems_of \<iota>F)!i,Lli i) \<in> NL" if "i < length (prems_of \<iota>F)" for i
-    using that subset_fst[OF iF_prems] nth_mem someI_ex unfolding Lli_def
-    by metis
+    using that iF_prems nth_mem someI_ex unfolding Lli_def by (metis subset_fst)
   define Ll where "Ll \<equiv> map Lli [0..<length (prems_of \<iota>F)]"
   have Ll_length: "length Ll = length (prems_of \<iota>F)" unfolding Ll_def by auto
   have subs_NL: "set (zip (prems_of \<iota>F) Ll) \<subseteq> NL" unfolding Ll_def by (auto simp:in_set_zip)

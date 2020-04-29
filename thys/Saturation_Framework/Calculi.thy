@@ -275,15 +275,16 @@ qed
 
 subsection \<open>Calculi with a Family of Redundancy Criteria\<close>
 
-locale calculus_with_red_crit_family = inference_system Inf + consequence_relation_family Bot Q entails_q
+locale calculus_with_red_crit_family =
+  inference_system Inf + consequence_relation_family Bot Q entails_q
   for
     Bot :: "'f set" and
     Inf :: \<open>'f inference set\<close> and
     Q :: "'q set" and
-    entails_q :: "'q \<Rightarrow> ('f set \<Rightarrow> 'f set \<Rightarrow> bool)"
+    entails_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set \<Rightarrow> bool"
   + fixes
-    Red_Inf_q :: "'q \<Rightarrow> ('f set \<Rightarrow> 'f inference set)" and
-    Red_F_q :: "'q \<Rightarrow> ('f set \<Rightarrow> 'f set)"
+    Red_Inf_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f inference set" and
+    Red_F_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set"
   assumes
     Q_nonempty: "Q \<noteq> {}" and
     all_red_crit: "\<forall>q \<in> Q. calculus_with_red_crit Bot Inf (entails_q q) (Red_Inf_q q) (Red_F_q q)"
@@ -518,6 +519,23 @@ qed
 
 end
 
+subsection \<open>Families of Calculi with a Family of Redundancy Criteria\<close>
+
+locale calculus_family_with_red_crit_family =
+  inference_system_family Q Inf_q + consequence_relation_family Bot Q entails_q
+  for
+    Bot :: "'f set" and
+    Q :: "'q set" and
+    Inf_q :: \<open>'q \<Rightarrow> 'f inference set\<close> and
+    entails_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set \<Rightarrow> bool"
+  + fixes
+    Red_Inf_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f inference set" and
+    Red_F_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set"
+  assumes
+    Q_nonempty: "Q \<noteq> {}" and
+    all_red_crit:
+      "\<forall>q \<in> Q. calculus_with_red_crit Bot (Inf_q q) (entails_q q) (Red_Inf_q q) (Red_F_q q)"
+
 subsection \<open>Variations on a Theme\<close>
 
 locale calculus_with_reduced_red_crit = calculus_with_red_crit Bot Inf entails Red_Inf Red_F
@@ -550,7 +568,7 @@ qed
 
 end
 
-locale  reduc_static_refutational_complete_calculus = calculus_with_red_crit +
+locale reduc_static_refutational_complete_calculus = calculus_with_red_crit +
   assumes reduc_static_refutational_complete:
     "B \<in> Bot \<Longrightarrow> reduc_saturated N \<Longrightarrow> N \<Turnstile> {B} \<Longrightarrow> \<exists>B'\<in>Bot. B' \<in> N"
 
@@ -575,14 +593,16 @@ proof
   have reduc_saturated_N: "reduc_saturated N" using saturated_N sat_eq_reduc_sat by blast
   show "\<exists>B'\<in>Bot. B' \<in> N" using reduc_static_refutational_complete[OF bot_elem reduc_saturated_N refut_N] .
 qed
+
 end
 
 context calculus_with_reduced_red_crit
 begin
 
 (* cor:reduced-rc-implies-st-ref-comp-equiv-reduced-st-ref-comp 2/2 *)
-lemma stat_ref_comp_imp_red_stat_ref_comp: "static_refutational_complete_calculus Bot Inf entails Red_Inf Red_F \<Longrightarrow>
-  reduc_static_refutational_complete_calculus Bot Inf entails Red_Inf Red_F"
+lemma stat_ref_comp_imp_red_stat_ref_comp:
+  "static_refutational_complete_calculus Bot Inf entails Red_Inf Red_F \<Longrightarrow>
+   reduc_static_refutational_complete_calculus Bot Inf entails Red_Inf Red_F"
 proof
   fix B N
   assume
@@ -592,9 +612,10 @@ proof
     refut_N: "N \<Turnstile> {B}"
   have reduc_saturated_N: "saturated N" using saturated_N sat_eq_reduc_sat by blast
   show "\<exists>B'\<in>Bot. B' \<in> N"
-    using Calculi.static_refutational_complete_calculus.static_refutational_complete[OF stat_ref_comp
+    using static_refutational_complete_calculus.static_refutational_complete[OF stat_ref_comp
       bot_elem reduc_saturated_N refut_N] .
 qed
+
 end
 
 context calculus_with_red_crit
@@ -661,8 +682,8 @@ lemma reduc_calc: "calculus_with_reduced_red_crit Bot Inf entails Red_Red_Inf Re
   using inf_subs_reduced_red_inf reduced_calc_is_calc
   by (simp add: calculus_with_reduced_red_crit.intro calculus_with_reduced_red_crit_axioms_def)
 
-interpretation reduc_calc : calculus_with_reduced_red_crit Bot Inf entails Red_Red_Inf Red_F
-  using reduc_calc by simp
+interpretation reduc_calc: calculus_with_reduced_red_crit Bot Inf entails Red_Red_Inf Red_F
+  by (fact reduc_calc)
 
 (* lem:saturation-red-vs-red'-1 *)
 lemma sat_imp_red_calc_sat: "saturated N \<Longrightarrow> reduc_calc.saturated N"
@@ -909,24 +930,26 @@ next
     by (simp add: reduc_dynamic_refutational_complete_calculus_axioms)
 qed
 
-interpretation reduc_calc : calculus_with_reduced_red_crit Bot Inf entails Red_Red_Inf Red_F
-using reduc_calc by simp
+interpretation reduc_calc: calculus_with_reduced_red_crit Bot Inf entails Red_Red_Inf Red_F
+  by (fact reduc_calc)
 
 (* thm:reduced-dyn-ref-compl 1/3 (v) \<longleftrightarrow> (vii) *)
-theorem dyn_ref_eq_dyn_ref_red: "dynamic_refutational_complete_calculus Bot Inf entails Red_Inf Red_F \<longleftrightarrow>
-  dynamic_refutational_complete_calculus Bot Inf entails Red_Red_Inf Red_F"
+theorem dyn_ref_eq_dyn_ref_red:
+  "dynamic_refutational_complete_calculus Bot Inf entails Red_Inf Red_F \<longleftrightarrow>
+   dynamic_refutational_complete_calculus Bot Inf entails Red_Red_Inf Red_F"
   using dyn_equiv_stat stat_is_stat_red reduc_calc.dyn_equiv_stat by meson
 
 (* thm:reduced-dyn-ref-compl 2/3 (viii) \<longleftrightarrow> (vii) *)
-theorem red_dyn_ref_red_eq_dyn_ref_red: "reduc_dynamic_refutational_complete_calculus Bot Inf
-  entails Red_Red_Inf Red_F \<longleftrightarrow>
-  dynamic_refutational_complete_calculus Bot Inf entails Red_Red_Inf Red_F"
+theorem red_dyn_ref_red_eq_dyn_ref_red:
+  "reduc_dynamic_refutational_complete_calculus Bot Inf entails Red_Red_Inf Red_F \<longleftrightarrow>
+   dynamic_refutational_complete_calculus Bot Inf entails Red_Red_Inf Red_F"
   using red_dyn_equiv_red_stat dyn_equiv_stat red_stat_red_is_stat_red
   by (simp add: reduc_calc.dyn_equiv_stat reduc_calc.red_dyn_equiv_red_stat)
 
 (* thm:reduced-dyn-ref-compl 3/3 (vi) \<longleftrightarrow> (vii) *)
-theorem red_dyn_ref_eq_dyn_ref_red: "reduc_dynamic_refutational_complete_calculus Bot Inf entails Red_Inf Red_F \<longleftrightarrow>
-  dynamic_refutational_complete_calculus Bot Inf entails Red_Red_Inf Red_F"
+theorem red_dyn_ref_eq_dyn_ref_red:
+  "reduc_dynamic_refutational_complete_calculus Bot Inf entails Red_Inf Red_F \<longleftrightarrow>
+   dynamic_refutational_complete_calculus Bot Inf entails Red_Red_Inf Red_F"
   using red_dyn_equiv_red_stat dyn_equiv_stat red_stat_is_stat_red
     reduc_calc.dyn_equiv_stat reduc_calc.red_dyn_equiv_red_stat
   by blast

@@ -95,11 +95,30 @@ locale inference_system =
     Inf :: \<open>'f inference set\<close>
 begin
 
-definition Inf_from :: "'f set  \<Rightarrow> 'f inference set" where
+definition Inf_from :: "'f set \<Rightarrow> 'f inference set" where
   "Inf_from N = {\<iota> \<in> Inf. set (prems_of \<iota>) \<subseteq> N}"
 
 definition Inf_from2 :: "'f set \<Rightarrow> 'f set \<Rightarrow> 'f inference set" where
   "Inf_from2 N M = Inf_from (N \<union> M) - Inf_from (N - M)"
+
+end
+
+subsection \<open>Families of Inference Systems\<close>
+
+locale inference_system_family =
+  fixes
+    Q :: "'q set" and
+    Inf_q :: "'q \<Rightarrow> 'f inference set"
+  assumes
+    Q_nonempty: "Q \<noteq> {}" and
+    q_cons_rel: "\<forall>q \<in> Q. inference_system (Inf_q q)"
+begin
+
+definition Inf_from_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f inference set" where
+  "Inf_from_q q = inference_system.Inf_from (Inf_q q)"
+
+definition Inf_from2_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set \<Rightarrow> 'f inference set" where
+  "Inf_from2_q q = inference_system.Inf_from2 (Inf_q q)"
 
 end
 

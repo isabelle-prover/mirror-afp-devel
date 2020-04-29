@@ -13,15 +13,15 @@ begin
 
 subsection \<open>Basis of the Prover Architectures\<close>
 
-locale Prover_Architecture_Basis = labeled_lifting_with_red_crit_family Bot_F Inf_F Bot_G Q entails_q Inf_G
-  Red_Inf_q Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL
+locale Prover_Architecture_Basis = labeled_lifting_with_red_crit_family Bot_F Inf_F Bot_G Q
+  entails_q Inf_G_q Red_Inf_q Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL
   for
     Bot_F :: "'f set"
     and Inf_F :: "'f inference set"
     and Bot_G :: "'g set"
     and Q :: "'q set"
     and entails_q :: "'q \<Rightarrow> ('g set \<Rightarrow> 'g set \<Rightarrow> bool)"
-    and Inf_G :: \<open>'g inference set\<close>
+    and Inf_G_q :: \<open>'q \<Rightarrow> 'g inference set\<close>
     and Red_Inf_q :: "'q \<Rightarrow> ('g set \<Rightarrow> 'g inference set)"
     and Red_F_q :: "'q \<Rightarrow> ('g set \<Rightarrow> 'g set)"
     and \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set"
@@ -110,30 +110,29 @@ lemma labeled_static_ref_comp:
 lemma standard_labeled_lifting_family:
   assumes q_in: "q \<in> Q"
   shows "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G
-    (entails_q q) Inf_G (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Prec_FL)"
+    (entails_q q) (Inf_G_q q) (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Prec_FL)"
 proof -
-  have "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G (entails_q q) Inf_G
+  have "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q)
     (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Labeled_Empty_Order)"
     using ord_fam_lifted_q[OF q_in] .
-  then have "standard_lifting Bot_FL Inf_FL Bot_G Inf_G (entails_q q) (Red_Inf_q q) (Red_F_q q)
-    (\<G>_F_L_q q) (\<G>_Inf_L_q q)"
+  then have "standard_lifting Bot_FL Inf_FL Bot_G (Inf_G_q q) (entails_q q) (Red_Inf_q q)
+    (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q)"
     using lifted_q[OF q_in] by blast
-  then show "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G (entails_q q) Inf_G (Red_Inf_q q)
-    (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Prec_FL)"
+  then show "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q)
+    (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Prec_FL)"
     using wf_prec_FL
     by (simp add: lifting_with_wf_ordering_family.intro lifting_with_wf_ordering_family_axioms.intro)
 qed
 
-sublocale labeled_ord_red_crit_fam: standard_lifting_with_red_crit_family Inf_FL Bot_G Inf_G Q
-  entails_q Red_Inf_q Red_F_q
-  Bot_FL \<G>_F_L_q \<G>_Inf_L_q "\<lambda>g. Prec_FL"
+sublocale labeled_ord_red_crit_fam: standard_lifting_with_red_crit_family Inf_FL Bot_G Q Inf_G_q
+  entails_q Red_Inf_q Red_F_q Bot_FL \<G>_F_L_q \<G>_Inf_L_q "\<lambda>g. Prec_FL"
   using standard_labeled_lifting_family
-    no_labels.Ground_family.calculus_with_red_crit_family_axioms
+    no_labels.Ground_family.calculus_family_with_red_crit_family_axioms
   by (simp add: standard_lifting_with_red_crit_family.intro
     standard_lifting_with_red_crit_family_axioms.intro)
 
 lemma entail_equiv:
-  "labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.entails_Q N1 N2 = (N1 \<Turnstile>\<inter>L N2)"
+  "labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.entails_Q N1 N2 \<longleftrightarrow> (N1 \<Turnstile>\<inter>L N2)"
   unfolding labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.entails_Q_def
     entails_\<G>_L_Q_def entails_\<G>_L_q_def labeled_ord_red_crit_fam.entails_\<G>_q_def
      labeled_ord_red_crit_fam.\<G>_set_q_def \<G>_set_L_q_def
@@ -429,7 +428,7 @@ end
 
 subsection \<open>Given Clause Architecture\<close>
 
-locale Given_Clause = Prover_Architecture_Basis Bot_F Inf_F Bot_G Q entails_q Inf_G Red_Inf_q
+locale Given_Clause = Prover_Architecture_Basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_Inf_q
   Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL Equiv_F Prec_F Prec_l
   for
     Bot_F :: "'f set" and
@@ -437,7 +436,7 @@ locale Given_Clause = Prover_Architecture_Basis Bot_F Inf_F Bot_G Q entails_q In
     Bot_G :: "'g set" and
     Q :: "'q set" and
     entails_q :: "'q \<Rightarrow> ('g set \<Rightarrow> 'g set \<Rightarrow> bool)" and
-    Inf_G :: \<open>'g inference set\<close> and
+    Inf_G_q :: \<open>'q \<Rightarrow> 'g inference set\<close> and
     Red_Inf_q :: "'q \<Rightarrow> ('g set \<Rightarrow> 'g inference set)" and
     Red_F_q :: "'q \<Rightarrow> ('g set \<Rightarrow> 'g set)" and
     \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set"  and
@@ -779,7 +778,7 @@ end
 
 subsection \<open>Lazy Given Clause Architecture\<close>
 
-locale Lazy_Given_Clause = Prover_Architecture_Basis Bot_F Inf_F Bot_G Q entails_q Inf_G Red_Inf_q
+locale Lazy_Given_Clause = Prover_Architecture_Basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_Inf_q
   Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL Equiv_F Prec_F Prec_l
   for
     Bot_F :: "'f set" and
@@ -787,7 +786,7 @@ locale Lazy_Given_Clause = Prover_Architecture_Basis Bot_F Inf_F Bot_G Q entails
     Bot_G :: "'g set" and
     Q :: "'q set" and
     entails_q :: "'q \<Rightarrow> ('g set \<Rightarrow> 'g set \<Rightarrow> bool)" and
-    Inf_G :: \<open>'g inference set\<close> and
+    Inf_G_q :: \<open>'q \<Rightarrow> 'g inference set\<close> and
     Red_Inf_q :: "'q \<Rightarrow> ('g set \<Rightarrow> 'g inference set)" and
     Red_F_q :: "'q \<Rightarrow> ('g set \<Rightarrow> 'g set)" and
     \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set"  and
@@ -995,44 +994,7 @@ proof -
     }
     moreover {
       assume m_pos: "m > 0"
-      have uniq_nj: "j \<in> {0..<m} \<Longrightarrow>
-        (enat (Suc nj1) < llength D \<and>
-        (prems_of \<iota>)!j \<notin> active_subset (snd (lnth D nj1)) \<and>
-        (\<forall>k. k > nj1 \<longrightarrow> enat k < llength D \<longrightarrow> (prems_of \<iota>)!j \<in> active_subset (snd (lnth D k)))) \<Longrightarrow>
-        (enat (Suc nj2) < llength D \<and>
-        (prems_of \<iota>)!j \<notin> active_subset (snd (lnth D nj2)) \<and>
-        (\<forall>k. k > nj2 \<longrightarrow> enat k < llength D \<longrightarrow> (prems_of \<iota>)!j \<in> active_subset (snd (lnth D k)))) \<Longrightarrow>
-        nj1=nj2"
-      proof (clarify, rule ccontr)
-        fix j nj1 nj2
-        assume "j \<in> {0..<m}" and
-          nj1_d: "enat (Suc nj1) < llength D" and
-          nj2_d: "enat (Suc nj2) < llength D" and
-          nj1_notin: "prems_of \<iota> ! j \<notin> active_subset (snd (lnth D nj1))" and
-          k_nj1: "\<forall>k>nj1. enat k < llength D \<longrightarrow> prems_of \<iota> ! j \<in> active_subset (snd (lnth D k))" and
-          nj2_notin: "prems_of \<iota> ! j \<notin> active_subset (snd (lnth D nj2))" and
-          k_nj2: "\<forall>k>nj2. enat k < llength D \<longrightarrow> prems_of \<iota> ! j \<in> active_subset (snd (lnth D k))" and
-          diff_12: "nj1 \<noteq> nj2"
-        have "nj1 < nj2 \<Longrightarrow> False"
-        proof -
-          assume prec_12: "nj1 < nj2"
-          have "enat nj2 < llength D" using nj2_d using Suc_ile_eq less_trans by blast
-          then have "prems_of \<iota> ! j \<in> active_subset (snd (lnth D nj2))"
-            using k_nj1 prec_12 by simp
-          then show False using nj2_notin by simp
-        qed
-        moreover have "nj1 > nj2 \<Longrightarrow> False"
-        proof -
-          assume prec_21: "nj2 < nj1"
-          have "enat nj1 < llength D" using nj1_d using Suc_ile_eq less_trans by blast
-          then have "prems_of \<iota> ! j \<in> active_subset (snd (lnth D nj1))"
-            using k_nj2 prec_21
-            by simp
-          then show False using nj1_notin by simp
-        qed
-        ultimately show False using diff_12 by linarith
-      qed
-            have nj_not_empty: "nj_set \<noteq> {}"
+      have nj_not_empty: "nj_set \<noteq> {}"
       proof -
         have zero_in: "0 \<in> {0..<m}" using m_pos by simp
         then obtain n0 where "enat (Suc n0) < llength D" and
@@ -1043,7 +1005,7 @@ proof -
         then show "nj_set \<noteq> {}" by auto
       qed
       have nj_finite: "finite nj_set"
-        using uniq_nj all_ex_finite_set[OF exist_nj] by (metis (no_types, lifting) Suc_ile_eq
+        using all_ex_finite_set[OF exist_nj] by (metis (no_types, lifting) Suc_ile_eq
           dual_order.strict_implies_order linorder_neqE_nat nj_set_def)
       have "\<exists>n \<in> nj_set. \<forall>nj \<in> nj_set. nj \<le> n"
         using nj_not_empty nj_finite using Max_ge Max_in by blast
