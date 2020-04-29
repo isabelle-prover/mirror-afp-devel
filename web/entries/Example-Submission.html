@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -93,10 +106,15 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">
-This is an example submission to the Archive of Formal Proofs. It shows
+  <td class="abstract mathjax_process">
+<p>This is an example submission to the Archive of Formal Proofs. It shows
 submission requirements and explains the structure of a simple typical
-submission.</td>
+submission.</p>
+<p>Note that you can use <em>HTML tags</em> and LaTeX formulae like
+$\sum_{n=1}^\infty \frac{1}{n^2} = \frac{\pi^2}{6}$ in the abstract. Display formulae like
+$$ \int_0^1 x^{-x}\,\text{d}x = \sum_{n=1}^\infty n^{-n}$$
+are also possible. Please read the
+<a href="../submitting.html">submission guidelines</a> before using this.</p></td>
 </tr>
 
   <tr>

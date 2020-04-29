@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -101,7 +114,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">We present a solution to the POPLmark challenge designed by Aydemir et al., which has as a goal the formalization of the meta-theory of System F<sub>&lt;:</sub>. The formalization is carried out in the theorem prover Isabelle/HOL using an encoding based on de Bruijn indices. We start with a relatively simple formalization covering only the basic features of System F<sub>&lt;:</sub>, and explain how it can be extended to also cover records and more advanced binding constructs.</td>
+  <td class="abstract mathjax_process">We present a solution to the POPLmark challenge designed by Aydemir et al., which has as a goal the formalization of the meta-theory of System F<sub>&lt;:</sub>. The formalization is carried out in the theorem prover Isabelle/HOL using an encoding based on de Bruijn indices. We start with a relatively simple formalization covering only the basic features of System F<sub>&lt;:</sub>, and explain how it can be extended to also cover records and more advanced binding constructs.</td>
 </tr>
 
 

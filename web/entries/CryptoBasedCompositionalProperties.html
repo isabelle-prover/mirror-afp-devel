@@ -7,9 +7,22 @@
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
 <link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
 </head>
 
-<body>
+<body class="mathjax_ignore">
 
 <table width="100%">
 <tbody>
@@ -99,7 +112,7 @@
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">This paper presents an Isabelle/HOL set of theories which allows the specification of crypto-based components and the verification of their composition properties wrt. cryptographic aspects. We introduce a formalisation of the security property of data secrecy, the corresponding definitions and proofs. Please note that here we import the Isabelle/HOL theory ListExtras.thy, presented in the AFP entry FocusStreamsCaseStudies-AFP.</td>
+  <td class="abstract mathjax_process">This paper presents an Isabelle/HOL set of theories which allows the specification of crypto-based components and the verification of their composition properties wrt. cryptographic aspects. We introduce a formalisation of the security property of data secrecy, the corresponding definitions and proofs. Please note that here we import the Isabelle/HOL theory ListExtras.thy, presented in the AFP entry FocusStreamsCaseStudies-AFP.</td>
 </tr>
 
 
