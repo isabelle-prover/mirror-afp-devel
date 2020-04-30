@@ -9248,3 +9248,25 @@ abstract =
   p<sub><em>i</em></sub> for
   i&gt;k.</p>
 
+[Gaussian_Integers]
+title = Gaussian Integers
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory
+date = 2020-04-24
+notify = eberlm@in.tum.de
+abstract = 
+  <p>The Gaussian integers are the subring &#8484;[i] of the
+  complex numbers, i. e. the ring of all complex numbers with integral
+  real and imaginary part. This article provides a definition of this
+  ring as well as proofs of various basic properties, such as that they
+  form a Euclidean ring and a full classification of their primes. An
+  executable (albeit not very efficient) factorisation algorithm is also
+  provided.</p> <p>Lastly, this Gaussian integer
+  formalisation is used in two short applications:</p> <ol>
+  <li> The characterisation of all positive integers that can be
+  written as sums of two squares</li> <li> Euclid's
+  formula for primitive Pythagorean triples</li> </ol>
+  <p>While elementary proofs for both of these are already
+  available in the AFP, the theory of Gaussian integers provides more
+  concise proofs and a more high-level view.</p>
+

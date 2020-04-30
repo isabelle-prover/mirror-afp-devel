@@ -106,6 +106,28 @@ and the MacLaurin series of
 at &lt;em&gt;x&lt;/em&gt; = 0.&lt;/p&gt;</description>
     </item>
     <item>
+       <title>Gaussian Integers</title>
+              <link>https://www.isa-afp.org/entries/Gaussian_Integers.html</link>
+       <guid>https://www.isa-afp.org/entries/Gaussian_Integers.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>24 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;The Gaussian integers are the subring &amp;#8484;[i] of the
+complex numbers, i. e. the ring of all complex numbers with integral
+real and imaginary part. This article provides a definition of this
+ring as well as proofs of various basic properties, such as that they
+form a Euclidean ring and a full classification of their primes. An
+executable (albeit not very efficient) factorisation algorithm is also
+provided.&lt;/p&gt; &lt;p&gt;Lastly, this Gaussian integer
+formalisation is used in two short applications:&lt;/p&gt; &lt;ol&gt;
+&lt;li&gt; The characterisation of all positive integers that can be
+written as sums of two squares&lt;/li&gt; &lt;li&gt; Euclid&#39;s
+formula for primitive Pythagorean triples&lt;/li&gt; &lt;/ol&gt;
+&lt;p&gt;While elementary proofs for both of these are already
+available in the AFP, the theory of Gaussian integers provides more
+concise proofs and a more high-level view.&lt;/p&gt;</description>
+    </item>
+    <item>
        <title>Authenticated Data Structures As Functors</title>
               <link>https://www.isa-afp.org/entries/ADS_Functor.html</link>
        <guid>https://www.isa-afp.org/entries/ADS_Functor.html</guid>
@@ -580,40 +602,6 @@ language. Bounded-length identifiers are useful in some applications,
 for example the &lt;a href=&#34;https://www.isa-afp.org/entries/Differential_Dynamic_Logic.html&#34;&gt;Differential_Dynamic_Logic&lt;/a&gt; article,
 where a Euclidean space indexed by identifiers demands that identifiers
 are finitely many.</description>
-    </item>
-    <item>
-       <title>Zermelo Fraenkel Set Theory in Higher-Order Logic</title>
-              <link>https://www.isa-afp.org/entries/ZFC_in_HOL.html</link>
-       <guid>https://www.isa-afp.org/entries/ZFC_in_HOL.html</guid>
-       <dc:creator> Lawrence C. Paulson       </dc:creator>
-       <pubDate>24 Oct 2019 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This entry is a new formalisation of ZFC set theory in Isabelle/HOL. It is
-logically equivalent to Obua&#39;s HOLZF; the point is to have the closest
-possible integration with the rest of Isabelle/HOL, minimising the amount of
-new notations and exploiting type classes.&lt;/p&gt;
-&lt;p&gt;There is a type &lt;em&gt;V&lt;/em&gt; of sets and a function &lt;em&gt;elts :: V =&amp;gt; V
-set&lt;/em&gt; mapping a set to its elements. Classes simply have type &lt;em&gt;V
-set&lt;/em&gt;, and a predicate identifies the small classes: those that correspond
-to actual sets. Type classes connected with orders and lattices are used to
-minimise the amount of new notation for concepts such as the subset relation,
-union and intersection. Basic concepts — Cartesian products, disjoint sums,
-natural numbers, functions, etc. — are formalised.&lt;/p&gt;
-&lt;p&gt;More advanced set-theoretic concepts, such as transfinite induction,
-ordinals, cardinals and the transitive closure of a set, are also provided.
-The definition of addition and multiplication for general sets (not just
-ordinals) follows Kirby.&lt;/p&gt;
-&lt;p&gt;The theory provides two type classes with the aim of facilitating
-developments that combine &lt;em&gt;V&lt;/em&gt; with other Isabelle/HOL types:
-&lt;em&gt;embeddable&lt;/em&gt;, the class of types that can be injected into &lt;em&gt;V&lt;/em&gt;
-(including &lt;em&gt;V&lt;/em&gt; itself as well as &lt;em&gt;V*V&lt;/em&gt;, etc.), and
-&lt;em&gt;small&lt;/em&gt;, the class of types that correspond to some ZF set.&lt;/p&gt;
-extra-history =
-Change history:
-[2020-01-28]:  Generalisation of the &#34;small&#34; predicate and order types to arbitrary sets;
-ordinal exponentiation;
-introduction of the coercion ord_of_nat :: &#34;nat =&gt; V&#34;;
-numerous new lemmas. (revision 6081d5be8d08)</description>
     </item>
   </channel>
 </rss>
