@@ -710,7 +710,7 @@ next
   qed
 qed
 
-interpretation cons_rel_Q: consequence_relation Bot_F entails_\<G>_Q
+sublocale cons_rel_Q: consequence_relation Bot_F entails_\<G>_Q
 proof -
   interpret cons_rel_fam: consequence_relation_family Bot_F Q entails_\<G>_q
     by (rule cons_rel_fam_Q_lem)
@@ -726,7 +726,8 @@ sublocale lifted_calc_w_red_crit_family:
   by (simp add: Ground_family.Q_nonempty calculus_with_red_crit_family.intro
       calculus_with_red_crit_family_axioms_def)
 
-lemma lifted_calc_family_is_calc: "calculus_with_red_crit Bot_F Inf_F entails_\<G>_Q Red_Inf_\<G>_Q Red_F_\<G>_g"
+sublocale lifted_calc_w_red_crit:
+  calculus_with_red_crit Bot_F Inf_F entails_\<G>_Q Red_Inf_\<G>_Q Red_F_\<G>_g
 proof -
   have "lifted_calc_w_red_crit_family.entails_Q = entails_\<G>_Q"
     unfolding entails_\<G>_Q_def lifted_calc_w_red_crit_family.entails_Q_def by simp
@@ -777,13 +778,11 @@ proof (standard, clarify)
     b_in: "B \<in> Bot_F" and
     sat_n: "calculus_with_red_crit.saturated Inf_F Red_Inf_\<G>_Q N" and
     entails_bot: "N \<Turnstile>\<inter> {B}"
-  interpret calculus_with_red_crit Bot_F Inf_F entails_\<G>_Q Red_Inf_\<G>_Q Red_F_\<G>_empty
-    using inter_calc by blast
   have "empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q = Red_Inf_\<G>_Q"
     unfolding Red_Inf_\<G>_Q_def lifted_calc_w_red_crit_family.Red_Inf_Q_def by simp
   then have empty_ord_sat_n:
     "empty_ord_lifted_calc_w_red_crit_family.inter_red_crit_calculus.saturated N"
-    using sat_n unfolding saturated_def
+    using sat_n unfolding lifted_calc_w_red_crit.saturated_def
       empty_ord_lifted_calc_w_red_crit_family.inter_red_crit_calculus.saturated_def
     by simp
   then obtain q where
