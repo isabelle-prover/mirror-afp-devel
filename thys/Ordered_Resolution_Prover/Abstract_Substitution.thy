@@ -139,11 +139,11 @@ definition generalizes_lit :: "'a literal \<Rightarrow> 'a literal \<Rightarrow>
 definition strictly_generalizes_lit :: "'a literal \<Rightarrow> 'a literal \<Rightarrow> bool" where
   "strictly_generalizes_lit L M \<longleftrightarrow> generalizes_lit L M \<and> \<not> generalizes_lit M L"
 
-definition generalizes_cls :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" where
-  "generalizes_cls C D \<longleftrightarrow> (\<exists>\<sigma>. C \<cdot> \<sigma> = D)"
+definition generalizes :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" where
+  "generalizes C D \<longleftrightarrow> (\<exists>\<sigma>. C \<cdot> \<sigma> = D)"
 
-definition strictly_generalizes_cls :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" where
-  "strictly_generalizes_cls C D \<longleftrightarrow> generalizes_cls C D \<and> \<not> generalizes_cls D C"
+definition strictly_generalizes :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" where
+  "strictly_generalizes C D \<longleftrightarrow> generalizes C D \<and> \<not> generalizes D C"
 
 definition subsumes :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" where
   "subsumes C D \<longleftrightarrow> (\<exists>\<sigma>. C \<cdot> \<sigma> \<subseteq># D)"
@@ -152,7 +152,7 @@ definition strictly_subsumes :: "'a clause \<Rightarrow> 'a clause \<Rightarrow>
   "strictly_subsumes C D \<longleftrightarrow> subsumes C D \<and> \<not> subsumes D C"
 
 definition variants :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" where
-  "variants C D \<longleftrightarrow> generalizes_cls C D \<and> generalizes_cls D C"
+  "variants C D \<longleftrightarrow> generalizes C D \<and> generalizes D C"
 
 definition is_renaming :: "'s \<Rightarrow> bool" where
   "is_renaming \<sigma> \<longleftrightarrow> (\<exists>\<tau>. \<sigma> \<odot> \<tau> = id_subst)"
@@ -957,23 +957,23 @@ lemma variants_iff_subsumes: "variants C D \<longleftrightarrow> subsumes C D \<
 proof
   assume "variants C D"
   then show "subsumes C D \<and> subsumes D C"
-    unfolding variants_def generalizes_cls_def subsumes_def by (metis subset_mset.order.refl)
+    unfolding variants_def generalizes_def subsumes_def by (metis subset_mset.order.refl)
 next
   assume sub: "subsumes C D \<and> subsumes D C"
   then have "size C = size D"
     unfolding subsumes_def by (metis antisym size_mset_mono size_subst)
   then show "variants C D"
-    using sub unfolding subsumes_def variants_def generalizes_cls_def
+    using sub unfolding subsumes_def variants_def generalizes_def
     by (metis leD mset_subset_size size_mset_mono size_subst
         subset_mset.order.not_eq_order_implies_strict)
 qed
 
-lemma wf_strictly_generalizes_cls: "wfP strictly_generalizes_cls"
+lemma wf_strictly_generalizes: "wfP strictly_generalizes"
 proof -
   {
-    assume "\<exists>C_at. \<forall>i. strictly_generalizes_cls (C_at (Suc i)) (C_at i)"
+    assume "\<exists>C_at. \<forall>i. strictly_generalizes (C_at (Suc i)) (C_at i)"
     then obtain C_at :: "nat \<Rightarrow> 'a clause" where
-      sg_C: "\<And>i. strictly_generalizes_cls (C_at (Suc i)) (C_at i)"
+      sg_C: "\<And>i. strictly_generalizes (C_at (Suc i)) (C_at i)"
       by blast
 
     define n :: nat where
@@ -983,13 +983,13 @@ proof -
     proof (induct i)
       case (Suc i)
       then show ?case
-        using sg_C[of i] unfolding strictly_generalizes_cls_def generalizes_cls_def subst_cls_def
+        using sg_C[of i] unfolding strictly_generalizes_def generalizes_def subst_cls_def
         by (metis size_image_mset)
     qed (simp add: n_def)
 
     obtain \<sigma>_at :: "nat \<Rightarrow> 's" where
       C_\<sigma>: "\<And>i. image_mset (\<lambda>L. L \<cdot>l \<sigma>_at i) (C_at (Suc i)) = C_at i"
-      using sg_C[unfolded strictly_generalizes_cls_def generalizes_cls_def subst_cls_def] by metis
+      using sg_C[unfolded strictly_generalizes_def generalizes_def subst_cls_def] by metis
 
     define Ls_at :: "nat \<Rightarrow> 'a literal list" where
       "Ls_at = rec_nat (SOME Ls. mset Ls = C_at 0)
@@ -1025,7 +1025,7 @@ proof -
       using Ls_\<sigma> len_Ls by (metis literal.map_disc_iff nth_map subst_lit_def)
 
     have Ls_\<tau>_strict_lit: "\<And>i \<tau>. map (\<lambda>L. L \<cdot>l \<tau>) (Ls_at i) \<noteq> Ls_at (Suc i)"
-      by (metis C_\<sigma> mset_Ls Ls_\<sigma> mset_map sg_C generalizes_cls_def strictly_generalizes_cls_def
+      by (metis C_\<sigma> mset_Ls Ls_\<sigma> mset_map sg_C generalizes_def strictly_generalizes_def
           subst_cls_def)
 
     have Ls_\<tau>_strict_tm:
@@ -1057,15 +1057,19 @@ proof -
     then have False
       using wf_strictly_generalizes_atm[unfolded wfP_def wf_iff_no_infinite_down_chain] by blast
   }
-  then show "wfP (strictly_generalizes_cls :: 'a clause \<Rightarrow> _ \<Rightarrow> _)"
+  then show "wfP (strictly_generalizes :: 'a clause \<Rightarrow> _ \<Rightarrow> _)"
     unfolding wfP_def by (blast intro: wf_iff_no_infinite_down_chain[THEN iffD2])
 qed
 
-lemma strict_subset_subst_strictly_subsumes:
-  assumes c\<eta>_sub: "C \<cdot> \<eta> \<subset># D"
-  shows "strictly_subsumes C D"
-  by (metis c\<eta>_sub leD mset_subset_size size_mset_mono size_subst strictly_subsumes_def
+lemma strict_subset_subst_strictly_subsumes: "C \<cdot> \<eta> \<subset># D \<Longrightarrow> strictly_subsumes C D"
+  by (metis leD mset_subset_size size_mset_mono size_subst strictly_subsumes_def
       subset_mset.dual_order.strict_implies_order substitution_ops.subsumes_def)
+
+lemma generalizes_refl: "generalizes C C"
+  unfolding generalizes_def by (rule exI[of _ id_subst]) auto
+
+lemma generalizes_trans: "generalizes C D \<Longrightarrow> generalizes D E \<Longrightarrow> generalizes C E"
+  unfolding generalizes_def using subst_cls_comp_subst by blast
 
 lemma subsumes_refl: "subsumes C C"
   unfolding subsumes_def by (rule exI[of _ id_subst]) auto
@@ -1073,6 +1077,16 @@ lemma subsumes_refl: "subsumes C C"
 lemma subsumes_trans: "subsumes C D \<Longrightarrow> subsumes D E \<Longrightarrow> subsumes C E"
   unfolding subsumes_def
   by (metis (no_types) subset_mset.order.trans subst_cls_comp_subst subst_cls_mono_mset)
+
+lemma strictly_generalizes_irrefl: "\<not> strictly_generalizes C C"
+  unfolding strictly_generalizes_def by blast
+
+lemma strictly_generalizes_antisym: "strictly_generalizes C D \<Longrightarrow> \<not> strictly_generalizes D C"
+  unfolding strictly_generalizes_def by blast
+
+lemma strictly_generalizes_trans:
+  "strictly_generalizes C D \<Longrightarrow> strictly_generalizes D E \<Longrightarrow> strictly_generalizes C E"
+  unfolding strictly_generalizes_def using generalizes_trans by blast
 
 lemma strictly_subsumes_irrefl: "\<not> strictly_subsumes C C"
   unfolding strictly_subsumes_def by blast
@@ -1086,6 +1100,9 @@ lemma strictly_subsumes_trans:
 
 lemma subset_strictly_subsumes: "C \<subset># D \<Longrightarrow> strictly_subsumes C D"
   using strict_subset_subst_strictly_subsumes[of C id_subst] by auto
+
+lemma strictly_generalizes_neq: "strictly_generalizes D' D \<Longrightarrow> D' \<noteq> D \<cdot> \<sigma>"
+  unfolding strictly_generalizes_def generalizes_def by blast
 
 lemma strictly_subsumes_neq: "strictly_subsumes D' D \<Longrightarrow> D' \<noteq> D \<cdot> \<sigma>"
   unfolding strictly_subsumes_def subsumes_def by blast
@@ -1120,17 +1137,17 @@ proof (rule ccontr)
   then obtain l where
     l_p: "\<forall>l' \<ge> l. size (c l') = size (c (Suc l'))"
     by metis
-  then have "\<forall>l' \<ge> l. strictly_generalizes_cls (c (Suc l')) (c l')"
-    using ps unfolding strictly_generalizes_cls_def generalizes_cls_def
+  then have "\<forall>l' \<ge> l. strictly_generalizes (c (Suc l')) (c l')"
+    using ps unfolding strictly_generalizes_def generalizes_def
     by (metis size_subst less_irrefl strictly_subsumes_def mset_subset_size subset_mset_def
         subsumes_def strictly_subsumes_neq)
-  then have "\<forall>i. strictly_generalizes_cls (c (Suc i + l)) (c (i + l))"
-    unfolding strictly_generalizes_cls_def generalizes_cls_def by auto
-  then have "\<exists>f. \<forall>i. strictly_generalizes_cls (f (Suc i)) (f i)"
+  then have "\<forall>i. strictly_generalizes (c (Suc i + l)) (c (i + l))"
+    unfolding strictly_generalizes_def generalizes_def by auto
+  then have "\<exists>f. \<forall>i. strictly_generalizes (f (Suc i)) (f i)"
     by (rule exI[of _ "\<lambda>x. c (x + l)"])
   then show False
-    using wf_strictly_generalizes_cls
-      wf_iff_no_infinite_down_chain[of "{(x, y). strictly_generalizes_cls x y}"]
+    using wf_strictly_generalizes
+      wf_iff_no_infinite_down_chain[of "{(x, y). strictly_generalizes x y}"]
     unfolding wfP_def by auto
 qed
 
