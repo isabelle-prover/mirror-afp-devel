@@ -33,6 +33,53 @@ application is illustrated on the example of a healthcare IoT system
 and GDPR compliance verification.</description>
     </item>
     <item>
+       <title>Power Sum Polynomials</title>
+              <link>https://www.isa-afp.org/entries/Power_Sum_Polynomials.html</link>
+       <guid>https://www.isa-afp.org/entries/Power_Sum_Polynomials.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>24 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This article provides a formalisation of the symmetric
+multivariate polynomials known as &lt;em&gt;power sum
+polynomials&lt;/em&gt;. These are of the form
+p&lt;sub&gt;n&lt;/sub&gt;(&lt;em&gt;X&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;,&amp;hellip;,
+&lt;em&gt;X&lt;/em&gt;&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;) =
+&lt;em&gt;X&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;&lt;sup&gt;n&lt;/sup&gt;
++ &amp;hellip; +
+X&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;&lt;sup&gt;n&lt;/sup&gt;.
+A formal proof of the Girard–Newton Theorem is also given. This
+theorem relates the power sum polynomials to the elementary symmetric
+polynomials s&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt; in the form
+of a recurrence relation
+(-1)&lt;sup&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sup&gt;
+&lt;em&gt;k&lt;/em&gt; s&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;
+=
+&amp;sum;&lt;sub&gt;i&amp;isinv;[0,&lt;em&gt;k&lt;/em&gt;)&lt;/sub&gt;
+(-1)&lt;sup&gt;i&lt;/sup&gt; s&lt;sub&gt;i&lt;/sub&gt;
+p&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;-&lt;em&gt;i&lt;/em&gt;&lt;/sub&gt;&amp;thinsp;.&lt;/p&gt;
+&lt;p&gt;As an application, this is then used to solve a generalised
+form of a puzzle given as an exercise in Dummit and Foote&#39;s
+&lt;em&gt;Abstract Algebra&lt;/em&gt;: For &lt;em&gt;k&lt;/em&gt;
+complex unknowns &lt;em&gt;x&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;,
+&amp;hellip;,
+&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;,
+define p&lt;sub&gt;&lt;em&gt;j&lt;/em&gt;&lt;/sub&gt; :=
+&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;&lt;sup&gt;&lt;em&gt;j&lt;/em&gt;&lt;/sup&gt;
++ &amp;hellip; +
+&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;&lt;sup&gt;&lt;em&gt;j&lt;/em&gt;&lt;/sup&gt;.
+Then for each vector &lt;em&gt;a&lt;/em&gt; &amp;isinv;
+&amp;#x2102;&lt;sup&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sup&gt;, show that
+there is exactly one solution to the system p&lt;sub&gt;1&lt;/sub&gt;
+= a&lt;sub&gt;1&lt;/sub&gt;, &amp;hellip;,
+p&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt; =
+a&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt; up to permutation of
+the
+&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;&lt;em&gt;i&lt;/em&gt;&lt;/sub&gt;
+and determine the value of
+p&lt;sub&gt;&lt;em&gt;i&lt;/em&gt;&lt;/sub&gt; for
+i&amp;gt;k.&lt;/p&gt;</description>
+    </item>
+    <item>
        <title>The Lambert W Function on the Reals</title>
               <link>https://www.isa-afp.org/entries/Lambert_W.html</link>
        <guid>https://www.isa-afp.org/entries/Lambert_W.html</guid>
@@ -567,35 +614,6 @@ Change history:
 ordinal exponentiation;
 introduction of the coercion ord_of_nat :: &#34;nat =&gt; V&#34;;
 numerous new lemmas. (revision 6081d5be8d08)</description>
-    </item>
-    <item>
-       <title>Isabelle/C</title>
-              <link>https://www.isa-afp.org/entries/Isabelle_C.html</link>
-       <guid>https://www.isa-afp.org/entries/Isabelle_C.html</guid>
-       <dc:creator> Frédéric Tuong, Burkhart Wolff       </dc:creator>
-       <pubDate>22 Oct 2019 00:00:00 +0000</pubDate>
-       <description>
-We present a framework for C code in C11 syntax deeply integrated into
-the Isabelle/PIDE development environment. Our framework provides an
-abstract interface for verification back-ends to be plugged-in
-independently. Thus, various techniques such as deductive program
-verification or white-box testing can be applied to the same source,
-which is part of an integrated PIDE document model. Semantic back-ends
-are free to choose the supported C fragment and its semantics. In
-particular, they can differ on the chosen memory model or the
-specification mechanism for framing conditions. Our framework supports
-semantic annotations of C sources in the form of comments. Annotations
-serve to locally control back-end settings, and can express the term
-focus to which an annotation refers. Both the logical and the
-syntactic context are available when semantic annotations are
-evaluated. As a consequence, a formula in an annotation can refer both
-to HOL or C variables. Our approach demonstrates the degree of
-maturity and expressive power the Isabelle/PIDE sub-system has
-achieved in recent years. Our integration technique employs Lex and
-Yacc style grammars to ensure efficient deterministic parsing.  This
-is the core-module of Isabelle/C; the AFP package for Clean and
-Clean_wrapper as well as AutoCorres and AutoCorres_wrapper (available
-via git) are applications of this front-end.</description>
     </item>
   </channel>
 </rss>
