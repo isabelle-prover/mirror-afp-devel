@@ -482,7 +482,7 @@ definition non_active_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times>
   "non_active_subset M = {CL \<in> M. snd CL \<noteq> active}"
 
 inductive step :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<Longrightarrow>GC" 50) where
-  process: "N1 = N \<union> M \<Longrightarrow> N2 = N \<union> M' \<Longrightarrow> N \<inter> M = {} \<Longrightarrow>
+  process: "N1 = N \<union> M \<Longrightarrow> N2 = N \<union> M' \<Longrightarrow>
     M \<subseteq> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q (N \<union> M') \<Longrightarrow>
     active_subset M' = {} \<Longrightarrow> N1 \<Longrightarrow>GC N2" |
   infer: "N1 = N \<union> {(C, L)} \<Longrightarrow> {(C, L)} \<inter> N = {} \<Longrightarrow> N2 = N \<union> {(C, active)} \<union> M \<Longrightarrow> L \<noteq> active \<Longrightarrow>
@@ -503,11 +503,10 @@ next
     gc_step: "N1 \<Longrightarrow>GC N2" and
     n1_is: "N1 = N \<union> M" and
     n2_is: "N2 = N \<union> M'" and
-    empty_inter: "N \<inter> M = {}" and
     m_red: "M \<subseteq> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q (N \<union> M')" and
     active_empty: "active_subset M' = {}"
   have "N1 - N2 \<subseteq> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q N2"
-    using n1_is n2_is empty_inter m_red by auto
+    using n1_is n2_is m_red by auto
   then show "labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.derive N1 N2"
     unfolding labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.derive.simps by blast
 next
@@ -688,7 +687,7 @@ proof
       no_labels.lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` (N \<union> {(C, active)} \<union> M)))"
   proof -
     have proc_or_infer: "(\<exists>N1 N M N2 M'. lnth D n = N1 \<and> lnth D (Suc n) = N2 \<and> N1 = N \<union> M \<and>
-         N2 = N \<union> M' \<and> N \<inter> M = {} \<and>
+         N2 = N \<union> M' \<and>
          M \<subseteq> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q (N \<union> M') \<and>
          active_subset M' = {}) \<or>
        (\<exists>N1 N C L N2 M. lnth D n = N1 \<and> lnth D (Suc n) = N2 \<and> N1 = N \<union> {(C, L)} \<and>
@@ -723,8 +722,8 @@ proof
       assume "\<not> nj \<noteq> n"
       then have "(prems_of \<iota>)!j = (C0, active)"
         using C0_in C0_notin step.simps[of "lnth D n" "lnth D (Suc n)"] step_n
-        by (smt Un_iff Un_insert_right nj_greater nj_prems active_subset_def empty_Collect_eq
-            insertE lessI mem_Collect_eq prod.sel(2) suc_n_length)
+        by (smt Un_iff nth_d_is suc_nth_d_is l_not_active active_subset_def insertCI insertE lessI
+            mem_Collect_eq nj_greater nj_prems snd_conv suc_n_length)
       then show False using j_not_j0 C0_is by simp
     qed
     ultimately have "nj < n" using n_bigger by force
@@ -735,7 +734,7 @@ proof
   qed
   then have "set (prems_of \<iota>) \<subseteq> active_subset N \<union> {(C0, active)}"
     using C0_prems_i C0_is m_def by (metis Un_iff atLeast0LessThan in_set_conv_nth insertCI lessThan_iff subrelI)
-  moreover have "\<not> (set (prems_of \<iota>) \<subseteq> active_subset N - {(C0, active)})"  using C0_prems_i by blast
+  moreover have "\<not> (set (prems_of \<iota>) \<subseteq> active_subset N - {(C0, active)})" using C0_prems_i by blast
   ultimately have "\<iota> \<in> with_labels.Inf_from2 (active_subset N) {(C0, active)}"
     using i_in_inf_fl unfolding with_labels.Inf_from2_def with_labels.Inf_from_def by blast
   then have "to_F \<iota> \<in> no_labels.Non_ground.Inf_from2 (fst ` (active_subset N)) {C0}"
@@ -823,8 +822,8 @@ definition non_active_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times>
 
 inductive step :: "'f inference set \<times> ('f \<times> 'l) set \<Rightarrow>
   'f inference set \<times> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<Longrightarrow>LGC" 50) where
-  process: "N1 = N \<union> M \<Longrightarrow> N2 = N \<union> M' \<Longrightarrow> N \<inter> M = {} \<Longrightarrow>
-    M \<subseteq>  labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q (N \<union> M') \<Longrightarrow>
+  process: "N1 = N \<union> M \<Longrightarrow> N2 = N \<union> M' \<Longrightarrow>
+    M \<subseteq> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q (N \<union> M') \<Longrightarrow>
     active_subset M' = {} \<Longrightarrow> (T, N1) \<Longrightarrow>LGC (T, N2)" |
   schedule_infer: "T2 = T1 \<union> T' \<Longrightarrow> N1 = N \<union> {(C, L)} \<Longrightarrow> {(C, L)} \<inter> N = {} \<Longrightarrow> N2 = N \<union> {(C, active)} \<Longrightarrow>
     L \<noteq> active \<Longrightarrow> T' = no_labels.Non_ground.Inf_from2 (fst ` (active_subset N)) {C} \<Longrightarrow>
@@ -850,10 +849,9 @@ next
   assume
     n1_is: "N1 = N \<union> M" and
     n2_is: "N2 = N \<union> M'" and
-    empty_inter: "N \<inter> M = {}" and
     m_red: "M \<subseteq> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q (N \<union> M')"
   have "N1 - N2 \<subseteq> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q N2"
-    using n1_is n2_is empty_inter m_red by auto
+    using n1_is n2_is m_red by auto
   then show "N1 \<rhd>RedL N2"
     unfolding labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.derive.simps by blast
 next
@@ -1074,7 +1072,7 @@ proof
     then have prems_i_active: "set (prems_of \<iota>) \<subseteq> active_subset N \<union> {(C0, active)}"
       using C0_prems_i C0_is m_def
       by (metis Un_iff atLeast0LessThan in_set_conv_nth insertCI lessThan_iff subrelI)
-    moreover have "\<not> (set (prems_of \<iota>) \<subseteq> active_subset N - {(C0, active)})"  using C0_prems_i by blast
+    moreover have "\<not> (set (prems_of \<iota>) \<subseteq> active_subset N - {(C0, active)})" using C0_prems_i by blast
     ultimately have "\<iota> \<in> with_labels.Inf_from2 (active_subset N) {(C0, active)}"
       using i_in_inf_fl prems_i_active unfolding with_labels.Inf_from2_def with_labels.Inf_from_def
       by blast
@@ -1251,7 +1249,7 @@ proof -
   have not_empty_d2: "\<not> lnull (lmap snd D)" using not_empty_d by force
   have simp_snd_lmap: "lnth (lmap snd D) 0 = snd (lnth D 0)"
     using lnth_lmap[of 0 D snd] not_empty_d by (simp add: zero_enat_def)
-  have labeled_bot_entailed: "entails_\<G>_L_Q  (snd (lnth D 0)) {(B, active)}"
+  have labeled_bot_entailed: "entails_\<G>_L_Q (snd (lnth D 0)) {(B, active)}"
     using labeled_entailment_lifting bot_entailed by fastforce
   have "fair (lmap snd D)"
     using lgc_fair[OF deriv not_empty_d init_state final_state no_prems_init_active final_schedule] .
