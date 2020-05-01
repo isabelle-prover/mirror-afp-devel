@@ -194,27 +194,14 @@ lemma empty_red_f_equiv2: "labeled_ord_red_crit_fam.empty_ord_lifted_calc_w_red_
   with_labels.Red_F_Q"
   using empty_red_f_equiv by auto
 
-lemma labeled_ordered_static_ref_comp:
-  "static_refutational_complete_calculus Bot_FL Inf_FL
-  labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.entails_Q
-  labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_Inf_Q
-  labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q"
-  using labeled_ord_red_crit_fam.static_empty_ord_inter_equiv_static_inter empty_red_f_equiv2
-    red_inf_equiv2 entail_equiv2 labeled_static_ref_comp
-  by argo
-
-interpretation stat_ref_calc: static_refutational_complete_calculus Bot_FL Inf_FL
+sublocale stat_ref_calc:
+  static_refutational_complete_calculus Bot_FL Inf_FL
   labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.entails_Q
   labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_Inf_Q
   labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q
-  by (rule labeled_ordered_static_ref_comp)
-
-lemma labeled_ordered_dynamic_ref_comp:
-  "dynamic_refutational_complete_calculus Bot_FL Inf_FL
-  labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.entails_Q
-  labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_Inf_Q
-  labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q"
-  by (rule stat_ref_calc.dynamic_refutational_complete_calculus_axioms)
+  using labeled_ord_red_crit_fam.static_empty_ord_inter_equiv_static_inter empty_red_f_equiv2
+    red_inf_equiv2 entail_equiv2 labeled_static_ref_comp
+  by argo
 
 (* lem:redundant-labeled-inferences *)
 lemma labeled_red_inf_eq_red_inf: "\<iota> \<in> Inf_FL \<Longrightarrow>
@@ -792,7 +779,7 @@ proof -
     using labeled_entailment_lifting bot_entailed by fastforce
   have "fair D" using gc_fair[OF deriv not_empty_d init_state final_state] .
   then have "\<exists>i \<in> {i. enat i < llength D}. \<exists>BL\<in>Bot_FL. BL \<in> lnth D i"
-    using labeled_ordered_dynamic_ref_comp labeled_b_in not_empty_d2 gc_to_red[OF deriv]
+    using stat_ref_calc.dynamic_refutational_complete labeled_b_in not_empty_d2 gc_to_red[OF deriv]
       labeled_bot_entailed entail_equiv
     unfolding dynamic_refutational_complete_calculus_def
       dynamic_refutational_complete_calculus_axioms_def by blast
@@ -1269,7 +1256,7 @@ proof -
   have "fair (lmap snd D)"
     using lgc_fair[OF deriv not_empty_d init_state final_state no_prems_init_active final_schedule] .
   then have "\<exists>i \<in> {i. enat i < llength D}. \<exists>BL\<in>Bot_FL. BL \<in> (snd (lnth D i))"
-    using labeled_ordered_dynamic_ref_comp labeled_b_in not_empty_d2 lgc_to_red[OF deriv]
+    using stat_ref_calc.dynamic_refutational_complete labeled_b_in not_empty_d2 lgc_to_red[OF deriv]
       labeled_bot_entailed entail_equiv simp_snd_lmap
     unfolding dynamic_refutational_complete_calculus_def
       dynamic_refutational_complete_calculus_axioms_def

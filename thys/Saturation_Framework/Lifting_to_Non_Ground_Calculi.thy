@@ -189,7 +189,7 @@ lemma prop_nested_in_set: "D \<in> P C \<Longrightarrow> C \<in> {C. \<forall>D 
 lemma Red_F_\<G>_equiv_def:
   \<open>Red_F_\<G> N = {C. \<forall>Di \<in> \<G>_F C. Di \<in> Red_F_G (\<G>_set N) \<or>
     (\<exists>E \<in> (N - Red_F_\<G> N). Prec_F_g Di E C \<and> Di \<in> \<G>_F E)}\<close>
-proof (rule;clarsimp)
+proof (rule; clarsimp)
   fix C D
   assume
     C_in: \<open>C \<in> Red_F_\<G> N\<close> and
@@ -414,9 +414,6 @@ proof
   show \<open>\<iota> \<in> Inf_F \<Longrightarrow> concl_of \<iota> \<in> N \<Longrightarrow> \<iota> \<in> Red_Inf_\<G> N\<close> using Red_Inf_of_Inf_to_N_F by simp
 qed
 
-lemma lifted_calc_is_calc: "calculus_with_red_crit Bot_F Inf_F entails_\<G> Red_Inf_\<G> Red_F_\<G>"
-  using lifted_calculus_with_red_crit.calculus_with_red_crit_axioms .
-
 lemma grounded_inf_in_ground_inf: "\<iota> \<in> Inf_F \<Longrightarrow> \<G>_Inf \<iota> \<noteq> None \<Longrightarrow> the (\<G>_Inf \<iota>) \<subseteq> Inf_G"
   using inf_map Ground.Red_Inf_to_Inf by blast
 
@@ -448,8 +445,8 @@ qed
 theorem stat_ref_comp_to_non_ground:
   assumes
     stat_ref_G: "static_refutational_complete_calculus Bot_G Inf_G entails_G Red_Inf_G Red_F_G" and
-    sat_n_imp: "\<And>N. (lifted_calculus_with_red_crit.saturated N \<Longrightarrow> Ground.Inf_from (\<G>_set N) \<subseteq>
-    ({\<iota>. \<exists>\<iota>'\<in> Non_ground.Inf_from N. \<G>_Inf \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf \<iota>')} \<union> Red_Inf_G (\<G>_set N)))"
+    sat_n_imp: "\<And>N. lifted_calculus_with_red_crit.saturated N \<Longrightarrow> Ground.Inf_from (\<G>_set N) \<subseteq>
+      {\<iota>. \<exists>\<iota>'\<in> Non_ground.Inf_from N. \<G>_Inf \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf \<iota>')} \<union> Red_Inf_G (\<G>_set N)"
   shows
     "static_refutational_complete_calculus Bot_F Inf_F entails_\<G> Red_Inf_\<G> Red_F_\<G>"
 proof
@@ -467,7 +464,7 @@ proof
   have ground_n_entails_bot: "\<G>_set N \<Turnstile>G {BG}"
     using ground_n_entails bg_in1 Ground.entail_set_all_formulas by blast
   have "Ground.Inf_from (\<G>_set N) \<subseteq>
-    ({\<iota>. \<exists>\<iota>'\<in> Non_ground.Inf_from N. \<G>_Inf \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf \<iota>')} \<union> Red_Inf_G (\<G>_set N))"
+    {\<iota>. \<exists>\<iota>'\<in> Non_ground.Inf_from N. \<G>_Inf \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf \<iota>')} \<union> Red_Inf_G (\<G>_set N)"
     using sat_n_imp[OF sat_n] .
   have "Ground.saturated (\<G>_set N)"
     using sat_imp_ground_sat[OF sat_n sat_n_imp[OF sat_n]] .
@@ -540,10 +537,10 @@ lemma saturated_empty_order_equiv_saturated:
 
 (* lem:static-ref-compl-indep-of-sqsubset *)
 lemma static_empty_order_equiv_static:
-  "static_refutational_complete_calculus Bot_F Inf_F
-    any_order_lifting.entails_\<G> empty_order_lifting.Red_Inf_\<G> empty_order_lifting.Red_F_\<G> =
-    static_refutational_complete_calculus Bot_F Inf_F any_order_lifting.entails_\<G>
-      any_order_lifting.Red_Inf_\<G> any_order_lifting.Red_F_\<G>"
+  "static_refutational_complete_calculus Bot_F Inf_F any_order_lifting.entails_\<G>
+     empty_order_lifting.Red_Inf_\<G> empty_order_lifting.Red_F_\<G> =
+   static_refutational_complete_calculus Bot_F Inf_F any_order_lifting.entails_\<G>
+     any_order_lifting.Red_Inf_\<G> any_order_lifting.Red_F_\<G>"
   unfolding static_refutational_complete_calculus_def
   by (rule iffI) (standard,(standard)[],simp)+
 
@@ -553,7 +550,7 @@ theorem static_to_dynamic:
     any_order_lifting.entails_\<G> empty_order_lifting.Red_Inf_\<G> empty_order_lifting.Red_F_\<G> =
     dynamic_refutational_complete_calculus Bot_F Inf_F
     any_order_lifting.entails_\<G> any_order_lifting.Red_Inf_\<G> any_order_lifting.Red_F_\<G> "
-  (is "?static=?dynamic")
+  (is "?static = ?dynamic")
 proof
   assume ?static
   then have static_general:
@@ -823,7 +820,7 @@ qed
 
 (* lem:intersect-saturation-indep-of-sqsubset *)
 lemma sat_eq_sat_empty_order: "lifted_calc_w_red_crit_family.inter_red_crit_calculus.saturated N =
-  empty_ord_lifted_calc_w_red_crit_family.inter_red_crit_calculus.saturated N "
+  empty_ord_lifted_calc_w_red_crit_family.inter_red_crit_calculus.saturated N"
   by (rule refl)
 
 (* lem:intersect-static-ref-compl-indep-of-sqsubset *)
@@ -840,7 +837,7 @@ lemma static_empty_ord_inter_equiv_static_inter:
 theorem stat_eq_dyn_ref_comp_fam_inter: "static_refutational_complete_calculus Bot_F Inf_F lifted_calc_w_red_crit_family.entails_Q
     empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q empty_ord_lifted_calc_w_red_crit_family.Red_F_Q =
   dynamic_refutational_complete_calculus Bot_F Inf_F lifted_calc_w_red_crit_family.entails_Q
-    lifted_calc_w_red_crit_family.Red_Inf_Q lifted_calc_w_red_crit_family.Red_F_Q"  (is "?static=?dynamic")
+    lifted_calc_w_red_crit_family.Red_Inf_Q lifted_calc_w_red_crit_family.Red_F_Q"  (is "?static = ?dynamic")
 proof
   assume ?static
   then have static_general: "static_refutational_complete_calculus Bot_F Inf_F
