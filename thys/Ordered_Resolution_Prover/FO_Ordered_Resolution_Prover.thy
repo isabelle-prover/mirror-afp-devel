@@ -255,10 +255,7 @@ The following formalizes Lemma 4.10.
 
 context
   fixes Sts :: "'a state llist"
-  assumes deriv: "chain (\<leadsto>) Sts"
 begin
-
-lemmas lhd_lmap_Sts = llist.map_sel(1)[OF chain_not_lnull[OF deriv]]
 
 definition S_Q :: "'a clause \<Rightarrow> 'a clause" where
   "S_Q = S_M S (Q_of_state (Liminf_state Sts))"
@@ -678,8 +675,8 @@ text \<open>
 Another formulation of the part of Lemma 4.10 that states we have a theorem proving process:
 \<close>
 
-lemma ground_derive_chain: "chain sr_ext.derive (lmap grounding_of_state Sts)"
-  using deriv RP_ground_derive by (simp add: chain_lmap[of "(\<leadsto>)"])
+lemma ground_derive_chain: "chain (\<leadsto>) Sts \<Longrightarrow> chain sr_ext.derive (lmap grounding_of_state Sts)"
+  using RP_ground_derive by (simp add: chain_lmap[of "(\<leadsto>)"])
 
 text \<open>
 The following is used prove to Lemma 4.11:
@@ -769,6 +766,7 @@ qed
 
 lemma instance_if_subsumed_and_in_limit:
   assumes
+    deriv: "chain (\<leadsto>) Sts" and
     ns: "Gs = lmap grounding_of_state Sts" and
     c: "C \<in> Liminf_llist Gs - sr.Rf (Liminf_llist Gs)" and
     d: "D \<in> clss_of_state (lnth Sts i)" "enat i < llength Sts" "subsumes D C"
@@ -816,6 +814,7 @@ qed
 
 lemma from_Q_to_Q_inf:
   assumes
+    deriv: "chain (\<leadsto>) Sts" and
     fair: "fair_state_seq Sts" and
     ns: "Gs = lmap grounding_of_state Sts" and
     c: "C \<in> Liminf_llist Gs - sr.Rf (Liminf_llist Gs)" and
@@ -834,7 +833,7 @@ proof -
     using ground_derive_chain deriv ns by auto
 
   have "\<exists>\<sigma>. D \<cdot> \<sigma> = C \<and> is_ground_subst \<sigma>"
-    using instance_if_subsumed_and_in_limit c d unfolding ns by blast
+    using instance_if_subsumed_and_in_limit[OF deriv] c d unfolding ns by blast
   then obtain \<sigma> where
     \<sigma>: "D \<cdot> \<sigma> = C" "is_ground_subst \<sigma>"
     by auto
@@ -917,6 +916,7 @@ qed
 
 lemma from_P_to_Q:
   assumes
+    deriv: "chain (\<leadsto>) Sts" and
     fair: "fair_state_seq Sts" and
     ns: "Gs = lmap grounding_of_state Sts" and
     c: "C \<in> Liminf_llist Gs - sr.Rf (Liminf_llist Gs)" and
@@ -936,7 +936,7 @@ proof -
     using ground_derive_chain deriv ns by auto
 
   have "\<exists>\<sigma>. D \<cdot> \<sigma> = C \<and> is_ground_subst \<sigma>"
-    using instance_if_subsumed_and_in_limit ns c d by blast
+    using instance_if_subsumed_and_in_limit[OF deriv] ns c d by blast
   then obtain \<sigma> where
     \<sigma>: "D \<cdot> \<sigma> = C" "is_ground_subst \<sigma>"
     by auto
@@ -1040,6 +1040,7 @@ lemma neg_properly_subsume_variants:
 
 lemma from_N_to_P_or_Q:
   assumes
+    deriv: "chain (\<leadsto>) Sts" and
     fair: "fair_state_seq Sts" and
     ns: "Gs = lmap grounding_of_state Sts" and
     c: "C \<in> Liminf_llist Gs - sr.Rf (Liminf_llist Gs)" and
@@ -1061,7 +1062,7 @@ proof -
     using ground_derive_chain deriv ns by auto
 
   have "\<exists>\<sigma>. D \<cdot> \<sigma> = C \<and> is_ground_subst \<sigma>"
-    using instance_if_subsumed_and_in_limit ns c d by blast
+    using instance_if_subsumed_and_in_limit[OF deriv] ns c d by blast
   then obtain \<sigma> where
     \<sigma>: "D \<cdot> \<sigma> = C" "is_ground_subst \<sigma>"
     by auto
@@ -1152,6 +1153,7 @@ qed
 
 lemma eventually_in_Qinf:
   assumes
+    deriv: "chain (\<leadsto>) Sts" and
     D_p: "D \<in> clss_of_state (Sup_state Sts)"
       "subsumes D C" "\<forall>E \<in> {E. E \<in> (clss_of_state (Sup_state Sts)) \<and> subsumes E C}.
        \<not> strictly_subsumes E D" and
@@ -1174,7 +1176,7 @@ proof -
     using ground_derive_chain deriv ns by auto
 
   have "\<exists>\<sigma>. D \<cdot> \<sigma> = C \<and> is_ground_subst \<sigma>"
-    using instance_if_subsumed_and_in_limit[OF ns c] D_p i_p by blast
+    using instance_if_subsumed_and_in_limit[OF deriv ns c] D_p i_p by blast
   then obtain \<sigma> where
     \<sigma>: "D \<cdot> \<sigma> = C" "is_ground_subst \<sigma>"
     by blast
@@ -1191,9 +1193,9 @@ proof -
       using from_N_to_P_or_Q deriv fair ns c i_p(1) D_p(2) D_p(3) by blast
     then obtain l' where
       l'_p: "D' \<in> ?Qs l'" "l' < llength Sts"
-      using from_P_to_Q[OF fair ns c _ D'_p(3) D'_p(6) D'_p(5)] by blast
+      using from_P_to_Q[OF deriv fair ns c _ D'_p(3) D'_p(6) D'_p(5)] by blast
     then have "D' \<in> Q_of_state (Liminf_state Sts)"
-      using from_Q_to_Q_inf[OF fair ns c _ l'_p(2)] D'_p by auto
+      using from_Q_to_Q_inf[OF deriv fair ns c _ l'_p(2)] D'_p by auto
     then have ?thesis
       using D'_p by auto
   }
@@ -1202,9 +1204,9 @@ proof -
     assume a: "D \<in> ?Ps i"
     then obtain l' where
       l'_p: "D \<in> ?Qs l'" "l' < llength Sts"
-      using from_P_to_Q[OF fair ns c a i_p(1) D_p(2) D_p(3)] by auto
+      using from_P_to_Q[OF deriv fair ns c a i_p(1) D_p(2) D_p(3)] by auto
     then have "D \<in> Q_of_state (Liminf_state Sts)"
-      using from_Q_to_Q_inf[OF fair ns c l'_p(1) l'_p(2)] D_p(3) \<sigma>(1) \<sigma>(2) D_p(2) by auto
+      using from_Q_to_Q_inf[OF deriv fair ns c l'_p(1) l'_p(2)] D_p(3) \<sigma>(1) \<sigma>(2) D_p(2) by auto
     then have ?thesis
       using D_p \<sigma> by auto
   }
@@ -1212,7 +1214,7 @@ proof -
   {
     assume a: "D \<in> ?Qs i"
     then have "D \<in> Q_of_state (Liminf_state Sts)"
-      using from_Q_to_Q_inf[OF fair ns c a i_p(1)] \<sigma> D_p(2,3) by auto
+      using from_Q_to_Q_inf[OF deriv fair ns c a i_p(1)] \<sigma> D_p(2,3) by auto
     then have ?thesis
       using D_p \<sigma> by auto
   }
@@ -1226,9 +1228,11 @@ The following corresponds to Lemma 4.11:
 
 lemma fair_imp_Liminf_minus_Rf_subset_ground_Liminf_state:
   assumes
+    deriv: "chain (\<leadsto>) Sts" and
     fair: "fair_state_seq Sts" and
     ns: "Gs = lmap grounding_of_state Sts"
-  shows "Liminf_llist Gs - sr.Rf (Liminf_llist Gs) \<subseteq> grounding_of_clss (Q_of_state (Liminf_state Sts))"
+  shows "Liminf_llist Gs - sr.Rf (Liminf_llist Gs)
+    \<subseteq> grounding_of_clss (Q_of_state (Liminf_state Sts))"
 proof
   let ?Ns = "\<lambda>i. N_of_state (lnth Sts i)"
   let ?Ps = "\<lambda>i. P_of_state (lnth Sts i)"
@@ -1255,7 +1259,7 @@ proof
     using C_p using Liminf_grounding_of_state_ground ns by auto
 
   have "\<exists>D' \<sigma>'. D' \<in> Q_of_state (Liminf_state Sts) \<and> D' \<cdot> \<sigma>' = C \<and> is_ground_subst \<sigma>'"
-    using eventually_in_Qinf[of D C Gs] using D_p(1-3) fair ns C_p ground_C by auto
+    using eventually_in_Qinf[of D C Gs] using D_p(1-3) deriv fair ns C_p ground_C by auto
   then obtain D' \<sigma>' where
     D'_p: "D' \<in> Q_of_state (Liminf_state Sts) \<and> D' \<cdot> \<sigma>' = C \<and> is_ground_subst \<sigma>'"
     by blast
@@ -1316,8 +1320,9 @@ qed
 
 lemma empty_clause_in_Q_of_Liminf_state:
   assumes
-    empty_in: "{#} \<in> Liminf_llist (lmap grounding_of_state Sts)" and
-    fair: "fair_state_seq Sts"
+    deriv: "chain (\<leadsto>) Sts" and
+    fair: "fair_state_seq Sts" and
+    empty_in: "{#} \<in> Liminf_llist (lmap grounding_of_state Sts)"
   shows "{#} \<in> Q_of_state (Liminf_state Sts)"
 proof -
   define Gs :: "'a clause set llist" where
@@ -1325,7 +1330,7 @@ proof -
   from empty_in have in_Liminf_not_Rf: "{#} \<in> Liminf_llist Gs - sr.Rf (Liminf_llist Gs)"
     unfolding ns sr.Rf_def by auto
   then have "{#} \<in> grounding_of_clss (Q_of_state (Liminf_state Sts))"
-    using fair_imp_Liminf_minus_Rf_subset_ground_Liminf_state[OF fair ns] by auto
+    using fair_imp_Liminf_minus_Rf_subset_ground_Liminf_state[OF deriv fair ns] by auto
   then show ?thesis
     unfolding grounding_of_clss_def grounding_of_cls_def by auto
 qed
@@ -1367,7 +1372,9 @@ proof
 qed
 
 theorem RP_sound:
-  assumes "{#} \<in> clss_of_state (Liminf_state Sts)"
+  assumes
+    deriv: "chain (\<leadsto>) Sts" and
+    "{#} \<in> clss_of_state (Liminf_state Sts)"
   shows "\<not> satisfiable (grounding_of_state (lhd Sts))"
 proof -
   from assms have "{#} \<in> grounding_of_state (Liminf_state Sts)"
@@ -1377,13 +1384,14 @@ proof -
   then have "\<not> satisfiable (Liminf_llist (lmap grounding_of_state Sts))"
     using true_clss_def by auto
   then have "\<not> satisfiable (lhd (lmap grounding_of_state Sts))"
-    using sr_ext.sat_limit_iff ground_derive_chain by blast
+    using sr_ext.sat_limit_iff ground_derive_chain deriv by blast
   then show ?thesis
-    unfolding lhd_lmap_Sts .
+    using chain_not_lnull deriv by fastforce
 qed
 
 theorem RP_saturated_if_fair:
   assumes
+    deriv: "chain (\<leadsto>) Sts" and
     fair: "fair_state_seq Sts" and
     empty_Q0: "Q_of_state (lhd Sts) = {}"
   shows "sr.saturated_upto (Liminf_llist (lmap grounding_of_state Sts))"
@@ -1488,8 +1496,7 @@ proof -
         subgoal by auto
         subgoal
           unfolding infer_from_def
-          by (rule ord_resolve_rename.cases[OF s_p(4)])
-            (use s_p(4) C'_p(3) C'_p(5) j_p'(2) in force)
+          by (rule ord_resolve_rename.cases[OF s_p(4)]) (use s_p(4) C'_p(3,5) j_p'(2) in force)
         done
       then show ?thesis
         using C'_p(4) by auto
@@ -1518,20 +1525,20 @@ qed
 
 corollary RP_complete_if_fair:
   assumes
+    deriv: "chain (\<leadsto>) Sts" and
     fair: "fair_state_seq Sts" and
     empty_Q0: "Q_of_state (lhd Sts) = {}" and
     unsat: "\<not> satisfiable (grounding_of_state (lhd Sts))"
   shows "{#} \<in> Q_of_state (Liminf_state Sts)"
 proof -
   have "\<not> satisfiable (Liminf_llist (lmap grounding_of_state Sts))"
-    unfolding sr_ext.sat_limit_iff[OF ground_derive_chain]
-    by (rule unsat[folded lhd_lmap_Sts[of grounding_of_state]])
+    using unsat sr_ext.sat_limit_iff[OF ground_derive_chain] chain_not_lnull deriv by fastforce
   moreover have "sr.saturated_upto (Liminf_llist (lmap grounding_of_state Sts))"
-    by (rule RP_saturated_if_fair[OF fair empty_Q0, simplified])
+    by (rule RP_saturated_if_fair[OF deriv fair empty_Q0, simplified])
   ultimately have "{#} \<in> Liminf_llist (lmap grounding_of_state Sts)"
     using sr.saturated_upto_complete_if by auto
   then show ?thesis
-    using empty_clause_in_Q_of_Liminf_state fair by auto
+    using empty_clause_in_Q_of_Liminf_state[OF deriv fair] by auto
 qed
 
 end
