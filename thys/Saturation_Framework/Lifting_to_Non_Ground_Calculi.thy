@@ -611,8 +611,7 @@ definition Red_Inf_\<G>_Q :: "'f set \<Rightarrow> 'f inference set" where
   "Red_Inf_\<G>_Q N = \<Inter> {X N |X. X \<in> Red_Inf_\<G>_q ` Q}"
 
 definition Red_F_\<G>_empty_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set" where
-  "Red_F_\<G>_empty_q q N =
-   {C. \<forall>D \<in> \<G>_F_q q C. D \<in> Red_F_q q (\<G>_set_q q N) \<or> (\<exists>E \<in> N. Empty_Order E C \<and> D \<in> \<G>_F_q q E)}"
+  "Red_F_\<G>_empty_q q N = {C. \<forall>D \<in> \<G>_F_q q C. D \<in> Red_F_q q (\<G>_set_q q N)}"
 
 definition Red_F_\<G>_empty :: "'f set \<Rightarrow> 'f set" where
   "Red_F_\<G>_empty N = \<Inter> {X N |X. X \<in> Red_F_\<G>_empty_q ` Q}"
