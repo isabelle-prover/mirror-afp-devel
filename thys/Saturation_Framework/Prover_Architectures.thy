@@ -485,7 +485,7 @@ inductive step :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rig
   process: "N1 = N \<union> M \<Longrightarrow> N2 = N \<union> M' \<Longrightarrow>
     M \<subseteq> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q (N \<union> M') \<Longrightarrow>
     active_subset M' = {} \<Longrightarrow> N1 \<Longrightarrow>GC N2" |
-  infer: "N1 = N \<union> {(C, L)} \<Longrightarrow> {(C, L)} \<inter> N = {} \<Longrightarrow> N2 = N \<union> {(C, active)} \<union> M \<Longrightarrow> L \<noteq> active \<Longrightarrow>
+  infer: "N1 = N \<union> {(C, L)} \<Longrightarrow> N2 = N \<union> {(C, active)} \<union> M \<Longrightarrow> L \<noteq> active \<Longrightarrow>
     active_subset M = {} \<Longrightarrow>
     no_labels.Non_ground.Inf_from2 (fst ` (active_subset N)) {C} \<subseteq>
       no_labels.lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` (N \<union> {(C, active)} \<union> M)) \<Longrightarrow>
@@ -516,15 +516,13 @@ next
     n1_is: "N1 = N \<union> {(C, L)}" and
     not_active: "L \<noteq> active" and
     n2_is: "N2 = N \<union> {(C, active)} \<union> M" and
-    empty_inter: "{(C, L)} \<inter> N = {}" and
     active_empty: "active_subset M = {}"
   have "(C, active) \<in> N2" using n2_is by auto
   moreover have "C \<preceq>\<cdot> C" using equiv_equiv_F by (metis equivp_def)
   moreover have "active \<sqsubset>l L" using active_minimal[OF not_active] .
   ultimately have "{(C, L)} \<subseteq> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q N2"
     using red_labeled_clauses by blast
-  moreover have "(C, L) \<notin> M \<Longrightarrow> N1 - N2 = {(C, L)}" using n1_is n2_is empty_inter not_active by auto
-  moreover have "(C, L) \<in> M \<Longrightarrow> N1 - N2 = {}" using n1_is n2_is by auto
+  moreover have "N1 - N2 = {} \<or> N1 - N2 = {(C, L)}" using n1_is n2_is by blast
   ultimately have "N1 - N2 \<subseteq> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q N2"
     using empty_red_f_equiv[of N2] by blast
   then show "labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.derive N1 N2"
@@ -680,7 +678,7 @@ proof
   have C0_notin: "(C0, active) \<notin> (lnth D n)" using C0_is j0_notin unfolding active_subset_def by simp
   have step_n: "lnth D n \<Longrightarrow>GC lnth D (Suc n)"
     using deriv chain_lnth_rel n_in unfolding nj_set_def by blast
-  have "\<exists>N C L M. (lnth D n = N \<union> {(C, L)} \<and> {(C, L)} \<inter> N = {} \<and>
+  have "\<exists>N C L M. (lnth D n = N \<union> {(C, L)} \<and>
       lnth D (Suc n) = N \<union> {(C, active)} \<union> M \<and> L \<noteq> active \<and>
       active_subset M = {} \<and>
       no_labels.Non_ground.Inf_from2 (fst ` (active_subset N)) {C} \<subseteq>
@@ -691,8 +689,7 @@ proof
          M \<subseteq> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q (N \<union> M') \<and>
          active_subset M' = {}) \<or>
        (\<exists>N1 N C L N2 M. lnth D n = N1 \<and> lnth D (Suc n) = N2 \<and> N1 = N \<union> {(C, L)} \<and>
-         {(C, L)} \<inter> N = {} \<and> N2 = N \<union> {(C, active)} \<union> M \<and>
-         L \<noteq> active \<and> active_subset M = {} \<and>
+         N2 = N \<union> {(C, active)} \<union> M \<and> L \<noteq> active \<and> active_subset M = {} \<and>
          no_labels.Non_ground.Inf_from2 (fst ` (active_subset N)) {C} \<subseteq>
            no_labels.lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` (N \<union> {(C, active)} \<union> M)))"
       using step.simps[of "lnth D n" "lnth D (Suc n)"] step_n by blast
@@ -825,13 +822,13 @@ inductive step :: "'f inference set \<times> ('f \<times> 'l) set \<Rightarrow>
   process: "N1 = N \<union> M \<Longrightarrow> N2 = N \<union> M' \<Longrightarrow>
     M \<subseteq> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q (N \<union> M') \<Longrightarrow>
     active_subset M' = {} \<Longrightarrow> (T, N1) \<Longrightarrow>LGC (T, N2)" |
-  schedule_infer: "T2 = T1 \<union> T' \<Longrightarrow> N1 = N \<union> {(C, L)} \<Longrightarrow> {(C, L)} \<inter> N = {} \<Longrightarrow> N2 = N \<union> {(C, active)} \<Longrightarrow>
+  schedule_infer: "T2 = T1 \<union> T' \<Longrightarrow> N1 = N \<union> {(C, L)} \<Longrightarrow> N2 = N \<union> {(C, active)} \<Longrightarrow>
     L \<noteq> active \<Longrightarrow> T' = no_labels.Non_ground.Inf_from2 (fst ` (active_subset N)) {C} \<Longrightarrow>
     (T1, N1) \<Longrightarrow>LGC (T2, N2)" |
-  compute_infer: "T1 = T2 \<union> {\<iota>} \<Longrightarrow> T2 \<inter> {\<iota>} = {} \<Longrightarrow> N2 = N1 \<union> M \<Longrightarrow> active_subset M = {} \<Longrightarrow>
+  compute_infer: "T1 = T2 \<union> {\<iota>} \<Longrightarrow> N2 = N1 \<union> M \<Longrightarrow> active_subset M = {} \<Longrightarrow>
     \<iota> \<in> no_labels.lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` (N1 \<union> M)) \<Longrightarrow>
     (T1, N1) \<Longrightarrow>LGC (T2, N2)" |
-  delete_orphans: "T1 = T2 \<union> T' \<Longrightarrow> T2 \<inter> T' = {} \<Longrightarrow>
+  delete_orphans: "T1 = T2 \<union> T' \<Longrightarrow>
     T' \<inter> no_labels.Non_ground.Inf_from (fst ` (active_subset N)) = {} \<Longrightarrow> (T1, N) \<Longrightarrow>LGC (T2, N)"
 
 abbreviation derive :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<rhd>RedL" 50) where
@@ -1032,13 +1029,13 @@ proof
     have step_n: "lnth D n \<Longrightarrow>LGC lnth D (Suc n)"
       using deriv chain_lnth_rel n_in unfolding nj_set_def by blast
     have is_scheduled: "\<exists>T2 T1 T' N1 N C L N2. lnth D n = (T1, N1) \<and> lnth D (Suc n) = (T2, N2) \<and>
-        T2 = T1 \<union> T' \<and> N1 = N \<union> {(C, L)} \<and> {(C, L)} \<inter> N = {} \<and> N2 = N \<union> {(C, active)} \<and> L \<noteq> active \<and>
+        T2 = T1 \<union> T' \<and> N1 = N \<union> {(C, L)} \<and> N2 = N \<union> {(C, active)} \<and> L \<noteq> active \<and>
         T' = no_labels.Non_ground.Inf_from2 (fst ` active_subset N) {C}"
       using step.simps[of "lnth D n" "lnth D (Suc n)"] step_n C0_in C0_notin
       unfolding active_subset_def by fastforce
     then obtain T2 T1 T' N1 N L N2 where nth_d_is: "lnth D n = (T1, N1)" and
       suc_nth_d_is: "lnth D (Suc n) = (T2, N2)" and t2_is: "T2 = T1 \<union> T'" and
-      n1_is: "N1 = N \<union> {(C0, L)}" "{(C0, L)} \<inter> N = {}" "N2 = N \<union> {(C0, active)}" and
+      n1_is: "N1 = N \<union> {(C0, L)}" "N2 = N \<union> {(C0, active)}" and
       l_not_active: "L \<noteq> active" and
       tp_is: "T' = no_labels.Non_ground.Inf_from2 (fst ` active_subset N) {C0}"
       using C0_in C0_notin j0_in C0_is using active_subset_def by fastforce
@@ -1163,17 +1160,16 @@ proof
   have p_neq_n: "Suc p \<noteq> n" using i_notin_suc_p i_in_suc_n by blast
   have step_p: "lnth D p \<Longrightarrow>LGC lnth D (Suc p)" using deriv p_smaller_d chain_lnth_rel by blast
   then have "\<exists>T1 T2 \<iota> N2 N1 M. lnth D p = (T1, N1) \<and> lnth D (Suc p) = (T2, N2) \<and>
-      T1 = T2 \<union> {\<iota>} \<and> T2 \<inter> {\<iota>} = {} \<and> N2 = N1 \<union> M \<and> active_subset M = {} \<and>
+      T1 = T2 \<union> {\<iota>} \<and> N2 = N1 \<union> M \<and> active_subset M = {} \<and>
       \<iota> \<in> no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` (N1 \<union> M))"
   proof -
     have ci_or_do: "(\<exists>T1 T2 \<iota> N2 N1 M. lnth D p = (T1, N1) \<and> lnth D (Suc p) = (T2, N2) \<and>
-        T1 = T2 \<union> {\<iota>} \<and> T2 \<inter> {\<iota>} = {} \<and> N2 = N1 \<union> M \<and> active_subset M = {} \<and>
+        T1 = T2 \<union> {\<iota>} \<and> N2 = N1 \<union> M \<and> active_subset M = {} \<and>
         \<iota> \<in> no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` (N1 \<union> M))) \<or>
         (\<exists>T1 T2 T' N. lnth D p = (T1, N) \<and> lnth D (Suc p) = (T2, N) \<and>
-        T1 = T2 \<union> T' \<and> T2 \<inter> T' = {} \<and>
+        T1 = T2 \<union> T' \<and>
         T' \<inter> no_labels.Non_ground.Inf_from (fst ` active_subset N) = {})"
-      using step.simps[of "lnth D p" "lnth D (Suc p)"] step_p i_in_p i_notin_suc_p
-      by fastforce
+      using step.simps[of "lnth D p" "lnth D (Suc p)"] step_p i_in_p i_notin_suc_p by fastforce
     then have p_greater_n_strict: "n < Suc p"
       using suc_nth_d_is p_greater_n i_in_t2 i_notin_suc_p le_eq_less_or_eq by force
     have "m > 0 \<Longrightarrow> j \<in> {0..<m} \<Longrightarrow> (prems_of (to_F \<iota>))!j \<in> (fst ` (active_subset (snd (lnth D p))))"
@@ -1197,12 +1193,12 @@ proof
       using i_in_F unfolding no_labels.Non_ground.Inf_from_def
       by (smt atLeast0LessThan in_set_conv_nth lessThan_iff m_def_F mem_Collect_eq subsetI)
     have "m = 0 \<Longrightarrow> (\<exists>T1 T2 \<iota> N2 N1 M. lnth D p = (T1, N1) \<and> lnth D (Suc p) = (T2, N2) \<and>
-        T1 = T2 \<union> {\<iota>} \<and> T2 \<inter> {\<iota>} = {} \<and> N2 = N1 \<union> M \<and> active_subset M = {} \<and>
+        T1 = T2 \<union> {\<iota>} \<and> N2 = N1 \<union> M \<and> active_subset M = {} \<and>
         \<iota> \<in> no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` (N1 \<union> M)))"
       using ci_or_do premise_free_inf_always_from[of "to_F \<iota>" "fst ` active_subset _", OF i_in_F]
         m_def i_in_p i_notin_suc_p m_def_F by auto
     then show "(\<exists>T1 T2 \<iota> N2 N1 M. lnth D p = (T1, N1) \<and> lnth D (Suc p) = (T2, N2) \<and>
-        T1 = T2 \<union> {\<iota>} \<and> T2 \<inter> {\<iota>} = {} \<and> N2 = N1 \<union> M \<and> active_subset M = {} \<and>
+        T1 = T2 \<union> {\<iota>} \<and> N2 = N1 \<union> M \<and> active_subset M = {} \<and>
         \<iota> \<in> no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` (N1 \<union> M)))"
       using ci_or_do i_in_p i_notin_suc_p prems_i_active_p unfolding active_subset_def
       by force
