@@ -481,9 +481,9 @@ definition active_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l)
 definition non_active_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
   "non_active_subset M = {CL \<in> M. snd CL \<noteq> active}"
 
-inductive Given_Clause_step :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<Longrightarrow>GC" 50) where
+inductive step :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<Longrightarrow>GC" 50) where
   process: "N1 = N \<union> M \<Longrightarrow> N2 = N \<union> M' \<Longrightarrow> N \<inter> M = {} \<Longrightarrow>
-    M \<subseteq>  labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q (N \<union> M') \<Longrightarrow>
+    M \<subseteq> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q (N \<union> M') \<Longrightarrow>
     active_subset M' = {} \<Longrightarrow> N1 \<Longrightarrow>GC N2" |
   infer: "N1 = N \<union> {(C, L)} \<Longrightarrow> {(C, L)} \<inter> N = {} \<Longrightarrow> N2 = N \<union> {(C, active)} \<union> M \<Longrightarrow> L \<noteq> active \<Longrightarrow>
     active_subset M = {} \<Longrightarrow>
@@ -495,7 +495,7 @@ abbreviation derive :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set 
   "derive \<equiv> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.derive"
 
 lemma one_step_equiv: "N1 \<Longrightarrow>GC N2 \<Longrightarrow> N1 \<rhd>RedL N2"
-proof (cases N1 N2 rule: Given_Clause_step.cases)
+proof (cases N1 N2 rule: step.cases)
   show "N1 \<Longrightarrow>GC N2 \<Longrightarrow> N1 \<Longrightarrow>GC N2" by blast
 next
   fix N M M'
@@ -696,7 +696,7 @@ proof
          L \<noteq> active \<and> active_subset M = {} \<and>
          no_labels.Non_ground.Inf_from2 (fst ` (active_subset N)) {C} \<subseteq>
            no_labels.lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` (N \<union> {(C, active)} \<union> M)))"
-      using Given_Clause_step.simps[of "lnth D n" "lnth D (Suc n)"] step_n by blast
+      using step.simps[of "lnth D n" "lnth D (Suc n)"] step_n by blast
     show ?thesis
       using C0_in C0_notin proc_or_infer j0_in C0_is
       by (smt Un_iff active_subset_def mem_Collect_eq snd_conv sup_bot.right_neutral)
@@ -722,7 +722,7 @@ proof
     proof (rule ccontr)
       assume "\<not> nj \<noteq> n"
       then have "(prems_of \<iota>)!j = (C0, active)"
-        using C0_in C0_notin Given_Clause_step.simps[of "lnth D n" "lnth D (Suc n)"] step_n
+        using C0_in C0_notin step.simps[of "lnth D n" "lnth D (Suc n)"] step_n
         by (smt Un_iff Un_insert_right nj_greater nj_prems active_subset_def empty_Collect_eq
             insertE lessI mem_Collect_eq prod.sel(2) suc_n_length)
       then show False using j_not_j0 C0_is by simp
@@ -821,7 +821,7 @@ definition active_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l)
 definition non_active_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
   "non_active_subset M = {CL \<in> M. snd CL \<noteq> active}"
 
-inductive Lazy_Given_Clause_step :: "'f inference set \<times> ('f \<times> 'l) set \<Rightarrow>
+inductive step :: "'f inference set \<times> ('f \<times> 'l) set \<Rightarrow>
   'f inference set \<times> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<Longrightarrow>LGC" 50) where
   process: "N1 = N \<union> M \<Longrightarrow> N2 = N \<union> M' \<Longrightarrow> N \<inter> M = {} \<Longrightarrow>
     M \<subseteq>  labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q (N \<union> M') \<Longrightarrow>
@@ -843,7 +843,7 @@ lemma premise_free_inf_always_from: "\<iota> \<in> Inf_F \<Longrightarrow> lengt
   unfolding no_labels.Non_ground.Inf_from_def by simp
 
 lemma one_step_equiv: "(T1, N1) \<Longrightarrow>LGC (T2, N2) \<Longrightarrow> N1 \<rhd>RedL N2"
-proof (cases "(T1, N1)" "(T2, N2)" rule: Lazy_Given_Clause_step.cases)
+proof (cases "(T1, N1)" "(T2, N2)" rule: step.cases)
   show "(T1, N1) \<Longrightarrow>LGC (T2, N2) \<Longrightarrow> (T1, N1) \<Longrightarrow>LGC (T2, N2)" by blast
 next
   fix N M M'
@@ -1036,7 +1036,7 @@ proof
     have is_scheduled: "\<exists>T2 T1 T' N1 N C L N2. lnth D n = (T1, N1) \<and> lnth D (Suc n) = (T2, N2) \<and>
         T2 = T1 \<union> T' \<and> N1 = N \<union> {(C, L)} \<and> {(C, L)} \<inter> N = {} \<and> N2 = N \<union> {(C, active)} \<and> L \<noteq> active \<and>
         T' = no_labels.Non_ground.Inf_from2 (fst ` active_subset N) {C}"
-      using Lazy_Given_Clause_step.simps[of "lnth D n" "lnth D (Suc n)"] step_n C0_in C0_notin
+      using step.simps[of "lnth D n" "lnth D (Suc n)"] step_n C0_in C0_notin
       unfolding active_subset_def by fastforce
     then obtain T2 T1 T' N1 N L N2 where nth_d_is: "lnth D n = (T1, N1)" and
       suc_nth_d_is: "lnth D (Suc n) = (T2, N2)" and t2_is: "T2 = T1 \<union> T'" and
@@ -1060,7 +1060,7 @@ proof
       proof (rule ccontr)
         assume "\<not> nj \<noteq> n"
         then have "(prems_of \<iota>)!j = (C0, active)"
-          using C0_in C0_notin Lazy_Given_Clause_step.simps[of "lnth D n" "lnth D (Suc n)"] step_n
+          using C0_in C0_notin step.simps[of "lnth D n" "lnth D (Suc n)"] step_n
             active_subset_def is_scheduled nj_greater nj_prems suc_n_length by auto
         then show False using j_not_j0 C0_is by simp
       qed
@@ -1174,7 +1174,7 @@ proof
         (\<exists>T1 T2 T' N. lnth D p = (T1, N) \<and> lnth D (Suc p) = (T2, N) \<and>
         T1 = T2 \<union> T' \<and> T2 \<inter> T' = {} \<and>
         T' \<inter> no_labels.Non_ground.Inf_from (fst ` active_subset N) = {})"
-      using Lazy_Given_Clause_step.simps[of "lnth D p" "lnth D (Suc p)"] step_p i_in_p i_notin_suc_p
+      using step.simps[of "lnth D p" "lnth D (Suc p)"] step_p i_in_p i_notin_suc_p
       by fastforce
     then have p_greater_n_strict: "n < Suc p"
       using suc_nth_d_is p_greater_n i_in_t2 i_notin_suc_p le_eq_less_or_eq by force
