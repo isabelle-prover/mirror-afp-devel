@@ -741,13 +741,13 @@ proof
   then have "to_F \<iota> \<in> no_labels.lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` (lnth D (Suc n)))"
     using suc_nth_d_is inf_from_subs by fastforce
   then have "\<forall>q \<in> Q. (\<G>_Inf_q q (to_F \<iota>) \<noteq> None \<and>
-      the (\<G>_Inf_q q (to_F \<iota>)) \<subseteq> Red_Inf_q q (\<Union> (\<G>_F_q q ` (fst ` (lnth D (Suc n))))))
+      the (\<G>_Inf_q q (to_F \<iota>)) \<subseteq> Red_Inf_q q (\<Union> (\<G>_F_q q ` fst ` lnth D (Suc n))))
       \<or> (\<G>_Inf_q q (to_F \<iota>) = None \<and>
-      \<G>_F_q q (concl_of (to_F \<iota>)) \<subseteq> (\<Union> (\<G>_F_q q ` (fst ` (lnth D (Suc n))))) \<union>
-        Red_F_q q (\<Union> (\<G>_F_q q ` (fst ` (lnth D (Suc n))))))"
+      \<G>_F_q q (concl_of (to_F \<iota>)) \<subseteq> \<Union> (\<G>_F_q q ` fst ` lnth D (Suc n)) \<union>
+        Red_F_q q (\<Union> (\<G>_F_q q ` fst ` lnth D (Suc n))))"
     unfolding to_F_def no_labels.lifted_calc_w_red_crit_family.Red_Inf_Q_def
       no_labels.Red_Inf_\<G>_q_def no_labels.\<G>_set_q_def
-    by fastforce
+      by blast
   then have "\<iota> \<in> with_labels.Red_Inf_Q (lnth D (Suc n))"
     unfolding to_F_def with_labels.Red_Inf_Q_def Red_Inf_\<G>_L_q_def \<G>_Inf_L_q_def \<G>_set_L_q_def
       \<G>_F_L_q_def using i_in_inf_fl by auto
@@ -1212,13 +1212,13 @@ proof
   have "to_F \<iota> \<in> no_labels.lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` (snd (lnth D (Suc p))))"
     using i_in_red_inf suc_p_is n2p_is by fastforce
   then have "\<forall>q \<in> Q. (\<G>_Inf_q q (to_F \<iota>) \<noteq> None \<and>
-      the (\<G>_Inf_q q (to_F \<iota>)) \<subseteq> Red_Inf_q q (\<Union> (\<G>_F_q q ` (fst ` (snd (lnth D (Suc p)))))))
+      the (\<G>_Inf_q q (to_F \<iota>)) \<subseteq> Red_Inf_q q (\<Union> (\<G>_F_q q ` fst ` snd (lnth D (Suc p)))))
       \<or> (\<G>_Inf_q q (to_F \<iota>) = None \<and>
-      \<G>_F_q q (concl_of (to_F \<iota>)) \<subseteq> (\<Union> (\<G>_F_q q ` (fst ` (snd (lnth D (Suc p)))))) \<union>
-        Red_F_q q (\<Union> (\<G>_F_q q ` (fst ` (snd (lnth D (Suc p)))))))"
+      \<G>_F_q q (concl_of (to_F \<iota>)) \<subseteq> \<Union> (\<G>_F_q q ` fst ` snd (lnth D (Suc p))) \<union>
+        Red_F_q q (\<Union> (\<G>_F_q q ` fst ` snd (lnth D (Suc p)))))"
     unfolding to_F_def no_labels.lifted_calc_w_red_crit_family.Red_Inf_Q_def
       no_labels.Red_Inf_\<G>_q_def no_labels.\<G>_set_q_def
-    by fastforce
+    by blast
   then have "\<iota> \<in> with_labels.Red_Inf_Q (snd (lnth D (Suc p)))"
     unfolding to_F_def with_labels.Red_Inf_Q_def Red_Inf_\<G>_L_q_def \<G>_Inf_L_q_def \<G>_set_L_q_def
       \<G>_F_L_q_def using i_in_inf_fl by auto
@@ -1249,7 +1249,7 @@ proof -
     using labeled_entailment_lifting bot_entailed by fastforce
   have "fair (lmap snd D)"
     using lgc_fair[OF deriv not_empty_d init_state final_state no_prems_init_active final_schedule] .
-  then have "\<exists>i \<in> {i. enat i < llength D}. \<exists>BL\<in>Bot_FL. BL \<in> (snd (lnth D i))"
+  then have "\<exists>i \<in> {i. enat i < llength D}. \<exists>BL\<in>Bot_FL. BL \<in> snd (lnth D i)"
     using stat_ref_calc.dynamic_refutational_complete labeled_b_in not_empty_d2 lgc_to_red[OF deriv]
       labeled_bot_entailed entail_equiv simp_snd_lmap
     unfolding dynamic_refutational_complete_calculus_def

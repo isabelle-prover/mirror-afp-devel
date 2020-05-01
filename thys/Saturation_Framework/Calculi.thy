@@ -291,10 +291,10 @@ locale calculus_with_red_crit_family =
 begin
 
 definition Red_Inf_Q :: "'f set \<Rightarrow> 'f inference set" where
-  "Red_Inf_Q N = \<Inter> {X N |X. X \<in> (Red_Inf_q ` Q)}"
+  "Red_Inf_Q N = \<Inter> {Red_Inf_q q N |q. q \<in> Q}"
 
 definition Red_F_Q :: "'f set \<Rightarrow> 'f set" where
-  "Red_F_Q N = \<Inter> {X N |X. X \<in> (Red_F_q ` Q)}"
+  "Red_F_Q N = \<Inter> {Red_F_q q N |q. q \<in> Q}"
 
 (* lem:intersection-of-red-crit *)
 lemma inter_red_crit: "calculus_with_red_crit Bot Inf entails_Q Red_Inf_Q Red_F_Q"
@@ -307,24 +307,14 @@ next
     unfolding Red_Inf_Q_def
   proof
     fix N
-    show "\<Inter> {X N |X. X \<in> Red_Inf_q ` Q} \<subseteq> Inf"
+    show "\<Inter> {Red_Inf_q q N |q. q \<in> Q} \<subseteq> Inf"
     proof (intro Inter_subset)
       fix Red_Infs
-      assume one_red_inf: "Red_Infs \<in> {X N |X. X \<in> Red_Inf_q ` Q}"
+      assume one_red_inf: "Red_Infs \<in> {Red_Inf_q q N |q. q \<in> Q}"
       show "Red_Infs \<subseteq> Inf" using one_red_inf
-      proof
-        assume "\<exists>Red_Inf_qi. Red_Infs = Red_Inf_qi N \<and> Red_Inf_qi \<in> Red_Inf_q ` Q"
-        then obtain Red_Inf_qi where
-          red_infs_def: "Red_Infs = Red_Inf_qi N" and red_inf_qi_in: "Red_Inf_qi \<in> Red_Inf_q ` Q"
-          by blast
-        obtain qi where red_inf_qi_def: "Red_Inf_qi = Red_Inf_q qi" and qi_in: "qi \<in> Q"
-          using red_inf_qi_in by blast
-        show "Red_Infs \<subseteq> Inf"
-          using all_red_crit calculus_with_red_crit.Red_Inf_to_Inf red_inf_qi_def red_infs_def qi_in
-          by blast
-      qed
+        using all_red_crit calculus_with_red_crit.Red_Inf_to_Inf by blast
     next
-      show "{X N |X. X \<in> Red_Inf_q ` Q} \<noteq> {}"
+      show "{Red_Inf_q q N |q. q \<in> Q} \<noteq> {}"
         using Q_nonempty by blast
     qed
   qed
@@ -355,7 +345,7 @@ next
         using qi_in all_red_crit Red_F_qi_def calculus_with_red_crit.Red_F_Bot[OF _ B_in]
           entails_qi_def
         by fastforce
-      show "(N - \<Inter> {X N |X. X \<in> Red_F_q ` Q}) \<Turnstile>qi {B}"
+      show "(N - \<Inter> {Red_F_q q N |q. q \<in> Q}) \<Turnstile>qi {B}"
         using consequence_relation.entails_trans[OF cons_rel_qi entails_1 N_unsat_qi]
         unfolding Red_F_Q_def .
     qed
@@ -488,7 +478,7 @@ next
       have "one.saturated N" using qi_in all_sat red_inf_qi_def by blast
       then show "\<iota> \<in> Red_Inf_qi N" unfolding one.saturated_def using \<iota>_in red_inf_qi_def by blast
     qed
-    then show "\<iota> \<in> \<Inter> {X N |X. X \<in> Red_Inf_q ` Q}" by blast
+    then show "\<iota> \<in> \<Inter> {Red_Inf_q q N |q. q \<in> Q}" by blast
   qed
 qed
 

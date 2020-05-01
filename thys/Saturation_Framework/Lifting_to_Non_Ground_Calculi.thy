@@ -605,25 +605,25 @@ definition Red_Inf_\<G>_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f inference
    \<or> (\<G>_Inf_q q \<iota> = None \<and> \<G>_F_q q (concl_of \<iota>) \<subseteq> (\<G>_set_q q N \<union> Red_F_q q (\<G>_set_q q N)))}"
 
 definition Red_Inf_\<G>_Q :: "'f set \<Rightarrow> 'f inference set" where
-  "Red_Inf_\<G>_Q N = \<Inter> {X N |X. X \<in> Red_Inf_\<G>_q ` Q}"
+  "Red_Inf_\<G>_Q N = \<Inter> {Red_Inf_\<G>_q q N |q. q \<in> Q}"
 
 definition Red_F_\<G>_empty_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set" where
   "Red_F_\<G>_empty_q q N = {C. \<forall>D \<in> \<G>_F_q q C. D \<in> Red_F_q q (\<G>_set_q q N)}"
 
 definition Red_F_\<G>_empty :: "'f set \<Rightarrow> 'f set" where
-  "Red_F_\<G>_empty N = \<Inter> {X N |X. X \<in> Red_F_\<G>_empty_q ` Q}"
+  "Red_F_\<G>_empty N = \<Inter> {Red_F_\<G>_empty_q q N |q. q \<in> Q}"
 
 definition Red_F_\<G>_q_g :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set" where
   "Red_F_\<G>_q_g q N =
    {C. \<forall>D \<in> \<G>_F_q q C. D \<in> Red_F_q q (\<G>_set_q q N) \<or> (\<exists>E \<in> N. Prec_F_g D E C \<and> D \<in> \<G>_F_q q E)}"
 
 definition Red_F_\<G>_g :: "'f set \<Rightarrow> 'f set" where
-  "Red_F_\<G>_g N = \<Inter> {X N |X. X \<in> (Red_F_\<G>_q_g ` Q)}"
+  "Red_F_\<G>_g N = \<Inter> {Red_F_\<G>_q_g q N |q. q \<in> Q}"
 
 definition entails_\<G>_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set \<Rightarrow> bool" where
   "entails_\<G>_q q N1 N2 \<equiv> entails_q q (\<G>_set_q q N1) (\<G>_set_q q N2)"
 
-definition entails_\<G>_Q :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>\<inter>" 50) where
+definition entails_\<G>_Q :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>\<inter>\<G>" 50) where
   "entails_\<G>_Q N1 N2 \<equiv> \<forall>q \<in> Q. entails_\<G>_q q N1 N2"
 
 lemma red_crit_lifting_family:
@@ -773,7 +773,7 @@ proof (standard, clarify)
   assume
     b_in: "B \<in> Bot_F" and
     sat_n: "calculus_with_red_crit.saturated Inf_F Red_Inf_\<G>_Q N" and
-    entails_bot: "N \<Turnstile>\<inter> {B}"
+    entails_bot: "N \<Turnstile>\<inter>\<G> {B}"
   have "empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q = Red_Inf_\<G>_Q"
     unfolding Red_Inf_\<G>_Q_def lifted_calc_w_red_crit_family.Red_Inf_Q_def by simp
   then have empty_ord_sat_n:

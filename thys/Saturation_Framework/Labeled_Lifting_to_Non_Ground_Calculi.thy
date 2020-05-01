@@ -214,7 +214,7 @@ definition Red_Inf_\<G>_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarr
     \<or> ((\<G>_Inf_L_q q \<iota> = None) \<and> \<G>_F_L_q q (concl_of \<iota>) \<subseteq> (\<G>_set_L_q q N \<union> Red_F_q q (\<G>_set_L_q q N)))}"
 
 definition Red_Inf_\<G>_L_Q :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) inference set" where
-  "Red_Inf_\<G>_L_Q N = \<Inter> {X N |X. X \<in> (Red_Inf_\<G>_L_q ` Q)}"
+  "Red_Inf_\<G>_L_Q N = \<Inter> {Red_Inf_\<G>_L_q q N |q. q \<in> Q}"
 
 abbreviation Labeled_Empty_Order :: \<open> ('f \<times> 'l) \<Rightarrow> ('f \<times> 'l) \<Rightarrow> bool\<close> where
   "Labeled_Empty_Order C1 C2 \<equiv> False"
@@ -224,7 +224,7 @@ definition Red_F_\<G>_empty_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Righ
     (\<exists>E \<in> N. Labeled_Empty_Order E C \<and> D \<in> \<G>_F_L_q q E)}"
 
 definition Red_F_\<G>_empty_L :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
-  "Red_F_\<G>_empty_L N = \<Inter> {X N |X. X \<in> (Red_F_\<G>_empty_L_q ` Q)}"
+  "Red_F_\<G>_empty_L N = \<Inter> {Red_F_\<G>_empty_L_q q N |q. q \<in> Q}"
 
 definition entails_\<G>_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" where
   "entails_\<G>_L_q q N1 N2 \<equiv> entails_q q (\<G>_set_L_q q N1) (\<G>_set_L_q q N2)"
@@ -329,15 +329,15 @@ proof clarify
   fix X Xa q
   assume
     q_in: "q \<in> Q" and
-    i_in_inter: "\<iota> \<in> \<Inter> {X NL |X. X \<in> Red_Inf_\<G>_L_q ` Q}"
+    i_in_inter: "\<iota> \<in> \<Inter> {Red_Inf_\<G>_L_q q NL |q. q \<in> Q}"
   have i_in_q: "\<iota> \<in> Red_Inf_\<G>_L_q q NL" using q_in i_in_inter image_eqI by blast
   then have i_in: "\<iota> \<in> Inf_FL" unfolding Red_Inf_\<G>_L_q_def by blast
   have to_F_in: "to_F \<iota> \<in> Inf_F" unfolding to_F_def using Inf_FL_to_Inf_F[OF i_in] .
   have rephrase1: "(\<Union>CL\<in>NL. \<G>_F_q q (fst CL)) = (\<Union> (\<G>_F_q q ` fst ` NL))" by blast
   have rephrase2: "fst (concl_of \<iota>) = concl_of (to_F \<iota>)"
     unfolding concl_of_def to_F_def by simp
-  have subs_red: "((\<G>_Inf_L_q q \<iota>) \<noteq> None \<and> the (\<G>_Inf_L_q q \<iota>) \<subseteq> Red_Inf_q q (\<G>_set_L_q q NL))
-    \<or> ((\<G>_Inf_L_q q \<iota> = None) \<and> \<G>_F_L_q q (concl_of \<iota>) \<subseteq> (\<G>_set_L_q q NL \<union> Red_F_q q (\<G>_set_L_q q NL)))"
+  have subs_red: "(\<G>_Inf_L_q q \<iota> \<noteq> None \<and> the (\<G>_Inf_L_q q \<iota>) \<subseteq> Red_Inf_q q (\<G>_set_L_q q NL))
+    \<or> (\<G>_Inf_L_q q \<iota> = None \<and> \<G>_F_L_q q (concl_of \<iota>) \<subseteq> \<G>_set_L_q q NL \<union> Red_F_q q (\<G>_set_L_q q NL))"
     using i_in_q unfolding Red_Inf_\<G>_L_q_def by blast
   then have to_F_subs_red: "(\<G>_Inf_q q (to_F \<iota>) \<noteq> None \<and>
       the (\<G>_Inf_q q (to_F \<iota>)) \<subseteq> Red_Inf_q q (no_labels.\<G>_set_q q (fst ` NL)))
