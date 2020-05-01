@@ -194,7 +194,7 @@ definition is_ground_subst_list :: "'s list \<Rightarrow> bool" where
   "is_ground_subst_list \<sigma>s \<longleftrightarrow> (\<forall>\<sigma> \<in> set \<sigma>s. is_ground_subst \<sigma>)"
 
 definition grounding_of_cls :: "'a clause \<Rightarrow> 'a clause set" where
-  "grounding_of_cls C = {C \<cdot> \<sigma> | \<sigma>. is_ground_subst \<sigma>}"
+  "grounding_of_cls C = {C \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>}"
 
 definition grounding_of_clss :: "'a clause set \<Rightarrow> 'a clause set" where
   "grounding_of_clss CC = (\<Union>C \<in> CC. grounding_of_cls C)"
@@ -789,7 +789,7 @@ lemma is_ground_cls_list_is_ground_cls_sum_list[simp]:
   by (meson in_mset_sum_list2 is_ground_cls_def is_ground_cls_list_def)
 
 
-paragraph \<open>Ground mono\<close>
+paragraph \<open>Grounding monotonicity\<close>
 
 lemma is_ground_cls_mono: "C \<subseteq># D \<Longrightarrow> is_ground_cls D \<Longrightarrow> is_ground_cls C"
   unfolding is_ground_cls_def by (metis set_mset_mono subsetD)
@@ -900,6 +900,12 @@ lemma grounding_of_cls_ground: "is_ground_cls C \<Longrightarrow> grounding_of_c
 
 lemma grounding_of_cls_empty[simp]: "grounding_of_cls {#} = {{#}}"
   by (simp add: grounding_of_cls_ground)
+
+
+paragraph \<open>Grounding idempotence\<close>
+
+lemma grounding_of_grounding_of_cls: "E \<in> grounding_of_cls D \<Longrightarrow> D \<in> grounding_of_cls C \<Longrightarrow> E = D"
+  using grounding_of_cls_def by auto
 
 
 subsubsection \<open>Subsumption\<close>
