@@ -40,7 +40,7 @@ locale Prover_Architecture_Basis = labeled_lifting_with_red_crit_family Bot_F In
     compat_equiv_prec: "C1 \<doteq> D1 \<Longrightarrow> C2 \<doteq> D2 \<Longrightarrow> C1 \<prec>\<cdot> C2 \<Longrightarrow> D1 \<prec>\<cdot> D2" and
     equiv_F_grounding: "q \<in> Q \<Longrightarrow> C1 \<doteq> C2 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
     prec_F_grounding: "q \<in> Q \<Longrightarrow> C2 \<prec>\<cdot> C1 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
-    static_ref_comp: "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>)
+    static_ref_comp: "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>)
       no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q
       no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_F_Q"
 begin
@@ -135,7 +135,7 @@ next
 qed
 
 lemma labeled_static_ref_comp:
-  "static_refutational_complete_calculus Bot_FL Inf_FL (\<Turnstile>\<inter>L) with_labels.Red_Inf_Q with_labels.Red_F_Q"
+  "static_refutational_complete_calculus Bot_FL Inf_FL (\<Turnstile>\<inter>\<G>L) with_labels.Red_Inf_Q with_labels.Red_F_Q"
   using labeled_static_ref[OF static_ref_comp] .
 
 lemma standard_labeled_lifting_family:
@@ -163,13 +163,13 @@ sublocale labeled_ord_red_crit_fam: standard_lifting_with_red_crit_family Inf_FL
     standard_lifting_with_red_crit_family_axioms.intro)
 
 lemma entail_equiv:
-  "labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.entails_Q N1 N2 \<longleftrightarrow> (N1 \<Turnstile>\<inter>L N2)"
+  "labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.entails_Q N1 N2 \<longleftrightarrow> (N1 \<Turnstile>\<inter>\<G>L N2)"
   unfolding labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.entails_Q_def
     entails_\<G>_L_Q_def entails_\<G>_L_q_def labeled_ord_red_crit_fam.entails_\<G>_q_def
      labeled_ord_red_crit_fam.\<G>_set_q_def \<G>_set_L_q_def
   by simp
 
-lemma entail_equiv2: "labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.entails_Q = (\<Turnstile>\<inter>L)"
+lemma entail_equiv2: "labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.entails_Q = (\<Turnstile>\<inter>\<G>L)"
   using entail_equiv by auto
 
 lemma red_inf_equiv: "labeled_ord_red_crit_fam.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q N =
