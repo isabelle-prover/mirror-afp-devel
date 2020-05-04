@@ -636,7 +636,6 @@ lemma viewRn_list: "viewRn t = Some (nd, s)
   qed
   done
 
-
 type_synonym ('e,'a) viewres = "(('e \<times>'a) \<times> ('e,'a) FingerTreeStruc) option"
 
 text \<open>Detach the leftmost element. Return @{const None} on empty finger tree.\<close>
@@ -671,7 +670,7 @@ next
   with v1 vn have v3: "nodeToList nd = [a]"
     apply (auto simp add: viewL_def )
     apply (induct nd)
-    apply auto
+    apply (simp_all (no_asm_use))
     done
   with v1 v2
   show "\<exists>a s. viewL t = Some (a, s) \<and> ft_invar s \<and> toList t = a # toList s"
@@ -720,7 +719,7 @@ next
   with v1 vn have v3: "nodeToList nd = [a]"
     apply (auto simp add: viewR_def )
     apply (induct nd)
-    apply auto
+    apply (simp_all (no_asm_use))
     done
   with v1 v2
   show "\<exists>a s. viewR t = Some (a, s) \<and> ft_invar s \<and> toList t = toList s @ [a]"
