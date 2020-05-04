@@ -5,9 +5,10 @@ session Stirling_Formula (AFP) = Bernoulli +
   sessions
     Bernoulli
     Landau_Symbols
+    "HOL-Real_Asymp"
   theories
     Stirling_Formula
-    Ln_Gamma_Asymptotics
+    Gamma_Asymptotics
   document_files
     "root.tex"
     "root.bib"
