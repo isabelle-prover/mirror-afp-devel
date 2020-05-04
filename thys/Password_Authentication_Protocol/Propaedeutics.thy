@@ -1024,6 +1024,7 @@ apply (erule parts.induct)
    apply (erule parts.Snd)
   apply (erule disjE)
    apply simp
+   apply (rule disjI2)
    apply (rule parts.Inj)
    apply simp
   apply (rule disjI2)
