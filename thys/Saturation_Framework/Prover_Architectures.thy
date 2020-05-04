@@ -204,12 +204,11 @@ sublocale stat_ref_calc:
   by argo
 
 (* lem:redundant-labeled-inferences *)
-lemma labeled_red_inf_eq_red_inf: "\<iota> \<in> Inf_FL \<Longrightarrow>
-  \<iota> \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_Inf_Q N \<equiv>
-  to_F \<iota> \<in> no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` N)" for \<iota>
+lemma labeled_red_inf_eq_red_inf:
+  assumes i_in: "\<iota> \<in> Inf_FL"
+  shows "\<iota> \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_Inf_Q N \<longleftrightarrow>
+    to_F \<iota> \<in> no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` N)"
 proof -
-  fix \<iota>
-  assume i_in: "\<iota> \<in> Inf_FL"
   have "\<iota> \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_Inf_Q N \<Longrightarrow>
     to_F \<iota> \<in> no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` N)"
   proof -
@@ -365,9 +364,8 @@ proof -
       unfolding labeled_ord_red_crit_fam.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q_def
       by blast
   qed
-  ultimately show "\<iota> \<in> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_Inf_Q N \<equiv>
-    to_F \<iota> \<in> no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` N)"
-    by argo
+  ultimately show ?thesis
+    by blast
 qed
 
 (* lem:redundant-labeled-formulas *)
@@ -491,8 +489,8 @@ inductive step :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rig
       no_labels.lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` (N \<union> {(C, active)} \<union> M)) \<Longrightarrow>
     N1 \<Longrightarrow>GC N2"
 
-abbreviation derive :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<rhd>RedL" 50) where
-  "derive \<equiv> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.derive"
+notation labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.derive
+  (infix "\<rhd>RedL" 50)
 
 lemma one_step_equiv: "N1 \<Longrightarrow>GC N2 \<Longrightarrow> N1 \<rhd>RedL N2"
 proof (cases N1 N2 rule: step.cases)
@@ -831,8 +829,8 @@ inductive step :: "'f inference set \<times> ('f \<times> 'l) set \<Rightarrow>
   delete_orphans: "T1 = T2 \<union> T' \<Longrightarrow>
     T' \<inter> no_labels.Non_ground.Inf_from (fst ` (active_subset N)) = {} \<Longrightarrow> (T1, N) \<Longrightarrow>LGC (T2, N)"
 
-abbreviation derive :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<rhd>RedL" 50) where
-  "derive \<equiv> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.derive"
+notation labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.derive
+  (infix "\<rhd>RedL" 50)
 
 lemma premise_free_inf_always_from: "\<iota> \<in> Inf_F \<Longrightarrow> length (prems_of \<iota>) = 0 \<Longrightarrow>
   \<iota> \<in> no_labels.Non_ground.Inf_from N"

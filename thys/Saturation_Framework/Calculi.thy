@@ -55,10 +55,10 @@ proof -
 qed
 
 definition saturated :: "'f set \<Rightarrow> bool" where
-  "saturated N \<equiv> Inf_from N \<subseteq> Red_Inf N"
+  "saturated N \<longleftrightarrow> Inf_from N \<subseteq> Red_Inf N"
 
 definition reduc_saturated :: "'f set \<Rightarrow> bool" where
-"reduc_saturated N \<equiv> Inf_from (N - Red_F N) \<subseteq> Red_Inf N"
+  "reduc_saturated N \<longleftrightarrow> Inf_from (N - Red_F N) \<subseteq> Red_Inf N"
 
 lemma Red_Inf_without_red_F:
   "Red_Inf (N - Red_F N) = Red_Inf N"
@@ -83,7 +83,7 @@ lemma Sup_Red_Inf_unit: "Sup_Red_Inf_llist (LCons X LNil) = Red_Inf X"
   using Sup_Red_Inf_llist_def enat_0_iff(1) by simp
 
 definition fair :: "'f set llist \<Rightarrow> bool" where
-  "fair D \<equiv> Inf_from (Liminf_llist D) \<subseteq> Sup_Red_Inf_llist D"
+  "fair D \<longleftrightarrow> Inf_from (Liminf_llist D) \<subseteq> Sup_Red_Inf_llist D"
 
 inductive "derive" :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<rhd>Red" 50) where
   derive: "M - N \<subseteq> Red_F N \<Longrightarrow> M \<rhd>Red N"
@@ -104,10 +104,10 @@ proof -
   obtain k where k: "C \<in> lnth D k" "enat k < llength D" "k \<le> i" using C_D_i
     unfolding Sup_upto_llist_def by auto
   let ?S = "{i. i < j \<and> i \<ge> k \<and> C \<in> lnth D i}"
-  define l where "l \<equiv> Max ?S"
+  define l where "l = Max ?S"
   have \<open>k \<in> {i. i < j \<and> k \<le> i \<and> C \<in> lnth D i}\<close> using k j by (auto simp: order.order_iff_strict)
   then have nempty: "{i. i < j \<and> k \<le> i \<and> C \<in> lnth D i} \<noteq> {}" by auto
-  then have l_prop: "l < j \<and> l \<ge> k \<and> C \<in> (lnth D l)" using Max_in[of ?S, OF _ nempty] unfolding l_def by auto
+  then have l_prop: "l < j \<and> l \<ge> k \<and> C \<in> lnth D l" using Max_in[of ?S, OF _ nempty] unfolding l_def by auto
   then have "C \<in> lnth D l - lnth D (Suc l)" using j gt_Max_notin[OF _ nempty, of "Suc l"]
     unfolding l_def[symmetric] by (auto intro: Suc_lessI)
   then show ?thesis
@@ -233,7 +233,7 @@ proof
   have head_D: "N = lnth D 0" by (simp add: D_def)
   have "Sup_Red_Inf_llist D = Red_Inf N" by (simp add: D_def Sup_Red_Inf_unit)
   then have fair_D: "fair D" using saturated_N by (simp add: fair_def saturated_def liminf_is_N)
-  obtain i B' where B'_is_bot: \<open>B' \<in> Bot\<close> and B'_in: "B' \<in> (lnth D i)" and \<open>i < llength D\<close>
+  obtain i B' where B'_is_bot: \<open>B' \<in> Bot\<close> and B'_in: "B' \<in> lnth D i" and \<open>i < llength D\<close>
     using dynamic_refutational_complete[of B D] bot_elem fair_D head_D saturated_N deriv_D refut_N
     by auto
   then have "i = 0"
@@ -267,7 +267,7 @@ proof
     have \<open>saturated (Liminf_llist D)\<close>
       using deriv fair fair_implies_Liminf_saturated unfolding saturated_def by auto
 
-   then have \<open>\<exists>B'\<in>Bot. B' \<in> (Liminf_llist D)\<close>
+   then have \<open>\<exists>B'\<in>Bot. B' \<in> Liminf_llist D\<close>
      using bot_elem static_refutational_complete Liminf_entails_Bot by auto
    then show \<open>\<exists>i\<in>{i. enat i < llength D}. \<exists>B'\<in>Bot. B' \<in> lnth D i\<close>
      unfolding Liminf_llist_def by auto
@@ -291,10 +291,10 @@ locale calculus_with_red_crit_family =
 begin
 
 definition Red_Inf_Q :: "'f set \<Rightarrow> 'f inference set" where
-  "Red_Inf_Q N = \<Inter> {Red_Inf_q q N |q. q \<in> Q}"
+  "Red_Inf_Q N = (\<Inter>q \<in> Q. Red_Inf_q q N)"
 
 definition Red_F_Q :: "'f set \<Rightarrow> 'f set" where
-  "Red_F_Q N = \<Inter> {Red_F_q q N |q. q \<in> Q}"
+  "Red_F_Q N = (\<Inter>q \<in> Q. Red_F_q q N)"
 
 (* lem:intersection-of-red-crit *)
 lemma inter_red_crit: "calculus_with_red_crit Bot Inf entails_Q Red_Inf_Q Red_F_Q"
@@ -307,14 +307,14 @@ next
     unfolding Red_Inf_Q_def
   proof
     fix N
-    show "\<Inter> {Red_Inf_q q N |q. q \<in> Q} \<subseteq> Inf"
+    show "(\<Inter>q \<in> Q. Red_Inf_q q N) \<subseteq> Inf"
     proof (intro Inter_subset)
       fix Red_Infs
-      assume one_red_inf: "Red_Infs \<in> {Red_Inf_q q N |q. q \<in> Q}"
-      show "Red_Infs \<subseteq> Inf" using one_red_inf
-        using all_red_crit calculus_with_red_crit.Red_Inf_to_Inf by blast
+      assume one_red_inf: "Red_Infs \<in> (\<lambda>q. Red_Inf_q q N) ` Q"
+      show "Red_Infs \<subseteq> Inf"
+        using one_red_inf all_red_crit calculus_with_red_crit.Red_Inf_to_Inf by blast
     next
-      show "{Red_Inf_q q N |q. q \<in> Q} \<noteq> {}"
+      show "(\<lambda>q. Red_Inf_q q N) ` Q \<noteq> {}"
         using Q_nonempty by blast
     qed
   qed
@@ -345,7 +345,7 @@ next
         using qi_in all_red_crit Red_F_qi_def calculus_with_red_crit.Red_F_Bot[OF _ B_in]
           entails_qi_def
         by fastforce
-      show "(N - \<Inter> {Red_F_q q N |q. q \<in> Q}) \<Turnstile>qi {B}"
+      show "(N - (\<Inter>q \<in> Q. Red_F_q q N)) \<Turnstile>qi {B}"
         using consequence_relation.entails_trans[OF cons_rel_qi entails_1 N_unsat_qi]
         unfolding Red_F_Q_def .
     qed
@@ -478,7 +478,7 @@ next
       have "one.saturated N" using qi_in all_sat red_inf_qi_def by blast
       then show "\<iota> \<in> Red_Inf_qi N" unfolding one.saturated_def using \<iota>_in red_inf_qi_def by blast
     qed
-    then show "\<iota> \<in> \<Inter> {Red_Inf_q q N |q. q \<in> Q}" by blast
+    then show "\<iota> \<in> (\<Inter>q \<in> Q. Red_Inf_q q N)" by blast
   qed
 qed
 
@@ -802,7 +802,7 @@ proof
 qed
 
 definition reduc_fair :: "'f set llist \<Rightarrow> bool" where
-"reduc_fair D \<equiv> Inf_from (Liminf_llist D - (Sup_Red_F_llist D)) \<subseteq> Sup_Red_Inf_llist D"
+  "reduc_fair D \<longleftrightarrow> Inf_from (Liminf_llist D - (Sup_Red_F_llist D)) \<subseteq> Sup_Red_Inf_llist D"
 
 (* lem:red-fairness-implies-red-saturation *)
 lemma reduc_fair_imp_Liminf_reduc_sat: "chain derive D \<Longrightarrow> reduc_fair D \<Longrightarrow> reduc_saturated (Liminf_llist D)"
@@ -845,7 +845,7 @@ proof
   ultimately have fair_D: "reduc_fair D"
     using saturated_N liminf_is_N unfolding reduc_fair_def reduc_saturated_def
     by (simp add: reduc_fair_def reduc_saturated_def liminf_is_N)
-  obtain i B' where B'_is_bot: \<open>B' \<in> Bot\<close> and B'_in: "B' \<in> (lnth D i)" and \<open>i < llength D\<close>
+  obtain i B' where B'_is_bot: \<open>B' \<in> Bot\<close> and B'_in: "B' \<in> lnth D i" and \<open>i < llength D\<close>
     using reduc_dynamic_refutational_complete[of B D] bot_elem fair_D head_D saturated_N deriv_D refut_N
     by auto
   then have "i = 0"
@@ -878,7 +878,7 @@ proof
     have \<open>reduc_saturated (Liminf_llist D)\<close>
     using deriv fair reduc_fair_imp_Liminf_reduc_sat unfolding reduc_saturated_def
       by auto
-   then have \<open>\<exists>B'\<in>Bot. B' \<in> (Liminf_llist D)\<close>
+   then have \<open>\<exists>B'\<in>Bot. B' \<in> Liminf_llist D\<close>
      using bot_elem reduc_static_refutational_complete Liminf_entails_Bot
      by auto
    then show \<open>\<exists>i\<in>{i. enat i < llength D}. \<exists>B'\<in>Bot. B' \<in> lnth D i\<close>

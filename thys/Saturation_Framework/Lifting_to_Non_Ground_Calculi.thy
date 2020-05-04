@@ -43,7 +43,7 @@ abbreviation \<G>_set :: \<open>'f set \<Rightarrow> 'g set\<close> where
 lemma \<G>_subset: \<open>N1 \<subseteq> N2 \<Longrightarrow> \<G>_set N1 \<subseteq> \<G>_set N2\<close> by auto
 
 definition entails_\<G>  :: \<open>'f set \<Rightarrow> 'f set \<Rightarrow> bool\<close> (infix "\<Turnstile>\<G>" 50) where
-  \<open>N1 \<Turnstile>\<G> N2 \<equiv> \<G>_set N1 \<Turnstile>G \<G>_set N2\<close>
+  \<open>N1 \<Turnstile>\<G> N2 \<longleftrightarrow> \<G>_set N1 \<Turnstile>G \<G>_set N2\<close>
 
 lemma subs_Bot_G_entails:
   assumes
@@ -478,7 +478,7 @@ qed
 
 end
 
-abbreviation Empty_Order where
+abbreviation Empty_Order :: "'f \<Rightarrow> 'f \<Rightarrow> bool" where
   "Empty_Order C1 C2 \<equiv> False"
 
 lemma wf_Empty_Order: "minimal_element Empty_Order UNIV"
@@ -598,33 +598,33 @@ locale standard_lifting_with_red_crit_family = Non_ground: inference_system Inf_
 begin
 
 definition \<G>_set_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'g set" where
-  "\<G>_set_q q N \<equiv> \<Union> (\<G>_F_q q ` N)"
+  "\<G>_set_q q N = \<Union> (\<G>_F_q q ` N)"
 
 definition Red_Inf_\<G>_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f inference set" where
   "Red_Inf_\<G>_q q N = {\<iota> \<in> Inf_F. (\<G>_Inf_q q \<iota> \<noteq> None \<and> the (\<G>_Inf_q q \<iota>) \<subseteq> Red_Inf_q q (\<G>_set_q q N))
    \<or> (\<G>_Inf_q q \<iota> = None \<and> \<G>_F_q q (concl_of \<iota>) \<subseteq> (\<G>_set_q q N \<union> Red_F_q q (\<G>_set_q q N)))}"
 
 definition Red_Inf_\<G>_Q :: "'f set \<Rightarrow> 'f inference set" where
-  "Red_Inf_\<G>_Q N = \<Inter> {Red_Inf_\<G>_q q N |q. q \<in> Q}"
+  "Red_Inf_\<G>_Q N = (\<Inter>q \<in> Q. Red_Inf_\<G>_q q N)"
 
 definition Red_F_\<G>_empty_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set" where
   "Red_F_\<G>_empty_q q N = {C. \<forall>D \<in> \<G>_F_q q C. D \<in> Red_F_q q (\<G>_set_q q N)}"
 
 definition Red_F_\<G>_empty :: "'f set \<Rightarrow> 'f set" where
-  "Red_F_\<G>_empty N = \<Inter> {Red_F_\<G>_empty_q q N |q. q \<in> Q}"
+  "Red_F_\<G>_empty N = (\<Inter>q \<in> Q. Red_F_\<G>_empty_q q N)"
 
 definition Red_F_\<G>_q_g :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set" where
   "Red_F_\<G>_q_g q N =
    {C. \<forall>D \<in> \<G>_F_q q C. D \<in> Red_F_q q (\<G>_set_q q N) \<or> (\<exists>E \<in> N. Prec_F_g D E C \<and> D \<in> \<G>_F_q q E)}"
 
 definition Red_F_\<G>_g :: "'f set \<Rightarrow> 'f set" where
-  "Red_F_\<G>_g N = \<Inter> {Red_F_\<G>_q_g q N |q. q \<in> Q}"
+  "Red_F_\<G>_g N = (\<Inter>q \<in> Q. Red_F_\<G>_q_g q N)"
 
 definition entails_\<G>_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set \<Rightarrow> bool" where
-  "entails_\<G>_q q N1 N2 \<equiv> entails_q q (\<G>_set_q q N1) (\<G>_set_q q N2)"
+  "entails_\<G>_q q N1 N2 \<longleftrightarrow> entails_q q (\<G>_set_q q N1) (\<G>_set_q q N2)"
 
 definition entails_\<G>_Q :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>\<inter>\<G>" 50) where
-  "entails_\<G>_Q N1 N2 \<equiv> \<forall>q \<in> Q. entails_\<G>_q q N1 N2"
+  "entails_\<G>_Q N1 N2 \<longleftrightarrow> (\<forall>q \<in> Q. entails_\<G>_q q N1 N2)"
 
 lemma red_crit_lifting_family:
   assumes q_in: "q \<in> Q"

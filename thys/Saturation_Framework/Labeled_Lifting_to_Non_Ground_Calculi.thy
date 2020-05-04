@@ -108,10 +108,10 @@ proof clarify
     subs_Red_Inf: "{\<iota> \<in> Inf_FL. set (prems_of \<iota>) \<subseteq> NL} \<subseteq> labeled_lifting_w_empty_ord_family.Red_Inf_\<G> NL" and
     i_in: "\<iota> \<in> Inf_F" and
     i_prems: "set (prems_of \<iota>) \<subseteq> fst ` NL"
-  define Lli where "Lli i \<equiv> (SOME x. ((prems_of \<iota>)!i,x) \<in> NL)" for i
+  define Lli where "Lli i = (SOME x. ((prems_of \<iota>)!i,x) \<in> NL)" for i
   have [simp]:"((prems_of \<iota>)!i,Lli i) \<in> NL" if "i < length (prems_of \<iota>)" for i
     using that i_prems unfolding Lli_def by (metis nth_mem someI_ex DomainE Domain_fst subset_eq)
-  define Ll where "Ll \<equiv> map Lli [0..<length (prems_of \<iota>)]"
+  define Ll where "Ll = map Lli [0..<length (prems_of \<iota>)]"
   have Ll_length: "length Ll = length (prems_of \<iota>)" unfolding Ll_def by auto
   have subs_NL: "set (zip (prems_of \<iota>) Ll) \<subseteq> NL" unfolding Ll_def by (auto simp:in_set_zip)
   obtain L0 where L0: "Infer (zip (prems_of \<iota>) Ll) (concl_of \<iota>, L0) \<in> Inf_FL"
@@ -207,14 +207,14 @@ definition \<G>_Inf_L_q :: \<open>'q \<Rightarrow> ('f \<times> 'l) inference \<
   \<open>\<G>_Inf_L_q q \<iota>\<^sub>F\<^sub>L = \<G>_Inf_q q (to_F \<iota>\<^sub>F\<^sub>L)\<close>
 
 definition \<G>_set_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> 'g set" where
-  "\<G>_set_L_q q N \<equiv> \<Union> (\<G>_F_L_q q ` N)"
+  "\<G>_set_L_q q N = \<Union> (\<G>_F_L_q q ` N)"
 
 definition Red_Inf_\<G>_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) inference set" where
   "Red_Inf_\<G>_L_q q N = {\<iota> \<in> Inf_FL. ((\<G>_Inf_L_q q \<iota>) \<noteq> None \<and> the (\<G>_Inf_L_q q \<iota>) \<subseteq> Red_Inf_q q (\<G>_set_L_q q N))
     \<or> ((\<G>_Inf_L_q q \<iota> = None) \<and> \<G>_F_L_q q (concl_of \<iota>) \<subseteq> (\<G>_set_L_q q N \<union> Red_F_q q (\<G>_set_L_q q N)))}"
 
 definition Red_Inf_\<G>_L_Q :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) inference set" where
-  "Red_Inf_\<G>_L_Q N = \<Inter> {Red_Inf_\<G>_L_q q N |q. q \<in> Q}"
+  "Red_Inf_\<G>_L_Q N = (\<Inter>q \<in> Q. Red_Inf_\<G>_L_q q N)"
 
 abbreviation Labeled_Empty_Order :: \<open> ('f \<times> 'l) \<Rightarrow> ('f \<times> 'l) \<Rightarrow> bool\<close> where
   "Labeled_Empty_Order C1 C2 \<equiv> False"
@@ -224,13 +224,13 @@ definition Red_F_\<G>_empty_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Righ
     (\<exists>E \<in> N. Labeled_Empty_Order E C \<and> D \<in> \<G>_F_L_q q E)}"
 
 definition Red_F_\<G>_empty_L :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
-  "Red_F_\<G>_empty_L N = \<Inter> {Red_F_\<G>_empty_L_q q N |q. q \<in> Q}"
+  "Red_F_\<G>_empty_L N = (\<Inter>q \<in> Q. Red_F_\<G>_empty_L_q q N)"
 
 definition entails_\<G>_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" where
-  "entails_\<G>_L_q q N1 N2 \<equiv> entails_q q (\<G>_set_L_q q N1) (\<G>_set_L_q q N2)"
+  "entails_\<G>_L_q q N1 N2 \<longleftrightarrow> entails_q q (\<G>_set_L_q q N1) (\<G>_set_L_q q N2)"
 
 definition entails_\<G>_L_Q :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<Turnstile>\<inter>\<G>L" 50) where
-  "entails_\<G>_L_Q N1 N2 \<equiv> \<forall>q \<in> Q. entails_\<G>_L_q q N1 N2"
+  "entails_\<G>_L_Q N1 N2 \<longleftrightarrow> (\<forall>q \<in> Q. entails_\<G>_L_q q N1 N2)"
 
 lemma lifting_q:
   assumes "q \<in> Q"
@@ -329,7 +329,7 @@ proof clarify
   fix X Xa q
   assume
     q_in: "q \<in> Q" and
-    i_in_inter: "\<iota> \<in> \<Inter> {Red_Inf_\<G>_L_q q NL |q. q \<in> Q}"
+    i_in_inter: "\<iota> \<in> (\<Inter>q \<in> Q. Red_Inf_\<G>_L_q q NL)"
   have i_in_q: "\<iota> \<in> Red_Inf_\<G>_L_q q NL" using q_in i_in_inter image_eqI by blast
   then have i_in: "\<iota> \<in> Inf_FL" unfolding Red_Inf_\<G>_L_q_def by blast
   have to_F_in: "to_F \<iota> \<in> Inf_F" unfolding to_F_def using Inf_FL_to_Inf_F[OF i_in] .
@@ -361,10 +361,10 @@ proof clarify
     labeled_sat: "{\<iota> \<in> Inf_FL. set (prems_of \<iota>) \<subseteq> NL} \<subseteq> with_labels.Red_Inf_Q NL" and
     iF_in: "\<iota>F \<in> Inf_F" and
     iF_prems: "set (prems_of \<iota>F) \<subseteq> fst ` NL"
-  define Lli where "Lli i \<equiv> (SOME x. ((prems_of \<iota>F)!i,x) \<in> NL)" for i
+  define Lli where "Lli i = (SOME x. ((prems_of \<iota>F)!i,x) \<in> NL)" for i
   have [simp]:"((prems_of \<iota>F)!i,Lli i) \<in> NL" if "i < length (prems_of \<iota>F)" for i
     using that iF_prems nth_mem someI_ex unfolding Lli_def by (metis DomainE Domain_fst subset_eq)
-  define Ll where "Ll \<equiv> map Lli [0..<length (prems_of \<iota>F)]"
+  define Ll where "Ll = map Lli [0..<length (prems_of \<iota>F)]"
   have Ll_length: "length Ll = length (prems_of \<iota>F)" unfolding Ll_def by auto
   have subs_NL: "set (zip (prems_of \<iota>F) Ll) \<subseteq> NL" unfolding Ll_def by (auto simp:in_set_zip)
   obtain L0 where L0: "Infer (zip (prems_of \<iota>F) Ll) (concl_of \<iota>F, L0) \<in> Inf_FL"
