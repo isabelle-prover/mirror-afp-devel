@@ -242,8 +242,10 @@ next
   next
     assume "\<exists>c''. c' = c'';;c\<^sub>2"
     then obtain c'' where [simp]:"c' = c'';;c\<^sub>2" by blast
+    have "c\<^sub>2 \<noteq> c'';; c\<^sub>2"
+      by (induction c\<^sub>2) auto
     with \<open>\<langle>c;;c\<^sub>2,s\<rangle> \<rightarrow> \<langle>c',s'\<rangle>\<close> have "\<langle>c,s\<rangle> \<rightarrow> \<langle>c'',s'\<rangle>"
-      by(auto elim!:red.cases,induct c\<^sub>2,auto)
+      by (auto elim!:red.cases)
     from IH[OF this] obtain l' where "c\<^sub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c'',s',l'\<rangle>"
       and "labels c\<^sub>1 l' c''" by blast
     from \<open>c\<^sub>1 \<turnstile> \<langle>c,s,l\<rangle> \<leadsto> \<langle>c'',s',l'\<rangle>\<close> have "c\<^sub>1;;c\<^sub>2 \<turnstile> \<langle>c;;c\<^sub>2,s,l\<rangle> \<leadsto> \<langle>c'';;c\<^sub>2,s',l'\<rangle>"
