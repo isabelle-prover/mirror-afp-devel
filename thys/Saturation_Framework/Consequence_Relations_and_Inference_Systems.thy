@@ -101,6 +101,10 @@ definition Inf_from :: "'f set \<Rightarrow> 'f inference set" where
 definition Inf_from2 :: "'f set \<Rightarrow> 'f set \<Rightarrow> 'f inference set" where
   "Inf_from2 N M = Inf_from (N \<union> M) - Inf_from (N - M)"
 
+lemma Inf_from2_alt:
+  "Inf_from2 N M = {\<iota> \<in> Inf. \<iota> \<in> Inf_from (N \<union> M) \<and> set (prems_of \<iota>) \<inter> M \<noteq> {}}"
+  unfolding Inf_from_def Inf_from2_def by auto
+
 end
 
 subsection \<open>Families of Inference Systems\<close>
@@ -118,6 +122,10 @@ definition Inf_from_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f inference set
 
 definition Inf_from2_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set \<Rightarrow> 'f inference set" where
   "Inf_from2_q q = inference_system.Inf_from2 (Inf_q q)"
+
+lemma Inf_from2_q_alt:
+  "Inf_from2_q q N M = {\<iota> \<in> Inf_q q. \<iota> \<in> Inf_from_q q (N \<union> M) \<and> set (prems_of \<iota>) \<inter> M \<noteq> {}}"
+  unfolding Inf_from_q_def Inf_from2_q_def inference_system.Inf_from2_alt by auto
 
 end
 
