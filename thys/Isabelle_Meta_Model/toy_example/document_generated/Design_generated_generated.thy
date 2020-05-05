@@ -216,6 +216,10 @@ by(rule \<sigma>\<^sub>1)
 
 interpretation state_\<sigma>\<^sub>1': state_\<sigma>\<^sub>1' "oid1" "oid2" "oid3" "X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n" "X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1" "X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n" "X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2" "X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n" "X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3"
 by(rule \<sigma>\<^sub>1')
+
+definition "heap_\<sigma>\<^sub>1 = (heap (state_\<sigma>\<^sub>1.\<sigma>\<^sub>1))"
+
+definition "heap_\<sigma>\<^sub>1' = (heap (state_\<sigma>\<^sub>1'.\<sigma>\<^sub>1'))"
 end
 
 end
