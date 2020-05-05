@@ -554,7 +554,6 @@ qed
 lemma gc_fair:
   assumes
     deriv: "chain (\<Longrightarrow>GC) D" and
-    non_empty: "llength D > 0" and
     init_state: "active_subset (lnth D 0) = {}" and
     final_state: "non_active_subset (Liminf_llist D) = {}"
   shows "fair D"
@@ -601,7 +600,7 @@ proof
       by (metis (mono_tags, lifting) Collect_empty_eq \<open>(C, active) \<in> Liminf_llist D\<close>
           \<open>Liminf_llist D = active_subset (Liminf_llist D)\<close>
           \<open>\<forall>k\<ge>nj_min. enat k < llength D \<longrightarrow> (C, active) \<in> lnth D k\<close> active_subset_def init_state
-          linorder_not_less mem_Collect_eq non_empty zero_enat_def)
+          linorder_not_less mem_Collect_eq zero_enat_def chain_length_pos[OF deriv])
     then obtain njm_prec where nj_prec_is: "Suc njm_prec = nj_min" using gr0_conv_Suc by auto
     then have njm_prec_njm: "njm_prec < nj_min" by blast
     then have njm_prec_njm_enat: "enat njm_prec < enat nj_min" by simp
@@ -760,20 +759,18 @@ qed
 theorem gc_complete:
   assumes
     deriv: "chain (\<Longrightarrow>GC) D" and
-    not_empty_d: "llength D > 0" and
     init_state: "active_subset (lnth D 0) = {}" and
     final_state: "non_active_subset (Liminf_llist D) = {}" and
     b_in: "B \<in> Bot_F" and
     bot_entailed: "no_labels.entails_\<G>_Q (fst ` (lnth D 0)) {B}"
-  shows "\<exists>i. enat i < llength D \<and> (\<exists>BL\<in> Bot_FL. BL \<in> (lnth D i))"
+  shows "\<exists>i. enat i < llength D \<and> (\<exists>BL \<in> Bot_FL. BL \<in> (lnth D i))"
 proof -
   have labeled_b_in: "(B, active) \<in> Bot_FL" unfolding Bot_FL_def using b_in by simp
-  have not_empty_d2: "\<not> lnull D" using not_empty_d by force
-  have labeled_bot_entailed: "entails_\<G>_L_Q  (lnth D 0) {(B, active)}"
+  have labeled_bot_entailed: "entails_\<G>_L_Q (lnth D 0) {(B, active)}"
     using labeled_entailment_lifting bot_entailed by fastforce
-  have "fair D" using gc_fair[OF deriv not_empty_d init_state final_state] .
-  then have "\<exists>i \<in> {i. enat i < llength D}. \<exists>BL\<in>Bot_FL. BL \<in> lnth D i"
-    using stat_ref_calc.dynamic_refutational_complete labeled_b_in not_empty_d2 gc_to_red[OF deriv]
+  have "fair D" using gc_fair[OF deriv init_state final_state] .
+  then have "\<exists>i \<in> {i. enat i < llength D}. \<exists>BL \<in> Bot_FL. BL \<in> lnth D i"
+    using stat_ref_calc.dynamic_refutational_complete labeled_b_in gc_to_red[OF deriv]
       labeled_bot_entailed entail_equiv
     unfolding dynamic_refutational_complete_calculus_def
       dynamic_refutational_complete_calculus_axioms_def by blast
@@ -894,7 +891,6 @@ lemma lgc_to_red: "chain (\<Longrightarrow>LGC) D \<Longrightarrow> chain (\<rhd
 lemma lgc_fair:
   assumes
     deriv: "chain (\<Longrightarrow>LGC) D" and
-    non_empty: "llength D > 0" and
     init_state: "active_subset (snd (lnth D 0)) = {}" and
     final_state: "non_active_subset (Liminf_llist (lmap snd D)) = {}" and
     no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> (fst (lnth D 0))" and
@@ -941,7 +937,7 @@ proof
     have "nj_min > 0"
       using nj_is c_in2 nj_pos nj_min_is
       by (metis (mono_tags, lifting) active_subset_def emptyE in_allk init_state mem_Collect_eq
-          non_empty not_less snd_conv zero_enat_def)
+          not_less snd_conv zero_enat_def chain_length_pos[OF deriv])
     then obtain njm_prec where nj_prec_is: "Suc njm_prec = nj_min" using gr0_conv_Suc by auto
     then have njm_prec_njm: "njm_prec < nj_min" by blast
     then have njm_prec_njm_enat: "enat njm_prec < enat nj_min" by simp
@@ -989,7 +985,7 @@ proof
   {
     assume m_null: "m = 0"
     then have "enat 0 < llength D \<and> to_F \<iota> \<in> fst (lnth D 0)"
-      using no_prems_init_active i_in_F non_empty m_def_F zero_enat_def by auto
+      using no_prems_init_active i_in_F m_def_F zero_enat_def chain_length_pos[OF deriv] by auto
     then have "\<exists>n. enat n < llength D \<and> to_F \<iota> \<in> fst (lnth D n)"
       by blast
   }
@@ -1230,7 +1226,6 @@ qed
 theorem lgc_complete:
   assumes
     deriv: "chain (\<Longrightarrow>LGC) D" and
-    not_empty_d: "llength D > 0" and
     init_state: "active_subset (snd (lnth D 0)) = {}" and
     final_state: "non_active_subset (Liminf_llist (lmap snd D)) = {}" and
     no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> fst (lnth D 0)" and
@@ -1240,15 +1235,14 @@ theorem lgc_complete:
   shows "\<exists>i. enat i < llength D \<and> (\<exists>BL \<in> Bot_FL. BL \<in> snd (lnth D i))"
 proof -
   have labeled_b_in: "(B, active) \<in> Bot_FL" unfolding Bot_FL_def using b_in by simp
-  have not_empty_d2: "\<not> lnull (lmap snd D)" using not_empty_d by force
   have simp_snd_lmap: "lnth (lmap snd D) 0 = snd (lnth D 0)"
-    using lnth_lmap[of 0 D snd] not_empty_d by (simp add: zero_enat_def)
+    using lnth_lmap[of 0 D snd] chain_length_pos[OF deriv] by (simp add: zero_enat_def)
   have labeled_bot_entailed: "entails_\<G>_L_Q (snd (lnth D 0)) {(B, active)}"
     using labeled_entailment_lifting bot_entailed by fastforce
   have "fair (lmap snd D)"
-    using lgc_fair[OF deriv not_empty_d init_state final_state no_prems_init_active final_schedule] .
+    using lgc_fair[OF deriv init_state final_state no_prems_init_active final_schedule] .
   then have "\<exists>i \<in> {i. enat i < llength D}. \<exists>BL\<in>Bot_FL. BL \<in> snd (lnth D i)"
-    using stat_ref_calc.dynamic_refutational_complete labeled_b_in not_empty_d2 lgc_to_red[OF deriv]
+    using stat_ref_calc.dynamic_refutational_complete labeled_b_in lgc_to_red[OF deriv]
       labeled_bot_entailed entail_equiv simp_snd_lmap
     unfolding dynamic_refutational_complete_calculus_def
       dynamic_refutational_complete_calculus_axioms_def
