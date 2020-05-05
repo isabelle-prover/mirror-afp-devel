@@ -86,6 +86,12 @@ lemma true_clss_union[iff]: "I \<Turnstile>s CC \<union> DD \<longleftrightarrow
 lemma true_clss_mono: "DD \<subseteq> CC \<Longrightarrow> I \<Turnstile>s CC \<Longrightarrow> I \<Turnstile>s DD"
   by (simp add: subsetD true_clss_def)
 
+lemma true_clss_mono_strong: "(\<forall>D \<in> DD. \<exists>C \<in> CC. C \<subseteq># D) \<Longrightarrow> I \<Turnstile>s CC \<Longrightarrow> I \<Turnstile>s DD"
+  unfolding true_clss_def true_cls_def true_lit_def by (meson mset_subset_eqD)
+
+lemma true_clss_subclause: "C \<subseteq># D \<Longrightarrow> I \<Turnstile>s {C} \<Longrightarrow> I \<Turnstile>s {D}"
+  by (rule true_clss_mono_strong[of _ "{C}"]) auto
+
 abbreviation satisfiable :: "'a clause set \<Rightarrow> bool" where
   "satisfiable CC \<equiv> \<exists>I. I \<Turnstile>s CC"
 
@@ -109,6 +115,9 @@ lemma true_cls_mset_image_mset[iff]: "I \<Turnstile>m image_mset f A \<longleftr
 
 lemma true_cls_mset_mono: "set_mset DD \<subseteq> set_mset CC \<Longrightarrow> I \<Turnstile>m CC \<Longrightarrow> I \<Turnstile>m DD"
   unfolding true_cls_mset_def subset_iff by auto
+
+lemma true_cls_mset_mono_strong: "(\<forall>D \<in># DD. \<exists>C \<in># CC. C \<subseteq># D) \<Longrightarrow> I \<Turnstile>m CC \<Longrightarrow> I \<Turnstile>m DD"
+  unfolding true_cls_mset_def true_cls_def true_lit_def by (meson mset_subset_eqD)
 
 lemma true_clss_set_mset[iff]: "I \<Turnstile>s set_mset CC \<longleftrightarrow> I \<Turnstile>m CC"
   unfolding true_clss_def true_cls_mset_def by auto
