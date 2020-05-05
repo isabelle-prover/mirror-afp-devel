@@ -82,9 +82,6 @@ definition Liminf_llist :: "'a set llist \<Rightarrow> 'a set" where
   "Liminf_llist Xs =
    (\<Union>i \<in> {i. enat i < llength Xs}. \<Inter>j \<in> {j. i \<le> j \<and> enat j < llength Xs}. lnth Xs j)"
 
-lemma Liminf_llist_subset_Sup_llist: "Liminf_llist Xs \<subseteq> Sup_llist Xs"
-  unfolding Liminf_llist_def Sup_llist_def by fast
-
 lemma Liminf_llist_LNil[simp]: "Liminf_llist LNil = {}"
   unfolding Liminf_llist_def by simp
 
@@ -143,5 +140,11 @@ qed (simp add: Liminf_llist_def)
 
 lemma Liminf_llist_ltl: "\<not> lnull (ltl Xs) \<Longrightarrow> Liminf_llist Xs = Liminf_llist (ltl Xs)"
   by (metis Liminf_llist_LCons lhd_LCons_ltl lnull_ltlI)
+
+lemma Liminf_llist_subset_Sup_llist: "Liminf_llist Xs \<subseteq> Sup_llist Xs"
+  unfolding Liminf_llist_def Sup_llist_def by fast
+
+lemma image_Liminf_llist_subset: "f ` Liminf_llist Ns \<subseteq> Liminf_llist (lmap ((`) f) Ns)"
+  unfolding Liminf_llist_def by auto
 
 end
