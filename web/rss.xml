@@ -23,6 +23,21 @@ transitive model of ZFC, we construct a proper generic extension and
 show that the latter also satisfies ZFC.</description>
     </item>
     <item>
+       <title>Banach-Steinhaus Theorem</title>
+              <link>https://www.isa-afp.org/entries/Banach_Steinhaus.html</link>
+       <guid>https://www.isa-afp.org/entries/Banach_Steinhaus.html</guid>
+       <dc:creator> Dominique Unruh, Jose Manuel Rodriguez Caballero       </dc:creator>
+       <pubDate>02 May 2020 00:00:00 +0000</pubDate>
+       <description>
+We formalize is Isabelle/HOL the following result \cite{Weisstein_UBP}
+due to S. Banach and H. Steinhaus \cite{banach1927principe}, known as
+the Banach-Steinhaus theorem or Uniform boundedness principle: A
+pointwise-bounded family of continuous linear operators from a Banach
+space to a normed space is uniformly bounded. Our approach is an
+adaptation to Isabelle/HOL of a proof due to A. Sokal
+\cite{sokal2011really}.</description>
+    </item>
+    <item>
        <title>Attack Trees in Isabelle for GDPR compliance of IoT healthcare systems</title>
               <link>https://www.isa-afp.org/entries/Attack_Trees.html</link>
        <guid>https://www.isa-afp.org/entries/Attack_Trees.html</guid>
@@ -570,31 +585,6 @@ functions and their finite Fourier series&lt;/li&gt;
 and separable characters&lt;/li&gt; &lt;li&gt;induced moduli and
 primitive characters&lt;/li&gt; &lt;li&gt;the
 Pólya&amp;mdash;Vinogradov inequality&lt;/li&gt; &lt;/ul&gt;</description>
-    </item>
-    <item>
-       <title>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</title>
-              <link>https://www.isa-afp.org/entries/Generalized_Counting_Sort.html</link>
-       <guid>https://www.isa-afp.org/entries/Generalized_Counting_Sort.html</guid>
-       <dc:creator> Pasquale Noce       </dc:creator>
-       <pubDate>04 Dec 2019 00:00:00 +0000</pubDate>
-       <description>
-Counting sort is a well-known algorithm that sorts objects of any kind
-mapped to integer keys, or else to keys in one-to-one correspondence
-with some subset of the integers (e.g. alphabet letters). However, it
-is suitable for direct use, viz. not just as a subroutine of another
-sorting algorithm (e.g. radix sort), only if the key range is not
-significantly larger than the number of the objects to be sorted.
-This paper describes a tail-recursive generalization of counting sort
-making use of a bounded number of counters, suitable for direct use in
-case of a large, or even infinite key range of any kind, subject to
-the only constraint of being a subset of an arbitrary linear order.
-After performing a pen-and-paper analysis of how such algorithm has to
-be designed to maximize its efficiency, this paper formalizes the
-resulting generalized counting sort (GCsort) algorithm and then
-formally proves its correctness properties, namely that (a) the
-counters&#39; number is maximized never exceeding the fixed upper
-bound, (b) objects are conserved, (c) objects get sorted, and (d) the
-algorithm is stable.</description>
     </item>
   </channel>
 </rss>
