@@ -9,7 +9,19 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>27 Apr 2020 00:00:00 +0000</pubDate>
+    <pubDate>06 May 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Formalization of Forcing in Isabelle/ZF</title>
+              <link>https://www.isa-afp.org/entries/Forcing.html</link>
+       <guid>https://www.isa-afp.org/entries/Forcing.html</guid>
+       <dc:creator> Emmanuel Gunther, Miguel Pagano, Pedro Sánchez Terraf       </dc:creator>
+       <pubDate>06 May 2020 00:00:00 +0000</pubDate>
+       <description>
+We formalize the theory of forcing in the set theory framework of
+Isabelle/ZF. Under the assumption of the existence of a countable
+transitive model of ZFC, we construct a proper generic extension and
+show that the latter also satisfies ZFC.</description>
+    </item>
     <item>
        <title>Attack Trees in Isabelle for GDPR compliance of IoT healthcare systems</title>
               <link>https://www.isa-afp.org/entries/Attack_Trees.html</link>
@@ -583,25 +595,6 @@ formally proves its correctness properties, namely that (a) the
 counters&#39; number is maximized never exceeding the fixed upper
 bound, (b) objects are conserved, (c) objects get sorted, and (d) the
 algorithm is stable.</description>
-    </item>
-    <item>
-       <title>Interval Arithmetic on 32-bit Words</title>
-              <link>https://www.isa-afp.org/entries/Interval_Arithmetic_Word32.html</link>
-       <guid>https://www.isa-afp.org/entries/Interval_Arithmetic_Word32.html</guid>
-       <dc:creator> Brandon Bohrer       </dc:creator>
-       <pubDate>27 Nov 2019 00:00:00 +0000</pubDate>
-       <description>
-Interval_Arithmetic implements conservative interval arithmetic
-computations, then uses this interval arithmetic to implement a simple
-programming language where all terms have 32-bit signed word values,
-with explicit infinities for terms outside the representable bounds.
-Our target use case is interpreters for languages that must have a
-well-understood low-level behavior.  We include a formalization of
-bounded-length strings which are used for the identifiers of our
-language. Bounded-length identifiers are useful in some applications,
-for example the &lt;a href=&#34;https://www.isa-afp.org/entries/Differential_Dynamic_Logic.html&#34;&gt;Differential_Dynamic_Logic&lt;/a&gt; article,
-where a Euclidean space indexed by identifiers demands that identifiers
-are finitely many.</description>
     </item>
   </channel>
 </rss>

@@ -9207,7 +9207,7 @@ author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Mathematics/Algebra
 date = 2020-04-24
 notify = eberlm@in.tum.de
-abstract = 
+abstract =
   <p>This article provides a formalisation of the symmetric
   multivariate polynomials known as <em>power sum
   polynomials</em>. These are of the form
@@ -9254,7 +9254,7 @@ author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Mathematics/Number Theory
 date = 2020-04-24
 notify = eberlm@in.tum.de
-abstract = 
+abstract =
   <p>The Gaussian integers are the subring &#8484;[i] of the
   complex numbers, i. e. the ring of all complex numbers with integral
   real and imaginary part. This article provides a definition of this
@@ -9270,3 +9270,14 @@ abstract =
   available in the AFP, the theory of Gaussian integers provides more
   concise proofs and a more high-level view.</p>
 
+[Forcing]
+title = Formalization of Forcing in Isabelle/ZF
+author = Emmanuel Gunther <mailto:gunther@famaf.unc.edu.ar>, Miguel Pagano <https://cs.famaf.unc.edu.ar/~mpagano/>,  Pedro Sánchez Terraf <https://cs.famaf.unc.edu.ar/~pedro/home_en>
+topic = Logic/Set theory
+date = 2020-05-06
+notify = gunther@famaf.unc.edu.ar, pagano@famaf.unc.edu.ar, sterraf@famaf.unc.edu.ar
+abstract =
+  We formalize the theory of forcing in the set theory framework of
+  Isabelle/ZF. Under the assumption of the existence of a countable
+  transitive model of ZFC, we construct a proper generic extension and
+  show that the latter also satisfies ZFC.
