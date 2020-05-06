@@ -122,6 +122,9 @@ lemma true_cls_mset_mono_strong: "(\<forall>D \<in># DD. \<exists>C \<in># CC. C
 lemma true_clss_set_mset[iff]: "I \<Turnstile>s set_mset CC \<longleftrightarrow> I \<Turnstile>m CC"
   unfolding true_clss_def true_cls_mset_def by auto
 
+lemma true_clss_mset_set[simp]: "finite CC \<Longrightarrow> I \<Turnstile>m mset_set CC \<longleftrightarrow> I \<Turnstile>s CC"
+  unfolding true_clss_def true_cls_mset_def by auto
+
 lemma true_cls_mset_true_cls: "I \<Turnstile>m CC \<Longrightarrow> C \<in># CC \<Longrightarrow> I \<Turnstile> C"
   using true_cls_mset_def by auto
 
