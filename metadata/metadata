@@ -8816,7 +8816,7 @@ abstract =
 [ZFC_in_HOL]
 title = Zermelo Fraenkel Set Theory in Higher-Order Logic
 author = Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
-topic = Mathematics/Set Theory
+topic = Logic/Set theory
 date = 2019-10-24
 notify = lp15@cam.ac.uk
 abstract =
