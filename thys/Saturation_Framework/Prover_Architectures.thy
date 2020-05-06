@@ -489,8 +489,15 @@ inductive step :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rig
       no_labels.lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` (N \<union> {(C, active)} \<union> M)) \<Longrightarrow>
     N1 \<Longrightarrow>GC N2"
 
-notation labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.derive
-  (infix "\<rhd>RedL" 50)
+notation labeled_ord_red_crit_fam.lifted_calc_w_red_crit.derive (infix "\<rhd>RedL" 50)
+
+lemma derive_equiv:
+  "(\<rhd>RedL) = labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.derive"
+  unfolding labeled_ord_red_crit_fam.lifted_calc_w_red_crit.derive.simps
+     labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.derive.simps
+     labeled_ord_red_crit_fam.Red_F_\<G>_g_def
+     labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q_def
+  by (rule refl)
 
 lemma one_step_equiv: "N1 \<Longrightarrow>GC N2 \<Longrightarrow> N1 \<rhd>RedL N2"
 proof (cases N1 N2 rule: step.cases)
@@ -505,8 +512,10 @@ next
     active_empty: "active_subset M' = {}"
   have "N1 - N2 \<subseteq> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q N2"
     using n1_is n2_is m_red by auto
-  then show "labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.derive N1 N2"
-    unfolding labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.derive.simps by blast
+  then show "N1 \<rhd>RedL N2"
+    unfolding derive_equiv
+      labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.derive.simps
+    by blast
 next
   fix N C L M
   assume
@@ -523,13 +532,25 @@ next
   moreover have "N1 - N2 = {} \<or> N1 - N2 = {(C, L)}" using n1_is n2_is by blast
   ultimately have "N1 - N2 \<subseteq> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.Red_F_Q N2"
     using empty_red_f_equiv[of N2] by blast
-  then show "labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.derive N1 N2"
-    unfolding labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.derive.simps
+  then show "N1 \<rhd>RedL N2"
+    unfolding derive_equiv
+      labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.derive.simps
     by blast
 qed
 
 abbreviation fair :: "('f \<times> 'l) set llist \<Rightarrow> bool" where
-  "fair \<equiv> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.fair"
+  "fair \<equiv> labeled_ord_red_crit_fam.lifted_calc_w_red_crit.fair"
+
+lemma fair_equiv:
+  "fair =
+   labeled_ord_red_crit_fam.empty_ord_lifted_calc_w_red_crit_family.inter_red_crit_calculus.fair"
+  unfolding labeled_ord_red_crit_fam.empty_ord_lifted_calc_w_red_crit_family.inter_red_crit_calculus.fair_def
+    labeled_ord_red_crit_fam.empty_ord_lifted_calc_w_red_crit_family.inter_red_crit_calculus.Sup_Red_Inf_llist_def
+    labeled_ord_red_crit_fam.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q_def
+    labeled_ord_red_crit_fam.lifted_calc_w_red_crit.fair_def
+    labeled_ord_red_crit_fam.lifted_calc_w_red_crit.Sup_Red_Inf_llist_def
+    labeled_ord_red_crit_fam.Red_Inf_\<G>_Q_def
+  by (rule refl)
 
 (* lem:gc-derivations-are-red-derivations *)
 lemma gc_to_red: "chain (\<Longrightarrow>GC) D \<Longrightarrow> chain (\<rhd>RedL) D"
@@ -557,7 +578,8 @@ lemma gc_fair:
     init_state: "active_subset (lnth D 0) = {}" and
     final_state: "non_active_subset (Liminf_llist D) = {}"
   shows "fair D"
-  unfolding labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.fair_def
+  unfolding fair_equiv
+    labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.fair_def
 proof
   fix \<iota>
   assume i_in: "\<iota> \<in> with_labels.Inf_from (Liminf_llist D)"
@@ -770,9 +792,9 @@ proof -
     using labeled_entailment_lifting bot_entailed by fastforce
   have "fair D" using gc_fair[OF deriv init_state final_state] .
   then have "\<exists>i \<in> {i. enat i < llength D}. \<exists>BL \<in> Bot_FL. BL \<in> lnth D i"
-    using stat_ref_calc.dynamic_refutational_complete labeled_b_in gc_to_red[OF deriv]
-      labeled_bot_entailed entail_equiv
-    unfolding dynamic_refutational_complete_calculus_def
+    using stat_ref_calc.dynamic_refutational_complete[folded fair_equiv]
+      labeled_b_in gc_to_red[OF deriv] labeled_bot_entailed entail_equiv
+    unfolding derive_equiv dynamic_refutational_complete_calculus_def
       dynamic_refutational_complete_calculus_axioms_def by blast
   then show ?thesis by blast
 qed
