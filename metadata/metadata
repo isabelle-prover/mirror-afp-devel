@@ -20,13 +20,12 @@ topic = Mathematics/Analysis
 date = 2020-05-02
 notify = jose.manuel.rodriguez.caballero@ut.ee, unruh@ut.ee
 abstract =
-  We formalize is Isabelle/HOL the following result \cite{Weisstein_UBP}
-  due to S. Banach and H. Steinhaus \cite{banach1927principe}, known as
+  We formalize is Isabelle/HOL a result
+  due to S. Banach and H. Steinhaus, known as
   the Banach-Steinhaus theorem or Uniform boundedness principle: A
   pointwise-bounded family of continuous linear operators from a Banach
   space to a normed space is uniformly bounded. Our approach is an
-  adaptation to Isabelle/HOL of a proof due to A. Sokal
-  \cite{sokal2011really}.
+  adaptation to Isabelle/HOL of a proof due to A. Sokal.
 
 [Complex_Geometry]
 title = Complex Geometry
