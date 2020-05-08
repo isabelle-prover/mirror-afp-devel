@@ -538,20 +538,6 @@ next
     by blast
 qed
 
-abbreviation fair :: "('f \<times> 'l) set llist \<Rightarrow> bool" where
-  "fair \<equiv> labeled_ord_red_crit_fam.lifted_calc_w_red_crit.fair"
-
-lemma fair_equiv:
-  "fair =
-   labeled_ord_red_crit_fam.empty_ord_lifted_calc_w_red_crit_family.inter_red_crit_calculus.fair"
-  unfolding labeled_ord_red_crit_fam.empty_ord_lifted_calc_w_red_crit_family.inter_red_crit_calculus.fair_def
-    labeled_ord_red_crit_fam.empty_ord_lifted_calc_w_red_crit_family.inter_red_crit_calculus.Sup_Red_Inf_llist_def
-    labeled_ord_red_crit_fam.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q_def
-    labeled_ord_red_crit_fam.lifted_calc_w_red_crit.fair_def
-    labeled_ord_red_crit_fam.lifted_calc_w_red_crit.Sup_Red_Inf_llist_def
-    labeled_ord_red_crit_fam.Red_Inf_\<G>_Q_def
-  by (rule refl)
-
 (* lem:gc-derivations-are-red-derivations *)
 lemma gc_to_red: "chain (\<Longrightarrow>GC) D \<Longrightarrow> chain (\<rhd>RedL) D"
   using one_step_equiv Lazy_List_Chain.chain_mono by blast
@@ -578,8 +564,7 @@ lemma gc_fair:
     init_state: "active_subset (lnth D 0) = {}" and
     final_state: "non_active_subset (Liminf_llist D) = {}"
   shows "fair D"
-  unfolding fair_equiv
-    labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.fair_def
+  unfolding fair_def
 proof
   fix \<iota>
   assume i_in: "\<iota> \<in> with_labels.Inf_from (Liminf_llist D)"
@@ -770,11 +755,8 @@ proof
   then have "\<iota> \<in> with_labels.Red_Inf_Q (lnth D (Suc n))"
     unfolding to_F_def with_labels.Red_Inf_Q_def Red_Inf_\<G>_L_q_def \<G>_Inf_L_q_def \<G>_set_L_q_def
       \<G>_F_L_q_def using i_in_inf_fl by auto
-  then show "\<iota> \<in>
-      labeled_ord_red_crit_fam.empty_ord_lifted_calc_w_red_crit_family.inter_red_crit_calculus.Sup_Red_Inf_llist D"
-    unfolding
-      labeled_ord_red_crit_fam.empty_ord_lifted_calc_w_red_crit_family.inter_red_crit_calculus.Sup_Red_Inf_llist_def
-    using red_inf_equiv2 suc_n_length by auto
+  then show "\<iota> \<in> Sup_Red_Inf_llist D"
+    unfolding Sup_Red_Inf_llist_def using red_inf_equiv2 suc_n_length by auto
 qed
 
 (* thm:gc-completeness *)
@@ -792,10 +774,9 @@ proof -
     using labeled_entailment_lifting bot_entailed by fastforce
   have "fair D" using gc_fair[OF deriv init_state final_state] .
   then have "\<exists>i \<in> {i. enat i < llength D}. \<exists>BL \<in> Bot_FL. BL \<in> lnth D i"
-    using stat_ref_calc.dynamic_refutational_complete[folded fair_equiv]
-      labeled_b_in gc_to_red[OF deriv] labeled_bot_entailed entail_equiv
-    unfolding derive_equiv dynamic_refutational_complete_calculus_def
-      dynamic_refutational_complete_calculus_axioms_def by blast
+    using stat_ref_calc.dynamic_refutational_complete
+      labeled_b_in gc_to_red[OF deriv] labeled_bot_entailed entail_equiv red_inf_equiv2
+    unfolding derive_equiv by auto
   then show ?thesis by blast
 qed
 
@@ -902,9 +883,6 @@ next
     by blast
 qed
 
-abbreviation fair :: "('f \<times> 'l) set llist \<Rightarrow> bool" where
-  "fair \<equiv> labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.fair"
-
 (* lem:lgc-derivations-are-red-derivations *)
 lemma lgc_to_red: "chain (\<Longrightarrow>LGC) D \<Longrightarrow> chain (\<rhd>RedL) (lmap snd D)"
   using one_step_equiv Lazy_List_Chain.chain_mono by (smt chain_lmap prod.collapse)
@@ -918,7 +896,7 @@ lemma lgc_fair:
     no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> (fst (lnth D 0))" and
     final_schedule: "Liminf_llist (lmap fst D) = {}"
   shows "fair (lmap snd D)"
-  unfolding labeled_ord_red_crit_fam.lifted_calc_w_red_crit_family.inter_red_crit_calculus.fair_def
+  unfolding fair_def
 proof
   fix \<iota>
   assume i_in: "\<iota> \<in> with_labels.Inf_from (Liminf_llist (lmap snd D))"
@@ -1238,10 +1216,8 @@ proof
   then have "\<iota> \<in> with_labels.Red_Inf_Q (snd (lnth D (Suc p)))"
     unfolding to_F_def with_labels.Red_Inf_Q_def Red_Inf_\<G>_L_q_def \<G>_Inf_L_q_def \<G>_set_L_q_def
       \<G>_F_L_q_def using i_in_inf_fl by auto
-  then show "\<iota> \<in> labeled_ord_red_crit_fam.empty_ord_lifted_calc_w_red_crit_family.inter_red_crit_calculus.Sup_Red_Inf_llist (lmap snd D)"
-    unfolding
-      labeled_ord_red_crit_fam.empty_ord_lifted_calc_w_red_crit_family.inter_red_crit_calculus.Sup_Red_Inf_llist_def
-    using red_inf_equiv2 suc_n_length p_smaller_d by auto
+  then show "\<iota> \<in> Sup_Red_Inf_llist (lmap snd D)"
+    unfolding Sup_Red_Inf_llist_def using red_inf_equiv2 suc_n_length p_smaller_d by auto
 qed
 
 (* thm:lgc-completeness *)
@@ -1265,9 +1241,7 @@ proof -
     using lgc_fair[OF deriv init_state final_state no_prems_init_active final_schedule] .
   then have "\<exists>i \<in> {i. enat i < llength D}. \<exists>BL\<in>Bot_FL. BL \<in> snd (lnth D i)"
     using stat_ref_calc.dynamic_refutational_complete labeled_b_in lgc_to_red[OF deriv]
-      labeled_bot_entailed entail_equiv simp_snd_lmap
-    unfolding dynamic_refutational_complete_calculus_def
-      dynamic_refutational_complete_calculus_axioms_def
+      labeled_bot_entailed entail_equiv simp_snd_lmap red_inf_equiv2
     by (metis (mono_tags, lifting) llength_lmap lnth_lmap mem_Collect_eq)
   then show ?thesis by blast
 qed
