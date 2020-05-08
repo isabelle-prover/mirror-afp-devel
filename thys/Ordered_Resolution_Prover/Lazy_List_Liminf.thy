@@ -48,6 +48,14 @@ lemma lhd_subset_Sup_llist: "\<not> lnull Xs \<Longrightarrow> lhd Xs \<subseteq
 definition Sup_upto_llist :: "'a set llist \<Rightarrow> nat \<Rightarrow> 'a set" where
   "Sup_upto_llist Xs j = (\<Union>i \<in> {i. enat i < llength Xs \<and> i \<le> j}. lnth Xs i)"
 
+lemma Sup_upto_llist_0[simp]: "Sup_upto_llist Xs 0 = (if 0 < llength Xs then lnth Xs 0 else {})"
+  unfolding Sup_upto_llist_def image_def by (simp add: enat_0)
+
+lemma Sup_upto_llist_Suc[simp]:
+  "Sup_upto_llist Xs (Suc j) =
+   Sup_upto_llist Xs j \<union> (if enat (Suc j) < llength Xs then lnth Xs (Suc j) else {})"
+  unfolding Sup_upto_llist_def image_def by (auto intro: le_SucI elim: le_SucE)
+
 lemma Sup_upto_llist_mono: "j \<le> k \<Longrightarrow> Sup_upto_llist Xs j \<subseteq> Sup_upto_llist Xs k"
   unfolding Sup_upto_llist_def by auto
 
@@ -57,6 +65,9 @@ lemma Sup_upto_llist_subset_Sup_llist: "j \<le> k \<Longrightarrow> Sup_upto_lli
 lemma elem_Sup_llist_imp_Sup_upto_llist:
 	"x \<in> Sup_llist Xs \<Longrightarrow> \<exists>j < llength Xs. x \<in> Sup_upto_llist Xs j"
   unfolding Sup_llist_def Sup_upto_llist_def by blast
+
+lemma lnth_subset_Sup_upto_llist: "enat j < llength Xs \<Longrightarrow> lnth Xs j \<subseteq> Sup_upto_llist Xs j"
+  unfolding Sup_upto_llist_def by auto
 
 lemma finite_Sup_llist_imp_Sup_upto_llist:
   assumes "finite X" and "X \<subseteq> Sup_llist Xs"
