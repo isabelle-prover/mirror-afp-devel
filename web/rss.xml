@@ -176,6 +176,22 @@ available in the AFP, the theory of Gaussian integers provides more
 concise proofs and a more high-level view.&lt;/p&gt;</description>
     </item>
     <item>
+       <title>Matrices for ODEs</title>
+              <link>https://www.isa-afp.org/entries/Matrices_for_ODEs.html</link>
+       <guid>https://www.isa-afp.org/entries/Matrices_for_ODEs.html</guid>
+       <dc:creator> Jonathan Julian Huerta y Munive       </dc:creator>
+       <pubDate>19 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+Our theories formalise various matrix properties that serve to
+establish existence, uniqueness and characterisation of the solution
+to affine systems of ordinary differential equations (ODEs). In
+particular, we formalise the operator and maximum norm of matrices.
+Then we use them to prove that square matrices form a Banach space,
+and in this setting, we show an instance of Picard-Lindelöf’s
+theorem for affine systems of ODEs. Finally, we use this formalisation
+to verify three simple hybrid programs.</description>
+    </item>
+    <item>
        <title>Authenticated Data Structures As Functors</title>
               <link>https://www.isa-afp.org/entries/ADS_Functor.html</link>
        <guid>https://www.isa-afp.org/entries/ADS_Functor.html</guid>
@@ -573,21 +589,6 @@ shown that the model satisfies all Tarski&#39;s axioms except the
 Euclid&#39;s axiom. It is shown that it satisfies its negation and
 the limiting parallels axiom (which proves it to be a model of
 hyperbolic geometry).</description>
-    </item>
-    <item>
-       <title>Complex Geometry</title>
-              <link>https://www.isa-afp.org/entries/Complex_Geometry.html</link>
-       <guid>https://www.isa-afp.org/entries/Complex_Geometry.html</guid>
-       <dc:creator> Filip Marić, Danijela Simić       </dc:creator>
-       <pubDate>16 Dec 2019 00:00:00 +0000</pubDate>
-       <description>
-A formalization of geometry of complex numbers is presented.
-Fundamental objects that are investigated are the complex plane
-extended by a single infinite point, its objects (points, lines and
-circles), and groups of transformations that act on them (e.g.,
-inversions and Möbius transformations). Most objects are defined
-algebraically, but correspondence with classical geometric definitions
-is shown.</description>
     </item>
   </channel>
 </rss>
