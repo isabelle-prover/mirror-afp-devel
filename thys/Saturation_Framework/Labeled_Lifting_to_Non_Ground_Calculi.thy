@@ -97,11 +97,9 @@ lemma red_inf_impl: "\<iota> \<in> labeled_lifting_w_empty_ord_family.Red_Inf_\<
 
 (* lem:labeled-saturation *)
 lemma labeled_saturation_lifting:
-  "labeled_lifting_w_empty_ord_family.lifted_calculus_with_red_crit.saturated NL \<Longrightarrow>
-    empty_order_lifting.lifted_calculus_with_red_crit.saturated (fst ` NL)"
-  unfolding labeled_lifting_w_empty_ord_family.lifted_calculus_with_red_crit.saturated_def
-    empty_order_lifting.lifted_calculus_with_red_crit.saturated_def
-    labeled_standard_lifting.Non_ground.Inf_from_def Non_ground.Inf_from_def
+  "labeled_lifting_w_empty_ord_family.saturated NL \<Longrightarrow> empty_order_lifting.saturated (fst ` NL)"
+  unfolding labeled_lifting_w_empty_ord_family.saturated_def empty_order_lifting.saturated_def
+    labeled_standard_lifting.Inf_from_def Inf_from_def
 proof clarify
   fix \<iota>
   assume
@@ -132,8 +130,7 @@ lemma stat_ref_comp_to_labeled_sta_ref_comp: "static_refutational_complete_calcu
 proof (rule conjI impI; clarify)
   interpret calculus_with_red_crit Bot_FL Inf_FL labeled_standard_lifting.entails_\<G>
     labeled_lifting_w_empty_ord_family.Red_Inf_\<G> labeled_lifting_w_empty_ord_family.Red_F_\<G>
-    by (simp add:
-      labeled_lifting_w_empty_ord_family.lifted_calculus_with_red_crit.calculus_with_red_crit_axioms)
+    by (simp add: labeled_lifting_w_empty_ord_family.calculus_with_red_crit_axioms)
   show "calculus_with_red_crit Bot_FL Inf_FL (\<Turnstile>\<G>L) labeled_lifting_w_empty_ord_family.Red_Inf_\<G>
     labeled_lifting_w_empty_ord_family.Red_F_\<G>"
     by standard
@@ -148,15 +145,15 @@ next
     fix Bl :: \<open>'f \<times> 'l\<close> and Nl :: \<open>('f \<times> 'l) set\<close>
     assume
       Bl_in: \<open>Bl \<in> Bot_FL\<close> and
-      Nl_sat: \<open>labeled_lifting_w_empty_ord_family.lifted_calculus_with_red_crit.saturated Nl\<close> and
+      Nl_sat: \<open>labeled_lifting_w_empty_ord_family.saturated Nl\<close> and
       Nl_entails_Bl: \<open>Nl \<Turnstile>\<G>L {Bl}\<close>
-    have static_axioms: "B \<in> Bot_F \<longrightarrow> empty_order_lifting.lifted_calculus_with_red_crit.saturated N \<longrightarrow>
-      N \<Turnstile>\<G> {B} \<longrightarrow> (\<exists>B'\<in>Bot_F. B' \<in> N)" for B N
+    have static_axioms: "B \<in> Bot_F \<longrightarrow> empty_order_lifting.saturated N \<longrightarrow> N \<Turnstile>\<G> {B} \<longrightarrow>
+      (\<exists>B'\<in>Bot_F. B' \<in> N)" for B N
       using static[unfolded static_refutational_complete_calculus_axioms_def] by fast
     define B where "B = fst Bl"
     have B_in: "B \<in> Bot_F" using Bl_in Bot_FL_def B_def SigmaE by force
     define N where "N = fst ` Nl"
-    have N_sat: "empty_order_lifting.lifted_calculus_with_red_crit.saturated N"
+    have N_sat: "empty_order_lifting.saturated N"
       using N_def Nl_sat labeled_saturation_lifting by blast
     have N_entails_B: "N \<Turnstile>\<G> {B}"
       using Nl_entails_Bl unfolding labeled_entailment_lifting N_def B_def by force
@@ -284,7 +281,7 @@ proof -
   moreover have "Red_F_\<G>_empty_L_q q = ord_q_lifting.Red_F_\<G>"
     unfolding Red_F_\<G>_empty_L_q_def ord_q_lifting.Red_F_\<G>_def \<G>_set_L_q_def by simp
   ultimately show ?thesis
-    using ord_q_lifting.lifted_calculus_with_red_crit.calculus_with_red_crit_axioms by argo
+    using ord_q_lifting.calculus_with_red_crit_axioms by argo
 qed
 
 lemma all_lifted_cons_rel:
@@ -352,11 +349,10 @@ proof clarify
 qed
 
 (* lem:labeled-saturation-intersection *)
-lemma labeled_family_saturation_lifting: "with_labels.inter_red_crit_calculus.saturated NL \<Longrightarrow>
-  no_labels.lifted_calc_w_red_crit_family.inter_red_crit_calculus.saturated (fst ` NL)"
-  unfolding with_labels.inter_red_crit_calculus.saturated_def
-    no_labels.lifted_calc_w_red_crit_family.inter_red_crit_calculus.saturated_def
-    with_labels.Inf_from_def no_labels.Non_ground.Inf_from_def
+lemma labeled_family_saturation_lifting: "with_labels.saturated NL \<Longrightarrow>
+  no_labels.lifted_calc_w_red_crit_family.saturated (fst ` NL)"
+  unfolding with_labels.saturated_def no_labels.lifted_calc_w_red_crit_family.saturated_def
+    with_labels.Inf_from_def no_labels.Inf_from_def
 proof clarify
   fix \<iota>F
   assume
@@ -382,9 +378,10 @@ qed
 
 (* thm:labeled-static-ref-compl-intersection *)
 theorem labeled_static_ref: "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>)
-  no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q
-  no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_F_Q
-  \<Longrightarrow> static_refutational_complete_calculus Bot_FL Inf_FL (\<Turnstile>\<inter>\<G>L) with_labels.Red_Inf_Q with_labels.Red_F_Q"
+    no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q
+    no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_F_Q \<Longrightarrow>
+  static_refutational_complete_calculus Bot_FL Inf_FL (\<Turnstile>\<inter>\<G>L) with_labels.Red_Inf_Q
+    with_labels.Red_F_Q"
   unfolding static_refutational_complete_calculus_def
 proof (rule conjI impI; clarify)
   show "calculus_with_red_crit Bot_FL Inf_FL (\<Turnstile>\<inter>\<G>L) with_labels.Red_Inf_Q with_labels.Red_F_Q"
@@ -402,16 +399,15 @@ next
     fix Bl :: \<open>'f \<times> 'l\<close> and Nl :: \<open>('f \<times> 'l) set\<close>
     assume
       Bl_in: \<open>Bl \<in> Bot_FL\<close> and
-      Nl_sat: \<open>with_labels.inter_red_crit_calculus.saturated Nl\<close> and
+      Nl_sat: \<open>with_labels.saturated Nl\<close> and
       Nl_entails_Bl: \<open>Nl \<Turnstile>\<inter>\<G>L {Bl}\<close>
-    have static_axioms: "B \<in> Bot_F \<longrightarrow>
-      no_labels.lifted_calc_w_red_crit_family.inter_red_crit_calculus.saturated N \<longrightarrow>
+    have static_axioms: "B \<in> Bot_F \<longrightarrow> no_labels.lifted_calc_w_red_crit_family.saturated N \<longrightarrow>
       N \<Turnstile>\<inter>\<G> {B} \<longrightarrow> (\<exists>B'\<in>Bot_F. B' \<in> N)" for B N
       using static[unfolded static_refutational_complete_calculus_axioms_def] by fast
     define B where "B = fst Bl"
     have B_in: "B \<in> Bot_F" using Bl_in Bot_FL_def B_def SigmaE by force
     define N where "N = fst ` Nl"
-    have N_sat: "no_labels.lifted_calc_w_red_crit_family.inter_red_crit_calculus.saturated N"
+    have N_sat: "no_labels.lifted_calc_w_red_crit_family.saturated N"
       using N_def Nl_sat labeled_family_saturation_lifting by blast
     have N_entails_B: "N \<Turnstile>\<inter>\<G> {B}"
       using Nl_entails_Bl unfolding labeled_entailment_lifting N_def B_def by force

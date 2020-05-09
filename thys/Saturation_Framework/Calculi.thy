@@ -214,8 +214,8 @@ locale static_refutational_complete_calculus = calculus_with_red_crit +
 
 locale dynamic_refutational_complete_calculus = calculus_with_red_crit +
   assumes
-    dynamic_refutational_complete: "B \<in> Bot \<Longrightarrow> chain (\<rhd>Red) D \<Longrightarrow> fair D
-      \<Longrightarrow> lnth D 0 \<Turnstile> {B} \<Longrightarrow> \<exists>i \<in> {i. enat i < llength D}. \<exists>B'\<in>Bot. B' \<in> lnth D i"
+    dynamic_refutational_complete: "B \<in> Bot \<Longrightarrow> chain (\<rhd>Red) D \<Longrightarrow> fair D \<Longrightarrow> lnth D 0 \<Turnstile> {B} \<Longrightarrow>
+      \<exists>i \<in> {i. enat i < llength D}. \<exists>B'\<in>Bot. B' \<in> lnth D i"
 begin
 
 (* lem:dynamic-ref-compl-implies-static *)
@@ -297,7 +297,7 @@ definition Red_F_Q :: "'f set \<Rightarrow> 'f set" where
   "Red_F_Q N = (\<Inter>q \<in> Q. Red_F_q q N)"
 
 (* lem:intersection-of-red-crit *)
-sublocale inter_red_crit_calculus: calculus_with_red_crit Bot Inf entails_Q Red_Inf_Q Red_F_Q
+sublocale calculus_with_red_crit Bot Inf entails_Q Red_Inf_Q Red_F_Q
   unfolding calculus_with_red_crit_def calculus_with_red_crit_axioms_def
 proof (intro conjI)
   show "consequence_relation Bot entails_Q"
@@ -335,17 +335,17 @@ next
       define Red_F_qi where "Red_F_qi = Red_F_q qi"
       have red_qi_in_Q: "Red_F_Q N \<subseteq> Red_F_qi N"
         unfolding Red_F_Q_def Red_F_qi_def using qi_in image_iff by blast
-      then have "N - (Red_F_qi N) \<subseteq> N - (Red_F_Q N)" by blast
-      then have entails_1: "(N - Red_F_Q N) \<Turnstile>qi (N - Red_F_qi N)"
+      then have "N - Red_F_qi N \<subseteq> N - Red_F_Q N" by blast
+      then have entails_1: "N - Red_F_Q N \<Turnstile>qi N - Red_F_qi N"
         using qi_in all_red_crit
         unfolding calculus_with_red_crit_def consequence_relation_def entails_qi_def by metis
       have N_unsat_qi: "N \<Turnstile>qi {B}" using qi_in N_unsat unfolding entails_qi_def entails_Q_def
         by simp
-      then have N_unsat_qi: "(N - Red_F_qi N) \<Turnstile>qi {B}"
+      then have N_unsat_qi: "N - Red_F_qi N \<Turnstile>qi {B}"
         using qi_in all_red_crit Red_F_qi_def calculus_with_red_crit.Red_F_Bot[OF _ B_in]
           entails_qi_def
         by fastforce
-      show "(N - (\<Inter>q \<in> Q. Red_F_q q N)) \<Turnstile>qi {B}"
+      show "N - (\<Inter>q \<in> Q. Red_F_q q N) \<Turnstile>qi {B}"
         using consequence_relation.entails_trans[OF cons_rel_qi entails_1 N_unsat_qi]
         unfolding Red_F_Q_def .
     qed
@@ -448,13 +448,13 @@ proof
       by (metis all_red_crit)
     show "one.saturated N"
       using qi_in inter_sat
-      unfolding one.saturated_def inter_red_crit_calculus.saturated_def Red_Inf_Q_def by blast
+      unfolding one.saturated_def saturated_def Red_Inf_Q_def by blast
   qed
 next
   fix N
   assume all_sat: "\<forall>qi \<in> Q. calculus_with_red_crit.saturated Inf (Red_Inf_q qi) N"
-  show "inter_red_crit_calculus.saturated N"
-    unfolding inter_red_crit_calculus.saturated_def Red_Inf_Q_def
+  show "saturated N"
+    unfolding saturated_def Red_Inf_Q_def
   proof
     fix \<iota>
     assume \<iota>_in: "\<iota> \<in> Inf_from N"
@@ -487,7 +487,7 @@ proof (rule ccontr)
   obtain N1 B1 where B1_in:
     "B1 \<in> Bot" and N1_saturated: "calculus_with_red_crit.saturated Inf Red_Inf_Q N1" and
     N1_unsat: "N1 \<Turnstile>Q {B1}" and no_B_in_N1: "\<forall>B \<in> Bot. B \<notin> N1"
-    using no_stat_ref_comp by (metis inter_red_crit_calculus.calculus_with_red_crit_axioms
+    using no_stat_ref_comp by (metis calculus_with_red_crit_axioms
         static_refutational_complete_calculus.intro
         static_refutational_complete_calculus_axioms.intro)
   obtain B2 qi where
