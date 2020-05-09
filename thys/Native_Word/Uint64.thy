@@ -53,10 +53,10 @@ end
 lemmas [code] = less_uint64.rep_eq less_eq_uint64.rep_eq
 
 instantiation uint64 :: bit_operations begin
-lift_definition bitNOT_uint64 :: "uint64 \<Rightarrow> uint64" is bitNOT .
-lift_definition bitAND_uint64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" is bitAND .
-lift_definition bitOR_uint64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" is bitOR .
-lift_definition bitXOR_uint64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" is bitXOR .
+lift_definition bitNOT_uint64 :: "uint64 \<Rightarrow> uint64" is NOT .
+lift_definition bitAND_uint64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" is \<open>(AND)\<close> .
+lift_definition bitOR_uint64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" is \<open>(OR)\<close> .
+lift_definition bitXOR_uint64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" is \<open>(XOR)\<close> .
 lift_definition test_bit_uint64 :: "uint64 \<Rightarrow> nat \<Rightarrow> bool" is test_bit .
 lift_definition set_bit_uint64 :: "uint64 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint64" is set_bit .
 lift_definition lsb_uint64 :: "uint64 \<Rightarrow> bool" is lsb .
@@ -564,22 +564,22 @@ code_printing
   (Haskell) infix 4 "<" and
   (OCaml) "Uint64.less" and
   (Scala) "Uint64.less"
-| constant "bitNOT :: uint64 \<Rightarrow> _" \<rightharpoonup>
+| constant "NOT :: uint64 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Uint64.notb" and
   (Haskell) "Data'_Bits.complement" and
   (OCaml) "Int64.lognot" and
   (Scala) "_.unary'_~"
-| constant "bitAND :: uint64 \<Rightarrow> _" \<rightharpoonup>
+| constant "(AND) :: uint64 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Uint64.andb" and
   (Haskell) infixl 7 "Data_Bits..&." and
   (OCaml) "Int64.logand" and
   (Scala) infixl 3 "&"
-| constant "bitOR :: uint64 \<Rightarrow> _" \<rightharpoonup>
+| constant "(OR) :: uint64 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Uint64.orb" and
   (Haskell) infixl 5 "Data_Bits..|." and
   (OCaml) "Int64.logor" and
   (Scala) infixl 1 "|"
-| constant "bitXOR :: uint64 \<Rightarrow> _" \<rightharpoonup>
+| constant "(XOR) :: uint64 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Uint64.xorb" and
   (Haskell) "Data'_Bits.xor" and
   (OCaml) "Int64.logxor" and

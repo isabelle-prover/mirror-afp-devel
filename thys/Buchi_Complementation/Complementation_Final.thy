@@ -20,7 +20,7 @@ begin
 
   definition "hci k \<equiv> uint32_of_nat k * 1103515245 + 12345"
   definition "hc \<equiv> \<lambda> (p, q, b). hci p + hci q * 31 + (if b then 1 else 0)"
-  definition "list_hash xs \<equiv> fold (bitXOR \<circ> hc) xs 0"
+  definition "list_hash xs \<equiv> fold ((XOR) \<circ> hc) xs 0"
 
   lemma list_hash_eq:
     assumes "distinct xs" "distinct ys" "set xs = set ys"
@@ -28,7 +28,7 @@ begin
   proof -
     have "remdups xs <~~> remdups ys" using eq_set_perm_remdups assms(3) by this
     then have "xs <~~> ys" using assms(1, 2) by (simp add: distinct_remdups_id)
-    then have "fold (bitXOR \<circ> hc) xs a = fold (bitXOR \<circ> hc) ys a" for a
+    then have "fold ((XOR) \<circ> hc) xs a = fold ((XOR) \<circ> hc) ys a" for a
     proof (induct arbitrary: a)
       case (swap y x l)
       have "x XOR y XOR a = y XOR x XOR a" for x y by (transfer) (simp add: word_bw_lcs(3))

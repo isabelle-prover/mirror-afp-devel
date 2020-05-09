@@ -293,7 +293,7 @@ definition mem_val_w32 :: "asi_type \<Rightarrow> phys_address \<Rightarrow>
                            ('a) sparc_state \<Rightarrow> word32 option"
 where
 "mem_val_w32 asi addr state \<equiv>
-  let addr' = bitAND addr 0b111111111111111111111111111111111100;
+  let addr' = (AND) addr 0b111111111111111111111111111111111100;
       addr0 = addr';
       addr1 = addr' + 1;
       addr2 = addr' + 2;
@@ -311,7 +311,7 @@ where
         byte2 = case r2 of Some v \<Rightarrow> v;
         byte3 = case r3 of Some v \<Rightarrow> v 
     in
-    Some (bitOR (bitOR (bitOR ((ucast(byte0)) << 24) 
+    Some ((OR) ((OR) ((OR) ((ucast(byte0)) << 24) 
                               ((ucast(byte1)) << 16)) 
                        ((ucast(byte2)) << 8)) 
                 (ucast(byte3)))
@@ -327,25 +327,25 @@ definition mem_mod_w32 :: "asi_type \<Rightarrow> phys_address \<Rightarrow> wor
                            ('a) sparc_state \<Rightarrow> ('a) sparc_state"
 where
 "mem_mod_w32 asi addr byte_mask data_w32 state \<equiv>
-  let addr' = bitAND addr 0b111111111111111111111111111111111100;
-      addr0 = bitOR addr' 0b000000000000000000000000000000000000;
-      addr1 = bitOR addr' 0b000000000000000000000000000000000001;
-      addr2 = bitOR addr' 0b000000000000000000000000000000000010;
-      addr3 = bitOR addr' 0b000000000000000000000000000000000011;
+  let addr' = (AND) addr 0b111111111111111111111111111111111100;
+      addr0 = (OR) addr' 0b000000000000000000000000000000000000;
+      addr1 = (OR) addr' 0b000000000000000000000000000000000001;
+      addr2 = (OR) addr' 0b000000000000000000000000000000000010;
+      addr3 = (OR) addr' 0b000000000000000000000000000000000011;
       byte0 = (ucast (data_w32 >> 24))::mem_val_type;
       byte1 = (ucast (data_w32 >> 16))::mem_val_type;
       byte2 = (ucast (data_w32 >> 8))::mem_val_type;
       byte3 = (ucast data_w32)::mem_val_type;
-      s0 = if ((bitAND byte_mask (0b1000::word4)) >> 3) = 1 then
+      s0 = if (((AND) byte_mask (0b1000::word4)) >> 3) = 1 then
               mem_mod asi addr0 byte0 state 
            else state;
-      s1 = if ((bitAND byte_mask (0b0100::word4)) >> 2) = 1 then
+      s1 = if (((AND) byte_mask (0b0100::word4)) >> 2) = 1 then
               mem_mod asi addr1 byte1 s0 
            else s0;
-      s2 = if ((bitAND byte_mask (0b0010::word4)) >> 1) = 1 then
+      s2 = if (((AND) byte_mask (0b0010::word4)) >> 1) = 1 then
               mem_mod asi addr2 byte2 s1 
            else s1;
-      s3 = if (bitAND byte_mask (0b0001::word4)) = 1 then
+      s3 = if ((AND) byte_mask (0b0001::word4)) = 1 then
               mem_mod asi addr3 byte3 s2 
            else s2
   in
@@ -424,10 +424,10 @@ where
 definition read_data_cache:: "('a) sparc_state \<Rightarrow> virtua_address \<Rightarrow> machine_word option"
 where "read_data_cache state va \<equiv>
   let tag = (ucast (va >> 12))::word20;
-       offset0 = bitAND ((ucast va)::word12) 0b111111111100;
-       offset1 = bitOR offset0 0b000000000001;
-       offset2 = bitOR offset0 0b000000000010;
-       offset3 = bitOR offset0 0b000000000011;
+       offset0 = (AND) ((ucast va)::word12) 0b111111111100;
+       offset1 = (OR) offset0 0b000000000001;
+       offset2 = (OR) offset0 0b000000000010;
+       offset3 = (OR) offset0 0b000000000011;
        r0 = dcache_val (tag,offset0) state;
        r1 = dcache_val (tag,offset1) state;
        r2 = dcache_val (tag,offset2) state;
@@ -441,7 +441,7 @@ where "read_data_cache state va \<equiv>
         byte2 = case r2 of Some v \<Rightarrow> v;
         byte3 = case r3 of Some v \<Rightarrow> v 
     in
-    Some (bitOR (bitOR (bitOR ((ucast(byte0)) << 24) 
+    Some ((OR) ((OR) ((OR) ((ucast(byte0)) << 24) 
                               ((ucast(byte1)) << 16)) 
                        ((ucast(byte2)) << 8)) 
                 (ucast(byte3)))
@@ -450,10 +450,10 @@ where "read_data_cache state va \<equiv>
 definition read_instr_cache:: "('a) sparc_state \<Rightarrow> virtua_address \<Rightarrow> machine_word option"
 where "read_instr_cache state va \<equiv>
   let tag = (ucast (va >> 12))::word20;
-       offset0 = bitAND ((ucast va)::word12) 0b111111111100;
-       offset1 = bitOR offset0 0b000000000001;
-       offset2 = bitOR offset0 0b000000000010;
-       offset3 = bitOR offset0 0b000000000011;
+       offset0 = (AND) ((ucast va)::word12) 0b111111111100;
+       offset1 = (OR) offset0 0b000000000001;
+       offset2 = (OR) offset0 0b000000000010;
+       offset3 = (OR) offset0 0b000000000011;
        r0 = icache_val (tag,offset0) state;
        r1 = icache_val (tag,offset1) state;
        r2 = icache_val (tag,offset2) state;
@@ -467,7 +467,7 @@ where "read_instr_cache state va \<equiv>
         byte2 = case r2 of Some v \<Rightarrow> v;
         byte3 = case r3 of Some v \<Rightarrow> v 
     in
-    Some (bitOR (bitOR (bitOR ((ucast(byte0)) << 24) 
+    Some ((OR) ((OR) ((OR) ((ucast(byte0)) << 24) 
                               ((ucast(byte1)) << 16)) 
                        ((ucast(byte2)) << 8)) 
                 (ucast(byte3)))
@@ -478,24 +478,24 @@ definition add_data_cache :: "('a) sparc_state \<Rightarrow> virtua_address \<Ri
 where 
  "add_data_cache state va word byte_mask \<equiv> 
    let tag = (ucast (va >> 12))::word20;
-       offset0 = bitAND ((ucast va)::word12) 0b111111111100;
-       offset1 = bitOR offset0 0b000000000001;
-       offset2 = bitOR offset0 0b000000000010;
-       offset3 = bitOR offset0 0b000000000011;
+       offset0 = (AND) ((ucast va)::word12) 0b111111111100;
+       offset1 = (OR) offset0 0b000000000001;
+       offset2 = (OR) offset0 0b000000000010;
+       offset3 = (OR) offset0 0b000000000011;
        byte0 = (ucast (word >> 24))::mem_val_type;
        byte1 = (ucast (word >> 16))::mem_val_type;
        byte2 = (ucast (word >> 8))::mem_val_type;
        byte3 = (ucast word)::mem_val_type;
-       s0 = if ((bitAND byte_mask (0b1000::word4)) >> 3) = 1 then
+       s0 = if (((AND) byte_mask (0b1000::word4)) >> 3) = 1 then
               dcache_mod (tag,offset0) byte0 state
             else state;
-       s1 = if ((bitAND byte_mask (0b0100::word4)) >> 2) = 1 then
+       s1 = if (((AND) byte_mask (0b0100::word4)) >> 2) = 1 then
               dcache_mod (tag,offset1) byte1 s0
             else s0;
-       s2 = if ((bitAND byte_mask (0b0010::word4)) >> 1) = 1 then
+       s2 = if (((AND) byte_mask (0b0010::word4)) >> 1) = 1 then
               dcache_mod (tag,offset2) byte2 s1
             else s1;
-       s3 = if (bitAND byte_mask (0b0001::word4)) = 1 then
+       s3 = if ((AND) byte_mask (0b0001::word4)) = 1 then
               dcache_mod (tag,offset3) byte3 s2
             else s2
    in s3
@@ -506,24 +506,24 @@ definition add_instr_cache :: "('a) sparc_state \<Rightarrow> virtua_address \<R
 where 
  "add_instr_cache state va word byte_mask \<equiv> 
    let tag = (ucast (va >> 12))::word20;
-       offset0 = bitAND ((ucast va)::word12) 0b111111111100;
-       offset1 = bitOR offset0 0b000000000001;
-       offset2 = bitOR offset0 0b000000000010;
-       offset3 = bitOR offset0 0b000000000011;
+       offset0 = (AND) ((ucast va)::word12) 0b111111111100;
+       offset1 = (OR) offset0 0b000000000001;
+       offset2 = (OR) offset0 0b000000000010;
+       offset3 = (OR) offset0 0b000000000011;
        byte0 = (ucast (word >> 24))::mem_val_type;
        byte1 = (ucast (word >> 16))::mem_val_type;
        byte2 = (ucast (word >> 8))::mem_val_type;
        byte3 = (ucast word)::mem_val_type;
-       s0 = if ((bitAND byte_mask (0b1000::word4)) >> 3) = 1 then
+       s0 = if (((AND) byte_mask (0b1000::word4)) >> 3) = 1 then
               icache_mod (tag,offset0) byte0 state
             else state;
-       s1 = if ((bitAND byte_mask (0b0100::word4)) >> 2) = 1 then
+       s1 = if (((AND) byte_mask (0b0100::word4)) >> 2) = 1 then
               icache_mod (tag,offset1) byte1 s0
             else s0;
-       s2 = if ((bitAND byte_mask (0b0010::word4)) >> 1) = 1 then
+       s2 = if (((AND) byte_mask (0b0010::word4)) >> 1) = 1 then
               icache_mod (tag,offset2) byte2 s1
             else s1;
-       s3 = if (bitAND byte_mask (0b0001::word4)) = 1 then
+       s3 = if ((AND) byte_mask (0b0001::word4)) = 1 then
               icache_mod (tag,offset3) byte3 s2
             else s2
    in s3
@@ -549,8 +549,8 @@ where
 "ccr_flush state \<equiv>
   let ccr_val = sys_reg_val CCR state;
       \<comment> \<open>\<open>FI\<close> is bit 21 of \<open>CCR\<close>\<close>
-      fi_val = (bitAND ccr_val (0b00000000001000000000000000000000)) >> 21;
-      fd_val = (bitAND ccr_val (0b00000000010000000000000000000000)) >> 22;
+      fi_val = ((AND) ccr_val (0b00000000001000000000000000000000)) >> 21;
+      fd_val = ((AND) ccr_val (0b00000000010000000000000000000000)) >> 22;
       state1 = (if fi_val = 1 then flush_instr_cache state else state)
   in
   if fd_val = 1 then flush_data_cache state1 else state1"
@@ -671,7 +671,7 @@ text \<open>We only read the address such that add mod 4 = 0.
 definition pb_block_ldst_word_val :: "virtua_address \<Rightarrow> ('a) sparc_state
   \<Rightarrow> bool"
 where "pb_block_ldst_word_val add state \<equiv>
-  let add0 = (bitAND add (0b11111111111111111111111111111100::word32)) in
+  let add0 = ((AND) add (0b11111111111111111111111111111100::word32)) in
   (atm_ldst_word (state_var state)) add0"
 
 text \<open>We only write the address such that add mod 4 = 0.
@@ -679,7 +679,7 @@ text \<open>We only write the address such that add mod 4 = 0.
 definition pb_block_ldst_word_mod :: "virtua_address \<Rightarrow> bool \<Rightarrow> 
   ('a) sparc_state \<Rightarrow> ('a) sparc_state"
 where "pb_block_ldst_word_mod add b s \<equiv>
-  let add0 = (bitAND add (0b11111111111111111111111111111100::word32)) in
+  let add0 = ((AND) add (0b11111111111111111111111111111100::word32)) in
   s\<lparr>state_var := ((state_var s)
     \<lparr>atm_ldst_word := (atm_ldst_word (state_var s))(add0 := b)\<rparr>)\<rparr>"
 
@@ -788,11 +788,11 @@ text \<open>Check if an address is used in ASI 9 or 11.\<close>
 definition sup_addr :: "phys_address \<Rightarrow> ('a) sparc_state \<Rightarrow> bool"
 where
 "sup_addr addr state \<equiv>
-  let addr' = bitAND addr 0b111111111111111111111111111111111100;
-      addr0 = bitOR addr' 0b000000000000000000000000000000000000;
-      addr1 = bitOR addr' 0b000000000000000000000000000000000001;
-      addr2 = bitOR addr' 0b000000000000000000000000000000000010;
-      addr3 = bitOR addr' 0b000000000000000000000000000000000011;
+  let addr' = (AND) addr 0b111111111111111111111111111111111100;
+      addr0 = (OR) addr' 0b000000000000000000000000000000000000;
+      addr1 = (OR) addr' 0b000000000000000000000000000000000001;
+      addr2 = (OR) addr' 0b000000000000000000000000000000000010;
+      addr3 = (OR) addr' 0b000000000000000000000000000000000011;
       r0 = mem_val_asi 9 addr0 state;
       r1 = mem_val_asi 9 addr1 state;
       r2 = mem_val_asi 9 addr2 state;

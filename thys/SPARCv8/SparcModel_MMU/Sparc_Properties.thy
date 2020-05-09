@@ -83,7 +83,7 @@ lemma rett_instr_result: "(fst i) = ctrl_type RETT \<and>
   ((ucast (get_S (cpu_reg_val PSR s)))::word1) \<noteq> 0 \<and>
   (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s))) + 1) mod NWINDOWS)) 
     (cpu_reg_val WIM s)) = 0 \<and>
-  (bitAND (get_addr (snd i) s) (0b00000000000000000000000000000011::word32)) = 0) \<Longrightarrow>
+  ((AND) (get_addr (snd i) s) (0b00000000000000000000000000000011::word32)) = 0) \<Longrightarrow>
   snd (rett_instr i s) = False"
 apply (simp add: rett_instr_def)
 apply (simp add: simpler_gets_def bind_def h1_def h2_def)
@@ -867,7 +867,7 @@ assumes a1: "(fst i) = ctrl_type RETT \<and> (get_ET (cpu_reg_val PSR s) \<noteq
   ((ucast (get_S (cpu_reg_val PSR s)))::word1) \<noteq> 0 \<and>
   (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s))) + 1) mod NWINDOWS)) 
     (cpu_reg_val WIM s)) = 0 \<and>
-  (bitAND (get_addr (snd i) s) (0b00000000000000000000000000000011::word32)) = 0)"
+  ((AND) (get_addr (snd i) s) (0b00000000000000000000000000000011::word32)) = 0)"
 shows "snd (dispatch_instruction i s) = False"
 proof (cases "get_trap_set s = {}")
   case True
@@ -1124,7 +1124,7 @@ lemma good_context_6 :
  ((ucast (get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
  (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s''))) + 1) mod NWINDOWS)) 
   (cpu_reg_val WIM s'')) = 0 \<and>
- (bitAND (get_addr (snd v2) s'') (0b00000000000000000000000000000011::word32)) \<noteq> 0
+ ((AND) (get_addr (snd v2) s'') (0b00000000000000000000000000000011::word32)) \<noteq> 0
  \<Longrightarrow> False"
 proof -
   assume asm: "good_context (s::(('a::len0) sparc_state)) \<and> 
@@ -1137,12 +1137,12 @@ proof -
   ((ucast (get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
   (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s''))) + 1) mod NWINDOWS)) 
     (cpu_reg_val WIM s'')) = 0 \<and>
-  (bitAND (get_addr (snd v2) s'') (0b00000000000000000000000000000011::word32)) \<noteq> 0"
+  ((AND) (get_addr (snd v2) s'') (0b00000000000000000000000000000011::word32)) \<noteq> 0"
   then have "(fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
   ((ucast (get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
   (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s''))) + 1) mod NWINDOWS)) 
     (cpu_reg_val WIM s'')) = 0 \<and>
-  (bitAND (get_addr (snd v2) s'') (0b00000000000000000000000000000011::word32)) \<noteq> 0
+  ((AND) (get_addr (snd v2) s'') (0b00000000000000000000000000000011::word32)) \<noteq> 0
   \<Longrightarrow> False"
     proof (cases "(get_trap_set s) \<noteq> {} \<and> (reset_trap_val s) = False \<and> 
       get_ET (cpu_reg_val PSR s) = 0")
@@ -1177,7 +1177,7 @@ lemma good_context_all :
         ((ucast (get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
         (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s''))) + 1) mod NWINDOWS)) 
           (cpu_reg_val WIM s'')) = 0 \<and>
-        (bitAND (get_addr (snd v2) s'') (0b00000000000000000000000000000011::word32)) = 0))))))))"
+        ((AND) (get_addr (snd v2) s'') (0b00000000000000000000000000000011::word32)) = 0))))))))"
 proof -
  assume asm: "good_context s \<and> s'' = delayed_pool_write s"
  from asm have "(get_trap_set s) \<noteq> {} \<and> (reset_trap_val s) = False \<and> 
@@ -1219,7 +1219,7 @@ proof -
   ((ucast (get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
   (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s''))) + 1) mod NWINDOWS)) 
     (cpu_reg_val WIM s'')) = 0 \<and>
-  (bitAND (get_addr (snd v2) s'') (0b00000000000000000000000000000011::word32)) \<noteq> 0
+  ((AND) (get_addr (snd v2) s'') (0b00000000000000000000000000000011::word32)) \<noteq> 0
   \<Longrightarrow> False"
     using good_context_6 by blast
  from asm show ?thesis 
@@ -1268,7 +1268,7 @@ proof -
                   using fact10 fact6 by auto
                 then have fact13: "\<exists>v1 v2. fetch_instruction s'' = Inr v1 \<and> 
                 ((decode_instruction v1)::(Exception list + instruction)) = Inr v2 \<and>
-                (bitAND (get_addr (snd v2) s'') (0b00000000000000000000000000000011::word32)) = 0"
+                ((AND) (get_addr (snd v2) s'') (0b00000000000000000000000000000011::word32)) = 0"
                   using fact10 fact11 fact7 by blast
                 thus ?thesis using fact1 fact10 fact11 fact12 by auto
               qed
@@ -1782,7 +1782,7 @@ proof -
         ((ucast (get_S (cpu_reg_val PSR ?s')))::word1) \<noteq> 0 \<and>
         (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR ?s'))) + 1) mod NWINDOWS)) 
           (cpu_reg_val WIM ?s')) = 0 \<and>
-        (bitAND (get_addr (snd v2) ?s') (0b00000000000000000000000000000011::word32)) = 0))))))))"
+        ((AND) (get_addr (snd v2) ?s') (0b00000000000000000000000000000011::word32)) = 0))))))))"
        using good_context_all by blast
    from f1 have f2: "get_trap_set s \<noteq> {} \<Longrightarrow> 
    (reset_trap_val s) \<noteq> False \<or> get_ET (cpu_reg_val PSR s) \<noteq> 0" 
@@ -1872,7 +1872,7 @@ proof -
                 ((ucast (get_S (cpu_reg_val PSR ?s')))::word1) \<noteq> 0 \<and>
                 (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR ?s'))) + 1) mod NWINDOWS)) 
                   (cpu_reg_val WIM ?s')) = 0 \<and>
-                (bitAND (get_addr (snd v2) ?s') (0b00000000000000000000000000000011::word32)) = 0)"
+                ((AND) (get_addr (snd v2) ?s') (0b00000000000000000000000000000011::word32)) = 0)"
                 using f1 fetch_instr_result_2 f7' f8 by auto
                 then show ?thesis using f3 f4
                 proof (cases "get_trap_set ?s' = {}")
@@ -2737,72 +2737,72 @@ lemma ucast_02: "get_S w = 0 \<Longrightarrow> ((ucast (get_S w))::word1) = 0"
 by simp
 
 lemma ucast_s: "((ucast (get_S w))::word1) = 0 \<Longrightarrow> 
-  bitAND w (0b00000000000000000000000010000000::word32) = 0"
+  (AND) w (0b00000000000000000000000010000000::word32) = 0"
 apply (simp add: get_S_def)
 by (metis (mono_tags) ucast_id zero_neq_one)
 
-lemma ucast_s2: "bitAND w 0b00000000000000000000000010000000 = 0
+lemma ucast_s2: "(AND) w 0b00000000000000000000000010000000 = 0
   \<Longrightarrow> ((ucast (get_S w))::word1) = 0"
 by (simp add: get_S_def)
 
-lemma update_PSR_icc_1: "w' = bitAND w (0b11111111000011111111111111111111::word32)
+lemma update_PSR_icc_1: "w' = (AND) w (0b11111111000011111111111111111111::word32)
   \<and> ((ucast (get_S w))::word1) = 0
   \<Longrightarrow> ((ucast (get_S w'))::word1) = 0"
 by (simp add: get_S_def word_bw_assocs(1))
 
-lemma and_num_1048576_128: "bitAND (0b00000000000100000000000000000000::word32)
+lemma and_num_1048576_128: "(AND) (0b00000000000100000000000000000000::word32)
   (0b00000000000000000000000010000000::word32) = 0"
 by simp
 
-lemma and_num_2097152_128: "bitAND (0b00000000001000000000000000000000::word32)
+lemma and_num_2097152_128: "(AND) (0b00000000001000000000000000000000::word32)
   (0b00000000000000000000000010000000::word32) = 0"
 by simp
 
-lemma and_num_4194304_128: "bitAND (0b00000000010000000000000000000000::word32)
+lemma and_num_4194304_128: "(AND) (0b00000000010000000000000000000000::word32)
   (0b00000000000000000000000010000000::word32) = 0"
 by simp
 
-lemma and_num_8388608_128: "bitAND (0b00000000100000000000000000000000::word32)
+lemma and_num_8388608_128: "(AND) (0b00000000100000000000000000000000::word32)
   (0b00000000000000000000000010000000::word32) = 0"
 by simp
 
-lemma or_and_s: "bitAND w1 (0b00000000000000000000000010000000::word32) = 0
-  \<and> bitAND w2 (0b00000000000000000000000010000000::word32) = 0
-  \<Longrightarrow> bitAND (bitOR w1 w2) (0b00000000000000000000000010000000::word32) = 0"
+lemma or_and_s: "(AND) w1 (0b00000000000000000000000010000000::word32) = 0
+  \<and> (AND) w2 (0b00000000000000000000000010000000::word32) = 0
+  \<Longrightarrow> (AND) ((OR) w1 w2) (0b00000000000000000000000010000000::word32) = 0"
 by (simp add: word_ao_dist)
 
 lemma and_or_s: 
 assumes a1: "((ucast (get_S w1))::word1) = 0 \<and> 
-  bitAND w2 (0b00000000000000000000000010000000::word32) = 0"
-shows "((ucast (get_S (bitOR (bitAND w1 
+  (AND) w2 (0b00000000000000000000000010000000::word32) = 0"
+shows "((ucast (get_S ((OR) ((AND) w1 
   (0b11111111000011111111111111111111::word32)) w2)))::word1) = 0"
 by (metis (full_types) assms ucast_s ucast_s2 word_ao_absorbs(8) word_bool_alg.conj_disj_distrib2)
 
 lemma and_or_or_s:
 assumes a1: "((ucast (get_S w1))::word1) = 0 \<and> 
-  bitAND w2 (0b00000000000000000000000010000000::word32) = 0 \<and>  
-  bitAND w3 (0b00000000000000000000000010000000::word32) = 0"
-shows "((ucast (get_S (bitOR (bitOR (bitAND w1 
+  (AND) w2 (0b00000000000000000000000010000000::word32) = 0 \<and>  
+  (AND) w3 (0b00000000000000000000000010000000::word32) = 0"
+shows "((ucast (get_S ((OR) ((OR) ((AND) w1 
   (0b11111111000011111111111111111111::word32)) w2) w3)))::word1) = 0"
 using and_or_s assms or_and_s ucast_s ucast_s2 by blast 
 
 lemma and_or_or_or_s:
 assumes a1: "((ucast (get_S w1))::word1) = 0 \<and> 
-  bitAND w2 (0b00000000000000000000000010000000::word32) = 0 \<and>  
-  bitAND w3 (0b00000000000000000000000010000000::word32) = 0 \<and>
-  bitAND w4 (0b00000000000000000000000010000000::word32) = 0"
-shows "((ucast (get_S (bitOR (bitOR (bitOR (bitAND w1 
+  (AND) w2 (0b00000000000000000000000010000000::word32) = 0 \<and>  
+  (AND) w3 (0b00000000000000000000000010000000::word32) = 0 \<and>
+  (AND) w4 (0b00000000000000000000000010000000::word32) = 0"
+shows "((ucast (get_S ((OR) ((OR) ((OR) ((AND) w1 
   (0b11111111000011111111111111111111::word32)) w2) w3) w4)))::word1) = 0"
 using and_or_or_s assms or_and_s ucast_s ucast_s2 
 by (meson word_bool_alg.conj.commute word_bool_alg.conj_zero_left word_bw_assocs(1))
 
 lemma and_or_or_or_or_s:
 assumes a1: "((ucast (get_S w1))::word1) = 0 \<and> 
-  bitAND w2 (0b00000000000000000000000010000000::word32) = 0 \<and>  
-  bitAND w3 (0b00000000000000000000000010000000::word32) = 0 \<and>
-  bitAND w4 (0b00000000000000000000000010000000::word32) = 0 \<and> 
-  bitAND w5 (0b00000000000000000000000010000000::word32) = 0"
-shows "((ucast (get_S (bitOR (bitOR (bitOR (bitOR (bitAND w1 
+  (AND) w2 (0b00000000000000000000000010000000::word32) = 0 \<and>  
+  (AND) w3 (0b00000000000000000000000010000000::word32) = 0 \<and>
+  (AND) w4 (0b00000000000000000000000010000000::word32) = 0 \<and> 
+  (AND) w5 (0b00000000000000000000000010000000::word32) = 0"
+shows "((ucast (get_S ((OR) ((OR) ((OR) ((OR) ((AND) w1 
   (0b11111111000011111111111111111111::word32)) w2) w3) w4) w5)))::word1) = 0"
 using and_or_or_or_s assms or_and_s ucast_s ucast_s2
 by (meson word_ao_absorbs(8) word_bool_alg.conj_disj_distrib2) 
@@ -2848,17 +2848,17 @@ apply auto
 using update_PSR_icc_1 and_num_1048576_128 and_num_2097152_128 and_num_4194304_128 
 and_num_8388608_128 and_or_or_or_or_s by blast 
 
-lemma and_num_4294967167_128: "bitAND (0b11111111111111111111111101111111::word32)
+lemma and_num_4294967167_128: "(AND) (0b11111111111111111111111101111111::word32)
   (0b00000000000000000000000010000000::word32) = 0"
 by simp
 
-lemma s_0_word: "((ucast (get_S (bitAND w 
+lemma s_0_word: "((ucast (get_S ((AND) w 
   (0b11111111111111111111111101111111::word32))))::word1) = 0"
 apply (simp add: get_S_def)
 using and_num_4294967167_128
 by (simp add: word_bool_alg.conj.commute word_bw_lcs(1)) 
 
-lemma update_PSR_CWP_1: "w' = bitAND w (0b11111111111111111111111111100000::word32)
+lemma update_PSR_CWP_1: "w' = (AND) w (0b11111111111111111111111111100000::word32)
   \<and> ((ucast (get_S w))::word1) = 0
   \<Longrightarrow> ((ucast (get_S w'))::word1) = 0"
 by (simp add: get_S_def word_bw_assocs(1))

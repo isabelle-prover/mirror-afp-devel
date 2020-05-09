@@ -400,7 +400,7 @@ where "good_context s \<equiv>
               if et_val_r = 1 then True
               else if s_val_r = 0 then False
               else if (get_WIM_bit (nat new_cwp_int_r) wim_val_r) \<noteq> 0 then False
-              else if (bitAND addr_r (0b00000000000000000000000000000011::word32)) \<noteq> 0 then False
+              else if ((AND) addr_r (0b00000000000000000000000000000011::word32)) \<noteq> 0 then False
               else True
             else True
           else False \<comment> \<open>Unsupported instruction.\<close>

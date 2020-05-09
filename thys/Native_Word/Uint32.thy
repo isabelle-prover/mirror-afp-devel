@@ -42,10 +42,10 @@ end
 lemmas [code] = less_uint32.rep_eq less_eq_uint32.rep_eq
 
 instantiation uint32 :: bit_operations begin
-lift_definition bitNOT_uint32 :: "uint32 \<Rightarrow> uint32" is bitNOT .
-lift_definition bitAND_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is bitAND .
-lift_definition bitOR_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is bitOR .
-lift_definition bitXOR_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is bitXOR .
+lift_definition bitNOT_uint32 :: "uint32 \<Rightarrow> uint32" is NOT .
+lift_definition bitAND_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is \<open>(AND)\<close> .
+lift_definition bitOR_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is \<open>(OR)\<close> .
+lift_definition bitXOR_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is \<open>(XOR)\<close> .
 lift_definition test_bit_uint32 :: "uint32 \<Rightarrow> nat \<Rightarrow> bool" is test_bit .
 lift_definition set_bit_uint32 :: "uint32 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint32" is set_bit .
 lift_definition lsb_uint32 :: "uint32 \<Rightarrow> bool" is lsb .
@@ -366,22 +366,22 @@ code_printing
   (Haskell) infix 4 "<" and
   (OCaml) "Uint32.less" and
   (Scala) "Uint32.less"
-| constant "bitNOT :: uint32 \<Rightarrow> _" \<rightharpoonup>
+| constant "NOT :: uint32 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word32.notb" and
   (Haskell) "Data'_Bits.complement" and
   (OCaml) "Int32.lognot" and
   (Scala) "_.unary'_~"
-| constant "bitAND :: uint32 \<Rightarrow> _" \<rightharpoonup>
+| constant "(AND) :: uint32 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word32.andb ((_),/ (_))" and
   (Haskell) infixl 7 "Data_Bits..&." and
   (OCaml) "Int32.logand" and
   (Scala) infixl 3 "&"
-| constant "bitOR :: uint32 \<Rightarrow> _" \<rightharpoonup>
+| constant "(OR) :: uint32 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word32.orb ((_),/ (_))" and
   (Haskell) infixl 5 "Data_Bits..|." and
   (OCaml) "Int32.logor" and
   (Scala) infixl 1 "|"
-| constant "bitXOR :: uint32 \<Rightarrow> _" \<rightharpoonup>
+| constant "(XOR) :: uint32 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word32.xorb ((_),/ (_))" and
   (Haskell) "Data'_Bits.xor" and
   (OCaml) "Int32.logxor" and
