@@ -535,8 +535,8 @@ lemma gc_fair:
     deriv: "chain (\<Longrightarrow>GC) D" and
     init_state: "active_subset (lnth D 0) = {}" and
     final_state: "non_active_subset (Liminf_llist D) = {}"
-  shows "fair D"
-  unfolding fair_def
+  shows "with_labels.inter_red_crit_calculus.fair D"
+  unfolding with_labels.inter_red_crit_calculus.fair_def
 proof
   fix \<iota>
   assume i_in: "\<iota> \<in> with_labels.Inf_from (Liminf_llist D)"
@@ -726,8 +726,8 @@ proof
   then have "\<iota> \<in> with_labels.Red_Inf_Q (lnth D (Suc n))"
     unfolding to_F_def with_labels.Red_Inf_Q_def Red_Inf_\<G>_L_q_def \<G>_Inf_L_q_def \<G>_set_L_q_def
       \<G>_F_L_q_def using i_in_inf_fl by auto
-  then show "\<iota> \<in> Sup_Red_Inf_llist D"
-    unfolding Sup_Red_Inf_llist_def using red_inf_equiv2 suc_n_length by auto
+  then show "\<iota> \<in> with_labels.inter_red_crit_calculus.Sup_Red_Inf_llist D"
+    unfolding with_labels.inter_red_crit_calculus.Sup_Red_Inf_llist_def using suc_n_length by auto
 qed
 
 (* thm:gc-completeness *)
@@ -743,7 +743,7 @@ proof -
   have labeled_b_in: "(B, active) \<in> Bot_FL" unfolding Bot_FL_def using b_in by simp
   have labeled_bot_entailed: "entails_\<G>_L_Q (lnth D 0) {(B, active)}"
     using labeled_entailment_lifting bot_entailed by fastforce
-  have "fair D" using gc_fair[OF deriv init_state final_state] .
+  have "with_labels.inter_red_crit_calculus.fair D" using gc_fair[OF deriv init_state final_state] .
   then have "\<exists>i \<in> {i. enat i < llength D}. \<exists>BL \<in> Bot_FL. BL \<in> lnth D i"
     using dynamic_refutational_complete labeled_b_in gc_to_red[OF deriv] labeled_bot_entailed
       entail_equiv red_inf_equiv2
@@ -862,8 +862,8 @@ lemma lgc_fair:
     final_state: "non_active_subset (Liminf_llist (lmap snd D)) = {}" and
     no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> (fst (lnth D 0))" and
     final_schedule: "Liminf_llist (lmap fst D) = {}"
-  shows "fair (lmap snd D)"
-  unfolding fair_def
+  shows "with_labels.inter_red_crit_calculus.fair (lmap snd D)"
+  unfolding with_labels.inter_red_crit_calculus.fair_def
 proof
   fix \<iota>
   assume i_in: "\<iota> \<in> with_labels.Inf_from (Liminf_llist (lmap snd D))"
@@ -1183,8 +1183,9 @@ proof
   then have "\<iota> \<in> with_labels.Red_Inf_Q (snd (lnth D (Suc p)))"
     unfolding to_F_def with_labels.Red_Inf_Q_def Red_Inf_\<G>_L_q_def \<G>_Inf_L_q_def \<G>_set_L_q_def
       \<G>_F_L_q_def using i_in_inf_fl by auto
-  then show "\<iota> \<in> Sup_Red_Inf_llist (lmap snd D)"
-    unfolding Sup_Red_Inf_llist_def using red_inf_equiv2 suc_n_length p_smaller_d by auto
+  then show "\<iota> \<in> with_labels.inter_red_crit_calculus.Sup_Red_Inf_llist (lmap snd D)"
+    unfolding with_labels.inter_red_crit_calculus.Sup_Red_Inf_llist_def
+    using suc_n_length p_smaller_d by auto
 qed
 
 (* thm:lgc-completeness *)
@@ -1204,7 +1205,7 @@ proof -
     using lnth_lmap[of 0 D snd] chain_length_pos[OF deriv] by (simp add: zero_enat_def)
   have labeled_bot_entailed: "entails_\<G>_L_Q (snd (lnth D 0)) {(B, active)}"
     using labeled_entailment_lifting bot_entailed by fastforce
-  have "fair (lmap snd D)"
+  have "with_labels.inter_red_crit_calculus.fair (lmap snd D)"
     using lgc_fair[OF deriv init_state final_state no_prems_init_active final_schedule] .
   then have "\<exists>i \<in> {i. enat i < llength D}. \<exists>BL\<in>Bot_FL. BL \<in> snd (lnth D i)"
     using dynamic_refutational_complete labeled_b_in lgc_to_red[OF deriv]

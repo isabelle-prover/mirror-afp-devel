@@ -297,7 +297,7 @@ definition Red_F_Q :: "'f set \<Rightarrow> 'f set" where
   "Red_F_Q N = (\<Inter>q \<in> Q. Red_F_q q N)"
 
 (* lem:intersection-of-red-crit *)
-lemma inter_red_crit: "calculus_with_red_crit Bot Inf entails_Q Red_Inf_Q Red_F_Q"
+sublocale inter_red_crit_calculus: calculus_with_red_crit Bot Inf entails_Q Red_Inf_Q Red_F_Q
   unfolding calculus_with_red_crit_def calculus_with_red_crit_axioms_def
 proof (intro conjI)
   show "consequence_relation Bot entails_Q"
@@ -434,14 +434,6 @@ next
   qed
 qed
 
-sublocale inter_red_crit_calculus: calculus_with_red_crit
-  where Bot=Bot
-  and Inf=Inf
-  and entails=entails_Q
-  and Red_Inf=Red_Inf_Q
-  and Red_F=Red_F_Q
-  using inter_red_crit .
-
 (* lem:satur-wrt-intersection-of-red *)
 lemma sat_int_to_sat_q: "calculus_with_red_crit.saturated Inf Red_Inf_Q N \<longleftrightarrow>
   (\<forall>qi \<in> Q. calculus_with_red_crit.saturated Inf (Red_Inf_q qi) N)" for N
@@ -495,8 +487,9 @@ proof (rule ccontr)
   obtain N1 B1 where B1_in:
     "B1 \<in> Bot" and N1_saturated: "calculus_with_red_crit.saturated Inf Red_Inf_Q N1" and
     N1_unsat: "N1 \<Turnstile>Q {B1}" and no_B_in_N1: "\<forall>B \<in> Bot. B \<notin> N1"
-    using no_stat_ref_comp by (metis inter_red_crit static_refutational_complete_calculus.intro
-      static_refutational_complete_calculus_axioms.intro)
+    using no_stat_ref_comp by (metis inter_red_crit_calculus.calculus_with_red_crit_axioms
+        static_refutational_complete_calculus.intro
+        static_refutational_complete_calculus_axioms.intro)
   obtain B2 qi where
     qi_in: "qi \<in> Q" and
     no_qi: "\<not> entails_q qi N1 {B2}"

@@ -732,7 +732,7 @@ proof -
   moreover have "lifted_calc_w_red_crit_family.Red_F_Q = Red_F_\<G>_g"
     unfolding Red_F_\<G>_g_def lifted_calc_w_red_crit_family.Red_F_Q_def by simp
   ultimately show "calculus_with_red_crit Bot_F Inf_F entails_\<G>_Q Red_Inf_\<G>_Q Red_F_\<G>_g"
-  using lifted_calc_w_red_crit_family.inter_red_crit by simp
+  using lifted_calc_w_red_crit_family.inter_red_crit_calculus.calculus_with_red_crit_axioms by simp
 qed
 
 sublocale empty_ord_lifted_calc_w_red_crit_family:
@@ -750,7 +750,8 @@ proof -
   moreover have "empty_ord_lifted_calc_w_red_crit_family.Red_F_Q = Red_F_\<G>_empty"
     unfolding Red_F_\<G>_empty_def empty_ord_lifted_calc_w_red_crit_family.Red_F_Q_def by simp
   ultimately show "calculus_with_red_crit Bot_F Inf_F entails_\<G>_Q Red_Inf_\<G>_Q Red_F_\<G>_empty"
-  using empty_ord_lifted_calc_w_red_crit_family.inter_red_crit by simp
+  using empty_ord_lifted_calc_w_red_crit_family.inter_red_crit_calculus.calculus_with_red_crit_axioms
+  by simp
 qed
 
 (* thm:intersect-finf-complete *)

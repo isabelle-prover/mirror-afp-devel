@@ -24,7 +24,7 @@ locale labeled_lifting_w_wf_ord_family =
     Red_F_G :: "'g set \<Rightarrow> 'g set" and
     \<G>_F :: "'f \<Rightarrow> 'g set" and
     \<G>_Inf :: "'f inference \<Rightarrow> 'g inference set option" and
-    Prec_F :: "'g \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> bool"  (infix "\<sqsubset>" 50)
+    Prec_F :: "'g \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<sqsubset>" 50)
   + fixes
     Inf_FL :: \<open>('f \<times> 'l) inference set\<close>
   assumes
@@ -229,9 +229,6 @@ definition Red_F_\<G>_empty_L :: "('f \<times> 'l) set \<Rightarrow> ('f \<times
 definition entails_\<G>_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" where
   "entails_\<G>_L_q q N1 N2 \<longleftrightarrow> entails_q q (\<G>_set_L_q q N1) (\<G>_set_L_q q N2)"
 
-definition entails_\<G>_L_Q :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<Turnstile>\<inter>\<G>L" 50) where
-  "entails_\<G>_L_Q N1 N2 \<longleftrightarrow> (\<forall>q \<in> Q. entails_\<G>_L_q q N1 N2)"
-
 lemma lifting_q:
   assumes "q \<in> Q"
   shows "labeled_lifting_w_wf_ord_family Bot_F Inf_F Bot_G (entails_q q) (Inf_G_q q) (Red_Inf_q q)
@@ -316,6 +313,11 @@ sublocale with_labels: calculus_with_red_crit_family Bot_FL Inf_FL Q entails_\<G
 
 notation no_labels.entails_\<G>_Q (infix "\<Turnstile>\<inter>\<G>" 50)
 
+abbreviation entails_\<G>_L_Q :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<Turnstile>\<inter>\<G>L" 50) where
+  "(\<Turnstile>\<inter>\<G>L) \<equiv> labeled_cons_rel_family.entails_Q"
+
+lemmas entails_\<G>_L_Q_def = labeled_cons_rel_family.entails_Q_def
+
 (* lem:labeled-consequence-intersection *)
 lemma labeled_entailment_lifting: "NL1 \<Turnstile>\<inter>\<G>L NL2 \<longleftrightarrow> fst ` NL1 \<Turnstile>\<inter>\<G> fst ` NL2"
   unfolding no_labels.entails_\<G>_Q_def no_labels.entails_\<G>_q_def no_labels.\<G>_set_q_def
@@ -377,10 +379,6 @@ proof clarify
   ultimately show "\<iota>F \<in> no_labels.empty_ord_lifted_calc_w_red_crit_family.Red_Inf_Q (fst ` NL)"
     by (auto intro:red_inf_impl)
 qed
-
-sublocale calculus_with_red_crit Bot_FL Inf_FL "(\<Turnstile>\<inter>\<G>L)" with_labels.Red_Inf_Q with_labels.Red_F_Q
-  using with_labels.inter_red_crit_calculus.calculus_with_red_crit_axioms
-  unfolding labeled_cons_rel_family.entails_Q_def entails_\<G>_L_Q_def .
 
 (* thm:labeled-static-ref-compl-intersection *)
 theorem labeled_static_ref: "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>)
