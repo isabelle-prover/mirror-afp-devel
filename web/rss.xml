@@ -9,7 +9,29 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>06 May 2020 00:00:00 +0000</pubDate>
+    <pubDate>08 May 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>An Efficient Normalisation Procedure for Linear Temporal Logic: Isabelle/HOL Formalisation</title>
+              <link>https://www.isa-afp.org/entries/LTL_Normal_Form.html</link>
+       <guid>https://www.isa-afp.org/entries/LTL_Normal_Form.html</guid>
+       <dc:creator> Salomon Sickert       </dc:creator>
+       <pubDate>08 May 2020 00:00:00 +0000</pubDate>
+       <description>
+In the mid 80s, Lichtenstein, Pnueli, and Zuck proved a classical
+theorem stating that every formula of Past LTL (the extension of LTL
+with past operators) is equivalent to a formula of the form
+$\bigwedge_{i=1}^n \mathbf{G}\mathbf{F} \varphi_i \vee
+\mathbf{F}\mathbf{G} \psi_i$,  where $\varphi_i$ and $\psi_i$ contain
+only past operators. Some years later, Chang, Manna, and Pnueli built
+on this result to derive a similar normal form for LTL. Both
+normalisation procedures have a non-elementary worst-case blow-up, and
+follow an involved path from formulas to counter-free automata to
+star-free regular expressions and back to formulas. We improve on both
+points. We present an executable formalisation of a direct and purely
+syntactic normalisation procedure for LTL yielding a normal form,
+comparable to the one by Chang, Manna, and Pnueli, that has only a
+single exponential blow-up.</description>
+    </item>
     <item>
        <title>Formalization of Forcing in Isabelle/ZF</title>
               <link>https://www.isa-afp.org/entries/Forcing.html</link>
@@ -566,24 +588,6 @@ circles), and groups of transformations that act on them (e.g.,
 inversions and Möbius transformations). Most objects are defined
 algebraically, but correspondence with classical geometric definitions
 is shown.</description>
-    </item>
-    <item>
-       <title>Gauss Sums and the Pólya–Vinogradov Inequality</title>
-              <link>https://www.isa-afp.org/entries/Gauss_Sums.html</link>
-       <guid>https://www.isa-afp.org/entries/Gauss_Sums.html</guid>
-       <dc:creator> Rodrigo Raya, Manuel Eberl       </dc:creator>
-       <pubDate>10 Dec 2019 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This article provides a full formalisation of Chapter 8 of
-Apostol&#39;s &lt;em&gt;&lt;a
-href=&#34;https://www.springer.com/de/book/9780387901633&#34;&gt;Introduction
-to Analytic Number Theory&lt;/a&gt;&lt;/em&gt;. Subjects that are
-covered are:&lt;/p&gt; &lt;ul&gt; &lt;li&gt;periodic arithmetic
-functions and their finite Fourier series&lt;/li&gt;
-&lt;li&gt;(generalised) Ramanujan sums&lt;/li&gt; &lt;li&gt;Gauss sums
-and separable characters&lt;/li&gt; &lt;li&gt;induced moduli and
-primitive characters&lt;/li&gt; &lt;li&gt;the
-Pólya&amp;mdash;Vinogradov inequality&lt;/li&gt; &lt;/ul&gt;</description>
     </item>
   </channel>
 </rss>
