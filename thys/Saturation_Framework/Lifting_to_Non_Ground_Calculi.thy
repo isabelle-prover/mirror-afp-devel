@@ -641,7 +641,7 @@ proof -
     using wf_lift.empty_order_lifting.calculus_with_red_crit_axioms by simp
 qed
 
-sublocale lifted: consequence_relation_family Bot_F Q entails_\<G>_q
+sublocale consequence_relation_family Bot_F Q entails_\<G>_q
 proof (unfold_locales; (intro ballI)?)
   show "Q \<noteq> {}"
     by (rule ground.Q_nonempty)
@@ -657,25 +657,25 @@ next
     by unfold_locales
 qed
 
-sublocale lifted: calculus_with_red_crit_family Bot_F Inf_F Q entails_\<G>_q Red_Inf_\<G>_q Red_F_\<G>_q_g
-  by unfold_locales (auto simp: lifted.Q_nonempty red_crit_lifting_family)
+sublocale calculus_with_red_crit_family Bot_F Inf_F Q entails_\<G>_q Red_Inf_\<G>_q Red_F_\<G>_q_g
+  by unfold_locales (auto simp: Q_nonempty red_crit_lifting_family)
 
 abbreviation entails_\<G>_Q :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>\<inter>\<G>" 50) where
-  "(\<Turnstile>\<inter>\<G>) \<equiv> lifted.entails_Q"
+  "(\<Turnstile>\<inter>\<G>) \<equiv> entails_Q"
 
 abbreviation Red_Inf_\<G>_Q :: "'f set \<Rightarrow> 'f inference set" where
-  "Red_Inf_\<G>_Q \<equiv> lifted.Red_Inf_Q"
+  "Red_Inf_\<G>_Q \<equiv> Red_Inf_Q"
 
 abbreviation Red_F_\<G>_Q :: "'f set \<Rightarrow> 'f set" where
-  "Red_F_\<G>_Q \<equiv> lifted.Red_F_Q"
+  "Red_F_\<G>_Q \<equiv> Red_F_Q"
 
-lemmas entails_\<G>_Q_def = lifted.entails_Q_def
-lemmas Red_Inf_\<G>_Q_def = lifted.Red_Inf_Q_def
-lemmas Red_F_\<G>_Q_def = lifted.Red_F_Q_def
+lemmas entails_\<G>_Q_def = entails_Q_def
+lemmas Red_Inf_\<G>_Q_def = Red_Inf_Q_def
+lemmas Red_F_\<G>_Q_def = Red_F_Q_def
 
 sublocale empty_ord_lifted:
   calculus_with_red_crit_family Bot_F Inf_F Q entails_\<G>_q Red_Inf_\<G>_q Red_F_\<G>_empty_q
-  by unfold_locales (auto simp: lifted.Q_nonempty red_crit_lifting_family_empty_ord)
+  by unfold_locales (auto simp: Q_nonempty red_crit_lifting_family_empty_ord)
 
 abbreviation Red_F_\<G>_empty :: "'f set \<Rightarrow> 'f set" where
   "Red_F_\<G>_empty \<equiv> empty_ord_lifted.Red_F_Q"
@@ -710,9 +710,9 @@ proof (standard, clarify)
       \<union> Red_Inf_q q (\<G>_set_q q N)"
     using sat_n_imp[of N] by blast
   interpret q_calc: calculus_with_red_crit Bot_F Inf_F "entails_\<G>_q q" "Red_Inf_\<G>_q q" "Red_F_\<G>_q_g q"
-    using lifted.all_red_crit[rule_format, OF q_in] .
+    using all_red_crit[rule_format, OF q_in] .
   have n_q_sat: "q_calc.saturated N"
-    using q_in lifted.sat_int_to_sat_q sat_n by simp
+    using q_in sat_int_to_sat_q sat_n by simp
   interpret lifted_q_calc:
     lifting_with_wf_ordering_family Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_Inf_q q"
       "Red_F_q q" "\<G>_F_q q" "\<G>_Inf_q q"
@@ -739,23 +739,23 @@ proof (standard, clarify)
 qed
 
 (* lem:intersect-saturation-indep-of-sqsubset *)
-lemma sat_eq_sat_empty_order: "lifted.saturated N = empty_ord_lifted.saturated N"
+lemma sat_eq_sat_empty_order: "saturated N = empty_ord_lifted.saturated N"
   by (rule refl)
 
 (* lem:intersect-static-ref-compl-indep-of-sqsubset *)
 lemma static_empty_ord_inter_equiv_static_inter:
-  "static_refutational_complete_calculus Bot_F Inf_F lifted.entails_Q lifted.Red_Inf_Q lifted.Red_F_Q =
-  static_refutational_complete_calculus Bot_F Inf_F lifted.entails_Q
+  "static_refutational_complete_calculus Bot_F Inf_F entails_Q Red_Inf_Q Red_F_Q =
+  static_refutational_complete_calculus Bot_F Inf_F entails_Q
     empty_ord_lifted.Red_Inf_Q empty_ord_lifted.Red_F_Q"
   unfolding static_refutational_complete_calculus_def
-  by (simp add: empty_ord_lifted.calculus_with_red_crit_axioms lifted.calculus_with_red_crit_axioms)
+  by (simp add: empty_ord_lifted.calculus_with_red_crit_axioms calculus_with_red_crit_axioms)
 
 (* thm:intersect-static-ref-compl-is-dyn-ref-compl-with-order *)
 theorem stat_eq_dyn_ref_comp_fam_inter: "static_refutational_complete_calculus Bot_F Inf_F
-    lifted.entails_Q empty_ord_lifted.Red_Inf_Q empty_ord_lifted.Red_F_Q =
-  dynamic_refutational_complete_calculus Bot_F Inf_F lifted.entails_Q lifted.Red_Inf_Q
-    lifted.Red_F_Q"
-  using lifted.dyn_equiv_stat static_empty_ord_inter_equiv_static_inter by blast
+    entails_Q empty_ord_lifted.Red_Inf_Q empty_ord_lifted.Red_F_Q =
+  dynamic_refutational_complete_calculus Bot_F Inf_F entails_Q Red_Inf_Q
+    Red_F_Q"
+  using dyn_equiv_stat static_empty_ord_inter_equiv_static_inter by blast
 
 end
 

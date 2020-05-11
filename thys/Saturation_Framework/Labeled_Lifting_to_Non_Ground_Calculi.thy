@@ -212,10 +212,10 @@ abbreviation \<G>_set_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow
 
 definition Red_Inf_\<G>_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) inference set" where
   "Red_Inf_\<G>_L_q q N = {\<iota> \<in> Inf_FL. ((\<G>_Inf_L_q q \<iota>) \<noteq> None \<and> the (\<G>_Inf_L_q q \<iota>) \<subseteq> Red_Inf_q q (\<G>_set_L_q q N))
-    \<or> ((\<G>_Inf_L_q q \<iota> = None) \<and> \<G>_F_L_q q (concl_of \<iota>) \<subseteq> (\<G>_set_L_q q N \<union> Red_F_q q (\<G>_set_L_q q N)))}"
+    \<or> (\<G>_Inf_L_q q \<iota> = None \<and> \<G>_F_L_q q (concl_of \<iota>) \<subseteq> \<G>_set_L_q q N \<union> Red_F_q q (\<G>_set_L_q q N))}"
 
-definition Red_Inf_\<G>_L_Q :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) inference set" where
-  "Red_Inf_\<G>_L_Q N = (\<Inter>q \<in> Q. Red_Inf_\<G>_L_q q N)"
+abbreviation Red_Inf_\<G>_L_Q :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) inference set" where
+  "Red_Inf_\<G>_L_Q N \<equiv> (\<Inter>q \<in> Q. Red_Inf_\<G>_L_q q N)"
 
 abbreviation Labeled_Empty_Order :: \<open> ('f \<times> 'l) \<Rightarrow> ('f \<times> 'l) \<Rightarrow> bool\<close> where
   "Labeled_Empty_Order C1 C2 \<equiv> False"
@@ -224,11 +224,11 @@ definition Red_F_\<G>_empty_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Righ
   "Red_F_\<G>_empty_L_q q N = {C. \<forall>D \<in> \<G>_F_L_q q C. D \<in> Red_F_q q (\<G>_set_L_q q N) \<or>
     (\<exists>E \<in> N. Labeled_Empty_Order E C \<and> D \<in> \<G>_F_L_q q E)}"
 
-definition Red_F_\<G>_empty_L :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
-  "Red_F_\<G>_empty_L N = (\<Inter>q \<in> Q. Red_F_\<G>_empty_L_q q N)"
+abbreviation Red_F_\<G>_empty_L :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
+  "Red_F_\<G>_empty_L N \<equiv> (\<Inter>q \<in> Q. Red_F_\<G>_empty_L_q q N)"
 
-definition entails_\<G>_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" where
-  "entails_\<G>_L_q q N1 N2 \<longleftrightarrow> entails_q q (\<G>_set_L_q q N1) (\<G>_set_L_q q N2)"
+abbreviation entails_\<G>_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" where
+  "entails_\<G>_L_q q N1 N2 \<equiv> entails_q q (\<G>_set_L_q q N1) (\<G>_set_L_q q N2)"
 
 lemma lifting_q:
   assumes "q \<in> Q"
@@ -274,9 +274,7 @@ proof -
   interpret ord_q_lifting: lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G "entails_q q"
     "Inf_G_q q" "Red_Inf_q q" "Red_F_q q" "\<G>_F_L_q q" "\<G>_Inf_L_q q" "\<lambda>g. Empty_Order"
     using ord_fam_lifted_q[OF q_in] .
-  have "entails_\<G>_L_q q = ord_q_lifting.entails_\<G>"
-    unfolding entails_\<G>_L_q_def by simp
-  moreover have "Red_Inf_\<G>_L_q q = ord_q_lifting.Red_Inf_\<G>"
+  have "Red_Inf_\<G>_L_q q = ord_q_lifting.Red_Inf_\<G>"
     unfolding Red_Inf_\<G>_L_q_def ord_q_lifting.Red_Inf_\<G>_def by simp
   moreover have "Red_F_\<G>_empty_L_q q = ord_q_lifting.Red_F_\<G>"
     unfolding Red_F_\<G>_empty_L_q_def ord_q_lifting.Red_F_\<G>_def by simp
@@ -287,23 +285,17 @@ qed
 lemma all_lifted_cons_rel:
   assumes q_in: "q \<in> Q"
   shows "consequence_relation Bot_FL (entails_\<G>_L_q q)"
-proof -
-  interpret q_red_crit: calculus_with_red_crit Bot_FL Inf_FL "entails_\<G>_L_q q" "Red_Inf_\<G>_L_q q"
-    "Red_F_\<G>_empty_L_q q"
-    using all_lifted_red_crit[OF q_in] .
-  show ?thesis
-    using q_red_crit.consequence_relation_axioms .
-qed
+  using all_lifted_red_crit calculus_with_red_crit_def q_in by blast
 
 sublocale labeled_cons_rel_family: consequence_relation_family Bot_FL Q entails_\<G>_L_q
   using all_lifted_cons_rel
-  by (simp add: consequence_relation_family.intro no_labels.lifted.Q_nonempty)
+  by (simp add: consequence_relation_family.intro no_labels.Q_nonempty)
 
 sublocale with_labels: calculus_with_red_crit_family Bot_FL Inf_FL Q entails_\<G>_L_q Red_Inf_\<G>_L_q
   Red_F_\<G>_empty_L_q
   using calculus_with_red_crit_family.intro[OF labeled_cons_rel_family.consequence_relation_family_axioms]
   by (simp add: all_lifted_red_crit calculus_with_red_crit_family_axioms_def
-      no_labels.lifted.Q_nonempty)
+      no_labels.Q_nonempty)
 
 notation no_labels.entails_\<G>_Q (infix "\<Turnstile>\<inter>\<G>" 50)
 
@@ -314,7 +306,7 @@ lemmas entails_\<G>_L_Q_def = labeled_cons_rel_family.entails_Q_def
 
 (* lem:labeled-consequence-intersection *)
 lemma labeled_entailment_lifting: "NL1 \<Turnstile>\<inter>\<G>L NL2 \<longleftrightarrow> fst ` NL1 \<Turnstile>\<inter>\<G> fst ` NL2"
-  unfolding no_labels.entails_\<G>_Q_def entails_\<G>_L_Q_def entails_\<G>_L_q_def by force
+  unfolding no_labels.entails_\<G>_Q_def entails_\<G>_L_Q_def by force
 
 lemma red_inf_impl: "\<iota> \<in> with_labels.Red_Inf_Q NL \<Longrightarrow>
   to_F \<iota> \<in> no_labels.empty_ord_lifted.Red_Inf_Q (fst ` NL)"
@@ -344,8 +336,8 @@ qed
 
 (* lem:labeled-saturation-intersection *)
 lemma labeled_family_saturation_lifting:
-  "with_labels.saturated NL \<Longrightarrow> no_labels.lifted.saturated (fst ` NL)"
-  unfolding with_labels.saturated_def no_labels.lifted.saturated_def with_labels.Inf_from_def
+  "with_labels.saturated NL \<Longrightarrow> no_labels.saturated (fst ` NL)"
+  unfolding with_labels.saturated_def no_labels.saturated_def with_labels.Inf_from_def
     no_labels.Inf_from_def
 proof clarify
   fix \<iota>F
@@ -371,46 +363,34 @@ proof clarify
 qed
 
 (* thm:labeled-static-ref-compl-intersection *)
-theorem labeled_static_ref: "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>)
-    no_labels.empty_ord_lifted.Red_Inf_Q no_labels.empty_ord_lifted.Red_F_Q \<Longrightarrow>
-  static_refutational_complete_calculus Bot_FL Inf_FL (\<Turnstile>\<inter>\<G>L) with_labels.Red_Inf_Q
+theorem labeled_static_ref:
+  assumes calc: "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>)
+    no_labels.empty_ord_lifted.Red_Inf_Q no_labels.empty_ord_lifted.Red_F_Q"
+  shows "static_refutational_complete_calculus Bot_FL Inf_FL (\<Turnstile>\<inter>\<G>L) with_labels.Red_Inf_Q
     with_labels.Red_F_Q"
-  unfolding static_refutational_complete_calculus_def
-proof (rule conjI impI; clarify)
-  show "calculus_with_red_crit Bot_FL Inf_FL (\<Turnstile>\<inter>\<G>L) with_labels.Red_Inf_Q with_labels.Red_F_Q"
-    by unfold_locales
-next
+proof
+  fix Bl :: \<open>'f \<times> 'l\<close> and Nl :: \<open>('f \<times> 'l) set\<close>
   assume
-    calc: "calculus_with_red_crit Bot_F Inf_F (\<Turnstile>\<inter>\<G>) no_labels.empty_ord_lifted.Red_Inf_Q
-      no_labels.empty_ord_lifted.Red_F_Q" and
-    static: "static_refutational_complete_calculus_axioms Bot_F Inf_F (\<Turnstile>\<inter>\<G>)
-      no_labels.empty_ord_lifted.Red_Inf_Q"
-  show "static_refutational_complete_calculus_axioms Bot_FL Inf_FL (\<Turnstile>\<inter>\<G>L) with_labels.Red_Inf_Q"
-    unfolding static_refutational_complete_calculus_axioms_def
-  proof (intro conjI impI allI)
-    fix Bl :: \<open>'f \<times> 'l\<close> and Nl :: \<open>('f \<times> 'l) set\<close>
-    assume
-      Bl_in: \<open>Bl \<in> Bot_FL\<close> and
-      Nl_sat: \<open>with_labels.saturated Nl\<close> and
-      Nl_entails_Bl: \<open>Nl \<Turnstile>\<inter>\<G>L {Bl}\<close>
-    have static_axioms: "B \<in> Bot_F \<longrightarrow> no_labels.lifted.saturated N \<longrightarrow> N \<Turnstile>\<inter>\<G> {B} \<longrightarrow>
-      (\<exists>B'\<in>Bot_F. B' \<in> N)" for B N
-      using static[unfolded static_refutational_complete_calculus_axioms_def] by fast
-    define B where "B = fst Bl"
-    have B_in: "B \<in> Bot_F" using Bl_in B_def SigmaE by force
-    define N where "N = fst ` Nl"
-    have N_sat: "no_labels.lifted.saturated N"
-      using N_def Nl_sat labeled_family_saturation_lifting by blast
-    have N_entails_B: "N \<Turnstile>\<inter>\<G> {B}"
-      using Nl_entails_Bl unfolding labeled_entailment_lifting N_def B_def by force
-    have "\<exists>B' \<in> Bot_F. B' \<in> N" using B_in N_sat N_entails_B static_axioms[of B N] by blast
-    then obtain B' where in_Bot: "B' \<in> Bot_F" and in_N: "B' \<in> N" by force
-    then have "B' \<in> fst ` Bot_FL" by fastforce
-    obtain Bl' where in_Nl: "Bl' \<in> Nl" and fst_Bl': "fst Bl' = B'"
-      using in_N unfolding N_def by blast
-    have "Bl' \<in> Bot_FL" using fst_Bl' in_Bot vimage_fst by fastforce
-    then show \<open>\<exists>Bl'\<in>Bot_FL. Bl' \<in> Nl\<close> using in_Nl by blast
-  qed
+    Bl_in: \<open>Bl \<in> Bot_FL\<close> and
+    Nl_sat: \<open>with_labels.saturated Nl\<close> and
+    Nl_entails_Bl: \<open>Nl \<Turnstile>\<inter>\<G>L {Bl}\<close>
+  define B where "B = fst Bl"
+  have B_in: "B \<in> Bot_F" using Bl_in B_def SigmaE by force
+  define N where "N = fst ` Nl"
+  have N_sat: "no_labels.saturated N"
+    using N_def Nl_sat labeled_family_saturation_lifting by blast
+  have N_entails_B: "N \<Turnstile>\<inter>\<G> {B}"
+    using Nl_entails_Bl unfolding labeled_entailment_lifting N_def B_def by force
+  have "\<exists>B' \<in> Bot_F. B' \<in> N" using B_in N_sat N_entails_B
+      calc[unfolded static_refutational_complete_calculus_def
+        static_refutational_complete_calculus_axioms_def]
+    by blast
+  then obtain B' where in_Bot: "B' \<in> Bot_F" and in_N: "B' \<in> N" by force
+  then have "B' \<in> fst ` Bot_FL" by fastforce
+  obtain Bl' where in_Nl: "Bl' \<in> Nl" and fst_Bl': "fst Bl' = B'"
+    using in_N unfolding N_def by blast
+  have "Bl' \<in> Bot_FL" using fst_Bl' in_Bot vimage_fst by fastforce
+  then show \<open>\<exists>Bl'\<in>Bot_FL. Bl' \<in> Nl\<close> using in_Nl by blast
 qed
 
 end
