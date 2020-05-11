@@ -20,9 +20,9 @@ topic = Mathematics/Analysis
 date = 2020-05-02
 notify = jose.manuel.rodriguez.caballero@ut.ee, unruh@ut.ee
 abstract =
-  We formalize is Isabelle/HOL a result
-  due to S. Banach and H. Steinhaus, known as
-  the Banach-Steinhaus theorem or Uniform boundedness principle: A
+  We formalize in Isabelle/HOL a result
+  due to S. Banach and H. Steinhaus known as
+  the Banach-Steinhaus theorem or Uniform boundedness principle: a
   pointwise-bounded family of continuous linear operators from a Banach
   space to a normed space is uniformly bounded. Our approach is an
   adaptation to Isabelle/HOL of a proof due to A. Sokal.
@@ -9295,14 +9295,14 @@ abstract =
   Isabelle/ZF. Under the assumption of the existence of a countable
   transitive model of ZFC, we construct a proper generic extension and
   show that the latter also satisfies ZFC.
-  
+
 [LTL_Normal_Form]
 title = An Efficient Normalisation Procedure for Linear Temporal Logic: Isabelle/HOL Formalisation
 author = Salomon Sickert <mailto:s.sickert@tum.de>
 topic = Computer Science/Automata and Formal Languages, Logic/General logic/Temporal logic
 date = 2020-05-08
 notify = s.sickert@tum.de
-abstract = 
+abstract =
   In the mid 80s, Lichtenstein, Pnueli, and Zuck proved a classical
   theorem stating that every formula of Past LTL (the extension of LTL
   with past operators) is equivalent to a formula of the form
@@ -9324,7 +9324,7 @@ author = Jonathan Julian Huerta y Munive <mailto:jjhuertaymunive1@sheffield.ac.u
 topic = Mathematics/Analysis, Mathematics/Algebra
 date = 2020-04-19
 notify = jonjulian23@gmail.com
-abstract = 
+abstract =
   Our theories formalise various matrix properties that serve to
   establish existence, uniqueness and characterisation of the solution
   to affine systems of ordinary differential equations (ODEs). In
