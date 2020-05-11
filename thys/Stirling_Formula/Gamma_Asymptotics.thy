@@ -722,7 +722,7 @@ proof -
     have "(\<lambda>n. \<Sum>i=1..<n. s / of_nat i - ln (1 + s / of_nat i)) \<longlonglongrightarrow> 
              ln_Gamma s + euler_mascheroni * s + ln s" (is "?f \<longlonglongrightarrow> _")
       using ln_Gamma_series'_aux[OF s'] unfolding sums_def 
-      by (subst LIMSEQ_Suc_iff [symmetric], subst (asm) sum.atLeast1_atMost_eq [symmetric]) 
+      by (subst filterlim_sequentially_Suc [symmetric], subst (asm) sum.atLeast1_atMost_eq [symmetric]) 
          (simp add: atLeastLessThanSuc_atLeastAtMost)
     thus "((\<lambda>n. ?f n - (euler_mascheroni * s + ln s)) \<longlongrightarrow> ln_Gamma s) at_top"
       by (auto intro: tendsto_eq_intros)
@@ -744,7 +744,7 @@ proof -
   next
     have "(\<lambda>x. s * of_real (harm (x - 1) - ln (real (x - 1)) - euler_mascheroni)) \<longlonglongrightarrow> 
             s * of_real (euler_mascheroni - euler_mascheroni)"
-      by (subst LIMSEQ_Suc_iff [symmetric], intro tendsto_intros) 
+      by (subst filterlim_sequentially_Suc [symmetric], intro tendsto_intros) 
          (insert euler_mascheroni_LIMSEQ, simp_all)
     also have "?this \<longleftrightarrow> (\<lambda>x. s * (harm (x - 1) - ln (of_nat (x - 1)) - euler_mascheroni)) \<longlonglongrightarrow> 0"
       by (intro filterlim_cong refl eventually_mono[OF eventually_gt_at_top[of "1::nat"]]) 
@@ -764,7 +764,7 @@ proof -
     finally have "((\<lambda>n. ln (of_real (real n + 1) + s) - ln (of_real (real n))) \<longlongrightarrow> 0) at_top"
       by (rule filterlim_compose[OF _ filterlim_real_sequentially])
     hence "((\<lambda>n. ln (of_nat n + s) - ln (of_nat (n - 1))) \<longlongrightarrow> 0) at_top"
-      by (subst LIMSEQ_Suc_iff [symmetric]) (simp add: add_ac)
+      by (subst filterlim_sequentially_Suc [symmetric]) (simp add: add_ac)
     thus "(\<lambda>x. s * (ln (of_nat x + s) - ln (of_nat (x - 1)))) \<longlonglongrightarrow> 0"
       by (rule tendsto_mult_right_zero)
   next
