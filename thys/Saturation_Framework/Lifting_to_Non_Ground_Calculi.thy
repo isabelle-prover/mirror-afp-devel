@@ -542,27 +542,7 @@ theorem static_to_dynamic:
     any_order_lifting.entails_\<G> empty_order_lifting.Red_Inf_\<G> empty_order_lifting.Red_F_\<G> =
     dynamic_refutational_complete_calculus Bot_F Inf_F
     any_order_lifting.entails_\<G> any_order_lifting.Red_Inf_\<G> any_order_lifting.Red_F_\<G> "
-  (is "?static = ?dynamic")
-proof
-  assume ?static
-  then have static_general:
-    "static_refutational_complete_calculus Bot_F Inf_F any_order_lifting.entails_\<G>
-      any_order_lifting.Red_Inf_\<G> any_order_lifting.Red_F_\<G>" (is "?static_gen")
-    using static_empty_order_equiv_static by simp
-  interpret static_refutational_complete_calculus Bot_F Inf_F any_order_lifting.entails_\<G>
-    any_order_lifting.Red_Inf_\<G> any_order_lifting.Red_F_\<G>
-    using static_general .
-  show "?dynamic" by standard
-next
-  assume dynamic_gen: ?dynamic
-  interpret dynamic_refutational_complete_calculus Bot_F Inf_F any_order_lifting.entails_\<G>
-    any_order_lifting.Red_Inf_\<G> any_order_lifting.Red_F_\<G>
-    using dynamic_gen .
-  have "static_refutational_complete_calculus Bot_F Inf_F any_order_lifting.entails_\<G>
-    any_order_lifting.Red_Inf_\<G> any_order_lifting.Red_F_\<G>"
-    by standard
-  then show "?static" using static_empty_order_equiv_static by simp
-qed
+  using any_order_lifting.dyn_equiv_stat static_empty_order_equiv_static by blast
 
 end
 
