@@ -21,7 +21,10 @@ Processes'') of Bachmair and Ganzinger's chapter.
 definition Sup_llist :: "'a set llist \<Rightarrow> 'a set" where
   "Sup_llist Xs = (\<Union>i \<in> {i. enat i < llength Xs}. lnth Xs i)"
 
-lemma lnth_subset_Sup_llist: "enat i < llength xs \<Longrightarrow> lnth xs i \<subseteq> Sup_llist xs"
+lemma lnth_subset_Sup_llist: "enat i < llength Xs \<Longrightarrow> lnth Xs i \<subseteq> Sup_llist Xs"
+  unfolding Sup_llist_def by auto
+
+lemma Sup_llist_imp_exists_index: "x \<in> Sup_llist Xs \<Longrightarrow> \<exists>i. enat i < llength Xs \<and> x \<in> lnth Xs i"
   unfolding Sup_llist_def by auto
 
 lemma Sup_llist_LNil[simp]: "Sup_llist LNil = {}"

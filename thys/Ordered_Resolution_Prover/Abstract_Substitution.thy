@@ -830,6 +830,20 @@ lemma ground_subst_ground_cls_lists[simp]:
   "\<forall>\<sigma> \<in> set \<sigma>s. is_ground_subst \<sigma> \<Longrightarrow> is_ground_cls_list (Cs \<cdot>\<cdot>cl \<sigma>s)"
   unfolding is_ground_cls_list_def subst_cls_lists_def by (auto simp: set_zip)
 
+lemma subst_cls_eq_grounding_of_cls_subset_eq:
+  assumes "D \<cdot> \<sigma> = C"
+  shows "grounding_of_cls C \<subseteq> grounding_of_cls D"
+proof
+  fix C\<sigma>'
+  assume "C\<sigma>' \<in> grounding_of_cls C"
+  then obtain \<sigma>' where
+    C\<sigma>': "C \<cdot> \<sigma>' = C\<sigma>'" "is_ground_subst \<sigma>'"
+    unfolding grounding_of_cls_def by auto
+  then have "C \<cdot> \<sigma>' = D \<cdot> \<sigma> \<cdot> \<sigma>' \<and> is_ground_subst (\<sigma> \<odot> \<sigma>')"
+    using assms by auto
+  then show "C\<sigma>' \<in> grounding_of_cls D"
+    unfolding grounding_of_cls_def using C\<sigma>'(1) by force
+qed
 
 paragraph \<open>Substituting on ground expression has no effect\<close>
 
@@ -958,6 +972,9 @@ lemma is_unifiers_is_unifier: "is_unifiers \<sigma> AAA \<Longrightarrow> AA \<i
 
 
 subsubsection \<open>Generalization and Subsumption\<close>
+
+lemma variants_sym: "variants D D' \<longleftrightarrow> variants D' D"
+  unfolding variants_def by auto
 
 lemma variants_iff_subsumes: "variants C D \<longleftrightarrow> subsumes C D \<and> subsumes D C"
 proof
@@ -1159,6 +1176,47 @@ qed
 
 lemma wf_strictly_subsumes: "wfP strictly_subsumes"
   using strictly_subsumes_has_minimum by (metis equals0D wfP_eq_minimal)
+
+lemma variants_imp_exists_substitution: "variants D D' \<Longrightarrow> \<exists>\<sigma>. D \<cdot> \<sigma> = D'"
+  unfolding variants_iff_subsumes subsumes_def
+  by (meson strictly_subsumes_def subset_mset_def strict_subset_subst_strictly_subsumes subsumes_def)
+
+lemma strictly_subsumes_variants:
+  assumes "strictly_subsumes E D" and "variants D D'"
+  shows "strictly_subsumes E D'"
+proof -
+  from assms obtain \<sigma> \<sigma>' where
+    \<sigma>_\<sigma>'_p: "D \<cdot> \<sigma> = D' \<and> D' \<cdot> \<sigma>' = D"
+    using variants_imp_exists_substitution variants_sym by metis
+
+  from assms obtain \<sigma>'' where
+    "E \<cdot> \<sigma>'' \<subseteq># D"
+    unfolding strictly_subsumes_def subsumes_def by auto
+  then have "E \<cdot> \<sigma>'' \<cdot> \<sigma> \<subseteq># D \<cdot> \<sigma>"
+    using subst_cls_mono_mset by blast
+  then have "E \<cdot> (\<sigma>'' \<odot> \<sigma>) \<subseteq># D'"
+    using \<sigma>_\<sigma>'_p by auto
+  moreover from assms have n: "\<nexists>\<sigma>. D \<cdot> \<sigma> \<subseteq># E"
+    unfolding strictly_subsumes_def subsumes_def by auto
+  have "\<nexists>\<sigma>. D' \<cdot> \<sigma> \<subseteq># E"
+  proof
+    assume "\<exists>\<sigma>'''. D' \<cdot> \<sigma>''' \<subseteq># E"
+    then obtain \<sigma>''' where
+      "D' \<cdot> \<sigma>''' \<subseteq># E"
+      by auto
+    then have "D \<cdot> (\<sigma> \<odot> \<sigma>''') \<subseteq># E"
+      using \<sigma>_\<sigma>'_p by auto
+    then show False
+      using n by metis
+  qed
+  ultimately show ?thesis
+    unfolding strictly_subsumes_def subsumes_def by metis
+qed
+
+lemma neg_strictly_subsumes_variants:
+  assumes "\<not> strictly_subsumes E D" and "variants D D'"
+  shows "\<not> strictly_subsumes E D'"
+  using assms strictly_subsumes_variants variants_sym by auto
 
 end
 
