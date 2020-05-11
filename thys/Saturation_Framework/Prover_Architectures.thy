@@ -142,7 +142,7 @@ lemma standard_labeled_lifting_family:
     (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Prec_FL)"
 proof -
   have "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q)
-    (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Labeled_Empty_Order)"
+    (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g Cl Cl'. False)"
     using ord_fam_lifted_q[OF q_in] .
   then have "standard_lifting Bot_FL Inf_FL Bot_G (Inf_G_q q) (entails_q q) (Red_Inf_q q)
     (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q)"

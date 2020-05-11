@@ -75,16 +75,13 @@ next
     unfolding to_F_def using no_labels.inf_map Inf_FL_to_Inf_F by fastforce
 qed
 
-abbreviation Labeled_Empty_Order :: \<open> ('f \<times> 'l) \<Rightarrow> ('f \<times> 'l) \<Rightarrow> bool\<close> where
-  "Labeled_Empty_Order C1 C2 \<equiv> False"
-
 sublocale labeled_lifting_w_empty_ord_family:
   lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F_L
-    \<G>_Inf_L "\<lambda>g. Labeled_Empty_Order"
+    \<G>_Inf_L "\<lambda>g Cl Cl'. False"
 proof
-  show "po_on Labeled_Empty_Order UNIV"
+  show "po_on (\<lambda>Cl Cl'. False) UNIV"
     unfolding po_on_def by (simp add: transp_onI wfp_on_imp_irreflp_on)
-  show "wfp_on Labeled_Empty_Order UNIV"
+  show "wfp_on (\<lambda>Cl Cl'. False) UNIV"
     unfolding wfp_on_def by simp
 qed
 
@@ -161,7 +158,7 @@ end
 subsection \<open>Labeled Lifting with a Family of Redundancy Criteria\<close>
 
 locale labeled_lifting_with_red_crit_family = no_labels: standard_lifting_with_red_crit_family Inf_F
-  Bot_G Q Inf_G_q entails_q Red_Inf_q Red_F_q Bot_F \<G>_F_q \<G>_Inf_q "\<lambda>g. Empty_Order"
+  Bot_G Q Inf_G_q entails_q Red_Inf_q Red_F_q Bot_F \<G>_F_q \<G>_Inf_q "\<lambda>g Cl Cl'. False"
   for
     Bot_F :: "'f set" and
     Inf_F :: "'f inference set" and
@@ -204,23 +201,13 @@ definition Red_Inf_\<G>_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarr
 abbreviation Red_Inf_\<G>_L_Q :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) inference set" where
   "Red_Inf_\<G>_L_Q N \<equiv> (\<Inter>q \<in> Q. Red_Inf_\<G>_L_q q N)"
 
-abbreviation Labeled_Empty_Order :: \<open> ('f \<times> 'l) \<Rightarrow> ('f \<times> 'l) \<Rightarrow> bool\<close> where
-  "Labeled_Empty_Order C1 C2 \<equiv> False"
-
-definition Red_F_\<G>_empty_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
-  "Red_F_\<G>_empty_L_q q N = {C. \<forall>D \<in> \<G>_F_L_q q C. D \<in> Red_F_q q (\<G>_set_L_q q N) \<or>
-    (\<exists>E \<in> N. Labeled_Empty_Order E C \<and> D \<in> \<G>_F_L_q q E)}"
-
-abbreviation Red_F_\<G>_empty_L :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
-  "Red_F_\<G>_empty_L N \<equiv> (\<Inter>q \<in> Q. Red_F_\<G>_empty_L_q q N)"
-
 abbreviation entails_\<G>_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" where
   "entails_\<G>_L_q q N1 N2 \<equiv> entails_q q (\<G>_set_L_q q N1) (\<G>_set_L_q q N2)"
 
 lemma lifting_q:
   assumes "q \<in> Q"
   shows "labeled_lifting_w_wf_ord_family Bot_F Inf_F Bot_G (entails_q q) (Inf_G_q q) (Red_Inf_q q)
-    (Red_F_q q) (\<G>_F_q q) (\<G>_Inf_q q) (\<lambda>g. Empty_Order) Inf_FL"
+    (Red_F_q q) (\<G>_F_q q) (\<G>_Inf_q q) (\<lambda>g Cl Cl'. False) Inf_FL"
   using assms no_labels.standard_lifting_family Inf_F_to_Inf_FL Inf_FL_to_Inf_F
   by (simp add: labeled_lifting_w_wf_ord_family_axioms_def labeled_lifting_w_wf_ord_family_def)
 
@@ -230,7 +217,7 @@ lemma lifted_q:
     (\<G>_F_L_q q) (\<G>_Inf_L_q q)"
 proof -
   interpret q_lifting: labeled_lifting_w_wf_ord_family Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q"
-    "Red_Inf_q q" "Red_F_q q" "\<G>_F_q q" "\<G>_Inf_q q" "\<lambda>g. Empty_Order" Inf_FL
+    "Red_Inf_q q" "Red_F_q q" "\<G>_F_q q" "\<G>_Inf_q q" "\<lambda>g Cl Cl'. False" Inf_FL
     using lifting_q[OF q_in] .
   have "\<G>_Inf_L_q q = q_lifting.\<G>_Inf_L"
     unfolding to_F_def q_lifting.to_F_def by simp
@@ -241,17 +228,24 @@ qed
 lemma ord_fam_lifted_q:
   assumes q_in: "q \<in> Q"
   shows "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q) (Red_Inf_q q)
-    (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Empty_Order)"
+    (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g Cl Cl'. False)"
 proof -
   interpret standard_q_lifting: standard_lifting Bot_FL Inf_FL Bot_G "Inf_G_q q" "entails_q q"
     "Red_Inf_q q" "Red_F_q q" "\<G>_F_L_q q" "\<G>_Inf_L_q q"
     using lifted_q[OF q_in] .
-  have "minimal_element Labeled_Empty_Order UNIV"
+  have "minimal_element (\<lambda>Cl Cl'. False) UNIV"
     by (simp add: minimal_element.intro po_on_def transp_onI wfp_on_imp_irreflp_on)
   then show ?thesis
     using standard_q_lifting.standard_lifting_axioms
-    by (simp add: lifting_with_wf_ordering_family_axioms.intro lifting_with_wf_ordering_family_def)
+    by (simp add: lifting_with_wf_ordering_family_axioms_def lifting_with_wf_ordering_family_def)
 qed
+
+definition Red_F_\<G>_empty_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
+  "Red_F_\<G>_empty_L_q q N = {C. \<forall>D \<in> \<G>_F_L_q q C. D \<in> Red_F_q q (\<G>_set_L_q q N) \<or>
+    (\<exists>E \<in> N. False \<and> D \<in> \<G>_F_L_q q E)}"
+
+abbreviation Red_F_\<G>_empty_L :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
+  "Red_F_\<G>_empty_L N \<equiv> (\<Inter>q \<in> Q. Red_F_\<G>_empty_L_q q N)"
 
 lemma all_lifted_red_crit:
   assumes q_in: "q \<in> Q"
@@ -259,7 +253,7 @@ lemma all_lifted_red_crit:
     (Red_F_\<G>_empty_L_q q)"
 proof -
   interpret ord_q_lifting: lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G "entails_q q"
-    "Inf_G_q q" "Red_Inf_q q" "Red_F_q q" "\<G>_F_L_q q" "\<G>_Inf_L_q q" "\<lambda>g. Empty_Order"
+    "Inf_G_q q" "Red_Inf_q q" "Red_F_q q" "\<G>_F_L_q q" "\<G>_Inf_L_q q" "\<lambda>g Cl Cl'. False"
     using ord_fam_lifted_q[OF q_in] .
   have "Red_Inf_\<G>_L_q q = ord_q_lifting.Red_Inf_\<G>"
     unfolding Red_Inf_\<G>_L_q_def ord_q_lifting.Red_Inf_\<G>_def by simp

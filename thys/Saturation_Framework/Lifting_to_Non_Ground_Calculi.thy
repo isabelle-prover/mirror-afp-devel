@@ -473,16 +473,13 @@ qed
 
 end
 
-abbreviation Empty_Order :: "'f \<Rightarrow> 'f \<Rightarrow> bool" where
-  "Empty_Order C1 C2 \<equiv> False"
-
-lemma wf_Empty_Order: "minimal_element Empty_Order UNIV"
+lemma wf_empty_rel: "minimal_element (\<lambda>_ _. False) UNIV"
   by (simp add: minimal_element.intro po_on_def transp_onI wfp_on_imp_irreflp_on)
 
 lemma any_to_empty_order_lifting:
   "lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F
     \<G>_Inf Prec_F_g \<Longrightarrow> lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
-    Red_F_G \<G>_F \<G>_Inf (\<lambda>g. Empty_Order)"
+    Red_F_G \<G>_F \<G>_Inf (\<lambda>g C C'. False)"
 proof -
   fix Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F \<G>_Inf Prec_F_g
   assume lift: "lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
@@ -492,8 +489,8 @@ proof -
       \<G>_Inf Prec_F_g
     by auto
   show "lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G
-    \<G>_F \<G>_Inf (\<lambda>g. Empty_Order)"
-    by (simp add: wf_Empty_Order lift_g.standard_lifting_axioms
+    \<G>_F \<G>_Inf (\<lambda>g C C'. False)"
+    by (simp add: wf_empty_rel lift_g.standard_lifting_axioms
       lifting_with_wf_ordering_family_axioms.intro lifting_with_wf_ordering_family_def)
 qed
 
@@ -501,7 +498,7 @@ locale lifting_equivalence_with_empty_order =
   any_order_lifting: lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
     Red_F_G \<G>_F \<G>_Inf Prec_F_g +
   empty_order_lifting: lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
-    Red_F_G \<G>_F \<G>_Inf "\<lambda>g. Empty_Order"
+    Red_F_G \<G>_F \<G>_Inf "\<lambda>g C C'. False"
   for
     \<G>_F :: \<open>'f \<Rightarrow> 'g set\<close> and
     \<G>_Inf :: \<open>'f inference \<Rightarrow> 'g inference set option\<close> and
@@ -516,9 +513,9 @@ locale lifting_equivalence_with_empty_order =
 
 sublocale lifting_with_wf_ordering_family \<subseteq> lifting_equivalence_with_empty_order
 proof
-  show "po_on Empty_Order UNIV"
+  show "po_on (\<lambda>C C'. False) UNIV"
     unfolding po_on_def by (simp add: transp_onI wfp_on_imp_irreflp_on)
-  show "wfp_on Empty_Order UNIV"
+  show "wfp_on (\<lambda>C C'. False) UNIV"
     unfolding wfp_on_def by simp
 qed
 
