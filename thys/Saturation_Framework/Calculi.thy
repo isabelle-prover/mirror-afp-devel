@@ -211,6 +211,35 @@ end
 
 locale static_refutational_complete_calculus = calculus_with_red_crit +
   assumes static_refutational_complete: "B \<in> Bot \<Longrightarrow> saturated N \<Longrightarrow> N \<Turnstile> {B} \<Longrightarrow> \<exists>B'\<in>Bot. B' \<in> N"
+begin
+
+lemma dynamic_refutational_complete_Liminf:
+  fixes B D
+  assumes
+    bot_elem: \<open>B \<in> Bot\<close> and
+    deriv: \<open>chain (\<rhd>Red) D\<close> and
+    fair: \<open>fair D\<close> and
+    unsat: \<open>lnth D 0 \<Turnstile> {B}\<close>
+  shows \<open>\<exists>B'\<in>Bot. B' \<in> Liminf_llist D\<close>
+proof -
+  have non_empty: \<open>\<not> lnull D\<close> using chain_not_lnull[OF deriv] .
+  have subs: \<open>lnth D 0 \<subseteq> Sup_llist D\<close>
+    using lhd_subset_Sup_llist[of D] non_empty by (simp add: lhd_conv_lnth)
+  have \<open>Sup_llist D \<Turnstile> {B}\<close>
+    using unsat subset_entailed[OF subs] entails_trans[of "Sup_llist D" "lnth D 0"] by auto
+  then have Sup_no_Red: \<open>Sup_llist D - Red_F (Sup_llist D) \<Turnstile> {B}\<close>
+    using bot_elem Red_F_Bot by auto
+  have Sup_no_Red_in_Liminf: \<open>Sup_llist D - Red_F (Sup_llist D) \<subseteq> Liminf_llist D\<close>
+    using deriv Red_in_Sup by auto
+  have Liminf_entails_Bot: \<open>Liminf_llist D \<Turnstile> {B}\<close>
+    using Sup_no_Red subset_entailed[OF Sup_no_Red_in_Liminf] entails_trans by blast
+  have \<open>saturated (Liminf_llist D)\<close>
+    using deriv fair fair_implies_Liminf_saturated unfolding saturated_def by auto
+  then show ?thesis
+    using bot_elem static_refutational_complete Liminf_entails_Bot by auto
+qed
+
+end
 
 locale dynamic_refutational_complete_calculus = calculus_with_red_crit +
   assumes
@@ -249,28 +278,14 @@ sublocale static_refutational_complete_calculus \<subseteq> dynamic_refutational
 proof
   fix B D
   assume
-    bot_elem: \<open>B \<in> Bot\<close> and
-    deriv: \<open>chain (\<rhd>Red) D\<close> and
-    fair: \<open>fair D\<close> and
-    unsat: \<open>lnth D 0 \<Turnstile> {B}\<close>
-    have non_empty: \<open>\<not> lnull D\<close> using chain_not_lnull[OF deriv] .
-    have subs: \<open>lnth D 0 \<subseteq> Sup_llist D\<close>
-      using lhd_subset_Sup_llist[of D] non_empty by (simp add: lhd_conv_lnth)
-    have \<open>Sup_llist D \<Turnstile> {B}\<close>
-      using unsat subset_entailed[OF subs] entails_trans[of "Sup_llist D" "lnth D 0"] by auto
-    then have Sup_no_Red: \<open>Sup_llist D - Red_F (Sup_llist D) \<Turnstile> {B}\<close>
-      using bot_elem Red_F_Bot by auto
-    have Sup_no_Red_in_Liminf: \<open>Sup_llist D - Red_F (Sup_llist D) \<subseteq> Liminf_llist D\<close>
-      using deriv Red_in_Sup by auto
-    have Liminf_entails_Bot: \<open>Liminf_llist D \<Turnstile> {B}\<close>
-      using Sup_no_Red subset_entailed[OF Sup_no_Red_in_Liminf] entails_trans by blast
-    have \<open>saturated (Liminf_llist D)\<close>
-      using deriv fair fair_implies_Liminf_saturated unfolding saturated_def by auto
-
-   then have \<open>\<exists>B'\<in>Bot. B' \<in> Liminf_llist D\<close>
-     using bot_elem static_refutational_complete Liminf_entails_Bot by auto
-   then show \<open>\<exists>i\<in>{i. enat i < llength D}. \<exists>B'\<in>Bot. B' \<in> lnth D i\<close>
-     unfolding Liminf_llist_def by auto
+    \<open>B \<in> Bot\<close> and
+    \<open>chain (\<rhd>Red) D\<close> and
+    \<open>fair D\<close> and
+    \<open>lnth D 0 \<Turnstile> {B}\<close>
+  then have \<open>\<exists>B'\<in>Bot. B' \<in> Liminf_llist D\<close>
+    by (rule dynamic_refutational_complete_Liminf)
+  then show \<open>\<exists>i\<in>{i. enat i < llength D}. \<exists>B'\<in>Bot. B' \<in> lnth D i\<close>
+    unfolding Liminf_llist_def by auto
 qed
 
 subsection \<open>Calculi with a Family of Redundancy Criteria\<close>

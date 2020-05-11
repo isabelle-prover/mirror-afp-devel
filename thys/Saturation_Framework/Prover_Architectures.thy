@@ -32,7 +32,8 @@ locale Prover_Architecture_Basis = std?: labeled_lifting_with_red_crit_family Bo
   + fixes
     Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) and
     Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50) and
-    Prec_l :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix "\<sqsubset>l" 50)
+    Prec_l :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix "\<sqsubset>l" 50) and
+    active :: "'l"
   assumes
     equiv_equiv_F: "equivp (\<doteq>)" and
     wf_prec_F: "minimal_element (\<prec>\<cdot>) UNIV" and
@@ -40,6 +41,9 @@ locale Prover_Architecture_Basis = std?: labeled_lifting_with_red_crit_family Bo
     compat_equiv_prec: "C1 \<doteq> D1 \<Longrightarrow> C2 \<doteq> D2 \<Longrightarrow> C1 \<prec>\<cdot> C2 \<Longrightarrow> D1 \<prec>\<cdot> D2" and
     equiv_F_grounding: "q \<in> Q \<Longrightarrow> C1 \<doteq> C2 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
     prec_F_grounding: "q \<in> Q \<Longrightarrow> C2 \<prec>\<cdot> C1 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
+    active_minimal: "l2 \<noteq> active \<Longrightarrow> active \<sqsubset>l l2" and
+    at_least_two_labels: "\<exists>l2. active \<sqsubset>l l2" and
+    inf_never_active: "\<iota> \<in> Inf_FL \<Longrightarrow> snd (concl_of \<iota>) \<noteq> active" and
     static_ref_comp: "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>)
       no_labels.Red_Inf_\<G>_Q no_labels.Red_F_\<G>_empty"
 begin
@@ -130,6 +134,12 @@ next
       by auto
   qed
 qed
+
+definition active_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
+  "active_subset M = {CL \<in> M. snd CL = active}"
+
+definition passive_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
+  "passive_subset M = {CL \<in> M. snd CL \<noteq> active}"
 
 sublocale std?: static_refutational_complete_calculus Bot_FL Inf_FL "(\<Turnstile>\<inter>\<G>L)" Red_Inf_Q Red_F_Q
   using labeled_static_ref[OF static_ref_comp] .
@@ -365,7 +375,7 @@ end
 subsection \<open>Given Clause Architecture\<close>
 
 locale Given_Clause = Prover_Architecture_Basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_Inf_q
-  Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL Equiv_F Prec_F Prec_l
+  Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL Equiv_F Prec_F Prec_l active
   for
     Bot_F :: "'f set" and
     Inf_F :: "'f inference set" and
@@ -380,24 +390,14 @@ locale Given_Clause = Prover_Architecture_Basis Bot_F Inf_F Bot_G Q entails_q In
     Inf_FL :: \<open>('f \<times> 'l) inference set\<close> and
     Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) and
     Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50) and
-    Prec_l :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix "\<sqsubset>l" 50)
-  + fixes
-    active :: "'l"
+    Prec_l :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix "\<sqsubset>l" 50) and
+    active :: 'l +
   assumes
-    inf_have_prems: "\<iota>F \<in> Inf_F \<Longrightarrow> prems_of \<iota>F \<noteq> []" and
-    active_minimal: "l2 \<noteq> active \<Longrightarrow> active \<sqsubset>l l2" and
-    at_least_two_labels: "\<exists>l2. active \<sqsubset>l l2" and
-    inf_never_active: "\<iota> \<in> Inf_FL \<Longrightarrow> snd (concl_of \<iota>) \<noteq> active"
+    inf_have_prems: "\<iota>F \<in> Inf_F \<Longrightarrow> prems_of \<iota>F \<noteq> []"
 begin
 
 lemma labeled_inf_have_prems: "\<iota> \<in> Inf_FL \<Longrightarrow> set (prems_of \<iota>) \<noteq> {}"
   using inf_have_prems Inf_FL_to_Inf_F by fastforce
-
-definition active_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
-  "active_subset M = {CL \<in> M. snd CL = active}"
-
-definition non_active_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
-  "non_active_subset M = {CL \<in> M. snd CL \<noteq> active}"
 
 inductive step :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<Longrightarrow>GC" 50) where
   process: "N1 = N \<union> M \<Longrightarrow> N2 = N \<union> M' \<Longrightarrow> M \<subseteq> Red_F_Q (N \<union> M') \<Longrightarrow>
@@ -467,7 +467,7 @@ lemma gc_fair:
   assumes
     deriv: "chain (\<Longrightarrow>GC) D" and
     init_state: "active_subset (lnth D 0) = {}" and
-    final_state: "non_active_subset (Liminf_llist D) = {}"
+    final_state: "passive_subset (Liminf_llist D) = {}"
   shows "fair D"
   unfolding fair_def
 proof
@@ -475,7 +475,7 @@ proof
   assume i_in: "\<iota> \<in> Inf_from (Liminf_llist D)"
   have i_in_inf_fl: "\<iota> \<in> Inf_FL" using i_in unfolding Inf_from_def by blast
   have "Liminf_llist D = active_subset (Liminf_llist D)"
-    using final_state unfolding non_active_subset_def active_subset_def by blast
+    using final_state unfolding passive_subset_def active_subset_def by blast
   then have i_in2: "\<iota> \<in> Inf_from (active_subset (Liminf_llist D))" using i_in by simp
   define m where "m = length (prems_of \<iota>)"
   then have m_def_F: "m = length (prems_of (to_F \<iota>))" unfolding to_F_def by simp
@@ -659,24 +659,39 @@ proof
     unfolding Sup_Red_Inf_llist_def using suc_n_length by auto
 qed
 
-(* thm:gc-completeness *)
-theorem gc_complete:
+theorem gc_complete_Liminf:
   assumes
     deriv: "chain (\<Longrightarrow>GC) D" and
     init_state: "active_subset (lnth D 0) = {}" and
-    final_state: "non_active_subset (Liminf_llist D) = {}" and
+    final_state: "passive_subset (Liminf_llist D) = {}" and
     b_in: "B \<in> Bot_F" and
-    bot_entailed: "no_labels.entails_\<G>_Q (fst ` (lnth D 0)) {B}"
-  shows "\<exists>i. enat i < llength D \<and> (\<exists>BL \<in> Bot_FL. BL \<in> lnth D i)"
+    bot_entailed: "no_labels.entails_\<G>_Q (fst ` lnth D 0) {B}"
+  shows "\<exists>BL \<in> Bot_FL. BL \<in> Liminf_llist D"
 proof -
   have labeled_b_in: "(B, active) \<in> Bot_FL" using b_in by simp
   have labeled_bot_entailed: "entails_\<G>_L_Q (lnth D 0) {(B, active)}"
     using labeled_entailment_lifting bot_entailed by fastforce
   have fair: "fair D" using gc_fair[OF deriv init_state final_state] .
   then show ?thesis
-    using dynamic_refutational_complete[OF labeled_b_in gc_to_red[OF deriv] fair
+    using dynamic_refutational_complete_Liminf[OF labeled_b_in gc_to_red[OF deriv] fair
         labeled_bot_entailed]
     by blast
+qed
+
+(* thm:gc-completeness *)
+theorem gc_complete:
+  assumes
+    deriv: "chain (\<Longrightarrow>GC) D" and
+    init_state: "active_subset (lnth D 0) = {}" and
+    final_state: "passive_subset (Liminf_llist D) = {}" and
+    b_in: "B \<in> Bot_F" and
+    bot_entailed: "no_labels.entails_\<G>_Q (fst ` (lnth D 0)) {B}"
+  shows "\<exists>i. enat i < llength D \<and> (\<exists>BL \<in> Bot_FL. BL \<in> lnth D i)"
+proof -
+  have "\<exists>BL\<in>Bot_FL. BL \<in> Liminf_llist D"
+    using assms by (rule gc_complete_Liminf)
+  then show ?thesis
+    unfolding Liminf_llist_def by auto
 qed
 
 end
@@ -684,7 +699,7 @@ end
 subsection \<open>Lazy Given Clause Architecture\<close>
 
 locale Lazy_Given_Clause = Prover_Architecture_Basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_Inf_q
-  Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL Equiv_F Prec_F Prec_l
+  Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL Equiv_F Prec_F Prec_l active
   for
     Bot_F :: "'f set" and
     Inf_F :: "'f inference set" and
@@ -699,20 +714,9 @@ locale Lazy_Given_Clause = Prover_Architecture_Basis Bot_F Inf_F Bot_G Q entails
     Inf_FL :: \<open>('f \<times> 'l) inference set\<close> and
     Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) and
     Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50) and
-    Prec_l :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix "\<sqsubset>l" 50)
-  + fixes
-    active :: "'l"
-  assumes
-    active_minimal: "l2 \<noteq> active \<Longrightarrow> active \<sqsubset>l l2" and
-    at_least_two_labels: "\<exists>l2. active \<sqsubset>l l2" and
-    inf_never_active: "\<iota> \<in> Inf_FL \<Longrightarrow> snd (concl_of \<iota>) \<noteq> active"
+    Prec_l :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix "\<sqsubset>l" 50) and
+    active :: 'l
 begin
-
-definition active_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
-  "active_subset M = {CL \<in> M. snd CL = active}"
-
-definition non_active_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
-  "non_active_subset M = {CL \<in> M. snd CL \<noteq> active}"
 
 inductive step :: "'f inference set \<times> ('f \<times> 'l) set \<Rightarrow>
   'f inference set \<times> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<Longrightarrow>LGC" 50) where
@@ -783,7 +787,7 @@ lemma lgc_fair:
   assumes
     deriv: "chain (\<Longrightarrow>LGC) D" and
     init_state: "active_subset (snd (lnth D 0)) = {}" and
-    final_state: "non_active_subset (Liminf_llist (lmap snd D)) = {}" and
+    final_state: "passive_subset (Liminf_llist (lmap snd D)) = {}" and
     no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> (fst (lnth D 0))" and
     final_schedule: "Liminf_llist (lmap fst D) = {}"
   shows "fair (lmap snd D)"
@@ -793,7 +797,7 @@ proof
   assume i_in: "\<iota> \<in> Inf_from (Liminf_llist (lmap snd D))"
   have i_in_inf_fl: "\<iota> \<in> Inf_FL" using i_in unfolding Inf_from_def by blast
   have "Liminf_llist (lmap snd D) = active_subset (Liminf_llist (lmap snd D))"
-    using final_state unfolding non_active_subset_def active_subset_def by blast
+    using final_state unfolding passive_subset_def active_subset_def by blast
   then have i_in2: "\<iota> \<in> Inf_from (active_subset (Liminf_llist (lmap snd D)))"
     using i_in by simp
   define m where "m = length (prems_of \<iota>)"
@@ -1105,17 +1109,16 @@ proof
     unfolding Sup_Red_Inf_llist_def using suc_n_length p_smaller_d by auto
 qed
 
-(* thm:lgc-completeness *)
-theorem lgc_complete:
+theorem lgc_complete_Liminf:
   assumes
     deriv: "chain (\<Longrightarrow>LGC) D" and
     init_state: "active_subset (snd (lnth D 0)) = {}" and
-    final_state: "non_active_subset (Liminf_llist (lmap snd D)) = {}" and
+    final_state: "passive_subset (Liminf_llist (lmap snd D)) = {}" and
     no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> fst (lnth D 0)" and
     final_schedule: "Liminf_llist (lmap fst D) = {}" and
     b_in: "B \<in> Bot_F" and
     bot_entailed: "no_labels.entails_\<G>_Q (fst ` (snd (lnth D 0))) {B}"
-  shows "\<exists>i. enat i < llength D \<and> (\<exists>BL \<in> Bot_FL. BL \<in> snd (lnth D i))"
+  shows "\<exists>BL \<in> Bot_FL. BL \<in> Liminf_llist (lmap snd D)"
 proof -
   have labeled_b_in: "(B, active) \<in> Bot_FL" using b_in by simp
   have simp_snd_lmap: "lnth (lmap snd D) 0 = snd (lnth D 0)"
@@ -1124,11 +1127,28 @@ proof -
     using labeled_entailment_lifting bot_entailed by fastforce
   have "fair (lmap snd D)"
     using lgc_fair[OF deriv init_state final_state no_prems_init_active final_schedule] .
-  then have "\<exists>i \<in> {i. enat i < llength D}. \<exists>BL\<in>Bot_FL. BL \<in> snd (lnth D i)"
-    using dynamic_refutational_complete labeled_b_in lgc_to_red[OF deriv]
+  then show ?thesis
+    using dynamic_refutational_complete_Liminf labeled_b_in lgc_to_red[OF deriv]
       labeled_bot_entailed simp_snd_lmap std_Red_Inf_Q_eq
-    by (metis (mono_tags, lifting) llength_lmap lnth_lmap mem_Collect_eq)
-  then show ?thesis by blast
+    by presburger
+qed
+
+(* thm:lgc-completeness *)
+theorem lgc_complete:
+  assumes
+    deriv: "chain (\<Longrightarrow>LGC) D" and
+    init_state: "active_subset (snd (lnth D 0)) = {}" and
+    final_state: "passive_subset (Liminf_llist (lmap snd D)) = {}" and
+    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> fst (lnth D 0)" and
+    final_schedule: "Liminf_llist (lmap fst D) = {}" and
+    b_in: "B \<in> Bot_F" and
+    bot_entailed: "no_labels.entails_\<G>_Q (fst ` snd (lnth D 0)) {B}"
+  shows "\<exists>i. enat i < llength D \<and> (\<exists>BL \<in> Bot_FL. BL \<in> snd (lnth D i))"
+proof -
+  have "\<exists>BL\<in>Bot_FL. BL \<in> Liminf_llist (lmap snd D)"
+    using assms by (rule lgc_complete_Liminf)
+  then show ?thesis
+    unfolding Liminf_llist_def by auto
 qed
 
 end
