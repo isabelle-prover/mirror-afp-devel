@@ -12,9 +12,8 @@ begin
 
 subsection \<open>Labeled Lifting with a Family of Well-founded Orderings\<close>
 
-locale labeled_lifting_w_wf_ord_family =
-  no_labels: lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F
-    \<G>_Inf Prec_F
+locale labeled_lifting_w_wf_ord_family = no_labels: lifting_with_wf_ordering_family Bot_F Inf_F
+  Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F \<G>_Inf Prec_F
   for
     Bot_F :: "'f set" and
     Inf_F :: "'f inference set" and
@@ -47,12 +46,7 @@ abbreviation \<G>_Inf_L :: \<open>('f \<times> 'l) inference \<Rightarrow> 'g in
   \<open>\<G>_Inf_L \<iota>\<^sub>F\<^sub>L \<equiv> \<G>_Inf (to_F \<iota>\<^sub>F\<^sub>L)\<close>
 
 (* lem:labeled-grounding-function *)
-sublocale standard_lifting
-  where
-    Bot_F = Bot_FL and
-    Inf_F = Inf_FL and
-    \<G>_F = \<G>_F_L and
-    \<G>_Inf = \<G>_Inf_L
+sublocale standard_lifting Bot_FL Inf_FL Bot_G Inf_G "(\<Turnstile>G)" Red_Inf_G Red_F_G \<G>_F_L \<G>_Inf_L
 proof
   show "Bot_FL \<noteq> {}"
     using no_labels.Bot_F_not_empty by simp
@@ -75,9 +69,8 @@ next
     unfolding to_F_def using no_labels.inf_map Inf_FL_to_Inf_F by fastforce
 qed
 
-sublocale labeled_lifting_w_empty_ord_family:
-  lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F_L
-    \<G>_Inf_L "\<lambda>g Cl Cl'. False"
+sublocale lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G entails_G Inf_G Red_Inf_G Red_F_G
+  \<G>_F_L \<G>_Inf_L "\<lambda>g Cl Cl'. False"
 proof
   show "po_on (\<lambda>Cl Cl'. False) UNIV"
     unfolding po_on_def by (simp add: transp_onI wfp_on_imp_irreflp_on)
@@ -91,20 +84,16 @@ notation entails_\<G> (infix "\<Turnstile>\<G>L" 50)
 lemma labeled_entailment_lifting: "NL1 \<Turnstile>\<G>L NL2 \<longleftrightarrow> fst ` NL1 \<Turnstile>\<G> fst ` NL2"
   by simp
 
-lemma red_inf_impl:
-  "\<iota> \<in> labeled_lifting_w_empty_ord_family.Red_Inf_\<G> NL \<Longrightarrow> to_F \<iota> \<in> no_labels.Red_Inf_\<G> (fst ` NL)"
-  unfolding labeled_lifting_w_empty_ord_family.Red_Inf_\<G>_def no_labels.Red_Inf_\<G>_def
-  using Inf_FL_to_Inf_F by (auto simp: to_F_def)
+lemma red_inf_impl: "\<iota> \<in> Red_Inf_\<G> NL \<Longrightarrow> to_F \<iota> \<in> no_labels.Red_Inf_\<G> (fst ` NL)"
+  unfolding Red_Inf_\<G>_def no_labels.Red_Inf_\<G>_def using Inf_FL_to_Inf_F by (auto simp: to_F_def)
 
 (* lem:labeled-saturation *)
-lemma labeled_saturation_lifting:
-  "labeled_lifting_w_empty_ord_family.saturated NL \<Longrightarrow> no_labels.saturated (fst ` NL)"
-  unfolding labeled_lifting_w_empty_ord_family.saturated_def no_labels.saturated_def Inf_from_def
-    no_labels.Inf_from_def
+lemma labeled_saturation_lifting: "saturated NL \<Longrightarrow> no_labels.saturated (fst ` NL)"
+  unfolding saturated_def no_labels.saturated_def Inf_from_def no_labels.Inf_from_def
 proof clarify
   fix \<iota>
   assume
-    subs_Red_Inf: "{\<iota> \<in> Inf_FL. set (prems_of \<iota>) \<subseteq> NL} \<subseteq> labeled_lifting_w_empty_ord_family.Red_Inf_\<G> NL" and
+    subs_Red_Inf: "{\<iota> \<in> Inf_FL. set (prems_of \<iota>) \<subseteq> NL} \<subseteq> Red_Inf_\<G> NL" and
     i_in: "\<iota> \<in> Inf_F" and
     i_prems: "set (prems_of \<iota>) \<subseteq> fst ` NL"
   define Lli where "Lli i = (SOME x. ((prems_of \<iota>)!i,x) \<in> NL)" for i
@@ -118,7 +107,7 @@ proof clarify
   define \<iota>_FL where "\<iota>_FL = Infer (zip (prems_of \<iota>) Ll) (concl_of \<iota>, L0)"
   then have "set (prems_of \<iota>_FL) \<subseteq> NL" using subs_NL by simp
   then have "\<iota>_FL \<in> {\<iota> \<in> Inf_FL. set (prems_of \<iota>) \<subseteq> NL}" unfolding \<iota>_FL_def using L0 by blast
-  then have "\<iota>_FL \<in> labeled_lifting_w_empty_ord_family.Red_Inf_\<G> NL" using subs_Red_Inf by fast
+  then have "\<iota>_FL \<in> Red_Inf_\<G> NL" using subs_Red_Inf by fast
   moreover have "\<iota> = to_F \<iota>_FL" unfolding to_F_def \<iota>_FL_def using Ll_length by (cases \<iota>) auto
   ultimately show "\<iota> \<in> no_labels.Red_Inf_\<G> (fst ` NL)" by (auto intro: red_inf_impl)
 qed
@@ -127,13 +116,12 @@ qed
 lemma stat_ref_comp_to_labeled_sta_ref_comp:
   assumes static:
     "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<G>) no_labels.Red_Inf_\<G> no_labels.Red_F_\<G>"
-  shows "static_refutational_complete_calculus Bot_FL Inf_FL (\<Turnstile>\<G>L)
-    labeled_lifting_w_empty_ord_family.Red_Inf_\<G> labeled_lifting_w_empty_ord_family.Red_F_\<G>"
+  shows "static_refutational_complete_calculus Bot_FL Inf_FL (\<Turnstile>\<G>L) Red_Inf_\<G> Red_F_\<G>"
 proof
   fix Bl :: \<open>'f \<times> 'l\<close> and Nl :: \<open>('f \<times> 'l) set\<close>
   assume
     Bl_in: \<open>Bl \<in> Bot_FL\<close> and
-    Nl_sat: \<open>labeled_lifting_w_empty_ord_family.saturated Nl\<close> and
+    Nl_sat: \<open>saturated Nl\<close> and
     Nl_entails_Bl: \<open>Nl \<Turnstile>\<G>L {Bl}\<close>
   define B where "B = fst Bl"
   have B_in: "B \<in> Bot_F" using Bl_in B_def SigmaE by force
@@ -268,21 +256,19 @@ lemma all_lifted_cons_rel:
   shows "consequence_relation Bot_FL (entails_\<G>_L_q q)"
   using all_lifted_red_crit calculus_with_red_crit_def q_in by blast
 
-sublocale labeled_cons_rel_family: consequence_relation_family Bot_FL Q entails_\<G>_L_q
-  using all_lifted_cons_rel
-  by (simp add: consequence_relation_family.intro no_labels.Q_nonempty)
+sublocale consequence_relation_family Bot_FL Q entails_\<G>_L_q
+  using all_lifted_cons_rel by (simp add: consequence_relation_family.intro no_labels.Q_nonempty)
 
 sublocale calculus_with_red_crit_family Bot_FL Inf_FL Q entails_\<G>_L_q Red_Inf_\<G>_L_q Red_F_\<G>_empty_L_q
-  using calculus_with_red_crit_family.intro[OF labeled_cons_rel_family.consequence_relation_family_axioms]
-  by (simp add: all_lifted_red_crit calculus_with_red_crit_family_axioms_def
-      no_labels.Q_nonempty)
+  using calculus_with_red_crit_family.intro[OF consequence_relation_family_axioms]
+  by (simp add: all_lifted_red_crit calculus_with_red_crit_family_axioms_def no_labels.Q_nonempty)
 
 notation no_labels.entails_\<G>_Q (infix "\<Turnstile>\<inter>\<G>" 50)
 
 abbreviation entails_\<G>_L_Q :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<Turnstile>\<inter>\<G>L" 50) where
-  "(\<Turnstile>\<inter>\<G>L) \<equiv> labeled_cons_rel_family.entails_Q"
+  "(\<Turnstile>\<inter>\<G>L) \<equiv> entails_Q"
 
-lemmas entails_\<G>_L_Q_def = labeled_cons_rel_family.entails_Q_def
+lemmas entails_\<G>_L_Q_def = entails_Q_def
 
 (* lem:labeled-consequence-intersection *)
 lemma labeled_entailment_lifting: "NL1 \<Turnstile>\<inter>\<G>L NL2 \<longleftrightarrow> fst ` NL1 \<Turnstile>\<inter>\<G> fst ` NL2"

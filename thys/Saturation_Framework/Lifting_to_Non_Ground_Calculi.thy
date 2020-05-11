@@ -115,7 +115,7 @@ locale strong_standard_lifting = inference_system Inf_F +
     inf_map_in_Inf: \<open>\<iota> \<in> Inf_F \<Longrightarrow> \<G>_Inf \<iota> \<noteq> None \<Longrightarrow> the (\<G>_Inf \<iota>) \<subseteq> Inf_G\<close>
 begin
 
-sublocale standard_lifting
+sublocale standard_lifting Bot_F Inf_F Bot_G Inf_G "(\<Turnstile>G)" Red_Inf_G Red_F_G \<G>_F \<G>_Inf
 proof
   show "Bot_F \<noteq> {}" using Bot_F_not_empty .
 next

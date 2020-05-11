@@ -119,13 +119,11 @@ next
 
     have g_chain: "\<forall>i. (g (Suc i), g i) \<in> S"
       unfolding g_def using f_chain by simp
-
     have wf_s: "wf S"
       unfolding S_def
       by (rule wf_subset[OF wf_app[OF wf_prec_l[unfolded minimal_element_def, THEN conjunct2,
                 unfolded wfp_on_UNIV wfP_def], of snd]])
         fast
-
     show False
       using g_chain[unfolded S_def]
         wf_s[unfolded S_def, folded wfP_def wfp_on_UNIV, unfolded wfp_on_def]
