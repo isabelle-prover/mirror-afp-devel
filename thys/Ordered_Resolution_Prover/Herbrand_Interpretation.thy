@@ -83,6 +83,9 @@ lemma true_clss_insert[iff]: "I \<Turnstile>s insert C DD \<longleftrightarrow> 
 lemma true_clss_union[iff]: "I \<Turnstile>s CC \<union> DD \<longleftrightarrow> I \<Turnstile>s CC \<and> I \<Turnstile>s DD"
   unfolding true_clss_def by blast
 
+lemma true_clss_Union[iff]: "I \<Turnstile>s \<Union> CCC \<longleftrightarrow> (\<forall>CC \<in> CCC. I \<Turnstile>s CC)"
+  unfolding true_clss_def by simp
+
 lemma true_clss_mono: "DD \<subseteq> CC \<Longrightarrow> I \<Turnstile>s CC \<Longrightarrow> I \<Turnstile>s DD"
   by (simp add: subsetD true_clss_def)
 
@@ -112,6 +115,9 @@ lemma true_cls_mset_singleton[iff]: "I \<Turnstile>m {#C#} \<longleftrightarrow>
 
 lemma true_cls_mset_union[iff]: "I \<Turnstile>m CC + DD \<longleftrightarrow> I \<Turnstile>m CC \<and> I \<Turnstile>m DD"
   unfolding true_cls_mset_def by auto
+
+lemma true_cls_mset_Union[iff]: "I \<Turnstile>m \<Union># CCC \<longleftrightarrow> (\<forall>CC \<in># CCC. I \<Turnstile>m CC)"
+  unfolding true_cls_mset_def by simp
 
 lemma true_cls_mset_add_mset[iff]: "I \<Turnstile>m add_mset C CC \<longleftrightarrow> I \<Turnstile> C \<and> I \<Turnstile>m CC"
   unfolding true_cls_mset_def by auto

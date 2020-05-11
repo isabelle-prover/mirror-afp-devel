@@ -158,4 +158,8 @@ lemma Liminf_llist_subset_Sup_llist: "Liminf_llist Xs \<subseteq> Sup_llist Xs"
 lemma image_Liminf_llist_subset: "f ` Liminf_llist Ns \<subseteq> Liminf_llist (lmap ((`) f) Ns)"
   unfolding Liminf_llist_def by auto
 
+lemma Liminf_llist_imp_exists_index:
+  "x \<in> Liminf_llist Xs \<Longrightarrow> \<exists>i. enat i < llength Xs \<and> x \<in> lnth Xs i"
+  unfolding Liminf_llist_def by auto
+
 end
