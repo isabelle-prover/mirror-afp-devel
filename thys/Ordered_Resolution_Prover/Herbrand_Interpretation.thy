@@ -95,6 +95,12 @@ lemma true_clss_subclause: "C \<subseteq># D \<Longrightarrow> I \<Turnstile>s {
 abbreviation satisfiable :: "'a clause set \<Rightarrow> bool" where
   "satisfiable CC \<equiv> \<exists>I. I \<Turnstile>s CC"
 
+lemma satisfiable_antimono: "CC \<subseteq> DD \<Longrightarrow> satisfiable DD \<Longrightarrow> satisfiable CC"
+  using true_clss_mono by blast
+
+lemma unsatisfiable_mono: "CC \<subseteq> DD \<Longrightarrow> \<not> satisfiable CC \<Longrightarrow> \<not> satisfiable DD"
+  using satisfiable_antimono by blast
+
 definition true_cls_mset :: "'a interp \<Rightarrow> 'a clause multiset \<Rightarrow> bool" (infix "\<Turnstile>m" 50) where
   "I \<Turnstile>m CC \<longleftrightarrow> (\<forall>C \<in># CC. I \<Turnstile> C)"
 
