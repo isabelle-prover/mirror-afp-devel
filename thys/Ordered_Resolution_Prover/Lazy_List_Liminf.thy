@@ -162,4 +162,54 @@ lemma Liminf_llist_imp_exists_index:
   "x \<in> Liminf_llist Xs \<Longrightarrow> \<exists>i. enat i < llength Xs \<and> x \<in> lnth Xs i"
   unfolding Liminf_llist_def by auto
 
+lemma Liminf_llist_lmap_image:
+  assumes f_inj: "inj_on f (Sup_llist (lmap g xs))"
+  shows "Liminf_llist (lmap (\<lambda>x. f ` g x) xs) = f ` Liminf_llist (lmap g xs)" (is "?lhs = ?rhs")
+proof
+  show "?lhs \<subseteq> ?rhs"
+  proof
+    fix x
+    assume "x \<in> Liminf_llist (lmap (\<lambda>x. f ` g x) xs)"
+    then obtain i where
+      i_lt: "enat i < llength xs" and
+      x_in_fgj: "\<forall>j. i \<le> j \<longrightarrow> enat j < llength xs \<longrightarrow> x \<in> f ` g (lnth xs j)"
+      unfolding Liminf_llist_def by auto
+
+    have ex_in_gi: "\<exists>y. y \<in> g (lnth xs i) \<and> x = f y"
+      using f_inj i_lt x_in_fgj unfolding inj_on_def Sup_llist_def by auto
+    have "\<exists>y. \<forall>j. i \<le> j \<longrightarrow> enat j < llength xs \<longrightarrow> y \<in> g (lnth xs j) \<and> x = f y"
+      apply (rule exI[of _ "SOME y. y \<in> g (lnth xs i) \<and> x = f y"])
+      using someI_ex[OF ex_in_gi] x_in_fgj f_inj i_lt x_in_fgj unfolding inj_on_def Sup_llist_def
+      by simp (metis (no_types, lifting) imageE)
+    then show "x \<in> f ` Liminf_llist (lmap g xs)"
+      using i_lt unfolding Liminf_llist_def by auto
+  qed
+next
+  show "?rhs \<subseteq> ?lhs"
+    using image_Liminf_llist_subset[of f "lmap g xs", unfolded llist.map_comp] by auto
+qed
+
+lemma Liminf_llist_lmap_union:
+  assumes "\<forall>x \<in> lset xs. \<forall>Y \<in> lset xs. g x \<inter> h Y = {}"
+  shows "Liminf_llist (lmap (\<lambda>x. g x \<union> h x) xs) =
+    Liminf_llist (lmap g xs) \<union> Liminf_llist (lmap h xs)" (is "?lhs = ?rhs")
+proof (intro equalityI subsetI)
+  fix x
+  assume x_in: "x \<in> ?lhs"
+  then obtain i where
+    i_lt: "enat i < llength xs" and
+    j: "\<forall>j. i \<le> j \<and> enat j < llength xs \<longrightarrow> x \<in> g (lnth xs j) \<or> x \<in> h (lnth xs j)"
+    using x_in[unfolded Liminf_llist_def, simplified] by blast
+
+  then have "(\<exists>i'. enat i' < llength xs \<and> (\<forall>j. i' \<le> j \<and> enat j < llength xs \<longrightarrow> x \<in> g (lnth xs j)))
+     \<or> (\<exists>i'. enat i' < llength xs \<and> (\<forall>j. i' \<le> j \<and> enat j < llength xs \<longrightarrow> x \<in> h (lnth xs j)))"
+    using assms[unfolded disjoint_iff_not_equal] by (metis in_lset_conv_lnth)
+  then show "x \<in> ?rhs"
+    unfolding Liminf_llist_def by simp
+next
+  fix x
+  show "x \<in> ?rhs \<Longrightarrow> x \<in> ?lhs"
+    using assms unfolding Liminf_llist_def by auto
+qed
+
 end
