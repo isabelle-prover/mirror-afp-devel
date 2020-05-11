@@ -291,8 +291,7 @@ sublocale labeled_cons_rel_family: consequence_relation_family Bot_FL Q entails_
   using all_lifted_cons_rel
   by (simp add: consequence_relation_family.intro no_labels.Q_nonempty)
 
-sublocale with_labels: calculus_with_red_crit_family Bot_FL Inf_FL Q entails_\<G>_L_q Red_Inf_\<G>_L_q
-  Red_F_\<G>_empty_L_q
+sublocale calculus_with_red_crit_family Bot_FL Inf_FL Q entails_\<G>_L_q Red_Inf_\<G>_L_q Red_F_\<G>_empty_L_q
   using calculus_with_red_crit_family.intro[OF labeled_cons_rel_family.consequence_relation_family_axioms]
   by (simp add: all_lifted_red_crit calculus_with_red_crit_family_axioms_def
       no_labels.Q_nonempty)
@@ -308,9 +307,8 @@ lemmas entails_\<G>_L_Q_def = labeled_cons_rel_family.entails_Q_def
 lemma labeled_entailment_lifting: "NL1 \<Turnstile>\<inter>\<G>L NL2 \<longleftrightarrow> fst ` NL1 \<Turnstile>\<inter>\<G> fst ` NL2"
   unfolding no_labels.entails_\<G>_Q_def entails_\<G>_L_Q_def by force
 
-lemma red_inf_impl:
-  "\<iota> \<in> with_labels.Red_Inf_Q NL \<Longrightarrow> to_F \<iota> \<in> no_labels.Red_Inf_\<G>_Q (fst ` NL)"
-  unfolding no_labels.Red_Inf_\<G>_Q_def with_labels.Red_Inf_Q_def
+lemma red_inf_impl: "\<iota> \<in> Red_Inf_Q NL \<Longrightarrow> to_F \<iota> \<in> no_labels.Red_Inf_\<G>_Q (fst ` NL)"
+  unfolding no_labels.Red_Inf_\<G>_Q_def Red_Inf_Q_def
 proof clarify
   fix X Xa q
   assume
@@ -336,14 +334,12 @@ proof clarify
 qed
 
 (* lem:labeled-saturation-intersection *)
-lemma labeled_family_saturation_lifting:
-  "with_labels.saturated NL \<Longrightarrow> no_labels.saturated (fst ` NL)"
-  unfolding with_labels.saturated_def no_labels.saturated_def with_labels.Inf_from_def
-    no_labels.Inf_from_def
+lemma labeled_family_saturation_lifting: "saturated NL \<Longrightarrow> no_labels.saturated (fst ` NL)"
+  unfolding saturated_def no_labels.saturated_def Inf_from_def no_labels.Inf_from_def
 proof clarify
   fix \<iota>F
   assume
-    labeled_sat: "{\<iota> \<in> Inf_FL. set (prems_of \<iota>) \<subseteq> NL} \<subseteq> with_labels.Red_Inf_Q NL" and
+    labeled_sat: "{\<iota> \<in> Inf_FL. set (prems_of \<iota>) \<subseteq> NL} \<subseteq> Red_Inf_Q NL" and
     iF_in: "\<iota>F \<in> Inf_F" and
     iF_prems: "set (prems_of \<iota>F) \<subseteq> fst ` NL"
   define Lli where "Lli i = (SOME x. ((prems_of \<iota>F)!i,x) \<in> NL)" for i
@@ -357,7 +353,7 @@ proof clarify
   define \<iota>FL where "\<iota>FL = Infer (zip (prems_of \<iota>F) Ll) (concl_of \<iota>F, L0)"
   then have "set (prems_of \<iota>FL) \<subseteq> NL" using subs_NL by simp
   then have "\<iota>FL \<in> {\<iota> \<in> Inf_FL. set (prems_of \<iota>) \<subseteq> NL}" unfolding \<iota>FL_def using L0 by blast
-  then have "\<iota>FL \<in> with_labels.Red_Inf_Q NL" using labeled_sat by fast
+  then have "\<iota>FL \<in> Red_Inf_Q NL" using labeled_sat by fast
   moreover have "\<iota>F = to_F \<iota>FL" unfolding to_F_def \<iota>FL_def using Ll_length by (cases \<iota>F) auto
   ultimately show "\<iota>F \<in> no_labels.Red_Inf_\<G>_Q (fst ` NL)"
     by (auto intro: red_inf_impl)
@@ -367,13 +363,12 @@ qed
 theorem labeled_static_ref:
   assumes calc: "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>) no_labels.Red_Inf_\<G>_Q
     no_labels.Red_F_\<G>_empty"
-  shows "static_refutational_complete_calculus Bot_FL Inf_FL (\<Turnstile>\<inter>\<G>L) with_labels.Red_Inf_Q
-    with_labels.Red_F_Q"
+  shows "static_refutational_complete_calculus Bot_FL Inf_FL (\<Turnstile>\<inter>\<G>L) Red_Inf_Q Red_F_Q"
 proof
   fix Bl :: \<open>'f \<times> 'l\<close> and Nl :: \<open>('f \<times> 'l) set\<close>
   assume
     Bl_in: \<open>Bl \<in> Bot_FL\<close> and
-    Nl_sat: \<open>with_labels.saturated Nl\<close> and
+    Nl_sat: \<open>saturated Nl\<close> and
     Nl_entails_Bl: \<open>Nl \<Turnstile>\<inter>\<G>L {Bl}\<close>
   define B where "B = fst Bl"
   have B_in: "B \<in> Bot_F" using Bl_in B_def SigmaE by force

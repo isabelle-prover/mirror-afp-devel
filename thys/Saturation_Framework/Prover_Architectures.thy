@@ -15,7 +15,7 @@ begin
 
 subsection \<open>Basis of the Prover Architectures\<close>
 
-locale Prover_Architecture_Basis = labeled_lifting_with_red_crit_family Bot_F Inf_F Bot_G Q
+locale Prover_Architecture_Basis = std?: labeled_lifting_with_red_crit_family Bot_F Inf_F Bot_G Q
   entails_q Inf_G_q Red_Inf_q Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL
   for
     Bot_F :: "'f set"
@@ -40,8 +40,8 @@ locale Prover_Architecture_Basis = labeled_lifting_with_red_crit_family Bot_F In
     compat_equiv_prec: "C1 \<doteq> D1 \<Longrightarrow> C2 \<doteq> D2 \<Longrightarrow> C1 \<prec>\<cdot> C2 \<Longrightarrow> D1 \<prec>\<cdot> D2" and
     equiv_F_grounding: "q \<in> Q \<Longrightarrow> C1 \<doteq> C2 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
     prec_F_grounding: "q \<in> Q \<Longrightarrow> C2 \<prec>\<cdot> C1 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
-    static_ref_comp: "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>) no_labels.Red_Inf_\<G>_Q
-      no_labels.Red_F_\<G>_empty"
+    static_ref_comp: "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>)
+      no_labels.Red_Inf_\<G>_Q no_labels.Red_F_\<G>_empty"
 begin
 
 abbreviation Prec_eq_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<preceq>\<cdot>" 50) where
@@ -133,14 +133,13 @@ next
   qed
 qed
 
-lemma labeled_static_ref_comp:
-  "static_refutational_complete_calculus Bot_FL Inf_FL (\<Turnstile>\<inter>\<G>L) with_labels.Red_Inf_Q with_labels.Red_F_Q"
+sublocale std?: static_refutational_complete_calculus Bot_FL Inf_FL "(\<Turnstile>\<inter>\<G>L)" Red_Inf_Q Red_F_Q
   using labeled_static_ref[OF static_ref_comp] .
 
 lemma standard_labeled_lifting_family:
   assumes q_in: "q \<in> Q"
-  shows "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G
-    (entails_q q) (Inf_G_q q) (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Prec_FL)"
+  shows "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q)
+    (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Prec_FL)"
 proof -
   have "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q)
     (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Labeled_Empty_Order)"
@@ -160,17 +159,19 @@ sublocale standard_lifting_with_red_crit_family Inf_FL Bot_G Q Inf_G_q entails_q
   by (simp add: standard_lifting_with_red_crit_family.intro
     standard_lifting_with_red_crit_family_axioms.intro)
 
-lemma red_inf_equiv: "Red_Inf_\<G>_Q = with_labels.Red_Inf_Q"
-  unfolding Red_Inf_\<G>_Q_def with_labels.Red_Inf_Q_def Red_Inf_\<G>_q_def Red_Inf_\<G>_L_q_def by simp
+notation derive (infix "\<rhd>RedL" 50)
 
-lemma empty_red_f_equiv: "Red_F_\<G>_empty = with_labels.Red_F_Q"
-  unfolding Red_F_\<G>_empty_def with_labels.Red_F_Q_def Red_F_\<G>_empty_q_def Red_F_\<G>_empty_L_q_def
-  by simp
+lemma std_Red_Inf_Q_eq: "std.Red_Inf_Q = Red_Inf_\<G>_Q"
+  unfolding Red_Inf_\<G>_q_def Red_Inf_\<G>_L_q_def by simp
+
+lemma std_Red_F_Q_eq: "std.Red_F_Q = Red_F_\<G>_empty"
+  unfolding Red_F_\<G>_empty_q_def Red_F_\<G>_empty_L_q_def by simp
+
+lemma std_fair_eq: "std.fair = fair"
+  using std_Red_Inf_Q_eq by auto
 
 sublocale static_refutational_complete_calculus Bot_FL Inf_FL "(\<Turnstile>\<inter>\<G>L)" Red_Inf_Q Red_F_Q
-  using static_empty_ord_inter_equiv_static_inter empty_red_f_equiv red_inf_equiv
-    labeled_static_ref_comp
-  by argo
+  by unfold_locales (use static_refutational_complete std_Red_Inf_Q_eq in auto)
 
 (* lem:redundant-labeled-inferences *)
 lemma labeled_red_inf_eq_red_inf:
@@ -181,7 +182,7 @@ proof
   then have "X \<in> Red_Inf_\<G>_q ` Q \<Longrightarrow> \<iota> \<in> X N" for X
     unfolding Red_Inf_Q_def by blast
   obtain X0 where "X0 \<in> Red_Inf_\<G>_q ` Q"
-    using with_labels.Q_nonempty by blast
+    using Q_nonempty by blast
   then obtain q0 where x0_is: "X0 N = Red_Inf_\<G>_q q0 N" by blast
   then obtain Y0 where y0_is: "Y0 (fst ` N) = to_F ` (X0 N)" by auto
   have "Y0 (fst ` N) = no_labels.Red_Inf_\<G>_q q0 (fst ` N)"
@@ -244,9 +245,8 @@ proof
         using x0_is i0_to_i0_FL i0_in2 by blast
     qed
   qed
-  then have "Y \<in> no_labels.Red_Inf_\<G>_q ` Q \<Longrightarrow> (to_F \<iota>) \<in> Y (fst ` N)" for Y
-    using i_in2 no_labels.Red_Inf_Q_def
-      red_inf_equiv red_inf_impl by fastforce
+  then have "Y \<in> no_labels.Red_Inf_\<G>_q ` Q \<Longrightarrow> to_F \<iota> \<in> Y (fst ` N)" for Y
+    using i_in2 no_labels.Red_Inf_Q_def std_Red_Inf_Q_eq red_inf_impl by force
   then show "to_F \<iota> \<in> no_labels.Red_Inf_\<G>_Q (fst ` N)"
     unfolding Red_Inf_Q_def no_labels.Red_Inf_\<G>_Q_def by blast
 next
@@ -410,8 +410,6 @@ inductive step :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rig
     \<subseteq> no_labels.Red_Inf_Q (fst ` (N \<union> {(C, active)} \<union> M)) \<Longrightarrow>
     N1 \<Longrightarrow>GC N2"
 
-notation derive (infix "\<rhd>RedL" 50)
-
 lemma one_step_equiv: "N1 \<Longrightarrow>GC N2 \<Longrightarrow> N1 \<rhd>RedL N2"
 proof (cases N1 N2 rule: step.cases)
   show "N1 \<Longrightarrow>GC N2 \<Longrightarrow> N1 \<Longrightarrow>GC N2" by blast
@@ -442,7 +440,7 @@ next
     using red_labeled_clauses by blast
   moreover have "N1 - N2 = {} \<or> N1 - N2 = {(C, L)}" using n1_is n2_is by blast
   ultimately have "N1 - N2 \<subseteq> Red_F_Q N2"
-    using empty_red_f_equiv by blast
+    using std_Red_F_Q_eq by blast
   then show "N1 \<rhd>RedL N2"
     unfolding derive.simps by blast
 qed
@@ -472,19 +470,19 @@ lemma gc_fair:
     deriv: "chain (\<Longrightarrow>GC) D" and
     init_state: "active_subset (lnth D 0) = {}" and
     final_state: "non_active_subset (Liminf_llist D) = {}"
-  shows "with_labels.fair D"
-  unfolding with_labels.fair_def
+  shows "fair D"
+  unfolding fair_def
 proof
   fix \<iota>
-  assume i_in: "\<iota> \<in> with_labels.Inf_from (Liminf_llist D)"
-  have i_in_inf_fl: "\<iota> \<in> Inf_FL" using i_in unfolding with_labels.Inf_from_def by blast
+  assume i_in: "\<iota> \<in> Inf_from (Liminf_llist D)"
+  have i_in_inf_fl: "\<iota> \<in> Inf_FL" using i_in unfolding Inf_from_def by blast
   have "Liminf_llist D = active_subset (Liminf_llist D)"
     using final_state unfolding non_active_subset_def active_subset_def by blast
-  then have i_in2: "\<iota> \<in> with_labels.Inf_from (active_subset (Liminf_llist D))" using i_in by simp
+  then have i_in2: "\<iota> \<in> Inf_from (active_subset (Liminf_llist D))" using i_in by simp
   define m where "m = length (prems_of \<iota>)"
   then have m_def_F: "m = length (prems_of (to_F \<iota>))" unfolding to_F_def by simp
   have i_in_F: "to_F \<iota> \<in> Inf_F"
-    using i_in Inf_FL_to_Inf_F unfolding with_labels.Inf_from_def to_F_def by blast
+    using i_in Inf_FL_to_Inf_F unfolding Inf_from_def to_F_def by blast
   then have m_pos: "m > 0" using m_def_F using inf_have_prems by blast
   have exist_nj: "\<forall>j \<in> {0..<m}. (\<exists>nj. enat (Suc nj) < llength D \<and>
       prems_of \<iota> ! j \<notin> active_subset (lnth D nj) \<and>
@@ -493,10 +491,10 @@ proof
     fix j
     assume j_in: "j \<in> {0..<m}"
     then obtain C where c_is: "(C, active) = prems_of \<iota> ! j"
-      using i_in2 unfolding m_def with_labels.Inf_from_def active_subset_def
+      using i_in2 unfolding m_def Inf_from_def active_subset_def
       by (smt Collect_mem_eq Collect_mono_iff atLeastLessThan_iff nth_mem old.prod.exhaust snd_conv)
     then have "(C, active) \<in> Liminf_llist D"
-      using j_in i_in unfolding m_def with_labels.Inf_from_def by force
+      using j_in i_in unfolding m_def Inf_from_def by force
     then obtain nj where nj_is: "enat nj < llength D" and
       c_in2: "(C, active) \<in> \<Inter> (lnth D ` {k. nj \<le> k \<and> enat k < llength D})"
       unfolding Liminf_llist_def using init_state by blast
@@ -583,7 +581,7 @@ proof
     j0_allin: "(\<forall>k. k > n \<longrightarrow> enat k < llength D \<longrightarrow> prems_of \<iota> ! j0 \<in> active_subset (lnth D k))"
     unfolding nj_set_def by blast
   obtain C0 where C0_is: "prems_of \<iota> ! j0 = (C0, active)" using j0_in
-    using i_in2 unfolding m_def with_labels.Inf_from_def active_subset_def
+    using i_in2 unfolding m_def Inf_from_def active_subset_def
     by (smt Collect_mem_eq Collect_mono_iff atLeastLessThan_iff nth_mem old.prod.exhaust snd_conv)
   then have C0_prems_i: "(C0, active) \<in> set (prems_of \<iota>)" using in_set_conv_nth j0_in m_def by force
   have C0_in: "(C0, active) \<in> (lnth D (Suc n))"
@@ -643,10 +641,10 @@ proof
     using C0_prems_i C0_is m_def
     by (metis Un_iff atLeast0LessThan in_set_conv_nth insertCI lessThan_iff subrelI)
   moreover have "\<not> (set (prems_of \<iota>) \<subseteq> active_subset N - {(C0, active)})" using C0_prems_i by blast
-  ultimately have "\<iota> \<in> with_labels.Inf_from2 (active_subset N) {(C0, active)}"
-    using i_in_inf_fl unfolding with_labels.Inf_from2_def with_labels.Inf_from_def by blast
+  ultimately have "\<iota> \<in> Inf_from2 (active_subset N) {(C0, active)}"
+    using i_in_inf_fl unfolding Inf_from2_def Inf_from_def by blast
   then have "to_F \<iota> \<in> no_labels.Inf_from2 (fst ` (active_subset N)) {C0}"
-    unfolding to_F_def with_labels.Inf_from2_def with_labels.Inf_from_def
+    unfolding to_F_def Inf_from2_def Inf_from_def
       no_labels.Inf_from2_def no_labels.Inf_from_def using Inf_FL_to_Inf_F
     by force
   then have "to_F \<iota> \<in> no_labels.Red_Inf_Q (fst ` (lnth D (Suc n)))"
@@ -657,10 +655,10 @@ proof
       \<G>_F_q q (concl_of (to_F \<iota>)) \<subseteq> \<Union> (\<G>_F_q q ` fst ` lnth D (Suc n)) \<union>
         Red_F_q q (\<Union> (\<G>_F_q q ` fst ` lnth D (Suc n))))"
     unfolding to_F_def no_labels.Red_Inf_Q_def no_labels.Red_Inf_\<G>_q_def by blast
-  then have "\<iota> \<in> with_labels.Red_Inf_Q (lnth D (Suc n))"
-    unfolding to_F_def with_labels.Red_Inf_Q_def Red_Inf_\<G>_L_q_def using i_in_inf_fl by auto
-  then show "\<iota> \<in> with_labels.Sup_Red_Inf_llist D"
-    unfolding with_labels.Sup_Red_Inf_llist_def using suc_n_length by auto
+  then have "\<iota> \<in> Red_Inf_\<G>_Q (lnth D (Suc n))"
+    using i_in_inf_fl unfolding Red_Inf_\<G>_Q_def Red_Inf_\<G>_q_def by (simp add: to_F_def)
+  then show "\<iota> \<in> Sup_Red_Inf_llist D"
+    unfolding Sup_Red_Inf_llist_def using suc_n_length by auto
 qed
 
 (* thm:gc-completeness *)
@@ -671,17 +669,16 @@ theorem gc_complete:
     final_state: "non_active_subset (Liminf_llist D) = {}" and
     b_in: "B \<in> Bot_F" and
     bot_entailed: "no_labels.entails_\<G>_Q (fst ` (lnth D 0)) {B}"
-  shows "\<exists>i. enat i < llength D \<and> (\<exists>BL \<in> Bot_FL. BL \<in> (lnth D i))"
+  shows "\<exists>i. enat i < llength D \<and> (\<exists>BL \<in> Bot_FL. BL \<in> lnth D i)"
 proof -
   have labeled_b_in: "(B, active) \<in> Bot_FL" using b_in by simp
   have labeled_bot_entailed: "entails_\<G>_L_Q (lnth D 0) {(B, active)}"
     using labeled_entailment_lifting bot_entailed by fastforce
-  have "with_labels.fair D" using gc_fair[OF deriv init_state final_state] .
-  then have "\<exists>i \<in> {i. enat i < llength D}. \<exists>BL \<in> Bot_FL. BL \<in> lnth D i"
-    using dynamic_refutational_complete labeled_b_in gc_to_red[OF deriv] labeled_bot_entailed
-      red_inf_equiv
-    by auto
-  then show ?thesis by blast
+  have fair: "fair D" using gc_fair[OF deriv init_state final_state] .
+  then show ?thesis
+    using dynamic_refutational_complete[OF labeled_b_in gc_to_red[OF deriv] fair
+        labeled_bot_entailed]
+    by blast
 qed
 
 end
@@ -731,8 +728,6 @@ inductive step :: "'f inference set \<times> ('f \<times> 'l) set \<Rightarrow>
   delete_orphans: "T1 = T2 \<union> T' \<Longrightarrow>
     T' \<inter> no_labels.Inf_from (fst ` (active_subset N)) = {} \<Longrightarrow> (T1, N) \<Longrightarrow>LGC (T2, N)"
 
-notation derive (infix "\<rhd>RedL" 50)
-
 lemma premise_free_inf_always_from:
   "\<iota> \<in> Inf_F \<Longrightarrow> length (prems_of \<iota>) = 0 \<Longrightarrow> \<iota> \<in> no_labels.Inf_from N"
   unfolding no_labels.Inf_from_def by simp
@@ -762,7 +757,7 @@ next
   ultimately have "{(C, L)} \<subseteq> Red_F_Q N2"
     using red_labeled_clauses by blast
   then have "N1 - N2 \<subseteq> Red_F_Q N2"
-    using empty_red_f_equiv using n1_is n2_is by blast
+    using std_Red_F_Q_eq using n1_is n2_is by blast
   then show "N1 \<rhd>RedL N2"
     unfolding derive.simps by blast
 next
@@ -793,20 +788,20 @@ lemma lgc_fair:
     final_state: "non_active_subset (Liminf_llist (lmap snd D)) = {}" and
     no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> (fst (lnth D 0))" and
     final_schedule: "Liminf_llist (lmap fst D) = {}"
-  shows "with_labels.fair (lmap snd D)"
-  unfolding with_labels.fair_def
+  shows "fair (lmap snd D)"
+  unfolding fair_def
 proof
   fix \<iota>
-  assume i_in: "\<iota> \<in> with_labels.Inf_from (Liminf_llist (lmap snd D))"
-  have i_in_inf_fl: "\<iota> \<in> Inf_FL" using i_in unfolding with_labels.Inf_from_def by blast
+  assume i_in: "\<iota> \<in> Inf_from (Liminf_llist (lmap snd D))"
+  have i_in_inf_fl: "\<iota> \<in> Inf_FL" using i_in unfolding Inf_from_def by blast
   have "Liminf_llist (lmap snd D) = active_subset (Liminf_llist (lmap snd D))"
     using final_state unfolding non_active_subset_def active_subset_def by blast
-  then have i_in2: "\<iota> \<in> with_labels.Inf_from (active_subset (Liminf_llist (lmap snd D)))"
+  then have i_in2: "\<iota> \<in> Inf_from (active_subset (Liminf_llist (lmap snd D)))"
     using i_in by simp
   define m where "m = length (prems_of \<iota>)"
   then have m_def_F: "m = length (prems_of (to_F \<iota>))" unfolding to_F_def by simp
   have i_in_F: "to_F \<iota> \<in> Inf_F"
-    using i_in Inf_FL_to_Inf_F unfolding with_labels.Inf_from_def to_F_def by blast
+    using i_in Inf_FL_to_Inf_F unfolding Inf_from_def to_F_def by blast
   have exist_nj: "\<forall>j \<in> {0..<m}. (\<exists>nj. enat (Suc nj) < llength D \<and>
       prems_of \<iota> ! j \<notin> active_subset (snd (lnth D nj)) \<and>
       (\<forall>k. k > nj \<longrightarrow> enat k < llength D \<longrightarrow> prems_of \<iota> ! j \<in> active_subset (snd (lnth D k))))"
@@ -814,10 +809,10 @@ proof
     fix j
     assume j_in: "j \<in> {0..<m}"
     then obtain C where c_is: "(C, active) = prems_of \<iota> ! j"
-      using i_in2 unfolding m_def with_labels.Inf_from_def active_subset_def
+      using i_in2 unfolding m_def Inf_from_def active_subset_def
       by (smt Collect_mem_eq Collect_mono_iff atLeastLessThan_iff nth_mem old.prod.exhaust snd_conv)
     then have "(C, active) \<in> Liminf_llist (lmap snd D)"
-      using j_in i_in unfolding m_def with_labels.Inf_from_def by force
+      using j_in i_in unfolding m_def Inf_from_def by force
     then obtain nj where nj_is: "enat nj < llength D" and
       c_in2: "(C, active) \<in> \<Inter> (snd ` (lnth D ` {k. nj \<le> k \<and> enat k < llength D}))"
       unfolding Liminf_llist_def using init_state by fastforce
@@ -911,7 +906,7 @@ proof
           prems_of \<iota> ! j0 \<in> active_subset (snd (lnth D k)))"
       unfolding nj_set_def by blast
     obtain C0 where C0_is: "prems_of \<iota> ! j0 = (C0, active)"
-      using j0_in i_in2 unfolding m_def with_labels.Inf_from_def active_subset_def
+      using j0_in i_in2 unfolding m_def Inf_from_def active_subset_def
       by (smt Collect_mem_eq Collect_mono_iff atLeastLessThan_iff nth_mem old.prod.exhaust snd_conv)
     then have C0_prems_i: "(C0, active) \<in> set (prems_of \<iota>)" using in_set_conv_nth j0_in m_def by force
     have C0_in: "(C0, active) \<in> (snd (lnth D (Suc n)))"
@@ -962,11 +957,10 @@ proof
       using C0_prems_i C0_is m_def
       by (metis Un_iff atLeast0LessThan in_set_conv_nth insertCI lessThan_iff subrelI)
     moreover have "\<not> (set (prems_of \<iota>) \<subseteq> active_subset N - {(C0, active)})" using C0_prems_i by blast
-    ultimately have "\<iota> \<in> with_labels.Inf_from2 (active_subset N) {(C0, active)}"
-      using i_in_inf_fl prems_i_active unfolding with_labels.Inf_from2_def with_labels.Inf_from_def
-      by blast
+    ultimately have "\<iota> \<in> Inf_from2 (active_subset N) {(C0, active)}"
+      using i_in_inf_fl prems_i_active unfolding Inf_from2_def Inf_from_def by blast
     then have "to_F \<iota> \<in> no_labels.Inf_from2 (fst ` (active_subset N)) {C0}"
-      unfolding to_F_def with_labels.Inf_from2_def with_labels.Inf_from_def
+      unfolding to_F_def Inf_from2_def Inf_from_def
         no_labels.Inf_from2_def no_labels.Inf_from_def
       using Inf_FL_to_Inf_F by force
     then have i_in_t2: "to_F \<iota> \<in> T2" using tp_is t2_is by simp
@@ -1107,11 +1101,10 @@ proof
       \<G>_F_q q (concl_of (to_F \<iota>)) \<subseteq> \<Union> (\<G>_F_q q ` fst ` snd (lnth D (Suc p))) \<union>
         Red_F_q q (\<Union> (\<G>_F_q q ` fst ` snd (lnth D (Suc p)))))"
     unfolding to_F_def no_labels.Red_Inf_Q_def no_labels.Red_Inf_\<G>_q_def by blast
-  then have "\<iota> \<in> with_labels.Red_Inf_Q (snd (lnth D (Suc p)))"
-    unfolding to_F_def with_labels.Red_Inf_Q_def Red_Inf_\<G>_L_q_def using i_in_inf_fl by auto
-  then show "\<iota> \<in> with_labels.Sup_Red_Inf_llist (lmap snd D)"
-    unfolding with_labels.Sup_Red_Inf_llist_def
-    using suc_n_length p_smaller_d by auto
+  then have "\<iota> \<in> Red_Inf_\<G>_Q (snd (lnth D (Suc p)))"
+    using i_in_inf_fl unfolding Red_Inf_\<G>_Q_def Red_Inf_\<G>_q_def by (simp add: to_F_def)
+  then show "\<iota> \<in> Sup_Red_Inf_llist (lmap snd D)"
+    unfolding Sup_Red_Inf_llist_def using suc_n_length p_smaller_d by auto
 qed
 
 (* thm:lgc-completeness *)
@@ -1131,11 +1124,11 @@ proof -
     using lnth_lmap[of 0 D snd] chain_length_pos[OF deriv] by (simp add: zero_enat_def)
   have labeled_bot_entailed: "entails_\<G>_L_Q (snd (lnth D 0)) {(B, active)}"
     using labeled_entailment_lifting bot_entailed by fastforce
-  have "with_labels.fair (lmap snd D)"
+  have "fair (lmap snd D)"
     using lgc_fair[OF deriv init_state final_state no_prems_init_active final_schedule] .
   then have "\<exists>i \<in> {i. enat i < llength D}. \<exists>BL\<in>Bot_FL. BL \<in> snd (lnth D i)"
     using dynamic_refutational_complete labeled_b_in lgc_to_red[OF deriv]
-      labeled_bot_entailed simp_snd_lmap red_inf_equiv
+      labeled_bot_entailed simp_snd_lmap std_Red_Inf_Q_eq
     by (metis (mono_tags, lifting) llength_lmap lnth_lmap mem_Collect_eq)
   then show ?thesis by blast
 qed
