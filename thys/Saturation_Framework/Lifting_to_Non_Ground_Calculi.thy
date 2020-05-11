@@ -673,14 +673,14 @@ lemmas entails_\<G>_Q_def = entails_Q_def
 lemmas Red_Inf_\<G>_Q_def = Red_Inf_Q_def
 lemmas Red_F_\<G>_Q_def = Red_F_Q_def
 
-sublocale empty_ord_lifted:
-  calculus_with_red_crit_family Bot_F Inf_F Q entails_\<G>_q Red_Inf_\<G>_q Red_F_\<G>_empty_q
+sublocale empty_ord: calculus_with_red_crit_family Bot_F Inf_F Q entails_\<G>_q Red_Inf_\<G>_q
+  Red_F_\<G>_empty_q
   by unfold_locales (auto simp: Q_nonempty red_crit_lifting_family_empty_ord)
 
 abbreviation Red_F_\<G>_empty :: "'f set \<Rightarrow> 'f set" where
-  "Red_F_\<G>_empty \<equiv> empty_ord_lifted.Red_F_Q"
+  "Red_F_\<G>_empty \<equiv> empty_ord.Red_F_Q"
 
-lemmas Red_F_\<G>_empty_def = empty_ord_lifted.Red_F_Q_def
+lemmas Red_F_\<G>_empty_def = empty_ord.Red_F_Q_def
 
 (* thm:intersect-finf-complete *)
 theorem stat_ref_comp_to_non_ground_fam_inter:
@@ -689,19 +689,19 @@ theorem stat_ref_comp_to_non_ground_fam_inter:
       "\<forall>q \<in> Q. static_refutational_complete_calculus Bot_G (Inf_G_q q) (entails_q q) (Red_Inf_q q)
         (Red_F_q q)" and
     sat_n_imp:
-      "\<And>N. empty_ord_lifted.saturated N \<Longrightarrow>
+      "\<And>N. saturated N \<Longrightarrow>
          \<exists>q \<in> Q. ground.Inf_from_q q (\<G>_set_q q N) \<subseteq>
            {\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_Inf_q q \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf_q q \<iota>')}
            \<union> Red_Inf_q q (\<G>_set_q q N)"
   shows
     "static_refutational_complete_calculus Bot_F Inf_F entails_\<G>_Q Red_Inf_\<G>_Q Red_F_\<G>_empty"
-    using empty_ord_lifted.calculus_with_red_crit_axioms unfolding static_refutational_complete_calculus_def
+    using empty_ord.calculus_with_red_crit_axioms unfolding static_refutational_complete_calculus_def
       static_refutational_complete_calculus_axioms_def
 proof (standard, clarify)
   fix B N
   assume
     b_in: "B \<in> Bot_F" and
-    sat_n: "empty_ord_lifted.saturated N" and
+    sat_n: "saturated N" and
     entails_bot: "N \<Turnstile>\<inter>\<G> {B}"
   then obtain q where
     q_in: "q \<in> Q" and
@@ -739,22 +739,20 @@ proof (standard, clarify)
 qed
 
 (* lem:intersect-saturation-indep-of-sqsubset *)
-lemma sat_eq_sat_empty_order: "saturated N = empty_ord_lifted.saturated N"
+lemma sat_eq_sat_empty_order: "saturated N = empty_ord.saturated N"
   by (rule refl)
 
 (* lem:intersect-static-ref-compl-indep-of-sqsubset *)
 lemma static_empty_ord_inter_equiv_static_inter:
   "static_refutational_complete_calculus Bot_F Inf_F entails_Q Red_Inf_Q Red_F_Q =
-  static_refutational_complete_calculus Bot_F Inf_F entails_Q
-    empty_ord_lifted.Red_Inf_Q empty_ord_lifted.Red_F_Q"
+  static_refutational_complete_calculus Bot_F Inf_F entails_Q Red_Inf_Q Red_F_\<G>_empty"
   unfolding static_refutational_complete_calculus_def
-  by (simp add: empty_ord_lifted.calculus_with_red_crit_axioms calculus_with_red_crit_axioms)
+  by (simp add: empty_ord.calculus_with_red_crit_axioms calculus_with_red_crit_axioms)
 
 (* thm:intersect-static-ref-compl-is-dyn-ref-compl-with-order *)
 theorem stat_eq_dyn_ref_comp_fam_inter: "static_refutational_complete_calculus Bot_F Inf_F
-    entails_Q empty_ord_lifted.Red_Inf_Q empty_ord_lifted.Red_F_Q =
-  dynamic_refutational_complete_calculus Bot_F Inf_F entails_Q Red_Inf_Q
-    Red_F_Q"
+    entails_Q Red_Inf_Q Red_F_\<G>_empty =
+  dynamic_refutational_complete_calculus Bot_F Inf_F entails_Q Red_Inf_Q Red_F_Q"
   using dyn_equiv_stat static_empty_ord_inter_equiv_static_inter by blast
 
 end

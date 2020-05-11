@@ -77,9 +77,9 @@ qed
 abbreviation Labeled_Empty_Order :: \<open> ('f \<times> 'l) \<Rightarrow> ('f \<times> 'l) \<Rightarrow> bool\<close> where
   "Labeled_Empty_Order C1 C2 \<equiv> False"
 
-sublocale labeled_lifting_w_empty_ord_family :
+sublocale labeled_lifting_w_empty_ord_family:
   lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F_L
-  \<G>_Inf_L "\<lambda>g. Labeled_Empty_Order"
+    \<G>_Inf_L "\<lambda>g. Labeled_Empty_Order"
 proof
   show "po_on Labeled_Empty_Order UNIV"
     unfolding po_on_def by (simp add: transp_onI wfp_on_imp_irreflp_on)
@@ -308,9 +308,9 @@ lemmas entails_\<G>_L_Q_def = labeled_cons_rel_family.entails_Q_def
 lemma labeled_entailment_lifting: "NL1 \<Turnstile>\<inter>\<G>L NL2 \<longleftrightarrow> fst ` NL1 \<Turnstile>\<inter>\<G> fst ` NL2"
   unfolding no_labels.entails_\<G>_Q_def entails_\<G>_L_Q_def by force
 
-lemma red_inf_impl: "\<iota> \<in> with_labels.Red_Inf_Q NL \<Longrightarrow>
-  to_F \<iota> \<in> no_labels.empty_ord_lifted.Red_Inf_Q (fst ` NL)"
-  unfolding no_labels.empty_ord_lifted.Red_Inf_Q_def with_labels.Red_Inf_Q_def
+lemma red_inf_impl:
+  "\<iota> \<in> with_labels.Red_Inf_Q NL \<Longrightarrow> to_F \<iota> \<in> no_labels.Red_Inf_\<G>_Q (fst ` NL)"
+  unfolding no_labels.Red_Inf_\<G>_Q_def with_labels.Red_Inf_Q_def
 proof clarify
   fix X Xa q
   assume
@@ -328,7 +328,8 @@ proof clarify
   then have to_F_subs_red: "(\<G>_Inf_q q (to_F \<iota>) \<noteq> None \<and>
       the (\<G>_Inf_q q (to_F \<iota>)) \<subseteq> Red_Inf_q q (no_labels.\<G>_set_q q (fst ` NL)))
     \<or> (\<G>_Inf_q q (to_F \<iota>) = None \<and>
-      \<G>_F_q q (concl_of (to_F \<iota>)) \<subseteq> (no_labels.\<G>_set_q q (fst ` NL) \<union> Red_F_q q (no_labels.\<G>_set_q q (fst ` NL))))"
+      \<G>_F_q q (concl_of (to_F \<iota>))
+      \<subseteq> no_labels.\<G>_set_q q (fst ` NL) \<union> Red_F_q q (no_labels.\<G>_set_q q (fst ` NL)))"
     using rephrase1 rephrase2 by metis
   then show "to_F \<iota> \<in> no_labels.Red_Inf_\<G>_q q (fst ` NL)"
     using to_F_in unfolding no_labels.Red_Inf_\<G>_q_def by simp
@@ -358,14 +359,14 @@ proof clarify
   then have "\<iota>FL \<in> {\<iota> \<in> Inf_FL. set (prems_of \<iota>) \<subseteq> NL}" unfolding \<iota>FL_def using L0 by blast
   then have "\<iota>FL \<in> with_labels.Red_Inf_Q NL" using labeled_sat by fast
   moreover have "\<iota>F = to_F \<iota>FL" unfolding to_F_def \<iota>FL_def using Ll_length by (cases \<iota>F) auto
-  ultimately show "\<iota>F \<in> no_labels.empty_ord_lifted.Red_Inf_Q (fst ` NL)"
-    by (auto intro:red_inf_impl)
+  ultimately show "\<iota>F \<in> no_labels.Red_Inf_\<G>_Q (fst ` NL)"
+    by (auto intro: red_inf_impl)
 qed
 
 (* thm:labeled-static-ref-compl-intersection *)
 theorem labeled_static_ref:
-  assumes calc: "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>)
-    no_labels.empty_ord_lifted.Red_Inf_Q no_labels.empty_ord_lifted.Red_F_Q"
+  assumes calc: "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>) no_labels.Red_Inf_\<G>_Q
+    no_labels.Red_F_\<G>_empty"
   shows "static_refutational_complete_calculus Bot_FL Inf_FL (\<Turnstile>\<inter>\<G>L) with_labels.Red_Inf_Q
     with_labels.Red_F_Q"
 proof

@@ -40,8 +40,8 @@ locale Prover_Architecture_Basis = labeled_lifting_with_red_crit_family Bot_F In
     compat_equiv_prec: "C1 \<doteq> D1 \<Longrightarrow> C2 \<doteq> D2 \<Longrightarrow> C1 \<prec>\<cdot> C2 \<Longrightarrow> D1 \<prec>\<cdot> D2" and
     equiv_F_grounding: "q \<in> Q \<Longrightarrow> C1 \<doteq> C2 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
     prec_F_grounding: "q \<in> Q \<Longrightarrow> C2 \<prec>\<cdot> C1 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
-    static_ref_comp: "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>)
-      no_labels.empty_ord_lifted.Red_Inf_Q no_labels.empty_ord_lifted.Red_F_Q"
+    static_ref_comp: "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>) no_labels.Red_Inf_\<G>_Q
+      no_labels.Red_F_\<G>_empty"
 begin
 
 abbreviation Prec_eq_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<preceq>\<cdot>" 50) where
@@ -160,14 +160,11 @@ sublocale standard_lifting_with_red_crit_family Inf_FL Bot_G Q Inf_G_q entails_q
   by (simp add: standard_lifting_with_red_crit_family.intro
     standard_lifting_with_red_crit_family_axioms.intro)
 
-lemma red_inf_equiv: "empty_ord_lifted.Red_Inf_Q = with_labels.Red_Inf_Q"
-  unfolding empty_ord_lifted.Red_Inf_Q_def with_labels.Red_Inf_Q_def Red_Inf_\<G>_q_def
-    Red_Inf_\<G>_L_q_def
-  by simp
+lemma red_inf_equiv: "Red_Inf_\<G>_Q = with_labels.Red_Inf_Q"
+  unfolding Red_Inf_\<G>_Q_def with_labels.Red_Inf_Q_def Red_Inf_\<G>_q_def Red_Inf_\<G>_L_q_def by simp
 
-lemma empty_red_f_equiv: "empty_ord_lifted.Red_F_Q = with_labels.Red_F_Q"
-  unfolding empty_ord_lifted.Red_F_Q_def with_labels.Red_F_Q_def Red_F_\<G>_empty_q_def
-    Red_F_\<G>_empty_L_q_def
+lemma empty_red_f_equiv: "Red_F_\<G>_empty = with_labels.Red_F_Q"
+  unfolding Red_F_\<G>_empty_def with_labels.Red_F_Q_def Red_F_\<G>_empty_q_def Red_F_\<G>_empty_L_q_def
   by simp
 
 sublocale static_refutational_complete_calculus Bot_FL Inf_FL "(\<Turnstile>\<inter>\<G>L)" Red_Inf_Q Red_F_Q
@@ -178,139 +175,127 @@ sublocale static_refutational_complete_calculus Bot_FL Inf_FL "(\<Turnstile>\<in
 (* lem:redundant-labeled-inferences *)
 lemma labeled_red_inf_eq_red_inf:
   assumes i_in: "\<iota> \<in> Inf_FL"
-  shows "\<iota> \<in> Red_Inf_Q N \<longleftrightarrow>
-    to_F \<iota> \<in> no_labels.empty_ord_lifted.Red_Inf_Q (fst ` N)"
-proof -
-  have "\<iota> \<in> Red_Inf_Q N \<Longrightarrow>
-    to_F \<iota> \<in> no_labels.empty_ord_lifted.Red_Inf_Q (fst ` N)"
-  proof -
-    assume i_in2: "\<iota> \<in> Red_Inf_Q N"
-    then have "X \<in> Red_Inf_\<G>_q ` Q \<Longrightarrow> \<iota> \<in> X N" for X
-      unfolding Red_Inf_Q_def by blast
-    obtain X0 where "X0 \<in> Red_Inf_\<G>_q ` Q"
-      using with_labels.Q_nonempty by blast
-    then obtain q0 where x0_is: "X0 N = Red_Inf_\<G>_q q0 N" by blast
-    then obtain Y0 where y0_is: "Y0 (fst ` N) = to_F ` (X0 N)" by auto
-    have "Y0 (fst ` N) = no_labels.Red_Inf_\<G>_q q0 (fst ` N)"
-      unfolding  y0_is
+  shows "\<iota> \<in> Red_Inf_Q N \<longleftrightarrow> to_F \<iota> \<in> no_labels.Red_Inf_\<G>_Q (fst ` N)"
+proof
+  assume i_in2: "\<iota> \<in> Red_Inf_Q N"
+  then have "X \<in> Red_Inf_\<G>_q ` Q \<Longrightarrow> \<iota> \<in> X N" for X
+    unfolding Red_Inf_Q_def by blast
+  obtain X0 where "X0 \<in> Red_Inf_\<G>_q ` Q"
+    using with_labels.Q_nonempty by blast
+  then obtain q0 where x0_is: "X0 N = Red_Inf_\<G>_q q0 N" by blast
+  then obtain Y0 where y0_is: "Y0 (fst ` N) = to_F ` (X0 N)" by auto
+  have "Y0 (fst ` N) = no_labels.Red_Inf_\<G>_q q0 (fst ` N)"
+    unfolding  y0_is
+  proof
+    show "to_F ` X0 N \<subseteq> no_labels.Red_Inf_\<G>_q q0 (fst ` N)"
     proof
-      show "to_F ` X0 N \<subseteq> no_labels.Red_Inf_\<G>_q q0 (fst ` N)"
-      proof
-        fix \<iota>0
-        assume i0_in: "\<iota>0 \<in> to_F ` X0 N"
-        then have i0_in2: "\<iota>0 \<in> to_F ` Red_Inf_\<G>_q q0 N"
-          using x0_is by argo
-        then obtain \<iota>0_FL where i0_FL_in: "\<iota>0_FL \<in> Inf_FL" and i0_to_i0_FL: "\<iota>0 = to_F \<iota>0_FL" and
-          subs1: "((\<G>_Inf_L_q q0 \<iota>0_FL) \<noteq> None \<and>
+      fix \<iota>0
+      assume i0_in: "\<iota>0 \<in> to_F ` X0 N"
+      then have i0_in2: "\<iota>0 \<in> to_F ` Red_Inf_\<G>_q q0 N"
+        using x0_is by argo
+      then obtain \<iota>0_FL where i0_FL_in: "\<iota>0_FL \<in> Inf_FL" and i0_to_i0_FL: "\<iota>0 = to_F \<iota>0_FL" and
+        subs1: "((\<G>_Inf_L_q q0 \<iota>0_FL) \<noteq> None \<and>
             the (\<G>_Inf_L_q q0 \<iota>0_FL) \<subseteq> Red_Inf_q q0 (\<G>_set_q q0 N))
             \<or> ((\<G>_Inf_L_q q0 \<iota>0_FL = None) \<and>
             \<G>_F_L_q q0 (concl_of \<iota>0_FL) \<subseteq> \<G>_set_q q0 N \<union> Red_F_q q0 (\<G>_set_q q0 N))"
-          unfolding Red_Inf_\<G>_q_def by blast
-        have concl_swap: "fst (concl_of \<iota>0_FL) = concl_of \<iota>0"
-          unfolding concl_of_def i0_to_i0_FL to_F_def by simp
-        have i0_in3: "\<iota>0 \<in> Inf_F"
-          using i0_to_i0_FL Inf_FL_to_Inf_F[OF i0_FL_in] unfolding to_F_def by blast
-        {
-          assume
-            not_none: "\<G>_Inf_q q0 \<iota>0 \<noteq> None" and
-            "the (\<G>_Inf_q q0 \<iota>0) \<noteq> {}"
-          then obtain \<iota>1 where i1_in: "\<iota>1 \<in> the (\<G>_Inf_q q0 \<iota>0)" by blast
-          have "the (\<G>_Inf_q q0 \<iota>0) \<subseteq> Red_Inf_q q0 (no_labels.\<G>_set_q q0 (fst ` N))"
-            using subs1 i0_to_i0_FL not_none by auto
-        }
-        moreover {
-          assume
-            is_none: "\<G>_Inf_q q0 \<iota>0 = None"
-          then have "\<G>_F_q q0 (concl_of \<iota>0) \<subseteq> no_labels.\<G>_set_q q0 (fst ` N)
+        unfolding Red_Inf_\<G>_q_def by blast
+      have concl_swap: "fst (concl_of \<iota>0_FL) = concl_of \<iota>0"
+        unfolding concl_of_def i0_to_i0_FL to_F_def by simp
+      have i0_in3: "\<iota>0 \<in> Inf_F"
+        using i0_to_i0_FL Inf_FL_to_Inf_F[OF i0_FL_in] unfolding to_F_def by blast
+      {
+        assume
+          not_none: "\<G>_Inf_q q0 \<iota>0 \<noteq> None" and
+          "the (\<G>_Inf_q q0 \<iota>0) \<noteq> {}"
+        then obtain \<iota>1 where i1_in: "\<iota>1 \<in> the (\<G>_Inf_q q0 \<iota>0)" by blast
+        have "the (\<G>_Inf_q q0 \<iota>0) \<subseteq> Red_Inf_q q0 (no_labels.\<G>_set_q q0 (fst ` N))"
+          using subs1 i0_to_i0_FL not_none by auto
+      }
+      moreover {
+        assume
+          is_none: "\<G>_Inf_q q0 \<iota>0 = None"
+        then have "\<G>_F_q q0 (concl_of \<iota>0) \<subseteq> no_labels.\<G>_set_q q0 (fst ` N)
             \<union> Red_F_q q0 (no_labels.\<G>_set_q q0 (fst ` N))"
-            using subs1 i0_to_i0_FL concl_swap by simp
-        }
-        ultimately show "\<iota>0 \<in> no_labels.Red_Inf_\<G>_q q0 (fst ` N)"
-          unfolding no_labels.Red_Inf_\<G>_q_def using i0_in3 by auto
-       qed
-     next
-       show "no_labels.Red_Inf_\<G>_q q0 (fst ` N) \<subseteq> to_F ` X0 N"
-       proof
-         fix \<iota>0
-         assume i0_in: "\<iota>0 \<in> no_labels.Red_Inf_\<G>_q q0 (fst ` N)"
-         then have i0_in2: "\<iota>0 \<in> Inf_F"
-           unfolding no_labels.Red_Inf_\<G>_q_def by blast
-         obtain \<iota>0_FL where i0_FL_in: "\<iota>0_FL \<in> Inf_FL" and i0_to_i0_FL: "\<iota>0 = to_F \<iota>0_FL"
-           using Inf_F_to_Inf_FL[OF i0_in2] unfolding to_F_def
-           by (metis Ex_list_of_length fst_conv inference.exhaust_sel inference.inject map_fst_zip)
-         have concl_swap: "fst (concl_of \<iota>0_FL) = concl_of \<iota>0"
-           unfolding concl_of_def i0_to_i0_FL to_F_def by simp
-         have subs1: "((\<G>_Inf_L_q q0 \<iota>0_FL) \<noteq> None \<and>
+          using subs1 i0_to_i0_FL concl_swap by simp
+      }
+      ultimately show "\<iota>0 \<in> no_labels.Red_Inf_\<G>_q q0 (fst ` N)"
+        unfolding no_labels.Red_Inf_\<G>_q_def using i0_in3 by auto
+    qed
+  next
+    show "no_labels.Red_Inf_\<G>_q q0 (fst ` N) \<subseteq> to_F ` X0 N"
+    proof
+      fix \<iota>0
+      assume i0_in: "\<iota>0 \<in> no_labels.Red_Inf_\<G>_q q0 (fst ` N)"
+      then have i0_in2: "\<iota>0 \<in> Inf_F"
+        unfolding no_labels.Red_Inf_\<G>_q_def by blast
+      obtain \<iota>0_FL where i0_FL_in: "\<iota>0_FL \<in> Inf_FL" and i0_to_i0_FL: "\<iota>0 = to_F \<iota>0_FL"
+        using Inf_F_to_Inf_FL[OF i0_in2] unfolding to_F_def
+        by (metis Ex_list_of_length fst_conv inference.exhaust_sel inference.inject map_fst_zip)
+      have concl_swap: "fst (concl_of \<iota>0_FL) = concl_of \<iota>0"
+        unfolding concl_of_def i0_to_i0_FL to_F_def by simp
+      have subs1: "((\<G>_Inf_L_q q0 \<iota>0_FL) \<noteq> None \<and>
            the (\<G>_Inf_L_q q0 \<iota>0_FL) \<subseteq> Red_Inf_q q0 (\<G>_set_q q0 N))
            \<or> ((\<G>_Inf_L_q q0 \<iota>0_FL = None) \<and>
            \<G>_F_L_q q0 (concl_of \<iota>0_FL) \<subseteq> (\<G>_set_q q0 N \<union> Red_F_q q0 (\<G>_set_q q0 N)))"
-           using i0_in i0_to_i0_FL concl_swap unfolding no_labels.Red_Inf_\<G>_q_def by simp
-         then have "\<iota>0_FL \<in> Red_Inf_\<G>_q q0 N"
-           using i0_FL_in unfolding Red_Inf_\<G>_q_def by simp
-         then show "\<iota>0 \<in> to_F ` X0 N"
-           using x0_is i0_to_i0_FL i0_in2 by blast
-       qed
-     qed
-    then have "Y \<in> no_labels.Red_Inf_\<G>_q ` Q \<Longrightarrow> (to_F \<iota>) \<in> Y (fst ` N)" for Y
-      using i_in2 no_labels.Red_Inf_Q_def
-        red_inf_equiv red_inf_impl by fastforce
-    then show "to_F \<iota> \<in> no_labels.empty_ord_lifted.Red_Inf_Q (fst ` N)"
-      unfolding Red_Inf_Q_def no_labels.empty_ord_lifted.Red_Inf_Q_def by blast
+        using i0_in i0_to_i0_FL concl_swap unfolding no_labels.Red_Inf_\<G>_q_def by simp
+      then have "\<iota>0_FL \<in> Red_Inf_\<G>_q q0 N"
+        using i0_FL_in unfolding Red_Inf_\<G>_q_def by simp
+      then show "\<iota>0 \<in> to_F ` X0 N"
+        using x0_is i0_to_i0_FL i0_in2 by blast
     qed
-  moreover have "(to_F \<iota>) \<in> no_labels.empty_ord_lifted.Red_Inf_Q (fst ` N) \<Longrightarrow>
-    \<iota> \<in> Red_Inf_Q N"
-  proof -
-    assume to_F_in: "to_F \<iota> \<in> no_labels.empty_ord_lifted.Red_Inf_Q (fst ` N)"
-    have imp_to_F: "X \<in> no_labels.Red_Inf_\<G>_q ` Q \<Longrightarrow> to_F \<iota> \<in> X (fst ` N)" for X
-      using to_F_in unfolding no_labels.empty_ord_lifted.Red_Inf_Q_def
-      by blast
-    then have to_F_in2: "to_F \<iota> \<in> no_labels.Red_Inf_\<G>_q q (fst ` N)" if "q \<in> Q" for q
-      using that by auto
-    have "Red_Inf_\<G>_q q N = {\<iota>0_FL \<in> Inf_FL. to_F \<iota>0_FL \<in> no_labels.Red_Inf_\<G>_q q (fst ` N)}" for q
-    proof
-      show "Red_Inf_\<G>_q q N \<subseteq> {\<iota>0_FL \<in> Inf_FL. to_F \<iota>0_FL \<in> no_labels.Red_Inf_\<G>_q q (fst ` N)}"
-      proof
-        fix q0 \<iota>1
-        assume
-          i1_in: "\<iota>1 \<in> Red_Inf_\<G>_q q0 N"
-        have i1_in2: "\<iota>1 \<in> Inf_FL"
-          using i1_in unfolding Red_Inf_\<G>_q_def by blast
-          then have to_F_i1_in: "to_F \<iota>1 \<in> Inf_F"
-          using Inf_FL_to_Inf_F unfolding to_F_def by simp
-        have concl_swap: "fst (concl_of \<iota>1) = concl_of (to_F \<iota>1)"
-          unfolding concl_of_def to_F_def by simp
-        then have i1_to_F_in: "to_F \<iota>1 \<in> no_labels.Red_Inf_\<G>_q q0 (fst ` N)"
-          using i1_in to_F_i1_in unfolding Red_Inf_\<G>_q_def no_labels.Red_Inf_\<G>_q_def by force
-        show "\<iota>1 \<in> {\<iota>0_FL \<in> Inf_FL. to_F \<iota>0_FL \<in> no_labels.Red_Inf_\<G>_q q0 (fst ` N)}"
-          using i1_in2 i1_to_F_in by blast
-      qed
-    next
-      show "{\<iota>0_FL \<in> Inf_FL. to_F \<iota>0_FL \<in> no_labels.Red_Inf_\<G>_q q (fst ` N)} \<subseteq> Red_Inf_\<G>_q q N"
-      proof
-        fix q0 \<iota>1
-        assume
-          i1_in: "\<iota>1 \<in> {\<iota>0_FL \<in> Inf_FL. to_F \<iota>0_FL \<in> no_labels.Red_Inf_\<G>_q q0 (fst ` N)}"
-        then have i1_in2: "\<iota>1 \<in> Inf_FL" by blast
-        then have to_F_i1_in: "to_F \<iota>1 \<in> Inf_F"
-          using Inf_FL_to_Inf_F unfolding to_F_def by simp
-        have concl_swap: "fst (concl_of \<iota>1) = concl_of (to_F \<iota>1)"
-          unfolding concl_of_def to_F_def by simp
-        then have "((\<G>_Inf_L_q q0 \<iota>1) \<noteq> None \<and>
-          the (\<G>_Inf_L_q q0 \<iota>1) \<subseteq> Red_Inf_q q0 (\<G>_set_q q0 N))
-          \<or> ((\<G>_Inf_L_q q0 \<iota>1 = None) \<and>
-          \<G>_F_L_q q0 (concl_of \<iota>1) \<subseteq> (\<G>_set_q q0 N \<union> Red_F_q q0 (\<G>_set_q q0 N)))"
-          using i1_in unfolding no_labels.Red_Inf_\<G>_q_def by auto
-        then show "\<iota>1 \<in> Red_Inf_\<G>_q q0 N"
-          using i1_in2 unfolding Red_Inf_\<G>_q_def by blast
-      qed
-    qed
-    then have "\<iota> \<in> Red_Inf_\<G>_q q N" if "q \<in> Q" for q
-      using that to_F_in2 i_in unfolding Red_Inf_\<G>_q_def no_labels.Red_Inf_\<G>_q_def by auto
-    then show "\<iota> \<in> empty_ord_lifted.Red_Inf_Q N"
-      unfolding empty_ord_lifted.Red_Inf_Q_def by blast
   qed
-  ultimately show ?thesis
-    by blast
+  then have "Y \<in> no_labels.Red_Inf_\<G>_q ` Q \<Longrightarrow> (to_F \<iota>) \<in> Y (fst ` N)" for Y
+    using i_in2 no_labels.Red_Inf_Q_def
+      red_inf_equiv red_inf_impl by fastforce
+  then show "to_F \<iota> \<in> no_labels.Red_Inf_\<G>_Q (fst ` N)"
+    unfolding Red_Inf_Q_def no_labels.Red_Inf_\<G>_Q_def by blast
+next
+  assume to_F_in: "to_F \<iota> \<in> no_labels.Red_Inf_\<G>_Q (fst ` N)"
+  have imp_to_F: "X \<in> no_labels.Red_Inf_\<G>_q ` Q \<Longrightarrow> to_F \<iota> \<in> X (fst ` N)" for X
+    using to_F_in unfolding no_labels.Red_Inf_\<G>_Q_def by blast
+  then have to_F_in2: "to_F \<iota> \<in> no_labels.Red_Inf_\<G>_q q (fst ` N)" if "q \<in> Q" for q
+    using that by auto
+  have "Red_Inf_\<G>_q q N = {\<iota>0_FL \<in> Inf_FL. to_F \<iota>0_FL \<in> no_labels.Red_Inf_\<G>_q q (fst ` N)}" for q
+  proof
+    show "Red_Inf_\<G>_q q N \<subseteq> {\<iota>0_FL \<in> Inf_FL. to_F \<iota>0_FL \<in> no_labels.Red_Inf_\<G>_q q (fst ` N)}"
+    proof
+      fix q0 \<iota>1
+      assume
+        i1_in: "\<iota>1 \<in> Red_Inf_\<G>_q q0 N"
+      have i1_in2: "\<iota>1 \<in> Inf_FL"
+        using i1_in unfolding Red_Inf_\<G>_q_def by blast
+      then have to_F_i1_in: "to_F \<iota>1 \<in> Inf_F"
+        using Inf_FL_to_Inf_F unfolding to_F_def by simp
+      have concl_swap: "fst (concl_of \<iota>1) = concl_of (to_F \<iota>1)"
+        unfolding concl_of_def to_F_def by simp
+      then have i1_to_F_in: "to_F \<iota>1 \<in> no_labels.Red_Inf_\<G>_q q0 (fst ` N)"
+        using i1_in to_F_i1_in unfolding Red_Inf_\<G>_q_def no_labels.Red_Inf_\<G>_q_def by force
+      show "\<iota>1 \<in> {\<iota>0_FL \<in> Inf_FL. to_F \<iota>0_FL \<in> no_labels.Red_Inf_\<G>_q q0 (fst ` N)}"
+        using i1_in2 i1_to_F_in by blast
+    qed
+  next
+    show "{\<iota>0_FL \<in> Inf_FL. to_F \<iota>0_FL \<in> no_labels.Red_Inf_\<G>_q q (fst ` N)} \<subseteq> Red_Inf_\<G>_q q N"
+    proof
+      fix q0 \<iota>1
+      assume
+        i1_in: "\<iota>1 \<in> {\<iota>0_FL \<in> Inf_FL. to_F \<iota>0_FL \<in> no_labels.Red_Inf_\<G>_q q0 (fst ` N)}"
+      then have i1_in2: "\<iota>1 \<in> Inf_FL" by blast
+      then have to_F_i1_in: "to_F \<iota>1 \<in> Inf_F"
+        using Inf_FL_to_Inf_F unfolding to_F_def by simp
+      have concl_swap: "fst (concl_of \<iota>1) = concl_of (to_F \<iota>1)"
+        unfolding concl_of_def to_F_def by simp
+      then have "((\<G>_Inf_L_q q0 \<iota>1) \<noteq> None \<and> the (\<G>_Inf_L_q q0 \<iota>1) \<subseteq> Red_Inf_q q0 (\<G>_set_q q0 N))
+        \<or> (\<G>_Inf_L_q q0 \<iota>1 = None \<and>
+          \<G>_F_L_q q0 (concl_of \<iota>1) \<subseteq> \<G>_set_q q0 N \<union> Red_F_q q0 (\<G>_set_q q0 N))"
+        using i1_in unfolding no_labels.Red_Inf_\<G>_q_def by auto
+      then show "\<iota>1 \<in> Red_Inf_\<G>_q q0 N"
+        using i1_in2 unfolding Red_Inf_\<G>_q_def by blast
+    qed
+  qed
+  then have "\<iota> \<in> Red_Inf_\<G>_q q N" if "q \<in> Q" for q
+    using that to_F_in2 i_in unfolding Red_Inf_\<G>_q_def no_labels.Red_Inf_\<G>_q_def by auto
+  then show "\<iota> \<in> Red_Inf_\<G>_Q N"
+    unfolding Red_Inf_\<G>_Q_def by blast
 qed
 
 (* lem:redundant-labeled-formulas *)
@@ -1068,17 +1053,17 @@ proof
   have step_p: "lnth D p \<Longrightarrow>LGC lnth D (Suc p)" using deriv p_smaller_d chain_lnth_rel by blast
   then have "\<exists>T1 T2 \<iota> N2 N1 M. lnth D p = (T1, N1) \<and> lnth D (Suc p) = (T2, N2) \<and>
       T1 = T2 \<union> {\<iota>} \<and> N2 = N1 \<union> M \<and> active_subset M = {} \<and>
-      \<iota> \<in> no_labels.empty_ord_lifted.Red_Inf_Q (fst ` (N1 \<union> M))"
+      \<iota> \<in> no_labels.Red_Inf_\<G>_Q (fst ` (N1 \<union> M))"
   proof -
     have ci_or_do: "(\<exists>T1 T2 \<iota> N2 N1 M. lnth D p = (T1, N1) \<and> lnth D (Suc p) = (T2, N2) \<and>
         T1 = T2 \<union> {\<iota>} \<and> N2 = N1 \<union> M \<and> active_subset M = {} \<and>
-        \<iota> \<in> no_labels.empty_ord_lifted.Red_Inf_Q (fst ` (N1 \<union> M))) \<or>
+        \<iota> \<in> no_labels.Red_Inf_\<G>_Q (fst ` (N1 \<union> M))) \<or>
         (\<exists>T1 T2 T' N. lnth D p = (T1, N) \<and> lnth D (Suc p) = (T2, N) \<and>
         T1 = T2 \<union> T' \<and> T' \<inter> no_labels.Inf_from (fst ` active_subset N) = {})"
       using step.simps[of "lnth D p" "lnth D (Suc p)"] step_p i_in_p i_notin_suc_p by fastforce
     then have p_greater_n_strict: "n < Suc p"
       using suc_nth_d_is p_greater_n i_in_t2 i_notin_suc_p le_eq_less_or_eq by force
-    have "m > 0 \<Longrightarrow> j \<in> {0..<m} \<Longrightarrow> (prems_of (to_F \<iota>))!j \<in> (fst ` (active_subset (snd (lnth D p))))"
+    have "m > 0 \<Longrightarrow> j \<in> {0..<m} \<Longrightarrow> prems_of (to_F \<iota>) ! j \<in> fst ` active_subset (snd (lnth D p))"
       for j
     proof -
       fix j
@@ -1089,9 +1074,9 @@ proof
         using all_prems_active_after[OF m_pos] p_smaller_d m_def p_greater_n p_neq_n
         by (meson Suc_ile_eq atLeastLessThan_iff dual_order.strict_implies_order nth_mem
             p_greater_n_strict)
-      then have "fst (prems_of \<iota> ! j) \<in> (fst ` (active_subset (snd (lnth D p))))"
+      then have "fst (prems_of \<iota> ! j) \<in> fst ` active_subset (snd (lnth D p))"
         by blast
-      then show "(prems_of (to_F \<iota>))!j \<in> (fst ` (active_subset (snd (lnth D p))))"
+      then show "prems_of (to_F \<iota>) ! j \<in> fst ` active_subset (snd (lnth D p))"
         unfolding to_F_def using j_in m_def by simp
     qed
     then have prems_i_active_p: "m > 0 \<Longrightarrow>
@@ -1100,19 +1085,18 @@ proof
       by (smt atLeast0LessThan in_set_conv_nth lessThan_iff m_def_F mem_Collect_eq subsetI)
     have "m = 0 \<Longrightarrow> (\<exists>T1 T2 \<iota> N2 N1 M. lnth D p = (T1, N1) \<and> lnth D (Suc p) = (T2, N2) \<and>
         T1 = T2 \<union> {\<iota>} \<and> N2 = N1 \<union> M \<and> active_subset M = {} \<and>
-        \<iota> \<in> no_labels.empty_ord_lifted.Red_Inf_Q (fst ` (N1 \<union> M)))"
+        \<iota> \<in> no_labels.Red_Inf_\<G>_Q (fst ` (N1 \<union> M)))"
       using ci_or_do premise_free_inf_always_from[of "to_F \<iota>" "fst ` active_subset _", OF i_in_F]
         m_def i_in_p i_notin_suc_p m_def_F by auto
     then show "(\<exists>T1 T2 \<iota> N2 N1 M. lnth D p = (T1, N1) \<and> lnth D (Suc p) = (T2, N2) \<and>
         T1 = T2 \<union> {\<iota>} \<and> N2 = N1 \<union> M \<and> active_subset M = {} \<and>
-        \<iota> \<in> no_labels.empty_ord_lifted.Red_Inf_Q (fst ` (N1 \<union> M)))"
-      using ci_or_do i_in_p i_notin_suc_p prems_i_active_p unfolding active_subset_def
-      by force
+        \<iota> \<in> no_labels.Red_Inf_\<G>_Q (fst ` (N1 \<union> M)))"
+      using ci_or_do i_in_p i_notin_suc_p prems_i_active_p unfolding active_subset_def by force
   qed
   then obtain T1p T2p N1p N2p Mp where  "lnth D p = (T1p, N1p)" and
     suc_p_is: "lnth D (Suc p) = (T2p, N2p)" and "T1p = T2p \<union> {to_F \<iota>}" and "T2p \<inter> {to_F \<iota>} = {}" and
     n2p_is: "N2p = N1p \<union> Mp"and "active_subset Mp = {}" and
-    i_in_red_inf: "to_F \<iota> \<in> no_labels.empty_ord_lifted.Red_Inf_Q
+    i_in_red_inf: "to_F \<iota> \<in> no_labels.Red_Inf_\<G>_Q
         (fst ` (N1p \<union> Mp))"
     using i_in_p i_notin_suc_p by fastforce
   have "to_F \<iota> \<in> no_labels.Red_Inf_Q (fst ` (snd (lnth D (Suc p))))"
