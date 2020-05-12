@@ -412,36 +412,28 @@ qed
 lemma grounded_inf_in_ground_inf: "\<iota> \<in> Inf_F \<Longrightarrow> \<G>_Inf \<iota> \<noteq> None \<Longrightarrow> the (\<G>_Inf \<iota>) \<subseteq> Inf_G"
   using inf_map ground.Red_Inf_to_Inf by blast
 
+abbreviation ground_Inf_redundant :: "'f set \<Rightarrow> bool" where
+  "ground_Inf_redundant N \<equiv>
+   ground.Inf_from (\<G>_set N)
+   \<subseteq> {\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_Inf \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf \<iota>')} \<union> Red_Inf_G (\<G>_set N)"
+
+lemma sat_inf_imp_ground_red:
+  assumes
+    "saturated N" and
+    "\<iota>' \<in> Inf_from N" and
+    "\<G>_Inf \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf \<iota>')"
+  shows "\<iota> \<in> Red_Inf_G (\<G>_set N)"
+  using assms Red_Inf_\<G>_def unfolding saturated_def by auto
+
 (* lem:sat-wrt-finf *)
-lemma sat_imp_ground_sat: "saturated N \<Longrightarrow> ground.Inf_from (\<G>_set N) \<subseteq>
-  ({\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_Inf \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf \<iota>')} \<union> Red_Inf_G (\<G>_set N)) \<Longrightarrow>
-  ground.saturated (\<G>_set N)"
-proof -
-  fix N
-  assume
-    sat_n: "saturated N" and
-    inf_grounded_in: "ground.Inf_from (\<G>_set N) \<subseteq>
-    ({\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_Inf \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf \<iota>')} \<union> Red_Inf_G (\<G>_set N))"
-  show "ground.saturated (\<G>_set N)" unfolding ground.saturated_def
-  proof
-    fix \<iota>
-    assume i_in: "\<iota> \<in> ground.Inf_from (\<G>_set N)"
-    {
-      assume "\<iota> \<in> {\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_Inf \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf \<iota>')}"
-      then obtain \<iota>' where "\<iota>'\<in> Inf_from N" "\<G>_Inf \<iota>' \<noteq> None" "\<iota> \<in> the (\<G>_Inf \<iota>')" by blast
-      then have "\<iota> \<in> Red_Inf_G (\<G>_set N)"
-        using Red_Inf_\<G>_def sat_n unfolding saturated_def by auto
-    }
-    then show "\<iota> \<in> Red_Inf_G (\<G>_set N)" using inf_grounded_in i_in by blast
-  qed
-qed
+lemma sat_imp_ground_sat: "saturated N \<Longrightarrow> ground_Inf_redundant N \<Longrightarrow> ground.saturated (\<G>_set N)"
+  unfolding ground.saturated_def using sat_inf_imp_ground_red by auto
 
 (* thm:finf-complete *)
 theorem stat_ref_comp_to_non_ground:
   assumes
     stat_ref_G: "static_refutational_complete_calculus Bot_G Inf_G entails_G Red_Inf_G Red_F_G" and
-    sat_n_imp: "\<And>N. saturated N \<Longrightarrow> ground.Inf_from (\<G>_set N) \<subseteq>
-      {\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_Inf \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf \<iota>')} \<union> Red_Inf_G (\<G>_set N)"
+    sat_n_imp: "\<And>N. saturated N \<Longrightarrow> ground_Inf_redundant N"
   shows
     "static_refutational_complete_calculus Bot_F Inf_F entails_\<G> Red_Inf_\<G> Red_F_\<G>"
 proof
@@ -659,17 +651,42 @@ abbreviation Red_F_\<G>_empty :: "'f set \<Rightarrow> 'f set" where
 
 lemmas Red_F_\<G>_empty_def = empty_ord.Red_F_Q_def
 
+lemma sat_inf_imp_ground_red_fam_inter:
+  assumes
+    sat_n: "saturated N" and
+    i'_in: "\<iota>' \<in> Inf_from N" and
+    q_in: "q \<in> Q" and
+    grounding: "\<G>_Inf_q q \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf_q q \<iota>')"
+  shows "\<iota> \<in> Red_Inf_q q (\<G>_set_q q N)"
+proof -
+  have "\<iota>' \<in> Red_Inf_\<G>_q q N"
+    using sat_n i'_in q_in all_red_crit calculus_with_red_crit.saturated_def sat_int_to_sat_q
+    by blast
+  then have "the (\<G>_Inf_q q \<iota>') \<subseteq> Red_Inf_q q (\<G>_set_q q N)"
+    by (simp add: Red_Inf_\<G>_q_def grounding)
+  then show ?thesis
+    using grounding by blast
+qed
+
+abbreviation ground_Inf_redundant :: "'q \<Rightarrow> 'f set \<Rightarrow> bool" where
+  "ground_Inf_redundant q N \<equiv>
+   ground.Inf_from_q q (\<G>_set_q q N)
+   \<subseteq> {\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_Inf_q q \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf_q q \<iota>')} \<union> Red_Inf_q q (\<G>_set_q q N)"
+
+abbreviation ground_saturated :: "'q \<Rightarrow> 'f set \<Rightarrow> bool" where
+  "ground_saturated q N \<equiv> ground.Inf_from_q q (\<G>_set_q q N) \<subseteq> Red_Inf_q q (\<G>_set_q q N)"
+
+lemma sat_imp_ground_sat_fam_inter:
+  "saturated N \<Longrightarrow> q \<in> Q \<Longrightarrow> ground_Inf_redundant q N \<Longrightarrow> ground_saturated q N"
+  using sat_inf_imp_ground_red_fam_inter by auto
+
 (* thm:intersect-finf-complete *)
 theorem stat_ref_comp_to_non_ground_fam_inter:
   assumes
     stat_ref_G:
       "\<forall>q \<in> Q. static_refutational_complete_calculus Bot_G (Inf_G_q q) (entails_q q) (Red_Inf_q q)
         (Red_F_q q)" and
-    sat_n_imp:
-      "\<And>N. saturated N \<Longrightarrow>
-         \<exists>q \<in> Q. ground.Inf_from_q q (\<G>_set_q q N) \<subseteq>
-           {\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_Inf_q q \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf_q q \<iota>')}
-           \<union> Red_Inf_q q (\<G>_set_q q N)"
+    sat_n_imp: "\<And>N. saturated N \<Longrightarrow> \<exists>q \<in> Q. ground_Inf_redundant q N"
   shows
     "static_refutational_complete_calculus Bot_F Inf_F entails_\<G>_Q Red_Inf_\<G>_Q Red_F_\<G>_empty"
     using empty_ord.calculus_with_red_crit_axioms unfolding static_refutational_complete_calculus_def

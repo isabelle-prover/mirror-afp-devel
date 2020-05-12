@@ -864,7 +864,7 @@ definition list_of_mset :: "'a multiset \<Rightarrow> 'a list" where
 lemma list_of_mset_exi: "\<exists>l. m = mset l"
   using ex_mset by metis
 
-lemma mset_list_of_mset [simp]: "mset (list_of_mset m) = m"
+lemma mset_list_of_mset[simp]: "mset (list_of_mset m) = m"
   by (metis (mono_tags, lifting) ex_mset list_of_mset_def someI_ex)
 
 lemma length_list_of_mset[simp]: "length (list_of_mset A) = size A"
