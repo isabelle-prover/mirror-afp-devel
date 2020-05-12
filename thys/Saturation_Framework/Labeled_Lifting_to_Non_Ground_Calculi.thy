@@ -183,7 +183,7 @@ abbreviation \<G>_set_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow
   "\<G>_set_L_q q N \<equiv> \<Union> (\<G>_F_L_q q ` N)"
 
 definition Red_Inf_\<G>_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) inference set" where
-  "Red_Inf_\<G>_L_q q N = {\<iota> \<in> Inf_FL. ((\<G>_Inf_L_q q \<iota>) \<noteq> None \<and> the (\<G>_Inf_L_q q \<iota>) \<subseteq> Red_Inf_q q (\<G>_set_L_q q N))
+  "Red_Inf_\<G>_L_q q N = {\<iota> \<in> Inf_FL. (\<G>_Inf_L_q q \<iota> \<noteq> None \<and> the (\<G>_Inf_L_q q \<iota>) \<subseteq> Red_Inf_q q (\<G>_set_L_q q N))
     \<or> (\<G>_Inf_L_q q \<iota> = None \<and> \<G>_F_L_q q (concl_of \<iota>) \<subseteq> \<G>_set_L_q q N \<union> Red_F_q q (\<G>_set_L_q q N))}"
 
 abbreviation Red_Inf_\<G>_L_Q :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) inference set" where
