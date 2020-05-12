@@ -2124,7 +2124,7 @@ proof -
   }
   then show ?thesis 
     unfolding problem_plan_bound_def RD_def Sup_nat_def
-    by blast
+    using RD_bounds_sublistD_i_b by auto 
 qed
 
 
