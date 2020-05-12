@@ -2024,7 +2024,7 @@ proof -
   {
     have "length p - 1 \<le> Max {length p - 1 |p. valid_path Pi p \<and> distinct p}" 
       using assms(3, 4) 1(1)
-      by (metis (no_types, lifting) Sup_nat_def assms(3) cSup_eq_maximum)  
+      by (smt Max.coboundedI bdd_aboveI bdd_above_nat)
     moreover 
     have "Min (PLS s as) \<le> length p - 1"
       using 3
