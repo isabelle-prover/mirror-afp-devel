@@ -77,13 +77,9 @@ proof (rule ballI)+
       using  x_def y_def by force+      
     {
       fix ya yb xa xb
-      assume y_prop:"ya \<le> yb \<and> {ya..yb} = y"
-      assume x_prop:"xa \<le> xb \<and> {xa..xb} = x"          
-      from  x_prop have upper_x:"Max x = xb" 
-        by (metis Sup_nat_def cSup_atLeastAtMost)
-      from y_prop have lower_y:"Min y = ya" 
-        by (metis Inf_fin.coboundedI Inf_fin_Min Min_in add.right_neutral finite_atLeastAtMost
-            le_add1 ord_class.atLeastAtMost_iff order_class.antisym pre)
+      assume y_prop:"ya \<le> yb \<and> {ya..yb} = y" and x_prop:"xa \<le> xb \<and> {xa..xb} = x"          
+      then have upper_x:"Max x = xb" and lower_y: "Min y = ya" 
+        by (auto simp: Max_eq_iff Min_eq_iff)
       from upper_x and lower_y and pre have upper_eq_lower: "xb+1 = ya" 
         by blast
       hence "y= {xb+1 .. yb}" using y_prop by blast
@@ -276,11 +272,10 @@ proof
 qed
   
 lemma leq_max_sup:"(m::nat) \<le> n \<longrightarrow> Max {m..n} = n" 
-  by (metis Sup_nat_def cSup_atLeastAtMost)
+  by (auto simp: Max_eq_iff)
     
 lemma leq_min_inf: "(m::nat) \<le> n \<longrightarrow> Min {m..n} = m"
-  by (meson Min_in Min_le antisym atLeastAtMost_iff atLeastatMost_empty_iff 
-      eq_imp_le finite_atLeastAtMost)
+  by (auto simp: Min_eq_iff)
     
 lemma leq_max_sup':"(m::nat) \<le> n \<longrightarrow> maximum(Abs_nat_int{m..n}) = n" 
 proof 
