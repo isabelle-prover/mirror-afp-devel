@@ -9335,3 +9335,19 @@ abstract =
   to verify three simple hybrid programs.
 
 
+[Irrational_Series_Erdos_Straus]
+title = Irrationality Criteria for Series by Erdős and Straus
+author = Angeliki Koutsoukou-Argyraki <mailto:ak2110@cam.ac.uk>, Wenda Li <mailto:wl302@cam.ac.uk>
+topic = Mathematics/Number theory, Mathematics/Analysis
+date = 2020-05-12
+notify = ak2110@cam.ac.uk, wl302@cam.ac.uk, liwenda1990@hotmail.com
+abstract = 
+  We formalise certain irrationality criteria for infinite series of the form:
+  \[\sum_{n=1}^\infty \frac{b_n}{\prod_{i=1}^n a_i} \]
+  where $\{b_n\}$ is a sequence of integers and $\{a_n\}$ a sequence of positive integers
+  with $a_n >1$ for all large n. The results are due to P. Erdős and E. G. Straus 
+  <a href="https://projecteuclid.org/euclid.pjm/1102911140">[1]</a>. 
+  In particular, we formalise Theorem 2.1, Corollary 2.10 and Theorem 3.1. 
+  The latter is an application of Theorem 2.1 involving the prime numbers.
+
+

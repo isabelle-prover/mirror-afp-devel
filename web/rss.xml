@@ -9,7 +9,22 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>08 May 2020 00:00:00 +0000</pubDate>
+    <pubDate>12 May 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Irrationality Criteria for Series by Erdős and Straus</title>
+              <link>https://www.isa-afp.org/entries/Irrational_Series_Erdos_Straus.html</link>
+       <guid>https://www.isa-afp.org/entries/Irrational_Series_Erdos_Straus.html</guid>
+       <dc:creator> Angeliki Koutsoukou-Argyraki, Wenda Li       </dc:creator>
+       <pubDate>12 May 2020 00:00:00 +0000</pubDate>
+       <description>
+We formalise certain irrationality criteria for infinite series of the form:
+\[\sum_{n=1}^\infty \frac{b_n}{\prod_{i=1}^n a_i} \]
+where $\{b_n\}$ is a sequence of integers and $\{a_n\}$ a sequence of positive integers
+with $a_n &gt;1$ for all large n. The results are due to P. Erdős and E. G. Straus
+&lt;a href=&#34;https://projecteuclid.org/euclid.pjm/1102911140&#34;&gt;[1]&lt;/a&gt;.
+In particular, we formalise Theorem 2.1, Corollary 2.10 and Theorem 3.1.
+The latter is an application of Theorem 2.1 involving the prime numbers.</description>
+    </item>
     <item>
        <title>An Efficient Normalisation Procedure for Linear Temporal Logic: Isabelle/HOL Formalisation</title>
               <link>https://www.isa-afp.org/entries/LTL_Normal_Form.html</link>
@@ -571,24 +586,6 @@ hint at symmetric cases. It also requires a substantial background of
 mathematical theories, e.g., the Jordan curve theorem, real analysis,
 ordinary differential equations, and limiting (long-term) behavior of
 dynamical systems.</description>
-    </item>
-    <item>
-       <title>Poincaré Disc Model</title>
-              <link>https://www.isa-afp.org/entries/Poincare_Disc.html</link>
-       <guid>https://www.isa-afp.org/entries/Poincare_Disc.html</guid>
-       <dc:creator> Danijela Simić, Filip Marić, Pierre Boutry       </dc:creator>
-       <pubDate>16 Dec 2019 00:00:00 +0000</pubDate>
-       <description>
-We describe formalization of the Poincaré disc model of hyperbolic
-geometry within the Isabelle/HOL proof assistant. The model is defined
-within the extended complex plane (one dimensional complex projectives
-space &amp;#8450;P1), formalized in the AFP entry “Complex Geometry”.
-Points, lines, congruence of pairs of points, betweenness of triples
-of points, circles, and isometries are defined within the model. It is
-shown that the model satisfies all Tarski&#39;s axioms except the
-Euclid&#39;s axiom. It is shown that it satisfies its negation and
-the limiting parallels axiom (which proves it to be a model of
-hyperbolic geometry).</description>
     </item>
   </channel>
 </rss>
