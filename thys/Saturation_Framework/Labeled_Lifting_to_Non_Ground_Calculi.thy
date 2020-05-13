@@ -71,12 +71,7 @@ qed
 
 sublocale lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G entails_G Inf_G Red_Inf_G Red_F_G
   \<G>_F_L \<G>_Inf_L "\<lambda>g Cl Cl'. False"
-proof
-  show "po_on (\<lambda>Cl Cl'. False) UNIV"
-    unfolding po_on_def by (simp add: transp_onI wfp_on_imp_irreflp_on)
-  show "wfp_on (\<lambda>Cl Cl'. False) UNIV"
-    unfolding wfp_on_def by simp
-qed
+  by unfold_locales simp+
 
 notation entails_\<G> (infix "\<Turnstile>\<G>L" 50)
 

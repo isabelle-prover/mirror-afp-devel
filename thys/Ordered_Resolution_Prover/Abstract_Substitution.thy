@@ -915,6 +915,9 @@ lemma grounding_of_cls_ground: "is_ground_cls C \<Longrightarrow> grounding_of_c
 lemma grounding_of_cls_empty[simp]: "grounding_of_cls {#} = {{#}}"
   by (simp add: grounding_of_cls_ground)
 
+lemma union_grounding_of_cls_ground: "is_ground_clss (\<Union> (grounding_of_cls ` N))"
+  by (simp add: grounding_ground grounding_of_clss_def is_ground_clss_def)
+
 
 paragraph \<open>Grounding idempotence\<close>
 

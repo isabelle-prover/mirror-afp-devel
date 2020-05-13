@@ -486,6 +486,9 @@ proof -
       lifting_with_wf_ordering_family_axioms.intro lifting_with_wf_ordering_family_def)
 qed
 
+lemma po_on_empty_rel[simp]: "po_on (\<lambda>_ _. False) UNIV"
+  unfolding po_on_def irreflp_on_def transp_on_def by auto
+
 locale lifting_equivalence_with_empty_order =
   any_order_lifting: lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
     Red_F_G \<G>_F \<G>_Inf Prec_F_g +
@@ -504,12 +507,7 @@ locale lifting_equivalence_with_empty_order =
     Prec_F_g :: \<open>'g \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> bool\<close>
 
 sublocale lifting_with_wf_ordering_family \<subseteq> lifting_equivalence_with_empty_order
-proof
-  show "po_on (\<lambda>C C'. False) UNIV"
-    unfolding po_on_def by (simp add: transp_onI wfp_on_imp_irreflp_on)
-  show "wfp_on (\<lambda>C C'. False) UNIV"
-    unfolding wfp_on_def by simp
-qed
+  by unfold_locales simp+
 
 context lifting_equivalence_with_empty_order
 begin
