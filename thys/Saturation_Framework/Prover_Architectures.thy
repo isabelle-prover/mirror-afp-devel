@@ -15,7 +15,7 @@ begin
 
 subsection \<open>Basis of the Prover Architectures\<close>
 
-locale Prover_Architecture_Basis = std?: labeled_lifting_with_red_crit_family Bot_F Inf_F Bot_G Q
+locale prover_architecture_basis = std?: labeled_lifting_with_red_crit_family Bot_F Inf_F Bot_G Q
   entails_q Inf_G_q Red_Inf_q Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL
   for
     Bot_F :: "'f set"
@@ -374,7 +374,7 @@ end
 
 subsection \<open>Given Clause Architecture\<close>
 
-locale Given_Clause = Prover_Architecture_Basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_Inf_q
+locale given_clause = prover_architecture_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_Inf_q
   Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL Equiv_F Prec_F Prec_l active
   for
     Bot_F :: "'f set" and
@@ -698,7 +698,7 @@ end
 
 subsection \<open>Lazy Given Clause Architecture\<close>
 
-locale Lazy_Given_Clause = Prover_Architecture_Basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_Inf_q
+locale lazy_given_clause = prover_architecture_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_Inf_q
   Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL Equiv_F Prec_F Prec_l active
   for
     Bot_F :: "'f set" and
