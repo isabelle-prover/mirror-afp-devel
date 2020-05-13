@@ -26,6 +26,20 @@ In particular, we formalise Theorem 2.1, Corollary 2.10 and Theorem 3.1.
 The latter is an application of Theorem 2.1 involving the prime numbers.</description>
     </item>
     <item>
+       <title>Recursion Theorem in ZF</title>
+              <link>https://www.isa-afp.org/entries/Recursion-Addition.html</link>
+       <guid>https://www.isa-afp.org/entries/Recursion-Addition.html</guid>
+       <dc:creator> Georgy Dunaev       </dc:creator>
+       <pubDate>11 May 2020 00:00:00 +0000</pubDate>
+       <description>
+This document contains a proof of the recursion theorem. This is a
+mechanization of the proof of the recursion theorem from the text &lt;i&gt;Introduction to
+Set Theory&lt;/i&gt;, by Karel Hrbacek and Thomas Jech. This
+implementation may be used as the basis for a model of Peano arithmetic in
+ZF. While recursion and the natural numbers are already available in Isabelle/ZF, this clean development
+is much easier to follow.</description>
+    </item>
+    <item>
        <title>An Efficient Normalisation Procedure for Linear Temporal Logic: Isabelle/HOL Formalisation</title>
               <link>https://www.isa-afp.org/entries/LTL_Normal_Form.html</link>
        <guid>https://www.isa-afp.org/entries/LTL_Normal_Form.html</guid>
@@ -567,25 +581,6 @@ application consumes a coin and coins are earned through applications of
 the remaining rules. I show that if a branch can be closed then it can
 be closed starting from a single coin. These restrictions are imposed
 to rule out some means of nontermination.</description>
-    </item>
-    <item>
-       <title>The Poincaré-Bendixson Theorem</title>
-              <link>https://www.isa-afp.org/entries/Poincare_Bendixson.html</link>
-       <guid>https://www.isa-afp.org/entries/Poincare_Bendixson.html</guid>
-       <dc:creator> Fabian Immler, Yong Kiam Tan       </dc:creator>
-       <pubDate>18 Dec 2019 00:00:00 +0000</pubDate>
-       <description>
-The Poincaré-Bendixson theorem is a classical result in the study of
-(continuous) dynamical systems. Colloquially, it restricts the
-possible behaviors of planar dynamical systems: such systems cannot be
-chaotic. In practice, it is a useful tool for proving the existence of
-(limiting) periodic behavior in planar systems. The theorem is an
-interesting and challenging benchmark for formalized mathematics
-because proofs in the literature rely on geometric sketches and only
-hint at symmetric cases. It also requires a substantial background of
-mathematical theories, e.g., the Jordan curve theorem, real analysis,
-ordinary differential equations, and limiting (long-term) behavior of
-dynamical systems.</description>
     </item>
   </channel>
 </rss>

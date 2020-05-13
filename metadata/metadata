@@ -9296,6 +9296,20 @@ abstract =
   transitive model of ZFC, we construct a proper generic extension and
   show that the latter also satisfies ZFC.
 
+[Recursion-Addition]
+title = Recursion Theorem in ZF
+author = Georgy Dunaev <mailto:georgedunaev@gmail.com>
+topic = Logic/Set theory
+date = 2020-05-11
+notify = georgedunaev@gmail.com
+abstract =
+  This document contains a proof of the recursion theorem. This is a
+  mechanization of the proof of the recursion theorem from the text <i>Introduction to
+  Set Theory</i>, by Karel Hrbacek and Thomas Jech. This
+  implementation may be used as the basis for a model of Peano arithmetic in
+  ZF. While recursion and the natural numbers are already available in Isabelle/ZF, this clean development
+  is much easier to follow.
+
 [LTL_Normal_Form]
 title = An Efficient Normalisation Procedure for Linear Temporal Logic: Isabelle/HOL Formalisation
 author = Salomon Sickert <mailto:s.sickert@tum.de>
