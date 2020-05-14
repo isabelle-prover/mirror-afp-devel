@@ -66,22 +66,8 @@ definition entails_Q :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix 
 
 (* lem:intersection-of-conseq-rel *)
 lemma intersect_cons_rel_family: "consequence_relation Bot entails_Q"
-  unfolding consequence_relation_def
-proof (intro conjI)
-  show \<open>Bot \<noteq> {}\<close> using bot_not_empty .
-next
-  show "\<forall>B N. B \<in> Bot \<longrightarrow> {B} \<Turnstile>Q N"
-    unfolding entails_Q_def by (metis consequence_relation_def q_cons_rel)
-next
-  show "\<forall>N2 N1. N2 \<subseteq> N1 \<longrightarrow> N1 \<Turnstile>Q N2"
-    unfolding entails_Q_def by (metis consequence_relation_def q_cons_rel)
-next
-  show "\<forall>N2 N1. (\<forall>C\<in>N2. N1 \<Turnstile>Q {C}) \<longrightarrow> N1 \<Turnstile>Q N2"
-    unfolding entails_Q_def by (metis consequence_relation_def q_cons_rel)
-next
-  show "\<forall>N1 N2 N3. N1 \<Turnstile>Q N2 \<longrightarrow> N2 \<Turnstile>Q N3 \<longrightarrow> N1 \<Turnstile>Q N3"
-    unfolding entails_Q_def by (metis consequence_relation_def q_cons_rel)
-qed
+  unfolding consequence_relation_def entails_Q_def
+  by (intro conjI bot_not_empty) (metis consequence_relation_def q_cons_rel)+
 
 end
 
