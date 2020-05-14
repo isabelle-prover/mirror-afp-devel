@@ -141,6 +141,20 @@ definition active_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l)
 definition passive_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
   "passive_subset M = {CL \<in> M. snd CL \<noteq> active}"
 
+lemma active_subset_insert:
+  "active_subset (insert Cl N) = active_subset {Cl} \<union> active_subset N"
+  unfolding active_subset_def by auto
+
+lemma active_subset_union: "active_subset (M \<union> N) = active_subset M \<union> active_subset N"
+  unfolding active_subset_def by auto
+
+lemma passive_subset_insert:
+  "passive_subset (insert Cl N) = passive_subset {Cl} \<union> passive_subset N"
+  unfolding passive_subset_def by auto
+
+lemma passive_subset_union: "passive_subset (M \<union> N) = passive_subset M \<union> passive_subset N"
+  unfolding passive_subset_def by auto
+
 sublocale std?: static_refutational_complete_calculus Bot_FL Inf_FL "(\<Turnstile>\<inter>\<G>L)" Red_Inf_Q Red_F_Q
   using labeled_static_ref[OF static_ref_comp] .
 
@@ -174,9 +188,6 @@ lemma std_Red_Inf_Q_eq: "std.Red_Inf_Q = Red_Inf_\<G>_Q"
 
 lemma std_Red_F_Q_eq: "std.Red_F_Q = Red_F_\<G>_empty"
   unfolding Red_F_\<G>_empty_q_def Red_F_\<G>_empty_L_q_def by simp
-
-lemma std_fair_eq: "std.fair = fair"
-  using std_Red_Inf_Q_eq by auto
 
 sublocale static_refutational_complete_calculus Bot_FL Inf_FL "(\<Turnstile>\<inter>\<G>L)" Red_Inf_Q Red_F_Q
   by unfold_locales (use static_refutational_complete std_Red_Inf_Q_eq in auto)
@@ -396,7 +407,7 @@ locale given_clause = prover_architecture_basis Bot_F Inf_F Bot_G Q entails_q In
     inf_have_prems: "\<iota>F \<in> Inf_F \<Longrightarrow> prems_of \<iota>F \<noteq> []"
 begin
 
-lemma labeled_inf_have_prems: "\<iota> \<in> Inf_FL \<Longrightarrow> set (prems_of \<iota>) \<noteq> {}"
+lemma labeled_inf_have_prems: "\<iota> \<in> Inf_FL \<Longrightarrow> prems_of \<iota> \<noteq> []"
   using inf_have_prems Inf_FL_to_Inf_F by fastforce
 
 inductive step :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<Longrightarrow>GC" 50) where

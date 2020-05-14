@@ -54,8 +54,11 @@ proof -
     calculus_with_red_crit.Red_Inf_of_subset calculus_with_red_crit_axioms sup_bot.right_neutral)
 qed
 
+abbreviation saturated_wrt :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" where
+  "saturated_wrt M N \<equiv> Inf_from N \<subseteq> Red_Inf M"
+
 definition saturated :: "'f set \<Rightarrow> bool" where
-  "saturated N \<longleftrightarrow> Inf_from N \<subseteq> Red_Inf N"
+  "saturated N \<longleftrightarrow> saturated_wrt N N"
 
 definition reduc_saturated :: "'f set \<Rightarrow> bool" where
   "reduc_saturated N \<longleftrightarrow> Inf_from (N - Red_F N) \<subseteq> Red_Inf N"
