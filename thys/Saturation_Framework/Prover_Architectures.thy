@@ -141,18 +141,18 @@ definition active_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l)
 definition passive_subset :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
   "passive_subset M = {CL \<in> M. snd CL \<noteq> active}"
 
-lemma active_subset_insert:
-  "active_subset (insert Cl N) = active_subset {Cl} \<union> active_subset N"
+lemma active_subset_insert[simp]:
+  "active_subset (insert Cl N) = (if snd Cl = active then {Cl} else {}) \<union> active_subset N"
   unfolding active_subset_def by auto
 
-lemma active_subset_union: "active_subset (M \<union> N) = active_subset M \<union> active_subset N"
+lemma active_subset_union[simp]: "active_subset (M \<union> N) = active_subset M \<union> active_subset N"
   unfolding active_subset_def by auto
 
-lemma passive_subset_insert:
-  "passive_subset (insert Cl N) = passive_subset {Cl} \<union> passive_subset N"
+lemma passive_subset_insert[simp]:
+  "passive_subset (insert Cl N) = (if snd Cl \<noteq> active then {Cl} else {}) \<union> passive_subset N"
   unfolding passive_subset_def by auto
 
-lemma passive_subset_union: "passive_subset (M \<union> N) = passive_subset M \<union> passive_subset N"
+lemma passive_subset_union[simp]: "passive_subset (M \<union> N) = passive_subset M \<union> passive_subset N"
   unfolding passive_subset_def by auto
 
 sublocale std?: static_refutational_complete_calculus Bot_FL Inf_FL "(\<Turnstile>\<inter>\<G>L)" Red_Inf_Q Red_F_Q
@@ -799,7 +799,7 @@ lemma lgc_fair:
     deriv: "chain (\<Longrightarrow>LGC) D" and
     init_state: "active_subset (snd (lnth D 0)) = {}" and
     final_state: "passive_subset (Liminf_llist (lmap snd D)) = {}" and
-    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> (fst (lnth D 0))" and
+    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> fst (lnth D 0)" and
     final_schedule: "Liminf_llist (lmap fst D) = {}"
   shows "fair (lmap snd D)"
   unfolding fair_def

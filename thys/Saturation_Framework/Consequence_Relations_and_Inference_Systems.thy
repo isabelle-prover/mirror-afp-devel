@@ -87,6 +87,12 @@ definition Inf_from :: "'f set \<Rightarrow> 'f inference set" where
 definition Inf_from2 :: "'f set \<Rightarrow> 'f set \<Rightarrow> 'f inference set" where
   "Inf_from2 N M = Inf_from (N \<union> M) - Inf_from (N - M)"
 
+lemma Inf_if_Inf_from: "\<iota> \<in> Inf_from N \<Longrightarrow> \<iota> \<in> Inf"
+  unfolding Inf_from_def by simp
+
+lemma Inf_if_Inf_from2: "\<iota> \<in> Inf_from2 N M \<Longrightarrow> \<iota> \<in> Inf"
+  unfolding Inf_from2_def Inf_from_def by simp
+
 lemma Inf_from2_alt:
   "Inf_from2 N M = {\<iota> \<in> Inf. \<iota> \<in> Inf_from (N \<union> M) \<and> set (prems_of \<iota>) \<inter> M \<noteq> {}}"
   unfolding Inf_from_def Inf_from2_def by auto
