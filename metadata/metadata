@@ -9177,7 +9177,7 @@ abstract =
 
 [Knuth_Bendix_Order]
 title = A Formalization of Knuth–Bendix Orders
-author = Christian Sternagel <>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann/>
+author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann/>
 topic = Logic/Rewriting
 date = 2020-05-13
 notify = c.sternagel@gmail.com, rene.thiemann@uibk.ac.at
