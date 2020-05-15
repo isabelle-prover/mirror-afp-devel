@@ -180,10 +180,10 @@ begin
       obtain l where 2: "c = cs ! l" "l < length cs" using in_set_conv_nth 1 by metis
       show "infs c w"
       using that unfolding 2(1)
-      proof (coinduction arbitrary: w k rule: infs_set_coinduct)
-        case (infs_set w k)
+      proof (coinduction arbitrary: w k rule: infs_coinduct_shift)
+        case (infs w k)
         obtain u a v where 3: "w = u @- a ## v" "(cs ! l) a"
-          using degen_skip_arbitrary_condition 2(2) infs_set by this
+          using degen_skip_arbitrary_condition 2(2) infs by this
         let ?k = "fold (count cs) u k"
         let ?l = "fold (count cs) (u @ [a]) k"
         have 4: "a ## v ||| ?k ## sscan (count cs) (a ## v) ?k =
@@ -191,7 +191,7 @@ begin
           using 3(1) eq_shift scons_eq
           by (metis sdrop_simps(1) sdrop_stl sdrop_szip sscan_scons_snth sscan_sdrop stream.sel(2))
         have 5: "infs (degen cs) (a ## v ||| ?k ## sscan (count cs) (a ## v) ?k)"
-          using infs_set unfolding 4 by blast
+          using infs unfolding 4 by blast
         show ?case
         proof (intro exI conjI bexI)
           show "w = (u @ [a]) @- v" "(cs ! l) a" "a \<in> set (u @ [a])" "v = v" using 3 by auto
@@ -201,10 +201,10 @@ begin
     qed
     show "infs (degen cs) (w ||| k ## sscan (count cs) w k)" if "gen infs cs w"
     using that
-    proof (coinduction arbitrary: w k rule: infs_set_coinduct)
-      case (infs_set w k)
+    proof (coinduction arbitrary: w k rule: infs_coinduct_shift)
+      case (infs w k)
       obtain u a v where 1: "w = u @- a ## v" "degen cs (a, fold (count cs) u k)"
-        using gen_degen_step infs_set by this
+        using gen_degen_step infs by this
       let ?u = "u @ [a] || k # scan (count cs) u k"
       let ?l = "fold (count cs) (u @ [a]) k"
       show ?case
@@ -222,7 +222,7 @@ begin
         also have "\<dots> \<in> set ?u" by (fastforce intro: last_in_set simp: zip_eq_Nil_iff)
         finally show "(a, fold (count cs) u k) \<in> set ?u" by this
         show "v ||| ?l ## sscan (count cs) v ?l = v ||| ?l ## sscan (count cs) v ?l" by rule
-        show "gen infs cs v" using infs_set unfolding 1(1) by auto
+        show "gen infs cs v" using infs unfolding 1(1) by auto
       qed
     qed
   qed
