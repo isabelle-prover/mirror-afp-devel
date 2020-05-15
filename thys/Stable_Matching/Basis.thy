@@ -218,6 +218,9 @@ next
     unfolding order_on_defs total_on_def by (fastforce simp: ins maxR_def elim: transE intro: FieldI1)
 qed
 
+
+declare [[simproc del: eliminate_false_implies]]
+
 lemma MaxR_opt_is_greatest:
   assumes "MaxR_opt A = Some x"
   assumes "y \<in> A \<inter> Field r"
@@ -225,9 +228,31 @@ lemma MaxR_opt_is_greatest:
 using finite[of A] assms
 proof(induct arbitrary: x)
   note ins = insert
-  case (insert a A) then show ?case
-    using r_Linear_order unfolding order_on_defs refl_on_def total_on_def
-    by (auto 10 0 simp: maxR_def ins dest!: range_None range_Some split: if_splits option.splits elim: transE)
+  case (insert a A)
+  show ?case
+  proof (cases "y = x")
+    case True
+    thus "(y, x) \<in> r"
+      using r_Linear_order insert by (auto simp: order_on_defs refl_on_def)
+  next
+    case False
+    show "(y, x) \<in> r"
+    proof (rule ccontr)
+      assume "(y, x) \<notin> r"
+      from insert have "x \<in> Field r" "y \<in> Field r"
+        by (auto simp: maxR_def ins dest!: range_None range_Some split: if_splits option.splits)
+      from \<open>(y, x) \<notin> r\<close> and \<open>y \<noteq> x\<close> and insert obtain z where z: "(x, z) \<notin> r" "(y, z) \<in> r" "z \<in> Field r"
+        by (auto simp: maxR_def ins dest!: range_None range_Some split: if_splits option.splits)
+      have "(x, y) \<in> r"
+        using r_Linear_order \<open>(y, x) \<notin> r\<close> \<open>x \<in> Field r\<close> \<open>y \<in> Field r\<close> \<open>y \<noteq> x\<close>
+        by (auto simp: order_on_defs total_on_def)
+      have "trans r"
+        using r_Linear_order by (auto simp: order_on_defs)
+      from this and \<open>(x, y) \<in> r\<close> and \<open>(y, z) \<in> r\<close> have "(x, z) \<in> r"
+        by (rule transD)
+      with \<open>(x, z) \<notin> r\<close> show False by contradiction
+    qed
+  qed
 qed simp
 
 lemma greatest_is_MaxR_opt:

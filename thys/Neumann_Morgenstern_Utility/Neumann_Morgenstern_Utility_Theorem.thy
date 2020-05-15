@@ -585,7 +585,7 @@ next
     moreover have "e \<in> outcomes"
       using calculation(2) calculation(3) by blast
     moreover have "x = return_pmf e"
-      using calculation(3) set_pmf_subset_singleton by fastforce
+      using calculation(3) set_pmf_subset_singleton by fast
     ultimately show "x \<in> {return_pmf x |x. x \<in> outcomes}"
       by blast
   qed

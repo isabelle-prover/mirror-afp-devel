@@ -184,7 +184,6 @@ lemma FinalDeny_approximating_in_doubt_deny: "matcher_agree_on_exact_matches \<g
     prefer 2
     apply(simp add: good_ruleset_append)
     apply (metis approximating_bigstep.decision approximating_bigstep.seq Semantics.decisionD state.inject)
-   apply(thin_tac "False \<Longrightarrow> _ \<Longrightarrow> _")
    apply(simp add: good_ruleset_append, clarify)
    apply(drule(2) iptables_bigstep_undecided_to_undecided_in_doubt_deny_approx)
    apply(erule disjE)
