@@ -168,6 +168,11 @@ lemma Liminf_llist_imp_exists_index:
   "x \<in> Liminf_llist Xs \<Longrightarrow> \<exists>i. enat i < llength Xs \<and> x \<in> lnth Xs i"
   unfolding Liminf_llist_def by auto
 
+lemma not_Liminf_llist_imp_exists_index:
+  "\<not> lnull Xs \<Longrightarrow> x \<notin> Liminf_llist Xs \<Longrightarrow> enat i < llength Xs \<Longrightarrow>
+   (\<exists>j. i \<le> j \<and> enat j < llength Xs \<and> x \<notin> lnth Xs j)"
+  unfolding Liminf_llist_def by auto
+
 lemma finite_subset_Liminf_llist_imp_exists_index:
   assumes
     nnil: "\<not> lnull Xs" and

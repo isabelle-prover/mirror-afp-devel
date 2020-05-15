@@ -864,9 +864,9 @@ proof
     bot_elem: \<open>B \<in> Bot\<close> and
     deriv: \<open>chain (\<rhd>Red) D\<close> and
     fair: \<open>reduc_fair D\<close> and
-    unsat: \<open>(lnth D 0) \<Turnstile> {B}\<close>
+    unsat: \<open>lnth D 0 \<Turnstile> {B}\<close>
     have non_empty: \<open>\<not> lnull D\<close> using chain_not_lnull[OF deriv] .
-    have subs: \<open>(lnth D 0) \<subseteq> Sup_llist D\<close>
+    have subs: \<open>lnth D 0 \<subseteq> Sup_llist D\<close>
       using lhd_subset_Sup_llist[of D] non_empty by (simp add: lhd_conv_lnth)
     have \<open>Sup_llist D \<Turnstile> {B}\<close>
       using unsat subset_entailed[OF subs] entails_trans[of "Sup_llist D" "lnth D 0"] by auto
