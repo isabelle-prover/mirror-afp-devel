@@ -307,7 +307,6 @@ begin
     apply(elim disjE)
        apply(simp_all)
      apply(simp_all add: disjoint_intervals_def disjoint_def)
-     apply(thin_tac [!] "False \<Longrightarrow> _ \<Longrightarrow> _ \<Longrightarrow> _")
      apply(blast dest: A_in_listwordinterval_compress)+
     done
   text\<open>END merging overlapping intervals\<close>

@@ -86,7 +86,7 @@ lemma limseq_shift_iff: "(\<lambda>m. x (m+i)) \<longlonglongrightarrow> y = x \
 next 
   case (Suc n)
   also have "(\<lambda>m. x (m + n)) \<longlonglongrightarrow> y = (\<lambda>m. x (Suc m + n)) \<longlonglongrightarrow> y"
-    by (rule LIMSEQ_Suc_iff[THEN sym])  
+    by (rule filterlim_sequentially_Suc[THEN sym])  
   also have "\<dots> = (\<lambda>m. x (m + Suc n)) \<longlonglongrightarrow> y"
     by simp
   finally show ?case .

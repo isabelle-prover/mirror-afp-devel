@@ -537,10 +537,14 @@ fun all_meta aux ret = let open META open META_overload in fn
                     (META.holThyLocale_header data)))
            #> snd)
        |> fold (fold (semi__theory Local_Theory.background_theory
-                                   (fn f => fn lthy => lthy
-                                     |> Local_Theory.new_group
-                                     |> f
-                                     |> Local_Theory.reset_group))) l
+                                   (fn f =>
+                                     \<comment> \<open>Note: This function is not equivalent to \<^ML>\<open>Local_Theory.subtarget\<close>.\<close>
+                                     Local_Theory.new_group
+                                     #> f
+                                     #> Local_Theory.reset_group
+                                     #> (fn lthy =>
+                                          #1 (Named_Target.switch NONE (Context.Proof lthy)) lthy
+                                          |> Context.the_proof)))) l
        |> Local_Theory.exit_global)
 | META_boot_generation_syntax _ => ret o I
 | META_boot_setup_env _ => ret o I

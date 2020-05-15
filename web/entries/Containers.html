@@ -114,14 +114,14 @@ MathJax = {
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract"><div class="mathjax_process">
+  <td class="abstract mathjax_process">
 This development provides a framework for container types like sets and maps such that generated code implements these containers with different (efficient) data structures.
 Thanks to type classes and refinement during code generation, this light-weight approach can seamlessly replace Isabelle's default setup for code generation.
 Heuristics automatically pick one of the available data structures depending on the type of elements to be stored, but users can also choose on their own.
 The extensible design permits to add more implementations at any time.
 <p>
 To support arbitrary nesting of sets, we define a linear order on sets based on a linear order of the elements and provide efficient implementations.
-It even allows to compare complements with non-complements.</div></td>
+It even allows to compare complements with non-complements.</td>
 </tr>
 
   <tr>

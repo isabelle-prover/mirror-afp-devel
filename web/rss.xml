@@ -9,7 +9,55 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>10 Apr 2020 00:00:00 +0000</pubDate>
+    <pubDate>27 Apr 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Attack Trees in Isabelle for GDPR compliance of IoT healthcare systems</title>
+              <link>https://www.isa-afp.org/entries/Attack_Trees.html</link>
+       <guid>https://www.isa-afp.org/entries/Attack_Trees.html</guid>
+       <dc:creator> Florian Kammueller       </dc:creator>
+       <pubDate>27 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+In this article, we present a proof theory for Attack Trees. Attack
+Trees are a well established and useful model for the construction of
+attacks on systems since they allow a stepwise exploration of high
+level attacks in application scenarios. Using the expressiveness of
+Higher Order Logic in Isabelle, we develop a generic
+theory of Attack Trees with a state-based semantics based on Kripke
+structures and CTL. The resulting framework
+allows mechanically supported logic analysis of the meta-theory of the
+proof calculus of Attack Trees and at the same time the developed
+proof theory enables application to case studies. A central
+correctness and completeness result proved in Isabelle establishes a
+connection between the notion of Attack Tree validity and CTL. The
+application is illustrated on the example of a healthcare IoT system
+and GDPR compliance verification.</description>
+    </item>
+    <item>
+       <title>Authenticated Data Structures As Functors</title>
+              <link>https://www.isa-afp.org/entries/ADS_Functor.html</link>
+       <guid>https://www.isa-afp.org/entries/ADS_Functor.html</guid>
+       <dc:creator> Andreas Lochbihler, Ognjen Marić       </dc:creator>
+       <pubDate>16 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+Authenticated data structures allow several systems to convince each
+other that they are referring to the same data structure, even if each
+of them knows only a part of the data structure. Using inclusion
+proofs, knowledgeable systems can selectively share their knowledge
+with other systems and the latter can verify the authenticity of what
+is being shared.  In this article, we show how to modularly define
+authenticated data structures, their inclusion proofs, and operations
+thereon as datatypes in Isabelle/HOL, using a shallow embedding.
+Modularity allows us to construct complicated trees from reusable
+building blocks, which we call Merkle functors. Merkle functors
+include sums, products, and function spaces and are closed under
+composition and least fixpoints.  As a practical application, we model
+the hierarchical transactions of &lt;a
+href=&#34;https://www.canton.io&#34;&gt;Canton&lt;/a&gt;, a
+practical interoperability protocol for distributed ledgers, as
+authenticated data structures. This is a first step towards
+formalizing the Canton protocol and verifying its integrity and
+security guarantees.</description>
+    </item>
     <item>
        <title>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</title>
               <link>https://www.isa-afp.org/entries/Sliding_Window_Algorithm.html</link>
@@ -77,6 +125,27 @@ addition of regular expressions and aggregations, we implemented &lt;a
 href=&#34;https://www.isa-afp.org/entries/Generic_Join.html&#34;&gt;multi-way
 joins&lt;/a&gt; and a specialized sliding window algorithm to further
 optimize the monitor.</description>
+    </item>
+    <item>
+       <title>Lucas's Theorem</title>
+              <link>https://www.isa-afp.org/entries/Lucas_Theorem.html</link>
+       <guid>https://www.isa-afp.org/entries/Lucas_Theorem.html</guid>
+       <dc:creator> Chelsea Edmonds       </dc:creator>
+       <pubDate>07 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+This work presents a formalisation of a generating function proof for
+Lucas&#39;s theorem. We first outline extensions to the existing
+Formal Power Series (FPS) library, including an equivalence relation
+for coefficients modulo &lt;em&gt;n&lt;/em&gt;, an alternate binomial theorem statement,
+and a formalised proof of the Freshman&#39;s dream (mod &lt;em&gt;p&lt;/em&gt;) lemma.
+The second part of the work presents the formal proof of Lucas&#39;s
+Theorem. Working backwards, the formalisation first proves a well
+known corollary of the theorem which is easier to formalise, and then
+applies induction to prove the original theorem statement. The proof
+of the corollary aims to provide a good example of a formalised
+generating function equivalence proof using the FPS library. The final
+theorem statement is intended to be integrated into the formalised
+proof of Hilbert&#39;s 10th Problem.</description>
     </item>
     <item>
        <title>Strong Eventual Consistency of the Collaborative Editing Framework WOOT</title>
@@ -514,74 +583,6 @@ was a program verification competition associated with ETAPS 2019. It
 was the 8th event in the VerifyThis competition series. In this entry,
 we present polished and completed versions of our solutions that we
 created during the competition.</description>
-    </item>
-    <item>
-       <title>Aristotle's Assertoric Syllogistic</title>
-              <link>https://www.isa-afp.org/entries/Aristotles_Assertoric_Syllogistic.html</link>
-       <guid>https://www.isa-afp.org/entries/Aristotles_Assertoric_Syllogistic.html</guid>
-       <dc:creator> Angeliki Koutsoukou-Argyraki       </dc:creator>
-       <pubDate>08 Oct 2019 00:00:00 +0000</pubDate>
-       <description>
-We formalise with Isabelle/HOL some basic elements of Aristotle&#39;s
-assertoric syllogistic following the &lt;a
-href=&#34;https://plato.stanford.edu/entries/aristotle-logic/&#34;&gt;article from the Stanford Encyclopedia of Philosophy by Robin Smith.&lt;/a&gt; To
-this end, we use a set theoretic formulation (covering both individual
-and general predication). In particular, we formalise the deductions
-in the Figures and after that we present Aristotle&#39;s
-metatheoretical observation that all deductions in the Figures can in
-fact be reduced to either Barbara or Celarent. As the formal proofs
-prove to be straightforward, the interest of this entry lies in
-illustrating the functionality of Isabelle and high efficiency of
-Sledgehammer for simple exercises in philosophy.</description>
-    </item>
-    <item>
-       <title>Sigma Protocols and Commitment Schemes</title>
-              <link>https://www.isa-afp.org/entries/Sigma_Commit_Crypto.html</link>
-       <guid>https://www.isa-afp.org/entries/Sigma_Commit_Crypto.html</guid>
-       <dc:creator> David Butler, Andreas Lochbihler       </dc:creator>
-       <pubDate>07 Oct 2019 00:00:00 +0000</pubDate>
-       <description>
-We use CryptHOL to formalise commitment schemes and Sigma-protocols.
-Both are widely used fundamental two party cryptographic primitives.
-Security for commitment schemes is considered using game-based
-definitions whereas the security of Sigma-protocols is considered
-using both the game-based and simulation-based security paradigms. In
-this work, we first define security for both primitives and then prove
-secure multiple case studies: the Schnorr, Chaum-Pedersen and
-Okamoto Sigma-protocols as well as a construction that allows for
-compound (AND and OR statements) Sigma-protocols and the Pedersen and
-Rivest commitment schemes. We also prove that commitment schemes can
-be constructed from Sigma-protocols. We formalise this proof at an
-abstract level, only assuming the existence of a Sigma-protocol;
-consequently, the instantiations of this result for the concrete
-Sigma-protocols we consider come for free.</description>
-    </item>
-    <item>
-       <title>Clean - An Abstract Imperative Programming Language and its Theory</title>
-              <link>https://www.isa-afp.org/entries/Clean.html</link>
-       <guid>https://www.isa-afp.org/entries/Clean.html</guid>
-       <dc:creator> Frédéric Tuong, Burkhart Wolff       </dc:creator>
-       <pubDate>04 Oct 2019 00:00:00 +0000</pubDate>
-       <description>
-Clean is based on a simple, abstract execution model for an imperative
-target language. “Abstract” is understood in contrast to “Concrete
-Semantics”; alternatively, the term “shallow-style embedding” could be
-used. It strives for a type-safe notion of program-variables, an
-incremental construction of the typed state-space, support of
-incremental verification, and open-world extensibility of new type
-definitions being intertwined with the program definitions. Clean is
-based on a “no-frills” state-exception monad with the usual
-definitions of bind and unit for the compositional glue of state-based
-computations. Clean offers conditionals and loops supporting C-like
-control-flow operators such as break and return. The state-space
-construction is based on the extensible record package. Direct
-recursion of procedures is supported. Clean’s design strives for
-extreme simplicity. It is geared towards symbolic execution and proven
-correct verification tools. The underlying libraries of this package,
-however, deliberately restrict themselves to the most elementary
-infrastructure for these tasks. The package is intended to serve as
-demonstrator semantic backend for Isabelle/C, or for the
-test-generation techniques.</description>
     </item>
   </channel>
 </rss>

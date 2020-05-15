@@ -90,10 +90,10 @@ end
 lemmas [code] = less_uint.rep_eq less_eq_uint.rep_eq
 
 instantiation uint :: bit_operations begin
-lift_definition bitNOT_uint :: "uint \<Rightarrow> uint" is bitNOT .
-lift_definition bitAND_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is bitAND .
-lift_definition bitOR_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is bitOR .
-lift_definition bitXOR_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is bitXOR .
+lift_definition bitNOT_uint :: "uint \<Rightarrow> uint" is NOT .
+lift_definition bitAND_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is \<open>(AND)\<close> .
+lift_definition bitOR_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is \<open>(OR)\<close> .
+lift_definition bitXOR_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is \<open>(XOR)\<close> .
 lift_definition test_bit_uint :: "uint \<Rightarrow> nat \<Rightarrow> bool" is test_bit .
 lift_definition set_bit_uint :: "uint \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint" is set_bit .
 lift_definition lsb_uint :: "uint \<Rightarrow> bool" is lsb .
@@ -500,28 +500,28 @@ code_printing
   (Haskell) infix 4 "<" and
   (OCaml) "Uint.less" and
   (Scala) "Uint.less"
-| constant "bitNOT :: uint \<Rightarrow> _" \<rightharpoonup>
+| constant "NOT :: uint \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word.notb" and
   (Eval) "(raise (Fail \"Machine dependent code\"))" and
   (Quickcheck) "Word.notb" and
   (Haskell) "Data'_Bits.complement" and
   (OCaml) "Pervasives.lnot" and
   (Scala) "_.unary'_~"
-| constant "bitAND :: uint \<Rightarrow> _" \<rightharpoonup>
+| constant "(AND) :: uint \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word.andb ((_),/ (_))" and
   (Eval) "(raise (Fail \"Machine dependent code\"))" and
   (Quickcheck) "Word.andb ((_),/ (_))" and
   (Haskell) infixl 7 "Data_Bits..&." and
   (OCaml) "Pervasives.(land)" and
   (Scala) infixl 3 "&"
-| constant "bitOR :: uint \<Rightarrow> _" \<rightharpoonup>
+| constant "(OR) :: uint \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word.orb ((_),/ (_))" and
   (Eval) "(raise (Fail \"Machine dependent code\"))" and
   (Quickcheck) "Word.orb ((_),/ (_))" and
   (Haskell) infixl 5 "Data_Bits..|." and
   (OCaml) "Pervasives.(lor)" and
   (Scala) infixl 1 "|"
-| constant "bitXOR :: uint \<Rightarrow> _" \<rightharpoonup>
+| constant "(XOR) :: uint \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word.xorb ((_),/ (_))" and
   (Eval) "(raise (Fail \"Machine dependent code\"))" and
   (Quickcheck) "Word.xorb ((_),/ (_))" and

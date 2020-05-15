@@ -21,7 +21,13 @@ Processes'') of Bachmair and Ganzinger's chapter.
 definition Sup_llist :: "'a set llist \<Rightarrow> 'a set" where
   "Sup_llist Xs = (\<Union>i \<in> {i. enat i < llength Xs}. lnth Xs i)"
 
-lemma lnth_subset_Sup_llist: "enat i < llength xs \<Longrightarrow> lnth xs i \<subseteq> Sup_llist xs"
+lemma lnth_subset_Sup_llist: "enat i < llength Xs \<Longrightarrow> lnth Xs i \<subseteq> Sup_llist Xs"
+  unfolding Sup_llist_def by auto
+
+lemma Sup_llist_imp_exists_index: "x \<in> Sup_llist Xs \<Longrightarrow> \<exists>i. enat i < llength Xs \<and> x \<in> lnth Xs i"
+  unfolding Sup_llist_def by auto
+
+lemma exists_index_imp_Sup_llist: "enat i < llength Xs \<Longrightarrow> x \<in> lnth Xs i \<Longrightarrow> x \<in> Sup_llist Xs"
   unfolding Sup_llist_def by auto
 
 lemma Sup_llist_LNil[simp]: "Sup_llist LNil = {}"
@@ -48,6 +54,14 @@ lemma lhd_subset_Sup_llist: "\<not> lnull Xs \<Longrightarrow> lhd Xs \<subseteq
 definition Sup_upto_llist :: "'a set llist \<Rightarrow> nat \<Rightarrow> 'a set" where
   "Sup_upto_llist Xs j = (\<Union>i \<in> {i. enat i < llength Xs \<and> i \<le> j}. lnth Xs i)"
 
+lemma Sup_upto_llist_0[simp]: "Sup_upto_llist Xs 0 = (if 0 < llength Xs then lnth Xs 0 else {})"
+  unfolding Sup_upto_llist_def image_def by (simp add: enat_0)
+
+lemma Sup_upto_llist_Suc[simp]:
+  "Sup_upto_llist Xs (Suc j) =
+   Sup_upto_llist Xs j \<union> (if enat (Suc j) < llength Xs then lnth Xs (Suc j) else {})"
+  unfolding Sup_upto_llist_def image_def by (auto intro: le_SucI elim: le_SucE)
+
 lemma Sup_upto_llist_mono: "j \<le> k \<Longrightarrow> Sup_upto_llist Xs j \<subseteq> Sup_upto_llist Xs k"
   unfolding Sup_upto_llist_def by auto
 
@@ -57,6 +71,9 @@ lemma Sup_upto_llist_subset_Sup_llist: "j \<le> k \<Longrightarrow> Sup_upto_lli
 lemma elem_Sup_llist_imp_Sup_upto_llist:
 	"x \<in> Sup_llist Xs \<Longrightarrow> \<exists>j < llength Xs. x \<in> Sup_upto_llist Xs j"
   unfolding Sup_llist_def Sup_upto_llist_def by blast
+
+lemma lnth_subset_Sup_upto_llist: "enat j < llength Xs \<Longrightarrow> lnth Xs j \<subseteq> Sup_upto_llist Xs j"
+  unfolding Sup_upto_llist_def by auto
 
 lemma finite_Sup_llist_imp_Sup_upto_llist:
   assumes "finite X" and "X \<subseteq> Sup_llist Xs"
@@ -81,9 +98,6 @@ qed simp
 definition Liminf_llist :: "'a set llist \<Rightarrow> 'a set" where
   "Liminf_llist Xs =
    (\<Union>i \<in> {i. enat i < llength Xs}. \<Inter>j \<in> {j. i \<le> j \<and> enat j < llength Xs}. lnth Xs j)"
-
-lemma Liminf_llist_subset_Sup_llist: "Liminf_llist Xs \<subseteq> Sup_llist Xs"
-  unfolding Liminf_llist_def Sup_llist_def by fast
 
 lemma Liminf_llist_LNil[simp]: "Liminf_llist LNil = {}"
   unfolding Liminf_llist_def by simp
@@ -143,5 +157,127 @@ qed (simp add: Liminf_llist_def)
 
 lemma Liminf_llist_ltl: "\<not> lnull (ltl Xs) \<Longrightarrow> Liminf_llist Xs = Liminf_llist (ltl Xs)"
   by (metis Liminf_llist_LCons lhd_LCons_ltl lnull_ltlI)
+
+lemma Liminf_llist_subset_Sup_llist: "Liminf_llist Xs \<subseteq> Sup_llist Xs"
+  unfolding Liminf_llist_def Sup_llist_def by fast
+
+lemma image_Liminf_llist_subset: "f ` Liminf_llist Ns \<subseteq> Liminf_llist (lmap ((`) f) Ns)"
+  unfolding Liminf_llist_def by auto
+
+lemma Liminf_llist_imp_exists_index:
+  "x \<in> Liminf_llist Xs \<Longrightarrow> \<exists>i. enat i < llength Xs \<and> x \<in> lnth Xs i"
+  unfolding Liminf_llist_def by auto
+
+lemma not_Liminf_llist_imp_exists_index:
+  "\<not> lnull Xs \<Longrightarrow> x \<notin> Liminf_llist Xs \<Longrightarrow> enat i < llength Xs \<Longrightarrow>
+   (\<exists>j. i \<le> j \<and> enat j < llength Xs \<and> x \<notin> lnth Xs j)"
+  unfolding Liminf_llist_def by auto
+
+lemma finite_subset_Liminf_llist_imp_exists_index:
+  assumes
+    nnil: "\<not> lnull Xs" and
+    fin: "finite X" and
+    in_lim: "X \<subseteq> Liminf_llist Xs"
+  shows "\<exists>i. enat i < llength Xs \<and> X \<subseteq> \<Inter> (lnth Xs ` {j. i \<le> j \<and> enat j < llength Xs})"
+proof -
+  show ?thesis
+  proof (cases "X = {}")
+    case True
+    then show ?thesis
+      using nnil by (auto intro: exI[of _ 0] simp: zero_enat_def[symmetric])
+  next
+    case nemp: False
+
+    have in_lim':
+      "\<forall>x \<in> X. \<exists>i. enat i < llength Xs \<and> x \<in> \<Inter> (lnth Xs ` {j. i \<le> j \<and> enat j < llength Xs})"
+      using in_lim[unfolded Liminf_llist_def] in_mono by fastforce
+    obtain i_of where
+      i_of_lt: "\<forall>x \<in> X. enat (i_of x) < llength Xs" and
+      in_inter: "\<forall>x \<in> X. x \<in> \<Inter> (lnth Xs ` {j. i_of x \<le> j \<and> enat j < llength Xs})"
+      using bchoice[OF in_lim'] by blast
+
+    define i_max where
+      "i_max = Max (i_of ` X)"
+
+    have "i_max \<in> i_of ` X"
+      by (simp add: fin i_max_def nemp)
+    then obtain x_max where
+      x_max_in: "x_max \<in> X" and
+      i_max_is: "i_max = i_of x_max"
+      unfolding i_max_def by blast
+    have le_i_max: "\<forall>x \<in> X. i_of x \<le> i_max"
+      unfolding i_max_def by (simp add: fin)
+    have "enat i_max < llength Xs"
+      using i_of_lt x_max_in i_max_is by auto
+    moreover have "X \<subseteq> \<Inter> (lnth Xs ` {j. i_max \<le> j \<and> enat j < llength Xs})"
+    proof
+      fix x
+      assume x_in: "x \<in> X"
+      then have x_in_inter: "x \<in> \<Inter> (lnth Xs ` {j. i_of x \<le> j \<and> enat j < llength Xs})"
+        using in_inter by auto
+      moreover have "{j. i_max \<le> j \<and> enat j < llength Xs}
+        \<subseteq> {j. i_of x \<le> j \<and> enat j < llength Xs}"
+        using x_in le_i_max by auto
+      ultimately show "x \<in> \<Inter> (lnth Xs ` {j. i_max \<le> j \<and> enat j < llength Xs})"
+        by auto
+    qed
+    ultimately show ?thesis
+      by auto
+  qed
+qed
+
+lemma Liminf_llist_lmap_image:
+  assumes f_inj: "inj_on f (Sup_llist (lmap g xs))"
+  shows "Liminf_llist (lmap (\<lambda>x. f ` g x) xs) = f ` Liminf_llist (lmap g xs)" (is "?lhs = ?rhs")
+proof
+  show "?lhs \<subseteq> ?rhs"
+  proof
+    fix x
+    assume "x \<in> Liminf_llist (lmap (\<lambda>x. f ` g x) xs)"
+    then obtain i where
+      i_lt: "enat i < llength xs" and
+      x_in_fgj: "\<forall>j. i \<le> j \<longrightarrow> enat j < llength xs \<longrightarrow> x \<in> f ` g (lnth xs j)"
+      unfolding Liminf_llist_def by auto
+
+    have ex_in_gi: "\<exists>y. y \<in> g (lnth xs i) \<and> x = f y"
+      using f_inj i_lt x_in_fgj unfolding inj_on_def Sup_llist_def by auto
+    have "\<exists>y. \<forall>j. i \<le> j \<longrightarrow> enat j < llength xs \<longrightarrow> y \<in> g (lnth xs j) \<and> x = f y"
+      apply (rule exI[of _ "SOME y. y \<in> g (lnth xs i) \<and> x = f y"])
+      using someI_ex[OF ex_in_gi] x_in_fgj f_inj i_lt x_in_fgj unfolding inj_on_def Sup_llist_def
+      by simp (metis (no_types, lifting) imageE)
+    then show "x \<in> f ` Liminf_llist (lmap g xs)"
+      using i_lt unfolding Liminf_llist_def by auto
+  qed
+next
+  show "?rhs \<subseteq> ?lhs"
+    using image_Liminf_llist_subset[of f "lmap g xs", unfolded llist.map_comp] by auto
+qed
+
+lemma Liminf_llist_lmap_union:
+  assumes "\<forall>x \<in> lset xs. \<forall>Y \<in> lset xs. g x \<inter> h Y = {}"
+  shows "Liminf_llist (lmap (\<lambda>x. g x \<union> h x) xs) =
+    Liminf_llist (lmap g xs) \<union> Liminf_llist (lmap h xs)" (is "?lhs = ?rhs")
+proof (intro equalityI subsetI)
+  fix x
+  assume x_in: "x \<in> ?lhs"
+  then obtain i where
+    i_lt: "enat i < llength xs" and
+    j: "\<forall>j. i \<le> j \<and> enat j < llength xs \<longrightarrow> x \<in> g (lnth xs j) \<or> x \<in> h (lnth xs j)"
+    using x_in[unfolded Liminf_llist_def, simplified] by blast
+
+  then have "(\<exists>i'. enat i' < llength xs \<and> (\<forall>j. i' \<le> j \<and> enat j < llength xs \<longrightarrow> x \<in> g (lnth xs j)))
+     \<or> (\<exists>i'. enat i' < llength xs \<and> (\<forall>j. i' \<le> j \<and> enat j < llength xs \<longrightarrow> x \<in> h (lnth xs j)))"
+    using assms[unfolded disjoint_iff_not_equal] by (metis in_lset_conv_lnth)
+  then show "x \<in> ?rhs"
+    unfolding Liminf_llist_def by simp
+next
+  fix x
+  show "x \<in> ?rhs \<Longrightarrow> x \<in> ?lhs"
+    using assms unfolding Liminf_llist_def by auto
+qed
+
+lemma Liminf_set_filter_commute:
+  "Liminf_llist (lmap (\<lambda>X. {x \<in> X. p x}) Xs) = {x \<in> Liminf_llist Xs. p x}"
+  unfolding Liminf_llist_def by force
 
 end

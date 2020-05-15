@@ -71,10 +71,10 @@ end
 instantiation integer :: bit_operations begin
 context includes integer.lifting begin
 
-lift_definition bitAND_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer" is "bitAND" .
-lift_definition bitOR_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer" is "bitOR" .
-lift_definition bitXOR_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer" is "bitXOR" .
-lift_definition bitNOT_integer :: "integer \<Rightarrow> integer" is "bitNOT" .
+lift_definition bitAND_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer" is "(AND)" .
+lift_definition bitOR_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer" is "(OR)" .
+lift_definition bitXOR_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer" is "(XOR)" .
+lift_definition bitNOT_integer :: "integer \<Rightarrow> integer" is "NOT" .
 
 lift_definition test_bit_integer :: "integer \<Rightarrow> nat \<Rightarrow> bool" is test_bit .
 lift_definition lsb_integer :: "integer \<Rightarrow> bool" is lsb .
@@ -325,25 +325,25 @@ def testBit(x: BigInt, n: BigInt) : Boolean =
 } /* object Bits_Integer */\<close>
 
 code_printing
-  constant "bitAND :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
+  constant "(AND) :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.andb ((_),/ (_))" and
   (OCaml) "Z.logand" and
   (Haskell) "((Data'_Bits..&.) :: Integer -> Integer -> Integer)" and
   (Haskell_Quickcheck) "((Data'_Bits..&.) :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
   (Scala) infixl 3 "&"
-| constant "bitOR :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
+| constant "(OR) :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.orb ((_),/ (_))" and
   (OCaml) "Z.logor" and
   (Haskell) "((Data'_Bits..|.) :: Integer -> Integer -> Integer)" and
   (Haskell_Quickcheck) "((Data'_Bits..|.) :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
   (Scala) infixl 1 "|"
-| constant "bitXOR :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
+| constant "(XOR) :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.xorb ((_),/ (_))" and
   (OCaml) "Z.logxor" and
   (Haskell) "(Data'_Bits.xor :: Integer -> Integer -> Integer)" and
   (Haskell_Quickcheck) "(Data'_Bits.xor :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
   (Scala) infixl 2 "^"
-| constant "bitNOT :: integer \<Rightarrow> integer" \<rightharpoonup>
+| constant "NOT :: integer \<Rightarrow> integer" \<rightharpoonup>
   (SML) "IntInf.notb" and
   (OCaml) "Z.lognot" and
   (Haskell) "(Data'_Bits.complement :: Integer -> Integer)" and

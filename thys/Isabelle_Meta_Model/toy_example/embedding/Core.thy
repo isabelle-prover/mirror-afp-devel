@@ -121,7 +121,8 @@ definition "thy_def_pre_post = (\<lambda> Floor1 \<Rightarrow> Embed_theories
                                               [ Floor1_examp.print_pre_post ]
                                 | Floor2 \<Rightarrow> Embed_locale
                                               Floor2_examp.print_pre_post_locale
-                                              [ Floor2_examp.print_pre_post_interp ])"
+                                              [ Floor2_examp.print_pre_post_interp
+                                              , Floor2_examp.print_pre_post_def_state' ])"
 definition "thy_ctxt = (\<lambda> Floor1 \<Rightarrow> Embed_theories 
                                       [ Floor1_ctxt.print_ctxt ]
                         | Floor2 \<Rightarrow> Embed_theories 

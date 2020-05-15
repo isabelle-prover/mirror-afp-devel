@@ -1678,9 +1678,6 @@ lemma oghoare_steps_Stuck[rule_format, OF _ refl refl]:
     apply clarsimp
     apply (drule (3) oghoare_step_Stuck)
    apply clarsimp
-   apply (drule meta_spec)+
-   apply (erule meta_impE, (rule conjI, (rule refl)+))+
-    apply simp
    apply (drule step_Fault_prop ; simp)
    apply simp
  done

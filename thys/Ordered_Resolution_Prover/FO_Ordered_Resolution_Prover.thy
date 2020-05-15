@@ -43,8 +43,7 @@ locale FO_resolution_prover =
     mgu :: "'a set set \<Rightarrow> 's option" and
     less_atm :: "'a \<Rightarrow> 'a \<Rightarrow> bool" +
   assumes
-    sel_stable: "\<And>\<rho> C. is_renaming \<rho> \<Longrightarrow> S (C \<cdot> \<rho>) = S C \<cdot> \<rho>" and
-    less_atm_ground: "is_ground_atm A \<Longrightarrow> is_ground_atm B \<Longrightarrow> less_atm A B \<Longrightarrow> A < B"
+    sel_stable: "\<And>\<rho> C. is_renaming \<rho> \<Longrightarrow> S (C \<cdot> \<rho>) = S C \<cdot> \<rho>"
 begin
 
 fun N_of_state :: "'a state \<Rightarrow> 'a clause set" where
@@ -143,10 +142,7 @@ The following formalizes Lemma 4.10.
 
 context
   fixes Sts :: "'a state llist"
-  assumes deriv: "chain (\<leadsto>) Sts"
 begin
-
-lemmas lhd_lmap_Sts = llist.map_sel(1)[OF chain_not_lnull[OF deriv]]
 
 definition S_Q :: "'a clause \<Rightarrow> 'a clause" where
   "S_Q = S_M S (Q_of_state (Liminf_state Sts))"
@@ -190,7 +186,7 @@ definition sr_ext_Ri :: "'a clause set \<Rightarrow> 'a inference set" where
   "sr_ext_Ri N = sr.Ri N \<union> (ground_sound_\<Gamma> - gr.ord_\<Gamma>)"
 
 interpretation sr_ext:
-  sat_preserving_redundancy_criterion "ground_sound_\<Gamma>" "sr.Rf" "sr_ext_Ri"
+  sat_preserving_redundancy_criterion ground_sound_\<Gamma> sr.Rf sr_ext_Ri
   unfolding sat_preserving_redundancy_criterion_def sr_ext_Ri_def
   using sat_preserving_ground_sound_\<Gamma> redundancy_criterion_standard_extension gd_ord_\<Gamma>_ngd_ord_\<Gamma>
     sr.redundancy_criterion_axioms by auto
@@ -247,21 +243,6 @@ proof
     using \<mu>_p strict_subset_subsumption_redundant_clss[of D "\<sigma> \<odot> \<mu>" "C \<cdot> \<mu>"] D_in_St by auto
 qed
 
-lemma subst_cls_eq_grounding_of_cls_subset_eq:
-  assumes "D \<cdot> \<sigma> = C"
-  shows "grounding_of_cls C \<subseteq> grounding_of_cls D"
-proof
-  fix C\<sigma>'
-  assume "C\<sigma>' \<in> grounding_of_cls C"
-  then obtain \<sigma>' where
-    C\<sigma>': "C \<cdot> \<sigma>' = C\<sigma>'" "is_ground_subst \<sigma>'"
-    unfolding grounding_of_cls_def by auto
-  then have "C \<cdot> \<sigma>' = D \<cdot> \<sigma> \<cdot> \<sigma>' \<and> is_ground_subst (\<sigma> \<odot> \<sigma>')"
-    using assms by auto
-  then show "C\<sigma>' \<in> grounding_of_cls D"
-    unfolding grounding_of_cls_def using C\<sigma>'(1) by force
-qed
-
 lemma derive_if_remove_subsumed:
   assumes
     "D \<in> clss_of_state St" and
@@ -305,7 +286,7 @@ proof -
     unfolding grounding_of_cls_def by auto
 
   define \<gamma> where
-    "\<gamma> = Infer {#(C + {#L#})\<cdot> \<mu>#} ((D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu>) (C \<cdot> \<mu>)"
+    "\<gamma> = Infer {#(C + {#L#}) \<cdot> \<mu>#} ((D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu>) (C \<cdot> \<mu>)"
 
   have "(D + {#L'#}) \<cdot> \<sigma> \<cdot> \<mu> \<in> grounding_of_clss (CC \<union> {C + {#L#}})"
     unfolding grounding_of_clss_def grounding_of_cls_def
@@ -454,7 +435,7 @@ next
         (\<exists>x \<in> P. D \<cdot> \<rho> \<cdot> \<sigma> \<cdot> \<mu> \<in> grounding_of_cls x) \<or>
         (\<exists>x \<in> Q. D \<cdot> \<rho> \<cdot> \<sigma> \<cdot> \<mu> \<in> grounding_of_cls x))"
         by metis
-      moreover have "\<forall>i < length (CAs \<cdot>\<cdot>cl \<rho>s \<cdot>cl \<sigma> \<cdot>cl \<mu>). ((CAs \<cdot>\<cdot>cl \<rho>s \<cdot>cl \<sigma> \<cdot>cl \<mu>) ! i) \<in>
+      moreover have "\<forall>i < length (CAs \<cdot>\<cdot>cl \<rho>s \<cdot>cl \<sigma> \<cdot>cl \<mu>). (CAs \<cdot>\<cdot>cl \<rho>s \<cdot>cl \<sigma> \<cdot>cl \<mu>) ! i \<in>
         {C \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>} \<union>
         ((\<Union>C \<in> P. {C \<cdot> \<sigma> | \<sigma>. is_ground_subst \<sigma>}) \<union> (\<Union>C\<in>Q. {C \<cdot> \<sigma> | \<sigma>. is_ground_subst \<sigma>}))"
       proof (rule, rule)
@@ -508,7 +489,7 @@ next
       "E \<cdot> \<mu> \<in> concls_of (sr_ext.inferences_from (grounding_of_state ({}, P \<union> {C}, Q)))"
       unfolding sr_ext.inferences_from_def inference_system.inferences_from_def ground_sound_\<Gamma>_def
         infer_from_def
-      using \<gamma>_ground_def by (metis (no_types, lifting) imageI inference.sel(3) mem_Collect_eq)
+      using \<gamma>_ground_def by (metis (mono_tags, lifting) image_eqI inference.sel(3) mem_Collect_eq)
     then have "E\<mu> \<in> concls_of (sr_ext.inferences_from (grounding_of_state ({}, P \<union> {C}, Q)))"
       using E_\<mu>_p by auto
   }
@@ -526,8 +507,7 @@ text \<open>
 A useful consequence:
 \<close>
 
-theorem RP_model:
-  "St \<leadsto> St' \<Longrightarrow> I \<Turnstile>s grounding_of_state St' \<longleftrightarrow> I \<Turnstile>s grounding_of_state St"
+theorem RP_model: "St \<leadsto> St' \<Longrightarrow> I \<Turnstile>s grounding_of_state St' \<longleftrightarrow> I \<Turnstile>s grounding_of_state St"
 proof (drule RP_ground_derive, erule sr_ext.derive.cases, hypsubst)
   let
     ?gSt = "grounding_of_state St" and
@@ -566,16 +546,12 @@ text \<open>
 Another formulation of the part of Lemma 4.10 that states we have a theorem proving process:
 \<close>
 
-lemma ground_derive_chain: "chain sr_ext.derive (lmap grounding_of_state Sts)"
-  using deriv RP_ground_derive by (simp add: chain_lmap[of "(\<leadsto>)"])
+lemma ground_derive_chain: "chain (\<leadsto>) Sts \<Longrightarrow> chain sr_ext.derive (lmap grounding_of_state Sts)"
+  using RP_ground_derive by (simp add: chain_lmap[of "(\<leadsto>)"])
 
 text \<open>
 The following is used prove to Lemma 4.11:
 \<close>
-
-lemma in_Sup_llist_in_nth: "C \<in> Sup_llist Gs \<Longrightarrow> \<exists>j. enat j < llength Gs \<and> C \<in> lnth Gs j"
-  unfolding Sup_llist_def by auto
-    \<comment> \<open>Note: Gs is called Ns in the chapter\<close>
 
 lemma Sup_llist_grounding_of_state_ground:
   assumes "C \<in> Sup_llist (lmap grounding_of_state Sts)"
@@ -583,11 +559,7 @@ lemma Sup_llist_grounding_of_state_ground:
 proof -
   have "\<exists>j. enat j < llength (lmap grounding_of_state Sts)
     \<and> C \<in> lnth (lmap grounding_of_state Sts) j"
-    using assms in_Sup_llist_in_nth by fast
-  then obtain j where
-    "enat j < llength (lmap grounding_of_state Sts)"
-    "C \<in> lnth (lmap grounding_of_state Sts) j"
-    by blast
+    using assms Sup_llist_imp_exists_index by fast
   then show ?thesis
     unfolding grounding_of_clss_def grounding_of_cls_def by auto
 qed
@@ -604,7 +576,7 @@ lemma in_Sup_llist_in_Sup_state:
 proof -
   from assms obtain i where
     i_p: "enat i < llength Sts \<and> C \<in> lnth (lmap grounding_of_state Sts) i"
-    using in_Sup_llist_in_nth by fastforce
+    using Sup_llist_imp_exists_index by fastforce
   then obtain D \<sigma> where
     "D \<in> clss_of_state (lnth Sts i) \<and> D \<cdot> \<sigma> = C \<and> is_ground_subst \<sigma>"
     using assms unfolding grounding_of_clss_def grounding_of_cls_def by fastforce
@@ -657,6 +629,7 @@ qed
 
 lemma instance_if_subsumed_and_in_limit:
   assumes
+    deriv: "chain (\<leadsto>) Sts" and
     ns: "Gs = lmap grounding_of_state Sts" and
     c: "C \<in> Liminf_llist Gs - sr.Rf (Liminf_llist Gs)" and
     d: "D \<in> clss_of_state (lnth Sts i)" "enat i < llength Sts" "subsumes D C"
@@ -704,11 +677,13 @@ qed
 
 lemma from_Q_to_Q_inf:
   assumes
+    deriv: "chain (\<leadsto>) Sts" and
     fair: "fair_state_seq Sts" and
     ns: "Gs = lmap grounding_of_state Sts" and
     c: "C \<in> Liminf_llist Gs - sr.Rf (Liminf_llist Gs)" and
     d: "D \<in> Q_of_state (lnth Sts i)" "enat i < llength Sts" "subsumes D C" and
-    d_least: "\<forall>E \<in> {E. E \<in> (clss_of_state (Sup_state Sts)) \<and> subsumes E C}. \<not> strictly_subsumes E D"
+    d_least: "\<forall>E \<in> {E. E \<in> (clss_of_state (Sup_state Sts)) \<and> subsumes E C}.
+      \<not> strictly_subsumes E D"
   shows "D \<in> Q_of_state (Liminf_state Sts)"
 proof -
   let ?Ps = "\<lambda>i. P_of_state (lnth Sts i)"
@@ -721,7 +696,7 @@ proof -
     using ground_derive_chain deriv ns by auto
 
   have "\<exists>\<sigma>. D \<cdot> \<sigma> = C \<and> is_ground_subst \<sigma>"
-    using instance_if_subsumed_and_in_limit c d unfolding ns by blast
+    using instance_if_subsumed_and_in_limit[OF deriv] c d unfolding ns by blast
   then obtain \<sigma> where
     \<sigma>: "D \<cdot> \<sigma> = C" "is_ground_subst \<sigma>"
     by auto
@@ -804,6 +779,7 @@ qed
 
 lemma from_P_to_Q:
   assumes
+    deriv: "chain (\<leadsto>) Sts" and
     fair: "fair_state_seq Sts" and
     ns: "Gs = lmap grounding_of_state Sts" and
     c: "C \<in> Liminf_llist Gs - sr.Rf (Liminf_llist Gs)" and
@@ -823,7 +799,7 @@ proof -
     using ground_derive_chain deriv ns by auto
 
   have "\<exists>\<sigma>. D \<cdot> \<sigma> = C \<and> is_ground_subst \<sigma>"
-    using instance_if_subsumed_and_in_limit ns c d by blast
+    using instance_if_subsumed_and_in_limit[OF deriv] ns c d by blast
   then obtain \<sigma> where
     \<sigma>: "D \<cdot> \<sigma> = C" "is_ground_subst \<sigma>"
     by auto
@@ -881,52 +857,9 @@ proof -
   qed (use l_p in auto)
 qed
 
-lemma variants_sym: "variants D D' \<longleftrightarrow> variants D' D"
-  unfolding variants_def by auto
-
-lemma variants_imp_exists_subtitution: "variants D D' \<Longrightarrow> \<exists>\<sigma>. D \<cdot> \<sigma> = D'"
-  unfolding variants_iff_subsumes subsumes_def
-  by (meson strictly_subsumes_def subset_mset_def strict_subset_subst_strictly_subsumes subsumes_def)
-
-lemma properly_subsume_variants:
-  assumes "strictly_subsumes E D" and "variants D D'"
-  shows "strictly_subsumes E D'"
-proof -
-  from assms obtain \<sigma> \<sigma>' where
-    \<sigma>_\<sigma>'_p: "D \<cdot> \<sigma> = D' \<and> D' \<cdot> \<sigma>' = D"
-    using variants_imp_exists_subtitution variants_sym by metis
-
-  from assms obtain \<sigma>'' where
-    "E \<cdot> \<sigma>'' \<subseteq># D"
-    unfolding strictly_subsumes_def subsumes_def by auto
-  then have "E \<cdot> \<sigma>'' \<cdot> \<sigma> \<subseteq># D \<cdot> \<sigma>"
-    using subst_cls_mono_mset by blast
-  then have "E \<cdot> (\<sigma>'' \<odot> \<sigma>)  \<subseteq># D'"
-    using \<sigma>_\<sigma>'_p by auto
-  moreover from assms have n: "(\<nexists>\<sigma>. D \<cdot> \<sigma> \<subseteq># E)"
-    unfolding strictly_subsumes_def subsumes_def by auto
-  have "\<nexists>\<sigma>. D' \<cdot> \<sigma> \<subseteq># E"
-  proof
-    assume "\<exists>\<sigma>'''. D' \<cdot> \<sigma>''' \<subseteq># E"
-    then obtain \<sigma>''' where
-      "D' \<cdot> \<sigma>''' \<subseteq># E"
-      by auto
-    then have "D \<cdot> (\<sigma> \<odot> \<sigma>''') \<subseteq># E"
-      using \<sigma>_\<sigma>'_p by auto
-    then show False
-      using n by metis
-  qed
-  ultimately show ?thesis
-    unfolding strictly_subsumes_def subsumes_def by metis
-qed
-
-lemma neg_properly_subsume_variants:
-  assumes "\<not> strictly_subsumes E D" and "variants D D'"
-  shows "\<not> strictly_subsumes E D'"
-  using assms properly_subsume_variants variants_sym by auto
-
 lemma from_N_to_P_or_Q:
   assumes
+    deriv: "chain (\<leadsto>) Sts" and
     fair: "fair_state_seq Sts" and
     ns: "Gs = lmap grounding_of_state Sts" and
     c: "C \<in> Liminf_llist Gs - sr.Rf (Liminf_llist Gs)" and
@@ -948,7 +881,7 @@ proof -
     using ground_derive_chain deriv ns by auto
 
   have "\<exists>\<sigma>. D \<cdot> \<sigma> = C \<and> is_ground_subst \<sigma>"
-    using instance_if_subsumed_and_in_limit ns c d by blast
+    using instance_if_subsumed_and_in_limit[OF deriv] ns c d by blast
   then obtain \<sigma> where
     \<sigma>: "D \<cdot> \<sigma> = C" "is_ground_subst \<sigma>"
     by auto
@@ -999,10 +932,10 @@ proof -
       using D'_p unfolding variants_iff_subsumes by auto
     then have mini: "\<forall>E \<in> {E \<in> clss_of_state (Sup_state Sts). subsumes E C}.
       \<not> strictly_subsumes E D'"
-      using d_least D'_p neg_properly_subsume_variants[of _ D D'] by auto
+      using d_least D'_p neg_strictly_subsumes_variants[of _ D D'] by auto
 
     from v have "\<exists>\<sigma>'. D' \<cdot> \<sigma>' = C"
-      using \<sigma> variants_imp_exists_subtitution variants_sym by (metis subst_cls_comp_subst)
+      using \<sigma> variants_imp_exists_substitution variants_sym by (metis subst_cls_comp_subst)
     then have "\<exists>\<sigma>'. D' \<cdot> \<sigma>' = C \<and> is_ground_subst \<sigma>'"
       using ground_C by (meson make_ground_subst refl)
     then obtain \<sigma>' where
@@ -1039,12 +972,11 @@ qed
 
 lemma eventually_in_Qinf:
   assumes
+    deriv: "chain (\<leadsto>) Sts" and
     D_p: "D \<in> clss_of_state (Sup_state Sts)"
       "subsumes D C" "\<forall>E \<in> {E. E \<in> (clss_of_state (Sup_state Sts)) \<and> subsumes E C}.
        \<not> strictly_subsumes E D" and
     fair: "fair_state_seq Sts" and
-    (* We could also, we guess, in this proof obtain a D with property D_p(3) from one with only
-       properties D_p(2,3). *)
     ns: "Gs = lmap grounding_of_state Sts" and
     c: "C \<in> Liminf_llist Gs - sr.Rf (Liminf_llist Gs)" and
     ground_C: "is_ground_cls C"
@@ -1057,13 +989,13 @@ proof -
   from D_p obtain i where
     i_p: "i < llength Sts" "D \<in> ?Ns i \<or> D \<in> ?Ps i \<or> D \<in> ?Qs i"
     unfolding Sup_state_def
-    by simp_all (metis (no_types) in_Sup_llist_in_nth llength_lmap lnth_lmap)
+    by simp_all (metis (no_types) Sup_llist_imp_exists_index llength_lmap lnth_lmap)
 
   have derivns: "chain sr_ext.derive Gs"
     using ground_derive_chain deriv ns by auto
 
   have "\<exists>\<sigma>. D \<cdot> \<sigma> = C \<and> is_ground_subst \<sigma>"
-    using instance_if_subsumed_and_in_limit[OF ns c] D_p i_p by blast
+    using instance_if_subsumed_and_in_limit[OF deriv ns c] D_p i_p by blast
   then obtain \<sigma> where
     \<sigma>: "D \<cdot> \<sigma> = C" "is_ground_subst \<sigma>"
     by blast
@@ -1080,9 +1012,9 @@ proof -
       using from_N_to_P_or_Q deriv fair ns c i_p(1) D_p(2) D_p(3) by blast
     then obtain l' where
       l'_p: "D' \<in> ?Qs l'" "l' < llength Sts"
-      using from_P_to_Q[OF fair ns c _ D'_p(3) D'_p(6) D'_p(5)] by blast
+      using from_P_to_Q[OF deriv fair ns c _ D'_p(3) D'_p(6) D'_p(5)] by blast
     then have "D' \<in> Q_of_state (Liminf_state Sts)"
-      using from_Q_to_Q_inf[OF fair ns c _ l'_p(2)] D'_p by auto
+      using from_Q_to_Q_inf[OF deriv fair ns c _ l'_p(2)] D'_p by auto
     then have ?thesis
       using D'_p by auto
   }
@@ -1091,9 +1023,9 @@ proof -
     assume a: "D \<in> ?Ps i"
     then obtain l' where
       l'_p: "D \<in> ?Qs l'" "l' < llength Sts"
-      using from_P_to_Q[OF fair ns c a i_p(1) D_p(2) D_p(3)] by auto
+      using from_P_to_Q[OF deriv fair ns c a i_p(1) D_p(2) D_p(3)] by auto
     then have "D \<in> Q_of_state (Liminf_state Sts)"
-      using from_Q_to_Q_inf[OF fair ns c l'_p(1) l'_p(2)] D_p(3) \<sigma>(1) \<sigma>(2) D_p(2) by auto
+      using from_Q_to_Q_inf[OF deriv fair ns c l'_p(1) l'_p(2)] D_p(3) \<sigma>(1) \<sigma>(2) D_p(2) by auto
     then have ?thesis
       using D_p \<sigma> by auto
   }
@@ -1101,7 +1033,7 @@ proof -
   {
     assume a: "D \<in> ?Qs i"
     then have "D \<in> Q_of_state (Liminf_state Sts)"
-      using from_Q_to_Q_inf[OF fair ns c a i_p(1)] \<sigma> D_p(2,3) by auto
+      using from_Q_to_Q_inf[OF deriv fair ns c a i_p(1)] \<sigma> D_p(2,3) by auto
     then have ?thesis
       using D_p \<sigma> by auto
   }
@@ -1115,9 +1047,11 @@ The following corresponds to Lemma 4.11:
 
 lemma fair_imp_Liminf_minus_Rf_subset_ground_Liminf_state:
   assumes
+    deriv: "chain (\<leadsto>) Sts" and
     fair: "fair_state_seq Sts" and
     ns: "Gs = lmap grounding_of_state Sts"
-  shows "Liminf_llist Gs - sr.Rf (Liminf_llist Gs) \<subseteq> grounding_of_clss (Q_of_state (Liminf_state Sts))"
+  shows "Liminf_llist Gs - sr.Rf (Liminf_llist Gs)
+    \<subseteq> grounding_of_clss (Q_of_state (Liminf_state Sts))"
 proof
   let ?Ns = "\<lambda>i. N_of_state (lnth Sts i)"
   let ?Ps = "\<lambda>i. P_of_state (lnth Sts i)"
@@ -1144,7 +1078,7 @@ proof
     using C_p using Liminf_grounding_of_state_ground ns by auto
 
   have "\<exists>D' \<sigma>'. D' \<in> Q_of_state (Liminf_state Sts) \<and> D' \<cdot> \<sigma>' = C \<and> is_ground_subst \<sigma>'"
-    using eventually_in_Qinf[of D C Gs] using D_p(1-3) fair ns C_p ground_C by auto
+    using eventually_in_Qinf[of D C Gs] using D_p(1-3) deriv fair ns C_p ground_C by auto
   then obtain D' \<sigma>' where
     D'_p: "D' \<in> Q_of_state (Liminf_state Sts) \<and> D' \<cdot> \<sigma>' = C \<and> is_ground_subst \<sigma>'"
     by blast
@@ -1159,15 +1093,6 @@ qed
 text \<open>
 The following corresponds to (one direction of) Theorem 4.13:
 \<close>
-
-lemma ground_subclauses:
-  assumes
-    "\<forall>i < length CAs. CAs ! i = Cs ! i + poss (AAs ! i)" and
-    "length Cs = length CAs" and
-    "is_ground_cls_list CAs"
-  shows "is_ground_cls_list Cs"
-  unfolding is_ground_cls_list_def
-  by (metis assms in_set_conv_nth is_ground_cls_list_def is_ground_cls_union)
 
 lemma subseteq_Liminf_state_eventually_always:
   fixes CC
@@ -1205,8 +1130,9 @@ qed
 
 lemma empty_clause_in_Q_of_Liminf_state:
   assumes
-    empty_in: "{#} \<in> Liminf_llist (lmap grounding_of_state Sts)" and
-    fair: "fair_state_seq Sts"
+    deriv: "chain (\<leadsto>) Sts" and
+    fair: "fair_state_seq Sts" and
+    empty_in: "{#} \<in> Liminf_llist (lmap grounding_of_state Sts)"
   shows "{#} \<in> Q_of_state (Liminf_state Sts)"
 proof -
   define Gs :: "'a clause set llist" where
@@ -1214,7 +1140,7 @@ proof -
   from empty_in have in_Liminf_not_Rf: "{#} \<in> Liminf_llist Gs - sr.Rf (Liminf_llist Gs)"
     unfolding ns sr.Rf_def by auto
   then have "{#} \<in> grounding_of_clss (Q_of_state (Liminf_state Sts))"
-    using fair_imp_Liminf_minus_Rf_subset_ground_Liminf_state[OF fair ns] by auto
+    using fair_imp_Liminf_minus_Rf_subset_ground_Liminf_state[OF deriv fair ns] by auto
   then show ?thesis
     unfolding grounding_of_clss_def grounding_of_cls_def by auto
 qed
@@ -1234,13 +1160,14 @@ proof
     \<or> C \<in> Liminf_llist (lmap grounding_of_clss (lmap P_of_state Sts))
     \<or> C \<in> Liminf_llist (lmap grounding_of_clss (lmap Q_of_state Sts))"
     unfolding Liminf_llist_def grounding_of_clss_def grounding_of_cls_def
+    using D_\<sigma>_p
     apply -
     apply (erule disjE)
     subgoal
       apply (rule disjI1)
       using D_\<sigma>_p by auto
     subgoal
-      apply (erule HOL.disjE)
+      apply (erule disjE)
       subgoal
         apply (rule disjI2)
         apply (rule disjI1)
@@ -1256,7 +1183,9 @@ proof
 qed
 
 theorem RP_sound:
-  assumes "{#} \<in> clss_of_state (Liminf_state Sts)"
+  assumes
+    deriv: "chain (\<leadsto>) Sts" and
+    "{#} \<in> clss_of_state (Liminf_state Sts)"
   shows "\<not> satisfiable (grounding_of_state (lhd Sts))"
 proof -
   from assms have "{#} \<in> grounding_of_state (Liminf_state Sts)"
@@ -1266,35 +1195,14 @@ proof -
   then have "\<not> satisfiable (Liminf_llist (lmap grounding_of_state Sts))"
     using true_clss_def by auto
   then have "\<not> satisfiable (lhd (lmap grounding_of_state Sts))"
-    using sr_ext.sat_limit_iff ground_derive_chain by blast
+    using sr_ext.sat_limit_iff ground_derive_chain deriv by blast
   then show ?thesis
-    unfolding lhd_lmap_Sts .
-qed
-
-lemma ground_ord_resolve_ground:
-  assumes
-    CAs_p: "gr.ord_resolve CAs DA AAs As E" and
-    ground_cas: "is_ground_cls_list CAs" and
-    ground_da: "is_ground_cls DA"
-  shows "is_ground_cls E"
-proof -
-  have a1: "atms_of E \<subseteq> (\<Union>CA \<in> set CAs. atms_of CA) \<union> atms_of DA"
-    using gr.ord_resolve_atms_of_concl_subset[of CAs DA _ _ E] CAs_p by auto
-  {
-    fix L :: "'a literal"
-    assume "L \<in># E"
-    then have "atm_of L \<in> atms_of E"
-      by (meson atm_of_lit_in_atms_of)
-    then have "is_ground_atm (atm_of L)"
-      using a1 ground_cas ground_da is_ground_cls_imp_is_ground_atm is_ground_cls_list_def
-      by auto
-  }
-  then show ?thesis
-    unfolding is_ground_cls_def is_ground_lit_def by simp
+    using chain_not_lnull deriv by fastforce
 qed
 
 theorem RP_saturated_if_fair:
   assumes
+    deriv: "chain (\<leadsto>) Sts" and
     fair: "fair_state_seq Sts" and
     empty_Q0: "Q_of_state (lhd Sts) = {}"
   shows "sr.saturated_upto (Liminf_llist (lmap grounding_of_state Sts))"
@@ -1348,103 +1256,11 @@ proof -
     then have ground_cas: "is_ground_cls_list CAs"
       using CAs_p unfolding is_ground_cls_list_def by auto
 
-    then have ground_e: "is_ground_cls ?E"
-      using ground_ord_resolve_ground CAs_p ground_da by auto
-
-    have "\<exists>AAs As \<sigma>. ord_resolve (S_M S (Q_of_state (Liminf_state Sts))) CAs ?DA AAs As \<sigma> ?E"
-      using CAs_p[THEN conjunct1]
-    proof (cases rule: gr.ord_resolve.cases)
-      case (ord_resolve n Cs D)
-      note DA = this(1) and e = this(2) and cas_len = this(3) and cs_len = this(4) and
-        aas_len = this(5) and as_len = this(6) and nz = this(7) and cas = this(8) and
-        aas_not_empt = this(9) and as_aas = this(10) and eligibility = this(11) and
-        str_max = this(12) and sel_empt = this(13)
-
-      have len_aas_len_as: "length AAs = length As"
-        using aas_len as_len by auto
-
-      from as_aas have "\<forall>i<n. \<forall>A \<in># add_mset (As ! i) (AAs ! i). A = As ! i"
-        using ord_resolve by simp
-      then have "\<forall>i < n. card (set_mset (add_mset (As ! i) (AAs ! i))) \<le> Suc 0"
-        using all_the_same by metis
-      then have "\<forall>i < length AAs. card (set_mset (add_mset (As ! i) (AAs ! i))) \<le> Suc 0"
-        using aas_len by auto
-      then have "\<forall>AA \<in> set (map2 add_mset As AAs). card (set_mset AA) \<le> Suc 0"
-        using set_map2_ex[of AAs As add_mset, OF len_aas_len_as] by auto
-      then have "is_unifiers id_subst (set_mset ` set (map2 add_mset As AAs))"
-        unfolding is_unifiers_def is_unifier_def by auto
-      moreover have "finite (set_mset ` set (map2 add_mset As AAs))"
-        by auto
-      moreover have "\<forall>AA \<in> set_mset ` set (map2 add_mset As AAs). finite AA"
-        by auto
-      ultimately obtain \<sigma> where
-        \<sigma>_p: "Some \<sigma> = mgu (set_mset ` set (map2 add_mset As AAs))"
-        using mgu_complete by metis
-
-      have ground_elig: "gr.eligible As (D + negs (mset As))"
-        using ord_resolve by simp
-      have ground_cs: "\<forall>i < n. is_ground_cls (Cs ! i)"
-        using ord_resolve(8) ord_resolve(3,4) ground_cas
-        using ground_subclauses[of CAs Cs AAs] unfolding is_ground_cls_list_def by auto
-      have ground_set_as: "is_ground_atms (set As)"
-        using ord_resolve(1) ground_da
-        by (metis atms_of_negs is_ground_cls_union set_mset_mset
-            is_ground_cls_is_ground_atms_atms_of)
-      then have ground_mset_as: "is_ground_atm_mset (mset As)"
-        unfolding is_ground_atm_mset_def is_ground_atms_def by auto
-      have ground_as: "is_ground_atm_list As"
-        using ground_set_as is_ground_atm_list_def is_ground_atms_def by auto
-      have ground_d: "is_ground_cls D"
-        using ground_da ord_resolve by simp
-
-      from as_len nz have "atms_of D \<union> set As \<noteq> {}" "finite (atms_of D \<union> set As)"
-        by auto
-      then have "Max (atms_of D \<union> set As) \<in> atms_of D \<union> set As"
-        using Max_in by metis
-      then have is_ground_Max: "is_ground_atm (Max (atms_of D \<union> set As))"
-        using ground_d ground_mset_as is_ground_cls_imp_is_ground_atm
-        unfolding is_ground_atm_mset_def by auto
-      then have Max\<sigma>_is_Max: "\<forall>\<sigma>. Max (atms_of D \<union> set As) \<cdot>a \<sigma> = Max (atms_of D \<union> set As)"
-        by auto
-
-      have ann1: "maximal_wrt (Max (atms_of D \<union> set As)) (D + negs (mset As))"
-        unfolding maximal_wrt_def
-        by clarsimp (metis Max_less_iff UnCI \<open>atms_of D \<union> set As \<noteq> {}\<close>
-            \<open>finite (atms_of D \<union> set As)\<close> ground_d ground_set_as infinite_growing is_ground_Max
-            is_ground_atms_def is_ground_cls_imp_is_ground_atm less_atm_ground)
-
-      from ground_elig have ann2:
-        "Max (atms_of D \<union> set As) \<cdot>a \<sigma> = Max (atms_of D \<union> set As)"
-        "D \<cdot> \<sigma> + negs (mset As \<cdot>am \<sigma>) = D + negs (mset As)"
-        using is_ground_Max ground_mset_as ground_d by auto
-
-      from ground_elig have fo_elig:
-        "eligible (S_M S (Q_of_state (Liminf_state Sts))) \<sigma> As (D + negs (mset As))"
-        unfolding gr.eligible.simps eligible.simps gr.maximal_wrt_def using ann1 ann2
-        by (auto simp: S_Q_def)
-
-      have l: "\<forall>i < n. gr.strictly_maximal_wrt (As ! i) (Cs ! i)"
-        using ord_resolve by simp
-      then have "\<forall>i < n. strictly_maximal_wrt (As ! i) (Cs ! i)"
-        unfolding gr.strictly_maximal_wrt_def strictly_maximal_wrt_def
-        using ground_as[unfolded is_ground_atm_list_def] ground_cs as_len less_atm_ground
-        by clarsimp (fastforce simp: is_ground_cls_as_atms)+
-
-      then have ll: "\<forall>i < n. strictly_maximal_wrt (As ! i \<cdot>a \<sigma>) (Cs ! i \<cdot> \<sigma>)"
-        by (simp add: ground_as ground_cs as_len)
-
-      have m: "\<forall>i < n. S_Q (CAs ! i) = {#}"
-        using ord_resolve by simp
-
-      have ground_e: "is_ground_cls (\<Union># (mset Cs) + D)"
-        using ground_d ground_cs ground_e e by simp
-      show ?thesis
-        using ord_resolve.intros
-          [OF cas_len cs_len aas_len as_len nz cas aas_not_empt \<sigma>_p fo_elig ll] m DA e ground_e
-        unfolding S_Q_def by auto
-    qed
-    then obtain AAs As \<sigma> where
-      \<sigma>_p: "ord_resolve (S_M S (Q_of_state (Liminf_state Sts))) CAs ?DA AAs As \<sigma> ?E"
+    have "\<exists>\<sigma>. ord_resolve S_Q CAs ?DA AAs As \<sigma> ?E"
+      by (rule ground_ord_resolve_imp_ord_resolve[OF ground_da ground_cas
+            gr.ground_resolution_with_selection_axioms CAs_p[THEN conjunct1]])
+    then obtain \<sigma> where
+      \<sigma>_p: "ord_resolve S_Q CAs ?DA AAs As \<sigma> ?E"
       by auto
     then obtain \<eta>s' \<eta>' \<eta>2' CAs' DA' AAs' As' \<tau>' E' where s_p:
       "is_ground_subst \<eta>'"
@@ -1456,7 +1272,7 @@ proof -
       "E' \<cdot> \<eta>2' = ?E"
       "{DA'} \<union> set CAs' \<subseteq> Q_of_state (Liminf_state Sts)"
       using ord_resolve_rename_lifting[OF sel_stable, of "Q_of_state (Liminf_state Sts)" CAs ?DA]
-        \<sigma>_p selection_axioms DA_CAs_in_ground_Liminf by metis
+        \<sigma>_p[unfolded S_Q_def] selection_axioms DA_CAs_in_ground_Liminf by metis
     from this(8) have "\<exists>j. enat j < llength Sts \<and> (set CAs' \<union> {DA'} \<subseteq> ?Qs j)"
       unfolding Liminf_llist_def
       using subseteq_Liminf_state_eventually_always[of "{DA'} \<union> set CAs'"] by auto
@@ -1491,8 +1307,7 @@ proof -
         subgoal by auto
         subgoal
           unfolding infer_from_def
-          by (rule ord_resolve_rename.cases[OF s_p(4)])
-            (use s_p(4) C'_p(3) C'_p(5) j_p'(2) in force)
+          by (rule ord_resolve_rename.cases[OF s_p(4)]) (use s_p(4) C'_p(3,5) j_p'(2) in force)
         done
       then show ?thesis
         using C'_p(4) by auto
@@ -1521,20 +1336,20 @@ qed
 
 corollary RP_complete_if_fair:
   assumes
+    deriv: "chain (\<leadsto>) Sts" and
     fair: "fair_state_seq Sts" and
     empty_Q0: "Q_of_state (lhd Sts) = {}" and
     unsat: "\<not> satisfiable (grounding_of_state (lhd Sts))"
   shows "{#} \<in> Q_of_state (Liminf_state Sts)"
 proof -
   have "\<not> satisfiable (Liminf_llist (lmap grounding_of_state Sts))"
-    unfolding sr_ext.sat_limit_iff[OF ground_derive_chain]
-    by (rule unsat[folded lhd_lmap_Sts[of grounding_of_state]])
+    using unsat sr_ext.sat_limit_iff[OF ground_derive_chain] chain_not_lnull deriv by fastforce
   moreover have "sr.saturated_upto (Liminf_llist (lmap grounding_of_state Sts))"
-    by (rule RP_saturated_if_fair[OF fair empty_Q0, simplified])
+    by (rule RP_saturated_if_fair[OF deriv fair empty_Q0, simplified])
   ultimately have "{#} \<in> Liminf_llist (lmap grounding_of_state Sts)"
     using sr.saturated_upto_complete_if by auto
   then show ?thesis
-    using empty_clause_in_Q_of_Liminf_state fair by auto
+    using empty_clause_in_Q_of_Liminf_state[OF deriv fair] by auto
 qed
 
 end

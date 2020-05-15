@@ -11,7 +11,7 @@ imports
 begin
 
 declare [[code drop:
-  "bitAND :: int \<Rightarrow> _" "bitOR :: int \<Rightarrow> _" "bitXOR :: int \<Rightarrow> _" "bitNOT :: int \<Rightarrow> _"
+  "(AND) :: int \<Rightarrow> _" "(OR) :: int \<Rightarrow> _" "(XOR) :: int \<Rightarrow> _" "NOT :: int \<Rightarrow> _"
   "lsb :: int \<Rightarrow> _" "set_bit :: int \<Rightarrow> _" "test_bit :: int \<Rightarrow> _"
   "shiftl :: int \<Rightarrow> _" "shiftr :: int \<Rightarrow> _"
   bin_last bin_rest bin_nth Bit

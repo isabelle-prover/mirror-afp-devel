@@ -139,11 +139,11 @@ definition generalizes_lit :: "'a literal \<Rightarrow> 'a literal \<Rightarrow>
 definition strictly_generalizes_lit :: "'a literal \<Rightarrow> 'a literal \<Rightarrow> bool" where
   "strictly_generalizes_lit L M \<longleftrightarrow> generalizes_lit L M \<and> \<not> generalizes_lit M L"
 
-definition generalizes_cls :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" where
-  "generalizes_cls C D \<longleftrightarrow> (\<exists>\<sigma>. C \<cdot> \<sigma> = D)"
+definition generalizes :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" where
+  "generalizes C D \<longleftrightarrow> (\<exists>\<sigma>. C \<cdot> \<sigma> = D)"
 
-definition strictly_generalizes_cls :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" where
-  "strictly_generalizes_cls C D \<longleftrightarrow> generalizes_cls C D \<and> \<not> generalizes_cls D C"
+definition strictly_generalizes :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" where
+  "strictly_generalizes C D \<longleftrightarrow> generalizes C D \<and> \<not> generalizes D C"
 
 definition subsumes :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" where
   "subsumes C D \<longleftrightarrow> (\<exists>\<sigma>. C \<cdot> \<sigma> \<subseteq># D)"
@@ -152,7 +152,7 @@ definition strictly_subsumes :: "'a clause \<Rightarrow> 'a clause \<Rightarrow>
   "strictly_subsumes C D \<longleftrightarrow> subsumes C D \<and> \<not> subsumes D C"
 
 definition variants :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" where
-  "variants C D \<longleftrightarrow> generalizes_cls C D \<and> generalizes_cls D C"
+  "variants C D \<longleftrightarrow> generalizes C D \<and> generalizes D C"
 
 definition is_renaming :: "'s \<Rightarrow> bool" where
   "is_renaming \<sigma> \<longleftrightarrow> (\<exists>\<tau>. \<sigma> \<odot> \<tau> = id_subst)"
@@ -194,7 +194,7 @@ definition is_ground_subst_list :: "'s list \<Rightarrow> bool" where
   "is_ground_subst_list \<sigma>s \<longleftrightarrow> (\<forall>\<sigma> \<in> set \<sigma>s. is_ground_subst \<sigma>)"
 
 definition grounding_of_cls :: "'a clause \<Rightarrow> 'a clause set" where
-  "grounding_of_cls C = {C \<cdot> \<sigma> | \<sigma>. is_ground_subst \<sigma>}"
+  "grounding_of_cls C = {C \<cdot> \<sigma> |\<sigma>. is_ground_subst \<sigma>}"
 
 definition grounding_of_clss :: "'a clause set \<Rightarrow> 'a clause set" where
   "grounding_of_clss CC = (\<Union>C \<in> CC. grounding_of_cls C)"
@@ -463,7 +463,7 @@ lemma subst_clss_empty_iff[simp]: "CC \<cdot>cs \<eta> = {} \<longleftrightarrow
 lemma subst_cls_list_empty_iff[simp]: "Cs \<cdot>cl \<eta> = [] \<longleftrightarrow> Cs = []"
   unfolding subst_cls_list_def by auto
 
-lemma subst_cls_lists_empty_iff[simp]: "Cs \<cdot>\<cdot>cl \<eta>s = [] \<longleftrightarrow> (Cs = [] \<or> \<eta>s = [])"
+lemma subst_cls_lists_empty_iff[simp]: "Cs \<cdot>\<cdot>cl \<eta>s = [] \<longleftrightarrow> Cs = [] \<or> \<eta>s = []"
   using map2_empty_iff subst_cls_lists_def by auto
 
 lemma subst_cls_mset_empty_iff[simp]: "CC \<cdot>cm \<eta> = {#} \<longleftrightarrow> CC = {#}"
@@ -496,6 +496,11 @@ lemma subst_clss_union[simp]: "(CC \<union> DD) \<cdot>cs \<sigma> = CC \<cdot>c
 lemma subst_cls_list_append[simp]: "(Cs @ Ds) \<cdot>cl \<sigma> = Cs \<cdot>cl \<sigma> @ Ds \<cdot>cl \<sigma>"
   unfolding subst_cls_list_def by auto
 
+lemma subst_cls_lists_append[simp]:
+  "length Cs = length \<sigma>s \<Longrightarrow> length Cs' = length \<sigma>s' \<Longrightarrow>
+   (Cs @ Cs') \<cdot>\<cdot>cl (\<sigma>s @ \<sigma>s') = Cs \<cdot>\<cdot>cl \<sigma>s @ Cs' \<cdot>\<cdot>cl \<sigma>s'"
+  unfolding subst_cls_lists_def by auto
+
 lemma subst_cls_mset_union[simp]: "(CC + DD) \<cdot>cm \<sigma> = CC \<cdot>cm \<sigma> + DD \<cdot>cm \<sigma>"
   unfolding subst_cls_mset_def by auto
 
@@ -526,6 +531,9 @@ lemma subst_clss_single[simp]: "{C} \<cdot>cs \<sigma> = {C \<cdot> \<sigma>}"
 lemma subst_cls_list_single[simp]: "[C] \<cdot>cl \<sigma> = [C \<cdot> \<sigma>]"
   unfolding subst_cls_list_def by auto
 
+lemma subst_cls_lists_single[simp]: "[C] \<cdot>\<cdot>cl [\<sigma>] = [C \<cdot> \<sigma>]"
+  unfolding subst_cls_lists_def by auto
+
 lemma subst_cls_mset_single[simp]: "{#C#} \<cdot>cm \<sigma> = {#C \<cdot> \<sigma>#}"
   by simp
 
@@ -550,11 +558,17 @@ lemma subst_cls_lists_Cons[simp]: "(C # Cs) \<cdot>\<cdot>cl (\<sigma> # \<sigma
 
 subsubsection \<open>Substitution on @{term tl}\<close>
 
-lemma subst_atm_list_tl[simp]: "tl (As \<cdot>al \<eta>) = tl As \<cdot>al \<eta>"
-  by (induction As) auto
+lemma subst_atm_list_tl[simp]: "tl (As \<cdot>al \<sigma>) = tl As \<cdot>al \<sigma>"
+  by (cases As) auto
 
-lemma subst_atm_mset_list_tl[simp]: "tl (AAs \<cdot>aml \<eta>) = tl AAs \<cdot>aml \<eta>"
-  by (induction AAs) auto
+lemma subst_atm_mset_list_tl[simp]: "tl (AAs \<cdot>aml \<sigma>) = tl AAs \<cdot>aml \<sigma>"
+  by (cases AAs) auto
+
+lemma subst_cls_list_tl[simp]: "tl (Cs \<cdot>cl \<sigma>) = tl Cs \<cdot>cl \<sigma>"
+  by (cases Cs) auto
+
+lemma subst_cls_lists_tl[simp]: "length Cs = length \<sigma>s \<Longrightarrow> tl (Cs \<cdot>\<cdot>cl \<sigma>s) = tl Cs \<cdot>\<cdot>cl tl \<sigma>s"
+  by (cases Cs; cases \<sigma>s) auto
 
 
 subsubsection \<open>Substitution on @{term nth}\<close>
@@ -662,7 +676,8 @@ lemma is_renaming_inv_renaming_cancel_atm_mset_list[simp]: "is_renaming \<rho> \
 
 lemma is_renaming_list_inv_renaming_cancel_atm_mset_lists[simp]:
   "length AAs = length \<rho>s \<Longrightarrow> is_renaming_list \<rho>s \<Longrightarrow> AAs \<cdot>\<cdot>aml \<rho>s \<cdot>\<cdot>aml map inv_renaming \<rho>s = AAs"
-  by (metis inv_renaming_cancel_r_list subst_atm_mset_lists_comp_substs subst_atm_mset_lists_id_subst)
+  by (metis inv_renaming_cancel_r_list subst_atm_mset_lists_comp_substs
+      subst_atm_mset_lists_id_subst)
 
 lemma is_renaming_inv_renaming_cancel_lit[simp]: "is_renaming \<rho> \<Longrightarrow> (L \<cdot>l \<rho>) \<cdot>l inv_renaming \<rho> = L"
   by (metis inv_renaming_cancel_r subst_lit_comp_subst subst_lit_id_subst)
@@ -670,17 +685,20 @@ lemma is_renaming_inv_renaming_cancel_lit[simp]: "is_renaming \<rho> \<Longright
 lemma is_renaming_inv_renaming_cancel_cls[simp]: "is_renaming \<rho> \<Longrightarrow> C  \<cdot> \<rho> \<cdot> inv_renaming \<rho> = C"
   by (metis inv_renaming_cancel_r subst_cls_comp_subst subst_cls_id_subst)
 
-lemma is_renaming_inv_renaming_cancel_clss[simp]: "is_renaming \<rho> \<Longrightarrow> CC \<cdot>cs \<rho> \<cdot>cs inv_renaming \<rho> = CC"
+lemma is_renaming_inv_renaming_cancel_clss[simp]:
+  "is_renaming \<rho> \<Longrightarrow> CC \<cdot>cs \<rho> \<cdot>cs inv_renaming \<rho> = CC"
   by (metis inv_renaming_cancel_r subst_clss_id_subst subst_clsscomp_subst)
 
-lemma is_renaming_inv_renaming_cancel_cls_list[simp]: "is_renaming \<rho> \<Longrightarrow> Cs \<cdot>cl \<rho> \<cdot>cl inv_renaming \<rho> = Cs"
+lemma is_renaming_inv_renaming_cancel_cls_list[simp]:
+  "is_renaming \<rho> \<Longrightarrow> Cs \<cdot>cl \<rho> \<cdot>cl inv_renaming \<rho> = Cs"
   by (metis inv_renaming_cancel_r subst_cls_list_comp_subst subst_cls_list_id_subst)
 
 lemma is_renaming_list_inv_renaming_cancel_cls_list[simp]:
   "length Cs = length \<rho>s \<Longrightarrow> is_renaming_list \<rho>s \<Longrightarrow> Cs \<cdot>\<cdot>cl \<rho>s \<cdot>\<cdot>cl map inv_renaming \<rho>s = Cs"
   by (metis inv_renaming_cancel_r_list subst_cls_lists_comp_substs subst_cls_lists_id_subst)
 
-lemma is_renaming_inv_renaming_cancel_cls_mset[simp]: "is_renaming \<rho> \<Longrightarrow> CC \<cdot>cm \<rho> \<cdot>cm inv_renaming \<rho> = CC"
+lemma is_renaming_inv_renaming_cancel_cls_mset[simp]:
+  "is_renaming \<rho> \<Longrightarrow> CC \<cdot>cm \<rho> \<cdot>cm inv_renaming \<rho> = CC"
   by (metis inv_renaming_cancel_r subst_cls_mset_comp_subst subst_cls_mset_id_subst)
 
 
@@ -771,7 +789,7 @@ lemma is_ground_cls_list_is_ground_cls_sum_list[simp]:
   by (meson in_mset_sum_list2 is_ground_cls_def is_ground_cls_list_def)
 
 
-paragraph \<open>Ground mono\<close>
+paragraph \<open>Grounding monotonicity\<close>
 
 lemma is_ground_cls_mono: "C \<subseteq># D \<Longrightarrow> is_ground_cls D \<Longrightarrow> is_ground_cls C"
   unfolding is_ground_cls_def by (metis set_mset_mono subsetD)
@@ -812,6 +830,20 @@ lemma ground_subst_ground_cls_lists[simp]:
   "\<forall>\<sigma> \<in> set \<sigma>s. is_ground_subst \<sigma> \<Longrightarrow> is_ground_cls_list (Cs \<cdot>\<cdot>cl \<sigma>s)"
   unfolding is_ground_cls_list_def subst_cls_lists_def by (auto simp: set_zip)
 
+lemma subst_cls_eq_grounding_of_cls_subset_eq:
+  assumes "D \<cdot> \<sigma> = C"
+  shows "grounding_of_cls C \<subseteq> grounding_of_cls D"
+proof
+  fix C\<sigma>'
+  assume "C\<sigma>' \<in> grounding_of_cls C"
+  then obtain \<sigma>' where
+    C\<sigma>': "C \<cdot> \<sigma>' = C\<sigma>'" "is_ground_subst \<sigma>'"
+    unfolding grounding_of_cls_def by auto
+  then have "C \<cdot> \<sigma>' = D \<cdot> \<sigma> \<cdot> \<sigma>' \<and> is_ground_subst (\<sigma> \<odot> \<sigma>')"
+    using assms by auto
+  then show "C\<sigma>' \<in> grounding_of_cls D"
+    unfolding grounding_of_cls_def using C\<sigma>'(1) by force
+qed
 
 paragraph \<open>Substituting on ground expression has no effect\<close>
 
@@ -883,6 +915,15 @@ lemma grounding_of_cls_ground: "is_ground_cls C \<Longrightarrow> grounding_of_c
 lemma grounding_of_cls_empty[simp]: "grounding_of_cls {#} = {{#}}"
   by (simp add: grounding_of_cls_ground)
 
+lemma union_grounding_of_cls_ground: "is_ground_clss (\<Union> (grounding_of_cls ` N))"
+  by (simp add: grounding_ground grounding_of_clss_def is_ground_clss_def)
+
+
+paragraph \<open>Grounding idempotence\<close>
+
+lemma grounding_of_grounding_of_cls: "E \<in> grounding_of_cls D \<Longrightarrow> D \<in> grounding_of_cls C \<Longrightarrow> E = D"
+  using grounding_of_cls_def by auto
+
 
 subsubsection \<open>Subsumption\<close>
 
@@ -935,27 +976,30 @@ lemma is_unifiers_is_unifier: "is_unifiers \<sigma> AAA \<Longrightarrow> AA \<i
 
 subsubsection \<open>Generalization and Subsumption\<close>
 
+lemma variants_sym: "variants D D' \<longleftrightarrow> variants D' D"
+  unfolding variants_def by auto
+
 lemma variants_iff_subsumes: "variants C D \<longleftrightarrow> subsumes C D \<and> subsumes D C"
 proof
   assume "variants C D"
   then show "subsumes C D \<and> subsumes D C"
-    unfolding variants_def generalizes_cls_def subsumes_def by (metis subset_mset.order.refl)
+    unfolding variants_def generalizes_def subsumes_def by (metis subset_mset.order.refl)
 next
   assume sub: "subsumes C D \<and> subsumes D C"
   then have "size C = size D"
     unfolding subsumes_def by (metis antisym size_mset_mono size_subst)
   then show "variants C D"
-    using sub unfolding subsumes_def variants_def generalizes_cls_def
+    using sub unfolding subsumes_def variants_def generalizes_def
     by (metis leD mset_subset_size size_mset_mono size_subst
         subset_mset.order.not_eq_order_implies_strict)
 qed
 
-lemma wf_strictly_generalizes_cls: "wfP strictly_generalizes_cls"
+lemma wf_strictly_generalizes: "wfP strictly_generalizes"
 proof -
   {
-    assume "\<exists>C_at. \<forall>i. strictly_generalizes_cls (C_at (Suc i)) (C_at i)"
+    assume "\<exists>C_at. \<forall>i. strictly_generalizes (C_at (Suc i)) (C_at i)"
     then obtain C_at :: "nat \<Rightarrow> 'a clause" where
-      sg_C: "\<And>i. strictly_generalizes_cls (C_at (Suc i)) (C_at i)"
+      sg_C: "\<And>i. strictly_generalizes (C_at (Suc i)) (C_at i)"
       by blast
 
     define n :: nat where
@@ -965,13 +1009,13 @@ proof -
     proof (induct i)
       case (Suc i)
       then show ?case
-        using sg_C[of i] unfolding strictly_generalizes_cls_def generalizes_cls_def subst_cls_def
+        using sg_C[of i] unfolding strictly_generalizes_def generalizes_def subst_cls_def
         by (metis size_image_mset)
     qed (simp add: n_def)
 
     obtain \<sigma>_at :: "nat \<Rightarrow> 's" where
       C_\<sigma>: "\<And>i. image_mset (\<lambda>L. L \<cdot>l \<sigma>_at i) (C_at (Suc i)) = C_at i"
-      using sg_C[unfolded strictly_generalizes_cls_def generalizes_cls_def subst_cls_def] by metis
+      using sg_C[unfolded strictly_generalizes_def generalizes_def subst_cls_def] by metis
 
     define Ls_at :: "nat \<Rightarrow> 'a literal list" where
       "Ls_at = rec_nat (SOME Ls. mset Ls = C_at 0)
@@ -1007,7 +1051,7 @@ proof -
       using Ls_\<sigma> len_Ls by (metis literal.map_disc_iff nth_map subst_lit_def)
 
     have Ls_\<tau>_strict_lit: "\<And>i \<tau>. map (\<lambda>L. L \<cdot>l \<tau>) (Ls_at i) \<noteq> Ls_at (Suc i)"
-      by (metis C_\<sigma> mset_Ls Ls_\<sigma> mset_map sg_C generalizes_cls_def strictly_generalizes_cls_def
+      by (metis C_\<sigma> mset_Ls Ls_\<sigma> mset_map sg_C generalizes_def strictly_generalizes_def
           subst_cls_def)
 
     have Ls_\<tau>_strict_tm:
@@ -1039,22 +1083,52 @@ proof -
     then have False
       using wf_strictly_generalizes_atm[unfolded wfP_def wf_iff_no_infinite_down_chain] by blast
   }
-  then show "wfP (strictly_generalizes_cls :: 'a clause \<Rightarrow> _ \<Rightarrow> _)"
+  then show "wfP (strictly_generalizes :: 'a clause \<Rightarrow> _ \<Rightarrow> _)"
     unfolding wfP_def by (blast intro: wf_iff_no_infinite_down_chain[THEN iffD2])
 qed
 
-lemma strict_subset_subst_strictly_subsumes:
-  assumes c\<eta>_sub: "C \<cdot> \<eta> \<subset># D"
-  shows "strictly_subsumes C D"
-  by (metis c\<eta>_sub leD mset_subset_size size_mset_mono size_subst strictly_subsumes_def
+lemma strict_subset_subst_strictly_subsumes: "C \<cdot> \<eta> \<subset># D \<Longrightarrow> strictly_subsumes C D"
+  by (metis leD mset_subset_size size_mset_mono size_subst strictly_subsumes_def
       subset_mset.dual_order.strict_implies_order substitution_ops.subsumes_def)
+
+lemma generalizes_refl: "generalizes C C"
+  unfolding generalizes_def by (rule exI[of _ id_subst]) auto
+
+lemma generalizes_trans: "generalizes C D \<Longrightarrow> generalizes D E \<Longrightarrow> generalizes C E"
+  unfolding generalizes_def using subst_cls_comp_subst by blast
+
+lemma subsumes_refl: "subsumes C C"
+  unfolding subsumes_def by (rule exI[of _ id_subst]) auto
 
 lemma subsumes_trans: "subsumes C D \<Longrightarrow> subsumes D E \<Longrightarrow> subsumes C E"
   unfolding subsumes_def
   by (metis (no_types) subset_mset.order.trans subst_cls_comp_subst subst_cls_mono_mset)
 
+lemma strictly_generalizes_irrefl: "\<not> strictly_generalizes C C"
+  unfolding strictly_generalizes_def by blast
+
+lemma strictly_generalizes_antisym: "strictly_generalizes C D \<Longrightarrow> \<not> strictly_generalizes D C"
+  unfolding strictly_generalizes_def by blast
+
+lemma strictly_generalizes_trans:
+  "strictly_generalizes C D \<Longrightarrow> strictly_generalizes D E \<Longrightarrow> strictly_generalizes C E"
+  unfolding strictly_generalizes_def using generalizes_trans by blast
+
+lemma strictly_subsumes_irrefl: "\<not> strictly_subsumes C C"
+  unfolding strictly_subsumes_def by blast
+
+lemma strictly_subsumes_antisym: "strictly_subsumes C D \<Longrightarrow> \<not> strictly_subsumes D C"
+  unfolding strictly_subsumes_def by blast
+
+lemma strictly_subsumes_trans:
+  "strictly_subsumes C D \<Longrightarrow> strictly_subsumes D E \<Longrightarrow> strictly_subsumes C E"
+  unfolding strictly_subsumes_def using subsumes_trans by blast
+
 lemma subset_strictly_subsumes: "C \<subset># D \<Longrightarrow> strictly_subsumes C D"
   using strict_subset_subst_strictly_subsumes[of C id_subst] by auto
+
+lemma strictly_generalizes_neq: "strictly_generalizes D' D \<Longrightarrow> D' \<noteq> D \<cdot> \<sigma>"
+  unfolding strictly_generalizes_def generalizes_def by blast
 
 lemma strictly_subsumes_neq: "strictly_subsumes D' D \<Longrightarrow> D' \<noteq> D \<cdot> \<sigma>"
   unfolding strictly_subsumes_def subsumes_def by blast
@@ -1089,19 +1163,63 @@ proof (rule ccontr)
   then obtain l where
     l_p: "\<forall>l' \<ge> l. size (c l') = size (c (Suc l'))"
     by metis
-  then have "\<forall>l' \<ge> l. strictly_generalizes_cls (c (Suc l')) (c l')"
-    using ps unfolding strictly_generalizes_cls_def generalizes_cls_def
-    by (metis size_subst less_irrefl strictly_subsumes_def mset_subset_size
-        subset_mset_def subsumes_def strictly_subsumes_neq)
-  then have "\<forall>i. strictly_generalizes_cls (c (Suc i + l)) (c (i + l))"
-    unfolding strictly_generalizes_cls_def generalizes_cls_def by auto
-  then have "\<exists>f. \<forall>i. strictly_generalizes_cls (f (Suc i)) (f i)"
+  then have "\<forall>l' \<ge> l. strictly_generalizes (c (Suc l')) (c l')"
+    using ps unfolding strictly_generalizes_def generalizes_def
+    by (metis size_subst less_irrefl strictly_subsumes_def mset_subset_size subset_mset_def
+        subsumes_def strictly_subsumes_neq)
+  then have "\<forall>i. strictly_generalizes (c (Suc i + l)) (c (i + l))"
+    unfolding strictly_generalizes_def generalizes_def by auto
+  then have "\<exists>f. \<forall>i. strictly_generalizes (f (Suc i)) (f i)"
     by (rule exI[of _ "\<lambda>x. c (x + l)"])
   then show False
-    using wf_strictly_generalizes_cls
-      wf_iff_no_infinite_down_chain[of "{(x, y). strictly_generalizes_cls x y}"]
+    using wf_strictly_generalizes
+      wf_iff_no_infinite_down_chain[of "{(x, y). strictly_generalizes x y}"]
     unfolding wfP_def by auto
 qed
+
+lemma wf_strictly_subsumes: "wfP strictly_subsumes"
+  using strictly_subsumes_has_minimum by (metis equals0D wfP_eq_minimal)
+
+lemma variants_imp_exists_substitution: "variants D D' \<Longrightarrow> \<exists>\<sigma>. D \<cdot> \<sigma> = D'"
+  unfolding variants_iff_subsumes subsumes_def
+  by (meson strictly_subsumes_def subset_mset_def strict_subset_subst_strictly_subsumes subsumes_def)
+
+lemma strictly_subsumes_variants:
+  assumes "strictly_subsumes E D" and "variants D D'"
+  shows "strictly_subsumes E D'"
+proof -
+  from assms obtain \<sigma> \<sigma>' where
+    \<sigma>_\<sigma>'_p: "D \<cdot> \<sigma> = D' \<and> D' \<cdot> \<sigma>' = D"
+    using variants_imp_exists_substitution variants_sym by metis
+
+  from assms obtain \<sigma>'' where
+    "E \<cdot> \<sigma>'' \<subseteq># D"
+    unfolding strictly_subsumes_def subsumes_def by auto
+  then have "E \<cdot> \<sigma>'' \<cdot> \<sigma> \<subseteq># D \<cdot> \<sigma>"
+    using subst_cls_mono_mset by blast
+  then have "E \<cdot> (\<sigma>'' \<odot> \<sigma>) \<subseteq># D'"
+    using \<sigma>_\<sigma>'_p by auto
+  moreover from assms have n: "\<nexists>\<sigma>. D \<cdot> \<sigma> \<subseteq># E"
+    unfolding strictly_subsumes_def subsumes_def by auto
+  have "\<nexists>\<sigma>. D' \<cdot> \<sigma> \<subseteq># E"
+  proof
+    assume "\<exists>\<sigma>'''. D' \<cdot> \<sigma>''' \<subseteq># E"
+    then obtain \<sigma>''' where
+      "D' \<cdot> \<sigma>''' \<subseteq># E"
+      by auto
+    then have "D \<cdot> (\<sigma> \<odot> \<sigma>''') \<subseteq># E"
+      using \<sigma>_\<sigma>'_p by auto
+    then show False
+      using n by metis
+  qed
+  ultimately show ?thesis
+    unfolding strictly_subsumes_def subsumes_def by metis
+qed
+
+lemma neg_strictly_subsumes_variants:
+  assumes "\<not> strictly_subsumes E D" and "variants D D'"
+  shows "\<not> strictly_subsumes E D'"
+  using assms strictly_subsumes_variants variants_sym by auto
 
 end
 

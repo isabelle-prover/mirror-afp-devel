@@ -438,7 +438,7 @@ sublocale ord_\<Gamma>_sound_counterex_reducing?:
     "ground_resolution_with_selection.INTERP S" +
   reductive_inference_system "ground_resolution_with_selection.ord_\<Gamma> S"
 proof unfold_locales
-  fix DA :: "'a clause" and N :: "'a clause set"
+  fix N :: "'a clause set" and DA :: "'a clause"
   assume "{#} \<notin> N" and "DA \<in> N" and "\<not> INTERP N \<Turnstile> DA" and "\<And>C. C \<in> N \<Longrightarrow> \<not> INTERP N \<Turnstile> C \<Longrightarrow> DA \<le> C"
   then obtain CAs AAs As E where
     dd_sset_n: "set CAs \<subseteq> N" and

@@ -159,7 +159,7 @@ abbreviation S_gQ :: "'a clause \<Rightarrow> 'a clause" where
   "S_gQ \<equiv> S_Q (lmap state_of_wstate Sts)"
 
 interpretation sq: selection S_gQ
-  unfolding S_Q_def[OF deriv_RP] using S_M_selects_subseteq S_M_selects_neg_lits selection_axioms
+  unfolding S_Q_def using S_M_selects_subseteq S_M_selects_neg_lits selection_axioms
   by unfold_locales auto
 
 interpretation gd: ground_resolution_with_selection S_gQ

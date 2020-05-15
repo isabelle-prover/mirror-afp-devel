@@ -58,10 +58,10 @@ end
 lemmas [code] = less_uint16.rep_eq less_eq_uint16.rep_eq
 
 instantiation uint16 :: bit_operations begin
-lift_definition bitNOT_uint16 :: "uint16 \<Rightarrow> uint16" is bitNOT .
-lift_definition bitAND_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is bitAND .
-lift_definition bitOR_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is bitOR .
-lift_definition bitXOR_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is bitXOR .
+lift_definition bitNOT_uint16 :: "uint16 \<Rightarrow> uint16" is NOT .
+lift_definition bitAND_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is \<open>(AND)\<close> .
+lift_definition bitOR_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is \<open>(OR)\<close> .
+lift_definition bitXOR_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is \<open>(XOR)\<close> .
 lift_definition test_bit_uint16 :: "uint16 \<Rightarrow> nat \<Rightarrow> bool" is test_bit .
 lift_definition set_bit_uint16 :: "uint16 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint16" is set_bit .
 lift_definition lsb_uint16 :: "uint16 \<Rightarrow> bool" is lsb .
@@ -291,19 +291,19 @@ code_printing
   (SML_word) "Word16.< ((_), (_))" and
   (Haskell) infix 4 "<" and
   (Scala) infixl 4 "<"
-| constant "bitNOT :: uint16 \<Rightarrow> _" \<rightharpoonup>
+| constant "NOT :: uint16 \<Rightarrow> _" \<rightharpoonup>
   (SML_word) "Word16.notb" and
   (Haskell) "Data'_Bits.complement" and
   (Scala) "_.unary'_~.toChar"
-| constant "bitAND :: uint16 \<Rightarrow> _" \<rightharpoonup>
+| constant "(AND) :: uint16 \<Rightarrow> _" \<rightharpoonup>
   (SML_word) "Word16.andb ((_),/ (_))" and
   (Haskell) infixl 7 "Data_Bits..&." and
   (Scala) "(_ & _).toChar"
-| constant "bitOR :: uint16 \<Rightarrow> _" \<rightharpoonup>
+| constant "(OR) :: uint16 \<Rightarrow> _" \<rightharpoonup>
   (SML_word) "Word16.orb ((_),/ (_))" and
   (Haskell) infixl 5 "Data_Bits..|." and
   (Scala) "(_ | _).toChar"
-| constant "bitXOR :: uint16 \<Rightarrow> _" \<rightharpoonup>
+| constant "(XOR) :: uint16 \<Rightarrow> _" \<rightharpoonup>
   (SML_word) "Word16.xorb ((_),/ (_))" and
   (Haskell) "Data'_Bits.xor" and
   (Scala) "(_ ^ _).toChar"

@@ -167,11 +167,11 @@ definition mem_context_val_w32 :: "asi_type \<Rightarrow> phys_address \<Rightar
                            mem_context \<Rightarrow> word32 option"
 where
 "mem_context_val_w32 asi addr m \<equiv>
-  let addr' = bitAND addr 0b111111111111111111111111111111111100;
-      addr0 = bitOR addr' 0b000000000000000000000000000000000000;
-      addr1 = bitOR addr' 0b000000000000000000000000000000000001;
-      addr2 = bitOR addr' 0b000000000000000000000000000000000010;
-      addr3 = bitOR addr' 0b000000000000000000000000000000000011;
+  let addr' = (AND) addr 0b111111111111111111111111111111111100;
+      addr0 = (OR) addr' 0b000000000000000000000000000000000000;
+      addr1 = (OR) addr' 0b000000000000000000000000000000000001;
+      addr2 = (OR) addr' 0b000000000000000000000000000000000010;
+      addr3 = (OR) addr' 0b000000000000000000000000000000000011;
       r0 = mem_context_val asi addr0 m;
       r1 = mem_context_val asi addr1 m;
       r2 = mem_context_val asi addr2 m;
@@ -185,7 +185,7 @@ where
         byte2 = case r2 of Some v \<Rightarrow> v;
         byte3 = case r3 of Some v \<Rightarrow> v 
     in
-    Some (bitOR (bitOR (bitOR ((ucast(byte0)) << 24) 
+    Some ((OR) ((OR) ((OR) ((ucast(byte0)) << 24) 
                               ((ucast(byte1)) << 16)) 
                        ((ucast(byte2)) << 8)) 
                 (ucast(byte3)))
@@ -214,22 +214,22 @@ where "ptd_lookup va pt m lvl = (
       if lvl = 1 then (ucast ((ucast (va >> 24))::word8))::word32
       else if lvl = 2 then (ucast ((ucast (va >> 18))::word6))::word32
       else (ucast ((ucast (va >> 12))::word6))::word32);
-        thislvl_addr = bitOR pt thislvl_offset;
+        thislvl_addr = (OR) pt thislvl_offset;
         thislvl_data = mem_context_val_w32 (word_of_int 9) (ucast thislvl_addr) m
     in
     case thislvl_data of 
     Some v \<Rightarrow> (
-      let et_val = bitAND v 0b00000000000000000000000000000011 in
+      let et_val = (AND) v 0b00000000000000000000000000000011 in
       if et_val = 0 then \<comment> \<open>Invalid\<close>
         None
       else if et_val = 1 then \<comment> \<open>Page Table Descriptor\<close>
-        let ptp = bitAND v 0b11111111111111111111111111111100 in
+        let ptp = (AND) v 0b11111111111111111111111111111100 in
         ptd_lookup va ptp m (lvl+1)
       else if et_val = 2 then \<comment> \<open>Page Table Entry\<close>
         let ppn = (ucast (v >> 8))::word24;
             va_offset = (ucast ((ucast va)::word12))::word36
         in
-        Some ((bitOR (((ucast ppn)::word36) << 12) va_offset), 
+        Some (((OR) (((ucast ppn)::word36) << 12) va_offset), 
               ((ucast v)::word8))
       else \<comment> \<open>\<open>et_val = 3\<close>, reserved.\<close>
         None
@@ -273,11 +273,11 @@ where
         cnr_val = mmu_reg_val mmu (0x200);
         mmu_cr_val = (registers mmu) CR
     in
-    if bitAND mmu_cr_val 1 \<noteq> 0 then \<comment> \<open>MMU enabled.\<close>
+    if (AND) mmu_cr_val 1 \<noteq> 0 then \<comment> \<open>MMU enabled.\<close>
       case (ctp_val,cnr_val) of
       (Some v1, Some v2) \<Rightarrow>
-        let context_table_entry = bitOR ((v1 >> 11) << 11)
-            ((bitAND v2 0b00000000000000000000000111111111) << 2);
+        let context_table_entry = (OR) ((v1 >> 11) << 11)
+            (((AND) v2 0b00000000000000000000000111111111) << 2);
             context_table_data = mem_context_val_w32 (word_of_int 9) 
               (ucast context_table_entry) m
         in (

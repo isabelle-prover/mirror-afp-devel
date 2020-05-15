@@ -49,10 +49,10 @@ end
 lemmas [code] = less_uint8.rep_eq less_eq_uint8.rep_eq
 
 instantiation uint8 :: bit_operations begin
-lift_definition bitNOT_uint8 :: "uint8 \<Rightarrow> uint8" is bitNOT .
-lift_definition bitAND_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is bitAND .
-lift_definition bitOR_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is bitOR .
-lift_definition bitXOR_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is bitXOR .
+lift_definition bitNOT_uint8 :: "uint8 \<Rightarrow> uint8" is NOT .
+lift_definition bitAND_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is \<open>(AND)\<close> .
+lift_definition bitOR_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is \<open>(OR)\<close> .
+lift_definition bitXOR_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is \<open>(XOR)\<close> .
 lift_definition test_bit_uint8 :: "uint8 \<Rightarrow> nat \<Rightarrow> bool" is test_bit .
 lift_definition set_bit_uint8 :: "uint8 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint8" is set_bit .
 lift_definition lsb_uint8 :: "uint8 \<Rightarrow> bool" is lsb .
@@ -292,19 +292,19 @@ code_printing type_constructor uint8 \<rightharpoonup>
   (SML) "Word8.< ((_), (_))" and
   (Haskell) infix 4 "<" and
   (Scala) "Uint8.less"
-| constant "bitNOT :: uint8 \<Rightarrow> _" \<rightharpoonup>
+| constant "NOT :: uint8 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word8.notb" and
   (Haskell) "Data'_Bits.complement" and
   (Scala) "_.unary'_~.toByte"
-| constant "bitAND :: uint8 \<Rightarrow> _" \<rightharpoonup>
+| constant "(AND) :: uint8 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word8.andb ((_),/ (_))" and
   (Haskell) infixl 7 "Data_Bits..&." and
   (Scala) "(_ & _).toByte"
-| constant "bitOR :: uint8 \<Rightarrow> _" \<rightharpoonup>
+| constant "(OR) :: uint8 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word8.orb ((_),/ (_))" and
   (Haskell) infixl 5 "Data_Bits..|." and
   (Scala) "(_ | _).toByte"
-| constant "bitXOR :: uint8 \<Rightarrow> _" \<rightharpoonup>
+| constant "(XOR) :: uint8 \<Rightarrow> _" \<rightharpoonup>
   (SML) "Word8.xorb ((_),/ (_))" and
   (Haskell) "Data'_Bits.xor" and
   (Scala) "(_ ^ _).toByte"

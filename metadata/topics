@@ -1,5 +1,5 @@
-Computer Science
-  Automata and Formal Languages
+Computer science
+  Automata and formal languages
   Algorithms
     Graph
     Distributed
@@ -10,25 +10,25 @@ Computer Science
     Mathematical
     Optimization
   Concurrency
-    Process Calculi
-  Data Structures
-  Functional Programming
+    Process calculi
+  Data structures
+  Functional programming
   Hardware
-  Machine Learning
+  Machine learning
   Networks
-  Programming Languages
-    Language Definitions
-    Lambda Calculi
-    Type Systems
+  Programming languages
+    Language definitions
+    Lambda calculi
+    Type systems
     Logics
     Compiling
-    Static Analysis
+    Static analysis
     Transformations
     Misc
   Security
     Cryptography
   Semantics
-  System Description Languages
+  System description languages
 Logic
   Philosophical aspects
   General logic
@@ -49,15 +49,14 @@ Mathematics
   Order
   Algebra
   Analysis
-  Probability Theory
-  Number Theory
-  Games and Economics
+  Probability theory
+  Number theory
+  Games and economics
   Geometry
   Topology
-  Graph Theory
+  Graph theory
   Combinatorics
-  Category Theory
+  Category theory
   Physics
-  Set Theory
   Misc
 Tools

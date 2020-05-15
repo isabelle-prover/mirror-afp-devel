@@ -142,7 +142,7 @@ where
 definition get_tt :: "word32 \<Rightarrow> word8"
 where
 "get_tt tbr \<equiv>
-  ucast ((bitAND tbr 0b00000000000000000000111111110000) >> 4)
+  ucast (((AND) tbr 0b00000000000000000000111111110000) >> 4)
 "
 
 text \<open>Write the tt field of the TBR register. 
@@ -150,80 +150,80 @@ text \<open>Write the tt field of the TBR register.
 definition write_tt :: "word8 \<Rightarrow> word32 \<Rightarrow> word32"
 where
 "write_tt new_tt_val tbr_val \<equiv>
-  let tmp = bitAND tbr_val 0b111111111111111111111000000001111 in
-      bitOR tmp (((ucast new_tt_val)::word32) << 4)
+  let tmp = (AND) tbr_val 0b111111111111111111111000000001111 in
+      (OR) tmp (((ucast new_tt_val)::word32) << 4)
 "
 
-text \<open>Get the nth bit of WIM. This equals (bitAND WIM $2^n$). 
+text \<open>Get the nth bit of WIM. This equals ((AND) WIM $2^n$). 
         N.B. the first bit of WIM is the 0th bit.\<close>
 definition get_WIM_bit :: "nat \<Rightarrow> word32 \<Rightarrow> word1"
 where
 "get_WIM_bit n wim \<equiv>
   let mask = ((ucast (0b1::word1))::word32) << n in
-  ucast ((bitAND mask wim) >> n)
+  ucast (((AND) mask wim) >> n)
 "
 
 definition get_CWP :: "word32 \<Rightarrow> word5"
 where
 "get_CWP psr \<equiv> 
-  ucast (bitAND psr 0b00000000000000000000000000011111) 
+  ucast ((AND) psr 0b00000000000000000000000000011111) 
 "
 
 definition get_ET :: "word32 \<Rightarrow> word1"
 where
 "get_ET psr \<equiv> 
-  ucast ((bitAND psr 0b00000000000000000000000000100000) >> 5) 
+  ucast (((AND) psr 0b00000000000000000000000000100000) >> 5) 
 "
 
 definition get_PIL :: "word32 \<Rightarrow> word4"
 where
 "get_PIL psr \<equiv> 
-  ucast ((bitAND psr 0b00000000000000000000111100000000) >> 8) 
+  ucast (((AND) psr 0b00000000000000000000111100000000) >> 8) 
 "
 
 definition get_PS :: "word32 \<Rightarrow> word1"
 where
 "get_PS psr \<equiv> 
-  ucast ((bitAND psr 0b00000000000000000000000001000000) >> 6) 
+  ucast (((AND) psr 0b00000000000000000000000001000000) >> 6) 
 "
 
 definition get_S :: "word32 \<Rightarrow> word1"
 where
 "get_S psr \<equiv> 
-  \<^cancel>\<open>ucast ((bitAND psr 0b00000000000000000000000010000000) >> 7)\<close>
-  if (bitAND psr (0b00000000000000000000000010000000::word32)) = 0 then 0
+  \<^cancel>\<open>ucast (((AND) psr 0b00000000000000000000000010000000) >> 7)\<close>
+  if ((AND) psr (0b00000000000000000000000010000000::word32)) = 0 then 0
   else 1
 "
 
 definition get_icc_N :: "word32 \<Rightarrow> word1"
 where
 "get_icc_N psr \<equiv>
-  ucast ((bitAND psr 0b00000000100000000000000000000000) >> 23)
+  ucast (((AND) psr 0b00000000100000000000000000000000) >> 23)
 "
 
 definition get_icc_Z :: "word32 \<Rightarrow> word1"
 where
 "get_icc_Z psr \<equiv>
-  ucast ((bitAND psr 0b00000000010000000000000000000000) >> 22)
+  ucast (((AND) psr 0b00000000010000000000000000000000) >> 22)
 "
 
 definition get_icc_V :: "word32 \<Rightarrow> word1"
 where
 "get_icc_V psr \<equiv>
-  ucast ((bitAND psr 0b00000000001000000000000000000000) >> 21)
+  ucast (((AND) psr 0b00000000001000000000000000000000) >> 21)
 "
 
 definition get_icc_C :: "word32 \<Rightarrow> word1"
 where
 "get_icc_C psr \<equiv>
-  ucast ((bitAND psr 0b00000000000100000000000000000000) >> 20)
+  ucast (((AND) psr 0b00000000000100000000000000000000) >> 20)
 "
 
 definition update_S :: "word1 \<Rightarrow> word32 \<Rightarrow> word32"
 where
 "update_S s_val psr_val \<equiv>
-  let tmp0 = bitAND psr_val 0b11111111111111111111111101111111 in
-  bitOR tmp0 (((ucast s_val)::word32) << 7)
+  let tmp0 = (AND) psr_val 0b11111111111111111111111101111111 in
+  (OR) tmp0 (((ucast s_val)::word32) << 7)
 "
 
 text \<open>Update the CWP field of PSR. 
@@ -231,13 +231,13 @@ text \<open>Update the CWP field of PSR.
 definition update_CWP :: "word5 \<Rightarrow> word32 \<Rightarrow> word32"
 where
 "update_CWP cwp_val psr_val \<equiv>
-  let tmp0 = bitAND psr_val (0b11111111111111111111111111100000::word32);
+  let tmp0 = (AND) psr_val (0b11111111111111111111111111100000::word32);
       s_val = ((ucast (get_S psr_val))::word1)
   in
   if s_val = 0 then  
-    bitAND (bitOR tmp0 ((ucast cwp_val)::word32)) (0b11111111111111111111111101111111::word32)
+    (AND) ((OR) tmp0 ((ucast cwp_val)::word32)) (0b11111111111111111111111101111111::word32)
   else
-    bitOR (bitOR tmp0 ((ucast cwp_val)::word32)) (0b00000000000000000000000010000000::word32)
+    (OR) ((OR) tmp0 ((ucast cwp_val)::word32)) (0b00000000000000000000000010000000::word32)
 "
 
 text \<open>Update the the ET, CWP, and S fields of PSR. 
@@ -245,10 +245,10 @@ text \<open>Update the the ET, CWP, and S fields of PSR.
 definition update_PSR_rett :: "word5 \<Rightarrow> word1 \<Rightarrow> word1 \<Rightarrow> word32 \<Rightarrow> word32"
 where
 "update_PSR_rett cwp_val et_val s_val psr_val \<equiv>
-  let tmp0 = bitAND psr_val 0b11111111111111111111111101000000;
-      tmp1 = bitOR tmp0 ((ucast cwp_val)::word32);
-      tmp2 = bitOR tmp1 (((ucast et_val)::word32) << 5); 
-      tmp3 = bitOR tmp2 (((ucast s_val)::word32) << 7)
+  let tmp0 = (AND) psr_val 0b11111111111111111111111101000000;
+      tmp1 = (OR) tmp0 ((ucast cwp_val)::word32);
+      tmp2 = (OR) tmp1 (((ucast et_val)::word32) << 5); 
+      tmp3 = (OR) tmp2 (((ucast s_val)::word32) << 7)
   in  
   tmp3
 "
@@ -256,10 +256,10 @@ where
 definition update_PSR_exe_trap :: "word5 \<Rightarrow> word1 \<Rightarrow> word1 \<Rightarrow> word32 \<Rightarrow> word32"
 where
 "update_PSR_exe_trap cwp_val et_val ps_val psr_val \<equiv>
-  let tmp0 = bitAND psr_val 0b11111111111111111111111110000000;
-      tmp1 = bitOR tmp0 ((ucast cwp_val)::word32);
-      tmp2 = bitOR tmp1 (((ucast et_val)::word32) << 5); 
-      tmp3 = bitOR tmp2 (((ucast ps_val)::word32) << 6)
+  let tmp0 = (AND) psr_val 0b11111111111111111111111110000000;
+      tmp1 = (OR) tmp0 ((ucast cwp_val)::word32);
+      tmp2 = (OR) tmp1 (((ucast et_val)::word32) << 5); 
+      tmp3 = (OR) tmp2 (((ucast ps_val)::word32) << 6)
   in  
   tmp3
 "
@@ -278,11 +278,11 @@ where
                  else       (0b00000000001000000000000000000000::word32);
       c_val_32 = if c_val = 0 then 0 
                  else       (0b00000000000100000000000000000000::word32);
-      tmp0 = bitAND psr_val (0b11111111000011111111111111111111::word32);
-      tmp1 = bitOR tmp0 n_val_32;
-      tmp2 = bitOR tmp1 z_val_32;
-      tmp3 = bitOR tmp2 v_val_32;
-      tmp4 = bitOR tmp3 c_val_32
+      tmp0 = (AND) psr_val (0b11111111000011111111111111111111::word32);
+      tmp1 = (OR) tmp0 n_val_32;
+      tmp2 = (OR) tmp1 z_val_32;
+      tmp3 = (OR) tmp2 v_val_32;
+      tmp4 = (OR) tmp3 c_val_32
   in
   tmp4
 "
@@ -292,9 +292,9 @@ text \<open>Update the ET, PIL fields of PSR.
 definition update_PSR_et_pil :: "word1 \<Rightarrow> word4 \<Rightarrow> word32 \<Rightarrow> word32"
 where
 "update_PSR_et_pil et pil psr_val \<equiv>
-  let tmp0 = bitAND psr_val 0b111111111111111111111000011011111;
-      tmp1 = bitOR tmp0 (((ucast et)::word32) << 5);
-      tmp2 = bitOR tmp1 (((ucast pil)::word32) << 8)
+  let tmp0 = (AND) psr_val 0b111111111111111111111000011011111;
+      tmp1 = (OR) tmp0 (((ucast et)::word32) << 5);
+      tmp2 = (OR) tmp1 (((ucast pil)::word32) << 8)
   in
   tmp2
 "
@@ -468,10 +468,10 @@ text \<open>Given a word7 value, find the highest bit,
 definition sign_ext7::"word7 \<Rightarrow> word32"
 where
 "sign_ext7 w \<equiv> 
-  let highest_bit = (bitAND w 0b1000000) >> 6 in
+  let highest_bit = ((AND) w 0b1000000) >> 6 in
   if highest_bit = 0 then
     (ucast w)::word32
-  else bitOR ((ucast w)::word32) 0b11111111111111111111111110000000
+  else (OR) ((ucast w)::word32) 0b11111111111111111111111110000000
 "
 
 definition zero_ext8 :: "word8 \<Rightarrow> word32"
@@ -484,10 +484,10 @@ text \<open>Given a word8 value, find the highest bit,
 definition sign_ext8::"word8 \<Rightarrow> word32"
 where
 "sign_ext8 w \<equiv> 
-  let highest_bit = (bitAND w 0b10000000) >> 7 in
+  let highest_bit = ((AND) w 0b10000000) >> 7 in
   if highest_bit = 0 then
     (ucast w)::word32
-  else bitOR ((ucast w)::word32) 0b11111111111111111111111100000000
+  else (OR) ((ucast w)::word32) 0b11111111111111111111111100000000
 "
 
 text \<open>Given a word13 value, find the highest bit,
@@ -495,10 +495,10 @@ text \<open>Given a word13 value, find the highest bit,
 definition sign_ext13::"word13 \<Rightarrow> word32"
 where
 "sign_ext13 w \<equiv> 
-  let highest_bit = (bitAND w 0b1000000000000) >> 12 in
+  let highest_bit = ((AND) w 0b1000000000000) >> 12 in
   if highest_bit = 0 then
     (ucast w)::word32
-  else bitOR ((ucast w)::word32) 0b11111111111111111110000000000000
+  else (OR) ((ucast w)::word32) 0b11111111111111111110000000000000
 "
 
 definition zero_ext16 :: "word16 \<Rightarrow> word32"
@@ -511,10 +511,10 @@ text \<open>Given a word16 value, find the highest bit,
 definition sign_ext16::"word16 \<Rightarrow> word32"
 where
 "sign_ext16 w \<equiv> 
-  let highest_bit = (bitAND w 0b1000000000000000) >> 15 in
+  let highest_bit = ((AND) w 0b1000000000000000) >> 15 in
   if highest_bit = 0 then
     (ucast w)::word32
-  else bitOR ((ucast w)::word32) 0b11111111111111110000000000000000
+  else (OR) ((ucast w)::word32) 0b11111111111111110000000000000000
 "
 
 text \<open>Given a word22 value, find the highest bit,
@@ -522,10 +522,10 @@ text \<open>Given a word22 value, find the highest bit,
 definition sign_ext22::"word22 \<Rightarrow> word32"
 where
 "sign_ext22 w \<equiv>
-  let highest_bit = (bitAND w 0b1000000000000000000000) >> 21 in
+  let highest_bit = ((AND) w 0b1000000000000000000000) >> 21 in
   if highest_bit = 0 then
     (ucast w)::word32
-  else bitOR ((ucast w)::word32) 0b11111111110000000000000000000000
+  else (OR) ((ucast w)::word32) 0b11111111110000000000000000000000
 "
 
 text \<open>Given a word24 value, find the highest bit,
@@ -533,10 +533,10 @@ text \<open>Given a word24 value, find the highest bit,
 definition sign_ext24::"word24 \<Rightarrow> word32"
 where
 "sign_ext24 w \<equiv>
-  let highest_bit = (bitAND w 0b100000000000000000000000) >> 23 in
+  let highest_bit = ((AND) w 0b100000000000000000000000) >> 23 in
   if highest_bit = 0 then
     (ucast w)::word32
-  else bitOR ((ucast w)::word32) 0b11111111000000000000000000000000
+  else (OR) ((ucast w)::word32) 0b11111111000000000000000000000000
 "
 
 text\<open>

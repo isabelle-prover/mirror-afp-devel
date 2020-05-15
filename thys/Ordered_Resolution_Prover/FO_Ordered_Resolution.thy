@@ -32,7 +32,8 @@ locale FO_resolution = mgu subst_atm id_subst comp_subst atm_of_atms renamings_a
   fixes
     less_atm :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
   assumes
-    less_atm_stable: "less_atm A B \<Longrightarrow> less_atm (A \<cdot>a \<sigma>) (B \<cdot>a \<sigma>)"
+    less_atm_stable: "less_atm A B \<Longrightarrow> less_atm (A \<cdot>a \<sigma>) (B \<cdot>a \<sigma>)" and
+    less_atm_ground: "is_ground_atm A \<Longrightarrow> is_ground_atm B \<Longrightarrow> less_atm A B \<Longrightarrow> A < B"
 begin
 
 
@@ -71,6 +72,40 @@ proof -
     by blast
 qed
 
+lemma map2_add_mset_map:
+  assumes "length AAs' = n" and "length As' = n"
+  shows "map2 add_mset (As' \<cdot>al \<eta>) (AAs' \<cdot>aml \<eta>) = map2 add_mset As' AAs' \<cdot>aml \<eta>"
+  using assms
+proof (induction n arbitrary: AAs' As')
+  case (Suc n)
+  then have "map2 add_mset (tl (As' \<cdot>al \<eta>)) (tl (AAs' \<cdot>aml \<eta>)) = map2 add_mset (tl As') (tl AAs') \<cdot>aml \<eta>"
+    by simp
+  moreover have Succ: "length (As' \<cdot>al \<eta>) = Suc n" "length (AAs' \<cdot>aml \<eta>) = Suc n"
+    using Suc(3) Suc(2) by auto
+  then have "length (tl (As' \<cdot>al \<eta>)) = n" "length (tl (AAs' \<cdot>aml \<eta>)) = n"
+    by auto
+  then have "length (map2 add_mset (tl (As' \<cdot>al \<eta>)) (tl (AAs' \<cdot>aml \<eta>))) = n"
+    "length (map2 add_mset (tl As') (tl AAs') \<cdot>aml \<eta>) = n"
+    using Suc(2,3) by auto
+  ultimately have "\<forall>i < n. tl (map2 add_mset ( (As' \<cdot>al \<eta>)) ((AAs' \<cdot>aml \<eta>))) ! i =
+    tl (map2 add_mset (As') (AAs') \<cdot>aml \<eta>) ! i"
+    using Suc(2,3) Succ by (simp add: map2_tl map_tl subst_atm_mset_list_def del: subst_atm_list_tl)
+  moreover have nn: "length (map2 add_mset ((As' \<cdot>al \<eta>)) ((AAs' \<cdot>aml \<eta>))) = Suc n"
+    "length (map2 add_mset (As') (AAs') \<cdot>aml \<eta>) = Suc n"
+    using Succ Suc by auto
+  ultimately have "\<forall>i. i < Suc n \<longrightarrow> i > 0 \<longrightarrow>
+    map2 add_mset (As' \<cdot>al \<eta>) (AAs' \<cdot>aml \<eta>) ! i = (map2 add_mset As' AAs' \<cdot>aml \<eta>) ! i"
+    by (auto simp: subst_atm_mset_list_def gr0_conv_Suc subst_atm_mset_def)
+  moreover have "add_mset (hd As' \<cdot>a \<eta>) (hd AAs' \<cdot>am \<eta>) = add_mset (hd As') (hd AAs') \<cdot>am \<eta>"
+    unfolding subst_atm_mset_def by auto
+  then have "(map2 add_mset (As' \<cdot>al \<eta>) (AAs' \<cdot>aml \<eta>)) ! 0  = (map2 add_mset (As') (AAs') \<cdot>aml \<eta>) ! 0"
+    using Suc by (simp add: Succ(2) subst_atm_mset_def)
+  ultimately have "\<forall>i < Suc n. (map2 add_mset (As' \<cdot>al \<eta>) (AAs' \<cdot>aml \<eta>)) ! i =
+    (map2 add_mset (As') (AAs') \<cdot>aml \<eta>) ! i"
+    using Suc by auto
+  then show ?case
+    using nn list_eq_iff_nth_eq by metis
+qed auto
 
 context
   fixes S :: "'a clause \<Rightarrow> 'a clause"
@@ -91,6 +126,13 @@ definition strictly_maximal_wrt :: "'a \<Rightarrow> 'a literal multiset \<Right
 
 lemma strictly_maximal_wrt_maximal_wrt: "strictly_maximal_wrt A C \<Longrightarrow> maximal_wrt A C"
   unfolding maximal_wrt_def strictly_maximal_wrt_def by auto
+
+lemma maximal_wrt_subst: "maximal_wrt (A \<cdot>a \<sigma>) (C \<cdot> \<sigma>) \<Longrightarrow> maximal_wrt A C"
+  unfolding maximal_wrt_def using in_atms_of_subst less_atm_stable by blast
+
+lemma strictly_maximal_wrt_subst:
+  "strictly_maximal_wrt (A \<cdot>a \<sigma>) (C \<cdot> \<sigma>) \<Longrightarrow> strictly_maximal_wrt A C"
+  unfolding strictly_maximal_wrt_def using in_atms_of_subst less_atm_stable by blast
 
 inductive eligible :: "'s \<Rightarrow> 'a list \<Rightarrow> 'a clause \<Rightarrow> bool" where
   eligible:
@@ -247,15 +289,15 @@ qed
 
 lemma subst_sound:
   assumes
-    "\<And>\<sigma>. is_ground_subst \<sigma> \<Longrightarrow> I \<Turnstile> (C \<cdot> \<sigma>)" and
+    "\<And>\<sigma>. is_ground_subst \<sigma> \<Longrightarrow> I \<Turnstile> C \<cdot> \<sigma>" and
     "is_ground_subst \<eta>"
-  shows "I \<Turnstile> (C \<cdot> \<rho>) \<cdot> \<eta>"
+  shows "I \<Turnstile> C \<cdot> \<rho> \<cdot> \<eta>"
   using assms is_ground_comp_subst subst_cls_comp_subst by metis
 
 lemma subst_sound_scl:
   assumes
     len: "length P = length CAs" and
-    true_cas: "\<And>\<sigma>. is_ground_subst \<sigma> \<Longrightarrow> I \<Turnstile>m (mset CAs) \<cdot>cm \<sigma>" and
+    true_cas: "\<And>\<sigma>. is_ground_subst \<sigma> \<Longrightarrow> I \<Turnstile>m mset CAs \<cdot>cm \<sigma>" and
     ground_subst_\<eta>: "is_ground_subst \<eta>"
   shows "I \<Turnstile>m mset (CAs \<cdot>\<cdot>cl P) \<cdot>cm \<eta>"
 proof -
@@ -346,9 +388,6 @@ definition ord_FO_\<Gamma> :: "'a inference set" where
   "ord_FO_\<Gamma> = {Infer (mset CAs) DA E | CAs DA AAs As \<sigma> E. ord_resolve_rename CAs DA AAs As \<sigma> E}"
 
 interpretation ord_FO_resolution: inference_system ord_FO_\<Gamma> .
-
-lemma exists_compose: "\<exists>x. P (f x) \<Longrightarrow> \<exists>y. P y"
-  by meson
 
 lemma finite_ord_FO_resolution_inferences_between:
   assumes fin_cc: "finite CC"
@@ -548,47 +587,6 @@ end
 text \<open>
 The following corresponds to Lemma 4.12:
 \<close>
-
-lemma map2_add_mset_map:
-  assumes "length AAs' = n" and "length As' = n"
-  shows "map2 add_mset (As' \<cdot>al \<eta>) (AAs' \<cdot>aml \<eta>) = map2 add_mset As' AAs' \<cdot>aml \<eta>"
-  using assms
-proof (induction n arbitrary: AAs' As')
-  case (Suc n)
-  then have "map2 add_mset (tl (As' \<cdot>al \<eta>)) (tl (AAs' \<cdot>aml \<eta>)) = map2 add_mset (tl As') (tl AAs') \<cdot>aml \<eta>"
-    by simp
-  moreover have Succ: "length (As' \<cdot>al \<eta>) = Suc n" "length (AAs' \<cdot>aml \<eta>) = Suc n"
-    using Suc(3) Suc(2) by auto
-  then have "length (tl (As' \<cdot>al \<eta>)) = n" "length (tl (AAs' \<cdot>aml \<eta>)) = n"
-    by auto
-  then have "length (map2 add_mset (tl (As' \<cdot>al \<eta>)) (tl (AAs' \<cdot>aml \<eta>))) = n"
-    "length (map2 add_mset (tl As') (tl AAs') \<cdot>aml \<eta>) = n"
-    using Suc(2,3) by auto
-  ultimately have "\<forall>i < n. tl (map2 add_mset ( (As' \<cdot>al \<eta>)) ((AAs' \<cdot>aml \<eta>))) ! i =
-    tl (map2 add_mset (As') (AAs') \<cdot>aml \<eta>) ! i"
-    using Suc(2,3) Succ by (simp add: map2_tl map_tl subst_atm_mset_list_def del: subst_atm_list_tl)
-  moreover have nn: "length (map2 add_mset ((As' \<cdot>al \<eta>)) ((AAs' \<cdot>aml \<eta>))) = Suc n"
-    "length (map2 add_mset (As') (AAs') \<cdot>aml \<eta>) = Suc n"
-    using Succ Suc by auto
-  ultimately have "\<forall>i. i < Suc n \<longrightarrow> i > 0 \<longrightarrow>
-    map2 add_mset (As' \<cdot>al \<eta>) (AAs' \<cdot>aml \<eta>) ! i = (map2 add_mset As' AAs' \<cdot>aml \<eta>) ! i"
-    by (auto simp: subst_atm_mset_list_def gr0_conv_Suc subst_atm_mset_def)
-  moreover have "add_mset (hd As' \<cdot>a \<eta>) (hd AAs' \<cdot>am \<eta>) = add_mset (hd As') (hd AAs') \<cdot>am \<eta>"
-    unfolding subst_atm_mset_def by auto
-  then have "(map2 add_mset (As' \<cdot>al \<eta>) (AAs' \<cdot>aml \<eta>)) ! 0  = (map2 add_mset (As') (AAs') \<cdot>aml \<eta>) ! 0"
-    using Suc by (simp add: Succ(2) subst_atm_mset_def)
-  ultimately have "\<forall>i < Suc n. (map2 add_mset (As' \<cdot>al \<eta>) (AAs' \<cdot>aml \<eta>)) ! i =
-    (map2 add_mset (As') (AAs') \<cdot>aml \<eta>) ! i"
-    using Suc by auto
-  then show ?case
-    using nn list_eq_iff_nth_eq by metis
-qed auto
-
-lemma maximal_wrt_subst: "maximal_wrt (A \<cdot>a \<sigma>) (C \<cdot> \<sigma>) \<Longrightarrow> maximal_wrt A C"
-  unfolding maximal_wrt_def using in_atms_of_subst less_atm_stable by blast
-
-lemma strictly_maximal_wrt_subst: "strictly_maximal_wrt (A \<cdot>a \<sigma>) (C \<cdot> \<sigma>) \<Longrightarrow> strictly_maximal_wrt A C"
-  unfolding strictly_maximal_wrt_def using in_atms_of_subst less_atm_stable by blast
 
 lemma ground_resolvent_subset:
   assumes
@@ -877,6 +875,7 @@ lemma ord_resolve_rename_lifting:
     "CAs0 \<cdot>\<cdot>cl \<eta>s = CAs" "DA0 \<cdot> \<eta> = DA" "E0 \<cdot> \<eta>2 = E"
     "{DA0} \<union> set CAs0 \<subseteq> M"
     "length CAs0 = length CAs"
+    "length \<eta>s = length CAs"
   using res_e
 proof (cases rule: ord_resolve.cases)
   case (ord_resolve n Cs D)
@@ -1273,7 +1272,11 @@ proof (cases rule: ord_resolve.cases)
       using that e0'\<phi>e make_ground_subst by auto
   qed
 
-  have \<open>length CAs0 = length CAs\<close> using n by simp
+  have \<open>length CAs0 = length CAs\<close>
+    using n by simp
+
+  have \<open>length \<eta>s0 = length CAs\<close>
+    using n by simp
 
   \<comment> \<open>Wrap up the proof\<close>
   have "ord_resolve S (CAs0 \<cdot>\<cdot>cl \<rho>s) (DA0 \<cdot> \<rho>) (AAs0 \<cdot>\<cdot>aml \<rho>s) (As0 \<cdot>al \<rho>) \<tau> E0'"
@@ -1287,8 +1290,121 @@ proof (cases rule: ord_resolve.cases)
   then show thesis
     using that[of \<eta>0 \<eta>s0 \<eta>2 CAs0 DA0] \<open>is_ground_subst \<eta>0\<close> \<open>is_ground_subst_list \<eta>s0\<close>
       \<open>is_ground_subst \<eta>2\<close> \<open>CAs0 \<cdot>\<cdot>cl \<eta>s0 = CAs\<close> \<open>DA0 \<cdot> \<eta>0 = DA\<close> \<open>E0' \<cdot> \<eta>2 = E\<close> \<open>DA0 \<in> M\<close>
-      \<open>\<forall>CA \<in> set CAs0. CA \<in> M\<close> \<open>length CAs0 = length CAs\<close>
-  by blast
+      \<open>\<forall>CA \<in> set CAs0. CA \<in> M\<close> \<open>length CAs0 = length CAs\<close> \<open>length \<eta>s0 = length CAs\<close>
+    by blast
+qed
+
+lemma ground_ord_resolve_ground:
+  assumes
+    select: "selection S" and
+    CAs_p: "ground_resolution_with_selection.ord_resolve S CAs DA AAs As E" and
+    ground_cas: "is_ground_cls_list CAs" and
+    ground_da: "is_ground_cls DA"
+  shows "is_ground_cls E"
+proof -
+  have a1: "atms_of E \<subseteq> (\<Union>CA \<in> set CAs. atms_of CA) \<union> atms_of DA"
+    using ground_resolution_with_selection.ord_resolve_atms_of_concl_subset[OF _ CAs_p]
+      ground_resolution_with_selection.intro[OF select] by blast
+  {
+    fix L :: "'a literal"
+    assume "L \<in># E"
+    then have "atm_of L \<in> atms_of E"
+      by (meson atm_of_lit_in_atms_of)
+    then have "is_ground_atm (atm_of L)"
+      using a1 ground_cas ground_da is_ground_cls_imp_is_ground_atm is_ground_cls_list_def
+      by auto
+  }
+  then show ?thesis
+    unfolding is_ground_cls_def is_ground_lit_def by simp
+qed
+
+lemma ground_ord_resolve_imp_ord_resolve:
+  assumes
+    ground_da: \<open>is_ground_cls DA\<close> and
+    ground_cas: \<open>is_ground_cls_list CAs\<close> and
+    gr: "ground_resolution_with_selection S_G" and
+    gr_res: \<open>ground_resolution_with_selection.ord_resolve S_G CAs DA AAs As E\<close>
+  shows \<open>\<exists>\<sigma>. ord_resolve S_G CAs DA AAs As \<sigma> E\<close>
+proof (cases rule: ground_resolution_with_selection.ord_resolve.cases[OF gr gr_res])
+  case (1 CAs n Cs AAs As D)
+  note cas = this(1) and da = this(2) and aas = this(3) and as = this(4) and e = this(5) and
+    cas_len = this(6) and cs_len = this(7) and aas_len = this(8) and as_len = this(9) and
+    nz = this(10) and casi = this(11) and aas_not_empt = this(12) and as_aas = this(13) and
+    eligibility = this(14) and str_max = this(15) and sel_empt = this(16)
+
+  have len_aas_len_as: "length AAs = length As"
+    using aas_len as_len by auto
+
+  from as_aas have "\<forall>i < n. \<forall>A \<in># add_mset (As ! i) (AAs ! i). A = As ! i"
+    by simp
+  then have "\<forall>i < n. card (set_mset (add_mset (As ! i) (AAs ! i))) \<le> Suc 0"
+    using all_the_same by metis
+  then have "\<forall>i < length AAs. card (set_mset (add_mset (As ! i) (AAs ! i))) \<le> Suc 0"
+    using aas_len by auto
+  then have "\<forall>AA \<in> set (map2 add_mset As AAs). card (set_mset AA) \<le> Suc 0"
+    using set_map2_ex[of AAs As add_mset, OF len_aas_len_as] by auto
+  then have "is_unifiers id_subst (set_mset ` set (map2 add_mset As AAs))"
+    unfolding is_unifiers_def is_unifier_def by auto
+  moreover have "finite (set_mset ` set (map2 add_mset As AAs))"
+    by auto
+  moreover have "\<forall>AA \<in> set_mset ` set (map2 add_mset As AAs). finite AA"
+    by auto
+  ultimately obtain \<sigma> where
+    \<sigma>_p: "Some \<sigma> = mgu (set_mset ` set (map2 add_mset As AAs))"
+    using mgu_complete by metis
+
+  have ground_elig: "ground_resolution_with_selection.eligible S_G As (D + negs (mset As))"
+    using eligibility by simp
+  have ground_cs: "\<forall>i < n. is_ground_cls (Cs ! i)"
+    using cas cas_len cs_len casi ground_cas nth_mem unfolding is_ground_cls_list_def by force
+  have ground_set_as: "is_ground_atms (set As)"
+    using da ground_da by (metis atms_of_negs is_ground_cls_is_ground_atms_atms_of
+        is_ground_cls_union set_mset_mset)
+  then have ground_mset_as: "is_ground_atm_mset (mset As)"
+    unfolding is_ground_atm_mset_def is_ground_atms_def by auto
+  have ground_as: "is_ground_atm_list As"
+    using ground_set_as is_ground_atm_list_def is_ground_atms_def by auto
+  have ground_d: "is_ground_cls D"
+    using ground_da da by simp
+
+  from as_len nz have atms:
+    "atms_of D \<union> set As \<noteq> {}"
+    "finite (atms_of D \<union> set As)"
+    by auto
+  then have "Max (atms_of D \<union> set As) \<in> atms_of D \<union> set As"
+    using Max_in by metis
+  then have is_ground_Max: "is_ground_atm (Max (atms_of D \<union> set As))"
+    using ground_d ground_mset_as is_ground_cls_imp_is_ground_atm
+    unfolding is_ground_atm_mset_def by auto
+
+  have "maximal_wrt (Max (atms_of D \<union> set As)) (D + negs (mset As))"
+    unfolding maximal_wrt_def
+    by clarsimp (metis atms Max_less_iff UnCI ground_d ground_set_as infinite_growing
+        is_ground_Max is_ground_atms_def is_ground_cls_imp_is_ground_atm less_atm_ground)
+  moreover have
+    "Max (atms_of D \<union> set As) \<cdot>a \<sigma> = Max (atms_of D \<union> set As)" and
+    "D \<cdot> \<sigma> + negs (mset As \<cdot>am \<sigma>) = D + negs (mset As)"
+    using ground_elig is_ground_Max ground_mset_as ground_d by auto
+  ultimately have fo_elig: "eligible S_G \<sigma> As (D + negs (mset As))"
+    using ground_elig unfolding ground_resolution_with_selection.eligible.simps[OF gr]
+      ground_resolution_with_selection.maximal_wrt_def[OF gr] eligible.simps
+    by auto
+
+  have "\<forall>i < n. strictly_maximal_wrt (As ! i) (Cs ! i)"
+    using str_max[unfolded ground_resolution_with_selection.strictly_maximal_wrt_def[OF gr]]
+      ground_as[unfolded is_ground_atm_list_def] ground_cs as_len less_atm_ground
+    unfolding strictly_maximal_wrt_def by clarsimp (fastforce simp: is_ground_cls_as_atms)+
+  then have ll: "\<forall>i < n. strictly_maximal_wrt (As ! i \<cdot>a \<sigma>) (Cs ! i \<cdot> \<sigma>)"
+    by (simp add: ground_as ground_cs as_len)
+
+  have ground_e: "is_ground_cls E"
+    using ground_d ground_cs cs_len unfolding e is_ground_cls_def
+    by simp (metis in_mset_sum_list2 in_set_conv_nth)
+
+  show ?thesis
+    using cas da aas as e ground_e ord_resolve.intros[OF cas_len cs_len aas_len as_len nz casi
+        aas_not_empt \<sigma>_p fo_elig ll sel_empt]
+    by auto
 qed
 
 end

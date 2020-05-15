@@ -804,22 +804,16 @@ proof -
         using calculation(1)
         by blast
     }
-    note 1 = this
+    moreover
     {
       have "finite (prob_proj PROB vs)"
-        unfolding prob_proj_def valid_states_def
-        using assms(1)
-        by simp
+        by (simp add: assms(1) prob_proj_def)
       then have "finite ?S"
         using Setcompr_eq_image assms(3)
         by (metis List.finite_set finite_imageI)
     }
-    then have "S vs lss PROB (fmrestrict_set vs s) \<le> Max ?S"
-      using 1 Max.coboundedI
-      by blast
-    then have "S vs lss PROB (fmrestrict_set vs s) \<le> Sup ?S"
-      using Sup_nat_def
-      by presburger
+    ultimately have "S vs lss PROB (fmrestrict_set vs s) \<le> Sup ?S"
+      using le_cSup_finite by blast
   }
   ultimately show ?thesis
     using le_trans

@@ -66,77 +66,77 @@ where "get_op w \<equiv> uint (w >> 30)"
 definition get_op2::"word32 \<Rightarrow> int"
 where "get_op2 w \<equiv> 
   let mask_op2 = 0b00000001110000000000000000000000 in
-  uint ((bitAND mask_op2 w) >> 22)"
+  uint (((AND) mask_op2 w) >> 22)"
 
 definition get_op3::"word32 \<Rightarrow> int"
 where "get_op3 w \<equiv> 
   let mask_op3 = 0b00000001111110000000000000000000 in 
-  uint ((bitAND mask_op3 w) >> 19)"
+  uint (((AND) mask_op3 w) >> 19)"
 
 definition get_disp30::"word32 \<Rightarrow> int"
 where "get_disp30 w \<equiv> 
   let mask_disp30 = 0b00111111111111111111111111111111 in
-  uint (bitAND mask_disp30 w)"
+  uint ((AND) mask_disp30 w)"
 
 definition get_a::"word32 \<Rightarrow> int"
 where "get_a w \<equiv>
   let mask_a = 0b00100000000000000000000000000000 in
-  uint ((bitAND mask_a w) >> 29)"
+  uint (((AND) mask_a w) >> 29)"
 
 definition get_cond::"word32 \<Rightarrow> int"
 where "get_cond w \<equiv>
   let mask_cond = 0b00011110000000000000000000000000 in
-  uint ((bitAND mask_cond w) >> 25)"
+  uint (((AND) mask_cond w) >> 25)"
 
 definition get_disp_imm22::"word32 \<Rightarrow> int"
 where "get_disp_imm22 w \<equiv>
   let mask_disp_imm22 = 0b00000000001111111111111111111111 in
-  uint (bitAND mask_disp_imm22 w)"
+  uint ((AND) mask_disp_imm22 w)"
 
 definition get_rd::"word32 \<Rightarrow> int"
 where "get_rd w \<equiv>
   let mask_rd = 0b00111110000000000000000000000000 in
-  uint ((bitAND mask_rd w) >> 25)"
+  uint (((AND) mask_rd w) >> 25)"
 
 definition get_rs1::"word32 \<Rightarrow> int"
 where "get_rs1 w \<equiv>
   let mask_rs1 = 0b00000000000001111100000000000000 in
-  uint ((bitAND mask_rs1 w) >> 14)"
+  uint (((AND) mask_rs1 w) >> 14)"
 
 definition get_i::"word32 \<Rightarrow> int"
 where "get_i w \<equiv>
   let mask_i = 0b00000000000000000010000000000000 in
-  uint ((bitAND mask_i w) >> 13)"
+  uint (((AND) mask_i w) >> 13)"
 
 definition get_opf::"word32 \<Rightarrow> int"
 where "get_opf w \<equiv> 
   let mask_opf = 0b00000000000000000011111111100000 in
-  uint ((bitAND mask_opf w) >> 5)"
+  uint (((AND) mask_opf w) >> 5)"
 
 definition get_rs2::"word32 \<Rightarrow> int"
 where "get_rs2 w \<equiv>
   let mask_rs2 = 0b00000000000000000000000000011111 in
-  uint (bitAND mask_rs2 w)"
+  uint ((AND) mask_rs2 w)"
 
 definition get_simm13::"word32 \<Rightarrow> int"
 where "get_simm13 w \<equiv>
   let mask_simm13 = 0b00000000000000000001111111111111 in
-  uint (bitAND mask_simm13 w)"
+  uint ((AND) mask_simm13 w)"
 
 definition get_asi::"word32 \<Rightarrow> int"
 where "get_asi w \<equiv>
   let mask_asi = 0b00000000000000000001111111100000 in
-  uint ((bitAND mask_asi w) >> 5)"
+  uint (((AND) mask_asi w) >> 5)"
 
 definition get_trap_cond:: "word32 \<Rightarrow> int"
 where "get_trap_cond w \<equiv>
   let mask_cond = 0b00011110000000000000000000000000 in
-  uint ((bitAND mask_cond w) >> 25)"
+  uint (((AND) mask_cond w) >> 25)"
 
 definition get_trap_imm7:: "word32 \<Rightarrow> int"
 where "get_trap_imm7 w \<equiv>
   let mask_imm7 = 0b00000000000000000000000001111111 in
-  uint (bitAND mask_imm7 w)"
+  uint ((AND) mask_imm7 w)"
 
 definition parse_instr_f1::"word32 \<Rightarrow> 
   (Exception list + instruction)"
@@ -1110,7 +1110,7 @@ where "fetch_instruction s \<equiv>
   \<comment> \<open>Check if \<open>pc_val\<close> is aligned to 4-byte (32-bit) boundary.\<close>
   \<comment> \<open>That is, check if the least significant two bits of\<close>
   \<comment> \<open>\<open>pc_val\<close> are 0s.\<close>
-    if uint(bitAND (0b00000000000000000000000000000011) pc_val) = 0 then
+    if uint((AND) (0b00000000000000000000000000000011) pc_val) = 0 then
     \<comment> \<open>Get the 32-bit value from the address of \<open>pc_val\<close>\<close>
     \<comment> \<open>to the address of \<open>pc_val+3\<close>\<close>
         let (mem_result,n_s) = memory_read asi pc_val s in
@@ -1169,9 +1169,9 @@ where
     else if instr_name = bicc_type BE then 
       if z_val = 1 then 1 else 0
     else if instr_name = bicc_type BG then
-      if (bitOR z_val (n_val XOR v_val)) = 0 then 1 else 0
+      if ((OR) z_val (n_val XOR v_val)) = 0 then 1 else 0
     else if instr_name = bicc_type BLE then
-      if (bitOR z_val (n_val XOR v_val)) = 1 then 1 else 0
+      if ((OR) z_val (n_val XOR v_val)) = 1 then 1 else 0
     else if instr_name = bicc_type BGE then
       if (n_val XOR v_val) = 0 then 1 else 0
     else if instr_name = bicc_type BL then
@@ -1332,7 +1332,7 @@ where "jmpl_instr instr \<equiv>
   do
     curr_win \<leftarrow> get_curr_win();
     jmp_addr \<leftarrow> gets (\<lambda>s. (get_addr op_list s));
-    if (bitAND jmp_addr 0b00000000000000000000000000000011) \<noteq> 0 then
+    if ((AND) jmp_addr 0b00000000000000000000000000000011) \<noteq> 0 then
       do
         raise_trap mem_address_not_aligned;
         return ()
@@ -1393,7 +1393,7 @@ where "rett_instr instr \<equiv>
         raise_trap window_underflow;
         fail ()
       od
-    else if (bitAND addr (0b00000000000000000000000000000011::word32)) \<noteq> 0 then
+    else if ((AND) addr (0b00000000000000000000000000000011::word32)) \<noteq> 0 then
       do
         write_cpu_tt (0b00000111::word8);
         set_exe_mode False;
@@ -1554,7 +1554,7 @@ where "write_state_reg_instr instr \<equiv>
     s_val \<leftarrow> gets (\<lambda>s. (get_S psr_val));
     op2 \<leftarrow> gets (\<lambda>s. (get_operand2 op_list s));
     rs1_val \<leftarrow> gets (\<lambda>s. (user_reg_val curr_win rs1 s));
-    result \<leftarrow> gets (\<lambda>s. (bitXOR rs1_val op2));
+    result \<leftarrow> gets (\<lambda>s. ((XOR) rs1_val op2));
     if instr_name = sreg_type WRY then
       do
         modify (\<lambda>s. (delayed_pool_add (DELAYNUM, result, Y) s));
@@ -1617,9 +1617,9 @@ where "write_state_reg_instr instr \<equiv>
       else 
         do \<comment> \<open>Only write the bits \<open><31:12>\<close> of the result to \<open>TBR\<close>.\<close>
           tbr_val \<leftarrow> gets (\<lambda>s. (cpu_reg_val TBR s));
-          tbr_val_11_0 \<leftarrow> gets (\<lambda>s. (bitAND tbr_val 0b00000000000000000000111111111111));
-          result_tmp \<leftarrow> gets (\<lambda>s. (bitAND result 0b11111111111111111111000000000000));
-          result_f \<leftarrow> gets (\<lambda>s. (bitOR tbr_val_11_0 result_tmp));
+          tbr_val_11_0 \<leftarrow> gets (\<lambda>s. ((AND) tbr_val 0b00000000000000000000111111111111));
+          result_tmp \<leftarrow> gets (\<lambda>s. ((AND) result 0b11111111111111111111000000000000));
+          result_f \<leftarrow> gets (\<lambda>s. ((OR) tbr_val_11_0 result_tmp));
           modify (\<lambda>s. (delayed_pool_add (DELAYNUM, result_f, TBR) s));
           return ()
         od
@@ -1629,19 +1629,19 @@ definition logical_result :: "sparc_operation \<Rightarrow> word32 \<Rightarrow>
 where "logical_result instr_name rs1_val operand2 \<equiv>
   if (instr_name = logic_type ANDs) \<or> 
                             (instr_name = logic_type ANDcc) then
-                          bitAND rs1_val operand2     
+                          (AND) rs1_val operand2     
                          else if (instr_name = logic_type ANDN) \<or> 
                                  (instr_name = logic_type ANDNcc) then
-                          bitAND rs1_val (bitNOT operand2)
+                          (AND) rs1_val (NOT operand2)
                          else if (instr_name = logic_type ORs) \<or> 
                                  (instr_name = logic_type ORcc) then
-                          bitOR rs1_val operand2
+                          (OR) rs1_val operand2
                          else if instr_name \<in> {logic_type ORN,logic_type ORNcc} then 
-                          bitOR rs1_val (bitNOT operand2)
+                          (OR) rs1_val (NOT operand2)
                          else if instr_name \<in> {logic_type XORs,logic_type XORcc} then 
-                          bitXOR rs1_val operand2
+                          (XOR) rs1_val operand2
                          else \<comment> \<open>Must be \<open>XNOR\<close> or \<open>XNORcc\<close>\<close>
-                          bitXOR rs1_val (bitNOT operand2)
+                          (XOR) rs1_val (NOT operand2)
 "
 
 definition logical_new_psr_val :: "word32 \<Rightarrow> ('a) sparc_state \<Rightarrow> word32"
@@ -1736,16 +1736,16 @@ where "add_instr_sub1 instr_name result rs1_val operand2 \<equiv>
         operand2_31 \<leftarrow> gets (\<lambda>s. ((ucast (operand2 >> 31))::word1));
         new_n_val \<leftarrow> gets (\<lambda>s. (result_31));
         new_z_val \<leftarrow> gets (\<lambda>s. (if result = 0 then 1::word1 else 0::word1));
-        new_v_val \<leftarrow> gets (\<lambda>s. (bitOR (bitAND rs1_val_31 
-                                              (bitAND operand2_31 
-                                                      (bitNOT result_31))) 
-                                      (bitAND (bitNOT rs1_val_31) 
-                                              (bitAND (bitNOT operand2_31) 
+        new_v_val \<leftarrow> gets (\<lambda>s. ((OR) ((AND) rs1_val_31 
+                                              ((AND) operand2_31 
+                                                      (NOT result_31))) 
+                                      ((AND) (NOT rs1_val_31) 
+                                              ((AND) (NOT operand2_31) 
                                                       result_31))));
-        new_c_val \<leftarrow> gets (\<lambda>s. (bitOR (bitAND rs1_val_31 
+        new_c_val \<leftarrow> gets (\<lambda>s. ((OR) ((AND) rs1_val_31 
                                               operand2_31) 
-                                      (bitAND (bitNOT result_31) 
-                                              (bitOR rs1_val_31 
+                                      ((AND) (NOT result_31) 
+                                              ((OR) rs1_val_31 
                                                      operand2_31))));
         new_psr_val \<leftarrow> gets (\<lambda>s. (update_PSR_icc new_n_val 
                                                  new_z_val 
@@ -1794,16 +1794,16 @@ where "sub_instr_sub1 instr_name result rs1_val operand2 \<equiv>
         operand2_31 \<leftarrow> gets (\<lambda>s. ((ucast (operand2 >> 31))::word1));
         new_n_val \<leftarrow> gets (\<lambda>s. (result_31));
         new_z_val \<leftarrow> gets (\<lambda>s. (if result = 0 then 1::word1 else 0::word1));
-        new_v_val \<leftarrow> gets (\<lambda>s. (bitOR (bitAND rs1_val_31 
-                                              (bitAND (bitNOT operand2_31) 
-                                                      (bitNOT result_31))) 
-                                      (bitAND (bitNOT rs1_val_31) 
-                                              (bitAND operand2_31 
+        new_v_val \<leftarrow> gets (\<lambda>s. ((OR) ((AND) rs1_val_31 
+                                              ((AND) (NOT operand2_31) 
+                                                      (NOT result_31))) 
+                                      ((AND) (NOT rs1_val_31) 
+                                              ((AND) operand2_31 
                                                       result_31))));
-        new_c_val \<leftarrow> gets (\<lambda>s. (bitOR (bitAND (bitNOT rs1_val_31) 
+        new_c_val \<leftarrow> gets (\<lambda>s. ((OR) ((AND) (NOT rs1_val_31) 
                                               operand2_31) 
-                                      (bitAND result_31 
-                                              (bitOR (bitNOT rs1_val_31) 
+                                      ((AND) result_31 
+                                              ((OR) (NOT rs1_val_31) 
                                                      operand2_31))));
         new_psr_val \<leftarrow> gets (\<lambda>s. (update_PSR_icc new_n_val 
                                                  new_z_val 
@@ -2038,7 +2038,7 @@ definition load_sub2 :: "virtua_address \<Rightarrow> asi_type \<Rightarrow> wor
   ('a::len0) window_size \<Rightarrow> word32 \<Rightarrow> ('a,unit) sparc_state_monad"
 where "load_sub2 address asi rd curr_win word0 \<equiv>
   do
-    write_reg word0 curr_win (bitAND rd 0b11110);
+    write_reg word0 curr_win ((AND) rd 0b11110);
     (result1,new_state1) \<leftarrow> gets (\<lambda>s. (memory_read asi (address + 4) s));
     if result1 = None then
     do
@@ -2049,7 +2049,7 @@ where "load_sub2 address asi rd curr_win word0 \<equiv>
     do
       word1 \<leftarrow> gets (\<lambda>s. (case result1 of Some v \<Rightarrow> v));
       modify (\<lambda>s. (new_state1));
-      write_reg word1 curr_win (bitOR rd 1);
+      write_reg word1 curr_win ((OR) rd 1);
       return ()                                       
     od
   od"
@@ -2175,7 +2175,7 @@ definition st_data0 :: "instruction \<Rightarrow> ('a::len0) window_size \<Right
   word5 \<Rightarrow> virtua_address \<Rightarrow> ('a) sparc_state \<Rightarrow> reg_type"
 where "st_data0 instr curr_win rd address s \<equiv>
   if (fst instr) \<in> {load_store_type STD,load_store_type STDA} then 
-    user_reg_val curr_win (bitAND rd 0b11110) s
+    user_reg_val curr_win ((AND) rd 0b11110) s
   else if (fst instr) \<in> {load_store_type ST,load_store_type STA} then 
     user_reg_val curr_win rd s
   else if (fst instr) \<in> {load_store_type STH,load_store_type STHA} then
@@ -2213,7 +2213,7 @@ where "store_sub2 instr curr_win rd asi address \<equiv>
       modify (\<lambda>s. (new_state));
       if (fst instr) \<in> {load_store_type STD,load_store_type STDA} then  
       do
-        data1 \<leftarrow> gets (\<lambda>s. (user_reg_val curr_win (bitOR rd 0b00001) s));
+        data1 \<leftarrow> gets (\<lambda>s. (user_reg_val curr_win ((OR) rd 0b00001) s));
         result1 \<leftarrow> gets (\<lambda>s. (memory_write asi (address + 4) (0b1111::word4) data1 s));
         if result1 = None then
         do
@@ -2534,13 +2534,13 @@ where "tadd_instr instr \<equiv>
     operand2_31 \<leftarrow> gets (\<lambda>s. ((ucast (operand2 >> 31))::word1));
     rs1_val_2 \<leftarrow> gets (\<lambda>s. (bit2_zero ((ucast rs1_val)::word2)));
     operand2_2 \<leftarrow> gets (\<lambda>s. (bit2_zero ((ucast operand2)::word2)));
-    temp_V \<leftarrow> gets (\<lambda>s. (bitOR (bitOR (bitAND rs1_val_31 
-                                              (bitAND operand2_31 
-                                                      (bitNOT result_31))) 
-                                      (bitAND (bitNOT rs1_val_31) 
-                                              (bitAND (bitNOT operand2_31) 
+    temp_V \<leftarrow> gets (\<lambda>s. ((OR) ((OR) ((AND) rs1_val_31 
+                                              ((AND) operand2_31 
+                                                      (NOT result_31))) 
+                                      ((AND) (NOT rs1_val_31) 
+                                              ((AND) (NOT operand2_31) 
                                                       result_31)))
-                               (bitOR rs1_val_2 operand2_2)));
+                               ((OR) rs1_val_2 operand2_2)));
     if instr_name = arith_type TADDccTV \<and> temp_V = 1 then 
     do
       raise_trap tag_overflow;
@@ -2554,10 +2554,10 @@ where "tadd_instr instr \<equiv>
       new_n_val \<leftarrow> gets (\<lambda>s. (result_31));
       new_z_val \<leftarrow> gets (\<lambda>s. (if result = 0 then 1::word1 else 0::word1));
       new_v_val \<leftarrow> gets (\<lambda>s. temp_V);
-      new_c_val \<leftarrow> gets (\<lambda>s. (bitOR (bitAND rs1_val_31 
+      new_c_val \<leftarrow> gets (\<lambda>s. ((OR) ((AND) rs1_val_31 
                                               operand2_31) 
-                                      (bitAND (bitNOT result_31) 
-                                              (bitOR rs1_val_31 
+                                      ((AND) (NOT result_31) 
+                                              ((OR) rs1_val_31 
                                                      operand2_31))));
       new_psr_val \<leftarrow> gets (\<lambda>s. (update_PSR_icc new_n_val 
                                                  new_z_val 
@@ -2591,13 +2591,13 @@ where "tsub_instr instr \<equiv>
     operand2_31 \<leftarrow> gets (\<lambda>s. ((ucast (operand2 >> 31))::word1));
     rs1_val_2 \<leftarrow> gets (\<lambda>s. (bit2_zero ((ucast rs1_val)::word2)));
     operand2_2 \<leftarrow> gets (\<lambda>s. (bit2_zero ((ucast operand2)::word2)));
-    temp_V \<leftarrow> gets (\<lambda>s. (bitOR (bitOR (bitAND rs1_val_31 
-                                              (bitAND operand2_31 
-                                                      (bitNOT result_31))) 
-                                      (bitAND (bitNOT rs1_val_31) 
-                                              (bitAND (bitNOT operand2_31) 
+    temp_V \<leftarrow> gets (\<lambda>s. ((OR) ((OR) ((AND) rs1_val_31 
+                                              ((AND) operand2_31 
+                                                      (NOT result_31))) 
+                                      ((AND) (NOT rs1_val_31) 
+                                              ((AND) (NOT operand2_31) 
                                                       result_31)))
-                               (bitOR rs1_val_2 operand2_2)));
+                               ((OR) rs1_val_2 operand2_2)));
     if instr_name = arith_type TSUBccTV \<and> temp_V = 1 then 
     do
       raise_trap tag_overflow;
@@ -2611,10 +2611,10 @@ where "tsub_instr instr \<equiv>
       new_n_val \<leftarrow> gets (\<lambda>s. (result_31));
       new_z_val \<leftarrow> gets (\<lambda>s. (if result = 0 then 1::word1 else 0::word1));
       new_v_val \<leftarrow> gets (\<lambda>s. temp_V);
-      new_c_val \<leftarrow> gets (\<lambda>s. (bitOR (bitAND rs1_val_31 
+      new_c_val \<leftarrow> gets (\<lambda>s. ((OR) ((AND) rs1_val_31 
                                               operand2_31) 
-                                      (bitAND (bitNOT result_31) 
-                                              (bitOR rs1_val_31 
+                                      ((AND) (NOT result_31) 
+                                              ((OR) rs1_val_31 
                                                      operand2_31))));
       new_psr_val \<leftarrow> gets (\<lambda>s. (update_PSR_icc new_n_val 
                                                  new_z_val 
@@ -2651,7 +2651,7 @@ where "muls_instr instr \<equiv>
     v_val \<leftarrow> gets (\<lambda>s. (get_icc_V psr_val));
     c_val \<leftarrow> gets (\<lambda>s. (get_icc_C psr_val));
     y_val \<leftarrow> gets (\<lambda>s. (cpu_reg_val Y s));
-    operand1 \<leftarrow> gets (\<lambda>s. (word_cat (bitXOR n_val v_val) 
+    operand1 \<leftarrow> gets (\<lambda>s. (word_cat ((XOR) n_val v_val) 
                                     ((ucast (rs1_val >> 1))::word31)));
     operand2 \<leftarrow> gets (\<lambda>s. (muls_op2 op_list s));    
     result \<leftarrow> gets (\<lambda>s. (operand1 + operand2));
@@ -2665,16 +2665,16 @@ where "muls_instr instr \<equiv>
     operand2_31 \<leftarrow> gets (\<lambda>s. ((ucast (operand2 >> 31))::word1));
     new_n_val \<leftarrow> gets (\<lambda>s. (result_31));
     new_z_val \<leftarrow> gets (\<lambda>s. (if result = 0 then 1::word1 else 0::word1));
-    new_v_val \<leftarrow> gets (\<lambda>s. (bitOR (bitAND operand1_31 
-                                  (bitAND operand2_31 
-                                     (bitNOT result_31))) 
-                                  (bitAND (bitNOT operand1_31) 
-                                     (bitAND (bitNOT operand2_31) 
+    new_v_val \<leftarrow> gets (\<lambda>s. ((OR) ((AND) operand1_31 
+                                  ((AND) operand2_31 
+                                     (NOT result_31))) 
+                                  ((AND) (NOT operand1_31) 
+                                     ((AND) (NOT operand2_31) 
                                              result_31))));
-    new_c_val \<leftarrow> gets (\<lambda>s. (bitOR (bitAND operand1_31 
+    new_c_val \<leftarrow> gets (\<lambda>s. ((OR) ((AND) operand1_31 
                                           operand2_31) 
-                                  (bitAND (bitNOT result_31) 
-                                          (bitOR operand1_31 
+                                  ((AND) (NOT result_31) 
+                                          ((OR) operand1_31 
                                                  operand2_31))));
     new_psr_val \<leftarrow> gets (\<lambda>s. (update_PSR_icc new_n_val 
                                              new_z_val 
@@ -2694,9 +2694,9 @@ where "trap_eval_icc instr_name n_val z_val v_val c_val \<equiv>
     else if instr_name = ticc_type TE then 
       if z_val = 1 then 1 else 0
     else if instr_name = ticc_type TG then
-      if (bitOR z_val (n_val XOR v_val)) = 0 then 1 else 0
+      if ((OR) z_val (n_val XOR v_val)) = 0 then 1 else 0
     else if instr_name = ticc_type TLE then
-      if (bitOR z_val (n_val XOR v_val)) = 1 then 1 else 0
+      if ((OR) z_val (n_val XOR v_val)) = 1 then 1 else 0
     else if instr_name = ticc_type TGE then
       if (n_val XOR v_val) = 0 then 1 else 0
     else if instr_name = ticc_type TL then

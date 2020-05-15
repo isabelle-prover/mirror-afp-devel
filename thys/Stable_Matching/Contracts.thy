@@ -888,6 +888,9 @@ However neither arises from a pair \<open>XD, XH\<close> that satisfy
 
 \<close>
 
+
+
+
 lemma StableNoDecomp_XD_XH:
   shows "StableNoDecomp.stable_pair (XD, XH) \<longleftrightarrow> (XD = {} \<and> XH = {Xd1, Xd1', Xd2, Xd2'})"
 (*<*)
@@ -898,7 +901,7 @@ proof(rule iffI)
   using X4_pow [of XD] X4_pow [of XH]
     apply simp
     apply (erule StableNoDecomp.stable_pair_onE)
-    apply (elim disjE)
+  apply (elim disjE)
     apply (simp_all add: StableNoDecomp.CD_on_def StableNoDecomp.CH_def)
     unfolding X4_UNIV [simplified]
     apply (auto simp: D2_ALL D2_UNION X4_ALL insert_commute StableNoDecomp.maxR_def linord_of_list_linord_of_listP)

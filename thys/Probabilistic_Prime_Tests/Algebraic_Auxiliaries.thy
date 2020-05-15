@@ -194,8 +194,8 @@ lemma cong_square_alt_int:
 lemma cong_square_alt:
   "prime p \<Longrightarrow> [a * a = 1] (mod p) \<Longrightarrow> [a = 1] (mod p) \<or> [a = p - 1] (mod p)"
   for a p :: nat
-  using cong_square_alt_int and cong_int_iff prime_nat_int_transfer
-  by (metis (mono_tags) int_ops(2) int_ops(7) less_imp_le_nat of_nat_diff prime_gt_1_nat)
+  using cong_square_alt_int[of "int p" "int a"] prime_nat_int_transfer[of p] prime_gt_1_nat[of p]
+  by (simp flip: cong_int_iff add: of_nat_diff)  
 
 lemma square_minus_one_cong_one:
   fixes n x :: nat

@@ -83,11 +83,26 @@ lemma true_clss_insert[iff]: "I \<Turnstile>s insert C DD \<longleftrightarrow> 
 lemma true_clss_union[iff]: "I \<Turnstile>s CC \<union> DD \<longleftrightarrow> I \<Turnstile>s CC \<and> I \<Turnstile>s DD"
   unfolding true_clss_def by blast
 
+lemma true_clss_Union[iff]: "I \<Turnstile>s \<Union> CCC \<longleftrightarrow> (\<forall>CC \<in> CCC. I \<Turnstile>s CC)"
+  unfolding true_clss_def by simp
+
 lemma true_clss_mono: "DD \<subseteq> CC \<Longrightarrow> I \<Turnstile>s CC \<Longrightarrow> I \<Turnstile>s DD"
   by (simp add: subsetD true_clss_def)
 
+lemma true_clss_mono_strong: "(\<forall>D \<in> DD. \<exists>C \<in> CC. C \<subseteq># D) \<Longrightarrow> I \<Turnstile>s CC \<Longrightarrow> I \<Turnstile>s DD"
+  unfolding true_clss_def true_cls_def true_lit_def by (meson mset_subset_eqD)
+
+lemma true_clss_subclause: "C \<subseteq># D \<Longrightarrow> I \<Turnstile>s {C} \<Longrightarrow> I \<Turnstile>s {D}"
+  by (rule true_clss_mono_strong[of _ "{C}"]) auto
+
 abbreviation satisfiable :: "'a clause set \<Rightarrow> bool" where
   "satisfiable CC \<equiv> \<exists>I. I \<Turnstile>s CC"
+
+lemma satisfiable_antimono: "CC \<subseteq> DD \<Longrightarrow> satisfiable DD \<Longrightarrow> satisfiable CC"
+  using true_clss_mono by blast
+
+lemma unsatisfiable_mono: "CC \<subseteq> DD \<Longrightarrow> \<not> satisfiable CC \<Longrightarrow> \<not> satisfiable DD"
+  using satisfiable_antimono by blast
 
 definition true_cls_mset :: "'a interp \<Rightarrow> 'a clause multiset \<Rightarrow> bool" (infix "\<Turnstile>m" 50) where
   "I \<Turnstile>m CC \<longleftrightarrow> (\<forall>C \<in># CC. I \<Turnstile> C)"
@@ -101,6 +116,9 @@ lemma true_cls_mset_singleton[iff]: "I \<Turnstile>m {#C#} \<longleftrightarrow>
 lemma true_cls_mset_union[iff]: "I \<Turnstile>m CC + DD \<longleftrightarrow> I \<Turnstile>m CC \<and> I \<Turnstile>m DD"
   unfolding true_cls_mset_def by auto
 
+lemma true_cls_mset_Union[iff]: "I \<Turnstile>m \<Union># CCC \<longleftrightarrow> (\<forall>CC \<in># CCC. I \<Turnstile>m CC)"
+  unfolding true_cls_mset_def by simp
+
 lemma true_cls_mset_add_mset[iff]: "I \<Turnstile>m add_mset C CC \<longleftrightarrow> I \<Turnstile> C \<and> I \<Turnstile>m CC"
   unfolding true_cls_mset_def by auto
 
@@ -110,7 +128,13 @@ lemma true_cls_mset_image_mset[iff]: "I \<Turnstile>m image_mset f A \<longleftr
 lemma true_cls_mset_mono: "set_mset DD \<subseteq> set_mset CC \<Longrightarrow> I \<Turnstile>m CC \<Longrightarrow> I \<Turnstile>m DD"
   unfolding true_cls_mset_def subset_iff by auto
 
+lemma true_cls_mset_mono_strong: "(\<forall>D \<in># DD. \<exists>C \<in># CC. C \<subseteq># D) \<Longrightarrow> I \<Turnstile>m CC \<Longrightarrow> I \<Turnstile>m DD"
+  unfolding true_cls_mset_def true_cls_def true_lit_def by (meson mset_subset_eqD)
+
 lemma true_clss_set_mset[iff]: "I \<Turnstile>s set_mset CC \<longleftrightarrow> I \<Turnstile>m CC"
+  unfolding true_clss_def true_cls_mset_def by auto
+
+lemma true_clss_mset_set[simp]: "finite CC \<Longrightarrow> I \<Turnstile>m mset_set CC \<longleftrightarrow> I \<Turnstile>s CC"
   unfolding true_clss_def true_cls_mset_def by auto
 
 lemma true_cls_mset_true_cls: "I \<Turnstile>m CC \<Longrightarrow> C \<in># CC \<Longrightarrow> I \<Turnstile> C"
