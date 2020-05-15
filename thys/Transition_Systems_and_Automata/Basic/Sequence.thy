@@ -425,10 +425,33 @@ begin
     shows "sdescending w"
     using stream.collapse sdescending.coinduct assms by (metis (no_types))
 
+  lemma sdescending_scons:
+    assumes "sdescending (a ## w)"
+    shows "sdescending w"
+    using assms by (auto elim: sdescending.cases)
+  lemma sdescending_sappend:
+    assumes "sdescending (u @- v)"
+    obtains "sdescending v"
+    using assms by (induct u) (auto elim: sdescending.cases)
   lemma sdescending_sdrop:
     assumes "sdescending w"
     shows "sdescending (sdrop k w)"
-    using assms by (induct k) (auto, metis sdescending.cases sdrop_stl stream.sel(2))
+    using assms by (metis sdescending_sappend stake_sdrop)
+
+  lemma sdescending_sset_scons:
+    assumes "sdescending (a ## w)"
+    assumes "b \<in> sset w"
+    shows "a \<ge> b"
+  proof -
+    have "pred_stream (\<lambda> b. a \<ge> b) w" if "sdescending w" "a \<ge> shd w" for w
+      using that by (coinduction arbitrary: w) (auto elim: sdescending.cases)
+    then show ?thesis using assms unfolding stream.pred_set by force
+  qed
+  lemma sdescending_sset_sappend:
+    assumes "sdescending (u @- v)"
+    assumes "a \<in> set u" "b \<in> sset v"
+    shows "a \<ge> b"
+    using assms by (induct u) (auto elim: sdescending.cases dest: sdescending_sset_scons)
 
   lemma sdescending_snth_antimono:
     assumes "sdescending w"
@@ -444,26 +467,24 @@ begin
   lemma sdescending_stuck:
     fixes w :: "'a :: wellorder stream"
     assumes "sdescending w"
-    obtains k
-    where "sdrop k w = sconst (w !! k)"
+    obtains u a
+    where "w = u @- sconst a"
   using assms
-  proof (induct "w !! 0" arbitrary: w thesis rule: less_induct)
+  proof (induct "shd w" arbitrary: w thesis rule: less_induct)
     case less
     show ?case
-    proof (cases "w = sconst (w !! 0)")
+    proof (cases "w = sconst (shd w)")
       case True
-      show ?thesis using less(2)[of 0] True by simp
+      show ?thesis using shift_replicate_sconst less(2) True by metis
     next
       case False
-      obtain k where 1: "w !! k \<noteq> w !! 0"
-        using False by (metis empty_iff eqI_snth insert_iff snth_sset sset_sconst)
-      have 2: "antimono (snth w)" using sdescending_snth_antimono less(3) by this
-      have 3: "w !! k \<le> w !! 0" using 1 2 by (blast dest: antimonoD)
-      have 4: "sdrop k w !! 0 < w !! 0" using 1 3 by auto
-      have 5: "sdescending (sdrop k w)" using sdescending_sdrop less(3) by this
-      obtain l where 5: "sdrop l (sdrop k w) = sconst (sdrop k w !! l)"
-        using less(1)[OF 4 _ 5] by this
-      show ?thesis using less(2) 5 by simp
+      then obtain u v where 1: "w = u @- v" "u \<noteq> []" "shd w \<noteq> shd v"
+        by (metis empty_iff eqI_snth insert_iff sdrop_simps(1) shift.simps(1) snth_sset sset_sconst stake_sdrop)
+      have 2: "shd w \<ge> shd v" using sdescending_sset_sappend less(3) 1 by (metis hd_in_set shd_sset shift_simps(1))
+      have 3: "shd w > shd v" using 1(3) 2 by simp
+      obtain s a where 4: "v = s @- sconst a" using sdescending_sappend less(1, 3) 1(1) 3 by metis
+      have 5: "w = (u @ s) @- sconst a" unfolding 1(1) 4 by simp
+      show ?thesis using less(2) 5 by this
     qed
   qed
 

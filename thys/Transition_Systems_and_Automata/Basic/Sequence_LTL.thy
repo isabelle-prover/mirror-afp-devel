@@ -67,7 +67,7 @@ begin
     assumes "\<And> w. R w \<Longrightarrow> Bex (sset w) P \<and> ev R (stl w)"
     shows "infs P w"
     using assms by (coinduct rule: alw_ev_coinduct) (auto simp: ev_holds_sset)
-  lemma infs_set_coinduct[case_names infs_set, consumes 1]:
+  lemma infs_coinduct_shift[case_names infs, consumes 1]:
     assumes "R w"
     assumes "\<And> w. R w \<Longrightarrow> \<exists> u v. w = u @- v \<and> Bex (set u) P \<and> R v"
     shows "infs P w"
@@ -76,8 +76,29 @@ begin
     assumes "R w"
     assumes "\<And> u v. R (u ## v) \<Longrightarrow> Bex (set u) P \<and> R v"
     shows "infs P (flat w)"
-    using assms by (coinduction arbitrary: w rule: infs_set_coinduct)
+    using assms by (coinduction arbitrary: w rule: infs_coinduct_shift)
       (metis empty_iff flat_Stream list.set(1) stream.exhaust)
+  lemma infs_sscan_coinduct[case_names infs_sscan, consumes 1]:
+    assumes "R w a"
+    assumes "\<And> w a. R w a \<Longrightarrow> P a \<and> (\<exists> u v. w = u @- v \<and> u \<noteq> [] \<and> R v (fold f u a))"
+    shows "infs P (a ## sscan f w a)"
+  using assms(1)
+  proof (coinduction arbitrary: w a rule: infs_coinduct_shift)
+    case (infs w a)
+    obtain u v where 1: "P a" "w = u @- v" "u \<noteq> []" "R v (fold f u a)" using infs assms(2) by blast
+    show ?case
+    proof (intro exI conjI bexI)
+      have "sscan f w a = scan f u a @- sscan f v (fold f u a)" unfolding 1(2) by simp
+      also have "scan f u a = butlast (scan f u a) @ [fold f u a]"
+        using 1(3) by (metis last_ConsR scan_eq_nil scan_last snoc_eq_iff_butlast)
+      also have "a ## \<dots> @- sscan f v (fold f u a) =
+        (a # butlast (scan f u a)) @- fold f u a ## sscan f v (fold f u a)" by simp
+      finally show "a ## sscan f w a = (a # butlast (scan f u a)) @- fold f u a ## sscan f v (fold f u a)" by this
+      show "P a" using 1(1) by this
+      show "a \<in> set (a # butlast (scan f u a))" by simp
+      show "R v (fold f u a)" using 1(4) by this
+    qed rule
+  qed
 
   lemma infs_mono: "(\<And> a. a \<in> sset w \<Longrightarrow> P a \<Longrightarrow> Q a) \<Longrightarrow> infs P w \<Longrightarrow> infs Q w"
     unfolding infs_snth by force
@@ -110,7 +131,7 @@ begin
     show "infs P (cycle w) \<Longrightarrow> Bex (set w) P"
       using assms by (auto simp: ev_holds_sset dest: alwD)
     show "Bex (set w) P \<Longrightarrow> infs P (cycle w)"
-      using assms by (coinduction rule: infs_set_coinduct) (blast dest: cycle_decomp)
+      using assms by (coinduction rule: infs_coinduct_shift) (blast dest: cycle_decomp)
   qed
 
 end

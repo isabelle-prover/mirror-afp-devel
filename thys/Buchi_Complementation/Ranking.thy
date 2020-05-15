@@ -45,14 +45,13 @@ begin
         show "gurun A w s u" using 3 by auto
       qed auto
     qed
-    obtain n k where 3: "sdrop n (smap f (v ## gtrace r v)) = sconst k"
+    obtain s k where 3: "smap f (v ## gtrace r v) = s @- sconst k"
       using sdescending_stuck[OF 2] by metis
-    have "gtrace (sdrop (Suc n) r) (gtarget (stake (Suc n) r) v) = sdrop (Suc n) (gtrace r v)"
+    have "gtrace (sdrop (Suc (length s)) r) (gtarget (stake (Suc (length s)) r) v) = sdrop (Suc (length s)) (gtrace r v)"
       using sscan_sdrop by rule
-    also have "smap f \<dots> = sdrop n (smap f (v ## gtrace r v))"
-      by (auto, metis 3 id_apply sdrop_smap sdrop_stl siterate.simps(2)
-        sscan_const stream.map stream.map_sel(2) stream.sel(2))
-    also have "\<dots> = sconst k" using 3 by this
+    also have "smap f \<dots> = sdrop (length s) (smap f (v ## gtrace r v))"
+      by (metis "3" id_apply sdrop_simps(2) sdrop_smap sdrop_stl shift_eq siterate.simps(2) stream.sel(2))
+    also have "\<dots> = sconst k" unfolding 3 using shift_eq by metis
     finally show ?thesis using that by blast
   qed
 

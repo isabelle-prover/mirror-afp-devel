@@ -14,10 +14,38 @@ begin
       obtains r
       where "run r p" "pred_stream P (p ## trace r p)" "stream_all2 Q (p ## trace r p) r"
     proof -
-      obtain f where 1: "P p" "\<And> p. P p \<Longrightarrow> enabled (f p) p \<and> P (execute (f p) p) \<and> Q p (f p)"
+      obtain f where 1:
+        "P p"
+        "\<And> p. P p \<Longrightarrow> enabled (f p) p"
+        "\<And> p. P p \<Longrightarrow> P (execute (f p) p)"
+        "\<And> p. P p \<Longrightarrow> Q p (f p)"
         using assms by metis
-      note 2 = that[of "smap f (siterate (\<lambda> p. execute (f p) p) p)"]
-      show ?thesis using 1 by (intro 2; coinduction arbitrary: p) (auto)
+      let ?r = "\<lambda> p. smap f (siterate (\<lambda> p. execute (f p) p) p)"
+      show ?thesis
+      proof
+        show "run (?r p) p" using 1 by (coinduction arbitrary: p) (auto)
+        show "pred_stream P (p ## trace (?r p) p)" using 1 by (coinduction arbitrary: p) (auto)
+        show "stream_all2 Q (p ## trace (?r p) p) (?r p)" using 1 by (coinduction arbitrary: p) (auto)
+      qed
+    qed
+    lemma recurring_condition:
+      assumes "P p" "\<And> p. P p \<Longrightarrow> \<exists> r. r \<noteq> [] \<and> path r p \<and> P (target r p)"
+      obtains r
+      where "run r p" "infs P (p ## trace r p)"
+    proof -
+      obtain f where 1:
+        "P p"
+        "\<And> p. P p \<Longrightarrow> f p \<noteq> []"
+        "\<And> p. P p \<Longrightarrow> path (f p) p"
+        "\<And> p. P p \<Longrightarrow> P (target (f p) p)"
+        using assms by metis
+      let ?r = "\<lambda> p. flat (smap f (siterate (\<lambda> p. target (f p) p) p))"
+      have 2: "?r p = f p @- ?r (target (f p) p)" if "P p" for p using that 1(2) by (simp add: flat_unfold)
+      show ?thesis
+      proof
+        show "run (?r p) p" using 1 2 by (coinduction arbitrary: p rule: run_coinduct_shift) (blast)
+        show "infs P (p ## trace (?r p) p)" using 1 2 by (coinduction arbitrary: p rule: infs_sscan_coinduct) (blast)
+      qed
     qed
 
     lemma invariant_run_index:
@@ -47,45 +75,6 @@ begin
         unfolding s_def g_def by (induct k) (auto simp add: stake_Suc simp del: stake.simps(2))
 
       show ?thesis using that 3 4 5 unfolding s_def 6 by simp
-    qed
-
-    lemma recurring_condition:
-      assumes "P p" "\<And> p. P p \<Longrightarrow> \<exists> r. r \<noteq> [] \<and> path r p \<and> P (target r p)"
-      obtains r
-      where "run r p" "infs P (p ## trace r p)"
-    proof -
-      obtain f where 1:
-        "P p"
-        "\<And> p. P p \<Longrightarrow> f p \<noteq> []"
-        "\<And> p. P p \<Longrightarrow> path (f p) p"
-        "\<And> p. P p \<Longrightarrow> P (target (f p) p)"
-        using assms by metis
-      define g where "g p \<equiv> target (f p) p" for p
-      define h where "h p \<equiv> states (f p) p" for p
-
-      have 2: "P (g p)" if "P p" for p using 1(4) that unfolding g_def by simp
-      have 3: "h p \<noteq> []" if "P p" for p using 1(2) that unfolding h_def by simp
-
-      let ?r = "\<lambda> p. flat (smap f (siterate g p))"
-      let ?t = "\<lambda> p. flat (smap h (siterate g p))"
-
-      have 4: "?t p = h p @- ?t (g p)" if "P p" for p
-        using 1(2) that by (simp add: flat_unfold g_def h_def)
-      have 5: "trace (?r p) p = h p @- trace (?r (g p)) (g p)" if "P p" for p
-        using 1(2) that by (simp add: flat_unfold g_def h_def)
-      have 6: "?t p = trace (?r p) p"
-        using 1(1) 2 3 4 5 by (coinduction arbitrary: p rule: stream_eq_coinduct_shift) (blast)
-
-      have 7: "run (?r p) p"
-        using 1 unfolding g_def by (coinduction arbitrary: p rule: run_flat_coinduct) (auto)
-
-      have 8: "g p = last (h p)" if "P p" for p by (metis 3 that g_def h_def last.simps scan_last)
-      have 9: "Bex (set (h p)) P" if "P p" for p using 2 3 8 that by force
-      have 10: "infs P (?t p)"
-        using 1 9 unfolding g_def by (coinduction arbitrary: p rule: infs_flat_coinduct) (auto)
-      have 11: "infs P (p ## ?t p)" using 10 by simp
-
-      show ?thesis using that 7 11 unfolding 6 by this
     qed
 
     lemma koenig:
