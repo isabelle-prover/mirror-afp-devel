@@ -10,11 +10,6 @@
 theory Sound imports Logic MultiStep Reachability begin
 (*>*)
 
-(*<*)
-lemma MaxZero[rule_format]: "max n k = (0::nat) \<Longrightarrow> n=0 \<and> k=0"
-by (simp add: max_def, case_tac "n\<le>k", clarsimp,clarsimp)
-(*>*)
-
 section\<open>Soundness\<close>
 text\<open>This section contains the soundness proof of the program logic.
 In the first subsection, we define our notion of validity, thus
@@ -342,7 +337,7 @@ apply (simp add: INVS_soundK_def , clarsimp)
   apply (rule, rule, rule)
   apply rule  
     apply (rule, rule, rule) apply (case_tac k, clarsimp)  apply (drule no_zero_height_Exec_derivs, simp) apply clarsimp
-       apply (erule eval_cases) apply (simp add: INVS_SC_def mbody_is_def,clarsimp) apply clarsimp apply (drule MaxZero, clarsimp)
+       apply (erule eval_cases) apply (simp add: INVS_SC_def mbody_is_def,clarsimp) apply clarsimp
        apply (drule no_zero_height_Exec_derivs, simp)
    apply (rule, rule, rule, rule)
      apply clarsimp 
