@@ -258,6 +258,12 @@ sublocale calculus_with_red_crit_family Bot_FL Inf_FL Q entails_\<G>_L_q Red_Inf
   using calculus_with_red_crit_family.intro[OF consequence_relation_family_axioms]
   by (simp add: all_lifted_red_crit calculus_with_red_crit_family_axioms_def no_labels.Q_nonempty)
 
+lemma in_Inf_FL_imp_to_F_in_Inf_F: "\<iota> \<in> Inf_FL \<Longrightarrow> to_F \<iota> \<in> Inf_F"
+  by (simp add: Inf_FL_to_Inf_F to_F_def)
+
+lemma in_Inf_from_imp_to_F_in_Inf_from: "\<iota> \<in> Inf_from N \<Longrightarrow> to_F \<iota> \<in> no_labels.Inf_from (fst ` N)"
+  unfolding Inf_from_def no_labels.Inf_from_def to_F_def by (auto intro: Inf_FL_to_Inf_F)
+
 notation no_labels.entails_\<G>_Q (infix "\<Turnstile>\<inter>\<G>" 50)
 
 abbreviation entails_\<G>_L_Q :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<Turnstile>\<inter>\<G>L" 50) where
