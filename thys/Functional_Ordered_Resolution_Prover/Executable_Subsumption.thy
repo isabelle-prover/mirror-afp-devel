@@ -6,12 +6,14 @@
 section \<open>An Executable Algorithm for Clause Subsumption\<close>
 
 text \<open>
-This theory provides a functional implementation of clause subsumption, building
-on the \textsf{IsaFoR} library (part of the AFP entry \<open>First_Order_Terms\<close>).
+This theory provides an executable functional implementation of clause
+subsumption, building on the \textsf{IsaFoR} library.
 \<close>
 
 theory Executable_Subsumption
-  imports IsaFoR_Term First_Order_Terms.Matching
+  imports
+    IsaFoR_Term
+    First_Order_Terms.Matching
 begin
 
 

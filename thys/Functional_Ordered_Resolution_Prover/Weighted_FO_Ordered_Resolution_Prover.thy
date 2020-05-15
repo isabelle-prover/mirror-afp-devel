@@ -16,9 +16,6 @@ theory Weighted_FO_Ordered_Resolution_Prover
   imports Ordered_Resolution_Prover.FO_Ordered_Resolution_Prover
 begin
 
-
-subsection \<open>Prover\<close>
-
 type_synonym 'a wclause = "'a clause \<times> nat"
 type_synonym 'a wstate = "'a wclause multiset \<times> 'a wclause multiset \<times> 'a wclause multiset \<times> nat"
 
