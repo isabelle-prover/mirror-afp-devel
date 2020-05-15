@@ -666,8 +666,8 @@ proof
     unfolding to_F_def no_labels.Red_Inf_Q_def no_labels.Red_Inf_\<G>_q_def by blast
   then have "\<iota> \<in> Red_Inf_\<G>_Q (lnth D (Suc n))"
     using i_in_inf_fl unfolding Red_Inf_\<G>_Q_def Red_Inf_\<G>_q_def by (simp add: to_F_def)
-  then show "\<iota> \<in> Sup_Red_Inf_llist D"
-    unfolding Sup_Red_Inf_llist_def using suc_n_length by auto
+  then show "\<iota> \<in> Sup_llist (lmap Red_Inf_\<G>_Q D)"
+    unfolding Sup_llist_def using suc_n_length by auto
 qed
 
 theorem gc_complete_Liminf:
@@ -1116,8 +1116,8 @@ proof
     unfolding to_F_def no_labels.Red_Inf_Q_def no_labels.Red_Inf_\<G>_q_def by blast
   then have "\<iota> \<in> Red_Inf_\<G>_Q (snd (lnth D (Suc p)))"
     using i_in_inf_fl unfolding Red_Inf_\<G>_Q_def Red_Inf_\<G>_q_def by (simp add: to_F_def)
-  then show "\<iota> \<in> Sup_Red_Inf_llist (lmap snd D)"
-    unfolding Sup_Red_Inf_llist_def using suc_n_length p_smaller_d by auto
+  then show "\<iota> \<in> Sup_llist (lmap Red_Inf_\<G>_Q (lmap snd D))"
+    unfolding Sup_llist_def using suc_n_length p_smaller_d by auto
 qed
 
 theorem lgc_complete_Liminf:

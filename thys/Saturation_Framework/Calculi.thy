@@ -54,11 +54,8 @@ proof -
     calculus_with_red_crit.Red_Inf_of_subset calculus_with_red_crit_axioms sup_bot.right_neutral)
 qed
 
-abbreviation saturated_wrt :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" where
-  "saturated_wrt M N \<equiv> Inf_from N \<subseteq> Red_Inf M"
-
 definition saturated :: "'f set \<Rightarrow> bool" where
-  "saturated N \<longleftrightarrow> saturated_wrt N N"
+  "saturated N \<longleftrightarrow> Inf_from N \<subseteq> Red_Inf N"
 
 definition reduc_saturated :: "'f set \<Rightarrow> bool" where
   "reduc_saturated N \<longleftrightarrow> Inf_from (N - Red_F N) \<subseteq> Red_Inf N"
@@ -79,14 +76,8 @@ proof -
   then show ?thesis unfolding saturated_def by auto
 qed
 
-definition Sup_Red_Inf_llist :: "'f set llist \<Rightarrow> 'f inference set" where
-  "Sup_Red_Inf_llist D = (\<Union>i \<in> {i. enat i < llength D}. Red_Inf (lnth D i))"
-
-lemma Sup_Red_Inf_unit: "Sup_Red_Inf_llist (LCons X LNil) = Red_Inf X"
-  using Sup_Red_Inf_llist_def enat_0_iff(1) by simp
-
 definition fair :: "'f set llist \<Rightarrow> bool" where
-  "fair D \<longleftrightarrow> Inf_from (Liminf_llist D) \<subseteq> Sup_Red_Inf_llist D"
+  "fair D \<longleftrightarrow> Inf_from (Liminf_llist D) \<subseteq> Sup_llist (lmap Red_Inf D)"
 
 inductive "derive" :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<rhd>Red" 50) where
   derive: "M - N \<subseteq> Red_F N \<Longrightarrow> M \<rhd>Red N"
@@ -203,9 +194,9 @@ lemma fair_implies_Liminf_saturated:
 proof
   fix \<iota>
   assume \<iota>: \<open>\<iota> \<in> Inf_from (Liminf_llist D)\<close>
-  have \<open>\<iota> \<in> Sup_Red_Inf_llist D\<close> using fair \<iota> unfolding fair_def by auto
+  have \<open>\<iota> \<in> Sup_llist (lmap Red_Inf D)\<close> using fair \<iota> unfolding fair_def by auto
   then obtain i where i: \<open>enat i < llength D\<close> \<open>\<iota> \<in> Red_Inf (lnth D i)\<close>
-    unfolding Sup_Red_Inf_llist_def by auto
+    unfolding Sup_llist_def by auto
   then show \<open>\<iota> \<in> Red_Inf (Liminf_llist D)\<close>
     using deriv i_in_Liminf_or_Red_F[of D i] Red_Inf_subset_Liminf by blast
 qed
@@ -263,7 +254,7 @@ proof
   have deriv_D: \<open>chain (\<rhd>Red) D\<close> by (simp add: chain.chain_singleton D_def)
   have liminf_is_N: "Liminf_llist D = N" by (simp add: D_def Liminf_llist_LCons)
   have head_D: "N = lnth D 0" by (simp add: D_def)
-  have "Sup_Red_Inf_llist D = Red_Inf N" by (simp add: D_def Sup_Red_Inf_unit)
+  have "Sup_llist (lmap Red_Inf D) = Red_Inf N" by (simp add: D_def)
   then have fair_D: "fair D" using saturated_N by (simp add: fair_def saturated_def liminf_is_N)
   obtain i B' where B'_is_bot: \<open>B' \<in> Bot\<close> and B'_in: "B' \<in> lnth D i" and \<open>i < llength D\<close>
     using dynamic_refutational_complete[of B D] bot_elem fair_D head_D saturated_N deriv_D refut_N
@@ -778,34 +769,30 @@ theorem red_stat_is_stat_red: "reduc_static_refutational_complete_calculus Bot I
     reduc_static_refutational_complete_calculus_def reduc_static_refutational_complete_calculus_axioms_def
   by blast
 
-definition Sup_Red_F_llist :: "'f set llist \<Rightarrow> 'f set" where
-"Sup_Red_F_llist D = (\<Union>i \<in> {i. enat i < llength D}. Red_F (lnth D i))"
-
-lemma Sup_Red_F_unit: "Sup_Red_F_llist (LCons X LNil) = Red_F X"
-using Sup_Red_F_llist_def enat_0_iff(1) by simp
-
-lemma sup_red_f_in_red_liminf: "chain derive D \<Longrightarrow> Sup_Red_F_llist D \<subseteq> Red_F (Liminf_llist D)"
+lemma sup_red_f_in_red_liminf:
+  "chain derive D \<Longrightarrow> Sup_llist (lmap Red_F D) \<subseteq> Red_F (Liminf_llist D)"
 proof
   fix N
   assume
     deriv: "chain derive D" and
-    n_in_sup: "N \<in> Sup_Red_F_llist D"
+    n_in_sup: "N \<in> Sup_llist (lmap Red_F D)"
   obtain i0 where i_smaller: "enat i0 < llength D" and n_in: "N \<in> Red_F (lnth D i0)"
-    using n_in_sup unfolding Sup_Red_F_llist_def by blast
+    using n_in_sup by (metis Sup_llist_imp_exists_index llength_lmap lnth_lmap)
   have "Red_F (lnth D i0) \<subseteq> Red_F (Liminf_llist D)"
     using i_smaller by (simp add: deriv Red_F_subset_Liminf)
   then show "N \<in> Red_F (Liminf_llist D)"
     using n_in by fast
 qed
 
-lemma sup_red_inf_in_red_liminf: "chain derive D \<Longrightarrow> Sup_Red_Inf_llist D \<subseteq> Red_Inf (Liminf_llist D)"
+lemma sup_red_inf_in_red_liminf:
+  "chain derive D \<Longrightarrow> Sup_llist (lmap Red_Inf D) \<subseteq> Red_Inf (Liminf_llist D)"
 proof
   fix \<iota>
   assume
     deriv: "chain derive D" and
-    i_in_sup: "\<iota> \<in> Sup_Red_Inf_llist D"
+    i_in_sup: "\<iota> \<in> Sup_llist (lmap Red_Inf D)"
   obtain i0 where i_smaller: "enat i0 < llength D" and n_in: "\<iota> \<in> Red_Inf (lnth D i0)"
-    using i_in_sup unfolding Sup_Red_Inf_llist_def by blast
+    using i_in_sup unfolding Sup_llist_def by auto
   have "Red_Inf (lnth D i0) \<subseteq> Red_Inf (Liminf_llist D)"
     using i_smaller by (simp add: deriv Red_Inf_subset_Liminf)
   then show "\<iota> \<in> Red_Inf (Liminf_llist D)"
@@ -813,19 +800,22 @@ proof
 qed
 
 definition reduc_fair :: "'f set llist \<Rightarrow> bool" where
-  "reduc_fair D \<longleftrightarrow> Inf_from (Liminf_llist D - (Sup_Red_F_llist D)) \<subseteq> Sup_Red_Inf_llist D"
+  "reduc_fair D \<longleftrightarrow>
+   Inf_from (Liminf_llist D - Sup_llist (lmap Red_F D)) \<subseteq> Sup_llist (lmap Red_Inf D)"
 
 (* lem:red-fairness-implies-red-saturation *)
-lemma reduc_fair_imp_Liminf_reduc_sat: "chain derive D \<Longrightarrow> reduc_fair D \<Longrightarrow> reduc_saturated (Liminf_llist D)"
+lemma reduc_fair_imp_Liminf_reduc_sat:
+  "chain derive D \<Longrightarrow> reduc_fair D \<Longrightarrow> reduc_saturated (Liminf_llist D)"
   unfolding reduc_saturated_def
 proof -
   fix D
   assume
     deriv: "chain derive D" and
     red_fair: "reduc_fair D"
-  have "Inf_from (Liminf_llist D - Red_F (Liminf_llist D)) \<subseteq> Inf_from (Liminf_llist D - Sup_Red_F_llist D)"
+  have "Inf_from (Liminf_llist D - Red_F (Liminf_llist D))
+    \<subseteq> Inf_from (Liminf_llist D - Sup_llist (lmap Red_F D))"
     using sup_red_f_in_red_liminf[OF deriv] unfolding Inf_from_def by blast
-  then have "Inf_from (Liminf_llist D - Red_F (Liminf_llist D)) \<subseteq> Sup_Red_Inf_llist D"
+  then have "Inf_from (Liminf_llist D - Red_F (Liminf_llist D)) \<subseteq> Sup_llist (lmap Red_Inf D)"
     using red_fair unfolding reduc_fair_def by simp
   then show "Inf_from (Liminf_llist D - Red_F (Liminf_llist D)) \<subseteq> Red_Inf (Liminf_llist D)"
     using sup_red_inf_in_red_liminf[OF deriv] by fast
@@ -851,8 +841,8 @@ proof
   have deriv_D: \<open>chain (\<rhd>Red) D\<close> by (simp add: chain.chain_singleton D_def)
   have liminf_is_N: "Liminf_llist D = N" by (simp add: D_def Liminf_llist_LCons)
   have head_D: "N = lnth D 0" by (simp add: D_def)
-  have "Sup_Red_F_llist D = Red_F N" by (simp add: D_def Sup_Red_F_unit)
-  moreover have "Sup_Red_Inf_llist D = Red_Inf N" by (simp add: D_def Sup_Red_Inf_unit)
+  have "Sup_llist (lmap Red_F D) = Red_F N" by (simp add: D_def)
+  moreover have "Sup_llist (lmap Red_Inf D) = Red_Inf N" by (simp add: D_def)
   ultimately have fair_D: "reduc_fair D"
     using saturated_N liminf_is_N unfolding reduc_fair_def reduc_saturated_def
     by (simp add: reduc_fair_def reduc_saturated_def liminf_is_N)

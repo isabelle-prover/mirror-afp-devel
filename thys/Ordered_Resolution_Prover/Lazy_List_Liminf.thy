@@ -27,6 +27,9 @@ lemma lnth_subset_Sup_llist: "enat i < llength Xs \<Longrightarrow> lnth Xs i \<
 lemma Sup_llist_imp_exists_index: "x \<in> Sup_llist Xs \<Longrightarrow> \<exists>i. enat i < llength Xs \<and> x \<in> lnth Xs i"
   unfolding Sup_llist_def by auto
 
+lemma exists_index_imp_Sup_llist: "enat i < llength Xs \<Longrightarrow> x \<in> lnth Xs i \<Longrightarrow> x \<in> Sup_llist Xs"
+  unfolding Sup_llist_def by auto
+
 lemma Sup_llist_LNil[simp]: "Sup_llist LNil = {}"
   unfolding Sup_llist_def by auto
 
@@ -165,6 +168,59 @@ lemma Liminf_llist_imp_exists_index:
   "x \<in> Liminf_llist Xs \<Longrightarrow> \<exists>i. enat i < llength Xs \<and> x \<in> lnth Xs i"
   unfolding Liminf_llist_def by auto
 
+lemma finite_subset_Liminf_llist_imp_exists_index:
+  assumes
+    nnil: "\<not> lnull Xs" and
+    fin: "finite X" and
+    in_lim: "X \<subseteq> Liminf_llist Xs"
+  shows "\<exists>i. enat i < llength Xs \<and> X \<subseteq> \<Inter> (lnth Xs ` {j. i \<le> j \<and> enat j < llength Xs})"
+proof -
+  show ?thesis
+  proof (cases "X = {}")
+    case True
+    then show ?thesis
+      using nnil by (auto intro: exI[of _ 0] simp: zero_enat_def[symmetric])
+  next
+    case nemp: False
+
+    have in_lim':
+      "\<forall>x \<in> X. \<exists>i. enat i < llength Xs \<and> x \<in> \<Inter> (lnth Xs ` {j. i \<le> j \<and> enat j < llength Xs})"
+      using in_lim[unfolded Liminf_llist_def] in_mono by fastforce
+    obtain i_of where
+      i_of_lt: "\<forall>x \<in> X. enat (i_of x) < llength Xs" and
+      in_inter: "\<forall>x \<in> X. x \<in> \<Inter> (lnth Xs ` {j. i_of x \<le> j \<and> enat j < llength Xs})"
+      using bchoice[OF in_lim'] by blast
+
+    define i_max where
+      "i_max = Max (i_of ` X)"
+
+    have "i_max \<in> i_of ` X"
+      by (simp add: fin i_max_def nemp)
+    then obtain x_max where
+      x_max_in: "x_max \<in> X" and
+      i_max_is: "i_max = i_of x_max"
+      unfolding i_max_def by blast
+    have le_i_max: "\<forall>x \<in> X. i_of x \<le> i_max"
+      unfolding i_max_def by (simp add: fin)
+    have "enat i_max < llength Xs"
+      using i_of_lt x_max_in i_max_is by auto
+    moreover have "X \<subseteq> \<Inter> (lnth Xs ` {j. i_max \<le> j \<and> enat j < llength Xs})"
+    proof
+      fix x
+      assume x_in: "x \<in> X"
+      then have x_in_inter: "x \<in> \<Inter> (lnth Xs ` {j. i_of x \<le> j \<and> enat j < llength Xs})"
+        using in_inter by auto
+      moreover have "{j. i_max \<le> j \<and> enat j < llength Xs}
+        \<subseteq> {j. i_of x \<le> j \<and> enat j < llength Xs}"
+        using x_in le_i_max by auto
+      ultimately show "x \<in> \<Inter> (lnth Xs ` {j. i_max \<le> j \<and> enat j < llength Xs})"
+        by auto
+    qed
+    ultimately show ?thesis
+      by auto
+  qed
+qed
+
 lemma Liminf_llist_lmap_image:
   assumes f_inj: "inj_on f (Sup_llist (lmap g xs))"
   shows "Liminf_llist (lmap (\<lambda>x. f ` g x) xs) = f ` Liminf_llist (lmap g xs)" (is "?lhs = ?rhs")
@@ -214,5 +270,9 @@ next
   show "x \<in> ?rhs \<Longrightarrow> x \<in> ?lhs"
     using assms unfolding Liminf_llist_def by auto
 qed
+
+lemma Liminf_set_filter_commute:
+  "Liminf_llist (lmap (\<lambda>X. {x \<in> X. p x}) Xs) = {x \<in> Liminf_llist Xs. p x}"
+  unfolding Liminf_llist_def by force
 
 end

@@ -97,6 +97,12 @@ lemma Inf_from2_alt:
   "Inf_from2 N M = {\<iota> \<in> Inf. \<iota> \<in> Inf_from (N \<union> M) \<and> set (prems_of \<iota>) \<inter> M \<noteq> {}}"
   unfolding Inf_from_def Inf_from2_def by auto
 
+lemma Inf_from_mono: "N \<subseteq> N' \<Longrightarrow> Inf_from N \<subseteq> Inf_from N'"
+  unfolding Inf_from_def by auto
+
+lemma Inf_from2_mono: "N \<subseteq> N' \<Longrightarrow> M \<subseteq> M' \<Longrightarrow> Inf_from2 N M \<subseteq> Inf_from2 N' M'"
+  unfolding Inf_from2_alt using Inf_from_mono[of "N \<union> M" "N' \<union> M'"] by auto
+
 end
 
 subsection \<open>Families of Inference Systems\<close>
