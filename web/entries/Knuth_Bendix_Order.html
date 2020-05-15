@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>The Z Property - Archive of Formal Proofs
+<title>A Formalization of Knuth–Bendix Orders - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,11 +74,15 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">T</font>he
+  <h1>          <font class="first">A</font>
   
-          <font class="first">Z</font>
+          <font class="first">F</font>ormalization
   
-          <font class="first">P</font>roperty
+          of
+  
+          <font class="first">K</font>nuth–Bendix
+  
+          <font class="first">O</font>rders
   
 </h1>
   <p>&nbsp;</p>
@@ -87,7 +91,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">The Z Property</td>
+  <td class="data" width="80%">A Formalization of Knuth–Bendix Orders</td>
 </tr>
 
 <tr>
@@ -95,10 +99,8 @@ MathJax = {
           Authors:
       </td>
   <td class="data">
-                      Bertram Felgenhauer (int-e /at/ gmx /dot/ de),
-                  Julian Nagele,
-                Vincent van Oostrom and
-          Christian Sternagel
+                    Christian Sternagel and
+          <a href="http://cl-informatik.uibk.ac.at/~thiemann/">René Thiemann</a>
       </td>
 </tr>
 
@@ -106,30 +108,30 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2016-06-30</td>
+  <td class="data">2020-05-13</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-We formalize the Z property introduced by Dehornoy and van Oostrom.
-First we show that for any abstract rewrite system, Z implies
-confluence. Then we give two examples of proofs using Z: confluence of
-lambda-calculus with respect to beta-reduction and confluence of
-combinatory logic.</td>
+We define a generalized version of Knuth&ndash;Bendix orders,
+including subterm coefficient functions. For these orders we formalize
+several properties such as strong normalization, the subterm property,
+closure properties under substitutions and contexts, as well as ground
+totality.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Rewriting_Z-AFP,
-  author  = {Bertram Felgenhauer and Julian Nagele and Vincent van Oostrom and Christian Sternagel},
-  title   = {The Z Property},
+        <pre>@article{Knuth_Bendix_Order-AFP,
+  author  = {Christian Sternagel and René Thiemann},
+  title   = {A Formalization of Knuth–Bendix Orders},
   journal = {Archive of Formal Proofs},
-  month   = jun,
-  year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Rewriting_Z.html},
+  month   = may,
+  year    = 2020,
+  note    = {\url{http://isa-afp.org/entries/Knuth_Bendix_Order.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -141,7 +143,7 @@ combinatory logic.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Abstract-Rewriting.html">Abstract-Rewriting</a>, <a href="Nominal2.html">Nominal2</a>      </td></tr>
+          <td class="data"><a href="First_Order_Terms.html">First_Order_Terms</a>, <a href="Matrix.html">Matrix</a>, <a href="Polynomial_Factorization.html">Polynomial_Factorization</a>      </td></tr>
           
                     
 
@@ -155,49 +157,23 @@ combinatory logic.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Rewriting_Z/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Rewriting_Z/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Knuth_Bendix_Order/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Knuth_Bendix_Order/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Rewriting_Z/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Knuth_Bendix_Order/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Rewriting_Z-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Knuth_Bendix_Order-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2019:
-            <a href="../release/afp-Rewriting_Z-2019-06-11.tar.gz">
-              afp-Rewriting_Z-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Rewriting_Z-2018-08-16.tar.gz">
-              afp-Rewriting_Z-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-Rewriting_Z-2017-10-10.tar.gz">
-              afp-Rewriting_Z-2017-10-10.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016-1:
-            <a href="../release/afp-Rewriting_Z-2016-12-17.tar.gz">
-              afp-Rewriting_Z-2016-12-17.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016:
-            <a href="../release/afp-Rewriting_Z-2016-06-30.tar.gz">
-              afp-Rewriting_Z-2016-06-30.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>
