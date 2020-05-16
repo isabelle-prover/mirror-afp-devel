@@ -9,7 +9,20 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>12 May 2020 00:00:00 +0000</pubDate>
+    <pubDate>13 May 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Formalization of Knuth–Bendix Orders</title>
+              <link>https://www.isa-afp.org/entries/Knuth_Bendix_Order.html</link>
+       <guid>https://www.isa-afp.org/entries/Knuth_Bendix_Order.html</guid>
+       <dc:creator> Christian Sternagel, René Thiemann       </dc:creator>
+       <pubDate>13 May 2020 00:00:00 +0000</pubDate>
+       <description>
+We define a generalized version of Knuth&amp;ndash;Bendix orders,
+including subterm coefficient functions. For these orders we formalize
+several properties such as strong normalization, the subterm property,
+closure properties under substitutions and contexts, as well as ground
+totality.</description>
+    </item>
     <item>
        <title>Irrationality Criteria for Series by Erdős and Straus</title>
               <link>https://www.isa-afp.org/entries/Irrational_Series_Erdos_Straus.html</link>
@@ -556,31 +569,6 @@ proven by Apéry (which is why this result is also often called
 formalisation follows &lt;a
 href=&#34;http://people.math.sc.edu/filaseta/gradcourses/Math785/Math785Notes4.pdf&#34;&gt;Filaseta&#39;s
 presentation&lt;/a&gt; of Beukers&#39;s proof.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Formalizing a Seligman-Style Tableau System for Hybrid Logic</title>
-              <link>https://www.isa-afp.org/entries/Hybrid_Logic.html</link>
-       <guid>https://www.isa-afp.org/entries/Hybrid_Logic.html</guid>
-       <dc:creator> Asta Halkjær From       </dc:creator>
-       <pubDate>20 Dec 2019 00:00:00 +0000</pubDate>
-       <description>
-This work is a formalization of soundness and completeness proofs
-for a Seligman-style tableau system for hybrid logic. The completeness
-result is obtained via a synthetic approach using maximally
-consistent sets of tableau blocks. The formalization differs from
-the cited work in a few ways. First, to avoid the need to backtrack in
-the construction of a tableau, the formalized system has no unnamed
-initial segment, and therefore no Name rule. Second, I show that the
-full Bridge rule is admissible in the system. Third, I start from rules
-restricted to only extend the branch with new formulas, including only
-witnessing diamonds that are not already witnessed, and show that
-the unrestricted rules are admissible. Similarly, I start from simpler
-versions of the @-rules and show the general ones admissible. Finally,
-the GoTo rule is restricted using a notion of coins such that each
-application consumes a coin and coins are earned through applications of
-the remaining rules. I show that if a branch can be closed then it can
-be closed starting from a single coin. These restrictions are imposed
-to rule out some means of nontermination.</description>
     </item>
   </channel>
 </rss>
