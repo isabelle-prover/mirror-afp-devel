@@ -31,6 +31,7 @@ Automatic_Refinement
 AxiomaticCategoryTheory
 BDD
 BNF_Operations
+Banach_Steinhaus
 Bell_Numbers_Spivey
 Berlekamp_Zassenhaus
 Bernoulli
@@ -163,6 +164,7 @@ Flow_Networks
 Floyd_Warshall
 Flyspeck-Tame
 FocusStreamsCaseStudies
+Forcing
 Formal_SSA
 Formula_Derivatives
 Fourier
@@ -179,6 +181,7 @@ Game_Based_Crypto
 Gauss-Jordan-Elim-Fun
 Gauss_Jordan
 Gauss_Sums
+Gaussian_Integers
 GenClock
 General-Triangle
 Generalized_Counting_Sort
@@ -229,6 +232,7 @@ InformationFlowSlicing_Inter
 Integration
 Interval_Arithmetic_Word32
 Iptables_Semantics
+Irrational_Series_Erdos_Straus
 Irrationality_J_Hancl
 Isabelle_C
 Isabelle_Meta_Model
@@ -246,6 +250,7 @@ Key_Agreement_Strong_Adversaries
 Kleene_Algebra
 Knuth_Bendix_Order
 Knot_Theory
+Knuth_Bendix_Order
 Knuth_Morris_Pratt
 Koenigsberg_Friendship
 Kruskal
@@ -257,11 +262,13 @@ LTL
 LTL_to_DRA
 LTL_to_GBA
 LTL_Master_Theorem
+LTL_Normal_Form
 Lam-ml-Normalization
 LambdaAuth
 LambdaMu
 Lambda_Free_KBOs
 Lambda_Free_RPOs
+Lambert_W
 Landau_Symbols
 Laplace_Transform
 Latin_Square
@@ -295,6 +302,7 @@ MSO_Regex_Equivalence
 Markov_Models
 Marriage
 Mason_Stothers
+Matrices_for_ODEs
 Matrix
 Matrix_Tensor
 Matroids
@@ -370,6 +378,7 @@ Poincare_Disc
 Pop_Refinement
 Posix-Lexing
 Possibilistic_Noninterference
+Power_Sum_Polynomials
 Pratt_Certificate
 Presburger-Automata
 Prim_Dijkstra_Simple
@@ -408,6 +417,7 @@ Random_Graph_Subgraph_Threshold
 Randomised_Social_Choice
 Rank_Nullity_Theorem
 Real_Impl
+Recursion-Addition
 Recursion-Theory-I
 Refine_Imperative_HOL
 Refine_Monadic

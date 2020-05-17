@@ -24,6 +24,83 @@ closure properties under substitutions and contexts, as well as ground
 totality.</description>
     </item>
     <item>
+       <title>Irrationality Criteria for Series by Erdős and Straus</title>
+              <link>https://www.isa-afp.org/entries/Irrational_Series_Erdos_Straus.html</link>
+       <guid>https://www.isa-afp.org/entries/Irrational_Series_Erdos_Straus.html</guid>
+       <dc:creator> Angeliki Koutsoukou-Argyraki, Wenda Li       </dc:creator>
+       <pubDate>12 May 2020 00:00:00 +0000</pubDate>
+       <description>
+We formalise certain irrationality criteria for infinite series of the form:
+\[\sum_{n=1}^\infty \frac{b_n}{\prod_{i=1}^n a_i} \]
+where $\{b_n\}$ is a sequence of integers and $\{a_n\}$ a sequence of positive integers
+with $a_n &gt;1$ for all large n. The results are due to P. Erdős and E. G. Straus
+&lt;a href=&#34;https://projecteuclid.org/euclid.pjm/1102911140&#34;&gt;[1]&lt;/a&gt;.
+In particular, we formalise Theorem 2.1, Corollary 2.10 and Theorem 3.1.
+The latter is an application of Theorem 2.1 involving the prime numbers.</description>
+    </item>
+    <item>
+       <title>Recursion Theorem in ZF</title>
+              <link>https://www.isa-afp.org/entries/Recursion-Addition.html</link>
+       <guid>https://www.isa-afp.org/entries/Recursion-Addition.html</guid>
+       <dc:creator> Georgy Dunaev       </dc:creator>
+       <pubDate>11 May 2020 00:00:00 +0000</pubDate>
+       <description>
+This document contains a proof of the recursion theorem. This is a
+mechanization of the proof of the recursion theorem from the text &lt;i&gt;Introduction to
+Set Theory&lt;/i&gt;, by Karel Hrbacek and Thomas Jech. This
+implementation may be used as the basis for a model of Peano arithmetic in
+ZF. While recursion and the natural numbers are already available in Isabelle/ZF, this clean development
+is much easier to follow.</description>
+    </item>
+    <item>
+       <title>An Efficient Normalisation Procedure for Linear Temporal Logic: Isabelle/HOL Formalisation</title>
+              <link>https://www.isa-afp.org/entries/LTL_Normal_Form.html</link>
+       <guid>https://www.isa-afp.org/entries/LTL_Normal_Form.html</guid>
+       <dc:creator> Salomon Sickert       </dc:creator>
+       <pubDate>08 May 2020 00:00:00 +0000</pubDate>
+       <description>
+In the mid 80s, Lichtenstein, Pnueli, and Zuck proved a classical
+theorem stating that every formula of Past LTL (the extension of LTL
+with past operators) is equivalent to a formula of the form
+$\bigwedge_{i=1}^n \mathbf{G}\mathbf{F} \varphi_i \vee
+\mathbf{F}\mathbf{G} \psi_i$,  where $\varphi_i$ and $\psi_i$ contain
+only past operators. Some years later, Chang, Manna, and Pnueli built
+on this result to derive a similar normal form for LTL. Both
+normalisation procedures have a non-elementary worst-case blow-up, and
+follow an involved path from formulas to counter-free automata to
+star-free regular expressions and back to formulas. We improve on both
+points. We present an executable formalisation of a direct and purely
+syntactic normalisation procedure for LTL yielding a normal form,
+comparable to the one by Chang, Manna, and Pnueli, that has only a
+single exponential blow-up.</description>
+    </item>
+    <item>
+       <title>Formalization of Forcing in Isabelle/ZF</title>
+              <link>https://www.isa-afp.org/entries/Forcing.html</link>
+       <guid>https://www.isa-afp.org/entries/Forcing.html</guid>
+       <dc:creator> Emmanuel Gunther, Miguel Pagano, Pedro Sánchez Terraf       </dc:creator>
+       <pubDate>06 May 2020 00:00:00 +0000</pubDate>
+       <description>
+We formalize the theory of forcing in the set theory framework of
+Isabelle/ZF. Under the assumption of the existence of a countable
+transitive model of ZFC, we construct a proper generic extension and
+show that the latter also satisfies ZFC.</description>
+    </item>
+    <item>
+       <title>Banach-Steinhaus Theorem</title>
+              <link>https://www.isa-afp.org/entries/Banach_Steinhaus.html</link>
+       <guid>https://www.isa-afp.org/entries/Banach_Steinhaus.html</guid>
+       <dc:creator> Dominique Unruh, Jose Manuel Rodriguez Caballero       </dc:creator>
+       <pubDate>02 May 2020 00:00:00 +0000</pubDate>
+       <description>
+We formalize in Isabelle/HOL a result
+due to S. Banach and H. Steinhaus known as
+the Banach-Steinhaus theorem or Uniform boundedness principle: a
+pointwise-bounded family of continuous linear operators from a Banach
+space to a normed space is uniformly bounded. Our approach is an
+adaptation to Isabelle/HOL of a proof due to A. Sokal.</description>
+    </item>
+    <item>
        <title>Attack Trees in Isabelle for GDPR compliance of IoT healthcare systems</title>
               <link>https://www.isa-afp.org/entries/Attack_Trees.html</link>
        <guid>https://www.isa-afp.org/entries/Attack_Trees.html</guid>
@@ -44,6 +121,117 @@ correctness and completeness result proved in Isabelle establishes a
 connection between the notion of Attack Tree validity and CTL. The
 application is illustrated on the example of a healthcare IoT system
 and GDPR compliance verification.</description>
+    </item>
+    <item>
+       <title>Power Sum Polynomials</title>
+              <link>https://www.isa-afp.org/entries/Power_Sum_Polynomials.html</link>
+       <guid>https://www.isa-afp.org/entries/Power_Sum_Polynomials.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>24 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This article provides a formalisation of the symmetric
+multivariate polynomials known as &lt;em&gt;power sum
+polynomials&lt;/em&gt;. These are of the form
+p&lt;sub&gt;n&lt;/sub&gt;(&lt;em&gt;X&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;,&amp;hellip;,
+&lt;em&gt;X&lt;/em&gt;&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;) =
+&lt;em&gt;X&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;&lt;sup&gt;n&lt;/sup&gt;
++ &amp;hellip; +
+X&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;&lt;sup&gt;n&lt;/sup&gt;.
+A formal proof of the Girard–Newton Theorem is also given. This
+theorem relates the power sum polynomials to the elementary symmetric
+polynomials s&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt; in the form
+of a recurrence relation
+(-1)&lt;sup&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sup&gt;
+&lt;em&gt;k&lt;/em&gt; s&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;
+=
+&amp;sum;&lt;sub&gt;i&amp;isinv;[0,&lt;em&gt;k&lt;/em&gt;)&lt;/sub&gt;
+(-1)&lt;sup&gt;i&lt;/sup&gt; s&lt;sub&gt;i&lt;/sub&gt;
+p&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;-&lt;em&gt;i&lt;/em&gt;&lt;/sub&gt;&amp;thinsp;.&lt;/p&gt;
+&lt;p&gt;As an application, this is then used to solve a generalised
+form of a puzzle given as an exercise in Dummit and Foote&#39;s
+&lt;em&gt;Abstract Algebra&lt;/em&gt;: For &lt;em&gt;k&lt;/em&gt;
+complex unknowns &lt;em&gt;x&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;,
+&amp;hellip;,
+&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;,
+define p&lt;sub&gt;&lt;em&gt;j&lt;/em&gt;&lt;/sub&gt; :=
+&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;&lt;sup&gt;&lt;em&gt;j&lt;/em&gt;&lt;/sup&gt;
++ &amp;hellip; +
+&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;&lt;sup&gt;&lt;em&gt;j&lt;/em&gt;&lt;/sup&gt;.
+Then for each vector &lt;em&gt;a&lt;/em&gt; &amp;isinv;
+&amp;#x2102;&lt;sup&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sup&gt;, show that
+there is exactly one solution to the system p&lt;sub&gt;1&lt;/sub&gt;
+= a&lt;sub&gt;1&lt;/sub&gt;, &amp;hellip;,
+p&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt; =
+a&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt; up to permutation of
+the
+&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;&lt;em&gt;i&lt;/em&gt;&lt;/sub&gt;
+and determine the value of
+p&lt;sub&gt;&lt;em&gt;i&lt;/em&gt;&lt;/sub&gt; for
+i&amp;gt;k.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>The Lambert W Function on the Reals</title>
+              <link>https://www.isa-afp.org/entries/Lambert_W.html</link>
+       <guid>https://www.isa-afp.org/entries/Lambert_W.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>24 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;The Lambert &lt;em&gt;W&lt;/em&gt; function is a multi-valued
+function defined as the inverse function of &lt;em&gt;x&lt;/em&gt;
+&amp;#x21A6; &lt;em&gt;x&lt;/em&gt;
+e&lt;sup&gt;&lt;em&gt;x&lt;/em&gt;&lt;/sup&gt;. Besides numerous
+applications in combinatorics, physics, and engineering, it also
+frequently occurs when solving equations containing both
+e&lt;sup&gt;&lt;em&gt;x&lt;/em&gt;&lt;/sup&gt; and
+&lt;em&gt;x&lt;/em&gt;, or both &lt;em&gt;x&lt;/em&gt; and log
+&lt;em&gt;x&lt;/em&gt;.&lt;/p&gt; &lt;p&gt;This article provides a
+definition of the two real-valued branches
+&lt;em&gt;W&lt;/em&gt;&lt;sub&gt;0&lt;/sub&gt;(&lt;em&gt;x&lt;/em&gt;)
+and
+&lt;em&gt;W&lt;/em&gt;&lt;sub&gt;-1&lt;/sub&gt;(&lt;em&gt;x&lt;/em&gt;)
+and proves various properties such as basic identities and
+inequalities, monotonicity, differentiability, asymptotic expansions,
+and the MacLaurin series of
+&lt;em&gt;W&lt;/em&gt;&lt;sub&gt;0&lt;/sub&gt;(&lt;em&gt;x&lt;/em&gt;)
+at &lt;em&gt;x&lt;/em&gt; = 0.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>Gaussian Integers</title>
+              <link>https://www.isa-afp.org/entries/Gaussian_Integers.html</link>
+       <guid>https://www.isa-afp.org/entries/Gaussian_Integers.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>24 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;The Gaussian integers are the subring &amp;#8484;[i] of the
+complex numbers, i. e. the ring of all complex numbers with integral
+real and imaginary part. This article provides a definition of this
+ring as well as proofs of various basic properties, such as that they
+form a Euclidean ring and a full classification of their primes. An
+executable (albeit not very efficient) factorisation algorithm is also
+provided.&lt;/p&gt; &lt;p&gt;Lastly, this Gaussian integer
+formalisation is used in two short applications:&lt;/p&gt; &lt;ol&gt;
+&lt;li&gt; The characterisation of all positive integers that can be
+written as sums of two squares&lt;/li&gt; &lt;li&gt; Euclid&#39;s
+formula for primitive Pythagorean triples&lt;/li&gt; &lt;/ol&gt;
+&lt;p&gt;While elementary proofs for both of these are already
+available in the AFP, the theory of Gaussian integers provides more
+concise proofs and a more high-level view.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>Matrices for ODEs</title>
+              <link>https://www.isa-afp.org/entries/Matrices_for_ODEs.html</link>
+       <guid>https://www.isa-afp.org/entries/Matrices_for_ODEs.html</guid>
+       <dc:creator> Jonathan Julian Huerta y Munive       </dc:creator>
+       <pubDate>19 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+Our theories formalise various matrix properties that serve to
+establish existence, uniqueness and characterisation of the solution
+to affine systems of ordinary differential equations (ODEs). In
+particular, we formalise the operator and maximum norm of matrices.
+Then we use them to prove that square matrices form a Banach space,
+and in this setting, we show an instance of Picard-Lindelöf’s
+theorem for affine systems of ODEs. Finally, we use this formalisation
+to verify three simple hybrid programs.</description>
     </item>
     <item>
        <title>Authenticated Data Structures As Functors</title>
@@ -381,208 +569,6 @@ proven by Apéry (which is why this result is also often called
 formalisation follows &lt;a
 href=&#34;http://people.math.sc.edu/filaseta/gradcourses/Math785/Math785Notes4.pdf&#34;&gt;Filaseta&#39;s
 presentation&lt;/a&gt; of Beukers&#39;s proof.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Formalizing a Seligman-Style Tableau System for Hybrid Logic</title>
-              <link>https://www.isa-afp.org/entries/Hybrid_Logic.html</link>
-       <guid>https://www.isa-afp.org/entries/Hybrid_Logic.html</guid>
-       <dc:creator> Asta Halkjær From       </dc:creator>
-       <pubDate>20 Dec 2019 00:00:00 +0000</pubDate>
-       <description>
-This work is a formalization of soundness and completeness proofs
-for a Seligman-style tableau system for hybrid logic. The completeness
-result is obtained via a synthetic approach using maximally
-consistent sets of tableau blocks. The formalization differs from
-the cited work in a few ways. First, to avoid the need to backtrack in
-the construction of a tableau, the formalized system has no unnamed
-initial segment, and therefore no Name rule. Second, I show that the
-full Bridge rule is admissible in the system. Third, I start from rules
-restricted to only extend the branch with new formulas, including only
-witnessing diamonds that are not already witnessed, and show that
-the unrestricted rules are admissible. Similarly, I start from simpler
-versions of the @-rules and show the general ones admissible. Finally,
-the GoTo rule is restricted using a notion of coins such that each
-application consumes a coin and coins are earned through applications of
-the remaining rules. I show that if a branch can be closed then it can
-be closed starting from a single coin. These restrictions are imposed
-to rule out some means of nontermination.</description>
-    </item>
-    <item>
-       <title>The Poincaré-Bendixson Theorem</title>
-              <link>https://www.isa-afp.org/entries/Poincare_Bendixson.html</link>
-       <guid>https://www.isa-afp.org/entries/Poincare_Bendixson.html</guid>
-       <dc:creator> Fabian Immler, Yong Kiam Tan       </dc:creator>
-       <pubDate>18 Dec 2019 00:00:00 +0000</pubDate>
-       <description>
-The Poincaré-Bendixson theorem is a classical result in the study of
-(continuous) dynamical systems. Colloquially, it restricts the
-possible behaviors of planar dynamical systems: such systems cannot be
-chaotic. In practice, it is a useful tool for proving the existence of
-(limiting) periodic behavior in planar systems. The theorem is an
-interesting and challenging benchmark for formalized mathematics
-because proofs in the literature rely on geometric sketches and only
-hint at symmetric cases. It also requires a substantial background of
-mathematical theories, e.g., the Jordan curve theorem, real analysis,
-ordinary differential equations, and limiting (long-term) behavior of
-dynamical systems.</description>
-    </item>
-    <item>
-       <title>Poincaré Disc Model</title>
-              <link>https://www.isa-afp.org/entries/Poincare_Disc.html</link>
-       <guid>https://www.isa-afp.org/entries/Poincare_Disc.html</guid>
-       <dc:creator> Danijela Simić, Filip Marić, Pierre Boutry       </dc:creator>
-       <pubDate>16 Dec 2019 00:00:00 +0000</pubDate>
-       <description>
-We describe formalization of the Poincaré disc model of hyperbolic
-geometry within the Isabelle/HOL proof assistant. The model is defined
-within the extended complex plane (one dimensional complex projectives
-space &amp;#8450;P1), formalized in the AFP entry “Complex Geometry”.
-Points, lines, congruence of pairs of points, betweenness of triples
-of points, circles, and isometries are defined within the model. It is
-shown that the model satisfies all Tarski&#39;s axioms except the
-Euclid&#39;s axiom. It is shown that it satisfies its negation and
-the limiting parallels axiom (which proves it to be a model of
-hyperbolic geometry).</description>
-    </item>
-    <item>
-       <title>Complex Geometry</title>
-              <link>https://www.isa-afp.org/entries/Complex_Geometry.html</link>
-       <guid>https://www.isa-afp.org/entries/Complex_Geometry.html</guid>
-       <dc:creator> Filip Marić, Danijela Simić       </dc:creator>
-       <pubDate>16 Dec 2019 00:00:00 +0000</pubDate>
-       <description>
-A formalization of geometry of complex numbers is presented.
-Fundamental objects that are investigated are the complex plane
-extended by a single infinite point, its objects (points, lines and
-circles), and groups of transformations that act on them (e.g.,
-inversions and Möbius transformations). Most objects are defined
-algebraically, but correspondence with classical geometric definitions
-is shown.</description>
-    </item>
-    <item>
-       <title>Gauss Sums and the Pólya–Vinogradov Inequality</title>
-              <link>https://www.isa-afp.org/entries/Gauss_Sums.html</link>
-       <guid>https://www.isa-afp.org/entries/Gauss_Sums.html</guid>
-       <dc:creator> Rodrigo Raya, Manuel Eberl       </dc:creator>
-       <pubDate>10 Dec 2019 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This article provides a full formalisation of Chapter 8 of
-Apostol&#39;s &lt;em&gt;&lt;a
-href=&#34;https://www.springer.com/de/book/9780387901633&#34;&gt;Introduction
-to Analytic Number Theory&lt;/a&gt;&lt;/em&gt;. Subjects that are
-covered are:&lt;/p&gt; &lt;ul&gt; &lt;li&gt;periodic arithmetic
-functions and their finite Fourier series&lt;/li&gt;
-&lt;li&gt;(generalised) Ramanujan sums&lt;/li&gt; &lt;li&gt;Gauss sums
-and separable characters&lt;/li&gt; &lt;li&gt;induced moduli and
-primitive characters&lt;/li&gt; &lt;li&gt;the
-Pólya&amp;mdash;Vinogradov inequality&lt;/li&gt; &lt;/ul&gt;</description>
-    </item>
-    <item>
-       <title>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</title>
-              <link>https://www.isa-afp.org/entries/Generalized_Counting_Sort.html</link>
-       <guid>https://www.isa-afp.org/entries/Generalized_Counting_Sort.html</guid>
-       <dc:creator> Pasquale Noce       </dc:creator>
-       <pubDate>04 Dec 2019 00:00:00 +0000</pubDate>
-       <description>
-Counting sort is a well-known algorithm that sorts objects of any kind
-mapped to integer keys, or else to keys in one-to-one correspondence
-with some subset of the integers (e.g. alphabet letters). However, it
-is suitable for direct use, viz. not just as a subroutine of another
-sorting algorithm (e.g. radix sort), only if the key range is not
-significantly larger than the number of the objects to be sorted.
-This paper describes a tail-recursive generalization of counting sort
-making use of a bounded number of counters, suitable for direct use in
-case of a large, or even infinite key range of any kind, subject to
-the only constraint of being a subset of an arbitrary linear order.
-After performing a pen-and-paper analysis of how such algorithm has to
-be designed to maximize its efficiency, this paper formalizes the
-resulting generalized counting sort (GCsort) algorithm and then
-formally proves its correctness properties, namely that (a) the
-counters&#39; number is maximized never exceeding the fixed upper
-bound, (b) objects are conserved, (c) objects get sorted, and (d) the
-algorithm is stable.</description>
-    </item>
-    <item>
-       <title>Interval Arithmetic on 32-bit Words</title>
-              <link>https://www.isa-afp.org/entries/Interval_Arithmetic_Word32.html</link>
-       <guid>https://www.isa-afp.org/entries/Interval_Arithmetic_Word32.html</guid>
-       <dc:creator> Brandon Bohrer       </dc:creator>
-       <pubDate>27 Nov 2019 00:00:00 +0000</pubDate>
-       <description>
-Interval_Arithmetic implements conservative interval arithmetic
-computations, then uses this interval arithmetic to implement a simple
-programming language where all terms have 32-bit signed word values,
-with explicit infinities for terms outside the representable bounds.
-Our target use case is interpreters for languages that must have a
-well-understood low-level behavior.  We include a formalization of
-bounded-length strings which are used for the identifiers of our
-language. Bounded-length identifiers are useful in some applications,
-for example the &lt;a href=&#34;https://www.isa-afp.org/entries/Differential_Dynamic_Logic.html&#34;&gt;Differential_Dynamic_Logic&lt;/a&gt; article,
-where a Euclidean space indexed by identifiers demands that identifiers
-are finitely many.</description>
-    </item>
-    <item>
-       <title>Zermelo Fraenkel Set Theory in Higher-Order Logic</title>
-              <link>https://www.isa-afp.org/entries/ZFC_in_HOL.html</link>
-       <guid>https://www.isa-afp.org/entries/ZFC_in_HOL.html</guid>
-       <dc:creator> Lawrence C. Paulson       </dc:creator>
-       <pubDate>24 Oct 2019 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This entry is a new formalisation of ZFC set theory in Isabelle/HOL. It is
-logically equivalent to Obua&#39;s HOLZF; the point is to have the closest
-possible integration with the rest of Isabelle/HOL, minimising the amount of
-new notations and exploiting type classes.&lt;/p&gt;
-&lt;p&gt;There is a type &lt;em&gt;V&lt;/em&gt; of sets and a function &lt;em&gt;elts :: V =&amp;gt; V
-set&lt;/em&gt; mapping a set to its elements. Classes simply have type &lt;em&gt;V
-set&lt;/em&gt;, and a predicate identifies the small classes: those that correspond
-to actual sets. Type classes connected with orders and lattices are used to
-minimise the amount of new notation for concepts such as the subset relation,
-union and intersection. Basic concepts — Cartesian products, disjoint sums,
-natural numbers, functions, etc. — are formalised.&lt;/p&gt;
-&lt;p&gt;More advanced set-theoretic concepts, such as transfinite induction,
-ordinals, cardinals and the transitive closure of a set, are also provided.
-The definition of addition and multiplication for general sets (not just
-ordinals) follows Kirby.&lt;/p&gt;
-&lt;p&gt;The theory provides two type classes with the aim of facilitating
-developments that combine &lt;em&gt;V&lt;/em&gt; with other Isabelle/HOL types:
-&lt;em&gt;embeddable&lt;/em&gt;, the class of types that can be injected into &lt;em&gt;V&lt;/em&gt;
-(including &lt;em&gt;V&lt;/em&gt; itself as well as &lt;em&gt;V*V&lt;/em&gt;, etc.), and
-&lt;em&gt;small&lt;/em&gt;, the class of types that correspond to some ZF set.&lt;/p&gt;
-extra-history =
-Change history:
-[2020-01-28]:  Generalisation of the &#34;small&#34; predicate and order types to arbitrary sets;
-ordinal exponentiation;
-introduction of the coercion ord_of_nat :: &#34;nat =&gt; V&#34;;
-numerous new lemmas. (revision 6081d5be8d08)</description>
-    </item>
-    <item>
-       <title>Isabelle/C</title>
-              <link>https://www.isa-afp.org/entries/Isabelle_C.html</link>
-       <guid>https://www.isa-afp.org/entries/Isabelle_C.html</guid>
-       <dc:creator> Frédéric Tuong, Burkhart Wolff       </dc:creator>
-       <pubDate>22 Oct 2019 00:00:00 +0000</pubDate>
-       <description>
-We present a framework for C code in C11 syntax deeply integrated into
-the Isabelle/PIDE development environment. Our framework provides an
-abstract interface for verification back-ends to be plugged-in
-independently. Thus, various techniques such as deductive program
-verification or white-box testing can be applied to the same source,
-which is part of an integrated PIDE document model. Semantic back-ends
-are free to choose the supported C fragment and its semantics. In
-particular, they can differ on the chosen memory model or the
-specification mechanism for framing conditions. Our framework supports
-semantic annotations of C sources in the form of comments. Annotations
-serve to locally control back-end settings, and can express the term
-focus to which an annotation refers. Both the logical and the
-syntactic context are available when semantic annotations are
-evaluated. As a consequence, a formula in an annotation can refer both
-to HOL or C variables. Our approach demonstrates the degree of
-maturity and expressive power the Isabelle/PIDE sub-system has
-achieved in recent years. Our integration technique employs Lex and
-Yacc style grammars to ensure efficient deterministic parsing.  This
-is the core-module of Isabelle/C; the AFP package for Clean and
-Clean_wrapper as well as AutoCorres and AutoCorres_wrapper (available
-via git) are applications of this front-end.</description>
     </item>
   </channel>
 </rss>

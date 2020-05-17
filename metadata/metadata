@@ -13,6 +13,20 @@ abstract =
   integers less than and relatively prime to <em>n</em> constitute an
   arithmetic progression?
 
+[Banach_Steinhaus]
+title = Banach-Steinhaus Theorem
+author = Dominique Unruh <http://kodu.ut.ee/~unruh/> <mailto:unruh@ut.ee>, Jose Manuel Rodriguez Caballero <https://josephcmac.github.io/> <mailto:jose.manuel.rodriguez.caballero@ut.ee>
+topic = Mathematics/Analysis
+date = 2020-05-02
+notify = jose.manuel.rodriguez.caballero@ut.ee, unruh@ut.ee
+abstract =
+  We formalize in Isabelle/HOL a result
+  due to S. Banach and H. Steinhaus known as
+  the Banach-Steinhaus theorem or Uniform boundedness principle: a
+  pointwise-bounded family of continuous linear operators from a Banach
+  space to a normed space is uniformly bounded. Our approach is an
+  adaptation to Isabelle/HOL of a proof due to A. Sokal.
+
 [Complex_Geometry]
 title = Complex Geometry
 author = Filip Marić <http://www.matf.bg.ac.rs/~filip>, Danijela Simić <http://poincare.matf.bg.ac.rs/~danijela>
@@ -5425,6 +5439,32 @@ abstract =
   recurrences and derive a fully executable solver for them that can be
   exported to programming languages like Haskell. </p>
 
+[Lambert_W]
+title = The Lambert W Function on the Reals
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Analysis
+date = 2020-04-24
+notify = eberlm@in.tum.de
+abstract =
+  <p>The Lambert <em>W</em> function is a multi-valued
+  function defined as the inverse function of <em>x</em>
+  &#x21A6; <em>x</em>
+  e<sup><em>x</em></sup>. Besides numerous
+  applications in combinatorics, physics, and engineering, it also
+  frequently occurs when solving equations containing both
+  e<sup><em>x</em></sup> and
+  <em>x</em>, or both <em>x</em> and log
+  <em>x</em>.</p> <p>This article provides a
+  definition of the two real-valued branches
+  <em>W</em><sub>0</sub>(<em>x</em>)
+  and
+  <em>W</em><sub>-1</sub>(<em>x</em>)
+  and proves various properties such as basic identities and
+  inequalities, monotonicity, differentiability, asymptotic expansions,
+  and the MacLaurin series of
+  <em>W</em><sub>0</sub>(<em>x</em>)
+  at <em>x</em> = 0.</p>
+
 [Cartan_FP]
 title = The Cartan Fixed Point Theorems
 author = Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
@@ -6443,13 +6483,13 @@ notify = eberlm@in.tum.de
 date = 2016-09-01
 topic = Mathematics/Analysis
 abstract =
-        <p>This work contains a proof of Stirling's formula both for the factorial $n! \sim \sqrt{2\pi n} (n/e)^n$ on natural numbers and the real 
+        <p>This work contains a proof of Stirling's formula both for the factorial $n! \sim \sqrt{2\pi n} (n/e)^n$ on natural numbers and the real
         Gamma function $\Gamma(x)\sim \sqrt{2\pi/x} (x/e)^x$. The proof is based on work by <a
 	href="http://www.maths.lancs.ac.uk/~jameson/stirlgamma.pdf">Graham Jameson</a>.</p>
         <p>This is then extended to the full asymptotic expansion
         $$\log\Gamma(z) = \big(z - \tfrac{1}{2}\big)\log z - z + \tfrac{1}{2}\log(2\pi) + \sum_{k=1}^{n-1} \frac{B_{k+1}}{k(k+1)} z^{-k}\\
         {} - \frac{1}{n} \int_0^\infty B_n([t])(t + z)^{-n}\,\text{d}t$$
-        uniformly for all complex $z\neq 0$ in the cone $\text{arg}(z)\leq \alpha$ for any $\alpha\in(0,\pi)$, with which the above asymptotic 
+        uniformly for all complex $z\neq 0$ in the cone $\text{arg}(z)\leq \alpha$ for any $\alpha\in(0,\pi)$, with which the above asymptotic
         relation for &Gamma; is also extended to complex arguments.</p>
 
 [Lp]
@@ -6884,7 +6924,7 @@ abstract =
   $\sum_{n=1}^\infty \frac{1}{n^2} = \frac{\pi^2}{6}$ in the abstract. Display formulae like
   $$ \int_0^1 x^{-x}\,\text{d}x = \sum_{n=1}^\infty n^{-n}$$
   are also possible. Please read the
-  <a href="../submitting.html">submission guidelines</a> before using this.</p>  
+  <a href="../submitting.html">submission guidelines</a> before using this.</p>
 extra-no-index = no-index: true
 
 [CRDT]
@@ -9175,13 +9215,161 @@ abstract =
   formalizing the Canton protocol and verifying its integrity and
   security guarantees.
 
+[Power_Sum_Polynomials]
+title = Power Sum Polynomials
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Algebra
+date = 2020-04-24
+notify = eberlm@in.tum.de
+abstract =
+  <p>This article provides a formalisation of the symmetric
+  multivariate polynomials known as <em>power sum
+  polynomials</em>. These are of the form
+  p<sub>n</sub>(<em>X</em><sub>1</sub>,&hellip;,
+  <em>X</em><sub><em>k</em></sub>) =
+  <em>X</em><sub>1</sub><sup>n</sup>
+  + &hellip; +
+  X<sub><em>k</em></sub><sup>n</sup>.
+  A formal proof of the Girard–Newton Theorem is also given. This
+  theorem relates the power sum polynomials to the elementary symmetric
+  polynomials s<sub><em>k</em></sub> in the form
+  of a recurrence relation
+  (-1)<sup><em>k</em></sup>
+  <em>k</em> s<sub><em>k</em></sub>
+  =
+  &sum;<sub>i&isinv;[0,<em>k</em>)</sub>
+  (-1)<sup>i</sup> s<sub>i</sub>
+  p<sub><em>k</em>-<em>i</em></sub>&thinsp;.</p>
+  <p>As an application, this is then used to solve a generalised
+  form of a puzzle given as an exercise in Dummit and Foote's
+  <em>Abstract Algebra</em>: For <em>k</em>
+  complex unknowns <em>x</em><sub>1</sub>,
+  &hellip;,
+  <em>x</em><sub><em>k</em></sub>,
+  define p<sub><em>j</em></sub> :=
+  <em>x</em><sub>1</sub><sup><em>j</em></sup>
+  + &hellip; +
+  <em>x</em><sub><em>k</em></sub><sup><em>j</em></sup>.
+  Then for each vector <em>a</em> &isinv;
+  &#x2102;<sup><em>k</em></sup>, show that
+  there is exactly one solution to the system p<sub>1</sub>
+  = a<sub>1</sub>, &hellip;,
+  p<sub><em>k</em></sub> =
+  a<sub><em>k</em></sub> up to permutation of
+  the
+  <em>x</em><sub><em>i</em></sub>
+  and determine the value of
+  p<sub><em>i</em></sub> for
+  i&gt;k.</p>
+
+[Gaussian_Integers]
+title = Gaussian Integers
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number theory
+date = 2020-04-24
+notify = eberlm@in.tum.de
+abstract =
+  <p>The Gaussian integers are the subring &#8484;[i] of the
+  complex numbers, i. e. the ring of all complex numbers with integral
+  real and imaginary part. This article provides a definition of this
+  ring as well as proofs of various basic properties, such as that they
+  form a Euclidean ring and a full classification of their primes. An
+  executable (albeit not very efficient) factorisation algorithm is also
+  provided.</p> <p>Lastly, this Gaussian integer
+  formalisation is used in two short applications:</p> <ol>
+  <li> The characterisation of all positive integers that can be
+  written as sums of two squares</li> <li> Euclid's
+  formula for primitive Pythagorean triples</li> </ol>
+  <p>While elementary proofs for both of these are already
+  available in the AFP, the theory of Gaussian integers provides more
+  concise proofs and a more high-level view.</p>
+
+[Forcing]
+title = Formalization of Forcing in Isabelle/ZF
+author = Emmanuel Gunther <mailto:gunther@famaf.unc.edu.ar>, Miguel Pagano <https://cs.famaf.unc.edu.ar/~mpagano/>,  Pedro Sánchez Terraf <https://cs.famaf.unc.edu.ar/~pedro/home_en>
+topic = Logic/Set theory
+date = 2020-05-06
+notify = gunther@famaf.unc.edu.ar, pagano@famaf.unc.edu.ar, sterraf@famaf.unc.edu.ar
+abstract =
+  We formalize the theory of forcing in the set theory framework of
+  Isabelle/ZF. Under the assumption of the existence of a countable
+  transitive model of ZFC, we construct a proper generic extension and
+  show that the latter also satisfies ZFC.
+
+[Recursion-Addition]
+title = Recursion Theorem in ZF
+author = Georgy Dunaev <mailto:georgedunaev@gmail.com>
+topic = Logic/Set theory
+date = 2020-05-11
+notify = georgedunaev@gmail.com
+abstract =
+  This document contains a proof of the recursion theorem. This is a
+  mechanization of the proof of the recursion theorem from the text <i>Introduction to
+  Set Theory</i>, by Karel Hrbacek and Thomas Jech. This
+  implementation may be used as the basis for a model of Peano arithmetic in
+  ZF. While recursion and the natural numbers are already available in Isabelle/ZF, this clean development
+  is much easier to follow.
+
+[LTL_Normal_Form]
+title = An Efficient Normalisation Procedure for Linear Temporal Logic: Isabelle/HOL Formalisation
+author = Salomon Sickert <mailto:s.sickert@tum.de>
+topic = Computer science/Automata and formal languages, Logic/General logic/Temporal logic
+date = 2020-05-08
+notify = s.sickert@tum.de
+abstract =
+  In the mid 80s, Lichtenstein, Pnueli, and Zuck proved a classical
+  theorem stating that every formula of Past LTL (the extension of LTL
+  with past operators) is equivalent to a formula of the form
+  $\bigwedge_{i=1}^n \mathbf{G}\mathbf{F} \varphi_i \vee
+  \mathbf{F}\mathbf{G} \psi_i$,  where $\varphi_i$ and $\psi_i$ contain
+  only past operators. Some years later, Chang, Manna, and Pnueli built
+  on this result to derive a similar normal form for LTL. Both
+  normalisation procedures have a non-elementary worst-case blow-up, and
+  follow an involved path from formulas to counter-free automata to
+  star-free regular expressions and back to formulas. We improve on both
+  points. We present an executable formalisation of a direct and purely
+  syntactic normalisation procedure for LTL yielding a normal form,
+  comparable to the one by Chang, Manna, and Pnueli, that has only a
+  single exponential blow-up.
+
+[Matrices_for_ODEs]
+title = Matrices for ODEs
+author = Jonathan Julian Huerta y Munive <mailto:jjhuertaymunive1@sheffield.ac.uk>
+topic = Mathematics/Analysis, Mathematics/Algebra
+date = 2020-04-19
+notify = jonjulian23@gmail.com
+abstract =
+  Our theories formalise various matrix properties that serve to
+  establish existence, uniqueness and characterisation of the solution
+  to affine systems of ordinary differential equations (ODEs). In
+  particular, we formalise the operator and maximum norm of matrices.
+  Then we use them to prove that square matrices form a Banach space,
+  and in this setting, we show an instance of Picard-Lindelöf’s
+  theorem for affine systems of ODEs. Finally, we use this formalisation
+  to verify three simple hybrid programs.
+
+[Irrational_Series_Erdos_Straus]
+title = Irrationality Criteria for Series by Erdős and Straus
+author = Angeliki Koutsoukou-Argyraki <https://www.cl.cam.ac.uk/~ak2110/>, Wenda Li <https://www.cl.cam.ac.uk/~wl302/>
+topic = Mathematics/Number theory, Mathematics/Analysis
+date = 2020-05-12
+notify = ak2110@cam.ac.uk, wl302@cam.ac.uk, liwenda1990@hotmail.com
+abstract =
+  We formalise certain irrationality criteria for infinite series of the form:
+  \[\sum_{n=1}^\infty \frac{b_n}{\prod_{i=1}^n a_i} \]
+  where $\{b_n\}$ is a sequence of integers and $\{a_n\}$ a sequence of positive integers
+  with $a_n >1$ for all large n. The results are due to P. Erdős and E. G. Straus
+  <a href="https://projecteuclid.org/euclid.pjm/1102911140">[1]</a>.
+  In particular, we formalise Theorem 2.1, Corollary 2.10 and Theorem 3.1.
+  The latter is an application of Theorem 2.1 involving the prime numbers.
+
 [Knuth_Bendix_Order]
 title = A Formalization of Knuth–Bendix Orders
 author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann/>
 topic = Logic/Rewriting
 date = 2020-05-13
 notify = c.sternagel@gmail.com, rene.thiemann@uibk.ac.at
-abstract = 
+abstract =
   We define a generalized version of Knuth&ndash;Bendix orders,
   including subterm coefficient functions. For these orders we formalize
   several properties such as strong normalization, the subterm property,
