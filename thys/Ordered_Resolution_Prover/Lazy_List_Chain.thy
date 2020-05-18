@@ -22,7 +22,7 @@ Ganzinger's chapter.
 subsection \<open>Chains\<close>
 
 coinductive chain :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> bool" for R :: "'a \<Rightarrow> 'a \<Rightarrow> bool" where
-	chain_singleton: "chain R (LCons x LNil)"
+  chain_singleton: "chain R (LCons x LNil)"
 | chain_cons: "chain R xs \<Longrightarrow> R x (lhd xs) \<Longrightarrow> chain R (LCons x xs)"
 
 lemma
@@ -553,7 +553,7 @@ qed
 subsection \<open>Full Chains\<close>
 
 coinductive full_chain :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a llist \<Rightarrow> bool" for R :: "'a \<Rightarrow> 'a \<Rightarrow> bool" where
-	full_chain_singleton: "(\<forall>y. \<not> R x y) \<Longrightarrow> full_chain R (LCons x LNil)"
+  full_chain_singleton: "(\<forall>y. \<not> R x y) \<Longrightarrow> full_chain R (LCons x LNil)"
 | full_chain_cons: "full_chain R xs \<Longrightarrow> R x (lhd xs) \<Longrightarrow> full_chain R (LCons x xs)"
 
 lemma

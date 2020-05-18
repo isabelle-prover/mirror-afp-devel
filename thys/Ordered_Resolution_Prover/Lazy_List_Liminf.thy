@@ -1,10 +1,10 @@
-(*  Title:       Liminf of Lazy Lists
-    Author:      Jasmin Blanchette <j.c.blanchette at vu.nl>, 2014, 2017
+(*  Title:       Supremum and Liminf of Lazy Lists
+    Author:      Jasmin Blanchette <j.c.blanchette at vu.nl>, 2014, 2017, 2020
     Author:      Dmitriy Traytel <traytel at inf.ethz.ch>, 2014
     Maintainer:  Jasmin Blanchette <j.c.blanchette at vu.nl>
 *)
 
-section \<open>Liminf of Lazy Lists\<close>
+section \<open>Supremum and Liminf of Lazy Lists\<close>
 
 theory Lazy_List_Liminf
   imports Coinductive.Coinductive_List
@@ -17,6 +17,15 @@ elements of a lazy list of sets and the limit of such a lazy list. The definitio
 generally in terms of lattices. The basis for this theory is Section 4.1 (``Theorem Proving
 Processes'') of Bachmair and Ganzinger's chapter.
 \<close>
+
+
+subsection \<open>Library\<close>
+
+lemma less_llength_ltake: "i < llength (ltake k Xs) \<longleftrightarrow> i < k \<and> i < llength Xs"
+  by simp
+
+
+subsection \<open>Supremum\<close>
 
 definition Sup_llist :: "'a set llist \<Rightarrow> 'a set" where
   "Sup_llist Xs = (\<Union>i \<in> {i. enat i < llength Xs}. lnth Xs i)"
@@ -51,49 +60,69 @@ qed ((auto)[], metis i0_lb lnth_0 zero_enat_def, metis Suc_ile_eq lnth_Suc_LCons
 lemma lhd_subset_Sup_llist: "\<not> lnull Xs \<Longrightarrow> lhd Xs \<subseteq> Sup_llist Xs"
   by (cases Xs) simp_all
 
-definition Sup_upto_llist :: "'a set llist \<Rightarrow> nat \<Rightarrow> 'a set" where
-  "Sup_upto_llist Xs j = (\<Union>i \<in> {i. enat i < llength Xs \<and> i \<le> j}. lnth Xs i)"
 
-lemma Sup_upto_llist_0[simp]: "Sup_upto_llist Xs 0 = (if 0 < llength Xs then lnth Xs 0 else {})"
-  unfolding Sup_upto_llist_def image_def by (simp add: enat_0)
+subsection \<open>Supremum up-to\<close>
+
+definition Sup_upto_llist :: "'a set llist \<Rightarrow> enat \<Rightarrow> 'a set" where
+  "Sup_upto_llist Xs j = (\<Union>i \<in> {i. enat i < llength Xs \<and> enat i \<le> j}. lnth Xs i)"
+
+lemma Sup_upto_llist_eq_Sup_llist_ltake: "Sup_upto_llist Xs j = Sup_llist (ltake (eSuc j) Xs)"
+  unfolding Sup_upto_llist_def Sup_llist_def
+  by (smt Collect_cong Sup.SUP_cong iless_Suc_eq lnth_ltake less_llength_ltake mem_Collect_eq)
+
+lemma Sup_upto_llist_0[simp]:
+  "Sup_upto_llist Xs (enat 0) = (if 0 < llength Xs then lnth Xs 0 else {})"
+  unfolding Sup_upto_llist_def image_def by (simp add: enat_0[symmetric])
 
 lemma Sup_upto_llist_Suc[simp]:
-  "Sup_upto_llist Xs (Suc j) =
-   Sup_upto_llist Xs j \<union> (if enat (Suc j) < llength Xs then lnth Xs (Suc j) else {})"
+  "Sup_upto_llist Xs (enat (Suc j)) =
+   Sup_upto_llist Xs (enat j) \<union> (if enat (Suc j) < llength Xs then lnth Xs (Suc j) else {})"
   unfolding Sup_upto_llist_def image_def by (auto intro: le_SucI elim: le_SucE)
+
+lemma Sup_upto_llist_infinity[simp]: "Sup_upto_llist Xs \<infinity> = Sup_llist Xs"
+  unfolding Sup_upto_llist_def Sup_llist_def by simp
+
+lemma Sup_upto_llist_eSuc[simp]:
+  "Sup_upto_llist Xs (eSuc j) =
+   (case j of
+      enat k \<Rightarrow> Sup_upto_llist Xs (enat (Suc k))
+    | \<infinity> \<Rightarrow> Sup_llist Xs)"
+  by (auto simp: eSuc_enat split: enat.split)
 
 lemma Sup_upto_llist_mono: "j \<le> k \<Longrightarrow> Sup_upto_llist Xs j \<subseteq> Sup_upto_llist Xs k"
   unfolding Sup_upto_llist_def by auto
 
-lemma Sup_upto_llist_subset_Sup_llist: "j \<le> k \<Longrightarrow> Sup_upto_llist Xs j \<subseteq> Sup_llist Xs"
+lemma Sup_upto_llist_subset_Sup_llist: "Sup_upto_llist Xs j \<subseteq> Sup_llist Xs"
   unfolding Sup_llist_def Sup_upto_llist_def by auto
 
 lemma elem_Sup_llist_imp_Sup_upto_llist:
-	"x \<in> Sup_llist Xs \<Longrightarrow> \<exists>j < llength Xs. x \<in> Sup_upto_llist Xs j"
+  "x \<in> Sup_llist Xs \<Longrightarrow> \<exists>j < llength Xs. x \<in> Sup_upto_llist Xs (enat j)"
   unfolding Sup_llist_def Sup_upto_llist_def by blast
 
-lemma lnth_subset_Sup_upto_llist: "enat j < llength Xs \<Longrightarrow> lnth Xs j \<subseteq> Sup_upto_llist Xs j"
+lemma lnth_subset_Sup_upto_llist: "j < llength Xs \<Longrightarrow> lnth Xs j \<subseteq> Sup_upto_llist Xs j"
   unfolding Sup_upto_llist_def by auto
 
 lemma finite_Sup_llist_imp_Sup_upto_llist:
   assumes "finite X" and "X \<subseteq> Sup_llist Xs"
-  shows "\<exists>k. X \<subseteq> Sup_upto_llist Xs k"
+  shows "\<exists>k. X \<subseteq> Sup_upto_llist Xs (enat k)"
   using assms
 proof induct
   case (insert x X)
   then have x: "x \<in> Sup_llist Xs" and X: "X \<subseteq> Sup_llist Xs"
     by simp+
-  from x obtain k where k: "x \<in> Sup_upto_llist Xs k"
+  from x obtain k where k: "x \<in> Sup_upto_llist Xs (enat k)"
     using elem_Sup_llist_imp_Sup_upto_llist by fast
-  from X obtain k' where k': "X \<subseteq> Sup_upto_llist Xs k'"
+  from X obtain k' where k': "X \<subseteq> Sup_upto_llist Xs (enat k')"
     using insert.hyps(3) by fast
   have "insert x X \<subseteq> Sup_upto_llist Xs (max k k')"
-    using k k'
-    by (metis insert_absorb insert_subset Sup_upto_llist_mono max.cobounded2 max.commute
-        order.trans)
+    using k k' by (metis (mono_tags) Sup_upto_llist_mono enat_ord_simps(1) insert_subset
+      max.cobounded1 max.cobounded2 subset_iff)
   then show ?case
     by fast
 qed simp
+
+
+subsection \<open>Liminf\<close>
 
 definition Liminf_llist :: "'a set llist \<Rightarrow> 'a set" where
   "Liminf_llist Xs =
@@ -178,7 +207,7 @@ lemma finite_subset_Liminf_llist_imp_exists_index:
     nnil: "\<not> lnull Xs" and
     fin: "finite X" and
     in_lim: "X \<subseteq> Liminf_llist Xs"
-  shows "\<exists>i. enat i < llength Xs \<and> X \<subseteq> \<Inter> (lnth Xs ` {j. i \<le> j \<and> enat j < llength Xs})"
+  shows "\<exists>i. enat i < llength Xs \<and> X \<subseteq> (\<Inter>j \<in> {j. i \<le> j \<and> enat j < llength Xs}. lnth Xs j)"
 proof -
   show ?thesis
   proof (cases "X = {}")
@@ -189,11 +218,11 @@ proof -
     case nemp: False
 
     have in_lim':
-      "\<forall>x \<in> X. \<exists>i. enat i < llength Xs \<and> x \<in> \<Inter> (lnth Xs ` {j. i \<le> j \<and> enat j < llength Xs})"
+      "\<forall>x \<in> X. \<exists>i. enat i < llength Xs \<and> x \<in> (\<Inter>j \<in> {j. i \<le> j \<and> enat j < llength Xs}. lnth Xs j)"
       using in_lim[unfolded Liminf_llist_def] in_mono by fastforce
     obtain i_of where
       i_of_lt: "\<forall>x \<in> X. enat (i_of x) < llength Xs" and
-      in_inter: "\<forall>x \<in> X. x \<in> \<Inter> (lnth Xs ` {j. i_of x \<le> j \<and> enat j < llength Xs})"
+      in_inter: "\<forall>x \<in> X. x \<in> (\<Inter>j \<in> {j. i_of x \<le> j \<and> enat j < llength Xs}. lnth Xs j)"
       using bchoice[OF in_lim'] by blast
 
     define i_max where
@@ -209,16 +238,16 @@ proof -
       unfolding i_max_def by (simp add: fin)
     have "enat i_max < llength Xs"
       using i_of_lt x_max_in i_max_is by auto
-    moreover have "X \<subseteq> \<Inter> (lnth Xs ` {j. i_max \<le> j \<and> enat j < llength Xs})"
+    moreover have "X \<subseteq> (\<Inter>j \<in> {j. i_max \<le> j \<and> enat j < llength Xs}. lnth Xs j)"
     proof
       fix x
       assume x_in: "x \<in> X"
-      then have x_in_inter: "x \<in> \<Inter> (lnth Xs ` {j. i_of x \<le> j \<and> enat j < llength Xs})"
+      then have x_in_inter: "x \<in> (\<Inter>j \<in> {j. i_of x \<le> j \<and> enat j < llength Xs}. lnth Xs j)"
         using in_inter by auto
       moreover have "{j. i_max \<le> j \<and> enat j < llength Xs}
         \<subseteq> {j. i_of x \<le> j \<and> enat j < llength Xs}"
         using x_in le_i_max by auto
-      ultimately show "x \<in> \<Inter> (lnth Xs ` {j. i_max \<le> j \<and> enat j < llength Xs})"
+      ultimately show "x \<in> (\<Inter>j \<in> {j. i_max \<le> j \<and> enat j < llength Xs}. lnth Xs j)"
         by auto
     qed
     ultimately show ?thesis
@@ -279,5 +308,66 @@ qed
 lemma Liminf_set_filter_commute:
   "Liminf_llist (lmap (\<lambda>X. {x \<in> X. p x}) Xs) = {x \<in> Liminf_llist Xs. p x}"
   unfolding Liminf_llist_def by force
+
+
+subsection \<open>Liminf up-to\<close>
+
+definition Liminf_upto_llist :: "'a set llist \<Rightarrow> enat \<Rightarrow> 'a set" where
+  "Liminf_upto_llist Xs k =
+   (\<Union>i \<in> {i. enat i < llength Xs \<and> enat i \<le> k}.
+      \<Inter>j \<in> {j. i \<le> j \<and> enat j < llength Xs \<and> enat j \<le> k}. lnth Xs j)"
+
+lemma Liminf_upto_llist_eq_Liminf_llist_ltake:
+  "Liminf_upto_llist Xs j = Liminf_llist (ltake (eSuc j) Xs)"
+  unfolding Liminf_upto_llist_def Liminf_llist_def
+  by (smt Collect_cong Sup.SUP_cong iless_Suc_eq lnth_ltake less_llength_ltake mem_Collect_eq)
+
+lemma Liminf_upto_llist_nat[simp]:
+  "Liminf_upto_llist Xs (enat k) =
+   (if lnull Xs then {} else if enat k < llength Xs then lnth Xs k else llast Xs)"
+proof (cases "lnull Xs")
+  case nil: True
+  then show ?thesis
+    unfolding Liminf_upto_llist_def by simp
+next
+  case nnil: False
+  show ?thesis
+  proof (cases "enat k < llength Xs")
+    case k_lt: True
+    then show ?thesis
+      unfolding Liminf_upto_llist_def by force
+  next
+    case k_ge: False
+    then obtain j where
+      j: "eSuc (enat j) = llength Xs"
+      by (metis eSuc_enat_iff enat_ile le_less_linear lhd_LCons_ltl llength_LCons nnil)
+
+    have fin: "lfinite Xs"
+      using k_ge not_lfinite_llength by fastforce
+    have le_k: "enat i < llength Xs \<and> i \<le> k \<longleftrightarrow> enat i < llength Xs" for i
+      using k_ge linear order_le_less_subst2 by fastforce
+    have "Liminf_upto_llist Xs (enat k) = llast Xs"
+      using j nnil lfinite_Liminf_llist[OF fin] nnil
+      unfolding Liminf_upto_llist_def Liminf_llist_def using llast_conv_lnth[OF j[symmetric]]
+      by (simp add: le_k)
+    then show ?thesis
+      using k_ge nnil by simp
+  qed
+qed
+
+lemma Liminf_upto_llist_infinity[simp]: "Liminf_upto_llist Xs \<infinity> = Liminf_llist Xs"
+  unfolding Liminf_upto_llist_def Liminf_llist_def by simp
+
+lemma Liminf_upto_llist_eSuc[simp]:
+  "Liminf_upto_llist Xs (eSuc j) =
+   (case j of
+      enat k \<Rightarrow> Liminf_upto_llist Xs (enat (Suc k))
+    | \<infinity> \<Rightarrow> Liminf_llist Xs)"
+  by (auto simp: eSuc_enat split: enat.split)
+
+lemma elem_Liminf_llist_imp_Liminf_upto_llist:
+  "x \<in> Liminf_llist Xs \<Longrightarrow>
+   \<exists>i < llength Xs. \<forall>j. i \<le> j \<and> j < llength Xs \<longrightarrow> x \<in> Liminf_upto_llist Xs (enat j)"
+  unfolding Liminf_llist_def Liminf_upto_llist_def using enat_ord_simps(1) by force
 
 end

@@ -91,10 +91,10 @@ lemma equiv_Sup_Liminf:
   shows
     "\<exists>i \<in> {i. enat (Suc i) < llength D}. C \<in> lnth D i - lnth D (Suc i)"
 proof -
-  obtain i where C_D_i: "C \<in> Sup_upto_llist D i" and "i < llength D"
+  obtain i where C_D_i: "C \<in> Sup_upto_llist D (enat i)" and "enat i < llength D"
     using elem_Sup_llist_imp_Sup_upto_llist in_Sup by fast
-  then obtain j where j: "j \<ge> i \<and> enat j < llength D \<and> C \<notin> lnth D j" using not_in_Liminf
-    unfolding Sup_llist_def chain_def Liminf_llist_def by auto
+  then obtain j where j: "j \<ge> i \<and> enat j < llength D \<and> C \<notin> lnth D j"
+    using not_in_Liminf unfolding Sup_upto_llist_def chain_def Liminf_llist_def by auto
   obtain k where k: "C \<in> lnth D k" "enat k < llength D" "k \<le> i" using C_D_i
     unfolding Sup_upto_llist_def by auto
   let ?S = "{i. i < j \<and> i \<ge> k \<and> C \<in> lnth D i}"
