@@ -213,14 +213,15 @@ lemma dynamic_refutational_complete_Liminf:
     bot_elem: \<open>B \<in> Bot\<close> and
     deriv: \<open>chain (\<rhd>Red) D\<close> and
     fair: \<open>fair D\<close> and
-    unsat: \<open>lnth D 0 \<Turnstile> {B}\<close>
+    unsat: \<open>lhd D \<Turnstile> {B}\<close>
   shows \<open>\<exists>B'\<in>Bot. B' \<in> Liminf_llist D\<close>
 proof -
+  note lhd_is = lhd_conv_lnth[OF chain_not_lnull[OF deriv]]
   have non_empty: \<open>\<not> lnull D\<close> using chain_not_lnull[OF deriv] .
-  have subs: \<open>lnth D 0 \<subseteq> Sup_llist D\<close>
+  have subs: \<open>lhd D \<subseteq> Sup_llist D\<close>
     using lhd_subset_Sup_llist[of D] non_empty by (simp add: lhd_conv_lnth)
   have \<open>Sup_llist D \<Turnstile> {B}\<close>
-    using unsat subset_entailed[OF subs] entails_trans[of "Sup_llist D" "lnth D 0"] by auto
+    using unsat subset_entailed[OF subs] entails_trans[of "Sup_llist D" "lhd D"] by auto
   then have Sup_no_Red: \<open>Sup_llist D - Red_F (Sup_llist D) \<Turnstile> {B}\<close>
     using bot_elem Red_F_Bot by auto
   have Sup_no_Red_in_Liminf: \<open>Sup_llist D - Red_F (Sup_llist D) \<subseteq> Liminf_llist D\<close>
@@ -237,7 +238,7 @@ end
 
 locale dynamic_refutational_complete_calculus = calculus_with_red_crit +
   assumes
-    dynamic_refutational_complete: "B \<in> Bot \<Longrightarrow> chain (\<rhd>Red) D \<Longrightarrow> fair D \<Longrightarrow> lnth D 0 \<Turnstile> {B} \<Longrightarrow>
+    dynamic_refutational_complete: "B \<in> Bot \<Longrightarrow> chain (\<rhd>Red) D \<Longrightarrow> fair D \<Longrightarrow> lhd D \<Turnstile> {B} \<Longrightarrow>
       \<exists>i \<in> {i. enat i < llength D}. \<exists>B'\<in>Bot. B' \<in> lnth D i"
 begin
 
@@ -253,7 +254,7 @@ proof
   have[simp]: \<open>\<not> lnull D\<close> by (auto simp: D_def)
   have deriv_D: \<open>chain (\<rhd>Red) D\<close> by (simp add: chain.chain_singleton D_def)
   have liminf_is_N: "Liminf_llist D = N" by (simp add: D_def Liminf_llist_LCons)
-  have head_D: "N = lnth D 0" by (simp add: D_def)
+  have head_D: "N = lhd D" by (simp add: D_def)
   have "Sup_llist (lmap Red_Inf D) = Red_Inf N" by (simp add: D_def)
   then have fair_D: "fair D" using saturated_N by (simp add: fair_def saturated_def liminf_is_N)
   obtain i B' where B'_is_bot: \<open>B' \<in> Bot\<close> and B'_in: "B' \<in> lnth D i" and \<open>i < llength D\<close>
@@ -262,7 +263,7 @@ proof
   then have "i = 0"
     by (auto simp: D_def enat_0_iff)
   show \<open>\<exists>B'\<in>Bot. B' \<in> N\<close>
-    using B'_is_bot B'_in unfolding \<open>i = 0\<close> head_D[symmetric] by auto
+    using B'_is_bot B'_in unfolding \<open>i = 0\<close> head_D[symmetric] D_def by auto
 qed
 
 end
@@ -275,7 +276,7 @@ proof
     \<open>B \<in> Bot\<close> and
     \<open>chain (\<rhd>Red) D\<close> and
     \<open>fair D\<close> and
-    \<open>lnth D 0 \<Turnstile> {B}\<close>
+    \<open>lhd D \<Turnstile> {B}\<close>
   then have \<open>\<exists>B'\<in>Bot. B' \<in> Liminf_llist D\<close>
     by (rule dynamic_refutational_complete_Liminf)
   then show \<open>\<exists>i\<in>{i. enat i < llength D}. \<exists>B'\<in>Bot. B' \<in> lnth D i\<close>
@@ -825,8 +826,8 @@ end
 
 locale reduc_dynamic_refutational_complete_calculus = calculus_with_red_crit +
   assumes
-    reduc_dynamic_refutational_complete: "B \<in> Bot \<Longrightarrow> chain derive D \<Longrightarrow> reduc_fair D
-      \<Longrightarrow> lnth D 0 \<Turnstile> {B} \<Longrightarrow> \<exists>i \<in> {i. enat i < llength D}. \<exists> B'\<in>Bot. B' \<in> lnth D i"
+    reduc_dynamic_refutational_complete: "B \<in> Bot \<Longrightarrow> chain derive D \<Longrightarrow> reduc_fair D \<Longrightarrow>
+      lhd D \<Turnstile> {B} \<Longrightarrow> \<exists>i \<in> {i. enat i < llength D}. \<exists> B'\<in>Bot. B' \<in> lnth D i"
 begin
 
 sublocale reduc_static_refutational_complete_calculus
@@ -840,7 +841,7 @@ proof
   have[simp]: \<open>\<not> lnull D\<close> by (auto simp: D_def)
   have deriv_D: \<open>chain (\<rhd>Red) D\<close> by (simp add: chain.chain_singleton D_def)
   have liminf_is_N: "Liminf_llist D = N" by (simp add: D_def Liminf_llist_LCons)
-  have head_D: "N = lnth D 0" by (simp add: D_def)
+  have head_D: "N = lhd D" by (simp add: D_def)
   have "Sup_llist (lmap Red_F D) = Red_F N" by (simp add: D_def)
   moreover have "Sup_llist (lmap Red_Inf D) = Red_Inf N" by (simp add: D_def)
   ultimately have fair_D: "reduc_fair D"
@@ -852,7 +853,7 @@ proof
   then have "i = 0"
     by (auto simp: D_def enat_0_iff)
   show \<open>\<exists>B'\<in>Bot. B' \<in> N\<close>
-    using B'_is_bot B'_in unfolding \<open>i = 0\<close> head_D[symmetric] by auto
+    using B'_is_bot B'_in unfolding \<open>i = 0\<close> head_D[symmetric] D_def by auto
 qed
 
 end
@@ -864,12 +865,12 @@ proof
     bot_elem: \<open>B \<in> Bot\<close> and
     deriv: \<open>chain (\<rhd>Red) D\<close> and
     fair: \<open>reduc_fair D\<close> and
-    unsat: \<open>lnth D 0 \<Turnstile> {B}\<close>
+    unsat: \<open>lhd D \<Turnstile> {B}\<close>
     have non_empty: \<open>\<not> lnull D\<close> using chain_not_lnull[OF deriv] .
-    have subs: \<open>lnth D 0 \<subseteq> Sup_llist D\<close>
+    have subs: \<open>lhd D \<subseteq> Sup_llist D\<close>
       using lhd_subset_Sup_llist[of D] non_empty by (simp add: lhd_conv_lnth)
     have \<open>Sup_llist D \<Turnstile> {B}\<close>
-      using unsat subset_entailed[OF subs] entails_trans[of "Sup_llist D" "lnth D 0"] by auto
+      using unsat subset_entailed[OF subs] entails_trans[of "Sup_llist D" "lhd D"] by auto
     then have Sup_no_Red: \<open>Sup_llist D - Red_F (Sup_llist D) \<Turnstile> {B}\<close>
       using bot_elem Red_F_Bot by auto
     have Sup_no_Red_in_Liminf: \<open>Sup_llist D - Red_F (Sup_llist D) \<subseteq> Liminf_llist D\<close>

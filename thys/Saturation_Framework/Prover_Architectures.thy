@@ -477,13 +477,14 @@ qed
 lemma gc_fair:
   assumes
     deriv: "chain (\<Longrightarrow>GC) D" and
-    init_state: "active_subset (lnth D 0) = {}" and
+    init_state: "active_subset (lhd D) = {}" and
     final_state: "passive_subset (Liminf_llist D) = {}"
   shows "fair D"
   unfolding fair_def
 proof
   fix \<iota>
   assume i_in: "\<iota> \<in> Inf_from (Liminf_llist D)"
+  note lhd_is = lhd_conv_lnth[OF chain_not_lnull[OF deriv]]
   have i_in_inf_fl: "\<iota> \<in> Inf_FL" using i_in unfolding Inf_from_def by blast
   have "Liminf_llist D = active_subset (Liminf_llist D)"
     using final_state unfolding passive_subset_def active_subset_def by blast
@@ -507,8 +508,9 @@ proof
     then obtain nj where nj_is: "enat nj < llength D" and
       c_in2: "(C, active) \<in> \<Inter> (lnth D ` {k. nj \<le> k \<and> enat k < llength D})"
       unfolding Liminf_llist_def using init_state by blast
-    then have c_in3: "\<forall>k. k \<ge> nj \<longrightarrow> enat k < llength D \<longrightarrow> (C, active) \<in> (lnth D k)" by blast
-    have nj_pos: "nj > 0" using init_state c_in2 nj_is unfolding active_subset_def by fastforce
+    then have c_in3: "\<forall>k. k \<ge> nj \<longrightarrow> enat k < llength D \<longrightarrow> (C, active) \<in> lnth D k" by blast
+    have nj_pos: "nj > 0" using init_state c_in2 nj_is
+      unfolding active_subset_def lhd_is by force
     obtain nj_min where nj_min_is: "nj_min = (LEAST nj. enat nj < llength D \<and>
         (C, active) \<in> \<Inter> (lnth D ` {k. nj \<le> k \<and> enat k < llength D}))" by blast
     then have in_allk: "\<forall>k. k \<ge> nj_min \<longrightarrow> enat k < llength D \<longrightarrow> (C, active) \<in> (lnth D k)"
@@ -519,7 +521,7 @@ proof
       by (smt LeastI_ex \<open>\<And>thesis. (\<And>nj. \<lbrakk>enat nj < llength D;
           (C, active) \<in> \<Inter> (lnth D ` {k. nj \<le> k \<and> enat k < llength D})\<rbrakk> \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>)
     have "nj_min > 0"
-      using nj_is c_in2 nj_pos nj_min_is
+      using nj_is c_in2 nj_pos nj_min_is lhd_is
       by (metis (mono_tags, lifting) Collect_empty_eq \<open>(C, active) \<in> Liminf_llist D\<close>
           \<open>Liminf_llist D = active_subset (Liminf_llist D)\<close>
           \<open>\<forall>k\<ge>nj_min. enat k < llength D \<longrightarrow> (C, active) \<in> lnth D k\<close> active_subset_def init_state
@@ -528,7 +530,7 @@ proof
     then have njm_prec_njm: "njm_prec < nj_min" by blast
     then have njm_prec_njm_enat: "enat njm_prec < enat nj_min" by simp
     have njm_prec_smaller_d: "njm_prec < llength D"
-      using  HOL.no_atp(15)[OF njm_smaller_D njm_prec_njm_enat] .
+      using HOL.no_atp(15)[OF njm_smaller_D njm_prec_njm_enat] .
     have njm_prec_all_suc: "\<forall>k>njm_prec. enat k < llength D \<longrightarrow> (C, active) \<in> lnth D k"
       using nj_prec_is in_allk by simp
     have notin_njm_prec: "(C, active) \<notin> lnth D njm_prec"
@@ -673,15 +675,16 @@ qed
 theorem gc_complete_Liminf:
   assumes
     deriv: "chain (\<Longrightarrow>GC) D" and
-    init_state: "active_subset (lnth D 0) = {}" and
+    init_state: "active_subset (lhd D) = {}" and
     final_state: "passive_subset (Liminf_llist D) = {}" and
     b_in: "B \<in> Bot_F" and
-    bot_entailed: "no_labels.entails_\<G>_Q (fst ` lnth D 0) {B}"
+    bot_entailed: "no_labels.entails_\<G>_Q (fst ` lhd D) {B}"
   shows "\<exists>BL \<in> Bot_FL. BL \<in> Liminf_llist D"
 proof -
+  note lhd_is = lhd_conv_lnth[OF chain_not_lnull[OF deriv]]
   have labeled_b_in: "(B, active) \<in> Bot_FL" using b_in by simp
-  have labeled_bot_entailed: "entails_\<G>_L_Q (lnth D 0) {(B, active)}"
-    using labeled_entailment_lifting bot_entailed by fastforce
+  have labeled_bot_entailed: "entails_\<G>_L_Q (lhd D) {(B, active)}"
+    using labeled_entailment_lifting bot_entailed lhd_is by fastforce
   have fair: "fair D" using gc_fair[OF deriv init_state final_state] .
   then show ?thesis
     using dynamic_refutational_complete_Liminf[OF labeled_b_in gc_to_red[OF deriv] fair
@@ -693,12 +696,13 @@ qed
 theorem gc_complete:
   assumes
     deriv: "chain (\<Longrightarrow>GC) D" and
-    init_state: "active_subset (lnth D 0) = {}" and
+    init_state: "active_subset (lhd D) = {}" and
     final_state: "passive_subset (Liminf_llist D) = {}" and
     b_in: "B \<in> Bot_F" and
-    bot_entailed: "no_labels.entails_\<G>_Q (fst ` (lnth D 0)) {B}"
+    bot_entailed: "no_labels.entails_\<G>_Q (fst ` lhd D) {B}"
   shows "\<exists>i. enat i < llength D \<and> (\<exists>BL \<in> Bot_FL. BL \<in> lnth D i)"
 proof -
+  note lhd_is = lhd_conv_lnth[OF chain_not_lnull[OF deriv]]
   have "\<exists>BL\<in>Bot_FL. BL \<in> Liminf_llist D"
     using assms by (rule gc_complete_Liminf)
   then show ?thesis
@@ -797,15 +801,16 @@ lemma lgc_to_red: "chain (\<Longrightarrow>LGC) D \<Longrightarrow> chain (\<rhd
 lemma lgc_fair:
   assumes
     deriv: "chain (\<Longrightarrow>LGC) D" and
-    init_state: "active_subset (snd (lnth D 0)) = {}" and
+    init_state: "active_subset (snd (lhd D)) = {}" and
     final_state: "passive_subset (Liminf_llist (lmap snd D)) = {}" and
-    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> fst (lnth D 0)" and
+    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> fst (lhd D)" and
     final_schedule: "Liminf_llist (lmap fst D) = {}"
   shows "fair (lmap snd D)"
   unfolding fair_def
 proof
   fix \<iota>
   assume i_in: "\<iota> \<in> Inf_from (Liminf_llist (lmap snd D))"
+  note lhd_is = lhd_conv_lnth[OF chain_not_lnull[OF deriv]]
   have i_in_inf_fl: "\<iota> \<in> Inf_FL" using i_in unfolding Inf_from_def by blast
   have "Liminf_llist (lmap snd D) = active_subset (Liminf_llist (lmap snd D))"
     using final_state unfolding passive_subset_def active_subset_def by blast
@@ -830,7 +835,7 @@ proof
       c_in2: "(C, active) \<in> \<Inter> (snd ` (lnth D ` {k. nj \<le> k \<and> enat k < llength D}))"
       unfolding Liminf_llist_def using init_state by fastforce
     then have c_in3: "\<forall>k. k \<ge> nj \<longrightarrow> enat k < llength D \<longrightarrow> (C, active) \<in> snd (lnth D k)" by blast
-    have nj_pos: "nj > 0" using init_state c_in2 nj_is unfolding active_subset_def by fastforce
+    have nj_pos: "nj > 0" using init_state c_in2 nj_is unfolding active_subset_def lhd_is by fastforce
     obtain nj_min where nj_min_is: "nj_min = (LEAST nj. enat nj < llength D \<and>
         (C, active) \<in> \<Inter> (snd ` (lnth D ` {k. nj \<le> k \<and> enat k < llength D})))" by blast
     then have in_allk: "\<forall>k. k \<ge> nj_min \<longrightarrow> enat k < llength D \<longrightarrow> (C, active) \<in> snd (lnth D k)"
@@ -841,7 +846,7 @@ proof
       by (smt LeastI_ex \<open>\<And>thesis. (\<And>nj. \<lbrakk>enat nj < llength D;
           (C, active) \<in> \<Inter> (snd ` (lnth D ` {k. nj \<le> k \<and> enat k < llength D}))\<rbrakk> \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>)
     have "nj_min > 0"
-      using nj_is c_in2 nj_pos nj_min_is
+      using nj_is c_in2 nj_pos nj_min_is lhd_is
       by (metis (mono_tags, lifting) active_subset_def emptyE in_allk init_state mem_Collect_eq
           not_less snd_conv zero_enat_def chain_length_pos[OF deriv])
     then obtain njm_prec where nj_prec_is: "Suc njm_prec = nj_min" using gr0_conv_Suc by auto
@@ -890,10 +895,10 @@ proof
       (\<forall>k. k > nj \<longrightarrow> enat k < llength D \<longrightarrow> prems_of \<iota> ! j \<in> active_subset (snd (lnth D k))))}"
   {
     assume m_null: "m = 0"
-    then have "enat 0 < llength D \<and> to_F \<iota> \<in> fst (lnth D 0)"
+    then have "enat 0 < llength D \<and> to_F \<iota> \<in> fst (lhd D)"
       using no_prems_init_active i_in_F m_def_F zero_enat_def chain_length_pos[OF deriv] by auto
     then have "\<exists>n. enat n < llength D \<and> to_F \<iota> \<in> fst (lnth D n)"
-      by blast
+      unfolding lhd_is by blast
   }
   moreover {
     assume m_pos: "m > 0"
@@ -1123,18 +1128,18 @@ qed
 theorem lgc_complete_Liminf:
   assumes
     deriv: "chain (\<Longrightarrow>LGC) D" and
-    init_state: "active_subset (snd (lnth D 0)) = {}" and
+    init_state: "active_subset (snd (lhd D)) = {}" and
     final_state: "passive_subset (Liminf_llist (lmap snd D)) = {}" and
-    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> fst (lnth D 0)" and
+    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> fst (lhd D)" and
     final_schedule: "Liminf_llist (lmap fst D) = {}" and
     b_in: "B \<in> Bot_F" and
-    bot_entailed: "no_labels.entails_\<G>_Q (fst ` (snd (lnth D 0))) {B}"
+    bot_entailed: "no_labels.entails_\<G>_Q (fst ` snd (lhd D)) {B}"
   shows "\<exists>BL \<in> Bot_FL. BL \<in> Liminf_llist (lmap snd D)"
 proof -
   have labeled_b_in: "(B, active) \<in> Bot_FL" using b_in by simp
-  have simp_snd_lmap: "lnth (lmap snd D) 0 = snd (lnth D 0)"
-    using lnth_lmap[of 0 D snd] chain_length_pos[OF deriv] by (simp add: zero_enat_def)
-  have labeled_bot_entailed: "entails_\<G>_L_Q (snd (lnth D 0)) {(B, active)}"
+  have simp_snd_lmap: "lhd (lmap snd D) = snd (lhd D)"
+    by (rule llist.map_sel(1)[OF chain_not_lnull[OF deriv]])
+  have labeled_bot_entailed: "entails_\<G>_L_Q (snd (lhd D)) {(B, active)}"
     using labeled_entailment_lifting bot_entailed by fastforce
   have "fair (lmap snd D)"
     using lgc_fair[OF deriv init_state final_state no_prems_init_active final_schedule] .
@@ -1148,12 +1153,12 @@ qed
 theorem lgc_complete:
   assumes
     deriv: "chain (\<Longrightarrow>LGC) D" and
-    init_state: "active_subset (snd (lnth D 0)) = {}" and
+    init_state: "active_subset (snd (lhd D)) = {}" and
     final_state: "passive_subset (Liminf_llist (lmap snd D)) = {}" and
-    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> fst (lnth D 0)" and
+    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> fst (lhd D)" and
     final_schedule: "Liminf_llist (lmap fst D) = {}" and
     b_in: "B \<in> Bot_F" and
-    bot_entailed: "no_labels.entails_\<G>_Q (fst ` snd (lnth D 0)) {B}"
+    bot_entailed: "no_labels.entails_\<G>_Q (fst ` snd (lhd D)) {B}"
   shows "\<exists>i. enat i < llength D \<and> (\<exists>BL \<in> Bot_FL. BL \<in> snd (lnth D i))"
 proof -
   have "\<exists>BL\<in>Bot_FL. BL \<in> Liminf_llist (lmap snd D)"

@@ -8,7 +8,9 @@
 section \<open>Relational Chains over Lazy Lists\<close>
 
 theory Lazy_List_Chain
-  imports "HOL-Library.BNF_Corec" Lazy_List_Liminf
+  imports
+    "HOL-Library.BNF_Corec"
+    Lazy_List_Liminf
 begin
 
 text \<open>

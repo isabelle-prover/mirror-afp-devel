@@ -71,8 +71,16 @@ lemma Sup_upto_llist_eq_Sup_llist_ltake: "Sup_upto_llist Xs j = Sup_llist (ltake
   by (smt Collect_cong Sup.SUP_cong iless_Suc_eq lnth_ltake less_llength_ltake mem_Collect_eq)
 
 lemma Sup_upto_llist_enat_0[simp]:
-  "Sup_upto_llist Xs (enat 0) = (if 0 < llength Xs then lnth Xs 0 else {})"
-  unfolding Sup_upto_llist_def image_def by (simp add: enat_0[symmetric])
+  "Sup_upto_llist Xs (enat 0) = (if lnull Xs then {} else lhd Xs)"
+proof (cases "lnull Xs")
+  case True
+  then show ?thesis
+    unfolding Sup_upto_llist_def by auto
+next
+  case False
+  show ?thesis
+    unfolding Sup_upto_llist_def image_def by (simp add: lhd_conv_lnth enat_0 enat_0_iff)
+qed
 
 lemma Sup_upto_llist_Suc[simp]:
   "Sup_upto_llist Xs (enat (Suc j)) =
@@ -82,9 +90,8 @@ lemma Sup_upto_llist_Suc[simp]:
 lemma Sup_upto_llist_infinity[simp]: "Sup_upto_llist Xs \<infinity> = Sup_llist Xs"
   unfolding Sup_upto_llist_def Sup_llist_def by simp
 
-lemma Sup_upto_llist_0[simp]:
-  "Sup_upto_llist Xs 0 = (if 0 < llength Xs then lnth Xs 0 else {})"
-  unfolding Sup_upto_llist_def image_def by (simp add: enat_0[symmetric])
+lemma Sup_upto_llist_0[simp]: "Sup_upto_llist Xs 0 = (if lnull Xs then {} else lhd Xs)"
+  unfolding zero_enat_def by (rule Sup_upto_llist_enat_0)
 
 lemma Sup_upto_llist_eSuc[simp]:
   "Sup_upto_llist Xs (eSuc j) =
@@ -363,8 +370,9 @@ lemma Liminf_upto_llist_infinity[simp]: "Liminf_upto_llist Xs \<infinity> = Limi
   unfolding Liminf_upto_llist_def Liminf_llist_def by simp
 
 lemma Liminf_upto_llist_0[simp]:
-  "Liminf_upto_llist Xs 0 = (if lnull Xs then {} else lnth Xs 0)"
-  unfolding Liminf_upto_llist_def image_def by (simp add: enat_0[symmetric]) (simp add: enat_0)
+  "Liminf_upto_llist Xs 0 = (if lnull Xs then {} else lhd Xs)"
+  unfolding Liminf_upto_llist_def image_def
+  by (simp add: enat_0[symmetric]) (simp add: enat_0 lnth_0_conv_lhd)
 
 lemma Liminf_upto_llist_eSuc[simp]:
   "Liminf_upto_llist Xs (eSuc j) =

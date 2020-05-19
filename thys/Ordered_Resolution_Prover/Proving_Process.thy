@@ -53,8 +53,6 @@ lemma deriv_sat_preserving:
     sat_n0: "satisfiable (lhd Ns)"
   shows "satisfiable (Sup_llist Ns)"
 proof -
-  have ns0: "lnth Ns 0 = lhd Ns"
-    using deriv by (metis chain_not_lnull lhd_conv_lnth)
   have len_ns: "llength Ns > 0"
     using deriv by (case_tac Ns) simp+
   {
@@ -67,7 +65,9 @@ proof -
     proof (induct k)
       case 0
       then show ?case
-        using len_ns ns0 sat_n0 unfolding Sup_upto_llist_def true_clss_def by auto
+        using len_ns sat_n0
+        unfolding Sup_upto_llist_def true_clss_def lhd_conv_lnth[OF chain_not_lnull[OF deriv]]
+        by auto
     next
       case (Suc k)
       show ?case
