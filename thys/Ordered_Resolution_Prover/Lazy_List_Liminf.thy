@@ -70,7 +70,7 @@ lemma Sup_upto_llist_eq_Sup_llist_ltake: "Sup_upto_llist Xs j = Sup_llist (ltake
   unfolding Sup_upto_llist_def Sup_llist_def
   by (smt Collect_cong Sup.SUP_cong iless_Suc_eq lnth_ltake less_llength_ltake mem_Collect_eq)
 
-lemma Sup_upto_llist_0[simp]:
+lemma Sup_upto_llist_enat_0[simp]:
   "Sup_upto_llist Xs (enat 0) = (if 0 < llength Xs then lnth Xs 0 else {})"
   unfolding Sup_upto_llist_def image_def by (simp add: enat_0[symmetric])
 
@@ -82,6 +82,10 @@ lemma Sup_upto_llist_Suc[simp]:
 lemma Sup_upto_llist_infinity[simp]: "Sup_upto_llist Xs \<infinity> = Sup_llist Xs"
   unfolding Sup_upto_llist_def Sup_llist_def by simp
 
+lemma Sup_upto_llist_0[simp]:
+  "Sup_upto_llist Xs 0 = (if 0 < llength Xs then lnth Xs 0 else {})"
+  unfolding Sup_upto_llist_def image_def by (simp add: enat_0[symmetric])
+
 lemma Sup_upto_llist_eSuc[simp]:
   "Sup_upto_llist Xs (eSuc j) =
    (case j of
@@ -89,7 +93,7 @@ lemma Sup_upto_llist_eSuc[simp]:
     | \<infinity> \<Rightarrow> Sup_llist Xs)"
   by (auto simp: eSuc_enat split: enat.split)
 
-lemma Sup_upto_llist_mono: "j \<le> k \<Longrightarrow> Sup_upto_llist Xs j \<subseteq> Sup_upto_llist Xs k"
+lemma Sup_upto_llist_mono[simp]: "j \<le> k \<Longrightarrow> Sup_upto_llist Xs j \<subseteq> Sup_upto_llist Xs k"
   unfolding Sup_upto_llist_def by auto
 
 lemma Sup_upto_llist_subset_Sup_llist: "Sup_upto_llist Xs j \<subseteq> Sup_llist Xs"
@@ -322,41 +326,45 @@ lemma Liminf_upto_llist_eq_Liminf_llist_ltake:
   unfolding Liminf_upto_llist_def Liminf_llist_def
   by (smt Collect_cong Sup.SUP_cong iless_Suc_eq lnth_ltake less_llength_ltake mem_Collect_eq)
 
-lemma Liminf_upto_llist_nat[simp]:
+lemma Liminf_upto_llist_enat[simp]:
   "Liminf_upto_llist Xs (enat k) =
-   (if lnull Xs then {} else if enat k < llength Xs then lnth Xs k else llast Xs)"
+   (if enat k < llength Xs then lnth Xs k else if lnull Xs then {} else llast Xs)"
+proof (cases "enat k < llength Xs")
+  case True
+  then show ?thesis
+    unfolding Liminf_upto_llist_def by force
+next
+  case k_ge: False
+  show ?thesis
 proof (cases "lnull Xs")
   case nil: True
   then show ?thesis
     unfolding Liminf_upto_llist_def by simp
 next
   case nnil: False
-  show ?thesis
-  proof (cases "enat k < llength Xs")
-    case k_lt: True
-    then show ?thesis
-      unfolding Liminf_upto_llist_def by force
-  next
-    case k_ge: False
-    then obtain j where
-      j: "eSuc (enat j) = llength Xs"
-      by (metis eSuc_enat_iff enat_ile le_less_linear lhd_LCons_ltl llength_LCons nnil)
+  then obtain j where
+    j: "eSuc (enat j) = llength Xs"
+    using k_ge by (metis eSuc_enat_iff enat_ile le_less_linear lhd_LCons_ltl llength_LCons)
 
-    have fin: "lfinite Xs"
-      using k_ge not_lfinite_llength by fastforce
-    have le_k: "enat i < llength Xs \<and> i \<le> k \<longleftrightarrow> enat i < llength Xs" for i
-      using k_ge linear order_le_less_subst2 by fastforce
-    have "Liminf_upto_llist Xs (enat k) = llast Xs"
-      using j nnil lfinite_Liminf_llist[OF fin] nnil
-      unfolding Liminf_upto_llist_def Liminf_llist_def using llast_conv_lnth[OF j[symmetric]]
-      by (simp add: le_k)
-    then show ?thesis
-      using k_ge nnil by simp
+  have fin: "lfinite Xs"
+    using k_ge not_lfinite_llength by fastforce
+  have le_k: "enat i < llength Xs \<and> i \<le> k \<longleftrightarrow> enat i < llength Xs" for i
+    using k_ge linear order_le_less_subst2 by fastforce
+  have "Liminf_upto_llist Xs (enat k) = llast Xs"
+    using j nnil lfinite_Liminf_llist[OF fin] nnil
+    unfolding Liminf_upto_llist_def Liminf_llist_def using llast_conv_lnth[OF j[symmetric]]
+    by (simp add: le_k)
+  then show ?thesis
+    using k_ge nnil by simp
   qed
 qed
 
 lemma Liminf_upto_llist_infinity[simp]: "Liminf_upto_llist Xs \<infinity> = Liminf_llist Xs"
   unfolding Liminf_upto_llist_def Liminf_llist_def by simp
+
+lemma Liminf_upto_llist_0[simp]:
+  "Liminf_upto_llist Xs 0 = (if lnull Xs then {} else lnth Xs 0)"
+  unfolding Liminf_upto_llist_def image_def by (simp add: enat_0[symmetric]) (simp add: enat_0)
 
 lemma Liminf_upto_llist_eSuc[simp]:
   "Liminf_upto_llist Xs (eSuc j) =
