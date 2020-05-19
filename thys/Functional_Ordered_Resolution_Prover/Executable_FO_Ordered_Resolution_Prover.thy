@@ -18,7 +18,7 @@ theory Executable_FO_Ordered_Resolution_Prover
     Executable_Subsumption
     "HOL-Library.Code_Target_Nat"
     Show.Show_Instances
-    IsaFoR_Term_KBO
+    IsaFoR_Term
 begin
 
 global_interpretation RP: deterministic_FO_resolution_prover where
