@@ -328,6 +328,44 @@ joins&lt;/a&gt; and a specialized sliding window algorithm to further
 optimize the monitor.</description>
     </item>
     <item>
+       <title>Stateful Protocol Composition and Typing</title>
+              <link>https://www.isa-afp.org/entries/Stateful_Protocol_Composition_and_Typing.html</link>
+       <guid>https://www.isa-afp.org/entries/Stateful_Protocol_Composition_and_Typing.html</guid>
+       <dc:creator> Andreas V. Hess, Sebastian Mödersheim, Achim D. Brucker       </dc:creator>
+       <pubDate>08 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+We provide in this AFP entry several relative soundness results for
+security protocols. In particular, we prove typing and
+compositionality results for stateful protocols (i.e., protocols with
+mutable state that may span several sessions), and that focuses on
+reachability properties. Such results are useful to simplify protocol
+verification by reducing it to a simpler problem: Typing results give
+conditions under which it is safe to verify a protocol in a typed
+model where only &#34;well-typed&#34; attacks can occur whereas
+compositionality results allow us to verify a composed protocol by
+only verifying the component protocols in isolation. The conditions on
+the protocols under which the results hold are furthermore syntactic
+in nature allowing for full automation. The foundation presented here
+is used in another entry to provide fully automated and formalized
+security proofs of stateful protocols.</description>
+    </item>
+    <item>
+       <title>Automated Stateful Protocol Verification</title>
+              <link>https://www.isa-afp.org/entries/Automated_Stateful_Protocol_Verification.html</link>
+       <guid>https://www.isa-afp.org/entries/Automated_Stateful_Protocol_Verification.html</guid>
+       <dc:creator> Andreas V. Hess, Sebastian Mödersheim, Achim D. Brucker, Anders Schlichtkrull       </dc:creator>
+       <pubDate>08 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+In protocol verification we observe a wide spectrum from fully
+automated methods to interactive theorem proving with proof assistants
+like Isabelle/HOL. In this AFP entry, we present a fully-automated
+approach for verifying stateful security protocols, i.e., protocols
+with mutable state that may span several sessions. The approach
+supports reachability goals like secrecy and authentication. We also
+include a simple user-friendly transaction-based protocol
+specification language that is embedded into Isabelle.</description>
+    </item>
+    <item>
        <title>Lucas's Theorem</title>
               <link>https://www.isa-afp.org/entries/Lucas_Theorem.html</link>
        <guid>https://www.isa-afp.org/entries/Lucas_Theorem.html</guid>
@@ -531,44 +569,6 @@ time. In a randomised skip list the skipped elements are choosen
 randomly. &lt;/p&gt; &lt;p&gt; This entry contains formalized proofs
 of the textbook results about the expected height and the expected
 length of a search path in a randomised skip list. &lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Bicategories</title>
-              <link>https://www.isa-afp.org/entries/Bicategory.html</link>
-       <guid>https://www.isa-afp.org/entries/Bicategory.html</guid>
-       <dc:creator> Eugene W. Stark       </dc:creator>
-       <pubDate>06 Jan 2020 00:00:00 +0000</pubDate>
-       <description>
-Taking as a starting point the author&#39;s previous work on
-developing aspects of category theory in Isabelle/HOL, this article
-gives a compatible formalization of the notion of
-&#34;bicategory&#34; and develops a framework within which formal
-proofs of facts about bicategories can be given.  The framework
-includes a number of basic results, including the Coherence Theorem,
-the Strictness Theorem, pseudofunctors and biequivalence, and facts
-about internal equivalences and adjunctions in a bicategory.  As a
-driving application and demonstration of the utility of the framework,
-it is used to give a formal proof of a theorem, due to Carboni,
-Kasangian, and Street, that characterizes up to biequivalence the
-bicategories of spans in a category with pullbacks.  The formalization
-effort necessitated the filling-in of many details that were not
-evident from the brief presentation in the original paper, as well as
-identifying a few minor corrections along the way.</description>
-    </item>
-    <item>
-       <title>The Irrationality of ζ(3)</title>
-              <link>https://www.isa-afp.org/entries/Zeta_3_Irrational.html</link>
-       <guid>https://www.isa-afp.org/entries/Zeta_3_Irrational.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>27 Dec 2019 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This article provides a formalisation of Beukers&#39;s
-straightforward analytic proof that ζ(3) is irrational. This was first
-proven by Apéry (which is why this result is also often called
-‘Apéry&#39;s Theorem’) using a more algebraic approach. This
-formalisation follows &lt;a
-href=&#34;http://people.math.sc.edu/filaseta/gradcourses/Math785/Math785Notes4.pdf&#34;&gt;Filaseta&#39;s
-presentation&lt;/a&gt; of Beukers&#39;s proof.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

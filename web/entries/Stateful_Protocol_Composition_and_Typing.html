@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>First-Order Terms - Archive of Formal Proofs
+<title>Stateful Protocol Composition and Typing - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,9 +74,15 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">F</font>irst-Order
+  <h1>          <font class="first">S</font>tateful
   
-          <font class="first">T</font>erms
+          <font class="first">P</font>rotocol
+  
+          <font class="first">C</font>omposition
+  
+          and
+  
+          <font class="first">T</font>yping
   
 </h1>
   <p>&nbsp;</p>
@@ -85,7 +91,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">First-Order Terms</td>
+  <td class="data" width="80%">Stateful Protocol Composition and Typing</td>
 </tr>
 
 <tr>
@@ -93,8 +99,9 @@ MathJax = {
           Authors:
       </td>
   <td class="data">
-                    Christian Sternagel (c /dot/ sternagel /at/ gmail /dot/ com) and
-          <a href="http://cl-informatik.uibk.ac.at/~thiemann/">René Thiemann</a>
+                      Andreas V. Hess (avhe /at/ dtu /dot/ dk),
+                <a href="https://people.compute.dtu.dk/samo/">Sebastian Mödersheim</a> and
+          <a href="https://www.brucker.ch/">Achim D. Brucker</a>
       </td>
 </tr>
 
@@ -102,34 +109,39 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2018-02-06</td>
+  <td class="data">2020-04-08</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-We formalize basic results on first-order terms, including matching and a
-first-order unification algorithm, as well as well-foundedness of the
-subsumption order. This entry is part of the <i>Isabelle
-Formalization of Rewriting</i> <a
-href="http://cl-informatik.uibk.ac.at/isafor">IsaFoR</a>,
-where first-order terms are omni-present: the unification algorithm is
-used to certify several confluence and termination techniques, like
-critical-pair computation and dependency graph approximations; and the
-subsumption order is a crucial ingredient for completion.</td>
+We provide in this AFP entry several relative soundness results for
+security protocols. In particular, we prove typing and
+compositionality results for stateful protocols (i.e., protocols with
+mutable state that may span several sessions), and that focuses on
+reachability properties. Such results are useful to simplify protocol
+verification by reducing it to a simpler problem: Typing results give
+conditions under which it is safe to verify a protocol in a typed
+model where only "well-typed" attacks can occur whereas
+compositionality results allow us to verify a composed protocol by
+only verifying the component protocols in isolation. The conditions on
+the protocols under which the results hold are furthermore syntactic
+in nature allowing for full automation. The foundation presented here
+is used in another entry to provide fully automated and formalized
+security proofs of stateful protocols.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{First_Order_Terms-AFP,
-  author  = {Christian Sternagel and René Thiemann},
-  title   = {First-Order Terms},
+        <pre>@article{Stateful_Protocol_Composition_and_Typing-AFP,
+  author  = {Andreas V. Hess and Sebastian Mödersheim and Achim D. Brucker},
+  title   = {Stateful Protocol Composition and Typing},
   journal = {Archive of Formal Proofs},
-  month   = feb,
-  year    = 2018,
-  note    = {\url{http://isa-afp.org/entries/First_Order_Terms.html},
+  month   = apr,
+  year    = 2020,
+  note    = {\url{http://isa-afp.org/entries/Stateful_Protocol_Composition_and_Typing.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -137,14 +149,14 @@ subsumption order is a crucial ingredient for completion.</td>
 </tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Abstract-Rewriting.html">Abstract-Rewriting</a>      </td></tr>
+          <td class="data"><a href="First_Order_Terms.html">First_Order_Terms</a>      </td></tr>
           
                       <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Functional_Ordered_Resolution_Prover.html">Functional_Ordered_Resolution_Prover</a>, <a href="Knuth_Bendix_Order.html">Knuth_Bendix_Order</a>, <a href="Resolution_FOL.html">Resolution_FOL</a>, <a href="Stateful_Protocol_Composition_and_Typing.html">Stateful_Protocol_Composition_and_Typing</a>      </td></tr>
+          <td class="data"><a href="Automated_Stateful_Protocol_Verification.html">Automated_Stateful_Protocol_Verification</a>      </td></tr>
           
 
         
@@ -157,44 +169,23 @@ subsumption order is a crucial ingredient for completion.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/First_Order_Terms/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/First_Order_Terms/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Stateful_Protocol_Composition_and_Typing/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Stateful_Protocol_Composition_and_Typing/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/First_Order_Terms/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Stateful_Protocol_Composition_and_Typing/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-First_Order_Terms-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Stateful_Protocol_Composition_and_Typing-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2019:
-            <a href="../release/afp-First_Order_Terms-2019-06-11.tar.gz">
-              afp-First_Order_Terms-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-First_Order_Terms-2018-08-16.tar.gz">
-              afp-First_Order_Terms-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-First_Order_Terms-2018-02-07.tar.gz">
-              afp-First_Order_Terms-2018-02-07.tar.gz
-            </a>
-            </li>
-                      <li>Isabelle 2017:
-            <a href="../release/afp-First_Order_Terms-2018-02-06.tar.gz">
-              afp-First_Order_Terms-2018-02-06.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>
