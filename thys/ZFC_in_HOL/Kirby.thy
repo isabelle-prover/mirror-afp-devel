@@ -717,6 +717,11 @@ end
 lemma mult: "x * y = (SUP u\<in>elts y. lift (x * u) x)"
   unfolding times_V_def  by (subst transrec) (force simp:)
 
+lemma elts_multE:
+  assumes "z \<in> elts (x * y)" 
+  obtains u v where "u \<in> elts x" "v \<in> elts y" "z = x*v + u" 
+  using mult [of x y] lift_def assms by auto
+
 text \<open>Lemma 4.2\<close>
 
 lemma mult_zero_right [simp]:
@@ -1384,6 +1389,36 @@ proof -
     by (metis Ord_mem_iff_lt Ord_succ add_mem_right_cancel mult_cancel_le_iff mult_succ succ_le_iff vsubsetD)
 qed
 
+lemma Ord_add_mult_iff:
+  assumes "\<beta> \<in> elts \<gamma>" "\<beta>' \<in> elts \<gamma>" "Ord \<alpha>" "Ord \<alpha>'" "Ord \<gamma>"
+  shows "\<gamma> * \<alpha> + \<beta> \<in> elts (\<gamma> * \<alpha>' + \<beta>') \<longleftrightarrow> \<alpha> \<in> elts \<alpha>' \<or> \<alpha> = \<alpha>' \<and> \<beta> \<in> elts \<beta>'" (is "?lhs \<longleftrightarrow> ?rhs")
+proof
+  assume L: ?lhs
+  show ?rhs
+  proof (cases "\<alpha> \<in> elts \<alpha>'")
+    case False
+    with assms have "\<alpha> = \<alpha>'"
+      by (meson L Ord_linear Ord_mult Ord_trans add_mult_less not_add_mem_right)
+    then show ?thesis
+      using L less_V_def by auto
+  qed auto
+next
+  assume R: ?rhs
+  then show ?lhs
+  proof
+    assume "\<alpha> \<in> elts \<alpha>'"
+    then obtain \<delta> where "\<alpha>' = \<alpha>+\<delta>"
+      by (metis OrdmemD assms(3) assms(4) le_Ord_diff less_V_def)
+    show ?lhs 
+      using assms
+      by (meson \<open>\<alpha> \<in> elts \<alpha>'\<close> add_le_cancel_left0 add_mult_less vsubsetD)
+  next
+    assume "\<alpha> = \<alpha>' \<and> \<beta> \<in> elts \<beta>'"
+    then show ?lhs
+      using less_V_def by auto
+  qed
+qed
+
 lemma vcard_mult: "vcard (x * y) = vcard x \<otimes> vcard y"
 proof -
   have 1: "elts (lift (x * u) x) \<approx> elts x" if "u \<in> elts y" for u
@@ -1525,5 +1560,91 @@ proof -
   ultimately show ?thesis
     using \<beta> by auto
 qed
+
+lemma ordertype_Times:
+  assumes "small A" "small B" and r: "wf r" "trans r" "total_on A r" and s: "wf s" "trans s" "total_on B s"
+  shows "ordertype (A\<times>B) (r <*lex*> s) = ordertype B s * ordertype A r" (is "_ = ?\<beta> * ?\<alpha>")
+proof (subst ordertype_eq_iff)
+  show "Ord (?\<beta> * ?\<alpha>)"
+    by (intro wf_Ord_ordertype Ord_mult r s; simp)
+  define f where "f \<equiv> \<lambda>(x,y). ?\<beta> * ordermap A r x + (ordermap B s y)"
+  show "\<exists>f. bij_betw f (A \<times> B) (elts (?\<beta> * ?\<alpha>)) \<and> (\<forall>x\<in>A \<times> B. \<forall>y\<in>A \<times> B. (f x < f y) = ((x, y) \<in> (r <*lex*> s)))"
+    unfolding bij_betw_def
+  proof (intro exI conjI strip)
+    show "inj_on f (A \<times> B)"
+    proof (clarsimp simp: f_def inj_on_def)
+      fix x y x' y'
+      assume "x \<in> A" "y \<in> B" "x' \<in> A" "y' \<in> B"
+        and eq: "?\<beta> * ordermap A r x + ordermap B s y = ?\<beta> * ordermap A r x' + ordermap B s y'"
+      have "ordermap A r x = ordermap A r x' \<and>
+            ordermap B s y = ordermap B s y'"
+      proof (rule mult_cancellation_lemma [OF eq])
+        show "ordermap B s y \<sqsubset> ?\<beta>"
+          using ordermap_in_ordertype [OF \<open>y \<in> B\<close>, of s] less_TC_iff \<open>small B\<close> by blast 
+        show "ordermap B s y' \<sqsubset> ?\<beta>"
+          using ordermap_in_ordertype [OF \<open>y' \<in> B\<close>, of s] less_TC_iff \<open>small B\<close> by blast 
+      qed
+      then show "x = x' \<and> y = y'"
+        using \<open>x \<in> A\<close> \<open>x' \<in> A\<close> \<open>y \<in> B\<close> \<open>y' \<in> B\<close> r s \<open>small A\<close> \<open>small B\<close> by auto
+    qed
+    show "f ` (A \<times> B) = elts (?\<beta> * ?\<alpha>)" (is "?lhs = ?rhs")
+    proof 
+      show "f ` (A \<times> B) \<subseteq> elts (?\<beta> * ?\<alpha>)"
+        apply (auto simp: f_def add_mult_less ordermap_in_ordertype wf_Ord_ordertype r s)
+        by (simp add: add_mult_less assms ordermap_in_ordertype wf_Ord_ordertype)
+      show "elts (?\<beta> * ?\<alpha>) \<subseteq> f ` (A \<times> B)"
+      proof (clarsimp simp: f_def image_iff elim !: elts_multE split: prod.split)
+        fix u v
+        assume u: "u \<in> elts (?\<beta>)" and v: "v \<in> elts ?\<alpha>"
+        have "inv_into B (ordermap B s) u \<in> B"
+          by (simp add: inv_into_ordermap u)
+        moreover have "inv_into A (ordermap A r) v \<in> A"
+          by (simp add: inv_into_ordermap v)
+        ultimately show "\<exists>x\<in>A. \<exists>y\<in>B. ?\<beta> * v + u = ?\<beta> * ordermap A r x + ordermap B s y"
+          by (metis \<open>small A\<close> \<open>small B\<close> bij_betw_inv_into_right ordermap_bij r(1) r(3) s(1) s(3) u v)
+      qed
+    qed
+  next
+    fix p q
+    assume "p \<in> A \<times> B" and "q \<in> A \<times> B"
+    then obtain u v x y where \<section>: "p = (u,v)" "u \<in> A" "v \<in> B" "q = (x,y)" "x \<in> A" "y \<in> B"
+      by blast
+    show "((f p) < f q) = ((p, q) \<in> (r <*lex*> s))"
+    proof
+      assume "f p < f q"
+      with \<section> assms have "(u, x) \<in> r \<or> u=x \<and> (v, y) \<in> s"
+        apply (simp add: f_def)
+        by (metis Ord_add Ord_add_mult_iff Ord_mem_iff_lt Ord_mult Ord_ordermap converse_ordermap_mono 
+            ordermap_eq_iff ordermap_in_ordertype wf_Ord_ordertype)
+      then show "(p,q) \<in> (r <*lex*> s)"
+        by (simp add: \<section>)
+    next
+      assume "(p,q) \<in> (r <*lex*> s)"
+      then have "(u, x) \<in> r \<or> u = x \<and> (v, y) \<in> s"
+        by (simp add: \<section>)
+      then show "f p < f q"
+      proof
+        assume ux: "(u, x) \<in> r"
+        have oo: "\<And>x. Ord (ordermap A r x)" "\<And>y. Ord (ordermap B s y)" 
+          by (simp_all add: r s)
+        show "f p < f q"
+        proof (clarsimp simp: f_def split: prod.split)
+          fix a b a' b'
+          assume "p = (a, b)" and "q = (a', b')"
+          then have "?\<beta> * ordermap A r a + ordermap B s b < ?\<beta> * ordermap A r a'"
+            using ux assms \<section>
+            by (metis Ord_mult Ord_ordermap OrdmemD Pair_inject add_mult_less ordermap_in_ordertype ordermap_mono wf_Ord_ordertype)
+          also have "\<dots> \<le> ?\<beta> * ordermap A r a' + ordermap B s b'"
+            by simp
+          finally show "?\<beta> * ordermap A r a + ordermap B s b < ?\<beta> * ordermap A r a' + ordermap B s b'" .
+        qed
+      next
+        assume "u = x \<and> (v, y) \<in> s"
+        then show "f p < f q"
+          using \<section> assms by (fastforce simp: f_def split: prod.split intro: ordermap_mono_less)
+      qed 
+    qed
+  qed 
+qed (use assms small_Times in auto)
 
 end

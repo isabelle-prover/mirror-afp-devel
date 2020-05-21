@@ -919,10 +919,10 @@ lemma ord_of_nat_\<omega> [iff]:"ord_of_nat n \<in> elts \<omega>"
 lemma succ_\<omega>_iff [iff]: "succ n \<in> elts \<omega> \<longleftrightarrow> n \<in> elts \<omega>"
   by (metis Ord_\<omega> OrdmemD elts_vinsert insert_iff less_V_def succ_def succ_in_omega vsubsetD)
 
-lemma \<omega>_gt0: "\<omega> > 0"
+lemma \<omega>_gt0 [simp]: "\<omega> > 0"
   by (simp add: OrdmemD)
 
-lemma \<omega>_gt1: "\<omega> > 1"
+lemma \<omega>_gt1 [simp]: "\<omega> > 1"
   by (simp add: OrdmemD one_V_def)
 
 subsubsection\<open>Limit ordinals\<close>

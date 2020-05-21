@@ -128,6 +128,25 @@ lemma times_empty_iff: "VSigma A B = 0 \<longleftrightarrow> A=0 \<or> (\<forall
 lemma elts_VSigma: "elts (VSigma a b) = (\<lambda>(x,y). vpair x y) ` Sigma (elts a) (\<lambda>x. elts (b x))"
   by auto
 
+lemma small_Times [simp]:
+  assumes "small A" "small B" 
+  shows "small (A \<times> B)"
+proof -
+  obtain f a g b where "inj_on f A" "inj_on g B" and f: "f ` A = elts a" and g: "g ` B = elts b"
+    using assms by (auto simp: small_def)
+  define h where "h \<equiv> \<lambda>(x,y). \<langle>f x, g y\<rangle>"
+  show ?thesis
+    unfolding small_def
+  proof (intro exI conjI)
+    show "inj_on h (A \<times> B)"
+      using \<open>inj_on f A\<close> \<open>inj_on g B\<close> by (simp add: h_def inj_on_def)
+    have "h ` (A \<times> B) = elts (vtimes a b)"
+      using f g by (fastforce simp: h_def image_iff split: prod.split)
+    then show "h ` (A \<times> B) \<in> range elts"
+      by blast
+  qed
+qed
+
 
 subsection \<open>Disjoint Sum\<close>
 
@@ -988,6 +1007,9 @@ lemma ordermap_eq_iff [simp]:
   "\<lbrakk>x \<in> A; y \<in> A; wf r; total_on A r; small A\<rbrakk> \<Longrightarrow> ordermap A r x = ordermap A r y \<longleftrightarrow> x = y"
   by (metis bij_betw_iff_bijections ordermap_bij)
 
+lemma inv_into_ordermap: "\<alpha> \<in> elts (ordertype A r) \<Longrightarrow> inv_into A (ordermap A r) \<alpha> \<in> A"
+  by (meson in_mono inv_into_into ordermap_surj)
+
 lemma ordertype_nat_imp_finite:
   assumes "ordertype A r = ord_of_nat m" "small A" "wf r" "total_on A r"
   shows "finite A"
@@ -1390,6 +1412,16 @@ proof (rule antisym)
     using assms down ordertype_infinite_ge_\<omega> by auto
 qed
 
+lemma ordertype_UNIV_\<omega> [simp]: "ordertype UNIV less_than = \<omega>"
+proof (subst ordertype_eq_iff)
+  show "\<exists>f. bij_betw f UNIV (elts \<omega>) \<and> (\<forall>x\<in>UNIV. \<forall>y\<in>UNIV. f x < f y \<longleftrightarrow> ((x, y) \<in> less_than))"
+  proof (intro exI conjI ballI)
+    show "bij_betw ord_of_nat UNIV (elts \<omega>)"
+      by (simp add: \<omega>_def bij_betw_def inj_ord_of_nat)
+  qed fastforce
+  show "small (UNIV::nat set)"
+    using small_image_iff small_image_nat by blast
+qed (use total_less_than in auto)
 
 proposition ordertype_eq_ordertype:
   assumes r: "wf r" "total_on A r" "trans r" and "small A"
@@ -1577,6 +1609,46 @@ proof -
         by (auto simp: strict_mono_on_def)
     qed
   qed
+qed
+
+lemma ordertype_finite_less_than [simp]: 
+  assumes "finite A" shows "ordertype A less_than = card A"
+proof -
+  let ?M = "ord_of_nat ` A"
+  obtain M: "finite ?M" "?M \<subseteq> ON"
+    using Ord_ord_of_nat assms by blast
+  have "ordertype A less_than = ordertype ?M VWF"
+    by (rule ordertype_inc_eq [symmetric]) (use assms finite_imp_small total_on_def in \<open>force+\<close>)
+  also have "\<dots> = card A"
+  proof (subst ordertype_eq_iff)
+    let ?M = "ord_of_nat ` A"
+    obtain h where bijh: "bij_betw h {..<card A} ?M" and smh: "strict_mono_on h {..<card A}"
+      by (metis M card_image ex_bij_betw_strict_mono_card inj_on_def ord_of_nat_inject)
+    define f where "f \<equiv> ord_of_nat \<circ> inv_into {..<card A} h"
+    show "\<exists>f. bij_betw f ?M (elts (card A)) \<and> (\<forall>x\<in>?M. \<forall>y\<in>?M. f x < f y \<longleftrightarrow> ((x, y) \<in> VWF))"
+    proof (intro exI conjI ballI)
+      have "bij_betw (ord_of_nat \<circ> inv_into {..<card A} h) (ord_of_nat ` A) (ord_of_nat ` {..<card A})"
+        by (meson UNIV_I bijh bij_betw_def bij_betw_inv_into bij_betw_subset bij_betw_trans inj_ord_of_nat subsetI)
+      then show "bij_betw f ?M (elts (card A))"
+        by (metis elts_ord_of_nat f_def)
+    next
+      fix x y
+      assume xy: "x \<in> ?M" "y \<in> ?M"
+      then obtain m n where "x = ord_of_nat m" "y = ord_of_nat n"
+        by auto
+      have "(f x < f y) \<longleftrightarrow> ((h \<circ> inv_into {..<card A} h) x < (h \<circ> inv_into {..<card A} h) y)"
+        unfolding f_def using smh bij_betw_imp_surj_on [OF bijh] 
+        apply simp
+        by (metis (mono_tags, lifting) inv_into_into not_less_iff_gr_or_eq order.asym strict_mono_onD xy)
+      also have "\<dots> = (x < y)"
+        using bijh
+        by (simp add: bij_betw_inv_into_right xy)
+      also have "\<dots> \<longleftrightarrow> ((x, y) \<in> VWF)"
+        using M(2) ON_imp_Ord xy by auto
+      finally show "(f x < f y) \<longleftrightarrow> ((x, y) \<in> VWF)" . 
+    qed 
+  qed auto
+  finally show ?thesis .
 qed
 
 
