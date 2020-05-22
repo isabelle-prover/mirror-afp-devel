@@ -154,7 +154,7 @@ proof -
     using f_ran Max_in[OF fin_f] by (simp add:nextMax_def Suc_leI subset_eq)
   
   have "x \<in> Domain ?g \<Longrightarrow> x \<notin> Domain f" for x unfolding f_dom Let_def by auto
-  hence g_not_f:"(x,y) \<in> ?g \<Longrightarrow> (x,z) \<notin> f" for x y z by auto
+  hence g_not_f:"(x,y) \<in> ?g \<Longrightarrow> (x,z) \<notin> f" for x y z by blast
   have uni_g':"univalent ?g" "univalent (converse ?g)" unfolding Let_def by auto
   with f_uni have uni_g:"univalent g" by (auto simp:g_def extend_def g_not_f)
   from fin_g have "(a,b) \<in> g \<Longrightarrow> b < Suc (Max (Range g))" for a b
@@ -195,7 +195,7 @@ proof -
 
     have "max n (nextMax (Range ?g)) = n + length (sorted_list_of_set ?R_L)" (is "_ = ?len")
       unfolding Let_def Range_snd set_map[symmetric] map_snd_zip[OF ln] nextMax_set[OF sorted_upt]
-      by fastforce
+      by (fastforce simp del: length_sorted_list_of_set)
     hence n_eq:"?len = max n (nextMax (Range g))"
       unfolding Range_snd[symmetric] g_def extend_def Range_Un_eq
                 nextMax_Un_eq[OF fin_f fin_g'(2)] max.assoc[symmetric] max_absorb1[OF nextMax_f]
@@ -208,7 +208,7 @@ proof -
       unfolding Range_snd n_eq ..
     have "?g `` Domain a = ?g `` (?R_L \<union> vertices (fst R))"
       using dom_a subsLR by auto
-    also have "\<dots> = ?g `` ?R_L \<union> ?g `` vertices (fst R)" by auto
+    also have "\<dots> = ?g `` ?R_L \<union> ?g `` vertices (fst R)" by blast
     also have "?g `` vertices (fst R) = {}" apply(rule Image_outside_Domain)
       unfolding Let_def Domain_set_zip[OF ln] by auto
     also have "?g `` ?R_L = Range ?g" apply(rule Image_Domain)

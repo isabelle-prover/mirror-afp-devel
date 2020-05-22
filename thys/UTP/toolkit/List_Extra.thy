@@ -148,9 +148,7 @@ definition sorted_list_of_set_alt :: "('a::ord) set \<Rightarrow> 'a list" where
 
 lemma is_sorted_list_of_set:
   "finite A \<Longrightarrow> is_sorted_list_of_set A (sorted_list_of_set A)"
-  apply (simp add: is_sorted_list_of_set_def)
-  apply (metis One_nat_def add.right_neutral add_Suc_right sorted_distinct sorted_list_of_set)
-  done
+  by (simp add: is_sorted_list_of_set_alt_def)
 
 lemma sorted_list_of_set_other_def:
   "finite A \<Longrightarrow> sorted_list_of_set(A) = (THE xs. sorted(xs) \<and> distinct(xs) \<and> set xs = A)"
