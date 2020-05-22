@@ -1071,7 +1071,6 @@ definition "one_step_until_time_ivl_in_ivl X0 (t1::real) (t2::real) R dR =
     CHECKs (ST ''one_step_until_time_ivl_in_ivl: there should not be scaleR2'') (l = 1 \<and> u = 1);
     (l, u) \<leftarrow> ivl_rep R;
     CHECKs (ST ''one_step_until_time_ivl_in_ivl: strange interval'') (l \<le> u);
-    _ \<leftarrow> mk_safe {l .. u};
     let _ = trace_set1 (ST ''final step to:'') (Some X);
     let _ = trace_set (ST ''contained in?'') (Some {l .. u});
     let _ = print_set1 False X;
