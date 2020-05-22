@@ -411,7 +411,7 @@ proof -
           using 1 that by (auto simp: cfuncset_iff)
         have "x0 + (h'' - t0) *\<^sub>R ode b \<in> {l .. u}" if "b \<in> X" for b
         proof -
-          from 1(16)[rule_format, OF that] assms(1)
+          from 1(17)[rule_format, OF that] assms(1)
           have "einterpret (euler_incr_fas' D) (list_of_eucl x0 @ (h'' - t0) # list_of_eucl b) \<in> eucl_of_list ` XS"
             by (auto simp: wdD)
           also have "eucl_of_list ` XS \<subseteq> {l .. u}" by fact

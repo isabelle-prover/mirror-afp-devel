@@ -881,8 +881,11 @@ definition Picard_step_ivl :: "'a::executable_euclidean_space set \<Rightarrow> 
         do {
           (l, u) \<leftarrow> op_ivl_rep_of_set ((eucl_of_list ` env::'a set));
           ASSERT (l \<le> u);
-          r \<leftarrow> mk_safe ({l .. u}:::appr_rel);
-          RETURN (Some (r:::appr_rel))
+          s \<leftarrow> safe_set {l .. u};
+          if s then do {
+            r \<leftarrow> mk_safe ({l .. u}:::appr_rel);
+            RETURN (Some (r:::appr_rel))
+          } else RETURN None
         }
     | None \<Rightarrow> RETURN None)
   }"
@@ -907,9 +910,16 @@ primrec P_iter::"'a::executable_euclidean_space set \<Rightarrow> real \<Rightar
         let l' = inf l' l - (if do_widening then abs (l' - l) else 0);
         let u' = sup u' u + (if do_widening then abs (u' - u) else 0);
         ASSERT (l' \<le> u');
-        ivl' \<leftarrow> mk_safe {l' .. u'};
-        if (l \<le> l' \<and> u' \<le> u) then RETURN (Some ivl)
-        else P_iter X0 h i ivl'
+        s \<leftarrow> safe_set {l' .. u'};
+        if s
+        then do {
+          ivl' \<leftarrow> mk_safe {l' .. u'};
+          if (l \<le> l' \<and> u' \<le> u) then RETURN (Some ivl)
+          else P_iter X0 h i ivl'
+        } else do {
+          let _ = trace_set (ST ''P_iter failed (unsafe interval after widening)'') (Some (X));
+          RETURN None
+        }
       }
     | None \<Rightarrow> do {
         let _ = trace_set (ST ''P_iter failed (Picard_step)'') (Some (X));
