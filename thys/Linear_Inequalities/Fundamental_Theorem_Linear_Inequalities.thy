@@ -71,7 +71,7 @@ private lemma card_a_I[simp]: "I \<subseteq> {0 ..< m} \<Longrightarrow> card (a
 
 private lemma in_a_I[simp]: "I \<subseteq> {0 ..< m} \<Longrightarrow> i < m \<Longrightarrow> (a i \<in> a ` I) = (i \<in> I)"
   using inj_a
-  by (meson atLeastLessThan_iff image_eqI inj_on_image_mem_iff_alt zero_le)
+  by (meson atLeastLessThan_iff image_eqI inj_on_image_mem_iff zero_le)
 
 private definition "valid_I = { I. card I = n \<and> lin_indpt (a ` I) \<and> I \<subseteq> {0 ..< m}}"
 

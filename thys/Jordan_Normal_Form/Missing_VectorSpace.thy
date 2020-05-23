@@ -981,7 +981,7 @@ next
     show "a \<in> insert (T x) (T ` A) \<rightarrow> carrier K" 
       using insert.prems(2) by blast
     show "T x \<notin> T ` A" 
-      by (meson inj_T inj_on_image_mem_iff_alt insert.hyps(2) insert.prems(1) insert_subset)
+      by (meson inj_T inj_on_image_mem_iff insert.hyps(2) insert.prems(1) insert_subset)
     show "T x \<in> carrier W" using insert.prems(1) by blast
   qed
   also have "... = a (T x) \<odot>\<^bsub>W\<^esub> (T x) \<oplus>\<^bsub>W\<^esub> (T (V.module.lincomb (a \<circ> T) A))"
