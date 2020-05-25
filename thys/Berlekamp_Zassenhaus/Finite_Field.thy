@@ -14,7 +14,7 @@ theory Finite_Field
 imports 
   "HOL-Computational_Algebra.Primes"
   "HOL-Number_Theory.Residues"
-  Containers.Set_Impl
+  "HOL-Library.Cardinality"
   Subresultants.Binary_Exponentiation
   Polynomial_Interpolation.Ring_Hom_Poly
 begin
