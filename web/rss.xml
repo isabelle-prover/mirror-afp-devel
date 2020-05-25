@@ -9,7 +9,28 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>13 May 2020 00:00:00 +0000</pubDate>
+    <pubDate>23 May 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>A verified algorithm for computing the Smith normal form of a matrix</title>
+              <link>https://www.isa-afp.org/entries/Smith_Normal_Form.html</link>
+       <guid>https://www.isa-afp.org/entries/Smith_Normal_Form.html</guid>
+       <dc:creator> Jose Divasón       </dc:creator>
+       <pubDate>23 May 2020 00:00:00 +0000</pubDate>
+       <description>
+This work presents a formal proof in Isabelle/HOL of an algorithm to
+transform a matrix into its Smith normal form, a canonical matrix
+form, in a general setting: the algorithm is parameterized by
+operations to prove its existence over elementary divisor rings, while
+execution is guaranteed over Euclidean domains. We also provide a
+formal proof on some results about the generality of this algorithm as
+well as the uniqueness of the Smith normal form.  Since Isabelle/HOL
+does not feature dependent types, the development is carried out
+switching conveniently between two different existing libraries: the
+Hermite normal form (based on HOL Analysis) and the Jordan normal form
+AFP entries. This permits to reuse results from both developments and
+it is done by means of the lifting and transfer package together with
+the use of local type definitions.</description>
+    </item>
     <item>
        <title>A Formalization of Knuth–Bendix Orders</title>
               <link>https://www.isa-afp.org/entries/Knuth_Bendix_Order.html</link>
@@ -552,23 +573,6 @@ problem in Computational Geometry. Functional correctness and the
 optimal running time of &lt;em&gt;O&lt;/em&gt;(&lt;em&gt;n&lt;/em&gt; log &lt;em&gt;n&lt;/em&gt;) are
 proved. Executable code is generated which is empirically competitive
 with handwritten reference implementations.</description>
-    </item>
-    <item>
-       <title>Skip Lists</title>
-              <link>https://www.isa-afp.org/entries/Skip_Lists.html</link>
-       <guid>https://www.isa-afp.org/entries/Skip_Lists.html</guid>
-       <dc:creator> Max W. Haslbeck, Manuel Eberl       </dc:creator>
-       <pubDate>09 Jan 2020 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt; Skip lists are sorted linked lists enhanced with shortcuts
-and are an alternative to binary search trees. A skip lists consists
-of multiple levels of sorted linked lists where a list on level n is a
-subsequence of the list on level n − 1. In the ideal case, elements
-are skipped in such a way that a lookup in a skip lists takes O(log n)
-time. In a randomised skip list the skipped elements are choosen
-randomly. &lt;/p&gt; &lt;p&gt; This entry contains formalized proofs
-of the textbook results about the expected height and the expected
-length of a search path in a randomised skip list. &lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
