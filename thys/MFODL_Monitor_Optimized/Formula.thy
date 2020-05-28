@@ -93,7 +93,7 @@ fun eval_agg_op :: "agg_op \<Rightarrow> (event_data \<times> enat) set \<Righta
       else double_of_event_data (xs ! u'))"
 
 qualified datatype (discs_sels) formula = Pred name "trm list"
-  | Let name nat formula formula
+  | Let name formula formula
   | Eq trm trm | Less trm trm | LessEq trm trm
   | Neg formula | Or formula formula | And formula formula | Ands "formula list" | Exists formula
   | Agg nat agg_op nat trm formula
@@ -106,7 +106,7 @@ qualified definition "TT \<equiv> Neg FF"
 
 qualified fun fvi :: "nat \<Rightarrow> formula \<Rightarrow> nat set" where
   "fvi b (Pred r ts) = (\<Union>t\<in>set ts. fvi_trm b t)"
-| "fvi b (Let p _ \<phi> \<psi>) = fvi b \<psi>"
+| "fvi b (Let p \<phi> \<psi>) = fvi b \<psi>"
 | "fvi b (Eq t1 t2) = fvi_trm b t1 \<union> fvi_trm b t2"
 | "fvi b (Less t1 t2) = fvi_trm b t1 \<union> fvi_trm b t2"
 | "fvi b (LessEq t1 t2) = fvi_trm b t1 \<union> fvi_trm b t2"
@@ -193,7 +193,7 @@ qualified definition envs :: "formula \<Rightarrow> env set" where
   "envs \<phi> = {v. length v = nfv \<phi>}"
 
 lemma nfv_simps[simp]:
-  "nfv (Let p b \<phi> \<psi>) = nfv \<psi>"
+  "nfv (Let p \<phi> \<psi>) = nfv \<psi>"
   "nfv (Neg \<phi>) = nfv \<phi>"
   "nfv (Or \<phi> \<psi>) = max (nfv \<phi>) (nfv \<psi>)"
   "nfv (And \<phi> \<psi>) = max (nfv \<phi>) (nfv \<psi>)"
@@ -236,7 +236,7 @@ subsubsection \<open>Future reach\<close>
 
 qualified fun future_bounded :: "formula \<Rightarrow> bool" where
   "future_bounded (Pred _ _) = True"
-| "future_bounded (Let p b \<phi> \<psi>) = (future_bounded \<phi> \<and> future_bounded \<psi>)"
+| "future_bounded (Let p \<phi> \<psi>) = (future_bounded \<phi> \<and> future_bounded \<psi>)"
 | "future_bounded (Eq _ _) = True"
 | "future_bounded (Less _ _) = True"
 | "future_bounded (LessEq _ _) = True"
@@ -262,8 +262,8 @@ qualified fun sat :: "trace \<Rightarrow> (name \<rightharpoonup> nat \<Rightarr
   "sat \<sigma> V v i (Pred r ts) = (case V r of
        None \<Rightarrow> (r, map (eval_trm v) ts) \<in> \<Gamma> \<sigma> i
      | Some X \<Rightarrow> map (eval_trm v) ts \<in> X i)"
-| "sat \<sigma> V v i (Let p b \<phi> \<psi>) =
-    sat \<sigma> (V(p \<mapsto> \<lambda>i. {v. length v = nfv \<phi> - b \<and> (\<exists>zs. length zs = b \<and> sat \<sigma> V (zs @ v) i \<phi>)})) v i \<psi>"
+| "sat \<sigma> V v i (Let p \<phi> \<psi>) =
+    sat \<sigma> (V(p \<mapsto> \<lambda>i. {v. length v = nfv \<phi> \<and> sat \<sigma> V v i \<phi>})) v i \<psi>"
 | "sat \<sigma> V v i (Eq t1 t2) = (eval_trm v t1 = eval_trm v t2)"
 | "sat \<sigma> V v i (Less t1 t2) = (eval_trm v t1 < eval_trm v t2)"
 | "sat \<sigma> V v i (LessEq t1 t2) = (eval_trm v t1 \<le> eval_trm v t2)"
@@ -528,7 +528,7 @@ fun safe_formula :: "formula \<Rightarrow> bool" where
 | "safe_formula (Less t1 t2) = False"
 | "safe_formula (LessEq t1 t2) = False"
 | "safe_formula (Pred e ts) = (\<forall>t\<in>set ts. is_Var t \<or> is_Const t)"
-| "safe_formula (Let p b \<phi> \<psi>) = ({0..<nfv \<phi>} \<subseteq> fv \<phi> \<and> b \<le> nfv \<phi> \<and> safe_formula \<phi> \<and> safe_formula \<psi>)"
+| "safe_formula (Let p \<phi> \<psi>) = ({0..<nfv \<phi>} \<subseteq> fv \<phi> \<and> safe_formula \<phi> \<and> safe_formula \<psi>)"
 | "safe_formula (Neg \<phi>) = (fv \<phi> = {} \<and> safe_formula \<phi>)"
 | "safe_formula (Or \<phi> \<psi>) = (fv \<psi> = fv \<phi> \<and> safe_formula \<phi> \<and> safe_formula \<psi>)"
 | "safe_formula (And \<phi> \<psi>) = (safe_formula \<phi> \<and>
@@ -590,7 +590,7 @@ lemma safe_formula_induct[consumes 1, case_names Eq_Const Eq_Var1 Eq_Var2 neq_Va
     and Eq_Var2: "\<And>c x. P (Eq (Var x) (Const c))"
     and neq_Var: "\<And>x. P (Neg (Eq (Var x) (Var x)))"
     and Pred: "\<And>e ts. \<forall>t\<in>set ts. is_Var t \<or> is_Const t \<Longrightarrow> P (Pred e ts)"
-    and Let: "\<And>p b \<phi> \<psi>. {0..<nfv \<phi>} \<subseteq> fv \<phi> \<Longrightarrow> b \<le> nfv \<phi> \<Longrightarrow> safe_formula \<phi> \<Longrightarrow> safe_formula \<psi> \<Longrightarrow> P \<phi> \<Longrightarrow> P \<psi> \<Longrightarrow> P (Let p b \<phi> \<psi>)"
+    and Let: "\<And>p \<phi> \<psi>. {0..<nfv \<phi>} \<subseteq> fv \<phi> \<Longrightarrow> safe_formula \<phi> \<Longrightarrow> safe_formula \<psi> \<Longrightarrow> P \<phi> \<Longrightarrow> P \<psi> \<Longrightarrow> P (Let p \<phi> \<psi>)"
     and And_assign: "\<And>\<phi> \<psi>. safe_formula \<phi> \<Longrightarrow> safe_assignment (fv \<phi>) \<psi> \<Longrightarrow> P \<phi> \<Longrightarrow> P (And \<phi> \<psi>)"
     and And_safe: "\<And>\<phi> \<psi>. safe_formula \<phi> \<Longrightarrow> \<not> safe_assignment (fv \<phi>) \<psi> \<Longrightarrow> safe_formula \<psi> \<Longrightarrow>
       P \<phi> \<Longrightarrow> P \<psi> \<Longrightarrow> P (And \<phi> \<psi>)"
@@ -689,8 +689,8 @@ subsection \<open>Slicing traces\<close>
 qualified fun matches ::
   "env \<Rightarrow> formula \<Rightarrow> name \<times> event_data list \<Rightarrow> bool" where
   "matches v (Pred r ts) e = (fst e = r \<and> map (eval_trm v) ts = snd e)"
-| "matches v (Let p b \<phi> \<psi>) e =
-    ((\<exists>zs v'. length zs = b \<and> matches (zs @ v') \<phi> e \<and> matches v \<psi> (p, v')) \<or>
+| "matches v (Let p \<phi> \<psi>) e =
+    ((\<exists>v'. matches v' \<phi> e \<and> matches v \<psi> (p, v')) \<or>
     fst e \<noteq> p \<and> matches v \<psi> e)"
 | "matches v (Eq _ _) e = False"
 | "matches v (Less _ _) e = False"
@@ -768,7 +768,7 @@ proof (induction \<phi> arbitrary: V V' v S i)
     ultimately show ?thesis by simp
   qed
 next
-  case (Let p b \<phi> \<psi>)
+  case (Let p \<phi> \<psi>)
   from Let.prems show ?case unfolding sat.simps
   proof (intro Let(2)[of S], goal_cases relevant v dom V)
     case (V p' v' i)
@@ -778,13 +778,13 @@ next
       with V show ?thesis
         unfolding fun_upd_apply eqTrueI[OF True] if_True option.sel mem_Collect_eq
       proof (intro ex_cong conj_cong refl Let(1)[where
-        S="{zs @ v' | zs v'. length zs = b \<and> (\<exists>v \<in> S. matches v \<psi> (p, v'))}" and V=V],
+        S="{v'. (\<exists>v \<in> S. matches v \<psi> (p, v'))}" and V=V],
         goal_cases relevant' v' dom' V')
-        case (relevant' zs)
+        case (relevant')
         then show ?case
           by (elim subset_trans[rotated]) (auto simp: set_eq_iff)
       next
-        case (V' zs p' v' i)
+        case (V' p' v' i)
         then show ?case
           by (intro V(4)) (auto simp: set_eq_iff)
       qed auto

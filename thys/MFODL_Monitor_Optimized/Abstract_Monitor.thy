@@ -149,7 +149,7 @@ fun past_only :: "Formula.formula \<Rightarrow> bool" where
 | "past_only (Formula.Eq _ _) = True"
 | "past_only (Formula.Less _ _) = True"
 | "past_only (Formula.LessEq _ _) = True"
-| "past_only (Formula.Let _ _ \<alpha> \<beta>) = (past_only \<alpha> \<and> past_only \<beta>)"
+| "past_only (Formula.Let _ \<alpha> \<beta>) = (past_only \<alpha> \<and> past_only \<beta>)"
 | "past_only (Formula.Neg \<psi>) = past_only \<psi>"
 | "past_only (Formula.Or \<alpha> \<beta>) = (past_only \<alpha> \<and> past_only \<beta>)"
 | "past_only (Formula.And \<alpha> \<beta>) = (past_only \<alpha> \<and> past_only \<beta>)"
@@ -182,11 +182,8 @@ proof (induction \<phi> arbitrary: V V' v i)
     ultimately show ?thesis by simp
   qed
 next
-  case (Let p b \<phi> \<psi>)
-  let ?V = "\<lambda>V \<sigma>. (V(p \<mapsto>
-      \<lambda>i. {v. length v = Formula.nfv \<phi> - b \<and>
-              (\<exists>zs. length zs = b \<and>
-                    Formula.sat \<sigma> V (zs @ v) i \<phi>)}))"
+  case (Let p \<phi> \<psi>)
+  let ?V = "\<lambda>V \<sigma>. (V(p \<mapsto> \<lambda>i. {v. length v = Formula.nfv \<phi> \<and> Formula.sat \<sigma> V v i \<phi>}))"
   show ?case unfolding sat.simps proof (rule Let.IH(2))
     show "i < plen \<pi>" by fact
     from Let.prems show "past_only \<psi>" by simp
