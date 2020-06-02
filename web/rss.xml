@@ -32,6 +32,20 @@ it is done by means of the lifting and transfer package together with
 the use of local type definitions.</description>
     </item>
     <item>
+       <title>The Nash-Williams Partition Theorem</title>
+              <link>https://www.isa-afp.org/entries/Nash_Williams.html</link>
+       <guid>https://www.isa-afp.org/entries/Nash_Williams.html</guid>
+       <dc:creator> Lawrence C. Paulson       </dc:creator>
+       <pubDate>16 May 2020 00:00:00 +0000</pubDate>
+       <description>
+In 1965, Nash-Williams discovered a generalisation of the infinite
+form of Ramsey&#39;s theorem. Where the latter concerns infinite sets
+of n-element sets for some fixed n, the Nash-Williams theorem concerns
+infinite sets of finite sets (or lists) subject to a “no initial
+segment” condition. The present formalisation follows a
+monograph on Ramsey Spaces by Todorčević.</description>
+    </item>
+    <item>
        <title>A Formalization of Knuth–Bendix Orders</title>
               <link>https://www.isa-afp.org/entries/Knuth_Bendix_Order.html</link>
        <guid>https://www.isa-afp.org/entries/Knuth_Bendix_Order.html</guid>
@@ -559,20 +573,6 @@ We present the first formal verification of approximation algorithms
 for NP-complete optimization problems: vertex cover, independent set,
 load balancing, and bin packing. The proofs correct incompletenesses
 in existing proofs and improve the approximation ratio in one case.</description>
-    </item>
-    <item>
-       <title>Closest Pair of Points Algorithms</title>
-              <link>https://www.isa-afp.org/entries/Closest_Pair_Points.html</link>
-       <guid>https://www.isa-afp.org/entries/Closest_Pair_Points.html</guid>
-       <dc:creator> Martin Rau, Tobias Nipkow       </dc:creator>
-       <pubDate>13 Jan 2020 00:00:00 +0000</pubDate>
-       <description>
-This entry provides two related verified divide-and-conquer algorithms
-solving the fundamental &lt;em&gt;Closest Pair of Points&lt;/em&gt;
-problem in Computational Geometry. Functional correctness and the
-optimal running time of &lt;em&gt;O&lt;/em&gt;(&lt;em&gt;n&lt;/em&gt; log &lt;em&gt;n&lt;/em&gt;) are
-proved. Executable code is generated which is empirically competitive
-with handwritten reference implementations.</description>
     </item>
   </channel>
 </rss>
