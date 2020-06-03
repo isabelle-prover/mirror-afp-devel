@@ -8973,7 +8973,7 @@ abstract =
 	restricted to only extend the branch with new formulas, including only
 	witnessing diamonds that are not already witnessed, and show that
 	the unrestricted rules are admissible. Similarly, I start from simpler
-	versions of the @-rules and show the general ones admissible.
+	versions of the @-rules and show that these are sufficient.
 	The GoTo rule is restricted using a notion of potential such that each
 	application consumes potential and potential is earned through applications of
 	the remaining rules. I show that if a branch can be closed then it can
