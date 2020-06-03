@@ -9,7 +9,24 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>23 May 2020 00:00:00 +0000</pubDate>
+    <pubDate>01 Jun 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles</title>
+              <link>https://www.isa-afp.org/entries/Safe_Distance.html</link>
+       <guid>https://www.isa-afp.org/entries/Safe_Distance.html</guid>
+       <dc:creator> Albert Rizaldi, Fabian Immler       </dc:creator>
+       <pubDate>01 Jun 2020 00:00:00 +0000</pubDate>
+       <description>
+The Vienna Convention on Road Traffic defines the safe distance
+traffic rules informally. This could make autonomous vehicle liable
+for safe-distance-related accidents because there is no clear
+definition of how large a safe distance is. We provide a formally
+proven prescriptive definition of a safe distance, and checkers which
+can decide whether an autonomous vehicle is obeying the safe distance
+rule. Not only does our work apply to the domain of law, but it also
+serves as a specification for autonomous vehicle manufacturers and for
+online verification of path planners.</description>
+    </item>
     <item>
        <title>A verified algorithm for computing the Smith normal form of a matrix</title>
               <link>https://www.isa-afp.org/entries/Smith_Normal_Form.html</link>
@@ -561,18 +578,6 @@ Mersenne primes.&lt;/p&gt; &lt;p&gt;In particular, an efficient,
 verified, and executable version of the Lucas&amp;ndash;Lehmer test is
 developed. This test decides primality for Mersenne numbers in time
 polynomial in &lt;em&gt;n&lt;/em&gt;.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Verified Approximation Algorithms</title>
-              <link>https://www.isa-afp.org/entries/Approximation_Algorithms.html</link>
-       <guid>https://www.isa-afp.org/entries/Approximation_Algorithms.html</guid>
-       <dc:creator> Robin Eßmann, Tobias Nipkow, Simon Robillard       </dc:creator>
-       <pubDate>16 Jan 2020 00:00:00 +0000</pubDate>
-       <description>
-We present the first formal verification of approximation algorithms
-for NP-complete optimization problems: vertex cover, independent set,
-load balancing, and bin packing. The proofs correct incompletenesses
-in existing proofs and improve the approximation ratio in one case.</description>
     </item>
   </channel>
 </rss>

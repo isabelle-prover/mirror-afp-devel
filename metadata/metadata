@@ -9449,4 +9449,20 @@ abstract =
   segment” condition. The present formalisation follows a
   monograph on Ramsey Spaces by Todorčević.
 
+[Safe_Distance]
+title = A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles
+author = Albert Rizaldi <mailto:albert.rizaldi@ntu.edu.sg>, Fabian Immler <http://home.in.tum.de/~immler/>
+topic = Computer science/Algorithms/Mathematical, Mathematics/Physics
+date = 2020-06-01
+notify = albert.rizaldi@ntu.edu.sg, fimmler@andrew.cmu.edu, martin.rau@tum.de
+abstract = 
+  The Vienna Convention on Road Traffic defines the safe distance
+  traffic rules informally. This could make autonomous vehicle liable
+  for safe-distance-related accidents because there is no clear
+  definition of how large a safe distance is. We provide a formally
+  proven prescriptive definition of a safe distance, and checkers which
+  can decide whether an autonomous vehicle is obeying the safe distance
+  rule. Not only does our work apply to the domain of law, but it also
+  serves as a specification for autonomous vehicle manufacturers and for
+  online verification of path planners.
 
