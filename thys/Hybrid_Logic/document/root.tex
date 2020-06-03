@@ -41,21 +41,28 @@
 \maketitle
 
 \begin{abstract}
-  This work is a formalization of soundness and completeness proofs for a Seligman-style tableau system for hybrid logic~\cite{jlog17}.
-  The completeness result is obtained via a synthetic approach using maximally consistent sets of tableau blocks~\cite{aiml16}.
-  The formalization differs from the cited work in a few ways.
-  First, to avoid the need to backtrack in the construction of a tableau, the formalized system has no unnamed initial segment, and therefore no \textit{Name} rule.
-  Second, I show that the full \textit{Bridge} rule is admissible in the system.
-  Third, I start from rules restricted to only extend the branch with new formulas, including only witnessing diamonds that are not already witnessed, and show that the unrestricted rules are admissible.
-  Similarly, I start from simpler versions of the \( @ \)-rules and show the general ones admissible.
-  Finally, the \textit{GoTo} rule is restricted using a notion of coins such that each application consumes a coin and coins are earned through applications of the remaining rules.
-  I show that if a branch can be closed then it can be closed starting from a single coin.
-  These restrictions are imposed to rule out some means of nontermination~\cite{jlog17}.
+This work is a formalization of soundness and completeness proofs
+for a Seligman-style tableau system for hybrid logic. The completeness
+result is obtained via a synthetic approach using maximally
+consistent sets of tableau blocks. The formalization differs from
+previous work~\cite{jlog17, aiml16} in a few ways. First, to avoid the need to backtrack in
+the construction of a tableau, the formalized system has no unnamed
+initial segment, and therefore no Name rule. Second, I show that the
+full Bridge rule is admissible in the system. Third, I start from rules
+restricted to only extend the branch with new formulas, including only
+witnessing diamonds that are not already witnessed, and show that
+the unrestricted rules are admissible. Similarly, I start from simpler
+versions of the @-rules and show the general ones admissible.
+The GoTo rule is restricted using a notion of potential such that each
+application consumes potential and potential is earned through applications of
+the remaining rules. I show that if a branch can be closed then it can
+be closed starting from a single unit. Finally, Nom is restricted by
+a fixed set of allowed nominals. The resulting system should be terminating.
 \end{abstract}
 
 \section*{Preamble}
 
-The formalization is part of the author's MSc thesis in Computer Science and Engineering at the Technical University of Denmark (DTU).
+The formalization was part of the author's MSc thesis in Computer Science and Engineering at the Technical University of Denmark (DTU).
 
 \paragraph{Supervisors:}
 
