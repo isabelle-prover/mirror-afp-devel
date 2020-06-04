@@ -2229,7 +2229,7 @@ lemma prime_square_sum_nat_decomp_code_aux:
 proof -
   let ?A = "Set.filter (\<lambda>(x,y). x ^ 2 + y ^ 2 = p) (SIGMA x:{0..p}. {x..p})"
   have eq: "?A = {(x,y). x \<le> y \<and> x ^ 2 + y ^ 2 = p}"
-    using sum_of_squares_nat_bound sum_of_squares_nat_bound' by auto
+    using sum_of_squares_nat_bound [of _ _ p] sum_of_squares_nat_bound' [of _ _ p] by auto
   have z: "z \<in> Set.filter (\<lambda>(x,y). x ^ 2 + y ^ 2 = p) (SIGMA x:{0..p}. {x..p})"
     unfolding z_def eq using prime_sum_of_squares_unique[OF assms(1,2)]
     by (intro the_elemI) (simp add: is_singleton_conv_Ex1)

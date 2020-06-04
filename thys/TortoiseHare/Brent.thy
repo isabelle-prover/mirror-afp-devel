@@ -34,8 +34,13 @@ proof(induct x)
 qed simp
 
 lemma lg_inv2:
-  "2 ^ i = x \<Longrightarrow> 2 ^ lg x = x"
-by (induct i arbitrary: x) (auto simp: lg.simps, arith)
+  \<open>2 ^ lg x = x\<close> if \<open>2 ^ i = x\<close> for x
+proof -
+  have \<open>2 ^ lg (2 ^ i) = (2::nat) ^ i\<close>
+    by (induction i) (simp_all add: lg_safe mult_2)
+  with that show ?thesis
+    by simp
+qed
 
 lemmas lg_simps = lg_safe lg_inv lg_inv2
 

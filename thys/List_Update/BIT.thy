@@ -1870,7 +1870,7 @@ text "Approximation of the Term for Free exchanges"
       using bv_set by auto
       also
       have E4: "\<dots> = (\<Sum>x\<in>{l::bool list. length l = ?l}. (?insf x) * (1/2)^?l)"
-      using list_pmf by auto
+        by (simp add: list_pmf)
       also
       have "\<dots> = (\<Sum>x\<in>{l::bool list. length l = ?l}. (?insf x)) * ((1/2)^?l)"
       by(simp only: sum_distrib_right[where r="(1/2)^?l"])

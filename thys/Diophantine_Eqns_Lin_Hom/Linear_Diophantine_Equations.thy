@@ -588,7 +588,7 @@ proof (rule ccontr)
     then consider (eq_0)  "(\<exists>x\<in>set Seq_p. x mod (a ! k) = 0)" |
       (not_0) "(\<exists>i<length Seq_p. \<exists>j<length Seq_p. i \<noteq> j \<and>
                (Seq_p ! i) mod (a!k) = (Seq_p ! j) mod (a!k))"
-      using list_mod_cases[of Seq_p] Seq_p_def ak_n0 by auto
+      using list_mod_cases[of Seq_p] Seq_p_def ak_n0 by auto force
     then show False
     proof (cases)
       case eq_0

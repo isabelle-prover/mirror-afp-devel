@@ -2288,7 +2288,7 @@ proof (rule iffI)
       {
         fix v assume "dim_vec (v::complex vec) = dim_col (B - A) \<and> vec_norm v = 1"
         then have dimv: "v \<in> carrier_vec n" and nv: "vec_norm v = 1"
-          using carrier_matD[OF dimBmA] carrier_vecI by auto
+          using carrier_matD[OF dimBmA] by (auto intro: carrier_vecI)
         have dimov: "outer_prod v v \<in> carrier_mat n n" using dimv by auto
         then have "partial_density_operator (outer_prod v v)" 
           using dimv nv pure_state_self_outer_prod_is_partial_density_operator by auto

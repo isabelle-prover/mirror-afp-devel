@@ -480,7 +480,9 @@ lemma map_of_le_pair:
   using that
   unfolding pair.map_of_def
   unfolding lookup_pair_def inv_pair_def map_of_def map_le_def dom_def map_add_def
-  by (auto 4 6 split: prod.split_asm if_split_asm option.split simp: Let_def)
+  apply auto
+  apply (auto 4 6 split: prod.split_asm if_split_asm option.split simp: Let_def)
+  done
 
 lemma pair_le_map_of:
   "map_of m1 ++ map_of m2 \<subseteq>\<^sub>m pair.map_of (Pair_Storage k1 k2 m1 m2)"

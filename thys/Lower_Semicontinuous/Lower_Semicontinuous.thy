@@ -457,8 +457,9 @@ moreover
     hence "limsup (f \<circ> x) \<le> f x0" using a unfolding usc_limsup by auto
     moreover have "\<dots> \<le> liminf (f \<circ> x)" using a \<open>x \<longlonglongrightarrow> x0\<close> unfolding lsc_liminf by auto
     ultimately have "limsup (f \<circ> x) = f x0 \<and> liminf (f \<circ> x) = f x0"
-       using Liminf_le_Limsup[of sequentially "f \<circ> x"] by auto
-    hence "(f \<circ> x) \<longlonglongrightarrow> f x0" using Liminf_eq_Limsup[of sequentially] by auto
+      using Liminf_le_Limsup[of sequentially "f \<circ> x"] by auto
+    hence "(f \<circ> x) \<longlonglongrightarrow> f x0" using Liminf_eq_Limsup[of sequentially]
+      by (simp add: tendsto_iff_Liminf_eq_Limsup)
   } hence "continuous (at x0) f"
     using continuous_at_sequentially[of x0 f] by auto
 } ultimately show ?thesis by blast

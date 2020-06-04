@@ -798,9 +798,9 @@ lemma rel_state_lookup':
   apply (intro rel_funI)
   apply simp
   apply (rule mem_rel_state_ofI')
-  subgoal for x y
-    using rel_state_lookup by (rule rel_funD) (rule HOL.refl)
-  by (rule lookup_inv)
+  using rel_state_lookup apply (rule rel_funD) apply (rule refl)
+  apply (rule lookup_inv)
+  done
 
 lemma rel_state_update':
   "((=) ===> (=) ===> mem.rel_state (=)) pair.update_pair update_pair"

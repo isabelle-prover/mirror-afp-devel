@@ -993,12 +993,12 @@ next
   assume sound:"sound (SG, C)"
   obtain \<Gamma> and \<Delta> where SG_dec:"(\<Gamma>,\<Delta>) = (SG ! i)"
     by (metis seq2fml.cases)
-  have cohideR_simp:"\<And>\<Gamma> \<Delta> SS p q. 
+  have cohideR_simp:"
     (\<Gamma>,\<Delta>) = SS \<Longrightarrow> 
-    Rrule_result CohideR j SS = [(\<Gamma>, [nth \<Delta> j])]"
-    subgoal for AI SI SS p q by(cases SS, auto) done
+    Rrule_result CohideR j SS = [(\<Gamma>, [nth \<Delta> j])]" for \<Gamma> \<Delta> SS p q
+    by (cases SS, auto)
   have res_eq:"Rrule_result CohideR j (SG ! i) =  [(\<Gamma>, [nth \<Delta> j])]"
-    using SG_dec cohideR_simp by auto
+    using SG_dec by (rule cohideR_simp)
   have close_eq:"close [(\<Gamma>, [nth \<Delta> j])] (\<Gamma>,\<Delta>) = [(\<Gamma>, [nth \<Delta> j])]"
     using chg 
     by (metis SG_dec close_nonmember_eq member_rec(1) member_rec(2))
@@ -1026,12 +1026,12 @@ next
   assume sound:"sound (SG, C)"
   obtain \<Gamma> and \<Delta> where SG_dec:"(\<Gamma>,\<Delta>) = (SG ! i)"
     by (metis seq2fml.cases)
-  have cohideRR_simp:"\<And>\<Gamma> \<Delta> SS p q. 
+  have cohideRR_simp:" 
     (\<Gamma>,\<Delta>) = SS \<Longrightarrow> 
-    Rrule_result CohideRR j SS = [([], [nth \<Delta> j])]"
-    subgoal for AI SI SS p q by(cases SS, auto) done
+    Rrule_result CohideRR j SS = [([], [nth \<Delta> j])]" for \<Gamma> \<Delta> SS p q
+    by (cases SS, auto)
   have res_eq:"Rrule_result CohideRR j (SG ! i) =  [([], [nth \<Delta> j])]"
-    using SG_dec cohideRR_simp by auto
+    using SG_dec by (rule cohideRR_simp)
   have close_eq:"close [([], [nth \<Delta> j])] (\<Gamma>,\<Delta>) = [([], [nth \<Delta> j])]"
     using chg 
     by (metis SG_dec close_nonmember_eq member_rec(1) member_rec(2))

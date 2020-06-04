@@ -309,7 +309,7 @@ apply(rule)
  apply(force)
 apply(drule clds_in_path_exist)
  apply(simp)
-apply(erule wf_programE) apply(clarsimp)
+apply(erule wf_programE)
 apply(drule_tac x = "(ctx, cld)" in bspec, simp)
 apply(drule_tac x = cld in bspec, simp)
 apply(simp add: wf_meth_defs_in_wf_class)
@@ -1269,7 +1269,7 @@ done
 
 lemma fresh_oid:
   "wf_heap P H \<Longrightarrow> (\<exists>oid. oid \<notin> dom H)"
-apply(erule wf_heapE) apply(clarsimp)
+apply(erule wf_heapE)
 apply(cut_tac infinite_UNIV_nat) apply(frule_tac A = "dom H" in ex_new_if_finite)
 apply(assumption) apply(simp)
 done

@@ -253,7 +253,6 @@ apply (rule conjI)
    apply (intro conjI; simp; rule xy_update)
    apply (solves simp)
   apply (solves \<open>fastforce simp: propositional.f_antecedent_def\<close>)
- apply clarsimp
 
  apply (rule task1_1.wf)
    apply (solves \<open>clarsimp; metis n_impI snth_smap snth_sset\<close>)
@@ -266,7 +265,6 @@ apply (rule conjI)
    apply (intro conjI; simp; rule xy_update)
    apply (solves simp)
   apply (solves \<open>fastforce simp: propositional.f_antecedent_def\<close>)
- apply clarsimp
 
  apply (rule task1_1.wf)
    apply (solves \<open>clarsimp; metis n_impE snth_smap snth_sset\<close>)

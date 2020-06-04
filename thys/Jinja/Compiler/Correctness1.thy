@@ -493,7 +493,11 @@ text\<open>\noindent and the correct block numbering:\<close>
 
 lemma \<B>: "\<And>Vs n. size Vs = n \<Longrightarrow> \<B> (compE\<^sub>1 Vs e) n"
 and \<B>s: "\<And>Vs n. size Vs = n \<Longrightarrow> \<B>s (compEs\<^sub>1 Vs es) n"
-(*<*)by(induct e and es rule: \<B>.induct \<B>s.induct) simp_all(*>*)
+(*<*)apply (induction e and es rule: \<B>.induct \<B>s.induct)
+                  apply (auto dest: sym)
+   apply (metis length_append_singleton)
+  apply (metis length_append_singleton)
+  done(*>*)
 
 text\<open>The main complication is preservation of definite assignment
 @{term"\<D>"}.\<close>

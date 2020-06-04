@@ -267,6 +267,7 @@ proof
       using mult_sm_inv_l[of "cor k" "congruence (mat_inv M) ?H" "?H"]
       using mult_sm_inv_l[of "1/cor k" "congruence M ?H"]
       using congruence_scale_m[of M "1/cor k" "?H"]
+      using \<open>\<And>B. \<lbrakk>1 / cor k \<noteq> 0; (1 / cor k) *\<^sub>s\<^sub>m congruence M (1, 0, 0, - 1) = B\<rbrakk> \<Longrightarrow> congruence M (1, 0, 0, - 1) = (1 / (1 / cor k)) *\<^sub>s\<^sub>m B\<close>
       by (auto simp add: mat_det_inv)
     then obtain a b k' where "k' \<noteq> 0" "M = k' *\<^sub>s\<^sub>m (a, b, cnj b, cnj a)" "sgn (Re (mat_det (a, b, cnj b, cnj a))) = 1"
       using unitary11_sgn_det_orientation'[of M k] \<open>k > 0\<close>

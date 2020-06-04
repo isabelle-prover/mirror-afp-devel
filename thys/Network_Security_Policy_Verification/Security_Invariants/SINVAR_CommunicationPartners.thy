@@ -122,7 +122,6 @@ rewrites "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = Comm
    apply(rule_tac x="(\<lambda> x. DontCare)(vertex_1 := DontCare, vertex_2 := Master [vertex_1])" in exI, simp)
    apply(rule_tac x="vertex_1" in exI, simp)
    apply(simp split: prod.split)
-   apply(clarify)
    apply force
   apply(rename_tac M) (*case Master M*)
   apply(rule_tac x="(\<lambda> x. DontCare)(vertex_1 := DontCare, vertex_2 := (Master (vertex_1#M')))" in exI, simp)

@@ -184,7 +184,7 @@ unfolding t_bal_def
 apply(induction n xs rule: bal_tm.induct)
 apply(case_tac "n=0")
 apply(simp add: bal_tm_simps)
-apply(auto simp add: bal_tm_simps tm_simps split: tm.split)
+  apply(auto simp add: bal_tm_simps tm_simps simp del: subst_all split: tm.split)
 subgoal premises p for n xs t1 xs1
   using p(2)[OF refl,of xs1] p(3-) by(simp)
 done

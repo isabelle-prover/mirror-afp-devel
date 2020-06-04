@@ -937,7 +937,6 @@ proof(rule ta_seq_consist_nthI)
     apply(auto simp add: action_obs_def value_written_def write_actions_iff)
     apply(erule is_write_action.cases)
     apply auto
-    apply blast+
     done
   finally show "\<exists>b. mrw_values P Map.empty (list_of (ltake (enat i) (lmap snd (ltake r E)))) (ad, al) = \<lfloor>(v, b)\<rfloor>"
     by blast

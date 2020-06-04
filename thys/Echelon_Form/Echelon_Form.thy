@@ -1274,7 +1274,7 @@ lemma bezout_iterate_zero_column_k:
 proof (induct n arbitrary: A)
   case 0
   show ?case unfolding bezout_iterate.simps
-    using "0.prems"(5) i_le_a to_nat_from_nat to_nat_le by auto
+    using "0.prems"(5) i_le_a to_nat_from_nat to_nat_le to_nat_mono by fastforce
 next
   case (Suc n)
   show ?case

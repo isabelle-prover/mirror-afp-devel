@@ -3244,7 +3244,8 @@ next
         next
           case main
           note s_bnds = s_bnds[of x]
-          show ?thesis unfolding main using s_bnds dir vc by (auto simp: boundsl_def boundsu_def indexl_def indexu_def) blast+
+          show ?thesis unfolding main using s_bnds dir vc
+            by (auto simp: boundsl_def boundsu_def indexl_def indexu_def)
         qed
       qed
     qed

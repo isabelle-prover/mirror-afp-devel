@@ -265,7 +265,13 @@ lemma fin_cut_same_replicate[simp]: "fin_cut_same x (xs @ replicate n x) = fin_c
     (auto simp: replicate_append_same[symmetric] append_assoc[symmetric] simp del: append_assoc)
 
 lemma fin_cut_sameE: "fin_cut_same x xs = ys \<Longrightarrow> \<exists>m. xs = ys @ replicate m x"
-  by (induct xs arbitrary: ys) (auto, metis replicate_Suc)
+  apply (induct xs arbitrary: ys)
+   apply auto
+    apply (metis replicate_Suc)
+   apply metis
+  apply metis
+  done
+
 
 definition "SAMEQUOT a A = {fin_cut_same a x @ replicate m a| x m. x \<in> A}"
 

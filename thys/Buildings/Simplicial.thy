@@ -68,7 +68,7 @@ proof
   define u and y where "u \<equiv> the_inv_into x f v" and y: "y \<equiv> {v\<in>x. f v \<in> z}"
   moreover with assms(2) v have "x = insert u y"
     using the_inv_into_f_eq[OF assms(1)] the_inv_into_into[OF assms(1)]
-    by    auto
+    by fastforce
   ultimately show "y \<lhd> x"
     using v f_the_inv_into_f[OF assms(1)] by (force intro: facetrelI)
   from y assms(2) show "f`y = z" using facetrel_subset by fast

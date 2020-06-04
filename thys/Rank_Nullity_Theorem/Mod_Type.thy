@@ -445,8 +445,8 @@ lemma to_nat_less_card:
 lemma from_nat_0: "from_nat 0 = 0"
   unfolding from_nat_def o_def of_nat_0 Abs'_def mod_0 zero_def ..
 lemma to_nat_0: "to_nat 0 = 0" unfolding to_nat_def o_def Rep_0 nat_0 ..
-lemma to_nat_eq_0: "(to_nat x = 0) = (x = 0)" using to_nat_0 to_nat_from_nat by auto
-
+lemma to_nat_eq_0: "(to_nat x = 0) = (x = 0)"
+  by (auto simp add: to_nat_0 from_nat_0 dest: to_nat_from_nat)
 
 lemma suc_not_zero:
   assumes "to_nat a + 1 \<noteq> CARD('a)"

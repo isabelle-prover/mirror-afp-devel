@@ -311,7 +311,7 @@ apply(rule) apply(rule)
   apply(simp)
  apply(clarsimp) apply(simp add: fields_f_def)
  apply(simp add: fields_f_def) apply(case_tac "find_path_ty_f P ty") apply(simp) apply(simp add: fields_noneI[simplified])
-apply(clarsimp) apply(case_tac "find_path_ty_f P ty") apply(simp) apply(simp) apply(clarsimp)
+apply(clarsimp) apply(case_tac "find_path_ty_f P ty") apply(simp) apply(simp)
 apply(rule fields_someI) apply(simp) apply(simp)
 done
 

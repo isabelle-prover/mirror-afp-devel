@@ -124,7 +124,7 @@ apply(induct qs as arbitrary: s  n rule: list_induct2)
 
 lemma steps'_distinct: "length qs = length as \<Longrightarrow> length as = n
   \<Longrightarrow> distinct (steps' s qs as n) = distinct s"
-apply(induct qs as arbitrary: s  n rule: list_induct2) by(auto simp: distinct_step)
+  by (induct qs as arbitrary: s n rule: list_induct2) (fastforce simp add: distinct_step)+
 
 lemma steps'_dist_perm: "length qs = length as \<Longrightarrow> length as = n
   \<Longrightarrow> dist_perm s s \<Longrightarrow> dist_perm (steps' s qs as n) (steps' s qs as n)"

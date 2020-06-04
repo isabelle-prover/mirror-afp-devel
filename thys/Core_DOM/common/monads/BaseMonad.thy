@@ -150,7 +150,7 @@ proof (unfold comp_def, rule ccpo.admissibleI, clarify)
     by (rule chain_fun[OF 1])
   show "P h h2 r"
     using chain_fun[OF 1] flat_lub_in_chain[OF chain_fun[OF 1]] 2 4 unfolding execute_def fun_lub_def
-    by force
+    by auto (metis (lifting) Inl_Inr_False)
 qed
 
 lemma execute_admissible2: 
@@ -171,18 +171,17 @@ proof (unfold comp_def, rule ccpo.admissibleI, clarify)
   have "h \<turnstile> ?lub \<in> {y. \<exists>f\<in>A. y = f h}"
     using flat_lub_in_chain[OF h1] 4
     unfolding execute_def fun_lub_def
-    by auto
+    by auto (metis (lifting) Inl_Inr_False)
   moreover have "h' \<turnstile> ?lub \<in> {y. \<exists>f\<in>A. y = f h'}"
     using flat_lub_in_chain[OF h1] 5
     unfolding execute_def fun_lub_def
-    by auto
+    by auto (metis (lifting) Inl_Inr_False)
   ultimately obtain f where
     "f \<in> A" and
     "h \<turnstile> Prog f = Inr (r, h2)" and
     "h' \<turnstile> Prog f = Inr (r', h2')"
     using 1 4 5 
-    apply(auto simp add:  chain_def fun_ord_def flat_ord_def execute_def)[1]
-    by (metis Inl_Inr_False)
+    by (auto simp add: chain_def fun_ord_def flat_ord_def execute_def)[1] (metis (lifting) Inl_Inr_False)
   then show "P h h' h2 h2' r r'"
     by(fact 2)
 qed

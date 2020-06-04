@@ -82,8 +82,6 @@ by (induction xs) auto
 lemma if_edit_Nil2: "edit es ([]::'a list) = ys \<Longrightarrow> length ys \<le> cost es"
 apply(induction es "[]::'a list" arbitrary: ys rule: edit.induct)
 apply auto
- apply fastforce
-apply fastforce
 done
 
 lemma if_edit_eq_Nil: "edit es xs = [] \<Longrightarrow> length xs \<le> cost es"

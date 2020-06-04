@@ -808,7 +808,7 @@ proof -
     by simp_all
   have 1:"tfs = map typeof zs"
     using n_zeros_typeof assms(8)
-    by simp
+    by auto
   have "t1s = map typeof vs"
     using typing_map_typeof assms(3) tvs_def t_eqs
     by fastforce

@@ -307,7 +307,7 @@ proof -
     using cos_add[of a a] by auto
   have "ccos a * ccos a = 1 - csin a * csin a"
     using csin_ccos_squared_add[of a]
-      cancel_comm_monoid_add_class.add_implies_diff by auto
+      by (auto intro: add_implies_diff)
   then have "ccos a * ccos a - csin a * csin a = 1 - 2 * csin (a::real) * csin a"
     by simp
   with eq show ?thesis by simp

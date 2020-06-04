@@ -398,7 +398,6 @@ lemma wf_weaken:
   apply simp
   apply (rule wf_all)
   apply simp
-  apply (drule_tac x="TVarB T \<Colon> \<Delta>" in meta_spec)
   apply simp
   done
 
@@ -876,7 +875,6 @@ lemma substT_subtype: \<comment> \<open>A.10\<close>
   apply simp+
   apply (rule SA_all)
   apply simp
-  apply (drule_tac x="TVarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply simp
   done
 
@@ -936,7 +934,6 @@ lemma subst_subtype:
   apply simp+
   apply (rule SA_all)
   apply simp
-  apply (drule_tac x="TVarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply simp
   done
 
@@ -1033,12 +1030,10 @@ lemma narrow_type: \<comment> \<open>A.7\<close>
   apply simp
   apply (simp split: nat.split nat.split_asm)+
   apply (rule T_Abs [simplified])
-  apply (drule_tac x="VarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply simp
   apply (rule_tac T\<^sub>1\<^sub>1=T\<^sub>1\<^sub>1 in T_App)
   apply simp+
   apply (rule T_TAbs)
-  apply (drule_tac x="TVarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply simp
   apply (rule_tac T\<^sub>1\<^sub>1=T\<^sub>1\<^sub>1 in T_TApp)
   apply simp
@@ -1143,14 +1138,12 @@ lemma type_weaken:
   apply arith
   apply (rule refl)
   apply (rule T_Abs [THEN T_eq])
-  apply (drule_tac x="VarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply simp
   apply simp
   apply (rule_tac T\<^sub>1\<^sub>1="\<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> T\<^sub>1\<^sub>1" in T_App)
   apply simp
   apply simp
   apply (rule T_TAbs)
-  apply (drule_tac x="TVarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply simp
   apply (erule_tac T_TApp [THEN T_eq])
   apply (drule subtype_weaken)
@@ -1225,7 +1218,6 @@ theorem subst_type: \<comment> \<open>A.8\<close>
   apply (simp (no_asm_simp))
   apply arith
   apply simp
-  apply (drule_tac x="VarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply (rule T_Abs [THEN T_eq])
   apply simp
   apply (simp add: substT_substT [symmetric])
@@ -1233,7 +1225,6 @@ theorem subst_type: \<comment> \<open>A.8\<close>
   apply (rule_tac T\<^sub>1\<^sub>1="T\<^sub>1\<^sub>1[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>" in T_App)
   apply simp+
   apply (rule T_TAbs)
-  apply (drule_tac x="TVarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply simp
   apply simp
   apply (rule T_TApp [THEN T_eq])
@@ -1282,13 +1273,11 @@ theorem substT_type: \<comment> \<open>A.11\<close>
   apply arith
   apply arith
   apply (rule T_Abs [THEN T_eq])
-  apply (drule_tac x="VarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply simp
   apply (simp add: substT_substT [symmetric])
   apply (rule_tac T\<^sub>1\<^sub>1="T\<^sub>1\<^sub>1[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> P]\<^sub>\<tau>" in T_App)
   apply simp+
   apply (rule T_TAbs)
-  apply (drule_tac x="TVarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply simp
   apply (rule T_TApp [THEN T_eq])
   apply simp

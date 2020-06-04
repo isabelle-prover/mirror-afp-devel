@@ -258,7 +258,8 @@ proof -
   proof
     assume "D \<cdot> \<sigma> = C"
     then have "grounding_of_cls C \<subseteq> grounding_of_cls D"
-      using subst_cls_eq_grounding_of_cls_subset_eq by simp
+      using subst_cls_eq_grounding_of_cls_subset_eq
+      by (auto dest: sym)
     then have "(grounding_of_state St \<union> grounding_of_cls C) = grounding_of_state St"
       using assms unfolding grounding_of_clss_def by auto
     then show ?thesis

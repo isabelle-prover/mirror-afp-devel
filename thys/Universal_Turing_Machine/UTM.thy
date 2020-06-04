@@ -2209,8 +2209,8 @@ proof(induct "length args" arbitrary: args lm rs m n, simp)
     assume g: "Suc x = length args" "args \<noteq> []" "lm = <args>" "args = xs @ [a::nat]" "xs = (aa::nat) # list"
     thus "\<exists>stp ln rn. steps0 (Suc 0, Bk # Bk\<up>(m) @ rev lm @ Bk # Bk # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp =
       (0, Bk # ires, Bk # Oc # Bk\<up>(ln) @ Bk # Bk # Oc\<up>(bl_bin lm + rs * 2 ^ (length lm - 1)) @ Bk\<up>(rn))"
-    proof(induct a arbitrary: m n rs args lm, simp_all add: tape_of_nl_rev, 
-        simp only: tape_of_nl_cons_app1, simp)
+    proof(induct a arbitrary: m n rs args lm, simp_all add: tape_of_nl_rev del: subst_all subst_all', 
+        simp only: tape_of_nl_cons_app1, simp del: subst_all subst_all')
       fix m n rs args lm
       have "\<exists>stp ln rn.
         steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # rev (<(aa::nat) # list>) @ Bk # Bk # ires,

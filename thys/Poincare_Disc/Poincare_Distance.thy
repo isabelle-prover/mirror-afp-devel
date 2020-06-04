@@ -1397,7 +1397,7 @@ proof-
           using \<open>?P ?Mx ?Mu\<close> \<open>?R Mz ?Mx ?Mu\<close>
           by (metis \<open>moebius_pt (blaschke a) (of_complex z') \<in> unit_disc\<close> \<open>of_complex Mz \<in> unit_disc\<close> to_complex_of_complex unit_disc_to_complex_inj)
         thus "z' = to_complex ?z"
-          using moebius_pt_invert by auto
+          by (simp add: moebius_pt_invert)
       qed
     qed
   qed
