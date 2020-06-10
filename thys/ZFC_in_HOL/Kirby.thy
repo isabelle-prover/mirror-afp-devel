@@ -1166,7 +1166,7 @@ qed
 subsubsection\<open>Theorem 4.7\<close>
 
 lemma mult_cancellation_half:
-  assumes "a*x + r = a*y + s" "r \<sqsubset> a" "s \<sqsubset> a"
+  assumes "a*x + r \<le> a*y + s" "r \<sqsubset> a" "s \<sqsubset> a"
   shows "x \<le> y"
 proof -
   have "x \<le> y" if "Ord \<alpha>" "x \<in> elts (Vset \<alpha>)" "y \<in> elts (Vset \<alpha>)" for \<alpha>
@@ -1190,7 +1190,7 @@ proof -
       also have "\<dots> \<le> elts (a*x)"
         using u by (force simp: mult [of _ x])
       also have "\<dots> \<le> elts (a*y + s)"
-        by (metis less_eq_V_def plus_eq_lift succ.prems(3) sup_ge1)
+        using plus_eq_lift succ.prems(3) by auto
       also have "\<dots> = elts (a*y) \<union> elts (lift (a*y) s)"
         by (simp add: plus_eq_lift)
       finally have "a * u + r' \<in> elts (a * y) \<union> elts (lift (a * y) s)" .
@@ -1203,10 +1203,8 @@ proof -
             using * by (auto simp: mult [of _ y] lift_def)
           then have v_k: "v \<in> elts (Vset k)"
             using Vset_succ_TC less_TC_iff succ.prems(2) by blast
-          then have "u = v"
-            by (metis succ.IH u_k V_equalityI \<open>r' \<in> elts a\<close> le_TC_refl less_TC_iff v(2) v(3) vsubsetD)
           then show ?thesis
-            using \<open>v \<in> elts y\<close> by blast
+            by (metis \<open>r' \<in> elts a\<close> antisym le_TC_refl less_TC_iff order_refl succ.IH u_k v)
         qed
       next
         assume "a * u + r' \<in> elts (lift (a * y) s)"
@@ -1271,24 +1269,35 @@ proof -
         by (meson k x y Limit.hyps Limit_def Ord_in_Ord Ord_mem_iff_lt Ord_sup union_less_iff)
       show "x \<in> elts (Vset (i \<squnion> j))" "y \<in> elts (Vset (i \<squnion> j))"
         using x y by (auto simp: Vfrom_sup)
-      thm Limit.prems
-    qed (auto intro: Limit.prems)
+      show "a * x + r \<le> a * y + s"
+        by (simp add: Limit.prems)
+    qed (auto simp: Limit.prems)
   qed
   then show ?thesis
     by (metis two_in_Vset Ord_rank Ord_VsetI rank_lt)
 qed
 
-
 theorem mult_cancellation_lemma:
   assumes "a*x + r = a*y + s" "r \<sqsubset> a" "s \<sqsubset> a"
   shows "x=y \<and> r=s"
-  by (metis add_right_cancel mult_cancellation_half antisym assms)
+  by (metis assms leD less_V_def mult_cancellation_half odiff_add_cancel order_refl)
 
 corollary mult_cancellation [simp]:
   fixes a::V
   assumes "a \<noteq> 0"
   shows "a*x = a*y \<longleftrightarrow> x=y"
   by (metis assms nonzero_less_TC mult_cancellation_lemma)
+
+corollary mult_cancellation_less:
+  assumes lt: "a*x + r < a*y + s" and "r \<sqsubset> a" "s \<sqsubset> a"
+  obtains "x < y" | "x = y" "r < s"
+proof -
+  have "x \<le> y"
+    by (meson assms dual_order.strict_implies_order mult_cancellation_half)
+  then consider "x < y" | "x = y"
+    using less_V_def by blast
+  with lt that show ?thesis by blast
+qed
 
 corollary lift_mult_TC_disjoint:
   fixes x::V

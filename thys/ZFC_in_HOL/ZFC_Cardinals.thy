@@ -1412,16 +1412,19 @@ proof (rule antisym)
     using assms down ordertype_infinite_ge_\<omega> by auto
 qed
 
-lemma ordertype_UNIV_\<omega> [simp]: "ordertype UNIV less_than = \<omega>"
-proof (subst ordertype_eq_iff)
-  show "\<exists>f. bij_betw f UNIV (elts \<omega>) \<and> (\<forall>x\<in>UNIV. \<forall>y\<in>UNIV. f x < f y \<longleftrightarrow> ((x, y) \<in> less_than))"
-  proof (intro exI conjI ballI)
-    show "bij_betw ord_of_nat UNIV (elts \<omega>)"
-      by (simp add: \<omega>_def bij_betw_def inj_ord_of_nat)
-  qed fastforce
-  show "small (UNIV::nat set)"
-    using small_image_iff small_image_nat by blast
-qed (use total_less_than in auto)
+text \<open>For infinite sets of natural numbers\<close>
+lemma ordertype_nat_\<omega>:
+  assumes "infinite N" shows "ordertype N less_than = \<omega>"
+proof -
+  have "small N"
+    by (meson inj_on_def ord_of_nat_inject small_def small_iff_range small_image_nat_V)
+  have "ordertype (ord_of_nat ` N) VWF = \<omega>"
+    by (force simp: assms finite_image_iff inj_on_def intro: ordertype_infinite_\<omega>)
+  moreover have "ordertype (ord_of_nat ` N) VWF = ordertype N less_than"
+    by (auto intro: ordertype_inc_eq \<open>small N\<close>)
+  ultimately show ?thesis
+    by simp
+qed
 
 proposition ordertype_eq_ordertype:
   assumes r: "wf r" "total_on A r" "trans r" and "small A"
