@@ -104,7 +104,7 @@ proof(induct f)
       moreover
       { assume "c\<noteq>0"
         hence ?thesis using \<open>r = c*x + \<langle>cs,xs\<rangle>\<close> Atom Eq Cons \<open>l<y\<close> \<open>y<u\<close>
-          by(auto simp: ac_simps depends\<^sub>R_def split:if_splits) }
+          by (auto simp: depends\<^sub>R_def split: if_splits) }
       ultimately show ?thesis by force
     qed
   qed

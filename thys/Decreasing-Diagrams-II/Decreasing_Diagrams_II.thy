@@ -883,8 +883,8 @@ lemma dd_cr_modulo[case_names wf trans symE peak cliff]:
 proof (induct rule: dd_commute_modulo[of r])
   note E' = E[unfolded sym_conv_converse_eq]
   case (rcliff a b s t u) show ?case
-  using cl[OF rcliff(2) rcliff(1)[unfolded E'], unfolded converse_iff[of t u,symmetric]]
-  by (auto simp only: ac_simps E' converse_inward)
+    using cl[OF rcliff(2) rcliff(1)[unfolded E'], unfolded converse_iff[of t u,symmetric]]
+    by (auto simp only: E' converse_inward) (auto simp only: ac_simps)
 qed fact+
 
 subsection \<open>Commutation and confluence\<close>

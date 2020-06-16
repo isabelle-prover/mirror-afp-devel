@@ -1741,8 +1741,8 @@ next
       have "P,a\<bullet>compareAndSwap(D\<bullet>F, i, e),h' \<turnstile> (Val (Bool b), loc) \<leftrightarrow> ([Bool b], loc, length (compE2 (a\<bullet>compareAndSwap(D\<bullet>F, i, e))), None)" for b
         by(rule bisim1Val2) simp
       with False exec stk xcp show ?thesis
-        by(auto elim!: exec_meth.cases simp add: exec_move_def is_Ref_def ac_simps intro: Red1CASSucceed Red1CASFail)
-          (fastforce intro!: Red1CASSucceed Red1CASFail simp add: ta_bisim_def)+
+        by (auto elim!: exec_meth.cases simp add: exec_move_def is_Ref_def intro: Red1CASSucceed Red1CASFail)
+          (fastforce intro!: Red1CASSucceed Red1CASFail simp add: ta_bisim_def ac_simps)+
     qed
     ultimately show ?thesis using exec xcp stk by(fastforce simp add: no_call2_def)
   qed
@@ -2319,13 +2319,15 @@ next
     moreover from xsV V have "True,P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) Val v, (h, xs)\<rangle> -\<lbrace>UnlockFail\<rightarrow>a'\<rbrace>\<rightarrow> \<langle>THROW IllegalMonitorState,(h, xs)\<rangle>"
       by(rule Unlock1SynchronizedFail[OF TrueI])
     ultimately show ?case using \<tau> \<tau>' exec
-      by(fastforce elim!: exec_meth.cases simp add: is_Ref_def ta_bisim_def ac_simps exec_move_def ta_upd_simps)
+      by (fastforce elim!: exec_meth.cases simp add: is_Ref_def ta_bisim_def exec_move_def ac_simps ta_upd_simps
+        simp del: conj.left_commute)
   next
     assume xsV: "xs ! V = Null"
     have "P,sync\<^bsub>V\<^esub> (e1) e2,h \<turnstile> (THROW NullPointer,xs) \<leftrightarrow> ([Null, v],xs,4 + length (compE2 e1) + length (compE2 e2),\<lfloor>addr_of_sys_xcpt NullPointer\<rfloor>)"
       by(rule bisim1Sync12)
     thus ?case using \<tau> \<tau>' exec xsV V
-      by(fastforce elim!: exec_meth.cases intro: Unlock1SynchronizedNull simp add: is_Ref_def ta_bisim_def ac_simps exec_move_def)
+      by (fastforce elim!: exec_meth.cases intro: Unlock1SynchronizedNull simp add: is_Ref_def ta_bisim_def ac_simps exec_move_def
+        simp del: conj.left_commute)
   qed
 next
   case (bisim1Sync6 e1 n e2 V v x)
