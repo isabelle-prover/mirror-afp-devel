@@ -177,8 +177,10 @@ qed
 
 sublocale lifting_intersection Inf_FL Bot_G Q Inf_G_q entails_q Red_Inf_q Red_F_q
   Bot_FL \<G>_F_L_q \<G>_Inf_L_q "\<lambda>g. Prec_FL"
-  using labeled_tiebreaker_lifting no_labels.ground.calculus_family_axioms
-  unfolding lifting_intersection_def by (simp add: lifting_intersection_axioms.intro)
+  using labeled_tiebreaker_lifting unfolding lifting_intersection_def
+  by (simp add: lifting_intersection_axioms.intro
+      no_labels.ground.consequence_relation_family_axioms
+      no_labels.ground.inference_system_family_axioms)
 
 notation derive (infix "\<rhd>RedL" 50)
 

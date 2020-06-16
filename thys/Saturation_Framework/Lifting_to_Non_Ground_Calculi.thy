@@ -543,8 +543,9 @@ end
 
 subsection \<open>Lifting with a Family of Redundancy Criteria\<close>
 
-locale lifting_intersection = inference_system Inf_F
-  + ground: calculus_family Bot_G Q Inf_G_q entails_q Red_Inf_q Red_F_q
+locale lifting_intersection = inference_system Inf_F +
+  ground: inference_system_family Q Inf_G_q +
+  ground: consequence_relation_family Bot_G Q entails_q
   for
     Inf_F :: "'f inference set" and
     Bot_G :: "'g set" and
@@ -560,8 +561,8 @@ locale lifting_intersection = inference_system Inf_F
     Prec_F_g :: "'g \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> bool"
   assumes
     standard_lifting_family:
-      "\<forall>q \<in> Q. tiebreaker_lifting Bot_F Inf_F Bot_G (entails_q q) (Inf_G_q q)
-         (Red_Inf_q q) (Red_F_q q) (\<G>_F_q q) (\<G>_Inf_q q) Prec_F_g"
+      "\<forall>q \<in> Q. tiebreaker_lifting Bot_F Inf_F Bot_G (entails_q q) (Inf_G_q q) (Red_Inf_q q)
+         (Red_F_q q) (\<G>_F_q q) (\<G>_Inf_q q) Prec_F_g"
 begin
 
 abbreviation \<G>_set_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'g set" where

@@ -237,22 +237,4 @@ qed
 
 end
 
-
-subsection \<open>Families of Calculi\<close>
-
-locale calculus_family =
-  inference_system_family Q Inf_q + consequence_relation_family Bot Q entails_q
-  for
-    Bot :: "'f set" and
-    Q :: "'q set" and
-    Inf_q :: \<open>'q \<Rightarrow> 'f inference set\<close> and
-    entails_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set \<Rightarrow> bool"
-  + fixes
-    Red_Inf_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f inference set" and
-    Red_F_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set"
-  assumes
-    Q_nonempty: "Q \<noteq> {}" and
-    all_red_crit:
-      "\<forall>q \<in> Q. calculus Bot (Inf_q q) (entails_q q) (Red_Inf_q q) (Red_F_q q)"
-
 end
