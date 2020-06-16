@@ -1,4 +1,4 @@
-(*  Title:       Lifting to Non-Ground Calculi of the Saturation Framework
+(*  Title:       Lifting to Non-Ground Calculi
  *  Author:      Sophie Tourret <stourret at mpi-inf.mpg.de>, 2018-2020 *)
 
 section \<open>Lifting to Non-ground Calculi\<close>
@@ -10,9 +10,11 @@ text \<open>The section 3.1 to 3.3 of the report are covered by the current sect
 
 theory Lifting_to_Non_Ground_Calculi
   imports
-    Calculi
+    Intersection_Calculus
+    Calculus_Variations
     Well_Quasi_Orders.Minimal_Elements
 begin
+
 
 subsection \<open>Standard Lifting\<close>
 
@@ -90,6 +92,7 @@ qed
 
 end
 
+
 subsection \<open>Strong Standard Lifting\<close>
 
 (* rmk:strong-standard-lifting *)
@@ -145,7 +148,8 @@ qed
 
 end
 
-subsection \<open>Lifting with a Family of Well-founded Orderings\<close>
+
+subsection \<open>Lifting with a Family of Tiebreaker Orderings\<close>
 
 locale lifting_with_wf_ordering_family =
   standard_lifting Bot_F Inf_F Bot_G Inf_G entails_G Red_Inf_G Red_F_G \<G>_F \<G>_Inf
@@ -535,6 +539,7 @@ theorem static_to_dynamic:
   using any_order_lifting.dyn_equiv_stat static_empty_order_equiv_static by blast
 
 end
+
 
 subsection \<open>Lifting with a Family of Redundancy Criteria\<close>
 

@@ -1,7 +1,7 @@
-(*  Title:       Labeled Lifting to Non-Ground Calculi of the Saturation Framework
+(*  Title:       Labeled Lifting to Non-Ground Calculi
  *  Author:      Sophie Tourret <stourret at mpi-inf.mpg.de>, 2019-2020 *)
 
-section \<open>Labeled Liftings\<close>
+section \<open>Labeled Lifting to Non-Ground Calculi\<close>
 
 text \<open>This section formalizes the extension of the lifting results to labeled
   calculi. This corresponds to section 3.4 of the report.\<close>
@@ -10,7 +10,8 @@ theory Labeled_Lifting_to_Non_Ground_Calculi
   imports Lifting_to_Non_Ground_Calculi
 begin
 
-subsection \<open>Labeled Lifting with a Family of Well-founded Orderings\<close>
+
+subsection \<open>Labeled Lifting with a Family of Tiebreaker Orderings\<close>
 
 locale labeled_lifting_w_wf_ord_family = no_labels: lifting_with_wf_ordering_family Bot_F Inf_F
   Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F \<G>_Inf Prec_F
@@ -137,6 +138,7 @@ proof
 qed
 
 end
+
 
 subsection \<open>Labeled Lifting with a Family of Redundancy Criteria\<close>
 

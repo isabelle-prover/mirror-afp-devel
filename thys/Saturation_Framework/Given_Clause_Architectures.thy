@@ -1,19 +1,20 @@
-(*  Title:       Prover Architectures of the Saturation Framework
+(*  Title:       Given Clause Prover Architectures
  *  Author:      Sophie Tourret <stourret at mpi-inf.mpg.de>, 2019-2020 *)
 
-section \<open>Prover Architectures\<close>
+section \<open>Given Clause Prover Architectures\<close>
 
 text \<open>This section covers all the results presented in the section 4 of the report.
   This is where abstract architectures of provers are defined and proven
   dynamically refutationally complete.\<close>
 
-theory Prover_Architectures
+theory Given_Clause_Architectures
   imports
     Lambda_Free_RPOs.Lambda_Free_Util
     Labeled_Lifting_to_Non_Ground_Calculi
 begin
 
-subsection \<open>Basis of the Prover Architectures\<close>
+
+subsection \<open>Basis of the Given Clause Prover Architectures\<close>
 
 locale prover_architecture_basis = std?: labeled_lifting_with_red_crit_family Bot_F Inf_F Bot_G Q
   entails_q Inf_G_q Red_Inf_q Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL
@@ -383,7 +384,8 @@ qed
 
 end
 
-subsection \<open>Given Clause Architecture\<close>
+
+subsection \<open>Given Clause Procedure\<close>
 
 locale given_clause = prover_architecture_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_Inf_q
   Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL Equiv_F Prec_F Prec_l active
@@ -711,7 +713,8 @@ qed
 
 end
 
-subsection \<open>Lazy Given Clause Architecture\<close>
+
+subsection \<open>Lazy Given Clause Procedure\<close>
 
 locale lazy_given_clause = prover_architecture_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_Inf_q
   Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL Equiv_F Prec_F Prec_l active
