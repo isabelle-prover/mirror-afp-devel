@@ -19,7 +19,7 @@ begin
 subsection \<open>Standard Lifting\<close>
 
 locale standard_lifting = inference_system Inf_F +
-  ground: calculus_with_red_crit Bot_G Inf_G entails_G Red_Inf_G Red_F_G
+  ground: calculus Bot_G Inf_G entails_G Red_Inf_G Red_F_G
   for
     Bot_F :: \<open>'f set\<close> and
     Inf_F :: \<open>'f inference set\<close> and
@@ -97,7 +97,7 @@ subsection \<open>Strong Standard Lifting\<close>
 
 (* rmk:strong-standard-lifting *)
 locale strong_standard_lifting = inference_system Inf_F +
-  ground: calculus_with_red_crit Bot_G Inf_G entails_G Red_Inf_G Red_F_G
+  ground: calculus Bot_G Inf_G entails_G Red_Inf_G Red_F_G
   for
     Bot_F :: \<open>'f set\<close> and
     Inf_F :: \<open>'f inference set\<close> and
@@ -151,7 +151,7 @@ end
 
 subsection \<open>Lifting with a Family of Tiebreaker Orderings\<close>
 
-locale lifting_with_wf_ordering_family =
+locale lifting_intersection =
   standard_lifting Bot_F Inf_F Bot_G Inf_G entails_G Red_Inf_G Red_F_G \<G>_F \<G>_Inf
   for
     Bot_F :: \<open>'f set\<close> and
@@ -401,7 +401,7 @@ proof -
 qed
 
 (* thm:FRedsqsubset-is-red-crit and also thm:lifted-red-crit if ordering empty *)
-sublocale calculus_with_red_crit Bot_F Inf_F entails_\<G> Red_Inf_\<G> Red_F_\<G>
+sublocale calculus Bot_F Inf_F entails_\<G> Red_Inf_\<G> Red_F_\<G>
 proof
   fix B N N' \<iota>
   show \<open>Red_Inf_\<G> N \<subseteq> Inf_F\<close> unfolding Red_Inf_\<G>_def by blast
@@ -436,10 +436,10 @@ lemma sat_imp_ground_sat: "saturated N \<Longrightarrow> ground_Inf_redundant N 
 (* thm:finf-complete *)
 theorem stat_ref_comp_to_non_ground:
   assumes
-    stat_ref_G: "static_refutational_complete_calculus Bot_G Inf_G entails_G Red_Inf_G Red_F_G" and
+    stat_ref_G: "statically_complete_calculus Bot_G Inf_G entails_G Red_Inf_G Red_F_G" and
     sat_n_imp: "\<And>N. saturated N \<Longrightarrow> ground_Inf_redundant N"
   shows
-    "static_refutational_complete_calculus Bot_F Inf_F entails_\<G> Red_Inf_\<G> Red_F_\<G>"
+    "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_Inf_\<G> Red_F_\<G>"
 proof
   fix B N
   assume
@@ -460,8 +460,8 @@ proof
   have "ground.saturated (\<G>_set N)"
     using sat_imp_ground_sat[OF sat_n sat_n_imp[OF sat_n]] .
   then have "\<exists>BG'\<in>Bot_G. BG' \<in> (\<G>_set N)"
-    using stat_ref_G ground.calculus_with_red_crit_axioms bg_in ground_n_entails_bot
-    unfolding static_refutational_complete_calculus_def static_refutational_complete_calculus_axioms_def
+    using stat_ref_G ground.calculus_axioms bg_in ground_n_entails_bot
+    unfolding statically_complete_calculus_def statically_complete_calculus_axioms_def
     by blast
   then show "\<exists>B'\<in> Bot_F. B' \<in> N"
     using bg_in Bot_cond Bot_map_not_empty Bot_cond by blast
@@ -473,30 +473,30 @@ lemma wf_empty_rel: "minimal_element (\<lambda>_ _. False) UNIV"
   by (simp add: minimal_element.intro po_on_def transp_onI wfp_on_imp_irreflp_on)
 
 lemma any_to_empty_order_lifting:
-  "lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F
-    \<G>_Inf Prec_F_g \<Longrightarrow> lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
+  "lifting_intersection Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F
+    \<G>_Inf Prec_F_g \<Longrightarrow> lifting_intersection Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
     Red_F_G \<G>_F \<G>_Inf (\<lambda>g C C'. False)"
 proof -
   fix Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F \<G>_Inf Prec_F_g
-  assume lift: "lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
+  assume lift: "lifting_intersection Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
     Red_F_G \<G>_F \<G>_Inf Prec_F_g"
   then interpret lift_g:
-    lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F
+    lifting_intersection Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F
       \<G>_Inf Prec_F_g
     by auto
-  show "lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G
+  show "lifting_intersection Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G
     \<G>_F \<G>_Inf (\<lambda>g C C'. False)"
     by (simp add: wf_empty_rel lift_g.standard_lifting_axioms
-      lifting_with_wf_ordering_family_axioms.intro lifting_with_wf_ordering_family_def)
+      lifting_intersection_axioms.intro lifting_intersection_def)
 qed
 
 lemma po_on_empty_rel[simp]: "po_on (\<lambda>_ _. False) UNIV"
   unfolding po_on_def irreflp_on_def transp_on_def by auto
 
 locale lifting_equivalence_with_empty_order =
-  any_order_lifting: lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
+  any_order_lifting: lifting_intersection Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
     Red_F_G \<G>_F \<G>_Inf Prec_F_g +
-  empty_order_lifting: lifting_with_wf_ordering_family Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
+  empty_order_lifting: lifting_intersection Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
     Red_F_G \<G>_F \<G>_Inf "\<lambda>g C C'. False"
   for
     \<G>_F :: \<open>'f \<Rightarrow> 'g set\<close> and
@@ -510,7 +510,7 @@ locale lifting_equivalence_with_empty_order =
     Red_F_G :: \<open>'g set \<Rightarrow> 'g set\<close> and
     Prec_F_g :: \<open>'g \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> bool\<close>
 
-sublocale lifting_with_wf_ordering_family \<subseteq> lifting_equivalence_with_empty_order
+sublocale lifting_intersection \<subseteq> lifting_equivalence_with_empty_order
   by unfold_locales simp+
 
 context lifting_equivalence_with_empty_order
@@ -523,18 +523,18 @@ lemma saturated_empty_order_equiv_saturated:
 
 (* lem:static-ref-compl-indep-of-sqsubset *)
 lemma static_empty_order_equiv_static:
-  "static_refutational_complete_calculus Bot_F Inf_F any_order_lifting.entails_\<G>
+  "statically_complete_calculus Bot_F Inf_F any_order_lifting.entails_\<G>
      empty_order_lifting.Red_Inf_\<G> empty_order_lifting.Red_F_\<G> =
-   static_refutational_complete_calculus Bot_F Inf_F any_order_lifting.entails_\<G>
+   statically_complete_calculus Bot_F Inf_F any_order_lifting.entails_\<G>
      any_order_lifting.Red_Inf_\<G> any_order_lifting.Red_F_\<G>"
-  unfolding static_refutational_complete_calculus_def
+  unfolding statically_complete_calculus_def
   by (rule iffI) (standard,(standard)[],simp)+
 
 (* thm:FRedsqsubset-is-dyn-ref-compl *)
 theorem static_to_dynamic:
-  "static_refutational_complete_calculus Bot_F Inf_F
+  "statically_complete_calculus Bot_F Inf_F
     any_order_lifting.entails_\<G> empty_order_lifting.Red_Inf_\<G> empty_order_lifting.Red_F_\<G> =
-    dynamic_refutational_complete_calculus Bot_F Inf_F
+    dynamically_complete_calculus Bot_F Inf_F
     any_order_lifting.entails_\<G> any_order_lifting.Red_Inf_\<G> any_order_lifting.Red_F_\<G> "
   using any_order_lifting.dyn_equiv_stat static_empty_order_equiv_static by blast
 
@@ -544,7 +544,7 @@ end
 subsection \<open>Lifting with a Family of Redundancy Criteria\<close>
 
 locale standard_lifting_with_red_crit_family = inference_system Inf_F
-  + ground: calculus_family_with_red_crit_family Bot_G Q Inf_G_q entails_q Red_Inf_q Red_F_q
+  + ground: calculus_family Bot_G Q Inf_G_q entails_q Red_Inf_q Red_F_q
   for
     Inf_F :: "'f inference set" and
     Bot_G :: "'g set" and
@@ -560,7 +560,7 @@ locale standard_lifting_with_red_crit_family = inference_system Inf_F
     Prec_F_g :: "'g \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> bool"
   assumes
     standard_lifting_family:
-      "\<forall>q \<in> Q. lifting_with_wf_ordering_family Bot_F Inf_F Bot_G (entails_q q) (Inf_G_q q)
+      "\<forall>q \<in> Q. lifting_intersection Bot_F Inf_F Bot_G (entails_q q) (Inf_G_q q)
          (Red_Inf_q q) (Red_F_q q) (\<G>_F_q q) (\<G>_Inf_q q) Prec_F_g"
 begin
 
@@ -583,10 +583,10 @@ abbreviation entails_\<G>_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set \<R
 
 lemma red_crit_lifting_family:
   assumes q_in: "q \<in> Q"
-  shows "calculus_with_red_crit Bot_F Inf_F (entails_\<G>_q q) (Red_Inf_\<G>_q q) (Red_F_\<G>_q_g q)"
+  shows "calculus Bot_F Inf_F (entails_\<G>_q q) (Red_Inf_\<G>_q q) (Red_F_\<G>_q_g q)"
 proof -
   interpret wf_lift:
-    lifting_with_wf_ordering_family Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_Inf_q q"
+    lifting_intersection Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_Inf_q q"
       "Red_F_q q" "\<G>_F_q q" "\<G>_Inf_q q" Prec_F_g
     using standard_lifting_family q_in by metis
   have "Red_Inf_\<G>_q q = wf_lift.Red_Inf_\<G>"
@@ -594,15 +594,15 @@ proof -
   moreover have "Red_F_\<G>_q_g q = wf_lift.Red_F_\<G>"
     unfolding Red_F_\<G>_q_g_def wf_lift.Red_F_\<G>_def by blast
   ultimately show ?thesis
-    using wf_lift.calculus_with_red_crit_axioms by simp
+    using wf_lift.calculus_axioms by simp
 qed
 
 lemma red_crit_lifting_family_empty_ord:
   assumes q_in: "q \<in> Q"
-  shows "calculus_with_red_crit Bot_F Inf_F (entails_\<G>_q q) (Red_Inf_\<G>_q q) (Red_F_\<G>_empty_q q)"
+  shows "calculus Bot_F Inf_F (entails_\<G>_q q) (Red_Inf_\<G>_q q) (Red_F_\<G>_empty_q q)"
 proof -
   interpret wf_lift:
-    lifting_with_wf_ordering_family Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_Inf_q q"
+    lifting_intersection Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_Inf_q q"
       "Red_F_q q" "\<G>_F_q q" "\<G>_Inf_q q" Prec_F_g
     using standard_lifting_family q_in by metis
   have "Red_Inf_\<G>_q q = wf_lift.Red_Inf_\<G>"
@@ -610,7 +610,7 @@ proof -
   moreover have "Red_F_\<G>_empty_q q = wf_lift.empty_order_lifting.Red_F_\<G>"
     unfolding Red_F_\<G>_empty_q_def wf_lift.empty_order_lifting.Red_F_\<G>_def by blast
   ultimately show ?thesis
-    using wf_lift.empty_order_lifting.calculus_with_red_crit_axioms by simp
+    using wf_lift.empty_order_lifting.calculus_axioms by simp
 qed
 
 sublocale consequence_relation_family Bot_F Q entails_\<G>_q
@@ -621,7 +621,7 @@ next
   fix qi
   assume qi_in: "qi \<in> Q"
 
-  interpret lift: lifting_with_wf_ordering_family Bot_F Inf_F Bot_G "entails_q qi" "Inf_G_q qi"
+  interpret lift: lifting_intersection Bot_F Inf_F Bot_G "entails_q qi" "Inf_G_q qi"
     "Red_Inf_q qi" "Red_F_q qi" "\<G>_F_q qi" "\<G>_Inf_q qi" Prec_F_g
     using qi_in by (metis standard_lifting_family)
 
@@ -629,7 +629,7 @@ next
     by unfold_locales
 qed
 
-sublocale calculus_with_red_crit_family Bot_F Inf_F Q entails_\<G>_q Red_Inf_\<G>_q Red_F_\<G>_q_g
+sublocale intersection_calculus Bot_F Inf_F Q entails_\<G>_q Red_Inf_\<G>_q Red_F_\<G>_q_g
   by unfold_locales (auto simp: Q_nonempty red_crit_lifting_family)
 
 abbreviation entails_\<G>_Q :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>\<inter>\<G>" 50) where
@@ -645,7 +645,7 @@ lemmas entails_\<G>_Q_def = entails_Q_def
 lemmas Red_Inf_\<G>_Q_def = Red_Inf_Q_def
 lemmas Red_F_\<G>_Q_def = Red_F_Q_def
 
-sublocale empty_ord: calculus_with_red_crit_family Bot_F Inf_F Q entails_\<G>_q Red_Inf_\<G>_q
+sublocale empty_ord: intersection_calculus Bot_F Inf_F Q entails_\<G>_q Red_Inf_\<G>_q
   Red_F_\<G>_empty_q
   by unfold_locales (auto simp: Q_nonempty red_crit_lifting_family_empty_ord)
 
@@ -663,7 +663,7 @@ lemma sat_inf_imp_ground_red_fam_inter:
   shows "\<iota> \<in> Red_Inf_q q (\<G>_set_q q N)"
 proof -
   have "\<iota>' \<in> Red_Inf_\<G>_q q N"
-    using sat_n i'_in q_in all_red_crit calculus_with_red_crit.saturated_def sat_int_to_sat_q
+    using sat_n i'_in q_in all_red_crit calculus.saturated_def sat_int_to_sat_q
     by blast
   then have "the (\<G>_Inf_q q \<iota>') \<subseteq> Red_Inf_q q (\<G>_set_q q N)"
     by (simp add: Red_Inf_\<G>_q_def grounding)
@@ -687,13 +687,13 @@ lemma sat_imp_ground_sat_fam_inter:
 theorem stat_ref_comp_to_non_ground_fam_inter:
   assumes
     stat_ref_G:
-      "\<forall>q \<in> Q. static_refutational_complete_calculus Bot_G (Inf_G_q q) (entails_q q) (Red_Inf_q q)
+      "\<forall>q \<in> Q. statically_complete_calculus Bot_G (Inf_G_q q) (entails_q q) (Red_Inf_q q)
         (Red_F_q q)" and
     sat_n_imp: "\<And>N. saturated N \<Longrightarrow> \<exists>q \<in> Q. ground_Inf_redundant q N"
   shows
-    "static_refutational_complete_calculus Bot_F Inf_F entails_\<G>_Q Red_Inf_\<G>_Q Red_F_\<G>_empty"
-    using empty_ord.calculus_with_red_crit_axioms unfolding static_refutational_complete_calculus_def
-      static_refutational_complete_calculus_axioms_def
+    "statically_complete_calculus Bot_F Inf_F entails_\<G>_Q Red_Inf_\<G>_Q Red_F_\<G>_empty"
+    using empty_ord.calculus_axioms unfolding statically_complete_calculus_def
+      statically_complete_calculus_axioms_def
 proof (standard, clarify)
   fix B N
   assume
@@ -706,12 +706,12 @@ proof (standard, clarify)
       {\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_Inf_q q \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf_q q \<iota>')}
       \<union> Red_Inf_q q (\<G>_set_q q N)"
     using sat_n_imp[of N] by blast
-  interpret q_calc: calculus_with_red_crit Bot_F Inf_F "entails_\<G>_q q" "Red_Inf_\<G>_q q" "Red_F_\<G>_q_g q"
+  interpret q_calc: calculus Bot_F Inf_F "entails_\<G>_q q" "Red_Inf_\<G>_q q" "Red_F_\<G>_q_g q"
     using all_red_crit[rule_format, OF q_in] .
   have n_q_sat: "q_calc.saturated N"
     using q_in sat_int_to_sat_q sat_n by simp
   interpret lifted_q_calc:
-    lifting_with_wf_ordering_family Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_Inf_q q"
+    lifting_intersection Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_Inf_q q"
       "Red_F_q q" "\<G>_F_q q" "\<G>_Inf_q q"
     using q_in by (simp add: standard_lifting_family)
   have n_lift_sat: "lifted_q_calc.empty_order_lifting.saturated N"
@@ -722,14 +722,14 @@ proof (standard, clarify)
       (use n_lift_sat inf_subs ground.Inf_from_q_def in auto)
   have ground_n_entails_bot: "entails_\<G>_q q N {B}"
     using q_in entails_bot unfolding entails_\<G>_Q_def by simp
-  interpret static_refutational_complete_calculus Bot_G "Inf_G_q q" "entails_q q" "Red_Inf_q q"
+  interpret statically_complete_calculus Bot_G "Inf_G_q q" "entails_q q" "Red_Inf_q q"
     "Red_F_q q"
     using stat_ref_G[rule_format, OF q_in] .
   obtain BG where bg_in: "BG \<in> \<G>_F_q q B"
     using lifted_q_calc.Bot_map_not_empty[OF b_in] by blast
   then have "BG \<in> Bot_G" using lifted_q_calc.Bot_map[OF b_in] by blast
   then have "\<exists>BG'\<in>Bot_G. BG' \<in> \<G>_set_q q N"
-    using ground_sat_n ground_n_entails_bot static_refutational_complete[of BG, OF _ ground_sat_n]
+    using ground_sat_n ground_n_entails_bot statically_complete[of BG, OF _ ground_sat_n]
       bg_in lifted_q_calc.ground.entail_set_all_formulas[of "\<G>_set_q q N" "\<G>_set_q q {B}"]
     by simp
   then show "\<exists>B'\<in> Bot_F. B' \<in> N" using lifted_q_calc.Bot_cond by blast
@@ -741,15 +741,15 @@ lemma sat_eq_sat_empty_order: "saturated N = empty_ord.saturated N"
 
 (* lem:intersect-static-ref-compl-indep-of-sqsubset *)
 lemma static_empty_ord_inter_equiv_static_inter:
-  "static_refutational_complete_calculus Bot_F Inf_F entails_Q Red_Inf_Q Red_F_Q =
-  static_refutational_complete_calculus Bot_F Inf_F entails_Q Red_Inf_Q Red_F_\<G>_empty"
-  unfolding static_refutational_complete_calculus_def
-  by (simp add: empty_ord.calculus_with_red_crit_axioms calculus_with_red_crit_axioms)
+  "statically_complete_calculus Bot_F Inf_F entails_Q Red_Inf_Q Red_F_Q =
+  statically_complete_calculus Bot_F Inf_F entails_Q Red_Inf_Q Red_F_\<G>_empty"
+  unfolding statically_complete_calculus_def
+  by (simp add: empty_ord.calculus_axioms calculus_axioms)
 
 (* thm:intersect-static-ref-compl-is-dyn-ref-compl-with-order *)
-theorem stat_eq_dyn_ref_comp_fam_inter: "static_refutational_complete_calculus Bot_F Inf_F
+theorem stat_eq_dyn_ref_comp_fam_inter: "statically_complete_calculus Bot_F Inf_F
     entails_Q Red_Inf_Q Red_F_\<G>_empty =
-  dynamic_refutational_complete_calculus Bot_F Inf_F entails_Q Red_Inf_Q Red_F_Q"
+  dynamically_complete_calculus Bot_F Inf_F entails_Q Red_Inf_Q Red_F_Q"
   using dyn_equiv_stat static_empty_ord_inter_equiv_static_inter by blast
 
 end

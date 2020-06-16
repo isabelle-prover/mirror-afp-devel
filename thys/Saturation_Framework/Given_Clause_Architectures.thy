@@ -16,7 +16,7 @@ begin
 
 subsection \<open>Basis of the Given Clause Prover Architectures\<close>
 
-locale prover_architecture_basis = std?: labeled_lifting_with_red_crit_family Bot_F Inf_F Bot_G Q
+locale given_clause_basis = std?: labeled_lifting_intersection Bot_F Inf_F Bot_G Q
   entails_q Inf_G_q Red_Inf_q Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL
   for
     Bot_F :: "'f set"
@@ -45,7 +45,7 @@ locale prover_architecture_basis = std?: labeled_lifting_with_red_crit_family Bo
     active_minimal: "l2 \<noteq> active \<Longrightarrow> active \<sqsubset>l l2" and
     at_least_two_labels: "\<exists>l2. active \<sqsubset>l l2" and
     inf_never_active: "\<iota> \<in> Inf_FL \<Longrightarrow> snd (concl_of \<iota>) \<noteq> active" and
-    static_ref_comp: "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>)
+    static_ref_comp: "statically_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>)
       no_labels.Red_Inf_\<G>_Q no_labels.Red_F_\<G>_empty"
 begin
 
@@ -156,29 +156,29 @@ lemma passive_subset_insert[simp]:
 lemma passive_subset_union[simp]: "passive_subset (M \<union> N) = passive_subset M \<union> passive_subset N"
   unfolding passive_subset_def by auto
 
-sublocale std?: static_refutational_complete_calculus Bot_FL Inf_FL "(\<Turnstile>\<inter>\<G>L)" Red_Inf_Q Red_F_Q
+sublocale std?: statically_complete_calculus Bot_FL Inf_FL "(\<Turnstile>\<inter>\<G>L)" Red_Inf_Q Red_F_Q
   using labeled_static_ref[OF static_ref_comp] .
 
 lemma standard_labeled_lifting_family:
   assumes q_in: "q \<in> Q"
-  shows "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q)
+  shows "lifting_intersection Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q)
     (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Prec_FL)"
 proof -
-  have "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q)
+  have "lifting_intersection Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q)
     (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g Cl Cl'. False)"
     using ord_fam_lifted_q[OF q_in] .
   then have "standard_lifting Bot_FL Inf_FL Bot_G (Inf_G_q q) (entails_q q) (Red_Inf_q q)
     (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q)"
     using lifted_q[OF q_in] by blast
-  then show "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q)
+  then show "lifting_intersection Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q)
     (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Prec_FL)"
     using wf_prec_FL
-    by (simp add: lifting_with_wf_ordering_family.intro lifting_with_wf_ordering_family_axioms.intro)
+    by (simp add: lifting_intersection.intro lifting_intersection_axioms.intro)
 qed
 
 sublocale standard_lifting_with_red_crit_family Inf_FL Bot_G Q Inf_G_q entails_q Red_Inf_q Red_F_q
   Bot_FL \<G>_F_L_q \<G>_Inf_L_q "\<lambda>g. Prec_FL"
-  using standard_labeled_lifting_family no_labels.ground.calculus_family_with_red_crit_family_axioms
+  using standard_labeled_lifting_family no_labels.ground.calculus_family_axioms
   by (simp add: standard_lifting_with_red_crit_family.intro
     standard_lifting_with_red_crit_family_axioms.intro)
 
@@ -190,8 +190,8 @@ lemma std_Red_Inf_Q_eq: "std.Red_Inf_Q = Red_Inf_\<G>_Q"
 lemma std_Red_F_Q_eq: "std.Red_F_Q = Red_F_\<G>_empty"
   unfolding Red_F_\<G>_empty_q_def Red_F_\<G>_empty_L_q_def by simp
 
-sublocale static_refutational_complete_calculus Bot_FL Inf_FL "(\<Turnstile>\<inter>\<G>L)" Red_Inf_Q Red_F_Q
-  by unfold_locales (use static_refutational_complete std_Red_Inf_Q_eq in auto)
+sublocale statically_complete_calculus Bot_FL Inf_FL "(\<Turnstile>\<inter>\<G>L)" Red_Inf_Q Red_F_Q
+  by unfold_locales (use statically_complete std_Red_Inf_Q_eq in auto)
 
 (* lem:redundant-labeled-inferences *)
 lemma labeled_red_inf_eq_red_inf:
@@ -387,7 +387,7 @@ end
 
 subsection \<open>Given Clause Procedure\<close>
 
-locale given_clause = prover_architecture_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_Inf_q
+locale given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_Inf_q
   Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL Equiv_F Prec_F Prec_l active
   for
     Bot_F :: "'f set" and
@@ -689,7 +689,7 @@ proof -
     using labeled_entailment_lifting bot_entailed lhd_is by fastforce
   have fair: "fair D" using gc_fair[OF deriv init_state final_state] .
   then show ?thesis
-    using dynamic_refutational_complete_Liminf[OF labeled_b_in gc_to_red[OF deriv] fair
+    using dynamically__complete_Liminf[OF labeled_b_in gc_to_red[OF deriv] fair
         labeled_bot_entailed]
     by blast
 qed
@@ -716,7 +716,7 @@ end
 
 subsection \<open>Lazy Given Clause Procedure\<close>
 
-locale lazy_given_clause = prover_architecture_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_Inf_q
+locale lazy_given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_Inf_q
   Red_F_q \<G>_F_q \<G>_Inf_q Inf_FL Equiv_F Prec_F Prec_l active
   for
     Bot_F :: "'f set" and
@@ -1147,7 +1147,7 @@ proof -
   have "fair (lmap snd D)"
     using lgc_fair[OF deriv init_state final_state no_prems_init_active final_schedule] .
   then show ?thesis
-    using dynamic_refutational_complete_Liminf labeled_b_in lgc_to_red[OF deriv]
+    using dynamically__complete_Liminf labeled_b_in lgc_to_red[OF deriv]
       labeled_bot_entailed simp_snd_lmap std_Red_Inf_Q_eq
     by presburger
 qed

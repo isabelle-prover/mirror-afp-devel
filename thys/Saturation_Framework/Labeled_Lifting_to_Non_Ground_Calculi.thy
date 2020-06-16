@@ -13,7 +13,7 @@ begin
 
 subsection \<open>Labeled Lifting with a Family of Tiebreaker Orderings\<close>
 
-locale labeled_lifting_w_wf_ord_family = no_labels: lifting_with_wf_ordering_family Bot_F Inf_F
+locale labeled_tiebreaking_lifting = no_labels: lifting_intersection Bot_F Inf_F
   Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F \<G>_Inf Prec_F
   for
     Bot_F :: "'f set" and
@@ -70,7 +70,7 @@ next
     unfolding to_F_def using no_labels.inf_map Inf_FL_to_Inf_F by fastforce
 qed
 
-sublocale lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G entails_G Inf_G Red_Inf_G Red_F_G
+sublocale lifting_intersection Bot_FL Inf_FL Bot_G entails_G Inf_G Red_Inf_G Red_F_G
   \<G>_F_L \<G>_Inf_L "\<lambda>g Cl Cl'. False"
   by unfold_locales simp+
 
@@ -111,8 +111,8 @@ qed
 (* lem:labeled-static-ref-compl *)
 lemma stat_ref_comp_to_labeled_sta_ref_comp:
   assumes static:
-    "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<G>) no_labels.Red_Inf_\<G> no_labels.Red_F_\<G>"
-  shows "static_refutational_complete_calculus Bot_FL Inf_FL (\<Turnstile>\<G>L) Red_Inf_\<G> Red_F_\<G>"
+    "statically_complete_calculus Bot_F Inf_F (\<Turnstile>\<G>) no_labels.Red_Inf_\<G> no_labels.Red_F_\<G>"
+  shows "statically_complete_calculus Bot_FL Inf_FL (\<Turnstile>\<G>L) Red_Inf_\<G> Red_F_\<G>"
 proof
   fix Bl :: \<open>'f \<times> 'l\<close> and Nl :: \<open>('f \<times> 'l) set\<close>
   assume
@@ -127,8 +127,8 @@ proof
   have N_entails_B: "N \<Turnstile>\<G> {B}"
     using Nl_entails_Bl unfolding labeled_entailment_lifting N_def B_def by force
   have "\<exists>B' \<in> Bot_F. B' \<in> N" using B_in N_sat N_entails_B
-    using static[unfolded static_refutational_complete_calculus_def
-        static_refutational_complete_calculus_axioms_def] by blast
+    using static[unfolded statically_complete_calculus_def
+        statically_complete_calculus_axioms_def] by blast
   then obtain B' where in_Bot: "B' \<in> Bot_F" and in_N: "B' \<in> N" by force
   then have "B' \<in> fst ` Bot_FL" by fastforce
   obtain Bl' where in_Nl: "Bl' \<in> Nl" and fst_Bl': "fst Bl' = B'"
@@ -142,7 +142,7 @@ end
 
 subsection \<open>Labeled Lifting with a Family of Redundancy Criteria\<close>
 
-locale labeled_lifting_with_red_crit_family = no_labels: standard_lifting_with_red_crit_family Inf_F
+locale labeled_lifting_intersection = no_labels: standard_lifting_with_red_crit_family Inf_F
   Bot_G Q Inf_G_q entails_q Red_Inf_q Red_F_q Bot_F \<G>_F_q \<G>_Inf_q "\<lambda>g Cl Cl'. False"
   for
     Bot_F :: "'f set" and
@@ -191,17 +191,17 @@ abbreviation entails_\<G>_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Righta
 
 lemma lifting_q:
   assumes "q \<in> Q"
-  shows "labeled_lifting_w_wf_ord_family Bot_F Inf_F Bot_G (entails_q q) (Inf_G_q q) (Red_Inf_q q)
+  shows "labeled_tiebreaking_lifting Bot_F Inf_F Bot_G (entails_q q) (Inf_G_q q) (Red_Inf_q q)
     (Red_F_q q) (\<G>_F_q q) (\<G>_Inf_q q) (\<lambda>g Cl Cl'. False) Inf_FL"
   using assms no_labels.standard_lifting_family Inf_F_to_Inf_FL Inf_FL_to_Inf_F
-  by (simp add: labeled_lifting_w_wf_ord_family_axioms_def labeled_lifting_w_wf_ord_family_def)
+  by (simp add: labeled_tiebreaking_lifting_axioms_def labeled_tiebreaking_lifting_def)
 
 lemma lifted_q:
   assumes q_in: "q \<in> Q"
   shows "standard_lifting Bot_FL Inf_FL Bot_G (Inf_G_q q) (entails_q q) (Red_Inf_q q) (Red_F_q q)
     (\<G>_F_L_q q) (\<G>_Inf_L_q q)"
 proof -
-  interpret q_lifting: labeled_lifting_w_wf_ord_family Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q"
+  interpret q_lifting: labeled_tiebreaking_lifting Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q"
     "Red_Inf_q q" "Red_F_q q" "\<G>_F_q q" "\<G>_Inf_q q" "\<lambda>g Cl Cl'. False" Inf_FL
     using lifting_q[OF q_in] .
   have "\<G>_Inf_L_q q = q_lifting.\<G>_Inf_L"
@@ -212,7 +212,7 @@ qed
 
 lemma ord_fam_lifted_q:
   assumes q_in: "q \<in> Q"
-  shows "lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q) (Red_Inf_q q)
+  shows "lifting_intersection Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q) (Red_Inf_q q)
     (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g Cl Cl'. False)"
 proof -
   interpret standard_q_lifting: standard_lifting Bot_FL Inf_FL Bot_G "Inf_G_q q" "entails_q q"
@@ -222,7 +222,7 @@ proof -
     by (simp add: minimal_element.intro po_on_def transp_onI wfp_on_imp_irreflp_on)
   then show ?thesis
     using standard_q_lifting.standard_lifting_axioms
-    by (simp add: lifting_with_wf_ordering_family_axioms_def lifting_with_wf_ordering_family_def)
+    by (simp add: lifting_intersection_axioms_def lifting_intersection_def)
 qed
 
 definition Red_F_\<G>_empty_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
@@ -234,10 +234,9 @@ abbreviation Red_F_\<G>_empty_L :: "('f \<times> 'l) set \<Rightarrow> ('f \<tim
 
 lemma all_lifted_red_crit:
   assumes q_in: "q \<in> Q"
-  shows "calculus_with_red_crit Bot_FL Inf_FL (entails_\<G>_L_q q) (Red_Inf_\<G>_L_q q)
-    (Red_F_\<G>_empty_L_q q)"
+  shows "calculus Bot_FL Inf_FL (entails_\<G>_L_q q) (Red_Inf_\<G>_L_q q) (Red_F_\<G>_empty_L_q q)"
 proof -
-  interpret ord_q_lifting: lifting_with_wf_ordering_family Bot_FL Inf_FL Bot_G "entails_q q"
+  interpret ord_q_lifting: lifting_intersection Bot_FL Inf_FL Bot_G "entails_q q"
     "Inf_G_q q" "Red_Inf_q q" "Red_F_q q" "\<G>_F_L_q q" "\<G>_Inf_L_q q" "\<lambda>g Cl Cl'. False"
     using ord_fam_lifted_q[OF q_in] .
   have "Red_Inf_\<G>_L_q q = ord_q_lifting.Red_Inf_\<G>"
@@ -245,20 +244,20 @@ proof -
   moreover have "Red_F_\<G>_empty_L_q q = ord_q_lifting.Red_F_\<G>"
     unfolding Red_F_\<G>_empty_L_q_def ord_q_lifting.Red_F_\<G>_def by simp
   ultimately show ?thesis
-    using ord_q_lifting.calculus_with_red_crit_axioms by argo
+    using ord_q_lifting.calculus_axioms by argo
 qed
 
 lemma all_lifted_cons_rel:
   assumes q_in: "q \<in> Q"
   shows "consequence_relation Bot_FL (entails_\<G>_L_q q)"
-  using all_lifted_red_crit calculus_with_red_crit_def q_in by blast
+  using all_lifted_red_crit calculus_def q_in by blast
 
 sublocale consequence_relation_family Bot_FL Q entails_\<G>_L_q
   using all_lifted_cons_rel by (simp add: consequence_relation_family.intro no_labels.Q_nonempty)
 
-sublocale calculus_with_red_crit_family Bot_FL Inf_FL Q entails_\<G>_L_q Red_Inf_\<G>_L_q Red_F_\<G>_empty_L_q
-  using calculus_with_red_crit_family.intro[OF consequence_relation_family_axioms]
-  by (simp add: all_lifted_red_crit calculus_with_red_crit_family_axioms_def no_labels.Q_nonempty)
+sublocale intersection_calculus Bot_FL Inf_FL Q entails_\<G>_L_q Red_Inf_\<G>_L_q Red_F_\<G>_empty_L_q
+  using intersection_calculus.intro[OF consequence_relation_family_axioms]
+  by (simp add: all_lifted_red_crit intersection_calculus_axioms_def no_labels.Q_nonempty)
 
 lemma in_Inf_FL_imp_to_F_in_Inf_F: "\<iota> \<in> Inf_FL \<Longrightarrow> to_F \<iota> \<in> Inf_F"
   by (simp add: Inf_FL_to_Inf_F to_F_def)
@@ -331,9 +330,9 @@ qed
 
 (* thm:labeled-static-ref-compl-intersection *)
 theorem labeled_static_ref:
-  assumes calc: "static_refutational_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>) no_labels.Red_Inf_\<G>_Q
+  assumes calc: "statically_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>) no_labels.Red_Inf_\<G>_Q
     no_labels.Red_F_\<G>_empty"
-  shows "static_refutational_complete_calculus Bot_FL Inf_FL (\<Turnstile>\<inter>\<G>L) Red_Inf_Q Red_F_Q"
+  shows "statically_complete_calculus Bot_FL Inf_FL (\<Turnstile>\<inter>\<G>L) Red_Inf_Q Red_F_Q"
 proof
   fix Bl :: \<open>'f \<times> 'l\<close> and Nl :: \<open>('f \<times> 'l) set\<close>
   assume
@@ -348,8 +347,8 @@ proof
   have N_entails_B: "N \<Turnstile>\<inter>\<G> {B}"
     using Nl_entails_Bl unfolding labeled_entailment_lifting N_def B_def by force
   have "\<exists>B' \<in> Bot_F. B' \<in> N" using B_in N_sat N_entails_B
-      calc[unfolded static_refutational_complete_calculus_def
-        static_refutational_complete_calculus_axioms_def]
+      calc[unfolded statically_complete_calculus_def
+        statically_complete_calculus_axioms_def]
     by blast
   then obtain B' where in_Bot: "B' \<in> Bot_F" and in_N: "B' \<in> N" by force
   then have "B' \<in> fst ` Bot_FL" by fastforce
