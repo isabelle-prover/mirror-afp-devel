@@ -151,7 +151,7 @@ end
 
 subsection \<open>Lifting with a Family of Tiebreaker Orderings\<close>
 
-locale lifting_intersection =
+locale tiebreaker_lifting =
   standard_lifting Bot_F Inf_F Bot_G Inf_G entails_G Red_Inf_G Red_F_G \<G>_F \<G>_Inf
   for
     Bot_F :: \<open>'f set\<close> and
@@ -473,30 +473,30 @@ lemma wf_empty_rel: "minimal_element (\<lambda>_ _. False) UNIV"
   by (simp add: minimal_element.intro po_on_def transp_onI wfp_on_imp_irreflp_on)
 
 lemma any_to_empty_order_lifting:
-  "lifting_intersection Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F
-    \<G>_Inf Prec_F_g \<Longrightarrow> lifting_intersection Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
+  "tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F
+    \<G>_Inf Prec_F_g \<Longrightarrow> tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
     Red_F_G \<G>_F \<G>_Inf (\<lambda>g C C'. False)"
 proof -
   fix Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F \<G>_Inf Prec_F_g
-  assume lift: "lifting_intersection Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
+  assume lift: "tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
     Red_F_G \<G>_F \<G>_Inf Prec_F_g"
   then interpret lift_g:
-    lifting_intersection Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F
+    tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F
       \<G>_Inf Prec_F_g
     by auto
-  show "lifting_intersection Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G
+  show "tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G
     \<G>_F \<G>_Inf (\<lambda>g C C'. False)"
     by (simp add: wf_empty_rel lift_g.standard_lifting_axioms
-      lifting_intersection_axioms.intro lifting_intersection_def)
+      tiebreaker_lifting_axioms.intro tiebreaker_lifting_def)
 qed
 
 lemma po_on_empty_rel[simp]: "po_on (\<lambda>_ _. False) UNIV"
   unfolding po_on_def irreflp_on_def transp_on_def by auto
 
 locale lifting_equivalence_with_empty_order =
-  any_order_lifting: lifting_intersection Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
+  any_order_lifting: tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
     Red_F_G \<G>_F \<G>_Inf Prec_F_g +
-  empty_order_lifting: lifting_intersection Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
+  empty_order_lifting: tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
     Red_F_G \<G>_F \<G>_Inf "\<lambda>g C C'. False"
   for
     \<G>_F :: \<open>'f \<Rightarrow> 'g set\<close> and
@@ -510,7 +510,7 @@ locale lifting_equivalence_with_empty_order =
     Red_F_G :: \<open>'g set \<Rightarrow> 'g set\<close> and
     Prec_F_g :: \<open>'g \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> bool\<close>
 
-sublocale lifting_intersection \<subseteq> lifting_equivalence_with_empty_order
+sublocale tiebreaker_lifting \<subseteq> lifting_equivalence_with_empty_order
   by unfold_locales simp+
 
 context lifting_equivalence_with_empty_order
@@ -543,7 +543,7 @@ end
 
 subsection \<open>Lifting with a Family of Redundancy Criteria\<close>
 
-locale standard_lifting_with_red_crit_family = inference_system Inf_F
+locale lifting_intersection = inference_system Inf_F
   + ground: calculus_family Bot_G Q Inf_G_q entails_q Red_Inf_q Red_F_q
   for
     Inf_F :: "'f inference set" and
@@ -560,7 +560,7 @@ locale standard_lifting_with_red_crit_family = inference_system Inf_F
     Prec_F_g :: "'g \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> bool"
   assumes
     standard_lifting_family:
-      "\<forall>q \<in> Q. lifting_intersection Bot_F Inf_F Bot_G (entails_q q) (Inf_G_q q)
+      "\<forall>q \<in> Q. tiebreaker_lifting Bot_F Inf_F Bot_G (entails_q q) (Inf_G_q q)
          (Red_Inf_q q) (Red_F_q q) (\<G>_F_q q) (\<G>_Inf_q q) Prec_F_g"
 begin
 
@@ -586,7 +586,7 @@ lemma red_crit_lifting_family:
   shows "calculus Bot_F Inf_F (entails_\<G>_q q) (Red_Inf_\<G>_q q) (Red_F_\<G>_q_g q)"
 proof -
   interpret wf_lift:
-    lifting_intersection Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_Inf_q q"
+    tiebreaker_lifting Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_Inf_q q"
       "Red_F_q q" "\<G>_F_q q" "\<G>_Inf_q q" Prec_F_g
     using standard_lifting_family q_in by metis
   have "Red_Inf_\<G>_q q = wf_lift.Red_Inf_\<G>"
@@ -602,7 +602,7 @@ lemma red_crit_lifting_family_empty_ord:
   shows "calculus Bot_F Inf_F (entails_\<G>_q q) (Red_Inf_\<G>_q q) (Red_F_\<G>_empty_q q)"
 proof -
   interpret wf_lift:
-    lifting_intersection Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_Inf_q q"
+    tiebreaker_lifting Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_Inf_q q"
       "Red_F_q q" "\<G>_F_q q" "\<G>_Inf_q q" Prec_F_g
     using standard_lifting_family q_in by metis
   have "Red_Inf_\<G>_q q = wf_lift.Red_Inf_\<G>"
@@ -621,7 +621,7 @@ next
   fix qi
   assume qi_in: "qi \<in> Q"
 
-  interpret lift: lifting_intersection Bot_F Inf_F Bot_G "entails_q qi" "Inf_G_q qi"
+  interpret lift: tiebreaker_lifting Bot_F Inf_F Bot_G "entails_q qi" "Inf_G_q qi"
     "Red_Inf_q qi" "Red_F_q qi" "\<G>_F_q qi" "\<G>_Inf_q qi" Prec_F_g
     using qi_in by (metis standard_lifting_family)
 
@@ -711,7 +711,7 @@ proof (standard, clarify)
   have n_q_sat: "q_calc.saturated N"
     using q_in sat_int_to_sat_q sat_n by simp
   interpret lifted_q_calc:
-    lifting_intersection Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_Inf_q q"
+    tiebreaker_lifting Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_Inf_q q"
       "Red_F_q q" "\<G>_F_q q" "\<G>_Inf_q q"
     using q_in by (simp add: standard_lifting_family)
   have n_lift_sat: "lifted_q_calc.empty_order_lifting.saturated N"

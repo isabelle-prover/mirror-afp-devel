@@ -13,7 +13,7 @@ begin
 
 subsection \<open>Labeled Lifting with a Family of Tiebreaker Orderings\<close>
 
-locale labeled_tiebreaking_lifting = no_labels: lifting_intersection Bot_F Inf_F
+locale labeled_tiebreaking_lifting = no_labels: tiebreaker_lifting Bot_F Inf_F
   Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F \<G>_Inf Prec_F
   for
     Bot_F :: "'f set" and
@@ -70,8 +70,8 @@ next
     unfolding to_F_def using no_labels.inf_map Inf_FL_to_Inf_F by fastforce
 qed
 
-sublocale lifting_intersection Bot_FL Inf_FL Bot_G entails_G Inf_G Red_Inf_G Red_F_G
-  \<G>_F_L \<G>_Inf_L "\<lambda>g Cl Cl'. False"
+sublocale tiebreaker_lifting Bot_FL Inf_FL Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F_L \<G>_Inf_L
+  "\<lambda>g Cl Cl'. False"
   by unfold_locales simp+
 
 notation entails_\<G> (infix "\<Turnstile>\<G>L" 50)
@@ -142,7 +142,7 @@ end
 
 subsection \<open>Labeled Lifting with a Family of Redundancy Criteria\<close>
 
-locale labeled_lifting_intersection = no_labels: standard_lifting_with_red_crit_family Inf_F
+locale labeled_lifting_intersection = no_labels: lifting_intersection Inf_F
   Bot_G Q Inf_G_q entails_q Red_Inf_q Red_F_q Bot_F \<G>_F_q \<G>_Inf_q "\<lambda>g Cl Cl'. False"
   for
     Bot_F :: "'f set" and
@@ -212,7 +212,7 @@ qed
 
 lemma ord_fam_lifted_q:
   assumes q_in: "q \<in> Q"
-  shows "lifting_intersection Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q) (Red_Inf_q q)
+  shows "tiebreaker_lifting Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q) (Red_Inf_q q)
     (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g Cl Cl'. False)"
 proof -
   interpret standard_q_lifting: standard_lifting Bot_FL Inf_FL Bot_G "Inf_G_q q" "entails_q q"
@@ -222,7 +222,7 @@ proof -
     by (simp add: minimal_element.intro po_on_def transp_onI wfp_on_imp_irreflp_on)
   then show ?thesis
     using standard_q_lifting.standard_lifting_axioms
-    by (simp add: lifting_intersection_axioms_def lifting_intersection_def)
+    by (simp add: tiebreaker_lifting_axioms_def tiebreaker_lifting_def)
 qed
 
 definition Red_F_\<G>_empty_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set" where
@@ -236,7 +236,7 @@ lemma all_lifted_red_crit:
   assumes q_in: "q \<in> Q"
   shows "calculus Bot_FL Inf_FL (entails_\<G>_L_q q) (Red_Inf_\<G>_L_q q) (Red_F_\<G>_empty_L_q q)"
 proof -
-  interpret ord_q_lifting: lifting_intersection Bot_FL Inf_FL Bot_G "entails_q q"
+  interpret ord_q_lifting: tiebreaker_lifting Bot_FL Inf_FL Bot_G "entails_q q"
     "Inf_G_q q" "Red_Inf_q q" "Red_F_q q" "\<G>_F_L_q q" "\<G>_Inf_L_q q" "\<lambda>g Cl Cl'. False"
     using ord_fam_lifted_q[OF q_in] .
   have "Red_Inf_\<G>_L_q q = ord_q_lifting.Red_Inf_\<G>"

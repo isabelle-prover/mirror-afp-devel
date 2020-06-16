@@ -159,28 +159,26 @@ lemma passive_subset_union[simp]: "passive_subset (M \<union> N) = passive_subse
 sublocale std?: statically_complete_calculus Bot_FL Inf_FL "(\<Turnstile>\<inter>\<G>L)" Red_Inf_Q Red_F_Q
   using labeled_static_ref[OF static_ref_comp] .
 
-lemma standard_labeled_lifting_family:
+lemma labeled_tiebreaker_lifting:
   assumes q_in: "q \<in> Q"
-  shows "lifting_intersection Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q)
+  shows "tiebreaker_lifting Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q)
     (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Prec_FL)"
 proof -
-  have "lifting_intersection Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q)
+  have "tiebreaker_lifting Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q)
     (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g Cl Cl'. False)"
     using ord_fam_lifted_q[OF q_in] .
   then have "standard_lifting Bot_FL Inf_FL Bot_G (Inf_G_q q) (entails_q q) (Red_Inf_q q)
     (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q)"
     using lifted_q[OF q_in] by blast
-  then show "lifting_intersection Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q)
+  then show "tiebreaker_lifting Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q)
     (Red_Inf_q q) (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g. Prec_FL)"
-    using wf_prec_FL
-    by (simp add: lifting_intersection.intro lifting_intersection_axioms.intro)
+    using wf_prec_FL by (simp add: tiebreaker_lifting.intro tiebreaker_lifting_axioms.intro)
 qed
 
-sublocale standard_lifting_with_red_crit_family Inf_FL Bot_G Q Inf_G_q entails_q Red_Inf_q Red_F_q
+sublocale lifting_intersection Inf_FL Bot_G Q Inf_G_q entails_q Red_Inf_q Red_F_q
   Bot_FL \<G>_F_L_q \<G>_Inf_L_q "\<lambda>g. Prec_FL"
-  using standard_labeled_lifting_family no_labels.ground.calculus_family_axioms
-  by (simp add: standard_lifting_with_red_crit_family.intro
-    standard_lifting_with_red_crit_family_axioms.intro)
+  using labeled_tiebreaker_lifting no_labels.ground.calculus_family_axioms
+  unfolding lifting_intersection_def by (simp add: lifting_intersection_axioms.intro)
 
 notation derive (infix "\<rhd>RedL" 50)
 
