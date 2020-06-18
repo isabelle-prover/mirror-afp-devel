@@ -58,7 +58,7 @@ where
 
 text \<open>Write a global register. win should be initialised as NWINDOWS.\<close>
 fun (sequential) global_reg_mod :: "word32 \<Rightarrow> nat \<Rightarrow> user_reg_type \<Rightarrow> 
-  ('a::len0) sparc_state \<Rightarrow> ('a) sparc_state"
+  ('a::len) sparc_state \<Rightarrow> ('a) sparc_state"
 where
 "global_reg_mod data_w32 0 ur state = state"
 |
@@ -71,7 +71,7 @@ where
 )"
 
 text \<open>Compute the next window.\<close>
-definition next_window :: "('a::len0) window_size \<Rightarrow> ('a) window_size"
+definition next_window :: "('a::len) window_size \<Rightarrow> ('a) window_size"
 where
 "next_window win \<equiv>
   if (uint win) < (NWINDOWS - 1) then (win + 1)
@@ -79,7 +79,7 @@ where
 "
 
 text \<open>Compute the previous window.\<close>
-definition pre_window :: "('a::len0) window_size \<Rightarrow> ('a::len0) window_size"
+definition pre_window :: "('a::len) window_size \<Rightarrow> ('a::len) window_size"
 where
 "pre_window win \<equiv>
   if (uint win) > 0 then (win - 1)
@@ -88,7 +88,7 @@ where
 
 text \<open>write an output register. 
   Also write ur+16 of the previous window.\<close>
-definition out_reg_mod :: "word32 \<Rightarrow> ('a::len0) window_size \<Rightarrow> user_reg_type \<Rightarrow> 
+definition out_reg_mod :: "word32 \<Rightarrow> ('a::len) window_size \<Rightarrow> user_reg_type \<Rightarrow> 
   ('a) sparc_state \<Rightarrow> ('a) sparc_state"
 where
 "out_reg_mod data_w32 win ur state \<equiv>
@@ -103,7 +103,7 @@ where
 
 text \<open>Write a input register.
   Also write ur-16 of the next window.\<close>
-definition in_reg_mod :: "word32 \<Rightarrow> ('a::len0) window_size \<Rightarrow> user_reg_type \<Rightarrow>
+definition in_reg_mod :: "word32 \<Rightarrow> ('a::len) window_size \<Rightarrow> user_reg_type \<Rightarrow>
   ('a) sparc_state \<Rightarrow> ('a) sparc_state"
 where
 "in_reg_mod data_w32 win ur state \<equiv>
@@ -117,7 +117,7 @@ where
 "
 
 text \<open>Do not modify r[0].\<close>
-definition user_reg_mod :: "word32 \<Rightarrow> ('a::len0) window_size \<Rightarrow> user_reg_type \<Rightarrow> 
+definition user_reg_mod :: "word32 \<Rightarrow> ('a::len) window_size \<Rightarrow> user_reg_type \<Rightarrow> 
  ('a) sparc_state \<Rightarrow> ('a) sparc_state"
 where
 "user_reg_mod data_w32 win ur state \<equiv>
@@ -910,7 +910,7 @@ text \<open>Given a word32 value, a word4 window, a user register,
         write the value in the user register. 
         N.B. CWP is a 5 bit value, but we only use the last 4 bits,
         since there are only 16 windows.\<close>
-definition write_reg :: "word32 \<Rightarrow> ('a::len0) word \<Rightarrow> user_reg_type \<Rightarrow> 
+definition write_reg :: "word32 \<Rightarrow> ('a::len) word \<Rightarrow> user_reg_type \<Rightarrow> 
   ('a,unit) sparc_state_monad"
 where "write_reg w win ur \<equiv>
   do

@@ -1135,7 +1135,7 @@ where "decode_instruction w \<equiv>
 "
 
 text \<open>Get the current window from the PSR\<close>
-definition get_curr_win::"unit \<Rightarrow> ('a,('a::len0 window_size)) sparc_state_monad"
+definition get_curr_win::"unit \<Rightarrow> ('a,('a::len window_size)) sparc_state_monad"
 where "get_curr_win _ \<equiv> 
   do
     curr_win \<leftarrow> gets (\<lambda>s. (ucast (get_CWP (cpu_reg_val PSR s))));
@@ -1143,7 +1143,7 @@ where "get_curr_win _ \<equiv>
   od"
 
 text \<open>Operational semantics for CALL\<close>
-definition call_instr::"instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition call_instr::"instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "call_instr instr \<equiv>
   let op_list = snd instr;
       mem_addr = ((ucast (get_operand_w30 (op_list!0)))::word32) << 2
@@ -1251,7 +1251,7 @@ definition nop_instr::"instruction \<Rightarrow> ('a,unit) sparc_state_monad"
 where "nop_instr instr \<equiv> return ()"
 
 text \<open>Operational semantics for SETHI\<close>
-definition sethi_instr::"instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition sethi_instr::"instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "sethi_instr instr \<equiv>
   let op_list = snd instr;
       imm22 = get_operand_w22 (op_list!0); 
@@ -1272,7 +1272,7 @@ text \<open>
   else \<open>operand2 = sign_ext13(simm13)\<close>.
   \<open>op_list\<close> should be \<open>[i,rs1,rs2,\<dots>]\<close> or \<open>[i,rs1,simm13,\<dots>]\<close>.
 \<close>
-definition get_operand2::"inst_operand list \<Rightarrow> ('a::len0) sparc_state
+definition get_operand2::"inst_operand list \<Rightarrow> ('a::len) sparc_state
   \<Rightarrow> virtua_address"
 where "get_operand2 op_list s \<equiv>
   let flagi = get_operand_flag (op_list!0);
@@ -1293,7 +1293,7 @@ text \<open>
   else \<open>operand2_val = sint sign_ext13(simm13)\<close>.
   \<open>op_list\<close> should be \<open>[i,rs1,rs2,\<dots>]\<close> or \<open>[i,rs1,simm13,\<dots>]\<close>.
 \<close>
-definition get_operand2_val::"inst_operand list \<Rightarrow> ('a::len0) sparc_state \<Rightarrow> int"
+definition get_operand2_val::"inst_operand list \<Rightarrow> ('a::len) sparc_state \<Rightarrow> int"
 where "get_operand2_val op_list s \<equiv>
   let flagi = get_operand_flag (op_list!0);
       curr_win = ucast (get_CWP (cpu_reg_val PSR s))
@@ -1313,7 +1313,7 @@ text \<open>
   else \<open>addr = r[rs1] + sign_ext13(simm13)\<close>.
   \<open>op_list\<close> should be \<open>[i,rs1,rs2,\<dots>]\<close> or \<open>[i,rs1,simm13,\<dots>]\<close>.
 \<close>
-definition get_addr::"inst_operand list \<Rightarrow> ('a::len0) sparc_state \<Rightarrow> virtua_address"
+definition get_addr::"inst_operand list \<Rightarrow> ('a::len) sparc_state \<Rightarrow> virtua_address"
 where "get_addr op_list s \<equiv>
   let rs1 = get_operand_w5 (op_list!1);
       curr_win = ucast (get_CWP (cpu_reg_val PSR s));
@@ -1324,7 +1324,7 @@ where "get_addr op_list s \<equiv>
 "
 
 text \<open>Operational semantics for JMPL\<close>
-definition jmpl_instr::"instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition jmpl_instr::"instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "jmpl_instr instr \<equiv>
   let op_list = snd instr;
       rd = get_operand_w5 (op_list!3)      
@@ -1352,7 +1352,7 @@ where "jmpl_instr instr \<equiv>
   od"
 
 text \<open>Operational semantics for RETT\<close>
-definition rett_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition rett_instr :: "instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "rett_instr instr \<equiv>
   let op_list = snd instr in
   do
@@ -1411,7 +1411,7 @@ where "rett_instr instr \<equiv>
       od
   od"
 
-definition save_retore_sub1 :: "word32 \<Rightarrow> word5 \<Rightarrow> word5 \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition save_retore_sub1 :: "word32 \<Rightarrow> word5 \<Rightarrow> word5 \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "save_retore_sub1 result new_cwp rd \<equiv>
   do
   psr_val \<leftarrow> gets (\<lambda>s. (cpu_reg_val PSR s));
@@ -1422,7 +1422,7 @@ where "save_retore_sub1 result new_cwp rd \<equiv>
   od"
 
 text \<open>Operational semantics for SAVE and RESTORE.\<close>
-definition save_restore_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition save_restore_instr :: "instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "save_restore_instr instr \<equiv>
   let instr_name = fst instr;
       op_list = snd instr;
@@ -1470,7 +1470,7 @@ where "flush_Ibuf_and_pipeline \<equiv> undefined"
 
 text \<open>Operational semantics for FLUSH. 
         Flush the all the caches.\<close>
-definition flush_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition flush_instr :: "instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "flush_instr instr \<equiv>
   let op_list = snd instr in
   do
@@ -1483,7 +1483,7 @@ where "flush_instr instr \<equiv>
 
 text \<open>Operational semantics for read state register instructions. 
         We do not consider RDASR here.\<close>
-definition read_state_reg_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition read_state_reg_instr :: "instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "read_state_reg_instr instr \<equiv> 
   let instr_name = fst instr;
       op_list = snd instr;
@@ -1541,7 +1541,7 @@ where "read_state_reg_instr instr \<equiv>
 
 text \<open>Operational semantics for write state register instructions. 
         We do not consider WRASR here.\<close>
-definition write_state_reg_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition write_state_reg_instr :: "instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "write_state_reg_instr instr \<equiv>
   let instr_name = fst instr;
       op_list = snd instr;
@@ -1656,7 +1656,7 @@ where "logical_new_psr_val result s \<equiv>
 "
 
 definition logical_instr_sub1 :: "sparc_operation \<Rightarrow> word32 \<Rightarrow> 
-  ('a::len0,unit) sparc_state_monad"
+  ('a::len,unit) sparc_state_monad"
 where
 "logical_instr_sub1 instr_name result \<equiv>
   if instr_name \<in> {logic_type ANDcc,logic_type ANDNcc,logic_type ORcc,
@@ -1670,7 +1670,7 @@ where
 "
 
 text \<open>Operational semantics for logical instructions.\<close>
-definition logical_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition logical_instr :: "instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "logical_instr instr \<equiv>
   let instr_name = fst instr;
       op_list = snd instr;
@@ -1689,7 +1689,7 @@ where "logical_instr instr \<equiv>
   od"
 
 text \<open>Operational semantics for shift instructions.\<close>
-definition shift_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition shift_instr :: "instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "shift_instr instr \<equiv>
   let instr_name = fst instr;
       op_list = snd instr;
@@ -1726,7 +1726,7 @@ where "shift_instr instr \<equiv>
   od"
 
 definition add_instr_sub1 :: "sparc_operation \<Rightarrow> word32 \<Rightarrow> word32 \<Rightarrow> word32
-  \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+  \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "add_instr_sub1 instr_name result rs1_val operand2 \<equiv>
   if instr_name \<in> {arith_type ADDcc,arith_type ADDXcc} then
       do
@@ -1759,7 +1759,7 @@ where "add_instr_sub1 instr_name result rs1_val operand2 \<equiv>
 
 text \<open>Operational semantics for add instructions. 
         These include ADD, ADDcc, ADDX.\<close>
-definition add_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition add_instr :: "instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "add_instr instr \<equiv>
   let instr_name = fst instr;
       op_list = snd instr;
@@ -1784,7 +1784,7 @@ where "add_instr instr \<equiv>
   od"
 
 definition sub_instr_sub1 :: "sparc_operation \<Rightarrow> word32 \<Rightarrow> word32 \<Rightarrow> word32
-  \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+  \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "sub_instr_sub1 instr_name result rs1_val operand2 \<equiv>
   if instr_name \<in> {arith_type SUBcc,arith_type SUBXcc} then
       do
@@ -1817,7 +1817,7 @@ where "sub_instr_sub1 instr_name result rs1_val operand2 \<equiv>
 
 text \<open>Operational semantics for subtract instructions. 
         These include SUB, SUBcc, SUBX.\<close>
-definition sub_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition sub_instr :: "instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "sub_instr instr \<equiv>
   let instr_name = fst instr;
       op_list = snd instr;
@@ -1842,7 +1842,7 @@ where "sub_instr instr \<equiv>
   od"
 
 definition mul_instr_sub1 :: "sparc_operation \<Rightarrow> word32 \<Rightarrow> 
-  ('a::len0,unit) sparc_state_monad"
+  ('a::len,unit) sparc_state_monad"
 where "mul_instr_sub1 instr_name result \<equiv>
   if instr_name \<in> {arith_type SMULcc,arith_type UMULcc} then
       do
@@ -1862,7 +1862,7 @@ where "mul_instr_sub1 instr_name result \<equiv>
 "
 
 text \<open>Operational semantics for multiply instructions.\<close>
-definition mul_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition mul_instr :: "instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "mul_instr instr \<equiv>
   let instr_name = fst instr;
       op_list = snd instr;
@@ -1933,7 +1933,7 @@ where "div_comp_result i temp_V temp_64bit \<equiv>
   else ((ucast temp_64bit)::word32)"
 
 definition div_write_new_val :: "instruction \<Rightarrow> word32 \<Rightarrow> word1 \<Rightarrow> 
-  ('a::len0,unit) sparc_state_monad"
+  ('a::len,unit) sparc_state_monad"
 where "div_write_new_val i result temp_V \<equiv>
   if (fst i) \<in> {arith_type UDIVcc,arith_type SDIVcc} then
   do
@@ -1952,7 +1952,7 @@ where "div_write_new_val i result temp_V \<equiv>
   else return ()"
 
 definition div_comp :: "instruction \<Rightarrow> word5 \<Rightarrow> word5 \<Rightarrow> virtua_address \<Rightarrow>
-  ('a::len0,unit) sparc_state_monad"
+  ('a::len,unit) sparc_state_monad"
 where "div_comp instr rs1 rd operand2 \<equiv>
   do
     curr_win \<leftarrow> get_curr_win();
@@ -1973,7 +1973,7 @@ where "div_comp instr rs1 rd operand2 \<equiv>
   od"
 
 text \<open>Operational semantics for divide instructions.\<close>
-definition div_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition div_instr :: "instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "div_instr instr \<equiv>
   let instr_name = fst instr;
       op_list = snd instr;
@@ -2035,7 +2035,7 @@ where "ld_asi instr s_val \<equiv>
 "
 
 definition load_sub2 :: "virtua_address \<Rightarrow> asi_type \<Rightarrow> word5 \<Rightarrow> 
-  ('a::len0) window_size \<Rightarrow> word32 \<Rightarrow> ('a,unit) sparc_state_monad"
+  ('a::len) window_size \<Rightarrow> word32 \<Rightarrow> ('a,unit) sparc_state_monad"
 where "load_sub2 address asi rd curr_win word0 \<equiv>
   do
     write_reg word0 curr_win ((AND) rd 0b11110);
@@ -2054,9 +2054,9 @@ where "load_sub2 address asi rd curr_win word0 \<equiv>
     od
   od"
 
-definition load_sub3 :: "instruction \<Rightarrow> ('a::len0) window_size \<Rightarrow>
+definition load_sub3 :: "instruction \<Rightarrow> ('a::len) window_size \<Rightarrow>
   word5 \<Rightarrow> asi_type \<Rightarrow> virtua_address \<Rightarrow>
-  ('a::len0,unit) sparc_state_monad"
+  ('a::len,unit) sparc_state_monad"
 where "load_sub3 instr curr_win rd asi address \<equiv>
   do
     (result,new_state) \<leftarrow> gets (\<lambda>s. (memory_read asi address s));
@@ -2084,7 +2084,7 @@ where "load_sub3 instr curr_win rd asi address \<equiv>
   od"
 
 definition load_sub1 :: "instruction \<Rightarrow> word5 \<Rightarrow> word1 \<Rightarrow>
-  ('a::len0,unit) sparc_state_monad"
+  ('a::len,unit) sparc_state_monad"
 where "load_sub1 instr rd s_val \<equiv>
   do
     curr_win \<leftarrow> get_curr_win();
@@ -2107,7 +2107,7 @@ where "load_sub1 instr rd s_val \<equiv>
   od"
 
 text \<open>Operational semantics for Load instructions.\<close>
-definition load_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition load_instr :: "instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "load_instr instr \<equiv>
   let instr_name = fst instr;
       op_list = snd instr;
@@ -2171,7 +2171,7 @@ where "st_byte_mask instr address \<equiv>
       (0b0001::word4)
 "
 
-definition st_data0 :: "instruction \<Rightarrow> ('a::len0) window_size \<Rightarrow> 
+definition st_data0 :: "instruction \<Rightarrow> ('a::len) window_size \<Rightarrow> 
   word5 \<Rightarrow> virtua_address \<Rightarrow> ('a) sparc_state \<Rightarrow> reg_type"
 where "st_data0 instr curr_win rd address s \<equiv>
   if (fst instr) \<in> {load_store_type STD,load_store_type STDA} then 
@@ -2194,9 +2194,9 @@ where "st_data0 instr curr_win rd address s \<equiv>
         user_reg_val curr_win rd s
 "
 
-definition store_sub2 :: "instruction \<Rightarrow> ('a::len0) window_size \<Rightarrow>
+definition store_sub2 :: "instruction \<Rightarrow> ('a::len) window_size \<Rightarrow>
   word5 \<Rightarrow> asi_type \<Rightarrow> virtua_address \<Rightarrow> 
-  ('a::len0,unit) sparc_state_monad"
+  ('a::len,unit) sparc_state_monad"
 where "store_sub2 instr curr_win rd asi address \<equiv>
   do
     byte_mask \<leftarrow> gets (\<lambda>s. (st_byte_mask instr address));
@@ -2233,7 +2233,7 @@ where "store_sub2 instr curr_win rd asi address \<equiv>
   od"
 
 definition store_sub1 :: "instruction \<Rightarrow> word5 \<Rightarrow> word1 \<Rightarrow> 
-  ('a::len0,unit) sparc_state_monad"
+  ('a::len,unit) sparc_state_monad"
 where "store_sub1 instr rd s_val \<equiv>
   do
     curr_win \<leftarrow> get_curr_win();
@@ -2264,7 +2264,7 @@ where "store_sub1 instr rd s_val \<equiv>
 
 text \<open>Operational semantics for Store instructions.\<close>
 definition store_instr :: "instruction \<Rightarrow> 
-  ('a::len0,unit) sparc_state_monad"
+  ('a::len,unit) sparc_state_monad"
 where "store_instr instr \<equiv>
   let instr_name = fst instr;
       op_list = snd instr;
@@ -2333,7 +2333,7 @@ where "ldst_byte_mask instr address \<equiv>
 "
 
 definition load_store_sub1 :: "instruction \<Rightarrow> word5 \<Rightarrow> word1 \<Rightarrow>
-  ('a::len0,unit) sparc_state_monad"
+  ('a::len,unit) sparc_state_monad"
 where "load_store_sub1 instr rd s_val \<equiv>
   do
     curr_win \<leftarrow> get_curr_win();
@@ -2395,7 +2395,7 @@ where "load_store_sub1 instr rd s_val \<equiv>
   od"
 
 text \<open>Operational semantics for atomic load-store.\<close>
-definition load_store_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition load_store_instr :: "instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "load_store_instr instr \<equiv>
   let instr_name = fst instr;
       op_list = snd instr;
@@ -2423,7 +2423,7 @@ where "load_store_instr instr \<equiv>
   od"
 
 definition swap_sub1 :: "instruction \<Rightarrow> word5 \<Rightarrow> word1 \<Rightarrow>
-  ('a::len0,unit) sparc_state_monad"
+  ('a::len,unit) sparc_state_monad"
 where "swap_sub1 instr rd s_val \<equiv>
   do
     curr_win \<leftarrow> get_curr_win();
@@ -2484,7 +2484,7 @@ where "swap_sub1 instr rd s_val \<equiv>
   od"
 
 text \<open>Operational semantics for swap.\<close>
-definition swap_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition swap_instr :: "instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "swap_instr instr \<equiv>
   let instr_name = fst instr;
       op_list = snd instr;
@@ -2515,7 +2515,7 @@ definition bit2_zero :: "word2 \<Rightarrow> word1"
 where "bit2_zero w2 \<equiv> if w2 \<noteq> 0 then 1 else 0"
 
 text \<open>Operational semantics for tagged add instructions.\<close>
-definition tadd_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition tadd_instr :: "instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "tadd_instr instr \<equiv>
   let instr_name = fst instr;
       op_list = snd instr;
@@ -2572,7 +2572,7 @@ where "tadd_instr instr \<equiv>
   od"
 
 text \<open>Operational semantics for tagged add instructions.\<close>
-definition tsub_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition tsub_instr :: "instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "tsub_instr instr \<equiv>
   let instr_name = fst instr;
       op_list = snd instr;
@@ -2628,7 +2628,7 @@ where "tsub_instr instr \<equiv>
     od
   od"
 
-definition muls_op2 :: "inst_operand list \<Rightarrow> ('a::len0) sparc_state \<Rightarrow> word32"
+definition muls_op2 :: "inst_operand list \<Rightarrow> ('a::len) sparc_state \<Rightarrow> word32"
 where "muls_op2 op_list s \<equiv>
   let y_val = cpu_reg_val Y s in
   if ((ucast y_val)::word1) = 0 then 0
@@ -2636,7 +2636,7 @@ where "muls_op2 op_list s \<equiv>
 "
 
 text \<open>Operational semantics for multiply step instruction.\<close>
-definition muls_instr :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition muls_instr :: "instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "muls_instr instr \<equiv>
   let instr_name = fst instr;
       op_list = snd instr;
@@ -2728,7 +2728,7 @@ text \<open>
   else \<open>operand2 = sign_ext7(trap_imm7)\<close>.
   \<open>op_list\<close> should be \<open>[i,rs1,rs2]\<close> or \<open>[i,rs1,trap_imm7]\<close>.
 \<close>
-definition get_trap_op2::"inst_operand list \<Rightarrow> ('a::len0) sparc_state
+definition get_trap_op2::"inst_operand list \<Rightarrow> ('a::len) sparc_state
   \<Rightarrow> virtua_address"
 where "get_trap_op2 op_list s \<equiv>
   let flagi = get_operand_flag (op_list!0);
@@ -2745,7 +2745,7 @@ where "get_trap_op2 op_list s \<equiv>
 
 text \<open>Operational semantics for Ticc insturctions.\<close>
 definition ticc_instr::"instruction \<Rightarrow> 
-  ('a::len0,unit) sparc_state_monad"
+  ('a::len,unit) sparc_state_monad"
 where "ticc_instr instr \<equiv>
   let instr_name = fst instr;
       op_list = snd instr;
@@ -2778,7 +2778,7 @@ where "ticc_instr instr \<equiv>
   od"
 
 text \<open>Operational semantics for store barrier.\<close>
-definition store_barrier_instr::"instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition store_barrier_instr::"instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "store_barrier_instr instr \<equiv>
   do
     modify (\<lambda>s. (store_barrier_pending_mod True s));

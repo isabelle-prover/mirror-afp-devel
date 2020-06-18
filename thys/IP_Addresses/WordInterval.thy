@@ -17,14 +17,14 @@ subsection\<open>Syntax\<close>
 context
   notes [[typedef_overloaded]]
 begin
-  datatype ('a::len0) wordinterval = WordInterval
-                                        "('a::len0) word" \<comment> \<open>start (inclusive)\<close>
-                                        "('a::len0) word" \<comment> \<open>end (inclusive)\<close>
+  datatype ('a::len) wordinterval = WordInterval
+                                        "('a::len) word" \<comment> \<open>start (inclusive)\<close>
+                                        "('a::len) word" \<comment> \<open>end (inclusive)\<close>
                                   | RangeUnion "'a wordinterval" "'a wordinterval"
 end
 
 subsection\<open>Semantics\<close>
-  fun wordinterval_to_set :: "'a::len0 wordinterval \<Rightarrow> ('a::len0 word) set"
+  fun wordinterval_to_set :: "'a::len wordinterval \<Rightarrow> ('a::len word) set"
   where
     "wordinterval_to_set (WordInterval start end) =
         {start .. end}" |
@@ -36,7 +36,7 @@ subsection\<open>Semantics\<close>
 
 subsection\<open>Basic operations\<close>
   text\<open>\<open>\<in>\<close>\<close>
-  fun wordinterval_element :: "'a::len0 word \<Rightarrow> 'a::len0 wordinterval \<Rightarrow> bool" where
+  fun wordinterval_element :: "'a::len word \<Rightarrow> 'a::len wordinterval \<Rightarrow> bool" where
     "wordinterval_element el (WordInterval s e) \<longleftrightarrow> s \<le> el \<and> el \<le> e" |
     "wordinterval_element el (RangeUnion r1 r2) \<longleftrightarrow>
                                             wordinterval_element el r1 \<or> wordinterval_element el r2"
@@ -45,13 +45,13 @@ subsection\<open>Basic operations\<close>
     by(induction rg rule: wordinterval_element.induct) simp_all
 
   definition wordinterval_union
-    :: "'a::len0 wordinterval \<Rightarrow> 'a::len0 wordinterval \<Rightarrow> 'a::len0 wordinterval" where
+    :: "'a::len wordinterval \<Rightarrow> 'a::len wordinterval \<Rightarrow> 'a::len wordinterval" where
     "wordinterval_union r1 r2 = RangeUnion r1 r2"
   lemma wordinterval_union_set_eq[simp]:
     "wordinterval_to_set (wordinterval_union r1 r2) = wordinterval_to_set r1 \<union> wordinterval_to_set r2"
     unfolding wordinterval_union_def by simp
 
-  fun wordinterval_empty :: "'a::len0 wordinterval \<Rightarrow> bool" where
+  fun wordinterval_empty :: "'a::len wordinterval \<Rightarrow> bool" where
     "wordinterval_empty (WordInterval s e) \<longleftrightarrow> e < s" |
     "wordinterval_empty (RangeUnion r1 r2) \<longleftrightarrow> wordinterval_empty r1 \<and> wordinterval_empty r2"
   lemma wordinterval_empty_set_eq[simp]: "wordinterval_empty r \<longleftrightarrow> wordinterval_to_set r = {}"
@@ -70,7 +70,7 @@ subsection\<open>WordInterval and Lists\<close>
   text\<open>A list of \<open>(start, end)\<close> tuples.\<close>
 
   text\<open>wordinterval to list\<close>
-  fun wi2l :: "'a::len0 wordinterval \<Rightarrow> ('a::len0 word \<times> 'a::len0 word) list" where
+  fun wi2l :: "'a::len wordinterval \<Rightarrow> ('a::len word \<times> 'a::len word) list" where
     "wi2l (RangeUnion r1 r2) = wi2l r1 @ wi2l r2" |
     "wi2l (WordInterval s e) = (if e < s then [] else [(s,e)])"
 
@@ -112,7 +112,7 @@ subsection\<open>Optimizing and minimizing @{typ "('a::len) wordinterval"}s\<clo
 text\<open>Removing empty intervals\<close>
 context
 begin
-  fun wordinterval_optimize_empty :: "'a::len0 wordinterval \<Rightarrow> 'a wordinterval" where
+  fun wordinterval_optimize_empty :: "'a::len wordinterval \<Rightarrow> 'a wordinterval" where
     "wordinterval_optimize_empty (RangeUnion r1 r2) = (let r1o = wordinterval_optimize_empty r1;
                                                            r2o = wordinterval_optimize_empty r2
       in if
@@ -134,7 +134,7 @@ begin
     "wordinterval_optimize_empty (wordinterval_optimize_empty r) = wordinterval_optimize_empty r"
     by(induction r) (simp_all add: Let_def)
 
-  private fun wordinterval_empty_shallow :: "'a::len0 wordinterval \<Rightarrow> bool"  where
+  private fun wordinterval_empty_shallow :: "'a::len wordinterval \<Rightarrow> bool"  where
     "wordinterval_empty_shallow (WordInterval s e) \<longleftrightarrow> e < s" |
     "wordinterval_empty_shallow (RangeUnion _ _) \<longleftrightarrow> False"
   private lemma helper_optimize_shallow:
@@ -171,17 +171,17 @@ begin
   private definition disjoint :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" where
     "disjoint A B \<equiv> A \<inter> B = {}"
 
-  private primrec interval_of :: "('a::len0) word \<times> 'a word \<Rightarrow> 'a word set" where
+  private primrec interval_of :: "('a::len) word \<times> 'a word \<Rightarrow> 'a word set" where
     "interval_of (s,e) = {s .. e}"
   declare interval_of.simps[simp del]
 
   private definition disjoint_intervals
-    :: "(('a::len0) word \<times> ('a::len0) word) \<Rightarrow> ('a word \<times> 'a word) \<Rightarrow> bool"
+    :: "(('a::len) word \<times> ('a::len) word) \<Rightarrow> ('a word \<times> 'a word) \<Rightarrow> bool"
   where
     "disjoint_intervals A B \<equiv> disjoint (interval_of A) (interval_of B)"
 
   private definition not_disjoint_intervals
-    :: "(('a::len0) word \<times> ('a::len0) word) \<Rightarrow> ('a word \<times> 'a word) \<Rightarrow> bool"
+    :: "(('a::len) word \<times> ('a::len) word) \<Rightarrow> ('a word \<times> 'a word) \<Rightarrow> bool"
   where
     "not_disjoint_intervals A B \<equiv> \<not> disjoint (interval_of A) (interval_of B)"
 
@@ -204,7 +204,7 @@ begin
   (*result has no empty intervals and all are disjoint.
     merging things such as [1,7] [8,10] would still be possible*)
   private fun merge_overlap
-    :: "(('a::len0) word \<times> ('a::len0) word) \<Rightarrow> ('a word \<times> 'a word) list \<Rightarrow> ('a word \<times> 'a word) list"
+    :: "(('a::len) word \<times> ('a::len) word) \<Rightarrow> ('a word \<times> 'a word) list \<Rightarrow> ('a word \<times> 'a word) list"
   where
     "merge_overlap s [] = [s]" |
     "merge_overlap (s,e) ((s',e')#ss) = (
@@ -213,7 +213,7 @@ begin
        else (s',e')#merge_overlap (s,e) ss)"
 
   private lemma not_disjoint_union:
-      fixes s :: "('a::len0) word"
+      fixes s :: "('a::len) word"
       shows "\<not> disjoint {s..e} {s'..e'} \<Longrightarrow> {s..e} \<union> {s'..e'} = {min s s' .. max e e'}"
     by(auto simp add: disjoint_def min_def max_def)
 
@@ -266,7 +266,7 @@ begin
   lemma "merge_overlap (1:: 16 word,2) [(3, 7)] = [(3, 7), (1,2)]" by eval
 
   private function listwordinterval_compress
-    :: "(('a::len0) word \<times> ('a::len0) word) list \<Rightarrow> ('a word \<times> 'a word) list" where
+    :: "(('a::len) word \<times> ('a::len) word) list \<Rightarrow> ('a word \<times> 'a word) list" where
     "listwordinterval_compress [] = []" |
     "listwordinterval_compress (s#ss) = (
             if \<forall>s' \<in> set ss. disjoint_intervals s s'
@@ -662,7 +662,7 @@ text\<open>The smallest element in the interval\<close>
   by (metis Min.coboundedI assms(1) assms(2) dual_order.antisym is_lowest_element_def)
 
 text\<open>Smallest element in the interval\<close>
-  fun wordinterval_lowest_element :: "'a::len0 wordinterval \<Rightarrow> 'a word option" where
+  fun wordinterval_lowest_element :: "'a::len wordinterval \<Rightarrow> 'a word option" where
     "wordinterval_lowest_element (WordInterval s e) = (if s \<le> e then Some s else None)" |
     "wordinterval_lowest_element (RangeUnion A B) =
       (case (wordinterval_lowest_element A, wordinterval_lowest_element B) of

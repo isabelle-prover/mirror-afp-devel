@@ -245,9 +245,8 @@ lemmas p2len = iffD2 [OF p2_eq_0 order_refl]
 lemma and_mask_arith:
   "w AND mask n = (w * 2^(size w - n)) div 2^(size w - n)"
   apply (cases "0 < n")
-   apply (erule and_mask_arith')
+   apply (auto elim!: and_mask_arith')
   apply (simp add: word_size)
-  apply (simp add: word_of_int_hom_syms word_div_def)
   done
 
 lemma mask_2pm1: "mask n = 2 ^ n - 1"
@@ -290,7 +289,7 @@ lemma le_shiftr1:
   done
 
 lemma le_shiftr:
-  "u \<le> v \<Longrightarrow> u >> (n :: nat) \<le> (v :: 'a :: len0 word) >> n"
+  "u \<le> v \<Longrightarrow> u >> (n :: nat) \<le> (v :: 'a :: len word) >> n"
   apply (unfold shiftr_def)
   apply (induct_tac "n")
    apply auto
@@ -306,7 +305,7 @@ lemma shiftr_mask_le:
 lemmas shiftr_mask = order_refl [THEN shiftr_mask_le, simp]
 
 lemma word_leI:
-  "(\<And>n.  \<lbrakk>n < size (u::'a::len0 word); u !! n \<rbrakk> \<Longrightarrow> (v::'a::len0 word) !! n) \<Longrightarrow> u <= v"
+  "(\<And>n.  \<lbrakk>n < size (u::'a::len word); u !! n \<rbrakk> \<Longrightarrow> (v::'a::len word) !! n) \<Longrightarrow> u <= v"
   apply (rule xtr4)
    apply (rule word_and_le2)
   apply (rule word_eqI)
@@ -393,7 +392,7 @@ lemmas mask_lt_2pn =
   le_mask_iff_lt_2n [THEN iffD1, THEN iffD1, OF _ order_refl]
 
 lemma bang_eq:
-  fixes x :: "'a::len0 word"
+  fixes x :: "'a::len word"
   shows "(x = y) = (\<forall>n. x !! n = y !! n)"
   by (subst test_bit_eq_iff[symmetric]) fastforce
 

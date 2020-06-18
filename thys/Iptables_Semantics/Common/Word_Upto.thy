@@ -9,7 +9,7 @@ begin
 text\<open>Enumerate a range of machine words.\<close>
 
 text\<open>enumerate from the back (inefficient)\<close>
-function word_upto :: "'a word \<Rightarrow> 'a word \<Rightarrow> ('a::len0) word list" where
+function word_upto :: "'a word \<Rightarrow> 'a word \<Rightarrow> ('a::len) word list" where
 "word_upto a b = (if a = b then [a] else word_upto a (b - 1) @ [b])"
 by pat_completeness auto
 
@@ -30,7 +30,7 @@ declare word_upto.simps[simp del]
  
 
 text\<open>enumerate from the front (more inefficient)\<close>
-function word_upto' :: "'a word \<Rightarrow> 'a word \<Rightarrow> ('a::len0) word list" where
+function word_upto' :: "'a word \<Rightarrow> 'a word \<Rightarrow> ('a::len) word list" where
 "word_upto' a b = (if a = b then [a] else a # word_upto' (a + 1) b)"
 by pat_completeness auto
 

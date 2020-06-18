@@ -135,7 +135,7 @@ where "select_trap _ \<equiv>
     else return ()
   od"
 
-definition exe_trap_st_pc :: "unit \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition exe_trap_st_pc :: "unit \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "exe_trap_st_pc _ \<equiv>
   do
     annul \<leftarrow> gets (\<lambda>s. (annul_val s));
@@ -157,7 +157,7 @@ where "exe_trap_st_pc _ \<equiv>
       od
   od"
 
-definition exe_trap_wr_pc :: "unit \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition exe_trap_wr_pc :: "unit \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "exe_trap_wr_pc _ \<equiv>
   do
     psr_val \<leftarrow> gets (\<lambda>s. (cpu_reg_val PSR s));
@@ -180,7 +180,7 @@ where "exe_trap_wr_pc _ \<equiv>
       od
   od"
   
-definition execute_trap :: "unit \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition execute_trap :: "unit \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "execute_trap _ \<equiv>
   do
     select_trap();
@@ -202,7 +202,7 @@ where "execute_trap _ \<equiv>
       od  
   od"
 
-definition dispatch_instruction :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition dispatch_instruction :: "instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "dispatch_instruction instr \<equiv> 
   let instr_name = fst instr in
   do
@@ -289,7 +289,7 @@ where "supported_instruction instr \<equiv>
   else False
 "
 
-definition execute_instr_sub1 :: "instruction \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition execute_instr_sub1 :: "instruction \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "execute_instr_sub1 instr \<equiv>
   do
     instr_name \<leftarrow> gets (\<lambda>s. (fst instr));
@@ -309,7 +309,7 @@ where "execute_instr_sub1 instr \<equiv>
     else return ()
   od"
 
-definition execute_instruction :: "unit \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+definition execute_instruction :: "unit \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "execute_instruction _ \<equiv> 
   do
     traps \<leftarrow> gets (\<lambda>s. (get_trap_set s));
@@ -361,11 +361,11 @@ where "execute_instruction _ \<equiv>
     od
   od"
 
-definition NEXT :: "('a::len0)sparc_state \<Rightarrow> ('a)sparc_state option"
+definition NEXT :: "('a::len)sparc_state \<Rightarrow> ('a)sparc_state option"
 where "NEXT s \<equiv> case execute_instruction () s of (_,True) \<Rightarrow> None
 | (s',False) \<Rightarrow> Some (snd s')"
 
-definition good_context :: "('a::len0) sparc_state \<Rightarrow> bool"
+definition good_context :: "('a::len) sparc_state \<Rightarrow> bool"
 where "good_context s \<equiv> 
   let traps = get_trap_set s;
       psr_val = cpu_reg_val PSR s;
@@ -408,7 +408,7 @@ where "good_context s \<equiv>
     )
 "
 
-function (sequential) seq_exec:: "nat \<Rightarrow> ('a::len0,unit) sparc_state_monad"
+function (sequential) seq_exec:: "nat \<Rightarrow> ('a::len,unit) sparc_state_monad"
 where "seq_exec 0 = return ()"
  |
 "seq_exec n =  (do execute_instruction();

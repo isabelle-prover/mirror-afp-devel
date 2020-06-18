@@ -29,22 +29,22 @@ lemma len64: "len_of (x :: 64 itself) = 64" by simp
 
 
 abbreviation
-  wordNOT  :: "'a::len0 word \<Rightarrow> 'a word"      ("~~ _" [70] 71)
+  wordNOT  :: "'a::len word \<Rightarrow> 'a word"      ("~~ _" [70] 71)
 where
   "~~ x == NOT x"
 
 abbreviation
-  wordAND  :: "'a::len0 word \<Rightarrow> 'a word \<Rightarrow> 'a word" (infixr "&&" 64)
+  wordAND  :: "'a::len word \<Rightarrow> 'a word \<Rightarrow> 'a word" (infixr "&&" 64)
 where
   "a && b == a AND b"
 
 abbreviation
-  wordOR   :: "'a::len0 word \<Rightarrow> 'a word \<Rightarrow> 'a word" (infixr "||"  59)
+  wordOR   :: "'a::len word \<Rightarrow> 'a word \<Rightarrow> 'a word" (infixr "||"  59)
 where
   "a || b == a OR b"
 
 abbreviation
-  wordXOR  :: "'a::len0 word \<Rightarrow> 'a word \<Rightarrow> 'a word" (infixr "xor" 59)
+  wordXOR  :: "'a::len word \<Rightarrow> 'a word \<Rightarrow> 'a word" (infixr "xor" 59)
 where
   "a xor b == a XOR b"
 

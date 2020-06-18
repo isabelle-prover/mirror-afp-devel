@@ -10,7 +10,7 @@ definition "card_UNIV = Phantom('a word) (2 ^ LENGTH('a))"
 instance by(intro_classes)(simp_all add: card_UNIV_word_def card_word finite_UNIV_word_def)
 end
 
-definition word_of_integer :: "integer \<Rightarrow> 'a::len0 word"
+definition word_of_integer :: "integer \<Rightarrow> 'a::len word"
 where "word_of_integer = word_of_int \<circ> int_of_integer"
 
 lemma word_of_integer_code [code]:
@@ -24,7 +24,7 @@ apply(subst int_of_integer_code)
 apply(clarsimp simp add: divmod_integer_def)
 by (metis minus_minus plus_word.abs_eq times_word.abs_eq wi_hom_neg word_1_wi word_numeral_alt)
 
-definition word_of :: "natural \<Rightarrow> 'a::len0 word"
+definition word_of :: "natural \<Rightarrow> 'a::len word"
 where "word_of = word_of_integer o integer_of_natural"
 
 text \<open>randomly generate a set of (up to) n elements drawn from 0 to bound\<close>

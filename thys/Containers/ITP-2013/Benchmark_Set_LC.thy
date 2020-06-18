@@ -7,22 +7,22 @@ begin
 
 lemma [code_unfold del]: "card \<equiv> Cardinality.card'" by(simp)
 
-instantiation word :: (len0) ceq begin
+instantiation word :: (len) ceq begin
 definition "CEQ('a word) = Some (=)"
 instance by(intro_classes)(simp add: ceq_word_def)
 end
 
-instantiation word :: (len0) compare begin
+instantiation word :: (len) compare begin
 definition "compare_word = (comparator_of :: 'a word comparator)"
 instance by(intro_classes)(simp add: compare_word_def comparator_of)
 end
 
-instantiation word :: (len0) ccompare begin
+instantiation word :: (len) ccompare begin
 definition "CCOMPARE('a word) = Some compare"
 instance by(intro_classes)(simp add: ccompare_word_def comparator_compare)
 end
 
-instantiation word :: (len0) set_impl begin
+instantiation word :: (len) set_impl begin
 definition "SET_IMPL('a word) = Phantom('a word) set_RBT"
 instance ..
 end
@@ -76,7 +76,7 @@ instance by( intro_classes, simp add: cproper_interval_word_def ccompare_word_de
   compare_word_def le_lt_comparator_of ID_Some proper_interval_class.axioms)
 end
 
-instantiation word :: (len0) cenum begin
+instantiation word :: (len) cenum begin
 definition "CENUM('a word) = None"
 instance by(intro_classes)(simp_all add: cEnum_word_def)
 end

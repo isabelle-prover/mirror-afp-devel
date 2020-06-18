@@ -105,7 +105,7 @@ proof -
     by(simp add: word_le_nat_alt word_div_def word_mod_def uint_nat unat_of_nat zmod_int[symmetric] zdiv_int[symmetric] word_of_nat[symmetric])(simp add: Let_def split del: if_split split: if_split_asm)
 qed
 
-lemma word_test_bit_set_bits: "(BITS n. f n :: 'a :: len0 word) !! n \<longleftrightarrow> n < LENGTH('a) \<and> f n"
+lemma word_test_bit_set_bits: "(BITS n. f n :: 'a :: len word) !! n \<longleftrightarrow> n < LENGTH('a) \<and> f n"
 by(auto simp add: word_set_bits_def test_bit_bl word_bl.Abs_inverse word_size)
 
 lemma word_of_int_conv_set_bits: "word_of_int i = (BITS n. i !! n)"
@@ -255,19 +255,19 @@ text \<open>More implementations tailored towards target-language implementation
 context
 includes integer.lifting
 begin
-lift_definition word_of_integer :: "integer \<Rightarrow> 'a :: len0 word" is word_of_int .
+lift_definition word_of_integer :: "integer \<Rightarrow> 'a :: len word" is word_of_int .
 
 lemma word_of_integer_code [code]: "word_of_integer n = word_of_int (int_of_integer n)"
 by(simp add: word_of_integer.rep_eq)
 end
 
 lemma word_of_int_code [code abstract]:
-  "uint (word_of_int x :: 'a word) = x AND bin_mask (LENGTH('a :: len0))"
+  "uint (word_of_int x :: 'a word) = x AND bin_mask (LENGTH('a :: len))"
 by(simp add: uint_word_of_int and_bin_mask_conv_mod)
 
 context fixes f :: "nat \<Rightarrow> bool" begin
 
-fun set_bits_aux :: "'a word \<Rightarrow> nat \<Rightarrow> 'a :: len0 word"
+fun set_bits_aux :: "'a word \<Rightarrow> nat \<Rightarrow> 'a :: len word"
 where
   "set_bits_aux w 0 = w"
 | "set_bits_aux w (Suc n) = set_bits_aux ((w << 1) OR (if f n then 1 else 0)) n"

@@ -75,7 +75,7 @@ lemma uints_bitlen_eq: "uints n = {i. 0 \<le> i \<and> bitlen i \<le> n}"
   by (auto simp: uints_num bitlen_le_iff_power)
 
 lemma uint_word_of_int_bitlen_eq:
-  "uint (word_of_int x::'a::len0 word) = x" if "bitlen x \<le> LENGTH('a)" "x \<ge> 0"
+  "uint (word_of_int x::'a::len word) = x" if "bitlen x \<le> LENGTH('a)" "x \<ge> 0"
   by (subst word_uint.Abs_inverse) (simp_all add: uints_bitlen_eq that)
 
 lemma fraction_normal_of_Float:"fraction (normal_of_Float x::('e, 'f)float) =

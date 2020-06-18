@@ -66,7 +66,7 @@ where
  "array_in_bound arr idx \<equiv> unat idx < (length arr)"
 
 definition
-  array_nat_sum :: "('a :: len0) word array \<Rightarrow> nat"
+  array_nat_sum :: "('a :: len) word array \<Rightarrow> nat"
 where
   "array_nat_sum arr \<equiv> sum_list (map unat arr)"
 
@@ -299,8 +299,8 @@ lemma local_sum_MAXSUM':
          clarsimp simp: trans_le_add1)
 
 lemma word_min_0[simp]:
- "min (x::'a::len0 word) 0 = 0"
- "min 0 (x::'a::len0 word) = 0"
+ "min (x::'a::len word) 0 = 0"
+ "min 0 (x::'a::len word) = 0"
  by (simp add:min_def)+
 
 ML \<open>fun TRY' tac i = TRY (tac i)\<close>

@@ -3548,12 +3548,17 @@ lemma msb_min_neg:
   assumes msb1:"msb (- w)"
   assumes msb2:"msb w"
   shows "uint w = ((2^(len_of (TYPE(31)))))"
-  proof -
-    have neq1:"uint w \<noteq> 0" using msb2 word_msb_0 uint_0_iff by force
-    show ?thesis using msb1 msb2 msb_non_min[OF neq1] 
-    by auto
-  qed
-
+proof (rule ccontr)
+  from \<open>msb w\<close> have \<open>w \<noteq> 0\<close>
+    using word_msb_0 by auto
+  then have \<open>uint w \<noteq> 0\<close>
+    by transfer simp
+  moreover assume \<open>uint w \<noteq> 2 ^ LENGTH(31)\<close>
+  ultimately have \<open>msb (- w) \<longleftrightarrow> \<not> msb w\<close>
+    by (rule msb_non_min)
+  with assms show False
+    by simp
+qed
 
 text\<open>Only 0x00000000 preserves msb=0 under negation\<close>
 lemma msb_zero:

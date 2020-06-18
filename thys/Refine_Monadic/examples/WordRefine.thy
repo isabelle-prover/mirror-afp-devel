@@ -21,8 +21,7 @@ lemma [simp]: "single_valuedp (\<lambda>c a. a = unat c)"
   by (rule single_valuedpI) blast
 
 lemma [simp, relator_props]: "single_valued (converse word_nat_rel)" 
-  apply (auto intro!: injI)
-  by (metis order_antisym order_eq_refl word_le_nat_alt)
+  by (auto intro: injI)
 
 lemmas [refine_hsimp] = 
   word_less_nat_alt word_le_nat_alt unat_sub iffD1[OF unat_add_lem]

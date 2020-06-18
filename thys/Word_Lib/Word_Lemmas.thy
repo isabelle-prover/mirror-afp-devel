@@ -1165,7 +1165,7 @@ lemma  word_less_power_trans2:
 
 (* shadows the slightly weaker Word.nth_ucast *)
 lemma nth_ucast:
-  "(ucast (w::'a::len0 word)::'b::len0 word) !! n =
+  "(ucast (w::'a::len word)::'b::len word) !! n =
    (w !! n \<and> n < min LENGTH('a) LENGTH('b))"
   by (simp add: ucast_def test_bit_bin word_ubin.eq_norm nth_bintr word_size)
      (fast elim!: bin_nth_uint_imp)
@@ -1589,7 +1589,7 @@ lemma ucast_ucast_id:
   by (auto intro: ucast_up_ucast_id simp: is_up_def source_size_def target_size_def word_size)
 
 lemma unat_ucast:
-  "unat (ucast x :: ('a :: len0) word) = unat x mod 2 ^ (LENGTH('a))"
+  "unat (ucast x :: ('a :: len) word) = unat x mod 2 ^ (LENGTH('a))"
   apply (simp add: unat_def ucast_def)
   apply (subst word_uint.eq_norm)
   apply (subst nat_mod_distrib)
@@ -3342,7 +3342,7 @@ lemma sint_ucast_eq_uint:
   done
 
 lemma word_less_nowrapI':
-  "(x :: 'a :: len0 word) \<le> z - k \<Longrightarrow> k \<le> z \<Longrightarrow> 0 < k \<Longrightarrow> x < x + k"
+  "(x :: 'a :: len word) \<le> z - k \<Longrightarrow> k \<le> z \<Longrightarrow> 0 < k \<Longrightarrow> x < x + k"
   by uint_arith
 
 lemma mask_plus_1:
@@ -3793,14 +3793,13 @@ lemma div_by_0_word:"(x::('a::len) word) div 0 = 0"
   by (metis div_0 div_by_0 unat_0 word_arith_nat_defs(6) word_div_1)
 
 lemma div_less_dividend_word:"\<lbrakk>x \<noteq> 0; n \<noteq> 1\<rbrakk> \<Longrightarrow> (x::('a::len) word) div n < x"
-  apply (case_tac "n = 0")
+  apply (cases \<open>n = 0\<close>)
    apply clarsimp
-   apply (subst div_by_0_word)
    apply (simp add:word_neq_0_conv)
   apply (subst word_arith_nat_div)
   apply (rule word_of_nat_less)
   apply (rule div_less_dividend)
-   apply (metis (poly_guards_query) One_nat_def less_one nat_neq_iff unat_eq_1(2) unat_eq_zero)
+  using unat_eq_zero word_unat_Rep_inject1 apply force
   apply (simp add:unat_gt_0)
   done
 
@@ -4072,7 +4071,7 @@ lemma le_shiftr1':
   by (smt Bit_def bin_rest_BIT)
 
 lemma le_shiftr':
-  "\<lbrakk> u >> n \<le> v >> n ; u >> n \<noteq> v >> n \<rbrakk> \<Longrightarrow> (u::'a::len0 word) \<le> v"
+  "\<lbrakk> u >> n \<le> v >> n ; u >> n \<noteq> v >> n \<rbrakk> \<Longrightarrow> (u::'a::len word) \<le> v"
   apply (induct n; simp add: shiftr_def)
   apply (case_tac "(shiftr1 ^^ n) u = (shiftr1 ^^ n) v", simp)
   apply (fastforce dest: le_shiftr1')
@@ -4968,16 +4967,16 @@ lemma bin_cat_inj: "(bin_cat a n b) = bin_cat c n d \<longleftrightarrow> a = c 
   by (auto intro: bin_cat_cong bin_cat_eqD1 bin_cat_eqD2)
 
 lemma word_of_int_bin_cat_eq_iff:
-  "(word_of_int (bin_cat (uint a) LENGTH('b) (uint b))::'c::len0 word) =
+  "(word_of_int (bin_cat (uint a) LENGTH('b) (uint b))::'c::len word) =
   word_of_int (bin_cat (uint c) LENGTH('b) (uint d)) \<longleftrightarrow> b = d \<and> a = c"
   if "LENGTH('a) + LENGTH('b) \<le> LENGTH('c)"
-  for a::"'a::len0 word" and b::"'b::len0 word"
+  for a::"'a::len word" and b::"'b::len word"
   by (subst word_uint.Abs_inject)
      (auto simp: bin_cat_inj intro!: that bin_cat_in_uintsI)
 
-lemma word_cat_inj: "(word_cat a b::'c::len0 word) = word_cat c d \<longleftrightarrow> a = c \<and> b = d"
+lemma word_cat_inj: "(word_cat a b::'c::len word) = word_cat c d \<longleftrightarrow> a = c \<and> b = d"
   if "LENGTH('a) + LENGTH('b) \<le> LENGTH('c)"
-  for a::"'a::len0 word" and b::"'b::len0 word"
+  for a::"'a::len word" and b::"'b::len word"
   by (auto simp: word_cat_def word_uint.Abs_inject word_of_int_bin_cat_eq_iff that)
 
 lemma p2_eq_1: "2 ^ n = (1::'a::len word) \<longleftrightarrow> n = 0"
@@ -5207,7 +5206,7 @@ lemma ucast_shiftl:
   by word_eqI_solve
 
 lemma ucast_leq_mask:
-  "LENGTH('a) \<le> n \<Longrightarrow> ucast (x::'a::len0 word) \<le> mask n"
+  "LENGTH('a) \<le> n \<Longrightarrow> ucast (x::'a::len word) \<le> mask n"
   by (clarsimp simp: le_mask_high_bits word_size nth_ucast)
 
 lemma shiftl_inj:

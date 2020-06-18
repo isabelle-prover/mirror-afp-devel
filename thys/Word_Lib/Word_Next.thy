@@ -80,7 +80,7 @@ lemma word_atLeastLessThan_Suc_atLeastAtMost_union:
   qed
 
 lemma max_word_less_eq_iff [simp]:
-  \<open>- 1 \<le> w \<longleftrightarrow> w = - 1\<close> for w :: \<open>'a::len0 word\<close>
+  \<open>- 1 \<le> w \<longleftrightarrow> w = - 1\<close> for w :: \<open>'a::len word\<close>
   by (auto simp add: le_less)  
 
 lemma word_adjacent_union:

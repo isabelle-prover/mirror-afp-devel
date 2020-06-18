@@ -23,7 +23,7 @@ lemma word_or_zero:
   by (safe; rule word_eqI, drule_tac x=n in word_eqD, simp)
 
 lemma test_bit_over:
-  "n \<ge> size (x::'a::len0 word) \<Longrightarrow> (x !! n) = False"
+  "n \<ge> size (x::'a::len word) \<Longrightarrow> (x !! n) = False"
   by (simp add: test_bit_bl word_size)
 
 lemma neg_mask_test_bit:
