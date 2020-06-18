@@ -28,27 +28,70 @@ declare Rep_uint8_inverse[code abstype]
 
 declare Quotient_uint8[transfer_rule]
 
-instantiation uint8 :: "{neg_numeral, modulo, comm_monoid_mult, comm_ring}" begin
-lift_definition zero_uint8 :: uint8 is "0" .
+instantiation uint8 :: comm_ring_1
+begin
+lift_definition zero_uint8 :: uint8 is "0 :: 8 word" .
 lift_definition one_uint8 :: uint8 is "1" .
-lift_definition plus_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "(+)" .
+lift_definition plus_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "(+) :: 8 word \<Rightarrow> _" .
 lift_definition minus_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "(-)" .
 lift_definition uminus_uint8 :: "uint8 \<Rightarrow> uint8" is uminus .
 lift_definition times_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "(*)" .
+instance by (standard; transfer) (simp_all add: algebra_simps)
+end
+
+instantiation uint8 :: semiring_modulo
+begin
 lift_definition divide_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "(div)" .
 lift_definition modulo_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "(mod)" .
-instance by standard (transfer, simp add: algebra_simps)+
+instance by (standard; transfer) (fact word_mod_div_equality)
 end
 
 instantiation uint8 :: linorder begin
 lift_definition less_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> bool" is "(<)" .
 lift_definition less_eq_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> bool" is "(\<le>)" .
-instance by standard (transfer, simp add: less_le_not_le linear)+
+instance by (standard; transfer) (simp_all add: less_le_not_le linear)
 end
 
 lemmas [code] = less_uint8.rep_eq less_eq_uint8.rep_eq
 
-instantiation uint8 :: bit_operations begin
+context
+  includes lifting_syntax
+  notes
+    transfer_rule_of_bool [transfer_rule]
+    transfer_rule_numeral [transfer_rule]
+begin
+
+lemma [transfer_rule]:
+  "((=) ===> cr_uint8) of_bool of_bool"
+  by transfer_prover
+
+lemma transfer_rule_numeral_uint [transfer_rule]:
+  "((=) ===> cr_uint8) numeral numeral"
+  by transfer_prover
+
+lemma [transfer_rule]:
+  \<open>(cr_uint8 ===> (\<longleftrightarrow>)) even ((dvd) 2 :: uint8 \<Rightarrow> bool)\<close>
+  by (unfold dvd_def) transfer_prover
+
+end
+
+instance uint8 :: semiring_bits
+  by (standard; transfer)
+    (fact even_iff_mod_2_eq_zero odd_iff_mod_2_eq_one odd_one bits_induct
+       bits_div_0 bits_div_by_1 bits_mod_div_trivial even_succ_div_2
+       even_mask_div_iff exp_div_exp_eq div_exp_eq mod_exp_eq mult_exp_mod_exp_eq
+       div_exp_mod_exp_eq even_mult_exp_div_exp_iff)+
+
+instantiation uint8 :: semiring_bit_shifts
+begin
+lift_definition push_bit_uint8 :: \<open>nat \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is push_bit .
+lift_definition drop_bit_uint8 :: \<open>nat \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is drop_bit .
+instance by (standard; transfer)
+  (fact push_bit_eq_mult drop_bit_eq_div)+
+end
+
+instantiation uint8 :: bit_operations
+begin
 lift_definition bitNOT_uint8 :: "uint8 \<Rightarrow> uint8" is NOT .
 lift_definition bitAND_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is \<open>(AND)\<close> .
 lift_definition bitOR_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is \<open>(OR)\<close> .
