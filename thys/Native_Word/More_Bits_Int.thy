@@ -269,7 +269,7 @@ using wff proof (induction m arbitrary: f)
 next
   case Suc
   from Suc.IH [of "f \<circ> Suc"] Suc.prems show ?case
-    by (simp add: More_Bits_Int.bin_rest_set_bits comp_def)
+    by (simp add: More_Bits_Int.bin_rest_set_bits comp_def bit_Suc)
 qed
 
 end

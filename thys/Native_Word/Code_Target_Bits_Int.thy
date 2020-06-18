@@ -14,7 +14,7 @@ declare [[code drop:
   "(AND) :: int \<Rightarrow> _" "(OR) :: int \<Rightarrow> _" "(XOR) :: int \<Rightarrow> _" "NOT :: int \<Rightarrow> _"
   "lsb :: int \<Rightarrow> _" "set_bit :: int \<Rightarrow> _" "test_bit :: int \<Rightarrow> _"
   "shiftl :: int \<Rightarrow> _" "shiftr :: int \<Rightarrow> _"
-  bin_nth Bit
+  Bit
   int_of_integer_symbolic
   ]]
 
@@ -56,7 +56,7 @@ lemma bin_rest_code:
 
 declare bitval_bin_last [code_unfold]
 
-declare bin_nth_conv_AND [code]
+declare bin_nth_conv_AND [code_unfold]
 
 lemma Bit_code [code]: "int_of_integer i BIT b = int_of_integer (Bit_integer i b)"
 by transfer simp

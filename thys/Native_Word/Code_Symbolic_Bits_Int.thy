@@ -19,30 +19,20 @@ lemma Bit_code [code]:
   "Int.Neg n BIT True = Int.Neg (Num.BitM n)"
 by(cases b)(simp_all)
 
-lemma bin_last_code:
-  "bin_last 0 \<longleftrightarrow> False"
-  "bin_last (Int.Pos num.One) \<longleftrightarrow> True"
-  "bin_last (Int.Pos (num.Bit0 n)) \<longleftrightarrow> False"
-  "bin_last (Int.Pos (num.Bit1 n)) \<longleftrightarrow> True"
-  "bin_last (Int.Neg num.One) \<longleftrightarrow> True"
-  "bin_last (Int.Neg (num.Bit0 n)) \<longleftrightarrow> False"
-  "bin_last (Int.Neg (num.Bit1 n)) \<longleftrightarrow> True"
-  by simp_all
-
-lemma bin_nth_code [code]:
-  "bin_nth 0                 n = False"
-  "bin_nth (Int.Neg num.One) n = True"
-  "bin_nth (Int.Pos num.One)      0 = True"
-  "bin_nth (Int.Pos (num.Bit0 m)) 0 = False"
-  "bin_nth (Int.Pos (num.Bit1 m)) 0 = True"
-  "bin_nth (Int.Neg (num.Bit0 m)) 0 = False"
-  "bin_nth (Int.Neg (num.Bit1 m)) 0 = True"
-  "bin_nth (Int.Pos num.One)      (Suc n) = False"
-  "bin_nth (Int.Pos (num.Bit0 m)) (Suc n) = bin_nth (Int.Pos m) n"
-  "bin_nth (Int.Pos (num.Bit1 m)) (Suc n) = bin_nth (Int.Pos m) n"
-  "bin_nth (Int.Neg (num.Bit0 m)) (Suc n) = bin_nth (Int.Neg m) n"
-  "bin_nth (Int.Neg (num.Bit1 m)) (Suc n) = bin_nth (Int.Neg (Num.inc m)) n"
-  by (simp_all add: Num.add_One)
+lemma test_bit_int_code [code]:
+  "test_bit (0::int)          n = False"
+  "test_bit (Int.Neg num.One) n = True"
+  "test_bit (Int.Pos num.One)      0 = True"
+  "test_bit (Int.Pos (num.Bit0 m)) 0 = False"
+  "test_bit (Int.Pos (num.Bit1 m)) 0 = True"
+  "test_bit (Int.Neg (num.Bit0 m)) 0 = False"
+  "test_bit (Int.Neg (num.Bit1 m)) 0 = True"
+  "test_bit (Int.Pos num.One)      (Suc n) = False"
+  "test_bit (Int.Pos (num.Bit0 m)) (Suc n) = test_bit (Int.Pos m) n"
+  "test_bit (Int.Pos (num.Bit1 m)) (Suc n) = test_bit (Int.Pos m) n"
+  "test_bit (Int.Neg (num.Bit0 m)) (Suc n) = test_bit (Int.Neg m) n"
+  "test_bit (Int.Neg (num.Bit1 m)) (Suc n) = test_bit (Int.Neg (Num.inc m)) n"
+  by (simp_all add: Num.add_One bit_Suc)
 
 lemma int_not_code [code]:
   "NOT (0 :: int) = -1"

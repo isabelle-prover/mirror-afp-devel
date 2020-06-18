@@ -80,24 +80,14 @@ context includes integer.lifting begin
   
   lemma bs_subset_eq_correct: "bs_subset_eq s1 s2 \<longleftrightarrow> bs_\<alpha> s1 \<subseteq> bs_\<alpha> s2"
     unfolding bs_\<alpha>_def bs_subset_eq_def
-    apply transfer
-    apply rule
-    apply auto []
-    apply (metis bin_nth_code(1) bin_nth_ops(1) bin_nth_ops(4))
-    apply (auto intro!: bin_eqI simp: bin_nth_ops)
-    done
+    by transfer (auto simp add: bit_eq_iff bin_nth_ops)
 
   definition bs_disjoint :: "bitset \<Rightarrow> bitset \<Rightarrow> bool" where
     "bs_disjoint s1 s2 \<equiv> s1 AND s2 = 0"
   
   lemma bs_disjoint_correct: "bs_disjoint s1 s2 \<longleftrightarrow> bs_\<alpha> s1 \<inter> bs_\<alpha> s2 = {}"
     unfolding bs_\<alpha>_def bs_disjoint_def
-    apply transfer
-    apply rule
-    apply auto []
-    apply (metis bin_nth_code(1) bin_nth_ops(1))
-    apply (auto intro!: bin_eqI simp: bin_nth_ops)
-    done
+    by transfer (auto simp add: bit_eq_iff bin_nth_ops)
 
   definition bs_union :: "bitset \<Rightarrow> bitset \<Rightarrow> bitset" where
     "bs_union s1 s2 = s1 OR s2"

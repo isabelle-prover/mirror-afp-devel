@@ -3661,7 +3661,7 @@ lemma msb_neg:
                        = {2^((len_of TYPE(32) - 1))+1 .. 2^((len_of TYPE(32)))-1}"
       apply(auto)
       subgoal for xa by (simp add: word_le_def)
-      subgoal for w using Word.word.uint[of w] by auto
+      subgoal for w using uint_lt [of w] by simp
       subgoal for xa
       proof -
         assume lower:"2147483649 \<le> xa" and upper:"xa \<le> 4294967295"
