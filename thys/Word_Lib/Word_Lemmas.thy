@@ -3773,24 +3773,20 @@ lemma shiftr1_unfold: "shiftr1 x = x >> 1"
   by (metis One_nat_def comp_apply funpow.simps(1) funpow.simps(2) id_apply shiftr_def)
 
 lemma shiftr1_is_div_2: "(x::('a::len) word) >> 1 = x div 2"
-  apply (case_tac "LENGTH('a) = 1")
-   apply simp
- apply (subgoal_tac "x = 0 \<or> x = 1")
-    apply (erule disjE)
-     apply (clarsimp simp:word_div_def)+
-   apply (metis One_nat_def less_irrefl_nat sint_1_cases)
-  apply clarsimp
-  apply (subst word_div_def)
-  apply clarsimp
-  apply (subst bintrunc_id)
-    apply (subgoal_tac "2 \<le> LENGTH('a)")
-     apply simp
-    apply (metis (no_types) le_0_eq le_SucE lens_not_0(2) not_less_eq_eq numeral_2_eq_2)
-   apply simp
-  apply (subst bin_rest_def[symmetric])
-  apply (subst shiftr1_def[symmetric])
-  apply (clarsimp simp:shiftr1_unfold)
-  done
+proof (cases \<open>2 \<le> LENGTH('a)\<close>)
+  case False
+  then have *: \<open>LENGTH('a) = 1\<close>
+    by simp
+  then have \<open>x = 0 \<or> x = 1\<close>
+    by (metis One_nat_def less_irrefl_nat sint_1_cases)
+  then show ?thesis
+    by (auto simp add: word_arith_nat_defs(6) *)
+next
+  case True
+  then show ?thesis
+    using shiftr1_unfold [symmetric, of x] uint_2_id [where ?'a = 'a]
+    by (simp add: shiftr1_def word_div_def bin_rest_def)
+qed
 
 lemma shiftl1_is_mult: "(x << 1) = (x :: 'a::len word) * 2"
   by (metis One_nat_def mult_2 mult_2_right one_add_one
