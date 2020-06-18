@@ -53,8 +53,10 @@ begin
     "simple_match_any \<equiv> \<lparr>iiface=ifaceAny, oiface=ifaceAny, src=(0,0), dst=(0,0), proto=ProtoAny, sports=(0,65535), dports=(0,65535) \<rparr>"
   lemma simple_match_any: "simple_matches simple_match_any p"
     proof -
-      have "(65535::16 word) = max_word" by(simp add: max_word_def)
-      thus ?thesis by(simp add: simple_match_any_def ipset_from_cidr_0 match_ifaceAny)
+      have *: "(65535::16 word) = max_word"
+        by simp
+      show ?thesis
+        by (simp add: simple_match_any_def ipset_from_cidr_0 match_ifaceAny *)
     qed
 
   text\<open>we specify only one empty port range\<close>

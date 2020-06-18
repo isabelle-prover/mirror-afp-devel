@@ -86,7 +86,7 @@ lemma minBound_word:
 
 lemma maxBound_max_word:
   "(maxBound::'a::len word) = max_word"
-  by (simp add: maxBound_word max_word_minus [symmetric])
+  by (fact maxBound_word)
 
 lemma leq_maxBound [simp]:
   "(x::'a::len word) \<le> maxBound"

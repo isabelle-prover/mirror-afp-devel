@@ -24,7 +24,7 @@ section \<open>Modelling IP Adresses\<close>
     "max_ip_addr \<equiv> of_nat ((2^(len_of(TYPE('i)))) - 1)"
 
   lemma max_ip_addr_max_word: "max_ip_addr = max_word"
-    by(simp add: max_ip_addr_def max_word_def word_of_int_minus)
+    by(simp add: max_ip_addr_def word_of_int_minus)
 
   lemma max_ip_addr_max: "\<forall>a. a \<le> max_ip_addr"
     by(simp add: max_ip_addr_max_word)

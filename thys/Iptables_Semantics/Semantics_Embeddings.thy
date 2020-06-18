@@ -333,15 +333,15 @@ lemma Semantics_optimize_primitive_univ_common_matcher:
   assumes "matcher_agree_on_exact_matches \<gamma> common_matcher" 
     shows "Semantics.matches \<gamma> (optimize_primitive_univ m) p = Semantics.matches \<gamma> m p"
 proof -
-  have "(max_word::16 word) =  65535" by(simp add: max_word_def)
-  hence port_range: "\<And>s e port. s = 0 \<and> e = 0xFFFF \<longrightarrow> (port::16 word) \<le> 0xFFFF" by simp
+  have "65535 = (max_word::16 word)"
+    by simp
+  then have port_range: "\<And>s e port. s = 0 \<and> e = 0xFFFF \<longrightarrow> (port::16 word) \<le> 0xFFFF"
+    by (simp only:) simp
   from assms show ?thesis
   apply(induction m rule: optimize_primitive_univ.induct)
   apply(auto elim!: matcher_agree_on_exact_matches_gammaE
              simp add: port_range match_ifaceAny ipset_from_cidr_0 ctstate_is_UNIV)
   done
 qed
-
-
 
 end

@@ -58,16 +58,17 @@ lemma word_Suc_leq: fixes k::"'a::len word" shows "k \<noteq> max_word \<Longrig
 lemma word_Suc_le: fixes k::"'a::len word" shows "x \<noteq> max_word \<Longrightarrow> x + 1 \<le> k \<longleftrightarrow> x < k"
   by (meson not_less word_Suc_leq)
 
-lemma word_lessThan_Suc_atMost: fixes k::"'a::len word" shows "k \<noteq> max_word \<Longrightarrow> {..< k + 1} = {..k}"
-  by(simp add: lessThan_def atMost_def word_Suc_leq)
+lemma word_lessThan_Suc_atMost:
+  \<open>{..< k + 1} = {..k}\<close> if \<open>k \<noteq> - 1\<close> for k :: \<open>'a::len word\<close>
+  using that by (simp add: lessThan_def atMost_def word_Suc_leq)
 
 lemma word_atLeastLessThan_Suc_atLeastAtMost:
-  fixes l::"'a::len word" shows "u \<noteq> max_word \<Longrightarrow> {l..< u + 1} = {l..u}"
-  by (simp add: atLeastAtMost_def atLeastLessThan_def word_lessThan_Suc_atMost)
+  \<open>{l ..< u + 1} = {l..u}\<close> if \<open>u \<noteq> - 1\<close> for l :: \<open>'a::len word\<close>
+  using that by (simp add: atLeastAtMost_def atLeastLessThan_def word_lessThan_Suc_atMost)
 
-lemma word_atLeastAtMost_Suc_greaterThanAtMost: fixes l::"'a::len word"
-  shows "m \<noteq> max_word \<Longrightarrow> {m<..u} = {m + 1..u}"
-  by(simp add: greaterThanAtMost_def greaterThan_def atLeastAtMost_def atLeast_def word_Suc_le)
+lemma word_atLeastAtMost_Suc_greaterThanAtMost:
+  \<open>{m<..u} = {m + 1..u}\<close> if \<open>m \<noteq> - 1\<close> for m :: \<open>'a::len word\<close>
+  using that by (simp add: greaterThanAtMost_def greaterThan_def atLeastAtMost_def atLeast_def word_Suc_le)
 
 lemma word_atLeastLessThan_Suc_atLeastAtMost_union:
   fixes l::"'a::len word"
@@ -78,9 +79,17 @@ lemma word_atLeastLessThan_Suc_atLeastAtMost_union:
   with assms show ?thesis by(simp add: word_atLeastAtMost_Suc_greaterThanAtMost)
   qed
 
+lemma max_word_less_eq_iff [simp]:
+  \<open>- 1 \<le> w \<longleftrightarrow> w = - 1\<close> for w :: \<open>'a::len0 word\<close>
+  by (auto simp add: le_less)  
+
 lemma word_adjacent_union:
   "word_next e = s' \<Longrightarrow> s \<le> e \<Longrightarrow> s' \<le> e' \<Longrightarrow> {s..e} \<union> {s'..e'} = {s .. e'}"
-  by (metis Un_absorb2 atLeastatMost_subset_iff ivl_disj_un_two(7) max_word_max
-            word_atLeastLessThan_Suc_atLeastAtMost word_le_less_eq word_next_def linorder_not_le)
+  apply (simp add: word_next_def ivl_disj_un_two_touch split: if_splits)
+  apply (drule sym)
+  apply simp
+  apply (subst word_atLeastLessThan_Suc_atLeastAtMost_union)
+     apply (simp_all add: word_Suc_le)
+  done
 
 end

@@ -762,11 +762,11 @@ qed
         (simple_match_port (dports m) (pc_dport c))"
   
   lemma simple_conn_matches_simple_match_any: "simple_conn_matches simple_match_any c"
-    apply(simp add: simple_conn_matches_def)
-    apply(simp add: simple_match_any_def match_ifaceAny)
-    apply(subgoal_tac "(65535::16 word) = max_word")
-     apply(simp)
-    by(simp add: max_word_def)
+    apply (simp add: simple_conn_matches_def simple_match_any_def match_ifaceAny)
+    apply (subgoal_tac "(65535::16 word) = max_word")
+     apply (simp only:)
+     apply simp_all
+    done
   
   lemma has_default_policy_simple_conn_matches:
     "has_default_policy rs \<Longrightarrow> has_default_policy [r\<leftarrow>rs . simple_conn_matches (match_sel r) c]"

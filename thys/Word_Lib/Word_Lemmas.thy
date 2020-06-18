@@ -2195,13 +2195,14 @@ lemma i_hate_words:
 
 lemma overflow_plus_one_self:
   "(1 + p \<le> p) = (p = (-1 :: 'a :: len word))"
-  apply (safe, simp_all)
+  apply rule
   apply (rule ccontr)
-  apply (drule plus_one_helper2)
+   apply (drule plus_one_helper2)
    apply (rule notI)
    apply (drule arg_cong[where f="\<lambda>x. x - 1"])
    apply simp
-  apply (simp add: field_simps)
+   apply (simp add: field_simps)
+  apply simp
   done
 
 lemma plus_1_less:
@@ -3846,7 +3847,7 @@ lemma shiftr1_0_or_1:"(x::('a::len) word) >> 1 = 0 \<Longrightarrow> x = 0 \<or>
 
 lemma word_overflow:"(x::('a::len) word) + 1 > x \<or> x + 1 = 0"
   apply clarsimp
-  by (metis diff_0 eq_diff_eq less_x_plus_1 max_word_max plus_1_less)
+  by (metis diff_0 eq_diff_eq less_x_plus_1)
 
 lemma word_overflow_unat:"unat ((x::('a::len) word) + 1) = unat x + 1 \<or> x + 1 = 0"
   by (metis Suc_eq_plus1 add.commute unatSuc)
@@ -3937,9 +3938,8 @@ lemma cast_chunk_assemble_id:
   apply (rule ucast_ucast_len)
   apply (rule shiftr_less_t2n')
    apply (subst and_mask_eq_iff_le_mask)
-   apply (clarsimp simp:mask_def)
-   apply (metis max_word_eq max_word_max mult_2_right)
-  apply (metis add_diff_cancel_left' diff_less len_gt_0 mult_2_right)
+   apply (simp_all add: mask_def flip: mult_2_right)
+  apply (metis add_diff_cancel_left' len_gt_0 mult_2_right zero_less_diff)
   done
 
 lemma cast_chunk_scast_assemble_id:
@@ -3976,9 +3976,7 @@ lemma word_sless_sint_le:"x <s y \<Longrightarrow> sint x \<le> sint y - 1"
 lemma upper_trivial:
   fixes x :: "'a::len word"
   shows "x \<noteq> 2 ^ LENGTH('a) - 1 \<Longrightarrow> x < 2 ^ LENGTH('a) - 1"
-  by (cut_tac n=x and 'a='a in max_word_max,
-      clarsimp simp:max_word_def,
-      simp add: less_le)
+  by (simp add: less_le)
 
 lemma constraint_expand:
   fixes x :: "'a::len word"
@@ -4006,44 +4004,44 @@ lemma card_map_elide2:
   by (subst card_map_elide) clarsimp+
 
 lemma le_max_word_ucast_id:
-  assumes "(x::'a::len word) \<le> ucast (max_word::'b::len word)"
-  shows "ucast ((ucast x)::'b word) = x"
+  \<open>UCAST('b \<rightarrow> 'a) (UCAST('a \<rightarrow> 'b) x) = x\<close>
+    if \<open>x \<le> UCAST('b::len \<rightarrow> 'a) (- 1)\<close>
+    for x :: \<open>'a::len word\<close>
 proof -
-  {
-    assume a1: "x \<le> word_of_int (uint (word_of_int (2 ^ LENGTH('b) - 1)::'b word))"
-    have f2: "((\<exists>i ia. (0::int) \<le> i \<and> \<not> 0 \<le> i + - 1 * ia \<and> i mod ia \<noteq> i) \<or>
-              \<not> (0::int) \<le> - 1 + 2 ^ LENGTH('b) \<or> (0::int) \<le> - 1 + 2 ^ LENGTH('b) + - 1 * 2 ^ LENGTH('b) \<or>
-              (- (1::int) + 2 ^ LENGTH('b)) mod 2 ^ LENGTH('b) =
-                - 1 + 2 ^ LENGTH('b)) = ((\<exists>i ia. (0::int) \<le> i \<and> \<not> 0 \<le> i + - 1 * ia \<and> i mod ia \<noteq> i) \<or>
-              \<not> (1::int) \<le> 2 ^ LENGTH('b) \<or>
-              2 ^ LENGTH('b) + - (1::int) * ((- 1 + 2 ^ LENGTH('b)) mod 2 ^ LENGTH('b)) = 1)"
-      by force
-    have f3: "\<forall>i ia. \<not> (0::int) \<le> i \<or> 0 \<le> i + - 1 * ia \<or> i mod ia = i"
-      using mod_pos_pos_trivial by force
-    have "(1::int) \<le> 2 ^ LENGTH('b)"
-      by simp
-    then have "2 ^ LENGTH('b) + - (1::int) * ((- 1 + 2 ^ LENGTH('b)) mod 2 ^ len_of TYPE ('b)) = 1"
-      using f3 f2 by blast
-    then have f4: "- (1::int) + 2 ^ LENGTH('b) = (- 1 + 2 ^ LENGTH('b)) mod 2 ^ LENGTH('b)"
-      by linarith
-    have f5: "x \<le> word_of_int (uint (word_of_int (- 1 + 2 ^ LENGTH('b))::'b word))"
-      using a1 by force
-    have f6: "2 ^ LENGTH('b) + - (1::int) = - 1 + 2 ^ LENGTH('b)"
-      by force
-    have f7: "- (1::int) * 1 = - 1"
-      by auto
-    have "\<forall>x0 x1. (x1::int) - x0 = x1 + - 1 * x0"
-      by force
-    then have "x \<le> 2 ^ LENGTH('b) - 1"
-      using f7 f6 f5 f4 by (metis uint_word_of_int wi_homs(2) word_arith_wis(8) word_of_int_2p)
-  }
-  with assms show ?thesis
-    unfolding ucast_def
-    apply (subst word_ubin.eq_norm)
-    apply (subst and_mask_bintr[symmetric])
-    apply (subst and_mask_eq_iff_le_mask)
-    apply (clarsimp simp: max_word_def mask_def)
-    done
+  from that have a1: \<open>x \<le> word_of_int (uint (word_of_int (2 ^ LENGTH('b) - 1) :: 'b word))\<close>
+    by (simp add: ucast_def word_of_int_minus)
+  have f2: "((\<exists>i ia. (0::int) \<le> i \<and> \<not> 0 \<le> i + - 1 * ia \<and> i mod ia \<noteq> i) \<or>
+            \<not> (0::int) \<le> - 1 + 2 ^ LENGTH('b) \<or> (0::int) \<le> - 1 + 2 ^ LENGTH('b) + - 1 * 2 ^ LENGTH('b) \<or>
+            (- (1::int) + 2 ^ LENGTH('b)) mod 2 ^ LENGTH('b) =
+              - 1 + 2 ^ LENGTH('b)) = ((\<exists>i ia. (0::int) \<le> i \<and> \<not> 0 \<le> i + - 1 * ia \<and> i mod ia \<noteq> i) \<or>
+            \<not> (1::int) \<le> 2 ^ LENGTH('b) \<or>
+            2 ^ LENGTH('b) + - (1::int) * ((- 1 + 2 ^ LENGTH('b)) mod 2 ^ LENGTH('b)) = 1)"
+    by force
+  have f3: "\<forall>i ia. \<not> (0::int) \<le> i \<or> 0 \<le> i + - 1 * ia \<or> i mod ia = i"
+    using mod_pos_pos_trivial by force
+  have "(1::int) \<le> 2 ^ LENGTH('b)"
+    by simp
+  then have "2 ^ LENGTH('b) + - (1::int) * ((- 1 + 2 ^ LENGTH('b)) mod 2 ^ len_of TYPE ('b)) = 1"
+    using f3 f2 by blast
+  then have f4: "- (1::int) + 2 ^ LENGTH('b) = (- 1 + 2 ^ LENGTH('b)) mod 2 ^ LENGTH('b)"
+    by linarith
+  have f5: "x \<le> word_of_int (uint (word_of_int (- 1 + 2 ^ LENGTH('b))::'b word))"
+    using a1 by force
+  have f6: "2 ^ LENGTH('b) + - (1::int) = - 1 + 2 ^ LENGTH('b)"
+    by force
+  have f7: "- (1::int) * 1 = - 1"
+    by auto
+  have "\<forall>x0 x1. (x1::int) - x0 = x1 + - 1 * x0"
+    by force
+  then have "x \<le> 2 ^ LENGTH('b) - 1"
+    using f7 f6 f5 f4 by (metis uint_word_of_int wi_homs(2) word_arith_wis(8) word_of_int_2p)
+  then have \<open>uint x \<le> uint (2 ^ LENGTH('b) - (1 :: 'a word))\<close>
+    by (simp add: word_le_def)
+  then have \<open>uint x \<le> 2 ^ LENGTH('b) - 1\<close>
+    by (simp add: uint_word_ariths)
+      (metis \<open>1 \<le> 2 ^ LENGTH('b)\<close> \<open>uint x \<le> uint (2 ^ LENGTH('b) - 1)\<close> linorder_not_less lt2p_lem uint_1 uint_minus_simple_alt uint_power_lower word_le_def zle_diff1_eq)
+  then show ?thesis
+    by (simp add: ucast_def word_ubin.eq_norm bintrunc_mod2p)
 qed
 
 lemma remdups_enum_upto:
@@ -4149,7 +4147,7 @@ lemma word_clz_0[simp]:
 lemma word_clz_minus_one[simp]:
   "word_clz (-1::'a::len word) = 0"
   unfolding word_clz_def
-  by (simp add: max_word_bl[simplified max_word_minus] takeWhile_replicate)
+  by (simp add: takeWhile_replicate)
 
 lemma word_add_no_overflow:"(x::'a::len word) < max_word \<Longrightarrow> x < x + 1"
   using less_x_plus_1 order_less_le by blast
@@ -4394,7 +4392,7 @@ qed
 
 lemma max_word_mask:
   "(max_word :: 'a::len word) = mask LENGTH('a)"
-  unfolding mask_def by (metis max_word_eq shiftl_1)
+  unfolding mask_def by simp
 
 lemmas mask_len_max = max_word_mask[symmetric]
 
@@ -4824,9 +4822,9 @@ lemma shiftl_1_not_0:
   "n < LENGTH('a) \<Longrightarrow> (1::'a::len word) << n \<noteq> 0"
   by (simp add: shiftl_t2n)
 
-lemma max_word_not_0[simp]:
-  "max_word \<noteq> 0"
-  by (simp add: max_word_minus)
+lemma max_word_not_0 [simp]:
+  "- 1 \<noteq> (0 :: 'a::len word)"
+  by simp
 
 lemma ucast_zero_is_aligned:
   "UCAST('a::len \<rightarrow> 'b::len) w = 0 \<Longrightarrow> n \<le> LENGTH('b) \<Longrightarrow> is_aligned w n"
@@ -4840,8 +4838,8 @@ lemma unat_ucast_eq_unat_and_mask:
     thus ?thesis using ucast_ucast_mask by simp
   qed
 
-lemma unat_max_word_pos[simp]: "0 < unat max_word"
-  by (auto simp: unat_gt_0)
+lemma unat_max_word_pos[simp]: "0 < unat (- 1 :: 'a::len word)"
+  using unat_gt_0 [of \<open>- 1 :: 'a::len word\<close>] by simp
 
 
 (* Miscellaneous conditional injectivity rules. *)

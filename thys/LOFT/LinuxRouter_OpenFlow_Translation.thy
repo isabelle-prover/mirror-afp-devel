@@ -493,8 +493,8 @@ definition "is_iface_list ifs \<equiv> distinct ifs \<and> list_all is_iface_nam
 
 lemma max_16_word_max[simp]: "(a :: 16 word) \<le> 0xffff"
 proof -
-	have ffff: "0xffff = word_of_int (2 ^ 16 - 1)" by fastforce
-	show ?thesis using max_word_max[of a] unfolding max_word_def ffff by fastforce
+	have "0xFFFF = (- 1 :: 16 word)" by simp
+	then show ?thesis by (simp only:) simp
 qed
 
 lemma replicate_FT_hlp: "x \<le> 16 \<and> y \<le> 16 \<Longrightarrow> replicate (16 - x) False @ replicate x True = replicate (16 - y) False @ replicate y True \<Longrightarrow> x = y"

@@ -30,7 +30,7 @@ section \<open>IPv6 Addresses\<close>
   lemma "max_ipv6_addr = 340282366920938463463374607431768211455"
     by(fact max_ipv6_addr_number)
   lemma max_ipv6_addr_max_word: "max_ipv6_addr = max_word"
-    by(simp add: max_ipv6_addr_number max_word_def)
+    by(simp add: max_ipv6_addr_number)
   lemma max_ipv6_addr_max: "\<forall>a. a \<le> max_ipv6_addr"
     by(simp add: max_ipv6_addr_max_word)
   lemma UNIV_ipv6addrset: "UNIV = {0 .. max_ipv6_addr}" (*not in the simp set, for a reason*)

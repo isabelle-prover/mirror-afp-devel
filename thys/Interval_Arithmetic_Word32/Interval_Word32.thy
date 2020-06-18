@@ -3527,7 +3527,8 @@ lemma msb_non_min:
     then have uintNeq1:"uint (~~ w) \<noteq> 0xFFFFFFFF"
       using uint_distinct[of "~~w" "0xFFFFFFFF"] 
       by auto
-    have "~~ (0x7FFFFFFF::word) = (2 ^ 31::word)" by (auto simp add: max_word_def)
+    have "~~ (0x7FFFFFFF::word) = (2 ^ 31::word)"
+      by simp
     then have "(~~ w) \<noteq> 0x7FFFFFFF"
       using neqneg1 neqneg2 Word.word_bool_alg.double_compl[of w] 
       by metis

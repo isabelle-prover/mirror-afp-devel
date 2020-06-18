@@ -63,6 +63,10 @@ lemma zero_simps:
   subgoal by transfer auto
   done
 
+lemma emax_eq: "emax x = 2^LENGTH('e) - 1"
+  for x::"('e, 'f)float itself"
+  by (simp add: emax_def unat_minus_one_word)
+
 lemma topfloat_simps:
   "sign (topfloat::('e, 'f)float) = 0"
   "exponent (topfloat::('e, 'f)float) = emax TYPE(('e, 'f)float) - 1"
@@ -71,26 +75,15 @@ lemma topfloat_simps:
   "sign (bottomfloat::('e, 'f)float) = 1"
   "exponent (bottomfloat::('e, 'f)float) = emax TYPE(('e, 'f)float) - 1"
   "fraction (bottomfloat::('e, 'f)float) = 2^fracwidth TYPE(('e, 'f)float) - 1"
-  subgoal by transfer auto
-  subgoal by transfer (auto simp: emax_def unat_sub)
-  subgoal
-    apply transfer
-    apply safe
-    by (metis One_nat_def diff_less lessI minus_one_norm minus_one_word unat_0 unat_lt2p
-        unat_of_nat_len)
-  subgoal by transfer auto
-  subgoal by transfer (auto simp: emax_def unat_sub)
-  subgoal
-    apply transfer
-    apply safe
-    by (metis One_nat_def diff_less lessI minus_one_norm minus_one_word unat_0 unat_lt2p
-        unat_of_nat_len)
+  subgoal by transfer simp
+  subgoal by transfer (simp add: emax_eq bintrunc_eq_take_bit take_bit_minus_small_eq
+    nat_diff_distrib nat_power_eq)
+  subgoal by transfer (simp add: unat_minus_one_word)
+  subgoal by transfer simp
+  subgoal by transfer (simp add: emax_eq bintrunc_eq_take_bit take_bit_minus_small_eq
+    unat_minus_one_word nat_diff_distrib nat_power_eq)
+  subgoal by transfer (simp add: unat_minus_one_word)
   done
-
-lemma emax_eq: "emax x = 2^LENGTH('e) - 1"
-  for x::"('e, 'f)float itself"
-  unfolding bias_def emax_def
-  by (auto simp: max_word_eq unat_minus word_size)
 
 lemmas float_defs =
   is_finite_def is_infinity_def is_zero_def is_nan_def

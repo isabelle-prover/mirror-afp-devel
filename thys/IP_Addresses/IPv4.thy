@@ -27,7 +27,7 @@ section \<open>IPv4 Adresses\<close>
   lemma "max_ipv4_addr = 0b11111111111111111111111111111111"
     by(fact max_ipv4_addr_number)
   lemma max_ipv4_addr_max_word: "max_ipv4_addr = max_word"
-    by(simp add: max_ipv4_addr_number max_word_def)
+    by(simp add: max_ipv4_addr_number)
   lemma max_ipv4_addr_max[simp]: "\<forall>a. a \<le> max_ipv4_addr"
     by(simp add: max_ipv4_addr_max_word)
   lemma UNIV_ipv4addrset: "UNIV = {0 .. max_ipv4_addr}" (*not in the simp set, for a reason*)

@@ -68,7 +68,12 @@ lemma "simple_proto_conjunct p1 (Proto p2) \<noteq> None \<Longrightarrow> \<for
   qed
 
   lemma set_word8_word_upto: "{0..(max_word :: 8 word)} = set (word_upto 0 255)"
-    by(auto simp add: max_word_def word_upto_set_eq)
+  proof -
+    have \<open>0xFF = (max_word :: 8 word)\<close>
+      by simp
+    then show ?thesis
+      by (simp only:) (auto simp add: word_upto_set_eq)
+  qed
   lemma "(\<forall>p \<in> {0..max_word}. Proto p \<in> set (getNeg ps)) \<longleftrightarrow>
          ((\<forall>p \<in> set (word_upto 0 255). Proto p \<in> set (getNeg ps)))"
     by(simp add: set_word8_word_upto)
