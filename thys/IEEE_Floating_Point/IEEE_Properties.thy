@@ -76,11 +76,11 @@ lemma topfloat_simps:
   "exponent (bottomfloat::('e, 'f)float) = emax TYPE(('e, 'f)float) - 1"
   "fraction (bottomfloat::('e, 'f)float) = 2^fracwidth TYPE(('e, 'f)float) - 1"
   subgoal by transfer simp
-  subgoal by transfer (simp add: emax_eq bintrunc_eq_take_bit take_bit_minus_small_eq
+  subgoal by transfer (simp add: emax_eq take_bit_minus_small_eq
     nat_diff_distrib nat_power_eq)
   subgoal by transfer (simp add: unat_minus_one_word)
   subgoal by transfer simp
-  subgoal by transfer (simp add: emax_eq bintrunc_eq_take_bit take_bit_minus_small_eq
+  subgoal by transfer (simp add: emax_eq take_bit_minus_small_eq
     unat_minus_one_word nat_diff_distrib nat_power_eq)
   subgoal by transfer (simp add: unat_minus_one_word)
   done

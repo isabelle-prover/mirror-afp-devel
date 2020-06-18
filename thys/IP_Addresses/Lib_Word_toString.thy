@@ -64,13 +64,7 @@ termination string_of_word
     apply(subgoal_tac "(n div base) < n")
      apply(blast intro: unat_mono)
     apply(rule div_less_dividend_word)
-     subgoal by(metis Word_Lemmas.power_not_zero linorder_neqE_nat numeral_less_iff
-                      power_zero_numeral semiring_norm(76) word_neq_0_conv)
-    apply(clarsimp)
-    apply(thin_tac "n \<noteq> 0")
-    subgoal by (metis One_nat_def mult.right_neutral power_0 power_Suc unat_1
-                      unat_power_lower Suc_1 inc_induct le_def less_eq_Suc_le lt1_neq0
-                      not_degenerate_imp_2_neq_0 word_le_less_eq)
+     apply (auto simp add: not_less word_le_nat_alt)
   done
 done
 

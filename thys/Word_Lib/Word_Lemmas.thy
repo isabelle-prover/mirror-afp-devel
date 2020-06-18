@@ -3754,17 +3754,7 @@ lemma mask_twice2:
 
 lemma uint_2_id:
   "LENGTH('a) \<ge> 2 \<Longrightarrow> uint (2::('a::len) word) = 2"
-  apply clarsimp
-  apply (subgoal_tac "2 \<in> uints (LENGTH('a))")
-   apply (subst (asm) Word.word_ubin.set_iff_norm)
-   apply simp
-  apply (subst word_uint.set_iff_norm)
-  apply clarsimp
-  apply (rule int_mod_eq')
-   apply simp
-  apply (rule pow_2_gt)
-  apply simp
-  done
+  by simp
 
 lemma bintrunc_id:
   "\<lbrakk>m \<le> of_nat n; 0 < m\<rbrakk> \<Longrightarrow> bintrunc n m = m"
@@ -3888,32 +3878,10 @@ lemma of_nat_neq_iff_word:
   done
 
 lemma shiftr1_irrelevant_lsb:"(x::('a::len) word) !! 0 \<or> x >> 1 = (x + 1) >> 1"
-  apply (case_tac "LENGTH('a) = 1")
-   apply clarsimp
-   apply (drule_tac x=x in degenerate_word[unfolded One_nat_def])
-   apply (erule disjE)
-    apply clarsimp+
-  apply (subst (asm) shiftr1_is_div_2[unfolded One_nat_def])+
-  apply (subst (asm) word_arith_nat_div)+
-  apply clarsimp
-  apply (subst (asm) bintrunc_id)
-    apply (subgoal_tac "LENGTH('a) > 0")
-     apply linarith
-    apply clarsimp+
-  apply (subst (asm) bintrunc_id)
-    apply (subgoal_tac "LENGTH('a) > 0")
-     apply linarith
-    apply clarsimp+
-  apply (case_tac "x + 1 = 0")
-   apply (clarsimp simp:overflow_imp_lsb)
-  apply (cut_tac x=x in word_overflow_unat)
-  apply clarsimp
-  apply (case_tac "even (unat x)")
-   apply (subgoal_tac "unat x div 2 = Suc (unat x) div 2")
-    apply metis
-   apply (subst numeral_2_eq_2)+
-   apply simp
-  apply (simp add:odd_iff_lsb)
+  using word_overflow_unat [of x]
+  apply (simp only: shiftr1_is_div_2 flip: odd_iff_lsb)
+  apply (cases \<open>2 \<le> LENGTH('a)\<close>)
+   apply (auto simp add: test_bit_def' uint_nat word_arith_nat_div dest: overflow_imp_lsb)
   done
 
 lemma shiftr1_0_imp_only_lsb:"((x::('a::len) word) + 1) >> 1 = 0 \<Longrightarrow> x = 0 \<or> x + 1 = 0"
@@ -4988,18 +4956,13 @@ qed
 
 lemma bin_cat_cong: "bin_cat a n b = bin_cat c m d"
   if "n = m" "a = c" "bintrunc m b = bintrunc m d"
-  using that(3) unfolding that(1,2)
-proof (induction m arbitrary: b d)
-  case (Suc m)
-  show ?case
-    using Suc.prems by (auto intro: Suc.IH)
-qed simp
+  using that(3) unfolding that(1,2) by (simp add: bin_cat_eq_push_bit_add_take_bit)
 
 lemma bin_cat_eqD1: "bin_cat a n b = bin_cat c n d \<Longrightarrow> a = c"
   by (induction n arbitrary: b d) auto
 
 lemma bin_cat_eqD2: "bin_cat a n b = bin_cat c n d \<Longrightarrow> bintrunc n b = bintrunc n d"
-  by (induction n arbitrary: b d) auto
+  by (induction n arbitrary: b d) (simp_all add: take_bit_Suc)
 
 lemma bin_cat_inj: "(bin_cat a n b) = bin_cat c n d \<longleftrightarrow> a = c \<and> bintrunc n b = bintrunc n d"
   by (auto intro: bin_cat_cong bin_cat_eqD1 bin_cat_eqD2)
