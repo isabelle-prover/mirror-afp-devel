@@ -3785,7 +3785,7 @@ next
   case True
   then show ?thesis
     using shiftr1_unfold [symmetric, of x] uint_2_id [where ?'a = 'a]
-    by (simp add: shiftr1_def word_div_def bin_rest_def)
+    by (simp add: shiftr1_def word_div_def)
 qed
 
 lemma shiftl1_is_mult: "(x << 1) = (x :: 'a::len word) * 2"

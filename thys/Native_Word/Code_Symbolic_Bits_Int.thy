@@ -91,8 +91,8 @@ lemma int_xor_code [code]: fixes i j :: int shows
   "Int.Pos n XOR Int.Neg m = NOT (Int.Pos n XOR Num.sub m num.One)"
   by(fold int_not_neg_numeral)(simp_all add: int_numeral_bitXOR_num int_xor_not cong: option.case_cong)
 
-lemma bin_rest_code [code]: "bin_rest i = i >> 1"
-by(simp add: bin_rest_def shiftr_int_def)
+lemma bin_rest_code: "bin_rest i = i >> 1"
+  by (simp add: shiftr_int_def)
 
 lemma sbintrunc_code [code]:
   "sbintrunc n bin =

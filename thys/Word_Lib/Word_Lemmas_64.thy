@@ -164,8 +164,7 @@ lemma of_nat64_n_less_equal_power_2:
 
 lemma word_rsplit_0:
   "word_rsplit (0 :: word64) = [0, 0, 0, 0, 0, 0, 0, 0 :: word8]"
-  apply (simp add: word_rsplit_def bin_rsplit_def Let_def)
-  done
+  by (simp add: word_rsplit_def bin_rsplit_def)
 
 lemma unat_ucast_10_64 :
   fixes x :: "10 word"

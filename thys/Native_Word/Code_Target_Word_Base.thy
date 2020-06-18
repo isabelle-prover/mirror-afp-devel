@@ -83,8 +83,9 @@ proof -
   let ?q' = "2 * (n div 2 div m)"
   have "n div 2 div m < 2 ^ LENGTH('a)" using n by (metis of_nat_inverse unat_lt2p uno_simps(2))
   hence q: "?q = of_nat ?q'" using n m
-    apply(simp add: shiftr_def shiftr1_def bin_rest_def uint_nat unat_of_nat shiftl_def shiftl1_def Bit_def word_div_def word_of_nat)
-    by (metis of_nat_inverse of_nat_numeral uno_simps(2) word_of_nat zdiv_int)
+    apply (simp add: shiftr_def shiftr1_def uint_nat unat_of_nat shiftl_def shiftl1_def Bit_def word_div_def word_of_nat)
+    apply (metis of_nat_inverse of_nat_numeral uno_simps(2) word_of_nat zdiv_int)
+    done
   from assms have "m \<noteq> 0" using m by -(rule notI, simp)
 
   from n have "2 * (n div 2 div m) < 2 ^ LENGTH('a)"

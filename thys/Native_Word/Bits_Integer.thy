@@ -368,7 +368,7 @@ by transfer(simp add: int_not_def)
 
 lemma bin_rest_integer_code [code nbe]:
   "bin_rest_integer i = i div 2"
-by transfer(simp add: bin_rest_def)
+  by transfer rule
 
 lemma bin_last_integer_code [code]:
   "bin_last_integer i \<longleftrightarrow> i AND 1 \<noteq> 0"
