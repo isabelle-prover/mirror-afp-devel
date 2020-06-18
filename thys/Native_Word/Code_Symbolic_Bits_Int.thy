@@ -19,7 +19,7 @@ lemma Bit_code [code]:
   "Int.Neg n BIT True = Int.Neg (Num.BitM n)"
 by(cases b)(simp_all)
 
-lemma bin_last_code [code]: 
+lemma bin_last_code:
   "bin_last 0 \<longleftrightarrow> False"
   "bin_last (Int.Pos num.One) \<longleftrightarrow> True"
   "bin_last (Int.Pos (num.Bit0 n)) \<longleftrightarrow> False"
@@ -27,7 +27,7 @@ lemma bin_last_code [code]:
   "bin_last (Int.Neg num.One) \<longleftrightarrow> True"
   "bin_last (Int.Neg (num.Bit0 n)) \<longleftrightarrow> False"
   "bin_last (Int.Neg (num.Bit1 n)) \<longleftrightarrow> True"
-by(simp_all)
+  by simp_all
 
 lemma bin_nth_code [code]:
   "bin_nth 0                 n = False"
@@ -42,7 +42,7 @@ lemma bin_nth_code [code]:
   "bin_nth (Int.Pos (num.Bit1 m)) (Suc n) = bin_nth (Int.Pos m) n"
   "bin_nth (Int.Neg (num.Bit0 m)) (Suc n) = bin_nth (Int.Neg m) n"
   "bin_nth (Int.Neg (num.Bit1 m)) (Suc n) = bin_nth (Int.Neg (Num.inc m)) n"
-by(simp_all add: Num.add_One)
+  by (simp_all add: Num.add_One)
 
 lemma int_not_code [code]:
   "NOT (0 :: int) = -1"

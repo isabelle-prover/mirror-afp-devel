@@ -14,7 +14,7 @@ declare [[code drop:
   "(AND) :: int \<Rightarrow> _" "(OR) :: int \<Rightarrow> _" "(XOR) :: int \<Rightarrow> _" "NOT :: int \<Rightarrow> _"
   "lsb :: int \<Rightarrow> _" "set_bit :: int \<Rightarrow> _" "test_bit :: int \<Rightarrow> _"
   "shiftl :: int \<Rightarrow> _" "shiftr :: int \<Rightarrow> _"
-  bin_last bin_rest bin_nth Bit
+  bin_rest bin_nth Bit
   int_of_integer_symbolic
   ]]
 
@@ -38,11 +38,21 @@ lemma bitNOT_int_code [code]:
   "NOT (int_of_integer i) = int_of_integer (NOT i)"
 by transfer simp
 
-declare bin_last_conv_AND [code]
+context
+begin
+
+qualified definition even :: \<open>int \<Rightarrow> bool\<close>
+  where [code_abbrev]: \<open>even = Parity.even\<close>
+
+end
+
+lemma [code]:
+  \<open>Code_Target_Bits_Int.even i \<longleftrightarrow> i AND 1 = 0\<close>
+  by (simp add: Code_Target_Bits_Int.even_def even_conv_AND)
 
 lemma bin_rest_code [code]:
-   "bin_rest (int_of_integer i) = int_of_integer (bin_rest_integer i)"
-by transfer simp
+  "bin_rest (int_of_integer i) = int_of_integer (bin_rest_integer i)"
+  by transfer simp
 
 declare bitval_bin_last [code_unfold]
 
