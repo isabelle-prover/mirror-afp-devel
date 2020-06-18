@@ -223,33 +223,16 @@ proof -
   apply(simp)
   using unat_of_bl_128_16_le_helper by simp
 
- from assms have "ucast (((ucast:: 16 word \<Rightarrow> 128 word) b && mask (128 - n) && mask 16) && mask (128 - n)) = b"
-  apply(subst Word_Lemmas.mask_and_mask)
-  apply(simp)
-  apply(subst Word.word_bool_alg.conj.assoc)
-  apply(subst Word_Lemmas.mask_and_mask)
-  apply(simp)
-  apply(simp add: ucast_mask Word_Lemmas.ucast_ucast_mask)
-  apply(subst Word.mask_eq_iff)
-  apply(rule order_less_trans)
-   apply(rule Word.uint_lt)
-  apply(simp; fail)
-  done
- 
- thus ?thesis
+  from assms have "ucast (((ucast:: 16 word \<Rightarrow> 128 word) b && mask (128 - n) && mask 16) && mask (128 - n)) = b"
+    by (auto simp add: nth_ucast word_size intro: word_eqI)
+  thus ?thesis
   apply(subst Word_Lemmas.word_and_mask_shiftl)
   apply(subst Word_Lemmas.shiftl_shiftr3)
    apply(simp; fail)
   apply(simp)
   apply(subst Word_Lemmas.shiftl_shiftr3)
-   apply(simp; fail)
-  apply(simp add: word_size)
-  apply(subst Word.word_bool_alg.conj.assoc)
-  apply assumption
+    apply(simp_all add: word_size and.assoc)
   done
 qed
-
-
-
 
 end

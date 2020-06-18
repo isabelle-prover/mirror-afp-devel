@@ -11,6 +11,10 @@ begin
 
 section \<open>Implementations of bit operations on \<^typ>\<open>int\<close> operating on symbolic representation\<close>
 
+lemma not_minus_numeral_inc_eq:
+  \<open>NOT (- numeral (Num.inc n)) = (numeral n :: int)\<close>
+  by (simp add: not_int_def sub_inc_One)
+
 lemma Bit_code [code]:
   "0 BIT b = of_bool b"
   "Int.Pos n BIT False = Int.Pos (num.Bit0 n)"
@@ -18,6 +22,10 @@ lemma Bit_code [code]:
   "Int.Neg n BIT False = Int.Neg (num.Bit0 n)"
   "Int.Neg n BIT True = Int.Neg (Num.BitM n)"
 by(cases b)(simp_all)
+
+lemma [code_abbrev]:
+  \<open>test_bit = (bit :: int \<Rightarrow> nat \<Rightarrow> bool)\<close>
+  by (simp add: fun_eq_iff)
 
 lemma test_bit_int_code [code]:
   "test_bit (0::int)          n = False"
@@ -51,9 +59,10 @@ lemma int_and_code [code]: fixes i j :: int shows
   "Int.Neg num.One AND Int.Pos m = Int.Pos m"
   "Int.Neg (num.Bit0 n) AND Int.Pos m = Num.sub (bitORN_num (Num.BitM n) m) num.One"
   "Int.Neg (num.Bit1 n) AND Int.Pos m = Num.sub (bitORN_num (num.Bit0 n) m) num.One"
-           apply (fold int_not_neg_numeral)
-           apply (simp_all add: int_numeral_bitAND_num int_or_not_bitORN_num[symmetric] bbw_not_dist Num.add_One int_not_neg_numeral sub_inc_One inc_BitM cong: option.case_cong)
-    apply (simp_all add: int_and_comm int_not_neg_numeral [symmetric])
+           apply (simp_all add: int_numeral_bitAND_num Num.add_One
+              sub_inc_One inc_BitM not_minus_numeral_inc_eq
+              flip: int_not_neg_numeral int_or_not_bitORN_num split: option.split)
+   apply (simp_all add: ac_simps)
   done
 
 lemma int_or_code [code]: fixes i j :: int shows
@@ -67,9 +76,9 @@ lemma int_or_code [code]: fixes i j :: int shows
   "Int.Neg num.One OR Int.Pos m = Int.Neg num.One"
   "Int.Neg (num.Bit0 n) OR Int.Pos m = (case bitANDN_num (Num.BitM n) m of None \<Rightarrow> -1 | Some n' \<Rightarrow> Int.Neg (Num.inc n'))"
   "Int.Neg (num.Bit1 n) OR Int.Pos m = (case bitANDN_num (num.Bit0 n) m of None \<Rightarrow> -1 | Some n' \<Rightarrow> Int.Neg (Num.inc n'))"
-           apply (simp_all add: int_numeral_bitOR_num)
-      apply (simp_all add: int_or_def int_not_neg_numeral int_and_comm int_not_and_bitANDN_num del: int_not_simps(4) split: option.split)
-  apply (simp_all add: Num.add_One)
+           apply (simp_all add: int_numeral_bitOR_num flip: int_not_neg_numeral)
+     apply (simp_all add: or_int_def int_and_comm int_not_and_bitANDN_num del: int_not_simps(4) split: option.split)
+     apply (simp_all add: Num.add_One)
   done
 
 lemma int_xor_code [code]: fixes i j :: int shows
@@ -91,7 +100,7 @@ lemma sbintrunc_code [code]:
 proof (induct n arbitrary: bin)
   case 0
   then show ?case
-    by (simp add: bitval_bin_last [symmetric])
+    by (simp add: mod_2_eq_odd and_one_eq)
 next
   case (Suc n)
   thus ?case by(cases bin rule: bin_exhaust)(simp add: Let_def minus_BIT_0)

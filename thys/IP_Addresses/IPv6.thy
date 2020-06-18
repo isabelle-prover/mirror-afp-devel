@@ -467,15 +467,7 @@ subsection\<open>Semantics\<close>
   proof -
     have and_mask_shift_helper: "w AND (mask m << n) >> n << n = w AND (mask m << n)"
       for m n::nat and w::ipv6addr
-     proof - (*sledgehammered for 128 word and concrete values for m and n*)
-       have f1: "\<And>w wa wb. ((w::'a::len word) && wa) && wb = w && wb && wa"
-         by (simp add: word_bool_alg.conj_left_commute word_bw_comms(1))
-       have "\<And>w n wa. ((w::'a::len word) && ~~ (mask n)) && (wa << n) = (w >> n) && wa << n"
-         by (simp add: and_not_mask shiftl_over_and_dist)
-       then show ?thesis
-        by (simp add: is_aligned_mask is_aligned_shiftr_shiftl word_bool_alg.conj.assoc)
-        (*using f1 by (metis (no_types) and_not_mask word_and_mask_shiftl word_bw_comms(1))*)
-     qed
+      by (metis is_aligned_shift is_aligned_shiftr_shiftl shiftr_and_eq_shiftl)
     have ucast_ipv6_piece_rule:
       "length (dropWhile Not (to_bl w)) \<le> 16 \<Longrightarrow> (ucast::16 word \<Rightarrow> 128 word) ((ucast::128 word \<Rightarrow> 16 word) w) = w"
       for w::ipv6addr 

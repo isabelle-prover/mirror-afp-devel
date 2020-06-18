@@ -2351,7 +2351,8 @@ lemma enum_word_div:
 
 lemma of_bool_nth:
   "of_bool (x !! v) = (x >> v) && 1"
-  by (word_eqI cong: rev_conj_cong)
+  by (simp add: test_bit_word_eq shiftr_word_eq bit_eq_iff)
+    (auto simp add: bit_1_iff bit_and_iff bit_drop_bit_eq intro: ccontr)
 
 lemma unat_1_0:
   "1 \<le> (x::'a::len word) = (0 < unat x)"
@@ -2567,18 +2568,7 @@ lemma word_shift_zero:
 lemma bool_mask':
   fixes x :: "'a :: len word"
   shows "2 < LENGTH('a) \<Longrightarrow> (0 < x && 1) = (x && 1 = 1)"
-  apply (rule iffI)
-   prefer 2
-   apply simp
-  apply (subgoal_tac "x && mask 1 < 2^1")
-   prefer 2
-   apply (rule and_mask_less_size)
-   apply (simp add: word_size)
-  apply (simp add: mask_def)
-  apply (drule word_less_cases [where y=2])
-  apply (erule disjE, simp)
-  apply simp
-  done
+  by (simp add: and_one_eq mod_2_eq_odd)
 
 lemma sint_eq_uint:
   "\<not> msb x \<Longrightarrow> sint x = uint x"
@@ -3459,13 +3449,7 @@ definition
 
 lemma to_bool_and_1:
   "to_bool (x && 1) = (x !! 0)"
-  apply (simp add: to_bool_def)
-  apply (rule iffI)
-   apply (rule classical, erule notE, word_eqI)
-   apply (case_tac n; simp)
-  apply (rule notI, drule word_eqD[where x=0])
-  apply simp
-  done
+  by (simp add: test_bit_word_eq to_bool_def and_one_eq mod_2_eq_odd)
 
 lemma to_bool_from_bool [simp]:
   "to_bool (from_bool r) = r"
@@ -3657,8 +3641,7 @@ lemma le_step_down_word_2:
       simp add: word_le_minus_one_leq)
 
 lemma NOT_mask_AND_mask[simp]: "(w && mask n) && ~~ (mask n) = 0"
-  apply (clarsimp simp:mask_def)
-  by (metis word_bool_alg.conj_cancel_right word_bool_alg.conj_zero_right word_bw_comms(1) word_bw_lcs(1))
+  by (clarsimp simp add: mask_def Parity.bit_eq_iff bit_and_iff bit_not_iff bit_mask_iff)
 
 lemma and_and_not[simp]:"(a && b) && ~~ b = 0"
   apply (subst word_bw_assocs(1))
@@ -3666,8 +3649,7 @@ lemma and_and_not[simp]:"(a && b) && ~~ b = 0"
   done
 
 lemma mask_shift_and_negate[simp]:"(w && mask n << m) && ~~ (mask n << m) = 0"
-  apply (clarsimp simp:mask_def)
-  by (metis (erased, hide_lams) mask_eq_x_eq_0 shiftl_over_and_dist word_bool_alg.conj_absorb word_bw_assocs(1))
+  by (clarsimp simp add: mask_def Parity.bit_eq_iff bit_and_iff bit_not_iff shiftl_word_eq bit_push_bit_iff)
 
 lemma le_step_down_nat:"\<lbrakk>(i::nat) \<le> n; i = n \<longrightarrow> P; i \<le> n - 1 \<longrightarrow> P\<rbrakk> \<Longrightarrow> P"
   by arith
@@ -3701,19 +3683,15 @@ lemma bitfield_op_twice'':
 
 lemma bit_twiddle_min:
   "(y::'a::len word) xor (((x::'a::len word) xor y) && (if x < y then -1 else 0)) = min x y"
-  by (metis (mono_tags) min_def word_bitwise_m1_simps(2) word_bool_alg.xor_left_commute
-             word_bool_alg.xor_self word_bool_alg.xor_zero_right word_bw_comms(1)
-             word_le_less_eq word_log_esimps(7))
+  by (auto simp add: Parity.bit_eq_iff bit_xor_iff min_def)
 
 lemma bit_twiddle_max:
   "(x::'a::len word) xor (((x::'a::len word) xor y) && (if x < y then -1 else 0)) = max x y"
-  by (metis (mono_tags) max_def word_bitwise_m1_simps(2) word_bool_alg.xor_left_self
-            word_bool_alg.xor_zero_right word_bw_comms(1) word_le_less_eq word_log_esimps(7))
+  by (auto simp add: Parity.bit_eq_iff bit_xor_iff max_def)
 
 lemma swap_with_xor:
   "\<lbrakk>(x::'a::len word) = a xor b; y = b xor x; z = x xor y\<rbrakk> \<Longrightarrow> z = b \<and> y = a"
-  by (metis word_bool_alg.xor_assoc word_bool_alg.xor_commute word_bool_alg.xor_self
-            word_bool_alg.xor_zero_right)
+  by (auto simp add: Parity.bit_eq_iff bit_xor_iff max_def)
 
 lemma scast_nop1:
   "((scast ((of_int x)::('a::len) word))::'a sword) = of_int x"
@@ -3737,11 +3715,7 @@ lemma or_not_mask_nop:
 
 lemma mask_subsume:
   "\<lbrakk>n \<le> m\<rbrakk> \<Longrightarrow> ((x::'a::len word) || y && mask n) && ~~ (mask m) = x && ~~ (mask m)"
-  apply (subst word_ao_dist)
-  apply (subgoal_tac "(y && mask n) && ~~ (mask m) = 0")
-   apply simp
-  by (metis (no_types, hide_lams) is_aligned_mask is_aligned_weaken word_and_not
-            word_bool_alg.conj_zero_right word_bw_comms(1) word_bw_lcs(1))
+  by (auto simp add: Parity.bit_eq_iff bit_not_iff bit_or_iff bit_and_iff mask_eq_mask bit_mask_iff)
 
 lemma and_mask_0_iff_le_mask:
   fixes w :: "'a::len word"
@@ -3852,7 +3826,7 @@ lemma odd_word_imp_even_next:"odd (unat (x::('a::len) word)) \<Longrightarrow> x
   done
 
 lemma overflow_imp_lsb:"(x::('a::len) word) + 1 = 0 \<Longrightarrow> x !! 0"
-  by (metis add.commute add_left_cancel max_word_max not_less word_and_1 word_bool_alg.conj_one_right word_bw_comms(1) word_overflow zero_neq_one)
+  using even_plus_one_iff [of x] by (simp add: test_bit_word_eq)
 
 lemma word_lsb_nat:"lsb w = (unat w mod 2 = 1)"
   unfolding word_lsb_def bin_last_def
@@ -4673,7 +4647,10 @@ lemma map_bits_rev_to_bl:
 (* negating a mask which has been shifted to the very left *)
 lemma NOT_mask_shifted_lenword:
   "~~ (mask len << (LENGTH('a) - len) ::'a::len word) = mask (LENGTH('a) - len)"
-  by (rule Word.word_bool_alg.compl_unique, simp) word_eqI_solve
+  apply (rule bit_eqI)
+  apply (simp add: shiftl_word_eq bit_not_iff bit_push_bit_iff)
+  apply (auto simp add: mask_def bit_mask_iff)
+  done
 
 (* Comparisons between different word sizes. *)
 
@@ -4723,8 +4700,7 @@ lemma ucast_or_distrib:
   fixes x :: "'a::len word"
   fixes y :: "'a::len word"
   shows "(ucast (x || y) :: ('b::len) word) = ucast x || ucast y"
-  unfolding ucast_def Word.bitOR_word.abs_eq uint_or
-  by blast
+  by (simp add: ucast_def uint_or flip: or_word.abs_eq)
 
 lemma shiftr_less:
   "(w::'a::len word) < k \<Longrightarrow> w >> n < k"
@@ -4961,7 +4937,7 @@ lemma bin_cat_eqD1: "bin_cat a n b = bin_cat c n d \<Longrightarrow> a = c"
   by (induction n arbitrary: b d) auto
 
 lemma bin_cat_eqD2: "bin_cat a n b = bin_cat c n d \<Longrightarrow> bintrunc n b = bintrunc n d"
-  by (induction n arbitrary: b d) (simp_all add: take_bit_Suc)
+  by (induction n arbitrary: b d) (simp_all add: take_bit_Suc mod_2_eq_odd)
 
 lemma bin_cat_inj: "(bin_cat a n b) = bin_cat c n d \<longleftrightarrow> a = c \<and> bintrunc n b = bintrunc n d"
   by (auto intro: bin_cat_cong bin_cat_eqD1 bin_cat_eqD2)
@@ -5185,10 +5161,10 @@ lemma word_and_or_mask_aligned:
   "\<lbrakk> is_aligned a n; b \<le> mask n \<rbrakk> \<Longrightarrow> a + b = a || b"
   by (simp add: aligned_mask_disjoint word_plus_and_or_coroll)
 
-lemmas word_and_or_mask_aligned2 =
-  word_and_or_mask_aligned[where a=b and b=a for a b,
-                           simplified add.commute word_bool_alg.disj.commute]
-
+lemma word_and_or_mask_aligned2:
+  \<open>is_aligned b n \<Longrightarrow> a \<le> mask n \<Longrightarrow> a + b = a || b\<close>
+  using word_and_or_mask_aligned [of b n a] by (simp add: ac_simps)
+  
 lemma is_aligned_ucastI:
   "is_aligned w n \<Longrightarrow> is_aligned (ucast w) n"
   by (clarsimp simp: word_eqI_simps)
@@ -5199,7 +5175,7 @@ lemma ucast_le_maskI:
 
 lemma ucast_add_mask_aligned:
   "\<lbrakk> a \<le> mask n; is_aligned b n \<rbrakk> \<Longrightarrow> UCAST ('a::len \<rightarrow> 'b::len) (a + b) = ucast a + ucast b"
-  by (metis is_aligned_ucastI ucast_le_maskI ucast_or_distrib word_and_or_mask_aligned2)
+  by (metis add.commute is_aligned_ucastI ucast_le_maskI ucast_or_distrib word_and_or_mask_aligned)
 
 lemma ucast_shiftl:
   "LENGTH('b) \<le> LENGTH ('a) \<Longrightarrow> UCAST ('a::len \<rightarrow> 'b::len) x << n = ucast (x << n)"
@@ -5393,11 +5369,11 @@ lemma sub_right_shift:
 
 lemma and_and_mask_simple:
   "y && mask n = mask n \<Longrightarrow> (x && y) && mask n = x && mask n"
-  by (simp add: word_bool_alg.conj.assoc)
+  by (simp add: ac_simps)
 
 lemma and_and_mask_simple_not:
   "y && mask n = 0 \<Longrightarrow> (x && y) && mask n = 0"
-  by (simp add: word_bool_alg.conj.assoc)
+  by (simp add: ac_simps)
 
 lemma word_and_le':
   "b \<le> c \<Longrightarrow> (a :: 'a :: len word) && b \<le> c"
@@ -5473,8 +5449,7 @@ lemma unat_of_nat_ctz_smw:
 
 lemma shiftr_and_eq_shiftl:
   "(w >> n) && x = y \<Longrightarrow> w && (x << n) = (y << n)" for y :: "'a:: len word"
-  by (smt and_not_mask is_aligned_neg_mask_eq is_aligned_shift shift_over_ao_dists(4)
-          word_bool_alg.conj_assoc word_bw_comms(1))
+  by (metis (no_types, lifting) and_not_mask bit.conj_ac(1) bit.conj_ac(2) mask_eq_0_eq_x shiftl_mask_is_0 shiftl_over_and_dist)
 
 lemma neg_mask_combine:
   "~~(mask a) && ~~(mask b) = ~~(mask (max a b))"
@@ -5504,7 +5479,7 @@ lemma neg_mask_in_mask_range:
     apply (drule sym)
     apply (simp add: word_and_le2)
     apply (subst word_plus_and_or_coroll, word_eqI_solve)
-    apply (metis le_word_or2 neg_mask_add_mask word_bool_alg.conj.right_idem)
+    apply (metis le_word_or2 neg_mask_add_mask and.right_idem)
    apply clarsimp
    apply (smt add.right_neutral eq_iff is_aligned_neg_mask_eq mask_out_add_aligned neg_mask_mono_le
               word_and_not)
@@ -5775,8 +5750,7 @@ lemma eq_or_less_helperD:
 
 lemma mask_sub:
   "n \<le> m \<Longrightarrow> mask m - mask n = mask m && ~~(mask n)"
-  by (metis (no_types) AND_NOT_mask_plus_AND_mask_eq add_right_imp_eq diff_add_cancel
-                       and_mask_eq_iff_shiftr_0 shiftr_mask_le word_bool_alg.conj.commute)
+  by (metis (full_types) and_mask_eq_iff_shiftr_0 mask_out_sub_mask shiftr_mask_le word_bw_comms(1))
 
 lemma neg_mask_diff_bound:
   "sz'\<le> sz \<Longrightarrow> (ptr && ~~(mask sz')) - (ptr && ~~(mask sz)) \<le> 2 ^ sz - 2 ^ sz'"
@@ -5967,8 +5941,7 @@ lemma mask_overlap_zero:
 
 lemma mask_shifl_overlap_zero:
   "a + c \<le> b \<Longrightarrow> (p && mask a << c) && ~~(mask b) = 0"
-  by (metis and_not_mask le_mask_iff mask_shiftl_decompose shiftl_0 shiftl_over_and_dist
-            shiftr_mask_le word_and_le' word_bool_alg.conj_commute)
+  by (metis and_mask_0_iff_le_mask mask_mono mask_shiftl_decompose order_trans shiftl_over_and_dist word_and_le' word_and_le2)
 
 lemma mask_overlap_zero':
   "a \<ge> b \<Longrightarrow> (p && ~~(mask a)) && mask b = 0"
@@ -5984,8 +5957,7 @@ lemma shift_alignment:
 
 lemma mask_split_sum_twice:
   "a \<ge> b \<Longrightarrow> (p && ~~(mask a)) + ((p && mask a) && ~~(mask b)) + (p && mask b) = p"
-  by (simp add: add.commute multiple_mask_trivia word_bool_alg.conj_commute
-                word_bool_alg.conj_left_commute word_plus_and_or_coroll2)
+  by (simp add: add.commute multiple_mask_trivia word_bw_comms(1) word_bw_lcs(1) word_plus_and_or_coroll2)
 
 lemma mask_shift_eq_mask_mask:
   "(p && mask a >> b << b) = (p && mask a) && ~~(mask b)"

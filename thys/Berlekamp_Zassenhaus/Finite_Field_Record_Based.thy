@@ -620,9 +620,8 @@ proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
     obtain d' r' where dr': "Divides.divmod_nat y' 2 = (d',r')" by force
     from divmod_nat_def[of y' 2, unfolded dr']
     have r': "r' = y' mod 2" and d': "d' = y' div 2" by auto
-    have aux: "\<And> y'. int (y' mod 2) = int y' mod 2" by presburger
     have "urel32 (y AND 1) r'" unfolding r' using y unfolding urel32_def using small
-      unfolding ppp by (transfer, auto simp: uint_and int_and_1, auto simp: aux) 
+      unfolding ppp by transfer (auto simp add: uint_nat unat_mod and_one_eq)
     from urel32_eq[OF this urel32_0]     
     have rem: "(y AND 1 = 0) = (r' = 0)" by simp
     have div: "urel32 (shiftr y 1) (int d')" unfolding d' using y unfolding urel32_def using small
@@ -1032,9 +1031,8 @@ proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
     obtain d' r' where dr': "Divides.divmod_nat y' 2 = (d',r')" by force
     from divmod_nat_def[of y' 2, unfolded dr']
     have r': "r' = y' mod 2" and d': "d' = y' div 2" by auto
-    have aux: "\<And> y'. int (y' mod 2) = int y' mod 2" by presburger
     have "urel64 (y AND 1) r'" unfolding r' using y unfolding urel64_def using small
-      unfolding ppp by (transfer, auto simp: uint_and int_and_1, auto simp: aux) 
+      unfolding ppp by transfer (auto simp add: uint_nat unat_mod and_one_eq) 
     from urel64_eq[OF this urel64_0]     
     have rem: "(y AND 1 = 0) = (r' = 0)" by simp
     have div: "urel64 (shiftr y 1) (int d')" unfolding d' using y unfolding urel64_def using small
@@ -1434,8 +1432,8 @@ proof (induct x' y' arbitrary: x y rule: power_p.induct[of _ p])
     show ?thesis unfolding y True by (simp add: power_p.simps urel_integer_1)
   next
     case False
-    hence id: "(y \<le> 0) = False" "(y' = 0) = False" using False y unfolding urel_integer_def
-      by ((metis eq_iff nat_int nat_of_integer.rep_eq nat_of_integer_code)+)
+    hence id: "(y \<le> 0) = False" "(y' = 0) = False" using False y
+      by (auto simp add: urel_integer_def not_le) (metis of_int_integer_of of_int_of_nat_eq of_nat_0_less_iff)
     obtain d' r' where dr': "Divides.divmod_nat y' 2 = (d',r')" by force
     from divmod_nat_def[of y' 2, unfolded dr']
     have r': "r' = y' mod 2" and d': "d' = y' div 2" by auto

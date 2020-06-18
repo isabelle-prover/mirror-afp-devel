@@ -71,11 +71,6 @@ end
 instantiation integer :: bit_operations begin
 context includes integer.lifting begin
 
-lift_definition bitAND_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer" is "(AND)" .
-lift_definition bitOR_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer" is "(OR)" .
-lift_definition bitXOR_integer :: "integer \<Rightarrow> integer \<Rightarrow> integer" is "(XOR)" .
-lift_definition bitNOT_integer :: "integer \<Rightarrow> integer" is "NOT" .
-
 lift_definition test_bit_integer :: "integer \<Rightarrow> nat \<Rightarrow> bool" is test_bit .
 lift_definition lsb_integer :: "integer \<Rightarrow> bool" is lsb .
 lift_definition set_bit_integer :: "integer \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> integer" is set_bit .
@@ -554,7 +549,10 @@ lemma bitAND_integer_unfold [code]:
    (if x = 0 then 0
     else if x = - 1 then y
     else Bit_integer (bin_rest_integer x AND bin_rest_integer y) (bin_last_integer x \<and> bin_last_integer y))"
-  by transfer (fact bitAND_int.simps)
+  apply transfer
+  apply simp
+  apply (metis bin_rl_simp int_and_Bits) 
+  done
 
 lemma bitOR_integer_unfold [code]:
   "x OR y =

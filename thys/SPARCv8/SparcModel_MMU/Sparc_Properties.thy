@@ -2772,11 +2772,18 @@ lemma or_and_s: "(AND) w1 (0b00000000000000000000000010000000::word32) = 0
 by (simp add: word_ao_dist)
 
 lemma and_or_s: 
-assumes a1: "((ucast (get_S w1))::word1) = 0 \<and> 
+assumes "((ucast (get_S w1))::word1) = 0 \<and> 
   (AND) w2 (0b00000000000000000000000010000000::word32) = 0"
 shows "((ucast (get_S ((OR) ((AND) w1 
   (0b11111111000011111111111111111111::word32)) w2)))::word1) = 0"
-by (metis (full_types) assms ucast_s ucast_s2 word_ao_absorbs(8) word_bool_alg.conj_disj_distrib2)
+proof -
+  from assms have "w1 AND 128 = 0"
+    using ucast_s by blast
+  then have "(w1 AND 4279238655 OR w2) AND 128 = 0"
+    using assms by (metis word_ao_absorbs(6) word_ao_dist word_bw_comms(2))
+  then show ?thesis
+    using ucast_s2 by blast
+qed 
 
 lemma and_or_or_s:
 assumes a1: "((ucast (get_S w1))::word1) = 0 \<and> 
@@ -2793,8 +2800,8 @@ assumes a1: "((ucast (get_S w1))::word1) = 0 \<and>
   (AND) w4 (0b00000000000000000000000010000000::word32) = 0"
 shows "((ucast (get_S ((OR) ((OR) ((OR) ((AND) w1 
   (0b11111111000011111111111111111111::word32)) w2) w3) w4)))::word1) = 0"
-using and_or_or_s assms or_and_s ucast_s ucast_s2 
-by (meson word_bool_alg.conj.commute word_bool_alg.conj_zero_left word_bw_assocs(1))
+  using and_or_or_s assms or_and_s ucast_s ucast_s2
+  by (simp add: and_or_or_s assms or_and_s ucast_s ucast_s2) 
 
 lemma and_or_or_or_or_s:
 assumes a1: "((ucast (get_S w1))::word1) = 0 \<and> 
@@ -2804,8 +2811,8 @@ assumes a1: "((ucast (get_S w1))::word1) = 0 \<and>
   (AND) w5 (0b00000000000000000000000010000000::word32) = 0"
 shows "((ucast (get_S ((OR) ((OR) ((OR) ((OR) ((AND) w1 
   (0b11111111000011111111111111111111::word32)) w2) w3) w4) w5)))::word1) = 0"
-using and_or_or_or_s assms or_and_s ucast_s ucast_s2
-by (meson word_ao_absorbs(8) word_bool_alg.conj_disj_distrib2) 
+  using and_or_or_or_s assms or_and_s ucast_s ucast_s2
+  by (simp add: and_or_or_or_s assms or_and_s ucast_s ucast_s2)
 
 lemma write_cpu_PSR_icc_privilege: 
 assumes a1: "s' = snd (fst (write_cpu (update_PSR_icc n_val z_val v_val c_val 
@@ -2855,8 +2862,8 @@ by simp
 lemma s_0_word: "((ucast (get_S ((AND) w 
   (0b11111111111111111111111101111111::word32))))::word1) = 0"
 apply (simp add: get_S_def)
-using and_num_4294967167_128
-by (simp add: word_bool_alg.conj.commute word_bw_lcs(1)) 
+  using and_num_4294967167_128
+  by (simp add: ac_simps)
 
 lemma update_PSR_CWP_1: "w' = (AND) w (0b11111111111111111111111111100000::word32)
   \<and> ((ucast (get_S w))::word1) = 0
@@ -4627,10 +4634,13 @@ assumes a1: "low_equal s1 s2 \<and>
 t1 = snd (memory_read (10::word8) address s1) \<and>
 t2 = snd (memory_read (10::word8) address s2)"
 shows "low_equal t1 t2"
-using a1 apply (simp add: memory_read_def)
-using a1 apply (auto simp add: sys_reg_low_equal)
-using a1 apply (simp add: load_word_mem_10_low_equal)
-by (metis (no_types, lifting) add_data_cache_low_equal option.case_eq_if snd_conv)
+  using a1 apply (simp add: memory_read_def)
+  using a1 apply (auto simp add: sys_reg_low_equal mod_2_eq_odd)
+  using a1 apply (simp add: load_word_mem_10_low_equal)
+  apply (auto split: option.splits)
+  using add_data_cache_low_equal apply force
+  using add_data_cache_low_equal apply force
+  done
 
 lemma mem_read_delayed_write_low_equal:
 assumes a1: "low_equal s1 s2 \<and> get_delayed_pool s1 = [] \<and> get_delayed_pool s2 = []"

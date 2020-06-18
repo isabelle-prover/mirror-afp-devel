@@ -3520,18 +3520,17 @@ lemma msb_non_min:
     have not_undef:"w \<noteq> 0x80000000"
       using neq2 by auto
     then have neqneg2:"w \<noteq> (2^31)" by auto
-    have "~~ 0xFFFFFFFF = (0::word)" by auto
+    from \<open>w \<noteq> 0\<close> have \<open>~~ w \<noteq> ~~ 0\<close>
+      by (simp only: bit.compl_eq_compl_iff) simp
     then have "(~~ w) \<noteq> 0xFFFFFFFF"
-      using neqneg1 neqneg2 Word.word_bool_alg.double_compl[of w] 
-      by metis
+      by auto
     then have uintNeq1:"uint (~~ w) \<noteq> 0xFFFFFFFF"
       using uint_distinct[of "~~w" "0xFFFFFFFF"] 
       by auto
-    have "~~ (0x7FFFFFFF::word) = (2 ^ 31::word)"
-      by simp
+    from \<open>w \<noteq> 2 ^ 31\<close> have \<open>~~ w \<noteq> ~~ 2 ^ 31\<close>
+      by (simp only: bit.compl_eq_compl_iff) simp
     then have "(~~ w) \<noteq> 0x7FFFFFFF"
-      using neqneg1 neqneg2 Word.word_bool_alg.double_compl[of w] 
-      by metis
+      by auto
     then have uintNeq2:" uint (~~ w) \<noteq> 0x7FFFFFFF"
       using uint_distinct[of "~~w" "0x7FFFFFFF"]
       by auto

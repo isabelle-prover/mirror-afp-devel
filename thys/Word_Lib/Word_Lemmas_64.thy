@@ -247,14 +247,26 @@ lemma shiftr_1:
   by word_bitwise clarsimp
 
 lemma mask_step_down_64:
-  "(b::64word) && 0x1 = (1::64word) \<Longrightarrow> (\<exists>x. x < 64 \<and> mask x = b >> 1) \<Longrightarrow> (\<exists>x. mask x = b)"
-  apply clarsimp
-  apply (rule_tac x="x + 1" in exI)
-  apply (subgoal_tac "x \<le> 63")
-   apply (erule le_step_down_nat, clarsimp simp:mask_def, word_bitwise, clarsimp+)+
-   apply (clarsimp simp:mask_def, word_bitwise, clarsimp)
-  apply clarsimp
-  done
+  \<open>\<exists>x. mask x = b\<close> if \<open>b && 1 = 1\<close>
+    and \<open>\<exists>x. x < 64 \<and> mask x = b >> 1\<close> for b :: \<open>64word\<close>
+proof -
+  from \<open>b && 1 = 1\<close> have \<open>odd b\<close>
+    by (auto simp add: mod_2_eq_odd and_one_eq)
+  then have \<open>b mod 2 = 1\<close>
+    using odd_iff_mod_2_eq_one by blast
+  from \<open>\<exists>x. x < 64 \<and> mask x = b >> 1\<close> obtain x where \<open>x < 64\<close> \<open>mask x = b >> 1\<close> by blast
+  then have \<open>mask x = b div 2\<close>
+    using shiftr1_is_div_2 [of b] by simp
+  with \<open>b mod 2 = 1\<close> have \<open>2 * mask x + 1 = 2 * (b div 2) + b mod 2\<close>
+    by (simp only:) 
+  also have \<open>\<dots> = b\<close>
+    by (simp add: mult_div_mod_eq)
+  finally have \<open>2 * mask x + 1 = b\<close> .
+  moreover have \<open>mask (Suc x) = 2 * mask x + 1\<close>
+    by (metis (no_types, lifting) Groups.add_ac(2) Groups.add_ac(3) diff_add_cancel mask_2pm1 mask_Suc mult_2)
+  ultimately show ?thesis
+    by auto
+qed
 
 lemma unat_of_int_64:
   "\<lbrakk>i \<ge> 0; i \<le> 2 ^ 63\<rbrakk> \<Longrightarrow> (unat ((of_int i)::sword64)) = nat i"

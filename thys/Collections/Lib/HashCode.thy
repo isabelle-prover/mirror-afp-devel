@@ -133,9 +133,7 @@ lemma hashcode_option_simps [simp]:
 lemma bounded_hashcode_option_simps [simp]:
   "bounded_hashcode n None = 0"
   "bounded_hashcode n (Some a) = (hashcode a + 1) mod n"
-  apply (simp_all add: bounded_hashcode_def, transfer, simp_all add: word_mod_def)
-  apply (simp_all add: algebra_simps)
-  done
+  by (simp_all add: bounded_hashcode_def ac_simps)
 
 (*
 lemma bounded_hashcode_option_simps [simp]:

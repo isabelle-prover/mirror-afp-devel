@@ -510,15 +510,52 @@ lemma word_and_max_word:
   shows "x = max_word \<Longrightarrow> a AND x = a"
   by simp
 
+lemma word_and_full_mask_simp:
+  \<open>x && Bit_Operations.mask LENGTH('a) = x\<close> for x :: \<open>'a::len word\<close>
+proof (rule bit_eqI)
+  fix n
+  assume \<open>2 ^ n \<noteq> (0 :: 'a word)\<close>
+  then have \<open>n < LENGTH('a)\<close>
+    by simp
+  then show \<open>bit (x && Bit_Operations.mask LENGTH('a)) n \<longleftrightarrow> bit x n\<close>
+    by (simp add: bit_and_iff bit_mask_iff)
+qed
+	
+lemma word8_and_max_simp:
+  \<open>x && 0xFF = x\<close> for x :: \<open>8 word\<close>
+  using word_and_full_mask_simp [of x]
+  by (simp add: numeral_eq_Suc mask_Suc_exp)
+	
+lemma word16_and_max_simp:
+  \<open>x && 0xFFFF = x\<close> for x :: \<open>16 word\<close>
+  using word_and_full_mask_simp [of x]
+  by (simp add: numeral_eq_Suc mask_Suc_exp)
+	
+lemma word32_and_max_simp:
+  \<open>x && 0xFFFFFFFF = x\<close> for x :: \<open>32 word\<close>
+  using word_and_full_mask_simp [of x]
+  by (simp add: numeral_eq_Suc mask_Suc_exp)
+	
+lemma word64_and_max_simp:
+  \<open>x && 0xFFFFFFFFFFFFFFFF = x\<close> for x :: \<open>64 word\<close>
+  using word_and_full_mask_simp [of x]
+  by (simp add: numeral_eq_Suc mask_Suc_exp)
+	
+lemmas word_and_max_simps =
+  word8_and_max_simp
+  word16_and_max_simp
+  word32_and_max_simp
+  word64_and_max_simp
+
 lemma word_and_1_bl:
   fixes x::"'a::len word"
   shows "(x AND 1) = of_bl [x !! 0]"
-  by (simp add: word_and_1)
+  by (simp add: mod_2_eq_odd test_bit_word_eq and_one_eq)
 
 lemma word_1_and_bl:
   fixes x::"'a::len word"
   shows "(1 AND x) = of_bl [x !! 0]"
-  by (subst word_bw_comms) (simp add: word_and_1)
+  by (simp add: mod_2_eq_odd test_bit_word_eq one_and_eq)
 
 lemma scast_scast_id [simp]:
   "scast (scast x :: ('a::len) signed word) = (x :: 'a word)"

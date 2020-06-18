@@ -267,19 +267,35 @@ by(simp add: uint_word_of_int and_bin_mask_conv_mod)
 
 context fixes f :: "nat \<Rightarrow> bool" begin
 
-fun set_bits_aux :: "'a word \<Rightarrow> nat \<Rightarrow> 'a :: len word"
-where
-  "set_bits_aux w 0 = w"
-| "set_bits_aux w (Suc n) = set_bits_aux ((w << 1) OR (if f n then 1 else 0)) n"
+lemma bit_set_bits_word_iff:
+  \<open>bit (set_bits f :: 'a word) n \<longleftrightarrow> n < LENGTH('a::len) \<and> f n\<close>
+  by (auto simp add: of_nth_def test_bit_of_bl simp flip: test_bit_word_eq)
 
-lemma set_bits_aux_conv: "set_bits_aux w n = (w << n) OR (set_bits f AND mask n)"
-apply(induct w n rule: set_bits_aux.induct)
-apply(auto 4 3 intro: word_eqI simp add: word_ao_nth nth_shiftl test_bit.eq_norm word_size not_less less_Suc_eq)
-done
+definition set_bits_aux :: \<open>'a word \<Rightarrow> nat \<Rightarrow> 'a :: len word\<close>
+  where \<open>set_bits_aux w n = push_bit n w OR take_bit n (set_bits f)\<close>
+
+lemma set_bits_aux_conv:
+  \<open>set_bits_aux w n = (w << n) OR (set_bits f AND mask n)\<close>
+  by (auto simp add: set_bits_aux_def bit_eq_iff bit_or_iff bit_push_bit_iff bit_take_bit_iff
+    bit_and_iff bit_set_bits_word_iff shiftl_word_eq)
 
 corollary set_bits_conv_set_bits_aux:
-  "set_bits f = (set_bits_aux 0 (LENGTH('a)) :: 'a :: len word)"
-by(simp add: set_bits_aux_conv)
+  \<open>set_bits f = (set_bits_aux 0 (LENGTH('a)) :: 'a :: len word)\<close>
+  by (simp add: set_bits_aux_conv)
+
+lemma set_bits_aux_0 [simp]:
+  \<open>set_bits_aux w 0 = w\<close>
+  by  (simp add: set_bits_aux_conv)
+
+lemma set_bits_aux_Suc [simp]:
+  \<open>set_bits_aux w (Suc n) = set_bits_aux ((w << 1) OR (if f n then 1 else 0)) n\<close>
+  by (simp add: set_bits_aux_def shiftl_word_eq bit_eq_iff bit_or_iff bit_push_bit_iff bit_take_bit_iff bit_set_bits_word_iff)
+    (auto simp add: bit_exp_iff not_less bit_1_iff less_Suc_eq_le exp_eq_zero_iff)
+
+lemma set_bits_aux_simps [code]:
+  \<open>set_bits_aux w 0 = w\<close>
+  \<open>set_bits_aux w (Suc n) = set_bits_aux ((w << 1) OR (if f n then 1 else 0)) n\<close>
+  by simp_all
 
 end
 
@@ -419,6 +435,6 @@ setup \<open>Code_Target.add_derived_target ("SML_word", [(Code_ML.target_SML, I
 code_identifier code_module Code_Target_Word_Base \<rightharpoonup>
   (SML) Word and (Haskell) Word and (OCaml) Word and (Scala) Word
 
-export_code sbintrunc bin_mask in SML
+export_code sbintrunc bin_mask in SML module_name Code
 
 end

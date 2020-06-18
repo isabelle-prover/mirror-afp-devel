@@ -172,19 +172,10 @@ subsection\<open>Equivalence Proofs\<close>
     have prefix_match_semantics_ipset_from_netmask:
            "(prefix_to_wordset pfx) = ipset_from_netmask (pfxm_prefix pfx) (NOT (pfxm_mask pfx))"
       unfolding prefix_to_wordset_def ipset_from_netmask_def Let_def
-      unfolding word_bool_alg.double_compl
-      proof(goal_cases)
-        case 1
-        have *: "pfxm_prefix pfx AND NOT (pfxm_mask pfx) = pfxm_prefix pfx"
-          unfolding mask_eq_0_eq_x[symmetric]
-          using valid_prefix_E[OF assms] word_bw_comms(1)[of "pfxm_prefix pfx"] by simp
-        hence **: "pfxm_prefix pfx AND NOT (pfxm_mask pfx) OR pfxm_mask pfx =
-                    pfxm_prefix pfx OR pfxm_mask pfx"
-          by simp
-        show ?case unfolding * ** ..
-      qed
+      using assms
+        by (clarsimp dest!: valid_prefix_E) (metis bit.conj_commute mask_eq_0_eq_x)
       have "((mask len)::'a::len word) << LENGTH('a) - len = ~~ (mask (LENGTH('a) - len))"
-      for len using NOT_mask_shifted_lenword by (metis word_not_not)
+        for len using NOT_mask_shifted_lenword by (metis word_not_not)
       from this[of "(pfxm_length pfx)"] have mask_def2_symmetric:
         "((mask (pfxm_length pfx)::'a::len word) << LENGTH('a) - pfxm_length pfx) =
           NOT (pfxm_mask pfx)"

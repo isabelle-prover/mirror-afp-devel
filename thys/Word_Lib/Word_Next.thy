@@ -22,7 +22,6 @@ lemma "word_next (255:: 8 word) = 255" by eval
 lemma "word_prev (2:: 8 word) = 1" by eval
 lemma "word_prev (0:: 8 word) = 0" by eval
 
-
 lemma plus_one_helper[elim!]:
   "x < n + (1 :: 'a :: len word) \<Longrightarrow> x \<le> n"
   apply (simp add: word_less_nat_alt word_le_nat_alt field_simps)

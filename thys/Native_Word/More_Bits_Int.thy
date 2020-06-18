@@ -37,11 +37,11 @@ lemma int_of_integer_symbolic_aux_code [code nbe]:
 
 code_identifier
   code_module Bits_Int \<rightharpoonup>
-  (SML) Bits_Int and (OCaml) Bits_Int and (Haskell) Bits_Int and (Scala) Bits_Int
+  (SML) Bit_Operations and (OCaml) Bit_Operations and (Haskell) Bit_Operations and (Scala) Bit_Operations
 | code_module More_Bits_Int \<rightharpoonup>
-  (SML) Bits_Int and (OCaml) Bits_Int and (Haskell) Bits_Int and (Scala) Bits_Int
-| code_module Bit_Representation \<rightharpoonup>
-  (SML) Bits_Int and (OCaml) Bits_Int and (Haskell) Bits_Int and (Scala) Bits_Int
+  (SML) Bit_Operations and (OCaml) Bit_Operations and (Haskell) Bit_Operations and (Scala) Bit_Operations
+| constant take_bit \<rightharpoonup>
+  (SML) Bit_Operations.take_bit and (OCaml) Bit_Operations.take_bit and (Haskell) Bit_Operations.take_bit and (Scala) Bit_Operations.take_bit
 
 
 section \<open>Symbolic bit operations on numerals and @{typ int}s\<close>

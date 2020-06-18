@@ -131,12 +131,28 @@ instance by (standard; transfer)
   (fact push_bit_eq_mult drop_bit_eq_div)+
 end
 
+context
+  includes lifting_syntax
+begin
+
+lemma transfer_rule_bit [transfer_rule]:
+  \<open>(cr_uint ===> (=)) bit bit\<close>
+  by (unfold bit_def) transfer_prover
+
+end
+
+instantiation uint :: ring_bit_operations
+begin
+lift_definition not_uint :: "uint \<Rightarrow> uint" is NOT .
+lift_definition and_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is \<open>(AND)\<close> .
+lift_definition or_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is \<open>(OR)\<close> .
+lift_definition xor_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is \<open>(XOR)\<close> .
+instance by (standard; transfer)
+  (simp_all add: bit_and_iff bit_or_iff bit_xor_iff bit_not_iff minus_eq_not_minus_1)
+end
+
 instantiation uint :: bit_operations
 begin
-lift_definition bitNOT_uint :: "uint \<Rightarrow> uint" is NOT .
-lift_definition bitAND_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is \<open>(AND)\<close> .
-lift_definition bitOR_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is \<open>(OR)\<close> .
-lift_definition bitXOR_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is \<open>(XOR)\<close> .
 lift_definition test_bit_uint :: "uint \<Rightarrow> nat \<Rightarrow> bool" is test_bit .
 lift_definition set_bit_uint :: "uint \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint" is set_bit .
 lift_definition lsb_uint :: "uint \<Rightarrow> bool" is lsb .
