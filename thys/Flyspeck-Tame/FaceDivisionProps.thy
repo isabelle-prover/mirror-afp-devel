@@ -4804,7 +4804,7 @@ qed
 
 
 lemma before_filter: "\<And>  ys. filter P xs = ys \<Longrightarrow> distinct xs \<Longrightarrow> before ys  u v \<Longrightarrow> before xs u v"
-  using subst_all subst_all' [simp del]
+  supply subst_all [simp del]
   apply (subgoal_tac "P u")
   apply (subgoal_tac "P v")
   apply (subgoal_tac "pre_between xs u v")

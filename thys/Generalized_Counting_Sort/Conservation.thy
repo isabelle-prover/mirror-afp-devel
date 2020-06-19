@@ -869,9 +869,9 @@ proof (induction xs arbitrary: ns, simp add: offs_none_def offs_num_def offs_nex
       fill xs ?ns' index key ub mi ma ! i = None"
     by simp
   show "(fill xs ?ns' index key ub mi ma)[ns ! ?i' := Some x] ! i = None"
-  proof (insert C, simp add: offs_none_def, erule disjE, erule_tac [2] disjE, simp_all del: subst_all subst_all'
+  proof (insert C, simp add: offs_none_def, erule disjE, erule_tac [2] disjE, simp_all del: subst_all
    add: offs_num_cons split: if_split_asm, erule conjE, rule case_split, drule mp,
-   assumption, simp_all del: subst_all subst_all', (erule conjE)+, (erule_tac [2] conjE)+,
+   assumption, simp_all del: subst_all, (erule conjE)+, (erule_tac [2] conjE)+,
    erule_tac [3] conjE, erule_tac [5] conjE)
     fix j
     assume
