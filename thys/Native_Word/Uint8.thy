@@ -75,29 +75,27 @@ lemma [transfer_rule]:
 
 end
 
-instance uint8 :: semiring_bits
+instantiation uint8 :: semiring_bits
+begin
+
+lift_definition bit_uint8 :: \<open>uint8 \<Rightarrow> nat \<Rightarrow> bool\<close> is bit .
+
+instance
   by (standard; transfer)
-    (fact even_iff_mod_2_eq_zero odd_iff_mod_2_eq_one odd_one bits_induct
+    (fact bit_iff_odd even_iff_mod_2_eq_zero odd_iff_mod_2_eq_one odd_one bits_induct
        bits_div_0 bits_div_by_1 bits_mod_div_trivial even_succ_div_2
        even_mask_div_iff exp_div_exp_eq div_exp_eq mod_exp_eq mult_exp_mod_exp_eq
        div_exp_mod_exp_eq even_mult_exp_div_exp_iff)+
+
+end
 
 instantiation uint8 :: semiring_bit_shifts
 begin
 lift_definition push_bit_uint8 :: \<open>nat \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is push_bit .
 lift_definition drop_bit_uint8 :: \<open>nat \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is drop_bit .
+lift_definition take_bit_uint8 :: \<open>nat \<Rightarrow> uint8 \<Rightarrow> uint8\<close> is take_bit .
 instance by (standard; transfer)
-  (fact push_bit_eq_mult drop_bit_eq_div)+
-end
-
-context
-  includes lifting_syntax
-begin
-
-lemma transfer_rule_bit [transfer_rule]:
-  \<open>(cr_uint8 ===> (=)) bit bit\<close>
-  by (unfold bit_def) transfer_prover
-
+  (fact push_bit_eq_mult drop_bit_eq_div take_bit_eq_mod)+
 end
 
 instantiation uint8 :: ring_bit_operations
@@ -440,10 +438,14 @@ where [code del]:
   (if n < 0 \<or> 7 < n then undefined (test_bit :: uint8 \<Rightarrow> _) x n
    else x !! (nat_of_integer n))"
 
+lemma test_bit_eq_bit_uint8 [code]:
+  \<open>test_bit = (bit :: uint8 \<Rightarrow> _)\<close>
+  by (rule ext)+ (transfer, transfer, simp)
+
 lemma test_bit_uint8_code [code]:
   "test_bit x n \<longleftrightarrow> n < 8 \<and> uint8_test_bit x (integer_of_nat n)"
-including undefined_transfer integer.lifting unfolding uint8_test_bit_def
-by transfer(auto cong: conj_cong dest: test_bit_size simp add: word_size)
+  including undefined_transfer integer.lifting unfolding uint8_test_bit_def
+  by (transfer, simp, transfer, simp)
 
 lemma uint8_test_bit_code [code]:
   "uint8_test_bit w n =

@@ -68,29 +68,27 @@ lemma [transfer_rule]:
 
 end
 
-instance uint32 :: semiring_bits
+instantiation uint32:: semiring_bits
+begin
+
+lift_definition bit_uint32 :: \<open>uint32 \<Rightarrow> nat \<Rightarrow> bool\<close> is bit .
+
+instance
   by (standard; transfer)
-    (fact even_iff_mod_2_eq_zero odd_iff_mod_2_eq_one odd_one bits_induct
+    (fact bit_iff_odd even_iff_mod_2_eq_zero odd_iff_mod_2_eq_one odd_one bits_induct
        bits_div_0 bits_div_by_1 bits_mod_div_trivial even_succ_div_2
        even_mask_div_iff exp_div_exp_eq div_exp_eq mod_exp_eq mult_exp_mod_exp_eq
        div_exp_mod_exp_eq even_mult_exp_div_exp_iff)+
+
+end
 
 instantiation uint32 :: semiring_bit_shifts
 begin
 lift_definition push_bit_uint32 :: \<open>nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is push_bit .
 lift_definition drop_bit_uint32 :: \<open>nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is drop_bit .
+lift_definition take_bit_uint32 :: \<open>nat \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is take_bit .
 instance by (standard; transfer)
-  (fact push_bit_eq_mult drop_bit_eq_div)+
-end
-
-context
-  includes lifting_syntax
-begin
-
-lemma transfer_rule_bit [transfer_rule]:
-  \<open>(cr_uint32 ===> (=)) bit bit\<close>
-  by (unfold bit_def) transfer_prover
-
+  (fact push_bit_eq_mult drop_bit_eq_div take_bit_eq_mod)+
 end
 
 instantiation uint32 :: ring_bit_operations
@@ -519,10 +517,14 @@ where [code del]:
   (if n < 0 \<or> 31 < n then undefined (test_bit :: uint32 \<Rightarrow> _) x n
    else x !! (nat_of_integer n))"
 
+lemma test_bit_eq_bit_uint32 [code]:
+  \<open>test_bit = (bit :: uint32 \<Rightarrow> _)\<close>
+  by (rule ext)+ (transfer, transfer, simp)
+
 lemma test_bit_uint32_code [code]:
-  "test_bit x n \<longleftrightarrow> n < 32 \<and> uint32_test_bit x (integer_of_nat n)"
-including undefined_transfer integer.lifting unfolding uint32_test_bit_def
-by transfer(auto cong: conj_cong dest: test_bit_size simp add: word_size)
+  "bit x n \<longleftrightarrow> n < 32 \<and> uint32_test_bit x (integer_of_nat n)"
+  including undefined_transfer integer.lifting unfolding uint32_test_bit_def
+  by (transfer, simp, transfer, simp)
 
 lemma uint32_test_bit_code [code]:
   "uint32_test_bit w n =
