@@ -27,6 +27,7 @@ Aristotles_Assertoric_Syllogistic
 Arith_Prog_Rel_Primes
 ArrowImpossibilityGS
 AutoFocus-Stream
+Automated_Stateful_Protocol_Verification
 Automatic_Refinement
 AxiomaticCategoryTheory
 BDD
@@ -328,6 +329,7 @@ Multirelations
 Multi_Party_Computation
 Myhill-Nerode
 Name_Carrying_Type_Inference
+Nash_Williams
 Nat-Interval-Logic
 Native_Word
 Nested_Multisets_Ordinals
@@ -441,6 +443,7 @@ SDS_Impossibility
 SIFPL
 SIFUM_Type_Systems
 SPARCv8
+Safe_Distance
 Safe_OCL
 Saturation_Framework
 Secondary_Sylow
@@ -463,6 +466,7 @@ Skew_Heap
 Skip_Lists
 Slicing
 Sliding_Window_Algorithm
+Smith_Normal_Form
 Smooth_Manifolds
 Sort_Encodings
 Source_Coding_Theorem
@@ -471,6 +475,7 @@ Splay_Tree
 Sqrt_Babylonian
 Stable_Matching
 Statecharts
+Stateful_Protocol_Composition_and_Typing
 Stellar_Quorums
 Stern_Brocot
 Stewart_Apollonius

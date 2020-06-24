@@ -123,21 +123,25 @@ This work is a formalization of soundness and completeness proofs
 for a Seligman-style tableau system for hybrid logic. The completeness
 result is obtained via a synthetic approach using maximally
 consistent sets of tableau blocks. The formalization differs from
-the cited work in a few ways. First, to avoid the need to backtrack in
+previous work in a few ways. First, to avoid the need to backtrack in
 the construction of a tableau, the formalized system has no unnamed
 initial segment, and therefore no Name rule. Second, I show that the
 full Bridge rule is admissible in the system. Third, I start from rules
 restricted to only extend the branch with new formulas, including only
 witnessing diamonds that are not already witnessed, and show that
 the unrestricted rules are admissible. Similarly, I start from simpler
-versions of the @-rules and show the general ones admissible. Finally,
-the GoTo rule is restricted using a notion of coins such that each
-application consumes a coin and coins are earned through applications of
+versions of the @-rules and show that these are sufficient.
+The GoTo rule is restricted using a notion of potential such that each
+application consumes potential and potential is earned through applications of
 the remaining rules. I show that if a branch can be closed then it can
-be closed starting from a single coin. These restrictions are imposed
-to rule out some means of nontermination.</td>
+be closed starting from a single unit. Finally, Nom is restricted by
+a fixed set of allowed nominals. The resulting system should be terminating.</td>
 </tr>
 
+  <tr>
+    <td class="datahead" valign="top">Change history:</td>
+    <td class="abstract">[2020-06-03]: The fully restricted system has been shown complete by updating the synthetic completeness proof.</td>
+  </tr>
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>

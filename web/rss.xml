@@ -9,7 +9,59 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>13 May 2020 00:00:00 +0000</pubDate>
+    <pubDate>01 Jun 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles</title>
+              <link>https://www.isa-afp.org/entries/Safe_Distance.html</link>
+       <guid>https://www.isa-afp.org/entries/Safe_Distance.html</guid>
+       <dc:creator> Albert Rizaldi, Fabian Immler       </dc:creator>
+       <pubDate>01 Jun 2020 00:00:00 +0000</pubDate>
+       <description>
+The Vienna Convention on Road Traffic defines the safe distance
+traffic rules informally. This could make autonomous vehicle liable
+for safe-distance-related accidents because there is no clear
+definition of how large a safe distance is. We provide a formally
+proven prescriptive definition of a safe distance, and checkers which
+can decide whether an autonomous vehicle is obeying the safe distance
+rule. Not only does our work apply to the domain of law, but it also
+serves as a specification for autonomous vehicle manufacturers and for
+online verification of path planners.</description>
+    </item>
+    <item>
+       <title>A verified algorithm for computing the Smith normal form of a matrix</title>
+              <link>https://www.isa-afp.org/entries/Smith_Normal_Form.html</link>
+       <guid>https://www.isa-afp.org/entries/Smith_Normal_Form.html</guid>
+       <dc:creator> Jose Divasón       </dc:creator>
+       <pubDate>23 May 2020 00:00:00 +0000</pubDate>
+       <description>
+This work presents a formal proof in Isabelle/HOL of an algorithm to
+transform a matrix into its Smith normal form, a canonical matrix
+form, in a general setting: the algorithm is parameterized by
+operations to prove its existence over elementary divisor rings, while
+execution is guaranteed over Euclidean domains. We also provide a
+formal proof on some results about the generality of this algorithm as
+well as the uniqueness of the Smith normal form.  Since Isabelle/HOL
+does not feature dependent types, the development is carried out
+switching conveniently between two different existing libraries: the
+Hermite normal form (based on HOL Analysis) and the Jordan normal form
+AFP entries. This permits to reuse results from both developments and
+it is done by means of the lifting and transfer package together with
+the use of local type definitions.</description>
+    </item>
+    <item>
+       <title>The Nash-Williams Partition Theorem</title>
+              <link>https://www.isa-afp.org/entries/Nash_Williams.html</link>
+       <guid>https://www.isa-afp.org/entries/Nash_Williams.html</guid>
+       <dc:creator> Lawrence C. Paulson       </dc:creator>
+       <pubDate>16 May 2020 00:00:00 +0000</pubDate>
+       <description>
+In 1965, Nash-Williams discovered a generalisation of the infinite
+form of Ramsey&#39;s theorem. Where the latter concerns infinite sets
+of n-element sets for some fixed n, the Nash-Williams theorem concerns
+infinite sets of finite sets (or lists) subject to a “no initial
+segment” condition. The present formalisation follows a
+monograph on Ramsey Spaces by Todorčević.</description>
+    </item>
     <item>
        <title>A Formalization of Knuth–Bendix Orders</title>
               <link>https://www.isa-afp.org/entries/Knuth_Bendix_Order.html</link>
@@ -328,6 +380,44 @@ joins&lt;/a&gt; and a specialized sliding window algorithm to further
 optimize the monitor.</description>
     </item>
     <item>
+       <title>Stateful Protocol Composition and Typing</title>
+              <link>https://www.isa-afp.org/entries/Stateful_Protocol_Composition_and_Typing.html</link>
+       <guid>https://www.isa-afp.org/entries/Stateful_Protocol_Composition_and_Typing.html</guid>
+       <dc:creator> Andreas V. Hess, Sebastian Mödersheim, Achim D. Brucker       </dc:creator>
+       <pubDate>08 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+We provide in this AFP entry several relative soundness results for
+security protocols. In particular, we prove typing and
+compositionality results for stateful protocols (i.e., protocols with
+mutable state that may span several sessions), and that focuses on
+reachability properties. Such results are useful to simplify protocol
+verification by reducing it to a simpler problem: Typing results give
+conditions under which it is safe to verify a protocol in a typed
+model where only &#34;well-typed&#34; attacks can occur whereas
+compositionality results allow us to verify a composed protocol by
+only verifying the component protocols in isolation. The conditions on
+the protocols under which the results hold are furthermore syntactic
+in nature allowing for full automation. The foundation presented here
+is used in another entry to provide fully automated and formalized
+security proofs of stateful protocols.</description>
+    </item>
+    <item>
+       <title>Automated Stateful Protocol Verification</title>
+              <link>https://www.isa-afp.org/entries/Automated_Stateful_Protocol_Verification.html</link>
+       <guid>https://www.isa-afp.org/entries/Automated_Stateful_Protocol_Verification.html</guid>
+       <dc:creator> Andreas V. Hess, Sebastian Mödersheim, Achim D. Brucker, Anders Schlichtkrull       </dc:creator>
+       <pubDate>08 Apr 2020 00:00:00 +0000</pubDate>
+       <description>
+In protocol verification we observe a wide spectrum from fully
+automated methods to interactive theorem proving with proof assistants
+like Isabelle/HOL. In this AFP entry, we present a fully-automated
+approach for verifying stateful security protocols, i.e., protocols
+with mutable state that may span several sessions. The approach
+supports reachability goals like secrecy and authentication. We also
+include a simple user-friendly transaction-based protocol
+specification language that is embedded into Isabelle.</description>
+    </item>
+    <item>
        <title>Lucas's Theorem</title>
               <link>https://www.isa-afp.org/entries/Lucas_Theorem.html</link>
        <guid>https://www.isa-afp.org/entries/Lucas_Theorem.html</guid>
@@ -488,87 +578,6 @@ Mersenne primes.&lt;/p&gt; &lt;p&gt;In particular, an efficient,
 verified, and executable version of the Lucas&amp;ndash;Lehmer test is
 developed. This test decides primality for Mersenne numbers in time
 polynomial in &lt;em&gt;n&lt;/em&gt;.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Verified Approximation Algorithms</title>
-              <link>https://www.isa-afp.org/entries/Approximation_Algorithms.html</link>
-       <guid>https://www.isa-afp.org/entries/Approximation_Algorithms.html</guid>
-       <dc:creator> Robin Eßmann, Tobias Nipkow, Simon Robillard       </dc:creator>
-       <pubDate>16 Jan 2020 00:00:00 +0000</pubDate>
-       <description>
-We present the first formal verification of approximation algorithms
-for NP-complete optimization problems: vertex cover, independent set,
-load balancing, and bin packing. The proofs correct incompletenesses
-in existing proofs and improve the approximation ratio in one case.</description>
-    </item>
-    <item>
-       <title>Closest Pair of Points Algorithms</title>
-              <link>https://www.isa-afp.org/entries/Closest_Pair_Points.html</link>
-       <guid>https://www.isa-afp.org/entries/Closest_Pair_Points.html</guid>
-       <dc:creator> Martin Rau, Tobias Nipkow       </dc:creator>
-       <pubDate>13 Jan 2020 00:00:00 +0000</pubDate>
-       <description>
-This entry provides two related verified divide-and-conquer algorithms
-solving the fundamental &lt;em&gt;Closest Pair of Points&lt;/em&gt;
-problem in Computational Geometry. Functional correctness and the
-optimal running time of &lt;em&gt;O&lt;/em&gt;(&lt;em&gt;n&lt;/em&gt; log &lt;em&gt;n&lt;/em&gt;) are
-proved. Executable code is generated which is empirically competitive
-with handwritten reference implementations.</description>
-    </item>
-    <item>
-       <title>Skip Lists</title>
-              <link>https://www.isa-afp.org/entries/Skip_Lists.html</link>
-       <guid>https://www.isa-afp.org/entries/Skip_Lists.html</guid>
-       <dc:creator> Max W. Haslbeck, Manuel Eberl       </dc:creator>
-       <pubDate>09 Jan 2020 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt; Skip lists are sorted linked lists enhanced with shortcuts
-and are an alternative to binary search trees. A skip lists consists
-of multiple levels of sorted linked lists where a list on level n is a
-subsequence of the list on level n − 1. In the ideal case, elements
-are skipped in such a way that a lookup in a skip lists takes O(log n)
-time. In a randomised skip list the skipped elements are choosen
-randomly. &lt;/p&gt; &lt;p&gt; This entry contains formalized proofs
-of the textbook results about the expected height and the expected
-length of a search path in a randomised skip list. &lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Bicategories</title>
-              <link>https://www.isa-afp.org/entries/Bicategory.html</link>
-       <guid>https://www.isa-afp.org/entries/Bicategory.html</guid>
-       <dc:creator> Eugene W. Stark       </dc:creator>
-       <pubDate>06 Jan 2020 00:00:00 +0000</pubDate>
-       <description>
-Taking as a starting point the author&#39;s previous work on
-developing aspects of category theory in Isabelle/HOL, this article
-gives a compatible formalization of the notion of
-&#34;bicategory&#34; and develops a framework within which formal
-proofs of facts about bicategories can be given.  The framework
-includes a number of basic results, including the Coherence Theorem,
-the Strictness Theorem, pseudofunctors and biequivalence, and facts
-about internal equivalences and adjunctions in a bicategory.  As a
-driving application and demonstration of the utility of the framework,
-it is used to give a formal proof of a theorem, due to Carboni,
-Kasangian, and Street, that characterizes up to biequivalence the
-bicategories of spans in a category with pullbacks.  The formalization
-effort necessitated the filling-in of many details that were not
-evident from the brief presentation in the original paper, as well as
-identifying a few minor corrections along the way.</description>
-    </item>
-    <item>
-       <title>The Irrationality of ζ(3)</title>
-              <link>https://www.isa-afp.org/entries/Zeta_3_Irrational.html</link>
-       <guid>https://www.isa-afp.org/entries/Zeta_3_Irrational.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>27 Dec 2019 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This article provides a formalisation of Beukers&#39;s
-straightforward analytic proof that ζ(3) is irrational. This was first
-proven by Apéry (which is why this result is also often called
-‘Apéry&#39;s Theorem’) using a more algebraic approach. This
-formalisation follows &lt;a
-href=&#34;http://people.math.sc.edu/filaseta/gradcourses/Math785/Math785Notes4.pdf&#34;&gt;Filaseta&#39;s
-presentation&lt;/a&gt; of Beukers&#39;s proof.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

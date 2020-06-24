@@ -9379,3 +9379,93 @@ abstract =
   closure properties under substitutions and contexts, as well as ground
   totality.
 
+[Stateful_Protocol_Composition_and_Typing]
+title = Stateful Protocol Composition and Typing
+author = Andreas V. Hess <mailto:avhe@dtu.dk>, Sebastian Mödersheim <https://people.compute.dtu.dk/samo/>, Achim D. Brucker <https://www.brucker.ch/>
+topic = Computer science/Security
+date = 2020-04-08
+notify = avhe@dtu.dk, andreasvhess@gmail.com, samo@dtu.dk, brucker@spamfence.net, andschl@dtu.dk
+abstract =
+  We provide in this AFP entry several relative soundness results for
+  security protocols. In particular, we prove typing and
+  compositionality results for stateful protocols (i.e., protocols with
+  mutable state that may span several sessions), and that focuses on
+  reachability properties. Such results are useful to simplify protocol
+  verification by reducing it to a simpler problem: Typing results give
+  conditions under which it is safe to verify a protocol in a typed
+  model where only "well-typed" attacks can occur whereas
+  compositionality results allow us to verify a composed protocol by
+  only verifying the component protocols in isolation. The conditions on
+  the protocols under which the results hold are furthermore syntactic
+  in nature allowing for full automation. The foundation presented here
+  is used in another entry to provide fully automated and formalized
+  security proofs of stateful protocols.
+
+[Automated_Stateful_Protocol_Verification]
+title = Automated Stateful Protocol Verification
+author = Andreas V. Hess <mailto:avhe@dtu.dk>, Sebastian Mödersheim <https://people.compute.dtu.dk/samo/>, Achim D. Brucker <https://www.brucker.ch/>, Anders Schlichtkrull <https://people.compute.dtu.dk/andschl/>
+topic = Computer science/Security, Tools
+date = 2020-04-08
+notify = avhe@dtu.dk, andreasvhess@gmail.com, samo@dtu.dk, brucker@spamfence.net, andschl@dtu.dk
+abstract =
+  In protocol verification we observe a wide spectrum from fully
+  automated methods to interactive theorem proving with proof assistants
+  like Isabelle/HOL. In this AFP entry, we present a fully-automated
+  approach for verifying stateful security protocols, i.e., protocols
+  with mutable state that may span several sessions. The approach
+  supports reachability goals like secrecy and authentication. We also
+  include a simple user-friendly transaction-based protocol
+  specification language that is embedded into Isabelle.
+
+[Smith_Normal_Form]
+title = A verified algorithm for computing the Smith normal form of a matrix
+author = Jose Divasón <https://www.unirioja.es/cu/jodivaso/>
+topic = Mathematics/Algebra, Computer science/Algorithms/Mathematical
+date = 2020-05-23
+notify = jose.divason@unirioja.es
+abstract = 
+  This work presents a formal proof in Isabelle/HOL of an algorithm to
+  transform a matrix into its Smith normal form, a canonical matrix
+  form, in a general setting: the algorithm is parameterized by
+  operations to prove its existence over elementary divisor rings, while
+  execution is guaranteed over Euclidean domains. We also provide a
+  formal proof on some results about the generality of this algorithm as
+  well as the uniqueness of the Smith normal form.  Since Isabelle/HOL
+  does not feature dependent types, the development is carried out
+  switching conveniently between two different existing libraries: the
+  Hermite normal form (based on HOL Analysis) and the Jordan normal form
+  AFP entries. This permits to reuse results from both developments and
+  it is done by means of the lifting and transfer package together with
+  the use of local type definitions.
+
+[Nash_Williams]
+title = The Nash-Williams Partition Theorem
+author = Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
+topic = Mathematics/Combinatorics
+date = 2020-05-16
+notify = lp15@cam.ac.uk
+abstract = 
+  In 1965, Nash-Williams discovered a generalisation of the infinite
+  form of Ramsey's theorem. Where the latter concerns infinite sets
+  of n-element sets for some fixed n, the Nash-Williams theorem concerns
+  infinite sets of finite sets (or lists) subject to a “no initial
+  segment” condition. The present formalisation follows a
+  monograph on Ramsey Spaces by Todorčević.
+
+[Safe_Distance]
+title = A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles
+author = Albert Rizaldi <mailto:albert.rizaldi@ntu.edu.sg>, Fabian Immler <http://home.in.tum.de/~immler/>
+topic = Computer science/Algorithms/Mathematical, Mathematics/Physics
+date = 2020-06-01
+notify = albert.rizaldi@ntu.edu.sg, fimmler@andrew.cmu.edu, martin.rau@tum.de
+abstract = 
+  The Vienna Convention on Road Traffic defines the safe distance
+  traffic rules informally. This could make autonomous vehicle liable
+  for safe-distance-related accidents because there is no clear
+  definition of how large a safe distance is. We provide a formally
+  proven prescriptive definition of a safe distance, and checkers which
+  can decide whether an autonomous vehicle is obeying the safe distance
+  rule. Not only does our work apply to the domain of law, but it also
+  serves as a specification for autonomous vehicle manufacturers and for
+  online verification of path planners.
+
