@@ -1,6 +1,7 @@
 body {
   color: #000000;
   background: #FFFFFF;
+  font-family: sans-serif;
 }
 
 a:link    { color: #0000EE }
@@ -271,7 +272,7 @@ div.date {
 	width: 100%;
 }
 
-div.cite { 
+div.cite {
   font-size: small;
 }
 
@@ -286,7 +287,7 @@ div.list a:hover { text-decoration:underline }
 div.list a:active { text-decoration:underline }
 div.list a:focus { text-decoration:underline }
 
-pre.bibtex { 
+pre.bibtex {
   white-space: pre;
   border-width: thin thin thin thin;
   border-style: solid;
@@ -299,7 +300,7 @@ code {
   border-radius: 4px;
 }
 
-pre.code { 
+pre.code {
   white-space: pre;
   background-color: #F2F2F2;
   color: #303030;
