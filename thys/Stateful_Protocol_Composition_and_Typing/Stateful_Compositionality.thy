@@ -56,7 +56,7 @@ proof -
   proof
     fix \<tau> assume \<tau>: "\<tau> \<in> \<Gamma> ` Var ` fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>)"
     then obtain x where x: "x \<in> fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>)" "\<Gamma> (Var x) = \<tau>" by moura
-  
+
     show "\<tau> \<in> \<Gamma> ` Var ` fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p a"
     proof (cases "x \<in> fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p a")
       case False
@@ -68,13 +68,13 @@ proof -
           using fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p_NegCheck(1)[of X "F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<delta>" "G \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<delta>"]
                 fv\<^sub>s\<^sub>s\<^sub>t\<^sub>p_NegCheck(1)[of X F G] False x(1)
           by fastforce+
-  
+
         obtain y where y: "y \<in> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s G" "x \<in> fv (rm_vars (set X) \<delta> y)"
           using fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_subst_obtain_var[of _ _ "rm_vars (set X) \<delta>"]
                 fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_subst_obtain_var[of _ _ "rm_vars (set X) \<delta>"]
                 *(1)
           by blast
-  
+
         have "fv (rm_vars (set X) \<delta> z) = {} \<or> (\<exists>u. rm_vars (set X) \<delta> z = Var u)" for z
           using assms(2) rm_vars_img_subset[of "set X" \<delta>] by blast
         hence "rm_vars (set X) \<delta> y = Var x" using y(2) by fastforce
@@ -94,7 +94,7 @@ proof -
   proof
     fix \<tau> assume \<tau>: "\<tau> \<in> \<Gamma> ` Var ` vars\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>)"
     then obtain x where x: "x \<in> vars\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>)" "\<Gamma> (Var x) = \<tau>" by moura
-  
+
     show "\<tau> \<in> \<Gamma> ` Var ` vars\<^sub>s\<^sub>s\<^sub>t\<^sub>p a"
     proof (cases "x \<in> vars\<^sub>s\<^sub>s\<^sub>t\<^sub>p a")
       case False
@@ -106,13 +106,13 @@ proof -
           using vars\<^sub>s\<^sub>s\<^sub>t\<^sub>p_NegCheck[of X "F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<delta>" "G \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<delta>"]
                 vars\<^sub>s\<^sub>s\<^sub>t\<^sub>p_NegCheck[of X F G] False x(1)
           by (fastforce, blast)
-  
+
         obtain y where y: "y \<in> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s G" "x \<in> fv (rm_vars (set X) \<delta> y)"
           using fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_subst_obtain_var[of _ _ "rm_vars (set X) \<delta>"]
                 fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_subst_obtain_var[of _ _ "rm_vars (set X) \<delta>"]
                 *(1)
           by blast
-  
+
         have "fv (rm_vars (set X) \<delta> z) = {} \<or> (\<exists>u. rm_vars (set X) \<delta> z = Var u)" for z
           using assms(2) rm_vars_img_subset[of "set X" \<delta>] by blast
         hence "rm_vars (set X) \<delta> y = Var x" using y(2) by fastforce
@@ -165,7 +165,7 @@ proof -
   proof (induction A)
     case (Cons a A)
     obtain l b where a: "a = (l,b)" by (metis surj_pair)
-  
+
     show ?case
       using Cons.IH wt_subst_sstp_vars_type_subset[OF assms, of b] *[OF a, of A]
       by (metis Un_mono)
@@ -258,7 +258,7 @@ proof -
   proof -
     obtain k where k: "(k,d) \<in> set D - set (dbproj i D)"
       using d by force
-    
+
     have "(i,f) \<in> ((\<lambda>(t, s). (i, t, s)) ` set F') \<union> set D"
          "(k,d) \<in> ((\<lambda>(t, s). (i, t, s)) ` set F') \<union> set D"
       using f k by auto
@@ -310,12 +310,12 @@ proof (induction D rule: List.rev_induct)
   have "pair (t,s) \<cdot> \<I> = pair d \<cdot> \<I>" using di snoc.prems(2) by auto
   hence "\<exists>\<delta>. Unifier \<delta> (pair (t,s)) (pair d)" by auto
   hence 1: "i = j" using snoc.prems(1) di by fastforce
-  
+
   have "set D \<subseteq> set (D@[di])" by auto
   hence 2: "?P D" using snoc.prems(1) by blast
 
   have 3: "?Q D" using snoc.prems(2) by auto
-  
+
   show ?case using di 1 snoc.IH[OF 2 3] by simp
 qed simp
 
@@ -390,7 +390,7 @@ lemma setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p_pair_image[simp]:
 unfolding lpair_def by force+
 
 definition par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t where
-  "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>::('fun,'var,'lbl) labeled_stateful_strand) (Secrets::('fun,'var) terms) \<equiv> 
+  "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t (\<A>::('fun,'var,'lbl) labeled_stateful_strand) (Secrets::('fun,'var) terms) \<equiv>
     (\<forall>l1 l2. l1 \<noteq> l2 \<longrightarrow>
               GSMP_disjoint (trms\<^sub>s\<^sub>s\<^sub>t (proj_unl l1 \<A>) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l1 \<A>))
                             (trms\<^sub>s\<^sub>s\<^sub>t (proj_unl l2 \<A>) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l2 \<A>)) Secrets) \<and>
@@ -519,7 +519,7 @@ proof (unfold par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def case_prod_unfold; int
     unfolding GSMP_disjoint_def by fastforce
   thus "?R (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>)" unfolding M_def by blast
 
-  have "?Q A" using A unfolding par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by force 
+  have "?Q A" using A unfolding par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by force
   thus "?Q (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>)" using \<delta>(3)
   proof (induction A)
     case (Cons a A)
@@ -531,7 +531,7 @@ proof (unfold par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def case_prod_unfold; int
     have "?Q A" "subst_domain \<delta> \<inter> bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t A = {}"
       using Cons.prems 0 unfolding setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by auto
     hence IH: "?Q (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>)" using Cons.IH unfolding setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by blast
-    
+
     have 1: "fst p = fst q"
       when p: "p \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>)"
         and q: "q \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p (a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>)"
@@ -546,12 +546,12 @@ proof (unfold par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def case_prod_unfold; int
       for p q
     proof -
       obtain p' X where p':
-          "p' \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A" "fst p = fst p'" 
+          "p' \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A" "fst p = fst p'"
           "X \<subseteq> bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (a#A)" "snd p = snd p' \<cdot>\<^sub>p rm_vars X \<delta>"
         using setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_in_subst[OF p] 0 by blast
 
       obtain q' Y where q':
-          "q' \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p a" "fst q = fst q'" 
+          "q' \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p a" "fst q = fst q'"
           "Y \<subseteq> bvars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (a#A)" "snd q = snd q' \<cdot>\<^sub>p rm_vars Y \<delta>"
         using setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p_in_subst[OF q] 0 by blast
 
@@ -592,9 +592,9 @@ proof -
   have 1: "wf\<^sub>s\<^sub>t X (unlabel (c2@A))"
     using wf_fun_pair_ineqs_map[OF assms(1)] ci_eqs(2) unlabel_append[of c2 A] c4
     by metis
-  have 2: "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel Di) \<subseteq> X" 
+  have 2: "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel Di) \<subseteq> X"
     using assms(3) subseqs_set_subset(1)[OF assms(2)]
-    unfolding unlabel_def 
+    unfolding unlabel_def
     by fastforce
   { fix B::"('fun,'var) strand" assume "wf\<^sub>s\<^sub>t X B"
     hence "wf\<^sub>s\<^sub>t X (unlabel c1@B)" using 2 unfolding c1 unlabel_def by (induct Di) auto
@@ -647,7 +647,7 @@ proof
     using B by meson
   hence p: "p \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>)"
     using b(2) unfolding setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def subst_apply_labeled_stateful_strand_def by auto
-  
+
   obtain X q where q:
       "q \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A" "fst p = fst q" "snd p = snd q \<cdot>\<^sub>p rm_vars X \<delta>"
     using setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_in_subst[OF p] by blast
@@ -725,7 +725,7 @@ proof -
     hence 1: "fv\<^sub>l\<^sub>s\<^sub>t A'' \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t AA \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel D)"
       using fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_mono[of "unlabel (fltD1 Di)" "unlabel D"]
       unfolding unlabel_def fltD1_def by force
-    
+
     have 2: "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel Di) \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel (fltD1 Di)) \<subseteq> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel D)"
       using subseqs_set_subset(1)[OF *(1)]
       unfolding fltD1_def unlabel_def
@@ -738,7 +738,7 @@ proof -
     hence 3: "fv\<^sub>l\<^sub>s\<^sub>t (constr Di) \<subseteq> fv t \<union> fv s \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel D)" using 2 by blast
 
     have 4: "fv\<^sub>s\<^sub>s\<^sub>t (unlabel A) = fv t \<union> fv s \<union> fv\<^sub>s\<^sub>s\<^sub>t AA" using iB by auto
-    
+
     have "fv\<^sub>s\<^sub>t (unlabel A') \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel D)" using 1 3 4 5 by blast
     thus ?case by metis
   next
@@ -1023,12 +1023,12 @@ proof -
         using prems by moura
 
       have *: "wf'\<^sub>s\<^sub>s\<^sub>t X (unlabel A)" "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (unlabel D) \<subseteq> X" using prems si by auto
-      
+
       have "bvars\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<subseteq> bvars\<^sub>s\<^sub>s\<^sub>t (unlabel ((i,\<forall>Y\<langle>\<or>\<noteq>: F \<or>\<notin>: F'\<rangle>)#A))"
            "fv\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t (unlabel ((i,\<forall>Y\<langle>\<or>\<noteq>: F \<or>\<notin>: F'\<rangle>)#A))"
         by auto
       hence **:  "P D A" using prems si unfolding P_def by blast
-  
+
       show ?thesis using IH[OF A''(2) * **] A''(1) wf_pair_negchecks_map' by simp
     qed
   qed
@@ -1105,7 +1105,7 @@ proof -
     from prems(1) have A': "A' \<in> set (tr\<^sub>p\<^sub>c A (List.insert (i,t,s) D))" by simp
 
     have 1: "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (unlabel A)" using sublmm[OF prems(2,3,4,5)] by simp
-  
+
     have "pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel ((i,insert\<langle>t,s\<rangle>)#A)) \<union> pair`snd`set D =
           pair ` setops\<^sub>s\<^sub>s\<^sub>t (unlabel A) \<union> pair`snd`set (List.insert (i,t,s) D)"
       by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
@@ -1149,7 +1149,7 @@ proof -
     have **: "?P1 A (filter (\<lambda>d. d \<notin> set Di) D)"
       using prems(4) bvars\<^sub>s\<^sub>s\<^sub>t_cons_subset[of "unlabel A" "delete\<langle>t,s\<rangle>"]
       unfolding unlabel_def by fastforce
-      
+
     have 1: "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A'')"
       using IH[OF A''(3,2) sublmm(1,2)[OF prems(2,3,4,5)] ** *]
       by metis
@@ -1213,13 +1213,13 @@ proof -
       by moura
 
     have 1: "list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel A'')"
-      using IH[OF A''(2) sublmm(1,2,3)[OF prems(2,3,4,5)] sublmm(4)[OF prems(2,3,4,5)]] 
+      using IH[OF A''(2) sublmm(1,2,3)[OF prems(2,3,4,5)] sublmm(4)[OF prems(2,3,4,5)]]
       by metis
-    
+
     have 2: "\<Gamma> (pair (t,s)) = \<Gamma> (pair (snd d))"
       when "\<exists>\<delta>. Unifier \<delta> (pair (t,s)) (pair (snd d))"
       using that prems(2,5) A''(3) unfolding tfr\<^sub>s\<^sub>s\<^sub>t_def by (simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
-    
+
     show ?case using A''(1) 1 2 by fastforce
   next
     case (8 i X F F' A D)
@@ -1252,7 +1252,7 @@ proof -
 
     have 2: "(F' = [] \<and> Q1 F X) \<or> Q2 (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> pair ` set F') X"
       using prems(2) unfolding Q1_def Q2_def by simp
-  
+
     have 3: "F' = [] \<Longrightarrow> Q1 F X \<Longrightarrow> list_all tfr\<^sub>s\<^sub>t\<^sub>p (unlabel constr)"
       using 0 2 tfr\<^sub>s\<^sub>t\<^sub>p_list_all_alt_def[of "unlabel constr"] unfolding Q1_def by auto
 
@@ -1414,7 +1414,7 @@ next
 
   define constr where
     "constr = (\<lambda>D. map (\<lambda>G. (i,\<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t)) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' (map snd (dbproj i D))))"
-  
+
   obtain B' where B':
       "B = constr D@B'"
       "B' \<in> set (tr\<^sub>p\<^sub>c S D)"
@@ -1661,7 +1661,7 @@ proof -
       define constr where "constr = (
         \<lambda>d::(('lbl strand_label \<times> ('fun,'var) term \<times> ('fun,'var) term)).
           (i,\<langle>ac: (pair (t',s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t))"
-      
+
       obtain A'' d where *: "A' = constr d#A''" "A'' \<in> set (tr\<^sub>p\<^sub>c S D)" "d \<in> set (dbproj i D)"
         using prems(3) constr_def by auto
       have "E \<noteq> []" using prems(1) by auto
@@ -1680,7 +1680,7 @@ proof -
 
       define constr where
         "constr = map (\<lambda>H. (i,\<forall>X\<langle>\<or>\<noteq>: (G@H)\<rangle>\<^sub>s\<^sub>t)) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s G' (map snd (dbproj i D)))"
-      
+
       obtain A'' where *: "A' = constr@A''" "A'' \<in> set (tr\<^sub>p\<^sub>c S D)"
         using prems(3) constr_def by auto
       have ***:  "(m, receive\<langle>t\<rangle>\<^sub>s\<^sub>t) \<notin> set constr" using constr_def by auto
@@ -1763,16 +1763,16 @@ proof
       let ?g1 = "\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t"
       let ?f2 = "\<lambda>d. (i, ?f1 (snd d))"
       let ?g2 = "\<lambda>d. (i, ?g1 (snd d))"
-  
+
       define constr1 where "constr1 = (\<lambda>Di. (map ?f1 Di)@(map ?g1 [d\<leftarrow>unlabel D. d \<notin> set Di]))"
       define constr2 where "constr2 = (\<lambda>Di. (map ?f2 Di)@(map ?g2 [d\<leftarrow>D. d \<notin> set Di]))"
-  
+
       obtain C' Di where C':
           "Di \<in> set (subseqs D)"
           "C = constr2 Di@C'"
           "C' \<in> set (tr'\<^sub>p\<^sub>c S [d\<leftarrow>D. d \<notin> set Di])"
         using "6.prems"(1) unfolding constr2_def by moura
-      
+
       have 0: "set [d\<leftarrow>D. d \<notin> set Di] \<subseteq> set D"
               "setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t S \<subseteq> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((i, delete\<langle>t,s\<rangle>)#S)"
         by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
@@ -1781,12 +1781,12 @@ proof
            \<forall>(k, q) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t S \<union> set [d\<leftarrow>D. d \<notin> set Di].
             p = q \<longrightarrow> j = k"
         using "6.prems"(2) by blast
-  
+
       have "\<forall>(i,p) \<in> set D \<union> set Di. \<forall>(j,q) \<in> set D \<union> set Di. p = q \<longrightarrow> i = j"
         using "6.prems"(2) subseqs_set_subset(1)[OF C'(1)] by blast
       hence 2: "unlabel [d\<leftarrow>D. d \<notin> set Di] = [d\<leftarrow>unlabel D. d \<notin> set (unlabel Di)]"
         using unlabel_filter_eq[of D "set Di"] unfolding unlabel_def by simp
-  
+
       have 3:
           "\<And>f g::('a \<times> 'a \<Rightarrow> 'c). \<And>A B::(('b \<times> 'a \<times> 'a) list).
               map snd ((map (\<lambda>d. (i, f (snd d))) A)@(map (\<lambda>d. (i, g (snd d))) B)) =
@@ -1797,12 +1797,12 @@ proof
         by (simp add: constr1_def constr2_def unlabel_def)
       hence 4: "unlabel C = constr1 (unlabel Di)@unlabel C'"
         using C'(2) unlabel_append by metis
-  
+
       have "unlabel Di \<in> set (map unlabel (subseqs D))"
         using C'(1) unfolding unlabel_def by simp
       hence 5: "unlabel Di \<in> set (subseqs (unlabel D))"
         using map_subseqs[of snd D] unfolding unlabel_def by simp
-  
+
       show ?case using "6.IH"[OF C'(1,3) 1] 2 4 5 unfolding constr1_def by auto
     next
       case (7 i ac t s S D)
@@ -1810,7 +1810,7 @@ proof
           "C = (i,\<langle>ac: (pair (t,s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t)#C'"
           "C' \<in> set (tr'\<^sub>p\<^sub>c S D)" "d \<in> set D"
         using "7.prems"(1) by moura
-  
+
       have "setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t S \<union> set D \<subseteq> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((i,InSet ac t s)#S) \<union> set D"
         by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       hence "\<forall>(j, p) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t S \<union> set D.
@@ -1825,7 +1825,7 @@ proof
           "C = map (\<lambda>G. (i,\<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t)) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' (map snd D))@C'"
           "C' \<in> set (tr'\<^sub>p\<^sub>c S D)"
         using "8.prems"(1) by moura
-  
+
       have "setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t S \<union> set D \<subseteq> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((i,NegChecks X F F')#S) \<union> set D"
         by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       hence "\<forall>(j, p) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t S \<union> set D.
@@ -1882,7 +1882,7 @@ proof
         hence "j = ia" using Cons.prems(2) a Insert by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
         hence "?P ia" using j(1) by metis
       } hence j: "?P ia" by metis
-      
+
       have 2: "\<forall>(k1, p) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A \<union> set (List.insert (ia,t,s) D).
                \<forall>(k2, q) \<in> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t A \<union> set (List.insert (ia,t,s) D).
                  p = q \<longrightarrow> k1 = k2"
@@ -1894,7 +1894,7 @@ proof
       define c where "c \<equiv> (\<lambda>(i::'lbl strand_label) Di.
         map (\<lambda>d. (i,\<langle>check: (pair (t,s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t)) Di@
         map (\<lambda>d. (i,\<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair (snd d))]\<rangle>\<^sub>s\<^sub>t)) [d\<leftarrow>D. d \<notin> set Di])"
-      
+
       define d where "d \<equiv> (\<lambda>Di.
         map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di@
         map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>unlabel D. d \<notin> set Di])"
@@ -1919,14 +1919,14 @@ proof
         using Cons.prems(2) by blast
       hence 3: "[d\<leftarrow>unlabel D. d \<notin> set Di] = unlabel [d\<leftarrow>D. d \<notin> set Di']"
         using Di'(2) unlabel_filter_eq[of D "set Di'"] unfolding unlabel_def by auto
-      
+
       obtain C where C: "C \<in> set (tr'\<^sub>p\<^sub>c A [d\<leftarrow>D. d \<notin> set Di'])" "B' = unlabel C"
         using 3 Cons.IH[OF _ 2] B'(3) by auto
       hence 4: "c ia Di'@C \<in> set (tr'\<^sub>p\<^sub>c (a#A) D)" using Di'(1) a Delete unfolding c_def by auto
 
       have "unlabel (c ia Di') = d Di" using Di' 3 unfolding c_def d_def unlabel_def by auto
       hence 5: "B = unlabel (c ia Di'@C)" using B'(1) C(2) unlabel_append[of "c ia Di'" C] by simp
-      
+
       show ?thesis using 4 5 by blast
     next
       case (InSet ac t s)
@@ -1938,7 +1938,7 @@ proof
       thus ?thesis using Cons.IH[OF _ 1] a InSet unfolding unlabel_def by auto
     next
       case (NegChecks X F F')
-      then obtain B' where B': 
+      then obtain B' where B':
           "B = map (\<lambda>G. \<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' (unlabel D))@B'"
           "B' \<in> set (tr (unlabel A) (unlabel D))"
         using Cons.prems(1) a by auto
@@ -1968,7 +1968,7 @@ proof
 
       obtain B' where B': "B = (i,send\<langle>t\<rangle>\<^sub>s\<^sub>t)#B'" "B' \<in> set (tr\<^sub>p\<^sub>c S D)"
         using prems(1) by moura
-          
+
       have 1: "\<lbrakk>M; unlabel B'\<rbrakk>\<^sub>d \<I>" using prems(2) B'(1) by simp
       have 4: "?R3 S D" using prems(3) by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       have 5: "?R4 S D" using prems(4) by force
@@ -1987,7 +1987,7 @@ proof
       note IH = "3.IH"
 
       obtain B' where B': "B = (i,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)#B'" "B' \<in> set (tr\<^sub>p\<^sub>c S D)" using prems(1) by moura
-          
+
       have 1: "\<lbrakk>insert (t \<cdot> \<I>) M; unlabel B'\<rbrakk>\<^sub>d \<I> " using prems(2) B'(1) by simp
       have 4: "?R3 S D" using prems(3) by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       have 5: "?R4 S D" using prems(4) by force
@@ -2006,7 +2006,7 @@ proof
 
       obtain B' where B': "B = (i,\<langle>ac: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t)#B'" "B' \<in> set (tr\<^sub>p\<^sub>c S D)"
         using prems(1) by moura
-          
+
       have 1: "\<lbrakk>M; unlabel B'\<rbrakk>\<^sub>d \<I> " using prems(2) B'(1) by simp
       have 4: "?R3 S D" using prems(3) by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       have 5: "?R4 S D" using prems(4) by force
@@ -2026,7 +2026,7 @@ proof
       note IH = "5.IH"
 
       have B: "B \<in> set (tr\<^sub>p\<^sub>c S (List.insert (i,t,s) D))" using prems(1) by simp
-          
+
       have 1: "\<lbrakk>M; unlabel B\<rbrakk>\<^sub>d \<I> " using prems(2) B(1) by simp
       have 4: "?R3 S (List.insert (i,t,s) D)" using prems(3) by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       have 5: "?R4 S (List.insert (i,t,s) D)" using prems(4,5) by force
@@ -2070,7 +2070,7 @@ proof
           using dbproj_subseq_subset[OF B'(1)] by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
         hence "(\<exists>\<delta>. Unifier \<delta> (pair p) (pair q)) \<Longrightarrow> j = k" using prems(3) by blast
       } hence 4: "?R3 S [d\<leftarrow>D. d \<notin> set Di]" by blast
-      
+
       have 5: "?R4 S (filter (\<lambda>d. d \<notin> set Di) D)" using prems(4) by force
       have 6: "?R5 S D" using prems(5) by force
 
@@ -2081,7 +2081,7 @@ proof
         using prems(2) B'(2) 0(1) strand_sem_split(3,4)[of M "unlabel (c Di)" "unlabel B'"]
         unfolding c unlabel_def by auto
 
-      have "\<lbrakk>M; unlabel (?cl2 Di)\<rbrakk>\<^sub>d \<I>" using 7(1) 0(1) unfolding c unlabel_def by auto 
+      have "\<lbrakk>M; unlabel (?cl2 Di)\<rbrakk>\<^sub>d \<I>" using 7(1) 0(1) unfolding c unlabel_def by auto
       hence "\<lbrakk>M; ?cu2 Di\<rbrakk>\<^sub>d \<I>" by (metis 0(4))
       moreover {
         fix j p k q
@@ -2155,7 +2155,7 @@ proof
       obtain B' where B': "B = c@B'" "B' \<in> set (tr\<^sub>p\<^sub>c S D)" using prems(1) c by moura
 
       have 0: "ik\<^sub>s\<^sub>t (unlabel c) = {}" "ik\<^sub>s\<^sub>t (unlabel d) = {}"
-              "unlabel ?cl = ?cu" "unlabel ?dl = ?du" 
+              "unlabel ?cl = ?cu" "unlabel ?dl = ?du"
         unfolding c d unlabel_def by force+
 
       have "ik\<^sub>s\<^sub>t (unlabel c) = {}" unfolding c unlabel_def by force
@@ -2177,7 +2177,7 @@ proof
       have 8: "d@C \<in> set (tr'\<^sub>p\<^sub>c ((i,NegChecks X F F')#S) D)"
         using C(1) unfolding d unlabel_def by auto
 
-      have "\<lbrakk>M; unlabel ?cl\<rbrakk>\<^sub>d \<I>" using 7(1) unfolding c unlabel_def by auto 
+      have "\<lbrakk>M; unlabel ?cl\<rbrakk>\<^sub>d \<I>" using 7(1) unfolding c unlabel_def by auto
       hence "\<lbrakk>M; ?cu\<rbrakk>\<^sub>d \<I>" by (metis 0(3))
       moreover {
         fix j p k q
@@ -2213,7 +2213,7 @@ proof
 
       obtain C' where C': "C = (i,send\<langle>t\<rangle>\<^sub>s\<^sub>t)#C'" "C' \<in> set (tr'\<^sub>p\<^sub>c S D)"
         using prems(1) by moura
-          
+
       have 1: "\<lbrakk>M; unlabel C'\<rbrakk>\<^sub>d \<I> " using prems(2) C'(1) by simp
       have 4: "?R3 S D" using prems(3) by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       have 5: "?R4 S D" using prems(4) by force
@@ -2234,7 +2234,7 @@ proof
 
       obtain C' where C': "C = (i,receive\<langle>t\<rangle>\<^sub>s\<^sub>t)#C'" "C' \<in> set (tr'\<^sub>p\<^sub>c S D)"
         using prems(1) by moura
-          
+
       have 1: "\<lbrakk>insert (t \<cdot> \<I>) M; unlabel C'\<rbrakk>\<^sub>d \<I> " using prems(2) C'(1) by simp
       have 4: "?R3 S D" using prems(3) by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       have 5: "?R4 S D" using prems(4) by force
@@ -2253,7 +2253,7 @@ proof
 
       obtain C' where C': "C = (i,\<langle>ac: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t)#C'" "C' \<in> set (tr'\<^sub>p\<^sub>c S D)"
         using prems(1) by moura
-          
+
       have 1: "\<lbrakk>M; unlabel C'\<rbrakk>\<^sub>d \<I> " using prems(2) C'(1) by simp
       have 4: "?R3 S D" using prems(3) by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       have 5: "?R4 S D" using prems(4) by force
@@ -2273,7 +2273,7 @@ proof
       note IH = "5.IH"
 
       have C: "C \<in> set (tr'\<^sub>p\<^sub>c S (List.insert (i,t,s) D))" using prems(1) by simp
-          
+
       have 1: "\<lbrakk>M; unlabel C\<rbrakk>\<^sub>d \<I> " using prems(2) C(1) by simp
       have 4: "?R3 S (List.insert (i,t,s) D)" using prems(3) by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
       have 5: "?R4 S (List.insert (i,t,s) D)" using prems(4,5) by force
@@ -2339,18 +2339,18 @@ proof
                \<forall>(k, q) \<in> {(i, t, s)} \<union> set D.
                 (\<exists>\<delta>. Unifier \<delta> (pair p) (pair q)) \<longrightarrow> j = k"
         by blast
-      moreover have "\<lbrakk>M; unlabel (?cl1 Di)\<rbrakk>\<^sub>d \<I>" using 7(1) unfolding c unlabel_append by auto 
+      moreover have "\<lbrakk>M; unlabel (?cl1 Di)\<rbrakk>\<^sub>d \<I>" using 7(1) unfolding c unlabel_append by auto
       hence "\<lbrakk>M; ?cu1 Di\<rbrakk>\<^sub>d \<I>" by (metis 0(3))
       ultimately have *: "Di \<in> set (subseqs (dbproj i D))"
         using labeled_sat_eqs_subseqs[OF C'(1)] by simp
       hence 8: "d Di@B \<in> set (tr\<^sub>p\<^sub>c ((i,delete\<langle>t,s\<rangle>)#S) D)"
         using B(1) unfolding d unlabel_def by auto
 
-      have "\<lbrakk>M; unlabel (?cl2 Di)\<rbrakk>\<^sub>d \<I>" using 7(1) 0(1) unfolding c unlabel_def by auto 
+      have "\<lbrakk>M; unlabel (?cl2 Di)\<rbrakk>\<^sub>d \<I>" using 7(1) 0(1) unfolding c unlabel_def by auto
       hence "\<lbrakk>M; ?cu2 Di\<rbrakk>\<^sub>d \<I>" by (metis 0(4))
       hence "\<lbrakk>M; ?du2 Di\<rbrakk>\<^sub>d \<I>" by (metis labeled_sat_ineq_dbproj)
       hence "\<lbrakk>M; unlabel (?dl2 Di)\<rbrakk>\<^sub>d \<I>" by (metis 0(6))
-      moreover have "\<lbrakk>M; unlabel (?cl1 Di)\<rbrakk>\<^sub>d \<I>" using 7(1) unfolding c unlabel_def by auto 
+      moreover have "\<lbrakk>M; unlabel (?cl1 Di)\<rbrakk>\<^sub>d \<I>" using 7(1) unfolding c unlabel_def by auto
       hence "\<lbrakk>M; unlabel (?dl1 Di)\<rbrakk>\<^sub>d \<I>" by (metis 0(3,5))
       ultimately have "\<lbrakk>M; unlabel (d Di)\<rbrakk>\<^sub>d \<I>" using 0(2) unfolding c d unlabel_def by force
       hence 9: "\<lbrakk>M; unlabel (d Di@B)\<rbrakk>\<^sub>d \<I>" using 0(2) B(2) unfolding unlabel_def by auto
@@ -2365,7 +2365,7 @@ proof
           "C = (i,\<langle>ac: (pair (t,s)) \<doteq> (pair (snd d))\<rangle>\<^sub>s\<^sub>t)#C'"
           "C' \<in> set (tr'\<^sub>p\<^sub>c S D)" "d \<in> set D"
         using prems(1) by moura
-          
+
       have 1: "\<lbrakk>M; unlabel C'\<rbrakk>\<^sub>d \<I> " using prems(2) C'(1) by simp
 
       { fix j p k q
@@ -2416,7 +2416,7 @@ proof
       obtain C' where C': "C = c@C'" "C' \<in> set (tr'\<^sub>p\<^sub>c S D)" using prems(1) c by moura
 
       have 0: "ik\<^sub>s\<^sub>t (unlabel c) = {}" "ik\<^sub>s\<^sub>t (unlabel d) = {}"
-              "unlabel ?cl = ?cu" "unlabel ?dl = ?du" 
+              "unlabel ?cl = ?cu" "unlabel ?dl = ?du"
         unfolding c d unlabel_def by force+
 
       have "ik\<^sub>s\<^sub>t (unlabel c) = {}" unfolding c unlabel_def by force
@@ -2438,7 +2438,7 @@ proof
       have 8: "d@B \<in> set (tr\<^sub>p\<^sub>c ((i,NegChecks X F F')#S) D)"
         using B(1) unfolding d unlabel_def by auto
 
-      have "\<lbrakk>M; unlabel ?cl\<rbrakk>\<^sub>d \<I>" using 7(1) unfolding c unlabel_def by auto 
+      have "\<lbrakk>M; unlabel ?cl\<rbrakk>\<^sub>d \<I>" using 7(1) unfolding c unlabel_def by auto
       hence "\<lbrakk>M; ?cu\<rbrakk>\<^sub>d \<I>" by (metis 0(3))
       moreover {
         fix j p k q
@@ -2657,7 +2657,7 @@ definition par_comp_prot_stateful where
 
 definition component_secure_prot_stateful where
   "component_secure_prot_stateful n P Sec attack \<equiv>
-    (\<forall>\<A> \<in> P. suffix [(ln n, Send (Fun attack []))] \<A> \<longrightarrow> 
+    (\<forall>\<A> \<in> P. suffix [(ln n, Send (Fun attack []))] \<A> \<longrightarrow>
      (\<forall>\<I>\<^sub>\<tau>. (interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<I>\<^sub>\<tau>)) \<longrightarrow>
             \<not>(\<I>\<^sub>\<tau> \<Turnstile>\<^sub>s (proj_unl n \<A>)) \<and>
             (\<forall>\<A>'. prefix \<A>' \<A> \<longrightarrow>
@@ -2678,13 +2678,13 @@ lemma par_comp_prot_impl_par_comp_stateful:
   assumes "par_comp_prot_stateful \<P> Sec" "\<A> \<in> \<P>"
   shows "par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A> Sec"
 proof -
-  have *: 
+  have *:
       "\<forall>l1 l2. l1 \<noteq> l2 \<longrightarrow>
           GSMP_disjoint (\<Union>\<A> \<in> \<P>. trms\<^sub>s\<^sub>s\<^sub>t (proj_unl l1 \<A>) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l1 \<A>))
                         (\<Union>\<A> \<in> \<P>. trms\<^sub>s\<^sub>s\<^sub>t (proj_unl l2 \<A>) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l2 \<A>)) Sec"
     using assms(1) unfolding par_comp_prot_stateful_def by argo
   { fix l1 l2::'lbl assume **: "l1 \<noteq> l2"
-    hence ***: 
+    hence ***:
         "GSMP_disjoint (\<Union>\<A> \<in> \<P>. trms\<^sub>s\<^sub>s\<^sub>t (proj_unl l1 \<A>) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l1 \<A>))
                        (\<Union>\<A> \<in> \<P>. trms\<^sub>s\<^sub>s\<^sub>t (proj_unl l2 \<A>) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l2 \<A>)) Sec"
       using * by auto
@@ -2742,9 +2742,9 @@ proof -
       using par_comp_prot_impl_par_comp_stateful[OF P(2) \<A>(2)]
             typing_cond_prot_impl_typing_cond_stateful[OF tcp \<A>(2)]
       by metis+
-  
+
     have "unlabel (proj n \<A>) = proj_unl n \<A>" "proj_unl n \<A> = proj_unl n (proj n \<A>)"
-         "\<And>A. A \<in> Pi n \<Longrightarrow> proj n A = A" 
+         "\<And>A. A \<in> Pi n \<Longrightarrow> proj n A = A"
          "proj n \<A> = (proj n \<A>')@[(ln n, Send (Fun attack []))]"
       using P(1,3) \<A> by (auto simp add: proj_def unlabel_def component_prot_def composed_prot_def)
     moreover have "proj n \<A> \<in> Pi n"
@@ -2759,7 +2759,7 @@ proof -
                  (\<forall>I. declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t A I = declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t B I)"
         using * by metis
     }
-    ultimately have *: 
+    ultimately have *:
         "\<forall>\<I>\<^sub>\<tau>. interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>\<^sub>\<tau> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<I>\<^sub>\<tau>) \<longrightarrow>
                   \<not>(\<I>\<^sub>\<tau> \<Turnstile>\<^sub>s (proj_unl n \<A>)) \<and> (\<forall>\<A>'. prefix \<A>' \<A> \<longrightarrow>
                         (\<forall>t \<in> Sec - declassified\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<A>' \<I>\<^sub>\<tau>. \<not>(\<I>\<^sub>\<tau> \<Turnstile>\<^sub>s (proj_unl n \<A>'@[Send t]))))"
