@@ -34,20 +34,30 @@ def owl_simplify_automaton(path):
 	result = subprocess.run(["owl", "-I", path, "---", "hoa", "---", "optimize-aut", "---", "hoa", "-s"], stdout = subprocess.PIPE, text = True)
 	return result.stdout
 
+def spot_to_buchi_automaton(path):
+	result = subprocess.run(["autfilt", "--ba", "--small", path], stdout = subprocess.PIPE, text = True, timeout = 60)
+	return result.stdout
+
 def spot_formula_to_nba(formula):
 	result = subprocess.run(["ltl2tgba", "--ba", formula], stdout = subprocess.PIPE, text = True)
 	return result.stdout
 def owl_formula_to_nba(formula):
 	result = subprocess.run(["owl", "-i", formula, "---", "ltl", "---", "simplify-ltl", "---", "ltl2nba", "---", "hoa", "-s"], stdout = subprocess.PIPE, text = True)
 	return result.stdout
+def owl_formula_to_nba_opt(formula):
+	result = subprocess.run(["owl", "-i", formula, "---", "ltl", "---", "simplify-ltl", "---", "ltl2nba", "---", "optimize-aut", "---", "hoa", "-s"], stdout = subprocess.PIPE, text = True)
+	return result.stdout
 def owl_formula_to_dra(formula):
 	result = subprocess.run(["owl", "-i", formula, "---", "ltl", "---", "simplify-ltl", "---", "ltl2dra", "---", "hoa", "-s"], stdout = subprocess.PIPE, text = True)
 	return result.stdout
+def owl_formula_to_dra_opt(formula):
+	result = subprocess.run(["owl", "-i", formula, "---", "ltl", "---", "simplify-ltl", "---", "ltl2dra", "---", "optimize-aut", "---", "hoa", "-s"], stdout = subprocess.PIPE, text = True)
+	return result.stdout
 
 def bc_complement(path1, path2):
-	subprocess.run(["./Autool", "complement_quick", path1, path2], timeout = 10)
+	subprocess.run(["./Autool", "complement_quick", path1, path2], timeout = 60)
 def bc_equivalence(path1, path2):
-	result = subprocess.run(["./Autool", "equivalence", path1, path2], timeout = 10, stdout = subprocess.PIPE, text = True)
+	result = subprocess.run(["./Autool", "equivalence", path1, path2], timeout = 60, stdout = subprocess.PIPE, text = True)
 	return result.stdout.strip() == "true"
 
 def complement(path_input, path_output):
@@ -62,6 +72,7 @@ def equivalence(path_1, path_2):
 	except subprocess.TimeoutExpired: eq = None; duration = "T"
 	else: duration = str(time.time() - start)
 	print("{} {} {} {}".format(get_state_count(path_1), get_state_count(path_2), eq, duration))
+	return eq
 
 if sys.argv[1] == "complement_automaton":
 	while True:
@@ -78,14 +89,22 @@ if sys.argv[1] == "equivalence_random":
 		equivalence("a.hoa", "b.hoa")
 if sys.argv[1] == "equivalence_simplify":
 	while True:
-		write("a.hoa", spot_generate_automaton(20, 4))
+		write("a.hoa", spot_generate_automaton(10, 4))
 		write("b.hoa", spot_simplify_automaton("a.hoa"))
 		equivalence("a.hoa", "b.hoa")
 if sys.argv[1] == "equivalence_translate":
 	while True:
 		formula = spot_generate_formula(4)
-		print(formula)
 		write("a.hoa", spot_formula_to_nba(formula))
-		write("b.hoa", owl_formula_to_nba(formula))
-		if not read("b.hoa"): continue
-		equivalence("a.hoa", "b.hoa")
+		write("b.hoa", owl_formula_to_dra_opt(formula))
+		write("c.hoa", spot_simplify_automaton("b.hoa"))
+		if equivalence("a.hoa", "c.hoa") == False: print(formula)
+if sys.argv[1] == "equivalence_translate_collection":
+	for formula in read(sys.argv[2]).splitlines():
+		print(formula)
+		try:
+			write("a.hoa", spot_formula_to_nba(formula))
+			write("b.hoa", owl_formula_to_dra_opt(formula))
+			write("c.hoa", spot_to_buchi_automaton("b.hoa"))
+			equivalence("a.hoa", "c.hoa")
+		except subprocess.TimeoutExpired: print("T")
