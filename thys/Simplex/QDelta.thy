@@ -8,13 +8,11 @@ begin
 
 datatype QDelta = QDelta rat rat
 
-primrec qdfst :: "QDelta \<Rightarrow> rat"
-  where
-    "qdfst (QDelta a b) = a"
+primrec qdfst :: "QDelta \<Rightarrow> rat" where
+  "qdfst (QDelta a b) = a"
 
-primrec qdsnd :: "QDelta \<Rightarrow> rat"
-  where
-    "qdsnd (QDelta a b) = b"
+primrec qdsnd :: "QDelta \<Rightarrow> rat" where
+  "qdsnd (QDelta a b) = b"
 
 lemma [simp]: "QDelta (qdfst qd) (qdsnd qd) = qd"
   by (cases qd) auto
