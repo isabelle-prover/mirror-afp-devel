@@ -14,18 +14,14 @@ begin
       obtains r
       where "run r p" "pred_stream P (p ## trace r p)" "stream_all2 Q (p ## trace r p) r"
     proof -
-      obtain f where 1:
-        "P p"
-        "\<And> p. P p \<Longrightarrow> enabled (f p) p"
-        "\<And> p. P p \<Longrightarrow> P (execute (f p) p)"
-        "\<And> p. P p \<Longrightarrow> Q p (f p)"
-        using assms by metis
-      let ?r = "\<lambda> p. smap f (siterate (\<lambda> p. execute (f p) p) p)"
+      obtain f where 1: "enabled (f p) p" "P (execute (f p) p)" "Q p (f p)" if "P p" for p using assms(2) by metis
+      let ?g = "\<lambda> p. execute (f p) p"
+      let ?r = "\<lambda> p. smap f (siterate ?g p)"
       show ?thesis
       proof
-        show "run (?r p) p" using 1 by (coinduction arbitrary: p) (auto)
-        show "pred_stream P (p ## trace (?r p) p)" using 1 by (coinduction arbitrary: p) (auto)
-        show "stream_all2 Q (p ## trace (?r p) p) (?r p)" using 1 by (coinduction arbitrary: p) (auto)
+        show "run (?r p) p" using assms(1) 1 by (coinduction arbitrary: p) (auto)
+        show "pred_stream P (p ## trace (?r p) p)" using assms(1) 1 by (coinduction arbitrary: p) (auto)
+        show "stream_all2 Q (p ## trace (?r p) p) (?r p)" using assms(1) 1 by (coinduction arbitrary: p) (auto)
       qed
     qed
     lemma recurring_condition:
@@ -33,18 +29,14 @@ begin
       obtains r
       where "run r p" "infs P (p ## trace r p)"
     proof -
-      obtain f where 1:
-        "P p"
-        "\<And> p. P p \<Longrightarrow> f p \<noteq> []"
-        "\<And> p. P p \<Longrightarrow> path (f p) p"
-        "\<And> p. P p \<Longrightarrow> P (target (f p) p)"
-        using assms by metis
-      let ?r = "\<lambda> p. flat (smap f (siterate (\<lambda> p. target (f p) p) p))"
-      have 2: "?r p = f p @- ?r (target (f p) p)" if "P p" for p using that 1(2) by (simp add: flat_unfold)
+      obtain f where 1: "f p \<noteq> []" "path (f p) p" "P (target (f p) p)" if "P p" for p using assms(2) by metis
+      let ?g = "\<lambda> p. target (f p) p"
+      let ?r = "\<lambda> p. flat (smap f (siterate ?g p))"
+      have 2: "?r p = f p @- ?r (?g p)" if "P p" for p using that 1(1) by (simp add: flat_unfold)
       show ?thesis
       proof
-        show "run (?r p) p" using 1 2 by (coinduction arbitrary: p rule: run_coinduct_shift) (blast)
-        show "infs P (p ## trace (?r p) p)" using 1 2 by (coinduction arbitrary: p rule: infs_sscan_coinduct) (blast)
+        show "run (?r p) p" using assms(1) 1 2 by (coinduction arbitrary: p rule: run_coinduct_shift) (blast)
+        show "infs P (p ## trace (?r p) p)" using assms(1) 1 2 by (coinduction arbitrary: p rule: infs_sscan_coinduct) (blast)
       qed
     qed
 

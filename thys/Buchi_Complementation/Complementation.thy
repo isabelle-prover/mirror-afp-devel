@@ -148,7 +148,7 @@ begin
       then show ?case using 1(2) unfolding complement_def by auto
     next
       case (execute v u)
-      have "snd u \<in> \<Union> ((transition A (w !! fst v)) ` (dom (fst (?m !! fst v))))"
+      have "snd u \<in> \<Union> (transition A (w !! fst v) ` dom (fst (?m !! fst v)))"
         using execute(2, 3) by auto
       also have "\<dots> = dom (fst (?m !! Suc (fst v)))"
         using 100 unfolding lr_succ_def by simp
@@ -222,7 +222,6 @@ begin
         assume 13: "even k"
         obtain t u where 14: "u \<in> ginitial A" "gupath A w t u" "v = gtarget t u" using 10 by auto
         obtain l where 15: "l \<ge> length t" "P l = {}" using 4 by auto
-        obtain l' where 16: "l' \<ge> Suc l" "P l' = {}" using 4 by auto
         have 30: "gurun A w (t @- s) u" using 11 14 by auto
         have 21: "fst (gtarget (stake (Suc l) (t @- s)) u) = Suc l" for l
           unfolding sscan_snth[symmetric] using 30 14(1) by (auto elim!: grun_elim)
@@ -242,13 +241,12 @@ begin
           also have "smap f (gtrace s v) = sconst k" unfolding 12 by rule
           also have "sconst k !! (l - length t) = k" by simp
           finally have 23: "even (f (gtarget (stake (Suc l) (t @- s)) u))" using 13 by simp
-          have 24: "snd (gtarget (stake (Suc l) (t @- s)) u) \<in>
+          have "snd (gtarget (stake (Suc l) (t @- s)) u) \<in>
             {p \<in> dom (fst (?m !! Suc l)). even (f (Suc l, p))}"
             using 21 22 23 by (metis (mono_tags, lifting) mem_Collect_eq prod.collapse)
           also have "\<dots> = st_succ A (w !! l) (fst (?m !! Suc l)) (P l)"
             unfolding 15(2) st_succ_def f_def by simp
           also have "\<dots> = P (Suc l)" using 100(2) unfolding P_def by rule
-          also have "P (Suc l) = P (l + Suc 0)" by simp
           finally show ?case by auto
         next
           case (Suc i)
@@ -281,6 +279,7 @@ begin
           also have "\<dots> = P (Suc l + Suc i)" by simp
           finally show ?case by this
         qed
+        obtain l' where 16: "l' \<ge> Suc l" "P l' = {}" using 4 by auto
         show "False" using 16 17 using nat_le_iff_add by auto
       qed
     qed
@@ -314,7 +313,7 @@ begin
   qed
   lemma reach_Suc_succ:
     assumes "w !! n \<in> alphabet A"
-    shows "reach A w (Suc n) = \<Union>((transition A (w !! n) ` (reach A w n)))"
+    shows "reach A w (Suc n) = \<Union> (transition A (w !! n) ` reach A w n)"
   proof safe
     fix q
     assume 1: "q \<in> reach A w (Suc n)"
@@ -356,7 +355,7 @@ begin
     qed
   qed
   lemma reach_Suc[simp]: "reach A w (Suc n) = (if w !! n \<in> alphabet A
-    then \<Union>((transition A (w !! n) ` (reach A w n))) else {})"
+    then \<Union> (transition A (w !! n) ` reach A w n) else {})"
     using reach_Suc_empty reach_Suc_succ by metis
   lemma reach_nodes: "reach A w i \<subseteq> nodes A" by (induct i) (auto)
   lemma reach_gunodes: "{i} \<times> reach A w i \<subseteq> gunodes A w"
@@ -478,7 +477,7 @@ begin
         proof (rule ccontr)
           assume 20: "\<not> (\<forall> n. \<exists> k \<ge> n. P k = {})"
           obtain k where 22: "P (k + n) \<noteq> {}" for n using 20 using le_add1 by blast
-          define m where "m n S \<equiv> {p \<in> \<Union>((transition A (w !! n) ` S)). even (the (g (Suc n) p))}" for n S
+          define m where "m n S \<equiv> {p \<in> \<Union> (transition A (w !! n) ` S). even (the (g (Suc n) p))}" for n S
           define R where "R i n S \<equiv> rec_nat S (\<lambda> i. m (n + i)) i" for i n S
           have R_0[simp]: "R 0 n = id" for n unfolding R_def by auto
           have R_Suc[simp]: "R (Suc i) n = m (n + i) \<circ> R i n" for i n unfolding R_def by auto
