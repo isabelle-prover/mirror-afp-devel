@@ -1,11 +1,13 @@
 Maintaining an Entry in the AFP
 -------------------------------
 
-To maintain an entry, you must have write access to the mercurial
-repository of the archive at Bitbucket. To get access, [sign up at
-Bitbucket](https://bitbucket.org), and ask one of the
-[editors](http://isa-afp.org/about.html#editors) to add you to
-the AFP project.
+To maintain an entry, you must have write access to the mercurial repository
+of the archive at [Heptapod][hetpa]. To get access, [sign up at
+Heptapod][hepta], and ask one of the [editors][editors] to add you to the AFP
+project.
+
+[hepta]: https://foss.heptapod.net
+[editors]: http://isa-afp.org/about.html#editors
 
 **Setup:**
 
@@ -41,7 +43,7 @@ an automatic email notification each time your entry breaks (see below).
 
 -   To get the current Isabelle development version, use
 
-        hg clone http://isabelle.in.tum.de/repos/isabelle 
+        hg clone http://isabelle.in.tum.de/repos/isabelle
 
     to clone the hg repository. See the README file inside for further
     instructions.
