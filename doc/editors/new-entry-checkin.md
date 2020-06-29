@@ -16,7 +16,7 @@ current release branch and development version.
 
         hg clone ssh://hg@bitbucket.org/isa-afp/afp-devel devel
 
-You might need to set up ssh keys on Bitbucket for this to work. This can
+You might need to set up ssh keys on Heptapod for this to work. This can
 be done under "Manage account/SSH Keys".
 
 New submissions, changes to the web site and to admin scripts go into
