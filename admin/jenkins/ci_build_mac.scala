@@ -18,7 +18,7 @@ object profile extends isabelle.CI_Profile
 
   def selection = Sessions.Selection(
     all_sessions = true,
-    exclude_sessions = List("HOL-Proofs", "HOL-ODE-Numerics", "Linear_Programming"),
+    exclude_sessions = List("HOL-Proofs", "HOL-ODE-Numerics", "Linear_Programming", "HOL-Nominal-Examples"),
     exclude_session_groups = List("slow"))
 
 }
