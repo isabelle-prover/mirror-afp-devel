@@ -16,7 +16,7 @@ ISABELLE_VERSION="Isabelle${VERSION}"
 
 DEST=afpweb@isa-afp.org:
 FILES=frs.sourceforge.net:/home/frs/project/afp/afp-$ISABELLE_VERSION/
-SRC=ssh://hg@bitbucket.org/isa-afp/$AFP_VERSION
+SRC=ssh://hg@foss.heptapod.net/isa-afp/$AFP_VERSION
 
 if [ -n "$SF_LOGIN" ]; then
     LN=$SF_LOGIN
@@ -92,7 +92,7 @@ ROOT="$(hg root)" || fail "could not obtain repo root"
 cd "$ROOT" || fail "could not cd to repo root"
 
 echo "Checking sync with $SRC"
-$HG outgoing $SRC && fail "Push changes to bitbucket first."
+$HG outgoing $SRC && fail "Push changes to Heptapod first."
 
 echo "Exporting from working copy $ROOT"
 HG_EXPORT=afp-export-$DATE

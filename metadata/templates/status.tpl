@@ -26,7 +26,7 @@
   <tr>
     <td>AFP revision:</td>
     <td>
-      <a href="https://bitbucket.org/isa-afp/afp-devel/commits/{{ build_data.afp_id }}">
+      <a href="https://foss.heptapod.net/isa-afp/afp-devel/-/commit/{{ build_data.afp_id }}">
         {{ build_data.afp_id }}
       </a>
     </td>

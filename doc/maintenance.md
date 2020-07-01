@@ -13,19 +13,21 @@ project.
 
  Check out the archive from the mercurial repository with:
 
-    hg clone ssh://hg@bitbucket.org/isa-afp/afp-devel
+    hg clone ssh://hg@foss.heptapod.net/isa-afp/afp-devel
 
 The command above will create a directory `afp-devel` where theories and
 additional files are located. You can register an ssh key for your
-account at Bitbucket under "Manage Account/SSH keys" from the avatar
-icon on the top right of the Bitbucket interface.
+account at Heptapod under "[Settings/SSH keys][keys]" from the avatar
+icon on the top right of the Heptapod interface.
+
+[keys]: https://foss.heptapod.net/profile/keys
 
 **Maintenance:**
 
- Maintaining an entry means making sure that this entry works with the
-current Isabelle development version. Maintainers are not supposed to
-check in and push new entries. New entries must be reviewed and formally
-accepted. They are created on the release branch by the editors.
+Maintaining an entry means making sure that this entry works with the current
+Isabelle development version. Maintainers are not supposed to check in and
+push new entries. New entries must be reviewed and formally accepted. They
+are created on the release branch by the editors.
 
 Depending on the type of the entry, you might want to work in close lock
 step with Isabelle development, i.e. fix the entry immediately each time
