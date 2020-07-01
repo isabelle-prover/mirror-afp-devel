@@ -5,6 +5,7 @@ imports
   Word_Lib.Word_Lemmas
   Word_Lib.Word_Lib
   Word_Lib.Word_Syntax
+  Word_Lib.Bitwise
 begin
 
 text\<open>Interval-Word32.thy implements conservative interval arithmetic operators on 32-bit word 
@@ -3691,7 +3692,7 @@ text\<open>2s-complement commutes with negation except edge cases\<close>
 lemma sint_neg_hom:
   fixes w :: "32 Word.word"
   shows "uint w \<noteq> ((2^(len_of (TYPE(31))))) \<Longrightarrow> (sint(-w) = -(sint w))"
-  unfolding Word_Bitwise.word_sint_msb_eq apply auto
+  unfolding word_sint_msb_eq apply auto
     subgoal using msb_min_neg by auto 
    prefer 3 subgoal using msb_zero[of w] by (simp add: msb_zero)
   proof -

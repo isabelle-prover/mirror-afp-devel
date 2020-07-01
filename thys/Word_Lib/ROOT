@@ -7,5 +7,6 @@ session Word_Lib (AFP) = "HOL-Word" +
   theories
     Word_Lemmas_32
     Word_Lemmas_64
+    Examples
   document_files
     "root.tex"

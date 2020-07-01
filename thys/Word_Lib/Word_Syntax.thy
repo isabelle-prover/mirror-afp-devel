@@ -8,8 +8,8 @@ section "Additional Syntax for Word Bit Operations"
 
 theory Word_Syntax
 imports
-  "HOL-Word.More_Word"
-  WordBitwise_Signed
+  "HOL-Word.Word"
+  Bitwise_Signed
   Hex_Words
   Norm_Words
   Word_Type_Syntax
