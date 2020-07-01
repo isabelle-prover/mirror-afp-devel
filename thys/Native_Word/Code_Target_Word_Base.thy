@@ -109,7 +109,7 @@ lemma word_test_bit_set_bits: "(BITS n. f n :: 'a :: len word) !! n \<longleftri
 by(auto simp add: word_set_bits_def test_bit_bl word_bl.Abs_inverse word_size)
 
 lemma word_of_int_conv_set_bits: "word_of_int i = (BITS n. i !! n)"
-by(rule word_eqI)(simp add: word_test_bit_set_bits)
+  by (rule word_eqI) (auto simp add: word_test_bit_set_bits test_bit.eq_norm)
 
 lemma word_and_mask_or_conv_and_mask:
   "n !! index \<Longrightarrow> (n AND mask index) OR (1 << index) = n AND mask (index + 1)"
