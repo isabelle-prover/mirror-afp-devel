@@ -1,29 +1,33 @@
 Maintaining an Entry in the AFP
 -------------------------------
 
-To maintain an entry, you must have write access to the mercurial
-repository of the archive at Bitbucket. To get access, [sign up at
-Bitbucket](https://bitbucket.org), and ask one of the
-[editors](http://isa-afp.org/about.html#editors) to add you to
-the AFP project.
+To maintain an entry, you must have write access to the mercurial repository
+of the archive at [Heptapod][hetpa]. To get access, [sign up at
+Heptapod][hepta], and ask one of the [editors][editors] to add you to the AFP
+project.
+
+[hepta]: https://foss.heptapod.net
+[editors]: http://isa-afp.org/about.html#editors
 
 **Setup:**
 
  Check out the archive from the mercurial repository with:
 
-    hg clone ssh://hg@bitbucket.org/isa-afp/afp-devel
+    hg clone ssh://hg@foss.heptapod.net/isa-afp/afp-devel
 
 The command above will create a directory `afp-devel` where theories and
 additional files are located. You can register an ssh key for your
-account at Bitbucket under "Manage Account/SSH keys" from the avatar
-icon on the top right of the Bitbucket interface.
+account at Heptapod under "[Settings/SSH keys][keys]" from the avatar
+icon on the top right of the Heptapod interface.
+
+[keys]: https://foss.heptapod.net/profile/keys
 
 **Maintenance:**
 
- Maintaining an entry means making sure that this entry works with the
-current Isabelle development version. Maintainers are not supposed to
-check in and push new entries. New entries must be reviewed and formally
-accepted. They are created on the release branch by the editors.
+Maintaining an entry means making sure that this entry works with the current
+Isabelle development version. Maintainers are not supposed to check in and
+push new entries. New entries must be reviewed and formally accepted. They
+are created on the release branch by the editors.
 
 Depending on the type of the entry, you might want to work in close lock
 step with Isabelle development, i.e. fix the entry immediately each time
@@ -41,7 +45,7 @@ an automatic email notification each time your entry breaks (see below).
 
 -   To get the current Isabelle development version, use
 
-        hg clone http://isabelle.in.tum.de/repos/isabelle 
+        hg clone http://isabelle.in.tum.de/repos/isabelle
 
     to clone the hg repository. See the README file inside for further
     instructions.
