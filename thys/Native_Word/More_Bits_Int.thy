@@ -134,40 +134,35 @@ section \<open>Bit masks of type \<^typ>\<open>int\<close>\<close>
 primrec bin_mask :: "nat \<Rightarrow> int" 
 where
   "bin_mask 0 = 0"
-| "bin_mask (Suc n) = bin_mask n BIT True"
+| "bin_mask (Suc n) = 1 + 2 * bin_mask n"
 
 lemma bin_mask_conv_pow2:
   "bin_mask n = 2 ^ n - 1"
-by(induct n)(simp_all add: Bit_def)
+  by (induct n) simp_all
 
+lemma bin_mask_eq_mask:
+  \<open>bin_mask = Bit_Operations.mask\<close>
+  by (simp add: bin_mask_conv_pow2 [abs_def] mask_eq_exp_minus_1 [abs_def])
+  
 lemma bin_mask_ge0: "bin_mask n \<ge> 0"
 by(induct n) simp_all
 
 lemma and_bin_mask_conv_mod: "x AND bin_mask n = x mod 2 ^ n"
-proof(induction n arbitrary: x)
-  case 0 thus ?case by simp
-next
-  case (Suc n)
-  obtain x' b where "x = x' BIT b" by(cases x rule: bin_exhaust)
-  with Suc show ?case by (cases b)
-    (simp_all, simp_all add: Bit_def pos_zmod_mult_2 add.commute)
-qed
+  by (rule bit_eqI)
+    (simp add: bin_mask_eq_mask bit_and_iff bit_mask_iff bit_take_bit_iff ac_simps flip: take_bit_eq_mod)
 
 lemma bin_mask_numeral: 
-  "bin_mask (numeral n) = bin_mask (pred_numeral n) BIT True"
+  "bin_mask (numeral n) = 1 + 2 * bin_mask (pred_numeral n)"
 by(simp add: numeral_eq_Suc)
 
 lemma bin_nth_mask [simp]: "bin_nth (bin_mask n) i \<longleftrightarrow> i < n"
-proof(induction n arbitrary: i)
-  case (Suc n)
-  thus ?case by(cases i) simp_all
-qed simp
+  by (simp add: bin_mask_eq_mask bit_mask_iff)
 
 lemma bin_sign_mask [simp]: "bin_sign (bin_mask n) = 0"
-by(induct n) simp_all
+  by (simp add: bin_sign_def bin_mask_conv_pow2)
 
 lemma bin_mask_p1_conv_shift: "bin_mask n + 1 = 1 << n"
-by(induct n) simp_all
+  by (simp add: bin_mask_conv_pow2 shiftl_int_def)
 
 
 section \<open>More on bit comprehension\<close>
@@ -211,7 +206,7 @@ context
 begin
 
 lemma int_set_bits_unfold_BIT:
-  "set_bits f = set_bits (f \<circ> Suc) BIT f 0"
+  "set_bits f = of_bool (f 0) + (2 :: int) * set_bits (f \<circ> Suc)"
 using wff proof cases
   case (zeros n)
   show ?thesis
@@ -227,7 +222,10 @@ using wff proof cases
     also have "(\<lambda>n. \<forall>n'\<ge>Suc n. \<not> f n') = (\<lambda>n. \<forall>n'\<ge>n. \<not> f (Suc n'))" by(auto dest: Suc_le_D)
     also from zeros have "\<forall>n'\<ge>n. \<not> f (Suc n')" by auto
     ultimately show ?thesis using zeros
-      by(simp (no_asm_simp) add: set_bits_int_def exI split del: if_split)(rule bin_rl_eqI, auto simp add: bin_last_bl_to_bin hd_map bin_rest_bl_to_bin map_tl[symmetric] map_map[symmetric] map_Suc_upt simp del: map_map)
+      apply (simp (no_asm_simp) add: set_bits_int_def exI split del: if_split)
+      apply clarsimp apply (safe; rule bin_rl_eqI)
+         apply (auto simp add: bin_last_bl_to_bin hd_map bin_rest_bl_to_bin map_tl[symmetric] map_map[symmetric] map_Suc_upt simp del: map_map)
+      done
   qed
 next
   case (ones n)
@@ -248,7 +246,11 @@ next
     moreover hence "(\<exists>n. \<forall>n'\<ge>n. \<not> f (Suc n')) = False"
       by(auto elim: allE[where x="Suc n" for n] dest: Suc_le_D)
     ultimately show ?thesis using ones
-      by(simp (no_asm_simp) add: set_bits_int_def exI split del: if_split)(auto simp add: Let_def bin_last_bl_to_bin hd_map bin_rest_bl_to_bin map_tl[symmetric] map_map[symmetric] map_Suc_upt simp del: map_map)
+      apply (simp (no_asm_simp) add: set_bits_int_def exI split del: if_split)
+      apply (auto simp add: Let_def bin_last_bl_to_bin hd_map bin_rest_bl_to_bin map_tl[symmetric] map_map[symmetric] map_Suc_upt upt_conv_Cons simp del: map_map)
+       apply (metis bin_last_bl_to_bin last.simps list.distinct(1))
+      apply (metis (no_types, lifting) Nil_is_append_conv bin_last_bl_to_bin last_ConsR last_snoc list.distinct(1))
+      done
   qed
 qed
 

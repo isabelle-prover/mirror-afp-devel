@@ -64,7 +64,7 @@ text \<open>Bit operations on @{typ integer} are the same as on @{typ int}\<clos
 
 lift_definition bin_rest_integer :: "integer \<Rightarrow> integer" is bin_rest .
 lift_definition bin_last_integer :: "integer \<Rightarrow> bool" is bin_last .
-lift_definition Bit_integer :: "integer \<Rightarrow> bool \<Rightarrow> integer" is Bit .
+lift_definition Bit_integer :: "integer \<Rightarrow> bool \<Rightarrow> integer" is \<open>\<lambda>k b. of_bool b + 2 * k\<close> .
 
 end
 
@@ -523,7 +523,7 @@ lemma integer_shiftr_code [code]:
    integer_shiftr (Code_Numeral.Neg n') (Code_Numeral.sub n num.One)"
   "integer_shiftr (Code_Numeral.Neg (num.Bit1 n')) (Code_Numeral.Pos n) = 
    integer_shiftr (Code_Numeral.Neg (Num.inc n')) (Code_Numeral.sub n num.One)"
-by(simp_all add: integer_shiftr_def shiftr_integer_def)
+  by (simp_all add: integer_shiftr_def shiftr_integer_def int_shiftr_code)
 
 context
 includes integer.lifting
@@ -532,7 +532,7 @@ begin
 lemma Bit_integer_code [code]:
   "Bit_integer i False = i << 1"
   "Bit_integer i True = (i << 1) + 1"
-by(transfer, simp add: Bit_def shiftl_int_def)+
+  by (transfer; simp add: shiftl_int_def)+
 
 lemma msb_integer_code [code]:
   "msb (x :: integer) \<longleftrightarrow> x < 0"
@@ -549,27 +549,20 @@ lemma bitAND_integer_unfold [code]:
    (if x = 0 then 0
     else if x = - 1 then y
     else Bit_integer (bin_rest_integer x AND bin_rest_integer y) (bin_last_integer x \<and> bin_last_integer y))"
-  apply transfer
-  apply simp
-  apply (metis bin_rl_simp int_and_Bits) 
-  done
+  by transfer
+    (auto simp add: algebra_simps
+      and_int_rec [of _ \<open>_ * 2\<close>] and_int_rec [of \<open>_ * 2\<close>] and_int_rec [of \<open>1 + _ * 2\<close>]
+      elim!: evenE oddE)
 
 lemma bitOR_integer_unfold [code]:
   "x OR y =
    (if x = 0 then y
     else if x = - 1 then - 1
     else Bit_integer (bin_rest_integer x OR bin_rest_integer y) (bin_last_integer x \<or> bin_last_integer y))"
-proof transfer
-  fix x y :: int
-  from int_or_Bits [of "bin_rest x" "bin_last x" "bin_rest y" "bin_last y"]
-  have "(bin_rest x OR bin_rest y) BIT (bin_last x \<or> bin_last y) = x OR y"
-    by simp
-  then show "x OR y =
-    (if x = 0 then y
-     else if x = - 1 then - 1
-     else Bit (bin_rest x OR bin_rest y) (bin_last x \<or> bin_last y))"
-    by simp
-qed
+  by transfer
+    (auto simp add: algebra_simps
+      or_int_rec [of _ \<open>_ * 2\<close>] or_int_rec [of _ \<open>1 + _ * 2\<close>] or_int_rec [of \<open>1 + _ * 2\<close>]
+      elim!: evenE oddE)
 
 lemma bitXOR_integer_unfold [code]:
   "x XOR y =
@@ -577,21 +570,10 @@ lemma bitXOR_integer_unfold [code]:
     else if x = - 1 then NOT y
     else Bit_integer (bin_rest_integer x XOR bin_rest_integer y)
       (\<not> bin_last_integer x \<longleftrightarrow> bin_last_integer y))"
-proof transfer
-  fix x y :: int
-  from int_xor_Bits [of "bin_rest x" "bin_last x" "bin_rest y" "bin_last y"]
-  have "(bin_rest x XOR bin_rest y) BIT
-    ((bin_last x \<or> bin_last y) \<and> (bin_last x \<longrightarrow> \<not> bin_last y)) = x XOR y"
-    by auto
-  also have "(bin_last x \<or> bin_last y) \<and> (bin_last x \<longrightarrow> \<not> bin_last y) \<longleftrightarrow> (\<not> bin_last x \<longleftrightarrow> bin_last y)"
-    by auto
-  finally show "x XOR y =
-   (if x = 0 then y
-    else if x = - 1 then NOT y
-    else Bit (bin_rest x XOR bin_rest y)
-      (\<not> bin_last x \<longleftrightarrow> bin_last y))"
-    by simp
-qed
+  by transfer
+    (auto simp add: algebra_simps
+      xor_int_rec [of _ \<open>_ * 2\<close>] xor_int_rec [of \<open>_ * 2\<close>] xor_int_rec [of \<open>1 + _ * 2\<close>]
+      elim!: evenE oddE)
 
 end
 

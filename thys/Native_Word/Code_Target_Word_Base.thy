@@ -78,13 +78,15 @@ lemma div_half_word:
   shows "(x div y, x mod y) = (let q = (x >> 1) div y << 1; r = x - q * y in if y \<le> r then (q + 1, r - y) else (q, r))"
 proof -
   obtain n where n: "x = of_nat n" "n < 2 ^ LENGTH('a)" by (cases x)
-  obtain m where m: "y = of_nat m" "m < 2 ^ LENGTH('a)" by(cases y)
+  moreover obtain m where m: "y = of_nat m" "m < 2 ^ LENGTH('a)" by (cases y)
+  ultimately have [simp]: \<open>unat (of_nat n :: 'a word) = n\<close> \<open>unat (of_nat m :: 'a word) = m\<close>
+    by (simp add: unat_def, transfer, simp_all add: take_bit_of_nat take_bit_eq_self)+
   let ?q = "(x >> 1) div y << 1"
   let ?q' = "2 * (n div 2 div m)"
   have "n div 2 div m < 2 ^ LENGTH('a)" using n by (metis of_nat_inverse unat_lt2p uno_simps(2))
   hence q: "?q = of_nat ?q'" using n m
-    apply (simp add: shiftr_def shiftr1_def uint_nat unat_of_nat shiftl_def shiftl1_def Bit_def word_div_def word_of_nat)
-    apply (metis of_nat_inverse of_nat_numeral uno_simps(2) word_of_nat zdiv_int)
+    apply (auto simp add: shiftr_word_eq drop_bit_eq_div shiftl_t2n word_arith_nat_div uno_simps)
+    apply (metis \<open>unat (of_nat n) = n\<close> uno_simps(2))
     done
   from assms have "m \<noteq> 0" using m by -(rule notI, simp)
 
@@ -323,10 +325,10 @@ proof -
       by(auto intro!: bin_eqI simp add: bin_nth_ops)
     have "overflow \<le> i'" by(subst unf)(rule le_int_or, simp add: bin_sign_and assms i'_def)
     hence "i' - shift < least \<longleftrightarrow> False" unfolding assms
-      by(cases "LENGTH('a)")(simp_all add: not_less Bit_def)
+      by(cases "LENGTH('a)")(simp_all add: not_less)
     moreover
     have "overflow \<le> i' - shift \<longleftrightarrow> False" using \<open>i' < shift\<close> unfolding assms
-      by(cases "LENGTH('a)")(auto simp add: not_le Bit_def elim: less_le_trans)
+      by(cases "LENGTH('a)")(auto simp add: not_le elim: less_le_trans)
     moreover
     have "word_of_int (i' - shift) = (word_of_int i :: 'a word)" using \<open>i' < shift\<close>
       by(auto intro!: word_eqI simp add: i'_def shift_def mask_def bin_nth_ops bin_nth_minus_p2 bin_sign_and)

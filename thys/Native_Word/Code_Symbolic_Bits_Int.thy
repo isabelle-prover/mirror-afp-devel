@@ -15,14 +15,6 @@ lemma not_minus_numeral_inc_eq:
   \<open>NOT (- numeral (Num.inc n)) = (numeral n :: int)\<close>
   by (simp add: not_int_def sub_inc_One)
 
-lemma Bit_code [code]:
-  "0 BIT b = of_bool b"
-  "Int.Pos n BIT False = Int.Pos (num.Bit0 n)"
-  "Int.Pos n BIT True = Int.Pos (num.Bit1 n)"
-  "Int.Neg n BIT False = Int.Neg (num.Bit0 n)"
-  "Int.Neg n BIT True = Int.Neg (Num.BitM n)"
-by(cases b)(simp_all)
-
 lemma [code_abbrev]:
   \<open>test_bit = (bit :: int \<Rightarrow> nat \<Rightarrow> bool)\<close>
   by (simp add: fun_eq_iff)
@@ -97,13 +89,19 @@ lemma sbintrunc_code [code]:
   "sbintrunc n bin =
   (let bin' = bin AND bin_mask (n + 1)
    in if bin' !! n then bin' - (2 << n) else bin')"
-proof (induct n arbitrary: bin)
+proof (induction n arbitrary: bin)
   case 0
   then show ?case
     by (simp add: mod_2_eq_odd and_one_eq)
 next
   case (Suc n)
-  thus ?case by(cases bin rule: bin_exhaust)(simp add: Let_def minus_BIT_0)
+  have *: \<open>(4 * 2 ^ n - 1) div 2 = 2 * 2 ^ n - (1::int)\<close>
+    by simp
+  from Suc [of \<open>bin div 2\<close>]
+  show ?case 
+    by (auto simp add: Let_def bin_mask_conv_pow2 shiftl_int_def algebra_simps *
+      and_int_rec [of \<open>_ + _ * 2\<close>] and_int_rec [of \<open>_ * 2\<close>]
+      bit_double_iff even_bit_succ_iff elim!: evenE oddE)
 qed
 
 lemma set_bits_code [code]: 
@@ -125,13 +123,12 @@ lemma int_shiftr_code [code]: fixes i :: int shows
   "Int.Neg num.One >> Suc n = -1"
   "Int.Neg (num.Bit0 m) >> Suc n = Int.Neg m >> n"
   "Int.Neg (num.Bit1 m) >> Suc n = Int.Neg (Num.inc m) >> n"
-  by (simp_all only: BIT_special_simps(2 )[symmetric] int_shiftr0 int_0shiftr numeral_One int_minus1_shiftr Int.Pos_def Int.Neg_def expand_BIT int_shiftr_Suc Num.add_One uminus_Bit_eq)
-    (simp_all add: add_One)
+  by (simp_all add: shiftr_eq_drop_bit drop_bit_Suc add_One)
 
 lemma int_shiftl_code [code]:
   "i << 0 = i"
   "i << Suc n = Int.dup i << n"
-by(simp_all add: shiftl_int_def)
+  by (simp_all add: shiftl_int_def)
 
 lemma int_lsb_code [code]:
   "lsb (0 :: int) = False"
@@ -141,6 +138,6 @@ lemma int_lsb_code [code]:
   "lsb (Int.Neg num.One) = True"
   "lsb (Int.Neg (num.Bit0 w)) = False"
   "lsb (Int.Neg (num.Bit1 w)) = True"
-by simp_all
+  by simp_all
 
 end

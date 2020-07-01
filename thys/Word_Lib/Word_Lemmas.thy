@@ -4035,14 +4035,10 @@ lemma le_or_mask:
 
 lemma le_shiftr1':
   "\<lbrakk> shiftr1 u \<le> shiftr1 v ; shiftr1 u \<noteq> shiftr1 v \<rbrakk> \<Longrightarrow> u \<le> v"
-  apply (unfold word_le_def shiftr1_def word_ubin.eq_norm)
-  apply (unfold bin_rest_trunc_i
-                trans [OF bintrunc_bintrunc_l word_ubin.norm_Rep,
-                          unfolded word_ubin.norm_Rep,
-                       OF order_refl [THEN le_SucI]])
-  apply (case_tac "uint u" rule: bin_exhaust)
-  apply (case_tac "uint v" rule: bin_exhaust)
-  by (smt Bit_def bin_rest_BIT)
+  apply (simp add: shiftr1_def)
+  apply transfer
+  apply simp
+  done
 
 lemma le_shiftr':
   "\<lbrakk> u >> n \<le> v >> n ; u >> n \<noteq> v >> n \<rbrakk> \<Longrightarrow> (u::'a::len word) \<le> v"
@@ -4908,11 +4904,11 @@ lemma uints_mono_iff: "uints l \<subseteq> uints m \<longleftrightarrow> l \<le>
 
 lemmas uints_monoI = uints_mono_iff[THEN iffD2]
 
-lemma Bit_in_uints_Suc: "w BIT c \<in> uints (Suc m)" if "w \<in> uints m"
+lemma Bit_in_uints_Suc: "of_bool c + 2 * w \<in> uints (Suc m)" if "w \<in> uints m"
   using that
-  by (auto simp: uints_num Bit_def)
+  by (auto simp: uints_num)
 
-lemma Bit_in_uintsI: "w BIT c \<in> uints m" if "w \<in> uints (m - 1)" "m > 0"
+lemma Bit_in_uintsI: "of_bool c + 2 * w \<in> uints m" if "w \<in> uints (m - 1)" "m > 0"
   using Bit_in_uints_Suc[OF that(1)] that(2)
   by auto
 
@@ -4926,7 +4922,7 @@ proof (induction n arbitrary: b m)
 next
   case (Suc n)
   then show ?case
-    by (auto intro!: Bit_in_uintsI)
+    using Bit_in_uintsI by auto
 qed
 
 lemma bin_cat_cong: "bin_cat a n b = bin_cat c m d"
@@ -4934,11 +4930,11 @@ lemma bin_cat_cong: "bin_cat a n b = bin_cat c m d"
   using that(3) unfolding that(1,2) by (simp add: bin_cat_eq_push_bit_add_take_bit)
 
 lemma bin_cat_eqD1: "bin_cat a n b = bin_cat c n d \<Longrightarrow> a = c"
-  by (induction n arbitrary: b d) auto
+  by (metis drop_bit_bin_cat_eq)
 
 lemma bin_cat_eqD2: "bin_cat a n b = bin_cat c n d \<Longrightarrow> bintrunc n b = bintrunc n d"
-  by (induction n arbitrary: b d) (simp_all add: take_bit_Suc mod_2_eq_odd)
-
+  by (metis take_bit_bin_cat_eq)
+  
 lemma bin_cat_inj: "(bin_cat a n b) = bin_cat c n d \<longleftrightarrow> a = c \<and> bintrunc n b = bintrunc n d"
   by (auto intro: bin_cat_cong bin_cat_eqD1 bin_cat_eqD2)
 

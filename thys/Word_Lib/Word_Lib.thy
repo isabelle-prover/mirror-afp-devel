@@ -282,10 +282,10 @@ lemma le_shiftr1:
   apply (case_tac "uint v" rule: bin_exhaust)
   apply (rename_tac bs' bit')
   apply (case_tac "bit")
-   apply (case_tac "bit'", auto simp: less_eq_int_code le_Bits)[1]
+   apply (case_tac "bit'", auto simp: less_eq_int_code)[1]
   apply (case_tac bit')
-   apply (simp add: le_Bits less_eq_int_code)
-  apply (auto simp: le_Bits less_eq_int_code)
+    apply (simp add: less_eq_int_code)
+  apply (simp add: less_eq_int_code)
   done
 
 lemma le_shiftr:
@@ -598,12 +598,8 @@ lemma word_fixed_sint_1[simp]:
 
 lemma word_sint_1 [simp]:
   "sint (1::'a::len word) = (if LENGTH('a) = 1 then -1 else 1)"
-  apply (case_tac "LENGTH('a) \<le> 1")
-   apply (metis diff_is_0_eq sbintrunc_0_numeral(1) sint_n1 word_1_wi
-           word_m1_wi word_msb_1 word_msb_n1 word_sbin.Abs_norm)
-  apply (metis bin_nth_1 diff_is_0_eq neq0_conv sbintrunc_minus_simps(4)
-            sint_word_ariths(8) uint_1 word_msb_1 word_msb_nth)
-  done
+  by (cases \<open>LENGTH('a)\<close>)
+    (simp_all add: not_le sint_uint le_Suc_eq sbintrunc_minus_simps)
 
 lemma scast_1':
   "(scast (1::'a::len word) :: 'b::len word) =
