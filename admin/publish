@@ -92,7 +92,7 @@ ROOT="$(hg root)" || fail "could not obtain repo root"
 cd "$ROOT" || fail "could not cd to repo root"
 
 echo "Checking sync with $SRC"
-$HG outgoing $SRC && fail "Push changes to bitbucket first."
+$HG outgoing $SRC && fail "Push changes to Heptapod first."
 
 echo "Exporting from working copy $ROOT"
 HG_EXPORT=afp-export-$DATE
