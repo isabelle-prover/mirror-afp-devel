@@ -19,7 +19,7 @@ authors.
 </p>
 <p>
 This conflicts with the purpose of archiving and preserving
-entries as they have been submitted and with the purpose of 
+entries as they have been submitted and with the purpose of
 providing a clear and simple interface to readers.
 </p>
 <p>
@@ -37,7 +37,7 @@ In the background, the archive maintainers evolve all entries to
 be up to date with the current Isabelle development
 version. Authors can contribute changes to this version which is
 available as a <a
-href="https://bitbucket.org/isa-afp/afp-devel/">bitbucket
+href="https://foss.heptapod.net/isa-afp/afp-devel/">Heptapod
 mercurial repository</a> or as tar.gz package on the <a href="download.html">
 download page</a>.
 </li>
@@ -83,14 +83,14 @@ provide a new, better version of your AFP entry, you can do so.
 </p>
 <p>
 To achieve this, you should base your changes on the <a
-href="https://bitbucket.org/isa-afp/afp-devel/">mercurial 
+href="https:/foss.heptapod.net/isa-afp/afp-devel/">mercurial
 development version</a>
 of your AFP entry and test it against the current <a
 href="http://isabelle.in.tum.de/devel/">Isabelle development
 version</a>.
 </p>
 <p>
-If you would like to get write access to your entry in the 
+If you would like to get write access to your entry in the
 mercurial repository or if you need
 assistance, please contact the <a href="about.html#editors">editors</a>.
 </p>
