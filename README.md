@@ -4,7 +4,7 @@ The Archive of Formal Proofs
 This is the mercurial repository for the [Archive of Formal Proofs][1] (AFP).
 
 The main development version of the AFP repository is hosted at
-<https://bitbucket.org/isa-afp/afp-devel>.
+<https://foss.heptapod.net/isa-afp/afp-devel>.
 
 If you are an AFP author or Isabelle maintainer, you can get push access to
 this repository by sending a request, including your bitbucket login, to
