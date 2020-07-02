@@ -185,10 +185,6 @@ lift_definition sshiftr_uint :: "uint \<Rightarrow> nat \<Rightarrow> uint" (inf
 
 lift_definition uint_of_int :: "int \<Rightarrow> uint" is "word_of_int" .
 
-lemma of_bool_integer_transfer [transfer_rule]:
-  "(rel_fun (=) pcr_integer) of_bool of_bool"
-by(auto simp add: integer.pcr_cr_eq cr_integer_def split: bit.split)
-
 text \<open>Use pretty numerals from integer for pretty printing\<close>
 
 context includes integer.lifting begin

@@ -157,10 +157,6 @@ lift_definition nat_of_uint64 :: "uint64 \<Rightarrow> nat" is "unat" .
 definition integer_of_uint64 :: "uint64 \<Rightarrow> integer"
 where "integer_of_uint64 = integer_of_int o int_of_uint64"
 
-lemma bitval_integer_transfer [transfer_rule]:
-  "(rel_fun (=) pcr_integer) of_bool of_bool"
-by(auto simp add: of_bool_def integer.pcr_cr_eq cr_integer_def split: bit.split)
-
 text \<open>Use pretty numerals from integer for pretty printing\<close>
 
 context includes integer.lifting begin
