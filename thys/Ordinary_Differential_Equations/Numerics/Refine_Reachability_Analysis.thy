@@ -953,7 +953,7 @@ proof (goal_cases)
       qed
       done
     done
-  also have "\<dots> \<subseteq> res" using hyps(5) by (auto simp: \<open>D = _\<close>)
+  also have "\<dots> \<subseteq> res" using hyps(6) by (simp add: \<open>D = _\<close>)
   finally show ?case by (simp add: \<open>D = _\<close>)
 qed
 
@@ -1179,8 +1179,8 @@ lemma op_eventually_within_sctn[le, refine_vcg]:
       by (auto simp: elim!: abs_in_Basis_absE)
   qed (use prems in \<open>auto elim!: abs_in_BasisE simp: eucl_le[where 'a='a] dest!: bspec subsetD\<close>)
   subgoal by simp
-  subgoal by (auto elim!: abs_in_BasisE simp: eucl_le[where 'a='a] dest!: bspec subsetD cong del: image_cong_simp)
-  subgoal by (auto elim!: abs_in_BasisE simp: eucl_le[where 'a='a] dest!: bspec subsetD cong del: image_cong_simp)
+  subgoal using [[simproc del: defined_all]] by (auto elim!: abs_in_BasisE simp: eucl_le[where 'a='a] dest!: bspec subsetD cong del: image_cong_simp)
+  subgoal using [[simproc del: defined_all]] by (auto elim!: abs_in_BasisE simp: eucl_le[where 'a='a] dest!: bspec subsetD cong del: image_cong_simp)
   done
 
 lemma Let_unit: "Let (x::unit) f = f ()"

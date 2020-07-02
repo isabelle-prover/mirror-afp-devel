@@ -1001,6 +1001,7 @@ lemma lorenz_interrupt[le, refine_vcg]:
           eucl_of_list_def
           large_cube_def)
     subgoal premises prems for x
+      supply [[simproc del: defined_all]]
       apply (auto simp:)
       subgoal for A B C D E
         apply (rule image_eqI[where x="cast_eucl1 (((B, C, D), A))"])

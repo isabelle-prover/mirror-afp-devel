@@ -192,11 +192,10 @@ lemma
   and "\<forall>z\<in> set list. Let l binds c' \<in> callsV z \<longrightarrow> fst ` set binds \<subseteq> varsV z"
   and "\<forall>x\<in> set (list2 :: (var \<times> lambda) list) . Let l binds c' \<in> calls (snd x) \<longrightarrow> fst ` set binds \<subseteq> vars (snd x)"
   and "Let l binds c' \<in> calls (snd (t:: var\<times>lambda)) \<Longrightarrow> fst ` set binds \<subseteq> vars (snd t)"
-apply (induct x and y and z and list and list2 and t rule:mutual_lambda_call_var_inducts)
-apply auto
-apply (erule_tac x="((ab, bc), bd)" in ballE)
-apply (rule_tac x="((ab, bc), bd)" in bexI, auto)
-done
+       apply (induct x and y and z and list and list2 and t rule:mutual_lambda_call_var_inducts)
+             apply auto
+  apply fastforce
+  done
 
 lemma
   shows let4: "Let l binds c' \<in> calls x \<Longrightarrow> snd ` set binds \<subseteq> lambdas x"

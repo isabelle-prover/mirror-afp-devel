@@ -505,15 +505,17 @@ next
       using snoc * by (simp add: node_deliver_messages_append)
   next
     case (Deliver x2) thus ?thesis
-      using snoc * apply(clarsimp simp add: node_deliver_messages_def map_filter_def map_filter_append)
+      using snoc * [[simproc del: defined_all]]
+      apply (clarsimp simp add: node_deliver_messages_def map_filter_def map_filter_append)
       apply (rename_tac m m1 m2)
       apply (case_tac m; clarsimp)
-      apply(drule set_elem_nth, erule exE, erule conjE)
-      apply(erule_tac x="length xs" in meta_allE)
-      apply(clarsimp simp add: nth_append)
-      by (metis causal_delivery insert_subset node_histories.local_order_carrier_closed
-          node_histories_axioms node_total_order_antisym)
-  qed
+      apply (drule set_elem_nth, erule exE, erule conjE)
+      apply (erule_tac x="length xs" in meta_allE)
+      apply (clarsimp simp add: nth_append)
+      apply (metis causal_delivery insert_subset local_order_carrier_closed
+        node_total_order_antisym)
+      done
+ qed
 qed
     
 corollary (in network_with_ops)

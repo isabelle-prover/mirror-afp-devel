@@ -324,9 +324,9 @@ proof
         for ye yd using v inv_tr_card_min[OF verts_in_translation,of "e\<^sub>2"]
         by(cases "ye=0";cases "yd=0";auto)
     have d_a:"Domain (?tr\<^sub>1\<inverse> O f\<^sub>1) \<inter>  Domain (?tr\<^sub>2\<inverse> O f\<^sub>2) = {card (vertices (translation e\<^sub>2))}"
-      using zero_one by (auto simp:v)
+      using zero_one using [[simproc del: defined_all]] by (auto simp: v)
     have d_b:"Domain (?tr\<^sub>1\<inverse> O f\<^sub>1 \<inter> ?tr\<^sub>2\<inverse> O f\<^sub>2) = {card (vertices (translation e\<^sub>2))}"
-      using zero_one f\<^sub>1(2,3) by auto
+      using zero_one f\<^sub>1(2,3) using [[simproc del: defined_all]] by auto
     note cmp1 = graph_homomorphism_composes[OF graph_homo_inv[OF translation_graph inj1] f\<^sub>1(1)]
     note cmp2 = graph_homomorphism_composes[OF graph_homo_inv[OF translation_graph inj2] f\<^sub>2(1)]
     have "graph_homomorphism (translation (A_Cmp e\<^sub>1 e\<^sub>2)) G (?tr\<^sub>1\<inverse> O f\<^sub>1 \<union> ?tr\<^sub>2\<inverse> O f\<^sub>2)"
@@ -347,7 +347,7 @@ proof
       and n2: "n \<ge> 2"
       by (auto simp:n_def inv_translation_def)
     then have [simp]:"insert (Suc 0) {2..<n} = {1..<n}"
-      "insert 0 {Suc 0..<n} = {0..<n}" by auto
+      "insert 0 {Suc 0..<n} = {0..<n}" using [[simproc del: defined_all]] by auto
     let ?f = "on_graph ?G (\<lambda> x. if x < 2 then 1 - x else x)"
     have h:"graph_homomorphism ?G G (?f O f)"
     proof(rule graph_homomorphism_composes[OF _ f(1)],rule graph_homomorphismI)

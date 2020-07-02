@@ -864,7 +864,7 @@ proof (simp, transfer, transfer)
   then obtain a' k' \<phi>
     where ***: "k' \<noteq> 0 \<and> a' * cnj a' \<noteq> 1 \<and> M = k' *\<^sub>s\<^sub>m (cis \<phi>, 0, 0, 1) *\<^sub>m\<^sub>m (1, - a', - cnj a', 1)"
     using ** unitary11_gen_cis_blaschke[of k M a b]
-    by auto
+    by auto blast
   have "a' = 0 \<or> 1 < 1 / (cmod a')\<^sup>2"
     using * *** complex_mult_cnj_cmod[of a']
     by simp

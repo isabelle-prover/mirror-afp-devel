@@ -482,7 +482,6 @@ proof (coinduction arbitrary: name)
     apply (rule disjI1)
     apply (simp add: mk_rec_env_def)
     apply (elim conjE exE)
-    apply (intro exI conjI)
     by (auto intro: fmdomI)
   with vrelated show ?case
     by fastforce

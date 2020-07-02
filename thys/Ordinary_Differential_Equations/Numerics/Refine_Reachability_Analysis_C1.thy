@@ -1074,6 +1074,7 @@ lemma reach_cont[le, refine_vcg]:
     G \<union> (CX \<times> UNIV) \<subseteq> (Csafe - guards) \<times> UNIV \<and>
     X \<union> G \<subseteq> CX \<times> UNIV \<and>
     flowsto X {0..} (CX \<times> UNIV) G)"
+  using [[simproc del: defined_all]]
   unfolding reach_cont_def autoref_tag_defs
   apply (refine_vcg, clarsimp_all simp add: cancel_times_UNIV_subset)
   subgoal by (rule flowsto_self) (auto simp: )
@@ -2011,6 +2012,7 @@ lemma width_spec_ivl[THEN order_trans, refine_vcg]: "width_spec_ivl M X \<le> SP
 
 lemma partition_ivl_spec[le, refine_vcg]:
   shows "partition_ivl cg XS \<le> SPEC (\<lambda>YS. XS \<subseteq> YS)"
+  using [[simproc del: defined_all]]
   unfolding partition_ivl_def autoref_tag_defs
   apply (refine_vcg, clarsimp_all)
   subgoal by fastforce
@@ -2285,6 +2287,7 @@ qed
 
 lemma reduce_ivle[le, refine_vcg]:
   "reduce_ivle Y b \<le> SPEC (\<lambda>R. Y \<subseteq> R)"
+  using [[simproc del: defined_all]]
   unfolding reduce_ivle_def
   apply refine_vcg
   apply (auto simp: scaleR2_def image_def vimage_def)
@@ -2523,6 +2526,7 @@ next
   case (Cons a guards)
   note Cons.IH[simplified, le, refine_vcg]
   show ?case
+    supply [[simproc del: defined_all]]
     apply auto
     apply refine_vcg
      apply clarsimp_all
@@ -2585,7 +2589,7 @@ next
         apply (rule do_intersection_poincare_mapstos_trans[OF pmro disro])
         subgoal by auto
         subgoal premises that for i
-          using prems(12)[rule_format, unfolded do_intersection_spec_def, OF that]
+          using prems(12)[rule_format, unfolded do_intersection_spec_def, OF that] using [[simproc del: defined_all]]
           by (auto simp: do_intersection_spec_def)
         subgoal using assms(1,2) prems by (auto simp: do_intersection_spec_def)
         subgoal by auto
@@ -2739,6 +2743,7 @@ lemma one_step_until_time_spec[le, refine_vcg]:
       (flow0 x0 t1, Dflow x0 t1 o\<^sub>L d0) \<in> R \<and>
       (\<forall>t \<in> {0 .. t1}. flow0 x0 t \<in> CX)) \<and>
       fst ` R \<union> CX \<subseteq> Csafe)"
+  using [[simproc del: defined_all]]
   unfolding one_step_until_time_def autoref_tag_defs
   apply (refine_vcg WHILE_rule[where I="\<lambda>(t, h, X, CX). fst ` X \<subseteq> Csafe \<and> CX \<subseteq> Csafe \<and> 0 \<le> h \<and> 0 \<le> t \<and> t \<le> t1 \<and>
         (\<forall>(x0, d0) \<in> X0. t \<in> existence_ivl0 x0 \<and>
@@ -2807,8 +2812,6 @@ lemma one_step_until_time_ivl_spec[le, refine_vcg]:
       using interval_subset_existence_ivl[of t1 x0 t2]
       by (auto simp: flow_trans')
     done
-  subgoal
-    by (auto simp: scaleR2_def image_def vimage_def)
   done
 
 lemma empty_symstart_flowsto:

@@ -501,6 +501,7 @@ qed
 
 lemma viewLn_list: " viewLn t = Some (nd, s) 
   \<Longrightarrow> toList t = (nodeToList nd) @ (toList s)"
+  supply [[simproc del: defined_all]]
   apply(induct t arbitrary: nd s rule: viewLn.induct)
   apply(simp)
   apply(simp)
@@ -603,6 +604,7 @@ qed
 
 lemma viewRn_list: "viewRn t = Some (nd, s) 
   \<Longrightarrow> toList t = (toList s) @ (nodeToList nd)"
+  supply [[simproc del: defined_all]]
   apply(induct t arbitrary: nd s rule: viewRn.induct)
   apply(simp)
   apply(simp)

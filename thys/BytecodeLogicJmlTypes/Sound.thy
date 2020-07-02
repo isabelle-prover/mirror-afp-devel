@@ -324,6 +324,7 @@ induction on $K$.\<close>
 lemma INVS_soundK_all:
   "INVS_soundK K G C m l D m' T MI Anno Anno2 M' A B I"
 (*<*)
+supply [[simproc del: defined_all]]
 apply (induct K)
 (*K=0*)
 apply (simp add: INVS_soundK_def , clarsimp)
@@ -539,6 +540,7 @@ lemma SOUND_Aux[rule_format]:
   ((b \<longrightarrow> \<Turnstile>\<^sub>K \<lbrace>A\<rbrace> C, m, l \<lbrace>B\<rbrace> I) \<and> 
    ((\<not> b) \<longrightarrow> \<Turnstile>\<^sub>(Suc K) \<lbrace>A\<rbrace> C, m, l \<lbrace>B\<rbrace> I))"
 (*<*)
+supply [[simproc del: defined_all]]
 apply (erule SP_Judgement.induct)
 (*INSTR*)
 apply clarsimp

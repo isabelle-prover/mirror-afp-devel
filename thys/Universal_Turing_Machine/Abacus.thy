@@ -1195,7 +1195,8 @@ lemma inv_locate_b[simp]: "inv_locate_b (as, am) (q, aaa, Oc # xs) ires
       rule_tac x = tn in exI, rule_tac x = m in exI)
   apply(rule_tac x = "Suc ml" in exI, rule_tac x = "mr - 1" in exI,
       rule_tac x = rn in exI)
-  apply(case_tac mr, simp_all, auto)
+  apply(case_tac mr)
+  apply simp_all
   done
 
 lemma tape_nat[simp]:  "<[x::nat]> = Oc\<up>(Suc x)"
@@ -1211,7 +1212,7 @@ lemma inv_locate[simp]: "\<lbrakk>inv_locate_b (as, am) (q, aaa, Bk # xs) ires; 
   apply(rename_tac lm1 n lm2 tn m ml mr rn)
   apply(rule_tac x = "lm1 @ [m]" in exI, rule_tac x = tn in exI, simp split: if_splits)
    apply(case_tac mr, simp_all)
-   apply(cases "length am", simp_all, case_tac tn, simp_all)
+   apply(cases "length am", simp_all)
    apply(case_tac lm2, simp_all add: tape_of_nl_cons split: if_splits)
      apply(cases am, simp_all)
     apply(case_tac n, simp_all)
@@ -1259,6 +1260,7 @@ lemma length_equal: "xs = ys \<Longrightarrow> length xs = length ys"
 lemma inv_locate_a_Bk_via_b[simp]: "\<lbrakk>inv_locate_b (as, am) (q, aaa, Bk # xs) ires; 
                 \<not> (\<exists>n. xs = Bk\<up>n)\<rbrakk> 
        \<Longrightarrow> inv_locate_a (as, am) (Suc q, Bk # aaa, xs) ires"
+  supply [[simproc del: defined_all]]
   apply(simp add: inv_locate_b.simps inv_locate_a.simps)
   apply(rule_tac disjI1)
   apply(simp only: in_middle.simps at_begin_norm.simps)
@@ -2477,6 +2479,7 @@ lemma inv_on_left_moving_Bk_tl[simp]:
 lemma inv_on_left_moving_tl[simp]:
   "\<lbrakk>abc_lm_v am n = 0; inv_locate_b (as, am) (n, aaa, []) ires\<rbrakk>
    \<Longrightarrow> inv_on_left_moving (as, abc_lm_s am n 0) (s, tl aaa, [hd aaa]) ires"
+  supply [[simproc del: defined_all]]
   apply(simp add: inv_on_left_moving.simps)
   apply(simp only: inv_locate_b.simps in_middle.simps) 
   apply(erule_tac exE)+

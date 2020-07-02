@@ -605,6 +605,7 @@ next
    "add_inv n (u, Suc (Suc m) # ns, xs)" and
    "stab_inv f key (u, Suc (Suc m) # ns, xs)"
   thus "stab_inv f key (round index key p q r (u, Suc (Suc m) # ns, xs))"
+  using [[simproc del: defined_all]]
   proof (simp split: prod.split, ((rule_tac allI)+, ((rule_tac impI)+)?)+,
    (erule_tac conjE)+, subst (asm) (2) add_base_zero, simp)
     fix m' r' v ms' ws' xs' k

@@ -1583,6 +1583,7 @@ done
 lemma twiddle_mkIDs_compose:
   "\<lbrakk>(a,b) \<equiv>\<^sub>(mkId b) (ab, bb); (ab,bb) \<equiv>\<^sub>(mkId bb) (aa, ba)\<rbrakk>
   \<Longrightarrow> (a,b) \<equiv>\<^sub>(mkId b) (aa, ba)"
+supply [[simproc del: defined_all]]
 apply (simp add: twiddle_def)
   apply (rule, simp add: twiddleStore_def, clarsimp)
     apply (erule_tac x=x in allE, clarsimp)

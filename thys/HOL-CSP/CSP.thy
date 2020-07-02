@@ -1311,7 +1311,7 @@ next
   then show ?case
     apply(cases t) using EmptyLeftSync apply fastforce
     apply(cases u) apply fastforce
-  proof(simp split:if_splits, goal_cases)
+  using [[simproc del: defined_all]] proof (simp split:if_splits, goal_cases)
     case (1 a list aa lista)
     then show ?case by fastforce
   next
@@ -1591,7 +1591,7 @@ next
   then show ?case
     apply(cases u) using EmptyLeftSync Sync.sym apply fastforce 
     apply(cases t1, cases t2) apply simp apply fastforce 
-  proof(auto, goal_cases)
+  using [[simproc del: defined_all]] proof(auto, goal_cases)
     case (1 list lista)
     with 1(1)[OF 1(7) 1(2)] show ?case by simp
   next

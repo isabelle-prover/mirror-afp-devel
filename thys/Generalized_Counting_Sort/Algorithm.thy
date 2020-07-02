@@ -1722,6 +1722,7 @@ proof (induction ns, simp_all, (rule impI)+, subst (asm) (3) add_base_zero,
     (\<forall>x \<in> set ns. case x of 0 \<Rightarrow> True | Suc 0 \<Rightarrow> True | Suc (Suc m) \<Rightarrow>
       bn_valid m (p - bn_count (n # ns))
         (foldl (+) 0 ns + n - bn_count (n # ns)))"
+  using [[simproc del: defined_all]]
   proof (rule conjI, rule_tac [2] ballI, simp_all split: nat.split, rule_tac [!] allI,
    rule_tac [!] impI)
     fix m
@@ -1839,6 +1840,7 @@ qed
 lemma round_add_inv [rule_format]:
  "index_less index key \<longrightarrow> bn_inv p q t \<longrightarrow> add_inv n t \<longrightarrow>
     add_inv n (round index key p q r t)"
+using [[simproc del: defined_all]]
 proof (induction index key p q r t arbitrary: n rule: round.induct, simp_all
  add: Let_def split: prod.split, (rule allI)+, (rule impI)+, erule conjE,
  (rule_tac [2] allI)+, (rule_tac [2] impI)+, (erule_tac [2] conjE)+,
@@ -1981,6 +1983,7 @@ lemma round_len_less [rule_format]:
       length (fst (snd (round index key p q r t)))) * q =
     (fst t + bn_count (fst (snd t))) * q +
       (foldl (+) 0 (fst (snd t)) - bn_count (fst (snd t))) * p + r"
+using [[simproc del: defined_all]]
 proof (induction index key p q r t rule: round.induct, simp_all add: Let_def
  split: prod.split del: all_simps, ((rule allI)+, (rule impI)+, simp add:
  add_suc)+, subst (asm) (3) add_base_zero, subst add_base_zero, erule conjE)
@@ -2094,6 +2097,7 @@ qed
 lemma round_len_eq [rule_format]:
  "bn_count (fst (snd t)) = foldl (+) 0 (fst (snd t)) \<longrightarrow>
     length (fst (snd (round index key p q r t))) = foldl (+) 0 (fst (snd t))"
+using [[simproc del: defined_all]]
 proof (induction index key p q r t rule: round.induct, simp_all add: Let_def
  split: prod.split del: all_simps, ((rule allI)+, (rule impI)+, simp add:
  add_suc)+, subst (asm) (3) add_base_zero, subst add_base_zero)

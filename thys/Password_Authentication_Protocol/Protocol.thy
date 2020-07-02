@@ -2306,7 +2306,7 @@ lemma pr_ext_agrk_user_2 [rule_format]:
       \<lbrace>pubAK e, Auth_Data x y, pubAK g, Crypt (priSK CA) (Hash (pubAK g))\<rbrace>)
       \<in> set evs \<longrightarrow>
   ExtAgrK (S (User m, n, run)) \<noteq> None"
-proof (erule protocol.induct, simp_all, (rule_tac [!] impI)+, simp_all,
+using [[simproc del: defined_all]] proof (erule protocol.induct, simp_all, (rule_tac [!] impI)+, simp_all,
  (erule conjE)+)
   fix evs S A U n run s a b d e X
   assume "(evs, S, A, U) \<in> protocol"
@@ -3813,6 +3813,7 @@ lemma pr_key_secrecy_aux [rule_format]:
       \<lbrace>pubAK (c * (s + a * b)), Auth_Data g b, pubAK g,
        Crypt (priSK CA) (Hash (pubAK g))\<rbrace>) \<in> set evs \<longrightarrow>
   Key (sesK (c * f)) \<notin> A"
+supply [[simproc del: defined_all]] 
 apply (erule protocol.induct, (rule_tac [!] impI)+, simp_all split: if_split_asm)
        apply (erule_tac [7] disjE)
         apply simp_all
@@ -4704,6 +4705,7 @@ lemma pr_unique_run_4 [rule_format]:
     IntAgrK (S (Card n, n, run)) = Some d \<longrightarrow>
     ExtAgrK (S (Card n, n, run)) = Some e \<longrightarrow>
   n' = n \<and> run' = run"
+using [[simproc del: defined_all]]
 proof (erule protocol.induct, simp_all, (rule_tac [!] impI)+, rule_tac [1-3] impI,
  simp_all, (erule_tac [2-3] conjE)+)
   fix evsR3 S A U n run s' a b c
@@ -4824,6 +4826,7 @@ lemma pr_confirm_parts [rule_format]:
     Says n run 5 X (Card n) (Crypt (sesK K) (Passwd n)) \<in> set evs \<and>
     Says n run 5 (Card n) X (Crypt (sesK K) (Number 0)) \<in> set evs)"
   (is "_ \<Longrightarrow> _ \<longrightarrow> _ \<longrightarrow> ?P K evs")
+using [[simproc del: defined_all]]
 proof (erule protocol.induct, simp, subst parts_simp, simp, blast+,
  simp_all add: parts_simp_insert parts_auth_data parts_crypt parts_mpair,
  rule_tac [3] conjI, (rule_tac [!] impI)+, simp_all, blast+)
@@ -4867,6 +4870,7 @@ lemma pr_unique_run_5 [rule_format]:
     \<lbrace>Key (sesK K), Agent (User m'), Number n', Number run'\<rbrace> \<in> U \<longrightarrow>
     \<lbrace>Key (sesK K), Agent (User m), Number n, Number run\<rbrace> \<in> U \<longrightarrow>
   m = m' \<and> n = n' \<and> run = run'"
+using [[simproc del: defined_all]]
 proof (erule protocol.induct, simp_all, blast, (rule conjI, rule impI)+,
  rule_tac [2] impI, (rule_tac [3] impI)+, rule_tac [4] conjI, (rule_tac [4-5] impI)+,
  simp_all, blast, rule_tac [!] ccontr)
@@ -5013,6 +5017,7 @@ lemma pr_unique_passwd_parts [rule_format]:
     Crypt (sesK K) (Passwd m') \<in> parts (A \<union> spies evs) \<longrightarrow>
     Crypt (sesK K) (Passwd m) \<in> parts (A \<union> spies evs) \<longrightarrow>
   m' = m"
+using [[simproc del: defined_all]]
 proof (erule protocol.induct, simp, subst parts_simp, simp, blast+,
  simp_all add: parts_simp_insert parts_auth_data parts_crypt parts_mpair,
  rule_tac [!] conjI, (rule_tac [!] impI)+, erule_tac [!] conjE, simp_all)

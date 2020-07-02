@@ -187,6 +187,7 @@ subsection "Dijkstra's Algorithm"
 
     (* TODO/FIXME: Should we built in such massaging of the goal into 
         refine_rcg ?*)
+    supply [[simproc del: defined_all]]
     apply (simp_all split: prod.split_asm)
     apply (tactic \<open>
       ALLGOALS ((REPEAT_DETERM o Hypsubst.bound_hyp_subst_tac @{context})

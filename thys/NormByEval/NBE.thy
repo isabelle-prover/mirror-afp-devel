@@ -1993,7 +1993,6 @@ lemma C_redt: "t \<Rightarrow> t' \<Longrightarrow> C_normal t \<Longrightarrow>
 apply(induct arbitrary: ts nm rule:Red_term_hnf_induct)
 apply (simp_all del: map_map)
    apply (metis no_match_R_coincide rev_rev_ident)
-  apply clarsimp
   apply rule
    apply (metis C_normal_ML_inv)
   apply clarify

@@ -38,7 +38,7 @@ nominal_function map_fixed :: "var \<Rightarrow> var list \<Rightarrow> term \<R
   "map_fixed fp l (Unauth t) = (Unauth ((map_fixed fp l t)))" |
   "map_fixed fp l (Hash h) = (Hash h)" |
   "map_fixed fp l (Hashed h t) = (Hashed h ((map_fixed fp l t)))"
-  using [[simproc del: alpha_lst]]
+  using [[simproc del: alpha_lst defined_all]]
   subgoal by (simp add: eqvt_def map_fixed_graph_aux_def)
   subgoal by (erule map_fixed_graph.induct) (auto simp: fresh_star_def fresh_at_base)
                       apply clarify
@@ -148,7 +148,7 @@ nominal_function subst_term :: "term \<Rightarrow> term \<Rightarrow> var \<Righ
   "(Unauth t)[t' / x] = Unauth (t[t' / x])" |
   "(Hash h)[t' / x] = Hash h" |
   "(Hashed h t)[t' / x] = Hashed h (t[t' / x])"
-  using [[simproc del: alpha_lst]]
+  using [[simproc del: alpha_lst defined_all]]
   subgoal by (simp add: eqvt_def subst_term_graph_aux_def)
   subgoal by (erule subst_term_graph.induct) (auto simp: fresh_star_def fresh_at_base)
                       apply clarify
@@ -198,7 +198,7 @@ nominal_function psubst_term :: "term \<Rightarrow> tenv \<Rightarrow> term" whe
   "psubst_term (Unauth t) f = Unauth (psubst_term t f)" |
   "psubst_term (Hash h) f = Hash h" |
   "psubst_term (Hashed h t) f = Hashed h (psubst_term t f)"
-  using [[simproc del: alpha_lst]]
+  using [[simproc del: alpha_lst defined_all]]
   subgoal by (simp add: eqvt_def psubst_term_graph_aux_def)
   subgoal by (erule psubst_term_graph.induct) (auto simp: fresh_star_def fresh_at_base)
   apply clarify
@@ -236,7 +236,7 @@ nominal_function subst_type :: "ty \<Rightarrow> ty \<Rightarrow> tvar \<Rightar
   "atom y \<sharp> (t', x) \<Longrightarrow> subst_type (Mu y t) t' x = Mu y (subst_type t t' x)" |
   "subst_type (Alpha y) t' x = (if y = x then t' else Alpha y)" |
   "subst_type (AuthT t) t' x = AuthT (subst_type t t' x)"
-  using [[simproc del: alpha_lst]]
+  using [[simproc del: alpha_lst defined_all]]
   subgoal by (simp add: eqvt_def subst_type_graph_aux_def)
   subgoal by (erule subst_type_graph.induct) (auto simp: fresh_star_def fresh_at_base)
   apply clarify
@@ -602,7 +602,6 @@ nominal_function shallow :: "term \<Rightarrow> term" ("\<lparr>_\<rparr>") wher
       apply (simp_all add: perm_supp_eq Abs_fresh_iff)
     done
   subgoal
-    apply (erule conjE)
     apply (erule Abs_lst1_fcb2')
        apply (simp_all add: eqvt_at_def)
       apply (simp_all add: perm_supp_eq Abs_fresh_iff)

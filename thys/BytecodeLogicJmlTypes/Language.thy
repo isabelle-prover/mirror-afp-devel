@@ -424,6 +424,7 @@ lemma StepExec_determ_Aux[rule_format]:
        (\<forall> n2 l2 r. (M,l,s,n2,l2,r):Step \<longrightarrow> (n1=n2 \<and> t=r \<and> l1=l2))) \<and>
  (\<forall> n1 l M s h v . n1 \<le> n \<longrightarrow> (M, l, s, n1, h, v) \<in> Exec \<longrightarrow>
       (\<forall> n2 k w . (M,l,s,n2,k,w):Exec \<longrightarrow> (n1=n2 \<and> h=k \<and> v=w)))"
+supply [[simproc del: defined_all]]
 apply (induct n)
 apply clarsimp apply rule apply clarsimp apply (drule no_zero_height_Step_derivs1, simp)
    apply clarsimp apply (drule no_zero_height_Exec_derivs1, simp)

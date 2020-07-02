@@ -783,6 +783,7 @@ by (auto simp add: l2_def l2_init_def l2_inv8_def)
 
 lemma l2_inv8_trans [iff]:
   "{l2_inv8 \<inter> l2_inv1 \<inter> l2_inv3} trans l2 {> l2_inv8}"
+supply [[simproc del: defined_all]] 
 apply (auto simp add: PO_hoare_defs l2_nostep_defs intro!: l2_inv8I)
 apply (auto simp add: l2_defs dy_fake_chan_def)
 apply (auto simp add: partners_def partner_runs_def matching_def dest!: l2_inv3D)
@@ -853,6 +854,7 @@ lemma l2_step3_refines_step3:
   "{R12s \<inter> UNIV \<times> (l2_inv1 \<inter> l2_inv3 \<inter> l2_inv7)} 
       l1_step3 Ra A B K, l2_step3 Ra A B K 
    {>R12s}"
+supply [[simproc del: defined_all]] 
 apply (auto simp add: PO_rhoare_defs R12s_defs l1_step3_def, simp_all add: l2_step3_def)
 apply (auto dest!: l2_inv3D l2_inv7_aux intro:l2_step3_partners)
 apply (auto simp add: can_signal_def)

@@ -213,6 +213,7 @@ lemma FOREACHoci_refine_genR:
   \<rbrakk> \<Longrightarrow> (\<sigma>,\<sigma>')\<in>R'"
   shows "FOREACHoci RR \<Phi> S c f \<sigma>0 \<le> \<Down>R' (FOREACHoci RR' \<Phi>' S' c' f' \<sigma>0')"
   (* TODO: Clean up this mess !!! *)
+  supply [[simproc del: defined_all]]
   unfolding FOREACHoci_def
   apply (refine_rcg WHILEIT_refine_genR[where 
     R'="{((xs,\<sigma>),(xs',\<sigma>')) . 

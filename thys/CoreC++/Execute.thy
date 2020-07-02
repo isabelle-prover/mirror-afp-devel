@@ -96,7 +96,7 @@ proof -
     apply (case_tac ys)
      apply simp
     apply simp
-    apply (erule conjE)
+
     apply (rule map_val.Cons)
     apply simp
     done

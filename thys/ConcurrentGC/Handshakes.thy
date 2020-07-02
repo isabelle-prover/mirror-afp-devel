@@ -574,8 +574,10 @@ done
 lemma (in mut_m) mut_ghost_handshake_phase_idle:
   "\<lbrakk> mut_ghost_handshake_phase s = hp_Idle; handshake_phase_inv s; phase_rel_inv s \<rbrakk>
      \<Longrightarrow> sys_phase s = ph_Idle"
-by (auto dest!: phase_rel_invD handshake_phase_invD
-          simp: phase_rel_def hp_step_rel_def)
+  apply (drule phase_rel_invD)
+  apply (drule handshake_phase_invD)
+  apply (auto simp: phase_rel_def hp_step_rel_def)
+  done
 (*>*)
 (*<*)
 

@@ -89,6 +89,7 @@ lemma "VARS H p q r
   INV {\<exists>ps qs. (list p ps ** list q qs) H \<and> rev ps @ qs = rev Ps @ Qs}
   DO r := p; p := the(H p); H := H(r \<mapsto> q); q := r OD
   {list q (rev Ps @ Qs) H}"
+  supply [[simproc del: defined_all]]
   apply vcg
     apply fastforce
    apply clarsimp

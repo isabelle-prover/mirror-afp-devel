@@ -981,12 +981,10 @@ where "init G [] k = None" |
                                 | Some T \<Rightarrow> Some(T((k, 1) := xs))))" 
 
 
-lemma init1[rule_format] :
-"\<forall>T. init G w k = Some T \<longrightarrow> 
-     init' G w k = T"
-by(induct_tac G w k rule: init.induct, clarsimp+, simp split: list.split_asm, rule ext, clarsimp+,
-   simp split: list.split_asm option.split_asm, rule ext, clarsimp, force)
-
+lemma init1:
+  \<open>init' G w k = T\<close> if \<open>init G w k = Some T\<close> 
+  using that by (induction G w k arbitrary: T rule: init.induct)
+    (simp_all split: list.splits option.splits)
 
 lemma init2 :
 "(init G w k = None) =

@@ -1840,7 +1840,7 @@ function prappend_signed_list :: "'a signed list \<Rightarrow> 'a signed list \<
       | "prappend_signed_list (xs@[x]) (y#ys) = (
           if y = flip_signed x then prappend_signed_list xs ys else xs @ x # y # ys
         )"
-  by (auto, rule two_prod_lists_cases_snoc_Cons)
+  by (auto) (rule two_prod_lists_cases_snoc_Cons)
   termination by (relation "measure (\<lambda>(xs,ys). length xs + length ys)") auto
 
 lemma proper_prappend_signed_list:

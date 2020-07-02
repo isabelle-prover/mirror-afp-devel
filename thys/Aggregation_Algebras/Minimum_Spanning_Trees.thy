@@ -280,7 +280,7 @@ theorem kruskal:
         h := h \<sqinter> -e \<sqinter> -e\<^sup>T
      OD
   [ minimum_spanning_forest f g ]"
-proof vcg_tc_simp
+using [[simproc del: defined_all]] proof vcg_tc_simp
   assume "symmetric g"
   thus "kruskal_invariant bot g g"
     using kruskal_vc_1 kruskal_exists_minimal_spanning kruskal_invariant_def by simp
@@ -889,7 +889,7 @@ theorem prim:
         v := v \<squnion> e\<^sup>T * top
      OD
   [ minimum_spanning_tree t g r ]"
-proof vcg_tc_simp
+using [[simproc del: defined_all]] proof vcg_tc_simp
   assume "prim_precondition g r \<and> (\<exists>w . minimum_spanning_tree w g r)"
   thus "prim_invariant bot r g r"
     using prim_invariant_def prim_vc_1 by simp

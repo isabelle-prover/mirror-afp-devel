@@ -343,7 +343,8 @@ begin
       next
         case Log thus ?case by (cases rs\<^sub>1) (auto intro: iptables_goto_bigstep.intros simp add: log empty)
       next
-        case Nomatch thus ?case by (cases rs\<^sub>1) (auto intro: iptables_goto_bigstep.intros simp add: not_no_matching_Goto_singleton_cases)
+        case Nomatch thus ?case by (cases rs\<^sub>1)
+          (auto intro: iptables_goto_bigstep.intros simp add: not_no_matching_Goto_singleton_cases, meson nomatch not_no_matching_Goto_singleton_cases skip)
       next
         case Decision thus ?case by (auto intro: iptables_goto_bigstep.intros)
       next

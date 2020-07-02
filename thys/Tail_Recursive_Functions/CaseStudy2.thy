@@ -420,14 +420,19 @@ fun t_ins_form :: "'a t_type \<Rightarrow> bool" where
 lemma t_ins_intro_1:
  "\<lbrakk>t_ins_inv x xt X; t_ins_form X\<rbrakk> \<Longrightarrow>
   t_sorted xt \<longrightarrow> t_sorted (t_ins_out X)"
-proof (rule t_ins_form.cases [of X], simp_all add: t_ins_out_def)
-qed (erule conjE, drule_tac x = "Suc 0" in bspec, simp_all)
+  apply (rule t_ins_form.cases [of X])
+  apply (auto simp add: t_ins_out_def)
+  apply force
+  done
 
 lemma t_ins_intro_2:
  "\<lbrakk>t_ins_inv x xt X; t_ins_form X\<rbrakk> \<Longrightarrow>
   t_count y (t_ins_out X) = (if y = x then Suc else id) (t_count y xt)"
-proof (rule t_ins_form.cases [of X], simp_all add: t_ins_out_def t_count_def)
-qed (erule conjE, drule_tac x = "Suc 0" in bspec, simp_all)
+  apply (rule t_ins_form.cases [of X])
+  apply (auto simp add: t_ins_out_def t_count_def)
+   apply force
+  apply force
+  done
 
 text \<open>
 \null
@@ -480,7 +485,7 @@ subsection "Step 9"
 lemma t_ins_invariance:
   assumes XY: "Y \<in> t_ins_set X" and X: "t_ins_inv x xt X"
   shows "t_ins_inv x xt Y"
-using XY
+using XY [[simproc del: defined_all]]
 proof (rule t_ins_set.induct, simp_all split del: if_split)
   show "t_ins_inv x xt X" using X .
 next

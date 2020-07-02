@@ -127,7 +127,7 @@ text_raw\<open>\label{thy:ex:idioms}\<close>
       the additional problem that frame-inference guesses
       a wrong instantiation, and is not able to infer the frame.
       So we have to pre-instantiate the rule, as done below.\<close>
-    apply (rule_tac s1=pp in ent_frame_fwd[OF lseg_append])
+    apply (rule_tac s1=a in ent_frame_fwd[OF lseg_append])
     apply frame_inference \<comment> \<open>Now frame-inference is able to infer the frame\<close>
 
     txt \<open>Now we are left with a trivial entailment, modulo commutativity of

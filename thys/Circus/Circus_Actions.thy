@@ -357,6 +357,7 @@ lemma CSP1_Sup: "A \<noteq> {} \<Longrightarrow> (\<Squnion> relation_of ` A) is
 done
 
 lemma CSP2_Sup: "A \<noteq> {} \<Longrightarrow> (\<Squnion> relation_of ` A) is CSP2 healthy"
+  supply [[simproc del: defined_all]]
   apply (simp add: design_defs csp_defs fun_eq_iff)
   apply (rule allI)+
   apply (rule)

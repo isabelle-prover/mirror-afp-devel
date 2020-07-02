@@ -980,19 +980,19 @@ lemma transfer_arrive':
               by simp
         next
           assume "H = {}"
-             and "s = s'"
+             and "s' = s"
              and "K = {ii}"
-          from \<open>s = s'\<close> \<open>netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))\<close>
+          from \<open>s' = s\<close> \<open>netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))\<close>
                         \<open>netgmap sr ns = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>, \<zeta>)\<close>
                         \<open>ns = NodeS ii s R\<close> and \<open>ns' = NodeS ii s' R\<close>
             have "\<sigma>' ii = \<sigma> ii" by simp (metis option.sel)
           hence "((\<sigma>, NodeS ii (snd (sr s)) R), {}\<not>{ii}:arrive(m), (\<sigma>', NodeS ii (snd (sr s)) R))
                                                                       \<in> onode_sos (trans (onp ii))"
             by (rule onode_arrive)
-          with \<open>H={}\<close> \<open>K={ii}\<close> and \<open>s = s'\<close>
-            show "((\<sigma>, NodeS ii (snd (sr s)) R), H\<not>K:arrive(m), (\<sigma>', NodeS ii (snd (sr s')) R))
-                                                                      \<in> onode_sos (trans (onp ii))"
-              by simp
+          with \<open>H={}\<close> \<open>K={ii}\<close> and \<open>s' = s\<close>
+          show "((\<sigma>, NodeS ii (snd (sr s)) R), H\<not>K:arrive(m), (\<sigma>', NodeS ii (snd (sr s')) R))
+                                                                     \<in> onode_sos (trans (onp ii))"
+            by simp
         qed
       with \<open>ns = NodeS ii s R\<close> \<open>ns' = NodeS ii s' R\<close>
         show "((\<sigma>, snd (netgmap sr ns)), H\<not>K:arrive(m), (\<sigma>', snd (netgmap sr ns')))
@@ -1191,14 +1191,14 @@ lemma transfer_cast:
                                                                       \<in> onode_sos (trans (onp ii))"
         proof (rule node_castTE)
           assume "(s, broadcast m, s') \<in> trans (np ii)"
-             and "R = mR"
+             and "mR = R"
           from \<open>\<sigma> ii = fst (sr s)\<close> \<open>\<sigma>' ii = fst (sr s')\<close> and this(1)
             have "((\<sigma>, snd (sr s)), broadcast m, (\<sigma>', snd (sr s'))) \<in> trans (onp ii)"
               by (rule trans)
           hence "((\<sigma>, NodeS ii (snd (sr s)) R), R:*cast(m), (\<sigma>', NodeS ii (snd (sr s')) R))
                                                                       \<in> onode_sos (trans (onp ii))"
             by (rule onode_bcast)
-          with \<open>R=mR\<close> show "((\<sigma>, NodeS ii (snd (sr s)) R), mR:*cast(m), (\<sigma>', NodeS ii (snd (sr s')) R))
+          with \<open>mR = R\<close> show "((\<sigma>, NodeS ii (snd (sr s)) R), mR:*cast(m), (\<sigma>', NodeS ii (snd (sr s')) R))
                                                                       \<in> onode_sos (trans (onp ii))"
               by simp
         next

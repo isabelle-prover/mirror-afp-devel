@@ -2442,6 +2442,7 @@ next
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f12: "distinct (vertices f12)" apply (rule_tac split_face_distinct1) by auto
   from x vors show "x \<in> ?lhs"
+    supply [[simproc del: defined_all]]
     apply (simp add: dist_f12 is_nextElem_def is_sublist_def) apply (simp add: split_face_def)
     apply (case_tac "c = ram2 \<and> d = last vs") apply simp
     apply (rule disjCI) apply simp
@@ -2522,6 +2523,7 @@ next
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f12: "distinct (vertices f12)" apply (rule_tac split_face_distinct1) by auto
   from x vors show "x \<in> ?lhs"
+    supply [[simproc del: defined_all]]
     apply (simp add: dist_f12 is_nextElem_def is_sublist_def) apply (simp add: split_face_def)
     apply (case_tac "c = ram2 \<and> d = ram1") apply simp
     apply (rule disjCI) apply simp
@@ -2726,6 +2728,7 @@ next
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f21: "distinct (vertices f21)" apply (rule_tac split_face_distinct2) by auto
   from x vors show "x \<in> ?lhs"
+    supply [[simproc del: defined_all]]
     apply (simp add: dist_f21 is_nextElem_def is_sublist_def) apply (simp add: split_face_def)
     apply (case_tac "c = ram2 \<and> d = hd (between (vertices f) ram2 ram1)") apply simp apply (rule disjI1)
      apply (intro exI) apply (subgoal_tac "ram2 # between (vertices f) ram2 ram1 @ ram1 # vs =
@@ -2814,6 +2817,7 @@ next
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f21: "distinct (vertices f21)" apply (rule_tac split_face_distinct2) by auto
   from x vors show "x \<in> ?lhs"
+    supply [[simproc del: defined_all]]
     apply (simp add: dist_f21 is_nextElem_def is_sublist_def) apply (simp add: split_face_def)
     apply (case_tac "c = ram2 \<and> d = hd (between (vertices f) ram2 ram1)") apply simp apply (rule disjI1)
     apply (intro exI) apply (subgoal_tac "ram2 # between (vertices f) ram2 ram1 @ [ram1] =
@@ -2881,6 +2885,7 @@ next
   with c_def  have [simp]: "x = (c,d)" by simp
   from vors have dist_f21: "distinct (vertices f21)" apply (rule_tac split_face_distinct2) by auto
   from x vors show "x \<in> ?lhs"
+    supply [[simproc del: defined_all]]
     apply (simp add: dist_f21 is_nextElem_def is_sublist_def) apply (simp add: split_face_def)
     apply (case_tac "c = ram2 \<and> d = ram1") apply simp apply (rule disjI1) apply force
     apply (case_tac "c = ram1 \<and> d = hd vs") apply (rule disjI1)
@@ -3048,7 +3053,9 @@ proof (intro equalityI subsetI)
   from vors have dist_f: "distinct (vertices f)" by (simp add: pre_split_face_def)
   from vors have dist_vs2: "distinct (ram2 # vs2 @ [ram1])" apply (simp only:)
     apply (rule between_distinct_r12) apply (rule dist_f) apply (rule not_sym) by (simp add: pre_split_face_def)
-  from x vors show "x \<in> ?lhs" apply (simp add: dist_f)
+  from x vors show "x \<in> ?lhs"
+    supply [[simproc del: defined_all]]
+    apply (simp add: dist_f)
     apply (subgoal_tac "ram1 \<in> set (vertices f)") apply (simp add: verticesFrom_is_nextElem verticesFrom_ram1)
     apply (simp add: is_nextElem_def)
     apply (case_tac "c = last (between (vertices f) ram2 ram1) \<and> d = ram1") apply simp apply simp apply (rule disjI1)
@@ -3118,7 +3125,9 @@ proof (intro equalityI subsetI)
   from vors have dist_f: "distinct (vertices f)" by (simp add: pre_split_face_def)
   from vors have dist_vs1: "distinct (ram1 # vs1 @ [ram2])" apply (simp only:)
     apply (rule between_distinct_r12) apply (rule dist_f) by (simp add: pre_split_face_def)
-  from x vors show "x \<in> ?lhs" apply (simp add: dist_f)
+  from x vors show "x \<in> ?lhs"
+    supply [[simproc del: defined_all]]
+    apply (simp add: dist_f)
     apply (subgoal_tac "ram1 \<in> \<V> f") apply (simp add: verticesFrom_is_nextElem verticesFrom_ram1)
     apply (simp add: is_nextElem_def)
     apply (case_tac "c = ram2 \<and> d = ram1") apply simp apply simp apply (rule disjI1)
@@ -3193,7 +3202,9 @@ next
     apply (rule between_distinct_r12) apply (rule dist_f) by (simp add: pre_split_face_def)
   from vors have dist_vs2: "distinct (ram2 # vs2 @ [ram1])" apply (simp only:)
     apply (rule between_distinct_r12) apply (rule dist_f) apply (rule not_sym) by (simp add: pre_split_face_def)
-  from x vors show "x \<in> ?lhs" apply (simp add: dist_f)
+  from x vors show "x \<in> ?lhs" 
+    supply [[simproc del: defined_all]]
+    apply (simp add: dist_f)
     apply (subgoal_tac "ram1 \<in> \<V> f") apply (simp add: verticesFrom_is_nextElem verticesFrom_ram1)
     apply (simp add: is_nextElem_def)
     apply (case_tac "c = last (between (vertices f) ram2 ram1) \<and> d = ram1") apply simp apply simp apply (rule disjI1)

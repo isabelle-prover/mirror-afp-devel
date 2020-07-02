@@ -251,6 +251,10 @@ proof -
   moreover have "v2\<in>nodes G2"
     by (metis (full_types) \<open>valid_graph G2\<close> assms(4) assms(6) valid_graph.is_path_memb
         valid_unMultigraph.is_trail_intro valid_unMultigraph.is_Eulerian_trail_def)
+  moreover have \<open>ba \<in> nodes G1\<close> if \<open>(aa, ab, ba) \<in> edges G1\<close>
+    for aa ab ba
+    using that
+    by (meson \<open>valid_graph G1\<close> valid_graph.E_validD(2)) 
   ultimately have "valid_unMultigraph \<lparr>nodes=nodes G1 \<union> nodes G2, edges=edges G1 \<union> edges G2 \<union>
                    {(v1',w,v2),(v2,w,v1')}\<rparr>"
     using
@@ -261,15 +265,7 @@ proof -
       valid_graph.E_validD[OF \<open>valid_graph G1\<close>]
       valid_graph.E_validD[OF \<open>valid_graph G2\<close>]
       \<open>nodes G1 \<inter> nodes G2 = {}\<close>
-    proof (unfold_locales,auto)
-      fix aa ab ba
-      assume  "(aa, ab, ba) \<in> edges G1"
-      thus "ba \<in> nodes G1" by (metis \<open>\<And>v' v e. (v, e, v') \<in> edges G1 \<Longrightarrow> v' \<in> nodes G1\<close>)
-    next
-      fix aa ab ba
-      assume "ba \<notin> nodes G2"  "(aa, ab, ba) \<in> edges G2"
-      thus "ba \<in> nodes G1" by (metis \<open>valid_graph G2\<close> valid_graph.E_validD(2))
-    qed
+    by unfold_locales auto
   hence valid: "valid_unMultigraph G" using G by auto
   hence valid':"valid_graph G" using valid_unMultigraph_def by auto
   moreover have "valid_unMultigraph.is_trail G v1 (ps1@((v1',w,v2)#ps2)) v2'"

@@ -438,7 +438,7 @@ lemma implSecure_synth_analz:
   "H \<subseteq> payload \<union> asym.valid \<union> range LtK \<union> Tags \<Longrightarrow>
    asym.implSecure A B M \<in> synth (analz H) \<Longrightarrow>
    asym.implSecure A B M \<in> H \<or> (M \<in> synth (analz H) \<and> (A, B) \<in> broken H)"
-proof (erule synth.cases, simp_all)
+using [[simproc del: defined_all]] proof (erule synth.cases, simp_all)
   fix X
   assume H:"H \<subseteq> payload \<union> asym.valid \<union> range LtK \<union> Tags"
   assume H':"Sign (Aenc \<langle>SecureTag, Agent A, M\<rangle> (pubK B)) (priK A) = X"

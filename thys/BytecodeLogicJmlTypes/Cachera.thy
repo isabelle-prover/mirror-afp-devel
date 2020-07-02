@@ -650,6 +650,7 @@ lemma Call_SoundAux[rule_format]:
           derivAssum G C m l1 (Cachera k) \<longrightarrow> 
           deriv G C m l (Cachera (n+k)))"
 (*<*)
+supply [[simproc del: defined_all]]
 apply (induct args)
 apply clarsimp
   apply (erule compilePrim.cases) apply (simp,simp,simp, simp, simp, clarsimp)  
@@ -1031,6 +1032,7 @@ lemma TP_epxr_Sound[rule_format]:
     MST\<down>(C,m) = Some (T,MI,Anno) \<longrightarrow>
     Segment C m l l1 code1 \<longrightarrow> deriv G C m l (Cachera n))"
 (*<*)
+supply [[simproc del: defined_all]]
 apply (erule TP_expr.induct)
 (*SUB*)
 apply clarsimp

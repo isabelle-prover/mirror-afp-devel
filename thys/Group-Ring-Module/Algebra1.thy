@@ -1225,43 +1225,11 @@ done
 
 lemma Nset_img0:"\<lbrakk>f \<in> {j. j \<le> Suc n} \<rightarrow> B; (f (Suc n)) \<in> f ` {j. j \<le> n}\<rbrakk> \<Longrightarrow>
                    f ` {j. j \<le> Suc n} = f ` {j. j \<le> n}"
-apply (rule equalityI)
- apply (rule subsetI)
- apply (simp add:image_def)
- apply (erule exE, erule conjE)
- apply (erule exE, simp, erule conjE)
- apply (case_tac "xb = Suc n", simp, blast)
- apply (frule_tac m = xb and n = "Suc n" in noteq_le_less, assumption,
-         thin_tac "xb \<le> Suc n",
-         frule_tac x = xb and n = "Suc n" in less_le_diff,
-         thin_tac "xb < Suc n", simp, blast)
- apply (rule subsetI, simp add:image_def, (erule exE)+, (erule conjE)+)
- apply (simp,
-        frule_tac x = xb and y = n and z = "Suc n" in le_less_trans,
-        simp,
-        frule_tac x = xb and y = "Suc n" in less_imp_le,
-         blast)
-done
+  by (auto simp add: le_Suc_eq)
 
 lemma Nset_img:"f \<in> {j. j \<le> Suc n} \<rightarrow> B \<Longrightarrow>
          insert (f (Suc n)) (f ` {j. j \<le> n}) = f ` {j. j \<le> Suc n}"
-apply (rule equalityI)
- apply (rule subsetI)
- apply (simp add:image_def,
-        erule disjE, blast,
-        erule exE, erule conjE,
-        frule_tac x = xa and y = n and z = "Suc n" in le_less_trans,
-        simp+,
-        frule_tac x = xa and y = "Suc n" in less_imp_le, blast)
- apply (rule subsetI,
-        simp add:image_def,
-        erule exE, simp, erule conjE,
-        case_tac "xa = Suc n", simp)
- apply (frule_tac m = xa and n = "Suc n" in noteq_le_less, assumption,
-        frule_tac x = xa and n = "Suc n" in less_le_diff,
-        thin_tac "xa \<le> Suc n", thin_tac "xa < Suc n", simp)
- apply blast
-done
+  by (auto elim: le_SucE)
 
 primrec nasc_seq :: "[nat set, nat, nat] \<Rightarrow> nat"
 where
@@ -4177,22 +4145,10 @@ apply (simp add:image_Nset_Suc)
 apply (cut_tac image_Nsetn_card_pos[of f n], simp)
 done
 
-lemma slide_surj:"i < (j::nat) \<Longrightarrow> 
-                    surj_to (slide i) {l. l \<le> (j - i)} (nset i j)"
-proof -
- assume p1:"i < j"
- from p1 show ?thesis
-  apply (simp add:surj_to_def image_def)
-  apply (rule equalityI,
-         rule subsetI, simp, erule exE, simp add:slide_def nset_def,
-         frule less_imp_le [of i j], erule conjE,
-         thin_tac "i < j", frule add_le_mono [of _ "j - i" "i" "i"],
-         simp+, rule subsetI, simp)
- apply (simp add:nset_def slide_def, erule conjE, 
-        frule_tac m = x and n = j and l = i in diff_le_mono,
-        subgoal_tac "x = i + (x - i)", blast, simp)
- done
-qed
+lemma slide_surj:
+  \<open>surj_to (slide i) {l. l \<le> (j - i)} (nset i j)\<close> if \<open>i < j\<close> for i j :: nat
+  using that  
+  by (auto simp add: surj_to_def image_def slide_def nset_def) presburger
 
 lemma slide_inj:"i < j \<Longrightarrow> inj_on (slide i) {k. k \<le> (j - i)}"
 apply (simp add:inj_on_def, (rule allI)+)

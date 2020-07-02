@@ -166,7 +166,6 @@ apply(fastforce simp add: residual.inject name_fresh_abs alpha' fresh_left calc_
 apply(fastforce simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction)
 apply(fastforce simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction)
 apply(auto simp add: residual.inject name_fresh_abs alpha' fresh_left calc_atm dest: freshOutputAction)
-apply force
 done
 
 lemma freshTauTransition:

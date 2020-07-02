@@ -162,11 +162,11 @@ next
   thus ?case
   proof(clarsimp)
     fix T'
-    assume wte: "P,E,hp s \<turnstile> e : T'" "is_type P T"
+    assume wte: "P,E,hp s \<turnstile> e : T'" "is_type P C"
     from wte and hconf and IH and \<open>P,hp s \<turnstile> t \<surd>t\<close> have "\<exists>U. P,E,hp s' \<turnstile> e' : U \<and> P \<turnstile> U \<le> T'" by simp
     then obtain U where wtee: "P,E,hp s' \<turnstile> e' : U" and UsTT: "P \<turnstile> U \<le> T'" by blast
-    from wtee \<open>is_type P T\<close> have "P,E,hp s' \<turnstile> Cast T e' : T" by(rule WTrtCast)
-    thus "\<exists>T'. P,E,hp s' \<turnstile> Cast T e' : T' \<and> P \<turnstile> T' \<le> T" by blast
+    from wtee \<open>is_type P C\<close> have "P,E,hp s' \<turnstile> Cast C e' : C" by(rule WTrtCast)
+    thus "\<exists>T'. P,E,hp s' \<turnstile> Cast C e' : T' \<and> P \<turnstile> T' \<le> C" by blast
   qed
 next
   case RedCast thus ?case

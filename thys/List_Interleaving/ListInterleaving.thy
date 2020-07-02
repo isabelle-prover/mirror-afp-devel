@@ -850,6 +850,7 @@ by (subst Interleaves_swap, simp add: Interleaves_all_nil)
 lemma Interleaves_suffix_one_aux:
   assumes A: "P x []"
   shows "\<not> xs @ [x] \<cong> {[], zs, P}"
+using [[simproc del: defined_all]]
 proof (induction xs arbitrary: zs, simp_all, rule_tac [!] notI)
   fix zs
   assume "[x] \<cong> {[], zs, P}"
@@ -870,6 +871,7 @@ lemma Interleaves_suffix_one_fst_2 [rule_format]:
   assumes A: "P x []"
   shows "xs @ [x] \<cong> {ys @ [x], zs, P} \<longrightarrow> xs \<cong> {ys, zs, \<lambda>w ws. P w (ws @ [x])}"
     (is "_ \<longrightarrow> _ \<cong> {_, _, ?P'}")
+using [[simproc del: defined_all]]
 proof (induction xs arbitrary: ys zs, rule_tac [!] impI, simp_all)
   fix ys zs
   assume "[x] \<cong> {ys @ [x], zs, P}"
@@ -928,6 +930,7 @@ lemma Interleaves_suffix_fst_1 [rule_format]:
   assumes A: "\<forall>n < length ws. P (ws ! n) (drop (Suc n) ws)"
   shows "xs \<cong> {ys, zs, \<lambda>v vs. P v (vs @ ws)} \<longrightarrow> xs @ ws \<cong> {ys @ ws, zs, P}"
     (is "_ \<cong> {_, _, ?P'} \<longrightarrow> _")
+using [[simproc del: defined_all]]
 proof (induction xs arbitrary: ys zs, rule_tac [!] impI, simp_all)
   fix ys zs
   assume "[] \<cong> {ys, zs, ?P'}"
@@ -1062,6 +1065,7 @@ lemma Interleaves_suffix_fst_2 [rule_format]:
   assumes A: "\<forall>n < length ws. P (ws ! n) (drop (Suc n) ws)"
   shows "xs @ ws \<cong> {ys @ ws, zs, P} \<longrightarrow> xs \<cong> {ys, zs, \<lambda>v vs. P v (vs @ ws)}"
     (is "_ \<longrightarrow> _ \<cong> {_, _, ?P'}")
+using [[simproc del: defined_all]]
 proof (induction xs arbitrary: ys zs, rule_tac [!] impI, simp_all)
   fix ys zs
   assume "ws \<cong> {ys @ ws, zs, P}"

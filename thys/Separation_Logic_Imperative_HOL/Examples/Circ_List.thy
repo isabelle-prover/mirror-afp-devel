@@ -126,7 +126,7 @@ lemma cs_append_rule:
 
   apply (sep_auto simp: cs_append.simps)
   apply (rule ent_frame_fwd)
-  apply (rule_tac s=pp in lseg_append) (* frame_inference does no backtracking
+  apply (rule_tac s=a in lseg_append) (* frame_inference does no backtracking
     on instantiating schematics, hence we have to give it some help here. *)
   apply frame_inference
   apply (sep_auto)
@@ -169,7 +169,7 @@ lemma cs_pop_rule:
   (* Some unfortunate quantifier fiddling :( *)
   apply (rule_tac x=aa in exI)
   apply (rule_tac x=list in exI)
-  apply (rule_tac x=pp in exI)
+  apply (rule_tac x=a in exI)
   apply clarsimp
   apply (rule exI)
   apply sep_auto
@@ -205,7 +205,7 @@ lemma cs_rotate_rule:
 
   apply (sep_auto simp: cs_rotate.simps)
   apply (rule ent_frame_fwd)
-  apply (rule_tac s="pp" in lseg_append)
+  apply (rule_tac s="a" in lseg_append)
   apply frame_inference
   apply sep_auto
   done

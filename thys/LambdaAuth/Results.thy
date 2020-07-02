@@ -66,8 +66,10 @@ next
     obtain z :: var where "atom z \<sharp> (x, e, y, e')"
       by (metis obtain_fresh)
     with AppRec(1-4) AppRec(5)[simplified] s_AppRec(1,3) show ?thesis
-      by (auto simp: fresh_Pair AppRec(5)
-          intro: box_equals[OF _ subst_term_perm[symmetric, of z] subst_term_perm[symmetric, of z]])
+      apply (auto simp: fresh_Pair AppRec(1))
+      apply (rule box_equals[OF _ subst_term_perm[symmetric, of z] subst_term_perm[symmetric, of z]])
+      using AppRec(1) apply auto
+      done
   qed (auto dest: value_no_step)
 next
   case (s_Let1 x e\<^sub>1 e\<^sub>1' e\<^sub>2)

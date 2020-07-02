@@ -998,7 +998,7 @@ lemma (in loc2) model':
   notes [simp] = FEval_subst
   notes [simp del] = is_axiom.simps
   shows "infinite (deriv s) ==> init s ==> \<forall>A. size A = h --> (\<forall>m n. contains f n (m,A) --> ~ (FEval mo ntou A))"
-
+  supply [[simproc del: defined_all]]
   apply(rule_tac nat_less_induct) apply(rule, rule) apply(case_tac A) 
        apply(rule,rule,rule) apply(simp add: mo Let_def) apply(simp add: model_def Let_def del: map_map) apply(simp only: f[symmetric]) apply(force)
 

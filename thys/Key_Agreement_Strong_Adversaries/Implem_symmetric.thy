@@ -535,7 +535,7 @@ lemma implAuth_synth_analz:
   "H \<subseteq> payload \<union> sym.valid \<union> range LtK \<union> Tags \<Longrightarrow>
    sym.implAuth A B M \<in> synth (analz H) \<Longrightarrow>
    sym.implAuth A B M \<in> H \<or> (M \<in> synth (analz H) \<and> (A, B) \<in> broken H)"
-proof (erule synth.cases, simp_all)
+using [[simproc del: defined_all]] proof (erule synth.cases, simp_all)
   fix X
   assume H:  "H \<subseteq> payload \<union> sym.valid \<union> range LtK \<union> Tags"
   assume H':"\<langle>M, hmac \<langle>AuthTag, M\<rangle> (shrK A B)\<rangle> = X" " X \<in> analz H"

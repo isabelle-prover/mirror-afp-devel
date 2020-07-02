@@ -50,7 +50,7 @@ next
   from \<open>P,E,H \<turnstile> Cast T (Val v) : T'\<close> show ?case
   proof(rule WTrt_elim_cases)
     fix T''
-    assume wt: "P,E,H \<turnstile> Val v : T''" "T = T'"
+    assume wt: "P,E,H \<turnstile> Val v : T''" "T' = T"
     thus ?thesis
       by(cases "P \<turnstile> T'' \<le> T")(fastforce intro: red_reds.RedCast red_reds.RedCastFail)+
   qed

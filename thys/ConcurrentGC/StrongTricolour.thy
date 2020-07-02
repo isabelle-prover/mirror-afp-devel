@@ -1481,6 +1481,7 @@ lemma (in sys) marked_deletions_dequeue_ref[simp]:
   "\<lbrakk> sys_mem_write_buffers (mutator m') s = mw_Mutate r f opt_r' # ws; mut_m.marked_deletions m s; mut_m.marked_insertions m' s \<rbrakk>
      \<Longrightarrow> mut_m.marked_deletions m (s(sys := s sys\<lparr>heap := (sys_heap s)(r := Option.map_option (\<lambda>obj. obj\<lparr>obj_fields := (obj_fields obj)(f := opt_r')\<rparr>) (sys_heap s r)),
                                                  mem_write_buffers := (mem_write_buffers (s sys))((mutator m') := ws)\<rparr>))"
+supply [[simproc del: defined_all]]
 apply (clarsimp simp: mut_m.marked_deletions_def)
 apply (cases "m = m'")
  apply clarsimp
@@ -2711,6 +2712,7 @@ lemma (in sys) strong_tricolour_inv[intro]:
   "\<lbrace> LSTP (fM_rel_inv \<^bold>\<and> handshake_phase_inv \<^bold>\<and> mutators_phase_inv \<^bold>\<and> strong_tricolour_inv \<^bold>\<and> sys_phase_inv \<^bold>\<and> tso_writes_inv \<^bold>\<and> valid_W_inv) \<rbrace>
      sys
    \<lbrace> LSTP strong_tricolour_inv \<rbrace>"
+supply [[simproc del: defined_all]]
 apply (vcg_jackhammer simp: strong_tricolour_inv_def p_not_sys)
 apply (clarsimp simp: do_write_action_def fM_rel_inv_def
                split: mem_write_action.splits)

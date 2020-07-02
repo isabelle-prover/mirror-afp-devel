@@ -1887,6 +1887,7 @@ done
 
 lemma (in Module) exist_extension_mhom:"\<lbrakk>R module N; free_generator R M H; 
       f \<in> H \<rightarrow> carrier N\<rbrakk> \<Longrightarrow> \<exists>g\<in>mHom R M N. \<forall>x\<in>H. g x = f x"
+supply [[simproc del: defined_all]]
 apply (frule Order_od_fm_fun[of N H f], assumption+) 
 apply (frule_tac  N = N and H = H and f = f in od_fm_fun_inductive, 
              assumption+)

@@ -189,8 +189,6 @@ begin
              apply auto 
     subgoal   
       by (metis append_self_conv in_set_conv_decomp set_quicksort_by_rel subset_iff)  
-    subgoal  
-      by blast  
     done
 
 

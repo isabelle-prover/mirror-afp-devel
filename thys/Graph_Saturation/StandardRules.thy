@@ -587,11 +587,12 @@ lemma standard_rules_edges:
          (l = S_Idt \<Longrightarrow> thesis) \<Longrightarrow>
          (l \<in> S_Const ` C \<Longrightarrow> thesis) \<Longrightarrow>
          (l \<in> L \<Longrightarrow> thesis) \<Longrightarrow> thesis"
-  using assms
-  by (auto simp:Let_def standard_rules_def constant_rules_def identity_rules_def
+  using assms [[simproc del: defined_all]]
+  by (auto simp: Let_def standard_rules_def constant_rules_def identity_rules_def
    const_exists_def const_exists_rev_def const_prop_def const_disj_def
    reflexivity_rule_def transitive_rule_def symmetry_rule_def congruence_rule_def
    top_rule_def nonempty_rule_def)
+
 
 text \<open>Lemma 8.
 

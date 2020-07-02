@@ -787,6 +787,7 @@ next
    "add_inv n (u, Suc (Suc m) # ns, xs)" and
    "sort_inv key (u, Suc (Suc m) # ns, xs)"
   with C show "sort_inv key (round index key p q r (u, Suc (Suc m) # ns, xs))"
+  using [[simproc del: defined_all]]
   proof (simp split: prod.split, ((rule_tac allI)+, (rule_tac impI)+)+,
    rule_tac ballI, simp, (erule_tac conjE)+, subst (asm) (2) add_base_zero, simp)
     fix m' r' v ms' ws' u' ns' xs' i j k

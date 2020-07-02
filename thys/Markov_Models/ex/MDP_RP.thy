@@ -386,8 +386,8 @@ lemma en_mono: "\<phi> \<le> \<psi> \<Longrightarrow> en \<phi> \<subseteq> en \
   unfolding en_def
   apply transfer
   apply (auto simp: fun_ord_def split: option.splits)
-  subgoal for \<phi> \<psi> a b x y
-    by (auto elim!: allE[of _ x] simp: ord_option.simps intro!: exI[of _ b] exI[of _ x])
+  apply (auto simp add: ord_option.simps subset_iff)
+  apply force
   done
 
 lemma en_states: "(s, t) \<in> en M \<Longrightarrow> s \<in> states M"

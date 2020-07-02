@@ -212,7 +212,6 @@ begin
       split: option.splits if_split_asm
       intro!: ext[where 'a='a and 'b="'b list option"])
 
-    apply fastforce+
     done
 
   definition "s_init_foreach U0 \<equiv> do {

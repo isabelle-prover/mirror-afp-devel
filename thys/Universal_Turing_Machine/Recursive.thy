@@ -2297,7 +2297,7 @@ lemma abc_list_crsp_steps:
                                           abc_list_crsp lm' lma"
 proof(induct stp arbitrary: a lm')
   case (Suc stp)
-  then show ?case apply(cases "abc_steps_l (0, lm @ 0\<up>m) aprog stp", simp add: abc_step_red)
+  then show ?case using [[simproc del: defined_all]] apply(cases "abc_steps_l (0, lm @ 0\<up>m) aprog stp", simp add: abc_step_red)
   proof -
     fix stp a lm' aa b
     assume ind:

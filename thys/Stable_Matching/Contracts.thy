@@ -798,9 +798,11 @@ function CX4h :: "H1 \<Rightarrow> X4 cfun" where
 | "CX4h _ {Xd1', Xd2, Xd2'} = {}"
 | "CX4h _ {Xd1, Xd1', Xd2, Xd2'} = {}"
 | "CX4h _ {} = {}"
-apply %invisible (case_tac x)
-apply (cut_tac X=b in X4_pow)
-apply auto
+                      apply %invisible (case_tac x)
+                      apply (cut_tac X=b in X4_pow)
+                      apply simp
+                      apply force
+                      apply auto
 done
 (*<*)
 

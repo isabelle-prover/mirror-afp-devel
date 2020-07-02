@@ -1626,9 +1626,7 @@ lemma wcode_on_checking_2_via_left[simp]: "wcode_on_left_moving_2 ires rs (b, Oc
 lemma wcode_backto_standard_pos_2_empty_via_right[simp]:
   "wcode_goon_right_moving_2 ires rs (b, []) \<Longrightarrow>
               wcode_backto_standard_pos_2 ires rs (b, [Oc])"
-  apply(simp only: wcode_fourtimes_invs)
-  apply(erule_tac exE)+
-  by(rule_tac disjI1,auto)
+  by (auto simp add: wcode_fourtimes_invs) force
 
 lemma wcode_goon_checking_cases[simp]: "wcode_goon_checking ires rs (b, Oc # list) \<Longrightarrow>
   (b = [] \<longrightarrow> wcode_right_move ires rs ([Oc], list)) \<and>

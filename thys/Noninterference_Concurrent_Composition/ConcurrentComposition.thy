@@ -2450,7 +2450,7 @@ qed
 
 lemma con_comp_consistent_maps:
  "consistent_maps D E p q \<Longrightarrow> con_comp_map D E p q = con_comp_map E D q p"
-proof (simp add: consistent_maps_def, rule ext)
+using [[simproc del: defined_all]] proof (simp add: consistent_maps_def, rule ext)
   fix x
   assume A: "\<forall>x \<in> range p \<inter> range q. D (inv p x) = E (inv q x)"
   show "con_comp_map D E p q x = con_comp_map E D q p x"

@@ -681,6 +681,7 @@ lemma fpr_mid_path'[rule_format]:
          ctxcld \<in> set path' \<or>
          (\<forall>path_fqn. find_path_rec_f P (fst ctxcld) (cl_fqn (fqn_def (class_name_f (snd ctxcld)))) path'' = Some path_fqn \<longrightarrow>
               (\<forall>path'''. path_fqn = path'' @ path''' \<longrightarrow> (\<exists>path_rest. path = path_rest @ path'''))))"
+supply [[simproc del: defined_all]]
 apply(induct_tac P ctx cl path' rule: find_path_rec_f.induct)
  apply(simp)
 apply(clarsimp split: option.splits)

@@ -567,6 +567,7 @@ proof -
     have "callee_invariant_on (lazy_channel_insec' \<oplus>\<^sub>O lazy_channel_send' \<oplus>\<^sub>O lazy_channel_recv_f') ?I \<I>"
       apply(unfold_locales)
       subgoal for s x y s'
+        supply [[simproc del: defined_all]]
         apply(clarsimp simp add: \<I>_def; elim PlusE; clarsimp simp add: lazy_channel_insec'_def lazy_channel_send'_def lazy_channel_recv_f'_def)
         subgoal for _ _ _ _ x'
           by(cases "(snd s, x')" rule: lazy_channel_insec.cases)
@@ -587,6 +588,7 @@ proof -
     also have "callee_invariant_on (lazy_channel_insec' \<oplus>\<^sub>O lazy_channel_send' \<oplus>\<^sub>O lazy_channel_recv') ?I \<I>"
       apply(unfold_locales)
       subgoal for s x y s'
+        supply [[simproc del: defined_all]]
         apply(clarsimp simp add: \<I>_def; elim PlusE; clarsimp simp add: lazy_channel_insec'_def lazy_channel_send'_def lazy_channel_recv'_def)
         subgoal for _ _ _ _ x'
           by(cases "(snd s, x')" rule: lazy_channel_insec.cases)
@@ -993,7 +995,7 @@ proof -
      \<I>"
     apply unfold_locales
     subgoal for s x y s'
-      apply(clarsimp simp add: \<I>_def; elim PlusE; clarsimp)
+      using [[simproc del: defined_all]] apply(clarsimp simp add: \<I>_def; elim PlusE; clarsimp)
       subgoal for _ _ _ x'
         by(cases "(s, x')" rule: lazy_channel_insec.cases)
           (auto simp add: vld_def in_nlists_UNIV rnd_def split: option.split_asm)
@@ -1016,7 +1018,7 @@ proof -
      \<I>"
     apply unfold_locales
     subgoal for s x y s'
-      apply(clarsimp simp add: \<I>_def; elim PlusE; clarsimp)
+      using [[simproc del: defined_all]] apply(clarsimp simp add: \<I>_def; elim PlusE; clarsimp)
       subgoal for _ _ _ x'
         by(cases "(s, x')" rule: lazy_channel_insec.cases)
           (auto simp add: vld_def in_nlists_UNIV rnd_def split: option.split_asm)
@@ -1038,7 +1040,7 @@ proof -
     (\<lambda>(_, m, s). ran m \<subseteq> nlists UNIV \<eta> \<and> pred_cstate (\<lambda>(x, y). length x = \<eta> \<and> length y = \<eta>) s) \<I>"
     apply(unfold_locales)
     subgoal for s x y s'
-      apply(clarsimp simp add: \<I>_def; elim PlusE; clarsimp)
+      using [[simproc del: defined_all]] apply(clarsimp simp add: \<I>_def; elim PlusE; clarsimp)
       subgoal for _ _ _ x'
         by(cases "(snd (snd s), x')" rule: insec_channel.insec_oracle.cases)
           (auto simp add: vld_def in_nlists_UNIV rnd_def insec_channel.insec_oracle.simps split: option.split_asm)

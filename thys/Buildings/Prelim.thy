@@ -583,7 +583,7 @@ next
 qed (rule snoc_Cons)
 
 lemma two_prod_lists_cases_snoc_Cons:
-  assumes "\<And>xs. as = xs \<and> bs = [] \<Longrightarrow> P" "\<And>ys. as = [] \<and> bs = ys \<Longrightarrow> P"
+  assumes "\<And>xs. as = xs \<Longrightarrow> bs = [] \<Longrightarrow> P" "\<And>ys. as = [] \<Longrightarrow> bs = ys \<Longrightarrow> P"
           "\<And>xs aa ba ab bb ys. as = xs @ [(aa, ba)] \<and> bs = (ab, bb) # ys \<Longrightarrow> P"
   shows "P"
 proof (rule two_lists_cases_snoc_Cons)

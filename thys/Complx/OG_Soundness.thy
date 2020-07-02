@@ -101,6 +101,7 @@ lemma oghoare_Await[rule_format, OF _ refl]:
 "\<Gamma>, \<Theta>\<turnstile>\<^bsub>/F\<^esub> P x Q,A \<Longrightarrow> \<forall>b c. x = Await b c \<longrightarrow>
  (\<exists>r P' Q' A'. P = AnnRec r P' \<and> \<Gamma>, \<Theta>\<tturnstile>\<^bsub>/F\<^esub>(r \<inter> b) P' c Q',A' \<and> atom_com c 
                  \<and> Q' \<subseteq> Q \<and> A' \<subseteq> A)"
+  supply [[simproc del: defined_all]]
   apply (induct rule: oghoare_induct, simp_all)
     apply (rename_tac \<Gamma> \<Theta> F r P Q A)
    apply (rule_tac x=Q in exI)
@@ -602,6 +603,7 @@ lemma state_upd_in_atomicsR[rule_format, OF _ refl refl]:
        s \<in> pre a \<Longrightarrow>
        (\<exists>p cm x. atomicsR \<Gamma> \<Theta> a c (p, cm) \<and> s \<in> p \<and>
        \<Gamma> \<turnstile> (cm, Normal s) \<rightarrow> (x, Normal t) \<and> final (x, Normal t))"
+supply [[simproc del: defined_all]]
   apply (induct arbitrary: c c' s t a rule: step.induct, simp_all)
        apply clarsimp
        apply (erule  ann_matches.cases, simp_all)
@@ -796,7 +798,8 @@ shows
         (\<forall>as. assertionsR \<Gamma> \<Theta> Q A a' c' as \<longrightarrow> assertionsR \<Gamma> \<Theta> Q A a c as) \<and>
         (\<forall>pm cm. atomicsR \<Gamma> \<Theta> a' c' (pm, cm) \<longrightarrow> atomicsR \<Gamma> \<Theta>  a c (pm, cm))"
  proof (induct arbitrary:c c' s a t Q A rule: step.induct)
-  case (Parallel i cs s c' s' ca c'a sa a t Q A) thus ?case
+   case (Parallel i cs s c' s' ca c'a sa a t Q A) thus ?case
+     supply [[simproc del: defined_all]]
      apply (clarsimp simp:)
      apply (drule oghoare_Parallel)
      apply clarsimp
@@ -1047,6 +1050,7 @@ next
                  intro:assertionsR.intros atomicsR.intros)
 next
   case (Seq c\<^sub>1 s c\<^sub>1' s' c\<^sub>2 c c' sa a t A Q) thus ?case
+    supply [[simproc del: defined_all]]
     apply (clarsimp simp:)
     apply (drule oghoare_Seq)
     apply clarsimp
@@ -1255,6 +1259,7 @@ next
   done
 next
   case (Catch c\<^sub>1 s c\<^sub>1' s' c\<^sub>2 c c' sa a t Q A) thus ?case
+    supply [[simproc del: defined_all]]
     apply (clarsimp simp:)
     apply (drule oghoare_Catch)
     apply clarsimp
@@ -1440,6 +1445,7 @@ lemma oghoare_steps[rule_format, OF _ refl refl]:
         (\<forall>as. assertionsR \<Gamma> \<Theta> Q A a' c' as \<longrightarrow> assertionsR \<Gamma> \<Theta> Q A a c as) \<and>
         (\<forall>pm cm. atomicsR \<Gamma> \<Theta> a' c' (pm, cm) \<longrightarrow> atomicsR \<Gamma> \<Theta> a c (pm, cm))"
   apply (induct arbitrary: a c s c' t rule: converse_rtranclp_induct)
+   supply [[simproc del: defined_all]]
    apply fastforce
   apply clarsimp
   apply (frule Normal_pre_star)
@@ -1542,6 +1548,7 @@ lemma oghoare_step_Fault[rule_format, OF _ refl refl]:
    cf' = (c', Fault f) \<Longrightarrow>
    x \<in> pre P \<Longrightarrow>
    \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F \<^esub>P c Q,A \<Longrightarrow> f \<in> F"
+  supply [[simproc del: defined_all]]
   apply (induct arbitrary: x c c' P Q A f rule: step.induct, simp_all)
        apply clarsimp
        apply (drule oghoare_Guard)
@@ -1610,7 +1617,6 @@ lemma oghoare_step_Stuck[rule_format, OF _ refl refl]:
     apply (drule_tac x="i" in spec)
     apply clarsimp
     apply (drule meta_spec)+
-    apply (erule meta_impE, rule conjI, (rule refl)+)+
     apply (drule_tac x="as!i" in bspec)
     apply (clarsimp simp: in_set_conv_nth)
     apply (rule_tac x="i" in exI, fastforce)
@@ -1644,6 +1650,7 @@ lemma oghoare_steps_Fault[rule_format, OF _ refl refl]:
    x \<in> pre P \<Longrightarrow>
    \<Gamma>,\<Theta>\<turnstile>\<^bsub>/F \<^esub>P c Q,A \<Longrightarrow> f \<in> F"
   apply (induct arbitrary: x c c' f rule: rtranclp_induct)
+   supply [[simproc del: defined_all]]
    apply fastforce
   apply clarsimp
   apply (rename_tac b x c c' f)

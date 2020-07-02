@@ -72,6 +72,7 @@ nominal_function (invariant "\<lambda>(xs, _) y. atom ` set xs \<sharp>* y")
  | "trans_fm e (Disj A B) = DBDisj (trans_fm e A) (trans_fm e B)"
  | "trans_fm e (Neg A)   = DBNeg (trans_fm e A)"
  | "atom k \<sharp> e \<Longrightarrow> trans_fm e (Ex k A) = DBEx (trans_fm (k#e) A)"
+supply [[simproc del: defined_all]]
 apply(simp add: eqvt_def trans_fm_graph_aux_def)
 apply(erule trans_fm_graph.induct)
 using [[simproc del: alpha_lst]]

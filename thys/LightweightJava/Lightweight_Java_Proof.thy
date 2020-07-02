@@ -404,6 +404,7 @@ lemma mty_preservation'''[rule_format]:
      (\<forall>(ctx', cld') \<in> set suffix.
          (\<forall>prefix' suffix'. find_path_rec_f P ctx' (cl_fqn (fqn_def (class_name_f cld'))) prefix' = Some (prefix' @ suffix') \<and>
                mtype_f P (ty_def ctx' (class_name_f cld')) m = Some mty \<longrightarrow> mtype_f P (ty_def ctx dcl) m = Some mty))"
+supply [[simproc del: defined_all]]
 apply(induct_tac P ctx cl prefix rule: find_path_rec_f.induct)
  apply(simp)
 apply(clarsimp split: option.splits)
@@ -564,6 +565,7 @@ lemma no_field_hiding''':
      (\<forall>(ctx, cld) \<in> set suffix.
          (\<forall>prefix' suffix'. find_path_rec_f P ctx (cl_fqn (fqn_def (class_name_f cld))) prefix' = Some (prefix' @ suffix') \<and>
                f \<in> set (fields_in_path_f suffix') \<longrightarrow> f \<in> set (fields_in_path_f suffix)))"
+supply [[simproc del: defined_all]]
 apply(induct_tac P ctx cl prefix rule: find_path_rec_f.induct)
  apply(simp)
 apply(clarsimp split: option.splits)
@@ -674,6 +676,7 @@ lemma ftype_preservation'''':
      (\<forall>(ctx, cld) \<in> set suffix.
          (\<forall>prefix' suffix'. find_path_rec_f P ctx (cl_fqn (fqn_def (class_name_f cld))) prefix' = Some (prefix' @ suffix') \<and>
                ftype_in_path_f P suffix' f = Some ty \<longrightarrow> ftype_in_path_f P suffix f = Some ty))"
+supply [[simproc del: defined_all]]
 apply(induct_tac P ctx cl prefix rule: find_path_rec_f.induct)
  apply(simp)
 apply(clarsimp split: option.splits)
@@ -1310,6 +1313,7 @@ lemma fpr_mem_has_path'[rule_format]:
   "\<forall>suffix. find_path_rec_f P ctx cl prefix = Some (prefix @ suffix) \<longrightarrow>
      (\<forall>(ctx', cld') \<in> set suffix. \<forall>prefix'.
            (\<exists>suffix'. find_path_rec_f P ctx' (cl_fqn (fqn_def (class_name_f cld'))) prefix' = Some suffix'))"
+supply [[simproc del: defined_all]]
 apply(induct_tac P ctx cl prefix rule: find_path_rec_f.induct)
  apply(simp)
 apply(clarsimp split: option.splits)
@@ -1458,6 +1462,7 @@ apply(induct ss') apply(simp add: tr_rel_f_eq)+ done
 
 theorem progress:
   "\<lbrakk>wf_config \<Gamma> (config_normal P L H S); S \<noteq> []\<rbrakk> \<Longrightarrow> \<exists>config'. r_stmt (config_normal P L H S) config'"
+supply [[simproc del: defined_all]]
 apply(case_tac S)
  apply(simp)
 apply(clarsimp) apply(rename_tac s ss)
@@ -1534,6 +1539,7 @@ theorem wf_preservation:
   "\<And>\<Gamma> config.
        \<lbrakk>wf_config \<Gamma> config; r_stmt config config'\<rbrakk>
        \<Longrightarrow> \<exists>\<Gamma>'. \<Gamma> \<subseteq>\<^sub>m \<Gamma>' \<and> wf_config \<Gamma>' config'"
+supply [[simproc del: defined_all]]
 apply(erule r_stmt.cases)
 
 (* s_read_npe, s_write_npe *)

@@ -811,6 +811,7 @@ lemma ac_fProd_ProdTr1:"\<forall>k \<le> (Suc n). Ring (B k) \<Longrightarrow>
  ag_setfunc n B (Suc 0) (compose {0::nat} B (slide (Suc n))) 
    (carr_prodag {i. i \<le> n} B) (carr_prodag {0} 
      (compose {0} B (slide (Suc n)))) \<subseteq>  carr_prodag {i. i \<le> (Suc n)} B" 
+supply [[simproc del: defined_all]]
 apply (rule subsetI)
 apply (simp add:ag_setfunc_def) 
 apply (erule exE, erule conjE, erule exE, erule conjE)

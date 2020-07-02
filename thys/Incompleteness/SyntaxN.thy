@@ -168,6 +168,7 @@ nominal_function eval_fm :: "(name, hf) finfun \<Rightarrow> fm \<Rightarrow> bo
  | "eval_fm e (A OR B) \<longleftrightarrow> eval_fm e A \<or> eval_fm e B"
  | "eval_fm e (Neg A) \<longleftrightarrow> (~ eval_fm e A)"
  | "atom k \<sharp> e \<Longrightarrow> eval_fm e (Ex k A) \<longleftrightarrow> (\<exists>x. eval_fm (finfun_update e k x) A)"
+supply [[simproc del: defined_all]]
 apply(simp add: eqvt_def eval_fm_graph_aux_def)
 apply(auto del: iffI)[16]
 apply(rule_tac y=b and c="(a)" in fm.strong_exhaust)
