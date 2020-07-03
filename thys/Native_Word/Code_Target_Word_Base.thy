@@ -278,8 +278,8 @@ definition set_bits_aux :: \<open>'a word \<Rightarrow> nat \<Rightarrow> 'a :: 
 
 lemma set_bits_aux_conv:
   \<open>set_bits_aux w n = (w << n) OR (set_bits f AND mask n)\<close>
-  by (auto simp add: set_bits_aux_def bit_eq_iff bit_or_iff bit_push_bit_iff bit_take_bit_iff
-    bit_and_iff bit_set_bits_word_iff shiftl_word_eq)
+  by (rule bit_word_eqI)
+    (auto simp add: set_bits_aux_def shiftl_word_eq mask_eq_mask bit_and_iff bit_or_iff bit_push_bit_iff bit_take_bit_iff bit_mask_iff bit_set_bits_word_iff exp_eq_zero_iff)
 
 corollary set_bits_conv_set_bits_aux:
   \<open>set_bits f = (set_bits_aux 0 (LENGTH('a)) :: 'a :: len word)\<close>

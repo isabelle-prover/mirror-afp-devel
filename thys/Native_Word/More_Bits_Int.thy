@@ -118,11 +118,11 @@ by(induct m n rule: bitXOR_num.induct)(simp_all split: option.split)
 
 lemma int_or_not_bitORN_num:
   "numeral n OR NOT (numeral m) = (- numeral (bitORN_num n m) :: int)"
-by(induct n m rule: bitORN_num.induct)(simp_all add: Num.add_One BitM_inc)
+  by (induction n m rule: bitORN_num.induct) (simp_all add: add_One BitM_inc_eq)
 
 lemma int_and_not_bitANDN_num:
   "numeral n AND NOT (numeral m) = (case bitANDN_num n m of None \<Rightarrow> 0 :: int | Some n' \<Rightarrow> numeral n')"
-by(induct n m rule: bitANDN_num.induct)(simp_all add: Num.add_One BitM_inc split: option.split)
+  by (induction n m rule: bitANDN_num.induct) (simp_all add: add_One BitM_inc_eq split: option.split)
 
 lemma int_not_and_bitANDN_num:
   "NOT (numeral m) AND numeral n = (case bitANDN_num n m of None \<Rightarrow> 0 :: int | Some n' \<Rightarrow> numeral n')"

@@ -2,7 +2,7 @@
 *)
 
 theory Bitwise
-  imports "HOL-Word.Word"
+  imports "HOL-Word.Word" "HOL-Word.Misc_Arithmetic"
 begin
 
 text \<open>Helper constants used in defining addition\<close>

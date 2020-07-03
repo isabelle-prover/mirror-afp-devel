@@ -4643,10 +4643,8 @@ lemma map_bits_rev_to_bl:
 (* negating a mask which has been shifted to the very left *)
 lemma NOT_mask_shifted_lenword:
   "~~ (mask len << (LENGTH('a) - len) ::'a::len word) = mask (LENGTH('a) - len)"
-  apply (rule bit_eqI)
-  apply (simp add: shiftl_word_eq bit_not_iff bit_push_bit_iff)
-  apply (auto simp add: mask_def bit_mask_iff)
-  done
+  by (rule bit_word_eqI)
+    (auto simp add: mask_eq_mask shiftl_word_eq word_size bit_not_iff bit_push_bit_iff bit_mask_iff)
 
 (* Comparisons between different word sizes. *)
 
