@@ -332,7 +332,7 @@ proof -
   assume jk_i: "j + k < i"
   have "[i>..j] = rev [j..<i]" using rev_upt_upt by simp
   also have "... ! k = [j..<i] ! (length [j..<i] - 1 - k)"
-    by (rule nth_rev, insert jk_i, auto)
+    using jk_i by (simp add: rev_nth)
   also have "... = [j..<i] ! (i - j - 1 - k)" by auto
   also have "... = j + (i - j - 1 - k)" by (rule nth_upt, insert jk_i, auto)
   finally show ?thesis using jk_i by auto

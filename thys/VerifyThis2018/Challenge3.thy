@@ -713,10 +713,8 @@ subsubsection \<open>Simulation\<close>
   lemma mod_mult_mod_eq[mod_simps]: "x mod (k * N) mod N = x mod N"  
     by (meson dvd_eq_mod_eq_0 mod_mod_cancel mod_mult_self2_is_0)
 
-  lemma mod_eq_imp_eq_aux: "b mod N = (a::nat) mod N \<Longrightarrow> a\<le>b \<Longrightarrow> b<a+N \<Longrightarrow> b=a"  
-    by (metis Groups.add_ac add_0_right 
-      le_add_diff_inverse less_diff_conv2 nat_minus_mod 
-      nat_minus_mod_plus_right mod_if)
+lemma mod_eq_imp_eq_aux: "b mod N = (a::nat) mod N \<Longrightarrow> a\<le>b \<Longrightarrow> b<a+N \<Longrightarrow> b=a"
+  using nat_mod_eq_lemma by force
     
   lemma mod_eq_imp_eq: 
     "\<lbrakk>b \<le> x; x < b + N; b \<le> y; y < b + N; x mod N = y mod N \<rbrakk> \<Longrightarrow> x=y"
@@ -1034,9 +1032,8 @@ subsection \<open>Refinement 3: Using an Array\<close>text_raw \<open>\label{sec
       apply clarify
       apply (erule blstep.cases, erule bstep_sng.cases)
       unfolding invar4_def
-      apply safe
-      apply (metis N_gt0 fun_upd_other fun_upd_same mod_mod_trivial 
-        nat_mod_lem has_ticket_simps(2))
+          apply safe
+      apply (metis N_gt0 fun_upd_apply has_ticket_simps(2) mod_less_divisor)
         apply (metis fun_upd_triv)
         apply (metis fun_upd_other fun_upd_same has_ticket_simps(3))
         apply (metis fun_upd_other fun_upd_same has_ticket_def has_ticket_simps(4))

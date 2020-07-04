@@ -1647,7 +1647,7 @@ lemma nth_bounded:
   "\<lbrakk>(x :: 'a :: len word) !! n; x < 2 ^ m; m \<le> len_of TYPE ('a)\<rbrakk> \<Longrightarrow> n < m"
   apply (frule test_bit_size)
   apply (clarsimp simp: test_bit_bl word_size)
-  apply (simp add: nth_rev)
+  apply (simp add: rev_nth)
   apply (subst(asm) is_aligned_add_conv[OF is_aligned_0',
                                         simplified add_0_left, rotated])
    apply assumption+
@@ -3513,7 +3513,7 @@ lemma word_rsplit_upt:
    apply (rule nth_equalityI, simp)
    apply (intro allI word_eqI impI)
    apply (simp add: test_bit_rsplit_alt word_size)
-   apply (simp add: nth_ucast nth_shiftr nth_rev field_simps)
+   apply (simp add: nth_ucast nth_shiftr rev_nth field_simps)
   apply (simp add: length_word_rsplit_exp_size)
   apply (metis mult.commute given_quot_alt word_size word_size_gt_0)
   done
@@ -6171,7 +6171,7 @@ lemma bin_to_bl_of_bl_eq:
   apply (clarsimp simp only: len_bin_to_bl nth_bin_to_bl word_test_bit_def[symmetric])
   apply (simp add: nth_shiftr nth_shiftl
                    shiftl_t2n[where n=c, simplified mult.commute, simplified, symmetric])
-  apply (simp add: is_aligned_nth[THEN iffD1, rule_format] test_bit_of_bl nth_rev)
+  apply (simp add: is_aligned_nth[THEN iffD1, rule_format] test_bit_of_bl rev_nth)
   apply arith
   done
 

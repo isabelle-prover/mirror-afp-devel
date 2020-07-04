@@ -3,6 +3,11 @@ imports Main
   "HOL-Word.Word"
 begin
 
+lemma zdiv_mult_self:
+  \<open>m \<noteq> 0 \<Longrightarrow> (a + m * n) div m = a div m + n\<close>
+  for a m n :: int
+  by simp
+
 section\<open>Helper Lemmas for Low-Level Operations on Machine Words\<close>
 text\<open>Needed for IPv4 Syntax\<close>
 

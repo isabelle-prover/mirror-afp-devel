@@ -210,7 +210,7 @@ lemma cfg_succ_list_invar: "distinct (cfg_succ_list c)"
 lemma cfg_succ_list_refine: "set (cfg_succ_list c) = cfg_succ c"
   apply (induction c)
   apply (simp_all only: cfg_succ.simps cfg_succ_list.simps 
-    if_distrib[of set] if_same_eq set_map)
+    if_distrib[of set] set_map)
   apply (simp_all)
   apply (auto, force+) []
   done

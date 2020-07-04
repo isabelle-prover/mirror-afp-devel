@@ -675,8 +675,7 @@ lemma bool_of_val_impl: "(bool_of_val_impl, bool_of_val) \<in> val_rel \<rightar
 
 
 lemma smod_by_div_abs: "a smod b = a - a sdiv b * b"
-  using sdiv_smod_id[of a b]
-  by (metis add_diff_cancel2)
+  by (subst (2) sdiv_smod_id [of a b, symmetric]) simp
 
 lift_definition sdiv_impl :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is "(sdiv)" .
 lift_definition smod_impl :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is "(smod)" .
@@ -687,9 +686,7 @@ lemma [code]: "sdiv_impl x y = Abs_uint32' (Rep_uint32' x sdiv Rep_uint32' y)"
   by simp
 
 lemma [code]: "smod_impl a b = a - sdiv_impl a b * b"
-  apply transfer
-  using sdiv_smod_id
-  by (metis add_diff_cancel2)
+  by transfer (simp add: smod_by_div_abs)
   
 
 primrec eval_bin_op_impl_aux :: "bin_op \<Rightarrow> uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" where

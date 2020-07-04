@@ -182,7 +182,7 @@ lemma rbl_word_scast:
   apply (rule nth_equalityI)
    apply (simp add: word_size takefill_last_def)
   apply (clarsimp simp: nth_scast takefill_last_def
-      nth_takefill word_size nth_rev to_bl_nth)
+      nth_takefill word_size rev_nth to_bl_nth)
   apply (cases "LENGTH('b)")
    apply simp
   apply (clarsimp simp: less_Suc_eq_le linorder_not_less
@@ -376,7 +376,7 @@ lemma rev_bin_to_bl_simps:
 lemma to_bl_upt: "to_bl x = rev (map ((!!) x) [0 ..< size x])"
   apply (rule nth_equalityI)
    apply (simp add: word_size)
-  apply (auto simp: to_bl_nth word_size nth_rev)
+  apply (auto simp: to_bl_nth word_size rev_nth)
   done
 
 lemma rev_to_bl_upt: "rev (to_bl x) = map ((!!) x) [0 ..< size x]"

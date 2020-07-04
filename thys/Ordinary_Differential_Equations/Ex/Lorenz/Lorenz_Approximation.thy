@@ -4,6 +4,11 @@ imports
   "HOL-ODE-Numerics.ODE_Numerics"
   Result_File_Coarse
 begin
+
+lemma replicate_numeral [simp]: "replicate (numeral k) x = x # replicate (pred_numeral k) x"
+  by (simp add: numeral_eq_Suc)
+
+
 text \<open>\label{sec:lorenz}\<close>
 
 text \<open>TODO: move to isabelle? \<close>

@@ -1101,8 +1101,10 @@ begin
       fix i
       obtain q n where RI: "r' (Suc i) = (q,n)" by (cases "r' (Suc i)")
       have "(n + (num_acc - n mod num_acc)) mod num_acc = 0"
-        by (metis NN0 R' \<open>r' (Suc i) = (q, n)\<close> add_diff_cancel_left' 
-          degen_run_bound less_imp_add_positive mod_self nat_mod_eq' snd_conv)
+        apply (rule dvd_imp_mod_0)
+        apply (metis (mono_tags, lifting) NN0 add_diff_inverse mod_0_imp_dvd
+          mod_add_left_eq mod_less_divisor mod_self nat_diff_split not_gr_zero zero_less_diff)
+        done
       then obtain ofs where 
         OFS_LESS: "ofs<num_acc" 
         and [simp]: "(n + ofs) mod num_acc = 0"

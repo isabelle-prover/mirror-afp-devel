@@ -149,9 +149,13 @@ begin
   lemma lc2aux: "{l. length l=2 \<and> valid l} = {[B,B]}"
     by (auto 4 3 intro: valid.intros elim: valid.cases simp: replicate_Cons_eq)
 
+  lemma valid_3R: \<open>valid [R, R, R]\<close>
+    using valid.intros(3) [of \<open>[]\<close> 3] by (simp add: numeral_eq_Suc valid.intros)
+
   lemma lc3_aux: "{l. length l=3 \<and> valid l} = {[B,B,B], [R,R,R]}"
-    by (auto 4 4 intro: valid.intros valid_red[of 3, simplified] elim: valid.cases
-        simp: replicate_Cons_eq)
+    by (auto 4 4 intro: valid.intros valid_3R elim: valid.cases
+      simp: replicate_Cons_eq)
+
 
   lemma lcounts_init: "lcount 0 = 1" "lcount 1 = 1" "lcount 2 = 1" "lcount 3 = 2"
     using lc0 lc1aux lc2aux lc3_aux unfolding lcount_def by simp_all

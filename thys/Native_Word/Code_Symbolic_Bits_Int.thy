@@ -13,7 +13,7 @@ section \<open>Implementations of bit operations on \<^typ>\<open>int\<close> op
 
 lemma not_minus_numeral_inc_eq:
   \<open>NOT (- numeral (Num.inc n)) = (numeral n :: int)\<close>
-  by (simp add: not_int_def sub_inc_One)
+  by (simp add: not_int_def sub_inc_One_eq)
 
 lemma [code_abbrev]:
   \<open>test_bit = (bit :: int \<Rightarrow> nat \<Rightarrow> bool)\<close>
@@ -52,7 +52,7 @@ lemma int_and_code [code]: fixes i j :: int shows
   "Int.Neg (num.Bit0 n) AND Int.Pos m = Num.sub (bitORN_num (Num.BitM n) m) num.One"
   "Int.Neg (num.Bit1 n) AND Int.Pos m = Num.sub (bitORN_num (num.Bit0 n) m) num.One"
            apply (simp_all add: int_numeral_bitAND_num Num.add_One
-              sub_inc_One inc_BitM not_minus_numeral_inc_eq
+              sub_inc_One_eq inc_BitM_eq not_minus_numeral_inc_eq
               flip: int_not_neg_numeral int_or_not_bitORN_num split: option.split)
    apply (simp_all add: ac_simps)
   done

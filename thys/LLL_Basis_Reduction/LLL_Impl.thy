@@ -696,7 +696,7 @@ next
       by (rule iarray_cong', insert ii, auto)
     have d': "(map (?d fs) (rev [0..<j])) = (map (?d fs'') (rev [0..<j]))"
       by (rule nth_equalityI, force, simp, subst updates(1), insert j i, auto
-        simp: nth_rev)
+        simp: rev_nth)
     have repr_id:
       "(map ((!) fs) [0..<m])[i := (fs'' ! i)] = map ((!) fs'') [0..<m]" (is "?xs = ?ys")
     proof (rule nth_equalityI, force)
@@ -768,7 +768,7 @@ proof (atomize(full), goal_cases)
     note start = this \<mu>_small_row_refl[of i fs]
     have id: "small_fs_state state = map (\<lambda> i. fs ! i) (rev [0..<i])"
       unfolding state using to_list_repr[OF impl inv state] i
-      unfolding list_repr_def by (auto intro!: nth_equalityI simp: nth_rev min_def)
+      unfolding list_repr_def by (auto intro!: nth_equalityI simp: rev_nth min_def)
     from i have mm: "[0..<m] = [0 ..< i] @ [i] @ [Suc i ..< m]"
       by (intro nth_equalityI, auto simp: nth_append nth_Cons split: nat.splits)
     from res[unfolded def] True

@@ -11,10 +11,11 @@ begin
 
 text \<open>More lemmas\<close>
 
-lemma nat_div_eq_Suc_0_iff: "n div m = Suc 0 \<longleftrightarrow> n \<ge> m \<and> n < 2 * m"
-  apply (auto simp add: sdl)
-  using not_less apply fastforce
-  apply (metis One_nat_def Suc_1 div_eq_0_iff lessI neq0_conv td_gal_lt)
+lemma nat_div_eq_Suc_0_iff: "n div m = Suc 0 \<longleftrightarrow> m \<le> n \<and> n < 2 * m"
+  apply auto
+  using div_greater_zero_iff apply fastforce
+   apply (metis One_nat_def div_greater_zero_iff dividend_less_div_times mult.right_neutral mult_Suc mult_numeral_1 numeral_2_eq_2 zero_less_numeral)
+  apply (simp add: div_nat_eqI)
   done
 
 lemma Suc_0_lt_2p_len_of: "Suc 0 < 2 ^ LENGTH('a :: len)"
@@ -96,7 +97,7 @@ proof -
   have "2 * (n div 2 div m) * m < 2 ^ LENGTH('a)" using n unfolding div_mult2_eq[symmetric]
     by(subst (2) mult.commute)(simp add: minus_mod_eq_div_mult [symmetric] diff_mult_distrib minus_mod_eq_mult_div [symmetric] div_mult2_eq)
   moreover have "2 * (n div 2 div m) * m \<le> n"
-    by(metis div_mult2_eq div_mult_le mult.assoc mult.commute)
+    by (metis div_mult2_eq dtle mult.assoc mult.left_commute)
   ultimately
   have r: "x - ?q * y = of_nat (n - ?q' * m)"
     and "y \<le> x - ?q * y \<Longrightarrow> of_nat (n - ?q' * m) - y = of_nat (n - ?q' * m - m)"
@@ -228,7 +229,7 @@ proof(cases "1 << (LENGTH('a) - 1) \<le> y")
     finally have div: "x div of_nat n = 1" using False n
       by(simp add: word_div_eq_1_iff not_less word_le_nat_alt unat_of_nat)
     moreover have "x mod y = x - x div y * y"
-      by (metis add_diff_cancel2 word_mod_div_equality)
+      by (simp add: minus_div_mult_eq_mod)
     with div n have "x mod y = x - y" by simp
     ultimately show ?thesis using False y n by simp
   qed

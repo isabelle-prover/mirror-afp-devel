@@ -2701,7 +2701,8 @@ lemma isFDERIV_product: "isFDERIV n xs fas vs \<longleftrightarrow>
   length fas = n \<and> length xs = n \<and>
   list_all (\<lambda>(x, f). isDERIV x f vs) (List.product xs fas)"
   apply (auto simp: isFDERIV_def list_all2_iff in_set_zip list_all_length product_nth)
-   apply (metis gt_or_eq_0 less_mult_imp_div_less mod_less_divisor not_less0)
-  by auto
+   apply auto
+  apply (metis gr_implies_not_zero gr_zeroI less_mult_imp_div_less pos_mod_bound)
+  done
 
 end

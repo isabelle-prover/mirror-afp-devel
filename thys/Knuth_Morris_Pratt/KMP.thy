@@ -81,9 +81,10 @@ proof (induction xs ys i rule: sublist_at.induct)
     then show ?rhs by blast
   next
     assume ?rhs
-    then obtain xs where "\<exists>ys. t#ts = xs@ss@ys \<and> Suc i = length xs" by blast
+    then obtain xs where "\<exists>ys. t#ts = xs@ss@ys \<and> length xs = Suc i"
+      by (blast dest: sym)
     then have "\<exists>ys. ts = (tl xs)@ss@ys \<and> i = length (tl xs)"
-      by (metis hd_Cons_tl length_0_conv list.sel(3) nat.simps(3) size_Cons_lem_eq tl_append2)
+      by (auto simp add: length_Suc_conv)
     then have "\<exists>xs ys. ts = xs@ss@ys \<and> i = length xs" by blast
     with "2.IH" show ?lhs by simp
   qed

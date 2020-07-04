@@ -840,13 +840,13 @@ unfolding thread_start_actions_ok_def by blast
 
 lemma thread_start_actions_ok_prefix:
   "\<lbrakk> thread_start_actions_ok E'; lprefix E E' \<rbrakk> \<Longrightarrow> thread_start_actions_ok E"
-apply(clarsimp simp add: lprefix_conv_lappend)
-apply(rule thread_start_actions_okI)
-apply(drule_tac a=a in thread_start_actions_okD)
-  apply(simp add: actions_def)
-  apply(metis Suc_ile_eq enat_le_plus_same(1) xtr6)
-apply(auto simp add: action_obs_def lnth_lappend1 actions_def action_tid_def le_less_trans[where y="enat a" for a])
-done
+  apply(clarsimp simp add: lprefix_conv_lappend)
+  apply(rule thread_start_actions_okI)
+  apply(drule_tac a=a in thread_start_actions_okD)
+    apply(simp add: actions_def)
+    apply(auto simp add: action_obs_def lnth_lappend1 actions_def action_tid_def le_less_trans[where y="enat a" for a])
+  apply (metis add.right_neutral add_strict_mono not_gr_zero)
+  done
 
 lemma wf_execI [intro?]:
   "\<lbrakk> is_write_seen P E ws;
