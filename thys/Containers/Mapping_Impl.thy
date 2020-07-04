@@ -119,9 +119,43 @@ apply(clarsimp simp add: size_eq_card_dom_lookup)
 apply(simp add: linorder.rbt_lookup_keys[OF ID_ccompare] ord.is_rbt_rbt_sorted RBT_Impl.keys_def distinct_card linorder.distinct_entries[OF ID_ccompare] del: set_map)
 done
 
-
 declare [[code drop: Mapping.tabulate]]
 declare tabulate_fold [code]
+
+declare [[code drop: Mapping.ordered_keys]]
+declare ordered_keys_def[code]
+
+declare [[code drop: Mapping.lookup_default]]
+declare Mapping.lookup_default_def[code]
+
+declare [[code drop: Mapping.filter]]
+lemma filter_code [code]:
+  fixes t :: "('a :: ccompare, 'b) mapping_rbt" shows
+  "Mapping.filter P (Mapping m) = Mapping (\<lambda>k. case m k of None \<Rightarrow> None | Some v \<Rightarrow> if P k v then Some v else None)"
+  "Mapping.filter P (Assoc_List_Mapping al) = Assoc_List_Mapping (DAList.filter (\<lambda>(k, v). P k v) al)"
+  "Mapping.filter P (RBT_Mapping t) =
+  (case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''filter RBT_Mapping: ccompare = None'') (\<lambda>_. Mapping.filter P (RBT_Mapping t))
+                         | Some _ \<Rightarrow> RBT_Mapping (RBT_Mapping2.filter (\<lambda>(k, v). P k v) t))"
+  subgoal by transfer simp
+  subgoal by (simp, transfer)(simp add: map_of_filter_apply fun_eq_iff cong: if_cong option.case_cong)
+  subgoal by(clarsimp simp add: Mapping_inject Mapping.filter.abs_eq fun_eq_iff split: option.split)
+  done
+
+declare [[code drop: Mapping.map]]
+lemma map_values_code [code]:
+  fixes t :: "('a :: ccompare, 'b) mapping_rbt" shows
+  "Mapping.map_values f (Mapping m) = Mapping (\<lambda>k. map_option (f k) (m k))"
+  "Mapping.map_values f (Assoc_List_Mapping al) = Assoc_List_Mapping (AssocList.map_values f al)"
+  "Mapping.map_values f (RBT_Mapping t) = 
+  (case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''map_values RBT_Mapping: ccompare = None'') (\<lambda>_. Mapping.map_values f (RBT_Mapping t))
+                         | Some _ \<Rightarrow> RBT_Mapping (RBT_Mapping2.map f t))"
+  subgoal by transfer simp
+  subgoal by(simp, transfer)(simp add: fun_eq_iff map_of_map')
+  subgoal by(clarsimp simp add: Mapping_inject Mapping.map_values.abs_eq fun_eq_iff split: option.split)
+  done
+
+declare [[code drop: Mapping.combine_with_key]]
+declare [[code drop: Mapping.combine]]
 
 datatype mapping_impl = Mapping_IMPL
 declare
@@ -248,5 +282,10 @@ definition "MAPPING_IMPL(('a, 'b) phantom) = Phantom (('a, 'b) phantom)
   (of_phantom MAPPING_IMPL('b))"
 instance ..
 end
+
+declare [[code drop: Mapping.bulkload]]
+lemma bulkload_code [code]:
+  "Mapping.bulkload vs = RBT_Mapping (RBT_Mapping2.bulkload (zip_with_index vs))"
+  by(simp add: Mapping.bulkload.abs_eq Mapping_inject ccompare_nat_def ID_def fun_eq_iff)
 
 end

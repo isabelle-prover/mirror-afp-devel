@@ -23,6 +23,12 @@ where
   "delete_aux k [] = []"
 | "delete_aux k ((k', v) # xs) = (if k = k' then xs else (k', v) # delete_aux k xs)"
 
+definition zip_with_index_from :: "nat \<Rightarrow> 'a list \<Rightarrow> (nat \<times> 'a) list" where
+  "zip_with_index_from n xs = zip [n..<n + length xs] xs"
+
+abbreviation zip_with_index :: "'a list \<Rightarrow> (nat \<times> 'a) list" where
+  "zip_with_index \<equiv> zip_with_index_from 0"
+
 lemma update_conv_update_with_aux:
   "AList.update k v xs = update_with_aux v k (\<lambda>_. v) xs"
 by(induct xs) simp_all
@@ -87,6 +93,28 @@ by(simp add: map_of_delete_aux')
 lemma delete_aux_eq_Nil_conv: "delete_aux k ts = [] \<longleftrightarrow> ts = [] \<or> (\<exists>v. ts = [(k, v)])"
 by(cases ts)(auto split: if_split_asm)
 
+lemma zip_with_index_from_simps [simp, code]:
+  "zip_with_index_from n [] = []"
+  "zip_with_index_from n (x # xs) = (n, x) # zip_with_index_from (Suc n) xs"
+  by(simp_all add: zip_with_index_from_def upt_rec del: upt.upt_Suc)
+
+lemma zip_with_index_from_append [simp]:
+  "zip_with_index_from n (xs @ ys) = zip_with_index_from n xs @ zip_with_index_from (n + length xs) ys"
+  by(simp add: zip_with_index_from_def zip_append[symmetric] upt_add_eq_append[symmetric] del: zip_append)
+    (simp add: add.assoc)
+
+lemma zip_with_index_from_conv_nth:
+  "zip_with_index_from n xs = map (\<lambda>i. (n + i, xs ! i)) [0..<length xs]"
+  by(induction xs rule: rev_induct)(auto simp add: nth_append)
+
+lemma map_of_zip_with_index_from [simp]:
+  "map_of (zip_with_index_from n xs) i = (if i \<ge> n \<and> i < n + length xs then Some (xs ! (i - n)) else None)"
+  by(auto simp add: zip_with_index_from_def set_zip intro: exI[where x="i - n"])
+
+lemma map_of_map': "map_of (map (\<lambda>(k, v). (k, f k v)) xs) x = map_option (f x) (map_of xs x)"
+  by (induct xs)(auto)
+
+
 subsection \<open>Operations on the abstract type @{typ "('a, 'b) alist"}\<close>
 
 lift_definition update_with :: "'v \<Rightarrow> 'k \<Rightarrow> ('v \<Rightarrow> 'v) \<Rightarrow> ('k, 'v) alist \<Rightarrow> ('k, 'v) alist"
@@ -99,6 +127,10 @@ lift_definition keys :: "('k, 'v) alist \<Rightarrow> 'k set" is "set \<circ> ma
 
 lift_definition set :: "('key, 'val) alist \<Rightarrow> ('key \<times> 'val) set"
 is "List.set" .
+
+lift_definition map_values :: "('key \<Rightarrow> 'val \<Rightarrow> 'val') \<Rightarrow> ('key, 'val) alist \<Rightarrow> ('key, 'val') alist" is
+  "\<lambda>f. map (\<lambda>(x,y). (x, f x y))"
+  by(simp add: o_def split_def)
 
 lemma lookup_update_with [simp]: 
   "DAList.lookup (update_with v k f al) = (DAList.lookup al)(k \<mapsto> case DAList.lookup al k of None \<Rightarrow> f v | Some v \<Rightarrow> f v)"
