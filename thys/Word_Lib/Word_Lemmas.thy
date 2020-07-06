@@ -8,6 +8,7 @@ section "Lemmas with Generic Word Length"
 
 theory Word_Lemmas
   imports
+    "HOL-Word.Misc_lsb"
     Word_EqI
     Word_Enum
     "HOL-Library.Sublist"

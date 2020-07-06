@@ -8,7 +8,7 @@ section "Additional Word Operations"
 
 theory Word_Lib
 imports
-  Word_Syntax
+  "HOL-Word.Misc_set_bit" Word_Syntax
 begin
 
 definition

@@ -3515,7 +3515,7 @@ lemma msb_non_min:
     have fact1:"uminus w = word_succ (~~ w)"
       by (rule twos_complement)
     have fact2:"msb (~~w) = HOL.Not(msb w)"
-      using Word.word_ops_msb[of w] 
+      using word_ops_msb[of w] 
       by auto
     have neqneg1:"w \<noteq> 0" using neq1 by auto
     have not_undef:"w \<noteq> 0x80000000"

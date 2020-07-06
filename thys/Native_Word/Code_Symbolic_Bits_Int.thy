@@ -6,7 +6,7 @@ chapter \<open>Symbolic implementation of bit operations on int\<close>
 
 theory Code_Symbolic_Bits_Int
 imports
-  More_Bits_Int
+  "HOL-Word.Misc_set_bit" "HOL-Word.Misc_lsb" More_Bits_Int
 begin
 
 section \<open>Implementations of bit operations on \<^typ>\<open>int\<close> operating on symbolic representation\<close>

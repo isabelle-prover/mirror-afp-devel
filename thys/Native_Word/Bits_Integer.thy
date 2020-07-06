@@ -68,17 +68,52 @@ lift_definition Bit_integer :: "integer \<Rightarrow> bool \<Rightarrow> integer
 
 end
 
-instantiation integer :: bit_operations begin
+instantiation integer :: semiring_bit_syntax begin
 context includes integer.lifting begin
 
 lift_definition test_bit_integer :: "integer \<Rightarrow> nat \<Rightarrow> bool" is test_bit .
-lift_definition lsb_integer :: "integer \<Rightarrow> bool" is lsb .
-lift_definition set_bit_integer :: "integer \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> integer" is set_bit .
 lift_definition shiftl_integer :: "integer \<Rightarrow> nat \<Rightarrow> integer" is shiftl .
 lift_definition shiftr_integer :: "integer \<Rightarrow> nat \<Rightarrow> integer" is shiftr .
 
+instance
+  by (standard; transfer) (fact test_bit_eq_bit shiftl_eq_push_bit shiftr_eq_drop_bit)+
+
+end
+end
+
+instantiation integer :: lsb begin
+context includes integer.lifting begin
+
+lift_definition lsb_integer :: "integer \<Rightarrow> bool" is lsb .
+
+instance
+  by (standard; transfer) (fact lsb_odd)
+
+end
+end
+
+instantiation integer :: msb begin
+context includes integer.lifting begin
+
 lift_definition msb_integer :: "integer \<Rightarrow> bool" is msb .
+
 instance ..
+
+end
+end
+
+instantiation integer :: set_bit begin
+context includes integer.lifting begin
+
+lift_definition set_bit_integer :: "integer \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> integer" is set_bit .
+
+instance
+  apply standard
+  apply (simp add: Bit_Operations.set_bit_def unset_bit_def)
+  apply transfer
+  apply (simp add: set_bit_eq Bit_Operations.set_bit_def unset_bit_def)
+  done
+
 end
 end
 

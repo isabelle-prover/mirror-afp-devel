@@ -10,6 +10,7 @@ imports
   "Lem_show"
   "Lem_function"
   "HOL-Word.Word"
+  "HOL-Word.Misc_msb"
 
 begin 
 
@@ -440,10 +441,10 @@ definition size_test_fn  :: "('a::len)Word.word \<Rightarrow> nat "  where
 
 definition signedDivide  :: "('a::len)Word.word \<Rightarrow>('a::len)Word.word \<Rightarrow>('a::len)Word.word "  where 
      " signedDivide x y = (
-    if Bits.msb x then
-        if Bits.msb y then (- x) div (- y)
+    if msb x then
+        if msb y then (- x) div (- y)
         else - ((- x) div y)
-    else if Bits.msb y then - (x div (- y))
+    else if msb y then - (x div (- y))
         else x div y )"
 
 

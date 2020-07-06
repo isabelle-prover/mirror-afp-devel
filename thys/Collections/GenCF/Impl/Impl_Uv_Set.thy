@@ -58,33 +58,30 @@ begin
     apply (auto simp: bin_nth_sc_gen)
     done
 
-find_consts name: set_bit
-
   primrec set_bit :: "nat \<Rightarrow> 'a::len word list \<Rightarrow> 'a::len word list" where
     "set_bit i [] = single_bit i"
   | "set_bit i (w#ws) = (
       if i<LENGTH('a) then 
-        Bits.set_bit w i True # ws
+        Bit_Operations.set_bit i w # ws
       else 
         w # set_bit (i - LENGTH('a)) ws)"
   
   lemma set_bit_lookup[simp]: "lookup i (set_bit j ws) \<longleftrightarrow> (lookup i ws \<or> i=j)"
     apply (induction ws arbitrary: i j)
-    apply (auto simp: test_bit_set_gen word_size)
+     apply (auto simp add: test_bit_eq_bit word_size bit_set_bit_iff exp_eq_zero_iff)
     done
-
 
   primrec reset_bit :: "nat \<Rightarrow> 'a::len word list \<Rightarrow> 'a::len word list" where
     "reset_bit i [] = []"
   | "reset_bit i (w#ws) = (
       if i<LENGTH('a) then 
-        Bits.set_bit w i False # ws
+        unset_bit i w # ws
       else 
         w # reset_bit (i - LENGTH('a)) ws)"
   
   lemma reset_bit_lookup[simp]: "lookup i (reset_bit j ws) \<longleftrightarrow> (lookup i ws \<and> i\<noteq>j)"
     apply (induction ws arbitrary: i j)
-    apply (auto simp: test_bit_set_gen word_size)
+    apply (auto simp: test_bit_eq_bit word_size bit_unset_bit_iff)
     done
 
   subsubsection \<open>Binary Operations\<close>

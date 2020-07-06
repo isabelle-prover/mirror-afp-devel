@@ -112,15 +112,37 @@ instance by (standard; transfer)
   (simp_all add: bit_and_iff bit_or_iff bit_xor_iff bit_not_iff minus_eq_not_minus_1)
 end
 
-instantiation uint64 :: bit_operations
+instantiation uint64:: semiring_bit_syntax
 begin
-lift_definition test_bit_uint64 :: "uint64 \<Rightarrow> nat \<Rightarrow> bool" is test_bit .
-lift_definition set_bit_uint64 :: "uint64 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint64" is set_bit .
-lift_definition lsb_uint64 :: "uint64 \<Rightarrow> bool" is lsb .
-lift_definition shiftl_uint64 :: "uint64 \<Rightarrow> nat \<Rightarrow> uint64" is shiftl .
-lift_definition shiftr_uint64 :: "uint64 \<Rightarrow> nat \<Rightarrow> uint64" is shiftr .
-lift_definition msb_uint64 :: "uint64 \<Rightarrow> bool" is msb .
+lift_definition test_bit_uint64 :: \<open>uint64 \<Rightarrow> nat \<Rightarrow> bool\<close> is test_bit .
+lift_definition shiftl_uint64 :: \<open>uint64 \<Rightarrow> nat \<Rightarrow> uint64\<close> is shiftl .
+lift_definition shiftr_uint64 :: \<open>uint64 \<Rightarrow> nat \<Rightarrow> uint64\<close> is shiftr .
+instance by (standard; transfer)
+  (fact test_bit_eq_bit shiftl_word_eq shiftr_word_eq)+
+end
+
+instantiation uint64 :: lsb
+begin
+lift_definition lsb_uint64 :: \<open>uint64 \<Rightarrow> bool\<close> is lsb .
+instance by (standard; transfer)
+  (fact lsb_odd)
+end
+
+instantiation uint64 :: msb
+begin
+lift_definition msb_uint64 :: \<open>uint64 \<Rightarrow> bool\<close> is msb .
 instance ..
+end
+
+instantiation uint64 :: set_bit
+begin
+lift_definition set_bit_uint64 :: \<open>uint64 \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> uint64\<close> is set_bit .
+instance
+  apply standard
+  apply (unfold Bit_Operations.set_bit_def unset_bit_def)
+  apply transfer
+  apply (simp add: set_bit_eq Bit_Operations.set_bit_def unset_bit_def)
+  done
 end
 
 instantiation uint64 :: bit_comprehension begin
