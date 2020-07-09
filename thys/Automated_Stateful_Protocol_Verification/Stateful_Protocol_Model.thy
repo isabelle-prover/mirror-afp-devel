@@ -3289,7 +3289,7 @@ proof -
       thus ?thesis by simp
     qed (use 2(3) in simp)
     moreover have "\<exists>u u'. T = [u,u']"
-      using 2(2) by (metis (no_types) length_0_conv length_Suc_conv)
+      using 2(2) by (metis (no_types, lifting) Suc_length_conv length_0_conv)
     ultimately show ?thesis using Fun 2(1,2) by force
   qed
 qed

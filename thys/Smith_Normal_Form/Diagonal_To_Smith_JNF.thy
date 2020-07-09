@@ -300,8 +300,10 @@ proof (intro rel_funI, clarify, goal_cases)
   let ?xs1="[i + 1..<min (dim_row A) (dim_col A)]"
   let ?xs2="[i + 1..<min (nrows A') (ncols A')]"
   have xs_eq[transfer_rule]: "?xs1 = ?xs2"
-    by (metis HMA_M3 HMA_M3.simps Mod_Type_Connect.dim_col_transfer_rule 
-        Mod_Type_Connect.dim_row_transfer_rule Suc_eq_plus1 ncols_def nrows_def)
+    using HMA_M3
+    by (auto intro: arg_cong2[where f = upt]
+        simp: Mod_Type_Connect.dim_col_transfer_rule Mod_Type_Connect.dim_row_transfer_rule
+        nrows_def ncols_def)
   have j_xs: "\<forall>j\<in>set ?xs1. j < min CARD('nr) CARD('nc)" using i
     by (metis atLeastLessThan_iff ncols_def nrows_def set_upt xs_eq)
   have rel: "HMA_M3 (diagonal_to_Smith_i_PQ_JNF ?xs1 i bezout (P,A,Q)) 
