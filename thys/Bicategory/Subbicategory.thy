@@ -76,11 +76,6 @@ begin
             inclusion
       by (unfold_locales, simp_all)
 
-    interpretation VxV: product_category \<open>(\<cdot>)\<close> \<open>(\<cdot>)\<close> ..
-    interpretation VV: subcategory VxV.comp
-        \<open>\<lambda>\<mu>\<nu>. arr (fst \<mu>\<nu>) \<and> arr (snd \<mu>\<nu>) \<and> src (fst \<mu>\<nu>) = trg (snd \<mu>\<nu>)\<close>
-      using subcategory_VV by auto
-
     interpretation "functor" VV.comp \<open>(\<cdot>)\<close> \<open>\<lambda>\<mu>\<nu>. fst \<mu>\<nu> \<star> snd \<mu>\<nu>\<close>
       using hcomp_def VV.arr_char src_def trg_def arr_char hcomp_closed dom_char cod_char
             VV.dom_char VV.cod_char
@@ -149,17 +144,6 @@ begin
       using arr_char src_def trg_def src_closed trg_closed
       apply (unfold_locales)
       using hcomp_def inclusion not_arr_null by auto
-
-    interpretation VxVxV: product_category \<open>(\<cdot>)\<close> VxV.comp ..
-    interpretation VVV: subcategory VxVxV.comp
-                          \<open>\<lambda>\<tau>\<mu>\<nu>. arr (fst \<tau>\<mu>\<nu>) \<and> VV.arr (snd \<tau>\<mu>\<nu>) \<and>
-                          src (fst \<tau>\<mu>\<nu>) = trg (fst (snd \<tau>\<mu>\<nu>))\<close>
-      using subcategory_VVV by auto
-
-    interpretation HoHV: "functor" VVV.comp \<open>(\<cdot>)\<close> HoHV
-      using functor_HoHV by auto
-    interpretation HoVH: "functor" VVV.comp \<open>(\<cdot>)\<close> HoVH
-      using functor_HoVH by auto
 
     abbreviation \<a>
     where "\<a> \<mu> \<nu> \<tau> \<equiv> if VVV.arr (\<mu>, \<nu>, \<tau>) then \<a>\<^sub>B \<mu> \<nu> \<tau> else null"
@@ -555,7 +539,7 @@ begin
 
     interpretation bicategory \<open>(\<cdot>)\<close> \<open>(\<star>)\<close> \<a> \<i> src trg
     proof
-      show "\<And>a. obj a \<Longrightarrow> \<guillemotleft>\<i> a : a \<star> a \<rightarrow> a\<guillemotright>"
+      show "\<And>a. obj a \<Longrightarrow> \<guillemotleft>\<i>[a] : a \<star> a \<Rightarrow> a\<guillemotright>"
       proof -
         fix a
         assume a: "obj a"
@@ -566,7 +550,7 @@ begin
           using a 1 obj_def src_def trg_def in_hom_char B.unit_in_hom
                 arr_char hcomp_def B.obj_def ide_char objE hcomp_closed
           by (metis (no_types, lifting) B.\<ll>_ide_simp B.unitor_coincidence(1) inclusion lunit_closed)
-        show "\<guillemotleft>\<i> a : a \<star> a \<rightarrow> a\<guillemotright>"
+        show "\<guillemotleft>\<i>[a] : a \<star> a \<Rightarrow> a\<guillemotright>"
           using a 1 2 obj_def src_def trg_def in_hom_char B.unit_in_hom
                 arr_char hcomp_def B.obj_def ide_char hcomp_closed
           apply (elim objE) by auto

@@ -150,18 +150,26 @@ begin
     lemma Dom_comp:
     assumes "seq g f"
     shows "Dom (g \<cdot> f) = Dom f"
-      using assms comp_def
-      apply (cases "C1.arr (fst g)"; cases "C1.arr (fst f)";
-             cases "C2.arr (snd f)"; cases "C2.arr (snd g)"; simp_all)
-      by auto
+    proof -
+      have "C1.arr (fst f) \<and> C1.arr (fst g) \<and> C1.dom (fst g) = C1.cod (fst f)"
+        using assms by blast
+      moreover have "C2.arr (snd f) \<and> C2.arr (snd g) \<and> C2.dom (snd g) = C2.cod (snd f)"
+        using assms by blast
+      ultimately show ?thesis
+        by (simp add: comp_def)
+    qed
 
     lemma Cod_comp:
     assumes "seq g f"
     shows "Cod (g \<cdot> f) = Cod g"
-      using assms comp_def
-      apply (cases "C1.arr (fst f)"; cases "C2.arr (snd f)";
-             cases "C1.arr (fst g)"; cases "C2.arr (snd g)"; simp_all)
-      by auto
+    proof -
+      have "C1.arr (fst f) \<and> C1.arr (fst g) \<and> C1.dom (fst g) = C1.cod (fst f)"
+        using assms by blast
+      moreover have "C2.arr (snd f) \<and> C2.arr (snd g) \<and> C2.dom (snd g) = C2.cod (snd f)"
+        using assms by blast
+      ultimately show ?thesis
+        by (simp add: comp_def)
+    qed
 
     theorem is_category:
     shows "category comp"
@@ -174,23 +182,24 @@ begin
         using comp_def seq_char by (metis C1.seqI C2.seqI Pair_inject null_char)
       fix h
       show "seq h g \<Longrightarrow> seq (h \<cdot> g) f \<Longrightarrow> seq g f"
-        using comp_def null_char seq_char by (elim seqE C1.seqE C2.seqE, simp)
+        using seq_char
+        by (metis category.seqE category.seqI Dom_comp
+            product_category_axioms product_category_def fst_conv snd_conv)
       show "seq h (g \<cdot> f) \<Longrightarrow> seq g f \<Longrightarrow> seq h g"
-        using comp_def null_char seq_char by (elim seqE C1.seqE C2.seqE, simp)
+        using seq_char
+        by (metis category.seqE category.seqI Cod_comp
+            product_category_axioms product_category_def fst_conv snd_conv)
       show "seq g f \<Longrightarrow> seq h g \<Longrightarrow> seq (h \<cdot> g) f"
-        using comp_def null_char seq_char by (elim seqE C1.seqE C2.seqE, simp)
+        using seq_char
+        by (metis arrE category.seqE category.seqI Dom_comp
+            product_category_axioms product_category_def fst_conv snd_conv)
       show "seq g f \<Longrightarrow> seq h g \<Longrightarrow> (h \<cdot> g) \<cdot> f = h \<cdot> g \<cdot> f"
         using comp_def null_char seq_char C1.comp_assoc C2.comp_assoc
         by (elim seqE C1.seqE C2.seqE, simp)
     qed
 
-  end
-
-  sublocale product_category \<subseteq> category comp
-    using is_category comp_def by auto
-
-  context product_category
-  begin
+    sublocale category comp
+      using is_category comp_def by auto
 
     lemma dom_char:
     shows "dom f = Dom f"

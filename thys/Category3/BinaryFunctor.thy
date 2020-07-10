@@ -215,11 +215,11 @@ begin
     shows "(\<lambda>f2. F (f1' \<cdot>\<^sub>A\<^sub>1 f1, f2)) =
                  vertical_composite.map A2 B (\<lambda>f2. F (f1, f2)) (\<lambda>f2. F (f1', f2))"
     proof -
-      interpret \<tau>: natural_transformation A2 B \<open>\<lambda>f2. F (A1.dom f1, f2)\<close> \<open>\<lambda>f2. F (A1.cod f1, f2)\<close>
-                                               \<open>\<lambda>f2. F (f1, f2)\<close>
+      interpret \<tau>: natural_transformation A2 B
+                     \<open>\<lambda>f2. F (A1.dom f1, f2)\<close> \<open>\<lambda>f2. F (A1.cod f1, f2)\<close> \<open>\<lambda>f2. F (f1, f2)\<close>
         using assms fixing_arr_gives_natural_transformation_1 by blast
-      interpret \<tau>': natural_transformation A2 B \<open>\<lambda>f2. F (A1.cod f1, f2)\<close> \<open>\<lambda>f2. F (A1.cod f1', f2)\<close>
-                                                \<open>\<lambda>f2. F (f1', f2)\<close>
+      interpret \<tau>': natural_transformation A2 B
+                     \<open>\<lambda>f2. F (A1.cod f1, f2)\<close> \<open>\<lambda>f2. F (A1.cod f1', f2)\<close> \<open>\<lambda>f2. F (f1', f2)\<close>
         using assms fixing_arr_gives_natural_transformation_1 A1.seqE by metis
       interpret \<tau>'o\<tau>: vertical_composite A2 B
                         \<open>\<lambda>f2. F (A1.dom f1, f2)\<close> \<open>\<lambda>f2. F (A1.cod f1, f2)\<close> \<open>\<lambda>f2. F (A1.cod f1', f2)\<close>

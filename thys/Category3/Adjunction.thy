@@ -268,6 +268,150 @@ begin
         by (metis C.arrI C.ide_dom C.in_homE D.arrI D.ide_dom D.in_homE)
     qed
 
+    lemma respects_natural_isomorphism:
+    assumes "natural_isomorphism D C F' F \<tau>" and "natural_isomorphism C D G G' \<mu>"
+    shows "meta_adjunction C D F' G'
+             (\<lambda>y f. \<mu> (C.cod f) \<cdot>\<^sub>D \<phi> y (f \<cdot>\<^sub>C inverse_transformation.map D C F \<tau> y))
+             (\<lambda>x g. \<psi> x ((inverse_transformation.map C D G' \<mu> x) \<cdot>\<^sub>D g) \<cdot>\<^sub>C \<tau> (D.dom g))"
+    proof -
+      interpret \<tau>: natural_isomorphism D C F' F \<tau>
+        using assms(1) by simp
+      interpret \<tau>': inverse_transformation D C F' F \<tau>
+        ..
+      interpret \<mu>: natural_isomorphism C D G G' \<mu>
+        using assms(2) by simp
+      interpret \<mu>': inverse_transformation C D G G' \<mu>
+        ..
+      let ?\<phi>' = "\<lambda>y f. \<mu> (C.cod f) \<cdot>\<^sub>D \<phi> y (f \<cdot>\<^sub>C \<tau>'.map y)"
+      let ?\<psi>' = "\<lambda>x g. \<psi> x (\<mu>'.map x \<cdot>\<^sub>D g) \<cdot>\<^sub>C \<tau> (D.dom g)"
+      show "meta_adjunction C D F' G' ?\<phi>' ?\<psi>'"
+      proof
+        show "\<And>y f x. \<lbrakk>D.ide y; \<guillemotleft>f : F' y \<rightarrow>\<^sub>C x\<guillemotright>\<rbrakk>
+                         \<Longrightarrow> \<guillemotleft>\<mu> (C.cod f) \<cdot>\<^sub>D \<phi> y (f \<cdot>\<^sub>C \<tau>'.map y) : y \<rightarrow>\<^sub>D G' x\<guillemotright>"
+        proof -
+          fix x y f
+          assume y: "D.ide y" and f: "\<guillemotleft>f : F' y \<rightarrow>\<^sub>C x\<guillemotright>"
+          show "\<guillemotleft>\<mu> (C.cod f) \<cdot>\<^sub>D \<phi> y (f \<cdot>\<^sub>C \<tau>'.map y) : y \<rightarrow>\<^sub>D G' x\<guillemotright>"
+          proof (intro D.comp_in_homI)
+            show "\<guillemotleft>\<mu> (C.cod f) : G x \<rightarrow>\<^sub>D G' x\<guillemotright>"
+              using f by fastforce
+            show "\<guillemotleft>\<phi> y (f \<cdot>\<^sub>C \<tau>'.map y) : y \<rightarrow>\<^sub>D G x\<guillemotright>"
+              using f y \<phi>_in_hom by auto
+          qed
+        qed
+        show "\<And>x g y. \<lbrakk>C.ide x; \<guillemotleft>g : y \<rightarrow>\<^sub>D G' x\<guillemotright>\<rbrakk>
+                         \<Longrightarrow> \<guillemotleft>\<psi> x (\<mu>'.map x \<cdot>\<^sub>D g) \<cdot>\<^sub>C \<tau> (D.dom g) : F' y \<rightarrow>\<^sub>C x\<guillemotright>"
+        proof -
+          fix x y g
+          assume x: "C.ide x" and g: "\<guillemotleft>g : y \<rightarrow>\<^sub>D G' x\<guillemotright>"
+          show "\<guillemotleft>\<psi> x (\<mu>'.map x \<cdot>\<^sub>D g) \<cdot>\<^sub>C \<tau> (D.dom g) : F' y \<rightarrow>\<^sub>C x\<guillemotright>"
+          proof (intro C.comp_in_homI)
+            show "\<guillemotleft>\<tau> (D.dom g) : F' y \<rightarrow>\<^sub>C F y\<guillemotright>"
+              using g by fastforce
+            show "\<guillemotleft>\<psi> x (\<mu>'.map x \<cdot>\<^sub>D g) : F y \<rightarrow>\<^sub>C x\<guillemotright>"
+              using x g \<psi>_in_hom by auto
+          qed
+        qed
+        show "\<And>y f x. \<lbrakk>D.ide y; \<guillemotleft>f : F' y \<rightarrow>\<^sub>C x\<guillemotright>\<rbrakk>
+                          \<Longrightarrow> \<psi> x (\<mu>'.map x \<cdot>\<^sub>D \<mu> (C.cod f) \<cdot>\<^sub>D \<phi> y (f \<cdot>\<^sub>C \<tau>'.map y)) \<cdot>\<^sub>C
+                                \<tau> (D.dom (\<mu> (C.cod f) \<cdot>\<^sub>D \<phi> y (f \<cdot>\<^sub>C \<tau>'.map y))) =
+                              f"
+        proof -
+          fix x y f
+          assume y: "D.ide y" and f: "\<guillemotleft>f : F' y \<rightarrow>\<^sub>C x\<guillemotright>"
+          have 1: "\<guillemotleft>\<phi> y (f \<cdot>\<^sub>C \<tau>'.map y) : y \<rightarrow>\<^sub>D G x\<guillemotright>"
+            using f y \<phi>_in_hom by auto
+          show "\<psi> x (\<mu>'.map x \<cdot>\<^sub>D \<mu> (C.cod f) \<cdot>\<^sub>D \<phi> y (f \<cdot>\<^sub>C \<tau>'.map y)) \<cdot>\<^sub>C
+                  \<tau> (D.dom (\<mu> (C.cod f) \<cdot>\<^sub>D \<phi> y (f \<cdot>\<^sub>C \<tau>'.map y))) =
+                f"
+          proof -
+            have "\<psi> x (\<mu>'.map x \<cdot>\<^sub>D \<mu> (C.cod f) \<cdot>\<^sub>D \<phi> y (f \<cdot>\<^sub>C \<tau>'.map y)) \<cdot>\<^sub>C
+                    \<tau> (D.dom (\<mu> (C.cod f) \<cdot>\<^sub>D \<phi> y (f \<cdot>\<^sub>C \<tau>'.map y))) =
+                  \<psi> x ((\<mu>'.map x \<cdot>\<^sub>D \<mu> (C.cod f)) \<cdot>\<^sub>D \<phi> y (f \<cdot>\<^sub>C \<tau>'.map y)) \<cdot>\<^sub>C
+                    \<tau> (D.dom (\<mu> (C.cod f) \<cdot>\<^sub>D \<phi> y (f \<cdot>\<^sub>C \<tau>'.map y)))"
+              using D.comp_assoc by simp
+            also have "... = \<psi> x (\<phi> y (f \<cdot>\<^sub>C \<tau>'.map y)) \<cdot>\<^sub>C \<tau> y"
+            proof -
+              have "C.cod f = x"
+                using f by auto
+              moreover have "\<mu>'.map x \<cdot>\<^sub>D \<mu> x = G x"
+                using f \<mu>'.inverts_components [of x] by force
+              moreover have "D.dom (\<mu> x \<cdot>\<^sub>D \<phi> y (f \<cdot>\<^sub>C \<tau>'.map y)) = y"
+                using f y 1 by fastforce
+              ultimately show ?thesis
+                using f y 1 D.comp_cod_arr by auto
+            qed
+            also have "... = f"
+              using f y \<psi>_\<phi> C.comp_assoc \<tau>'.inverts_components [of y] C.comp_arr_dom
+              by fastforce
+            finally show ?thesis by blast
+          qed
+        qed
+        show "\<And>x g y. \<lbrakk>C.ide x; \<guillemotleft>g : y \<rightarrow>\<^sub>D G' x\<guillemotright>\<rbrakk>
+                         \<Longrightarrow> \<mu> (C.cod (\<psi> x (\<mu>'.map x \<cdot>\<^sub>D g) \<cdot>\<^sub>C \<tau> (D.dom g))) \<cdot>\<^sub>D
+                               \<phi> y ((\<psi> x (\<mu>'.map x \<cdot>\<^sub>D g) \<cdot>\<^sub>C \<tau> (D.dom g)) \<cdot>\<^sub>C \<tau>'.map y) =
+                             g"
+        proof -
+          fix x y g
+          assume x: "C.ide x" and g: "\<guillemotleft>g : y \<rightarrow>\<^sub>D G' x\<guillemotright>"
+          have 1: "\<guillemotleft>\<psi> x (\<mu>'.map x \<cdot>\<^sub>D g) : F y \<rightarrow>\<^sub>C x\<guillemotright>"
+            using x g \<psi>_in_hom by auto
+          show "\<mu> (C.cod (\<psi> x (\<mu>'.map x \<cdot>\<^sub>D g) \<cdot>\<^sub>C \<tau> (D.dom g))) \<cdot>\<^sub>D
+                  \<phi> y ((\<psi> x (\<mu>'.map x \<cdot>\<^sub>D g) \<cdot>\<^sub>C \<tau> (D.dom g)) \<cdot>\<^sub>C \<tau>'.map y) =
+                g"
+          proof -
+            have "\<mu> (C.cod (\<psi> x (\<mu>'.map x \<cdot>\<^sub>D g) \<cdot>\<^sub>C \<tau> (D.dom g))) \<cdot>\<^sub>D
+                    \<phi> y ((\<psi> x (\<mu>'.map x \<cdot>\<^sub>D g) \<cdot>\<^sub>C \<tau> (D.dom g)) \<cdot>\<^sub>C \<tau>'.map y) =
+                  \<mu> (C.cod (\<psi> x (\<mu>'.map x \<cdot>\<^sub>D g) \<cdot>\<^sub>C \<tau> (D.dom g))) \<cdot>\<^sub>D
+                    \<phi> y (\<psi> x (\<mu>'.map x \<cdot>\<^sub>D g) \<cdot>\<^sub>C \<tau> (D.dom g) \<cdot>\<^sub>C \<tau>'.map y)"
+              using C.comp_assoc by simp
+            also have "... = \<mu> x \<cdot>\<^sub>D \<phi> y (\<psi> x (\<mu>'.map x \<cdot>\<^sub>D g))"
+            proof -
+              have "D.dom g = y"
+                using g by auto
+              moreover have "\<tau> y \<cdot>\<^sub>C \<tau>'.map y = F y"
+                using g \<tau>'.inverts_components [of y] by fastforce
+              moreover have "C.cod (\<psi> x (\<mu>'.map x \<cdot>\<^sub>D g) \<cdot>\<^sub>C \<tau> (D.dom g)) = x"
+                using g 1 by fastforce
+              ultimately show ?thesis
+                using x g 1 C.comp_arr_dom by auto
+            qed
+            also have "... = \<mu> x \<cdot>\<^sub>D \<mu>'.map x \<cdot>\<^sub>D g"
+              using x g \<phi>_\<psi> by auto
+            also have "... = (\<mu> x \<cdot>\<^sub>D \<mu>'.map x) \<cdot>\<^sub>D g"
+              using D.comp_assoc by simp
+            also have "... = g"
+              using x g \<mu>'.inverts_components [of x] D.comp_cod_arr by fastforce
+            finally show ?thesis by blast
+          qed
+        qed
+        show "\<And>f x x' g y' y h. \<lbrakk>\<guillemotleft>f : x \<rightarrow>\<^sub>C x'\<guillemotright>; \<guillemotleft>g : y' \<rightarrow>\<^sub>D y\<guillemotright>; \<guillemotleft>h : F' y \<rightarrow>\<^sub>C x\<guillemotright>\<rbrakk>
+                  \<Longrightarrow> \<mu> (C.cod (f \<cdot>\<^sub>C h \<cdot>\<^sub>C F' g)) \<cdot>\<^sub>D \<phi> y' ((f \<cdot>\<^sub>C h \<cdot>\<^sub>C F' g) \<cdot>\<^sub>C \<tau>'.map y') =
+                      G' f \<cdot>\<^sub>D (\<mu> (C.cod h) \<cdot>\<^sub>D \<phi> y (h \<cdot>\<^sub>C \<tau>'.map y)) \<cdot>\<^sub>D g"
+        proof -
+          fix x y x' y' f g h
+          assume f: "\<guillemotleft>f : x \<rightarrow>\<^sub>C x'\<guillemotright>" and g: "\<guillemotleft>g : y' \<rightarrow>\<^sub>D y\<guillemotright>" and h: "\<guillemotleft>h : F' y \<rightarrow>\<^sub>C x\<guillemotright>"
+          show "\<mu> (C.cod (f \<cdot>\<^sub>C h \<cdot>\<^sub>C F' g)) \<cdot>\<^sub>D \<phi> y' ((f \<cdot>\<^sub>C h \<cdot>\<^sub>C F' g) \<cdot>\<^sub>C \<tau>'.map y') =
+                G' f \<cdot>\<^sub>D (\<mu> (C.cod h) \<cdot>\<^sub>D \<phi> y (h \<cdot>\<^sub>C \<tau>'.map y)) \<cdot>\<^sub>D g"
+          proof -
+            have "\<mu> (C.cod (f \<cdot>\<^sub>C h \<cdot>\<^sub>C F' g)) \<cdot>\<^sub>D \<phi> y' ((f \<cdot>\<^sub>C h \<cdot>\<^sub>C F' g) \<cdot>\<^sub>C \<tau>'.map y') =
+                  \<mu> x' \<cdot>\<^sub>D \<phi> y' ((f \<cdot>\<^sub>C h \<cdot>\<^sub>C F' g) \<cdot>\<^sub>C \<tau>'.map y')"
+              using f g h by fastforce
+            also have "... = \<mu> x' \<cdot>\<^sub>D \<phi> y' (f \<cdot>\<^sub>C (h \<cdot>\<^sub>C \<tau>'.map y) \<cdot>\<^sub>C F g)"
+              using g \<tau>'.naturality C.comp_assoc by auto
+            also have "... = (\<mu> x' \<cdot>\<^sub>D G f) \<cdot>\<^sub>D \<phi> y (h \<cdot>\<^sub>C \<tau>'.map y) \<cdot>\<^sub>D g"
+              using f g h \<phi>_naturality [of f x x' g y' y "h \<cdot>\<^sub>C \<tau>'.map y"] D.comp_assoc
+              by fastforce
+            also have "... = (G' f \<cdot>\<^sub>D \<mu> x) \<cdot>\<^sub>D \<phi> y (h \<cdot>\<^sub>C \<tau>'.map y) \<cdot>\<^sub>D g"
+              using f \<mu>.naturality by auto
+            also have "... = G' f \<cdot>\<^sub>D (\<mu> (C.cod h) \<cdot>\<^sub>D \<phi> y (h \<cdot>\<^sub>C \<tau>'.map y)) \<cdot>\<^sub>D g"
+              using h D.comp_assoc by auto
+            finally show ?thesis by blast
+          qed
+        qed
+      qed
+    qed
+
   end
 
   subsection "Hom-Adjunction"
@@ -299,7 +443,7 @@ begin
   locale hom_adjunction =
     C: category C +
     D: category D +
-    S: set_category S +
+    S: replete_set_category S +
     Cop: dual_category C +
     Dop: dual_category D +
     CopxC: product_category Cop.comp C +
@@ -541,7 +685,7 @@ begin
   locale adjunction =
     C: category C +
     D: category D +
-    S: set_category S +
+    S: replete_set_category S +
     Cop: dual_category C +
     Dop: dual_category D +
     CopxC: product_category Cop.comp C +
@@ -740,8 +884,10 @@ begin
         using o_assoc by metis
     qed
 
-    interpretation \<epsilon>FoF\<eta>: vertical_composite D C F \<open>F o G o F\<close> F \<open>F o \<eta>.map\<close> \<open>\<epsilon>.map o F\<close> ..
-    interpretation G\<epsilon>o\<eta>G: vertical_composite C D G \<open>G o F o G\<close> G \<open>\<eta>.map o G\<close> \<open>G o \<epsilon>.map\<close> ..
+    interpretation \<epsilon>FoF\<eta>: vertical_composite D C F \<open>F o G o F\<close> F \<open>F o \<eta>.map\<close> \<open>\<epsilon>.map o F\<close>
+      ..
+    interpretation G\<epsilon>o\<eta>G: vertical_composite C D G \<open>G o F o G\<close> G \<open>\<eta>.map o G\<close> \<open>G o \<epsilon>.map\<close>
+      ..
 
     lemma unit_counit_F:
     assumes "D.ide y"
@@ -753,7 +899,7 @@ begin
     shows "G x = G (\<epsilon>o x) \<cdot>\<^sub>D \<eta>o (G x)"
       using assms \<phi>_in_terms_of_\<eta>o \<epsilon>o_def \<phi>_\<psi> \<epsilon>o_in_hom G.preserves_ide D.ide_in_hom by metis
 
-    theorem induces_unit_counit_adjunction:
+    lemma induces_unit_counit_adjunction':
     shows "unit_counit_adjunction C D F G \<eta>.map \<epsilon>.map"
     proof
       show "\<epsilon>FoF\<eta>.map = F"
@@ -766,22 +912,13 @@ begin
         by (intro NaturalTransformation.eqI, auto)
     qed
 
-    text\<open>
-      From the defined @{term \<eta>} and @{term \<epsilon>} we can recover the original @{term \<phi>} and @{term \<psi>}.
-\<close>
-
-    lemma \<phi>_in_terms_of_\<eta>:
-    assumes "D.ide y" and "\<guillemotleft>f : F y \<rightarrow>\<^sub>C x\<guillemotright>"
-    shows "\<phi> y f = G f \<cdot>\<^sub>D \<eta>.map y"
-      using assms by (simp add: \<phi>_in_terms_of_\<eta>o)
-
-    lemma \<psi>_in_terms_of_\<epsilon>:
-    assumes "C.ide x" and "\<guillemotleft>g : y \<rightarrow>\<^sub>D G x\<guillemotright>"
-    shows "\<psi> x g = \<epsilon>.map x \<cdot>\<^sub>C F g"
-      using assms by (simp add: \<psi>_in_terms_of_\<epsilon>o)
-
     definition \<eta> :: "'d \<Rightarrow> 'd" where "\<eta> \<equiv> \<eta>.map"
     definition \<epsilon> :: "'c \<Rightarrow> 'c" where "\<epsilon> \<equiv> \<epsilon>.map"
+
+    theorem induces_unit_counit_adjunction:
+    shows "unit_counit_adjunction C D F G \<eta> \<epsilon>"
+      unfolding \<eta>_def \<epsilon>_def
+      using induces_unit_counit_adjunction' by simp
 
     lemma \<eta>_is_natural_transformation:
     shows "natural_transformation D D D.map GF.map \<eta>"
@@ -790,6 +927,20 @@ begin
     lemma \<epsilon>_is_natural_transformation:
     shows "natural_transformation C C FG.map C.map \<epsilon>"
       unfolding \<epsilon>_def ..
+
+    text\<open>
+      From the defined @{term \<eta>} and @{term \<epsilon>} we can recover the original @{term \<phi>} and @{term \<psi>}.
+\<close>
+
+    lemma \<phi>_in_terms_of_\<eta>:
+    assumes "D.ide y" and "\<guillemotleft>f : F y \<rightarrow>\<^sub>C x\<guillemotright>"
+    shows "\<phi> y f = G f \<cdot>\<^sub>D \<eta> y"
+      using assms \<eta>_def by (simp add: \<phi>_in_terms_of_\<eta>o)
+
+    lemma \<psi>_in_terms_of_\<epsilon>:
+    assumes "C.ide x" and "\<guillemotleft>g : y \<rightarrow>\<^sub>D G x\<guillemotright>"
+    shows "\<psi> x g = \<epsilon> x \<cdot>\<^sub>C F g"
+      using assms \<epsilon>_def by (simp add: \<psi>_in_terms_of_\<epsilon>o)
 
   end
 
@@ -831,14 +982,6 @@ begin
     lemma has_left_adjoint_functor:
     shows "left_adjoint_functor D C F"
       apply unfold_locales using has_terminal_arrows_from_functor by auto
-
-  end
-
-  context meta_adjunction
-  begin
-
-    interpretation unit_counit_adjunction C D F G \<eta> \<epsilon>
-      using induces_unit_counit_adjunction \<eta>_def \<epsilon>_def by auto
 
     lemma has_initial_arrows_to_functor:
     assumes y: "D.ide y"
@@ -888,8 +1031,7 @@ begin
       fix x :: 'c and y :: 'd and f :: 'c
       assume y: "D.ide y" and f: "\<guillemotleft>f : F y \<rightarrow>\<^sub>C x\<guillemotright>"
       show 0: "\<guillemotleft>\<phi> y f : y \<rightarrow>\<^sub>D G x\<guillemotright>"
-        using f y G.preserves_hom \<eta>.preserves_hom \<phi>_def D.ide_in_hom
-        by (metis D.comp_in_homI D.in_homE comp_apply D.map_simp)
+        using f y G.preserves_hom \<eta>.preserves_hom \<phi>_def D.ide_in_hom by auto
       show "\<psi> x (\<phi> y f) = f"
       proof -
         have "\<psi> x (\<phi> y f) = (\<epsilon> x \<cdot>\<^sub>C F (G f)) \<cdot>\<^sub>C F (\<eta> y)"
@@ -1470,44 +1612,50 @@ begin
     To obtain a hom-adjunction from a meta-adjunction, we need to exhibit hom-functors
     from @{term C} and @{term D} to a common set category @{term S}, so it is necessary
     to apply an actual concrete construction of such a category.
-    We use the category \<open>SetCat\<close> whose element type is the disjoint sum
+    We use the replete set category generated by the disjoint sum
     @{typ "('c+'d)"} of the arrow types of @{term C} and @{term D}.
 \<close>
 
   context meta_adjunction
   begin
 
+    interpretation S: replete_setcat \<open>undefined :: 'c+'d\<close> .
+
     definition inC :: "'c \<Rightarrow> ('c+'d) setcat.arr"
-    where "inC \<equiv> SetCat.UP o Inl"
+    where "inC \<equiv> S.UP o Inl"
 
     definition inD :: "'d \<Rightarrow> ('c+'d) setcat.arr"
-    where "inD \<equiv> SetCat.UP o Inr"
+    where "inD \<equiv> S.UP o Inr"
 
-    interpretation S: set_category \<open>SetCat.comp :: ('c+'d) setcat.arr comp\<close>
-      using SetCat.is_set_category by auto
     interpretation Cop: dual_category C ..
     interpretation Dop: dual_category D ..
     interpretation CopxC: product_category Cop.comp C ..
     interpretation DopxD: product_category Dop.comp D ..
     interpretation DopxC: product_category Dop.comp C ..
-    interpretation HomC: hom_functor C \<open>SetCat.comp :: ('c+'d) setcat.arr comp\<close> \<open>\<lambda>_. inC\<close>
-      apply unfold_locales
-      unfolding inC_def using SetCat.UP_mapsto
-       apply auto[1]
-      using SetCat.inj_UP
-      by (metis injD inj_Inl inj_compose inj_on_def)
-    interpretation HomD: hom_functor D \<open>SetCat.comp :: ('c+'d) setcat.arr comp\<close> \<open>\<lambda>_. inD\<close>
-      apply unfold_locales
-      unfolding inD_def using SetCat.UP_mapsto
-       apply auto[1]
-      using SetCat.inj_UP
-      by (metis injD inj_Inr inj_compose inj_on_def)
+    interpretation HomC: hom_functor C S.comp \<open>\<lambda>_. inC\<close>
+    proof
+      show "\<And>f. C.arr f \<Longrightarrow> inC f \<in> S.Univ"
+        unfolding inC_def using S.UP_mapsto by auto
+      show "\<And>b a. \<lbrakk>C.ide b; C.ide a\<rbrakk> \<Longrightarrow> inj_on inC (C.hom b a)"
+        unfolding inC_def
+        using S.inj_UP
+        by (metis injD inj_Inl inj_compose inj_on_def)
+    qed
+    interpretation HomD: hom_functor D S.comp \<open>\<lambda>_. inD\<close>
+    proof
+      show "\<And>f. D.arr f \<Longrightarrow> inD f \<in> S.Univ"
+        unfolding inD_def using S.UP_mapsto by auto
+      show "\<And>b a. \<lbrakk>D.ide b; D.ide a\<rbrakk> \<Longrightarrow> inj_on inD (D.hom b a)"
+        unfolding inD_def
+        using S.inj_UP
+        by (metis injD inj_Inr inj_compose inj_on_def)
+    qed
     interpretation Fop: dual_functor D C F ..
     interpretation FopxC: product_functor Dop.comp C Cop.comp C Fop.map C.map ..
     interpretation DopxG: product_functor Dop.comp C Dop.comp D Dop.map G ..
-    interpretation Hom_FopxC: composite_functor DopxC.comp CopxC.comp SetCat.comp
+    interpretation Hom_FopxC: composite_functor DopxC.comp CopxC.comp S.comp
                                                 FopxC.map HomC.map ..
-    interpretation Hom_DopxG: composite_functor DopxC.comp DopxD.comp SetCat.comp
+    interpretation Hom_DopxG: composite_functor DopxC.comp DopxD.comp S.comp
                                                 DopxG.map HomD.map ..
 
     lemma inC_\<psi> [simp]:
@@ -1534,7 +1682,7 @@ begin
     assumes "DopxC.arr gf"
     shows "Hom_FopxC.map gf =
               S.mkArr (HomC.set (F (D.cod (fst gf)), C.dom (snd gf)))
-                      (HomC.set (F (D.dom (fst gf)), C.cod (snd gf)))            
+                      (HomC.set (F (D.dom (fst gf)), C.cod (snd gf)))
                       (inC \<circ> (\<lambda>h. snd gf \<cdot>\<^sub>C h \<cdot>\<^sub>C F (fst gf))
                            \<circ> HomC.\<psi> (F (D.cod (fst gf)), C.dom (snd gf)))"
       using assms HomC.map_def by simp
@@ -1543,7 +1691,7 @@ begin
     assumes "DopxC.arr gf"
     shows "Hom_DopxG.map gf =
               S.mkArr (HomD.set (D.cod (fst gf), G (C.dom (snd gf))))
-                      (HomD.set (D.dom (fst gf), G (C.cod (snd gf))))           
+                      (HomD.set (D.dom (fst gf), G (C.cod (snd gf))))
                       (inD \<circ> (\<lambda>h. G (snd gf) \<cdot>\<^sub>D h \<cdot>\<^sub>D fst gf)
                            \<circ> HomD.\<psi> (D.cod (fst gf), G (C.dom (snd gf))))"
       using assms HomD.map_def by simp
@@ -1584,7 +1732,7 @@ begin
       ultimately show ?thesis using \<Phi>o_def by auto
     qed
 
-    interpretation \<Phi>: transformation_by_components DopxC.comp SetCat.comp
+    interpretation \<Phi>: transformation_by_components DopxC.comp S.comp
                                                    Hom_FopxC.map Hom_DopxG.map \<Phi>o
     proof
       fix yx
@@ -1594,8 +1742,8 @@ begin
       next
       fix gf
       assume gf: "DopxC.arr gf"
-      show "SetCat.comp (\<Phi>o (DopxC.cod gf)) (Hom_FopxC.map gf)
-                = SetCat.comp (Hom_DopxG.map gf) (\<Phi>o (DopxC.dom gf))"
+      show "S.comp (\<Phi>o (DopxC.cod gf)) (Hom_FopxC.map gf)
+                = S.comp (Hom_DopxG.map gf) (\<Phi>o (DopxC.dom gf))"
       proof -
         let ?g = "fst gf"
         let ?f = "snd gf"
@@ -1617,34 +1765,38 @@ begin
                  \<Phi>o (DopxC.cod gf) = S.mkArr (HomC.set (?Fy', ?x')) (HomD.set (?y', ?Gx'))
                                              (inD o \<phi> ?y' o HomC.\<psi> (?Fy', ?x'))"
           using gf \<Phi>o_in_hom [of "DopxC.cod gf"] \<Phi>o_def [of "DopxC.cod gf"] \<phi>_in_hom
+                S.card_of_leq
           by auto
         have 3: "S.arr (\<Phi>o (DopxC.dom gf)) \<and>
                  \<Phi>o (DopxC.dom gf) = S.mkArr (HomC.set (?Fy, ?x)) (HomD.set (?y, ?Gx))
                                              (inD o \<phi> ?y o HomC.\<psi> (?Fy, ?x))"
           using gf \<Phi>o_in_hom [of "DopxC.dom gf"] \<Phi>o_def [of "DopxC.dom gf"] \<phi>_in_hom
+                S.card_of_leq
           by auto
         have 4: "S.arr (Hom_DopxG.map gf) \<and>
                  Hom_DopxG.map gf = S.mkArr (HomD.set (?y, ?Gx)) (HomD.set (?y', ?Gx'))
                                             (inD o (\<lambda>h. ?Gf \<cdot>\<^sub>D h \<cdot>\<^sub>D ?g) o HomD.\<psi> (?y, ?Gx))"
           using gf Hom_DopxG.preserves_arr Hom_DopxG_simp by blast
         have 5: "S.seq (\<Phi>o (DopxC.cod gf)) (Hom_FopxC.map gf) \<and>
-                 SetCat.comp (\<Phi>o (DopxC.cod gf)) (Hom_FopxC.map gf)
+                 S.comp (\<Phi>o (DopxC.cod gf)) (Hom_FopxC.map gf)
                      = S.mkArr (HomC.set (?Fy, ?x)) (HomD.set (?y', ?Gx'))
                                ((inD o \<phi> ?y' o HomC.\<psi> (?Fy', ?x'))
                                  o (inC o (\<lambda>h. ?f \<cdot>\<^sub>C h \<cdot>\<^sub>C ?Fg) o HomC.\<psi> (?Fy, ?x)))"
         proof -
           have "S.seq (\<Phi>o (DopxC.cod gf)) (Hom_FopxC.map gf)"
-            using gf 1 2 \<Phi>o_in_hom Hom_FopxC.preserves_hom by (intro S.seqI', auto)
+            using gf 1 2 \<Phi>o_in_hom Hom_FopxC.preserves_hom
+            by (intro S.seqI', auto)
           thus ?thesis
             using S.comp_mkArr 1 2 by metis
         qed
-        have 6: "SetCat.comp (Hom_DopxG.map gf) (\<Phi>o (DopxC.dom gf))
+        have 6: "S.comp (Hom_DopxG.map gf) (\<Phi>o (DopxC.dom gf))
                   = S.mkArr (HomC.set (?Fy, ?x)) (HomD.set (?y', ?Gx'))
                             ((inD o (\<lambda>h. ?Gf \<cdot>\<^sub>D h \<cdot>\<^sub>D ?g) o HomD.\<psi> (?y, ?Gx))
                               o (inD o \<phi> ?y o HomC.\<psi> (?Fy, ?x)))"
         proof -
           have "S.seq (Hom_DopxG.map gf) (\<Phi>o (DopxC.dom gf))"
-            using gf 3 4 S.arr_mkArr S.cod_mkArr S.dom_mkArr by (intro S.seqI; metis)
+            using gf 3 4 S.arr_mkArr S.cod_mkArr S.dom_mkArr
+            by (intro S.seqI', auto)
           thus ?thesis
             using 3 4 S.comp_mkArr by metis
         qed
@@ -1773,14 +1925,14 @@ begin
                                    (inD o \<phi> (fst yx) o HomC.\<psi> (F (fst yx), snd yx))"
         using yx \<Phi>_simp by blast
       have antipar: "S.antipar (\<Phi>.map yx) (\<Psi>o yx)"
-        using 1 2 by fastforce
-      moreover have "S.ide (SetCat.comp (\<Psi>o yx) (\<Phi>.map yx))"
+        using 1 2 by blast
+      moreover have "S.ide (S.comp (\<Psi>o yx) (\<Phi>.map yx))"
       proof -
-        have "SetCat.comp (\<Psi>o yx) (\<Phi>.map yx) =
+        have "S.comp (\<Psi>o yx) (\<Phi>.map yx) =
                   S.mkArr (HomC.set (F (fst yx), snd yx)) (HomC.set (F (fst yx), snd yx))
                           ((inC o \<psi> (snd yx) o HomD.\<psi> (fst yx, G (snd yx)))
                             o (inD o \<phi> (fst yx) o HomC.\<psi> (F (fst yx), snd yx)))"
-          using 1 2 3 antipar by fastforce
+          using 1 2 3 antipar S.comp_mkArr by auto
         also have
           "... = S.mkArr (HomC.set (F (fst yx), snd yx)) (HomC.set (F (fst yx), snd yx))
                          (\<lambda>x. x)"
@@ -1792,7 +1944,7 @@ begin
             show
               "S.arr (S.mkArr (HomC.set (F (fst yx), snd yx)) (HomC.set (F (fst yx), snd yx))
                      (\<lambda>x. x))"
-              using yx HomC.set_subset_Univ by simp
+              using yx HomC.set_subset_Univ S.arr_mkArr by simp
             show "\<And>x. x \<in> HomC.set (F (fst yx), snd yx) \<Longrightarrow>
                         x = ((inC o \<psi> (snd yx) o HomD.\<psi> (fst yx, G (snd yx)))
                              o (inD o \<phi> (fst yx) o HomC.\<psi> (F (fst yx), snd yx))) x"
@@ -1819,13 +1971,13 @@ begin
         also have "... = S.mkIde (HomC.set (F (fst yx), snd yx))"
           using yx S.mkIde_as_mkArr HomC.set_subset_Univ by force
         finally have
-            "SetCat.comp (\<Psi>o yx) (\<Phi>.map yx) = S.mkIde (HomC.set (F (fst yx), snd yx))"
+            "S.comp (\<Psi>o yx) (\<Phi>.map yx) = S.mkIde (HomC.set (F (fst yx), snd yx))"
           by auto
-        thus ?thesis using yx HomC.set_subset_Univ by simp
+        thus ?thesis using yx HomC.set_subset_Univ S.ide_mkIde by simp
       qed
-      moreover have "S.ide (SetCat.comp (\<Phi>.map yx) (\<Psi>o yx))"
+      moreover have "S.ide (S.comp (\<Phi>.map yx) (\<Psi>o yx))"
       proof -
-        have "SetCat.comp (\<Phi>.map yx) (\<Psi>o yx) =
+        have "S.comp (\<Phi>.map yx) (\<Psi>o yx) =
                   S.mkArr (HomD.set (fst yx, G (snd yx))) (HomD.set (fst yx, G (snd yx)))
                           ((inD o \<phi> (fst yx) o HomC.\<psi> (F (fst yx), snd yx))
                             o (inC o \<psi> (snd yx) o HomD.\<psi> (fst yx, G (snd yx))))"
@@ -1841,7 +1993,7 @@ begin
             show
               "S.arr (S.mkArr (HomD.set (fst yx, G (snd yx))) (HomD.set (fst yx, G (snd yx)))
                      (\<lambda>x. x))"
-              using yx HomD.set_subset_Univ by simp
+              using yx HomD.set_subset_Univ S.arr_mkArr by simp
             show "\<And>x. x \<in> (HomD.set (fst yx, G (snd yx))) \<Longrightarrow>
                         x = ((inD o \<phi> (fst yx) o HomC.\<psi> (F (fst yx), snd yx))
                             o (inC o \<psi> (snd yx) o HomD.\<psi> (fst yx, G (snd yx)))) x"
@@ -1872,21 +2024,21 @@ begin
         also have "... = S.mkIde (HomD.set (fst yx, G (snd yx)))"
           using yx S.mkIde_as_mkArr HomD.set_subset_Univ by force
         finally have
-            "SetCat.comp (\<Phi>.map yx) (\<Psi>o yx) = S.mkIde (HomD.set (fst yx, G (snd yx)))"
+            "S.comp (\<Phi>.map yx) (\<Psi>o yx) = S.mkIde (HomD.set (fst yx, G (snd yx)))"
           by auto
-        thus ?thesis using yx HomD.set_subset_Univ by simp
+        thus ?thesis using yx HomD.set_subset_Univ S.ide_mkIde by simp
       qed
       ultimately show ?thesis by auto
     qed
 
-    interpretation \<Phi>: natural_isomorphism DopxC.comp SetCat.comp
+    interpretation \<Phi>: natural_isomorphism DopxC.comp S.comp
                                           Hom_FopxC.map Hom_DopxG.map \<Phi>.map
       apply (unfold_locales) using \<Phi>_inv by blast
 
-    interpretation \<Psi>: inverse_transformation DopxC.comp SetCat.comp
+    interpretation \<Psi>: inverse_transformation DopxC.comp S.comp
                            Hom_FopxC.map Hom_DopxG.map \<Phi>.map ..
 
-    interpretation \<Phi>\<Psi>: inverse_transformations DopxC.comp SetCat.comp
+    interpretation \<Phi>\<Psi>: inverse_transformations DopxC.comp S.comp
                            Hom_FopxC.map Hom_DopxG.map \<Phi>.map \<Psi>.map
       using \<Psi>.inverts_components by (unfold_locales, simp)
 
@@ -1898,7 +2050,7 @@ begin
     abbreviation HomD where "HomD \<equiv> HomD.map"
     abbreviation \<phi>D where "\<phi>D \<equiv> \<lambda>_. inD"
 
-    theorem induces_hom_adjunction: "hom_adjunction C D SetCat.comp \<phi>C \<phi>D F G \<Phi> \<Psi>"
+    theorem induces_hom_adjunction: "hom_adjunction C D S.comp \<phi>C \<phi>D F G \<Phi> \<Psi>"
       using F.is_extensional by (unfold_locales, auto)
 
     lemma \<Psi>_simp:
@@ -1911,10 +2063,10 @@ begin
       The original @{term \<phi>} and @{term \<psi>} can be recovered from @{term \<Phi>} and @{term \<Psi>}.
 \<close>
 
-    interpretation \<Phi>: set_valued_transformation DopxC.comp SetCat.comp
+    interpretation \<Phi>: set_valued_transformation DopxC.comp S.comp
                                                 Hom_FopxC.map Hom_DopxG.map \<Phi>.map ..
      
-    interpretation \<Psi>: set_valued_transformation DopxC.comp SetCat.comp
+    interpretation \<Psi>: set_valued_transformation DopxC.comp S.comp
                                                 Hom_DopxG.map Hom_FopxC.map \<Psi>.map ..
 
     lemma \<phi>_in_terms_of_\<Phi>':
@@ -2167,7 +2319,7 @@ begin
                      = S.mkArr (HomC.set (F y, x)) (HomC.set (F y, x))
                                ((\<phi>C (F y, x) o \<psi> x o \<psi>D (y, G x))
                                   o (\<phi>D (y, G x) o \<phi> y o \<psi>C (F y, x)))"
-              using 1 2 S.ide_in_hom by force
+              using 1 2 S.ide_in_hom S.comp_mkArr by force
             also have "... = S.mkArr (HomC.set (F y, x)) (HomC.set (F y, x))
                                      (\<phi>C (F y, x) o (\<psi> x o \<phi> y) o \<psi>C (F y, x))"
             proof (intro S.mkArr_eqI')
@@ -2194,13 +2346,13 @@ begin
           qed
           moreover have "\<Psi> (y, x) \<cdot>\<^sub>S \<Phi> (y, x)
                              = S.mkArr (HomC.set (F y, x)) (HomC.set (F y, x)) (\<lambda>h. h)"
-         proof -
+          proof -
             have "\<Psi> (y, x) \<cdot>\<^sub>S \<Phi> (y, x) = S.dom (S (\<Psi> (y, x)) (\<Phi> (y, x)))"
               using 1 by auto
             also have "... = S.dom (\<Phi> (y, x))"
               using 1 S.dom_comp by blast
             finally show ?thesis
-              using 2 6 S.mkIde_as_mkArr by (elim S.seqE, auto)
+              using 2 6 S.mkIde_as_mkArr S.arr_mkArr by (elim S.seqE, auto)
           qed
           ultimately have 4: "S.mkArr (HomC.set (F y, x)) (HomC.set (F y, x))
                                       (\<phi>C (F y, x) o (\<psi> x o \<phi> y) o \<psi>C (F y, x))
@@ -2263,7 +2415,7 @@ begin
                      = S.mkArr (HomD.set (y, G x)) (HomD.set (y, G x))
                                ((\<phi>D (y, G x) o \<phi> y o \<psi>C (F y, x))
                                  o (\<phi>C (F y, x) o \<psi> x o \<psi>D (y, G x)))"
-              using 1 2 6 S.ide_in_hom by force
+              using 1 2 6 S.ide_in_hom S.comp_mkArr by fastforce
             also have "... = S.mkArr (HomD.set (y, G x)) (HomD.set (y, G x))
                                      (\<phi>D (y, G x) o (\<phi> y o \<psi> x) o \<psi>D (y, G x))"
             proof
@@ -2295,7 +2447,9 @@ begin
               using 1 by auto
             also have "... = S.dom (\<Psi> (y, x))"
               using 1 S.dom_comp by blast
-            finally show ?thesis using 2 6 S.mkIde_as_mkArr by (elim S.seqE, auto)
+            finally show ?thesis
+              using 2 6 S.mkIde_as_mkArr S.arr_mkArr
+              by (elim S.seqE, auto)
           qed
           ultimately have 4: "S.mkArr (HomD.set (y, G x)) (HomD.set (y, G x))
                                       (\<phi>D (y, G x) o (\<phi> y o \<psi> x) o \<psi>D (y, G x))
@@ -2388,7 +2542,7 @@ begin
                                           (\<phi>D (y', G x') o (\<lambda>h. G f \<cdot>\<^sub>D h \<cdot>\<^sub>D g) o \<psi>D (y, G x)))
                                  (S.mkArr (HomC.set (F y, x)) (HomD.set (y, G x))
                                           (\<phi>D (y, G x) o \<phi> y o \<psi>C (F y, x)))"
-              using 1 by fastforce
+              using 1 S.comp_mkArr by fastforce
             ultimately show ?thesis by auto
           qed
           moreover have
@@ -2427,7 +2581,7 @@ begin
                                           (\<phi>D (y', G x') o \<phi> y' o \<psi>C (F y', x')))
                                  (S.mkArr (HomC.set (F y, x)) (HomC.set (F y', x'))
                                           (\<phi>C (F y', x') o (\<lambda>h. f \<cdot>\<^sub>C h \<cdot>\<^sub>C F g) o \<psi>C (F y, x)))"
-              using 5 by fastforce
+              using 5 S.comp_mkArr by fastforce
             ultimately show ?thesis by argo
           qed
           moreover have 2:
@@ -2562,21 +2716,17 @@ begin
 
     interpretation \<eta>\<epsilon>: unit_counit_adjunction C D F G \<eta> \<epsilon>
       using induces_unit_counit_adjunction \<eta>_def \<epsilon>_def by auto
-
-    interpretation \<Phi>\<Psi>: hom_adjunction C D SetCat.comp \<phi>C \<phi>D F G \<Phi> \<Psi>
+    interpretation \<Phi>\<Psi>: hom_adjunction C D replete_setcat.comp \<phi>C \<phi>D F G \<Phi> \<Psi>
       using induces_hom_adjunction by auto
 
     theorem induces_adjunction:
-    shows "adjunction C D SetCat.comp \<phi>C \<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<Phi> \<Psi>"
+    shows "adjunction C D replete_setcat.comp \<phi>C \<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<Phi> \<Psi>"
       apply (unfold_locales)
       using \<epsilon>_map_simp \<eta>_map_simp \<phi>_in_terms_of_\<eta> \<phi>_in_terms_of_\<Phi>' \<psi>_in_terms_of_\<epsilon>
             \<psi>_in_terms_of_\<Psi>' \<Phi>_simp \<Psi>_simp \<eta>_def \<epsilon>_def
       by auto
 
   end
-
-  sublocale meta_adjunction \<subseteq> adjunction C D SetCat.comp \<phi>C \<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<Phi> \<Psi>
-    using induces_adjunction by auto
 
   context unit_counit_adjunction
   begin
@@ -2586,18 +2736,12 @@ begin
     interpretation F: left_adjoint_functor D C F using \<phi>\<psi>.has_left_adjoint_functor by auto
     interpretation G: right_adjoint_functor C D G using \<phi>\<psi>.has_right_adjoint_functor by auto
 
-    abbreviation HomC where "HomC \<equiv> \<phi>\<psi>.HomC"
-    abbreviation \<phi>C where "\<phi>C \<equiv> \<phi>\<psi>.\<phi>C"
-    abbreviation HomD where "HomD \<equiv> \<phi>\<psi>.HomD"
-    abbreviation \<phi>D where "\<phi>D \<equiv> \<phi>\<psi>.\<phi>D"
-    abbreviation \<Phi> where "\<Phi> \<equiv> \<phi>\<psi>.\<Phi>"
-    abbreviation \<Psi> where "\<Psi> \<equiv> \<phi>\<psi>.\<Psi>"
-
-    interpretation \<Phi>\<Psi>: hom_adjunction C D SetCat.comp \<phi>C \<phi>D F G \<Phi> \<Psi>
+    interpretation \<Phi>\<Psi>: hom_adjunction C D replete_setcat.comp
+                          \<phi>\<psi>.\<phi>C \<phi>\<psi>.\<phi>D F G \<phi>\<psi>.\<Phi> \<phi>\<psi>.\<Psi>
       using \<phi>\<psi>.induces_hom_adjunction by auto
 
     theorem induces_adjunction:
-    shows "adjunction C D SetCat.comp \<phi>C \<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<Phi> \<Psi>"
+    shows "adjunction C D replete_setcat.comp \<phi>\<psi>.\<phi>C \<phi>\<psi>.\<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<phi>\<psi>.\<Phi> \<phi>\<psi>.\<Psi>"
       using \<epsilon>_in_terms_of_\<psi> \<eta>_in_terms_of_\<phi> \<phi>\<psi>.\<phi>_in_terms_of_\<Phi>' \<psi>_def \<phi>\<psi>.\<psi>_in_terms_of_\<Psi>'
             \<phi>\<psi>.\<Phi>_simp \<phi>\<psi>.\<Psi>_simp \<phi>_def
       apply (unfold_locales)
@@ -2605,46 +2749,34 @@ begin
 
   end
 
-  text\<open>
-    The following fails, claiming ``roundup bound exceeded'':\\
-  @{theory_text
-  "sublocale unit_counit_adjunction \<subseteq> adjunction C D SetCat.comp \<phi>C \<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<Phi> \<Psi>
-     using induces_adjunction by auto"}
-\<close>
-   
   context hom_adjunction
   begin
    
     interpretation \<phi>\<psi>: meta_adjunction C D F G \<phi> \<psi>
       using induces_meta_adjunction by auto
-
     interpretation F: left_adjoint_functor D C F using \<phi>\<psi>.has_left_adjoint_functor by auto
     interpretation G: right_adjoint_functor C D G using \<phi>\<psi>.has_right_adjoint_functor by auto
-
-    abbreviation \<eta> where "\<eta> \<equiv> \<phi>\<psi>.\<eta>"
-    abbreviation \<epsilon> where "\<epsilon> \<equiv> \<phi>\<psi>.\<epsilon>"
-
-    interpretation \<eta>\<epsilon>: unit_counit_adjunction C D F G \<eta> \<epsilon>
+    interpretation \<eta>\<epsilon>: unit_counit_adjunction C D F G \<phi>\<psi>.\<eta> \<phi>\<psi>.\<epsilon>
       using \<phi>\<psi>.induces_unit_counit_adjunction \<phi>\<psi>.\<eta>_def \<phi>\<psi>.\<epsilon>_def by auto
 
     theorem induces_adjunction:
-    shows "adjunction C D S \<phi>C \<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<Phi> \<Psi>"
+    shows "adjunction C D S \<phi>C \<phi>D F G \<phi> \<psi> \<phi>\<psi>.\<eta> \<phi>\<psi>.\<epsilon> \<Phi> \<Psi>"
     proof
       fix x
       assume "C.ide x"
-      thus "\<epsilon> x = \<psi> x (G x)" using \<phi>\<psi>.\<epsilon>_map_simp \<phi>\<psi>.\<epsilon>_def by simp
+      thus "\<phi>\<psi>.\<epsilon> x = \<psi> x (G x)" using \<phi>\<psi>.\<epsilon>_map_simp \<phi>\<psi>.\<epsilon>_def by simp
       next
       fix y
       assume "D.ide y"
-      thus "\<eta> y = \<phi> y (F y)" using \<phi>\<psi>.\<eta>_map_simp \<phi>\<psi>.\<eta>_def by simp
+      thus "\<phi>\<psi>.\<eta> y = \<phi> y (F y)" using \<phi>\<psi>.\<eta>_map_simp \<phi>\<psi>.\<eta>_def by simp
       fix x y f
       assume y: "D.ide y" and f: "\<guillemotleft>f : F y \<rightarrow>\<^sub>C x\<guillemotright>"
-      show "\<phi> y f = G f \<cdot>\<^sub>D \<eta> y" using y f \<phi>\<psi>.\<phi>_in_terms_of_\<eta> \<phi>\<psi>.\<eta>_def by simp
+      show "\<phi> y f = G f \<cdot>\<^sub>D \<phi>\<psi>.\<eta> y" using y f \<phi>\<psi>.\<phi>_in_terms_of_\<eta> \<phi>\<psi>.\<eta>_def by simp
       show "\<phi> y f = (\<psi>D (y, G x) \<circ> \<Phi>.FUN (y, x) \<circ> \<phi>C (F y, x)) f" using y f \<phi>_def by auto
       next
       fix x y g
       assume x: "C.ide x" and g: "\<guillemotleft>g : y \<rightarrow>\<^sub>D G x\<guillemotright>"
-      show "\<psi> x g = \<epsilon> x \<cdot>\<^sub>C F g" using x g \<phi>\<psi>.\<psi>_in_terms_of_\<epsilon> \<phi>\<psi>.\<epsilon>_def by simp
+      show "\<psi> x g = \<phi>\<psi>.\<epsilon> x \<cdot>\<^sub>C F g" using x g \<phi>\<psi>.\<psi>_in_terms_of_\<epsilon> \<phi>\<psi>.\<epsilon>_def by simp
       show "\<psi> x g = (\<psi>C (F y, x) \<circ> \<Psi>.FUN (y, x) \<circ> \<phi>D (y, G x)) g" using x g \<psi>_def by fast
       next
       fix x y
@@ -2659,36 +2791,17 @@ begin
 
   end
 
-  text\<open>
-    The following fails for unknown reasons:\\
-  @{theory_text
-  "sublocale hom_adjunction \<subseteq> adjunction C D S \<phi>C \<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<Phi> \<Psi>
-    using induces_adjunction by auto"}
-\<close>
-
   context left_adjoint_functor
   begin
 
     interpretation \<phi>\<psi>: meta_adjunction C D F G \<phi> \<psi>
       using induces_meta_adjunction by auto
 
-    abbreviation HomC where "HomC \<equiv> \<phi>\<psi>.HomC"
-    abbreviation \<phi>C where "\<phi>C \<equiv> \<phi>\<psi>.\<phi>C"
-    abbreviation HomD where "HomD \<equiv> \<phi>\<psi>.HomD"
-    abbreviation \<phi>D where "\<phi>D \<equiv> \<phi>\<psi>.\<phi>D"
-    abbreviation \<eta> where "\<eta> \<equiv> \<phi>\<psi>.\<eta>"
-    abbreviation \<epsilon> where "\<epsilon> \<equiv> \<phi>\<psi>.\<epsilon>"
-    abbreviation \<Phi> where "\<Phi> \<equiv> \<phi>\<psi>.\<Phi>"
-    abbreviation \<Psi> where "\<Psi> \<equiv> \<phi>\<psi>.\<Psi>"
-
     theorem induces_adjunction:
-    shows "adjunction C D SetCat.comp \<phi>C \<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<Phi> \<Psi>"
+    shows "adjunction C D replete_setcat.comp \<phi>\<psi>.\<phi>C \<phi>\<psi>.\<phi>D F G \<phi> \<psi> \<phi>\<psi>.\<eta> \<phi>\<psi>.\<epsilon> \<phi>\<psi>.\<Phi> \<phi>\<psi>.\<Psi>"
       using \<phi>\<psi>.induces_adjunction by auto
 
   end
-
-  sublocale left_adjoint_functor \<subseteq> adjunction C D SetCat.comp \<phi>C \<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<Phi> \<Psi>
-    using induces_adjunction by auto
 
   context right_adjoint_functor
   begin
@@ -2696,30 +2809,189 @@ begin
     interpretation \<phi>\<psi>: meta_adjunction C D F G \<phi> \<psi>
       using induces_meta_adjunction by auto
 
-    abbreviation HomC where "HomC \<equiv> \<phi>\<psi>.HomC"
-    abbreviation \<phi>C where "\<phi>C \<equiv> \<phi>\<psi>.\<phi>C"
-    abbreviation HomD where "HomD \<equiv> \<phi>\<psi>.HomD"
-    abbreviation \<phi>D where "\<phi>D \<equiv> \<phi>\<psi>.\<phi>D"
-    abbreviation \<eta> where "\<eta> \<equiv> \<phi>\<psi>.\<eta>"
-    abbreviation \<epsilon> where "\<epsilon> \<equiv> \<phi>\<psi>.\<epsilon>"
-    abbreviation \<Phi> where "\<Phi> \<equiv> \<phi>\<psi>.\<Phi>"
-    abbreviation \<Psi> where "\<Psi> \<equiv> \<phi>\<psi>.\<Psi>"
-
     theorem induces_adjunction:
-    shows "adjunction C D SetCat.comp \<phi>C \<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<Phi> \<Psi>"
+    shows "adjunction C D replete_setcat.comp \<phi>\<psi>.\<phi>C \<phi>\<psi>.\<phi>D F G \<phi> \<psi> \<phi>\<psi>.\<eta> \<phi>\<psi>.\<epsilon> \<phi>\<psi>.\<Phi> \<phi>\<psi>.\<Psi>"
       using \<phi>\<psi>.induces_adjunction by auto
 
   end
 
-  text\<open>
-    The following fails, claiming ``roundup bound exceeded'':\\
-  @{theory_text
-  "sublocale right_adjoint_functor \<subseteq> adjunction C D SetCat.comp \<phi>C \<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<Phi> \<Psi>
-    using induces_adjunction by auto"}
-\<close>
-
   definition adjoint_functors
   where "adjoint_functors C D F G = (\<exists>\<phi> \<psi>. meta_adjunction C D F G \<phi> \<psi>)"
+
+  lemma adjoint_functors_respects_naturally_isomorphic:
+  assumes "adjoint_functors C D F G"
+  and "naturally_isomorphic D C F' F" and "naturally_isomorphic C D G G'"
+  shows "adjoint_functors C D F' G'"
+  proof -
+    obtain \<phi> \<psi> where \<phi>\<psi>: "meta_adjunction C D F G \<phi> \<psi>"
+      using assms(1) adjoint_functors_def by blast
+    interpret \<phi>\<psi>: meta_adjunction C D F G \<phi> \<psi>
+      using \<phi>\<psi> by simp
+    obtain \<tau> where \<tau>: "natural_isomorphism D C F' F \<tau>"
+      using assms(2) naturally_isomorphic_def by blast
+    obtain \<mu> where \<mu>: "natural_isomorphism C D G G' \<mu>"
+      using assms(3) naturally_isomorphic_def by blast
+    show ?thesis
+      using adjoint_functors_def \<tau> \<mu> \<phi>\<psi>.respects_natural_isomorphism by blast
+  qed
+
+  lemma left_adjoint_functor_respects_naturally_isomorphic:
+  assumes "left_adjoint_functor D C F"
+  and "naturally_isomorphic D C F F'"
+  shows "left_adjoint_functor D C F'"
+  proof -
+    interpret F: left_adjoint_functor D C F
+      using assms(1) by simp
+    have 1: "meta_adjunction C D F F.G F.\<phi> F.\<psi>"
+      using F.induces_meta_adjunction by simp
+    interpret \<phi>\<psi>: meta_adjunction C D F F.G F.\<phi> F.\<psi>
+      using 1 by simp
+    have "adjoint_functors C D F F.G"
+      using 1 adjoint_functors_def by blast
+    hence 2: "adjoint_functors C D F' F.G"
+      using assms(2) adjoint_functors_respects_naturally_isomorphic [of C D F F.G F' F.G]
+            naturally_isomorphic_reflexive naturally_isomorphic_symmetric
+            \<phi>\<psi>.G.functor_axioms
+      by blast
+    obtain \<phi>' \<psi>' where \<phi>'\<psi>': "meta_adjunction C D F' F.G \<phi>' \<psi>'"
+      using 2 adjoint_functors_def by blast
+    interpret \<phi>'\<psi>': meta_adjunction C D F' F.G \<phi>' \<psi>'
+      using \<phi>'\<psi>' by simp
+    show ?thesis
+      using \<phi>'\<psi>'.has_left_adjoint_functor by simp
+  qed
+
+  lemma right_adjoint_functor_respects_naturally_isomorphic:
+  assumes "right_adjoint_functor C D G"
+  and "naturally_isomorphic C D G G'"
+  shows "right_adjoint_functor C D G'"
+  proof -
+    interpret G: right_adjoint_functor C D G
+      using assms(1) by simp
+    have 1: "meta_adjunction C D G.F G G.\<phi> G.\<psi>"
+      using G.induces_meta_adjunction by simp
+    interpret \<phi>\<psi>: meta_adjunction C D G.F G G.\<phi> G.\<psi>
+      using 1 by simp
+    have "adjoint_functors C D G.F G"
+      using 1 adjoint_functors_def by blast
+    hence 2: "adjoint_functors C D G.F G'"
+      using assms(2) adjoint_functors_respects_naturally_isomorphic
+            naturally_isomorphic_reflexive naturally_isomorphic_symmetric
+            \<phi>\<psi>.F.functor_axioms
+      by blast
+    obtain \<phi>' \<psi>' where \<phi>'\<psi>': "meta_adjunction C D G.F G' \<phi>' \<psi>'"
+      using 2 adjoint_functors_def by blast
+    interpret \<phi>'\<psi>': meta_adjunction C D G.F G' \<phi>' \<psi>'
+      using \<phi>'\<psi>' by simp
+    show ?thesis
+      using \<phi>'\<psi>'.has_right_adjoint_functor by simp
+  qed
+
+  section "Inverse Functors are Adjoints"
+
+  (* TODO: This really should show that inverse functors induce an adjoint equivalence. *)
+
+  lemma inverse_functors_induce_meta_adjunction:
+  assumes "inverse_functors C D F G"
+  shows "meta_adjunction C D F G (\<lambda>x. G) (\<lambda>y. F)"
+  proof -
+    interpret inverse_functors C D F G using assms by auto
+    interpret meta_adjunction C D F G \<open>\<lambda>x. G\<close> \<open>\<lambda>y. F\<close>
+    proof -
+      have 1: "\<And>y. B.arr y \<Longrightarrow> G (F y) = y"
+      proof -
+        fix y
+        assume y: "B.arr y"
+        have "G (F y) = (G o F) y" by simp
+        thus "G (F y) = y" using y inv B.map_def by simp
+      qed
+      have 2: "\<And>x. A.arr x \<Longrightarrow> F (G x) = x"
+      proof -
+        fix x
+        assume x: "A.arr x"
+        have "F (G x) = (F o G) x" by simp
+        thus "F (G x) = x" using x inv' A.map_def by simp
+      qed
+      show "meta_adjunction C D F G (\<lambda>x. G) (\<lambda>y. F)"
+      proof
+        fix y f x
+        assume y: "B.ide y" and f: "\<guillemotleft>f : F y \<rightarrow>\<^sub>A x\<guillemotright>"
+        show "\<guillemotleft>G f : y \<rightarrow>\<^sub>B G x\<guillemotright>" using y f 1 G.preserves_hom by (elim A.in_homE, auto)
+        show "F (G f) = f" using f 2 by auto
+        next
+        fix x g y
+        assume x: "A.ide x" and g: "\<guillemotleft>g : y \<rightarrow>\<^sub>B G x\<guillemotright>"
+        show "\<guillemotleft>F g : F y \<rightarrow>\<^sub>A x\<guillemotright>" using x g 2 F.preserves_hom by (elim B.in_homE, auto)
+        show "G (F g) = g" using g 1 A.map_def by blast
+        next
+        fix f x x' g y' y h
+        assume f: "\<guillemotleft>f : x \<rightarrow>\<^sub>A x'\<guillemotright>" and g: "\<guillemotleft>g : y' \<rightarrow>\<^sub>B y\<guillemotright>" and h: "\<guillemotleft>h : F y \<rightarrow>\<^sub>A x\<guillemotright>"
+        show "G (C f (C h (F g))) = D (G f) (D (G h) g)"
+          using f g h 1 2 inv inv' A.map_def B.map_def by (elim A.in_homE B.in_homE, auto)
+      qed
+    qed
+    show ?thesis ..
+  qed
+
+  lemma inverse_functors_are_adjoints:
+  assumes "inverse_functors A B F G"
+  shows "adjoint_functors A B F G"
+    using assms inverse_functors_induce_meta_adjunction adjoint_functors_def by fast
+
+  context inverse_functors
+  begin
+
+    lemma \<eta>_char:
+    shows "meta_adjunction.\<eta> B F (\<lambda>x. G) = identity_functor.map B"
+    proof (intro eqI)
+      interpret meta_adjunction A B F G \<open>\<lambda>y. G\<close> \<open>\<lambda>x. F\<close>
+        using inverse_functors_induce_meta_adjunction inverse_functors_axioms by auto
+      interpret adjunction A B replete_setcat.comp \<phi>C \<phi>D F G \<open>\<lambda>y. G\<close> \<open>\<lambda>x. F\<close> \<eta> \<epsilon> \<Phi> \<Psi>
+        using induces_adjunction by simp
+      show "natural_transformation B B B.map GF.map \<eta>"
+        using \<eta>.natural_transformation_axioms by auto
+      show "natural_transformation B B B.map GF.map B.map"
+      proof -
+        have "natural_transformation B B B.map B.map B.map" ..
+        moreover have "GF.map = B.map" using inv by auto
+        ultimately show ?thesis by auto
+      qed
+      fix b
+      show "B.ide b \<Longrightarrow> \<eta> b = B.map b"
+      proof -
+        assume b: "B.ide b"
+        have "\<eta> b = GF.map b" using b \<eta>_map_simp \<eta>_def by simp
+        also have "... = B.map b" using b inv B.map_def by simp
+        finally show "\<eta> b = B.map b" by auto
+      qed
+    qed
+
+    lemma \<epsilon>_char:
+    shows "meta_adjunction.\<epsilon> A F G (\<lambda>y. F) = identity_functor.map A"
+    proof (intro eqI)
+      interpret meta_adjunction A B F G \<open>\<lambda>y. G\<close> \<open>\<lambda>x. F\<close>
+        using inverse_functors_induce_meta_adjunction inverse_functors_axioms by auto
+      interpret adjunction A B replete_setcat.comp \<phi>C \<phi>D F G \<open>\<lambda>y. G\<close> \<open>\<lambda>x. F\<close> \<eta> \<epsilon> \<Phi> \<Psi>
+        using induces_adjunction by simp
+      show "natural_transformation A A FG.map A.map \<epsilon>"
+        using \<epsilon>.natural_transformation_axioms by auto
+      show "natural_transformation A A FG.map A.map A.map"
+      proof -
+        have "natural_transformation A A A.map A.map A.map" ..
+        moreover have "FG.map = A.map" using inv' by auto
+        ultimately show ?thesis by auto
+      qed
+      fix a
+      show "A.ide a \<Longrightarrow> \<epsilon> a = A.map a"
+      proof -
+        assume a: "A.ide a"
+        have "\<epsilon> a = FG.map a" using a \<epsilon>_map_simp \<epsilon>_def by simp
+        also have "... = A.map a" using a inv' A.map_def by simp
+        finally show "\<epsilon> a = A.map a" by auto
+      qed
+    qed
+
+  end
 
   section "Composition of Adjunctions"
 
@@ -2745,6 +3017,13 @@ begin
   and \<phi>' :: "'c \<Rightarrow> 'b \<Rightarrow> 'c"
   and \<psi>' :: "'b \<Rightarrow> 'c \<Rightarrow> 'b"
   begin
+
+    interpretation FG: adjunction A B replete_setcat.comp
+                           FG.\<phi>C FG.\<phi>D F G \<phi> \<psi> FG.\<eta> FG.\<epsilon> FG.\<Phi> FG.\<Psi>
+      using FG.induces_adjunction by simp
+    interpretation F'G': adjunction B C replete_setcat.comp F'G'.\<phi>C F'G'.\<phi>D F' G' \<phi>' \<psi>'
+                           F'G'.\<eta> F'G'.\<epsilon> F'G'.\<Phi> F'G'.\<Psi>
+      using F'G'.induces_adjunction by simp
 
     (* Notation for C.in_hom is inherited here somehow, but I don't know from where. *)
 
@@ -2780,7 +3059,8 @@ begin
       qed
     qed
 
-    interpretation K\<eta>H: natural_transformation C C \<open>G' o F'\<close> \<open>G' o G o F o F'\<close> \<open>G' o FG.\<eta> o F'\<close>
+    interpretation K\<eta>H: natural_transformation C C \<open>G' o F'\<close> \<open>G' o G o F o F'\<close>
+                          \<open>G' o FG.\<eta> o F'\<close>
     proof -
       interpret \<eta>F': natural_transformation C B F' \<open>(G o F) o F'\<close> \<open>FG.\<eta> o F'\<close>
         using FG.\<eta>_is_natural_transformation F'.natural_transformation_axioms
@@ -2797,7 +3077,8 @@ begin
     interpretation G'\<eta>F'o\<eta>': vertical_composite C C C.map \<open>G' o F'\<close> \<open>G' o G o F o F'\<close>
                              F'G'.\<eta> \<open>G' o FG.\<eta> o F'\<close> ..
 
-    interpretation F\<epsilon>G: natural_transformation A A \<open>F o F' o G' o G\<close> \<open>F o G\<close> \<open>F o F'G'.\<epsilon> o G\<close>
+    interpretation F\<epsilon>G: natural_transformation A A \<open>F o F' o G' o G\<close> \<open>F o G\<close>
+                          \<open>F o F'G'.\<epsilon> o G\<close>
     proof -
       interpret F\<epsilon>': natural_transformation B A \<open>F o (F' o G')\<close> F \<open>F o F'G'.\<epsilon>\<close>
         using F'G'.\<epsilon>.natural_transformation_axioms F.natural_transformation_axioms
@@ -2816,6 +3097,9 @@ begin
     interpretation meta_adjunction A C \<open>F o F'\<close> \<open>G' o G\<close>
                                    \<open>\<lambda>z. \<phi>' z o \<phi> (F' z)\<close> \<open>\<lambda>x. \<psi> x o \<psi>' (G x)\<close>
       using is_meta_adjunction by auto
+    interpretation adjunction A C replete_setcat.comp \<phi>C \<phi>D \<open>F \<circ> F'\<close> \<open>G' \<circ> G\<close>
+                     \<open>\<lambda>z. \<phi>' z \<circ> \<phi> (F' z)\<close> \<open>\<lambda>x. \<psi> x \<circ> \<psi>' (G x)\<close> \<eta> \<epsilon> \<Phi> \<Psi>
+      using induces_adjunction by simp
 
     lemma \<eta>_char:
     shows "\<eta> = G'\<eta>F'o\<eta>'.map"
@@ -2894,11 +3178,11 @@ begin
     obtain \<phi>' \<psi>' where \<phi>'\<psi>': "meta_adjunction C D F G' \<phi>' \<psi>'"
       using assms adjoint_functors_def by blast
     interpret Adj: meta_adjunction C D F G \<phi> \<psi> using \<phi>\<psi> by auto
-    interpret
-        Adj: adjunction C D SetCat.comp Adj.\<phi>C Adj.\<phi>D F G \<phi> \<psi> Adj.\<eta> Adj.\<epsilon> Adj.\<Phi> Adj.\<Psi>
+    interpret Adj: adjunction C D replete_setcat.comp Adj.\<phi>C Adj.\<phi>D
+                              F G \<phi> \<psi> Adj.\<eta> Adj.\<epsilon> Adj.\<Phi> Adj.\<Psi>
       using Adj.induces_adjunction by auto
     interpret Adj': meta_adjunction C D F G' \<phi>' \<psi>' using \<phi>'\<psi>' by auto
-    interpret Adj': adjunction C D SetCat.comp Adj'.\<phi>C Adj'.\<phi>D
+    interpret Adj': adjunction C D replete_setcat.comp Adj'.\<phi>C Adj'.\<phi>D
                                F G' \<phi>' \<psi>' Adj'.\<eta> Adj'.\<epsilon> Adj'.\<Phi> Adj'.\<Psi>
       using Adj'.induces_adjunction by auto
     write C (infixr "\<cdot>\<^sub>C" 55)

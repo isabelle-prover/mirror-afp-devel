@@ -147,38 +147,29 @@ begin
     interpretation H: horizontal_homs V dom cod
       by (unfold_locales, auto)
 
-    interpretation VxV: product_category V V ..
-    interpretation VV: subcategory VxV.comp
-                          \<open>\<lambda>\<mu>\<nu>. V.arr (fst \<mu>\<nu>) \<and> V.arr (snd \<mu>\<nu>) \<and> dom (fst \<mu>\<nu>) = cod (snd \<mu>\<nu>)\<close>
-      using H.subcategory_VV by auto
-    interpretation VxVxV: product_category V VxV.comp ..
-    interpretation VVV: subcategory VxVxV.comp \<open>\<lambda>\<tau>\<mu>\<nu>. V.arr (fst \<tau>\<mu>\<nu>) \<and>
-                          VV.arr (snd \<tau>\<mu>\<nu>) \<and> dom (fst \<tau>\<mu>\<nu>) = cod (fst (snd \<tau>\<mu>\<nu>))\<close>
-      using H.subcategory_VVV by auto
-
-    interpretation H: "functor" VV.comp V \<open>\<lambda>\<mu>\<nu>. fst \<mu>\<nu> \<cdot> snd \<mu>\<nu>\<close>
+    interpretation H: "functor" H.VV.comp V \<open>\<lambda>\<mu>\<nu>. fst \<mu>\<nu> \<cdot> snd \<mu>\<nu>\<close>
       apply (unfold_locales)
-      using VV.arr_char V.null_char ext
+      using H.VV.arr_char V.null_char ext
           apply force
-      using VV.arr_char V.null_char VV.dom_char VV.cod_char
+      using H.VV.arr_char V.null_char H.VV.dom_char H.VV.cod_char
          apply auto[3]
     proof -
-      show "\<And>g f. VV.seq g f \<Longrightarrow>
-                   fst (VV.comp g f) \<cdot> snd (VV.comp g f) = V (fst g \<cdot> snd g) (fst f \<cdot> snd f)"
+      show "\<And>g f. H.VV.seq g f \<Longrightarrow>
+                   fst (H.VV.comp g f) \<cdot> snd (H.VV.comp g f) = V (fst g \<cdot> snd g) (fst f \<cdot> snd f)"
       proof -
-        have 0: "\<And>f. VV.arr f \<Longrightarrow> V.arr (fst f \<cdot> snd f)"
-          using VV.arr_char by auto
+        have 0: "\<And>f. H.VV.arr f \<Longrightarrow> V.arr (fst f \<cdot> snd f)"
+          using H.VV.arr_char by auto
         have 1: "\<And>f g. V.seq g f \<Longrightarrow> V.ide f \<and> g = f"
           using V.arr_char V.dom_char V.cod_char V.not_arr_null by force
-        have 2: "\<And>f g. VxV.seq g f \<Longrightarrow> VxV.ide f \<and> g = f"
-          using 1 VxV.seq_char by (metis VxV.dom_eqI VxV.ide_Ide)
+        have 2: "\<And>f g. H.VxV.seq g f \<Longrightarrow> H.VxV.ide f \<and> g = f"
+          using 1 H.VxV.seq_char by (metis H.VxV.dom_eqI H.VxV.ide_Ide)
         fix f g
-        assume fg: "VV.seq g f"
-        have 3: "VV.ide f \<and> f = g"
-          using fg 2 VV.seq_char VV.ide_char by blast
-        show "fst (VV.comp g f) \<cdot> snd (VV.comp g f) = V (fst g \<cdot> snd g) (fst f \<cdot> snd f)"
-          using fg 0 1 3 VV.comp_char VV.arr_char VV.ide_char V.arr_char V.comp_char
-                VV.comp_arr_ide
+        assume fg: "H.VV.seq g f"
+        have 3: "H.VV.ide f \<and> f = g"
+          using fg 2 H.VV.seq_char H.VV.ide_char by blast
+        show "fst (H.VV.comp g f) \<cdot> snd (H.VV.comp g f) = V (fst g \<cdot> snd g) (fst f \<cdot> snd f)"
+          using fg 0 1 3 H.VV.comp_char H.VV.arr_char H.VV.ide_char V.arr_char V.comp_char
+                H.VV.comp_arr_ide
           by (metis (no_types, lifting))
       qed
     qed
@@ -186,27 +177,17 @@ begin
     interpretation H: horizontal_composition V C dom cod
       by (unfold_locales, auto)
 
-    interpretation H.HoHV: "functor" VVV.comp V H.HoHV
-      using H.functor_HoHV by blast
-    interpretation H.HoVH: "functor" VVV.comp V H.HoVH
-      using H.functor_HoVH by blast
-
     abbreviation \<a>
     where "\<a> f g h \<equiv> f \<cdot> g \<cdot> h"
 
-    interpretation \<alpha>: natural_isomorphism VVV.comp V H.HoHV H.HoVH
+    interpretation \<alpha>: natural_isomorphism H.VVV.comp V H.HoHV H.HoVH
                         \<open>\<lambda>\<mu>\<nu>\<tau>. \<a> (fst \<mu>\<nu>\<tau>) (fst (snd \<mu>\<nu>\<tau>)) (snd (snd \<mu>\<nu>\<tau>))\<close>
       apply unfold_locales
       using V.null_char ext
            apply fastforce
-      using H.HoHV_def H.HoVH_def VVV.arr_char VV.arr_char VVV.dom_char VV.dom_char
-            VVV.cod_char VV.cod_char VVV.ide_char comp_assoc
+      using H.HoHV_def H.HoVH_def H.VVV.arr_char H.VV.arr_char H.VVV.dom_char H.VV.dom_char
+            H.VVV.cod_char H.VV.cod_char H.VVV.ide_char comp_assoc
       by auto
-
-    interpretation endofunctor V H.L
-        using H.endofunctor_L by auto
-    interpretation endofunctor V H.R
-      using H.endofunctor_R by auto
 
     interpretation fully_faithful_functor V V H.R
       using comp_arr_dom by (unfold_locales, auto)
@@ -241,28 +222,22 @@ begin
 
     interpretation I: constant_functor C C \<I>
       using \<iota>_in_hom by unfold_locales auto
-    interpretation HH: horizontal_homs C I.map I.map
+    interpretation horizontal_homs C I.map I.map
       by unfold_locales auto
-    interpretation CC': subcategory CC.comp \<open>\<lambda>\<mu>\<nu>. arr (fst \<mu>\<nu>) \<and> arr (snd \<mu>\<nu>) \<and>
-                                                  I.map (fst \<mu>\<nu>) = I.map (snd \<mu>\<nu>)\<close>
-      using HH.subcategory_VV by auto
-    interpretation CCC': subcategory CCC.comp \<open>\<lambda>\<tau>\<mu>\<nu>. arr (fst \<tau>\<mu>\<nu>) \<and> CC'.arr (snd \<tau>\<mu>\<nu>) \<and>
-                                                     I.map (fst \<tau>\<mu>\<nu>) = I.map (fst (snd \<tau>\<mu>\<nu>))\<close>
-      using HH.subcategory_VVV by simp
 
-    lemma CC'_eq_CC:
-    shows "CC.comp = CC'.comp"
+    lemma CC_eq_VV:
+    shows "CC.comp = VV.comp"
     proof -
-      have "\<And>g f. CC.comp g f = CC'.comp g f"
+      have "\<And>g f. CC.comp g f = VV.comp g f"
       proof -
         fix f g
-        show "CC.comp g f = CC'.comp g f"
+        show "CC.comp g f = VV.comp g f"
         proof -
-          have "CC.seq g f \<Longrightarrow> CC.comp g f = CC'.comp g f"
-            using CC'.comp_char CC'.arr_char CC.seq_char
+          have "CC.seq g f \<Longrightarrow> CC.comp g f = VV.comp g f"
+            using VV.comp_char VV.arr_char CC.seq_char
             by (elim CC.seqE seqE, simp)
-          moreover have "\<not> CC.seq g f \<Longrightarrow> CC.comp g f = CC'.comp g f"
-            using CC'.seq_char CC'.ext CC'.null_char CC.ext
+          moreover have "\<not> CC.seq g f \<Longrightarrow> CC.comp g f = VV.comp g f"
+            using VV.seq_char VV.ext VV.null_char CC.ext
             by (metis (no_types, lifting))
           ultimately show ?thesis by blast
         qed
@@ -270,19 +245,19 @@ begin
       thus ?thesis by blast
     qed
 
-    lemma CCC'_eq_CCC:
-    shows "CCC.comp = CCC'.comp"
+    lemma CCC_eq_VVV:
+    shows "CCC.comp = VVV.comp"
     proof -
-      have "\<And>g f. CCC.comp g f = CCC'.comp g f"
+      have "\<And>g f. CCC.comp g f = VVV.comp g f"
       proof -
         fix f g
-        show "CCC.comp g f = CCC'.comp g f"
+        show "CCC.comp g f = VVV.comp g f"
         proof -
-          have "CCC.seq g f \<Longrightarrow> CCC.comp g f = CCC'.comp g f"
-            using CCC'.comp_char CCC'.arr_char CCC.seq_char CC'.arr_char
+          have "CCC.seq g f \<Longrightarrow> CCC.comp g f = VVV.comp g f"
+            using VVV.comp_char VVV.arr_char CCC.seq_char VV.arr_char
             by (elim CCC.seqE CC.seqE seqE, simp)
-          moreover have "\<not> CCC.seq g f \<Longrightarrow> CCC.comp g f = CCC'.comp g f"
-            using CCC'.seq_char CCC'.ext CCC'.null_char CCC.ext
+          moreover have "\<not> CCC.seq g f \<Longrightarrow> CCC.comp g f = VVV.comp g f"
+            using VVV.seq_char VVV.ext VVV.null_char CCC.ext
             by (metis (no_types, lifting))
           ultimately show ?thesis by blast
         qed
@@ -290,36 +265,30 @@ begin
       thus ?thesis by blast
     qed
 
-    interpretation H: "functor" CC'.comp C \<open>\<lambda>\<mu>\<nu>. fst \<mu>\<nu> \<otimes> snd \<mu>\<nu>\<close>
-      using CC'_eq_CC T.functor_axioms by simp
+    interpretation H: "functor" VV.comp C \<open>\<lambda>\<mu>\<nu>. fst \<mu>\<nu> \<otimes> snd \<mu>\<nu>\<close>
+      using CC_eq_VV T.functor_axioms by simp
     interpretation H: horizontal_composition C tensor I.map I.map
       by (unfold_locales, simp_all)
 
     lemma HoHV_eq_ToTC:
     shows "H.HoHV = T.ToTC"
-      using H.HoHV_def T.ToTC_def CCC'_eq_CCC by presburger
-
-    interpretation HoHV: "functor" CCC'.comp C H.HoHV
-      using T.functor_ToTC HoHV_eq_ToTC CCC'_eq_CCC by argo
+      using H.HoHV_def T.ToTC_def CCC_eq_VVV by presburger
 
     lemma HoVH_eq_ToCT:
     shows "H.HoVH = T.ToCT"
-      using H.HoVH_def T.ToCT_def CCC'_eq_CCC by presburger
+      using H.HoVH_def T.ToCT_def CCC_eq_VVV by presburger
 
-    interpretation HoVH: "functor" CCC'.comp C H.HoVH
-      using T.functor_ToCT HoVH_eq_ToCT CCC'_eq_CCC by argo
-
-    interpretation \<alpha>: natural_isomorphism CCC'.comp C H.HoHV H.HoVH \<alpha>
-      using \<alpha>.natural_isomorphism_axioms CCC'_eq_CCC HoHV_eq_ToTC HoVH_eq_ToCT
+    interpretation \<alpha>: natural_isomorphism VVV.comp C H.HoHV H.HoVH \<alpha>
+      using \<alpha>.natural_isomorphism_axioms CCC_eq_VVV HoHV_eq_ToTC HoVH_eq_ToCT
       by simp
 
     lemma R'_eq_R:
     shows "H.R = R"
-      using H.is_extensional CC'_eq_CC CC.arr_char by force
+      using H.is_extensional CC_eq_VV CC.arr_char by force
 
     lemma L'_eq_L:
     shows "H.L = L"
-      using H.is_extensional CC'_eq_CC CC.arr_char by force
+      using H.is_extensional CC_eq_VV CC.arr_char by force
 
     interpretation R': fully_faithful_functor C C H.R
       using R'_eq_R R.fully_faithful_functor_axioms unity_def by auto
@@ -327,13 +296,13 @@ begin
       using L'_eq_L L.fully_faithful_functor_axioms unity_def by auto
 
     lemma obj_char:
-    shows "HH.obj a \<longleftrightarrow> a = \<I>"
-      using HH.obj_def \<iota>_in_hom by fastforce
+    shows "obj a \<longleftrightarrow> a = \<I>"
+      using obj_def \<iota>_in_hom by fastforce
 
     proposition induces_bicategory:
     shows "bicategory C tensor (\<lambda>\<mu> \<nu> \<tau>. \<alpha> (\<mu>, \<nu>, \<tau>)) (\<lambda>_. \<iota>) I.map I.map"
       using obj_char \<iota>_in_hom \<iota>_is_iso pentagon \<alpha>.is_extensional \<alpha>.is_natural_1 \<alpha>.is_natural_2
-      by (unfold_locales, simp_all)
+      by unfold_locales simp_all
 
   end
 
@@ -361,15 +330,6 @@ begin
     lemma induces_horizontal_composition:
     shows "horizontal_composition V H src trg"
     proof -
-      interpret VxV: product_category V V ..
-      interpret VV: subcategory VxV.comp \<open>\<lambda>\<mu>\<nu>. arr (fst \<mu>\<nu>) \<and> arr (snd \<mu>\<nu>) \<and>
-                                               src (fst \<mu>\<nu>) = trg (snd \<mu>\<nu>)\<close>
-        using subcategory_VV by argo
-      interpret VxVxV: product_category V VxV.comp ..
-      interpret VVV: subcategory VxVxV.comp
-                          \<open>\<lambda>\<tau>\<mu>\<nu>. arr (fst \<tau>\<mu>\<nu>) \<and> VV.arr (snd \<tau>\<mu>\<nu>) \<and>
-                                 src (fst \<tau>\<mu>\<nu>) = trg (fst (snd \<tau>\<mu>\<nu>))\<close>
-        using subcategory_VVV by blast
       interpret H: "functor" VV.comp V \<open>\<lambda>\<mu>\<nu>. fst \<mu>\<nu> \<star> snd \<mu>\<nu>\<close>
       proof -
         have "VV.comp = VoV.comp"
@@ -743,16 +703,6 @@ begin
               iso_is_section section_is_mono monoE [of "\<r>[f]" "R \<r>[f]" "\<r>[R f]"]
         by auto
     qed
-
-    interpretation VxVxV: product_category V VxV.comp ..
-    interpretation VVV: subcategory VxVxV.comp
-                            \<open>\<lambda>\<tau>\<mu>\<nu>. arr (fst \<tau>\<mu>\<nu>) \<and> VV.arr (snd \<tau>\<mu>\<nu>) \<and>
-                                   src (fst \<tau>\<mu>\<nu>) = trg (fst (snd \<tau>\<mu>\<nu>))\<close>
-      using subcategory_VVV by blast
-    interpretation HoHV: "functor" VVV.comp V HoHV
-      using functor_HoHV by blast
-    interpretation HoVH: "functor" VVV.comp V HoVH
-      using functor_HoVH by blast
 
     definition \<alpha>
     where "\<alpha> \<mu> \<nu> \<tau> \<equiv> if VVV.arr (\<mu>, \<nu>, \<tau>) then

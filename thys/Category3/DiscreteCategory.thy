@@ -87,6 +87,10 @@ begin
     shows "ide = arr"
       using arr_char ide_char by auto
 
+    lemma seq_char [iff]:
+    shows "seq f g \<longleftrightarrow> ide f \<and> f = g"
+      using is_discrete by (metis (full_types) ide_def seqE)
+
   end
 
 end

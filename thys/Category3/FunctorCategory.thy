@@ -192,8 +192,8 @@ begin
                 \<tau>.natural_transformation_axioms arrI arr_MkArr comp_MkArr ide_dom)
           show "ide (t \<cdot> MkArr (Cod t) (Dom t) \<tau>'.map)"
             using t 1 2
-            by (metis Map.simps(1) \<tau>'.natural_transformation_axioms arr_MkArr comp_char
-                dom_MkArr dom_comp ide_char' ide_compE)
+            by (metis Dom.simps(1) Map.simps(1) \<tau>.natural_transformation_axioms arrI
+                cod_char cod_comp comp_char ide_char' ide_compE)
         qed
       qed
     qed
@@ -354,13 +354,13 @@ begin
       proof -
         interpret F_dom_f1: "functor" A2 B \<open>\<lambda>f2. F (A1.dom f1, f2)\<close>
           using f1 \<tau>.F.is_extensional apply (unfold_locales, simp_all)
-          by (metis A1xA2.comp_char A1.arr_dom_iff_arr A1.comp_arr_dom A1.dom_dom
-                    A1xA2.seqI \<tau>.F.preserves_comp_2 fst_conv snd_conv)
+          by (metis A1.arr_dom A1.comp_arr_dom A1.dom_dom A1xA2.comp_simp A1xA2.seqI
+              \<tau>.F.preserves_comp_2 fst_conv snd_conv)
         interpret G_cod_f1: "functor" A2 B \<open>\<lambda>f2. G (A1.cod f1, f2)\<close>
           using f1 \<tau>.G.is_extensional A1.arr_cod_iff_arr
           apply (unfold_locales, simp_all)
-          using A1xA2.comp_char A1.arr_cod_iff_arr A1.comp_cod_arr
-          by (metis A1.cod_cod A1xA2.seqI \<tau>.G.preserves_comp_2 fst_conv snd_conv)
+          by (metis A1.comp_arr_dom A1.dom_cod A1xA2.comp_simp A1xA2.seqI
+              \<tau>.G.preserves_comp fst_conv snd_conv)
         have "natural_transformation A2 B (\<lambda>f2. F (A1.dom f1, f2)) (\<lambda>f2. G (A1.cod f1, f2))
                                           (\<lambda>f2. \<tau> (f1, f2))"
           using f1 \<tau>.is_extensional apply (unfold_locales, simp_all)

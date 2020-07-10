@@ -316,15 +316,23 @@ begin
         using match_2 ide_def not_arr_null by metis
     qed
 
-    lemma domains_char:
+    lemma domains_simp:
     assumes "arr f"
     shows "domains f = {dom f}"
       using assms dom_in_domains has_domain_iff_arr domain_unique by auto
 
-    lemma codomains_char:
+    lemma codomains_simp:
     assumes "arr f"
     shows "codomains f = {cod f}"
       using assms cod_in_codomains has_codomain_iff_arr codomain_unique by auto
+
+    lemma domains_char:
+    shows "domains f = (if arr f then {dom f} else {})"
+      using dom_in_domains has_domain_iff_arr domain_unique by auto
+
+    lemma codomains_char:
+    shows "codomains f = (if arr f then {cod f} else {})"
+      using cod_in_codomains has_codomain_iff_arr codomain_unique by auto
 
     text\<open>
       A consequence of the following lemma is that the notion @{term "arr"} is redundant,
@@ -400,7 +408,7 @@ begin
       have "ide (cod f) \<and> seq (cod f) f"
         using assms(1) has_codomain_iff_arr codomains_def cod_in_codomains ext by blast
       moreover have "ide (cod f) \<and> seq g (cod f)"
-        using assms(2-3) domains_def domains_char ext by fastforce
+        using assms(2-3) domains_def domains_simp ext by fastforce
       ultimately show ?thesis
         using match_4 ide_def ext by metis
     qed
@@ -429,7 +437,7 @@ begin
       proof -
         assume gf: "seq g f"
         have 1: "cod f \<in> codomains f"
-          using gf has_domain_iff_arr domains_comp cod_in_codomains codomains_char by blast
+          using gf has_domain_iff_arr domains_comp cod_in_codomains codomains_simp by blast
         have "ide (cod f) \<and> seq (cod f) f"
           using 1 codomains_def ext by auto
         hence "seq g (cod f)"
@@ -458,9 +466,9 @@ begin
     proof
       show 1: "seq g f" using assms compatible_iff_seq by blast
       show "dom (g \<cdot> f) = a"
-        using assms 1 domains_comp domains_char by blast
+        using assms 1 domains_comp domains_simp by blast
       show "cod (g \<cdot> f) = c"
-        using assms 1 codomains_comp codomains_char by blast
+        using assms 1 codomains_comp codomains_simp by blast
     qed
 
     lemma comp_in_homI' [simp]:
@@ -527,6 +535,16 @@ begin
     shows "cod f = b"
       using assms dom_in_domains domain_unique ide_char
       by (metis seqE)
+
+    lemma dom_eqI':
+    assumes "a \<in> domains f"
+    shows "a = dom f"
+      using assms dom_in_domains domain_unique by blast
+
+    lemma cod_eqI':
+    assumes "a \<in> codomains f"
+    shows "a = cod f"
+      using assms cod_in_codomains codomain_unique by blast
 
     lemma ide_char':
     shows "ide a \<longleftrightarrow> arr a \<and> (dom a = a \<or> cod a = a)"

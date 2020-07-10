@@ -26,7 +26,7 @@ text \<open>
 \<close>
 
 theory SpanBicategory
-imports Bicategory CategoryWithPullbacks InternalAdjunction Category3.FreeCategory
+imports Bicategory InternalAdjunction Category3.FreeCategory Category3.CategoryWithPullbacks
 begin
 
 subsection "Spans"
@@ -909,8 +909,7 @@ $$\xymatrix{
 
     lemma chine_hcomp_props:
     assumes "arr \<mu>" and "arr \<nu>" and "src \<nu> = trg \<mu>"
-    shows "\<guillemotleft>chine_hcomp \<nu> \<mu> :
-              Leg0 (Dom \<nu>) \<down>\<down> Leg1 (Dom \<mu>) \<rightarrow>  Leg0 (Cod \<nu>) \<down>\<down> Leg1 (Cod \<mu>)\<guillemotright>"
+    shows "\<guillemotleft>chine_hcomp \<nu> \<mu> : Leg0 (Dom \<nu>) \<down>\<down> Leg1 (Dom \<mu>) \<rightarrow>\<^sub>C Leg0 (Cod \<nu>) \<down>\<down> Leg1 (Cod \<mu>)\<guillemotright>"
     and "C.commutative_square (Leg0 (Cod \<nu>)) (Leg1 (Cod \<mu>))
             (Chn \<nu> \<cdot> \<p>\<^sub>1[Leg0 (Dom \<nu>), Leg1 (Dom \<mu>)])
             (Chn \<mu> \<cdot> \<p>\<^sub>0[Leg0 (Dom \<nu>), Leg1 (Dom \<mu>)])"
@@ -937,7 +936,7 @@ $$\xymatrix{
       show 2: "\<p>\<^sub>0[\<nu>.cod.leg0, \<mu>.cod.leg1] \<cdot> chine_hcomp \<nu> \<mu> = \<mu>.chine \<cdot> \<p>\<^sub>0[\<nu>.dom.leg0, \<mu>.dom.leg1]"
         unfolding chine_hcomp_def
         using 0 by simp
-      show 3: "\<guillemotleft>chine_hcomp \<nu> \<mu> : \<nu>.dom.leg0 \<down>\<down> \<mu>.dom.leg1 \<rightarrow> \<nu>.cod.leg0 \<down>\<down> \<mu>.cod.leg1\<guillemotright>"
+      show 3: "\<guillemotleft>chine_hcomp \<nu> \<mu> : \<nu>.dom.leg0 \<down>\<down> \<mu>.dom.leg1 \<rightarrow>\<^sub>C \<nu>.cod.leg0 \<down>\<down> \<mu>.cod.leg1\<guillemotright>"
         unfolding chine_hcomp_def
         using assms 0 src_def trg_def C.tuple_in_hom by auto
       show "C.commutative_square \<p>\<^sub>1[\<nu>.cod.leg0, \<mu>.cod.leg1] \<nu>.chine
@@ -950,8 +949,7 @@ $$\xymatrix{
 
     lemma chine_hcomp_in_hom [intro]:
     assumes "arr \<mu>" and "arr \<nu>" and "src \<nu> = trg \<mu>"
-    shows "\<guillemotleft>chine_hcomp \<nu> \<mu> :
-              Leg0 (Dom \<nu>) \<down>\<down> Leg1 (Dom \<mu>) \<rightarrow>  Leg0 (Cod \<nu>) \<down>\<down> Leg1 (Cod \<mu>)\<guillemotright>"
+    shows "\<guillemotleft>chine_hcomp \<nu> \<mu> : Leg0 (Dom \<nu>) \<down>\<down> Leg1 (Dom \<mu>) \<rightarrow>\<^sub>C Leg0 (Cod \<nu>) \<down>\<down> Leg1 (Cod \<mu>)\<guillemotright>"
       using assms chine_hcomp_props(1) by simp
 
     lemma arrow_of_spans_hcomp:
@@ -972,7 +970,7 @@ $$\xymatrix{
           using assms hcomp_def src_def trg_def by auto
         interpret Cod: span_in_category C \<open>Cod (\<nu> \<star> \<mu>)\<close>
           using span_Cod by (unfold_locales, auto)
-        show map: "\<guillemotleft>Chn (\<nu> \<star> \<mu>) : Dom.apex \<rightarrow> Cod.apex\<guillemotright>"
+        show map: "\<guillemotleft>Chn (\<nu> \<star> \<mu>) : Dom.apex \<rightarrow>\<^sub>C Cod.apex\<guillemotright>"
           using assms src_def trg_def chine_hcomp_props hcomp_def Cod.apex_def Dom.apex_def
           by auto
         show "Cod.leg0 \<cdot> Chn (\<nu> \<star> \<mu>) = Dom.leg0"
@@ -1430,11 +1428,6 @@ $$\xymatrix{
       ultimately show ?thesis by auto
     qed
 
-    interpretation VxV: product_category vcomp vcomp ..
-    interpretation VV: subcategory VxV.comp
-                         \<open>\<lambda>\<nu>\<mu>. arr (fst \<nu>\<mu>) \<and> arr (snd \<nu>\<mu>) \<and> src (fst \<nu>\<mu>) = trg (snd \<nu>\<mu>)\<close>
-      by (unfold_locales, simp_all)
-
     interpretation H: "functor" VV.comp vcomp \<open>\<lambda>\<nu>\<mu>. fst \<nu>\<mu> \<star> snd \<nu>\<mu>\<close>
     proof
       show "\<And>\<nu>\<mu>. \<not> VV.arr \<nu>\<mu> \<Longrightarrow> fst \<nu>\<mu> \<star> snd \<nu>\<mu> = null"
@@ -1484,24 +1477,10 @@ $$\xymatrix{
   context span_bicategory
   begin
 
-    interpretation VxVxV: product_category vcomp VxV.comp ..
-    interpretation VVV: subcategory VxVxV.comp
-                          \<open>\<lambda>\<tau>\<mu>\<nu>. arr (fst \<tau>\<mu>\<nu>) \<and> VV.arr (snd \<tau>\<mu>\<nu>) \<and>
-                                 src (fst \<tau>\<mu>\<nu>) = trg (fst (snd \<tau>\<mu>\<nu>))\<close>
-      using subcategory_VVV by auto
-
-    interpretation HoHV: "functor" VVV.comp vcomp HoHV
-      using functor_HoHV by blast
-    interpretation HoVH: "functor" VVV.comp vcomp HoVH
-      using functor_HoVH by blast
-
     lemma arr_eqI:
     assumes "par \<mu> \<mu>'" and "Chn \<mu> = Chn \<mu>'"
     shows "\<mu> = \<mu>'"
       using assms dom_char cod_char by auto
-
-    interpretation L: endofunctor vcomp L
-      using endofunctor_L by auto
 
     abbreviation \<l>
     where "\<l> f \<equiv> \<lparr>Chn = \<p>\<^sub>0[C.cod (Leg1 (Dom f)), Leg1 (Dom f)],
@@ -1551,7 +1530,7 @@ $$\xymatrix{
         qed
         show "arrow_of_spans C (\<l> f)" ..
       qed
-      show 0: "\<And>f. ide f \<Longrightarrow> \<guillemotleft>\<l> f : L f \<rightarrow> map f\<guillemotright>"
+      show 0: "\<And>f. ide f \<Longrightarrow> \<guillemotleft>\<l> f : L f \<Rightarrow> map f\<guillemotright>"
       proof -
         fix f
         assume f: "ide f"
@@ -1559,7 +1538,7 @@ $$\xymatrix{
           using f ide_char' by auto
         interpret \<l>f: arrow_of_spans C \<open>\<l> f\<close>
           using f * by blast
-        show "in_hom (\<l> f) (L f) (map f)"
+        show "\<guillemotleft>\<l> f : L f \<Rightarrow> map f\<guillemotright>"
         proof
           show 1: "arr (\<l> f)"
             using f * arr_char by blast
@@ -1715,15 +1694,12 @@ $$\xymatrix{
     shows "natural_isomorphism vcomp vcomp L map \<ll>.map"
       ..
 
-    interpretation equivalence_functor vcomp vcomp L
+    sublocale L: equivalence_functor vcomp vcomp L
       using L.isomorphic_to_identity_is_equivalence \<ll>.natural_isomorphism_axioms by simp
 
     lemma equivalence_functor_L:
     shows "equivalence_functor vcomp vcomp L"
       ..
-
-    interpretation R: endofunctor vcomp R
-      using endofunctor_R by auto
 
     abbreviation \<r>
     where "\<r> f \<equiv> \<lparr>Chn = \<p>\<^sub>1[Leg0 (Dom f), C.cod (Leg0 (Dom f))],
@@ -1774,7 +1750,7 @@ $$\xymatrix{
         qed
         show "arrow_of_spans C (\<r> f)" ..
       qed
-      show 0: "\<And>f. ide f \<Longrightarrow> in_hom (\<r> f) (R f) (map f)"
+      show 0: "\<And>f. ide f \<Longrightarrow> \<guillemotleft>\<r> f : R f \<Rightarrow> map f\<guillemotright>"
       proof -
         fix f
         assume f: "ide f"
@@ -1782,7 +1758,7 @@ $$\xymatrix{
           using f ide_char' by auto
         interpret \<r>f: arrow_of_spans C \<open>\<r> f\<close>
           using f * by blast
-        show "in_hom (\<r> f) (R f) (map f)"
+        show "\<guillemotleft>\<r> f : R f \<Rightarrow> map f\<guillemotright>"
         proof
           show 1: "arr (\<r> f)"
             using f * arr_char by blast
@@ -1941,7 +1917,7 @@ $$\xymatrix{
     shows "natural_isomorphism vcomp vcomp R map \<rho>.map"
       ..
 
-    interpretation equivalence_functor vcomp vcomp R
+    sublocale R: equivalence_functor vcomp vcomp R
       using R.isomorphic_to_identity_is_equivalence \<rho>.natural_isomorphism_axioms by simp
 
     lemma equivalence_functor_R:
@@ -2164,10 +2140,6 @@ $$\xymatrix{
     shows "ide \<mu>" and "ide \<nu>"
       using ide_char \<mu>.arrow_of_spans_axioms \<nu>.arrow_of_spans_axioms by auto
 
-    interpretation VxV: product_category vcomp vcomp ..
-    interpretation VV: subcategory VxV.comp \<open>\<lambda>\<nu>\<mu>. arr (fst \<nu>\<mu>) \<and> arr (snd \<nu>\<mu>) \<and>
-                                                   src (fst \<nu>\<mu>) = trg (snd \<nu>\<mu>)\<close>
-      by (unfold_locales, simp_all)
     interpretation H: "functor" VV.comp vcomp \<open>\<lambda>\<nu>\<mu>. fst \<nu>\<mu> \<star> snd \<nu>\<mu>\<close>
       using hcomp_is_functor by auto
 
@@ -2971,23 +2943,6 @@ $$\xymatrix{
   context span_bicategory
   begin
 
-    interpretation VxV: product_category vcomp vcomp ..
-    interpretation VV: subcategory VxV.comp \<open>\<lambda>\<nu>\<mu>. arr (fst \<nu>\<mu>) \<and> arr (snd \<nu>\<mu>) \<and>
-                                                   src (fst \<nu>\<mu>) = trg (snd \<nu>\<mu>)\<close>
-      by (unfold_locales, simp_all)
-    interpretation VxVxV: product_category vcomp VxV.comp ..
-    interpretation VVV: subcategory VxVxV.comp
-                          \<open>\<lambda>\<tau>\<mu>\<nu>. arr (fst \<tau>\<mu>\<nu>) \<and> VV.arr (snd \<tau>\<mu>\<nu>) \<and>
-                                 src (fst \<tau>\<mu>\<nu>) = trg (fst (snd \<tau>\<mu>\<nu>))\<close>
-      using subcategory_VVV by auto
-
-    interpretation H: horizontal_composition vcomp hcomp src trg
-      using has_horizontal_composition by auto
-    interpretation HoHV: "functor" VVV.comp vcomp HoHV
-      using functor_HoHV by blast
-    interpretation HoVH: "functor" VVV.comp vcomp HoVH
-      using functor_HoVH by blast
-
     abbreviation (input) assoc\<^sub>S\<^sub>B
     where "assoc\<^sub>S\<^sub>B f g h \<equiv> \<lparr>Chn = three_composable_identity_arrows_of_spans.chine_assoc
                                    C prj0 prj1 f g h,
@@ -3473,7 +3428,7 @@ $$\xymatrix{
     interpretation \<alpha>: natural_transformation VVV.comp vcomp HoHV HoVH \<alpha>\<^sub>S\<^sub>B
       using natural_transformation_\<alpha> by simp
 
-    interpretation \<alpha>: natural_isomorphism VVV.comp vcomp HoHV HoVH \<alpha>\<^sub>S\<^sub>B
+    sublocale \<alpha>: natural_isomorphism VVV.comp vcomp HoHV HoVH \<alpha>\<^sub>S\<^sub>B
     proof
       show "\<And>fgh. VVV.ide fgh \<Longrightarrow> iso (\<alpha>\<^sub>S\<^sub>B fgh)"
       proof -
@@ -4431,32 +4386,6 @@ $$\xymatrix{
 
   context span_bicategory
   begin
-
-    interpretation VxV: product_category vcomp vcomp ..
-    interpretation VV: subcategory VxV.comp \<open>\<lambda>\<nu>\<mu>. arr (fst \<nu>\<mu>) \<and> arr (snd \<nu>\<mu>) \<and>
-                                                   src (fst \<nu>\<mu>) = trg (snd \<nu>\<mu>)\<close>
-      by (unfold_locales, simp_all)
-    interpretation VxVxV: product_category vcomp VxV.comp ..
-    interpretation VVV: subcategory VxVxV.comp
-                          \<open>\<lambda>\<tau>\<mu>\<nu>. arr (fst \<tau>\<mu>\<nu>) \<and> VV.arr (snd \<tau>\<mu>\<nu>) \<and>
-                                 src (fst \<tau>\<mu>\<nu>) = trg (fst (snd \<tau>\<mu>\<nu>))\<close>
-      using subcategory_VVV by auto
-
-    interpretation H: horizontal_composition vcomp hcomp src trg
-      using has_horizontal_composition by auto
-
-    interpretation HoHV: "functor" VVV.comp vcomp HoHV
-      using functor_HoHV by blast
-    interpretation HoVH: "functor" VVV.comp vcomp HoVH
-      using functor_HoVH by blast
-
-    interpretation L: equivalence_functor vcomp vcomp L
-      using equivalence_functor_L by auto
-    interpretation R: equivalence_functor vcomp vcomp R
-      using equivalence_functor_R by auto
-
-    interpretation \<alpha>: natural_isomorphism VVV.comp vcomp HoHV HoVH \<alpha>\<^sub>S\<^sub>B
-      using natural_isomorphism_\<alpha> by blast
 
     lemma pentagon:
     assumes "ide f" and "ide g" and "ide h" and "ide k"

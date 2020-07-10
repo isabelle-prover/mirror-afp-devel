@@ -386,7 +386,7 @@ begin
 
     interpretation horizontal_homs vcomp src trg
       using src_def trg_def Cod_in_Obj Map_in_Hom
-      by (unfold_locales, auto)
+      by unfold_locales auto
 
     notation in_hhom  ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
 
@@ -462,12 +462,7 @@ begin
                            B.can (Dom \<mu> \<^bold>\<star> Dom \<nu>) (Dom \<mu> \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom \<nu>)"
       using assms hcomp_def [of \<mu> \<nu>] by simp
 
-    interpretation VxV: product_category vcomp vcomp ..
-    interpretation VV: subcategory VxV.comp
-                          \<open>\<lambda>\<mu>\<nu>. arr (fst \<mu>\<nu>) \<and> arr (snd \<mu>\<nu>) \<and> src (fst \<mu>\<nu>) = trg (snd \<mu>\<nu>)\<close>
-      using subcategory_VV by simp
-
-    interpretation H: "functor" VV.comp vcomp \<open>\<lambda>\<mu>\<nu>. hcomp (fst \<mu>\<nu>) (snd \<mu>\<nu>)\<close>
+    interpretation "functor" VV.comp vcomp \<open>\<lambda>\<mu>\<nu>. hcomp (fst \<mu>\<nu>) (snd \<mu>\<nu>)\<close>
     proof
       show "\<And>f. \<not> VV.arr f \<Longrightarrow> fst f \<star> snd f = null"
         using hcomp_def by auto
@@ -794,7 +789,7 @@ begin
       qed
     qed
 
-    interpretation H: horizontal_composition vcomp hcomp src trg
+    interpretation horizontal_composition vcomp hcomp src trg
       using hseq_char by (unfold_locales, auto)
 
     lemma hcomp_assoc:
@@ -808,9 +803,9 @@ begin
       have \<nu>\<tau>: "\<guillemotleft>Map \<nu> \<star>\<^sub>B Map \<tau> : \<lbrace>Dom \<nu> \<^bold>\<star> Dom \<tau>\<rbrace> \<Rightarrow>\<^sub>B \<lbrace>Cod \<nu> \<^bold>\<star> Cod \<tau>\<rbrace>\<guillemotright>"
         using assms src_def trg_def arr_char
         by (auto simp add: E.eval_simps'(2-3) Pair_inject)
-      show "H.hseq (\<mu> \<star> \<nu>) \<tau>"
+      show "hseq (\<mu> \<star> \<nu>) \<tau>"
         using assms \<mu>\<nu> \<nu>\<tau> by auto
-      show "H.hseq \<mu> (\<nu> \<star> \<tau>)"
+      show "hseq \<mu> (\<nu> \<star> \<tau>)"
         using assms \<mu>\<nu> \<nu>\<tau> by auto
       show "Dom ((\<mu> \<star> \<nu>) \<star> \<tau>) = Dom (\<mu> \<star> \<nu> \<star> \<tau>)"
       proof -
@@ -1135,7 +1130,7 @@ begin
     assumes "obj a"
     shows "a \<star> a = a"
     proof (intro arr_eqI)
-      show "H.hseq a a"
+      show "hseq a a"
         using assms by auto
       show "arr a"
         using assms by auto
@@ -1171,10 +1166,10 @@ begin
         qed
         also have "... = B.can (Dom a) (Dom a \<^bold>\<star> Dom a) \<cdot>\<^sub>B B.can (Dom a \<^bold>\<star> Dom a) (Dom a)"
           using assms obj_char arr_char B.comp_cod_arr E.ide_eval_Ide B.can_in_hom
-          by (metis (no_types, lifting) H.ide_hcomp obj_def obj_def'
+          by (metis (no_types, lifting) ide_hcomp obj_def obj_def'
               calculation B.comp_ide_arr B.ide_hcomp B.hseqE B.ideD(1) ide_char B.seqE)
         also have "... = \<lbrace>Dom a\<rbrace>"
-          using assms 1 2 obj_char arr_char B.vcomp_can calculation H.ide_hcomp ideE objE
+          using assms 1 2 obj_char arr_char B.vcomp_can calculation ide_hcomp ideE objE
           by (metis (no_types, lifting))
         also have "... = Map a"
           using assms obj_char by simp
@@ -1186,7 +1181,7 @@ begin
     assumes "ide f"
     shows "f \<star> src f = f"
     proof (intro arr_eqI)
-      show "H.hseq f (src f)"
+      show "hseq f (src f)"
         using assms by simp
       show "arr f"
         using assms by simp
@@ -1224,7 +1219,7 @@ begin
         qed
         also have "... = \<lbrace>Dom f\<rbrace>"
           using assms 1 ide_char arr_char
-          by (metis (no_types, lifting) H.ide_hcomp calculation ideE ide_src obj_def' obj_src)
+          by (metis (no_types, lifting) ide_hcomp calculation ideE ide_src obj_def' obj_src)
         also have "... = Map f"
           using assms by auto
         finally show ?thesis by simp
@@ -1235,7 +1230,7 @@ begin
     assumes "ide f"
     shows "trg f \<star> f = f"
     proof (intro arr_eqI)
-      show "H.hseq (trg f) f"
+      show "hseq (trg f) f"
         using assms by auto
       show "arr f"
         using assms by auto
@@ -1273,7 +1268,7 @@ begin
         qed
         also have "... = \<lbrace>Dom f\<rbrace>"
           using assms 1 ide_char arr_char
-          by (metis (no_types, lifting) H.ide_hcomp Map_ide(1) calculation ideD(1)
+          by (metis (no_types, lifting) ide_hcomp Map_ide(1) calculation ideD(1)
               src_trg trg.preserves_ide)
         also have "... = Map f"
           using assms by auto
@@ -1281,25 +1276,20 @@ begin
       qed
     qed
 
-    interpretation L: endofunctor vcomp H.L
-      using H.endofunctor_L by auto
-    interpretation R: endofunctor vcomp H.R
-      using H.endofunctor_R by auto
-
-    interpretation L: full_functor vcomp vcomp H.L
+    interpretation L: full_functor vcomp vcomp L
     proof
       fix a a' g
       assume a: "ide a" and a': "ide a'"
-      assume g: "in_hom g (H.L a') (H.L a)"
+      assume g: "in_hom g (L a') (L a)"
       have a_eq: "a = MkIde (Dom a)"
         using a dom_char [of a] by simp
       have a'_eq: "a' = MkIde (Dom a')"
         using a' dom_char [of a'] by simp
       have 1: "Cod g = Dom a"
       proof -
-        have "Dom (H.L a) = Dom a"
+        have "Dom (L a) = Dom a"
         proof -
-          have "Dom (H.L a) = E.Trg (Dom a) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom a"
+          have "Dom (L a) = E.Trg (Dom a) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom a"
             using a trg_def hcomp_def
             apply simp
             by (metis (no_types, lifting) ideE src_trg trg.preserves_reflects_arr)
@@ -1314,9 +1304,9 @@ begin
       qed
       have 2: "Dom g = Dom a'"
       proof -
-        have "Dom (H.L a') = Dom a'"
+        have "Dom (L a') = Dom a'"
         proof -
-          have "Dom (H.L a') = E.Trg (Dom a') \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom a'"
+          have "Dom (L a') = E.Trg (Dom a') \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom a'"
             using a' trg_def hcomp_def
             apply simp
             by (metis (no_types, lifting) ideE src_trg trg.preserves_reflects_arr)
@@ -1351,9 +1341,9 @@ begin
         show "cod (MkArr (Dom a') (Cod a) (Map g)) = a"
           using a a' 3 cod_char by auto
       qed
-      moreover have "H.L ?f = g"
+      moreover have "L ?f = g"
       proof -
-        have "H.L ?f =
+        have "L ?f =
               trg (MkArr (Dom a') (Cod a) (Map g)) \<star> MkArr (Dom a') (Cod a) (Map g)"
           using f by auto
         also have "... = MkIde (E.Trg (Cod a)) \<star> MkArr (Dom a') (Cod a) (Map g)"
@@ -1408,8 +1398,10 @@ begin
               by (metis (no_types, lifting) partial_magma_axioms B.in_homE partial_magma.arrI)
             also have "... = (B.lunit \<lbrace>Cod g\<rbrace> \<cdot>\<^sub>B B.lunit' \<lbrace>Cod g\<rbrace>) \<cdot>\<^sub>B Map g"
               using B.comp_assoc by simp
+            also have "... = \<lbrace>Cod g\<rbrace> \<cdot>\<^sub>B Map g"
+              using g E.ide_eval_Ide B.comp_arr_inv' by fastforce
             also have "... = Map g"
-              using g arr_char E.ide_eval_Ide B.comp_arr_inv' B.comp_cod_arr by fastforce
+              using g E.ide_eval_Ide B.comp_cod_arr by fastforce
             finally show ?thesis by simp
           qed
           ultimately have
@@ -1424,24 +1416,24 @@ begin
           using g MkArr_Map by blast
         finally show ?thesis by simp
       qed
-      ultimately show "\<exists>f. in_hom f a' a \<and> H.L f = g"
+      ultimately show "\<exists>f. in_hom f a' a \<and> L f = g"
         by blast
     qed
 
-    interpretation R: full_functor vcomp vcomp H.R
+    interpretation R: full_functor vcomp vcomp R
     proof
       fix a a' g
       assume a: "ide a" and a': "ide a'"
-      assume g: "in_hom g (H.R a') (H.R a)"
+      assume g: "in_hom g (R a') (R a)"
       have a_eq: "a = MkIde (Dom a)"
         using a dom_char [of a] by simp
       have a'_eq: "a' = MkIde (Dom a')"
         using a' dom_char [of a'] by simp
       have 1: "Cod g = Dom a"
       proof -
-        have "Dom (H.R a) = Dom a"
+        have "Dom (R a) = Dom a"
         proof -
-          have "Dom (H.R a) = Dom a \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> E.Src (Dom a)"
+          have "Dom (R a) = Dom a \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> E.Src (Dom a)"
             using a src_def hcomp_def
             apply simp
             by (metis (no_types, lifting) ideE trg_src src.preserves_reflects_arr)
@@ -1456,9 +1448,9 @@ begin
       qed
       have 2: "Dom g = Dom a'"
       proof -
-        have "Dom (H.R a') = Dom a'"
+        have "Dom (R a') = Dom a'"
         proof -
-          have "Dom (H.R a') = Dom a' \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> E.Src (Dom a')"
+          have "Dom (R a') = Dom a' \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> E.Src (Dom a')"
             using a' src_def hcomp_def
             apply simp
             by (metis (no_types, lifting) ideE trg_src src.preserves_reflects_arr)
@@ -1493,9 +1485,9 @@ begin
         show "cod (MkArr (Dom a') (Cod a) (Map g)) = a"
           using a a' 3 cod_char by auto
       qed
-      moreover have "H.R ?f = g"
+      moreover have "R ?f = g"
       proof -
-        have "H.R ?f =
+        have "R ?f =
                MkArr (Dom a') (Cod a) (Map g) \<star> src (MkArr (Dom a') (Cod a) (Map g))"
           using f by auto
         also have "... = MkArr (Dom a') (Cod a) (Map g) \<star> MkIde (E.Src (Cod a))"
@@ -1525,12 +1517,12 @@ begin
                                (B.runit \<lbrace>Cod a\<rbrace> \<cdot>\<^sub>B (Map g \<star>\<^sub>B src\<^sub>B \<lbrace>Cod a\<rbrace>) \<cdot>\<^sub>B B.runit' \<lbrace>Dom a'\<rbrace>)"
         proof -
           have "E.Src (Cod a) = E.Src (Dom a')"
-            using a a' g ide_char arr_char src_def trg_def src_hcomp
-            by (metis (no_types, lifting) Cod_dom f ideE in_homE src_cod src_simps(1))
+            using a a' g arr_char
+            by (metis (no_types, lifting) 1 2 Cod.simps(1) a_eq in_hom_char)
           moreover have "B.can (Cod a) (Cod a \<^bold>\<star> E.Src (Cod a)) = B.runit \<lbrace>Cod a\<rbrace>"
-            using a ide_char arr_char B.canE_unitor(1) by blast
+            using a B.canE_unitor(1) by blast
           moreover have "B.can (Dom a' \<^bold>\<star> E.Src (Dom a')) (Dom a') = B.runit' \<lbrace>Dom a'\<rbrace>"
-            using a' ide_char arr_char B.canE_unitor(3) by blast
+            using a' B.canE_unitor(3) by blast
           ultimately show ?thesis by simp
         qed
         also have "... = MkArr (Dom g) (Cod g) (Map g)"
@@ -1548,8 +1540,10 @@ begin
               by (metis (no_types, lifting) partial_magma_axioms B.in_homE partial_magma.arrI)
             also have "... = (B.runit \<lbrace>Cod g\<rbrace> \<cdot>\<^sub>B B.runit' \<lbrace>Cod g\<rbrace>) \<cdot>\<^sub>B Map g"
               using B.comp_assoc by simp
+            also have "... = \<lbrace>Cod g\<rbrace> \<cdot>\<^sub>B Map g"
+              using g E.ide_eval_Ide B.comp_arr_inv' by fastforce
             also have "... = Map g"
-              using g arr_char E.ide_eval_Ide B.comp_arr_inv' B.comp_cod_arr by fastforce
+              using g E.ide_eval_Ide B.comp_cod_arr by fastforce
             finally show ?thesis by simp
           qed
           ultimately have
@@ -1563,14 +1557,14 @@ begin
            using g MkArr_Map by blast
         finally show ?thesis by simp
       qed
-      ultimately show "\<exists>f. in_hom f a' a \<and> H.R f = g"
+      ultimately show "\<exists>f. in_hom f a' a \<and> R f = g"
         by blast
     qed
 
-    interpretation L: faithful_functor vcomp vcomp H.L
+    interpretation L: faithful_functor vcomp vcomp L
     proof
       fix f f'
-      assume par: "par f f'" and eq: "H.L f = H.L f'"
+      assume par: "par f f'" and eq: "L f = L f'"
       show "f = f'"
       proof (intro arr_eqI)
         have 1: "Dom f = Dom f' \<and> Cod f = Cod f'"
@@ -1680,10 +1674,10 @@ begin
       qed
     qed
 
-    interpretation R: faithful_functor vcomp vcomp H.R
+    interpretation R: faithful_functor vcomp vcomp R
     proof
       fix f f'
-      assume par: "par f f'" and eq: "H.R f = H.R f'"
+      assume par: "par f f'" and eq: "R f = R f'"
       show "f = f'"
       proof (intro arr_eqI)
         have 1: "Dom f = Dom f' \<and> Cod f = Cod f'"
@@ -1795,55 +1789,45 @@ begin
       qed
     qed
 
-    interpretation VxVxV: product_category vcomp VxV.comp ..
-    interpretation VVV: subcategory VxVxV.comp
-                 \<open>\<lambda>\<tau>\<mu>\<nu>. arr (fst \<tau>\<mu>\<nu>) \<and> VV.arr (snd \<tau>\<mu>\<nu>) \<and> src (fst \<tau>\<mu>\<nu>) = trg (fst (snd \<tau>\<mu>\<nu>))\<close>
-      using subcategory_VVV by auto
-
-    interpretation HoHV: "functor" VVV.comp vcomp H.HoHV
-      using H.functor_HoHV by auto
-    interpretation HoVH: "functor" VVV.comp vcomp H.HoVH
-      using H.functor_HoVH by auto
-
     definition \<a>
     where "\<a> \<tau> \<mu> \<nu> \<equiv> if VVV.arr (\<tau>, \<mu>, \<nu>) then hcomp \<tau> (hcomp \<mu> \<nu>) else null"
 
-    interpretation natural_isomorphism VVV.comp vcomp H.HoHV H.HoVH
+    interpretation natural_isomorphism VVV.comp vcomp HoHV HoVH
                      \<open>\<lambda>\<tau>\<mu>\<nu>. \<a> (fst \<tau>\<mu>\<nu>) (fst (snd \<tau>\<mu>\<nu>)) (snd (snd \<tau>\<mu>\<nu>))\<close>
     proof
       show "\<And>\<tau>\<mu>\<nu>. \<not> VVV.arr \<tau>\<mu>\<nu> \<Longrightarrow> \<a> (fst \<tau>\<mu>\<nu>) (fst (snd \<tau>\<mu>\<nu>)) (snd (snd \<tau>\<mu>\<nu>)) = null"
         using \<a>_def by simp
       show "\<And>\<tau>\<mu>\<nu>. VVV.arr \<tau>\<mu>\<nu> \<Longrightarrow>
-                  dom (\<a> (fst \<tau>\<mu>\<nu>) (fst (snd \<tau>\<mu>\<nu>)) (snd (snd \<tau>\<mu>\<nu>))) = H.HoHV (VVV.dom \<tau>\<mu>\<nu>)"
-        using VVV.arr_char VV.arr_char \<a>_def hcomp_assoc H.HoHV_def by force
+                  dom (\<a> (fst \<tau>\<mu>\<nu>) (fst (snd \<tau>\<mu>\<nu>)) (snd (snd \<tau>\<mu>\<nu>))) = HoHV (VVV.dom \<tau>\<mu>\<nu>)"
+        using VVV.arr_char VV.arr_char \<a>_def hcomp_assoc HoHV_def by force
       show 1: "\<And>\<tau>\<mu>\<nu>. VVV.arr \<tau>\<mu>\<nu> \<Longrightarrow>
-                     cod (\<a> (fst \<tau>\<mu>\<nu>) (fst (snd \<tau>\<mu>\<nu>)) (snd (snd \<tau>\<mu>\<nu>))) = H.HoVH (VVV.cod \<tau>\<mu>\<nu>)"
-        using VVV.arr_char VV.arr_char \<a>_def H.HoVH_def by force
+                     cod (\<a> (fst \<tau>\<mu>\<nu>) (fst (snd \<tau>\<mu>\<nu>)) (snd (snd \<tau>\<mu>\<nu>))) = HoVH (VVV.cod \<tau>\<mu>\<nu>)"
+        using VVV.arr_char VV.arr_char \<a>_def HoVH_def by force
       show "\<And>\<tau>\<mu>\<nu>. VVV.arr \<tau>\<mu>\<nu> \<Longrightarrow>
-                  H.HoVH \<tau>\<mu>\<nu> \<cdot>
+                  HoVH \<tau>\<mu>\<nu> \<cdot>
                     \<a> (fst (VVV.dom \<tau>\<mu>\<nu>)) (fst (snd (VVV.dom \<tau>\<mu>\<nu>)))
                       (snd (snd (VVV.dom \<tau>\<mu>\<nu>))) =
                   \<a> (fst \<tau>\<mu>\<nu>) (fst (snd \<tau>\<mu>\<nu>)) (snd (snd \<tau>\<mu>\<nu>))"
-        using \<a>_def HoVH.is_natural_1 H.HoVH_def by auto
+        using \<a>_def HoVH.is_natural_1 HoVH_def by auto
       show "\<And>\<tau>\<mu>\<nu>. VVV.arr \<tau>\<mu>\<nu> \<Longrightarrow>
                    \<a> (fst (VVV.cod \<tau>\<mu>\<nu>)) (fst (snd (VVV.cod \<tau>\<mu>\<nu>)))
-                     (snd (snd (VVV.cod \<tau>\<mu>\<nu>))) \<cdot> H.HoHV \<tau>\<mu>\<nu> =
+                     (snd (snd (VVV.cod \<tau>\<mu>\<nu>))) \<cdot> HoHV \<tau>\<mu>\<nu> =
                    \<a> (fst \<tau>\<mu>\<nu>) (fst (snd \<tau>\<mu>\<nu>)) (snd (snd \<tau>\<mu>\<nu>))"
       proof -
         fix \<tau>\<mu>\<nu>
         assume \<tau>\<mu>\<nu>: "VVV.arr \<tau>\<mu>\<nu>"
-        have "H.HoHV \<tau>\<mu>\<nu> = \<a> (fst \<tau>\<mu>\<nu>) (fst (snd \<tau>\<mu>\<nu>)) (snd (snd \<tau>\<mu>\<nu>))"
-          unfolding \<a>_def H.HoHV_def
+        have "HoHV \<tau>\<mu>\<nu> = \<a> (fst \<tau>\<mu>\<nu>) (fst (snd \<tau>\<mu>\<nu>)) (snd (snd \<tau>\<mu>\<nu>))"
+          unfolding \<a>_def HoHV_def
           using \<tau>\<mu>\<nu> HoHV.preserves_cod hcomp_assoc VVV.arr_char VV.arr_char
           by simp
         thus "\<a> (fst (VVV.cod \<tau>\<mu>\<nu>)) (fst (snd (VVV.cod \<tau>\<mu>\<nu>))) (snd (snd (VVV.cod \<tau>\<mu>\<nu>))) \<cdot>
-                H.HoHV \<tau>\<mu>\<nu> =
+                HoHV \<tau>\<mu>\<nu> =
               \<a> (fst \<tau>\<mu>\<nu>) (fst (snd \<tau>\<mu>\<nu>)) (snd (snd \<tau>\<mu>\<nu>))"
           using 1 \<tau>\<mu>\<nu> comp_cod_arr \<a>_def
-          by (metis (no_types, lifting) H.HoVH_def HoHV.preserves_arr prod.collapse)
+          by (metis (no_types, lifting) HoVH_def HoHV.preserves_arr prod.collapse)
       qed
       show "\<And>fgh. VVV.ide fgh \<Longrightarrow> iso (\<a> (fst fgh) (fst (snd fgh)) (snd (snd fgh)))"
-        using \<a>_def HoVH.preserves_ide H.HoVH_def by auto
+        using \<a>_def HoVH.preserves_ide HoVH_def by auto
     qed
 
     definition \<i>
@@ -2115,8 +2099,6 @@ begin
       qed
     qed
 
-    interpretation "functor" B.VV.comp VV.comp UP.FF
-      using UP.functor_FF by auto
     interpretation HoUP_UP: composite_functor B.VV.comp VV.comp vcomp
                               UP.FF \<open>\<lambda>\<mu>\<nu>. hcomp (fst \<mu>\<nu>) (snd \<mu>\<nu>)\<close> ..
     interpretation UPoH: composite_functor B.VV.comp V\<^sub>B vcomp
@@ -2133,7 +2115,7 @@ begin
       show "\<guillemotleft>\<Phi>\<^sub>o fg : HoUP_UP.map fg \<Rightarrow> UPoH.map fg\<guillemotright>"
         using fg arr_char dom_char cod_char B.VV.ide_char B.VV.arr_char
               UP.FF_def UP_def hcomp_def B.can_Ide_self src_def trg_def
-        apply (intro in_homI) by auto
+        by (intro in_homI) auto
       next
       fix \<mu>\<nu>
       assume \<mu>\<nu>: "B.VV.arr \<mu>\<nu>"
@@ -2324,7 +2306,7 @@ begin
               using f g h fg gh B.canI_associator_0 B.inverse_arrows_can by simp
             ultimately show ?thesis
               using 1 2 f g h fg gh \<Phi>.map_def UP_def hcomp_def UP.FF_def
-                    B.VV.arr_char trg_def B.can_Ide_self B.comp_cod_arr
+                    B.VV.arr_char B.can_Ide_self B.comp_cod_arr
               by simp
           qed
           ultimately have "UP \<a>\<^sub>B[f, g, h] \<cdot> \<Phi> (f \<star>\<^sub>B g, h) \<cdot> (\<Phi> (f, g) \<star> UP h) =
@@ -2690,7 +2672,7 @@ begin
 
     interpretation "functor" vcomp V\<^sub>B DN
       using DN_def seqE Map_comp seq_char
-      by (unfold_locales, auto)
+      by unfold_locales auto
 
     interpretation DN: weak_arrow_of_homs vcomp src trg V\<^sub>B src\<^sub>B trg\<^sub>B DN
     proof
@@ -2873,8 +2855,8 @@ begin
           also have "... = B.can (Cod (fst \<mu>\<nu>) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Cod (snd \<mu>\<nu>))
                                  (Cod (fst \<mu>\<nu>) \<^bold>\<star> Cod (snd \<mu>\<nu>)) \<cdot>\<^sub>B
                              (Map (fst \<mu>\<nu>) \<star>\<^sub>B Map (snd \<mu>\<nu>)) \<cdot>\<^sub>B \<Psi>\<^sub>o' \<mu>\<nu> \<cdot>\<^sub>B \<Psi>\<^sub>o \<mu>\<nu>"
-            using B B.comp_assoc \<mu>\<nu> VV.arr_char arr_char src_def trg_def B.inverse_arrows_can
-                  E.Ide_HcompNml E.Nmlize_Nml E.Nml_HcompNml(1) B.can_Ide_self B.comp_arr_dom
+            using B \<mu>\<nu> VV.arr_char arr_char src_def trg_def
+                  E.Ide_HcompNml E.Nml_HcompNml(1) B.can_Ide_self B.comp_arr_dom
             by auto
           also have "... = DNoH.map \<mu>\<nu> \<cdot>\<^sub>B \<Psi>\<^sub>o (VV.dom \<mu>\<nu>)"
           proof -
@@ -2929,7 +2911,7 @@ begin
           using assms 1 \<Psi>.preserves_hom by auto
       qed
       show "\<guillemotleft>\<Psi> \<mu>\<nu> : DN (src (snd \<mu>\<nu>)) \<rightarrow>\<^sub>B DN (trg (fst \<mu>\<nu>))\<guillemotright>"
-        using assms 1 2 B.src_dom [of "\<Psi> \<mu>\<nu>"] B.trg_dom [of "\<Psi> \<mu>\<nu>"] by auto
+       using assms 2 B.src_dom [of "\<Psi> \<mu>\<nu>"] B.trg_dom [of "\<Psi> \<mu>\<nu>"] by auto
     qed
 
     lemma \<Psi>_simps [simp]:
@@ -3036,11 +3018,16 @@ begin
                       E.Nml_HcompNml(1) E.Nmlize.simps(3) E.Nmlize_Nml arr_char ideD(1)
                       src_simps(2) trg_simps(2))
                 show "\<guillemotleft>Map g \<star>\<^sub>B Map h : EVAL (Dom g \<^bold>\<star> Dom h) \<Rightarrow>\<^sub>B EVAL (Cod g \<^bold>\<star> Cod h)\<guillemotright>"
-                  using g h gh 1 Map_in_Hom B.hcomp_in_vhom B.not_arr_null B.seq_if_composable
-                        B.trg.is_extensional B.trg.preserves_hom B.vconn_implies_hpar(2)
-                        B.vconn_implies_hpar(4) Cod_ide E.eval.simps(3) Map_ide(1)
-                        arr_char ideD(1)
-                  by (metis (no_types, lifting))
+                proof
+                  show 2: "B.hseq (Map g) (Map h)"
+                    using g h gh
+                    by (metis (no_types, lifting) B.comp_null(1-2) B.hseq_char'
+                        B.ideD(1) Map_hcomp ideE ide_hcomp)
+                  show "B.dom (Map g \<star>\<^sub>B Map h) = EVAL (Dom g \<^bold>\<star> Dom h)"
+                    using g h gh 2 by fastforce
+                  show "B.cod (Map g \<star>\<^sub>B Map h) = EVAL (Cod g \<^bold>\<star> Cod h)"
+                    using g h gh 2 by fastforce
+                qed
                 show "\<guillemotleft>Map f : Map f \<Rightarrow>\<^sub>B EVAL (Cod f)\<guillemotright>"
                   using f arr_char Cod_ide by auto
                 show "src\<^sub>B (Map f) = trg\<^sub>B \<lbrace>Dom g \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> Dom h\<rbrace>"
@@ -3449,8 +3436,7 @@ begin
           moreover have "arr (MkArr \<^bold>\<langle>a'\<^bold>\<rangle>\<^sub>0 \<^bold>\<langle>a'\<^bold>\<rangle>\<^sub>0 a')"
             using a' arr_char B.obj_def by auto
           ultimately have "DN.map\<^sub>0 (UP.map\<^sub>0 a') = a'"
-            using a' UP.map\<^sub>0_def UP_def DN.map\<^sub>0_def DN_def src_def UP.map\<^sub>0_simps(1)
-            by auto
+            using a' UP.map\<^sub>0_def DN.map\<^sub>0_def DN_def src_def by auto
           thus ?thesis
             using a' B.equivalent_objects_reflexive by simp
         qed

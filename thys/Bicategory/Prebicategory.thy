@@ -2473,16 +2473,16 @@ begin
       of formally horizontally composable pairs and triples of arrows.
     \<close>
 
-    interpretation VxV: product_category V V ..
-    interpretation VV: subcategory VxV.comp \<open>\<lambda>\<mu>\<nu>. hseq\<^sub>H\<^sub>H (fst \<mu>\<nu>) (snd \<mu>\<nu>)\<close>
+    sublocale VxV: product_category V V ..
+    sublocale VV: subcategory VxV.comp \<open>\<lambda>\<mu>\<nu>. hseq\<^sub>H\<^sub>H (fst \<mu>\<nu>) (snd \<mu>\<nu>)\<close>
       by (unfold_locales, auto)
 
     lemma subcategory_VV:
     shows "subcategory VxV.comp (\<lambda>\<mu>\<nu>. hseq\<^sub>H\<^sub>H (fst \<mu>\<nu>) (snd \<mu>\<nu>))"
       ..
 
-    interpretation VxVxV: product_category V VxV.comp ..
-    interpretation VVV: subcategory VxVxV.comp
+    sublocale VxVxV: product_category V VxV.comp ..
+    sublocale VVV: subcategory VxVxV.comp
                             \<open>\<lambda>\<tau>\<mu>\<nu>. arr (fst \<tau>\<mu>\<nu>) \<and> VV.arr (snd \<tau>\<mu>\<nu>) \<and>
                                    src (fst \<tau>\<mu>\<nu>) = trg (fst (snd \<tau>\<mu>\<nu>))\<close>
       using VV.arr_char
@@ -3237,12 +3237,6 @@ begin
       using assms inverse_arrow_unique [of "\<nu> \<star> \<mu>"] inv_is_inverse inverse_arrows_hcomp
       by auto
 
-    interpretation VxVxV: product_category V VxV.comp ..
-    interpretation VVV: subcategory VxVxV.comp
-                          \<open>\<lambda>\<tau>\<mu>\<nu>. arr (fst \<tau>\<mu>\<nu>) \<and> VV.arr (snd \<tau>\<mu>\<nu>) \<and>
-                                 src (fst \<tau>\<mu>\<nu>) = trg (fst (snd \<tau>\<mu>\<nu>))\<close>
-      using subcategory_VVV by auto
-
     text \<open>
       The following define the two ways of using horizontal composition to compose three arrows.
     \<close>
@@ -3280,6 +3274,9 @@ begin
       qed
     qed
 
+    sublocale HoHV: "functor" VVV.comp V HoHV
+      using functor_HoHV by simp
+
     lemma functor_HoVH:
     shows "functor VVV.comp V HoVH"
       apply unfold_locales
@@ -3309,6 +3306,9 @@ begin
       qed
     qed
 
+    sublocale HoVH: "functor" VVV.comp V HoVH
+      using functor_HoVH by simp
+
     text \<open>
       The following define horizontal composition of an arrow on the left by its target
       and on the right by its source.
@@ -3320,15 +3320,21 @@ begin
     abbreviation R
     where "R \<equiv> \<lambda>\<mu>. if arr \<mu> then \<mu> \<star> src \<mu> else null"
 
+    sublocale L: endofunctor V L
+      using vseq_implies_hpar(2) whisker_left
+      by (unfold_locales, auto)
+
     lemma endofunctor_L:
     shows "endofunctor V L"
-      using vseq_implies_hpar(2) whisker_left
+      ..
+
+    sublocale R: endofunctor V R
+      using vseq_implies_hpar(1) whisker_right
       by (unfold_locales, auto)
 
     lemma endofunctor_R:
     shows "endofunctor V R"
-      using vseq_implies_hpar(1) whisker_right
-      by (unfold_locales, auto)
+      ..
 
   end
 

@@ -2657,7 +2657,7 @@ begin
         using \<xi>' by auto
       let ?\<epsilon>' = "UP.\<Psi> ?b \<cdot>\<^sub>S \<xi>' \<cdot>\<^sub>S S.inv (S.\<Phi> (f, g))"
       have \<epsilon>': "\<guillemotleft>?\<epsilon>' : S.UP (f \<star> g) \<Rightarrow>\<^sub>S S.UP ?b\<guillemotright>"
-        using assms(2-3) S.UP_map\<^sub>0_obj apply (intro S.in_homI) by auto
+        using assms(2-3) S.UP_map\<^sub>0_obj by (intro S.in_homI) auto
       have ex_un_\<epsilon>: "\<exists>!\<epsilon>. \<guillemotleft>\<epsilon> : f \<star> g \<Rightarrow> ?b\<guillemotright> \<and> S.UP \<epsilon> = ?\<epsilon>'"
       proof -
         have "\<exists>\<epsilon>. \<guillemotleft>\<epsilon> : f \<star> g \<Rightarrow> ?b\<guillemotright> \<and> S.UP \<epsilon> = ?\<epsilon>'"

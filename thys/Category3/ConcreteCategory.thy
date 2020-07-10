@@ -87,7 +87,8 @@ begin
     proof -
       let ?P = "\<lambda>n. \<forall>f. COMP n f = n \<and> COMP f n = n"
       have "Null = null"
-        using COMP_def null_def the1_equality [of ?P] by metis
+        using COMP_def null_def the1_equality [of ?P]
+        by (metis (no_types, lifting))
       thus ?thesis by simp
     qed
 
@@ -433,7 +434,8 @@ begin
         using assms Dom_in_Obj MkArr_in_hom [of "Dom a" "Dom b"] by simp
       moreover show "\<And>f. f \<in> hom a b \<Longrightarrow> MkArr (Dom a) (Dom b) (Map f) = f"
         using MkArr_Map by auto
-      moreover show "\<And>F. F \<in> Hom (Dom a) (Dom b) \<Longrightarrow> Map (MkArr (Dom a) (Dom b) F) = F"
+      moreover show "\<And>F. F \<in> Hom (Dom a) (Dom b)
+                            \<Longrightarrow> Map (MkArr (Dom a) (Dom b) F) = F"
         by simp
       ultimately show "bij_betw Map (hom a b) (Hom (Dom a) (Dom b))"
         using bij_betwI by blast

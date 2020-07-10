@@ -92,21 +92,21 @@ text \<open>
         fix r'
         assume r': "D.ide r'"
         obtain f g where fg: "C.is_left_adjoint f \<and> C.is_left_adjoint g \<and> G.G r' \<cong>\<^sub>C g \<star>\<^sub>C f\<^sup>*\<^sup>C"
-          using r' C.BS1 G.G\<^sub>1_props(1) G.G_ide by presburger
+          using r' C.BS1 G.FG\<^sub>1_iso(1) G.G_ide by presburger
         have trg_g: "trg\<^sub>C g = G.G\<^sub>0 (trg\<^sub>D r')"
           using fg r' C.isomorphic_def C.hcomp_simps(2)
           by (metis C.ideD(1) C.isomorphic_implies_hpar(4) C.isomorphic_implies_ide(2)
-              C.trg_hcomp D.ideD(1) G.G_props(1) C.in_hhomE)
+              C.trg_hcomp G.FG\<^sub>1_iso(2) G.G_ide C.in_hhomE)
         have trg_f: "trg\<^sub>C f = G.G\<^sub>0 (src\<^sub>D r')"
           using fg r' C.isomorphic_def C.hcomp_simps(1)
-          by (metis C.ideD(1) C.isomorphic_implies_hpar(2-3) C.src_hcomp D.ideD(1) G.G_props(1)
-              C.right_adjoint_simps(2) C.in_hhomE)
+          by (metis C.ideD(1) C.isomorphic_implies_hpar(2-3) C.src_hcomp
+              G.FG\<^sub>1_iso(2) G.G_ide C.right_adjoint_simps(2) C.in_hhomE)
         interpret e_src: equivalence_in_bicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D
                            \<open>G.e (src\<^sub>D r')\<close> \<open>G.d (src\<^sub>D r')\<close> \<open>G.\<eta> (src\<^sub>D r')\<close> \<open>G.\<epsilon> (src\<^sub>D r')\<close>
-          using r' G.G\<^sub>0_props [of "src\<^sub>D r'"] by simp
+          using r' by (simp add: G.equivalence_ed\<eta>\<epsilon>)
         interpret e_trg: equivalence_in_bicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D
                            \<open>G.e (trg\<^sub>D r')\<close> \<open>G.d (trg\<^sub>D r')\<close> \<open>G.\<eta> (trg\<^sub>D r')\<close> \<open>G.\<epsilon> (trg\<^sub>D r')\<close>
-          using r' G.G\<^sub>0_props [of "trg\<^sub>D r'"] by simp
+          using r' by (simp add: G.equivalence_ed\<eta>\<epsilon>)
         interpret e: two_equivalences_in_bicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D
                            \<open>G.e (src\<^sub>D r')\<close> \<open>G.d (src\<^sub>D r')\<close> \<open>G.\<eta> (src\<^sub>D r')\<close> \<open>G.\<epsilon> (src\<^sub>D r')\<close>
                            \<open>G.e (trg\<^sub>D r')\<close> \<open>G.d (trg\<^sub>D r')\<close> \<open>G.\<eta> (trg\<^sub>D r')\<close> \<open>G.\<epsilon> (trg\<^sub>D r')\<close>
@@ -129,7 +129,7 @@ text \<open>
           hence "D.is_left_adjoint (G.d (trg\<^sub>D r'))"
             using r' D.equivalence_is_adjoint by simp
           moreover have "src\<^sub>D (G.d (trg\<^sub>D r')) = trg\<^sub>D (F g)"
-            using fg r' G.G\<^sub>0_props trg_g
+            using fg r' G.FG\<^sub>1_iso(2) trg_g
             by (simp add: C.left_adjoint_is_ide)
           ultimately show ?thesis
             unfolding g'_def
@@ -144,7 +144,7 @@ text \<open>
           moreover have "D.is_right_adjoint (F f\<^sup>*\<^sup>C)"
             using fg C.left_adjoint_extends_to_adjoint_pair F.preserves_adjoint_pair by blast
           moreover have "src\<^sub>D (F f\<^sup>*\<^sup>C) = trg\<^sub>D (G.e (src\<^sub>D r'))"
-            using fg r' G.G\<^sub>0_props trg_f
+            using fg r' G.FG\<^sub>1_iso(2) trg_f
             by (simp add: C.right_adjoint_is_ide)
           ultimately show ?thesis
             using fg r' D.right_adjoints_compose F.preserves_right_adjoint by blast
@@ -162,7 +162,7 @@ text \<open>
         also have 1: "... \<cong>\<^sub>D (G.d (trg\<^sub>D r') \<star>\<^sub>D F (G.G r') \<star>\<^sub>D G.e (src\<^sub>D r'))"
         proof -
           have "G.e (trg\<^sub>D r') \<star>\<^sub>D r' \<star>\<^sub>D G.d (src\<^sub>D r') \<cong>\<^sub>D F (G.G r')"
-            by (simp add: D.isomorphic_symmetric G.G\<^sub>1_props(3) G.G_ide r')
+            by (simp add: D.isomorphic_symmetric G.FG\<^sub>1_iso(3) G.G_ide r')
           thus ?thesis
             using r' D.hcomp_isomorphic_ide D.hcomp_ide_isomorphic by simp
         qed
@@ -9641,8 +9641,6 @@ $$
     interpretation SPN: weak_arrow_of_homs V src trg Span.vcomp Span.src Span.trg SPN
       using SPN_is_weak_arrow_of_homs by simp
 
-    interpretation SPN_SPN: "functor" VV.comp Span.VV.comp SPN.FF
-      using SPN.functor_FF by auto
     interpretation HoSPN_SPN: composite_functor VV.comp Span.VV.comp Span.vcomp
                                 SPN.FF \<open>\<lambda>\<mu>\<nu>. fst \<mu>\<nu> \<circ> snd \<mu>\<nu>\<close>
       ..
@@ -14073,8 +14071,6 @@ $$
       using SPN_is_functor by simp
     interpretation SPN: weak_arrow_of_homs V src trg Span.vcomp Span.src Span.trg SPN
       using SPN_is_weak_arrow_of_homs by simp
-    interpretation SPN_SPN: "functor" VV.comp Span.VV.comp SPN.FF
-      using SPN.functor_FF by auto
     interpretation HoSPN_SPN: composite_functor VV.comp Span.VV.comp Span.vcomp
                                 SPN.FF \<open>\<lambda>\<mu>\<nu>. Span.hcomp (fst \<mu>\<nu>) (snd \<mu>\<nu>)\<close>
       ..

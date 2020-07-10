@@ -1400,7 +1400,8 @@ begin
             have "is_Prim\<^sub>0 u \<Longrightarrow> ?thesis"
               using u v w x tu uw vw 1 2 Cod.simps(3) VcompNml_Cod_Nml Dom.simps(2)
                     HcompNml_Prim HcompNml_term_Prim\<^sub>0 Nml_HcompNml(3) HcompNml_Trg_Nml
-              apply (cases u, simp_all)
+              apply (cases u)
+                apply simp_all
               by (cases w, simp_all add: Src_VcompNml)
             moreover have "\<not> is_Prim\<^sub>0 u \<Longrightarrow> ?thesis"
             proof -
@@ -1446,7 +1447,8 @@ begin
         proof -
           have "is_Prim\<^sub>0 u \<Longrightarrow> ?thesis"
             using u v w uw tu vw t12 I1 I2 1 Obj_Src
-            apply (cases u, simp_all)
+            apply (cases u)
+              apply simp_all
             by (cases w, simp_all add: Src_VcompNml)
           moreover have "\<not> is_Prim\<^sub>0 u \<Longrightarrow> ?thesis"
           proof -
@@ -1658,7 +1660,8 @@ begin
     proof -
       have "Can t \<Longrightarrow> Ide \<^bold>\<lfloor>t\<^bold>\<rfloor>"
         using Can_implies_Arr Ide_HcompNml Nml_Nmlize Ide_VcompNml Nml_HcompNml
-        apply (induct t, auto simp add: Dom_Ide Cod_Ide)
+        apply (induct t)
+          apply (auto simp add: Dom_Ide Cod_Ide)
         by (metis Ide_VcompNml)
       thus ?thesis using assms by blast
     qed

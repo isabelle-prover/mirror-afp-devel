@@ -202,6 +202,9 @@ A brief synopsis of the formal mathematical content of the present development i
   embedding preserves limits.
 \end{itemize}
 
+\medskip\par\noindent
+{\bf Revision Notes}
+
 The 2018 version of this development was a major revision of the original (2016)
 version.  Although the overall organization and content remained essentially the same,
 the 2018 version revised the axioms used to define a category, and as a consequence
@@ -229,10 +232,11 @@ required parentheses, and the notation for asserting that an arrow inhabits a pa
 hom-set gives these assertions a more familiar appearance; making it easier to understand
 them at a glance.
 
-The present (2020) version revises the 2018 version by incorporating the generic
-``concrete category'' construction originally introduced in \cite{Bicategory-AFP},
-and using it systematically as a uniform replacement for various constructions that were
-previously done in an {\em ad hoc} manner.  These include the construction of
+This document was revised again in early 2020, prior to the release of Isabelle2020.
+That revision incorporated the generic ``concrete category'' construction originally
+introduced in \cite{Bicategory-AFP}, and using it systematically as a uniform replacement
+for various constructions that were previously done in an {\em ad hoc} manner.
+These include the construction of
 ``functor categories'' of categories of functors and natural transformations,
 ``set categories'' of sets and functions, and various kinds of free categories.
 The awkward ``abstracted category'' construction, which had no interesting mathematical
@@ -244,6 +248,27 @@ has been replaced by a single lemma that does the same job.
 Finally, a lemma in the original version that incorrectly advertised itself as being
 the ``interchange law'' for natural transformations, has been changed to be the
 correct general statement.
+
+The current version of this document incorporates further revisions, made later in 2020
+after the release of Isabelle2020.  The theory ``category with pullbacks'',
+originally introduced in \cite{Bicategory-AFP}, was moved here and improved somewhat.
+In addition, new theories were introduced to cover additional common
+situations of categories with certain kinds of limits:
+``cartesian category'', which concerns categories with binary products and a terminal object,
+``cartesian closed category'', which additionally have exponentials, and
+``category with finite limits'', which is shown to be the same as
+``category with pullbacks and terminal object''.
+To tie things together and to verify the consistency of the locales
+(\emph{e.g.}~``cartesian closed category'') for which concrete interpretations have not yet
+been given, we construct a category whose objects correspond to the hereditarily finite sets
+and whose arrows correspond to functions between such sets, and we show that this category
+is cartesian closed and has finite limits.
+To facilitate this development, we generalize the ``set category'' construction to cover
+some cases in which not every subset of the ``universe'' need determine an object.
+In particular, the generalized notion of ``set category'' covers the case in which only
+finite sets correspond to objects.  This generalization permits us to treat the category
+of hereditarily finite sets as a ``set category'' and to apply some results previously shown
+about limits in such a category.
 
 % include generated text of all theories
 \input{session}

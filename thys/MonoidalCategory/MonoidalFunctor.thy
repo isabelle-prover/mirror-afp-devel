@@ -120,7 +120,8 @@ begin
         interpret L: "functor" D D \<open>\<lambda>f. (F \<I>\<^sub>C) \<otimes>\<^sub>D f\<close>
           using D.T.fixing_ide_gives_functor_1 by simp
         interpret L: endofunctor D \<open>\<lambda>f. (F \<I>\<^sub>C) \<otimes>\<^sub>D f\<close> ..
-        interpret \<psi>x: natural_transformation D D \<open>\<lambda>f. (F \<I>\<^sub>C) \<otimes>\<^sub>D f\<close> \<open>\<lambda>f. \<I>\<^sub>D \<otimes>\<^sub>D f\<close> \<open>\<lambda>f. \<psi> \<otimes>\<^sub>D f\<close>
+        interpret \<psi>x: natural_transformation D D \<open>\<lambda>f. (F \<I>\<^sub>C) \<otimes>\<^sub>D f\<close> \<open>\<lambda>f. \<I>\<^sub>D \<otimes>\<^sub>D f\<close>
+                        \<open>\<lambda>f. \<psi> \<otimes>\<^sub>D f\<close>
           using \<psi> D.T.fixing_arr_gives_natural_transformation_1 [of \<psi>] by auto
         interpret \<psi>x: natural_isomorphism D D \<open>\<lambda>f. (F \<I>\<^sub>C) \<otimes>\<^sub>D f\<close> \<open>\<lambda>f. \<I>\<^sub>D \<otimes>\<^sub>D f\<close> \<open>\<lambda>f. \<psi> \<otimes>\<^sub>D f\<close>
           apply unfold_locales using \<psi> D.tensor_preserves_iso by simp
@@ -140,7 +141,8 @@ begin
         interpret R: "functor" D D \<open>\<lambda>f. T\<^sub>D (f, F \<I>\<^sub>C)\<close>
           using D.T.fixing_ide_gives_functor_2 by simp
         interpret R: endofunctor D \<open>\<lambda>f. T\<^sub>D (f, F \<I>\<^sub>C)\<close> ..
-        interpret x\<psi>: natural_transformation D D \<open>\<lambda>f. f \<otimes>\<^sub>D (F \<I>\<^sub>C)\<close> \<open>\<lambda>f. f \<otimes>\<^sub>D \<I>\<^sub>D\<close> \<open>\<lambda>f. f \<otimes>\<^sub>D \<psi>\<close>
+        interpret x\<psi>: natural_transformation D D \<open>\<lambda>f. f \<otimes>\<^sub>D (F \<I>\<^sub>C)\<close> \<open>\<lambda>f. f \<otimes>\<^sub>D \<I>\<^sub>D\<close>  
+                        \<open>\<lambda>f. f \<otimes>\<^sub>D \<psi>\<close>
           using \<psi> D.T.fixing_arr_gives_natural_transformation_2 [of \<psi>] by auto
         interpret x\<psi>: natural_isomorphism D D \<open>\<lambda>f. f \<otimes>\<^sub>D (F \<I>\<^sub>C)\<close> \<open>\<lambda>f. f \<otimes>\<^sub>D \<I>\<^sub>D\<close> \<open>\<lambda>f. f \<otimes>\<^sub>D \<psi>\<close>
           using \<psi> D.tensor_preserves_iso by (unfold_locales, simp)

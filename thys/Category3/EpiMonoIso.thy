@@ -33,6 +33,11 @@ begin
      shows "arr f"
        using assms epi_def by auto
 
+     (*
+      * TODO: epiE and monoE don't need both seq hypotheses.
+      * Also, they are not stated in the form of elimination rules.
+      *)
+
      lemma epiE [elim]:
      assumes "epi f"
      and "seq g f" and "seq g' f" and "g \<cdot> f = g' \<cdot> f"

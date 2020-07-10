@@ -558,9 +558,9 @@ begin
         proof -
           have 2: "rep f \<in> f" using f rep_in_ARR by simp
           moreover have "equiv (rep f \<^bold>\<cdot> DOM f) (rep f)"
-            using f 1 2 mkarr_memb_ARR mkarr_extensionality \<open>ide (mkarr (DOM f))\<close>
-                  emptyE equiv_iff_eq_norm norm_memb_eq_rep_ARR null_char ide_def
-            by metis
+            by (metis 1 Arr.simps(4) Arr_rep_ARR COD_mkarr Cod.simps(4)
+                Diagonalize_Comp_Arr_Dom Dom.simps(4) IDE_def Ide_implies_Arr
+                \<open>IDE (mkarr (DOM f))\<close> \<open>Ide (DOM f)\<close> all_not_in_conv DOM_mkarr comp_def)
           ultimately show ?thesis
             using f ARR_eqI 1 \<open>ide (mkarr (DOM f))\<close> null_char ide_def by auto
         qed
@@ -1795,7 +1795,7 @@ begin
              comp tensor\<^sub>F\<^sub>M\<^sub>C unity\<^sub>F\<^sub>M\<^sub>C lunit\<^sub>F\<^sub>M\<^sub>C runit\<^sub>F\<^sub>M\<^sub>C assoc\<^sub>F\<^sub>M\<^sub>C"
       ..
 
-    abbreviation T\<^sub>F\<^sub>M\<^sub>C where "T\<^sub>F\<^sub>M\<^sub>C \<equiv> EMC.T\<^sub>E\<^sub>M\<^sub>C"
+    abbreviation T\<^sub>F\<^sub>M\<^sub>C where "T\<^sub>F\<^sub>M\<^sub>C \<equiv> EMC.T"
     abbreviation \<alpha>\<^sub>F\<^sub>M\<^sub>C where "\<alpha>\<^sub>F\<^sub>M\<^sub>C \<equiv> EMC.\<alpha>"
     abbreviation \<iota>\<^sub>F\<^sub>M\<^sub>C where "\<iota>\<^sub>F\<^sub>M\<^sub>C \<equiv> EMC.\<iota>"
 
@@ -2355,7 +2355,7 @@ begin
         fix a
         show "Ide a \<Longrightarrow> F (mkarr a) = E.map (mkarr a)"
           using E.strictly_preserves_everything F.strictly_preserves_everything Ide_implies_Arr
-          by (induct a, auto)
+          by (induct a) auto
       qed
       show ?thesis
       proof
@@ -2372,7 +2372,7 @@ begin
             show "Arr t \<Longrightarrow> F (mkarr t) = E.map (mkarr t)"
               using Ide_case E.strictly_preserves_everything F.strictly_preserves_everything
                     Arr_implies_Ide_Dom Arr_implies_Ide_Cod
-              by (induct t, auto)
+              by (induct t) auto
           qed
           ultimately show "F f = E.map f" by metis
         qed
@@ -2654,7 +2654,8 @@ begin
     interpretation \<mu>: transformation_by_components
                         \<F>\<^sub>SC.comp \<F>\<^sub>SC.comp DoS.map \<F>\<^sub>SC.map \<open>\<lambda>a. a\<close>
       using \<F>\<^sub>SC.ideD \<F>\<^sub>SC.map_simp DoS_eq_\<F>\<^sub>SC \<F>\<^sub>SC.map_simp \<F>\<^sub>SC.comp_cod_arr \<F>\<^sub>SC.comp_arr_dom
-      by (unfold_locales, intro \<F>\<^sub>SC.in_homI, auto)
+      apply unfold_locales
+      by (intro \<F>\<^sub>SC.in_homI) auto
          
     interpretation \<mu>: natural_isomorphism \<F>\<^sub>SC.comp \<F>\<^sub>SC.comp DoS.map \<F>\<^sub>SC.map \<mu>.map
       apply unfold_locales using \<mu>.map_simp_ide \<F>\<^sub>SC.ide_is_iso by simp
@@ -2937,7 +2938,7 @@ begin
     lemma is_elementary_monoidal_category:
     shows "elementary_monoidal_category comp tensor\<^sub>S \<I> (\<lambda>a. a) (\<lambda>a. a) assoc\<^sub>S" ..
 
-    abbreviation T\<^sub>F\<^sub>S\<^sub>M\<^sub>C where "T\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<equiv> EMC.T\<^sub>E\<^sub>M\<^sub>C"
+    abbreviation T\<^sub>F\<^sub>S\<^sub>M\<^sub>C where "T\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<equiv> EMC.T"
     abbreviation \<alpha>\<^sub>F\<^sub>S\<^sub>M\<^sub>C where "\<alpha>\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<equiv> EMC.\<alpha>"
     abbreviation \<iota>\<^sub>F\<^sub>S\<^sub>M\<^sub>C where "\<iota>\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<equiv> EMC.\<iota>"
 
@@ -2956,12 +2957,8 @@ begin
 
   sublocale free_strict_monoidal_category \<subseteq>
               strict_monoidal_category comp T\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<alpha>\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<iota>\<^sub>F\<^sub>S\<^sub>M\<^sub>C
-    using tensor_preserves_ide assoc_agreement lunit_agreement runit_agreement
-    apply unfold_locales
-    unfolding assoc\<^sub>S_def
-      apply presburger
-     apply meson
-    by meson
+    using tensor_preserves_ide lunit_agreement runit_agreement \<alpha>_ide_simp assoc\<^sub>S_def
+    by unfold_locales auto
 
   context free_strict_monoidal_category
   begin
@@ -3336,10 +3333,9 @@ begin
       show "map (\<F>\<^sub>SC.assoc a b c) = \<a>\<^sub>D[map a, map b, map c]"
       proof -
         have "map (\<F>\<^sub>SC.assoc a b c) = map a \<otimes>\<^sub>D map b \<otimes>\<^sub>D map c"
-          using a b c \<F>\<^sub>SC.\<alpha>_def \<F>\<^sub>SC.assoc_agreement \<F>\<^sub>SC.assoc\<^sub>S_def \<F>\<^sub>SC.arr_tensor
-                \<F>\<^sub>SC.T_simp \<F>\<^sub>SC.ideD(1) \<F>\<^sub>SC.strict_assoc preserves_ide [of "\<F>\<^sub>SC.assoc a b c"]
-                strictly_preserves_tensor
-          by force
+          using a b c \<F>\<^sub>SC.\<alpha>_def \<F>\<^sub>SC.assoc\<^sub>S_def \<F>\<^sub>SC.arr_tensor \<F>\<^sub>SC.T_simp \<F>\<^sub>SC.ideD(1)
+                strictly_preserves_tensor \<F>\<^sub>SC.\<alpha>_ide_simp
+          by presburger
         also have "... = \<a>\<^sub>D[map a, map b, map c]"
           using a b c D.strict_assoc D.assoc_in_hom [of "map a" "map b" "map c"] by auto
         finally show ?thesis by blast

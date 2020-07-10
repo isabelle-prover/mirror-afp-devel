@@ -293,17 +293,146 @@ begin
       using B.map_def by (metis comp_apply is_extensional preserves_arr)
   qed
 
+  lemma faithful_functors_compose:
+  assumes "faithful_functor A B F" and "faithful_functor B C G"
+  shows "faithful_functor A C (G o F)"
+  proof -
+    interpret F: faithful_functor A B F
+      using assms(1) by simp
+    interpret G: faithful_functor B C G
+      using assms(2) by simp
+    interpret composite_functor A B C F G ..
+    show "faithful_functor A C (G o F)"
+    proof
+      show "\<And>f f'. \<lbrakk>F.A.par f f'; map f = map f'\<rbrakk> \<Longrightarrow> f = f'"
+        using F.is_faithful G.is_faithful
+        by (metis (mono_tags, lifting) F.preserves_arr F.preserves_cod F.preserves_dom o_apply)
+    qed
+  qed
+
+  lemma full_functors_compose:
+  assumes "full_functor A B F" and "full_functor B C G"
+  shows "full_functor A C (G o F)"
+  proof -
+    interpret F: full_functor A B F
+      using assms(1) by simp
+    interpret G: full_functor B C G
+      using assms(2) by simp
+    interpret composite_functor A B C F G ..
+    show "full_functor A C (G o F)"
+    proof
+      show "\<And>a a' g. \<lbrakk>F.A.ide a; F.A.ide a'; \<guillemotleft>g : map a' \<rightarrow> map a\<guillemotright>\<rbrakk>
+                        \<Longrightarrow> \<exists>f. F.A.in_hom f a' a \<and> map f = g"
+        using F.is_full G.is_full
+        by (metis F.preserves_ide o_apply)
+    qed
+  qed
+
+  lemma fully_faithful_functors_compose:
+  assumes "fully_faithful_functor A B F" and "fully_faithful_functor B C G"
+  shows "full_functor A C (G o F)"
+  proof -
+    interpret F: fully_faithful_functor A B F
+      using assms(1) by simp
+    interpret G: fully_faithful_functor B C G
+      using assms(2) by simp
+    interpret composite_functor A B C F G ..
+    interpret faithful_functor A C \<open>G o F\<close>
+      using F.faithful_functor_axioms G.faithful_functor_axioms faithful_functors_compose
+      by blast
+    interpret full_functor A C \<open>G o F\<close>
+      using F.full_functor_axioms G.full_functor_axioms full_functors_compose
+      by blast
+    show "full_functor A C (G o F)" ..
+  qed
+
+  lemma embedding_functors_compose:
+  assumes "embedding_functor A B F" and "embedding_functor B C G"
+  shows "embedding_functor A C (G o F)"
+  proof -
+    interpret F: embedding_functor A B F
+      using assms(1) by simp
+    interpret G: embedding_functor B C G
+      using assms(2) by simp
+    interpret composite_functor A B C F G ..
+    show "embedding_functor A C (G o F)"
+    proof
+      show "\<And>f f'. \<lbrakk>F.A.arr f; F.A.arr f'; map f = map f'\<rbrakk> \<Longrightarrow> f = f'"
+        by (simp add: F.is_embedding G.is_embedding)
+    qed
+  qed
+
+  lemma full_embedding_functors_compose:
+  assumes "full_embedding_functor A B F" and "full_embedding_functor B C G"
+  shows "full_embedding_functor A C (G o F)"
+  proof -
+    interpret F: full_embedding_functor A B F
+      using assms(1) by simp
+    interpret G: full_embedding_functor B C G
+      using assms(2) by simp
+    interpret composite_functor A B C F G ..
+    interpret embedding_functor A C \<open>G o F\<close>
+      using F.embedding_functor_axioms G.embedding_functor_axioms embedding_functors_compose
+      by blast
+    interpret full_functor A C \<open>G o F\<close>
+      using F.full_functor_axioms G.full_functor_axioms full_functors_compose
+      by blast
+    show "full_embedding_functor A C (G o F)" ..
+  qed
+
+  lemma essentially_surjective_functors_compose:
+  assumes "essentially_surjective_functor A B F" and "essentially_surjective_functor B C G"
+  shows "essentially_surjective_functor A C (G o F)"
+  proof -
+    interpret F: essentially_surjective_functor A B F
+      using assms(1) by simp
+    interpret G: essentially_surjective_functor B C G
+      using assms(2) by simp
+    interpret composite_functor A B C F G ..
+    show "essentially_surjective_functor A C (G o F)"
+    proof
+      show "\<And>c. G.B.ide c \<Longrightarrow> \<exists>a. F.A.ide a \<and> G.B.isomorphic (map a) c"
+      proof -
+        fix c
+        assume c: "G.B.ide c"
+        obtain b where b: "F.B.ide b \<and> G.B.isomorphic (G b) c"
+          using c G.essentially_surjective by auto
+        obtain a where a: "F.A.ide a \<and> F.B.isomorphic (F a) b"
+          using b F.essentially_surjective by auto
+        have "G.B.isomorphic (map a) c"
+        proof -
+          have "G.B.isomorphic (G (F a)) (G b)"
+            using a G.preserves_iso G.B.isomorphic_def by blast
+          thus ?thesis
+            using b G.B.isomorphic_transitive by auto
+        qed
+        thus "\<exists>a. F.A.ide a \<and> G.B.isomorphic (map a) c"
+          using a by auto
+      qed
+    qed
+  qed
+
   locale inverse_functors =
     A: category A +
     B: category B +
-    F: "functor" A B F +
-    G: "functor" B A G
+    F: "functor" B A F +
+    G: "functor" A B G
   for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
   and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
-  and F :: "'a \<Rightarrow> 'b"
-  and G :: "'b \<Rightarrow> 'a" +
-  assumes inv: "G o F = identity_functor.map A"
-  and inv': "F o G = identity_functor.map B"
+  and F :: "'b \<Rightarrow> 'a"
+  and G :: "'a \<Rightarrow> 'b" +
+  assumes inv: "G o F = identity_functor.map B"
+  and inv': "F o G = identity_functor.map A"
+  begin
+
+    lemma bij_betw_arr_sets:
+    shows "bij_betw F (Collect B.arr) (Collect A.arr)"
+      using inv inv'
+      apply (intro bij_betwI)
+         apply auto
+      using comp_eq_dest_lhs by force+
+
+  end
 
   locale isomorphic_categories =
     A: category A +
@@ -347,66 +476,337 @@ begin
   locale invertible_functor =
     A: category A +
     B: category B +
-    F: "functor" A B F
+    G: "functor" A B G
   for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
   and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
-  and F :: "'a \<Rightarrow> 'b" +
-  assumes invertible: "\<exists>G. inverse_functors A B F G"
+  and G :: "'a \<Rightarrow> 'b" +
+  assumes invertible: "\<exists>F. inverse_functors A B F G"
   begin
 
     lemma has_unique_inverse:
-    shows "\<exists>!G. inverse_functors A B F G"
-      using invertible inverse_functor_unique by blast
+    shows "\<exists>!F. inverse_functors A B F G"
+      using invertible inverse_functor_unique' by blast
 
     definition inv
-    where "inv \<equiv> THE G. inverse_functors A B F G"
+    where "inv \<equiv> THE F. inverse_functors A B F G"
 
-    interpretation inverse_functors A B F inv
-      using inv_def has_unique_inverse theI' [of "\<lambda>G. inverse_functors A B F G"]
+    interpretation inverse_functors A B inv G
+      using inv_def has_unique_inverse theI' [of "\<lambda>F. inverse_functors A B F G"]
       by simp
 
     lemma inv_is_inverse:
-    shows "inverse_functors A B F inv" ..
+    shows "inverse_functors A B inv G" ..
   
     lemma preserves_terminal:
     assumes "A.terminal a"
-    shows "B.terminal (F a)"
+    shows "B.terminal (G a)"
     proof
-      show 0: "B.ide (F a)" using assms F.preserves_ide A.terminal_def by blast
+      show 0: "B.ide (G a)" using assms G.preserves_ide A.terminal_def by blast
       fix b :: 'b
       assume b: "B.ide b"
-      show "\<exists>!g. \<guillemotleft>g : b \<rightarrow>\<^sub>B F a\<guillemotright>"
+      show "\<exists>!g. \<guillemotleft>g : b \<rightarrow>\<^sub>B G a\<guillemotright>"
       proof
-        let ?G = "SOME G. inverse_functors A B F G"
-        from invertible have G: "inverse_functors A B F ?G"
-          using someI_ex [of "\<lambda>G. inverse_functors A B F G"] by fast
-        interpret inverse_functors A B F ?G using G by auto
-        let ?P = "\<lambda>f. \<guillemotleft>f : ?G b \<rightarrow>\<^sub>A a\<guillemotright>"
-        have 1: "\<exists>!f. ?P f" using assms b A.terminal_def G.preserves_ide by simp
+        let ?F = "SOME F. inverse_functors A B F G"
+        from invertible have F: "inverse_functors A B ?F G"
+          using someI_ex [of "\<lambda>F. inverse_functors A B F G"] by fast
+        interpret inverse_functors A B ?F G using F by auto
+        let ?P = "\<lambda>f. \<guillemotleft>f : ?F b \<rightarrow>\<^sub>A a\<guillemotright>"
+        have 1: "\<exists>!f. ?P f" using assms b A.terminal_def by simp
         hence 2: "?P (THE f. ?P f)" by (metis (no_types, lifting) theI')
-        thus "\<guillemotleft>F (THE f. ?P f) : b \<rightarrow>\<^sub>B F a\<guillemotright>"
+        thus "\<guillemotleft>G (THE f. ?P f) : b \<rightarrow>\<^sub>B G a\<guillemotright>"
           using b apply (elim A.in_homE, intro B.in_homI, auto)
-          using B.ideD(1) B.map_simp comp_def inv' by metis
-        hence 3: "\<guillemotleft>(THE f. ?P f) : ?G b \<rightarrow>\<^sub>A a\<guillemotright>"
-          using assms 2 b G by simp
+          using B.ideD(1) B.map_simp comp_def inv by metis
+        hence 3: "\<guillemotleft>(THE f. ?P f) : ?F b \<rightarrow>\<^sub>A a\<guillemotright>"
+          using assms 2 b F by simp
         fix g :: 'b
-        assume g: "\<guillemotleft>g : b \<rightarrow>\<^sub>B F a\<guillemotright>"
-        have "?G (F a) = a"
-          using assms(1) A.terminal_def inv A.map_simp
-          by (metis 0 F.preserves_reflects_arr B.ideD(1) comp_apply)
-        hence "\<guillemotleft>?G g : ?G b \<rightarrow>\<^sub>A a\<guillemotright>"
-          using assms(1) g A.terminal_def inv G.preserves_hom [of b "F a" g]
+        assume g: "\<guillemotleft>g : b \<rightarrow>\<^sub>B G a\<guillemotright>"
+        have "?F (G a) = a"
+          using assms(1) A.terminal_def inv' A.map_simp
+          by (metis 0 B.ideD(1) G.preserves_reflects_arr comp_eq_dest_lhs)
+        hence "\<guillemotleft>?F g : ?F b \<rightarrow>\<^sub>A a\<guillemotright>"
+          using assms(1) g A.terminal_def inv
           by (elim B.in_homE, auto)
-        hence "?G g = (THE f. ?P f)" using assms 1 3 A.terminal_def by blast
-        thus "g = F (THE f. ?P f)"
-          using inv' g by (metis B.in_homE B.map_simp comp_def)
+        hence "?F g = (THE f. ?P f)" using assms 1 3 A.terminal_def by blast
+        thus "g = G (THE f. ?P f)"
+          using inv g by (metis B.in_homE B.map_simp comp_def)
       qed
     qed
   
   end
 
-  sublocale invertible_functor \<subseteq> inverse_functors A B F inv
+  sublocale invertible_functor \<subseteq> inverse_functors A B inv G
     using inv_is_inverse by simp
+
+  text \<open>
+    A bijection from a set \<open>S\<close> to the set of arrows of a category \<open>C\<close> induces an isomorphic
+    copy of \<open>C\<close> having \<open>S\<close> as its set of arrows, assuming that there exists some \<open>n \<notin> S\<close>
+    to serve as the null.
+  \<close>
+
+  context category
+  begin
+
+    lemma bij_induces_invertible_functor:
+    assumes "bij_betw \<phi> S (Collect arr)" and "n \<notin> S"
+    shows "\<exists>C'. Collect (partial_magma.arr C') = S \<and>
+                invertible_functor C' C (\<lambda>i. if partial_magma.arr C' i then \<phi> i else null)"
+    proof -
+      define \<psi> where "\<psi> = (\<lambda>f. if arr f then inv_into S \<phi> f else n)"
+      have \<psi>: "bij_betw \<psi> (Collect arr) S"
+        using assms(1) \<psi>_def bij_betw_inv_into
+        by (metis (no_types, lifting) bij_betw_cong mem_Collect_eq)
+      have \<phi>_\<psi> [simp]: "\<And>f. arr f \<Longrightarrow> \<phi> (\<psi> f) = f"
+        using assms(1) \<psi> \<psi>_def bij_betw_inv_into_right by fastforce
+      have \<psi>_\<phi> [simp]: "\<And>i. i \<in> S \<Longrightarrow> \<psi> (\<phi> i) = i"
+        unfolding \<psi>_def
+        using assms(1) \<psi> bij_betw_inv_into_left [of \<phi> S "Collect arr"]
+        by (metis bij_betw_def image_eqI mem_Collect_eq)
+      define C' where "C' = (\<lambda>i j. if i \<in> S \<and> j \<in> S \<and> seq (\<phi> i) (\<phi> j) then \<psi> (\<phi> i \<cdot> \<phi> j) else n)"
+      interpret C': partial_magma C'
+        using assms(1-2) C'_def \<psi>_def
+        by unfold_locales metis
+      have null_char: "C'.null = n"
+        using assms(1-2) C'_def \<psi>_def C'.null_eqI by metis
+      have ide_char: "\<And>i. C'.ide i \<longleftrightarrow> i \<in> S \<and> ide (\<phi> i)"
+      proof
+        fix i
+        assume i: "C'.ide i"
+        show "i \<in> S \<and> ide (\<phi> i)"
+        proof (unfold ide_def, intro conjI)
+          show 1: "\<phi> i \<cdot> \<phi> i \<noteq> null"
+            using i assms(1) C'.ide_def C'_def null_char by auto
+          show 2: "i \<in> S"
+            using 1 assms(1) by (metis C'.ide_def C'_def i)
+          show "\<forall>f. (f \<cdot> \<phi> i \<noteq> null \<longrightarrow> f \<cdot> \<phi> i = f) \<and> (\<phi> i \<cdot> f \<noteq> null \<longrightarrow> \<phi> i \<cdot> f = f)"
+          proof (intro allI conjI impI)
+            show "\<And>f. f \<cdot> \<phi> i \<noteq> null \<Longrightarrow> f \<cdot> \<phi> i = f"
+            proof -
+              fix f
+              assume f: "f \<cdot> \<phi> i \<noteq> null"
+              hence 1: "arr f \<and> arr (\<phi> i) \<and> seq f (\<phi> i)"
+                by (meson seqE ext)
+              have "f \<cdot> \<phi> i = \<phi> (C' (\<psi> f) i)"
+                using 1 2 C'_def null_char
+                by (metis (no_types, lifting) \<phi>_\<psi> \<psi> bij_betw_def image_eqI mem_Collect_eq)
+              also have "... = f"
+                by (metis 1 C'.ide_def C'_def \<phi>_\<psi> \<psi> assms(2) bij_betw_def i image_eqI
+                    mem_Collect_eq null_char)
+              finally show "f \<cdot> \<phi> i = f" by simp
+            qed
+            show "\<And>f. \<phi> i \<cdot> f \<noteq> null \<Longrightarrow> \<phi> i \<cdot> f = f"
+            proof -
+              fix f
+              assume f: "\<phi> i \<cdot> f \<noteq> null"
+              hence 1: "arr f \<and> arr (\<phi> i) \<and> seq (\<phi> i) f"
+                by (meson seqE ext)
+              show "\<phi> i \<cdot> f = f"
+                using 1 2 C'_def null_char \<psi>
+                by (metis (no_types, lifting) \<open>\<And>f. f \<cdot> \<phi> i \<noteq> null \<Longrightarrow> f \<cdot> \<phi> i = f\<close>
+                    ide_char' codomains_null comp_cod_arr has_codomain_iff_arr
+                    comp_ide_arr)
+            qed
+          qed
+        qed
+        next
+        fix i
+        assume i: "i \<in> S \<and> ide (\<phi> i)"
+        have "\<psi> (\<phi> i) \<in> S"
+          using i assms(1)
+          by (metis \<psi> bij_betw_def ideD(1) image_eqI mem_Collect_eq)
+        show "C'.ide i"
+          using assms(2) i C'_def null_char comp_arr_ide comp_ide_arr
+          apply (unfold C'.ide_def, intro conjI allI impI)
+            apply auto[1]
+          by force+
+      qed
+      have dom: "\<And>i. i \<in> S \<Longrightarrow> \<psi> (dom (\<phi> i)) \<in> C'.domains i"
+      proof -
+        fix i
+        assume i: "i \<in> S"
+        have 1: "C'.ide (\<psi> (dom (\<phi> i)))"
+        proof (unfold C'.ide_def, intro conjI allI impI)
+          show "C' (\<psi> (dom (\<phi> i))) (\<psi> (dom (\<phi> i))) \<noteq> C'.null"
+          proof -
+            have "C' (\<psi> (dom (\<phi> i))) (\<psi> (dom (\<phi> i))) = \<psi> (dom (\<phi> i))"
+              using C'_def i assms(1-2) \<psi> \<psi>_\<phi> \<psi>_def bij_betw_def
+              by (metis (no_types, lifting) C'.ide_def \<phi>_\<psi> ide_char ide_dom image_eqI
+                  mem_Collect_eq)
+            moreover have "\<psi> (dom (\<phi> i)) \<noteq> C'.null"
+              using i null_char assms(1-2) bij_betw_def
+              by (metis \<psi> arr_dom_iff_arr image_iff mem_Collect_eq)
+            ultimately show ?thesis
+              by simp
+          qed
+          show "\<And>j. C' j (\<psi> (dom (\<phi> i))) \<noteq> C'.null \<Longrightarrow> C' j (\<psi> (dom (\<phi> i))) = j"
+          proof -
+            fix j
+            assume j: "C' j (\<psi> (dom (\<phi> i))) \<noteq> C'.null"
+            show "C' j (\<psi> (dom (\<phi> i))) = j"
+              using j \<phi>_\<psi> \<psi>_def ide_char null_char
+              by (metis C'.comp_null(2) C'.ide_def C'_def
+                  \<open>C' (\<psi> (dom (\<phi> i))) (\<psi> (dom (\<phi> i))) \<noteq> C'.null\<close>
+                  arr_dom_iff_arr ide_dom)
+          qed
+          show "\<And>j. C' (\<psi> (dom (\<phi> i))) j \<noteq> C'.null \<Longrightarrow> C' (\<psi> (dom (\<phi> i))) j = j"
+          proof -
+            fix j
+            assume j: "C' (\<psi> (dom (\<phi> i))) j \<noteq> C'.null"
+            show "C' (\<psi> (dom (\<phi> i))) j = j"
+              using j
+              by (metis C'.ide_def C'_def
+                  \<open>C' (\<psi> (dom (\<phi> i))) (\<psi> (dom (\<phi> i))) \<noteq> C'.null\<close>
+                  \<open>\<And>j. C' j (\<psi> (dom (\<phi> i))) \<noteq> C'.null \<Longrightarrow> C' j (\<psi> (dom (\<phi> i))) = j\<close>
+                  \<phi>_\<psi> \<psi>_def arr_dom_iff_arr ide_char ide_dom null_char)
+          qed
+        qed
+        moreover have "C' i (\<psi> (dom (\<phi> i))) \<noteq> C'.null"
+          using i 1 assms(1-2) C'_def null_char ide_char \<phi>_\<psi> \<psi>_\<phi> \<psi>_def comp_arr_dom
+          apply simp
+          by (metis (no_types, lifting))
+        ultimately show "\<psi> (dom (\<phi> i)) \<in> C'.domains i"
+          using C'.domains_def by simp
+      qed
+      have cod: "\<And>i. i \<in> S \<Longrightarrow> \<psi> (cod (\<phi> i)) \<in> C'.codomains i"
+      proof -
+        fix i
+        assume i: "i \<in> S"
+        have 1: "C'.ide (\<psi> (cod (\<phi> i)))"
+        proof (unfold C'.ide_def, intro conjI allI impI)
+          show "C' (\<psi> (cod (\<phi> i))) (\<psi> (cod (\<phi> i))) \<noteq> C'.null"
+          proof -
+            have "C' (\<psi> (cod (\<phi> i))) (\<psi> (cod (\<phi> i))) = \<psi> (cod (\<phi> i))"
+            proof -
+              have "\<phi> (\<psi> (cod (\<phi> i))) = cod (\<phi> i)"
+                using i assms(1-2) \<phi>_\<psi> \<psi>_\<phi> \<psi>_def arr_cod_iff_arr by force
+              moreover have "cod (\<phi> i) \<cdot> cod (\<phi> i) = cod (\<phi> i)"
+                using i assms(1-2) comp_ide_self ide_cod [of "\<phi> i"] \<psi>_\<phi> \<psi>_def by fastforce
+              ultimately show ?thesis
+                using C'_def i assms(1)
+                apply simp
+                by (metis (no_types, lifting) \<psi> \<psi>_def bij_betw_def image_eqI mem_Collect_eq)
+            qed
+            moreover have "\<psi> (cod (\<phi> i)) \<noteq> C'.null"
+              using i null_char assms(1-2)
+              by (metis \<psi> bij_betw_def category.arr_cod_iff_arr category_axioms
+                  image_eqI mem_Collect_eq)
+            ultimately show ?thesis
+              by simp
+          qed
+          show "\<And>j. C' (\<psi> (cod (\<phi> i))) j \<noteq> C'.null \<Longrightarrow> C' (\<psi> (cod (\<phi> i))) j = j"
+          proof -
+            fix j
+            assume j: "C' (\<psi> (cod (\<phi> i))) j \<noteq> C'.null"
+            show "C' (\<psi> (cod (\<phi> i))) j = j"
+              using j
+              by (metis C'.comp_null(2) C'.ide_def C'_def
+                  \<open>C' (\<psi> (cod (\<phi> i))) (\<psi> (cod (\<phi> i))) \<noteq> C'.null\<close>
+                  \<phi>_\<psi> \<psi>_def arr_cod_iff_arr category.ide_cod category_axioms ide_char null_char)
+          qed
+          show "\<And>j. C' j (\<psi> (cod (\<phi> i))) \<noteq> C'.null \<Longrightarrow> C' j (\<psi> (cod (\<phi> i))) = j"
+          proof -
+            fix j
+            assume j: "C' j (\<psi> (cod (\<phi> i))) \<noteq> C'.null"
+            show "C' j (\<psi> (cod (\<phi> i))) = j"
+              using j
+              by (metis C'.ide_def C'_def \<open>C' (\<psi> (cod (\<phi> i))) (\<psi> (cod (\<phi> i))) \<noteq> C'.null\<close>
+                  \<open>\<And>j. C' (\<psi> (cod (\<phi> i))) j \<noteq> C'.null \<Longrightarrow> C' (\<psi> (cod (\<phi> i))) j = j\<close>
+                  \<phi>_\<psi> \<psi>_def arr_cod_iff_arr category.ide_cod category_axioms ide_char null_char)
+          qed
+        qed
+        moreover have "C' (\<psi> (cod (\<phi> i))) i \<noteq> C'.null"
+          using i assms(1-2) C'_def null_char \<phi>_\<psi> \<psi>_\<phi> \<psi>_def comp_cod_arr ide_char
+          apply simp
+          by (metis (no_types, lifting) \<psi>_def 1)
+        ultimately show "\<psi> (cod (\<phi> i)) \<in> C'.codomains i"
+          using C'.codomains_def by simp
+      qed
+      have arr_char: "\<And>i. C'.arr i \<longleftrightarrow> i \<in> S"
+      proof
+        fix i
+        show "i \<in> S \<Longrightarrow> C'.arr i"
+          using dom cod C'.arr_def by auto
+        show "C'.arr i \<Longrightarrow> i \<in> S"
+          using C'_def C'.arr_def C'.domains_def C'.codomains_def null_char
+          apply simp
+          by metis
+      qed
+      have seq_char: "\<And>i j. C'.seq i j \<longleftrightarrow> i \<in> S \<and> j \<in> S \<and> seq (\<phi> i) (\<phi> j)"
+        using assms(1-2) C'_def arr_char null_char
+        apply simp
+        using \<psi> bij_betw_apply by fastforce
+      interpret C': category C'
+      proof
+        show "\<And>g f. C' g f \<noteq> C'.null \<Longrightarrow> C'.seq g f"
+          using C'_def null_char seq_char by fastforce
+        show "\<And>f. (C'.domains f \<noteq> {}) = (C'.codomains f \<noteq> {})"
+          using dom cod null_char arr_char C'.arr_def by blast
+        show "\<And>h g f. \<lbrakk>C'.seq h g; C'.seq (C' h g) f\<rbrakk> \<Longrightarrow> C'.seq g f"
+          using seq_char
+          apply simp
+          using C'_def by fastforce
+        show "\<And>h g f. \<lbrakk>C'.seq h (C' g f); C'.seq g f\<rbrakk> \<Longrightarrow> C'.seq h g"
+          using seq_char
+          apply simp
+          using C'_def by fastforce
+        show "\<And>g f h. \<lbrakk>C'.seq g f; C'.seq h g\<rbrakk> \<Longrightarrow> C'.seq (C' h g) f"
+          using seq_char arr_char
+          apply simp
+          using C'_def by auto
+        show "\<And>g f h. \<lbrakk>C'.seq g f; C'.seq h g\<rbrakk> \<Longrightarrow> C' (C' h g) f = C' h (C' g f)"
+          using seq_char arr_char C'_def comp_assoc assms(2)
+          apply simp by presburger
+      qed
+      have dom_char: "C'.dom = (\<lambda>i. if i \<in> S then \<psi> (dom (\<phi> i)) else n)"
+        using dom arr_char null_char C'.dom_eqI' C'.arr_def C'.dom_def by metis
+      have cod_char: "C'.cod = (\<lambda>i. if i \<in> S then \<psi> (cod (\<phi> i)) else n)"
+        using cod arr_char null_char C'.cod_eqI' C'.arr_def C'.cod_def by metis
+      interpret \<phi>: "functor" C' C \<open>\<lambda>i. if C'.arr i then \<phi> i else null\<close>
+        using arr_char null_char dom_char cod_char seq_char \<phi>_\<psi> \<psi>_\<phi> \<psi>_def C'.not_arr_null C'_def
+              C'.arr_dom C'.arr_cod
+        apply unfold_locales
+            apply simp_all
+           apply (metis (full_types))
+          apply force
+         apply force
+        by metis
+      interpret \<psi>: "functor" C C' \<psi>
+        using \<psi>_def null_char arr_char
+        apply unfold_locales
+            apply simp
+           apply (metis (no_types, lifting) \<psi> bij_betw_def image_eqI mem_Collect_eq)
+          apply (metis (no_types, lifting) \<phi>_\<psi> \<psi> bij_betw_def dom_char image_eqI mem_Collect_eq)
+         apply (metis (no_types, lifting) \<phi>_\<psi> \<psi> bij_betw_def cod_char image_eqI mem_Collect_eq)
+        by (metis (no_types, lifting) C'_def \<phi>_\<psi> \<psi> bij_betw_def seqE image_eqI mem_Collect_eq)
+      interpret \<phi>\<psi>: inverse_functors C' C \<psi> \<open>\<lambda>i. if C'.arr i then \<phi> i else null\<close>
+      proof
+        show "\<psi> \<circ> (\<lambda>i. if C'.arr i then \<phi> i else null) = C'.map"
+          by (auto simp add: C'.is_extensional \<psi>.is_extensional arr_char)
+        show "(\<lambda>i. if C'.arr i then \<phi> i else null) \<circ> \<psi> = map"
+          by (auto simp add: is_extensional)
+      qed
+      have "invertible_functor C' C (\<lambda>i. if C'.arr i then \<phi> i else null)"
+        using \<phi>\<psi>.inverse_functors_axioms by unfold_locales auto
+      thus ?thesis
+        using arr_char by blast
+    qed
+
+    corollary (in category) finite_imp_ex_iso_nat_comp:
+    assumes "finite (Collect arr)"
+    shows "\<exists>C' :: nat comp. isomorphic_categories C' C"
+    proof -
+      obtain n :: nat and \<phi> where \<phi>: "bij_betw \<phi> {0..<n} (Collect arr)"
+        using assms ex_bij_betw_nat_finite by blast
+      obtain C' where C': "Collect (partial_magma.arr C') = {0..<n} \<and>
+                           invertible_functor C' (\<cdot>)
+                             (\<lambda>i. if partial_magma.arr C' i then \<phi> i else null)"
+        using \<phi> bij_induces_invertible_functor [of \<phi> "{0..<n}"] by auto
+      interpret \<phi>: invertible_functor C' C \<open>\<lambda>i. if partial_magma.arr C' i then \<phi> i else null\<close>
+        using C' by simp
+      show ?thesis
+        using \<phi>.isomorphic_categories_axioms by blast
+    qed
+
+  end
 
   text \<open>
     We now prove the result, advertised earlier in theory \<open>ConcreteCategory\<close>,
@@ -430,8 +830,8 @@ begin
       by (unfold_locales, auto)
 
     interpretation FG: inverse_functors C CC.COMP
-                       \<open>\<lambda>f. if arr f then CC.MkArr (dom f) (cod f) f else CC.null\<close>
                        \<open>\<lambda>F. if CC.arr F then CC.Map F else null\<close>
+                       \<open>\<lambda>f. if arr f then CC.MkArr (dom f) (cod f) f else CC.null\<close>
     proof
       show "(\<lambda>F. if CC.arr F then CC.Map F else null) \<circ>
               (\<lambda>f. if arr f then CC.MkArr (dom f) (cod f) f else CC.null) =
@@ -478,7 +878,7 @@ begin
 
   end
 
-  sublocale invertible_functor \<subseteq> inverse_functors A B F inv
+  sublocale invertible_functor \<subseteq> inverse_functors A B inv G
     using inv_is_inverse by simp
 
    sublocale dual_functor \<subseteq> "functor" Aop.comp Bop.comp map

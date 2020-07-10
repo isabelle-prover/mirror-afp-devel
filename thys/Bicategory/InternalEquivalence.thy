@@ -233,14 +233,15 @@ begin
         show g': "ide g'" using assms by auto
         show 1: "\<guillemotleft>(g' \<star> \<phi>) \<cdot> (\<psi> \<star> f) \<cdot> \<eta> : src f' \<Rightarrow> g' \<star> f'\<guillemotright>"
           using assms f' g' E.unit_in_hom E.antipar(2) vconn_implies_hpar(3)
-         apply (intro comp_in_homI, auto)
-          by (intro hcomp_in_vhom, auto)
+         apply (intro comp_in_homI)
+            apply auto
+          by (intro hcomp_in_vhom) auto
         show "iso ((g' \<star> \<phi>) \<cdot> (\<psi> \<star> f) \<cdot> \<eta>)"
           using assms 1 g' vconn_implies_hpar(3) E.antipar(2) iso_hcomp
-          by (intro isos_compose, auto)
+          by (intro isos_compose) auto
         show 1: "\<guillemotleft>\<epsilon> \<cdot> (inv \<phi> \<star> g) \<cdot> (f' \<star> inv \<psi>) : f' \<star> g' \<Rightarrow> src g'\<guillemotright>"
           using assms f' ide_in_hom(2) vconn_implies_hpar(3-4) E.antipar(1-2)
-          by (intro comp_in_homI, auto)
+          by (intro comp_in_homI) auto
         show "iso (\<epsilon> \<cdot> (inv \<phi> \<star> g) \<cdot> (f' \<star> inv \<psi>))"
           using assms 1 isos_compose
           by (metis E.counit_is_iso E.ide_right arrI f' hseqE ide_is_iso iso_hcomp

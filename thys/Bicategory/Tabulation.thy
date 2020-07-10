@@ -2342,7 +2342,7 @@ $$
             by (intro comp_in_homI, auto)
           moreover have "iso ?\<nu>'"
             using assms \<nu>' w\<theta>\<nu> \<phi>_in_hhom iso_inv_iso
-            by (intro iso_hcomp isos_compose, auto)
+            by (intro iso_hcomp isos_compose) auto
           moreover have "T'.composite_cell w \<theta> \<cdot> ?\<nu>' = \<omega>"
           proof -
             have "composite_cell w \<theta> \<cdot> ((\<phi> \<star> w) \<cdot> ?\<nu>') = \<omega>"
@@ -2997,13 +2997,6 @@ $$
     attempt this here.
   \<close>
 
-  (*
-   * TODO: The fully_faithful_and_essentially_surjective_functor locale should have arguments in
-   * same order as functor, faithful_functor, etc.
-   * The equivalence_functor definition can reverse the arguments for consistency
-   * with the definition of adjoint equivalence.
-   *)
-
   context equivalence_pseudofunctor
   begin
 
@@ -3061,7 +3054,7 @@ $$
             using \<omega>' v'_def \<open>trg\<^sub>D v' = trg\<^sub>D (F r)\<close> by auto
 
           obtain a where a: "C.obj a \<and> D.equivalent_objects (map\<^sub>0 a) a'"
-            using u' \<omega>' a'_def surjective_on_objects_up_to_equivalence D.obj_src by blast
+            using u' \<omega>' a'_def biessentially_surjective_on_objects D.obj_src by blast
           obtain e' where e': "\<guillemotleft>e' : map\<^sub>0 a \<rightarrow>\<^sub>D a'\<guillemotright> \<and> D.equivalence_map e'"
             using a D.equivalent_objects_def by auto
 
@@ -4039,7 +4032,7 @@ $$
           cancellation of the various isomorphisms that appear.\<close>
 
           obtain a\<^sub>C where a\<^sub>C: "C.obj a\<^sub>C \<and> D.equivalent_objects (map\<^sub>0 a\<^sub>C) a"
-            using w a_def surjective_on_objects_up_to_equivalence D.obj_src D.ideD(1)
+            using w a_def biessentially_surjective_on_objects D.obj_src D.ideD(1)
             by presburger
           obtain e where e: "\<guillemotleft>e : map\<^sub>0 a\<^sub>C \<rightarrow>\<^sub>D a\<guillemotright> \<and> D.equivalence_map e"
             using a\<^sub>C D.equivalent_objects_def by auto
