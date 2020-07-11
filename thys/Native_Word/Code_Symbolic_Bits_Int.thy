@@ -85,25 +85,6 @@ lemma int_xor_code [code]: fixes i j :: int shows
 lemma bin_rest_code: "bin_rest i = i >> 1"
   by (simp add: shiftr_int_def)
 
-lemma sbintrunc_code [code]:
-  "sbintrunc n bin =
-  (let bin' = bin AND bin_mask (n + 1)
-   in if bin' !! n then bin' - (2 << n) else bin')"
-proof (induction n arbitrary: bin)
-  case 0
-  then show ?case
-    by (simp add: mod_2_eq_odd and_one_eq)
-next
-  case (Suc n)
-  have *: \<open>(4 * 2 ^ n - 1) div 2 = 2 * 2 ^ n - (1::int)\<close>
-    by simp
-  from Suc [of \<open>bin div 2\<close>]
-  show ?case 
-    by (auto simp add: Let_def bin_mask_conv_pow2 shiftl_int_def algebra_simps *
-      and_int_rec [of \<open>_ + _ * 2\<close>] and_int_rec [of \<open>_ * 2\<close>]
-      bit_double_iff even_bit_succ_iff elim!: evenE oddE)
-qed
-
 lemma set_bits_code [code]: 
   "set_bits = Code.abort (STR ''set_bits is unsupported on type int'') (\<lambda>_. set_bits :: _ \<Rightarrow> int)"
 by simp

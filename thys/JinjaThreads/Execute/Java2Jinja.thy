@@ -62,7 +62,10 @@ code_identifier
 | code_module Conditionally_Complete_Lattices \<rightharpoonup> (SML) Set
 | code_module List \<rightharpoonup> (SML) Set
 | code_module Predicate \<rightharpoonup> (SML) Set
-| constant member_i_i \<rightharpoonup> (SML) "Set.member_i_i"
+| code_module Parity \<rightharpoonup> (SML) Bit_Operations
+| type_class semiring_parity \<rightharpoonup> (SML) Bit_Operations.semiring_parity
+| class_instance int :: semiring_parity \<rightharpoonup> (SML) Bit_Operations.semiring_parity_int
+| constant member_i_i \<rightharpoonup> (SML) Set.member_i_i
 
 export_code
   wf_J_prog' exec_J_rr exec_J_rnd 
