@@ -222,9 +222,10 @@ using wff proof cases
     also have "(\<lambda>n. \<forall>n'\<ge>Suc n. \<not> f n') = (\<lambda>n. \<forall>n'\<ge>n. \<not> f (Suc n'))" by(auto dest: Suc_le_D)
     also from zeros have "\<forall>n'\<ge>n. \<not> f (Suc n')" by auto
     ultimately show ?thesis using zeros
-      apply (simp (no_asm_simp) add: set_bits_int_def exI split del: if_split)
-      apply clarsimp apply (safe; rule bin_rl_eqI)
-         apply (auto simp add: bin_last_bl_to_bin hd_map bin_rest_bl_to_bin map_tl[symmetric] map_map[symmetric] map_Suc_upt simp del: map_map)
+      apply (simp (no_asm_simp) add: set_bits_int_def exI
+        del: upt.upt_Suc flip: map_map split del: if_split)
+      apply (simp only: map_Suc_upt upt_conv_Cons)
+      apply simp
       done
   qed
 next
@@ -247,11 +248,9 @@ next
       by(auto elim: allE[where x="Suc n" for n] dest: Suc_le_D)
     ultimately show ?thesis using ones
       apply (simp (no_asm_simp) add: set_bits_int_def exI split del: if_split)
-      apply (auto simp add: Let_def bin_last_bl_to_bin hd_map bin_rest_bl_to_bin map_tl[symmetric] map_map[symmetric] map_Suc_upt upt_conv_Cons signed_take_bit_Suc simp del: map_map)
-         apply (metis bin_last_bl_to_bin last.simps list.simps(3) parity_cases)
-        apply (metis bin_last_bl_to_bin last_ConsL last_ConsR list.simps(3) parity_cases)
-       apply (metis (no_types, lifting) append_is_Nil_conv bin_last_bl_to_bin last_ConsR last_snoc list.distinct(1) odd_iff_mod_2_eq_one)
-      apply (metis (no_types, lifting) append_is_Nil_conv bin_last_bl_to_bin last_ConsR last_snoc list.distinct(1) not_mod_2_eq_1_eq_0 odd_iff_mod_2_eq_one)
+      apply (auto simp add: Let_def bin_last_bl_to_bin hd_map bin_rest_bl_to_bin map_tl[symmetric] map_map[symmetric] map_Suc_upt upt_conv_Cons signed_take_bit_Suc
+        not_le
+        simp del: map_map)
       done
   qed
 qed

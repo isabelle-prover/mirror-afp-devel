@@ -109,7 +109,7 @@ proof -
 qed
 
 lemma word_test_bit_set_bits: "(BITS n. f n :: 'a :: len word) !! n \<longleftrightarrow> n < LENGTH('a) \<and> f n"
-by(auto simp add: word_set_bits_def test_bit_bl word_bl.Abs_inverse word_size)
+  by (simp add: test_bit_eq_bit bit_set_bits_word_iff)
 
 lemma word_of_int_conv_set_bits: "word_of_int i = (BITS n. i !! n)"
   by (rule word_eqI) (auto simp add: word_test_bit_set_bits test_bit.eq_norm)
@@ -269,10 +269,6 @@ lemma word_of_int_code [code abstract]:
 by(simp add: uint_word_of_int and_bin_mask_conv_mod)
 
 context fixes f :: "nat \<Rightarrow> bool" begin
-
-lemma bit_set_bits_word_iff:
-  \<open>bit (set_bits f :: 'a word) n \<longleftrightarrow> n < LENGTH('a::len) \<and> f n\<close>
-  by (auto simp add: of_nth_def test_bit_of_bl simp flip: test_bit_word_eq)
 
 definition set_bits_aux :: \<open>'a word \<Rightarrow> nat \<Rightarrow> 'a :: len word\<close>
   where \<open>set_bits_aux w n = push_bit n w OR take_bit n (set_bits f)\<close>
