@@ -279,7 +279,7 @@ lemma rev_bl_order_bl_to_bin:
     rev_bl_order True xs ys = (bl_to_bin (rev xs) \<le> bl_to_bin (rev ys)) \<and>
     rev_bl_order False xs ys = (bl_to_bin (rev xs) < bl_to_bin (rev ys))"
   apply (induct xs ys rule: list_induct2)
-   apply (simp_all add: rev_bl_order_simps bl_to_bin_app_cat)
+   apply (simp_all add: rev_bl_order_simps bl_to_bin_app_cat concat_bit_Suc)
   apply (auto simp add: bl_to_bin_def add1_zle_eq)
   done
 

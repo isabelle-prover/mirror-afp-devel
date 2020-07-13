@@ -4911,17 +4911,20 @@ lemma Bit_in_uintsI: "of_bool c + 2 * w \<in> uints m" if "w \<in> uints (m - 1)
   using Bit_in_uints_Suc[OF that(1)] that(2)
   by auto
 
-lemma bin_cat_in_uintsI: "bin_cat a n b \<in> uints m" if "a \<in> uints l" "m \<ge> l + n"
-  using that
-proof (induction n arbitrary: b m)
-  case 0
-  then have "uints l \<subseteq> uints m"
-    by (intro uints_monoI) auto
-  then show ?case using 0 by auto
-next
-  case (Suc n)
-  then show ?case
-    using Bit_in_uintsI by auto
+lemma bin_cat_in_uintsI:
+  \<open>bin_cat a n b \<in> uints m\<close> if \<open>a \<in> uints l\<close> \<open>m \<ge> l + n\<close>
+proof -
+  from \<open>m \<ge> l + n\<close> obtain q where \<open>m = l + n + q\<close>
+    using le_Suc_ex by blast
+  then have \<open>(2::int) ^ m = 2 ^ n * 2 ^ (l + q)\<close>
+    by (simp add: ac_simps power_add)
+  moreover have \<open>a mod 2 ^ (l + q) = a\<close>
+    using \<open>a \<in> uints l\<close>
+    by (auto simp add: uints_def take_bit_eq_mod power_add Divides.mod_mult2_eq)
+  ultimately have \<open>concat_bit n b a = take_bit m (concat_bit n b a)\<close>
+    by (simp add: concat_bit_eq take_bit_eq_mod push_bit_eq_mult Divides.mod_mult2_eq)
+  then show ?thesis
+    by (simp add: uints_def)
 qed
 
 lemma bin_cat_cong: "bin_cat a n b = bin_cat c m d"
