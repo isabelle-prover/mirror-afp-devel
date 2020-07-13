@@ -10,15 +10,15 @@ theory Calculus_Variations
   imports Calculus
 begin
 
-locale reduced_calculus = calculus Bot Inf entails Red_Inf Red_F
+locale reduced_calculus = calculus Bot Inf entails Red_I Red_F
   for
     Bot :: "'f set" and
     Inf :: \<open>'f inference set\<close> and
     entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50) and
-    Red_Inf :: "'f set \<Rightarrow> 'f inference set" and
+    Red_I :: "'f set \<Rightarrow> 'f inference set" and
     Red_F :: "'f set \<Rightarrow> 'f set"
  + assumes
-   inf_in_red_inf: "Inf_from2 UNIV (Red_F N) \<subseteq> Red_Inf N"
+   inf_in_red_inf: "Inf_from2 UNIV (Red_F N) \<subseteq> Red_I N"
 begin
 
 (* lem:reduced-rc-implies-sat-equiv-reduced-sat *)
@@ -27,7 +27,7 @@ proof
   fix N
   assume "saturated N"
   then show "reduc_saturated N"
-    using Red_Inf_without_red_F saturated_without_red_F
+    using Red_I_without_red_F saturated_without_red_F
     unfolding saturated_def reduc_saturated_def
     by blast
 next
@@ -73,12 +73,12 @@ begin
 
 (* cor:reduced-rc-implies-st-ref-comp-equiv-reduced-st-ref-comp 2/2 *)
 lemma stat_ref_comp_imp_red_stat_ref_comp:
-  "statically_complete_calculus Bot Inf entails Red_Inf Red_F \<Longrightarrow>
-   reducedly_statically_complete_calculus Bot Inf entails Red_Inf Red_F"
+  "statically_complete_calculus Bot Inf entails Red_I Red_F \<Longrightarrow>
+   reducedly_statically_complete_calculus Bot Inf entails Red_I Red_F"
 proof
   fix B N
   assume
-    stat_ref_comp: "statically_complete_calculus Bot Inf (\<Turnstile>) Red_Inf Red_F" and
+    stat_ref_comp: "statically_complete_calculus Bot Inf (\<Turnstile>) Red_I Red_F" and
     bot_elem: \<open>B \<in> Bot\<close> and
     saturated_N: "reduc_saturated N" and
     refut_N: "N \<Turnstile> {B}"
@@ -93,14 +93,14 @@ end
 context calculus
 begin
 
-definition Red_Red_Inf :: "'f set \<Rightarrow> 'f inference set" where
-  "Red_Red_Inf N = Red_Inf N \<union> Inf_from2 UNIV (Red_F N)"
+definition Red_Red_I :: "'f set \<Rightarrow> 'f inference set" where
+  "Red_Red_I N = Red_I N \<union> Inf_from2 UNIV (Red_F N)"
 
-lemma reduced_calc_is_calc: "calculus Bot Inf entails Red_Red_Inf Red_F"
+lemma reduced_calc_is_calc: "calculus Bot Inf entails Red_Red_I Red_F"
 proof
   fix N
-  show "Red_Red_Inf N \<subseteq> Inf"
-    unfolding Red_Red_Inf_def Inf_from2_def Inf_from_def using Red_Inf_to_Inf by auto
+  show "Red_Red_I N \<subseteq> Inf"
+    unfolding Red_Red_I_def Inf_from2_def Inf_from_def using Red_I_to_Inf by auto
 next
   fix B N
   assume
@@ -119,8 +119,8 @@ next
     using Red_F_of_subset[OF n_in] unfolding Inf_from_def by auto
   then have "Inf_from2 UNIV (Red_F N) \<subseteq> Inf_from2 UNIV (Red_F N')"
     unfolding Inf_from2_def by auto
-  then show "Red_Red_Inf N \<subseteq> Red_Red_Inf N'"
-    unfolding Red_Red_Inf_def using Red_Inf_of_subset[OF n_in] by blast
+  then show "Red_Red_I N \<subseteq> Red_Red_I N'"
+    unfolding Red_Red_I_def using Red_I_of_subset[OF n_in] by blast
 next
   fix N N' :: "'f set"
   assume "N' \<subseteq> Red_F N"
@@ -133,33 +133,33 @@ next
     by (metis Diff_subset Red_F_of_subset eq_iff)
   then have "Inf_from2 UNIV (Red_F N) \<subseteq> Inf_from2 UNIV (Red_F (N - N'))"
     unfolding Inf_from2_def by auto
-  then show "Red_Red_Inf N \<subseteq> Red_Red_Inf (N - N')"
-    unfolding Red_Red_Inf_def using Red_Inf_of_Red_F_subset[OF np_subs] by blast
+  then show "Red_Red_I N \<subseteq> Red_Red_I (N - N')"
+    unfolding Red_Red_I_def using Red_I_of_Red_F_subset[OF np_subs] by blast
 next
   fix \<iota> N
   assume "\<iota> \<in> Inf"
     "concl_of \<iota> \<in> N"
-  then show "\<iota> \<in> Red_Red_Inf N"
-    by (simp add: Red_Inf_of_Inf_to_N Red_Red_Inf_def)
+  then show "\<iota> \<in> Red_Red_I N"
+    by (simp add: Red_I_of_Inf_to_N Red_Red_I_def)
 qed
 
-lemma inf_subs_reduced_red_inf: "Inf_from2 UNIV (Red_F N) \<subseteq> Red_Red_Inf N"
-  unfolding Red_Red_Inf_def by simp
+lemma inf_subs_reduced_red_inf: "Inf_from2 UNIV (Red_F N) \<subseteq> Red_Red_I N"
+  unfolding Red_Red_I_def by simp
 
 (* lem:red'-is-reduced-redcrit *)
 text \<open>The following is a lemma and not a sublocale as was previously used in similar cases.
   Here, a sublocale cannot be used because it would create an infinitely descending
   chain of sublocales. \<close>
-lemma reduc_calc: "reduced_calculus Bot Inf entails Red_Red_Inf Red_F"
+lemma reduc_calc: "reduced_calculus Bot Inf entails Red_Red_I Red_F"
   using inf_subs_reduced_red_inf reduced_calc_is_calc
   by (simp add: reduced_calculus.intro reduced_calculus_axioms_def)
 
-interpretation reduc_calc: reduced_calculus Bot Inf entails Red_Red_Inf Red_F
+interpretation reduc_calc: reduced_calculus Bot Inf entails Red_Red_I Red_F
   by (fact reduc_calc)
 
 (* lem:saturation-red-vs-red'-1 *)
 lemma sat_imp_red_calc_sat: "saturated N \<Longrightarrow> reduc_calc.saturated N"
-  unfolding saturated_def reduc_calc.saturated_def Red_Red_Inf_def by blast
+  unfolding saturated_def reduc_calc.saturated_def Red_Red_I_def by blast
 
 (* lem:saturation-red-vs-red'-2 1/2 (i) \<longleftrightarrow> (ii) *)
 lemma red_sat_eq_red_calc_sat: "reduc_saturated N \<longleftrightarrow> reduc_calc.saturated N"
@@ -170,9 +170,9 @@ proof
   proof
     fix \<iota>
     assume i_in: "\<iota> \<in> Inf_from N"
-    show "\<iota> \<in> Red_Red_Inf N"
+    show "\<iota> \<in> Red_Red_I N"
       using i_in red_sat_n
-      unfolding reduc_saturated_def Inf_from2_def Inf_from_def Red_Red_Inf_def by blast
+      unfolding reduc_saturated_def Inf_from2_def Inf_from_def Red_Red_I_def by blast
   qed
 next
   assume red_sat_n: "reduc_calc.saturated N"
@@ -181,23 +181,23 @@ next
   proof
     fix \<iota>
     assume i_in: "\<iota> \<in> Inf_from (N - Red_F N)"
-    show "\<iota> \<in> Red_Inf N"
+    show "\<iota> \<in> Red_I N"
       using i_in red_sat_n
-      unfolding Inf_from_def reduc_calc.saturated_def Red_Red_Inf_def Inf_from2_def by blast
+      unfolding Inf_from_def reduc_calc.saturated_def Red_Red_I_def Inf_from2_def by blast
   qed
 qed
 
 (* lem:saturation-red-vs-red'-2 2/2 (i) \<longleftrightarrow> (iii) *)
 lemma red_sat_eq_sat: "reduc_saturated N \<longleftrightarrow> saturated (N - Red_F N)"
-  unfolding reduc_saturated_def saturated_def by (simp add: Red_Inf_without_red_F)
+  unfolding reduc_saturated_def saturated_def by (simp add: Red_I_without_red_F)
 
 (* thm:reduced-stat-ref-compl 1/3 (i) \<longleftrightarrow> (iii) *)
-theorem stat_is_stat_red: "statically_complete_calculus Bot Inf entails Red_Inf Red_F \<longleftrightarrow>
-  statically_complete_calculus Bot Inf entails Red_Red_Inf Red_F"
+theorem stat_is_stat_red: "statically_complete_calculus Bot Inf entails Red_I Red_F \<longleftrightarrow>
+  statically_complete_calculus Bot Inf entails Red_Red_I Red_F"
 proof
   assume
-    stat_ref1: "statically_complete_calculus Bot Inf entails Red_Inf Red_F"
-  show "statically_complete_calculus Bot Inf entails Red_Red_Inf Red_F"
+    stat_ref1: "statically_complete_calculus Bot Inf entails Red_I Red_F"
+  show "statically_complete_calculus Bot Inf entails Red_Red_I Red_F"
     using reduc_calc.calculus_axioms
     unfolding statically_complete_calculus_def statically_complete_calculus_axioms_def
   proof
@@ -216,8 +216,8 @@ proof
   qed
 next
   assume
-    stat_ref3: "statically_complete_calculus Bot Inf entails Red_Red_Inf Red_F"
-  show "statically_complete_calculus Bot Inf entails Red_Inf Red_F"
+    stat_ref3: "statically_complete_calculus Bot Inf entails Red_Red_I Red_F"
+  show "statically_complete_calculus Bot Inf entails Red_I Red_F"
     unfolding statically_complete_calculus_def statically_complete_calculus_axioms_def
     using calculus_axioms
   proof
@@ -237,8 +237,8 @@ qed
 
 (* thm:reduced-stat-ref-compl 2/3 (iv) \<longleftrightarrow> (iii) *)
 theorem red_stat_red_is_stat_red:
-  "reducedly_statically_complete_calculus Bot Inf entails Red_Red_Inf Red_F \<longleftrightarrow>
-   statically_complete_calculus Bot Inf entails Red_Red_Inf Red_F"
+  "reducedly_statically_complete_calculus Bot Inf entails Red_Red_I Red_F \<longleftrightarrow>
+   statically_complete_calculus Bot Inf entails Red_Red_I Red_F"
   using reduc_calc.stat_ref_comp_imp_red_stat_ref_comp
   by (metis reduc_calc.sat_eq_reduc_sat reducedly_statically_complete_calculus.axioms(2)
     reducedly_statically_complete_calculus_axioms_def reduced_calc_is_calc
@@ -246,8 +246,8 @@ theorem red_stat_red_is_stat_red:
 
 (* thm:reduced-stat-ref-compl 3/3 (ii) \<longleftrightarrow> (iii) *)
 theorem red_stat_is_stat_red:
-  "reducedly_statically_complete_calculus Bot Inf entails Red_Inf Red_F \<longleftrightarrow>
-   statically_complete_calculus Bot Inf entails Red_Red_Inf Red_F"
+  "reducedly_statically_complete_calculus Bot Inf entails Red_I Red_F \<longleftrightarrow>
+   statically_complete_calculus Bot Inf entails Red_Red_I Red_F"
   using reduc_calc.calculus_axioms calculus_axioms red_sat_eq_red_calc_sat
   unfolding statically_complete_calculus_def statically_complete_calculus_axioms_def
     reducedly_statically_complete_calculus_def reducedly_statically_complete_calculus_axioms_def
@@ -269,23 +269,23 @@ proof
 qed
 
 lemma sup_red_inf_in_red_liminf:
-  "chain derive D \<Longrightarrow> Sup_llist (lmap Red_Inf D) \<subseteq> Red_Inf (Liminf_llist D)"
+  "chain derive D \<Longrightarrow> Sup_llist (lmap Red_I D) \<subseteq> Red_I (Liminf_llist D)"
 proof
   fix \<iota>
   assume
     deriv: "chain derive D" and
-    i_in_sup: "\<iota> \<in> Sup_llist (lmap Red_Inf D)"
-  obtain i0 where i_smaller: "enat i0 < llength D" and n_in: "\<iota> \<in> Red_Inf (lnth D i0)"
+    i_in_sup: "\<iota> \<in> Sup_llist (lmap Red_I D)"
+  obtain i0 where i_smaller: "enat i0 < llength D" and n_in: "\<iota> \<in> Red_I (lnth D i0)"
     using i_in_sup unfolding Sup_llist_def by auto
-  have "Red_Inf (lnth D i0) \<subseteq> Red_Inf (Liminf_llist D)"
-    using i_smaller by (simp add: deriv Red_Inf_subset_Liminf)
-  then show "\<iota> \<in> Red_Inf (Liminf_llist D)"
+  have "Red_I (lnth D i0) \<subseteq> Red_I (Liminf_llist D)"
+    using i_smaller by (simp add: deriv Red_I_subset_Liminf)
+  then show "\<iota> \<in> Red_I (Liminf_llist D)"
     using n_in by fast
 qed
 
 definition reduc_fair :: "'f set llist \<Rightarrow> bool" where
   "reduc_fair D \<longleftrightarrow>
-   Inf_from (Liminf_llist D - Sup_llist (lmap Red_F D)) \<subseteq> Sup_llist (lmap Red_Inf D)"
+   Inf_from (Liminf_llist D - Sup_llist (lmap Red_F D)) \<subseteq> Sup_llist (lmap Red_I D)"
 
 (* lem:red-fairness-implies-red-saturation *)
 lemma reduc_fair_imp_Liminf_reduc_sat:
@@ -299,9 +299,9 @@ proof -
   have "Inf_from (Liminf_llist D - Red_F (Liminf_llist D))
     \<subseteq> Inf_from (Liminf_llist D - Sup_llist (lmap Red_F D))"
     using sup_red_f_in_red_liminf[OF deriv] unfolding Inf_from_def by blast
-  then have "Inf_from (Liminf_llist D - Red_F (Liminf_llist D)) \<subseteq> Sup_llist (lmap Red_Inf D)"
+  then have "Inf_from (Liminf_llist D - Red_F (Liminf_llist D)) \<subseteq> Sup_llist (lmap Red_I D)"
     using red_fair unfolding reduc_fair_def by simp
-  then show "Inf_from (Liminf_llist D - Red_F (Liminf_llist D)) \<subseteq> Red_Inf (Liminf_llist D)"
+  then show "Inf_from (Liminf_llist D - Red_F (Liminf_llist D)) \<subseteq> Red_I (Liminf_llist D)"
     using sup_red_inf_in_red_liminf[OF deriv] by fast
 qed
 
@@ -326,7 +326,7 @@ proof
   have liminf_is_N: "Liminf_llist D = N" by (simp add: D_def Liminf_llist_LCons)
   have head_D: "N = lhd D" by (simp add: D_def)
   have "Sup_llist (lmap Red_F D) = Red_F N" by (simp add: D_def)
-  moreover have "Sup_llist (lmap Red_Inf D) = Red_Inf N" by (simp add: D_def)
+  moreover have "Sup_llist (lmap Red_I D) = Red_I N" by (simp add: D_def)
   ultimately have fair_D: "reduc_fair D"
     using saturated_N liminf_is_N unfolding reduc_fair_def reduc_saturated_def
     by (simp add: reduc_fair_def reduc_saturated_def liminf_is_N)
@@ -373,59 +373,59 @@ qed
 context calculus
 begin
 
-lemma dyn_equiv_stat: "dynamically_complete_calculus Bot Inf entails Red_Inf Red_F =
-  statically_complete_calculus Bot Inf entails Red_Inf Red_F"
+lemma dyn_equiv_stat: "dynamically_complete_calculus Bot Inf entails Red_I Red_F =
+  statically_complete_calculus Bot Inf entails Red_I Red_F"
 proof
-  assume "dynamically_complete_calculus Bot Inf entails Red_Inf Red_F"
-  then interpret dynamically_complete_calculus Bot Inf entails Red_Inf Red_F
+  assume "dynamically_complete_calculus Bot Inf entails Red_I Red_F"
+  then interpret dynamically_complete_calculus Bot Inf entails Red_I Red_F
     by simp
-  show "statically_complete_calculus Bot Inf entails Red_Inf Red_F"
+  show "statically_complete_calculus Bot Inf entails Red_I Red_F"
     by (simp add: statically_complete_calculus_axioms)
 next
-  assume "statically_complete_calculus Bot Inf entails Red_Inf Red_F"
-  then interpret statically_complete_calculus Bot Inf entails Red_Inf Red_F
+  assume "statically_complete_calculus Bot Inf entails Red_I Red_F"
+  then interpret statically_complete_calculus Bot Inf entails Red_I Red_F
     by simp
-  show "dynamically_complete_calculus Bot Inf entails Red_Inf Red_F"
+  show "dynamically_complete_calculus Bot Inf entails Red_I Red_F"
     by (simp add: dynamically_complete_calculus_axioms)
 qed
 
 lemma red_dyn_equiv_red_stat:
-  "reducedly_dynamically_complete_calculus Bot Inf entails Red_Inf Red_F =
-   reducedly_statically_complete_calculus Bot Inf entails Red_Inf Red_F"
+  "reducedly_dynamically_complete_calculus Bot Inf entails Red_I Red_F =
+   reducedly_statically_complete_calculus Bot Inf entails Red_I Red_F"
 proof
-  assume "reducedly_dynamically_complete_calculus Bot Inf entails Red_Inf Red_F"
-  then interpret reducedly_dynamically_complete_calculus Bot Inf entails Red_Inf Red_F
+  assume "reducedly_dynamically_complete_calculus Bot Inf entails Red_I Red_F"
+  then interpret reducedly_dynamically_complete_calculus Bot Inf entails Red_I Red_F
     by simp
-  show "reducedly_statically_complete_calculus Bot Inf entails Red_Inf Red_F"
+  show "reducedly_statically_complete_calculus Bot Inf entails Red_I Red_F"
     by (simp add: reducedly_statically_complete_calculus_axioms)
 next
-  assume "reducedly_statically_complete_calculus Bot Inf entails Red_Inf Red_F"
-  then interpret reducedly_statically_complete_calculus Bot Inf entails Red_Inf Red_F
+  assume "reducedly_statically_complete_calculus Bot Inf entails Red_I Red_F"
+  then interpret reducedly_statically_complete_calculus Bot Inf entails Red_I Red_F
     by simp
-  show "reducedly_dynamically_complete_calculus Bot Inf entails Red_Inf Red_F"
+  show "reducedly_dynamically_complete_calculus Bot Inf entails Red_I Red_F"
     by (simp add: reducedly_dynamically_complete_calculus_axioms)
 qed
 
-interpretation reduc_calc: reduced_calculus Bot Inf entails Red_Red_Inf Red_F
+interpretation reduc_calc: reduced_calculus Bot Inf entails Red_Red_I Red_F
   by (fact reduc_calc)
 
 (* thm:reduced-dyn-ref-compl 1/3 (v) \<longleftrightarrow> (vii) *)
 theorem dyn_ref_eq_dyn_ref_red:
-  "dynamically_complete_calculus Bot Inf entails Red_Inf Red_F \<longleftrightarrow>
-   dynamically_complete_calculus Bot Inf entails Red_Red_Inf Red_F"
+  "dynamically_complete_calculus Bot Inf entails Red_I Red_F \<longleftrightarrow>
+   dynamically_complete_calculus Bot Inf entails Red_Red_I Red_F"
   using dyn_equiv_stat stat_is_stat_red reduc_calc.dyn_equiv_stat by meson
 
 (* thm:reduced-dyn-ref-compl 2/3 (viii) \<longleftrightarrow> (vii) *)
 theorem red_dyn_ref_red_eq_dyn_ref_red:
-  "reducedly_dynamically_complete_calculus Bot Inf entails Red_Red_Inf Red_F \<longleftrightarrow>
-   dynamically_complete_calculus Bot Inf entails Red_Red_Inf Red_F"
+  "reducedly_dynamically_complete_calculus Bot Inf entails Red_Red_I Red_F \<longleftrightarrow>
+   dynamically_complete_calculus Bot Inf entails Red_Red_I Red_F"
   using red_dyn_equiv_red_stat dyn_equiv_stat red_stat_red_is_stat_red
   by (simp add: reduc_calc.dyn_equiv_stat reduc_calc.red_dyn_equiv_red_stat)
 
 (* thm:reduced-dyn-ref-compl 3/3 (vi) \<longleftrightarrow> (vii) *)
 theorem red_dyn_ref_eq_dyn_ref_red:
-  "reducedly_dynamically_complete_calculus Bot Inf entails Red_Inf Red_F \<longleftrightarrow>
-   dynamically_complete_calculus Bot Inf entails Red_Red_Inf Red_F"
+  "reducedly_dynamically_complete_calculus Bot Inf entails Red_I Red_F \<longleftrightarrow>
+   dynamically_complete_calculus Bot Inf entails Red_Red_I Red_F"
   using red_dyn_equiv_red_stat dyn_equiv_stat red_stat_is_stat_red
     reduc_calc.dyn_equiv_stat reduc_calc.red_dyn_equiv_red_stat
   by blast

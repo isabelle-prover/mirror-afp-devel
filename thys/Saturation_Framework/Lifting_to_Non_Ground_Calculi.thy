@@ -19,14 +19,14 @@ begin
 subsection \<open>Standard Lifting\<close>
 
 locale standard_lifting = inference_system Inf_F +
-  ground: calculus Bot_G Inf_G entails_G Red_Inf_G Red_F_G
+  ground: calculus Bot_G Inf_G entails_G Red_I_G Red_F_G
   for
     Bot_F :: \<open>'f set\<close> and
     Inf_F :: \<open>'f inference set\<close> and
     Bot_G :: \<open>'g set\<close> and
     Inf_G ::  \<open>'g inference set\<close> and
     entails_G ::  \<open>'g set  \<Rightarrow> 'g set  \<Rightarrow> bool\<close> (infix "\<Turnstile>G" 50) and
-    Red_Inf_G :: \<open>'g set \<Rightarrow> 'g inference set\<close> and
+    Red_I_G :: \<open>'g set \<Rightarrow> 'g inference set\<close> and
     Red_F_G :: \<open>'g set \<Rightarrow> 'g set\<close>
   + fixes
     \<G>_F :: \<open>'f \<Rightarrow> 'g set\<close> and
@@ -36,7 +36,7 @@ locale standard_lifting = inference_system Inf_F +
     Bot_map_not_empty: \<open>B \<in> Bot_F \<Longrightarrow> \<G>_F B \<noteq> {}\<close> and
     Bot_map: \<open>B \<in> Bot_F \<Longrightarrow> \<G>_F B \<subseteq> Bot_G\<close> and
     Bot_cond: \<open>\<G>_F C \<inter> Bot_G \<noteq> {} \<longrightarrow> C \<in> Bot_F\<close> and
-    inf_map: \<open>\<iota> \<in> Inf_F \<Longrightarrow> \<G>_Inf \<iota> \<noteq> None \<Longrightarrow> the (\<G>_Inf \<iota>) \<subseteq> Red_Inf_G (\<G>_F (concl_of \<iota>))\<close>
+    inf_map: \<open>\<iota> \<in> Inf_F \<Longrightarrow> \<G>_Inf \<iota> \<noteq> None \<Longrightarrow> the (\<G>_Inf \<iota>) \<subseteq> Red_I_G (\<G>_F (concl_of \<iota>))\<close>
 begin
 
 abbreviation \<G>_set :: \<open>'f set \<Rightarrow> 'g set\<close> where
@@ -97,14 +97,14 @@ subsection \<open>Strong Standard Lifting\<close>
 
 (* rmk:strong-standard-lifting *)
 locale strong_standard_lifting = inference_system Inf_F +
-  ground: calculus Bot_G Inf_G entails_G Red_Inf_G Red_F_G
+  ground: calculus Bot_G Inf_G entails_G Red_I_G Red_F_G
   for
     Bot_F :: \<open>'f set\<close> and
     Inf_F :: \<open>'f inference set\<close> and
     Bot_G :: \<open>'g set\<close> and
     Inf_G ::  \<open>'g inference set\<close> and
     entails_G ::  \<open>'g set  \<Rightarrow> 'g set  \<Rightarrow> bool\<close> (infix "\<Turnstile>G" 50) and
-    Red_Inf_G :: \<open>'g set \<Rightarrow> 'g inference set\<close> and
+    Red_I_G :: \<open>'g set \<Rightarrow> 'g inference set\<close> and
     Red_F_G :: \<open>'g set \<Rightarrow> 'g set\<close>
   + fixes
     \<G>_F :: \<open>'f \<Rightarrow> 'g set\<close> and
@@ -118,7 +118,7 @@ locale strong_standard_lifting = inference_system Inf_F +
     inf_map_in_Inf: \<open>\<iota> \<in> Inf_F \<Longrightarrow> \<G>_Inf \<iota> \<noteq> None \<Longrightarrow> the (\<G>_Inf \<iota>) \<subseteq> Inf_G\<close>
 begin
 
-sublocale standard_lifting Bot_F Inf_F Bot_G Inf_G "(\<Turnstile>G)" Red_Inf_G Red_F_G \<G>_F \<G>_Inf
+sublocale standard_lifting Bot_F Inf_F Bot_G Inf_G "(\<Turnstile>G)" Red_I_G Red_F_G \<G>_F \<G>_Inf
 proof
   show "Bot_F \<noteq> {}" using Bot_F_not_empty .
 next
@@ -135,13 +135,13 @@ next
   fix \<iota>
   assume i_in: "\<iota> \<in> Inf_F" and
     some_g: "\<G>_Inf \<iota> \<noteq> None"
-  show "the (\<G>_Inf \<iota>) \<subseteq> Red_Inf_G (\<G>_F (concl_of \<iota>))"
+  show "the (\<G>_Inf \<iota>) \<subseteq> Red_I_G (\<G>_F (concl_of \<iota>))"
   proof
     fix \<iota>G
     assume ig_in1: "\<iota>G \<in> the (\<G>_Inf \<iota>)"
     then have ig_in2: "\<iota>G \<in> Inf_G" using inf_map_in_Inf[OF i_in some_g] by blast
-    show "\<iota>G \<in> Red_Inf_G (\<G>_F (concl_of \<iota>))"
-      using strong_inf_map[OF i_in some_g] ground.Red_Inf_of_Inf_to_N[OF ig_in2]
+    show "\<iota>G \<in> Red_I_G (\<G>_F (concl_of \<iota>))"
+      using strong_inf_map[OF i_in some_g] ground.Red_I_of_Inf_to_N[OF ig_in2]
         ig_in1 by blast
   qed
 qed
@@ -152,14 +152,14 @@ end
 subsection \<open>Lifting with a Family of Tiebreaker Orderings\<close>
 
 locale tiebreaker_lifting =
-  standard_lifting Bot_F Inf_F Bot_G Inf_G entails_G Red_Inf_G Red_F_G \<G>_F \<G>_Inf
+  standard_lifting Bot_F Inf_F Bot_G Inf_G entails_G Red_I_G Red_F_G \<G>_F \<G>_Inf
   for
     Bot_F :: \<open>'f set\<close> and
     Inf_F :: \<open>'f inference set\<close> and
     Bot_G :: \<open>'g set\<close> and
     entails_G :: \<open>'g set \<Rightarrow> 'g set \<Rightarrow> bool\<close> (infix "\<Turnstile>G" 50) and
     Inf_G :: \<open>'g inference set\<close> and
-    Red_Inf_G :: \<open>'g set \<Rightarrow> 'g inference set\<close> and
+    Red_I_G :: \<open>'g set \<Rightarrow> 'g inference set\<close> and
     Red_F_G :: \<open>'g set \<Rightarrow> 'g set\<close> and
     \<G>_F :: "'f \<Rightarrow> 'g set" and
     \<G>_Inf :: "'f inference \<Rightarrow> 'g inference set option"
@@ -169,8 +169,8 @@ locale tiebreaker_lifting =
     all_wf: "minimal_element (Prec_F_g g) UNIV"
 begin
 
-definition Red_Inf_\<G> :: "'f set \<Rightarrow> 'f inference set" where
-  \<open>Red_Inf_\<G> N = {\<iota> \<in> Inf_F. (\<G>_Inf \<iota> \<noteq> None \<and> the (\<G>_Inf \<iota>) \<subseteq> Red_Inf_G (\<G>_set N))
+definition Red_I_\<G> :: "'f set \<Rightarrow> 'f inference set" where
+  \<open>Red_I_\<G> N = {\<iota> \<in> Inf_F. (\<G>_Inf \<iota> \<noteq> None \<and> the (\<G>_Inf \<iota>) \<subseteq> Red_I_G (\<G>_set N))
     \<or> (\<G>_Inf \<iota> = None \<and> \<G>_F (concl_of \<iota>) \<subseteq> \<G>_set N \<union> Red_F_G (\<G>_set N))}\<close>
 
 definition Red_F_\<G> :: "'f set \<Rightarrow> 'f set" where
@@ -295,8 +295,8 @@ lemma Red_F_of_subset_F: \<open>N \<subseteq> N' \<Longrightarrow> Red_F_\<G> N 
   using ground.Red_F_of_subset unfolding Red_F_\<G>_def by clarsimp (meson \<G>_subset subsetD)
 
 (* lem:redundancy-monotonic-addition 2/2 *)
-lemma Red_Inf_of_subset_F: \<open>N \<subseteq> N' \<Longrightarrow> Red_Inf_\<G> N \<subseteq> Red_Inf_\<G> N'\<close>
-  using Collect_mono \<G>_subset subset_iff ground.Red_Inf_of_subset unfolding Red_Inf_\<G>_def
+lemma Red_I_of_subset_F: \<open>N \<subseteq> N' \<Longrightarrow> Red_I_\<G> N \<subseteq> Red_I_\<G> N'\<close>
+  using Collect_mono \<G>_subset subset_iff ground.Red_I_of_subset unfolding Red_I_\<G>_def
   by (smt ground.Red_F_of_subset Un_iff)
 
 (* lem:redundancy-monotonic-deletion-forms *)
@@ -339,30 +339,30 @@ proof
 qed
 
 (* lem:redundancy-monotonic-deletion-infs *)
-lemma Red_Inf_of_Red_F_subset_F: \<open>N' \<subseteq> Red_F_\<G> N \<Longrightarrow> Red_Inf_\<G> N \<subseteq> Red_Inf_\<G> (N - N') \<close>
+lemma Red_I_of_Red_F_subset_F: \<open>N' \<subseteq> Red_F_\<G> N \<Longrightarrow> Red_I_\<G> N \<subseteq> Red_I_\<G> (N - N') \<close>
 proof
   fix N N' \<iota>
   assume
     N'_in_Red_F_N: \<open>N' \<subseteq> Red_F_\<G> N\<close> and
-    i_in_Red_Inf_N: \<open>\<iota> \<in> Red_Inf_\<G> N\<close>
-  have i_in: \<open>\<iota> \<in> Inf_F\<close> using i_in_Red_Inf_N unfolding Red_Inf_\<G>_def by blast
+    i_in_Red_I_N: \<open>\<iota> \<in> Red_I_\<G> N\<close>
+  have i_in: \<open>\<iota> \<in> Inf_F\<close> using i_in_Red_I_N unfolding Red_I_\<G>_def by blast
   {
     assume not_none: "\<G>_Inf \<iota> \<noteq> None"
-    have \<open>\<forall>\<iota>' \<in> the (\<G>_Inf \<iota>). \<iota>' \<in> Red_Inf_G (\<G>_set N)\<close>
-      using not_none i_in_Red_Inf_N unfolding Red_Inf_\<G>_def by auto
-    then have \<open>\<forall>\<iota>' \<in> the (\<G>_Inf \<iota>). \<iota>' \<in> Red_Inf_G (\<G>_set N - Red_F_G (\<G>_set N))\<close>
-      using not_none ground.Red_Inf_of_Red_F_subset by blast
-    then have ip_in_Red_Inf_G: \<open>\<forall>\<iota>' \<in> the (\<G>_Inf \<iota>). \<iota>' \<in> Red_Inf_G (\<G>_set (N - Red_F_\<G> N))\<close>
-      using not_none ground.Red_Inf_of_subset[OF not_red_map_in_map_not_red[of N]] by auto
-    then have not_none_in: \<open>\<forall>\<iota>' \<in> the (\<G>_Inf \<iota>). \<iota>' \<in> Red_Inf_G (\<G>_set (N - N'))\<close>
+    have \<open>\<forall>\<iota>' \<in> the (\<G>_Inf \<iota>). \<iota>' \<in> Red_I_G (\<G>_set N)\<close>
+      using not_none i_in_Red_I_N unfolding Red_I_\<G>_def by auto
+    then have \<open>\<forall>\<iota>' \<in> the (\<G>_Inf \<iota>). \<iota>' \<in> Red_I_G (\<G>_set N - Red_F_G (\<G>_set N))\<close>
+      using not_none ground.Red_I_of_Red_F_subset by blast
+    then have ip_in_Red_I_G: \<open>\<forall>\<iota>' \<in> the (\<G>_Inf \<iota>). \<iota>' \<in> Red_I_G (\<G>_set (N - Red_F_\<G> N))\<close>
+      using not_none ground.Red_I_of_subset[OF not_red_map_in_map_not_red[of N]] by auto
+    then have not_none_in: \<open>\<forall>\<iota>' \<in> the (\<G>_Inf \<iota>). \<iota>' \<in> Red_I_G (\<G>_set (N - N'))\<close>
       using not_none N'_in_Red_F_N
-      by (meson Diff_mono ground.Red_Inf_of_subset \<G>_subset subset_iff subset_refl)
-    then have "the (\<G>_Inf \<iota>) \<subseteq> Red_Inf_G (\<G>_set (N - N'))" by blast
+      by (meson Diff_mono ground.Red_I_of_subset \<G>_subset subset_iff subset_refl)
+    then have "the (\<G>_Inf \<iota>) \<subseteq> Red_I_G (\<G>_set (N - N'))" by blast
   }
   moreover {
     assume none: "\<G>_Inf \<iota> = None"
     have ground_concl_subs: "\<G>_F (concl_of \<iota>) \<subseteq> (\<G>_set N \<union> Red_F_G (\<G>_set N))"
-      using none i_in_Red_Inf_N unfolding Red_Inf_\<G>_def by blast
+      using none i_in_Red_I_N unfolding Red_I_\<G>_def by blast
     then have d_in_imp12: "D \<in> \<G>_F (concl_of \<iota>) \<Longrightarrow> D \<in> \<G>_set N - Red_F_G (\<G>_set N) \<or> D \<in> Red_F_G (\<G>_set N)"
       by blast
     have d_in_imp1: "D \<in> \<G>_set N - Red_F_G (\<G>_set N) \<Longrightarrow> D \<in> \<G>_set (N - N')"
@@ -381,53 +381,53 @@ proof
       by (smt ground.Red_F_of_Red_F_subset ground.Red_F_of_subset UnCI UnE Un_Diff_cancel2
         ground_concl_subs g_subs1 g_subs2 subset_iff)
   }
-  ultimately show \<open>\<iota> \<in> Red_Inf_\<G> (N - N')\<close> using i_in unfolding Red_Inf_\<G>_def by auto
+  ultimately show \<open>\<iota> \<in> Red_I_\<G> (N - N')\<close> using i_in unfolding Red_I_\<G>_def by auto
 qed
 
 (* lem:concl-contained-implies-red-inf *)
-lemma Red_Inf_of_Inf_to_N_F:
+lemma Red_I_of_Inf_to_N_F:
   assumes
     i_in: \<open>\<iota> \<in> Inf_F\<close> and
     concl_i_in: \<open>concl_of \<iota> \<in> N\<close>
   shows
-    \<open>\<iota> \<in> Red_Inf_\<G> N \<close>
+    \<open>\<iota> \<in> Red_I_\<G> N \<close>
 proof -
-  have \<open>\<iota> \<in> Inf_F \<Longrightarrow> \<G>_Inf \<iota> \<noteq> None \<Longrightarrow> the (\<G>_Inf \<iota>) \<subseteq> Red_Inf_G (\<G>_F (concl_of \<iota>))\<close> using inf_map by simp
-  moreover have \<open>Red_Inf_G (\<G>_F (concl_of \<iota>)) \<subseteq> Red_Inf_G (\<G>_set N)\<close>
-    using concl_i_in ground.Red_Inf_of_subset by blast
+  have \<open>\<iota> \<in> Inf_F \<Longrightarrow> \<G>_Inf \<iota> \<noteq> None \<Longrightarrow> the (\<G>_Inf \<iota>) \<subseteq> Red_I_G (\<G>_F (concl_of \<iota>))\<close> using inf_map by simp
+  moreover have \<open>Red_I_G (\<G>_F (concl_of \<iota>)) \<subseteq> Red_I_G (\<G>_set N)\<close>
+    using concl_i_in ground.Red_I_of_subset by blast
   moreover have "\<iota> \<in> Inf_F \<Longrightarrow> \<G>_Inf \<iota> = None \<Longrightarrow> concl_of \<iota> \<in> N \<Longrightarrow> \<G>_F (concl_of \<iota>) \<subseteq> \<G>_set N"
     by blast
-  ultimately show ?thesis using i_in concl_i_in unfolding Red_Inf_\<G>_def by auto
+  ultimately show ?thesis using i_in concl_i_in unfolding Red_I_\<G>_def by auto
 qed
 
 (* thm:FRedsqsubset-is-red-crit and also thm:lifted-red-crit if ordering empty *)
-sublocale calculus Bot_F Inf_F entails_\<G> Red_Inf_\<G> Red_F_\<G>
+sublocale calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>
 proof
   fix B N N' \<iota>
-  show \<open>Red_Inf_\<G> N \<subseteq> Inf_F\<close> unfolding Red_Inf_\<G>_def by blast
+  show \<open>Red_I_\<G> N \<subseteq> Inf_F\<close> unfolding Red_I_\<G>_def by blast
   show \<open>B \<in> Bot_F \<Longrightarrow> N \<Turnstile>\<G> {B} \<Longrightarrow> N - Red_F_\<G> N \<Turnstile>\<G> {B}\<close> using Red_F_Bot_F by simp
   show \<open>N \<subseteq> N' \<Longrightarrow> Red_F_\<G> N \<subseteq> Red_F_\<G> N'\<close> using Red_F_of_subset_F by simp
-  show \<open>N \<subseteq> N' \<Longrightarrow> Red_Inf_\<G> N \<subseteq> Red_Inf_\<G> N'\<close> using Red_Inf_of_subset_F by simp
+  show \<open>N \<subseteq> N' \<Longrightarrow> Red_I_\<G> N \<subseteq> Red_I_\<G> N'\<close> using Red_I_of_subset_F by simp
   show \<open>N' \<subseteq> Red_F_\<G> N \<Longrightarrow> Red_F_\<G> N \<subseteq> Red_F_\<G> (N - N')\<close> using Red_F_of_Red_F_subset_F by simp
-  show \<open>N' \<subseteq> Red_F_\<G> N \<Longrightarrow> Red_Inf_\<G> N \<subseteq> Red_Inf_\<G> (N - N')\<close> using Red_Inf_of_Red_F_subset_F by simp
-  show \<open>\<iota> \<in> Inf_F \<Longrightarrow> concl_of \<iota> \<in> N \<Longrightarrow> \<iota> \<in> Red_Inf_\<G> N\<close> using Red_Inf_of_Inf_to_N_F by simp
+  show \<open>N' \<subseteq> Red_F_\<G> N \<Longrightarrow> Red_I_\<G> N \<subseteq> Red_I_\<G> (N - N')\<close> using Red_I_of_Red_F_subset_F by simp
+  show \<open>\<iota> \<in> Inf_F \<Longrightarrow> concl_of \<iota> \<in> N \<Longrightarrow> \<iota> \<in> Red_I_\<G> N\<close> using Red_I_of_Inf_to_N_F by simp
 qed
 
 lemma grounded_inf_in_ground_inf: "\<iota> \<in> Inf_F \<Longrightarrow> \<G>_Inf \<iota> \<noteq> None \<Longrightarrow> the (\<G>_Inf \<iota>) \<subseteq> Inf_G"
-  using inf_map ground.Red_Inf_to_Inf by blast
+  using inf_map ground.Red_I_to_Inf by blast
 
 abbreviation ground_Inf_redundant :: "'f set \<Rightarrow> bool" where
   "ground_Inf_redundant N \<equiv>
    ground.Inf_from (\<G>_set N)
-   \<subseteq> {\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_Inf \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf \<iota>')} \<union> Red_Inf_G (\<G>_set N)"
+   \<subseteq> {\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_Inf \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf \<iota>')} \<union> Red_I_G (\<G>_set N)"
 
 lemma sat_inf_imp_ground_red:
   assumes
     "saturated N" and
     "\<iota>' \<in> Inf_from N" and
     "\<G>_Inf \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf \<iota>')"
-  shows "\<iota> \<in> Red_Inf_G (\<G>_set N)"
-  using assms Red_Inf_\<G>_def unfolding saturated_def by auto
+  shows "\<iota> \<in> Red_I_G (\<G>_set N)"
+  using assms Red_I_\<G>_def unfolding saturated_def by auto
 
 (* lem:sat-wrt-finf *)
 lemma sat_imp_ground_sat: "saturated N \<Longrightarrow> ground_Inf_redundant N \<Longrightarrow> ground.saturated (\<G>_set N)"
@@ -436,10 +436,10 @@ lemma sat_imp_ground_sat: "saturated N \<Longrightarrow> ground_Inf_redundant N 
 (* thm:finf-complete *)
 theorem stat_ref_comp_to_non_ground:
   assumes
-    stat_ref_G: "statically_complete_calculus Bot_G Inf_G entails_G Red_Inf_G Red_F_G" and
+    stat_ref_G: "statically_complete_calculus Bot_G Inf_G entails_G Red_I_G Red_F_G" and
     sat_n_imp: "\<And>N. saturated N \<Longrightarrow> ground_Inf_redundant N"
   shows
-    "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_Inf_\<G> Red_F_\<G>"
+    "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>"
 proof
   fix B N
   assume
@@ -455,7 +455,7 @@ proof
   have ground_n_entails_bot: "\<G>_set N \<Turnstile>G {BG}"
     using ground_n_entails bg_in1 ground.entail_set_all_formulas by blast
   have "ground.Inf_from (\<G>_set N) \<subseteq>
-    {\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_Inf \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf \<iota>')} \<union> Red_Inf_G (\<G>_set N)"
+    {\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_Inf \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf \<iota>')} \<union> Red_I_G (\<G>_set N)"
     using sat_n_imp[OF sat_n] .
   have "ground.saturated (\<G>_set N)"
     using sat_imp_ground_sat[OF sat_n sat_n_imp[OF sat_n]] .
@@ -473,18 +473,18 @@ lemma wf_empty_rel: "minimal_element (\<lambda>_ _. False) UNIV"
   by (simp add: minimal_element.intro po_on_def transp_onI wfp_on_imp_irreflp_on)
 
 lemma any_to_empty_order_lifting:
-  "tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F
-    \<G>_Inf Prec_F_g \<Longrightarrow> tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
+  "tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F
+    \<G>_Inf Prec_F_g \<Longrightarrow> tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G
     Red_F_G \<G>_F \<G>_Inf (\<lambda>g C C'. False)"
 proof -
-  fix Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F \<G>_Inf Prec_F_g
-  assume lift: "tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
+  fix Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F \<G>_Inf Prec_F_g
+  assume lift: "tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G
     Red_F_G \<G>_F \<G>_Inf Prec_F_g"
   then interpret lift_g:
-    tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G \<G>_F
+    tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F
       \<G>_Inf Prec_F_g
     by auto
-  show "tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G Red_F_G
+  show "tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G Red_F_G
     \<G>_F \<G>_Inf (\<lambda>g C C'. False)"
     by (simp add: wf_empty_rel lift_g.standard_lifting_axioms
       tiebreaker_lifting_axioms.intro tiebreaker_lifting_def)
@@ -494,9 +494,9 @@ lemma po_on_empty_rel[simp]: "po_on (\<lambda>_ _. False) UNIV"
   unfolding po_on_def irreflp_on_def transp_on_def by auto
 
 locale lifting_equivalence_with_empty_order =
-  any_order_lifting: tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
+  any_order_lifting: tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G
     Red_F_G \<G>_F \<G>_Inf Prec_F_g +
-  empty_order_lifting: tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_Inf_G
+  empty_order_lifting: tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G
     Red_F_G \<G>_F \<G>_Inf "\<lambda>g C C'. False"
   for
     \<G>_F :: \<open>'f \<Rightarrow> 'g set\<close> and
@@ -506,7 +506,7 @@ locale lifting_equivalence_with_empty_order =
     Bot_G :: \<open>'g set\<close> and
     Inf_G :: \<open>'g inference set\<close> and
     entails_G :: \<open>'g set \<Rightarrow> 'g set \<Rightarrow> bool\<close> (infix "\<Turnstile>G" 50) and
-    Red_Inf_G :: \<open>'g set \<Rightarrow> 'g inference set\<close> and
+    Red_I_G :: \<open>'g set \<Rightarrow> 'g inference set\<close> and
     Red_F_G :: \<open>'g set \<Rightarrow> 'g set\<close> and
     Prec_F_g :: \<open>'g \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> bool\<close>
 
@@ -524,18 +524,18 @@ lemma saturated_empty_order_equiv_saturated:
 (* lem:static-ref-compl-indep-of-sqsubset *)
 lemma static_empty_order_equiv_static:
   "statically_complete_calculus Bot_F Inf_F any_order_lifting.entails_\<G>
-     empty_order_lifting.Red_Inf_\<G> empty_order_lifting.Red_F_\<G> =
+     empty_order_lifting.Red_I_\<G> empty_order_lifting.Red_F_\<G> =
    statically_complete_calculus Bot_F Inf_F any_order_lifting.entails_\<G>
-     any_order_lifting.Red_Inf_\<G> any_order_lifting.Red_F_\<G>"
+     any_order_lifting.Red_I_\<G> any_order_lifting.Red_F_\<G>"
   unfolding statically_complete_calculus_def
   by (rule iffI) (standard,(standard)[],simp)+
 
 (* thm:FRedsqsubset-is-dyn-ref-compl *)
 theorem static_to_dynamic:
   "statically_complete_calculus Bot_F Inf_F
-    any_order_lifting.entails_\<G> empty_order_lifting.Red_Inf_\<G> empty_order_lifting.Red_F_\<G> =
+    any_order_lifting.entails_\<G> empty_order_lifting.Red_I_\<G> empty_order_lifting.Red_F_\<G> =
     dynamically_complete_calculus Bot_F Inf_F
-    any_order_lifting.entails_\<G> any_order_lifting.Red_Inf_\<G> any_order_lifting.Red_F_\<G> "
+    any_order_lifting.entails_\<G> any_order_lifting.Red_I_\<G> any_order_lifting.Red_F_\<G> "
   using any_order_lifting.dyn_equiv_stat static_empty_order_equiv_static by blast
 
 end
@@ -552,7 +552,7 @@ locale lifting_intersection = inference_system Inf_F +
     Q :: "'q set" and
     Inf_G_q :: \<open>'q \<Rightarrow> 'g inference set\<close> and
     entails_q :: "'q \<Rightarrow> 'g set \<Rightarrow> 'g set \<Rightarrow> bool" and
-    Red_Inf_q :: "'q \<Rightarrow> 'g set \<Rightarrow> 'g inference set" and
+    Red_I_q :: "'q \<Rightarrow> 'g set \<Rightarrow> 'g inference set" and
     Red_F_q :: "'q \<Rightarrow> 'g set \<Rightarrow> 'g set"
   + fixes
     Bot_F :: "'f set" and
@@ -561,22 +561,22 @@ locale lifting_intersection = inference_system Inf_F +
     Prec_F_g :: "'g \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> bool"
   assumes
     standard_lifting_family:
-      "\<forall>q \<in> Q. tiebreaker_lifting Bot_F Inf_F Bot_G (entails_q q) (Inf_G_q q) (Red_Inf_q q)
+      "\<forall>q \<in> Q. tiebreaker_lifting Bot_F Inf_F Bot_G (entails_q q) (Inf_G_q q) (Red_I_q q)
          (Red_F_q q) (\<G>_F_q q) (\<G>_Inf_q q) Prec_F_g"
 begin
 
 abbreviation \<G>_set_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'g set" where
   "\<G>_set_q q N \<equiv> \<Union> (\<G>_F_q q ` N)"
 
-definition Red_Inf_\<G>_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f inference set" where
-  "Red_Inf_\<G>_q q N = {\<iota> \<in> Inf_F. (\<G>_Inf_q q \<iota> \<noteq> None \<and> the (\<G>_Inf_q q \<iota>) \<subseteq> Red_Inf_q q (\<G>_set_q q N))
+definition Red_I_\<G>_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f inference set" where
+  "Red_I_\<G>_q q N = {\<iota> \<in> Inf_F. (\<G>_Inf_q q \<iota> \<noteq> None \<and> the (\<G>_Inf_q q \<iota>) \<subseteq> Red_I_q q (\<G>_set_q q N))
    \<or> (\<G>_Inf_q q \<iota> = None \<and> \<G>_F_q q (concl_of \<iota>) \<subseteq> (\<G>_set_q q N \<union> Red_F_q q (\<G>_set_q q N)))}"
 
 definition Red_F_\<G>_empty_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set" where
   "Red_F_\<G>_empty_q q N = {C. \<forall>D \<in> \<G>_F_q q C. D \<in> Red_F_q q (\<G>_set_q q N)}"
 
-definition Red_F_\<G>_q_g :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set" where
-  "Red_F_\<G>_q_g q N =
+definition Red_F_\<G>_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set" where
+  "Red_F_\<G>_q q N =
    {C. \<forall>D \<in> \<G>_F_q q C. D \<in> Red_F_q q (\<G>_set_q q N) \<or> (\<exists>E \<in> N. Prec_F_g D E C \<and> D \<in> \<G>_F_q q E)}"
 
 abbreviation entails_\<G>_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set \<Rightarrow> bool" where
@@ -584,30 +584,30 @@ abbreviation entails_\<G>_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set \<R
 
 lemma red_crit_lifting_family:
   assumes q_in: "q \<in> Q"
-  shows "calculus Bot_F Inf_F (entails_\<G>_q q) (Red_Inf_\<G>_q q) (Red_F_\<G>_q_g q)"
+  shows "calculus Bot_F Inf_F (entails_\<G>_q q) (Red_I_\<G>_q q) (Red_F_\<G>_q q)"
 proof -
   interpret wf_lift:
-    tiebreaker_lifting Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_Inf_q q"
+    tiebreaker_lifting Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_I_q q"
       "Red_F_q q" "\<G>_F_q q" "\<G>_Inf_q q" Prec_F_g
     using standard_lifting_family q_in by metis
-  have "Red_Inf_\<G>_q q = wf_lift.Red_Inf_\<G>"
-    unfolding Red_Inf_\<G>_q_def wf_lift.Red_Inf_\<G>_def by blast
-  moreover have "Red_F_\<G>_q_g q = wf_lift.Red_F_\<G>"
-    unfolding Red_F_\<G>_q_g_def wf_lift.Red_F_\<G>_def by blast
+  have "Red_I_\<G>_q q = wf_lift.Red_I_\<G>"
+    unfolding Red_I_\<G>_q_def wf_lift.Red_I_\<G>_def by blast
+  moreover have "Red_F_\<G>_q q = wf_lift.Red_F_\<G>"
+    unfolding Red_F_\<G>_q_def wf_lift.Red_F_\<G>_def by blast
   ultimately show ?thesis
     using wf_lift.calculus_axioms by simp
 qed
 
 lemma red_crit_lifting_family_empty_ord:
   assumes q_in: "q \<in> Q"
-  shows "calculus Bot_F Inf_F (entails_\<G>_q q) (Red_Inf_\<G>_q q) (Red_F_\<G>_empty_q q)"
+  shows "calculus Bot_F Inf_F (entails_\<G>_q q) (Red_I_\<G>_q q) (Red_F_\<G>_empty_q q)"
 proof -
   interpret wf_lift:
-    tiebreaker_lifting Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_Inf_q q"
+    tiebreaker_lifting Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_I_q q"
       "Red_F_q q" "\<G>_F_q q" "\<G>_Inf_q q" Prec_F_g
     using standard_lifting_family q_in by metis
-  have "Red_Inf_\<G>_q q = wf_lift.Red_Inf_\<G>"
-    unfolding Red_Inf_\<G>_q_def wf_lift.Red_Inf_\<G>_def by blast
+  have "Red_I_\<G>_q q = wf_lift.Red_I_\<G>"
+    unfolding Red_I_\<G>_q_def wf_lift.Red_I_\<G>_def by blast
   moreover have "Red_F_\<G>_empty_q q = wf_lift.empty_order_lifting.Red_F_\<G>"
     unfolding Red_F_\<G>_empty_q_def wf_lift.empty_order_lifting.Red_F_\<G>_def by blast
   ultimately show ?thesis
@@ -623,37 +623,37 @@ next
   assume qi_in: "qi \<in> Q"
 
   interpret lift: tiebreaker_lifting Bot_F Inf_F Bot_G "entails_q qi" "Inf_G_q qi"
-    "Red_Inf_q qi" "Red_F_q qi" "\<G>_F_q qi" "\<G>_Inf_q qi" Prec_F_g
+    "Red_I_q qi" "Red_F_q qi" "\<G>_F_q qi" "\<G>_Inf_q qi" Prec_F_g
     using qi_in by (metis standard_lifting_family)
 
   show "consequence_relation Bot_F (entails_\<G>_q qi)"
     by unfold_locales
 qed
 
-sublocale intersection_calculus Bot_F Inf_F Q entails_\<G>_q Red_Inf_\<G>_q Red_F_\<G>_q_g
+sublocale intersection_calculus Bot_F Inf_F Q entails_\<G>_q Red_I_\<G>_q Red_F_\<G>_q
   by unfold_locales (auto simp: Q_nonempty red_crit_lifting_family)
 
-abbreviation entails_\<G>_Q :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>\<inter>\<G>" 50) where
-  "(\<Turnstile>\<inter>\<G>) \<equiv> entails_Q"
+abbreviation entails_\<G> :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>\<inter>\<G>" 50) where
+  "(\<Turnstile>\<inter>\<G>) \<equiv> entails"
 
-abbreviation Red_Inf_\<G>_Q :: "'f set \<Rightarrow> 'f inference set" where
-  "Red_Inf_\<G>_Q \<equiv> Red_Inf_Q"
+abbreviation Red_I_\<G> :: "'f set \<Rightarrow> 'f inference set" where
+  "Red_I_\<G> \<equiv> Red_I"
 
-abbreviation Red_F_\<G>_Q :: "'f set \<Rightarrow> 'f set" where
-  "Red_F_\<G>_Q \<equiv> Red_F_Q"
+abbreviation Red_F_\<G> :: "'f set \<Rightarrow> 'f set" where
+  "Red_F_\<G> \<equiv> Red_F"
 
-lemmas entails_\<G>_Q_def = entails_Q_def
-lemmas Red_Inf_\<G>_Q_def = Red_Inf_Q_def
-lemmas Red_F_\<G>_Q_def = Red_F_Q_def
+lemmas entails_\<G>_def = entails_def
+lemmas Red_I_\<G>_def = Red_I_def
+lemmas Red_F_\<G>_def = Red_F_def
 
-sublocale empty_ord: intersection_calculus Bot_F Inf_F Q entails_\<G>_q Red_Inf_\<G>_q
+sublocale empty_ord: intersection_calculus Bot_F Inf_F Q entails_\<G>_q Red_I_\<G>_q
   Red_F_\<G>_empty_q
   by unfold_locales (auto simp: Q_nonempty red_crit_lifting_family_empty_ord)
 
 abbreviation Red_F_\<G>_empty :: "'f set \<Rightarrow> 'f set" where
-  "Red_F_\<G>_empty \<equiv> empty_ord.Red_F_Q"
+  "Red_F_\<G>_empty \<equiv> empty_ord.Red_F"
 
-lemmas Red_F_\<G>_empty_def = empty_ord.Red_F_Q_def
+lemmas Red_F_\<G>_empty_def = empty_ord.Red_F_def
 
 lemma sat_inf_imp_ground_red_fam_inter:
   assumes
@@ -661,13 +661,13 @@ lemma sat_inf_imp_ground_red_fam_inter:
     i'_in: "\<iota>' \<in> Inf_from N" and
     q_in: "q \<in> Q" and
     grounding: "\<G>_Inf_q q \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf_q q \<iota>')"
-  shows "\<iota> \<in> Red_Inf_q q (\<G>_set_q q N)"
+  shows "\<iota> \<in> Red_I_q q (\<G>_set_q q N)"
 proof -
-  have "\<iota>' \<in> Red_Inf_\<G>_q q N"
+  have "\<iota>' \<in> Red_I_\<G>_q q N"
     using sat_n i'_in q_in all_red_crit calculus.saturated_def sat_int_to_sat_q
     by blast
-  then have "the (\<G>_Inf_q q \<iota>') \<subseteq> Red_Inf_q q (\<G>_set_q q N)"
-    by (simp add: Red_Inf_\<G>_q_def grounding)
+  then have "the (\<G>_Inf_q q \<iota>') \<subseteq> Red_I_q q (\<G>_set_q q N)"
+    by (simp add: Red_I_\<G>_q_def grounding)
   then show ?thesis
     using grounding by blast
 qed
@@ -675,10 +675,10 @@ qed
 abbreviation ground_Inf_redundant :: "'q \<Rightarrow> 'f set \<Rightarrow> bool" where
   "ground_Inf_redundant q N \<equiv>
    ground.Inf_from_q q (\<G>_set_q q N)
-   \<subseteq> {\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_Inf_q q \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf_q q \<iota>')} \<union> Red_Inf_q q (\<G>_set_q q N)"
+   \<subseteq> {\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_Inf_q q \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf_q q \<iota>')} \<union> Red_I_q q (\<G>_set_q q N)"
 
 abbreviation ground_saturated :: "'q \<Rightarrow> 'f set \<Rightarrow> bool" where
-  "ground_saturated q N \<equiv> ground.Inf_from_q q (\<G>_set_q q N) \<subseteq> Red_Inf_q q (\<G>_set_q q N)"
+  "ground_saturated q N \<equiv> ground.Inf_from_q q (\<G>_set_q q N) \<subseteq> Red_I_q q (\<G>_set_q q N)"
 
 lemma sat_imp_ground_sat_fam_inter:
   "saturated N \<Longrightarrow> q \<in> Q \<Longrightarrow> ground_Inf_redundant q N \<Longrightarrow> ground_saturated q N"
@@ -688,11 +688,11 @@ lemma sat_imp_ground_sat_fam_inter:
 theorem stat_ref_comp_to_non_ground_fam_inter:
   assumes
     stat_ref_G:
-      "\<forall>q \<in> Q. statically_complete_calculus Bot_G (Inf_G_q q) (entails_q q) (Red_Inf_q q)
+      "\<forall>q \<in> Q. statically_complete_calculus Bot_G (Inf_G_q q) (entails_q q) (Red_I_q q)
         (Red_F_q q)" and
     sat_n_imp: "\<And>N. saturated N \<Longrightarrow> \<exists>q \<in> Q. ground_Inf_redundant q N"
   shows
-    "statically_complete_calculus Bot_F Inf_F entails_\<G>_Q Red_Inf_\<G>_Q Red_F_\<G>_empty"
+    "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>_empty"
     using empty_ord.calculus_axioms unfolding statically_complete_calculus_def
       statically_complete_calculus_axioms_def
 proof (standard, clarify)
@@ -705,25 +705,25 @@ proof (standard, clarify)
     q_in: "q \<in> Q" and
     inf_subs: "ground.Inf_from_q q (\<G>_set_q q N) \<subseteq>
       {\<iota>. \<exists>\<iota>'\<in> Inf_from N. \<G>_Inf_q q \<iota>' \<noteq> None \<and> \<iota> \<in> the (\<G>_Inf_q q \<iota>')}
-      \<union> Red_Inf_q q (\<G>_set_q q N)"
+      \<union> Red_I_q q (\<G>_set_q q N)"
     using sat_n_imp[of N] by blast
-  interpret q_calc: calculus Bot_F Inf_F "entails_\<G>_q q" "Red_Inf_\<G>_q q" "Red_F_\<G>_q_g q"
+  interpret q_calc: calculus Bot_F Inf_F "entails_\<G>_q q" "Red_I_\<G>_q q" "Red_F_\<G>_q q"
     using all_red_crit[rule_format, OF q_in] .
   have n_q_sat: "q_calc.saturated N"
     using q_in sat_int_to_sat_q sat_n by simp
   interpret lifted_q_calc:
-    tiebreaker_lifting Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_Inf_q q"
+    tiebreaker_lifting Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q" "Red_I_q q"
       "Red_F_q q" "\<G>_F_q q" "\<G>_Inf_q q"
     using q_in by (simp add: standard_lifting_family)
   have n_lift_sat: "lifted_q_calc.empty_order_lifting.saturated N"
-    using n_q_sat unfolding Red_Inf_\<G>_q_def lifted_q_calc.empty_order_lifting.Red_Inf_\<G>_def
+    using n_q_sat unfolding Red_I_\<G>_q_def lifted_q_calc.empty_order_lifting.Red_I_\<G>_def
       lifted_q_calc.saturated_def q_calc.saturated_def by auto
   have ground_sat_n: "lifted_q_calc.ground.saturated (\<G>_set_q q N)"
     by (rule lifted_q_calc.sat_imp_ground_sat[OF n_lift_sat])
       (use n_lift_sat inf_subs ground.Inf_from_q_def in auto)
   have ground_n_entails_bot: "entails_\<G>_q q N {B}"
-    using q_in entails_bot unfolding entails_\<G>_Q_def by simp
-  interpret statically_complete_calculus Bot_G "Inf_G_q q" "entails_q q" "Red_Inf_q q"
+    using q_in entails_bot unfolding entails_\<G>_def by simp
+  interpret statically_complete_calculus Bot_G "Inf_G_q q" "entails_q q" "Red_I_q q"
     "Red_F_q q"
     using stat_ref_G[rule_format, OF q_in] .
   obtain BG where bg_in: "BG \<in> \<G>_F_q q B"
@@ -742,15 +742,15 @@ lemma sat_eq_sat_empty_order: "saturated N = empty_ord.saturated N"
 
 (* lem:intersect-static-ref-compl-indep-of-sqsubset *)
 lemma static_empty_ord_inter_equiv_static_inter:
-  "statically_complete_calculus Bot_F Inf_F entails_Q Red_Inf_Q Red_F_Q =
-  statically_complete_calculus Bot_F Inf_F entails_Q Red_Inf_Q Red_F_\<G>_empty"
+  "statically_complete_calculus Bot_F Inf_F entails Red_I Red_F =
+  statically_complete_calculus Bot_F Inf_F entails Red_I Red_F_\<G>_empty"
   unfolding statically_complete_calculus_def
   by (simp add: empty_ord.calculus_axioms calculus_axioms)
 
 (* thm:intersect-static-ref-compl-is-dyn-ref-compl-with-order *)
 theorem stat_eq_dyn_ref_comp_fam_inter: "statically_complete_calculus Bot_F Inf_F
-    entails_Q Red_Inf_Q Red_F_\<G>_empty =
-  dynamically_complete_calculus Bot_F Inf_F entails_Q Red_Inf_Q Red_F_Q"
+    entails Red_I Red_F_\<G>_empty =
+  dynamically_complete_calculus Bot_F Inf_F entails Red_I Red_F"
   using dyn_equiv_stat static_empty_ord_inter_equiv_static_inter by blast
 
 end

@@ -66,12 +66,12 @@ lemma bot_not_empty: "Bot \<noteq> {}"
   using Q_nonempty consequence_relation.bot_not_empty consequence_relation_family.q_cons_rel
     consequence_relation_family_axioms by blast
 
-definition entails_Q :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>Q" 50) where
+definition entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>Q" 50) where
   "N1 \<Turnstile>Q N2 \<longleftrightarrow> (\<forall>q \<in> Q. entails_q q N1 N2)"
 
 (* lem:intersection-of-conseq-rel *)
-lemma intersect_cons_rel_family: "consequence_relation Bot entails_Q"
-  unfolding consequence_relation_def entails_Q_def
+lemma intersect_cons_rel_family: "consequence_relation Bot entails"
+  unfolding consequence_relation_def entails_def
   by (intro conjI bot_not_empty) (metis consequence_relation_def q_cons_rel)+
 
 end
@@ -143,61 +143,61 @@ locale calculus = inference_system Inf + consequence_relation Bot entails
     Inf :: \<open>'f inference set\<close> and
     entails :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<Turnstile>" 50)
   + fixes
-    Red_Inf :: "'f set \<Rightarrow> 'f inference set" and
+    Red_I :: "'f set \<Rightarrow> 'f inference set" and
     Red_F :: "'f set \<Rightarrow> 'f set"
   assumes
-    Red_Inf_to_Inf: "Red_Inf N \<subseteq> Inf" and
+    Red_I_to_Inf: "Red_I N \<subseteq> Inf" and
     Red_F_Bot: "B \<in> Bot \<Longrightarrow> N \<Turnstile> {B} \<Longrightarrow> N - Red_F N \<Turnstile> {B}" and
     Red_F_of_subset: "N \<subseteq> N' \<Longrightarrow> Red_F N \<subseteq> Red_F N'" and
-    Red_Inf_of_subset: "N \<subseteq> N' \<Longrightarrow> Red_Inf N \<subseteq> Red_Inf N'" and
+    Red_I_of_subset: "N \<subseteq> N' \<Longrightarrow> Red_I N \<subseteq> Red_I N'" and
     Red_F_of_Red_F_subset: "N' \<subseteq> Red_F N \<Longrightarrow> Red_F N \<subseteq> Red_F (N - N')" and
-    Red_Inf_of_Red_F_subset: "N' \<subseteq> Red_F N \<Longrightarrow> Red_Inf N \<subseteq> Red_Inf (N - N')" and
-    Red_Inf_of_Inf_to_N: "\<iota> \<in> Inf \<Longrightarrow> concl_of \<iota> \<in> N \<Longrightarrow> \<iota> \<in> Red_Inf N"
+    Red_I_of_Red_F_subset: "N' \<subseteq> Red_F N \<Longrightarrow> Red_I N \<subseteq> Red_I (N - N')" and
+    Red_I_of_Inf_to_N: "\<iota> \<in> Inf \<Longrightarrow> concl_of \<iota> \<in> N \<Longrightarrow> \<iota> \<in> Red_I N"
 begin
 
-lemma Red_Inf_of_Inf_to_N_subset: "{\<iota> \<in> Inf. concl_of \<iota> \<in> N} \<subseteq> Red_Inf N"
-  using Red_Inf_of_Inf_to_N by blast
+lemma Red_I_of_Inf_to_N_subset: "{\<iota> \<in> Inf. concl_of \<iota> \<in> N} \<subseteq> Red_I N"
+  using Red_I_of_Inf_to_N by blast
 
 (* lem:red-concl-implies-red-inf *)
 lemma red_concl_to_red_inf:
   assumes
     i_in: "\<iota> \<in> Inf" and
     concl: "concl_of \<iota> \<in> Red_F N"
-  shows "\<iota> \<in> Red_Inf N"
+  shows "\<iota> \<in> Red_I N"
 proof -
-  have "\<iota> \<in> Red_Inf (Red_F N)" by (simp add: Red_Inf_of_Inf_to_N i_in concl)
-  then have i_in_Red: "\<iota> \<in> Red_Inf (N \<union> Red_F N)" by (simp add: Red_Inf_of_Inf_to_N concl i_in)
+  have "\<iota> \<in> Red_I (Red_F N)" by (simp add: Red_I_of_Inf_to_N i_in concl)
+  then have i_in_Red: "\<iota> \<in> Red_I (N \<union> Red_F N)" by (simp add: Red_I_of_Inf_to_N concl i_in)
   have red_n_subs: "Red_F N \<subseteq> Red_F (N \<union> Red_F N)" by (simp add: Red_F_of_subset)
-  then have "\<iota> \<in> Red_Inf ((N \<union> Red_F N) - (Red_F N - N))" using Red_Inf_of_Red_F_subset i_in_Red
+  then have "\<iota> \<in> Red_I ((N \<union> Red_F N) - (Red_F N - N))" using Red_I_of_Red_F_subset i_in_Red
     by (meson Diff_subset subsetCE subset_trans)
   then show ?thesis by (metis Diff_cancel Diff_subset Un_Diff Un_Diff_cancel contra_subsetD
-    calculus.Red_Inf_of_subset calculus_axioms sup_bot.right_neutral)
+    calculus.Red_I_of_subset calculus_axioms sup_bot.right_neutral)
 qed
 
 definition saturated :: "'f set \<Rightarrow> bool" where
-  "saturated N \<longleftrightarrow> Inf_from N \<subseteq> Red_Inf N"
+  "saturated N \<longleftrightarrow> Inf_from N \<subseteq> Red_I N"
 
 definition reduc_saturated :: "'f set \<Rightarrow> bool" where
-  "reduc_saturated N \<longleftrightarrow> Inf_from (N - Red_F N) \<subseteq> Red_Inf N"
+  "reduc_saturated N \<longleftrightarrow> Inf_from (N - Red_F N) \<subseteq> Red_I N"
 
-lemma Red_Inf_without_red_F:
-  "Red_Inf (N - Red_F N) = Red_Inf N"
-  using Red_Inf_of_subset [of "N - Red_F N" N]
-    and Red_Inf_of_Red_F_subset [of "Red_F N" N] by blast
+lemma Red_I_without_red_F:
+  "Red_I (N - Red_F N) = Red_I N"
+  using Red_I_of_subset [of "N - Red_F N" N]
+    and Red_I_of_Red_F_subset [of "Red_F N" N] by blast
 
 lemma saturated_without_red_F:
   assumes saturated: "saturated N"
   shows "saturated (N - Red_F N)"
 proof -
   have "Inf_from (N - Red_F N) \<subseteq> Inf_from N" unfolding Inf_from_def by auto
-  also have "Inf_from N \<subseteq> Red_Inf N" using saturated unfolding saturated_def by auto
-  also have "Red_Inf N \<subseteq> Red_Inf (N - Red_F N)" using Red_Inf_of_Red_F_subset by auto
-  finally have "Inf_from (N - Red_F N) \<subseteq> Red_Inf (N - Red_F N)" by auto
+  also have "Inf_from N \<subseteq> Red_I N" using saturated unfolding saturated_def by auto
+  also have "Red_I N \<subseteq> Red_I (N - Red_F N)" using Red_I_of_Red_F_subset by auto
+  finally have "Inf_from (N - Red_F N) \<subseteq> Red_I (N - Red_F N)" by auto
   then show ?thesis unfolding saturated_def by auto
 qed
 
 definition fair :: "'f set llist \<Rightarrow> bool" where
-  "fair D \<longleftrightarrow> Inf_from (Liminf_llist D) \<subseteq> Sup_llist (lmap Red_Inf D)"
+  "fair D \<longleftrightarrow> Inf_from (Liminf_llist D) \<subseteq> Sup_llist (lmap Red_I D)"
 
 inductive "derive" :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<rhd>Red" 50) where
   derive: "M - N \<subseteq> Red_F N \<Longrightarrow> M \<rhd>Red N"
@@ -254,21 +254,21 @@ proof
 qed
 
 (* lem:redundant-remains-redundant-during-run 1/2 *)
-lemma Red_Inf_subset_Liminf:
+lemma Red_I_subset_Liminf:
   assumes deriv: \<open>chain (\<rhd>Red) D\<close> and
     i: \<open>enat i < llength D\<close>
-  shows \<open>Red_Inf (lnth D i) \<subseteq> Red_Inf (Liminf_llist D)\<close>
+  shows \<open>Red_I (lnth D i) \<subseteq> Red_I (Liminf_llist D)\<close>
 proof -
-  have Sup_in_diff: \<open>Red_Inf (Sup_llist D) \<subseteq> Red_Inf (Sup_llist D - (Sup_llist D - Liminf_llist D))\<close>
-    using Red_Inf_of_Red_F_subset[OF Red_in_Sup] deriv by auto
+  have Sup_in_diff: \<open>Red_I (Sup_llist D) \<subseteq> Red_I (Sup_llist D - (Sup_llist D - Liminf_llist D))\<close>
+    using Red_I_of_Red_F_subset[OF Red_in_Sup] deriv by auto
   also have \<open>Sup_llist D - (Sup_llist D - Liminf_llist D) = Liminf_llist D\<close>
     by (simp add: Liminf_llist_subset_Sup_llist double_diff)
-  then have Red_Inf_Sup_in_Liminf: \<open>Red_Inf (Sup_llist D) \<subseteq> Red_Inf (Liminf_llist D)\<close>
+  then have Red_I_Sup_in_Liminf: \<open>Red_I (Sup_llist D) \<subseteq> Red_I (Liminf_llist D)\<close>
     using Sup_in_diff by auto
   have \<open>lnth D i \<subseteq> Sup_llist D\<close> unfolding Sup_llist_def using i by blast
-  then have "Red_Inf (lnth D i) \<subseteq> Red_Inf (Sup_llist D)" using Red_Inf_of_subset
+  then have "Red_I (lnth D i) \<subseteq> Red_I (Sup_llist D)" using Red_I_of_subset
     unfolding Sup_llist_def by auto
-  then show ?thesis using Red_Inf_Sup_in_Liminf by auto
+  then show ?thesis using Red_I_Sup_in_Liminf by auto
 qed
 
 (* lem:redundant-remains-redundant-during-run 2/2 *)
@@ -317,11 +317,11 @@ lemma fair_implies_Liminf_saturated:
 proof
   fix \<iota>
   assume \<iota>: \<open>\<iota> \<in> Inf_from (Liminf_llist D)\<close>
-  have \<open>\<iota> \<in> Sup_llist (lmap Red_Inf D)\<close> using fair \<iota> unfolding fair_def by auto
-  then obtain i where i: \<open>enat i < llength D\<close> \<open>\<iota> \<in> Red_Inf (lnth D i)\<close>
+  have \<open>\<iota> \<in> Sup_llist (lmap Red_I D)\<close> using fair \<iota> unfolding fair_def by auto
+  then obtain i where i: \<open>enat i < llength D\<close> \<open>\<iota> \<in> Red_I (lnth D i)\<close>
     unfolding Sup_llist_def by auto
-  then show \<open>\<iota> \<in> Red_Inf (Liminf_llist D)\<close>
-    using deriv i_in_Liminf_or_Red_F[of D i] Red_Inf_subset_Liminf by blast
+  then show \<open>\<iota> \<in> Red_I (Liminf_llist D)\<close>
+    using deriv i_in_Liminf_or_Red_F[of D i] Red_I_subset_Liminf by blast
 qed
 
 end
@@ -378,7 +378,7 @@ proof
   have deriv_D: \<open>chain (\<rhd>Red) D\<close> by (simp add: chain.chain_singleton D_def)
   have liminf_is_N: "Liminf_llist D = N" by (simp add: D_def Liminf_llist_LCons)
   have head_D: "N = lhd D" by (simp add: D_def)
-  have "Sup_llist (lmap Red_Inf D) = Red_Inf N" by (simp add: D_def)
+  have "Sup_llist (lmap Red_I D) = Red_I N" by (simp add: D_def)
   then have fair_D: "fair D" using saturated_N by (simp add: fair_def saturated_def liminf_is_N)
   obtain i B' where B'_is_bot: \<open>B' \<in> Bot\<close> and B'_in: "B' \<in> lnth D i" and \<open>i < llength D\<close>
     using dynamically__complete[of B D] bot_elem fair_D head_D saturated_N deriv_D refut_N
