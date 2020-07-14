@@ -2,7 +2,7 @@ Maintaining an Entry in the AFP
 -------------------------------
 
 To maintain an entry, you must have write access to the mercurial repository
-of the archive at [Heptapod][hetpa]. To get access, [sign up at
+of the archive at [Heptapod][hepta]. To get access, [sign up at
 Heptapod][hepta], and ask one of the [editors][editors] to add you to the AFP
 project.
 
@@ -76,11 +76,10 @@ an automatic email notification each time your entry breaks (see below).
 **Email Notification:**
 
  You can receive an automatic email notification if entry `x` breaks by
-editing the file `afp-devel/thys/x/config`:
+editing the file `afp-devel/metadata/metadata`:
 
--   To switch on: add your email address to `NOTIFY`, hg commit, and hg
-    push the file. `NOTIFY` is a space separated list. If the entry is
-    marked as `FREQUENT`, the test will run daily.
--   To switch off: remove your email address from `NOTIFY` and hg
+-   To switch on: find the your entry by searching for its short name, add your email address to `notify = <email addresses>`, hg commit, and hg push the file. Do not change meta data of other entries.
+    `notify` is a comma-separated list of email addresses. If the
+    entry is not in group `slow` or `very_slow` in the `ROOT` file, the test will run on every push to the repository.
+-   To switch off: remove your email address from `notify` and hg
     commit + push the file.
-

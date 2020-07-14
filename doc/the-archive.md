@@ -22,8 +22,7 @@ installed, it will be announced on isabelle-users.
 2.  Check if submission works with current released version of Isabelle.
 3.  Make sure submitter agrees to BSD or LGPL and potentially
     maintenance.
-4.  Check submission into repository (as release and development, we do
-    this, not the submitters)
+4.  Check submission into repository (as release and development, the editors do this, not the submitters)
 5.  Make available on web page
 6.  Give out maintenance access to submitter on development version
 7.  Announce on isabelle-users
@@ -31,12 +30,10 @@ installed, it will be announced on isabelle-users.
 **The archive:** Will initially contain an unstructured collection of
 submissions. For each submission there is a page with title, authors,
 abstract, keywords, tar.file, and link to the generated html-files for
-browsing. If it takes off, we can have fun imposing some structure on
-it. But right from the beginning it will be encouraged and possible to
-build on other contributions in the archive. The current released
-archive should work with the current released Isabelle version. For
-later: older archive versions should remain accessible (but maybe not on
-the main page).
+browsing. It is encouraged and possible to build on other contributions
+in the archive. The current released archive should work with the
+current released Isabelle version. For later: older archive versions
+should remain accessible (but maybe not on the main page).
 
 **Roles:**
 
