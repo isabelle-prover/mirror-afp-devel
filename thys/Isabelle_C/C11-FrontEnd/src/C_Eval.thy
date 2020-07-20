@@ -59,7 +59,7 @@ val empty' = ([], C_Env.empty_env_lang)
 structure Data_Lang = Generic_Data
   (type T = (stack_data * C_Env.env_lang) option
    val empty = NONE
-   val extend = K empty
+   val extend = I
    val merge = K empty)
 open Data_Lang
 fun get' context = case get context of NONE => empty' | SOME data => data

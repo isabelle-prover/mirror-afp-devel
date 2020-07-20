@@ -49,7 +49,7 @@ ML\<open>
 structure Data_Out = Generic_Data
   (type T = (C_Grammar_Rule.start_happy * C_Antiquote.antiq C_Env.stream) list
    val empty = []
-   val extend = K empty
+   val extend = I
    val merge = K empty)
 
 fun get_module thy =
@@ -79,7 +79,7 @@ ML \<open>
 structure Directive_include = Generic_Data
   (type T = (Input.source * C_Env.markup_ident) list Symtab.table
    val empty = Symtab.empty
-   val extend = K empty
+   val extend = I
    val merge = K empty)
 \<close>
 

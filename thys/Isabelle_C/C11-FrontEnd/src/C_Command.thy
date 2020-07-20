@@ -151,13 +151,13 @@ struct
 structure Data_In_Source = Generic_Data
   (type T = Input.source list
    val empty = []
-   val extend = K empty
+   val extend = I
    val merge = K empty)
 
 structure Data_In_Env = Generic_Data
   (type T = C_Env.env_lang
    val empty = C_Env.empty_env_lang
-   val extend = K empty
+   val extend = I
    val merge = K empty)
 
 structure Data_Accept = Generic_Data
