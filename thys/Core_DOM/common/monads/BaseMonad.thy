@@ -149,11 +149,19 @@ proof (unfold comp_def, rule ccpo.admissibleI, clarify)
   have h1:"\<And>a. Complete_Partial_Order.chain (flat_ord (Inl e)) {y. \<exists>f\<in>A. y = f a}"
     by (rule chain_fun[OF 1])
   show "P h h2 r"
-    using chain_fun[OF 1] flat_lub_in_chain[OF chain_fun[OF 1]] 2 4 unfolding execute_def fun_lub_def
-    by force
+    using CollectD Inl_Inr_False prog.sel chain_fun[OF 1] flat_lub_in_chain[OF chain_fun[OF 1]] 2 4 
+    unfolding execute_def fun_lub_def
+  proof -
+    assume a1: "the_prog (Prog (\<lambda>x. flat_lub (Inl e) {y. \<exists>f\<in>A. y = f x})) h = Inr (r, h2)"
+    assume a2: "\<forall>xa\<in>A. \<forall>h h2 r. the_prog (Prog xa) h = Inr (r, h2) \<longrightarrow> P h h2 r"
+    have "Inr (r, h2) \<in> {s. \<exists>f. f \<in> A \<and> s = f h} \<or> Inr (r, h2) = Inl e"
+      using a1 by (metis (lifting) \<open>\<And>aa a. flat_lub (Inl e) {y. \<exists>f\<in>A. y = f aa} = a \<Longrightarrow> a = Inl e \<or> a \<in> {y. \<exists>f\<in>A. y = f aa}\<close> prog.sel)
+    then show ?thesis
+      using a2 by fastforce
+  qed
 qed
 
-lemma execute_admissible2: 
+lemma execute_admissible2:
   "ccpo.admissible (fun_lub (flat_lub (Inl (e::'e)))) (fun_ord (flat_ord (Inl e)))
      ((\<lambda>a. \<forall>(h::'heap) h' h2 h2' (r::'result) r'. 
                     h \<turnstile> a = Inr (r, h2) \<longrightarrow> h' \<turnstile> a = Inr (r', h2') \<longrightarrow> P h h' h2 h2' r r') \<circ> Prog)"
@@ -171,11 +179,11 @@ proof (unfold comp_def, rule ccpo.admissibleI, clarify)
   have "h \<turnstile> ?lub \<in> {y. \<exists>f\<in>A. y = f h}"
     using flat_lub_in_chain[OF h1] 4
     unfolding execute_def fun_lub_def
-    by auto
+    by (metis (mono_tags, lifting) Collect_cong Inl_Inr_False prog.sel)
   moreover have "h' \<turnstile> ?lub \<in> {y. \<exists>f\<in>A. y = f h'}"
     using flat_lub_in_chain[OF h1] 5
     unfolding execute_def fun_lub_def
-    by auto
+    by (metis (no_types, lifting) Collect_cong Inl_Inr_False prog.sel)
   ultimately obtain f where
     "f \<in> A" and
     "h \<turnstile> Prog f = Inr (r, h2)" and
