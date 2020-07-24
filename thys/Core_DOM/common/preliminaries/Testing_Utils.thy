@@ -75,10 +75,12 @@ val _ = Theory.setup
           handle Timeout.TIMEOUT _ => NONE;
         val t2 = Time.now() - start2;
       in
-        if length (Seq.list_of result) > 0 then (Output.information ("eval took " ^ (Time.toString t)); File.append (Path.explode "/tmp/isabellebench") (Time.toString t ^ ",")) else ();
+        if length (Seq.list_of result) > 0 then (Output.information ("eval took " ^ (Time.toString t));
+File.append (Path.explode "/tmp/isabellebench") (Time.toString t ^ ",")) else ();
         (case result2_opt of
           SOME result2 => 
-            (if length (Seq.list_of result2) > 0 then (Output.information ("code_simp took " ^ (Time.toString t2));  File.append (Path.explode "/tmp/isabellebench") (Time.toString t2 ^ "\n")) else ())
+            (if length (Seq.list_of result2) > 0 then (Output.information ("code_simp took " ^ (Time.toString t2));
+File.append (Path.explode "/tmp/isabellebench") (Time.toString t2 ^ "\n")) else ())
         | NONE => (Output.information "code_simp timed out after 600s"; File.append (Path.explode "/tmp/isabellebench") (">600.000\n")));
         result
       end)))

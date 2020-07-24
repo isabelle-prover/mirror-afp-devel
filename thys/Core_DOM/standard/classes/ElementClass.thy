@@ -39,43 +39,52 @@ text\<open>The type @{type "DOMString"} is a type synonym for @{type "string"}, 
 type_synonym attr_key = DOMString 
 type_synonym attr_value = DOMString
 type_synonym attrs = "(attr_key, attr_value) fmap"
-type_synonym tag_type = DOMString
+type_synonym tag_name = DOMString
 record ('node_ptr, 'element_ptr, 'character_data_ptr, 'shadow_root_ptr) RElement = RNode +
   nothing :: unit
-  tag_type :: tag_type
+  tag_name :: tag_name
   child_nodes :: "('node_ptr, 'element_ptr, 'character_data_ptr) node_ptr list"
   attrs :: attrs
   shadow_root_opt :: "'shadow_root_ptr shadow_root_ptr option"
 type_synonym 
   ('node_ptr, 'element_ptr, 'character_data_ptr, 'shadow_root_ptr, 'Element) Element
-  = "('node_ptr, 'element_ptr, 'character_data_ptr, 'shadow_root_ptr, 'Element option) RElement_scheme"
+  = "('node_ptr, 'element_ptr, 'character_data_ptr, 'shadow_root_ptr, 'Element option)
+RElement_scheme"
 register_default_tvars 
   "('node_ptr, 'element_ptr, 'character_data_ptr, 'shadow_root_ptr, 'Element) Element"
 type_synonym 
   ('node_ptr, 'element_ptr, 'character_data_ptr, 'shadow_root_ptr, 'Node, 'Element) Node
-  = "(('node_ptr, 'element_ptr, 'character_data_ptr, 'shadow_root_ptr, 'Element option) RElement_ext + 'Node) Node"
+  = "(('node_ptr, 'element_ptr, 'character_data_ptr, 'shadow_root_ptr, 'Element option) RElement_ext
++ 'Node) Node"
 register_default_tvars 
   "('node_ptr, 'element_ptr, 'character_data_ptr, 'shadow_root_ptr, 'Node, 'Element) Node"
 type_synonym 
   ('node_ptr, 'element_ptr, 'character_data_ptr, 'shadow_root_ptr, 'Object, 'Node, 'Element) Object
-  = "('Object, ('node_ptr, 'element_ptr, 'character_data_ptr, 'shadow_root_ptr, 'Element option) RElement_ext + 'Node) Object"
+  = "('Object, ('node_ptr, 'element_ptr, 'character_data_ptr, 'shadow_root_ptr, 'Element option)
+RElement_ext + 'Node) Object"
 register_default_tvars 
   "('node_ptr, 'element_ptr, 'character_data_ptr, 'shadow_root_ptr, 'Object, 'Node, 'Element) Object"
 
 type_synonym
-  ('object_ptr, 'node_ptr, 'element_ptr, 'character_data_ptr, 'document_ptr, 'shadow_root_ptr, 'Object, 'Node, 'Element) heap
-  = "('document_ptr document_ptr + 'shadow_root_ptr shadow_root_ptr + 'object_ptr, 'element_ptr element_ptr + 'character_data_ptr character_data_ptr + 'node_ptr, 'Object,
-      ('node_ptr, 'element_ptr, 'character_data_ptr, 'shadow_root_ptr, 'Element option) RElement_ext + 'Node) heap" 
+  ('object_ptr, 'node_ptr, 'element_ptr, 'character_data_ptr, 'document_ptr, 'shadow_root_ptr,
+    'Object, 'Node, 'Element) heap
+  = "('document_ptr document_ptr + 'shadow_root_ptr shadow_root_ptr + 'object_ptr,
+'element_ptr element_ptr + 'character_data_ptr character_data_ptr + 'node_ptr, 'Object,
+('node_ptr, 'element_ptr, 'character_data_ptr, 'shadow_root_ptr, 'Element option) RElement_ext +
+'Node) heap"
 register_default_tvars
-  "('object_ptr, 'node_ptr, 'element_ptr, 'character_data_ptr, 'document_ptr, 'shadow_root_ptr, 'Object, 'Node, 'Element) heap" 
+  "('object_ptr, 'node_ptr, 'element_ptr, 'character_data_ptr, 'document_ptr, 'shadow_root_ptr,
+'Object, 'Node, 'Element) heap"
 type_synonym heap\<^sub>f\<^sub>i\<^sub>n\<^sub>a\<^sub>l = "(unit, unit, unit, unit, unit, unit, unit, unit, unit) heap"
 
 definition element_ptr_kinds :: "(_) heap \<Rightarrow> (_) element_ptr fset"
   where
-    "element_ptr_kinds heap = the |`| (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r |`| (ffilter is_element_ptr_kind (node_ptr_kinds heap)))"
+    "element_ptr_kinds heap =
+the |`| (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r |`| (ffilter is_element_ptr_kind (node_ptr_kinds heap)))"
 
 lemma element_ptr_kinds_simp [simp]: 
-  "element_ptr_kinds (Heap (fmupd (cast element_ptr) element (the_heap h))) = {|element_ptr|} |\<union>| element_ptr_kinds h"
+  "element_ptr_kinds (Heap (fmupd (cast element_ptr) element (the_heap h))) =
+{|element_ptr|} |\<union>| element_ptr_kinds h"
   apply(auto simp add: element_ptr_kinds_def)[1]
   by force
 
@@ -85,7 +94,8 @@ definition element_ptrs :: "(_) heap \<Rightarrow> (_) element_ptr fset"
 
 definition cast\<^sub>N\<^sub>o\<^sub>d\<^sub>e\<^sub>2\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t :: "(_) Node \<Rightarrow> (_) Element option"
   where
-    "cast\<^sub>N\<^sub>o\<^sub>d\<^sub>e\<^sub>2\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t node = (case RNode.more node of Inl element \<Rightarrow> Some (RNode.extend (RNode.truncate node) element) | _ \<Rightarrow> None)"
+    "cast\<^sub>N\<^sub>o\<^sub>d\<^sub>e\<^sub>2\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t node =
+(case RNode.more node of Inl element \<Rightarrow> Some (RNode.extend (RNode.truncate node) element) | _ \<Rightarrow> None)"
 adhoc_overloading cast cast\<^sub>N\<^sub>o\<^sub>d\<^sub>e\<^sub>2\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t
 
 abbreviation cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t :: "(_) Object \<Rightarrow> (_) Element option"
@@ -210,9 +220,9 @@ lemma get_elment_ptr_simp2 [simp]:
   by(auto simp add: get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def put\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def)
 
 
-abbreviation "create_element_obj tag_type_arg child_nodes_arg attrs_arg shadow_root_opt_arg
+abbreviation "create_element_obj tag_name_arg child_nodes_arg attrs_arg shadow_root_opt_arg
   \<equiv> \<lparr> RObject.nothing = (), RNode.nothing = (), RElement.nothing = (),
-      tag_type = tag_type_arg, Element.child_nodes = child_nodes_arg, attrs = attrs_arg,
+      tag_name = tag_name_arg, Element.child_nodes = child_nodes_arg, attrs = attrs_arg,
       shadow_root_opt = shadow_root_opt_arg, \<dots> = None \<rparr>"
 
 definition new\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t :: "(_) heap \<Rightarrow> ((_) element_ptr \<times> (_) heap)"
@@ -298,11 +308,15 @@ lemma known_ptrs_known_ptr:
   apply(simp add: a_known_ptrs_def)
   using notin_fset by fastforce
 
-lemma known_ptrs_preserved: "object_ptr_kinds h = object_ptr_kinds h' \<Longrightarrow> a_known_ptrs h = a_known_ptrs h'"
+lemma known_ptrs_preserved:
+  "object_ptr_kinds h = object_ptr_kinds h' \<Longrightarrow> a_known_ptrs h = a_known_ptrs h'"
   by(auto simp add: a_known_ptrs_def)
-lemma known_ptrs_subset: "object_ptr_kinds h' |\<subseteq>| object_ptr_kinds h \<Longrightarrow> a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
+lemma known_ptrs_subset:
+  "object_ptr_kinds h' |\<subseteq>| object_ptr_kinds h \<Longrightarrow> a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
   by(simp add: a_known_ptrs_def less_eq_fset.rep_eq subsetD)
-lemma known_ptrs_new_ptr: "object_ptr_kinds h' = object_ptr_kinds h |\<union>| {|new_ptr|} \<Longrightarrow> known_ptr new_ptr \<Longrightarrow> a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
+lemma known_ptrs_new_ptr:
+  "object_ptr_kinds h' = object_ptr_kinds h |\<union>| {|new_ptr|} \<Longrightarrow> known_ptr new_ptr \<Longrightarrow>
+a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
   by(simp add: a_known_ptrs_def)
 end
 global_interpretation l_known_ptrs\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t known_ptr defines known_ptrs = a_known_ptrs .

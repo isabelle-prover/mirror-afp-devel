@@ -164,7 +164,8 @@ lemma get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>
           \<longleftrightarrow> get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a character_data_ptr h \<noteq> None"
   using l_type_wf\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_axioms assms
   apply(simp add: type_wf_defs get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_def l_type_wf\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_def)
-  by (metis assms bind.bind_lzero character_data_ptr_kinds_commutes fmember.rep_eq local.get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_type_wf option.exhaust option.simps(3))
+  by (metis assms bind.bind_lzero character_data_ptr_kinds_commutes fmember.rep_eq
+      local.get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_type_wf option.exhaust option.simps(3))
 end
 
 global_interpretation l_get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_lemmas type_wf
@@ -258,14 +259,16 @@ lemma new\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>
 lemma new_character_data_ptr_new: 
   "character_data_ptr.Ref (Suc (fMax (finsert 0 (character_data_ptr.the_ref |`| character_data_ptrs h)))) 
               |\<notin>| character_data_ptrs h"
-  by (metis Suc_n_not_le_n character_data_ptr.sel(1) fMax_ge fimage_finsert finsertI1 finsertI2 set_finsert)
+  by (metis Suc_n_not_le_n character_data_ptr.sel(1) fMax_ge fimage_finsert finsertI1
+      finsertI2 set_finsert)
 
 lemma new\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_ptr_not_in_heap:
   assumes "new\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a h = (new_character_data_ptr, h')"
   shows "new_character_data_ptr |\<notin>| character_data_ptr_kinds h"
   using assms
   unfolding new\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_def
-  by (metis Pair_inject character_data_ptrs_def fMax_finsert fempty_iff ffmember_filter fimage_is_fempty is_character_data_ptr_ref max_0L new_character_data_ptr_new)
+  by (metis Pair_inject character_data_ptrs_def fMax_finsert fempty_iff ffmember_filter
+      fimage_is_fempty is_character_data_ptr_ref max_0L new_character_data_ptr_new)
 
 lemma new\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_new_ptr:
   assumes "new\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a h = (new_character_data_ptr, h')"
@@ -337,7 +340,9 @@ lemma known_ptrs_preserved:
 lemma known_ptrs_subset: 
   "object_ptr_kinds h' |\<subseteq>| object_ptr_kinds h \<Longrightarrow> a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
   by(simp add: a_known_ptrs_def less_eq_fset.rep_eq subsetD)
-lemma known_ptrs_new_ptr: "object_ptr_kinds h' = object_ptr_kinds h |\<union>| {|new_ptr|} \<Longrightarrow> known_ptr new_ptr \<Longrightarrow> a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
+lemma known_ptrs_new_ptr:
+  "object_ptr_kinds h' = object_ptr_kinds h |\<union>| {|new_ptr|} \<Longrightarrow> known_ptr new_ptr \<Longrightarrow>
+a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
   by(simp add: a_known_ptrs_def)
 end
 global_interpretation l_known_ptrs\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a known_ptr defines known_ptrs = a_known_ptrs .

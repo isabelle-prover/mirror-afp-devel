@@ -216,7 +216,7 @@ lemma get_child_nodes_reads: "reads (get_child_nodes_locs ptr) (get_child_nodes 
       intro!: reads_bind_pure  reads_subset[OF return_reads] )[1]
   apply(auto simp add: get_child_nodes\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def intro: reads_subset[OF reads_singleton] 
       reads_subset[OF check_in_heap_reads] intro!: reads_bind_pure  reads_subset[OF return_reads] 
-      split: option.splits)
+      split: option.splits)[1]
   done
 end
 
@@ -618,7 +618,8 @@ lemma set_child_nodes_get_child_nodes_different_pointers:
    apply(auto)[1]
   apply(auto)[1]
   apply(rule is_element_ptr_kind_obtains) 
-   apply(auto)
+   apply(auto)[1]
+  apply(auto)[1]
   done
 
 lemma set_child_nodes_element_ok [simp]:
@@ -630,10 +631,12 @@ lemma set_child_nodes_element_ok [simp]:
 proof -
   have "is_element_ptr ptr"
     using \<open>known_ptr ptr\<close> assms(4)
-    by(auto simp add: known_ptr_impl known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
+    by(auto simp add: known_ptr_impl known_ptr_defs CharacterDataClass.known_ptr_defs
+        ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
   then show ?thesis
     using assms
-    apply(auto simp add: set_child_nodes_def a_set_child_nodes_tups_def set_child_nodes\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def split: option.splits)[1]
+    apply(auto simp add: set_child_nodes_def a_set_child_nodes_tups_def set_child_nodes\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def
+        split: option.splits)[1]
     by (simp add: DocumentMonad.put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_ok local.type_wf_impl)
 qed
 
@@ -647,10 +650,12 @@ lemma set_child_nodes_document1_ok [simp]:
 proof -
   have "is_document_ptr ptr"
     using \<open>known_ptr ptr\<close> assms(4)
-    by(auto simp add: known_ptr_impl known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
+    by(auto simp add: known_ptr_impl known_ptr_defs CharacterDataClass.known_ptr_defs
+        ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
   then show ?thesis
     using assms
-    apply(auto simp add: set_child_nodes_def a_set_child_nodes_tups_def set_child_nodes\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def split: option.splits)[1]
+    apply(auto simp add: set_child_nodes_def a_set_child_nodes_tups_def set_child_nodes\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def
+        split: option.splits)[1]
     by (simp add: DocumentMonad.put_M\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_ok local.type_wf_impl)
 qed
 
@@ -665,10 +670,11 @@ lemma set_child_nodes_document2_ok [simp]:
 proof -
   have "is_document_ptr ptr"
     using \<open>known_ptr ptr\<close> assms(4)
-    by(auto simp add: known_ptr_impl known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
+    by(auto simp add: known_ptr_impl known_ptr_defs CharacterDataClass.known_ptr_defs
+        ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
   then show ?thesis
     using assms
-    apply(auto simp add: set_child_nodes_def a_set_child_nodes_tups_def set_child_nodes\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def)
+    apply(auto simp add: set_child_nodes_def a_set_child_nodes_tups_def set_child_nodes\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def)[1]
     apply(split invoke_splits, rule conjI)+
        apply(auto simp add: is_element_ptr_kind\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def set_child_nodes\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def split: option.splits)[1]
       apply(auto simp add: is_element_ptr_kind\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def set_child_nodes\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r_def split: option.splits)[1]
@@ -1172,7 +1178,8 @@ begin
 
 definition a_set_disconnected_nodes :: "(_) document_ptr \<Rightarrow> (_) node_ptr list \<Rightarrow> (_, unit) dom_prog"
   where
-    "a_set_disconnected_nodes document_ptr disc_nodes = put_M document_ptr disconnected_nodes_update disc_nodes"
+    "a_set_disconnected_nodes document_ptr disc_nodes =
+put_M document_ptr disconnected_nodes_update disc_nodes"
 lemmas set_disconnected_nodes_defs = a_set_disconnected_nodes_def
 
 definition a_set_disconnected_nodes_locs :: "(_) document_ptr \<Rightarrow> (_, unit) dom_prog set"
@@ -1196,10 +1203,13 @@ locale l_set_disconnected_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\
   assumes set_disconnected_nodes_locs_impl: "set_disconnected_nodes_locs = a_set_disconnected_nodes_locs"
 begin
 lemmas set_disconnected_nodes_def = set_disconnected_nodes_impl[unfolded a_set_disconnected_nodes_def]
-lemmas set_disconnected_nodes_locs_def = set_disconnected_nodes_locs_impl[unfolded a_set_disconnected_nodes_locs_def]
+lemmas set_disconnected_nodes_locs_def =
+  set_disconnected_nodes_locs_impl[unfolded a_set_disconnected_nodes_locs_def]
 lemma set_disconnected_nodes_ok:
-  "type_wf h \<Longrightarrow> document_ptr |\<in>| document_ptr_kinds h \<Longrightarrow> h \<turnstile> ok (set_disconnected_nodes document_ptr node_ptrs)"
-  by (simp add: type_wf_impl put_M\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_ok set_disconnected_nodes_impl[unfolded a_set_disconnected_nodes_def])
+  "type_wf h \<Longrightarrow> document_ptr |\<in>| document_ptr_kinds h \<Longrightarrow>
+h \<turnstile> ok (set_disconnected_nodes document_ptr node_ptrs)"
+  by (simp add: type_wf_impl put_M\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_ok
+      set_disconnected_nodes_impl[unfolded a_set_disconnected_nodes_def])
 
 lemma set_disconnected_nodes_ptr_in_heap: 
   "h \<turnstile> ok (set_disconnected_nodes document_ptr disc_nodes) \<Longrightarrow> document_ptr |\<in>| document_ptr_kinds h"
@@ -1234,13 +1244,17 @@ end
 
 locale l_set_disconnected_nodes = l_type_wf + l_set_disconnected_nodes_defs +
   assumes set_disconnected_nodes_writes: 
-    "writes (set_disconnected_nodes_locs document_ptr) (set_disconnected_nodes document_ptr disc_nodes) h h'"
+    "writes (set_disconnected_nodes_locs document_ptr)
+(set_disconnected_nodes document_ptr disc_nodes) h h'"
   assumes set_disconnected_nodes_ok: 
-    "type_wf h \<Longrightarrow> document_ptr |\<in>| document_ptr_kinds h \<Longrightarrow> h \<turnstile> ok (set_disconnected_nodes document_ptr disc_noded)"
+    "type_wf h \<Longrightarrow> document_ptr |\<in>| document_ptr_kinds h \<Longrightarrow>
+h \<turnstile> ok (set_disconnected_nodes document_ptr disc_noded)"
   assumes set_disconnected_nodes_ptr_in_heap: 
-    "h \<turnstile> ok (set_disconnected_nodes document_ptr disc_noded) \<Longrightarrow> document_ptr |\<in>| document_ptr_kinds h"
+    "h \<turnstile> ok (set_disconnected_nodes document_ptr disc_noded) \<Longrightarrow>
+document_ptr |\<in>| document_ptr_kinds h"
   assumes set_disconnected_nodes_pointers_preserved: 
-   "w \<in> set_disconnected_nodes_locs document_ptr \<Longrightarrow> h \<turnstile> w \<rightarrow>\<^sub>h h' \<Longrightarrow> object_ptr_kinds h = object_ptr_kinds h'"
+    "w \<in> set_disconnected_nodes_locs document_ptr \<Longrightarrow> h \<turnstile> w \<rightarrow>\<^sub>h h' \<Longrightarrow>
+object_ptr_kinds h = object_ptr_kinds h'"
  assumes set_disconnected_nodes_types_preserved: 
    "w \<in> set_disconnected_nodes_locs document_ptr \<Longrightarrow> h \<turnstile> w \<rightarrow>\<^sub>h h' \<Longrightarrow> type_wf h = type_wf h'"
 
@@ -1257,7 +1271,8 @@ declare l_set_disconnected_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D
 lemma set_disconnected_nodes_is_l_set_disconnected_nodes [instances]: 
   "l_set_disconnected_nodes type_wf set_disconnected_nodes set_disconnected_nodes_locs"
   apply(simp add: l_set_disconnected_nodes_def)
-  using set_disconnected_nodes_ok set_disconnected_nodes_writes set_disconnected_nodes_pointers_preserved 
+  using set_disconnected_nodes_ok set_disconnected_nodes_writes
+    set_disconnected_nodes_pointers_preserved
         set_disconnected_nodes_ptr_in_heap set_disconnected_nodes_typess_preserved
   by blast+
 
@@ -1299,7 +1314,8 @@ interpretation i_set_disconnected_nodes_get_disconnected_nodes?:
   by unfold_locales
 declare l_set_disconnected_nodes_get_disconnected_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms[instances]
 
-lemma set_disconnected_nodes_get_disconnected_nodes_is_l_set_disconnected_nodes_get_disconnected_nodes [instances]:
+lemma set_disconnected_nodes_get_disconnected_nodes_is_l_set_disconnected_nodes_get_disconnected_nodes
+  [instances]:
   "l_set_disconnected_nodes_get_disconnected_nodes  type_wf get_disconnected_nodes get_disconnected_nodes_locs 
                                                     set_disconnected_nodes set_disconnected_nodes_locs"
   using set_disconnected_nodes_is_l_set_disconnected_nodes get_disconnected_nodes_is_l_get_disconnected_nodes
@@ -1346,17 +1362,17 @@ subsubsection \<open>get\_tag\_name\<close>
 
 locale l_get_tag_name\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs
 begin
-definition a_get_tag_name :: "(_) element_ptr \<Rightarrow> (_, tag_type) dom_prog"
+definition a_get_tag_name :: "(_) element_ptr \<Rightarrow> (_, tag_name) dom_prog"
   where
-    "a_get_tag_name element_ptr = get_M element_ptr tag_type"
+    "a_get_tag_name element_ptr = get_M element_ptr tag_name"
 
 definition a_get_tag_name_locs :: "(_) element_ptr \<Rightarrow> ((_) heap \<Rightarrow> (_) heap \<Rightarrow> bool) set"
   where
-    "a_get_tag_name_locs element_ptr \<equiv> {preserved (get_M element_ptr tag_type)}"
+    "a_get_tag_name_locs element_ptr \<equiv> {preserved (get_M element_ptr tag_name)}"
 end
 
 locale l_get_tag_name_defs =
-  fixes get_tag_name :: "(_) element_ptr \<Rightarrow> (_, tag_type) dom_prog"
+  fixes get_tag_name :: "(_) element_ptr \<Rightarrow> (_, tag_name) dom_prog"
   fixes get_tag_name_locs :: "(_) element_ptr \<Rightarrow> ((_) heap \<Rightarrow> (_) heap \<Rightarrow> bool) set"
 
 locale l_get_tag_name\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M =
@@ -1364,7 +1380,7 @@ locale l_get_tag_name\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^
   l_get_tag_name_defs get_tag_name get_tag_name_locs +
   l_get_tag_name\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs 
   for type_wf :: "(_) heap \<Rightarrow> bool"
-  and get_tag_name :: "(_) element_ptr \<Rightarrow> (_, tag_type) dom_prog"
+    and get_tag_name :: "(_) element_ptr \<Rightarrow> (_, tag_name) dom_prog"
   and get_tag_name_locs :: "(_) element_ptr \<Rightarrow> ((_) heap \<Rightarrow> (_) heap \<Rightarrow> bool) set" +
   assumes type_wf_impl: "type_wf = DocumentClass.type_wf"
   assumes get_tag_name_impl: "get_tag_name = a_get_tag_name"
@@ -1466,7 +1482,7 @@ begin
 lemma set_child_nodes_get_tag_name: 
   "\<forall>w \<in> set_child_nodes_locs ptr. (h \<turnstile> w \<rightarrow>\<^sub>h h' \<longrightarrow> (\<forall>r \<in> get_tag_name_locs ptr'. r h h'))"
   by(auto simp add: set_child_nodes_locs_def get_tag_name_locs_def all_args_def 
-          intro: element_put_get_preserved[where getter=tag_type and setter=child_nodes_update])
+      intro: element_put_get_preserved[where getter=tag_name and setter=child_nodes_update])
 end
 
 locale l_set_child_nodes_get_tag_name = l_set_child_nodes + l_get_tag_name +
@@ -1489,159 +1505,159 @@ lemma set_child_nodes_get_tag_name_is_l_set_child_nodes_get_tag_name [instances]
 
 subsubsection \<open>set\_tag\_type\<close>
 
-locale l_set_tag_type\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs
+locale l_set_tag_name\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs
 begin
 
-definition a_set_tag_type :: "(_) element_ptr \<Rightarrow> tag_type \<Rightarrow> (_, unit) dom_prog"
+definition a_set_tag_name :: "(_) element_ptr \<Rightarrow> tag_name \<Rightarrow> (_, unit) dom_prog"
   where
-    "a_set_tag_type ptr tag = do {
+    "a_set_tag_name ptr tag = do {
       m \<leftarrow> get_M ptr attrs;
-      put_M ptr tag_type_update tag
+      put_M ptr tag_name_update tag
     }"
-lemmas set_tag_type_defs = a_set_tag_type_def
+lemmas set_tag_name_defs = a_set_tag_name_def
 
-definition a_set_tag_type_locs :: "(_) element_ptr \<Rightarrow> (_, unit) dom_prog set"
+definition a_set_tag_name_locs :: "(_) element_ptr \<Rightarrow> (_, unit) dom_prog set"
   where
-    "a_set_tag_type_locs element_ptr \<equiv> all_args (put_M element_ptr tag_type_update)"
+    "a_set_tag_name_locs element_ptr \<equiv> all_args (put_M element_ptr tag_name_update)"
 end
 
-locale l_set_tag_type_defs =
-  fixes set_tag_type :: "(_) element_ptr \<Rightarrow> tag_type \<Rightarrow> (_, unit) dom_prog"
-  fixes set_tag_type_locs :: "(_) element_ptr \<Rightarrow> (_, unit) dom_prog set"
+locale l_set_tag_name_defs =
+  fixes set_tag_name :: "(_) element_ptr \<Rightarrow> tag_name \<Rightarrow> (_, unit) dom_prog"
+  fixes set_tag_name_locs :: "(_) element_ptr \<Rightarrow> (_, unit) dom_prog set"
 
-locale l_set_tag_type\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M =
+locale l_set_tag_name\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M =
   l_type_wf type_wf +
-  l_set_tag_type_defs set_tag_type set_tag_type_locs +
-  l_set_tag_type\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs 
+  l_set_tag_name_defs set_tag_name set_tag_name_locs +
+  l_set_tag_name\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs
   for type_wf :: "(_) heap \<Rightarrow> bool"
-  and set_tag_type :: "(_) element_ptr \<Rightarrow> char list \<Rightarrow> (_, unit) dom_prog"
-  and set_tag_type_locs :: "(_) element_ptr \<Rightarrow> (_, unit) dom_prog set" +
+    and set_tag_name :: "(_) element_ptr \<Rightarrow> char list \<Rightarrow> (_, unit) dom_prog"
+    and set_tag_name_locs :: "(_) element_ptr \<Rightarrow> (_, unit) dom_prog set" +
   assumes type_wf_impl: "type_wf = DocumentClass.type_wf"
-  assumes set_tag_type_impl: "set_tag_type = a_set_tag_type"
-  assumes set_tag_type_locs_impl: "set_tag_type_locs = a_set_tag_type_locs"
+  assumes set_tag_name_impl: "set_tag_name = a_set_tag_name"
+  assumes set_tag_name_locs_impl: "set_tag_name_locs = a_set_tag_name_locs"
 begin
 
-lemma set_tag_type_ok: 
-  "type_wf h \<Longrightarrow> element_ptr |\<in>| element_ptr_kinds h \<Longrightarrow> h \<turnstile> ok (set_tag_type element_ptr tag)"
+lemma set_tag_name_ok:
+  "type_wf h \<Longrightarrow> element_ptr |\<in>| element_ptr_kinds h \<Longrightarrow> h \<turnstile> ok (set_tag_name element_ptr tag)"
   apply(unfold type_wf_impl)
-  unfolding set_tag_type_impl[unfolded a_set_tag_type_def] using get_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_ok put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_ok
+  unfolding set_tag_name_impl[unfolded a_set_tag_name_def] using get_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_ok put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_ok
   by (metis (no_types, lifting) DocumentClass.type_wf\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t ElementMonad.get_M_pure bind_is_OK_E 
                                 bind_is_OK_pure_I is_OK_returns_result_I)
 
-lemma set_tag_type_writes: 
-  "writes (set_tag_type_locs element_ptr) (set_tag_type element_ptr tag) h h'"
-  by(auto simp add: set_tag_type_impl[unfolded a_set_tag_type_def] 
-                    set_tag_type_locs_impl[unfolded a_set_tag_type_locs_def] intro: writes_bind_pure)
+lemma set_tag_name_writes:
+  "writes (set_tag_name_locs element_ptr) (set_tag_name element_ptr tag) h h'"
+  by(auto simp add: set_tag_name_impl[unfolded a_set_tag_name_def]
+      set_tag_name_locs_impl[unfolded a_set_tag_name_locs_def] intro: writes_bind_pure)
 
-lemma set_tag_type_pointers_preserved:
-  assumes "w \<in> set_tag_type_locs element_ptr"
+lemma set_tag_name_pointers_preserved:
+  assumes "w \<in> set_tag_name_locs element_ptr"
   assumes "h \<turnstile> w \<rightarrow>\<^sub>h h'"
   shows "object_ptr_kinds h = object_ptr_kinds h'"
   using assms(1) object_ptr_kinds_preserved[OF writes_singleton2 assms(2)]
-  by(auto simp add: all_args_def set_tag_type_locs_impl[unfolded a_set_tag_type_locs_def] 
+  by(auto simp add: all_args_def set_tag_name_locs_impl[unfolded a_set_tag_name_locs_def]
           split: if_splits)
 
-lemma set_tag_type_typess_preserved:
-  assumes "w \<in> set_tag_type_locs element_ptr"
+lemma set_tag_name_typess_preserved:
+  assumes "w \<in> set_tag_name_locs element_ptr"
   assumes "h \<turnstile> w \<rightarrow>\<^sub>h h'"
   shows "type_wf h = type_wf h'"
   apply(unfold type_wf_impl)
   using assms(1) type_wf_preserved[OF writes_singleton2 assms(2)]
-  by(auto simp add: all_args_def set_tag_type_locs_impl[unfolded a_set_tag_type_locs_def] 
+  by(auto simp add: all_args_def set_tag_name_locs_impl[unfolded a_set_tag_name_locs_def]
           split: if_splits)
 end
 
-locale l_set_tag_type = l_type_wf + l_set_tag_type_defs +
-  assumes set_tag_type_writes: 
-    "writes (set_tag_type_locs element_ptr) (set_tag_type element_ptr tag) h h'"
-  assumes set_tag_type_ok: 
-    "type_wf h \<Longrightarrow> element_ptr |\<in>| element_ptr_kinds h \<Longrightarrow> h \<turnstile> ok (set_tag_type element_ptr tag)"
-  assumes set_tag_type_pointers_preserved: 
-    "w \<in> set_tag_type_locs element_ptr \<Longrightarrow> h \<turnstile> w \<rightarrow>\<^sub>h h' \<Longrightarrow> object_ptr_kinds h = object_ptr_kinds h'"
-  assumes set_tag_type_types_preserved: 
-    "w \<in> set_tag_type_locs element_ptr \<Longrightarrow> h \<turnstile> w \<rightarrow>\<^sub>h h' \<Longrightarrow> type_wf h = type_wf h'"
+locale l_set_tag_name = l_type_wf + l_set_tag_name_defs +
+  assumes set_tag_name_writes:
+    "writes (set_tag_name_locs element_ptr) (set_tag_name element_ptr tag) h h'"
+  assumes set_tag_name_ok:
+    "type_wf h \<Longrightarrow> element_ptr |\<in>| element_ptr_kinds h \<Longrightarrow> h \<turnstile> ok (set_tag_name element_ptr tag)"
+  assumes set_tag_name_pointers_preserved:
+    "w \<in> set_tag_name_locs element_ptr \<Longrightarrow> h \<turnstile> w \<rightarrow>\<^sub>h h' \<Longrightarrow> object_ptr_kinds h = object_ptr_kinds h'"
+  assumes set_tag_name_types_preserved:
+    "w \<in> set_tag_name_locs element_ptr \<Longrightarrow> h \<turnstile> w \<rightarrow>\<^sub>h h' \<Longrightarrow> type_wf h = type_wf h'"
 
 
-global_interpretation l_set_tag_type\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs defines
-  set_tag_type = l_set_tag_type\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs.a_set_tag_type and
-  set_tag_type_locs = l_set_tag_type\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs.a_set_tag_type_locs .
+global_interpretation l_set_tag_name\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs defines
+  set_tag_name = l_set_tag_name\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs.a_set_tag_name and
+  set_tag_name_locs = l_set_tag_name\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs.a_set_tag_name_locs .
 interpretation 
-  i_set_tag_type?: l_set_tag_type\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M type_wf set_tag_type set_tag_type_locs
+  i_set_tag_name?: l_set_tag_name\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M type_wf set_tag_name set_tag_name_locs
   apply(unfold_locales)
-  by (auto simp add: set_tag_type_def set_tag_type_locs_def)
-declare l_set_tag_type\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms[instances]
+  by (auto simp add: set_tag_name_def set_tag_name_locs_def)
+declare l_set_tag_name\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms[instances]
 
-lemma set_tag_type_is_l_set_tag_type [instances]: 
-  "l_set_tag_type type_wf set_tag_type set_tag_type_locs"
-  apply(simp add: l_set_tag_type_def)
-  using set_tag_type_ok set_tag_type_writes set_tag_type_pointers_preserved 
-        set_tag_type_typess_preserved
+lemma set_tag_name_is_l_set_tag_name [instances]:
+  "l_set_tag_name type_wf set_tag_name set_tag_name_locs"
+  apply(simp add: l_set_tag_name_def)
+  using set_tag_name_ok set_tag_name_writes set_tag_name_pointers_preserved
+    set_tag_name_typess_preserved
   by blast
 
 paragraph \<open>get\_child\_nodes\<close>
 
-locale l_set_tag_type_get_child_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M =
-  l_set_tag_type\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M +
+locale l_set_tag_name_get_child_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M =
+  l_set_tag_name\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M +
   l_get_child_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M
 begin
-lemma set_tag_type_get_child_nodes: 
-  "\<forall>w \<in> set_tag_type_locs ptr. (h \<turnstile> w \<rightarrow>\<^sub>h h' \<longrightarrow> (\<forall>r \<in> get_child_nodes_locs ptr'. r h h'))"
-  by(auto simp add: set_tag_type_locs_impl[unfolded a_set_tag_type_locs_def] 
+lemma set_tag_name_get_child_nodes:
+  "\<forall>w \<in> set_tag_name_locs ptr. (h \<turnstile> w \<rightarrow>\<^sub>h h' \<longrightarrow> (\<forall>r \<in> get_child_nodes_locs ptr'. r h h'))"
+  by(auto simp add: set_tag_name_locs_impl[unfolded a_set_tag_name_locs_def]
                     get_child_nodes_locs_impl[unfolded a_get_child_nodes_locs_def] all_args_def 
-          intro: element_put_get_preserved[where setter=tag_type_update and getter=child_nodes])
+      intro: element_put_get_preserved[where setter=tag_name_update and getter=child_nodes])
 end
 
-locale l_set_tag_type_get_child_nodes = l_set_tag_type + l_get_child_nodes +
-  assumes set_tag_type_get_child_nodes: 
-    "\<forall>w \<in> set_tag_type_locs ptr. (h \<turnstile> w \<rightarrow>\<^sub>h h' \<longrightarrow> (\<forall>r \<in> get_child_nodes_locs ptr'. r h h'))"
+locale l_set_tag_name_get_child_nodes = l_set_tag_name + l_get_child_nodes +
+  assumes set_tag_name_get_child_nodes:
+    "\<forall>w \<in> set_tag_name_locs ptr. (h \<turnstile> w \<rightarrow>\<^sub>h h' \<longrightarrow> (\<forall>r \<in> get_child_nodes_locs ptr'. r h h'))"
 
 interpretation
-  i_set_tag_type_get_child_nodes?: l_set_tag_type_get_child_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M type_wf 
-                                   set_tag_type set_tag_type_locs known_ptr 
+  i_set_tag_name_get_child_nodes?: l_set_tag_name_get_child_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M type_wf
+  set_tag_name set_tag_name_locs known_ptr
                                    get_child_nodes get_child_nodes_locs
   by unfold_locales
-declare l_set_tag_type_get_child_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms[instances]
+declare l_set_tag_name_get_child_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms[instances]
 
-lemma set_tag_type_get_child_nodes_is_l_set_tag_type_get_child_nodes [instances]:
-  "l_set_tag_type_get_child_nodes type_wf set_tag_type set_tag_type_locs known_ptr get_child_nodes 
+lemma set_tag_name_get_child_nodes_is_l_set_tag_name_get_child_nodes [instances]:
+  "l_set_tag_name_get_child_nodes type_wf set_tag_name set_tag_name_locs known_ptr get_child_nodes
                                   get_child_nodes_locs"
-  using set_tag_type_is_l_set_tag_type get_child_nodes_is_l_get_child_nodes
-  apply(simp add: l_set_tag_type_get_child_nodes_def l_set_tag_type_get_child_nodes_axioms_def)
-  using set_tag_type_get_child_nodes
+  using set_tag_name_is_l_set_tag_name get_child_nodes_is_l_get_child_nodes
+  apply(simp add: l_set_tag_name_get_child_nodes_def l_set_tag_name_get_child_nodes_axioms_def)
+  using set_tag_name_get_child_nodes
   by fast
 
 
 paragraph \<open>get\_disconnected\_nodes\<close>
 
-locale l_set_tag_type_get_disconnected_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M =
-  l_set_tag_type\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M +
+locale l_set_tag_name_get_disconnected_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M =
+  l_set_tag_name\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M +
   l_get_disconnected_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M
 begin
-lemma set_tag_type_get_disconnected_nodes: 
-  "\<forall>w \<in> set_tag_type_locs ptr. (h \<turnstile> w \<rightarrow>\<^sub>h h' \<longrightarrow> (\<forall>r \<in> get_disconnected_nodes_locs ptr'. r h h'))"
-  by(auto simp add: set_tag_type_locs_impl[unfolded a_set_tag_type_locs_def] 
+lemma set_tag_name_get_disconnected_nodes:
+  "\<forall>w \<in> set_tag_name_locs ptr. (h \<turnstile> w \<rightarrow>\<^sub>h h' \<longrightarrow> (\<forall>r \<in> get_disconnected_nodes_locs ptr'. r h h'))"
+  by(auto simp add: set_tag_name_locs_impl[unfolded a_set_tag_name_locs_def]
                     get_disconnected_nodes_locs_impl[unfolded a_get_disconnected_nodes_locs_def] 
                     all_args_def)
 end
 
-locale l_set_tag_type_get_disconnected_nodes = l_set_tag_type + l_get_disconnected_nodes +
-  assumes set_tag_type_get_disconnected_nodes: 
-   "\<forall>w \<in> set_tag_type_locs ptr. (h \<turnstile> w \<rightarrow>\<^sub>h h' \<longrightarrow> (\<forall>r \<in> get_disconnected_nodes_locs ptr'. r h h'))"
+locale l_set_tag_name_get_disconnected_nodes = l_set_tag_name + l_get_disconnected_nodes +
+  assumes set_tag_name_get_disconnected_nodes:
+    "\<forall>w \<in> set_tag_name_locs ptr. (h \<turnstile> w \<rightarrow>\<^sub>h h' \<longrightarrow> (\<forall>r \<in> get_disconnected_nodes_locs ptr'. r h h'))"
 
 interpretation
-  i_set_tag_type_get_disconnected_nodes?: l_set_tag_type_get_disconnected_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M type_wf 
-                                          set_tag_type set_tag_type_locs get_disconnected_nodes 
+  i_set_tag_name_get_disconnected_nodes?: l_set_tag_name_get_disconnected_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M type_wf
+  set_tag_name set_tag_name_locs get_disconnected_nodes
                                           get_disconnected_nodes_locs
   by unfold_locales
-declare l_set_tag_type_get_disconnected_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms[instances]
+declare l_set_tag_name_get_disconnected_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms[instances]
 
-lemma set_tag_type_get_disconnected_nodes_is_l_set_tag_type_get_disconnected_nodes [instances]:
-  "l_set_tag_type_get_disconnected_nodes type_wf set_tag_type set_tag_type_locs get_disconnected_nodes 
+lemma set_tag_name_get_disconnected_nodes_is_l_set_tag_name_get_disconnected_nodes [instances]:
+  "l_set_tag_name_get_disconnected_nodes type_wf set_tag_name set_tag_name_locs get_disconnected_nodes
                                          get_disconnected_nodes_locs"
-  using set_tag_type_is_l_set_tag_type get_disconnected_nodes_is_l_get_disconnected_nodes
-  apply(simp add: l_set_tag_type_get_disconnected_nodes_def 
-                  l_set_tag_type_get_disconnected_nodes_axioms_def)
-  using set_tag_type_get_disconnected_nodes
+  using set_tag_name_is_l_set_tag_name get_disconnected_nodes_is_l_get_disconnected_nodes
+  apply(simp add: l_set_tag_name_get_disconnected_nodes_def
+      l_set_tag_name_get_disconnected_nodes_axioms_def)
+  using set_tag_name_get_disconnected_nodes
   by fast
 
 
@@ -1785,7 +1801,8 @@ interpretation
 declare l_set_val_get_disconnected_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms[instances]
 
 lemma set_val_get_disconnected_nodes_is_l_set_val_get_disconnected_nodes [instances]:
-  "l_set_val_get_disconnected_nodes type_wf set_val set_val_locs get_disconnected_nodes get_disconnected_nodes_locs"
+  "l_set_val_get_disconnected_nodes type_wf set_val set_val_locs get_disconnected_nodes
+get_disconnected_nodes_locs"
   using set_val_is_l_set_val get_disconnected_nodes_is_l_get_disconnected_nodes
   apply(simp add: l_set_val_get_disconnected_nodes_def l_set_val_get_disconnected_nodes_axioms_def)
   using set_val_get_disconnected_nodes
@@ -2419,7 +2436,9 @@ lemma remove_child_child_in_heap:
   assumes "h \<turnstile> remove_child ptr' child \<rightarrow>\<^sub>h h'"
   shows "child |\<in>| node_ptr_kinds h"
   using assms
-  apply(auto simp add: remove_child_def elim!: bind_returns_heap_E bind_returns_heap_E2[rotated, OF get_child_nodes_pure, rotated] split: if_splits)[1]
+  apply(auto simp add: remove_child_def
+      elim!: bind_returns_heap_E bind_returns_heap_E2[rotated, OF get_child_nodes_pure, rotated]
+      split: if_splits)[1]
   by (meson is_OK_returns_result_I local.get_owner_document_ptr_in_heap node_ptr_kinds_commutes)
 
 
@@ -2437,7 +2456,8 @@ proof -
     using assms(1)
     apply(auto simp add: remove_child_def 
                elim!: bind_returns_heap_E 
-               dest!: returns_result_eq[OF assms(2)] pure_returns_heap_eq[rotated, OF get_owner_document_pure] 
+        dest!: returns_result_eq[OF assms(2)]
+        pure_returns_heap_eq[rotated, OF get_owner_document_pure]
                       pure_returns_heap_eq[rotated, OF get_child_nodes_pure] 
                split: if_splits)[1]
     by (metis get_disconnected_nodes_pure pure_returns_heap_eq)
@@ -2460,7 +2480,8 @@ lemma remove_child_writes [simp]:
           intro!: writes_bind)
 
 lemma remove_writes: 
-  "writes (remove_child_locs (the |h \<turnstile> get_parent child|\<^sub>r) |h \<turnstile> get_owner_document (cast child)|\<^sub>r) (remove child) h h'"
+  "writes (remove_child_locs (the |h \<turnstile> get_parent child|\<^sub>r) |h \<turnstile> get_owner_document (cast child)|\<^sub>r)
+(remove child) h h'"
   by(auto simp add: remove_def intro!: writes_bind_pure split: option.splits)
 
 lemma remove_child_children_subset:
@@ -2544,7 +2565,8 @@ end
 locale l_remove_child = l_type_wf + l_known_ptrs + l_remove_child_defs + l_get_owner_document_defs 
                       + l_get_child_nodes_defs + l_get_disconnected_nodes_defs +
   assumes remove_child_writes: 
-  "writes (remove_child_locs object_ptr |h \<turnstile> get_owner_document (cast child)|\<^sub>r) (remove_child object_ptr child) h h'"
+    "writes (remove_child_locs object_ptr |h \<turnstile> get_owner_document (cast child)|\<^sub>r)
+(remove_child object_ptr child) h h'"
   assumes remove_child_pointers_preserved: 
   "w \<in> remove_child_locs ptr owner_document \<Longrightarrow> h \<turnstile> w \<rightarrow>\<^sub>h h' \<Longrightarrow> object_ptr_kinds h = object_ptr_kinds h'"
   assumes remove_child_types_preserved: 
@@ -2742,7 +2764,8 @@ proof -
   obtain old_document parent_opt h2 where
     old_document: "h \<turnstile> get_owner_document (cast node) \<rightarrow>\<^sub>r old_document" and
     parent_opt: "h \<turnstile> get_parent node \<rightarrow>\<^sub>r parent_opt" and
-    h2: "h \<turnstile> (case parent_opt of Some parent \<Rightarrow> do { remove_child parent node } | None \<Rightarrow> do { return ()}) \<rightarrow>\<^sub>h h2" 
+    h2: "h \<turnstile> (case parent_opt of Some parent \<Rightarrow> do { remove_child parent node } |
+None \<Rightarrow> do { return ()}) \<rightarrow>\<^sub>h h2"
     and
     h': "h2 \<turnstile> (if owner_document \<noteq> old_document then do {
         old_disc_nodes \<leftarrow> get_disconnected_nodes old_document;
@@ -2790,7 +2813,8 @@ proof -
   next
     case (Some option)
     then show ?case 
-      using assms(2) \<open>h2 \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children'\<close> remove_child_children_subset known_ptrs type_wf 
+      using assms(2) \<open>h2 \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children'\<close> remove_child_children_subset known_ptrs
+        type_wf
       by simp
   qed
 qed
@@ -2824,7 +2848,8 @@ lemma adopt_node_types_preserved:
   by (auto split: if_splits)
 end
 
-locale l_adopt_node = l_type_wf + l_known_ptrs + l_get_parent_defs + l_adopt_node_defs + l_get_child_nodes_defs + l_get_owner_document_defs +
+locale l_adopt_node = l_type_wf + l_known_ptrs + l_get_parent_defs + l_adopt_node_defs +
+  l_get_child_nodes_defs + l_get_owner_document_defs +
   assumes adopt_node_writes: 
   "writes (adopt_node_locs |h \<turnstile> get_parent node|\<^sub>r 
            |h \<turnstile> get_owner_document (cast node)|\<^sub>r document_ptr) (adopt_node document_ptr node) h h'"
@@ -3020,7 +3045,8 @@ locale l_insert_before\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<
   and get_disconnected_nodes :: "(_) document_ptr \<Rightarrow> ((_) heap, exception, (_) node_ptr list) prog"
   and get_disconnected_nodes_locs :: "(_) document_ptr \<Rightarrow> ((_) heap \<Rightarrow> (_) heap \<Rightarrow> bool) set"
   and get_owner_document :: "(_) object_ptr \<Rightarrow> ((_) heap, exception, (_) document_ptr) prog"
-  and insert_before :: "(_) object_ptr \<Rightarrow> (_) node_ptr \<Rightarrow> (_) node_ptr option \<Rightarrow> ((_) heap, exception, unit) prog"
+    and insert_before ::
+    "(_) object_ptr \<Rightarrow> (_) node_ptr \<Rightarrow> (_) node_ptr option \<Rightarrow> ((_) heap, exception, unit) prog"
   and insert_before_locs :: "(_) object_ptr \<Rightarrow> (_) object_ptr option \<Rightarrow> (_) document_ptr 
                                             \<Rightarrow> (_) document_ptr \<Rightarrow> (_, unit) dom_prog set"
   and append_child :: "(_) object_ptr \<Rightarrow> (_) node_ptr \<Rightarrow> ((_) heap, exception, unit) prog"
@@ -3084,7 +3110,8 @@ lemma insert_before_ptr_in_heap:
   shows "ptr |\<in>| object_ptr_kinds h"
   using assms
   apply(auto simp add: insert_before_def elim!: bind_is_OK_E)[1]
-  by (metis (mono_tags, lifting) ensure_pre_insertion_validity_pure is_OK_returns_result_I local.get_owner_document_ptr_in_heap next_sibling_pure pure_returns_heap_eq return_returns_heap)
+  by (metis (mono_tags, lifting) ensure_pre_insertion_validity_pure is_OK_returns_result_I
+      local.get_owner_document_ptr_in_heap next_sibling_pure pure_returns_heap_eq return_returns_heap)
 
 lemma insert_before_child_in_heap:
   assumes "h \<turnstile> ok (insert_before ptr node reference_child)"
@@ -3203,7 +3230,7 @@ subsubsection \<open>create\_element\<close>
 locale l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs =
   l_get_disconnected_nodes_defs get_disconnected_nodes get_disconnected_nodes_locs +
   l_set_disconnected_nodes_defs set_disconnected_nodes set_disconnected_nodes_locs +
-  l_set_tag_type_defs set_tag_type set_tag_type_locs
+  l_set_tag_name_defs set_tag_name set_tag_name_locs
   for get_disconnected_nodes :: 
       "(_) document_ptr \<Rightarrow> ((_) heap, exception, (_) node_ptr list) prog"
   and get_disconnected_nodes_locs :: 
@@ -3212,16 +3239,16 @@ locale l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\
       "(_) document_ptr \<Rightarrow> (_) node_ptr list \<Rightarrow> ((_) heap, exception, unit) prog"
   and set_disconnected_nodes_locs :: 
       "(_) document_ptr \<Rightarrow> ((_) heap, exception, unit) prog set"
-  and set_tag_type :: 
+    and set_tag_name ::
       "(_) element_ptr \<Rightarrow> char list \<Rightarrow> ((_) heap, exception, unit) prog"
-  and set_tag_type_locs :: 
+    and set_tag_name_locs ::
       "(_) element_ptr \<Rightarrow> ((_) heap, exception, unit) prog set"
 begin
-definition a_create_element :: "(_) document_ptr \<Rightarrow> tag_type \<Rightarrow> (_, (_) element_ptr) dom_prog"
+definition a_create_element :: "(_) document_ptr \<Rightarrow> tag_name \<Rightarrow> (_, (_) element_ptr) dom_prog"
   where
     "a_create_element document_ptr tag = do {
       new_element_ptr \<leftarrow> new_element;
-      set_tag_type new_element_ptr tag;
+      set_tag_name new_element_ptr tag;
       disc_nodes \<leftarrow> get_disconnected_nodes document_ptr;
       set_disconnected_nodes document_ptr (cast new_element_ptr # disc_nodes);
       return new_element_ptr
@@ -3229,28 +3256,29 @@ definition a_create_element :: "(_) document_ptr \<Rightarrow> tag_type \<Righta
 end
 
 locale l_create_element_defs =
-  fixes create_element :: "(_) document_ptr \<Rightarrow> tag_type \<Rightarrow> (_, (_) element_ptr) dom_prog"
+  fixes create_element :: "(_) document_ptr \<Rightarrow> tag_name \<Rightarrow> (_, (_) element_ptr) dom_prog"
 
 global_interpretation l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs get_disconnected_nodes get_disconnected_nodes_locs 
                                                   set_disconnected_nodes set_disconnected_nodes_locs 
-                                                  set_tag_type set_tag_type_locs
+  set_tag_name set_tag_name_locs
   defines 
   create_element = "l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs.a_create_element get_disconnected_nodes 
-                                                                set_disconnected_nodes set_tag_type"
+                                                                set_disconnected_nodes set_tag_name"
   .
 
 locale l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M =
-  l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs get_disconnected_nodes get_disconnected_nodes_locs set_disconnected_nodes set_disconnected_nodes_locs set_tag_type set_tag_type_locs +
+  l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs get_disconnected_nodes get_disconnected_nodes_locs
+  set_disconnected_nodes set_disconnected_nodes_locs set_tag_name set_tag_name_locs +
   l_get_disconnected_nodes type_wf get_disconnected_nodes get_disconnected_nodes_locs +
-  l_set_tag_type type_wf set_tag_type set_tag_type_locs +
+  l_set_tag_name type_wf set_tag_name set_tag_name_locs +
   l_create_element_defs create_element +
   l_known_ptr known_ptr
   for get_disconnected_nodes :: "(_) document_ptr \<Rightarrow> ((_) heap, exception, (_) node_ptr list) prog"
   and get_disconnected_nodes_locs :: "(_) document_ptr \<Rightarrow> ((_) heap \<Rightarrow> (_) heap \<Rightarrow> bool) set"
   and set_disconnected_nodes :: "(_) document_ptr \<Rightarrow> (_) node_ptr list \<Rightarrow> ((_) heap, exception, unit) prog"
   and set_disconnected_nodes_locs :: "(_) document_ptr \<Rightarrow> ((_) heap, exception, unit) prog set"
-  and set_tag_type :: "(_) element_ptr \<Rightarrow> char list \<Rightarrow> ((_) heap, exception, unit) prog"
-  and set_tag_type_locs :: "(_) element_ptr \<Rightarrow> ((_) heap, exception, unit) prog set"
+    and set_tag_name :: "(_) element_ptr \<Rightarrow> char list \<Rightarrow> ((_) heap, exception, unit) prog"
+    and set_tag_name_locs :: "(_) element_ptr \<Rightarrow> ((_) heap, exception, unit) prog set"
   and type_wf :: "(_) heap \<Rightarrow> bool"
   and create_element :: "(_) document_ptr \<Rightarrow> char list \<Rightarrow> ((_) heap, exception, (_) element_ptr) prog"
   and known_ptr :: "(_) object_ptr \<Rightarrow> bool" +
@@ -3270,7 +3298,7 @@ proof -
   obtain new_element_ptr h2 h3 disc_nodes_h3 where
     new_element_ptr: "h \<turnstile> new_element \<rightarrow>\<^sub>r new_element_ptr" and
     h2: "h \<turnstile> new_element \<rightarrow>\<^sub>h h2" and
-    h3: "h2 \<turnstile> set_tag_type new_element_ptr tag \<rightarrow>\<^sub>h h3" and
+    h3: "h2 \<turnstile> set_tag_name new_element_ptr tag \<rightarrow>\<^sub>h h3" and
     disc_nodes_h3: "h3 \<turnstile> get_disconnected_nodes document_ptr \<rightarrow>\<^sub>r disc_nodes_h3" and
     h': "h3 \<turnstile> set_disconnected_nodes document_ptr (cast new_element_ptr # disc_nodes_h3) \<rightarrow>\<^sub>h h'"
     by(auto simp add: create_element_def
@@ -3281,8 +3309,9 @@ proof -
     using new_element_new_ptr h2 new_element_ptr by blast
   
   moreover have object_ptr_kinds_eq_h2: "object_ptr_kinds h3 = object_ptr_kinds h2"
-    apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h' = object_ptr_kinds h", OF set_tag_type_writes h3])
-    using set_tag_type_pointers_preserved
+    apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h' = object_ptr_kinds h",
+          OF set_tag_name_writes h3])
+    using set_tag_name_pointers_preserved
     by (auto simp add: reflp_def transp_def)
   moreover have "document_ptr |\<in>| document_ptr_kinds h3"
     by (meson disc_nodes_h3 is_OK_returns_result_I local.get_disconnected_nodes_ptr_in_heap)
@@ -3301,14 +3330,17 @@ proof -
     using new_element_is_element_ptr
     by blast
   then show ?thesis
-    by(auto simp add: known_ptr_impl DocumentClass.known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs)
+    by(auto simp add: known_ptr_impl DocumentClass.known_ptr_defs CharacterDataClass.known_ptr_defs
+        ElementClass.known_ptr_defs)
 qed
 end
 
 locale l_create_element = l_create_element_defs
 
 interpretation
-  i_create_element?: l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M get_disconnected_nodes get_disconnected_nodes_locs set_disconnected_nodes set_disconnected_nodes_locs set_tag_type set_tag_type_locs type_wf create_element known_ptr
+  i_create_element?: l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M get_disconnected_nodes get_disconnected_nodes_locs
+  set_disconnected_nodes set_disconnected_nodes_locs set_tag_name set_tag_name_locs type_wf
+  create_element known_ptr
   by(auto simp add: l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_def l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms_def create_element_def instances)
 declare l_create_element\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms[instances]
 
@@ -3388,7 +3420,8 @@ proof -
     using new_character_data_new_ptr h2 new_character_data_ptr by blast
   
   moreover have object_ptr_kinds_eq_h2: "object_ptr_kinds h3 = object_ptr_kinds h2"
-    apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h' = object_ptr_kinds h", OF set_val_writes h3])
+    apply(rule writes_small_big[where P="\<lambda>h h'. object_ptr_kinds h' = object_ptr_kinds h",
+          OF set_val_writes h3])
     using set_val_pointers_preserved
     by (auto simp add: reflp_def transp_def)
   moreover have "document_ptr |\<in>| document_ptr_kinds h3"
@@ -3408,15 +3441,19 @@ proof -
     using new_character_data_is_character_data_ptr
     by blast
   then show ?thesis
-    by(auto simp add: known_ptr_impl DocumentClass.known_ptr_defs CharacterDataClass.known_ptr_defs ElementClass.known_ptr_defs)
+    by(auto simp add: known_ptr_impl DocumentClass.known_ptr_defs CharacterDataClass.known_ptr_defs
+        ElementClass.known_ptr_defs)
 qed
 end
 
 locale l_create_character_data = l_create_character_data_defs
 
 interpretation
-  i_create_character_data?: l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M get_disconnected_nodes get_disconnected_nodes_locs set_disconnected_nodes set_disconnected_nodes_locs set_val set_val_locs type_wf create_character_data known_ptr
-  by(auto simp add: l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_def l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms_def create_character_data_def instances)
+  i_create_character_data?: l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M get_disconnected_nodes
+  get_disconnected_nodes_locs set_disconnected_nodes set_disconnected_nodes_locs set_val set_val_locs
+  type_wf create_character_data known_ptr
+  by(auto simp add: l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_def l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms_def
+      create_character_data_def instances)
 declare l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms [instances]
 
 
@@ -3612,11 +3649,11 @@ definition a_get_elements_by_class_name :: "(_) object_ptr \<Rightarrow> attr_va
 
 definition a_get_elements_by_tag_name :: "(_) object_ptr \<Rightarrow> attr_value \<Rightarrow> (_, (_) element_ptr list) dom_prog"
   where
-    "a_get_elements_by_tag_name ptr tag_name = to_tree_order ptr \<bind>
+    "a_get_elements_by_tag_name ptr tag = to_tree_order ptr \<bind>
       map_filter_M (\<lambda>ptr. (case cast ptr of
         Some element_ptr \<Rightarrow> do {
-          this_tag_name \<leftarrow> get_M element_ptr tag_type;
-          (if this_tag_name = tag_name then return (Some element_ptr) else return None)
+          this_tag_name \<leftarrow> get_M element_ptr tag_name;
+          (if this_tag_name = tag then return (Some element_ptr) else return None)
         }
       | _ \<Rightarrow> return None))"
 end
@@ -3631,7 +3668,8 @@ l_get_element_by\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M
 defines                      
   get_element_by_id = "l_get_element_by\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs.a_get_element_by_id first_in_tree_order get_attribute" 
 and
-  get_elements_by_class_name = "l_get_element_by\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs.a_get_elements_by_class_name to_tree_order get_attribute" 
+    get_elements_by_class_name = "l_get_element_by\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs.a_get_elements_by_class_name
+to_tree_order get_attribute"
 and
   get_elements_by_tag_name = "l_get_element_by\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs.a_get_elements_by_tag_name to_tree_order" .
 
@@ -3642,13 +3680,17 @@ locale l_get_element_by\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\
   l_to_tree_order to_tree_order +
   l_get_attribute type_wf get_attribute get_attribute_locs
   for to_tree_order :: "(_::linorder) object_ptr \<Rightarrow> ((_) heap, exception, (_) object_ptr list) prog"
-  and first_in_tree_order :: "(_) object_ptr \<Rightarrow> ((_) object_ptr \<Rightarrow> ((_) heap, exception, (_) element_ptr option) prog) 
+    and first_in_tree_order ::
+    "(_) object_ptr \<Rightarrow> ((_) object_ptr \<Rightarrow> ((_) heap, exception, (_) element_ptr option) prog)
                                              \<Rightarrow> ((_) heap, exception, (_) element_ptr option) prog"
   and get_attribute :: "(_) element_ptr \<Rightarrow> char list \<Rightarrow> ((_) heap, exception, char list option) prog"
   and get_attribute_locs :: "(_) element_ptr \<Rightarrow> ((_) heap \<Rightarrow> (_) heap \<Rightarrow> bool) set"
-  and get_element_by_id :: "(_) object_ptr \<Rightarrow> char list \<Rightarrow> ((_) heap, exception, (_) element_ptr option) prog"
-  and get_elements_by_class_name :: "(_) object_ptr \<Rightarrow> char list \<Rightarrow> ((_) heap, exception, (_) element_ptr list) prog"
-  and get_elements_by_tag_name :: "(_) object_ptr \<Rightarrow> char list \<Rightarrow> ((_) heap, exception, (_) element_ptr list) prog"
+    and get_element_by_id ::
+    "(_) object_ptr \<Rightarrow> char list \<Rightarrow> ((_) heap, exception, (_) element_ptr option) prog"
+    and get_elements_by_class_name ::
+    "(_) object_ptr \<Rightarrow> char list \<Rightarrow> ((_) heap, exception, (_) element_ptr list) prog"
+    and get_elements_by_tag_name ::
+    "(_) object_ptr \<Rightarrow> char list \<Rightarrow> ((_) heap, exception, (_) element_ptr list) prog"
   and type_wf :: "(_) heap \<Rightarrow> bool" +
   assumes get_element_by_id_impl: "get_element_by_id = a_get_element_by_id"
   assumes get_elements_by_class_name_impl: "get_elements_by_class_name = a_get_elements_by_class_name"
@@ -3696,7 +3738,7 @@ lemma get_elements_by_tag_name_result_in_tree_order:
                intro!: map_filter_M_pure map_M_pure_I bind_pure_I 
                split: option.splits list.splits if_splits)
 
-lemma get_elements_by_tag_name_pure [simp]: "pure (get_elements_by_tag_name ptr tag_name) h"
+lemma get_elements_by_tag_name_pure [simp]: "pure (get_elements_by_tag_name ptr tag) h"
   by(auto simp add: get_elements_by_tag_name_def 
           intro!: bind_pure_I map_filter_M_pure 
           split: option.splits)
@@ -3706,7 +3748,7 @@ locale l_get_element_by = l_get_element_by_defs + l_to_tree_order_defs +
   assumes get_element_by_id_result_in_tree_order: 
           "h \<turnstile> get_element_by_id ptr iden \<rightarrow>\<^sub>r Some element_ptr \<Longrightarrow> h \<turnstile> to_tree_order ptr \<rightarrow>\<^sub>r to 
                \<Longrightarrow> cast element_ptr \<in> set to"
-  assumes get_elements_by_tag_name_pure [simp]: "pure (get_elements_by_tag_name ptr tag_name) h"
+  assumes get_elements_by_tag_name_pure [simp]: "pure (get_elements_by_tag_name ptr tag) h"
 
 interpretation 
   i_get_element_by?: l_get_element_by\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M to_tree_order first_in_tree_order get_attribute 

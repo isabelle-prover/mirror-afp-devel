@@ -127,9 +127,13 @@ lemmas known_ptr_defs = a_known_ptr_def
 locale l_known_ptrs = l_known_ptr known_ptr for known_ptr :: "(_) object_ptr \<Rightarrow> bool" +
   fixes known_ptrs :: "(_) heap \<Rightarrow> bool"
   assumes known_ptrs_known_ptr: "known_ptrs h \<Longrightarrow> ptr |\<in>| object_ptr_kinds h \<Longrightarrow> known_ptr ptr"
-  assumes known_ptrs_preserved: "object_ptr_kinds h = object_ptr_kinds h' \<Longrightarrow> known_ptrs h = known_ptrs h'"
-  assumes known_ptrs_subset: "object_ptr_kinds h' |\<subseteq>| object_ptr_kinds h \<Longrightarrow> known_ptrs h \<Longrightarrow> known_ptrs h'"
-  assumes known_ptrs_new_ptr: "object_ptr_kinds h' = object_ptr_kinds h |\<union>| {|new_ptr|} \<Longrightarrow> known_ptr new_ptr \<Longrightarrow> known_ptrs h \<Longrightarrow> known_ptrs h'"
+  assumes known_ptrs_preserved:
+    "object_ptr_kinds h = object_ptr_kinds h' \<Longrightarrow> known_ptrs h = known_ptrs h'"
+  assumes known_ptrs_subset:
+    "object_ptr_kinds h' |\<subseteq>| object_ptr_kinds h \<Longrightarrow> known_ptrs h \<Longrightarrow> known_ptrs h'"
+  assumes known_ptrs_new_ptr:
+    "object_ptr_kinds h' = object_ptr_kinds h |\<union>| {|new_ptr|} \<Longrightarrow> known_ptr new_ptr \<Longrightarrow>
+known_ptrs h \<Longrightarrow> known_ptrs h'"
 
 locale l_known_ptrs\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t = l_known_ptr known_ptr for known_ptr :: "(_) object_ptr \<Rightarrow> bool"
 begin
@@ -142,11 +146,15 @@ lemma known_ptrs_known_ptr:
   apply(simp add: a_known_ptrs_def)
   using notin_fset by fastforce
 
-lemma known_ptrs_preserved: "object_ptr_kinds h = object_ptr_kinds h' \<Longrightarrow> a_known_ptrs h = a_known_ptrs h'"
+lemma known_ptrs_preserved:
+  "object_ptr_kinds h = object_ptr_kinds h' \<Longrightarrow> a_known_ptrs h = a_known_ptrs h'"
   by(auto simp add: a_known_ptrs_def)
-lemma known_ptrs_subset: "object_ptr_kinds h' |\<subseteq>| object_ptr_kinds h \<Longrightarrow> a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
+lemma known_ptrs_subset:
+  "object_ptr_kinds h' |\<subseteq>| object_ptr_kinds h \<Longrightarrow> a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
   by(simp add: a_known_ptrs_def less_eq_fset.rep_eq subsetD)
-lemma known_ptrs_new_ptr: "object_ptr_kinds h' = object_ptr_kinds h |\<union>| {|new_ptr|} \<Longrightarrow> known_ptr new_ptr \<Longrightarrow> a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
+lemma known_ptrs_new_ptr:
+  "object_ptr_kinds h' = object_ptr_kinds h |\<union>| {|new_ptr|} \<Longrightarrow> known_ptr new_ptr \<Longrightarrow>
+a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
   by(simp add: a_known_ptrs_def)
 end
 global_interpretation l_known_ptrs\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t known_ptr defines known_ptrs = a_known_ptrs .

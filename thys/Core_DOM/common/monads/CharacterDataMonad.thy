@@ -308,7 +308,7 @@ lemma type_wf_put_ptr_not_in_heap_E:
   shows "type_wf h"
   using assms
   apply(auto simp add: type_wf_defs elim!: ElementMonad.type_wf_put_ptr_not_in_heap_E 
-      split: option.splits if_splits)
+      split: option.splits if_splits)[1]
   using assms(2) node_ptr_kinds_commutes by blast
 
 lemma type_wf_put_ptr_in_heap_E:
@@ -319,7 +319,8 @@ lemma type_wf_put_ptr_in_heap_E:
   shows "type_wf h"
   using assms
   apply(auto simp add: type_wf_defs split: option.splits if_splits)[1]
-  by (metis (no_types, lifting) ElementClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf assms(2) bind.bind_lunit cast\<^sub>N\<^sub>o\<^sub>d\<^sub>e\<^sub>2\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_inv cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e_inv get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_def get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def notin_fset option.collapse)
+  by (metis (no_types, lifting) ElementClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf assms(2) bind.bind_lunit
+      cast\<^sub>N\<^sub>o\<^sub>d\<^sub>e\<^sub>2\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_inv cast\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>2\<^sub>N\<^sub>o\<^sub>d\<^sub>e_inv get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_def get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def notin_fset option.collapse)
 
 subsection\<open>Preserving Types\<close>
 
@@ -340,8 +341,8 @@ lemma new_element_is_l_new_element: "l_new_element type_wf"
   using l_new_element.intro new_element_type_wf_preserved
   by blast
 
-lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_tag_type_type_wf_preserved [simp]: 
-  "h \<turnstile> put_M element_ptr tag_type_update v \<rightarrow>\<^sub>h h' \<Longrightarrow> type_wf h = type_wf h'"
+lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_tag_name_type_wf_preserved [simp]:
+  "h \<turnstile> put_M element_ptr tag_name_update v \<rightarrow>\<^sub>h h' \<Longrightarrow> type_wf h = type_wf h'"
   apply(auto simp add: ElementMonad.put_M_defs put\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def put\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def 
       dest!: get_heap_E  
       elim!: bind_returns_heap_E2 
@@ -526,6 +527,8 @@ lemma type_wf_drop: "type_wf h \<Longrightarrow> type_wf (Heap (fmdrop ptr (the_
   apply(auto simp add: type_wf_def ElementMonad.type_wf_drop  
       l_type_wf_def\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a.a_type_wf_def)[1]
   using type_wf_drop
-  by (metis (no_types, lifting) ElementClass.type_wf\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t ObjectClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf character_data_ptr_kinds_commutes finite_set_in fmlookup_drop get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_def get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def node_ptr_kinds_commutes object_ptr_kinds_code5)
+  by (metis (no_types, lifting) ElementClass.type_wf\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t ObjectClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf
+      character_data_ptr_kinds_commutes finite_set_in fmlookup_drop get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_def get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def
+      get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def node_ptr_kinds_commutes object_ptr_kinds_code5)
 
 end

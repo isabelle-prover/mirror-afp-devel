@@ -165,7 +165,7 @@ lemma type_wf_put_ptr_in_heap_E:
   assumes "is_node_ptr_kind ptr \<Longrightarrow> is_node_kind (the (get ptr h))"
   shows "type_wf h"
   using assms
-  apply(auto simp add: type_wf_defs split: option.splits if_splits)
+  apply(auto simp add: type_wf_defs split: option.splits if_splits)[1]
   by (metis ObjectClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf bind.bind_lunit finite_set_in get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def is_node_kind_def option.exhaust_sel)
 
 
@@ -192,7 +192,7 @@ lemma type_wf_preserved_small:
   assumes "\<And>node_ptr. preserved (get_M\<^sub>N\<^sub>o\<^sub>d\<^sub>e node_ptr RNode.nothing) h h'"
   shows "type_wf h = type_wf h'"
   using type_wf_preserved allI[OF assms(2), of id, simplified]
-  apply(auto simp add: type_wf_defs)
+  apply(auto simp add: type_wf_defs)[1]
    apply(auto simp add: preserved_def get_M_defs node_ptr_kinds_small[OF assms(1)]
       split: option.splits)[1]
   apply (metis notin_fset option.simps(3))

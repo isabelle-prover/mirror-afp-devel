@@ -142,19 +142,23 @@ fun get_element_by_id_with_null :: "((_::linorder) object_ptr option) \<Rightarr
   | "get_element_by_id_with_null _ _ = error SegmentationFault"
 notation get_element_by_id_with_null ("_ . getElementById'(_')")
 
-fun get_elements_by_class_name_with_null :: "((_::linorder) object_ptr option) \<Rightarrow> string \<Rightarrow> (_, ((_) object_ptr option) list) dom_prog"
+fun get_elements_by_class_name_with_null ::
+"((_::linorder) object_ptr option) \<Rightarrow> string \<Rightarrow> (_, ((_) object_ptr option) list) dom_prog"
   where                                                                     
     "get_elements_by_class_name_with_null (Some ptr) class_name =
       get_elements_by_class_name ptr class_name \<bind> map_M (return \<circ> Some \<circ> cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r)"
 notation get_elements_by_class_name_with_null ("_ . getElementsByClassName'(_')")
 
-fun get_elements_by_tag_name_with_null :: "((_::linorder) object_ptr option) \<Rightarrow> string \<Rightarrow> (_, ((_) object_ptr option) list) dom_prog"
+fun get_elements_by_tag_name_with_null ::
+"((_::linorder) object_ptr option) \<Rightarrow> string \<Rightarrow> (_, ((_) object_ptr option) list) dom_prog"
   where                                                                     
-    "get_elements_by_tag_name_with_null (Some ptr) tag_name =
-      get_elements_by_tag_name ptr tag_name \<bind> map_M (return \<circ> Some \<circ> cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r)"
+    "get_elements_by_tag_name_with_null (Some ptr) tag =
+      get_elements_by_tag_name ptr tag \<bind> map_M (return \<circ> Some \<circ> cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r)"
 notation get_elements_by_tag_name_with_null ("_ . getElementsByTagName'(_')")
 
-fun insert_before_with_null :: "((_::linorder) object_ptr option) \<Rightarrow> ((_) object_ptr option) \<Rightarrow> ((_) object_ptr option) \<Rightarrow> (_, ((_) object_ptr option)) dom_prog"
+fun insert_before_with_null ::
+"((_::linorder) object_ptr option) \<Rightarrow> ((_) object_ptr option) \<Rightarrow> ((_) object_ptr option) \<Rightarrow>
+(_, ((_) object_ptr option)) dom_prog"
   where
     "insert_before_with_null (Some ptr) (Some child_obj) ref_child_obj_opt = (case cast child_obj of
       Some child \<Rightarrow> do {
@@ -165,7 +169,8 @@ fun insert_before_with_null :: "((_::linorder) object_ptr option) \<Rightarrow> 
     | None \<Rightarrow> error HierarchyRequestError)"
 notation insert_before_with_null ("_ . insertBefore'(_, _')")
 
-fun append_child_with_null :: "((_::linorder) object_ptr option) \<Rightarrow> ((_) object_ptr option) \<Rightarrow> (_, unit) dom_prog"
+fun append_child_with_null :: "((_::linorder) object_ptr option) \<Rightarrow> ((_) object_ptr option) \<Rightarrow>
+(_, unit) dom_prog"
   where
     "append_child_with_null (Some ptr) (Some child_obj) = (case cast child_obj of
       Some child \<Rightarrow> append_child ptr child
@@ -180,7 +185,8 @@ fun get_body :: "((_::linorder) object_ptr option) \<Rightarrow> (_, ((_) object
     }"
 notation get_body ("_ . body")
 
-fun get_document_element_with_null :: "((_::linorder) object_ptr option) \<Rightarrow> (_, ((_) object_ptr option)) dom_prog"
+fun get_document_element_with_null :: "((_::linorder) object_ptr option) \<Rightarrow>
+(_, ((_) object_ptr option)) dom_prog"
   where
     "get_document_element_with_null (Some ptr) = (case cast\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r ptr of
     Some document_ptr \<Rightarrow> do {
@@ -190,14 +196,16 @@ fun get_document_element_with_null :: "((_::linorder) object_ptr option) \<Right
       | None \<Rightarrow> None)})"
 notation get_document_element_with_null ("_ . documentElement")
 
-fun get_owner_document_with_null :: "((_::linorder) object_ptr option) \<Rightarrow> (_, ((_) object_ptr option)) dom_prog"
+fun get_owner_document_with_null :: "((_::linorder) object_ptr option) \<Rightarrow>
+(_, ((_) object_ptr option)) dom_prog"
   where
     "get_owner_document_with_null (Some ptr) = (do {
         document_ptr \<leftarrow> get_owner_document ptr;
         return (Some (cast\<^sub>d\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r document_ptr))})"
 notation get_owner_document_with_null ("_ . ownerDocument")
 
-fun remove_with_null :: "((_::linorder) object_ptr option) \<Rightarrow> ((_) object_ptr option) \<Rightarrow> (_, ((_) object_ptr option)) dom_prog"
+fun remove_with_null :: "((_::linorder) object_ptr option) \<Rightarrow> ((_) object_ptr option) \<Rightarrow>
+(_, ((_) object_ptr option)) dom_prog"
   where
     "remove_with_null (Some ptr) (Some child) = (case cast child of
       Some child_node \<Rightarrow> do {
@@ -208,7 +216,8 @@ fun remove_with_null :: "((_::linorder) object_ptr option) \<Rightarrow> ((_) ob
   | "remove_with_null _ None = error TypeError"
 notation remove_with_null ("_ . remove'(')")
 
-fun remove_child_with_null :: "((_::linorder) object_ptr option) \<Rightarrow> ((_) object_ptr option) \<Rightarrow> (_, ((_) object_ptr option)) dom_prog"
+fun remove_child_with_null :: "((_::linorder) object_ptr option) \<Rightarrow> ((_) object_ptr option) \<Rightarrow>
+(_, ((_) object_ptr option)) dom_prog"
   where
     "remove_child_with_null (Some ptr) (Some child) = (case cast child of
       Some child_node \<Rightarrow> do {
@@ -222,7 +231,7 @@ notation remove_child_with_null ("_ . removeChild")
 fun get_tag_name_with_null :: "((_) object_ptr option) \<Rightarrow> (_, attr_value) dom_prog"
   where
     "get_tag_name_with_null (Some ptr) = (case cast ptr of
-      Some element_ptr \<Rightarrow> get_M element_ptr tag_type)"
+      Some element_ptr \<Rightarrow> get_M element_ptr tag_name)"
 notation get_tag_name_with_null ("_ . tagName")
 
 abbreviation "remove_attribute_with_null ptr k \<equiv> set_attribute_with_null2 ptr k None"
@@ -256,7 +265,8 @@ fun first_child_with_null :: "((_) object_ptr option) \<Rightarrow> (_, ((_) obj
       | None \<Rightarrow> None)}"
 notation first_child_with_null ("_ . firstChild")
 
-fun adopt_node_with_null :: "((_::linorder) object_ptr option) \<Rightarrow> ((_) object_ptr option) \<Rightarrow> (_, ((_) object_ptr option)) dom_prog"
+fun adopt_node_with_null ::
+"((_::linorder) object_ptr option) \<Rightarrow> ((_) object_ptr option) \<Rightarrow>(_, ((_) object_ptr option)) dom_prog"
   where
     "adopt_node_with_null (Some ptr) (Some child) = (case cast ptr of
       Some document_ptr \<Rightarrow> (case cast child of
@@ -266,7 +276,8 @@ fun adopt_node_with_null :: "((_::linorder) object_ptr option) \<Rightarrow> ((_
 notation adopt_node_with_null ("_ . adoptNode'(_')")
       
 
-definition createTestTree :: "((_::linorder) object_ptr option) \<Rightarrow> (_, (string \<Rightarrow>  (_, ((_) object_ptr option)) dom_prog)) dom_prog"
+definition createTestTree ::
+"((_::linorder) object_ptr option) \<Rightarrow> (_, (string \<Rightarrow>  (_, ((_) object_ptr option)) dom_prog)) dom_prog"
   where
    "createTestTree ref = return (\<lambda>id. get_element_by_id_with_null ref id)"
 

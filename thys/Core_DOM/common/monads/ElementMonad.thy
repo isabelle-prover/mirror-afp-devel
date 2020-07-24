@@ -233,10 +233,10 @@ lemma new_element_child_nodes:
   by(auto simp add: get_M_defs new_element_def new\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def Let_def 
       split: option.splits prod.splits elim!: bind_returns_result_E bind_returns_heap_E)
 
-lemma new_element_tag_type:
+lemma new_element_tag_name:
   assumes "h \<turnstile> new_element \<rightarrow>\<^sub>h h'"
   assumes "h \<turnstile> new_element \<rightarrow>\<^sub>r new_element_ptr"
-  shows "h' \<turnstile> get_M new_element_ptr tag_type \<rightarrow>\<^sub>r ''''"
+  shows "h' \<turnstile> get_M new_element_ptr tag_name \<rightarrow>\<^sub>r ''''"
   using assms
   by(auto simp add: get_M_defs new_element_def new\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def Let_def 
       split: option.splits prod.splits elim!: bind_returns_result_E bind_returns_heap_E)
@@ -338,8 +338,8 @@ lemma new_element_is_l_new_element: "l_new_element type_wf"
   using l_new_element.intro new_element_type_wf_preserved
   by blast
 
-lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_tag_type_type_wf_preserved [simp]: 
-  "h \<turnstile> put_M element_ptr tag_type_update v \<rightarrow>\<^sub>h h' \<Longrightarrow> type_wf h = type_wf h'"
+lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_tag_name_type_wf_preserved [simp]:
+  "h \<turnstile> put_M element_ptr tag_name_update v \<rightarrow>\<^sub>h h' \<Longrightarrow> type_wf h = type_wf h'"
   apply(auto simp add: type_wf_defs NodeClass.type_wf_defs ObjectClass.type_wf_defs  
       Let_def put_M_defs get_M_defs put\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def put\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def put\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def 
       get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def 

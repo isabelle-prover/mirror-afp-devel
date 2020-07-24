@@ -181,18 +181,23 @@ definition a_known_ptrs :: "(_) heap \<Rightarrow> bool"
 lemma known_ptrs_known_ptr: "a_known_ptrs h \<Longrightarrow> ptr |\<in>| object_ptr_kinds h \<Longrightarrow> known_ptr ptr"
   apply(simp add: a_known_ptrs_def)
   using notin_fset by fastforce
-lemma known_ptrs_preserved: "object_ptr_kinds h = object_ptr_kinds h' \<Longrightarrow> a_known_ptrs h = a_known_ptrs h'"
+lemma known_ptrs_preserved:
+  "object_ptr_kinds h = object_ptr_kinds h' \<Longrightarrow> a_known_ptrs h = a_known_ptrs h'"
   by(auto simp add: a_known_ptrs_def)
-lemma known_ptrs_subset: "object_ptr_kinds h' |\<subseteq>| object_ptr_kinds h \<Longrightarrow> a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
+lemma known_ptrs_subset:
+  "object_ptr_kinds h' |\<subseteq>| object_ptr_kinds h \<Longrightarrow> a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
   by(simp add: a_known_ptrs_def less_eq_fset.rep_eq subsetD)
-lemma known_ptrs_new_ptr: "object_ptr_kinds h' = object_ptr_kinds h |\<union>| {|new_ptr|} \<Longrightarrow> known_ptr new_ptr \<Longrightarrow> a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
+lemma known_ptrs_new_ptr:
+  "object_ptr_kinds h' = object_ptr_kinds h |\<union>| {|new_ptr|} \<Longrightarrow> known_ptr new_ptr \<Longrightarrow>
+a_known_ptrs h \<Longrightarrow> a_known_ptrs h'"
   by(simp add: a_known_ptrs_def)
 end
 global_interpretation l_known_ptrs\<^sub>N\<^sub>o\<^sub>d\<^sub>e known_ptr defines known_ptrs = a_known_ptrs .
 lemmas known_ptrs_defs = a_known_ptrs_def
 
 lemma known_ptrs_is_l_known_ptrs: "l_known_ptrs known_ptr known_ptrs"
-  using known_ptrs_known_ptr known_ptrs_preserved l_known_ptrs_def known_ptrs_subset known_ptrs_new_ptr
+  using known_ptrs_known_ptr known_ptrs_preserved l_known_ptrs_def known_ptrs_subset
+    known_ptrs_new_ptr
   by blast
 
 lemma get_node_ptr_simp1 [simp]: "get\<^sub>N\<^sub>o\<^sub>d\<^sub>e node_ptr (put\<^sub>N\<^sub>o\<^sub>d\<^sub>e node_ptr node h) = Some node"

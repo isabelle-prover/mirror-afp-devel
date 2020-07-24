@@ -93,7 +93,8 @@ definition
   where
     "returns_result_heap h p r h' \<longleftrightarrow> h \<turnstile> p \<rightarrow>\<^sub>r r \<and> h \<turnstile> p \<rightarrow>\<^sub>h h'"
 
-lemma return_result_heap_code [code]: "returns_result_heap h p r h' \<longleftrightarrow> (case h \<turnstile> p of Inr (r', h'') \<Rightarrow> r = r' \<and> h' = h'' | Inl _ \<Rightarrow> False)" 
+lemma return_result_heap_code [code]:
+  "returns_result_heap h p r h' \<longleftrightarrow> (case h \<turnstile> p of Inr (r', h'') \<Rightarrow> r = r' \<and> h' = h'' | Inl _ \<Rightarrow> False)"
   by(auto simp add: returns_result_heap_def returns_result_def returns_heap_def split: sum.splits)
 
 fun select_result_heap ("|(_)|\<^sub>r\<^sub>h")
@@ -452,32 +453,12 @@ fun forall_M :: "('y \<Rightarrow> ('heap, 'e, 'result) prog) \<Rightarrow> 'y l
       P x;
       forall_M P xs
     }"
-    (* 
-lemma forall_M_elim:
-  assumes "h \<turnstile> forall_M P xs \<rightarrow>\<^sub>r True" and "\<And>x h. x \<in> set xs \<Longrightarrow> pure (P x) h"
-  shows "\<forall>x \<in> set xs. h \<turnstile> P x \<rightarrow>\<^sub>r True"
-  apply(insert assms, induct xs)
-   apply(simp)
-  apply(auto elim!: bind_returns_result_E)[1]
-  by (metis (full_types) pure_returns_heap_eq) *)
+    
 
 lemma pure_forall_M_I: "(\<And>x. x \<in> set xs \<Longrightarrow> pure (P x) h) \<Longrightarrow> pure (forall_M P xs) h"
   apply(induct xs)
   by(auto intro!: bind_pure_I)
-    (* 
-lemma forall_M_pure_I:
-  assumes "\<And>x. x \<in> set xs \<Longrightarrow> h \<turnstile> P x \<rightarrow>\<^sub>r True" and "\<And>x h. x \<in> set xs \<Longrightarrow> pure (P x)h" 
-  shows "h \<turnstile> forall_M P xs \<rightarrow>\<^sub>r True"
-  apply(insert assms, induct xs)
-   apply(simp)
-  by(fastforce)
-
-lemma forall_M_pure_eq:
-  assumes "\<And>x. x \<in> set xs \<Longrightarrow> h \<turnstile> P x \<rightarrow>\<^sub>r True \<longleftrightarrow> h' \<turnstile> P x \<rightarrow>\<^sub>r True" 
-      and "\<And>x h. x \<in> set xs \<Longrightarrow> pure (P x) h"
-  shows "(h \<turnstile> forall_M P xs \<rightarrow>\<^sub>r True) \<longleftrightarrow> h' \<turnstile> forall_M P xs \<rightarrow>\<^sub>r True"
-  using assms
-  by(auto intro!: forall_M_pure_I dest!: forall_M_elim) *)
+   
 
 subsection \<open>Fold\<close>
 
@@ -506,7 +487,8 @@ lemma filter_M_pure_I [intro]: "(\<And>x. x \<in> set xs \<Longrightarrow> pure 
   apply(induct xs) 
   by(auto intro!: bind_pure_I)
 
-lemma filter_M_is_OK_I [intro]: "(\<And>x. x \<in> set xs \<Longrightarrow> h \<turnstile> ok (P x)) \<Longrightarrow> (\<And>x. x \<in> set xs \<Longrightarrow> pure (P x) h) \<Longrightarrow> h \<turnstile> ok (filter_M P xs)"
+lemma filter_M_is_OK_I [intro]:
+  "(\<And>x. x \<in> set xs \<Longrightarrow> h \<turnstile> ok (P x)) \<Longrightarrow> (\<And>x. x \<in> set xs \<Longrightarrow> pure (P x) h) \<Longrightarrow> h \<turnstile> ok (filter_M P xs)"
   apply(induct xs)
    apply(simp)
   by(auto intro!: bind_is_OK_pure_I)
@@ -518,7 +500,8 @@ lemma filter_M_not_more_elements:
   by(auto elim!: bind_returns_result_E2 split: if_splits intro!: set_ConsD)
 
 lemma filter_M_in_result_if_ok:
-  assumes "h \<turnstile> filter_M P xs \<rightarrow>\<^sub>r ys" and "\<And>h x. x \<in> set xs \<Longrightarrow> pure (P x) h" and "x \<in> set xs" and "h \<turnstile> P x \<rightarrow>\<^sub>r True"
+  assumes "h \<turnstile> filter_M P xs \<rightarrow>\<^sub>r ys" and "\<And>h x. x \<in> set xs \<Longrightarrow> pure (P x) h" and "x \<in> set xs" and
+    "h \<turnstile> P x \<rightarrow>\<^sub>r True"
   shows "x \<in> set ys"
   apply(insert assms, induct xs arbitrary: ys)
    apply(simp)
@@ -730,7 +713,8 @@ definition preserved :: "('heap, 'e, 'result) prog \<Rightarrow> 'heap \<Rightar
   where
     "preserved f h h' \<longleftrightarrow> (\<forall>x. h \<turnstile> f \<rightarrow>\<^sub>r x \<longleftrightarrow> h' \<turnstile> f \<rightarrow>\<^sub>r x)"
 
-lemma preserved_code [code]: "preserved f h h' = (((h \<turnstile> ok f) \<and> (h' \<turnstile> ok f) \<and> |h \<turnstile> f|\<^sub>r = |h' \<turnstile> f|\<^sub>r) \<or> ((\<not>h \<turnstile> ok f) \<and> (\<not>h' \<turnstile> ok f)))"
+lemma preserved_code [code]:
+  "preserved f h h' = (((h \<turnstile> ok f) \<and> (h' \<turnstile> ok f) \<and> |h \<turnstile> f|\<^sub>r = |h' \<turnstile> f|\<^sub>r) \<or> ((\<not>h \<turnstile> ok f) \<and> (\<not>h' \<turnstile> ok f)))"
   apply(auto simp add: preserved_def)[1]
    apply (meson is_OK_returns_result_E is_OK_returns_result_I)+
   done
@@ -768,13 +752,16 @@ lemma reads_bind_pure:
       dest: pure_returns_heap_eq 
       elim!: bind_returns_result_E)
 
-lemma reads_insert_writes_set_left: "\<forall>P \<in> S. reflp P \<and> transp P \<Longrightarrow> reads {getter} f h h' \<Longrightarrow> reads (insert getter S) f h h'"
+lemma reads_insert_writes_set_left:
+  "\<forall>P \<in> S. reflp P \<and> transp P \<Longrightarrow> reads {getter} f h h' \<Longrightarrow> reads (insert getter S) f h h'"
   unfolding reads_def by simp
 
-lemma reads_insert_writes_set_right: "reflp getter \<Longrightarrow> transp getter \<Longrightarrow> reads S f h h' \<Longrightarrow> reads (insert getter S) f h h'"
+lemma reads_insert_writes_set_right:
+  "reflp getter \<Longrightarrow> transp getter \<Longrightarrow> reads S f h h' \<Longrightarrow> reads (insert getter S) f h h'"
   unfolding reads_def by blast
 
-lemma reads_subset: "reads S f h h' \<Longrightarrow> \<forall>P \<in> S' - S. reflp P \<and> transp P \<Longrightarrow> S \<subseteq> S' \<Longrightarrow> reads S' f h h'"
+lemma reads_subset:
+  "reads S f h h' \<Longrightarrow> \<forall>P \<in> S' - S. reflp P \<and> transp P \<Longrightarrow> S \<subseteq> S' \<Longrightarrow> reads S' f h h'"
   by(auto simp add: reads_def)
 
 lemma return_reads [simp]: "reads {} (return x) h h'"
