@@ -15,6 +15,8 @@ imports
   "HOL-Library.Simps_Case_Conv"
 begin
 
+declare subst_all [simp del] [[simproc del: defined_all]]
+
 (*>*)
 subsection\<open>Functions and predicates\<close>
 

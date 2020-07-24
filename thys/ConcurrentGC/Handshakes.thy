@@ -14,6 +14,8 @@ imports
   TSO
 begin
 
+declare subst_all [simp del] [[simproc del: defined_all]]
+
 (*>*)
 subsection\<open>Handshake phases\<close>
 

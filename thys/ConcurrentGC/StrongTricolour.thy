@@ -14,6 +14,8 @@ imports
   MarkObject
 begin
 
+declare subst_all [simp del] [[simproc del: defined_all]]
+
 (*>*)
 subsection\<open>The strong-tricolour invariant \label{sec:strong-tricolour-invariant} \<close>
 

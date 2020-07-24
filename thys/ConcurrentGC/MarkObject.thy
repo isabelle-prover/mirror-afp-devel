@@ -14,6 +14,8 @@ imports
   Handshakes
 begin
 
+declare subst_all [simp del] [[simproc del: defined_all]]
+
 (*>*)
 subsection\<open>Object colours, reference validity, worklist validity\<close>
 

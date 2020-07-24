@@ -14,6 +14,8 @@ imports
   Concrete_heap
 begin
 
+declare subst_all [simp del] [[simproc del: defined_all]]
+
 (*>*)
 text\<open>\<close>
 

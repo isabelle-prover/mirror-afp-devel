@@ -14,6 +14,8 @@ imports
   StrongTricolour
 begin
 
+declare subst_all [simp del] [[simproc del: defined_all]]
+
 (*>*)
 section\<open>Top-level safety \label{sec:top-level-correctness}\<close>
 

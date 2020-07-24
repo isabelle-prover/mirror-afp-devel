@@ -15,6 +15,8 @@ imports
   "HOL-Library.Sublist"
 begin
 
+declare subst_all [simp del] [[simproc del: defined_all]]
+
 (*>*)
 section\<open>Invariants and Proofs \label{sec:gc-invs}\<close>
 

@@ -15,6 +15,8 @@ imports
   "HOL-Library.Monad_Syntax"
 begin
 
+declare subst_all [simp del] [[simproc del: defined_all]]
+
 (*>*)
 section\<open>The Schism garbage collector \label{sec:gc-model}\<close>
 
