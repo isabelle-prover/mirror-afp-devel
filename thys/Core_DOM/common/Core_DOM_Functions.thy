@@ -1661,6 +1661,51 @@ lemma set_tag_name_get_disconnected_nodes_is_l_set_tag_name_get_disconnected_nod
   by fast
 
 
+paragraph \<open>get\_tag\_type\<close>
+
+locale l_set_tag_name_get_tag_name\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M = l_get_tag_name\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M
+  + l_set_tag_name\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M
+begin
+lemma set_tag_name_get_tag_name:
+  assumes "h \<turnstile> a_set_tag_name element_ptr tag \<rightarrow>\<^sub>h h'"
+  shows "h' \<turnstile> a_get_tag_name element_ptr \<rightarrow>\<^sub>r tag"
+  using assms
+  by(auto simp add: a_get_tag_name_def a_set_tag_name_def)
+
+lemma set_tag_name_get_tag_name_different_pointers:
+  assumes "ptr \<noteq> ptr'"
+  assumes "w \<in> a_set_tag_name_locs ptr"
+  assumes "h \<turnstile> w \<rightarrow>\<^sub>h h'"
+  assumes "r \<in> a_get_tag_name_locs ptr'"
+  shows "r h h'"
+  using assms
+  by(auto simp add: all_args_def a_set_tag_name_locs_def a_get_tag_name_locs_def
+      split: if_splits option.splits )
+end
+
+locale l_set_tag_name_get_tag_name = l_get_tag_name + l_set_tag_name +
+  assumes set_tag_name_get_tag_name:
+    "h \<turnstile> set_tag_name element_ptr tag \<rightarrow>\<^sub>h h'
+     \<Longrightarrow> h' \<turnstile> get_tag_name element_ptr \<rightarrow>\<^sub>r tag"
+  assumes set_tag_name_get_tag_name_different_pointers:
+    "ptr \<noteq> ptr' \<Longrightarrow> w \<in> set_tag_name_locs ptr \<Longrightarrow> h \<turnstile> w \<rightarrow>\<^sub>h h'
+    \<Longrightarrow> r \<in> get_tag_name_locs ptr' \<Longrightarrow> r h h'"
+
+interpretation i_set_tag_name_get_tag_name?:
+  l_set_tag_name_get_tag_name\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M type_wf get_tag_name
+  get_tag_name_locs set_tag_name set_tag_name_locs
+  by unfold_locales
+declare l_set_tag_name_get_tag_name\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms[instances]
+
+lemma set_tag_name_get_tag_name_is_l_set_tag_name_get_tag_name [instances]:
+  "l_set_tag_name_get_tag_name  type_wf get_tag_name get_tag_name_locs
+                                                    set_tag_name set_tag_name_locs"
+  using set_tag_name_is_l_set_tag_name get_tag_name_is_l_get_tag_name
+  apply(simp add: l_set_tag_name_get_tag_name_def
+      l_set_tag_name_get_tag_name_axioms_def)
+  using set_tag_name_get_tag_name
+    set_tag_name_get_tag_name_different_pointers
+  by fast+
 subsubsection \<open>set\_val\<close>
 
 locale l_set_val\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs
@@ -3379,7 +3424,8 @@ global_interpretation l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^
   .
 
 locale l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M =
-  l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs set_val set_val_locs get_disconnected_nodes get_disconnected_nodes_locs set_disconnected_nodes set_disconnected_nodes_locs +
+  l_create_character_data\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_defs set_val set_val_locs get_disconnected_nodes
+  get_disconnected_nodes_locs set_disconnected_nodes set_disconnected_nodes_locs +
   l_get_disconnected_nodes type_wf get_disconnected_nodes get_disconnected_nodes_locs +
   l_set_val type_wf set_val set_val_locs +
   l_create_character_data_defs create_character_data +
