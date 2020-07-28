@@ -9,7 +9,28 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>01 Jun 2020 00:00:00 +0000</pubDate>
+    <pubDate>13 Jul 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Relational Characterisations of Paths</title>
+              <link>https://www.isa-afp.org/entries/Relational_Paths.html</link>
+       <guid>https://www.isa-afp.org/entries/Relational_Paths.html</guid>
+       <dc:creator> Walter Guttmann, Peter Höfner       </dc:creator>
+       <pubDate>13 Jul 2020 00:00:00 +0000</pubDate>
+       <description>
+Binary relations are one of the standard ways to encode, characterise
+and reason about graphs. Relation algebras provide equational axioms
+for a large fragment of the calculus of binary relations. Although
+relations are standard tools in many areas of mathematics and
+computing, researchers usually fall back to point-wise reasoning when
+it comes to arguments about paths in a graph. We present a purely
+algebraic way to specify different kinds of paths in Kleene relation
+algebras, which are relation algebras equipped with an operation for
+reflexive transitive closure. We study the relationship between paths
+with a designated root vertex and paths without such a vertex. Since
+we stay in first-order logic this development helps with mechanising
+proofs. To demonstrate the applicability of the algebraic framework we
+verify the correctness of three basic graph algorithms.</description>
+    </item>
     <item>
        <title>A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles</title>
               <link>https://www.isa-afp.org/entries/Safe_Distance.html</link>
@@ -563,21 +584,6 @@ This technique has been used, for example, with the antidomain
 operation, dynamic negation and Stone algebras. We present a common
 ground for these constructions based on a new equational
 axiomatisation of Boolean algebras.</description>
-    </item>
-    <item>
-       <title>Mersenne primes and the Lucas–Lehmer test</title>
-              <link>https://www.isa-afp.org/entries/Mersenne_Primes.html</link>
-       <guid>https://www.isa-afp.org/entries/Mersenne_Primes.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>17 Jan 2020 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This article provides formal proofs of basic properties of
-Mersenne numbers, i. e. numbers of the form
-2&lt;sup&gt;&lt;em&gt;n&lt;/em&gt;&lt;/sup&gt; - 1, and especially of
-Mersenne primes.&lt;/p&gt; &lt;p&gt;In particular, an efficient,
-verified, and executable version of the Lucas&amp;ndash;Lehmer test is
-developed. This test decides primality for Mersenne numbers in time
-polynomial in &lt;em&gt;n&lt;/em&gt;.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
