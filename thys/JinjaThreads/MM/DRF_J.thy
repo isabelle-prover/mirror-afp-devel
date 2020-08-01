@@ -296,7 +296,7 @@ lemma red_read_typeable:
   \<Longrightarrow> \<exists>T'. P,hp s \<turnstile> ad@al : T'"
 proof(induct arbitrary: E T and E Ts rule: red_reds.inducts)
   case RedAAcc thus ?case
-    by(fastforce intro: addr_loc_type.intros simp add: nat_less_iff word_sle_def)
+    by(fastforce intro: addr_loc_type.intros simp add: nat_less_iff word_sle_eq)
 next
   case RedFAcc thus ?case
     by(fastforce intro: addr_loc_type.intros)
@@ -396,7 +396,7 @@ lemma red_non_speculative_vs_conf:
 proof(induct arbitrary: E T and E Ts rule: red_reds.inducts)
   case (RedAAss h a U n i w V h' xs)
   from \<open>sint i < int n\<close> \<open>0 <=s i\<close> have "nat (sint i) < n"
-    by (metis nat_less_iff sint_0 word_sle_def)
+    by (simp add: word_sle_eq nat_less_iff)
   with \<open>typeof_addr h a = \<lfloor>Array_type U n\<rfloor>\<close> have "P,h \<turnstile> a@ACell (nat (sint i)) : U"
     by(auto intro: addr_loc_type.intros)
   moreover from \<open>heap_write h a (ACell (nat (sint i))) w h'\<close> have "h \<unlhd> h'" by(rule hext_heap_write)
@@ -623,7 +623,7 @@ proof(induct e hxs\<equiv>"(shr s, xs)" ta e' hxs'\<equiv>"(h', xs')"
   hence [simp]: "I = 0" "al'' = ACell (nat (sint i))" "a'' = a" 
     and v': "v' \<in> vs (a, ACell (nat (sint i)))" by simp_all
   from RedAAcc have adal: "P,shr s \<turnstile> a@ACell (nat (sint i)) : U"
-    by(auto intro: addr_loc_type.intros simp add: nat_less_iff word_sle_def)
+    by(auto intro: addr_loc_type.intros simp add: nat_less_iff word_sle_eq)
   from v' vs adal have "P,shr s \<turnstile> v' :\<le> U" by(auto dest!: vs_confD dest: addr_loc_type_fun)  
   with hrt adal have "heap_read (shr s) a (ACell (nat (sint i))) v'" using hconf by(rule heap_read_typeableD)
   with \<open>typeof_addr (shr s) a = \<lfloor>Array_type U n\<rfloor>\<close> \<open>0 <=s i\<close> \<open>sint i < int n\<close> 

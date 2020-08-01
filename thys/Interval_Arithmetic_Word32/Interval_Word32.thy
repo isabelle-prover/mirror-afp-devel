@@ -2,6 +2,7 @@
 theory Interval_Word32
 imports
   Complex_Main
+  "HOL-Word.More_Word"
   Word_Lib.Word_Lemmas
   Word_Lib.Word_Lib
   Word_Lib.Word_Syntax
@@ -478,11 +479,11 @@ next
   have leq2:"r'\<^sub>2 =  (real_of_int (sint w2))"
     using equiv2 neq1 eq2 neq3 by (auto simp add: repe.simps)
   have case1:"?sum <=s ((scast NEG_INF)::64 Word.word) \<Longrightarrow> NEG_INF \<equiv>\<^sub>U r1 + r2"
-    using up1 up2 apply (simp add: repU_def repe.simps word_sle_def)
+    using up1 up2 apply (simp add: repU_def repe.simps word_sle_eq)
     apply(rule exI[where x= "r1 + r2"])
-    apply(auto)
+      apply(auto)
         using w2case1a min_extend_neg
-        apply (auto simp add: neq1 eq2 neq3 repINT repU_def repe.simps repeInt_simps
+               apply (auto simp add: neq1 eq2 neq3 repINT repU_def repe.simps repeInt_simps
         up2 word_sless_alt) 
     using repINT repU_def repe.simps repeInt_simps up2 word_sless_alt 
       add.right_neutral add_mono dual_order.trans of_int_le_0_iff scast_eq3 by fastforce+
@@ -774,7 +775,7 @@ next
      assume "scast w1 + scast w2 <=s ((- 0x7FFFFFFF)::64 Word.word)"
      then have sum_leq:"sint w1 + sint w2 \<le> - 0x7FFFFFFF"
            and sum_leq':" (sint w1 + sint w2) \<le>  (- 2147483647)"
-       using sint_eq unfolding Word.word_sle_def by auto 
+       using sint_eq unfolding word_sle_eq by auto 
      obtain r'\<^sub>1 r'\<^sub>2 ::real where 
        bound1:"r'\<^sub>1 \<ge> r1 \<and> (w1 \<equiv>\<^sub>E r'\<^sub>1)" and
        bound2:"r'\<^sub>2 \<ge> r2 \<and> (w2 \<equiv>\<^sub>E r'\<^sub>2)"
@@ -804,12 +805,12 @@ next
    proof -
      assume "\<not>(((scast POS_INF)::64 Word.word) <=s ?sum)"
      then have sum_leq:"sint w1 + sint w2 < 0x7FFFFFFF"
-       unfolding Word.word_sle_def POS_INF_def using sint_eq by auto
+       unfolding word_sle_eq POS_INF_def using sint_eq by auto
      then have sum_leq':" (sint w1 + sint w2) <  (2147483647)"
        by auto
      assume "\<not>(?sum <=s ((scast NEG_INF)::64 Word.word))"
      then have sum_geq:"(- 0x7FFFFFFF) < sint w1 + sint w2"
-       unfolding Word.word_sle_def NEG_INF_def using sint_eq by auto 
+       unfolding word_sle_eq NEG_INF_def using sint_eq by auto 
      then have sum_geq':" (- 2147483647) <  (sint w1 + sint w2)"
        by auto
      obtain r'\<^sub>1 r'\<^sub>2 ::real where 
@@ -1449,7 +1450,7 @@ next
     assume "scast w1 + scast w2 <=s ((- 0x7FFFFFFF)::64 Word.word)"
     then have sum_leq:"sint w1 + sint w2 \<le> - 0x7FFFFFFF"
           and sum_leq':" (sint w1 + sint w2) \<le>  (- 2147483647)"
-      using sint_eq unfolding Word.word_sle_def by auto 
+      using sint_eq unfolding word_sle_eq by auto 
     obtain r'\<^sub>1 r'\<^sub>2 ::real where 
       bound1:"r'\<^sub>1 \<le> r1 \<and> (w1 \<equiv>\<^sub>E r'\<^sub>1)" and
       bound2:"r'\<^sub>2 \<le> r2 \<and> (w2 \<equiv>\<^sub>E r'\<^sub>2)"
@@ -1479,12 +1480,12 @@ next
   proof -
     assume "\<not>(((scast POS_INF)::64 Word.word) <=s ?sum)"
     then have sum_leq:"sint w1 + sint w2 < 0x7FFFFFFF"
-      unfolding Word.word_sle_def using sint_eq by auto
+      unfolding word_sle_eq using sint_eq by auto
     then have sum_leq':" (sint w1 + sint w2) < (2147483647)"
       by auto
     assume "\<not>(?sum <=s ((scast NEG_INF)::64 Word.word))"
     then have sum_geq:"(- 0x7FFFFFFF) < sint w1 + sint w2"
-      unfolding Word.word_sle_def using sint_eq by auto
+      unfolding word_sle_eq using sint_eq by auto
     then have sum_geq':" (- 2147483647) <  (sint w1 + sint w2)"
       by auto
     obtain r'\<^sub>1 r'\<^sub>2 ::real where 
@@ -1557,7 +1558,7 @@ next
     assume "0x7FFFFFFF <=s ((scast w1)::64 Word.word) + ((scast w2)::64 Word.word)"
     then have sum_leq:"0x7FFFFFFF \<le> sint w1 + sint w2 "
           and sum_leq':" 2147483647 \<le>  (sint w1 + sint w2)"
-      using sint_eq unfolding Word.word_sle_def by auto 
+      using sint_eq unfolding word_sle_eq by auto 
     obtain r'\<^sub>1 r'\<^sub>2 ::real where 
       bound1:"r'\<^sub>1 \<le> r1 \<and> (w1 \<equiv>\<^sub>E r'\<^sub>1)" and
       bound2:"r'\<^sub>2 \<le> r2 \<and> (w2 \<equiv>\<^sub>E r'\<^sub>2)"

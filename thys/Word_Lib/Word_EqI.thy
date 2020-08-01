@@ -84,7 +84,7 @@ lemma neg_mask_mono_le:
 proof (rule ccontr, simp add: linorder_not_le, cases "n < LENGTH('a)")
   case False
   then show "y && ~~(mask n) < x && ~~(mask n) \<Longrightarrow> False"
-    by (simp add: mask_def linorder_not_less power_overflow)
+    by (simp add: mask_eq_decr_exp linorder_not_less power_overflow)
 next
   case True
   assume a: "x \<le> y" and b: "y && ~~(mask n) < x && ~~(mask n)"

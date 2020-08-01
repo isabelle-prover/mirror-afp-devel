@@ -96,7 +96,8 @@ next
   with \<open>H \<unlhd> hp (h, l)\<close> \<open>typeof_addr h a = \<lfloor>Array_type T n\<rfloor>\<close>
   have Ha: "typeof_addr H a = \<lfloor>Array_type T n\<rfloor>" by(auto dest: hext_arrD)
   with \<open>0 <=s i\<close> \<open>sint i < int n\<close>
-  have "nat (sint i) < n" by(metis nat_less_iff sint_0 word_sle_def)
+  have "nat (sint i) < n"
+    by (simp add: word_sle_eq nat_less_iff)
   with Ha have "P,H \<turnstile> a@ACell (nat (sint i)) : T"
     by(auto intro: addr_loc_type.intros)
   from heap_read_total[OF hconf this]
@@ -138,7 +139,7 @@ next
     by(auto simp add: conf_def)
   from \<open>0 <=s i\<close> \<open>sint i < int n\<close>
   have "nat (sint i) < n"
-    by (metis nat_less_iff sint_0 word_sle_def)
+    by (simp add: word_sle_eq nat_less_iff)
   with Ha have "P,H \<turnstile> a@ACell (nat (sint i)) : T"
     by(auto intro: addr_loc_type.intros)
   from heap_write_total[OF hconf this conf]

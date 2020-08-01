@@ -92,12 +92,14 @@ private lemma valid_prefix_E: "valid_prefix pf \<Longrightarrow> ((pfxm_mask pf)
 private lemma valid_prefix_alt: fixes p::"'a::len prefix_match"
   shows "valid_prefix p = (pfxm_prefix p AND (2 ^ ((len_of TYPE ('a)) - pfxm_length p) - 1) = 0)"
   unfolding valid_prefix_def
-  unfolding mask_def
+  unfolding mask_eq
   using word_bw_comms(1)
    arg_cong[where f = "\<lambda>x. (pfxm_prefix p AND x - 1 = 0)"]
    shiftl_1
-  unfolding pfxm_prefix_def pfxm_mask_def mask_def
-  by metis
+  unfolding pfxm_prefix_def pfxm_mask_def mask_eq
+  apply (cases p)
+  apply (simp add: ac_simps)
+  done
 
 subsection\<open>Address Semantics\<close>
   text\<open>Matching on a @{typ "'a::len prefix_match"}. Think of routing tables.\<close>

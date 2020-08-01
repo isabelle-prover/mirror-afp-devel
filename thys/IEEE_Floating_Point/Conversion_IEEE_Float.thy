@@ -114,19 +114,22 @@ proof -
     by simp
   then show ?thesis
     apply (transfer fixing: x)
-    unfolding Let_def split_beta' fst_conv snd_conv uint_nat[symmetric] unat_def
+    unfolding Let_def split_beta' fst_conv snd_conv uint_nat [symmetric] nat_uint_eq [symmetric]
     using nn
-    by (subst uint_word_of_int_bitlen_eq)
-      (auto simp: nat_mult_distrib nat_diff_distrib nat_power_eq)
+    apply (subst uint_word_of_int_bitlen_eq)
+      apply (auto simp: nat_mult_distrib nat_diff_distrib nat_power_eq)
+    done
 qed
 
 lemma exponent_normal_of_Float:"exponent (normal_of_Float x::('e, 'f)float) =
   nat (Float.exponent x + (bias TYPE(('e, 'f)float)) + bitlen \<bar>mantissa x\<bar> - 1)"
   if "is_normal_Float TYPE(('e, 'f)float) x"
   using that
-  by (transfer fixing: x)
-    (auto simp: is_normal_Float_def bitlen_le_iff_power uint_word_of_int_bitlen_eq Let_def
-      uint_nat[symmetric] unat_def)
+  apply (transfer fixing: x)
+  apply (simp flip: uint_nat nat_uint_eq add: Let_def)
+  apply (subst uint_word_of_int_bitlen_eq)
+    apply (auto simp: is_normal_Float_def bitlen_le_iff_power uint_word_of_int_bitlen_eq Let_def)
+  done
 
 lift_definition denormal_of_Float :: "Float.float \<Rightarrow> ('e, 'f)float"
   is "\<lambda>x. let m = mantissa x; e = Float.exponent x in
@@ -164,10 +167,9 @@ proof -
     by (auto simp: is_denormal_Float_def algebra_simps)
   then show ?thesis
     apply (transfer fixing: x)
-    unfolding Let_def split_beta' fst_conv snd_conv uint_nat[symmetric] unat_def
-    apply (subst uint_word_of_int_bitlen_eq)
-    unfolding bitlen_le_iff_power
-    by (auto simp: nat_mult_distrib)
+    apply transfer
+    apply (simp add: Let_def nat_eq_iff take_bit_eq_mod)
+    done
 qed
 
 definition of_finite_Float :: "Float.float \<Rightarrow> ('e, 'f) float" where

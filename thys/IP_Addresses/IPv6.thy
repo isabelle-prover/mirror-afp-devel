@@ -458,7 +458,7 @@ subsection\<open>Semantics\<close>
     "(0xFFFF00000000::ipv6addr) = (mask 16) << 32"
     "(0xFFFF0000::ipv6addr) = (mask 16) << 16"
     "(0xFFFF::ipv6addr) = (mask 16)"
-    by(simp add: mask_def)+
+    by(simp add: mask_eq)+
 
 
   text\<open>Correctness: round trip property one\<close>
@@ -520,7 +520,7 @@ subsection\<open>Semantics\<close>
              ip && mask 16 =
              ip"
       apply(subst word_ao_dist2[symmetric])+
-      apply(simp add: mask_def)
+      apply(simp add: mask_eq)
       apply(subst mask128)
       apply(rule mask_len_word)
       apply simp

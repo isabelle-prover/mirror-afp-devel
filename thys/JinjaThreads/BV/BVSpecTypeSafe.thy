@@ -1081,7 +1081,7 @@ proof -
       case True
       hence si': "0 <=s idxI" "sint idxI < int n" by auto
       hence "nat (sint idxI) < n"
-        by(metis nat_less_iff  sint_0 word_sle_def)
+        by (simp add: word_sle_eq nat_less_iff)
       with ha have al: "P,h \<turnstile> a@ACell (nat (sint idxI)) : Xel" ..
 
       { fix v
@@ -1198,7 +1198,7 @@ proof -
           let ?f = "(stk', loc, C, M, pc + 1)"
 
           from si' have "nat (sint idxI) < n"
-            by(metis nat_less_iff  sint_0 word_sle_def)
+            by (simp add: word_sle_eq nat_less_iff)
           with ha have "P,h \<turnstile> a@ACell (nat (sint idxI)) : Xel" ..
           with "write" heap_ok have heap_ok': "hconf h'" using eXel
             by(rule hconf_heap_write_mono)
@@ -1590,7 +1590,7 @@ proof -
           case True
           hence si': "0 <=s idxI" "sint idxI < int n" by auto
           hence "nat (sint idxI) < n"
-            by(metis nat_less_iff sint_0 word_sle_def)
+            by (simp add: word_sle_eq nat_less_iff)
           with ha have al: "P,h \<turnstile> a@ACell (nat (sint idxI)) : Xel" ..
           from heap_read_total[OF hconf this] True False ha stk' idxI a
           show ?thesis by auto
@@ -1639,7 +1639,7 @@ proof -
           case True
           hence si': "0 <=s idxI" "sint idxI < int n" by simp_all
           hence "nat (sint idxI) < n"
-            by(metis nat_less_iff  sint_0 word_sle_def)
+            by (simp add: word_sle_eq nat_less_iff)
           with ha have adal: "P,h \<turnstile> a@ACell (nat (sint idxI)) : Xel" ..
           
           show ?thesis

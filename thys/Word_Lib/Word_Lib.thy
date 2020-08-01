@@ -250,11 +250,11 @@ lemma and_mask_arith:
   done
 
 lemma mask_2pm1: "mask n = 2 ^ n - 1"
-  by (simp add : mask_def)
+  by (fact mask_eq_decr_exp)
 
 lemma add_mask_fold:
   "x + 2 ^ n - 1 = x + mask n"
-  by (simp add: mask_def)
+  by (simp add: mask_eq_decr_exp)
 
 lemma word_and_mask_le_2pm1: "w && mask n \<le> 2 ^ n - 1"
   by (simp add: mask_2pm1[symmetric] word_and_le1)
@@ -272,7 +272,7 @@ lemma is_aligned_AND_less_0:
 
 lemma le_shiftr1:
   "u <= v \<Longrightarrow> shiftr1 u <= shiftr1 v"
-  apply (unfold word_le_def shiftr1_def word_ubin.eq_norm)
+  apply (unfold word_le_def shiftr1_eq word_ubin.eq_norm)
   apply (unfold bin_rest_trunc_i
                 trans [OF bintrunc_bintrunc_l word_ubin.norm_Rep,
                           unfolded word_ubin.norm_Rep,
@@ -572,21 +572,12 @@ lemma ucast_scast_id [simp]:
 
 lemma scast_of_nat [simp]:
     "scast (of_nat x :: 'a::len signed word) = (of_nat x :: 'a word)"
-  by (metis (hide_lams, no_types) len_signed scast_def uint_sint
-         word_of_nat word_ubin.Abs_norm word_ubin.eq_norm)
+  by transfer simp
 
 lemma ucast_of_nat:
   "is_down (ucast :: 'a :: len word \<Rightarrow> 'b :: len word)
     \<Longrightarrow> ucast (of_nat n :: 'a word) = (of_nat n :: 'b word)"
-  apply (rule sym)
-  apply (subst word_unat.inverse_norm)
-  apply (simp add: ucast_def word_of_int[symmetric]
-                   of_nat_nat[symmetric] unat_def[symmetric])
-  apply (simp add: unat_of_nat)
-  apply (rule nat_int.Rep_eqD)
-  apply (simp only: zmod_int)
-  apply (rule mod_mod_cancel)
-  by (simp add: is_down le_imp_power_dvd)
+  by transfer simp
 
 (* shortcut for some specific lengths *)
 lemma word_fixed_sint_1[simp]:
@@ -604,7 +595,7 @@ lemma word_sint_1 [simp]:
 lemma scast_1':
   "(scast (1::'a::len word) :: 'b::len word) =
    (word_of_int (sbintrunc (LENGTH('a::len) - Suc 0) (1::int)))"
-  by (metis One_nat_def scast_def sint_word_ariths(8))
+  by transfer simp
 
 lemma scast_1 [simp]:
   "(scast (1::'a::len word) :: 'b::len word) = (if LENGTH('a) = 1 then -1 else 1)"
@@ -666,12 +657,12 @@ lemmas less_le_mult_nat = less_le_mult_nat'[simplified distrib_right, simplified
 
 (* FIXME: these should eventually be moved to HOL/Word. *)
 lemmas extra_sle_sless_unfolds [simp] =
-    word_sle_def[where a=0 and b=1]
-    word_sle_def[where a=0 and b="numeral n"]
-    word_sle_def[where a=1 and b=0]
-    word_sle_def[where a=1 and b="numeral n"]
-    word_sle_def[where a="numeral n" and b=0]
-    word_sle_def[where a="numeral n" and b=1]
+    word_sle_eq[where a=0 and b=1]
+    word_sle_eq[where a=0 and b="numeral n"]
+    word_sle_eq[where a=1 and b=0]
+    word_sle_eq[where a=1 and b="numeral n"]
+    word_sle_eq[where a="numeral n" and b=0]
+    word_sle_eq[where a="numeral n" and b=1]
     word_sless_alt[where a=0 and b=1]
     word_sless_alt[where a=0 and b="numeral n"]
     word_sless_alt[where a=1 and b=0]
@@ -685,7 +676,7 @@ lemma to_bl_1:
   "to_bl (1::'a::len word) = replicate (LENGTH('a) - 1) False @ [True]"
 proof -
   have "to_bl (1 :: 'a::len word) = to_bl (mask 1 :: 'a::len word)"
-    by (simp add: mask_def)
+    by (simp add: mask_Suc_0) 
 
   also have "\<dots> = replicate (LENGTH('a) - 1) False @ [True]"
     by (cases "LENGTH('a)"; clarsimp simp: to_bl_mask)

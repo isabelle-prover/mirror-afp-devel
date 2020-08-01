@@ -81,9 +81,7 @@ function gen_sum_squares :: "16 word \<Rightarrow> 16 word \<Rightarrow> 16 word
   "gen_sum_squares accum n =
    (if n = 0 then accum else gen_sum_squares (accum + n * n) (n - 1))"
 (*<*)by pat_completeness simp
-termination by(relation "measure (nat \<circ> uint \<circ> snd)")
-  (simp_all, metis (hide_lams, mono_tags) uint_1 uint_eq_0 uint_minus_simple_alt uint_sub_ge word_le_sub1 word_less_def word_neq_0_conv word_zero_le zle_diff1_eq)(*>*)
-
+termination by (relation \<open>measure (nat \<circ> uint \<circ> snd)\<close>) (simp_all add: measure_unat)
 
 definition sum_squares :: "16 word \<Rightarrow> 16 word" where
    "sum_squares = gen_sum_squares 0"

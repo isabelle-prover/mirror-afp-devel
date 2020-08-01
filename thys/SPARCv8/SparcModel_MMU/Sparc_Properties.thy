@@ -80,16 +80,16 @@ by (simp add: raise_trap_def simpler_modify_def)
 
 lemma rett_instr_result: "(fst i) = ctrl_type RETT \<and> 
   (get_ET (cpu_reg_val PSR s) \<noteq> 1 \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) \<noteq> 0 \<and>
+  (((get_S (cpu_reg_val PSR s)))::word1) \<noteq> 0 \<and>
   (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s))) + 1) mod NWINDOWS)) 
     (cpu_reg_val WIM s)) = 0 \<and>
   ((AND) (get_addr (snd i) s) (0b00000000000000000000000000000011::word32)) = 0) \<Longrightarrow>
   snd (rett_instr i s) = False"
 apply (simp add: rett_instr_def)
 apply (simp add: simpler_gets_def bind_def h1_def h2_def)
-apply (simp add: write_cpu_def simpler_modify_def)
-apply (simp add: raise_trap_def simpler_modify_def)
-by (simp add: return_def)
+  apply (simp add: write_cpu_def simpler_modify_def)
+  apply (auto simp add: Let_def return_def)
+  done
 
 lemma call_instr_result: "(fst i) = call_type CALL \<Longrightarrow>
   snd (call_instr i s) = False"
@@ -864,7 +864,7 @@ qed
 
 lemma dispatch_instr_result_rett: 
 assumes a1: "(fst i) = ctrl_type RETT \<and> (get_ET (cpu_reg_val PSR s) \<noteq> 1 \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) \<noteq> 0 \<and>
+  (((get_S (cpu_reg_val PSR s)))::word1) \<noteq> 0 \<and>
   (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s))) + 1) mod NWINDOWS)) 
     (cpu_reg_val WIM s)) = 0 \<and>
   ((AND) (get_addr (snd i) s) (0b00000000000000000000000000000011::word32)) = 0)"
@@ -1044,7 +1044,7 @@ lemma good_context_4 :
  annul_val s'' = False \<and> 
  supported_instruction (fst v2) = True \<and> \<comment> \<open>This line is redundant\<close>
  (fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
- ((ucast (get_S (cpu_reg_val PSR s'')))::word1) = 0
+ (((get_S (cpu_reg_val PSR s'')))::word1) = 0
  \<Longrightarrow> False"
 proof -
   assume asm: "good_context (s::(('a::len) sparc_state)) \<and> 
@@ -1054,9 +1054,9 @@ proof -
   annul_val s'' = False \<and> 
   supported_instruction (fst v2) = True \<and> \<comment> \<open>This line is redundant\<close>
   (fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
-  ((ucast (get_S (cpu_reg_val PSR s'')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s'')))::word1) = 0"
   then have "(fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
-  ((ucast (get_S (cpu_reg_val PSR s'')))::word1) = 0 \<Longrightarrow> False"
+  (((get_S (cpu_reg_val PSR s'')))::word1) = 0 \<Longrightarrow> False"
     proof (cases "(get_trap_set s) \<noteq> {} \<and> (reset_trap_val s) = False \<and> 
       get_ET (cpu_reg_val PSR s) = 0")
       case True
@@ -1079,7 +1079,7 @@ lemma good_context_5 :
  annul_val s'' = False \<and> 
  supported_instruction (fst v2) = True \<and> \<comment> \<open>This line is redundant\<close>
  (fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
- ((ucast (get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
+ (((get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
  (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s''))) + 1) mod NWINDOWS)) 
   (cpu_reg_val WIM s'')) \<noteq> 0
  \<Longrightarrow> False"
@@ -1091,11 +1091,11 @@ proof -
   annul_val s'' = False \<and> 
   supported_instruction (fst v2) = True \<and> \<comment> \<open>This line is redundant\<close>
   (fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
-  ((ucast (get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
+  (((get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
   (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s''))) + 1) mod NWINDOWS)) 
     (cpu_reg_val WIM s'')) \<noteq> 0"
   then have "(fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
-  ((ucast (get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
+  (((get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
   (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s''))) + 1) mod NWINDOWS)) 
     (cpu_reg_val WIM s'')) \<noteq> 0
   \<Longrightarrow> False"
@@ -1121,7 +1121,7 @@ lemma good_context_6 :
  annul_val s'' = False \<and> 
  supported_instruction (fst v2) = True \<and> \<comment> \<open>This line is redundant\<close>
  (fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
- ((ucast (get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
+ (((get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
  (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s''))) + 1) mod NWINDOWS)) 
   (cpu_reg_val WIM s'')) = 0 \<and>
  ((AND) (get_addr (snd v2) s'') (0b00000000000000000000000000000011::word32)) \<noteq> 0
@@ -1134,12 +1134,12 @@ proof -
   annul_val s'' = False \<and> 
   supported_instruction (fst v2) = True \<and> \<comment> \<open>This line is redundant\<close>
   (fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
-  ((ucast (get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
+  (((get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
   (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s''))) + 1) mod NWINDOWS)) 
     (cpu_reg_val WIM s'')) = 0 \<and>
   ((AND) (get_addr (snd v2) s'') (0b00000000000000000000000000000011::word32)) \<noteq> 0"
   then have "(fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
-  ((ucast (get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
+  (((get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
   (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s''))) + 1) mod NWINDOWS)) 
     (cpu_reg_val WIM s'')) = 0 \<and>
   ((AND) (get_addr (snd v2) s'') (0b00000000000000000000000000000011::word32)) \<noteq> 0
@@ -1174,7 +1174,7 @@ lemma good_context_all :
       ((fst v2) = ctrl_type RETT \<and> 
        (get_ET (cpu_reg_val PSR s'') = 1 \<or>
         (get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
-        ((ucast (get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
+        (((get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
         (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s''))) + 1) mod NWINDOWS)) 
           (cpu_reg_val WIM s'')) = 0 \<and>
         ((AND) (get_addr (snd v2) s'') (0b00000000000000000000000000000011::word32)) = 0))))))))"
@@ -1200,14 +1200,14 @@ proof -
   ((decode_instruction v1)::(Exception list + instruction)) = Inr v2 \<and>
   annul_val s'' = False \<and> supported_instruction (fst v2) = True \<and>
   (fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
-  ((ucast (get_S (cpu_reg_val PSR s'')))::word1) = 0
+  (((get_S (cpu_reg_val PSR s'')))::word1) = 0
   \<Longrightarrow> False"
   using good_context_4 by blast
  from asm have fact6: "\<exists>v1 v2. fetch_instruction s'' = Inr v1 \<and> 
   ((decode_instruction v1)::(Exception list + instruction)) = Inr v2 \<and>
   annul_val s'' = False \<and> supported_instruction (fst v2) = True \<and>
   (fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
-  ((ucast (get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
+  (((get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
   (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s''))) + 1) mod NWINDOWS)) 
     (cpu_reg_val WIM s'')) \<noteq> 0
   \<Longrightarrow> False" 
@@ -1216,7 +1216,7 @@ proof -
   ((decode_instruction v1)::(Exception list + instruction)) = Inr v2 \<and>
   annul_val s'' = False \<and> supported_instruction (fst v2) = True \<and>
   (fst v2) = ctrl_type RETT \<and> get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and>
-  ((ucast (get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
+  (((get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0 \<and>
   (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s''))) + 1) mod NWINDOWS)) 
     (cpu_reg_val WIM s'')) = 0 \<and>
   ((AND) (get_addr (snd v2) s'') (0b00000000000000000000000000000011::word32)) \<noteq> 0
@@ -1261,7 +1261,7 @@ proof -
               next
                 case False
                 then have fact11: "get_ET (cpu_reg_val PSR s'') \<noteq> 1 \<and> 
-                ((ucast (get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0"
+                (((get_S (cpu_reg_val PSR s'')))::word1) \<noteq> 0"
                   using fact10 fact5 by auto
                 then have fact12: "(get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR s''))) + 1) 
                   mod NWINDOWS)) (cpu_reg_val WIM s'')) = 0" 
@@ -1779,7 +1779,7 @@ proof -
       ((fst v2) = ctrl_type RETT \<and> 
        (get_ET (cpu_reg_val PSR ?s') = 1 \<or>
         (get_ET (cpu_reg_val PSR ?s') \<noteq> 1 \<and>
-        ((ucast (get_S (cpu_reg_val PSR ?s')))::word1) \<noteq> 0 \<and>
+        (((get_S (cpu_reg_val PSR ?s')))::word1) \<noteq> 0 \<and>
         (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR ?s'))) + 1) mod NWINDOWS)) 
           (cpu_reg_val WIM ?s')) = 0 \<and>
         ((AND) (get_addr (snd v2) ?s') (0b00000000000000000000000000000011::word32)) = 0))))))))"
@@ -1845,7 +1845,7 @@ proof -
                 case True
                 then have f10: "get_ET (cpu_reg_val PSR ?s') = 1" by auto
                 then show ?thesis 
-                proof (cases "((ucast (get_S (cpu_reg_val PSR ?s')))::word1) = 0")
+                proof (cases "(((get_S (cpu_reg_val PSR ?s')))::word1) = 0")
                   case True
                   then show ?thesis using f3 f4 f7 f8 f9 f10
                   apply exe_proof_to_decode              
@@ -1869,7 +1869,7 @@ proof -
                 annul_val ?s' = False \<and>
                 (fst v2) = ctrl_type RETT \<and>
                 (get_ET (cpu_reg_val PSR ?s') \<noteq> 1 \<and>
-                ((ucast (get_S (cpu_reg_val PSR ?s')))::word1) \<noteq> 0 \<and>
+                (((get_S (cpu_reg_val PSR ?s')))::word1) \<noteq> 0 \<and>
                 (get_WIM_bit (nat (((uint (get_CWP (cpu_reg_val PSR ?s'))) + 1) mod NWINDOWS)) 
                   (cpu_reg_val WIM ?s')) = 0 \<and>
                 ((AND) (get_addr (snd v2) ?s') (0b00000000000000000000000000000011::word32)) = 0)"
@@ -1991,39 +1991,39 @@ text \<open>The following shows that, if the pre-state is under user mode,
   then after a singel step execution, the post-state is aslo under user mode.\<close>
 
 lemma write_cpu_pc_privilege: "s' = snd (fst (write_cpu w PC s)) \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
-  ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
+  (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: write_cpu_def simpler_modify_def)
 apply (simp add: cpu_reg_mod_def)
 by (simp add: cpu_reg_val_def)
 
 lemma write_cpu_npc_privilege: "s' = snd (fst (write_cpu w nPC s)) \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
-  ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
+  (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: write_cpu_def simpler_modify_def)
 apply (simp add: cpu_reg_mod_def)
 by (simp add: cpu_reg_val_def)
 
 lemma write_cpu_y_privilege: "s' = snd (fst (write_cpu w Y s)) \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0
-  \<Longrightarrow> ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0
+  \<Longrightarrow> (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: write_cpu_def simpler_modify_def)
 apply (simp add: cpu_reg_mod_def)
 by (simp add: cpu_reg_val_def)
 
 lemma cpu_reg_mod_y_privilege: "s' = cpu_reg_mod w Y s \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0
-  \<Longrightarrow> ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0
+  \<Longrightarrow> (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 by (simp add: cpu_reg_mod_def cpu_reg_val_def)
 
 lemma cpu_reg_mod_asr_privilege: "s' = cpu_reg_mod w (ASR r) s \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0
-  \<Longrightarrow> ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0
+  \<Longrightarrow> (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 by (simp add: cpu_reg_mod_def cpu_reg_val_def)
 
 lemma global_reg_mod_privilege: "s' = global_reg_mod w1 n w2 s \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
-  ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
+  (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (induction n arbitrary:s)
  apply (clarsimp)
 apply (auto)
@@ -2031,22 +2031,22 @@ apply (simp add: Let_def)
 by (simp add: cpu_reg_val_def)
 
 lemma out_reg_mod_privilege: "s' = out_reg_mod a w r s \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
-  ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
+  (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: out_reg_mod_def Let_def)
 by (simp add: cpu_reg_val_def)
 
 lemma in_reg_mod_privilege: "s' = in_reg_mod a w r s \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
-  ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
+  (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: in_reg_mod_def Let_def)
 by (simp add: cpu_reg_val_def)
 
 lemma user_reg_mod_privilege: 
 assumes a1: " s' = user_reg_mod d (w::(('a::len) window_size)) r 
   (s::(('a::len) sparc_state)) \<and> 
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 proof (cases "r = 0")
   case True
   then show ?thesis using a1
@@ -2090,43 +2090,43 @@ qed
 
 lemma write_reg_privilege: "s' = snd (fst (write_reg w1 w2 w3 
   (s::(('a::len) sparc_state)))) \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
-  ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
+  (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: write_reg_def simpler_modify_def)
 by (auto intro: user_reg_mod_privilege)
 
 lemma set_annul_privilege: "s' = snd (fst (set_annul b s)) \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
-  ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
+  (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: set_annul_def simpler_modify_def)
 apply (simp add: annul_mod_def write_annul_def)
 by (simp add: cpu_reg_val_def)
 
 lemma set_reset_trap_privilege: "s' = snd (fst (set_reset_trap b s)) \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
-  ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
+  (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: set_reset_trap_def simpler_modify_def)
 apply (simp add: reset_trap_mod_def write_annul_def)
 by (simp add: cpu_reg_val_def)
 
 lemma empty_delayed_pool_write_privilege: "get_delayed_pool s = [] \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0 \<and>
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0 \<and>
   s' = delayed_pool_write s \<Longrightarrow> 
-  ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: delayed_pool_write_def)
 by (simp add: get_delayed_write_def delayed_write_all_def delayed_pool_rm_list_def)
 
 lemma raise_trap_privilege: 
-"((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0 \<and>
+"(((get_S (cpu_reg_val PSR s)))::word1) = 0 \<and>
   s' = snd (fst (raise_trap t s)) \<Longrightarrow> 
-  ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: raise_trap_def)
 apply (simp add: simpler_modify_def add_trap_set_def)
 by (simp add: cpu_reg_val_def)
 
 lemma write_cpu_tt_privilege: "s' = snd (fst (write_cpu_tt w s)) \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0
-  \<Longrightarrow> ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0
+  \<Longrightarrow> (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: write_cpu_tt_def)
 apply (simp add: exec_gets)
 apply (simp add: write_cpu_def cpu_reg_mod_def write_tt_def)
@@ -2134,21 +2134,21 @@ apply (simp add: simpler_modify_def)
 by (simp add: cpu_reg_val_def)
 
 lemma emp_trap_set_privilege: "s' = emp_trap_set s \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0
-  \<Longrightarrow> ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0
+  \<Longrightarrow> (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: emp_trap_set_def)
 by (simp add: cpu_reg_val_def)
 
 lemma sys_reg_mod_privilege: "s' = sys_reg_mod w r s 
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0
-  \<Longrightarrow> ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0
+  \<Longrightarrow> (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: sys_reg_mod_def)
 by (simp add: cpu_reg_val_def)
 
 lemma mem_mod_privilege: 
 assumes a1: "s' = mem_mod a1 a2 v s \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 proof (cases "(uint a1) = 8 \<or> (uint a1) = 10")
   case True
   then show ?thesis using a1
@@ -2174,30 +2174,30 @@ next
 qed
 
 lemma mem_mod_w32_privilege: "s' = mem_mod_w32 a1 a2 b d s \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0
-  \<Longrightarrow> ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0
+  \<Longrightarrow> (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: mem_mod_w32_def)
 apply (simp add: Let_def)
 by (auto intro: mem_mod_privilege)
 
 lemma add_instr_cache_privilege: "s' = add_instr_cache s addr y m \<Longrightarrow>
-((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
-((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+(((get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
+(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: add_instr_cache_def)
 apply (simp add: Let_def)
 by (simp add: icache_mod_def cpu_reg_val_def)
 
 lemma add_data_cache_privilege: "s' = add_data_cache s addr y m \<Longrightarrow>
-((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
-((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+(((get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
+(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: add_data_cache_def)
 apply (simp add: Let_def)
 by (simp add: dcache_mod_def cpu_reg_val_def)
 
 lemma memory_read_privilege: 
 assumes a1: "s' = snd (memory_read asi addr s) \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 proof (cases "uint asi = 1")
   case True
   then show ?thesis using a1 
@@ -2296,15 +2296,15 @@ next
 qed
 
 lemma get_curr_win_privilege: "s' = snd (fst (get_curr_win() s)) \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0
-  \<Longrightarrow> ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0
+  \<Longrightarrow> (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: get_curr_win_def)
 by (simp add: simpler_gets_def)
 
 lemma load_sub2_privilege: 
 assumes a1: "s' = snd (fst (load_sub2 addr asi r win w s))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 proof (cases "fst (memory_read asi (addr + 4)
                         (snd (fst (write_reg w win (r AND 30) s)))) =
                   None")
@@ -2327,8 +2327,8 @@ qed
 
 lemma load_sub3_privilege: 
 assumes a1: "s' = snd (fst (load_sub3 instr curr_win rd asi address s))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 proof (cases "fst (memory_read asi address s) = None")
   case True
   then show ?thesis using a1
@@ -2375,8 +2375,8 @@ qed
 
 lemma load_sub1_privilege: 
 assumes a1: "s' = snd (fst (load_sub1 instr rd s_val s))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 using a1
 apply (simp add: load_sub1_def)
 apply (simp add: simpler_gets_def bind_def h1_def h2_def Let_def)
@@ -2385,8 +2385,8 @@ apply auto
                by (auto intro: get_curr_win_privilege raise_trap_privilege load_sub3_privilege)
 
 lemma load_instr_privilege: "s' = snd (fst (load_instr i s))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0
-  \<Longrightarrow> ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0
+  \<Longrightarrow> (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: load_instr_def)
 apply (simp add: simpler_gets_def bind_def h1_def h2_def)
 apply (simp add: Let_def)
@@ -2394,16 +2394,16 @@ apply clarsimp
 by (auto intro: get_curr_win_privilege raise_trap_privilege load_sub1_privilege)
 
 lemma store_barrier_pending_mod_privilege: "s' = store_barrier_pending_mod b s
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0
-  \<Longrightarrow> ((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0
+  \<Longrightarrow> (((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: store_barrier_pending_mod_def)
 apply (simp add: write_store_barrier_pending_def)
 by (simp add: cpu_reg_val_def)
 
 lemma store_word_mem_privilege: 
 assumes a1: "store_word_mem s addr data byte_mask asi = Some s' \<and> 
-((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+(((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 using a1 apply (simp add: store_word_mem_def)
 apply (case_tac "virt_to_phys addr (mmu s) (mem s) = None")
 apply auto
@@ -2411,29 +2411,29 @@ apply (case_tac "mmu_writable (get_acc_flag b) asi")
 apply auto
 by (simp add: mem_mod_w32_privilege)
 
-lemma flush_instr_cache_privilege: "((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
+lemma flush_instr_cache_privilege: "(((get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
 s' = flush_instr_cache s \<Longrightarrow>
-((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: flush_instr_cache_def)
 by (simp add: cpu_reg_val_def)
 
-lemma flush_data_cache_privilege: "((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
+lemma flush_data_cache_privilege: "(((get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
 s' = flush_data_cache s \<Longrightarrow>
-((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: flush_data_cache_def)
 by (simp add: cpu_reg_val_def)
 
-lemma flush_cache_all_privilege: "((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
+lemma flush_cache_all_privilege: "(((get_S (cpu_reg_val PSR s)))::word1) = 0 \<Longrightarrow>
 s' = flush_cache_all s \<Longrightarrow>
-((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 apply (simp add: flush_cache_all_def)
 by (simp add: cpu_reg_val_def)
 
 lemma memory_write_asi_privilege: 
 assumes a1: "r = memory_write_asi asi addr byte_mask data s \<and>
   r = Some s' \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 proof (cases "uint asi = 1")
   case True
   then show ?thesis using a1
@@ -2573,14 +2573,14 @@ lemma memory_write_privilege:
 assumes a1: "r = memory_write asi addr byte_mask data 
   (s::(('a::len) sparc_state)) \<and>
   r = Some s' \<and>
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR 
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR 
   (s'::(('a::len) sparc_state)))))::word1) = 0"
 proof -
   have "\<forall>x. Some x \<noteq> None" by auto
   then have "r \<noteq> None" using a1
     by (simp add: \<open>r = memory_write asi addr byte_mask data s \<and> 
-        r = Some s' \<and> ucast (get_S (cpu_reg_val PSR s)) = 0\<close>)  
+        r = Some s' \<and> (get_S (cpu_reg_val PSR s)) = 0\<close>)  
   then have "\<exists>s''. r = Some (store_barrier_pending_mod False s'')" using a1
     by (metis (no_types, lifting) memory_write_def option.case_eq_if) 
   then have "\<exists>s''. s' = store_barrier_pending_mod False s''" using a1
@@ -2594,8 +2594,8 @@ qed
 
 lemma store_sub2_privilege: 
 assumes a1: "s' = snd (fst (store_sub2 instr curr_win rd asi address s))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 proof (cases "memory_write asi address (st_byte_mask instr address)
                         (st_data0 instr curr_win rd address s) s =
                        None")
@@ -2645,8 +2645,8 @@ qed
 lemma store_sub1_privilege: 
 assumes a1: "s' = snd (fst (store_sub1 instr rd s_val 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR 
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR 
   (s'::(('a::len) sparc_state)))))::word1) = 0"
 proof (cases "(fst instr = load_store_type STH \<or> fst instr = load_store_type STHA) \<and>
               ((ucast (get_addr (snd instr) (snd (fst (get_curr_win () s)))))::word1) \<noteq> 0")
@@ -2698,8 +2698,8 @@ qed
 lemma store_instr_privilege: 
 assumes a1: "s' = snd (fst (store_instr instr 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR 
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR 
   (s'::(('a::len) sparc_state)))))::word1) = 0"
 using a1
 apply (simp add: store_instr_def)
@@ -2710,8 +2710,8 @@ using raise_trap_privilege store_sub1_privilege by blast
 lemma sethi_instr_privilege: 
 assumes a1: "s' = snd (fst (sethi_instr instr 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 using a1
 apply (simp add: sethi_instr_def)
 apply (simp add: Let_def)
@@ -2724,30 +2724,30 @@ by (simp add: return_def)
 lemma nop_instr_privilege: 
 assumes a1: "s' = snd (fst (nop_instr instr 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 using a1
 apply (simp add: nop_instr_def)
 by (simp add: return_def)
 
-lemma ucast_0: "((ucast (get_S w))::word1) = 0 \<Longrightarrow> get_S w = 0"
+lemma ucast_0: "(((get_S w))::word1) = 0 \<Longrightarrow> get_S w = 0"
 by (simp add: ucast_id)
 
-lemma ucast_02: "get_S w = 0 \<Longrightarrow> ((ucast (get_S w))::word1) = 0"
+lemma ucast_02: "get_S w = 0 \<Longrightarrow> (((get_S w))::word1) = 0"
 by simp
 
-lemma ucast_s: "((ucast (get_S w))::word1) = 0 \<Longrightarrow> 
+lemma ucast_s: "(((get_S w))::word1) = 0 \<Longrightarrow> 
   (AND) w (0b00000000000000000000000010000000::word32) = 0"
 apply (simp add: get_S_def)
 by (metis (mono_tags) ucast_id zero_neq_one)
 
 lemma ucast_s2: "(AND) w 0b00000000000000000000000010000000 = 0
-  \<Longrightarrow> ((ucast (get_S w))::word1) = 0"
+  \<Longrightarrow> (((get_S w))::word1) = 0"
 by (simp add: get_S_def)
 
 lemma update_PSR_icc_1: "w' = (AND) w (0b11111111000011111111111111111111::word32)
-  \<and> ((ucast (get_S w))::word1) = 0
-  \<Longrightarrow> ((ucast (get_S w'))::word1) = 0"
+  \<and> (((get_S w))::word1) = 0
+  \<Longrightarrow> (((get_S w'))::word1) = 0"
 by (simp add: get_S_def word_bw_assocs(1))
 
 lemma and_num_1048576_128: "(AND) (0b00000000000100000000000000000000::word32)
@@ -2772,9 +2772,9 @@ lemma or_and_s: "(AND) w1 (0b00000000000000000000000010000000::word32) = 0
 by (simp add: word_ao_dist)
 
 lemma and_or_s: 
-assumes "((ucast (get_S w1))::word1) = 0 \<and> 
+assumes "(((get_S w1))::word1) = 0 \<and> 
   (AND) w2 (0b00000000000000000000000010000000::word32) = 0"
-shows "((ucast (get_S ((OR) ((AND) w1 
+shows "(((get_S ((OR) ((AND) w1 
   (0b11111111000011111111111111111111::word32)) w2)))::word1) = 0"
 proof -
   from assms have "w1 AND 128 = 0"
@@ -2786,30 +2786,30 @@ proof -
 qed 
 
 lemma and_or_or_s:
-assumes a1: "((ucast (get_S w1))::word1) = 0 \<and> 
+assumes a1: "(((get_S w1))::word1) = 0 \<and> 
   (AND) w2 (0b00000000000000000000000010000000::word32) = 0 \<and>  
   (AND) w3 (0b00000000000000000000000010000000::word32) = 0"
-shows "((ucast (get_S ((OR) ((OR) ((AND) w1 
+shows "(((get_S ((OR) ((OR) ((AND) w1 
   (0b11111111000011111111111111111111::word32)) w2) w3)))::word1) = 0"
 using and_or_s assms or_and_s ucast_s ucast_s2 by blast 
 
 lemma and_or_or_or_s:
-assumes a1: "((ucast (get_S w1))::word1) = 0 \<and> 
+assumes a1: "(((get_S w1))::word1) = 0 \<and> 
   (AND) w2 (0b00000000000000000000000010000000::word32) = 0 \<and>  
   (AND) w3 (0b00000000000000000000000010000000::word32) = 0 \<and>
   (AND) w4 (0b00000000000000000000000010000000::word32) = 0"
-shows "((ucast (get_S ((OR) ((OR) ((OR) ((AND) w1 
+shows "(((get_S ((OR) ((OR) ((OR) ((AND) w1 
   (0b11111111000011111111111111111111::word32)) w2) w3) w4)))::word1) = 0"
   using and_or_or_s assms or_and_s ucast_s ucast_s2
   by (simp add: and_or_or_s assms or_and_s ucast_s ucast_s2) 
 
 lemma and_or_or_or_or_s:
-assumes a1: "((ucast (get_S w1))::word1) = 0 \<and> 
+assumes a1: "(((get_S w1))::word1) = 0 \<and> 
   (AND) w2 (0b00000000000000000000000010000000::word32) = 0 \<and>  
   (AND) w3 (0b00000000000000000000000010000000::word32) = 0 \<and>
   (AND) w4 (0b00000000000000000000000010000000::word32) = 0 \<and> 
   (AND) w5 (0b00000000000000000000000010000000::word32) = 0"
-shows "((ucast (get_S ((OR) ((OR) ((OR) ((OR) ((AND) w1 
+shows "(((get_S ((OR) ((OR) ((OR) ((OR) ((AND) w1 
   (0b11111111000011111111111111111111::word32)) w2) w3) w4) w5)))::word1) = 0"
   using and_or_or_or_s assms or_and_s ucast_s ucast_s2
   by (simp add: and_or_or_or_s assms or_and_s ucast_s ucast_s2)
@@ -2819,8 +2819,8 @@ assumes a1: "s' = snd (fst (write_cpu (update_PSR_icc n_val z_val v_val c_val
                                         (cpu_reg_val PSR s)) 
                                       PSR 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 using a1
 apply (simp add: write_cpu_def)
 apply (simp add: simpler_modify_def)
@@ -2859,15 +2859,15 @@ lemma and_num_4294967167_128: "(AND) (0b11111111111111111111111101111111::word32
   (0b00000000000000000000000010000000::word32) = 0"
 by simp
 
-lemma s_0_word: "((ucast (get_S ((AND) w 
+lemma s_0_word: "(((get_S ((AND) w 
   (0b11111111111111111111111101111111::word32))))::word1) = 0"
 apply (simp add: get_S_def)
   using and_num_4294967167_128
   by (simp add: ac_simps)
 
 lemma update_PSR_CWP_1: "w' = (AND) w (0b11111111111111111111111111100000::word32)
-  \<and> ((ucast (get_S w))::word1) = 0
-  \<Longrightarrow> ((ucast (get_S w'))::word1) = 0"
+  \<and> (((get_S w))::word1) = 0
+  \<Longrightarrow> (((get_S w'))::word1) = 0"
 by (simp add: get_S_def word_bw_assocs(1))
 
 lemma write_cpu_PSR_CWP_privilege: 
@@ -2875,8 +2875,8 @@ assumes a1: "s' = snd (fst (write_cpu (update_CWP cwp_val
                                         (cpu_reg_val PSR s)) 
                                       PSR 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 using a1
 apply (simp add: write_cpu_def)
 apply (simp add: simpler_modify_def)
@@ -2890,8 +2890,8 @@ using s_0_word by blast
 lemma logical_instr_sub1_privilege: 
 assumes a1: "s' = snd (fst (logical_instr_sub1 instr_name result 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 proof (cases "instr_name = logic_type ANDcc \<or>
               instr_name = logic_type ANDNcc \<or>
               instr_name = logic_type ORcc \<or>
@@ -2913,8 +2913,8 @@ qed
 lemma logical_instr_privilege: 
 assumes a1: "s' = snd (fst (logical_instr instr 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 using a1
 apply (simp add: logical_instr_def)
 apply (simp add: Let_def simpler_gets_def bind_def h1_def h2_def)
@@ -2936,8 +2936,8 @@ auto,
 lemma shift_instr_privilege: 
 assumes a1: "s' = snd (fst (shift_instr instr 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 proof (cases "(fst instr = shift_type SLL) \<and> (get_operand_w5 ((snd instr)!3) \<noteq> 0)")
   case True
   then show ?thesis using a1
@@ -2976,8 +2976,8 @@ qed
 lemma add_instr_sub1_privilege: 
 assumes a1: "s' = snd (fst (add_instr_sub1 instr_name result rs1_val operand2 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 proof (cases "instr_name = arith_type ADDcc \<or> instr_name = arith_type ADDXcc")
   case True
   then show ?thesis using a1
@@ -2994,8 +2994,8 @@ qed
 lemma add_instr_privilege: 
 assumes a1: "s' = snd (fst (add_instr instr 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 using a1
 apply (simp add: add_instr_def)
 apply (simp add: Let_def)
@@ -3006,8 +3006,8 @@ by (meson add_instr_sub1_privilege get_curr_win_privilege write_reg_privilege)
 lemma sub_instr_sub1_privilege: 
 assumes a1: "s' = snd (fst (sub_instr_sub1 instr_name result rs1_val operand2 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 proof (cases "instr_name = arith_type SUBcc \<or> instr_name = arith_type SUBXcc")
   case True
   then show ?thesis using a1
@@ -3024,8 +3024,8 @@ qed
 lemma sub_instr_privilege: 
 assumes a1: "s' = snd (fst (sub_instr instr 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 using a1
 apply (simp add: sub_instr_def)
 apply (simp add: Let_def)
@@ -3036,8 +3036,8 @@ by (meson sub_instr_sub1_privilege get_curr_win_privilege write_reg_privilege)
 lemma mul_instr_sub1_privilege: 
 assumes a1: "s' = snd (fst (mul_instr_sub1 instr_name result  
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 proof (cases "instr_name \<in> {arith_type SMULcc,arith_type UMULcc}")
   case True
   then show ?thesis using a1
@@ -3054,8 +3054,8 @@ qed
 lemma mul_instr_privilege: 
 assumes a1: "s' = snd (fst (mul_instr instr 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 using a1
 apply (simp add: mul_instr_def)
 apply (simp add: Let_def)
@@ -3066,8 +3066,8 @@ by (meson get_curr_win_privilege mul_instr_sub1_privilege write_cpu_y_privilege 
 lemma div_write_new_val_privilege: 
 assumes a1: "s' = snd (fst (div_write_new_val i result temp_V  
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 proof (cases "(fst i) \<in> {arith_type UDIVcc,arith_type SDIVcc}")
   case True
   then show ?thesis using a1
@@ -3084,8 +3084,8 @@ qed
 lemma div_comp_privilege: 
 assumes a1: "s' = snd (fst (div_comp instr rs1 rd operand2  
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 using a1
 apply (simp add: div_comp_def)
 apply (simp add: simpler_gets_def bind_def h1_def h2_def Let_def)
@@ -3095,8 +3095,8 @@ by (meson get_curr_win_privilege div_write_new_val_privilege write_reg_privilege
 lemma div_instr_privilege: 
 assumes a1: "s' = snd (fst (div_instr instr 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 using a1
 apply (simp add: div_instr_def)
 apply (simp add: Let_def)
@@ -3110,8 +3110,8 @@ using div_comp_privilege by blast
 lemma save_retore_sub1_privilege: 
 assumes a1: "s' = snd (fst (save_retore_sub1 result new_cwp rd 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 using a1
 apply (simp add: save_retore_sub1_def)
 apply (simp add: simpler_gets_def bind_def h1_def h2_def Let_def)
@@ -3132,8 +3132,8 @@ auto,
 lemma save_restore_instr_privilege: 
 assumes a1: "s' = snd (fst (save_restore_instr instr 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 proof (cases "fst instr = ctrl_type SAVE")
   case True
   then have f1: "fst instr = ctrl_type SAVE" by auto
@@ -3148,8 +3148,8 @@ qed
 lemma call_instr_privilege: 
 assumes a1: "s' = snd (fst (call_instr instr 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 using a1
 apply (simp add: call_instr_def)
 apply (simp add: simpler_gets_def bind_def h1_def h2_def Let_def)
@@ -3159,8 +3159,8 @@ by (meson get_curr_win_privilege write_cpu_npc_privilege write_cpu_pc_privilege 
 lemma jmpl_instr_privilege: 
 assumes a1: "s' = snd (fst (jmpl_instr instr 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 using a1
 apply (simp add: jmpl_instr_def)
 apply (simp add: Let_def)
@@ -3176,8 +3176,8 @@ lemma rett_instr_privilege:
 assumes a1: "snd (rett_instr i s) = False \<and>
   s' = snd (fst (rett_instr instr 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 using a1
 apply (simp add: rett_instr_def)
 apply (simp add: simpler_gets_def bind_def h1_def h2_def Let_def)
@@ -3198,14 +3198,14 @@ method read_state_reg_instr_privilege_proof = (
 lemma read_state_reg_instr_privilege: 
 assumes a1: "s' = snd (fst (read_state_reg_instr instr 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 proof (cases "(fst instr \<in> {sreg_type RDPSR,sreg_type RDWIM,sreg_type RDTBR} \<or> 
         (fst instr = sreg_type RDASR \<and> privileged_ASR (get_operand_w5 ((snd instr)!0))))")
   case True
   then have "(fst instr \<in> {sreg_type RDPSR,sreg_type RDWIM,sreg_type RDTBR} \<or> 
         (fst instr = sreg_type RDASR \<and> privileged_ASR (get_operand_w5 ((snd instr)!0))))
-        \<and> ((ucast (get_S (cpu_reg_val PSR (snd (fst (get_curr_win () s))))))::word1) = 0"
+        \<and> (((get_S (cpu_reg_val PSR (snd (fst (get_curr_win () s))))))::word1) = 0"
     by (metis assms get_curr_win_privilege)    
   then show ?thesis using a1
   apply read_state_reg_instr_privilege_proof
@@ -3216,7 +3216,7 @@ next
                     fst instr = sreg_type RDWIM \<or>
                     fst instr = sreg_type RDTBR \<or>
                     fst instr = sreg_type RDASR \<and> privileged_ASR (get_operand_w5 (snd instr ! 0))) \<and>
-                   ucast (get_S (cpu_reg_val PSR (snd (fst (get_curr_win () s))))) = 0)"
+                   (get_S (cpu_reg_val PSR (snd (fst (get_curr_win () s))))) = 0)"
     by blast 
   then show ?thesis 
   proof (cases "illegal_instruction_ASR (get_operand_w5 ((snd instr)!0))")
@@ -3289,8 +3289,8 @@ method write_state_reg_instr_privilege_proof = (
 lemma write_state_reg_instr_privilege: 
 assumes a1: "s' = snd (fst (write_state_reg_instr instr 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 proof (cases "fst instr = sreg_type WRY")
   case True
   then show ?thesis using a1
@@ -3351,8 +3351,8 @@ qed
 lemma flush_instr_privilege: 
 assumes a1: "s' = snd (fst (flush_instr instr 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 using a1
 apply (simp add: flush_instr_def)
 apply (simp add: simpler_gets_def bind_def h1_def h2_def Let_def simpler_modify_def)
@@ -3361,8 +3361,8 @@ by (auto simp add: flush_cache_all_privilege)
 lemma branch_instr_privilege: 
 assumes a1: "s' = snd (fst (branch_instr instr 
   (s::(('a::len) sparc_state))))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 using a1
 apply (simp add: branch_instr_def)
 apply (simp add: Let_def simpler_gets_def bind_def h1_def h2_def)
@@ -3378,8 +3378,8 @@ method dispath_instr_privilege_proof = (
 lemma dispath_instr_privilege: 
 assumes a1: "snd (dispatch_instruction instr s) = False \<and>
   s' = snd (fst (dispatch_instruction instr s))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 proof (cases "get_trap_set s = {}")
   case True
   then have f1: "get_trap_set s = {}" by auto
@@ -3613,8 +3613,8 @@ qed
 lemma execute_instr_sub1_privilege: 
 assumes a1: "snd (execute_instr_sub1 i s) = False \<and>
   s' = snd (fst (execute_instr_sub1 i s))
-  \<and> ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  \<and> (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 proof (cases "get_trap_set s = {} \<and> fst i \<notin> {call_type CALL,ctrl_type RETT,ctrl_type JMPL,
                                    bicc_type BE,bicc_type BNE,bicc_type BGU,
                                    bicc_type BLE,bicc_type BL,bicc_type BGE,
@@ -3646,8 +3646,8 @@ theorem safe_privilege :
 assumes a1: "get_delayed_pool s = [] \<and> get_trap_set s = {} \<and>
   snd (execute_instruction() s) = False \<and>
   s' = snd (fst (execute_instruction() s)) \<and> 
-  ((ucast (get_S (cpu_reg_val PSR s)))::word1) = 0"
-shows "((ucast (get_S (cpu_reg_val PSR s')))::word1) = 0"
+  (((get_S (cpu_reg_val PSR s)))::word1) = 0"
+shows "(((get_S (cpu_reg_val PSR s')))::word1) = 0"
 proof (cases "exe_mode_val s")
   case True   
   then have f2: "exe_mode_val s = True" by auto
@@ -4992,8 +4992,8 @@ fst instr = load_store_type LDUH \<or>
 fst instr = load_store_type LD \<or> 
 fst instr = load_store_type LDA \<or> 
 fst instr = load_store_type LDD) \<and>
-((ucast (get_S (cpu_reg_val PSR s1)))::word1) = 0 \<and>
-((ucast (get_S (cpu_reg_val PSR s2)))::word1) = 0 \<and>
+(((get_S (cpu_reg_val PSR s1)))::word1) = 0 \<and>
+(((get_S (cpu_reg_val PSR s2)))::word1) = 0 \<and>
 t1 = snd (fst (load_instr instr s1)) \<and> t2 = snd (fst (load_instr instr s2))"
 shows "low_equal t1 t2"
 proof -
@@ -6189,8 +6189,8 @@ fst instr = load_store_type STH \<or>
 fst instr = load_store_type ST \<or> 
 fst instr = load_store_type STA \<or> 
 fst instr = load_store_type STD) \<and>
-((ucast (get_S (cpu_reg_val PSR s1)))::word1) = 0 \<and>
-((ucast (get_S (cpu_reg_val PSR s2)))::word1) = 0 \<and>
+(((get_S (cpu_reg_val PSR s1)))::word1) = 0 \<and>
+(((get_S (cpu_reg_val PSR s2)))::word1) = 0 \<and>
 t1 = snd (fst (store_instr instr s1)) \<and> t2 = snd (fst (store_instr instr s2))"
 shows "low_equal t1 t2"
 proof -
@@ -7456,8 +7456,8 @@ lemma rett_instr_low_equal:
 assumes a1: "low_equal s1 s2 \<and>
 \<not> snd (rett_instr instr s1) \<and>
 \<not> snd (rett_instr instr s2) \<and>
-((ucast (get_S (cpu_reg_val PSR s1)))::word1) = 0 \<and>
-((ucast (get_S (cpu_reg_val PSR s2)))::word1) = 0 \<and>
+(((get_S (cpu_reg_val PSR s1)))::word1) = 0 \<and>
+(((get_S (cpu_reg_val PSR s2)))::word1) = 0 \<and>
 t1 = snd (fst (rett_instr instr s1)) \<and> t2 = snd (fst (rett_instr instr s2))"
 shows "low_equal t1 t2"
 using a1
@@ -7474,8 +7474,8 @@ by (simp add: case_prod_unfold fail_def)
 
 lemma read_state_reg_low_equal:
 assumes a1: "low_equal s1 s2 \<and>
-((ucast (get_S (cpu_reg_val PSR s1)))::word1) = 0 \<and>
-((ucast (get_S (cpu_reg_val PSR s2)))::word1) = 0 \<and>
+(((get_S (cpu_reg_val PSR s1)))::word1) = 0 \<and>
+(((get_S (cpu_reg_val PSR s2)))::word1) = 0 \<and>
 t1 = snd (fst (read_state_reg_instr instr s1)) \<and> 
 t2 = snd (fst (read_state_reg_instr instr s2))"
 shows "low_equal t1 t2"
@@ -7484,8 +7484,8 @@ proof (cases "(fst instr \<in> {sreg_type RDPSR,sreg_type RDWIM,sreg_type RDTBR}
   case True   
   then have "(fst instr \<in> {sreg_type RDPSR,sreg_type RDWIM,sreg_type RDTBR} \<or> 
         (fst instr = sreg_type RDASR \<and> privileged_ASR (get_operand_w5 ((snd instr)!0))))
-        \<and> ((ucast (get_S (cpu_reg_val PSR (snd (fst (get_curr_win () s1))))))::word1) = 0
-        \<and> ((ucast (get_S (cpu_reg_val PSR (snd (fst (get_curr_win () s2))))))::word1) = 0"
+        \<and> (((get_S (cpu_reg_val PSR (snd (fst (get_curr_win () s1))))))::word1) = 0
+        \<and> (((get_S (cpu_reg_val PSR (snd (fst (get_curr_win () s2))))))::word1) = 0"
     by (metis assms get_curr_win_privilege)
   then show ?thesis using a1
   apply (simp add: read_state_reg_instr_def)
@@ -7597,8 +7597,8 @@ qed
 
 lemma write_state_reg_low_equal:
 assumes a1: "low_equal s1 s2 \<and>
-((ucast (get_S (cpu_reg_val PSR s1)))::word1) = 0 \<and>
-((ucast (get_S (cpu_reg_val PSR s2)))::word1) = 0 \<and>
+(((get_S (cpu_reg_val PSR s1)))::word1) = 0 \<and>
+(((get_S (cpu_reg_val PSR s2)))::word1) = 0 \<and>
 t1 = snd (fst (write_state_reg_instr instr s1)) \<and>
 t2 = snd (fst (write_state_reg_instr instr s2))"
 shows "low_equal t1 t2"
@@ -7703,8 +7703,8 @@ next
                   ASR (get_operand_w5 (snd instr ! 3))))
                (snd (fst (get_curr_win () s2)))))"
            assume f5: "low_equal s1 s2"
-           assume f6: "ucast (get_S (cpu_reg_val PSR s1)) = 0"
-           assume f7: "ucast (get_S (cpu_reg_val PSR s2)) = 0"
+           assume f6: "(get_S (cpu_reg_val PSR s1)) = 0"
+           assume f7: "(get_S (cpu_reg_val PSR s2)) = 0"
            assume f8: "t1 = snd (fst (modify
                     (delayed_pool_add
                       (DELAYNUM,
@@ -7924,8 +7924,8 @@ using write_cpu_low_equal by metis
 
 lemma dispath_instr_low_equal:
 assumes a1: "low_equal s1 s2 \<and>
-((ucast (get_S (cpu_reg_val PSR s1)))::word1) = 0 \<and>
-((ucast (get_S (cpu_reg_val PSR s2)))::word1) = 0 \<and>
+(((get_S (cpu_reg_val PSR s1)))::word1) = 0 \<and>
+(((get_S (cpu_reg_val PSR s2)))::word1) = 0 \<and>
 \<not> snd (dispatch_instruction instr s1) \<and>
 \<not> snd (dispatch_instruction instr s2) \<and>
 t1 = (snd (fst (dispatch_instruction instr s1))) \<and>
@@ -8213,16 +8213,16 @@ next
 qed
 
 theorem non_interference_step: 
-assumes a1: "((ucast (get_S (cpu_reg_val PSR s1)))::word1) = 0 \<and>
+assumes a1: "(((get_S (cpu_reg_val PSR s1)))::word1) = 0 \<and>
 good_context s1 \<and>
 get_delayed_pool s1 = [] \<and> get_trap_set s1 = {} \<and>
-((ucast (get_S (cpu_reg_val PSR s2)))::word1) = 0 \<and>
+(((get_S (cpu_reg_val PSR s2)))::word1) = 0 \<and>
 get_delayed_pool s2 = [] \<and> get_trap_set s2 = {} \<and>
 good_context s2 \<and>
 low_equal s1 s2"
 shows "\<exists>t1 t2. Some t1 = NEXT s1 \<and> Some t2 = NEXT s2 \<and> 
-((ucast (get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
-((ucast (get_S (cpu_reg_val PSR t2)))::word1) = 0 \<and>
+(((get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
+(((get_S (cpu_reg_val PSR t2)))::word1) = 0 \<and>
 low_equal t1 t2"
 proof -
   from a1 have "good_context s1 \<and> good_context s2" by auto
@@ -8236,8 +8236,8 @@ proof -
        by (auto simp add: NEXT_def case_prod_unfold)
   then have f1: "\<exists>t1 t2. Some t1 = NEXT s1 \<and>
       Some t2 = NEXT s2 \<and>
-      ((ucast (get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
-      ((ucast (get_S (cpu_reg_val PSR t2)))::word1) = 0"
+      (((get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
+      (((get_S (cpu_reg_val PSR t2)))::word1) = 0"
       using a1
       apply (auto simp add: NEXT_def case_prod_unfold)
        by (auto simp add: safe_privilege)
@@ -8264,8 +8264,8 @@ proof -
           then have "cpu_reg_val PC s1 = cpu_reg_val PC s2" 
             by (simp add: cpu_reg_val_def)
           then have "cpu_reg_val PC s1 = cpu_reg_val PC s2 \<and>
-                     ((ucast (get_S (cpu_reg_val PSR (delayed_pool_write s1))))::word1) = 0 \<and>
-                     ((ucast (get_S (cpu_reg_val PSR (delayed_pool_write s2))))::word1) = 0"
+                     (((get_S (cpu_reg_val PSR (delayed_pool_write s1))))::word1) = 0 \<and>
+                     (((get_S (cpu_reg_val PSR (delayed_pool_write s2))))::word1) = 0"
             using a1 
             by (auto simp add: empty_delayed_pool_write_privilege)  
           then show ?thesis using a1 f_fetch_error
@@ -8330,8 +8330,8 @@ proof -
           then have "cpu_reg_val PC s1 = cpu_reg_val PC s2" 
             by (simp add: cpu_reg_val_def)
           then have "cpu_reg_val PC s1 = cpu_reg_val PC s2 \<and>
-                     ((ucast (get_S (cpu_reg_val PSR (delayed_pool_write s1))))::word1) = 0 \<and>
-                     ((ucast (get_S (cpu_reg_val PSR (delayed_pool_write s2))))::word1) = 0"
+                     (((get_S (cpu_reg_val PSR (delayed_pool_write s1))))::word1) = 0 \<and>
+                     (((get_S (cpu_reg_val PSR (delayed_pool_write s2))))::word1) = 0"
             using a1 
             by (auto simp add: empty_delayed_pool_write_privilege)  
           then show ?thesis using a1 f_fetch_suc
@@ -8453,16 +8453,16 @@ definition user_seq_exe:: "nat \<Rightarrow> ('a::len) sparc_state \<Rightarrow>
 
 text \<open>NIA is short for non-interference assumption.\<close>
 definition "NIA t1 t2 \<equiv> 
-    ((ucast (get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
-    ((ucast (get_S (cpu_reg_val PSR t2)))::word1) = 0 \<and>
+    (((get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
+    (((get_S (cpu_reg_val PSR t2)))::word1) = 0 \<and>
     good_context t1 \<and> get_delayed_pool t1 = [] \<and> get_trap_set t1 = {} \<and>
     good_context t2 \<and> get_delayed_pool t2 = [] \<and> get_trap_set t2 = {} \<and>
     low_equal t1 t2"
 
 text \<open>NIC is short for non-interference conclusion.\<close>
 definition "NIC t1 t2 \<equiv> (\<exists>u1 u2. Some u1 = NEXT t1 \<and> Some u2 = NEXT t2 \<and> 
-    ((ucast (get_S (cpu_reg_val PSR u1)))::word1) = 0 \<and>
-    ((ucast (get_S (cpu_reg_val PSR u2)))::word1) = 0 \<and>
+    (((get_S (cpu_reg_val PSR u1)))::word1) = 0 \<and>
+    (((get_S (cpu_reg_val PSR u2)))::word1) = 0 \<and>
     low_equal u1 u2)"
 
 lemma NIS_short: "\<forall>t1 t2. NIA t1 t2 \<longrightarrow> NIC t1 t2"
@@ -8488,16 +8488,16 @@ assumes a1:
                  good_context t \<and> get_delayed_pool t = [] \<and> get_trap_set t = {}) \<longrightarrow>
           (\<exists>t1. Some t1 = SEQ n s1 \<and>
                (\<exists>t2. Some t2 = SEQ n s2 \<and>
-                     ((ucast (get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
-    ((ucast (get_S (cpu_reg_val PSR t2)))::word1) = 0 \<and> low_equal t1 t2))) \<and>
+                     (((get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
+    (((get_S (cpu_reg_val PSR t2)))::word1) = 0 \<and> low_equal t1 t2))) \<and>
 (\<forall>i t. i \<le> Suc n \<and> SEQ i s1 = Some t \<longrightarrow>
                good_context t \<and> get_delayed_pool t = [] \<and> get_trap_set t = {}) \<and>
          (\<forall>i t. i \<le> Suc n \<and> SEQ i s2 = Some t \<longrightarrow>
                good_context t \<and> get_delayed_pool t = [] \<and> get_trap_set t = {})"
 shows "\<exists>t1. Some t1 = (case SEQ n s1 of None \<Rightarrow> None | Some x \<Rightarrow> NEXT x) \<and>
               (\<exists>t2. Some t2 = (case SEQ n s2 of None \<Rightarrow> None | Some x \<Rightarrow> NEXT x) \<and>
-                    ((ucast (get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
-    ((ucast (get_S (cpu_reg_val PSR t2)))::word1) = 0 \<and> low_equal t1 t2)"
+                    (((get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
+    (((get_S (cpu_reg_val PSR t2)))::word1) = 0 \<and> low_equal t1 t2)"
 proof -
   from a1 have f1: "((\<forall>i t. i \<le> n \<and> SEQ i s1 = Some t \<longrightarrow>
   good_context t \<and> get_delayed_pool t = [] \<and> get_trap_set t = {}) \<and>
@@ -8506,8 +8506,8 @@ proof -
   by (metis le_SucI)
   then have f2: "(\<exists>t1. Some t1 = SEQ n s1 \<and>
     (\<exists>t2. Some t2 = SEQ n s2 \<and>
-    ((ucast (get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
-    ((ucast (get_S (cpu_reg_val PSR t2)))::word1) = 0 \<and>
+    (((get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
+    (((get_S (cpu_reg_val PSR t2)))::word1) = 0 \<and>
     low_equal t1 t2))"
   using a1 by auto
   then have f3: "(\<exists>t1. Some t1 = SEQ n s1 \<and>
@@ -8521,14 +8521,14 @@ proof -
   using non_interference_induct_case_sub1 by blast
   then have "(\<exists>t1. Some t1 = SEQ n s1 \<and>
     (\<exists>t2. Some t2 = SEQ n s2 \<and>
-    (((ucast (get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
-    ((ucast (get_S (cpu_reg_val PSR t2)))::word1) = 0 \<and>
+    ((((get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
+    (((get_S (cpu_reg_val PSR t2)))::word1) = 0 \<and>
     good_context t1 \<and> get_delayed_pool t1 = [] \<and> get_trap_set t1 = {} \<and>
     good_context t2 \<and> get_delayed_pool t2 = [] \<and> get_trap_set t2 = {} \<and>
     low_equal t1 t2) \<and>
     (\<exists>u1 u2. Some u1 = NEXT t1 \<and> Some u2 = NEXT t2 \<and> 
-    ((ucast (get_S (cpu_reg_val PSR u1)))::word1) = 0 \<and>
-    ((ucast (get_S (cpu_reg_val PSR u2)))::word1) = 0 \<and>
+    (((get_S (cpu_reg_val PSR u1)))::word1) = 0 \<and>
+    (((get_S (cpu_reg_val PSR u2)))::word1) = 0 \<and>
     low_equal u1 u2)))"
   using NIA_def NIC_def by fastforce
   then show ?thesis
@@ -8541,30 +8541,30 @@ assumes a1:
           user_seq_exe n s2 \<longrightarrow>
           (\<exists>t1. Some t1 = SEQ n s1 \<and>
                (\<exists>t2. Some t2 = SEQ n s2 \<and>
-                     ((ucast (get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
-    ((ucast (get_S (cpu_reg_val PSR t2)))::word1) = 0 \<and> low_equal t1 t2))) \<and>
+                     (((get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
+    (((get_S (cpu_reg_val PSR t2)))::word1) = 0 \<and> low_equal t1 t2))) \<and>
 user_seq_exe (Suc n) s1 \<and>
          user_seq_exe (Suc n) s2"
 shows "\<exists>t1. Some t1 = (case SEQ n s1 of None \<Rightarrow> None | Some x \<Rightarrow> NEXT x) \<and>
               (\<exists>t2. Some t2 = (case SEQ n s2 of None \<Rightarrow> None | Some x \<Rightarrow> NEXT x) \<and>
-                    ((ucast (get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
-    ((ucast (get_S (cpu_reg_val PSR t2)))::word1) = 0 \<and> low_equal t1 t2)"
+                    (((get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
+    (((get_S (cpu_reg_val PSR t2)))::word1) = 0 \<and> low_equal t1 t2)"
 using a1
 by (simp add: non_interference_induct_case user_seq_exe_def)
 
 theorem non_interference:
 assumes a1: 
-"((ucast (get_S (cpu_reg_val PSR s1)))::word1) = 0 \<and>
+"(((get_S (cpu_reg_val PSR s1)))::word1) = 0 \<and>
 good_context s1 \<and>
 get_delayed_pool s1 = [] \<and> get_trap_set s1 = {} \<and>
-((ucast (get_S (cpu_reg_val PSR s2)))::word1) = 0 \<and>
+(((get_S (cpu_reg_val PSR s2)))::word1) = 0 \<and>
 get_delayed_pool s2 = [] \<and> get_trap_set s2 = {} \<and>
 good_context s2 \<and>
 user_seq_exe n s1 \<and> user_seq_exe n s2 \<and>
 low_equal s1 s2"
 shows "(\<exists>t1 t2. Some t1 = SEQ n s1 \<and> Some t2 = SEQ n s2 \<and>
-  ((ucast (get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
-  ((ucast (get_S (cpu_reg_val PSR t2)))::word1) = 0 \<and>
+  (((get_S (cpu_reg_val PSR t1)))::word1) = 0 \<and>
+  (((get_S (cpu_reg_val PSR t2)))::word1) = 0 \<and>
   low_equal t1 t2)"
 using a1
 apply (induction n)

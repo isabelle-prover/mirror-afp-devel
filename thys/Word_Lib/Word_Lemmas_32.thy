@@ -49,7 +49,7 @@ lemma unat_mask_2_less_4:
   "unat (p && mask 2 :: word32) < 4"
   apply (rule unat_less_helper)
   apply (rule order_le_less_trans, rule word_and_le1)
-  apply (simp add: mask_def)
+  apply (simp add: mask_eq)
   done
 
 lemmas unat_of_nat32' = unat_of_nat_eq[where 'a=32]
@@ -90,7 +90,7 @@ lemma Suc_unat_mask_div:
   "Suc (unat (mask sz div word_size::word32)) = 2 ^ (min sz word_bits - 2)"
   apply (case_tac "sz < word_bits")
    apply (case_tac "2\<le>sz")
-    apply (clarsimp simp: word_size_def word_bits_def min_def mask_def)
+    apply (clarsimp simp: word_size_def word_bits_def min_def mask_eq)
     apply (drule (2) Suc_div_unat_helper
            [where 'a=32 and sz=sz and us=2, simplified, symmetric])
    apply (simp add: not_le word_size_def word_bits_def)
@@ -130,14 +130,7 @@ lemma less_4_cases:
 lemma unat_ucast_8_32:
   fixes x :: "word8"
   shows "unat (ucast x :: word32) = unat x"
-  unfolding ucast_def unat_def
-  apply (subst int_word_uint)
-  apply (subst mod_pos_pos_trivial)
-    apply simp
-   apply (rule lt2p_lem)
-   apply simp
-  apply simp
-  done
+  by transfer simp
 
 lemma if_then_1_else_0:
   "((if P then 1 else 0) = (0 :: word32)) = (\<not> P)"
@@ -180,14 +173,7 @@ lemma word_rsplit_0:
 lemma unat_ucast_10_32 :
   fixes x :: "10 word"
   shows "unat (ucast x :: word32) = unat x"
-  unfolding ucast_def unat_def
-  apply (subst int_word_uint)
-  apply (subst mod_pos_pos_trivial)
-    apply simp
-   apply (rule lt2p_lem)
-   apply simp
-  apply simp
-  done
+  by transfer simp
 
 lemma bool_mask [simp]:
   fixes x :: word32
@@ -288,7 +274,7 @@ qed
 
 lemma unat_of_int_32:
   "\<lbrakk>i \<ge> 0; i \<le>2 ^ 31\<rbrakk> \<Longrightarrow> (unat ((of_int i)::sword32)) = nat i"
-  unfolding unat_def
+  unfolding unat_eq_nat_uint
   apply (subst eq_nat_nat_iff, clarsimp+)
   apply (simp add: word_of_int uint_word_of_int)
   done

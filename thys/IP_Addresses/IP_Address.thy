@@ -77,7 +77,7 @@ subsection\<open>Sets of IP Addresses\<close>
   lemma ipset_from_cidr_wordlength:
     fixes ip :: "'i::len word"
     shows "ipset_from_cidr ip (LENGTH('i)) = {ip}"
-    by(simp add: ipset_from_cidr_def ipset_from_netmask_def Let_def mask_def)
+    by (simp add: ipset_from_cidr_def ipset_from_netmask_def)
 
   text\<open>Alternative definition: Considering words as bit lists:\<close>
   lemma ipset_from_cidr_bl:

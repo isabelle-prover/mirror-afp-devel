@@ -98,55 +98,43 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
     assume  "a < 256" and "b < 256" and "c < 256" and "d < 256"
     note assms= \<open>a < 256\<close> \<open>b < 256\<close> \<open>c < 256\<close> \<open>d < 256\<close>
     hence a:  "nat_of_ipv4addr ((ipv4addr_of_nat (d + 256 * c + 65536 * b + 16777216 * a) >> 24) AND mask 8) = a"
-      apply(simp add: ipv4addr_of_nat_def word_of_nat)
-      apply(simp add: nat_of_ipv4addr_def unat_def)
-      apply(simp add: and_mask_mod_2p)
-      apply(simp add: shiftr_div_2n)
-      apply(simp add: uint_word_of_int)
+      apply (simp add: ipv4addr_of_nat_def word_of_nat nat_of_ipv4addr_def)
+      apply transfer
+      apply (simp add: drop_bit_take_bit flip: take_bit_eq_mask)
+      apply (simp add: drop_bit_eq_div take_bit_eq_mod)
       done
     have ipv4addr_of_nat_AND_mask8: "(ipv4addr_of_nat a) AND mask 8 = (ipv4addr_of_nat (a mod 256))"
       for a
-      apply(simp add: ipv4addr_of_nat_def and_mask_mod_2p)
-      apply(simp add: word_of_nat) (*use this to get rid of of_nat. All thm are with word_of_int*)
-      apply(simp add: uint_word_of_int)
-      apply(subst mod_mod_cancel)
-       apply(simp; fail)
-      apply(simp add: zmod_int)
+      apply (simp add: ipv4addr_of_nat_def)
+      apply transfer
+      apply (simp flip: take_bit_eq_mask)
+      apply (simp add: take_bit_eq_mod of_nat_mod)
       done
     from assms have b:
       "nat_of_ipv4addr ((ipv4addr_of_nat (d + 256 * c + 65536 * b + 16777216 * a) >> 16) AND mask 8) = b"
-      apply(simp add: ipv4addr_of_nat_def word_of_nat)
-      apply(simp add: nat_of_ipv4addr_def unat_def)
-      apply(simp add: and_mask_mod_2p)
-      apply(simp add: shiftr_div_2n)
-      apply(simp add: uint_word_of_int)
-      apply(simp add: NumberWang_IPv4.div65536[simplified])
-      (*The [simplified] is needed because Word_Lib adds some additional simp rules*)
+      apply (simp add: ipv4addr_of_nat_def nat_of_ipv4addr_def)
+      apply transfer
+      apply (simp add: drop_bit_take_bit flip: take_bit_eq_mask)
+      using div65536
+      apply (simp add: drop_bit_eq_div take_bit_eq_mod)
       done
-      \<comment> \<open>When @{file \<open>../Word_Lib/Word_Lemmas.thy\<close>} is imported,
-         some @{file \<open>NumberWang_IPv4.thy\<close>} lemmas need the
-         [simplified] attribute because @{text Word_Lib} adds some simp rules.
-         This theory should also work without @{file \<open>../Word_Lib/Word_Lemmas.thy\<close>}\<close>
     from assms have c:
       "nat_of_ipv4addr ((ipv4addr_of_nat (d + 256 * c + 65536 * b + 16777216 * a) >> 8) AND mask 8) = c"
-      apply(simp add: ipv4addr_of_nat_def word_of_nat)
-      apply(simp add: nat_of_ipv4addr_def unat_def)
-      apply(simp add: and_mask_mod_2p)
-      apply(simp add: shiftr_div_2n)
-      apply(simp add: uint_word_of_int)
-      apply(simp add: NumberWang_IPv4.div256[simplified])
+      apply (simp add: ipv4addr_of_nat_def nat_of_ipv4addr_def)
+      apply transfer
+      apply (simp add: drop_bit_take_bit flip: take_bit_eq_mask)
+      using div256
+      apply (simp add: drop_bit_eq_div take_bit_eq_mod)
       done
     from \<open>d < 256\<close> have d: "nat_of_ipv4addr (ipv4addr_of_nat (d + 256 * c + 65536 * b + 16777216 * a) AND mask 8) = d"
-      apply(simp add: ipv4addr_of_nat_AND_mask8)
-      apply(simp add: ipv4addr_of_nat_def word_of_nat)
-      apply(simp add: nat_of_ipv4addr_def)
-      apply(subgoal_tac "(d + 256 * c + 65536 * b + 16777216 * a) mod 256 = d")
-       apply(simp add: unat_def uint_word_of_int; fail)
-      apply(simp add: NumberWang_IPv4.mod256)
+      apply (simp add: ipv4addr_of_nat_AND_mask8 ipv4addr_of_nat_def nat_of_ipv4addr_def)
+      apply transfer
+      apply (simp flip: take_bit_eq_mask)
+      apply (simp add: take_bit_eq_mod nat_mod_distrib nat_add_distrib nat_mult_distrib mod256)
       done
     from a b c d show ?thesis
-      apply(simp add: ipv4addr_of_dotdecimal.simps dotdecimal_of_ipv4addr.simps)
-      apply(simp add: mask_def)
+      apply (simp add: ipv4addr_of_dotdecimal.simps dotdecimal_of_ipv4addr.simps)
+      apply (simp add: mask_eq)
       done
   qed
 
@@ -160,7 +148,7 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
     have and_mask_bl_take: "length x \<ge> n \<Longrightarrow> ((of_bl x) AND mask n) = (of_bl (rev (take n (rev (x)))))"
       for x n by(simp add: List_rev_drop_geqn of_bl_drop)
     have ipv4addr_and_255: "x AND 255 = x AND mask 8" for x :: ipv4addr
-      by(simp add: mask_def)
+      by(simp add: mask_eq)
     have bit_equality:
       "((ip >> 24) AND 0xFF << 24) + ((ip >> 16) AND 0xFF << 16) + ((ip >> 8) AND 0xFF << 8) + (ip AND 0xFF) =
        of_bl (take 8 (to_bl ip) @ take 8 (drop 8 (to_bl ip)) @ take 8 (drop 16 (to_bl ip)) @ drop 24 (to_bl ip))"
@@ -216,14 +204,14 @@ subsection\<open>IP Ranges: Examples\<close>
 
   lemma "ipset_from_cidr (ipv4addr_of_dotdecimal (192,168,0,42)) 16 =
           {ipv4addr_of_dotdecimal (192,168,0,0) .. ipv4addr_of_dotdecimal (192,168,255,255)}"
-   by(simp add: ipset_from_cidr_alt mask_def  ipv4addr_of_dotdecimal.simps ipv4addr_of_nat_def)
+   by(simp add: ipset_from_cidr_alt mask_eq ipv4addr_of_dotdecimal.simps ipv4addr_of_nat_def)
 
   lemma "ip \<in> (ipset_from_cidr (ipv4addr_of_dotdecimal (0, 0, 0, 0)) 0)"
     by(simp add: ipset_from_cidr_0)
 
   lemma ipv4set_from_cidr_32: fixes addr :: ipv4addr
     shows "ipset_from_cidr addr 32 = {addr}"
-    by(simp add: ipset_from_cidr_alt mask_def)
+    by(simp add: ipset_from_cidr_alt mask_eq)
 
   lemma  fixes pre :: ipv4addr
     shows "ipset_from_cidr pre len = {(pre AND ((mask len) << (32 - len))) .. pre OR (mask (32 - len))}"
@@ -244,7 +232,7 @@ subsection\<open>IP Ranges: Examples\<close>
   (*small numbers because we didn't load Code_Target_Nat. Should work by eval*)
   lemma "ipv4addr_of_dotdecimal (192,168,42,8) \<in> (ipset_from_cidr (ipv4addr_of_dotdecimal (192,168,0,0)) 16)"
     by(simp add: ipv4addr_of_dotdecimal.simps ipv4addr_of_nat_def ipset_from_cidr_def
-                    ipset_from_netmask_def mask_def)
+                    ipset_from_netmask_def mask_eq)
 
   definition ipv4range_UNIV :: "32 wordinterval" where "ipv4range_UNIV \<equiv> wordinterval_UNIV"
 

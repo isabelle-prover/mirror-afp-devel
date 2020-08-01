@@ -175,7 +175,9 @@ lemma nth_scast:
     (n < LENGTH('b) \<and>
     (if n < LENGTH('a) - 1 then x !! n
      else x !! (LENGTH('a) - 1)))"
-  by (simp add: scast_def nth_sint)
+  apply transfer
+  apply (auto simp add: bit_signed_take_bit_iff min_def)
+  done
 
 lemma rbl_word_scast:
   "rev (to_bl (scast x :: 'a::len word)) = takefill_last False (LENGTH('a)) (rev (to_bl x))"
@@ -311,7 +313,7 @@ lemma word_sint_msb_eq: "sint x = uint x - (if msb x then 2 ^ size x else 0)"
   done
 
 lemma word_sle_msb_le: "x <=s y \<longleftrightarrow> (msb y \<longrightarrow> msb x) \<and> ((msb x \<and> \<not> msb y) \<or> x \<le> y)"
-  apply (simp add: word_sle_def word_sint_msb_eq word_size word_le_def)
+  apply (simp add: word_sle_eq word_sint_msb_eq word_size word_le_def)
   apply safe
    apply (rule order_trans[OF _ uint_ge_0])
    apply (simp add: order_less_imp_le)
@@ -321,7 +323,7 @@ lemma word_sle_msb_le: "x <=s y \<longleftrightarrow> (msb y \<longrightarrow> m
   done
 
 lemma word_sless_msb_less: "x <s y \<longleftrightarrow> (msb y \<longrightarrow> msb x) \<and> ((msb x \<and> \<not> msb y) \<or> x < y)"
-  by (auto simp add: word_sless_def word_sle_msb_le)
+  by (auto simp add: word_sless_eq word_sle_msb_le)
 
 definition "map_last f xs = (if xs = [] then [] else butlast xs @ [f (last xs)])"
 

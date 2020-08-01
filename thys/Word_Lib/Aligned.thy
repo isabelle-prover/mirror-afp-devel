@@ -13,15 +13,28 @@ imports
   More_Divides
 begin
 
+lift_definition is_aligned :: \<open>'a::len word \<Rightarrow> nat \<Rightarrow> bool\<close>
+  is \<open>\<lambda>k n. take_bit (min LENGTH('a) n) k = 0\<close>
+  by (simp only: ac_simps flip: take_bit_take_bit)
 
-definition
-  is_aligned :: "'a :: len word \<Rightarrow> nat \<Rightarrow> bool" where
-  "is_aligned ptr n \<equiv> 2^n dvd unat ptr"
+lemma is_aligned_iff_dvd_int:
+  \<open>is_aligned ptr n \<longleftrightarrow> 2 ^ n dvd uint ptr\<close>
+  by transfer (simp add: take_bit_eq_mod dvd_eq_mod_eq_0 mod_exp_eq)
 
+lemma is_aligned_iff_dvd_nat:
+  \<open>is_aligned ptr n \<longleftrightarrow> 2 ^ n dvd unat ptr\<close> (is \<open>?P \<longleftrightarrow> ?Q\<close>)
+proof -
+  have \<open>unat ptr = nat \<bar>uint ptr\<bar>\<close>
+    by transfer simp
+  then have \<open>2 ^ n dvd unat ptr \<longleftrightarrow> 2 ^ n dvd uint ptr\<close>
+    by (simp only: dvd_nat_abs_iff) simp
+  then show ?thesis
+    by (simp add: is_aligned_iff_dvd_int)
+qed
 
-lemma is_aligned_mask: "(is_aligned w n) = (w && mask n = 0)"
-  unfolding is_aligned_def by (rule and_mask_dvd_nat)
-
+lemma is_aligned_mask:
+  \<open>is_aligned w n \<longleftrightarrow> w && mask n = 0\<close>
+  by transfer (simp flip: take_bit_eq_mask)
 
 lemma is_aligned_to_bl:
   "is_aligned (w :: 'a :: len word) n = (True \<notin> set (drop (size w - n) (to_bl w)))"
@@ -50,7 +63,7 @@ lemma is_aligned_to_bl:
 lemma unat_power_lower [simp]:
   assumes nv: "n < LENGTH('a::len)"
   shows "unat ((2::'a::len word) ^ n) = 2 ^ n"
-  by (simp add: assms nat_power_eq uint_2p_alt unat_def)
+  using assms by transfer simp
 
 lemma power_overflow:
   "n \<ge> LENGTH('a) \<Longrightarrow> 2 ^ n = (0 :: 'a::len word)"
@@ -63,7 +76,7 @@ lemma is_alignedI [intro?]:
 proof cases
   assume nv: "n < LENGTH('a)"
   show ?thesis
-    unfolding is_aligned_def
+    unfolding is_aligned_iff_dvd_nat
   proof (rule dvdI [where k = "unat k mod 2 ^ (LENGTH('a) - n)"])
     from xv
     have "unat x = (unat (2::word32) ^ n * unat k) mod 2 ^ LENGTH('a)"
@@ -79,12 +92,13 @@ proof cases
 next
   assume "\<not> n < LENGTH('a)"
   with xv
-  show ?thesis by (simp add: not_less power_overflow is_aligned_def)
+  show ?thesis
+    by (simp add: not_less power_overflow is_aligned_iff_dvd_nat)
 qed
 
 lemma is_aligned_weaken:
   "\<lbrakk> is_aligned w x; x \<ge> y \<rbrakk> \<Longrightarrow> is_aligned w y"
-  unfolding is_aligned_def
+  unfolding is_aligned_iff_dvd_nat
   by (erule dvd_trans [rotated]) (simp add: le_imp_power_dvd)
 
 lemma nat_power_less_diff:
@@ -117,7 +131,7 @@ lemma is_alignedE_pre:
   shows        rl: "\<exists>q. w = 2 ^ n * (of_nat q) \<and> q < 2 ^ (LENGTH('a) - n)"
 proof -
   from aligned obtain q where wv: "unat w = 2 ^ n * q"
-    unfolding is_aligned_def ..
+    unfolding is_aligned_iff_dvd_nat ..
 
   show ?thesis
   proof (rule exI, intro conjI)
@@ -205,7 +219,7 @@ lemma aligned_add_aligned:
 proof cases
   assume nlt: "n < LENGTH('a)"
   show ?thesis
-    unfolding is_aligned_def dvd_def
+    unfolding is_aligned_iff_dvd_nat dvd_def
   proof -
     from aligned2 obtain q2 where yv: "y = 2 ^ m * of_nat q2"
       and q2v: "q2 < 2 ^ (LENGTH('a) - m)"
@@ -276,7 +290,8 @@ proof cases
 next
   assume "\<not> n < LENGTH('a)"
   with assms
-  show ?thesis by (simp add: not_less power_overflow is_aligned_mask mask_def)
+  show ?thesis
+    by (simp add: is_aligned_mask not_less mask_eq_mask take_bit_eq_mod power_overflow word_arith_nat_defs(7) flip: take_bit_eq_mask)
 qed
 
 corollary aligned_sub_aligned:
@@ -310,7 +325,7 @@ proof cases
     finally show "unat (k << m) = 2 ^ m * (unat k mod 2 ^ q)" .
   qed
 
-  then show ?thesis by (unfold is_aligned_def)
+  then show ?thesis by (unfold is_aligned_iff_dvd_nat)
 next
   assume "\<not> m < LENGTH('a)"
   then show ?thesis
@@ -329,12 +344,12 @@ proof cases
   assume szv: "sz < LENGTH('a)"
   with al
   show ?thesis
-    unfolding is_aligned_def
+    unfolding is_aligned_iff_dvd_nat
     by (simp add: and_mask_dvd_nat p2_gt_0 word_mod_2p_is_mask)
 next
   assume "\<not> sz < LENGTH('a)"
   with al show ?thesis
-    by (simp add: not_less power_overflow is_aligned_mask mask_def word_mod_by_0)
+    by (simp add: is_aligned_mask mask_eq_mask flip: take_bit_eq_mask take_bit_eq_mod)
 qed
 
 lemma is_aligned_triv: "is_aligned (2 ^ n ::'a::len word) n"
@@ -549,13 +564,14 @@ proof cases
   done
 next
   assume "\<not> n' < LENGTH('a)"
-  with al show ?thesis
-    by (simp add: is_aligned_mask mask_def not_less power_overflow)
+  show ?thesis
+    using al apply (rule is_alignedE)
+    using \<open>\<not> n' < LENGTH('a)\<close> by auto
 qed
 
 lemma is_aligned_0 [simp]:
   "is_aligned p 0"
-  by (simp add: is_aligned_def)
+  by (simp add: is_aligned_iff_dvd_nat)
 
 lemma is_aligned_replicateD:
   "\<lbrakk> is_aligned (w::'a::len word) n; n \<le> LENGTH('a) \<rbrakk>
@@ -608,15 +624,16 @@ lemma is_aligned_get_word_bits:
    apply simp
   apply simp
   apply (erule meta_mp)
-  apply (clarsimp simp: is_aligned_mask mask_def power_add
-                        power_overflow)
+  apply (simp add: is_aligned_mask power_add power_overflow not_less
+    mask_eq_mask flip: take_bit_eq_mask)
+  apply (metis take_bit_length_eq take_bit_of_0 take_bit_tightened)
   done
 
 lemma aligned_small_is_0:
   "\<lbrakk> is_aligned x n; x < 2 ^ n \<rbrakk> \<Longrightarrow> x = 0"
   apply (erule is_aligned_get_word_bits)
    apply (frule is_aligned_add_conv [rotated, where w=0])
-    apply (simp add: is_aligned_def)
+    apply (simp add: is_aligned_iff_dvd_nat)
    apply simp
    apply (drule is_aligned_replicateD)
     apply simp
@@ -699,7 +716,7 @@ proof cases
   assume "n < LENGTH('a)"
   with al
   show ?thesis
-    apply (simp add: is_aligned_def dvd_eq_mod_eq_0 word_arith_nat_mod)
+    apply (simp add: is_aligned_iff_dvd_nat dvd_eq_mod_eq_0 word_arith_nat_mod)
     apply (erule of_nat_neq_0)
     apply (rule order_less_trans)
      apply (rule mod_less_divisor)
@@ -710,8 +727,7 @@ next
   assume "\<not> n < LENGTH('a)"
   with al
   show ?thesis
-    by (simp add: is_aligned_mask mask_def not_less power_overflow
-                  word_less_nat_alt word_mod_by_0)
+    by transfer simp
 qed
 
 lemma nat_add_offset_le:
@@ -796,12 +812,13 @@ lemma unat_minus:
 
 lemma is_aligned_minus:
   "is_aligned p n \<Longrightarrow> is_aligned (- p) n"
-  apply (clarsimp simp: is_aligned_def unat_minus word_size word_neq_0_conv)
+  apply (clarsimp simp: is_aligned_iff_dvd_nat unat_minus word_size word_neq_0_conv)
   apply (rule dvd_diff_nat, simp_all)
   apply (rule le_imp_power_dvd)
-  apply (fold is_aligned_def)
+  apply (fold is_aligned_iff_dvd_nat)
   apply (erule_tac Q="0<p" in contrapos_pp)
-  apply (clarsimp simp add: is_aligned_mask mask_def power_overflow)
+  apply transfer
+  apply simp
   done
 
 lemma add_mask_lower_bits:
@@ -872,7 +889,7 @@ lemma is_aligned_and_not_zero:
 
 lemma is_aligned_and_2_to_k:
   "(n && 2 ^ k - 1) = 0 \<Longrightarrow> is_aligned (n :: 'a :: len word) k"
-  by (simp add: is_aligned_mask mask_def)
+  by (simp add: is_aligned_mask mask_eq_decr_exp)
 
 lemma is_aligned_power2:
   "b \<le> a \<Longrightarrow> is_aligned (2 ^ a) b"

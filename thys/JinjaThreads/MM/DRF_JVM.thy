@@ -534,7 +534,7 @@ proof -
         and "\<not> int (alen_of_htype (the (typeof_addr h (the_Addr (hd (tl (tl stk))))))) \<le> sint (the_Intg (hd (tl stk)))"
         and "P \<turnstile> the (typeof\<^bsub>h\<^esub> (hd stk)) \<le> the_Array (ty_of_htype (the (typeof_addr h (the_Addr (hd (tl (tl stk)))))))"
       moreover hence "nat (sint (the_Intg (hd (tl stk)))) < alen_of_htype (the (typeof_addr h (the_Addr (hd (tl (tl stk))))))"
-        by(auto simp add: not_le nat_less_iff word_sle_def word_sless_def not_less)
+        by(auto simp add: not_le nat_less_iff word_sle_eq word_sless_eq not_less)
       with assms AStore have "nat (sint (the_Intg (hd (tl stk)))) < alen_of_htype (the (typeof_addr h' (the_Addr (hd (tl (tl stk))))))"
         by(auto dest!: hext_arrD hext_heap_write)
       ultimately have "\<exists>T. P,h' \<turnstile> the_Addr (hd (tl (tl stk)))@ACell (nat (sint (the_Intg (hd (tl stk))))) : T \<and> P,h' \<turnstile> hd stk :\<le> T"
@@ -744,7 +744,7 @@ proof(cases i)
     where a: "length stk > 1" "hd (tl stk) = Addr a"
     and type: "typeof_addr (shr s) ?a = \<lfloor>Array_type T n\<rfloor>" by(fastforce simp add: is_Ref_def)
   from bounds type have "nat (sint ?i) < n"
-    by(simp add: word_sle_def nat_less_iff)
+    by (simp add: word_sle_eq nat_less_iff)
   with type have adal: "P,shr s \<turnstile> ?a@ACell (nat (sint ?i)) : T"
     by(rule addr_loc_type.intros)
   from v' vs adal have "P,shr s \<turnstile> v' :\<le> T" by(auto dest!: vs_confD dest: addr_loc_type_fun)

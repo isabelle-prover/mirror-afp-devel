@@ -135,7 +135,7 @@ text\<open>Not all members of the type @{type prefix_routing} are sane routing t
 The first two are set into code in the following way:
 \<close>
 lemma "valid_prefix (PrefixMatch pfx len) \<equiv> pfx && (2 ^ (32 - len) - 1) = (0 :: 32 word)" 
-unfolding valid_prefix_def pfxm_mask_def mask_def by (simp add: word_bw_comms(1))
+  by (simp add: valid_prefix_def pfxm_mask_def mask_eq_decr_exp and.commute)
 lemma "has_default_route rt \<longleftrightarrow> (\<exists>r \<in> set rt. pfxm_length (routing_match r) = 0)" 
 by(fact has_default_route_alt)
 text\<open>The third is not needed in any of the further proofs, so we omit it.\<close>

@@ -49,7 +49,7 @@ lemma unat_mask_2_less_4:
   "unat (p && mask 2 :: word64) < 4"
   apply (rule unat_less_helper)
   apply (rule order_le_less_trans, rule word_and_le1)
-  apply (simp add: mask_def)
+  apply (simp add: mask_eq)
   done
 
 lemmas unat_of_nat64' = unat_of_nat_eq[where 'a=64]
@@ -90,7 +90,7 @@ lemma Suc_unat_mask_div:
   "Suc (unat (mask sz div word_size::word64)) = 2 ^ (min sz word_bits - 3)"
   apply (case_tac "sz < word_bits")
    apply (case_tac "3\<le>sz")
-    apply (clarsimp simp: word_size_def word_bits_def min_def mask_def)
+    apply (clarsimp simp: word_size_def word_bits_def min_def mask_eq)
     apply (drule (2) Suc_div_unat_helper
            [where 'a=64 and sz=sz and us=3, simplified, symmetric])
    apply (simp add: not_le word_size_def word_bits_def)
@@ -169,14 +169,7 @@ lemma word_rsplit_0:
 lemma unat_ucast_10_64 :
   fixes x :: "10 word"
   shows "unat (ucast x :: word64) = unat x"
-  unfolding ucast_def unat_def
-  apply (subst int_word_uint)
-  apply (subst mod_pos_pos_trivial)
-    apply simp
-   apply (rule lt2p_lem)
-   apply simp
-  apply simp
-  done
+  by transfer simp
 
 lemma bool_mask [simp]:
   fixes x :: word64
@@ -270,7 +263,7 @@ qed
 
 lemma unat_of_int_64:
   "\<lbrakk>i \<ge> 0; i \<le> 2 ^ 63\<rbrakk> \<Longrightarrow> (unat ((of_int i)::sword64)) = nat i"
-  unfolding unat_def
+  unfolding unat_eq_nat_uint
   apply (subst eq_nat_nat_iff, clarsimp+)
   apply (simp add: word_of_int uint_word_of_int)
   done

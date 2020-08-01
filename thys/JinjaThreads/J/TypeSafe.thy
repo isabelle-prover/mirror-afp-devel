@@ -34,7 +34,8 @@ next
 next
   case (RedAAss h a U n i v U' h' l)
   from \<open>sint i < int n\<close> \<open>0 <=s i\<close>
-  have "nat (sint i) < n" by(metis nat_less_iff sint_0 word_sle_def)
+  have "nat (sint i) < n"
+    by (simp add: word_sle_eq nat_less_iff)
   thus ?case using RedAAss
     by(fastforce elim: hconf_heap_write_mono intro: addr_loc_type.intros simp add: conf_def)
 next
@@ -289,7 +290,8 @@ next
   case (RedAAcc h a T n i v l T' E)
   from \<open>E \<turnstile> (h, l) \<surd>\<close> have "hconf h" by(clarsimp simp add: sconf_def)
   from \<open>0 <=s i\<close> \<open>sint i < int n\<close>
-  have "nat (sint i) < n" by(metis nat_less_iff sint_0 word_sle_def)
+  have "nat (sint i) < n"
+    by (simp add: word_sle_eq nat_less_iff)
   with \<open>typeof_addr h a = \<lfloor>Array_type T n\<rfloor>\<close> have "P,h \<turnstile> a@ACell (nat (sint i)) : T"
     by(auto intro: addr_loc_type.intros)
   from heap_read_conf[OF \<open>heap_read h a (ACell (nat (sint i))) v\<close> this] \<open>hconf h\<close>

@@ -60,7 +60,7 @@ lemma length_drop_mask_inner: fixes ip::"'a::len word"
 
 
 lemma mask128: "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF = mask 128"
-  by(simp add: mask_def)
+  by (simp add: mask_eq)
 
 
 (*-------------- things for ipv6 syntax round trip property two ------------------*)
@@ -214,15 +214,8 @@ lemma helper_masked_ucast_equal_generic:
   assumes "n \<le> 128 - 16"
   shows "ucast (((ucast:: 16 word \<Rightarrow> 128 word) b << n) && (mask 16 << n) >> n) = b"
 proof -
- have ucast_mask: "(ucast:: 16 word \<Rightarrow> 128 word) b && mask 16 = ucast b" 
-  apply(subst Word_Lib.and_mask_eq_iff_le_mask)
-  apply(subst Word.ucast_bl)
-  apply(simp add: mask_def)
-  thm Word.word_uint_eqI word_le_nat_alt
-  apply(subst word_le_nat_alt)
-  apply(simp)
-  using unat_of_bl_128_16_le_helper by simp
-
+  have ucast_mask: "(ucast:: 16 word \<Rightarrow> 128 word) b && mask 16 = ucast b" 
+    by transfer (simp flip: take_bit_eq_mask)
   from assms have "ucast (((ucast:: 16 word \<Rightarrow> 128 word) b && mask (128 - n) && mask 16) && mask (128 - n)) = b"
     by (auto simp add: nth_ucast word_size intro: word_eqI)
   thus ?thesis
