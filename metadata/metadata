@@ -7414,6 +7414,19 @@ abstract =
   criterion, a general framework for refutational theorem proving, and
   soundness and completeness of an abstract first-order prover.
 
+[Chandy_Lamport]
+title = A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm
+author = Ben Fiedler <mailto:ben.fiedler@inf.ethz.ch>, Dmitriy Traytel <https://people.inf.ethz.ch/trayteld/>
+topic = Computer science/Algorithms/Distributed
+date = 2020-07-21
+notify = ben.fiedler@inf.ethz.ch, traytel@inf.ethz.ch
+abstract =
+  We provide a suitable distributed system model and implementation of the
+  Chandy--Lamport distributed snapshot algorithm [ACM Transactions on
+  Computer Systems, 3, 63-75, 1985]. Our main result is a formal
+  termination and correctness proof of the Chandy--Lamport algorithm and
+  its use in stable property detection.
+
 [BNF_Operations]
 title = Operations on Bounded Natural Functors
 author = Jasmin Christian Blanchette <mailto:jasmin.blanchette@gmail.com>, Andrei Popescu <mailto:uuomul@yahoo.com>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>
@@ -9472,7 +9485,7 @@ author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>, Pe
 topic = Mathematics/Graph theory
 date = 2020-07-13
 notify = walter.guttmann@canterbury.ac.nz, peter@hoefner-online.de
-abstract = 
+abstract =
   Binary relations are one of the standard ways to encode, characterise
   and reason about graphs. Relation algebras provide equational axioms
   for a large fragment of the calculus of binary relations. Although

@@ -9,7 +9,20 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>13 Jul 2020 00:00:00 +0000</pubDate>
+    <pubDate>21 Jul 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm</title>
+              <link>https://www.isa-afp.org/entries/Chandy_Lamport.html</link>
+       <guid>https://www.isa-afp.org/entries/Chandy_Lamport.html</guid>
+       <dc:creator> Ben Fiedler, Dmitriy Traytel       </dc:creator>
+       <pubDate>21 Jul 2020 00:00:00 +0000</pubDate>
+       <description>
+We provide a suitable distributed system model and implementation of the
+Chandy--Lamport distributed snapshot algorithm [ACM Transactions on
+Computer Systems, 3, 63-75, 1985]. Our main result is a formal
+termination and correctness proof of the Chandy--Lamport algorithm and
+its use in stable property detection.</description>
+    </item>
     <item>
        <title>Relational Characterisations of Paths</title>
               <link>https://www.isa-afp.org/entries/Relational_Paths.html</link>
@@ -569,21 +582,6 @@ Putnam exam problems of 2002&lt;/a&gt;. The statement of the problem is
 as follows: For which integers &lt;em&gt;n&lt;/em&gt; &gt; 1 does the set of positive
 integers less than and relatively prime to &lt;em&gt;n&lt;/em&gt; constitute an
 arithmetic progression?</description>
-    </item>
-    <item>
-       <title>A Hierarchy of Algebras for Boolean Subsets</title>
-              <link>https://www.isa-afp.org/entries/Subset_Boolean_Algebras.html</link>
-       <guid>https://www.isa-afp.org/entries/Subset_Boolean_Algebras.html</guid>
-       <dc:creator> Walter Guttmann, Bernhard Möller       </dc:creator>
-       <pubDate>31 Jan 2020 00:00:00 +0000</pubDate>
-       <description>
-We present a collection of axiom systems for the construction of
-Boolean subalgebras of larger overall algebras. The subalgebras are
-defined as the range of a complement-like operation on a semilattice.
-This technique has been used, for example, with the antidomain
-operation, dynamic negation and Stone algebras. We present a common
-ground for these constructions based on a new equational
-axiomatisation of Boolean algebras.</description>
     </item>
   </channel>
 </rss>
