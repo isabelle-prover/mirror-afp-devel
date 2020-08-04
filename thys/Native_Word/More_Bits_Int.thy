@@ -248,9 +248,8 @@ next
       by(auto elim: allE[where x="Suc n" for n] dest: Suc_le_D)
     ultimately show ?thesis using ones
       apply (simp (no_asm_simp) add: set_bits_int_def exI split del: if_split)
-      apply (auto simp add: Let_def bin_last_bl_to_bin hd_map bin_rest_bl_to_bin map_tl[symmetric] map_map[symmetric] map_Suc_upt upt_conv_Cons signed_take_bit_Suc
-        not_le
-        simp del: map_map)
+      apply (auto simp add: Let_def hd_map map_tl[symmetric] map_map[symmetric] map_Suc_upt upt_conv_Cons signed_take_bit_Suc
+        not_le simp del: map_map)
       done
   qed
 qed
