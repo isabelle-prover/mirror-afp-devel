@@ -93,13 +93,18 @@ end
 
 instantiation uint32 :: ring_bit_operations
 begin
-lift_definition not_uint32 :: "uint32 \<Rightarrow> uint32" is NOT .
-lift_definition and_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is \<open>(AND)\<close> .
-lift_definition or_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is \<open>(OR)\<close> .
-lift_definition xor_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is \<open>(XOR)\<close> .
+lift_definition not_uint32 :: \<open>uint32 \<Rightarrow> uint32\<close> is NOT .
+lift_definition and_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>(AND)\<close> .
+lift_definition or_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>(OR)\<close> .
+lift_definition xor_uint32 :: \<open>uint32 \<Rightarrow> uint32 \<Rightarrow> uint32\<close> is \<open>(XOR)\<close> .
+lift_definition mask_uint32 :: \<open>nat \<Rightarrow> uint32\<close> is mask .
 instance by (standard; transfer)
-  (simp_all add: bit_and_iff bit_or_iff bit_xor_iff bit_not_iff minus_eq_not_minus_1)
+  (simp_all add: bit_and_iff bit_or_iff bit_xor_iff bit_not_iff minus_eq_not_minus_1 mask_eq_decr_exp)
 end
+
+lemma [code]:
+  \<open>mask (Suc n) = (2 :: uint32) ^ n OR mask n\<close>
+  by (fact mask_Suc_exp)
 
 instantiation uint32:: semiring_bit_syntax
 begin

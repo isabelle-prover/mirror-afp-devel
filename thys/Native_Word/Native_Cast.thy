@@ -51,7 +51,13 @@ lift_definition uint64_of_uint8 :: "uint8 \<Rightarrow> uint64" is ucast .
 lift_definition uint64_of_uint16 :: "uint16 \<Rightarrow> uint64" is ucast .
 lift_definition uint64_of_uint32 :: "uint32 \<Rightarrow> uint64" is ucast .
 
-definition mask where "mask = (0xFFFFFFFF :: integer)"
+context
+begin
+
+qualified definition mask :: integer
+  where \<open>mask = (0xFFFFFFFF :: integer)\<close>
+
+end
 
 code_printing
   constant uint8_of_uint16 \<rightharpoonup>

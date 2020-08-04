@@ -266,8 +266,8 @@ proof -
   also have \<open>\<dots> = b\<close>
     by (simp add: mult_div_mod_eq)
   finally have \<open>2 * mask x + 1 = b\<close> .
-  moreover have \<open>mask (Suc x) = 2 * mask x + 1\<close>
-    by (metis (no_types, lifting) Groups.add_ac(2) Groups.add_ac(3) diff_add_cancel mask_2pm1 mask_Suc mult_2)
+  moreover have \<open>mask (Suc x) = 2 * mask x + (1 :: 'a::len word)\<close>
+    by (simp add: mask_Suc_rec)
   ultimately show ?thesis
     by auto
 qed

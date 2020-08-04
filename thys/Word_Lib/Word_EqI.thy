@@ -118,6 +118,7 @@ lemma and_neg_mask_eq_iff_not_mask_le:
 
 lemma le_mask_high_bits:
   "w \<le> mask n \<longleftrightarrow> (\<forall>i \<in> {n ..< size w}. \<not> w !! i)"
+  for w :: \<open>'a::len word\<close>
   by (auto simp: word_size and_mask_eq_iff_le_mask[symmetric] word_eq_iff)
 
 lemma neg_mask_le_high_bits:

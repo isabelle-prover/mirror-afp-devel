@@ -291,7 +291,7 @@ next
   assume "\<not> n < LENGTH('a)"
   with assms
   show ?thesis
-    by (simp add: is_aligned_mask not_less mask_eq_mask take_bit_eq_mod power_overflow word_arith_nat_defs(7) flip: take_bit_eq_mask)
+    by (simp add: is_aligned_mask not_less take_bit_eq_mod power_overflow word_arith_nat_defs(7) flip: take_bit_eq_mask)
 qed
 
 corollary aligned_sub_aligned:
@@ -329,8 +329,7 @@ proof cases
 next
   assume "\<not> m < LENGTH('a)"
   then show ?thesis
-    by (simp add: not_less power_overflow is_aligned_mask mask_def
-                  shiftl_zero_size word_size)
+    by (simp add: not_less power_overflow is_aligned_mask shiftl_zero_size word_size)
 qed
 
 lemma word_mod_by_0: "k mod (0::'a::len word) = k"
@@ -349,7 +348,7 @@ proof cases
 next
   assume "\<not> sz < LENGTH('a)"
   with al show ?thesis
-    by (simp add: is_aligned_mask mask_eq_mask flip: take_bit_eq_mask take_bit_eq_mod)
+    by (simp add: is_aligned_mask flip: take_bit_eq_mask take_bit_eq_mod)
 qed
 
 lemma is_aligned_triv: "is_aligned (2 ^ n ::'a::len word) n"
@@ -625,7 +624,7 @@ lemma is_aligned_get_word_bits:
   apply simp
   apply (erule meta_mp)
   apply (simp add: is_aligned_mask power_add power_overflow not_less
-    mask_eq_mask flip: take_bit_eq_mask)
+    flip: take_bit_eq_mask)
   apply (metis take_bit_length_eq take_bit_of_0 take_bit_tightened)
   done
 

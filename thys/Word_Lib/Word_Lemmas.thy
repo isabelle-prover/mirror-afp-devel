@@ -1830,6 +1830,7 @@ lemma and_mask_shiftl_comm:
   by (simp add: and_mask word_size shiftl_shiftl) (simp add: shiftl_shiftr1)
 
 lemma le_mask_shiftl_le_mask: "s = m + n \<Longrightarrow> x \<le> mask n \<Longrightarrow> x << m \<le> mask s"
+  for x :: \<open>'a::len word\<close>
   by (simp add: le_mask_iff shiftl_shiftr3)
 
 lemma and_not_mask_twice:
@@ -1948,11 +1949,11 @@ lemma plus_Collect_helper2:
   using plus_Collect_helper [of "- x" P] by (simp add: ac_simps)
 
 lemma word_FF_is_mask:
-  "0xFF = mask 8"
+  "0xFF = (mask 8 :: 'a::len word)"
   by (simp add: mask_eq_decr_exp)
 
 lemma word_1FF_is_mask:
-  "0x1FF = mask 9"
+  "0x1FF = (mask 9 :: 'a::len word)"
   by (simp add: mask_eq_decr_exp)
 
 lemma ucast_of_nat_small:
@@ -2542,7 +2543,7 @@ lemma nth_is_and_neq_0:
   "(x::'a::len word) !! n = (x && 2 ^ n \<noteq> 0)"
   by (subst and_neq_0_is_nth; rule refl)
 
-lemma mask_Suc_0 : "mask (Suc 0) = 1"
+lemma mask_Suc_0 : "mask (Suc 0) = (1 :: 'a::len word)"
   by (simp add: mask_eq_decr_exp)
 
 lemma ucast_ucast_add:
@@ -3339,7 +3340,7 @@ lemma word_less_nowrapI':
   by uint_arith
 
 lemma mask_plus_1:
-  "mask n + 1 = 2 ^ n"
+  "mask n + 1 = (2 ^ n :: 'a::len word)"
   by (clarsimp simp: mask_eq_decr_exp)
 
 lemma unat_inj: "inj unat"
@@ -3660,7 +3661,7 @@ lemma le_step_down_nat:"\<lbrakk>(i::nat) \<le> n; i = n \<longrightarrow> P; i 
 lemma le_step_down_int:"\<lbrakk>(i::int) \<le> n; i = n \<longrightarrow> P; i \<le> n - 1 \<longrightarrow> P\<rbrakk> \<Longrightarrow> P"
   by arith
 
-lemma ex_mask_1[simp]: "(\<exists>x. mask x = 1)"
+lemma ex_mask_1[simp]: "(\<exists>x. mask x = (1 :: 'a::len word))"
   apply (rule_tac x=1 in exI)
   apply (simp add:mask_eq_decr_exp)
   done
@@ -3718,7 +3719,7 @@ lemma or_not_mask_nop:
 
 lemma mask_subsume:
   "\<lbrakk>n \<le> m\<rbrakk> \<Longrightarrow> ((x::'a::len word) || y && mask n) && ~~ (mask m) = x && ~~ (mask m)"
-  by (auto simp add: Parity.bit_eq_iff bit_not_iff bit_or_iff bit_and_iff mask_eq_mask bit_mask_iff)
+  by (auto simp add: Parity.bit_eq_iff bit_not_iff bit_or_iff bit_and_iff bit_mask_iff)
 
 lemma and_mask_0_iff_le_mask:
   fixes w :: "'a::len word"
@@ -4635,7 +4636,7 @@ lemma map_bits_rev_to_bl:
 lemma NOT_mask_shifted_lenword:
   "~~ (mask len << (LENGTH('a) - len) ::'a::len word) = mask (LENGTH('a) - len)"
   by (rule bit_word_eqI)
-    (auto simp add: mask_eq_mask shiftl_word_eq word_size bit_not_iff bit_push_bit_iff bit_mask_iff)
+    (auto simp add: shiftl_word_eq word_size bit_not_iff bit_push_bit_iff bit_mask_iff)
 
 (* Comparisons between different word sizes. *)
 
@@ -5032,7 +5033,7 @@ lemma word_aligned_add_no_wrap_bounded:
   by (blast dest: is_aligned_no_overflow le_less_trans word_leq_le_minus_one)
 
 lemma mask_Suc:
-  "mask (Suc n) = 2^n + mask n"
+  "mask (Suc n) = (2 :: 'a::len word) ^ n + mask n"
   by (simp add: mask_eq_decr_exp)
 
 lemma is_aligned_no_overflow_mask:

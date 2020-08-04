@@ -59,7 +59,7 @@ lemma length_drop_mask_inner: fixes ip::"'a::len word"
   done
 
 
-lemma mask128: "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF = mask 128"
+lemma mask128: "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF = (mask 128 :: 'a::len word)"
   by (simp add: mask_eq)
 
 

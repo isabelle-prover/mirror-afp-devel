@@ -169,6 +169,7 @@ lemma "1 < (1024::32 word) \<and> 1 \<le> (1024::32 word)" by simp
 
 lemma and_not_mask:
   "w AND NOT (mask n) = (w >> n) << n"
+  for w :: \<open>'a::len word\<close>
   apply (rule word_eqI)
   apply (simp add : word_ops_nth_size word_size)
   apply (simp add : nth_shiftr nth_shiftl)
@@ -176,6 +177,7 @@ lemma and_not_mask:
 
 lemma and_mask:
   "w AND mask n = (w << (size w - n)) >> (size w - n)"
+  for w :: \<open>'a::len word\<close>
   apply (rule word_eqI)
   apply (simp add : word_ops_nth_size word_size)
   apply (simp add : nth_shiftr nth_shiftl)
@@ -223,10 +225,12 @@ lemmas p2_eq_0 [simp] = trans [OF eq_commute
 
 lemma neg_mask_is_div':
   "n < size w \<Longrightarrow> w AND NOT (mask n) = ((w div (2 ^ n)) * (2 ^ n))"
+  for w :: \<open>'a::len word\<close>
   by (simp add : and_not_mask shiftr_div_2n_w shiftl_t2n word_size)
 
 lemma neg_mask_is_div:
   "w AND NOT (mask n) = (w div 2^n) * 2^n"
+  for w :: \<open>'a::len word\<close>
   apply (cases "n < size w")
    apply (erule neg_mask_is_div')
   apply (simp add: word_size)
@@ -238,22 +242,25 @@ lemma neg_mask_is_div:
 
 lemma and_mask_arith':
   "0 < n \<Longrightarrow> w AND mask n = (w * 2^(size w - n)) div 2^(size w - n)"
+  for w :: \<open>'a::len word\<close>
   by (simp add: and_mask shiftr_div_2n_w shiftl_t2n word_size mult.commute)
 
 lemmas p2len = iffD2 [OF p2_eq_0 order_refl]
 
 lemma and_mask_arith:
   "w AND mask n = (w * 2^(size w - n)) div 2^(size w - n)"
+  for w :: \<open>'a::len word\<close>
   apply (cases "0 < n")
    apply (auto elim!: and_mask_arith')
   apply (simp add: word_size)
   done
 
-lemma mask_2pm1: "mask n = 2 ^ n - 1"
+lemma mask_2pm1: "mask n = 2 ^ n - (1 :: 'a::len word)"
   by (fact mask_eq_decr_exp)
 
 lemma add_mask_fold:
   "x + 2 ^ n - 1 = x + mask n"
+  for x :: \<open>'a::len word\<close>
   by (simp add: mask_eq_decr_exp)
 
 lemma word_and_mask_le_2pm1: "w && mask n \<le> 2 ^ n - 1"
@@ -297,7 +304,7 @@ lemma le_shiftr:
   done
 
 lemma shiftr_mask_le:
-  "n <= m \<Longrightarrow> mask n >> m = 0"
+  "n <= m \<Longrightarrow> mask n >> m = (0 :: 'a::len word)"
   apply (rule word_eqI)
   apply (simp add: word_size nth_shiftr)
   done
@@ -318,6 +325,7 @@ lemma word_leI:
 
 lemma le_mask_iff:
   "(w \<le> mask n) = (w >> n = 0)"
+  for w :: \<open>'a::len word\<close>
   apply safe
    apply (rule word_le_0_iff [THEN iffD1])
    apply (rule xtr3)
@@ -332,6 +340,7 @@ lemma le_mask_iff:
 
 lemma and_mask_eq_iff_shiftr_0:
   "(w AND mask n = w) = (w >> n = 0)"
+  for w :: \<open>'a::len word\<close>
   apply (unfold test_bit_eq_iff [THEN sym])
   apply (rule iffI)
    apply (rule ext)
@@ -374,7 +383,7 @@ lemma NOT_eq:
   apply (drule eq_diff_eq [THEN iffD2])
   by simp
 
-lemma NOT_mask: "NOT (mask n) = -(2 ^ n)"
+lemma NOT_mask: "NOT (mask n :: 'a::len word) = - (2 ^ n)"
   by (simp add : NOT_eq mask_2pm1)
 
 lemma le_m1_iff_lt: "(x > (0 :: 'a :: len word)) = ((y \<le> x - 1) = (y < x))"
@@ -674,15 +683,7 @@ lemmas extra_sle_sless_unfolds [simp] =
 
 lemma to_bl_1:
   "to_bl (1::'a::len word) = replicate (LENGTH('a) - 1) False @ [True]"
-proof -
-  have "to_bl (1 :: 'a::len word) = to_bl (mask 1 :: 'a::len word)"
-    by (simp add: mask_Suc_0) 
-
-  also have "\<dots> = replicate (LENGTH('a) - 1) False @ [True]"
-    by (cases "LENGTH('a)"; clarsimp simp: to_bl_mask)
-
-  finally show ?thesis .
-qed
+  by (rule nth_equalityI) (auto simp add: to_bl_unfold nth_append rev_nth bit_1_iff not_less not_le)
 
 lemma list_of_false:
   "True \<notin> set xs \<Longrightarrow> xs = replicate (length xs) False"

@@ -141,13 +141,18 @@ end
 
 instantiation uint :: ring_bit_operations
 begin
-lift_definition not_uint :: "uint \<Rightarrow> uint" is NOT .
-lift_definition and_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is \<open>(AND)\<close> .
-lift_definition or_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is \<open>(OR)\<close> .
-lift_definition xor_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is \<open>(XOR)\<close> .
+lift_definition not_uint :: \<open>uint \<Rightarrow> uint\<close> is NOT .
+lift_definition and_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>(AND)\<close> .
+lift_definition or_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>(OR)\<close> .
+lift_definition xor_uint :: \<open>uint \<Rightarrow> uint \<Rightarrow> uint\<close> is \<open>(XOR)\<close> .
+lift_definition mask_uint :: \<open>nat \<Rightarrow> uint\<close> is mask .
 instance by (standard; transfer)
-  (simp_all add: bit_and_iff bit_or_iff bit_xor_iff bit_not_iff minus_eq_not_minus_1)
+  (simp_all add: bit_and_iff bit_or_iff bit_xor_iff bit_not_iff minus_eq_not_minus_1 mask_eq_decr_exp)
 end
+
+lemma [code]:
+  \<open>mask (Suc n) = (2 :: uint) ^ n OR mask n\<close>
+  by (fact mask_Suc_exp)
 
 instantiation uint:: semiring_bit_syntax
 begin

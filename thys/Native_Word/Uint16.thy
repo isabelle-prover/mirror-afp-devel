@@ -109,13 +109,18 @@ end
 
 instantiation uint16 :: ring_bit_operations
 begin
-lift_definition not_uint16 :: "uint16 \<Rightarrow> uint16" is NOT .
-lift_definition and_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is \<open>(AND)\<close> .
-lift_definition or_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is \<open>(OR)\<close> .
-lift_definition xor_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is \<open>(XOR)\<close> .
+lift_definition not_uint16 :: \<open>uint16 \<Rightarrow> uint16\<close> is NOT .
+lift_definition and_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>(AND)\<close> .
+lift_definition or_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>(OR)\<close> .
+lift_definition xor_uint16 :: \<open>uint16 \<Rightarrow> uint16 \<Rightarrow> uint16\<close> is \<open>(XOR)\<close> .
+lift_definition mask_uint16 :: \<open>nat \<Rightarrow> uint16\<close> is mask .
 instance by (standard; transfer)
-  (simp_all add: bit_and_iff bit_or_iff bit_xor_iff bit_not_iff minus_eq_not_minus_1)
+  (simp_all add: bit_and_iff bit_or_iff bit_xor_iff bit_not_iff minus_eq_not_minus_1 mask_eq_decr_exp)
 end
+
+lemma [code]:
+  \<open>mask (Suc n) = (2 :: uint16) ^ n OR mask n\<close>
+  by (fact mask_Suc_exp)
 
 instantiation uint16:: semiring_bit_syntax
 begin

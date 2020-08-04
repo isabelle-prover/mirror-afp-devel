@@ -116,6 +116,7 @@ lemma word_of_int_conv_set_bits: "word_of_int i = (BITS n. i !! n)"
 
 lemma word_and_mask_or_conv_and_mask:
   "n !! index \<Longrightarrow> (n AND mask index) OR (1 << index) = n AND mask (index + 1)"
+  for n :: \<open>'a::len word\<close>
 by(rule word_eqI)(auto simp add: word_ao_nth word_size nth_shiftl simp del: shiftl_1)
 
 lemma uint_and_mask_or_full:
@@ -275,8 +276,9 @@ definition set_bits_aux :: \<open>'a word \<Rightarrow> nat \<Rightarrow> 'a :: 
 
 lemma set_bits_aux_conv:
   \<open>set_bits_aux w n = (w << n) OR (set_bits f AND mask n)\<close>
+  for w :: \<open>'a::len word\<close>
   by (rule bit_word_eqI)
-    (auto simp add: set_bits_aux_def shiftl_word_eq mask_eq_mask bit_and_iff bit_or_iff bit_push_bit_iff bit_take_bit_iff bit_mask_iff bit_set_bits_word_iff exp_eq_zero_iff)
+    (auto simp add: set_bits_aux_def shiftl_word_eq bit_and_iff bit_or_iff bit_push_bit_iff bit_take_bit_iff bit_mask_iff bit_set_bits_word_iff exp_eq_zero_iff)
 
 corollary set_bits_conv_set_bits_aux:
   \<open>set_bits f = (set_bits_aux 0 (LENGTH('a)) :: 'a :: len word)\<close>
