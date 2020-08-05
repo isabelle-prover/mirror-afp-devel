@@ -103,8 +103,13 @@ instance by (standard; transfer)
 end
 
 lemma [code]:
-  \<open>mask (Suc n) = (2 :: uint32) ^ n OR mask n\<close>
-  by (fact mask_Suc_exp)
+  \<open>take_bit n a = a AND mask n\<close> for a :: uint32
+  by (fact take_bit_eq_mask)
+
+lemma [code]:
+  \<open>mask (Suc n) = push_bit n (1 :: uint32) OR mask n\<close>
+  \<open>mask 0 = (0 :: uint32)\<close>
+  by (simp_all add: mask_Suc_exp push_bit_of_1)
 
 instantiation uint32:: semiring_bit_syntax
 begin
