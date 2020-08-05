@@ -78,8 +78,10 @@ lemma div_half_word:
   assumes "y \<noteq> 0"
   shows "(x div y, x mod y) = (let q = (x >> 1) div y << 1; r = x - q * y in if y \<le> r then (q + 1, r - y) else (q, r))"
 proof -
-  obtain n where n: "x = of_nat n" "n < 2 ^ LENGTH('a)" by (cases x)
-  moreover obtain m where m: "y = of_nat m" "m < 2 ^ LENGTH('a)" by (cases y)
+  obtain n where n: "x = of_nat n" "n < 2 ^ LENGTH('a)"
+    by (rule that [of \<open>unat x\<close>]) simp_all
+  moreover obtain m where m: "y = of_nat m" "m < 2 ^ LENGTH('a)"
+    by (rule that [of \<open>unat y\<close>]) simp_all
   ultimately have [simp]: \<open>unat (of_nat n :: 'a word) = n\<close> \<open>unat (of_nat m :: 'a word) = m\<close>
     by (transfer, simp add: take_bit_of_nat take_bit_eq_self)+
   let ?q = "(x >> 1) div y << 1"
@@ -221,7 +223,8 @@ proof(cases "1 << (LENGTH('a) - 1) \<le> y")
     thus ?thesis using True y by(simp add: word_div_lt_eq_0)
   next
     case False
-    obtain n where n: "y = of_nat n" "n < 2 ^ LENGTH('a)" by(cases y)
+    obtain n where n: "y = of_nat n" "n < 2 ^ LENGTH('a)"
+      by (rule that [of \<open>unat y\<close>]) simp_all
     have "unat x < 2 ^ LENGTH('a)" by(rule unat_lt2p)
     also have "\<dots> = 2 * 2 ^ (LENGTH('a) - 1)"
       by(metis Suc_pred len_gt_0 power_Suc One_nat_def)
@@ -237,7 +240,8 @@ proof(cases "1 << (LENGTH('a) - 1) \<le> y")
 next
   case False
   note y = this
-  obtain n where n: "x = of_nat n" "n < 2 ^ LENGTH('a)" by(cases x)
+  obtain n where n: "x = of_nat n" "n < 2 ^ LENGTH('a)"
+    by (rule that [of \<open>unat x\<close>]) simp_all
   hence "int n div 2 + 2 ^ (LENGTH('a) - Suc 0) < 2 ^ LENGTH('a)"
     by (cases "LENGTH('a)")
       (simp_all, simp only: of_nat_numeral [where ?'a = int, symmetric]

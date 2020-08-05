@@ -154,11 +154,11 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
        of_bl (take 8 (to_bl ip) @ take 8 (drop 8 (to_bl ip)) @ take 8 (drop 16 (to_bl ip)) @ drop 24 (to_bl ip))"
       apply(simp add: ipv4addr_and_255)
       apply(simp add: shiftr_slice)
-      apply(simp add: Word.slice_take' size_ipv4addr)
+      apply(simp add: slice_take' size_ipv4addr)
       apply(simp add: and_mask_bl_take)
       apply(simp add: List_rev_drop_geqn)
       apply(simp add: drop_take)
-      apply(simp add: Word.shiftl_of_bl)
+      apply(simp add: shiftl_of_bl)
       apply(simp add: of_bl_append)
       apply(simp add: ip_and_mask8_bl_drop24)
       done
@@ -172,7 +172,7 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
       apply(simp add: ipv4addr_of_nat_nat_of_ipv4addr)
       apply(simp add: bit_equality)
       done
-    thus ?thesis using Word.word_bl.Rep_inverse[symmetric] by simp
+    thus ?thesis using word_bl.Rep_inverse[symmetric] by simp
   qed
 
   lemma ipv4addr_of_dotdecimal_eqE:

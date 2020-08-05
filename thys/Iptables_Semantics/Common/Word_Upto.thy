@@ -179,25 +179,21 @@ lemma word_upto_upt:
   using word_upto_alt by metis
 
 lemma sorted_word_upto:
-   fixes a b :: "('l :: len) word"
-   assumes "a \<le> b"
-   shows "sorted (word_upto a b)"
-using assms
-proof(induction b)
-  fix b
-  assume le_prem: "a \<le> 1 + b"
-  assume nmax_prem: "1 + b \<noteq> 0"
-  assume IH: "a \<le> b \<Longrightarrow> sorted (word_upto a b)"
-  show "sorted (word_upto a (1 + b))"
-  proof(cases "a = 1 + b")
-    case True thus ?thesis by(simp add: word_upto.simps)
-  next
-    case False
-    have fprem: "a \<le> b" using le_prem False by (metis add.commute antisym_conv1 plus_one_helper)
-    note mIH = IH[OF this]
-    show ?thesis by(subst word_upto.simps)
-                   (simp add: fprem lt1_neq0 nmax_prem word_le_plus_either word_upto_set_eq False sorted_append mIH)
-    qed
-qed(simp add: word_upto.simps)
+  fixes a b :: "('l :: len) word"
+  assumes "a \<le> b"
+  shows "sorted (word_upto a b)"
+proof -
+  define m and n where \<open>m = unat a\<close> and \<open>n = Suc (unat b)\<close>
+  moreover have \<open>sorted (map of_nat [m..<n] :: 'l word list)\<close>
+    apply (simp add: sorted_map)
+    apply (rule sorted_wrt_mono_rel [of _ \<open>(\<le>)\<close>])
+     apply (simp_all flip: sorted_sorted_wrt)
+    apply (simp add: le_unat_uoi less_Suc_eq_le n_def word_of_nat_le)
+    done
+  ultimately have \<open>sorted (map of_nat [unat a..<Suc (unat b)] :: 'l word list)\<close>
+    by simp
+  with assms show ?thesis
+    by (simp only: word_upto_alt)
+qed
 
 end

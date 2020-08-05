@@ -99,21 +99,21 @@ proof -
   hence mnhelper2: "(of_bl::bool list \<Rightarrow> 128 word) (to_bl b) < 2 ^ (m - n)"
     apply(subgoal_tac "(of_bl::bool list \<Rightarrow> 128 word) (to_bl b) < 2^(LENGTH(16))")
      apply(simp; fail)
-    by(rule Word.of_bl_length_less) simp+
+    by(rule of_bl_length_less) simp+
   have mnhelper3: "(of_bl::bool list \<Rightarrow> 128 word) (to_bl b) * 2 ^ n < 2 ^ m"
     apply(rule Word.div_lt_mult)
      apply(rule Word_Lemmas.word_less_two_pow_divI)
        using assms by(simp_all add: mnhelper2 Word_Lib.p2_gt_0)
 
   from assms show ?thesis
-    apply(subst Word.ucast_bl)+
-    apply(subst Word.shiftl_of_bl)
-    apply(subst Word.of_bl_append)
+    apply(subst ucast_bl)+
+    apply(subst shiftl_of_bl)
+    apply(subst of_bl_append)
     apply simp
-    apply(subst Word_Lemmas.word_and_mask_shiftl)
-    apply(subst Word_Lib.shiftr_div_2n_w)
+    apply(subst word_and_mask_shiftl)
+    apply(subst shiftr_div_2n_w)
      subgoal by(simp add: word_size; fail)
-    apply(subst Word_Lemmas.word_div_less)
+    apply(subst word_div_less)
      subgoal by(rule mnhelper3)
     apply simp
     done
@@ -124,16 +124,16 @@ lemma unat_of_bl_128_16_less_helper:
   fixes b::"16 word"
   shows "unat ((of_bl::bool list \<Rightarrow> 128 word) (to_bl b)) < 2^16"
 proof -
-  from Word.word_bl_Rep' have 1: "length (to_bl b) = 16" by simp
+  from word_bl_Rep' have 1: "length (to_bl b) = 16" by simp
   have "unat ((of_bl::bool list \<Rightarrow> 128 word) (to_bl b)) < 2^(length (to_bl b))"
-    by(fact Word_Lemmas.unat_of_bl_length)
+    by(fact unat_of_bl_length)
   with 1 show ?thesis by auto
 qed
 lemma unat_of_bl_128_16_le_helper: "unat ((of_bl:: bool list \<Rightarrow> 128 word) (to_bl (b::16 word))) \<le> 65535"
 proof -
   from unat_of_bl_128_16_less_helper[of b] have
     "unat ((of_bl:: bool list \<Rightarrow> 128 word) (to_bl b)) < 65536" by simp 
-  from Nat.Suc_leI[OF this] show ?thesis by simp
+  from Suc_leI[OF this] show ?thesis by simp
 qed
 
 
@@ -200,9 +200,9 @@ qed
     using is_aligned_mask is_aligned_shiftl by force (*sledgehammer*)
 
    show ?thesis
-    apply(subst Word.ucast_bl)+
-    apply(subst Word_Lemmas.word_and_mask_shiftl)
-    apply(subst Aligned.aligned_shiftr_mask_shiftl)
+    apply(subst ucast_bl)+
+    apply(subst word_and_mask_shiftl)
+    apply(subst aligned_shiftr_mask_shiftl)
      subgoal by (fact aligned)
     subgoal by (fact of_bl_to_bl_shift_mask)
     done
@@ -219,11 +219,11 @@ proof -
   from assms have "ucast (((ucast:: 16 word \<Rightarrow> 128 word) b && mask (128 - n) && mask 16) && mask (128 - n)) = b"
     by (auto simp add: nth_ucast word_size intro: word_eqI)
   thus ?thesis
-  apply(subst Word_Lemmas.word_and_mask_shiftl)
-  apply(subst Word_Lemmas.shiftl_shiftr3)
+  apply(subst word_and_mask_shiftl)
+  apply(subst shiftl_shiftr3)
    apply(simp; fail)
   apply(simp)
-  apply(subst Word_Lemmas.shiftl_shiftr3)
+  apply(subst shiftl_shiftr3)
     apply(simp_all add: word_size and.assoc)
   done
 qed

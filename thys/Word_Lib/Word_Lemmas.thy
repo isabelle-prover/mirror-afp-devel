@@ -2364,9 +2364,12 @@ lemma unat_1_0:
 lemma x_less_2_0_1':
   fixes x :: "'a::len word"
   shows "\<lbrakk>LENGTH('a) \<noteq> 1; x < 2\<rbrakk> \<Longrightarrow> x = 0 \<or> x = 1"
-  apply (induct x)
-   apply clarsimp+
-  by (metis Suc_eq_plus1 add_lessD1 less_irrefl one_add_one unatSuc word_less_nat_alt)
+  apply (cases \<open>2 \<le> LENGTH('a)\<close>)
+  apply simp_all
+  apply transfer
+  apply auto
+  apply (metis add.commute add.right_neutral even_two_times_div_two mod_div_trivial mod_pos_pos_trivial mult.commute mult_zero_left not_less not_take_bit_negative odd_two_times_div_two_succ) 
+  done
 
 lemmas word_add_le_iff2 = word_add_le_iff [folded no_olen_add_nat]
 
@@ -4157,7 +4160,7 @@ lemma bl_cast_long_short_long_ingoreLeadingZero_generic:
 corollary ucast_short_ucast_long_ingoreLeadingZero:
   "\<lbrakk> length (dropWhile Not (to_bl w)) \<le> LENGTH('s); LENGTH('s) \<le> LENGTH('l) \<rbrakk> \<Longrightarrow>
    (ucast:: 's::len word \<Rightarrow> 'l::len word) ((ucast:: 'l::len word \<Rightarrow> 's::len word) w) = w"
-  apply (subst Word.ucast_bl)+
+  apply (subst ucast_bl)+
   apply (rule bl_cast_long_short_long_ingoreLeadingZero_generic; simp)
   done
 

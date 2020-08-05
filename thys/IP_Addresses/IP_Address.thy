@@ -85,7 +85,7 @@ subsection\<open>Sets of IP Addresses\<close>
     shows "ipset_from_cidr addr pflength \<equiv>
             ipset_from_netmask addr (of_bl ((replicate pflength True) @
                                             (replicate ((len_of(TYPE('i))) - pflength)) False))"
-    by(simp add: ipset_from_cidr_def mask_bl Word.shiftl_of_bl)
+    by(simp add: ipset_from_cidr_def mask_bl shiftl_of_bl)
 
   lemma ipset_from_cidr_alt:
     fixes pre :: "'i::len word"
@@ -94,7 +94,7 @@ subsection\<open>Sets of IP Addresses\<close>
              ..
              pre OR mask (LENGTH('i) - len)}"
     apply(simp add: ipset_from_cidr_def ipset_from_netmask_def Let_def)
-    apply(simp add: Word.word_oa_dist)
+    apply(simp add: word_oa_dist)
     apply(simp add: NOT_mask_shifted_lenword)
     done
 
