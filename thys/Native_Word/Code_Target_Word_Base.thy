@@ -270,7 +270,7 @@ by(simp add: word_of_integer.rep_eq)
 end
 
 lemma word_of_int_code [code abstract]:
-  "uint (word_of_int x :: 'a word) = x AND bin_mask (LENGTH('a :: len))"
+  "uint (word_of_int x :: 'a word) = x AND mask (LENGTH('a :: len))"
 by(simp add: uint_word_of_int and_bin_mask_conv_mod)
 
 context fixes f :: "nat \<Rightarrow> bool" begin
@@ -306,7 +306,7 @@ end
 
 lemma word_of_int_via_signed:
   fixes mask
-  assumes mask_def: "mask = bin_mask (LENGTH('a))"
+  assumes mask_def: "mask = Bit_Operations.mask (LENGTH('a))"
   and shift_def: "shift = 1 << LENGTH('a)"
   and index_def: "index = LENGTH('a) - 1"
   and overflow_def:"overflow = 1 << (LENGTH('a) - 1)"
@@ -338,9 +338,9 @@ proof -
     ultimately show ?thesis using True by(simp add: Let_def i'_def)
   next
     case False
-    hence "i' = i AND bin_mask (LENGTH('a) - 1)" unfolding assms i'_def
+    hence "i' = i AND Bit_Operations.mask (LENGTH('a) - 1)" unfolding assms i'_def
       by(clarsimp simp add: i'_def bin_nth_ops intro!: bin_eqI)(cases "LENGTH('a)", auto simp add: less_Suc_eq)
-    also have "\<dots> \<le> bin_mask (LENGTH('a) - 1)" by(rule int_and_le) simp
+    also have "\<dots> \<le> Bit_Operations.mask (LENGTH('a) - 1)" by(rule int_and_le) simp
     also have "\<dots> < overflow" unfolding overflow_def
       by(simp add: bin_mask_p1_conv_shift[symmetric])
     also
@@ -440,6 +440,6 @@ setup \<open>Code_Target.add_derived_target ("SML_word", [(Code_ML.target_SML, I
 code_identifier code_module Code_Target_Word_Base \<rightharpoonup>
   (SML) Word and (Haskell) Word and (OCaml) Word and (Scala) Word
 
-export_code sbintrunc bin_mask in SML module_name Code
+export_code signed_take_bit \<open>mask :: nat \<Rightarrow> int\<close> in SML module_name Code
 
 end

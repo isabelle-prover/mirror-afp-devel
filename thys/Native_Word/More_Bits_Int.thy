@@ -131,37 +131,28 @@ by(simp add: int_and_not_bitANDN_num[symmetric] int_and_comm)
 
 section \<open>Bit masks of type \<^typ>\<open>int\<close>\<close>
 
-primrec bin_mask :: "nat \<Rightarrow> int" 
-where
-  "bin_mask 0 = 0"
-| "bin_mask (Suc n) = 1 + 2 * bin_mask n"
-
 lemma bin_mask_conv_pow2:
-  "bin_mask n = 2 ^ n - 1"
-  by (induct n) simp_all
-
-lemma bin_mask_eq_mask:
-  \<open>bin_mask = Bit_Operations.mask\<close>
-  by (simp add: bin_mask_conv_pow2 [abs_def] mask_eq_exp_minus_1 [abs_def])
+  "mask n = 2 ^ n - (1 :: int)"
+  by (fact mask_eq_exp_minus_1)
   
-lemma bin_mask_ge0: "bin_mask n \<ge> 0"
-by(induct n) simp_all
+lemma bin_mask_ge0: "mask n \<ge> (0 :: int)"
+  by (fact mask_nonnegative_int)
 
-lemma and_bin_mask_conv_mod: "x AND bin_mask n = x mod 2 ^ n"
-  by (rule bit_eqI)
-    (simp add: bin_mask_eq_mask bit_and_iff bit_mask_iff bit_take_bit_iff ac_simps flip: take_bit_eq_mod)
+lemma and_bin_mask_conv_mod: "x AND mask n = x mod 2 ^ n"
+  for x :: int
+  by (simp flip: take_bit_eq_mod add: take_bit_eq_mask)
 
 lemma bin_mask_numeral: 
-  "bin_mask (numeral n) = 1 + 2 * bin_mask (pred_numeral n)"
-by(simp add: numeral_eq_Suc)
+  "mask (numeral n) = (1 :: int) + 2 * mask (pred_numeral n)"
+  by (fact mask_numeral)
 
-lemma bin_nth_mask [simp]: "bin_nth (bin_mask n) i \<longleftrightarrow> i < n"
-  by (simp add: bin_mask_eq_mask bit_mask_iff)
+lemma bin_nth_mask [simp]: "bit (mask n :: int) i \<longleftrightarrow> i < n"
+  by (simp add: bit_mask_iff)
 
-lemma bin_sign_mask [simp]: "bin_sign (bin_mask n) = 0"
+lemma bin_sign_mask [simp]: "bin_sign (mask n) = 0"
   by (simp add: bin_sign_def bin_mask_conv_pow2)
 
-lemma bin_mask_p1_conv_shift: "bin_mask n + 1 = 1 << n"
+lemma bin_mask_p1_conv_shift: "mask n + 1 = (1 :: int) << n"
   by (simp add: bin_mask_conv_pow2 shiftl_int_def)
 
 
