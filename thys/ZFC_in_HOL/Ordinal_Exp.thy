@@ -539,6 +539,21 @@ next
     by (metis Limit_oexp Ord_\<omega> OrdmemD one_V_def succ_in_omega zero_in_omega)
 qed
 
+lemma oexp_mult_commute:
+  fixes j::nat
+  assumes "Ord \<alpha>"
+  shows "(\<alpha> \<up> j) * \<alpha> = \<alpha> * (\<alpha> \<up> j)"
+proof -
+  have "(\<alpha> \<up> j) * \<alpha> = \<alpha> \<up> (1 + ord_of_nat j)"
+    by (simp add: one_V_def)
+  also have "... = \<alpha> * (\<alpha> \<up> j)"
+    by (simp add: assms oexp_add)
+  finally show ?thesis .
+qed
+
+lemma oexp_\<omega>_Limit: "Limit \<beta> \<Longrightarrow> \<omega>\<up>\<beta> = (SUP \<xi> \<in> elts \<beta>. \<omega>\<up>\<xi>)"
+  by (simp add: oexp_Limit)
+
 lemma \<omega>_power_succ_gtr: "Ord \<alpha> \<Longrightarrow> \<omega> \<up> \<alpha> * ord_of_nat n < \<omega> \<up> succ \<alpha>"
   by (simp add: OrdmemD)
 
