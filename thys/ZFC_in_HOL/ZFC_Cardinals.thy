@@ -1280,6 +1280,14 @@ next
     by (rule ordertype_inc_le [where \<pi>=f]) (use f assms in auto)
 qed
 
+lemma iso_imp_ordertype_eq_ordertype:
+  assumes iso: "iso r r' f"
+    and "wf r"
+    and "Total r"
+    and sm: "small (Field r)"
+  shows "ordertype (Field r) r = ordertype (Field r') r'"
+  by (metis (no_types, lifting) iso_forward iso_wf assms iso_Field ordertype_inc_eq sm)
+
 lemma ordertype_infinite_ge_\<omega>:
   assumes "infinite A" "small A"
   shows "ordertype A VWF \<ge> \<omega>"
@@ -1439,7 +1447,6 @@ proof
     by (meson ordermap_bij assms(4) bij_betw_def r)
   have B: "bij_betw (ordermap B s) B (ordermap B s ` B)"
     by (meson ordermap_bij assms(8) bij_betw_def s)
-
   define f where "f \<equiv> inv_into B (ordermap B s) o ordermap A r"
   show ?rhs
   proof (intro exI conjI)
@@ -1483,6 +1490,77 @@ next
     using assms ordertype_eqI  by blast
 qed
 
+corollary ordertype_eq_ordertype_iso:
+  assumes r: "wf r" "total_on A r" "trans r" and "small A" and FA: "Field r = A"
+  assumes s: "wf s" "total_on B s" "trans s" and "small B" and FB: "Field s = B"
+  shows "ordertype A r = ordertype B s \<longleftrightarrow> (\<exists>f. iso r s f)"
+    (is "?lhs = ?rhs")
+proof
+  assume L: ?lhs
+  then obtain f where "bij_betw f A B" "\<forall>x \<in> A. \<forall>y \<in> A. (f x, f y) \<in> s \<longleftrightarrow> (x,y) \<in> r"
+    using assms ordertype_eq_ordertype by blast
+  then show ?rhs
+    using FA FB iso_iff2 by blast
+next
+  assume ?rhs
+  then show ?lhs
+    using FA FB \<open>small A\<close> iso_imp_ordertype_eq_ordertype r by blast
+qed
+
+lemma Limit_ordertype_imp_Field_Restr:
+  assumes Lim: "Limit (ordertype A r)" and r: "wf r" "total_on A r" and "small A"
+  shows "Field (Restr r A) = A"
+proof -
+  have "\<exists>y\<in>A. (x,y) \<in> r" if "x \<in> A" for x
+  proof -
+    let ?oy = "succ (ordermap A r x)"
+    have \<section>: "?oy \<in> elts (ordertype A r)"
+      by (simp add: Lim \<open>small A\<close> ordermap_in_ordertype succ_in_Limit_iff that)
+    then have A: "inv_into A (ordermap A r) ?oy \<in> A"
+      by (simp add: inv_into_ordermap)
+    moreover have "(x, inv_into A (ordermap A r) ?oy) \<in> r"
+    proof -
+      have "ordermap A r x \<in> elts (ordermap A r (inv_into A (ordermap A r) ?oy))"
+        by (metis "\<section>" elts_succ f_inv_into_f insert_iff ordermap_surj subsetD)
+      then show ?thesis
+        by (metis \<open>small A\<close> A converse_ordermap_mono r that)
+    qed
+    ultimately show ?thesis ..
+  qed
+  then have "A \<subseteq> Field (Restr r A)"
+    by (auto simp: Field_def)
+  then show ?thesis
+    by (simp add: Field_Restr_subset subset_antisym)
+qed
+
+lemma ordertype_Field_Restr:
+  assumes "wf r" "total_on A r" "trans r" "small A" "Field (Restr r A) = A"
+  shows "ordertype (Field (Restr r A)) (Restr r A) = ordertype A r"
+  using assms by (force simp: ordertype_eq_ordertype wf_Restr total_on_def trans_Restr)
+
+proposition ordertype_eq_ordertype_iso_Restr:
+  assumes r: "wf r" "total_on A r" "trans r" and "small A" and FA: "Field (Restr r A) = A"
+  assumes s: "wf s" "total_on B s" "trans s" and "small B" and FB: "Field (Restr s B) = B"
+  shows "ordertype A r = ordertype B s \<longleftrightarrow> (\<exists>f. iso (Restr r A) (Restr s B) f)"
+    (is "?lhs = ?rhs")
+proof
+  assume L: ?lhs
+  then obtain f where "bij_betw f A B" "\<forall>x \<in> A. \<forall>y \<in> A. (f x, f y) \<in> s \<longleftrightarrow> (x,y) \<in> r"
+    using assms ordertype_eq_ordertype by blast
+  then show ?rhs
+    using FA FB bij_betwE unfolding iso_iff2 by fastforce
+next
+  assume ?rhs
+  moreover
+  have "ordertype (Field (Restr r A)) (Restr r A) = ordertype A r"
+    using FA \<open>small A\<close> ordertype_Field_Restr r by blast
+  moreover
+  have "ordertype (Field (Restr s B)) (Restr s B) = ordertype B s"
+    using FB \<open>small B\<close> ordertype_Field_Restr s by blast
+  ultimately show ?lhs
+    using iso_imp_ordertype_eq_ordertype FA FB \<open>small A\<close> r
+    by (fastforce intro: total_on_imp_Total_Restr trans_Restr wf_Int1)
+qed
 
 lemma ordermap_insert:
   assumes "Ord \<alpha>" and y: "Ord y" "y \<le> \<alpha>" and U: "U \<subseteq> elts \<alpha>"
