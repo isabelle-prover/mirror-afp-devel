@@ -134,19 +134,18 @@ lemmas of_bl_reasoning = to_bl_use_of_bl of_bl_append
 
 lemma uint_of_bl_is_bl_to_bin_drop:
   "length (dropWhile Not l) \<le> LENGTH('a) \<Longrightarrow> uint (of_bl l :: 'a::len word) = bl_to_bin l"
-  apply (simp add: of_bl_def)
-  apply (rule word_uint.Abs_inverse)
-  apply (simp add: uints_num bl_to_bin_ge0)
-  apply (rule order_less_le_trans)
-  apply (rule bl_to_bin_lt2p_drop)
-  apply (simp)
+  apply transfer
+  apply (simp add: take_bit_eq_mod)
+  apply (rule Divides.mod_less)
+   apply (rule bl_to_bin_ge0)
+  using bl_to_bin_lt2p_drop apply (rule order.strict_trans2)
+  apply simp
   done
 
 corollary uint_of_bl_is_bl_to_bin:
   "length l\<le>LENGTH('a) \<Longrightarrow> uint ((of_bl::bool list\<Rightarrow> ('a :: len) word) l) = bl_to_bin l"
   apply(rule uint_of_bl_is_bl_to_bin_drop)
   using le_trans length_dropWhile_le by blast
-
 
 lemma bin_to_bl_or:
   "bin_to_bl n (a OR b) = map2 (\<or>) (bin_to_bl n a) (bin_to_bl n b)"

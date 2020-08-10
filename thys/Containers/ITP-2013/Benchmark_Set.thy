@@ -19,10 +19,12 @@ lemma word_of_integer_code [code]:
    else if k = 0 then 0
    else let (q, r) = divmod_integer k 2
         in if r = 0 then 2 * word_of_integer q else 2 * word_of_integer q + 1)"
-apply(unfold word_of_integer_def o_def)
-apply(subst int_of_integer_code)
-apply(clarsimp simp add: divmod_integer_def)
-by (metis minus_minus plus_word.abs_eq times_word.abs_eq wi_hom_neg word_1_wi word_numeral_alt)
+  apply (unfold word_of_integer_def)
+  apply transfer
+  apply (auto simp add: not_less comp_def split_beta)
+  apply (subst int_of_integer_code)
+  apply (clarsimp simp add: divmod_integer_def)
+  done
 
 definition word_of :: "natural \<Rightarrow> 'a::len word"
 where "word_of = word_of_integer o integer_of_natural"

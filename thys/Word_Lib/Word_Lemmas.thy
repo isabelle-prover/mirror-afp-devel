@@ -3092,9 +3092,9 @@ lemma smod_word_min:
 
 lemma smod_word_alt_def:
   "(a :: ('a::len) word) smod b = a - (a sdiv b) * b"
-  apply (case_tac "a \<noteq> - (2 ^ (LENGTH('a) - 1)) \<or> b \<noteq> -1")
+  apply (cases \<open>a \<noteq> - (2 ^ (LENGTH('a) - 1)) \<or> b \<noteq> - 1\<close>)
    apply (clarsimp simp: smod_word_def sdiv_word_def smod_int_def
-             minus_word.abs_eq [symmetric] times_word.abs_eq [symmetric])
+     simp flip: wi_hom_sub wi_hom_mult)
   apply (clarsimp simp: smod_word_def smod_int_def)
   done
 
@@ -3165,7 +3165,7 @@ lemma ucast_distrib:
   apply (subst of_int_uint [symmetric], subst lift_M')
   apply (subst (1 2) int_word_uint)
   apply (subst word_of_int)
-  apply (subst word.abs_eq_iff)
+  apply (subst word_ubin.norm_eq_iff [symmetric])
   apply (subst (1 2) bintrunc_mod2p)
   apply (insert is_down)
   apply (unfold is_down_def)
@@ -4689,7 +4689,7 @@ lemma ucast_or_distrib:
   fixes x :: "'a::len word"
   fixes y :: "'a::len word"
   shows "(ucast (x || y) :: ('b::len) word) = ucast x || ucast y"
-  by (simp add: ucast_eq uint_or flip: or_word.abs_eq)
+  by transfer simp
 
 lemma shiftr_less:
   "(w::'a::len word) < k \<Longrightarrow> w >> n < k"
@@ -5636,13 +5636,7 @@ lemma word_le_mask_out_plus_2sz:
 
 lemma ucast_add:
   "ucast (a + (b :: 'a :: len word)) = ucast a + (ucast b :: ('a signed word))"
-  apply (case_tac "LENGTH('a) = 1")
-   apply (clarsimp simp: ucast_eq)
-   apply (metis (hide_lams, mono_tags) One_nat_def len_signed plus_word.abs_eq
-                                       uint_word_arith_bintrs(1) word_ubin.Abs_norm)
-  apply (clarsimp simp: ucast_eq)
-  apply (metis le_refl len_signed plus_word.abs_eq uint_word_arith_bintrs(1) wi_bintr)
-  done
+  by transfer (simp add: take_bit_add)
 
 lemma ucast_minus:
   "ucast (a - (b :: 'a :: len word)) = ucast a - (ucast b :: ('a signed word))"
