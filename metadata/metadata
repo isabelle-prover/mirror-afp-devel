@@ -8620,6 +8620,11 @@ abstract =
   monitor to that of other monitoring tools on randomly generated
   inputs. This case study revealed several errors in the optimized but
   unverified tools.
+extra-history =
+	Change history:
+	[2020-08-13]:
+	added the formalization of the abstract slicing framework and joint data
+	slicer (revision b1639ed541b7)<br>
 
 [FOL_Seq_Calc1]
 title = A Sequent Calculus for First-Order Logic
