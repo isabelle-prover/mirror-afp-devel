@@ -8615,8 +8615,7 @@ abstract =
   logic with real-time constraints and first-order quantification. The
   verified monitor implements a simplified variant of the algorithm used
   in the efficient MonPoly monitoring tool. The formalization is
-  presented in a forthcoming <a
-  href="http://people.inf.ethz.ch/trayteld/papers/rv19-verimon/verimon.pdf">RV
+  presented in a <a href="https://doi.org/10.1007/978-3-030-32079-9_18">RV
   2019 paper</a>, which also compares the output of the verified
   monitor to that of other monitoring tools on randomly generated
   inputs. This case study revealed several errors in the optimized but

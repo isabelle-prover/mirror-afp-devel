@@ -1,11 +1,11 @@
 (*<*)
 theory Monitor_Code
   imports Monitor
-  "HOL-Library.Code_Target_Nat"
-  "HOL.String"
-  Containers.Containers
+    "HOL-Library.Code_Target_Nat"
+    "HOL.String"
+    Containers.Containers
 begin
-(*>*)
+  (*>*)
 
 derive ccompare MFOTL.trm
 derive (eq) ceq MFOTL.trm

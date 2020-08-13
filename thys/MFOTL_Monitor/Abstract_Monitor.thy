@@ -1,175 +1,321 @@
 (*<*)
 theory Abstract_Monitor
-  imports MFOTL
+  imports Trace Table
 begin
 (*>*)
 
-section \<open>Abstract Specification of a Monitor\<close>
+section \<open>Abstract monitors and slicing\<close>
 
-locale monitorable =
-  fixes monitorable :: "'a MFOTL.formula \<Rightarrow> bool"
+subsection \<open>First-order specifications\<close>
 
-text \<open>The following locale specifies the desired behavior ouf a monitor abstractly.\<close>
+text \<open>
+  We abstract from first-order trace specifications by referring only to their
+  semantics. A first-order specification is described by a finite set of free
+  variables and a satisfaction function that defines for every trace the pairs
+  of valuations and time-points for which the specification is satisfied.
+\<close>
 
-locale monitor = monitorable +
+locale fo_spec =
   fixes
-    M :: "'a MFOTL.formula \<Rightarrow> 'a MFOTL.prefix \<Rightarrow> (nat \<times> 'a option list) set"
+    nfv :: nat and fv :: "nat set" and
+    sat :: "'a trace \<Rightarrow> 'b list \<Rightarrow> nat \<Rightarrow> bool"
   assumes
-    mono_monitor: "monitorable \<phi> \<Longrightarrow> \<pi> \<le> \<pi>' \<Longrightarrow> M \<phi> \<pi> \<subseteq> M \<phi> \<pi>'"
-    and sound_monitor: "monitorable \<phi> \<Longrightarrow> (i, v) \<in> M \<phi> \<pi> \<Longrightarrow>
-      i < plen \<pi> \<and> wf_tuple (MFOTL.nfv \<phi>) (MFOTL.fv \<phi>) v \<and> (\<forall>\<sigma>. prefix_of \<pi> \<sigma> \<longrightarrow> MFOTL.sat \<sigma> (map the v) i \<phi>)"
-    and complete_monitor: "monitorable \<phi> \<Longrightarrow> prefix_of \<pi> \<sigma> \<Longrightarrow>
-      i < plen \<pi> \<Longrightarrow> wf_tuple (MFOTL.nfv \<phi>) (MFOTL.fv \<phi>) v \<Longrightarrow>
-      (\<forall>\<sigma>. prefix_of \<pi> \<sigma> \<longrightarrow> MFOTL.sat \<sigma> (map the v) i \<phi>) \<Longrightarrow> \<exists>\<pi>'. prefix_of \<pi>' \<sigma> \<and> (i, v) \<in> M \<phi> \<pi>'"
-
-locale slicable_monitor = monitor +
-  assumes monitor_slice: "mem_restr S v \<Longrightarrow> (i, v) \<in> M \<phi> (MFOTL.pslice \<phi> S \<pi>) \<longleftrightarrow> (i, v) \<in> M \<phi> \<pi>"
-
-locale monitor_pre_progress = monitorable +
-  fixes progress :: "'a MFOTL.trace \<Rightarrow> 'a MFOTL.formula \<Rightarrow> nat \<Rightarrow> nat"
-  assumes
-    progress_mono: "j \<le> j' \<Longrightarrow> progress \<sigma> \<phi> j \<le> progress \<sigma> \<phi> j'"
-    and progress_le: "progress \<sigma> \<phi> j \<le> j"
-    and progress_ge: "monitorable \<phi> \<Longrightarrow> \<exists>j. i \<le> progress \<sigma> \<phi> j"
-
-locale monitor_progress = monitor_pre_progress +
-  assumes progress_prefix_conv: "prefix_of \<pi> \<sigma> \<Longrightarrow> prefix_of \<pi> \<sigma>' \<Longrightarrow>
-    progress \<sigma> \<phi> (plen \<pi>) = progress \<sigma>' \<phi> (plen \<pi>)"
+    fv_less_nfv: "x \<in> fv \<Longrightarrow> x < nfv" and
+    sat_fv_cong: "(\<And>x. x \<in> fv \<Longrightarrow> v!x = v'!x) \<Longrightarrow> sat \<sigma> v i = sat \<sigma> v' i"
 begin
 
-definition verdicts :: "'a MFOTL.formula \<Rightarrow> 'a MFOTL.prefix \<Rightarrow> (nat \<times> 'a tuple) set" where
-  "verdicts \<phi> \<pi> = {(i, v). wf_tuple (MFOTL.nfv \<phi>) (MFOTL.fv \<phi>) v \<and>
-    (\<forall>\<sigma>. prefix_of \<pi> \<sigma> \<longrightarrow> i < progress \<sigma> \<phi> (plen \<pi>) \<and> MFOTL.sat \<sigma> (map the v) i \<phi>)}"
-
-lemma verdicts_mono: "\<pi> \<le> \<pi>' \<Longrightarrow> verdicts \<phi> \<pi> \<subseteq> verdicts \<phi> \<pi>'"
-  unfolding verdicts_def
-  by (auto dest: prefix_of_antimono elim!: order.strict_trans2 intro!: progress_mono plen_mono)
+definition verdicts :: "'a trace \<Rightarrow> (nat \<times> 'b tuple) set" where
+  "verdicts \<sigma> = {(i, v). wf_tuple nfv fv v \<and> sat \<sigma> (map the v) i}"
 
 end
 
-lemma stake_eq_mono: "stake b x = stake b y \<Longrightarrow> a \<le> b \<Longrightarrow> stake a x = stake a y"
-proof (induction a arbitrary: b x y)
-  case 0
-  then show ?case by simp
-next
-  case Suca: (Suc a)
-  show ?case proof (cases b)
-    case 0
-    with Suca show ?thesis by (simp del: stake.simps)
-  next
-    case (Suc b')
-    with Suca show ?thesis by (auto simp only: stake.simps list.inject)
-  qed
-qed
+text \<open>
+  We usually employ a monitor to find the \<^emph>\<open>violations\<close> of a specification.
+  That is, the monitor should output the satisfactions of its negation.
+  Moreover, all monitor implementations must work with finite prefixes.
+  We are therefore interested in co-safety properties, which allow us to
+  identify all satisfactions on finite prefixes.
+\<close>
 
-sublocale monitor_progress \<subseteq> monitor monitorable verdicts
-proof (standard, goal_cases)
-  case (1 \<phi> \<pi> \<pi>')
-  from 1(2) show ?case by (rule verdicts_mono)
-next
-  case (2 \<phi> i v \<pi>)
-  from \<open>(i, v) \<in> verdicts \<phi> \<pi>\<close> show ?case
-    unfolding verdicts_def
-    using ex_prefix_of[of \<pi>]
-    by (auto elim!: order.strict_trans2 intro!: progress_le)
-next
-  case complete: (3 \<phi> \<pi> \<sigma> i v)
-  from \<open>monitorable \<phi>\<close> obtain j where eval: "i < progress \<sigma> \<phi> j"
-    unfolding less_eq_Suc_le
-    using progress_ge by blast
-  define j' where "j' = max (plen \<pi>) j"
-  then have "plen \<pi> \<le> j'" by simp
-  from eval have eval': "i < progress \<sigma> \<phi> j'"
-    unfolding j'_def
-    by (auto elim: order.strict_trans2 intro!: progress_mono)
-  from complete(2) \<open>plen \<pi> \<le> j'\<close> have "\<pi> \<le> take_prefix j' \<sigma>"
-  proof (transfer fixing: j', goal_cases prefix)
-    case (prefix \<pi> \<sigma>)
-    then have "stake j' \<sigma> = stake (length \<pi>) \<sigma> @ stake (j' - length \<pi>) (sdrop (length \<pi>) \<sigma>)"
-      by (unfold stake_add) auto
-    with \<open>stake (length \<pi>) \<sigma> = \<pi>\<close> show ?case 
-      by auto
-  qed
-  with complete(4) eval' show ?case using progress_prefix_conv[of "take_prefix j' \<sigma>" \<sigma> \<sigma>' \<phi> for \<sigma>']
-    unfolding verdicts_def
-    by (auto intro!: exI[where x="take_prefix j' \<sigma>"] complete(5)[rule_format] elim: prefix_of_antimono)
-qed
-
-locale monitor_timed_progress = monitor_pre_progress +
-  assumes progress_time_conv: "\<forall>i<j. \<tau> \<sigma> i = \<tau> \<sigma>' i \<Longrightarrow> progress \<sigma> \<phi> j = progress \<sigma>' \<phi> j"
-    and progress_sat_cong: "prefix_of \<pi> \<sigma> \<Longrightarrow> prefix_of \<pi> \<sigma>' \<Longrightarrow> i < progress \<sigma> \<phi> (plen \<pi>) \<Longrightarrow>
-      MFOTL.sat \<sigma> v i \<phi> \<longleftrightarrow> MFOTL.sat \<sigma>' v i \<phi>"
+locale cosafety_fo_spec = fo_spec +
+  assumes cosafety_lr: "sat \<sigma> v i \<Longrightarrow> \<exists>\<pi>. prefix_of \<pi> \<sigma> \<and> (\<forall>\<sigma>'. prefix_of \<pi> \<sigma>' \<longrightarrow> sat \<sigma>' v i)"
 begin
 
-lemma progress_map_conv: "progress (map_\<Gamma> f \<sigma>) \<phi> j = progress (map_\<Gamma> g \<sigma>) \<phi> j"
-  by (auto intro: progress_time_conv)
-
-lemma progress_slice_conv: "progress (MFOTL.slice \<phi>' R \<sigma>) \<phi> j = progress (MFOTL.slice \<phi>' R' \<sigma>) \<phi> j"
-  unfolding MFOTL.slice_def using progress_map_conv .
-
-lemma progress_slice: "progress (MFOTL.slice \<phi> R \<sigma>) \<phi> j = progress \<sigma> \<phi> j"
-  using progress_map_conv[where g=id] by (simp add: MFOTL.slice_def)
+lemma cosafety: "sat \<sigma> v i \<longleftrightarrow> (\<exists>\<pi>. prefix_of \<pi> \<sigma> \<and> (\<forall>\<sigma>'. prefix_of \<pi> \<sigma>' \<longrightarrow> sat \<sigma>' v i))"
+  using cosafety_lr by blast
 
 end
 
-sublocale monitor_timed_progress \<subseteq> monitor_progress
-  by (unfold_locales, auto intro: progress_time_conv \<tau>_prefix_conv)
+subsection \<open>Monitor function\<close>
 
-lemma (in monitor_timed_progress) verdicts_alt:
-  "verdicts \<phi> \<pi> = {(i, v). wf_tuple (MFOTL.nfv \<phi>) (MFOTL.fv \<phi>) v \<and>
-    (\<exists>\<sigma>. prefix_of \<pi> \<sigma> \<and> i < progress \<sigma> \<phi> (plen \<pi>) \<and> MFOTL.sat \<sigma> (map the v) i \<phi>)}"
-  unfolding verdicts_def
-  using ex_prefix_of[of \<pi>]
-  by (auto dest: progress_prefix_conv[of \<pi> _ _ \<phi>] elim!: progress_sat_cong[THEN iffD1, rotated -1])
+text \<open>
+  We model monitors abstractly as functions from prefixes to verdict sets.
+  The following locale specifies a minimal set of properties that any
+  reasonable monitor should have.
+\<close>
 
-sublocale monitor_timed_progress \<subseteq> slicable_monitor monitorable verdicts
+locale monitor = fo_spec +
+  fixes M :: "'a prefix \<Rightarrow> (nat \<times> 'b tuple) set"
+  assumes
+    mono_monitor: "\<pi> \<le> \<pi>' \<Longrightarrow> M \<pi> \<subseteq> M \<pi>'" and
+    wf_monitor: "(i, v) \<in> M \<pi> \<Longrightarrow> wf_tuple nfv fv v" and
+    sound_monitor: "(i, v) \<in> M \<pi> \<Longrightarrow> prefix_of \<pi> \<sigma> \<Longrightarrow> sat \<sigma> (map the v) i" and
+    complete_monitor: "prefix_of \<pi> \<sigma> \<Longrightarrow> wf_tuple nfv fv v \<Longrightarrow>
+      (\<And>\<sigma>. prefix_of \<pi> \<sigma> \<Longrightarrow> sat \<sigma> (map the v) i) \<Longrightarrow> \<exists>\<pi>'. prefix_of \<pi>' \<sigma> \<and> (i, v) \<in> M \<pi>'"
+
+text \<open>
+  A monitor for a co-safety specification computes precisely the set of all
+  satisfactions in the limit:
+\<close>
+
+abbreviation (in monitor) "M_limit \<sigma> \<equiv> \<Union>{M \<pi> | \<pi>. prefix_of \<pi> \<sigma>}"
+
+locale cosafety_monitor = cosafety_fo_spec + monitor
+begin
+
+lemma M_limit_eq: "M_limit \<sigma> = verdicts \<sigma>"
 proof
-  fix S :: "'a list set" and v i \<phi> \<pi>
+  show "\<Union>{M \<pi> | \<pi>. prefix_of \<pi> \<sigma>} \<subseteq> verdicts \<sigma>"
+    by (auto simp: verdicts_def wf_monitor sound_monitor)
+next
+  show "\<Union>{M \<pi> | \<pi>. prefix_of \<pi> \<sigma>} \<supseteq> verdicts \<sigma>"
+    unfolding verdicts_def
+  proof safe
+    fix i v
+    assume "wf_tuple nfv fv v" and "sat \<sigma> (map the v) i"
+    then obtain \<pi> where "prefix_of \<pi> \<sigma> \<and> (\<forall>\<sigma>'. prefix_of \<pi> \<sigma>' \<longrightarrow> sat \<sigma>' (map the v) i)"
+      using cosafety_lr by blast
+    with \<open>wf_tuple nfv fv v\<close> obtain \<pi>' where "prefix_of \<pi>' \<sigma> \<and> (i, v) \<in> M \<pi>'"
+      using complete_monitor by blast
+    then show "(i, v) \<in> \<Union>{M \<pi> | \<pi>. prefix_of \<pi> \<sigma>}"
+      by blast
+  qed
+qed
+
+end
+
+text \<open>
+  The monitor function \<^term>\<open>M\<close> adds some information over \<^term>\<open>sat\<close>, namely
+  when a verdict is output. One possible behavior is that the monitor outputs
+  its verdicts for one time-point at a time, in increasing order of
+  time-points. Then \<^term>\<open>M\<close> is uniquely defined by a progress function, which
+  returns for every prefix the time-point up to which all verdicts are computed.
+\<close>
+
+locale progress = fo_spec _ _ sat for sat :: "'a trace \<Rightarrow> 'b list \<Rightarrow> nat \<Rightarrow> bool" +
+  fixes progress :: "'a prefix \<Rightarrow> nat"
+  assumes
+    progress_mono: "\<pi> \<le> \<pi>' \<Longrightarrow> progress \<pi> \<le> progress \<pi>'" and
+    ex_progress_ge: "\<exists>\<pi>. prefix_of \<pi> \<sigma> \<and> x \<le> progress \<pi>" and
+    progress_sat_cong: "prefix_of \<pi> \<sigma> \<Longrightarrow> prefix_of \<pi> \<sigma>' \<Longrightarrow> i < progress \<pi> \<Longrightarrow>
+      sat \<sigma> v i \<longleftrightarrow> sat \<sigma>' v i"
+    \<comment> \<open>The last condition is not necessary to obtain a proper monitor function.
+      However, it corresponds to the intuitive understanding of monitor progress,
+      and it results in a stronger characterisation. In particular, it implies that
+      the specification is co-safety, as we will show below.\<close>
+begin
+
+definition M :: "'a prefix \<Rightarrow> (nat \<times> 'b tuple) set" where
+  "M \<pi> = {(i, v). i < progress \<pi> \<and> wf_tuple nfv fv v \<and>
+    (\<forall>\<sigma>. prefix_of \<pi> \<sigma> \<longrightarrow> sat \<sigma> (map the v) i)}"
+
+lemma M_alt: "M \<pi> = {(i, v). i < progress \<pi> \<and> wf_tuple nfv fv v \<and>
+    (\<exists>\<sigma>. prefix_of \<pi> \<sigma> \<and> sat \<sigma> (map the v) i)}"
+  using ex_prefix_of[of \<pi>]
+  by (auto simp: M_def cong: progress_sat_cong)
+
+end
+
+sublocale progress \<subseteq> cosafety_monitor _ _ _ M
+proof
+  fix i v and \<sigma> :: "'a trace"
+  assume "sat \<sigma> v i"
+  moreover obtain \<pi> where *: "prefix_of \<pi> \<sigma>" "i < progress \<pi>"
+    using ex_progress_ge by (auto simp: less_eq_Suc_le)
+  ultimately have "sat \<sigma>' v i" if "prefix_of \<pi> \<sigma>'" for \<sigma>'
+    using that by (simp cong: progress_sat_cong)
+  with * show "\<exists>\<pi>. prefix_of \<pi> \<sigma> \<and> (\<forall>\<sigma>'. prefix_of \<pi> \<sigma>' \<longrightarrow> sat \<sigma>' v i)"
+    by blast
+next
+  fix \<pi> \<pi>' :: "'a prefix"
+  assume "\<pi> \<le> \<pi>'"
+  then show "M \<pi> \<subseteq> M \<pi>'"
+    by (auto simp: M_def intro: progress_mono prefix_of_antimono
+        elim: order.strict_trans2)
+next
+  fix i v \<pi> and \<sigma> :: "'a trace"
+  assume *: "(i, v) \<in> M \<pi>"
+  then show "wf_tuple nfv fv v"
+    by (simp add: M_def)
+  assume "prefix_of \<pi> \<sigma>"
+  with * show "sat \<sigma> (map the v) i"
+    by (simp add: M_def)
+next
+  fix i v \<pi> and \<sigma> :: "'a trace"
+  assume *: "prefix_of \<pi> \<sigma>" "wf_tuple nfv fv v" "\<And>\<sigma>'. prefix_of \<pi> \<sigma>' \<Longrightarrow> sat \<sigma>' (map the v) i"
+  show "\<exists>\<pi>'. prefix_of \<pi>' \<sigma> \<and> (i, v) \<in> M \<pi>'"
+  proof (cases "i < progress \<pi>")
+    case True
+    with * show ?thesis by (auto simp: M_def)
+  next
+    case False
+    obtain \<pi>' where **: "prefix_of \<pi>' \<sigma> \<and> i < progress \<pi>'"
+      using ex_progress_ge by (auto simp: less_eq_Suc_le)
+    then have "\<pi> \<le> \<pi>'"
+      using \<open>prefix_of \<pi> \<sigma>\<close> prefix_of_imp_linear False progress_mono
+      by (blast intro: order.strict_trans2)
+    with * ** show ?thesis
+      by (auto simp: M_def intro: prefix_of_antimono)
+  qed
+qed
+
+subsection \<open>Slicing\<close>
+
+text \<open>Sliceable specifications can be evaluated meaningfully on a subset of events.\<close>
+
+locale abstract_slicer =
+  fixes relevant_events :: "'b list set \<Rightarrow> 'a set"
+begin
+
+abbreviation slice :: "'b list set \<Rightarrow> 'a trace \<Rightarrow> 'a trace" where
+  "slice S \<equiv> map_\<Gamma> (\<lambda>D. D \<inter> relevant_events S)"
+
+abbreviation pslice :: "'b list set \<Rightarrow> 'a prefix \<Rightarrow> 'a prefix" where
+  "pslice S \<equiv> pmap_\<Gamma> (\<lambda>D. D \<inter> relevant_events S)"
+
+lemma prefix_of_psliceI: "prefix_of \<pi> \<sigma> \<Longrightarrow> prefix_of (pslice S \<pi>) (slice S \<sigma>)"
+  by (transfer fixing: S) auto
+
+lemma plen_pslice[simp]: "plen (pslice S \<pi>) = plen \<pi>"
+  by (transfer fixing: S) simp
+
+lemma pslice_pnil[simp]: "pslice S pnil = pnil"
+  by (transfer fixing: S) simp
+
+lemma last_ts_pslice[simp]: "last_ts (pslice S \<pi>) = last_ts \<pi>"
+  by (transfer fixing: S) (simp add: last_map case_prod_beta split: list.split)
+
+abbreviation verdict_filter :: "'b list set \<Rightarrow> (nat \<times> 'b tuple) set \<Rightarrow> (nat \<times> 'b tuple) set" where
+  "verdict_filter S V \<equiv> {(i, v) \<in> V. mem_restr S v}"
+
+end
+
+locale sliceable_fo_spec = fo_spec _ _ sat + abstract_slicer relevant_events
+  for relevant_events :: "'b list set \<Rightarrow> 'a set" and sat :: "'a trace \<Rightarrow> 'b list \<Rightarrow> nat \<Rightarrow> bool" +
+  assumes sliceable: "v \<in> S \<Longrightarrow> sat (slice S \<sigma>) v i \<longleftrightarrow> sat \<sigma> v i"
+begin
+
+lemma union_verdicts_slice:
+  assumes part: "\<Union>\<S> = UNIV"
+  shows "\<Union>((\<lambda>S. verdict_filter S (verdicts (slice S \<sigma>))) ` \<S>) = verdicts \<sigma>"
+proof safe
+  fix S i and v :: "'b tuple"
+  assume "(i, v) \<in> verdicts (slice S \<sigma>)"
+  then have tuple: "wf_tuple nfv fv v" and "sat (slice S \<sigma>) (map the v) i"
+    by (auto simp: verdicts_def)
+  assume "mem_restr S v"
+  then obtain v' where "v' \<in> S" and 1: "\<forall>i\<in>fv. v ! i = Some (v' ! i)"
+    using tuple by (auto simp: fv_less_nfv elim: mem_restrE)
+  then have "sat (slice S \<sigma>) v' i"
+    using \<open>sat (slice S \<sigma>) (map the v) i\<close> tuple
+    by (auto simp: wf_tuple_length fv_less_nfv cong: sat_fv_cong)
+  then have "sat \<sigma> v' i"
+    using sliceable[OF \<open>v' \<in> S\<close>] by simp
+  then have "sat \<sigma> (map the v) i"
+    using tuple 1
+    by (auto simp: wf_tuple_length fv_less_nfv cong: sat_fv_cong)
+  then show "(i, v) \<in> verdicts \<sigma>"
+    using tuple by (simp add: verdicts_def)
+next
+  fix i and v :: "'b tuple"
+  assume "(i, v) \<in> verdicts \<sigma>"
+  then have tuple: "wf_tuple nfv fv v" and "sat \<sigma> (map the v) i"
+    by (auto simp: verdicts_def)
+  from part obtain S where "S \<in> \<S>" and "map the v \<in> S"
+    by blast
+  then have "mem_restr S v"
+    using mem_restrI[of "map the v" S nfv fv] tuple
+    by (auto simp: wf_tuple_def fv_less_nfv)
+  moreover have "sat (slice S \<sigma>) (map the v) i"
+    using \<open>sat \<sigma> (map the v) i\<close> sliceable[OF \<open>map the v \<in> S\<close>] by simp
+  then have "(i, v) \<in> verdicts (slice S \<sigma>)"
+    using tuple by (simp add: verdicts_def)
+  ultimately show "(i, v) \<in> (\<Union>S\<in>\<S>. verdict_filter S (verdicts (slice S \<sigma>)))"
+    using \<open>S \<in> \<S>\<close> by blast
+qed
+
+end
+
+text \<open>
+  We define a similar notion for monitors. It is potentially stronger because
+  the time-point at which verdicts are output must not change.
+\<close>
+
+locale sliceable_monitor = monitor _ _ sat M + abstract_slicer relevant_events
+  for relevant_events :: "'b list set \<Rightarrow> 'a set" and sat :: "'a trace \<Rightarrow> 'b list \<Rightarrow> nat \<Rightarrow> bool" and M +
+  assumes sliceable_M: "mem_restr S v \<Longrightarrow> (i, v) \<in> M (pslice S \<pi>) \<longleftrightarrow> (i, v) \<in> M \<pi>"
+begin
+
+lemma union_M_pslice:
+  assumes part: "\<Union>\<S> = UNIV"
+  shows "\<Union>((\<lambda>S. verdict_filter S (M (pslice S \<pi>))) ` \<S>) = M \<pi>"
+proof safe
+  fix S i and v :: "'b tuple"
+  assume "mem_restr S v" and "(i, v) \<in> M (pslice S \<pi>)"
+  then show "(i, v) \<in> M \<pi>" using sliceable_M by blast
+next
+  fix i and v :: "'b tuple"
+  assume "(i, v) \<in> M \<pi>"
+  then have tuple: "wf_tuple nfv fv v"
+    by (rule wf_monitor)
+  from part obtain S where "S \<in> \<S>" and "map the v \<in> S"
+    by blast
+  then have "mem_restr S v"
+    using mem_restrI[of "map the v" S nfv fv] tuple
+    by (auto simp: wf_tuple_def fv_less_nfv)
+  then have "(i, v) \<in> M (pslice S \<pi>)"
+    using \<open>(i, v) \<in> M \<pi>\<close> sliceable_M by blast
+  then show "(i, v) \<in> (\<Union>S\<in>\<S>. verdict_filter S (M (pslice S \<pi>)))"
+    using \<open>S \<in> \<S>\<close> \<open>mem_restr S v\<close> by blast
+qed
+
+end
+
+text \<open>
+  If the specification is sliceable and the monitor's progress depends only on
+  time-stamps, then also the monitor itself is sliceable.
+\<close>
+
+locale timed_progress = progress +
+  assumes progress_time_conv: "pts \<pi> = pts \<pi>' \<Longrightarrow> progress \<pi> = progress \<pi>'"
+
+locale sliceable_timed_progress = sliceable_fo_spec + timed_progress
+begin
+
+lemma progress_pslice[simp]: "progress (pslice S \<pi>) = progress \<pi>"
+  by (simp cong: progress_time_conv)
+
+end
+
+sublocale sliceable_timed_progress \<subseteq> sliceable_monitor _ _ _ _ M
+proof
+  fix S :: "'a list set" and v i \<pi>
   assume *: "mem_restr S v"
-  show "((i, v) \<in> verdicts \<phi> (MFOTL.pslice \<phi> S \<pi>)) = ((i, v) \<in> verdicts \<phi> \<pi>)" (is "?L = ?R")
+  show "(i, v) \<in> M (pslice S \<pi>) \<longleftrightarrow> (i, v) \<in> M \<pi>" (is "?L \<longleftrightarrow> ?R")
   proof
     assume ?L
-    with * show ?R unfolding verdicts_def
-      by (auto simp: progress_slice fvi_less_nfv wf_tuple_def elim!: mem_restrE
-        box_equals[OF sat_slice_iff sat_fvi_cong sat_fvi_cong, symmetric, THEN iffD1, rotated -1]
-        dest: spec[of _ "MFOTL.slice \<phi> S _"] prefix_of_pslice_slice)
+    with * show ?R
+      by (auto 0 4 simp: M_def wf_tuple_def elim!: mem_restrE
+          box_equals[OF sliceable sat_fv_cong sat_fv_cong, THEN iffD1, rotated -1]
+          intro: prefix_of_psliceI dest: fv_less_nfv spec[of _ "slice S _"])
   next
     assume ?R
-    with * show ?L unfolding verdicts_alt
-      by (auto simp: progress_slice fvi_less_nfv wf_tuple_def elim!: mem_restrE
-        box_equals[OF sat_slice_iff sat_fvi_cong sat_fvi_cong, symmetric, THEN iffD2, rotated -1]
-        intro: exI[of _ "MFOTL.slice \<phi> S _"] prefix_of_pslice_slice)
+    with * show ?L
+      by (auto 0 4 simp: M_alt wf_tuple_def elim!: mem_restrE
+        box_equals[OF sliceable sat_fv_cong sat_fv_cong, THEN iffD2, rotated -1]
+        intro: exI[of _ "slice S _"] prefix_of_psliceI dest: fv_less_nfv)
   qed
 qed
-
-text \<open>Past-only Formulas.\<close>
-
-fun past_only :: "'a MFOTL.formula \<Rightarrow> bool" where
-  "past_only (MFOTL.Pred _ _) = True"
-| "past_only (MFOTL.Eq _ _) = True"
-| "past_only (MFOTL.Neg \<psi>) = past_only \<psi>"
-| "past_only (MFOTL.Or \<alpha> \<beta>) = (past_only \<alpha> \<and> past_only \<beta>)"
-| "past_only (MFOTL.Exists \<psi>) = past_only \<psi>"
-| "past_only (MFOTL.Prev _ \<psi>) = past_only \<psi>"
-| "past_only (MFOTL.Next _ _) = False"
-| "past_only (MFOTL.Since \<alpha> _ \<beta>) = (past_only \<alpha> \<and> past_only \<beta>)"
-| "past_only (MFOTL.Until \<alpha> _ \<beta>) = False"
-
-interpretation past_only_monitor: monitor_timed_progress past_only "\<lambda>\<sigma> \<phi> j. if past_only \<phi> then j else 0"
-proof (unfold_locales, goal_cases)
-  case (5 \<pi> \<sigma> \<sigma>' i \<phi> v)
-  then have "past_only \<phi>" and "i < plen \<pi>" by (simp_all split: if_splits)
-  then show ?case proof (induction \<phi> arbitrary: v i)
-    case (Pred e ts)
-    with \<Gamma>_prefix_conv[OF 5(1,2)] show ?case by simp
-  next
-    case (Prev I \<phi>)
-    with \<tau>_prefix_conv[OF 5(1,2)] show ?case by (simp split: nat.split)
-  next
-    case (Since \<phi>1 I \<phi>2)
-    with Since \<tau>_prefix_conv[OF 5(1,2)] show ?case by auto
-  qed simp_all
-qed auto
 
 (*<*)
 end

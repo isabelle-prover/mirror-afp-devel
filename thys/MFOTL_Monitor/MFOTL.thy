@@ -1,14 +1,14 @@
 (*<*)
 theory MFOTL
-  imports Interval Trace Table
+  imports Interval Trace Abstract_Monitor
 begin
 (*>*)
 
-section \<open>Metric First-order Temporal Logic\<close>
+section \<open>Metric first-order temporal logic\<close>
 
 context begin
 
-subsection \<open>Formulas and Satisfiability\<close>
+subsection \<open>Formulas and satisfiability\<close>
 
 qualified type_synonym name = string
 qualified type_synonym 'a event = "(name \<times> 'a list)"
@@ -201,7 +201,7 @@ next
 qed (auto 8 0 simp add: nth_Cons' split: nat.splits intro!: iff_exI)
 
 
-subsection \<open>Defined Connectives\<close>
+subsection \<open>Defined connectives\<close>
 
 qualified definition "And \<phi> \<psi> = Neg (Or (Neg \<phi>) (Neg \<psi>))"
 
@@ -232,7 +232,7 @@ lemma sat_And_Not: "sat \<sigma> v i (And_Not \<phi> \<psi>) = (sat \<sigma> v i
   unfolding And_Not_def by simp
 
 
-subsection \<open>Safe Formulas\<close>
+subsection \<open>Safe formulas\<close>
 
 fun safe_formula :: "'a MFOTL.formula \<Rightarrow> bool" where
   "safe_formula (MFOTL.Eq t1 t2) = (MFOTL.is_Const t1 \<or> MFOTL.is_Const t2)"
@@ -291,7 +291,7 @@ next
 qed (auto intro: assms)
 
 
-subsection \<open>Slicing Traces\<close>
+subsection \<open>Slicing traces\<close>
 
 qualified primrec matches :: "'a env \<Rightarrow> 'a formula \<Rightarrow> name \<times> 'a list \<Rightarrow> bool" where
   "matches v (Pred r ts) e = (r = fst e \<and> map (eval_trm v) ts = snd e)"
@@ -313,14 +313,7 @@ next
   then show ?case unfolding matches.simps by (intro iff_exI) (simp add: fvi_Suc nth_Cons')
 qed (auto 5 0 simp add: nth_Cons')
 
-abbreviation relevant_events where
-  "relevant_events \<phi> S \<equiv> {e. S \<inter> {v. matches v \<phi> e} \<noteq> {}}"
-
-qualified definition slice :: "'a formula \<Rightarrow> 'a env set \<Rightarrow> 'a trace \<Rightarrow> 'a trace" where
-  "slice \<phi> S \<sigma> = map_\<Gamma> (\<lambda>D. D \<inter> relevant_events \<phi> S) \<sigma>"
-
-lemma \<tau>_slice[simp]: "\<tau> (slice \<phi> S \<sigma>) = \<tau> \<sigma>"
-  unfolding slice_def by (simp add: fun_eq_iff)
+abbreviation relevant_events where "relevant_events \<phi> S \<equiv> {e. S \<inter> {v. matches v \<phi> e} \<noteq> {}}"
 
 lemma sat_slice_strong: "relevant_events \<phi> S \<subseteq> E \<Longrightarrow> v \<in> S \<Longrightarrow>
   sat \<sigma> v i \<phi> \<longleftrightarrow> sat (map_\<Gamma> (\<lambda>D. D \<inter> E) \<sigma>) v i \<phi>"
@@ -360,69 +353,19 @@ next
    by (auto simp: Collect_disj_eq Int_Un_distrib subset_iff)
 qed
 
+end (*context*)
+
+interpretation MFOTL_slicer: abstract_slicer "relevant_events \<phi>" for \<phi> .
+
 lemma sat_slice_iff:
   assumes "v \<in> S"
-  shows "sat \<sigma> v i \<phi> \<longleftrightarrow> sat (slice \<phi> S \<sigma>) v i \<phi>"
-  unfolding slice_def
+  shows "MFOTL.sat \<sigma> v i \<phi> \<longleftrightarrow> MFOTL.sat (MFOTL_slicer.slice \<phi> S \<sigma>) v i \<phi>"
   by (rule sat_slice_strong[of S, OF subset_refl assms])
 
-qualified lift_definition pslice :: "'a formula \<Rightarrow> 'a env set \<Rightarrow> 'a prefix \<Rightarrow> 'a prefix" is
-  "\<lambda>\<phi> S \<pi>. map (\<lambda>(D, t). (D \<inter> relevant_events \<phi> S, t)) \<pi>"
-  by (auto simp: o_def split_beta)
-
-lemma prefix_of_pslice_slice: "prefix_of \<pi> \<sigma> \<Longrightarrow> prefix_of (pslice \<phi> R \<pi>) (MFOTL.slice \<phi> R \<sigma>)"
-  unfolding MFOTL.slice_def
-  by transfer simp
-
-lemma plen_pslice[simp]: "plen (pslice \<phi> R \<pi>) = plen \<pi>"
-  by transfer simp
-
-lemma pslice_pnil[simp]: "pslice \<phi> R pnil = pnil"
-  by transfer simp
-
-lemma last_ts_pslice[simp]: "last_ts (pslice \<phi> R \<pi>) = last_ts \<pi>"
-  by transfer (simp add: last_map case_prod_beta split: list.split)
-
-lemma prefix_of_replace_prefix:
-  "prefix_of (pslice \<phi> R \<pi>) \<sigma> \<Longrightarrow> prefix_of \<pi> (replace_prefix \<pi> \<sigma>)"
-proof (transfer; safe; goal_cases)
-  case (1 \<phi> R \<pi> \<sigma>)
-  then show ?case
-    by (subst (asm) (2) stake_sdrop[symmetric, of _ "length \<pi>"])
-      (auto 0 3 simp: ssorted_shift split_beta o_def stake_shift sdrop_smap[symmetric]
-        ssorted_sdrop not_le pslice_def simp del: sdrop_smap)
-qed
-
 lemma slice_replace_prefix:
-  "prefix_of (pslice \<phi> R \<pi>) \<sigma> \<Longrightarrow> slice \<phi> R (replace_prefix \<pi> \<sigma>) = slice \<phi> R \<sigma>"
-unfolding slice_def proof (transfer; safe; goal_cases)
-  case (1 \<phi> R \<pi> \<sigma>)
-  then show ?case
-    by (subst (asm) (2) stake_sdrop[symmetric, of \<sigma> "length \<pi>"],
-        subst (3) stake_sdrop[symmetric, of \<sigma> "length \<pi>"])
-      (auto simp: ssorted_shift split_beta o_def stake_shift sdrop_smap[symmetric] ssorted_sdrop
-        not_le pslice_def simp del: sdrop_smap cong: map_cong)
-qed
-
-lemma prefix_of_psliceD:
-  assumes "prefix_of (pslice \<phi> R \<pi>) \<sigma>"
-  shows "\<exists>\<sigma>'. prefix_of \<pi> \<sigma>' \<and> prefix_of (pslice \<phi> R \<pi>) (slice \<phi> R \<sigma>')"
-proof -
-  from assms(1) obtain \<sigma>' where 1: "prefix_of \<pi> \<sigma>'"
-    using ex_prefix_of by blast
-  then have "prefix_of (pslice \<phi> R \<pi>) (slice \<phi> R \<sigma>')"
-    unfolding MFOTL.slice_def
-    by transfer simp
-  with 1 show ?thesis by blast
-qed
-
-lemma prefix_of_sliceD:
-  assumes "prefix_of \<pi>' (slice \<phi> R \<sigma>)"
-  shows "\<exists>\<pi>''. \<pi>' = pslice \<phi> R \<pi>'' \<and> prefix_of \<pi>'' \<sigma>"
-  using assms unfolding slice_def
-  by transfer (auto intro!: exI[of _ "stake (length _) _"] elim: sym dest: sorted_stake)
-
-end (*context*)
+  "prefix_of (MFOTL_slicer.pslice \<phi> R \<pi>) \<sigma> \<Longrightarrow>
+    MFOTL_slicer.slice \<phi> R (replace_prefix \<pi> \<sigma>) = MFOTL_slicer.slice \<phi> R \<sigma>"
+  by (rule map_\<Gamma>_replace_prefix) auto
 
 (*<*)
 end

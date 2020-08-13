@@ -4,7 +4,7 @@ theory Table
 begin
 (*>*)
 
-section \<open>Finite Tables\<close>
+section \<open>Finite tables\<close>
 
 primrec tabulate :: "(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a list" where
   "tabulate f x 0 = []"
