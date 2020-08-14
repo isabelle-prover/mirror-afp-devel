@@ -596,7 +596,7 @@ subsection \<open>ML-Level Declarations\<close>
             |> Drule.dest_term
             |> Thm.term_of*)
   
-          val (_,lthy) = Local_Theory.open_target lthy 
+          val lthy = Local_Theory.open_target lthy 
           val ((dt,(_,thm)),lthy) = Local_Theory.define 
             ((name,Mixfix.NoSyn),((Thm.def_binding name,@{attributes [code]}@attribs),t)) lthy;
           val (lthy, lthy_old) = `Local_Theory.close_target lthy

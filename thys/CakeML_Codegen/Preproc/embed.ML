@@ -298,7 +298,7 @@ fun embed_def_cmd def_binding binding raw_consts opts lthy =
         warning "Skipping certificate proofs"
       else ()
 
-    val (_, lthy') = Local_Theory.open_target lthy
+    val lthy' = Local_Theory.open_target lthy
     val def_binding =
       if Binding.is_empty_atts def_binding then
         (Thm.def_binding binding, @{attributes [code]})

@@ -75,7 +75,7 @@ fun mk_funs {T, ctrs, ...} lthy =
     if exists then
       lthy
     else
-      Local_Theory.open_target lthy |> snd
+      Local_Theory.open_target lthy
       |> Proof_Context.concealed
       |> Local_Theory.map_background_naming
           (Name_Space.mandatory_path typ_name #> Name_Space.mandatory_path "constructor_fun")

@@ -56,7 +56,7 @@ fun lazify {T, casex, ctrs, case_thms, case_cong, ...} lthy =
         val binding = Binding.name "case_lazy"
 
         val ((term, thm), (lthy', lthy)) =
-          Local_Theory.open_target lthy |> snd
+          Local_Theory.open_target lthy
           |> Proof_Context.concealed
           |> Local_Theory.map_background_naming (Name_Space.mandatory_path typ_name)
           |> Local_Theory.define ((binding, NoSyn), ((Thm.def_binding binding, []), def))

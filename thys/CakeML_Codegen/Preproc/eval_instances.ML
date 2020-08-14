@@ -110,7 +110,6 @@ fun make typ_name thy =
 
     val (info, (lthy', lthy)) =
       Local_Theory.open_target lthy
-      |> snd
       |> Inductive.add_ind_def ind_flags [ind_head] ind_rules [] [rs] [(Binding.name name, NoSyn)]
       ||> `Local_Theory.close_target
     val phi = Proof_Context.export_morphism lthy lthy'

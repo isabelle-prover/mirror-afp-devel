@@ -273,7 +273,7 @@ fun mk_node class info super_evs lthy =
       |> BNF_FP_Def_Sugar.co_datatypes BNF_Util.Least_FP BNF_LFP.construct_lfp dtspec
       (* FIXME ideally BNF would return a fp_sugar value right here so that I can avoid constructing
          long names by hand above *)
-      |> Local_Theory.open_target |> snd
+      |> Local_Theory.open_target
       |> Local_Theory.define ((cert_binding, NoSyn), ((Thm.def_binding cert_binding, []), cert_term))
       |>> apsnd snd
       |> (fn (raw_cert, lthy) => prove_thms raw_cert lthy |>> pair raw_cert)
