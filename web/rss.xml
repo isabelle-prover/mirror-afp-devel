@@ -9,7 +9,20 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>21 Jul 2020 00:00:00 +0000</pubDate>
+    <pubDate>04 Aug 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Amicable Numbers</title>
+              <link>https://www.isa-afp.org/entries/Amicable_Numbers.html</link>
+       <guid>https://www.isa-afp.org/entries/Amicable_Numbers.html</guid>
+       <dc:creator> Angeliki Koutsoukou-Argyraki       </dc:creator>
+       <pubDate>04 Aug 2020 00:00:00 +0000</pubDate>
+       <description>
+This is a formalisation of Amicable Numbers, involving some relevant
+material including Euler&#39;s sigma function, some relevant
+definitions, results and examples as well as rules such as
+Th&amp;#257;bit ibn Qurra&#39;s Rule, Euler&#39;s Rule, te
+Riele&#39;s Rule and Borho&#39;s Rule with breeders.</description>
+    </item>
     <item>
        <title>A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm</title>
               <link>https://www.isa-afp.org/entries/Chandy_Lamport.html</link>
@@ -567,21 +580,6 @@ language semantics, program behaviours, forward and backward
 simulations, and compilers. We provide generic operations, such as
 simulation and compiler composition, and prove general (partial)
 correctness theorems, resulting in reusable proof components.</description>
-    </item>
-    <item>
-       <title>Arithmetic progressions and relative primes</title>
-              <link>https://www.isa-afp.org/entries/Arith_Prog_Rel_Primes.html</link>
-       <guid>https://www.isa-afp.org/entries/Arith_Prog_Rel_Primes.html</guid>
-       <dc:creator> José Manuel Rodríguez Caballero       </dc:creator>
-       <pubDate>01 Feb 2020 00:00:00 +0000</pubDate>
-       <description>
-This article provides a formalization of the solution obtained by the
-author of the Problem “ARITHMETIC PROGRESSIONS” from the
-&lt;a href=&#34;https://www.ocf.berkeley.edu/~wwu/riddles/putnam.shtml&#34;&gt;
-Putnam exam problems of 2002&lt;/a&gt;. The statement of the problem is
-as follows: For which integers &lt;em&gt;n&lt;/em&gt; &gt; 1 does the set of positive
-integers less than and relatively prime to &lt;em&gt;n&lt;/em&gt; constitute an
-arithmetic progression?</description>
     </item>
   </channel>
 </rss>

@@ -9500,3 +9500,16 @@ abstract =
   proofs. To demonstrate the applicability of the algebraic framework we
   verify the correctness of three basic graph algorithms.
 
+[Amicable_Numbers]
+title = Amicable Numbers
+author = Angeliki Koutsoukou-Argyraki <https://www.cl.cam.ac.uk/~ak2110/>
+topic = Mathematics/Number theory
+date = 2020-08-04
+notify = ak2110@cam.ac.uk
+abstract = 
+  This is a formalisation of Amicable Numbers, involving some relevant
+  material including Euler's sigma function, some relevant
+  definitions, results and examples as well as rules such as
+  Th&#257;bit ibn Qurra's Rule, Euler's Rule, te
+  Riele's Rule and Borho's Rule with breeders.
+
