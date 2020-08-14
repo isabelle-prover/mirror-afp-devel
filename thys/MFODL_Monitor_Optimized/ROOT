@@ -1,6 +1,6 @@
 chapter AFP
 
-session MFODL_Monitor_Optimized (AFP) = Containers +
+session MFODL_Monitor_Optimized (AFP) = MFOTL_Monitor +
   options [timeout = 1200]
   sessions
     IEEE_Floating_Point
@@ -8,16 +8,13 @@ session MFODL_Monitor_Optimized (AFP) = Containers +
   theories
     Code_Double
     Event_Data
-    Trace
     Regex
-    Interval
     Formula
-    Abstract_Monitor
     Optimized_Join
     Monitor
     Optimized_MTL
     Monitor_Impl
-  theories [condition=ISABELLE_OCAMLFIND, document=false]
+  theories [document=false]
     Monitor_Code
   document_files
     "root.tex"

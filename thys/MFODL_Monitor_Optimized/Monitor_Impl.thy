@@ -2,7 +2,6 @@
 theory Monitor_Impl
   imports Monitor
     Optimized_MTL
-    Event_Data
     "HOL-Library.Code_Target_Nat"
     Containers.Containers
 begin
@@ -40,17 +39,69 @@ interpretation muaux valid_mmuaux init_mmuaux add_new_mmuaux' length_mmuaux eval
   unfolding add_new_mmuaux'_def
   by unfold_locales assumption+
 
-global_interpretation verimon_maux: maux "\<lambda>_ cur (t, aux) auxlist. t = cur \<and> aux = auxlist" "\<lambda>_. (0, [])"
-  "\<lambda>args nt (t, auxlist). (nt, filter (\<lambda>(t, rel). enat (nt - t) \<le> right (args_ivl args)) auxlist)"
-  "\<lambda>args rel1 (t, auxlist). (t, map (\<lambda>(t, rel). (t, join rel (args_pos args) rel1)) auxlist)"
-  "\<lambda>args rel2 (cur, auxlist). (cur, (case auxlist of
+type_synonym 'a vmsaux = "nat \<times> (nat \<times> 'a table) list"
+
+definition valid_vmsaux :: "args \<Rightarrow> nat \<Rightarrow> event_data vmsaux \<Rightarrow>
+  (nat \<times> event_data table) list \<Rightarrow> bool" where
+  "valid_vmsaux = (\<lambda>_ cur (t, aux) auxlist. t = cur \<and> aux = auxlist)"
+
+definition init_vmsaux :: "args \<Rightarrow> event_data vmsaux" where
+  "init_vmsaux = (\<lambda>_. (0, []))"
+
+definition add_new_ts_vmsaux :: "args \<Rightarrow> nat \<Rightarrow> event_data vmsaux \<Rightarrow> event_data vmsaux" where
+  "add_new_ts_vmsaux = (\<lambda>args nt (t, auxlist). (nt, filter (\<lambda>(t, rel).
+    enat (nt - t) \<le> right (args_ivl args)) auxlist))"
+
+definition join_vmsaux :: "args \<Rightarrow> event_data table \<Rightarrow> event_data vmsaux \<Rightarrow> event_data vmsaux" where
+  "join_vmsaux = (\<lambda>args rel1 (t, auxlist). (t, map (\<lambda>(t, rel).
+    (t, join rel (args_pos args) rel1)) auxlist))"
+
+definition add_new_table_vmsaux :: "args \<Rightarrow> event_data table \<Rightarrow> event_data vmsaux \<Rightarrow>
+  event_data vmsaux" where
+  "add_new_table_vmsaux = (\<lambda>args rel2 (cur, auxlist). (cur, (case auxlist of
     [] => [(cur, rel2)]
-  | ((t, y) # ts) \<Rightarrow> if t = cur then (t, y \<union> rel2) # ts else (cur, rel2) # auxlist))"
-  "\<lambda>args (cur, auxlist). foldr (\<union>) [rel. (t, rel) \<leftarrow> auxlist, left (args_ivl args) \<le> cur - t] {}"
-  "\<lambda>_ cur (t, aux) auxlist. t = cur \<and> aux = auxlist" "\<lambda>_. (0, [])"
-  "\<lambda>args rel1 rel2 nt (t, auxlist). (nt, update_until args rel1 rel2 nt auxlist)"
-  "\<lambda>_ (_, auxlist). length auxlist"
-  "\<lambda>args nt (t, auxlist). (let (res, auxlist') = eval_until (args_ivl args) nt auxlist in (res, (t, auxlist')))"
+  | ((t, y) # ts) \<Rightarrow> if t = cur then (t, y \<union> rel2) # ts else (cur, rel2) # auxlist)))"
+
+definition result_vmsaux :: "args \<Rightarrow> event_data vmsaux \<Rightarrow> event_data table" where
+  "result_vmsaux = (\<lambda>args (cur, auxlist).
+    foldr (\<union>) [rel. (t, rel) \<leftarrow> auxlist, left (args_ivl args) \<le> cur - t] {})"
+
+type_synonym 'a vmuaux = "nat \<times> (nat \<times> 'a table \<times> 'a table) list"
+
+definition valid_vmuaux :: "args \<Rightarrow> nat \<Rightarrow> event_data vmuaux \<Rightarrow>
+  (nat \<times> event_data table \<times> event_data table) list \<Rightarrow> bool" where
+  "valid_vmuaux = (\<lambda>_ cur (t, aux) auxlist. t = cur \<and> aux = auxlist)"
+
+definition init_vmuaux :: "args \<Rightarrow> event_data vmuaux" where
+  "init_vmuaux = (\<lambda>_. (0, []))"
+
+definition add_new_vmuaux ::  "args \<Rightarrow> event_data table \<Rightarrow> event_data table \<Rightarrow> nat \<Rightarrow>
+  event_data vmuaux \<Rightarrow> event_data vmuaux" where
+  "add_new_vmuaux = (\<lambda>args rel1 rel2 nt (t, auxlist). (nt, update_until args rel1 rel2 nt auxlist))"
+
+definition length_vmuaux :: "args \<Rightarrow> event_data vmuaux \<Rightarrow> nat" where
+  "length_vmuaux = (\<lambda>_ (_, auxlist). length auxlist)"
+
+definition eval_vmuaux :: "args \<Rightarrow> nat \<Rightarrow> event_data vmuaux \<Rightarrow>
+  event_data table list \<times> event_data vmuaux" where
+  "eval_vmuaux = (\<lambda>args nt (t, auxlist).
+    (let (res, auxlist') = eval_until (args_ivl args) nt auxlist in (res, (t, auxlist'))))"
+
+global_interpretation verimon_maux: maux valid_vmsaux init_vmsaux add_new_ts_vmsaux join_vmsaux
+  add_new_table_vmsaux result_vmsaux valid_vmuaux init_vmuaux add_new_vmuaux length_vmuaux
+  eval_vmuaux
+  defines vminit0 = "maux.minit0 (init_vmsaux :: _ \<Rightarrow> event_data vmsaux) (init_vmuaux :: _ \<Rightarrow> event_data vmuaux) :: _ \<Rightarrow> Formula.formula \<Rightarrow> _"
+  and vminit = "maux.minit (init_vmsaux :: _ \<Rightarrow> event_data vmsaux) (init_vmuaux :: _ \<Rightarrow> event_data vmuaux) :: Formula.formula \<Rightarrow> _"
+  and vminit_safe = "maux.minit_safe (init_vmsaux :: _ \<Rightarrow> event_data vmsaux) (init_vmuaux :: _ \<Rightarrow> event_data vmuaux) :: Formula.formula \<Rightarrow> _"
+  and vmupdate_since = "maux.update_since add_new_ts_vmsaux join_vmsaux add_new_table_vmsaux (result_vmsaux :: _ \<Rightarrow> event_data vmsaux \<Rightarrow> event_data table)"
+  and vmeval = "maux.meval add_new_ts_vmsaux join_vmsaux add_new_table_vmsaux (result_vmsaux :: _ \<Rightarrow> event_data vmsaux \<Rightarrow> _) add_new_vmuaux (eval_vmuaux :: _ \<Rightarrow> _ \<Rightarrow> event_data vmuaux \<Rightarrow> _)"
+  and vmstep = "maux.mstep add_new_ts_vmsaux join_vmsaux add_new_table_vmsaux (result_vmsaux :: _ \<Rightarrow> event_data vmsaux \<Rightarrow> _) add_new_vmuaux (eval_vmuaux :: _ \<Rightarrow> _ \<Rightarrow> event_data vmuaux \<Rightarrow> _)"
+  and vmsteps0_stateless = "maux.msteps0_stateless add_new_ts_vmsaux join_vmsaux add_new_table_vmsaux (result_vmsaux :: _ \<Rightarrow> event_data vmsaux \<Rightarrow> _) add_new_vmuaux (eval_vmuaux :: _ \<Rightarrow> _ \<Rightarrow> event_data vmuaux \<Rightarrow> _)"
+  and vmsteps_stateless = "maux.msteps_stateless add_new_ts_vmsaux join_vmsaux add_new_table_vmsaux (result_vmsaux :: _ \<Rightarrow> event_data vmsaux \<Rightarrow> _) add_new_vmuaux (eval_vmuaux :: _ \<Rightarrow> _ \<Rightarrow> event_data vmuaux \<Rightarrow> _)"
+  and vmonitor = "maux.monitor init_vmsaux add_new_ts_vmsaux join_vmsaux add_new_table_vmsaux (result_vmsaux :: _ \<Rightarrow> event_data vmsaux \<Rightarrow> _) init_vmuaux add_new_vmuaux (eval_vmuaux :: _ \<Rightarrow> _ \<Rightarrow> event_data vmuaux \<Rightarrow> _)"
+  unfolding valid_vmsaux_def init_vmsaux_def add_new_ts_vmsaux_def join_vmsaux_def
+    add_new_table_vmsaux_def result_vmsaux_def valid_vmuaux_def init_vmuaux_def add_new_vmuaux_def
+    length_vmuaux_def eval_vmuaux_def
   by unfold_locales auto
 
 global_interpretation default_maux: maux valid_mmsaux "init_mmsaux :: _ \<Rightarrow> event_data mmsaux" add_new_ts_mmsaux gc_join_mmsaux add_new_table_mmsaux result_mmsaux
@@ -58,7 +109,7 @@ global_interpretation default_maux: maux valid_mmsaux "init_mmsaux :: _ \<Righta
   defines minit0 = "maux.minit0 (init_mmsaux :: _ \<Rightarrow> event_data mmsaux) (init_mmuaux :: _ \<Rightarrow> event_data mmuaux) :: _ \<Rightarrow> Formula.formula \<Rightarrow> _"
   and minit = "maux.minit (init_mmsaux :: _ \<Rightarrow> event_data mmsaux) (init_mmuaux :: _ \<Rightarrow> event_data mmuaux) :: Formula.formula \<Rightarrow> _"
   and minit_safe = "maux.minit_safe (init_mmsaux :: _ \<Rightarrow> event_data mmsaux) (init_mmuaux :: _ \<Rightarrow> event_data mmuaux) :: Formula.formula \<Rightarrow> _"
-  and update_since = "maux.update_since add_new_ts_mmsaux gc_join_mmsaux add_new_table_mmsaux (result_mmsaux :: _ \<Rightarrow> event_data mmsaux \<Rightarrow> event_data table)"
+  and mupdate_since = "maux.update_since add_new_ts_mmsaux gc_join_mmsaux add_new_table_mmsaux (result_mmsaux :: _ \<Rightarrow> event_data mmsaux \<Rightarrow> event_data table)"
   and meval = "maux.meval add_new_ts_mmsaux gc_join_mmsaux add_new_table_mmsaux (result_mmsaux :: _ \<Rightarrow> event_data mmsaux \<Rightarrow> _) add_new_mmuaux' (eval_mmuaux :: _ \<Rightarrow> _ \<Rightarrow> event_data mmuaux \<Rightarrow> _)"
   and mstep = "maux.mstep add_new_ts_mmsaux gc_join_mmsaux add_new_table_mmsaux (result_mmsaux :: _ \<Rightarrow> event_data mmsaux \<Rightarrow> _) add_new_mmuaux' (eval_mmuaux :: _ \<Rightarrow> _ \<Rightarrow> event_data mmuaux \<Rightarrow> _)"
   and msteps0_stateless = "maux.msteps0_stateless add_new_ts_mmsaux gc_join_mmsaux add_new_table_mmsaux (result_mmsaux :: _ \<Rightarrow> event_data mmsaux \<Rightarrow> _) add_new_mmuaux' (eval_mmuaux :: _ \<Rightarrow> _ \<Rightarrow> event_data mmuaux \<Rightarrow> _)"
@@ -405,7 +456,7 @@ lemma remove_Union_code[code]: "remove_Union A X B =
 lemma tabulate_remdups: "Mapping.tabulate xs f = Mapping.tabulate (remdups xs) f"
   by (transfer fixing: xs f) (auto simp: map_of_map_restrict)
 
-lift_definition clearjunk :: "(char list \<times> event_data list set) list \<Rightarrow> (char list, event_data list set list) alist" is
+lift_definition clearjunk :: "(String.literal \<times> event_data list set) list \<Rightarrow> (String.literal, event_data list set list) alist" is
   "\<lambda>t. List.map_filter (\<lambda>(p, X). if X = {} then None else Some (p, [X])) (AList.clearjunk t)"
   unfolding map_filter_def o_def list.map_comp
   by (subst map_cong[OF refl, of _ _ fst]) (auto simp: map_filter_def distinct_map_fst_filter split: if_splits)

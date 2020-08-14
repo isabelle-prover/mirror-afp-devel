@@ -1,7 +1,9 @@
 (*<*)
 theory Monitor
-  imports Abstract_Monitor
+  imports
+    Formula
     Optimized_Join
+    "MFOTL_Monitor.Abstract_Monitor"
     "HOL-Library.While_Combinator"
     "HOL-Library.Mapping"
     "Deriving.Derive"
@@ -884,6 +886,9 @@ termination (in maux)
 
 definition (in maux) minit :: "Formula.formula \<Rightarrow> ('msaux, 'muaux) mstate" where
   "minit \<phi> = (let n = Formula.nfv \<phi> in \<lparr>mstate_i = 0, mstate_m = minit0 n \<phi>, mstate_n = n\<rparr>)"
+
+definition (in maux) minit_safe where
+  "minit_safe \<phi> = (if mmonitorable_exec \<phi> then minit \<phi> else undefined)"
 
 fun mprev_next :: "\<I> \<Rightarrow> event_data table list \<Rightarrow> ts list \<Rightarrow> event_data table list \<times> event_data table list \<times> ts list" where
   "mprev_next I [] ts = ([], [], ts)"
@@ -1881,11 +1886,71 @@ next
 qed auto
 
 
-interpretation verimon: monitor_timed_progress Formula.future_bounded "\<lambda>\<sigma>. progress \<sigma> Map.empty"
-  by (unfold_locales, (fact progress_mono progress_le progress_time_conv sat_prefix_conv |
-        simp add: mmonitorable_def progress_ge)+)
+subsection \<open>Specification\<close>
 
-abbreviation "mverdicts \<equiv> verimon.verdicts"
+definition pprogress :: "Formula.formula \<Rightarrow> Formula.prefix \<Rightarrow> nat" where
+  "pprogress \<phi> \<pi> = (THE n. \<forall>\<sigma>. prefix_of \<pi> \<sigma> \<longrightarrow> progress \<sigma> Map.empty \<phi> (plen \<pi>) = n)"
+
+lemma pprogress_eq: "prefix_of \<pi> \<sigma> \<Longrightarrow> pprogress \<phi> \<pi> = progress \<sigma> Map.empty \<phi> (plen \<pi>)"
+  unfolding pprogress_def using progress_prefix_conv
+  by blast
+
+locale future_bounded_mfodl =
+  fixes \<phi> :: Formula.formula
+  assumes future_bounded: "Formula.future_bounded \<phi>"
+
+sublocale future_bounded_mfodl \<subseteq> sliceable_timed_progress "Formula.nfv \<phi>" "Formula.fv \<phi>" "relevant_events \<phi>"
+  "\<lambda>\<sigma> v i. Formula.sat \<sigma> Map.empty v i \<phi>" "pprogress \<phi>"
+proof (unfold_locales, goal_cases)
+  case (1 x)
+  then show ?case by (simp add: fvi_less_nfv)
+next
+  case (2 v v' \<sigma> i)
+  then show ?case by (simp cong: sat_fv_cong[rule_format])
+next
+  case (3 v S \<sigma> i)
+  then show ?case
+    using sat_slice_iff[symmetric] by simp
+next
+  case (4 \<pi> \<pi>')
+  moreover obtain \<sigma> where "prefix_of \<pi>' \<sigma>"
+    using ex_prefix_of ..
+  moreover have "prefix_of \<pi> \<sigma>"
+    using prefix_of_antimono[OF \<open>\<pi> \<le> \<pi>'\<close> \<open>prefix_of \<pi>' \<sigma>\<close>] .
+  ultimately show ?case
+    by (simp add: pprogress_eq plen_mono progress_mono)
+next
+  case (5 \<sigma> x)
+  obtain j where "x \<le> progress \<sigma> Map.empty \<phi> j"
+    using future_bounded progress_ge by blast
+  then have "x \<le> pprogress \<phi> (take_prefix j \<sigma>)"
+    by (simp add: pprogress_eq[of _ \<sigma>])
+  then show ?case by force
+next
+  case (6 \<pi> \<sigma> \<sigma>' i v)
+  then have "i < progress \<sigma> Map.empty \<phi> (plen \<pi>)"
+    by (simp add: pprogress_eq)
+  with 6 show ?case
+    using sat_prefix_conv by blast
+next
+  case (7 \<pi> \<pi>')
+  then have "plen \<pi> = plen \<pi>'"
+    by transfer (simp add: list_eq_iff_nth_eq)
+  moreover obtain \<sigma> \<sigma>' where "prefix_of \<pi> \<sigma>" "prefix_of \<pi>' \<sigma>'"
+    using ex_prefix_of by blast+
+  moreover have "\<forall>i < plen \<pi>. \<tau> \<sigma> i = \<tau> \<sigma>' i"
+    using 7 calculation
+    by transfer (simp add: list_eq_iff_nth_eq)
+  ultimately show ?case
+    by (simp add: pprogress_eq progress_time_conv)
+qed
+
+locale verimon_spec =
+  fixes \<phi> :: Formula.formula
+  assumes monitorable: "mmonitorable \<phi>"
+
+sublocale verimon_spec \<subseteq> future_bounded_mfodl
+  using monitorable by unfold_locales (simp add: mmonitorable_def)
 
 
 subsection \<open>Correctness\<close>
@@ -5380,32 +5445,29 @@ qed
 
 subsubsection \<open>Monitor function\<close>
 
-context maux
-begin
+locale verimon = verimon_spec + maux
 
-definition minit_safe where
-  "minit_safe \<phi> = (if mmonitorable_exec \<phi> then minit \<phi> else undefined)"
-
-lemma minit_safe_minit: "mmonitorable \<phi> \<Longrightarrow> minit_safe \<phi> = minit \<phi>"
-  unfolding minit_safe_def monitorable_formula_code by simp
-
-lemma mstep_mverdicts:
+lemma (in verimon) mstep_mverdicts:
   assumes wf: "wf_mstate \<phi> \<pi> R st"
     and le[simp]: "last_ts \<pi> \<le> snd tdb"
     and restrict: "mem_restr R v"
   shows "(i, v) \<in> flatten_verdicts (fst (mstep (map_prod mk_db id tdb) st)) \<longleftrightarrow>
-    (i, v) \<in> mverdicts \<phi> (psnoc \<pi> tdb) - mverdicts \<phi> \<pi>"
+    (i, v) \<in> M (psnoc \<pi> tdb) - M \<pi>"
 proof -
   obtain \<sigma> where p2: "prefix_of (psnoc \<pi> tdb) \<sigma>"
     using ex_prefix_of by blast
   with le have p1: "prefix_of \<pi> \<sigma>" by (blast elim!: prefix_of_psnocE)
   show ?thesis
-    unfolding verimon.verdicts_def
+    unfolding M_def
     by (auto 0 3 simp: p2 progress_prefix_conv[OF _ p1] sat_prefix_conv[OF _ p1] not_less
-        dest:  mstep_output_iff[OF wf le p2 restrict, THEN iffD1] spec[of _ \<sigma>]
-        mstep_output_iff[OF wf le _ restrict, THEN iffD1] verimon.progress_sat_cong[OF p1]
+        pprogress_eq[OF p1] pprogress_eq[OF p2]
+        dest: mstep_output_iff[OF wf le p2 restrict, THEN iffD1] spec[of _ \<sigma>]
+        mstep_output_iff[OF wf le _ restrict, THEN iffD1] progress_sat_cong[OF p1]
         intro: mstep_output_iff[OF wf le p2 restrict, THEN iffD2] p1)
 qed
+
+context maux
+begin
 
 primrec msteps0 where
   "msteps0 [] st = ([], st)"
@@ -5439,12 +5501,14 @@ lemma msteps_psnoc: "last_ts \<pi> \<le> snd tdb \<Longrightarrow> msteps (psnoc
 definition monitor where
   "monitor \<phi> \<pi> = msteps_stateless \<pi> (minit_safe \<phi>)"
 
+end
+
 lemma Suc_length_conv_snoc: "(Suc n = length xs) = (\<exists>y ys. xs = ys @ [y] \<and> length ys = n)"
   by (cases xs rule: rev_cases) auto
 
-lemma wf_mstate_msteps: "wf_mstate \<phi> \<pi> R st \<Longrightarrow> mem_restr R v \<Longrightarrow> \<pi> \<le> \<pi>' \<Longrightarrow>
+lemma (in verimon) wf_mstate_msteps: "wf_mstate \<phi> \<pi> R st \<Longrightarrow> mem_restr R v \<Longrightarrow> \<pi> \<le> \<pi>' \<Longrightarrow>
   X = msteps (pdrop (plen \<pi>) \<pi>') st \<Longrightarrow> wf_mstate \<phi> \<pi>' R (snd X) \<and>
-  ((i, v) \<in> flatten_verdicts (fst X)) = ((i, v) \<in> mverdicts \<phi> \<pi>' - mverdicts \<phi> \<pi>)"
+  ((i, v) \<in> flatten_verdicts (fst X)) = ((i, v) \<in> M \<pi>' - M \<pi>)"
 proof (induct "plen \<pi>' - plen \<pi>" arbitrary: X st \<pi> \<pi>')
   case 0
   from 0(1,4,5) have "\<pi> = \<pi>'"  "X = ([], st)"
@@ -5469,57 +5533,67 @@ next
   with Suc(1)[OF this(1) Suc.prems(1,2) this(2) refl] Suc.prems show ?case
     unfolding msteps_msteps_stateless[symmetric]
     by (auto simp: msteps_psnoc split_beta mstep_mverdicts
-        dest: verimon.verdicts_mono[THEN set_mp, rotated] intro!: wf_mstate_mstep)
+        dest: mono_monitor[THEN set_mp, rotated] intro!: wf_mstate_mstep)
 qed
 
-lemma wf_mstate_msteps_stateless:
+lemma (in verimon) wf_mstate_msteps_stateless:
   assumes "wf_mstate \<phi> \<pi> R st" "mem_restr R v" "\<pi> \<le> \<pi>'"
-  shows "(i, v) \<in> flatten_verdicts (msteps_stateless (pdrop (plen \<pi>) \<pi>') st) \<longleftrightarrow> (i, v) \<in> mverdicts \<phi> \<pi>' - mverdicts \<phi> \<pi>"
+  shows "(i, v) \<in> flatten_verdicts (msteps_stateless (pdrop (plen \<pi>) \<pi>') st) \<longleftrightarrow> (i, v) \<in> M \<pi>' - M \<pi>"
   using wf_mstate_msteps[OF assms refl] unfolding msteps_msteps_stateless by simp
 
-lemma wf_mstate_msteps_stateless_UNIV: "wf_mstate \<phi> \<pi> UNIV st \<Longrightarrow> \<pi> \<le> \<pi>' \<Longrightarrow>
-  flatten_verdicts (msteps_stateless (pdrop (plen \<pi>) \<pi>') st) = mverdicts \<phi> \<pi>' - mverdicts \<phi> \<pi>"
+lemma (in verimon) wf_mstate_msteps_stateless_UNIV: "wf_mstate \<phi> \<pi> UNIV st \<Longrightarrow> \<pi> \<le> \<pi>' \<Longrightarrow>
+  flatten_verdicts (msteps_stateless (pdrop (plen \<pi>) \<pi>') st) = M \<pi>' - M \<pi>"
   by (auto dest: wf_mstate_msteps_stateless[OF _ mem_restr_UNIV])
 
-lemma mverdicts_Nil: "mverdicts \<phi> pnil = {}"
-  unfolding verimon.verdicts_def
-  by (auto intro: ex_prefix_of)
+lemma (in verimon) mverdicts_Nil: "M pnil = {}"
+  by (simp add: M_def pprogress_eq)
+
+context maux
+begin
+
+lemma minit_safe_minit: "mmonitorable \<phi> \<Longrightarrow> minit_safe \<phi> = minit \<phi>"
+  unfolding minit_safe_def monitorable_formula_code by simp
 
 lemma wf_mstate_minit_safe: "mmonitorable \<phi> \<Longrightarrow> wf_mstate \<phi> pnil R (minit_safe \<phi>)"
   using wf_mstate_minit minit_safe_minit mmonitorable_def by metis
 
-lemma monitor_mverdicts: "mmonitorable \<phi> \<Longrightarrow> flatten_verdicts (monitor \<phi> \<pi>) = mverdicts \<phi> \<pi>"
-  unfolding monitor_def
+end
+
+lemma (in verimon) monitor_mverdicts: "flatten_verdicts (monitor \<phi> \<pi>) = M \<pi>"
+  unfolding monitor_def using monitorable
   by (subst wf_mstate_msteps_stateless_UNIV[OF wf_mstate_minit_safe, simplified])
     (auto simp: mmonitorable_def mverdicts_Nil)
 
 subsection \<open>Collected correctness results\<close>
 
+context verimon
+begin
+
 text \<open>We summarize the main results proved above.
 \begin{enumerate}
-\item The term @{term mverdicts} describes semantically the monitor's expected behaviour:
+\item The term @{term M} describes semantically the monitor's expected behaviour:
 \begin{itemize}
-\item @{thm[source] verimon.mono_monitor}: @{thm verimon.mono_monitor[no_vars]}
-\item @{thm[source] verimon.sound_monitor}: @{thm verimon.sound_monitor[no_vars]}
-\item @{thm[source] verimon.complete_monitor}: @{thm verimon.complete_monitor[no_vars]}
-\item @{thm[source] verimon.monitor_slice}: @{thm verimon.monitor_slice[no_vars]}
+\item @{thm[source] mono_monitor}: @{thm mono_monitor[no_vars]}
+\item @{thm[source] sound_monitor}: @{thm sound_monitor[no_vars]}
+\item @{thm[source] complete_monitor}: @{thm complete_monitor[no_vars]}
+\item @{thm[source] sliceable_M}: @{thm sliceable_M[no_vars]}
 \end{itemize}
 \item The executable monitor's online interface @{term minit_safe} and @{term mstep}
   preserves the invariant @{term wf_mstate} and produces the the verdicts according
-  to @{term mverdicts}:
+  to @{term M}:
 \begin{itemize}
 \item @{thm[source] wf_mstate_minit_safe}: @{thm wf_mstate_minit_safe[no_vars]}
 \item @{thm[source] wf_mstate_mstep}: @{thm wf_mstate_mstep[no_vars]}
 \item @{thm[source] mstep_mverdicts}: @{thm mstep_mverdicts[no_vars]}
 \end{itemize}
-\item The executable monitor's offline interface @{term monitor} implements @{term mverdicts}:
+\item The executable monitor's offline interface @{term monitor} implements @{term M}:
 \begin{itemize}
 \item @{thm[source] monitor_mverdicts}: @{thm monitor_mverdicts[no_vars]}
 \end{itemize}
 \end{enumerate}
 \<close>
 
-end \<comment> \<open>context @{locale maux}\<close>
+end
 
 (*<*)
 end

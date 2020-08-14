@@ -22,7 +22,7 @@ lemma "b \<noteq> 0 \<Longrightarrow> div_to_zero a b * b + mod_to_zero a b = a"
   by (auto simp: minus_mod_eq_mult_div[symmetric] div_minus_right mod_minus_right ac_simps)
 
 
-datatype event_data = EInt integer | EFloat double | EString string
+datatype event_data = EInt integer | EFloat double | EString String.literal
 
 derive (eq) ceq event_data
 derive ccompare event_data
@@ -37,7 +37,7 @@ fun less_eq_event_data where
 | "EFloat x \<le> EInt y \<longleftrightarrow> x \<le> double_of_integer y"
 | "EFloat x \<le> EFloat y \<longleftrightarrow> x \<le> y"
 | "EFloat _ \<le> EString _ \<longleftrightarrow> False"
-| "EString x \<le> EString y \<longleftrightarrow> lexordp_eq x y"
+| "EString x \<le> EString y \<longleftrightarrow> lexordp_eq (String.explode x) (String.explode y)"
 | "EString _ \<le> _ \<longleftrightarrow> False"
 
 definition less_event_data :: "event_data \<Rightarrow> event_data \<Rightarrow> bool"  where

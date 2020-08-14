@@ -615,4 +615,6 @@ lemma mmulti_join_correct:
     list_all2 (\<lambda>A X. restrict A z \<notin> X) A_neg (drop (length A_pos) L)"
   unfolding mmulti_join_link[OF assms] using mmulti_join'_correct[OF assms] .
 
+(*<*)
 end
+(*>*)
