@@ -9513,3 +9513,27 @@ abstract =
   Th&#257;bit ibn Qurra's Rule, Euler's Rule, te
   Riele's Rule and Borho's Rule with breeders.
 
+[Ordinal_Partitions]
+title = Ordinal Partitions
+author = Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
+topic = Mathematics/Combinatorics, Logic/Set theory
+date = 2020-08-03
+notify = lp15@cam.ac.uk
+abstract = 
+  The theory of partition relations concerns generalisations of
+  Ramsey's theorem. For any ordinal $\alpha$, write $\alpha \to
+  (\alpha, m)^2$ if for each function $f$ from unordered pairs of
+  elements of $\alpha$ into $\{0,1\}$, either there is a subset
+  $X\subseteq \alpha$ order-isomorphic to $\alpha$ such that
+  $f\{x,y\}=0$ for all $\{x,y\}\subseteq X$, or there is an $m$ element
+  set $Y\subseteq \alpha$ such that $f\{x,y\}=1$ for all
+  $\{x,y\}\subseteq Y$. (In both cases, with $\{x,y\}$ we require
+  $x\not=y$.) In particular, the infinite Ramsey theorem can be written
+  in this notation as $\omega \to (\omega, \omega)^2$, or if we
+  restrict $m$ to the positive integers as above, then $\omega \to
+  (\omega, m)^2$ for all $m$.  This entry formalises Larson's proof
+  of $\omega^\omega \to (\omega^\omega, m)^2$ along with a similar proof
+  of a result due to Specker: $\omega^2 \to (\omega^2, m)^2$. Also
+  proved is a necessary result by Erdős and Milner:
+  $\omega^{1+\alpha\cdot n} \to (\omega^{1+\alpha}, 2^n)^2$.
+

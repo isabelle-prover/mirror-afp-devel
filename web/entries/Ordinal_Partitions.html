@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>The Nash-Williams Partition Theorem - Archive of Formal Proofs
+<title>Ordinal Partitions - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,13 +74,9 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">T</font>he
+  <h1>          <font class="first">O</font>rdinal
   
-          <font class="first">N</font>ash-Williams
-  
-          <font class="first">P</font>artition
-  
-          <font class="first">T</font>heorem
+          <font class="first">P</font>artitions
   
 </h1>
   <p>&nbsp;</p>
@@ -89,7 +85,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">The Nash-Williams Partition Theorem</td>
+  <td class="data" width="80%">Ordinal Partitions</td>
 </tr>
 
 <tr>
@@ -105,31 +101,41 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2020-05-16</td>
+  <td class="data">2020-08-03</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-In 1965, Nash-Williams discovered a generalisation of the infinite
-form of Ramsey's theorem. Where the latter concerns infinite sets
-of n-element sets for some fixed n, the Nash-Williams theorem concerns
-infinite sets of finite sets (or lists) subject to a “no initial
-segment” condition. The present formalisation follows a
-monograph on Ramsey Spaces by Todorčević.</td>
+The theory of partition relations concerns generalisations of
+Ramsey's theorem. For any ordinal $\alpha$, write $\alpha \to
+(\alpha, m)^2$ if for each function $f$ from unordered pairs of
+elements of $\alpha$ into $\{0,1\}$, either there is a subset
+$X\subseteq \alpha$ order-isomorphic to $\alpha$ such that
+$f\{x,y\}=0$ for all $\{x,y\}\subseteq X$, or there is an $m$ element
+set $Y\subseteq \alpha$ such that $f\{x,y\}=1$ for all
+$\{x,y\}\subseteq Y$. (In both cases, with $\{x,y\}$ we require
+$x\not=y$.) In particular, the infinite Ramsey theorem can be written
+in this notation as $\omega \to (\omega, \omega)^2$, or if we
+restrict $m$ to the positive integers as above, then $\omega \to
+(\omega, m)^2$ for all $m$.  This entry formalises Larson's proof
+of $\omega^\omega \to (\omega^\omega, m)^2$ along with a similar proof
+of a result due to Specker: $\omega^2 \to (\omega^2, m)^2$. Also
+proved is a necessary result by Erdős and Milner:
+$\omega^{1+\alpha\cdot n} \to (\omega^{1+\alpha}, 2^n)^2$.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Nash_Williams-AFP,
+        <pre>@article{Ordinal_Partitions-AFP,
   author  = {Lawrence C. Paulson},
-  title   = {The Nash-Williams Partition Theorem},
+  title   = {Ordinal Partitions},
   journal = {Archive of Formal Proofs},
-  month   = may,
+  month   = aug,
   year    = 2020,
-  note    = {\url{http://isa-afp.org/entries/Nash_Williams.html},
+  note    = {\url{http://isa-afp.org/entries/Ordinal_Partitions.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -140,10 +146,10 @@ monograph on Ramsey Spaces by Todorčević.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Ordinal_Partitions.html">Ordinal_Partitions</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Nash_Williams.html">Nash_Williams</a>, <a href="ZFC_in_HOL.html">ZFC_in_HOL</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -155,17 +161,17 @@ monograph on Ramsey Spaces by Todorčević.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Nash_Williams/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Nash_Williams/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Ordinal_Partitions/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Ordinal_Partitions/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Nash_Williams/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Ordinal_Partitions/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Nash_Williams-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Ordinal_Partitions-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
