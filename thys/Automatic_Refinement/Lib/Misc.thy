@@ -3674,16 +3674,6 @@ lemma cyclic_subset:
     ultimately show ?thesis by (blast intro: wf_inv_image wf_subset)
   qed
 
-  lemma lex_prod_fstI: "\<lbrakk> (fst a, fst b)\<in>r \<rbrakk> \<Longrightarrow> (a,b)\<in>r<*lex*>s"
-    apply (cases a, cases b)
-    apply auto
-    done
-
-  lemma lex_prod_sndI: "\<lbrakk> fst a = fst b; (snd a, snd b)\<in>s \<rbrakk> \<Longrightarrow> (a,b)\<in>r<*lex*>s"
-    apply (cases a, cases b)
-    apply auto
-    done
-
   lemma wf_no_path: "Domain R \<inter> Range R = {} \<Longrightarrow> wf R"
     apply (rule wf_no_loop)
     by simp
