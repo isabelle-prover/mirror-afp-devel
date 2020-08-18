@@ -14,7 +14,7 @@ by (auto simp: Lex_inject)
 
 lemma Lex_unlex [simp, code abstype]:
   "Lex (unlex lxs) = lxs"
-  by (metis unlex_inverse)
+  by (fact unlex_inverse)
 
 lemma unlex_lexlist [simp, code abstract]:
   "unlex (lexlist xs) = xs"
@@ -32,7 +32,7 @@ lemma not_less_Nil [simp]: "\<not> list_less x []"
 lemma Nil_less_Cons [simp]: "list_less [] (a # x)"
   by (simp add: list_less_def)
 
-lemma Cons_less_Cons [simp]: "list_less (a # x) (b # y) \<longleftrightarrow> a < b \<or> a = b \<and> list_less x y"
+lemma Cons_less_Cons [simp]: "list_less (a # x) (b # y) \<longleftrightarrow> (if a = b then list_less x y else a < b)"
   by (simp add: list_less_def)
 
 lemma le_Nil [simp]: "list_le x [] \<longleftrightarrow> x = []"
@@ -41,19 +41,19 @@ lemma le_Nil [simp]: "list_le x [] \<longleftrightarrow> x = []"
 lemma Nil_le_Cons [simp]: "list_le [] x"
   unfolding list_le_def by (cases x) auto
 
-lemma Cons_le_Cons [simp]: "list_le (a # x) (b # y) \<longleftrightarrow> a < b \<or> a = b \<and> list_le x y"
+lemma Cons_le_Cons [simp]: "list_le (a # x) (b # y) \<longleftrightarrow> (if a = b then list_le x y else a < b)"
   unfolding list_le_def by auto
 
 lemma less_list_code [code]:
   "list_less xs [] \<longleftrightarrow> False"
   "list_less [] (x # xs) \<longleftrightarrow> True"
-  "list_less (x # xs) (y # ys) \<longleftrightarrow> x < y \<or> x = y \<and> list_less xs ys"
+  "list_less (x # xs) (y # ys) \<longleftrightarrow> (if x = y then list_less xs ys else x < y)"
   by simp_all
 
 lemma less_eq_list_code [code]:
   "list_le (x # xs) [] \<longleftrightarrow> False"
   "list_le [] xs \<longleftrightarrow> True"
-  "list_le (x # xs) (y # ys) \<longleftrightarrow> x < y \<or> x = y \<and> list_le xs ys"
+  "list_le (x # xs) (y # ys) \<longleftrightarrow> (if x = y then list_le xs ys else x < y)"
   by simp_all
 
 instantiation  lexlist :: (ord) ord
@@ -82,7 +82,7 @@ next
     apply (auto simp add: lexlist_ord_defs)
     apply (rule lexord_trans)
     apply (auto intro: transI)
-    done
+    using antisym_def order.asym by auto
 next
   fix xs ys :: "'a lexlist"
   assume "xs \<le> ys" and "ys \<le> xs"
@@ -92,18 +92,12 @@ next
     defer
     apply (rule lexord_trans)
     apply (auto intro: transI simp: unlex_inject)
-    done
+    using antisym_def by fastforce
 next
   fix xs ys :: "'a lexlist"
   show "xs < ys \<longleftrightarrow> xs \<le> ys \<and> \<not> ys \<le> xs"
     apply (auto simp add: lexlist_ord_defs)
-    defer
-    apply (rule lexord_irreflexive [THEN notE])
-    apply auto
-    apply (rule lexord_irreflexive [THEN notE])
-    defer
-    apply (rule lexord_trans)
-    apply (auto intro: transI)
+     apply (metis (no_types, lifting) antisym_def case_prodD case_prodI less_trans lexord_irreflexive lexord_trans mem_Collect_eq order.asym trans_def)+
     done
 qed
 

@@ -1788,26 +1788,24 @@ proof(rule_tac LE = inc_LE in halt_lemma2)
 next
   show "Q (f 0)"
     using inv_start
-    apply(simp add: f P Q steps.simps inc_inv.simps)
-    done
+    by(simp add: f P Q steps.simps inc_inv.simps)
 next
   show "\<not> P (f 0)"
-    apply(simp add: f P steps.simps)
-    done
+    by(simp add: f P steps.simps)
 next
   have "\<not> P (f n) \<and> Q (f n) \<Longrightarrow> Q (f (Suc n)) \<and> (f (Suc n), f n) 
         \<in> inc_LE" for n
   proof(simp add: f, 
       cases "steps (Suc 0, l, r) (tinc_b, 0) n", simp add: P)
     fix n a b c
-    assume "a \<noteq> 10 \<and> Q (a, b, c)"
+    assume 10: "a \<noteq> 10 \<and> Q (a, b, c)"
     thus  "Q (step (a, b, c) (tinc_b, 0)) \<and> (step (a, b, c) (tinc_b, 0), a, b, c) \<in> inc_LE"
       apply(simp add:Q)
       apply(simp add: inc_inv.simps)
       apply(cases c; cases "hd c")
          apply(auto simp: Let_def step.simps tinc_b_def split: if_splits) (* ~ 12 sec *)
                           apply(simp_all add: inc_inv.simps inc_LE_def lex_triple_def lex_pair_def
-          inc_measure_def numeral)         
+          inc_measure_def numeral)
       done
   qed
   thus "\<forall>n. \<not> P (f n) \<and> Q (f n) \<longrightarrow> Q (f (Suc n)) \<and> (f (Suc n), f n) \<in> inc_LE" by blast
