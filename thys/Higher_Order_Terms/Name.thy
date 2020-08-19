@@ -47,7 +47,7 @@ next
   then show "xs \<le> zs"
     apply (auto simp add: less_eq_name_def less_name_def)
     apply (rule lexord_trans)
-    apply (auto intro: transI)
+       apply (auto intro: transI simp: antisym_def)
     done
 next
   fix xs ys :: "name"
@@ -57,7 +57,7 @@ next
     apply (rule lexord_irreflexive [THEN notE])
     defer
     apply (rule lexord_trans)
-    apply (auto intro: transI)
+    apply (auto intro: transI simp: antisym_def)
     done
 next
   fix xs ys :: "name"
@@ -69,7 +69,7 @@ next
     apply (rule lexord_irreflexive [THEN notE])
     defer
     apply (rule lexord_trans)
-    apply (auto intro: transI)
+    apply (auto intro: transI simp: antisym_def)
     done
 qed
 

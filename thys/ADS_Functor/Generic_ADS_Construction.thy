@@ -341,6 +341,9 @@ lemma wfP_subterm_T: "wfP (\<lambda>x y. x \<in> set3_F\<^sub>m (the_T\<^sub>m y
     by(induct x)(auto intro: IH)
   done
 
+lemma irrefl_subterm_T: "x \<in> set3_F\<^sub>m y \<Longrightarrow> y \<noteq> the_T\<^sub>m x"
+  using wfP_subterm_T by (auto simp: wfP_def elim!: wf_irrefl)
+
 context
   fixes rh :: "('a\<^sub>m, 'a\<^sub>h) hash"
   fixes m :: "'a\<^sub>m merge"
@@ -351,7 +354,7 @@ function merge_T :: "('a\<^sub>m, 'a\<^sub>h) T\<^sub>m merge" where
   by pat_completeness auto
 termination
   apply(relation "{(x, y). x \<in> set3_F\<^sub>m (the_T\<^sub>m y)} <*lex*> {(x, y). x \<in> set3_F\<^sub>m (the_T\<^sub>m y)}")
-   apply(auto simp add: wfP_def[symmetric] wfP_subterm_T)
+   apply(auto simp add: wfP_def[symmetric] wfP_subterm_T dest!: irrefl_subterm_T)
   done
 
 lemma merge_on_T [locale_witness]:

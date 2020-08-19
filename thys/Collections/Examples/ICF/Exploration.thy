@@ -117,7 +117,7 @@ proof -
       hence "R``{\<sigma>} \<subseteq> R\<^sup>*``\<Sigma>i" 
         by (auto intro: rtrancl_into_rtrancl)
       with S(3) SSS have "\<Sigma>' \<subseteq> R\<^sup>*``\<Sigma>i" by auto
-      ultimately show ?thesis by simp
+      ultimately show ?thesis by force
     qed
   qed
   ultimately show ?thesis by (auto intro: wf_subset)

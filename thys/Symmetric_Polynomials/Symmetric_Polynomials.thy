@@ -1867,7 +1867,7 @@ proof (rule wf_subset)
     moreover have "f m2 = as @ [lookup m2 k] @ bs2" unfolding f_def
       using k by (subst decomp) (simp add: as_def bs2_def)
     ultimately show "(m1, m2) \<in> inv_image (lexn {(x,y). x < y} n) f"
-      using k(1) \<open>k < n\<close> unfolding lexn_conv by auto
+      using k(1) \<open>k < n\<close> unfolding lexn_conv by fastforce
   qed
 qed
 

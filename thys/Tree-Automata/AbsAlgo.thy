@@ -281,7 +281,7 @@ proof -
       "Q' \<subseteq> b_accessible \<delta>" 
       by auto
     ultimately have ?thesis 
-      by (simp add: br_termrel_def)
+      by (auto simp add: br_termrel_def)
   } ultimately show ?thesis by blast
 qed
 
