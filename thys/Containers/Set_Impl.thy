@@ -973,7 +973,7 @@ lemma cless_set_code [code]:
   "cless_set A B \<longleftrightarrow>
   (case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''cless_set: ccompare = None'') (\<lambda>_. cless_set A B)
               | Some c \<Rightarrow>
-     if finite A \<and> finite B then order.lexordp (\<lambda>x y. lt_of_comp c y x) (csorted_list_of_set A) (csorted_list_of_set B)
+     if finite A \<and> finite B then ord.lexordp (\<lambda>x y. lt_of_comp c y x) (csorted_list_of_set A) (csorted_list_of_set B)
      else Code.abort (STR ''cless_set: infinite set'') (\<lambda>_. cless_set A B))"
   (is "?fin_fin")
   and cless_set_Complement2 [set_complement_code]:
@@ -1001,7 +1001,7 @@ lemma cless_set_code [code]:
   and
   "cless_set (RBT_set rbt) (RBT_set rbt') \<longleftrightarrow> 
   (case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''cless_set RBT_set RBT_set: ccompare = None'') (\<lambda>_. cless_set (RBT_set rbt) (RBT_set rbt'))
-             | Some c \<Rightarrow> order.lexord_fusion (\<lambda>x y. lt_of_comp c y x) rbt_keys_generator rbt_keys_generator (RBT_Set2.init rbt) (RBT_Set2.init rbt'))"
+             | Some c \<Rightarrow> ord.lexord_fusion (\<lambda>x y. lt_of_comp c y x) rbt_keys_generator rbt_keys_generator (RBT_Set2.init rbt) (RBT_Set2.init rbt'))"
     (is ?rbt_rbt)
   and cless_set_rbt_Complement2 [set_complement_code]:
   "cless_set (RBT_set rbt1) (Complement (RBT_set rbt2)) \<longleftrightarrow>
@@ -1023,7 +1023,7 @@ proof -
     le_of_comp_of_ords_linorder[OF ID_ccompare]
     lt_of_comp_of_ords
     finite_subset[OF subset_UNIV] ccompare_set_def ID_Some
-    order.lexord_fusion_def 
+    ord.lexord_fusion_def 
     proper_intrvl.Compl_set_less_aux_fusion_def
     proper_intrvl.set_less_aux_Compl_fusion_def
     unfoldr_rbt_keys_generator
@@ -1037,9 +1037,7 @@ proof -
     linorder_proper_interval.Compl1_set_less_aux_conv_Compl_set_less_aux[OF ID_ccompare_interval, symmetric]
 
   show ?Compl_Compl by simp
-  show ?rbt_rbt
-    apply (subst order.lexord_fusion_def)
-    apply (auto simp: )
+   show ?rbt_rbt
     by auto
   show ?rbt_Compl by(cases "finite (UNIV :: 'b set)") auto
   show ?Compl_rbt by(cases "finite (UNIV :: 'b set)") auto
@@ -1061,7 +1059,7 @@ lemma cless_eq_set_code [code]:
   (case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''cless_eq_set: ccompare = None'') (\<lambda>_. cless_eq_set A B)
               | Some c \<Rightarrow>
      if finite A \<and> finite B then 
-        order.lexordp_eq (\<lambda>x y. lt_of_comp c y x) (csorted_list_of_set A) (csorted_list_of_set B)
+        ord.lexordp_eq (\<lambda>x y. lt_of_comp c y x) (csorted_list_of_set A) (csorted_list_of_set B)
      else Code.abort (STR ''cless_eq_set: infinite set'') (\<lambda>_. cless_eq_set A B))"
   (is "?fin_fin")
   and cless_eq_set_Complement2 [set_complement_code]:
@@ -1090,7 +1088,7 @@ lemma cless_eq_set_code [code]:
 
   "cless_eq_set (RBT_set rbt) (RBT_set rbt') \<longleftrightarrow> 
   (case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''cless_eq_set RBT_set RBT_set: ccompare = None'') (\<lambda>_. cless_eq_set (RBT_set rbt) (RBT_set rbt'))
-             | Some c \<Rightarrow> order.lexord_eq_fusion (\<lambda>x y. lt_of_comp c y x) rbt_keys_generator rbt_keys_generator (RBT_Set2.init rbt) (RBT_Set2.init rbt'))" 
+             | Some c \<Rightarrow> ord.lexord_eq_fusion (\<lambda>x y. lt_of_comp c y x) rbt_keys_generator rbt_keys_generator (RBT_Set2.init rbt) (RBT_Set2.init rbt'))" 
     (is ?rbt_rbt)
   and cless_eq_set_rbt_Complement2 [set_complement_code]:
   "cless_eq_set (RBT_set rbt1) (Complement (RBT_set rbt2)) \<longleftrightarrow>
@@ -1111,7 +1109,7 @@ proof -
     and [simp] = 
     le_of_comp_set_less_eq
     finite_subset[OF subset_UNIV] ccompare_set_def ID_Some
-    order.lexord_eq_fusion_def proper_intrvl.Compl_set_less_eq_aux_fusion_def
+    ord.lexord_eq_fusion_def proper_intrvl.Compl_set_less_eq_aux_fusion_def
     proper_intrvl.set_less_eq_aux_Compl_fusion_def
     unfoldr_rbt_keys_generator
     RBT_set_def sorted_RBT_Set_keys member_conv_keys

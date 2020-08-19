@@ -341,15 +341,15 @@ lemma sorted_Cons_Min: "sorted (x # xs) \<Longrightarrow> Min (insert x (set xs)
 
 lemma set_less_aux_code:
   "\<lbrakk> sorted xs; distinct xs; sorted ys; distinct ys \<rbrakk>
-  \<Longrightarrow> set xs \<sqsubset>' set ys \<longleftrightarrow> order.lexordp (>) xs ys"
+  \<Longrightarrow> set xs \<sqsubset>' set ys \<longleftrightarrow> ord.lexordp (>) xs ys"
   apply(induct xs ys rule: list_induct2')
-     apply(simp_all add: order.lexordp_simps[OF local.dual_order] empty_set_less_aux_finite_iff sorted_Cons_Min set_less_aux_rec neq_Nil_conv)
+     apply(simp_all add: empty_set_less_aux_finite_iff sorted_Cons_Min set_less_aux_rec neq_Nil_conv)
   apply(auto cong: conj_cong)
   done
 
 lemma set_less_eq_aux_code:
   assumes "sorted xs" "distinct xs" "sorted ys" "distinct ys"
-  shows "set xs \<sqsubseteq>' set ys \<longleftrightarrow> order.lexordp_eq (>) xs ys"
+  shows "set xs \<sqsubseteq>' set ys \<longleftrightarrow> ord.lexordp_eq (>) xs ys"
 proof -
   have dual: "class.linorder (\<ge>) (>)"
     by(rule linorder.dual_linorder) unfold_locales

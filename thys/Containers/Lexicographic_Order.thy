@@ -45,11 +45,11 @@ next
   case Cons thus ?case by(cases ys)(simp_all, safe, simp)
 qed
 
-end
+end                
 
 subsection \<open>Setup for list fusion\<close>
 
-context order begin
+context ord begin
 
 definition lexord_fusion :: "('a, 's1) generator \<Rightarrow> ('a, 's2) generator \<Rightarrow> 's1 \<Rightarrow> 's2 \<Rightarrow> bool"
 where [code del]: "lexord_fusion g1 g2 s1 s2 = lexordp (list.unfoldr g1 s1) (list.unfoldr g2 s2)"
@@ -82,11 +82,11 @@ by(subst (1 2) list.unfoldr.simps)(auto split: prod.split_asm)
 end
 
 lemmas [code] =
-  lexord_fusion_code order.lexord_fusion_code
-  lexord_eq_fusion_code order.lexord_eq_fusion_code
+  lexord_fusion_code ord.lexord_fusion_code
+  lexord_eq_fusion_code ord.lexord_eq_fusion_code
 
 lemmas [symmetric, code_unfold] =
-  lexord_fusion_def order.lexord_fusion_def
-  lexord_eq_fusion_def order.lexord_eq_fusion_def
+  lexord_fusion_def ord.lexord_fusion_def
+  lexord_eq_fusion_def ord.lexord_eq_fusion_def
 
 end
