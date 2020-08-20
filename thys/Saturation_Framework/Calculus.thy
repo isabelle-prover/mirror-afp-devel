@@ -1,5 +1,5 @@
 (*  Title:       Calculi Based on a Redundancy Criterion
- *   Author:      Sophie Tourret <stourret at mpi-inf.mpg.de>, 2018-2020 *)
+ *  Author:      Sophie Tourret <stourret at mpi-inf.mpg.de>, 2018-2020 *)
 
 section \<open>Calculi Based on a Redundancy Criterion\<close>
 
@@ -330,7 +330,7 @@ locale statically_complete_calculus = calculus +
   assumes statically_complete: "B \<in> Bot \<Longrightarrow> saturated N \<Longrightarrow> N \<Turnstile> {B} \<Longrightarrow> \<exists>B'\<in>Bot. B' \<in> N"
 begin
 
-lemma dynamically__complete_Liminf:
+lemma dynamically_complete_Liminf:
   fixes B D
   assumes
     bot_elem: \<open>B \<in> Bot\<close> and
@@ -361,7 +361,7 @@ end
 
 locale dynamically_complete_calculus = calculus +
   assumes
-    dynamically__complete: "B \<in> Bot \<Longrightarrow> chain (\<rhd>Red) D \<Longrightarrow> fair D \<Longrightarrow> lhd D \<Turnstile> {B} \<Longrightarrow>
+    dynamically_complete: "B \<in> Bot \<Longrightarrow> chain (\<rhd>Red) D \<Longrightarrow> fair D \<Longrightarrow> lhd D \<Turnstile> {B} \<Longrightarrow>
       \<exists>i \<in> {i. enat i < llength D}. \<exists>B'\<in>Bot. B' \<in> lnth D i"
 begin
 
@@ -381,7 +381,7 @@ proof
   have "Sup_llist (lmap Red_I D) = Red_I N" by (simp add: D_def)
   then have fair_D: "fair D" using saturated_N by (simp add: fair_def saturated_def liminf_is_N)
   obtain i B' where B'_is_bot: \<open>B' \<in> Bot\<close> and B'_in: "B' \<in> lnth D i" and \<open>i < llength D\<close>
-    using dynamically__complete[of B D] bot_elem fair_D head_D saturated_N deriv_D refut_N
+    using dynamically_complete[of B D] bot_elem fair_D head_D saturated_N deriv_D refut_N
     by auto
   then have "i = 0"
     by (auto simp: D_def enat_0_iff)
@@ -401,7 +401,7 @@ proof
     \<open>fair D\<close> and
     \<open>lhd D \<Turnstile> {B}\<close>
   then have \<open>\<exists>B'\<in>Bot. B' \<in> Liminf_llist D\<close>
-    by (rule dynamically__complete_Liminf)
+    by (rule dynamically_complete_Liminf)
   then show \<open>\<exists>i\<in>{i. enat i < llength D}. \<exists>B'\<in>Bot. B' \<in> lnth D i\<close>
     unfolding Liminf_llist_def by auto
 qed

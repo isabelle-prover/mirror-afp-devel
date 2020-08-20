@@ -689,7 +689,7 @@ proof -
     using labeled_entailment_lifting bot_entailed lhd_is by fastforce
   have fair: "fair D" using gc_fair[OF deriv init_state final_state] .
   then show ?thesis
-    using dynamically__complete_Liminf[OF labeled_b_in gc_to_red[OF deriv] fair
+    using dynamically_complete_Liminf[OF labeled_b_in gc_to_red[OF deriv] fair
         labeled_bot_entailed]
     by blast
 qed
@@ -1147,7 +1147,7 @@ proof -
   have "fair (lmap snd D)"
     using lgc_fair[OF deriv init_state final_state no_prems_init_active final_schedule] .
   then show ?thesis
-    using dynamically__complete_Liminf labeled_b_in lgc_to_red[OF deriv]
+    using dynamically_complete_Liminf labeled_b_in lgc_to_red[OF deriv]
       labeled_bot_entailed simp_snd_lmap std_Red_I_eq
     by presburger
 qed

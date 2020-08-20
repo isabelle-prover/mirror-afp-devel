@@ -1,5 +1,5 @@
 (*  Title:       Calculi Based on the Intersection of Redundancy Criteria
- *   Author:      Sophie Tourret <stourret at mpi-inf.mpg.de>, 2018-2020 *)
+ *  Author:      Sophie Tourret <stourret at mpi-inf.mpg.de>, 2018-2020 *)
 
 section \<open>Calculi Based on the Intersection of Redundancy Criteria\<close>
 
