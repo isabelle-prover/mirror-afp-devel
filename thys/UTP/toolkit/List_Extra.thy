@@ -410,21 +410,6 @@ lemma butlast_eq_if_eq_length_and_prefix:
   shows   "(butlast s) = (butlast z)"
   using assms by (auto simp add:strict_prefix_eq_exists)
 
-lemma prefix_imp_length_lteq:
-  assumes "prefix s t"
-  shows "length s \<le> length t"
-  using assms by (simp add: Sublist.prefix_length_le)
-
-lemma prefix_imp_length_not_gt:
-  assumes "prefix s t"
-  shows "\<not> length t < length s"
-  using assms by (simp add: Sublist.prefix_length_le leD)
-
-lemma prefix_and_eq_length_imp_eq_list:
-  assumes "prefix s t" and "length t = length s"
-  shows "s=t"
-  using assms by (simp add: prefix_length_eq)
-
 lemma butlast_prefix_imp_length_not_gt:
   assumes "length s > 0" "strict_prefix (butlast s) t"
   shows "\<not> (length t < length s)"
@@ -491,11 +476,11 @@ proof (induct xs\<^sub>2 arbitrary: xs\<^sub>1)
   from hyps(3) obtain x\<^sub>1 xs\<^sub>1' where xs\<^sub>1: "xs\<^sub>1 = x\<^sub>1 # xs\<^sub>1'" "length(xs\<^sub>1') = length(xs\<^sub>2')"
     by (auto, metis Suc_length_conv)
   with hyps(2) have xcases: "(x\<^sub>1, x\<^sub>2) \<in> R \<or> (xs\<^sub>1' @ ys\<^sub>1, xs\<^sub>2' @ ys\<^sub>2) \<in> lexord R"
-    by (auto)
+    by (auto split: if_split_asm)
   show ?case
   proof (cases "(x\<^sub>1, x\<^sub>2) \<in> R")
     case True with xs\<^sub>1 show ?thesis
-      by (auto)
+      using Cons.hyps hyps(2) by auto
   next
     case False
     with xcases have "(xs\<^sub>1' @ ys\<^sub>1, xs\<^sub>2' @ ys\<^sub>2) \<in> lexord R"
@@ -503,7 +488,7 @@ proof (induct xs\<^sub>2 arbitrary: xs\<^sub>1)
     with hyps(1) xs\<^sub>1 have dichot: "(xs\<^sub>1', xs\<^sub>2') \<in> lexord R \<or> (xs\<^sub>1' = xs\<^sub>2' \<and> (ys\<^sub>1, ys\<^sub>2) \<in> lexord R)"
       by (auto)
     have "x\<^sub>1 = x\<^sub>2"
-      using False hyps(2) xs\<^sub>1(1) by auto
+      using False hyps(2) xs\<^sub>1(1) by (auto split: if_split_asm)
     with dichot xs\<^sub>1 show ?thesis
       by (simp)
   qed
@@ -512,48 +497,53 @@ next
     by auto
 qed
 
-lemma strict_prefix_lexord_rel:
-  "strict_prefix xs ys \<Longrightarrow> (xs, ys) \<in> lexord R"
-  by (metis Sublist.strict_prefixE' lexord_append_rightI)
-
-lemma strict_prefix_lexord_left:
-  assumes "trans R" "(xs, ys) \<in> lexord R" "strict_prefix xs' xs"
+lemma prefix_lexord_left:
+  assumes "(xs, ys) \<in> lexord R" "prefix xs' xs"
   shows "(xs', ys) \<in> lexord R"
-  by (metis assms lexord_trans strict_prefix_lexord_rel)
+  using assms
+  apply (auto simp: lexord_def prefix_def)
+   apply (metis Nil_is_append_conv list.exhaust)
+  apply (simp add: append_eq_append_conv2)
+  apply (drule_tac x="u" in spec)
+  apply (drule_tac x="a" in spec)
+  apply (drule_tac x="b" in spec)
+  apply (auto simp: )
+   apply (metis hd_Cons_tl hd_append list.sel(1) self_append_conv2)
+  apply (metis Nil_is_append_conv hd_Cons_tl)
+  done
 
 lemma prefix_lexord_right:
-  assumes "trans R" "(xs, ys) \<in> lexord R" "strict_prefix ys ys'"
+  assumes "(xs, ys) \<in> lexord R" "prefix ys ys'"
   shows "(xs, ys') \<in> lexord R"
-  by (metis assms lexord_trans strict_prefix_lexord_rel)
+  using assms by (fastforce simp: lexord_def prefix_def)
+
 
 lemma lexord_eq_length:
   assumes "(xs, ys) \<in> lexord R" "length xs = length ys"
-  shows "\<exists> i. (xs!i, ys!i) \<in> R \<and> i < length xs \<and> (\<forall> j<i. xs!j = ys!j)"
+  shows "\<exists>i. (xs!i, ys!i) \<in> R \<and> xs!i\<noteq>ys!i \<and> i < length xs \<and> (\<forall> j<i. xs!j = ys!j)"
 using assms proof (induct xs arbitrary: ys)
   case (Cons x xs) note hyps = this
   then obtain y ys' where ys: "ys = y # ys'" "length ys' = length xs"
     by (metis Suc_length_conv)
   show ?case
-  proof (cases "(x, y) \<in> R")
-    case True with ys show ?thesis
+  proof (cases "(x,y) \<in> R \<and> x\<noteq>y")
+    case True with ys Cons show ?thesis
       by (rule_tac x="0" in exI, simp)
   next
     case False
     with ys hyps(2) have xy: "x = y" "(xs, ys') \<in> lexord R"
-      by auto
-    with hyps(1,3) ys obtain i where "(xs!i, ys'!i) \<in> R" "i < length xs" "(\<forall> j<i. xs!j = ys'!j)"
+      by (auto split: if_split_asm)
+    with hyps(1,3) ys obtain i where "(xs!i, ys'!i) \<in> R" "xs!i\<noteq>ys'!i" "i < length xs" "(\<forall> j<i. xs!j = ys'!j)"
       by force
     with xy ys show ?thesis
-      apply (rule_tac x="Suc i" in exI)
-      apply (auto simp add: less_Suc_eq_0_disj)
-    done
+      by (rule_tac x="Suc i" in exI) (auto simp add: less_Suc_eq_0_disj)
   qed
 next
   case Nil thus ?case by (auto)
 qed
 
 lemma lexord_intro_elems:
-  assumes "length xs > i" "length ys > i" "(xs!i, ys!i) \<in> R" "\<forall> j<i. xs!j = ys!j"
+  assumes "length xs > i" "length ys > i" "(xs!i, ys!i) \<in> R" "xs!i \<noteq> ys!i" "\<forall>j<i. xs!j = ys!j" 
   shows "(xs, ys) \<in> lexord R"
 using assms proof (induct i arbitrary: xs ys)
   case 0 thus ?case
@@ -562,8 +552,8 @@ next
   case (Suc i) note hyps = this
   then obtain x' y' xs' ys' where "xs = x' # xs'" "ys = y' # ys'"
     by (metis Suc_length_conv Suc_lessE)
-  moreover with hyps(5) have "\<forall>j<i. xs' ! j = ys' ! j"
-    by (auto)
+  moreover with hyps(5,6) have "\<forall>j<i. xs' ! j = ys' ! j"
+    using hyps(6) by auto
   ultimately show ?case using hyps
     by (auto)
 qed
@@ -831,21 +821,10 @@ lemma tl_list_minus_butlast_empty:
   shows "tl (t - (butlast s)) = []"
   using assms by (simp add: list_minus_butlast_eq_butlast_list)
 
-lemma concat_minus_list_concat_butlast_eq_list_minus_butlast:
-  assumes "prefix (butlast u) s"
-  shows "(t @ s) - (t @ (butlast u)) = s - (butlast u)"
-  using assms by (metis append_assoc prefix_concat_minus append_minus)
-
 lemma tl_list_minus_butlast_eq_empty:
   assumes "strict_prefix (butlast s) t" and "length s = length t"
   shows "tl (t - (butlast s)) = []"
   using assms by (metis list.sel(3) list_minus_butlast_eq_butlast_list)
-
-(* this can be shown using length_tl, but care is needed when list is empty? *)
-lemma prefix_length_tl_minus:
-  assumes "strict_prefix s t"
-  shows "length (tl (t-s)) = (length (t-s)) - 1"
-  by (auto)
 
 lemma length_list_minus:
   assumes "strict_prefix s t"

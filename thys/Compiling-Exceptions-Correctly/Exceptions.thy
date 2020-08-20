@@ -49,7 +49,10 @@ apply(induct cs)
  apply simp
 apply(case_tac a)
 apply auto
-done
+  done
+
+lemma jump_neq [simp]: "jump l cs \<noteq> Jump l # cs"
+  using size_jump1 [of l cs] by auto
 
 function (sequential) exec2 :: "bool \<Rightarrow> code \<Rightarrow> stack \<Rightarrow> stack" where
   "exec2 True [] s = s"
@@ -66,9 +69,11 @@ function (sequential) exec2 :: "bool \<Rightarrow> code \<Rightarrow> stack \<Ri
 | "exec2 False cs (HAN l # s) = exec2 True (jump l cs) s"
 by pat_completeness auto
 
-termination by (relation
+termination 
+  apply (relation
   "inv_image (measure(%cs. size cs) <*lex*> measure(%s. size s)) (%(b,cs,s). (cs,s))")
-    (auto simp add: size_jump1 size_jump2)
+  using size_jump2 apply(force simp add: size_jump1)+
+  done
 
 abbreviation "exec \<equiv> exec2 True"
 abbreviation "unwind \<equiv> exec2 False"

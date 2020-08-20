@@ -17,19 +17,6 @@ lemma lex_lengthD: "(x, y) \<in> lex P \<Longrightarrow> length x = length y"
   by (auto simp: lexord_lex)
 
 (*TODO: move*)
-lemma lexI:
-  assumes "length ys = length xs" and "i < length xs"
-    and "take i xs = take i ys" and "(xs ! i, ys ! i) \<in> r"
-  shows "(xs, ys) \<in> lex r"
-proof -
-  have "xs = take i xs @ xs ! i # drop (Suc i) xs"
-    and "ys = take i ys @ ys ! i # drop (Suc i) ys"
-    using assms by (metis id_take_nth_drop)+
-  then show ?thesis
-    using assms by (auto simp: lex_def lexn_conv)
-qed
-
-(*TODO: move*)
 lemma lex_take_index:
   assumes "(xs, ys) \<in> lex r"
   obtains i where "length ys = length xs"
@@ -637,19 +624,7 @@ qed
 lemma lex_trans:
   assumes "x <\<^sub>l\<^sub>e\<^sub>x y" and "y <\<^sub>l\<^sub>e\<^sub>x z"
   shows "x <\<^sub>l\<^sub>e\<^sub>x z"
-proof -
-  from assms obtain i and j where "length y = length x" and "length z = length x"
-     and "i < length x" and "j < length x"
-     and "take i x = take i y" and "take j y = take j z"
-     and "x ! i < y ! i" and "y ! j < z ! j" by (fastforce elim!: lex_take_index)
-  then show ?thesis
-    apply (intro lexI [where i = "min i j"])
-       apply (auto)
-     apply (metis min.commute take_take)
-    apply (auto simp: min_def)
-     apply (metis dual_order.order_iff_strict dual_order.trans not_le nth_take)
-    by (metis not_less nth_take)
-qed
+  using assms by (auto simp: antisym_def intro: transD [OF lex_transI])
 
 lemma rlex_trans:
   assumes "x <\<^sub>r\<^sub>l\<^sub>e\<^sub>x y" and "y <\<^sub>r\<^sub>l\<^sub>e\<^sub>x z"
@@ -661,7 +636,7 @@ lemma lex_append_rightD:
     and "\<not> xs <\<^sub>l\<^sub>e\<^sub>x ys"
   shows "ys = xs \<and> us <\<^sub>l\<^sub>e\<^sub>x vs"
   using assms(2,1,3)
-  by (induct xs ys rule: list_induct2) simp_all
+  by (induct xs ys rule: list_induct2) auto
 
 lemma rlex_Cons:
   "x # xs <\<^sub>r\<^sub>l\<^sub>e\<^sub>x y # ys \<longleftrightarrow> xs <\<^sub>r\<^sub>l\<^sub>e\<^sub>x ys \<or> ys = xs \<and> x < y" (is "?A = ?B")
