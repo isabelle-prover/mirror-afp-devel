@@ -354,7 +354,7 @@ function merge_T :: "('a\<^sub>m, 'a\<^sub>h) T\<^sub>m merge" where
   by pat_completeness auto
 termination
   apply(relation "{(x, y). x \<in> set3_F\<^sub>m (the_T\<^sub>m y)} <*lex*> {(x, y). x \<in> set3_F\<^sub>m (the_T\<^sub>m y)}")
-   apply(auto simp add: wfP_def[symmetric] wfP_subterm_T dest!: irrefl_subterm_T)
+   apply(auto simp add: wfP_def[symmetric] wfP_subterm_T)
   done
 
 lemma merge_on_T [locale_witness]:

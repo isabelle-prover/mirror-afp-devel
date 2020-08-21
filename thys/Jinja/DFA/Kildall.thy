@@ -353,10 +353,6 @@ proof -
 qed
 (*>*)
 
-(*for lex*)
-lemma ne_lesssub_iff [simp]: "y\<noteq>x \<and> x [\<sqsubset>\<^sub>r] y \<longleftrightarrow> x [\<sqsubset>\<^sub>r] y"
-  by (meson lesssub_def)
-
 lemma iter_properties[rule_format]: assumes "Semilat A r f"
 shows "\<lbrakk> acc r; pres_type step n A; mono r step n A;
      bounded step n; \<forall>p\<in>w0. p < n; ss0 \<in> list n A;

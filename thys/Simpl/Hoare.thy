@@ -312,7 +312,7 @@ lemma in_measure_iff: "(x,y) \<in> measure f = (f x < f y)"
   by (simp add: measure_def inv_image_def)
 
 lemma in_lex_iff:
-  "((a,b),(x,y)) \<in> r <*lex*> s = (a\<noteq>x \<and> (a,x) \<in> r \<or> (a=x \<and> (b,y)\<in>s))"
+  "((a,b),(x,y)) \<in> r <*lex*> s = ((a,x) \<in> r \<or> (a=x \<and> (b,y)\<in>s))"
   by (simp add: lex_prod_def)
 
 lemma in_mlex_iff:
@@ -337,7 +337,7 @@ proof (rule ccontr)
     f (g (Suc i)) = f (g i) \<and> (g (Suc i), g i) \<in> r"
     by (simp add: measure_lex_prod_def')
   hence le_g: "\<forall>i. f (g (Suc i)) \<le> f (g i)"
-    by (auto simp add: order_le_less)
+    by (auto simp add: in_measure_iff order_le_less)
   have "wf (measure f)"
     by simp
   hence " \<forall>Q. (\<exists>x. x \<in> Q) \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. (y, z) \<in> measure f \<longrightarrow> y \<notin> Q)"
@@ -346,8 +346,9 @@ proof (rule ccontr)
   have "\<exists>z. z \<in> range g \<and> (\<forall>y. (y, z) \<in> measure f \<longrightarrow> y \<notin> range g)"
     by auto
   then obtain z where
-    z: "z \<in> range g" and min_z: "\<forall>y. f y < f z \<longrightarrow> y \<notin> range g"
-    by auto
+    z: "z \<in> range g" and
+    min_z: "\<forall>y. f y < f z \<longrightarrow> y \<notin> range g"
+    by (auto simp add: in_measure_iff)
   from z obtain k where
     k: "z = g k"
     by auto
@@ -399,7 +400,7 @@ proof (rule ccontr)
   hence "\<forall>i. k \<le> i \<longrightarrow> f (g (Suc i)) = f (g i)"
     by simp
   with g have "\<forall>i. k \<le> i \<longrightarrow> (g (Suc i),(g i)) \<in> r"
-    by (auto simp add: order_less_le)
+    by (auto simp add: in_measure_iff order_less_le )
   hence "\<forall>i. (g (Suc (i+k)),(g (i+k))) \<in> r"
     by simp
   then

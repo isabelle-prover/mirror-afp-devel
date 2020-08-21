@@ -476,11 +476,11 @@ proof (induct xs\<^sub>2 arbitrary: xs\<^sub>1)
   from hyps(3) obtain x\<^sub>1 xs\<^sub>1' where xs\<^sub>1: "xs\<^sub>1 = x\<^sub>1 # xs\<^sub>1'" "length(xs\<^sub>1') = length(xs\<^sub>2')"
     by (auto, metis Suc_length_conv)
   with hyps(2) have xcases: "(x\<^sub>1, x\<^sub>2) \<in> R \<or> (xs\<^sub>1' @ ys\<^sub>1, xs\<^sub>2' @ ys\<^sub>2) \<in> lexord R"
-    by (auto split: if_split_asm)
+    by (auto)
   show ?case
   proof (cases "(x\<^sub>1, x\<^sub>2) \<in> R")
     case True with xs\<^sub>1 show ?thesis
-      using Cons.hyps hyps(2) by auto
+      by (auto)
   next
     case False
     with xcases have "(xs\<^sub>1' @ ys\<^sub>1, xs\<^sub>2' @ ys\<^sub>2) \<in> lexord R"
@@ -488,7 +488,7 @@ proof (induct xs\<^sub>2 arbitrary: xs\<^sub>1)
     with hyps(1) xs\<^sub>1 have dichot: "(xs\<^sub>1', xs\<^sub>2') \<in> lexord R \<or> (xs\<^sub>1' = xs\<^sub>2' \<and> (ys\<^sub>1, ys\<^sub>2) \<in> lexord R)"
       by (auto)
     have "x\<^sub>1 = x\<^sub>2"
-      using False hyps(2) xs\<^sub>1(1) by (auto split: if_split_asm)
+      using False hyps(2) xs\<^sub>1(1) by auto
     with dichot xs\<^sub>1 show ?thesis
       by (simp)
   qed
@@ -497,53 +497,48 @@ next
     by auto
 qed
 
-lemma prefix_lexord_left:
-  assumes "(xs, ys) \<in> lexord R" "prefix xs' xs"
+lemma strict_prefix_lexord_rel:
+  "strict_prefix xs ys \<Longrightarrow> (xs, ys) \<in> lexord R"
+  by (metis Sublist.strict_prefixE' lexord_append_rightI)
+
+lemma strict_prefix_lexord_left:
+  assumes "trans R" "(xs, ys) \<in> lexord R" "strict_prefix xs' xs"
   shows "(xs', ys) \<in> lexord R"
-  using assms
-  apply (auto simp: lexord_def prefix_def)
-   apply (metis Nil_is_append_conv list.exhaust)
-  apply (simp add: append_eq_append_conv2)
-  apply (drule_tac x="u" in spec)
-  apply (drule_tac x="a" in spec)
-  apply (drule_tac x="b" in spec)
-  apply (auto simp: )
-   apply (metis hd_Cons_tl hd_append list.sel(1) self_append_conv2)
-  apply (metis Nil_is_append_conv hd_Cons_tl)
-  done
+  by (metis assms lexord_trans strict_prefix_lexord_rel)
 
 lemma prefix_lexord_right:
-  assumes "(xs, ys) \<in> lexord R" "prefix ys ys'"
+  assumes "trans R" "(xs, ys) \<in> lexord R" "strict_prefix ys ys'"
   shows "(xs, ys') \<in> lexord R"
-  using assms by (fastforce simp: lexord_def prefix_def)
-
+  by (metis assms lexord_trans strict_prefix_lexord_rel)
 
 lemma lexord_eq_length:
   assumes "(xs, ys) \<in> lexord R" "length xs = length ys"
-  shows "\<exists>i. (xs!i, ys!i) \<in> R \<and> xs!i\<noteq>ys!i \<and> i < length xs \<and> (\<forall> j<i. xs!j = ys!j)"
+  shows "\<exists> i. (xs!i, ys!i) \<in> R \<and> i < length xs \<and> (\<forall> j<i. xs!j = ys!j)"
 using assms proof (induct xs arbitrary: ys)
   case (Cons x xs) note hyps = this
   then obtain y ys' where ys: "ys = y # ys'" "length ys' = length xs"
     by (metis Suc_length_conv)
   show ?case
-  proof (cases "(x,y) \<in> R \<and> x\<noteq>y")
-    case True with ys Cons show ?thesis
+  proof (cases "(x, y) \<in> R")
+    case True with ys show ?thesis
       by (rule_tac x="0" in exI, simp)
   next
     case False
     with ys hyps(2) have xy: "x = y" "(xs, ys') \<in> lexord R"
-      by (auto split: if_split_asm)
-    with hyps(1,3) ys obtain i where "(xs!i, ys'!i) \<in> R" "xs!i\<noteq>ys'!i" "i < length xs" "(\<forall> j<i. xs!j = ys'!j)"
+      by auto
+    with hyps(1,3) ys obtain i where "(xs!i, ys'!i) \<in> R" "i < length xs" "(\<forall> j<i. xs!j = ys'!j)"
       by force
     with xy ys show ?thesis
-      by (rule_tac x="Suc i" in exI) (auto simp add: less_Suc_eq_0_disj)
+      apply (rule_tac x="Suc i" in exI)
+      apply (auto simp add: less_Suc_eq_0_disj)
+    done
   qed
 next
   case Nil thus ?case by (auto)
 qed
 
 lemma lexord_intro_elems:
-  assumes "length xs > i" "length ys > i" "(xs!i, ys!i) \<in> R" "xs!i \<noteq> ys!i" "\<forall>j<i. xs!j = ys!j" 
+  assumes "length xs > i" "length ys > i" "(xs!i, ys!i) \<in> R" "\<forall> j<i. xs!j = ys!j"
   shows "(xs, ys) \<in> lexord R"
 using assms proof (induct i arbitrary: xs ys)
   case 0 thus ?case
@@ -552,8 +547,8 @@ next
   case (Suc i) note hyps = this
   then obtain x' y' xs' ys' where "xs = x' # xs'" "ys = y' # ys'"
     by (metis Suc_length_conv Suc_lessE)
-  moreover with hyps(5,6) have "\<forall>j<i. xs' ! j = ys' ! j"
-    using hyps(6) by auto
+  moreover with hyps(5) have "\<forall>j<i. xs' ! j = ys' ! j"
+    by (auto)
   ultimately show ?case using hyps
     by (auto)
 qed

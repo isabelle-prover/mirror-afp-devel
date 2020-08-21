@@ -3954,8 +3954,6 @@ next
 qed
 
 lemma llexord_llist_of:
-  assumes "irreflp r"
-  shows
   "llexord r (llist_of xs) (llist_of ys) \<longleftrightarrow>
    xs = ys \<or> (xs, ys) \<in> lexord {(x, y). r x y}"
   (is "?lhs \<longleftrightarrow> ?rhs")
@@ -3995,9 +3993,8 @@ proof
                                     (\<exists>u a b v w. (a, b) \<in> {(x, y). r x y} \<and>
                                                  x = u @ a # v \<and> y = u @ b # w)}"
       by auto }
-  with \<open>?lhs\<close> assms show ?rhs
-    apply (simp add: lexord_def irreflp_def llexord_conv)
-    by (metis )
+  with \<open>?lhs\<close> show ?rhs
+    unfolding lexord_def llexord_conv llist_of_inject by blast
 next
   assume "?rhs"
   thus ?lhs
@@ -4006,7 +4003,7 @@ next
   next
     assume "(xs, ys) \<in> lexord {(x, y). r x y}"
     thus ?thesis
-      by(coinduction arbitrary: xs ys)(auto, auto simp add: neq_Nil_conv split: if_split_asm)
+      by(coinduction arbitrary: xs ys)(auto, auto simp add: neq_Nil_conv)
   qed
 qed
 

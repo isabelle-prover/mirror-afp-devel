@@ -896,15 +896,6 @@ lemma next1_finite[intro]: "finite (next1 \<psi>)"
 lemma next1_subset_frmls: "\<phi> \<in> next1 \<psi> \<Longrightarrow> \<phi> \<in> subfrmlsr \<psi>"
   by (cases \<psi>) auto
 
-text \<open>Expanding the new-style lexorder\<close>
-lemma expand_ord_iff: "((a,b),(c,d)) \<in> expand_ord \<phi> 
-       \<longleftrightarrow> ((old_next_pair ` b, old_next_pair ` d) \<in> finite_psupset (old_next_limit \<phi>) 
-         \<or> old_next_pair ` b = old_next_pair ` d \<and> (\<Sum>x\<in>new a. Suc (2 * size x)) < (\<Sum>x\<in>new c. Suc (2 * size x)))"
-apply (simp add: expand_ord_def)
-  apply (auto simp: finite_psupset_def)
-   apply (metis (mono_tags, lifting) image_iff)+
-  done
-
 lemma expand_inv_impl[intro!]:
   assumes "expand_inv \<phi> (n, ns)"
       and newn: "\<psi> \<in> new n"
@@ -927,11 +918,11 @@ proof
   proof cases
     case n'def: 1
     with assms show ?thesis
-      unfolding expand_ord_iff expand_inv_def finite_psupset_def 
+      unfolding expand_ord_def expand_inv_def finite_psupset_def 
       apply (cases "old_next_pair ` ns \<subset> old_next_pair ` ns'") 
-       apply (simp_all add: psubset_eq)
-       apply blast
-      apply (metis (no_types, lifting) add_Suc diff_Suc_less sum.remove sum_diff1_nat zero_less_Suc)
+      apply simp_all
+      apply auto [1]
+      apply (metis (no_types, lifting) add_Suc diff_Suc_less psubsetI sum.remove sum_diff1_nat zero_less_Suc)
       done
   next
     case n'def: 2
@@ -951,7 +942,7 @@ proof
     have "size_set (new n') < size_set (new n)"
       using new1_less_sum[of \<psi>] by auto
     with assms show ?thesis 
-      unfolding expand_ord_iff finite_psupset_def by auto 
+      unfolding expand_ord_def finite_psupset_def by auto
   next
     case n'def: 3
     have \<psi>innew: "\<psi> \<in> new n" and fin_new: "finite (new n)"
@@ -970,7 +961,7 @@ proof
     have "size_set (new n') < size_set (new n)"
       using new2_less_sum[of \<psi>] sum_leq by auto
     with assms show ?thesis
-      unfolding expand_ord_iff finite_psupset_def by auto 
+      unfolding expand_ord_def finite_psupset_def by auto
   qed
 next
   have "new1 \<psi> \<subseteq> subfrmlsr \<phi>"
@@ -1079,7 +1070,7 @@ next
   moreover from prems have "expand_inv \<phi> (n, ns)"
     by simp
   ultimately have "((?n', ?ns'), (n, ns)) \<in> expand_ord \<phi>"
-    by (auto simp add: expand_ord_iff finite_psupset_def expand_inv_def)
+    by (auto simp add: expand_ord_def finite_psupset_def expand_inv_def)
   moreover from prems have "expand_inv \<phi> (?n', ?ns')"
     unfolding expand_inv_def by auto
   ultimately have "expand (?n', ?ns') \<le> SPEC (?P (?n', ?ns'))"

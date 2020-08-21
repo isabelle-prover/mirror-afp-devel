@@ -724,15 +724,7 @@ proof(induct_tac G T i k j rule: inner.induct)
 qed
 
    
-
-lemma in_lex_prod[simp]: "NO_MATCH less_than r \<Longrightarrow> ((a, b), (a', b')) \<in> r <*lex*> s \<longleftrightarrow> a \<noteq> a' \<and> (a, a') \<in> r \<or> a = a' \<and> (b, b') \<in> s"
-  by (auto simp:lex_prod_def)
-
-text\<open>compared with @{thm[source]in_lex_prod} this yields simpler results\<close>
-lemma in_lex_prod_less_than[simp]: "((a, b), (a', b')) \<in> less_than <*lex*> s \<longleftrightarrow>a<a' \<or> a = a' \<and> (b, b') \<in> s"
-  by auto
-
-
+   
 
 text\<open>Now the main part of the algorithm just iterates through all subwords up to the given length $len$,
        calls @{term "inner"} on these, and stores the results in the table $T$. The length $j$ is supposed to 

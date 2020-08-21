@@ -159,9 +159,6 @@ lemma less_multiset_ext\<^sub>D\<^sub>M_iff_mult:
   shows "less_multiset_ext\<^sub>D\<^sub>M R M N \<longleftrightarrow> (M, N) \<in> mult {(x, y). x \<in> A \<and> y \<in> A \<and> R x y}"
   using mult_imp_less_multiset_ext\<^sub>D\<^sub>M[OF assms] less_multiset_ext\<^sub>D\<^sub>M_imp_mult[OF N_A M_A] by blast
 
-lemma sub_nmset_lex: "((a,b),(c,d)) \<in> sub_nmset <*lex*> sub_nmset \<longleftrightarrow> (a,c) \<in> sub_nmset \<or> a=c \<and> (b,d) \<in> sub_nmset"
-  by auto
-
 instantiation nmultiset :: (preorder) preorder
 begin
 
@@ -177,8 +174,8 @@ function less_nmultiset :: "'a nmultiset \<Rightarrow> 'a nmultiset \<Rightarrow
 | "less_nmultiset (MSet M) (MSet N) \<longleftrightarrow> less_multiset_ext\<^sub>D\<^sub>M less_nmultiset M N"
   by pat_completeness auto
 termination
-  apply(relation "sub_nmset <*lex*> sub_nmset", force)
-  by (meson sub_nmset_lex sub_nmset.intros union_iff)
+  by (relation "sub_nmset <*lex*> sub_nmset", fastforce,
+    metis sub_nmset.simps in_lex_prod mset_subset_eqD mset_subset_eq_add_right)
 
 lemmas less_nmultiset_induct =
   less_nmultiset.induct[case_names Elem_Elem Elem_MSet MSet_Elem MSet_MSet]

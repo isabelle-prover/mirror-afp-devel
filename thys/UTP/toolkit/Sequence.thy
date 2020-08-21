@@ -120,57 +120,49 @@ lemma seq_lexord_irrefl:
   by (simp add: irrefl_def seq_lexord_irreflexive)
 
 lemma seq_lexord_transitive:
-  assumes "trans R" "antisym R" 
+  assumes "trans R"
   shows "trans (seq_lexord R)"
-  unfolding seq_lexord_def
+unfolding seq_lexord_def
 proof (rule transI, clarify)
   fix xs ys zs :: "'a seq" and m n :: nat
   assume las: "(sinit m xs, sinit m ys) \<in> lexord R" "(sinit n ys, sinit n zs) \<in> lexord R"
   hence inz: "m > 0"
     using gr0I by force
-  from las(1) obtain i where sinitm: "(sinit m xs!i, sinit m ys!i) \<in> R" "sinit m xs!i \<noteq> sinit m ys!i"
-                                     "i < m" "\<forall> j<i. sinit m xs!j = sinit m ys!j"
+  from las(1) obtain i where sinitm: "(sinit m xs!i, sinit m ys!i) \<in> R" "i < m" "\<forall> j<i. sinit m xs!j = sinit m ys!j"
     using lexord_eq_length by force
-  from las(2) obtain j where sinitn: "(sinit n ys!j, sinit n zs!j) \<in> R" "sinit n ys!j \<noteq> sinit n zs!j"
-                                     "j < n" "\<forall> k<j. sinit n ys!k = sinit n zs!k"
+  from las(2) obtain j where sinitn: "(sinit n ys!j, sinit n zs!j) \<in> R" "j < n" "\<forall> k<j. sinit n ys!k = sinit n zs!k"
     using lexord_eq_length by force
   show "\<exists>i. (sinit i xs, sinit i zs) \<in> lexord R"
   proof (cases "i \<le> j")
     case True note lt = this
     with sinitm sinitn have "(sinit n xs!i, sinit n zs!i) \<in> R"
       by (metis assms le_eq_less_or_eq le_less_trans nth_sinit transD)
-    moreover have "sinit n xs!i \<noteq> sinit n zs!i"
-      by (metis antisymD assms(2) dual_order.strict_trans2 le_eq_less_or_eq lt nth_sinit sinitm(1) sinitm(2) sinitm(3) sinitn(1) sinitn(3) sinitn(4))
     moreover from lt sinitm sinitn have "\<forall> j<i. sinit m xs!j = sinit m zs!j"
       by (metis less_le_trans less_trans nth_sinit)
-    moreover have "i<n"
-      using le_less_trans lt sinitn(3) by blast
     ultimately have "(sinit n xs, sinit n zs) \<in> lexord R" using sinitm(2) sinitn(2) lt
       apply (rule_tac lexord_intro_elems)
-          apply (auto)
-      by (metis less_trans nth_sinit sinitm(3))
+         apply (auto)
+      apply (metis less_le_trans less_trans nth_sinit)
+      done
     thus ?thesis by auto
   next
     case False
     then have ge: "i > j" by auto
     with assms sinitm sinitn have "(sinit n xs!j, sinit n zs!j) \<in> R"
       by (metis less_trans nth_sinit)
-    moreover have "sinit n xs!j \<noteq> sinit n zs!j"
-      by (metis ge less_trans nth_sinit sinitm(3) sinitm(4) sinitn(2) sinitn(3))
     moreover from ge sinitm sinitn have "\<forall> k<j. sinit m xs!k = sinit m zs!k"
       by (metis dual_order.strict_trans nth_sinit)
-    moreover have "j<n"
-      by (simp add: sinitn(3))
     ultimately have "(sinit n xs, sinit n zs) \<in> lexord R" using sinitm(2) sinitn(2) ge
       apply (rule_tac lexord_intro_elems)
-          apply (auto)
-      by (metis less_trans nth_sinit sinitm(3))
+         apply (auto)
+      apply (metis less_trans nth_sinit)
+      done
     thus ?thesis by auto
   qed
 qed
 
 lemma seq_lexord_trans:
-  "\<lbrakk> (xs, ys) \<in> seq_lexord R; (ys, zs) \<in> seq_lexord R; trans R; antisym R \<rbrakk> \<Longrightarrow> (xs, zs) \<in> seq_lexord R"
+  "\<lbrakk> (xs, ys) \<in> seq_lexord R; (ys, zs) \<in> seq_lexord R; trans R \<rbrakk> \<Longrightarrow> (xs, zs) \<in> seq_lexord R"
   by (meson seq_lexord_transitive transE)
 
 lemma seq_lexord_antisym:
@@ -214,20 +206,36 @@ end
 
 instance seq :: (order) order
 proof
-  have \<section>: "antisym {(xs, ys::'a). xs < ys}" "trans {(xs, ys::'a). xs < ys}"
-    using antisym_def trans_def by fastforce+
-  show "xs \<le> xs" for xs :: "'a seq"
-    by (simp add: less_eq_seq_def)
-  show "xs \<le> zs" if "xs \<le> ys" and "ys \<le> zs" for xs ys zs :: "'a seq"
-    using that
-    by (auto intro: \<section> seq_lexord_trans simp: less_eq_seq_def less_seq_def)
-  show "xs = ys" if "xs \<le> ys" and "ys \<le> xs" for xs ys :: "'a seq"
-    using that
+  fix xs :: "'a seq"
+  show "xs \<le> xs" by (simp add: less_eq_seq_def)
+next
+  fix xs ys zs :: "'a seq"
+  assume "xs \<le> ys" and "ys \<le> zs"
+  then show "xs \<le> zs"
+    by (force dest: seq_lexord_trans simp add: less_eq_seq_def less_seq_def trans_def)
+next
+  fix xs ys :: "'a seq"
+  assume "xs \<le> ys" and "ys \<le> xs"
+  then show "xs = ys"
     apply (auto simp add: less_eq_seq_def less_seq_def)
-    by (metis \<section> case_prodD less_irrefl mem_Collect_eq seq_lexord_irreflexive seq_lexord_trans)
-  show "xs < ys \<longleftrightarrow> xs \<le> ys \<and> \<not> ys \<le> xs" for xs ys :: "'a seq"
-    apply (auto simp add: less_seq_def less_eq_seq_def seq_lexord_irreflexive)
-    by (metis \<section> case_prodD less_irrefl mem_Collect_eq seq_lexord_irreflexive seq_lexord_trans)
+    apply (rule seq_lexord_irreflexive [THEN notE])
+     defer
+     apply (rule seq_lexord_trans)
+       apply (auto intro: transI)
+    done
+next
+  fix xs ys :: "'a seq"
+  show "xs < ys \<longleftrightarrow> xs \<le> ys \<and> \<not> ys \<le> xs"
+    apply (auto simp add: less_seq_def less_eq_seq_def)
+     defer
+     apply (rule seq_lexord_irreflexive [THEN notE])
+      apply auto
+     apply (rule seq_lexord_irreflexive [THEN notE])
+      defer
+      apply (rule seq_lexord_trans)
+        apply (auto intro: transI)
+    apply (simp add: seq_lexord_irreflexive)
+    done
 qed
 
 instance seq :: (linorder) linorder

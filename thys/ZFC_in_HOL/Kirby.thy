@@ -1626,11 +1626,11 @@ proof (subst ordertype_eq_iff)
         by (metis Ord_add Ord_add_mult_iff Ord_mem_iff_lt Ord_mult Ord_ordermap converse_ordermap_mono 
             ordermap_eq_iff ordermap_in_ordertype wf_Ord_ordertype)
       then show "(p,q) \<in> (r <*lex*> s)"
-        using "\<section>" r(1) by auto
+        by (simp add: \<section>)
     next
       assume "(p,q) \<in> (r <*lex*> s)"
       then have "(u, x) \<in> r \<or> u = x \<and> (v, y) \<in> s"
-        using \<section> by auto
+        by (simp add: \<section>)
       then show "f p < f q"
       proof
         assume ux: "(u, x) \<in> r"
@@ -1654,10 +1654,6 @@ proof (subst ordertype_eq_iff)
       qed 
     qed
   qed 
-  have "antisym r"
-    by (meson antisymI r(1) wf_not_sym)
-  then show "trans (r <*lex*> s)"
-    by (simp add: r(2) s(2))
 qed (use assms small_Times in auto)
 
 end

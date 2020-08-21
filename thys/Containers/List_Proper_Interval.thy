@@ -32,24 +32,19 @@ definition proper_interval_list_aux :: "'a list \<Rightarrow> 'a list \<Rightarr
 where proper_interval_list_aux_correct:
   "proper_interval_list_aux xs ys \<longleftrightarrow> (\<exists>zs. xs < zs \<and> zs < ys)"
 
-lemma proper_interval_list_aux_simp_1: 
+lemma proper_interval_list_aux_simps [code]:
   "proper_interval_list_aux xs [] \<longleftrightarrow> False"
-  by (simp add: proper_interval_list_aux_correct)
-
-lemma proper_interval_list_aux_simp_2:
   "proper_interval_list_aux [] (y # ys) \<longleftrightarrow> ys \<noteq> [] \<or> proper_interval None (Some y)"
-  apply(auto simp add: proper_interval_list_aux_correct proper_interval_simps Nil_less_conv_neq_Nil)
-  apply (metis Cons_less_Cons neq_Nil_conv not_less_Nil)
-  by (metis Cons_less_Cons Nil_less_Cons neq_Nil_conv)
-
-lemma proper_interval_list_aux_simp_3: 
-  "proper_interval_list_aux (x # xs) (y # ys) \<longleftrightarrow> (if x = y then proper_interval_list_aux xs ys else x < y)"
-    apply(auto simp add: proper_interval_list_aux_correct proper_interval_simps Nil_less_conv_neq_Nil Cons_less_iff)
-  apply fastforce
-  by (metis Cons_less_Cons Nil_less_Cons less_append_same_iff)
-
-lemmas proper_interval_list_aux_simps [code] = 
-  proper_interval_list_aux_simp_1 proper_interval_list_aux_simp_2 proper_interval_list_aux_simp_3
+  "proper_interval_list_aux (x # xs) (y # ys) \<longleftrightarrow> x < y \<or> x = y \<and> proper_interval_list_aux xs ys"
+apply(simp_all add: proper_interval_list_aux_correct proper_interval_simps Nil_less_conv_neq_Nil)
+ apply(fastforce simp add: neq_Nil_conv)
+apply(rule iffI)
+ apply(fastforce simp add: Cons_less_iff intro: less_trans)
+apply(erule disjE)
+ apply(rule exI[where x="x # xs @ [undefined]"])
+ apply(simp add: less_append_same_iff)
+apply(auto 4 3 simp add: Cons_less_iff)
+done
 
 fun proper_interval_list :: "'a list option \<Rightarrow> 'a list option \<Rightarrow> bool" where
   "proper_interval_list None None \<longleftrightarrow> True"
