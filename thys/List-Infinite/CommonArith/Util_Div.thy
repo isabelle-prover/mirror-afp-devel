@@ -1144,7 +1144,7 @@ thm
   mod_diff1_eq2
 
 thm
-  Divides.nat_mod_distrib
+  nat_mod_distrib
   int_mod_distrib
 
 thm
