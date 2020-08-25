@@ -9,7 +9,28 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>01 Jun 2020 00:00:00 +0000</pubDate>
+    <pubDate>25 Aug 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Extensions to the Comprehensive Framework for Saturation Theorem Proving</title>
+              <link>https://www.isa-afp.org/entries/Saturation_Framework_Extensions.html</link>
+       <guid>https://www.isa-afp.org/entries/Saturation_Framework_Extensions.html</guid>
+       <dc:creator> Jasmin Blanchette, Sophie Tourret       </dc:creator>
+       <pubDate>25 Aug 2020 00:00:00 +0000</pubDate>
+       <description>
+This Isabelle/HOL formalization extends the AFP entry
+&lt;em&gt;Saturation_Framework&lt;/em&gt; with the following
+contributions:  &lt;ul&gt; &lt;li&gt;an application of the framework
+to prove Bachmair and Ganzinger&#39;s resolution prover RP
+refutationally complete, which was formalized in a more ad hoc fashion
+by Schlichtkrull et al. in the AFP entry
+&lt;em&gt;Ordered_Resultion_Prover&lt;/em&gt;;&lt;/li&gt;
+&lt;li&gt;generalizations of various basic concepts formalized by
+Schlichtkrull et al., which were needed to verify RP and could be
+useful to formalize other calculi, such as superposition;&lt;/li&gt;
+&lt;li&gt;alternative proofs of fairness (and hence saturation and
+ultimately refutational completeness) for the given clause procedures
+GC and LGC, based on invariance.&lt;/li&gt; &lt;/ul&gt;</description>
+    </item>
     <item>
        <title>A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles</title>
               <link>https://www.isa-afp.org/entries/Safe_Distance.html</link>
@@ -563,21 +584,6 @@ This technique has been used, for example, with the antidomain
 operation, dynamic negation and Stone algebras. We present a common
 ground for these constructions based on a new equational
 axiomatisation of Boolean algebras.</description>
-    </item>
-    <item>
-       <title>Mersenne primes and the Lucas–Lehmer test</title>
-              <link>https://www.isa-afp.org/entries/Mersenne_Primes.html</link>
-       <guid>https://www.isa-afp.org/entries/Mersenne_Primes.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>17 Jan 2020 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This article provides formal proofs of basic properties of
-Mersenne numbers, i. e. numbers of the form
-2&lt;sup&gt;&lt;em&gt;n&lt;/em&gt;&lt;/sup&gt; - 1, and especially of
-Mersenne primes.&lt;/p&gt; &lt;p&gt;In particular, an efficient,
-verified, and executable version of the Lucas&amp;ndash;Lehmer test is
-developed. This test decides primality for Mersenne numbers in time
-polynomial in &lt;em&gt;n&lt;/em&gt;.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

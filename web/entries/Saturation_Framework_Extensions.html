@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic - Archive of Formal Proofs
+<title>Extensions to the Comprehensive Framework for Saturation Theorem Proving - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,25 +74,23 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">F</font>ormalization
+  <h1>          <font class="first">E</font>xtensions
   
-          of
+          to
   
-          a
+          the
   
-          <font class="first">M</font>onitoring
+          <font class="first">C</font>omprehensive
   
-          <font class="first">A</font>lgorithm
+          <font class="first">F</font>ramework
   
           for
   
-          <font class="first">M</font>etric
+          <font class="first">S</font>aturation
   
-          <font class="first">F</font>irst-Order
+          <font class="first">T</font>heorem
   
-          <font class="first">T</font>emporal
-  
-          <font class="first">L</font>ogic
+          <font class="first">P</font>roving
   
 </h1>
   <p>&nbsp;</p>
@@ -101,7 +99,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</td>
+  <td class="data" width="80%">Extensions to the Comprehensive Framework for Saturation Theorem Proving</td>
 </tr>
 
 <tr>
@@ -109,8 +107,8 @@ MathJax = {
           Authors:
       </td>
   <td class="data">
-                    Joshua Schneider and
-          <a href="http://people.inf.ethz.ch/trayteld/">Dmitriy Traytel</a>
+                    <a href="https://www.cs.vu.nl/~jbe248/">Jasmin Blanchette</a> and
+          <a href="https://www.mpi-inf.mpg.de/departments/automation-of-logic/people/sophie-tourret">Sophie Tourret</a>
       </td>
 </tr>
 
@@ -118,45 +116,38 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2019-07-04</td>
+  <td class="data">2020-08-25</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-A monitor is a runtime verification tool that solves the following
-problem: Given a stream of time-stamped events and a policy formulated
-in a specification language, decide whether the policy is satisfied at
-every point in the stream. We verify the correctness of an executable
-monitor for specifications given as formulas in metric first-order
-temporal logic (MFOTL), an expressive extension of linear temporal
-logic with real-time constraints and first-order quantification. The
-verified monitor implements a simplified variant of the algorithm used
-in the efficient MonPoly monitoring tool. The formalization is
-presented in a <a href="https://doi.org/10.1007/978-3-030-32079-9_18">RV
-2019 paper</a>, which also compares the output of the verified
-monitor to that of other monitoring tools on randomly generated
-inputs. This case study revealed several errors in the optimized but
-unverified tools.</td>
+This Isabelle/HOL formalization extends the AFP entry
+<em>Saturation_Framework</em> with the following
+contributions:  <ul> <li>an application of the framework
+to prove Bachmair and Ganzinger's resolution prover RP
+refutationally complete, which was formalized in a more ad hoc fashion
+by Schlichtkrull et al. in the AFP entry
+<em>Ordered_Resultion_Prover</em>;</li>
+<li>generalizations of various basic concepts formalized by
+Schlichtkrull et al., which were needed to verify RP and could be
+useful to formalize other calculi, such as superposition;</li>
+<li>alternative proofs of fairness (and hence saturation and
+ultimately refutational completeness) for the given clause procedures
+GC and LGC, based on invariance.</li> </ul></td>
 </tr>
 
-  <tr>
-    <td class="datahead" valign="top">Change history:</td>
-    <td class="abstract">[2020-08-13]:
-added the formalization of the abstract slicing framework and joint data
-slicer (revision b1639ed541b7)<br></td>
-  </tr>
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{MFOTL_Monitor-AFP,
-  author  = {Joshua Schneider and Dmitriy Traytel},
-  title   = {Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic},
+        <pre>@article{Saturation_Framework_Extensions-AFP,
+  author  = {Jasmin Blanchette and Sophie Tourret},
+  title   = {Extensions to the Comprehensive Framework for Saturation Theorem Proving},
   journal = {Archive of Formal Proofs},
-  month   = jul,
-  year    = 2019,
-  note    = {\url{http://isa-afp.org/entries/MFOTL_Monitor.html},
+  month   = aug,
+  year    = 2020,
+  note    = {\url{http://isa-afp.org/entries/Saturation_Framework_Extensions.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -168,11 +159,9 @@ slicer (revision b1639ed541b7)<br></td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Containers.html">Containers</a>      </td></tr>
+          <td class="data"><a href="First_Order_Terms.html">First_Order_Terms</a>, <a href="Ordered_Resolution_Prover.html">Ordered_Resolution_Prover</a>, <a href="Saturation_Framework.html">Saturation_Framework</a>, <a href="Well_Quasi_Orders.html">Well_Quasi_Orders</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Generic_Join.html">Generic_Join</a>, <a href="MFODL_Monitor_Optimized.html">MFODL_Monitor_Optimized</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -184,29 +173,23 @@ slicer (revision b1639ed541b7)<br></td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/MFOTL_Monitor/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/MFOTL_Monitor/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Saturation_Framework_Extensions/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Saturation_Framework_Extensions/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/MFOTL_Monitor/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Saturation_Framework_Extensions/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-MFOTL_Monitor-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Saturation_Framework_Extensions-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2019:
-            <a href="../release/afp-MFOTL_Monitor-2019-07-05.tar.gz">
-              afp-MFOTL_Monitor-2019-07-05.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>

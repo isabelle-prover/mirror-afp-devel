@@ -9131,6 +9131,27 @@ abstract =
   theorems corresponding to the results in the report are indicated in
   the margin of the report.
 
+[Saturation_Framework_Extensions]
+title = Extensions to the Comprehensive Framework for Saturation Theorem Proving
+author = Jasmin Blanchette <https://www.cs.vu.nl/~jbe248/>, Sophie Tourret <https://www.mpi-inf.mpg.de/departments/automation-of-logic/people/sophie-tourret>
+topic = Logic/General logic/Mechanization of proofs
+date = 2020-08-25
+notify = jasmin.blanchette@gmail.com
+abstract =
+  This Isabelle/HOL formalization extends the AFP entry
+  <em>Saturation_Framework</em> with the following
+  contributions:  <ul> <li>an application of the framework
+  to prove Bachmair and Ganzinger's resolution prover RP
+  refutationally complete, which was formalized in a more ad hoc fashion
+  by Schlichtkrull et al. in the AFP entry
+  <em>Ordered_Resultion_Prover</em>;</li>
+  <li>generalizations of various basic concepts formalized by
+  Schlichtkrull et al., which were needed to verify RP and could be
+  useful to formalize other calculi, such as superposition;</li>
+  <li>alternative proofs of fairness (and hence saturation and
+  ultimately refutational completeness) for the given clause procedures
+  GC and LGC, based on invariance.</li> </ul>
+
 [MFODL_Monitor_Optimized]
 title = Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations
 author = Thibault Dardinier<>, Lukas Heimes<>, Martin Raszyk <mailto:martin.raszyk@inf.ethz.ch>, Joshua Schneider <mailto:joshua.schneider@inf.ethz.ch>, Dmitriy Traytel <http://people.inf.ethz.ch/trayteld/>
