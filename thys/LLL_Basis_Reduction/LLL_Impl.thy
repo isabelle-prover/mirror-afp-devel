@@ -81,7 +81,7 @@ end
 context LLL
 begin
 
-lemma d_d\<mu>_add_row: assumes Linv: "LLL_invariant True i fs"
+lemma d_d\<mu>_add_row: assumes Linv: "LLL_invariant_weak fs"
   and i: "i < m"  and j: "j < i" 
   and fs': "fs' = fs[ i := fs ! i - c \<cdot>\<^sub>v fs ! j]" 
 shows  
@@ -97,16 +97,16 @@ shows
        else d\<mu> fs i' j')"
     (is "\<And> i' j'. _ \<Longrightarrow> _ \<Longrightarrow> _ = ?new_mu i' j'")
 proof -
-  interpret fs: fs_int' n m fs_init \<alpha> True i fs
+  interpret fs: fs_int' n m fs_init fs
     by standard (use Linv in auto)
   note add = basis_reduction_add_row_main[OF Linv i j fs']
-  interpret fs': fs_int' n m fs_init \<alpha> True i fs'
+  interpret fs': fs_int' n m fs_init fs'
     by standard (use add in auto)
   show d: "\<And> ii. ii \<le> m \<Longrightarrow> d fs' ii = d fs ii" by fact
   fix i' j'
   assume i': "i' < m" and j': "j' < i'"    
   hence j'm: "j' < m" and j'': "j' \<le> i'" by auto
-  note updates = add(5)[OF i' j'm]
+  note updates = add(7)[OF i' j'm]
   show "d\<mu> fs' i' j' = ?new_mu i' j'" 
   proof (cases "i' = i")
     case False
@@ -118,15 +118,15 @@ proof -
     have *: "rat_of_int (d\<mu> fs' i' j') = rat_of_int (d fs' (Suc j')) * fs'.gs.\<mu> i' j'"
       unfolding d\<mu>_def d_def
       apply(rule fs'.d\<mu>[unfolded fs'.d\<mu>_def fs'.d_def])
-      using j' i'  LLL_invD[OF add(1)]  by (auto)
+      using j' i'  LLL_inv_wD[OF add(1)]  by (auto)
     have **: "rat_of_int (d\<mu> fs i' j') = rat_of_int (d fs (Suc j')) * fs.gs.\<mu> i' j'"
       unfolding d\<mu>_def d_def
       apply(rule fs.d\<mu>[unfolded fs.d\<mu>_def fs.d_def])
-      using j' i' LLL_invD[OF Linv]  by (auto)
+      using j' i' LLL_inv_wD[OF Linv]  by (auto)
     have ***: "rat_of_int (d\<mu> fs j j') = rat_of_int (d fs (Suc j')) * fs.gs.\<mu> j j'" if "j' < j"
       unfolding d\<mu>_def d_def
       apply(rule fs.d\<mu>[unfolded fs.d\<mu>_def fs.d_def])
-      using that j i LLL_invD[OF Linv]  by (auto)
+      using that j i LLL_inv_wD[OF Linv]  by (auto)
 
     show ?thesis
       apply(intro int_via_rat_eqI)
@@ -141,7 +141,8 @@ end
 context LLL_with_assms
 begin
 
-lemma d_d\<mu>_swap: assumes inv: "LLL_invariant False k fs"
+lemma d_d\<mu>_swap: assumes invw: "LLL_invariant_weak fs"
+  and small: "LLL_invariant False k fs \<or> abs (\<mu> fs k (k - 1)) \<le> 1/2" 
   and k: "k < m"
   and k0: "k \<noteq> 0" 
   and norm_ineq: "sq_norm (gso fs (k - 1)) > \<alpha> * sq_norm (gso fs k)" 
@@ -166,13 +167,15 @@ and (* d\<mu>-updates *)
         else d\<mu> fs i j)" 
     (is "\<And> i j. _ \<Longrightarrow> _ \<Longrightarrow> _ = ?new_mu i j")
 proof -
-  note swap = basis_reduction_swap_main[OF inv k k0 norm_ineq fs'_def]
+  note swap = basis_reduction_swap_main[OF invw small k k0 norm_ineq fs'_def]
+  note invw2 = swap(1)
+  note swap = swap(1,3-)
   from k k0 have kk: "k - 1 < k" and le_m: "k - 1 \<le> m" "k \<le> m" "Suc k \<le> m" by auto
-  from LLL_invD[OF inv] have len: "length fs = m" by auto
-  interpret fs: fs_int' n m fs_init \<alpha> False k fs
-    by standard (use inv in auto)
-  interpret fs': fs_int' n m fs_init \<alpha> False "k - 1" fs'
-    by standard (use swap(1) in auto)
+  from LLL_inv_wD[OF invw] have len: "length fs = m" by auto
+  interpret fs: fs_int' n m fs_init fs
+    by standard (use invw in auto)
+  interpret fs': fs_int' n m fs_init fs'
+    by standard (use invw2 in auto)
   let ?r = rat_of_int
   let ?n = "\<lambda> i. sq_norm (gso fs i)" 
   let ?n' = "\<lambda> i. sq_norm (gso fs' i)" 
@@ -182,7 +185,7 @@ proof -
   let ?dmu' = "\<lambda> i j. ?r (d fs' (Suc j)) * \<mu> fs' i j" 
   note dmu = fs.d\<mu>
   note dmu' = fs'.d\<mu>
-  note inv' = LLL_invD[OF inv]
+  note inv' = LLL_inv_wD[OF invw]
   have nim1: "?n k + square_rat (\<mu> fs k (k - 1)) * ?n (k - 1) = 
     ?n' (k - 1)" by (subst swap(4), insert k, auto)
   have ni: "?n k * (?n (k - 1) / ?n' (k - 1)) = ?n' k"
@@ -193,20 +196,20 @@ proof -
     unfolding fs'_def using inv'(6) k k0 by auto
   let ?d'i = "(d fs (Suc k) * d fs (k - 1) + d\<mu> fs k (k - 1) * d\<mu> fs k (k - 1)) div (d fs k)" 
   have rat': "i < m \<Longrightarrow> j < i \<Longrightarrow> ?r (d\<mu> fs' i j) = ?dmu' i j" for i j 
-     using dmu'[of j i] LLL_invD[OF swap(1)] unfolding d\<mu>_def fs'.d\<mu>_def d_def fs'.d_def by auto
+     using dmu'[of j i] LLL_inv_wD[OF invw2] unfolding d\<mu>_def fs'.d\<mu>_def d_def fs'.d_def by auto
    have rat: "i < m \<Longrightarrow> j < i \<Longrightarrow> ?r (d\<mu> fs i j) = ?dmu i j" for i j
-     using dmu[of j i] LLL_invD[OF inv] unfolding d\<mu>_def fs.d\<mu>_def d_def fs.d_def by auto
+     using dmu[of j i] LLL_inv_wD[OF invw] unfolding d\<mu>_def fs.d\<mu>_def d_def fs.d_def by auto
   from k k0 have sim1: "Suc (k - 1) = k" and km1: "k - 1 < m" by auto
-  from LLL_d_Suc[OF inv km1, unfolded sim1] 
+  from LLL_d_Suc[OF invw km1, unfolded sim1] 
   have dn_km1: "?dn (k - 1) = ?r (d fs k) * ?r (d fs (k - 1))" by simp
-  note pos = Gramian_determinant[OF inv le_refl] 
+  note pos = Gramian_determinant[OF invw le_refl] 
   from pos(2) have "?r (gs.Gramian_determinant fs m) \<noteq> 0" by auto
   from this[unfolded pos(1)] have nzero: "i < m \<Longrightarrow> ?n i \<noteq> 0" for i by auto
-  note pos = Gramian_determinant[OF swap(1) le_refl] 
+  note pos = Gramian_determinant[OF invw2 le_refl] 
   from pos(2) have "?r (gs.Gramian_determinant fs' m) \<noteq> 0" by auto
   from this[unfolded pos(1)] have nzero': "i < m \<Longrightarrow> ?n' i \<noteq> 0" for i by auto
-  have dzero: "i \<le> m \<Longrightarrow> d fs i \<noteq> 0" for i using LLL_d_pos[OF inv, of i] by auto
-  have dzero': "i \<le> m \<Longrightarrow> d fs' i \<noteq> 0" for i using LLL_d_pos[OF swap(1), of i] by auto
+  have dzero: "i \<le> m \<Longrightarrow> d fs i \<noteq> 0" for i using LLL_d_pos[OF invw, of i] by auto
+  have dzero': "i \<le> m \<Longrightarrow> d fs' i \<noteq> 0" for i using LLL_d_pos[OF invw2, of i] by auto
 
   {
     define start where "start = ?dmu' k (k - 1)" 
@@ -239,14 +242,14 @@ proof -
           * (?n k  + \<mu> fs k (k - 1) * \<mu> fs k (k - 1) * ?n (k - 1))" 
         by (subst swap(4)[OF km1], insert dzero[of k], insert k, simp)
       also have "?n (k - 1) = ?r (d fs k) / ?r (d fs (k - 1))" 
-        unfolding LLL_d_Suc[OF inv km1, unfolded sim1] using dzero[of "k - 1"] k k0 by simp
+        unfolding LLL_d_Suc[OF invw km1, unfolded sim1] using dzero[of "k - 1"] k k0 by simp
       finally have "?r start = 
           ((?r (d fs k) * ?n k) * ?r (d fs (k - 1)) + ?dmu k (k - 1) * ?dmu k (k - 1)) 
           / (?r (d fs k))" 
         using k k0 dzero[of k] dzero[of "k - 1"]
         by (simp add: ring_distribs)
       also have "?r (d fs k) * ?n k = ?r (d fs (Suc k))" 
-        unfolding LLL_d_Suc[OF inv k] by simp
+        unfolding LLL_d_Suc[OF invw k] by simp
       also have "?dmu k (k - 1) = ?r (d\<mu> fs k (k - 1))" by (subst rat, insert k k0, auto)
       finally have "?r start = (?r (d fs (Suc k) * d fs (k - 1) + d\<mu> fs k (k - 1) * d\<mu> fs k (k - 1)))
           / (?r (d fs k))" by simp
@@ -333,7 +336,7 @@ proof -
             unfolding swaps unfolding jim1 using k k0 by simp 
           also have "\<dots> * ?x2 = (?n k * ?r (d fs k)) / ?n (k - 1) * \<mu> fs i k" 
             using k k0 nzero'[of "k - 1"] by simp
-          also have "?n k * ?r (d fs k) = ?r (d fs (Suc k))" unfolding LLL_d_Suc[OF inv k] ..
+          also have "?n k * ?r (d fs k) = ?r (d fs (Suc k))" unfolding LLL_d_Suc[OF invw k] ..
           also have "?r (d fs (Suc k)) / ?n (k - 1) * \<mu> fs i k = ?dmu i k / ?n (k - 1)" by simp
           also have "\<dots> = ?dmu i k * ?r (d fs (k - 1) * d fs (k - 1)) / ?dn (k - 1)" 
             using dzero[of "k - 1"] k by simp
@@ -629,13 +632,14 @@ next
   have id: "Suc j - 1 = j" by simp
   note mu = dmu_ij_state[OF impl Linv state j i]
   let ?c = "round (\<mu> fs i j)"
-  interpret fs: fs_int' n m fs_init \<alpha> True i fs
-    by standard (use Linv in auto)
+  note Linvw = LLL_inv_imp_w[OF Linv]
+  interpret fs: fs_int' n m fs_init fs
+    by standard (use Linvw in auto)
   have floor: "round_num_denom (d\<mu> fs i j) (d fs (Suc j)) = round (fs.gs.\<mu> i j)"
     using jj i inv unfolding d\<mu>_def d_def
     by (intro fs.round_num_denom_d\<mu>_d[unfolded fs.d\<mu>_def fs.d_def]) auto
-  from LLL_d_pos[OF Linv] j i have dj: "d fs (Suc j) > 0" by auto
-  note updates = d_d\<mu>_add_row[OF Linv i j refl]
+  from LLL_d_pos[OF Linvw] j i have dj: "d fs (Suc j) > 0" by auto
+  note updates = d_d\<mu>_add_row[OF Linvw i j refl]
   note d_state = d_state[OF impl Linv state]
   from d_state[of "Suc j"] j i have djs: "d_state state (Suc j) = d fs (Suc j)" by auto
   note res = Suc(5)[unfolded floor map_rev_Suc djs append.simps LLL_Impl.basis_reduction_add_rows_loop.simps
@@ -646,7 +650,7 @@ next
     from res[unfolded True]
     have res: "LLL_Impl.basis_reduction_add_rows_loop n state i j (?mapf fs j) = state'"
       by simp
-    note step = Linv basis_reduction_add_row_main_0[OF Linv i j True Suc(4)]
+    note step = Linv basis_reduction_add_row_main_0[OF Linvw i j True Suc(4)]
     show ?thesis using Suc(1)[OF impl step(1-2) res _ i] j True by auto
   next
     case False
@@ -657,7 +661,9 @@ next
       by (intro eq_vecI, insert inv(4)[OF i] inv(4)[OF jm], auto)
     define fi' where "fi' = fs ! i - ?c \<cdot>\<^sub>v fs ! j"
     obtain fs'' where fs'': "fs[i := fs ! i - ?c \<cdot>\<^sub>v fs ! j] = fs''" by auto
-    note step = basis_reduction_add_row_main[OF Linv i j fs''[symmetric]]
+    note step = basis_reduction_add_row_main[OF Linvw i j fs''[symmetric]]
+    note Linvw2 = step(1)
+    note step = step(2)[OF Linv] step(3,5-)
     note updates = updates[where c = ?c, unfolded fs'']
     have map_id_f: "?mapf fs j = ?mapf fs'' j"
       by (rule nth_equalityI, insert j i, auto simp: rev_nth fs''[symmetric])
@@ -803,6 +809,7 @@ shows
   "LLL_impl_inv state' i' fs'" (is ?g1)
   "basis_reduction_swap i fs = (upw',i',fs')" (is ?g2)
 proof -
+  note invw = LLL_inv_imp_w[OF inv]
   from i i0 have ii: "i - 1 < i" and le_m: "i - 1 \<le> m" "i \<le> m" "Suc i \<le> m" by auto
   obtain f mu ds where state: "state = (f,mu,ds)" by (cases state, auto)
   note dmu_ij_state = dmu_ij_state[OF impl inv state]
@@ -818,12 +825,14 @@ proof -
   let ?d = "d fs"
   let ?d' = "d fs''"
   let ?dmus = "dmu_ij_state state"
-  let ?ds = "d_state state"
-  note swap = basis_reduction_swap_main[OF inv i i0 cond refl, unfolded fs'']
-  interpret fs: fs_int' n m fs_init \<alpha> False i fs
-    by standard (use inv in auto)
-  interpret fs'': fs_int' n m fs_init \<alpha> False "i - 1" fs''
-    by standard (use swap in auto)
+  let ?ds = "d_state state" 
+  note swap = basis_reduction_swap_main[OF invw disjI1[OF inv] i i0 cond refl, unfolded fs'']
+  note invw2 = swap(1)
+  note swap = swap(2)[OF inv] swap(3-)
+  interpret fs: fs_int' n m fs_init fs
+    by standard (use invw in auto)
+  interpret fs'': fs_int' n m fs_init fs''
+    by standard (use invw2 in auto)
   note dmu = fs.d\<mu>
   note dmu' = fs''.d\<mu>
   note inv' = LLL_invD[OF inv]
@@ -846,7 +855,7 @@ proof -
     by (intro nth_equalityI, insert i i0 len, auto simp: nth_append, rename_tac ii, case_tac "ii \<in> {i-1,i}", auto)
   finally have f_repr: "list_repr (i - 1) ?fr (map ((!) fs'') [0..<m])" .
   from i0 have sim1: "Suc (i - 1) = i" by simp
-  from LLL_d_Suc[OF inv im1, unfolded sim1]
+  from LLL_d_Suc[OF invw im1, unfolded sim1]
   have "length fs'' = m"
     using fs'' inv'(6) by auto
   hence fs_id: "fs' = fs''" unfolding fs' res fs_state.simps using of_list_repr[OF f_repr]
@@ -854,7 +863,7 @@ proof -
   from to_mu_repr[OF impl inv state] have mu: "mu_repr mu fs" by auto
   from to_d_repr[OF impl inv state] have d_repr: "d_repr ds fs" by auto
   note mu_def = mu[unfolded mu_repr_def]
-  note updates = d_d\<mu>_swap[OF inv i i0 cond fs''[symmetric]]
+  note updates = d_d\<mu>_swap[OF invw disjI1[OF inv] i i0 cond fs''[symmetric]]
   note dmu_ii = dmu_ij_state[OF \<open>i - 1 < i\<close> i]
   show ?g1 unfolding fs_id LLL_impl_inv.simps res
   proof (intro conjI f_repr)
@@ -956,17 +965,18 @@ proof (atomize(full), goal_cases)
       and impl: "LLL_impl_inv state'' i fs''"
       and impl': "basis_reduction_add_rows upw i fs = fs''" 
       by auto
+    note invw = LLL_inv_imp_w[OF inv]
     obtain num denom where quot: "quotient_of \<alpha> = (num,denom)" by force
     note d_state = d_state[OF impl inv state]
     from i have le: "i - 1 \<le> m" " i \<le> m" "Suc i \<le> m" by auto
     note d_state = d_state[OF le(1)] d_state[OF le(2)] d_state[OF le(3)]
-    interpret fs'': fs_int' n m fs_init \<alpha> False i fs''
-      by standard (use inv in auto)
+    interpret fs'': fs_int' n m fs_init fs''
+      by standard (use invw in auto)
     have "i < length fs''"
       using LLL_invD[OF inv] i by auto
     note d_sq_norm_comparison = fs''.d_sq_norm_comparison[OF quot this False]
     note res = res[unfolded def id if_False Let_def state'' quot split d_state this]
-    note pos = LLL_d_pos[OF inv le(1)] LLL_d_pos[OF inv le(2)] quotient_of_denom_pos[OF quot]
+    note pos = LLL_d_pos[OF invw le(1)] LLL_d_pos[OF invw le(2)] quotient_of_denom_pos[OF quot]
     from False have sim1: "Suc (i - 1) = i" by simp
     let ?r = "rat_of_int"
     let ?x = "sq_norm (gso fs'' (i - 1))"

@@ -79,6 +79,38 @@ text \<open>This is the core invariant which enables to prove functional correct
 
 definition "\<mu>_small fs i = (\<forall> j < i. abs (\<mu> fs i j) \<le> 1/2)" 
 
+definition LLL_invariant_weak :: "int vec list \<Rightarrow> bool" where
+  "LLL_invariant_weak fs = (
+    gs.lin_indpt_list (RAT fs) \<and> 
+    lattice_of fs = L \<and>
+    length fs = m)"
+
+lemma LLL_inv_wD: assumes "LLL_invariant_weak fs"
+  shows 
+  "lin_indep fs" 
+  "length (RAT fs) = m" 
+  "set fs \<subseteq> carrier_vec n"
+  "\<And> i. i < m \<Longrightarrow> fs ! i \<in> carrier_vec n" 
+  "\<And> i. i < m \<Longrightarrow> gso fs i \<in> carrier_vec n" 
+  "length fs = m"
+  "lattice_of fs = L" 
+proof (atomize (full), goal_cases)
+  case 1
+  interpret gs': gram_schmidt_fs_lin_indpt n "RAT fs"
+    by (standard) (use assms LLL_invariant_weak_def gs.lin_indpt_list_def in auto)
+  show ?case
+    using assms gs'.fs_carrier gs'.f_carrier gs'.gso_carrier
+    by (auto simp add: LLL_invariant_weak_def gram_schmidt_fs.reduced_def)
+qed
+
+lemma LLL_inv_wI: assumes  
+  "set fs \<subseteq> carrier_vec n"
+  "length fs = m"
+  "lattice_of fs = L" 
+  "lin_indep fs" 
+shows "LLL_invariant_weak fs" 
+  unfolding LLL_invariant_weak_def Let_def using assms by auto
+
 definition LLL_invariant :: "bool \<Rightarrow> nat \<Rightarrow> int vec list \<Rightarrow> bool" where 
   "LLL_invariant upw i fs = ( 
     gs.lin_indpt_list (RAT fs) \<and> 
@@ -88,6 +120,9 @@ definition LLL_invariant :: "bool \<Rightarrow> nat \<Rightarrow> int vec list \
     length fs = m \<and>
     (upw \<or> \<mu>_small fs i)    
   )" 
+
+lemma LLL_inv_imp_w: "LLL_invariant upw i fs \<Longrightarrow> LLL_invariant_weak fs" 
+  unfolding LLL_invariant_def LLL_invariant_weak_def by blast 
 
 lemma LLL_invD: assumes "LLL_invariant upw i fs"
   shows 
@@ -127,11 +162,11 @@ shows "LLL_invariant upw i fs"
 end
 
 locale fs_int' =
-  fixes n m fs_init \<alpha> upw i fs 
-  assumes LLL_inv: "LLL.LLL_invariant n m fs_init \<alpha> upw i fs"
+  fixes n m fs_init fs 
+  assumes LLL_inv: "LLL.LLL_invariant_weak n m fs_init fs"
 
 sublocale fs_int' \<subseteq> fs_int_indpt
-   using LLL_inv unfolding LLL.LLL_invariant_def by (unfold_locales) blast
+   using LLL_inv unfolding LLL.LLL_invariant_weak_def by (unfold_locales) blast
 
 context LLL
 begin
@@ -162,34 +197,36 @@ definition LLL_measure :: "nat \<Rightarrow> int vec list \<Rightarrow> nat" whe
   "LLL_measure i fs = (2 * logD fs + m - i)" 
 
 context
-  fixes upw i fs
-  assumes Linv: "LLL_invariant upw i fs"
+  fixes fs
+  assumes Linv: "LLL_invariant_weak fs"
 begin
 
-interpretation fs: fs_int' n m fs_init \<alpha> upw i fs
+interpretation fs: fs_int' n m fs_init fs
   by (standard) (use Linv in auto)
 
 lemma Gramian_determinant:
   assumes k: "k \<le> m" 
 shows "of_int (gs.Gramian_determinant fs k) = (\<Prod> j<k. sq_norm (gso fs j))" (is ?g1)
   "gs.Gramian_determinant fs k > 0" (is ?g2)
-  using assms fs.Gramian_determinant LLL_invD[OF Linv]  by auto
+  using assms fs.Gramian_determinant LLL_inv_wD[OF Linv]  by auto
    
 lemma LLL_d_pos [intro]: assumes k: "k \<le> m" 
 shows "d fs k > 0"
-  unfolding d_def using fs.Gramian_determinant k LLL_invD[OF Linv] by auto
+  unfolding d_def using fs.Gramian_determinant k LLL_inv_wD[OF Linv] by auto
 
 lemma LLL_d_Suc: assumes k: "k < m" 
 shows "of_int (d fs (Suc k)) = sq_norm (gso fs k) * of_int (d fs k)" 
-  using assms fs.fs_int_d_Suc  LLL_invD[OF Linv] unfolding fs.d_def d_def by auto
+  using assms fs.fs_int_d_Suc  LLL_inv_wD[OF Linv] unfolding fs.d_def d_def by auto
 
 lemma LLL_D_pos:
   shows "D fs > 0"
-  using fs.fs_int_D_pos LLL_invD[OF Linv] unfolding D_def fs.D_def fs.d_def d_def by auto
+  using fs.fs_int_D_pos LLL_inv_wD[OF Linv] unfolding D_def fs.D_def fs.d_def d_def by auto
+end
 
 text \<open>Condition when we can increase the value of $i$\<close>
 
 lemma increase_i:
+  assumes Linv: "LLL_invariant upw i fs"
   assumes i: "i < m" 
   and upw: "upw \<Longrightarrow> i = 0" 
   and red_i: "i \<noteq> 0 \<Longrightarrow> sq_norm (gso fs (i - 1)) \<le> \<alpha> * sq_norm (gso fs i)"
@@ -211,17 +248,17 @@ proof -
   show "LLL_measure i fs > LLL_measure (Suc i) fs" unfolding LLL_measure_def using i by auto
 qed
 
-end
-
 text \<open>Standard addition step which makes $\mu_{i,j}$ small\<close>
 
 definition "\<mu>_small_row i fs j = (\<forall> j'. j \<le> j' \<longrightarrow> j' < i \<longrightarrow> abs (\<mu> fs i j') \<le> inverse 2)"
 
-lemma basis_reduction_add_row_main: assumes Linv: "LLL_invariant True i fs"
+lemma basis_reduction_add_row_main: assumes Linv: "LLL_invariant_weak fs"
   and i: "i < m"  and j: "j < i" 
   and fs': "fs' = fs[ i := fs ! i - c \<cdot>\<^sub>v fs ! j]" 
-shows "LLL_invariant True i fs'"
+shows "LLL_invariant_weak fs'" 
+  "LLL_invariant True i fs \<Longrightarrow> LLL_invariant True i fs'"
   "c = round (\<mu> fs i j) \<Longrightarrow> \<mu>_small_row i fs (Suc j) \<Longrightarrow> \<mu>_small_row i fs' j" (* mu-value at position i j gets small *)
+  "c = round (\<mu> fs i j) \<Longrightarrow> abs (\<mu> fs' i j) \<le> 1/2" (* mu-value at position i j gets small *)
   "LLL_measure i fs' = LLL_measure i fs" 
   (* new values of gso: no change *)
   "\<And> i. i < m \<Longrightarrow> gso fs' i = gso fs i" 
@@ -233,11 +270,11 @@ shows "LLL_invariant True i fs'"
 proof -
   define bnd :: rat where bnd: "bnd = 4 ^ (m - 1 - Suc j) * of_nat (N ^ (m - 1) * m)" 
   define M where "M = map (\<lambda>i. map (\<mu> fs i) [0..<m]) [0..<m]"
-  note inv = LLL_invD[OF Linv]
+  note inv = LLL_inv_wD[OF Linv]
   note Gr = inv(1)
   have ji: "j \<le> i" "j < m" and jstrict: "j < i" 
     and add: "set fs \<subseteq> carrier_vec n" "i < length fs" "j < length fs" "i \<noteq> j" 
-    and len: "length fs = m" and red: "weakly_reduced fs i"
+    and len: "length fs = m" 
     and indep: "lin_indep fs" 
     using inv j i by auto 
   let ?R = rat_of_int
@@ -312,7 +349,7 @@ proof -
     "gs.lin_indpt (set (RAT fs'))"
     using indep_F1 F1' unfolding gs.lin_indpt_list_def by auto
   interpret gs1: gram_schmidt_fs_lin_indpt n "RAT fs"
-    by (standard) (use LLL_invD[OF assms(1)] gs.lin_indpt_list_def in auto)
+    by (standard) (use inv gs.lin_indpt_list_def in auto)
   interpret gs2: gram_schmidt_fs_lin_indpt n "RAT fs'"
     by (standard) (use indep_F1 F1' gs.lin_indpt_list_def in auto)
   let ?G = "map ?g [0 ..< m]" 
@@ -349,10 +386,10 @@ proof -
     using gs2.oc_projection_exist[of i] conn2 i unfolding span_G1_G by auto
   from \<open>j < i\<close> have Gj_mem: "(RAT fs) ! j \<in> (\<lambda> x. ((RAT fs) ! x)) ` {0 ..< i}" by auto  
   have id1: "set (take i (RAT fs)) = (\<lambda>x. ?RV (fs ! x)) ` {0..<i}"
-    using \<open>i \<le> m\<close> len
+    using \<open>i < m\<close> len
     by (subst nth_image[symmetric], force+)
   have "(RAT fs) ! j \<in> ?rs \<longleftrightarrow> (RAT fs) ! j \<in> gs.span ((\<lambda>x. ?RV (fs ! x)) ` {0..<i})"
-    using gs1.partial_span  \<open>i \<le> m\<close> id1 inv by auto
+    using gs1.partial_span  \<open>i < m\<close> id1 inv by auto
   also have "(\<lambda>x. ?RV (fs ! x)) ` {0..<i} = (\<lambda>x. ((RAT fs) ! x)) ` {0..<i}" using \<open>i < m\<close> len by force
   also have "(RAT fs) ! j \<in> gs.span \<dots>"
     by (rule gs.span_mem[OF _ Gj_mem], insert \<open>i < m\<close> G, auto)
@@ -384,7 +421,7 @@ proof -
     show ?case by (rule linorder_class.linorder_cases[of x i],insert G1_G eq_part eq_rest,auto)
   qed
   hence Hs:"?G' = ?G" by (auto simp:o_def)
-  have red: "weakly_reduced fs' i" using red using eq_fs \<open>i < m\<close>
+  have red: "weakly_reduced fs i \<Longrightarrow> weakly_reduced fs' i" using eq_fs \<open>i < m\<close>
     unfolding gram_schmidt_fs.weakly_reduced_def by simp
   let ?Mi = "M ! i ! j"  
   have Gjn: "dim_vec (fs ! j) = n" using Fij(2) carrier_vecD by blast
@@ -429,7 +466,6 @@ proof -
   finally have "det (?GsM * ?GsM\<^sup>T) \<noteq> 0" by simp
   from vec_space.det_nonzero_congruence[OF EMN this _ _ N] Gs E M
   have EMN: "E * M' = N'" by auto (* lemma 16.12(i), part 2 *) 
-  from inv have sred: "reduced fs i" by auto
   {
     fix i' j'
     assume ij: "i' < m" "j' < m" and choice: "i' \<noteq> i \<or> j < j'" 
@@ -472,13 +508,22 @@ proof -
     ?mu' i' j' = (if i' = i \<and> j' \<le> j then ?mu i j' - ?R c * ?mu j j' else ?mu i' j')" 
     for i' j' using mu_change[of j'] mu_no_change[of i' j']
     by auto
-  have sred: "reduced fs' i"
-    unfolding gram_schmidt_fs.reduced_def 
-  proof (intro conjI[OF red] impI allI, goal_cases)
-    case (1 i' j)
-    with mu_no_change[of i' j] sred[unfolded gram_schmidt_fs.reduced_def, THEN conjunct2, rule_format, of i' j] i 
-    show ?case by auto
-  qed
+  {
+    assume "LLL_invariant True i fs"
+    from LLL_invD[OF this] have "weakly_reduced fs i" and sred: "reduced fs i" by auto
+    from red[OF this(1)] have red: "weakly_reduced fs' i" .
+    have sred: "reduced fs' i"
+      unfolding gram_schmidt_fs.reduced_def 
+    proof (intro conjI[OF red] impI allI, goal_cases)
+      case (1 i' j)
+      with mu_no_change[of i' j] sred[unfolded gram_schmidt_fs.reduced_def, THEN conjunct2, rule_format, of i' j] i 
+      show ?case by auto
+    qed
+    show "LLL_invariant True i fs'" 
+      by (intro LLL_invI[OF F1 lattice \<open>i \<le> m\<close> indep_F1 sred], auto)
+  } 
+  show Linv': "LLL_invariant_weak fs'" 
+    by (intro LLL_inv_wI[OF F1 lattice indep_F1])
 
   have mudiff:"?mu i j - of_int c = ?mu' i j"
     by (subst mu_change, auto simp: gs1.\<mu>.simps)
@@ -486,11 +531,11 @@ proof -
     unfolding gs.lin_indpt_list_def using conn2 by auto
   { 
     assume c: "c = round (\<mu> fs i j)" 
-    assume mu_small: "\<mu>_small_row i fs (Suc j)" 
     have small: "abs (?mu i j - of_int c) \<le> inverse 2" unfolding j c
       using of_int_round_abs_le by (auto simp add: abs_minus_commute)
     from this[unfolded mudiff] 
-    have mu'_2: "abs (?mu' i j) \<le> inverse 2" .
+    show mu'_2: "abs (?mu' i j) \<le> 1 / 2" by simp
+    assume mu_small: "\<mu>_small_row i fs (Suc j)" 
 
     show "\<mu>_small_row i fs' j" 
       unfolding \<mu>_small_row_def 
@@ -501,8 +546,6 @@ proof -
     qed
   }
 
-  show Linv': "LLL_invariant True i fs'" 
-    by (intro LLL_invI[OF F1 lattice \<open>i \<le> m\<close> lin_indpt_list_fs sred], auto)
   {
     fix i
     assume i: "i \<le> m"
@@ -520,13 +563,13 @@ qed
 
 text \<open>Addition step which can be skipped since $\mu$-value is already small\<close>
 
-lemma basis_reduction_add_row_main_0: assumes Linv: "LLL_invariant True i fs"
+lemma basis_reduction_add_row_main_0: assumes Linv: "LLL_invariant_weak fs"
   and i: "i < m"  and j: "j < i" 
   and 0: "round (\<mu> fs i j) = 0" 
   and mu_small: "\<mu>_small_row i fs (Suc j)"
 shows "\<mu>_small_row i fs j" (is ?g1)
 proof -
-  note inv = LLL_invD[OF Linv]
+  note inv = LLL_inv_wD[OF Linv]
   from inv(5)[OF i] inv(5)[of j] i j
   have id: "fs[i := fs ! i - 0 \<cdot>\<^sub>v fs ! j] = fs" 
     by (intro nth_equalityI, insert inv i, auto)
@@ -628,12 +671,14 @@ lemma reduction: "0 < reduction" "reduction \<le> 1"
 
 lemma base: "\<alpha> > 4/3 \<Longrightarrow> base > 1" using reduction(1,3) unfolding reduction_def base_def by auto
 
-lemma basis_reduction_swap_main: assumes Linv: "LLL_invariant False i fs"
+lemma basis_reduction_swap_main: assumes Linvw: "LLL_invariant_weak fs"
+  and small: "LLL_invariant False i fs \<or> abs (\<mu> fs i (i - 1)) \<le> 1/2" 
   and i: "i < m"
   and i0: "i \<noteq> 0" 
   and norm_ineq: "sq_norm (gso fs (i - 1)) > \<alpha> * sq_norm (gso fs i)" 
   and fs'_def: "fs' = fs[i := fs ! (i - 1), i - 1 := fs ! i]" 
-shows "LLL_invariant False (i - 1) fs'" 
+shows "LLL_invariant_weak fs'" 
+  and "LLL_invariant False i fs \<Longrightarrow> LLL_invariant False (i - 1) fs'" 
   and "LLL_measure i fs > LLL_measure (i - 1) fs'" 
   (* new values of gso *)
   and "\<And> k. k < m \<Longrightarrow> gso fs' k = (if k = i - 1 then
@@ -666,24 +711,24 @@ shows "LLL_invariant False (i - 1) fs'"
        sq_norm (gso fs' (i - 1)) / sq_norm (gso fs (i - 1)) * of_int (d fs i)
        else of_int (d fs ii))" 
 proof -
-  note inv = LLL_invD[OF Linv]
-  interpret fs: fs_int' n m fs_init \<alpha> False i fs
-    by (standard) (use Linv in auto)
+  note inv = LLL_inv_wD[OF Linvw]
+  interpret fs: fs_int' n m fs_init fs
+    by (standard) (use Linvw in auto)
   let ?mu1 = "\<mu> fs" 
   let ?mu2 = "\<mu> fs'" 
   let ?g1 = "gso fs" 
   let ?g2 = "gso fs'" 
-  from inv(11)[unfolded \<mu>_small_def]
-  have mu_F1_i: "\<And> j. j<i \<Longrightarrow> \<bar>?mu1 i j\<bar> \<le> 1 / 2" by auto
-  from mu_F1_i[of "i-1"] have m12: "\<bar>?mu1 i (i - 1)\<bar> \<le> inverse 2" using i0
-    by auto
+  have m12: "\<bar>?mu1 i (i - 1)\<bar> \<le> inverse 2" using small
+  proof 
+    assume "LLL_invariant False i fs" 
+    from LLL_invD(11)[OF this] i0 show ?thesis unfolding \<mu>_small_def by auto
+  qed auto
   note d = d_def  
   note Gd = Gramian_determinant(1)
-  note Gd12 = Gd[OF Linv]
+  note Gd12 = Gd[OF Linvw]
   let ?x = "?g1 (i - 1)" let ?y = "?g1 i" 
   let ?cond = "\<alpha> * sq_norm ?y < sq_norm ?x" 
-  from inv have red: "weakly_reduced fs i" 
-    and len: "length fs = m" and HC: "set fs \<subseteq> carrier_vec n" 
+  from inv have len: "length fs = m" and HC: "set fs \<subseteq> carrier_vec n" 
     and L: "lattice_of fs = L" 
     using i by auto 
   from i0 inv i have swap: "set fs \<subseteq> carrier_vec n" "i < length fs" "i - 1 < length fs" "i \<noteq> i - 1" 
@@ -724,10 +769,6 @@ proof -
   } note G2_G = this
   have take_eq: "take (Suc i - 1 - 1) fs' = take (Suc i - 1 - 1) fs" 
     by (intro nth_equalityI, insert len len' i swap(2-), auto intro!: fs'_fs) 
-  from inv have "weakly_reduced fs i" by auto
-  hence "weakly_reduced fs (i - 1)" unfolding gram_schmidt_fs.weakly_reduced_def by auto
-  hence red: "weakly_reduced fs' (i - 1)"
-    unfolding gram_schmidt_fs.weakly_reduced_def using i G2_G by simp
   have i1n: "i - 1 < m" using i by auto
   let ?R = rat_of_int
   let ?RV = "map_vec ?R"  
@@ -1101,16 +1142,6 @@ proof -
       by auto
   } note new_g = this
 
-  (* stay reduced *)
-  from inv have sred: "reduced fs i" by auto
-  have sred: "reduced fs' (i - 1)"
-    unfolding gram_schmidt_fs.reduced_def
-  proof (intro conjI[OF red] allI impI, goal_cases)
-    case (1 i' j)
-    with sred have "\<bar>?mu1 i' j\<bar> \<le> 1 / 2" unfolding gram_schmidt_fs.reduced_def by auto
-    thus ?case using mu'_mu_small_i[OF 1(1)] by simp
-  qed
-
   { (* 16.13 (ii) : norm of g (i - 1) decreases by reduction factor *)
     note sq_norm_g2_im1
     also have "?n1 i + (?mu1 i (i - 1) * ?mu1 i (i - 1)) * ?n1 (i - 1)
@@ -1132,21 +1163,41 @@ proof -
   have lin_indpt_list_fs': "gs.lin_indpt_list (RAT fs')"
     unfolding gs.lin_indpt_list_def using conn2 by auto
 
-  have mu_small: "\<mu>_small fs' (i - 1)" 
-    unfolding \<mu>_small_def
-  proof (intro allI impI, goal_cases)
-    case (1 j)
-    thus ?case using inv(11) unfolding mu'_mu_i_im1_j[OF 1] \<mu>_small_def by auto
-  qed      
+  {
+  (* stay reduced *)
+    assume "LLL_invariant False i fs" 
+    note inv = LLL_invD[OF this] 
+    from inv have "weakly_reduced fs i" by auto
+    hence "weakly_reduced fs (i - 1)" unfolding gram_schmidt_fs.weakly_reduced_def by auto
+    hence red: "weakly_reduced fs' (i - 1)"
+      unfolding gram_schmidt_fs.weakly_reduced_def using i G2_G by simp
+    from inv have sred: "reduced fs i" by auto
+    have sred: "reduced fs' (i - 1)"
+      unfolding gram_schmidt_fs.reduced_def
+    proof (intro conjI[OF red] allI impI, goal_cases)
+      case (1 i' j)
+      with sred have "\<bar>?mu1 i' j\<bar> \<le> 1 / 2" unfolding gram_schmidt_fs.reduced_def by auto
+      thus ?case using mu'_mu_small_i[OF 1(1)] by simp
+    qed
+    have mu_small: "\<mu>_small fs' (i - 1)" 
+      unfolding \<mu>_small_def
+    proof (intro allI impI, goal_cases)
+      case (1 j)
+      thus ?case using inv(11) unfolding mu'_mu_i_im1_j[OF 1] \<mu>_small_def by auto
+    qed      
+    show "LLL_invariant False (i - 1) fs'"
+      by (rule LLL_invI, insert lin_indpt_list_fs' conn2 mu_small span' lattice fs' sred i, auto)
+  } 
+
       
   (* invariant is established *)
-  show newInv: "LLL_invariant False (i - 1) fs'"
-    by (rule LLL_invI, insert lin_indpt_list_fs' conn2 mu_small span' lattice fs' sred i, auto)
+  show newInvw: "LLL_invariant_weak fs'"
+    by (rule LLL_inv_wI, insert lin_indpt_list_fs' conn2 span' lattice fs', auto)
 
   (* show decrease in measure *)
   { (* 16.16 (ii), the decreasing case *)
     have ile: "i \<le> m" using i by auto
-    from Gd[OF newInv, folded d_def, OF ile] 
+    from Gd[OF newInvw, folded d_def, OF ile] 
     have "?R (d fs' i) = (\<Prod>j<i. ?n2 j )" by auto
     also have "\<dots> = prod ?n2 ({0 ..< i-1} \<union> {i - 1})" 
       by (rule sym, rule prod.cong, (insert i0, auto)[1], insert i, auto)
@@ -1160,12 +1211,12 @@ proof -
       by (rule arg_cong[of _ _ "prod ?n1"], insert i0, auto)
     also have "\<dots> = (\<Prod>j<i. ?n1 j)"
       by (rule prod.cong, insert i0, auto)
-    also have "\<dots> = ?R (d fs i)" unfolding d_def Gd[OF Linv ile]
+    also have "\<dots> = ?R (d fs i)" unfolding d_def Gd[OF Linvw ile]
       by (rule prod.cong[OF refl], insert i, auto)
     finally have new_di: "?R (d fs' i) = ?n2 (i - 1) / ?n1 (i - 1) * ?R (d fs i)" by simp
     also have "\<dots> < (reduction * ?n1 (i - 1)) / ?n1 (i - 1) * ?R (d fs i)"
       by (rule mult_strict_right_mono[OF divide_strict_right_mono[OF g_reduction norm_pos1[OF im1]]],
-        insert LLL_d_pos[OF Linv] i, auto)  
+        insert LLL_d_pos[OF Linvw] i, auto)  
     also have "\<dots> = reduction * ?R (d fs i)" using norm_pos1[OF im1] by auto
     finally have "d fs' i < real_of_rat reduction * d fs i" 
       using of_rat_less of_rat_mult of_rat_of_int_eq by metis
@@ -1174,15 +1225,15 @@ proof -
   show "ii \<le> m \<Longrightarrow> ?R (d fs' ii) = (if ii = i then ?n2 (i - 1) / ?n1 (i - 1) * ?R (d fs i) else ?R (d fs ii))" 
     for ii using d_i d by auto
   have pos: "k < m \<Longrightarrow> 0 < d fs' k" "k < m \<Longrightarrow> 0 \<le> d fs' k" for k 
-    using LLL_d_pos[OF newInv, of k] by auto
+    using LLL_d_pos[OF newInvw, of k] by auto
   have prodpos:"0< (\<Prod>i<m. d fs' i)" apply (rule prod_pos)
-    using LLL_d_pos[OF newInv] by auto
+    using LLL_d_pos[OF newInvw] by auto
   have prod_pos':"0 < (\<Prod>x\<in>{0..<m} - {i}. real_of_int (d fs' x))" apply (rule prod_pos)
-    using LLL_d_pos[OF newInv] pos by auto
+    using LLL_d_pos[OF newInvw] pos by auto
   have prod_nonneg:"0 \<le> (\<Prod>x\<in>{0..<m} - {i}. real_of_int (d fs' x))" apply (rule prod_nonneg)
-    using LLL_d_pos[OF newInv] pos by auto
+    using LLL_d_pos[OF newInvw] pos by auto
   have prodpos2:"0<(\<Prod>ia<m. d fs ia)" apply (rule prod_pos)
-    using LLL_d_pos[OF assms(1)] by auto
+    using LLL_d_pos[OF Linvw] by auto
   have "D fs' = real_of_int (\<Prod>i<m. d fs' i)" unfolding D_def using prodpos by simp
   also have "(\<Prod>i<m. d fs' i) = (\<Prod> j \<in> {0 ..< m} - {i} \<union> {i}. d fs' j)"
     by (rule prod.cong, insert i, auto)
@@ -1211,7 +1262,7 @@ proof -
     let ?new = "real (D fs')" 
     let ?old = "real (D fs)" 
     let ?log = "log (1/of_rat reduction)" 
-    note pos = LLL_D_pos[OF newInv] LLL_D_pos[OF assms(1)]
+    note pos = LLL_D_pos[OF newInvw] LLL_D_pos[OF Linvw]
     from reduction have "real_of_rat reduction > 0" by auto
     hence gediv:"1/real_of_rat reduction > 0" by auto
     have "(1/of_rat reduction) * ?new \<le> ((1/of_rat reduction) * of_rat reduction) * ?old"
@@ -1304,28 +1355,28 @@ proof -
 qed
 
 
-lemma LLL_mu_d_Z: assumes inv: "LLL_invariant upw i fs" 
+lemma LLL_mu_d_Z: assumes inv: "LLL_invariant_weak fs" 
   and j: "j \<le> ii" and ii: "ii < m" 
 shows "of_int (d fs (Suc j)) * \<mu> fs ii j \<in> \<int>"
 proof -
-  interpret fs: fs_int' n m fs_init \<alpha> upw i fs
+  interpret fs: fs_int' n m fs_init fs
     by standard (use inv in auto)
   show ?thesis
-    using assms fs.fs_int_mu_d_Z LLL_invD[OF inv] unfolding d_def fs.d_def by auto
+    using assms fs.fs_int_mu_d_Z LLL_inv_wD[OF inv] unfolding d_def fs.d_def by auto
 qed
 
-context fixes upw i fs
-  assumes Linv: "LLL_invariant upw i fs" and gbnd: "g_bound fs" 
+context fixes fs
+  assumes Linv: "LLL_invariant_weak fs" and gbnd: "g_bound fs" 
 begin
 
 interpretation gs1: gram_schmidt_fs_lin_indpt n "RAT fs"
-  by (standard) (use Linv LLL_invariant_def gs.lin_indpt_list_def in auto)
+  by (standard) (use Linv LLL_invariant_weak_def gs.lin_indpt_list_def in auto)
 
 lemma LLL_inv_N_pos: assumes m: "m \<noteq> 0" 
 shows "N > 0" 
 proof -
   let ?r = rat_of_int
-  note inv = LLL_invD[OF Linv]
+  note inv = LLL_inv_wD[OF Linv]
   from inv have F: "RAT fs ! 0 \<in> Rn" "fs ! 0 \<in> carrier_vec n" using m by auto
   from m have upt: "[0..< m] = 0 # [1 ..< m]" using upt_add_eq_append[of 0 1 "m - 1"] by auto
   from inv(6) m have "map_vec ?r (fs ! 0) \<noteq> 0\<^sub>v n" using gs.lin_indpt_list_nonzero[OF inv(1)]
@@ -1345,7 +1396,7 @@ qed
 lemma d_approx_main: assumes i: "ii \<le> m" "m \<noteq> 0" 
 shows "rat_of_int (d fs ii) \<le> rat_of_nat (N^ii)" 
 proof -
-  note inv = LLL_invD[OF Linv]
+  note inv = LLL_inv_wD[OF Linv]
   from LLL_inv_N_pos i have A: "0 < N" by auto
   note main = inv(2)[unfolded gram_schmidt_int_def gram_schmidt_wit_def]
   have "rat_of_int (d fs ii) = (\<Prod>j<ii. \<parallel>gso fs j\<parallel>\<^sup>2)" unfolding d_def using i
@@ -1369,7 +1420,7 @@ lemma d_bound: assumes i: "ii < m"
 
 lemma D_approx: "D fs \<le> N ^ (m * m)" 
 proof - 
-  note inv = LLL_invD[OF Linv]
+  note inv = LLL_inv_wD[OF Linv]
   from LLL_inv_N_pos have N: "m \<noteq> 0 \<Longrightarrow> 0 < N" by auto
   note main = inv(2)[unfolded gram_schmidt_int_def gram_schmidt_wit_def]
   have "rat_of_int (\<Prod>i<m. d fs i) = (\<Prod>i<m. rat_of_int (d fs i))" by simp
@@ -1393,7 +1444,7 @@ proof -
   have id: "base = 1 / real_of_rat reduction" unfolding base_def reduction_def using \<alpha>0 by
     (auto simp: field_simps of_rat_divide)
   from LLL_D_pos[OF Linv] have D1: "real (D fs) \<ge> 1" by auto
-  note invD = LLL_invD[OF Linv]  
+  note invD = LLL_inv_wD[OF Linv]  
   from invD
   have F: "set fs \<subseteq> carrier_vec n" and len: "length fs = m" by auto
   have N0: "N > 0" using LLL_inv_N_pos[OF assms(2)] .
@@ -1451,7 +1502,7 @@ qed
 lemma LLL_measure_approx_fs_init: 
   "LLL_invariant upw i fs_init \<Longrightarrow> 4 / 3 < \<alpha> \<Longrightarrow> m \<noteq> 0 \<Longrightarrow> 
   real (LLL_measure i fs_init) \<le> real m + real (2 * m * m) * log base (real N)" 
-  using LLL_measure_approx[OF _ g_bound_fs_init] .
+  using LLL_measure_approx[OF LLL_inv_imp_w g_bound_fs_init] .
 
 lemma N_le_MMn: assumes m0: "m \<noteq> 0" 
   shows "N \<le> nat M * nat M * n" 
@@ -1555,12 +1606,13 @@ next
   show ?case
   proof (cases "?c = 0")
     case True
-    thus ?thesis using Suc(1)[OF Suc(2) basis_reduction_add_row_main_0[OF Suc(2) i j True Suc(3)]]
+    thus ?thesis using Suc(1)[OF Suc(2) basis_reduction_add_row_main_0[OF LLL_inv_imp_w[OF Suc(2)] i j True Suc(3)]]
       Suc(2-) by auto
   next
     case False
-    note step = basis_reduction_add_row_main[OF Suc(2) i j refl]
-    show ?thesis using Suc(1)[OF step(1-2)] False Suc(2-) step(3) by auto
+    note step = basis_reduction_add_row_main(2-)[OF LLL_inv_imp_w[OF Suc(2)] i j refl]
+    note step = step(1)[OF Suc(2)] step(2-)
+    show ?thesis using Suc(1)[OF step(1-2)] False Suc(2-) step(4) by simp
   qed
 qed
 
@@ -1594,10 +1646,11 @@ lemma basis_reduction_swap: assumes
 shows "LLL_invariant upw' i' fs'" (is ?g1)
   "LLL_measure i' fs' < LLL_measure i fs" (is ?g2)
 proof -
+  note invw = LLL_inv_imp_w[OF inv]
   note def = basis_reduction_swap_def
   from res[unfolded basis_reduction_swap_def]
   have id: "upw' = False" "i' = i - 1" "fs' = fs[i := fs ! (i - 1), i - 1 := fs ! i]" by auto
-  from basis_reduction_swap_main(1-2)[OF inv i cond id(3)] show ?g1 ?g2 unfolding id by auto
+  from basis_reduction_swap_main(2-3)[OF invw _ i cond id(3)] inv show ?g1 ?g2 unfolding id by auto
 qed
 
 lemma basis_reduction_step: assumes 
@@ -1608,11 +1661,12 @@ shows "LLL_invariant upw' i' fs'" "LLL_measure i' fs' < LLL_measure i fs"
 proof (atomize(full), goal_cases)
   case 1
   note def = basis_reduction_step_def
+  note invw = LLL_inv_imp_w[OF inv]
   obtain fs'' where fs'': "basis_reduction_add_rows upw i fs = fs''" by auto
   show ?case
   proof (cases "i = 0")
     case True
-    from increase_i[OF inv i True] True
+    from increase_i[OF inv i] True
       res show ?thesis by (auto simp: def)
   next
     case False
@@ -1623,11 +1677,12 @@ proof (atomize(full), goal_cases)
     from basis_reduction_add_rows[OF inv fs'' i]
     have inv: "LLL_invariant False i fs''"
       and meas: "LLL_measure i fs'' = LLL_measure i fs" by auto
+    note invw = LLL_inv_imp_w[OF inv]
     show ?thesis
     proof (cases "?x \<le> ?y")
       case True
-      from increase_i[OF inv i _ True] True res meas
-      show ?thesis by auto
+      from increase_i[OF inv i] id True res meas
+      show ?thesis by simp
     next
       case gt: False
       hence "?x > ?y" by auto

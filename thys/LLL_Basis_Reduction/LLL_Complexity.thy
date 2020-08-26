@@ -666,7 +666,7 @@ proof (cases "m > 0")
   let ?p = "nat M * nat M * n * n" 
   let ?lg = "real_of_int (M * n)" 
   from 0 True have m0: "m \<noteq> 0" by simp
-  from LLL_inv_N_pos[OF LLL_inv_initial_state g_bound_fs_init m0] have N0: "N > 0" .
+  from LLL_inv_N_pos[OF LLL_inv_imp_w[OF LLL_inv_initial_state] g_bound_fs_init m0] have N0: "N > 0" .
   from N_le_MMn[OF m0] have N_prod: "N \<le> ?prod" by auto
   from N0 N_prod have M0: "M > 0" by (cases "M \<le> 0", auto)
   from N0 N_prod have prod0: "0 < ?prod" by linarith
