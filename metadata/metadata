@@ -9537,3 +9537,17 @@ abstract =
   proved is a necessary result by Erdős and Milner:
   $\omega^{1+\alpha\cdot n} \to (\omega^{1+\alpha}, 2^n)^2$.
 
+[Relational_Disjoint_Set_Forests]
+title = Relational Disjoint-Set Forests
+author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>
+topic = Computer science/Data structures
+date = 2020-08-26
+notify = walter.guttmann@canterbury.ac.nz
+abstract = 
+  We give a simple relation-algebraic semantics of read and write
+  operations on associative arrays. The array operations seamlessly
+  integrate with assignments in the Hoare-logic library. Using relation
+  algebras and Kleene algebras we verify the correctness of an
+  array-based implementation of disjoint-set forests with a naive union
+  operation and a find operation with path compression.
+

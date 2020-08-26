@@ -9,7 +9,21 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>04 Aug 2020 00:00:00 +0000</pubDate>
+    <pubDate>26 Aug 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Relational Disjoint-Set Forests</title>
+              <link>https://www.isa-afp.org/entries/Relational_Disjoint_Set_Forests.html</link>
+       <guid>https://www.isa-afp.org/entries/Relational_Disjoint_Set_Forests.html</guid>
+       <dc:creator> Walter Guttmann       </dc:creator>
+       <pubDate>26 Aug 2020 00:00:00 +0000</pubDate>
+       <description>
+We give a simple relation-algebraic semantics of read and write
+operations on associative arrays. The array operations seamlessly
+integrate with assignments in the Hoare-logic library. Using relation
+algebras and Kleene algebras we verify the correctness of an
+array-based implementation of disjoint-set forests with a naive union
+operation and a find operation with path compression.</description>
+    </item>
     <item>
        <title>Amicable Numbers</title>
               <link>https://www.isa-afp.org/entries/Amicable_Numbers.html</link>
@@ -574,21 +588,6 @@ reasoning about IO. Our model is inspired by the handling of IO in
 Haskell. We start by formalizing the 🌍 and embrace the IO monad
 afterwards. Then we present a sample main :: IO (), followed by its
 proof of correctness.</description>
-    </item>
-    <item>
-       <title>Implementing the Goodstein Function in &lambda;-Calculus</title>
-              <link>https://www.isa-afp.org/entries/Goodstein_Lambda.html</link>
-       <guid>https://www.isa-afp.org/entries/Goodstein_Lambda.html</guid>
-       <dc:creator> Bertram Felgenhauer       </dc:creator>
-       <pubDate>21 Feb 2020 00:00:00 +0000</pubDate>
-       <description>
-In this formalization, we develop an implementation of the Goodstein
-function G in plain &amp;lambda;-calculus, linked to a concise, self-contained
-specification. The implementation works on a Church-encoded
-representation of countable ordinals. The initial conversion to
-hereditary base 2 is not covered, but the material is sufficient to
-compute the particular value G(16), and easily extends to other fixed
-arguments.</description>
     </item>
   </channel>
 </rss>
