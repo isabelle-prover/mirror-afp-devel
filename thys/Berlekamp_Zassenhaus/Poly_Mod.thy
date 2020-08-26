@@ -46,6 +46,12 @@ proof (induct A rule: infinite_finite_induct)
   finally show ?case using insert by simp
 qed auto
 
+definition inv_M :: "int \<Rightarrow> int" where
+  "inv_M = (\<lambda> x. if x + x \<le> m then x else x - m)" 
+
+lemma M_inv_M_id[simp]: "M (inv_M x) = M x" 
+  unfolding inv_M_def M_def by simp
+
 
 definition Mp :: "int poly \<Rightarrow> int poly" where "Mp = map_poly M"
 
@@ -247,6 +253,7 @@ end
 
 declare poly_mod.M_def[code]
 declare poly_mod.Mp_def[code]
+declare poly_mod.inv_M_def[code]
 
 definition Irr_Mon :: "'a :: comm_semiring_1 poly set"
   where "Irr_Mon = {x. irreducible x \<and> monic x}" 
@@ -449,6 +456,22 @@ qed
 
 lemma Mp_product_modulus: "m' = m * k \<Longrightarrow> k > 0 \<Longrightarrow> Mp (poly_mod.Mp m' f) = Mp f" 
   by (intro poly_eqI, unfold poly_mod.Mp_coeff poly_mod.M_def, auto simp: mod_mod_cancel) 
+
+lemma inv_M_rev: assumes bnd: "2 * abs c < m" 
+  shows "inv_M (M c) = c"
+proof (cases "c \<ge> 0")
+  case True
+  with bnd show ?thesis unfolding M_def inv_M_def by auto
+next
+  case False
+  have 2: "\<And> v :: int. 2 * v = v + v" by auto
+  from False have c: "c < 0" by auto
+  from bnd c have "c + m > 0" "c + m < m" by auto
+  with c have cm: "c mod m = c + m"
+    by (metis le_less mod_add_self2 mod_pos_pos_trivial)
+  from c bnd have "2 * (c mod m) > m" unfolding cm by auto
+  with bnd c show ?thesis unfolding M_def inv_M_def cm by auto
+qed
 
 end
 
