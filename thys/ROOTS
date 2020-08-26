@@ -431,6 +431,7 @@ Regular-Sets
 Regular_Algebras
 Relation_Algebra
 Relational-Incorrectness-Logic
+Relational_Disjoint_Set_Forests
 Relational_Paths
 Rep_Fin_Groups
 Residuated_Lattices
