@@ -33,6 +33,9 @@ definition f_bound :: "bool \<Rightarrow> nat \<Rightarrow> int vec list \<Right
   "f_bound outside ii fs = (\<forall> i < m. sq_norm (fs ! i) \<le> (if i \<noteq> ii \<or> outside then int (N * m) else 
      int (4 ^ (m - 1) * N ^ m * m * m)))" 
 
+definition g_bnd :: "rat \<Rightarrow> int vec list \<Rightarrow> bool" where 
+  "g_bnd B fs = (\<forall> i < m. sq_norm (gso fs i) \<le> B)" 
+
 definition "\<mu>_bound_row fs bnd i = (\<forall> j \<le> i. (\<mu> fs i j)^2 \<le> bnd)" 
 abbreviation "\<mu>_bound_row_inner fs i j \<equiv> \<mu>_bound_row fs (4 ^ (m - 1 - j) * of_nat (N ^ (m - 1) * m)) i"  
 
@@ -163,7 +166,9 @@ proof (rule bound_invI)
   from bound_invD[OF Linv]
   have Linv: "LLL_invariant True i fs" and fbnd: "f_bound False i fs" and gbnd: "g_bound fs"
     by auto
-  note main = basis_reduction_add_row_main[OF Linv i j fs']
+  note Linvw = LLL_inv_imp_w[OF Linv]
+  note main = basis_reduction_add_row_main[OF Linvw i j fs']
+  note main = main(2)[OF Linv] main(3,5-)
   note main = main(1) main(2)[OF c mu_small] main(3-)
   show Linv': "LLL_invariant True i fs'" by fact
   define bnd :: rat where bnd: "bnd = 4 ^ (m - 1 - Suc j) * of_nat (N ^ (m - 1) * m)" 
@@ -281,12 +286,13 @@ proof (rule bound_invI)
   from bound_invD[OF binv]
   have Linv: "LLL_invariant True i fs" (is ?g1) and fbnd: "f_bound True i fs" 
     and gbnd: "g_bound fs" by auto
-  interpret fs: fs_int' n m fs_init \<alpha> True i fs
-    by standard (use Linv in auto)
+  note Linvw = LLL_inv_imp_w[OF Linv]
+  interpret fs: fs_int' n m fs_init fs
+    by standard (use Linvw in auto)
   note inv = LLL_invD[OF Linv]
   show "LLL_invariant True i fs" by fact
   show fbndF: "f_bound False i fs" using f_bound_True_arbitrary[OF fbnd] .
-  have N0: "N > 0" using LLL_inv_N_pos[OF Linv gbnd] i by auto
+  have N0: "N > 0" using LLL_inv_N_pos[OF Linvw gbnd] i by auto
   {
     fix j
     assume ji: "j < i" 
@@ -296,7 +302,7 @@ proof (rule bound_invI)
       by (subst fs.of_int_Gramian_determinant, insert ji i inv(2-), auto simp: set_conv_nth)
     also have "\<parallel>RAT fs ! i\<parallel>\<^sup>2 = of_int \<parallel>fs ! i\<parallel>\<^sup>2" using i inv(2-) by (auto simp: sq_norm_of_int)
     also have "of_int (d fs j) * \<dots> \<le> rat_of_nat (N^j) * of_int \<parallel>fs ! i\<parallel>\<^sup>2"
-      by (rule mult_right_mono, insert ji i d_approx[OF Linv gbnd, of j], auto)
+      by (rule mult_right_mono, insert ji i d_approx[OF Linvw gbnd, of j], auto)
     also have "\<dots> \<le> rat_of_nat (N^(m-2)) * of_int (int (N * m))" 
       by (intro mult_mono, unfold of_nat_le_iff of_int_le_iff, rule pow_mono_exp,
       insert fbnd[unfolded f_bound_def, rule_format, of i] N0 ji i, auto)
@@ -389,10 +395,12 @@ next
   case (Suc j fs)
   note binv = Suc(2)
   note Linv = bound_invD(1)[OF binv]
+  note Linvw = LLL_inv_imp_w[OF Linv]
   from Suc have j: "j < i" by auto
   let ?c = "round (\<mu> fs i j)" 
   note step = basis_reduction_add_row_main_bound[OF Suc(2) i j refl refl Suc(3-4)]
-  note step' = basis_reduction_add_row_main(1,2,3)[OF Linv i j refl]
+  note step' = basis_reduction_add_row_main(2,3,5)[OF Linvw i j refl]
+  note step' = step'(1)[OF Linv] step'(2-)
   show ?case
   proof (cases "?c = 0")
     case True
@@ -430,42 +438,31 @@ proof -
   qed
 qed
 
-
-lemma basis_reduction_swap_bound: assumes 
-  binv: "LLL_bound_invariant True False i fs" 
-  and res: "basis_reduction_swap i fs = (upw',i',fs')" 
+lemma g_bnd_swap:  
+  assumes i: "i < m" "i \<noteq> 0"
+  and Linv: "LLL_invariant_weak fs"
+  and mu_F1_i: "\<bar>\<mu> fs i (i-1)\<bar> \<le> 1 / 2"
   and cond: "sq_norm (gso fs (i - 1)) > \<alpha> * sq_norm (gso fs i)" 
-  and i: "i < m" "i \<noteq> 0" 
-shows "LLL_bound_invariant True upw' i' fs'" 
-proof (rule bound_invI)
-  note Linv = bound_invD(1)[OF binv]
-  from basis_reduction_swap[OF Linv res cond i]
-  show Linv': "LLL_invariant upw' i' fs'" by auto
-  from res[unfolded basis_reduction_swap_def]
-  have id: "i' = i - 1" "fs' = fs[i := fs ! (i - 1), i - 1 := fs ! i]" by auto
-  from LLL_invD(6)[OF Linv] i
+  and fs'_def: "fs' = fs[i := fs ! (i - 1), i - 1 := fs ! i]" 
+  and g_bnd: "g_bnd B fs" 
+shows "g_bnd B fs'" 
+proof -
+  note inv = LLL_inv_wD[OF Linv]
   have choice: "fs' ! k = fs ! k \<or> fs' ! k = fs ! i \<or> fs' ! k = fs ! (i - 1)" for k 
-    unfolding id by (cases "k = i"; cases "k = i - 1", auto) 
-  from bound_invD(2)[OF binv] i 
-  show "f_bound True i' fs'" unfolding id(1) f_bound_def
-  proof (intro allI impI, goal_cases)
-    case (1 k)
-    thus ?case using choice[of k] by auto
-  qed
+    unfolding fs'_def using i inv(6) by (cases "k = i"; cases "k = i - 1", auto) 
 
   let ?g1 = "\<lambda> i. gso fs i"
   let ?g2 = "\<lambda> i. gso fs' i" 
   let ?n1 = "\<lambda> i. sq_norm (?g1 i)"
   let ?n2 = "\<lambda> i. sq_norm (?g2 i)" 
-  from bound_invD(3)[OF binv, unfolded g_bound_def]
-  have short: "\<And> k. k < m \<Longrightarrow> ?n1 k \<le> of_nat N" by auto
+  from g_bnd[unfolded g_bnd_def] have short: "\<And> k. k < m \<Longrightarrow> ?n1 k \<le> B" by auto
   from short[of "i - 1"] i 
-  have short_im1: "?n1 (i - 1) \<le> of_nat N" by auto
-  note swap = basis_reduction_swap_main[OF Linv i cond id(2)]
-  note updates = swap(3,4)
+  have short_im1: "?n1 (i - 1) \<le> B" by auto
+  note swap = basis_reduction_swap_main[OF Linv disjI2[OF mu_F1_i] i cond fs'_def]
+  note updates = swap(4,5)
   note Linv' = swap(1)
-  note inv' = LLL_invD[OF Linv']
-  note inv = LLL_invD[OF Linv]
+  note inv' = LLL_inv_wD[OF Linv']
+  note inv = LLL_inv_wD[OF Linv]
   interpret gs1: gram_schmidt_fs_int n "RAT fs"
     by (standard) (use inv gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   interpret gs2: gram_schmidt_fs_int n "RAT fs'"
@@ -473,8 +470,7 @@ proof (rule bound_invI)
   let ?mu1 = "\<mu> fs" 
   let ?mu2 = "\<mu> fs'" 
   let ?mu = "?mu1 i (i - 1)" 
-  from LLL_invD[OF Linv] have "\<mu>_small fs i" by blast
-  from this[unfolded \<mu>_small_def] i have mu: "abs ?mu \<le> 1/2" by auto
+  have mu: "abs ?mu \<le> 1/2" using mu_F1_i .
   have "?n2 (i - 1) = ?n1 i + ?mu * ?mu * ?n1 (i - 1)" 
    by (subst updates(2), insert i, auto)
   also have "\<dots> = inverse \<alpha> * (\<alpha> * ?n1 i) + (?mu * ?mu) * ?n1 (i - 1)" 
@@ -489,15 +485,15 @@ proof (rule bound_invI)
   also have "\<dots> * ?n1 (i - 1) \<le> 1 * ?n1 (i - 1)" 
     by (rule mult_right_mono, auto simp: reduction)
   finally have n2im1: "?n2 (i - 1) \<le> ?n1 (i - 1)" by simp
-  show "g_bound fs'" unfolding g_bound_def
+  show "g_bnd B fs'" unfolding g_bnd_def
   proof (intro allI impI)
     fix k 
     assume km: "k < m" 
     consider (ki) "k = i" | (im1) "k = i - 1" | (other) "k \<noteq> i" "k \<noteq> i-1" by blast
-    thus "?n2 k \<le> of_nat N"
+    thus "?n2 k \<le> B"
     proof cases
       case other
-      from short[OF km] have "?n1 k \<le> of_nat N" by auto
+      from short[OF km] have "?n1 k \<le> B" by auto
       also have "?n1 k = ?n2 k" using km other
         by (subst updates(2), auto)
       finally show ?thesis by simp
@@ -505,7 +501,7 @@ proof (rule bound_invI)
       case im1
       have "?n2 k = ?n2 (i - 1)" unfolding im1 ..
       also have "\<dots> \<le> ?n1 (i - 1)" by fact
-      also have "\<dots> \<le> of_nat N" using short_im1 by auto
+      also have "\<dots> \<le> B" using short_im1 by auto
       finally show ?thesis by simp
     next
       case ki
@@ -543,22 +539,22 @@ proof (rule bound_invI)
           "map f [x] = [f x]" for f x by auto
         have "gs.is_oc_projection (gs2.gso i) (gs.span (gs2.gso ` {0..<i})) ((RAT fs') ! i)"
           using i inv' unfolding gs.lin_indpt_list_def
-          by (intro gs2.gso_oc_projection_span(2)) (auto)
+          by (intro gs2.gso_oc_projection_span(2)) auto
         then have "gs.is_oc_projection (?g2 i) (gs.span (gs2.gso ` {0 ..< i}))  (?f1 (i - 1))" 
-          unfolding id(2) using inv(6) i by (auto)
+          unfolding fs'_def using inv(6) i by auto
         also have "?f1 (i - 1) = u + ?g1 (i - 1) " 
           apply(subst gs1.fi_is_sum_of_mu_gso, insert im1 inv, unfold gs.lin_indpt_list_def)
           apply(blast)
           unfolding list_id map_append u_def
           by (subst gs.M.sumlist_snoc, insert i, auto simp: gs1.\<mu>.simps intro!: inv(5))
         also have "gs.span (gs2.gso ` {0 ..< i}) = gs.span (set (take i (RAT fs')))" 
-          using inv' \<open>i \<le> m\<close> unfolding gs.lin_indpt_list_def
+          using inv' \<open>i < m\<close> unfolding gs.lin_indpt_list_def
           by (subst gs2.partial_span) auto
         also have "set (take i (RAT fs')) = ?f2 ` {0 ..< i}" using inv'(6) i 
           by (subst nth_image[symmetric], auto)
         also have "{0 ..< i} = {0 ..< i - 1} \<union> {(i - 1)}" using i by auto
         also have "?f2 ` \<dots> = ?f2 ` {0 ..< i - 1} \<union> {?f2 (i - 1)}" by auto
-        also have "\<dots> = U" unfolding U_def id(2) 
+        also have "\<dots> = U" unfolding U_def fs'_def 
           by (rule arg_cong2[of _ _ _ _ "(\<union>)"], insert i inv(6), force+)
         finally have "gs.is_oc_projection (?g2 i) (gs.span U) (u + ?g1 (i - 1))" .        
         hence proj: "gs.is_oc_projection (?g2 i) (gs.span U) (?g1 (i - 1))"
@@ -567,10 +563,42 @@ proof (rule bound_invI)
         from gs.is_oc_projection_sq_norm[OF this gs.span_is_subset2[OF U]  inv(5)[OF im1]]
         show "?n2 i \<le> ?n1 (i - 1)" .
       qed
-      also have "\<dots> \<le> of_nat N" by fact
+      also have "\<dots> \<le> B" by fact
       finally show ?thesis .
     qed
   qed
+qed
+
+
+lemma basis_reduction_swap_bound: assumes 
+  binv: "LLL_bound_invariant True False i fs" 
+  and res: "basis_reduction_swap i fs = (upw',i',fs')" 
+  and cond: "sq_norm (gso fs (i - 1)) > \<alpha> * sq_norm (gso fs i)" 
+  and i: "i < m" "i \<noteq> 0" 
+shows "LLL_bound_invariant True upw' i' fs'" 
+proof (rule bound_invI)
+  note Linv = bound_invD(1)[OF binv]
+  from basis_reduction_swap[OF Linv res cond i]
+  show Linv': "LLL_invariant upw' i' fs'" by auto
+  from res[unfolded basis_reduction_swap_def]
+  have id: "i' = i - 1" "fs' = fs[i := fs ! (i - 1), i - 1 := fs ! i]" by auto
+  from LLL_invD(6)[OF Linv] i
+  have choice: "fs' ! k = fs ! k \<or> fs' ! k = fs ! i \<or> fs' ! k = fs ! (i - 1)" for k 
+    unfolding id by (cases "k = i"; cases "k = i - 1", auto) 
+  from bound_invD(2)[OF binv] i 
+  show "f_bound True i' fs'" unfolding id(1) f_bound_def
+  proof (intro allI impI, goal_cases)
+    case (1 k)
+    thus ?case using choice[of k] by auto
+  qed
+
+  from bound_invD(3)[OF binv, unfolded g_bound_def]
+  have gbnd: "g_bnd (of_nat N) fs" unfolding g_bnd_def .
+  from LLL_invD(11)[OF Linv, unfolded \<mu>_small_def] i 
+  have "abs (\<mu> fs i (i - 1)) \<le> 1/2" by auto
+  from g_bnd_swap[OF i LLL_inv_imp_w[OF Linv] this cond id(2) gbnd]
+  have "g_bnd (rat_of_nat N) fs'" .
+  thus "g_bound fs'" unfolding g_bnd_def g_bound_def .
 qed
 
 lemma basis_reduction_step_bound: assumes 
@@ -706,7 +734,8 @@ proof -
   have inv: "LLL_invariant upw k fs" 
     and fbnd: "f_bound outside k fs" 
     and gbnd: "g_bound fs" by auto
-  from LLL_inv_N_pos[OF inv gbnd] i have N0: "N > 0" by auto
+  note invw = LLL_inv_imp_w[OF inv]
+  from LLL_inv_N_pos[OF invw gbnd] i have N0: "N > 0" by auto
   note inv = LLL_invD[OF inv] 
   from inv i have fsi: "fs ! i \<in> carrier_vec n" by auto
   have one: "\<bar>fs ! i $ j\<bar>^1 \<le> \<bar>fs ! i $ j\<bar>^2" 
@@ -749,10 +778,11 @@ proof -
   from bound_invD[OF binv]
   have inv: "LLL_invariant upw k fs" 
     and gbnd: "g_bound fs" by auto
+  note invw = LLL_inv_imp_w[OF inv]
   note * = LLL_invD[OF inv]
-  interpret fs: fs_int' n m fs_init \<alpha> upw k fs
-    by standard (use inv in auto)
-  note d_approx[OF inv gbnd i, unfolded d_def]  
+  interpret fs: fs_int' n m fs_init fs
+    by standard (use invw in auto)
+  note d_approx[OF invw gbnd i, unfolded d_def]  
   let ?r = "rat_of_int"
   have int: "(gs.Gramian_determinant (RAT fs) i \<cdot>\<^sub>v (gso fs i)) $ j \<in> \<int>"
   proof -
@@ -769,7 +799,7 @@ proof -
   from i have "m * m \<noteq> 0"
     by auto
   then have N0: "N \<noteq> 0"
-    using less_le_trans[OF LLL_D_pos[OF inv] D_approx[OF inv gbnd]] by auto
+    using less_le_trans[OF LLL_D_pos[OF invw] D_approx[OF invw gbnd]] by auto
   have "\<bar>(gso fs i $ j)\<bar> \<le> max 1 \<bar>(gso fs i $ j)\<bar>"
     by simp
   also have "\<dots> \<le> (max 1 \<bar>gso fs i $ j\<bar>)\<^sup>2"
@@ -786,10 +816,10 @@ proof -
   finally have l: "of_int (d fs i) * gso fs i $ j \<in> \<int>"
     by auto
   have num: "rat_of_int \<bar>num\<bar> \<le> of_int (d fs i * int N)" and denom: "denom \<le> d fs i"
-    using quotient_of_bounds[OF quot l LLL_d_pos[OF inv] gs_bound] i by auto
+    using quotient_of_bounds[OF quot l LLL_d_pos[OF invw] gs_bound] i by auto
   from num have num: "\<bar>num\<bar> \<le> d fs i * int N"
     by linarith
-  from d_approx[OF inv gbnd i] have d: "d fs i \<le> int (N ^ i)"
+  from d_approx[OF invw gbnd i] have d: "d fs i \<le> int (N ^ i)"
     by linarith
   from denom d have denom: "denom \<le> int (N ^ i)"
     by auto
@@ -841,16 +871,17 @@ next
   from bound_invD[OF binv]
   have inv: "LLL_invariant upw k fs"
      and gbnd: "g_bound fs" by auto
-  from LLL_inv_N_pos[OF inv gbnd] m have N: "N > 0" by auto 
+  note invw = LLL_inv_imp_w[OF inv]
+  from LLL_inv_N_pos[OF invw gbnd] m have N: "N > 0" by auto 
   let ?r = rat_of_int 
-  from d_approx_main[OF inv gbnd i m] 
+  from d_approx_main[OF invw gbnd i m] 
   have "rat_of_int (d fs i) \<le> of_nat (N ^ i)" 
     by auto
   hence one: "d fs i \<le> N ^ i" by linarith
   also have "\<dots> \<le> N ^ m" unfolding of_nat_le_iff
     by (rule pow_mono_exp, insert N i, auto)
   finally have "d fs i \<le> N ^ m" by simp
-  with LLL_d_pos[OF inv i] one
+  with LLL_d_pos[OF invw i] one
   show ?thesis by auto
 qed
 
@@ -863,13 +894,14 @@ proof -
   have inv: "LLL_invariant upw k fs"
      and fbnd: "f_bound outside k fs"
      and gbnd: "g_bound fs" by auto
-  from LLL_inv_N_pos[OF inv gbnd] i have N: "N > 0" by auto 
+  note invw = LLL_inv_imp_w[OF inv]
+  from LLL_inv_N_pos[OF invw gbnd] i have N: "N > 0" by auto 
   note * = LLL_invD[OF inv]
-  interpret fs: fs_int' n m fs_init \<alpha> upw k fs
-    by standard (use inv in auto)
+  interpret fs: fs_int' n m fs_init fs
+    by standard (use invw in auto)
   let ?mu = "\<mu> fs i j" 
   from j i have jm: "j < m" by auto
-  from d_approx[OF inv gbnd jm]
+  from d_approx[OF invw gbnd jm]
   have dj: "d fs j \<le> int (N ^ j)" by linarith
   let ?num = "4 ^ (m - 1) * N ^ m * m * m" 
   let ?bnd = "N^(m - 1) * 2 ^ (m - 1) * m" 
@@ -912,9 +944,10 @@ proof -
   have inv: "LLL_invariant upw k fs"
      and fbnd: "f_bound outside k fs"
      and gbnd: "g_bound fs" by auto
-  interpret fs: fs_int' n m fs_init \<alpha> upw k fs
-    by standard (use inv in auto)
-  from LLL_inv_N_pos[OF inv gbnd] i have N: "N > 0" by auto 
+  note invw = LLL_inv_imp_w[OF inv]
+  interpret fs: fs_int' n m fs_init fs
+    by standard (use invw in auto)
+  from LLL_inv_N_pos[OF invw gbnd] i have N: "N > 0" by auto 
   from j i have jm: "j < m - 1" "j < m" by auto
   let ?r = rat_of_int 
   from LLL_d_bound[of "Suc j"] jm
@@ -944,17 +977,18 @@ proof (atomize(full))
   have inv: "LLL_invariant upw k fs"
      and fbnd: "f_bound outside k fs"
      and gbnd: "g_bound fs" by auto
-  from LLL_inv_N_pos[OF inv gbnd] i have N: "N > 0" by auto 
+  note invw = LLL_inv_imp_w[OF inv]
+  from LLL_inv_N_pos[OF invw gbnd] i have N: "N > 0" by auto 
   note * = LLL_invD[OF inv]
-  interpret fs: fs_int' n m fs_init \<alpha> upw k fs
-    by standard (use inv in auto)
+  interpret fs: fs_int' n m fs_init fs
+    by standard (use invw in auto)
   let ?mu = "\<mu> fs i j" 
   let ?bnd = "N^(m - 1) * 2 ^ (m - 1) * m" 
   show "\<bar>num\<bar> \<le> N ^ (2 * m) * 2 ^ m * m \<and> \<bar>denom\<bar> \<le> N ^ m" 
   proof (cases "j < i")
     case j: True
     with i have jm: "j < m" by auto
-    from LLL_d_pos[OF inv, of "Suc j"] i j have dsj: "0 < d fs (Suc j)" by auto
+    from LLL_d_pos[OF invw, of "Suc j"] i j have dsj: "0 < d fs (Suc j)" by auto
     from quotient_of_square[OF quot] 
     have quot_sq: "quotient_of (?mu^2) = (num * num, denom * denom)" 
       unfolding power2_eq_square by auto
@@ -1034,7 +1068,8 @@ proof -
      and fbnd: "f_bound outside k fs" 
      and gbnd: "g_bound fs" 
     by auto
-  from LLL_inv_N_pos[OF inv gbnd] i have N: "N > 0" by auto
+  note invw = LLL_inv_imp_w[OF inv]
+  from LLL_inv_N_pos[OF invw gbnd] i have N: "N > 0" by auto
   let ?bnd = "N ^ (2 * m) * 2 ^ m * m" 
   have "N ^ m * int 1 \<le> N ^ (2 * m) * (2^m * int m)" 
     by (rule mult_mono, unfold of_nat_le_iff, rule pow_mono_exp, insert N i, auto)
@@ -1133,7 +1168,8 @@ proof -
   have inv: "LLL_invariant upw k fs"
      and gbnd: "g_bound fs" 
     by auto 
-  from LLL_inv_N_pos[OF inv gbnd m] have N: "N > 0" by auto
+  note invw = LLL_inv_imp_w[OF inv]
+  from LLL_inv_N_pos[OF invw gbnd m] have N: "N > 0" by auto
   have "log 2 \<bar>real_of_int x\<bar> \<le> log 2 m + real (3 + 3 * m) * log 2 N"
     using assms len fs.combined_size_bound_integer_log by (auto simp add: fs_gs_N_N)
   also have "\<dots> \<le> log 2 m + (3 + 3 * m) * (2 * log 2 (M * n))"
@@ -1160,7 +1196,8 @@ proof -
      and fbnd: "f_bound outside k fs" 
      and gbnd: "g_bound fs" 
     by auto 
-  from LLL_inv_N_pos[OF inv gbnd m] have N: "N > 0" by auto
+  note invw = LLL_inv_imp_w[OF inv]
+  from LLL_inv_N_pos[OF invw gbnd m] have N: "N > 0" by auto
   let ?r = real_of_int
   from x consider (fs) "x \<in> ?fs" | (d\<mu>) "x \<in> ?d\<mu>" | (d) "x \<in> ?d" by auto
   hence "abs x \<le> ?bnd" 

@@ -7414,6 +7414,19 @@ abstract =
   criterion, a general framework for refutational theorem proving, and
   soundness and completeness of an abstract first-order prover.
 
+[Chandy_Lamport]
+title = A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm
+author = Ben Fiedler <mailto:ben.fiedler@inf.ethz.ch>, Dmitriy Traytel <https://people.inf.ethz.ch/trayteld/>
+topic = Computer science/Algorithms/Distributed
+date = 2020-07-21
+notify = ben.fiedler@inf.ethz.ch, traytel@inf.ethz.ch
+abstract =
+  We provide a suitable distributed system model and implementation of the
+  Chandy--Lamport distributed snapshot algorithm [ACM Transactions on
+  Computer Systems, 3, 63-75, 1985]. Our main result is a formal
+  termination and correctness proof of the Chandy--Lamport algorithm and
+  its use in stable property detection.
+
 [BNF_Operations]
 title = Operations on Bounded Natural Functors
 author = Jasmin Christian Blanchette <mailto:jasmin.blanchette@gmail.com>, Andrei Popescu <mailto:uuomul@yahoo.com>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>
@@ -9493,4 +9506,76 @@ abstract =
   rule. Not only does our work apply to the domain of law, but it also
   serves as a specification for autonomous vehicle manufacturers and for
   online verification of path planners.
+
+[Relational_Paths]
+title = Relational Characterisations of Paths
+author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>, Peter Höfner <http://www.hoefner-online.de/>
+topic = Mathematics/Graph theory
+date = 2020-07-13
+notify = walter.guttmann@canterbury.ac.nz, peter@hoefner-online.de
+abstract =
+  Binary relations are one of the standard ways to encode, characterise
+  and reason about graphs. Relation algebras provide equational axioms
+  for a large fragment of the calculus of binary relations. Although
+  relations are standard tools in many areas of mathematics and
+  computing, researchers usually fall back to point-wise reasoning when
+  it comes to arguments about paths in a graph. We present a purely
+  algebraic way to specify different kinds of paths in Kleene relation
+  algebras, which are relation algebras equipped with an operation for
+  reflexive transitive closure. We study the relationship between paths
+  with a designated root vertex and paths without such a vertex. Since
+  we stay in first-order logic this development helps with mechanising
+  proofs. To demonstrate the applicability of the algebraic framework we
+  verify the correctness of three basic graph algorithms.
+
+[Amicable_Numbers]
+title = Amicable Numbers
+author = Angeliki Koutsoukou-Argyraki <https://www.cl.cam.ac.uk/~ak2110/>
+topic = Mathematics/Number theory
+date = 2020-08-04
+notify = ak2110@cam.ac.uk
+abstract = 
+  This is a formalisation of Amicable Numbers, involving some relevant
+  material including Euler's sigma function, some relevant
+  definitions, results and examples as well as rules such as
+  Th&#257;bit ibn Qurra's Rule, Euler's Rule, te
+  Riele's Rule and Borho's Rule with breeders.
+
+[Ordinal_Partitions]
+title = Ordinal Partitions
+author = Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
+topic = Mathematics/Combinatorics, Logic/Set theory
+date = 2020-08-03
+notify = lp15@cam.ac.uk
+abstract = 
+  The theory of partition relations concerns generalisations of
+  Ramsey's theorem. For any ordinal $\alpha$, write $\alpha \to
+  (\alpha, m)^2$ if for each function $f$ from unordered pairs of
+  elements of $\alpha$ into $\{0,1\}$, either there is a subset
+  $X\subseteq \alpha$ order-isomorphic to $\alpha$ such that
+  $f\{x,y\}=0$ for all $\{x,y\}\subseteq X$, or there is an $m$ element
+  set $Y\subseteq \alpha$ such that $f\{x,y\}=1$ for all
+  $\{x,y\}\subseteq Y$. (In both cases, with $\{x,y\}$ we require
+  $x\not=y$.) In particular, the infinite Ramsey theorem can be written
+  in this notation as $\omega \to (\omega, \omega)^2$, or if we
+  restrict $m$ to the positive integers as above, then $\omega \to
+  (\omega, m)^2$ for all $m$.  This entry formalises Larson's proof
+  of $\omega^\omega \to (\omega^\omega, m)^2$ along with a similar proof
+  of a result due to Specker: $\omega^2 \to (\omega^2, m)^2$. Also
+  proved is a necessary result by Erdős and Milner:
+  $\omega^{1+\alpha\cdot n} \to (\omega^{1+\alpha}, 2^n)^2$.
+
+[Relational_Disjoint_Set_Forests]
+title = Relational Disjoint-Set Forests
+author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>
+topic = Computer science/Data structures
+date = 2020-08-26
+notify = walter.guttmann@canterbury.ac.nz
+abstract = 
+  We give a simple relation-algebraic semantics of read and write
+  operations on associative arrays. The array operations seamlessly
+  integrate with assignments in the Hoare-logic library. Using relation
+  algebras and Kleene algebras we verify the correctness of an
+  array-based implementation of disjoint-set forests with a naive union
+  operation and a find operation with path compression.
 

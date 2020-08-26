@@ -36,9 +36,6 @@ paragraph \<open>The main part\<close>
 context poly_mod
 begin
 
-definition inv_M :: "int \<Rightarrow> int" where
-  "inv_M = (\<lambda> x. if x + x \<le> m then x else x - m)" 
-
 definition inv_Mp :: "int poly \<Rightarrow> int poly" where
   "inv_Mp = map_poly inv_M"
   
@@ -93,7 +90,6 @@ declare poly_mod.reconstruction.simps[code]
 declare poly_mod.prod_list_m.simps[code]
 declare poly_mod.mul_const_def[code]
 declare poly_mod.inv_M2_def[code]
-declare poly_mod.inv_M_def[code]
 declare poly_mod.inv_Mp2_def[code_unfold]
 declare poly_mod.inv_Mp_def[code_unfold]
 
@@ -109,9 +105,6 @@ definition zassenhaus_reconstruction_generic ::
   
 lemma coeff_mult_0: "coeff (f * g) 0 = coeff f 0 * coeff g 0"
   by (metis poly_0_coeff_0 poly_mult)
-
-lemma (in poly_mod) M_inv_M_id[simp]: "M (inv_M x) = M x" 
-  unfolding inv_M_def M_def by simp
 
 lemma lead_coeff_factor: assumes u: "u = v * (w :: 'a ::idom poly)"
   shows "smult (lead_coeff u) u = (smult (lead_coeff w) v) * (smult (lead_coeff v) w)"
@@ -172,22 +165,6 @@ lemma inv_Mp_coeff: "coeff (inv_Mp f) n = inv_M (coeff f n)"
 
 lemma Mp_inv_Mp_id[simp]: "Mp (inv_Mp f) = Mp f" 
   unfolding poly_eq_iff Mp_coeff inv_Mp_coeff by simp
-
-lemma inv_M_rev: assumes bnd: "2 * abs c < m" 
-  shows "inv_M (M c) = c"
-proof (cases "c \<ge> 0")
-  case True
-  with bnd show ?thesis unfolding M_def inv_M_def by auto
-next
-  case False
-  have 2: "\<And> v :: int. 2 * v = v + v" by auto
-  from False have c: "c < 0" by auto
-  from bnd c have "c + m > 0" "c + m < m" by auto
-  with c have cm: "c mod m = c + m"
-    by (metis le_less mod_add_self2 mod_pos_pos_trivial)
-  from c bnd have "2 * (c mod m) > m" unfolding cm by auto
-  with bnd c show ?thesis unfolding M_def inv_M_def cm by auto
-qed
 
 lemma inv_Mp_rev: assumes bnd: "\<And> n. 2 * abs (coeff f n) < m" 
   shows "inv_Mp (Mp f) = f" 

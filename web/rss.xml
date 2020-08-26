@@ -9,7 +9,21 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>25 Aug 2020 00:00:00 +0000</pubDate>
+    <pubDate>26 Aug 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Relational Disjoint-Set Forests</title>
+              <link>https://www.isa-afp.org/entries/Relational_Disjoint_Set_Forests.html</link>
+       <guid>https://www.isa-afp.org/entries/Relational_Disjoint_Set_Forests.html</guid>
+       <dc:creator> Walter Guttmann       </dc:creator>
+       <pubDate>26 Aug 2020 00:00:00 +0000</pubDate>
+       <description>
+We give a simple relation-algebraic semantics of read and write
+operations on associative arrays. The array operations seamlessly
+integrate with assignments in the Hoare-logic library. Using relation
+algebras and Kleene algebras we verify the correctness of an
+array-based implementation of disjoint-set forests with a naive union
+operation and a find operation with path compression.</description>
+    </item>
     <item>
        <title>Extensions to the Comprehensive Framework for Saturation Theorem Proving</title>
               <link>https://www.isa-afp.org/entries/Saturation_Framework_Extensions.html</link>
@@ -30,6 +44,77 @@ useful to formalize other calculi, such as superposition;&lt;/li&gt;
 &lt;li&gt;alternative proofs of fairness (and hence saturation and
 ultimately refutational completeness) for the given clause procedures
 GC and LGC, based on invariance.&lt;/li&gt; &lt;/ul&gt;</description>
+    </item>
+    <item>
+       <title>Amicable Numbers</title>
+              <link>https://www.isa-afp.org/entries/Amicable_Numbers.html</link>
+       <guid>https://www.isa-afp.org/entries/Amicable_Numbers.html</guid>
+       <dc:creator> Angeliki Koutsoukou-Argyraki       </dc:creator>
+       <pubDate>04 Aug 2020 00:00:00 +0000</pubDate>
+       <description>
+This is a formalisation of Amicable Numbers, involving some relevant
+material including Euler&#39;s sigma function, some relevant
+definitions, results and examples as well as rules such as
+Th&amp;#257;bit ibn Qurra&#39;s Rule, Euler&#39;s Rule, te
+Riele&#39;s Rule and Borho&#39;s Rule with breeders.</description>
+    </item>
+    <item>
+       <title>Ordinal Partitions</title>
+              <link>https://www.isa-afp.org/entries/Ordinal_Partitions.html</link>
+       <guid>https://www.isa-afp.org/entries/Ordinal_Partitions.html</guid>
+       <dc:creator> Lawrence C. Paulson       </dc:creator>
+       <pubDate>03 Aug 2020 00:00:00 +0000</pubDate>
+       <description>
+The theory of partition relations concerns generalisations of
+Ramsey&#39;s theorem. For any ordinal $\alpha$, write $\alpha \to
+(\alpha, m)^2$ if for each function $f$ from unordered pairs of
+elements of $\alpha$ into $\{0,1\}$, either there is a subset
+$X\subseteq \alpha$ order-isomorphic to $\alpha$ such that
+$f\{x,y\}=0$ for all $\{x,y\}\subseteq X$, or there is an $m$ element
+set $Y\subseteq \alpha$ such that $f\{x,y\}=1$ for all
+$\{x,y\}\subseteq Y$. (In both cases, with $\{x,y\}$ we require
+$x\not=y$.) In particular, the infinite Ramsey theorem can be written
+in this notation as $\omega \to (\omega, \omega)^2$, or if we
+restrict $m$ to the positive integers as above, then $\omega \to
+(\omega, m)^2$ for all $m$.  This entry formalises Larson&#39;s proof
+of $\omega^\omega \to (\omega^\omega, m)^2$ along with a similar proof
+of a result due to Specker: $\omega^2 \to (\omega^2, m)^2$. Also
+proved is a necessary result by Erdős and Milner:
+$\omega^{1+\alpha\cdot n} \to (\omega^{1+\alpha}, 2^n)^2$.</description>
+    </item>
+    <item>
+       <title>A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm</title>
+              <link>https://www.isa-afp.org/entries/Chandy_Lamport.html</link>
+       <guid>https://www.isa-afp.org/entries/Chandy_Lamport.html</guid>
+       <dc:creator> Ben Fiedler, Dmitriy Traytel       </dc:creator>
+       <pubDate>21 Jul 2020 00:00:00 +0000</pubDate>
+       <description>
+We provide a suitable distributed system model and implementation of the
+Chandy--Lamport distributed snapshot algorithm [ACM Transactions on
+Computer Systems, 3, 63-75, 1985]. Our main result is a formal
+termination and correctness proof of the Chandy--Lamport algorithm and
+its use in stable property detection.</description>
+    </item>
+    <item>
+       <title>Relational Characterisations of Paths</title>
+              <link>https://www.isa-afp.org/entries/Relational_Paths.html</link>
+       <guid>https://www.isa-afp.org/entries/Relational_Paths.html</guid>
+       <dc:creator> Walter Guttmann, Peter Höfner       </dc:creator>
+       <pubDate>13 Jul 2020 00:00:00 +0000</pubDate>
+       <description>
+Binary relations are one of the standard ways to encode, characterise
+and reason about graphs. Relation algebras provide equational axioms
+for a large fragment of the calculus of binary relations. Although
+relations are standard tools in many areas of mathematics and
+computing, researchers usually fall back to point-wise reasoning when
+it comes to arguments about paths in a graph. We present a purely
+algebraic way to specify different kinds of paths in Kleene relation
+algebras, which are relation algebras equipped with an operation for
+reflexive transitive closure. We study the relationship between paths
+with a designated root vertex and paths without such a vertex. Since
+we stay in first-order logic this development helps with mechanising
+proofs. To demonstrate the applicability of the algebraic framework we
+verify the correctness of three basic graph algorithms.</description>
     </item>
     <item>
        <title>A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles</title>
@@ -510,80 +595,6 @@ reasoning in an under-approximate Hoare logic, mirroring Beringer’s
 result for over-approximate relational logics. We illustrate the
 application of our logic on some small examples in which we provably
 demonstrate the presence of insecurity.</description>
-    </item>
-    <item>
-       <title>Hello World</title>
-              <link>https://www.isa-afp.org/entries/Hello_World.html</link>
-       <guid>https://www.isa-afp.org/entries/Hello_World.html</guid>
-       <dc:creator> Cornelius Diekmann, Lars Hupel       </dc:creator>
-       <pubDate>07 Mar 2020 00:00:00 +0000</pubDate>
-       <description>
-In this article, we present a formalization of the well-known
-&#34;Hello, World!&#34; code, including a formal framework for
-reasoning about IO. Our model is inspired by the handling of IO in
-Haskell. We start by formalizing the 🌍 and embrace the IO monad
-afterwards. Then we present a sample main :: IO (), followed by its
-proof of correctness.</description>
-    </item>
-    <item>
-       <title>Implementing the Goodstein Function in &lambda;-Calculus</title>
-              <link>https://www.isa-afp.org/entries/Goodstein_Lambda.html</link>
-       <guid>https://www.isa-afp.org/entries/Goodstein_Lambda.html</guid>
-       <dc:creator> Bertram Felgenhauer       </dc:creator>
-       <pubDate>21 Feb 2020 00:00:00 +0000</pubDate>
-       <description>
-In this formalization, we develop an implementation of the Goodstein
-function G in plain &amp;lambda;-calculus, linked to a concise, self-contained
-specification. The implementation works on a Church-encoded
-representation of countable ordinals. The initial conversion to
-hereditary base 2 is not covered, but the material is sufficient to
-compute the particular value G(16), and easily extends to other fixed
-arguments.</description>
-    </item>
-    <item>
-       <title>A Generic Framework for Verified Compilers</title>
-              <link>https://www.isa-afp.org/entries/VeriComp.html</link>
-       <guid>https://www.isa-afp.org/entries/VeriComp.html</guid>
-       <dc:creator> Martin Desharnais       </dc:creator>
-       <pubDate>10 Feb 2020 00:00:00 +0000</pubDate>
-       <description>
-This is a generic framework for formalizing compiler transformations.
-It leverages Isabelle/HOL’s locales to abstract over concrete
-languages and transformations. It states common definitions for
-language semantics, program behaviours, forward and backward
-simulations, and compilers. We provide generic operations, such as
-simulation and compiler composition, and prove general (partial)
-correctness theorems, resulting in reusable proof components.</description>
-    </item>
-    <item>
-       <title>Arithmetic progressions and relative primes</title>
-              <link>https://www.isa-afp.org/entries/Arith_Prog_Rel_Primes.html</link>
-       <guid>https://www.isa-afp.org/entries/Arith_Prog_Rel_Primes.html</guid>
-       <dc:creator> José Manuel Rodríguez Caballero       </dc:creator>
-       <pubDate>01 Feb 2020 00:00:00 +0000</pubDate>
-       <description>
-This article provides a formalization of the solution obtained by the
-author of the Problem “ARITHMETIC PROGRESSIONS” from the
-&lt;a href=&#34;https://www.ocf.berkeley.edu/~wwu/riddles/putnam.shtml&#34;&gt;
-Putnam exam problems of 2002&lt;/a&gt;. The statement of the problem is
-as follows: For which integers &lt;em&gt;n&lt;/em&gt; &gt; 1 does the set of positive
-integers less than and relatively prime to &lt;em&gt;n&lt;/em&gt; constitute an
-arithmetic progression?</description>
-    </item>
-    <item>
-       <title>A Hierarchy of Algebras for Boolean Subsets</title>
-              <link>https://www.isa-afp.org/entries/Subset_Boolean_Algebras.html</link>
-       <guid>https://www.isa-afp.org/entries/Subset_Boolean_Algebras.html</guid>
-       <dc:creator> Walter Guttmann, Bernhard Möller       </dc:creator>
-       <pubDate>31 Jan 2020 00:00:00 +0000</pubDate>
-       <description>
-We present a collection of axiom systems for the construction of
-Boolean subalgebras of larger overall algebras. The subalgebras are
-defined as the range of a complement-like operation on a semilattice.
-This technique has been used, for example, with the antidomain
-operation, dynamic negation and Stone algebras. We present a common
-ground for these constructions based on a new equational
-axiomatisation of Boolean algebras.</description>
     </item>
   </channel>
 </rss>
