@@ -63,11 +63,10 @@ qed
 lemma kruskal_vc_2:
   assumes "kruskal_spanning_invariant f g h"
       and "h \<noteq> bot"
-      and "card { x . regular x \<and> x \<le> --h } = n"
     shows "(minarc h \<le> -forest_components f \<longrightarrow> kruskal_spanning_invariant ((f \<sqinter> -(top * minarc h * f\<^sup>T\<^sup>\<star>)) \<squnion> (f \<sqinter> top * minarc h * f\<^sup>T\<^sup>\<star>)\<^sup>T \<squnion> minarc h) g (h \<sqinter> -minarc h \<sqinter> -minarc h\<^sup>T)
-                                               \<and> card { x . regular x \<and> x \<le> --h \<and> x \<le> -minarc h \<and> x \<le> -minarc h\<^sup>T } < n) \<and>
+                                               \<and> card { x . regular x \<and> x \<le> --h \<and> x \<le> -minarc h \<and> x \<le> -minarc h\<^sup>T } < card { x . regular x \<and> x \<le> --h }) \<and>
            (\<not> minarc h \<le> -forest_components f \<longrightarrow> kruskal_spanning_invariant f g (h \<sqinter> -minarc h \<sqinter> -minarc h\<^sup>T)
-                                                 \<and> card { x . regular x \<and> x \<le> --h \<and> x \<le> -minarc h \<and> x \<le> -minarc h\<^sup>T } < n)"
+                                                 \<and> card { x . regular x \<and> x \<le> --h \<and> x \<le> -minarc h \<and> x \<le> -minarc h\<^sup>T } < card { x . regular x \<and> x \<le> --h })"
 proof -
   let ?e = "minarc h"
   let ?f = "(f \<sqinter> -(top * ?e * f\<^sup>T\<^sup>\<star>)) \<squnion> (f \<sqinter> top * ?e * f\<^sup>T\<^sup>\<star>)\<^sup>T \<squnion> ?e"
@@ -81,13 +80,11 @@ proof -
     using regular_closed_star regular_conv_closed regular_mult_closed by simp
   have 3: "\<not> ?e \<le> -?e"
     using assms(2) inf.orderE minarc_bot_iff by fastforce
-  have "?n2 < ?n1"
+  have 4: "?n2 < ?n1"
     apply (rule psubset_card_mono)
     using finite_regular apply simp
     using 1 3 kruskal_spanning_invariant_def minarc_below by auto
-  hence 4: "?n2 < n"
-    using assms(3) by simp
-  show "(?e \<le> -?F \<longrightarrow> kruskal_spanning_invariant ?f g ?h \<and> ?n2 < n) \<and> (\<not> ?e \<le> -?F \<longrightarrow> kruskal_spanning_invariant f g ?h \<and> ?n2 < n)"
+  show "(?e \<le> -?F \<longrightarrow> kruskal_spanning_invariant ?f g ?h \<and> ?n2 < ?n1) \<and> (\<not> ?e \<le> -?F \<longrightarrow> kruskal_spanning_invariant f g ?h \<and> ?n2 < ?n1)"
   proof (rule conjI)
     have 5: "injective ?f"
       apply (rule kruskal_injective_inv)
@@ -98,7 +95,7 @@ proof -
       using assms(1,2) kruskal_spanning_invariant_def kruskal_injective_inv_2 minarc_arc spanning_forest_def apply simp
       using assms(2) arc_injective minarc_arc apply blast
       using assms(1,2) kruskal_spanning_invariant_def kruskal_injective_inv_3 minarc_arc spanning_forest_def by simp
-    show "?e \<le> -?F \<longrightarrow> kruskal_spanning_invariant ?f g ?h \<and> ?n2 < n"
+    show "?e \<le> -?F \<longrightarrow> kruskal_spanning_invariant ?f g ?h \<and> ?n2 < ?n1"
     proof
       assume 6: "?e \<le> -?F"
       have 7: "equivalence ?F"
@@ -109,7 +106,7 @@ proof -
         using 6 7 conv_complement conv_isotone by fastforce
       hence 8: "?e * ?F * ?e = bot"
         using le_bot triple_schroeder_p by simp
-      show "kruskal_spanning_invariant ?f g ?h \<and> ?n2 < n"
+      show "kruskal_spanning_invariant ?f g ?h \<and> ?n2 < ?n1"
       proof (unfold kruskal_spanning_invariant_def, intro conjI)
         show "symmetric g"
           using assms(1) kruskal_spanning_invariant_def by simp
@@ -151,17 +148,17 @@ proof -
             using 2 by simp
         qed
       next
-        show "?n2 < n"
+        show "?n2 < ?n1"
           using 4 by simp
       qed
     qed
   next
-    show "\<not> ?e \<le> -?F \<longrightarrow> kruskal_spanning_invariant f g ?h \<and> ?n2 < n"
+    show "\<not> ?e \<le> -?F \<longrightarrow> kruskal_spanning_invariant f g ?h \<and> ?n2 < ?n1"
     proof
       assume "\<not> ?e \<le> -?F"
       hence 9: "?e \<le> ?F"
         using 2 assms(2) arc_in_partition minarc_arc by fastforce
-      show "kruskal_spanning_invariant f g ?h \<and> ?n2 < n"
+      show "kruskal_spanning_invariant f g ?h \<and> ?n2 < ?n1"
       proof (unfold kruskal_spanning_invariant_def, intro conjI)
         show "symmetric g"
           using assms(1) kruskal_spanning_invariant_def by simp
@@ -198,7 +195,7 @@ proof -
             using 1 by simp
         qed
       next
-        show "?n2 < n"
+        show "?n2 < ?n1"
           using 4 by simp
       qed
     qed
@@ -229,7 +226,7 @@ theorem kruskal_spanning:
   [ spanning_forest f g ]"
   apply vcg_tc_simp
   using kruskal_vc_1 apply simp
-  using kruskal_vc_2 apply blast
+  using kruskal_vc_2 apply simp
   using kruskal_spanning_invariant_def by auto
 
 text \<open>
@@ -280,26 +277,26 @@ theorem kruskal:
         h := h \<sqinter> -e \<sqinter> -e\<^sup>T
      OD
   [ minimum_spanning_forest f g ]"
-using [[simproc del: defined_all]] proof vcg_tc_simp
+proof vcg_tc_simp
   assume "symmetric g"
   thus "kruskal_invariant bot g g"
     using kruskal_vc_1 kruskal_exists_minimal_spanning kruskal_invariant_def by simp
 next
-  fix n f h
+  fix f h
   let ?e = "minarc h"
   let ?f = "(f \<sqinter> -(top * ?e * f\<^sup>T\<^sup>\<star>)) \<squnion> (f \<sqinter> top * ?e * f\<^sup>T\<^sup>\<star>)\<^sup>T \<squnion> ?e"
   let ?h = "h \<sqinter> -?e \<sqinter> -?e\<^sup>T"
   let ?F = "forest_components f"
   let ?n1 = "card { x . regular x \<and> x \<le> --h }"
   let ?n2 = "card { x . regular x \<and> x \<le> --h \<and> x \<le> -?e \<and> x \<le> -?e\<^sup>T }"
-  assume 1: "kruskal_invariant f g h \<and> h \<noteq> bot \<and> ?n1 = n"
+  assume 1: "kruskal_invariant f g h \<and> h \<noteq> bot"
   from 1 obtain w where 2: "minimum_spanning_forest w g \<and> f \<le> w \<squnion> w\<^sup>T"
     using kruskal_invariant_def by auto
   hence 3: "regular f \<and> regular w \<and> regular ?e"
     using 1 by (metis kruskal_invariant_def kruskal_spanning_invariant_def minimum_spanning_forest_def spanning_forest_def minarc_regular)
-  show "(?e \<le> -?F \<longrightarrow> kruskal_invariant ?f g ?h \<and> ?n2 < n) \<and> (\<not> ?e \<le> -?F \<longrightarrow> kruskal_invariant f g ?h \<and> ?n2 < n)"
+  show "(?e \<le> -?F \<longrightarrow> kruskal_invariant ?f g ?h \<and> ?n2 < ?n1) \<and> (\<not> ?e \<le> -?F \<longrightarrow> kruskal_invariant f g ?h \<and> ?n2 < ?n1)"
   proof (rule conjI)
-    show "?e \<le> -?F \<longrightarrow> kruskal_invariant ?f g ?h \<and> ?n2 < n"
+    show "?e \<le> -?F \<longrightarrow> kruskal_invariant ?f g ?h \<and> ?n2 < ?n1"
     proof
       assume 4: "?e \<le> -?F"
       have 5: "equivalence ?F"
@@ -310,7 +307,7 @@ next
         using 4 5 conv_complement conv_isotone by fastforce
       hence 6: "?e * ?F * ?e = bot"
         using le_bot triple_schroeder_p by simp
-      show "kruskal_invariant ?f g ?h \<and> ?n2 < n"
+      show "kruskal_invariant ?f g ?h \<and> ?n2 < ?n1"
       proof (unfold kruskal_invariant_def, intro conjI)
         show "kruskal_spanning_invariant ?f g ?h"
           using 1 4 kruskal_vc_2 kruskal_invariant_def by simp
@@ -557,17 +554,17 @@ next
           qed
         qed
       next
-        show "?n2 < n"
+        show "?n2 < ?n1"
           using 1 kruskal_vc_2 kruskal_invariant_def by auto
       qed
     qed
   next
-    show "\<not> ?e \<le> -?F \<longrightarrow> kruskal_invariant f g ?h \<and> ?n2 < n"
+    show "\<not> ?e \<le> -?F \<longrightarrow> kruskal_invariant f g ?h \<and> ?n2 < ?n1"
       using 1 kruskal_vc_2 kruskal_invariant_def by auto
   qed
 next
-  fix f g h
-  assume 28: "kruskal_invariant f g h \<and> h = bot"
+  fix f
+  assume 28: "kruskal_invariant f g bot"
   hence 29: "spanning_forest f g"
     using kruskal_invariant_def kruskal_spanning_invariant_def by auto
   from 28 obtain w where 30: "minimum_spanning_forest w g \<and> f \<le> w \<squnion> w\<^sup>T"
@@ -675,8 +672,7 @@ qed
 lemma prim_vc_2:
   assumes "prim_spanning_invariant t v g r"
       and "v * -v\<^sup>T \<sqinter> g \<noteq> bot"
-      and "card { x . regular x \<and> x \<le> component g r \<and> x \<le> -v\<^sup>T } = n"
-    shows "prim_spanning_invariant (t \<squnion> minarc (v * -v\<^sup>T \<sqinter> g)) (v \<squnion> minarc (v * -v\<^sup>T \<sqinter> g)\<^sup>T * top) g r \<and> card { x . regular x \<and> x \<le> component g r \<and> x \<le> -(v \<squnion> minarc (v * -v\<^sup>T \<sqinter> g)\<^sup>T * top)\<^sup>T } < n"
+    shows "prim_spanning_invariant (t \<squnion> minarc (v * -v\<^sup>T \<sqinter> g)) (v \<squnion> minarc (v * -v\<^sup>T \<sqinter> g)\<^sup>T * top) g r \<and> card { x . regular x \<and> x \<le> component g r \<and> x \<le> -(v \<squnion> minarc (v * -v\<^sup>T \<sqinter> g)\<^sup>T * top)\<^sup>T } < card { x . regular x \<and> x \<le> component g r \<and> x \<le> -v\<^sup>T }"
 proof -
   let ?vcv = "v * -v\<^sup>T \<sqinter> g"
   let ?e = "minarc ?vcv"
@@ -718,7 +714,7 @@ proof -
     using assms(1) prim_invariant_def prim_spanning_invariant_def prim_precondition_def by simp
   hence 14: "?g\<^sup>T = ?g"
     using conv_complement by simp
-  show "prim_spanning_invariant ?t ?v g r \<and> ?n2 < n"
+  show "prim_spanning_invariant ?t ?v g r \<and> ?n2 < ?n1"
   proof (rule conjI)
     show "prim_spanning_invariant ?t ?v g r"
     proof (unfold prim_spanning_invariant_def, intro conjI)
@@ -782,12 +778,10 @@ proof -
       by (simp add: conv_dist_comp conv_dist_sup)
     hence 20: "\<not> top * ?e \<le> -?v\<^sup>T"
       using 18 by simp
-    have "?n2 < ?n1"
+    show "?n2 < ?n1"
       apply (rule psubset_card_mono)
       using finite_regular apply simp
       using 1 16 17 19 20 by auto
-    thus "?n2 < n"
-      using assms(3) by simp
   qed
 qed
 
@@ -889,12 +883,12 @@ theorem prim:
         v := v \<squnion> e\<^sup>T * top
      OD
   [ minimum_spanning_tree t g r ]"
-using [[simproc del: defined_all]] proof vcg_tc_simp
+proof vcg_tc_simp
   assume "prim_precondition g r \<and> (\<exists>w . minimum_spanning_tree w g r)"
   thus "prim_invariant bot r g r"
     using prim_invariant_def prim_vc_1 by simp
 next
-  fix t v n
+  fix t v
   let ?vcv = "v * -v\<^sup>T \<sqinter> g"
   let ?vv = "v * v\<^sup>T \<sqinter> g"
   let ?e = "minarc ?vcv"
@@ -904,7 +898,7 @@ next
   let ?g = "--g"
   let ?n1 = "card { x . regular x \<and> x \<le> ?c \<and> x \<le> -v\<^sup>T }"
   let ?n2 = "card { x . regular x \<and> x \<le> ?c \<and> x \<le> -?v\<^sup>T }"
-  assume 1: "prim_invariant t v g r \<and> ?vcv \<noteq> bot \<and> ?n1 = n"
+  assume 1: "prim_invariant t v g r \<and> ?vcv \<noteq> bot"
   hence 2: "regular v \<and> regular (v * v\<^sup>T)"
     by (metis (no_types, hide_lams) prim_invariant_def prim_spanning_invariant_def spanning_tree_def prim_precondition_def regular_conv_closed regular_closed_star regular_mult_closed conv_involutive)
   have 3: "t \<le> v * v\<^sup>T \<sqinter> ?g"
@@ -931,7 +925,7 @@ next
     using 1 prim_invariant_def prim_spanning_invariant_def prim_precondition_def by simp
   hence 14: "?g\<^sup>T = ?g"
     using conv_complement by simp
-  show "prim_invariant ?t ?v g r \<and> ?n2 < n"
+  show "prim_invariant ?t ?v g r \<and> ?n2 < ?n1"
   proof (unfold prim_invariant_def, intro conjI)
     show "prim_spanning_invariant ?t ?v g r"
       using 1 prim_invariant_def prim_vc_2 by blast
@@ -1039,7 +1033,7 @@ next
       qed
     qed
   next
-    show "?n2 < n"
+    show "?n2 < ?n1"
       using 1 prim_invariant_def prim_vc_2 by auto
   qed
 next

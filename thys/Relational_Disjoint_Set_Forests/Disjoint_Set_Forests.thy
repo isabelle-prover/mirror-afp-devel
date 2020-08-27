@@ -819,14 +819,14 @@ lemma find_set_1:
   using mult_left_isotone star.circ_reflexive find_set_precondition_def by fastforce
 
 lemma find_set_2:
-  "find_set_invariant p x y \<and> y \<noteq> p[[y]] \<and> card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * y } = n \<Longrightarrow> find_set_invariant p x (p[[y]]) \<and> card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * (p[[y]]) } < n"
+  "find_set_invariant p x y \<and> y \<noteq> p[[y]] \<Longrightarrow> find_set_invariant p x (p[[y]]) \<and> card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * (p[[y]]) } < card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * y }"
 proof -
   let ?s = "{ z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * y }"
   let ?t = "{ z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * (p[[y]]) }"
-  assume 1: "find_set_invariant p x y \<and> y \<noteq> p[[y]] \<and> card ?s = n"
-  hence 2: "point (p[[y]])"
-    using read_point find_set_invariant_def find_set_precondition_def by simp
-  show "find_set_invariant p x (p[[y]]) \<and> card ?t < n"
+  assume 1: "find_set_invariant p x y \<and> y \<noteq> p[[y]]"
+  have 2: "point (p[[y]])"
+    using 1 read_point find_set_invariant_def find_set_precondition_def by simp
+  show "find_set_invariant p x (p[[y]]) \<and> card ?t < card ?s"
   proof (unfold find_set_invariant_def, intro conjI)
     show "find_set_precondition p x"
       using 1 find_set_invariant_def by simp
@@ -838,7 +838,7 @@ proof -
       using 2 by simp
     show "p[[y]] \<le> p\<^sup>T\<^sup>\<star> * x"
       using 1 by (metis (hide_lams) find_set_invariant_def comp_associative comp_isotone star.circ_increasing star.circ_transitive_equal)
-    show "card ?t < n"
+    show "card ?t < card ?s"
     proof -
       have 3: "(p\<^sup>T \<sqinter> -1) * (p\<^sup>T \<sqinter> -1)\<^sup>+ * y \<le> (p\<^sup>T \<sqinter> -1)\<^sup>+ * y"
         by (simp add: mult_left_isotone mult_right_isotone star.left_plus_below_circ)
@@ -870,13 +870,11 @@ proof -
         thus False
           using 1 by (metis find_set_invariant_def comp_inf.coreflexive_idempotent conv_complement covector_vector_comp inf.absorb1 inf.sup_monoid.add_commute pseudo_complement surjective_conv_total top.extremum vector_top_closed regular_closed_top)
       qed
-      have "card ?t < card ?s"
+      show "card ?t < card ?s"
         apply (rule psubset_card_mono)
         subgoal using finite_regular by simp
         subgoal using 5 6 7 by auto
         done
-      thus ?thesis
-        using 1 by simp
     qed
   qed
 qed
@@ -950,7 +948,7 @@ theorem find_set:
   [ find_set_postcondition p x y ]"
   apply vcg_tc_simp
     apply (fact find_set_1)
-   apply (rule find_set_2, force)
+   apply (fact find_set_2)
   by (fact find_set_3)
 
 lemma find_set_exists:
@@ -998,20 +996,19 @@ definition "path_compression_postcondition p x y p0 \<equiv>
   path_compression_precondition p x y \<and> p \<sqinter> 1 = p0 \<sqinter> 1 \<and> fc p = fc p0"
 
 lemma path_compression_1:
-  "path_compression_precondition p x y \<and> p0 = p \<Longrightarrow> path_compression_invariant p x y p x"
+  "path_compression_precondition p x y \<Longrightarrow> path_compression_invariant p x y p x"
   using path_compression_invariant_def path_compression_precondition_def by auto
 
 lemma path_compression_2:
-  "path_compression_invariant p x y p0 w \<and> y \<noteq> p[[w]] \<and> card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * w } = n 
-  \<Longrightarrow> path_compression_invariant (p[w\<longmapsto>y]) x y p0 (p[[w]]) \<and> card { z . regular z \<and> z \<le> (p[w\<longmapsto>y])\<^sup>T\<^sup>\<star> * (p[[w]]) } < n"
+  "path_compression_invariant p x y p0 w \<and> y \<noteq> p[[w]] \<Longrightarrow> path_compression_invariant (p[w\<longmapsto>y]) x y p0 (p[[w]]) \<and> card { z . regular z \<and> z \<le> (p[w\<longmapsto>y])\<^sup>T\<^sup>\<star> * (p[[w]]) } < card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * w }"
 proof -
   let ?p = "p[w\<longmapsto>y]"
   let ?s = "{ z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * w }"
   let ?t = "{ z . regular z \<and> z \<le> ?p\<^sup>T\<^sup>\<star> * (p[[w]]) }"
-  assume 1: "path_compression_invariant p x y p0 w \<and> y \<noteq> p[[w]] \<and> card ?s = n"
+  assume 1: "path_compression_invariant p x y p0 w \<and> y \<noteq> p[[w]]"
   hence 2: "point (p[[w]])"
     by (simp add: path_compression_invariant_def path_compression_precondition_def read_point)
-  show "path_compression_invariant ?p x y p0 (p[[w]]) \<and> card ?t < n"
+  show "path_compression_invariant ?p x y p0 (p[[w]]) \<and> card ?t < card ?s"
   proof (unfold path_compression_invariant_def, intro conjI)
     have 3: "mapping ?p"
       using 1 by (meson path_compression_invariant_def path_compression_precondition_def update_mapping bijective_regular)
@@ -1307,7 +1304,7 @@ proof -
       thus ?thesis
         using 1 21 path_compression_invariant_def by simp
     qed
-    show "card ?t < n"
+    show "card ?t < card ?s"
     proof -
       have "?p\<^sup>T * p\<^sup>T\<^sup>\<star> * w = (w\<^sup>T \<sqinter> y) * p\<^sup>T\<^sup>\<star> * w \<squnion> (-w\<^sup>T \<sqinter> p\<^sup>T) * p\<^sup>T\<^sup>\<star> * w"
         by (simp add: conv_complement conv_dist_inf conv_dist_sup mult_right_dist_sup)
@@ -1362,19 +1359,17 @@ proof -
         thus False
           using 1 7 by (metis inf.le_iff_sup le_bot pseudo_complement schroeder_4_p semiring.mult_zero_right star.circ_plus_same path_compression_invariant_def)
       qed
-      have "card ?t < card ?s"
+      show "card ?t < card ?s"
         apply (rule psubset_card_mono)
         subgoal using finite_regular by simp
         subgoal using 22 23 24 by auto
         done
-      thus ?thesis
-        using 1 by simp
     qed
   qed
 qed
 
 lemma path_compression_3:
-  "path_compression_invariant p x y p0 w \<and> y = p[[w]] \<Longrightarrow> path_compression_postcondition p x (p[[w]]) p0"
+  "path_compression_invariant p x (p[[w]]) p0 w \<Longrightarrow> path_compression_postcondition p x (p[[w]]) p0"
   using path_compression_invariant_def path_compression_postcondition_def path_compression_precondition_def by auto
 
 theorem path_compression:
@@ -1390,9 +1385,9 @@ theorem path_compression:
      OD
   [ path_compression_postcondition p x y p0 ]"
   apply vcg_tc_simp
-    apply (rule path_compression_1, force)
-   apply (rule path_compression_2, force)
-  by (fact path_compression_3)
+    apply (fact path_compression_1)
+   apply (fact path_compression_2)
+  using path_compression_3 by auto
 
 lemma path_compression_exists:
   "path_compression_precondition p x y \<Longrightarrow> \<exists>p' . path_compression_postcondition p' x y p"
@@ -1436,10 +1431,9 @@ theorem find_set_path_compression_1:
      OD
   [ path_compression_postcondition p x y p0 ]"
   apply vcg_tc_simp
-  using find_set_function find_set_postcondition_def find_set_precondition_def path_compression_1 path_compression_precondition_def 
-    apply fastforce
-   apply (rule path_compression_2, force)
-  by (rule path_compression_3, force)
+    using find_set_function find_set_postcondition_def find_set_precondition_def path_compression_1 path_compression_precondition_def apply fastforce
+   apply (fact path_compression_2)
+  by (fact path_compression_3)
 
 theorem find_set_path_compression_2:
   "VARS p y
@@ -1453,8 +1447,8 @@ theorem find_set_path_compression_2:
   p := path_compression p x y
   [ path_compression_postcondition p x y p0 ]"
   apply vcg_tc_simp
-    apply (simp add: find_set_1)
-  using find_set_2 apply blast
+    apply (fact find_set_1)
+   apply (fact find_set_2)
   by (smt find_set_3 find_set_invariant_def find_set_postcondition_def find_set_precondition_def path_compression_function path_compression_precondition_def)
 
 theorem find_set_path_compression_3:
@@ -1477,10 +1471,10 @@ theorem find_set_path_compression_3:
   [ path_compression_postcondition p x y p0 ]"
   apply vcg_tc_simp
       apply (simp add: find_set_1)
-  using find_set_2 apply blast
-  using find_set_3 find_set_invariant_def find_set_postcondition_def find_set_precondition_def path_compression_invariant_def path_compression_precondition_def apply blast
-   apply (rule path_compression_2, force)
-  by (rule path_compression_3, force)
+     apply (fact find_set_2)
+    using find_set_3 find_set_invariant_def find_set_postcondition_def find_set_precondition_def path_compression_invariant_def path_compression_precondition_def apply blast
+   apply (fact path_compression_2)
+  by (fact path_compression_3)
 
 text \<open>
 Find-set with path compression returns two results: the representative of the tree and the modified disjoint-set forest.
@@ -1529,207 +1523,202 @@ theorem union_sets:
   s := snd t;
   p[r] := s
   [ union_sets_postcondition p x y p0 ]"
-proof - 
-  {
-    fix p
-    let ?t1 = "find_set_path_compression p x"
-    let ?p1 = "fst ?t1"
-    let ?r = "snd ?t1"
-    let ?t2 = "find_set_path_compression ?p1 y"
-    let ?p2 = "fst ?t2"
-    let ?s = "snd ?t2"
-    let ?p = "?p2[?r\<longmapsto>?s]"
-    assume 1: "union_sets_precondition p x y \<and> p0 = p"
-    have "union_sets_postcondition ?p x y p"
-    proof (unfold union_sets_postcondition_def union_sets_precondition_def, intro conjI)
-      have "path_compression_postcondition ?p1 x ?r p"
-        using 1 by (simp add: find_set_precondition_def union_sets_precondition_def find_set_path_compression_function)
-      hence 2: "disjoint_set_forest ?p1 \<and> point ?r \<and> ?r = root ?p1 x \<and> ?p1 \<sqinter> 1 = p \<sqinter> 1 \<and> fc ?p1 = fc p"
-        using path_compression_precondition_def path_compression_postcondition_def by auto
-      hence "path_compression_postcondition ?p2 y ?s ?p1"
-        using 1 by (simp add: find_set_precondition_def union_sets_precondition_def find_set_path_compression_function)
-      hence 3: "disjoint_set_forest ?p2 \<and> point ?s \<and> ?s = root ?p2 y \<and> ?p2 \<sqinter> 1 = ?p1 \<sqinter> 1 \<and> fc ?p2 = fc ?p1"
-        using path_compression_precondition_def path_compression_postcondition_def by auto
-      hence 4: "fc ?p2 = fc p"
-        using 2 by simp
-      show 5: "univalent ?p"
-        using 2 3 update_univalent by blast
-      show "total ?p"
-        using 2 3 bijective_regular update_total by blast
-      show "acyclic (?p \<sqinter> -1)"
-      proof (cases "?r = ?s")
-        case True
-        thus ?thesis
-          using 3 update_acyclic_3 by fastforce
-      next
-        case False
-        hence "bot = ?r \<sqinter> ?s"
-          using 2 3 distinct_points by blast
-        also have "... = ?r \<sqinter> ?p2\<^sup>T\<^sup>\<star> * ?s"
-          using 3 root_transitive_successor_loop by force
-        finally have "?s \<sqinter> ?p2\<^sup>\<star> * ?r = bot"
-          using schroeder_1 conv_star_commute inf.sup_monoid.add_commute by fastforce
-        thus ?thesis
-          using 2 3 update_acyclic_2 by blast
-      qed
-      show "vector x"
-        using 1 by (simp add: union_sets_precondition_def)
-      show "injective x"
-        using 1 by (simp add: union_sets_precondition_def)
-      show "surjective x"
-        using 1 by (simp add: union_sets_precondition_def)
-      show "vector y"
-        using 1 by (simp add: union_sets_precondition_def)
-      show "injective y"
-        using 1 by (simp add: union_sets_precondition_def)
-      show "surjective y"
-        using 1 by (simp add: union_sets_precondition_def)
-      show "fc ?p = wcc (p \<squnion> x * y\<^sup>T)"
-      proof (rule antisym)
-        have "?r = ?p1[[?r]]"
-          using 2 root_successor_loop by force
-        hence "?r * ?r\<^sup>T \<le> ?p1\<^sup>T"
-          using 2 eq_refl shunt_bijective by blast
-        hence "?r * ?r\<^sup>T \<le> ?p1"
-          using 2 conv_order coreflexive_symmetric by fastforce
-        hence "?r * ?r\<^sup>T \<le> ?p1 \<sqinter> 1"
-          using 2 inf.boundedI by blast
-        also have "... = ?p2 \<sqinter> 1"
-          using 3 by simp
-        finally have "?r * ?r\<^sup>T \<le> ?p2"
-          by simp
-        hence "?r \<le> ?p2 * ?r"
-          using 2 shunt_bijective by blast
-        hence 6: "?p2[[?r]] \<le> ?r"
-          using 3 shunt_mapping by blast
-        have "?r \<sqinter> ?p2 \<le> ?r * (top \<sqinter> ?r\<^sup>T * ?p2)"
-          using 2 by (metis dedekind_1)
-        also have "... = ?r * ?r\<^sup>T * ?p2"
-          by (simp add: mult_assoc)
-        also have "... \<le> ?r * ?r\<^sup>T"
-          using 6 by (metis comp_associative conv_dist_comp conv_involutive conv_order mult_right_isotone)
-        also have "... \<le> 1"
-          using 2 by blast
-        finally have 7: "?r \<sqinter> ?p2 \<le> 1"
-          by simp
-        have "p \<le> wcc p"
-          by (simp add: star.circ_sub_dist_1)
-        also have "... = wcc ?p2"
-          using 4 by (simp add: star_decompose_1)
-        also have 8: "... \<le> wcc ?p"
-        proof -
-          have "wcc ?p2 = wcc ((-?r \<sqinter> ?p2) \<squnion> (?r \<sqinter> ?p2))"
-            using 2 by (metis bijective_regular inf.sup_monoid.add_commute maddux_3_11_pp)
-          also have "... \<le> wcc ((-?r \<sqinter> ?p2) \<squnion> 1)"
-            using 7 wcc_isotone sup_right_isotone by simp
-          also have "... = wcc (-?r \<sqinter> ?p2)"
-            using wcc_with_loops by simp
-          also have "... \<le> wcc ?p"
-            using wcc_isotone sup_ge2 by blast
-          finally show ?thesis
-            by simp
-        qed
-        finally have 9: "p \<le> wcc ?p"
-          by force
-        have "?r \<le> ?p1\<^sup>T\<^sup>\<star> * x"
-          using 2 by simp
-        hence 10: "?r * x\<^sup>T \<le> ?p1\<^sup>T\<^sup>\<star>"
-          using 1 shunt_bijective union_sets_precondition_def by blast
-        hence "x * ?r\<^sup>T \<le> ?p1\<^sup>\<star>"
-          using conv_dist_comp conv_order conv_star_commute by force
-        also have "... \<le> wcc ?p1"
-          by (simp add: star.circ_sub_dist)
-        also have "... = wcc ?p2"
-          using 2 3 by (simp add: fc_wcc)
-        also have "... \<le> wcc ?p"
-          using 8 by simp
-        finally have 11: "x * ?r\<^sup>T \<le> wcc ?p"
-          by simp
-        have 12: "?r * ?s\<^sup>T \<le> wcc ?p"
-          using 2 3 star.circ_sub_dist_1 sup_assoc vector_covector by auto
-        have "?s \<le> ?p2\<^sup>T\<^sup>\<star> * y"
-          using 3 by simp
-        hence 13: "?s * y\<^sup>T \<le> ?p2\<^sup>T\<^sup>\<star>"
-          using 1 shunt_bijective union_sets_precondition_def by blast
-        also have "... \<le> wcc ?p2"
-          using star_isotone sup_ge2 by blast
-        also have "... \<le> wcc ?p"
-          using 8 by simp
-        finally have 14: "?s * y\<^sup>T \<le> wcc ?p"
-          by simp
-        have "x \<le> x * ?r\<^sup>T * ?r \<and> y \<le> y * ?s\<^sup>T * ?s"
-          using 2 3 shunt_bijective by blast
-        hence "x * y\<^sup>T \<le> x * ?r\<^sup>T * ?r * (y * ?s\<^sup>T * ?s)\<^sup>T"
-          using comp_isotone conv_isotone by blast
-        also have "... = x * ?r\<^sup>T * ?r * ?s\<^sup>T * ?s * y\<^sup>T"
-          by (simp add: comp_associative conv_dist_comp)
-        also have "... \<le> wcc ?p * (?r * ?s\<^sup>T) * (?s * y\<^sup>T)"
-          using 11 by (metis mult_left_isotone mult_assoc)
-        also have "... \<le> wcc ?p * wcc ?p * (?s * y\<^sup>T)"
-          using 12 by (metis mult_left_isotone mult_right_isotone)
-        also have "... \<le> wcc ?p * wcc ?p * wcc ?p"
-          using 14 by (metis mult_right_isotone)
-        also have "... = wcc ?p"
-          by (simp add: star.circ_transitive_equal)
-        finally have "p \<squnion> x * y\<^sup>T \<le> wcc ?p"
-          using 9 by simp
-        hence "wcc (p \<squnion> x * y\<^sup>T) \<le> wcc ?p"
-          using wcc_below_wcc by simp
-        thus "wcc (p \<squnion> x * y\<^sup>T) \<le> fc ?p"
-          using 5 fc_wcc by simp
-        have "-?r \<sqinter> ?p2 \<le> wcc ?p2"
-          by (simp add: inf.coboundedI2 star.circ_sub_dist_1)
-        also have "... = wcc p"
-          using 4 by (simp add: star_decompose_1)
-        also have "... \<le> wcc (p \<squnion> x * y\<^sup>T)"
-          by (simp add: wcc_isotone)
-        finally have 15: "-?r \<sqinter> ?p2 \<le> wcc (p \<squnion> x * y\<^sup>T)"
-          by simp
-        have "?r * x\<^sup>T \<le> wcc ?p1"
-          using 10 inf.order_trans star.circ_sub_dist sup_commute by fastforce
-        also have "... = wcc p"
-          using 2 by (simp add: star_decompose_1)
-        also have "... \<le> wcc (p \<squnion> x * y\<^sup>T)"
-          by (simp add: wcc_isotone)
-        finally have 16: "?r * x\<^sup>T \<le> wcc (p \<squnion> x * y\<^sup>T)"
-          by simp
-        have 17: "x * y\<^sup>T \<le> wcc (p \<squnion> x * y\<^sup>T)"
-          using le_supE star.circ_sub_dist_1 by blast
-        have "y * ?s\<^sup>T \<le> ?p2\<^sup>\<star>"
-          using 13 conv_dist_comp conv_order conv_star_commute by fastforce
-        also have "... \<le> wcc ?p2"
-          using star.circ_sub_dist sup_commute by fastforce
-        also have "... = wcc p"
-          using 4 by (simp add: star_decompose_1)
-        also have "... \<le> wcc (p \<squnion> x * y\<^sup>T)"
-          by (simp add: wcc_isotone)
-        finally have 18: "y * ?s\<^sup>T \<le> wcc (p \<squnion> x * y\<^sup>T)"
-          by simp
-        have "?r \<le> ?r * x\<^sup>T * x \<and> ?s \<le> ?s * y\<^sup>T * y"
-          using 1 shunt_bijective union_sets_precondition_def by blast
-        hence "?r * ?s\<^sup>T \<le> ?r * x\<^sup>T * x * (?s * y\<^sup>T * y)\<^sup>T"
-          using comp_isotone conv_isotone by blast
-        also have "... = ?r * x\<^sup>T * x * y\<^sup>T * y * ?s\<^sup>T"
-          by (simp add: comp_associative conv_dist_comp)
-        also have "... \<le> wcc (p \<squnion> x * y\<^sup>T) * (x * y\<^sup>T) * (y * ?s\<^sup>T)"
-          using 16 by (metis mult_left_isotone mult_assoc)
-        also have "... \<le> wcc (p \<squnion> x * y\<^sup>T) * wcc (p \<squnion> x * y\<^sup>T) * (y * ?s\<^sup>T)"
-          using 17 by (metis mult_left_isotone mult_right_isotone)
-        also have "... \<le> wcc (p \<squnion> x * y\<^sup>T) * wcc (p \<squnion> x * y\<^sup>T) * wcc (p \<squnion> x * y\<^sup>T)"
-          using 18 by (metis mult_right_isotone)
-        also have "... = wcc (p \<squnion> x * y\<^sup>T)"
-          by (simp add: star.circ_transitive_equal)
-        finally have "?p \<le> wcc (p \<squnion> x * y\<^sup>T)"
-          using 2 3 15 vector_covector by auto
-        hence "wcc ?p \<le> wcc (p \<squnion> x * y\<^sup>T)"
-          using wcc_below_wcc by blast
-        thus "fc ?p \<le> wcc (p \<squnion> x * y\<^sup>T)"
-          using 5 fc_wcc by simp
-      qed
+proof vcg_tc_simp
+  let ?t1 = "find_set_path_compression p0 x"
+  let ?p1 = "fst ?t1"
+  let ?r = "snd ?t1"
+  let ?t2 = "find_set_path_compression ?p1 y"
+  let ?p2 = "fst ?t2"
+  let ?s = "snd ?t2"
+  let ?p = "?p2[?r\<longmapsto>?s]"
+  assume 1: "union_sets_precondition p0 x y"
+  show "union_sets_postcondition ?p x y p0"
+  proof (unfold union_sets_postcondition_def union_sets_precondition_def, intro conjI)
+    have "path_compression_postcondition ?p1 x ?r p0"
+      using 1 by (simp add: find_set_precondition_def union_sets_precondition_def find_set_path_compression_function)
+    hence 2: "disjoint_set_forest ?p1 \<and> point ?r \<and> ?r = root ?p1 x \<and> ?p1 \<sqinter> 1 = p0 \<sqinter> 1 \<and> fc ?p1 = fc p0"
+      using path_compression_precondition_def path_compression_postcondition_def by auto
+    hence "path_compression_postcondition ?p2 y ?s ?p1"
+      using 1 by (simp add: find_set_precondition_def union_sets_precondition_def find_set_path_compression_function)
+    hence 3: "disjoint_set_forest ?p2 \<and> point ?s \<and> ?s = root ?p2 y \<and> ?p2 \<sqinter> 1 = ?p1 \<sqinter> 1 \<and> fc ?p2 = fc ?p1"
+      using path_compression_precondition_def path_compression_postcondition_def by auto
+    hence 4: "fc ?p2 = fc p0"
+      using 2 by simp
+    show 5: "univalent ?p"
+      using 2 3 update_univalent by blast
+    show "total ?p"
+      using 2 3 bijective_regular update_total by blast
+    show "acyclic (?p \<sqinter> -1)"
+    proof (cases "?r = ?s")
+      case True
+      thus ?thesis
+        using 3 update_acyclic_3 by fastforce
+    next
+      case False
+      hence "bot = ?r \<sqinter> ?s"
+        using 2 3 distinct_points by blast
+      also have "... = ?r \<sqinter> ?p2\<^sup>T\<^sup>\<star> * ?s"
+        using 3 root_transitive_successor_loop by force
+      finally have "?s \<sqinter> ?p2\<^sup>\<star> * ?r = bot"
+        using schroeder_1 conv_star_commute inf.sup_monoid.add_commute by fastforce
+      thus ?thesis
+        using 2 3 update_acyclic_2 by blast
     qed
-  } note main = this
-  show ?thesis
-    by (vcg_tc_simp, insert main, auto)
+    show "vector x"
+      using 1 by (simp add: union_sets_precondition_def)
+    show "injective x"
+      using 1 by (simp add: union_sets_precondition_def)
+    show "surjective x"
+      using 1 by (simp add: union_sets_precondition_def)
+    show "vector y"
+      using 1 by (simp add: union_sets_precondition_def)
+    show "injective y"
+      using 1 by (simp add: union_sets_precondition_def)
+    show "surjective y"
+      using 1 by (simp add: union_sets_precondition_def)
+    show "fc ?p = wcc (p0 \<squnion> x * y\<^sup>T)"
+    proof (rule antisym)
+      have "?r = ?p1[[?r]]"
+        using 2 root_successor_loop by force
+      hence "?r * ?r\<^sup>T \<le> ?p1\<^sup>T"
+        using 2 eq_refl shunt_bijective by blast
+      hence "?r * ?r\<^sup>T \<le> ?p1"
+        using 2 conv_order coreflexive_symmetric by fastforce
+      hence "?r * ?r\<^sup>T \<le> ?p1 \<sqinter> 1"
+        using 2 inf.boundedI by blast
+      also have "... = ?p2 \<sqinter> 1"
+        using 3 by simp
+      finally have "?r * ?r\<^sup>T \<le> ?p2"
+        by simp
+      hence "?r \<le> ?p2 * ?r"
+        using 2 shunt_bijective by blast
+      hence 6: "?p2[[?r]] \<le> ?r"
+        using 3 shunt_mapping by blast
+      have "?r \<sqinter> ?p2 \<le> ?r * (top \<sqinter> ?r\<^sup>T * ?p2)"
+        using 2 by (metis dedekind_1)
+      also have "... = ?r * ?r\<^sup>T * ?p2"
+        by (simp add: mult_assoc)
+      also have "... \<le> ?r * ?r\<^sup>T"
+        using 6 by (metis comp_associative conv_dist_comp conv_involutive conv_order mult_right_isotone)
+      also have "... \<le> 1"
+        using 2 by blast
+      finally have 7: "?r \<sqinter> ?p2 \<le> 1"
+        by simp
+      have "p0 \<le> wcc p0"
+        by (simp add: star.circ_sub_dist_1)
+      also have "... = wcc ?p2"
+        using 4 by (simp add: star_decompose_1)
+      also have 8: "... \<le> wcc ?p"
+      proof -
+        have "wcc ?p2 = wcc ((-?r \<sqinter> ?p2) \<squnion> (?r \<sqinter> ?p2))"
+          using 2 by (metis bijective_regular inf.sup_monoid.add_commute maddux_3_11_pp)
+        also have "... \<le> wcc ((-?r \<sqinter> ?p2) \<squnion> 1)"
+          using 7 wcc_isotone sup_right_isotone by simp
+        also have "... = wcc (-?r \<sqinter> ?p2)"
+          using wcc_with_loops by simp
+        also have "... \<le> wcc ?p"
+          using wcc_isotone sup_ge2 by blast
+        finally show ?thesis
+          by simp
+      qed
+      finally have 9: "p0 \<le> wcc ?p"
+        by force
+      have "?r \<le> ?p1\<^sup>T\<^sup>\<star> * x"
+        using 2 by simp
+      hence 10: "?r * x\<^sup>T \<le> ?p1\<^sup>T\<^sup>\<star>"
+        using 1 shunt_bijective union_sets_precondition_def by blast
+      hence "x * ?r\<^sup>T \<le> ?p1\<^sup>\<star>"
+        using conv_dist_comp conv_order conv_star_commute by force
+      also have "... \<le> wcc ?p1"
+        by (simp add: star.circ_sub_dist)
+      also have "... = wcc ?p2"
+        using 2 3 by (simp add: fc_wcc)
+      also have "... \<le> wcc ?p"
+        using 8 by simp
+      finally have 11: "x * ?r\<^sup>T \<le> wcc ?p"
+        by simp
+      have 12: "?r * ?s\<^sup>T \<le> wcc ?p"
+        using 2 3 star.circ_sub_dist_1 sup_assoc vector_covector by auto
+      have "?s \<le> ?p2\<^sup>T\<^sup>\<star> * y"
+        using 3 by simp
+      hence 13: "?s * y\<^sup>T \<le> ?p2\<^sup>T\<^sup>\<star>"
+        using 1 shunt_bijective union_sets_precondition_def by blast
+      also have "... \<le> wcc ?p2"
+        using star_isotone sup_ge2 by blast
+      also have "... \<le> wcc ?p"
+        using 8 by simp
+      finally have 14: "?s * y\<^sup>T \<le> wcc ?p"
+        by simp
+      have "x \<le> x * ?r\<^sup>T * ?r \<and> y \<le> y * ?s\<^sup>T * ?s"
+        using 2 3 shunt_bijective by blast
+      hence "x * y\<^sup>T \<le> x * ?r\<^sup>T * ?r * (y * ?s\<^sup>T * ?s)\<^sup>T"
+        using comp_isotone conv_isotone by blast
+      also have "... = x * ?r\<^sup>T * ?r * ?s\<^sup>T * ?s * y\<^sup>T"
+        by (simp add: comp_associative conv_dist_comp)
+      also have "... \<le> wcc ?p * (?r * ?s\<^sup>T) * (?s * y\<^sup>T)"
+        using 11 by (metis mult_left_isotone mult_assoc)
+      also have "... \<le> wcc ?p * wcc ?p * (?s * y\<^sup>T)"
+        using 12 by (metis mult_left_isotone mult_right_isotone)
+      also have "... \<le> wcc ?p * wcc ?p * wcc ?p"
+        using 14 by (metis mult_right_isotone)
+      also have "... = wcc ?p"
+        by (simp add: star.circ_transitive_equal)
+      finally have "p0 \<squnion> x * y\<^sup>T \<le> wcc ?p"
+        using 9 by simp
+      hence "wcc (p0 \<squnion> x * y\<^sup>T) \<le> wcc ?p"
+        using wcc_below_wcc by simp
+      thus "wcc (p0 \<squnion> x * y\<^sup>T) \<le> fc ?p"
+        using 5 fc_wcc by simp
+      have "-?r \<sqinter> ?p2 \<le> wcc ?p2"
+        by (simp add: inf.coboundedI2 star.circ_sub_dist_1)
+      also have "... = wcc p0"
+        using 4 by (simp add: star_decompose_1)
+      also have "... \<le> wcc (p0 \<squnion> x * y\<^sup>T)"
+        by (simp add: wcc_isotone)
+      finally have 15: "-?r \<sqinter> ?p2 \<le> wcc (p0 \<squnion> x * y\<^sup>T)"
+        by simp
+      have "?r * x\<^sup>T \<le> wcc ?p1"
+        using 10 inf.order_trans star.circ_sub_dist sup_commute by fastforce
+      also have "... = wcc p0"
+        using 2 by (simp add: star_decompose_1)
+      also have "... \<le> wcc (p0 \<squnion> x * y\<^sup>T)"
+        by (simp add: wcc_isotone)
+      finally have 16: "?r * x\<^sup>T \<le> wcc (p0 \<squnion> x * y\<^sup>T)"
+        by simp
+      have 17: "x * y\<^sup>T \<le> wcc (p0 \<squnion> x * y\<^sup>T)"
+        using le_supE star.circ_sub_dist_1 by blast
+      have "y * ?s\<^sup>T \<le> ?p2\<^sup>\<star>"
+        using 13 conv_dist_comp conv_order conv_star_commute by fastforce
+      also have "... \<le> wcc ?p2"
+        using star.circ_sub_dist sup_commute by fastforce
+      also have "... = wcc p0"
+        using 4 by (simp add: star_decompose_1)
+      also have "... \<le> wcc (p0 \<squnion> x * y\<^sup>T)"
+        by (simp add: wcc_isotone)
+      finally have 18: "y * ?s\<^sup>T \<le> wcc (p0 \<squnion> x * y\<^sup>T)"
+        by simp
+      have "?r \<le> ?r * x\<^sup>T * x \<and> ?s \<le> ?s * y\<^sup>T * y"
+        using 1 shunt_bijective union_sets_precondition_def by blast
+      hence "?r * ?s\<^sup>T \<le> ?r * x\<^sup>T * x * (?s * y\<^sup>T * y)\<^sup>T"
+        using comp_isotone conv_isotone by blast
+      also have "... = ?r * x\<^sup>T * x * y\<^sup>T * y * ?s\<^sup>T"
+        by (simp add: comp_associative conv_dist_comp)
+      also have "... \<le> wcc (p0 \<squnion> x * y\<^sup>T) * (x * y\<^sup>T) * (y * ?s\<^sup>T)"
+        using 16 by (metis mult_left_isotone mult_assoc)
+      also have "... \<le> wcc (p0 \<squnion> x * y\<^sup>T) * wcc (p0 \<squnion> x * y\<^sup>T) * (y * ?s\<^sup>T)"
+        using 17 by (metis mult_left_isotone mult_right_isotone)
+      also have "... \<le> wcc (p0 \<squnion> x * y\<^sup>T) * wcc (p0 \<squnion> x * y\<^sup>T) * wcc (p0 \<squnion> x * y\<^sup>T)"
+        using 18 by (metis mult_right_isotone)
+      also have "... = wcc (p0 \<squnion> x * y\<^sup>T)"
+        by (simp add: star.circ_transitive_equal)
+      finally have "?p \<le> wcc (p0 \<squnion> x * y\<^sup>T)"
+        using 2 3 15 vector_covector by auto
+      hence "wcc ?p \<le> wcc (p0 \<squnion> x * y\<^sup>T)"
+        using wcc_below_wcc by blast
+      thus "fc ?p \<le> wcc (p0 \<squnion> x * y\<^sup>T)"
+        using 5 fc_wcc by simp
+    qed
+  qed
 qed
 
 lemma union_sets_exists:
