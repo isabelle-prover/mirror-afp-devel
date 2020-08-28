@@ -967,8 +967,8 @@ lemma gf_U'_pos:
 proof (subst suminf_pos_iff)
   show "summable (\<lambda>n. u x y n * real (Suc n) * z ^ n)"
     using z by (intro summable_gf_U') simp
-  show pos: "\<forall>n. 0 \<le> u x y n * real (Suc n) * z ^ n"
-    using z by (auto intro!: mult_nonneg_nonneg u_nonneg)
+  show pos: "\<And>n. 0 \<le> u x y n * real (Suc n) * z ^ n"
+    using u_nonneg z by auto
   show "\<exists>n. 0 < u x y n * real (Suc n) * z ^ n"
   proof (rule ccontr)
     assume "\<not> (\<exists>n. 0 < u x y n * real (Suc n) * z ^ n)"
@@ -1017,7 +1017,7 @@ lemma gf_G_pos:
 proof (subst suminf_pos_iff)
   show "summable (\<lambda>n. p x y n *\<^sub>R z ^ n)"
     using z by (intro convergence_G convergence_G_less_1) simp
-  show pos: "\<forall>n. 0 \<le> p x y n *\<^sub>R z ^ n"
+  show pos: "\<And>n. 0 \<le> p x y n *\<^sub>R z ^ n"
     using z by (auto intro!: mult_nonneg_nonneg p_nonneg)
   show "\<exists>n. 0 < p x y n *\<^sub>R z ^ n"
   proof (rule ccontr)
@@ -2332,7 +2332,6 @@ proof (rule essential_classI)
     then show "y \<in> X"
       by induct (auto dest: ED)}
   note accD = this
-
   from \<open>X \<noteq> {}\<close> obtain x where "x \<in> X" by auto
   from \<open>x \<in> X\<close> show "X \<in> UNIV // communicating"
     by (auto simp add: quotient_def Image_def communicating_def accI dest: accD intro!: exI[of _ x])

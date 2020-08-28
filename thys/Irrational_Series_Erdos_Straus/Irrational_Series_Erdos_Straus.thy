@@ -18,16 +18,13 @@ begin
 section \<open>Miscellaneous\<close>
 
 lemma suminf_comparison:
-  assumes "summable f" and "\<forall>n. norm (g n) \<le> f n"
+  assumes "summable f" and gf: "\<And>n. norm (g n) \<le> f n"
   shows "suminf g \<le> suminf f"
 proof (rule suminf_le)
-  show "\<forall>n. g n \<le> f n" 
-    apply rule
-    subgoal for n using assms(2)[rule_format,of n] by auto
-    done
-  show "summable g" 
-    apply (rule summable_comparison_test'[OF \<open>summable f\<close>, of 0])
-    using assms(2) by auto
+  show "g n \<le> f n" for n
+    using gf[of n] by auto
+  show "summable g"
+    using assms summable_comparison_test' by blast 
   show "summable f" using assms(1) .
 qed
 
@@ -318,7 +315,7 @@ proof -
         show "summable (\<lambda>n. e/4 * 1/2^n)" 
           using summable_geometric[of "1/2",THEN summable_mult,of "e/4",simplified]
           by (auto simp add:algebra_simps power_divide)
-        show "\<forall>n. norm \<bar>g n\<bar> \<le> e / 4 * 1 / 2 ^ n" using g_lt less_eq_real_def by auto
+        show "\<And>n. norm \<bar>g n\<bar> \<le> e / 4 * 1 / 2 ^ n" using g_lt less_eq_real_def by auto
       qed
       also have "... = (e/4) * (\<Sum>n. (1/2)^n)"
         apply (subst suminf_mult[symmetric])

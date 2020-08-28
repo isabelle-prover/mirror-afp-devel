@@ -92,8 +92,8 @@ proof -
   hence sum2: "(\<lambda>n. y^Suc n / real (Suc n) - (-y)^Suc n / real (Suc n)) sums ln (1 + 1/x)"
     by (subst sums_Suc_iff) simp
 
-  from sum2 sum1 have "ln (1 + 1/x) \<le> T x"
-  proof (rule sums_le [OF allI, rotated])
+  have "ln (1 + 1/x) \<le> T x"
+  proof (rule sums_le [OF _ sum2 sum1])
     fix n :: nat
     show "y ^ Suc n / real (Suc n) - (-y) ^ Suc n / real (Suc n) \<le> y^Suc n - (-y) ^ Suc n"
     proof (cases "even n")

@@ -503,9 +503,7 @@ proof (rule sums_le)
     by (rule N_sums)
   show "(\<lambda>k. ?I n k + ?I m k) sums (N n + N m)"
     by (intro sums_add N_sums)
-  show "\<forall>k. ?I (n + m) k \<le> ?I n k + ?I m k"
-    using q_gt_1 by auto
-qed
+qed (use q_gt_1 in auto)
 
 lemma N_1: "N 1 = 1 / (q * (q - 1))"
 proof (rule sums_unique2)
@@ -532,7 +530,7 @@ text \<open>
 lemma N_dvd_mono:
   assumes "m dvd n"
   shows   "N n \<le> N m"
-proof (rule sums_le[OF allI N_sums N_sums])
+proof (rule sums_le[OF _ N_sums N_sums])
   fix k :: nat
   show "(if k = 0 \<or> int k dvd n then 0 else 1 / q ^ k) \<le>
         (if k = 0 \<or> int k dvd m then 0 else 1 / q ^ k)"
@@ -626,9 +624,9 @@ proof -
       using q_gt_1 by (simp add: field_simps)
     finally show "(\<lambda>k. if k \<in> {0, 1, p', n'} then 0 else (1 / q) ^ k) sums \<dots>" .
   next
-    show " \<forall>na. (if na = 0 \<or> int na dvd n then 0 else 1 / q ^ na)
-         \<le> (if na \<in> {0, 1, p', n'} then 0 else (1 / q) ^ na)"
-      using q_gt_1 assms p by (auto simp: p'_def n'_def power_divide)
+    show "\<And>k. (if k = 0 \<or> int k dvd n then 0 else 1 / q ^ k)
+         \<le> (if k \<in> {0, 1, p', n'} then 0 else (1 / q) ^ k)"
+      using q_gt_1 p by (auto simp: p'_def n'_def power_divide)
   qed
   also have "\<dots> < 1 / (q * (q - 1)) - 1 / q ^ n'"
     using q_gt_1 by simp
@@ -671,7 +669,7 @@ text \<open>
   Factorials, on the other hand, have very small norms:
 \<close>
 lemma N_fact_le: "N (fact m) \<le> 1 / (q - 1) * 1 / q ^ m"
-proof (rule sums_le[OF allI N_sums])
+proof (rule sums_le[OF _ N_sums])
   have "(\<lambda>k. 1 / q ^ k / q ^ Suc m) sums (q / (q - 1) / q ^ Suc m)"
     using geometric_sums[of "1 / q"] q_gt_1 
     by (intro sums_divide) (auto simp: field_simps)

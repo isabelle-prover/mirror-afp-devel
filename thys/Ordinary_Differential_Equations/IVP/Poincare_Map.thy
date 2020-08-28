@@ -477,18 +477,23 @@ proof -
     apply (subst suminf_mult[symmetric], fact)
     by (auto simp: power2_eq_square algebra_simps eval_nat_numeral)
   also have "norm \<dots> \<le> (norm w)\<^sup>2 / (1 - norm w)"
-    apply (rule order_trans[OF norm_mult_ineq])
-    apply (subst divide_inverse)
-    apply (rule mult_mono)
-       apply (auto simp: norm_power_ineq inverse_eq_divide assms )
-    apply (rule order_trans[OF summable_norm])
-     apply auto
-     apply fact
-    apply (rule order_trans[OF suminf_le])
-       apply (rule allI) apply (rule norm_power_ineq)
-      apply fact
-     apply fact
-    by (auto simp: suminf_geometric assms)
+  proof -
+    have \<section>: "norm (\<Sum>n. (- 1) ^ n *\<^sub>R w ^ n) \<le> 1 / (1 - norm w)"
+      apply (rule order_trans[OF summable_norm])
+       apply auto
+       apply fact
+      apply (rule order_trans[OF suminf_le])
+         apply (rule norm_power_ineq)
+        apply fact
+       apply fact
+      by (auto simp: suminf_geometric assms)
+    show ?thesis
+      apply (rule order_trans[OF norm_mult_ineq])
+      apply (subst divide_inverse)
+      apply (rule mult_mono)
+         apply (auto simp: norm_power_ineq inverse_eq_divide assms \<section>)
+      done
+  qed
   finally show ?L .
 qed
 
