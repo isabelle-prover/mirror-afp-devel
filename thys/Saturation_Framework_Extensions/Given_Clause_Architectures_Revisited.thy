@@ -117,7 +117,7 @@ proof cases
         using F\<iota>_inf unfolding to_F_def Inf_from_def no_labels.Inf_from_def by auto
 
       have "\<iota> \<in> Sup_upto_llist (lmap Red_I_\<G> Ns) (enat (Suc i))"
-      proof (cases "to_F \<iota> \<in> no_labels.Inf_from2 (fst ` active_subset N) {C}")
+      proof (cases "to_F \<iota> \<in> no_labels.Inf_between (fst ` active_subset N) {C}")
         case True
         then have "to_F \<iota> \<in> no_labels.Red_I_\<G> (fst ` (N \<union> {(C, active)} \<union> M))"
           using inff_red by auto
@@ -128,7 +128,7 @@ proof cases
       next
         case False
         then have "to_F \<iota> \<in> no_labels.Inf_from (fst ` active_subset N)"
-          using F\<iota>_inff unfolding no_labels.Inf_from_def no_labels.Inf_from2_def by auto
+          using F\<iota>_inff unfolding no_labels.Inf_from_def no_labels.Inf_between_def by auto
         then have "\<iota> \<in> Inf_from (active_subset N)"
           using \<iota>_inf l_pas unfolding to_F_def Inf_from_def no_labels.Inf_from_def
           by clarsimp (smt \<iota>_inff[unfolded Inf_from_def] active_subset_def imageE image_subset_iff
@@ -356,7 +356,7 @@ proof cases
         using Inf_FL_to_Inf_F[folded to_F_def] by fastforce
 
       have "\<iota> \<in> \<Union> (from_F ` (T1 \<union> T')) \<union> ?Sup_Red_Si"
-      proof (cases "to_F \<iota> \<in> no_labels.Inf_from2 (fst ` active_subset N) {C}")
+      proof (cases "to_F \<iota> \<in> no_labels.Inf_between (fst ` active_subset N) {C}")
         case True
         then have "\<iota> \<in> \<Union> (from_F ` (T1 \<union> T'))"
           unfolding t' from_F_def using \<iota>_inf by auto
@@ -367,7 +367,7 @@ proof cases
         moreover have "to_F \<iota> \<in> no_labels.Inf_from (fst ` (active_subset N \<union> {(C, active)}))"
           using \<iota>_inff F\<iota>_inf unfolding to_F_def Inf_from_def no_labels.Inf_from_def by auto
         ultimately have "to_F \<iota> \<in> no_labels.Inf_from (fst ` active_subset N)"
-          unfolding no_labels.Inf_from_def no_labels.Inf_from2_def by auto
+          unfolding no_labels.Inf_from_def no_labels.Inf_between_def by auto
         then have "\<iota> \<in> Inf_from (active_subset N)"
           using \<iota>_inf unfolding to_F_def no_labels.Inf_from_def
           by clarsimp (smt Inf_from_def Un_insert_right \<iota>_inff active_subset_def

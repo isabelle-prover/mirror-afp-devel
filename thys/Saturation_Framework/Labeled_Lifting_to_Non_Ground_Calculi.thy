@@ -14,7 +14,7 @@ begin
 subsection \<open>Labeled Lifting with a Family of Tiebreaker Orderings\<close>
 
 locale labeled_tiebreaking_lifting = no_labels: tiebreaker_lifting Bot_F Inf_F
-  Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F \<G>_Inf Prec_F
+  Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F \<G>_I Prec_F
   for
     Bot_F :: "'f set" and
     Inf_F :: "'f inference set" and
@@ -24,7 +24,7 @@ locale labeled_tiebreaking_lifting = no_labels: tiebreaker_lifting Bot_F Inf_F
     Red_I_G :: "'g set \<Rightarrow> 'g inference set" and
     Red_F_G :: "'g set \<Rightarrow> 'g set" and
     \<G>_F :: "'f \<Rightarrow> 'g set" and
-    \<G>_Inf :: "'f inference \<Rightarrow> 'g inference set option" and
+    \<G>_I :: "'f inference \<Rightarrow> 'g inference set option" and
     Prec_F :: "'g \<Rightarrow> 'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<sqsubset>" 50)
   + fixes
     Inf_FL :: \<open>('f \<times> 'l) inference set\<close>
@@ -43,11 +43,11 @@ abbreviation Bot_FL :: \<open>('f \<times> 'l) set\<close> where
 abbreviation \<G>_F_L :: \<open>('f \<times> 'l) \<Rightarrow> 'g set\<close> where
   \<open>\<G>_F_L CL \<equiv> \<G>_F (fst CL)\<close>
 
-abbreviation \<G>_Inf_L :: \<open>('f \<times> 'l) inference \<Rightarrow> 'g inference set option\<close> where
-  \<open>\<G>_Inf_L \<iota>\<^sub>F\<^sub>L \<equiv> \<G>_Inf (to_F \<iota>\<^sub>F\<^sub>L)\<close>
+abbreviation \<G>_I_L :: \<open>('f \<times> 'l) inference \<Rightarrow> 'g inference set option\<close> where
+  \<open>\<G>_I_L \<iota>\<^sub>F\<^sub>L \<equiv> \<G>_I (to_F \<iota>\<^sub>F\<^sub>L)\<close>
 
 (* lem:labeled-grounding-function *)
-sublocale standard_lifting Bot_FL Inf_FL Bot_G Inf_G "(\<Turnstile>G)" Red_I_G Red_F_G \<G>_F_L \<G>_Inf_L
+sublocale standard_lifting Bot_FL Inf_FL Bot_G Inf_G "(\<Turnstile>G)" Red_I_G Red_F_G \<G>_F_L \<G>_I_L
 proof
   show "Bot_FL \<noteq> {}"
     using no_labels.Bot_F_not_empty by simp
@@ -65,12 +65,12 @@ next
   fix \<iota>
   assume
     i_in: \<open>\<iota> \<in> Inf_FL\<close> and
-    ground_not_none: \<open>\<G>_Inf_L \<iota> \<noteq> None\<close>
-  then show "the (\<G>_Inf_L \<iota>) \<subseteq> Red_I_G (\<G>_F_L (concl_of \<iota>))"
+    ground_not_none: \<open>\<G>_I_L \<iota> \<noteq> None\<close>
+  then show "the (\<G>_I_L \<iota>) \<subseteq> Red_I_G (\<G>_F_L (concl_of \<iota>))"
     unfolding to_F_def using no_labels.inf_map Inf_FL_to_Inf_F by fastforce
 qed
 
-sublocale tiebreaker_lifting Bot_FL Inf_FL Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F_L \<G>_Inf_L
+sublocale tiebreaker_lifting Bot_FL Inf_FL Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F_L \<G>_I_L
   "\<lambda>g Cl Cl'. False"
   by unfold_locales simp+
 
@@ -143,7 +143,7 @@ end
 subsection \<open>Labeled Lifting with a Family of Redundancy Criteria\<close>
 
 locale labeled_lifting_intersection = no_labels: lifting_intersection Inf_F
-  Bot_G Q Inf_G_q entails_q Red_I_q Red_F_q Bot_F \<G>_F_q \<G>_Inf_q "\<lambda>g Cl Cl'. False"
+  Bot_G Q Inf_G_q entails_q Red_I_q Red_F_q Bot_F \<G>_F_q \<G>_I_q "\<lambda>g Cl Cl'. False"
   for
     Bot_F :: "'f set" and
     Inf_F :: "'f inference set" and
@@ -154,7 +154,7 @@ locale labeled_lifting_intersection = no_labels: lifting_intersection Inf_F
     Red_I_q :: "'q \<Rightarrow> 'g set \<Rightarrow> 'g inference set" and
     Red_F_q :: "'q \<Rightarrow> 'g set \<Rightarrow> 'g set" and
     \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set" and
-    \<G>_Inf_q :: "'q \<Rightarrow> 'f inference \<Rightarrow> 'g inference set option"
+    \<G>_I_q :: "'q \<Rightarrow> 'f inference \<Rightarrow> 'g inference set option"
   + fixes
     Inf_FL :: \<open>('f \<times> 'l) inference set\<close>
   assumes
@@ -173,15 +173,15 @@ abbreviation Bot_FL :: \<open>('f \<times> 'l) set\<close> where
 abbreviation \<G>_F_L_q :: \<open>'q \<Rightarrow> ('f \<times> 'l) \<Rightarrow> 'g set\<close> where
   \<open>\<G>_F_L_q q CL \<equiv> \<G>_F_q q (fst CL)\<close>
 
-abbreviation \<G>_Inf_L_q :: \<open>'q \<Rightarrow> ('f \<times> 'l) inference \<Rightarrow> 'g inference set option\<close> where
-  \<open>\<G>_Inf_L_q q \<iota>\<^sub>F\<^sub>L \<equiv> \<G>_Inf_q q (to_F \<iota>\<^sub>F\<^sub>L)\<close>
+abbreviation \<G>_I_L_q :: \<open>'q \<Rightarrow> ('f \<times> 'l) inference \<Rightarrow> 'g inference set option\<close> where
+  \<open>\<G>_I_L_q q \<iota>\<^sub>F\<^sub>L \<equiv> \<G>_I_q q (to_F \<iota>\<^sub>F\<^sub>L)\<close>
 
 abbreviation \<G>_set_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> 'g set" where
   "\<G>_set_L_q q N \<equiv> \<Union> (\<G>_F_L_q q ` N)"
 
 definition Red_I_\<G>_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) inference set" where
-  "Red_I_\<G>_L_q q N = {\<iota> \<in> Inf_FL. (\<G>_Inf_L_q q \<iota> \<noteq> None \<and> the (\<G>_Inf_L_q q \<iota>) \<subseteq> Red_I_q q (\<G>_set_L_q q N))
-    \<or> (\<G>_Inf_L_q q \<iota> = None \<and> \<G>_F_L_q q (concl_of \<iota>) \<subseteq> \<G>_set_L_q q N \<union> Red_F_q q (\<G>_set_L_q q N))}"
+  "Red_I_\<G>_L_q q N = {\<iota> \<in> Inf_FL. (\<G>_I_L_q q \<iota> \<noteq> None \<and> the (\<G>_I_L_q q \<iota>) \<subseteq> Red_I_q q (\<G>_set_L_q q N))
+    \<or> (\<G>_I_L_q q \<iota> = None \<and> \<G>_F_L_q q (concl_of \<iota>) \<subseteq> \<G>_set_L_q q N \<union> Red_F_q q (\<G>_set_L_q q N))}"
 
 abbreviation Red_I_\<G>_L :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) inference set" where
   "Red_I_\<G>_L N \<equiv> (\<Inter>q \<in> Q. Red_I_\<G>_L_q q N)"
@@ -192,19 +192,19 @@ abbreviation entails_\<G>_L_q :: "'q \<Rightarrow> ('f \<times> 'l) set \<Righta
 lemma lifting_q:
   assumes "q \<in> Q"
   shows "labeled_tiebreaking_lifting Bot_F Inf_F Bot_G (entails_q q) (Inf_G_q q) (Red_I_q q)
-    (Red_F_q q) (\<G>_F_q q) (\<G>_Inf_q q) (\<lambda>g Cl Cl'. False) Inf_FL"
+    (Red_F_q q) (\<G>_F_q q) (\<G>_I_q q) (\<lambda>g Cl Cl'. False) Inf_FL"
   using assms no_labels.standard_lifting_family Inf_F_to_Inf_FL Inf_FL_to_Inf_F
   by (simp add: labeled_tiebreaking_lifting_axioms_def labeled_tiebreaking_lifting_def)
 
 lemma lifted_q:
   assumes q_in: "q \<in> Q"
   shows "standard_lifting Bot_FL Inf_FL Bot_G (Inf_G_q q) (entails_q q) (Red_I_q q) (Red_F_q q)
-    (\<G>_F_L_q q) (\<G>_Inf_L_q q)"
+    (\<G>_F_L_q q) (\<G>_I_L_q q)"
 proof -
   interpret q_lifting: labeled_tiebreaking_lifting Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q"
-    "Red_I_q q" "Red_F_q q" "\<G>_F_q q" "\<G>_Inf_q q" "\<lambda>g Cl Cl'. False" Inf_FL
+    "Red_I_q q" "Red_F_q q" "\<G>_F_q q" "\<G>_I_q q" "\<lambda>g Cl Cl'. False" Inf_FL
     using lifting_q[OF q_in] .
-  have "\<G>_Inf_L_q q = q_lifting.\<G>_Inf_L"
+  have "\<G>_I_L_q q = q_lifting.\<G>_I_L"
     unfolding to_F_def q_lifting.to_F_def by simp
   then show ?thesis
     using q_lifting.standard_lifting_axioms by simp
@@ -213,10 +213,10 @@ qed
 lemma ord_fam_lifted_q:
   assumes q_in: "q \<in> Q"
   shows "tiebreaker_lifting Bot_FL Inf_FL Bot_G (entails_q q) (Inf_G_q q) (Red_I_q q)
-    (Red_F_q q) (\<G>_F_L_q q) (\<G>_Inf_L_q q) (\<lambda>g Cl Cl'. False)"
+    (Red_F_q q) (\<G>_F_L_q q) (\<G>_I_L_q q) (\<lambda>g Cl Cl'. False)"
 proof -
   interpret standard_q_lifting: standard_lifting Bot_FL Inf_FL Bot_G "Inf_G_q q" "entails_q q"
-    "Red_I_q q" "Red_F_q q" "\<G>_F_L_q q" "\<G>_Inf_L_q q"
+    "Red_I_q q" "Red_F_q q" "\<G>_F_L_q q" "\<G>_I_L_q q"
     using lifted_q[OF q_in] .
   have "minimal_element (\<lambda>Cl Cl'. False) UNIV"
     by (simp add: minimal_element.intro po_on_def transp_onI wfp_on_imp_irreflp_on)
@@ -237,7 +237,7 @@ lemma all_lifted_red_crit:
   shows "calculus Bot_FL Inf_FL (entails_\<G>_L_q q) (Red_I_\<G>_L_q q) (Red_F_\<G>_empty_L_q q)"
 proof -
   interpret ord_q_lifting: tiebreaker_lifting Bot_FL Inf_FL Bot_G "entails_q q"
-    "Inf_G_q q" "Red_I_q q" "Red_F_q q" "\<G>_F_L_q q" "\<G>_Inf_L_q q" "\<lambda>g Cl Cl'. False"
+    "Inf_G_q q" "Red_I_q q" "Red_F_q q" "\<G>_F_L_q q" "\<G>_I_L_q q" "\<lambda>g Cl Cl'. False"
     using ord_fam_lifted_q[OF q_in] .
   have "Red_I_\<G>_L_q q = ord_q_lifting.Red_I_\<G>"
     unfolding Red_I_\<G>_L_q_def ord_q_lifting.Red_I_\<G>_def by simp
@@ -289,12 +289,12 @@ proof clarify
   have rephrase1: "(\<Union>CL\<in>NL. \<G>_F_q q (fst CL)) = (\<Union> (\<G>_F_q q ` fst ` NL))" by blast
   have rephrase2: "fst (concl_of \<iota>) = concl_of (to_F \<iota>)"
     unfolding concl_of_def to_F_def by simp
-  have subs_red: "(\<G>_Inf_L_q q \<iota> \<noteq> None \<and> the (\<G>_Inf_L_q q \<iota>) \<subseteq> Red_I_q q (\<G>_set_L_q q NL))
-    \<or> (\<G>_Inf_L_q q \<iota> = None \<and> \<G>_F_L_q q (concl_of \<iota>) \<subseteq> \<G>_set_L_q q NL \<union> Red_F_q q (\<G>_set_L_q q NL))"
+  have subs_red: "(\<G>_I_L_q q \<iota> \<noteq> None \<and> the (\<G>_I_L_q q \<iota>) \<subseteq> Red_I_q q (\<G>_set_L_q q NL))
+    \<or> (\<G>_I_L_q q \<iota> = None \<and> \<G>_F_L_q q (concl_of \<iota>) \<subseteq> \<G>_set_L_q q NL \<union> Red_F_q q (\<G>_set_L_q q NL))"
     using i_in_q unfolding Red_I_\<G>_L_q_def by blast
-  then have to_F_subs_red: "(\<G>_Inf_q q (to_F \<iota>) \<noteq> None \<and>
-      the (\<G>_Inf_q q (to_F \<iota>)) \<subseteq> Red_I_q q (no_labels.\<G>_set_q q (fst ` NL)))
-    \<or> (\<G>_Inf_q q (to_F \<iota>) = None \<and>
+  then have to_F_subs_red: "(\<G>_I_q q (to_F \<iota>) \<noteq> None \<and>
+      the (\<G>_I_q q (to_F \<iota>)) \<subseteq> Red_I_q q (no_labels.\<G>_set_q q (fst ` NL)))
+    \<or> (\<G>_I_q q (to_F \<iota>) = None \<and>
       \<G>_F_q q (concl_of (to_F \<iota>))
       \<subseteq> no_labels.\<G>_set_q q (fst ` NL) \<union> Red_F_q q (no_labels.\<G>_set_q q (fst ` NL)))"
     using rephrase1 rephrase2 by metis

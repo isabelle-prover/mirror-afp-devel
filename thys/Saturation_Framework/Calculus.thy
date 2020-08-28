@@ -90,24 +90,24 @@ begin
 definition Inf_from :: "'f set \<Rightarrow> 'f inference set" where
   "Inf_from N = {\<iota> \<in> Inf. set (prems_of \<iota>) \<subseteq> N}"
 
-definition Inf_from2 :: "'f set \<Rightarrow> 'f set \<Rightarrow> 'f inference set" where
-  "Inf_from2 N M = Inf_from (N \<union> M) - Inf_from (N - M)"
+definition Inf_between :: "'f set \<Rightarrow> 'f set \<Rightarrow> 'f inference set" where
+  "Inf_between N M = Inf_from (N \<union> M) - Inf_from (N - M)"
 
 lemma Inf_if_Inf_from: "\<iota> \<in> Inf_from N \<Longrightarrow> \<iota> \<in> Inf"
   unfolding Inf_from_def by simp
 
-lemma Inf_if_Inf_from2: "\<iota> \<in> Inf_from2 N M \<Longrightarrow> \<iota> \<in> Inf"
-  unfolding Inf_from2_def Inf_from_def by simp
+lemma Inf_if_Inf_between: "\<iota> \<in> Inf_between N M \<Longrightarrow> \<iota> \<in> Inf"
+  unfolding Inf_between_def Inf_from_def by simp
 
-lemma Inf_from2_alt:
-  "Inf_from2 N M = {\<iota> \<in> Inf. \<iota> \<in> Inf_from (N \<union> M) \<and> set (prems_of \<iota>) \<inter> M \<noteq> {}}"
-  unfolding Inf_from_def Inf_from2_def by auto
+lemma Inf_between_alt:
+  "Inf_between N M = {\<iota> \<in> Inf. \<iota> \<in> Inf_from (N \<union> M) \<and> set (prems_of \<iota>) \<inter> M \<noteq> {}}"
+  unfolding Inf_from_def Inf_between_def by auto
 
 lemma Inf_from_mono: "N \<subseteq> N' \<Longrightarrow> Inf_from N \<subseteq> Inf_from N'"
   unfolding Inf_from_def by auto
 
-lemma Inf_from2_mono: "N \<subseteq> N' \<Longrightarrow> M \<subseteq> M' \<Longrightarrow> Inf_from2 N M \<subseteq> Inf_from2 N' M'"
-  unfolding Inf_from2_alt using Inf_from_mono[of "N \<union> M" "N' \<union> M'"] by auto
+lemma Inf_between_mono: "N \<subseteq> N' \<Longrightarrow> M \<subseteq> M' \<Longrightarrow> Inf_between N M \<subseteq> Inf_between N' M'"
+  unfolding Inf_between_alt using Inf_from_mono[of "N \<union> M" "N' \<union> M'"] by auto
 
 end
 
@@ -125,12 +125,12 @@ begin
 definition Inf_from_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f inference set" where
   "Inf_from_q q = inference_system.Inf_from (Inf_q q)"
 
-definition Inf_from2_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set \<Rightarrow> 'f inference set" where
-  "Inf_from2_q q = inference_system.Inf_from2 (Inf_q q)"
+definition Inf_between_q :: "'q \<Rightarrow> 'f set \<Rightarrow> 'f set \<Rightarrow> 'f inference set" where
+  "Inf_between_q q = inference_system.Inf_between (Inf_q q)"
 
-lemma Inf_from2_q_alt:
-  "Inf_from2_q q N M = {\<iota> \<in> Inf_q q. \<iota> \<in> Inf_from_q q (N \<union> M) \<and> set (prems_of \<iota>) \<inter> M \<noteq> {}}"
-  unfolding Inf_from_q_def Inf_from2_q_def inference_system.Inf_from2_alt by auto
+lemma Inf_between_q_alt:
+  "Inf_between_q q N M = {\<iota> \<in> Inf_q q. \<iota> \<in> Inf_from_q q (N \<union> M) \<and> set (prems_of \<iota>) \<inter> M \<noteq> {}}"
+  unfolding Inf_from_q_def Inf_between_q_def inference_system.Inf_between_alt by auto
 
 end
 
@@ -197,7 +197,7 @@ proof -
 qed
 
 definition fair :: "'f set llist \<Rightarrow> bool" where
-  "fair D \<longleftrightarrow> Inf_from (Liminf_llist D) \<subseteq> Sup_llist (lmap Red_I D)"
+  "fair Ns \<longleftrightarrow> Inf_from (Liminf_llist Ns) \<subseteq> Sup_llist (lmap Red_I Ns)"
 
 inductive "derive" :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool" (infix "\<rhd>Red" 50) where
   derive: "M - N \<subseteq> Red_F N \<Longrightarrow> M \<rhd>Red N"
@@ -206,28 +206,28 @@ lemma gt_Max_notin: \<open>finite A \<Longrightarrow> A \<noteq> {} \<Longrighta
 
 lemma equiv_Sup_Liminf:
   assumes
-    in_Sup: "C \<in> Sup_llist D" and
-    not_in_Liminf: "C \<notin> Liminf_llist D"
+    in_Sup: "C \<in> Sup_llist Ns" and
+    not_in_Liminf: "C \<notin> Liminf_llist Ns"
   shows
-    "\<exists>i \<in> {i. enat (Suc i) < llength D}. C \<in> lnth D i - lnth D (Suc i)"
+    "\<exists>i \<in> {i. enat (Suc i) < llength Ns}. C \<in> lnth Ns i - lnth Ns (Suc i)"
 proof -
-  obtain i where C_D_i: "C \<in> Sup_upto_llist D (enat i)" and "enat i < llength D"
+  obtain i where C_D_i: "C \<in> Sup_upto_llist Ns (enat i)" and "enat i < llength Ns"
     using elem_Sup_llist_imp_Sup_upto_llist in_Sup by fast
-  then obtain j where j: "j \<ge> i \<and> enat j < llength D \<and> C \<notin> lnth D j"
+  then obtain j where j: "j \<ge> i \<and> enat j < llength Ns \<and> C \<notin> lnth Ns j"
     using not_in_Liminf unfolding Sup_upto_llist_def chain_def Liminf_llist_def by auto
-  obtain k where k: "C \<in> lnth D k" "enat k < llength D" "k \<le> i" using C_D_i
+  obtain k where k: "C \<in> lnth Ns k" "enat k < llength Ns" "k \<le> i" using C_D_i
     unfolding Sup_upto_llist_def by auto
-  let ?S = "{i. i < j \<and> i \<ge> k \<and> C \<in> lnth D i}"
+  let ?S = "{i. i < j \<and> i \<ge> k \<and> C \<in> lnth Ns i}"
   define l where "l = Max ?S"
-  have \<open>k \<in> {i. i < j \<and> k \<le> i \<and> C \<in> lnth D i}\<close> using k j by (auto simp: order.order_iff_strict)
-  then have nempty: "{i. i < j \<and> k \<le> i \<and> C \<in> lnth D i} \<noteq> {}" by auto
-  then have l_prop: "l < j \<and> l \<ge> k \<and> C \<in> lnth D l" using Max_in[of ?S, OF _ nempty]
+  have \<open>k \<in> {i. i < j \<and> k \<le> i \<and> C \<in> lnth Ns i}\<close> using k j by (auto simp: order.order_iff_strict)
+  then have nempty: "{i. i < j \<and> k \<le> i \<and> C \<in> lnth Ns i} \<noteq> {}" by auto
+  then have l_prop: "l < j \<and> l \<ge> k \<and> C \<in> lnth Ns l" using Max_in[of ?S, OF _ nempty]
     unfolding l_def by auto
-  then have "C \<in> lnth D l - lnth D (Suc l)" using j gt_Max_notin[OF _ nempty, of "Suc l"]
+  then have "C \<in> lnth Ns l - lnth Ns (Suc l)" using j gt_Max_notin[OF _ nempty, of "Suc l"]
     unfolding l_def[symmetric] by (auto intro: Suc_lessI)
   then show ?thesis
   proof (rule bexI[of _ l])
-    show "l \<in> {i. enat (Suc i) < llength D}"
+    show "l \<in> {i. enat (Suc i) < llength Ns}"
       using l_prop j
       by (clarify, metis Suc_leI dual_order.order_iff_strict enat_ord_simps(2) less_trans)
   qed
@@ -235,56 +235,56 @@ qed
 
 (* lem:nonpersistent-is-redundant *)
 lemma Red_in_Sup:
-  assumes deriv: "chain (\<rhd>Red) D"
-  shows "Sup_llist D - Liminf_llist D \<subseteq> Red_F (Sup_llist D)"
+  assumes deriv: "chain (\<rhd>Red) Ns"
+  shows "Sup_llist Ns - Liminf_llist Ns \<subseteq> Red_F (Sup_llist Ns)"
 proof
   fix C
-  assume C_in_subset: "C \<in> Sup_llist D - Liminf_llist D"
+  assume C_in_subset: "C \<in> Sup_llist Ns - Liminf_llist Ns"
   {
     fix C i
     assume
-      in_ith_elem: "C \<in> lnth D i - lnth D (Suc i)" and
-      i: "enat (Suc i) < llength D"
-    have "lnth D i \<rhd>Red lnth D (Suc i)" using i deriv in_ith_elem chain_lnth_rel by auto
-    then have "C \<in> Red_F (lnth D (Suc i))" using in_ith_elem derive.cases by blast
-    then have "C \<in> Red_F (Sup_llist D)" using Red_F_of_subset
+      in_ith_elem: "C \<in> lnth Ns i - lnth Ns (Suc i)" and
+      i: "enat (Suc i) < llength Ns"
+    have "lnth Ns i \<rhd>Red lnth Ns (Suc i)" using i deriv in_ith_elem chain_lnth_rel by auto
+    then have "C \<in> Red_F (lnth Ns (Suc i))" using in_ith_elem derive.cases by blast
+    then have "C \<in> Red_F (Sup_llist Ns)" using Red_F_of_subset
       by (meson contra_subsetD i lnth_subset_Sup_llist)
   }
-  then show "C \<in> Red_F (Sup_llist D)" using equiv_Sup_Liminf[of C] C_in_subset by fast
+  then show "C \<in> Red_F (Sup_llist Ns)" using equiv_Sup_Liminf[of C] C_in_subset by fast
 qed
 
 (* lem:redundant-remains-redundant-during-run 1/2 *)
 lemma Red_I_subset_Liminf:
-  assumes deriv: \<open>chain (\<rhd>Red) D\<close> and
-    i: \<open>enat i < llength D\<close>
-  shows \<open>Red_I (lnth D i) \<subseteq> Red_I (Liminf_llist D)\<close>
+  assumes deriv: \<open>chain (\<rhd>Red) Ns\<close> and
+    i: \<open>enat i < llength Ns\<close>
+  shows \<open>Red_I (lnth Ns i) \<subseteq> Red_I (Liminf_llist Ns)\<close>
 proof -
-  have Sup_in_diff: \<open>Red_I (Sup_llist D) \<subseteq> Red_I (Sup_llist D - (Sup_llist D - Liminf_llist D))\<close>
+  have Sup_in_diff: \<open>Red_I (Sup_llist Ns) \<subseteq> Red_I (Sup_llist Ns - (Sup_llist Ns - Liminf_llist Ns))\<close>
     using Red_I_of_Red_F_subset[OF Red_in_Sup] deriv by auto
-  also have \<open>Sup_llist D - (Sup_llist D - Liminf_llist D) = Liminf_llist D\<close>
+  also have \<open>Sup_llist Ns - (Sup_llist Ns - Liminf_llist Ns) = Liminf_llist Ns\<close>
     by (simp add: Liminf_llist_subset_Sup_llist double_diff)
-  then have Red_I_Sup_in_Liminf: \<open>Red_I (Sup_llist D) \<subseteq> Red_I (Liminf_llist D)\<close>
+  then have Red_I_Sup_in_Liminf: \<open>Red_I (Sup_llist Ns) \<subseteq> Red_I (Liminf_llist Ns)\<close>
     using Sup_in_diff by auto
-  have \<open>lnth D i \<subseteq> Sup_llist D\<close> unfolding Sup_llist_def using i by blast
-  then have "Red_I (lnth D i) \<subseteq> Red_I (Sup_llist D)" using Red_I_of_subset
+  have \<open>lnth Ns i \<subseteq> Sup_llist Ns\<close> unfolding Sup_llist_def using i by blast
+  then have "Red_I (lnth Ns i) \<subseteq> Red_I (Sup_llist Ns)" using Red_I_of_subset
     unfolding Sup_llist_def by auto
   then show ?thesis using Red_I_Sup_in_Liminf by auto
 qed
 
 (* lem:redundant-remains-redundant-during-run 2/2 *)
 lemma Red_F_subset_Liminf:
- assumes deriv: \<open>chain (\<rhd>Red) D\<close> and
-    i: \<open>enat i < llength D\<close>
-  shows \<open>Red_F (lnth D i) \<subseteq> Red_F (Liminf_llist D)\<close>
+ assumes deriv: \<open>chain (\<rhd>Red) Ns\<close> and
+    i: \<open>enat i < llength Ns\<close>
+  shows \<open>Red_F (lnth Ns i) \<subseteq> Red_F (Liminf_llist Ns)\<close>
 proof -
-  have Sup_in_diff: \<open>Red_F (Sup_llist D) \<subseteq> Red_F (Sup_llist D - (Sup_llist D - Liminf_llist D))\<close>
+  have Sup_in_diff: \<open>Red_F (Sup_llist Ns) \<subseteq> Red_F (Sup_llist Ns - (Sup_llist Ns - Liminf_llist Ns))\<close>
     using Red_F_of_Red_F_subset[OF Red_in_Sup] deriv by auto
-  also have \<open>Sup_llist D - (Sup_llist D - Liminf_llist D) = Liminf_llist D\<close>
+  also have \<open>Sup_llist Ns - (Sup_llist Ns - Liminf_llist Ns) = Liminf_llist Ns\<close>
     by (simp add: Liminf_llist_subset_Sup_llist double_diff)
-  then have Red_F_Sup_in_Liminf: \<open>Red_F (Sup_llist D) \<subseteq> Red_F (Liminf_llist D)\<close>
+  then have Red_F_Sup_in_Liminf: \<open>Red_F (Sup_llist Ns) \<subseteq> Red_F (Liminf_llist Ns)\<close>
     using Sup_in_diff by auto
-  have \<open>lnth D i \<subseteq> Sup_llist D\<close> unfolding Sup_llist_def using i by blast
-  then have "Red_F (lnth D i) \<subseteq> Red_F (Sup_llist D)" using Red_F_of_subset
+  have \<open>lnth Ns i \<subseteq> Sup_llist Ns\<close> unfolding Sup_llist_def using i by blast
+  then have "Red_F (lnth Ns i) \<subseteq> Red_F (Sup_llist Ns)" using Red_F_of_subset
     unfolding Sup_llist_def by auto
   then show ?thesis using Red_F_Sup_in_Liminf by auto
 qed
@@ -292,36 +292,36 @@ qed
 (* lem:N-i-is-persistent-or-redundant *)
 lemma i_in_Liminf_or_Red_F:
   assumes
-    deriv: \<open>chain (\<rhd>Red) D\<close> and
-    i: \<open>enat i < llength D\<close>
-  shows \<open>lnth D i \<subseteq> Red_F (Liminf_llist D) \<union> Liminf_llist D\<close>
+    deriv: \<open>chain (\<rhd>Red) Ns\<close> and
+    i: \<open>enat i < llength Ns\<close>
+  shows \<open>lnth Ns i \<subseteq> Red_F (Liminf_llist Ns) \<union> Liminf_llist Ns\<close>
 proof (rule,rule)
   fix C
-  assume C: \<open>C \<in> lnth D i\<close>
-  and C_not_Liminf: \<open>C \<notin> Liminf_llist D\<close>
-  have \<open>C \<in> Sup_llist D\<close> unfolding Sup_llist_def using C i by auto
-  then obtain j where j: \<open>C \<in> lnth D j - lnth D (Suc j)\<close> \<open>enat (Suc j) < llength D\<close>
-    using equiv_Sup_Liminf[of C D] C_not_Liminf by auto
-  then have \<open>C \<in> Red_F (lnth D (Suc j))\<close>
+  assume C: \<open>C \<in> lnth Ns i\<close>
+  and C_not_Liminf: \<open>C \<notin> Liminf_llist Ns\<close>
+  have \<open>C \<in> Sup_llist Ns\<close> unfolding Sup_llist_def using C i by auto
+  then obtain j where j: \<open>C \<in> lnth Ns j - lnth Ns (Suc j)\<close> \<open>enat (Suc j) < llength Ns\<close>
+    using equiv_Sup_Liminf[of C Ns] C_not_Liminf by auto
+  then have \<open>C \<in> Red_F (lnth Ns (Suc j))\<close>
     using deriv by (meson chain_lnth_rel contra_subsetD derive.cases)
-  then show \<open>C \<in> Red_F (Liminf_llist D)\<close> using Red_F_subset_Liminf[of D "Suc j"] deriv j(2) by blast
+  then show \<open>C \<in> Red_F (Liminf_llist Ns)\<close> using Red_F_subset_Liminf[of Ns "Suc j"] deriv j(2) by blast
 qed
 
 (* lem:fairness-implies-saturation *)
 lemma fair_implies_Liminf_saturated:
   assumes
-    deriv: \<open>chain (\<rhd>Red) D\<close> and
-    fair: \<open>fair D\<close>
-  shows \<open>saturated (Liminf_llist D)\<close>
+    deriv: \<open>chain (\<rhd>Red) Ns\<close> and
+    fair: \<open>fair Ns\<close>
+  shows \<open>saturated (Liminf_llist Ns)\<close>
   unfolding saturated_def
 proof
   fix \<iota>
-  assume \<iota>: \<open>\<iota> \<in> Inf_from (Liminf_llist D)\<close>
-  have \<open>\<iota> \<in> Sup_llist (lmap Red_I D)\<close> using fair \<iota> unfolding fair_def by auto
-  then obtain i where i: \<open>enat i < llength D\<close> \<open>\<iota> \<in> Red_I (lnth D i)\<close>
+  assume \<iota>: \<open>\<iota> \<in> Inf_from (Liminf_llist Ns)\<close>
+  have \<open>\<iota> \<in> Sup_llist (lmap Red_I Ns)\<close> using fair \<iota> unfolding fair_def by auto
+  then obtain i where i: \<open>enat i < llength Ns\<close> \<open>\<iota> \<in> Red_I (lnth Ns i)\<close>
     unfolding Sup_llist_def by auto
-  then show \<open>\<iota> \<in> Red_I (Liminf_llist D)\<close>
-    using deriv i_in_Liminf_or_Red_F[of D i] Red_I_subset_Liminf by blast
+  then show \<open>\<iota> \<in> Red_I (Liminf_llist Ns)\<close>
+    using deriv i_in_Liminf_or_Red_F[of Ns i] Red_I_subset_Liminf by blast
 qed
 
 end
@@ -331,27 +331,27 @@ locale statically_complete_calculus = calculus +
 begin
 
 lemma dynamically_complete_Liminf:
-  fixes B D
+  fixes B Ns
   assumes
     bot_elem: \<open>B \<in> Bot\<close> and
-    deriv: \<open>chain (\<rhd>Red) D\<close> and
-    fair: \<open>fair D\<close> and
-    unsat: \<open>lhd D \<Turnstile> {B}\<close>
-  shows \<open>\<exists>B'\<in>Bot. B' \<in> Liminf_llist D\<close>
+    deriv: \<open>chain (\<rhd>Red) Ns\<close> and
+    fair: \<open>fair Ns\<close> and
+    unsat: \<open>lhd Ns \<Turnstile> {B}\<close>
+  shows \<open>\<exists>B'\<in>Bot. B' \<in> Liminf_llist Ns\<close>
 proof -
   note lhd_is = lhd_conv_lnth[OF chain_not_lnull[OF deriv]]
-  have non_empty: \<open>\<not> lnull D\<close> using chain_not_lnull[OF deriv] .
-  have subs: \<open>lhd D \<subseteq> Sup_llist D\<close>
-    using lhd_subset_Sup_llist[of D] non_empty by (simp add: lhd_conv_lnth)
-  have \<open>Sup_llist D \<Turnstile> {B}\<close>
-    using unsat subset_entailed[OF subs] entails_trans[of "Sup_llist D" "lhd D"] by auto
-  then have Sup_no_Red: \<open>Sup_llist D - Red_F (Sup_llist D) \<Turnstile> {B}\<close>
+  have non_empty: \<open>\<not> lnull Ns\<close> using chain_not_lnull[OF deriv] .
+  have subs: \<open>lhd Ns \<subseteq> Sup_llist Ns\<close>
+    using lhd_subset_Sup_llist[of Ns] non_empty by (simp add: lhd_conv_lnth)
+  have \<open>Sup_llist Ns \<Turnstile> {B}\<close>
+    using unsat subset_entailed[OF subs] entails_trans[of "Sup_llist Ns" "lhd Ns"] by auto
+  then have Sup_no_Red: \<open>Sup_llist Ns - Red_F (Sup_llist Ns) \<Turnstile> {B}\<close>
     using bot_elem Red_F_Bot by auto
-  have Sup_no_Red_in_Liminf: \<open>Sup_llist D - Red_F (Sup_llist D) \<subseteq> Liminf_llist D\<close>
+  have Sup_no_Red_in_Liminf: \<open>Sup_llist Ns - Red_F (Sup_llist Ns) \<subseteq> Liminf_llist Ns\<close>
     using deriv Red_in_Sup by auto
-  have Liminf_entails_Bot: \<open>Liminf_llist D \<Turnstile> {B}\<close>
+  have Liminf_entails_Bot: \<open>Liminf_llist Ns \<Turnstile> {B}\<close>
     using Sup_no_Red subset_entailed[OF Sup_no_Red_in_Liminf] entails_trans by blast
-  have \<open>saturated (Liminf_llist D)\<close>
+  have \<open>saturated (Liminf_llist Ns)\<close>
     using deriv fair fair_implies_Liminf_saturated unfolding saturated_def by auto
   then show ?thesis
     using bot_elem statically_complete Liminf_entails_Bot by auto
@@ -361,8 +361,8 @@ end
 
 locale dynamically_complete_calculus = calculus +
   assumes
-    dynamically_complete: "B \<in> Bot \<Longrightarrow> chain (\<rhd>Red) D \<Longrightarrow> fair D \<Longrightarrow> lhd D \<Turnstile> {B} \<Longrightarrow>
-      \<exists>i \<in> {i. enat i < llength D}. \<exists>B'\<in>Bot. B' \<in> lnth D i"
+    dynamically_complete: "B \<in> Bot \<Longrightarrow> chain (\<rhd>Red) Ns \<Longrightarrow> fair Ns \<Longrightarrow> lhd Ns \<Turnstile> {B} \<Longrightarrow>
+      \<exists>i \<in> {i. enat i < llength Ns}. \<exists>B'\<in>Bot. B' \<in> lnth Ns i"
 begin
 
 (* lem:dynamic-ref-compl-implies-static *)
@@ -373,20 +373,20 @@ proof
     bot_elem: \<open>B \<in> Bot\<close> and
     saturated_N: "saturated N" and
     refut_N: "N \<Turnstile> {B}"
-  define D where "D = LCons N LNil"
-  have[simp]: \<open>\<not> lnull D\<close> by (auto simp: D_def)
-  have deriv_D: \<open>chain (\<rhd>Red) D\<close> by (simp add: chain.chain_singleton D_def)
-  have liminf_is_N: "Liminf_llist D = N" by (simp add: D_def Liminf_llist_LCons)
-  have head_D: "N = lhd D" by (simp add: D_def)
-  have "Sup_llist (lmap Red_I D) = Red_I N" by (simp add: D_def)
-  then have fair_D: "fair D" using saturated_N by (simp add: fair_def saturated_def liminf_is_N)
-  obtain i B' where B'_is_bot: \<open>B' \<in> Bot\<close> and B'_in: "B' \<in> lnth D i" and \<open>i < llength D\<close>
-    using dynamically_complete[of B D] bot_elem fair_D head_D saturated_N deriv_D refut_N
+  define Ns where "Ns = LCons N LNil"
+  have[simp]: \<open>\<not> lnull Ns\<close> by (auto simp: Ns_def)
+  have deriv_D: \<open>chain (\<rhd>Red) Ns\<close> by (simp add: chain.chain_singleton Ns_def)
+  have liminf_is_N: "Liminf_llist Ns = N" by (simp add: Ns_def Liminf_llist_LCons)
+  have head_D: "N = lhd Ns" by (simp add: Ns_def)
+  have "Sup_llist (lmap Red_I Ns) = Red_I N" by (simp add: Ns_def)
+  then have fair_D: "fair Ns" using saturated_N by (simp add: fair_def saturated_def liminf_is_N)
+  obtain i B' where B'_is_bot: \<open>B' \<in> Bot\<close> and B'_in: "B' \<in> lnth Ns i" and \<open>i < llength Ns\<close>
+    using dynamically_complete[of B Ns] bot_elem fair_D head_D saturated_N deriv_D refut_N
     by auto
   then have "i = 0"
-    by (auto simp: D_def enat_0_iff)
+    by (auto simp: Ns_def enat_0_iff)
   show \<open>\<exists>B'\<in>Bot. B' \<in> N\<close>
-    using B'_is_bot B'_in unfolding \<open>i = 0\<close> head_D[symmetric] D_def by auto
+    using B'_is_bot B'_in unfolding \<open>i = 0\<close> head_D[symmetric] Ns_def by auto
 qed
 
 end
@@ -394,15 +394,15 @@ end
 (* lem:static-ref-compl-implies-dynamic *)
 sublocale statically_complete_calculus \<subseteq> dynamically_complete_calculus
 proof
-  fix B D
+  fix B Ns
   assume
     \<open>B \<in> Bot\<close> and
-    \<open>chain (\<rhd>Red) D\<close> and
-    \<open>fair D\<close> and
-    \<open>lhd D \<Turnstile> {B}\<close>
-  then have \<open>\<exists>B'\<in>Bot. B' \<in> Liminf_llist D\<close>
+    \<open>chain (\<rhd>Red) Ns\<close> and
+    \<open>fair Ns\<close> and
+    \<open>lhd Ns \<Turnstile> {B}\<close>
+  then have \<open>\<exists>B'\<in>Bot. B' \<in> Liminf_llist Ns\<close>
     by (rule dynamically_complete_Liminf)
-  then show \<open>\<exists>i\<in>{i. enat i < llength D}. \<exists>B'\<in>Bot. B' \<in> lnth D i\<close>
+  then show \<open>\<exists>i\<in>{i. enat i < llength Ns}. \<exists>B'\<in>Bot. B' \<in> lnth Ns i\<close>
     unfolding Liminf_llist_def by auto
 qed
 

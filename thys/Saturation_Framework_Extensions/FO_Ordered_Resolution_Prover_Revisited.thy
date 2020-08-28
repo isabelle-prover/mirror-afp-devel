@@ -146,15 +146,15 @@ abbreviation \<G>_Fs :: \<open>'a clause set \<Rightarrow> 'a clause set\<close>
 lemmas \<G>_F_def = grounding_of_cls_def
 lemmas \<G>_Fs_def = grounding_of_clss_def
 
-definition \<G>_Inf :: \<open>'a clause set \<Rightarrow> 'a clause inference \<Rightarrow> 'a clause inference set\<close> where
-  \<open>\<G>_Inf M \<iota> = {Infer (prems_of \<iota> \<cdot>\<cdot>cl \<rho>s) (concl_of \<iota> \<cdot> \<rho>) |\<rho> \<rho>s.
+definition \<G>_I :: \<open>'a clause set \<Rightarrow> 'a clause inference \<Rightarrow> 'a clause inference set\<close> where
+  \<open>\<G>_I M \<iota> = {Infer (prems_of \<iota> \<cdot>\<cdot>cl \<rho>s) (concl_of \<iota> \<cdot> \<rho>) |\<rho> \<rho>s.
      is_ground_subst_list \<rho>s \<and> is_ground_subst \<rho>
      \<and> Infer (prems_of \<iota> \<cdot>\<cdot>cl \<rho>s) (concl_of \<iota> \<cdot> \<rho>) \<in> G_Inf M}\<close>
 
 abbreviation
-  \<G>_Inf_opt :: \<open>'a clause set \<Rightarrow> 'a clause inference \<Rightarrow> 'a clause inference set option\<close>
+  \<G>_I_opt :: \<open>'a clause set \<Rightarrow> 'a clause inference \<Rightarrow> 'a clause inference set option\<close>
 where
-  \<open>\<G>_Inf_opt M \<iota> \<equiv> Some (\<G>_Inf M \<iota>)\<close>
+  \<open>\<G>_I_opt M \<iota> \<equiv> Some (\<G>_I M \<iota>)\<close>
 
 definition F_Inf :: "'a clause inference set" where
   "F_Inf = {Infer (CAs @ [DA]) E | CAs DA AAs As \<sigma> E. ord_resolve_rename S CAs DA AAs As \<sigma> E}"
@@ -163,7 +163,7 @@ lemma F_Inf_have_prems: "\<iota> \<in> F_Inf \<Longrightarrow> prems_of \<iota> 
   unfolding F_Inf_def by force
 
 interpretation F: lifting_intersection F_Inf "{{#}}" UNIV G_Inf "\<lambda>N. (\<TTurnstile>e)" G.Red_I "\<lambda>N. G.Red_F"
-  "{{#}}" "\<lambda>N. \<G>_F" \<G>_Inf_opt "\<lambda>D C C'. False"
+  "{{#}}" "\<lambda>N. \<G>_F" \<G>_I_opt "\<lambda>D C C'. False"
 proof (unfold_locales; (intro ballI)?)
   show "UNIV \<noteq> {}"
     by (rule UNIV_not_empty)
@@ -172,22 +172,22 @@ next
     by (fact consequence_relation_axioms)
 next
   show "\<And>M. tiebreaker_lifting {{#}} F_Inf {{#}} (\<TTurnstile>e) (G_Inf M) (G.Red_I M)
-    G.Red_F \<G>_F (\<G>_Inf_opt M) (\<lambda>D C C'. False)"
+    G.Red_F \<G>_F (\<G>_I_opt M) (\<lambda>D C C'. False)"
   proof
     fix M \<iota>
     assume \<iota>_in: "\<iota> \<in> F_Inf"
 
-    show "the (\<G>_Inf_opt M \<iota>) \<subseteq> G.Red_I M (\<G>_F (concl_of \<iota>))"
+    show "the (\<G>_I_opt M \<iota>) \<subseteq> G.Red_I M (\<G>_F (concl_of \<iota>))"
       unfolding option.sel
     proof
       fix \<iota>'
-      assume \<iota>'_in: "\<iota>' \<in> \<G>_Inf M \<iota>"
+      assume \<iota>'_in: "\<iota>' \<in> \<G>_I M \<iota>"
       then obtain \<rho> \<rho>s where
         \<iota>': "\<iota>' = Infer (prems_of \<iota> \<cdot>\<cdot>cl \<rho>s) (concl_of \<iota> \<cdot> \<rho>)" and
         \<rho>s_gr: "is_ground_subst_list \<rho>s" and
         \<rho>_gr: "is_ground_subst \<rho>" and
         \<rho>_infer: "Infer (prems_of \<iota> \<cdot>\<cdot>cl \<rho>s) (concl_of \<iota> \<cdot> \<rho>) \<in> G_Inf M"
-        unfolding \<G>_Inf_def by blast
+        unfolding \<G>_I_def by blast
 
       let ?DD1 = "{concl_of \<iota> \<cdot> \<rho>}"
 
@@ -239,7 +239,7 @@ proof
 qed
 
 lemma G_Inf_overapproximates_F_Inf:
-  "\<iota>\<^sub>0 \<in> G.Inf_from M (\<Union> (\<G>_F ` M)) \<Longrightarrow> \<exists>\<iota>. \<iota> \<in> F.Inf_from M \<and> \<iota>\<^sub>0 \<in> \<G>_Inf M \<iota>"
+  "\<iota>\<^sub>0 \<in> G.Inf_from M (\<Union> (\<G>_F ` M)) \<Longrightarrow> \<exists>\<iota>. \<iota> \<in> F.Inf_from M \<and> \<iota>\<^sub>0 \<in> \<G>_I M \<iota>"
 proof -
   assume \<iota>\<^sub>0_in: "\<iota>\<^sub>0 \<in> G.Inf_from M (\<Union> (\<G>_F ` M))"
   have prems_\<iota>\<^sub>0_in: "set (prems_of \<iota>\<^sub>0) \<subseteq> \<Union> (\<G>_F ` M)"
@@ -295,8 +295,8 @@ proof -
     by (rule exI[of _ \<eta>2], rule exI[of _ "\<eta>s @ [\<eta>]"], use ground_ns in
         \<open>auto intro: ground_n ground_n2 \<iota>\<^sub>0_G_Inf[unfolded \<iota>\<^sub>0_is']
            simp: \<iota>\<^sub>0_is' is_ground_subst_list_def\<close>)
-  then have \<open>\<iota>\<^sub>0 \<in> \<G>_Inf M \<iota>\<close>
-    unfolding \<G>_Inf_def \<iota>_def CAs0_is[symmetric] DA0_is[symmetric] E0_is[symmetric] by simp
+  then have \<open>\<iota>\<^sub>0 \<in> \<G>_I M \<iota>\<close>
+    unfolding \<G>_I_def \<iota>_def CAs0_is[symmetric] DA0_is[symmetric] E0_is[symmetric] by simp
   moreover have \<open>\<iota> \<in> F.Inf_from M\<close>
     using prems_in i_F_Inf unfolding F.Inf_from_def \<iota>_def by simp
   ultimately show ?thesis
@@ -310,9 +310,9 @@ proof (rule F.stat_ref_comp_to_non_ground_fam_inter; clarsimp; (intro exI)?)
 next
   fix N
   assume "F.saturated N"
-  show "F.ground.Inf_from_q N (\<Union> (\<G>_F ` N)) \<subseteq> {\<iota>. \<exists>\<iota>' \<in> F.Inf_from N. \<iota> \<in> \<G>_Inf N \<iota>'}
+  show "F.ground.Inf_from_q N (\<Union> (\<G>_F ` N)) \<subseteq> {\<iota>. \<exists>\<iota>' \<in> F.Inf_from N. \<iota> \<in> \<G>_I N \<iota>'}
     \<union> G.Red_I N (\<Union> (\<G>_F ` N))"
-    using G_Inf_overapproximates_F_Inf unfolding F.ground.Inf_from_q_def \<G>_Inf_def by fastforce
+    using G_Inf_overapproximates_F_Inf unfolding F.ground.Inf_from_q_def \<G>_I_def by fastforce
 qed
 
 
@@ -350,7 +350,7 @@ lemma wf_L_Prec: "wfP (\<sqsubset>l)"
   by (metis L_Prec.elims(2) L_Prec.simps(3) not_accp_down wfP_accp_iff)
 
 interpretation FL: given_clause "{{#}}" F_Inf "{{#}}" UNIV "\<lambda>N. (\<TTurnstile>e)" G_Inf G.Red_I
-  "\<lambda>N. G.Red_F" "\<lambda>N. \<G>_F" \<G>_Inf_opt FL_Inf "(\<doteq>)" "(\<prec>\<cdot>)" "(\<sqsubset>l)" Old
+  "\<lambda>N. G.Red_F" "\<lambda>N. \<G>_F" \<G>_I_opt FL_Inf "(\<doteq>)" "(\<prec>\<cdot>)" "(\<sqsubset>l)" Old
 proof (unfold_locales; (intro ballI)?)
   show "equivp (\<doteq>)"
     unfolding equivp_def by (meson generalizes_refl generalizes_trans)
@@ -682,7 +682,7 @@ qed (auto simp: FL.active_subset_def)
 
 lemma old_inferences_between_eq_new_inferences_between:
   "old_concl_of ` inference_system.inferences_between (ord_FO_\<Gamma> S) N C =
-   concl_of ` F.Inf_from2 N {C}" (is "?rp = ?f")
+   concl_of ` F.Inf_between N {C}" (is "?rp = ?f")
 proof (intro set_eqI iffI)
   fix E
   assume e_in: "E \<in> old_concl_of ` inference_system.inferences_between (ord_FO_\<Gamma> S) N C"
@@ -693,8 +693,8 @@ proof (intro set_eqI iffI)
     c_in: "C \<in> set CAs \<union> {DA}"
     using e_in unfolding inference_system.inferences_between_def infer_from_def ord_FO_\<Gamma>_def by auto
 
-  show "E \<in> concl_of ` F.Inf_from2 N {C}"
-    unfolding F.Inf_from2_alt F.Inf_from_def
+  show "E \<in> concl_of ` F.Inf_between N {C}"
+    unfolding F.Inf_between_alt F.Inf_from_def
   proof -
     have \<open>Infer (CAs @ [DA]) E \<in> F_Inf \<and> set (prems_of (Infer (CAs @ [DA]) E)) \<subseteq> insert C N \<and>
       C \<in> set (prems_of (Infer (CAs @ [DA]) E)) \<and> E = concl_of (Infer (CAs @ [DA]) E)\<close>
@@ -705,13 +705,13 @@ proof (intro set_eqI iffI)
   qed
 next
   fix E
-  assume e_in: "E \<in> concl_of ` F.Inf_from2 N {C}"
+  assume e_in: "E \<in> concl_of ` F.Inf_between N {C}"
 
   obtain CAs DA AAs As \<sigma> where
     e_res: "ord_resolve_rename S CAs DA AAs As \<sigma> E" and
     cd_sub: "set CAs \<union> {DA} \<subseteq> N \<union> {C}" and
     c_in: "C \<in> set CAs \<union> {DA}"
-    using e_in unfolding F.Inf_from2_alt F.Inf_from_def F_Inf_def inference_system.Inf_from2_alt
+    using e_in unfolding F.Inf_between_alt F.Inf_from_def F_Inf_def inference_system.Inf_between_alt
       inference_system.Inf_from_def
     by (auto simp: image_def Bex_def)
 
@@ -729,18 +729,18 @@ lemma GC_inference_step:
       (fst ` FL.active_subset N) C"
   shows "N \<union> {(C, l)} \<Longrightarrow>GC N \<union> {(C, Old)} \<union> M"
 proof (rule FL.step.infer[of _ N C l _ M])
-  have m_sup': "fst ` M \<supseteq> concl_of ` F.Inf_from2 (fst ` FL.active_subset N) {C}"
+  have m_sup': "fst ` M \<supseteq> concl_of ` F.Inf_between (fst ` FL.active_subset N) {C}"
     using m_sup unfolding old_inferences_between_eq_new_inferences_between .
 
-  show "F.Inf_from2 (fst ` FL.active_subset N) {C} \<subseteq> F.Red_I (fst ` (N \<union> {(C, Old)} \<union> M))"
+  show "F.Inf_between (fst ` FL.active_subset N) {C} \<subseteq> F.Red_I (fst ` (N \<union> {(C, Old)} \<union> M))"
   proof
     fix \<iota>
-    assume \<iota>_in_if2: "\<iota> \<in> F.Inf_from2 (fst ` FL.active_subset N) {C}"
+    assume \<iota>_in_if2: "\<iota> \<in> F.Inf_between (fst ` FL.active_subset N) {C}"
 
-    note \<iota>_in = F.Inf_if_Inf_from2[OF \<iota>_in_if2]
+    note \<iota>_in = F.Inf_if_Inf_between[OF \<iota>_in_if2]
 
     have "concl_of \<iota> \<in> fst ` M"
-      using m_sup' \<iota>_in_if2 m_sup' by (auto simp: image_def Collect_mono_iff F.Inf_from2_alt)
+      using m_sup' \<iota>_in_if2 m_sup' by (auto simp: image_def Collect_mono_iff F.Inf_between_alt)
     then have "concl_of \<iota> \<in> fst ` (N \<union> {(C, Old)} \<union> M)"
       by auto
     then show "\<iota> \<in> F.Red_I_\<G> (fst ` (N \<union> {(C, Old)} \<union> M))"
@@ -1070,7 +1070,7 @@ proof -
     qed
     obtain \<iota>' where
       \<iota>'_inff: "\<iota>' \<in> F.Inf_from Q" and
-      \<iota>_in_\<iota>': "\<iota> \<in> \<G>_Inf Q \<iota>'"
+      \<iota>_in_\<iota>': "\<iota> \<in> \<G>_I Q \<iota>'"
       using G_Inf_overapproximates_F_Inf \<iota>_inff unfolding G_def by blast
 
     note \<iota>'_inf = F.Inf_if_Inf_from[OF \<iota>'_inff]
