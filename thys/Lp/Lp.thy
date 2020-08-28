@@ -1506,12 +1506,12 @@ next
   case (real_pos p2)
   show ?thesis
   proof (rule complete\<^sub>N_I'[of "\<lambda>n. (1/2)^n * (1/(defect (\<LL> p M))^(Suc n))"], unfold \<open>p = ennreal p2\<close>)
-    show "0 < (1 / 2) ^ n * (1 / defect (\<LL> (ennreal p2) M) ^ Suc n)" for n
+    show "0 < (1/2) ^ n * (1 / defect (\<LL> (ennreal p2) M) ^ Suc n)" for n
       using defect_ge_1[of "\<LL> (ennreal p2) M"] by (auto simp add: divide_simps)
 
     fix u assume "\<forall>(n::nat). u n \<in> space\<^sub>N (\<LL> p2 M)" "\<forall>n. Norm (\<LL> p2 M) (u n) \<le> (1/2)^n * (1/(defect (\<LL> p2 M))^(Suc n))"
     then have H: "\<And>n. u n \<in> space\<^sub>N (\<LL> p2 M)"
-                 "\<And>n. Norm (\<LL> p2 M) (u n) \<le> (1 / 2) ^ n * (1/(defect (\<LL> p2 M))^(Suc n))"
+                 "\<And>n. Norm (\<LL> p2 M) (u n) \<le> (1/2) ^ n * (1/(defect (\<LL> p2 M))^(Suc n))"
       unfolding \<open>p = ennreal p2\<close> by auto
     have [measurable]: "u n \<in> borel_measurable M" for n using Lp_measurable[OF H(1)].
 
@@ -1524,7 +1524,7 @@ next
     have abs_u_space: "(\<lambda>x. \<bar>u n x\<bar>) \<in> space\<^sub>N (\<LL> p2 M)" for n
       by (rule Lp_Banach_lattice[OF \<open>u n \<in> space\<^sub>N (\<LL> p2 M)\<close>])
     then have wN_space: "w N \<in> space\<^sub>N (\<LL> p2 M)" for N unfolding w2 using H(1) by auto
-    have abs_u_Norm: "Norm (\<LL> p2 M) (\<lambda>x. \<bar>u n x\<bar>) \<le> (1 / 2) ^ n * (1/(defect (\<LL> p2 M))^(Suc n))" for n
+    have abs_u_Norm: "Norm (\<LL> p2 M) (\<lambda>x. \<bar>u n x\<bar>) \<le> (1/2) ^ n * (1/(defect (\<LL> p2 M))^(Suc n))" for n
       using Lp_Banach_lattice(2)[OF \<open>u n \<in> space\<^sub>N (\<LL> p2 M)\<close>] H(2) by auto
 
     have wN_Norm: "Norm (\<LL> p2 M) (w N) \<le> 2" for N
@@ -1533,11 +1533,11 @@ next
         using defect_ge_1[of "\<LL> p2 M"] by auto
       have "Norm (\<LL> p2 M) (w N) \<le> (\<Sum>n<N. (defect (\<LL> p2 M))^(Suc n) * Norm (\<LL> p2 M) (\<lambda>x. \<bar>u n x\<bar>))"
         unfolding w2 lessThan_Suc_atMost[symmetric] by (rule Norm_sum, simp add: abs_u_space)
-      also have "... \<le> (\<Sum>n<N. (defect (\<LL> p2 M))^(Suc n) * ((1 / 2) ^ n * (1/(defect (\<LL> p2 M))^(Suc n))))"
+      also have "... \<le> (\<Sum>n<N. (defect (\<LL> p2 M))^(Suc n) * ((1/2) ^ n * (1/(defect (\<LL> p2 M))^(Suc n))))"
         apply (rule sum_mono, rule mult_left_mono) using abs_u_Norm * by auto
-      also have "... = (\<Sum>n<N. (1 / 2) ^ n)"
+      also have "... = (\<Sum>n<N. (1/2) ^ n)"
         using *(2) defect_ge_1[of "\<LL> p2 M"] by (auto simp add: algebra_simps)
-      also have "... \<le> (\<Sum>n. (1 / 2) ^ n)"
+      also have "... \<le> (\<Sum>n. (1/2) ^ n)"
         unfolding lessThan_Suc_atMost[symmetric] by (rule sum_le_suminf, rule summable_geometric[of "1/2"], auto)
       also have "... = 2" using suminf_geometric[of "1/2"] by auto
       finally show ?thesis by simp
@@ -1588,8 +1588,8 @@ next
   case PInf
   show ?thesis
   proof (rule complete\<^sub>N_I'[of "\<lambda>n. (1/2)^n"])
-    fix u assume "\<forall>(n::nat). u n \<in> space\<^sub>N (\<LL> p M)" "\<forall>n. Norm (\<LL> p M) (u n) \<le> (1 / 2) ^ n"
-    then have H: "\<And>n. u n \<in> space\<^sub>N (\<LL> \<infinity> M)" "\<And>n. Norm (\<LL> \<infinity> M) (u n) \<le> (1 / 2) ^ n" using PInf by auto
+    fix u assume "\<forall>(n::nat). u n \<in> space\<^sub>N (\<LL> p M)" "\<forall>n. Norm (\<LL> p M) (u n) \<le> (1/2) ^ n"
+    then have H: "\<And>n. u n \<in> space\<^sub>N (\<LL> \<infinity> M)" "\<And>n. Norm (\<LL> \<infinity> M) (u n) \<le> (1/2) ^ n" using PInf by auto
     have [measurable]: "u n \<in> borel_measurable M" for n using Lp_measurable[OF H(1)] by auto
     define v where "v = (\<lambda>x. \<Sum>n. u n x)"
     have [measurable]: "v \<in> borel_measurable M" unfolding v_def by auto
@@ -1613,10 +1613,14 @@ next
       also have "... \<le> (\<Sum>n. \<bar>u (n + N) x\<bar>)"
         apply (rule summable_rabs, subst summable_iff_shift) using ** by auto
       also have "... \<le> (\<Sum>n. (1/2)^(n + N))"
-        apply (rule suminf_le)
-        apply (intro allI) using *[of "_ + N"] apply simp
-        apply (subst summable_iff_shift) using ** apply simp
-        apply (subst summable_iff_shift) using summable_geometric[of "1/2"] by auto
+      proof (rule suminf_le)
+        show "\<And>n. \<bar>u (n + N) x\<bar> \<le> (1/2) ^ (n + N)"
+          using *[of "_ + N"] by simp
+        show "summable (\<lambda>n. \<bar>u (n + N) x\<bar>)"
+          using ** by (subst summable_iff_shift) simp
+        show "summable (\<lambda>n. (1/2::real) ^ (n + N))"
+          using summable_geometric [of "1/2"] by (subst summable_iff_shift) simp
+      qed
       also have "... = (1/2)^N * (\<Sum>n. (1/2)^n)"
         by (subst power_add, subst suminf_mult2[symmetric], auto simp add: summable_geometric[of "1/2"])
       also have "... = (1/2)^N * 2"

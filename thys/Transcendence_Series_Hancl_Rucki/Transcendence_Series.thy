@@ -737,7 +737,7 @@ proof-
           by (auto simp add: inverse_eq_divide)
         then show ?thesis by (auto simp:algebra_simps)
       qed
-      then show " \<forall>n. bb (n + (k + 1)) / aa (n + (k + 1)) \<le> 1 / (tt + real n) powr (1 + \<epsilon>)"
+      then show "\<And>n. bb (n + (k + 1)) / aa (n + (k + 1)) \<le> 1 / (tt + real n) powr (1 + \<epsilon>)"
         unfolding ff_def tt_def by auto
       show "summable (\<lambda>i. bb (i + (k + 1)) / aa (i + (k + 1)))" 
         using summable[THEN summable_ignore_initial_segment,of "k+1"] .
