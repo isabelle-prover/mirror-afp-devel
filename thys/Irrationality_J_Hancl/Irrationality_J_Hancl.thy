@@ -234,7 +234,7 @@ proof-
       have "summable ff" unfolding ff_def using assumerational
         using summable_def by blast
       then show " summable (\<lambda>j. ff (j + n))" using summable_iff_shift[of ff n] by auto
-      show " \<forall>i. 0 < ff (i + n)" unfolding ff_def using a assms(4) int_one_le_iff_zero_less by auto
+      show "\<And>i. 0 < ff (i + n)" unfolding ff_def using a assms(4) int_one_le_iff_zero_less by auto
     qed
     ultimately show ?thesis unfolding aa_def ff_def using \<open>q\<ge>1\<close> by auto
   qed

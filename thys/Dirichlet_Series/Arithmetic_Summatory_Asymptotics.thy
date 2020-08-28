@@ -26,7 +26,7 @@ proof -
       by (intro divide_left_mono power_mono) simp_all
   qed (insert inverse_squares_sums, simp add: sums_iff)
   show "(\<Sum>n. 1 / (real (Suc n) + d) ^ 2) \<le> 1 / d"
-  proof (rule sums_le[OF allI])
+  proof (rule sums_le)
     fix n have "1 / (real (Suc n) + d) ^ 2 \<le> 1 / ((real n + d) * (real (Suc n) + d))"
       unfolding power2_eq_square using assms
       by (intro divide_left_mono mult_mono mult_pos_pos add_nonneg_pos) simp_all

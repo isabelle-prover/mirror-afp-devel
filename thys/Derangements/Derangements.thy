@@ -453,7 +453,7 @@ proof (unfold atLeastAtMost_iff, safe)
   from assms show "(exp 1 - (\<Sum>k<n. 1 / fact k :: real)) \<ge> 0"
     by (intro sums_le[OF _ sums_zero sums]) auto
   show "(exp 1 - (\<Sum>k<n. 1 / fact k :: real)) \<le> 2 / fact n"
-  proof (rule sums_le[OF allI])
+  proof (rule sums_le)
     from assms have "(\<lambda>k. (1 / fact n) * (1 / 2)^k :: real) sums ((1 / fact n) * (1 / (1 - 1 / 2)))"
       by (intro sums_mult geometric_sums) simp_all
     also have "\<dots> = 2 / fact n" by simp
