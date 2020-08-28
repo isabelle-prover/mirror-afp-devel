@@ -196,7 +196,7 @@ definition from_F :: "'f inference \<Rightarrow> ('f \<times> 'l) inference set"
   "from_F \<iota> = {\<iota>' \<in> Inf_FL. to_F \<iota>' = \<iota>}"
 
 definition lgc_invar :: "('f inference set \<times> ('f \<times> 'l) set) llist \<Rightarrow> enat \<Rightarrow> bool" where
-  "lgc_invar TNs i \<equiv>
+  "lgc_invar TNs i \<longleftrightarrow>
    Inf_from (active_subset (Liminf_upto_llist (lmap snd TNs) i))
    \<subseteq> \<Union> (from_F ` Liminf_upto_llist (lmap fst TNs) i) \<union> Sup_upto_llist (lmap (Red_I_\<G> \<circ> snd) TNs) i"
 
@@ -268,7 +268,7 @@ lemma lgc_invar_lgc_init:
   assumes
     nnil: "\<not> lnull TNs" and
     n_init: "active_subset (snd (lhd TNs)) = {}" and
-    t_init: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> fst (lhd TNs)"
+    t_init: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd TNs)"
   shows "lgc_invar TNs 0"
   unfolding lgc_invar_def
 proof -
@@ -451,7 +451,7 @@ lemma lgc_invar_lgc:
   assumes
     lgc: "chain (\<Longrightarrow>LGC) TNs" and
     n_init: "active_subset (snd (lhd TNs)) = {}" and
-    t_init: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> fst (lhd TNs)" and
+    t_init: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd TNs)" and
     i_lt: "i < llength TNs"
   shows "lgc_invar TNs i"
   using i_lt
@@ -477,7 +477,7 @@ lemma lgc_fair_new_proof:
     lgc: "chain (\<Longrightarrow>LGC) TNs" and
     n_init: "active_subset (snd (lhd TNs)) = {}" and
     n_lim: "passive_subset (Liminf_llist (lmap snd TNs)) = {}" and
-    t_init: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> fst (lhd TNs)" and
+    t_init: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd TNs)" and
     t_lim: "Liminf_llist (lmap fst TNs) = {}"
   shows "fair (lmap snd TNs)"
   unfolding fair_def llist.map_comp

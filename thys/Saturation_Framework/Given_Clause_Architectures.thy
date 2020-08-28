@@ -748,8 +748,7 @@ inductive step :: "'f inference set \<times> ('f \<times> 'l) set \<Rightarrow>
   delete_orphans: "T1 = T2 \<union> T' \<Longrightarrow>
     T' \<inter> no_labels.Inf_from (fst ` (active_subset N)) = {} \<Longrightarrow> (T1, N) \<Longrightarrow>LGC (T2, N)"
 
-lemma premise_free_inf_always_from:
-  "\<iota> \<in> Inf_F \<Longrightarrow> length (prems_of \<iota>) = 0 \<Longrightarrow> \<iota> \<in> no_labels.Inf_from N"
+lemma premise_free_inf_always_from: "\<iota> \<in> Inf_F \<Longrightarrow> prems_of \<iota> = [] \<Longrightarrow> \<iota> \<in> no_labels.Inf_from N"
   unfolding no_labels.Inf_from_def by simp
 
 lemma one_step_equiv: "(T1, N1) \<Longrightarrow>LGC (T2, N2) \<Longrightarrow> N1 \<rhd>RedL N2"
@@ -806,7 +805,7 @@ lemma lgc_fair:
     deriv: "chain (\<Longrightarrow>LGC) D" and
     init_state: "active_subset (snd (lhd D)) = {}" and
     final_state: "passive_subset (Liminf_llist (lmap snd D)) = {}" and
-    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> fst (lhd D)" and
+    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd D)" and
     final_schedule: "Liminf_llist (lmap fst D) = {}"
   shows "fair (lmap snd D)"
   unfolding fair_def
@@ -1133,7 +1132,7 @@ theorem lgc_complete_Liminf:
     deriv: "chain (\<Longrightarrow>LGC) D" and
     init_state: "active_subset (snd (lhd D)) = {}" and
     final_state: "passive_subset (Liminf_llist (lmap snd D)) = {}" and
-    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> fst (lhd D)" and
+    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd D)" and
     final_schedule: "Liminf_llist (lmap fst D) = {}" and
     b_in: "B \<in> Bot_F" and
     bot_entailed: "no_labels.entails_\<G> (fst ` snd (lhd D)) {B}"
@@ -1158,7 +1157,7 @@ theorem lgc_complete:
     deriv: "chain (\<Longrightarrow>LGC) D" and
     init_state: "active_subset (snd (lhd D)) = {}" and
     final_state: "passive_subset (Liminf_llist (lmap snd D)) = {}" and
-    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. length (prems_of \<iota>) = 0 \<longrightarrow> \<iota> \<in> fst (lhd D)" and
+    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd D)" and
     final_schedule: "Liminf_llist (lmap fst D) = {}" and
     b_in: "B \<in> Bot_F" and
     bot_entailed: "no_labels.entails_\<G> (fst ` snd (lhd D)) {B}"
