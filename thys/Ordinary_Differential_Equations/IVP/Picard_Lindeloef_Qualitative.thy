@@ -611,7 +611,7 @@ proof (rule ccontr)
     by (auto simp: tt_def closed_segment_eq_real_ivl min_def max_def split: if_split_asm)
 
   have "tt \<in> ?Z"
-  proof (safe intro!: connected_componentI[where t = "{t0 -- t_max} \<union> {t_max -- tt}"])
+  proof (safe intro!: connected_componentI[where T = "{t0 -- t_max} \<union> {t_max -- tt}"])
     fix s assume s: "s \<in> {t_max -- tt}"
     have "{t_max--s} \<subseteq> {t_max -- tt}"
       by (rule closed_segment_subset) (auto simp: s)
