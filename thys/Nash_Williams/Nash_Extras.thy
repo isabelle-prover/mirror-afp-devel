@@ -1,12 +1,9 @@
-section \<open>Library additions\<close>
+section \<open>The Pointwise Less-Than Relation Between Two Sets\<close>
 
 theory Nash_Extras
   imports "HOL-Library.Ramsey" "HOL-Library.Countable_Set"
 
 begin
-
-lemma disjoint_iff: "A \<inter> B = {} \<longleftrightarrow> (\<forall>x. x\<in>A \<longrightarrow> x \<notin> B)"
-  by auto
 
 definition less_sets :: "['a::order set, 'a::order set] \<Rightarrow> bool" where
   "less_sets A B \<equiv> \<forall>x\<in>A. \<forall>y\<in>B. x < y"
@@ -34,6 +31,16 @@ lemma less_sets_UN1: "less_sets (\<Union>\<A>) B \<longleftrightarrow> (\<forall
 
 lemma less_sets_UN2: "less_sets A (\<Union> \<B>) \<longleftrightarrow> (\<forall>B\<in>\<B>. less_sets A B)"
   by (auto simp: less_sets_def)
+
+lemma less_sets_Un1: "less_sets (A \<union> A') B \<longleftrightarrow> less_sets A B \<and> less_sets A' B"
+  by (auto simp: less_sets_def)
+
+lemma less_sets_Un2: "less_sets A (B \<union> B') \<longleftrightarrow> less_sets A B \<and> less_sets A B'"
+  by (auto simp: less_sets_def)
+
+lemma strict_sorted_imp_less_sets:
+  "strict_sorted (as @ bs) \<Longrightarrow> less_sets (list.set as) (list.set bs)"
+  by (simp add: less_sets_def sorted_wrt_append strict_sorted_sorted_wrt)
 
 lemma Sup_nat_less_sets_singleton:
   fixes n::nat

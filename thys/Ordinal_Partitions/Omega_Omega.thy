@@ -2066,7 +2066,7 @@ next
   have lessThan_k: "{..<k} = insert 0 {0<..<k}" if "k>0" for k::nat
     using that by auto
   then have sorted_list_of_set_k: "list_of {..<k} = 0 # list_of {0<..<k}" if "k>0" for k::nat
-    using sorted_list_of_set_insert [of concl: 0 "{0<..<k}"] that by simp
+    using sorted_list_of_set_insert_cons [of concl: 0 "{0<..<k}"] that by simp
 
   define RF where "RF \<equiv> \<lambda>j i. if j = k then QF k (j, m - Suc i) else QF k (j,i)"
   have RF_subset_N: "RF j i \<subseteq> N" if "i<m" for i j
