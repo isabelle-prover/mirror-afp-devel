@@ -9,7 +9,24 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>26 Aug 2020 00:00:00 +0000</pubDate>
+    <pubDate>31 Aug 2020 00:00:00 +0000</pubDate>
+    <item>
+       <title>Practical Algebraic Calculus Checker</title>
+              <link>https://www.isa-afp.org/entries/PAC_Checker.html</link>
+       <guid>https://www.isa-afp.org/entries/PAC_Checker.html</guid>
+       <dc:creator> Mathias Fleury, Daniela Kaufmann       </dc:creator>
+       <pubDate>31 Aug 2020 00:00:00 +0000</pubDate>
+       <description>
+Generating and checking proof certificates is important to increase
+the trust in automated reasoning tools. In recent years formal
+verification using computer algebra became more important and is
+heavily used in automated circuit verification.  An existing proof
+format which covers algebraic reasoning and allows efficient proof
+checking is the practical algebraic calculus (PAC). In this
+development, we present the verified checker Pastèque that is obtained
+by synthesis via the Refinement Framework.  This is the formalization
+going with our FMCAD&#39;20 tool presentation.</description>
+    </item>
     <item>
        <title>Relational Disjoint-Set Forests</title>
               <link>https://www.isa-afp.org/entries/Relational_Disjoint_Set_Forests.html</link>
@@ -574,20 +591,6 @@ reasoning in an under-approximate Hoare logic, mirroring Beringer’s
 result for over-approximate relational logics. We illustrate the
 application of our logic on some small examples in which we provably
 demonstrate the presence of insecurity.</description>
-    </item>
-    <item>
-       <title>Hello World</title>
-              <link>https://www.isa-afp.org/entries/Hello_World.html</link>
-       <guid>https://www.isa-afp.org/entries/Hello_World.html</guid>
-       <dc:creator> Cornelius Diekmann, Lars Hupel       </dc:creator>
-       <pubDate>07 Mar 2020 00:00:00 +0000</pubDate>
-       <description>
-In this article, we present a formalization of the well-known
-&#34;Hello, World!&#34; code, including a formal framework for
-reasoning about IO. Our model is inspired by the handling of IO in
-Haskell. We start by formalizing the 🌍 and embrace the IO monad
-afterwards. Then we present a sample main :: IO (), followed by its
-proof of correctness.</description>
     </item>
   </channel>
 </rss>
